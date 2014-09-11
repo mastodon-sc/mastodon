@@ -1,5 +1,6 @@
 package net.trackmate.model;
 
+import static net.trackmate.util.mempool.ByteUtils.BOOLEAN_SIZE;
 import static net.trackmate.util.mempool.ByteUtils.DOUBLE_SIZE;
 import static net.trackmate.util.mempool.ByteUtils.INT_SIZE;
 import net.imglib2.RealLocalizable;
@@ -20,7 +21,8 @@ public class Spot extends AbstractSpot< ByteMappedElement, Edge > implements Rea
 	protected static final int RADIUS_OFFSET = Z_OFFSET + DOUBLE_SIZE;
 	protected static final int QUALITY_OFFSET = RADIUS_OFFSET + DOUBLE_SIZE;
 	protected static final int FRAME_OFFSET = QUALITY_OFFSET + DOUBLE_SIZE;
-	protected static final int SIZE_IN_BYTES = FRAME_OFFSET + INT_SIZE;
+	protected static final int VISIBILITY_OFFSET = FRAME_OFFSET + INT_SIZE;
+	protected static final int SIZE_IN_BYTES = VISIBILITY_OFFSET + BOOLEAN_SIZE;
 
 	private final AdditionalFeatures additionalFeatures;
 	private final AbstractSpotPool< Spot, ByteMappedElement, ? > pool;
@@ -38,6 +40,7 @@ public class Spot extends AbstractSpot< ByteMappedElement, Edge > implements Rea
 		setZ( z );
 		setRadius( radius );
 		setQuality( quality );
+		setVisibility( false );
 		return this;
 	}
 
@@ -105,6 +108,16 @@ public class Spot extends AbstractSpot< ByteMappedElement, Edge > implements Rea
 	public void setFrame( final int frame )
 	{
 		access.putInt( frame, FRAME_OFFSET );
+	}
+
+	public boolean getVisibility()
+	{
+		return access.getBoolean( VISIBILITY_OFFSET );
+	}
+
+	public void setVisibility( final boolean frame )
+	{
+		access.putBoolean( frame, VISIBILITY_OFFSET );
 	}
 
 	public void putFeature( final String feature, final double value )

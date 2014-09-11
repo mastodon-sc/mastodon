@@ -18,6 +18,14 @@ package net.trackmate.util.mempool;
  */
 public interface MappedElement
 {
+	public void putByte( final byte value, final int offset );
+
+	public byte getByte( final int offset );
+
+	public void putBoolean( final boolean value, final int offset );
+
+	public boolean getBoolean( final int offset );
+
 	public void putInt( final int value, final int offset );
 
 	public int getInt( final int offset );

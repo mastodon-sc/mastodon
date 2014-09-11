@@ -47,6 +47,30 @@ public class ByteMappedElement implements MappedElement
 	}
 
 	@Override
+	public void putByte( final byte value, final int offset )
+	{
+		ByteUtils.putByte( value, dataArray.data, baseOffset + offset );
+	}
+
+	@Override
+	public byte getByte( final int offset )
+	{
+		return ByteUtils.getByte( dataArray.data, baseOffset + offset );
+	}
+
+	@Override
+	public void putBoolean( final boolean value, final int offset )
+	{
+		ByteUtils.putBoolean( value, dataArray.data, baseOffset + offset );
+	}
+
+	@Override
+	public boolean getBoolean( final int offset )
+	{
+		return ByteUtils.getBoolean( dataArray.data, baseOffset + offset );
+	}
+
+	@Override
 	public void putInt( final int value, final int offset )
 	{
 		ByteUtils.putInt( value, dataArray.data, baseOffset + offset );

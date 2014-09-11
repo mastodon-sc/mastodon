@@ -2,6 +2,10 @@ package net.trackmate.util.mempool;
 
 public class ByteUtils
 {
+	public static final int BYTE_SIZE = 1;
+
+	public static final int BOOLEAN_SIZE = 1;
+
 	public static final int INT_SIZE = 4;
 
 	public static final int LONG_SIZE = 8;
@@ -11,6 +15,26 @@ public class ByteUtils
 	public static final int DOUBLE_SIZE = 8;
 
 	public static final int INDEX_SIZE = INT_SIZE;
+
+	public static void putByte( final byte value, final byte[] array, final int offset )
+	{
+		array[ offset ] = value;
+	}
+
+	public static byte getByte( final byte[] array, final int offset )
+	{
+		return array[ offset ];
+	}
+
+	public static void putBoolean( final boolean value, final byte[] array, final int offset )
+	{
+		array[ offset ] = value ? ( byte ) 1 : ( byte ) 0;
+	}
+
+	public static boolean getBoolean( final byte[] array, final int offset )
+	{
+		return array[ offset ] == ( byte ) 0 ? false : true;
+	}
 
 	public static void putInt( final int value, final byte[] array, final int offset )
 	{
