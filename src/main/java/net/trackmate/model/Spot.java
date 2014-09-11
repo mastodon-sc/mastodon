@@ -1,6 +1,7 @@
 package net.trackmate.model;
 
 import static net.trackmate.util.mempool.ByteUtils.DOUBLE_SIZE;
+import static net.trackmate.util.mempool.ByteUtils.INT_SIZE;
 import net.trackmate.model.abstractmodel.AbstractSpot;
 import net.trackmate.model.abstractmodel.AbstractSpotPool;
 import net.trackmate.model.abstractmodel.AdditionalFeatures;
@@ -15,7 +16,10 @@ public class Spot extends AbstractSpot< ByteMappedElement, Edge >
 	protected static final int X_OFFSET = AbstractSpot.SIZE_IN_BYTES;
 	protected static final int Y_OFFSET = X_OFFSET + DOUBLE_SIZE;
 	protected static final int Z_OFFSET = Y_OFFSET + DOUBLE_SIZE;
-	protected static final int SIZE_IN_BYTES = Z_OFFSET + DOUBLE_SIZE;
+	protected static final int RADIUS_OFFSET = Z_OFFSET + DOUBLE_SIZE;
+	protected static final int QUALITY_OFFSET = RADIUS_OFFSET + DOUBLE_SIZE;
+	protected static final int FRAME_OFFSET = QUALITY_OFFSET + DOUBLE_SIZE;
+	protected static final int SIZE_IN_BYTES = FRAME_OFFSET + INT_SIZE;
 
 	private final AdditionalFeatures additionalFeatures;
 
@@ -59,6 +63,26 @@ public class Spot extends AbstractSpot< ByteMappedElement, Edge >
 	public void setZ( final double z )
 	{
 		access.putDouble( z, Z_OFFSET );
+	}
+
+	public double getRadius()
+	{
+		return access.getDouble( RADIUS_OFFSET );
+	}
+
+	public void setRadius( final double radius )
+	{
+		access.putDouble( radius, RADIUS_OFFSET );
+	}
+
+	public double getQuality()
+	{
+		return access.getDouble( QUALITY_OFFSET );
+	}
+
+	public void setQuality( final double quality )
+	{
+		access.putDouble( quality, QUALITY_OFFSET );
 	}
 
 	public void putFeature( final String feature, final double value )
