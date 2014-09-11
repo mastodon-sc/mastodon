@@ -3,6 +3,8 @@ package net.trackmate.model;
 import static net.trackmate.util.mempool.ByteUtils.DOUBLE_SIZE;
 import net.trackmate.model.abstractmodel.AbstractSpot;
 import net.trackmate.model.abstractmodel.AbstractSpotPool;
+import net.trackmate.model.abstractmodel.AdditionalFeatures;
+import net.trackmate.model.abstractmodel.AdditionalFeatures.Feature;
 import net.trackmate.model.abstractmodel.AllSpotEdges;
 import net.trackmate.model.abstractmodel.IncomingSpotEdges;
 import net.trackmate.model.abstractmodel.OutgoingSpotEdges;
@@ -15,13 +17,12 @@ public class Spot extends AbstractSpot< ByteMappedElement, Edge >
 	protected static final int Z_OFFSET = Y_OFFSET + DOUBLE_SIZE;
 	protected static final int SIZE_IN_BYTES = Z_OFFSET + DOUBLE_SIZE;
 
+	private final AdditionalFeatures additionalFeatures;
+
 	@Override
-	protected void init()
+	protected void setToUninitializedState()
 	{
-		super.init();
-		setX( 0 );
-		setY( 0 );
-		setZ( 0 );
+		super.setToUninitializedState();
 	}
 
 	@Override
@@ -60,6 +61,21 @@ public class Spot extends AbstractSpot< ByteMappedElement, Edge >
 		access.putDouble( z, Z_OFFSET );
 	}
 
+	public void putFeature( final String feature, final double value )
+	{
+		additionalFeatures.putFeature( feature, value, getInternalPoolIndex() );
+	}
+
+	public Feature getFeature( final String feature, final Feature value )
+	{
+		return additionalFeatures.getFeature( feature, getInternalPoolIndex(), value );
+	}
+
+	public Double getFeature( final String feature )
+	{
+		return additionalFeatures.getFeature( feature, getInternalPoolIndex() );
+	}
+
 	@Override
 	public String toString()
 	{
@@ -84,23 +100,9 @@ public class Spot extends AbstractSpot< ByteMappedElement, Edge >
 		return super.edges();
 	}
 
-	private Spot( final AbstractSpotPool< Spot, ByteMappedElement, ? > pool )
+	Spot( final AbstractSpotPool< Spot, ByteMappedElement, ? > pool, final AdditionalFeatures additionalSpotFeatures )
 	{
 		super( pool );
+		this.additionalFeatures = additionalSpotFeatures;
 	}
-
-	public static final AbstractSpot.Factory< Spot, ByteMappedElement > factory = new AbstractSpot.Factory< Spot, ByteMappedElement >()
-	{
-		@Override
-		public int getSpotSizeInBytes()
-		{
-			return SIZE_IN_BYTES;
-		}
-
-		@Override
-		public Spot createEmptySpotRef( final AbstractSpotPool< Spot, ByteMappedElement, ? > pool )
-		{
-			return new Spot( pool );
-		}
-	};
 }

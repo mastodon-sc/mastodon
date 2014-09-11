@@ -16,9 +16,9 @@ public class AbstractSpotPool< S extends AbstractSpot< T, E >, T extends MappedE
 {
 	private static AtomicInteger IDcounter = new AtomicInteger( -1 );
 
-	final Pool< T > memPool;
-
 	private final AbstractSpot.Factory< S, T > spotFactory;
+
+	final Pool< T > memPool;
 
 	private final TIntLongMap spotIdToIndexMap;
 
@@ -31,7 +31,6 @@ public class AbstractSpotPool< S extends AbstractSpot< T, E >, T extends MappedE
 	{
 		this.spotFactory = spotFactory;
 		this.memPool = poolFactory.createPool( initialCapacity, spotFactory.getSpotSizeInBytes() );
-		// TODO: synchronize with a ReadWriteLock to allow multiple threads to get()
 		this.spotIdToIndexMap = new TIntLongHashMap( initialCapacity, Constants.DEFAULT_LOAD_FACTOR, -1, -1 );
 	}
 
@@ -48,7 +47,7 @@ public class AbstractSpotPool< S extends AbstractSpot< T, E >, T extends MappedE
 
 	public S createEmptySpotRef()
 	{
-		final S spot = spotFactory.createEmptySpotRef( this );
+		final S spot = spotFactory.createEmptySpotRef();
 		if ( edgePool != null )
 			spot.linkEdgePool( edgePool );
 		return spot;
@@ -152,7 +151,7 @@ public class AbstractSpotPool< S extends AbstractSpot< T, E >, T extends MappedE
 	{
 		final long index = memPool.create();
 		spot.updateAccess( memPool, index );
-		spot.init();
+		spot.setToUninitializedState();
 		spot.setId( ID );
 		spotIdToIndexMap.put( ID, index );
 	}

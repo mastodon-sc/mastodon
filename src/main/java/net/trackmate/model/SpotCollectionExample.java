@@ -4,7 +4,7 @@ public class SpotCollectionExample
 {
 	public static void main( final String[] args )
 	{
-		final SpotCollection c = new SpotCollection( 4 );
+		final SpotCollection c = new SpotCollection();
 		System.out.println( c + "\n" );
 
 		for ( int i = 0; i < 5; ++i )

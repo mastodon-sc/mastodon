@@ -2,12 +2,15 @@ package net.trackmate.model;
 
 import java.util.Iterator;
 
+import net.trackmate.model.abstractmodel.AbstractEdge;
 import net.trackmate.model.abstractmodel.AbstractEdgePool;
+import net.trackmate.model.abstractmodel.AbstractSpot;
 import net.trackmate.model.abstractmodel.AbstractSpotPool;
+import net.trackmate.model.abstractmodel.AdditionalFeatures;
 import net.trackmate.util.mempool.ByteMappedElement;
 import net.trackmate.util.mempool.ByteMappedElementArray;
-import net.trackmate.util.mempool.SingleArrayPool;
 import net.trackmate.util.mempool.Pool.Factory;
+import net.trackmate.util.mempool.SingleArrayPool;
 
 public class SpotCollection implements Iterable< Spot >
 {
@@ -17,11 +20,53 @@ public class SpotCollection implements Iterable< Spot >
 
 	final AbstractEdgePool< Edge, ByteMappedElement, Spot > edgePool;
 
+	final AdditionalFeatures additionalSpotFeatures;
+
+	final AdditionalFeatures additionalEdgeFeatures;
+
+	final AbstractSpot.Factory< Spot, ByteMappedElement > spotFactory = new AbstractSpot.Factory< Spot, ByteMappedElement >()
+	{
+		@Override
+		public int getSpotSizeInBytes()
+		{
+			return Spot.SIZE_IN_BYTES;
+		}
+
+		@Override
+		public Spot createEmptySpotRef()
+		{
+			return new Spot( spotPool, additionalSpotFeatures );
+		}
+	};
+
+	final AbstractEdge.Factory< Edge, ByteMappedElement, Spot > edgeFactory = new AbstractEdge.Factory< Edge, ByteMappedElement, Spot >()
+	{
+		@Override
+		public int getEdgeSizeInBytes()
+		{
+			return Edge.SIZE_IN_BYTES;
+		}
+
+		@Override
+		public Edge createEmptyEdgeRef()
+		{
+			return new Edge( edgePool, additionalEdgeFeatures );
+		}
+	};
+
+
+	public SpotCollection()
+	{
+		this( 10000 );
+	}
+
 	public SpotCollection( final int initialCapacity )
 	{
-		spotPool = new AbstractSpotPool< Spot, ByteMappedElement, Edge >( initialCapacity, Spot.factory, poolFactory );
-		edgePool = new AbstractEdgePool< Edge, ByteMappedElement, Spot >( initialCapacity, Edge.factory, poolFactory, spotPool );
+		spotPool = new AbstractSpotPool< Spot, ByteMappedElement, Edge >( initialCapacity, spotFactory, poolFactory );
+		edgePool = new AbstractEdgePool< Edge, ByteMappedElement, Spot >( initialCapacity, edgeFactory, poolFactory, spotPool );
 		spotPool.linkEdgePool( edgePool );
+		additionalSpotFeatures = new AdditionalFeatures( initialCapacity );
+		additionalEdgeFeatures = new AdditionalFeatures( initialCapacity );
 	}
 
 	public void clear()

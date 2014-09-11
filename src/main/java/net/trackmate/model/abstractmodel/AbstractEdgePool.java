@@ -33,7 +33,7 @@ public class AbstractEdgePool< E extends AbstractEdge< T, ? >, T extends MappedE
 
 	public E createEmptyEdgeRef()
 	{
-		return edgeFactory.createEmptyEdgeRef( this );
+		return edgeFactory.createEmptyEdgeRef();
 	}
 
 	public E addEdge( final AbstractSpot< ?, ? > source, final AbstractSpot< ?, ? > target )
@@ -204,7 +204,7 @@ public class AbstractEdgePool< E extends AbstractEdge< T, ? >, T extends MappedE
 	{
 		final long index = memPool.create();
 		edge.updateAccess( memPool, index );
-		edge.init();
+		edge.setToUninitializedState();
 	}
 
 	void getByInternalPoolIndex( final long index, final E edge )

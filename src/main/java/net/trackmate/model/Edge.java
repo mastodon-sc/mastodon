@@ -2,29 +2,15 @@ package net.trackmate.model;
 
 import net.trackmate.model.abstractmodel.AbstractEdge;
 import net.trackmate.model.abstractmodel.AbstractEdgePool;
+import net.trackmate.model.abstractmodel.AdditionalFeatures;
+import net.trackmate.model.abstractmodel.AdditionalFeatures.Feature;
 import net.trackmate.util.mempool.ByteMappedElement;
 
 public class Edge extends AbstractEdge< ByteMappedElement, Spot >
 {
-	private Edge( final AbstractEdgePool< ?, ByteMappedElement, Spot > pool )
-	{
-		super( pool );
-	}
+	protected static final int SIZE_IN_BYTES = AbstractEdge.SIZE_IN_BYTES;
 
-	public static final AbstractEdge.Factory< Edge, ByteMappedElement, Spot > factory = new AbstractEdge.Factory< Edge, ByteMappedElement, Spot >()
-	{
-		@Override
-		public int getEdgeSizeInBytes()
-		{
-			return SIZE_IN_BYTES;
-		}
-
-		@Override
-		public Edge createEmptyEdgeRef( final AbstractEdgePool< ?, ByteMappedElement, Spot > pool )
-		{
-			return new Edge( pool );
-		}
-	};
+	private final AdditionalFeatures additionalFeatures;
 
 	public Spot getSourceSpot()
 	{
@@ -48,10 +34,30 @@ public class Edge extends AbstractEdge< ByteMappedElement, Spot >
 		return super.getTargetSpot( spot );
 	}
 
+	public void putFeature( final String feature, final double value )
+	{
+		additionalFeatures.putFeature( feature, value, getInternalPoolIndex() );
+	}
+
+	public Feature getFeature( final String feature, final Feature value )
+	{
+		return additionalFeatures.getFeature( feature, getInternalPoolIndex(), value );
+	}
+
+	public Double getFeature( final String feature )
+	{
+		return additionalFeatures.getFeature( feature, getInternalPoolIndex() );
+	}
+
 	@Override
 	public String toString()
 	{
 		return String.format( "Edge( %d -> %d )", getSourceSpot().getId(), getTargetSpot().getId() );
 	}
 
+	Edge( final AbstractEdgePool< ?, ByteMappedElement, Spot > pool, final AdditionalFeatures additionalEdgeFeatures )
+	{
+		super( pool );
+		this.additionalFeatures = additionalEdgeFeatures;
+	}
 }

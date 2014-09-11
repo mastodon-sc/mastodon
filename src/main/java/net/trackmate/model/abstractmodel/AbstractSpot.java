@@ -69,7 +69,7 @@ public class AbstractSpot< T extends MappedElement, E extends AbstractEdge< ?, ?
 		access.putLong( index, FIRST_OUT_EDGE_INDEX_OFFSET );
 	}
 
-	protected void init()
+	protected void setToUninitializedState()
 	{
 		setFirstInEdgeIndex( -1 );
 		setFirstOutEdgeIndex( -1 );
@@ -120,6 +120,6 @@ public class AbstractSpot< T extends MappedElement, E extends AbstractEdge< ?, ?
 	{
 		public int getSpotSizeInBytes();
 
-		public S createEmptySpotRef( final AbstractSpotPool< S, T, ? > pool );
+		public S createEmptySpotRef();
 	}
 }
