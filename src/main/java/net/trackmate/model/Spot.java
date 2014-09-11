@@ -10,10 +10,10 @@ import net.trackmate.util.mempool.ByteMappedElement;
 
 public class Spot extends AbstractSpot< ByteMappedElement, Edge >
 {
-	public static final int X_OFFSET = AbstractSpot.SIZE_IN_BYTES;
-	public static final int Y_OFFSET = X_OFFSET + DOUBLE_SIZE;
-	public static final int Z_OFFSET = Y_OFFSET + DOUBLE_SIZE;
-	public static final int SIZE_IN_BYTES = Z_OFFSET + DOUBLE_SIZE;
+	protected static final int X_OFFSET = AbstractSpot.SIZE_IN_BYTES;
+	protected static final int Y_OFFSET = X_OFFSET + DOUBLE_SIZE;
+	protected static final int Z_OFFSET = Y_OFFSET + DOUBLE_SIZE;
+	protected static final int SIZE_IN_BYTES = Z_OFFSET + DOUBLE_SIZE;
 
 	@Override
 	protected void init()

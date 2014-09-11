@@ -6,11 +6,11 @@ import net.trackmate.util.mempool.Pool;
 
 public class AbstractEdge< T extends MappedElement, S extends AbstractSpot< ?, ? > >
 {
-	public static final int SOURCE_INDEX_OFFSET = 0;
-	public static final int TARGET_INDEX_OFFSET = SOURCE_INDEX_OFFSET + LONG_SIZE;
-	public static final int NEXT_SOURCE_EDGE_INDEX_OFFSET = TARGET_INDEX_OFFSET + LONG_SIZE;
-	public static final int NEXT_TARGET_EDGE_INDEX_OFFSET = NEXT_SOURCE_EDGE_INDEX_OFFSET + LONG_SIZE;
-	public static final int SIZE_IN_BYTES = NEXT_TARGET_EDGE_INDEX_OFFSET + LONG_SIZE;
+	protected static final int SOURCE_INDEX_OFFSET = 0;
+	protected static final int TARGET_INDEX_OFFSET = SOURCE_INDEX_OFFSET + LONG_SIZE;
+	protected static final int NEXT_SOURCE_EDGE_INDEX_OFFSET = TARGET_INDEX_OFFSET + LONG_SIZE;
+	protected static final int NEXT_TARGET_EDGE_INDEX_OFFSET = NEXT_SOURCE_EDGE_INDEX_OFFSET + LONG_SIZE;
+	protected static final int SIZE_IN_BYTES = NEXT_TARGET_EDGE_INDEX_OFFSET + LONG_SIZE;
 
 	protected final T access;
 

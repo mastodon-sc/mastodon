@@ -14,10 +14,10 @@ import net.trackmate.util.mempool.Pool;
  */
 public class AbstractSpot< T extends MappedElement, E extends AbstractEdge< ?, ? > >
 {
-	public static final int ID_OFFSET = 0;
-	public static final int FIRST_IN_EDGE_INDEX_OFFSET = ID_OFFSET + INT_SIZE;
-	public static final int FIRST_OUT_EDGE_INDEX_OFFSET = FIRST_IN_EDGE_INDEX_OFFSET + LONG_SIZE;
-	public static final int SIZE_IN_BYTES = FIRST_OUT_EDGE_INDEX_OFFSET + LONG_SIZE;
+	protected static final int ID_OFFSET = 0;
+	protected static final int FIRST_IN_EDGE_INDEX_OFFSET = ID_OFFSET + INT_SIZE;
+	protected static final int FIRST_OUT_EDGE_INDEX_OFFSET = FIRST_IN_EDGE_INDEX_OFFSET + LONG_SIZE;
+	protected static final int SIZE_IN_BYTES = FIRST_OUT_EDGE_INDEX_OFFSET + LONG_SIZE;
 
 	protected final T access;
 
