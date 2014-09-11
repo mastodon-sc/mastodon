@@ -1,0 +1,16 @@
+package pietzsch.spots;
+
+import java.util.Iterator;
+
+
+public interface SpotEdges< E > extends Iterable< E >
+{
+	public int size();
+
+	public E get( final int i );
+
+	// garbage-free version
+	public E get( int i, final E edge );
+
+	public Iterator< E > safe_iterator();
+}
