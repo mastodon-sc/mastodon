@@ -1,12 +1,12 @@
-package pietzsch;
+package net.trackmate.model;
 
-import static pietzsch.mappedelementpool.ByteUtils.DOUBLE_SIZE;
-import pietzsch.mappedelementpool.ByteMappedElement;
-import pietzsch.spots.AbstractSpot;
-import pietzsch.spots.AbstractSpotPool;
-import pietzsch.spots.IncomingSpotEdges;
-import pietzsch.spots.OutgoingSpotEdges;
-import pietzsch.spots.AllSpotEdges;
+import static net.trackmate.util.mempool.ByteUtils.DOUBLE_SIZE;
+import net.trackmate.model.abstractmodel.AbstractSpot;
+import net.trackmate.model.abstractmodel.AbstractSpotPool;
+import net.trackmate.model.abstractmodel.AllSpotEdges;
+import net.trackmate.model.abstractmodel.IncomingSpotEdges;
+import net.trackmate.model.abstractmodel.OutgoingSpotEdges;
+import net.trackmate.util.mempool.ByteMappedElement;
 
 public class Spot extends AbstractSpot< ByteMappedElement, Edge >
 {

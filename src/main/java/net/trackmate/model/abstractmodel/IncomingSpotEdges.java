@@ -1,4 +1,4 @@
-package pietzsch.spots;
+package net.trackmate.model.abstractmodel;
 
 import java.util.Iterator;
 

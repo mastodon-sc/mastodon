@@ -1,4 +1,4 @@
-package pietzsch.spots;
+package net.trackmate.model.abstractmodel;
 
 import gnu.trove.impl.Constants;
 import gnu.trove.iterator.TIntLongIterator;
@@ -9,8 +9,8 @@ import java.util.Iterator;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import pietzsch.mappedelementpool.MappedElement;
-import pietzsch.mappedelementpool.Pool;
+import net.trackmate.util.mempool.MappedElement;
+import net.trackmate.util.mempool.Pool;
 
 public class AbstractSpotPool< S extends AbstractSpot< T, E >, T extends MappedElement, E extends AbstractEdge< ?, ? > > implements Iterable< S >
 {

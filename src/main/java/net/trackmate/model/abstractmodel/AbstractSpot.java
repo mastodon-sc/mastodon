@@ -1,9 +1,9 @@
-package pietzsch.spots;
+package net.trackmate.model.abstractmodel;
 
-import static pietzsch.mappedelementpool.ByteUtils.INT_SIZE;
-import static pietzsch.mappedelementpool.ByteUtils.LONG_SIZE;
-import pietzsch.mappedelementpool.MappedElement;
-import pietzsch.mappedelementpool.Pool;
+import static net.trackmate.util.mempool.ByteUtils.INT_SIZE;
+import static net.trackmate.util.mempool.ByteUtils.LONG_SIZE;
+import net.trackmate.util.mempool.MappedElement;
+import net.trackmate.util.mempool.Pool;
 
 /**
  * TODO: javadoc

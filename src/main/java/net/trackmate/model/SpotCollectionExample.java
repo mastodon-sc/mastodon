@@ -1,6 +1,6 @@
-package pietzsch;
+package net.trackmate.model;
 
-public class SpotPoolExample
+public class SpotCollectionExample
 {
 	public static void main( final String[] args )
 	{

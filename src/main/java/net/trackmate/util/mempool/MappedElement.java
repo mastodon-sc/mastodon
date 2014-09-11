@@ -1,4 +1,4 @@
-package pietzsch.mappedelementpool;
+package net.trackmate.util.mempool;
 
 /**
  * Maps into region of underlying memory area (a primitive array or similar).

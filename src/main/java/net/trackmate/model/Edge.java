@@ -1,8 +1,8 @@
-package pietzsch;
+package net.trackmate.model;
 
-import pietzsch.mappedelementpool.ByteMappedElement;
-import pietzsch.spots.AbstractEdge;
-import pietzsch.spots.AbstractEdgePool;
+import net.trackmate.model.abstractmodel.AbstractEdge;
+import net.trackmate.model.abstractmodel.AbstractEdgePool;
+import net.trackmate.util.mempool.ByteMappedElement;
 
 public class Edge extends AbstractEdge< ByteMappedElement, Spot >
 {

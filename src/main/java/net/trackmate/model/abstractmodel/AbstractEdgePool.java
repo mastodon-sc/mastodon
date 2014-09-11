@@ -1,11 +1,11 @@
-package pietzsch.spots;
+package net.trackmate.model.abstractmodel;
 
 import java.util.Iterator;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
-import pietzsch.mappedelementpool.MappedElement;
-import pietzsch.mappedelementpool.Pool;
-import pietzsch.mappedelementpool.Pool.PoolIterator;
+import net.trackmate.util.mempool.MappedElement;
+import net.trackmate.util.mempool.Pool;
+import net.trackmate.util.mempool.Pool.PoolIterator;
 
 public class AbstractEdgePool< E extends AbstractEdge< T, ? >, T extends MappedElement, S extends AbstractSpot< ?, ? > > implements Iterable< E >
 {

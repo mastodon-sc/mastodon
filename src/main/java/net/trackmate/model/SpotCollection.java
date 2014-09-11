@@ -1,13 +1,13 @@
-package pietzsch;
+package net.trackmate.model;
 
 import java.util.Iterator;
 
-import pietzsch.mappedelementpool.ByteMappedElement;
-import pietzsch.mappedelementpool.ByteMappedElementArray;
-import pietzsch.mappedelementpool.Pool.Factory;
-import pietzsch.mappedelementpool.SingleArrayPool;
-import pietzsch.spots.AbstractEdgePool;
-import pietzsch.spots.AbstractSpotPool;
+import net.trackmate.model.abstractmodel.AbstractEdgePool;
+import net.trackmate.model.abstractmodel.AbstractSpotPool;
+import net.trackmate.util.mempool.ByteMappedElement;
+import net.trackmate.util.mempool.ByteMappedElementArray;
+import net.trackmate.util.mempool.SingleArrayPool;
+import net.trackmate.util.mempool.Pool.Factory;
 
 public class SpotCollection implements Iterable< Spot >
 {
