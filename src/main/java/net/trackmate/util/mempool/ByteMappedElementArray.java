@@ -12,16 +12,16 @@ public class ByteMappedElementArray implements MappedElementArray< ByteMappedEle
 
 	final int bytesPerElement;
 
-	private final long size;
+	private final int size;
 
-	private ByteMappedElementArray( final long numElements, final int bytesPerElement )
+	private ByteMappedElementArray( final int numElements, final int bytesPerElement )
 	{
 		this ( numElements, bytesPerElement, null );
 	}
 
-	private ByteMappedElementArray( final long numElements, final int bytesPerElement, final ByteMappedElementArray copyFrom )
+	private ByteMappedElementArray( final int numElements, final int bytesPerElement, final ByteMappedElementArray copyFrom )
 	{
-		final long numBytes = numElements * bytesPerElement;
+		final long numBytes = ( long ) numElements * bytesPerElement;
 		if ( numBytes > Integer.MAX_VALUE )
 			throw new IllegalArgumentException(
 					"trying to create a " + getClass().getName() + " with more than " + maxSize() + " elements of " + bytesPerElement + " bytes.");
@@ -37,13 +37,13 @@ public class ByteMappedElementArray implements MappedElementArray< ByteMappedEle
 	}
 
 	@Override
-	public long size()
+	public int size()
 	{
 		return size;
 	}
 
 	@Override
-	public long maxSize()
+	public int maxSize()
 	{
 		return Integer.MAX_VALUE / bytesPerElement;
 	}
@@ -55,7 +55,7 @@ public class ByteMappedElementArray implements MappedElementArray< ByteMappedEle
 	}
 
 	@Override
-	public void updateAccess( final ByteMappedElement access, final long index )
+	public void updateAccess( final ByteMappedElement access, final int index )
 	{
 		access.setDataArray( this );
 		access.setElementIndex( ( int ) index );
@@ -64,13 +64,13 @@ public class ByteMappedElementArray implements MappedElementArray< ByteMappedEle
 	public static final MappedElementArray.Factory< ByteMappedElementArray > factory = new MappedElementArray.Factory< ByteMappedElementArray >()
 	{
 		@Override
-		public ByteMappedElementArray createArray( final long numElements, final int bytesPerElement )
+		public ByteMappedElementArray createArray( final int numElements, final int bytesPerElement )
 		{
 			return new ByteMappedElementArray( numElements, bytesPerElement );
 		}
 
 		@Override
-		public ByteMappedElementArray createArrayAndCopy( final long numElements, final int bytesPerElement, final ByteMappedElementArray copyFrom )
+		public ByteMappedElementArray createArrayAndCopy( final int numElements, final int bytesPerElement, final ByteMappedElementArray copyFrom )
 		{
 			return new ByteMappedElementArray( numElements, bytesPerElement, copyFrom );
 		}

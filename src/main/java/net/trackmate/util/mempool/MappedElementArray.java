@@ -9,18 +9,18 @@ package net.trackmate.util.mempool;
  */
 public interface MappedElementArray< T extends MappedElement >
 {
-	public long size();
+	public int size();
 
-	public long maxSize();
+	public int maxSize();
 
 	public T createAccess();
 
-	public void updateAccess( final T access, final long index );
+	public void updateAccess( final T access, final int index );
 
 	public static interface Factory< A > // A extends MappedElementArray< T >
 	{
-		public A createArray( final long numElements, final int bytesPerElement );
+		public A createArray( final int numElements, final int bytesPerElement );
 
-		public A createArrayAndCopy( final long numElements, final int bytesPerElement, final A copyFrom );
+		public A createArrayAndCopy( final int numElements, final int bytesPerElement, final A copyFrom );
 	}
 }

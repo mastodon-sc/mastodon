@@ -53,7 +53,7 @@ public class AbstractEdgePool< E extends AbstractEdge< T, ? >, T extends MappedE
 
 		final E tmp = getTmpEdgeRef();
 
-		final long sourceOutIndex = source.getFirstOutEdgeIndex();
+		final int sourceOutIndex = source.getFirstOutEdgeIndex();
 		if ( sourceOutIndex < 0 )
 		{
 			// source has no outgoing edge yet. Set this one as the first.
@@ -63,7 +63,7 @@ public class AbstractEdgePool< E extends AbstractEdge< T, ? >, T extends MappedE
 		{
 			// source has outgoing edges. Append this one to the end of the linked list.
 			getByInternalPoolIndex( sourceOutIndex, tmp );
-			long nextSourceEdgeIndex = tmp.getNextSourceEdgeIndex();
+			int nextSourceEdgeIndex = tmp.getNextSourceEdgeIndex();
 			while( nextSourceEdgeIndex >= 0 )
 			{
 				getByInternalPoolIndex( nextSourceEdgeIndex, tmp );
@@ -72,7 +72,7 @@ public class AbstractEdgePool< E extends AbstractEdge< T, ? >, T extends MappedE
 			tmp.setNextSourceEdgeIndex( edge.getInternalPoolIndex() );
 		}
 
-		final long targetInIndex = target.getFirstInEdgeIndex();
+		final int targetInIndex = target.getFirstInEdgeIndex();
 		if ( targetInIndex < 0 )
 		{
 			// target has no incoming edge yet. Set this one as the first.
@@ -82,7 +82,7 @@ public class AbstractEdgePool< E extends AbstractEdge< T, ? >, T extends MappedE
 		{
 			// target has incoming edges. Append this one to the end of the linked list.
 			getByInternalPoolIndex( targetInIndex, tmp );
-			long nextTargetEdgeIndex = tmp.getNextTargetEdgeIndex();
+			int nextTargetEdgeIndex = tmp.getNextTargetEdgeIndex();
 			while( nextTargetEdgeIndex >= 0 )
 			{
 				getByInternalPoolIndex( nextTargetEdgeIndex, tmp );
@@ -103,7 +103,7 @@ public class AbstractEdgePool< E extends AbstractEdge< T, ? >, T extends MappedE
 	// garbage-free version
 	public E getEdge( final AbstractSpot< ?, ? > source, final AbstractSpot< ?, ? > target, final E edge )
 	{
-		long nextSourceEdgeIndex = source.getFirstOutEdgeIndex();
+		int nextSourceEdgeIndex = source.getFirstOutEdgeIndex();
 		if ( nextSourceEdgeIndex < 0 )
 			return null;
 		getByInternalPoolIndex( nextSourceEdgeIndex, edge );
@@ -125,7 +125,7 @@ public class AbstractEdgePool< E extends AbstractEdge< T, ? >, T extends MappedE
 		final E tmpEdge = getTmpEdgeRef();
 
 		// release all outgoing edges
-		long index = spot.getFirstOutEdgeIndex();
+		int index = spot.getFirstOutEdgeIndex();
 		spot.setFirstOutEdgeIndex( -1 );
 		while ( index >= 0 )
 		{
@@ -180,7 +180,7 @@ public class AbstractEdgePool< E extends AbstractEdge< T, ? >, T extends MappedE
 			@Override
 			public E next()
 			{
-				final long index = pi.next();
+				final int index = pi.next();
 				edge.updateAccess( memPool, index );
 				return edge;
 			}
@@ -202,17 +202,17 @@ public class AbstractEdgePool< E extends AbstractEdge< T, ? >, T extends MappedE
 
 	private void create( final E edge )
 	{
-		final long index = memPool.create();
+		final int index = memPool.create();
 		edge.updateAccess( memPool, index );
 		edge.setToUninitializedState();
 	}
 
-	void getByInternalPoolIndex( final long index, final E edge )
+	void getByInternalPoolIndex( final int index, final E edge )
 	{
 		edge.updateAccess( memPool, index );
 	}
 
-	private void releaseByInternalPoolIndex( final long index )
+	private void releaseByInternalPoolIndex( final int index )
 	{
 		memPool.free( index );
 	}
@@ -220,7 +220,7 @@ public class AbstractEdgePool< E extends AbstractEdge< T, ? >, T extends MappedE
 	private void unlinkFromSource( final E edge, final E tmpEdge, final S tmpSpot )
 	{
 		spotPool.getByInternalPoolIndex( edge.getSourceSpotInternalPoolIndex(), tmpSpot );
-		final long sourceOutIndex = tmpSpot.getFirstOutEdgeIndex();
+		final int sourceOutIndex = tmpSpot.getFirstOutEdgeIndex();
 		if ( sourceOutIndex == edge.getInternalPoolIndex() )
 		{
 			// this edge is the first in the source's list of outgoing edges
@@ -230,7 +230,7 @@ public class AbstractEdgePool< E extends AbstractEdge< T, ? >, T extends MappedE
 		{
 			// find this edge in the source's list of outgoing edges and remove it
 			getByInternalPoolIndex( sourceOutIndex, tmpEdge );
-			long nextSourceEdgeIndex = tmpEdge.getNextSourceEdgeIndex();
+			int nextSourceEdgeIndex = tmpEdge.getNextSourceEdgeIndex();
 			while( nextSourceEdgeIndex != edge.getInternalPoolIndex() )
 			{
 				getByInternalPoolIndex( nextSourceEdgeIndex, tmpEdge );
@@ -243,7 +243,7 @@ public class AbstractEdgePool< E extends AbstractEdge< T, ? >, T extends MappedE
 	private void unlinkFromTarget( final E edge, final E tmpEdge, final S tmpSpot )
 	{
 		spotPool.getByInternalPoolIndex( edge.getTargetSpotInternalPoolIndex(), tmpSpot );
-		final long targetInIndex = tmpSpot.getFirstInEdgeIndex();
+		final int targetInIndex = tmpSpot.getFirstInEdgeIndex();
 		if ( targetInIndex == edge.getInternalPoolIndex() )
 		{
 			// this edge is the first in the target list of incoming edges
@@ -253,7 +253,7 @@ public class AbstractEdgePool< E extends AbstractEdge< T, ? >, T extends MappedE
 		{
 			// find this edge in the target's list of incoming edges and remove it
 			getByInternalPoolIndex( targetInIndex, tmpEdge );
-			long nextTargetEdgeIndex = tmpEdge.getNextTargetEdgeIndex();
+			int nextTargetEdgeIndex = tmpEdge.getNextTargetEdgeIndex();
 			while( nextTargetEdgeIndex >= 0 )
 			{
 				getByInternalPoolIndex( nextTargetEdgeIndex, tmpEdge );

@@ -23,8 +23,8 @@ public class AllSpotEdges< E extends AbstractEdge< ?, ? > > implements SpotEdges
 	public int size()
 	{
 		int numEdges = 0;
-		long inEdgeIndex = spot.getFirstInEdgeIndex();
-		long outEdgeIndex = spot.getFirstOutEdgeIndex();
+		int inEdgeIndex = spot.getFirstInEdgeIndex();
+		int outEdgeIndex = spot.getFirstOutEdgeIndex();
 		if ( inEdgeIndex >= 0 || outEdgeIndex >= 0 )
 		{
 			final E edge = edgePool.getTmpEdgeRef();
@@ -62,7 +62,7 @@ public class AllSpotEdges< E extends AbstractEdge< ?, ? > > implements SpotEdges
 	public E get( final int i, final E edge )
 	{
 		boolean in = true;
-		long edgeIndex = spot.getFirstInEdgeIndex();
+		int edgeIndex = spot.getFirstInEdgeIndex();
 		if ( edgeIndex < 0 )
 		{
 			in = false;
@@ -105,7 +105,7 @@ public class AllSpotEdges< E extends AbstractEdge< ?, ? > > implements SpotEdges
 
 	public class EdgesIterator implements Iterator< E >
 	{
-		private long edgeIndex;
+		private int edgeIndex;
 
 		private boolean in;
 

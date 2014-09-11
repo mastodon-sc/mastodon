@@ -1,7 +1,7 @@
 package net.trackmate.model.abstractmodel;
 
-import gnu.trove.map.TLongDoubleMap;
-import gnu.trove.map.hash.TLongDoubleHashMap;
+import gnu.trove.map.TIntDoubleMap;
+import gnu.trove.map.hash.TIntDoubleHashMap;
 
 import java.util.HashMap;
 
@@ -16,28 +16,28 @@ public class AdditionalFeatures
 
 	private final int initialCapacity;
 
-	private final HashMap< String, TLongDoubleMap > featureMaps;
+	private final HashMap< String, TIntDoubleMap > featureMaps;
 
 	public AdditionalFeatures( final int initialCapacity )
 	{
 		this.initialCapacity = initialCapacity;
-		featureMaps = new HashMap< String, TLongDoubleMap >();
+		featureMaps = new HashMap< String, TIntDoubleMap >();
 	}
 
-	public void putFeature( final String feature, final double value, final long index )
+	public void putFeature( final String feature, final double value, final int index )
 	{
-		TLongDoubleMap featureMap = featureMaps.get( feature );
+		TIntDoubleMap featureMap = featureMaps.get( feature );
 		if ( featureMap == null )
 		{
-			featureMap = new TLongDoubleHashMap( initialCapacity );
+			featureMap = new TIntDoubleHashMap( initialCapacity );
 			featureMaps.put( feature, featureMap );
 		}
 		featureMap.put( index, value );
 	}
 
-	public Feature getFeature( final String feature, final long index, final Feature value )
+	public Feature getFeature( final String feature, final int index, final Feature value )
 	{
-		final TLongDoubleMap featureMap = featureMaps.get( feature );
+		final TIntDoubleMap featureMap = featureMaps.get( feature );
 		if ( featureMap == null )
 			value.exists = false;
 		else
@@ -51,7 +51,7 @@ public class AdditionalFeatures
 		return value;
 	}
 
-	public Double getFeature( final String feature, final long index )
+	public Double getFeature( final String feature, final int index )
 	{
 		final Feature value = getFeature( feature, index, new Feature() );
 		return value.exists ? value.value : null;

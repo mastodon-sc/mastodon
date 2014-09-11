@@ -15,7 +15,7 @@ public class SingleArrayPool< T extends MappedElement, A extends MappedElementAr
 
 	private A data;
 
-	public SingleArrayPool( final MappedElementArray.Factory< A > arrayFactory, final long capacity, final int bytesPerElement )
+	public SingleArrayPool( final MappedElementArray.Factory< A > arrayFactory, final int capacity, final int bytesPerElement )
 	{
 		super( capacity, bytesPerElement );
 		this.arrayFactory = arrayFactory;
@@ -24,9 +24,9 @@ public class SingleArrayPool< T extends MappedElement, A extends MappedElementAr
 	}
 
 	@Override
-	protected long append()
+	protected int append()
 	{
-		final long index = size++;
+		final int index = size++;
 		if ( size > capacity )
 		{
 			capacity = Math.min( capacity << 1, data.maxSize() );
@@ -45,7 +45,7 @@ public class SingleArrayPool< T extends MappedElement, A extends MappedElementAr
 	}
 
 	@Override
-	public void updateAccess( final T access, final long index )
+	public void updateAccess( final T access, final int index )
 	{
 		// TODO: create data.updateAccessIndex() that does not update the dataArray of the access:
 		// This can be used in SingleArrayPool (but not in MultiArrayPool)
@@ -58,7 +58,7 @@ public class SingleArrayPool< T extends MappedElement, A extends MappedElementAr
 		return new Pool.Factory< T >()
 		{
 			@Override
-			public Pool< T > createPool( final long capacity, final int bytesPerElement )
+			public Pool< T > createPool( final int capacity, final int bytesPerElement )
 			{
 				return new SingleArrayPool< T, A >( arrayFactory, capacity, bytesPerElement );
 			}

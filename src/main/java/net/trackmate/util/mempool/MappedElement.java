@@ -22,6 +22,10 @@ public interface MappedElement
 
 	public int getInt( final int offset );
 
+	public void putIndex( final int value, final int offset );
+
+	public int getIndex( final int offset );
+
 	public void putLong( final long value, final int offset );
 
 	public long getLong( final int offset );

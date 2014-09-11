@@ -1,20 +1,20 @@
 package net.trackmate.model.abstractmodel;
 
-import static net.trackmate.util.mempool.ByteUtils.LONG_SIZE;
+import static net.trackmate.util.mempool.ByteUtils.INDEX_SIZE;
 import net.trackmate.util.mempool.MappedElement;
 import net.trackmate.util.mempool.Pool;
 
 public class AbstractEdge< T extends MappedElement, S extends AbstractSpot< ?, ? > >
 {
 	protected static final int SOURCE_INDEX_OFFSET = 0;
-	protected static final int TARGET_INDEX_OFFSET = SOURCE_INDEX_OFFSET + LONG_SIZE;
-	protected static final int NEXT_SOURCE_EDGE_INDEX_OFFSET = TARGET_INDEX_OFFSET + LONG_SIZE;
-	protected static final int NEXT_TARGET_EDGE_INDEX_OFFSET = NEXT_SOURCE_EDGE_INDEX_OFFSET + LONG_SIZE;
-	protected static final int SIZE_IN_BYTES = NEXT_TARGET_EDGE_INDEX_OFFSET + LONG_SIZE;
+	protected static final int TARGET_INDEX_OFFSET = SOURCE_INDEX_OFFSET + INDEX_SIZE;
+	protected static final int NEXT_SOURCE_EDGE_INDEX_OFFSET = TARGET_INDEX_OFFSET + INDEX_SIZE;
+	protected static final int NEXT_TARGET_EDGE_INDEX_OFFSET = NEXT_SOURCE_EDGE_INDEX_OFFSET + INDEX_SIZE;
+	protected static final int SIZE_IN_BYTES = NEXT_TARGET_EDGE_INDEX_OFFSET + INDEX_SIZE;
 
 	protected final T access;
 
-	private long index;
+	private int index;
 
 	protected final AbstractSpotPool< S, ?, ? > spotPool;
 
@@ -24,55 +24,55 @@ public class AbstractEdge< T extends MappedElement, S extends AbstractSpot< ?, ?
 		this.spotPool = pool.spotPool;
 	}
 
-	public long getInternalPoolIndex()
+	public int getInternalPoolIndex()
 	{
 		return index;
 	}
 
-	void updateAccess( final Pool< T > pool, final long index )
+	void updateAccess( final Pool< T > pool, final int index )
 	{
 		this.index = index;
 		pool.updateAccess( access, index );
 	}
 
-	protected long getSourceSpotInternalPoolIndex()
+	protected int getSourceSpotInternalPoolIndex()
 	{
-		return access.getLong( SOURCE_INDEX_OFFSET );
+		return access.getIndex( SOURCE_INDEX_OFFSET );
 	}
 
-	protected void setSourceSpotInternalPoolIndex( final long index )
+	protected void setSourceSpotInternalPoolIndex( final int index )
 	{
-		access.putLong( index, SOURCE_INDEX_OFFSET );
+		access.putIndex( index, SOURCE_INDEX_OFFSET );
 	}
 
-	protected long getTargetSpotInternalPoolIndex()
+	protected int getTargetSpotInternalPoolIndex()
 	{
-		return access.getLong( TARGET_INDEX_OFFSET );
+		return access.getIndex( TARGET_INDEX_OFFSET );
 	}
 
-	protected void setTargetSpotInternalPoolIndex( final long index )
+	protected void setTargetSpotInternalPoolIndex( final int index )
 	{
-		access.putLong( index, TARGET_INDEX_OFFSET );
+		access.putIndex( index, TARGET_INDEX_OFFSET );
 	}
 
-	protected long getNextSourceEdgeIndex()
+	protected int getNextSourceEdgeIndex()
 	{
-		return access.getLong( NEXT_SOURCE_EDGE_INDEX_OFFSET );
+		return access.getIndex( NEXT_SOURCE_EDGE_INDEX_OFFSET );
 	}
 
-	protected void setNextSourceEdgeIndex( final long index )
+	protected void setNextSourceEdgeIndex( final int index )
 	{
-		access.putLong( index, NEXT_SOURCE_EDGE_INDEX_OFFSET );
+		access.putIndex( index, NEXT_SOURCE_EDGE_INDEX_OFFSET );
 	}
 
-	protected long getNextTargetEdgeIndex()
+	protected int getNextTargetEdgeIndex()
 	{
-		return access.getLong( NEXT_TARGET_EDGE_INDEX_OFFSET );
+		return access.getIndex( NEXT_TARGET_EDGE_INDEX_OFFSET );
 	}
 
-	protected void setNextTargetEdgeIndex( final long index )
+	protected void setNextTargetEdgeIndex( final int index )
 	{
-		access.putLong( index, NEXT_TARGET_EDGE_INDEX_OFFSET );
+		access.putIndex( index, NEXT_TARGET_EDGE_INDEX_OFFSET );
 	}
 
 	protected void setToUninitializedState()

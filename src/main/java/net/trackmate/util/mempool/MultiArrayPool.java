@@ -7,7 +7,7 @@ package net.trackmate.util.mempool;
  */
 public class MultiArrayPool< T extends MappedElement, A extends MappedElementArray< T > > extends Pool< T >
 {
-	public MultiArrayPool( final long capacity, final int bytesPerElement )
+	public MultiArrayPool( final int capacity, final int bytesPerElement )
 	{
 		super( capacity, bytesPerElement );
 		// TODO Auto-generated constructor stub
@@ -21,14 +21,14 @@ public class MultiArrayPool< T extends MappedElement, A extends MappedElementArr
 	}
 
 	@Override
-	public void updateAccess( final T access, final long index )
+	public void updateAccess( final T access, final int index )
 	{
 		// TODO Auto-generated method stub
 
 	}
 
 	@Override
-	protected long append()
+	protected int append()
 	{
 		// TODO Auto-generated method stub
 		return 0;

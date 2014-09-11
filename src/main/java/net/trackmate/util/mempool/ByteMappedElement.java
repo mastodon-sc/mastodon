@@ -59,6 +59,18 @@ public class ByteMappedElement implements MappedElement
 	}
 
 	@Override
+	public void putIndex( final int value, final int offset )
+	{
+		ByteUtils.putIndex( value, dataArray.data, baseOffset + offset );
+	}
+
+	@Override
+	public int getIndex( final int offset )
+	{
+		return ByteUtils.getIndex( dataArray.data, baseOffset + offset );
+	}
+
+	@Override
 	public void putLong( final long value, final int offset )
 	{
 		ByteUtils.putLong( value, dataArray.data, baseOffset + offset );

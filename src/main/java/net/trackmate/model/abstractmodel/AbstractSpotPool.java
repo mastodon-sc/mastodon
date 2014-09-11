@@ -1,9 +1,9 @@
 package net.trackmate.model.abstractmodel;
 
 import gnu.trove.impl.Constants;
-import gnu.trove.iterator.TIntLongIterator;
-import gnu.trove.map.TIntLongMap;
-import gnu.trove.map.hash.TIntLongHashMap;
+import gnu.trove.iterator.TIntIntIterator;
+import gnu.trove.map.TIntIntMap;
+import gnu.trove.map.hash.TIntIntHashMap;
 
 import java.util.Iterator;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -20,7 +20,7 @@ public class AbstractSpotPool< S extends AbstractSpot< T, E >, T extends MappedE
 
 	final Pool< T > memPool;
 
-	private final TIntLongMap spotIdToIndexMap;
+	private final TIntIntMap spotIdToIndexMap;
 
 	private AbstractEdgePool< E, ?, S > edgePool;
 
@@ -31,7 +31,7 @@ public class AbstractSpotPool< S extends AbstractSpot< T, E >, T extends MappedE
 	{
 		this.spotFactory = spotFactory;
 		this.memPool = poolFactory.createPool( initialCapacity, spotFactory.getSpotSizeInBytes() );
-		this.spotIdToIndexMap = new TIntLongHashMap( initialCapacity, Constants.DEFAULT_LOAD_FACTOR, -1, -1 );
+		this.spotIdToIndexMap = new TIntIntHashMap( initialCapacity, Constants.DEFAULT_LOAD_FACTOR, -1, -1 );
 	}
 
 	public void linkEdgePool( final AbstractEdgePool< E, ?, S > edgePool )
@@ -104,7 +104,7 @@ public class AbstractSpotPool< S extends AbstractSpot< T, E >, T extends MappedE
 	// garbage-free version
 	public S get( final int ID, final S spot )
 	{
-		final long index = spotIdToIndexMap.get( ID );
+		final int index = spotIdToIndexMap.get( ID );
 		if ( index == -1 )
 			return null;
 		getByInternalPoolIndex( index, spot );
@@ -120,7 +120,7 @@ public class AbstractSpotPool< S extends AbstractSpot< T, E >, T extends MappedE
 
 	public void release( final int ID )
 	{
-		final long index = spotIdToIndexMap.remove( ID );
+		final int index = spotIdToIndexMap.remove( ID );
 		releaseByInternalPoolIndex( index );
 	}
 
@@ -132,7 +132,7 @@ public class AbstractSpotPool< S extends AbstractSpot< T, E >, T extends MappedE
 
 	public Iterator< S > iterator( final S spot )
 	{
-		final TIntLongIterator iter = spotIdToIndexMap.iterator();
+		final TIntIntIterator iter = spotIdToIndexMap.iterator();
 		return new Iterator< S >()
 		{
 			@Override
@@ -166,19 +166,19 @@ public class AbstractSpotPool< S extends AbstractSpot< T, E >, T extends MappedE
 
 	private void createWithId( final int ID, final S spot )
 	{
-		final long index = memPool.create();
+		final int index = memPool.create();
 		spot.updateAccess( memPool, index );
 		spot.setToUninitializedState();
 		spot.setId( ID );
 		spotIdToIndexMap.put( ID, index );
 	}
 
-	void getByInternalPoolIndex( final long index, final S spot )
+	void getByInternalPoolIndex( final int index, final S spot )
 	{
 		spot.updateAccess( memPool, index );
 	}
 
-	private void releaseByInternalPoolIndex( final long index )
+	private void releaseByInternalPoolIndex( final int index )
 	{
 		memPool.free( index );
 	}

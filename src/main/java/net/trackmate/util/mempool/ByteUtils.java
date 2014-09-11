@@ -10,6 +10,8 @@ public class ByteUtils
 
 	public static final int DOUBLE_SIZE = 8;
 
+	public static final int INDEX_SIZE = INT_SIZE;
+
 	public static void putInt( final int value, final byte[] array, final int offset )
 	{
 		array[ offset ] = ( byte ) ( 0xff & ( value >> 24 ) );
@@ -68,5 +70,15 @@ public class ByteUtils
 	public static double getDouble( final byte[] array, final int offset )
 	{
 		return( Double.longBitsToDouble( getLong( array, offset ) ) );
+	}
+
+	public static void putIndex( final int value, final byte[] array, final int offset )
+	{
+		putInt( value, array, offset );
+	}
+
+	public static int getIndex( final byte[] array, final int offset )
+	{
+		return getInt( array, offset );
 	}
 }

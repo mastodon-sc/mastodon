@@ -16,15 +16,15 @@ public abstract class Pool< T extends MappedElement >
 
 	protected T dataAccess;
 
-	protected long capacity;
+	protected int capacity;
 
-	protected long size;
+	protected int size;
 
-	protected long firstFreeIndex;
+	protected int firstFreeIndex;
 
-	public Pool( final long capacity, final int bytesPerElement )
+	public Pool( final int capacity, final int bytesPerElement )
 	{
-		this.bytesPerElement = Math.max( bytesPerElement, 12 );
+		this.bytesPerElement = Math.max( bytesPerElement, 8 );
 		this.capacity = capacity;
 		clear();
 	}
@@ -35,20 +35,20 @@ public abstract class Pool< T extends MappedElement >
 		firstFreeIndex = -1;
 	}
 
-	public long create()
+	public int create()
 	{
 		if ( firstFreeIndex < 0 )
 			return append();
 		else
 		{
-			final long index = firstFreeIndex;
+			final int index = firstFreeIndex;
 			updateAccess( dataAccess, firstFreeIndex );
-			firstFreeIndex = dataAccess.getLong( 4 );
+			firstFreeIndex = dataAccess.getIndex( 4 );
 			return index;
 		}
 	}
 
-	public void free( final long index )
+	public void free( final int index )
 	{
 		if ( index >= 0 && index <  size )
 		{
@@ -56,8 +56,8 @@ public abstract class Pool< T extends MappedElement >
 			final boolean isFree = dataAccess.getInt( 0 ) < 0;
 			if ( ! isFree )
 			{
-				dataAccess.putLong( -1, 0 );
-				dataAccess.putLong( firstFreeIndex, 4 );
+				dataAccess.putIndex( -1, 0 );
+				dataAccess.putIndex( firstFreeIndex, 4 );
 				firstFreeIndex = index;
 			}
 		}
@@ -65,9 +65,9 @@ public abstract class Pool< T extends MappedElement >
 
 	public abstract T createAccess();
 
-	public abstract void updateAccess( final T access, final long index );
+	public abstract void updateAccess( final T access, final int index );
 
-	protected abstract long append();
+	protected abstract int append();
 
 	public PoolIterator< T > iterator()
 	{
@@ -78,9 +78,9 @@ public abstract class Pool< T extends MappedElement >
 	{
 		private final Pool< T > pool;
 
-		private long nextIndex;
+		private int nextIndex;
 
-		private long currentIndex;
+		private int currentIndex;
 
 		private final T element;
 
@@ -117,7 +117,7 @@ public abstract class Pool< T extends MappedElement >
 			return nextIndex < pool.size;
 		}
 
-		public long next()
+		public int next()
 		{
 			currentIndex = nextIndex;
 			prepareNextElement();
@@ -133,6 +133,6 @@ public abstract class Pool< T extends MappedElement >
 
 	public static interface Factory< T extends MappedElement >
 	{
-		public Pool< T > createPool( final long capacity, final int bytesPerElement );
+		public Pool< T > createPool( final int capacity, final int bytesPerElement );
 	}
 }

@@ -1,7 +1,7 @@
 package net.trackmate.model.abstractmodel;
 
 import static net.trackmate.util.mempool.ByteUtils.INT_SIZE;
-import static net.trackmate.util.mempool.ByteUtils.LONG_SIZE;
+import static net.trackmate.util.mempool.ByteUtils.INDEX_SIZE;
 import net.trackmate.util.mempool.MappedElement;
 import net.trackmate.util.mempool.Pool;
 
@@ -16,24 +16,24 @@ public class AbstractSpot< T extends MappedElement, E extends AbstractEdge< ?, ?
 {
 	protected static final int ID_OFFSET = 0;
 	protected static final int FIRST_IN_EDGE_INDEX_OFFSET = ID_OFFSET + INT_SIZE;
-	protected static final int FIRST_OUT_EDGE_INDEX_OFFSET = FIRST_IN_EDGE_INDEX_OFFSET + LONG_SIZE;
-	protected static final int SIZE_IN_BYTES = FIRST_OUT_EDGE_INDEX_OFFSET + LONG_SIZE;
+	protected static final int FIRST_OUT_EDGE_INDEX_OFFSET = FIRST_IN_EDGE_INDEX_OFFSET + INDEX_SIZE;
+	protected static final int SIZE_IN_BYTES = FIRST_OUT_EDGE_INDEX_OFFSET + INDEX_SIZE;
 
 	protected final T access;
 
-	private long index;
+	private int index;
 
 	protected AbstractSpot( final AbstractSpotPool< ?, T, ? > pool )
 	{
 		this.access = pool.memPool.createAccess();
 	}
 
-	public long getInternalPoolIndex()
+	public int getInternalPoolIndex()
 	{
 		return index;
 	}
 
-	void updateAccess( final Pool< T > pool, final long index )
+	void updateAccess( final Pool< T > pool, final int index )
 	{
 		this.index = index;
 		pool.updateAccess( access, index );
@@ -49,24 +49,24 @@ public class AbstractSpot< T extends MappedElement, E extends AbstractEdge< ?, ?
 		access.putInt( id, ID_OFFSET );
 	}
 
-	protected long getFirstInEdgeIndex()
+	protected int getFirstInEdgeIndex()
 	{
-		return access.getLong( FIRST_IN_EDGE_INDEX_OFFSET );
+		return access.getIndex( FIRST_IN_EDGE_INDEX_OFFSET );
 	}
 
-	protected void setFirstInEdgeIndex( final long index )
+	protected void setFirstInEdgeIndex( final int index )
 	{
-		access.putLong( index, FIRST_IN_EDGE_INDEX_OFFSET );
+		access.putIndex( index, FIRST_IN_EDGE_INDEX_OFFSET );
 	}
 
-	protected long getFirstOutEdgeIndex()
+	protected int getFirstOutEdgeIndex()
 	{
-		return access.getLong( FIRST_OUT_EDGE_INDEX_OFFSET );
+		return access.getIndex( FIRST_OUT_EDGE_INDEX_OFFSET );
 	}
 
-	protected void setFirstOutEdgeIndex( final long index )
+	protected void setFirstOutEdgeIndex( final int index )
 	{
-		access.putLong( index, FIRST_OUT_EDGE_INDEX_OFFSET );
+		access.putIndex( index, FIRST_OUT_EDGE_INDEX_OFFSET );
 	}
 
 	protected void setToUninitializedState()

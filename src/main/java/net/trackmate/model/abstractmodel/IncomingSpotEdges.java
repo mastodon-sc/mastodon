@@ -23,7 +23,7 @@ public class IncomingSpotEdges< E extends AbstractEdge< ?, ? > > implements Spot
 	public int size()
 	{
 		int numEdges = 0;
-		long edgeIndex = spot.getFirstInEdgeIndex();
+		int edgeIndex = spot.getFirstInEdgeIndex();
 		if ( edgeIndex >= 0 )
 		{
 			final E edge = edgePool.getTmpEdgeRef();
@@ -48,7 +48,7 @@ public class IncomingSpotEdges< E extends AbstractEdge< ?, ? > > implements Spot
 	@Override
 	public E get( int i, final E edge )
 	{
-		long edgeIndex = spot.getFirstInEdgeIndex();
+		int edgeIndex = spot.getFirstInEdgeIndex();
 		edgePool.getByInternalPoolIndex( edgeIndex, edge );
 		while( i-- > 0 )
 		{
@@ -77,7 +77,7 @@ public class IncomingSpotEdges< E extends AbstractEdge< ?, ? > > implements Spot
 
 	public class IncomingEdgesIterator implements Iterator< E >
 	{
-		private long edgeIndex;
+		private int edgeIndex;
 
 		private final E edge;
 

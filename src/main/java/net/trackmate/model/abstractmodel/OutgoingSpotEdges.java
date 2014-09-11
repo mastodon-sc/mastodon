@@ -2,8 +2,6 @@ package net.trackmate.model.abstractmodel;
 
 import java.util.Iterator;
 
-
-
 public class OutgoingSpotEdges< E extends AbstractEdge< ?, ? > > implements SpotEdges< E >
 {
 	private final AbstractSpot< ?, ? > spot;
@@ -25,7 +23,7 @@ public class OutgoingSpotEdges< E extends AbstractEdge< ?, ? > > implements Spot
 	public int size()
 	{
 		int numEdges = 0;
-		long edgeIndex = spot.getFirstOutEdgeIndex();
+		int edgeIndex = spot.getFirstOutEdgeIndex();
 		if ( edgeIndex >= 0 )
 		{
 			final E edge = edgePool.getTmpEdgeRef();
@@ -50,7 +48,7 @@ public class OutgoingSpotEdges< E extends AbstractEdge< ?, ? > > implements Spot
 	@Override
 	public E get( int i, final E edge )
 	{
-		long edgeIndex = spot.getFirstOutEdgeIndex();
+		int edgeIndex = spot.getFirstOutEdgeIndex();
 		edgePool.getByInternalPoolIndex( edgeIndex, edge );
 		while( i-- > 0 )
 		{
@@ -79,7 +77,7 @@ public class OutgoingSpotEdges< E extends AbstractEdge< ?, ? > > implements Spot
 
 	public class OutgoingEdgesIterator implements Iterator< E >
 	{
-		private long edgeIndex;
+		private int edgeIndex;
 
 		private final E edge;
 
