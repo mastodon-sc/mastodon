@@ -1,5 +1,6 @@
 package net.trackmate.model;
 
+import static net.trackmate.util.mempool.ByteUtils.DOUBLE_SIZE;
 import net.trackmate.model.abstractmodel.AbstractEdge;
 import net.trackmate.model.abstractmodel.AbstractEdgePool;
 import net.trackmate.model.abstractmodel.AdditionalFeatures;
@@ -8,9 +9,26 @@ import net.trackmate.util.mempool.ByteMappedElement;
 
 public class Edge extends AbstractEdge< ByteMappedElement, Spot >
 {
-	protected static final int SIZE_IN_BYTES = AbstractEdge.SIZE_IN_BYTES;
+	protected static final int WEIGHT_OFFSET = AbstractEdge.SIZE_IN_BYTES;
+	protected static final int SIZE_IN_BYTES = WEIGHT_OFFSET +  + DOUBLE_SIZE;
 
 	private final AdditionalFeatures additionalFeatures;
+
+	public Edge init( final double weight )
+	{
+		setWeight( weight );
+		return this;
+	}
+
+	public double getWeight()
+	{
+		return access.getDouble( WEIGHT_OFFSET );
+	}
+
+	public void setWeight( final double weight )
+	{
+		access.putDouble( weight, WEIGHT_OFFSET );
+	}
 
 	public Spot getSourceSpot()
 	{

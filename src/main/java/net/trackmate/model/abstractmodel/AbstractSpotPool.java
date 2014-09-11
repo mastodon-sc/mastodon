@@ -45,6 +45,11 @@ public class AbstractSpotPool< S extends AbstractSpot< T, E >, T extends MappedE
 		spotIdToIndexMap.clear();
 	}
 
+	public int size()
+	{
+		return spotIdToIndexMap.size();
+	}
+
 	public S createEmptySpotRef()
 	{
 		final S spot = spotFactory.createEmptySpotRef();
@@ -77,6 +82,18 @@ public class AbstractSpotPool< S extends AbstractSpot< T, E >, T extends MappedE
 			IDcounter.compareAndSet( IDcounter.get(), ID );
 		createWithId( ID, spot );
 		return spot;
+	}
+
+	public S createReferenceTo( final S spot )
+	{
+		return createReferenceTo( spot, createEmptySpotRef() );
+	}
+
+	// garbage-free version
+	public S createReferenceTo( final S spot, final S reference )
+	{
+		reference.updateAccess( memPool, spot.getInternalPoolIndex() );
+		return reference;
 	}
 
 	public S get( final int ID )

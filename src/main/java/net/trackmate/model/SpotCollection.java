@@ -69,6 +69,11 @@ public class SpotCollection implements Iterable< Spot >
 		additionalEdgeFeatures = new AdditionalFeatures( initialCapacity );
 	}
 
+	public int numSpots()
+	{
+		return spotPool.size();
+	}
+
 	public void clear()
 	{
 		spotPool.clear();
@@ -86,9 +91,9 @@ public class SpotCollection implements Iterable< Spot >
 	}
 
 	// garbage-free version
-	public void createSpot( final Spot spot )
+	public Spot createSpot( final Spot spot )
 	{
-		spotPool.create( spot );
+		return spotPool.create( spot );
 	}
 
 	public Spot createSpot( final int ID )
@@ -97,9 +102,9 @@ public class SpotCollection implements Iterable< Spot >
 	}
 
 	// garbage-free version
-	public void createSpot( final int ID, final Spot spot )
+	public Spot createSpot( final int ID, final Spot spot )
 	{
-		spotPool.create( ID, spot );
+		return spotPool.create( ID, spot );
 	}
 
 	public Spot getSpot( final int ID )
@@ -162,6 +167,26 @@ public class SpotCollection implements Iterable< Spot >
 	public Iterable< Edge > edges()
 	{
 		return edgePool;
+	}
+
+	public Spot getTmpSpotRef()
+	{
+		return spotPool.getTmpSpotRef();
+	}
+
+	public void releaseTmpSpotRef( final Spot spot )
+	{
+		spotPool.releaseTmpSpotRef( spot );
+	}
+
+	public Edge getTmpEdgeRef()
+	{
+		return edgePool.getTmpEdgeRef();
+	}
+
+	public void releaseTmpEdgeRef( final Edge edge )
+	{
+		edgePool.releaseTmpEdgeRef( edge );
 	}
 
 	@Override

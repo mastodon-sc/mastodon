@@ -2,6 +2,7 @@ package net.trackmate.model;
 
 import static net.trackmate.util.mempool.ByteUtils.DOUBLE_SIZE;
 import static net.trackmate.util.mempool.ByteUtils.INT_SIZE;
+import net.imglib2.RealLocalizable;
 import net.trackmate.model.abstractmodel.AbstractSpot;
 import net.trackmate.model.abstractmodel.AbstractSpotPool;
 import net.trackmate.model.abstractmodel.AdditionalFeatures;
@@ -11,7 +12,7 @@ import net.trackmate.model.abstractmodel.IncomingSpotEdges;
 import net.trackmate.model.abstractmodel.OutgoingSpotEdges;
 import net.trackmate.util.mempool.ByteMappedElement;
 
-public class Spot extends AbstractSpot< ByteMappedElement, Edge >
+public class Spot extends AbstractSpot< ByteMappedElement, Edge > implements RealLocalizable
 {
 	protected static final int X_OFFSET = AbstractSpot.SIZE_IN_BYTES;
 	protected static final int Y_OFFSET = X_OFFSET + DOUBLE_SIZE;
@@ -22,11 +23,22 @@ public class Spot extends AbstractSpot< ByteMappedElement, Edge >
 	protected static final int SIZE_IN_BYTES = FRAME_OFFSET + INT_SIZE;
 
 	private final AdditionalFeatures additionalFeatures;
+	private final AbstractSpotPool< Spot, ByteMappedElement, ? > pool;
 
 	@Override
 	protected void setToUninitializedState()
 	{
 		super.setToUninitializedState();
+	}
+
+	public Spot init( final double x, final double y, final double z, final double radius, final double quality )
+	{
+		setX( x );
+		setY( y );
+		setZ( z );
+		setRadius( radius );
+		setQuality( quality );
+		return this;
 	}
 
 	@Override
@@ -85,6 +97,16 @@ public class Spot extends AbstractSpot< ByteMappedElement, Edge >
 		access.putDouble( quality, QUALITY_OFFSET );
 	}
 
+	public int getFrame()
+	{
+		return access.getInt( FRAME_OFFSET );
+	}
+
+	public void setFrame( final int frame )
+	{
+		access.putInt( frame, FRAME_OFFSET );
+	}
+
 	public void putFeature( final String feature, final double value )
 	{
 		additionalFeatures.putFeature( feature, value, getInternalPoolIndex() );
@@ -98,6 +120,21 @@ public class Spot extends AbstractSpot< ByteMappedElement, Edge >
 	public Double getFeature( final String feature )
 	{
 		return additionalFeatures.getFeature( feature, getInternalPoolIndex() );
+	}
+
+	public Spot getNewReference()
+	{
+		return pool.createReferenceTo( this );
+	}
+
+	public Spot getNewReference( final Spot newReference )
+	{
+		return pool.createReferenceTo( this, newReference );
+	}
+
+	public void referenceTo( final Spot spot )
+	{
+		pool.createReferenceTo( spot, this );
 	}
 
 	@Override
@@ -127,6 +164,43 @@ public class Spot extends AbstractSpot< ByteMappedElement, Edge >
 	Spot( final AbstractSpotPool< Spot, ByteMappedElement, ? > pool, final AdditionalFeatures additionalSpotFeatures )
 	{
 		super( pool );
+		this.pool = pool;
 		this.additionalFeatures = additionalSpotFeatures;
+	}
+
+	// === RealLocalizable ===
+
+	@Override
+	public int numDimensions()
+	{
+		return 3;
+	}
+
+	@Override
+	public void localize( final float[] position )
+	{
+		position[ 0 ] = ( float ) getX();
+		position[ 1 ] = ( float ) getY();
+		position[ 2 ] = ( float ) getZ();
+	}
+
+	@Override
+	public void localize( final double[] position )
+	{
+		position[ 0 ] = getX();
+		position[ 1 ] = getY();
+		position[ 2 ] = getZ();
+	}
+
+	@Override
+	public float getFloatPosition( final int d )
+	{
+		return ( float ) getDoublePosition( d );
+	}
+
+	@Override
+	public double getDoublePosition( final int d )
+	{
+		return ( d == 0 ) ? getX() : ( ( d == 1 ) ? getY() : getZ() );
 	}
 }
