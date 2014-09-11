@@ -12,7 +12,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import pietzsch.mappedelementpool.MappedElement;
 import pietzsch.mappedelementpool.Pool;
 
-public class AbstractSpotPool< S extends AbstractSpot< T, E >, T extends MappedElement, E extends AbstractEdge< ? > > implements Iterable< S >
+public class AbstractSpotPool< S extends AbstractSpot< T, E >, T extends MappedElement, E extends AbstractEdge< ?, ? > > implements Iterable< S >
 {
 	private static AtomicInteger IDcounter = new AtomicInteger( -1 );
 
@@ -22,7 +22,7 @@ public class AbstractSpotPool< S extends AbstractSpot< T, E >, T extends MappedE
 
 	private final TIntLongMap spotIdToIndexMap;
 
-	private AbstractEdgePool< E, ? > edgePool;
+	private AbstractEdgePool< E, ?, S > edgePool;
 
 	public AbstractSpotPool(
 			final int initialCapacity,
@@ -35,7 +35,7 @@ public class AbstractSpotPool< S extends AbstractSpot< T, E >, T extends MappedE
 		this.spotIdToIndexMap = new TIntLongHashMap( initialCapacity, Constants.DEFAULT_LOAD_FACTOR, -1, -1 );
 	}
 
-	public void linkEdgePool( final AbstractEdgePool< E, ? > edgePool )
+	public void linkEdgePool( final AbstractEdgePool< E, ?, S > edgePool )
 	{
 		this.edgePool = edgePool;
 	}
@@ -97,6 +97,8 @@ public class AbstractSpotPool< S extends AbstractSpot< T, E >, T extends MappedE
 
 	public void release( final S spot )
 	{
+		if ( edgePool != null )
+			edgePool.releaseAllLinkedEdges( spot );
 		release( spot.getId() );
 	}
 
@@ -155,8 +157,7 @@ public class AbstractSpotPool< S extends AbstractSpot< T, E >, T extends MappedE
 		spotIdToIndexMap.put( ID, index );
 	}
 
-	// TODO: make package private. this is just for debugging
-	public void getByInternalPoolIndex( final long index, final S spot )
+	void getByInternalPoolIndex( final long index, final S spot )
 	{
 		spot.updateAccess( memPool, index );
 	}

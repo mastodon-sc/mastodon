@@ -7,26 +7,33 @@ import pietzsch.mappedelementpool.MappedElement;
 import pietzsch.mappedelementpool.Pool;
 import pietzsch.mappedelementpool.Pool.PoolIterator;
 
-public class AbstractEdgePool< E extends AbstractEdge< T >, T extends MappedElement > implements Iterable< E >
+public class AbstractEdgePool< E extends AbstractEdge< T, ? >, T extends MappedElement, S extends AbstractSpot< ?, ? > > implements Iterable< E >
 {
-	private final Pool< T > pool;
+	final Pool< T > memPool;
 
-	private final AbstractEdge.Factory< E, T > edgeFactory;
+	private final AbstractEdge.Factory< E, T, S > edgeFactory;
 
-	public AbstractEdgePool( final int initialCapacity, final AbstractEdge.Factory< E, T > edgeFactory, final Pool.Factory< T > poolFactory )
+	final AbstractSpotPool< S, ?, ? > spotPool;
+
+	public AbstractEdgePool(
+			final int initialCapacity,
+			final AbstractEdge.Factory< E, T, S > edgeFactory,
+			final Pool.Factory< T > poolFactory,
+			final AbstractSpotPool< S, ?, ? > spotPool )
 	{
 		this.edgeFactory = edgeFactory;
-		this.pool = poolFactory.createPool( initialCapacity, edgeFactory.getEdgeSizeInBytes() );
+		this.spotPool = spotPool;
+		this.memPool = poolFactory.createPool( initialCapacity, edgeFactory.getEdgeSizeInBytes() );
 	}
 
 	public void clear()
 	{
-		pool.clear();
+		memPool.clear();
 	}
 
 	public E createEmptyEdgeRef()
 	{
-		return edgeFactory.createEmptyEdgeRef( pool );
+		return edgeFactory.createEmptyEdgeRef( this );
 	}
 
 	public E addEdge( final AbstractSpot< ?, ? > source, final AbstractSpot< ?, ? > target )
@@ -111,7 +118,7 @@ public class AbstractEdgePool< E extends AbstractEdge< T >, T extends MappedElem
 		return null;
 	}
 
-	public < S extends AbstractSpot< ?, ? > >  void releaseAllLinkedEdges( final S spot, final AbstractSpotPool< S, ?, ? > spotPool )
+	public void releaseAllLinkedEdges( final S spot )
 	{
 		final S tmpSpot = spotPool.getTmpSpotRef();
 		final E edge = getTmpEdgeRef();
@@ -123,7 +130,7 @@ public class AbstractEdgePool< E extends AbstractEdge< T >, T extends MappedElem
 		while ( index >= 0 )
 		{
 			getByInternalPoolIndex( index, edge );
-			unlinkFromTarget( edge, tmpEdge, tmpSpot, spotPool );
+			unlinkFromTarget( edge, tmpEdge, tmpSpot );
 			index = edge.getNextSourceEdgeIndex();
 			releaseByInternalPoolIndex( edge.getInternalPoolIndex() );
 		}
@@ -134,7 +141,7 @@ public class AbstractEdgePool< E extends AbstractEdge< T >, T extends MappedElem
 		while ( index >= 0 )
 		{
 			getByInternalPoolIndex( index, edge );
-			unlinkFromSource( edge, tmpEdge, tmpSpot, spotPool );
+			unlinkFromSource( edge, tmpEdge, tmpSpot );
 			index = edge.getNextTargetEdgeIndex();
 			releaseByInternalPoolIndex( edge.getInternalPoolIndex() );
 		}
@@ -144,13 +151,13 @@ public class AbstractEdgePool< E extends AbstractEdge< T >, T extends MappedElem
 		releaseTmpEdgeRef( tmpEdge );
 	}
 
-	public < S extends AbstractSpot< ?, ? > > void release( final E edge, final AbstractSpotPool< S, ?, ? > spotPool )
+	public void release( final E edge )
 	{
 		final S tmpSpot = spotPool.getTmpSpotRef();
 		final E tmp = getTmpEdgeRef();
 
-		unlinkFromSource( edge, tmp, tmpSpot, spotPool );
-		unlinkFromTarget( edge, tmp, tmpSpot, spotPool );
+		unlinkFromSource( edge, tmp, tmpSpot );
+		unlinkFromTarget( edge, tmp, tmpSpot );
 		releaseByInternalPoolIndex( edge.getInternalPoolIndex() );
 
 		spotPool.releaseTmpSpotRef( tmpSpot );
@@ -160,7 +167,7 @@ public class AbstractEdgePool< E extends AbstractEdge< T >, T extends MappedElem
 	@Override
 	public Iterator< E > iterator()
 	{
-		final PoolIterator< T > pi = pool.iterator();
+		final PoolIterator< T > pi = memPool.iterator();
 		final E edge = createEmptyEdgeRef();
 		return new Iterator< E >()
 		{
@@ -174,7 +181,7 @@ public class AbstractEdgePool< E extends AbstractEdge< T >, T extends MappedElem
 			public E next()
 			{
 				final long index = pi.next();
-				edge.updateAccess( pool, index );
+				edge.updateAccess( memPool, index );
 				return edge;
 			}
 
@@ -195,22 +202,22 @@ public class AbstractEdgePool< E extends AbstractEdge< T >, T extends MappedElem
 
 	private void create( final E edge )
 	{
-		final long index = pool.create();
-		edge.updateAccess( pool, index );
+		final long index = memPool.create();
+		edge.updateAccess( memPool, index );
 		edge.init();
 	}
 
 	void getByInternalPoolIndex( final long index, final E edge )
 	{
-		edge.updateAccess( pool, index );
+		edge.updateAccess( memPool, index );
 	}
 
 	private void releaseByInternalPoolIndex( final long index )
 	{
-		pool.free( index );
+		memPool.free( index );
 	}
 
-	private < S extends AbstractSpot< ?, ? > > void unlinkFromSource( final E edge, final E tmpEdge, final S tmpSpot, final AbstractSpotPool< S, ?, ? > spotPool )
+	private void unlinkFromSource( final E edge, final E tmpEdge, final S tmpSpot )
 	{
 		spotPool.getByInternalPoolIndex( edge.getSourceSpotInternalPoolIndex(), tmpSpot );
 		final long sourceOutIndex = tmpSpot.getFirstOutEdgeIndex();
@@ -233,7 +240,7 @@ public class AbstractEdgePool< E extends AbstractEdge< T >, T extends MappedElem
 		}
 	}
 
-	private < S extends AbstractSpot< ?, ? > > void unlinkFromTarget( final E edge, final E tmpEdge, final S tmpSpot, final AbstractSpotPool< S, ?, ? > spotPool )
+	private void unlinkFromTarget( final E edge, final E tmpEdge, final S tmpSpot )
 	{
 		spotPool.getByInternalPoolIndex( edge.getTargetSpotInternalPoolIndex(), tmpSpot );
 		final long targetInIndex = tmpSpot.getFirstInEdgeIndex();

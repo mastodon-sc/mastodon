@@ -4,27 +4,19 @@ import java.util.Iterator;
 
 
 
-public class OutgoingSpotEdges< E extends AbstractEdge< ? > > implements SpotEdges< E >
+public class OutgoingSpotEdges< E extends AbstractEdge< ?, ? > > implements SpotEdges< E >
 {
 	private final AbstractSpot< ?, ? > spot;
-	private final AbstractEdgePool< E, ? > edgePool;
-	private final AbstractSpotPool< ? extends AbstractSpot< ?, ? >, ?, ? > spotPool;
+	private final AbstractEdgePool< E, ?, ? > edgePool;
 
 	private OutgoingEdgesIterator iterator;
 
-	/**
-	 * @param spotPool
-	 *            May be null. This is only required if the
-	 *            {@link Iterator#remove()} operation is used.
-	 */
 	public OutgoingSpotEdges(
 			final AbstractSpot< ?, ? > spot,
-			final AbstractEdgePool< E, ? > edgePool,
-			final AbstractSpotPool< ? extends AbstractSpot< ?, ? >, ?, ? > spotPool )
+			final AbstractEdgePool< E, ?, ? > edgePool )
 	{
 		this.spot = spot;
 		this.edgePool = edgePool;
-		this.spotPool = spotPool;
 
 		iterator = null;
 	}
@@ -119,10 +111,7 @@ public class OutgoingSpotEdges< E extends AbstractEdge< ? > > implements SpotEdg
 		@Override
 		public void remove()
 		{
-			if ( spotPool == null )
-				throw new UnsupportedOperationException();
-			else
-				edgePool.release( edge, spotPool );
+			edgePool.release( edge );
 		}
 	}
 }

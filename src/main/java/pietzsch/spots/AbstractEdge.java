@@ -4,7 +4,7 @@ import static pietzsch.mappedelementpool.ByteUtils.LONG_SIZE;
 import pietzsch.mappedelementpool.MappedElement;
 import pietzsch.mappedelementpool.Pool;
 
-public class AbstractEdge< T extends MappedElement >
+public class AbstractEdge< T extends MappedElement, S extends AbstractSpot< ?, ? > >
 {
 	public static final int SOURCE_INDEX_OFFSET = 0;
 	public static final int TARGET_INDEX_OFFSET = SOURCE_INDEX_OFFSET + LONG_SIZE;
@@ -16,9 +16,12 @@ public class AbstractEdge< T extends MappedElement >
 
 	private long index;
 
-	protected AbstractEdge( final T access )
+	protected final AbstractSpotPool< S, ?, ? > spotPool;
+
+	protected AbstractEdge( final AbstractEdgePool< ?, T, S > pool )
 	{
-		this.access = access;
+		this.access = pool.memPool.createAccess();
+		this.spotPool = pool.spotPool;
 	}
 
 	public long getInternalPoolIndex()
@@ -78,11 +81,24 @@ public class AbstractEdge< T extends MappedElement >
 		setNextTargetEdgeIndex( -1 );
 	}
 
+	protected S getSourceSpot( final S spot )
+	{
+		spotPool.getByInternalPoolIndex( getSourceSpotInternalPoolIndex(), spot );
+		return spot;
+	}
+
+	protected S getTargetSpot( final S spot )
+	{
+		spotPool.getByInternalPoolIndex( getTargetSpotInternalPoolIndex(), spot );
+		return spot;
+	}
+
+
 	@Override
 	public boolean equals( final Object obj )
 	{
-		return obj instanceof AbstractEdge< ? > &&
-				access.equals( ( ( AbstractEdge< ? > ) obj ).access );
+		return obj instanceof AbstractEdge< ?, ? > &&
+				access.equals( ( ( AbstractEdge< ?, ? > ) obj ).access );
 	}
 
 	@Override
@@ -91,11 +107,11 @@ public class AbstractEdge< T extends MappedElement >
 		return access.hashCode();
 	}
 
-	public static interface Factory< E extends AbstractEdge< T >, T extends MappedElement >
+	public static interface Factory< E extends AbstractEdge< T, ? >, T extends MappedElement, S extends AbstractSpot< ?, ? > >
 	{
 		public int getEdgeSizeInBytes();
 
-		public E createEmptyEdgeRef( final Pool< T > pool );
+		public E createEmptyEdgeRef( final AbstractEdgePool< ?, T, S > pool );
 	}
 
 }

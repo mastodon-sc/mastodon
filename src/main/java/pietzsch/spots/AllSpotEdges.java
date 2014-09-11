@@ -2,27 +2,19 @@ package pietzsch.spots;
 
 import java.util.Iterator;
 
-public class AllSpotEdges< E extends AbstractEdge< ? > > implements SpotEdges< E >
+public class AllSpotEdges< E extends AbstractEdge< ?, ? > > implements SpotEdges< E >
 {
 	private final AbstractSpot< ?, ? > spot;
-	private final AbstractEdgePool< E, ? > edgePool;
-	private final AbstractSpotPool< ? extends AbstractSpot< ?, ? >, ?, ? > spotPool;
+	private final AbstractEdgePool< E, ?, ? > edgePool;
 
 	private EdgesIterator iterator;
 
-	/**
-	 * @param spotPool
-	 *            May be null. This is only required if the
-	 *            {@link Iterator#remove()} operation is used.
-	 */
 	public AllSpotEdges(
 			final AbstractSpot< ?, ? > spot,
-			final AbstractEdgePool< E, ? > edgePool,
-			final AbstractSpotPool< ? extends AbstractSpot< ?, ? >, ?, ? > spotPool )
+			final AbstractEdgePool< E, ?, ? > edgePool )
 	{
 		this.spot = spot;
 		this.edgePool = edgePool;
-		this.spotPool = spotPool;
 
 		iterator = null;
 	}
@@ -164,10 +156,7 @@ public class AllSpotEdges< E extends AbstractEdge< ? > > implements SpotEdges< E
 		@Override
 		public void remove()
 		{
-			if ( spotPool == null )
-				throw new UnsupportedOperationException();
-			else
-				edgePool.release( edge, spotPool );
+			edgePool.release( edge );
 		}
 	}
 }

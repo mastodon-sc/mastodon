@@ -13,15 +13,14 @@ public class SpotCollection implements Iterable< Spot >
 {
 	private static final Factory< ByteMappedElement > poolFactory = SingleArrayPool.factory( ByteMappedElementArray.factory );
 
-	// TODO: make package private. this is just for debugging
-	public final AbstractSpotPool< Spot, ByteMappedElement, Edge > spotPool;
+	final AbstractSpotPool< Spot, ByteMappedElement, Edge > spotPool;
 
-	final AbstractEdgePool< Edge, ByteMappedElement > edgePool;
+	final AbstractEdgePool< Edge, ByteMappedElement, Spot > edgePool;
 
 	public SpotCollection( final int initialCapacity )
 	{
 		spotPool = new AbstractSpotPool< Spot, ByteMappedElement, Edge >( initialCapacity, Spot.factory, poolFactory );
-		edgePool = new AbstractEdgePool< Edge, ByteMappedElement >( initialCapacity, Edge.factory, poolFactory );
+		edgePool = new AbstractEdgePool< Edge, ByteMappedElement, Spot >( initialCapacity, Edge.factory, poolFactory, spotPool );
 		spotPool.linkEdgePool( edgePool );
 	}
 
@@ -71,7 +70,6 @@ public class SpotCollection implements Iterable< Spot >
 
 	public void releaseSpot( final Spot spot )
 	{
-		edgePool.releaseAllLinkedEdges( spot, spotPool );
 		spotPool.release( spot );
 	}
 
@@ -116,9 +114,24 @@ public class SpotCollection implements Iterable< Spot >
 		return spotPool.iterator( createEmptySpotRef() );
 	}
 
-	// TODO: remove(?) this is just for debugging.
 	public Iterable< Edge > edges()
 	{
 		return edgePool;
+	}
+
+	@Override
+	public String toString()
+	{
+		final StringBuffer sb = new StringBuffer( "SpotCollection {\n" );
+		sb.append( "  spots = {\n" );
+		for ( final Spot spot : this )
+			sb.append( "    " + spot + "\n" );
+		sb.append( "  },\n" );
+		sb.append( "  edges = {\n" );
+		for ( final Edge edge : edges() )
+			sb.append( "    " + edge + "\n" );
+		sb.append( "  }\n" );
+		sb.append( "}" );
+		return sb.toString();
 	}
 }

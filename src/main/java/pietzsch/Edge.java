@@ -1,29 +1,17 @@
 package pietzsch;
 
 import pietzsch.mappedelementpool.ByteMappedElement;
-import pietzsch.mappedelementpool.Pool;
 import pietzsch.spots.AbstractEdge;
-import pietzsch.spots.AbstractSpot;
-import pietzsch.spots.AbstractSpotPool;
+import pietzsch.spots.AbstractEdgePool;
 
-public class Edge extends AbstractEdge< ByteMappedElement >
+public class Edge extends AbstractEdge< ByteMappedElement, Spot >
 {
-	private Edge( final Pool< ByteMappedElement > pool )
+	private Edge( final AbstractEdgePool< ?, ByteMappedElement, Spot > pool )
 	{
-		super( pool.createAccess() );
+		super( pool );
 	}
 
-	// TODO: remove. this is just for debugging
-	public < S extends AbstractSpot< ?, ? > > String toString( final AbstractSpotPool< S, ?, ? > spots )
-	{
-		final S source = spots.createEmptySpotRef();
-		spots.getByInternalPoolIndex( getSourceSpotInternalPoolIndex(), source );
-		final S target = spots.createEmptySpotRef();
-		spots.getByInternalPoolIndex( getTargetSpotInternalPoolIndex(), target );
-		return String.format( "Edge( source=%d, target=%d )", source.getId(), target.getId() );
-	}
-
-	public static final AbstractEdge.Factory< Edge, ByteMappedElement > factory = new AbstractEdge.Factory< Edge, ByteMappedElement >()
+	public static final AbstractEdge.Factory< Edge, ByteMappedElement, Spot > factory = new AbstractEdge.Factory< Edge, ByteMappedElement, Spot >()
 	{
 		@Override
 		public int getEdgeSizeInBytes()
@@ -32,9 +20,38 @@ public class Edge extends AbstractEdge< ByteMappedElement >
 		}
 
 		@Override
-		public Edge createEmptyEdgeRef( final Pool< ByteMappedElement > pool )
+		public Edge createEmptyEdgeRef( final AbstractEdgePool< ?, ByteMappedElement, Spot > pool )
 		{
 			return new Edge( pool );
 		}
 	};
+
+	public Spot getSourceSpot()
+	{
+		return super.getSourceSpot( spotPool.createEmptySpotRef() );
+	}
+
+	@Override
+	public Spot getSourceSpot( final Spot spot )
+	{
+		return super.getSourceSpot( spot );
+	}
+
+	public Spot getTargetSpot()
+	{
+		return super.getTargetSpot( spotPool.createEmptySpotRef() );
+	}
+
+	@Override
+	public Spot getTargetSpot( final Spot spot )
+	{
+		return super.getTargetSpot( spot );
+	}
+
+	@Override
+	public String toString()
+	{
+		return String.format( "Edge( %d -> %d )", getSourceSpot().getId(), getTargetSpot().getId() );
+	}
+
 }

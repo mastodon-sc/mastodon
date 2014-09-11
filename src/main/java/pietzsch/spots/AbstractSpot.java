@@ -12,7 +12,7 @@ import pietzsch.mappedelementpool.Pool;
  *
  * @author Tobias Pietzsch <tobias.pietzsch@gmail.com>
  */
-public class AbstractSpot< T extends MappedElement, E extends AbstractEdge< ? > >
+public class AbstractSpot< T extends MappedElement, E extends AbstractEdge< ?, ? > >
 {
 	public static final int ID_OFFSET = 0;
 	public static final int FIRST_IN_EDGE_INDEX_OFFSET = ID_OFFSET + INT_SIZE;
@@ -23,12 +23,9 @@ public class AbstractSpot< T extends MappedElement, E extends AbstractEdge< ? > 
 
 	private long index;
 
-	private final AbstractSpotPool< ?, T, ? > spotPool;
-
 	protected AbstractSpot( final AbstractSpotPool< ?, T, ? > pool )
 	{
 		this.access = pool.memPool.createAccess();
-		this.spotPool = pool;
 	}
 
 	public long getInternalPoolIndex()
@@ -42,8 +39,7 @@ public class AbstractSpot< T extends MappedElement, E extends AbstractEdge< ? > 
 		pool.updateAccess( access, index );
 	}
 
-	// TODO: make protected. This is just for debugging
-	public int getId()
+	protected int getId()
 	{
 		return access.getInt( ID_OFFSET );
 	}
@@ -100,11 +96,11 @@ public class AbstractSpot< T extends MappedElement, E extends AbstractEdge< ? > 
 		return edges;
 	}
 
-	void linkEdgePool( final AbstractEdgePool< E, ? > edgePool )
+	void linkEdgePool( final AbstractEdgePool< E, ?, ? > edgePool )
 	{
-		incomingEdges = new IncomingSpotEdges< E >( this, edgePool, spotPool );
-		outgoingEdges = new OutgoingSpotEdges< E >( this, edgePool, spotPool );
-		edges = new AllSpotEdges< E >( this, edgePool, spotPool );
+		incomingEdges = new IncomingSpotEdges< E >( this, edgePool );
+		outgoingEdges = new OutgoingSpotEdges< E >( this, edgePool );
+		edges = new AllSpotEdges< E >( this, edgePool );
 	}
 
 	@Override
