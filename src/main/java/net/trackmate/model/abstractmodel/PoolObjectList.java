@@ -21,6 +21,12 @@ public class PoolObjectList< O extends PoolObject< T >, T extends MappedElement 
 
 	private final Pool< O, T > pool;
 
+	public PoolObjectList( final Pool< O, T > pool )
+	{
+		this.pool = pool;
+		indices = new TIntArrayList();
+	}
+
 	public PoolObjectList( final Pool< O, T > pool, final int initialCapacity )
 	{
 		this.pool = pool;
@@ -34,7 +40,7 @@ public class PoolObjectList< O extends PoolObject< T >, T extends MappedElement 
 	}
 
 	@Override
-	public TIntCollection getIndexCollection()
+	public TIntList getIndexCollection()
 	{
 		return indices;
 	}

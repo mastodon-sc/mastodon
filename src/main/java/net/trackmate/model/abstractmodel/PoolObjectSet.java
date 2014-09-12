@@ -1,6 +1,5 @@
 package net.trackmate.model.abstractmodel;
 
-import gnu.trove.TIntCollection;
 import gnu.trove.iterator.TIntIterator;
 import gnu.trove.set.TIntSet;
 import gnu.trove.set.hash.TIntHashSet;
@@ -18,6 +17,12 @@ public class PoolObjectSet< O extends PoolObject< T >, T extends MappedElement >
 
 	private final Pool< O, T > pool;
 
+	public PoolObjectSet( final Pool< O, T > pool )
+	{
+		this.pool = pool;
+		indices = new TIntHashSet();
+	}
+
 	public PoolObjectSet( final Pool< O, T > pool, final int initialCapacity )
 	{
 		this.pool = pool;
@@ -25,7 +30,7 @@ public class PoolObjectSet< O extends PoolObject< T >, T extends MappedElement >
 	}
 
 	@Override
-	public TIntCollection getIndexCollection()
+	public TIntSet getIndexCollection()
 	{
 		return indices;
 	}

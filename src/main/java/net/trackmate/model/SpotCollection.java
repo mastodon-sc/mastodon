@@ -1,6 +1,9 @@
 package net.trackmate.model;
 
 import java.util.Iterator;
+import java.util.NavigableSet;
+import java.util.Set;
+import java.util.concurrent.ConcurrentSkipListMap;
 
 import net.trackmate.model.abstractmodel.AbstractEdgePool;
 import net.trackmate.model.abstractmodel.AbstractSpotPool;
@@ -202,5 +205,33 @@ public class SpotCollection implements Iterable< Spot >
 		sb.append( "  }\n" );
 		sb.append( "}" );
 		return sb.toString();
+	}
+
+	//// Adding Spots to Frames ////
+
+	/** The frame by frame list of spot this object wrap. */
+	private final ConcurrentSkipListMap< Integer, Set< Spot > > content = new ConcurrentSkipListMap< Integer, Set< Spot > >();
+
+	public void addSpotTo( final Spot spot, final int frame )
+	{
+		Set< Spot > spots = content.get( frame );
+		if ( null == spots )
+		{
+			spots = new SpotSet( this );
+			content.put( frame, spots );
+		}
+		spots.add( spot );
+		spot.setFrame( frame );;
+		spot.setVisibility( true );
+	}
+
+	public NavigableSet< Integer > keySet()
+	{
+		return content.keySet();
+	}
+
+	public Set< Spot > getAll( final int frame )
+	{
+		return content.get( frame );
 	}
 }
