@@ -186,10 +186,6 @@ public class PoolObjectList< O extends PoolObject< T >, T extends MappedElement 
 	 */
 	private class ListItr implements ListIterator< O >
 	{
-		final MemPool< T > memPool = pool.getMemPool();
-
-		final TIntIterator ii = indices.iterator();
-
 		final O obj = pool.createEmptyRef();
 
 		/**
