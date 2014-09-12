@@ -8,7 +8,7 @@ package net.trackmate.util.mempool;
  * translates into computing a base offset in the memory area. Then values of
  * different types can be read or written at (byte) offsets relative to the
  * current base offset. For example {@code putLong( 42l, 2 )} would put write
- * the {@code long} value 42 into the bytes 2--10 relative to the current base
+ * the {@code long} value 42 into the bytes 2 ... 10 relative to the current base
  * offset.
  *
  * This is used to build imglib2-like proxy objects that map into primitive
