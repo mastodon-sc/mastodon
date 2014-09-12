@@ -93,9 +93,9 @@ public class AbstractEdge< T extends MappedElement, S extends AbstractSpot< ?, ?
 
 	public static interface Factory< E extends AbstractEdge< T, ? >, T extends MappedElement >
 	{
-		public int getEdgeSizeInBytes();
+		public int getSizeInBytes();
 
-		public E createEmptyEdgeRef();
+		public E createEmptyRef();
 	}
 
 }

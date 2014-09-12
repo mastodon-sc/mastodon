@@ -2,11 +2,10 @@ package net.trackmate.model;
 
 import java.util.Iterator;
 
-import net.trackmate.model.abstractmodel.AbstractEdge;
 import net.trackmate.model.abstractmodel.AbstractEdgePool;
-import net.trackmate.model.abstractmodel.AbstractSpot;
 import net.trackmate.model.abstractmodel.AbstractSpotPool;
 import net.trackmate.model.abstractmodel.AdditionalFeatures;
+import net.trackmate.model.abstractmodel.PoolObject;
 import net.trackmate.util.mempool.ByteMappedElement;
 import net.trackmate.util.mempool.ByteMappedElementArray;
 import net.trackmate.util.mempool.MemPool.Factory;
@@ -24,31 +23,31 @@ public class SpotCollection implements Iterable< Spot >
 
 	final AdditionalFeatures additionalEdgeFeatures;
 
-	final AbstractSpot.Factory< Spot, ByteMappedElement > spotFactory = new AbstractSpot.Factory< Spot, ByteMappedElement >()
+	final PoolObject.Factory< Spot > spotFactory = new PoolObject.Factory< Spot >()
 	{
 		@Override
-		public int getSpotSizeInBytes()
+		public int getSizeInBytes()
 		{
 			return Spot.SIZE_IN_BYTES;
 		}
 
 		@Override
-		public Spot createEmptySpotRef()
+		public Spot createEmptyRef()
 		{
 			return new Spot( spotPool, additionalSpotFeatures );
 		}
 	};
 
-	final AbstractEdge.Factory< Edge, ByteMappedElement > edgeFactory = new AbstractEdge.Factory< Edge, ByteMappedElement >()
+	final PoolObject.Factory< Edge > edgeFactory = new PoolObject.Factory< Edge >()
 	{
 		@Override
-		public int getEdgeSizeInBytes()
+		public int getSizeInBytes()
 		{
 			return Edge.SIZE_IN_BYTES;
 		}
 
 		@Override
-		public Edge createEmptyEdgeRef()
+		public Edge createEmptyRef()
 		{
 			return new Edge( edgePool, additionalEdgeFeatures );
 		}
@@ -125,10 +124,10 @@ public class SpotCollection implements Iterable< Spot >
 
 	public void releaseSpot( final int ID )
 	{
-		final Spot tmp = spotPool.getTmpSpotRef();
+		final Spot tmp = spotPool.getTmpRef();
 		getSpot( ID, tmp );
 		releaseSpot( tmp );
-		spotPool.releaseTmpSpotRef( tmp );
+		spotPool.releaseTmpRef( tmp );
 	}
 
 	public Edge createEmptyEdgeRef()
@@ -171,22 +170,22 @@ public class SpotCollection implements Iterable< Spot >
 
 	public Spot getTmpSpotRef()
 	{
-		return spotPool.getTmpSpotRef();
+		return spotPool.getTmpRef();
 	}
 
 	public void releaseTmpSpotRef( final Spot spot )
 	{
-		spotPool.releaseTmpSpotRef( spot );
+		spotPool.releaseTmpRef( spot );
 	}
 
 	public Edge getTmpEdgeRef()
 	{
-		return edgePool.getTmpEdgeRef();
+		return edgePool.getTmpRef();
 	}
 
 	public void releaseTmpEdgeRef( final Edge edge )
 	{
-		edgePool.releaseTmpEdgeRef( edge );
+		edgePool.releaseTmpRef( edge );
 	}
 
 	@Override

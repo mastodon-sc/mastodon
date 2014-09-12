@@ -6,7 +6,6 @@ import gnu.trove.map.TIntIntMap;
 import gnu.trove.map.hash.TIntIntHashMap;
 
 import java.util.Iterator;
-import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import net.trackmate.util.mempool.MappedElement;
@@ -16,21 +15,16 @@ public class AbstractSpotPool< S extends AbstractSpot< T, E >, T extends MappedE
 {
 	private static AtomicInteger IDcounter = new AtomicInteger( -1 );
 
-	private final AbstractSpot.Factory< S, T > spotFactory;
-
-	private final MemPool< T > memPool;
-
 	private final TIntIntMap spotIdToIndexMap;
 
 	private AbstractEdgePool< E, ?, S > edgePool;
 
 	public AbstractSpotPool(
 			final int initialCapacity,
-			final AbstractSpot.Factory< S, T > spotFactory,
+			final PoolObject.Factory< S > spotFactory,
 			final MemPool.Factory< T > poolFactory )
 	{
-		this.spotFactory = spotFactory;
-		this.memPool = poolFactory.createPool( initialCapacity, spotFactory.getSpotSizeInBytes() );
+		super( initialCapacity, spotFactory, poolFactory );
 		this.spotIdToIndexMap = new TIntIntHashMap( initialCapacity, Constants.DEFAULT_LOAD_FACTOR, -1, -1 );
 	}
 
@@ -39,9 +33,10 @@ public class AbstractSpotPool< S extends AbstractSpot< T, E >, T extends MappedE
 		this.edgePool = edgePool;
 	}
 
+	@Override
 	public void clear()
 	{
-		memPool.clear();
+		super.clear();
 		spotIdToIndexMap.clear();
 	}
 
@@ -53,7 +48,7 @@ public class AbstractSpotPool< S extends AbstractSpot< T, E >, T extends MappedE
 	@Override
 	public S createEmptyRef()
 	{
-		final S spot = spotFactory.createEmptySpotRef();
+		final S spot = super.createEmptyRef();
 		if ( edgePool != null )
 			spot.linkEdgePool( edgePool );
 		return spot;
@@ -83,18 +78,6 @@ public class AbstractSpotPool< S extends AbstractSpot< T, E >, T extends MappedE
 			IDcounter.compareAndSet( IDcounter.get(), ID );
 		createWithId( ID, spot );
 		return spot;
-	}
-
-	public S createReferenceTo( final S spot )
-	{
-		return createReferenceTo( spot, createEmptyRef() );
-	}
-
-	// garbage-free version
-	public S createReferenceTo( final S spot, final S reference )
-	{
-		reference.updateAccess( memPool, spot.getInternalPoolIndex() );
-		return reference;
 	}
 
 	public S get( final int ID )
@@ -172,34 +155,5 @@ public class AbstractSpotPool< S extends AbstractSpot< T, E >, T extends MappedE
 		spot.setToUninitializedState();
 		spot.setId( ID );
 		spotIdToIndexMap.put( ID, index );
-	}
-
-	@Override
-	MemPool< T > getMemPool()
-	{
-		return memPool;
-	}
-
-	void getByInternalPoolIndex( final int index, final S spot )
-	{
-		spot.updateAccess( memPool, index );
-	}
-
-	private void releaseByInternalPoolIndex( final int index )
-	{
-		memPool.free( index );
-	}
-
-	private final ConcurrentLinkedQueue< S > tmpSpotRefs = new ConcurrentLinkedQueue< S >();
-
-	public S getTmpSpotRef()
-	{
-		final S spot = tmpSpotRefs.poll();
-		return spot == null ? createEmptyRef() : spot;
-	}
-
-	public void releaseTmpSpotRef( final S spot )
-	{
-		tmpSpotRefs.add( spot );
 	}
 }

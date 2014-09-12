@@ -27,7 +27,7 @@ public class AllSpotEdges< E extends AbstractEdge< ?, ? > > implements SpotEdges
 		int outEdgeIndex = spot.getFirstOutEdgeIndex();
 		if ( inEdgeIndex >= 0 || outEdgeIndex >= 0 )
 		{
-			final E edge = edgePool.getTmpEdgeRef();
+			final E edge = edgePool.getTmpRef();
 			if ( inEdgeIndex >= 0 )
 			{
 				while ( inEdgeIndex >= 0 )
@@ -46,7 +46,7 @@ public class AllSpotEdges< E extends AbstractEdge< ?, ? > > implements SpotEdges
 					outEdgeIndex = edge.getNextSourceEdgeIndex();
 				}
 			}
-			edgePool.releaseTmpEdgeRef( edge );
+			edgePool.releaseTmpRef( edge );
 		}
 		return numEdges;
 	}

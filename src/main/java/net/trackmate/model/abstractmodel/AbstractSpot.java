@@ -102,8 +102,8 @@ public class AbstractSpot< T extends MappedElement, E extends AbstractEdge< ?, ?
 
 	public static interface Factory< S extends AbstractSpot< T, ? >, T extends MappedElement >
 	{
-		public int getSpotSizeInBytes();
+		public int getSizeInBytes();
 
-		public S createEmptySpotRef();
+		public S createEmptyRef();
 	}
 }

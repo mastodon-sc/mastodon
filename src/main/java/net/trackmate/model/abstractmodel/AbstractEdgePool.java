@@ -1,7 +1,6 @@
 package net.trackmate.model.abstractmodel;
 
 import java.util.Iterator;
-import java.util.concurrent.ConcurrentLinkedQueue;
 
 import net.trackmate.util.mempool.MappedElement;
 import net.trackmate.util.mempool.MemPool;
@@ -9,32 +8,16 @@ import net.trackmate.util.mempool.MemPool.PoolIterator;
 
 public class AbstractEdgePool< E extends AbstractEdge< T, ? >, T extends MappedElement, S extends AbstractSpot< ?, ? > > extends Pool< E, T > implements Iterable< E >
 {
-	private final MemPool< T > memPool;
-
-	private final AbstractEdge.Factory< E, T > edgeFactory;
-
 	final AbstractSpotPool< S, ?, ? > spotPool;
 
 	public AbstractEdgePool(
 			final int initialCapacity,
-			final AbstractEdge.Factory< E, T > edgeFactory,
+			final PoolObject.Factory< E > edgeFactory,
 			final MemPool.Factory< T > poolFactory,
 			final AbstractSpotPool< S, ?, ? > spotPool )
 	{
-		this.edgeFactory = edgeFactory;
+		super( initialCapacity, edgeFactory, poolFactory );
 		this.spotPool = spotPool;
-		this.memPool = poolFactory.createPool( initialCapacity, edgeFactory.getEdgeSizeInBytes() );
-	}
-
-	public void clear()
-	{
-		memPool.clear();
-	}
-
-	@Override
-	public E createEmptyRef()
-	{
-		return edgeFactory.createEmptyEdgeRef();
 	}
 
 	public E addEdge( final AbstractSpot< ?, ? > source, final AbstractSpot< ?, ? > target )
@@ -52,7 +35,7 @@ public class AbstractEdgePool< E extends AbstractEdge< T, ? >, T extends MappedE
 		edge.setSourceSpotInternalPoolIndex( source.getInternalPoolIndex() );
 		edge.setTargetSpotInternalPoolIndex( target.getInternalPoolIndex() );
 
-		final E tmp = getTmpEdgeRef();
+		final E tmp = getTmpRef();
 
 		final int sourceOutIndex = source.getFirstOutEdgeIndex();
 		if ( sourceOutIndex < 0 )
@@ -92,7 +75,7 @@ public class AbstractEdgePool< E extends AbstractEdge< T, ? >, T extends MappedE
 			tmp.setNextTargetEdgeIndex( edge.getInternalPoolIndex() );
 		}
 
-		releaseTmpEdgeRef( tmp );
+		releaseTmpRef( tmp );
 		return edge;
 	}
 
@@ -121,9 +104,9 @@ public class AbstractEdgePool< E extends AbstractEdge< T, ? >, T extends MappedE
 
 	public void releaseAllLinkedEdges( final S spot )
 	{
-		final S tmpSpot = spotPool.getTmpSpotRef();
-		final E edge = getTmpEdgeRef();
-		final E tmpEdge = getTmpEdgeRef();
+		final S tmpSpot = spotPool.getTmpRef();
+		final E edge = getTmpRef();
+		final E tmpEdge = getTmpRef();
 
 		// release all outgoing edges
 		int index = spot.getFirstOutEdgeIndex();
@@ -147,22 +130,22 @@ public class AbstractEdgePool< E extends AbstractEdge< T, ? >, T extends MappedE
 			releaseByInternalPoolIndex( edge.getInternalPoolIndex() );
 		}
 
-		spotPool.releaseTmpSpotRef( tmpSpot );
-		releaseTmpEdgeRef( edge );
-		releaseTmpEdgeRef( tmpEdge );
+		spotPool.releaseTmpRef( tmpSpot );
+		releaseTmpRef( edge );
+		releaseTmpRef( tmpEdge );
 	}
 
 	public void release( final E edge )
 	{
-		final S tmpSpot = spotPool.getTmpSpotRef();
-		final E tmp = getTmpEdgeRef();
+		final S tmpSpot = spotPool.getTmpRef();
+		final E tmp = getTmpRef();
 
 		unlinkFromSource( edge, tmp, tmpSpot );
 		unlinkFromTarget( edge, tmp, tmpSpot );
 		releaseByInternalPoolIndex( edge.getInternalPoolIndex() );
 
-		spotPool.releaseTmpSpotRef( tmpSpot );
-		releaseTmpEdgeRef( tmp );
+		spotPool.releaseTmpRef( tmpSpot );
+		releaseTmpRef( tmp );
 	}
 
 	@Override
@@ -206,22 +189,6 @@ public class AbstractEdgePool< E extends AbstractEdge< T, ? >, T extends MappedE
 		final int index = memPool.create();
 		edge.updateAccess( memPool, index );
 		edge.setToUninitializedState();
-	}
-
-	void getByInternalPoolIndex( final int index, final E edge )
-	{
-		edge.updateAccess( memPool, index );
-	}
-
-	@Override
-	MemPool< T > getMemPool()
-	{
-		return memPool;
-	}
-
-	private void releaseByInternalPoolIndex( final int index )
-	{
-		memPool.free( index );
 	}
 
 	private void unlinkFromSource( final E edge, final E tmpEdge, final S tmpSpot )
@@ -268,18 +235,5 @@ public class AbstractEdgePool< E extends AbstractEdge< T, ? >, T extends MappedE
 			}
 			tmpEdge.setNextTargetEdgeIndex( edge.getNextTargetEdgeIndex() );
 		}
-	}
-
-	private final ConcurrentLinkedQueue< E > tmpEdgeRefs = new ConcurrentLinkedQueue< E >();
-
-	public E getTmpEdgeRef()
-	{
-		final E edge = tmpEdgeRefs.poll();
-		return edge == null ? createEmptyRef() : edge;
-	}
-
-	public void releaseTmpEdgeRef( final E edge )
-	{
-		tmpEdgeRefs.add( edge );
 	}
 }

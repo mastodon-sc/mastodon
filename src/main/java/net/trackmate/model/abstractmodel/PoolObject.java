@@ -25,4 +25,11 @@ public abstract class PoolObject< T extends MappedElement >
 		this.index = index;
 		pool.updateAccess( access, index );
 	}
+
+	public static interface Factory< O >
+	{
+		public int getSizeInBytes();
+
+		public O createEmptyRef();
+	}
 }

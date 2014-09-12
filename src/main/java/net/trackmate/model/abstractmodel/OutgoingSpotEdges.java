@@ -26,14 +26,14 @@ public class OutgoingSpotEdges< E extends AbstractEdge< ?, ? > > implements Spot
 		int edgeIndex = spot.getFirstOutEdgeIndex();
 		if ( edgeIndex >= 0 )
 		{
-			final E edge = edgePool.getTmpEdgeRef();
+			final E edge = edgePool.getTmpRef();
 			while ( edgeIndex >= 0 )
 			{
 				++numEdges;
 				edgePool.getByInternalPoolIndex( edgeIndex, edge );
 				edgeIndex = edge.getNextSourceEdgeIndex();
 			}
-			edgePool.releaseTmpEdgeRef( edge );
+			edgePool.releaseTmpRef( edge );
 		}
 		return numEdges;
 	}
