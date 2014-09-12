@@ -2,9 +2,8 @@ package net.trackmate.model.abstractmodel;
 
 import static net.trackmate.util.mempool.ByteUtils.INDEX_SIZE;
 import net.trackmate.util.mempool.MappedElement;
-import net.trackmate.util.mempool.Pool;
 
-public class AbstractEdge< T extends MappedElement, S extends AbstractSpot< ?, ? > >
+public class AbstractEdge< T extends MappedElement, S extends AbstractSpot< ?, ? > > extends PoolObject< T >
 {
 	protected static final int SOURCE_INDEX_OFFSET = 0;
 	protected static final int TARGET_INDEX_OFFSET = SOURCE_INDEX_OFFSET + INDEX_SIZE;
@@ -12,27 +11,12 @@ public class AbstractEdge< T extends MappedElement, S extends AbstractSpot< ?, ?
 	protected static final int NEXT_TARGET_EDGE_INDEX_OFFSET = NEXT_SOURCE_EDGE_INDEX_OFFSET + INDEX_SIZE;
 	protected static final int SIZE_IN_BYTES = NEXT_TARGET_EDGE_INDEX_OFFSET + INDEX_SIZE;
 
-	protected final T access;
-
-	private int index;
-
 	protected final AbstractSpotPool< S, ?, ? > spotPool;
 
 	protected AbstractEdge( final AbstractEdgePool< ?, T, S > pool )
 	{
-		this.access = pool.memPool.createAccess();
+		super( pool.getMemPool() );
 		this.spotPool = pool.spotPool;
-	}
-
-	public int getInternalPoolIndex()
-	{
-		return index;
-	}
-
-	void updateAccess( final Pool< T > pool, final int index )
-	{
-		this.index = index;
-		pool.updateAccess( access, index );
 	}
 
 	protected int getSourceSpotInternalPoolIndex()
@@ -107,7 +91,7 @@ public class AbstractEdge< T extends MappedElement, S extends AbstractSpot< ?, ?
 		return access.hashCode();
 	}
 
-	public static interface Factory< E extends AbstractEdge< T, ? >, T extends MappedElement, S extends AbstractSpot< ?, ? > >
+	public static interface Factory< E extends AbstractEdge< T, ? >, T extends MappedElement >
 	{
 		public int getEdgeSizeInBytes();
 

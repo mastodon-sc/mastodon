@@ -10,7 +10,7 @@ package net.trackmate.util.mempool;
  *
  * @author Tobias Pietzsch <tobias.pietzsch@gmail.com>
  */
-public abstract class Pool< T extends MappedElement >
+public abstract class MemPool< T extends MappedElement >
 {
 	protected final int bytesPerElement;
 
@@ -22,7 +22,7 @@ public abstract class Pool< T extends MappedElement >
 
 	protected int firstFreeIndex;
 
-	public Pool( final int capacity, final int bytesPerElement )
+	public MemPool( final int capacity, final int bytesPerElement )
 	{
 		this.bytesPerElement = Math.max( bytesPerElement, 8 );
 		this.capacity = capacity;
@@ -76,7 +76,7 @@ public abstract class Pool< T extends MappedElement >
 
 	public static class PoolIterator< T extends MappedElement >
 	{
-		private final Pool< T > pool;
+		private final MemPool< T > pool;
 
 		private int nextIndex;
 
@@ -84,7 +84,7 @@ public abstract class Pool< T extends MappedElement >
 
 		private final T element;
 
-		private PoolIterator( final Pool< T > pool )
+		private PoolIterator( final MemPool< T > pool )
 		{
 			this.pool = pool;
 			element = pool.createAccess();
@@ -133,6 +133,6 @@ public abstract class Pool< T extends MappedElement >
 
 	public static interface Factory< T extends MappedElement >
 	{
-		public Pool< T > createPool( final int capacity, final int bytesPerElement );
+		public MemPool< T > createPool( final int capacity, final int bytesPerElement );
 	}
 }

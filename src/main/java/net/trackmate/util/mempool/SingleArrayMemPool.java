@@ -9,13 +9,13 @@ package net.trackmate.util.mempool;
  *
  * @author Tobias Pietzsch <tobias.pietzsch@gmail.com>
  */
-public class SingleArrayPool< T extends MappedElement, A extends MappedElementArray< T > > extends Pool< T >
+public class SingleArrayMemPool< T extends MappedElement, A extends MappedElementArray< T > > extends MemPool< T >
 {
 	private final MappedElementArray.Factory< A > arrayFactory;
 
 	private A data;
 
-	public SingleArrayPool( final MappedElementArray.Factory< A > arrayFactory, final int capacity, final int bytesPerElement )
+	public SingleArrayMemPool( final MappedElementArray.Factory< A > arrayFactory, final int capacity, final int bytesPerElement )
 	{
 		super( capacity, bytesPerElement );
 		this.arrayFactory = arrayFactory;
@@ -53,14 +53,14 @@ public class SingleArrayPool< T extends MappedElement, A extends MappedElementAr
 	}
 
 	public static < T extends MappedElement, A extends MappedElementArray< T > >
-			Pool.Factory< T > factory( final MappedElementArray.Factory< A > arrayFactory )
+			MemPool.Factory< T > factory( final MappedElementArray.Factory< A > arrayFactory )
 	{
-		return new Pool.Factory< T >()
+		return new MemPool.Factory< T >()
 		{
 			@Override
-			public Pool< T > createPool( final int capacity, final int bytesPerElement )
+			public MemPool< T > createPool( final int capacity, final int bytesPerElement )
 			{
-				return new SingleArrayPool< T, A >( arrayFactory, capacity, bytesPerElement );
+				return new SingleArrayMemPool< T, A >( arrayFactory, capacity, bytesPerElement );
 			}
 		};
 	}

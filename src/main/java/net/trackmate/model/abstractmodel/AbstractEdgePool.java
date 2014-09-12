@@ -4,21 +4,21 @@ import java.util.Iterator;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 import net.trackmate.util.mempool.MappedElement;
-import net.trackmate.util.mempool.Pool;
-import net.trackmate.util.mempool.Pool.PoolIterator;
+import net.trackmate.util.mempool.MemPool;
+import net.trackmate.util.mempool.MemPool.PoolIterator;
 
-public class AbstractEdgePool< E extends AbstractEdge< T, ? >, T extends MappedElement, S extends AbstractSpot< ?, ? > > implements Iterable< E >
+public class AbstractEdgePool< E extends AbstractEdge< T, ? >, T extends MappedElement, S extends AbstractSpot< ?, ? > > extends Pool< E, T > implements Iterable< E >
 {
-	final Pool< T > memPool;
+	private final MemPool< T > memPool;
 
-	private final AbstractEdge.Factory< E, T, S > edgeFactory;
+	private final AbstractEdge.Factory< E, T > edgeFactory;
 
 	final AbstractSpotPool< S, ?, ? > spotPool;
 
 	public AbstractEdgePool(
 			final int initialCapacity,
-			final AbstractEdge.Factory< E, T, S > edgeFactory,
-			final Pool.Factory< T > poolFactory,
+			final AbstractEdge.Factory< E, T > edgeFactory,
+			final MemPool.Factory< T > poolFactory,
 			final AbstractSpotPool< S, ?, ? > spotPool )
 	{
 		this.edgeFactory = edgeFactory;
@@ -31,14 +31,15 @@ public class AbstractEdgePool< E extends AbstractEdge< T, ? >, T extends MappedE
 		memPool.clear();
 	}
 
-	public E createEmptyEdgeRef()
+	@Override
+	public E createEmptyRef()
 	{
 		return edgeFactory.createEmptyEdgeRef();
 	}
 
 	public E addEdge( final AbstractSpot< ?, ? > source, final AbstractSpot< ?, ? > target )
 	{
-		return addEdge( source, target, createEmptyEdgeRef() );
+		return addEdge( source, target, createEmptyRef() );
 	}
 
 	// garbage-free version
@@ -97,7 +98,7 @@ public class AbstractEdgePool< E extends AbstractEdge< T, ? >, T extends MappedE
 
 	public E getEdge( final AbstractSpot< ?, ? > source, final AbstractSpot< ?, ? > target )
 	{
-		return getEdge( source, target, createEmptyEdgeRef() );
+		return getEdge( source, target, createEmptyRef() );
 	}
 
 	// garbage-free version
@@ -168,7 +169,7 @@ public class AbstractEdgePool< E extends AbstractEdge< T, ? >, T extends MappedE
 	public Iterator< E > iterator()
 	{
 		final PoolIterator< T > pi = memPool.iterator();
-		final E edge = createEmptyEdgeRef();
+		final E edge = createEmptyRef();
 		return new Iterator< E >()
 		{
 			@Override
@@ -210,6 +211,12 @@ public class AbstractEdgePool< E extends AbstractEdge< T, ? >, T extends MappedE
 	void getByInternalPoolIndex( final int index, final E edge )
 	{
 		edge.updateAccess( memPool, index );
+	}
+
+	@Override
+	MemPool< T > getMemPool()
+	{
+		return memPool;
 	}
 
 	private void releaseByInternalPoolIndex( final int index )
@@ -268,7 +275,7 @@ public class AbstractEdgePool< E extends AbstractEdge< T, ? >, T extends MappedE
 	public E getTmpEdgeRef()
 	{
 		final E edge = tmpEdgeRefs.poll();
-		return edge == null ? createEmptyEdgeRef() : edge;
+		return edge == null ? createEmptyRef() : edge;
 	}
 
 	public void releaseTmpEdgeRef( final E edge )

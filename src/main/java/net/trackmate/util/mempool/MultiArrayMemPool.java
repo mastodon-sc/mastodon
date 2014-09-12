@@ -5,9 +5,9 @@ package net.trackmate.util.mempool;
  *
  * @author Tobias Pietzsch <tobias.pietzsch@gmail.com>
  */
-public class MultiArrayPool< T extends MappedElement, A extends MappedElementArray< T > > extends Pool< T >
+public class MultiArrayMemPool< T extends MappedElement, A extends MappedElementArray< T > > extends MemPool< T >
 {
-	public MultiArrayPool( final int capacity, final int bytesPerElement )
+	public MultiArrayMemPool( final int capacity, final int bytesPerElement )
 	{
 		super( capacity, bytesPerElement );
 		// TODO Auto-generated constructor stub

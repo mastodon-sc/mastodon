@@ -41,7 +41,7 @@ public class OutgoingSpotEdges< E extends AbstractEdge< ?, ? > > implements Spot
 	@Override
 	public E get( final int i )
 	{
-		return get( i, edgePool.createEmptyEdgeRef() );
+		return get( i, edgePool.createEmptyRef() );
 	}
 
 	// garbage-free version
@@ -83,7 +83,7 @@ public class OutgoingSpotEdges< E extends AbstractEdge< ?, ? > > implements Spot
 
 		public OutgoingEdgesIterator()
 		{
-			this.edge = edgePool.createEmptyEdgeRef();
+			this.edge = edgePool.createEmptyRef();
 			reset();
 		}
 

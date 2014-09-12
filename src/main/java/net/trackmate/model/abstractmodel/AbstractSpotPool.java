@@ -10,15 +10,15 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import net.trackmate.util.mempool.MappedElement;
-import net.trackmate.util.mempool.Pool;
+import net.trackmate.util.mempool.MemPool;
 
-public class AbstractSpotPool< S extends AbstractSpot< T, E >, T extends MappedElement, E extends AbstractEdge< ?, ? > > implements Iterable< S >
+public class AbstractSpotPool< S extends AbstractSpot< T, E >, T extends MappedElement, E extends AbstractEdge< ?, ? > > extends Pool< S, T > implements Iterable< S >
 {
 	private static AtomicInteger IDcounter = new AtomicInteger( -1 );
 
 	private final AbstractSpot.Factory< S, T > spotFactory;
 
-	final Pool< T > memPool;
+	private final MemPool< T > memPool;
 
 	private final TIntIntMap spotIdToIndexMap;
 
@@ -27,7 +27,7 @@ public class AbstractSpotPool< S extends AbstractSpot< T, E >, T extends MappedE
 	public AbstractSpotPool(
 			final int initialCapacity,
 			final AbstractSpot.Factory< S, T > spotFactory,
-			final Pool.Factory< T > poolFactory )
+			final MemPool.Factory< T > poolFactory )
 	{
 		this.spotFactory = spotFactory;
 		this.memPool = poolFactory.createPool( initialCapacity, spotFactory.getSpotSizeInBytes() );
@@ -50,7 +50,8 @@ public class AbstractSpotPool< S extends AbstractSpot< T, E >, T extends MappedE
 		return spotIdToIndexMap.size();
 	}
 
-	public S createEmptySpotRef()
+	@Override
+	public S createEmptyRef()
 	{
 		final S spot = spotFactory.createEmptySpotRef();
 		if ( edgePool != null )
@@ -60,7 +61,7 @@ public class AbstractSpotPool< S extends AbstractSpot< T, E >, T extends MappedE
 
 	public S create()
 	{
-		return create( createEmptySpotRef() );
+		return create( createEmptyRef() );
 	}
 
 	// garbage-free version
@@ -72,7 +73,7 @@ public class AbstractSpotPool< S extends AbstractSpot< T, E >, T extends MappedE
 
 	public S create( final int ID )
 	{
-		return create( ID, createEmptySpotRef() );
+		return create( ID, createEmptyRef() );
 	}
 
 	// garbage-free version
@@ -86,7 +87,7 @@ public class AbstractSpotPool< S extends AbstractSpot< T, E >, T extends MappedE
 
 	public S createReferenceTo( final S spot )
 	{
-		return createReferenceTo( spot, createEmptySpotRef() );
+		return createReferenceTo( spot, createEmptyRef() );
 	}
 
 	// garbage-free version
@@ -98,7 +99,7 @@ public class AbstractSpotPool< S extends AbstractSpot< T, E >, T extends MappedE
 
 	public S get( final int ID )
 	{
-		return get( ID, createEmptySpotRef() );
+		return get( ID, createEmptyRef() );
 	}
 
 	// garbage-free version
@@ -127,7 +128,7 @@ public class AbstractSpotPool< S extends AbstractSpot< T, E >, T extends MappedE
 	@Override
 	public Iterator< S > iterator()
 	{
-		return iterator( createEmptySpotRef() );
+		return iterator( createEmptyRef() );
 	}
 
 	public Iterator< S > iterator( final S spot )
@@ -173,6 +174,12 @@ public class AbstractSpotPool< S extends AbstractSpot< T, E >, T extends MappedE
 		spotIdToIndexMap.put( ID, index );
 	}
 
+	@Override
+	MemPool< T > getMemPool()
+	{
+		return memPool;
+	}
+
 	void getByInternalPoolIndex( final int index, final S spot )
 	{
 		spot.updateAccess( memPool, index );
@@ -188,7 +195,7 @@ public class AbstractSpotPool< S extends AbstractSpot< T, E >, T extends MappedE
 	public S getTmpSpotRef()
 	{
 		final S spot = tmpSpotRefs.poll();
-		return spot == null ? createEmptySpotRef() : spot;
+		return spot == null ? createEmptyRef() : spot;
 	}
 
 	public void releaseTmpSpotRef( final S spot )

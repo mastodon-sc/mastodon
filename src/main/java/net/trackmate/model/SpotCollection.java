@@ -9,12 +9,12 @@ import net.trackmate.model.abstractmodel.AbstractSpotPool;
 import net.trackmate.model.abstractmodel.AdditionalFeatures;
 import net.trackmate.util.mempool.ByteMappedElement;
 import net.trackmate.util.mempool.ByteMappedElementArray;
-import net.trackmate.util.mempool.Pool.Factory;
-import net.trackmate.util.mempool.SingleArrayPool;
+import net.trackmate.util.mempool.MemPool.Factory;
+import net.trackmate.util.mempool.SingleArrayMemPool;
 
 public class SpotCollection implements Iterable< Spot >
 {
-	private static final Factory< ByteMappedElement > poolFactory = SingleArrayPool.factory( ByteMappedElementArray.factory );
+	private static final Factory< ByteMappedElement > poolFactory = SingleArrayMemPool.factory( ByteMappedElementArray.factory );
 
 	final AbstractSpotPool< Spot, ByteMappedElement, Edge > spotPool;
 
@@ -39,7 +39,7 @@ public class SpotCollection implements Iterable< Spot >
 		}
 	};
 
-	final AbstractEdge.Factory< Edge, ByteMappedElement, Spot > edgeFactory = new AbstractEdge.Factory< Edge, ByteMappedElement, Spot >()
+	final AbstractEdge.Factory< Edge, ByteMappedElement > edgeFactory = new AbstractEdge.Factory< Edge, ByteMappedElement >()
 	{
 		@Override
 		public int getEdgeSizeInBytes()
@@ -82,7 +82,7 @@ public class SpotCollection implements Iterable< Spot >
 
 	public Spot createEmptySpotRef()
 	{
-		return spotPool.createEmptySpotRef();
+		return spotPool.createEmptyRef();
 	}
 
 	public Spot createSpot()
@@ -133,7 +133,7 @@ public class SpotCollection implements Iterable< Spot >
 
 	public Edge createEmptyEdgeRef()
 	{
-		return edgePool.createEmptyEdgeRef();
+		return edgePool.createEmptyRef();
 	}
 
 	public Edge getEdge( final Spot source, final Spot target )

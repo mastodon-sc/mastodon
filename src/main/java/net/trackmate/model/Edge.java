@@ -32,7 +32,7 @@ public class Edge extends AbstractEdge< ByteMappedElement, Spot >
 
 	public Spot getSourceSpot()
 	{
-		return super.getSourceSpot( spotPool.createEmptySpotRef() );
+		return super.getSourceSpot( spotPool.createEmptyRef() );
 	}
 
 	@Override
@@ -43,7 +43,7 @@ public class Edge extends AbstractEdge< ByteMappedElement, Spot >
 
 	public Spot getTargetSpot()
 	{
-		return super.getTargetSpot( spotPool.createEmptySpotRef() );
+		return super.getTargetSpot( spotPool.createEmptyRef() );
 	}
 
 	@Override

@@ -1,9 +1,8 @@
 package net.trackmate.model.abstractmodel;
 
-import static net.trackmate.util.mempool.ByteUtils.INT_SIZE;
 import static net.trackmate.util.mempool.ByteUtils.INDEX_SIZE;
+import static net.trackmate.util.mempool.ByteUtils.INT_SIZE;
 import net.trackmate.util.mempool.MappedElement;
-import net.trackmate.util.mempool.Pool;
 
 /**
  * TODO: javadoc
@@ -12,31 +11,16 @@ import net.trackmate.util.mempool.Pool;
  *
  * @author Tobias Pietzsch <tobias.pietzsch@gmail.com>
  */
-public class AbstractSpot< T extends MappedElement, E extends AbstractEdge< ?, ? > >
+public class AbstractSpot< T extends MappedElement, E extends AbstractEdge< ?, ? > > extends PoolObject< T >
 {
 	protected static final int ID_OFFSET = 0;
 	protected static final int FIRST_IN_EDGE_INDEX_OFFSET = ID_OFFSET + INT_SIZE;
 	protected static final int FIRST_OUT_EDGE_INDEX_OFFSET = FIRST_IN_EDGE_INDEX_OFFSET + INDEX_SIZE;
 	protected static final int SIZE_IN_BYTES = FIRST_OUT_EDGE_INDEX_OFFSET + INDEX_SIZE;
 
-	protected final T access;
-
-	private int index;
-
 	protected AbstractSpot( final AbstractSpotPool< ?, T, ? > pool )
 	{
-		this.access = pool.memPool.createAccess();
-	}
-
-	public int getInternalPoolIndex()
-	{
-		return index;
-	}
-
-	void updateAccess( final Pool< T > pool, final int index )
-	{
-		this.index = index;
-		pool.updateAccess( access, index );
+		super( pool.getMemPool() );
 	}
 
 	protected int getId()
