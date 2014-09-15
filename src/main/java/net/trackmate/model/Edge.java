@@ -1,10 +1,9 @@
 package net.trackmate.model;
 
 import static net.trackmate.util.mempool.ByteUtils.DOUBLE_SIZE;
+import net.trackmate.model.AdditionalFeatures.Feature;
 import net.trackmate.model.abstractmodel.AbstractEdge;
 import net.trackmate.model.abstractmodel.AbstractEdgePool;
-import net.trackmate.model.abstractmodel.AdditionalFeatures;
-import net.trackmate.model.abstractmodel.AdditionalFeatures.Feature;
 import net.trackmate.util.mempool.ByteMappedElement;
 
 public class Edge extends AbstractEdge< ByteMappedElement, Spot >

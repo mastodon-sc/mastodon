@@ -1,4 +1,4 @@
-package net.trackmate.model.abstractmodel;
+package net.trackmate.model;
 
 import gnu.trove.map.TIntDoubleMap;
 import gnu.trove.map.hash.TIntDoubleHashMap;

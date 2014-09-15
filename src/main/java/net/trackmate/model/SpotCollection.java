@@ -7,7 +7,6 @@ import java.util.concurrent.ConcurrentSkipListMap;
 
 import net.trackmate.model.abstractmodel.AbstractEdgePool;
 import net.trackmate.model.abstractmodel.AbstractIdVertexPool;
-import net.trackmate.model.abstractmodel.AdditionalFeatures;
 import net.trackmate.model.abstractmodel.PoolObject;
 import net.trackmate.util.mempool.ByteMappedElement;
 import net.trackmate.util.mempool.ByteMappedElementArray;
