@@ -1,4 +1,4 @@
-package net.trackmate.util.mempool;
+package net.trackmate.graph.mempool;
 
 /**
  * Maps into region of underlying memory area (a primitive array or similar).

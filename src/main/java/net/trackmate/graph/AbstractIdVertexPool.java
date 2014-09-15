@@ -1,4 +1,4 @@
-package net.trackmate.model.abstractmodel;
+package net.trackmate.graph;
 
 import gnu.trove.impl.Constants;
 import gnu.trove.iterator.TIntIntIterator;
@@ -8,8 +8,8 @@ import gnu.trove.map.hash.TIntIntHashMap;
 import java.util.Iterator;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import net.trackmate.util.mempool.MappedElement;
-import net.trackmate.util.mempool.MemPool;
+import net.trackmate.graph.mempool.MappedElement;
+import net.trackmate.graph.mempool.MemPool;
 
 public class AbstractIdVertexPool< V extends AbstractIdVertex< T, E >, T extends MappedElement, E extends AbstractEdge< ?, ? > > extends AbstractVertexPool< V, T, E >
 {

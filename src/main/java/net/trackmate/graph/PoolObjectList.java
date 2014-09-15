@@ -1,4 +1,4 @@
-package net.trackmate.model.abstractmodel;
+package net.trackmate.graph;
 
 import gnu.trove.TIntCollection;
 import gnu.trove.iterator.TIntIterator;
@@ -12,8 +12,8 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.NoSuchElementException;
 
-import net.trackmate.util.mempool.MappedElement;
-import net.trackmate.util.mempool.MemPool;
+import net.trackmate.graph.mempool.MappedElement;
+import net.trackmate.graph.mempool.MemPool;
 
 public class PoolObjectList< O extends PoolObject< T >, T extends MappedElement > implements PoolObjectCollection< O, T >, List< O >
 {
@@ -99,7 +99,7 @@ public class PoolObjectList< O extends PoolObject< T >, T extends MappedElement 
 	public boolean contains( final Object obj )
 	{
 		return ( obj instanceof PoolObject )
-				? indices.contains( ( (net.trackmate.model.abstractmodel.PoolObject< ? > ) obj ).getInternalPoolIndex() )
+				? indices.contains( ( (net.trackmate.graph.PoolObject< ? > ) obj ).getInternalPoolIndex() )
 				: false;
 	}
 

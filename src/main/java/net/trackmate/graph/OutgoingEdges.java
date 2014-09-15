@@ -1,15 +1,15 @@
-package net.trackmate.model.abstractmodel;
+package net.trackmate.graph;
 
 import java.util.Iterator;
 
-public class IncomingEdges< E extends AbstractEdge< ?, ? > > implements Edges< E >
+public class OutgoingEdges< E extends AbstractEdge< ?, ? > > implements Edges< E >
 {
 	private final AbstractVertex< ?, ? > vertex;
 	private final AbstractEdgePool< E, ?, ? > edgePool;
 
-	private IncomingEdgesIterator iterator;
+	private OutgoingEdgesIterator iterator;
 
-	public IncomingEdges(
+	public OutgoingEdges(
 			final AbstractVertex< ?, ? > vertex,
 			final AbstractEdgePool< E, ?, ? > edgePool )
 	{
@@ -23,7 +23,7 @@ public class IncomingEdges< E extends AbstractEdge< ?, ? > > implements Edges< E
 	public int size()
 	{
 		int numEdges = 0;
-		int edgeIndex = vertex.getFirstInEdgeIndex();
+		int edgeIndex = vertex.getFirstOutEdgeIndex();
 		if ( edgeIndex >= 0 )
 		{
 			final E edge = edgePool.getTmpRef();
@@ -31,7 +31,7 @@ public class IncomingEdges< E extends AbstractEdge< ?, ? > > implements Edges< E
 			{
 				++numEdges;
 				edgePool.getByInternalPoolIndex( edgeIndex, edge );
-				edgeIndex = edge.getNextTargetEdgeIndex();
+				edgeIndex = edge.getNextSourceEdgeIndex();
 			}
 			edgePool.releaseTmpRef( edge );
 		}
@@ -48,11 +48,11 @@ public class IncomingEdges< E extends AbstractEdge< ?, ? > > implements Edges< E
 	@Override
 	public E get( int i, final E edge )
 	{
-		int edgeIndex = vertex.getFirstInEdgeIndex();
+		int edgeIndex = vertex.getFirstOutEdgeIndex();
 		edgePool.getByInternalPoolIndex( edgeIndex, edge );
 		while( i-- > 0 )
 		{
-			edgeIndex = edge.getNextTargetEdgeIndex();
+			edgeIndex = edge.getNextSourceEdgeIndex();
 			edgePool.getByInternalPoolIndex( edgeIndex, edge );
 		}
 		return edge;
@@ -60,28 +60,28 @@ public class IncomingEdges< E extends AbstractEdge< ?, ? > > implements Edges< E
 	}
 
 	@Override
-	public IncomingEdgesIterator iterator()
+	public OutgoingEdgesIterator iterator()
 	{
 		if ( iterator == null )
-			iterator = new IncomingEdgesIterator();
+			iterator = new OutgoingEdgesIterator();
 		else
 			iterator.reset();
 		return iterator;
 	}
 
 	@Override
-	public IncomingEdgesIterator safe_iterator()
+	public OutgoingEdgesIterator safe_iterator()
 	{
-		return new IncomingEdgesIterator();
+		return new OutgoingEdgesIterator();
 	}
 
-	public class IncomingEdgesIterator implements Iterator< E >
+	public class OutgoingEdgesIterator implements Iterator< E >
 	{
 		private int edgeIndex;
 
 		private final E edge;
 
-		public IncomingEdgesIterator()
+		public OutgoingEdgesIterator()
 		{
 			this.edge = edgePool.createEmptyRef();
 			reset();
@@ -89,7 +89,7 @@ public class IncomingEdges< E extends AbstractEdge< ?, ? > > implements Edges< E
 
 		public void reset()
 		{
-			edgeIndex = vertex.getFirstInEdgeIndex();
+			edgeIndex = vertex.getFirstOutEdgeIndex();
 		}
 
 		@Override
@@ -102,7 +102,7 @@ public class IncomingEdges< E extends AbstractEdge< ?, ? > > implements Edges< E
 		public E next()
 		{
 			edgePool.getByInternalPoolIndex( edgeIndex, edge );
-			edgeIndex = edge.getNextTargetEdgeIndex();
+			edgeIndex = edge.getNextSourceEdgeIndex();
 			return edge;
 		}
 

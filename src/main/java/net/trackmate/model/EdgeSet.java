@@ -1,7 +1,7 @@
 package net.trackmate.model;
 
-import net.trackmate.model.abstractmodel.PoolObjectSet;
-import net.trackmate.util.mempool.ByteMappedElement;
+import net.trackmate.graph.PoolObjectSet;
+import net.trackmate.graph.mempool.ByteMappedElement;
 
 public class EdgeSet extends PoolObjectSet< Edge, ByteMappedElement >
 {

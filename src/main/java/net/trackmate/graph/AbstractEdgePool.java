@@ -1,7 +1,7 @@
-package net.trackmate.model.abstractmodel;
+package net.trackmate.graph;
 
-import net.trackmate.util.mempool.MappedElement;
-import net.trackmate.util.mempool.MemPool;
+import net.trackmate.graph.mempool.MappedElement;
+import net.trackmate.graph.mempool.MemPool;
 
 public class AbstractEdgePool< E extends AbstractEdge< T, ? >, T extends MappedElement, S extends AbstractVertex< ?, ? > > extends Pool< E, T > implements Iterable< E >
 {

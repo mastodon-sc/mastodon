@@ -5,13 +5,13 @@ import java.util.NavigableSet;
 import java.util.Set;
 import java.util.concurrent.ConcurrentSkipListMap;
 
-import net.trackmate.model.abstractmodel.AbstractEdgePool;
-import net.trackmate.model.abstractmodel.AbstractIdVertexPool;
-import net.trackmate.model.abstractmodel.PoolObject;
-import net.trackmate.util.mempool.ByteMappedElement;
-import net.trackmate.util.mempool.ByteMappedElementArray;
-import net.trackmate.util.mempool.MemPool.Factory;
-import net.trackmate.util.mempool.SingleArrayMemPool;
+import net.trackmate.graph.AbstractEdgePool;
+import net.trackmate.graph.AbstractIdVertexPool;
+import net.trackmate.graph.PoolObject;
+import net.trackmate.graph.mempool.ByteMappedElement;
+import net.trackmate.graph.mempool.ByteMappedElementArray;
+import net.trackmate.graph.mempool.SingleArrayMemPool;
+import net.trackmate.graph.mempool.MemPool.Factory;
 
 public class SpotCollection implements Iterable< Spot >
 {

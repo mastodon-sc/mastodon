@@ -1,17 +1,17 @@
 package net.trackmate.model;
 
-import static net.trackmate.util.mempool.ByteUtils.BOOLEAN_SIZE;
-import static net.trackmate.util.mempool.ByteUtils.DOUBLE_SIZE;
-import static net.trackmate.util.mempool.ByteUtils.INT_SIZE;
+import static net.trackmate.graph.mempool.ByteUtils.BOOLEAN_SIZE;
+import static net.trackmate.graph.mempool.ByteUtils.DOUBLE_SIZE;
+import static net.trackmate.graph.mempool.ByteUtils.INT_SIZE;
 import net.imglib2.RealLocalizable;
+import net.trackmate.graph.AbstractIdVertex;
+import net.trackmate.graph.AbstractIdVertexPool;
+import net.trackmate.graph.AbstractVertex;
+import net.trackmate.graph.AllEdges;
+import net.trackmate.graph.IncomingEdges;
+import net.trackmate.graph.OutgoingEdges;
+import net.trackmate.graph.mempool.ByteMappedElement;
 import net.trackmate.model.AdditionalFeatures.Feature;
-import net.trackmate.model.abstractmodel.AbstractIdVertexPool;
-import net.trackmate.model.abstractmodel.AbstractVertex;
-import net.trackmate.model.abstractmodel.AbstractIdVertex;
-import net.trackmate.model.abstractmodel.AllEdges;
-import net.trackmate.model.abstractmodel.IncomingEdges;
-import net.trackmate.model.abstractmodel.OutgoingEdges;
-import net.trackmate.util.mempool.ByteMappedElement;
 
 public class Spot extends AbstractIdVertex< ByteMappedElement, Edge > implements RealLocalizable
 {

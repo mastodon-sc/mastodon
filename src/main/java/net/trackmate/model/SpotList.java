@@ -1,8 +1,8 @@
 package net.trackmate.model;
 
 import gnu.trove.list.TIntList;
-import net.trackmate.model.abstractmodel.PoolObjectList;
-import net.trackmate.util.mempool.ByteMappedElement;
+import net.trackmate.graph.PoolObjectList;
+import net.trackmate.graph.mempool.ByteMappedElement;
 
 public class SpotList extends PoolObjectList< Spot, ByteMappedElement >
 {

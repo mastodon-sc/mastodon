@@ -1,4 +1,4 @@
-package net.trackmate.model.abstractmodel;
+package net.trackmate.graph;
 
 import java.util.Iterator;
 

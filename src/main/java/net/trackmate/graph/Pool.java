@@ -1,11 +1,11 @@
-package net.trackmate.model.abstractmodel;
+package net.trackmate.graph;
 
 import java.util.Iterator;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
-import net.trackmate.util.mempool.MappedElement;
-import net.trackmate.util.mempool.MemPool;
-import net.trackmate.util.mempool.MemPool.PoolIterator;
+import net.trackmate.graph.mempool.MappedElement;
+import net.trackmate.graph.mempool.MemPool;
+import net.trackmate.graph.mempool.MemPool.PoolIterator;
 
 public class Pool< O extends PoolObject< T >, T extends MappedElement > implements Iterable< O >
 {

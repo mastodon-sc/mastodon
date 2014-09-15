@@ -1,7 +1,7 @@
-package net.trackmate.model.abstractmodel;
+package net.trackmate.graph;
 
-import static net.trackmate.util.mempool.ByteUtils.INDEX_SIZE;
-import net.trackmate.util.mempool.MappedElement;
+import static net.trackmate.graph.mempool.ByteUtils.INDEX_SIZE;
+import net.trackmate.graph.mempool.MappedElement;
 
 /**
  * TODO: javadoc

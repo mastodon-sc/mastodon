@@ -1,4 +1,4 @@
-package net.trackmate.util.mempool;
+package net.trackmate.graph.mempool;
 
 /**
  * TODO: implement
