@@ -91,12 +91,4 @@ public class AbstractEdge< T extends MappedElement, V extends AbstractVertex< ?,
 	{
 		return access.hashCode();
 	}
-
-	public static interface Factory< E extends AbstractEdge< T, ? >, T extends MappedElement >
-	{
-		public int getSizeInBytes();
-
-		public E createEmptyRef();
-	}
-
 }

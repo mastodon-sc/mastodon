@@ -6,7 +6,7 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentSkipListMap;
 
 import net.trackmate.model.abstractmodel.AbstractEdgePool;
-import net.trackmate.model.abstractmodel.AbstractSpotPool;
+import net.trackmate.model.abstractmodel.AbstractIdVertexPool;
 import net.trackmate.model.abstractmodel.AdditionalFeatures;
 import net.trackmate.model.abstractmodel.PoolObject;
 import net.trackmate.util.mempool.ByteMappedElement;
@@ -18,7 +18,7 @@ public class SpotCollection implements Iterable< Spot >
 {
 	private static final Factory< ByteMappedElement > poolFactory = SingleArrayMemPool.factory( ByteMappedElementArray.factory );
 
-	final AbstractSpotPool< Spot, ByteMappedElement, Edge > spotPool;
+	final AbstractIdVertexPool< Spot, ByteMappedElement, Edge > spotPool;
 
 	final AbstractEdgePool< Edge, ByteMappedElement, Spot > edgePool;
 
@@ -64,7 +64,7 @@ public class SpotCollection implements Iterable< Spot >
 
 	public SpotCollection( final int initialCapacity )
 	{
-		spotPool = new AbstractSpotPool< Spot, ByteMappedElement, Edge >( initialCapacity, spotFactory, poolFactory );
+		spotPool = new AbstractIdVertexPool< Spot, ByteMappedElement, Edge >( initialCapacity, spotFactory, poolFactory );
 		edgePool = new AbstractEdgePool< Edge, ByteMappedElement, Spot >( initialCapacity, edgeFactory, poolFactory, spotPool );
 		spotPool.linkEdgePool( edgePool );
 		additionalSpotFeatures = new AdditionalFeatures( initialCapacity );

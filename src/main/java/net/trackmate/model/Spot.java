@@ -4,8 +4,9 @@ import static net.trackmate.util.mempool.ByteUtils.BOOLEAN_SIZE;
 import static net.trackmate.util.mempool.ByteUtils.DOUBLE_SIZE;
 import static net.trackmate.util.mempool.ByteUtils.INT_SIZE;
 import net.imglib2.RealLocalizable;
+import net.trackmate.model.abstractmodel.AbstractIdVertexPool;
 import net.trackmate.model.abstractmodel.AbstractVertex;
-import net.trackmate.model.abstractmodel.AbstractSpotPool;
+import net.trackmate.model.abstractmodel.AbstractIdVertex;
 import net.trackmate.model.abstractmodel.AdditionalFeatures;
 import net.trackmate.model.abstractmodel.AdditionalFeatures.Feature;
 import net.trackmate.model.abstractmodel.AllEdges;
@@ -13,7 +14,7 @@ import net.trackmate.model.abstractmodel.IncomingEdges;
 import net.trackmate.model.abstractmodel.OutgoingEdges;
 import net.trackmate.util.mempool.ByteMappedElement;
 
-public class Spot extends AbstractVertex< ByteMappedElement, Edge > implements RealLocalizable
+public class Spot extends AbstractIdVertex< ByteMappedElement, Edge > implements RealLocalizable
 {
 	protected static final int X_OFFSET = AbstractVertex.SIZE_IN_BYTES;
 	protected static final int Y_OFFSET = X_OFFSET + DOUBLE_SIZE;
@@ -25,7 +26,7 @@ public class Spot extends AbstractVertex< ByteMappedElement, Edge > implements R
 	protected static final int SIZE_IN_BYTES = VISIBILITY_OFFSET + BOOLEAN_SIZE;
 
 	private final AdditionalFeatures additionalFeatures;
-	private final AbstractSpotPool< Spot, ByteMappedElement, ? > pool;
+	private final AbstractIdVertexPool< Spot, ByteMappedElement, ? > pool;
 
 	@Override
 	protected void setToUninitializedState()
@@ -174,7 +175,7 @@ public class Spot extends AbstractVertex< ByteMappedElement, Edge > implements R
 		return super.edges();
 	}
 
-	Spot( final AbstractSpotPool< Spot, ByteMappedElement, ? > pool, final AdditionalFeatures additionalSpotFeatures )
+	Spot( final AbstractIdVertexPool< Spot, ByteMappedElement, ? > pool, final AdditionalFeatures additionalSpotFeatures )
 	{
 		super( pool );
 		this.pool = pool;

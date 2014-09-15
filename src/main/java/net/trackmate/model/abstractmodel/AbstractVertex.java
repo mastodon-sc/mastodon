@@ -1,7 +1,6 @@
 package net.trackmate.model.abstractmodel;
 
 import static net.trackmate.util.mempool.ByteUtils.INDEX_SIZE;
-import static net.trackmate.util.mempool.ByteUtils.INT_SIZE;
 import net.trackmate.util.mempool.MappedElement;
 
 /**
@@ -13,24 +12,13 @@ import net.trackmate.util.mempool.MappedElement;
  */
 public class AbstractVertex< T extends MappedElement, E extends AbstractEdge< ?, ? > > extends PoolObject< T >
 {
-	protected static final int ID_OFFSET = 0;
-	protected static final int FIRST_IN_EDGE_INDEX_OFFSET = ID_OFFSET + INT_SIZE;
+	protected static final int FIRST_IN_EDGE_INDEX_OFFSET = 0;
 	protected static final int FIRST_OUT_EDGE_INDEX_OFFSET = FIRST_IN_EDGE_INDEX_OFFSET + INDEX_SIZE;
 	protected static final int SIZE_IN_BYTES = FIRST_OUT_EDGE_INDEX_OFFSET + INDEX_SIZE;
 
 	protected AbstractVertex( final AbstractVertexPool< ?, T, ? > pool )
 	{
 		super( pool.getMemPool() );
-	}
-
-	protected int getId()
-	{
-		return access.getInt( ID_OFFSET );
-	}
-
-	protected void setId( final int id )
-	{
-		access.putInt( id, ID_OFFSET );
 	}
 
 	protected int getFirstInEdgeIndex()
@@ -99,12 +87,5 @@ public class AbstractVertex< T extends MappedElement, E extends AbstractEdge< ?,
 	public int hashCode()
 	{
 		return access.hashCode();
-	}
-
-	public static interface Factory< S extends AbstractVertex< T, ? >, T extends MappedElement >
-	{
-		public int getSizeInBytes();
-
-		public S createEmptyRef();
 	}
 }

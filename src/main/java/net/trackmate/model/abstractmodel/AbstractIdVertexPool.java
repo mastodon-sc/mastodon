@@ -11,13 +11,13 @@ import java.util.concurrent.atomic.AtomicInteger;
 import net.trackmate.util.mempool.MappedElement;
 import net.trackmate.util.mempool.MemPool;
 
-public class AbstractSpotPool< V extends AbstractVertex< T, E >, T extends MappedElement, E extends AbstractEdge< ?, ? > > extends AbstractVertexPool< V, T, E >
+public class AbstractIdVertexPool< V extends AbstractIdVertex< T, E >, T extends MappedElement, E extends AbstractEdge< ?, ? > > extends AbstractVertexPool< V, T, E >
 {
 	private static AtomicInteger IDcounter = new AtomicInteger( -1 );
 
 	private final TIntIntMap vertexIdToIndexMap;
 
-	public AbstractSpotPool(
+	public AbstractIdVertexPool(
 			final int initialCapacity,
 			final PoolObject.Factory< V > vertexFactory,
 			final MemPool.Factory< T > poolFactory )
