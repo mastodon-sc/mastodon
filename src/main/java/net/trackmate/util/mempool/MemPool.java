@@ -12,6 +12,8 @@ package net.trackmate.util.mempool;
  */
 public abstract class MemPool< T extends MappedElement >
 {
+	public static final int FREE_ELEMENT_MAGIC_NUMBER = -2;
+
 	protected final int bytesPerElement;
 
 	protected T dataAccess;
@@ -73,10 +75,10 @@ public abstract class MemPool< T extends MappedElement >
 		if ( index >= 0 && index < allocatedSize )
 		{
 			updateAccess( dataAccess, index );
-			final boolean isFree = dataAccess.getInt( 0 ) < 0;
+			final boolean isFree = dataAccess.getInt( 0 ) == FREE_ELEMENT_MAGIC_NUMBER;
 			if ( ! isFree )
 			{
-				dataAccess.putIndex( -1, 0 );
+				dataAccess.putIndex( FREE_ELEMENT_MAGIC_NUMBER, 0 );
 				dataAccess.putIndex( firstFreeIndex, 4 );
 				firstFreeIndex = index;
 			}
@@ -125,7 +127,7 @@ public abstract class MemPool< T extends MappedElement >
 				while( ++nextIndex < pool.allocatedSize )
 				{
 					pool.updateAccess( element, nextIndex );
-					final boolean isFree = element.getInt( 0 ) < 0;
+					final boolean isFree = element.getInt( 0 ) == FREE_ELEMENT_MAGIC_NUMBER;
 					if ( ! isFree )
 						break;
 				}
