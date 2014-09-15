@@ -29,28 +29,6 @@ public class Edge extends AbstractEdge< ByteMappedElement, Spot >
 		access.putDouble( weight, WEIGHT_OFFSET );
 	}
 
-	public Spot getSourceSpot()
-	{
-		return super.getSourceVertex( vertexPool.createEmptyRef() );
-	}
-
-	@Override
-	public Spot getSourceVertex( final Spot spot )
-	{
-		return super.getSourceVertex( spot );
-	}
-
-	public Spot getTargetSpot()
-	{
-		return super.getTargetVertex( vertexPool.createEmptyRef() );
-	}
-
-	@Override
-	public Spot getTargetVertex( final Spot spot )
-	{
-		return super.getTargetVertex( spot );
-	}
-
 	public void putFeature( final String feature, final double value )
 	{
 		additionalFeatures.putFeature( feature, value, getInternalPoolIndex() );
@@ -69,7 +47,7 @@ public class Edge extends AbstractEdge< ByteMappedElement, Spot >
 	@Override
 	public String toString()
 	{
-		return String.format( "Edge( %d -> %d )", getSourceSpot().getId(), getTargetSpot().getId() );
+		return String.format( "Edge( %d -> %d )", getSource().getId(), getTarget().getId() );
 	}
 
 	Edge( final AbstractEdgePool< ?, ByteMappedElement, Spot > pool, final AdditionalFeatures additionalEdgeFeatures )

@@ -54,17 +54,17 @@ public class AbstractVertex< T extends MappedElement, E extends AbstractEdge< ?,
 
 	private AllEdges< E > edges;
 
-	protected IncomingEdges< E > incomingEdges()
+	public IncomingEdges< E > incomingEdges()
 	{
 		return incomingEdges;
 	}
 
-	protected OutgoingEdges< E > outgoingEdges()
+	public OutgoingEdges< E > outgoingEdges()
 	{
 		return outgoingEdges;
 	}
 
-	protected AllEdges< E > edges()
+	public AllEdges< E > edges()
 	{
 		return edges;
 	}

@@ -7,9 +7,6 @@ import net.imglib2.RealLocalizable;
 import net.trackmate.graph.AbstractIdVertex;
 import net.trackmate.graph.AbstractIdVertexPool;
 import net.trackmate.graph.AbstractVertex;
-import net.trackmate.graph.AllEdges;
-import net.trackmate.graph.IncomingEdges;
-import net.trackmate.graph.OutgoingEdges;
 import net.trackmate.graph.mempool.ByteMappedElement;
 import net.trackmate.model.AdditionalFeatures.Feature;
 
@@ -154,24 +151,6 @@ public class Spot extends AbstractIdVertex< ByteMappedElement, Edge > implements
 	public String toString()
 	{
 		return String.format( "Spot( ID=%d, X=%.2f, Y=%.2f, Z=%.2f )", getId(), getX(), getY(), getZ() );
-	}
-
-	@Override
-	public IncomingEdges< Edge > incomingEdges()
-	{
-		return super.incomingEdges();
-	}
-
-	@Override
-	public OutgoingEdges< Edge > outgoingEdges()
-	{
-		return super.outgoingEdges();
-	}
-
-	@Override
-	public AllEdges< Edge > edges()
-	{
-		return super.edges();
 	}
 
 	Spot( final AbstractIdVertexPool< Spot, ByteMappedElement, ? > pool, final AdditionalFeatures additionalSpotFeatures )

@@ -66,18 +66,27 @@ public class AbstractEdge< T extends MappedElement, V extends AbstractVertex< ?,
 		setNextTargetEdgeIndex( -1 );
 	}
 
-	protected V getSourceVertex( final V vertex )
+	public V getSource()
+	{
+		return getSource( vertexPool.createEmptyRef() );
+	}
+
+	public V getSource( final V vertex )
 	{
 		vertexPool.getByInternalPoolIndex( getSourceVertexInternalPoolIndex(), vertex );
 		return vertex;
 	}
 
-	protected V getTargetVertex( final V vertex )
+	public V getTarget()
+	{
+		return getTarget( vertexPool.createEmptyRef() );
+	}
+
+	public V getTarget( final V vertex )
 	{
 		vertexPool.getByInternalPoolIndex( getTargetVertexInternalPoolIndex(), vertex );
 		return vertex;
 	}
-
 
 	@Override
 	public boolean equals( final Object obj )
