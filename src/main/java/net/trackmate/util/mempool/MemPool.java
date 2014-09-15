@@ -18,7 +18,16 @@ public abstract class MemPool< T extends MappedElement >
 
 	protected int capacity;
 
+	/**
+	 * The number of elements currently allocated in this pool.
+	 */
 	protected int size;
+
+	/**
+	 * The max size this pool ever had. This equals {@link #size} the number of
+	 * elements in free-element-list.
+	 */
+	protected int allocatedSize;
 
 	protected int firstFreeIndex;
 
@@ -32,7 +41,18 @@ public abstract class MemPool< T extends MappedElement >
 	public void clear()
 	{
 		size = 0;
+		allocatedSize = 0;
 		firstFreeIndex = -1;
+	}
+
+	/**
+	 * Get the number of elements currently allocated in this pool.
+	 *
+	 * @return number of elements.
+	 */
+	public int size()
+	{
+		return size;
 	}
 
 	public int create()
@@ -50,7 +70,7 @@ public abstract class MemPool< T extends MappedElement >
 
 	public void free( final int index )
 	{
-		if ( index >= 0 && index <  size )
+		if ( index >= 0 && index < allocatedSize )
 		{
 			updateAccess( dataAccess, index );
 			final boolean isFree = dataAccess.getInt( 0 ) < 0;
@@ -93,7 +113,7 @@ public abstract class MemPool< T extends MappedElement >
 
 		public void reset()
 		{
-			nextIndex = ( pool.size == 0 ) ? 1 : -1;
+			nextIndex = ( pool.allocatedSize == 0 ) ? 1 : -1;
 			currentIndex = -1;
 			prepareNextElement();
 		}
@@ -102,7 +122,7 @@ public abstract class MemPool< T extends MappedElement >
 		{
 			if ( hasNext() )
 			{
-				while( ++nextIndex < pool.size )
+				while( ++nextIndex < pool.allocatedSize )
 				{
 					pool.updateAccess( element, nextIndex );
 					final boolean isFree = element.getInt( 0 ) < 0;
@@ -114,7 +134,7 @@ public abstract class MemPool< T extends MappedElement >
 
 		public boolean hasNext()
 		{
-			return nextIndex < pool.size;
+			return nextIndex < pool.allocatedSize;
 		}
 
 		public int next()

@@ -1,39 +1,36 @@
 package net.trackmate.model.abstractmodel;
 
-import java.util.Iterator;
-
 import net.trackmate.util.mempool.MappedElement;
 import net.trackmate.util.mempool.MemPool;
-import net.trackmate.util.mempool.MemPool.PoolIterator;
 
-public class AbstractEdgePool< E extends AbstractEdge< T, ? >, T extends MappedElement, S extends AbstractSpot< ?, ? > > extends Pool< E, T > implements Iterable< E >
+public class AbstractEdgePool< E extends AbstractEdge< T, ? >, T extends MappedElement, S extends AbstractVertex< ?, ? > > extends Pool< E, T > implements Iterable< E >
 {
-	final AbstractSpotPool< S, ?, ? > spotPool;
+	final AbstractVertexPool< S, ?, ? > vertexPool;
 
 	public AbstractEdgePool(
 			final int initialCapacity,
 			final PoolObject.Factory< E > edgeFactory,
 			final MemPool.Factory< T > poolFactory,
-			final AbstractSpotPool< S, ?, ? > spotPool )
+			final AbstractVertexPool< S, ?, ? > spotPool )
 	{
 		super( initialCapacity, edgeFactory, poolFactory );
-		this.spotPool = spotPool;
+		this.vertexPool = spotPool;
 	}
 
-	public E addEdge( final AbstractSpot< ?, ? > source, final AbstractSpot< ?, ? > target )
+	public E addEdge( final AbstractVertex< ?, ? > source, final AbstractVertex< ?, ? > target )
 	{
 		return addEdge( source, target, createEmptyRef() );
 	}
 
 	// garbage-free version
-	public E addEdge( final AbstractSpot< ?, ? > source, final AbstractSpot< ?, ? > target, final E edge )
+	public E addEdge( final AbstractVertex< ?, ? > source, final AbstractVertex< ?, ? > target, final E edge )
 	{
 		if ( getEdge( source, target, edge ) != null )
 			return null;
 
 		create( edge );
-		edge.setSourceSpotInternalPoolIndex( source.getInternalPoolIndex() );
-		edge.setTargetSpotInternalPoolIndex( target.getInternalPoolIndex() );
+		edge.setSourceVertexInternalPoolIndex( source.getInternalPoolIndex() );
+		edge.setTargetVertexInternalPoolIndex( target.getInternalPoolIndex() );
 
 		final E tmp = getTmpRef();
 
@@ -79,13 +76,13 @@ public class AbstractEdgePool< E extends AbstractEdge< T, ? >, T extends MappedE
 		return edge;
 	}
 
-	public E getEdge( final AbstractSpot< ?, ? > source, final AbstractSpot< ?, ? > target )
+	public E getEdge( final AbstractVertex< ?, ? > source, final AbstractVertex< ?, ? > target )
 	{
 		return getEdge( source, target, createEmptyRef() );
 	}
 
 	// garbage-free version
-	public E getEdge( final AbstractSpot< ?, ? > source, final AbstractSpot< ?, ? > target, final E edge )
+	public E getEdge( final AbstractVertex< ?, ? > source, final AbstractVertex< ?, ? > target, final E edge )
 	{
 		int nextSourceEdgeIndex = source.getFirstOutEdgeIndex();
 		if ( nextSourceEdgeIndex < 0 )
@@ -93,7 +90,7 @@ public class AbstractEdgePool< E extends AbstractEdge< T, ? >, T extends MappedE
 		getByInternalPoolIndex( nextSourceEdgeIndex, edge );
 		do
 		{
-			if ( edge.getTargetSpotInternalPoolIndex() == target.getInternalPoolIndex() )
+			if ( edge.getTargetVertexInternalPoolIndex() == target.getInternalPoolIndex() )
 				return edge;
 			getByInternalPoolIndex( nextSourceEdgeIndex, edge );
 			nextSourceEdgeIndex = edge.getNextSourceEdgeIndex();
@@ -104,7 +101,7 @@ public class AbstractEdgePool< E extends AbstractEdge< T, ? >, T extends MappedE
 
 	public void releaseAllLinkedEdges( final S spot )
 	{
-		final S tmpSpot = spotPool.getTmpRef();
+		final S tmpSpot = vertexPool.getTmpRef();
 		final E edge = getTmpRef();
 		final E tmpEdge = getTmpRef();
 
@@ -130,51 +127,22 @@ public class AbstractEdgePool< E extends AbstractEdge< T, ? >, T extends MappedE
 			releaseByInternalPoolIndex( edge.getInternalPoolIndex() );
 		}
 
-		spotPool.releaseTmpRef( tmpSpot );
+		vertexPool.releaseTmpRef( tmpSpot );
 		releaseTmpRef( edge );
 		releaseTmpRef( tmpEdge );
 	}
 
 	public void release( final E edge )
 	{
-		final S tmpSpot = spotPool.getTmpRef();
+		final S tmpSpot = vertexPool.getTmpRef();
 		final E tmp = getTmpRef();
 
 		unlinkFromSource( edge, tmp, tmpSpot );
 		unlinkFromTarget( edge, tmp, tmpSpot );
 		releaseByInternalPoolIndex( edge.getInternalPoolIndex() );
 
-		spotPool.releaseTmpRef( tmpSpot );
+		vertexPool.releaseTmpRef( tmpSpot );
 		releaseTmpRef( tmp );
-	}
-
-	@Override
-	public Iterator< E > iterator()
-	{
-		final PoolIterator< T > pi = memPool.iterator();
-		final E edge = createEmptyRef();
-		return new Iterator< E >()
-		{
-			@Override
-			public boolean hasNext()
-			{
-				return pi.hasNext();
-			}
-
-			@Override
-			public E next()
-			{
-				final int index = pi.next();
-				edge.updateAccess( memPool, index );
-				return edge;
-			}
-
-			@Override
-			public void remove()
-			{
-				throw new UnsupportedOperationException();
-			}
-		};
 	}
 
 	/*
@@ -184,16 +152,9 @@ public class AbstractEdgePool< E extends AbstractEdge< T, ? >, T extends MappedE
 	 *
 	 */
 
-	private void create( final E edge )
-	{
-		final int index = memPool.create();
-		edge.updateAccess( memPool, index );
-		edge.setToUninitializedState();
-	}
-
 	private void unlinkFromSource( final E edge, final E tmpEdge, final S tmpSpot )
 	{
-		spotPool.getByInternalPoolIndex( edge.getSourceSpotInternalPoolIndex(), tmpSpot );
+		vertexPool.getByInternalPoolIndex( edge.getSourceVertexInternalPoolIndex(), tmpSpot );
 		final int sourceOutIndex = tmpSpot.getFirstOutEdgeIndex();
 		if ( sourceOutIndex == edge.getInternalPoolIndex() )
 		{
@@ -216,7 +177,7 @@ public class AbstractEdgePool< E extends AbstractEdge< T, ? >, T extends MappedE
 
 	private void unlinkFromTarget( final E edge, final E tmpEdge, final S tmpSpot )
 	{
-		spotPool.getByInternalPoolIndex( edge.getTargetSpotInternalPoolIndex(), tmpSpot );
+		vertexPool.getByInternalPoolIndex( edge.getTargetVertexInternalPoolIndex(), tmpSpot );
 		final int targetInIndex = tmpSpot.getFirstInEdgeIndex();
 		if ( targetInIndex == edge.getInternalPoolIndex() )
 		{

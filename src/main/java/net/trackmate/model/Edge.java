@@ -32,24 +32,24 @@ public class Edge extends AbstractEdge< ByteMappedElement, Spot >
 
 	public Spot getSourceSpot()
 	{
-		return super.getSourceSpot( spotPool.createEmptyRef() );
+		return super.getSourceVertex( vertexPool.createEmptyRef() );
 	}
 
 	@Override
-	public Spot getSourceSpot( final Spot spot )
+	public Spot getSourceVertex( final Spot spot )
 	{
-		return super.getSourceSpot( spot );
+		return super.getSourceVertex( spot );
 	}
 
 	public Spot getTargetSpot()
 	{
-		return super.getTargetSpot( spotPool.createEmptyRef() );
+		return super.getTargetVertex( vertexPool.createEmptyRef() );
 	}
 
 	@Override
-	public Spot getTargetSpot( final Spot spot )
+	public Spot getTargetVertex( final Spot spot )
 	{
-		return super.getTargetSpot( spot );
+		return super.getTargetVertex( spot );
 	}
 
 	public void putFeature( final String feature, final double value )

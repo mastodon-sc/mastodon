@@ -2,7 +2,7 @@ package net.trackmate.model.abstractmodel;
 
 import java.util.Iterator;
 
-public interface SpotEdges< E > extends Iterable< E >
+public interface Edges< E > extends Iterable< E >
 {
 	public int size();
 

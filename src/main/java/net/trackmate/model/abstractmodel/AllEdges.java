@@ -2,18 +2,18 @@ package net.trackmate.model.abstractmodel;
 
 import java.util.Iterator;
 
-public class AllSpotEdges< E extends AbstractEdge< ?, ? > > implements SpotEdges< E >
+public class AllEdges< E extends AbstractEdge< ?, ? > > implements Edges< E >
 {
-	private final AbstractSpot< ?, ? > spot;
+	private final AbstractVertex< ?, ? > vertex;
 	private final AbstractEdgePool< E, ?, ? > edgePool;
 
 	private EdgesIterator iterator;
 
-	public AllSpotEdges(
-			final AbstractSpot< ?, ? > spot,
+	public AllEdges(
+			final AbstractVertex< ?, ? > vertex,
 			final AbstractEdgePool< E, ?, ? > edgePool )
 	{
-		this.spot = spot;
+		this.vertex = vertex;
 		this.edgePool = edgePool;
 
 		iterator = null;
@@ -23,8 +23,8 @@ public class AllSpotEdges< E extends AbstractEdge< ?, ? > > implements SpotEdges
 	public int size()
 	{
 		int numEdges = 0;
-		int inEdgeIndex = spot.getFirstInEdgeIndex();
-		int outEdgeIndex = spot.getFirstOutEdgeIndex();
+		int inEdgeIndex = vertex.getFirstInEdgeIndex();
+		int outEdgeIndex = vertex.getFirstOutEdgeIndex();
 		if ( inEdgeIndex >= 0 || outEdgeIndex >= 0 )
 		{
 			final E edge = edgePool.getTmpRef();
@@ -62,11 +62,11 @@ public class AllSpotEdges< E extends AbstractEdge< ?, ? > > implements SpotEdges
 	public E get( final int i, final E edge )
 	{
 		boolean in = true;
-		int edgeIndex = spot.getFirstInEdgeIndex();
+		int edgeIndex = vertex.getFirstInEdgeIndex();
 		if ( edgeIndex < 0 )
 		{
 			in = false;
-			edgeIndex = spot.getFirstOutEdgeIndex();
+			edgeIndex = vertex.getFirstOutEdgeIndex();
 		}
 		edgePool.getByInternalPoolIndex( edgeIndex, edge );
 		while( i > 0 )
@@ -77,7 +77,7 @@ public class AllSpotEdges< E extends AbstractEdge< ?, ? > > implements SpotEdges
 				if ( edgeIndex < 0 )
 				{
 					in = false;
-					edgeIndex = spot.getFirstOutEdgeIndex();
+					edgeIndex = vertex.getFirstOutEdgeIndex();
 				}
 			}
 			else
@@ -119,11 +119,11 @@ public class AllSpotEdges< E extends AbstractEdge< ?, ? > > implements SpotEdges
 
 		public void reset()
 		{
-			edgeIndex = spot.getFirstInEdgeIndex();
+			edgeIndex = vertex.getFirstInEdgeIndex();
 			if ( edgeIndex < 0 )
 			{
 				in = false;
-				edgeIndex = spot.getFirstOutEdgeIndex();
+				edgeIndex = vertex.getFirstOutEdgeIndex();
 			}
 			else
 				in = true;
@@ -145,7 +145,7 @@ public class AllSpotEdges< E extends AbstractEdge< ?, ? > > implements SpotEdges
 				if ( edgeIndex < 0 )
 				{
 					in = false;
-					edgeIndex = spot.getFirstOutEdgeIndex();
+					edgeIndex = vertex.getFirstOutEdgeIndex();
 				}
 			}
 			else

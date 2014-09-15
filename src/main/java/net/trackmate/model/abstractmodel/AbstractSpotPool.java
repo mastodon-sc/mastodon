@@ -11,113 +11,92 @@ import java.util.concurrent.atomic.AtomicInteger;
 import net.trackmate.util.mempool.MappedElement;
 import net.trackmate.util.mempool.MemPool;
 
-public class AbstractSpotPool< S extends AbstractSpot< T, E >, T extends MappedElement, E extends AbstractEdge< ?, ? > > extends Pool< S, T > implements Iterable< S >
+public class AbstractSpotPool< V extends AbstractVertex< T, E >, T extends MappedElement, E extends AbstractEdge< ?, ? > > extends AbstractVertexPool< V, T, E >
 {
 	private static AtomicInteger IDcounter = new AtomicInteger( -1 );
 
-	private final TIntIntMap spotIdToIndexMap;
-
-	private AbstractEdgePool< E, ?, S > edgePool;
+	private final TIntIntMap vertexIdToIndexMap;
 
 	public AbstractSpotPool(
 			final int initialCapacity,
-			final PoolObject.Factory< S > spotFactory,
+			final PoolObject.Factory< V > vertexFactory,
 			final MemPool.Factory< T > poolFactory )
 	{
-		super( initialCapacity, spotFactory, poolFactory );
-		this.spotIdToIndexMap = new TIntIntHashMap( initialCapacity, Constants.DEFAULT_LOAD_FACTOR, -1, -1 );
-	}
-
-	public void linkEdgePool( final AbstractEdgePool< E, ?, S > edgePool )
-	{
-		this.edgePool = edgePool;
+		super( initialCapacity, vertexFactory, poolFactory );
+		this.vertexIdToIndexMap = new TIntIntHashMap( initialCapacity, Constants.DEFAULT_LOAD_FACTOR, -1, -1 );
 	}
 
 	@Override
 	public void clear()
 	{
 		super.clear();
-		spotIdToIndexMap.clear();
-	}
-
-	public int size()
-	{
-		return spotIdToIndexMap.size();
-	}
-
-	@Override
-	public S createEmptyRef()
-	{
-		final S spot = super.createEmptyRef();
-		if ( edgePool != null )
-			spot.linkEdgePool( edgePool );
-		return spot;
-	}
-
-	public S create()
-	{
-		return create( createEmptyRef() );
+		vertexIdToIndexMap.clear();
 	}
 
 	// garbage-free version
-	public S create( final S spot )
+	@Override
+	public V create( final V vertex )
 	{
-		createWithId( IDcounter.incrementAndGet(), spot );
-		return spot;
+		createWithId( IDcounter.incrementAndGet(), vertex );
+		return vertex;
 	}
 
-	public S create( final int ID )
+	public V create( final int ID )
 	{
 		return create( ID, createEmptyRef() );
 	}
 
 	// garbage-free version
-	public S create( final int ID, final S spot )
+	public V create( final int ID, final V vertex )
 	{
 		while ( IDcounter.get() < ID )
 			IDcounter.compareAndSet( IDcounter.get(), ID );
-		createWithId( ID, spot );
-		return spot;
+		createWithId( ID, vertex );
+		return vertex;
 	}
 
-	public S get( final int ID )
+	public V get( final int ID )
 	{
 		return get( ID, createEmptyRef() );
 	}
 
 	// garbage-free version
-	public S get( final int ID, final S spot )
+	public V get( final int ID, final V vertex )
 	{
-		final int index = spotIdToIndexMap.get( ID );
+		final int index = vertexIdToIndexMap.get( ID );
 		if ( index == -1 )
 			return null;
-		getByInternalPoolIndex( index, spot );
-		return spot;
+		getByInternalPoolIndex( index, vertex );
+		return vertex;
 	}
 
-	public void release( final S spot )
+	@Override
+	public void release( final V vertex )
 	{
-		if ( edgePool != null )
-			edgePool.releaseAllLinkedEdges( spot );
-		release( spot.getId() );
+		vertexIdToIndexMap.remove( vertex.getId() );
+		super.release( vertex );
 	}
 
 	public void release( final int ID )
 	{
-		final int index = spotIdToIndexMap.remove( ID );
-		releaseByInternalPoolIndex( index );
+		final int index = vertexIdToIndexMap.remove( ID );
+		final V vertex = getTmpRef();
+		getByInternalPoolIndex( index, vertex );
+		super.release( vertex );
+		releaseTmpRef( vertex );
 	}
 
 	@Override
-	public Iterator< S > iterator()
+	public Iterator< V > iterator()
 	{
 		return iterator( createEmptyRef() );
 	}
 
-	public Iterator< S > iterator( final S spot )
+	@Override
+	public Iterator< V > iterator( final V vertex )
 	{
-		final TIntIntIterator iter = spotIdToIndexMap.iterator();
-		return new Iterator< S >()
+		final TIntIntIterator iter = vertexIdToIndexMap.iterator();
+		return new Iterator< V >()
 		{
 			@Override
 			public boolean hasNext()
@@ -126,11 +105,11 @@ public class AbstractSpotPool< S extends AbstractSpot< T, E >, T extends MappedE
 			}
 
 			@Override
-			public S next()
+			public V next()
 			{
 				iter.advance();
-				getByInternalPoolIndex( iter.value(), spot );
-				return spot;
+				getByInternalPoolIndex( iter.value(), vertex );
+				return vertex;
 			}
 
 			@Override
@@ -148,12 +127,10 @@ public class AbstractSpotPool< S extends AbstractSpot< T, E >, T extends MappedE
 	 *
 	 */
 
-	private void createWithId( final int ID, final S spot )
+	private void createWithId( final int ID, final V vertex )
 	{
-		final int index = memPool.create();
-		spot.updateAccess( memPool, index );
-		spot.setToUninitializedState();
-		spot.setId( ID );
-		spotIdToIndexMap.put( ID, index );
+		super.create( vertex );
+		vertex.setId( ID );
+		vertexIdToIndexMap.put( ID, vertex.getInternalPoolIndex() );
 	}
 }

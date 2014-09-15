@@ -26,11 +26,11 @@ public class SingleArrayMemPool< T extends MappedElement, A extends MappedElemen
 	@Override
 	protected int append()
 	{
-		final int index = size++;
-		if ( size > capacity )
+		final int index = allocatedSize++;
+		if ( allocatedSize > capacity )
 		{
 			capacity = Math.min( capacity << 1, data.maxSize() );
-			if ( size > capacity )
+			if ( allocatedSize > capacity )
 				throw new IllegalArgumentException( "cannot store more than " + data.maxSize() + " elements" );
 			data = arrayFactory.createArrayAndCopy( capacity, bytesPerElement, data );
 			dataAccess = data.createAccess();

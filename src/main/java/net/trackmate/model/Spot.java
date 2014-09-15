@@ -4,18 +4,18 @@ import static net.trackmate.util.mempool.ByteUtils.BOOLEAN_SIZE;
 import static net.trackmate.util.mempool.ByteUtils.DOUBLE_SIZE;
 import static net.trackmate.util.mempool.ByteUtils.INT_SIZE;
 import net.imglib2.RealLocalizable;
-import net.trackmate.model.abstractmodel.AbstractSpot;
+import net.trackmate.model.abstractmodel.AbstractVertex;
 import net.trackmate.model.abstractmodel.AbstractSpotPool;
 import net.trackmate.model.abstractmodel.AdditionalFeatures;
 import net.trackmate.model.abstractmodel.AdditionalFeatures.Feature;
-import net.trackmate.model.abstractmodel.AllSpotEdges;
-import net.trackmate.model.abstractmodel.IncomingSpotEdges;
-import net.trackmate.model.abstractmodel.OutgoingSpotEdges;
+import net.trackmate.model.abstractmodel.AllEdges;
+import net.trackmate.model.abstractmodel.IncomingEdges;
+import net.trackmate.model.abstractmodel.OutgoingEdges;
 import net.trackmate.util.mempool.ByteMappedElement;
 
-public class Spot extends AbstractSpot< ByteMappedElement, Edge > implements RealLocalizable
+public class Spot extends AbstractVertex< ByteMappedElement, Edge > implements RealLocalizable
 {
-	protected static final int X_OFFSET = AbstractSpot.SIZE_IN_BYTES;
+	protected static final int X_OFFSET = AbstractVertex.SIZE_IN_BYTES;
 	protected static final int Y_OFFSET = X_OFFSET + DOUBLE_SIZE;
 	protected static final int Z_OFFSET = Y_OFFSET + DOUBLE_SIZE;
 	protected static final int RADIUS_OFFSET = Z_OFFSET + DOUBLE_SIZE;
@@ -157,19 +157,19 @@ public class Spot extends AbstractSpot< ByteMappedElement, Edge > implements Rea
 	}
 
 	@Override
-	public IncomingSpotEdges< Edge > incomingEdges()
+	public IncomingEdges< Edge > incomingEdges()
 	{
 		return super.incomingEdges();
 	}
 
 	@Override
-	public OutgoingSpotEdges< Edge > outgoingEdges()
+	public OutgoingEdges< Edge > outgoingEdges()
 	{
 		return super.outgoingEdges();
 	}
 
 	@Override
-	public AllSpotEdges< Edge > edges()
+	public AllEdges< Edge > edges()
 	{
 		return super.edges();
 	}

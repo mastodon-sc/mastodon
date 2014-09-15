@@ -20,6 +20,8 @@ public abstract class PoolObject< T extends MappedElement >
 		return index;
 	}
 
+	protected abstract void setToUninitializedState();
+
 	void updateAccess( final MemPool< T > pool, final int index )
 	{
 		this.index = index;

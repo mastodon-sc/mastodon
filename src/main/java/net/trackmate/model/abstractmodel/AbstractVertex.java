@@ -11,14 +11,14 @@ import net.trackmate.util.mempool.MappedElement;
  *
  * @author Tobias Pietzsch <tobias.pietzsch@gmail.com>
  */
-public class AbstractSpot< T extends MappedElement, E extends AbstractEdge< ?, ? > > extends PoolObject< T >
+public class AbstractVertex< T extends MappedElement, E extends AbstractEdge< ?, ? > > extends PoolObject< T >
 {
 	protected static final int ID_OFFSET = 0;
 	protected static final int FIRST_IN_EDGE_INDEX_OFFSET = ID_OFFSET + INT_SIZE;
 	protected static final int FIRST_OUT_EDGE_INDEX_OFFSET = FIRST_IN_EDGE_INDEX_OFFSET + INDEX_SIZE;
 	protected static final int SIZE_IN_BYTES = FIRST_OUT_EDGE_INDEX_OFFSET + INDEX_SIZE;
 
-	protected AbstractSpot( final AbstractSpotPool< ?, T, ? > pool )
+	protected AbstractVertex( final AbstractVertexPool< ?, T, ? > pool )
 	{
 		super( pool.getMemPool() );
 	}
@@ -53,45 +53,46 @@ public class AbstractSpot< T extends MappedElement, E extends AbstractEdge< ?, ?
 		access.putIndex( index, FIRST_OUT_EDGE_INDEX_OFFSET );
 	}
 
+	@Override
 	protected void setToUninitializedState()
 	{
 		setFirstInEdgeIndex( -1 );
 		setFirstOutEdgeIndex( -1 );
 	}
 
-	private IncomingSpotEdges< E > incomingEdges;
+	private IncomingEdges< E > incomingEdges;
 
-	private OutgoingSpotEdges< E > outgoingEdges;
+	private OutgoingEdges< E > outgoingEdges;
 
-	private AllSpotEdges< E > edges;
+	private AllEdges< E > edges;
 
-	protected IncomingSpotEdges< E > incomingEdges()
+	protected IncomingEdges< E > incomingEdges()
 	{
 		return incomingEdges;
 	}
 
-	protected OutgoingSpotEdges< E > outgoingEdges()
+	protected OutgoingEdges< E > outgoingEdges()
 	{
 		return outgoingEdges;
 	}
 
-	protected AllSpotEdges< E > edges()
+	protected AllEdges< E > edges()
 	{
 		return edges;
 	}
 
 	void linkEdgePool( final AbstractEdgePool< E, ?, ? > edgePool )
 	{
-		incomingEdges = new IncomingSpotEdges< E >( this, edgePool );
-		outgoingEdges = new OutgoingSpotEdges< E >( this, edgePool );
-		edges = new AllSpotEdges< E >( this, edgePool );
+		incomingEdges = new IncomingEdges< E >( this, edgePool );
+		outgoingEdges = new OutgoingEdges< E >( this, edgePool );
+		edges = new AllEdges< E >( this, edgePool );
 	}
 
 	@Override
 	public boolean equals( final Object obj )
 	{
-		return obj instanceof AbstractSpot< ?, ? > &&
-				access.equals( ( ( AbstractSpot< ?, ? > ) obj ).access );
+		return obj instanceof AbstractVertex< ?, ? > &&
+				access.equals( ( ( AbstractVertex< ?, ? > ) obj ).access );
 	}
 
 	@Override
@@ -100,7 +101,7 @@ public class AbstractSpot< T extends MappedElement, E extends AbstractEdge< ?, ?
 		return access.hashCode();
 	}
 
-	public static interface Factory< S extends AbstractSpot< T, ? >, T extends MappedElement >
+	public static interface Factory< S extends AbstractVertex< T, ? >, T extends MappedElement >
 	{
 		public int getSizeInBytes();
 

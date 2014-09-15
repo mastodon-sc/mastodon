@@ -1,11 +1,13 @@
 package net.trackmate.model.abstractmodel;
 
+import java.util.Iterator;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 import net.trackmate.util.mempool.MappedElement;
 import net.trackmate.util.mempool.MemPool;
+import net.trackmate.util.mempool.MemPool.PoolIterator;
 
-public class Pool< O extends PoolObject< T >, T extends MappedElement >
+public class Pool< O extends PoolObject< T >, T extends MappedElement > implements Iterable< O >
 {
 	private final PoolObject.Factory< O > objFactory;
 
@@ -25,6 +27,11 @@ public class Pool< O extends PoolObject< T >, T extends MappedElement >
 	public void clear()
 	{
 		memPool.clear();
+	}
+
+	public int size()
+	{
+		return memPool.size();
 	}
 
 	public O createEmptyRef()
@@ -55,9 +62,51 @@ public class Pool< O extends PoolObject< T >, T extends MappedElement >
 		return reference;
 	}
 
+	@Override
+	public Iterator< O > iterator()
+	{
+		return iterator( createEmptyRef() );
+	}
+
+	// garbage-free version
+	public Iterator< O > iterator( final O obj )
+	{
+		final PoolIterator< T > pi = memPool.iterator();
+		return new Iterator< O >()
+		{
+			@Override
+			public boolean hasNext()
+			{
+				return pi.hasNext();
+			}
+
+			@Override
+			public O next()
+			{
+				final int index = pi.next();
+				obj.updateAccess( memPool, index );
+				return obj;
+			}
+
+			@Override
+			public void remove()
+			{
+				throw new UnsupportedOperationException();
+			}
+		};
+	}
+
 	MemPool< T > getMemPool()
 	{
 		return memPool;
+	}
+
+	O create( final O obj )
+	{
+		final int index = memPool.create();
+		obj.updateAccess( memPool, index );
+		obj.setToUninitializedState();
+		return obj;
 	}
 
 	void getByInternalPoolIndex( final int index, final O obj )

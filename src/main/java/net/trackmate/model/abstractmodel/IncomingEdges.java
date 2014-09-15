@@ -2,18 +2,18 @@ package net.trackmate.model.abstractmodel;
 
 import java.util.Iterator;
 
-public class IncomingSpotEdges< E extends AbstractEdge< ?, ? > > implements SpotEdges< E >
+public class IncomingEdges< E extends AbstractEdge< ?, ? > > implements Edges< E >
 {
-	private final AbstractSpot< ?, ? > spot;
+	private final AbstractVertex< ?, ? > vertex;
 	private final AbstractEdgePool< E, ?, ? > edgePool;
 
 	private IncomingEdgesIterator iterator;
 
-	public IncomingSpotEdges(
-			final AbstractSpot< ?, ? > spot,
+	public IncomingEdges(
+			final AbstractVertex< ?, ? > vertex,
 			final AbstractEdgePool< E, ?, ? > edgePool )
 	{
-		this.spot = spot;
+		this.vertex = vertex;
 		this.edgePool = edgePool;
 
 		iterator = null;
@@ -23,7 +23,7 @@ public class IncomingSpotEdges< E extends AbstractEdge< ?, ? > > implements Spot
 	public int size()
 	{
 		int numEdges = 0;
-		int edgeIndex = spot.getFirstInEdgeIndex();
+		int edgeIndex = vertex.getFirstInEdgeIndex();
 		if ( edgeIndex >= 0 )
 		{
 			final E edge = edgePool.getTmpRef();
@@ -48,7 +48,7 @@ public class IncomingSpotEdges< E extends AbstractEdge< ?, ? > > implements Spot
 	@Override
 	public E get( int i, final E edge )
 	{
-		int edgeIndex = spot.getFirstInEdgeIndex();
+		int edgeIndex = vertex.getFirstInEdgeIndex();
 		edgePool.getByInternalPoolIndex( edgeIndex, edge );
 		while( i-- > 0 )
 		{
@@ -89,7 +89,7 @@ public class IncomingSpotEdges< E extends AbstractEdge< ?, ? > > implements Spot
 
 		public void reset()
 		{
-			edgeIndex = spot.getFirstInEdgeIndex();
+			edgeIndex = vertex.getFirstInEdgeIndex();
 		}
 
 		@Override

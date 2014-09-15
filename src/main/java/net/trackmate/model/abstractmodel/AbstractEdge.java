@@ -3,7 +3,7 @@ package net.trackmate.model.abstractmodel;
 import static net.trackmate.util.mempool.ByteUtils.INDEX_SIZE;
 import net.trackmate.util.mempool.MappedElement;
 
-public class AbstractEdge< T extends MappedElement, S extends AbstractSpot< ?, ? > > extends PoolObject< T >
+public class AbstractEdge< T extends MappedElement, V extends AbstractVertex< ?, ? > > extends PoolObject< T >
 {
 	protected static final int SOURCE_INDEX_OFFSET = 0;
 	protected static final int TARGET_INDEX_OFFSET = SOURCE_INDEX_OFFSET + INDEX_SIZE;
@@ -11,30 +11,30 @@ public class AbstractEdge< T extends MappedElement, S extends AbstractSpot< ?, ?
 	protected static final int NEXT_TARGET_EDGE_INDEX_OFFSET = NEXT_SOURCE_EDGE_INDEX_OFFSET + INDEX_SIZE;
 	protected static final int SIZE_IN_BYTES = NEXT_TARGET_EDGE_INDEX_OFFSET + INDEX_SIZE;
 
-	protected final AbstractSpotPool< S, ?, ? > spotPool;
+	protected final AbstractVertexPool< V, ?, ? > vertexPool;
 
-	protected AbstractEdge( final AbstractEdgePool< ?, T, S > pool )
+	protected AbstractEdge( final AbstractEdgePool< ?, T, V > pool )
 	{
 		super( pool.getMemPool() );
-		this.spotPool = pool.spotPool;
+		this.vertexPool = pool.vertexPool;
 	}
 
-	protected int getSourceSpotInternalPoolIndex()
+	protected int getSourceVertexInternalPoolIndex()
 	{
 		return access.getIndex( SOURCE_INDEX_OFFSET );
 	}
 
-	protected void setSourceSpotInternalPoolIndex( final int index )
+	protected void setSourceVertexInternalPoolIndex( final int index )
 	{
 		access.putIndex( index, SOURCE_INDEX_OFFSET );
 	}
 
-	protected int getTargetSpotInternalPoolIndex()
+	protected int getTargetVertexInternalPoolIndex()
 	{
 		return access.getIndex( TARGET_INDEX_OFFSET );
 	}
 
-	protected void setTargetSpotInternalPoolIndex( final int index )
+	protected void setTargetVertexInternalPoolIndex( final int index )
 	{
 		access.putIndex( index, TARGET_INDEX_OFFSET );
 	}
@@ -59,22 +59,23 @@ public class AbstractEdge< T extends MappedElement, S extends AbstractSpot< ?, ?
 		access.putIndex( index, NEXT_TARGET_EDGE_INDEX_OFFSET );
 	}
 
+	@Override
 	protected void setToUninitializedState()
 	{
 		setNextSourceEdgeIndex( -1 );
 		setNextTargetEdgeIndex( -1 );
 	}
 
-	protected S getSourceSpot( final S spot )
+	protected V getSourceVertex( final V vertex )
 	{
-		spotPool.getByInternalPoolIndex( getSourceSpotInternalPoolIndex(), spot );
-		return spot;
+		vertexPool.getByInternalPoolIndex( getSourceVertexInternalPoolIndex(), vertex );
+		return vertex;
 	}
 
-	protected S getTargetSpot( final S spot )
+	protected V getTargetVertex( final V vertex )
 	{
-		spotPool.getByInternalPoolIndex( getTargetSpotInternalPoolIndex(), spot );
-		return spot;
+		vertexPool.getByInternalPoolIndex( getTargetVertexInternalPoolIndex(), vertex );
+		return vertex;
 	}
 
 
