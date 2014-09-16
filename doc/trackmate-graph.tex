@@ -1,0 +1,640 @@
+\documentclass[a4paper]{article}
+%\usepackage{mathpazo,helvet}
+\usepackage[T1]{fontenc}
+
+\usepackage{tikz}
+%\usepackage{funkey}
+
+\usetikzlibrary{shapes}
+\usetikzlibrary{arrows}
+\usetikzlibrary{decorations.pathreplacing}
+\usetikzlibrary{fit}
+\usetikzlibrary{positioning}
+\usetikzlibrary{shadows}
+\usetikzlibrary{calc}
+\usetikzlibrary{backgrounds}
+\usetikzlibrary{matrix}
+%\usetikzlibrary{matrix.skeleton}
+
+\begin{document}
+
+\title{trackmate-graph}
+\author{Tobias Pietzsch, Jean-Yves Tinevez}
+\maketitle
+
+\abstract{The \emph{trackmate-graph} Java package
+	can be used to implement directed graphs with small memory footprint.
+	Vertices and edges are not stored as individual objects.
+	Instead vertex and edge data is laid out in a primitive \texttt{byte[]} array and accessed via proxy objects.
+	This document describes some internals of the \emph{trackmate-graph} package.}
+
+\pgfdeclarelayer{background}
+\pgfsetlayers{background,main}
+
+\tikzset{every picture/.append style={>=latex'}}
+
+\tikzstyle{obj layout matrix}=[
+  	matrix anchor=north west,
+		inner sep=0pt,
+		outer ysep=0pt,
+		nodes={
+			inner sep=3.5pt,
+			draw,
+			minimum height=7mm,
+			text width=30mm,
+			font=\ttfamily
+		}
+	]
+	
+\tikzstyle{obj layout indices}=[
+  	matrix anchor=north east,
+		xshift=4mm,
+		nodes={
+			%draw=gray!20,
+			minimum height=7mm,
+			text width=6mm,
+			align=right,
+			font=\ttfamily
+		},
+		text=blue
+	]
+	
+\tikzstyle{edge layout indices}=[
+		obj layout indices,
+		text=red
+	]
+	
+\tikzstyle{obj layout byte indices}=[
+		obj layout indices,
+		xshift=-2.5mm,
+		yshift=2mm,
+		text=gray
+	]
+
+
+% -------------------------------------
+\section{Memory Layout}
+% -------------------------------------
+
+Each vertex and each edge maps to a contiguous portion of a \texttt{byte[]} array.
+The size is of a portion (\emph{elements}) is fixed for a particular \texttt{AbstractVertex} or \texttt{AbstractEdge} subclass.
+Each \emph{element} starts with a fixed part that represents the graph structure and then
+	additional payload used by the subclass to describe some vertex attributes, etc.
+ 
+There is one \texttt{byte[]} array that stores all vertices,
+	and one \texttt{byte[]} array that stores all edges.
+References between these arrays are in the form of \emph{element indices}.
+Whether these are indices refer to elements in the vertex or in the edge memory array is clear from the context.
+
+% -------------------------------------
+\subsection{Vertex Layout}
+% ------------------------------------
+The following diagram illustrates the layout of vertices in a \texttt{byte[]} array:
+\begin{center}
+	\begin{tikzpicture}[
+			scale=0.8, every node/.style={scale=0.8},
+			inner frame xsep=0mm,
+			inner frame ysep=0mm,
+			background rectangle/.style={
+	    	fill=black!10
+	    },
+	    %show background rectangle
+		]
+		\newcommand{\spot}[4]{
+		  \matrix (l) at (l.south west) [obj layout matrix]
+		  {
+		    \node (sl1) {FIRST\_IN\_EDGE}; \\
+		    \node (sl2) {FIRST\_OUT\_EDGE}; \\
+		    \node (sl3) [minimum height=20mm] {}; \\
+		  };
+		  
+		  \draw
+		  	[decoration={brace,amplitude=0.5em},decorate,thick]
+		 			($(sl1.north east) + (3mm, -0.2mm)$) -- 
+					($(sl2.south east) + (3mm, 0.2mm)$)
+					node [anchor=west, midway, yshift=-1pt, xshift=2mm, font=\ttfamily] {AbstractVertex};
+					
+		  \draw
+		  	[decoration={brace,amplitude=0.5em},decorate,thick]
+		 			($(sl1.north east) + (1mm, -0.2mm)$) -- 
+					($(sl3.south east) + (1mm, 0.2mm)$)
+					node [anchor=west, midway, yshift=-1pt, xshift=2mm, font=\ttfamily] {Spot};
+					
+			\matrix (b) [obj layout byte indices]
+			at (l.north west)
+			{
+		    \node {#2}; \\
+		    \node {#3}; \\
+		    \node {#4}; \\
+			};
+			\matrix (i) [obj layout indices]
+			at (b.north west)
+			{
+		    \node {#1}; \\
+			};
+		}
+		\coordinate (l);
+		\spot{0}{0}{4}{8}
+		\spot{1}{57}{61}{65}
+	  \matrix (l) at (l.south west) [obj layout matrix]
+	  {
+	    \node (sl1) {FIRST\_IN\_EDGE}; \\
+	    \node (sl2) [draw=none] {...}; \\
+	  };
+	  \draw (sl2.north west) -- (sl2.south west);
+	  \draw (sl2.north east) -- (sl2.south east);
+	  \draw (sl2.north west) -- (sl2.north east);
+		\matrix (b) [obj layout byte indices]
+		at (l.north west)
+		{
+	    \node {114}; \\
+		};
+		\matrix (i) [obj layout indices]
+		at (b.north west)
+		{
+	    \node {2}; \\
+		};
+	\end{tikzpicture}
+\end{center}
+\noindent
+In the left-most column, \emph{element indices} are shown (in blue), followed by byte indices (in grey).
+In the example, each element of the \texttt{AbstractVertex} subclass \texttt{Spot} requires $57$ bytes to store.
+The data for the $i$th \texttt{Spot} starts at byte $i \cdot 57$.
+The fixed \texttt{AbstractVertex} part comprises element indices \texttt{FIRST\_IN\_EDGE} and \texttt{FIRST\_OUT\_EDGE}, occupying 4 bytes each.
+The remaining 49 bytes are \texttt{Spot} attributes.
+
+\texttt{FIRST\_IN\_EDGE} is the element index (in the edge memory array) of the first \emph{incoming} edge, i.e., an edge pointing to this vertex. The remaining incoming edges of the same vertex are stored as a linked list in the edge memory as described below.
+If this vertex does not have any incoming edges \texttt{FIRST\_IN\_EDGE} is $-1$.
+
+Similarly, \texttt{FIRST\_OUT\_EDGE} is the element index of the first \emph{outgoing} edge, i.e., an edge starting from this vertex. The remaining outgoing edges of the same vertex are stored as a linked list in the edge memory as described below.
+If this vertex does not have any outgoing edges \texttt{FIRST\_OUT\_EDGE} is $-1$.
+
+% -------------------------------------
+\subsection{Edge Layout}
+% -------------------------------------
+The following diagram illustrates the layout of edges in a \texttt{byte[]} array:
+\begin{center}
+	\begin{tikzpicture}[
+			scale=0.8, every node/.style={scale=0.8},
+			inner frame xsep=0mm,
+			inner frame ysep=0mm,
+			background rectangle/.style={
+	    	fill=black!10
+	    },
+	    %show background rectangle
+		]
+		\newcommand{\edge}[6]{
+		  \matrix (l) at (l.south west) [obj layout matrix]
+		  {
+		    \node (sl1) {SOURCE}; \\
+		    \node (sl2) {TARGET}; \\
+		    \node (sl3) {NEXT\_SOURCE\_EDGE}; \\
+		    \node (sl4) {NEXT\_TARGET\_EDGE}; \\
+		    \node (sl5) [minimum height=12mm] {}; \\
+		  };
+		  
+		  \draw
+		  	[decoration={brace,amplitude=0.5em},decorate,thick]
+		 			($(sl1.north east) + (3.5mm, -0.2mm)$) -- 
+					($(sl4.south east) + (3.5mm, 0.2mm)$)
+					node [anchor=west, midway, yshift=-1pt, xshift=2mm, font=\ttfamily] {AbstractEdge};
+					
+		  \draw
+		  	[decoration={brace,amplitude=0.5em},decorate,thick]
+		 			($(sl1.north east) + (1mm, -0.2mm)$) -- 
+					($(sl5.south east) + (1mm, 0.2mm)$)
+					node [anchor=west, midway, yshift=-1pt, xshift=3mm, font=\ttfamily] {Edge};
+					
+			\matrix (b) [obj layout byte indices]
+			at (l.north west)
+			{
+		    \node {#2}; \\
+		    \node {#3}; \\
+		    \node {#4}; \\
+		    \node {#5}; \\
+		    \node {#6}; \\
+			};
+			\matrix (i) [edge layout indices]
+			at (b.north west)
+			{
+		    \node {#1}; \\
+			};
+		}
+		\coordinate (l);
+		\edge{0} {0} {4} {8}{12}{16}
+		\edge{1}{24}{28}{32}{36}{40}
+	  \matrix (l) at (l.south west) [obj layout matrix]
+	  {
+	    \node (sl1) {SOURCE}; \\
+	    \node (sl2) [draw=none] {...}; \\
+	  };
+	  \draw (sl2.north west) -- (sl2.south west);
+	  \draw (sl2.north east) -- (sl2.south east);
+	  \draw (sl2.north west) -- (sl2.north east);
+		\matrix (b) [obj layout byte indices]
+		at (l.north west)
+		{
+	    \node {48}; \\
+		};
+		\matrix (i) [edge layout indices]
+		at (b.north west)
+		{
+	    \node {2}; \\
+		};
+	\end{tikzpicture}
+\end{center}
+\noindent
+In the left-most column, \emph{element indices} are shown (in red), followed by byte indices (in grey).
+In the example, each element of the \texttt{AbstractEdge} subclass \texttt{Edge} requires $24$ bytes to store.
+The data for the $i$th \texttt{Edge} starts at byte $i \cdot 24$.
+The fixed \texttt{AbstractEdge} part comprises element indices
+	\texttt{SOURCE},
+	\texttt{TARGET},
+	\texttt{NEXT\_SOURCE\_EDGE}, and
+	\texttt{NEXT\_TARGET\_EDGE}, occupying 4 bytes each.
+The remaining 8 bytes are \texttt{Edge} attributes.
+
+\texttt{SOURCE} is the element index (in the vertex memory array) of the vertex from which this edge starts.
+
+\texttt{TARGET} is the element index (in the vertex memory array) of the vertex to which this edge points.
+
+\texttt{NEXT\_SOURCE\_EDGE} is the element index (in the edge memory array) of the next outgoing edge of the source vertex,
+	i.e., the next edge that has the same \texttt{SOURCE}.
+If there is no such edge then \texttt{NEXT\_SOURCE\_EDGE} is $-1$.
+
+\texttt{NEXT\_TARGET\_EDGE} is the element index (in the edge memory array) of the next incoming edge of the target vertex,
+	i.e., the next edge that has the same \texttt{TARGET}.
+If there is no such edge then \texttt{NEXT\_TARGET\_EDGE} is $-1$.
+
+
+
+
+
+% -------------------------------------
+\subsection{Example}
+% -------------------------------------
+
+\tikzstyle{spot matrix}=[
+  	matrix anchor=north west,
+		inner sep=0pt,
+		outer ysep=0pt,
+		nodes={
+			inner sep=3.5pt,
+			draw,
+			minimum height=5mm,
+			text width=9mm,
+			align=right,
+		}
+	]
+
+\tikzstyle{incoming edge}=[
+		green!50!black,
+		thick,
+		->,
+		shorten >=1mm,
+		shorten <=1mm,
+		text=green!50!black,
+		anchor=east
+	]
+
+\tikzstyle{outgoing edge}=[
+		orange!70!black,
+		thick,
+		->,
+		shorten >=1mm,
+		shorten <=1mm,
+		text=orange!50!black,
+		anchor=east
+	]
+
+\tikzstyle{incoming bg}=[
+		fill=green!10,
+		inner sep=0pt
+	]
+
+\tikzstyle{outgoing bg}=[
+		fill=orange!10,
+		inner sep=0pt
+	]
+
+\newcommand{\spot}[4]{
+  \matrix (s) at (s.south west) [spot matrix]
+  {
+    \node (s#4c1) [text=red] {#1}; \\
+    \node (s#4c2) [text=red] {#2}; \\
+    \node (s#4c3) [minimum height=13.5mm] {}; \\
+  };
+	\node at (s#4c1.west) [text width=2mm, draw=none, xshift=2mm, text=black] {$#4$};
+	\node at (s#4c1.west) [text width=3mm, draw=none, xshift=-1mm, text=blue, font=\scriptsize] {#3};
+}
+
+\newcommand{\edge}[6]{
+  \matrix (e) at (e.south west) [spot matrix]
+  {
+  	\node (e#6c1) [text=blue] {#1}; \\
+    \node (e#6c2) [text=blue] {#2}; \\
+    \node (e#6c3) [text=red]  {#3}; \\
+    \node (e#6c4) [text=red]  {#4}; \\
+    \node (e#6c5) [minimum height=9mm] {}; \\
+  };
+	\node at (e#6c1.west) [text width=2mm, draw=none, xshift=2mm, text=black] {$#6$};
+	\node at (e#6c1.west) [text width=3mm, draw=none, xshift=-1mm, text=red, font=\scriptsize] {#5};
+}
+
+Consider the following example graph comprising vertices $A, B, C, D, E$ and edges $a, b, c, d$.
+\begin{center}
+	\tikzstyle{spot node}=[
+			circle,
+			very thick,
+			draw=blue,
+			text=blue,
+			edge from parent/.style={red,draw},
+		]
+	\tikzstyle{edge link}=[
+			text=red
+		]
+	
+	\begin{tikzpicture}[
+			level distance=14mm,
+	    edge from parent/.style={red,very thick,draw},
+			->]
+	  \node [spot node] {$A$}
+	  child {
+			node [spot node] {$B$}
+		  child [level distance=10mm, sibling distance=25mm ] {
+				node [spot node] {$C$}
+				edge from parent node [above left] {$b$}
+			}
+		  child [level distance=10mm, sibling distance=25mm ] {
+				node [spot node] {$D$}
+			  child [level distance=14mm] {
+					node [spot node] {$E$}
+					edge from parent node [edge link, right] {$d$}
+				}
+				edge from parent node [above right] {$c$}
+			}
+			edge from parent node [right] {$a$}
+		};
+	\end{tikzpicture}
+\end{center}
+This is laid out in memory as follows
+\begin{center}
+	\begin{tikzpicture}
+		\coordinate (s);
+		\spot {$-1$}  {$0$}   {0}{A}
+		\spot  {$0$}  {$1$}   {1}{B}
+		\spot  {$1$} {$-1$}   {2}{C}
+		\spot  {$2$}  {$3$}   {3}{D}
+		\spot  {$3$} {$-1$}   {4}{E}
+		
+		\coordinate (e) at (5,0);
+		\edge  {$0$}  {$1$} {$-1$} {$-1$}   {0}{a}
+		\edge  {$1$}  {$2$}  {$2$} {$-1$}   {1}{b}
+		\edge  {$1$}  {$3$} {$-1$} {$-1$}   {2}{c}
+		\edge  {$3$}  {$4$} {$-1$} {$-1$}   {3}{d}
+		
+		\tikzstyle{edge loop}=[
+			to path={.. controls +(180:1) and +(-200:1) .. (\tikztotarget) \tikztonodes}
+		]
+	    
+	  \draw [incoming edge] (sBc1.east) to [out=0, in=180] ($(eac1.west)-(2mm,0mm)$);
+	  \node [incoming edge] at (eac4.west) {$\bot$};
+
+	  \draw [outgoing edge] (sBc2.east) to [out=0, in=180] ($(ebc1.west)-(2mm,0mm)$);
+	  \draw [outgoing edge] (ebc3.west) to [edge loop] ($(ecc1.west)-(2mm,0mm)$);
+	  \node [outgoing edge] at (ecc3.west) {$\bot$};
+
+		\begin{pgfonlayer}{background}
+	  	\node [incoming bg, fit=(sBc1)] {};
+	  	\node [incoming bg, fit=(eac4)] {};
+	  	\node [outgoing bg, fit=(sBc2)] {};
+	  	\node [outgoing bg, fit=(ebc3)] {};
+	  	\node [outgoing bg, fit=(ecc3)] {};
+	  \end{pgfonlayer}
+	\end{tikzpicture}
+\end{center}
+The links between vertex $B$ and it's adjacent edges $a, b, c$ have been highlighted.
+Let's look at that in more detail:
+Vertex $B$ is stored at element index $1$ in the vertex memory array.
+$B$ has one incoming edge $a$.
+The edge $a$ is stored at element index $0$ in the edge memory array.
+Therefore the \texttt{FIRST\_IN\_EDGE} field of $B$ is $0$.
+%
+Apart from $a$, the vertex $B$ has no further incoming edges.
+Therefore, the \texttt{NEXT\_TARGET\_EDGE} field of $a$ is $-1$, i.e., the list of edges entering $B$ terminates here.
+
+$B$ has two outgoing edges $b, c$.
+The edge $b$ is stored at element index $1$ in the edge memory array.
+Therefore the \texttt{FIRST\_OUT\_EDGE} field of $B$ is $1$.
+%
+The next outgoing edge of $B$ is $c$ which is stored at element index $2$.
+Therefore, the \texttt{NEXT\_SOURCE\_EDGE} field of $b$ is $2$.
+After $c$, the vertex $B$ has no further outgoing edges.
+Therefore, the \texttt{NEXT\_SOURCE\_EDGE} field of $c$ is $-1$, i.e., the list of edges leaving $B$ terminates here.
+
+Below is the same memory layout again, this time highlighting the references from edges $a, b, c$ back to the vertex memory array.
+\begin{center}
+	\begin{tikzpicture}
+		\coordinate (s);
+		\spot {$-1$}  {$0$}   {0}{A}
+		\spot  {$0$}  {$1$}   {1}{B}
+		\spot  {$1$} {$-1$}   {2}{C}
+		\spot  {$2$}  {$3$}   {3}{D}
+		\spot  {$3$} {$-1$}   {4}{E}
+		
+		\coordinate (e) at (5,0);
+		\edge  {$0$}  {$1$} {$-1$} {$-1$}   {0}{a}
+		\edge  {$1$}  {$2$}  {$2$} {$-1$}   {1}{b}
+		\edge  {$1$}  {$3$} {$-1$} {$-1$}   {2}{c}
+		\edge  {$3$}  {$4$} {$-1$} {$-1$}   {3}{d}
+		
+	  \draw [outgoing edge] ($(eac1.west)-(2mm,0mm)$) to [out=180, in=0]   (sAc1.east);
+	  \draw [incoming edge]   (eac2.west)             to [out=180, in=0] ($(sBc1.east)+(0mm,1mm)$);
+
+	  \draw [outgoing edge] ($(ebc1.west)-(2mm,0mm)$) to [out=180, in=0]   (sBc1.east);
+	  \draw [incoming edge]   (ebc2.west)             to [out=180, in=0]   (sCc1.east);
+
+	  \draw [outgoing edge] ($(ecc1.west)-(2mm,0mm)$) to [out=180, in=0] ($(sBc1.east)-(0mm,1mm)$);
+	  \draw [incoming edge]   (ecc2.west)             to [out=180, in=0]   (sDc1.east);
+	\end{tikzpicture}
+\end{center}
+For example, edge $c$ is leaving vertex $B$ (index $1$) and entering vertex $D$ (index $3$).
+Therefore the \texttt{SOURCE} field of $c$ is $1$, and the \texttt{TARGET} field of $c$ is $3$.
+
+
+
+
+
+% -----------------------------------------
+\section{Free-list of unallocated elements}
+% -----------------------------------------
+
+\tikzstyle{free bg}=[
+		fill=gray!20,
+		inner sep=0pt
+	]
+
+\newcommand{\freespot}[2]{
+  \matrix (s) at (s.south west) [spot matrix]
+  {
+    \node (s#2c1) {$\mathbf{-2}$}; \\
+    \node (s#2c2) {#1}; \\
+    \node (s#2c3) [minimum height=13.5mm] {}; \\
+  };
+	\node at (s#2c1.west) [text width=3mm, draw=none, xshift=-1mm, text=blue, font=\scriptsize] {#2};
+	\begin{pgfonlayer}{background}
+  	\node [free bg, fit=(s#2c1)(s#2c3)] {};
+  \end{pgfonlayer}
+}
+
+\newcommand{\freeedge}[2]{
+  \matrix (e) at (e.south west) [spot matrix]
+  {
+  	\node (e#2c1) {$\mathbf{-2}$}; \\
+    \node (e#2c2) {#1}; \\
+    \node (e#2c3) [minimum height=19mm] {}; \\
+  };
+	\node at (e#2c1.west) [text width=3mm, draw=none, xshift=-1mm, text=red, font=\scriptsize] {#2};
+	\begin{pgfonlayer}{background}
+  	\node [free bg, fit=(e#2c1)(e#2c3)] {};
+  \end{pgfonlayer}
+}
+
+
+The vertex and edge memory arrays can only ever grow.
+When elements are released, they are simply marked as free for re-use.
+Assume that in the above example vertex $D$ is deleted, as well as it's adjacent edges $c, d$, leaving this:
+\begin{center}
+	\tikzstyle{spot node}=[
+			circle,
+			very thick,
+			draw=blue,
+			text=blue,
+			edge from parent/.style={red,draw},
+		]
+	\tikzstyle{edge link}=[
+			text=red
+		]
+	
+	\begin{tikzpicture}[
+			level distance=14mm,
+	    edge from parent/.style={red,very thick,draw},
+			->]
+	  \node [spot node] {$A$}
+	  child {
+			node [spot node] {$B$}
+		  child [level distance=10mm, sibling distance=25mm ] {
+				node [spot node] {$C$}
+				edge from parent node [above left] {$b$}
+			}
+		  child [level distance=10mm, sibling distance=25mm] {
+				node [spot node, draw=gray!40, text=gray!40] {$D$}
+			  child [level distance=14mm] {
+					node [spot node] {$E$}
+					edge from parent [draw=gray!40, text=gray!40] node [right] {$d$}
+				}
+				edge from parent [draw=gray!40, text=gray!40] node [above right] {$c$}
+			}
+			edge from parent node [right] {$a$}
+		};
+	\end{tikzpicture}
+\end{center}
+
+\noindent
+After removing $c, d, D$ the memory layout looks like this:
+
+\begin{center}
+	\begin{tikzpicture}
+		\coordinate (s);
+		\spot {$-1$}  {$0$}   {0}{A}
+		\spot  {$0$}  {$1$}   {1}{B}
+		\spot  {$1$} {$-1$}   {2}{C}
+		\freespot {$-1$} {3}
+		\spot {$-1$} {$-1$}   {4}{E}
+		
+		\coordinate (e) at (5,0);
+		\edge  {$0$}  {$1$} {$-1$} {$-1$}   {0}{a}
+		\edge  {$1$}  {$2$} {$-1$} {$-1$}   {1}{b}
+		\freeedge {$-1$} {2}
+		\freeedge {$2$} {3}
+		
+		\tikzstyle{edge loop}=[
+			to path={.. controls +(180:1.5) and +(-170:1.5) .. (\tikztotarget) \tikztonodes}
+		]
+		\tikzstyle{freed edge}=[
+				black,
+				thick,
+				->,
+				shorten >=1mm,
+				shorten <=1mm,
+				anchor=east
+			]
+	    
+		\node [freed edge] (ffs) at ($(s3c1.west)-(10mm,0mm)$) {\texttt{free}};
+	  \draw [freed edge, shorten <=0mm] (ffs) to ($(s3c1.west)-(2mm,0mm)$);
+	  \node [freed edge] at (s3c2.west) {$\bot$};
+
+		\node [freed edge] (ffe) at ($(e3c1.west)-(13mm,0mm)$) {\texttt{free}};
+	  \draw [freed edge, shorten <=0mm] (ffe) to ($(e3c1.west)-(2mm,0mm)$);
+	  \draw [freed edge] (e3c2.west) to [edge loop] ($(e2c1.west)-(2mm,0mm)$);
+	  \node [freed edge] at (e2c2.west) {$\bot$};
+	  
+		\node [draw=none] at ($(e2c1.east)+(18mm,0mm)$) {};	  
+	\end{tikzpicture}
+\end{center}
+The element $3$ in the vertex memory array as well as elements $2$ and $3$ in the edge memory array have been marked as free.
+This is done by putting the magic number ``$-2$'' into the first 4 bytes of the element.\footnote{
+	In vertices and edges the first 4 bytes are always occupied by a (positive) index or a $-1$ index list terminator.
+	Therefore, occupied and free blocks can not be confused.}
+The next 4 bytes of a freed element are the index of the next freed element in the (same) memory array,
+	or $-1$ if there is no next freed element.
+Each memory array remembers the index \texttt{free} of the first freed element.
+
+Newly freed elements are enqueued at \texttt{free}, that is, at the head of the free-list.
+So in the above example, edge element $2$ was freed first, followed by edge element $3$.
+
+The next edge element will be allocated at head of the free-list and the \texttt{free} index move to the next element.
+For example, assume that a new edge is created from $B$ to $E$:
+\begin{center}
+	\begin{tikzpicture}
+		\coordinate (s);
+		\spot {$-1$}  {$0$}   {0}{A}
+		\spot  {$0$}  {$1$}   {1}{B}
+		\spot  {$1$} {$-1$}   {2}{C}
+		\freespot {$-1$} {3}
+		\spot {$3$} {$-1$}   {4}{E}
+		
+		\coordinate (e) at (5,0);
+		\edge  {$0$}  {$1$} {$-1$} {$-1$}   {0}{a}
+		\edge  {$1$}  {$2$} {$3$} {$-1$}   {1}{b}
+		\freeedge {$-1$} {2}
+		\edge  {$1$}  {$4$} {$-1$} {$-1$}   {3}{ }
+		
+		\tikzstyle{edge loop}=[
+			to path={.. controls +(180:1.5) and +(-170:1.5) .. (\tikztotarget) \tikztonodes}
+		]
+		\tikzstyle{freed edge}=[
+				black,
+				thick,
+				->,
+				shorten >=1mm,
+				shorten <=1mm,
+				anchor=east
+			]
+	    
+		\node [freed edge] (ffs) at ($(s3c1.west)-(10mm,0mm)$) {\texttt{free}};
+	  \draw [freed edge, shorten <=0mm] (ffs) to ($(s3c1.west)-(2mm,0mm)$);
+	  \node [freed edge] at (s3c2.west) {$\bot$};
+
+		\node [freed edge] (ffe) at ($(e2c1.west)-(13mm,0mm)$) {\texttt{free}};
+	  \draw [freed edge, shorten <=0mm] (ffe) to ($(e2c1.west)-(2mm,0mm)$);
+	  \node [freed edge] at (e2c2.west) {$\bot$};
+	  
+		\node [draw=none] at ($(e2c1.east)+(18mm,0mm)$) {};	  
+	\end{tikzpicture}
+\end{center}
+If \texttt{free} is -1, then no more freed elements are available and the underlying memory array has to grow to fit newly added elements.
+
+\end{document}
+
+
