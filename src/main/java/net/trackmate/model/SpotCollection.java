@@ -10,8 +10,8 @@ import net.trackmate.graph.AbstractIdVertexPool;
 import net.trackmate.graph.PoolObject;
 import net.trackmate.graph.mempool.ByteMappedElement;
 import net.trackmate.graph.mempool.ByteMappedElementArray;
-import net.trackmate.graph.mempool.SingleArrayMemPool;
 import net.trackmate.graph.mempool.MemPool.Factory;
+import net.trackmate.graph.mempool.SingleArrayMemPool;
 
 public class SpotCollection implements Iterable< Spot >
 {
@@ -73,6 +73,11 @@ public class SpotCollection implements Iterable< Spot >
 	public int numSpots()
 	{
 		return spotPool.size();
+	}
+
+	public int numEdges()
+	{
+		return edgePool.size();
 	}
 
 	public void clear()
@@ -180,6 +185,12 @@ public class SpotCollection implements Iterable< Spot >
 		spotPool.releaseTmpRef( spot );
 	}
 
+	public void releaseTmpSpotRef( final Spot... spots )
+	{
+		for ( final Spot spot : spots )
+			spotPool.releaseTmpRef( spot );
+	}
+
 	public Edge getTmpEdgeRef()
 	{
 		return edgePool.getTmpRef();
@@ -188,6 +199,12 @@ public class SpotCollection implements Iterable< Spot >
 	public void releaseTmpEdgeRef( final Edge edge )
 	{
 		edgePool.releaseTmpRef( edge );
+	}
+
+	public void releaseTmpEdgeRef( final Edge... edges )
+	{
+		for ( final Edge edge : edges )
+			edgePool.releaseTmpRef( edge );
 	}
 
 	@Override
