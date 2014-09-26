@@ -59,6 +59,7 @@ public abstract class MemPool< T extends MappedElement >
 
 	public int create()
 	{
+		++size;
 		if ( firstFreeIndex < 0 )
 			return append();
 		else
@@ -78,6 +79,7 @@ public abstract class MemPool< T extends MappedElement >
 			final boolean isFree = dataAccess.getInt( 0 ) == FREE_ELEMENT_MAGIC_NUMBER;
 			if ( ! isFree )
 			{
+				--size;
 				dataAccess.putIndex( FREE_ELEMENT_MAGIC_NUMBER, 0 );
 				dataAccess.putIndex( firstFreeIndex, 4 );
 				firstFreeIndex = index;
