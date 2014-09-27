@@ -3,18 +3,22 @@ package net.trackmate.graph;
 import net.trackmate.graph.mempool.MappedElement;
 import net.trackmate.graph.mempool.MemPool;
 
-public class AbstractEdgePool< E extends AbstractEdge< T, ? >, T extends MappedElement, S extends AbstractVertex< ?, ? > > extends Pool< E, T > implements Iterable< E >
+public class AbstractEdgePool<
+			E extends AbstractEdge< T, ? >,
+			T extends MappedElement,
+			V extends AbstractVertex< ?, ? > >
+		extends Pool< E, T > implements Iterable< E >
 {
-	final AbstractVertexPool< S, ?, ? > vertexPool;
+	final AbstractVertexPool< V, ?, ? > vertexPool;
 
 	public AbstractEdgePool(
 			final int initialCapacity,
 			final PoolObject.Factory< E > edgeFactory,
 			final MemPool.Factory< T > poolFactory,
-			final AbstractVertexPool< S, ?, ? > spotPool )
+			final AbstractVertexPool< V, ?, ? > vertexPool )
 	{
 		super( initialCapacity, edgeFactory, poolFactory );
-		this.vertexPool = spotPool;
+		this.vertexPool = vertexPool;
 	}
 
 	public E addEdge( final AbstractVertex< ?, ? > source, final AbstractVertex< ?, ? > target )
@@ -99,9 +103,9 @@ public class AbstractEdgePool< E extends AbstractEdge< T, ? >, T extends MappedE
 		return null;
 	}
 
-	public void releaseAllLinkedEdges( final S spot )
+	public void releaseAllLinkedEdges( final V spot )
 	{
-		final S tmpSpot = vertexPool.getTmpRef();
+		final V tmpSpot = vertexPool.getTmpRef();
 		final E edge = getTmpRef();
 		final E tmpEdge = getTmpRef();
 
@@ -134,7 +138,7 @@ public class AbstractEdgePool< E extends AbstractEdge< T, ? >, T extends MappedE
 
 	public void release( final E edge )
 	{
-		final S tmpSpot = vertexPool.getTmpRef();
+		final V tmpSpot = vertexPool.getTmpRef();
 		final E tmp = getTmpRef();
 
 		unlinkFromSource( edge, tmp, tmpSpot );
@@ -152,7 +156,7 @@ public class AbstractEdgePool< E extends AbstractEdge< T, ? >, T extends MappedE
 	 *
 	 */
 
-	private void unlinkFromSource( final E edge, final E tmpEdge, final S tmpSpot )
+	private void unlinkFromSource( final E edge, final E tmpEdge, final V tmpSpot )
 	{
 		vertexPool.getByInternalPoolIndex( edge.getSourceVertexInternalPoolIndex(), tmpSpot );
 		final int sourceOutIndex = tmpSpot.getFirstOutEdgeIndex();
@@ -175,7 +179,7 @@ public class AbstractEdgePool< E extends AbstractEdge< T, ? >, T extends MappedE
 		}
 	}
 
-	private void unlinkFromTarget( final E edge, final E tmpEdge, final S tmpSpot )
+	private void unlinkFromTarget( final E edge, final E tmpEdge, final V tmpSpot )
 	{
 		vertexPool.getByInternalPoolIndex( edge.getTargetVertexInternalPoolIndex(), tmpSpot );
 		final int targetInIndex = tmpSpot.getFirstInEdgeIndex();
