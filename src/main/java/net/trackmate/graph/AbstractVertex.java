@@ -10,7 +10,7 @@ import net.trackmate.graph.mempool.MappedElement;
  *
  * @author Tobias Pietzsch <tobias.pietzsch@gmail.com>
  */
-public class AbstractVertex< T extends MappedElement, E extends AbstractEdge< ?, ? > > extends PoolObject< T >
+public class AbstractVertex< T extends MappedElement, E extends AbstractEdge< ?, ? > > extends PoolObject< T > implements Vertex< E >
 {
 	protected static final int FIRST_IN_EDGE_INDEX_OFFSET = 0;
 	protected static final int FIRST_OUT_EDGE_INDEX_OFFSET = FIRST_IN_EDGE_INDEX_OFFSET + INDEX_SIZE;
@@ -54,16 +54,19 @@ public class AbstractVertex< T extends MappedElement, E extends AbstractEdge< ?,
 
 	private AllEdges< E > edges;
 
+	@Override
 	public IncomingEdges< E > incomingEdges()
 	{
 		return incomingEdges;
 	}
 
+	@Override
 	public OutgoingEdges< E > outgoingEdges()
 	{
 		return outgoingEdges;
 	}
 
+	@Override
 	public AllEdges< E > edges()
 	{
 		return edges;

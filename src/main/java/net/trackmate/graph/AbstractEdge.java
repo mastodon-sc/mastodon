@@ -3,7 +3,7 @@ package net.trackmate.graph;
 import static net.trackmate.graph.mempool.ByteUtils.INDEX_SIZE;
 import net.trackmate.graph.mempool.MappedElement;
 
-public class AbstractEdge< T extends MappedElement, V extends AbstractVertex< ?, ? > > extends PoolObject< T >
+public class AbstractEdge< T extends MappedElement, V extends AbstractVertex< ?, ? > > extends PoolObject< T > implements Edge< V >
 {
 	protected static final int SOURCE_INDEX_OFFSET = 0;
 	protected static final int TARGET_INDEX_OFFSET = SOURCE_INDEX_OFFSET + INDEX_SIZE;
@@ -66,22 +66,26 @@ public class AbstractEdge< T extends MappedElement, V extends AbstractVertex< ?,
 		setNextTargetEdgeIndex( -1 );
 	}
 
+	@Override
 	public V getSource()
 	{
 		return getSource( vertexPool.createEmptyRef() );
 	}
 
+	@Override
 	public V getSource( final V vertex )
 	{
 		vertexPool.getByInternalPoolIndex( getSourceVertexInternalPoolIndex(), vertex );
 		return vertex;
 	}
 
+	@Override
 	public V getTarget()
 	{
 		return getTarget( vertexPool.createEmptyRef() );
 	}
 
+	@Override
 	public V getTarget( final V vertex )
 	{
 		vertexPool.getByInternalPoolIndex( getTargetVertexInternalPoolIndex(), vertex );
