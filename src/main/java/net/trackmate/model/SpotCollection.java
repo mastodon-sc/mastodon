@@ -7,6 +7,8 @@ import java.util.concurrent.ConcurrentSkipListMap;
 
 import net.trackmate.graph.AbstractEdgePool;
 import net.trackmate.graph.AbstractIdVertexPool;
+import net.trackmate.graph.Graph;
+import net.trackmate.graph.GraphImp;
 import net.trackmate.graph.PoolObject;
 import net.trackmate.graph.mempool.ByteMappedElement;
 import net.trackmate.graph.mempool.ByteMappedElementArray;
@@ -20,6 +22,8 @@ public class SpotCollection implements Iterable< Spot >
 	final AbstractIdVertexPool< Spot, ByteMappedElement, Edge > spotPool;
 
 	final AbstractEdgePool< Edge, ByteMappedElement, Spot > edgePool;
+
+	private final Graph< Spot, Edge > graph;
 
 	final AdditionalFeatures additionalSpotFeatures;
 
@@ -55,7 +59,6 @@ public class SpotCollection implements Iterable< Spot >
 		}
 	};
 
-
 	public SpotCollection()
 	{
 		this( 10000 );
@@ -68,6 +71,12 @@ public class SpotCollection implements Iterable< Spot >
 		spotPool.linkEdgePool( edgePool );
 		additionalSpotFeatures = new AdditionalFeatures( initialCapacity );
 		additionalEdgeFeatures = new AdditionalFeatures( initialCapacity );
+		graph = GraphImp.create( spotPool, edgePool );
+	}
+
+	public Graph< Spot, Edge > getGraph()
+	{
+		return graph;
 	}
 
 	public int numSpots()
