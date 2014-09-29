@@ -13,7 +13,7 @@ import net.trackmate.graph.mempool.MappedElement;
 public class AbstractIdVertex< T extends MappedElement, E extends AbstractEdge< ?, ? > > extends AbstractVertex< T, E >
 {
 	protected static final int ID_OFFSET = AbstractVertex.SIZE_IN_BYTES;
-	protected static final int SIZE_IN_BYTES = FIRST_OUT_EDGE_INDEX_OFFSET + INT_SIZE;
+	protected static final int SIZE_IN_BYTES = ID_OFFSET + INT_SIZE;
 
 	protected AbstractIdVertex( final AbstractVertexPool< ?, T, ? > pool )
 	{
