@@ -2,7 +2,7 @@ package net.trackmate.graph.mempool;
 
 /**
  * Maps into region of underlying memory area (a primitive array or similar).
- * The memory is split into same sized regions. By
+ * This memory is split into equal-sized regions. By
  * {@link MappedElementArray#updateAccess(MappedElement, int)}, the index of the
  * region that this {@link MappedElement} represents can be set. This translates
  * into computing a base offset in the memory area. Then values of different
@@ -11,9 +11,11 @@ package net.trackmate.graph.mempool;
  * {@code long} value 42 into the bytes 2 ... 10 relative to the current base
  * offset.
  *
+ * <p>
  * This is used to build imglib2-like proxy objects that map into primitive
  * arrays.
  *
+ * <p>
  * Note: The method for updating the base offset
  * {@link MappedElementArray#updateAccess(MappedElement, int)} needs to be in
  * the {@link MappedElementArray}, not here. This is because data might be split

@@ -1,25 +1,34 @@
 package net.trackmate.graph.mempool;
 
 /**
- *
- * TODO: javadoc
+ * A {@link MappedElementArray} that stores {@link ByteMappedElement
+ * ByteMappedElements} in a {@code byte[]} array.
  *
  * @author Tobias Pietzsch <tobias.pietzsch@gmail.com>
  */
 public class ByteMappedElementArray implements MappedElementArray< ByteMappedElement >
 {
-	final byte[] data;
+	/**
+	 * The current data storage. This is changed when the array is
+	 * {@link #resize(int) resized}.
+	 */
+	byte[] data;
 
+	/**
+	 * How many bytes on element in this array accupies.
+	 */
 	final int bytesPerElement;
 
-	private final int size;
+	/**
+	 * How many elements are stored in this array.
+	 */
+	private int size;
 
+	/**
+	 * Create a new array containing {@code numElements} elements of
+	 * {@code bytesPerElement} bytes each.
+	 */
 	private ByteMappedElementArray( final int numElements, final int bytesPerElement )
-	{
-		this ( numElements, bytesPerElement, null );
-	}
-
-	private ByteMappedElementArray( final int numElements, final int bytesPerElement, final ByteMappedElementArray copyFrom )
 	{
 		final long numBytes = ( long ) numElements * bytesPerElement;
 		if ( numBytes > Integer.MAX_VALUE )
@@ -27,11 +36,6 @@ public class ByteMappedElementArray implements MappedElementArray< ByteMappedEle
 					"trying to create a " + getClass().getName() + " with more than " + maxSize() + " elements of " + bytesPerElement + " bytes.");
 
 		this.data = new byte[ ( int ) numBytes ];
-		if ( copyFrom != null )
-		{
-			final int copyLength = Math.min( copyFrom.data.length, data.length );
-			System.arraycopy( copyFrom.data, 0, data, 0, copyLength );
-		}
 		this.bytesPerElement = bytesPerElement;
 		this.size = numElements;
 	}
@@ -61,18 +65,34 @@ public class ByteMappedElementArray implements MappedElementArray< ByteMappedEle
 		access.setElementIndex( ( int ) index );
 	}
 
+	/**
+	 * {@inheritDoc} The storage array is reallocated and the old contents
+	 * copied over.
+	 */
+	@Override
+	public void resize( final int numElements )
+	{
+		final long numBytes = ( long ) numElements * bytesPerElement;
+		if ( numBytes > Integer.MAX_VALUE )
+			throw new IllegalArgumentException(
+					"trying to resize a " + getClass().getName() + " to more than " + maxSize() + " elements of " + bytesPerElement + " bytes.");
+
+		final byte[] datacopy = new byte[ ( int ) numBytes ];
+			final int copyLength = Math.min( data.length, datacopy.length );
+			System.arraycopy( data, 0, datacopy, 0, copyLength );
+		this.data = datacopy;
+		this.size = numElements;
+	}
+
+	/**
+	 * A factory for {@link ByteMappedElementArray}s.
+	 */
 	public static final MappedElementArray.Factory< ByteMappedElementArray > factory = new MappedElementArray.Factory< ByteMappedElementArray >()
 	{
 		@Override
 		public ByteMappedElementArray createArray( final int numElements, final int bytesPerElement )
 		{
 			return new ByteMappedElementArray( numElements, bytesPerElement );
-		}
-
-		@Override
-		public ByteMappedElementArray createArrayAndCopy( final int numElements, final int bytesPerElement, final ByteMappedElementArray copyFrom )
-		{
-			return new ByteMappedElementArray( numElements, bytesPerElement, copyFrom );
 		}
 	};
 }

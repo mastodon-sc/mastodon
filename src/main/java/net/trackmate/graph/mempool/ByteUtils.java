@@ -1,5 +1,11 @@
 package net.trackmate.graph.mempool;
 
+/**
+ * Helper methods to encode and decode different data types ({@code long, double}
+ * etc.) from bytes at an offset in a {@code byte[]} array.
+ *
+ * @author Tobias Pietzsch <tobias.pietzsch@gmail.com>
+ */
 public class ByteUtils
 {
 	public static final int BYTE_SIZE = 1;
@@ -66,7 +72,7 @@ public class ByteUtils
 
 	public static long getLong( final byte[] array, final int offset )
 	{
-		return  ( ( long ) ( array[ offset ] & 0xff ) << 56 ) |
+		return ( ( long ) ( array[ offset ] & 0xff ) << 56 ) |
 				( ( long ) ( array[ offset + 1 ] & 0xff ) << 48 ) |
 				( ( long ) ( array[ offset + 2 ] & 0xff ) << 40 ) |
 				( ( long ) ( array[ offset + 3 ] & 0xff ) << 32 ) |
@@ -83,7 +89,7 @@ public class ByteUtils
 
 	public static float getFloat( final byte[] array, final int offset )
 	{
-		return( Float.intBitsToFloat( getInt( array, offset ) ) );
+		return ( Float.intBitsToFloat( getInt( array, offset ) ) );
 	}
 
 	public static void putDouble( final double value, final byte[] array, final int offset )
@@ -93,7 +99,7 @@ public class ByteUtils
 
 	public static double getDouble( final byte[] array, final int offset )
 	{
-		return( Double.longBitsToDouble( getLong( array, offset ) ) );
+		return ( Double.longBitsToDouble( getLong( array, offset ) ) );
 	}
 
 	public static void putIndex( final int value, final byte[] array, final int offset )

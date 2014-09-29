@@ -1,28 +1,46 @@
 package net.trackmate.graph.mempool;
 
 /**
+ * A {@link MappedElement} that stores its data in a portion of a {@code byte[]}
+ * array.
  *
- * TODO: javadoc
- *
- *
- * Contract: may be used on different {@link ByteMappedElementArray}s but they all must have the same bytesPerElement.
+ * <p>
+ * Contract: A {@link ByteMappedElement} may be used on different
+ * {@link ByteMappedElementArray}s but they all must have the same
+ * bytesPerElement.
  *
  * @author Tobias Pietzsch <tobias.pietzsch@gmail.com>
  */
 public class ByteMappedElement implements MappedElement
 {
+	/**
+	 * How many bytes are required to store one element.
+	 */
 	private final int bytesPerElement;
 
+	/**
+	 * The current base offset (in bytes) into the underlying
+	 * {@link ByteMappedElementArray#data storage array}.
+	 */
 	private int baseOffset;
 
+	/**
+	 * Contains the {@link ByteMappedElementArray#data storage array}.
+	 */
 	private ByteMappedElementArray dataArray;
 
-	private final byte[] data;
-
+	/**
+	 * Create a new proxy for representing element is in the given
+	 * {@link ByteMappedElementArray}.
+	 *
+	 * @param dataArray
+	 *            initial storage.
+	 * @param index
+	 *            initial element index in storage.
+	 */
 	public ByteMappedElement( final ByteMappedElementArray dataArray, final int index )
 	{
 		this.dataArray = dataArray;
-		this.data = dataArray.data;
 		this.bytesPerElement = dataArray.bytesPerElement;
 		this.baseOffset = index * bytesPerElement;
 	}
@@ -130,6 +148,10 @@ public class ByteMappedElement implements MappedElement
 		return ByteUtils.getDouble( dataArray.data, baseOffset + offset );
 	}
 
+	/**
+	 * Two {@link ByteMappedElement} are equal if they refer to the same index
+	 * in the same {@link ByteMappedElementArray}.
+	 */
 	@Override
 	public boolean equals( final Object obj )
 	{

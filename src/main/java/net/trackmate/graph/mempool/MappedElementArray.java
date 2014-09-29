@@ -1,7 +1,9 @@
 package net.trackmate.graph.mempool;
 
 /**
- * A fixed-size array of {@link MappedElement MappedElements}.
+ * An array of {@link MappedElement MappedElements}. The array can grow, see
+ * {@link #resize(int)}, which involves reallocating and copying the underlying
+ * primitive array.
  *
  * @param <T>
  *            the {@link MappedElement} type stored in this array.
@@ -19,8 +21,7 @@ public interface MappedElementArray< T extends MappedElement >
 
 	/**
 	 * The maximum number of {@link MappedElement elements} that could be
-	 * maximally contained in a {@link MappedElementArray} of the same type as
-	 * this one.
+	 * maximally contained in a {@link MappedElementArray} of this type.
 	 *
 	 * This depends on the size of a single element and the strategy used to
 	 * store their data. For example, a {@link ByteMappedElementArray} stores
@@ -34,17 +35,26 @@ public interface MappedElementArray< T extends MappedElement >
 	public int maxSize();
 
 	/**
-	 * Create a new proxy referring element 0.
+	 * Create a new proxy referring to the element at index 0.
 	 *
 	 * @return new access (proxy).
 	 */
 	public T createAccess();
 
 	/**
-	 * Update the given {@code access} to refer the element at {@code index} in
-	 * this array.
+	 * Update the given {@link MappedElement} to refer the element at
+	 * {@code index} in this array.
 	 */
 	public void updateAccess( final T access, final int index );
+
+	/**
+	 * Set the size of this array to contain {@code numElements}
+	 * {@link MappedElement elements}.
+	 *
+	 * @param numElements
+	 *            new number of {@link MappedElement elements} in this array.
+	 */
+	public void resize( final int numElements );
 
 	/**
 	 * A factory for {@link MappedElementArray}.
@@ -60,13 +70,5 @@ public interface MappedElementArray< T extends MappedElement >
 		 * {@code bytesPerElement} bytes each.
 		 */
 		public A createArray( final int numElements, final int bytesPerElement );
-
-		/**
-		 * Create an array containing {@code numElements} elements of
-		 * {@code bytesPerElement} bytes each. Copy data from the array
-		 * {@code copyFrom}. {@code copyFrom} may be larger or smaller than the
-		 * created array in which case as much data as possible is copied.
-		 */
-		public A createArrayAndCopy( final int numElements, final int bytesPerElement, final A copyFrom );
 	}
 }

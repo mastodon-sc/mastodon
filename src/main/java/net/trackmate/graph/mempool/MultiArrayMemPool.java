@@ -1,6 +1,8 @@
 package net.trackmate.graph.mempool;
 
 /**
+ * A {@link MemPool} that keeps data in several {@link ByteMappedElementArray}s.
+ *
  * TODO: implement
  *
  * @author Tobias Pietzsch <tobias.pietzsch@gmail.com>

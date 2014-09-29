@@ -2,7 +2,7 @@ package net.trackmate.graph.mempool;
 
 
 /**
- * TODO: javadoc
+ * A {@link MemPool} that keeps data in a single {@link MappedElementArray}.
  *
  * @param <T>
  * @param <A>
@@ -11,14 +11,11 @@ package net.trackmate.graph.mempool;
  */
 public class SingleArrayMemPool< T extends MappedElement, A extends MappedElementArray< T > > extends MemPool< T >
 {
-	private final MappedElementArray.Factory< A > arrayFactory;
-
-	private A data;
+	private final A data;
 
 	public SingleArrayMemPool( final MappedElementArray.Factory< A > arrayFactory, final int capacity, final int bytesPerElement )
 	{
 		super( capacity, bytesPerElement );
-		this.arrayFactory = arrayFactory;
 		data = arrayFactory.createArray( ( int ) capacity, this.bytesPerElement );
 		dataAccess = data.createAccess();
 	}
@@ -32,8 +29,7 @@ public class SingleArrayMemPool< T extends MappedElement, A extends MappedElemen
 			capacity = Math.min( capacity << 1, data.maxSize() );
 			if ( allocatedSize > capacity )
 				throw new IllegalArgumentException( "cannot store more than " + data.maxSize() + " elements" );
-			data = arrayFactory.createArrayAndCopy( capacity, bytesPerElement, data );
-			dataAccess = data.createAccess();
+			data.resize( capacity );
 		}
 		return index;
 	}
@@ -52,6 +48,11 @@ public class SingleArrayMemPool< T extends MappedElement, A extends MappedElemen
 		data.updateAccess( access, index );
 	}
 
+	/**
+	 * Create a factory for {@link SingleArrayMemPool}s that use the specified
+	 * {@code arrayFactory} for creating their storage
+	 * {@link MappedElementArray}.
+	 */
 	public static < T extends MappedElement, A extends MappedElementArray< T > >
 			MemPool.Factory< T > factory( final MappedElementArray.Factory< A > arrayFactory )
 	{
