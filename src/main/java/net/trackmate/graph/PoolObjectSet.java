@@ -99,7 +99,7 @@ public class PoolObjectSet< O extends PoolObject< T >, T extends MappedElement >
 
 			final TIntIterator ii = indices.iterator();
 
-			final O obj = pool.createEmptyRef();
+			final O obj = pool.createRef();
 
 			@Override
 			public boolean hasNext()

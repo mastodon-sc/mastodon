@@ -97,7 +97,7 @@ public class SpotCollection implements Iterable< Spot >
 
 	public Spot createEmptySpotRef()
 	{
-		return spotPool.createEmptyRef();
+		return spotPool.createRef();
 	}
 
 	public Spot createSpot()
@@ -140,15 +140,15 @@ public class SpotCollection implements Iterable< Spot >
 
 	public void releaseSpot( final int ID )
 	{
-		final Spot tmp = spotPool.getTmpRef();
+		final Spot tmp = spotPool.createRef();
 		getSpot( ID, tmp );
 		releaseSpot( tmp );
-		spotPool.releaseTmpRef( tmp );
+		spotPool.releaseRef( tmp );
 	}
 
 	public Edge createEmptyEdgeRef()
 	{
-		return edgePool.createEmptyRef();
+		return edgePool.createRef();
 	}
 
 	public Edge getEdge( final Spot source, final Spot target )
@@ -186,34 +186,34 @@ public class SpotCollection implements Iterable< Spot >
 
 	public Spot getTmpSpotRef()
 	{
-		return spotPool.getTmpRef();
+		return spotPool.createRef();
 	}
 
 	public void releaseTmpSpotRef( final Spot spot )
 	{
-		spotPool.releaseTmpRef( spot );
+		spotPool.releaseRef( spot );
 	}
 
 	public void releaseTmpSpotRef( final Spot... spots )
 	{
 		for ( final Spot spot : spots )
-			spotPool.releaseTmpRef( spot );
+			spotPool.releaseRef( spot );
 	}
 
 	public Edge getTmpEdgeRef()
 	{
-		return edgePool.getTmpRef();
+		return edgePool.createRef();
 	}
 
 	public void releaseTmpEdgeRef( final Edge edge )
 	{
-		edgePool.releaseTmpRef( edge );
+		edgePool.releaseRef( edge );
 	}
 
 	public void releaseTmpEdgeRef( final Edge... edges )
 	{
 		for ( final Edge edge : edges )
-			edgePool.releaseTmpRef( edge );
+			edgePool.releaseRef( edge );
 	}
 
 	@Override

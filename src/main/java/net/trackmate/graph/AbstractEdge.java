@@ -69,7 +69,7 @@ public class AbstractEdge< T extends MappedElement, V extends AbstractVertex< ?,
 	@Override
 	public V getSource()
 	{
-		return getSource( vertexPool.createEmptyRef() );
+		return getSource( vertexPool.createRef() );
 	}
 
 	@Override
@@ -82,7 +82,7 @@ public class AbstractEdge< T extends MappedElement, V extends AbstractVertex< ?,
 	@Override
 	public V getTarget()
 	{
-		return getTarget( vertexPool.createEmptyRef() );
+		return getTarget( vertexPool.createRef() );
 	}
 
 	@Override

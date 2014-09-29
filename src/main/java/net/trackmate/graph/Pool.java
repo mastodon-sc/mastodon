@@ -34,38 +34,34 @@ public class Pool< O extends PoolObject< T >, T extends MappedElement > implemen
 		return memPool.size();
 	}
 
-	public O createEmptyRef()
+	public O createRef()
 	{
-		return objFactory.createEmptyRef();
+		return createRef( true );
 	}
 
-	public O getTmpRef()
+	public O createRef( final boolean recycle )
 	{
-		final O obj = tmpObjRefs.poll();
-		return obj == null ? createEmptyRef() : obj;
+		if ( recycle )
+		{
+			final O obj = tmpObjRefs.poll();
+			return obj == null ? objFactory.createEmptyRef() : obj;
+		}
+		else
+			return objFactory.createEmptyRef();
 	}
 
-	public void releaseTmpRef( final O obj )
+	public void releaseRef( final O obj )
 	{
 		tmpObjRefs.add( obj );
 	}
 
-	public O createReferenceTo( final O obj )
-	{
-		return createReferenceTo( obj, createEmptyRef() );
-	}
-
-	// garbage-free version
-	public O createReferenceTo( final O obj, final O reference )
-	{
-		reference.updateAccess( memPool, obj.getInternalPoolIndex() );
-		return reference;
-	}
+	// TODO: add releaseRefs( PoolObject<?> ... objs )
+	// This requires that each PoolObject knows its pool so that it can release itself.
 
 	@Override
 	public Iterator< O > iterator()
 	{
-		return iterator( createEmptyRef() );
+		return iterator( createRef() );
 	}
 
 	// garbage-free version

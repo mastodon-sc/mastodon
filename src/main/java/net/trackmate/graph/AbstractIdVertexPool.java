@@ -43,7 +43,7 @@ public class AbstractIdVertexPool< V extends AbstractIdVertex< T, E >, T extends
 
 	public V create( final int ID )
 	{
-		return create( ID, createEmptyRef() );
+		return create( ID, createRef() );
 	}
 
 	// garbage-free version
@@ -57,7 +57,7 @@ public class AbstractIdVertexPool< V extends AbstractIdVertex< T, E >, T extends
 
 	public V get( final int ID )
 	{
-		return get( ID, createEmptyRef() );
+		return get( ID, createRef() );
 	}
 
 	// garbage-free version
@@ -80,16 +80,16 @@ public class AbstractIdVertexPool< V extends AbstractIdVertex< T, E >, T extends
 	public void release( final int ID )
 	{
 		final int index = vertexIdToIndexMap.remove( ID );
-		final V vertex = getTmpRef();
+		final V vertex = createRef();
 		getByInternalPoolIndex( index, vertex );
 		super.release( vertex );
-		releaseTmpRef( vertex );
+		releaseRef( vertex );
 	}
 
 	@Override
 	public Iterator< V > iterator()
 	{
-		return iterator( createEmptyRef() );
+		return iterator( createRef() );
 	}
 
 	@Override

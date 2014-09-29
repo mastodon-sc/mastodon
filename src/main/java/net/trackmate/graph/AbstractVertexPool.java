@@ -21,9 +21,9 @@ public class AbstractVertexPool< V extends AbstractVertex< T, E >, T extends Map
 	}
 
 	@Override
-	public V createEmptyRef()
+	public V createRef()
 	{
-		final V vertex = super.createEmptyRef();
+		final V vertex = super.createRef();
 		if ( edgePool != null )
 			vertex.linkEdgePool( edgePool );
 		return vertex;
@@ -31,7 +31,7 @@ public class AbstractVertexPool< V extends AbstractVertex< T, E >, T extends Map
 
 	public V create()
 	{
-		return create( createEmptyRef() );
+		return create( createRef() );
 	}
 
 	@Override

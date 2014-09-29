@@ -126,7 +126,7 @@ public class PoolObjectList< O extends PoolObject< T >, T extends MappedElement 
 	@Override
 	public O get( final int index )
 	{
-		return get( index, pool.createEmptyRef() );
+		return get( index, pool.createRef() );
 	}
 
 	@Override
@@ -152,7 +152,7 @@ public class PoolObjectList< O extends PoolObject< T >, T extends MappedElement 
 
 			final TIntIterator ii = indices.iterator();
 
-			final O obj = pool.createEmptyRef();
+			final O obj = pool.createRef();
 
 			@Override
 			public boolean hasNext()
@@ -192,7 +192,7 @@ public class PoolObjectList< O extends PoolObject< T >, T extends MappedElement 
 	 */
 	private class ListItr implements ListIterator< O >
 	{
-		final O obj = pool.createEmptyRef();
+		final O obj = pool.createRef();
 
 		/**
 		 * Index of element to be returned by subsequent call to next.
@@ -372,7 +372,7 @@ public class PoolObjectList< O extends PoolObject< T >, T extends MappedElement 
 	@Override
 	public O remove( final int index )
 	{
-		return remove( index, pool.createEmptyRef() );
+		return remove( index, pool.createRef() );
 	}
 
 	@Override
@@ -413,7 +413,7 @@ public class PoolObjectList< O extends PoolObject< T >, T extends MappedElement 
 	@Override
 	public O set( final int index, final O obj )
 	{
-		return set( index, obj, pool.createEmptyRef() );
+		return set( index, obj, pool.createRef() );
 	}
 
 	@Override

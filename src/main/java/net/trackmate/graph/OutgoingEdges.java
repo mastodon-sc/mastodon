@@ -26,14 +26,14 @@ public class OutgoingEdges< E extends AbstractEdge< ?, ? > > implements Edges< E
 		int edgeIndex = vertex.getFirstOutEdgeIndex();
 		if ( edgeIndex >= 0 )
 		{
-			final E edge = edgePool.getTmpRef();
+			final E edge = edgePool.createRef();
 			while ( edgeIndex >= 0 )
 			{
 				++numEdges;
 				edgePool.getByInternalPoolIndex( edgeIndex, edge );
 				edgeIndex = edge.getNextSourceEdgeIndex();
 			}
-			edgePool.releaseTmpRef( edge );
+			edgePool.releaseRef( edge );
 		}
 		return numEdges;
 	}
@@ -41,7 +41,7 @@ public class OutgoingEdges< E extends AbstractEdge< ?, ? > > implements Edges< E
 	@Override
 	public E get( final int i )
 	{
-		return get( i, edgePool.createEmptyRef() );
+		return get( i, edgePool.createRef() );
 	}
 
 	// garbage-free version
@@ -83,7 +83,7 @@ public class OutgoingEdges< E extends AbstractEdge< ?, ? > > implements Edges< E
 
 		public OutgoingEdgesIterator()
 		{
-			this.edge = edgePool.createEmptyRef();
+			this.edge = edgePool.createRef();
 			reset();
 		}
 

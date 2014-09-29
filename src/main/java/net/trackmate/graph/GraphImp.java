@@ -88,38 +88,38 @@ public class GraphImp<
 	@Override
 	public V vertexRef()
 	{
-		return vertexPool.getTmpRef();
+		return vertexPool.createRef();
 	}
 
 	@Override
 	public E edgeRef()
 	{
-		return edgePool.getTmpRef();
+		return edgePool.createRef();
 	}
 
 	@Override
 	public void releaseRef( final V ref )
 	{
-		vertexPool.releaseTmpRef( ref );
+		vertexPool.releaseRef( ref );
 	}
 
 	@Override
 	public void releaseRef( final E ref )
 	{
-		edgePool.releaseTmpRef( ref );
+		edgePool.releaseRef( ref );
 	}
 
 	@Override
 	public void releaseRef( final V... refs )
 	{
 		for ( final V ref : refs )
-			vertexPool.releaseTmpRef( ref );
+			vertexPool.releaseRef( ref );
 	}
 
 	@Override
 	public void releaseRef( final E... refs )
 	{
 		for ( final E ref : refs )
-			edgePool.releaseTmpRef( ref );
+			edgePool.releaseRef( ref );
 	}
 }

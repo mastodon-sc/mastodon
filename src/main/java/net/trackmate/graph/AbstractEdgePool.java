@@ -21,9 +21,10 @@ public class AbstractEdgePool<
 		this.vertexPool = vertexPool;
 	}
 
+	// TODO: remove
 	public E addEdge( final AbstractVertex< ?, ? > source, final AbstractVertex< ?, ? > target )
 	{
-		return addEdge( source, target, createEmptyRef() );
+		return addEdge( source, target, createRef() );
 	}
 
 	// garbage-free version
@@ -36,7 +37,7 @@ public class AbstractEdgePool<
 		edge.setSourceVertexInternalPoolIndex( source.getInternalPoolIndex() );
 		edge.setTargetVertexInternalPoolIndex( target.getInternalPoolIndex() );
 
-		final E tmp = getTmpRef();
+		final E tmp = createRef();
 
 		final int sourceOutIndex = source.getFirstOutEdgeIndex();
 		if ( sourceOutIndex < 0 )
@@ -76,13 +77,14 @@ public class AbstractEdgePool<
 			tmp.setNextTargetEdgeIndex( edge.getInternalPoolIndex() );
 		}
 
-		releaseTmpRef( tmp );
+		releaseRef( tmp );
 		return edge;
 	}
 
+	// TODO: remove
 	public E getEdge( final AbstractVertex< ?, ? > source, final AbstractVertex< ?, ? > target )
 	{
-		return getEdge( source, target, createEmptyRef() );
+		return getEdge( source, target, createRef() );
 	}
 
 	// garbage-free version
@@ -105,9 +107,9 @@ public class AbstractEdgePool<
 
 	public void releaseAllLinkedEdges( final V vertex )
 	{
-		final V tmpSpot = vertexPool.getTmpRef();
-		final E edge = getTmpRef();
-		final E tmpEdge = getTmpRef();
+		final V tmpSpot = vertexPool.createRef();
+		final E edge = createRef();
+		final E tmpEdge = createRef();
 
 		// release all outgoing edges
 		int index = vertex.getFirstOutEdgeIndex();
@@ -131,22 +133,24 @@ public class AbstractEdgePool<
 			releaseByInternalPoolIndex( edge.getInternalPoolIndex() );
 		}
 
-		vertexPool.releaseTmpRef( tmpSpot );
-		releaseTmpRef( edge );
-		releaseTmpRef( tmpEdge );
+		// TODO: use Pool.releaseRefs() when it is available
+		vertexPool.releaseRef( tmpSpot );
+		releaseRef( edge );
+		releaseRef( tmpEdge );
 	}
 
 	public void release( final E edge )
 	{
-		final V tmpSpot = vertexPool.getTmpRef();
-		final E tmp = getTmpRef();
+		final V tmpSpot = vertexPool.createRef();
+		final E tmp = createRef();
 
 		unlinkFromSource( edge, tmp, tmpSpot );
 		unlinkFromTarget( edge, tmp, tmpSpot );
 		releaseByInternalPoolIndex( edge.getInternalPoolIndex() );
 
-		vertexPool.releaseTmpRef( tmpSpot );
-		releaseTmpRef( tmp );
+		// TODO: use Pool.releaseRefs() when it is available
+		vertexPool.releaseRef( tmpSpot );
+		releaseRef( tmp );
 	}
 
 	/*
