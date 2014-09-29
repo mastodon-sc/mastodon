@@ -17,8 +17,14 @@ import net.trackmate.graph.mempool.MemPool;
  */
 public abstract class PoolObject< T extends MappedElement >
 {
+	/**
+	 * Access to the data.
+	 */
 	protected final T access;
 
+	/**
+	 * Current index of (of the access) in the {@link MemPool}.
+	 */
 	private int index;
 
 	public PoolObject( final MemPool< T > pool )
