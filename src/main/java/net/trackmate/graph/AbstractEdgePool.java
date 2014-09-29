@@ -103,15 +103,15 @@ public class AbstractEdgePool<
 		return null;
 	}
 
-	public void releaseAllLinkedEdges( final V spot )
+	public void releaseAllLinkedEdges( final V vertex )
 	{
 		final V tmpSpot = vertexPool.getTmpRef();
 		final E edge = getTmpRef();
 		final E tmpEdge = getTmpRef();
 
 		// release all outgoing edges
-		int index = spot.getFirstOutEdgeIndex();
-		spot.setFirstOutEdgeIndex( -1 );
+		int index = vertex.getFirstOutEdgeIndex();
+		vertex.setFirstOutEdgeIndex( -1 );
 		while ( index >= 0 )
 		{
 			getByInternalPoolIndex( index, edge );
@@ -121,8 +121,8 @@ public class AbstractEdgePool<
 		}
 
 		// release all incoming edges
-		index = spot.getFirstInEdgeIndex();
-		spot.setFirstInEdgeIndex( -1 );
+		index = vertex.getFirstInEdgeIndex();
+		vertex.setFirstInEdgeIndex( -1 );
 		while ( index >= 0 )
 		{
 			getByInternalPoolIndex( index, edge );
@@ -156,14 +156,14 @@ public class AbstractEdgePool<
 	 *
 	 */
 
-	private void unlinkFromSource( final E edge, final E tmpEdge, final V tmpSpot )
+	private void unlinkFromSource( final E edge, final E tmpEdge, final V tmpVertex )
 	{
-		vertexPool.getByInternalPoolIndex( edge.getSourceVertexInternalPoolIndex(), tmpSpot );
-		final int sourceOutIndex = tmpSpot.getFirstOutEdgeIndex();
+		vertexPool.getByInternalPoolIndex( edge.getSourceVertexInternalPoolIndex(), tmpVertex );
+		final int sourceOutIndex = tmpVertex.getFirstOutEdgeIndex();
 		if ( sourceOutIndex == edge.getInternalPoolIndex() )
 		{
 			// this edge is the first in the source's list of outgoing edges
-			tmpSpot.setFirstOutEdgeIndex( edge.getNextSourceEdgeIndex() );
+			tmpVertex.setFirstOutEdgeIndex( edge.getNextSourceEdgeIndex() );
 		}
 		else
 		{
@@ -179,14 +179,14 @@ public class AbstractEdgePool<
 		}
 	}
 
-	private void unlinkFromTarget( final E edge, final E tmpEdge, final V tmpSpot )
+	private void unlinkFromTarget( final E edge, final E tmpEdge, final V tmpVertex )
 	{
-		vertexPool.getByInternalPoolIndex( edge.getTargetVertexInternalPoolIndex(), tmpSpot );
-		final int targetInIndex = tmpSpot.getFirstInEdgeIndex();
+		vertexPool.getByInternalPoolIndex( edge.getTargetVertexInternalPoolIndex(), tmpVertex );
+		final int targetInIndex = tmpVertex.getFirstInEdgeIndex();
 		if ( targetInIndex == edge.getInternalPoolIndex() )
 		{
 			// this edge is the first in the target list of incoming edges
-			tmpSpot.setFirstInEdgeIndex( edge.getNextTargetEdgeIndex() );
+			tmpVertex.setFirstInEdgeIndex( edge.getNextTargetEdgeIndex() );
 		}
 		else
 		{
