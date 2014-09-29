@@ -6,13 +6,12 @@ import static net.trackmate.graph.mempool.ByteUtils.INT_SIZE;
 import net.imglib2.RealLocalizable;
 import net.trackmate.graph.AbstractIdVertex;
 import net.trackmate.graph.AbstractIdVertexPool;
-import net.trackmate.graph.AbstractVertex;
 import net.trackmate.graph.mempool.ByteMappedElement;
 import net.trackmate.model.AdditionalFeatures.Feature;
 
 public class Spot extends AbstractIdVertex< ByteMappedElement, Edge > implements RealLocalizable
 {
-	protected static final int X_OFFSET = AbstractVertex.SIZE_IN_BYTES;
+	protected static final int X_OFFSET = AbstractIdVertex.SIZE_IN_BYTES;
 	protected static final int Y_OFFSET = X_OFFSET + DOUBLE_SIZE;
 	protected static final int Z_OFFSET = Y_OFFSET + DOUBLE_SIZE;
 	protected static final int RADIUS_OFFSET = Z_OFFSET + DOUBLE_SIZE;
