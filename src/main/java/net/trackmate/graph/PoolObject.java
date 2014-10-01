@@ -103,7 +103,8 @@ public abstract class PoolObject< T extends MappedElement >
 	 * @param obj
 	 *            A {@link PoolObject}, usually of the same type as this one.
 	 */
-	void refTo( final PoolObject< T > obj )
+	// TODO: this should either not be public or generically typed
+	public void refTo( final PoolObject< T > obj )
 	{
 		updateAccess( obj.pool, obj.index );
 	}
@@ -118,6 +119,7 @@ public abstract class PoolObject< T extends MappedElement >
 	{
 		public int getSizeInBytes();
 
+		// TODO: rename to createRef()?
 		public O createEmptyRef();
 	}
 }

@@ -57,6 +57,7 @@ public class Pool< O extends PoolObject< T >, T extends MappedElement > implemen
 
 	// TODO: add releaseRefs( PoolObject<?> ... objs )
 	// This requires that each PoolObject knows its pool so that it can release itself.
+	// This in turn requires adding generic parameter PoolObject< T, O extends PoolObject< T, O > >
 
 	@Override
 	public Iterator< O > iterator()
