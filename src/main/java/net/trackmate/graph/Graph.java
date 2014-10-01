@@ -1,5 +1,15 @@
 package net.trackmate.graph;
 
+/**
+ * A graph consisting of vertices of type {@code V} and edges of type {@code E}.
+ *
+ * @param <V>
+ *            the {@link Vertex} type of the {@link Graph}.
+ * @param <E>
+ *            the {@link Edge} type of the {@link Graph}.
+ *
+ * @author Tobias Pietzsch <tobias.pietzsch@gmail.com>
+ */
 public interface Graph< V extends Vertex< E >, E extends Edge< V > >
 {
 	public V addVertex();
