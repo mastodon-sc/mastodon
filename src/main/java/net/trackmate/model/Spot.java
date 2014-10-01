@@ -133,17 +133,20 @@ public class Spot extends AbstractIdVertex< ByteMappedElement, Edge > implements
 
 	public Spot getNewReference()
 	{
-		return pool.createReferenceTo( this );
+		final Spot spot = pool.createRef();
+		spot.refTo( this );
+		return spot;
 	}
 
 	public Spot getNewReference( final Spot newReference )
 	{
-		return pool.createReferenceTo( this, newReference );
+		newReference.refTo( this );
+		return newReference;
 	}
 
 	public void referenceTo( final Spot spot )
 	{
-		pool.createReferenceTo( spot, this );
+		refTo( spot );
 	}
 
 	@Override
