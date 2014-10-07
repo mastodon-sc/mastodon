@@ -10,7 +10,7 @@ package net.trackmate.graph.mempool;
  *
  * @author Tobias Pietzsch <tobias.pietzsch@gmail.com>
  */
-public interface MappedElementArray< T extends MappedElement, A extends MappedElementArray< T, A > >
+public interface MappedElementArray< A extends MappedElementArray< A, T >, T extends MappedElement >
 {
 	/**
 	 * Get the number of {@link MappedElement elements} in this array.
