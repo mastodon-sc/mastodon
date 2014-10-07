@@ -11,7 +11,11 @@ import java.util.concurrent.atomic.AtomicInteger;
 import net.trackmate.graph.mempool.MappedElement;
 import net.trackmate.graph.mempool.MemPool;
 
-public class AbstractIdVertexPool< V extends AbstractIdVertex< T, E >, T extends MappedElement, E extends AbstractEdge< ?, ? > > extends AbstractVertexPool< V, T, E >
+public class AbstractIdVertexPool<
+			V extends AbstractIdVertex< V, E, T >,
+			E extends AbstractEdge< E, ?, ? >,
+			T extends MappedElement >
+		extends AbstractVertexPool< V, E, T >
 {
 	private static AtomicInteger IDcounter = new AtomicInteger( -1 );
 

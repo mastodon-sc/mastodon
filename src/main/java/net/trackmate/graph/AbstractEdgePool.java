@@ -4,9 +4,9 @@ import net.trackmate.graph.mempool.MappedElement;
 import net.trackmate.graph.mempool.MemPool;
 
 public class AbstractEdgePool<
-			E extends AbstractEdge< T, ? >,
-			T extends MappedElement,
-			V extends AbstractVertex< ?, ? > >
+			E extends AbstractEdge< E, V, T >,
+			V extends AbstractVertex< V, ?, ? >,
+			T extends MappedElement >
 		extends Pool< E, T > implements Iterable< E >
 {
 	final AbstractVertexPool< V, ?, ? > vertexPool;
@@ -22,13 +22,13 @@ public class AbstractEdgePool<
 	}
 
 	// TODO: remove
-	public E addEdge( final AbstractVertex< ?, ? > source, final AbstractVertex< ?, ? > target )
+	public E addEdge( final AbstractVertex< ?, ?, ? > source, final AbstractVertex< ?, ?, ? > target )
 	{
 		return addEdge( source, target, createRef() );
 	}
 
 	// garbage-free version
-	public E addEdge( final AbstractVertex< ?, ? > source, final AbstractVertex< ?, ? > target, final E edge )
+	public E addEdge( final AbstractVertex< ?, ?, ? > source, final AbstractVertex< ?, ?, ? > target, final E edge )
 	{
 		if ( getEdge( source, target, edge ) != null )
 			return null;
@@ -82,13 +82,13 @@ public class AbstractEdgePool<
 	}
 
 	// TODO: remove
-	public E getEdge( final AbstractVertex< ?, ? > source, final AbstractVertex< ?, ? > target )
+	public E getEdge( final AbstractVertex< ?, ?, ? > source, final AbstractVertex< ?, ?, ? > target )
 	{
 		return getEdge( source, target, createRef() );
 	}
 
 	// garbage-free version
-	public E getEdge( final AbstractVertex< ?, ? > source, final AbstractVertex< ?, ? > target, final E edge )
+	public E getEdge( final AbstractVertex< ?, ?, ? > source, final AbstractVertex< ?, ?, ? > target, final E edge )
 	{
 		int nextSourceEdgeIndex = source.getFirstOutEdgeIndex();
 		if ( nextSourceEdgeIndex < 0 )
@@ -105,7 +105,7 @@ public class AbstractEdgePool<
 		return null;
 	}
 
-	public void releaseAllLinkedEdges( final V vertex )
+	public void releaseAllLinkedEdges( final AbstractVertex< ?, ?, ? > vertex )
 	{
 		final V tmpSpot = vertexPool.createRef();
 		final E edge = createRef();

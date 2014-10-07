@@ -7,7 +7,7 @@ import net.trackmate.graph.mempool.MappedElement;
 import net.trackmate.graph.mempool.MemPool;
 import net.trackmate.graph.mempool.MemPool.PoolIterator;
 
-public class Pool< O extends PoolObject< T >, T extends MappedElement > implements Iterable< O >
+public class Pool< O extends PoolObject< O, T >, T extends MappedElement > implements Iterable< O >
 {
 	private final PoolObject.Factory< O > objFactory;
 

@@ -3,7 +3,18 @@ package net.trackmate.graph;
 import static net.trackmate.graph.mempool.ByteUtils.INDEX_SIZE;
 import net.trackmate.graph.mempool.MappedElement;
 
-public class AbstractEdge< T extends MappedElement, V extends AbstractVertex< ?, ? > > extends PoolObject< T > implements Edge< V >
+/**
+ * TODO: javadoc
+ *
+ * @param <E>
+ * @param <V>
+ * @param <T>
+ *
+ * @author Tobias Pietzsch <tobias.pietzsch@gmail.com>
+ */
+public class AbstractEdge< E extends AbstractEdge< E, V, T >, V extends AbstractVertex< V, ?, ? >, T extends MappedElement >
+		extends PoolObject< E, T >
+		implements Edge< V >
 {
 	protected static final int SOURCE_INDEX_OFFSET = 0;
 	protected static final int TARGET_INDEX_OFFSET = SOURCE_INDEX_OFFSET + INDEX_SIZE;
@@ -13,7 +24,7 @@ public class AbstractEdge< T extends MappedElement, V extends AbstractVertex< ?,
 
 	protected final AbstractVertexPool< V, ?, ? > vertexPool;
 
-	protected AbstractEdge( final AbstractEdgePool< ?, T, V > pool )
+	protected AbstractEdge( final AbstractEdgePool< ?, V, T > pool )
 	{
 		super( pool.getMemPool() );
 		this.vertexPool = pool.vertexPool;
@@ -95,8 +106,8 @@ public class AbstractEdge< T extends MappedElement, V extends AbstractVertex< ?,
 	@Override
 	public boolean equals( final Object obj )
 	{
-		return obj instanceof AbstractEdge< ?, ? > &&
-				access.equals( ( ( AbstractEdge< ?, ? > ) obj ).access );
+		return obj instanceof AbstractEdge< ?, ?, ? > &&
+				access.equals( ( ( AbstractEdge< ?, ?, ? > ) obj ).access );
 	}
 
 	@Override

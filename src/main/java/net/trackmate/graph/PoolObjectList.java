@@ -15,7 +15,7 @@ import java.util.NoSuchElementException;
 import net.trackmate.graph.mempool.MappedElement;
 import net.trackmate.graph.mempool.MemPool;
 
-public class PoolObjectList< O extends PoolObject< T >, T extends MappedElement > implements PoolObjectCollection< O, T >, List< O >
+public class PoolObjectList< O extends PoolObject< O, T >, T extends MappedElement > implements PoolObjectCollection< O, T >, List< O >
 {
 	private final TIntList indices;
 
@@ -99,7 +99,7 @@ public class PoolObjectList< O extends PoolObject< T >, T extends MappedElement 
 	public boolean contains( final Object obj )
 	{
 		return ( obj instanceof PoolObject )
-				? indices.contains( ( (net.trackmate.graph.PoolObject< ? > ) obj ).getInternalPoolIndex() )
+				? indices.contains( ( ( PoolObject< ?, ? > ) obj ).getInternalPoolIndex() )
 				: false;
 	}
 
@@ -133,7 +133,7 @@ public class PoolObjectList< O extends PoolObject< T >, T extends MappedElement 
 	public int indexOf( final Object obj )
 	{
 		return ( obj instanceof PoolObject )
-				? indices.indexOf( ( ( PoolObject< ? > ) obj ).getInternalPoolIndex() )
+				? indices.indexOf( ( ( PoolObject< ?, ? > ) obj ).getInternalPoolIndex() )
 				: -1;
 	}
 
@@ -180,7 +180,7 @@ public class PoolObjectList< O extends PoolObject< T >, T extends MappedElement 
 	public int lastIndexOf( final Object obj )
 	{
 		return ( obj instanceof PoolObject )
-				? indices.lastIndexOf( ( ( PoolObject< ? > ) obj ).getInternalPoolIndex() )
+				? indices.lastIndexOf( ( ( PoolObject< ?, ? > ) obj ).getInternalPoolIndex() )
 				: -1;
 	}
 
@@ -359,7 +359,7 @@ public class PoolObjectList< O extends PoolObject< T >, T extends MappedElement 
 	public boolean remove( final Object obj )
 	{
 		return ( obj instanceof PoolObject )
-				? indices.remove( ( ( PoolObject< ? > ) obj ).getInternalPoolIndex() )
+				? indices.remove( ( ( PoolObject< ?, ? > ) obj ).getInternalPoolIndex() )
 				: false;
 	}
 

@@ -14,12 +14,14 @@ import net.trackmate.graph.mempool.MemPool;
  * In principle, this could extend {@link MappedElement}, but we rather use
  * composition to hide {@link MappedElement} methods from users.
  *
+ * @param <O>
+ *            recursive type of this {@link PoolObject}.
  * @param <T>
  *            the MappedElement type, for example {@link ByteMappedElement}.
  *
  * @author Tobias Pietzsch <tobias.pietzsch@gmail.com>
  */
-public abstract class PoolObject< T extends MappedElement >
+public abstract class PoolObject< O extends PoolObject< O, T >, T extends MappedElement >
 {
 	/**
 	 * Access to the data.
@@ -103,10 +105,11 @@ public abstract class PoolObject< T extends MappedElement >
 	 * @param obj
 	 *            A {@link PoolObject}, usually of the same type as this one.
 	 */
-	// TODO: this should either not be public or generically typed
-	public void refTo( final PoolObject< T > obj )
+	@SuppressWarnings( "unchecked" )
+	public O refTo( final O obj )
 	{
 		updateAccess( obj.pool, obj.index );
+		return ( O ) this;
 	}
 
 	/**

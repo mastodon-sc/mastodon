@@ -11,7 +11,7 @@ import java.util.Set;
 import net.trackmate.graph.mempool.MappedElement;
 import net.trackmate.graph.mempool.MemPool;
 
-public class PoolObjectSet< O extends PoolObject< T >, T extends MappedElement > implements PoolObjectCollection< O, T >, Set< O >
+public class PoolObjectSet< O extends PoolObject< O, T >, T extends MappedElement > implements PoolObjectCollection< O, T >, Set< O >
 {
 	private final TIntSet indices;
 
@@ -66,7 +66,7 @@ public class PoolObjectSet< O extends PoolObject< T >, T extends MappedElement >
 	public boolean contains( final Object obj )
 	{
 		return ( obj instanceof PoolObject )
-				? indices.contains( ( (net.trackmate.graph.PoolObject< ? > ) obj ).getInternalPoolIndex() )
+				? indices.contains( ( ( PoolObject< ?, ? > ) obj ).getInternalPoolIndex() )
 				: false;
 	}
 
@@ -128,8 +128,8 @@ public class PoolObjectSet< O extends PoolObject< T >, T extends MappedElement >
 	{
 		if ( obj instanceof PoolObject )
 		{
-			final PoolObject< ? > spot = ( PoolObject< ? > ) obj;
-			return indices.remove( spot.getInternalPoolIndex() );
+			final PoolObject< ?, ? > o = ( PoolObject< ?, ? > ) obj;
+			return indices.remove( o.getInternalPoolIndex() );
 		}
 		else
 			return false;

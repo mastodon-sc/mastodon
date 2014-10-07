@@ -2,15 +2,15 @@ package net.trackmate.graph;
 
 import java.util.Iterator;
 
-public class OutgoingEdges< E extends AbstractEdge< ?, ? > > implements Edges< E >
+public class OutgoingEdges< E extends AbstractEdge< E, ?, ? > > implements Edges< E >
 {
-	private final AbstractVertex< ?, ? > vertex;
+	private final AbstractVertex< ?, ?, ? > vertex;
 	private final AbstractEdgePool< E, ?, ? > edgePool;
 
 	private OutgoingEdgesIterator iterator;
 
 	public OutgoingEdges(
-			final AbstractVertex< ?, ? > vertex,
+			final AbstractVertex< ?, ?, ? > vertex,
 			final AbstractEdgePool< E, ?, ? > edgePool )
 	{
 		this.vertex = vertex;
