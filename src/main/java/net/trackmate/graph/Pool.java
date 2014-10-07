@@ -93,12 +93,12 @@ public class Pool< O extends PoolObject< T >, T extends MappedElement > implemen
 		};
 	}
 
-	MemPool< T > getMemPool()
+	protected MemPool< T > getMemPool()
 	{
 		return memPool;
 	}
 
-	O create( final O obj )
+	protected O create( final O obj )
 	{
 		final int index = memPool.create();
 		obj.updateAccess( memPool, index );
@@ -106,12 +106,12 @@ public class Pool< O extends PoolObject< T >, T extends MappedElement > implemen
 		return obj;
 	}
 
-	void getByInternalPoolIndex( final int index, final O obj )
+	protected void getByInternalPoolIndex( final int index, final O obj )
 	{
 		obj.updateAccess( memPool, index );
 	}
 
-	void releaseByInternalPoolIndex( final int index )
+	protected void releaseByInternalPoolIndex( final int index )
 	{
 		memPool.free( index );
 	}
