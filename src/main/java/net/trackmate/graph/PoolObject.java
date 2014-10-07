@@ -133,12 +133,17 @@ public abstract class PoolObject< O extends PoolObject< O, T >, T extends Mapped
 	 *
 	 * @param <O>
 	 *            a {@link PoolObject} type.
+	 * @param <T>
+	 *            the MappedElement type of the {@link PoolObject}, for example
+	 *            {@link ByteMappedElement}.
 	 */
-	public static interface Factory< O >
+	public static interface Factory< O extends PoolObject< O, T >, T extends MappedElement >
 	{
 		public int getSizeInBytes();
 
 		// TODO: rename to createRef()?
 		public O createEmptyRef();
+
+		public MemPool.Factory< T > getMemPoolFactory();
 	}
 }

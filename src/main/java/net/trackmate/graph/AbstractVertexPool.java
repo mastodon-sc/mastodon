@@ -1,7 +1,6 @@
 package net.trackmate.graph;
 
 import net.trackmate.graph.mempool.MappedElement;
-import net.trackmate.graph.mempool.MemPool;
 
 public class AbstractVertexPool<
 			V extends AbstractVertex< V, E, T >,
@@ -13,10 +12,9 @@ public class AbstractVertexPool<
 
 	public AbstractVertexPool(
 			final int initialCapacity,
-			final PoolObject.Factory< V > vertexFactory,
-			final MemPool.Factory< T > poolFactory )
+			final PoolObject.Factory< V, T > vertexFactory )
 	{
-		super( initialCapacity, vertexFactory, poolFactory );
+		super( initialCapacity, vertexFactory );
 	}
 
 	public void linkEdgePool( final AbstractEdgePool< E, ?, ? > edgePool )

@@ -9,7 +9,7 @@ import net.trackmate.graph.mempool.MemPool.PoolIterator;
 
 public class Pool< O extends PoolObject< O, T >, T extends MappedElement > implements Iterable< O >
 {
-	private final PoolObject.Factory< O > objFactory;
+	private final PoolObject.Factory< O, T > objFactory;
 
 	final MemPool< T > memPool;
 
@@ -17,11 +17,10 @@ public class Pool< O extends PoolObject< O, T >, T extends MappedElement > imple
 
 	public Pool(
 			final int initialCapacity,
-			final PoolObject.Factory< O > objFactory,
-			final MemPool.Factory< T > poolFactory )
+			final PoolObject.Factory< O, T > objFactory )
 	{
 		this.objFactory = objFactory;
-		this.memPool = poolFactory.createPool( initialCapacity, objFactory.getSizeInBytes() );
+		this.memPool = objFactory.getMemPoolFactory().createPool( initialCapacity, objFactory.getSizeInBytes() );
 	}
 
 	public void clear()

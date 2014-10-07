@@ -9,7 +9,6 @@ import java.util.Iterator;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import net.trackmate.graph.mempool.MappedElement;
-import net.trackmate.graph.mempool.MemPool;
 
 public class AbstractIdVertexPool<
 			V extends AbstractIdVertex< V, E, T >,
@@ -23,10 +22,9 @@ public class AbstractIdVertexPool<
 
 	public AbstractIdVertexPool(
 			final int initialCapacity,
-			final PoolObject.Factory< V > vertexFactory,
-			final MemPool.Factory< T > poolFactory )
+			final PoolObject.Factory< V, T > vertexFactory )
 	{
-		super( initialCapacity, vertexFactory, poolFactory );
+		super( initialCapacity, vertexFactory );
 		this.vertexIdToIndexMap = new TIntIntHashMap( initialCapacity, Constants.DEFAULT_LOAD_FACTOR, -1, -1 );
 	}
 
