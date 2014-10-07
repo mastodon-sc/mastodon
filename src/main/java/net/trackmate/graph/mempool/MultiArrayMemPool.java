@@ -7,7 +7,7 @@ package net.trackmate.graph.mempool;
  *
  * @author Tobias Pietzsch <tobias.pietzsch@gmail.com>
  */
-public class MultiArrayMemPool< T extends MappedElement, A extends MappedElementArray< T > > extends MemPool< T >
+public class MultiArrayMemPool< T extends MappedElement, A extends MappedElementArray< T, A > > extends MemPool< T >
 {
 	public MultiArrayMemPool( final int capacity, final int bytesPerElement )
 	{
@@ -34,5 +34,11 @@ public class MultiArrayMemPool< T extends MappedElement, A extends MappedElement
 	{
 		// TODO Auto-generated method stub
 		return 0;
+	}
+
+	@Override
+	public void swap( final int index0, final int index1 )
+	{
+		// TODO Auto-generated method stub
 	}
 }

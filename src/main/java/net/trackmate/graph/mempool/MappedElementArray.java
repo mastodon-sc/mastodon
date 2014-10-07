@@ -10,7 +10,7 @@ package net.trackmate.graph.mempool;
  *
  * @author Tobias Pietzsch <tobias.pietzsch@gmail.com>
  */
-public interface MappedElementArray< T extends MappedElement >
+public interface MappedElementArray< T extends MappedElement, A extends MappedElementArray< T, A > >
 {
 	/**
 	 * Get the number of {@link MappedElement elements} in this array.
@@ -55,6 +55,20 @@ public interface MappedElementArray< T extends MappedElement >
 	 *            new number of {@link MappedElement elements} in this array.
 	 */
 	public void resize( final int numElements );
+
+	/**
+	 * Swap the {@link MappedElement} data at {@code index} in this
+	 * {@link MappedElementArray} with the element at {@code arrayIndex} in the
+	 * {@link MappedElementArray} {@code array}.
+	 *
+	 * @param index
+	 *            index of element to swap in this array.
+	 * @param array
+	 *            other array
+	 * @param arrayIndex
+	 *            index of element to swap in other array.
+	 */
+	public void swapElement( final int index, final A array, final int arrayIndex );
 
 	/**
 	 * A factory for {@link MappedElementArray}.

@@ -9,7 +9,7 @@ package net.trackmate.graph.mempool;
  *
  * @author Tobias Pietzsch <tobias.pietzsch@gmail.com>
  */
-public class SingleArrayMemPool< T extends MappedElement, A extends MappedElementArray< T > > extends MemPool< T >
+public class SingleArrayMemPool< T extends MappedElement, A extends MappedElementArray< T, A > > extends MemPool< T >
 {
 	private final A data;
 
@@ -48,12 +48,18 @@ public class SingleArrayMemPool< T extends MappedElement, A extends MappedElemen
 		data.updateAccess( access, index );
 	}
 
+	@Override
+	public void swap( final int index0, final int index1 )
+	{
+		data.swapElement( index0, data, index1 );
+	}
+
 	/**
 	 * Create a factory for {@link SingleArrayMemPool}s that use the specified
 	 * {@code arrayFactory} for creating their storage
 	 * {@link MappedElementArray}.
 	 */
-	public static < T extends MappedElement, A extends MappedElementArray< T > >
+	public static < T extends MappedElement, A extends MappedElementArray< T, A > >
 			MemPool.Factory< T > factory( final MappedElementArray.Factory< A > arrayFactory )
 	{
 		return new MemPool.Factory< T >()

@@ -6,13 +6,15 @@ package net.trackmate.graph.mempool;
  *
  * @author Tobias Pietzsch <tobias.pietzsch@gmail.com>
  */
-public class ByteMappedElementArray implements MappedElementArray< ByteMappedElement >
+public class ByteMappedElementArray implements MappedElementArray< ByteMappedElement, ByteMappedElementArray >
 {
 	/**
 	 * The current data storage. This is changed when the array is
 	 * {@link #resize(int) resized}.
 	 */
 	byte[] data;
+
+	final private byte[] swapTmp;
 
 	/**
 	 * How many bytes on element in this array accupies.
@@ -36,6 +38,7 @@ public class ByteMappedElementArray implements MappedElementArray< ByteMappedEle
 					"trying to create a " + getClass().getName() + " with more than " + maxSize() + " elements of " + bytesPerElement + " bytes.");
 
 		this.data = new byte[ ( int ) numBytes ];
+		this.swapTmp = new byte[ bytesPerElement ];
 		this.bytesPerElement = bytesPerElement;
 		this.size = numElements;
 	}
@@ -63,6 +66,21 @@ public class ByteMappedElementArray implements MappedElementArray< ByteMappedEle
 	{
 		access.setDataArray( this );
 		access.setElementIndex( ( int ) index );
+	}
+
+	/**
+	 * {@inheritDoc} Moves the data using
+	 * {@link System#arraycopy(Object, int, Object, int, int)}, using
+	 * {@link #swapTmp} as a temporary.
+	 */
+	@Override
+	public void swapElement( final int index, final ByteMappedElementArray array, final int arrayIndex )
+	{
+		final int baseOffset = index * bytesPerElement;
+		final int arrayBaseOffset = arrayIndex * bytesPerElement;
+		System.arraycopy( data, baseOffset, swapTmp, 0, bytesPerElement );
+		System.arraycopy( array.data, arrayBaseOffset, data, baseOffset, bytesPerElement );
+		System.arraycopy( swapTmp, 0, array.data, arrayBaseOffset, bytesPerElement );
 	}
 
 	/**

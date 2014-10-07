@@ -157,6 +157,11 @@ public abstract class MemPool< T extends MappedElement >
 	public abstract void updateAccess( final T access, final int index );
 
 	/**
+	 * Swap the element at {@code index0} with the element at {@code index1}.
+	 */
+	public abstract void swap( final int index0, final int index1 );
+
+	/**
 	 * Append a new element at the end of the list. Must be implemented in
 	 * subclasses. It is called when allocating an element and the free-element
 	 * list is empty.
