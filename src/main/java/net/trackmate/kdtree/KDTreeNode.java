@@ -3,11 +3,14 @@ package net.trackmate.kdtree;
 import static net.trackmate.graph.mempool.ByteUtils.DOUBLE_SIZE;
 import static net.trackmate.graph.mempool.ByteUtils.INDEX_SIZE;
 import net.imglib2.RealLocalizable;
+import net.trackmate.graph.Pool;
 import net.trackmate.graph.PoolObject;
 import net.trackmate.graph.mempool.MappedElement;
-import net.trackmate.graph.mempool.MemPool;
 
-public class KDTreeNode< T extends MappedElement, O extends PoolObject< ? > & RealLocalizable > extends PoolObject< T >
+public class KDTreeNode<
+			O extends PoolObject< O, ? > & RealLocalizable,
+			T extends MappedElement >
+		extends PoolObject< KDTreeNode< O, T >, T >
 {
 	protected static final int LEFT_INDEX_OFFSET = 0;
 	protected static final int RIGHT_INDEX_OFFSET = LEFT_INDEX_OFFSET + INDEX_SIZE;
@@ -16,7 +19,7 @@ public class KDTreeNode< T extends MappedElement, O extends PoolObject< ? > & Re
 
 	private final int n;
 
-	public KDTreeNode( final MemPool< T > pool, final int numDimensions )
+	public KDTreeNode( final Pool< KDTreeNode< O, T >, T > pool, final int numDimensions )
 	{
 		super( pool );
 		this.n = numDimensions;

@@ -6,65 +6,92 @@ import net.imglib2.EuclideanSpace;
 import net.imglib2.RealLocalizable;
 import net.trackmate.graph.Pool;
 import net.trackmate.graph.PoolObject;
-import net.trackmate.graph.PoolObject.Factory;
 import net.trackmate.graph.mempool.ByteMappedElement;
 import net.trackmate.graph.mempool.ByteMappedElementArray;
 import net.trackmate.graph.mempool.MappedElement;
 import net.trackmate.graph.mempool.MemPool;
+import net.trackmate.graph.mempool.MemPool.Factory;
 import net.trackmate.graph.mempool.SingleArrayMemPool;
 
-public class KDTree< N extends KDTreeNode< T, O >, O extends PoolObject< ? > & RealLocalizable, T extends MappedElement >
-	extends Pool< N, T >
-	implements EuclideanSpace
+public class KDTree<
+			O extends PoolObject< O, ? > & RealLocalizable,
+			T extends MappedElement >
+		extends Pool< KDTreeNode< O, T >, T >
+		implements EuclideanSpace
 {
-	private static final MemPool.Factory< ByteMappedElement > poolFactory = SingleArrayMemPool.factory( ByteMappedElementArray.factory );
+	private static final MemPool.Factory< ByteMappedElement > defaultPoolFactory = SingleArrayMemPool.factory( ByteMappedElementArray.factory );
 
-	public static < O extends PoolObject< ? > & RealLocalizable > Pool< KDTreeNode< ByteMappedElement, O >, ByteMappedElement >
-		kdtree( final Collection< O > objects )
+	public static < O extends PoolObject< O, ? > & RealLocalizable >
+			KDTree< O, ByteMappedElement > kdtree( final Collection< O > objects )
 	{
-		return kdtree( objects, poolFactory );
+		return kdtree( objects, defaultPoolFactory );
 	}
 
-	public static < T extends MappedElement, O extends PoolObject< ? > & RealLocalizable > Pool< KDTreeNode< T, O >, T >
-		kdtree( final Collection< O > objects, final MemPool.Factory< T > poolFactory )
+	public static < O extends PoolObject< O, ? > & RealLocalizable, T extends MappedElement >
+			KDTree< O, T > kdtree( final Collection< O > objects, final MemPool.Factory< T > poolFactory )
 	{
 		if ( objects.isEmpty() )
 			return null;
-
-		final int numDimensions = objects.iterator().next().numDimensions();
-		final int sizeInBytes = KDTreeNode.sizeInBytes( numDimensions );
-		final int capacity = objects.size();
-		final Factory< KDTreeNode< T, O > > objFactory = new Factory< KDTreeNode< T, O > >()
-		{
-			@Override
-			public int getSizeInBytes()
-			{
-				return sizeInBytes;
-			}
-
-			@Override
-			public KDTreeNode< T, O > createEmptyRef()
-			{
-				return new KDTreeNode< T, O >( poolFactory.createPool( capacity, sizeInBytes ), numDimensions );
-			}
-		};
-		final KDTree< KDTreeNode< T, O >, O, T > nodePool =
-				new KDTree< KDTreeNode< T, O >, O, T >( capacity, objFactory, poolFactory, numDimensions, objects );
-		return nodePool;
+		return new NodeFactory< O, T >( objects, poolFactory ).kdtree;
 	}
 
-	public KDTree( final int initialCapacity, final Factory< N > objFactory, final MemPool.Factory< T > poolFactory, final int numDimensions, final Collection< O > objects )
+	private static final class NodeFactory<
+				O extends PoolObject< O, ? > & RealLocalizable,
+				T extends MappedElement >
+			implements PoolObject.Factory< KDTreeNode< O, T >, T >
 	{
-		super( initialCapacity, objFactory, poolFactory );
+		private final KDTree< O, T > kdtree;
+
+		private final int sizeInBytes;
+
+		private final int numDimensions;
+
+		private final MemPool.Factory< T > poolFactory;
+
+		public NodeFactory( final Collection< O > objects, final MemPool.Factory< T > poolFactory )
+		{
+			this.poolFactory = poolFactory;
+			this.numDimensions = objects.iterator().next().numDimensions();
+			this.sizeInBytes = KDTreeNode.sizeInBytes( numDimensions );
+			final int capacity = objects.size();
+			kdtree = new KDTree< O, T >( capacity, this, numDimensions, objects );
+		}
+
+		@Override
+		public int getSizeInBytes()
+		{
+			return sizeInBytes;
+		}
+
+		@Override
+		public KDTreeNode< O, T > createEmptyRef()
+		{
+			return new KDTreeNode< O, T >( kdtree, numDimensions );
+		}
+
+		@Override
+		public Factory< T > getMemPoolFactory()
+		{
+			return poolFactory;
+		}
+	};
+
+	private KDTree(
+			final int initialCapacity,
+			final NodeFactory< O, T > nodeFactory,
+			final int numDimensions,
+			final Collection< O > objects )
+	{
+		super( initialCapacity, nodeFactory );
 		this.n = numDimensions;
 		this.rootIndex = build( objects );
 	}
 
 	private int build( final Collection< O > objects )
 	{
-		final N n1 = createRef();
-		final N n2 = createRef();
-		final N n3 = createRef();
+		final KDTreeNode< O, T > n1 = createRef();
+		final KDTreeNode< O, T > n2 = createRef();
+		final KDTreeNode< O, T > n3 = createRef();
 		for ( final O obj : objects )
 			create( n1 ).init( obj );
 		final int max = objects.size() - 1;
@@ -102,7 +129,7 @@ public class KDTree< N extends KDTreeNode< T, O >, O extends PoolObject< ? > & R
 	 * @return a new node containing the subtree of the given sublist of
 	 *         positions.
 	 */
-	private int makeNode( final int i, final int j, final int d, final N n1, final N n2, final N n3 )
+	private int makeNode( final int i, final int j, final int d, final KDTreeNode< O, T > n1, final KDTreeNode< O, T > n2, final KDTreeNode< O, T > n3 )
 	{
 		if ( j > i )
 		{
@@ -148,7 +175,7 @@ public class KDTree< N extends KDTreeNode< T, O >, O extends PoolObject< ? > & R
 	 * @param compare
 	 *            ordering function on T
 	 */
-	private void kthElement( int i, int j, final int k, final int compare_d, final N pivot, final N ti, final N tj )
+	private void kthElement( int i, int j, final int k, final int compare_d, final KDTreeNode< O, T > pivot, final KDTreeNode< O, T > ti, final KDTreeNode< O, T > tj )
 	{
 		while ( true )
 		{
@@ -186,7 +213,7 @@ public class KDTree< N extends KDTreeNode< T, O >, O extends PoolObject< ? > & R
 	 *            ordering function on T
 	 * @return index of pivot element
 	 */
-	private int partitionSubList( int i, int j, final int compare_d, final N pivot, final N ti, final N tj )
+	private int partitionSubList( int i, int j, final int compare_d, final KDTreeNode< O, T > pivot, final KDTreeNode< O, T > ti, final KDTreeNode< O, T > tj )
 	{
 		final int pivotIndex = j;
 		getByInternalPoolIndex( j--, pivot );
@@ -236,7 +263,7 @@ public class KDTree< N extends KDTreeNode< T, O >, O extends PoolObject< ? > & R
 	}
 
 	@Override
-	protected void getByInternalPoolIndex( final int index, final N node )
+	protected void getByInternalPoolIndex( final int index, final KDTreeNode< O, T > node )
 	{
 		super.getByInternalPoolIndex( index, node );
 	}

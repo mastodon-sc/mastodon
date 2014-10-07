@@ -5,6 +5,7 @@ import net.imglib2.Sampler;
 import net.imglib2.neighborsearch.NearestNeighborSearch;
 import net.trackmate.graph.Pool;
 import net.trackmate.graph.PoolObject;
+import net.trackmate.graph.mempool.MappedElement;
 
 /**
  * Implementation of {@link NearestNeighborSearch} search for kd-trees.
@@ -12,22 +13,22 @@ import net.trackmate.graph.PoolObject;
  *
  * @author Tobias Pietzsch
  */
-public class NearestNeighborSearchOnKDTree< N extends KDTreeNode< ?, O >, O extends PoolObject< ? > & RealLocalizable >
+public class NearestNeighborSearchOnKDTree< O extends PoolObject< O, ? > & RealLocalizable, T extends MappedElement >
 	implements NearestNeighborSearch< O >, Sampler< O >
 {
-	protected KDTree< N, O, ? > tree;
+	protected KDTree< O, T > tree;
 
 	protected final int n;
 
 	protected final double[] pos;
 
-	protected N bestPoint;
+	protected KDTreeNode< O, T > bestPoint;
 
 	protected int bestPointNodeIndex;
 
 	protected double bestSquDistance;
 
-	public NearestNeighborSearchOnKDTree( final KDTree< N, O, ? > tree )
+	public NearestNeighborSearchOnKDTree( final KDTree< O, T > tree )
 	{
 		n = tree.numDimensions();
 		pos = new double[ n ];
@@ -45,10 +46,10 @@ public class NearestNeighborSearchOnKDTree< N extends KDTreeNode< ?, O >, O exte
 	{
 		p.localize( pos );
 		bestSquDistance = Double.MAX_VALUE;
-		searchNode( tree.createRef(), tree.rootIndex );
+		searchNode( tree.createRef(), tree.rootIndex, 0 );
 	}
 
-	protected void searchNode( final N node, final int currentNodeIndex, final int d )
+	protected void searchNode( final KDTreeNode< O, T > node, final int currentNodeIndex, final int d )
 	{
 		// consider the current node
 		tree.getByInternalPoolIndex( currentNodeIndex, node );
@@ -107,7 +108,7 @@ public class NearestNeighborSearchOnKDTree< N extends KDTreeNode< ?, O >, O exte
 	@Override
 	public O get()
 	{
-		final N node = tree.createRef();
+		final KDTreeNode< O, T > node = tree.createRef();
 		tree.getByInternalPoolIndex( bestPointNodeIndex, node );
 		final O obj = pool.createRef();
 
@@ -115,7 +116,7 @@ public class NearestNeighborSearchOnKDTree< N extends KDTreeNode< ?, O >, O exte
 	}
 
 	@Override
-	public NearestNeighborSearchOnKDTree< N, O > copy()
+	public NearestNeighborSearchOnKDTree< O, T > copy()
 	{
 		// TODO Auto-generated method stub
 		return null;
