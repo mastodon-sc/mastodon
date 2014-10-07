@@ -20,9 +20,9 @@ public class AbstractVertex< V extends AbstractVertex< V, E, T >, E extends Abst
 	protected static final int FIRST_OUT_EDGE_INDEX_OFFSET = FIRST_IN_EDGE_INDEX_OFFSET + INDEX_SIZE;
 	protected static final int SIZE_IN_BYTES = FIRST_OUT_EDGE_INDEX_OFFSET + INDEX_SIZE;
 
-	protected AbstractVertex( final AbstractVertexPool< ?, ?, T > pool )
+	protected AbstractVertex( final AbstractVertexPool< V, ?, T > pool )
 	{
-		super( pool.getMemPool() );
+		super( pool );
 	}
 
 	protected int getFirstInEdgeIndex()

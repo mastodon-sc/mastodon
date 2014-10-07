@@ -36,7 +36,13 @@ public abstract class PoolObject< O extends PoolObject< O, T >, T extends Mapped
 	/**
 	 * The {@link MemPool} into which this proxy currently refers.
 	 */
-	private MemPool< T > pool;
+	private MemPool< T > memPool;
+
+	/**
+	 * The {@link Pool} that created this {@link PoolObject}.
+	 * This is used only to forward {@link #releaseRef()} to the creating {@link Pool}.
+	 */
+	private final Pool< O, T > creatingPool;
 
 	/**
 	 * Create a {@link PoolObject} referring data in the given {@link MemPool}.
@@ -46,10 +52,11 @@ public abstract class PoolObject< O extends PoolObject< O, T >, T extends Mapped
 	 * @param pool
 	 *            the {@link MemPool} where derived classes store their data.
 	 */
-	public PoolObject( final MemPool< T > pool )
+	public PoolObject( final Pool< O, T > pool )
 	{
-		this.pool = pool;
-		this.access = pool.createAccess();
+		this.creatingPool = pool;
+		this.memPool = pool.getMemPool();
+		this.access = memPool.createAccess();
 	}
 
 	/**
@@ -81,14 +88,14 @@ public abstract class PoolObject< O extends PoolObject< O, T >, T extends Mapped
 	 */
 	void updateAccess( final MemPool< T > pool, final int index )
 	{
-		this.pool = pool;
+		this.memPool = pool;
 		this.index = index;
 		pool.updateAccess( access, index );
 	}
 
 	/**
 	 * Make this proxy refer the element at the specified {@code index} in the
-	 * current {@link #pool}.
+	 * current {@link #memPool}.
 	 *
 	 * @param index
 	 */
@@ -96,7 +103,7 @@ public abstract class PoolObject< O extends PoolObject< O, T >, T extends Mapped
 	void updateAccess( final int index )
 	{
 		this.index = index;
-		pool.updateAccess( access, index );
+		memPool.updateAccess( access, index );
 	}
 
 	/**
@@ -108,8 +115,17 @@ public abstract class PoolObject< O extends PoolObject< O, T >, T extends Mapped
 	@SuppressWarnings( "unchecked" )
 	public O refTo( final O obj )
 	{
-		updateAccess( obj.pool, obj.index );
+		updateAccess( obj.memPool, obj.index );
 		return ( O ) this;
+	}
+
+	/**
+	 * Make the {@link Pool} that created this proxy {@link Pool#releaseRef(PoolObject) release} it.
+	 */
+	@SuppressWarnings( "unchecked" )
+	void releaseRef()
+	{
+		creatingPool.releaseRef( ( O ) this );
 	}
 
 	/**

@@ -50,7 +50,7 @@ public class Edge extends AbstractEdge< Edge, Spot, ByteMappedElement >
 		return String.format( "Edge( %d -> %d )", getSource().getId(), getTarget().getId() );
 	}
 
-	Edge( final AbstractEdgePool< ?, Spot, ByteMappedElement > pool, final AdditionalFeatures additionalEdgeFeatures )
+	Edge( final AbstractEdgePool< Edge, Spot, ByteMappedElement > pool, final AdditionalFeatures additionalEdgeFeatures )
 	{
 		super( pool );
 		this.additionalFeatures = additionalEdgeFeatures;

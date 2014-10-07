@@ -18,7 +18,7 @@ public class AbstractIdVertex< V extends AbstractIdVertex< V, E, T >, E extends 
 	protected static final int ID_OFFSET = AbstractVertex.SIZE_IN_BYTES;
 	protected static final int SIZE_IN_BYTES = ID_OFFSET + INT_SIZE;
 
-	protected AbstractIdVertex( final AbstractVertexPool< ?, ?, T > pool )
+	protected AbstractIdVertex( final AbstractVertexPool< V, ?, T > pool )
 	{
 		super( pool );
 	}

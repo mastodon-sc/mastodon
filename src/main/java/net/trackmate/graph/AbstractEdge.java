@@ -24,9 +24,9 @@ public class AbstractEdge< E extends AbstractEdge< E, V, T >, V extends Abstract
 
 	protected final AbstractVertexPool< V, ?, ? > vertexPool;
 
-	protected AbstractEdge( final AbstractEdgePool< ?, V, T > pool )
+	protected AbstractEdge( final AbstractEdgePool< E, V, T > pool )
 	{
-		super( pool.getMemPool() );
+		super( pool );
 		this.vertexPool = pool.vertexPool;
 	}
 

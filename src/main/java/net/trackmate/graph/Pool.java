@@ -55,9 +55,12 @@ public class Pool< O extends PoolObject< O, T >, T extends MappedElement > imple
 		tmpObjRefs.add( obj );
 	}
 
-	// TODO: add releaseRefs( PoolObject<?> ... objs )
-	// This requires that each PoolObject knows its pool so that it can release itself.
-	// This in turn requires adding generic parameter PoolObject< T, O extends PoolObject< T, O > >
+	// TODO: find instances where releaseRefs( PoolObject<?> ... objs ) can be used instead of separately releasing refs (Then probably don't use it because it creates an Object array).
+	public static void releaseRefs( final PoolObject< ?, ? >... objs )
+	{
+		for ( final PoolObject< ?, ? > obj : objs )
+			obj.releaseRef();
+	}
 
 	@Override
 	public Iterator< O > iterator()
