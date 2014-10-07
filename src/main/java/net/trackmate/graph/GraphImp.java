@@ -3,18 +3,18 @@ package net.trackmate.graph;
 import net.trackmate.graph.mempool.MappedElement;
 
 public class GraphImp<
-		VP extends AbstractVertexPool< V, T, E >,
-		EP extends AbstractEdgePool< E, T, V >,
-		V extends AbstractVertex< T, E >,
-		E extends AbstractEdge< T, V >,
+		VP extends AbstractVertexPool< V, E, T >,
+		EP extends AbstractEdgePool< E, V, T >,
+		V extends AbstractVertex< V, E, T >,
+		E extends AbstractEdge< E, V, T >,
 		T extends MappedElement >
 	implements Graph< V, E >
 {
 	public static <
-			VP extends AbstractVertexPool< V, T, E >,
-			EP extends AbstractEdgePool< E, T, V >,
-			V extends AbstractVertex< T, E >,
-			E extends AbstractEdge< T, V >,
+			VP extends AbstractVertexPool< V, E, T >,
+			EP extends AbstractEdgePool< E, V, T >,
+			V extends AbstractVertex< V, E, T >,
+			E extends AbstractEdge< E, V, T >,
 			T extends MappedElement >
 	GraphImp< VP, EP, V, E, T > create( final VP vertexPool, final EP edgePool )
 	{

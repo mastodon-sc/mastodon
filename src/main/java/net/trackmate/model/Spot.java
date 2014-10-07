@@ -9,7 +9,7 @@ import net.trackmate.graph.AbstractIdVertexPool;
 import net.trackmate.graph.mempool.ByteMappedElement;
 import net.trackmate.model.AdditionalFeatures.Feature;
 
-public class Spot extends AbstractIdVertex< ByteMappedElement, Edge > implements RealLocalizable
+public class Spot extends AbstractIdVertex< Spot, Edge, ByteMappedElement > implements RealLocalizable
 {
 	protected static final int X_OFFSET = AbstractIdVertex.SIZE_IN_BYTES;
 	protected static final int Y_OFFSET = X_OFFSET + DOUBLE_SIZE;
@@ -21,7 +21,7 @@ public class Spot extends AbstractIdVertex< ByteMappedElement, Edge > implements
 	protected static final int SIZE_IN_BYTES = VISIBILITY_OFFSET + BOOLEAN_SIZE;
 
 	private final AdditionalFeatures additionalFeatures;
-	private final AbstractIdVertexPool< Spot, ByteMappedElement, ? > pool;
+	private final AbstractIdVertexPool< Spot, ?, ByteMappedElement > pool;
 
 	@Override
 	protected void setToUninitializedState()
@@ -155,7 +155,7 @@ public class Spot extends AbstractIdVertex< ByteMappedElement, Edge > implements
 		return String.format( "Spot( ID=%d, X=%.2f, Y=%.2f, Z=%.2f )", getId(), getX(), getY(), getZ() );
 	}
 
-	Spot( final AbstractIdVertexPool< Spot, ByteMappedElement, ? > pool, final AdditionalFeatures additionalSpotFeatures )
+	Spot( final AbstractIdVertexPool< Spot, ?, ByteMappedElement > pool, final AdditionalFeatures additionalSpotFeatures )
 	{
 		super( pool );
 		this.pool = pool;

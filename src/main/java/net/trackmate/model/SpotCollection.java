@@ -19,9 +19,9 @@ public class SpotCollection implements Iterable< Spot >
 {
 	private static final Factory< ByteMappedElement > poolFactory = SingleArrayMemPool.factory( ByteMappedElementArray.factory );
 
-	final AbstractIdVertexPool< Spot, ByteMappedElement, Edge > spotPool;
+	final AbstractIdVertexPool< Spot, Edge, ByteMappedElement > spotPool;
 
-	final AbstractEdgePool< Edge, ByteMappedElement, Spot > edgePool;
+	final AbstractEdgePool< Edge, Spot, ByteMappedElement > edgePool;
 
 	private final Graph< Spot, Edge > graph;
 
@@ -66,8 +66,8 @@ public class SpotCollection implements Iterable< Spot >
 
 	public SpotCollection( final int initialCapacity )
 	{
-		spotPool = new AbstractIdVertexPool< Spot, ByteMappedElement, Edge >( initialCapacity, spotFactory, poolFactory );
-		edgePool = new AbstractEdgePool< Edge, ByteMappedElement, Spot >( initialCapacity, edgeFactory, poolFactory, spotPool );
+		spotPool = new AbstractIdVertexPool< Spot, Edge, ByteMappedElement >( initialCapacity, spotFactory, poolFactory );
+		edgePool = new AbstractEdgePool< Edge, Spot, ByteMappedElement >( initialCapacity, edgeFactory, poolFactory, spotPool );
 		spotPool.linkEdgePool( edgePool );
 		additionalSpotFeatures = new AdditionalFeatures( initialCapacity );
 		additionalEdgeFeatures = new AdditionalFeatures( initialCapacity );

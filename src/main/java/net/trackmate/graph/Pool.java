@@ -7,7 +7,7 @@ import net.trackmate.graph.mempool.MappedElement;
 import net.trackmate.graph.mempool.MemPool;
 import net.trackmate.graph.mempool.MemPool.PoolIterator;
 
-public class Pool< O extends PoolObject< T >, T extends MappedElement > implements Iterable< O >
+public class Pool< O extends PoolObject< O, T >, T extends MappedElement > implements Iterable< O >
 {
 	private final PoolObject.Factory< O > objFactory;
 
@@ -55,9 +55,12 @@ public class Pool< O extends PoolObject< T >, T extends MappedElement > implemen
 		tmpObjRefs.add( obj );
 	}
 
-	// TODO: add releaseRefs( PoolObject<?> ... objs )
-	// This requires that each PoolObject knows its pool so that it can release itself.
-	// This in turn requires adding generic parameter PoolObject< T, O extends PoolObject< T, O > >
+	// TODO: find instances where releaseRefs( PoolObject<?> ... objs ) can be used instead of separately releasing refs (Then probably don't use it because it creates an Object array).
+	public static void releaseRefs( final PoolObject< ?, ? >... objs )
+	{
+		for ( final PoolObject< ?, ? > obj : objs )
+			obj.releaseRef();
+	}
 
 	@Override
 	public Iterator< O > iterator()
@@ -93,12 +96,12 @@ public class Pool< O extends PoolObject< T >, T extends MappedElement > implemen
 		};
 	}
 
-	MemPool< T > getMemPool()
+	protected MemPool< T > getMemPool()
 	{
 		return memPool;
 	}
 
-	O create( final O obj )
+	protected O create( final O obj )
 	{
 		final int index = memPool.create();
 		obj.updateAccess( memPool, index );
@@ -106,12 +109,12 @@ public class Pool< O extends PoolObject< T >, T extends MappedElement > implemen
 		return obj;
 	}
 
-	void getByInternalPoolIndex( final int index, final O obj )
+	protected void getByInternalPoolIndex( final int index, final O obj )
 	{
 		obj.updateAccess( memPool, index );
 	}
 
-	void releaseByInternalPoolIndex( final int index )
+	protected void releaseByInternalPoolIndex( final int index )
 	{
 		memPool.free( index );
 	}

@@ -9,7 +9,7 @@ package net.trackmate.graph.mempool;
  *
  * @author Tobias Pietzsch <tobias.pietzsch@gmail.com>
  */
-public class SingleArrayMemPool< T extends MappedElement, A extends MappedElementArray< T, A > > extends MemPool< T >
+public class SingleArrayMemPool< A extends MappedElementArray< A, T >, T extends MappedElement > extends MemPool< T >
 {
 	private final A data;
 
@@ -59,7 +59,7 @@ public class SingleArrayMemPool< T extends MappedElement, A extends MappedElemen
 	 * {@code arrayFactory} for creating their storage
 	 * {@link MappedElementArray}.
 	 */
-	public static < T extends MappedElement, A extends MappedElementArray< T, A > >
+	public static < A extends MappedElementArray< A, T >, T extends MappedElement >
 			MemPool.Factory< T > factory( final MappedElementArray.Factory< A > arrayFactory )
 	{
 		return new MemPool.Factory< T >()
@@ -67,7 +67,7 @@ public class SingleArrayMemPool< T extends MappedElement, A extends MappedElemen
 			@Override
 			public MemPool< T > createPool( final int capacity, final int bytesPerElement )
 			{
-				return new SingleArrayMemPool< T, A >( arrayFactory, capacity, bytesPerElement );
+				return new SingleArrayMemPool< A, T >( arrayFactory, capacity, bytesPerElement );
 			}
 		};
 	}

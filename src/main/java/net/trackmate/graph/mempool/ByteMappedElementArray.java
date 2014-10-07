@@ -6,7 +6,7 @@ package net.trackmate.graph.mempool;
  *
  * @author Tobias Pietzsch <tobias.pietzsch@gmail.com>
  */
-public class ByteMappedElementArray implements MappedElementArray< ByteMappedElement, ByteMappedElementArray >
+public class ByteMappedElementArray implements MappedElementArray< ByteMappedElementArray, ByteMappedElement >
 {
 	/**
 	 * The current data storage. This is changed when the array is
