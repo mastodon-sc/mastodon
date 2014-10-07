@@ -29,7 +29,7 @@ public class SpotCollection implements Iterable< Spot >
 
 	final AdditionalFeatures additionalEdgeFeatures;
 
-	final PoolObject.Factory< Spot > spotFactory = new PoolObject.Factory< Spot >()
+	final PoolObject.Factory< Spot, ByteMappedElement > spotFactory = new PoolObject.Factory< Spot, ByteMappedElement >()
 	{
 		@Override
 		public int getSizeInBytes()
@@ -42,9 +42,15 @@ public class SpotCollection implements Iterable< Spot >
 		{
 			return new Spot( spotPool, additionalSpotFeatures );
 		}
+
+		@Override
+		public Factory< ByteMappedElement > getMemPoolFactory()
+		{
+			return poolFactory;
+		}
 	};
 
-	final PoolObject.Factory< Edge > edgeFactory = new PoolObject.Factory< Edge >()
+	final PoolObject.Factory< Edge, ByteMappedElement > edgeFactory = new PoolObject.Factory< Edge, ByteMappedElement >()
 	{
 		@Override
 		public int getSizeInBytes()
@@ -57,6 +63,12 @@ public class SpotCollection implements Iterable< Spot >
 		{
 			return new Edge( edgePool, additionalEdgeFeatures );
 		}
+
+		@Override
+		public Factory< ByteMappedElement > getMemPoolFactory()
+		{
+			return poolFactory;
+		}
 	};
 
 	public SpotCollection()
@@ -66,8 +78,8 @@ public class SpotCollection implements Iterable< Spot >
 
 	public SpotCollection( final int initialCapacity )
 	{
-		spotPool = new AbstractIdVertexPool< Spot, Edge, ByteMappedElement >( initialCapacity, spotFactory, poolFactory );
-		edgePool = new AbstractEdgePool< Edge, Spot, ByteMappedElement >( initialCapacity, edgeFactory, poolFactory, spotPool );
+		spotPool = new AbstractIdVertexPool< Spot, Edge, ByteMappedElement >( initialCapacity, spotFactory );
+		edgePool = new AbstractEdgePool< Edge, Spot, ByteMappedElement >( initialCapacity, edgeFactory, spotPool );
 		spotPool.linkEdgePool( edgePool );
 		additionalSpotFeatures = new AdditionalFeatures( initialCapacity );
 		additionalEdgeFeatures = new AdditionalFeatures( initialCapacity );
