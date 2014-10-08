@@ -1,11 +1,18 @@
 package net.trackmate.graph.mempool;
 
+import java.lang.reflect.Field;
+import java.security.AccessController;
+import java.security.PrivilegedExceptionAction;
+
+import sun.misc.Unsafe;
+
 /**
  * Helper methods to encode and decode different data types ({@code long, double}
  * etc.) from bytes at an offset in a {@code byte[]} array.
  *
  * @author Tobias Pietzsch <tobias.pietzsch@gmail.com>
  */
+@SuppressWarnings( "restriction" )
 public class ByteUtils
 {
 	public static final int BYTE_SIZE = 1;
@@ -44,62 +51,42 @@ public class ByteUtils
 
 	public static void putInt( final int value, final byte[] array, final int offset )
 	{
-		array[ offset ] = ( byte ) ( 0xff & ( value >> 24 ) );
-		array[ offset + 1 ] = ( byte ) ( 0xff & ( value >> 16 ) );
-		array[ offset + 2 ] = ( byte ) ( 0xff & ( value >> 8 ) );
-		array[ offset + 3 ] = ( byte ) ( 0xff & value );
+		UNSAFE.putInt( array, BYTE_ARRAY_OFFSET + offset, value );
 	}
 
 	public static int getInt( final byte[] array, final int offset )
 	{
-		return ( ( array[ offset ] & 0xff ) << 24 ) |
-				( ( array[ offset + 1 ] & 0xff ) << 16 ) |
-				( ( array[ offset + 2 ] & 0xff ) << 8 ) |
-				( array[ offset + 3 ] & 0xff );
+		return UNSAFE.getInt( array, BYTE_ARRAY_OFFSET + offset );
 	}
 
 	public static void putLong( final long value, final byte[] array, final int offset )
 	{
-		array[ offset ] = ( byte ) ( 0xff & ( value >> 56 ) );
-		array[ offset + 1 ] = ( byte ) ( 0xff & ( value >> 48 ) );
-		array[ offset + 2 ] = ( byte ) ( 0xff & ( value >> 40 ) );
-		array[ offset + 3 ] = ( byte ) ( 0xff & ( value >> 32 ) );
-		array[ offset + 4 ] = ( byte ) ( 0xff & ( value >> 24 ) );
-		array[ offset + 5 ] = ( byte ) ( 0xff & ( value >> 16 ) );
-		array[ offset + 6 ] = ( byte ) ( 0xff & ( value >> 8 ) );
-		array[ offset + 7 ] = ( byte ) ( 0xff & value );
+		UNSAFE.putLong( array, BYTE_ARRAY_OFFSET + offset, value );
 	}
 
 	public static long getLong( final byte[] array, final int offset )
 	{
-		return ( ( long ) ( array[ offset ] & 0xff ) << 56 ) |
-				( ( long ) ( array[ offset + 1 ] & 0xff ) << 48 ) |
-				( ( long ) ( array[ offset + 2 ] & 0xff ) << 40 ) |
-				( ( long ) ( array[ offset + 3 ] & 0xff ) << 32 ) |
-				( ( long ) ( array[ offset + 4 ] & 0xff ) << 24 ) |
-				( ( long ) ( array[ offset + 5 ] & 0xff ) << 16 ) |
-				( ( long ) ( array[ offset + 6 ] & 0xff ) << 8 ) |
-				( array[ offset + 7 ] & 0xff );
+		return UNSAFE.getLong( array, BYTE_ARRAY_OFFSET + offset );
 	}
 
 	public static void putFloat( final float value, final byte[] array, final int offset )
 	{
-		putInt( Float.floatToRawIntBits( value ), array, offset );
+		UNSAFE.putFloat( array, BYTE_ARRAY_OFFSET + offset, value );
 	}
 
 	public static float getFloat( final byte[] array, final int offset )
 	{
-		return ( Float.intBitsToFloat( getInt( array, offset ) ) );
+		return UNSAFE.getFloat( array, BYTE_ARRAY_OFFSET + offset );
 	}
 
 	public static void putDouble( final double value, final byte[] array, final int offset )
 	{
-		putLong( Double.doubleToRawLongBits( value ), array, offset );
+		UNSAFE.putDouble( array, BYTE_ARRAY_OFFSET + offset, value );
 	}
 
 	public static double getDouble( final byte[] array, final int offset )
 	{
-		return ( Double.longBitsToDouble( getLong( array, offset ) ) );
+		return UNSAFE.getDouble( array, BYTE_ARRAY_OFFSET + offset );
 	}
 
 	public static void putIndex( final int value, final byte[] array, final int offset )
@@ -111,4 +98,31 @@ public class ByteUtils
 	{
 		return getInt( array, offset );
 	}
+
+	private static final Unsafe UNSAFE;
+
+	static
+	{
+		try
+		{
+			final PrivilegedExceptionAction< Unsafe > action = new PrivilegedExceptionAction< Unsafe >()
+			{
+				@Override
+				public Unsafe run() throws Exception
+				{
+					final Field field = Unsafe.class.getDeclaredField( "theUnsafe" );
+					field.setAccessible( true );
+					return ( Unsafe ) field.get( null );
+				}
+			};
+
+			UNSAFE = AccessController.doPrivileged( action );
+		}
+		catch ( final Exception ex )
+		{
+			throw new RuntimeException( ex );
+		}
+	}
+
+	private static final long BYTE_ARRAY_OFFSET = UNSAFE.arrayBaseOffset( byte[].class );
 }
