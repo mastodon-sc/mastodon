@@ -32,7 +32,9 @@ public class KDTree<
 	{
 		if ( objects.isEmpty() )
 			return null;
-		return new NodeFactory< O, T >( objects, objectPool, poolFactory ).kdtree;
+		final KDTree< O, T > kdtree = new NodeFactory< O, T >( objects, objectPool, poolFactory ).kdtree;
+		kdtree.build( objects );
+		return kdtree;
 	}
 
 	private static final class NodeFactory<
@@ -86,10 +88,9 @@ public class KDTree<
 		super( initialCapacity, nodeFactory );
 		this.n = numDimensions;
 		this.objectPool = objectPool;
-		this.rootIndex = build( objects );
 	}
 
-	private int build( final Collection< O > objects )
+	private void build( final Collection< O > objects )
 	{
 		final KDTreeNode< O, T > n1 = createRef();
 		final KDTreeNode< O, T > n2 = createRef();
@@ -101,14 +102,14 @@ public class KDTree<
 		releaseRef( n1 );
 		releaseRef( n2 );
 		releaseRef( n3 );
-		return r;
+		rootIndex = r;
 	}
 
 	private final Pool< O, ? > objectPool;
 
 	private final int n;
 
-	protected final int rootIndex;
+	protected int rootIndex;
 
 	/**
 	 * Construct the tree by recursively adding nodes. The sublist of positions
@@ -264,12 +265,6 @@ public class KDTree<
 			getMemPool().swap( i, pivotIndex );
 		}
 		return i;
-	}
-
-	@Override
-	public void getByInternalPoolIndex( final int index, final KDTreeNode< O, T > node )
-	{
-		super.getByInternalPoolIndex( index, node );
 	}
 
 	@Override
