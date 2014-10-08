@@ -29,6 +29,7 @@ public class GraphImp<
 	{
 		this.vertexPool = vertexPool;
 		this.edgePool = edgePool;
+		vertexPool.linkEdgePool( edgePool );
 	}
 
 	@Override
