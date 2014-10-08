@@ -11,6 +11,7 @@ public class KDTreeNode<
 			O extends PoolObject< O, ? > & RealLocalizable,
 			T extends MappedElement >
 		extends PoolObject< KDTreeNode< O, T >, T >
+		implements RealLocalizable
 {
 	protected static final int LEFT_INDEX_OFFSET = 0;
 	protected static final int RIGHT_INDEX_OFFSET = LEFT_INDEX_OFFSET + INDEX_SIZE;
@@ -122,5 +123,37 @@ public class KDTreeNode<
 			sum += ( posd - pd ) * ( posd - pd );
 		}
 		return sum;
+	}
+
+	@Override
+	public int numDimensions()
+	{
+		return n;
+	}
+
+	@Override
+	public void localize( final float[] position )
+	{
+		for ( int d = 0; d < n; ++d )
+			position[ d ] = ( float ) getPosition( d );
+	}
+
+	@Override
+	public void localize( final double[] position )
+	{
+		for ( int d = 0; d < n; ++d )
+			position[ d ] = getPosition( d );
+	}
+
+	@Override
+	public float getFloatPosition( final int d )
+	{
+		return ( float ) getPosition( d );
+	}
+
+	@Override
+	public double getDoublePosition( final int d )
+	{
+		return getPosition( d );
 	}
 }

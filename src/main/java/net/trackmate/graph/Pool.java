@@ -108,7 +108,8 @@ public class Pool< O extends PoolObject< O, T >, T extends MappedElement > imple
 		return obj;
 	}
 
-	protected void getByInternalPoolIndex( final int index, final O obj )
+	// TODO: this should not be public. provide InternalPoolAccess( Pool ) class that can be used to access it for stuff that knows what it is doing.
+	public void getByInternalPoolIndex( final int index, final O obj )
 	{
 		obj.updateAccess( memPool, index );
 	}

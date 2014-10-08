@@ -3,7 +3,6 @@ package net.trackmate.kdtree;
 import net.imglib2.RealLocalizable;
 import net.imglib2.Sampler;
 import net.imglib2.neighborsearch.NearestNeighborSearch;
-import net.trackmate.graph.Pool;
 import net.trackmate.graph.PoolObject;
 import net.trackmate.graph.mempool.MappedElement;
 
@@ -103,16 +102,14 @@ public class NearestNeighborSearchOnKDTree< O extends PoolObject< O, ? > & RealL
 		return Math.sqrt( bestSquDistance );
 	}
 
-	Pool< O, ? > pool;
-
 	@Override
 	public O get()
 	{
 		final KDTreeNode< O, T > node = tree.createRef();
 		tree.getByInternalPoolIndex( bestPointNodeIndex, node );
-		final O obj = pool.createRef();
-
-		return null;
+		final O obj = tree.getObjectPool().createRef(); // TODO: shouldn't create a new ref every time...
+		tree.getObjectPool().getByInternalPoolIndex( node.getDataIndex(), obj );
+		return obj;
 	}
 
 	@Override
