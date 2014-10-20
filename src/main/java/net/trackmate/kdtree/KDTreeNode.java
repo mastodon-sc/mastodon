@@ -90,8 +90,8 @@ public class KDTreeNode<
 		float sum = 0;
 		for ( int d = 0; d < n; ++d )
 		{
-			final double posd = getPosition( d );
-			sum += ( posd - p[ d ] ) * ( posd - p[ d ] );
+			final double diff = getPosition( d ) - p[ d ];
+			sum += diff * diff;
 		}
 		return sum;
 	}
@@ -104,8 +104,8 @@ public class KDTreeNode<
 		double sum = 0;
 		for ( int d = 0; d < n; ++d )
 		{
-			final double posd = getPosition( d );
-			sum += ( posd - p[ d ] ) * ( posd - p[ d ] );
+			final double diff = getPosition( d ) - p[ d ];
+			sum += diff * diff;
 		}
 		return sum;
 	}
@@ -118,9 +118,8 @@ public class KDTreeNode<
 		double sum = 0;
 		for ( int d = 0; d < n; ++d )
 		{
-			final double posd = getPosition( d );
-			final double pd = p.getDoublePosition( d );
-			sum += ( posd - pd ) * ( posd - pd );
+			final double diff = getPosition( d ) - p.getDoublePosition( d );
+			sum += diff * diff;
 		}
 		return sum;
 	}

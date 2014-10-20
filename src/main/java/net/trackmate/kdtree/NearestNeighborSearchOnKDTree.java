@@ -21,17 +21,21 @@ public class NearestNeighborSearchOnKDTree< O extends PoolObject< O, ? > & RealL
 
 	protected final double[] pos;
 
-	protected KDTreeNode< O, T > bestPoint;
+	private final KDTreeNode< O, T > node;
 
 	protected int bestPointNodeIndex;
 
 	protected double bestSquDistance;
+
+	protected final O obj;
 
 	public NearestNeighborSearchOnKDTree( final KDTree< O, T > tree )
 	{
 		n = tree.numDimensions();
 		pos = new double[ n ];
 		this.tree = tree;
+		this.node = tree.createRef();
+		this.obj = tree.getObjectPool().createRef();
 	}
 
 	@Override
@@ -45,10 +49,10 @@ public class NearestNeighborSearchOnKDTree< O extends PoolObject< O, ? > & RealL
 	{
 		p.localize( pos );
 		bestSquDistance = Double.MAX_VALUE;
-		searchNode( tree.createRef(), tree.rootIndex, 0 );
+		searchNode( tree.rootIndex, 0 );
 	}
 
-	protected void searchNode( final KDTreeNode< O, T > node, final int currentNodeIndex, final int d )
+	private final void searchNode( final int currentNodeIndex, final int d )
 	{
 		// consider the current node
 		tree.getByInternalPoolIndex( currentNodeIndex, node );
@@ -60,22 +64,17 @@ public class NearestNeighborSearchOnKDTree< O extends PoolObject< O, ? > & RealL
 		}
 
 		final double axisDiff = pos[ d ] - node.getPosition( d );
-		final double axisSquDistance = axisDiff * axisDiff;
 		final boolean leftIsNearBranch = axisDiff < 0;
 
-		final int dChild = ( d + 1 == n ) ? 0 : d + 1;
-
 		// search the near branch
-		final int left = node.getLeftIndex();
-		final int right = node.getRightIndex();
-		final int nearChildNodeIndex = leftIsNearBranch ? left : right;
-		final int awayChildNodeIndex = leftIsNearBranch ? right : left;
+		final int nearChildNodeIndex = leftIsNearBranch ? node.getLeftIndex() : node.getRightIndex();
+		final int awayChildNodeIndex = leftIsNearBranch ? node.getRightIndex() : node.getLeftIndex();
 		if ( nearChildNodeIndex != -1 )
-			searchNode( node, nearChildNodeIndex, dChild );
+			searchNode( nearChildNodeIndex, d + 1 == n ? 0 : d + 1 );
 
 		// search the away branch - maybe
-		if ( ( axisSquDistance <= bestSquDistance ) && ( awayChildNodeIndex != -1 ) )
-			searchNode( node, awayChildNodeIndex, dChild );
+		if ( ( awayChildNodeIndex != -1 ) && ( axisDiff * axisDiff <= bestSquDistance ) )
+			searchNode( awayChildNodeIndex, d + 1 == n ? 0 : d + 1 );
 	}
 
 	@Override
@@ -87,7 +86,8 @@ public class NearestNeighborSearchOnKDTree< O extends PoolObject< O, ? > & RealL
 	@Override
 	public RealLocalizable getPosition()
 	{
-		return bestPoint;
+		tree.getByInternalPoolIndex( bestPointNodeIndex, node );
+		return node;
 	}
 
 	@Override
@@ -105,9 +105,7 @@ public class NearestNeighborSearchOnKDTree< O extends PoolObject< O, ? > & RealL
 	@Override
 	public O get()
 	{
-		final KDTreeNode< O, T > node = tree.createRef();
 		tree.getByInternalPoolIndex( bestPointNodeIndex, node );
-		final O obj = tree.getObjectPool().createRef(); // TODO: shouldn't create a new ref every time...
 		tree.getObjectPool().getByInternalPoolIndex( node.getDataIndex(), obj );
 		return obj;
 	}

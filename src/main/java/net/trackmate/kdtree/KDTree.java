@@ -111,6 +111,100 @@ public class KDTree<
 
 	protected int rootIndex;
 
+	protected double[] doubles;
+
+	protected int doublesRootIndex;
+
+	protected void createDoubles()
+	{
+		final KDTreeNode< O, T > n1 = createRef();
+		final int nodeSizeInDoubles = n + 2;
+		doubles = new double[ size() * nodeSizeInDoubles ];
+
+		for ( int i = 0; i < size(); ++i )
+		{
+			final int doubleOffset = i * nodeSizeInDoubles;
+
+			getByInternalPoolIndex( i, n1 );
+			int left = n1.getLeftIndex();
+			if ( left != -1 )
+				left *= nodeSizeInDoubles;
+			int right = n1.getRightIndex();
+			if ( right != -1 )
+				right *= nodeSizeInDoubles;
+			final double leftright = Double.longBitsToDouble( ( ( ( long ) left ) << 32 ) | ( ( long ) right ) );
+			final double data = Double.longBitsToDouble( ( long ) n1.getDataIndex() );
+
+			for ( int d = 0; d < n; ++d )
+				doubles[ doubleOffset + d ] = n1.getDoublePosition( d );
+			doubles[ doubleOffset + n ] = leftright;
+			doubles[ doubleOffset + n + 1 ] = data;
+		}
+		doublesRootIndex = rootIndex * nodeSizeInDoubles;
+		releaseRef( n1 );
+	}
+
+	int depthfirstfill( int nextNewId, final int[] oldToNew, final int[] newToOld, final int oldId, final KDTreeNode< O, T > n1 )
+	{
+		final int newId = nextNewId++;
+		oldToNew[ oldId ] = newId;
+		newToOld[ newId ] = oldId;
+		getByInternalPoolIndex( oldId, n1 );
+		final int left = n1.getLeftIndex();
+		final int right = n1.getRightIndex();
+		if ( left != -1 )
+			nextNewId = depthfirstfill( nextNewId, oldToNew, newToOld, left, n1 );
+		if ( right != -1 )
+			nextNewId = depthfirstfill( nextNewId, oldToNew, newToOld, right, n1 );
+		return nextNewId;
+	}
+
+	protected void reorder()
+	{
+		final KDTreeNode< O, T > n1 = createRef();
+		final int[] oldToNew = new int[ size() ];
+		final int[] newToOld = new int[ size() ];
+
+//		final TIntArrayList nextLevelIds = new TIntArrayList( size() );
+//		nextLevelIds.add( rootIndex );
+//		fill( 0, nextLevelIds, oldToNew, newToOld, n1 );
+		depthfirstfill( 0, oldToNew, newToOld, rootIndex, n1 );
+
+		// TODO rename arrays
+		final int[] cur = new int[ size() ];
+		final int[] ruc = new int[ size() ];
+		for ( int i = 0; i < size(); ++i )
+		{
+			cur[ i ] = i;
+			ruc[ i ] = i;
+		}
+
+		for ( int i = 0; i < size(); ++i )
+		{
+			final int newId = i;
+			final int oldId = newToOld[ newId ];
+
+			final int curId = cur[ oldId ];
+			final int x = ruc[ newId ];
+			ruc[ newId ] = oldId;
+			ruc[ curId ] = x;
+			cur[ oldId ] = newId;
+			cur[ x ] = curId;
+
+			getMemPool().swap( newId, curId );
+
+			getByInternalPoolIndex( newId, n1 );
+			final int left = n1.getLeftIndex();
+			if ( left != -1 )
+				n1.setLeftIndex( oldToNew[ left ] );
+			final int right = n1.getRightIndex();
+			if ( right != -1 )
+				n1.setRightIndex( oldToNew[ right ] );
+		}
+
+		rootIndex = oldToNew[ rootIndex ];
+	}
+
 	/**
 	 * Construct the tree by recursively adding nodes. The sublist of positions
 	 * between indices i and j (inclusive) is split at the median element with
@@ -148,12 +242,12 @@ public class KDTree<
 			getByInternalPoolIndex( k, n1 );
 			n1.setLeftIndex( left );
 			n1.setRightIndex( right );
-
 			return k;
 		}
 		else if ( j == i )
 		{
 			// no left/right children
+			getByInternalPoolIndex( i, n1 );
 			n1.setLeftIndex( -1 );
 			n1.setRightIndex( -1 );
 			return i;
@@ -196,7 +290,7 @@ public class KDTree<
 				i = pivotpos + 1;
 			}
 			else
-				return;
+				break;
 		}
 	}
 
