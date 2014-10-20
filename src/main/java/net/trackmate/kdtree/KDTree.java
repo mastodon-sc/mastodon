@@ -6,8 +6,8 @@ import net.imglib2.EuclideanSpace;
 import net.imglib2.RealLocalizable;
 import net.trackmate.graph.Pool;
 import net.trackmate.graph.PoolObject;
-import net.trackmate.graph.mempool.ByteMappedElement;
-import net.trackmate.graph.mempool.ByteMappedElementArray;
+import net.trackmate.graph.mempool.DoubleMappedElement;
+import net.trackmate.graph.mempool.DoubleMappedElementArray;
 import net.trackmate.graph.mempool.MappedElement;
 import net.trackmate.graph.mempool.MemPool;
 import net.trackmate.graph.mempool.MemPool.Factory;
@@ -19,10 +19,10 @@ public class KDTree<
 		extends Pool< KDTreeNode< O, T >, T >
 		implements EuclideanSpace
 {
-	private static final MemPool.Factory< ByteMappedElement > defaultPoolFactory = SingleArrayMemPool.factory( ByteMappedElementArray.factory );
+	private static final MemPool.Factory< DoubleMappedElement > defaultPoolFactory = SingleArrayMemPool.factory( DoubleMappedElementArray.factory );
 
 	public static < O extends PoolObject< O, ? > & RealLocalizable >
-			KDTree< O, ByteMappedElement > kdtree( final Collection< O > objects, final Pool< O, ? > objectPool )
+			KDTree< O, DoubleMappedElement > kdtree( final Collection< O > objects, final Pool< O, ? > objectPool )
 	{
 		return kdtree( objects, objectPool, defaultPoolFactory );
 	}
