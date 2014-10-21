@@ -55,6 +55,14 @@ public class SingleArrayMemPool< A extends MappedElementArray< A, T >, T extends
 	}
 
 	/**
+	 * For internal use only!
+	 */
+	public A getDataArray()
+	{
+		return data;
+	}
+
+	/**
 	 * Create a factory for {@link SingleArrayMemPool}s that use the specified
 	 * {@code arrayFactory} for creating their storage
 	 * {@link MappedElementArray}.

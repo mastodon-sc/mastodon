@@ -108,6 +108,14 @@ public class DoubleMappedElementArray implements MappedElementArray< DoubleMappe
 	}
 
 	/**
+	 * For internal use only!
+	 */
+	public double[] getCurrentDataArray()
+	{
+		return data;
+	}
+
+	/**
 	 * A factory for {@link DoubleMappedElementArray}s.
 	 */
 	public static final MappedElementArray.Factory< DoubleMappedElementArray > factory = new MappedElementArray.Factory< DoubleMappedElementArray >()

@@ -8,7 +8,6 @@ import java.util.Random;
 
 import net.imglib2.RealLocalizable;
 import net.imglib2.RealPoint;
-import net.imglib2.util.Util;
 import net.trackmate.graph.AbstractEdge;
 import net.trackmate.graph.AbstractEdgePool;
 import net.trackmate.graph.AbstractVertex;
@@ -236,11 +235,11 @@ public class KDTreeExample
 		long start = System.currentTimeMillis();
 		final KDTree< MyVertex, DoubleMappedElement > kdtree = KDTree.kdtree( vertices, vertexPool );
 		kdtree.reorder();
-//		kdtree.createDoubles();
+		kdtree.createDoubles();
 //		kdtree.createSOA();
-		final NearestNeighborSearchOnKDTree< MyVertex, DoubleMappedElement > kd = new NearestNeighborSearchOnKDTree< MyVertex, DoubleMappedElement >( kdtree );
+//		final NearestNeighborSearchOnKDTree< MyVertex, DoubleMappedElement > kd = new NearestNeighborSearchOnKDTree< MyVertex, DoubleMappedElement >( kdtree );
 //		final NNSOA< MyVertex, ByteMappedElement > kd = new NNSOA< MyVertex, ByteMappedElement >( kdtree );
-//		final NNDoubles< MyVertex, DoubleMappedElement > kd = new NNDoubles< MyVertex, DoubleMappedElement >( kdtree );
+		final NNDoubles< MyVertex, DoubleMappedElement > kd = new NNDoubles< MyVertex, DoubleMappedElement >( kdtree );
 		final long kdSetupTime = System.currentTimeMillis() - start;
 		System.out.println( "kdtree setup took: " + ( kdSetupTime ) + " ms." );
 //		System.out.println( "rootIndex = " + kdtree.rootIndex );
@@ -256,26 +255,26 @@ public class KDTreeExample
 			testpoints.add( t );
 		}
 
-		for ( final RealPoint t : testpoints )
-		{
-			kd.search( t );
-			final RealLocalizable nnKdtree = kd.getSampler().get();
-			final RealLocalizable nnExhaustive = findNearestNeighborExhaustive( vertices, vertex, t );
-
-			boolean equal = true;
-			for ( int d = 0; d < numDimensions; ++d )
-				if ( nnKdtree.getDoublePosition( d ) != nnExhaustive.getDoublePosition( d ) )
-					equal = false;
-			if ( !equal )
-			{
-				System.out.println( "Nearest neighbor to: " + t );
-				System.out.println( "KD-Tree says: " + nnKdtree + " " + Util.printCoordinates( nnKdtree ) );
-				System.out.println( "Exhaustive says: " + nnExhaustive + " " + Util.printCoordinates( nnExhaustive ) );
-				return false;
-			}
-		}
-		final long compareTime = System.currentTimeMillis() - start;
-		System.out.println( "comparison (kdtree <-> exhaustive) search took: " + ( compareTime ) + " ms." );
+//		for ( final RealPoint t : testpoints )
+//		{
+//			kd.search( t );
+//			final RealLocalizable nnKdtree = kd.getSampler().get();
+//			final RealLocalizable nnExhaustive = findNearestNeighborExhaustive( vertices, vertex, t );
+//
+//			boolean equal = true;
+//			for ( int d = 0; d < numDimensions; ++d )
+//				if ( nnKdtree.getDoublePosition( d ) != nnExhaustive.getDoublePosition( d ) )
+//					equal = false;
+//			if ( !equal )
+//			{
+//				System.out.println( "Nearest neighbor to: " + t );
+//				System.out.println( "KD-Tree says: " + nnKdtree + " " + Util.printCoordinates( nnKdtree ) );
+//				System.out.println( "Exhaustive says: " + nnExhaustive + " " + Util.printCoordinates( nnExhaustive ) );
+//				return false;
+//			}
+//		}
+//		final long compareTime = System.currentTimeMillis() - start;
+//		System.out.println( "comparison (kdtree <-> exhaustive) search took: " + ( compareTime ) + " ms." );
 
 		start = System.currentTimeMillis();
 		for ( final RealPoint t : testpoints )
@@ -286,16 +285,16 @@ public class KDTreeExample
 		}
 		final long kdTime = System.currentTimeMillis() - start;
 		System.out.println( "kdtree search took: " + ( kdTime ) + " ms." );
-		System.out.println( "kdtree all together took: " + ( kdSetupTime + kdTime ) + " ms." );
-
-		start = System.currentTimeMillis();
-		for ( final RealPoint t : testpoints )
-		{
-			final RealLocalizable nnExhaustive = findNearestNeighborExhaustive( vertices, vertex, t );
-			nnExhaustive.getClass();
-		}
-		final long exhaustiveTime = System.currentTimeMillis() - start;
-		System.out.println( "exhaustive search took: " + ( exhaustiveTime ) + " ms." );
+//		System.out.println( "kdtree all together took: " + ( kdSetupTime + kdTime ) + " ms." );
+//
+//		start = System.currentTimeMillis();
+//		for ( final RealPoint t : testpoints )
+//		{
+//			final RealLocalizable nnExhaustive = findNearestNeighborExhaustive( vertices, vertex, t );
+//			nnExhaustive.getClass();
+//		}
+//		final long exhaustiveTime = System.currentTimeMillis() - start;
+//		System.out.println( "exhaustive search took: " + ( exhaustiveTime ) + " ms." );
 
 		return true;
 	}
@@ -330,8 +329,9 @@ public class KDTreeExample
 
 	public static void main( final String[] args )
 	{
-		if ( KDTreeExample.testNearestNeighborSearch( 100000, 1000, -5, 5 ) )
-			System.out.println( "Nearest neighbor test successful\n" );
+		for ( int i = 0; i < 20; ++i )
+		if ( KDTreeExample.testNearestNeighborSearch( 100000, 1000, -5, 5 ) );
+//			System.out.println( "Nearest neighbor test successful\n" );
 
 //		KDTreeExample.testBuild( 1000000, -5, 5 );
 //		KDTreeExample.testNearestNeighborSearch( 100000, 1000, -5, 5 );

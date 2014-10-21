@@ -117,8 +117,21 @@ public class KDTree<
 
 	protected void createDoubles()
 	{
-		final KDTreeNode< O, T > n1 = createRef();
 		final int nodeSizeInDoubles = n + 2;
+		doublesRootIndex = rootIndex * nodeSizeInDoubles;
+
+		if ( this.getMemPool() instanceof SingleArrayMemPool )
+		{
+			final SingleArrayMemPool< ?, ? > mempool = ( SingleArrayMemPool< ?, ? > ) this.getMemPool();
+			if ( mempool.getDataArray() instanceof DoubleMappedElementArray )
+			{
+				final DoubleMappedElementArray doublearray = ( DoubleMappedElementArray ) mempool.getDataArray();
+				doubles = doublearray.getCurrentDataArray();
+				return;
+			}
+		}
+
+		final KDTreeNode< O, T > n1 = createRef();
 		doubles = new double[ size() * nodeSizeInDoubles ];
 
 		for ( int i = 0; i < size(); ++i )
@@ -140,7 +153,6 @@ public class KDTree<
 			doubles[ doubleOffset + n ] = leftright;
 			doubles[ doubleOffset + n + 1 ] = data;
 		}
-		doublesRootIndex = rootIndex * nodeSizeInDoubles;
 		releaseRef( n1 );
 	}
 

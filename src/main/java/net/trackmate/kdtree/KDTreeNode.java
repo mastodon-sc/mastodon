@@ -2,6 +2,9 @@ package net.trackmate.kdtree;
 
 import static net.trackmate.graph.mempool.ByteUtils.DOUBLE_SIZE;
 import static net.trackmate.graph.mempool.ByteUtils.INDEX_SIZE;
+
+import java.nio.ByteOrder;
+
 import net.imglib2.RealLocalizable;
 import net.trackmate.graph.Pool;
 import net.trackmate.graph.PoolObject;
@@ -13,37 +16,54 @@ public class KDTreeNode<
 		extends PoolObject< KDTreeNode< O, T >, T >
 		implements RealLocalizable
 {
-	protected static final int LEFT_INDEX_OFFSET = 0;
-	protected static final int RIGHT_INDEX_OFFSET = LEFT_INDEX_OFFSET + INDEX_SIZE;
-	protected static final int DATA_INDEX_OFFSET = RIGHT_INDEX_OFFSET + INDEX_SIZE;
-	protected static final int POS_INDEX_OFFSET = DATA_INDEX_OFFSET + INDEX_SIZE;
-
 	private final int n;
+
+	private final int POS_INDEX_OFFSET;
+	private final int LEFT_INDEX_OFFSET;
+	private final int RIGHT_INDEX_OFFSET;
+	private final int DATA_INDEX_OFFSET;
+
+	private final int sizeInDoubles;
 
 	public KDTreeNode( final Pool< KDTreeNode< O, T >, T > pool, final int numDimensions )
 	{
 		super( pool );
-		this.n = numDimensions;
+		n = numDimensions;
+		POS_INDEX_OFFSET = 0;
+		if ( java.nio.ByteOrder.nativeOrder() == ByteOrder.LITTLE_ENDIAN )
+		{
+			RIGHT_INDEX_OFFSET = POS_INDEX_OFFSET + n * DOUBLE_SIZE;
+			LEFT_INDEX_OFFSET = RIGHT_INDEX_OFFSET + INDEX_SIZE;
+			DATA_INDEX_OFFSET = LEFT_INDEX_OFFSET + INDEX_SIZE;
+			sizeInDoubles = ( DATA_INDEX_OFFSET + 2 * INDEX_SIZE ) / DOUBLE_SIZE;
+		}
+		else
+		{
+			LEFT_INDEX_OFFSET = POS_INDEX_OFFSET + n * DOUBLE_SIZE;
+			RIGHT_INDEX_OFFSET = LEFT_INDEX_OFFSET + INDEX_SIZE;
+			DATA_INDEX_OFFSET = RIGHT_INDEX_OFFSET + 2 * INDEX_SIZE;
+			sizeInDoubles = ( DATA_INDEX_OFFSET + INDEX_SIZE ) / DOUBLE_SIZE;
+		}
 	}
 
 	protected int getLeftIndex()
 	{
-		return access.getIndex( LEFT_INDEX_OFFSET );
+		return access.getIndex( LEFT_INDEX_OFFSET ) / sizeInDoubles;
 	}
 
 	protected void setLeftIndex( final int index )
 	{
-		access.putIndex( index, LEFT_INDEX_OFFSET );
+		access.putIndex( index * sizeInDoubles, LEFT_INDEX_OFFSET );
 	}
 
 	protected int getRightIndex()
 	{
-		return access.getIndex( RIGHT_INDEX_OFFSET );
+		return access.getIndex( RIGHT_INDEX_OFFSET ) / sizeInDoubles;
 	}
 
 	protected void setRightIndex( final int index )
 	{
-		access.putIndex( index, RIGHT_INDEX_OFFSET );
+		access.putIndex( index * sizeInDoubles, RIGHT_INDEX_OFFSET );
 	}
 
 	protected int getDataIndex()
@@ -79,7 +99,7 @@ public class KDTreeNode<
 
 	protected static int sizeInBytes( final int n )
 	{
-		return POS_INDEX_OFFSET + n * DOUBLE_SIZE;
+		return 4 * INDEX_SIZE + n * DOUBLE_SIZE;
 	}
 
 	/**
