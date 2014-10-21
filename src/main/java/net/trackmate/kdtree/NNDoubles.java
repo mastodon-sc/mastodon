@@ -40,7 +40,7 @@ public class NNDoubles< O extends PoolObject< O, ? > & RealLocalizable, T extend
 		this.tree = tree;
 		this.doubles = tree.doubles;
 		this.obj = tree.getObjectPool().createRef();
-		final int depth = 18; // TODO: get this from the KDTree
+		final int depth = ( int ) ( Math.log( tree.size() ) / Math.log( 2 ) ) + 2;
 		axisDiffs = new double[ depth ];
 		awayChildNodeIndices = new int[ depth ];
 		ds = new int[ depth ];
