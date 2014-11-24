@@ -56,7 +56,7 @@ public class KDTreeTest
 		for ( int i = 0; i < numTestVertices; ++i )
 		{
 			for ( int d = 0; d < n; ++d )
-				p[ d ] = rnd.nextDouble() * size + minCoordinateValue;
+				p[ d ] = rnd.nextDouble() * 2 * size + minCoordinateValue - size / 2;
 			vertexPool.create( vertex );
 			vertex.setPosition( p );
 			testVertices.add( vertex );
