@@ -12,22 +12,24 @@ import net.trackmate.graph.mempool.MappedElement;
  *
  * @author Tobias Pietzsch
  */
-public class NearestNeighborSearchOnKDTree< O extends PoolObject< O, ? > & RealLocalizable, T extends MappedElement >
+public final class NearestNeighborSearchOnKDTree< O extends PoolObject< O, ? > & RealLocalizable, T extends MappedElement >
 	implements NearestNeighborSearch< O >, Sampler< O >
 {
-	protected KDTree< O, T > tree;
+	private final KDTree< O, T > tree;
 
-	protected final int n;
+	private final int n;
 
-	protected final double[] pos;
+	private final double[] pos;
 
 	private final KDTreeNode< O, T > node;
 
-	protected int bestPointNodeIndex;
+	private int bestPointNodeIndex;
 
-	protected double bestSquDistance;
+	private double bestSquDistance;
 
-	protected final O obj;
+	private final O obj;
+
+	private final FastDoubleSearch fastDoubleSearch;
 
 	public NearestNeighborSearchOnKDTree( final KDTree< O, T > tree )
 	{
@@ -36,6 +38,7 @@ public class NearestNeighborSearchOnKDTree< O extends PoolObject< O, ? > & RealL
 		this.tree = tree;
 		this.node = tree.createRef();
 		this.obj = tree.getObjectPool().createRef();
+		this.fastDoubleSearch = ( tree.getDoubles() != null ) ? new FastDoubleSearch( tree ) : null;
 	}
 
 	@Override
@@ -47,9 +50,18 @@ public class NearestNeighborSearchOnKDTree< O extends PoolObject< O, ? > & RealL
 	@Override
 	public void search( final RealLocalizable p )
 	{
-		p.localize( pos );
-		bestSquDistance = Double.MAX_VALUE;
-		searchNode( tree.rootIndex, 0 );
+		if ( fastDoubleSearch != null )
+		{
+			fastDoubleSearch.search( p );
+			bestPointNodeIndex = fastDoubleSearch.getBestPointNodeIndex();
+			bestSquDistance = fastDoubleSearch.getBestSquDistance();
+		}
+		else
+		{
+			p.localize( pos );
+			bestSquDistance = Double.MAX_VALUE;
+			searchNode( tree.rootIndex, 0 );
+		}
 	}
 
 	private final void searchNode( final int currentNodeIndex, final int d )
@@ -113,7 +125,116 @@ public class NearestNeighborSearchOnKDTree< O extends PoolObject< O, ? > & RealL
 	@Override
 	public NearestNeighborSearchOnKDTree< O, T > copy()
 	{
-		// TODO Auto-generated method stub
-		return null;
+		final NearestNeighborSearchOnKDTree< O, T > copy = new NearestNeighborSearchOnKDTree< O, T >( tree );
+		System.arraycopy( pos, 0, copy.pos, 0, pos.length );
+		copy.bestPointNodeIndex = bestPointNodeIndex;
+		copy.bestSquDistance = bestSquDistance;
+		return copy;
+	}
+
+	private static final class FastDoubleSearch
+	{
+		private final int n;
+
+		private final int nodeSizeInDoubles;
+
+		private final double[] pos;
+
+		private int bestIndex;
+
+		private double bestSquDistance;
+
+		private final double[] doubles;
+
+		private final int doublesRootIndex;
+
+		private final double[] axisDiffs;
+
+		private final int[] awayChildNodeIndices;
+
+		private final int[] ds;
+
+		FastDoubleSearch( final KDTree< ?, ? > tree )
+		{
+			n = tree.numDimensions();
+			nodeSizeInDoubles = n + 2;
+			final int depth = ( int ) ( Math.log( tree.size() ) / Math.log( 2 ) ) + 2;
+			pos = new double[ n ];
+			doubles = tree.getDoubles();
+			doublesRootIndex = tree.rootIndex * nodeSizeInDoubles;
+			axisDiffs = new double[ depth ];
+			awayChildNodeIndices = new int[ depth ];
+			ds = new int[ depth ];
+			for ( int i = 0; i < depth; ++i )
+				ds[ i ] = i % n;
+		}
+
+		void search( final RealLocalizable p )
+		{
+			p.localize( pos );
+			int currentIndex = doublesRootIndex;
+			int depth = 0;
+			double bestSquDistanceL = Double.MAX_VALUE;
+			int bestIndexL = 0;
+			while ( true )
+			{
+				final double distance = squDistance( currentIndex );
+				if ( distance < bestSquDistanceL )
+				{
+					bestSquDistanceL = distance;
+					bestIndexL = currentIndex;
+				}
+
+				final int d = ds[ depth ];
+				final double axisDiff = pos[ d ] - doubles[ currentIndex + d ];
+				final boolean leftIsNearBranch = axisDiff < 0;
+
+				final long leftright = Double.doubleToRawLongBits( doubles[ currentIndex + n ] );
+				final int left = ( int ) ( leftright >> 32 );
+				final int right = ( int ) ( leftright & 0xffffffff );
+
+				// search the near branch
+				final int nearChildNodeIndex = leftIsNearBranch ? left : right;
+				final int awayChildNodeIndex = leftIsNearBranch ? right : left;
+				++depth;
+				awayChildNodeIndices[ depth ] = awayChildNodeIndex;
+				axisDiffs[ depth ] = axisDiff * axisDiff;
+				if ( nearChildNodeIndex < 0 )
+				{
+					while ( awayChildNodeIndices[ depth ] < 0 || axisDiffs[ depth ] > bestSquDistanceL )
+						if ( --depth == 0 )
+						{
+							bestSquDistance = bestSquDistanceL;
+							bestIndex = bestIndexL;
+							return;
+						}
+					currentIndex = awayChildNodeIndices[ depth ];
+					awayChildNodeIndices[ depth ] = -1;
+				}
+				else
+					currentIndex = nearChildNodeIndex;
+			}
+		}
+
+		int getBestPointNodeIndex()
+		{
+			return bestIndex / nodeSizeInDoubles;
+		}
+
+		double getBestSquDistance()
+		{
+			return bestSquDistance;
+		}
+
+		private final double squDistance( final int index )
+		{
+			double sum = 0;
+			for ( int d = 0; d < n; ++d )
+			{
+				final double diff = ( pos[ d ] - doubles[ index + d ] );
+				sum += diff * diff;
+			}
+			return sum;
+		}
 	}
 }

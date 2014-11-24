@@ -1,153 +1,27 @@
 package net.trackmate.kdtree;
 
-import static net.trackmate.graph.mempool.ByteUtils.DOUBLE_SIZE;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 import java.util.Random;
 
 import net.imglib2.RealLocalizable;
-import net.trackmate.graph.AbstractEdge;
-import net.trackmate.graph.AbstractEdgePool;
-import net.trackmate.graph.AbstractVertex;
-import net.trackmate.graph.AbstractVertexPool;
-import net.trackmate.graph.PoolObject;
 import net.trackmate.graph.PoolObjectList;
 import net.trackmate.graph.mempool.ByteMappedElement;
 import net.trackmate.graph.mempool.ByteMappedElementArray;
 import net.trackmate.graph.mempool.DoubleMappedElement;
-import net.trackmate.graph.mempool.MemPool;
 import net.trackmate.graph.mempool.SingleArrayMemPool;
+import net.trackmate.kdtree.RealLocalizableVertices.MyVertex;
+import net.trackmate.kdtree.RealLocalizableVertices.MyVertexPool;
 
 import org.junit.Before;
 import org.junit.Test;
 
 public class KDTreeTest
 {
-	static class MyVertex extends AbstractVertex< MyVertex, MyEdge, ByteMappedElement > implements RealLocalizable
-	{
-		protected static final int X_OFFSET = AbstractVertex.SIZE_IN_BYTES;
+	final int numDataVertices = 10000;
 
-		protected static final int Y_OFFSET = X_OFFSET + DOUBLE_SIZE;
-
-		protected static final int Z_OFFSET = Y_OFFSET + DOUBLE_SIZE;
-
-		protected static final int SIZE_IN_BYTES = Z_OFFSET + DOUBLE_SIZE;
-
-		protected MyVertex( final AbstractVertexPool< MyVertex, ?, ByteMappedElement > pool )
-		{
-			super( pool );
-		}
-
-		private final int n = 3;
-
-		// === subset of RealPositionable ===
-
-		public void setPosition( final RealLocalizable localizable )
-		{
-			for ( int d = 0; d < n; ++d )
-				access.putDouble( localizable.getDoublePosition( d ), X_OFFSET + d * DOUBLE_SIZE );
-		}
-
-		public void setPosition( final double[] position )
-		{
-			for ( int d = 0; d < n; ++d )
-				access.putDouble( position[ d ], X_OFFSET + d * DOUBLE_SIZE );
-		}
-
-		public void setPosition( final double position, final int d )
-		{
-			access.putDouble( position, X_OFFSET + d * DOUBLE_SIZE );
-		}
-
-		// === RealLocalizable ===
-
-		@Override
-		public int numDimensions()
-		{
-			return n;
-		}
-
-		@Override
-		public void localize( final float[] position )
-		{
-			for ( int d = 0; d < n; ++d )
-				position[ d ] = ( float ) access.getDouble( X_OFFSET + d * DOUBLE_SIZE );
-		}
-
-		@Override
-		public void localize( final double[] position )
-		{
-			for ( int d = 0; d < n; ++d )
-				position[ d ] = access.getDouble( X_OFFSET + d * DOUBLE_SIZE );
-		}
-
-		@Override
-		public float getFloatPosition( final int d )
-		{
-			return ( float ) getDoublePosition( d );
-		}
-
-		@Override
-		public double getDoublePosition( final int d )
-		{
-			return access.getDouble( X_OFFSET + d * DOUBLE_SIZE );
-		}
-	}
-
-	static class MyEdge extends AbstractEdge< MyEdge, MyVertex, ByteMappedElement >
-	{
-		protected static final int SIZE_IN_BYTES = AbstractEdge.SIZE_IN_BYTES;
-
-		protected MyEdge( final AbstractEdgePool< MyEdge, MyVertex, ByteMappedElement > pool )
-		{
-			super( pool );
-		}
-	}
-
-	static class MyVertexPool extends AbstractVertexPool< MyVertex, MyEdge, ByteMappedElement >
-	{
-		public MyVertexPool( final int initialCapacity )
-		{
-			this( initialCapacity, new MyVertexFactory() );
-		}
-
-		private MyVertexPool( final int initialCapacity, final MyVertexFactory f )
-		{
-			super( initialCapacity, f );
-			f.vertexPool = this;
-		}
-
-		static class MyVertexFactory implements PoolObject.Factory< MyVertex, ByteMappedElement >
-		{
-			private MyVertexPool vertexPool;
-
-			@Override
-			public int getSizeInBytes()
-			{
-				return MyVertex.SIZE_IN_BYTES;
-			}
-
-			@Override
-			public MyVertex createEmptyRef()
-			{
-				return new MyVertex( vertexPool );
-			}
-
-			@Override
-			public MemPool.Factory< ByteMappedElement > getMemPoolFactory()
-			{
-				return SingleArrayMemPool.factory( ByteMappedElementArray.factory );
-			}
-		};
-	}
-
-	// TODO: make test KDTree vs. exhaustive
-	// Reduce MyVertex etc to barest minimum
-
-	final int numDataVertices = 100000;
-
-	final int numTestVertices = 1000;
+	final int numTestVertices = 100;
 
 	final double minCoordinateValue = -5.0;
 
@@ -199,6 +73,8 @@ public class KDTreeTest
 	}
 
 	/**
+	 * Find nearest neighbor by exhaustive search. For verification of KDTree results
+	 *
 	 * @param nearest
 	 *            is returned, referencing the nearest data point to t.
 	 * @param t
@@ -246,11 +122,10 @@ public class KDTreeTest
 	}
 
 	@Test
-	public void testNearestNeighborSearchDouble()
+	public void testNearestNeighborSearchBytes()
 	{
-		final KDTree< MyVertex, DoubleMappedElement > kdtree = KDTree.kdtree( dataVertices, vertexPool );
-		kdtree.createDoubles();
-		final NNDoubles< MyVertex, DoubleMappedElement > kd = new NNDoubles< MyVertex, DoubleMappedElement >( kdtree );
+		final KDTree< MyVertex, ByteMappedElement > kdtree = KDTree.kdtree( dataVertices, vertexPool, SingleArrayMemPool.factory( ByteMappedElementArray.factory ) );
+		final NearestNeighborSearchOnKDTree< MyVertex, ByteMappedElement > kd = new NearestNeighborSearchOnKDTree< MyVertex, ByteMappedElement >( kdtree );
 		final MyVertex nnExhaustive = vertexPool.createRef();
 		for ( final RealLocalizable t : testVertices )
 		{

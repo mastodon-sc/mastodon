@@ -109,112 +109,20 @@ public class KDTree<
 
 	private final int n;
 
-	protected int rootIndex;
+	int rootIndex;
 
-	protected double[] doubles;
-
-	protected int doublesRootIndex;
-
-	protected void createDoubles()
+	double[] getDoubles()
 	{
-		final int nodeSizeInDoubles = n + 2;
-		doublesRootIndex = rootIndex * nodeSizeInDoubles;
-
 		if ( this.getMemPool() instanceof SingleArrayMemPool )
 		{
 			final SingleArrayMemPool< ?, ? > mempool = ( SingleArrayMemPool< ?, ? > ) this.getMemPool();
 			if ( mempool.getDataArray() instanceof DoubleMappedElementArray )
 			{
 				final DoubleMappedElementArray doublearray = ( DoubleMappedElementArray ) mempool.getDataArray();
-				doubles = doublearray.getCurrentDataArray();
-				return;
+				return doublearray.getCurrentDataArray();
 			}
 		}
-
-		final KDTreeNode< O, T > n1 = createRef();
-		doubles = new double[ size() * nodeSizeInDoubles ];
-
-		for ( int i = 0; i < size(); ++i )
-		{
-			final int doubleOffset = i * nodeSizeInDoubles;
-
-			getByInternalPoolIndex( i, n1 );
-			int left = n1.getLeftIndex();
-			if ( left != -1 )
-				left *= nodeSizeInDoubles;
-			int right = n1.getRightIndex();
-			if ( right != -1 )
-				right *= nodeSizeInDoubles;
-			final double leftright = Double.longBitsToDouble( ( ( ( long ) left ) << 32 ) | ( ( long ) right ) );
-			final double data = Double.longBitsToDouble( ( long ) n1.getDataIndex() );
-
-			for ( int d = 0; d < n; ++d )
-				doubles[ doubleOffset + d ] = n1.getDoublePosition( d );
-			doubles[ doubleOffset + n ] = leftright;
-			doubles[ doubleOffset + n + 1 ] = data;
-		}
-		releaseRef( n1 );
-	}
-
-	int depthfirstfill( int nextNewId, final int[] oldToNew, final int[] newToOld, final int oldId, final KDTreeNode< O, T > n1 )
-	{
-		final int newId = nextNewId++;
-		oldToNew[ oldId ] = newId;
-		newToOld[ newId ] = oldId;
-		getByInternalPoolIndex( oldId, n1 );
-		final int left = n1.getLeftIndex();
-		final int right = n1.getRightIndex();
-		if ( left != -1 )
-			nextNewId = depthfirstfill( nextNewId, oldToNew, newToOld, left, n1 );
-		if ( right != -1 )
-			nextNewId = depthfirstfill( nextNewId, oldToNew, newToOld, right, n1 );
-		return nextNewId;
-	}
-
-	protected void reorder()
-	{
-		final KDTreeNode< O, T > n1 = createRef();
-		final int[] oldToNew = new int[ size() ];
-		final int[] newToOld = new int[ size() ];
-
-//		final TIntArrayList nextLevelIds = new TIntArrayList( size() );
-//		nextLevelIds.add( rootIndex );
-//		fill( 0, nextLevelIds, oldToNew, newToOld, n1 );
-		depthfirstfill( 0, oldToNew, newToOld, rootIndex, n1 );
-
-		// TODO rename arrays
-		final int[] cur = new int[ size() ];
-		final int[] ruc = new int[ size() ];
-		for ( int i = 0; i < size(); ++i )
-		{
-			cur[ i ] = i;
-			ruc[ i ] = i;
-		}
-
-		for ( int i = 0; i < size(); ++i )
-		{
-			final int newId = i;
-			final int oldId = newToOld[ newId ];
-
-			final int curId = cur[ oldId ];
-			final int x = ruc[ newId ];
-			ruc[ newId ] = oldId;
-			ruc[ curId ] = x;
-			cur[ oldId ] = newId;
-			cur[ x ] = curId;
-
-			getMemPool().swap( newId, curId );
-
-			getByInternalPoolIndex( newId, n1 );
-			final int left = n1.getLeftIndex();
-			if ( left != -1 )
-				n1.setLeftIndex( oldToNew[ left ] );
-			final int right = n1.getRightIndex();
-			if ( right != -1 )
-				n1.setRightIndex( oldToNew[ right ] );
-		}
-
-		rootIndex = oldToNew[ rootIndex ];
+		return null;
 	}
 
 	/**
