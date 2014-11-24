@@ -320,7 +320,7 @@ public class KDTreeExample
 		}
 
 		final long start = System.currentTimeMillis();
-		final net.imglib2.collection.KDTree< RealPoint > kdTree = new net.imglib2.collection.KDTree< RealPoint >( points, points );
+		final net.imglib2.KDTree< RealPoint > kdTree = new net.imglib2.KDTree< RealPoint >( points, points );
 		final net.imglib2.neighborsearch.NearestNeighborSearchOnKDTree< RealPoint > kd = new net.imglib2.neighborsearch.NearestNeighborSearchOnKDTree< RealPoint >( kdTree );
 		final long kdSetupTime = System.currentTimeMillis() - start;
 		System.out.println( "kdtree setup took: " + ( kdSetupTime ) + " ms. (imglib)" );
