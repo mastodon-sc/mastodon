@@ -11,7 +11,7 @@ public class Pool< O extends PoolObject< O, T >, T extends MappedElement > imple
 {
 	private final PoolObject.Factory< O, T > objFactory;
 
-	final MemPool< T > memPool;
+	private final MemPool< T > memPool;
 
 	private final ConcurrentLinkedQueue< O > tmpObjRefs = new ConcurrentLinkedQueue< O >();
 
