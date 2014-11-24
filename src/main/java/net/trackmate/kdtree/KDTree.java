@@ -13,6 +13,16 @@ import net.trackmate.graph.mempool.MemPool;
 import net.trackmate.graph.mempool.MemPool.Factory;
 import net.trackmate.graph.mempool.SingleArrayMemPool;
 
+/**
+ * KDTree of {@link RealLocalizable} {@link PoolObject PoolObjects}.
+ *
+ * @param <O>
+ *            type of objects stored in the tree.
+ * @param <T>
+ *            the MappedElement type of the {@link KDTreeNode tree nodes}.
+ *
+ * @author Tobias Pietzsch
+ */
 public class KDTree<
 			O extends PoolObject< O, ? > & RealLocalizable,
 			T extends MappedElement >
@@ -21,12 +31,34 @@ public class KDTree<
 {
 	private static final MemPool.Factory< DoubleMappedElement > defaultPoolFactory = SingleArrayMemPool.factory( DoubleMappedElementArray.factory );
 
+	/**
+	 * Build a KDTree of the given {@code objects}. The KDTree is stored in a
+	 * {@link SingleArrayMemPool} of {@link DoubleMappedElement}s.
+	 *
+	 * @param objects
+	 *            objects to build tree from.
+	 * @param objectPool
+	 *            the pool that contains the {@code objects}.
+	 * @return the tree.
+	 */
 	public static < O extends PoolObject< O, ? > & RealLocalizable >
 			KDTree< O, DoubleMappedElement > kdtree( final Collection< O > objects, final Pool< O, ? > objectPool )
 	{
 		return kdtree( objects, objectPool, defaultPoolFactory );
 	}
 
+	/**
+	 * Build a KDTree of the given {@code objects}.
+	 *
+	 * @param objects
+	 *            objects to build tree from.
+	 * @param objectPool
+	 *            the pool that contains the {@code objects}.
+	 * @param poolFactory
+	 *            The {@link MemPool.Factory} that should be used to create
+	 *            storage for {@link KDTreeNode nodes}
+	 * @return the tree.
+	 */
 	public static < O extends PoolObject< O, ? > & RealLocalizable, T extends MappedElement >
 			KDTree< O, T > kdtree( final Collection< O > objects, final Pool< O, ? > objectPool, final MemPool.Factory< T > poolFactory )
 	{
@@ -78,6 +110,12 @@ public class KDTree<
 		}
 	};
 
+	private final Pool< O, ? > objectPool;
+
+	private final int n;
+
+	int rootIndex;
+
 	private KDTree(
 			final int initialCapacity,
 			final NodeFactory< O, T > nodeFactory,
@@ -105,11 +143,11 @@ public class KDTree<
 		rootIndex = r;
 	}
 
-	private final Pool< O, ? > objectPool;
-
-	private final int n;
-
-	int rootIndex;
+	@Override
+	public int numDimensions()
+	{
+		return n;
+	}
 
 	double[] getDoubles()
 	{
@@ -125,28 +163,33 @@ public class KDTree<
 		return null;
 	}
 
+	Pool< O, ? > getObjectPool()
+	{
+		return objectPool;
+	}
+
 	/**
-	 * Construct the tree by recursively adding nodes. The sublist of positions
-	 * between indices i and j (inclusive) is split at the median element with
-	 * respect to coordinates in the given dimension d. The median becomes the
-	 * new node which is returned. The left and right partitions of the sublist
-	 * are processed recursively and form the left and right subtrees of the
-	 * node.
+	 * Construct the tree by recursively adding nodes. The sublist of
+	 * {@link KDTreeNode elements} between indices i and j (inclusive) is split
+	 * at the median element with respect to coordinates in the given dimension
+	 * d. The median becomes the new node which is returned. The left and right
+	 * partitions of the sublist are processed recursively and form the left and
+	 * right subtrees of the node.
 	 *
-	 * @param positions
-	 *            list of positions
 	 * @param i
 	 *            start index of sublist to process
 	 * @param j
 	 *            end index of sublist to process
 	 * @param d
 	 *            dimension along which to split the sublist
-	 * @param values
-	 *            list of values corresponding to permuted positions
-	 * @param permutation
-	 *            the index of the values element at index k is permutation[k]
-	 * @return a new node containing the subtree of the given sublist of
-	 *         positions.
+	 * @param n1
+	 *            temporary {@link KDTreeNode} reference.
+	 * @param n2
+	 *            temporary {@link KDTreeNode} reference.
+	 * @param n3
+	 *            temporary {@link KDTreeNode} reference.
+	 * @return index of the constructed node containing the subtree of the given
+	 *         sublist of positions.
 	 */
 	private int makeNode( final int i, final int j, final int d, final KDTreeNode< O, T > n1, final KDTreeNode< O, T > n2, final KDTreeNode< O, T > n3 )
 	{
@@ -179,20 +222,28 @@ public class KDTree<
 	}
 
 	/**
-	 * Partition a sublist of {@code values} such that the k-th smallest value
-	 * is at position {@code k}, elements before the k-th are smaller or equal
-	 * and elements after the k-th are larger or equal.
+	 * Partition a sublist of KDTreeNodes such that the k-th smallest value is
+	 * at position {@code k}, elements before the k-th are smaller or equal and
+	 * elements after the k-th are larger or equal. Elements are compared by
+	 * their coordinate in the specified dimension.s
+	 *
+	 * Note, that is is assumed that the {@link KDTreeNode}s are stored with
+	 * consecutive indices in the pool.
 	 *
 	 * @param i
-	 *            index of first element of subarray
+	 *            index of first element of the sublist
 	 * @param j
-	 *            index of last element of subarray
+	 *            index of last element of the sublist
 	 * @param k
 	 *            index for k-th smallest value. i <= k <= j.
-	 * @param values
-	 *            array
-	 * @param compare
-	 *            ordering function on T
+	 * @param compare_d
+	 *            dimension by which to compare.
+	 * @param pivot
+	 *            temporary {@link KDTreeNode} reference.
+	 * @param ti
+	 *            temporary {@link KDTreeNode} reference.
+	 * @param tj
+	 *            temporary {@link KDTreeNode} reference.
 	 */
 	private void kthElement( int i, int j, final int k, final int compare_d, final KDTreeNode< O, T > pivot, final KDTreeNode< O, T > ti, final KDTreeNode< O, T > tj )
 	{
@@ -215,21 +266,29 @@ public class KDTree<
 	}
 
 	/**
-	 * Partition a sublist of {@code values}.
+	 * Partition a sublist of KDTreeNodes by their coordinate in the specified
+	 * dimension.
 	 *
 	 * The element at index {@code j} is taken as the pivot value. The elements
 	 * {@code [i,j]} are reordered, such that all elements before the pivot are
 	 * smaller and all elements after the pivot are equal or larger than the
 	 * pivot. The index of the pivot element is returned.
 	 *
+	 * Note, that is is assumed that the {@link KDTreeNode}s are stored with
+	 * consecutive indices in the pool.
+	 *
 	 * @param i
 	 *            index of first element of the sublist
 	 * @param j
 	 *            index of last element of the sublist
-	 * @param values
-	 *            the list
-	 * @param compare
-	 *            ordering function on T
+	 * @param compare_d
+	 *            dimension by which to order the sublist
+	 * @param pivot
+	 *            temporary {@link KDTreeNode} reference.
+	 * @param ti
+	 *            temporary {@link KDTreeNode} reference.
+	 * @param tj
+	 *            temporary {@link KDTreeNode} reference.
 	 * @return index of pivot element
 	 */
 	private int partitionSubList( int i, int j, final int compare_d, final KDTreeNode< O, T > pivot, final KDTreeNode< O, T > ti, final KDTreeNode< O, T > tj )
@@ -279,16 +338,5 @@ public class KDTree<
 			getMemPool().swap( i, pivotIndex );
 		}
 		return i;
-	}
-
-	@Override
-	public int numDimensions()
-	{
-		return n;
-	}
-
-	public Pool< O, ? > getObjectPool()
-	{
-		return objectPool;
 	}
 }
