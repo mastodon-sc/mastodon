@@ -6,7 +6,7 @@ package net.trackmate.graph.mempool;
  *
  * <p>
  * Contract: A {@link DoubleMappedElement} may be used on different
- * {@link ByteMappedElementArray}s but they all must have the same
+ * {@link DoubleMappedElementArray}s but they all must have the same
  * bytesPerElement.
  *
  * @author Tobias Pietzsch <tobias.pietzsch@gmail.com>
@@ -150,7 +150,7 @@ public class DoubleMappedElement implements MappedElement
 
 	/**
 	 * Two {@link DoubleMappedElement} are equal if they refer to the same index
-	 * in the same {@link ByteMappedElementArray}.
+	 * in the same {@link DoubleMappedElementArray}.
 	 */
 	@Override
 	public boolean equals( final Object obj )
