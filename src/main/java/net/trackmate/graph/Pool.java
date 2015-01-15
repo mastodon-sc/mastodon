@@ -3,10 +3,25 @@ package net.trackmate.graph;
 import java.util.Iterator;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
+import net.trackmate.graph.mempool.ByteMappedElement;
 import net.trackmate.graph.mempool.MappedElement;
 import net.trackmate.graph.mempool.MemPool;
 import net.trackmate.graph.mempool.MemPool.PoolIterator;
 
+/**
+ * A pool of {@link PoolObject PoolObjects} all stored in a common
+ * {@link MemPool}. Provides methods to {@link #createRef() create} and
+ * {@link #releaseRef(PoolObject) release} proxy objects.
+ * The pool can be {@link #iterator() iterated}.
+ *
+ * @param <O>
+ *            type of {@link PoolObject} stored in this {@link Pool}.
+ * @param <T>
+ *            the MappedElement type of the {@link PoolObject}, for example
+ *            {@link ByteMappedElement}.
+ *
+ * @author Tobias Pietzsch <tobias.pietzsch@gmail.com>
+ */
 public class Pool< O extends PoolObject< O, T >, T extends MappedElement > implements Iterable< O >
 {
 	private final PoolObject.Factory< O, T > objFactory;
@@ -23,11 +38,23 @@ public class Pool< O extends PoolObject< O, T >, T extends MappedElement > imple
 		this.memPool = objFactory.getMemPoolFactory().createPool( initialCapacity, objFactory.getSizeInBytes() );
 	}
 
+	/**
+	 * Remove all objects from the pool.
+	 *
+	 * <p>
+	 * Note, that existing proxies refer to invalid data after calling this method!
+	 */
 	public void clear()
 	{
 		memPool.clear();
 	}
 
+	/**
+	 * Returns the pool size, that is, how many objects the pool currently
+	 * contains.
+	 *
+	 * @return the pool size.
+	 */
 	public int size()
 	{
 		return memPool.size();
