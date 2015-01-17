@@ -32,6 +32,14 @@ public class GraphImp<
 		vertexPool.linkEdgePool( edgePool );
 	}
 
+	@SuppressWarnings( "unchecked" )
+	public GraphImp( final EP edgePool )
+	{
+		this.vertexPool = ( VP ) edgePool.vertexPool;
+		this.edgePool = edgePool;
+		vertexPool.linkEdgePool( edgePool );
+	}
+
 	@Override
 	public V addVertex()
 	{
