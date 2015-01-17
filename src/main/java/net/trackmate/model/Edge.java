@@ -9,7 +9,7 @@ import net.trackmate.model.AdditionalFeatures.Feature;
 public class Edge extends AbstractEdge< Edge, Spot, ByteMappedElement >
 {
 	protected static final int WEIGHT_OFFSET = AbstractEdge.SIZE_IN_BYTES;
-	protected static final int SIZE_IN_BYTES = WEIGHT_OFFSET +  + DOUBLE_SIZE;
+	protected static final int SIZE_IN_BYTES = WEIGHT_OFFSET + DOUBLE_SIZE;
 
 	private final AdditionalFeatures additionalFeatures;
 
