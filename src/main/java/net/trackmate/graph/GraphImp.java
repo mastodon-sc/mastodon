@@ -21,6 +21,17 @@ public class GraphImp<
 		return new GraphImp< VP, EP, V, E, T >( vertexPool, edgePool );
 	}
 
+	public static <
+			VP extends AbstractVertexPool< V, E, T >,
+			EP extends AbstractEdgePool< E, V, T >,
+			V extends AbstractVertex< V, E, T >,
+			E extends AbstractEdge< E, V, T >,
+			T extends MappedElement >
+	GraphImp< VP, EP, V, E, T > create( final EP edgePool )
+	{
+		return new GraphImp< VP, EP, V, E, T >( edgePool );
+	}
+
 	protected final VP vertexPool;
 
 	protected final EP edgePool;

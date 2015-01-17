@@ -113,6 +113,6 @@ public class MinimalGraphExample
 		final int initialCapacity = 1000;
 		final MyVertexPool vertexPool = new MyVertexPool( initialCapacity );
 		final MyEdgePool edgePool = new MyEdgePool( initialCapacity, vertexPool );
-		final Graph< MyVertex, MyEdge > graph = GraphImp.create( vertexPool, edgePool );
+		final Graph< MyVertex, MyEdge > graph = GraphImp.create( edgePool );
 	}
 }
