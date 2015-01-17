@@ -19,6 +19,8 @@ public interface Edges< E extends Edge< ? > > extends Iterable< E >
 	 */
 	public int size();
 
+	public boolean isEmpty();
+
 	/**
 	 * Get the <em>i</em>th edge in this list.
 	 *

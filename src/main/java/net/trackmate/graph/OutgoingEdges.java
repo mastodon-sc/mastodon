@@ -39,6 +39,12 @@ public class OutgoingEdges< E extends AbstractEdge< E, ?, ? > > implements Edges
 	}
 
 	@Override
+	public boolean isEmpty()
+	{
+		return vertex.getFirstOutEdgeIndex() < 0;
+	}
+
+	@Override
 	public E get( final int i )
 	{
 		return get( i, edgePool.createRef() );
