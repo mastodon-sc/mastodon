@@ -52,7 +52,7 @@ public abstract class PoolObject< O extends PoolObject< O, T >, T extends Mapped
 	 * @param pool
 	 *            the {@link MemPool} where derived classes store their data.
 	 */
-	public PoolObject( final Pool< O, T > pool )
+	protected PoolObject( final Pool< O, T > pool )
 	{
 		this.creatingPool = pool;
 		this.memPool = pool.getMemPool();
