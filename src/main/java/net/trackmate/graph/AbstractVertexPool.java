@@ -31,11 +31,6 @@ public class AbstractVertexPool<
 		return vertex;
 	}
 
-	public V create()
-	{
-		return create( createRef() );
-	}
-
 	@Override
 	public V create( final V vertex )
 	{

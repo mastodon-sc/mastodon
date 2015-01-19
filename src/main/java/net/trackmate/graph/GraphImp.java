@@ -54,7 +54,7 @@ public class GraphImp<
 	@Override
 	public V addVertex()
 	{
-		return vertexPool.create();
+		return vertexPool.create( vertexRef() );
 	}
 
 	@Override
@@ -66,7 +66,7 @@ public class GraphImp<
 	@Override
 	public E addEdge( final V source, final V target )
 	{
-		return edgePool.addEdge( source, target );
+		return edgePool.addEdge( source, target, edgeRef() );
 	}
 
 	@Override
@@ -78,7 +78,7 @@ public class GraphImp<
 	@Override
 	public E getEdge( final V source, final V target )
 	{
-		return edgePool.getEdge( source, target );
+		return edgePool.getEdge( source, target, edgeRef() );
 	}
 
 	@Override

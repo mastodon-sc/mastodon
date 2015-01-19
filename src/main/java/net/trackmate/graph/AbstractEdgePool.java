@@ -19,13 +19,6 @@ public class AbstractEdgePool<
 		this.vertexPool = vertexPool;
 	}
 
-	// TODO: remove
-	public E addEdge( final AbstractVertex< ?, ?, ? > source, final AbstractVertex< ?, ?, ? > target )
-	{
-		return addEdge( source, target, createRef() );
-	}
-
-	// garbage-free version
 	public E addEdge( final AbstractVertex< ?, ?, ? > source, final AbstractVertex< ?, ?, ? > target, final E edge )
 	{
 		if ( getEdge( source, target, edge ) != null )
@@ -79,13 +72,6 @@ public class AbstractEdgePool<
 		return edge;
 	}
 
-	// TODO: remove
-	public E getEdge( final AbstractVertex< ?, ?, ? > source, final AbstractVertex< ?, ?, ? > target )
-	{
-		return getEdge( source, target, createRef() );
-	}
-
-	// garbage-free version
 	public E getEdge( final AbstractVertex< ?, ?, ? > source, final AbstractVertex< ?, ?, ? > target, final E edge )
 	{
 		int nextSourceEdgeIndex = source.getFirstOutEdgeIndex();

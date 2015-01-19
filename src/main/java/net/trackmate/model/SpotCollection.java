@@ -114,7 +114,7 @@ public class SpotCollection implements Iterable< Spot >
 
 	public Spot createSpot()
 	{
-		return spotPool.create();
+		return spotPool.create( spotPool.createRef() );
 	}
 
 	// garbage-free version
@@ -165,7 +165,7 @@ public class SpotCollection implements Iterable< Spot >
 
 	public Edge getEdge( final Spot source, final Spot target )
 	{
-		return edgePool.getEdge( source, target );
+		return edgePool.getEdge( source, target, edgePool.createRef() );
 	}
 
 	// garbage-free version
@@ -176,7 +176,7 @@ public class SpotCollection implements Iterable< Spot >
 
 	public Edge addEdge( final Spot source, final Spot target )
 	{
-		return edgePool.addEdge( source, target );
+		return edgePool.addEdge( source, target, edgePool.createRef() );
 	}
 
 	// garbage-free version
