@@ -6,7 +6,7 @@ public class AbstractEdgePool<
 			E extends AbstractEdge< E, V, T >,
 			V extends AbstractVertex< V, ?, ? >,
 			T extends MappedElement >
-		extends Pool< E, T > implements Iterable< E >
+		extends Pool< E, T >
 {
 	final AbstractVertexPool< V, ?, ? > vertexPool;
 
