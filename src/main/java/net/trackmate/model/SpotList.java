@@ -24,6 +24,6 @@ public class SpotList extends PoolObjectList< Spot, ByteMappedElement >
 	@Override
 	public SpotList subList( final int fromIndex, final int toIndex )
 	{
-		return new SpotList( this, getIndexCollection().subList( fromIndex, fromIndex ) );
+		return new SpotList( this, getIndexCollection().subList( fromIndex, toIndex ) );
 	}
 }
