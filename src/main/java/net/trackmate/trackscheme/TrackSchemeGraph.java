@@ -169,7 +169,7 @@ public class TrackSchemeGraph extends GraphImp< TrackSchemeGraph.TrackSchemeVert
 		System.out.println( graph );
 		System.out.println();
 
-		final LineageTreeLayout< TrackSchemeVertex, TrackSchemeEdge > layout = new LineageTreeLayout< TrackSchemeVertex, TrackSchemeEdge >( graph );
+		final LineageTreeLayout layout = new LineageTreeLayout( graph );
 		layout.reset();
 		layout.layoutX( v1 );
 		System.out.println( graph );

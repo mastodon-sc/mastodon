@@ -2,16 +2,13 @@ package net.trackmate.trackscheme;
 
 import java.util.Iterator;
 
-import net.trackmate.graph.Edge;
-import net.trackmate.graph.Graph;
-
-public class LineageTreeLayout< V extends TrackSchemeVertexI< V, E >, E extends Edge< V > >
+public class LineageTreeLayout
 {
 	private double rightmost;
 
-	private final Graph< V, E > graph;
+	private final TrackSchemeGraph graph;
 
-	public LineageTreeLayout( final Graph< V, E > graph )
+	public LineageTreeLayout( final TrackSchemeGraph graph )
 	{
 		this.graph = graph;
 		rightmost = 0;
@@ -25,15 +22,15 @@ public class LineageTreeLayout< V extends TrackSchemeVertexI< V, E >, E extends 
 	public void layoutX()
 	{
 		reset();
-		final TrackSchemeVertexList roots = VertexOrder.getRoots( ( TrackSchemeGraph ) graph );
+		final TrackSchemeVertexList roots = VertexOrder.getRoots( graph );
 		roots.getIndexCollection().sort();
 		// TODO sort roots by something meaningful...
 
 		for ( final TrackSchemeVertex root : roots )
-			layoutX( (V) root );
+			layoutX( root );
 	}
 
-	public void layoutX( final V v )
+	public void layoutX( final TrackSchemeVertex v )
 	{
 		if ( v.outgoingEdges().isEmpty() )
 		{
@@ -42,8 +39,8 @@ public class LineageTreeLayout< V extends TrackSchemeVertexI< V, E >, E extends 
 		}
 		else
 		{
-			final V child = graph.vertexRef();
-			final Iterator< E > iterator = v.outgoingEdges().iterator();
+			final TrackSchemeVertex child = graph.vertexRef();
+			final Iterator< TrackSchemeEdge > iterator = v.outgoingEdges().iterator();
 			layoutX( iterator.next().getTarget( child ) );
 			final double firstChildX = child.getLayoutX();
 			if ( iterator.hasNext() )

@@ -219,7 +219,7 @@ public class VertexOrder
 		final TrackSchemeVertex v4 = graph.addVertex().init( "4", 0, false );;
 		final TrackSchemeVertex v5 = graph.addVertex().init( "5", 0, false );;
 
-		final LineageTreeLayout< TrackSchemeVertex, TrackSchemeEdge > layout = new LineageTreeLayout< TrackSchemeVertex, TrackSchemeEdge >( graph );
+		final LineageTreeLayout layout = new LineageTreeLayout( graph );
 		layout.reset();
 		layout.layoutX();
 		System.out.println( graph );
