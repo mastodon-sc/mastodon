@@ -22,6 +22,17 @@ public class LineageTreeLayout< V extends TrackSchemeVertexI< V, E >, E extends 
 		rightmost = 0;
 	}
 
+	public void layoutX()
+	{
+		reset();
+		final TrackSchemeVertexList roots = VertexOrder.getRoots( ( TrackSchemeGraph ) graph );
+		roots.getIndexCollection().sort();
+		// TODO sort roots by something meaningful...
+
+		for ( final TrackSchemeVertex root : roots )
+			layoutX( (V) root );
+	}
+
 	public void layoutX( final V v )
 	{
 		if ( v.outgoingEdges().isEmpty() )
