@@ -22,9 +22,7 @@ public class LineageTreeLayout
 	public void layoutX()
 	{
 		reset();
-		final TrackSchemeVertexList roots = VertexOrder.getRoots( graph );
-		roots.getIndexCollection().sort();
-		// TODO sort roots by something meaningful...
+		final TrackSchemeVertexList roots = VertexOrder.getOrderedRoots( graph );
 
 		for ( final TrackSchemeVertex root : roots )
 			layoutX( root );
