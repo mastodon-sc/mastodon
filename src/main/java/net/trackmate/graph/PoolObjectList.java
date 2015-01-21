@@ -119,7 +119,7 @@ public class PoolObjectList< O extends PoolObject< O, T >, T extends MappedEleme
 
 	public O get( final int index, final O obj )
 	{
-		obj.updateAccess( pool.getMemPool(), index );
+		obj.updateAccess( pool.getMemPool(), indices.get( index ) );
 		return obj;
 	}
 
