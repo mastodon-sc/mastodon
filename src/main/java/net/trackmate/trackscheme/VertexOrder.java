@@ -1,5 +1,8 @@
 package net.trackmate.trackscheme;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import gnu.trove.iterator.TIntIterator;
 import gnu.trove.list.array.TIntArrayList;
 import gnu.trove.map.hash.TIntObjectHashMap;
@@ -33,6 +36,23 @@ public class VertexOrder
 
 		for ( final TrackSchemeVertex root : roots )
 			build( root );
+	}
+
+	public void print()
+	{
+		final TIntIterator iter = timepoints.iterator();
+		while ( iter.hasNext() )
+		{
+			final int timepoint = iter.next();
+			System.out.println( "tp = " + timepoint );
+			final TrackSchemeVertexList vertexList = timepointToOrderedVertices.get( timepoint );
+			for ( final TrackSchemeVertex vertex : vertexList )
+			{
+				System.out.print( vertex.getId() + ":" + vertex.getLayoutX() + " " );
+			}
+			System.out.println();
+			System.out.println();
+		}
 	}
 
 	private void build( final TrackSchemeVertex v )
@@ -73,109 +93,39 @@ public class VertexOrder
 
 	public double getMinX( final int timepoint )
 	{
-		// TODO reuse vetex ref?
-		final TrackSchemeVertex vertex = graph.vertexRef();
-		double min = Double.MAX_VALUE;
-		if ( getMinVertex( timepoint, vertex ) != null )
-			min = vertex.getLayoutX();
-		graph.releaseRef( vertex );
-		return min;
+		final TrackSchemeVertexList vlist = timepointToOrderedVertices.get( timepoint );
+		return vlist == null ? Double.POSITIVE_INFINITY : vlist.getMinLayoutX();
 	}
 
 	public double getMaxX( final int timepoint )
 	{
-		// TODO reuse vetex ref?
-		final TrackSchemeVertex vertex = graph.vertexRef();
-		double max = Double.MIN_VALUE;
-		if ( getMaxVertex( timepoint, vertex ) != null )
-			max = vertex.getLayoutX();
-		graph.releaseRef( vertex );
-		return max;
+		final TrackSchemeVertexList vlist = timepointToOrderedVertices.get( timepoint );
+		return vlist == null ? Double.NEGATIVE_INFINITY : vlist.getMaxLayoutX();
 	}
 
 	public double getMinX()
 	{
-		// TODO reuse vetex ref?
-		final TrackSchemeVertex vertex = graph.vertexRef();
-		double min = Double.MAX_VALUE;
+		double min = Double.POSITIVE_INFINITY;
 		final TIntIterator iter = timepoints.iterator();
 		while ( iter.hasNext() )
 		{
 			final int timepoint = iter.next();
-			if ( getMinVertex( timepoint, vertex ) != null )
-				min = Math.min( min, vertex.getLayoutX() );
+			min = Math.min( min, getMinX( timepoint ) );
 		}
-		graph.releaseRef( vertex );
 		return min;
 	}
 
 	public double getMaxX()
 	{
-		// TODO reuse vetex ref?
-		final TrackSchemeVertex vertex = graph.vertexRef();
-		double max = Double.MIN_VALUE;
+		double max = Double.NEGATIVE_INFINITY;
 		final TIntIterator iter = timepoints.iterator();
 		while ( iter.hasNext() )
 		{
 			final int timepoint = iter.next();
-			if ( getMaxVertex( timepoint, vertex ) != null )
-				max = Math.max( max, vertex.getLayoutX() );
+			max = Math.max( max, getMaxX( timepoint ) );
 		}
-		graph.releaseRef( vertex );
 		return max;
 	}
-
-	public double getMinDistance( final double minX, final double maxX, final int timepoint )
-	{
-		// TODO
-		return 0;
-	}
-
-	public double getMinDistance( final TrackSchemeVertex first, final TrackSchemeVertex last, final int timepoint )
-	{
-		// TODO
-		return 0;
-	}
-
-	public double getMinDistance( final int firstIndex, final int lastIndex, final int timepoint )
-	{
-		// TODO
-		return 0;
-	}
-
-
-	// TODO add binarySearch, min, max, etc to TrackSchemeVertexList !?
-
-	// find largest index of vertex with vertex.getLayoutX() <= layoutX
-    public int binarySearch( final double layoutX, final int fromIndex, final int toIndex, final int timepoint ) {
-		final TrackSchemeVertexList vlist = timepointToOrderedVertices.get( timepoint );
-		if ( vlist == null )
-            throw new ArrayIndexOutOfBoundsException( timepoint );
-		if ( fromIndex < 0 )
-            throw new ArrayIndexOutOfBoundsException( fromIndex );
-        if ( toIndex > vlist.size() )
-            throw new ArrayIndexOutOfBoundsException( toIndex );
-
-        int low = fromIndex;
-        int high = toIndex - 1;
-
-		final TrackSchemeVertex vertex = graph.vertexRef();
-		while ( low <= high )
-		{
-			final int mid = ( low + high ) >>> 1;
-			final double midX = vlist.get( mid, vertex ).getLayoutX();
-
-			System.out.println( "low=" + low + " mid=" + mid + " high=" + high );
-			if ( midX <= layoutX )
-				low = mid + 1;
-			else
-				high = mid - 1;
-			System.out.println( "low=" + low + " mid=" + mid + " high=" + high );
-			System.out.println();
-		}
-		graph.releaseRef( vertex );
-		return low;
-    }
 
 	public int getMinTimepoint()
 	{
@@ -193,6 +143,47 @@ public class VertexOrder
 			return timepoints.get( timepoints.size() - 1 );
 	}
 
+	public List< ScreenVertex > cropAndScale( final double minX, final double maxX, final double minY, final double maxY, final int screenWidth, final int screenHeight )
+	{
+		final TrackSchemeVertex v1 = graph.vertexRef();
+		final ArrayList< ScreenVertex > screenVertices = new ArrayList< ScreenVertex >();
+
+		final double yScale = ( double ) ( screenHeight - 1 ) / ( maxY - minY );
+		final double xScale = ( double ) ( screenWidth - 1 ) / ( maxX - minX );
+
+		final TIntIterator iter = timepoints.iterator();
+		while ( iter.hasNext() )
+		{
+			final int timepoint = iter.next();
+			if ( timepoint + 1 >= minY && timepoint - 1 <= maxY )
+			{
+				System.out.println( "use timepoint " + timepoint );
+
+				final TrackSchemeVertexList vertexList = timepointToOrderedVertices.get( timepoint );
+				int minIndex = vertexList.binarySearch( minX );
+				minIndex--;
+				if ( minIndex < 0 )
+					minIndex = 0;
+				int maxIndex = vertexList.binarySearch( maxX, minIndex, vertexList.size() );
+				if ( maxIndex < vertexList.size() - 1 )
+					maxIndex++;
+				for ( int i = minIndex; i <= maxIndex; ++i )
+				{
+					vertexList.get( i, v1 );
+					final int id = v1.getInternalPoolIndex();
+					final double x = ( v1.getLayoutX() - minX ) * xScale;
+					final double y = ( v1.getTimePoint() - minY ) * yScale;
+					final String label = v1.getLabel();
+					final boolean selected = false;
+					final ScreenVertex sv = new ScreenVertex( id, x, y, label, selected );
+					screenVertices.add( sv );
+				}
+			}
+		}
+		graph.releaseRef( v1 );
+		return screenVertices;
+	}
+
 	public static TrackSchemeVertexList getOrderedRoots( final TrackSchemeGraph graph )
 	{
 		final TrackSchemeVertexList roots = new TrackSchemeVertexList( graph );
@@ -203,34 +194,5 @@ public class VertexOrder
 		}
 		roots.getIndexCollection().sort(); // TODO sort roots by something meaningful...
 		return roots;
-	}
-
-	public static void main( final String[] args )
-	{
-		final TrackSchemeGraph graph = new TrackSchemeGraph();
-
-		final TrackSchemeVertex v0 = graph.addVertex().init( "0", 0, false );
-		final TrackSchemeVertex v1 = graph.addVertex().init( "1", 0, false );
-		final TrackSchemeVertex v2 = graph.addVertex().init( "2", 0, false );;
-		final TrackSchemeVertex v3 = graph.addVertex().init( "3", 0, false );;
-		final TrackSchemeVertex v4 = graph.addVertex().init( "4", 0, false );;
-		final TrackSchemeVertex v5 = graph.addVertex().init( "5", 0, false );;
-
-		final LineageTreeLayout layout = new LineageTreeLayout( graph );
-		layout.reset();
-		layout.layoutX();
-		System.out.println( graph );
-
-		final VertexOrder order = new VertexOrder( graph );
-		order.build();
-		final TrackSchemeVertexList vlist = order.timepointToOrderedVertices.get( 0 );
-		for ( final TrackSchemeVertex v : vlist )
-		{
-			System.out.print( v.getLayoutX() + "  " );
-		}
-		System.out.println();
-		System.out.println();
-
-		order.binarySearch( 4.1, 0, vlist.size(), 0 );
 	}
 }
