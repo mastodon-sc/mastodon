@@ -1,5 +1,6 @@
 package net.trackmate.trackscheme;
 
+import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
@@ -16,37 +17,40 @@ public class GraphLayoutOverlay implements OverlayRenderer
 
 	private int height;
 
+	private ScreenEntities entities;
+
+	private  List< ScreenEdge > edges;
+
 	private List< ScreenVertex > vertices;
 
 	@Override
-	public void drawOverlays( final Graphics g )
+	public synchronized void drawOverlays( final Graphics g )
 	{
 		final Graphics2D g2 = ( Graphics2D ) g;
-		if ( vertices != null )
+		final ScreenEntities ent = entities;
+		if ( ent != null )
 		{
-			for ( final ScreenVertex vertex : vertices )
+			edges = ent.edges;
+			vertices = ent.vertices;
+			if ( edges != null )
 			{
-				drawVertex( g2, vertex );
+				for ( final ScreenEdge edge : edges )
+				{
+					drawEdge( g2, edge );
+				}
+			}
+			if ( vertices != null )
+			{
+				for ( final ScreenVertex vertex : vertices )
+				{
+//					drawVertex( g2, vertex );
+//					drawVertexSimplified( g2, vertex );
+				}
 			}
 		}
-//		test( g2, 100, 100, 12379 );
 	}
 
 	final Font font = new Font( "SansSerif", Font.PLAIN, 9 );
-
-	private void test( final Graphics2D g2, final double x, final double y, final int id )
-	{
-		final double spotradius = 10.0;
-		g2.drawOval( ( int ) ( x - spotradius ), ( int ) ( y - spotradius ), ( int ) ( 2 * spotradius ), ( int ) ( 2 * spotradius ) );
-
-		final String text = Integer.toString( id );
-		final FontRenderContext frc = g2.getFontRenderContext();
-		final TextLayout layout = new TextLayout( text, font, frc );
-		final Rectangle2D bounds = layout.getBounds();
-		final float tx = ( float ) ( x - bounds.getCenterX() );
-		final float ty = ( float ) ( y - bounds.getCenterY() );
-		layout.draw( g2, tx, ty );
-	}
 
 	private void drawVertex( final Graphics2D g2, final ScreenVertex vertex )
 	{
@@ -56,6 +60,9 @@ public class GraphLayoutOverlay implements OverlayRenderer
 		final double y = vertex.getY();
 		final String label = vertex.getLabel();
 
+		g2.setColor( Color.WHITE );
+		g2.fillOval( ( int ) ( x - spotradius ), ( int ) ( y - spotradius ), ( int ) ( 2 * spotradius ), ( int ) ( 2 * spotradius ) );
+		g2.setColor( Color.BLACK );
 		g2.drawOval( ( int ) ( x - spotradius ), ( int ) ( y - spotradius ), ( int ) ( 2 * spotradius ), ( int ) ( 2 * spotradius ) );
 
 		final FontRenderContext frc = g2.getFontRenderContext();
@@ -64,6 +71,22 @@ public class GraphLayoutOverlay implements OverlayRenderer
 		final float tx = ( float ) ( x - bounds.getCenterX() );
 		final float ty = ( float ) ( y - bounds.getCenterY() );
 		layout.draw( g2, tx, ty );
+	}
+
+	private void drawVertexSimplified( final Graphics2D g2, final ScreenVertex vertex )
+	{
+		final double spotradius = 2.0;
+		final double x = vertex.getX();
+		final double y = vertex.getY();
+		g2.setColor( Color.BLACK );
+		g2.fillOval( ( int ) ( x - spotradius ), ( int ) ( y - spotradius ), ( int ) ( 2 * spotradius ), ( int ) ( 2 * spotradius ) );
+	}
+
+	private void drawEdge( final Graphics2D g2, final ScreenEdge edge )
+	{
+		final ScreenVertex vs = vertices.get( edge.getSourceScreenVertexIndex() );
+		final ScreenVertex vt = vertices.get( edge.getTargetScreenVertexIndex() );
+		g2.drawLine( ( int ) vs.getX(), ( int ) vs.getY(), ( int ) vt.getX(), ( int ) vt.getY() );
 	}
 
 	@Override
@@ -83,8 +106,8 @@ public class GraphLayoutOverlay implements OverlayRenderer
 		return height;
 	}
 
-	public void setVertices( final List< ScreenVertex > vertices )
+	public void setScreenEntities( final ScreenEntities entities )
 	{
-		this.vertices = vertices;
+		this.entities = entities;
 	}
 }

@@ -1,8 +1,6 @@
 package net.trackmate.trackscheme;
 
 import java.util.ArrayList;
-import java.util.List;
-
 import gnu.trove.iterator.TIntIterator;
 import gnu.trove.list.array.TIntArrayList;
 import gnu.trove.map.hash.TIntObjectHashMap;
@@ -143,9 +141,10 @@ public class VertexOrder
 			return timepoints.get( timepoints.size() - 1 );
 	}
 
-	public List< ScreenVertex > cropAndScale( final double minX, final double maxX, final double minY, final double maxY, final int screenWidth, final int screenHeight )
+	public ScreenEntities cropAndScale( final double minX, final double maxX, final double minY, final double maxY, final int screenWidth, final int screenHeight )
 	{
 		final TrackSchemeVertex v1 = graph.vertexRef();
+		final TrackSchemeVertex v2 = graph.vertexRef();
 		final ArrayList< ScreenVertex > screenVertices = new ArrayList< ScreenVertex >();
 
 		final double yScale = ( double ) ( screenHeight - 1 ) / ( maxY - minY );
@@ -157,7 +156,7 @@ public class VertexOrder
 			final int timepoint = iter.next();
 			if ( timepoint + 1 >= minY && timepoint - 1 <= maxY )
 			{
-				System.out.println( "use timepoint " + timepoint );
+//				System.out.println( "use timepoint " + timepoint );
 
 				final TrackSchemeVertexList vertexList = timepointToOrderedVertices.get( timepoint );
 				int minIndex = vertexList.binarySearch( minX );
@@ -170,6 +169,7 @@ public class VertexOrder
 				for ( int i = minIndex; i <= maxIndex; ++i )
 				{
 					vertexList.get( i, v1 );
+					v1.setScreenVertexIndex( screenVertices.size() );
 					final int id = v1.getInternalPoolIndex();
 					final double x = ( v1.getLayoutX() - minX ) * xScale;
 					final double y = ( v1.getTimePoint() - minY ) * yScale;
@@ -180,8 +180,31 @@ public class VertexOrder
 				}
 			}
 		}
+
+		final ArrayList< ScreenEdge > screenEdges = new ArrayList< ScreenEdge >();
+		for ( final ScreenVertex sv : screenVertices )
+		{
+			graph.getVertexPool().getByInternalPoolIndex( sv.getId(), v1 );
+			for ( final TrackSchemeEdge edge : v1.outgoingEdges() )
+			{
+				edge.getTarget( v2 );
+				final int v2si = v2.getScreenVertexIndex();
+				if ( v2si < screenVertices.size() && screenVertices.get( v2si ).getId() == v2.getInternalPoolIndex() )
+				{
+					final int id = edge.getInternalPoolIndex();
+					final int sourceScreenVertexIndex = v1.getScreenVertexIndex();
+					final int targetScreenVertexIndex = v2si;
+					final boolean selected = false;
+					final ScreenEdge se = new ScreenEdge( id, sourceScreenVertexIndex, targetScreenVertexIndex, selected );
+					screenEdges.add( se );
+				}
+			}
+		}
+
 		graph.releaseRef( v1 );
-		return screenVertices;
+		graph.releaseRef( v2 );
+
+		return new ScreenEntities( screenVertices, screenEdges );
 	}
 
 	public static TrackSchemeVertexList getOrderedRoots( final TrackSchemeGraph graph )

@@ -12,6 +12,10 @@ public interface TrackSchemeVertexI< V extends TrackSchemeVertexI< V, E >, E ext
 
 	public int getTimePoint();
 
+	public int getScreenVertexIndex();
+
+	public void setScreenVertexIndex( final int screenVertexIndex );
+
 	public double getLayoutX();
 
 	public void setLayoutX( double x );

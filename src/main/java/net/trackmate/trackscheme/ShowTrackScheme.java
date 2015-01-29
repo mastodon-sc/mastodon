@@ -4,32 +4,73 @@ import java.awt.BorderLayout;
 import java.awt.GraphicsConfiguration;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.util.List;
-
 import javax.swing.JFrame;
 
-import net.imglib2.realtransform.AffineTransform2D;
 import net.imglib2.ui.InteractiveDisplayCanvasComponent;
 import net.imglib2.ui.PainterThread;
-import net.imglib2.ui.TransformEventHandler2D;
+import net.imglib2.ui.TransformListener;
 import net.imglib2.ui.util.GuiUtil;
 
-public class ShowTrackScheme
+public class ShowTrackScheme implements TransformListener< ScreenTransform >
 {
+	final TrackSchemeGraph graph;
+
+	final LineageTreeLayout layout;
+
+	final VertexOrder order;
+
 	final GraphLayoutOverlay overlay;
 
 	final MyFrame frame;
 
-	public ShowTrackScheme()
+	public ShowTrackScheme( final TrackSchemeGraph graph )
 	{
+		this.graph = graph;
+
+		layout = new LineageTreeLayout( graph );
+		layout.reset();
+		layout.layoutX();
+//		System.out.println( graph );
+
+		order = new VertexOrder( graph );
+		order.build();
+//		order.print();
+
 		overlay = new GraphLayoutOverlay();
-		final InteractiveDisplayCanvasComponent< AffineTransform2D > canvas = new InteractiveDisplayCanvasComponent< AffineTransform2D >( 800, 600, TransformEventHandler2D.factory() );
+		overlay.setCanvasSize( 800, 600 );
+
+		final InteractiveDisplayCanvasComponent< ScreenTransform > canvas = new InteractiveDisplayCanvasComponent< ScreenTransform >( 800, 600, ScreenTransform.ScreenTransformEventHandler.factory() );
+		final double minY = order.getMinTimepoint() - 0.5;
+		final double maxY = order.getMaxTimepoint() + 0.5;
+		final double minX = order.getMinX() - 1.0;
+		final double maxX = order.getMaxX() + 1.0;
+		final int w = overlay.getWidth();
+		final int h = overlay.getHeight();
+		canvas.getTransformEventHandler().setTransform( new ScreenTransform( minX, maxX, minY, maxY, w, h ) );
+		canvas.getTransformEventHandler().setTransformListener( this );
+
 		frame = new MyFrame( "trackscheme", GuiUtil.getSuitableGraphicsConfiguration( GuiUtil.RGB_COLOR_MODEL ) );
 		frame.getContentPane().add( canvas, BorderLayout.CENTER );
 		frame.pack();
 		frame.setVisible( true );
-
 		canvas.addOverlayRenderer( overlay );
+
+//		transformChanged( canvas.getTransformEventHandler().getTransform() );
+	}
+
+	@Override
+	public void transformChanged( final ScreenTransform transform )
+	{
+//		System.out.println( "transformChanged" );
+		final double minX = transform.minX;
+		final double maxX = transform.maxX;
+		final double minY = transform.minY;
+		final double maxY = transform.maxY;
+		final int w = transform.screenWidth;
+		final int h = transform.screenHeight;
+		final ScreenEntities entities = order.cropAndScale( minX, maxX, minY, maxY, w, h );
+		overlay.setScreenEntities( entities );
+		frame.repaint();
 	}
 
 	static class MyFrame extends JFrame implements PainterThread.Paintable
@@ -76,27 +117,6 @@ public class ShowTrackScheme
 		graph.addEdge( v1, v3 );
 		graph.addEdge( v4, v5 );
 
-		final LineageTreeLayout layout = new LineageTreeLayout( graph );
-		layout.reset();
-		layout.layoutX();
-		System.out.println( graph );
-
-		final VertexOrder order = new VertexOrder( graph );
-		order.build();
-		order.print();
-
-		final double minY = order.getMinTimepoint() - 0.5;
-		final double maxY = order.getMaxTimepoint() + 0.5;
-		final double minX = order.getMinX() - 1.0;
-		final double maxX = order.getMaxX() + 1.0;
-
-		final ShowTrackScheme showTrackScheme = new ShowTrackScheme();
-		final int w = showTrackScheme.overlay.getWidth();
-		final int h = showTrackScheme.overlay.getHeight();
-
-		final List< ScreenVertex > vertices = order.cropAndScale( minX, maxX, minY, maxY, w, h );
-		showTrackScheme.overlay.setVertices( vertices );
-		showTrackScheme.frame.repaint();
+		final ShowTrackScheme showTrackScheme = new ShowTrackScheme( graph );
 	}
-
 }
