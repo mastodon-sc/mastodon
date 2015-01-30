@@ -1,6 +1,6 @@
 package net.trackmate.model;
 
-import gnu.trove.list.TIntList;
+import gnu.trove.list.array.TIntArrayList;
 import net.trackmate.graph.PoolObjectList;
 import net.trackmate.graph.mempool.ByteMappedElement;
 
@@ -16,7 +16,7 @@ public class EdgeList extends PoolObjectList< Edge, ByteMappedElement >
 		super( c.edgePool, initialCapacity );
 	}
 
-	protected EdgeList( final EdgeList list, final TIntList indexSubList )
+	protected EdgeList( final EdgeList list, final TIntArrayList indexSubList )
 	{
 		super( list, indexSubList );
 	}
@@ -24,6 +24,6 @@ public class EdgeList extends PoolObjectList< Edge, ByteMappedElement >
 	@Override
 	public EdgeList subList( final int fromIndex, final int toIndex )
 	{
-		return new EdgeList( this, getIndexCollection().subList( fromIndex, fromIndex ) );
+		return new EdgeList( this, ( TIntArrayList ) getIndexCollection().subList( fromIndex, fromIndex ) );
 	}
 }

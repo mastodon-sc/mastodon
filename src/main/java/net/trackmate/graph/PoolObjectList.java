@@ -2,7 +2,6 @@ package net.trackmate.graph;
 
 import gnu.trove.TIntCollection;
 import gnu.trove.iterator.TIntIterator;
-import gnu.trove.list.TIntList;
 import gnu.trove.list.array.TIntArrayList;
 
 import java.util.Collection;
@@ -17,7 +16,7 @@ import net.trackmate.graph.mempool.MemPool;
 
 public class PoolObjectList< O extends PoolObject< O, T >, T extends MappedElement > implements PoolObjectCollection< O, T >, List< O >
 {
-	private final TIntList indices;
+	private final TIntArrayList indices;
 
 	private final Pool< O, T > pool;
 
@@ -33,14 +32,24 @@ public class PoolObjectList< O extends PoolObject< O, T >, T extends MappedEleme
 		indices = new TIntArrayList( initialCapacity );
 	}
 
-	protected PoolObjectList( final PoolObjectList< O, T > list, final TIntList indexSubList )
+	protected PoolObjectList( final PoolObjectList< O, T > list, final TIntArrayList indexSubList )
 	{
 		pool = list.pool;
 		indices = indexSubList;
 	}
 
+	public O createRef()
+	{
+		return pool.createRef();
+	}
+
+	public void releaseRef( final O obj )
+	{
+		pool.releaseRef( obj );
+	}
+
 	@Override
-	public TIntList getIndexCollection()
+	public TIntArrayList getIndexCollection()
 	{
 		return indices;
 	}
@@ -93,6 +102,16 @@ public class PoolObjectList< O extends PoolObject< O, T >, T extends MappedEleme
 	public void clear()
 	{
 		indices.clear();
+	}
+
+	public void reset()
+	{
+		indices.reset();
+	}
+
+	public void resetQuick()
+	{
+		indices.resetQuick();
 	}
 
 	@Override
@@ -425,7 +444,7 @@ public class PoolObjectList< O extends PoolObject< O, T >, T extends MappedEleme
 	@Override
 	public List< O > subList( final int fromIndex, final int toIndex )
 	{
-		return new PoolObjectList< O, T >( this, indices.subList( fromIndex, fromIndex ) );
+		return new PoolObjectList< O, T >( this, ( TIntArrayList ) indices.subList( fromIndex, fromIndex ) );
 	}
 
 	@Override
