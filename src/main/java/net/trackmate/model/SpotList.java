@@ -1,6 +1,6 @@
 package net.trackmate.model;
 
-import gnu.trove.list.TIntList;
+import gnu.trove.list.array.TIntArrayList;
 import net.trackmate.graph.PoolObjectList;
 import net.trackmate.graph.mempool.ByteMappedElement;
 
@@ -16,7 +16,7 @@ public class SpotList extends PoolObjectList< Spot, ByteMappedElement >
 		super( c.spotPool, initialCapacity );
 	}
 
-	protected SpotList( final SpotList list, final TIntList indexSubList )
+	protected SpotList( final SpotList list, final TIntArrayList indexSubList )
 	{
 		super( list, indexSubList );
 	}
@@ -24,6 +24,6 @@ public class SpotList extends PoolObjectList< Spot, ByteMappedElement >
 	@Override
 	public SpotList subList( final int fromIndex, final int toIndex )
 	{
-		return new SpotList( this, getIndexCollection().subList( fromIndex, toIndex ) );
+		return new SpotList( this, ( TIntArrayList ) getIndexCollection().subList( fromIndex, toIndex ) );
 	}
 }
