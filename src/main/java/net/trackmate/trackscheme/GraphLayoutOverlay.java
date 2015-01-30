@@ -7,8 +7,6 @@ import java.awt.Graphics2D;
 import java.awt.font.FontRenderContext;
 import java.awt.font.TextLayout;
 import java.awt.geom.Rectangle2D;
-import java.util.List;
-
 import net.imglib2.ui.OverlayRenderer;
 
 public class GraphLayoutOverlay implements OverlayRenderer
@@ -19,9 +17,13 @@ public class GraphLayoutOverlay implements OverlayRenderer
 
 	private ScreenEntities entities;
 
-	private  List< ScreenEdge > edges;
+	private ScreenEdgeList edges;
 
-	private List< ScreenVertex > vertices;
+	private ScreenVertexList vertices;
+
+	private ScreenVertex vs;
+
+	private ScreenVertex vt;
 
 	@Override
 	public synchronized void drawOverlays( final Graphics g )
@@ -30,8 +32,14 @@ public class GraphLayoutOverlay implements OverlayRenderer
 		final ScreenEntities ent = entities;
 		if ( ent != null )
 		{
-			edges = ent.edges;
-			vertices = ent.vertices;
+			edges = ( ScreenEdgeList ) ent.edges;
+			vertices = ( ScreenVertexList ) ent.vertices;
+			if ( vertices != null )
+			{
+				vs = vertices.createRef();
+				vt = vertices.createRef();
+			}
+
 			if ( edges != null )
 			{
 				for ( final ScreenEdge edge : edges )
@@ -46,6 +54,12 @@ public class GraphLayoutOverlay implements OverlayRenderer
 //					drawVertex( g2, vertex );
 //					drawVertexSimplified( g2, vertex );
 				}
+			}
+
+			if ( vertices != null )
+			{
+				vertices.releaseRef( vs );
+				vertices.releaseRef( vt );
 			}
 		}
 	}
@@ -84,8 +98,8 @@ public class GraphLayoutOverlay implements OverlayRenderer
 
 	private void drawEdge( final Graphics2D g2, final ScreenEdge edge )
 	{
-		final ScreenVertex vs = vertices.get( edge.getSourceScreenVertexIndex() );
-		final ScreenVertex vt = vertices.get( edge.getTargetScreenVertexIndex() );
+		vertices.get( edge.getSourceScreenVertexIndex(), vs );
+		vertices.get( edge.getTargetScreenVertexIndex(), vt );
 		g2.drawLine( ( int ) vs.getX(), ( int ) vs.getY(), ( int ) vt.getX(), ( int ) vt.getY() );
 	}
 

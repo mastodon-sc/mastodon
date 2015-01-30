@@ -1,6 +1,6 @@
 package net.trackmate.trackscheme;
 
-import gnu.trove.list.TIntList;
+import gnu.trove.list.array.TIntArrayList;
 import net.trackmate.graph.PoolObjectList;
 import net.trackmate.graph.mempool.ByteMappedElement;
 
@@ -20,7 +20,7 @@ public class TrackSchemeVertexList extends PoolObjectList< TrackSchemeVertex, By
 		this.graph = graph;
 	}
 
-	protected TrackSchemeVertexList( final TrackSchemeVertexList list, final TIntList indexSubList )
+	protected TrackSchemeVertexList( final TrackSchemeVertexList list, final TIntArrayList indexSubList )
 	{
 		super( list, indexSubList );
 		this.graph = list.graph;
@@ -29,7 +29,7 @@ public class TrackSchemeVertexList extends PoolObjectList< TrackSchemeVertex, By
 	@Override
 	public TrackSchemeVertexList subList( final int fromIndex, final int toIndex )
 	{
-		return new TrackSchemeVertexList( this, getIndexCollection().subList( fromIndex, toIndex ) );
+		return new TrackSchemeVertexList( this, ( TIntArrayList ) getIndexCollection().subList( fromIndex, toIndex ) );
 	}
 
 	/**

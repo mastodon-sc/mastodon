@@ -22,6 +22,7 @@ public class TrackSchemeVertex extends AbstractIdVertex< TrackSchemeVertex, Trac
 	protected void setToUninitializedState()
 	{
 		super.setToUninitializedState();
+		setScreenVertexIndex( -1 );
 	}
 
 	public TrackSchemeVertex init( final String label, final int timepoint, final boolean isSelected )
