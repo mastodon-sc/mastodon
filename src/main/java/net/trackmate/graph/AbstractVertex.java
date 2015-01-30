@@ -52,6 +52,8 @@ public class AbstractVertex< V extends AbstractVertex< V, E, T >, E extends Abst
 		setFirstOutEdgeIndex( -1 );
 	}
 
+	private AbstractEdgePool< E, ?, ? > edgePool;
+
 	private IncomingEdges< E > incomingEdges;
 
 	private OutgoingEdges< E > outgoingEdges;
@@ -78,9 +80,13 @@ public class AbstractVertex< V extends AbstractVertex< V, E, T >, E extends Abst
 
 	void linkEdgePool( final AbstractEdgePool< E, ?, ? > edgePool )
 	{
-		incomingEdges = new IncomingEdges< E >( this, edgePool );
-		outgoingEdges = new OutgoingEdges< E >( this, edgePool );
-		edges = new AllEdges< E >( this, edgePool );
+		if ( this.edgePool != edgePool )
+		{
+			this.edgePool = edgePool;
+			incomingEdges = new IncomingEdges< E >( this, edgePool );
+			outgoingEdges = new OutgoingEdges< E >( this, edgePool );
+			edges = new AllEdges< E >( this, edgePool );
+		}
 	}
 
 	@Override
