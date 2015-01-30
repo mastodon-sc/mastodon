@@ -7,6 +7,8 @@ import java.awt.Graphics2D;
 import java.awt.font.FontRenderContext;
 import java.awt.font.TextLayout;
 import java.awt.geom.Rectangle2D;
+import java.util.List;
+
 import net.imglib2.ui.OverlayRenderer;
 
 public class GraphLayoutOverlay implements OverlayRenderer
@@ -29,11 +31,14 @@ public class GraphLayoutOverlay implements OverlayRenderer
 	public synchronized void drawOverlays( final Graphics g )
 	{
 		final Graphics2D g2 = ( Graphics2D ) g;
+		g2.setColor( Color.BLACK );
+
 		final ScreenEntities ent = entities;
 		if ( ent != null )
 		{
-			edges = ( ScreenEdgeList ) ent.edges;
-			vertices = ( ScreenVertexList ) ent.vertices;
+			edges = ( ScreenEdgeList ) ent.edges; // TODO: get rid of cast
+			vertices = ( ScreenVertexList ) ent.vertices; // TODO: get rid of cast
+			final List< ScreenVertexRange > vertexRanges = ent.vertexRanges;
 			if ( vertices != null )
 			{
 				vs = vertices.createRef();
@@ -53,6 +58,13 @@ public class GraphLayoutOverlay implements OverlayRenderer
 				{
 //					drawVertex( g2, vertex );
 //					drawVertexSimplified( g2, vertex );
+				}
+			}
+			if ( vertexRanges != null )
+			{
+				for ( final ScreenVertexRange range : vertexRanges )
+				{
+					drawVertexRange( g2, range );
 				}
 			}
 
@@ -94,6 +106,15 @@ public class GraphLayoutOverlay implements OverlayRenderer
 		final double y = vertex.getY();
 		g2.setColor( Color.BLACK );
 		g2.fillOval( ( int ) ( x - spotradius ), ( int ) ( y - spotradius ), ( int ) ( 2 * spotradius ), ( int ) ( 2 * spotradius ) );
+	}
+
+	private void drawVertexRange( final Graphics2D g2, final ScreenVertexRange range  )
+	{
+		final int x = ( int ) range.getMinX();
+		final int y = ( int ) range.getMinY();
+		final int w = ( int ) range.getMaxX() - x;
+		final int h = ( int ) range.getMaxY() - y;
+		g2.fillRect( x, y, w, h );
 	}
 
 	private void drawEdge( final Graphics2D g2, final ScreenEdge edge )

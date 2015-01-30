@@ -30,6 +30,16 @@ public class ShowTrackScheme implements TransformListener< ScreenTransform >
 		layout = new LineageTreeLayout( graph );
 		layout.reset();
 		layout.layoutX();
+
+//		for ( int i = 0; i < 100; ++i )
+//		{
+//			final long t0 = System.currentTimeMillis();
+//			layout.reset();
+//			layout.layoutX();
+//			final long t1 = System.currentTimeMillis();
+//			System.out.println( "layout: " + ( t1 - t0 ) + "ms");
+//		}
+
 //		System.out.println( graph );
 
 		order = new VertexOrder( graph );
