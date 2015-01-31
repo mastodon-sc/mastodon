@@ -8,22 +8,30 @@ public class TrackSchemeVertexList extends PoolObjectList< TrackSchemeVertex, By
 {
 	private final TrackSchemeGraph graph;
 
+	private double cachedMinLayoutXDistance;
+
+	// TODO: needs to be reset to false when the graph is laid out again.
+	private boolean cachedMinLayoutXDistanceValid;
+
 	public TrackSchemeVertexList( final TrackSchemeGraph graph )
 	{
 		super( graph.getVertexPool() );
 		this.graph = graph;
+		cachedMinLayoutXDistanceValid = false;
 	}
 
 	public TrackSchemeVertexList( final TrackSchemeGraph graph, final int initialCapacity )
 	{
 		super( graph.getVertexPool(), initialCapacity );
 		this.graph = graph;
+		cachedMinLayoutXDistanceValid = false;
 	}
 
 	protected TrackSchemeVertexList( final TrackSchemeVertexList list, final TIntArrayList indexSubList )
 	{
 		super( list, indexSubList );
 		this.graph = list.graph;
+		cachedMinLayoutXDistanceValid = false;
 	}
 
 	@Override
@@ -90,6 +98,54 @@ public class TrackSchemeVertexList extends PoolObjectList< TrackSchemeVertex, By
 		return high;
 	}
 
+	protected TIntArrayList getDenseRanges( final int fromIndex, final int toIndex, final double minLayoutX, final double allowedMinD, final int minSubDivSize, final TrackSchemeVertex vref )
+	{
+		if ( fromIndex < 0 )
+			throw new ArrayIndexOutOfBoundsException( fromIndex );
+		if ( toIndex > size() )
+			throw new ArrayIndexOutOfBoundsException( toIndex );
+
+		final int i = fromIndex;
+		final int j = toIndex - 1;
+
+		final double xi = get( i, vref ).getLayoutX();
+		final double xj = get( j, vref ).getLayoutX();
+
+		if ( ( xj - xi ) - minLayoutX * ( j - i - 1 ) < allowedMinD )
+		{
+			final TIntArrayList ranges = new TIntArrayList();
+			ranges.add( i );
+			ranges.add( j );
+			return ranges;
+		}
+		else
+		{
+			if ( toIndex - fromIndex < minSubDivSize )
+				return null;
+			final int k = ( i + j ) / 2;
+			final TIntArrayList rangesL = getDenseRanges( i, k + 1, minLayoutX, allowedMinD, minSubDivSize, vref );
+			final TIntArrayList rangesR = getDenseRanges( k, j + 1, minLayoutX, allowedMinD, minSubDivSize, vref );
+			if ( rangesL == null )
+				return rangesR;
+			else if ( rangesR == null )
+				return rangesL;
+			else
+			{
+				if ( rangesL.get( rangesL.size() - 1 ) == rangesR.get( 0 ) )
+				{
+					rangesL.set( rangesL.size() - 1, rangesR.get( 1 ) );
+					for ( int r = 2; r < rangesR.size(); ++r )
+						rangesL.add( rangesR.get( r ) );
+				}
+				else
+				{
+					rangesL.addAll( rangesR );
+				}
+				return rangesL;
+			}
+		}
+	}
+
 	protected double getMinLayoutX()
 	{
 		if ( isEmpty() )
@@ -126,7 +182,12 @@ public class TrackSchemeVertexList extends PoolObjectList< TrackSchemeVertex, By
 	 */
 	protected double getMinLayoutXDistance()
 	{
-		return getMinLayoutXDistance( 0, size() );
+		if ( ! cachedMinLayoutXDistanceValid )
+		{
+			cachedMinLayoutXDistance = getMinLayoutXDistance( 0, size() );
+			cachedMinLayoutXDistanceValid = true;
+		}
+		return cachedMinLayoutXDistance;
 	}
 
 	/**
