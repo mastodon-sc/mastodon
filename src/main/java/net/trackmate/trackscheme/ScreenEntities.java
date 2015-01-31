@@ -4,11 +4,11 @@ import java.util.List;
 
 public class ScreenEntities
 {
-	public List< ScreenVertex > vertices;
+	public final List< ScreenVertex > vertices;
 
-	public List< ScreenEdge > edges;
+	public final List< ScreenEdge > edges;
 
-	public List< ScreenVertexRange > vertexRanges;
+	public final List< ScreenVertexRange > vertexRanges;
 
 	public ScreenEntities( final List< ScreenVertex > vertices, final List< ScreenEdge > edges, final List<ScreenVertexRange> vertexRanges )
 	{

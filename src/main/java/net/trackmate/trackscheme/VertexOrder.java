@@ -217,6 +217,11 @@ public class VertexOrder
 
 		final double yScale = ( double ) ( screenHeight - 1 ) / ( maxY - minY );
 		final double xScale = ( double ) ( screenWidth - 1 ) / ( maxX - minX );
+		final double allowedMinD = 2.0 / xScale;
+
+//		System.out.println();
+//		System.out.println( xScale + " xScale" );
+//		System.out.println( allowedMinD + " allowedMinD" );
 
 		final long t0 = System.currentTimeMillis();
 		final TIntIterator iter = timepoints.iterator();
@@ -225,6 +230,7 @@ public class VertexOrder
 			final int timepoint = iter.next();
 			if ( timepoint + 1 >= minY && timepoint - 1 <= maxY )
 			{
+				final int timepointStartScreenVertexIndex = screenVertices.size();
 				final double y = ( timepoint - minY ) * yScale;
 				final double prevY = ( timepoint - 1 - minY ) * yScale;
 				final TrackSchemeVertexList vertexList = timepointToOrderedVertices.get( timepoint );
@@ -235,17 +241,24 @@ public class VertexOrder
 				int maxIndex = vertexList.binarySearch( maxX, minIndex, vertexList.size() );
 				if ( maxIndex < vertexList.size() - 1 )
 					maxIndex++;
-//				final double minLayoutXDistance = xScale * vertexList.getMinLayoutXDistance( minIndex, maxIndex + 1 );
-//				System.out.println( "timepoint " + timepoint + ": " + ( maxIndex - minIndex + 1 ) + " vertices, " + minLayoutXDistance + " min Distance" );
-				if ( maxIndex - minIndex + 1 > screenWidth * 1.5 )
+
+				final double minLayoutX = vertexList.getMinLayoutXDistance();
+				TIntArrayList denseRanges = vertexList.getDenseRanges( minIndex, maxIndex + 1, minLayoutX, allowedMinD, 3, v1 );
+				if ( denseRanges == null )
+					denseRanges = new TIntArrayList();
+				denseRanges.add( maxIndex + 1 );
+
+//				System.out.println( "timepoint " + timepoint + ": " + ( maxIndex - minIndex + 1 ) + " vertices, " + minLayoutX + " min Distance" );
+//				System.out.println( "numranges = " + ( ( denseRanges.size() - 1 ) / 2 ) );
+
+				final TIntIterator riter = denseRanges.iterator();
+				int nextRangeStart = riter.next();
+
+				double prevX = Double.NEGATIVE_INFINITY;
+				double minVertexScreenDist = yScale;
+				for ( int i = minIndex; i <= maxIndex; ++i )
 				{
-					final double svMinX = ( vertexList.get( minIndex, v1 ).getLayoutX() - minX ) * xScale;
-					final double svMaxX = ( vertexList.get( maxIndex, v1 ).getLayoutX() - minX ) * xScale;
-					vertexRanges.add( new ScreenVertexRange( svMinX, svMaxX, prevY, y ) );
-				}
-				else
-				{
-					for ( int i = minIndex; i <= maxIndex; ++i )
+					if ( i < nextRangeStart )
 					{
 						vertexList.get( i, v1 );
 						final int v1si = screenVertices.size();
@@ -257,11 +270,14 @@ public class VertexOrder
 						screenVertexPool.create( sv ).init( id, x, y, selected );
 						screenVertices.add( sv );
 
+						minVertexScreenDist = Math.min( minVertexScreenDist, x - prevX );
+						prevX = x;
+
 						for ( final TrackSchemeEdge edge : v1.incomingEdges() )
 						{
 							edge.getSource( v2 );
 							final int v2si = v2.getScreenVertexIndex();
-							if ( v2si < screenVertices.size() && screenVertices.get( v2si, sv ).getId() == v2.getInternalPoolIndex() )
+							if ( v2si > 0 && v2si < screenVertices.size() && screenVertices.get( v2si, sv ).getId() == v2.getInternalPoolIndex() )
 							{
 								final int eid = edge.getInternalPoolIndex();
 								final int sourceScreenVertexIndex = v2si;
@@ -272,6 +288,21 @@ public class VertexOrder
 							}
 						}
 					}
+					else
+					{
+						final int rangeMinIndex = nextRangeStart;
+						final int rangeMaxIndex = riter.next();
+						nextRangeStart = riter.next();
+						i = rangeMaxIndex;
+						final double svMinX = ( vertexList.get( rangeMinIndex, v1 ).getLayoutX() - minX ) * xScale;
+						final double svMaxX = ( vertexList.get( rangeMaxIndex, v1 ).getLayoutX() - minX ) * xScale;
+						vertexRanges.add( new ScreenVertexRange( svMinX, svMaxX, prevY, y ) );
+						minVertexScreenDist = 0;
+					}
+				}
+				for ( int i = timepointStartScreenVertexIndex; i < screenVertices.size(); ++i )
+				{
+					screenVertices.get( i, sv ).setVertexDist( minVertexScreenDist );
 				}
 			}
 		}

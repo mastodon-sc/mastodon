@@ -1,5 +1,7 @@
 package net.trackmate.trackscheme;
 
+import java.util.Random;
+
 public class LargeModelExample
 {
 	private static final int N_STARTING_CELLS = 20;
@@ -7,6 +9,8 @@ public class LargeModelExample
 	private static final int N_DIVISIONS = 14;
 
 	private static final int N_FRAMES_PER_DIVISION = 5;
+
+	private static final double TERMINATION_PROBABILITY = 0.01;
 
 	public static void main( final String[] args )
 	{
@@ -16,6 +20,7 @@ public class LargeModelExample
 	public LargeModelExample()
 	{
 		graph = new TrackSchemeGraph();
+		rand = new Random( 123104 );
 
 		for ( int i = 0; i < N_STARTING_CELLS; ++i )
 		{
@@ -30,6 +35,8 @@ public class LargeModelExample
 
 	private int labelGenerator;
 
+	private final Random rand;
+
 	private void addBranch( final TrackSchemeVertex start, final int iteration )
 	{
 		if ( iteration >= N_DIVISIONS ) { return; }
@@ -42,6 +49,8 @@ public class LargeModelExample
 		previousSpot.refTo( start );
 		for ( int it = 0; it < N_FRAMES_PER_DIVISION; it++ )
 		{
+			if ( rand.nextDouble() < TERMINATION_PROBABILITY ) { return; }
+
 			graph.addVertex( spot ).init( Integer.toString( ++labelGenerator ), previousSpot.getTimePoint() + 1, false );
 			graph.addEdge( previousSpot, spot, edge );
 			previousSpot.refTo( spot );

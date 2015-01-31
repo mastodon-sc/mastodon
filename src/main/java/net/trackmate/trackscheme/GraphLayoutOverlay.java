@@ -4,9 +4,6 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.awt.font.FontRenderContext;
-import java.awt.font.TextLayout;
-import java.awt.geom.Rectangle2D;
 import java.util.List;
 
 import net.imglib2.ui.OverlayRenderer;
@@ -56,12 +53,16 @@ public class GraphLayoutOverlay implements OverlayRenderer
 			{
 				for ( final ScreenVertex vertex : vertices )
 				{
-//					drawVertex( g2, vertex );
-//					drawVertexSimplified( g2, vertex );
+					final double d = vertex.getVertexDist();
+					if ( d > 20 )
+						drawVertex( g2, vertex );
+					else if ( d > 5 )
+						drawVertexSimplified( g2, vertex );
 				}
 			}
 			if ( vertexRanges != null )
 			{
+				g2.setColor( Color.RED );
 				for ( final ScreenVertexRange range : vertexRanges )
 				{
 					drawVertexRange( g2, range );
@@ -91,12 +92,12 @@ public class GraphLayoutOverlay implements OverlayRenderer
 		g2.setColor( Color.BLACK );
 		g2.drawOval( ( int ) ( x - spotradius ), ( int ) ( y - spotradius ), ( int ) ( 2 * spotradius ), ( int ) ( 2 * spotradius ) );
 
-		final FontRenderContext frc = g2.getFontRenderContext();
-		final TextLayout layout = new TextLayout( label, font, frc );
-		final Rectangle2D bounds = layout.getBounds();
-		final float tx = ( float ) ( x - bounds.getCenterX() );
-		final float ty = ( float ) ( y - bounds.getCenterY() );
-		layout.draw( g2, tx, ty );
+//		final FontRenderContext frc = g2.getFontRenderContext();
+//		final TextLayout layout = new TextLayout( label, font, frc );
+//		final Rectangle2D bounds = layout.getBounds();
+//		final float tx = ( float ) ( x - bounds.getCenterX() );
+//		final float ty = ( float ) ( y - bounds.getCenterY() );
+//		layout.draw( g2, tx, ty );
 	}
 
 	private void drawVertexSimplified( final Graphics2D g2, final ScreenVertex vertex )

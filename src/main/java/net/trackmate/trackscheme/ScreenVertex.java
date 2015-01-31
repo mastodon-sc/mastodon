@@ -16,7 +16,9 @@ public class ScreenVertex extends PoolObject< ScreenVertex, ByteMappedElement >
 
 	protected static final int Y_OFFSET = X_OFFSET + DOUBLE_SIZE;
 
-	protected static final int SELECTED_OFFSET = Y_OFFSET + DOUBLE_SIZE;
+	protected static final int VERTEX_DIST_OFFSET = Y_OFFSET + DOUBLE_SIZE;
+
+	protected static final int SELECTED_OFFSET = VERTEX_DIST_OFFSET + DOUBLE_SIZE;
 
 	protected static final int SIZE_IN_BYTES = SELECTED_OFFSET + BOOLEAN_SIZE;
 
@@ -66,6 +68,16 @@ public class ScreenVertex extends PoolObject< ScreenVertex, ByteMappedElement >
 	protected void setY( final double y )
 	{
 		access.putDouble( y, Y_OFFSET );
+	}
+
+	public double getVertexDist()
+	{
+		return access.getDouble( VERTEX_DIST_OFFSET );
+	}
+
+	public void setVertexDist( final double minVertexScreenDist )
+	{
+		access.putDouble( minVertexScreenDist, VERTEX_DIST_OFFSET );
 	}
 
 	public String getLabel()

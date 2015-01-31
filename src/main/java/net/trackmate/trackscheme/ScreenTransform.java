@@ -88,6 +88,24 @@ public class ScreenTransform
 		maxY = minY + newSizeY;
 	}
 
+	void scaleX( final double scale, final int x, final int y )
+	{
+		final double lX = screenToLayoutX( x );
+		final double newSizeX = ( maxX - minX ) * scale;
+		final double newXInvScale = newSizeX / ( double ) ( screenWidth - 1 );
+		minX = lX - newXInvScale * x;
+		maxX = minX + newSizeX;
+	}
+
+	void scaleY( final double scale, final int x, final int y )
+	{
+		final double lY = screenToLayoutY( y );
+		final double newSizeY = ( maxY - minY ) * scale;
+		final double newYInvScale = newSizeY / ( double ) ( screenHeight - 1 );
+		minY = lY - newYInvScale * y;
+		maxY = minY + newSizeY;
+	}
+
 	public static class ScreenTransformEventHandler extends MouseAdapter implements KeyListener, TransformEventHandler< ScreenTransform >
 	{
 		final static private TransformEventHandlerFactory< ScreenTransform > factory = new TransformEventHandlerFactory< ScreenTransform >()
@@ -200,18 +218,20 @@ public class ScreenTransform
 
 		// ================ KeyListener =============================
 
+		private boolean shiftPressed = false;
+
 		@Override
 		public void keyPressed( final KeyEvent e )
 		{
-			// TODO Auto-generated method stub
-
+			if ( e.getKeyCode() == KeyEvent.VK_SHIFT )
+				shiftPressed = true;
 		}
 
 		@Override
 		public void keyReleased( final KeyEvent e )
 		{
-			// TODO Auto-generated method stub
-
+			if ( e.getKeyCode() == KeyEvent.VK_SHIFT )
+				shiftPressed = false;
 		}
 
 		@Override
@@ -257,15 +277,38 @@ public class ScreenTransform
 		{
 			synchronized ( transform )
 			{
+				final double dScale = 1.1;
 				final int modifiers = e.getModifiersEx();
 				final int s = e.getWheelRotation();
-				if ( ( ( modifiers & KeyEvent.CTRL_DOWN_MASK ) != 0 && ( modifiers & KeyEvent.SHIFT_DOWN_MASK ) != 0 ) || ( modifiers & KeyEvent.META_DOWN_MASK ) != 0 )
+				final boolean ctrlPressed = ( modifiers & KeyEvent.CTRL_DOWN_MASK ) != 0;
+				final boolean altPressed = ( modifiers & KeyEvent.ALT_DOWN_MASK ) != 0;
+				final boolean metaPressed = ( ( modifiers & KeyEvent.META_DOWN_MASK ) != 0 ) || ( ctrlPressed && shiftPressed );
+				if ( metaPressed ) // zoom both axes
 				{
-					final double dScale = 1.0 + 0.1;
 					if ( s > 0 )
 						transform.scale( 1.0 / dScale, e.getX(), e.getY() );
 					else
 						transform.scale( dScale, e.getX(), e.getY() );
+				}
+				else if ( shiftPressed ) // zoom X axis
+				{
+					if ( s > 0 )
+						transform.scaleX( 1.0 / dScale, e.getX(), e.getY() );
+					else
+						transform.scaleX( dScale, e.getX(), e.getY() );
+				}
+				else if ( ctrlPressed || altPressed ) // zoom Y axis
+				{
+					if ( s > 0 )
+						transform.scaleY( 1.0 / dScale, e.getX(), e.getY() );
+					else
+						transform.scaleY( dScale, e.getX(), e.getY() );
+				}
+				else
+				{
+					final int d = s * 15;
+					final boolean dirX = ( modifiers & KeyEvent.SHIFT_DOWN_MASK ) != 0;
+					transform.setScreenTranslated( dirX ? d : 0, dirX ? 0 : d, transform );
 				}
 
 				update();
