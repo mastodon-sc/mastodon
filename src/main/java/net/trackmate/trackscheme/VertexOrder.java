@@ -277,7 +277,7 @@ public class VertexOrder
 						{
 							edge.getSource( v2 );
 							final int v2si = v2.getScreenVertexIndex();
-							if ( v2si > 0 && v2si < screenVertices.size() && screenVertices.get( v2si, sv ).getId() == v2.getInternalPoolIndex() )
+							if ( v2si >= 0 && v2si < screenVertices.size() && screenVertices.get( v2si, sv ).getId() == v2.getInternalPoolIndex() )
 							{
 								final int eid = edge.getInternalPoolIndex();
 								final int sourceScreenVertexIndex = v2si;
