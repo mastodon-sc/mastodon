@@ -4,11 +4,11 @@ import java.util.Random;
 
 public class LargeModelExample
 {
-	private static final int N_STARTING_CELLS = 20;
+	private static final int N_STARTING_CELLS = 50;
 
-	private static final int N_DIVISIONS = 14;
+	private static final int N_DIVISIONS = 16;
 
-	private static final int N_FRAMES_PER_DIVISION = 5;
+	private static final int N_FRAMES_PER_DIVISION = 7;
 
 	private static final double TERMINATION_PROBABILITY = 0.01;
 
