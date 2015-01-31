@@ -138,6 +138,11 @@ public class ScreenTransform
 		protected TransformListener< ScreenTransform > listener;
 
 		/**
+		 * Whom to notify when selecting stuff.
+		 */
+		protected SelectionListener selectionListener;
+
+		/**
 		 * Coordinates where mouse dragging started.
 		 */
 		protected int oX, oY;
@@ -158,6 +163,7 @@ public class ScreenTransform
 		public ScreenTransformEventHandler( final TransformListener< ScreenTransform > listener )
 		{
 			this.listener = listener;
+			this.selectionListener = null;
 		}
 
 		@Override
@@ -199,6 +205,11 @@ public class ScreenTransform
 		public void setTransformListener( final TransformListener< ScreenTransform > transformListener )
 		{
 			listener = transformListener;
+		}
+
+		public void setSelectionListener( final SelectionListener selectionListener )
+		{
+			this.selectionListener = selectionListener;
 		}
 
 		@Override
@@ -251,6 +262,10 @@ public class ScreenTransform
 			synchronized ( transform )
 			{
 				transformDragStart.set( transform );
+
+				if ( selectionListener != null )
+					if ( e.getButton() == MouseEvent.BUTTON1 )
+						selectionListener.selectAt( transform, e.getX(), e.getY() );
 			}
 		}
 

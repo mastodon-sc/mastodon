@@ -37,6 +37,18 @@ public class VertexOrder
 
 	private ScreenEdgeList screenEdges2;
 
+	private double lastLayoutMinX;
+
+	private double lastLayoutMaxX;
+
+	private double lastLayoutMinY;
+
+	private double lastLayoutMaxY;
+
+	private int lastLayoutScreenWidth;
+
+	private int lastLayoutScreenHeight;
+
 	public VertexOrder( final TrackSchemeGraph graph )
 	{
 		this.graph = graph;
@@ -204,8 +216,94 @@ public class VertexOrder
 			return timepoints.get( timepoints.size() - 1 );
 	}
 
+	private static final double SELECT_DISTANCE_TOLERANCE = 5.0;
+
+	public void selectClosest( final double lx, final double ly )
+	{
+		final TrackSchemeVertex v = graph.vertexRef();
+		final ScreenVertex sv = screenVertexPool.createRef();
+
+		final double yScale = ( double ) ( lastLayoutScreenHeight - 1 ) / ( lastLayoutMaxY - lastLayoutMinY );
+		final double xScale = ( double ) ( lastLayoutScreenWidth - 1 ) / ( lastLayoutMaxX - lastLayoutMinX );
+
+		final int closestY = ( int ) Math.round( ly );
+
+		double closestVertexD = Double.POSITIVE_INFINITY;
+		int closestVertexIndex = -1;
+		final TIntIterator iter = timepoints.iterator();
+		while ( iter.hasNext() )
+		{
+			final int timepoint = iter.next();
+			if ( timepoint >= closestY - 1 && timepoint <= closestY + 1 )
+			{
+				final TrackSchemeVertexList vertexList = timepointToOrderedVertices.get( timepoint );
+				int left = vertexList.binarySearch( lx );
+				if ( left < 0 )
+					left = 0;
+				int right = left + 1;
+				if ( right >= vertexList.size() )
+					right = vertexList.size() - 1;
+
+				vertexList.get( left, v );
+				double diffx = ( lx - v.getLayoutX() ) * xScale;
+				double diffy = ( ly - v.getTimePoint() ) * yScale;
+				double d = Math.sqrt( diffx * diffx + diffy * diffy );
+				if ( d < closestVertexD )
+				{
+					closestVertexD = d;
+					closestVertexIndex = v.getInternalPoolIndex();
+				}
+
+				vertexList.get( right, v );
+				diffx = ( lx - v.getLayoutX() ) * xScale;
+				diffy = ( ly - v.getTimePoint() ) * yScale;
+				d = Math.sqrt( diffx * diffx + diffy * diffy );
+				if ( d < closestVertexD )
+				{
+					closestVertexD = d;
+					closestVertexIndex = v.getInternalPoolIndex();
+				}
+			}
+		}
+		if ( closestVertexIndex >= 0 )
+		{
+			graph.getVertexPool().getByInternalPoolIndex( closestVertexIndex, v );
+
+			final int si = v.getScreenVertexIndex();
+			if ( si >= 0 && si < screenVertices.size() && screenVertices.get( si, sv ).getId() == v.getInternalPoolIndex() )
+			{
+				final double spotdiameter = Math.min( sv.getVertexDist() - 10.0, GraphLayoutOverlay.maxDisplayVertexSize );
+				final double spotradius = ( int ) ( spotdiameter / 2 );
+				if ( closestVertexD < spotradius + SELECT_DISTANCE_TOLERANCE )
+				{
+					final boolean selected = ! v.isSelected();
+					v.setSelected( selected );
+					sv.setSelected( selected );
+				}
+			}
+		}
+
+		screenVertexPool.releaseRef( sv );
+		graph.releaseRef( v );
+	}
+
+	private long numCropAndScales = 0;
+	private long sumCropAndScaleTimes = 0;
+	private long sumVerticesToPaint = 0;
+	private long sumVertexRangesToPaint = 0;
+	private final long printEveryNRuns = 100;
+
 	public ScreenEntities cropAndScale( final double minX, final double maxX, final double minY, final double maxY, final int screenWidth, final int screenHeight )
 	{
+		final long t0 = System.currentTimeMillis();
+
+		this.lastLayoutMinX = minX;
+		this.lastLayoutMaxX = maxX;
+		this.lastLayoutMinY = minY;
+		this.lastLayoutMaxY = maxY;
+		this.lastLayoutScreenWidth = screenWidth;
+		this.lastLayoutScreenHeight = screenHeight;
+
 		swapPools();
 
 		final TrackSchemeVertex v1 = graph.vertexRef();
@@ -223,7 +321,6 @@ public class VertexOrder
 //		System.out.println( xScale + " xScale" );
 //		System.out.println( allowedMinD + " allowedMinD" );
 
-		final long t0 = System.currentTimeMillis();
 		final TIntIterator iter = timepoints.iterator();
 		while ( iter.hasNext() )
 		{
@@ -265,8 +362,7 @@ public class VertexOrder
 						v1.setScreenVertexIndex( v1si );
 						final int id = v1.getInternalPoolIndex();
 						final double x = ( v1.getLayoutX() - minX ) * xScale;
-//						final String label = v1.getLabel();
-						final boolean selected = false;
+						final boolean selected = v1.isSelected();
 						screenVertexPool.create( sv ).init( id, x, y, selected );
 						screenVertices.add( sv );
 
@@ -306,14 +402,31 @@ public class VertexOrder
 				}
 			}
 		}
-//		System.out.println( "screenVertices.size() = " + screenVertices.size() );
-//		final long t1 = System.currentTimeMillis();
-//		System.out.println( ( t1 - t0 ) + "ms" );
 
 		screenEdgePool.releaseRef( se );
 		screenVertexPool.releaseRef( sv );
 		graph.releaseRef( v1 );
 		graph.releaseRef( v2 );
+
+		final long t1 = System.currentTimeMillis();
+
+		numCropAndScales++;
+		sumCropAndScaleTimes += ( t1 - t0 );
+		sumVerticesToPaint += screenVertices.size();
+		sumVertexRangesToPaint += vertexRanges.size();
+		if ( numCropAndScales == printEveryNRuns )
+		{
+			System.out.println( "crop and scale time = " + ( sumCropAndScaleTimes / numCropAndScales ) + "ms" );
+			System.out.println( "painting " + ( sumVerticesToPaint / numCropAndScales ) + " vertices" );
+			System.out.println( "painting " + ( sumVertexRangesToPaint / numCropAndScales ) + " dense vertex ranges" );
+			System.out.println( "(averages over last " + printEveryNRuns + " runs)");
+			System.out.println();
+
+			numCropAndScales = 0;
+			sumCropAndScaleTimes = 0;
+			sumVerticesToPaint = 0;
+			sumVertexRangesToPaint = 0;
+		}
 
 		return new ScreenEntities( screenVertices, screenEdges, vertexRanges );
 	}

@@ -22,13 +22,16 @@ public class LargeModelExample
 		graph = new TrackSchemeGraph();
 		rand = new Random( 123104 );
 
+		final long t0 = System.currentTimeMillis();
 		for ( int i = 0; i < N_STARTING_CELLS; ++i )
 		{
 			final TrackSchemeVertex mother = graph.addVertex().init( Integer.toString( ++labelGenerator ), 0, false );
 			addBranch( mother, 1 );
 		}
-
+		final long t1 = System.currentTimeMillis();
 		System.out.println( labelGenerator + " vertices" );
+		System.out.println( "model build in " + ( t1 - t0 ) + "ms" );
+		System.out.println();
 	}
 
 	final private TrackSchemeGraph graph;

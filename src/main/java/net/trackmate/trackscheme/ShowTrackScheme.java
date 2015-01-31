@@ -4,14 +4,16 @@ import java.awt.BorderLayout;
 import java.awt.GraphicsConfiguration;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+
 import javax.swing.JFrame;
 
 import net.imglib2.ui.InteractiveDisplayCanvasComponent;
 import net.imglib2.ui.PainterThread;
 import net.imglib2.ui.TransformListener;
 import net.imglib2.ui.util.GuiUtil;
+import net.imglib2.util.BenchmarkHelper;
 
-public class ShowTrackScheme implements TransformListener< ScreenTransform >
+public class ShowTrackScheme implements TransformListener< ScreenTransform >, SelectionListener
 {
 	final TrackSchemeGraph graph;
 
@@ -28,17 +30,20 @@ public class ShowTrackScheme implements TransformListener< ScreenTransform >
 		this.graph = graph;
 
 		layout = new LineageTreeLayout( graph );
-		layout.reset();
-		layout.layoutX();
+//		layout.reset();
+//		layout.layoutX();
 
-//		for ( int i = 0; i < 100; ++i )
-//		{
-//			final long t0 = System.currentTimeMillis();
-//			layout.reset();
-//			layout.layoutX();
-//			final long t1 = System.currentTimeMillis();
-//			System.out.println( "layout: " + ( t1 - t0 ) + "ms");
-//		}
+		System.out.println( "benchmarking layout of the full graph:" );
+		BenchmarkHelper.benchmarkAndPrint( 10, true, new Runnable()
+		{
+			@Override
+			public void run()
+			{
+				layout.reset();
+				layout.layoutX();
+			}
+		} );
+		System.out.println();
 
 //		System.out.println( graph );
 
@@ -58,6 +63,7 @@ public class ShowTrackScheme implements TransformListener< ScreenTransform >
 		final int h = overlay.getHeight();
 		canvas.getTransformEventHandler().setTransform( new ScreenTransform( minX, maxX, minY, maxY, w, h ) );
 		canvas.getTransformEventHandler().setTransformListener( this );
+		( ( ScreenTransform.ScreenTransformEventHandler ) canvas.getTransformEventHandler() ).setSelectionListener( this );
 
 		frame = new MyFrame( "trackscheme", GuiUtil.getSuitableGraphicsConfiguration( GuiUtil.RGB_COLOR_MODEL ) );
 		frame.getContentPane().add( canvas, BorderLayout.CENTER );
@@ -80,6 +86,16 @@ public class ShowTrackScheme implements TransformListener< ScreenTransform >
 		final int h = transform.screenHeight;
 		final ScreenEntities entities = order.cropAndScale( minX, maxX, minY, maxY, w, h );
 		overlay.setScreenEntities( entities );
+		frame.repaint();
+	}
+
+	@Override
+	public void selectAt( final ScreenTransform transform, final int x, final int y )
+	{
+		final double lx = transform.screenToLayoutX( x );
+		final double ly = transform.screenToLayoutY( y );
+
+		order.selectClosest( lx, ly );
 		frame.repaint();
 	}
 

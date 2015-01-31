@@ -27,27 +27,46 @@ public class GraphLayoutOverlay implements OverlayRenderer
 
 	private ScreenVertex vt;
 
-	private final double minDisplayVertexDist = 20.0;
+	public static final double minDisplayVertexDist = 20.0;
 
-	private final double maxDisplayVertexSize = 100.0;
+	public static final double maxDisplayVertexSize = 100.0;
 
-	private final double minDisplaySimplifiedVertexDist = 5.0;
+	public static final double minDisplaySimplifiedVertexDist = 5.0;
+
+	public static final double simplifiedVertexRadius = 3.0;
 
 	private final Font font = new Font( "SansSerif", Font.PLAIN, 9 );
 
 	private final double avgLabelLetterWidth = 5.0;
 
+	private final Color edgeColor = Color.black;
+
+	private final Color vertexFillColor = Color.white;
+
+	private final Color vertexDrawColor = Color.black;
+
+	private final Color selectedVertexFillColor = new Color( 128, 255, 128 );
+
+	private final Color selectedVertexDrawColor = Color.black;
+
+	private final Color simplifiedVertexFillColor = Color.black;
+
+	private final Color selectedSimplifiedVertexFillColor = new Color( 0, 128, 0 );
+
+	private final Color vertexRangeColor = new Color( 128, 128, 128 );
+
 	@Override
 	public synchronized void drawOverlays( final Graphics g )
 	{
 		final Graphics2D g2 = ( Graphics2D ) g;
-		g2.setColor( Color.BLACK );
+		g2.setColor( edgeColor );
 
 		final ScreenEntities ent = entities;
 		if ( ent != null )
 		{
 			edges = ( ScreenEdgeList ) ent.edges; // TODO: get rid of cast
-			vertices = ( ScreenVertexList ) ent.vertices; // TODO: get rid of cast
+			vertices = ( ScreenVertexList ) ent.vertices; // TODO: get rid of
+															// cast
 			final List< ScreenVertexRange > vertexRanges = ent.vertexRanges;
 			if ( vertices != null )
 			{
@@ -75,7 +94,7 @@ public class GraphLayoutOverlay implements OverlayRenderer
 			}
 			if ( vertexRanges != null )
 			{
-				g2.setColor( Color.RED );
+				g2.setColor( vertexRangeColor );
 				for ( final ScreenVertexRange range : vertexRanges )
 				{
 					drawVertexRange( g2, range );
@@ -99,9 +118,10 @@ public class GraphLayoutOverlay implements OverlayRenderer
 		final double x = vertex.getX();
 		final double y = vertex.getY();
 
-		g2.setColor( Color.WHITE );
+		final boolean selected = vertex.isSelected();
+		g2.setColor( selected ? selectedVertexFillColor : vertexFillColor );
 		g2.fillOval( ( int ) ( x - spotradius ), ( int ) ( y - spotradius ), sd, sd );
-		g2.setColor( Color.BLACK );
+		g2.setColor( selected ? selectedVertexDrawColor : vertexDrawColor );
 		g2.drawOval( ( int ) ( x - spotradius ), ( int ) ( y - spotradius ), sd, sd );
 
 		final int maxLabelLength = ( int ) ( spotdiameter / avgLabelLetterWidth );
@@ -122,14 +142,14 @@ public class GraphLayoutOverlay implements OverlayRenderer
 
 	private void drawVertexSimplified( final Graphics2D g2, final ScreenVertex vertex )
 	{
-		final double spotradius = 2.0;
+		final double spotradius = simplifiedVertexRadius;
 		final double x = vertex.getX();
 		final double y = vertex.getY();
-		g2.setColor( Color.BLACK );
+		g2.setColor( vertex.isSelected() ? selectedSimplifiedVertexFillColor : simplifiedVertexFillColor );
 		g2.fillOval( ( int ) ( x - spotradius ), ( int ) ( y - spotradius ), ( int ) ( 2 * spotradius ), ( int ) ( 2 * spotradius ) );
 	}
 
-	private void drawVertexRange( final Graphics2D g2, final ScreenVertexRange range  )
+	private void drawVertexRange( final Graphics2D g2, final ScreenVertexRange range )
 	{
 		final int x = ( int ) range.getMinX();
 		final int y = ( int ) range.getMinY();
