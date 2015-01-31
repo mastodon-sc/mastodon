@@ -44,8 +44,8 @@ public class VertexOrder
 		timepointToOrderedVertices = new TIntObjectHashMap< TrackSchemeVertexList >();
 
 
-		screenVertexPool = new ScreenVertex.ScreenVertexPool( 1000000 );
-		screenVertexPool2 = new ScreenVertex.ScreenVertexPool( 1000000 );
+		screenVertexPool = new ScreenVertex.ScreenVertexPool( 1000000, graph.getVertexPool() );
+		screenVertexPool2 = new ScreenVertex.ScreenVertexPool( 1000000, graph.getVertexPool() );
 
 		screenVertices = new ScreenVertexList( screenVertexPool, 1000000 );
 		screenVertices2 = new ScreenVertexList( screenVertexPool2, 1000000 );

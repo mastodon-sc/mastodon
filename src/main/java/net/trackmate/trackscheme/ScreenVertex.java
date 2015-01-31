@@ -6,6 +6,7 @@ import net.trackmate.graph.mempool.ByteMappedElement;
 import net.trackmate.graph.mempool.ByteMappedElementArray;
 import net.trackmate.graph.mempool.MemPool;
 import net.trackmate.graph.mempool.SingleArrayMemPool;
+import net.trackmate.trackscheme.TrackSchemeGraph.TrackSchemeVertexPool;
 import static net.trackmate.graph.mempool.ByteUtils.*;
 
 public class ScreenVertex extends PoolObject< ScreenVertex, ByteMappedElement >
@@ -22,9 +23,15 @@ public class ScreenVertex extends PoolObject< ScreenVertex, ByteMappedElement >
 
 	protected static final int SIZE_IN_BYTES = SELECTED_OFFSET + BOOLEAN_SIZE;
 
-	protected ScreenVertex( final Pool< ScreenVertex, ByteMappedElement > pool )
+	private final TrackSchemeVertex vref;
+
+	private final TrackSchemeVertexPool trackSchemeVertexPool;
+
+	protected ScreenVertex( final Pool< ScreenVertex, ByteMappedElement > pool, final TrackSchemeVertexPool trackSchemeVertexPool )
 	{
 		super( pool );
+		this.trackSchemeVertexPool = trackSchemeVertexPool;
+		this.vref = trackSchemeVertexPool.createRef();
 	}
 
 	public ScreenVertex init(
@@ -82,8 +89,8 @@ public class ScreenVertex extends PoolObject< ScreenVertex, ByteMappedElement >
 
 	public String getLabel()
 	{
-		// TODO get label from original vertex
-		return "";
+		trackSchemeVertexPool.getByInternalPoolIndex( getId(), vref );
+		return vref.getLabel();
 	}
 
 	public boolean isSelected()
@@ -115,9 +122,9 @@ public class ScreenVertex extends PoolObject< ScreenVertex, ByteMappedElement >
 
 	public static class ScreenVertexPool extends Pool< ScreenVertex, ByteMappedElement >
 	{
-		public ScreenVertexPool( final int initialCapacity )
+		public ScreenVertexPool( final int initialCapacity, final TrackSchemeVertexPool trackSchemeVertexPool )
 		{
-			this( initialCapacity, new VertexFactory( initialCapacity ) );
+			this( initialCapacity, new VertexFactory( initialCapacity, trackSchemeVertexPool ) );
 		}
 
 		private ScreenVertexPool( final int initialCapacity, final VertexFactory f )
@@ -141,11 +148,14 @@ public class ScreenVertex extends PoolObject< ScreenVertex, ByteMappedElement >
 		{
 			private ScreenVertexPool vertexPool;
 
+			private final TrackSchemeVertexPool trackSchemeVertexPool;
+
 			private final Labels labels;
 
-			public VertexFactory( final int initialCapacity )
+			public VertexFactory( final int initialCapacity, final TrackSchemeVertexPool trackSchemeVertexPool )
 			{
 				labels = new Labels( initialCapacity );
+				this.trackSchemeVertexPool = trackSchemeVertexPool;
 			}
 
 			@Override
@@ -157,7 +167,7 @@ public class ScreenVertex extends PoolObject< ScreenVertex, ByteMappedElement >
 			@Override
 			public ScreenVertex createEmptyRef()
 			{
-				return new ScreenVertex( vertexPool );
+				return new ScreenVertex( vertexPool, trackSchemeVertexPool );
 			}
 
 			@Override

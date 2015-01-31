@@ -4,6 +4,9 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.font.FontRenderContext;
+import java.awt.font.TextLayout;
+import java.awt.geom.Rectangle2D;
 import java.util.List;
 
 import net.imglib2.ui.OverlayRenderer;
@@ -23,6 +26,16 @@ public class GraphLayoutOverlay implements OverlayRenderer
 	private ScreenVertex vs;
 
 	private ScreenVertex vt;
+
+	private final double minDisplayVertexDist = 20.0;
+
+	private final double maxDisplayVertexSize = 100.0;
+
+	private final double minDisplaySimplifiedVertexDist = 5.0;
+
+	private final Font font = new Font( "SansSerif", Font.PLAIN, 9 );
+
+	private final double avgLabelLetterWidth = 5.0;
 
 	@Override
 	public synchronized void drawOverlays( final Graphics g )
@@ -54,9 +67,9 @@ public class GraphLayoutOverlay implements OverlayRenderer
 				for ( final ScreenVertex vertex : vertices )
 				{
 					final double d = vertex.getVertexDist();
-					if ( d > 20 )
+					if ( d >= minDisplayVertexDist )
 						drawVertex( g2, vertex );
-					else if ( d > 5 )
+					else if ( d >= minDisplaySimplifiedVertexDist )
 						drawVertexSimplified( g2, vertex );
 				}
 			}
@@ -77,27 +90,34 @@ public class GraphLayoutOverlay implements OverlayRenderer
 		}
 	}
 
-	final Font font = new Font( "SansSerif", Font.PLAIN, 9 );
-
 	private void drawVertex( final Graphics2D g2, final ScreenVertex vertex )
 	{
-		final double spotradius = 10.0;
+		final double spotdiameter = Math.min( vertex.getVertexDist() - 10.0, maxDisplayVertexSize );
+		final double spotradius = ( int ) ( spotdiameter / 2 );
+		final int sd = ( int ) spotdiameter;
 
 		final double x = vertex.getX();
 		final double y = vertex.getY();
-		final String label = vertex.getLabel();
 
 		g2.setColor( Color.WHITE );
-		g2.fillOval( ( int ) ( x - spotradius ), ( int ) ( y - spotradius ), ( int ) ( 2 * spotradius ), ( int ) ( 2 * spotradius ) );
+		g2.fillOval( ( int ) ( x - spotradius ), ( int ) ( y - spotradius ), sd, sd );
 		g2.setColor( Color.BLACK );
-		g2.drawOval( ( int ) ( x - spotradius ), ( int ) ( y - spotradius ), ( int ) ( 2 * spotradius ), ( int ) ( 2 * spotradius ) );
+		g2.drawOval( ( int ) ( x - spotradius ), ( int ) ( y - spotradius ), sd, sd );
 
-//		final FontRenderContext frc = g2.getFontRenderContext();
-//		final TextLayout layout = new TextLayout( label, font, frc );
-//		final Rectangle2D bounds = layout.getBounds();
-//		final float tx = ( float ) ( x - bounds.getCenterX() );
-//		final float ty = ( float ) ( y - bounds.getCenterY() );
-//		layout.draw( g2, tx, ty );
+		final int maxLabelLength = ( int ) ( spotdiameter / avgLabelLetterWidth );
+		if ( maxLabelLength > 2 )
+		{
+			String label = vertex.getLabel();
+			if ( label.length() > maxLabelLength )
+				label = label.substring( 0, maxLabelLength - 2 ) + "...";
+
+			final FontRenderContext frc = g2.getFontRenderContext();
+			final TextLayout layout = new TextLayout( label, font, frc );
+			final Rectangle2D bounds = layout.getBounds();
+			final float tx = ( float ) ( x - bounds.getCenterX() );
+			final float ty = ( float ) ( y - bounds.getCenterY() );
+			layout.draw( g2, tx, ty );
+		}
 	}
 
 	private void drawVertexSimplified( final Graphics2D g2, final ScreenVertex vertex )
