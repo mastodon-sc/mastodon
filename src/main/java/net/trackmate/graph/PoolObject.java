@@ -115,7 +115,7 @@ public abstract class PoolObject< O extends PoolObject< O, T >, T extends Mapped
 	@SuppressWarnings( "unchecked" )
 	public O refTo( final O obj )
 	{
-		updateAccess( obj.memPool, obj.index );
+		updateAccess( ( ( PoolObject< O, T > ) obj ).memPool, ( ( PoolObject< O, T > ) obj ).index );
 		return ( O ) this;
 	}
 
