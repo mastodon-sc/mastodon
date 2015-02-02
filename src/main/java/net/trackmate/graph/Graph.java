@@ -41,9 +41,4 @@ public interface Graph< V extends Vertex< E >, E extends Edge< V > >
 	public void releaseRef( final V ... refs );
 
 	public void releaseRef( final E ... refs );
-
-	public void getVertexByInternalPoolIndex( final int index, final V v );
-
-	public void getEdgeByInternalPoolIndex( final int index, final E e );
-
 }

@@ -142,16 +142,4 @@ public class GraphImp<
 		for ( final E ref : refs )
 			edgePool.releaseRef( ref );
 	}
-
-	@Override
-	public void getVertexByInternalPoolIndex( final int index, final V v )
-	{
-		vertexPool.getByInternalPoolIndex( index, v );
-	}
-
-	@Override
-	public void getEdgeByInternalPoolIndex( final int index, final E e )
-	{
-		edgePool.getByInternalPoolIndex( index, e );
-	}
 }
