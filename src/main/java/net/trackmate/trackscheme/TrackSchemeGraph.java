@@ -145,7 +145,7 @@ public class TrackSchemeGraph extends GraphImp< TrackSchemeGraph.TrackSchemeVert
 		return sb.toString();
 	}
 
-	protected TrackSchemeVertexPool getVertexPool()
+	public TrackSchemeVertexPool getVertexPool()
 	{
 		return vertexPool;
 	}
