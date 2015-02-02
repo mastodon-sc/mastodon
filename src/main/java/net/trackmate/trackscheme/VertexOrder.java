@@ -1,7 +1,6 @@
 package net.trackmate.trackscheme;
 
 import java.util.ArrayList;
-
 import net.trackmate.trackscheme.ScreenEdge.ScreenEdgePool;
 import net.trackmate.trackscheme.ScreenVertex.ScreenVertexPool;
 import gnu.trove.iterator.TIntIterator;
@@ -141,9 +140,18 @@ public class VertexOrder
 		vlist.add( v );
 
 		final TrackSchemeVertex child = graph.vertexRef();
-		for ( final TrackSchemeEdge edge : v.outgoingEdges() )
-			build( edge.getTarget( child ) );
+		final TrackSchemeEdge edge = graph.edgeRef();
+		for ( final TrackSchemeEdge next : v.outgoingEdges() )
+			buildNextChild( next, child, edge );
+		graph.releaseRef( edge );
 		graph.releaseRef( child );
+	}
+
+	private void buildNextChild( final TrackSchemeEdge next, final TrackSchemeVertex child, final TrackSchemeEdge edge )
+	{
+		next.getTarget( child );
+		if ( child.incomingEdges().get( 0, edge ).equals( next ) )
+			build( child );
 	}
 
 	public TrackSchemeVertex getMinVertex( final int timepoint, final TrackSchemeVertex vertex )

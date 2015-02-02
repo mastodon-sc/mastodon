@@ -38,19 +38,46 @@ public class LineageTreeLayout
 		else
 		{
 			final TrackSchemeVertex child = graph.vertexRef();
+			final TrackSchemeEdge edge = graph.edgeRef();
 			final Iterator< TrackSchemeEdge > iterator = v.outgoingEdges().iterator();
-			layoutX( iterator.next().getTarget( child ) );
+			int numLaidOutChildren = layoutNextChild( iterator, child, edge );
 			final double firstChildX = child.getLayoutX();
 			if ( iterator.hasNext() )
 			{
 				while ( iterator.hasNext() )
-					layoutX( iterator.next().getTarget( child ) );
+					numLaidOutChildren += layoutNextChild( iterator, child, edge );
 				final double lastChildX = child.getLayoutX();
-				v.setLayoutX( ( firstChildX + lastChildX ) / 2 );
+				if ( numLaidOutChildren > 0 )
+					v.setLayoutX( ( firstChildX + lastChildX ) / 2 );
+				else
+				{
+					v.setLayoutX( rightmost );
+					rightmost += 1;
+				}
 			}
 			else
-				v.setLayoutX( firstChildX );
+				if ( numLaidOutChildren > 0 )
+					v.setLayoutX( firstChildX );
+				else
+				{
+					v.setLayoutX( rightmost );
+					rightmost += 1;
+				}
+			graph.releaseRef( edge );
 			graph.releaseRef( child );
 		}
+	}
+
+	private int layoutNextChild( final Iterator< TrackSchemeEdge > iterator, final TrackSchemeVertex child, final TrackSchemeEdge edge )
+	{
+		final TrackSchemeEdge next = iterator.next();
+		next.getTarget( child );
+		if ( child.incomingEdges().get( 0, edge ).equals( next ) )
+		{
+			layoutX( child );
+			return 1;
+		}
+		else
+			return 0;
 	}
 }

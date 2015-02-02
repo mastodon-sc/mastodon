@@ -10,6 +10,7 @@ import net.trackmate.graph.AbstractVertex;
 import net.trackmate.graph.Graph;
 import net.trackmate.graph.mempool.ByteMappedElement;
 import net.trackmate.graph.mempool.MappedElement;
+import net.trackmate.trackscheme.ShowTrackScheme;
 import net.trackmate.trackscheme.TrackSchemeEdge;
 import net.trackmate.trackscheme.TrackSchemeGraph;
 import net.trackmate.trackscheme.TrackSchemeVertex;
@@ -126,7 +127,7 @@ public class DepthFirstIterator< V extends AbstractVertex< V, E, T >, E extends 
 
 		graph.addEdge( E, F );
 
-//		new ShowTrackScheme( graph ); // does not work with non-tree graphs.
+		new ShowTrackScheme( graph ); // does not work with non-tree graphs.
 
 		final DepthFirstIterator< TrackSchemeVertex, TrackSchemeEdge, ByteMappedElement > iterator = new DepthFirstIterator< TrackSchemeVertex, TrackSchemeEdge, ByteMappedElement >( graph, A );
 
