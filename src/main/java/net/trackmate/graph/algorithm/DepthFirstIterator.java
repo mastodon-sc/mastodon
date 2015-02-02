@@ -1,16 +1,14 @@
 package net.trackmate.graph.algorithm;
 
-import gnu.trove.set.hash.TIntHashSet;
-import gnu.trove.stack.array.TIntArrayStack;
-
 import java.util.Iterator;
 
 import net.trackmate.graph.AbstractEdge;
 import net.trackmate.graph.AbstractVertex;
-import net.trackmate.graph.Graph;
+import net.trackmate.graph.Pool;
+import net.trackmate.graph.PoolObjectSet;
+import net.trackmate.graph.PoolObjectStack;
 import net.trackmate.graph.mempool.ByteMappedElement;
 import net.trackmate.graph.mempool.MappedElement;
-import net.trackmate.trackscheme.ShowTrackScheme;
 import net.trackmate.trackscheme.TrackSchemeEdge;
 import net.trackmate.trackscheme.TrackSchemeGraph;
 import net.trackmate.trackscheme.TrackSchemeVertex;
@@ -18,11 +16,9 @@ import net.trackmate.trackscheme.TrackSchemeVertex;
 public class DepthFirstIterator< V extends AbstractVertex< V, E, T >, E extends AbstractEdge< E, V, T >, T extends MappedElement > implements Iterator< V >
 {
 
-	private final Graph< V, E > graph;
+	private PoolObjectSet< V, T > visited;
 
-	private final TIntHashSet visited;
-
-	private final TIntArrayStack stack;
+	private PoolObjectStack< V, T > stack;
 
 	private final V returned;
 
@@ -32,16 +28,18 @@ public class DepthFirstIterator< V extends AbstractVertex< V, E, T >, E extends 
 
 	private final V v;
 
-	public DepthFirstIterator( final Graph< V, E > graph, final V startVertex )
+	private final Pool< V, T > pool;
+
+	public DepthFirstIterator( final Pool< V, T > pool, final V startVertex )
 	{
-		this.graph = graph;
-		this.visited = new TIntHashSet();
-		this.stack = new TIntArrayStack();
-		this.returned = graph.vertexRef();
-		this.next = graph.vertexRef();
-		this.v = graph.vertexRef();
+		this.pool = pool;
+		this.visited = new PoolObjectSet< V, T >( pool );
+		this.stack = new PoolObjectStack< V, T >( pool );
+		this.returned = pool.createRef();
+		this.next = pool.createRef();
+		this.v = pool.createRef();
 		this.hasNext = true;
-		stack.push( startVertex.getInternalPoolIndex() );
+		stack.push( startVertex );
 		fetchNext();
 	}
 
@@ -56,9 +54,11 @@ public class DepthFirstIterator< V extends AbstractVertex< V, E, T >, E extends 
 	 */
 	public void release()
 	{
-		graph.releaseRef( returned );
-		graph.releaseRef( next );
-		graph.releaseRef( v );
+		pool.releaseRef( returned );
+		pool.releaseRef( next );
+		pool.releaseRef( v );
+		stack = null;
+		visited = null;
 	}
 
 	protected void fetchNext()
@@ -66,19 +66,19 @@ public class DepthFirstIterator< V extends AbstractVertex< V, E, T >, E extends 
 		if ( stack.size() < 1 )
 		{
 			hasNext = false;
+			release();
 			return;
 		}
 
-		final int vref = stack.pop();
-		if ( !visited.contains( vref ) )
+		stack.pop( v );
+		if ( !visited.contains( v ) )
 		{
-			visited.add( vref );
-
-			graph.getVertexByInternalPoolIndex( vref, next );
+			visited.add( v );
+			next.refTo( v );
 			for ( final E e : next.outgoingEdges() )
 			{
 				e.getTarget( v );
-				stack.push( v.getInternalPoolIndex() );
+				stack.push( v );
 			}
 		}
 		else
@@ -127,15 +127,15 @@ public class DepthFirstIterator< V extends AbstractVertex< V, E, T >, E extends 
 
 		graph.addEdge( E, F );
 
-		new ShowTrackScheme( graph ); // does not work with non-tree graphs.
+//		new ShowTrackScheme( graph ); // does not work with non-tree graphs.
 
-		final DepthFirstIterator< TrackSchemeVertex, TrackSchemeEdge, ByteMappedElement > iterator = new DepthFirstIterator< TrackSchemeVertex, TrackSchemeEdge, ByteMappedElement >( graph, A );
+		final DepthFirstIterator< TrackSchemeVertex, TrackSchemeEdge, ByteMappedElement > iterator 
+ = new DepthFirstIterator< TrackSchemeVertex, TrackSchemeEdge, ByteMappedElement >( graph.getVertexPool(), A );
 
 		while ( iterator.hasNext() )
 		{
 			System.out.println( iterator.next().toString() );
 		}
-		iterator.release();
 	}
 
 }
