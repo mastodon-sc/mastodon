@@ -44,4 +44,10 @@ public class ObjectVertex< K > implements Vertex< ObjectEdge< K > >
 		return allEdges;
 	}
 
+	@Override
+	public String toString()
+	{
+		return content.toString();
+	}
+
 }
