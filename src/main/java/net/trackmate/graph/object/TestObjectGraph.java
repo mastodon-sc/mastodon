@@ -1,12 +1,9 @@
 package net.trackmate.graph.object;
 
-import java.util.Arrays;
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
 
-import net.trackmate.graph.object.ObjectGraphUtils.Function;
+import net.trackmate.trackscheme.TrackSchemeGraph;
+import net.trackmate.trackscheme.TrackSchemeVertex;
 
 public class TestObjectGraph
 {
@@ -14,154 +11,48 @@ public class TestObjectGraph
 	{
 		final ObjectGraph< String > graph = createCElegansLineage();
 
-		final Function< String, Integer > fun = new Function< String, Integer >()
-		{
-			@Override
-			public Integer eval( final String input )
-			{
-				return Integer.valueOf( input.length() + 2 );
-			}
-		};
-
 		final Collection< ObjectVertex< String >> roots = Tree.findRoot( graph.getVertices().iterator() );
 		for ( final ObjectVertex< String > root : roots )
 		{
-			final Map< ObjectVertex< String >, Integer > widthMap = ObjectGraphUtils.recursiveCumSum( root, fun );
-			final Map< ObjectVertex< String >, Integer > depthMap = ObjectGraphUtils.depth( root );
-
-			/*
-			 * Max depth and text holder.
-			 */
-
-			int maxDepth = -1;
-			for ( final Integer depth : depthMap.values() )
-			{
-				final int d = depth.intValue();
-				if ( d > maxDepth )
-				{
-					maxDepth = d;
-				}
-			}
-			final StringBuffer[] str = new StringBuffer[ maxDepth + 1 ];
-			final StringBuffer[] above1 = new StringBuffer[ maxDepth + 1 ];
-			final StringBuffer[] above2 = new StringBuffer[ maxDepth + 1 ];
-			final int[] columns = new int[ maxDepth + 1 ];
-
-			for ( int i = 0; i < str.length; i++ )
-			{
-				str[ i ] = new StringBuffer();
-				above1[ i ] = new StringBuffer();
-				above2[ i ] = new StringBuffer();
-			}
-
-			/*
-			 * Iterate into the tree.
-			 */
-
-			final Map< ObjectVertex< String >, Integer > writeTo = new HashMap< ObjectVertex< String >, Integer >( widthMap.size() );
-			final Iterator< ObjectVertex< String >> it = new DepthFirstIterator< String >( root );
-			while ( it.hasNext() )
-			{
-				final ObjectVertex< String > vi = it.next();
-				final int row = depthMap.get( vi ).intValue();
-				final int width = widthMap.get( vi ).intValue();
-				
-				columns[ row ] += width;
-				writeTo.put( vi, Integer.valueOf( columns[ row ] ) );
-
-				final StringBuffer sb = new StringBuffer( width );
-				sb.append( spaces( width ) );
-				final String s = vi.getContent();
-				final int sl = s.length();
-				final int start = width/2 - sl/2;
-				final int end = start + sl;
-				sb.replace( start , end , s );
-				str[ row ].append( sb );
-				
-				final StringBuffer sb1 = new StringBuffer( width );
-				sb1.append( spaces( width ) );
-				sb1.setCharAt( width / 2, '|' );
-				above1[ row ].append( sb1 );
-
-				final StringBuffer sb2 = new StringBuffer( width );
-				sb2.append( spaces( width ) );
-				char c;
-				if ( !vi.incomingEdges().isEmpty() && vi.incomingEdges().get( 0 ).getSource().outgoingEdges().size() > 1 )
-				{
-					c = '+';
-
-				}
-				else
-				{
-					c = '|';
-				}
-				sb2.setCharAt( width / 2, c );
-				above2[ row ].append( sb2 );
-
-				if ( Tree.isLeaf( vi ) )
-				{
-					for ( int i = row + 1; i <= maxDepth; i++ )
-					{
-						final char[] spaces = spaces( width );
-						str[ i ].append( spaces( width ) );
-						above1[ i ].append( spaces );
-						above2[ i ].append( spaces );
-						columns[ i ] += width;
-					}
-				}
-			}
-			
-			/*
-			 * Second iteration
-			 */
-			
-			final Iterator< ObjectVertex< String >> it2 = new DepthFirstIterator< String >( root );
-			while ( it2.hasNext() )
-			{
-				final ObjectVertex< String > vi = it2.next();
-				final int row = depthMap.get( vi ).intValue();
-				if ( row == maxDepth )
-				{
-					continue;
-				}
-				final int col = writeTo.get( vi ).intValue();
-				final int width = widthMap.get( vi ).intValue();
-
-				char c;
-				if ( vi.outgoingEdges().size() > 1 )
-				{
-					c = '+';
-				}
-				else
-				{
-					c = ' ';
-				}
-				above2[ row + 1 ].setCharAt( col - width / 2, c );
-			}
-
-			// Cat
-			final StringBuffer text = new StringBuffer();
-			for ( int i = 0; i < above2.length; i++ )
-			{
-				text.append( above2[ i ] );
-				text.append( '\n' );
-				text.append( above1[ i ] );
-				text.append( '\n' );
-				text.append( str[ i ] );
-				text.append( '\n' );
-			}
-
-			System.out.println( text );
-			System.out.println( '\n' );
+			System.out.println( Tree.toString( root ) );
 		}
 
+		System.out.println();
+		System.out.println();
+
+		final TrackSchemeGraph tsg = createTrackMateGraph();
+		final Collection< TrackSchemeVertex > tsRoots = Tree.findRoot( tsg.vertices().iterator() );
+		for ( final TrackSchemeVertex tsRoot : tsRoots )
+		{
+			System.out.println( Tree.toString( tsRoot ) );
+		}
 	}
 
-	private static final char[] spaces( final int n )
+	public static final TrackSchemeGraph createTrackMateGraph()
 	{
-		final char[] spaces = new char[ n ];
-		Arrays.fill( spaces, ' ' );
-		return spaces;
+		final TrackSchemeGraph graph = new TrackSchemeGraph();
+
+		final TrackSchemeVertex A = graph.addVertex().init( "A", 0, true );
+
+		final TrackSchemeVertex B = graph.addVertex().init( "B", 1, true );
+		graph.addEdge( A, B );
+
+		final TrackSchemeVertex C = graph.addVertex().init( "C", 1, true );
+		graph.addEdge( A, C );
+
+		final TrackSchemeVertex E = graph.addVertex().init( "E", 1, true );
+		graph.addEdge( A, E );
+
+		final TrackSchemeVertex D = graph.addVertex().init( "D", 2, true );
+		graph.addEdge( B, D );
+
+		final TrackSchemeVertex F = graph.addVertex().init( "F", 2, true );
+		graph.addEdge( B, F );
+
+		final TrackSchemeVertex G = graph.addVertex().init( "G", 2, true );
+		graph.addEdge( C, G );
+
+		return graph;
 	}
 
 	public static ObjectGraph< String > createCElegansLineage()
@@ -285,6 +176,18 @@ public class TestObjectGraph
 		graph.addEdge( zygote, AB );
 		graph.addEdge( zygote, P1 );
 
+		// Extras, to get a long branch
+
+		final ObjectVertex< String > ABplaa = graph.addVertex().init( "AB.plaa" );
+		graph.addEdge( ABpla, ABplaa );
+
+		final ObjectVertex< String > ABplaaa = graph.addVertex().init( "AB.plaaa" );
+		graph.addEdge( ABplaa, ABplaaa );
+
+		final ObjectVertex< String > ABplaaaa = graph.addVertex().init( "AB.plaaaa" );
+		graph.addEdge( ABplaaa, ABplaaaa );
+
 		return graph;
+
 	}
 }
