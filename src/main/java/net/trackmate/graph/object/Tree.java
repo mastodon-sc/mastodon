@@ -16,6 +16,20 @@ import net.trackmate.graph.algorithm.DFI;
 public class Tree
 {
 
+	private static final char V_BAR_CHAR = '│';
+
+	private static final char CORNER_BR_CHAR = '┌';
+
+	private static final char CORNER_BL_CHAR = '┐';
+
+	private static final char TRIANGLE_B_CHAR = '┬';
+
+	private static final char TRIANGLE_U_CHAR = '┴';
+
+	private static final char SPACE_CHAR = ' ';
+
+	private static final char H_BAR_CHAR = '─';
+
 	public static boolean isTree( final Iterator< Vertex< ? >> it )
 	{
 		while ( it.hasNext() )
@@ -112,7 +126,7 @@ public class Tree
 
 			final StringBuffer sb1 = new StringBuffer( width );
 			sb1.append( spaces( width ) );
-			sb1.setCharAt( width / 2, '|' );
+			sb1.setCharAt( width / 2, V_BAR_CHAR );
 			above1[ row ].append( sb1 );
 
 			final StringBuffer sb2 = new StringBuffer( width );
@@ -120,12 +134,23 @@ public class Tree
 			char c;
 			if ( !vi.incomingEdges().isEmpty() && vi.incomingEdges().get( 0 ).getSource().outgoingEdges().size() > 1 )
 			{
-				c = '+';
+				if ( vi.incomingEdges().get( 0 ).getSource().outgoingEdges().get( 0 ).equals( vi.incomingEdges().get( 0 ) ) )
+				{
+					c = CORNER_BL_CHAR;
+				}
+				else if ( vi.incomingEdges().get( 0 ).getSource().outgoingEdges().get( vi.incomingEdges().get( 0 ).getSource().outgoingEdges().size() - 1 ).equals( vi.incomingEdges().get( 0 ) ) )
+				{
+					c = CORNER_BR_CHAR;
+				}
+				else
+				{
+					c = TRIANGLE_B_CHAR;
+				}
 
 			}
 			else
 			{
-				c = '|';
+				c = V_BAR_CHAR;
 			}
 			sb2.setCharAt( width / 2, c );
 			above2[ row ].append( sb2 );
@@ -163,63 +188,54 @@ public class Tree
 			char c;
 			if ( vi.outgoingEdges().size() > 1 )
 			{
-				c = '+';
+				c = TRIANGLE_U_CHAR;
 			}
 			else if ( vi.outgoingEdges().size() > 0 )
 			{
-				c = '|';
+				c = V_BAR_CHAR;
 			}
 			else
 			{
-				c = ' ';
+				c = SPACE_CHAR;
 			}
 			above2[ row + 1 ].setCharAt( col + width / 2, c );
 
-			final int fi1 = above2[ row + 1 ].indexOf( "|", col + 1 );
-			final int fi2 = above2[ row + 1 ].indexOf( "+", col + 1 );
-			if ( fi1 < 0 && fi2 < 0 )
-			{
-				continue;
-			}
 			int fi = -1;
-			if ( fi1 >= 0 && fi1 <= col + width )
+			for ( int i = col + 1; i < col + width; i++ )
 			{
-				fi = fi1;
-			}
-			if ( fi2 >= 0 && fi2 <= col + width )
-			{
-				fi = Math.max( fi, fi2 );
+				final char d = above2[ row + 1 ].charAt( i );
+				if ( d == V_BAR_CHAR || d == TRIANGLE_B_CHAR || d == CORNER_BL_CHAR || d == CORNER_BR_CHAR )
+				{
+					fi = i;
+					break;
+				}
 			}
 			if ( fi < 0 )
 			{
 				continue;
 			}
 
-			final int li1 = above2[ row + 1 ].lastIndexOf( "|", col + width );
-			final int li2 = above2[ row + 1 ].lastIndexOf( "+", col + width );
-			if ( li1 < 0 && li2 < 0 )
-			{
-				continue;
-			}
 			int li = -1;
-			if ( li1 >= 0 && li1 <= col + width )
+			for ( int i = col + width - 1; i >= col + 1; i-- )
 			{
-				li = li1;
-			}
-			if ( li2 >= 0 && li2 <= col + width )
-			{
-				li = Math.max( li, li2 );
+				final char d = above2[ row + 1 ].charAt( i );
+				if ( d == V_BAR_CHAR || d == TRIANGLE_B_CHAR || d == CORNER_BL_CHAR || d == CORNER_BR_CHAR )
+				{
+					li = i;
+					break;
+				}
 			}
 			if ( li < 0 )
 			{
 				continue;
 			}
 
+
 			for ( int i = fi; i < li; i++ )
 			{
-				if ( above2[ row + 1 ].charAt( i ) == ' ' )
+				if ( above2[ row + 1 ].charAt( i ) == SPACE_CHAR )
 				{
-					above2[ row + 1 ].setCharAt( i, '-' );
+					above2[ row + 1 ].setCharAt( i, H_BAR_CHAR );
 				}
 			}
 
