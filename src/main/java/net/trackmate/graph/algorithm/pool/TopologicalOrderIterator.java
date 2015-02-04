@@ -2,6 +2,7 @@ package net.trackmate.graph.algorithm.pool;
 
 import java.util.Iterator;
 
+import net.trackmate.graph.AbstractEdge;
 import net.trackmate.graph.AbstractVertex;
 import net.trackmate.graph.Edge;
 import net.trackmate.graph.Pool;
@@ -23,12 +24,10 @@ import net.trackmate.graph.PoolObjectSet;
  *
  * @param <V>
  */
-public class TopologicalOrderIterator< V extends AbstractVertex< V, ? extends Edge< V >, ? > > implements Iterator< V >
+public class TopologicalOrderIterator< V extends AbstractVertex< V, ? extends AbstractEdge< ?, V, ? >, ? > > implements Iterator< V >
 {
 
 	private final Pool< V, ? > pool;
-
-	private final Iterator< V > vertices;
 
 	private PoolObjectSet< V, ? > marked;
 
@@ -44,7 +43,6 @@ public class TopologicalOrderIterator< V extends AbstractVertex< V, ? extends Ed
 	public TopologicalOrderIterator( final Pool< V, ? > pool )
 	{
 		this.pool = pool;
-		this.vertices = pool.iterator();
 		this.failed = false;
 		this.marked = new PoolObjectSet( pool );
 		this.temporaryMarked = new PoolObjectSet( pool );
@@ -61,8 +59,7 @@ public class TopologicalOrderIterator< V extends AbstractVertex< V, ? extends Ed
 	}
 
 	/**
-	 * Returns <code>true</code> if the iterator stopped prematurely because the
-	 * graph it iterates has a cycle.
+	 * Returns <code>true</code> if the graph iterated has a cycle.
 	 *
 	 * @return <code>true</code> if the graph iterated is not a directed acyclic
 	 *         graph.
@@ -72,9 +69,6 @@ public class TopologicalOrderIterator< V extends AbstractVertex< V, ? extends Ed
 		return failed;
 	}
 
-	/**
-	 * Do this when you are done with the iterator.
-	 */
 	private void release()
 	{
 		marked = null;
@@ -83,6 +77,7 @@ public class TopologicalOrderIterator< V extends AbstractVertex< V, ? extends Ed
 
 	private void fetchList()
 	{
+		final Iterator< V > vertices = pool.iterator();
 		final V v1 = pool.createRef();
 		while ( vertices.hasNext() && !failed )
 		{
