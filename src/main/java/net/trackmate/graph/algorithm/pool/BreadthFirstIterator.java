@@ -1,4 +1,4 @@
-package net.trackmate.graph.algorithm;
+package net.trackmate.graph.algorithm.pool;
 
 import java.util.Iterator;
 
