@@ -460,4 +460,19 @@ public class PoolObjectList< O extends PoolObject< O, T >, T extends MappedEleme
 		// TODO
 		throw new UnsupportedOperationException( "not yet implemented" );
 	}
+
+	@Override
+	public String toString()
+	{
+		if ( isEmpty() ) { return "( )"; }
+		final StringBuffer sb = new StringBuffer();
+		final Iterator< ? > it = iterator();
+		sb.append( "( " + it.next().toString() );
+		while ( it.hasNext() )
+		{
+			sb.append( " , " + it.next().toString() );
+		}
+		sb.append( " )" );
+		return sb.toString();
+	}
 }
