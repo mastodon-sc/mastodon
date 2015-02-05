@@ -3,6 +3,9 @@ package net.trackmate.graph.algorithm.pool;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+
+import java.util.Iterator;
+
 import net.trackmate.trackscheme.TrackSchemeGraph;
 import net.trackmate.trackscheme.TrackSchemeVertex;
 
@@ -10,7 +13,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-public class TopologicalOrderIteratorTest
+public class TopologicalSortTest
 {
 
 	private TrackSchemeGraph graph;
@@ -53,17 +56,17 @@ public class TopologicalOrderIteratorTest
 	@Test
 	public void testBehavior()
 	{
-		final TopologicalOrderIterator< TrackSchemeVertex > it = new TopologicalOrderIterator< TrackSchemeVertex >( graph.getVertexPool() );
-		assertFalse( it.hasFailed() );
+		final TopologicalSort< TrackSchemeVertex > sort = new TopologicalSort< TrackSchemeVertex >( graph.getVertexPool() );
+		assertFalse( sort.hasFailed() );
+
+		final Iterator< TrackSchemeVertex > it = sort.get().iterator();
 
 		final TrackSchemeVertex previous = graph.vertexRef();
 		final TrackSchemeVertex current = graph.vertexRef();
 		previous.refTo( it.next() );
-		int count = 1;
 		while ( it.hasNext() )
 		{
 			current.refTo( it.next() );
-			count++;
 
 			assertTrue( "Vertex " + previous + " should have happend after " + current, current.getLayoutX() >= previous.getLayoutX() );
 
@@ -72,17 +75,17 @@ public class TopologicalOrderIteratorTest
 		graph.releaseRef( current );
 		graph.releaseRef( previous );
 
-		assertEquals( "Did not iterate through all the vertices of the graph.", graph.numVertices(), count );
+		assertEquals( "Did not iterate through all the vertices of the graph.", graph.numVertices(), sort.get().size() );
 	}
 
 	@Test
 	public void testNotDAG()
 	{
-		final TopologicalOrderIterator< TrackSchemeVertex > it = new TopologicalOrderIterator< TrackSchemeVertex >( graph.getVertexPool() );
+		final TopologicalSort< TrackSchemeVertex > it = new TopologicalSort< TrackSchemeVertex >( graph.getVertexPool() );
 		assertFalse( it.hasFailed() );
 
 		graph.addEdge( v10, v7 );
-		final TopologicalOrderIterator< TrackSchemeVertex > it2 = new TopologicalOrderIterator< TrackSchemeVertex >( graph.getVertexPool() );
+		final TopologicalSort< TrackSchemeVertex > it2 = new TopologicalSort< TrackSchemeVertex >( graph.getVertexPool() );
 		assertTrue( it2.hasFailed() );
 	}
 

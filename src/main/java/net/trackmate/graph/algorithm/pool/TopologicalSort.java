@@ -1,6 +1,7 @@
 package net.trackmate.graph.algorithm.pool;
 
 import java.util.Iterator;
+import java.util.List;
 
 import net.trackmate.graph.AbstractEdge;
 import net.trackmate.graph.AbstractVertex;
@@ -8,23 +9,20 @@ import net.trackmate.graph.Edge;
 import net.trackmate.graph.Pool;
 import net.trackmate.graph.PoolObjectList;
 import net.trackmate.graph.PoolObjectSet;
+import net.trackmate.graph.mempool.MappedElement;
 
 /**
- * A topological order iterator for a direct acyclic graph.
+ * A topological order sort for a direct acyclic graph.
  * <p>
- * If the graph provided is not acyclic, this iterator will have a flag returned
- * by the {@link #hasFailed()} method set to <code>true</code> to indicate the
- * problem.
- * <p>
- * Internally, this iterator is not a true iterator, but sorts the graph
- * vertices all at once, then uses an iterator over the sorted list. Therefore
- * the core of the calculation is done at instantiation.
+ * If the graph provided is not acyclic, the flag returned by the
+ * {@link #hasFailed()} method set to <code>true</code> to indicate the problem.
  *
  * @author Jean-Yves Tinevez
  *
  * @param <V>
+ *            the vertices type.
  */
-public class TopologicalOrderIterator< V extends AbstractVertex< V, ? extends AbstractEdge< ?, V, ? >, ? > > implements Iterator< V >
+public class TopologicalSort< V extends AbstractVertex< V, ? extends AbstractEdge< ?, V, ? >, ? extends MappedElement > >
 {
 
 	private final Pool< V, ? > pool;
@@ -35,12 +33,10 @@ public class TopologicalOrderIterator< V extends AbstractVertex< V, ? extends Ab
 
 	private boolean failed;
 
-	private final Iterator< V > iterator;
-
-	private PoolObjectList< V, ? > list;
+	private final PoolObjectList< V, ? > list;
 
 	@SuppressWarnings( { "rawtypes", "unchecked" } )
-	public TopologicalOrderIterator( final Pool< V, ? > pool )
+	public TopologicalSort( final Pool< V, ? > pool )
 	{
 		this.pool = pool;
 		this.failed = false;
@@ -48,14 +44,16 @@ public class TopologicalOrderIterator< V extends AbstractVertex< V, ? extends Ab
 		this.temporaryMarked = new PoolObjectSet( pool );
 		this.list = new PoolObjectList( pool, pool.size() );
 		fetchList();
-		this.iterator = list.iterator();
-		list = null;
 	}
 
-	@Override
-	public boolean hasNext()
+	/**
+	 * Returns the topologically sorted vertices in a list.
+	 * 
+	 * @return the list resulting from this sort operation.
+	 */
+	public List< V > get()
 	{
-		return iterator.hasNext();
+		return list;
 	}
 
 	/**
@@ -114,17 +112,5 @@ public class TopologicalOrderIterator< V extends AbstractVertex< V, ? extends Ab
 			temporaryMarked.remove( vertex );
 			list.add( vertex );
 		}
-	}
-
-	@Override
-	public V next()
-	{
-		return iterator.next();
-	}
-
-	@Override
-	public void remove()
-	{
-		throw new UnsupportedOperationException( "Remove is not supported for TopologicalSortIterator." );
 	}
 }
