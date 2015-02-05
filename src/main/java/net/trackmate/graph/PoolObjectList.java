@@ -444,7 +444,7 @@ public class PoolObjectList< O extends PoolObject< O, T >, T extends MappedEleme
 	@Override
 	public List< O > subList( final int fromIndex, final int toIndex )
 	{
-		return new PoolObjectList< O, T >( this, ( TIntArrayList ) indices.subList( fromIndex, fromIndex ) );
+		return new PoolObjectList< O, T >( this, ( TIntArrayList ) indices.subList( fromIndex, toIndex ) );
 	}
 
 	@Override
