@@ -4,8 +4,9 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-import java.util.Iterator;
+import java.util.List;
 
+import net.trackmate.trackscheme.TrackSchemeEdge;
 import net.trackmate.trackscheme.TrackSchemeGraph;
 import net.trackmate.trackscheme.TrackSchemeVertex;
 
@@ -59,21 +60,22 @@ public class TopologicalSortTest
 		final TopologicalSort< TrackSchemeVertex > sort = new TopologicalSort< TrackSchemeVertex >( graph.getVertexPool() );
 		assertFalse( sort.hasFailed() );
 
-		final Iterator< TrackSchemeVertex > it = sort.get().iterator();
-
-		final TrackSchemeVertex previous = graph.vertexRef();
+		final TrackSchemeVertex target = graph.vertexRef();
 		final TrackSchemeVertex current = graph.vertexRef();
-		previous.refTo( it.next() );
-		while ( it.hasNext() )
+		final List< TrackSchemeVertex > list = sort.get();
+
+		for ( int i = 0; i < list.size(); i++ )
 		{
-			current.refTo( it.next() );
-
-			assertTrue( "Vertex " + previous + " should have happend after " + current, current.getLayoutX() >= previous.getLayoutX() );
-
-			previous.refTo( current );
+			current.refTo( list.get( i ) );
+			for ( final TrackSchemeEdge e : current.outgoingEdges() )
+			{
+				e.getTarget( target );
+				final boolean dependenceInList = list.subList( 0, i ).contains( target );
+				assertTrue( "The dependency of " + current + ", " + target + ", could not be found in the sorted list before him.", dependenceInList );
+			}
 		}
 		graph.releaseRef( current );
-		graph.releaseRef( previous );
+		graph.releaseRef( target );
 
 		assertEquals( "Did not iterate through all the vertices of the graph.", graph.numVertices(), sort.get().size() );
 	}
