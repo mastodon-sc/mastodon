@@ -1,17 +1,18 @@
 package net.trackmate.graph.algorithm;
 
-import java.util.HashSet;
+import java.util.ArrayDeque;
+import java.util.Deque;
 import java.util.Iterator;
 import java.util.Set;
-import java.util.Stack;
 
+import net.trackmate.graph.CollectionUtils;
 import net.trackmate.graph.Edge;
 import net.trackmate.graph.Vertex;
 
 public class DFI< V extends Vertex< E >, E extends Edge< V >> implements Iterator< V >
 {
 
-	private Stack< V > stack;
+	private Deque< V > stack;
 
 	private V next;
 
@@ -21,8 +22,8 @@ public class DFI< V extends Vertex< E >, E extends Edge< V >> implements Iterato
 
 	public DFI( final V root )
 	{
-		this.visited = new HashSet< V >();
-		this.stack = new Stack< V >();
+		this.visited = CollectionUtils.createSet( root );
+		this.stack = new ArrayDeque< V >();
 		stack.push( root );
 		this.hasNext = true;
 		fetchNext();

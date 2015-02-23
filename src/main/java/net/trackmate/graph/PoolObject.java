@@ -42,7 +42,7 @@ public abstract class PoolObject< O extends PoolObject< O, T >, T extends Mapped
 	 * The {@link Pool} that created this {@link PoolObject}.
 	 * This is used only to forward {@link #releaseRef()} to the creating {@link Pool}.
 	 */
-	private final Pool< O, T > creatingPool;
+	final Pool< O, T > creatingPool;
 
 	/**
 	 * Create a {@link PoolObject} referring data in the given {@link MemPool}.

@@ -1,5 +1,8 @@
 package net.trackmate.graph;
 
+import java.util.Set;
+
+import net.trackmate.graph.CollectionUtils.CollectionCreator;
 import net.trackmate.graph.mempool.MappedElement;
 
 public class GraphImp<
@@ -8,7 +11,7 @@ public class GraphImp<
 		V extends AbstractVertex< V, E, T >,
 		E extends AbstractEdge< E, V, T >,
 		T extends MappedElement >
-	implements Graph< V, E >
+	implements Graph< V, E >, CollectionCreator< V, E >
 {
 	public static <
 			VP extends AbstractVertexPool< V, E, T >,
@@ -141,5 +144,17 @@ public class GraphImp<
 	{
 		for ( final E ref : refs )
 			edgePool.releaseRef( ref );
+	}
+
+	@Override
+	public Set< V > createVertexSet()
+	{
+		return new PoolObjectSet< V, T >( vertexPool );
+	}
+
+	@Override
+	public Set< V > createVertexSet( final int initialCapacity )
+	{
+		return new PoolObjectSet< V, T >( vertexPool, initialCapacity );
 	}
 }
