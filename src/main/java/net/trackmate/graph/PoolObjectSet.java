@@ -6,12 +6,11 @@ import gnu.trove.set.hash.TIntHashSet;
 
 import java.util.Collection;
 import java.util.Iterator;
-import java.util.Set;
-
+import net.trackmate.graph.collection.RefSet;
 import net.trackmate.graph.mempool.MappedElement;
 import net.trackmate.graph.mempool.MemPool;
 
-public class PoolObjectSet< O extends PoolObject< O, T >, T extends MappedElement > implements PoolObjectCollection< O, T >, Set< O >
+public class PoolObjectSet< O extends PoolObject< O, T >, T extends MappedElement > implements PoolObjectCollection< O, T >, RefSet< O >
 {
 	private final TIntSet indices;
 
@@ -27,6 +26,18 @@ public class PoolObjectSet< O extends PoolObject< O, T >, T extends MappedElemen
 	{
 		this.pool = pool;
 		indices = new TIntHashSet( initialCapacity );
+	}
+
+	@Override
+	public O createRef()
+	{
+		return pool.createRef();
+	}
+
+	@Override
+	public void releaseRef( final O obj )
+	{
+		pool.releaseRef( obj );
 	}
 
 	@Override
