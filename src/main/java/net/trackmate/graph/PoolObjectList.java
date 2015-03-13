@@ -11,10 +11,11 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.NoSuchElementException;
 
+import net.trackmate.graph.collection.RefList;
 import net.trackmate.graph.mempool.MappedElement;
 import net.trackmate.graph.mempool.MemPool;
 
-public class PoolObjectList< O extends PoolObject< O, T >, T extends MappedElement > implements PoolObjectCollection< O, T >, List< O >
+public class PoolObjectList< O extends PoolObject< O, T >, T extends MappedElement > implements PoolObjectCollection< O, T >, RefList< O >
 {
 	private final TIntArrayList indices;
 
@@ -38,11 +39,13 @@ public class PoolObjectList< O extends PoolObject< O, T >, T extends MappedEleme
 		indices = indexSubList;
 	}
 
+	@Override
 	public O createRef()
 	{
 		return pool.createRef();
 	}
 
+	@Override
 	public void releaseRef( final O obj )
 	{
 		pool.releaseRef( obj );
@@ -136,6 +139,7 @@ public class PoolObjectList< O extends PoolObject< O, T >, T extends MappedEleme
 		}
 	}
 
+	@Override
 	public O get( final int index, final O obj )
 	{
 		obj.updateAccess( pool.getMemPool(), indices.get( index ) );
@@ -382,6 +386,7 @@ public class PoolObjectList< O extends PoolObject< O, T >, T extends MappedEleme
 				: false;
 	}
 
+	@Override
 	public O remove( final int index, final O obj )
 	{
 		obj.updateAccess( pool.getMemPool(), indices.removeAt( index ) );
@@ -421,6 +426,7 @@ public class PoolObjectList< O extends PoolObject< O, T >, T extends MappedEleme
 		}
 	}
 
+	@Override
 	public O set( final int index, final O obj, final O replacedObj )
 	{
 		replacedObj.updateAccess(
