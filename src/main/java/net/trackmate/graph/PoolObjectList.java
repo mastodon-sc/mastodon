@@ -157,6 +157,12 @@ public class PoolObjectList< O extends PoolObject< O, T >, T extends MappedEleme
 		}
 	}
 
+	public O getQuick( final int index, final O obj )
+	{
+		obj.updateAccess( pool.getMemPool(), indices.getQuick( index ) );
+		return obj;
+	}
+
 	@Override
 	public O get( final int index, final O obj )
 	{
