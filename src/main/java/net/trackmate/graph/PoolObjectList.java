@@ -218,7 +218,7 @@ public class PoolObjectList< O extends PoolObject< O, T >, T extends MappedEleme
 			@Override
 			public void remove()
 			{
-				throw new UnsupportedOperationException();
+				ii.remove();
 			}
 		};
 	}
