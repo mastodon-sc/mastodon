@@ -1,57 +1,52 @@
 package net.trackmate.graph;
 
 import gnu.trove.iterator.TIntIterator;
-import gnu.trove.list.array.TIntArrayList;
 
 import java.util.Collection;
-import java.util.Deque;
 import java.util.Iterator;
-import java.util.NoSuchElementException;
 
+import net.trackmate.graph.collection.RefDeque;
 import net.trackmate.graph.mempool.MappedElement;
 import net.trackmate.graph.mempool.MemPool;
+import net.trackmate.graph.util.TIntArrayDeque;
 
-public class PoolObjectDeque< O extends PoolObject< O, T >, T extends MappedElement > implements PoolObjectCollection< O, T >, Deque< O >
+public class PoolObjectDeque< O extends PoolObject< O, T >, T extends MappedElement > implements PoolObjectCollection< O, T >, RefDeque< O >
 {
 
 	private final Pool< O, T > pool;
 
-	private final TIntArrayList indices;
+	private final TIntArrayDeque indices;
 
 	public PoolObjectDeque( final Pool< O, T > pool )
 	{
 		this.pool = pool;
-		this.indices = new TIntArrayList();
+		this.indices = new TIntArrayDeque();
 	}
 
 	public PoolObjectDeque( final Pool< O, T > pool, final int initialCapacity )
 	{
 		this.pool = pool;
-		indices = new TIntArrayList( initialCapacity );
-	}
-
-	protected PoolObjectDeque( final PoolObjectDeque< O, T > deque, final TIntArrayList indexSubList )
-	{
-		pool = deque.pool;
-		indices = indexSubList;
+		indices = new TIntArrayDeque( initialCapacity );
 	}
 
 	/*
 	 * POOL COLLECTION METHODS
 	 */
 
+	@Override
 	public O createRef()
 	{
 		return pool.createRef();
 	}
 
+	@Override
 	public void releaseRef( final O obj )
 	{
 		pool.releaseRef( obj );
 	}
 
 	@Override
-	public TIntArrayList getIndexCollection()
+	public TIntArrayDeque getIndexCollection()
 	{
 		return indices;
 	}
@@ -59,7 +54,6 @@ public class PoolObjectDeque< O extends PoolObject< O, T >, T extends MappedElem
 	/*
 	 * DEQUE METHODS
 	 */
-
 
 	@Override
 	public boolean add( final O obj )
@@ -142,7 +136,40 @@ public class PoolObjectDeque< O extends PoolObject< O, T >, T extends MappedElem
 			@Override
 			public void remove()
 			{
-				throw new UnsupportedOperationException();
+				ii.remove();
+			}
+		};
+	}
+
+	@Override
+	public Iterator< O > descendingIterator()
+	{
+		return new Iterator< O >()
+		{
+			final MemPool< T > memPool = pool.getMemPool();
+
+			final TIntIterator ii = indices.descendingIterator();
+
+			final O obj = pool.createRef();
+
+			@Override
+			public boolean hasNext()
+			{
+				return ii.hasNext();
+			}
+
+			@Override
+			public O next()
+			{
+				final int index = ii.next();
+				obj.updateAccess( memPool, index );
+				return obj;
+			}
+
+			@Override
+			public void remove()
+			{
+				ii.remove();
 			}
 		};
 	}
@@ -230,72 +257,117 @@ public class PoolObjectDeque< O extends PoolObject< O, T >, T extends MappedElem
 	@Override
 	public void addFirst( final O obj )
 	{
-		indices.insert( 0, obj.getInternalPoolIndex() );
+		indices.addFirst( obj.getInternalPoolIndex() );
 	}
 
 	@Override
 	public void addLast( final O obj )
 	{
-		add( obj );
+		indices.addLast( obj.getInternalPoolIndex() );
 	}
 
 	@Override
-	public Iterator< O > descendingIterator()
+	public O pollFirst( final O obj )
 	{
-		return new Iterator< O >()
-		{
-			final MemPool< T > memPool = pool.getMemPool();
-			
-			int index = indices.size() - 1;
-
-			final O obj = pool.createRef();
-
-			@Override
-			public boolean hasNext()
-			{
-				return index >= 0;
-			}
-
-			@Override
-			public O next()
-			{
-				final int id = indices.get( index-- );
-				obj.updateAccess( memPool, id );
-				return obj;
-			}
-
-			@Override
-			public void remove()
-			{
-				throw new UnsupportedOperationException();
-			}
-		};
+		obj.updateAccess( pool.getMemPool(), indices.pollFirst() );
+		return obj;
 	}
 
 	@Override
-	public O element()
+	public O pollFirst()
 	{
-		return getFirst();
+		return pollFirst( pool.createRef() );
+	}
+
+	@Override
+	public O pollLast( final O obj )
+	{
+		obj.updateAccess( pool.getMemPool(), indices.pollLast() );
+		return obj;
+	}
+
+	@Override
+	public O pollLast()
+	{
+		return pollLast( pool.createRef() );
+	}
+
+	@Override
+	public O peekFirst( final O obj )
+	{
+		obj.updateAccess( pool.getMemPool(), indices.peekFirst() );
+		return obj;
+	}
+
+	@Override
+	public O peekFirst()
+	{
+		return peekFirst( pool.createRef() );
+	}
+
+	@Override
+	public O peekLast( final O obj )
+	{
+		obj.updateAccess( pool.getMemPool(), indices.peekLast() );
+		return obj;
+	}
+
+	@Override
+	public O peekLast()
+	{
+		return peekLast( pool.createRef() );
+	}
+
+	@Override
+	public O removeFirst( final O obj )
+	{
+		obj.updateAccess( pool.getMemPool(), indices.removeFirst() );
+		return obj;
+	}
+
+	@Override
+	public O removeFirst()
+	{
+		return removeFirst( pool.createRef() );
+	}
+
+	@Override
+	public O removeLast( final O obj )
+	{
+		obj.updateAccess( pool.getMemPool(), indices.removeLast() );
+		return obj;
+	}
+
+	@Override
+	public O removeLast()
+	{
+		return removeLast( pool.createRef() );
+	}
+
+	@Override
+	public O getFirst( final O obj )
+	{
+		obj.updateAccess( pool.getMemPool(), indices.getFirst() );
+		return obj;
 	}
 
 	@Override
 	public O getFirst()
 	{
-		if ( size() > 0 ) { return getFirst(); }
-		throw new NoSuchElementException();
+		return getFirst( pool.createRef() );
+	}
+
+	@Override
+	public O getLast( final O obj )
+	{
+		obj.updateAccess( pool.getMemPool(), indices.getLast() );
+		return obj;
 	}
 
 	@Override
 	public O getLast()
 	{
-		if ( size() > 0 ) { return peekLast(); }
-		throw new NoSuchElementException();
-	}
-
-	@Override
-	public boolean offer( final O obj )
-	{
-		return add( obj );
+		return getLast( pool.createRef() );
 	}
 
 	@Override
@@ -313,55 +385,9 @@ public class PoolObjectDeque< O extends PoolObject< O, T >, T extends MappedElem
 	}
 
 	@Override
-	public O peek()
+	public boolean offer( final O obj )
 	{
-		return peekFirst();
-	}
-
-	@Override
-	public O peekFirst()
-	{
-		if ( size() > 0 ) { return getFirst(); }
-		return null;
-	}
-
-	@Override
-	public O peekLast()
-	{
-		if ( size() > 0 ) { return getLast(); }
-		return null;
-	}
-
-	@Override
-	public O poll()
-	{
-		return pollFirst();
-	}
-
-	@Override
-	public O pollFirst()
-	{
-		if ( size() > 0 ) { return removeFirst(); }
-		return null;
-	}
-
-	@Override
-	public O pollLast()
-	{
-		if ( size() > 0 ) { return removeLast(); }
-		return null;
-	}
-
-	@Override
-	public O pop()
-	{
-		return removeFirst();
-	}
-
-	@Override
-	public void push( final O obj )
-	{
-		addFirst( obj );
+        return offerLast( obj );
 	}
 
 	@Override
@@ -371,47 +397,78 @@ public class PoolObjectDeque< O extends PoolObject< O, T >, T extends MappedElem
 	}
 
 	@Override
-	public O removeFirst()
-	{
-		final int index = indices.removeAt( 0 );
-		final O ref = pool.createRef();
-		pool.getByInternalPoolIndex( index, ref );
-		return ref;
-	}
-
-
-	@Override
-	public O removeLast()
-	{
-		final int index = indices.removeAt( indices.size() - 1 );
-		final O ref = pool.createRef();
-		pool.getByInternalPoolIndex( index, ref );
-		return ref;
-	}
-
-	@Override
 	public boolean removeFirstOccurrence( final Object obj )
 	{
-		if ( !( obj instanceof PoolObjectCollection ) ) { return false; }
+		if ( !( obj instanceof PoolObjectCollection ) )
+			return false;
 		@SuppressWarnings( "unchecked" )
 		final O o = ( O ) obj;
 		final int id = o.getInternalPoolIndex();
-		final int lastIndexOf = indices.indexOf( id );
-		if ( lastIndexOf < 0 ) { return false; }
-		indices.removeAt( lastIndexOf );
-		return true;
+		return indices.remove( id );
 	}
 
 	@Override
 	public boolean removeLastOccurrence( final Object obj )
 	{
-		if ( !( obj instanceof PoolObjectCollection ) ) { return false; }
+		if ( !( obj instanceof PoolObjectCollection ) )
+			return false;
 		@SuppressWarnings( "unchecked" )
 		final O o = ( O ) obj;
 		final int id = o.getInternalPoolIndex();
-		final int lastIndexOf = indices.lastIndexOf( id );
-		if ( lastIndexOf < 0 ) { return false; }
-		indices.removeAt( lastIndexOf );
-		return true;
+		return indices.removeLastOccurrence( id );
+	}
+
+	@Override
+	public O poll()
+	{
+		return pollFirst();
+	}
+
+	@Override
+	public O poll( final O obj )
+	{
+		return poll( obj );
+	}
+
+	@Override
+	public O element()
+	{
+		return getFirst();
+	}
+
+	@Override
+	public O element( final O obj )
+	{
+		return getFirst( obj );
+	}
+
+	@Override
+	public O peek()
+	{
+		return peekFirst();
+	}
+
+	@Override
+	public O peek( final O obj )
+	{
+		return peekFirst( obj );
+	}
+
+	@Override
+	public void push( final O obj )
+	{
+		addFirst( obj );
+	}
+
+	@Override
+	public O pop()
+	{
+		return removeFirst();
+	}
+
+	@Override
+	public O pop( final O obj )
+	{
+		return removeFirst( obj );
 	}
 }
