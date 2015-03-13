@@ -146,4 +146,17 @@ public abstract class PoolObject< O extends PoolObject< O, T >, T extends Mapped
 
 		public MemPool.Factory< T > getMemPoolFactory();
 	}
+
+	@Override
+	public boolean equals( final Object obj )
+	{
+		return obj instanceof PoolObject< ?, ? > &&
+				access.equals( ( ( PoolObject< ?, ? > ) obj ).access );
+	}
+
+	@Override
+	public int hashCode()
+	{
+		return access.hashCode();
+	}
 }

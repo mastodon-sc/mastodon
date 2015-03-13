@@ -88,17 +88,4 @@ public class AbstractVertex< V extends AbstractVertex< V, E, T >, E extends Abst
 			edges = new AllEdges< E >( this, edgePool );
 		}
 	}
-
-	@Override
-	public boolean equals( final Object obj )
-	{
-		return obj instanceof AbstractVertex< ?, ?, ? > &&
-				access.equals( ( ( AbstractVertex< ?, ?, ? > ) obj ).access );
-	}
-
-	@Override
-	public int hashCode()
-	{
-		return access.hashCode();
-	}
 }

@@ -102,17 +102,4 @@ public class AbstractEdge< E extends AbstractEdge< E, V, T >, V extends Abstract
 		vertexPool.getByInternalPoolIndex( getTargetVertexInternalPoolIndex(), vertex );
 		return vertex;
 	}
-
-	@Override
-	public boolean equals( final Object obj )
-	{
-		return obj instanceof AbstractEdge< ?, ?, ? > &&
-				access.equals( ( ( AbstractEdge< ?, ?, ? > ) obj ).access );
-	}
-
-	@Override
-	public int hashCode()
-	{
-		return access.hashCode();
-	}
 }
