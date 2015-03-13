@@ -107,11 +107,29 @@ public class PoolObjectList< O extends PoolObject< O, T >, T extends MappedEleme
 		indices.clear();
 	}
 
+	/**
+	 * Sets the size of the list to 0, but does not change its capacity. This
+	 * method can be used as an alternative to the {@link #clear()} method if
+	 * you want to recycle a list without allocating new backing arrays.
+	 *
+	 * @see TIntArrayList#reset()
+	 */
 	public void reset()
 	{
 		indices.reset();
 	}
 
+	/**
+	 * Sets the size of the list to 0, but does not change its capacity. This
+	 * method can be used as an alternative to the {@link #clear()} method if
+	 * you want to recycle a list without allocating new backing arrays. This
+	 * method differs from {@link #reset()} in that it does not clear the old
+	 * values in the backing array. Thus, it is possible for getQuick to return
+	 * stale data if this method is used and the caller is careless about bounds
+	 * checking.
+	 *
+	 * @see TIntArrayList#resetQuick()
+	 */
 	public void resetQuick()
 	{
 		indices.resetQuick();
