@@ -7,8 +7,6 @@ import static org.junit.Assert.assertTrue;
 import java.util.ArrayList;
 
 import net.trackmate.graph.mempool.ByteMappedElement;
-import net.trackmate.trackscheme.TrackSchemeGraph;
-import net.trackmate.trackscheme.TrackSchemeVertex;
 
 import org.junit.After;
 import org.junit.Before;
@@ -16,23 +14,23 @@ import org.junit.Test;
 
 public class PoolObjectQueueTest
 {
-	private PoolObjectQueue< TrackSchemeVertex, ByteMappedElement > queue;
+	private PoolObjectQueue< TestObject, ByteMappedElement > queue;
 
-	private ArrayList< TrackSchemeVertex > objects;
+	private ArrayList< TestObject > objects;
 
 	@Before
 	public void noSetup()
 	{
-		final TrackSchemeGraph graph = new TrackSchemeGraph();
-		queue = new PoolObjectQueue< TrackSchemeVertex, ByteMappedElement >( graph.vertexPool );
-		final TrackSchemeVertex A = graph.addVertex().init( "A", 0, true );
-		final TrackSchemeVertex B = graph.addVertex().init( "B", 1, true );
-		final TrackSchemeVertex C = graph.addVertex().init( "C", 1, true );
-		final TrackSchemeVertex E = graph.addVertex().init( "E", 1, true );
-		final TrackSchemeVertex D = graph.addVertex().init( "D", 2, true );
-		final TrackSchemeVertex F = graph.addVertex().init( "F", 2, true );
-		final TrackSchemeVertex G = graph.addVertex().init( "G", 2, true );
-		objects = new ArrayList< TrackSchemeVertex >( 7 );
+		final TestObjectPool pool = new TestObjectPool( 10 );
+		queue = new PoolObjectQueue< TestObject, ByteMappedElement >( pool );
+		final TestObject A = pool.create().init( 1 );
+		final TestObject B = pool.create().init( 2 );
+		final TestObject C = pool.create().init( 3 );
+		final TestObject E = pool.create().init( 4 );
+		final TestObject D = pool.create().init( 5 );
+		final TestObject F = pool.create().init( 6 );
+		final TestObject G = pool.create().init( 7 );
+		objects = new ArrayList< TestObject >( 7 );
 		objects.add( A );
 		objects.add( B );
 		objects.add( C );
@@ -51,23 +49,23 @@ public class PoolObjectQueueTest
 	@Test
 	public void offerTest()
 	{
-		for ( final TrackSchemeVertex o : objects )
+		for ( final TestObject o : objects )
 		{
 			queue.offer( o );
 		}
-		final TrackSchemeVertex ref = queue.createRef();
+		final TestObject ref = queue.createRef();
 		assertEquals( queue.peek( ref ), objects.get( 0 ) );
 	}
 
 	@Test
 	public void pollTest()
 	{
-		for ( final TrackSchemeVertex o : objects )
+		for ( final TestObject o : objects )
 		{
 			queue.offer( o );
 		}
-		final TrackSchemeVertex ref = queue.createRef();
-		for ( final TrackSchemeVertex o : objects )
+		final TestObject ref = queue.createRef();
+		for ( final TestObject o : objects )
 		{
 			assertEquals( o, queue.poll( ref ) );
 		}
@@ -77,7 +75,7 @@ public class PoolObjectQueueTest
 	@Test
 	public void peekTest()
 	{
-		final TrackSchemeVertex ref = queue.createRef();
+		final TestObject ref = queue.createRef();
 		assertNull( queue.peek( ref ) );
 	}
 
