@@ -7,6 +7,7 @@ import java.util.Set;
 
 import net.trackmate.graph.CollectionUtils;
 import net.trackmate.graph.Edge;
+import net.trackmate.graph.Graph;
 import net.trackmate.graph.Vertex;
 
 public class DFI< V extends Vertex< E >, E extends Edge< V >> implements Iterator< V >
@@ -20,9 +21,9 @@ public class DFI< V extends Vertex< E >, E extends Edge< V >> implements Iterato
 
 	private Set< V > visited;
 
-	public DFI( final V root )
+	public DFI( final V root, final Graph< V, E > graph )
 	{
-		this.visited = CollectionUtils.createSet( root );
+		this.visited = CollectionUtils.createVertexSet( graph );
 		this.stack = new ArrayDeque< V >();
 		stack.push( root );
 		this.hasNext = true;

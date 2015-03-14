@@ -10,6 +10,7 @@ import java.util.Map;
 
 import net.trackmate.graph.Edge;
 import net.trackmate.graph.Edges;
+import net.trackmate.graph.Graph;
 import net.trackmate.graph.Vertex;
 import net.trackmate.graph.algorithm.DFI;
 
@@ -60,7 +61,7 @@ public class Tree
 		return v.outgoingEdges().size() == 0;
 	}
 
-	public static final String toString( final Vertex< ? > root )
+	public static final String toString( final Vertex< ? > root, final Graph< ?, ? > graph )
 	{
 		final Function< Vertex< ? >, Integer > fun = new Function< Vertex< ? >, Integer >()
 		{
@@ -105,7 +106,7 @@ public class Tree
 
 		final Map< Vertex< ? >, Integer > writeTo = new HashMap< Vertex< ? >, Integer >( widthMap.size() );
 		@SuppressWarnings( { "unchecked", "rawtypes" } )
-		final DFI it = new DFI( root );
+		final DFI it = new DFI( root, graph );
 		while ( it.hasNext() )
 		{
 			final Vertex< ? > vi = it.next();
@@ -173,7 +174,7 @@ public class Tree
 		 */
 
 		@SuppressWarnings( { "unchecked", "rawtypes" } )
-		final DFI it2 = new DFI( root );
+		final DFI it2 = new DFI( root, graph );
 		while ( it2.hasNext() )
 		{
 			final Vertex< ? > vi = it2.next();

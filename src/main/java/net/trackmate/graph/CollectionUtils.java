@@ -5,24 +5,6 @@ import java.util.Set;
 
 public class CollectionUtils
 {
-	@SuppressWarnings( { "rawtypes", "unchecked" } )
-	public static < T > Set< T > createSet( final T type )
-	{
-		if ( type instanceof PoolObject )
-			return ( Set< T > ) new PoolObjectSet( ( ( PoolObject ) type ).creatingPool );
-		else
-			return new HashSet< T >();
-	}
-
-	@SuppressWarnings( { "rawtypes", "unchecked" } )
-	public static < T > Set< T > createSet( final T type, final int initialCapacity )
-	{
-		if ( type instanceof PoolObject )
-			return ( Set< T > ) new PoolObjectSet( ( ( PoolObject ) type ).creatingPool, initialCapacity );
-		else
-			return new HashSet< T >( initialCapacity );
-	}
-
 	public static < V extends Vertex< ? > > Set< V > createVertexSet( final Graph< V, ? > graph )
 	{
 		if ( graph instanceof CollectionCreator )

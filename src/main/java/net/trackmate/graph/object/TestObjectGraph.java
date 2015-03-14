@@ -14,7 +14,7 @@ public class TestObjectGraph
 		final Collection< ObjectVertex< String >> roots = Tree.findRoot( graph.getVertices().iterator() );
 		for ( final ObjectVertex< String > root : roots )
 		{
-			System.out.println( Tree.toString( root ) );
+			System.out.println( Tree.toString( root, graph ) );
 		}
 
 		System.out.println();
@@ -24,7 +24,7 @@ public class TestObjectGraph
 		final Collection< TrackSchemeVertex > tsRoots = Tree.findRoot( tsg.vertices().iterator() );
 		for ( final TrackSchemeVertex tsRoot : tsRoots )
 		{
-			System.out.println( Tree.toString( tsRoot ) );
+			System.out.println( Tree.toString( tsRoot, graph ) );
 		}
 	}
 
