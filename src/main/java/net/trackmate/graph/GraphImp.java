@@ -1,7 +1,10 @@
 package net.trackmate.graph;
 
 import net.trackmate.graph.collection.CollectionUtils.CollectionCreator;
+import net.trackmate.graph.collection.RefDeque;
+import net.trackmate.graph.collection.RefList;
 import net.trackmate.graph.collection.RefSet;
+import net.trackmate.graph.collection.RefStack;
 import net.trackmate.graph.mempool.MappedElement;
 
 public class GraphImp<
@@ -155,5 +158,89 @@ public class GraphImp<
 	public RefSet< V > createVertexSet( final int initialCapacity )
 	{
 		return new PoolObjectSet< V, T >( vertexPool, initialCapacity );
+	}
+
+	@Override
+	public RefSet< E > createEdgeSet()
+	{
+		return new PoolObjectSet< E, T >( edgePool );
+	}
+
+	@Override
+	public RefSet< E > createEdgeSet( final int initialCapacity )
+	{
+		return new PoolObjectSet< E, T >( edgePool, initialCapacity );
+	}
+
+	@Override
+	public RefList< V > createVertexList()
+	{
+		return new PoolObjectList< V, T >( vertexPool );
+	}
+
+	@Override
+	public RefList< V > createVertexList( final int initialCapacity )
+	{
+		return new PoolObjectList< V, T >( vertexPool, initialCapacity );
+	}
+
+	@Override
+	public RefList< E > createEdgeList()
+	{
+		return new PoolObjectList< E, T >( edgePool );
+	}
+
+	@Override
+	public RefList< E > createEdgeList( final int initialCapacity )
+	{
+		return new PoolObjectList< E, T >( edgePool, initialCapacity );
+	}
+
+	@Override
+	public RefDeque< V > createVertexDeque()
+	{
+		return new PoolObjectDeque< V, T >( vertexPool );
+	}
+
+	@Override
+	public RefDeque< V > createVertexDeque( final int initialCapacity )
+	{
+		return new PoolObjectDeque< V, T >( vertexPool, initialCapacity );
+	}
+
+	@Override
+	public RefDeque< E > createEdgeDeque()
+	{
+		return new PoolObjectDeque< E, T >( edgePool );
+	}
+
+	@Override
+	public RefDeque< E > createEdgeDeque( final int initialCapacity )
+	{
+		return new PoolObjectDeque< E, T >( edgePool, initialCapacity );
+	}
+
+	@Override
+	public RefStack< V > createVertexStack()
+	{
+		return new PoolObjectStack< V, T >( vertexPool );
+	}
+
+	@Override
+	public RefStack< V > createVertexStack( final int initialCapacity )
+	{
+		return new PoolObjectStack< V, T >( vertexPool, initialCapacity );
+	}
+
+	@Override
+	public RefStack< E > createEdgeStack()
+	{
+		return new PoolObjectStack< E, T >( edgePool );
+	}
+
+	@Override
+	public RefStack< E > createEdgeStack( final int initialCapacity )
+	{
+		return new PoolObjectStack< E, T >( edgePool, initialCapacity );
 	}
 }
