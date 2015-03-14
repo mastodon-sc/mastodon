@@ -1,8 +1,7 @@
 package net.trackmate.graph;
 
-import java.util.Set;
-
 import net.trackmate.graph.collection.CollectionUtils.CollectionCreator;
+import net.trackmate.graph.collection.RefSet;
 import net.trackmate.graph.mempool.MappedElement;
 
 public class GraphImp<
@@ -147,13 +146,13 @@ public class GraphImp<
 	}
 
 	@Override
-	public Set< V > createVertexSet()
+	public RefSet< V > createVertexSet()
 	{
 		return new PoolObjectSet< V, T >( vertexPool );
 	}
 
 	@Override
-	public Set< V > createVertexSet( final int initialCapacity )
+	public RefSet< V > createVertexSet( final int initialCapacity )
 	{
 		return new PoolObjectSet< V, T >( vertexPool, initialCapacity );
 	}
