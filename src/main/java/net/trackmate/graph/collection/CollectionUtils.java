@@ -1,7 +1,11 @@
-package net.trackmate.graph;
+package net.trackmate.graph.collection;
 
 import java.util.HashSet;
 import java.util.Set;
+
+import net.trackmate.graph.Edge;
+import net.trackmate.graph.Graph;
+import net.trackmate.graph.Vertex;
 
 public class CollectionUtils
 {

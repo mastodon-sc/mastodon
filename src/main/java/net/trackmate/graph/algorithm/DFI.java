@@ -5,10 +5,10 @@ import java.util.Deque;
 import java.util.Iterator;
 import java.util.Set;
 
-import net.trackmate.graph.CollectionUtils;
 import net.trackmate.graph.Edge;
 import net.trackmate.graph.Graph;
 import net.trackmate.graph.Vertex;
+import net.trackmate.graph.collection.CollectionUtils;
 
 public class DFI< V extends Vertex< E >, E extends Edge< V >> implements Iterator< V >
 {

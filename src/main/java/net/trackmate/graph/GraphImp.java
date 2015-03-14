@@ -2,7 +2,7 @@ package net.trackmate.graph;
 
 import java.util.Set;
 
-import net.trackmate.graph.CollectionUtils.CollectionCreator;
+import net.trackmate.graph.collection.CollectionUtils.CollectionCreator;
 import net.trackmate.graph.mempool.MappedElement;
 
 public class GraphImp<
