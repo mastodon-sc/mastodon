@@ -35,4 +35,14 @@ class TestObject extends PoolObject< TestObject, ByteMappedElement >
 	{
 		access.putInt( id, ID_OFFSET );
 	}
+
+	@Override
+	public String toString()
+	{
+		final StringBuilder sb = new StringBuilder();
+		sb.append( "o(" );
+		sb.append( getId() );
+		sb.append( ")" );
+		return sb.toString();
+	}
 }
