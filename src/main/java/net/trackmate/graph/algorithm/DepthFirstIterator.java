@@ -8,7 +8,7 @@ import net.trackmate.graph.collection.CollectionUtils;
 import net.trackmate.graph.collection.RefSet;
 import net.trackmate.graph.collection.RefStack;
 
-public class DepthFirstIterator< V extends Vertex< E >, E extends Edge< V >> implements Iterator< V >
+public class DepthFirstIterator< V extends Vertex< E >, E extends Edge< V > > implements Iterator< V >
 {
 	private final RefStack< V > stack;
 
@@ -22,6 +22,11 @@ public class DepthFirstIterator< V extends Vertex< E >, E extends Edge< V >> imp
 		this.stack = CollectionUtils.createVertexStack( graph );
 		stack.push( root );
 		next = graph.vertexRef();
+	}
+
+	public static < V extends Vertex< E >, E extends Edge< V > > DepthFirstIterator< V, E > create( final V root, final Graph< V, E > graph )
+	{
+		return new DepthFirstIterator< V, E >( root, graph );
 	}
 
 	@Override

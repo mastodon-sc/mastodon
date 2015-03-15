@@ -4,6 +4,7 @@ import net.trackmate.graph.Graph;
 import net.trackmate.graph.TestEdge;
 import net.trackmate.graph.TestGraph;
 import net.trackmate.graph.TestVertex;
+
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
@@ -30,7 +31,7 @@ public class DepthFirstIteratorTest
 		graph.addEdge( v1, v12 );
 		graph.addEdge( v1, v11 );
 
-		final DepthFirstIterator< TestVertex, TestEdge > iter = new DepthFirstIterator< TestVertex, TestEdge >( v1, graph );
+		final DepthFirstIterator< TestVertex, TestEdge > iter = DepthFirstIterator.create( v1, graph );
 		assertEquals( iter.next().getId(), 1 );
 		assertEquals( iter.next().getId(), 11 );
 		assertEquals( iter.next().getId(), 111 );
