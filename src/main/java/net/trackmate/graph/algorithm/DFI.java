@@ -1,72 +1,53 @@
 package net.trackmate.graph.algorithm;
 
-import java.util.ArrayDeque;
-import java.util.Deque;
 import java.util.Iterator;
-import java.util.Set;
-
 import net.trackmate.graph.Edge;
 import net.trackmate.graph.Graph;
 import net.trackmate.graph.Vertex;
 import net.trackmate.graph.collection.CollectionUtils;
+import net.trackmate.graph.collection.RefSet;
+import net.trackmate.graph.collection.RefStack;
 
 public class DFI< V extends Vertex< E >, E extends Edge< V >> implements Iterator< V >
 {
+	private final RefStack< V > stack;
 
-	private Deque< V > stack;
+	private final RefSet< V > visited;
 
 	private V next;
-
-	private boolean hasNext;
-
-	private Set< V > visited;
 
 	public DFI( final V root, final Graph< V, E > graph )
 	{
 		this.visited = CollectionUtils.createVertexSet( graph );
-		this.stack = new ArrayDeque< V >();
+		this.stack = CollectionUtils.createVertexStack( graph );
 		stack.push( root );
-		this.hasNext = true;
-		fetchNext();
+		next = graph.vertexRef();
 	}
 
 	@Override
 	public boolean hasNext()
 	{
-		return hasNext;
+		return !stack.isEmpty();
 	}
 
 	@Override
 	public V next()
 	{
-		final V returned = next;
-		fetchNext();
-		return returned;
-	}
-
-	protected void fetchNext()
-	{
-		if ( stack.size() < 1 )
+		while( !stack.isEmpty() )
 		{
-			hasNext = false;
-			release();
-			return;
-		}
-
-		next = stack.pop();
-		if ( !visited.contains( next ) )
-		{
-			visited.add( next );
-			for ( final E e : next.outgoingEdges() )
+			next = stack.pop( next );
+			if ( !visited.contains( next ) )
 			{
-				final V target = e.getTarget();
-				stack.push( target );
+				visited.add( next );
+				for ( final E e : next.outgoingEdges() )
+				{
+					final V target = e.getTarget();
+					stack.push( target );
+				}
+				return next;
 			}
 		}
-		else
-		{
-			fetchNext();
-		}
+		return null;
 	}
 
 	@Override
@@ -74,14 +55,4 @@ public class DFI< V extends Vertex< E >, E extends Edge< V >> implements Iterato
 	{
 		throw new UnsupportedOperationException( "Remove is not supported for DepthFirstIterator." );
 	}
-
-	/**
-	 * Do this when you are done with the iterator.
-	 */
-	public void release()
-	{
-		stack = null;
-		visited = null;
-	}
-
 }
