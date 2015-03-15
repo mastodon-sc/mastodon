@@ -1,33 +1,42 @@
 package net.trackmate.graph.algorithm;
 
-import java.util.ArrayDeque;
-import java.util.Deque;
 import java.util.Iterator;
-import java.util.Set;
 
 import net.trackmate.graph.Edge;
 import net.trackmate.graph.Graph;
 import net.trackmate.graph.Vertex;
 import net.trackmate.graph.collection.CollectionUtils;
+import net.trackmate.graph.collection.RefSet;
+import net.trackmate.graph.collection.RefStack;
 
 public class DFI< V extends Vertex< E >, E extends Edge< V >> implements Iterator< V >
 {
 
-	private Deque< V > stack;
+	private RefStack< V > stack;
 
+	/**
+	 * The ref that will be returned by {@link #next()}.
+	 */
 	private V next;
 
 	private boolean hasNext;
 
-	private Set< V > visited;
+	private RefSet< V > visited;
+
+	/**
+	 * A utility ref.
+	 */
+	private final V v;
 
 	public DFI( final V root, final Graph< V, E > graph )
 	{
 		this.visited = CollectionUtils.createVertexSet( graph );
-		this.stack = new ArrayDeque< V >();
+		this.stack = CollectionUtils.createVertexStack( graph );
 		stack.push( root );
 		this.hasNext = true;
-		fetchNext();
+		// Allocate references
+		next = root;
+		v = graph.vertexRef();
 	}
 
 	@Override
@@ -41,25 +50,23 @@ public class DFI< V extends Vertex< E >, E extends Edge< V >> implements Iterato
 	{
 		final V returned = next;
 		fetchNext();
+		if ( stack.isEmpty() )
+		{
+			hasNext = false;
+			release();
+		}
 		return returned;
 	}
 
 	protected void fetchNext()
 	{
-		if ( stack.size() < 1 )
-		{
-			hasNext = false;
-			release();
-			return;
-		}
-
-		next = stack.pop();
+		next = stack.pop( next );
 		if ( !visited.contains( next ) )
 		{
 			visited.add( next );
 			for ( final E e : next.outgoingEdges() )
 			{
-				final V target = e.getTarget();
+				final V target = e.getTarget( v );
 				stack.push( target );
 			}
 		}
@@ -80,6 +87,8 @@ public class DFI< V extends Vertex< E >, E extends Edge< V >> implements Iterato
 	 */
 	public void release()
 	{
+		stack.releaseRef( next );
+		stack.releaseRef( v );
 		stack = null;
 		visited = null;
 	}
