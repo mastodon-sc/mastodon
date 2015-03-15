@@ -12,7 +12,7 @@ import net.trackmate.graph.Edge;
 import net.trackmate.graph.Edges;
 import net.trackmate.graph.Graph;
 import net.trackmate.graph.Vertex;
-import net.trackmate.graph.algorithm.DFI;
+import net.trackmate.graph.algorithm.DepthFirstIterator;
 
 public class Tree
 {
@@ -106,7 +106,7 @@ public class Tree
 
 		final Map< Vertex< ? >, Integer > writeTo = new HashMap< Vertex< ? >, Integer >( widthMap.size() );
 		@SuppressWarnings( { "unchecked", "rawtypes" } )
-		final DFI it = new DFI( root, graph );
+		final DepthFirstIterator it = new DepthFirstIterator( root, graph );
 		while ( it.hasNext() )
 		{
 			final Vertex< ? > vi = it.next();
@@ -174,7 +174,7 @@ public class Tree
 		 */
 
 		@SuppressWarnings( { "unchecked", "rawtypes" } )
-		final DFI it2 = new DFI( root, graph );
+		final DepthFirstIterator it2 = new DepthFirstIterator( root, graph );
 		while ( it2.hasNext() )
 		{
 			final Vertex< ? > vi = it2.next();
