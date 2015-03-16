@@ -9,7 +9,7 @@ public abstract class Assigner< O >
 	@SuppressWarnings( "unchecked" )
 	public static < O > Assigner< O > getFor( final O obj )
 	{
-		if ( obj instanceof PoolObject )
+		if ( obj != null && obj instanceof PoolObject )
 			return RefAssign.instance;
 		else
 			return ObjectAssign.instance;
