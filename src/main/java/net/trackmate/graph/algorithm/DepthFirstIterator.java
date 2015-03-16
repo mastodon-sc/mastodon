@@ -19,12 +19,15 @@ public class DepthFirstIterator< V extends Vertex< E >, E extends Edge< V > > im
 
 	private V next;
 
+	private final V tmpRef;
+
 	public DepthFirstIterator( final V root, final Graph< V, E > graph )
 	{
 		this.visited = CollectionUtils.createVertexSet( graph );
 		this.stack = CollectionUtils.createVertexStack( graph );
 		stack.push( root );
 		next = graph.vertexRef();
+		tmpRef = graph.vertexRef();
 	}
 
 	public static < V extends Vertex< E >, E extends Edge< V > > DepthFirstIterator< V, E > create( final V root, final Graph< V, E > graph )
@@ -49,7 +52,7 @@ public class DepthFirstIterator< V extends Vertex< E >, E extends Edge< V > > im
 				visited.add( next );
 				for ( final E e : next.outgoingEdges() )
 				{
-					final V target = e.getTarget();
+					final V target = e.getTarget( tmpRef );
 					stack.push( target );
 				}
 				return next;
