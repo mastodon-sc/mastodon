@@ -61,7 +61,7 @@ public class DepthFirstIterator< V extends Vertex< E >, E extends Edge< V > > ex
 		return next;
 	}
 
-	protected void fetchNext()
+	private void fetchNext()
 	{
 		while( !stack.isEmpty() )
 		{
@@ -77,6 +77,9 @@ public class DepthFirstIterator< V extends Vertex< E >, E extends Edge< V > > ex
 				return;
 			}
 		}
+		releaseRef( v );
+		releaseRef( fetched );
+		// we cannot release next, because it might still be in used outside of the iterator
 		fetched = null;
 	}
 
