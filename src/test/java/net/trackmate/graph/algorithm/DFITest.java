@@ -1,44 +1,44 @@
 package net.trackmate.graph.algorithm;
 
 import static org.junit.Assert.assertTrue;
-import net.trackmate.trackscheme.TrackSchemeEdge;
-import net.trackmate.trackscheme.TrackSchemeGraph;
-import net.trackmate.trackscheme.TrackSchemeVertex;
+import net.trackmate.graph.TestEdge;
+import net.trackmate.graph.TestGraph;
+import net.trackmate.graph.TestVertex;
 
 import org.junit.Before;
 import org.junit.Test;
 
 public class DFITest
 {
-	private TrackSchemeGraph graph;
+	private TestGraph graph;
 
-	private TrackSchemeVertex A;
+	private TestVertex A;
 
-	private TrackSchemeVertex B;
+	private TestVertex B;
 
 	@Before
 	public void setUp()
 	{
-		graph = new TrackSchemeGraph();
+		graph = new TestGraph();
 
-		A = graph.addVertex().init( "A", 0, true );
+		A = graph.addVertex().init( 1 );
 
-		B = graph.addVertex().init( "B", 1, true );
+		B = graph.addVertex().init( 2 );
 		graph.addEdge( A, B );
 
-		final TrackSchemeVertex C = graph.addVertex().init( "C", 1, true );
+		final TestVertex C = graph.addVertex().init( 3 );
 		graph.addEdge( A, C );
 
-		final TrackSchemeVertex E = graph.addVertex().init( "E", 1, true );
+		final TestVertex E = graph.addVertex().init( 5 );
 		graph.addEdge( A, E );
 
-		final TrackSchemeVertex D = graph.addVertex().init( "D", 2, true );
+		final TestVertex D = graph.addVertex().init( 4 );
 		graph.addEdge( B, D );
 
-		final TrackSchemeVertex F = graph.addVertex().init( "F", 2, true );
+		final TestVertex F = graph.addVertex().init( 6 );
 		graph.addEdge( B, F );
 
-		final TrackSchemeVertex G = graph.addVertex().init( "G", 2, true );
+		final TestVertex G = graph.addVertex().init( 7 );
 		graph.addEdge( C, G );
 
 		graph.addEdge( E, F );
@@ -47,14 +47,14 @@ public class DFITest
 	@Test
 	public void testBehavior()
 	{
-		final DepthFirstIterator< TrackSchemeVertex, TrackSchemeEdge > dfi = new DepthFirstIterator< TrackSchemeVertex, TrackSchemeEdge >( A, graph );
+		final DepthFirstIterator< TestVertex, TestEdge > dfi = new DepthFirstIterator< TestVertex, TestEdge >( A, graph );
 
 		assertTrue( "After initiation, DepthFirstIterator always has next. Got false.", dfi.hasNext() );
 
-		final TrackSchemeVertex first = dfi.next();
+		final TestVertex first = dfi.next();
 		assertTrue( "The first vertex iterated must be the root. got " + first + ".", A.equals( first ) );
 
-		TrackSchemeVertex previous = first;
+		TestVertex previous = first;
 		while ( dfi.hasNext() )
 		{
 			System.out.println( previous + "->" );// DEBUG INTERESTING TEST
@@ -63,7 +63,7 @@ public class DFITest
 			 * The ref pointed to by previous is the root, and is modified by
 			 * the dfi. Aarrrrgh. Have to think about this.
 			 */
-			final TrackSchemeVertex vertex = dfi.next();
+			final TestVertex vertex = dfi.next();
 			System.out.println( previous + "->" + vertex );// DEBUG
 
 			if ( !previous.outgoingEdges().isEmpty() )
@@ -78,10 +78,10 @@ public class DFITest
 		}
 	}
 
-	private boolean isSuccessor( final TrackSchemeVertex parent, final TrackSchemeVertex candidate )
+	private boolean isSuccessor( final TestVertex parent, final TestVertex candidate )
 	{
-		final TrackSchemeVertex v = graph.vertexRef();
-		for ( final TrackSchemeEdge edge : parent.outgoingEdges() )
+		final TestVertex v = graph.vertexRef();
+		for ( final TestEdge edge : parent.outgoingEdges() )
 		{
 			if ( edge.getTarget( v ).equals( candidate ) ) { return true; }
 		}
@@ -95,7 +95,7 @@ public class DFITest
 		final DFITest test = new DFITest();
 		test.setUp();
 
-		final DepthFirstIterator< TrackSchemeVertex, TrackSchemeEdge > iterator = new DepthFirstIterator< TrackSchemeVertex, TrackSchemeEdge >( test.A, test.graph );
+		final DepthFirstIterator< TestVertex, TestEdge > iterator = new DepthFirstIterator< TestVertex, TestEdge >( test.A, test.graph );
 		while ( iterator.hasNext() )
 		{
 			System.out.println( iterator.next().toString() );
