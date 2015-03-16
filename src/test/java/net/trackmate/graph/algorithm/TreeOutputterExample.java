@@ -1,58 +1,68 @@
-package net.trackmate.graph.object;
+package net.trackmate.graph.algorithm;
 
-import java.util.Collection;
+import net.trackmate.graph.TestEdge;
+import net.trackmate.graph.TestGraph;
+import net.trackmate.graph.TestVertex;
+import net.trackmate.graph.collection.RefSet;
+import net.trackmate.graph.object.ObjectEdge;
+import net.trackmate.graph.object.ObjectGraph;
+import net.trackmate.graph.object.ObjectVertex;
 
-import net.trackmate.trackscheme.TrackSchemeGraph;
-import net.trackmate.trackscheme.TrackSchemeVertex;
-
-public class TestObjectGraph
+public class TreeOutputterExample
 {
+	private static TestGraph tsg;
+
+	private static TestVertex A;
+
 	public static void main( final String[] args )
 	{
 		final ObjectGraph< String > graph = createCElegansLineage();
 
-		final Collection< ObjectVertex< String >> roots = Tree.findRoot( graph.getVertices().iterator() );
+		final RefSet< ObjectVertex< String >> roots = new RootFinder< ObjectVertex< String >, ObjectEdge< String > >( graph.getVertices().iterator(), graph ).get();
+		final TreeOutputter< ObjectVertex< String >, ObjectEdge< String > > treeOutputter = new TreeOutputter< ObjectVertex< String >, ObjectEdge< String > >( graph );
+
 		for ( final ObjectVertex< String > root : roots )
 		{
-			System.out.println( Tree.toString( root, graph ) );
+			System.out.println( treeOutputter.get( root ) );
 		}
 
 		System.out.println();
 		System.out.println();
 
-		final TrackSchemeGraph tsg = createTrackMateGraph();
-		final Collection< TrackSchemeVertex > tsRoots = Tree.findRoot( tsg.vertices().iterator() );
-		for ( final TrackSchemeVertex tsRoot : tsRoots )
-		{
-			System.out.println( Tree.toString( tsRoot, graph ) );
-		}
+		createTrackMateGraph();
+		final TreeOutputter< TestVertex, TestEdge > tsto = new TreeOutputter< TestVertex, TestEdge >( tsg );
+		System.out.println( tsto.get( A ) );
 	}
 
-	public static final TrackSchemeGraph createTrackMateGraph()
+	public static final TestGraph createTrackMateGraph()
 	{
-		final TrackSchemeGraph graph = new TrackSchemeGraph();
+		tsg = new TestGraph();
 
-		final TrackSchemeVertex A = graph.addVertex().init( "A", 0, true );
+		A = tsg.addVertex().init( 0 );
 
-		final TrackSchemeVertex B = graph.addVertex().init( "B", 1, true );
-		graph.addEdge( A, B );
+		final TestVertex B = tsg.addVertex().init( 1 );
+		tsg.addEdge( A, B );
 
-		final TrackSchemeVertex C = graph.addVertex().init( "C", 1, true );
-		graph.addEdge( A, C );
+		final TestVertex C = tsg.addVertex().init( 2 );
+		tsg.addEdge( A, C );
 
-		final TrackSchemeVertex E = graph.addVertex().init( "E", 1, true );
-		graph.addEdge( A, E );
+		final TestVertex E = tsg.addVertex().init( 3 );
+		tsg.addEdge( A, E );
 
-		final TrackSchemeVertex D = graph.addVertex().init( "D", 2, true );
-		graph.addEdge( B, D );
+		final TestVertex D = tsg.addVertex().init( 4 );
+		tsg.addEdge( B, D );
 
-		final TrackSchemeVertex F = graph.addVertex().init( "F", 2, true );
-		graph.addEdge( B, F );
+		final TestVertex F = tsg.addVertex().init( 5 );
+		tsg.addEdge( B, F );
 
-		final TrackSchemeVertex G = graph.addVertex().init( "G", 2, true );
-		graph.addEdge( C, G );
+		final TestVertex G = tsg.addVertex().init( 6 );
+		tsg.addEdge( C, G );
 
-		return graph;
+		// For fun, let's make it NOT a tree
+//		tsg.addEdge( G, A );
+		tsg.addEdge( E, G );
+
+		return tsg;
 	}
 
 	public static ObjectGraph< String > createCElegansLineage()

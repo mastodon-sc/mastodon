@@ -1,20 +1,28 @@
-package net.trackmate.graph.object;
+package net.trackmate.graph.algorithm;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 
 import net.trackmate.graph.Edge;
 import net.trackmate.graph.Edges;
 import net.trackmate.graph.Graph;
 import net.trackmate.graph.Vertex;
-import net.trackmate.graph.algorithm.DepthFirstIterator;
+import net.trackmate.graph.collection.CollectionUtils;
+import net.trackmate.graph.collection.RefSet;
 
-public class Tree
+/**
+ * An algorithm that can output the tree below a specified vertex.
+ * <p>
+ * It only works for graph that are trees, that is, graphs where all vertices
+ * have at most one predecessor. If this class is provided with a graph that is
+ * not a tree, vertices that are not accessible by descending from the specified
+ * root will be plainly ignored.
+ *
+ * @author Jean-Yves Tinevez
+ */
+public class TreeOutputter< V extends Vertex< E >, E extends Edge< V > > extends AbstractGraphAlgorithm< V, E >
 {
 
 	private static final char V_BAR_CHAR = '│';
@@ -31,49 +39,27 @@ public class Tree
 
 	private static final char H_BAR_CHAR = '─';
 
-	public static boolean isTree( final Iterator< Vertex< ? >> it )
+	private final Function< V, Integer > fun = new Function< V, Integer >()
 	{
-		while ( it.hasNext() )
+		@Override
+		public Integer eval( final V input )
 		{
-			final Vertex< ? > v = it.next();
-			final int vin = v.incomingEdges().size();
-			if ( vin > 1 ) { return false; }
+			return Integer.valueOf( input.toString().length() + 2 );
 		}
-		return true;
+	};
+
+	private RefSet< V > visited;
+
+	public TreeOutputter( final Graph< V, E > graph )
+	{
+		super( graph );
 	}
 
-	public static < K extends Vertex< ? >> Collection< K > findRoot( final Iterator< K > it )
+	public String get( final V root )
 	{
-		final List< K > roots = new ArrayList< K >();
-		while ( it.hasNext() )
-		{
-			final K v = it.next();
-			if ( v.incomingEdges().size() == 0 )
-			{
-				roots.add( v );
-			}
-		}
-		return roots;
-	}
-
-	public static final boolean isLeaf( final Vertex< ? > v )
-	{
-		return v.outgoingEdges().size() == 0;
-	}
-
-	public static final String toString( final Vertex< ? > root, final Graph< ?, ? > graph )
-	{
-		final Function< Vertex< ? >, Integer > fun = new Function< Vertex< ? >, Integer >()
-		{
-			@Override
-			public Integer eval( final Vertex< ? > input )
-			{
-				return Integer.valueOf( input.toString().length() + 2 );
-			}
-		};
-
-		final Map< Vertex< ? >, Integer > widthMap = recursiveCumSum( root, fun );
-		final Map< Vertex< ? >, Integer > depthMap = depth( root );
+		visited = createVertexSet();
+		final Map< V, Integer > widthMap = recursiveCumSum( root, fun );
+		final Map< V, Integer > depthMap = depth( root );
 
 		/*
 		 * Max depth and text holder.
@@ -104,12 +90,11 @@ public class Tree
 		 * Iterate into the tree.
 		 */
 
-		final Map< Vertex< ? >, Integer > writeTo = new HashMap< Vertex< ? >, Integer >( widthMap.size() );
-		@SuppressWarnings( { "unchecked", "rawtypes" } )
-		final DepthFirstIterator it = new DepthFirstIterator( root, graph );
+		final Map< V, Integer > writeTo = new HashMap< V, Integer >( widthMap.size() );
+		final Iterator< V > it = CollectionUtils.safeIterator( ( new DepthFirstIterator< V, E >( root, graph ) ) );
 		while ( it.hasNext() )
 		{
-			final Vertex< ? > vi = it.next();
+			final V vi = it.next();
 			final int row = depthMap.get( vi ).intValue();
 			final int width = widthMap.get( vi ).intValue();
 
@@ -156,7 +141,7 @@ public class Tree
 			sb2.setCharAt( width / 2, c );
 			above2[ row ].append( sb2 );
 
-			if ( Tree.isLeaf( vi ) )
+			if ( isLeaf( vi ) )
 			{
 				for ( int i = row + 1; i <= maxDepth; i++ )
 				{
@@ -173,11 +158,10 @@ public class Tree
 		 * Second iteration
 		 */
 
-		@SuppressWarnings( { "unchecked", "rawtypes" } )
-		final DepthFirstIterator it2 = new DepthFirstIterator( root, graph );
+		final DepthFirstIterator< V, E > it2 = new DepthFirstIterator< V, E >( root, graph );
 		while ( it2.hasNext() )
 		{
-			final Vertex< ? > vi = it2.next();
+			final V vi = it2.next();
 			final int row = depthMap.get( vi ).intValue();
 			if ( row == maxDepth )
 			{
@@ -231,7 +215,6 @@ public class Tree
 				continue;
 			}
 
-
 			for ( int i = fi; i < li; i++ )
 			{
 				if ( above2[ row + 1 ].charAt( i ) == SPACE_CHAR )
@@ -258,53 +241,67 @@ public class Tree
 		return text.toString();
 	}
 
-	private static final Map< Vertex< ? >, Integer > recursiveCumSum( final Vertex< ? > root, final Function< Vertex< ? >, Integer > fun )
+	private boolean isLeaf( final V vi )
 	{
-		final Map< Vertex< ? >, Integer > sumMap = new HashMap< Vertex< ? >, Integer >();
+		return vi.outgoingEdges().isEmpty();
+	}
+
+	private Map< V, Integer > recursiveCumSum( final V root, final Function< V, Integer > fun )
+	{
+		final Map< V, Integer > sumMap = new HashMap< V, Integer >();
 		recurse( root, sumMap, fun );
 		return sumMap;
 	}
 
-	private static final void recurse( final Vertex< ? > vertex, final Map< Vertex< ? >, Integer > map, final Function< Vertex< ? >, Integer > fun )
+	private boolean recurse( final V vertex, final Map< V, Integer > map, final Function< V, Integer > fun )
 	{
-		final Edges< ? > oEdges = vertex.outgoingEdges();
+		if ( visited.contains( vertex ) ) { return false; }
+		visited.add( vertex );
+		final Edges< E > oEdges = vertex.outgoingEdges();
 		if ( oEdges.isEmpty() )
 		{
 			final Integer val = fun.eval( vertex );
-			map.put( vertex, val );
-			return;
+			V tmp = vertexRef();
+			tmp = assign( vertex, tmp );
+			map.put( tmp, val );
+			return true;
 		}
 
 		int sum = 0;
-		for ( final Edge< ? > edge : oEdges )
+		for ( final E edge : oEdges )
 		{
-			final Vertex< ? > v = edge.getTarget();
-			recurse( v, map, fun );
-			sum += map.get( v ).intValue();
+			final V v = edge.getTarget();
+			if ( recurse( v, map, fun ) )
+			{
+				sum += map.get( v ).intValue();
+			}
 		}
 
 		sum = Math.max( sum, fun.eval( vertex ).intValue() );
 		map.put( vertex, Integer.valueOf( sum ) );
+		return true;
 	}
 
-	private static final Map< Vertex< ? >, Integer > depth( final Vertex< ? > root )
+	private Map< V, Integer > depth( final V root )
 	{
-		final Map< Vertex< ? >, Integer > depthMap = new HashMap< Vertex< ? >, Integer >();
+		final Map< V, Integer > depthMap = new HashMap< V, Integer >();
 		depthMap.put( root, Integer.valueOf( 0 ) );
-
 		recurseDepth( root, depthMap );
 		return depthMap;
 	}
 
-	private static final void recurseDepth( final Vertex< ? > v, final Map< Vertex< ? >, Integer > depthMap )
+	private void recurseDepth( final V v, final Map< V, Integer > depthMap )
 	{
-		final Edges< ? > oEdges = v.outgoingEdges();
+		final Edges< E > oEdges = v.outgoingEdges();
 		final Integer val = Integer.valueOf( depthMap.get( v ) + 1 );
-		for ( final Edge< ? > edge : oEdges )
+		for ( final E edge : oEdges )
 		{
-			final Vertex< ? > target = edge.getTarget();
-			depthMap.put( target, val );
-			recurseDepth( target, depthMap );
+			final V target = edge.getTarget();
+			if ( !depthMap.containsKey( target ) )
+			{
+				depthMap.put( target, val );
+				recurseDepth( target, depthMap );
+			}
 		}
 	}
 
@@ -315,7 +312,7 @@ public class Tree
 		return spaces;
 	}
 
-	private interface Function< I, O >
+	private static interface Function< I, O >
 	{
 		public O eval( I input );
 	}
