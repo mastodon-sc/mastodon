@@ -27,7 +27,7 @@ public class DepthFirstIterator< V extends Vertex< E >, E extends Edge< V > > ex
 	/**
 	 * A utility ref.
 	 */
-	private final V v;
+	private final V tmpRef;
 
 	public DepthFirstIterator( final V root, final Graph< V, E > graph )
 	{
@@ -36,7 +36,7 @@ public class DepthFirstIterator< V extends Vertex< E >, E extends Edge< V > > ex
 		stack = createVertexStack();
 		next = vertexRef();
 		fetched = vertexRef();
-		v = vertexRef();
+		tmpRef = vertexRef();
 
 		stack.push( root );
 		fetchNext();
@@ -71,13 +71,13 @@ public class DepthFirstIterator< V extends Vertex< E >, E extends Edge< V > > ex
 				visited.add( fetched );
 				for ( final E e : fetched.outgoingEdges() )
 				{
-					final V target = e.getTarget( v );
+					final V target = e.getTarget( tmpRef );
 					stack.push( target );
 				}
 				return;
 			}
 		}
-		releaseRef( v );
+		releaseRef( tmpRef );
 		releaseRef( fetched );
 		// we cannot release next, because it might still be in used outside of the iterator
 		fetched = null;

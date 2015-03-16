@@ -1,17 +1,92 @@
 package net.trackmate.graph.algorithm;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
+import java.util.Iterator;
+
 import net.trackmate.graph.Graph;
 import net.trackmate.graph.TestEdge;
 import net.trackmate.graph.TestGraph;
 import net.trackmate.graph.TestVertex;
+import net.trackmate.graph.collection.CollectionUtils;
 
+import org.junit.Before;
 import org.junit.Test;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 
 public class DepthFirstIteratorTest
 {
+	private TestGraph graph;
+
+	private TestVertex A;
+
+	private TestVertex B;
+
+	@Before
+	public void setUp()
+	{
+		graph = new TestGraph();
+
+		A = graph.addVertex().init( 1 );
+
+		B = graph.addVertex().init( 2 );
+		graph.addEdge( A, B );
+
+		final TestVertex C = graph.addVertex().init( 3 );
+		graph.addEdge( A, C );
+
+		final TestVertex E = graph.addVertex().init( 5 );
+		graph.addEdge( A, E );
+
+		final TestVertex D = graph.addVertex().init( 4 );
+		graph.addEdge( B, D );
+
+		final TestVertex F = graph.addVertex().init( 6 );
+		graph.addEdge( B, F );
+
+		final TestVertex G = graph.addVertex().init( 7 );
+		graph.addEdge( C, G );
+
+		graph.addEdge( E, F );
+	}
+
+	@Test
+	public void testBehavior()
+	{
+		final Iterator< TestVertex > dfi = CollectionUtils.safeIterator( new DepthFirstIterator< TestVertex, TestEdge >( A, graph ) );
+
+		assertTrue( "After initiation, DepthFirstIterator always has next. Got false.", dfi.hasNext() );
+
+		final TestVertex first = dfi.next();
+		assertTrue( "The first vertex iterated must be the root. got " + first + ".", A.equals( first ) );
+
+		TestVertex previous = first;
+		while ( dfi.hasNext() )
+		{
+			final TestVertex vertex = dfi.next();
+			if ( !previous.outgoingEdges().isEmpty() )
+			{
+				assertTrue( "When iterating from a previous vertex that has successors, "
+						+ "the current vertex must be a successor of the previous vertex. "
+						+ "This was not the case for " + previous + " -> " + vertex + ".",
+						isSuccessor( previous, vertex ) );
+			}
+			previous = vertex;
+		}
+	}
+
+	private boolean isSuccessor( final TestVertex parent, final TestVertex candidate )
+	{
+		final TestVertex v = graph.vertexRef();
+		for ( final TestEdge edge : parent.outgoingEdges() )
+		{
+			if ( edge.getTarget( v ).equals( candidate ) ) { return true; }
+		}
+
+		return false;
+	}
+
 	@Test
 	public void testDepthFirstIterator()
 	{

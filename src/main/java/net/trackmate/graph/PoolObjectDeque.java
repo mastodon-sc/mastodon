@@ -427,7 +427,7 @@ public class PoolObjectDeque< O extends PoolObject< O, T >, T extends MappedElem
 	@Override
 	public O poll( final O obj )
 	{
-		return poll( obj );
+		return pollFirst( obj );
 	}
 
 	@Override
