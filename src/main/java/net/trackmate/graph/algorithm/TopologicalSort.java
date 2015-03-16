@@ -5,7 +5,6 @@ import java.util.Iterator;
 import net.trackmate.graph.Edge;
 import net.trackmate.graph.Graph;
 import net.trackmate.graph.Vertex;
-import net.trackmate.graph.collection.CollectionUtils;
 import net.trackmate.graph.collection.RefCollection;
 import net.trackmate.graph.collection.RefList;
 import net.trackmate.graph.collection.RefSet;
@@ -21,36 +20,32 @@ import net.trackmate.graph.collection.RefSet;
  * @param <V>
  *            the vertices type.
  */
-public class TopologicalSort< V extends Vertex< E >, E extends Edge< V > >
+public class TopologicalSort< V extends Vertex< E >, E extends Edge< V > > extends AbstractGraphAlgorithm< V, E >
 {
-
-
 	private boolean failed;
 
 	private final RefCollection< V > vertices;
 
-	private final RefSet< V > marked;
+	private RefSet< V > marked;
 
-	private final RefSet< V > temporaryMarked;
+	private RefSet< V > temporaryMarked;
 
 	private final RefList< V > list;
 
-	private final Graph< V, E > graph;
-
 	public TopologicalSort( final RefCollection< V > vertices, final Graph< V, E > graph )
 	{
+		super( graph );
 		this.vertices = vertices;
-		this.graph = graph;
 		this.failed = false;
-		this.marked = CollectionUtils.createVertexSet( graph, vertices.size() );
-		this.temporaryMarked = CollectionUtils.createVertexSet( graph );
-		this.list = CollectionUtils.createVertexList( graph, vertices.size() );
+		this.marked = createVertexSet( vertices.size() );
+		this.temporaryMarked = createVertexSet();
+		this.list = createVertexList( vertices.size() );
 		fetchList();
 	}
 
 	/**
 	 * Returns the topologically sorted vertices in a list.
-	 * 
+	 *
 	 * @return a new {@link RefList} resulting from this sort operation.
 	 */
 	public RefList< V > get()
@@ -80,6 +75,9 @@ public class TopologicalSort< V extends Vertex< E >, E extends Edge< V > >
 				visit( v1 );
 			}
 		}
+		marked = null;
+		temporaryMarked = null;
+
 	}
 
 	private void visit( final V vertex )
