@@ -17,14 +17,34 @@ public class DepthFirstIterator< V extends Vertex< E >, E extends Edge< V > > im
 
 	private final RefSet< V > visited;
 
+	/**
+	 * is returned by {@link #next()}.
+	 */
 	private V next;
+
+	/**
+	 * will be returned by following {@link #next()}.
+	 */
+	private V fetched;
+
+	/**
+	 * A utility ref.
+	 */
+	private final V v;
+
+	private final Assigner< V > vertexAssigner;
 
 	public DepthFirstIterator( final V root, final Graph< V, E > graph )
 	{
 		this.visited = CollectionUtils.createVertexSet( graph );
 		this.stack = CollectionUtils.createVertexStack( graph );
-		stack.push( root );
 		next = graph.vertexRef();
+		fetched = graph.vertexRef();
+		v = graph.vertexRef();
+		vertexAssigner = Assigner.getFor( v );
+
+		stack.push( root );
+		fetchNext();
 	}
 
 	public static < V extends Vertex< E >, E extends Edge< V > > DepthFirstIterator< V, E > create( final V root, final Graph< V, E > graph )
@@ -35,27 +55,34 @@ public class DepthFirstIterator< V extends Vertex< E >, E extends Edge< V > > im
 	@Override
 	public boolean hasNext()
 	{
-		return !stack.isEmpty();
+		return fetched != null;
 	}
 
 	@Override
 	public V next()
 	{
+		next = vertexAssigner.assign( fetched, next );
+		fetchNext();
+		return next;
+	}
+
+	protected void fetchNext()
+	{
 		while( !stack.isEmpty() )
 		{
-			next = stack.pop( next );
-			if ( !visited.contains( next ) )
+			fetched = stack.pop( fetched );
+			if ( !visited.contains( fetched ) )
 			{
-				visited.add( next );
-				for ( final E e : next.outgoingEdges() )
+				visited.add( fetched );
+				for ( final E e : fetched.outgoingEdges() )
 				{
-					final V target = e.getTarget();
+					final V target = e.getTarget( v );
 					stack.push( target );
 				}
-				return next;
+				return;
 			}
 		}
-		return null;
+		fetched = null;
 	}
 
 	@Override
