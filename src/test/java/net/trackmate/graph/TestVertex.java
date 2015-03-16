@@ -1,29 +1,23 @@
 package net.trackmate.graph;
 
-import static net.trackmate.graph.mempool.ByteUtils.INT_SIZE;
 import net.trackmate.graph.mempool.ByteMappedElement;
+import static net.trackmate.graph.mempool.ByteUtils.INT_SIZE;
 
-class TestObject extends PoolObject< TestObject, ByteMappedElement >
+public class TestVertex extends AbstractVertex< TestVertex, TestEdge, ByteMappedElement >
 {
-	protected static final int ID_OFFSET = 0;
+	protected static final int ID_OFFSET = AbstractVertex.SIZE_IN_BYTES;
 
 	protected static final int SIZE_IN_BYTES = ID_OFFSET + INT_SIZE;
 
-	TestObject( final TestObjectPool pool )
+	protected TestVertex( final AbstractVertexPool< TestVertex, ?, ByteMappedElement > pool )
 	{
 		super( pool );
 	}
 
-	public TestObject init( final int id )
+	public TestVertex init( final int id )
 	{
 		setId( id );
 		return this;
-	}
-
-	@Override
-	protected void setToUninitializedState()
-	{
-		setId( -1 );
 	}
 
 	public int getId()
@@ -40,7 +34,7 @@ class TestObject extends PoolObject< TestObject, ByteMappedElement >
 	public String toString()
 	{
 		final StringBuilder sb = new StringBuilder();
-		sb.append( "o(" );
+		sb.append( "v(" );
 		sb.append( getId() );
 		sb.append( ")" );
 		return sb.toString();

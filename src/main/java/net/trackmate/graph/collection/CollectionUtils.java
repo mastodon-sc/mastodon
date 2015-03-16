@@ -4,11 +4,13 @@ import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Deque;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
 import net.trackmate.graph.Edge;
 import net.trackmate.graph.Graph;
+import net.trackmate.graph.SafePoolObjectIteratorWrapper;
 import net.trackmate.graph.Vertex;
 
 public class CollectionUtils
@@ -139,6 +141,15 @@ public class CollectionUtils
 			return ( ( CollectionCreator< ?, E > ) graph ).createEdgeStack( initialCapacity );
 		else
 			return wrapAsStack( new ArrayDeque< E >( initialCapacity ) );
+	}
+
+	@SuppressWarnings( { "unchecked", "rawtypes" } )
+	public static < O > Iterator< O > safeIterator( final Iterator< O > iterator )
+	{
+		if ( iterator instanceof MaybeRefIterator )
+			if ( ( ( MaybeRefIterator ) iterator ).isRefIterator() )
+				return new SafePoolObjectIteratorWrapper( ( Iterator ) iterator );
+		return iterator;
 	}
 
 	public static interface CollectionCreator< V extends Vertex< E >, E extends Edge< V > > extends Graph< V, E >
