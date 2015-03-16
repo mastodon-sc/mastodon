@@ -1,9 +1,13 @@
 package net.trackmate.graph.algorithm;
 
 import static org.junit.Assert.assertTrue;
+
+import java.util.Iterator;
+
 import net.trackmate.graph.TestEdge;
 import net.trackmate.graph.TestGraph;
 import net.trackmate.graph.TestVertex;
+import net.trackmate.graph.collection.CollectionUtils;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -47,7 +51,7 @@ public class DFITest
 	@Test
 	public void testBehavior()
 	{
-		final DepthFirstIterator< TestVertex, TestEdge > dfi = new DepthFirstIterator< TestVertex, TestEdge >( A, graph );
+		final Iterator< TestVertex > dfi = CollectionUtils.safeIterator( new DepthFirstIterator< TestVertex, TestEdge >( A, graph ) );
 
 		assertTrue( "After initiation, DepthFirstIterator always has next. Got false.", dfi.hasNext() );
 

@@ -1,14 +1,17 @@
 package net.trackmate.graph.algorithm;
 
 import java.util.Iterator;
+
 import net.trackmate.graph.Edge;
 import net.trackmate.graph.Graph;
+import net.trackmate.graph.PoolObject;
 import net.trackmate.graph.Vertex;
 import net.trackmate.graph.collection.CollectionUtils;
+import net.trackmate.graph.collection.MaybeRefIterator;
 import net.trackmate.graph.collection.RefSet;
 import net.trackmate.graph.collection.RefStack;
 
-public class DepthFirstIterator< V extends Vertex< E >, E extends Edge< V > > implements Iterator< V >
+public class DepthFirstIterator< V extends Vertex< E >, E extends Edge< V > > implements Iterator< V >, MaybeRefIterator
 {
 	private final RefStack< V > stack;
 
@@ -59,5 +62,11 @@ public class DepthFirstIterator< V extends Vertex< E >, E extends Edge< V > > im
 	public void remove()
 	{
 		throw new UnsupportedOperationException( "Remove is not supported for DepthFirstIterator." );
+	}
+
+	@Override
+	public boolean isRefIterator()
+	{
+		return next instanceof PoolObject;
 	}
 }
