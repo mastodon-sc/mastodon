@@ -2,9 +2,13 @@ package net.trackmate.graph.algorithm;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import net.trackmate.graph.Graph;
 import net.trackmate.graph.TestEdge;
 import net.trackmate.graph.TestGraph;
 import net.trackmate.graph.TestVertex;
+import net.trackmate.graph.object.ObjectEdge;
+import net.trackmate.graph.object.ObjectGraph;
+import net.trackmate.graph.object.ObjectVertex;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -87,25 +91,80 @@ public class BreadthFirstIteratorTest
 		assertFalse( iter.hasNext() );
 	}
 
-	public static void main( final String[] args ) throws Exception
+	@Test
+	public void testBreadthFirstIteratorCycle()
 	{
-		final BreadthFirstIteratorTest test = new BreadthFirstIteratorTest();
-		test.setUp();
+		final Graph< TestVertex, TestEdge > graph = new TestGraph();
 
-		System.out.println( "Breadth first:" );
-		final BreadthFirstIterator< TestVertex, TestEdge > i1 = new BreadthFirstIterator< TestVertex, TestEdge >( test.A, test.graph );
-		while ( i1.hasNext() )
-		{
-			System.out.println( i1.next().toString() );
-		}
-		System.out.println();
+		final TestVertex v1 = graph.addVertex().init( 1 );
+		final TestVertex v11 = graph.addVertex().init( 11 );
+		final TestVertex v12 = graph.addVertex().init( 12 );
+		final TestVertex v111 = graph.addVertex().init( 111 );
+		graph.addEdge( v11, v111 );
+		graph.addEdge( v12, v111 );
+		graph.addEdge( v1, v12 );
+		graph.addEdge( v1, v11 );
 
-		System.out.println( "Depth first:" );
-		final DepthFirstIterator< TestVertex, TestEdge > i2 = new DepthFirstIterator< TestVertex, TestEdge >( test.A, test.graph );
-		while ( i2.hasNext() )
-		{
-			System.out.println( i2.next().toString() );
-		}
-		System.out.println();
+		final BreadthFirstIterator< TestVertex, TestEdge > iter = BreadthFirstIterator.create( v1, graph );
+		assertEquals( iter.next().getId(), 1 );
+		assertEquals( iter.next().getId(), 12 );
+		assertEquals( iter.next().getId(), 11 );
+		assertEquals( iter.next().getId(), 111 );
+		assertFalse( iter.hasNext() );
+	}
+
+	@Test
+	public void testBreadthFirstIteratorWithObjectGraph()
+	{
+		final ObjectGraph< Integer > graph = new ObjectGraph< Integer >();
+		final ObjectVertex< Integer > v1 = graph.addVertex().init( 1 );
+		final ObjectVertex< Integer > v11 = graph.addVertex().init( 11 );
+		final ObjectVertex< Integer > v12 = graph.addVertex().init( 12 );
+		final ObjectVertex< Integer > v111 = graph.addVertex().init( 111 );
+		final ObjectVertex< Integer > v112 = graph.addVertex().init( 112 );
+		final ObjectVertex< Integer > v121 = graph.addVertex().init( 121 );
+		final ObjectVertex< Integer > v122 = graph.addVertex().init( 122 );
+
+		graph.addEdge( v12, v122 );
+		graph.addEdge( v12, v121 );
+		graph.addEdge( v11, v112 );
+		graph.addEdge( v11, v111 );
+		graph.addEdge( v1, v12 );
+		graph.addEdge( v1, v11 );
+
+		final BreadthFirstIterator< ObjectVertex< Integer >, ObjectEdge< Integer > > iter = BreadthFirstIterator.create( v1, graph );
+
+		assertEquals( iter.next().getContent().intValue(), 1 );
+		assertEquals( iter.next().getContent().intValue(), 12 );
+		assertEquals( iter.next().getContent().intValue(), 11 );
+		assertEquals( iter.next().getContent().intValue(), 122 );
+		assertEquals( iter.next().getContent().intValue(), 121 );
+		assertEquals( iter.next().getContent().intValue(), 112 );
+		assertEquals( iter.next().getContent().intValue(), 111 );
+		// BreadthFirstIterator return the linking order by default.
+		assertFalse( iter.hasNext() );
+	}
+
+	@Test
+	public void testBreadthFirstIteratorCycleWithObjectGraph()
+	{
+		final ObjectGraph< Integer > graph = new ObjectGraph< Integer >();
+		final ObjectVertex< Integer > v1 = graph.addVertex().init( 1 );
+		final ObjectVertex< Integer > v11 = graph.addVertex().init( 11 );
+		final ObjectVertex< Integer > v12 = graph.addVertex().init( 12 );
+		final ObjectVertex< Integer > v111 = graph.addVertex().init( 111 );
+
+		graph.addEdge( v11, v111 );
+		graph.addEdge( v12, v111 );
+		graph.addEdge( v1, v12 );
+		graph.addEdge( v1, v11 );
+
+		final BreadthFirstIterator< ObjectVertex< Integer >, ObjectEdge< Integer > > iter = BreadthFirstIterator.create( v1, graph );
+
+		assertEquals( iter.next().getContent().intValue(), 1 );
+		assertEquals( iter.next().getContent().intValue(), 12 );
+		assertEquals( iter.next().getContent().intValue(), 11 );
+		assertEquals( iter.next().getContent().intValue(), 111 );
+		assertFalse( iter.hasNext() );
 	}
 }

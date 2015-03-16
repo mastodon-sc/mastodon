@@ -6,12 +6,10 @@ import net.trackmate.graph.Edge;
 import net.trackmate.graph.Graph;
 import net.trackmate.graph.PoolObject;
 import net.trackmate.graph.Vertex;
-import net.trackmate.graph.collection.CollectionUtils;
-import net.trackmate.graph.collection.MaybeRefIterator;
 import net.trackmate.graph.collection.RefDeque;
 import net.trackmate.graph.collection.RefSet;
 
-public class BreadthFirstIterator< V extends Vertex< E >, E extends Edge< V > > implements Iterator< V >, MaybeRefIterator
+public class BreadthFirstIterator< V extends Vertex< E >, E extends Edge< V > > extends AbstractGraphIteratorAlgorithm< V, E > implements Iterator< V >
 {
 	private V next;
 
@@ -23,11 +21,12 @@ public class BreadthFirstIterator< V extends Vertex< E >, E extends Edge< V > > 
 
 	public BreadthFirstIterator(  final V root, final Graph< V, E > graph)
 	{
-		this.visited = CollectionUtils.createVertexSet( graph );
-		this.queue = CollectionUtils.createVertexDeque( graph );
+		super( graph );
+		this.visited = createVertexSet();
+		this.queue = createVertexDeque();
 		queue.offer( root );
-		this.next = graph.vertexRef();
-		this.tmpRef = graph.vertexRef();
+		this.next = vertexRef();
+		this.tmpRef = vertexRef();
 	}
 
 	@Override
@@ -53,6 +52,7 @@ public class BreadthFirstIterator< V extends Vertex< E >, E extends Edge< V > > 
 			}
 			return next;
 		}
+		releaseRef( tmpRef );
 		return null;
 	}
 
