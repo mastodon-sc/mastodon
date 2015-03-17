@@ -28,6 +28,12 @@ public class PoolObjectSet< O extends PoolObject< O, T >, T extends MappedElemen
 		indices = new TIntHashSet( initialCapacity );
 	}
 
+	protected PoolObjectSet( final Pool< O, T > pool, final TIntSet indices )
+	{
+		this.pool = pool;
+		this.indices = indices;
+	}
+
 	@Override
 	public O createRef()
 	{
