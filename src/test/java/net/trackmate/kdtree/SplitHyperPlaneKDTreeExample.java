@@ -12,7 +12,6 @@ import net.imglib2.img.array.ArrayImgs;
 import net.imglib2.img.display.imagej.ImageJFunctions;
 import net.imglib2.position.transform.Round;
 import net.imglib2.type.numeric.ARGBType;
-import net.imglib2.util.BenchmarkHelper;
 import net.imglib2.view.Views;
 import net.trackmate.graph.PoolObjectList;
 import net.trackmate.graph.collection.RefList;
@@ -25,8 +24,7 @@ public class SplitHyperPlaneKDTreeExample
 	{
 		final int w = 800;
 		final int h = 800;
-		final int nPoints = 100000;
-//		final int nPoints = 10000;
+		final int nPoints = 10000;
 
 		// make random 2D Points
 		final Random rand = new Random( 123124 );
@@ -44,24 +42,12 @@ public class SplitHyperPlaneKDTreeExample
 		final HyperPlane plane = new HyperPlane( 1, 0.5, 600 );
 		final KDTree< RealPoint, DoubleMappedElement > kdtree = KDTree.kdtree( points, pool );
 		final SplitHyperPlaneKDTree< RealPoint, DoubleMappedElement > split = new SplitHyperPlaneKDTree< RealPoint, DoubleMappedElement >( kdtree );
-		System.out.println("trackmate");
-		BenchmarkHelper.benchmarkAndPrint( 500, false, new Runnable()
-		{
-			@Override
-			public void run()
-			{
-				for ( int i = 0; i < 500; ++i )
-				{
-					split.split( plane );
-				}
-			}
-		} );
 		split.split( plane );
 
-//		// show all points
-//		final Img< ARGBType > pointsImg = ArrayImgs.argbs( w, h );
-//		paint( points, pointsImg, new ARGBType( 0x00ff00 ) );
-//		ImageJFunctions.show( pointsImg );
+		// show all points
+		final Img< ARGBType > pointsImg = ArrayImgs.argbs( w, h );
+		paint( points, pointsImg, new ARGBType( 0x00ff00 ) );
+		ImageJFunctions.show( pointsImg );
 
 		// show inside/outside points
 		final Img< ARGBType > clipImg = ArrayImgs.argbs( w, h );
