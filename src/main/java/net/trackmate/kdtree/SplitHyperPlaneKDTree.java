@@ -2,8 +2,6 @@ package net.trackmate.kdtree;
 
 import gnu.trove.list.array.TIntArrayList;
 
-import java.util.Arrays;
-
 import net.imglib2.RealLocalizable;
 import net.imglib2.algorithm.kdtree.HyperPlane;
 import net.trackmate.graph.PoolObject;
@@ -42,13 +40,13 @@ public class SplitHyperPlaneKDTree< O extends PoolObject< O, ? > & RealLocalizab
 
 	private final double[] xmax;
 
-	private final TIntArrayList aboveNodeIndices;
+	private final TIntArrayList aboveNodes;
 
-	private final TIntArrayList aboveSubtreeIndices;
+	private final TIntArrayList aboveSubtrees;
 
-	private final TIntArrayList belowNodeIndices;
+	private final TIntArrayList belowNodes;
 
-	private final TIntArrayList belowSubtreeIndices;
+	private final TIntArrayList belowSubtrees;
 
 	private final KDTreeNode< O, T > current;
 
@@ -61,10 +59,10 @@ public class SplitHyperPlaneKDTree< O extends PoolObject< O, ? > & RealLocalizab
 		xmax = new double[ n ];
 		normal = new double[ n ];
 		this.tree = tree;
-		aboveNodeIndices = new TIntArrayList();
-		aboveSubtreeIndices = new TIntArrayList();
-		belowNodeIndices = new TIntArrayList();
-		belowSubtreeIndices = new TIntArrayList();
+		aboveNodes = new TIntArrayList();
+		aboveSubtrees = new TIntArrayList();
+		belowNodes = new TIntArrayList();
+		belowSubtrees = new TIntArrayList();
 		current = tree.createRef();
 		fastDoubleSearch = ( tree.getDoubles() != null ) ? new FastDoubleSearch() : null;
 	}
@@ -98,25 +96,22 @@ public class SplitHyperPlaneKDTree< O extends PoolObject< O, ? > & RealLocalizab
 
 	private void initNewSearch()
 	{
-		aboveNodeIndices.clear();
-		aboveSubtreeIndices.clear();
-		belowNodeIndices.clear();
-		belowSubtreeIndices.clear();
-// TODO
-//		tree.realMin( xmin );
-//		tree.realMax( xmax );
-		Arrays.fill( xmin, Double.NEGATIVE_INFINITY );
-		Arrays.fill( xmax, Double.POSITIVE_INFINITY );
+		aboveNodes.clear();
+		aboveSubtrees.clear();
+		belowNodes.clear();
+		belowSubtrees.clear();
+		tree.realMin( xmin );
+		tree.realMax( xmax );
 	}
 
-	public Iterable< KDTreeNode< O, T > > getAboveNodes()
+	public Iterable< O > getAboveValues()
 	{
-		return new KDTreeNodeIterable< O, T >( aboveNodeIndices, aboveSubtreeIndices, tree );
+		return new KDTreeValueIterable< O, T >( aboveNodes, aboveSubtrees, tree, fastDoubleSearch != null );
 	}
 
-	public Iterable< KDTreeNode< O, T > > getBelowNodes()
+	public Iterable< O > getBelowValues()
 	{
-		return new KDTreeNodeIterable< O, T >( belowNodeIndices, belowSubtreeIndices, tree );
+		return new KDTreeValueIterable< O, T >( belowNodes, belowSubtrees, tree, fastDoubleSearch != null );
 	}
 
 	private boolean allAbove()
@@ -138,9 +133,9 @@ public class SplitHyperPlaneKDTree< O extends PoolObject< O, ? > & RealLocalizab
 	private void splitSubtree( final int currentNodeIndex, final int parentsd, final boolean p, final boolean q )
 	{
 		if ( p && q && allAbove() )
-			aboveSubtreeIndices.add( currentNodeIndex );
+			aboveSubtrees.add( currentNodeIndex );
 		else if ( !p && !q && allBelow() )
-			belowSubtreeIndices.add( currentNodeIndex );
+			belowSubtrees.add( currentNodeIndex );
 		else
 			split( currentNodeIndex, parentsd + 1 == n ? 0 : parentsd + 1 );
 	}
@@ -160,9 +155,9 @@ public class SplitHyperPlaneKDTree< O extends PoolObject< O, ? > & RealLocalizab
 
 		// current
 		if ( p )
-			aboveNodeIndices.add( currentNodeIndex );
+			aboveNodes.add( currentNodeIndex );
 		else
-			belowNodeIndices.add( currentNodeIndex );
+			belowNodes.add( currentNodeIndex );
 
 		// left
 		if ( left >= 0 )
@@ -183,8 +178,6 @@ public class SplitHyperPlaneKDTree< O extends PoolObject< O, ? > & RealLocalizab
 		}
 	}
 
-	// TODO:
-	// Make FastDouble variants of KDTreeNodeIterable (respectively something that returns the objects stored in the nodes)
 	private final class FastDoubleSearch
 	{
 		private final int nodeSizeInDoubles;
@@ -208,9 +201,9 @@ public class SplitHyperPlaneKDTree< O extends PoolObject< O, ? > & RealLocalizab
 		private void splitSubtree( final int currentIndex, final int parentsd, final boolean p, final boolean q )
 		{
 			if ( p && q && allAbove() )
-				aboveSubtreeIndices.add( currentIndex / nodeSizeInDoubles );
+				aboveSubtrees.add( currentIndex );
 			else if ( !p && !q && allBelow() )
-				belowSubtreeIndices.add( currentIndex / nodeSizeInDoubles );
+				belowSubtrees.add( currentIndex );
 			else
 				split( currentIndex, parentsd + 1 == n ? 0 : parentsd + 1 );
 		}
@@ -230,9 +223,9 @@ public class SplitHyperPlaneKDTree< O extends PoolObject< O, ? > & RealLocalizab
 
 			// current
 			if ( p )
-				aboveNodeIndices.add( currentIndex / nodeSizeInDoubles );
+				aboveNodes.add( currentIndex );
 			else
-				belowNodeIndices.add( currentIndex / nodeSizeInDoubles );
+				belowNodes.add( currentIndex );
 
 			// left
 			if ( left >= 0 )

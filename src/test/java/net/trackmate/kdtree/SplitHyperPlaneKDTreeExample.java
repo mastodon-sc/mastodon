@@ -65,8 +65,8 @@ public class SplitHyperPlaneKDTreeExample
 
 		// show inside/outside points
 		final Img< ARGBType > clipImg = ArrayImgs.argbs( w, h );
-		paint( split.getAboveNodes(), clipImg, new ARGBType( 0xffff00 ) );
-		paint( split.getBelowNodes(), clipImg, new ARGBType( 0x0000ff ) );
+		paint( split.getAboveValues(), clipImg, new ARGBType( 0xffff00 ) );
+		paint( split.getBelowValues(), clipImg, new ARGBType( 0x0000ff ) );
 		ImageJFunctions.show( clipImg );
 	}
 
