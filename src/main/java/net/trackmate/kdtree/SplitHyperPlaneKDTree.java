@@ -1,7 +1,6 @@
 package net.trackmate.kdtree;
 
 import gnu.trove.list.array.TIntArrayList;
-
 import net.imglib2.RealLocalizable;
 import net.imglib2.algorithm.kdtree.HyperPlane;
 import net.trackmate.graph.PoolObject;
@@ -21,8 +20,10 @@ import net.trackmate.graph.mempool.MappedElement;
  * The algorithm is described in <a
  * href="http://fly.mpi-cbg.de/~pietzsch/polytope.pdf">this note</a>.
  *
+ * @param <O>
+ *            type of objects stored in the tree.
  * @param <T>
- *            type of values stored in the tree.
+ *            the MappedElement type of the {@link KDTreeNode tree nodes}.
  *
  * @author Tobias Pietzsch <tobias.pietzsch@gmail.com>
  */
