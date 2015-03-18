@@ -3,6 +3,7 @@ package net.trackmate.graph;
 import net.trackmate.graph.collection.CollectionUtils.CollectionCreator;
 import net.trackmate.graph.collection.RefDeque;
 import net.trackmate.graph.collection.RefList;
+import net.trackmate.graph.collection.RefMap;
 import net.trackmate.graph.collection.RefSet;
 import net.trackmate.graph.collection.RefStack;
 import net.trackmate.graph.mempool.MappedElement;
@@ -242,5 +243,19 @@ public class GraphImp<
 	public RefStack< E > createEdgeStack( final int initialCapacity )
 	{
 		return new PoolObjectStack< E, T >( edgePool, initialCapacity );
+	}
+
+	@SuppressWarnings( { "unchecked", "rawtypes" } )
+	@Override
+	public < O > RefMap< V, O > createVertexMap( final Class< ? extends O > valueClass )
+	{
+		return ( RefMap< V, O > ) new PoolObjectObjectMap( vertexPool );
+	}
+
+	@SuppressWarnings( { "rawtypes", "unchecked" } )
+	@Override
+	public < O > RefMap< E, O > createEdgeMap( final Class< ? extends O > valueClass )
+	{
+		return ( RefMap< E, O > ) new PoolObjectObjectMap( edgePool );
 	}
 }
