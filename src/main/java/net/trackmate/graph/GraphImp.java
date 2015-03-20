@@ -1,5 +1,7 @@
 package net.trackmate.graph;
 
+import java.util.Iterator;
+
 import net.trackmate.graph.collection.CollectionUtils.CollectionCreator;
 import net.trackmate.graph.collection.RefDeque;
 import net.trackmate.graph.collection.RefList;
@@ -91,6 +93,18 @@ public class GraphImp<
 	public E getEdge( final V source, final V target, final E edge )
 	{
 		return edgePool.getEdge( source, target, edge );
+	}
+
+	@Override
+	public Iterator< V > vertexIterator()
+	{
+		return vertexPool.iterator();
+	}
+
+	@Override
+	public Iterator< E > edgeIterator()
+	{
+		return edgePool.iterator();
 	}
 
 	@Override
@@ -258,4 +272,5 @@ public class GraphImp<
 	{
 		return ( RefObjectMap< E, O > ) new PoolObjectObjectMap( edgePool );
 	}
+
 }

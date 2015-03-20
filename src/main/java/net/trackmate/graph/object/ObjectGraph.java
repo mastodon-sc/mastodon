@@ -3,6 +3,7 @@ package net.trackmate.graph.object;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Iterator;
 
 import net.trackmate.graph.Graph;
 
@@ -101,6 +102,18 @@ public class ObjectGraph< K > implements Graph< ObjectVertex< K >, ObjectEdge< K
 		{
 			remove( edge );
 		}
+	}
+
+	@Override
+	public Iterator< ObjectVertex< K >> vertexIterator()
+	{
+		return vertices.iterator();
+	}
+
+	@Override
+	public Iterator< ObjectEdge< K >> edgeIterator()
+	{
+		return edges.iterator();
 	}
 
 	@Override

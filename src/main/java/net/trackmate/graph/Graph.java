@@ -1,5 +1,7 @@
 package net.trackmate.graph;
 
+import java.util.Iterator;
+
 /**
  * A graph consisting of vertices of type {@code V} and edges of type {@code E}.
  *
@@ -41,4 +43,19 @@ public interface Graph< V extends Vertex< E >, E extends Edge< V > >
 	public void releaseRef( final V ... refs );
 
 	public void releaseRef( final E ... refs );
+
+	/**
+	 * Returns an iterator that will iterate over all the vertices of this grap.
+	 * 
+	 * @return a new {@link Iterator}.
+	 */
+	public Iterator< V > vertexIterator();
+
+	/**
+	 * Returns an iterator that will iterate over all the edges of this grap.
+	 * 
+	 * @return a new {@link Iterator}.
+	 */
+	public Iterator< E > edgeIterator();
+
 }
