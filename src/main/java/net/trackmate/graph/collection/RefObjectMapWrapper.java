@@ -5,14 +5,14 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * Wrap a standard {@link Map} in a {@link RefMap}.
+ * Wrap a standard {@link Map} in a {@link RefObjectMap}.
  * 
  */
-public class RefMapWrapper< O, V > implements RefMap< O, V >
+public class RefObjectMapWrapper< O, V > implements RefObjectMap< O, V >
 {
 	private final Map< O, V > map;
 
-	public RefMapWrapper( final Map< O, V > map )
+	public RefObjectMapWrapper( final Map< O, V > map )
 	{
 		this.map = map;
 	}

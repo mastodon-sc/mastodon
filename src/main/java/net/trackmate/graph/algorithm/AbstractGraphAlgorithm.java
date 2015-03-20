@@ -8,7 +8,7 @@ import net.trackmate.graph.Vertex;
 import net.trackmate.graph.collection.CollectionUtils;
 import net.trackmate.graph.collection.RefDeque;
 import net.trackmate.graph.collection.RefList;
-import net.trackmate.graph.collection.RefMap;
+import net.trackmate.graph.collection.RefObjectMap;
 import net.trackmate.graph.collection.RefSet;
 import net.trackmate.graph.collection.RefStack;
 
@@ -162,14 +162,14 @@ public abstract class AbstractGraphAlgorithm< V extends Vertex< E >, E extends E
 		return CollectionUtils.createEdgeStack( graph, initialCapacity );
 	}
 
-	protected < O > RefMap< V, O > createVertexMap( final Class< ? extends O > valueClass )
+	protected < O > RefObjectMap< V, O > createVertexObjectMap( final Class< ? extends O > valueClass )
 	{
-		return CollectionUtils.createVertexMap( graph, valueClass );
+		return CollectionUtils.createVertexObjectMap( graph, valueClass );
 	}
 
-	protected < O > RefMap< E, O > createEdgeMap( final Class< ? extends O > valueClass )
+	protected < O > RefObjectMap< E, O > createEdgeObjectMap( final Class< ? extends O > valueClass )
 	{
-		return CollectionUtils.createEdgeMap( graph, valueClass );
+		return CollectionUtils.createEdgeObjectMap( graph, valueClass );
 	}
 
 	protected static < O > Iterator< O > safeIterator( final Iterator< O > iterator )
