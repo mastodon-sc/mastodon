@@ -14,15 +14,11 @@ import net.trackmate.graph.collection.RefSet;
  */
 public class RootFinder< V extends Vertex< E >, E extends Edge< V > > extends AbstractGraphAlgorithm< V, E >
 {
-
-	private final Iterator< V > iterator;
-
 	private final RefSet< V > roots;
 
-	public RootFinder( final Iterator< V > iterator, final Graph< V, E > graph )
+	public RootFinder( final Graph< V, E > graph )
 	{
 		super( graph );
-		this.iterator = iterator;
 		this.roots = createVertexSet();
 		fetchRoots();
 	}
@@ -34,6 +30,7 @@ public class RootFinder< V extends Vertex< E >, E extends Edge< V > > extends Ab
 
 	private void fetchRoots()
 	{
+		final Iterator< V > iterator = graph.vertexIterator();
 		while ( iterator.hasNext() )
 		{
 			final V v = iterator.next();
@@ -42,6 +39,12 @@ public class RootFinder< V extends Vertex< E >, E extends Edge< V > > extends Ab
 				roots.add( v );
 			}
 		}
+	}
+	
+	@SuppressWarnings( { "rawtypes", "unchecked" } )
+	public static < V extends Vertex< ? >> RefSet< V > getRoots( final Graph< V, ? > graph )
+	{
+		return new RootFinder( graph ).get();
 	}
 
 }
