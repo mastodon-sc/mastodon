@@ -87,22 +87,17 @@ public abstract class AbstractRefCollectionWrapper< O, C extends Collection<  O 
 	@Override
 	public void clear()
 	{
-		// TODO Auto-generated method stub
-
+		collection.clear();
 	}
 
 	@Override
 	public O createRef()
 	{
-		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
 	public void releaseRef( final O obj )
-	{
-		// TODO Auto-generated method stub
-
-	}
+	{}
 
 }
