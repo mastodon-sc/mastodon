@@ -18,7 +18,7 @@ public class TreeOutputterExample
 	{
 		final ObjectGraph< String > graph = createCElegansLineage();
 
-		final RefSet< ObjectVertex< String >> roots = new RootFinder< ObjectVertex< String >, ObjectEdge< String > >( graph.getVertices().iterator(), graph ).get();
+		final RefSet< ObjectVertex< String >> roots = RootFinder.getRoots( graph );
 		final TreeOutputter< ObjectVertex< String >, ObjectEdge< String > > treeOutputter = new TreeOutputter< ObjectVertex< String >, ObjectEdge< String > >( graph );
 
 		for ( final ObjectVertex< String > root : roots )
@@ -32,6 +32,7 @@ public class TreeOutputterExample
 		createTrackMateGraph();
 		final TreeOutputter< TestVertex, TestEdge > tsto = new TreeOutputter< TestVertex, TestEdge >( tsg );
 		System.out.println( tsto.get( A ) );
+
 	}
 
 	public static final TestGraph createTrackMateGraph()
@@ -59,7 +60,7 @@ public class TreeOutputterExample
 		tsg.addEdge( C, G );
 
 		// For fun, let's make it NOT a tree
-//		tsg.addEdge( G, A );
+		tsg.addEdge( G, A );
 		tsg.addEdge( E, G );
 
 		return tsg;

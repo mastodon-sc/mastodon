@@ -1,24 +1,22 @@
 package net.trackmate.graph.algorithm;
 
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.Iterator;
-import java.util.Map;
 
 import net.trackmate.graph.Edge;
 import net.trackmate.graph.Edges;
 import net.trackmate.graph.Graph;
 import net.trackmate.graph.Vertex;
-import net.trackmate.graph.collection.CollectionUtils;
+import net.trackmate.graph.collection.RefObjectMap;
 import net.trackmate.graph.collection.RefSet;
 
 /**
  * An algorithm that can output the tree below a specified vertex.
  * <p>
- * It only works for graph that are trees, that is, graphs where all vertices
- * have at most one predecessor. If this class is provided with a graph that is
- * not a tree, vertices that are not accessible by descending from the specified
- * root will be plainly ignored.
+ * It only works for graph that are trees, that is, graphs without loops and
+ * where all vertices have at most one predecessor. If this class is provided
+ * with a graph that is not a tree, vertices that are not accessible by
+ * descending from the specified root will be plainly ignored.
  *
  * @author Jean-Yves Tinevez
  */
@@ -39,15 +37,6 @@ public class TreeOutputter< V extends Vertex< E >, E extends Edge< V > > extends
 
 	private static final char H_BAR_CHAR = '─';
 
-	private final Function< V, Integer > fun = new Function< V, Integer >()
-	{
-		@Override
-		public Integer eval( final V input )
-		{
-			return Integer.valueOf( input.toString().length() + 2 );
-		}
-	};
-
 	private RefSet< V > visited;
 
 	public TreeOutputter( final Graph< V, E > graph )
@@ -55,11 +44,24 @@ public class TreeOutputter< V extends Vertex< E >, E extends Edge< V > > extends
 		super( graph );
 	}
 
+	/**
+	 * Returns the string representation of the tree of children below the
+	 * specified vertex.
+	 * <p>
+	 * This method works faithfully only for trees, that is: for graphs without
+	 * loops and where all vertices have at most one parent. If this class is
+	 * provided with a graph that do not fulfill these conditions, the returned
+	 * representation will ignore loops and multiple incoming edges.
+	 * 
+	 * @param root
+	 *            the vertex to start the tree representation with.
+	 * @return a String representation of the tree.
+	 */
 	public String get( final V root )
 	{
 		visited = createVertexSet();
-		final Map< V, Integer > widthMap = recursiveCumSum( root, fun );
-		final Map< V, Integer > depthMap = depth( root );
+		final RefObjectMap< V, Integer > widthMap = recursiveCumSum( root, fun );
+		final RefObjectMap< V, Integer > depthMap = depth( root );
 
 		/*
 		 * Max depth and text holder.
@@ -90,11 +92,14 @@ public class TreeOutputter< V extends Vertex< E >, E extends Edge< V > > extends
 		 * Iterate into the tree.
 		 */
 
-		final Map< V, Integer > writeTo = new HashMap< V, Integer >( widthMap.size() );
-		final Iterator< V > it = CollectionUtils.safeIterator( ( new DepthFirstIterator< V, E >( root, graph ) ) );
+		final RefObjectMap< V, Integer > writeTo = createVertexObjectMap( Integer.class );
+		final Iterator< V > it = DepthFirstIterator.create( root, graph );
+		visited.clear();
 		while ( it.hasNext() )
 		{
 			final V vi = it.next();
+			visited.add( vi );
+
 			final int row = depthMap.get( vi ).intValue();
 			final int width = widthMap.get( vi ).intValue();
 
@@ -141,7 +146,28 @@ public class TreeOutputter< V extends Vertex< E >, E extends Edge< V > > extends
 			sb2.setCharAt( width / 2, c );
 			above2[ row ].append( sb2 );
 
-			if ( isLeaf( vi ) )
+			/*
+			 * Determine if this vertex is a leaf, or if it has children that
+			 * already have been visited. In any of these 2 cases, we need to
+			 * create space below what will be a childless node (on the
+			 * representation).
+			 */
+			boolean doSpace = isLeaf( vi );
+			if ( !doSpace )
+			{
+				final V tmp = vertexRef();
+				for ( final Edge< V > edge : vi.outgoingEdges() )
+				{
+					final V target = edge.getTarget( tmp );
+					if ( visited.contains( target ) )
+					{
+						doSpace = true;
+						break;
+					}
+				}
+			}
+
+			if ( doSpace )
 			{
 				for ( int i = row + 1; i <= maxDepth; i++ )
 				{
@@ -158,7 +184,7 @@ public class TreeOutputter< V extends Vertex< E >, E extends Edge< V > > extends
 		 * Second iteration
 		 */
 
-		final DepthFirstIterator< V, E > it2 = new DepthFirstIterator< V, E >( root, graph );
+		final DepthFirstIterator< V, E > it2 = DepthFirstIterator.create( root, graph );
 		while ( it2.hasNext() )
 		{
 			final V vi = it2.next();
@@ -246,14 +272,14 @@ public class TreeOutputter< V extends Vertex< E >, E extends Edge< V > > extends
 		return vi.outgoingEdges().isEmpty();
 	}
 
-	private Map< V, Integer > recursiveCumSum( final V root, final Function< V, Integer > fun )
+	private RefObjectMap< V, Integer > recursiveCumSum( final V root, final Function< V, Integer > fun )
 	{
-		final Map< V, Integer > sumMap = new HashMap< V, Integer >();
+		final RefObjectMap< V, Integer > sumMap = createVertexObjectMap( Integer.class );
 		recurse( root, sumMap, fun );
 		return sumMap;
 	}
 
-	private boolean recurse( final V vertex, final Map< V, Integer > map, final Function< V, Integer > fun )
+	private boolean recurse( final V vertex, final RefObjectMap< V, Integer > map, final Function< V, Integer > fun )
 	{
 		if ( visited.contains( vertex ) ) { return false; }
 		visited.add( vertex );
@@ -261,16 +287,15 @@ public class TreeOutputter< V extends Vertex< E >, E extends Edge< V > > extends
 		if ( oEdges.isEmpty() )
 		{
 			final Integer val = fun.eval( vertex );
-			V tmp = vertexRef();
-			tmp = assign( vertex, tmp );
-			map.put( tmp, val );
+			map.put( vertex, val );
 			return true;
 		}
 
 		int sum = 0;
+		final V tmp = vertexRef();
 		for ( final E edge : oEdges )
 		{
-			final V v = edge.getTarget();
+			final V v = edge.getTarget( tmp );
 			if ( recurse( v, map, fun ) )
 			{
 				sum += map.get( v ).intValue();
@@ -282,21 +307,22 @@ public class TreeOutputter< V extends Vertex< E >, E extends Edge< V > > extends
 		return true;
 	}
 
-	private Map< V, Integer > depth( final V root )
+	private RefObjectMap< V, Integer > depth( final V root )
 	{
-		final Map< V, Integer > depthMap = new HashMap< V, Integer >();
+		final RefObjectMap< V, Integer > depthMap = createVertexObjectMap( Integer.class );
 		depthMap.put( root, Integer.valueOf( 0 ) );
 		recurseDepth( root, depthMap );
 		return depthMap;
 	}
 
-	private void recurseDepth( final V v, final Map< V, Integer > depthMap )
+	private void recurseDepth( final V v, final RefObjectMap< V, Integer > depthMap )
 	{
 		final Edges< E > oEdges = v.outgoingEdges();
 		final Integer val = Integer.valueOf( depthMap.get( v ) + 1 );
+		final V tmp = vertexRef();
 		for ( final E edge : oEdges )
 		{
-			final V target = edge.getTarget();
+			final V target = edge.getTarget( tmp );
 			if ( !depthMap.containsKey( target ) )
 			{
 				depthMap.put( target, val );
@@ -316,5 +342,14 @@ public class TreeOutputter< V extends Vertex< E >, E extends Edge< V > > extends
 	{
 		public O eval( I input );
 	}
+
+	private final Function< V, Integer > fun = new Function< V, Integer >()
+	{
+		@Override
+		public Integer eval( final V input )
+		{
+			return Integer.valueOf( input.toString().length() + 2 );
+		}
+	};
 
 }
