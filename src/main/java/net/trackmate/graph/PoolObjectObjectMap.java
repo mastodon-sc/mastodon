@@ -6,21 +6,22 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
 
+import net.trackmate.graph.collection.RefObjectMap;
 import net.trackmate.graph.mempool.MappedElement;
 
 /**
  * Incomplete!
  * @author Tobias Pietzsch <tobias.pietzsch@gmail.com>
  */
-public class PoolObjectObjectMap< K extends PoolObject< K, T >, T extends MappedElement, V > implements Map< K, V >
+public class PoolObjectObjectMap< K extends PoolObject< K, T >, T extends MappedElement, O > implements Map< K, O >, RefObjectMap< K, O >
 {
-	private final TIntObjectHashMap< V > indexmap;
+	private final TIntObjectHashMap< O > indexmap;
 
 	private final Pool< K, T > pool;
 
 	public PoolObjectObjectMap( final Pool< K, T > pool )
 	{
-		indexmap = new TIntObjectHashMap< V >();
+		indexmap = new TIntObjectHashMap< O >();
 		this.pool = pool;
 	}
 
@@ -48,7 +49,7 @@ public class PoolObjectObjectMap< K extends PoolObject< K, T >, T extends Mapped
 
 	@SuppressWarnings( "unchecked" )
 	@Override
-	public V get( final Object key )
+	public O get( final Object key )
 	{
 		if ( key != null && key instanceof PoolObject )
 			return indexmap.get( ( ( K ) key ).getInternalPoolIndex() );
@@ -63,14 +64,14 @@ public class PoolObjectObjectMap< K extends PoolObject< K, T >, T extends Mapped
 	}
 
 	@Override
-	public V put( final K key, final V value )
+	public O put( final K key, final O value )
 	{
 		return indexmap.put( key.getInternalPoolIndex(), value );
 	}
 
 	@SuppressWarnings( "unchecked" )
 	@Override
-	public V remove( final Object key )
+	public O remove( final Object key )
 	{
 		if ( key != null && key instanceof PoolObject )
 			return indexmap.remove( ( ( K ) key ).getInternalPoolIndex() );
@@ -85,7 +86,7 @@ public class PoolObjectObjectMap< K extends PoolObject< K, T >, T extends Mapped
 	}
 
 	@Override
-	public Collection< V > values()
+	public Collection< O > values()
 	{
 		return indexmap.valueCollection();
 	}
@@ -97,16 +98,28 @@ public class PoolObjectObjectMap< K extends PoolObject< K, T >, T extends Mapped
 	}
 
 	@Override
-	public void putAll( final Map< ? extends K, ? extends V > m )
+	public void putAll( final Map< ? extends K, ? extends O > m )
 	{
 		// TODO
 		throw new UnsupportedOperationException();
 	}
 
 	@Override
-	public Set< Entry< K, V > > entrySet()
+	public Set< Entry< K, O > > entrySet()
 	{
 		// TODO
 		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public K createRef()
+	{
+		return pool.createRef();
+	}
+
+	@Override
+	public void releaseRef( final K obj )
+	{
+		pool.releaseRef( obj );
 	}
 }
