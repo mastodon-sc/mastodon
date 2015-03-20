@@ -352,4 +352,15 @@ public class TreeOutputter< V extends Vertex< E >, E extends Edge< V > > extends
 		}
 	};
 
+	public static < V extends Vertex< E >, E extends Edge< V > > String output( final Graph< V, E > graph, final V root )
+	{
+		return new TreeOutputter< V, E >( graph ).get( root );
+	}
+
+	public static < V extends Vertex< E >, E extends Edge< V > > String output( final Graph< V, E > graph )
+	{
+		final RefSet< V > roots = RootFinder.getRoots( graph );
+		if ( roots.isEmpty() ) { return ""; }
+		return new TreeOutputter< V, E >( graph ).get( roots.iterator().next() );
+	}
 }
