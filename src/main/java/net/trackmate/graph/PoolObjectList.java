@@ -480,15 +480,19 @@ public class PoolObjectList< O extends PoolObject< O, T >, T extends MappedEleme
 	@Override
 	public Object[] toArray()
 	{
-		// TODO
-		throw new UnsupportedOperationException( "not yet implemented" );
+		final Object[] obj = new Object[ indices.size() ];
+		for ( int i = 0; i < obj.length; i++ )
+		{
+			obj[ i ] = get( i );
+		}
+		return obj;
 	}
 
+	@SuppressWarnings( "unchecked" )
 	@Override
-	public < T > T[] toArray( final T[] a )
+	public < A > A[] toArray( final A[] a )
 	{
-		// TODO
-		throw new UnsupportedOperationException( "not yet implemented" );
+		return ( A[] ) toArray();
 	}
 
 	@Override
