@@ -165,4 +165,24 @@ public class AllEdges< E extends AbstractEdge< E, ?, ? > > implements Edges< E >
 			edgePool.release( edge );
 		}
 	}
+
+	@Override
+	public String toString()
+	{
+
+		final Iterator< E > i = iterator();
+		if ( !i.hasNext() )
+			return "[]";
+
+		final StringBuilder sb = new StringBuilder();
+		sb.append( '[' );
+		for ( ;; )
+		{
+			final E e = i.next();
+			sb.append( e );
+			if ( !i.hasNext() )
+				return sb.append( ']' ).toString();
+			sb.append( ", " );
+		}
+	}
 }

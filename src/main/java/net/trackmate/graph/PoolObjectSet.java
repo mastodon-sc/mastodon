@@ -6,6 +6,7 @@ import gnu.trove.set.hash.TIntHashSet;
 
 import java.util.Collection;
 import java.util.Iterator;
+
 import net.trackmate.graph.collection.RefSet;
 import net.trackmate.graph.mempool.MappedElement;
 import net.trackmate.graph.mempool.MemPool;
@@ -193,9 +194,28 @@ public class PoolObjectSet< O extends PoolObject< O, T >, T extends MappedElemen
 	}
 
 	@Override
-	public < T > T[] toArray( final T[] a )
+	public < A > A[] toArray( final A[] a )
 	{
 		// TODO
 		throw new UnsupportedOperationException( "not yet implemented" );
+	}
+
+	@Override
+	public String toString()
+	{
+		final Iterator< O > i = iterator();
+		if ( !i.hasNext() )
+			return "[]";
+
+		final StringBuilder sb = new StringBuilder();
+		sb.append( '[' );
+		for ( ;; )
+		{
+			final O e = i.next();
+			sb.append( e );
+			if ( !i.hasNext() )
+				return sb.append( ']' ).toString();
+			sb.append( ", " );
+		}
 	}
 }
