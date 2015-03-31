@@ -7,16 +7,23 @@ import java.util.WeakHashMap;
 import net.trackmate.graph.Edge;
 import net.trackmate.graph.Graph;
 import net.trackmate.graph.Vertex;
+import net.trackmate.graph.collection.CollectionUtils;
+import net.trackmate.graph.collection.CollectionUtils.CollectionCreator;
+import net.trackmate.graph.collection.RefDeque;
+import net.trackmate.graph.collection.RefList;
+import net.trackmate.graph.collection.RefObjectMap;
+import net.trackmate.graph.collection.RefSet;
+import net.trackmate.graph.collection.RefStack;
 
 /**
  * Transaction model inspired by JGraphX.
- * 
+ *
  * @author tinevez
  *
  * @param <V>
  * @param <E>
  */
-public class ListenableGraph< V extends Vertex< E >, E extends Edge< V > > implements Graph< V, E >
+public class ListenableGraph< V extends Vertex< E >, E extends Edge< V > > implements Graph< V, E >, CollectionCreator< V, E >
 {
 	private final Graph< V, E > graph;
 
@@ -230,6 +237,118 @@ public class ListenableGraph< V extends Vertex< E >, E extends Edge< V > > imple
 	public Iterator< E > edgeIterator()
 	{
 		return graph.edgeIterator();
+	}
+
+	/*
+	 * COLLECTION METHODS
+	 */
+
+	@Override
+	public RefSet< V > createVertexSet()
+	{
+		return CollectionUtils.createVertexSet( graph );
+	}
+
+	@Override
+	public RefSet< V > createVertexSet( final int initialCapacity )
+	{
+		return CollectionUtils.createVertexSet( graph, initialCapacity );
+	}
+
+	@Override
+	public RefSet< E > createEdgeSet()
+	{
+		return CollectionUtils.createEdgeSet( graph );
+	}
+
+	@Override
+	public RefSet< E > createEdgeSet( final int initialCapacity )
+	{
+		return CollectionUtils.createEdgeSet( graph, initialCapacity );
+	}
+
+	@Override
+	public RefList< V > createVertexList()
+	{
+		return CollectionUtils.createVertexList( graph );
+	}
+
+	@Override
+	public RefList< V > createVertexList( final int initialCapacity )
+	{
+		return CollectionUtils.createVertexList( graph, initialCapacity );
+	}
+
+	@Override
+	public RefList< E > createEdgeList()
+	{
+		return CollectionUtils.createEdgeList( graph );
+	}
+
+	@Override
+	public RefList< E > createEdgeList( final int initialCapacity )
+	{
+		return CollectionUtils.createEdgeList( graph, initialCapacity );
+	}
+
+	@Override
+	public RefDeque< V > createVertexDeque()
+	{
+		return CollectionUtils.createVertexDeque( graph );
+	}
+
+	@Override
+	public RefDeque< V > createVertexDeque( final int initialCapacity )
+	{
+		return CollectionUtils.createVertexDeque( graph, initialCapacity );
+	}
+
+	@Override
+	public RefDeque< E > createEdgeDeque()
+	{
+		return CollectionUtils.createEdgeDeque( graph );
+	}
+
+	@Override
+	public RefDeque< E > createEdgeDeque( final int initialCapacity )
+	{
+		return CollectionUtils.createEdgeDeque( graph, initialCapacity );
+	}
+
+	@Override
+	public RefStack< V > createVertexStack()
+	{
+		return CollectionUtils.createVertexStack( graph );
+	}
+
+	@Override
+	public RefStack< V > createVertexStack( final int initialCapacity )
+	{
+		return CollectionUtils.createVertexStack( graph, initialCapacity );
+	}
+
+	@Override
+	public RefStack< E > createEdgeStack()
+	{
+		return CollectionUtils.createEdgeStack( graph );
+	}
+
+	@Override
+	public RefStack< E > createEdgeStack( final int initialCapacity )
+	{
+		return CollectionUtils.createEdgeStack( graph, initialCapacity );
+	}
+
+	@Override
+	public < O > RefObjectMap< V, O > createVertexObjectMap( final Class< ? extends O > valueClass )
+	{
+		return CollectionUtils.createVertexObjectMap( graph, valueClass );
+	}
+
+	@Override
+	public < O > RefObjectMap< E, O > createEdgeObjectMap( final Class< ? extends O > valueClass )
+	{
+		return CollectionUtils.createEdgeObjectMap( graph, valueClass );
 	}
 
 }
