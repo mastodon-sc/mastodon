@@ -107,4 +107,22 @@ public class RefRefMapWrapper< O, P > implements RefRefMap< O, P >
 	@Override
 	public void releaseValueRef( final P obj )
 	{}
+
+	@Override
+	public P put( final O key, final P value, final P ref )
+	{
+		return put( key, value );
+	}
+
+	@Override
+	public P remove( final Object key, final P ref )
+	{
+		return remove( key );
+	}
+
+	@Override
+	public P get( final Object key, final P ref )
+	{
+		return get( key );
+	}
 }
