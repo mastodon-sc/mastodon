@@ -13,7 +13,19 @@ import net.trackmate.graph.mempool.MappedElement;
 
 public class PoolObjectPoolObjectMap< K extends PoolObject< K, TK >, L extends PoolObject< L, TL >, TK extends MappedElement, TL extends MappedElement > implements RefRefMap< K, L >
 {
-	private final TIntIntHashMap indexmap;
+	/**
+	 * Int value used to declare that the requested key is not in the map.
+	 * Negative, so that it cannot be an index in the pool.
+	 */
+	private static final int NO_ENTRY_KEY = -1;
+
+	/**
+	 * Int value used to declare that the requested value is not in the map.
+	 * Negative, so that it cannot be an index in the pool.
+	 */
+	private static final int NO_ENTRY_VALUE = -2;
+
+	final TIntIntHashMap indexmap;
 
 	private final Pool< K, TK > keyPool;
 
@@ -25,7 +37,7 @@ public class PoolObjectPoolObjectMap< K extends PoolObject< K, TK >, L extends P
 
 	public PoolObjectPoolObjectMap( final Pool< K, TK > keyPool, final Pool< L, TL > valuePool, final int initialCapacity, final float loadFactor )
 	{
-		this.indexmap = new TIntIntHashMap( initialCapacity, loadFactor );
+		this.indexmap = new TIntIntHashMap( initialCapacity, loadFactor, NO_ENTRY_KEY, NO_ENTRY_VALUE );
 		this.keyPool = keyPool;
 		this.valuePool = valuePool;
 	}
@@ -90,6 +102,7 @@ public class PoolObjectPoolObjectMap< K extends PoolObject< K, TK >, L extends P
 		{
 			@SuppressWarnings( "unchecked" )
 			final int index = indexmap.get( ( ( K ) key ).getInternalPoolIndex() );
+			if ( index == NO_ENTRY_VALUE ) { return null; }
 			ref.updateAccess( valuePool.getMemPool(), index );
 			return ref;
 		}
@@ -115,6 +128,7 @@ public class PoolObjectPoolObjectMap< K extends PoolObject< K, TK >, L extends P
 	public L put( final K key, final L value, final L ref )
 	{
 		final int index = indexmap.put( key.getInternalPoolIndex(), value.getInternalPoolIndex() );
+		if ( index == NO_ENTRY_VALUE ) { return null; }
 		ref.updateAccess( valuePool.getMemPool(), index );
 		return ref;
 	}
@@ -139,6 +153,7 @@ public class PoolObjectPoolObjectMap< K extends PoolObject< K, TK >, L extends P
 		{
 			@SuppressWarnings( "unchecked" )
 			final int index = indexmap.remove( ( ( K ) key ).getInternalPoolIndex() );
+			if ( index == NO_ENTRY_VALUE ) { return null; }
 			ref.updateAccess( valuePool.getMemPool(), index );
 			return ref;
 		}
@@ -188,6 +203,30 @@ public class PoolObjectPoolObjectMap< K extends PoolObject< K, TK >, L extends P
 	public void releaseValueRef( final L obj )
 	{
 		valuePool.releaseRef( obj );
+	}
+
+	@Override
+	public String toString()
+	{
+		final StringBuilder sb = new StringBuilder();
+		final L ref = createValueRef();
+		final Iterator< K > it = keySet().iterator();
+		sb.append( "{ " );
+		while ( it.hasNext() )
+		{
+			final K key = it.next();
+			final L val = get( key, ref );
+			sb.append( key );
+			sb.append( '=' ).append( '"' );
+			sb.append( val );
+			sb.append( '"' );
+			if ( it.hasNext() )
+			{
+				sb.append( ',' ).append( ' ' );
+			}
+		}
+		sb.append( " }" );
+		return sb.toString();
 	}
 
 	/*
@@ -248,9 +287,6 @@ public class PoolObjectPoolObjectMap< K extends PoolObject< K, TK >, L extends P
 			final L ref = createValueRef();
 			return new Iterator< L >()
 			{
-
-				private int index;
-
 				@Override
 				public boolean hasNext()
 				{
@@ -260,20 +296,15 @@ public class PoolObjectPoolObjectMap< K extends PoolObject< K, TK >, L extends P
 				@Override
 				public L next()
 				{
-					moveToNextIndex();
+					final int index = it.next();
 					ref.updateAccess( valuePool.getMemPool(), index );
 					return ref;
-				}
-
-				private void moveToNextIndex()
-				{
-					index = it.next();
 				}
 
 				@Override
 				public void remove()
 				{
-					indexmap.valueCollection().remove( index );
+					it.remove();
 				}
 			};
 		}
@@ -285,7 +316,7 @@ public class PoolObjectPoolObjectMap< K extends PoolObject< K, TK >, L extends P
 			if ( value != null && value instanceof PoolObject )
 			{
 				return indexmap.valueCollection().remove(
-						( ( K ) value ).getInternalPoolIndex() );
+						( ( L ) value ).getInternalPoolIndex() );
 			}
 			else
 			{
