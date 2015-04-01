@@ -1,8 +1,10 @@
 package net.trackmate.graph;
 
+import gnu.trove.iterator.TIntIterator;
 import gnu.trove.map.hash.TIntIntHashMap;
 
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
@@ -11,18 +13,31 @@ import net.trackmate.graph.mempool.MappedElement;
 
 public class PoolObjectPoolObjectMap< K extends PoolObject< K, TK >, L extends PoolObject< L, TL >, TK extends MappedElement, TL extends MappedElement > implements RefRefMap< K, L >
 {
-
 	private final TIntIntHashMap indexmap;
 
 	private final Pool< K, TK > keyPool;
 
 	private final Pool< L, TL > valuePool;
 
-	public PoolObjectPoolObjectMap( final Pool< K, TK > keyPool, final Pool< L, TL > valuePool )
+	/*
+	 * CONSTRUCTORS
+	 */
+
+	public PoolObjectPoolObjectMap( final Pool< K, TK > keyPool, final Pool< L, TL > valuePool, final int initialCapacity, final float loadFactor )
 	{
-		this.indexmap = new TIntIntHashMap();
+		this.indexmap = new TIntIntHashMap( initialCapacity, loadFactor );
 		this.keyPool = keyPool;
 		this.valuePool = valuePool;
+	}
+
+	public PoolObjectPoolObjectMap( final Pool< K, TK > keyPool, final Pool< L, TL > valuePool, final int initialCapacity )
+	{
+		this( keyPool, valuePool, initialCapacity, 0.5f );
+	}
+
+	public PoolObjectPoolObjectMap( final Pool< K, TK > keyPool, final Pool< L, TL > valuePool )
+	{
+		this( keyPool, valuePool, 10 );
 	}
 
 	/*
@@ -148,7 +163,7 @@ public class PoolObjectPoolObjectMap< K extends PoolObject< K, TK >, L extends P
 	@Override
 	public Collection< L > values()
 	{
-		throw new UnsupportedOperationException( "Cannot return a collection view of the values." );
+		return new CollectionValuesView();
 	}
 
 	@Override
@@ -175,4 +190,174 @@ public class PoolObjectPoolObjectMap< K extends PoolObject< K, TK >, L extends P
 		valuePool.releaseRef( obj );
 	}
 
+	/*
+	 * INNER CLASS
+	 */
+
+	private class CollectionValuesView implements Collection< L >
+	{
+
+		@Override
+		public boolean add( final L e )
+		{
+			throw new UnsupportedOperationException();
+		}
+
+		@Override
+		public boolean addAll( final Collection< ? extends L > c )
+		{
+			throw new UnsupportedOperationException();
+		}
+
+		@Override
+		public void clear()
+		{
+			PoolObjectPoolObjectMap.this.clear();
+		}
+
+		@Override
+		public boolean contains( final Object o )
+		{
+			return PoolObjectPoolObjectMap.this.containsValue( o );
+		}
+
+		@Override
+		public boolean containsAll( final Collection< ? > collection )
+		{
+			final Iterator< ? > iter = collection.iterator();
+			while ( iter.hasNext() )
+			{
+				if ( !PoolObjectPoolObjectMap.this.containsValue( iter.next() ) ) { return false; }
+			}
+			return true;
+		}
+
+		@Override
+		public boolean isEmpty()
+		{
+			return 0 == size();
+		}
+
+		/**
+		 * Unsafe iterator.
+		 */
+		@Override
+		public Iterator< L > iterator()
+		{
+			final TIntIterator it = indexmap.valueCollection().iterator();
+			final L ref = createValueRef();
+			return new Iterator< L >()
+			{
+
+				private int index;
+
+				@Override
+				public boolean hasNext()
+				{
+					return it.hasNext();
+				}
+
+				@Override
+				public L next()
+				{
+					moveToNextIndex();
+					ref.updateAccess( valuePool.getMemPool(), index );
+					return ref;
+				}
+
+				private void moveToNextIndex()
+				{
+					index = it.next();
+				}
+
+				@Override
+				public void remove()
+				{
+					indexmap.valueCollection().remove( index );
+				}
+			};
+		}
+
+		@SuppressWarnings( "unchecked" )
+		@Override
+		public boolean remove( final Object value )
+		{
+			if ( value != null && value instanceof PoolObject )
+			{
+				return indexmap.valueCollection().remove(
+						( ( K ) value ).getInternalPoolIndex() );
+			}
+			else
+			{
+				return false;
+			}
+		}
+
+		@Override
+		public boolean removeAll( final Collection< ? > collection )
+		{
+			boolean changed = false;
+			for ( final Object value : collection )
+			{
+				changed = remove( value ) || changed;
+			}
+			return changed;
+		}
+
+		@Override
+		public boolean retainAll( final Collection< ? > collection )
+		{
+			boolean changed = false;
+			final Iterator< L > it = iterator();
+			while ( it.hasNext() )
+			{
+				if ( !collection.contains( it.next() ) )
+				{
+					it.remove();
+					changed = true;
+				}
+			}
+			return changed;
+		}
+
+		@Override
+		public int size()
+		{
+			return indexmap.size();
+		}
+
+		@Override
+		public Object[] toArray()
+		{
+			final int[] indices = indexmap.values();
+			final Object[] obj = new Object[ indices.length ];
+			for ( int i = 0; i < obj.length; i++ )
+			{
+				final L ref = createValueRef();
+				ref.updateAccess( valuePool.getMemPool(), indices[ i ] );
+				obj[ i ] = ref;
+			}
+			return obj;
+		}
+
+		@SuppressWarnings( "unchecked" )
+		@Override
+		public < T > T[] toArray( final T[] a )
+		{
+			if ( a.length < size() ) { return ( T[] ) toArray(); }
+
+			final int[] indices = indexmap.values();
+			for ( int i = 0; i < indices.length; i++ )
+			{
+				final L ref = createValueRef();
+				ref.updateAccess( valuePool.getMemPool(), indices[ i ] );
+				a[ i ] = ( T ) ref;
+			}
+			for ( int i = indices.length; i < a.length; i++ )
+			{
+				a[ i ] = null;
+			}
+			return a;
+		}
+	}
 }
