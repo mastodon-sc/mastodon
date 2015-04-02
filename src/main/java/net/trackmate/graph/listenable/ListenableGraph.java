@@ -12,6 +12,7 @@ import net.trackmate.graph.collection.CollectionUtils.CollectionCreator;
 import net.trackmate.graph.collection.RefDeque;
 import net.trackmate.graph.collection.RefList;
 import net.trackmate.graph.collection.RefObjectMap;
+import net.trackmate.graph.collection.RefRefMap;
 import net.trackmate.graph.collection.RefSet;
 import net.trackmate.graph.collection.RefStack;
 
@@ -351,4 +352,56 @@ public class ListenableGraph< V extends Vertex< E >, E extends Edge< V > > imple
 		return CollectionUtils.createEdgeObjectMap( graph, valueClass );
 	}
 
+	@Override
+	public RefRefMap< V, E > createVertexEdgeMap()
+	{
+		return CollectionUtils.createVertexEdgeMap( graph );
+	}
+
+	@Override
+	public RefRefMap< V, E > createVertexEdgeMap( final int initialCapacity )
+	{
+		return CollectionUtils.createVertexEdgeMap( graph, initialCapacity );
+	}
+
+	@Override
+	public RefRefMap< E, V > createEdgeVertexMap()
+	{
+		return CollectionUtils.createEdgeVertexMap( graph );
+	}
+
+	@Override
+	public RefRefMap< E, V > createEdgeVertexMap( final int initialCapacity )
+	{
+		return CollectionUtils.createEdgeVertexMap( graph, initialCapacity );
+	}
+
+	@Override
+	public RefRefMap< V, V > createVertexVertexMap()
+	{
+		return CollectionUtils.createVertexVertexMap( graph );
+	}
+
+	@Override
+	public RefRefMap< V, V > createVertexVertexMap( final int initialCapacity )
+	{
+		return CollectionUtils.createVertexVertexMap( graph, initialCapacity );
+	}
+
+	@Override
+	public RefRefMap< E, E > createEdgeEdgeMap()
+	{
+		return CollectionUtils.createEdgeEdgeMap( graph );
+	}
+
+	@Override
+	public RefRefMap< E, E > createEdgeEdgeMap( final int initialCapacity )
+	{
+		return CollectionUtils.createEdgeEdgeMap( graph, initialCapacity );
+	}
+
+	protected static < O > Iterator< O > safeIterator( final Iterator< O > iterator )
+	{
+		return CollectionUtils.safeIterator( iterator );
+	}
 }
