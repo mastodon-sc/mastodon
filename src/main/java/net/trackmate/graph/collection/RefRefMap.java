@@ -1,17 +1,12 @@
 package net.trackmate.graph.collection;
 
-import java.util.Map;
 
 /**
  * Map-like interface for maps that map possibly reusable references to another
  * possibly reusable reference.
  */
-public interface RefRefMap< K, L > extends Map< K, L >
+public interface RefRefMap< K, L > extends RefObjectMap< K, L >
 {
-	public K createRef();
-
-	public void releaseRef( final K obj );
-
 	public L createValueRef();
 
 	public void releaseValueRef( final L obj );
