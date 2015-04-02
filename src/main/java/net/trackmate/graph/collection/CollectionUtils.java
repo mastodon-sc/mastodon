@@ -161,6 +161,70 @@ public class CollectionUtils
 			return wrap( new HashMap< V, O >() );
 	}
 
+	public static < V extends Vertex< E >, E extends Edge< V > > RefRefMap< V, E > createVertexEdgeMap( final Graph< V, E > graph )
+	{
+		if ( graph instanceof CollectionCreator )
+			return ( ( CollectionCreator< V, E > ) graph ).createVertexEdgeMap();
+		else
+			return wrap( new HashMap< V, E >() );
+	};
+
+	public static < V extends Vertex< E >, E extends Edge< V > > RefRefMap< V, E > createVertexEdgeMap( final Graph< V, E > graph, final int initialCapacity )
+	{
+		if ( graph instanceof CollectionCreator )
+			return ( ( CollectionCreator< V, E > ) graph ).createVertexEdgeMap( initialCapacity );
+		else
+			return wrap( new HashMap< V, E >( initialCapacity ) );
+	};
+
+	public static < V extends Vertex< E >, E extends Edge< V > > RefRefMap< E, V > createEdgeVertexMap( final Graph< V, E > graph )
+	{
+		if ( graph instanceof CollectionCreator )
+			return ( ( CollectionCreator< V, E > ) graph ).createEdgeVertexMap();
+		else
+			return wrap( new HashMap< E, V >() );
+	}
+
+	public static < V extends Vertex< E >, E extends Edge< V > > RefRefMap< E, V > createEdgeVertexMap( final Graph< V, E > graph, final int initialCapacity )
+	{
+		if ( graph instanceof CollectionCreator )
+			return ( ( CollectionCreator< V, E > ) graph ).createEdgeVertexMap();
+		else
+			return wrap( new HashMap< E, V >() );
+	}
+
+	public static < V extends Vertex< ? >> RefRefMap< V, V > createVertexVertexMap( final Graph< V, ? > graph )
+	{
+		if ( graph instanceof CollectionCreator )
+			return ( ( CollectionCreator< V, ? > ) graph ).createVertexVertexMap();
+		else
+			return wrap( new HashMap< V, V >() );
+	}
+
+	public static < V extends Vertex< ? >> RefRefMap< V, V > createVertexVertexMap( final Graph< V, ? > graph, final int initialCapacity )
+	{
+		if ( graph instanceof CollectionCreator )
+			return ( ( CollectionCreator< V, ? > ) graph ).createVertexVertexMap( initialCapacity );
+		else
+			return wrap( new HashMap< V, V >( initialCapacity ) );
+	}
+
+	public static < E extends Edge< ? >> RefRefMap< E, E > createEdgeEdgeMap( final Graph< ?, E > graph )
+	{
+		if ( graph instanceof CollectionCreator )
+			return ( ( CollectionCreator< ?, E > ) graph ).createEdgeEdgeMap();
+		else
+			return wrap( new HashMap< E, E >() );
+	}
+
+	public static < E extends Edge< ? >> RefRefMap< E, E > createEdgeEdgeMap( final Graph< ?, E > graph, final int initialCapacity )
+	{
+		if ( graph instanceof CollectionCreator )
+			return ( ( CollectionCreator< ?, E > ) graph ).createEdgeEdgeMap( initialCapacity );
+		else
+			return wrap( new HashMap< E, E >( initialCapacity ) );
+	}
+
 	@SuppressWarnings( { "unchecked", "rawtypes" } )
 	public static < O > Iterator< O > safeIterator( final Iterator< O > iterator )
 	{
@@ -245,7 +309,7 @@ public class CollectionUtils
 		return new RefStackWrapper< O >( set );
 	}
 
-	private static < K, O > RefObjectMap< K, O > wrap( final Map< K, O > map )
+	private static < K, O > RefRefMap< K, O > wrap( final Map< K, O > map )
 	{
 		return new RefMapWrapper< K, O >( map );
 	}
