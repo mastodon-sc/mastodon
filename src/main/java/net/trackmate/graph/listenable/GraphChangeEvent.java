@@ -4,6 +4,7 @@ import net.trackmate.graph.Edge;
 import net.trackmate.graph.Graph;
 import net.trackmate.graph.Vertex;
 import net.trackmate.graph.collection.CollectionUtils;
+import net.trackmate.graph.collection.RefRefMap;
 import net.trackmate.graph.collection.RefSet;
 
 public class GraphChangeEvent< V extends Vertex< E >, E extends Edge< V > >
@@ -18,6 +19,10 @@ public class GraphChangeEvent< V extends Vertex< E >, E extends Edge< V > >
 
 	private final RefSet< V > vertexRemoved;
 
+	private final RefRefMap< E, V > previousEdgeSource;
+
+	private final RefRefMap< E, V > previousEdgeTarget;
+
 	GraphChangeEvent( final Graph< V, E > source )
 	{
 		this.source = source;
@@ -25,6 +30,8 @@ public class GraphChangeEvent< V extends Vertex< E >, E extends Edge< V > >
 		this.vertexRemoved = CollectionUtils.createVertexSet( source );
 		this.edgeAdded = CollectionUtils.createEdgeSet( source );
 		this.edgeRemoved = CollectionUtils.createEdgeSet( source );
+		this.previousEdgeSource = CollectionUtils.createEdgeVertexMap( source );
+		this.previousEdgeTarget = CollectionUtils.createEdgeVertexMap( source );
 	}
 
 	void vertexAdded( final V vertex )
@@ -45,6 +52,8 @@ public class GraphChangeEvent< V extends Vertex< E >, E extends Edge< V > >
 	void edgeRemoved( final E edge )
 	{
 		edgeRemoved.add( edge );
+		previousEdgeSource.put( edge, edge.getSource() );
+		previousEdgeTarget.put( edge, edge.getTarget() );
 	}
 
 	public boolean isEmpty()
@@ -78,6 +87,16 @@ public class GraphChangeEvent< V extends Vertex< E >, E extends Edge< V > >
 	public RefSet< V > getVertexRemoved()
 	{
 		return vertexRemoved;
+	}
+
+	public V getPreviousEdgeSource( final E edge )
+	{
+		return previousEdgeSource.get( edge );
+	}
+
+	public V getPreviousEdgeTarget( final E edge )
+	{
+		return previousEdgeTarget.get( edge );
 	}
 
 }

@@ -2,6 +2,7 @@ package net.trackmate.graph.listenable;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.util.Iterator;
 
@@ -32,8 +33,6 @@ public class ListenableGraphRefTest
 
 	private TestEdge eRootA;
 
-	private TestEdge eRootB;
-
 	private TestEdge eA1;
 
 	private TestEdge eA2;
@@ -60,7 +59,7 @@ public class ListenableGraphRefTest
 		B1 = sourceGraph.addVertex().init( 5 );
 		B2 = sourceGraph.addVertex().init( 6 );
 		eRootA = sourceGraph.addEdge( root, A );
-		eRootB = sourceGraph.addEdge( root, B );
+		sourceGraph.addEdge( root, B );
 		eA1 = sourceGraph.addEdge( A, A1 );
 		eA2 = sourceGraph.addEdge( A, A2 );
 		eB1 = sourceGraph.addEdge( B, B1 );
@@ -113,11 +112,35 @@ public class ListenableGraphRefTest
 				final TestVertex actual = event.getVertexRemoved().iterator().next();
 				assertEquals( "Vertex marked as removed is not the expected one.", A, actual );
 				
-				/*
-				 * TODO add tests to check that the edges removed are the
-				 * expected one, once the FIXME for edge removal has been
-				 * addressed.
-				 */
+				for ( final TestEdge edge : event.getEdgeRemoved() )
+				{
+					final TestVertex source;
+					final TestVertex target;
+					if ( edge.equals( eRootA ) )
+					{
+						source = root;
+						target = A;
+					}
+					else if ( edge.equals( eA1 ) )
+					{
+						source = A;
+						target = A1;
+					}
+					else if ( edge.equals( eA2 ) )
+					{
+						source = A;
+						target = A2;
+					}
+					else
+					{
+						source = null;
+						target = null;
+						fail( "Unexpected removed edge: " + edge );
+					}
+
+					assertEquals( "Edge marked as removed is perturbed. Its source does not match.", source, event.getPreviousEdgeSource( edge ) );
+					assertEquals( "Edge marked as removed is perturbed. Its target does not match.", target, event.getPreviousEdgeTarget( edge ) );
+				}
 
 				// Test that the event has been fired.
 				throw new RuntimeException( "The event has been fired as expected." );
@@ -158,11 +181,40 @@ public class ListenableGraphRefTest
 				}
 				assertTrue( "All the actually removed vertices have not been reported by the event.", expecteds.isEmpty() );
 
-				/*
-				 * TODO add tests to check that the edges removed are the
-				 * expected one, once the FIXME for edge removal has been
-				 * addressed.
-				 */
+				for ( final TestEdge edge : event.getEdgeRemoved() )
+				{
+					final TestVertex source;
+					final TestVertex target;
+					if ( edge.equals( eB1 ) )
+					{
+						source = B;
+						target = B1;
+					}
+					else if ( edge.equals( eB2 ) )
+					{
+						source = B;
+						target = B2;
+					}
+					else if ( edge.equals( eA1 ) )
+					{
+						source = A;
+						target = A1;
+					}
+					else if ( edge.equals( eA2 ) )
+					{
+						source = A;
+						target = A2;
+					}
+					else
+					{
+						source = null;
+						target = null;
+						fail( "Unexpected removed edge: " + edge );
+					}
+
+					assertEquals( "Edge marked as removed is perturbed. Its source does not match.", source, event.getPreviousEdgeSource( edge ) );
+					assertEquals( "Edge marked as removed is perturbed. Its target does not match.", target, event.getPreviousEdgeTarget( edge ) );
+				}
 
 				// Test that the event has been fired.
 				throw new RuntimeException( "The event has been fired as expected." );
@@ -259,14 +311,14 @@ public class ListenableGraphRefTest
 				assertEquals( "Edge marked as removed is not the expected one.", edge, actual );
 
 				/*
-				 * FIXME Right now, this does not work. Because of course, as
-				 * soon as you remove an edge from the graph, you cannot access
-				 * in a reliable manner its source and target anymore. We
-				 * somehow have to store them BEFORE it is actually removed.
+				 * To test what were the source and target of an edge, you have
+				 * to rely on these two event methods.The #getSource() and
+				 * #getTarget() methods of the edge class are not reliable after
+				 * the edge has been removed from the graph.
 				 */
 
-				assertEquals( "Edge marked as removed is perturbed. Its source does not match.", source, actual.getSource() );
-				assertEquals( "Edge marked as removed is perturbed. Its target does not match.", target, actual.getTarget() );
+				assertEquals( "Edge marked as removed is perturbed. Its source does not match.", source, event.getPreviousEdgeSource( actual ) );
+				assertEquals( "Edge marked as removed is perturbed. Its target does not match.", target, event.getPreviousEdgeTarget( actual ) );
 
 				// Test that the event has been fired.
 				throw new RuntimeException( "The event has been fired as expected." );
