@@ -47,12 +47,13 @@ public class DepthFirstIteratorSortedTest
 	@Test
 	public void testBehavior()
 	{
+		// Will sort the tree in ASCENDING order
 		final Comparator< TestVertex > comparator = new Comparator< TestVertex >()
 		{
 			@Override
 			public int compare( final TestVertex o1, final TestVertex o2 )
 			{
-				return o1.getId() - o2.getId();
+				return -o1.getId() + o2.getId();
 			}
 		};
 		final Iterator< TestVertex > it = DepthFirstIteratorSorted.create( root, graph, comparator );
@@ -65,9 +66,9 @@ public class DepthFirstIteratorSortedTest
 		while ( it.hasNext() )
 		{
 			current.refTo( it.next() );
-			assertTrue( "Iteration over children of the same descendance should be ordered, but is not.", comparator.compare( current, previous ) > 0 );
+			// Careful: DFIsorted returns opposite order.
+			assertTrue( "Iteration over children of the same descendance should be ordered, but is not.", comparator.compare( current, previous ) < 0 );
 			previous.refTo( current );
 		}
 	}
-
 }

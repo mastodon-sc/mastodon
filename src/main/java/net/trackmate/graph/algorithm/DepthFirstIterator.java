@@ -1,43 +1,31 @@
 package net.trackmate.graph.algorithm;
 
-import java.util.Iterator;
-
 import net.trackmate.graph.Edge;
 import net.trackmate.graph.Graph;
 import net.trackmate.graph.Vertex;
-import net.trackmate.graph.collection.RefSet;
 import net.trackmate.graph.collection.RefStack;
 
-public class DepthFirstIterator< V extends Vertex< E >, E extends Edge< V > > extends AbstractGraphIteratorAlgorithm< V, E > implements Iterator< V >
+/**
+ * A Depth-first iterator, that traverses edges only following their direction.
+ * <p>
+ * With <code>A -> B</code>, the iterator will move from A to B, but not from B
+ * to A.
+ *
+ * @author Jean-Yves Tinevez
+ *
+ * @param <V>
+ *            the type of the graph vertices iterated.
+ * @param <E>
+ *            the type of the graph edges iterated.
+ */
+public class DepthFirstIterator< V extends Vertex< E >, E extends Edge< V > > extends AbstractGraphIteratorAlgorithm< V, E >
 {
 	private final RefStack< V > stack;
-
-	private final RefSet< V > visited;
-
-	/**
-	 * is returned by {@link #next()}.
-	 */
-	private V next;
-
-	/**
-	 * will be returned by following {@link #next()}.
-	 */
-	private V fetched;
-
-	/**
-	 * A utility ref.
-	 */
-	private final V tmpRef;
 
 	public DepthFirstIterator( final V root, final Graph< V, E > graph )
 	{
 		super( graph );
-		visited = createVertexSet();
 		stack = createVertexStack();
-		next = vertexRef();
-		fetched = vertexRef();
-		tmpRef = vertexRef();
-
 		stack.push( root );
 		fetchNext();
 	}
@@ -48,44 +36,26 @@ public class DepthFirstIterator< V extends Vertex< E >, E extends Edge< V > > ex
 	}
 
 	@Override
-	public boolean hasNext()
+	protected Iterable< E > neighbors( final V vertex )
 	{
-		return fetched != null;
+		return vertex.outgoingEdges();
 	}
 
 	@Override
-	public V next()
+	protected V fetch( final V ref )
 	{
-		next = assign( fetched, next );
-		fetchNext();
-		return next;
-	}
-
-	private void fetchNext()
-	{
-		while( !stack.isEmpty() )
-		{
-			fetched = stack.pop( fetched );
-			if ( !visited.contains( fetched ) )
-			{
-				visited.add( fetched );
-				for ( final E e : fetched.outgoingEdges() )
-				{
-					final V target = e.getTarget( tmpRef );
-					stack.push( target );
-				}
-				return;
-			}
-		}
-		releaseRef( tmpRef );
-		releaseRef( fetched );
-		// we cannot release next, because it might still be in used outside of the iterator
-		fetched = null;
+		return stack.pop( ref );
 	}
 
 	@Override
-	public void remove()
+	protected void toss( final V vertex )
 	{
-		throw new UnsupportedOperationException( "Remove is not supported for DepthFirstIterator." );
+		stack.push( vertex );
+	}
+
+	@Override
+	protected boolean canFetch()
+	{
+		return !stack.isEmpty();
 	}
 }

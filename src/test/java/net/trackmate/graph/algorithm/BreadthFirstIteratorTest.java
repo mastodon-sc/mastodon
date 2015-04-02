@@ -15,12 +15,9 @@ import org.junit.Test;
 
 public class BreadthFirstIteratorTest
 {
-
 	private TestGraph graph;
 
 	private TestVertex A;
-
-
 
 	@Before
 	public void setUp() throws Exception
@@ -73,19 +70,19 @@ public class BreadthFirstIteratorTest
 	public void testBehavior()
 	{
 		final BreadthFirstIterator< TestVertex, TestEdge > iter = BreadthFirstIterator.create( A, graph );
-		assertEquals( iter.next().getId(), 0 );
-		assertEquals( iter.next().getId(), 1 );
-		assertEquals( iter.next().getId(), 2 );
-		assertEquals( iter.next().getId(), 3 );
-		assertEquals( iter.next().getId(), 4 );
-		assertEquals( iter.next().getId(), 5 );
-		assertEquals( iter.next().getId(), 6 );
-		assertEquals( iter.next().getId(), 7 );
-		assertEquals( iter.next().getId(), 8 );
-		assertEquals( iter.next().getId(), 9 );
-		assertEquals( iter.next().getId(), 10 );
-		assertEquals( iter.next().getId(), 11 );
-		assertEquals( iter.next().getId(), 12 );
+		assertEquals( 0, iter.next().getId() );
+		assertEquals( 1, iter.next().getId() );
+		assertEquals( 2, iter.next().getId() );
+		assertEquals( 3, iter.next().getId() );
+		assertEquals( 4, iter.next().getId() );
+		assertEquals( 5, iter.next().getId() );
+		assertEquals( 6, iter.next().getId() );
+		assertEquals( 7, iter.next().getId() );
+		assertEquals( 8, iter.next().getId() );
+		assertEquals( 9, iter.next().getId() );
+		assertEquals( 10, iter.next().getId() );
+		assertEquals( 11, iter.next().getId() );
+		assertEquals( 12, iter.next().getId() );
 		// The breadth order is not affected by the two loops I put at then end
 		// of the tree.
 		assertFalse( iter.hasNext() );
