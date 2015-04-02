@@ -13,8 +13,25 @@ import net.trackmate.graph.collection.RefSet;
 
 import org.junit.Test;
 
+/**
+ * Test map from vertices to edges, both belong to the same graph.
+ * 
+ * @author Jean-Yves Tinevez - 2015
+ */
 public class PoolObjectPoolObjectMapTest extends PoolObjectPoolObjectMapAbstractTest
 {
+
+	/**
+	 * We want to test that the instances we are using are what is expected in
+	 * this test unit. For this instance, we expect to test a vertex pool and an
+	 * edge pool that come from the same graph.
+	 */
+	@Test
+	public void testTest()
+	{
+		assertEquals( "The graph vertex pool and the map key vertex pool are different.", graph.vertexPool, Ak.creatingPool );
+		assertEquals( "The graph edge pool and the map value edge pool are different.", graph.edgePool, eAB.creatingPool );
+	}
 
 	@Test
 	public void testClear()
