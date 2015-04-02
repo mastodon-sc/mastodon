@@ -166,7 +166,7 @@ public class CollectionUtils
 	{
 		if ( iterator instanceof MaybeRefIterator )
 			if ( ( ( MaybeRefIterator ) iterator ).isRefIterator() )
-				return new SafePoolObjectIteratorWrapper( ( Iterator ) iterator );
+				return new SafePoolObjectIteratorWrapper( iterator );
 		return iterator;
 	}
 
@@ -207,6 +207,22 @@ public class CollectionUtils
 		public < O > RefObjectMap< V, O > createVertexObjectMap( Class< ? extends O > valueClass );
 
 		public < O > RefObjectMap< E, O > createEdgeObjectMap( Class< ? extends O > valueClass );
+
+		public RefRefMap< V, E > createVertexEdgeMap();
+
+		public RefRefMap< V, E > createVertexEdgeMap( int initialCapacity );
+
+		public RefRefMap< E, V > createEdgeVertexMap();
+
+		public RefRefMap< E, V > createEdgeVertexMap( int initialCapacity );
+
+		public RefRefMap< V, V > createVertexVertexMap();
+
+		public RefRefMap< V, V > createVertexVertexMap( int initialCapacity );
+
+		public RefRefMap< E, E > createEdgeEdgeMap();
+
+		public RefRefMap< E, E > createEdgeEdgeMap( int initialCapacity );
 	}
 
 	private static < O > RefSet< O > wrap( final Set< O > set )
@@ -231,6 +247,6 @@ public class CollectionUtils
 
 	private static < K, O > RefObjectMap< K, O > wrap( final Map< K, O > map )
 	{
-		return new RefObjectMapWrapper< K, O >( map );
+		return new RefMapWrapper< K, O >( map );
 	}
 }

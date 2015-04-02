@@ -6,6 +6,7 @@ import net.trackmate.graph.collection.CollectionUtils.CollectionCreator;
 import net.trackmate.graph.collection.RefDeque;
 import net.trackmate.graph.collection.RefList;
 import net.trackmate.graph.collection.RefObjectMap;
+import net.trackmate.graph.collection.RefRefMap;
 import net.trackmate.graph.collection.RefSet;
 import net.trackmate.graph.collection.RefStack;
 import net.trackmate.graph.mempool.MappedElement;
@@ -263,14 +264,62 @@ public class GraphImp<
 	@Override
 	public < O > RefObjectMap< V, O > createVertexObjectMap( final Class< ? extends O > valueClass )
 	{
-		return ( RefObjectMap< V, O > ) new PoolObjectObjectMap( vertexPool );
+		return new PoolObjectObjectMap( vertexPool );
 	}
 
 	@SuppressWarnings( { "rawtypes", "unchecked" } )
 	@Override
 	public < O > RefObjectMap< E, O > createEdgeObjectMap( final Class< ? extends O > valueClass )
 	{
-		return ( RefObjectMap< E, O > ) new PoolObjectObjectMap( edgePool );
+		return new PoolObjectObjectMap( edgePool );
+	}
+
+	@Override
+	public RefRefMap< E, E > createEdgeEdgeMap()
+	{
+		return new PoolObjectPoolObjectMap< E, E, T, T >( edgePool, edgePool );
+	}
+
+	@Override
+	public RefRefMap< E, E > createEdgeEdgeMap( final int initialCapacity )
+	{
+		return new PoolObjectPoolObjectMap< E, E, T, T >( edgePool, edgePool, initialCapacity );
+	}
+
+	@Override
+	public RefRefMap< V, V > createVertexVertexMap()
+	{
+		return new PoolObjectPoolObjectMap< V, V, T, T >( vertexPool, vertexPool );
+	}
+
+	@Override
+	public RefRefMap< V, V > createVertexVertexMap( final int initialCapacity )
+	{
+		return new PoolObjectPoolObjectMap< V, V, T, T >( vertexPool, vertexPool, initialCapacity );
+	}
+
+	@Override
+	public RefRefMap< V, E > createVertexEdgeMap()
+	{
+		return new PoolObjectPoolObjectMap< V, E, T, T >( vertexPool, edgePool );
+	}
+
+	@Override
+	public RefRefMap< V, E > createVertexEdgeMap( final int initialCapacity )
+	{
+		return new PoolObjectPoolObjectMap< V, E, T, T >( vertexPool, edgePool, initialCapacity );
+	}
+
+	@Override
+	public RefRefMap< E, V > createEdgeVertexMap()
+	{
+		return new PoolObjectPoolObjectMap< E, V, T, T >( edgePool, vertexPool );
+	}
+
+	@Override
+	public RefRefMap< E, V > createEdgeVertexMap( final int initialCapacity )
+	{
+		return new PoolObjectPoolObjectMap< E, V, T, T >( edgePool, vertexPool, initialCapacity );
 	}
 
 }
