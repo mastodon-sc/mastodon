@@ -7,19 +7,13 @@ import java.util.Set;
 /**
  * Wraps a standard {@link Map} in a {@link RefRefMap}.
  */
-public class RefRefMapWrapper< O, P > implements RefRefMap< O, P >
+public class RefMapWrapper< K, L > implements RefRefMap< K, L >
 {
-	private final Map< O, P > map;
+	private final Map< K, L > map;
 
-	public RefRefMapWrapper( final Map< O, P > map )
+	public RefMapWrapper( final Map< K, L > map )
 	{
 		this.map = map;
-	}
-
-	@Override
-	public void clear()
-	{
-		map.clear();
 	}
 
 	@Override
@@ -35,13 +29,13 @@ public class RefRefMapWrapper< O, P > implements RefRefMap< O, P >
 	}
 
 	@Override
-	public Set< java.util.Map.Entry< O, P >> entrySet()
+	public Set< Entry< K, L >> entrySet()
 	{
 		return map.entrySet();
 	}
 
 	@Override
-	public P get( final Object key )
+	public L get( final Object key )
 	{
 		return map.get( key );
 	}
@@ -53,25 +47,25 @@ public class RefRefMapWrapper< O, P > implements RefRefMap< O, P >
 	}
 
 	@Override
-	public Set< O > keySet()
+	public Set< K > keySet()
 	{
 		return map.keySet();
 	}
 
 	@Override
-	public P put( final O key, final P value )
+	public L put( final K key, final L value )
 	{
 		return map.put( key, value );
 	}
 
 	@Override
-	public void putAll( final Map< ? extends O, ? extends P > m )
+	public void putAll( final Map< ? extends K, ? extends L > m )
 	{
 		map.putAll( m );
 	}
 
 	@Override
-	public P remove( final Object key )
+	public L remove( final Object key )
 	{
 		return map.remove( key );
 	}
@@ -83,45 +77,51 @@ public class RefRefMapWrapper< O, P > implements RefRefMap< O, P >
 	}
 
 	@Override
-	public Collection< P > values()
+	public Collection< L > values()
 	{
 		return map.values();
 	}
 
 	@Override
-	public O createRef()
+	public K createRef()
 	{
 		return null;
 	}
 
 	@Override
-	public void releaseRef( final O obj )
+	public void releaseRef( final K obj )
 	{}
 
 	@Override
-	public P createValueRef()
+	public void clear()
+	{
+		map.clear();
+	}
+
+	@Override
+	public L createValueRef()
 	{
 		return null;
 	}
 
 	@Override
-	public void releaseValueRef( final P obj )
+	public void releaseValueRef( final L obj )
 	{}
 
 	@Override
-	public P put( final O key, final P value, final P ref )
+	public L put( final K key, final L value, final L ref )
 	{
 		return put( key, value );
 	}
 
 	@Override
-	public P remove( final Object key, final P ref )
+	public L remove( final Object key, final L ref )
 	{
 		return remove( key );
 	}
 
 	@Override
-	public P get( final Object key, final P ref )
+	public L get( final Object key, final L ref )
 	{
 		return get( key );
 	}
