@@ -10,9 +10,9 @@ import net.trackmate.graph.collection.RefList;
 
 public abstract class AbstractGraphSortedIteratorAlgorithm< V extends Vertex< E >, E extends Edge< V > > extends AbstractGraphIteratorAlgorithm< V, E >
 {
-	private final Comparator< V > comparator;
+	protected final Comparator< V > comparator;
 
-	private final RefList< V > list;
+	protected final RefList< V > list;
 
 	public AbstractGraphSortedIteratorAlgorithm( final Graph< V, E > graph, final Comparator< V > comparator )
 	{
