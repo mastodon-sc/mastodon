@@ -28,6 +28,7 @@ public class DepthFirstIterator< V extends Vertex< E >, E extends Edge< V > > ex
 		stack = createVertexStack();
 		stack.push( root );
 		fetchNext();
+		visited.add( root );
 	}
 
 	public static < V extends Vertex< E >, E extends Edge< V > > DepthFirstIterator< V, E > create( final V root, final Graph< V, E > graph )

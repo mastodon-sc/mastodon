@@ -37,6 +37,7 @@ public class BreadthFirstIteratorSorted< V extends Vertex< E >, E extends Edge< 
 		this.queue = createVertexDeque();
 		queue.offer( root );
 		fetchNext();
+		visited.add( root );
 	}
 
 	public BreadthFirstIteratorSorted( final V root, final Graph< V, E > graph )

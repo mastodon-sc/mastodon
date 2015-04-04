@@ -52,6 +52,7 @@ public class DepthFirstIteratorSorted< V extends Vertex< E >, E extends Edge< V 
 		this.stack = createVertexStack();
 		stack.push( root );
 		fetchNext();
+		visited.add( root );
 	}
 
 	public DepthFirstIteratorSorted( final V root, final Graph< V, E > graph )

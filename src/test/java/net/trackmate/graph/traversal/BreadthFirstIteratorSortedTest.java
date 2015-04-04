@@ -1,5 +1,7 @@
 package net.trackmate.graph.traversal;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
@@ -9,9 +11,10 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
 
+import net.trackmate.graph.Graph;
+import net.trackmate.graph.TestEdge;
 import net.trackmate.graph.TestGraph;
 import net.trackmate.graph.TestVertex;
-import net.trackmate.graph.traversal.BreadthFirstIteratorSorted;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -51,6 +54,31 @@ public class BreadthFirstIteratorSortedTest
 				graph.addEdge( child, grandChild );
 			}
 		}
+	}
+
+	@Test
+	public void testBreadthFirstIteratorBigLoop()
+	{
+		final Graph< TestVertex, TestEdge > graph = new TestGraph();
+
+		final TestVertex v1 = graph.addVertex().init( 1 );
+		final TestVertex v2 = graph.addVertex().init( 2 );
+		final TestVertex v3 = graph.addVertex().init( 3 );
+		final TestVertex v4 = graph.addVertex().init( 4 );
+		final TestVertex v5 = graph.addVertex().init( 5 );
+		graph.addEdge( v1, v2 );
+		graph.addEdge( v2, v3 );
+		graph.addEdge( v3, v4 );
+		graph.addEdge( v4, v5 );
+		graph.addEdge( v5, v1 );
+
+		final BreadthFirstIteratorSorted< TestVertex, TestEdge > iter = BreadthFirstIteratorSorted.create( v1, graph );
+		assertEquals( iter.next().getId(), 1 );
+		assertEquals( iter.next().getId(), 2 );
+		assertEquals( iter.next().getId(), 3 );
+		assertEquals( iter.next().getId(), 4 );
+		assertEquals( iter.next().getId(), 5 );
+		assertFalse( iter.hasNext() );
 	}
 
 	@Test

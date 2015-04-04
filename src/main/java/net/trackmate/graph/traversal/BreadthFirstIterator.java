@@ -29,6 +29,7 @@ public class BreadthFirstIterator< V extends Vertex< E >, E extends Edge< V > > 
 		this.queue = createVertexDeque();
 		queue.offer( root );
 		fetchNext();
+		visited.add( root );
 	}
 
 	public static < V extends Vertex< E >, E extends Edge< V > > BreadthFirstIterator< V, E > create( final V root, final Graph< V, E > graph )
