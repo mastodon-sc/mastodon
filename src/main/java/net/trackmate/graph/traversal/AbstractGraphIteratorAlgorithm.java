@@ -1,4 +1,4 @@
-package net.trackmate.graph.algorithm;
+package net.trackmate.graph.traversal;
 
 import java.util.Iterator;
 
@@ -6,6 +6,7 @@ import net.trackmate.graph.Edge;
 import net.trackmate.graph.Graph;
 import net.trackmate.graph.PoolObject;
 import net.trackmate.graph.Vertex;
+import net.trackmate.graph.algorithm.AbstractGraphAlgorithm;
 import net.trackmate.graph.collection.MaybeRefIterator;
 import net.trackmate.graph.collection.RefSet;
 

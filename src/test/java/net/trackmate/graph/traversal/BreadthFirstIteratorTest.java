@@ -1,4 +1,4 @@
-package net.trackmate.graph.algorithm;
+package net.trackmate.graph.traversal;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -9,6 +9,7 @@ import net.trackmate.graph.TestVertex;
 import net.trackmate.graph.object.ObjectEdge;
 import net.trackmate.graph.object.ObjectGraph;
 import net.trackmate.graph.object.ObjectVertex;
+import net.trackmate.graph.traversal.BreadthFirstIterator;
 
 import org.junit.Before;
 import org.junit.Test;

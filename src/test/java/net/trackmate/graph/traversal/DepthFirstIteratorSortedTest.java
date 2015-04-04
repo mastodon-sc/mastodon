@@ -1,4 +1,4 @@
-package net.trackmate.graph.algorithm;
+package net.trackmate.graph.traversal;
 
 import static org.junit.Assert.assertTrue;
 
@@ -11,6 +11,7 @@ import java.util.Random;
 
 import net.trackmate.graph.TestGraph;
 import net.trackmate.graph.TestVertex;
+import net.trackmate.graph.traversal.DepthFirstIteratorSorted;
 
 import org.junit.Before;
 import org.junit.Test;
