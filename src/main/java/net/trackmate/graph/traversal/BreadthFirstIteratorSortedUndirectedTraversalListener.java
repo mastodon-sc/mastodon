@@ -16,7 +16,7 @@ public class BreadthFirstIteratorSortedUndirectedTraversalListener< V extends Ve
 
 	private final RefList< E > edgeList;
 
-	public BreadthFirstIteratorSortedUndirectedTraversalListener( final V root, final Graph< V, E > graph, final Comparator< V > comparator, final GraphTraversalListener< V, E > traversalListener )
+	BreadthFirstIteratorSortedUndirectedTraversalListener( final V root, final Graph< V, E > graph, final Comparator< V > comparator, final GraphTraversalListener< V, E > traversalListener )
 	{
 		super( root, graph, comparator );
 		this.edgeList = createEdgeList();

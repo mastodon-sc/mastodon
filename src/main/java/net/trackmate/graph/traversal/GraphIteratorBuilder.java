@@ -19,20 +19,19 @@ public class GraphIteratorBuilder< V extends Vertex< E >, E extends Edge< V > >
 
 	private final Graph< V, E > graph;
 
-	private IterationType iterationType;
+	private IterationType iterationType = IterationType.DEFAULT;
 
-	private V root;
+	private V root = null;
 
-	private Comparator< V > comparator;
+	private Comparator< V > comparator = null;
 
 	private boolean directed = true;
 
-	private GraphTraversalListener< V, E > traversalListener;
+	private GraphTraversalListener< V, E > traversalListener = null;
 
 	private GraphIteratorBuilder( final Graph< V, E > graph )
 	{
 		this.graph = graph;
-		this.iterationType = IterationType.DEFAULT;
 	}
 
 	public GraphIteratorBuilder< V, E > depthFirst( final V root )
@@ -298,5 +297,14 @@ public class GraphIteratorBuilder< V extends Vertex< E >, E extends Edge< V > >
 		}
 
 		return sb.toString();
+	}
+
+	/*
+	 * STATIC METHODS
+	 */
+
+	public static < V extends Vertex< E >, E extends Edge< V > > GraphIteratorBuilder< V, E > createOn( final Graph< V, E > graph )
+	{
+		return new GraphIteratorBuilder< V, E >( graph );
 	}
 }

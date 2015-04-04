@@ -9,7 +9,7 @@ public class DepthFirstIteratorTraversalListener< V extends Vertex< E >, E exten
 
 	private final GraphTraversalListener< V, E > traversalListener;
 
-	public DepthFirstIteratorTraversalListener( final V root, final Graph< V, E > graph, final GraphTraversalListener< V, E > traversalListener )
+	DepthFirstIteratorTraversalListener( final V root, final Graph< V, E > graph, final GraphTraversalListener< V, E > traversalListener )
 	{
 		super( root, graph );
 		this.traversalListener = traversalListener;
@@ -40,7 +40,7 @@ public class DepthFirstIteratorTraversalListener< V extends Vertex< E >, E exten
 		fetched = null;
 	}
 
-	public static < V extends Vertex< E >, E extends Edge< V > > DepthFirstIteratorTraversalListener< V, E > create( final V root, final Graph< V, E > graph, final GraphTraversalListener< V, E > traversalListener )
+	static < V extends Vertex< E >, E extends Edge< V > > DepthFirstIteratorTraversalListener< V, E > create( final V root, final Graph< V, E > graph, final GraphTraversalListener< V, E > traversalListener )
 	{
 		return new DepthFirstIteratorTraversalListener< V, E >( root, graph, traversalListener );
 	}

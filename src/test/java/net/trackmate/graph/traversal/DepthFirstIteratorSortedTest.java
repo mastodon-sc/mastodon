@@ -64,7 +64,7 @@ public class DepthFirstIteratorSortedTest
 		graph.addEdge( v4, v5 );
 		graph.addEdge( v5, v1 );
 
-		final DepthFirstIteratorSorted< TestVertex, TestEdge > iter = DepthFirstIteratorSorted.create( v1, graph );
+		final DepthFirstIteratorSorted< TestVertex, TestEdge > iter = DepthFirstIteratorSorted.create( v1, graph, null );
 		assertEquals( iter.next().getId(), 1 );
 		assertEquals( iter.next().getId(), 2 );
 		assertEquals( iter.next().getId(), 3 );

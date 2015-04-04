@@ -22,18 +22,13 @@ public class DepthFirstIterator< V extends Vertex< E >, E extends Edge< V > > ex
 {
 	private final RefStack< V > stack;
 
-	public DepthFirstIterator( final V root, final Graph< V, E > graph )
+	DepthFirstIterator( final V root, final Graph< V, E > graph )
 	{
 		super( graph );
 		stack = createVertexStack();
 		stack.push( root );
 		fetchNext();
 		visited.add( root );
-	}
-
-	public static < V extends Vertex< E >, E extends Edge< V > > DepthFirstIterator< V, E > create( final V root, final Graph< V, E > graph )
-	{
-		return new DepthFirstIterator< V, E >( root, graph );
 	}
 
 	@Override
@@ -58,5 +53,10 @@ public class DepthFirstIterator< V extends Vertex< E >, E extends Edge< V > > ex
 	protected boolean canFetch()
 	{
 		return !stack.isEmpty();
+	}
+
+	static < V extends Vertex< E >, E extends Edge< V > > DepthFirstIterator< V, E > create( final V root, final Graph< V, E > graph )
+	{
+		return new DepthFirstIterator< V, E >( root, graph );
 	}
 }

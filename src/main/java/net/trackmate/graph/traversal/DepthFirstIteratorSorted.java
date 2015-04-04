@@ -46,18 +46,13 @@ public class DepthFirstIteratorSorted< V extends Vertex< E >, E extends Edge< V 
 	 *            visited in the <b>opposite</b> order than the one specified by
 	 *            this comparator.
 	 */
-	public DepthFirstIteratorSorted( final V root, final Graph< V, E > graph, final Comparator< V > comparator )
+	DepthFirstIteratorSorted( final V root, final Graph< V, E > graph, final Comparator< V > comparator )
 	{
 		super( graph, comparator );
 		this.stack = createVertexStack();
 		stack.push( root );
 		fetchNext();
 		visited.add( root );
-	}
-
-	public DepthFirstIteratorSorted( final V root, final Graph< V, E > graph )
-	{
-		this( root, graph, null );
 	}
 
 	/*
@@ -92,15 +87,8 @@ public class DepthFirstIteratorSorted< V extends Vertex< E >, E extends Edge< V 
 	 * STATIC METHODS
 	 */
 
-	public static < V extends Vertex< E >, E extends Edge< V > > DepthFirstIteratorSorted< V, E > create( final V root, final Graph< V, E > graph, final Comparator< V > comparator )
+	static < V extends Vertex< E >, E extends Edge< V > > DepthFirstIteratorSorted< V, E > create( final V root, final Graph< V, E > graph, final Comparator< V > comparator )
 	{
 		return new DepthFirstIteratorSorted< V, E >( root, graph, comparator );
 	}
-
-	public static < V extends Vertex< E >, E extends Edge< V > > DepthFirstIteratorSorted< V, E > create( final V root, final Graph< V, E > graph )
-	{
-		return new DepthFirstIteratorSorted< V, E >( root, graph );
-	}
-
-
 }

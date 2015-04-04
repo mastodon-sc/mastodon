@@ -7,7 +7,7 @@ import net.trackmate.graph.Vertex;
 public class BreadthFirstIteratorUndirected< V extends Vertex< E >, E extends Edge< V > > extends BreadthFirstIterator< V, E >
 {
 
-	public BreadthFirstIteratorUndirected( final V root, final Graph< V, E > graph )
+	BreadthFirstIteratorUndirected( final V root, final Graph< V, E > graph )
 	{
 		super( root, graph );
 	}
@@ -18,7 +18,7 @@ public class BreadthFirstIteratorUndirected< V extends Vertex< E >, E extends Ed
 		return vertex.edges();
 	}
 
-	public static < V extends Vertex< E >, E extends Edge< V > > BreadthFirstIteratorUndirected< V, E > create( final V root, final Graph< V, E > graph )
+	static < V extends Vertex< E >, E extends Edge< V > > BreadthFirstIteratorUndirected< V, E > create( final V root, final Graph< V, E > graph )
 	{
 		return new BreadthFirstIteratorUndirected< V, E >( root, graph );
 	}

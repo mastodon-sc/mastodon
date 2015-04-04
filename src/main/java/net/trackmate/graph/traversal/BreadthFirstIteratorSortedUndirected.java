@@ -9,7 +9,7 @@ import net.trackmate.graph.Vertex;
 class BreadthFirstIteratorSortedUndirected< V extends Vertex< E >, E extends Edge< V > > extends BreadthFirstIteratorSorted< V, E >
 {
 
-	public BreadthFirstIteratorSortedUndirected( final V root, final Graph< V, E > graph, final Comparator< V > comparator )
+	BreadthFirstIteratorSortedUndirected( final V root, final Graph< V, E > graph, final Comparator< V > comparator )
 	{
 		super( root, graph, comparator );
 	}
@@ -20,7 +20,7 @@ class BreadthFirstIteratorSortedUndirected< V extends Vertex< E >, E extends Edg
 		return vertex.edges();
 	}
 
-	public static < V extends Vertex< E >, E extends Edge< V > > BreadthFirstIteratorSortedUndirected< V, E > create( final V root, final Graph< V, E > graph, final Comparator< V > comparator )
+	static < V extends Vertex< E >, E extends Edge< V > > BreadthFirstIteratorSortedUndirected< V, E > create( final V root, final Graph< V, E > graph, final Comparator< V > comparator )
 	{
 		return new BreadthFirstIteratorSortedUndirected< V, E >( root, graph, comparator );
 	}

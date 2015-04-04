@@ -31,18 +31,13 @@ public class BreadthFirstIteratorSorted< V extends Vertex< E >, E extends Edge< 
 	 * CONSTRUCTORS
 	 */
 
-	public BreadthFirstIteratorSorted( final V root, final Graph< V, E > graph, final Comparator< V > comparator )
+	BreadthFirstIteratorSorted( final V root, final Graph< V, E > graph, final Comparator< V > comparator )
 	{
 		super( graph, comparator );
 		this.queue = createVertexDeque();
 		queue.offer( root );
 		fetchNext();
 		visited.add( root );
-	}
-
-	public BreadthFirstIteratorSorted( final V root, final Graph< V, E > graph )
-	{
-		this( root, graph, null );
 	}
 
 	/*
@@ -77,13 +72,8 @@ public class BreadthFirstIteratorSorted< V extends Vertex< E >, E extends Edge< 
 	 * STATIC METHODS
 	 */
 
-	public static < V extends Vertex< E >, E extends Edge< V > > BreadthFirstIteratorSorted< V, E > create( final V root, final Graph< V, E > graph, final Comparator< V > comparator )
+	static < V extends Vertex< E >, E extends Edge< V > > BreadthFirstIteratorSorted< V, E > create( final V root, final Graph< V, E > graph, final Comparator< V > comparator )
 	{
 		return new BreadthFirstIteratorSorted< V, E >( root, graph, comparator );
-	}
-
-	public static < V extends Vertex< E >, E extends Edge< V > > BreadthFirstIteratorSorted< V, E > create( final V root, final Graph< V, E > graph )
-	{
-		return new BreadthFirstIteratorSorted< V, E >( root, graph );
 	}
 }

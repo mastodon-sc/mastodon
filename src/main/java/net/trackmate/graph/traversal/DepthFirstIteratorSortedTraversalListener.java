@@ -15,7 +15,7 @@ public class DepthFirstIteratorSortedTraversalListener< V extends Vertex< E >, E
 
 	private final RefList< E > edgeList;
 
-	public DepthFirstIteratorSortedTraversalListener( final V root, final Graph< V, E > graph, final Comparator< V > comparator, final GraphTraversalListener< V, E > traversalListener )
+	DepthFirstIteratorSortedTraversalListener( final V root, final Graph< V, E > graph, final Comparator< V > comparator, final GraphTraversalListener< V, E > traversalListener )
 	{
 		super( root, graph, comparator );
 		this.traversalListener = traversalListener;
@@ -58,7 +58,7 @@ public class DepthFirstIteratorSortedTraversalListener< V extends Vertex< E >, E
 		fetched = null;
 	}
 
-	public static < V extends Vertex< E >, E extends Edge< V > > DepthFirstIteratorSortedTraversalListener< V, E > create( final V root, final Graph< V, E > graph, final Comparator< V > comparator, final GraphTraversalListener< V, E > traversalListener )
+	static < V extends Vertex< E >, E extends Edge< V > > DepthFirstIteratorSortedTraversalListener< V, E > create( final V root, final Graph< V, E > graph, final Comparator< V > comparator, final GraphTraversalListener< V, E > traversalListener )
 	{
 		return new DepthFirstIteratorSortedTraversalListener< V, E >( root, graph, comparator, traversalListener );
 	}

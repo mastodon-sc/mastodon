@@ -9,7 +9,7 @@ public class BreadthFirstIteratorUndirectedTraversalListener< V extends Vertex< 
 
 	private final GraphTraversalListener< V, E > traversalListener;
 
-	public BreadthFirstIteratorUndirectedTraversalListener( final V root, final Graph< V, E > graph, final GraphTraversalListener< V, E > traversalListener )
+	BreadthFirstIteratorUndirectedTraversalListener( final V root, final Graph< V, E > graph, final GraphTraversalListener< V, E > traversalListener )
 	{
 		super( root, graph );
 		this.traversalListener = traversalListener;
