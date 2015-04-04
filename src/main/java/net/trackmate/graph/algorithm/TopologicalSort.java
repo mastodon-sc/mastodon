@@ -5,7 +5,6 @@ import java.util.Iterator;
 import net.trackmate.graph.Edge;
 import net.trackmate.graph.Graph;
 import net.trackmate.graph.Vertex;
-import net.trackmate.graph.collection.RefCollection;
 import net.trackmate.graph.collection.RefList;
 import net.trackmate.graph.collection.RefSet;
 
@@ -24,22 +23,19 @@ public class TopologicalSort< V extends Vertex< E >, E extends Edge< V > > exten
 {
 	private boolean failed;
 
-	private final RefCollection< V > vertices;
-
 	private RefSet< V > marked;
 
 	private RefSet< V > temporaryMarked;
 
 	private final RefList< V > list;
 
-	public TopologicalSort( final RefCollection< V > vertices, final Graph< V, E > graph )
+	public TopologicalSort( final Graph< V, E > graph )
 	{
 		super( graph );
-		this.vertices = vertices;
 		this.failed = false;
-		this.marked = createVertexSet( vertices.size() );
+		this.marked = createVertexSet();
 		this.temporaryMarked = createVertexSet();
-		this.list = createVertexList( vertices.size() );
+		this.list = createVertexList();
 		fetchList();
 	}
 
@@ -66,7 +62,7 @@ public class TopologicalSort< V extends Vertex< E >, E extends Edge< V > > exten
 
 	private void fetchList()
 	{
-		final Iterator< V > vit = vertices.iterator();
+		final Iterator< V > vit = graph.vertexIterator();
 		while ( vit.hasNext() && !failed )
 		{
 			final V v1 = vit.next();
