@@ -17,9 +17,9 @@ import net.trackmate.graph.util.TIntArrayDeque;
 /**
  * No Holm & de Lichtenbertg, because our tracks will be trees 90% of the time.
  * Another class will do Holm & de Lichtenbertg.
- * 
+ *
  * @author Jean-Yves Tinevez
- * 
+ *
  * @param <V>
  *            the type of the graph vertices iterated.
  * @param <E>
@@ -179,8 +179,24 @@ public class ConnectedComponentsDynamicDefault< V extends Vertex< E >, E extends
 				}
 				else
 				{
-					ccMap.get( id ).removeAll( candidateCC );
-					ccMap.put( idProvider.next(), candidateCC );
+					final int sizeSourceSide = candidateCC.size();
+					if ( sizeSourceSide > 1 )
+					{
+						// Only add it if it is large enough
+						ccMap.put( idProvider.next(), candidateCC );
+					}
+
+					final int sizeTargetSide = ccMap.get( id ).size() - sizeSourceSide;
+					if ( sizeTargetSide > 1 )
+					{
+						ccMap.get( id ).removeAll( candidateCC );
+					}
+					else
+					{
+						// It became too small, remove it.
+						ccMap.remove( id );
+						idProvider.free( id );
+					}
 				}
 			}
 		}
@@ -189,7 +205,7 @@ public class ConnectedComponentsDynamicDefault< V extends Vertex< E >, E extends
 	/**
 	 * Returns a new array containing the ids of the connected components of the
 	 * graph.
-	 * 
+	 *
 	 * @return a new <code>int</code> array.
 	 */
 	public int[] ids()
@@ -199,7 +215,7 @@ public class ConnectedComponentsDynamicDefault< V extends Vertex< E >, E extends
 
 	/**
 	 * Returns the number of connected components in the graph.
-	 * 
+	 *
 	 * @return the number of connected components in the graph.
 	 */
 	public int nComponents()
@@ -210,7 +226,7 @@ public class ConnectedComponentsDynamicDefault< V extends Vertex< E >, E extends
 	/**
 	 * Returns the connected component with the specified id, or
 	 * <code>null</code> if the specified id does not exist.
-	 * 
+	 *
 	 * @param id
 	 *            the id of the connected component.
 	 * @return the connected component.
@@ -223,7 +239,7 @@ public class ConnectedComponentsDynamicDefault< V extends Vertex< E >, E extends
 	/**
 	 * Returns the size of the connected component with the specified id, or -1
 	 * if the id does not exist.
-	 * 
+	 *
 	 * @param id
 	 *            the id of the connected components.
 	 * @return the connected component size.
@@ -238,7 +254,7 @@ public class ConnectedComponentsDynamicDefault< V extends Vertex< E >, E extends
 	/**
 	 * Returns the id of the connected component the specified vertex belongs
 	 * to, or -1 if the vertex does not belong to any connected component.
-	 * 
+	 *
 	 * @param v
 	 *            the vertex.
 	 * @return the id of its connected component.
