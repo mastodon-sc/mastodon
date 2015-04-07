@@ -9,6 +9,7 @@ import net.trackmate.graph.Graph;
 import net.trackmate.graph.Vertex;
 import net.trackmate.graph.collection.RefObjectMap;
 import net.trackmate.graph.collection.RefSet;
+import net.trackmate.graph.traversal.GraphIteratorBuilder;
 
 /**
  * An algorithm that can output the tree below a specified vertex.
@@ -52,7 +53,7 @@ public class TreeOutputter< V extends Vertex< E >, E extends Edge< V > > extends
 	 * loops and where all vertices have at most one parent. If this class is
 	 * provided with a graph that do not fulfill these conditions, the returned
 	 * representation will ignore loops and multiple incoming edges.
-	 * 
+	 *
 	 * @param root
 	 *            the vertex to start the tree representation with.
 	 * @return a String representation of the tree.
@@ -92,8 +93,11 @@ public class TreeOutputter< V extends Vertex< E >, E extends Edge< V > > extends
 		 * Iterate into the tree.
 		 */
 
+		final GraphIteratorBuilder< V, E > builder = GraphIteratorBuilder.createOn( graph );
+		builder.depthFirst( root );
+
 		final RefObjectMap< V, Integer > writeTo = createVertexObjectMap( Integer.class );
-		final Iterator< V > it = DepthFirstIterator.create( root, graph );
+		final Iterator< V > it = builder.build();
 		visited.clear();
 		while ( it.hasNext() )
 		{
@@ -184,7 +188,7 @@ public class TreeOutputter< V extends Vertex< E >, E extends Edge< V > > extends
 		 * Second iteration
 		 */
 
-		final DepthFirstIterator< V, E > it2 = DepthFirstIterator.create( root, graph );
+		final Iterator< V > it2 = builder.build();
 		while ( it2.hasNext() )
 		{
 			final V vi = it2.next();

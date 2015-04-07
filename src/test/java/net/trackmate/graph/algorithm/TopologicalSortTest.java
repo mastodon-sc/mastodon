@@ -79,7 +79,7 @@ public class TopologicalSortTest
 	@Test
 	public void testBehaviorRef()
 	{
-		final TopologicalSort< TestVertex, TestEdge > sort = new TopologicalSort< TestVertex, TestEdge >( verticesRef, graphRef );
+		final TopologicalSort< TestVertex, TestEdge > sort = new TopologicalSort< TestVertex, TestEdge >( graphRef );
 		assertFalse( sort.hasFailed() );
 
 		final TestVertex target = graphRef.vertexRef();
@@ -105,11 +105,11 @@ public class TopologicalSortTest
 	@Test
 	public void testNotDAGRef()
 	{
-		final TopologicalSort< TestVertex, TestEdge > sort = new TopologicalSort< TestVertex, TestEdge >( verticesRef, graphRef );
+		final TopologicalSort< TestVertex, TestEdge > sort = new TopologicalSort< TestVertex, TestEdge >( graphRef );
 		assertFalse( sort.hasFailed() );
 
 		graphRef.addEdge( v10ref, v7ref );
-		final TopologicalSort< TestVertex, TestEdge > sort2 = new TopologicalSort< TestVertex, TestEdge >( verticesRef, graphRef );
+		final TopologicalSort< TestVertex, TestEdge > sort2 = new TopologicalSort< TestVertex, TestEdge >( graphRef );
 		assertTrue( sort2.hasFailed() );
 	}
 
@@ -168,7 +168,7 @@ public class TopologicalSortTest
 	@Test
 	public void testBehaviorObj()
 	{
-		final TopologicalSort< ObjectVertex< String >, ObjectEdge< String > > sort = new TopologicalSort< ObjectVertex< String >, ObjectEdge< String > >( verticesObj, graphObj );
+		final TopologicalSort< ObjectVertex< String >, ObjectEdge< String > > sort = new TopologicalSort< ObjectVertex< String >, ObjectEdge< String > >( graphObj );
 		assertFalse( sort.hasFailed() );
 		final List< ObjectVertex< String >> list = sort.get();
 
@@ -188,11 +188,11 @@ public class TopologicalSortTest
 	@Test
 	public void testNotDAGObj()
 	{
-		final TopologicalSort< ObjectVertex< String >, ObjectEdge< String > > sort = new TopologicalSort< ObjectVertex< String >, ObjectEdge< String > >( verticesObj, graphObj );
+		final TopologicalSort< ObjectVertex< String >, ObjectEdge< String > > sort = new TopologicalSort< ObjectVertex< String >, ObjectEdge< String > >( graphObj );
 		assertFalse( sort.hasFailed() );
 
 		graphObj.addEdge( v10Obj, v7Obj );
-		final TopologicalSort< ObjectVertex< String >, ObjectEdge< String > > sort2 = new TopologicalSort< ObjectVertex< String >, ObjectEdge< String > >( verticesObj, graphObj );
+		final TopologicalSort< ObjectVertex< String >, ObjectEdge< String > > sort2 = new TopologicalSort< ObjectVertex< String >, ObjectEdge< String > >( graphObj );
 		assertTrue( sort2.hasFailed() );
 	}
 

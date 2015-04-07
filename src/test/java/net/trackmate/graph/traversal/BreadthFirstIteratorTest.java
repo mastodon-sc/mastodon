@@ -1,4 +1,4 @@
-package net.trackmate.graph.algorithm;
+package net.trackmate.graph.traversal;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -15,12 +15,9 @@ import org.junit.Test;
 
 public class BreadthFirstIteratorTest
 {
-
 	private TestGraph graph;
 
 	private TestVertex A;
-
-
 
 	@Before
 	public void setUp() throws Exception
@@ -73,19 +70,19 @@ public class BreadthFirstIteratorTest
 	public void testBehavior()
 	{
 		final BreadthFirstIterator< TestVertex, TestEdge > iter = BreadthFirstIterator.create( A, graph );
-		assertEquals( iter.next().getId(), 0 );
-		assertEquals( iter.next().getId(), 1 );
-		assertEquals( iter.next().getId(), 2 );
-		assertEquals( iter.next().getId(), 3 );
-		assertEquals( iter.next().getId(), 4 );
-		assertEquals( iter.next().getId(), 5 );
-		assertEquals( iter.next().getId(), 6 );
-		assertEquals( iter.next().getId(), 7 );
-		assertEquals( iter.next().getId(), 8 );
-		assertEquals( iter.next().getId(), 9 );
-		assertEquals( iter.next().getId(), 10 );
-		assertEquals( iter.next().getId(), 11 );
-		assertEquals( iter.next().getId(), 12 );
+		assertEquals( 0, iter.next().getId() );
+		assertEquals( 1, iter.next().getId() );
+		assertEquals( 2, iter.next().getId() );
+		assertEquals( 3, iter.next().getId() );
+		assertEquals( 4, iter.next().getId() );
+		assertEquals( 5, iter.next().getId() );
+		assertEquals( 6, iter.next().getId() );
+		assertEquals( 7, iter.next().getId() );
+		assertEquals( 8, iter.next().getId() );
+		assertEquals( 9, iter.next().getId() );
+		assertEquals( 10, iter.next().getId() );
+		assertEquals( 11, iter.next().getId() );
+		assertEquals( 12, iter.next().getId() );
 		// The breadth order is not affected by the two loops I put at then end
 		// of the tree.
 		assertFalse( iter.hasNext() );
@@ -110,6 +107,31 @@ public class BreadthFirstIteratorTest
 		assertEquals( iter.next().getId(), 12 );
 		assertEquals( iter.next().getId(), 11 );
 		assertEquals( iter.next().getId(), 111 );
+		assertFalse( iter.hasNext() );
+	}
+
+	@Test
+	public void testBreadthFirstIteratorBigLoop()
+	{
+		final Graph< TestVertex, TestEdge > graph = new TestGraph();
+
+		final TestVertex v1 = graph.addVertex().init( 1 );
+		final TestVertex v2 = graph.addVertex().init( 2 );
+		final TestVertex v3 = graph.addVertex().init( 3 );
+		final TestVertex v4 = graph.addVertex().init( 4 );
+		final TestVertex v5 = graph.addVertex().init( 5 );
+		graph.addEdge( v1, v2 );
+		graph.addEdge( v2, v3 );
+		graph.addEdge( v3, v4 );
+		graph.addEdge( v4, v5 );
+		graph.addEdge( v5, v1 );
+
+		final BreadthFirstIterator< TestVertex, TestEdge > iter = BreadthFirstIterator.create( v1, graph );
+		assertEquals( iter.next().getId(), 1 );
+		assertEquals( iter.next().getId(), 2 );
+		assertEquals( iter.next().getId(), 3 );
+		assertEquals( iter.next().getId(), 4 );
+		assertEquals( iter.next().getId(), 5 );
 		assertFalse( iter.hasNext() );
 	}
 
