@@ -11,7 +11,6 @@ import net.trackmate.graph.TestEdge;
 import net.trackmate.graph.TestGraph;
 import net.trackmate.graph.TestVertex;
 import net.trackmate.graph.collection.CollectionUtils;
-import net.trackmate.graph.object.ObjectEdge;
 import net.trackmate.graph.object.ObjectGraph;
 import net.trackmate.graph.object.ObjectVertex;
 
@@ -57,7 +56,9 @@ public class DepthFirstIteratorTest
 	@Test
 	public void testBehavior()
 	{
-		final Iterator< TestVertex > dfi = CollectionUtils.safeIterator( new DepthFirstIterator< TestVertex, TestEdge >( A, graph ) );
+		final Iterator< TestVertex > dfi = CollectionUtils.safeIterator(
+				GraphIteratorBuilder.createOn( graph ).depthFirst( A ).unsorted().directed().build()
+				);
 
 		assertTrue( "After initiation, DepthFirstIterator always has next. Got false.", dfi.hasNext() );
 
@@ -109,7 +110,7 @@ public class DepthFirstIteratorTest
 		graph.addEdge( v1, v12 );
 		graph.addEdge( v1, v11 );
 
-		final DepthFirstIterator< TestVertex, TestEdge > iter = DepthFirstIterator.create( v1, graph );
+		final Iterator< TestVertex > iter = GraphIteratorBuilder.createOn( graph ).depthFirst( v1 ).unsorted().directed().build();
 		assertEquals( iter.next().getId(), 1 );
 		assertEquals( iter.next().getId(), 11 );
 		assertEquals( iter.next().getId(), 111 );
@@ -134,7 +135,7 @@ public class DepthFirstIteratorTest
 		graph.addEdge( v1, v12 );
 		graph.addEdge( v1, v11 );
 
-		final DepthFirstIterator< TestVertex, TestEdge > iter = DepthFirstIterator.create( v1, graph );
+		final Iterator< TestVertex > iter = GraphIteratorBuilder.createOn( graph ).depthFirst( v1 ).unsorted().directed().build();
 		assertEquals( iter.next().getId(), 1 );
 		assertEquals( iter.next().getId(), 11 );
 		assertEquals( iter.next().getId(), 111 );
@@ -143,7 +144,7 @@ public class DepthFirstIteratorTest
 	}
 
 	@Test
-	public void testBreadthFirstIteratorBigLoop()
+	public void testDepthFirstIteratorBigLoop()
 	{
 		final Graph< TestVertex, TestEdge > graph = new TestGraph();
 
@@ -158,7 +159,7 @@ public class DepthFirstIteratorTest
 		graph.addEdge( v4, v5 );
 		graph.addEdge( v5, v1 );
 
-		final DepthFirstIteratorSorted< TestVertex, TestEdge > iter = DepthFirstIteratorSorted.create( v1, graph, null );
+		final Iterator< TestVertex > iter = GraphIteratorBuilder.createOn( graph ).depthFirst( v1 ).unsorted().directed().build();
 		assertEquals( iter.next().getId(), 1 );
 		assertEquals( iter.next().getId(), 2 );
 		assertEquals( iter.next().getId(), 3 );
@@ -186,8 +187,7 @@ public class DepthFirstIteratorTest
 		graph.addEdge( v1, v12 );
 		graph.addEdge( v1, v11 );
 
-		final DepthFirstIterator< ObjectVertex< Integer >, ObjectEdge< Integer > > iter = DepthFirstIterator.create( v1, graph );
-
+		final Iterator< ObjectVertex< Integer >> iter = GraphIteratorBuilder.createOn( graph ).depthFirst( v1 ).unsorted().directed().build();
 		assertEquals( iter.next().getContent().intValue(), 1 );
 		assertEquals( iter.next().getContent().intValue(), 11 );
 		assertEquals( iter.next().getContent().intValue(), 111 );
@@ -212,8 +212,7 @@ public class DepthFirstIteratorTest
 		graph.addEdge( v1, v12 );
 		graph.addEdge( v1, v11 );
 
-		final DepthFirstIterator< ObjectVertex< Integer >, ObjectEdge< Integer > > iter = DepthFirstIterator.create( v1, graph );
-
+		final Iterator< ObjectVertex< Integer >> iter = GraphIteratorBuilder.createOn( graph ).depthFirst( v1 ).unsorted().directed().build();
 		assertEquals( iter.next().getContent().intValue(), 1 );
 		assertEquals( iter.next().getContent().intValue(), 11 );
 		assertEquals( iter.next().getContent().intValue(), 111 );

@@ -2,11 +2,13 @@ package net.trackmate.graph.traversal;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+
+import java.util.Iterator;
+
 import net.trackmate.graph.Graph;
 import net.trackmate.graph.TestEdge;
 import net.trackmate.graph.TestGraph;
 import net.trackmate.graph.TestVertex;
-import net.trackmate.graph.object.ObjectEdge;
 import net.trackmate.graph.object.ObjectGraph;
 import net.trackmate.graph.object.ObjectVertex;
 
@@ -69,7 +71,7 @@ public class BreadthFirstIteratorTest
 	@Test
 	public void testBehavior()
 	{
-		final BreadthFirstIterator< TestVertex, TestEdge > iter = BreadthFirstIterator.create( A, graph );
+		final Iterator< TestVertex > iter = GraphIteratorBuilder.createOn( graph ).breadthFirst( A ).unsorted().directed().build();
 		assertEquals( 0, iter.next().getId() );
 		assertEquals( 1, iter.next().getId() );
 		assertEquals( 2, iter.next().getId() );
@@ -102,7 +104,7 @@ public class BreadthFirstIteratorTest
 		graph.addEdge( v1, v12 );
 		graph.addEdge( v1, v11 );
 
-		final BreadthFirstIterator< TestVertex, TestEdge > iter = BreadthFirstIterator.create( v1, graph );
+		final Iterator< TestVertex > iter = GraphIteratorBuilder.createOn( graph ).breadthFirst( v1 ).unsorted().directed().build();
 		assertEquals( iter.next().getId(), 1 );
 		assertEquals( iter.next().getId(), 12 );
 		assertEquals( iter.next().getId(), 11 );
@@ -126,7 +128,7 @@ public class BreadthFirstIteratorTest
 		graph.addEdge( v4, v5 );
 		graph.addEdge( v5, v1 );
 
-		final BreadthFirstIterator< TestVertex, TestEdge > iter = BreadthFirstIterator.create( v1, graph );
+		final Iterator< TestVertex > iter = GraphIteratorBuilder.createOn( graph ).breadthFirst( v1 ).unsorted().directed().build();
 		assertEquals( iter.next().getId(), 1 );
 		assertEquals( iter.next().getId(), 2 );
 		assertEquals( iter.next().getId(), 3 );
@@ -154,8 +156,7 @@ public class BreadthFirstIteratorTest
 		graph.addEdge( v1, v12 );
 		graph.addEdge( v1, v11 );
 
-		final BreadthFirstIterator< ObjectVertex< Integer >, ObjectEdge< Integer > > iter = BreadthFirstIterator.create( v1, graph );
-
+		final Iterator< ObjectVertex< Integer >> iter = GraphIteratorBuilder.createOn( graph ).breadthFirst( v1 ).unsorted().directed().build();
 		assertEquals( iter.next().getContent().intValue(), 1 );
 		assertEquals( iter.next().getContent().intValue(), 12 );
 		assertEquals( iter.next().getContent().intValue(), 11 );
@@ -181,8 +182,7 @@ public class BreadthFirstIteratorTest
 		graph.addEdge( v1, v12 );
 		graph.addEdge( v1, v11 );
 
-		final BreadthFirstIterator< ObjectVertex< Integer >, ObjectEdge< Integer > > iter = BreadthFirstIterator.create( v1, graph );
-
+		final Iterator< ObjectVertex< Integer >> iter = GraphIteratorBuilder.createOn( graph ).breadthFirst( v1 ).unsorted().directed().build();
 		assertEquals( iter.next().getContent().intValue(), 1 );
 		assertEquals( iter.next().getContent().intValue(), 12 );
 		assertEquals( iter.next().getContent().intValue(), 11 );

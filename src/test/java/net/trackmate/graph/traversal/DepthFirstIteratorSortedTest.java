@@ -28,6 +28,15 @@ public class DepthFirstIteratorSortedTest
 
 	private TestVertex root;
 
+	private static final Comparator< TestVertex > comparator = new Comparator< TestVertex >()
+	{
+		@Override
+		public int compare( final TestVertex o1, final TestVertex o2 )
+		{
+			return o1.getId() - o2.getId();
+		}
+	};
+
 	@Before
 	public void setUp() throws Exception
 	{
@@ -64,7 +73,7 @@ public class DepthFirstIteratorSortedTest
 		graph.addEdge( v4, v5 );
 		graph.addEdge( v5, v1 );
 
-		final DepthFirstIteratorSorted< TestVertex, TestEdge > iter = DepthFirstIteratorSorted.create( v1, graph, null );
+		final Iterator< TestVertex > iter = GraphIteratorBuilder.createOn( graph ).depthFirst( v1 ).sorted( comparator ).directed().build();
 		assertEquals( iter.next().getId(), 1 );
 		assertEquals( iter.next().getId(), 2 );
 		assertEquals( iter.next().getId(), 3 );
@@ -76,16 +85,7 @@ public class DepthFirstIteratorSortedTest
 	@Test
 	public void testBehavior()
 	{
-		// Will sort the tree in ASCENDING order
-		final Comparator< TestVertex > comparator = new Comparator< TestVertex >()
-		{
-			@Override
-			public int compare( final TestVertex o1, final TestVertex o2 )
-			{
-				return -o1.getId() + o2.getId();
-			}
-		};
-		final Iterator< TestVertex > it = DepthFirstIteratorSorted.create( root, graph, comparator );
+		final Iterator< TestVertex > it = GraphIteratorBuilder.createOn( graph ).depthFirst( root ).sorted( comparator ).directed().build();
 		assertTrue( "Iterator should more than 0 element, has not.", it.hasNext() );
 		assertTrue( "First element should be the root, is not.", it.next().equals( root ) );
 
