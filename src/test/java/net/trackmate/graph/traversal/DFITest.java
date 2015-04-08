@@ -46,11 +46,35 @@ public class DFITest
 	@Test
 	public void test()
 	{
-		final DFI< TestVertex, TestEdge > dfi = new DFI< TestVertex, TestEdge >( B, graph, false );
-		while ( dfi.hasNext() )
+
+		final TraversalListener< TestVertex, TestEdge > tl = new TraversalListener< TestVertex, TestEdge >()
 		{
-			System.out.println( "Iterating over " + dfi.next() );// DEBUG
-		}
+
+			@Override
+			public void processVertexLate( final TestVertex vertex, final int time )
+			{
+				System.out.println( "t = " + time + " - finished processing vertex " + vertex );// DEBUG
+			}
+
+			@Override
+			public void processVertexEarly( final TestVertex vertex, final int time )
+			{
+				System.out.println( "t = " + time + " - discovered vertex " + vertex );// DEBUG
+
+			}
+
+			@Override
+			public void processEdge( final TestEdge edge, final TestVertex from, final TestVertex to, final int time )
+			{
+				System.out.println( "t = " + time + " - crossing edge " + edge + " from vertex " + from + " to " + to );// DEBUG
+			}
+
+		};
+
+		final DepthFirstSearch< TestVertex, TestEdge > search = new DepthFirstSearch< TestVertex, TestEdge >( graph, B, tl, false );
+		search.restart( A );
+		System.out.println();// DEBUG
+		search.restart( B );
 	}
 
 }
