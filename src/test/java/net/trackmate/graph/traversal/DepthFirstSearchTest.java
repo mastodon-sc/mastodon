@@ -1,5 +1,7 @@
 package net.trackmate.graph.traversal;
 
+import static org.junit.Assert.assertEquals;
+
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
@@ -10,7 +12,6 @@ import net.trackmate.graph.TestVertex;
 
 import org.junit.Before;
 import org.junit.Test;
-
 public class DepthFirstSearchTest
 {
 	private TestGraph graph;
@@ -138,7 +139,7 @@ public class DepthFirstSearchTest
 		public void processVertexEarly( final TestVertex vertex, final int time, final GraphSearch< TestVertex, TestEdge > search )
 		{
 			System.out.println( " - discovered vertex " + vertex );// DEBUG
-//			assertEquals( "Did not meet the expected vertex sequence during search.", expectedVertexIterator.next(), vertex );
+			assertEquals( "Did not meet the expected vertex sequence during search.", expectedVertexIterator.next(), vertex );
 		}
 
 		@Override

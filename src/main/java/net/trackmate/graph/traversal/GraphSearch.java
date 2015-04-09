@@ -58,8 +58,7 @@ public abstract class GraphSearch< V extends Vertex< E >, E extends Edge< V > > 
 
 	public EdgeClass edgeClass( final V from, final V to )
 	{
-		final V p = parents.get( to );
-		if ( p != null && p.equals( from ) ) { return EdgeClass.TREE; }
+		if ( parents.get( to ).equals( from ) ) { return EdgeClass.TREE; }
 		if ( discovered.contains( to ) && !processed.contains( to ) ) { return EdgeClass.BACK; }
 		if ( processed.contains( to ) )
 		{
