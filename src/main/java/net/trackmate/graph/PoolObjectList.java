@@ -5,11 +5,13 @@ import gnu.trove.iterator.TIntIterator;
 import gnu.trove.list.array.TIntArrayList;
 
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.ConcurrentModificationException;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.NoSuchElementException;
+import java.util.Random;
 
 import net.trackmate.graph.collection.RefList;
 import net.trackmate.graph.mempool.MappedElement;
@@ -475,6 +477,55 @@ public class PoolObjectList< O extends PoolObject< O, T >, T extends MappedEleme
 	public List< O > subList( final int fromIndex, final int toIndex )
 	{
 		return new PoolObjectList< O, T >( this, ( TIntArrayList ) indices.subList( fromIndex, toIndex ) );
+	}
+
+	public void shuffle( final Random rand )
+	{
+		indices.shuffle( rand );
+	}
+
+	public void sort( final Comparator< O > comparator )
+	{
+		quicksort( 0, size(), comparator );
+	}
+
+	private void quicksort( final int low, final int high, final Comparator< O > comparator )
+	{
+		final O tmp = createRef();
+		final O pivot = get( low + ( high - low ) / 2, tmp );
+
+		int i = low;
+		int j = high;
+		while ( i <= j )
+		{
+			while ( comparator.compare( get( i ), pivot ) < 0 )
+			{
+				i++;
+			}
+			while ( comparator.compare( get( j ), pivot ) > 0 )
+			{
+				j--;
+			}
+			if ( i <= j )
+			{
+				exchange( i, j, tmp );
+				i++;
+				j--;
+			}
+		}
+
+		if ( low < j )
+			quicksort( low, j, comparator );
+		if ( i < high )
+			quicksort( i, high, comparator );
+	}
+
+	private void exchange( final int i, final int j, final O tmp )
+	{
+		final int idi = get( i, tmp ).getInternalPoolIndex();
+		final int idj = get( j, tmp ).getInternalPoolIndex();
+		indices.set( j, idi );
+		indices.set( i, idj );
 	}
 
 	@Override
