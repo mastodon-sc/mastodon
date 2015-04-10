@@ -1,5 +1,7 @@
 package net.trackmate.graph.traversal;
 
+import java.util.Comparator;
+
 import net.trackmate.graph.Edge;
 import net.trackmate.graph.Graph;
 import net.trackmate.graph.Vertex;
@@ -22,6 +24,8 @@ public abstract class GraphSearch< V extends Vertex< E >, E extends Edge< V > > 
 
 	protected final RefRefMap< V, V > parents;
 
+	protected Comparator< V > comparator;
+
 	public GraphSearch(final Graph< V, E > graph)
 	{
 		super( graph );
@@ -39,6 +43,11 @@ public abstract class GraphSearch< V extends Vertex< E >, E extends Edge< V > > 
 		time = 0;
 		finished = false;
 		visit( start );
+	}
+
+	public void setComparator( final Comparator< V > comparator )
+	{
+		this.comparator = comparator;
 	}
 
 	public void abort()
