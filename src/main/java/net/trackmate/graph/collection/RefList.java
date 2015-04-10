@@ -1,6 +1,8 @@
 package net.trackmate.graph.collection;
 
+import java.util.Comparator;
 import java.util.List;
+import java.util.Random;
 
 /**
  * List-like interface for collections that operates on possibly reusable
@@ -94,4 +96,21 @@ public interface RefList< O > extends RefCollection< O >, List< O >
 	 */
 	public O set( final int index, final O obj, final O replacedObj );
 
+	/**
+	 * Shuffle the elements of the list using the specified random number
+	 * generator.
+	 * 
+	 * @param rand
+	 *            a random number generator.
+	 */
+	public void shuffle( Random rand );
+
+	/**
+	 * Sort the values in the list, in ascending order according to the
+	 * specified {@link Comparator}.
+	 * 
+	 * @param comparator
+	 *            the comparator to use for ordering.
+	 */
+	public void sort( Comparator< O > comparator );
 }
