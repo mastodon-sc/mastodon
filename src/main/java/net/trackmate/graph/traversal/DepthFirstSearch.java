@@ -60,13 +60,17 @@ public class DepthFirstSearch< V extends Vertex< E >, E extends Edge< V > > exte
 		}
 
 		/*
-		 * Potentially sort them.
+		 * Potentially sort vertices and edges according to vertices sort order.
 		 */
 
-		if ( null != comparator )
+		if ( null != comparator && targets.size() > 1 )
 		{
 			Graphs.sort( targets, comparator, targetEdges );
 		}
+
+		/*
+		 * Discover vertices across these edges.
+		 */
 
 		E edge = edgeRef();
 		for ( int i = 0; i < targets.size(); i++ )
