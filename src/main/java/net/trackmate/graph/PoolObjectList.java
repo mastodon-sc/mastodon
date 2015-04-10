@@ -479,21 +479,22 @@ public class PoolObjectList< O extends PoolObject< O, T >, T extends MappedEleme
 		return new PoolObjectList< O, T >( this, ( TIntArrayList ) indices.subList( fromIndex, toIndex ) );
 	}
 
+	@Override
 	public void shuffle( final Random rand )
 	{
 		indices.shuffle( rand );
 	}
 
+	@Override
 	public void sort( final Comparator< O > comparator )
 	{
+		if ( indices.size() < 2 )
+			return;
 		quicksort( 0, size() - 1, comparator, createRef(), createRef() );
 	}
 
 	private void quicksort( final int low, final int high, final Comparator< O > comparator, final O tmpRef1, final O tmpRef2 )
 	{
-		if ( indices.size() < 2 )
-			return;
-
 		final O pivot = get( ( low + high ) / 2, tmpRef1 );
 
 		int i = low;
