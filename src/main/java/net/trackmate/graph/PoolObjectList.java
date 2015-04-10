@@ -486,46 +486,40 @@ public class PoolObjectList< O extends PoolObject< O, T >, T extends MappedEleme
 
 	public void sort( final Comparator< O > comparator )
 	{
-		quicksort( 0, size(), comparator );
+		quicksort( 0, size() - 1, comparator, createRef(), createRef() );
 	}
 
-	private void quicksort( final int low, final int high, final Comparator< O > comparator )
+	private void quicksort( final int low, final int high, final Comparator< O > comparator, final O tmpRef1, final O tmpRef2 )
 	{
-		final O tmp = createRef();
-		final O pivot = get( low + ( high - low ) / 2, tmp );
+		if ( indices.size() < 2 )
+			return;
+
+		final O pivot = get( ( low + high ) / 2, tmpRef1 );
 
 		int i = low;
 		int j = high;
-		while ( i <= j )
+
+		do
 		{
-			while ( comparator.compare( get( i ), pivot ) < 0 )
-			{
+			while ( comparator.compare( get( i, tmpRef2 ), pivot ) < 0 )
 				i++;
-			}
-			while ( comparator.compare( get( j ), pivot ) > 0 )
-			{
+			while ( comparator.compare( pivot, get( j, tmpRef2 ) ) < 0 )
 				j--;
-			}
 			if ( i <= j )
 			{
-				exchange( i, j, tmp );
+				final int tmp = indices.get( i );
+				indices.set( i, indices.get( j ) );
+				indices.set( j, tmp );
 				i++;
 				j--;
 			}
 		}
+		while ( i <= j );
 
 		if ( low < j )
-			quicksort( low, j, comparator );
+			quicksort( low, j, comparator, tmpRef1, tmpRef2 );
 		if ( i < high )
-			quicksort( i, high, comparator );
-	}
-
-	private void exchange( final int i, final int j, final O tmp )
-	{
-		final int idi = get( i, tmp ).getInternalPoolIndex();
-		final int idj = get( j, tmp ).getInternalPoolIndex();
-		indices.set( j, idi );
-		indices.set( i, idj );
+			quicksort( i, high, comparator, tmpRef1, tmpRef2 );
 	}
 
 	@Override

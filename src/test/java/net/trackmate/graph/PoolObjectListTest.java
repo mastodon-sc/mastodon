@@ -1,6 +1,6 @@
 package net.trackmate.graph;
 
-import static org.junit.Assert.fail;
+import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -21,61 +21,53 @@ public class PoolObjectListTest
 	@Before
 	public void setUp() throws Exception
 	{
-		final TestObjectPool pool = new TestObjectPool( 10 );
+		final int nobj = 1000;
+		final TestObjectPool pool = new TestObjectPool( nobj );
 		list = new PoolObjectList< TestObject, ByteMappedElement >( pool );
-		final TestObject A = pool.create().init( 1 );
-		final TestObject B = pool.create().init( 2 );
-		final TestObject C = pool.create().init( 3 );
-		final TestObject E = pool.create().init( 4 );
-		final TestObject D = pool.create().init( 5 );
-		final TestObject F = pool.create().init( 6 );
-		final TestObject G = pool.create().init( 7 );
+		
+		final Random rand = new Random();
 
-		list.add( A );
-		list.add( B );
-		list.add( C );
-		list.add( D );
-		list.add( E );
-		list.add( F );
-		list.add( G );
+		final int[] ids = new int[ nobj ];
+		for ( int i = 0; i < ids.length; i++ )
+		{
+			ids[ i ] = i + 1;
+		}
+		for ( int i = ids.length; i > 1; i-- )
+		{
+			final int temp = ids[ i - 1 ];
+			final int j = rand.nextInt( i );
+			ids[ i - 1 ] = ids[ j ];
+			ids[ j ] = temp;
+		}
 
-		objects = new ArrayList< TestObject >( 7 );
-		objects.add( A );
-		objects.add( B );
-		objects.add( C );
-		objects.add( D );
-		objects.add( E );
-		objects.add( F );
-		objects.add( G );
+		objects = new ArrayList< TestObject >( nobj );
+		for ( int i = 0; i < ids.length; i++ )
+		{
+			final TestObject o = pool.create().init( ids[ i ] );
+			list.add( o );
+			objects.add( o );
+		}
 	}
 
 	@Test
 	public void testSort()
 	{
-		list.shuffle( new Random( 1l ) );
-		for ( final TestObject testObject : list )
-		{
-			System.out.println( testObject );// DEBUG
-		}
-		System.out.println();// DEBUG
-
 		final Comparator< TestObject > comparator = new Comparator< TestObject >()
 		{
-
 			@Override
 			public int compare( final TestObject o1, final TestObject o2 )
 			{
 				return o1.getId() - o2.getId();
 			}
 		};
-
 		list.sort( comparator );
+
+		int previousID = Integer.MIN_VALUE;
 		for ( final TestObject testObject : list )
 		{
-			System.out.println( testObject );// DEBUG
+			assertTrue( "List around ID " + previousID + " is not sorted.", previousID < testObject.getId() );
+			previousID = testObject.getId();
 		}
-		System.out.println();// DEBUG
-		fail( "Not yet implemented" );
 	}
 
 }
