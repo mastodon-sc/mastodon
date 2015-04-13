@@ -113,4 +113,14 @@ public interface RefList< O > extends RefCollection< O >, List< O >
 	 *            the comparator to use for ordering.
 	 */
 	public void sort( Comparator< O > comparator );
+
+	/**
+	 * Swaps the elements at the specified positions in this list.
+	 * 
+	 * @param i
+	 *            the index of one element to be swapped.
+	 * @param j
+	 *            the index of the other element to be swapped.
+	 */
+	public void swap( int i, int j );
 }

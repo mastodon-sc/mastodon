@@ -103,4 +103,10 @@ public class RefListWrapper< O > extends AbstractRefCollectionWrapper< O, List< 
 	{
 		Collections.sort( collection, comparator );
 	}
+
+	@Override
+	public void swap( final int i, final int j )
+	{
+		Collections.swap( collection, i, j );
+	}
 }

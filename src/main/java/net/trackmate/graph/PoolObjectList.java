@@ -508,9 +508,7 @@ public class PoolObjectList< O extends PoolObject< O, T >, T extends MappedEleme
 				j--;
 			if ( i <= j )
 			{
-				final int tmp = indices.get( i );
-				indices.set( i, indices.get( j ) );
-				indices.set( j, tmp );
+				swap( i, j );
 				i++;
 				j--;
 			}
@@ -521,6 +519,14 @@ public class PoolObjectList< O extends PoolObject< O, T >, T extends MappedEleme
 			quicksort( low, j, comparator, tmpRef1, tmpRef2 );
 		if ( i < high )
 			quicksort( i, high, comparator, tmpRef1, tmpRef2 );
+	}
+
+	@Override
+	public void swap( final int i, final int j )
+	{
+		final int tmp = indices.get( i );
+		indices.set( i, indices.get( j ) );
+		indices.set( j, tmp );
 	}
 
 	@Override
