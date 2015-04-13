@@ -48,7 +48,7 @@ public class Graphs
 	 * </ul>
 	 * 
 	 * @param listO
-	 *            , the first list, that will be sorted.
+	 *            the first list, that will be sorted.
 	 * @param comparatorO
 	 *            the comparator used to sort the first list. <code>null</code>
 	 *            is not permitted.
@@ -66,26 +66,15 @@ public class Graphs
 		
 		final O tmpO1 = listO.createRef();
 		final O tmpO2 = listO.createRef();
-		final O tmpO3 = listO.createRef();
-		final O tmpO4 = listO.createRef();
-		final P tmpP1 = listP.createRef();
-		final P tmpP2 = listP.createRef();
-		final P tmpP3 = listP.createRef();
 		
-		quicksort( 0, listO.size() - 1, listO, comparatorO, listP, tmpO1, tmpO2, tmpO3, tmpO4, tmpP1, tmpP2, tmpP3 );
+		quicksort( 0, listO.size() - 1, listO, comparatorO, listP, tmpO1, tmpO2 );
 
 		listO.releaseRef( tmpO1 );
 		listO.releaseRef( tmpO2 );
-		listO.releaseRef( tmpO3 );
-		listO.releaseRef( tmpO4 );
-		listP.releaseRef( tmpP1 );
-		listP.releaseRef( tmpP2 );
-		listP.releaseRef( tmpP3 );
 	}
 
 	private static < O, P > void quicksort( final int low, final int high, final RefList< O > listO, final Comparator< O > comparatorO, final RefList< P > listP,
-			final O tmpO1, final O tmpO2, final O tmpO3, final O tmpO4,
-			final P tmpP1, final P tmpP2, final P tmpP3 )
+			final O tmpO1, final O tmpO2 )
 	{
 		final O pivot = listO.get( ( low + high ) / 2, tmpO1 );
 
@@ -101,13 +90,8 @@ public class Graphs
 
 			if ( i <= j )
 			{
-				final O tmpOVal = listO.get( i, tmpO4 );
-				listO.set( i, listO.get( j, tmpO2 ), tmpO3 );
-				listO.set( j, tmpOVal, tmpO3 );
-
-				final P tmpPVal = listP.get( i, tmpP1 );
-				listP.set( i, listP.get( j, tmpP2 ), tmpP3 );
-				listP.set( j, tmpPVal, tmpP3 );
+				listO.swap( i, j );
+				listP.swap( i, j );
 
 				i++;
 				j--;
@@ -116,9 +100,9 @@ public class Graphs
 		while ( i <= j );
 
 		if ( low < j )
-			quicksort( low, j, listO, comparatorO, listP, tmpO1, tmpO2, tmpO3, tmpO4, tmpP1, tmpP2, tmpP3 );
+			quicksort( low, j, listO, comparatorO, listP, tmpO1, tmpO2 );
 		if ( i < high )
-			quicksort( i, high, listO, comparatorO, listP, tmpO1, tmpO2, tmpO3, tmpO4, tmpP1, tmpP2, tmpP3 );
+			quicksort( i, high, listO, comparatorO, listP, tmpO1, tmpO2 );
 	}
 	
 	private Graphs()
