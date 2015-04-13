@@ -23,7 +23,7 @@ public class BreadthFirstIterator< V extends Vertex< E >, E extends Edge< V > > 
 {
 	private final RefDeque< V > queue;
 
-	BreadthFirstIterator( final V root, final Graph< V, E > graph )
+	public BreadthFirstIterator( final V root, final Graph< V, E > graph )
 	{
 		super( graph );
 		this.queue = createVertexDeque();

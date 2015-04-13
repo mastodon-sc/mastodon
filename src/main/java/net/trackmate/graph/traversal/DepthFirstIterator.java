@@ -22,7 +22,7 @@ public class DepthFirstIterator< V extends Vertex< E >, E extends Edge< V > > ex
 {
 	private final RefStack< V > stack;
 
-	DepthFirstIterator( final V root, final Graph< V, E > graph )
+	public DepthFirstIterator( final V root, final Graph< V, E > graph )
 	{
 		super( graph );
 		stack = createVertexStack();
