@@ -19,11 +19,54 @@ import net.trackmate.graph.TestGraph;
 import net.trackmate.graph.TestUtils;
 import net.trackmate.graph.TestVertex;
 import net.trackmate.graph.traversal.GraphSearch.EdgeClass;
+import net.trackmate.graph.traversal.GraphsForTests.GraphTestBundle;
 
 import org.junit.Test;
 
 public class DepthFirstSearchTest
 {
+	@Test
+	public void testAll()
+	{
+		final List< GraphTestBundle< TestVertex, TestEdge > > bundles = new ArrayList< GraphsForTests.GraphTestBundle< TestVertex, TestEdge > >();
+		bundles.add( GraphsForTests.forkPoolObjects() );
+		bundles.add( GraphsForTests.loopPoolObjects() );
+		bundles.add( GraphsForTests.wpExamplePoolObjects() );
+		bundles.add( GraphsForTests.singleEdgePoolObjects() );
+		bundles.add( GraphsForTests.straightLinePoolObjects() );
+		bundles.add( GraphsForTests.twoComponentsPoolObjects() );
+		bundles.add( GraphsForTests.singleVertexPoolObjects() );
+
+		for ( final GraphTestBundle< TestVertex, TestEdge > bundle : bundles )
+		{
+			System.out.println( bundle.name );
+
+			final TestVertex first = bundle.vertices.get( 0 );
+			final DepthFirstSearch< TestVertex, TestEdge > dfs = new DepthFirstSearch< TestVertex, TestEdge >( bundle.graph, true );
+			dfs.start( first, new SearchListener< TestVertex, TestEdge >()
+			{
+
+				@Override
+				public void processVertexLate( final TestVertex vertex, final int time, final GraphSearch< TestVertex, TestEdge > search )
+				{
+					System.out.println( "t = " + time + " - Finished processing " + vertex );
+				}
+
+				@Override
+				public void processVertexEarly( final TestVertex vertex, final int time, final GraphSearch< TestVertex, TestEdge > search )
+				{
+					System.out.println( "t = " + time + " - Discovered " + vertex );
+				}
+
+				@Override
+				public void processEdge( final TestEdge edge, final TestVertex from, final TestVertex to, final int time, final GraphSearch< TestVertex, TestEdge > search )
+				{
+					System.out.println( "t = " + time + " - Crossing " + edge + " from " + from + " to " + to );
+				}
+			} );
+			System.out.println( "Search complete.\n" );
+		}
+	}
 
 	@Test
 	public void testNonTree()
