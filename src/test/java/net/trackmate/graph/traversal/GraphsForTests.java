@@ -44,13 +44,13 @@ public class GraphsForTests
 		@Override
 		public void processVertexLate( final V vertex, final int time, final GraphSearch< V, E > search )
 		{
-			assertEquals( "Did not finished processing vertex in expected order during search.", expectedProcessedVertexIterator.next(), vertex );
+			assertEquals( "Did not finish processing vertex in expected order during search.", expectedProcessedVertexIterator.next(), vertex );
 		}
 
 		@Override
 		public void processVertexEarly( final V vertex, final int time, final GraphSearch< V, E > search )
 		{
-			assertEquals( "Did not discovered the expected vertex sequence during search.", expectedDiscoveredVertexIterator.next(), vertex );
+			assertEquals( "Did not discover the expected vertex sequence during search.", expectedDiscoveredVertexIterator.next(), vertex );
 		}
 
 		@Override
@@ -64,7 +64,7 @@ public class GraphsForTests
 
 		public void searchDone()
 		{
-			assertFalse( "Did not discovered all the expected vertices.", expectedDiscoveredVertexIterator.hasNext() );
+			assertFalse( "Did not discover all the expected vertices.", expectedDiscoveredVertexIterator.hasNext() );
 			assertFalse( "Did not finish processing all the expected vertices.", expectedProcessedVertexIterator.hasNext() );
 			assertFalse( "Did not cross all the expected edges.", expectedEdgeIterator.hasNext() );
 			assertFalse( "Did not assess all edge classes.", expectedEdgeClassIterator.hasNext() );
