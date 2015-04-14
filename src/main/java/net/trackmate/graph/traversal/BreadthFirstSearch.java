@@ -35,13 +35,14 @@ public class BreadthFirstSearch< V extends Vertex< E >, E extends Edge< V > > ex
 	public void start( final V start )
 	{
 		queue.clear();
+		queue.add( start );
 		super.start( start );
 	}
 
 	@Override
 	protected void visit( final V start )
 	{
-		queue.add( start );
+//		queue.add( start );
 		discovered.add( start );
 
 		final V tmpRef = vertexRef();
@@ -52,7 +53,8 @@ public class BreadthFirstSearch< V extends Vertex< E >, E extends Edge< V > > ex
 
 			time++;
 			final V vertex = queue.poll( tmpRef );
-			searchListener.processVertexEarly( vertex, time, this );
+			if ( null != searchListener )
+				searchListener.processVertexEarly( vertex, time, this );
 			processed.add( vertex );
 
 			final Edges< E > edges;
@@ -68,21 +70,22 @@ public class BreadthFirstSearch< V extends Vertex< E >, E extends Edge< V > > ex
 			for ( final E edge : edges )
 			{
 				target = Graphs.getOppositeVertex( edge, vertex, target );
-				if ( !processed.contains( target ) )
-				{
-					searchListener.processEdge( edge, vertex, target, time, this );
-				}
 				if ( !discovered.contains( target ) )
 				{
 					queue.add( target );
 					discovered.add( target );
-					parents.put( vertex, start );
+					parents.put( target, vertex );
+				}
+				if ( null != searchListener && ( directed || !processed.contains( target ) ) )
+				{
+					searchListener.processEdge( edge, vertex, target, time, this );
 				}
 				if ( wasAborted() )
 					return;
 			}
 			time++;
-			searchListener.processVertexLate( vertex, time, this );
+			if ( null != searchListener )
+				searchListener.processVertexLate( vertex, time, this );
 		}
 	}
 }
