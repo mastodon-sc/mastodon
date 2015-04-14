@@ -1,233 +1,507 @@
 package net.trackmate.graph.traversal;
 
 import static net.trackmate.graph.traversal.GraphSearch.EdgeClass.BACK;
-import static net.trackmate.graph.traversal.GraphSearch.EdgeClass.CROSS;
+import static net.trackmate.graph.traversal.GraphSearch.EdgeClass.FORWARD;
 import static net.trackmate.graph.traversal.GraphSearch.EdgeClass.TREE;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.Comparator;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Random;
 
 import net.trackmate.graph.TestEdge;
-import net.trackmate.graph.TestGraph;
-import net.trackmate.graph.TestUtils;
 import net.trackmate.graph.TestVertex;
+import net.trackmate.graph.object.ObjectEdge;
+import net.trackmate.graph.object.ObjectVertex;
 import net.trackmate.graph.traversal.GraphSearch.EdgeClass;
 import net.trackmate.graph.traversal.GraphsForTests.GraphTestBundle;
+import net.trackmate.graph.traversal.GraphsForTests.TraversalTester;
 
 import org.junit.Test;
 
+/**
+ * We assume that for unsorted search, child vertices are returned in the order
+ * they are added to the graph. If they are not, this test will fail, but it
+ * does not necessary means it is incorrect
+ */
 public class DepthFirstSearchTest
 {
+
 	@Test
-	public void testAll()
+	public void testForkPoolObjects()
 	{
-		final List< GraphTestBundle< TestVertex, TestEdge > > bundles = new ArrayList< GraphsForTests.GraphTestBundle< TestVertex, TestEdge > >();
-		bundles.add( GraphsForTests.forkPoolObjects() );
-		bundles.add( GraphsForTests.loopPoolObjects() );
-		bundles.add( GraphsForTests.wpExamplePoolObjects() );
-		bundles.add( GraphsForTests.singleEdgePoolObjects() );
-		bundles.add( GraphsForTests.straightLinePoolObjects() );
-		bundles.add( GraphsForTests.twoComponentsPoolObjects() );
-		bundles.add( GraphsForTests.singleVertexPoolObjects() );
+		final GraphTestBundle< TestVertex, TestEdge > bundle = GraphsForTests.forkPoolObjects();
 
-		for ( final GraphTestBundle< TestVertex, TestEdge > bundle : bundles )
-		{
-			System.out.println( bundle.name );
+		final TestVertex first = bundle.vertices.get( 0 );
+		final DepthFirstSearch< TestVertex, TestEdge > dfs = new DepthFirstSearch< TestVertex, TestEdge >( bundle.graph, true );
 
-			final TestVertex first = bundle.vertices.get( 0 );
-			final DepthFirstSearch< TestVertex, TestEdge > dfs = new DepthFirstSearch< TestVertex, TestEdge >( bundle.graph, true );
-			dfs.start( first, new SearchListener< TestVertex, TestEdge >()
-			{
+		final List< EdgeClass > edgeClass = Arrays.asList( new EdgeClass[] { TREE, TREE } );
+		final List< TestVertex > processedVertices = Arrays.asList( new TestVertex[] {
+				bundle.vertices.get( 1 ),
+				bundle.vertices.get( 2 ),
+				bundle.vertices.get( 0 )
+		} );
+		final TraversalTester< TestVertex, TestEdge > traversalTester = new TraversalTester< TestVertex, TestEdge >(
+				bundle.vertices.iterator(),
+				processedVertices.iterator(),
+				bundle.edges.iterator(),
+				edgeClass.iterator() );
 
-				@Override
-				public void processVertexLate( final TestVertex vertex, final int time, final GraphSearch< TestVertex, TestEdge > search )
-				{
-					System.out.println( "t = " + time + " - Finished processing " + vertex );
-				}
-
-				@Override
-				public void processVertexEarly( final TestVertex vertex, final int time, final GraphSearch< TestVertex, TestEdge > search )
-				{
-					System.out.println( "t = " + time + " - Discovered " + vertex );
-				}
-
-				@Override
-				public void processEdge( final TestEdge edge, final TestVertex from, final TestVertex to, final int time, final GraphSearch< TestVertex, TestEdge > search )
-				{
-					System.out.println( "t = " + time + " - Crossing " + edge + " from " + from + " to " + to );
-				}
-			} );
-			System.out.println( "Search complete.\n" );
-		}
+		dfs.start( first, traversalTester );
+		traversalTester.searchDone();
 	}
 
 	@Test
-	public void testNonTree()
+	public void testForkStdObjects()
 	{
-		/*
-		 * Skiena DFS in a loop.
-		 */
-		final TestGraph loop = new TestGraph();
-		final TestVertex F = loop.addVertex().init( 6 );
-		final TestVertex A = loop.addVertex().init( 1 );
-		final TestVertex B = loop.addVertex().init( 2 );
-		final TestVertex C = loop.addVertex().init( 3 );
-		final TestVertex E = loop.addVertex().init( 5 );
-		final TestVertex D = loop.addVertex().init( 4 );
+		final GraphTestBundle< ObjectVertex< Integer >, ObjectEdge< Integer >> bundle = GraphsForTests.forkStdObjects();
 
-		loop.addEdge( A, B );
-		loop.addEdge( E, A );
-		loop.addEdge( B, C );
-		loop.addEdge( C, D );
-		loop.addEdge( D, E );
-		loop.addEdge( E, B );
-		loop.addEdge( A, F );
+		final ObjectVertex< Integer > first = bundle.vertices.get( 0 );
+		final DepthFirstSearch< ObjectVertex< Integer >, ObjectEdge< Integer >> dfs = new DepthFirstSearch< ObjectVertex< Integer >, ObjectEdge< Integer >>( bundle.graph, true );
 
-		final List< TestVertex > fromB = Arrays.asList( new TestVertex[] { A, B, C, D, E, F } );
-		final List< EdgeClass > fromBEC = Arrays.asList( new EdgeClass[] { TREE, TREE, TREE, TREE, BACK, BACK, TREE } );
-		final TraversalTester tt = new TraversalTester( fromB.iterator(), fromBEC.iterator() );
-		final DepthFirstSearch< TestVertex, TestEdge > search = new DepthFirstSearch< TestVertex, TestEdge >( loop, true );
-		search.start( A, tt );
+		final List< EdgeClass > edgeClass = Arrays.asList( new EdgeClass[] { TREE, TREE } );
+		final List< ObjectVertex< Integer >> processedVertices = new ArrayList< ObjectVertex< Integer > >( 3 );
+		processedVertices.add( bundle.vertices.get( 1 ) );
+		processedVertices.add( bundle.vertices.get( 2 ) );
+		processedVertices.add( bundle.vertices.get( 0 ) );
+
+		final TraversalTester< ObjectVertex< Integer >, ObjectEdge< Integer >> traversalTester = new TraversalTester< ObjectVertex< Integer >, ObjectEdge< Integer >>(
+				bundle.vertices.iterator(),
+				processedVertices.iterator(),
+				bundle.edges.iterator(),
+				edgeClass.iterator() );
+
+		dfs.start( first, traversalTester );
+		traversalTester.searchDone();
 	}
 
 	@Test
-	public void testDirected()
+	public void testLoopPoolObjects()
 	{
-		final TestGraph graph = new TestGraph();
-		final TestVertex A = graph.addVertex().init( 1 );
-		final TestVertex B = graph.addVertex().init( 2 );
-		final TestVertex C = graph.addVertex().init( 3 );
-		final TestVertex E = graph.addVertex().init( 5 );
-		final TestVertex D = graph.addVertex().init( 4 );
-		final TestVertex F = graph.addVertex().init( 6 );
-		final TestVertex G = graph.addVertex().init( 7 );
+		final GraphTestBundle< TestVertex, TestEdge > bundle = GraphsForTests.loopPoolObjects();
 
-		graph.addEdge( B, D );
-		graph.addEdge( B, F );
-		graph.addEdge( A, B );
-		graph.addEdge( A, C );
-		graph.addEdge( A, E );
-		graph.addEdge( C, G );
-		graph.addEdge( E, F );
-		final List< TestVertex > fromB = Arrays.asList( new TestVertex[] { B, D, F } );
-		final List< EdgeClass > fromBEC = Arrays.asList( new EdgeClass[] { TREE, TREE } );
-		final TraversalTester tt = new TraversalTester( fromB.iterator(), fromBEC.iterator() );
+		final TestVertex first = bundle.vertices.get( 0 );
+		final DepthFirstSearch< TestVertex, TestEdge > dfs = new DepthFirstSearch< TestVertex, TestEdge >( bundle.graph, true );
 
-		final DepthFirstSearch< TestVertex, TestEdge > search = new DepthFirstSearch< TestVertex, TestEdge >( graph, true );
-		search.start( B, tt );
+		final List< EdgeClass > edgeClass = Arrays.asList( new EdgeClass[] { TREE, TREE, TREE, TREE, TREE, TREE, BACK } );
+		final List< TestVertex > processedVertices = Arrays.asList( new TestVertex[] {
+				bundle.vertices.get( 6 ),
+				bundle.vertices.get( 5 ),
+				bundle.vertices.get( 4 ),
+				bundle.vertices.get( 3 ),
+				bundle.vertices.get( 2 ),
+				bundle.vertices.get( 1 ),
+				bundle.vertices.get( 0 )
+		} );
+		final TraversalTester< TestVertex, TestEdge > traversalTester = new TraversalTester< TestVertex, TestEdge >(
+				bundle.vertices.iterator(),
+				processedVertices.iterator(),
+				bundle.edges.iterator(),
+				edgeClass.iterator() );
 
-		final List< TestVertex > fromA = Arrays.asList( new TestVertex[] { A, B, D, F, C, G, E } );
-		final List< EdgeClass > fromAEC = Arrays.asList( new EdgeClass[] { TREE, TREE, TREE, TREE, TREE, TREE, CROSS } );
-		tt.setExpectedVertexIterator( fromA.iterator() );
-		tt.setExpectedEdgeClassIterator( fromAEC.iterator() );
-		search.start( A, tt );
+		dfs.start( first, traversalTester );
+		traversalTester.searchDone();
 	}
 
 	@Test
-	public void testSorted()
+	public void testLoopStdObjects()
 	{
-		final Comparator< TestVertex > comparator = TestUtils.idComparator;
-		final int N_CHILDREN = 30;
-		final TestGraph graph = new TestGraph( N_CHILDREN + 1 );
-		final TestVertex root = graph.addVertex().init( 0 );
+		final GraphTestBundle< ObjectVertex< Integer >, ObjectEdge< Integer >> bundle = GraphsForTests.loopStdObjects();
 
-		final List< Integer > ids = new ArrayList< Integer >( N_CHILDREN );
-		for ( int i = 0; i < N_CHILDREN; i++ )
-		{
-			ids.add( Integer.valueOf( i + 1 ) );
-		}
-		Collections.shuffle( ids, new Random( 13371l ) );
+		final ObjectVertex< Integer > first = bundle.vertices.get( 0 );
+		final DepthFirstSearch< ObjectVertex< Integer >, ObjectEdge< Integer >> dfs = new DepthFirstSearch< ObjectVertex< Integer >, ObjectEdge< Integer >>( bundle.graph, true );
 
-		for ( final Integer id : ids )
-		{
-			final TestVertex child = graph.addVertex().init( id );
-			graph.addEdge( root, child );
-		}
+		final List< EdgeClass > edgeClass = Arrays.asList( new EdgeClass[] { TREE, TREE, TREE, TREE, TREE, TREE, BACK } );
+		final List< ObjectVertex< Integer >> processedVertices = new ArrayList< ObjectVertex< Integer > >( 7 );
+		processedVertices.add( bundle.vertices.get( 6 ) );
+		processedVertices.add( bundle.vertices.get( 5 ) );
+		processedVertices.add( bundle.vertices.get( 4 ) );
+		processedVertices.add( bundle.vertices.get( 3 ) );
+		processedVertices.add( bundle.vertices.get( 2 ) );
+		processedVertices.add( bundle.vertices.get( 1 ) );
+		processedVertices.add( bundle.vertices.get( 0 ) );
 
-		final TestVertex previous = graph.vertexRef();
-		final TestVertex edgeCheck = graph.vertexRef();
-		previous.refTo( root );
-		final SearchListener< TestVertex, TestEdge > l = new SearchListener< TestVertex, TestEdge >()
-		{
+		final TraversalTester< ObjectVertex< Integer >, ObjectEdge< Integer >> traversalTester = new TraversalTester< ObjectVertex< Integer >, ObjectEdge< Integer >>(
+				bundle.vertices.iterator(),
+				processedVertices.iterator(),
+				bundle.edges.iterator(),
+				edgeClass.iterator() );
 
-			@Override
-			public void processVertexLate( final TestVertex vertex, final int time, final GraphSearch< TestVertex, TestEdge > search )
-			{}
-
-			@Override
-			public void processEdge( final TestEdge edge, final TestVertex from, final TestVertex to, final int time, final GraphSearch< TestVertex, TestEdge > search )
-			{
-				// Check that the edge are processed also in order
-				edgeCheck.refTo( edge.getTarget( edgeCheck ) );
-			}
-
-			@Override
-			public void processVertexEarly( final TestVertex vertex, final int time, final GraphSearch< TestVertex, TestEdge > search )
-			{
-				assertEquals( "Given the edge that was previously processed, I received the wrong vertex.", edgeCheck, vertex );
-
-				if ( !vertex.equals( root ) )
-				{
-					assertTrue( "Iteration over children of the same descendance should be ordered, but is not. Got " + vertex + " after " + previous, comparator.compare( vertex, previous ) > 0 );
-				}
-				previous.refTo( vertex );
-			}
-		};
-
-		final DepthFirstSearch< TestVertex, TestEdge > dfs = new DepthFirstSearch< TestVertex, TestEdge >( graph, true );
-		dfs.setComparator( comparator );
-		dfs.start( root, l );
-
-		graph.releaseRef( previous );
-		graph.releaseRef( edgeCheck );
+		dfs.start( first, traversalTester );
+		traversalTester.searchDone();
 	}
 
-	private class TraversalTester implements SearchListener< TestVertex, TestEdge >
+	@Test
+	public void testExamplePoolObjects()
 	{
+		final GraphTestBundle< TestVertex, TestEdge > bundle = GraphsForTests.wpExamplePoolObjects();
 
-		private Iterator< TestVertex > expectedVertexIterator;
+		final TestVertex first = bundle.vertices.get( 0 );
+		final DepthFirstSearch< TestVertex, TestEdge > dfs = new DepthFirstSearch< TestVertex, TestEdge >( bundle.graph, true );
 
-		private Iterator< EdgeClass > expectedEdgeClassIterator;
+		final List< TestVertex > expectedVertices = Arrays.asList( new TestVertex[] {
+				bundle.vertices.get( 0 ),
+				bundle.vertices.get( 1 ),
+				bundle.vertices.get( 3 ),
+				bundle.vertices.get( 5 ),
+				bundle.vertices.get( 4 ),
+				bundle.vertices.get( 2 ),
+				bundle.vertices.get( 6 )
+		} );
+		final List< TestVertex > processedVertices = Arrays.asList( new TestVertex[] {
+				bundle.vertices.get( 3 ),
+				bundle.vertices.get( 4 ),
+				bundle.vertices.get( 5 ),
+				bundle.vertices.get( 1 ),
+				bundle.vertices.get( 6 ),
+				bundle.vertices.get( 2 ),
+				bundle.vertices.get( 0 )
+		} );
+		final List< TestEdge > epectedEdges = Arrays.asList( new TestEdge[] {
+				bundle.edges.get( 0 ),
+				bundle.edges.get( 3 ),
+				bundle.edges.get( 4 ),
+				bundle.edges.get( 5 ),
+				bundle.edges.get( 1 ),
+				bundle.edges.get( 6 ),
+				bundle.edges.get( 2 )
+		} );
+		final List< EdgeClass > edgeClass = Arrays.asList( new EdgeClass[] { TREE, TREE, TREE, TREE, TREE, TREE, FORWARD } );
 
-		public TraversalTester( final Iterator< TestVertex > expectedVertexIterator, final Iterator< EdgeClass > expectedEdgeClassIterator )
-		{
-			this.expectedVertexIterator = expectedVertexIterator;
-			this.expectedEdgeClassIterator = expectedEdgeClassIterator;
-		}
+		final TraversalTester< TestVertex, TestEdge > traversalTester = new TraversalTester< TestVertex, TestEdge >(
+				expectedVertices.iterator(),
+				processedVertices.iterator(),
+				epectedEdges.iterator(),
+				edgeClass.iterator() );
 
-		public void setExpectedVertexIterator( final Iterator< TestVertex > expectedVertexIterator )
-		{
-			this.expectedVertexIterator = expectedVertexIterator;
-		}
-
-		public void setExpectedEdgeClassIterator( final Iterator< EdgeClass > expectedEdgeClassIterator )
-		{
-			this.expectedEdgeClassIterator = expectedEdgeClassIterator;
-		}
-
-		@Override
-		public void processVertexLate( final TestVertex vertex, final int time, final GraphSearch< TestVertex, TestEdge > search )
-		{}
-
-		@Override
-		public void processVertexEarly( final TestVertex vertex, final int time, final GraphSearch< TestVertex, TestEdge > search )
-		{
-			assertEquals( "Did not meet the expected vertex sequence during search.", expectedVertexIterator.next(), vertex );
-		}
-
-		@Override
-		public void processEdge( final TestEdge edge, final TestVertex from, final TestVertex to, final int time, final GraphSearch< TestVertex, TestEdge > search )
-		{
-			final EdgeClass eclass = search.edgeClass( from, to );
-			assertEquals( "The edge " + edge + " traversed  from " + from + " to " + to + " has an unexpcted class in the search.", expectedEdgeClassIterator.next(), eclass );
-		}
+		dfs.start( first, traversalTester );
+		traversalTester.searchDone();
 	}
 
+	@Test
+	public void testExampleStdObjects()
+	{
+		final GraphTestBundle< ObjectVertex< Integer >, ObjectEdge< Integer >> bundle = GraphsForTests.wpExampleStdObjects();
+
+		final ObjectVertex< Integer > first = bundle.vertices.get( 0 );
+		final DepthFirstSearch< ObjectVertex< Integer >, ObjectEdge< Integer >> dfs = new DepthFirstSearch< ObjectVertex< Integer >, ObjectEdge< Integer >>( bundle.graph, true );
+
+		final List< ObjectVertex< Integer > > expectedVertices = new ArrayList< ObjectVertex< Integer > >( 7 );
+		expectedVertices.add( bundle.vertices.get( 0 ) );
+		expectedVertices.add( bundle.vertices.get( 1 ) );
+		expectedVertices.add( bundle.vertices.get( 3 ) );
+		expectedVertices.add( bundle.vertices.get( 5 ) );
+		expectedVertices.add( bundle.vertices.get( 4 ) );
+		expectedVertices.add( bundle.vertices.get( 2 ) );
+		expectedVertices.add( bundle.vertices.get( 6 ) );
+
+		final List< ObjectVertex< Integer > > processedVertices = new ArrayList< ObjectVertex< Integer > >( 7 );
+		processedVertices.add( bundle.vertices.get( 3 ) );
+		processedVertices.add( bundle.vertices.get( 4 ) );
+		processedVertices.add( bundle.vertices.get( 5 ) );
+		processedVertices.add( bundle.vertices.get( 1 ) );
+		processedVertices.add( bundle.vertices.get( 6 ) );
+		processedVertices.add( bundle.vertices.get( 2 ) );
+		processedVertices.add( bundle.vertices.get( 0 ) );
+
+		final List< ObjectEdge< Integer > > epectedEdges = new ArrayList< ObjectEdge<Integer> >(7);
+		epectedEdges.add( bundle.edges.get( 0 ) );
+		epectedEdges.add( bundle.edges.get( 3 ) );
+		epectedEdges.add( bundle.edges.get( 4 ) );
+		epectedEdges.add( bundle.edges.get( 5 ) );
+		epectedEdges.add( bundle.edges.get( 1 ) );
+		epectedEdges.add( bundle.edges.get( 6 ) );
+		epectedEdges.add( bundle.edges.get( 2 ) );
+
+		final List< EdgeClass > edgeClass = Arrays.asList( new EdgeClass[] { TREE, TREE, TREE, TREE, TREE, TREE, FORWARD } );
+
+		final TraversalTester< ObjectVertex< Integer >, ObjectEdge< Integer >> traversalTester = new TraversalTester< ObjectVertex< Integer >, ObjectEdge< Integer >>(
+				expectedVertices.iterator(),
+				processedVertices.iterator(),
+				epectedEdges.iterator(),
+				edgeClass.iterator() );
+
+		dfs.start( first, traversalTester );
+		traversalTester.searchDone();
+	}
+
+	@Test
+	public void testSingleEdgePoolObjects()
+	{
+		final GraphTestBundle< TestVertex, TestEdge > bundle = GraphsForTests.singleEdgePoolObjects();
+
+		final TestVertex first = bundle.vertices.get( 0 );
+		final DepthFirstSearch< TestVertex, TestEdge > dfs = new DepthFirstSearch< TestVertex, TestEdge >( bundle.graph, true );
+
+		final List< TestVertex > expectedVertices = Arrays.asList( new TestVertex[] {
+				bundle.vertices.get( 0 ),
+				bundle.vertices.get( 1 )
+		} );
+		final List< TestVertex > processedVertices = Arrays.asList( new TestVertex[] {
+				bundle.vertices.get( 1 ),
+				bundle.vertices.get( 0 )
+		} );
+		final List< TestEdge > epectedEdges = Arrays.asList( new TestEdge[] {
+				bundle.edges.get( 0 )
+		} );
+		final List< EdgeClass > edgeClass = Arrays.asList( new EdgeClass[] { TREE } );
+
+		final TraversalTester< TestVertex, TestEdge > traversalTester = new TraversalTester< TestVertex, TestEdge >(
+				expectedVertices.iterator(),
+				processedVertices.iterator(),
+				epectedEdges.iterator(),
+				edgeClass.iterator() );
+
+		dfs.start( first, traversalTester );
+		traversalTester.searchDone();
+	}
+
+	@Test
+	public void testSingleEdgeStdObjects()
+	{
+		final GraphTestBundle< ObjectVertex< Integer >, ObjectEdge< Integer >> bundle = GraphsForTests.singleEdgeStdObjects();
+
+		final ObjectVertex< Integer > first = bundle.vertices.get( 0 );
+		final DepthFirstSearch< ObjectVertex< Integer >, ObjectEdge< Integer >> dfs = new DepthFirstSearch< ObjectVertex< Integer >, ObjectEdge< Integer >>( bundle.graph, true );
+
+		final List< ObjectVertex< Integer > > expectedVertices = new ArrayList< ObjectVertex< Integer > >( 2 );
+		expectedVertices.add( bundle.vertices.get( 0 ) );
+		expectedVertices.add( bundle.vertices.get( 1 ) );
+
+		final List< ObjectVertex< Integer > > processedVertices = new ArrayList< ObjectVertex< Integer > >( 2 );
+		processedVertices.add( bundle.vertices.get( 1 ) );
+		processedVertices.add( bundle.vertices.get( 0 ) );
+
+		final List< ObjectEdge< Integer > > epectedEdges = new ArrayList< ObjectEdge< Integer > >( 1 );
+		epectedEdges.add( bundle.edges.get( 0 ) );
+
+		final List< EdgeClass > edgeClass = Arrays.asList( new EdgeClass[] { TREE } );
+
+		final TraversalTester< ObjectVertex< Integer >, ObjectEdge< Integer >> traversalTester = new TraversalTester< ObjectVertex< Integer >, ObjectEdge< Integer >>(
+				expectedVertices.iterator(),
+				processedVertices.iterator(),
+				epectedEdges.iterator(),
+				edgeClass.iterator() );
+
+		dfs.start( first, traversalTester );
+		traversalTester.searchDone();
+	}
+
+	@Test
+	public void testStraightLinePoolObjects()
+	{
+		final GraphTestBundle< TestVertex, TestEdge > bundle = GraphsForTests.straightLinePoolObjects();
+
+		final TestVertex first = bundle.vertices.get( 0 );
+		final DepthFirstSearch< TestVertex, TestEdge > dfs = new DepthFirstSearch< TestVertex, TestEdge >( bundle.graph, true );
+
+		final List< TestVertex > expectedVertices = bundle.vertices;
+
+		final List< TestVertex > processedVertices = Arrays.asList( new TestVertex[] {
+				bundle.vertices.get( 6 ),
+				bundle.vertices.get( 5 ),
+				bundle.vertices.get( 4 ),
+				bundle.vertices.get( 3 ),
+				bundle.vertices.get( 2 ),
+				bundle.vertices.get( 1 ),
+				bundle.vertices.get( 0 )
+		} );
+		final List< TestEdge > epectedEdges = bundle.edges;
+
+		final List< EdgeClass > edgeClass = Arrays.asList( new EdgeClass[] { TREE, TREE, TREE, TREE, TREE, TREE } );
+
+		final TraversalTester< TestVertex, TestEdge > traversalTester = new TraversalTester< TestVertex, TestEdge >(
+				expectedVertices.iterator(),
+				processedVertices.iterator(),
+				epectedEdges.iterator(),
+				edgeClass.iterator() );
+
+		dfs.start( first, traversalTester );
+		traversalTester.searchDone();
+	}
+
+	@Test
+	public void testStraightLineStdObjects()
+	{
+		final GraphTestBundle< ObjectVertex< Integer >, ObjectEdge< Integer >> bundle = GraphsForTests.straightLineStdObjects();
+
+		final ObjectVertex< Integer > first = bundle.vertices.get( 0 );
+		final DepthFirstSearch< ObjectVertex< Integer >, ObjectEdge< Integer >> dfs = new DepthFirstSearch< ObjectVertex< Integer >, ObjectEdge< Integer >>( bundle.graph, true );
+
+		final List< ObjectVertex< Integer > > expectedVertices = bundle.vertices;
+
+		final List< ObjectVertex< Integer > > processedVertices = new ArrayList< ObjectVertex< Integer > >( 2 );
+		processedVertices.add( bundle.vertices.get( 6 ) );
+		processedVertices.add( bundle.vertices.get( 5 ) );
+		processedVertices.add( bundle.vertices.get( 4 ) );
+		processedVertices.add( bundle.vertices.get( 3 ) );
+		processedVertices.add( bundle.vertices.get( 2 ) );
+		processedVertices.add( bundle.vertices.get( 1 ) );
+		processedVertices.add( bundle.vertices.get( 0 ) );
+
+		final List< ObjectEdge< Integer > > epectedEdges = bundle.edges;
+
+		final List< EdgeClass > edgeClass = Arrays.asList( new EdgeClass[] { TREE, TREE, TREE, TREE, TREE, TREE } );
+
+		final TraversalTester< ObjectVertex< Integer >, ObjectEdge< Integer >> traversalTester = new TraversalTester< ObjectVertex< Integer >, ObjectEdge< Integer >>(
+				expectedVertices.iterator(),
+				processedVertices.iterator(),
+				epectedEdges.iterator(),
+				edgeClass.iterator() );
+
+		dfs.start( first, traversalTester );
+		traversalTester.searchDone();
+	}
+
+	@Test
+	public void testTwoComponentsPoolObjects()
+	{
+		final GraphTestBundle< TestVertex, TestEdge > bundle = GraphsForTests.twoComponentsPoolObjects();
+
+		final TestVertex first = bundle.vertices.get( 0 );
+		final DepthFirstSearch< TestVertex, TestEdge > dfs = new DepthFirstSearch< TestVertex, TestEdge >( bundle.graph, true );
+
+		final List< TestVertex > expectedVertices = Arrays.asList( new TestVertex[] {
+				bundle.vertices.get( 0 ),
+				bundle.vertices.get( 1 ),
+				bundle.vertices.get( 3 ),
+				bundle.vertices.get( 5 ),
+				bundle.vertices.get( 4 ),
+				bundle.vertices.get( 2 ),
+				bundle.vertices.get( 6 )
+		} );
+		final List< TestVertex > processedVertices = Arrays.asList( new TestVertex[] {
+				bundle.vertices.get( 3 ),
+				bundle.vertices.get( 4 ),
+				bundle.vertices.get( 5 ),
+				bundle.vertices.get( 1 ),
+				bundle.vertices.get( 6 ),
+				bundle.vertices.get( 2 ),
+				bundle.vertices.get( 0 )
+		} );
+		final List< TestEdge > epectedEdges = Arrays.asList( new TestEdge[] {
+				bundle.edges.get( 0 ),
+				bundle.edges.get( 3 ),
+				bundle.edges.get( 4 ),
+				bundle.edges.get( 5 ),
+				bundle.edges.get( 1 ),
+				bundle.edges.get( 6 ),
+				bundle.edges.get( 2 )
+		} );
+		final List< EdgeClass > edgeClass = Arrays.asList( new EdgeClass[] { TREE, TREE, TREE, TREE, TREE, TREE, FORWARD } );
+
+		final TraversalTester< TestVertex, TestEdge > traversalTester = new TraversalTester< TestVertex, TestEdge >(
+				expectedVertices.iterator(),
+				processedVertices.iterator(),
+				epectedEdges.iterator(),
+				edgeClass.iterator() );
+
+		dfs.start( first, traversalTester );
+		traversalTester.searchDone();
+	}
+
+	@Test
+	public void testTwoComponentsStdObjects()
+	{
+		final GraphTestBundle< ObjectVertex< Integer >, ObjectEdge< Integer >> bundle = GraphsForTests.twoComponentsStdObjects();
+
+		final ObjectVertex< Integer > first = bundle.vertices.get( 0 );
+		final DepthFirstSearch< ObjectVertex< Integer >, ObjectEdge< Integer >> dfs = new DepthFirstSearch< ObjectVertex< Integer >, ObjectEdge< Integer >>( bundle.graph, true );
+
+		final List< ObjectVertex< Integer > > expectedVertices = new ArrayList< ObjectVertex< Integer > >( 7 );
+		expectedVertices.add( bundle.vertices.get( 0 ) );
+		expectedVertices.add( bundle.vertices.get( 1 ) );
+		expectedVertices.add( bundle.vertices.get( 3 ) );
+		expectedVertices.add( bundle.vertices.get( 5 ) );
+		expectedVertices.add( bundle.vertices.get( 4 ) );
+		expectedVertices.add( bundle.vertices.get( 2 ) );
+		expectedVertices.add( bundle.vertices.get( 6 ) );
+
+		final List< ObjectVertex< Integer > > processedVertices = new ArrayList< ObjectVertex< Integer > >( 7 );
+		processedVertices.add( bundle.vertices.get( 3 ) );
+		processedVertices.add( bundle.vertices.get( 4 ) );
+		processedVertices.add( bundle.vertices.get( 5 ) );
+		processedVertices.add( bundle.vertices.get( 1 ) );
+		processedVertices.add( bundle.vertices.get( 6 ) );
+		processedVertices.add( bundle.vertices.get( 2 ) );
+		processedVertices.add( bundle.vertices.get( 0 ) );
+
+		final List< ObjectEdge< Integer > > epectedEdges = new ArrayList< ObjectEdge< Integer > >( 7 );
+		epectedEdges.add( bundle.edges.get( 0 ) );
+		epectedEdges.add( bundle.edges.get( 3 ) );
+		epectedEdges.add( bundle.edges.get( 4 ) );
+		epectedEdges.add( bundle.edges.get( 5 ) );
+		epectedEdges.add( bundle.edges.get( 1 ) );
+		epectedEdges.add( bundle.edges.get( 6 ) );
+		epectedEdges.add( bundle.edges.get( 2 ) );
+
+		final List< EdgeClass > edgeClass = Arrays.asList( new EdgeClass[] { TREE, TREE, TREE, TREE, TREE, TREE, FORWARD } );
+
+		final TraversalTester< ObjectVertex< Integer >, ObjectEdge< Integer >> traversalTester = new TraversalTester< ObjectVertex< Integer >, ObjectEdge< Integer >>(
+				expectedVertices.iterator(),
+				processedVertices.iterator(),
+				epectedEdges.iterator(),
+				edgeClass.iterator() );
+
+		dfs.start( first, traversalTester );
+		traversalTester.searchDone();
+	}
+
+	@Test
+	public void testSingleVertexPoolObjects()
+	{
+		final GraphTestBundle< TestVertex, TestEdge > bundle = GraphsForTests.singleVertexPoolObjects();
+
+		final TestVertex first = bundle.vertices.get( 0 );
+		final DepthFirstSearch< TestVertex, TestEdge > dfs = new DepthFirstSearch< TestVertex, TestEdge >( bundle.graph, true );
+
+		final List< TestVertex > expectedVertices = Arrays.asList( new TestVertex[] {
+				bundle.vertices.get( 0 )
+		} );
+
+		final List< TestVertex > processedVertices = Arrays.asList( new TestVertex[] {
+				bundle.vertices.get( 0 )
+		} );
+
+		final List< TestEdge > epectedEdges = Collections.emptyList();
+
+		final List< EdgeClass > edgeClass = Collections.emptyList();
+
+		final TraversalTester< TestVertex, TestEdge > traversalTester = new TraversalTester< TestVertex, TestEdge >(
+				expectedVertices.iterator(),
+				processedVertices.iterator(),
+				epectedEdges.iterator(),
+				edgeClass.iterator() );
+
+		dfs.start( first, traversalTester );
+		traversalTester.searchDone();
+	}
+
+	@Test
+	public void testSingleVertexStdObjects()
+	{
+		final GraphTestBundle< ObjectVertex< Integer >, ObjectEdge< Integer >> bundle = GraphsForTests.singleVertexStdObjects();
+
+		final ObjectVertex< Integer > first = bundle.vertices.get( 0 );
+		final DepthFirstSearch< ObjectVertex< Integer >, ObjectEdge< Integer >> dfs = new DepthFirstSearch< ObjectVertex< Integer >, ObjectEdge< Integer >>( bundle.graph, true );
+
+		final List< ObjectVertex< Integer > > expectedVertices = new ArrayList< ObjectVertex< Integer > >( 2 );
+		expectedVertices.add( bundle.vertices.get( 0 ) );
+
+		final List< ObjectVertex< Integer > > processedVertices = new ArrayList< ObjectVertex< Integer > >( 2 );
+		processedVertices.add( bundle.vertices.get( 0 ) );
+
+		final List< ObjectEdge< Integer > > epectedEdges = Collections.emptyList();
+
+		final List< EdgeClass > edgeClass = Collections.emptyList();
+
+		final TraversalTester< ObjectVertex< Integer >, ObjectEdge< Integer >> traversalTester = new TraversalTester< ObjectVertex< Integer >, ObjectEdge< Integer >>(
+				expectedVertices.iterator(),
+				processedVertices.iterator(),
+				epectedEdges.iterator(),
+				edgeClass.iterator() );
+
+		dfs.start( first, traversalTester );
+		traversalTester.searchDone();
+	}
 }

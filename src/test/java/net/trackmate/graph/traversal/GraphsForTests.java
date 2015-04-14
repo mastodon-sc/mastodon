@@ -1,8 +1,12 @@
 package net.trackmate.graph.traversal;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 
 import net.trackmate.graph.Edge;
@@ -14,9 +18,82 @@ import net.trackmate.graph.Vertex;
 import net.trackmate.graph.object.ObjectEdge;
 import net.trackmate.graph.object.ObjectGraph;
 import net.trackmate.graph.object.ObjectVertex;
+import net.trackmate.graph.traversal.GraphSearch.EdgeClass;
 
 public class GraphsForTests
 {
+	public static final class TraversalTester< V extends Vertex< E >, E extends Edge< V > > implements SearchListener< V, E >
+	{
+
+		private final Iterator< V > expectedDiscoveredVertexIterator;
+
+		private final Iterator< EdgeClass > expectedEdgeClassIterator;
+
+		final Iterator< V > expectedProcessedVertexIterator;
+
+		private final Iterator< E > expectedEdgeIterator;
+
+		public TraversalTester( final Iterator< V > expectedDiscoveredVertexIterator, final Iterator< V > expectedProcessedVertexIterator, final Iterator< E > expectedEdgeIterator, final Iterator< EdgeClass > expectedEdgeClassIterator )
+		{
+			this.expectedDiscoveredVertexIterator = expectedDiscoveredVertexIterator;
+			this.expectedProcessedVertexIterator = expectedProcessedVertexIterator;
+			this.expectedEdgeIterator = expectedEdgeIterator;
+			this.expectedEdgeClassIterator = expectedEdgeClassIterator;
+		}
+
+		@Override
+		public void processVertexLate( final V vertex, final int time, final GraphSearch< V, E > search )
+		{
+			assertEquals( "Did not finished processing vertex in expected order during search.", expectedProcessedVertexIterator.next(), vertex );
+		}
+
+		@Override
+		public void processVertexEarly( final V vertex, final int time, final GraphSearch< V, E > search )
+		{
+			assertEquals( "Did not discovered the expected vertex sequence during search.", expectedDiscoveredVertexIterator.next(), vertex );
+		}
+
+		@Override
+		public void processEdge( final E edge, final V from, final V to, final int time, final GraphSearch< V, E > search )
+		{
+			assertEquals( "Did not cross the expected edge sequence during search.", expectedEdgeIterator.next(), edge );
+
+			final EdgeClass eclass = search.edgeClass( from, to );
+			assertEquals( "The edge " + edge + " traversed  from " + from + " to " + to + " has an unexpected class in the search.", expectedEdgeClassIterator.next(), eclass );
+		}
+
+		public void searchDone()
+		{
+			assertFalse( "Did not discovered all the expected vertices.", expectedDiscoveredVertexIterator.hasNext() );
+			assertFalse( "Did not finish processing all the expected vertices.", expectedProcessedVertexIterator.hasNext() );
+			assertFalse( "Did not cross all the expected edges.", expectedEdgeIterator.hasNext() );
+			assertFalse( "Did not assess all edge classes.", expectedEdgeClassIterator.hasNext() );
+		}
+	}
+
+	public static final < V extends Vertex< E >, E extends Edge< V > > SearchListener< V, E > traversalPrinter( final Graph< V, E > graph )
+	{
+		return new SearchListener< V, E >()
+		{
+			@Override
+			public void processVertexLate( final V vertex, final int time, final GraphSearch< V, E > search )
+			{
+				System.out.println( "t = " + time + " - Finished processing " + vertex );
+			}
+
+			@Override
+			public void processVertexEarly( final V vertex, final int time, final GraphSearch< V, E > search )
+			{
+				System.out.println( "t = " + time + " - Discovered " + vertex );
+			}
+
+			@Override
+			public void processEdge( final E edge, final V from, final V to, final int time, final GraphSearch< V, E > search )
+			{
+				System.out.println( "t = " + time + " - Crossing " + edge + " from " + from + " to " + to + ". Edge class = " + search.edgeClass( from, to ) );
+			}
+		};
+	}
 
 	public static final GraphTestBundle< TestVertex, TestEdge > straightLinePoolObjects()
 	{
@@ -104,7 +181,7 @@ public class GraphsForTests
 	{
 		final GraphTestBundle< TestVertex, TestEdge > bundle = straightLinePoolObjects();
 		final TestEdge edge = bundle.graph.addEdge( bundle.vertices.get( 6 ), bundle.vertices.get( 0 ) );
-		bundle.edges.add( edge);
+		bundle.edges.add( edge );
 
 		bundle.name = "Loop pool objects";
 		return bundle;
@@ -142,24 +219,25 @@ public class GraphsForTests
 		bundle.vertices.add( F );
 		bundle.vertices.add( G );
 
-		final TestEdge eAB = graph.addEdge( A, B );
-		final TestEdge eAC = graph.addEdge( A, C );
-		final TestEdge eAE = graph.addEdge( A, E );
-		final TestEdge eBD = graph.addEdge( B, D );
-		final TestEdge eBF = graph.addEdge( B, F );
-		final TestEdge eFE = graph.addEdge( F, E );
-		bundle.edges = new ArrayList< TestEdge >( 6 );
+		final TestEdge eAB = graph.addEdge( A, B ); // 0
+		final TestEdge eAC = graph.addEdge( A, C ); // 1
+		final TestEdge eAE = graph.addEdge( A, E ); // 2
+		final TestEdge eBD = graph.addEdge( B, D ); // 3
+		final TestEdge eBF = graph.addEdge( B, F ); // 4
+		final TestEdge eFE = graph.addEdge( F, E ); // 5
+		final TestEdge eCG = graph.addEdge( C, G ); // 6
+		bundle.edges = new ArrayList< TestEdge >( 7 );
 		bundle.edges.add( eAB );
 		bundle.edges.add( eAC );
 		bundle.edges.add( eAE );
 		bundle.edges.add( eBD );
 		bundle.edges.add( eBF );
 		bundle.edges.add( eFE );
+		bundle.edges.add( eCG );
 
 		bundle.name = "General example pool objects";
 		return bundle;
 	}
-
 
 	public static final GraphTestBundle< ObjectVertex< Integer >, ObjectEdge< Integer > > wpExampleStdObjects()
 	{
@@ -183,25 +261,26 @@ public class GraphsForTests
 		bundle.vertices.add( E );
 		bundle.vertices.add( F );
 		bundle.vertices.add( G );
-		
+
 		final ObjectEdge< Integer > eAB = graph.addEdge( A, B );
 		final ObjectEdge< Integer > eAC = graph.addEdge( A, C );
 		final ObjectEdge< Integer > eAE = graph.addEdge( A, E );
 		final ObjectEdge< Integer > eBD = graph.addEdge( B, D );
 		final ObjectEdge< Integer > eBF = graph.addEdge( B, F );
 		final ObjectEdge< Integer > eFE = graph.addEdge( F, E );
-		bundle.edges = new ArrayList< ObjectEdge< Integer > >( 6 );
+		final ObjectEdge< Integer > eCG = graph.addEdge( C, G );
+		bundle.edges = new ArrayList< ObjectEdge< Integer > >( 7 );
 		bundle.edges.add( eAB );
 		bundle.edges.add( eAC );
 		bundle.edges.add( eAE );
 		bundle.edges.add( eBD );
 		bundle.edges.add( eBF );
 		bundle.edges.add( eFE );
+		bundle.edges.add( eCG );
 
 		bundle.name = "General example standard objects";
 		return bundle;
 	}
-
 
 	public static final GraphTestBundle< TestVertex, TestEdge > singleVertexPoolObjects()
 	{
@@ -219,7 +298,6 @@ public class GraphsForTests
 		return bundle;
 	}
 
-
 	public static final GraphTestBundle< ObjectVertex< Integer >, ObjectEdge< Integer >> singleVertexStdObjects()
 	{
 		final GraphTestBundle< ObjectVertex< Integer >, ObjectEdge< Integer >> bundle = new GraphTestBundle< ObjectVertex< Integer >, ObjectEdge< Integer > >();
@@ -235,7 +313,6 @@ public class GraphsForTests
 		bundle.name = "Single vertex standard objects";
 		return bundle;
 	}
-
 
 	public static final GraphTestBundle< TestVertex, TestEdge > singleEdgePoolObjects()
 	{
@@ -254,7 +331,6 @@ public class GraphsForTests
 		bundle.name = "Single edge pool objects";
 		return bundle;
 	}
-
 
 	public static final GraphTestBundle< ObjectVertex< Integer >, ObjectEdge< Integer >> singleEdgeStdObjects()
 	{
@@ -277,7 +353,6 @@ public class GraphsForTests
 		return bundle;
 	}
 
-
 	public static final GraphTestBundle< TestVertex, TestEdge > forkPoolObjects()
 	{
 		final GraphTestBundle< TestVertex, TestEdge > bundle = new GraphTestBundle< TestVertex, TestEdge >();
@@ -297,7 +372,6 @@ public class GraphsForTests
 		bundle.name = "Fork pool objects";
 		return bundle;
 	}
-
 
 	public static final GraphTestBundle< ObjectVertex< Integer >, ObjectEdge< Integer >> forkStdObjects()
 	{
