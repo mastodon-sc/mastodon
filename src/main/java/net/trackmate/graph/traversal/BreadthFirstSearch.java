@@ -7,6 +7,17 @@ import net.trackmate.graph.Vertex;
 import net.trackmate.graph.collection.RefDeque;
 import net.trackmate.graph.util.Graphs;
 
+/**
+ * Breadth-first search for directed or undirected graph, following the
+ * framework of Skiena. http://www.algorist.com/
+ * 
+ * @author Jean-Yves Tinevez
+ *
+ * @param <V>
+ *            the type of the graph vertices iterated.
+ * @param <E>
+ *            the type of the graph edges iterated.
+ */
 public class BreadthFirstSearch< V extends Vertex< E >, E extends Edge< V > > extends GraphSearch< V, E >
 {
 	private final RefDeque< V > queue;
@@ -21,6 +32,13 @@ public class BreadthFirstSearch< V extends Vertex< E >, E extends Edge< V > > ex
 	}
 
 	@Override
+	public void start( final V start )
+	{
+		queue.clear();
+		super.start( start );
+	}
+
+	@Override
 	protected void visit( final V start )
 	{
 		queue.add( start );
@@ -29,12 +47,12 @@ public class BreadthFirstSearch< V extends Vertex< E >, E extends Edge< V > > ex
 		final V tmpRef = vertexRef();
 		while ( !queue.isEmpty() )
 		{
-			if ( finished )
+			if ( wasAborted() )
 				return;
 
 			time++;
 			final V vertex = queue.poll( tmpRef );
-			traversalListener.processVertexEarly( vertex, time, this );
+			searchListener.processVertexEarly( vertex, time, this );
 			processed.add( vertex );
 
 			final Edges< E > edges;
@@ -52,7 +70,7 @@ public class BreadthFirstSearch< V extends Vertex< E >, E extends Edge< V > > ex
 				target = Graphs.getOppositeVertex( edge, vertex, target );
 				if ( !processed.contains( target ) )
 				{
-					traversalListener.processEdge( edge, vertex, target, time, this );
+					searchListener.processEdge( edge, vertex, target, time, this );
 				}
 				if ( !discovered.contains( target ) )
 				{
@@ -60,11 +78,11 @@ public class BreadthFirstSearch< V extends Vertex< E >, E extends Edge< V > > ex
 					discovered.add( target );
 					parents.put( vertex, start );
 				}
-				if ( finished )
+				if ( wasAborted() )
 					return;
 			}
 			time++;
-			traversalListener.processVertexLate( vertex, time, this );
+			searchListener.processVertexLate( vertex, time, this );
 		}
 	}
 }

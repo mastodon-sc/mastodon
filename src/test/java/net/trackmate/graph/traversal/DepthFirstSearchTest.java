@@ -47,7 +47,8 @@ public class DepthFirstSearchTest
 				bundle.edges.iterator(),
 				edgeClass.iterator() );
 
-		dfs.start( first, traversalTester );
+		dfs.setTraversalListener( traversalTester );
+		dfs.start( first );
 		traversalTester.searchDone();
 	}
 
@@ -71,7 +72,8 @@ public class DepthFirstSearchTest
 				bundle.edges.iterator(),
 				edgeClass.iterator() );
 
-		dfs.start( first, traversalTester );
+		dfs.setTraversalListener( traversalTester );
+		dfs.start( first );
 		traversalTester.searchDone();
 	}
 
@@ -99,7 +101,8 @@ public class DepthFirstSearchTest
 				bundle.edges.iterator(),
 				edgeClass.iterator() );
 
-		dfs.start( first, traversalTester );
+		dfs.setTraversalListener( traversalTester );
+		dfs.start( first );
 		traversalTester.searchDone();
 	}
 
@@ -127,7 +130,8 @@ public class DepthFirstSearchTest
 				bundle.edges.iterator(),
 				edgeClass.iterator() );
 
-		dfs.start( first, traversalTester );
+		dfs.setTraversalListener( traversalTester );
+		dfs.start( first );
 		traversalTester.searchDone();
 	}
 
@@ -174,7 +178,8 @@ public class DepthFirstSearchTest
 				epectedEdges.iterator(),
 				edgeClass.iterator() );
 
-		dfs.start( first, traversalTester );
+		dfs.setTraversalListener( traversalTester );
+		dfs.start( first );
 		traversalTester.searchDone();
 	}
 
@@ -221,7 +226,8 @@ public class DepthFirstSearchTest
 				epectedEdges.iterator(),
 				edgeClass.iterator() );
 
-		dfs.start( first, traversalTester );
+		dfs.setTraversalListener( traversalTester );
+		dfs.start( first );
 		traversalTester.searchDone();
 	}
 
@@ -252,7 +258,8 @@ public class DepthFirstSearchTest
 				epectedEdges.iterator(),
 				edgeClass.iterator() );
 
-		dfs.start( first, traversalTester );
+		dfs.setTraversalListener( traversalTester );
+		dfs.start( first );
 		traversalTester.searchDone();
 	}
 
@@ -283,7 +290,8 @@ public class DepthFirstSearchTest
 				epectedEdges.iterator(),
 				edgeClass.iterator() );
 
-		dfs.start( first, traversalTester );
+		dfs.setTraversalListener( traversalTester );
+		dfs.start( first );
 		traversalTester.searchDone();
 	}
 
@@ -316,7 +324,8 @@ public class DepthFirstSearchTest
 				epectedEdges.iterator(),
 				edgeClass.iterator() );
 
-		dfs.start( first, traversalTester );
+		dfs.setTraversalListener( traversalTester );
+		dfs.start( first );
 		traversalTester.searchDone();
 	}
 
@@ -349,7 +358,8 @@ public class DepthFirstSearchTest
 				epectedEdges.iterator(),
 				edgeClass.iterator() );
 
-		dfs.start( first, traversalTester );
+		dfs.setTraversalListener( traversalTester );
+		dfs.start( first );
 		traversalTester.searchDone();
 	}
 
@@ -396,7 +406,8 @@ public class DepthFirstSearchTest
 				epectedEdges.iterator(),
 				edgeClass.iterator() );
 
-		dfs.start( first, traversalTester );
+		dfs.setTraversalListener( traversalTester );
+		dfs.start( first );
 		traversalTester.searchDone();
 	}
 
@@ -443,7 +454,8 @@ public class DepthFirstSearchTest
 				epectedEdges.iterator(),
 				edgeClass.iterator() );
 
-		dfs.start( first, traversalTester );
+		dfs.setTraversalListener( traversalTester );
+		dfs.start( first );
 		traversalTester.searchDone();
 	}
 
@@ -473,7 +485,8 @@ public class DepthFirstSearchTest
 				epectedEdges.iterator(),
 				edgeClass.iterator() );
 
-		dfs.start( first, traversalTester );
+		dfs.setTraversalListener( traversalTester );
+		dfs.start( first );
 		traversalTester.searchDone();
 	}
 
@@ -501,7 +514,8 @@ public class DepthFirstSearchTest
 				epectedEdges.iterator(),
 				edgeClass.iterator() );
 
-		dfs.start( first, traversalTester );
+		dfs.setTraversalListener( traversalTester );
+		dfs.start( first );
 		traversalTester.searchDone();
 	}
 }

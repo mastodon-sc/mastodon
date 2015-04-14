@@ -7,6 +7,17 @@ import net.trackmate.graph.Vertex;
 import net.trackmate.graph.collection.RefList;
 import net.trackmate.graph.util.Graphs;
 
+/**
+ * Depth-first search for directed or undirected graph, following the framework
+ * of Skiena. http://www.algorist.com/
+ * 
+ * @author Jean-Yves Tinevez
+ *
+ * @param <V>
+ *            the type of the graph vertices iterated.
+ * @param <E>
+ *            the type of the graph edges iterated.
+ */
 public class DepthFirstSearch< V extends Vertex< E >, E extends Edge< V > > extends GraphSearch< V, E >
 {
 	protected final boolean directed;
@@ -20,12 +31,13 @@ public class DepthFirstSearch< V extends Vertex< E >, E extends Edge< V > > exte
 	@Override
 	protected void visit( final V vertex )
 	{
-		if ( finished )
+		if ( wasAborted() )
 			return;
 
 		time++;
 		discovered.add( vertex );
-		traversalListener.processVertexEarly( vertex, time, this );
+		if ( null != searchListener )
+			searchListener.processVertexEarly( vertex, time, this );
 
 		/*
 		 * Collect target vertices and edges.
@@ -81,19 +93,21 @@ public class DepthFirstSearch< V extends Vertex< E >, E extends Edge< V > > exte
 			if ( !discovered.contains( target ) )
 			{
 				parents.put( target, vertex );
-				traversalListener.processEdge( edge, vertex, target, time, this );
+				if ( null != searchListener )
+					searchListener.processEdge( edge, vertex, target, time, this );
 				visit( target );
 			}
-			else if ( directed || ( !processed.contains( target ) && !parents.get( vertex ).equals( target ) ) )
+			else if ( null != searchListener && ( directed || ( !processed.contains( target ) && !parents.get( vertex ).equals( target ) ) ) )
 			{
-				traversalListener.processEdge( edge, vertex, target, time, this );
+				searchListener.processEdge( edge, vertex, target, time, this );
 			}
 
-			if ( finished )
+			if ( wasAborted() )
 				return;
 		}
 
-		traversalListener.processVertexLate( vertex, time, this );
+		if ( null != searchListener )
+			searchListener.processVertexLate( vertex, time, this );
 		time++;
 
 		processed.add( vertex );
