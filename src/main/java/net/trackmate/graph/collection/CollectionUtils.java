@@ -225,6 +225,38 @@ public class CollectionUtils
 			return wrap( new HashMap< E, E >( initialCapacity ) );
 	}
 
+	public static < V extends Vertex< ? >> RefIntMap< V > createVertexIntMap( final Graph< V, ? > graph, final int noEntryValue )
+	{
+		if ( graph instanceof CollectionCreator )
+			return ( ( CollectionCreator< V, ? > ) graph ).createVertexIntMap( noEntryValue );
+		else
+			return new RefIntMapWrapper< V >( noEntryValue );
+	}
+
+	public static < V extends Vertex< ? >> RefIntMap< V > createVertexIntMap( final Graph< V, ? > graph, final int noEntryValue, final int initialCapacity )
+	{
+		if ( graph instanceof CollectionCreator )
+			return ( ( CollectionCreator< V, ? > ) graph ).createVertexIntMap( noEntryValue, initialCapacity );
+		else
+			return new RefIntMapWrapper< V >( noEntryValue, initialCapacity );
+	}
+
+	public static < E extends Edge< ? >> RefIntMap< E > createEdgeIntMap( final Graph< ?, E > graph, final int noEntryValue )
+	{
+		if ( graph instanceof CollectionCreator )
+			return ( ( CollectionCreator< ?, E > ) graph ).createEdgeIntMap( noEntryValue );
+		else
+			return new RefIntMapWrapper< E >( noEntryValue );
+	}
+
+	public static < E extends Edge< ? >> RefIntMap< E > createEdgeIntMap( final Graph< ?, E > graph, final int noEntryValue, final int initialCapacity )
+	{
+		if ( graph instanceof CollectionCreator )
+			return ( ( CollectionCreator< ?, E > ) graph ).createEdgeIntMap( noEntryValue, initialCapacity );
+		else
+			return new RefIntMapWrapper< E >( noEntryValue, initialCapacity );
+	}
+
 	@SuppressWarnings( { "unchecked", "rawtypes" } )
 	public static < O > Iterator< O > safeIterator( final Iterator< O > iterator )
 	{
@@ -287,6 +319,14 @@ public class CollectionUtils
 		public RefRefMap< E, E > createEdgeEdgeMap();
 
 		public RefRefMap< E, E > createEdgeEdgeMap( int initialCapacity );
+
+		public RefIntMap< V > createVertexIntMap( int noEntryValue );
+
+		public RefIntMap< V > createVertexIntMap( int noEntryValue, int initialCapacity );
+
+		public RefIntMap< E > createEdgeIntMap( int noEntryValue );
+
+		public RefIntMap< E > createEdgeIntMap( int noEntryValue, int initialCapacity );
 	}
 
 	private static < O > RefSet< O > wrap( final Set< O > set )
