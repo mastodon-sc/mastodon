@@ -4,6 +4,7 @@ import net.trackmate.graph.Edge;
 import net.trackmate.graph.Edges;
 import net.trackmate.graph.Graph;
 import net.trackmate.graph.Vertex;
+import net.trackmate.graph.collection.RefIntMap;
 import net.trackmate.graph.collection.RefList;
 import net.trackmate.graph.util.Graphs;
 
@@ -20,12 +21,27 @@ import net.trackmate.graph.util.Graphs;
  */
 public class DepthFirstSearch< V extends Vertex< E >, E extends Edge< V > > extends GraphSearch< V, E >
 {
+	private static final int NO_ENTRY_VALUE = -1;
+
 	protected final boolean directed;
+
+	protected final RefIntMap< V > entryTime;
+
+	protected int time;
 
 	public DepthFirstSearch( final Graph< V, E > graph, final boolean directed )
 	{
 		super( graph );
 		this.directed = directed;
+		this.entryTime = createVertexIntMap( NO_ENTRY_VALUE );
+	}
+
+	@Override
+	public void start( final V start )
+	{
+		time = 0;
+		entryTime.clear();
+		super.start( start );
 	}
 
 	@Override
@@ -37,7 +53,7 @@ public class DepthFirstSearch< V extends Vertex< E >, E extends Edge< V > > exte
 		time++;
 		discovered.add( vertex );
 		if ( null != searchListener )
-			searchListener.processVertexEarly( vertex, time, this );
+			searchListener.processVertexEarly( vertex, this );
 
 		/*
 		 * Collect target vertices and edges.
@@ -94,12 +110,12 @@ public class DepthFirstSearch< V extends Vertex< E >, E extends Edge< V > > exte
 			{
 				parents.put( target, vertex );
 				if ( null != searchListener )
-					searchListener.processEdge( edge, vertex, target, time, this );
+					searchListener.processEdge( edge, vertex, target, this );
 				visit( target );
 			}
 			else if ( null != searchListener && ( directed || ( !processed.contains( target ) && !parents.get( vertex ).equals( target ) ) ) )
 			{
-				searchListener.processEdge( edge, vertex, target, time, this );
+				searchListener.processEdge( edge, vertex, target, this );
 			}
 
 			if ( wasAborted() )
@@ -107,11 +123,42 @@ public class DepthFirstSearch< V extends Vertex< E >, E extends Edge< V > > exte
 		}
 
 		if ( null != searchListener )
-			searchListener.processVertexLate( vertex, time, this );
+			searchListener.processVertexLate( vertex, this );
 		time++;
 
 		processed.add( vertex );
 		releaseRef( target );
 		releaseRef( edge );
+	}
+
+	/**
+	 * Returns the time of visit for the specified vertex.
+	 * 
+	 * @param vertex
+	 *            the vertex to time.
+	 * @return the vertex discovery time.
+	 */
+	public int timeOf( final V vertex )
+	{
+		return entryTime.get( vertex );
+	}
+
+	@Override
+	public EdgeClass edgeClass( final V from, final V to )
+	{
+		if ( from.equals( parents.get( to ) ) ) { return EdgeClass.TREE; }
+		if ( discovered.contains( to ) && !processed.contains( to ) ) { return EdgeClass.BACK; }
+		if ( processed.contains( to ) )
+		{
+			if ( timeOf( from ) < timeOf( to ) )
+			{
+				return EdgeClass.FORWARD;
+			}
+			else
+			{
+				return EdgeClass.CROSS;
+			}
+		}
+		return EdgeClass.UNCLASSIFIED;
 	}
 }

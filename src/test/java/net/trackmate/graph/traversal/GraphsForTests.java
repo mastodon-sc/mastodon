@@ -42,19 +42,19 @@ public class GraphsForTests
 		}
 
 		@Override
-		public void processVertexLate( final V vertex, final int time, final GraphSearch< V, E > search )
+		public void processVertexLate( final V vertex, final GraphSearch< V, E > search )
 		{
 			assertEquals( "Did not finish processing vertex in expected order during search.", expectedProcessedVertexIterator.next(), vertex );
 		}
 
 		@Override
-		public void processVertexEarly( final V vertex, final int time, final GraphSearch< V, E > search )
+		public void processVertexEarly( final V vertex, final GraphSearch< V, E > search )
 		{
 			assertEquals( "Did not discover the expected vertex sequence during search.", expectedDiscoveredVertexIterator.next(), vertex );
 		}
 
 		@Override
-		public void processEdge( final E edge, final V from, final V to, final int time, final GraphSearch< V, E > search )
+		public void processEdge( final E edge, final V from, final V to, final GraphSearch< V, E > search )
 		{
 			assertEquals( "Did not cross the expected edge sequence during search.", expectedEdgeIterator.next(), edge );
 
@@ -76,21 +76,21 @@ public class GraphsForTests
 		return new SearchListener< V, E >()
 		{
 			@Override
-			public void processVertexLate( final V vertex, final int time, final GraphSearch< V, E > search )
+			public void processVertexLate( final V vertex, final GraphSearch< V, E > search )
 			{
-				System.out.println( "t = " + time + " - Finished processing " + vertex );
+				System.out.println( " - Finished processing " + vertex );
 			}
 
 			@Override
-			public void processVertexEarly( final V vertex, final int time, final GraphSearch< V, E > search )
+			public void processVertexEarly( final V vertex, final GraphSearch< V, E > search )
 			{
-				System.out.println( "t = " + time + " - Discovered " + vertex );
+				System.out.println( " - Discovered " + vertex );
 			}
 
 			@Override
-			public void processEdge( final E edge, final V from, final V to, final int time, final GraphSearch< V, E > search )
+			public void processEdge( final E edge, final V from, final V to, final GraphSearch< V, E > search )
 			{
-				System.out.println( "t = " + time + " - Crossing " + edge + " from " + from + " to " + to + ". Edge class = " + search.edgeClass( from, to ) );
+				System.out.println( " - Crossing " + edge + " from " + from + " to " + to + ". Edge class = " + search.edgeClass( from, to ) );
 			}
 		};
 	}
