@@ -3,9 +3,19 @@ package net.trackmate.graph;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import gnu.trove.TIntCollection;
+import gnu.trove.function.TIntFunction;
+import gnu.trove.iterator.TObjectIntIterator;
+import gnu.trove.map.hash.TObjectIntHashMap;
+import gnu.trove.procedure.TIntProcedure;
+import gnu.trove.procedure.TObjectIntProcedure;
+import gnu.trove.procedure.TObjectProcedure;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 
@@ -134,6 +144,33 @@ public class PoolObjectIntMapTest
 	}
 
 	@Test
+	public void testKeys()
+	{
+		final TestObject[] keys = ( TestObject[] ) map.keys();
+		Arrays.sort( keys );
+		for ( final TestObject in : ins )
+		{
+			final int index = Arrays.binarySearch( keys, in );
+			assertTrue( "Did not find expected key " + in + " in key set.", index >= 0 );
+		}
+		assertEquals( "Key set does not have the expected size.", ins.size(), keys.length );
+	}
+
+	@Test
+	public void testKeysKArray()
+	{
+		TestObject[] keys = new TestObject[ 2 * ins.size() ];
+		keys = map.keys( keys );
+		Arrays.sort( keys );
+		for ( final TestObject in : ins )
+		{
+			final int index = Arrays.binarySearch( keys, in );
+			assertTrue( "Did not find expected key " + in + " in key set.", index >= 0 );
+		}
+		assertEquals( "Key set does not have the expected size.", 2 * ins.size(), keys.length );
+	}
+
+	@Test
 	public void testPut()
 	{
 		for ( final TestObject toPut : notIns )
@@ -160,151 +197,407 @@ public class PoolObjectIntMapTest
 		final int current = map.putIfAbsent( existing, 500 );
 		assertEquals( "Value returned by putIfAbsent is unexpected.", val, current );
 		// This should not have changed the stored value
-		final int newV                        al = map.get( existing );
+		final int newVal = map.get( existing );
+		assertEquals( "Value should not have changed since a mapping was present.", val, newVal );
+
+		// Try to put a new key
+		final TestObject newKey = notIns.get( 1 );
+		final int targetVal = 1000;
+		final int newCurrent = map.putIfAbsent( newKey, targetVal );
+		assertEquals( "Should have returned the 'no_entry_value' for non existing mapping.", map.getNoEntryValue(), newCurrent );
+		final int newVal2 = map.get( newKey );
+		assertEquals( "New mapping should have the desired value now.", targetVal, newVal2 );
 	}
 
 	@Test
 	public void testPutAllMapOfQextendsKQextendsInteger()
 	{
-		fail( "Not yet implemented" );
-	}
+		final Map< TestObject, Integer > nmap = new HashMap< TestObject, Integer >( notIns.size() + 1 );
+		final int targetVal = 1000;
+		for ( final TestObject toPut : notIns )
+		{
+			nmap.put( toPut, Integer.valueOf( targetVal ) );
+		}
+		final TestObject existing = ins.get( 1 );
+		nmap.put( existing, Integer.valueOf( targetVal ) );
 
-	@Test
-	public void testRemove()
-	{
-		fail( "Not yet implemented" );
-	}
+		map.putAll( nmap );
+		assertEquals( "Map does not have the expected size after putAll.", ins.size() + notIns.size(), map.size() );
+		for ( final TestObject in : ins )
+		{
+			assertTrue( "Map should contain a mapping for " + in, map.containsKey( in ) );
+		}
+		for ( final TestObject in : notIns )
+		{
+			assertTrue( "Map should contain a mapping for " + in, map.containsKey( in ) );
+		}
 
-	@Test
-	public void testGetNoEntryValue()
-	{
-		fail( "Not yet implemented" );
-	}
-
-	@Test
-	public void testSize()
-	{
-		fail( "Not yet implemented" );
-	}
-
-	@Test
-	public void testValues()
-	{
-		fail( "Not yet implemented" );
-	}
-
-	@Test
-	public void testValuesIntArray()
-	{
-		fail( "Not yet implemented" );
-	}
-
-	@Test
-	public void testValueCollection()
-	{
-		fail( "Not yet implemented" );
+		for ( final TestObject nmkey : nmap.keySet() )
+		{
+			assertEquals( "Mappings from extra map have unexpected values.", targetVal, map.get( nmkey ) );
+		}
 	}
 
 	@Test
 	public void testPutAllTObjectIntMapOfQextendsK()
 	{
-		fail( "Not yet implemented" );
+		final TObjectIntHashMap< TestObject > nmap = new TObjectIntHashMap< TestObject >();
+		final int targetVal = 1000;
+		for ( final TestObject toPut : notIns )
+		{
+			nmap.put( toPut, Integer.valueOf( targetVal ) );
+		}
+		final TestObject existing = ins.get( 1 );
+		nmap.put( existing, Integer.valueOf( targetVal ) );
+
+		map.putAll( nmap );
+		assertEquals( "Map does not have the expected size after putAll.", ins.size() + notIns.size(), map.size() );
+		for ( final TestObject in : ins )
+		{
+			assertTrue( "Map should contain a mapping for " + in, map.containsKey( in ) );
+		}
+		for ( final TestObject in : notIns )
+		{
+			assertTrue( "Map should contain a mapping for " + in, map.containsKey( in ) );
+		}
+
+		for ( final TestObject nmkey : nmap.keySet() )
+		{
+			assertEquals( "Mappings from extra map have unexpected values.", targetVal, map.get( nmkey ) );
+		}
 	}
 
 	@Test
-	public void testKeys()
+	public void testRemove()
 	{
-		fail( "Not yet implemented" );
+		final int tindex = 1;
+		final TestObject target = ins.get( tindex );
+		final int val = map.remove( target );
+		assertEquals( "Map does not have the expected size after removal.", ins.size() - 1, map.size() );
+		assertEquals( "Unexpected value returned by removal.", values[ tindex ], val );
+		
+		final TestObject notHere = notIns.get( 1 );
+		final int remove = map.remove( notHere );
+		assertEquals( "Map size should not have changed after trying to remove a non preset mapping.", ins.size() - 1, map.size() );
+		assertEquals( "Unexpected value returned by removal of a non present mapping.", map.getNoEntryValue(), remove );
 	}
 
 	@Test
-	public void testKeysKArray()
+	public void testGetNoEntryValue()
 	{
-		fail( "Not yet implemented" );
+		final TestObjectPool pool = new TestObjectPool( 10 );
+		final int lNoEntryValue = 1000;
+		final PoolObjectIntMap< TestObject, ByteMappedElement > lmap = new PoolObjectIntMap< TestObject, ByteMappedElement >( pool, lNoEntryValue );
+		assertEquals( "Unexpected 'no_entry_value'.", lNoEntryValue, lmap.getNoEntryValue() );
+	}
+
+	@Test
+	public void testSize()
+	{
+		assertEquals( "Map does not report the expected size.", ins.size(), map.size() );
+		for ( final TestObject nin : notIns )
+		{
+			map.put( nin, 1000 );
+		}
+		assertEquals( "Map does not report the expected size.", ins.size() + notIns.size(), map.size() );
+	}
+
+	@Test
+	public void testValues()
+	{
+		final int[] vals = map.values();
+		assertEquals( "Array returned by values() does not have the expected size.", ins.size(), vals.length );
+
+		Arrays.sort( vals );
+		for ( final int val : values )
+		{
+			final int index = Arrays.binarySearch( vals, val );
+			assertTrue( "Could not find expected value " + val + " in the array returned by values().", index >= 0 );
+		}
+	}
+
+	@Test
+	public void testValuesIntArray()
+	{
+		int[] vals = new int[ values.length * 2 ];
+		vals = map.values( vals );
+		assertEquals( "Array returned by values() does not have the expected size.", values.length * 2, vals.length );
+
+		for ( int i = values.length; i < vals.length; i++ )
+		{
+			assertEquals( "End of array returned by values() should have 0-value.", 0, vals[ i ] );
+		}
+
+		Arrays.sort( vals );
+		for ( final int val : values )
+		{
+			final int index = Arrays.binarySearch( vals, val );
+			assertTrue( "Could not find expected value " + val + " in the array returned by values().", index >= 0 );
+		}
+	}
+
+	@Test
+	public void testValueCollection()
+	{
+		final TIntCollection valueCollection = map.valueCollection();
+		assertEquals( "valueCollection does not have the expected size.", map.size(), valueCollection.size() );
+
+		Arrays.sort( values );
+		for ( final int val : valueCollection.toArray() )
+		{
+			final int index = Arrays.binarySearch( values, val );
+			assertTrue( "Could not find expected value " + val + " in the valueCollection().", index >= 0 );
+		}
+
+		// Modify the value collection
+		final TestObject target = ins.get( 1 );
+		final int tval = map.get( target );
+		final boolean removed = valueCollection.remove( tval );
+		assertTrue( "Could not remove a value from the valueCollection().", removed );
+		assertFalse( "After removal of value from the value collection, mapping should not be present in the map anymore.", map.containsKey( target ) );
+		valueCollection.clear();
+		assertTrue( "Map should be empty after clearing its value collection.", map.isEmpty() );
 	}
 
 	@Test
 	public void testIterator()
 	{
-		fail( "Not yet implemented" );
+		final TObjectIntIterator< TestObject > it = map.iterator();
+		while ( it.hasNext() )
+		{
+			it.advance();
+			final TestObject key = it.key();
+			final int value = it.value();
+
+			final boolean removed = ins.remove( key );
+			assertTrue( "The iterator returns a key not present a map.", removed );
+			final int eval = map.get( key );
+			assertEquals( "The iterator does not return the expected value for the iterated key.", eval, value );
+		}
+		assertTrue( "The iterator did not iterate over all the map keys.", ins.isEmpty() );
 	}
 
 	@Test
 	public void testIncrement()
 	{
-		fail( "Not yet implemented" );
+		for ( final TestObject key : map.keySet() )
+		{
+			final int pval = map.get( key );
+			map.increment( key );
+			assertEquals( "Value for key " + key + " did not increment.", pval + 1, map.get( key ) );
+		}
 	}
 
 	@Test
 	public void testAdjustValue()
 	{
-		fail( "Not yet implemented" );
+		final int amount = new Random().nextInt( 1000 );
+		for ( final TestObject key : map.keySet() )
+		{
+			final int pval = map.get( key );
+			map.adjustValue( key, amount );
+			assertEquals( "Value for key " + key + " was not correctly adjusted.", pval + amount, map.get( key ) );
+		}
 	}
 
 	@Test
 	public void testAdjustOrPutValue()
 	{
-		fail( "Not yet implemented" );
+		final int amount = new Random().nextInt( 1000 );
+		final int putAmount = -10 - new Random().nextInt( 1000 );
+
+		final Collection< TestObject > all = new ArrayList< TestObject >( ins );
+		all.addAll( notIns );
+
+		for ( final TestObject key : all )
+		{
+			map.adjustOrPutValue( key, amount, putAmount );
+		};
+
+		int index = 0;
+		for ( final TestObject key : ins )
+		{
+			final int pval = values[ index++ ];
+			assertEquals( "Value for key " + key + " was not correctly adjusted.", pval + amount, map.get( key ) );
+		}
+		for ( final TestObject key : notIns )
+		{
+			assertEquals( "Value for new key " + key + " was not correctly adjusted.", putAmount, map.get( key ) );
+		}
 	}
 
-	@Test
-	public void testForEachKeyTObjectProcedureOfQsuperKK()
-	{
-		fail( "Not yet implemented" );
-	}
 
 	@Test
-	public void testForEachKeyTObjectProcedureOfQsuperK()
+	public void testForEachEntryTObjectIntProcedureOfQsuperK()
 	{
-		fail( "Not yet implemented" );
+		final TObjectIntProcedure< TestObject > procedure = new TObjectIntProcedure< TestObject >()
+		{
+			@Override
+			public boolean execute( final TestObject key, final int val )
+			{
+				final int eval = map.get( key );
+				assertEquals( "Value passed to the procedure is not the right one.", eval, val );
+				// Switch it.
+				map.put( key, -val );
+				return true;
+			}
+		};
+		final boolean ok = map.forEachEntry( procedure );
+		assertTrue( "Procedure should have concluded successfully.", ok );
+
+		int index = 0;
+		for ( final TestObject in : ins )
+		{
+			assertEquals( "Did not retrieve the expected value for key " + in, -values[ index++ ], map.get( in ) );
+		}
 	}
 
 	@Test
 	public void testForEachValue()
 	{
-		fail( "Not yet implemented" );
+		final TIntProcedure procedure = new TIntProcedure()
+		{
+			@Override
+			public boolean execute( final int val )
+			{
+
+				final int index = Arrays.binarySearch( values, val );
+				assertTrue( "Procedure is passed an unexpected value.", index >= 0 );
+				return true;
+			}
+		};
+		Arrays.sort( values );
+		final boolean ok = map.forEachValue( procedure );
+		assertTrue( "Procedure should have concluded successfully.", ok );
 	}
 
 	@Test
 	public void testForEachEntryTObjectIntProcedureOfQsuperKK()
 	{
-		fail( "Not yet implemented" );
+		final TObjectIntProcedure< TestObject > procedure = new TObjectIntProcedure< TestObject >()
+		{
+			@Override
+			public boolean execute( final TestObject key, final int val )
+			{
+				final int eval = map.get( key );
+				assertEquals( "Value passed to the procedure is not the right one.", eval, val );
+				// Switch it.
+				map.put( key, -val );
+				return true;
+			}
+		};
+		final TestObject ref = ins.get( 0 ).creatingPool.createRef();
+		final boolean ok = map.forEachEntry( procedure, ref );
+		assertTrue( "Procedure should have concluded successfully.", ok );
+
+		int index = 0;
+		for ( final TestObject in : ins )
+		{
+			assertEquals( "Did not retrieve the expected value for key " + in, -values[ index++ ], map.get( in ) );
+		}
 	}
 
 	@Test
-	public void testForEachEntryTObjectIntProcedureOfQsuperK()
+	public void testForEachKeyTObjectProcedureOfQsuperKK()
 	{
-		fail( "Not yet implemented" );
+		final TObjectProcedure< TestObject > procedure = new TObjectProcedure< TestObject >()
+		{
+			@Override
+			public boolean execute( final TestObject key )
+			{
+				assertTrue( "Procedure iterates over keys that are not in the map.", ins.remove( key ) );
+				return true;
+			}
+		};
+		final TestObject ref = ins.get( 0 ).creatingPool.createRef();
+		final boolean ok = map.forEachKey( procedure, ref );
+		assertTrue( "Procedure should have concluded successfully.", ok );
+		assertTrue( "Procedure was not provided all the keys in the map.", ins.isEmpty() );
+	}
+
+	@Test
+	public void testForEachKeyTObjectProcedureOfQsuperK()
+	{
+		final TObjectProcedure< TestObject > procedure = new TObjectProcedure< TestObject >()
+		{
+			@Override
+			public boolean execute( final TestObject key )
+			{
+				assertTrue( "Procedure iterates over keys that are not in the map.", ins.remove( key ) );
+				return true;
+			}
+		};
+		final boolean ok = map.forEachKey( procedure );
+		assertTrue( "Procedure should have concluded successfully.", ok );
+		assertTrue( "Procedure was not provided all the keys in the map.", ins.isEmpty() );
 	}
 
 	@Test
 	public void testTransformValues()
 	{
-		fail( "Not yet implemented" );
+		final int amount = new Random().nextInt( 1000 );
+		final int[] clone = values.clone();
+		final TIntFunction function = new TIntFunction()
+		{
+
+			@Override
+			public int execute( final int val )
+			{
+				final int index = Arrays.binarySearch( clone, val );
+				assertTrue( "Function is passed an unexpected value.", index >= 0 );
+				return val + amount;
+			}
+		};
+		Arrays.sort( clone );
+		map.transformValues( function );
+		int index = 0;
+		for ( final TestObject in : ins )
+		{
+			assertEquals( "Did not retrieve the expected value for key " + in + " after value processing.", values[ index++ ] + amount, map.get( in ) );
+		}
+
 	}
 
 	@Test
 	public void testRetainEntriesTObjectIntProcedureOfQsuperKK()
 	{
-		fail( "Not yet implemented" );
+		// Retain 1 value
+		final TestObject target = ins.get( 1 );
+		final int targetVal = map.get( target );
+		final TObjectIntProcedure< TestObject > procedure = new TObjectIntProcedure< TestObject >()
+		{
+			
+			@Override
+			public boolean execute( final TestObject key, final int val )
+			{
+				assertTrue( "Procedure iterates over keys that are not in the map.", ins.contains( key ) );
+				return val == targetVal;
+			}
+		};
+		final TestObject ref = ins.get( 0 ).creatingPool.createRef();
+		final boolean changed = map.retainEntries( procedure, ref );
+		assertTrue( "Procedure should have changed the map.", changed );
+		assertEquals( "After procedure filtering, the map has not the expcted size.", 1, map.size() );
 	}
 
 	@Test
 	public void testRetainEntriesTObjectIntProcedureOfQsuperK()
 	{
-		fail( "Not yet implemented" );
-	}
+		// Retain 1 value
+		final TestObject target = ins.get( 1 );
+		final int targetVal = map.get( target );
+		final TObjectIntProcedure< TestObject > procedure = new TObjectIntProcedure< TestObject >()
+		{
 
-	@Test
-	public void testCreateRef()
-	{
-		fail( "Not yet implemented" );
+			@Override
+			public boolean execute( final TestObject key, final int val )
+			{
+				assertTrue( "Procedure iterates over keys that are not in the map.", ins.contains( key ) );
+				return val == targetVal;
+			}
+		};
+		final boolean changed = map.retainEntries( procedure );
+		assertTrue( "Procedure should have changed the map.", changed );
+		assertEquals( "After procedure filtering, the map has not the expcted size.", 1, map.size() );
 	}
-
-	@Test
-	public void testReleaseRef()
-	{
-		fail( "Not yet implemented" );
-	}
-
 }
