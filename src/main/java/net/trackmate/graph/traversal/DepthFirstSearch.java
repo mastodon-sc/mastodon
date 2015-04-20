@@ -51,6 +51,7 @@ public class DepthFirstSearch< V extends Vertex< E >, E extends Edge< V > > exte
 			return;
 
 		time++;
+		entryTime.put( vertex, time );
 		discovered.add( vertex );
 		if ( null != searchListener )
 			searchListener.processVertexEarly( vertex, this );
