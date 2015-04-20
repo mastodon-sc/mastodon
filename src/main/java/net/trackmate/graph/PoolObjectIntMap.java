@@ -41,7 +41,7 @@ public class PoolObjectIntMap< K extends PoolObject< K, T >, T extends MappedEle
 
 	public PoolObjectIntMap( final Pool< K, T > pool, final int noEntryValue )
 	{
-		this( pool, Constants.DEFAULT_CAPACITY, noEntryValue );
+		this( pool, noEntryValue, Constants.DEFAULT_CAPACITY );
 	}
 
 	/*
