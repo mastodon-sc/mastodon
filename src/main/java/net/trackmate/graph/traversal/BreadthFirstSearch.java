@@ -42,7 +42,6 @@ public class BreadthFirstSearch< V extends Vertex< E >, E extends Edge< V > > ex
 	@Override
 	protected void visit( final V start )
 	{
-//		queue.add( start );
 		discovered.add( start );
 
 		final V tmpRef = vertexRef();
@@ -51,10 +50,9 @@ public class BreadthFirstSearch< V extends Vertex< E >, E extends Edge< V > > ex
 			if ( wasAborted() )
 				return;
 
-			time++;
 			final V vertex = queue.poll( tmpRef );
 			if ( null != searchListener )
-				searchListener.processVertexEarly( vertex, time, this );
+				searchListener.processVertexEarly( vertex, this );
 			processed.add( vertex );
 
 			final Edges< E > edges;
@@ -78,14 +76,20 @@ public class BreadthFirstSearch< V extends Vertex< E >, E extends Edge< V > > ex
 				}
 				if ( null != searchListener && ( directed || !processed.contains( target ) ) )
 				{
-					searchListener.processEdge( edge, vertex, target, time, this );
+					searchListener.processEdge( edge, vertex, target, this );
 				}
 				if ( wasAborted() )
 					return;
 			}
-			time++;
 			if ( null != searchListener )
-				searchListener.processVertexLate( vertex, time, this );
+				searchListener.processVertexLate( vertex, this );
 		}
+	}
+
+	@Override
+	public EdgeClass edgeClass( final V from, final V to )
+	{
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

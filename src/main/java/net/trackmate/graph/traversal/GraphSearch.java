@@ -16,8 +16,6 @@ public abstract class GraphSearch< V extends Vertex< E >, E extends Edge< V > > 
 
 	protected final RefSet< V > processed;
 
-	protected int time;
-
 	private boolean aborted;
 
 	protected SearchListener< V, E > searchListener;
@@ -49,7 +47,6 @@ public abstract class GraphSearch< V extends Vertex< E >, E extends Edge< V > > 
 		discovered.clear();
 		processed.clear();
 		parents.clear();
-		time = 0;
 		aborted = false;
 		visit( start );
 	}
@@ -121,19 +118,6 @@ public abstract class GraphSearch< V extends Vertex< E >, E extends Edge< V > > 
 	}
 
 	/**
-	 * Returns the time of visit for the specified vertex. Actual meaning depend
-	 * on the concrete search implementation.
-	 * 
-	 * @param vertex
-	 *            the vertex to time.
-	 * @return the vertex discovery time.
-	 */
-	public int timeOf( final V vertex )
-	{
-		return -1; // TODO :( how can I store this elegantly?
-	}
-
-	/**
 	 * Computes the specified edge class in the current search. Return
 	 * {@link EdgeClass#UNCLASSIFIED} if the edge has not been visited yet.
 	 * 
@@ -143,23 +127,7 @@ public abstract class GraphSearch< V extends Vertex< E >, E extends Edge< V > > 
 	 *            the vertex visited last while crossing the edge.
 	 * @return the edge class.
 	 */
-	public EdgeClass edgeClass( final V from, final V to )
-	{
-		if ( from.equals( parents.get( to ) ) ) { return EdgeClass.TREE; }
-		if ( discovered.contains( to ) && !processed.contains( to ) ) { return EdgeClass.BACK; }
-		if ( processed.contains( to ) )
-		{
-			if ( timeOf( from ) < timeOf( to ) )
-			{
-				return EdgeClass.FORWARD;
-			}
-			else
-			{
-				return EdgeClass.CROSS;
-			}
-		}
-		return EdgeClass.UNCLASSIFIED;
-	}
+	public abstract EdgeClass edgeClass( final V from, final V to );
 
 	/**
 	 * Enumeration of the possible edge class during a graph search.
