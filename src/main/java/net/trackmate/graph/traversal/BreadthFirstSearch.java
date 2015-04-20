@@ -5,12 +5,13 @@ import net.trackmate.graph.Edges;
 import net.trackmate.graph.Graph;
 import net.trackmate.graph.Vertex;
 import net.trackmate.graph.collection.RefDeque;
+import net.trackmate.graph.collection.RefIntMap;
 import net.trackmate.graph.util.Graphs;
 
 /**
  * Breadth-first search for directed or undirected graph, following the
  * framework of Skiena. http://www.algorist.com/
- * 
+ *
  * @author Jean-Yves Tinevez
  *
  * @param <V>
@@ -20,7 +21,11 @@ import net.trackmate.graph.util.Graphs;
  */
 public class BreadthFirstSearch< V extends Vertex< E >, E extends Edge< V > > extends GraphSearch< V, E >
 {
-	private final RefDeque< V > queue;
+	private static final int NO_ENTRY_VALUE = -1;
+
+	protected final RefDeque< V > queue;
+
+	protected final RefIntMap< V > depths;
 
 	private final boolean directed;
 
@@ -29,6 +34,7 @@ public class BreadthFirstSearch< V extends Vertex< E >, E extends Edge< V > > ex
 		super( graph );
 		this.directed = directed;
 		this.queue = createVertexDeque();
+		this.depths = createVertexIntMap( NO_ENTRY_VALUE );
 	}
 
 	@Override
@@ -36,6 +42,8 @@ public class BreadthFirstSearch< V extends Vertex< E >, E extends Edge< V > > ex
 	{
 		queue.clear();
 		queue.add( start );
+		depths.clear();
+		depths.put( start, 0 );
 		super.start( start );
 	}
 
@@ -51,6 +59,8 @@ public class BreadthFirstSearch< V extends Vertex< E >, E extends Edge< V > > ex
 				return;
 
 			final V vertex = queue.poll( tmpRef );
+			final int level = depths.get( vertex );
+
 			if ( null != searchListener )
 				searchListener.processVertexEarly( vertex, this );
 			processed.add( vertex );
@@ -73,6 +83,7 @@ public class BreadthFirstSearch< V extends Vertex< E >, E extends Edge< V > > ex
 					queue.add( target );
 					discovered.add( target );
 					parents.put( target, vertex );
+					depths.put( target, level + 1 );
 				}
 				if ( null != searchListener && ( directed || !processed.contains( target ) ) )
 				{
@@ -89,7 +100,39 @@ public class BreadthFirstSearch< V extends Vertex< E >, E extends Edge< V > > ex
 	@Override
 	public EdgeClass edgeClass( final V from, final V to )
 	{
-		// TODO Auto-generated method stub
-		return null;
+		if ( !discovered.contains( from ) )
+		{
+			return EdgeClass.BACK;
+		}
+		else if ( !discovered.contains( to ) )
+		{
+			return EdgeClass.FORWARD;
+		}
+		else
+		{
+			final int depthFrom = depths.get( from );
+			final int depthTo = depths.get( to );
+
+			if ( depthFrom == depthTo )
+			{
+				return EdgeClass.CROSS;
+			}
+			else if ( depthFrom > depthTo )
+			{
+				return EdgeClass.BACK;
+			}
+			else
+			{
+				if ( from.equals( parents.get( to ) ) )
+				{
+					return EdgeClass.TREE;
+				}
+				else
+				{
+					return EdgeClass.FORWARD;
+
+				}
+			}
+		}
 	}
 }
