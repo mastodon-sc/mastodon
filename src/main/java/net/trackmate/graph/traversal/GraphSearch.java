@@ -9,7 +9,7 @@ import net.trackmate.graph.algorithm.AbstractGraphAlgorithm;
 import net.trackmate.graph.collection.RefRefMap;
 import net.trackmate.graph.collection.RefSet;
 
-public abstract class GraphSearch< V extends Vertex< E >, E extends Edge< V > > extends AbstractGraphAlgorithm< V, E >
+public abstract class GraphSearch< T extends GraphSearch< T, V, E >, V extends Vertex< E >, E extends Edge< V > > extends AbstractGraphAlgorithm< V, E >
 {
 
 	protected final RefSet< V > discovered;
@@ -18,7 +18,7 @@ public abstract class GraphSearch< V extends Vertex< E >, E extends Edge< V > > 
 
 	private boolean aborted;
 
-	protected SearchListener< V, E > searchListener;
+	protected SearchListener< V, E, T > searchListener;
 
 	protected final RefRefMap< V, V > parents;
 
@@ -62,7 +62,7 @@ public abstract class GraphSearch< V extends Vertex< E >, E extends Edge< V > > 
 	 *            the search listener to use for next search. Can be
 	 *            <code>null</code>.
 	 */
-	public void setTraversalListener( final SearchListener< V, E > searchListener )
+	public void setTraversalListener( final SearchListener< V, E, T > searchListener )
 	{
 		this.searchListener = searchListener;
 	}

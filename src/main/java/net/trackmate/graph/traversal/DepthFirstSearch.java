@@ -19,7 +19,7 @@ import net.trackmate.graph.util.Graphs;
  * @param <E>
  *            the type of the graph edges iterated.
  */
-public class DepthFirstSearch< V extends Vertex< E >, E extends Edge< V > > extends GraphSearch< V, E >
+public class DepthFirstSearch< V extends Vertex< E >, E extends Edge< V > > extends GraphSearch< DepthFirstSearch< V, E >, V, E >
 {
 	private static final int NO_ENTRY_VALUE = -1;
 

@@ -22,7 +22,7 @@ import net.trackmate.graph.traversal.GraphSearch.EdgeClass;
 
 public class GraphsForTests
 {
-	public static final class TraversalTester< V extends Vertex< E >, E extends Edge< V > > implements SearchListener< V, E >
+	public static final class TraversalTester< V extends Vertex< E >, E extends Edge< V >, T extends GraphSearch< T, V, E > > implements SearchListener< V, E, T >
 	{
 
 		private final Iterator< V > expectedDiscoveredVertexIterator;
@@ -42,19 +42,19 @@ public class GraphsForTests
 		}
 
 		@Override
-		public void processVertexLate( final V vertex, final GraphSearch< V, E > search )
+		public void processVertexLate( final V vertex, final T search )
 		{
 			assertEquals( "Did not finish processing vertex in expected order during search.", expectedProcessedVertexIterator.next(), vertex );
 		}
 
 		@Override
-		public void processVertexEarly( final V vertex, final GraphSearch< V, E > search )
+		public void processVertexEarly( final V vertex, final T search )
 		{
 			assertEquals( "Did not discover the expected vertex sequence during search.", expectedDiscoveredVertexIterator.next(), vertex );
 		}
 
 		@Override
-		public void processEdge( final E edge, final V from, final V to, final GraphSearch< V, E > search )
+		public void processEdge( final E edge, final V from, final V to, final T search )
 		{
 			assertEquals( "Did not cross the expected edge sequence during search.", expectedEdgeIterator.next(), edge );
 
@@ -71,24 +71,24 @@ public class GraphsForTests
 		}
 	}
 
-	public static final < V extends Vertex< E >, E extends Edge< V > > SearchListener< V, E > traversalPrinter( final Graph< V, E > graph )
+	public static final < V extends Vertex< E >, E extends Edge< V >, T extends GraphSearch< T, V, E > > SearchListener< V, E, T > traversalPrinter( final Graph< V, E > graph )
 	{
-		return new SearchListener< V, E >()
+		return new SearchListener< V, E, T >()
 		{
 			@Override
-			public void processVertexLate( final V vertex, final GraphSearch< V, E > search )
+			public void processVertexLate( final V vertex, final T search )
 			{
 				System.out.println( " - Finished processing " + vertex );
 			}
 
 			@Override
-			public void processVertexEarly( final V vertex, final GraphSearch< V, E > search )
+			public void processVertexEarly( final V vertex, final T search )
 			{
 				System.out.println( " - Discovered " + vertex );
 			}
 
 			@Override
-			public void processEdge( final E edge, final V from, final V to, final GraphSearch< V, E > search )
+			public void processEdge( final E edge, final V from, final V to, final T search )
 			{
 				System.out.println( " - Crossing " + edge + " from " + from + " to " + to + ". Edge class = " + search.edgeClass( from, to ) );
 			}

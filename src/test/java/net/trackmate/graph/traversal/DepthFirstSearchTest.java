@@ -41,7 +41,8 @@ public class DepthFirstSearchTest
 				bundle.vertices.get( 2 ),
 				bundle.vertices.get( 0 )
 		} );
-		final TraversalTester< TestVertex, TestEdge > traversalTester = new TraversalTester< TestVertex, TestEdge >(
+		final TraversalTester< TestVertex, TestEdge, DepthFirstSearch< TestVertex, TestEdge > > traversalTester =
+				new TraversalTester< TestVertex, TestEdge, DepthFirstSearch< TestVertex, TestEdge >>(
 				bundle.vertices.iterator(),
 				processedVertices.iterator(),
 				bundle.edges.iterator(),
@@ -66,7 +67,8 @@ public class DepthFirstSearchTest
 		processedVertices.add( bundle.vertices.get( 2 ) );
 		processedVertices.add( bundle.vertices.get( 0 ) );
 
-		final TraversalTester< ObjectVertex< Integer >, ObjectEdge< Integer >> traversalTester = new TraversalTester< ObjectVertex< Integer >, ObjectEdge< Integer >>(
+		final TraversalTester< ObjectVertex< Integer >, ObjectEdge< Integer >, DepthFirstSearch< ObjectVertex< Integer >, ObjectEdge< Integer >>> traversalTester =
+				new TraversalTester< ObjectVertex< Integer >, ObjectEdge< Integer >, DepthFirstSearch< ObjectVertex< Integer >, ObjectEdge< Integer >>>(
 				bundle.vertices.iterator(),
 				processedVertices.iterator(),
 				bundle.edges.iterator(),
@@ -95,7 +97,8 @@ public class DepthFirstSearchTest
 				bundle.vertices.get( 1 ),
 				bundle.vertices.get( 0 )
 		} );
-		final TraversalTester< TestVertex, TestEdge > traversalTester = new TraversalTester< TestVertex, TestEdge >(
+		final TraversalTester< TestVertex, TestEdge, DepthFirstSearch< TestVertex, TestEdge > > traversalTester =
+				new TraversalTester< TestVertex, TestEdge, DepthFirstSearch< TestVertex, TestEdge >>(
 				bundle.vertices.iterator(),
 				processedVertices.iterator(),
 				bundle.edges.iterator(),
@@ -124,7 +127,8 @@ public class DepthFirstSearchTest
 		processedVertices.add( bundle.vertices.get( 1 ) );
 		processedVertices.add( bundle.vertices.get( 0 ) );
 
-		final TraversalTester< ObjectVertex< Integer >, ObjectEdge< Integer >> traversalTester = new TraversalTester< ObjectVertex< Integer >, ObjectEdge< Integer >>(
+		final TraversalTester< ObjectVertex< Integer >, ObjectEdge< Integer >, DepthFirstSearch< ObjectVertex< Integer >, ObjectEdge< Integer >>> traversalTester =
+				new TraversalTester< ObjectVertex< Integer >, ObjectEdge< Integer >, DepthFirstSearch< ObjectVertex< Integer >, ObjectEdge< Integer >>>(
 				bundle.vertices.iterator(),
 				processedVertices.iterator(),
 				bundle.edges.iterator(),
@@ -161,7 +165,7 @@ public class DepthFirstSearchTest
 				bundle.vertices.get( 2 ),
 				bundle.vertices.get( 0 )
 		} );
-		final List< TestEdge > epectedEdges = Arrays.asList( new TestEdge[] {
+		final List< TestEdge > expectedEdges = Arrays.asList( new TestEdge[] {
 				bundle.edges.get( 0 ),
 				bundle.edges.get( 3 ),
 				bundle.edges.get( 4 ),
@@ -172,10 +176,11 @@ public class DepthFirstSearchTest
 		} );
 		final List< EdgeClass > edgeClass = Arrays.asList( new EdgeClass[] { TREE, TREE, TREE, TREE, TREE, TREE, FORWARD } );
 
-		final TraversalTester< TestVertex, TestEdge > traversalTester = new TraversalTester< TestVertex, TestEdge >(
+		final TraversalTester< TestVertex, TestEdge, DepthFirstSearch< TestVertex, TestEdge > > traversalTester =
+				new TraversalTester< TestVertex, TestEdge, DepthFirstSearch< TestVertex, TestEdge >>(
 				expectedVertices.iterator(),
 				processedVertices.iterator(),
-				epectedEdges.iterator(),
+				expectedEdges.iterator(),
 				edgeClass.iterator() );
 
 		dfs.setTraversalListener( traversalTester );
@@ -209,21 +214,22 @@ public class DepthFirstSearchTest
 		processedVertices.add( bundle.vertices.get( 2 ) );
 		processedVertices.add( bundle.vertices.get( 0 ) );
 
-		final List< ObjectEdge< Integer > > epectedEdges = new ArrayList< ObjectEdge<Integer> >(7);
-		epectedEdges.add( bundle.edges.get( 0 ) );
-		epectedEdges.add( bundle.edges.get( 3 ) );
-		epectedEdges.add( bundle.edges.get( 4 ) );
-		epectedEdges.add( bundle.edges.get( 5 ) );
-		epectedEdges.add( bundle.edges.get( 1 ) );
-		epectedEdges.add( bundle.edges.get( 6 ) );
-		epectedEdges.add( bundle.edges.get( 2 ) );
+		final List< ObjectEdge< Integer > > expectedEdges = new ArrayList< ObjectEdge<Integer> >(7);
+		expectedEdges.add( bundle.edges.get( 0 ) );
+		expectedEdges.add( bundle.edges.get( 3 ) );
+		expectedEdges.add( bundle.edges.get( 4 ) );
+		expectedEdges.add( bundle.edges.get( 5 ) );
+		expectedEdges.add( bundle.edges.get( 1 ) );
+		expectedEdges.add( bundle.edges.get( 6 ) );
+		expectedEdges.add( bundle.edges.get( 2 ) );
 
 		final List< EdgeClass > edgeClass = Arrays.asList( new EdgeClass[] { TREE, TREE, TREE, TREE, TREE, TREE, FORWARD } );
 
-		final TraversalTester< ObjectVertex< Integer >, ObjectEdge< Integer >> traversalTester = new TraversalTester< ObjectVertex< Integer >, ObjectEdge< Integer >>(
+		final TraversalTester< ObjectVertex< Integer >, ObjectEdge< Integer >, DepthFirstSearch< ObjectVertex< Integer >, ObjectEdge< Integer >>> traversalTester =
+				new TraversalTester< ObjectVertex< Integer >, ObjectEdge< Integer >, DepthFirstSearch< ObjectVertex< Integer >, ObjectEdge< Integer >>>(
 				expectedVertices.iterator(),
 				processedVertices.iterator(),
-				epectedEdges.iterator(),
+				expectedEdges.iterator(),
 				edgeClass.iterator() );
 
 		dfs.setTraversalListener( traversalTester );
@@ -247,15 +253,16 @@ public class DepthFirstSearchTest
 				bundle.vertices.get( 1 ),
 				bundle.vertices.get( 0 )
 		} );
-		final List< TestEdge > epectedEdges = Arrays.asList( new TestEdge[] {
+		final List< TestEdge > expectedEdges = Arrays.asList( new TestEdge[] {
 				bundle.edges.get( 0 )
 		} );
 		final List< EdgeClass > edgeClass = Arrays.asList( new EdgeClass[] { TREE } );
 
-		final TraversalTester< TestVertex, TestEdge > traversalTester = new TraversalTester< TestVertex, TestEdge >(
+		final TraversalTester< TestVertex, TestEdge, DepthFirstSearch< TestVertex, TestEdge > > traversalTester =
+				new TraversalTester< TestVertex, TestEdge, DepthFirstSearch< TestVertex, TestEdge >>(
 				expectedVertices.iterator(),
 				processedVertices.iterator(),
-				epectedEdges.iterator(),
+				expectedEdges.iterator(),
 				edgeClass.iterator() );
 
 		dfs.setTraversalListener( traversalTester );
@@ -279,15 +286,16 @@ public class DepthFirstSearchTest
 		processedVertices.add( bundle.vertices.get( 1 ) );
 		processedVertices.add( bundle.vertices.get( 0 ) );
 
-		final List< ObjectEdge< Integer > > epectedEdges = new ArrayList< ObjectEdge< Integer > >( 1 );
-		epectedEdges.add( bundle.edges.get( 0 ) );
+		final List< ObjectEdge< Integer > > expectedEdges = new ArrayList< ObjectEdge< Integer > >( 1 );
+		expectedEdges.add( bundle.edges.get( 0 ) );
 
 		final List< EdgeClass > edgeClass = Arrays.asList( new EdgeClass[] { TREE } );
 
-		final TraversalTester< ObjectVertex< Integer >, ObjectEdge< Integer >> traversalTester = new TraversalTester< ObjectVertex< Integer >, ObjectEdge< Integer >>(
+		final TraversalTester< ObjectVertex< Integer >, ObjectEdge< Integer >, DepthFirstSearch< ObjectVertex< Integer >, ObjectEdge< Integer >>> traversalTester =
+				new TraversalTester< ObjectVertex< Integer >, ObjectEdge< Integer >, DepthFirstSearch< ObjectVertex< Integer >, ObjectEdge< Integer >>>(
 				expectedVertices.iterator(),
 				processedVertices.iterator(),
-				epectedEdges.iterator(),
+				expectedEdges.iterator(),
 				edgeClass.iterator() );
 
 		dfs.setTraversalListener( traversalTester );
@@ -314,14 +322,15 @@ public class DepthFirstSearchTest
 				bundle.vertices.get( 1 ),
 				bundle.vertices.get( 0 )
 		} );
-		final List< TestEdge > epectedEdges = bundle.edges;
+		final List< TestEdge > expectedEdges = bundle.edges;
 
 		final List< EdgeClass > edgeClass = Arrays.asList( new EdgeClass[] { TREE, TREE, TREE, TREE, TREE, TREE } );
 
-		final TraversalTester< TestVertex, TestEdge > traversalTester = new TraversalTester< TestVertex, TestEdge >(
+		final TraversalTester< TestVertex, TestEdge, DepthFirstSearch< TestVertex, TestEdge > > traversalTester =
+				new TraversalTester< TestVertex, TestEdge, DepthFirstSearch< TestVertex, TestEdge >>(
 				expectedVertices.iterator(),
 				processedVertices.iterator(),
-				epectedEdges.iterator(),
+				expectedEdges.iterator(),
 				edgeClass.iterator() );
 
 		dfs.setTraversalListener( traversalTester );
@@ -348,14 +357,15 @@ public class DepthFirstSearchTest
 		processedVertices.add( bundle.vertices.get( 1 ) );
 		processedVertices.add( bundle.vertices.get( 0 ) );
 
-		final List< ObjectEdge< Integer > > epectedEdges = bundle.edges;
+		final List< ObjectEdge< Integer > > expectedEdges = bundle.edges;
 
 		final List< EdgeClass > edgeClass = Arrays.asList( new EdgeClass[] { TREE, TREE, TREE, TREE, TREE, TREE } );
 
-		final TraversalTester< ObjectVertex< Integer >, ObjectEdge< Integer >> traversalTester = new TraversalTester< ObjectVertex< Integer >, ObjectEdge< Integer >>(
+		final TraversalTester< ObjectVertex< Integer >, ObjectEdge< Integer >, DepthFirstSearch< ObjectVertex< Integer >, ObjectEdge< Integer >>> traversalTester =
+				new TraversalTester< ObjectVertex< Integer >, ObjectEdge< Integer >, DepthFirstSearch< ObjectVertex< Integer >, ObjectEdge< Integer >>>(
 				expectedVertices.iterator(),
 				processedVertices.iterator(),
-				epectedEdges.iterator(),
+				expectedEdges.iterator(),
 				edgeClass.iterator() );
 
 		dfs.setTraversalListener( traversalTester );
@@ -389,7 +399,7 @@ public class DepthFirstSearchTest
 				bundle.vertices.get( 2 ),
 				bundle.vertices.get( 0 )
 		} );
-		final List< TestEdge > epectedEdges = Arrays.asList( new TestEdge[] {
+		final List< TestEdge > expectedEdges = Arrays.asList( new TestEdge[] {
 				bundle.edges.get( 0 ),
 				bundle.edges.get( 3 ),
 				bundle.edges.get( 4 ),
@@ -400,10 +410,11 @@ public class DepthFirstSearchTest
 		} );
 		final List< EdgeClass > edgeClass = Arrays.asList( new EdgeClass[] { TREE, TREE, TREE, TREE, TREE, TREE, FORWARD } );
 
-		final TraversalTester< TestVertex, TestEdge > traversalTester = new TraversalTester< TestVertex, TestEdge >(
+		final TraversalTester< TestVertex, TestEdge, DepthFirstSearch< TestVertex, TestEdge > > traversalTester =
+				new TraversalTester< TestVertex, TestEdge, DepthFirstSearch< TestVertex, TestEdge >>(
 				expectedVertices.iterator(),
 				processedVertices.iterator(),
-				epectedEdges.iterator(),
+				expectedEdges.iterator(),
 				edgeClass.iterator() );
 
 		dfs.setTraversalListener( traversalTester );
@@ -437,21 +448,22 @@ public class DepthFirstSearchTest
 		processedVertices.add( bundle.vertices.get( 2 ) );
 		processedVertices.add( bundle.vertices.get( 0 ) );
 
-		final List< ObjectEdge< Integer > > epectedEdges = new ArrayList< ObjectEdge< Integer > >( 7 );
-		epectedEdges.add( bundle.edges.get( 0 ) );
-		epectedEdges.add( bundle.edges.get( 3 ) );
-		epectedEdges.add( bundle.edges.get( 4 ) );
-		epectedEdges.add( bundle.edges.get( 5 ) );
-		epectedEdges.add( bundle.edges.get( 1 ) );
-		epectedEdges.add( bundle.edges.get( 6 ) );
-		epectedEdges.add( bundle.edges.get( 2 ) );
+		final List< ObjectEdge< Integer > > expectedEdges = new ArrayList< ObjectEdge< Integer > >( 7 );
+		expectedEdges.add( bundle.edges.get( 0 ) );
+		expectedEdges.add( bundle.edges.get( 3 ) );
+		expectedEdges.add( bundle.edges.get( 4 ) );
+		expectedEdges.add( bundle.edges.get( 5 ) );
+		expectedEdges.add( bundle.edges.get( 1 ) );
+		expectedEdges.add( bundle.edges.get( 6 ) );
+		expectedEdges.add( bundle.edges.get( 2 ) );
 
 		final List< EdgeClass > edgeClass = Arrays.asList( new EdgeClass[] { TREE, TREE, TREE, TREE, TREE, TREE, FORWARD } );
 
-		final TraversalTester< ObjectVertex< Integer >, ObjectEdge< Integer >> traversalTester = new TraversalTester< ObjectVertex< Integer >, ObjectEdge< Integer >>(
+		final TraversalTester< ObjectVertex< Integer >, ObjectEdge< Integer >, DepthFirstSearch< ObjectVertex< Integer >, ObjectEdge< Integer >>> traversalTester =
+				new TraversalTester< ObjectVertex< Integer >, ObjectEdge< Integer >, DepthFirstSearch< ObjectVertex< Integer >, ObjectEdge< Integer >>>(
 				expectedVertices.iterator(),
 				processedVertices.iterator(),
-				epectedEdges.iterator(),
+				expectedEdges.iterator(),
 				edgeClass.iterator() );
 
 		dfs.setTraversalListener( traversalTester );
@@ -475,14 +487,15 @@ public class DepthFirstSearchTest
 				bundle.vertices.get( 0 )
 		} );
 
-		final List< TestEdge > epectedEdges = Collections.emptyList();
+		final List< TestEdge > expectedEdges = Collections.emptyList();
 
 		final List< EdgeClass > edgeClass = Collections.emptyList();
 
-		final TraversalTester< TestVertex, TestEdge > traversalTester = new TraversalTester< TestVertex, TestEdge >(
+		final TraversalTester< TestVertex, TestEdge, DepthFirstSearch< TestVertex, TestEdge > > traversalTester =
+				new TraversalTester< TestVertex, TestEdge, DepthFirstSearch< TestVertex, TestEdge >>(
 				expectedVertices.iterator(),
 				processedVertices.iterator(),
-				epectedEdges.iterator(),
+				expectedEdges.iterator(),
 				edgeClass.iterator() );
 
 		dfs.setTraversalListener( traversalTester );
@@ -504,14 +517,15 @@ public class DepthFirstSearchTest
 		final List< ObjectVertex< Integer > > processedVertices = new ArrayList< ObjectVertex< Integer > >( 2 );
 		processedVertices.add( bundle.vertices.get( 0 ) );
 
-		final List< ObjectEdge< Integer > > epectedEdges = Collections.emptyList();
+		final List< ObjectEdge< Integer > > expectedEdges = Collections.emptyList();
 
 		final List< EdgeClass > edgeClass = Collections.emptyList();
 
-		final TraversalTester< ObjectVertex< Integer >, ObjectEdge< Integer >> traversalTester = new TraversalTester< ObjectVertex< Integer >, ObjectEdge< Integer >>(
+		final TraversalTester< ObjectVertex< Integer >, ObjectEdge< Integer >, DepthFirstSearch< ObjectVertex< Integer >, ObjectEdge< Integer >>> traversalTester =
+				new TraversalTester< ObjectVertex< Integer >, ObjectEdge< Integer >, DepthFirstSearch< ObjectVertex< Integer >, ObjectEdge< Integer >>>(
 				expectedVertices.iterator(),
 				processedVertices.iterator(),
-				epectedEdges.iterator(),
+				expectedEdges.iterator(),
 				edgeClass.iterator() );
 
 		dfs.setTraversalListener( traversalTester );
