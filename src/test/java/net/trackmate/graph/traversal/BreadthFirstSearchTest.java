@@ -1,7 +1,6 @@
 package net.trackmate.graph.traversal;
 
 import static net.trackmate.graph.traversal.GraphSearch.EdgeClass.BACK;
-import static net.trackmate.graph.traversal.GraphSearch.EdgeClass.CROSS;
 import static net.trackmate.graph.traversal.GraphSearch.EdgeClass.TREE;
 
 import java.util.ArrayList;
@@ -138,7 +137,7 @@ public class BreadthFirstSearchTest
 				bundle.edges.get( 6 ),
 				bundle.edges.get( 5 )
 		} );
-		final List< EdgeClass > edgeClass = Arrays.asList( new EdgeClass[] { TREE, TREE, TREE, TREE, TREE, TREE, CROSS } );
+		final List< EdgeClass > edgeClass = Arrays.asList( new EdgeClass[] { TREE, TREE, TREE, TREE, TREE, TREE, BACK } );
 
 		final TraversalTester< TestVertex, TestEdge > traversalTester = new TraversalTester< TestVertex, TestEdge >(
 				expectedVertices.iterator(),
@@ -179,7 +178,7 @@ public class BreadthFirstSearchTest
 		epectedEdges.add( bundle.edges.get( 6 ) );
 		epectedEdges.add( bundle.edges.get( 5 ) );
 
-		final List< EdgeClass > edgeClass = Arrays.asList( new EdgeClass[] { TREE, TREE, TREE, TREE, TREE, TREE, CROSS } );
+		final List< EdgeClass > edgeClass = Arrays.asList( new EdgeClass[] { TREE, TREE, TREE, TREE, TREE, TREE, BACK } );
 
 		final TraversalTester< ObjectVertex< Integer >, ObjectEdge< Integer >> traversalTester = new TraversalTester< ObjectVertex< Integer >, ObjectEdge< Integer >>(
 				expectedVertices.iterator(),
@@ -205,8 +204,8 @@ public class BreadthFirstSearchTest
 				bundle.vertices.get( 1 )
 		} );
 		final List< TestVertex > processedVertices = Arrays.asList( new TestVertex[] {
-				bundle.vertices.get( 1 ),
-				bundle.vertices.get( 0 )
+				bundle.vertices.get( 0 ),
+				bundle.vertices.get( 1 )
 		} );
 		final List< TestEdge > epectedEdges = Arrays.asList( new TestEdge[] {
 				bundle.edges.get( 0 )
@@ -237,8 +236,8 @@ public class BreadthFirstSearchTest
 		expectedVertices.add( bundle.vertices.get( 1 ) );
 
 		final List< ObjectVertex< Integer > > processedVertices = new ArrayList< ObjectVertex< Integer > >( 2 );
-		processedVertices.add( bundle.vertices.get( 1 ) );
 		processedVertices.add( bundle.vertices.get( 0 ) );
+		processedVertices.add( bundle.vertices.get( 1 ) );
 
 		final List< ObjectEdge< Integer > > epectedEdges = new ArrayList< ObjectEdge< Integer > >( 1 );
 		epectedEdges.add( bundle.edges.get( 0 ) );
@@ -265,16 +264,7 @@ public class BreadthFirstSearchTest
 		final BreadthFirstSearch< TestVertex, TestEdge > bfs = new BreadthFirstSearch< TestVertex, TestEdge >( bundle.graph, true );
 
 		final List< TestVertex > expectedVertices = bundle.vertices;
-
-		final List< TestVertex > processedVertices = Arrays.asList( new TestVertex[] {
-				bundle.vertices.get( 6 ),
-				bundle.vertices.get( 5 ),
-				bundle.vertices.get( 4 ),
-				bundle.vertices.get( 3 ),
-				bundle.vertices.get( 2 ),
-				bundle.vertices.get( 1 ),
-				bundle.vertices.get( 0 )
-		} );
+		final List< TestVertex > processedVertices = bundle.vertices;
 		final List< TestEdge > epectedEdges = bundle.edges;
 
 		final List< EdgeClass > edgeClass = Arrays.asList( new EdgeClass[] { TREE, TREE, TREE, TREE, TREE, TREE } );
@@ -344,7 +334,7 @@ public class BreadthFirstSearchTest
 				bundle.edges.get( 6 ),
 				bundle.edges.get( 5 )
 		} );
-		final List< EdgeClass > edgeClass = Arrays.asList( new EdgeClass[] { TREE, TREE, TREE, TREE, TREE, TREE, CROSS } );
+		final List< EdgeClass > edgeClass = Arrays.asList( new EdgeClass[] { TREE, TREE, TREE, TREE, TREE, TREE, BACK } );
 
 		final TraversalTester< TestVertex, TestEdge > traversalTester = new TraversalTester< TestVertex, TestEdge >(
 				expectedVertices.iterator(),
@@ -385,7 +375,7 @@ public class BreadthFirstSearchTest
 		epectedEdges.add( bundle.edges.get( 6 ) );
 		epectedEdges.add( bundle.edges.get( 5 ) );
 
-		final List< EdgeClass > edgeClass = Arrays.asList( new EdgeClass[] { TREE, TREE, TREE, TREE, TREE, TREE, CROSS } );
+		final List< EdgeClass > edgeClass = Arrays.asList( new EdgeClass[] { TREE, TREE, TREE, TREE, TREE, TREE, BACK } );
 
 		final TraversalTester< ObjectVertex< Integer >, ObjectEdge< Integer >> traversalTester = new TraversalTester< ObjectVertex< Integer >, ObjectEdge< Integer >>(
 				expectedVertices.iterator(),
