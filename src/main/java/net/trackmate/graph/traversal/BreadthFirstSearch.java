@@ -81,13 +81,16 @@ public class BreadthFirstSearch< V extends Vertex< E >, E extends Edge< V > > ex
 				if ( !discovered.contains( target ) )
 				{
 					queue.add( target );
-					discovered.add( target );
 					parents.put( target, vertex );
 					depths.put( target, level + 1 );
 				}
 				if ( null != searchListener && ( directed || !processed.contains( target ) ) )
 				{
 					searchListener.processEdge( edge, vertex, target, this );
+				}
+				if ( !discovered.contains( target ) )
+				{
+					discovered.add( target );
 				}
 				if ( wasAborted() )
 					return;
@@ -100,39 +103,39 @@ public class BreadthFirstSearch< V extends Vertex< E >, E extends Edge< V > > ex
 	@Override
 	public EdgeClass edgeClass( final V from, final V to )
 	{
-		if ( !discovered.contains( from ) )
+		if ( !discovered.contains( to ) ) { return EdgeClass.TREE; }
+
+		int toDepth = depths.get( to );
+		int fromDepth = depths.get( from );
+
+		V b = vertexRef();
+		b = assign( to, b );
+		while ( toDepth > 0 && fromDepth < toDepth )
 		{
-			return EdgeClass.BACK;
+			b = parents.get( b, b );
+			toDepth = depths.get( b );
 		}
-		else if ( !discovered.contains( to ) )
+
+		V a = vertexRef();
+		a = assign( from, a );
+		while ( fromDepth > 0 && toDepth < fromDepth )
 		{
-			return EdgeClass.FORWARD;
+			a = parents.get( a, a );
+			fromDepth = depths.get( a );
+		}
+
+		if ( a.equals( b ) )
+		{
+			releaseRef( a );
+			releaseRef( b );
+			return EdgeClass.BACK;
 		}
 		else
 		{
-			final int depthFrom = depths.get( from );
-			final int depthTo = depths.get( to );
-
-			if ( depthFrom == depthTo )
-			{
-				return EdgeClass.CROSS;
-			}
-			else if ( depthFrom > depthTo )
-			{
-				return EdgeClass.BACK;
-			}
-			else
-			{
-				if ( from.equals( parents.get( to ) ) )
-				{
-					return EdgeClass.TREE;
-				}
-				else
-				{
-					return EdgeClass.FORWARD;
-
-				}
-			}
+			releaseRef( a );
+			releaseRef( b );
+			return EdgeClass.CROSS;
 		}
+
 	}
 }
