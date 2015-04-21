@@ -373,6 +373,29 @@ public class GraphsForTests
 		return bundle;
 	}
 
+	public static final GraphTestBundle< TestVertex, TestEdge > diamondPoolObjects()
+	{
+		final GraphTestBundle< TestVertex, TestEdge > bundle = new GraphTestBundle< TestVertex, TestEdge >();
+
+		final TestGraph graph = new TestGraph();
+		bundle.graph = graph;
+
+		final TestVertex A = graph.addVertex().init( 1 );
+		final TestVertex B = graph.addVertex().init( 2 );
+		final TestVertex C = graph.addVertex().init( 3 );
+		final TestVertex D = graph.addVertex().init( 4 );
+		bundle.vertices = Arrays.asList( new TestVertex[] { A, B, C, D } );
+
+		final TestEdge eAB = graph.addEdge( A, B );
+		final TestEdge eAC = graph.addEdge( A, C );
+		final TestEdge eBD = graph.addEdge( B, D );
+		final TestEdge eCD = graph.addEdge( C, D );
+		bundle.edges = Arrays.asList( new TestEdge[] { eAB, eAC, eBD, eCD } );
+
+		bundle.name = "Diamond pool objects";
+		return bundle;
+	}
+
 	public static final GraphTestBundle< ObjectVertex< Integer >, ObjectEdge< Integer >> forkStdObjects()
 	{
 		final GraphTestBundle< ObjectVertex< Integer >, ObjectEdge< Integer >> bundle = new GraphTestBundle< ObjectVertex< Integer >, ObjectEdge< Integer > >();
