@@ -47,6 +47,11 @@ public class BreadthFirstSearch< V extends Vertex< E >, E extends Edge< V > > ex
 		super.start( start );
 	}
 
+	public int depthOf( final V vertex )
+	{
+		return depths.get( vertex );
+	}
+
 	@Override
 	protected void visit( final V start )
 	{
