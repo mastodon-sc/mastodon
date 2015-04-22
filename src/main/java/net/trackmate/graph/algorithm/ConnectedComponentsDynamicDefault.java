@@ -11,7 +11,8 @@ import net.trackmate.graph.collection.RefSet;
 import net.trackmate.graph.listenable.GraphChangeEvent;
 import net.trackmate.graph.listenable.GraphListener;
 import net.trackmate.graph.listenable.ListenableGraph;
-import net.trackmate.graph.traversal.GraphIteratorBuilder;
+import net.trackmate.graph.traversal.BreadthFirstSearch;
+import net.trackmate.graph.traversal.SearchListener;
 import net.trackmate.graph.util.TIntArrayDeque;
 
 /**
@@ -31,14 +32,18 @@ public class ConnectedComponentsDynamicDefault< V extends Vertex< E >, E extends
 
 	private final IDProvider idProvider;
 
-	private final GraphIteratorBuilder< V, E > builder;
+	private final BreadthFirstSearch< V, E > bfs;
+
+	private final ConnectedComponentsDynamicDefault< V, E >.VertexFinderListener sl;
 
 	public ConnectedComponentsDynamicDefault( final ListenableGraph< V, E > graph )
 	{
 		super( graph );
 		this.ccMap = new TIntObjectHashMap< RefSet< V > >();
 		this.idProvider = new IDProvider();
-		this.builder = GraphIteratorBuilder.createOn( graph ).undirected().unsorted().withTraversalListener( null );
+		this.bfs = new BreadthFirstSearch< V, E >( graph, false );
+		this.sl = new VertexFinderListener();
+		bfs.setTraversalListener( sl );
 		init();
 	}
 
@@ -155,25 +160,17 @@ public class ConnectedComponentsDynamicDefault< V extends Vertex< E >, E extends
 				 * Iterate from the source vertex and see if we meet target.
 				 */
 
-				final Iterator< V > fromSourceIt = builder.breadthFirst( source ).build();
 				final RefSet< V > candidateCC = createVertexSet();
-				boolean sameCC = false;
-				while ( fromSourceIt.hasNext() )
-				{
-					final V v = fromSourceIt.next();
-					if ( v.equals( target ) )
-					{
-						sameCC = true;
-						break;
-					}
-					candidateCC.add( v );
-				}
+				sl.setCandidateCC( candidateCC );
+				sl.setTarget( target );
+				bfs.start( source );
 
-				if ( sameCC )
+				if ( bfs.wasAborted() )
 				{
 					/*
-					 * They still belong to the same cc, even after edge
-					 * removal. We don't do anything.
+					 * The target was found during search. So they still belong
+					 * to the same cc, even after edge removal. We don't do
+					 * anything.
 					 */
 					continue;
 				}
@@ -266,6 +263,50 @@ public class ConnectedComponentsDynamicDefault< V extends Vertex< E >, E extends
 			if ( ccMap.get( id ).contains( v ) ) { return id; }
 		}
 		return -1;
+	}
+
+	/*
+	 * PRIVATE CLASSES
+	 */
+
+	private class VertexFinderListener implements SearchListener< V, E, BreadthFirstSearch< V, E > >
+	{
+
+		private V target;
+
+		private RefSet< V > candidateCC;
+
+		private void setTarget( final V target )
+		{
+			this.target = target;
+		}
+
+		private void setCandidateCC( final RefSet< V > candidateCC )
+		{
+			this.candidateCC = candidateCC;
+		}
+
+		@Override
+		public void processVertexLate( final V vertex, final BreadthFirstSearch< V, E > search )
+		{}
+
+		@Override
+		public void processVertexEarly( final V vertex, final BreadthFirstSearch< V, E > search )
+		{
+			if ( vertex.equals( target ) )
+			{
+				search.abort();
+			}
+			else
+			{
+				candidateCC.add( vertex );
+			}
+		}
+
+		@Override
+		public void processEdge( final E edge, final V from, final V to, final BreadthFirstSearch< V, E > search )
+		{}
+
 	}
 
 	private static class IDProvider
