@@ -39,4 +39,16 @@ public class ObjectEdge< K > implements Edge< ObjectVertex< K > >
 		return target;
 	}
 
+	@Override
+	public String toString()
+	{
+		final StringBuilder sb = new StringBuilder();
+		sb.append( "e(" );
+		sb.append( source.toString() );
+		sb.append( " -> " );
+		sb.append( target.toString() );
+		sb.append( ")" );
+		return sb.toString();
+	}
+
 }

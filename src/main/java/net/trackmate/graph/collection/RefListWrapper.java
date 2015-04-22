@@ -1,8 +1,11 @@
 package net.trackmate.graph.collection;
 
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.ListIterator;
+import java.util.Random;
 
 public class RefListWrapper< O > extends AbstractRefCollectionWrapper< O, List< O > > implements RefList< O >
 {
@@ -87,5 +90,23 @@ public class RefListWrapper< O > extends AbstractRefCollectionWrapper< O, List< 
 	public O set( final int index, final O obj, final O replacedObj )
 	{
 		return collection.set( index, obj );
+	}
+
+	@Override
+	public void shuffle( final Random rand )
+	{
+		Collections.shuffle( collection, rand );
+	}
+
+	@Override
+	public void sort( final Comparator< O > comparator )
+	{
+		Collections.sort( collection, comparator );
+	}
+
+	@Override
+	public void swap( final int i, final int j )
+	{
+		Collections.swap( collection, i, j );
 	}
 }

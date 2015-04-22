@@ -4,6 +4,7 @@ import java.util.Iterator;
 
 import net.trackmate.graph.collection.CollectionUtils.CollectionCreator;
 import net.trackmate.graph.collection.RefDeque;
+import net.trackmate.graph.collection.RefIntMap;
 import net.trackmate.graph.collection.RefList;
 import net.trackmate.graph.collection.RefObjectMap;
 import net.trackmate.graph.collection.RefRefMap;
@@ -322,4 +323,27 @@ public class GraphImp<
 		return new PoolObjectPoolObjectMap< E, V, T, T >( edgePool, vertexPool, initialCapacity );
 	}
 
+	@Override
+	public RefIntMap< V > createVertexIntMap(final int noEntryValue )
+	{
+		return new PoolObjectIntMap< V, T>( vertexPool, noEntryValue );
+	}
+
+	@Override
+	public RefIntMap< V > createVertexIntMap( final int noEntryValue, final int initialCapacity )
+	{
+		return new PoolObjectIntMap< V, T>( vertexPool, noEntryValue, initialCapacity );
+	}
+
+	@Override
+	public RefIntMap< E > createEdgeIntMap(final int noEntryValue)
+	{
+		return new PoolObjectIntMap< E, T>( edgePool, noEntryValue );
+	}
+
+	@Override
+	public RefIntMap< E > createEdgeIntMap( final int noEntryValue, final int initialCapacity )
+	{
+		return new PoolObjectIntMap< E, T>( edgePool, noEntryValue, initialCapacity );
+	}
 }
