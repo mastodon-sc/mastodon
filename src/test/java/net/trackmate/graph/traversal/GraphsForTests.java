@@ -227,13 +227,13 @@ public class GraphsForTests
 		final TestEdge eFE = graph.addEdge( F, E ); // 5
 		final TestEdge eCG = graph.addEdge( C, G ); // 6
 		bundle.edges = new ArrayList< TestEdge >( 7 );
-		bundle.edges.add( eAB );
-		bundle.edges.add( eAC );
-		bundle.edges.add( eAE );
-		bundle.edges.add( eBD );
-		bundle.edges.add( eBF );
-		bundle.edges.add( eFE );
-		bundle.edges.add( eCG );
+		bundle.edges.add( eAB ); // 0
+		bundle.edges.add( eAC ); // 1
+		bundle.edges.add( eAE ); // 2
+		bundle.edges.add( eBD ); // 3
+		bundle.edges.add( eBF ); // 4
+		bundle.edges.add( eFE ); // 5
+		bundle.edges.add( eCG ); // 6
 
 		bundle.name = "General example pool objects";
 		return bundle;
