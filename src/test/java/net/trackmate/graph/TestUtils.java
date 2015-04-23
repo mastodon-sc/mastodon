@@ -1,6 +1,10 @@
 package net.trackmate.graph;
 
+import gnu.trove.map.hash.TIntObjectHashMap;
+
 import java.util.Comparator;
+
+import net.trackmate.graph.collection.RefSet;
 
 public class TestUtils
 {
@@ -12,6 +16,18 @@ public class TestUtils
 			return o1.getId() - o2.getId();
 		}
 	};
+
+	public static final String toString( final TIntObjectHashMap< RefSet< ? >> map )
+	{
+		final StringBuilder sb = new StringBuilder();
+		sb.append( "{\n" );
+		for ( final int key : map.keys() )
+		{
+			sb.append( "  " + key + " -> " + map.get( key ) + "\n" );
+		}
+		sb.append( "}" );
+		return sb.toString();
+	}
 
 	private TestUtils()
 	{}

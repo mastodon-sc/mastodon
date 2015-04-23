@@ -292,18 +292,6 @@ public class ConnectedComponentsDynamicDefault< V extends Vertex< E >, E extends
 		releaseRef( target );
 	}
 
-	private String toString( final TIntObjectHashMap< RefSet< V >> map )
-	{
-		final StringBuilder sb = new StringBuilder();
-		sb.append( "{\n" );
-		for ( final int key : map.keys() )
-		{
-			sb.append( "  " + key + " -> " + map.get( key ) + "\n" );
-		}
-		sb.append( "}" );
-		return sb.toString();
-	}
-
 	/**
 	 * Returns a new array containing the ids of the connected components of the
 	 * graph.
