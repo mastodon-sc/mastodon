@@ -10,6 +10,7 @@ import net.trackmate.graph.Vertex;
 import net.trackmate.graph.collection.CollectionUtils;
 import net.trackmate.graph.collection.CollectionUtils.CollectionCreator;
 import net.trackmate.graph.collection.RefDeque;
+import net.trackmate.graph.collection.RefIntMap;
 import net.trackmate.graph.collection.RefList;
 import net.trackmate.graph.collection.RefObjectMap;
 import net.trackmate.graph.collection.RefRefMap;
@@ -403,5 +404,29 @@ public class ListenableGraph< V extends Vertex< E >, E extends Edge< V > > imple
 	protected static < O > Iterator< O > safeIterator( final Iterator< O > iterator )
 	{
 		return CollectionUtils.safeIterator( iterator );
+	}
+
+	@Override
+	public RefIntMap< V > createVertexIntMap( final int noEntryValue )
+	{
+		return CollectionUtils.createVertexIntMap( graph, noEntryValue );
+	}
+
+	@Override
+	public RefIntMap< V > createVertexIntMap( final int noEntryValue, final int initialCapacity )
+	{
+		return CollectionUtils.createVertexIntMap( graph, noEntryValue, initialCapacity );
+	}
+
+	@Override
+	public RefIntMap< E > createEdgeIntMap( final int noEntryValue )
+	{
+		return CollectionUtils.createEdgeIntMap( graph, noEntryValue );
+	}
+
+	@Override
+	public RefIntMap< E > createEdgeIntMap( final int noEntryValue, final int initialCapacity )
+	{
+		return CollectionUtils.createEdgeIntMap( graph, noEntryValue, initialCapacity );
 	}
 }
