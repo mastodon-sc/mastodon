@@ -44,6 +44,7 @@ public class ConnectedComponentsDynamicDefault< V extends Vertex< E >, E extends
 		this.bfs = new BreadthFirstSearch< V, E >( graph, false );
 		this.sl = new VertexFinderListener();
 		bfs.setTraversalListener( sl );
+		graph.addGraphListener( this );
 		init();
 	}
 
@@ -81,7 +82,7 @@ public class ConnectedComponentsDynamicDefault< V extends Vertex< E >, E extends
 				if ( sourceID < 0 && targetID < 0 )
 				{
 					// They build a new component.
-					final RefSet< V > newCC = createVertexSet(2);
+					final RefSet< V > newCC = createVertexSet( 2 );
 					newCC.add( source );
 					newCC.add( target );
 					ccMap.put( idProvider.next(), newCC );
@@ -143,60 +144,164 @@ public class ConnectedComponentsDynamicDefault< V extends Vertex< E >, E extends
 		}
 
 		/*
+		 * Process vertices removed.
+		 */
+		if ( !event.getVertexRemoved().isEmpty() )
+		{
+			final Iterator< V > it = event.getVertexRemoved().iterator();
+			while ( it.hasNext() )
+			{
+				final V v = it.next();
+				final int id = idOf( v );
+				ccMap.get( id ).remove( v );
+			}
+		}
+
+		/*
 		 * Process edges removed now.
 		 */
 
 		if ( !event.getEdgeRemoved().isEmpty() )
 		{
-			final Iterator< E > it = event.getEdgeAdded().iterator();
+			final Iterator< E > it = event.getEdgeRemoved().iterator();
 			while ( it.hasNext() )
 			{
 				final E edge = it.next();
-				source = edge.getSource( source );
-				target = edge.getTarget( target );
-				final int id = idOf( source );
+				source = event.getPreviousEdgeSource( edge, source );
+				target = event.getPreviousEdgeTarget( edge, target );
 
-				/*
-				 * Iterate from the source vertex and see if we meet target.
-				 */
+				final int sourceID = idOf( source );
+				final int targetID = idOf( target );
 
-				final RefSet< V > candidateCC = createVertexSet();
-				sl.setCandidateCC( candidateCC );
-				sl.setTarget( target );
-				bfs.start( source );
-
-				if ( bfs.wasAborted() )
+				if ( sourceID >= 0 && targetID >= 0 )
 				{
 					/*
-					 * The target was found during search. So they still belong
-					 * to the same cc, even after edge removal. We don't do
-					 * anything.
+					 * Both source and target vertices still exist in the graph,
+					 * so we can look around to see if we have 2 components. For
+					 * instance, iterate from the source vertex and see if we
+					 * meet target.
 					 */
-					continue;
+
+					final RefSet< V > candidateCC = createVertexSet();
+					sl.setCandidateCC( candidateCC );
+
+					sl.setTarget( target );
+					bfs.start( source );
+
+					if ( bfs.wasAborted() )
+					{
+						/*
+						 * The target was found during search. So they still
+						 * belong to the same cc, even after edge removal. We
+						 * don't do anything.
+						 */
+						continue;
+					}
+					else
+					{
+						final int sizeSourceSide = candidateCC.size();
+						if ( sizeSourceSide > 1 )
+						{
+							// Only add it if it is large enough
+							ccMap.put( idProvider.next(), candidateCC );
+						}
+
+						final int sizeTargetSide = ccMap.get( sourceID ).size() - sizeSourceSide;
+						if ( sizeTargetSide > 1 )
+						{
+							ccMap.get( sourceID ).removeAll( candidateCC );
+						}
+						else
+						{
+							// It became too small, remove it.
+							ccMap.remove( sourceID );
+							idProvider.free( sourceID );
+						}
+					}
 				}
-				else
+				else if ( sourceID < 0 && targetID >= 0 )
 				{
-					final int sizeSourceSide = candidateCC.size();
-					if ( sizeSourceSide > 1 )
+
+					/*
+					 * The source CC is not present in the graph anymore. We
+					 * just have to create a new CC with what radiates from
+					 * target, and remove what we found from its previous CC.
+					 */
+					final RefSet< V > candidateCC = createVertexSet();
+					sl.setCandidateCC( candidateCC );
+
+					sl.setTarget( null );
+					bfs.start( target );
+
+					final int size = candidateCC.size();
+					if ( size > 1 )
 					{
 						// Only add it if it is large enough
 						ccMap.put( idProvider.next(), candidateCC );
 					}
 
-					final int sizeTargetSide = ccMap.get( id ).size() - sizeSourceSide;
-					if ( sizeTargetSide > 1 )
+					final int sizeOldCC = ccMap.get( targetID ).size() - size;
+					if ( sizeOldCC > 1 )
 					{
-						ccMap.get( id ).removeAll( candidateCC );
+						ccMap.get( targetID ).removeAll( candidateCC );
 					}
 					else
 					{
 						// It became too small, remove it.
-						ccMap.remove( id );
-						idProvider.free( id );
+						ccMap.remove( targetID );
+						idProvider.free( targetID );
+					}
+				}
+				else
+				{
+
+					/*
+					 * The target CC is not present in the graph anymore. We
+					 * just have to create a new CC with what radiates from
+					 * target, and remove what we found from its previous CC.
+					 */
+					final RefSet< V > candidateCC = createVertexSet();
+					sl.setCandidateCC( candidateCC );
+
+					sl.setTarget( null );
+					bfs.start( source );
+
+					final int size = candidateCC.size();
+					if ( size > 1 )
+					{
+						// Only add it if it is large enough
+						ccMap.put( idProvider.next(), candidateCC );
+					}
+
+					final int sizeOldCC = ccMap.get( sourceID ).size() - size;
+					if ( sizeOldCC > 1 )
+					{
+						ccMap.get( sourceID ).removeAll( candidateCC );
+					}
+					else
+					{
+						// It became too small, remove it.
+						ccMap.remove( sourceID );
+						idProvider.free( sourceID );
 					}
 				}
 			}
 		}
+
+		releaseRef( source );
+		releaseRef( target );
+	}
+
+	private String toString( final TIntObjectHashMap< RefSet< V >> map )
+	{
+		final StringBuilder sb = new StringBuilder();
+		sb.append( "{\n" );
+		for ( final int key : map.keys() )
+		{
+			sb.append( "  " + key + " -> " + map.get( key ) + "\n" );
+		}
+		sb.append( "}" );
+		return sb.toString();
 	}
 
 	/**
