@@ -3,25 +3,30 @@ package net.trackmate.graph.collection;
 import java.util.Collection;
 
 /**
- * TODO
+ * Interface for collections that can manage reference objects.
  * 
  * @param <O>
+ *            the type of the object to manage in this collection.
  *
  * @author Tobias Pietzsch <tobias.pietzsch@gmail.com>
  */
 public interface RefCollection< O > extends Collection< O >
 {
 	/**
-	 * TODO
+	 * Generates an object reference that can be used for retrieval. Depending
+	 * on concrete implementation, this object returned can be
+	 * <code>null.</code>
 	 * 
-	 * @return
+	 * @return a new, uninitialized, reference object.
 	 */
 	public O createRef();
 
 	/**
-	 * TODO
+	 * Releases a previously created reference object. Depending on concrete
+	 * implementation, this method might not do anything.
 	 * 
 	 * @param obj
+	 *            the reference object to release.
 	 */
 	public void releaseRef( final O obj );
 }

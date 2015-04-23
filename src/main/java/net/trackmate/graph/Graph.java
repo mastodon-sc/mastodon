@@ -45,14 +45,15 @@ public interface Graph< V extends Vertex< E >, E extends Edge< V > >
 	public void releaseRef( final E ... refs );
 
 	/**
-	 * Returns an iterator that will iterate over all the vertices of this grap.
+	 * Returns an iterator that will iterate over all the vertices of this
+	 * graph.
 	 * 
 	 * @return a new {@link Iterator}.
 	 */
 	public Iterator< V > vertexIterator();
 
 	/**
-	 * Returns an iterator that will iterate over all the edges of this grap.
+	 * Returns an iterator that will iterate over all the edges of this graph.
 	 * 
 	 * @return a new {@link Iterator}.
 	 */
