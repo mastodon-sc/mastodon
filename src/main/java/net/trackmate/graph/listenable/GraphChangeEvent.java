@@ -89,14 +89,74 @@ public class GraphChangeEvent< V extends Vertex< E >, E extends Edge< V > >
 		return vertexRemoved;
 	}
 
+	public V getPreviousEdgeSource( final E edge, final V tmpRef )
+	{
+		return previousEdgeSource.get( edge, tmpRef );
+	}
+
 	public V getPreviousEdgeSource( final E edge )
 	{
-		return previousEdgeSource.get( edge );
+		return getPreviousEdgeSource( edge, source.vertexRef() );
+	}
+
+	public V getPreviousEdgeTarget( final E edge, final V tmpRef )
+	{
+		return previousEdgeTarget.get( edge, tmpRef );
 	}
 
 	public V getPreviousEdgeTarget( final E edge )
 	{
-		return previousEdgeTarget.get( edge );
+		return getPreviousEdgeTarget( edge, source.vertexRef() );
 	}
 
+	@Override
+	public String toString()
+	{
+		final StringBuilder sb = new StringBuilder();
+		sb.append( super.toString() + "\n" );
+		sb.append( " - Source = " + source.toString() + "\n" );
+		if ( vertexAdded.isEmpty() )
+		{
+			sb.append( " - No vertices added.\n" );
+		}
+		else
+		{
+			sb.append( " - Vertices added: " + vertexAdded + "\n" );
+		}
+		if ( vertexRemoved.isEmpty() )
+		{
+			sb.append( " - No vertices removed.\n" );
+		}
+		else
+		{
+			sb.append( " - Vertices removed: " + vertexRemoved + "\n" );
+		}
+		if ( edgeAdded.isEmpty() )
+		{
+			sb.append( " - No edges added.\n" );
+		}
+		else
+		{
+			sb.append( " - Edges added: " + edgeAdded + "\n" );
+		}
+		if ( edgeRemoved.isEmpty() )
+		{
+			sb.append( " - No edges removed.\n" );
+		}
+		else
+		{
+			sb.append( " - Edges removed: [" );
+			for ( final E e : edgeRemoved )
+			{
+				sb.append( "e(" );
+				sb.append( previousEdgeSource.get( e ) + "->" + previousEdgeTarget.get( e ) );
+				sb.append( "), " );
+			}
+			sb.deleteCharAt( sb.length() - 1 );
+			sb.deleteCharAt( sb.length() - 1 );
+			sb.append( "]" );
+		}
+
+		return sb.toString();
+	}
 }
