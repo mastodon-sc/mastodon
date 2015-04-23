@@ -1,7 +1,6 @@
 package net.trackmate.graph.collection;
 
 import java.util.Collection;
-import java.util.Iterator;
 
 /**
  * TODO
