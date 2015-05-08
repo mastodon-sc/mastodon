@@ -1,9 +1,11 @@
 package net.trackmate.kdtree;
 
+import java.util.Arrays;
 import java.util.Collection;
 
-import net.imglib2.EuclideanSpace;
+import net.imglib2.RealInterval;
 import net.imglib2.RealLocalizable;
+import net.imglib2.RealPositionable;
 import net.trackmate.graph.Pool;
 import net.trackmate.graph.PoolObject;
 import net.trackmate.graph.mempool.DoubleMappedElement;
@@ -27,7 +29,7 @@ public class KDTree<
 			O extends PoolObject< O, ? > & RealLocalizable,
 			T extends MappedElement >
 		extends Pool< KDTreeNode< O, T >, T >
-		implements EuclideanSpace
+		implements RealInterval
 {
 	private static final MemPool.Factory< DoubleMappedElement > defaultPoolFactory = SingleArrayMemPool.factory( DoubleMappedElementArray.factory );
 
@@ -112,7 +114,20 @@ public class KDTree<
 
 	private final Pool< O, ? > objectPool;
 
+	/**
+	 * the number of dimensions.
+	 */
 	private final int n;
+
+	/**
+	 * minimum of each dimension.
+	 */
+	private final double[] min;
+
+	/**
+	 * maximum of each dimension.
+	 */
+	private final double[] max;
 
 	int rootIndex;
 
@@ -126,6 +141,10 @@ public class KDTree<
 		super( initialCapacity, nodeFactory );
 		this.n = numDimensions;
 		this.objectPool = objectPool;
+		min = new double[ n ];
+		max = new double[ n ];
+		Arrays.fill( min, Double.POSITIVE_INFINITY );
+		Arrays.fill( max, Double.NEGATIVE_INFINITY );
 	}
 
 	private void build( final Collection< O > objects )
@@ -134,19 +153,23 @@ public class KDTree<
 		final KDTreeNode< O, T > n2 = createRef();
 		final KDTreeNode< O, T > n3 = createRef();
 		for ( final O obj : objects )
+		{
 			create( n1 ).init( obj );
+			for ( int d = 0; d < n; ++d )
+			{
+				final double x = obj.getDoublePosition( d );
+				if ( x < min[ d ] )
+					min[ d ] = x;
+				if ( x > max[ d ] )
+					max[ d ] = x;
+			}
+		}
 		final int max = objects.size() - 1;
 		final int r = makeNode( 0, max, 0, n1, n2, n3 );
 		releaseRef( n1 );
 		releaseRef( n2 );
 		releaseRef( n3 );
 		rootIndex = r;
-	}
-
-	@Override
-	public int numDimensions()
-	{
-		return n;
 	}
 
 	double[] getDoubles()
@@ -338,5 +361,49 @@ public class KDTree<
 			getMemPool().swap( i, pivotIndex );
 		}
 		return i;
+	}
+
+	@Override
+	public int numDimensions()
+	{
+		return n;
+	}
+
+	@Override
+	public double realMin( final int d )
+	{
+		return min[ d ];
+	}
+
+	@Override
+	public void realMin( final double[] m )
+	{
+		for ( int d = 0; d < n; ++d )
+			m[ d ] = min[ d ];
+	}
+
+	@Override
+	public void realMin( final RealPositionable m )
+	{
+		m.setPosition( min );
+	}
+
+	@Override
+	public double realMax( final int d )
+	{
+		return max[ d ];
+	}
+
+	@Override
+	public void realMax( final double[] m )
+	{
+		for ( int d = 0; d < n; ++d )
+			m[ d ] = max[ d ];
+	}
+
+	@Override
+	public void realMax( final RealPositionable m )
+	{
+		m.setPosition( max );
 	}
 }

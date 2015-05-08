@@ -186,6 +186,16 @@ public class TIntArrayDeque implements TIntCollection
 		return peekLastUnchecked();
 	}
 
+	public void push( final int entry )
+	{
+		addFirst( entry );
+	}
+
+	public int pop()
+	{
+		return removeFirst();
+	}
+
 	@Override
 	public int getNoEntryValue()
 	{
