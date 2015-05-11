@@ -1,5 +1,12 @@
 package net.trackmate.trackscheme;
 
+/**
+ * Layouted dense vertex area.
+ *
+ * TODO: make this a PoolObject.
+ *
+ * @author Tobias Pietzsch <tobias.pietzsch@gmail.com>
+ */
 public class ScreenVertexRange
 {
 	private final double minX;

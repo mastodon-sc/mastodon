@@ -35,6 +35,12 @@ public class RealLocalizableVertices
 				access.putDouble( position[ d ], X_OFFSET + d * DOUBLE_SIZE );
 		}
 
+		public void setPosition( final RealLocalizable position )
+		{
+			for ( int d = 0; d < n; ++d )
+				access.putDouble( position.getDoublePosition( d ), X_OFFSET + d * DOUBLE_SIZE );
+		}
+
 		public void setPosition( final double position, final int d )
 		{
 			access.putDouble( position, X_OFFSET + d * DOUBLE_SIZE );

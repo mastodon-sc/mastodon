@@ -1,13 +1,19 @@
 package net.trackmate.trackscheme;
 
+import static net.trackmate.graph.mempool.ByteUtils.BOOLEAN_SIZE;
+import static net.trackmate.graph.mempool.ByteUtils.INDEX_SIZE;
 import net.trackmate.graph.Pool;
 import net.trackmate.graph.PoolObject;
 import net.trackmate.graph.mempool.ByteMappedElement;
 import net.trackmate.graph.mempool.ByteMappedElementArray;
 import net.trackmate.graph.mempool.MemPool;
 import net.trackmate.graph.mempool.SingleArrayMemPool;
-import static net.trackmate.graph.mempool.ByteUtils.*;
 
+/**
+ * Layouted edge.
+ *
+ * @author Tobias Pietzsch <tobias.pietzsch@gmail.com>
+ */
 public class ScreenEdge extends PoolObject< ScreenEdge, ByteMappedElement >
 {
 	protected static final int ORIG_EDGE_INDEX_OFFSET = 0;
@@ -38,6 +44,12 @@ public class ScreenEdge extends PoolObject< ScreenEdge, ByteMappedElement >
 		return this;
 	}
 
+	/**
+	 * Get the internal pool index of the associated {@link TrackSchemeEdge}.
+	 *
+	 * @return the internal pool index of the associated
+	 *         {@link TrackSchemeEdge}.
+	 */
 	public int getId()
 	{
 		return access.getIndex( ORIG_EDGE_INDEX_OFFSET );
@@ -48,6 +60,11 @@ public class ScreenEdge extends PoolObject< ScreenEdge, ByteMappedElement >
 		access.putIndex( id, ORIG_EDGE_INDEX_OFFSET );
 	}
 
+	/**
+	 * Get the internal pool index of the source ("from") {@link ScreenVertex}.
+	 *
+	 * @return internal pool index of the source {@link ScreenVertex}.
+	 */
 	public int getSourceScreenVertexIndex()
 	{
 		return access.getIndex( SOURCE_SCREEN_VERTEX_INDEX_OFFSET );
@@ -58,6 +75,11 @@ public class ScreenEdge extends PoolObject< ScreenEdge, ByteMappedElement >
 		access.putIndex( index, SOURCE_SCREEN_VERTEX_INDEX_OFFSET );
 	}
 
+	/**
+	 * Get the internal pool index of the target ("to") {@link ScreenVertex}.
+	 *
+	 * @return internal pool index of the target {@link ScreenVertex}.
+	 */
 	public int getTargetScreenVertexIndex()
 	{
 		return access.getIndex( TARGET_SCREEN_VERTEX_INDEX_OFFSET );
@@ -68,6 +90,11 @@ public class ScreenEdge extends PoolObject< ScreenEdge, ByteMappedElement >
 		access.putIndex( index, TARGET_SCREEN_VERTEX_INDEX_OFFSET );
 	}
 
+	/**
+	 * Get the selected state of the edge.
+	 *
+	 * @return true, if the edge is selected.
+	 */
 	public boolean isSelected()
 	{
 		return access.getBoolean( SELECTED_OFFSET );
@@ -99,13 +126,13 @@ public class ScreenEdge extends PoolObject< ScreenEdge, ByteMappedElement >
 	{
 		public ScreenEdgePool( final int initialCapacity )
 		{
-			this( initialCapacity, new EdgeFactory( initialCapacity ) );
+			this( initialCapacity, new EdgeFactory() );
 		}
 
 		private ScreenEdgePool( final int initialCapacity, final EdgeFactory f )
 		{
 			super( initialCapacity, f );
-			f.EdgePool = this;
+			f.edgePool = this;
 		}
 
 		@Override
@@ -121,14 +148,7 @@ public class ScreenEdge extends PoolObject< ScreenEdge, ByteMappedElement >
 
 		private static class EdgeFactory implements PoolObject.Factory< ScreenEdge, ByteMappedElement >
 		{
-			private ScreenEdgePool EdgePool;
-
-			private final Labels labels;
-
-			public EdgeFactory( final int initialCapacity )
-			{
-				labels = new Labels( initialCapacity );
-			}
+			private ScreenEdgePool edgePool;
 
 			@Override
 			public int getSizeInBytes()
@@ -139,7 +159,7 @@ public class ScreenEdge extends PoolObject< ScreenEdge, ByteMappedElement >
 			@Override
 			public ScreenEdge createEmptyRef()
 			{
-				return new ScreenEdge( EdgePool );
+				return new ScreenEdge( edgePool );
 			}
 
 			@Override

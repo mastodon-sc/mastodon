@@ -3,6 +3,11 @@ package net.trackmate.trackscheme;
 import gnu.trove.map.TIntObjectMap;
 import gnu.trove.map.hash.TIntObjectHashMap;
 
+/**
+ * Store labels of {@link TrackSchemeVertex}.
+ *
+ * @author Tobias Pietzsch <tobias.pietzsch@gmail.com>
+ */
 public class Labels
 {
 	private final TIntObjectMap< String > labels;

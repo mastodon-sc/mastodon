@@ -5,6 +5,12 @@ import net.trackmate.graph.PoolObjectList;
 import net.trackmate.graph.mempool.ByteMappedElement;
 import net.trackmate.trackscheme.ScreenVertex.ScreenVertexPool;
 
+/**
+ * A {@link PoolObjectList} of {@link ScreenVertex}. This is just a no-generics
+ * convenience class for {@code PoolObjectList<ScreenVertex, ByteMappedElement>}
+ *
+ * @author Tobias Pietzsch <tobias.pietzsch@gmail.com>
+ */
 public class ScreenVertexList extends PoolObjectList< ScreenVertex, ByteMappedElement >
 {
 	public ScreenVertexList( final ScreenVertexPool pool )
