@@ -8,7 +8,7 @@
 	<parent>
 		<groupId>sc.fiji</groupId>
 		<artifactId>pom-fiji</artifactId>
-		<version>7.3.0</version>
+		<version>10.1.0</version>
 	</parent>
 
 	<groupId>net.trackmate</groupId>
