@@ -122,7 +122,7 @@ public class VertexOrder
 			final TrackSchemeVertexList vertexList = timepointToOrderedVertices.get( timepoint );
 			for ( final TrackSchemeVertex vertex : vertexList )
 			{
-				System.out.print( vertex.getId() + ":" + vertex.getLayoutX() + " " );
+				System.out.print( vertex.getModelVertexId() + ":" + vertex.getLayoutX() + " " );
 			}
 			System.out.println();
 			System.out.println();
@@ -280,7 +280,7 @@ public class VertexOrder
 			graph.getVertexPool().getByInternalPoolIndex( closestVertexIndex, v );
 
 			final int si = v.getScreenVertexIndex();
-			if ( si >= 0 && si < screenVertices.size() && screenVertices.get( si, sv ).getId() == v.getInternalPoolIndex() )
+			if ( si >= 0 && si < screenVertices.size() && screenVertices.get( si, sv ).getTrackSchemeVertexId() == v.getInternalPoolIndex() )
 			{
 				final double spotdiameter = Math.min( sv.getVertexDist() - 10.0, GraphLayoutOverlay.maxDisplayVertexSize );
 				final double spotradius = ( int ) ( spotdiameter / 2 );
@@ -393,7 +393,7 @@ public class VertexOrder
 						{
 							edge.getSource( v2 );
 							final int v2si = v2.getScreenVertexIndex();
-							if ( v2si >= 0 && v2si < screenVertices.size() && screenVertices.get( v2si, sv ).getId() == v2.getInternalPoolIndex() )
+							if ( v2si >= 0 && v2si < screenVertices.size() && screenVertices.get( v2si, sv ).getTrackSchemeVertexId() == v2.getInternalPoolIndex() )
 							{
 								final int eid = edge.getInternalPoolIndex();
 								final int sourceScreenVertexIndex = v2si;

@@ -47,7 +47,7 @@ public class ScreenVertex extends PoolObject< ScreenVertex, ByteMappedElement >
 			final double y,
 			final boolean selected )
 	{
-		setId( id );
+		setTrackSchemeVertexId( id );
 		setX( x );
 		setY( y );
 		setSelected( selected );
@@ -60,12 +60,12 @@ public class ScreenVertex extends PoolObject< ScreenVertex, ByteMappedElement >
 	 * @return the internal pool index of the associated
 	 *         {@link TrackSchemeVertex}.
 	 */
-	public int getId()
+	public int getTrackSchemeVertexId()
 	{
 		return access.getIndex( ORIG_VERTEX_INDEX_OFFSET );
 	}
 
-	protected void setId( final int id )
+	protected void setTrackSchemeVertexId( final int id )
 	{
 		access.putIndex( id, ORIG_VERTEX_INDEX_OFFSET );
 	}
@@ -125,7 +125,7 @@ public class ScreenVertex extends PoolObject< ScreenVertex, ByteMappedElement >
 	 */
 	public String getLabel()
 	{
-		trackSchemeVertexPool.getByInternalPoolIndex( getId(), vref );
+		trackSchemeVertexPool.getByInternalPoolIndex( getTrackSchemeVertexId(), vref );
 		return vref.getLabel();
 	}
 

@@ -37,7 +37,7 @@ public class ScreenEdge extends PoolObject< ScreenEdge, ByteMappedElement >
 			final int targetScreenVertexIndex,
 			final boolean selected )
 	{
-		setId( id );
+		setTrackSchemeEdgeId( id );
 		setSourceScreenVertexIndex( sourceScreenVertexIndex );
 		setTargetScreenVertexIndex( targetScreenVertexIndex );
 		setSelected( selected );
@@ -50,12 +50,12 @@ public class ScreenEdge extends PoolObject< ScreenEdge, ByteMappedElement >
 	 * @return the internal pool index of the associated
 	 *         {@link TrackSchemeEdge}.
 	 */
-	public int getId()
+	public int getTrackSchemeEdgeId()
 	{
 		return access.getIndex( ORIG_EDGE_INDEX_OFFSET );
 	}
 
-	protected void setId( final int id )
+	protected void setTrackSchemeEdgeId( final int id )
 	{
 		access.putIndex( id, ORIG_EDGE_INDEX_OFFSET );
 	}

@@ -1,7 +1,7 @@
 package net.trackmate.trackscheme;
 
 import net.trackmate.graph.AbstractEdgePool;
-import net.trackmate.graph.AbstractIdVertexPool;
+import net.trackmate.graph.AbstractVertexPool;
 import net.trackmate.graph.GraphImp;
 import net.trackmate.graph.PoolObject;
 import net.trackmate.graph.mempool.ByteMappedElement;
@@ -21,7 +21,7 @@ public class TrackSchemeGraph extends GraphImp< TrackSchemeGraph.TrackSchemeVert
 		super( new TrackSchemeEdgePool( initialCapacity, new TrackSchemeVertexPool( initialCapacity ) ) );
 	}
 
-	static class TrackSchemeVertexPool extends AbstractIdVertexPool< TrackSchemeVertex, TrackSchemeEdge, ByteMappedElement >
+	static class TrackSchemeVertexPool extends AbstractVertexPool< TrackSchemeVertex, TrackSchemeEdge, ByteMappedElement >
 	{
 		public TrackSchemeVertexPool( final int initialCapacity )
 		{
