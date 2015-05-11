@@ -2,6 +2,12 @@ package net.trackmate.trackscheme;
 
 import java.util.List;
 
+/**
+ * A collection of layouted screen objects to paint. Comprises lists of
+ * {@link ScreenVertex}, {@link ScreenEdge}, and {@link ScreenVertexRange}.
+ *
+ * @author Tobias Pietzsch <tobias.pietzsch@gmail.com>
+ */
 public class ScreenEntities
 {
 	public final List< ScreenVertex > vertices;

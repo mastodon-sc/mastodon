@@ -5,6 +5,12 @@ import net.trackmate.graph.PoolObjectList;
 import net.trackmate.graph.mempool.ByteMappedElement;
 import net.trackmate.trackscheme.ScreenEdge.ScreenEdgePool;
 
+/**
+ * A {@link PoolObjectList} of {@link ScreenEdge}. This is just a no-generics
+ * convenience class for {@code PoolObjectList<ScreenEdge, ByteMappedElement>}
+ *
+ * @author Tobias Pietzsch <tobias.pietzsch@gmail.com>
+ */
 public class ScreenEdgeList extends PoolObjectList< ScreenEdge, ByteMappedElement >
 {
 	public ScreenEdgeList( final ScreenEdgePool pool )

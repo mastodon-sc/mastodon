@@ -1,5 +1,8 @@
 package net.trackmate.trackscheme;
 
+import static net.trackmate.graph.mempool.ByteUtils.BOOLEAN_SIZE;
+import static net.trackmate.graph.mempool.ByteUtils.DOUBLE_SIZE;
+import static net.trackmate.graph.mempool.ByteUtils.INDEX_SIZE;
 import net.trackmate.graph.Pool;
 import net.trackmate.graph.PoolObject;
 import net.trackmate.graph.mempool.ByteMappedElement;
@@ -7,8 +10,12 @@ import net.trackmate.graph.mempool.ByteMappedElementArray;
 import net.trackmate.graph.mempool.MemPool;
 import net.trackmate.graph.mempool.SingleArrayMemPool;
 import net.trackmate.trackscheme.TrackSchemeGraph.TrackSchemeVertexPool;
-import static net.trackmate.graph.mempool.ByteUtils.*;
 
+/**
+ * Layouted vertex.
+ *
+ * @author Tobias Pietzsch <tobias.pietzsch@gmail.com>
+ */
 public class ScreenVertex extends PoolObject< ScreenVertex, ByteMappedElement >
 {
 	protected static final int ORIG_VERTEX_INDEX_OFFSET = 0;
@@ -47,6 +54,12 @@ public class ScreenVertex extends PoolObject< ScreenVertex, ByteMappedElement >
 		return this;
 	}
 
+	/**
+	 * Get the internal pool index of the associated {@link TrackSchemeVertex}.
+	 *
+	 * @return the internal pool index of the associated
+	 *         {@link TrackSchemeVertex}.
+	 */
 	public int getId()
 	{
 		return access.getIndex( ORIG_VERTEX_INDEX_OFFSET );
@@ -57,6 +70,11 @@ public class ScreenVertex extends PoolObject< ScreenVertex, ByteMappedElement >
 		access.putIndex( id, ORIG_VERTEX_INDEX_OFFSET );
 	}
 
+	/**
+	 * Get the X screen coordinate of the vertex center.
+	 *
+	 * @return X screen coordinate.
+	 */
 	public double getX()
 	{
 		return access.getDouble( X_OFFSET );
@@ -67,6 +85,11 @@ public class ScreenVertex extends PoolObject< ScreenVertex, ByteMappedElement >
 		access.putDouble( x, X_OFFSET );
 	}
 
+	/**
+	 * Get the Y screen coordinate of the vertex center.
+	 *
+	 * @return Y screen coordinate.
+	 */
 	public double getY()
 	{
 		return access.getDouble( Y_OFFSET );
@@ -77,22 +100,40 @@ public class ScreenVertex extends PoolObject< ScreenVertex, ByteMappedElement >
 		access.putDouble( y, Y_OFFSET );
 	}
 
+	/**
+	 * (Estimate of) the distance to the closest vertex on screen.
+	 * Center-to-center distance.
+	 *
+	 * @return distance to the closest vertex on screen.
+	 */
 	public double getVertexDist()
 	{
 		return access.getDouble( VERTEX_DIST_OFFSET );
 	}
 
-	public void setVertexDist( final double minVertexScreenDist )
+	protected void setVertexDist( final double minVertexScreenDist )
 	{
 		access.putDouble( minVertexScreenDist, VERTEX_DIST_OFFSET );
 	}
 
+	/**
+	 * Get the label of the vertex. This calls
+	 * {@link TrackSchemeVertex#getLabel()} of the associated
+	 * {@link TrackSchemeVertex}.
+	 *
+	 * @return label of the vertex.
+	 */
 	public String getLabel()
 	{
 		trackSchemeVertexPool.getByInternalPoolIndex( getId(), vref );
 		return vref.getLabel();
 	}
 
+	/**
+	 * Get the selected state of the vertex.
+	 *
+	 * @return true, if the vertex is selected.
+	 */
 	public boolean isSelected()
 	{
 		return access.getBoolean( SELECTED_OFFSET );

@@ -98,7 +98,13 @@ public class TrackSchemeVertexList extends PoolObjectList< TrackSchemeVertex, By
 		return high;
 	}
 
-	protected TIntArrayList getDenseRanges( final int fromIndex, final int toIndex, final double minLayoutX, final double allowedMinD, final int minSubDivSize, final TrackSchemeVertex vref )
+	protected TIntArrayList getDenseRanges(
+			final int fromIndex,
+			final int toIndex,
+			final double minLayoutX,
+			final double allowedMinD,
+			final int minSubDivSize,
+			final TrackSchemeVertex vref )
 	{
 		if ( fromIndex < 0 )
 			throw new ArrayIndexOutOfBoundsException( fromIndex );

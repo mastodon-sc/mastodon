@@ -2,6 +2,19 @@ package net.trackmate.trackscheme;
 
 import java.util.Iterator;
 
+/**
+ * Layouting of a {@link TrackSchemeGraph} into layout coordinates.
+ *
+ * <p>
+ * This determines the layoutX coordinates for all vertices. (The layoutY
+ * coordinates of vertices are given by the timepoint.)
+ *
+ * <p>
+ * See {@link VertexOrder}. for transforming layout coordinates to screen
+ * coordinates.
+ *
+ * @author Tobias Pietzsch <tobias.pietzsch@gmail.com>
+ */
 public class LineageTreeLayout
 {
 	private double rightmost;
@@ -19,6 +32,10 @@ public class LineageTreeLayout
 		rightmost = 0;
 	}
 
+	/**
+	 * Get ordered list of roots and then call
+	 * {@link #layoutX(TrackSchemeVertex)} for every root.
+	 */
 	public void layoutX()
 	{
 		reset();
@@ -28,6 +45,18 @@ public class LineageTreeLayout
 			layoutX( root );
 	}
 
+	/**
+	 * Recursively lay out vertices such that
+	 * <ul>
+	 * <li>leafs are assigned layoutX = 0, 1, 2, ...
+	 * <li>non-leafs are centered between first and last child's layoutX
+	 * <li>for layout of vertices with more then one parent, only first incoming
+	 * edge counts as parent edge
+	 * </ul>
+	 *
+	 * @param v
+	 *            root of sub-tree to layout.
+	 */
 	public void layoutX( final TrackSchemeVertex v )
 	{
 		if ( v.outgoingEdges().isEmpty() )

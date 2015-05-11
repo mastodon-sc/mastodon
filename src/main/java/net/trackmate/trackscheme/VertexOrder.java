@@ -1,11 +1,13 @@
 package net.trackmate.trackscheme;
 
-import java.util.ArrayList;
-import net.trackmate.trackscheme.ScreenEdge.ScreenEdgePool;
-import net.trackmate.trackscheme.ScreenVertex.ScreenVertexPool;
 import gnu.trove.iterator.TIntIterator;
 import gnu.trove.list.array.TIntArrayList;
 import gnu.trove.map.hash.TIntObjectHashMap;
+
+import java.util.ArrayList;
+
+import net.trackmate.trackscheme.ScreenEdge.ScreenEdgePool;
+import net.trackmate.trackscheme.ScreenVertex.ScreenVertexPool;
 
 // TODO: build/maintain while adding nodes and edges to the TrackSchemeGraph
 public class VertexOrder
@@ -231,8 +233,8 @@ public class VertexOrder
 		final TrackSchemeVertex v = graph.vertexRef();
 		final ScreenVertex sv = screenVertexPool.createRef();
 
-		final double yScale = ( double ) ( lastLayoutScreenHeight - 1 ) / ( lastLayoutMaxY - lastLayoutMinY );
-		final double xScale = ( double ) ( lastLayoutScreenWidth - 1 ) / ( lastLayoutMaxX - lastLayoutMinX );
+		final double yScale = ( lastLayoutScreenHeight - 1 ) / ( lastLayoutMaxY - lastLayoutMinY );
+		final double xScale = ( lastLayoutScreenWidth - 1 ) / ( lastLayoutMaxX - lastLayoutMinX );
 
 		final int closestY = ( int ) Math.round( ly );
 
@@ -301,7 +303,13 @@ public class VertexOrder
 	private long sumVertexRangesToPaint = 0;
 	private final long printEveryNRuns = 100;
 
-	public ScreenEntities cropAndScale( final double minX, final double maxX, final double minY, final double maxY, final int screenWidth, final int screenHeight )
+	public ScreenEntities cropAndScale(
+			final double minX,
+			final double maxX,
+			final double minY,
+			final double maxY,
+			final int screenWidth,
+			final int screenHeight )
 	{
 		final long t0 = System.currentTimeMillis();
 
@@ -321,8 +329,8 @@ public class VertexOrder
 
 		final ArrayList< ScreenVertexRange > vertexRanges = new ArrayList< ScreenVertexRange >();
 
-		final double yScale = ( double ) ( screenHeight - 1 ) / ( maxY - minY );
-		final double xScale = ( double ) ( screenWidth - 1 ) / ( maxX - minX );
+		final double yScale = ( screenHeight - 1 ) / ( maxY - minY );
+		final double xScale = ( screenWidth - 1 ) / ( maxX - minX );
 		final double allowedMinD = 2.0 / xScale;
 
 //		System.out.println();
@@ -336,14 +344,18 @@ public class VertexOrder
 			if ( timepoint + 1 >= minY && timepoint - 1 <= maxY )
 			{
 				final int timepointStartScreenVertexIndex = screenVertices.size();
-				final double y = ( timepoint - minY ) * yScale;
-				final double prevY = ( timepoint - 1 - minY ) * yScale;
+				final double y = ( timepoint - minY ) * yScale; // screen y of vertices of timepoint
+				final double prevY = ( timepoint - 1 - minY ) * yScale; // screen y of vertices of (timepoint-1)
 				final TrackSchemeVertexList vertexList = timepointToOrderedVertices.get( timepoint );
+				// largest index of vertex with layoutX <= minX
 				int minIndex = vertexList.binarySearch( minX );
+				// include vertex before that (may be appears partially on screen, and may be needed to paint edge to vertex in other timepoint)
 				minIndex--;
 				if ( minIndex < 0 )
 					minIndex = 0;
+				// largest index of vertex with layoutX <= maxX
 				int maxIndex = vertexList.binarySearch( maxX, minIndex, vertexList.size() );
+				// include vertex after that (may be appears partially on screen, and may be needed to paint edge to vertex in other timepoint)
 				if ( maxIndex < vertexList.size() - 1 )
 					maxIndex++;
 

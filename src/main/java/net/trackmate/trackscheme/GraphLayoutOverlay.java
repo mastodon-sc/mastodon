@@ -11,6 +11,14 @@ import java.util.List;
 
 import net.imglib2.ui.OverlayRenderer;
 
+/**
+ * A {@link OverlayRenderer} that paints {@link ScreenEntities} of a trackscheme
+ * graph. Comprises methods to paint vertices, edges, and dense vertex ranges.
+ * It has no layout capabilities of its own, just paints layouted screen
+ * objects.
+ *
+ * @author Tobias Pietzsch <tobias.pietzsch@gmail.com>
+ */
 public class GraphLayoutOverlay implements OverlayRenderer
 {
 	private int width;
