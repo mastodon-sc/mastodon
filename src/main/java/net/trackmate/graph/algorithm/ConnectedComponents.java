@@ -17,7 +17,7 @@ import net.trackmate.graph.util.Graphs;
  * This version of the algorithm does not listen to changes in the graph. It
  * simply generates a new set of components each time the {@link #get()} method
  * is called.
- * 
+ *
  * @author Jean-Yves Tinevez.
  *
  * @param <V>
@@ -29,10 +29,18 @@ public class ConnectedComponents< V extends Vertex< E >, E extends Edge< V > > e
 {
 	private final RefSet< V > visited;
 
-	public ConnectedComponents( final Graph< V, E > graph )
+	private final int minimalSize;
+
+	public ConnectedComponents( final Graph< V, E > graph, final int minimalSize )
 	{
 		super( graph );
+		this.minimalSize = minimalSize;
 		this.visited = createVertexSet();
+	}
+
+	public ConnectedComponents( final Graph< V, E > graph )
+	{
+		this( graph, 2 );
 	}
 
 	private void visit( final V v, final RefSet< V > currentComponent )
@@ -60,7 +68,7 @@ public class ConnectedComponents< V extends Vertex< E >, E extends Edge< V > > e
 	 * The returned connected components are a snapshot of the graph
 	 * connectivity when this method is called. Subsequent calls to this method
 	 * will return a new set, that accounts for the latest graph modifications.
-	 * 
+	 *
 	 * @return a new {@link Set} containing the connected components of the
 	 *         graph.
 	 */
@@ -80,7 +88,10 @@ public class ConnectedComponents< V extends Vertex< E >, E extends Edge< V > > e
 
 			final RefSet< V > currentComponent = createVertexSet();
 			visit( v, currentComponent );
-			components.add( currentComponent );
+			if ( currentComponent.size() >= minimalSize )
+			{
+				components.add( currentComponent );
+			}
 		}
 		return components;
 	}
