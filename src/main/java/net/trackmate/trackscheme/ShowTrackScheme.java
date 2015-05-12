@@ -49,7 +49,6 @@ public class ShowTrackScheme implements TransformListener< ScreenTransform >, Se
 
 		private boolean dragStarted = false;
 
-
 		@Override
 		public void mouseClicked( MouseEvent e )
 		{
@@ -225,7 +224,10 @@ public class ShowTrackScheme implements TransformListener< ScreenTransform >, Se
 				final boolean selected = !closestEdge.isSelected();
 				closestEdge.setSelected( selected );
 				final ScreenEdge screenEdge = order.getScreenEdgeFor( closestEdge );
-				screenEdge.setSelected( selected );
+				if ( null != screenEdge )
+				{
+					screenEdge.setSelected( selected );
+				}
 			}
 		}
 		else
@@ -233,7 +235,10 @@ public class ShowTrackScheme implements TransformListener< ScreenTransform >, Se
 			final boolean selected = !closestVertex.isSelected();
 			closestVertex.setSelected( selected );
 			final ScreenVertex screenVertex = order.getScreenVertexFor( closestVertex );
-			screenVertex.setSelected( selected );
+			if ( null != screenVertex )
+			{
+				screenVertex.setSelected( selected );
+			}
 		}
 	}
 
@@ -252,7 +257,10 @@ public class ShowTrackScheme implements TransformListener< ScreenTransform >, Se
 		{
 			v.setSelected( selected );
 			final ScreenVertex sv = order.getScreenVertexFor( v );
-			sv.setSelected( selected );
+			if ( null != sv )
+			{
+				sv.setSelected( selected );
+			}
 
 			for ( final TrackSchemeEdge e : v.outgoingEdges() )
 			{
@@ -261,7 +269,10 @@ public class ShowTrackScheme implements TransformListener< ScreenTransform >, Se
 				{
 					e.setSelected( selected );
 					final ScreenEdge se = order.getScreenEdgeFor( e );
-					se.setSelected( selected );
+					if ( null != se )
+					{
+						se.setSelected( selected );
+					}
 				}
 			}
 		}
