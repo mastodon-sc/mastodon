@@ -324,11 +324,11 @@ public class VertexOrder
 		graph.releaseRef( v );
 	}
 
-	private long numCropAndScales = 0;
-	private long sumCropAndScaleTimes = 0;
-	private long sumVerticesToPaint = 0;
-	private long sumVertexRangesToPaint = 0;
-	private final long printEveryNRuns = 100;
+	//	private long numCropAndScales = 0;
+	//	private long sumCropAndScaleTimes = 0;
+	//	private long sumVerticesToPaint = 0;
+	//	private long sumVertexRangesToPaint = 0;
+	//	private final long printEveryNRuns = 100;
 
 	public ScreenEntities cropAndScale(
 			final double minX,
@@ -338,7 +338,7 @@ public class VertexOrder
 			final int screenWidth,
 			final int screenHeight )
 	{
-		final long t0 = System.currentTimeMillis();
+		//		final long t0 = System.currentTimeMillis();
 
 		this.lastLayoutMinX = minX;
 		this.lastLayoutMaxX = maxX;
@@ -461,25 +461,25 @@ public class VertexOrder
 		graph.releaseRef( v1 );
 		graph.releaseRef( v2 );
 
-		final long t1 = System.currentTimeMillis();
-
-		numCropAndScales++;
-		sumCropAndScaleTimes += ( t1 - t0 );
-		sumVerticesToPaint += screenVertices.size();
-		sumVertexRangesToPaint += vertexRanges.size();
-		if ( numCropAndScales == printEveryNRuns )
-		{
-			System.out.println( "crop and scale time = " + ( sumCropAndScaleTimes / numCropAndScales ) + "ms" );
-			System.out.println( "painting " + ( sumVerticesToPaint / numCropAndScales ) + " vertices" );
-			System.out.println( "painting " + ( sumVertexRangesToPaint / numCropAndScales ) + " dense vertex ranges" );
-			System.out.println( "(averages over last " + printEveryNRuns + " runs)");
-			System.out.println();
-
-			numCropAndScales = 0;
-			sumCropAndScaleTimes = 0;
-			sumVerticesToPaint = 0;
-			sumVertexRangesToPaint = 0;
-		}
+//		final long t1 = System.currentTimeMillis();
+		//
+		//		numCropAndScales++;
+		//		sumCropAndScaleTimes += ( t1 - t0 );
+		//		sumVerticesToPaint += screenVertices.size();
+		//		sumVertexRangesToPaint += vertexRanges.size();
+		//		if ( numCropAndScales == printEveryNRuns )
+		//		{
+		//			System.out.println( "crop and scale time = " + ( sumCropAndScaleTimes / numCropAndScales ) + "ms" );
+		//			System.out.println( "painting " + ( sumVerticesToPaint / numCropAndScales ) + " vertices" );
+		//			System.out.println( "painting " + ( sumVertexRangesToPaint / numCropAndScales ) + " dense vertex ranges" );
+		//			System.out.println( "(averages over last " + printEveryNRuns + " runs)");
+		//			System.out.println();
+		//
+		//			numCropAndScales = 0;
+		//			sumCropAndScaleTimes = 0;
+		//			sumVerticesToPaint = 0;
+		//			sumVertexRangesToPaint = 0;
+		//		}
 
 		return new ScreenEntities( screenVertices, screenEdges, vertexRanges );
 	}
