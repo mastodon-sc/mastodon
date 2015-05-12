@@ -26,8 +26,15 @@ public class TrackSchemeVertex extends AbstractVertex< TrackSchemeVertex, TrackS
 		setScreenVertexIndex( -1 );
 	}
 
+	// TODO: remove
 	public TrackSchemeVertex init( final String label, final int timepoint, final boolean isSelected )
 	{
+		return init( 0, label, timepoint, isSelected );
+	}
+
+	public TrackSchemeVertex init( final int modelVertexId, final String label, final int timepoint, final boolean isSelected )
+	{
+		setModelVertexId( modelVertexId );
 		setLabel( label );
 		setLayoutX( 0 );
 		setTimePoint( timepoint );
