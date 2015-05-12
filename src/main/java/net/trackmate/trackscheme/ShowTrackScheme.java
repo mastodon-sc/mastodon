@@ -19,6 +19,7 @@ import net.imglib2.ui.PainterThread;
 import net.imglib2.ui.TransformListener;
 import net.imglib2.ui.util.GuiUtil;
 import net.imglib2.util.BenchmarkHelper;
+import net.trackmate.graph.collection.RefSet;
 
 public class ShowTrackScheme implements TransformListener< ScreenTransform >, SelectionListener
 {
@@ -55,6 +56,7 @@ public class ShowTrackScheme implements TransformListener< ScreenTransform >, Se
 			if ( e.getButton() == MouseEvent.BUTTON1 )
 			{
 				selectionListener.selectAt( transform, e.getX(), e.getY() );
+				frame.repaint();
 			}
 		}
 
@@ -71,16 +73,17 @@ public class ShowTrackScheme implements TransformListener< ScreenTransform >, Se
 					oX = e.getX();
 					oY = e.getY();
 				}
+				frame.repaint();
 			}
-			frame.repaint();
 		}
 
 		@Override
 		public void mouseReleased( MouseEvent e )
 		{
-			if ( e.getButton() == MouseEvent.BUTTON1 )
+			if ( e.getButton() == MouseEvent.BUTTON1 && dragStarted )
 			{
 				dragStarted = false;
+				selectionListener.selectWithin( transform, oX, oY, eX, eY );
 				frame.repaint();
 			}
 		}
@@ -232,8 +235,38 @@ public class ShowTrackScheme implements TransformListener< ScreenTransform >, Se
 			final ScreenVertex screenVertex = order.getScreenVertexFor( closestVertex );
 			screenVertex.setSelected( selected );
 		}
+	}
 
-		frame.repaint();
+	@Override
+	public void selectWithin( ScreenTransform transform, int x1, int y1, int x2, int y2 )
+	{
+		final double lx1 = transform.screenToLayoutX( x1 );
+		final double ly1 = transform.screenToLayoutY( y1 );
+		final double lx2 = transform.screenToLayoutX( x2 );
+		final double ly2 = transform.screenToLayoutY( y2 );
+
+		final RefSet< TrackSchemeVertex > vs = order.getVerticesWithin( lx1, ly1, lx2, ly2 );
+		TrackSchemeVertex t = graph.vertexRef();
+		final boolean selected = true;
+		for ( final TrackSchemeVertex v : vs )
+		{
+			v.setSelected( selected );
+			final ScreenVertex sv = order.getScreenVertexFor( v );
+			sv.setSelected( selected );
+
+			for ( final TrackSchemeEdge e : v.outgoingEdges() )
+			{
+				t = e.getTarget( t );
+				if ( vs.contains( t ) )
+				{
+					e.setSelected( selected );
+					final ScreenEdge se = order.getScreenEdgeFor( e );
+					se.setSelected( selected );
+				}
+			}
+		}
+
+		graph.releaseRef( t );
 	}
 
 	static class MyFrame extends JFrame implements PainterThread.Paintable

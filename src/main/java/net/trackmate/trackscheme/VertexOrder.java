@@ -6,6 +6,7 @@ import gnu.trove.map.hash.TIntObjectHashMap;
 
 import java.util.ArrayList;
 
+import net.trackmate.graph.collection.RefSet;
 import net.trackmate.trackscheme.ScreenEdge.ScreenEdgePool;
 import net.trackmate.trackscheme.ScreenVertex.ScreenVertexPool;
 
@@ -377,6 +378,46 @@ public class VertexOrder
 			if ( d < tolerance ) { return e; }
 		}
 		return null;
+	}
+
+	public RefSet< TrackSchemeVertex > getVerticesWithin( double lx1, double ly1, double lx2, double ly2 )
+	{
+		final int tStart = ( int ) Math.ceil( Math.min( ly1, ly2 ) );
+		final int tEnd = ( int ) Math.floor( Math.max( ly1, ly2 ) );
+		final double x1 = Math.min( lx1, lx2 );
+		final double x2 = Math.max( lx1, lx2 );
+
+		final RefSet< TrackSchemeVertex > vertexSet = graph.createVertexSet();
+		TrackSchemeVertex v = graph.vertexRef();
+
+		final TIntIterator iter = timepoints.iterator();
+		while ( iter.hasNext() )
+		{
+			final int timepoint = iter.next();
+			if ( timepoint >= tStart && timepoint <= tEnd )
+			{
+				final TrackSchemeVertexList vertexList = timepointToOrderedVertices.get( timepoint );
+				int left = vertexList.binarySearch( x1 ) + 1;
+				if ( left < 0 )
+				{
+					left = 0;
+				}
+
+				int right = vertexList.binarySearch( x2, left, vertexList.size() );
+				if ( right >= vertexList.size() )
+				{
+					right = vertexList.size() - 1;
+				}
+
+				for ( int i = left; i <= right; i++ )
+				{
+					v = vertexList.get( i, v );
+					vertexSet.add( v );
+				}
+
+			}
+		}
+		return vertexSet;
 	}
 
 	// private long numCropAndScales = 0;
