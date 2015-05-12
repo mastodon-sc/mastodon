@@ -14,7 +14,7 @@ public class TrackSchemeVertex extends AbstractVertex< TrackSchemeVertex, TrackS
 	protected static final int X_OFFSET = ORIG_VERTEX_INDEX_OFFSET + INDEX_SIZE;
 	protected static final int TIMEPOINT_OFFSET = X_OFFSET + DOUBLE_SIZE;
 	protected static final int SCREENVERTEX_INDEX_OFFSET = TIMEPOINT_OFFSET + INT_SIZE;
-	protected static final int SELECTED_OFFSET = SCREENVERTEX_INDEX_OFFSET + INT_SIZE;
+	protected static final int SELECTED_OFFSET = SCREENVERTEX_INDEX_OFFSET + INDEX_SIZE;
 	protected static final int SIZE_IN_BYTES = SELECTED_OFFSET + BOOLEAN_SIZE;
 
 	private final Labels labels;
@@ -92,12 +92,12 @@ public class TrackSchemeVertex extends AbstractVertex< TrackSchemeVertex, TrackS
 
 	public int getScreenVertexIndex()
 	{
-		return access.getInt( SCREENVERTEX_INDEX_OFFSET );
+		return access.getIndex( SCREENVERTEX_INDEX_OFFSET );
 	}
 
 	public void setScreenVertexIndex( final int screenVertexIndex )
 	{
-		access.putInt( screenVertexIndex, SCREENVERTEX_INDEX_OFFSET );
+		access.putIndex( screenVertexIndex, SCREENVERTEX_INDEX_OFFSET );
 	}
 
 	public double getLayoutX()
