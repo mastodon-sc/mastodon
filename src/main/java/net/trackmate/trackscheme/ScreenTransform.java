@@ -269,13 +269,17 @@ public class ScreenTransform
 					synchronized ( transform )
 					{
 						transformDragStart.set( transform );
+			}
+		}
 
-						if ( selectionListener != null )
+		@Override
+		public void mouseClicked( MouseEvent e )
+		{
+			if ( selectionListener != null )
+			{
+				if ( e.getButton() == MouseEvent.BUTTON1 )
 						{
-							if ( e.getButton() == MouseEvent.BUTTON1 )
-							{
-								selectionListener.selectAt( transform, e.getX(), e.getY() );
-							}
+					selectionListener.selectAt( transform, e.getX(), e.getY() );
 						}
 					}
 				}
