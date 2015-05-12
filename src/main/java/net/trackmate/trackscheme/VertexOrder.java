@@ -6,8 +6,6 @@ import gnu.trove.map.hash.TIntObjectHashMap;
 
 import java.util.ArrayList;
 
-import net.trackmate.graph.AllEdges;
-import net.trackmate.graph.util.Graphs;
 import net.trackmate.trackscheme.ScreenEdge.ScreenEdgePool;
 import net.trackmate.trackscheme.ScreenVertex.ScreenVertexPool;
 
@@ -26,7 +24,7 @@ public class VertexOrder
 
 	// Map timepoint -> vertex list
 	// vertex list: all vertices of a timepoint ordered by natural tree order
-	//              tree roots (including unconnected vertices) are ordered by ID (for now)
+	// tree roots (including unconnected vertices) are ordered by ID (for now)
 	private final TIntObjectHashMap< TrackSchemeVertexList > timepointToOrderedVertices;
 
 	private ScreenVertexPool screenVertexPool;
@@ -62,7 +60,6 @@ public class VertexOrder
 		this.graph = graph;
 		timepoints = new TIntArrayList();
 		timepointToOrderedVertices = new TIntObjectHashMap< TrackSchemeVertexList >();
-
 
 		screenVertexPool = new ScreenVertex.ScreenVertexPool( INITIAL_CAPACITY, graph.getVertexPool() );
 		screenVertexPool2 = new ScreenVertex.ScreenVertexPool( INITIAL_CAPACITY, graph.getVertexPool() );
@@ -172,7 +169,8 @@ public class VertexOrder
 	public TrackSchemeVertex getMinVertex( final int timepoint, final TrackSchemeVertex vertex )
 	{
 		final TrackSchemeVertexList vlist = timepointToOrderedVertices.get( timepoint );
-		if ( vlist == null ) {
+		if ( vlist == null )
+		{
 			return null;
 		}
 		else
@@ -184,7 +182,8 @@ public class VertexOrder
 	public TrackSchemeVertex getMaxVertex( final int timepoint, final TrackSchemeVertex vertex )
 	{
 		final TrackSchemeVertexList vlist = timepointToOrderedVertices.get( timepoint );
-		if ( vlist == null ) {
+		if ( vlist == null )
+		{
 			return null;
 		}
 		else
@@ -231,7 +230,8 @@ public class VertexOrder
 
 	public int getMinTimepoint()
 	{
-		if ( timepoints.isEmpty() ) {
+		if ( timepoints.isEmpty() )
+		{
 			return 0;
 		}
 		else
@@ -242,7 +242,8 @@ public class VertexOrder
 
 	public int getMaxTimepoint()
 	{
-		if ( timepoints.isEmpty() ) {
+		if ( timepoints.isEmpty() )
+		{
 			return 0;
 		}
 		else
@@ -251,16 +252,30 @@ public class VertexOrder
 		}
 	}
 
-	private static final double SELECT_DISTANCE_TOLERANCE = 5.0;
-
-	public void selectClosest( final double lx, final double ly )
+	public ScreenVertex getScreenVertexFor( TrackSchemeVertex v )
 	{
-		final TrackSchemeVertex v = graph.vertexRef();
+		final int si = v.getScreenVertexIndex();
+		final ScreenVertex sv = screenVertices.createRef();
+		if ( si >= 0 && si < screenVertices.size()
+				&& screenVertices.get( si, sv ).getTrackSchemeVertexId() == v.getInternalPoolIndex() ) { return sv; }
+		return null;
+	}
+
+	public ScreenEdge getScreenEdgeFor( TrackSchemeEdge e )
+	{
+		final int si = e.getScreenVertexIndex();
+		final ScreenEdge se = screenEdges.createRef();
+		if ( si >= 0 && si < screenEdges.size()
+				&& screenEdges.get( si, se ).getTrackSchemeEdgeId() == e.getInternalPoolIndex() ) { return se; }
+		return null;
+	}
+
+	public TrackSchemeVertex getClosestVertex( final double lx, final double ly, double tolerance, TrackSchemeVertex v )
+	{
 		final ScreenVertex sv = screenVertexPool.createRef();
 
 		final double yScale = ( lastLayoutScreenHeight - 1 ) / ( lastLayoutMaxY - lastLayoutMinY );
 		final double xScale = ( lastLayoutScreenWidth - 1 ) / ( lastLayoutMaxX - lastLayoutMinX );
-
 		final int closestY = ( int ) Math.round( ly );
 
 		double closestVertexD = Double.POSITIVE_INFINITY;
@@ -313,61 +328,62 @@ public class VertexOrder
 			{
 				final double spotdiameter = Math.min( sv.getVertexDist() - 10.0, GraphLayoutOverlay.maxDisplayVertexSize );
 				final double spotradius = ( int ) ( spotdiameter / 2 );
-				if ( closestVertexD < spotradius + SELECT_DISTANCE_TOLERANCE )
+				if ( closestVertexD < spotradius + tolerance )
 				{
-					final boolean selected = ! v.isSelected();
-					v.setSelected( selected );
-					sv.setSelected( selected );
 					screenVertexPool.releaseRef( sv );
-					graph.releaseRef( v );
-					return;
+					return v;
 				}
 			}
-
-			/*
-			 * Look for an edge.
-			 */
-
-			final double x0 = lx * xScale;
-			final double y0 = ly * yScale;
-			final double x1 = v.getLayoutX() * xScale;
-			final double y1 = v.getTimePoint() * yScale;
-
-			final AllEdges< TrackSchemeEdge > edges = v.edges();
-			TrackSchemeVertex o = graph.vertexRef();
-			for ( final TrackSchemeEdge edge : edges )
-			{
-				o = Graphs.getOppositeVertex( edge, v, o );
-				final double x2 = o.getLayoutX() * xScale;
-				final double y2 = o.getTimePoint() * yScale;
-				final double d = lineDist( x0, y0, x1, y1, x2, y2 );
-
-				if ( d < SELECT_DISTANCE_TOLERANCE )
-				{
-					final boolean selected = ! edge.isSelected();
-					edge.setSelected( selected );
-
-					ScreenEdge sedge = screenEdges.createRef();
-					sedge = screenEdges.get( edge.getInternalPoolIndex(), sedge );
-					sedge.setSelected( selected );
-
-					graph.releaseRef( o );
-					screenEdges.releaseRef( sedge );
-					break;
-				}
-			}
-
 		}
-		screenVertexPool.releaseRef( sv );
-		graph.releaseRef( v );
 
+		return null;
 	}
 
-	//	private long numCropAndScales = 0;
-	//	private long sumCropAndScaleTimes = 0;
-	//	private long sumVerticesToPaint = 0;
-	//	private long sumVertexRangesToPaint = 0;
-	//	private final long printEveryNRuns = 100;
+	public TrackSchemeEdge getClosestEdge( final double lx, final double ly, double tolerance, TrackSchemeEdge e )
+	{
+		final double yScale = ( lastLayoutScreenHeight - 1 ) / ( lastLayoutMaxY - lastLayoutMinY );
+		final double xScale = ( lastLayoutScreenWidth - 1 ) / ( lastLayoutMaxX - lastLayoutMinX );
+
+		final double x0 = lx * xScale;
+		final double y0 = ly * yScale;
+
+		for ( final ScreenEdge se : screenEdges )
+		{
+			final int eid = se.getTrackSchemeEdgeId();
+			graph.getEdgePool().getByInternalPoolIndex( eid, e );
+			final TrackSchemeVertex s = e.getSource();
+			final TrackSchemeVertex t = e.getTarget();
+
+			final double x1 = s.getLayoutX() * xScale;
+			final double x2 = t.getLayoutX() * xScale;
+
+			if ( ( x0 < x1 - tolerance && x0 < x2 - tolerance )
+					|| ( x0 > x1 + tolerance && x0 > x2 + tolerance ) )
+			{
+				continue;
+			}
+
+			final double y1 = s.getTimePoint() * yScale;
+			final double y2 = t.getTimePoint() * yScale;
+
+			if ( ( y0 < y1 - tolerance && y0 < y2 - tolerance )
+					|| ( y0 > y1 + tolerance && y0 > y2 + tolerance ) )
+			{
+				continue;
+			}
+
+			final double d = lineDist( x0, y0, x1, y1, x2, y2 );
+
+			if ( d < tolerance ) { return e; }
+		}
+		return null;
+	}
+
+	// private long numCropAndScales = 0;
+	// private long sumCropAndScaleTimes = 0;
+	// private long sumVerticesToPaint = 0;
+	// private long sumVertexRangesToPaint = 0;
+	// private final long printEveryNRuns = 100;
 
 	public ScreenEntities cropAndScale(
 			final double minX,
@@ -377,7 +393,7 @@ public class VertexOrder
 			final int screenWidth,
 			final int screenHeight )
 	{
-		//		final long t0 = System.currentTimeMillis();
+		// final long t0 = System.currentTimeMillis();
 
 		this.lastLayoutMinX = minX;
 		this.lastLayoutMaxX = maxX;
@@ -399,9 +415,9 @@ public class VertexOrder
 		final double xScale = ( screenWidth - 1 ) / ( maxX - minX );
 		final double allowedMinD = 2.0 / xScale;
 
-		//		System.out.println();
-		//		System.out.println( xScale + " xScale" );
-		//		System.out.println( allowedMinD + " allowedMinD" );
+		// System.out.println();
+		// System.out.println( xScale + " xScale" );
+		// System.out.println( allowedMinD + " allowedMinD" );
 
 		final TIntIterator iter = timepoints.iterator();
 		while ( iter.hasNext() )
@@ -410,12 +426,20 @@ public class VertexOrder
 			if ( timepoint + 1 >= minY && timepoint - 1 <= maxY )
 			{
 				final int timepointStartScreenVertexIndex = screenVertices.size();
-				final double y = ( timepoint - minY ) * yScale; // screen y of vertices of timepoint
-				final double prevY = ( timepoint - 1 - minY ) * yScale; // screen y of vertices of (timepoint-1)
+				final double y = ( timepoint - minY ) * yScale; // screen y of
+																// vertices of
+																// timepoint
+				final double prevY = ( timepoint - 1 - minY ) * yScale; // screen
+																		// y of
+																		// vertices
+																		// of
+																		// (timepoint-1)
 				final TrackSchemeVertexList vertexList = timepointToOrderedVertices.get( timepoint );
 				// largest index of vertex with layoutX <= minX
 				int minIndex = vertexList.binarySearch( minX );
-				// include vertex before that (may be appears partially on screen, and may be needed to paint edge to vertex in other timepoint)
+				// include vertex before that (may be appears partially on
+				// screen, and may be needed to paint edge to vertex in other
+				// timepoint)
 				minIndex--;
 				if ( minIndex < 0 )
 				{
@@ -423,7 +447,9 @@ public class VertexOrder
 				}
 				// largest index of vertex with layoutX <= maxX
 				int maxIndex = vertexList.binarySearch( maxX, minIndex, vertexList.size() );
-				// include vertex after that (may be appears partially on screen, and may be needed to paint edge to vertex in other timepoint)
+				// include vertex after that (may be appears partially on
+				// screen, and may be needed to paint edge to vertex in other
+				// timepoint)
 				if ( maxIndex < vertexList.size() - 1 )
 				{
 					maxIndex++;
@@ -437,8 +463,11 @@ public class VertexOrder
 				}
 				denseRanges.add( maxIndex + 1 );
 
-				//				System.out.println( "timepoint " + timepoint + ": " + ( maxIndex - minIndex + 1 ) + " vertices, " + minLayoutX + " min Distance" );
-				//				System.out.println( "numranges = " + ( ( denseRanges.size() - 1 ) / 2 ) );
+				// System.out.println( "timepoint " + timepoint + ": " + (
+				// maxIndex - minIndex + 1 ) + " vertices, " + minLayoutX +
+				// " min Distance" );
+				// System.out.println( "numranges = " + ( ( denseRanges.size() -
+				// 1 ) / 2 ) );
 
 				final TIntIterator riter = denseRanges.iterator();
 				int nextRangeStart = riter.next();
@@ -473,6 +502,8 @@ public class VertexOrder
 								final boolean eselected = edge.isSelected();
 								screenEdgePool.create( se ).init( eid, sourceScreenVertexIndex, targetScreenVertexIndex, eselected );
 								screenEdges.add( se );
+								final int sei = se.getInternalPoolIndex();
+								edge.setScreenEdgeIndex( sei );
 							}
 						}
 					}
@@ -500,25 +531,29 @@ public class VertexOrder
 		graph.releaseRef( v1 );
 		graph.releaseRef( v2 );
 
-		//		final long t1 = System.currentTimeMillis();
+		// final long t1 = System.currentTimeMillis();
 		//
-		//		numCropAndScales++;
-		//		sumCropAndScaleTimes += ( t1 - t0 );
-		//		sumVerticesToPaint += screenVertices.size();
-		//		sumVertexRangesToPaint += vertexRanges.size();
-		//		if ( numCropAndScales == printEveryNRuns )
-		//		{
-		//			System.out.println( "crop and scale time = " + ( sumCropAndScaleTimes / numCropAndScales ) + "ms" );
-		//			System.out.println( "painting " + ( sumVerticesToPaint / numCropAndScales ) + " vertices" );
-		//			System.out.println( "painting " + ( sumVertexRangesToPaint / numCropAndScales ) + " dense vertex ranges" );
-		//			System.out.println( "(averages over last " + printEveryNRuns + " runs)");
-		//			System.out.println();
+		// numCropAndScales++;
+		// sumCropAndScaleTimes += ( t1 - t0 );
+		// sumVerticesToPaint += screenVertices.size();
+		// sumVertexRangesToPaint += vertexRanges.size();
+		// if ( numCropAndScales == printEveryNRuns )
+		// {
+		// System.out.println( "crop and scale time = " + ( sumCropAndScaleTimes
+		// / numCropAndScales ) + "ms" );
+		// System.out.println( "painting " + ( sumVerticesToPaint /
+		// numCropAndScales ) + " vertices" );
+		// System.out.println( "painting " + ( sumVertexRangesToPaint /
+		// numCropAndScales ) + " dense vertex ranges" );
+		// System.out.println( "(averages over last " + printEveryNRuns +
+		// " runs)");
+		// System.out.println();
 		//
-		//			numCropAndScales = 0;
-		//			sumCropAndScaleTimes = 0;
-		//			sumVerticesToPaint = 0;
-		//			sumVertexRangesToPaint = 0;
-		//		}
+		// numCropAndScales = 0;
+		// sumCropAndScaleTimes = 0;
+		// sumVerticesToPaint = 0;
+		// sumVertexRangesToPaint = 0;
+		// }
 
 		return new ScreenEntities( screenVertices, screenEdges, vertexRanges );
 	}
@@ -533,7 +568,8 @@ public class VertexOrder
 				roots.add( v );
 			}
 		}
-		roots.getIndexCollection().sort(); // TODO sort roots by something meaningful...
+		roots.getIndexCollection().sort(); // TODO sort roots by something
+											// meaningful...
 		return roots;
 	}
 

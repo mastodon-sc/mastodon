@@ -12,7 +12,9 @@ public class TrackSchemeEdge extends AbstractEdge< TrackSchemeEdge, TrackSchemeV
 
 	protected static final int SELECTED_OFFSET = ORIG_EDGE_INDEX_OFFSET + INT_SIZE;
 
-	protected static final int SIZE_IN_BYTES = SELECTED_OFFSET + INDEX_SIZE;
+	protected static final int SCREENVERTEX_INDEX_OFFSET = SELECTED_OFFSET + INT_SIZE;
+
+	protected static final int SIZE_IN_BYTES = SCREENVERTEX_INDEX_OFFSET + INDEX_SIZE;
 
 	@Override
 	public String toString()
@@ -50,5 +52,15 @@ public class TrackSchemeEdge extends AbstractEdge< TrackSchemeEdge, TrackSchemeV
 	public void setSelected( final boolean selected )
 	{
 		access.putBoolean( selected, SELECTED_OFFSET );
+	}
+
+	public int getScreenVertexIndex()
+	{
+		return access.getInt( SCREENVERTEX_INDEX_OFFSET );
+	}
+
+	public void setScreenEdgeIndex( final int screenVertexIndex )
+	{
+		access.putInt( screenVertexIndex, SCREENVERTEX_INDEX_OFFSET );
 	}
 }

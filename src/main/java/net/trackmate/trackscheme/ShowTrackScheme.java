@@ -22,6 +22,7 @@ import net.imglib2.util.BenchmarkHelper;
 
 public class ShowTrackScheme implements TransformListener< ScreenTransform >, SelectionListener
 {
+	private static final double SELECT_DISTANCE_TOLERANCE = 5.0;
 
 	public class SelectionHandler extends MouseAdapter implements MouseListener, MouseMotionListener
 	{
@@ -210,7 +211,28 @@ public class ShowTrackScheme implements TransformListener< ScreenTransform >, Se
 		final double lx = transform.screenToLayoutX( x );
 		final double ly = transform.screenToLayoutY( y );
 
-		order.selectClosest( lx, ly );
+		final TrackSchemeVertex closestVertex = order.getClosestVertex( lx, ly, SELECT_DISTANCE_TOLERANCE, graph.vertexRef() );
+
+		if ( null == closestVertex )
+		{
+			final TrackSchemeEdge closestEdge = order.getClosestEdge( lx, ly, SELECT_DISTANCE_TOLERANCE, graph.edgeRef() );
+
+			if ( null != closestEdge )
+			{
+				final boolean selected = !closestEdge.isSelected();
+				closestEdge.setSelected( selected );
+				final ScreenEdge screenEdge = order.getScreenEdgeFor( closestEdge );
+				screenEdge.setSelected( selected );
+			}
+		}
+		else
+		{
+			final boolean selected = !closestVertex.isSelected();
+			closestVertex.setSelected( selected );
+			final ScreenVertex screenVertex = order.getScreenVertexFor( closestVertex );
+			screenVertex.setSelected( selected );
+		}
+
 		frame.repaint();
 	}
 
