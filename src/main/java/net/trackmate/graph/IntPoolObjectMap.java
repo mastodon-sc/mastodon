@@ -1,12 +1,18 @@
 package net.trackmate.graph;
 
+import gnu.trove.function.TObjectFunction;
 import gnu.trove.impl.Constants;
+import gnu.trove.iterator.TIntObjectIterator;
 import gnu.trove.map.TIntIntMap;
+import gnu.trove.map.TIntObjectMap;
 import gnu.trove.map.hash.TIntIntHashMap;
+import gnu.trove.procedure.TIntObjectProcedure;
+import gnu.trove.procedure.TIntProcedure;
+import gnu.trove.procedure.TObjectProcedure;
+import gnu.trove.set.TIntSet;
 
 import java.util.Collection;
 import java.util.Map;
-import java.util.Set;
 
 import net.trackmate.graph.mempool.MappedElement;
 
@@ -19,7 +25,7 @@ import net.trackmate.graph.mempool.MappedElement;
  *
  * @author Tobias Pietzsch <tobias.pietzsch@gmail.com>
  */
-public class IntPoolObjectMap< O extends PoolObject< O, T >, T extends MappedElement > implements Map< Integer, O >
+public class IntPoolObjectMap< O extends PoolObject< O, T >, T extends MappedElement > implements TIntObjectMap< O >
 {
 	private final TIntIntMap keyToIndexMap;
 
@@ -44,33 +50,6 @@ public class IntPoolObjectMap< O extends PoolObject< O, T >, T extends MappedEle
 	}
 
 	@Override
-	public boolean containsKey( final Object arg0 )
-	{
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
-	public boolean containsValue( final Object arg0 )
-	{
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
-	public Set< java.util.Map.Entry< Integer, O > > entrySet()
-	{
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public O get( final Object arg0 )
-	{
-		// TODO Auto-generated method stub
-		return null;
-	}
-
 	public O get( final int key )
 	{
 		return get( key, pool.createRef() );
@@ -95,19 +74,6 @@ public class IntPoolObjectMap< O extends PoolObject< O, T >, T extends MappedEle
 	}
 
 	@Override
-	public Set< Integer > keySet()
-	{
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public O put( final Integer arg0, final O arg1 )
-	{
-		// TODO Auto-generated method stub
-		return null;
-	}
-
 	public O put( final int key, final O obj )
 	{
 		return put( key, obj, pool.createRef() );
@@ -126,30 +92,149 @@ public class IntPoolObjectMap< O extends PoolObject< O, T >, T extends MappedEle
 	}
 
 	@Override
-	public void putAll( final Map< ? extends Integer, ? extends O > arg0 )
-	{
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public O remove( final Object arg0 )
-	{
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
 	public int size()
 	{
 		return keyToIndexMap.size();
 	}
 
+
+
+	// === TODO === UNIMPLEMENTED ========
+
+
+
+
+
 	@Override
-	public Collection< O > values()
+	public int getNoEntryKey()
+	{
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public boolean containsKey( final int key )
+	{
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean containsValue( final Object value )
+	{
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public O putIfAbsent( final int key, final O value )
 	{
 		// TODO Auto-generated method stub
 		return null;
 	}
 
+	@Override
+	public O remove( final int key )
+	{
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void putAll( final Map< ? extends Integer, ? extends O > m )
+	{
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void putAll( final TIntObjectMap< ? extends O > map )
+	{
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public TIntSet keySet()
+	{
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public int[] keys()
+	{
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public int[] keys( final int[] array )
+	{
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Collection< O > valueCollection()
+	{
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Object[] values()
+	{
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public O[] values( final O[] array )
+	{
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public TIntObjectIterator< O > iterator()
+	{
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public boolean forEachKey( final TIntProcedure procedure )
+	{
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean forEachValue( final TObjectProcedure< ? super O > procedure )
+	{
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean forEachEntry( final TIntObjectProcedure< ? super O > procedure )
+	{
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public void transformValues( final TObjectFunction< O, O > function )
+	{
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public boolean retainEntries( final TIntObjectProcedure< ? super O > procedure )
+	{
+		// TODO Auto-generated method stub
+		return false;
+	}
 }
