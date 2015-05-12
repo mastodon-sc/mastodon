@@ -9,12 +9,13 @@ public class TrackSchemeEdge extends AbstractEdge< TrackSchemeEdge, TrackSchemeV
 {
 	protected static final int ORIG_EDGE_INDEX_OFFSET = AbstractEdge.SIZE_IN_BYTES;
 
+
 	protected static final int SIZE_IN_BYTES = ORIG_EDGE_INDEX_OFFSET + INDEX_SIZE;
 
 	@Override
 	public String toString()
 	{
-		return String.format( "Edge( %d -> %d )", getSource().getModelVertexId(), getTarget().getModelVertexId() );
+		return String.format( "Edge( %d -> %d )", getSource().getLabel(), getTarget().getLabel() );
 	}
 
 	TrackSchemeEdge( final AbstractEdgePool< TrackSchemeEdge, TrackSchemeVertex, ByteMappedElement > pool )
