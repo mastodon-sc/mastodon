@@ -2,6 +2,8 @@ package net.trackmate.trackscheme;
 
 import java.awt.BorderLayout;
 import java.awt.GraphicsConfiguration;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
@@ -15,6 +17,45 @@ import net.imglib2.util.BenchmarkHelper;
 
 public class ShowTrackScheme implements TransformListener< ScreenTransform >, SelectionListener
 {
+	public class SelectionHandler extends MouseAdapter
+	{
+
+		/**
+		 * Whom to notify when selecting stuff.
+		 */
+		protected SelectionListener selectionListener;
+
+		/**
+		 * Coordinates where mouse dragging started.
+		 */
+		protected int oX, oY;
+
+		private ScreenTransform transform;
+
+		@Override
+		public void mouseClicked( MouseEvent e )
+		{
+			if ( selectionListener != null )
+			{
+				if ( e.getButton() == MouseEvent.BUTTON1 )
+				{
+					selectionListener.selectAt( transform, e.getX(), e.getY() );
+				}
+			}
+		}
+
+		public void setSelectionListener( final SelectionListener selectionListener )
+		{
+			this.selectionListener = selectionListener;
+		}
+
+		public void setTransform( ScreenTransform transform )
+		{
+			this.transform = transform;
+		}
+
+	}
+
 	final TrackSchemeGraph graph;
 
 	final LineageTreeLayout layout;
@@ -24,6 +65,8 @@ public class ShowTrackScheme implements TransformListener< ScreenTransform >, Se
 	final GraphLayoutOverlay overlay;
 
 	final MyFrame frame;
+
+	private final SelectionHandler selectionHandler;
 
 	public ShowTrackScheme( final TrackSchemeGraph graph )
 	{
@@ -61,22 +104,27 @@ public class ShowTrackScheme implements TransformListener< ScreenTransform >, Se
 		final double maxX = order.getMaxX() + 1.0;
 		final int w = overlay.getWidth();
 		final int h = overlay.getHeight();
-		canvas.getTransformEventHandler().setTransform( new ScreenTransform( minX, maxX, minY, maxY, w, h ) );
+
+		selectionHandler = new SelectionHandler();
+		canvas.addMouseListener( selectionHandler );
+		selectionHandler.setSelectionListener( this );
+
+		final ScreenTransform screenTransform = new ScreenTransform( minX, maxX, minY, maxY, w, h );
+		canvas.getTransformEventHandler().setTransform( screenTransform );
 		canvas.getTransformEventHandler().setTransformListener( this );
-		( ( ScreenTransform.ScreenTransformEventHandler ) canvas.getTransformEventHandler() ).setSelectionListener( this );
 
 		frame = new MyFrame( "trackscheme", GuiUtil.getSuitableGraphicsConfiguration( GuiUtil.RGB_COLOR_MODEL ) );
 		frame.getContentPane().add( canvas, BorderLayout.CENTER );
 		frame.pack();
 		frame.setVisible( true );
 		canvas.addOverlayRenderer( overlay );
-
-//		transformChanged( canvas.getTransformEventHandler().getTransform() );
 	}
 
 	@Override
 	public void transformChanged( final ScreenTransform transform )
 	{
+		selectionHandler.setTransform( transform );
+
 //		System.out.println( "transformChanged" );
 		final double minX = transform.minX;
 		final double maxX = transform.maxX;
