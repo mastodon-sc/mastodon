@@ -29,7 +29,7 @@ import net.trackmate.graph.collection.RefStack;
  * @param <G>
  *            the type of the graph wrapped.
  */
-public class ListenableGraphWrapper< V extends Vertex< E >, E extends Edge< V >, G extends Graph< V, E > > implements ListenableGraph< V, E >, Graph< V, E >, CollectionCreator< V, E >
+public class ListenableGraphWrapper< V extends Vertex< E >, E extends Edge< V >, G extends Graph< V, E > > implements ListenableGraph< V, E >, CollectionCreator< V, E >
 {
 	/*
 	 * STATIC ACCESSOR

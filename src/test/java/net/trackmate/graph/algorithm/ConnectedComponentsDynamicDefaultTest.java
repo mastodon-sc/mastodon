@@ -10,6 +10,7 @@ import net.trackmate.graph.TestEdge;
 import net.trackmate.graph.TestGraph;
 import net.trackmate.graph.TestVertex;
 import net.trackmate.graph.collection.RefSet;
+import net.trackmate.graph.listenable.ListenableGraph;
 import net.trackmate.graph.listenable.ListenableGraphWrapper;
 
 import org.junit.Before;
@@ -18,7 +19,7 @@ import org.junit.Test;
 public class ConnectedComponentsDynamicDefaultTest
 {
 
-	private ListenableGraphWrapper< TestVertex, TestEdge > graph;
+	private ListenableGraph< TestVertex, TestEdge > graph;
 
 	private List< TestVertex > vertices;
 
@@ -154,7 +155,7 @@ public class ConnectedComponentsDynamicDefaultTest
 			edges.add( eUAC );
 		}
 
-		this.graph = new ListenableGraphWrapper< TestVertex, TestEdge >( g );
+		this.graph = ListenableGraphWrapper.wrap( g );
 		this.ccd = new ConnectedComponentsDynamicDefault< TestVertex, TestEdge >( graph );
 	}
 
@@ -181,7 +182,7 @@ public class ConnectedComponentsDynamicDefaultTest
 				testConnectedComponentSize( vertices.get( verticesIndex[ i ] ), expectedSizes[ i ] );
 			}
 		}
-		
+
 		/*
 		 * Let's break things.
 		 */
@@ -189,7 +190,7 @@ public class ConnectedComponentsDynamicDefaultTest
 		/*
 		 * Easy first: remove an edge in the straight line.
 		 */
-		
+
 		{
 			final int previouSize = ccd.nComponents();
 			final TestEdge eIJ = edges.get( 3 );
