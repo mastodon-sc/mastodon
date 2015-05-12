@@ -12,6 +12,11 @@ import net.trackmate.trackscheme.ScreenVertex.ScreenVertexPool;
 // TODO: build/maintain while adding nodes and edges to the TrackSchemeGraph
 public class VertexOrder
 {
+	/**
+	 * Initial capacity value to use when instantiating the screen pools.
+	 */
+	private static final int INITIAL_CAPACITY = 1000;
+
 	private final TrackSchemeGraph graph;
 
 	// ArrayList of all existing timpoints
@@ -57,17 +62,17 @@ public class VertexOrder
 		timepointToOrderedVertices = new TIntObjectHashMap< TrackSchemeVertexList >();
 
 
-		screenVertexPool = new ScreenVertex.ScreenVertexPool( 1000000, graph.getVertexPool() );
-		screenVertexPool2 = new ScreenVertex.ScreenVertexPool( 1000000, graph.getVertexPool() );
+		screenVertexPool = new ScreenVertex.ScreenVertexPool( INITIAL_CAPACITY, graph.getVertexPool() );
+		screenVertexPool2 = new ScreenVertex.ScreenVertexPool( INITIAL_CAPACITY, graph.getVertexPool() );
 
-		screenVertices = new ScreenVertexList( screenVertexPool, 1000000 );
-		screenVertices2 = new ScreenVertexList( screenVertexPool2, 1000000 );
+		screenVertices = new ScreenVertexList( screenVertexPool, INITIAL_CAPACITY );
+		screenVertices2 = new ScreenVertexList( screenVertexPool2, INITIAL_CAPACITY );
 
-		screenEdgePool = new ScreenEdge.ScreenEdgePool( 1000000 );
-		screenEdgePool2 = new ScreenEdge.ScreenEdgePool( 1000000 );
+		screenEdgePool = new ScreenEdge.ScreenEdgePool( INITIAL_CAPACITY );
+		screenEdgePool2 = new ScreenEdge.ScreenEdgePool( INITIAL_CAPACITY );
 
-		screenEdges = new ScreenEdgeList( screenEdgePool, 1000000 );
-		screenEdges2 = new ScreenEdgeList( screenEdgePool2, 1000000 );
+		screenEdges = new ScreenEdgeList( screenEdgePool, INITIAL_CAPACITY );
+		screenEdges2 = new ScreenEdgeList( screenEdgePool2, INITIAL_CAPACITY );
 	}
 
 	private void swapPools()
@@ -109,7 +114,9 @@ public class VertexOrder
 		final TrackSchemeVertexList roots = getOrderedRoots( graph );
 
 		for ( final TrackSchemeVertex root : roots )
+		{
 			build( root );
+		}
 	}
 
 	public void print()
@@ -144,7 +151,9 @@ public class VertexOrder
 		final TrackSchemeVertex child = graph.vertexRef();
 		final TrackSchemeEdge edge = graph.edgeRef();
 		for ( final TrackSchemeEdge next : v.outgoingEdges() )
+		{
 			buildNextChild( next, child, edge );
+		}
 		graph.releaseRef( edge );
 		graph.releaseRef( child );
 	}
@@ -153,25 +162,33 @@ public class VertexOrder
 	{
 		next.getTarget( child );
 		if ( child.incomingEdges().get( 0, edge ).equals( next ) )
+		{
 			build( child );
+		}
 	}
 
 	public TrackSchemeVertex getMinVertex( final int timepoint, final TrackSchemeVertex vertex )
 	{
 		final TrackSchemeVertexList vlist = timepointToOrderedVertices.get( timepoint );
-		if ( vlist == null )
+		if ( vlist == null ) {
 			return null;
+		}
 		else
+		{
 			return vlist.get( 0, vertex );
+		}
 	}
 
 	public TrackSchemeVertex getMaxVertex( final int timepoint, final TrackSchemeVertex vertex )
 	{
 		final TrackSchemeVertexList vlist = timepointToOrderedVertices.get( timepoint );
-		if ( vlist == null )
+		if ( vlist == null ) {
 			return null;
+		}
 		else
+		{
 			return vlist.get( vlist.size() - 1, vertex );
+		}
 	}
 
 	public double getMinX( final int timepoint )
@@ -212,18 +229,24 @@ public class VertexOrder
 
 	public int getMinTimepoint()
 	{
-		if ( timepoints.isEmpty() )
+		if ( timepoints.isEmpty() ) {
 			return 0;
+		}
 		else
+		{
 			return timepoints.get( 0 );
+		}
 	}
 
 	public int getMaxTimepoint()
 	{
-		if ( timepoints.isEmpty() )
+		if ( timepoints.isEmpty() ) {
 			return 0;
+		}
 		else
+		{
 			return timepoints.get( timepoints.size() - 1 );
+		}
 	}
 
 	private static final double SELECT_DISTANCE_TOLERANCE = 5.0;
@@ -249,10 +272,14 @@ public class VertexOrder
 				final TrackSchemeVertexList vertexList = timepointToOrderedVertices.get( timepoint );
 				int left = vertexList.binarySearch( lx );
 				if ( left < 0 )
+				{
 					left = 0;
+				}
 				int right = left + 1;
 				if ( right >= vertexList.size() )
+				{
 					right = vertexList.size() - 1;
+				}
 
 				vertexList.get( left, v );
 				double diffx = ( lx - v.getLayoutX() ) * xScale;
@@ -333,9 +360,9 @@ public class VertexOrder
 		final double xScale = ( screenWidth - 1 ) / ( maxX - minX );
 		final double allowedMinD = 2.0 / xScale;
 
-//		System.out.println();
-//		System.out.println( xScale + " xScale" );
-//		System.out.println( allowedMinD + " allowedMinD" );
+		//		System.out.println();
+		//		System.out.println( xScale + " xScale" );
+		//		System.out.println( allowedMinD + " allowedMinD" );
 
 		final TIntIterator iter = timepoints.iterator();
 		while ( iter.hasNext() )
@@ -352,21 +379,27 @@ public class VertexOrder
 				// include vertex before that (may be appears partially on screen, and may be needed to paint edge to vertex in other timepoint)
 				minIndex--;
 				if ( minIndex < 0 )
+				{
 					minIndex = 0;
+				}
 				// largest index of vertex with layoutX <= maxX
 				int maxIndex = vertexList.binarySearch( maxX, minIndex, vertexList.size() );
 				// include vertex after that (may be appears partially on screen, and may be needed to paint edge to vertex in other timepoint)
 				if ( maxIndex < vertexList.size() - 1 )
+				{
 					maxIndex++;
+				}
 
 				final double minLayoutX = vertexList.getMinLayoutXDistance();
 				TIntArrayList denseRanges = vertexList.getDenseRanges( minIndex, maxIndex + 1, minLayoutX, allowedMinD, 3, v1 );
 				if ( denseRanges == null )
+				{
 					denseRanges = new TIntArrayList();
+				}
 				denseRanges.add( maxIndex + 1 );
 
-//				System.out.println( "timepoint " + timepoint + ": " + ( maxIndex - minIndex + 1 ) + " vertices, " + minLayoutX + " min Distance" );
-//				System.out.println( "numranges = " + ( ( denseRanges.size() - 1 ) / 2 ) );
+				//				System.out.println( "timepoint " + timepoint + ": " + ( maxIndex - minIndex + 1 ) + " vertices, " + minLayoutX + " min Distance" );
+				//				System.out.println( "numranges = " + ( ( denseRanges.size() - 1 ) / 2 ) );
 
 				final TIntIterator riter = denseRanges.iterator();
 				int nextRangeStart = riter.next();
@@ -457,7 +490,9 @@ public class VertexOrder
 		for ( final TrackSchemeVertex v : graph.vertices() )
 		{
 			if ( v.incomingEdges().isEmpty() )
+			{
 				roots.add( v );
+			}
 		}
 		roots.getIndexCollection().sort(); // TODO sort roots by something meaningful...
 		return roots;
