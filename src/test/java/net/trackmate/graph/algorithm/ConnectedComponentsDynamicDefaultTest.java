@@ -10,7 +10,7 @@ import net.trackmate.graph.TestEdge;
 import net.trackmate.graph.TestGraph;
 import net.trackmate.graph.TestVertex;
 import net.trackmate.graph.collection.RefSet;
-import net.trackmate.graph.listenable.ListenableGraph;
+import net.trackmate.graph.listenable.ListenableGraphWrapper;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -18,7 +18,7 @@ import org.junit.Test;
 public class ConnectedComponentsDynamicDefaultTest
 {
 
-	private ListenableGraph< TestVertex, TestEdge > graph;
+	private ListenableGraphWrapper< TestVertex, TestEdge > graph;
 
 	private List< TestVertex > vertices;
 
@@ -154,7 +154,7 @@ public class ConnectedComponentsDynamicDefaultTest
 			edges.add( eUAC );
 		}
 
-		this.graph = new ListenableGraph< TestVertex, TestEdge >( g );
+		this.graph = new ListenableGraphWrapper< TestVertex, TestEdge >( g );
 		this.ccd = new ConnectedComponentsDynamicDefault< TestVertex, TestEdge >( graph );
 	}
 

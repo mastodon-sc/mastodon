@@ -10,7 +10,7 @@ import net.trackmate.graph.Vertex;
 import net.trackmate.graph.collection.RefSet;
 import net.trackmate.graph.listenable.GraphChangeEvent;
 import net.trackmate.graph.listenable.GraphListener;
-import net.trackmate.graph.listenable.ListenableGraph;
+import net.trackmate.graph.listenable.ListenableGraphWrapper;
 import net.trackmate.graph.traversal.BreadthFirstSearch;
 import net.trackmate.graph.traversal.SearchListener;
 import net.trackmate.graph.util.TIntArrayDeque;
@@ -36,7 +36,7 @@ public class ConnectedComponentsDynamicDefault< V extends Vertex< E >, E extends
 
 	private final ConnectedComponentsDynamicDefault< V, E >.VertexFinderListener sl;
 
-	public ConnectedComponentsDynamicDefault( final ListenableGraph< V, E > graph )
+	public ConnectedComponentsDynamicDefault( final ListenableGraphWrapper< V, E > graph )
 	{
 		super( graph );
 		this.ccMap = new TIntObjectHashMap< RefSet< V > >();

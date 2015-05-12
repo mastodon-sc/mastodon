@@ -43,7 +43,7 @@ public class ListenableGraphRefTest
 
 	private TestVertex solo;
 
-	private ListenableGraph< TestVertex, TestEdge > graph;
+	private ListenableGraphWrapper< TestVertex, TestEdge > graph;
 
 	private TestGraph sourceGraph;
 
@@ -65,7 +65,7 @@ public class ListenableGraphRefTest
 		eB1 = sourceGraph.addEdge( B, B1 );
 		eB2 = sourceGraph.addEdge( B, B2 );
 		solo = sourceGraph.addVertex().init( 7 );
-		graph = new ListenableGraph< TestVertex, TestEdge >( sourceGraph );
+		graph = new ListenableGraphWrapper< TestVertex, TestEdge >( sourceGraph );
 	}
 
 	@Test( expected = RuntimeException.class )

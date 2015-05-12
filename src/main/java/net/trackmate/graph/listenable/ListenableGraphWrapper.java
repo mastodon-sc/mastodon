@@ -20,14 +20,31 @@ import net.trackmate.graph.collection.RefStack;
 /**
  * Transaction model inspired by JGraphX.
  *
- * @author tinevez
+ * @author Jean-Yves Tinevez
  *
  * @param <V>
+ *            the type of the vertex of the graph wrapped.
  * @param <E>
+ *            the type of the edge of the graph wrapper.
+ * @param <G>
+ *            the type of the graph wrapped.
  */
-public class ListenableGraph< V extends Vertex< E >, E extends Edge< V > > implements Graph< V, E >, CollectionCreator< V, E >
+public class ListenableGraphWrapper< V extends Vertex< E >, E extends Edge< V >, G extends Graph< V, E > > implements ListenableGraph< V, E >, Graph< V, E >, CollectionCreator< V, E >
 {
-	private final Graph< V, E > graph;
+	/*
+	 * STATIC ACCESSOR
+	 */
+
+	public static final < V extends Vertex< E >, E extends Edge< V >, G extends Graph< V, E > > ListenableGraphWrapper< V, E, G > wrap( G graph )
+	{
+		return new ListenableGraphWrapper< V, E, G >( graph );
+	}
+
+	/*
+	 * FIELDS
+	 */
+
+	private final G graph;
 
 	/**
 	 * Counter for the depth of nested transactions. Each call to beginUpdate
@@ -47,7 +64,7 @@ public class ListenableGraph< V extends Vertex< E >, E extends Edge< V > > imple
 	 * CONSTRUCTOR
 	 */
 
-	public ListenableGraph( final Graph< V, E > graph )
+	public ListenableGraphWrapper( final G graph )
 	{
 		this.graph = graph;
 		this.currentEdit = new GraphChangeEvent< V, E >( graph );
@@ -95,19 +112,31 @@ public class ListenableGraph< V extends Vertex< E >, E extends Edge< V > > imple
 	}
 
 	/*
+	 * EXPOSE WRAPPED GRAPH. With the right type.
+	 */
+
+	public G getGraph()
+	{
+		return graph;
+	}
+
+	/*
 	 * LISTENER MANAGEMENT
 	 */
 
+	@Override
 	public boolean addGraphListener( final GraphListener< V, E > listener )
 	{
 		return null != listeners.put( listener, Boolean.TRUE );
 	}
 
+	@Override
 	public boolean removeGraphListener( final GraphListener< V, E > listener )
 	{
 		return null != listeners.remove( listener );
 	}
 
+	@Override
 	public Set< GraphListener< V, E >> getGraphListeners()
 	{
 		return listeners.keySet();
