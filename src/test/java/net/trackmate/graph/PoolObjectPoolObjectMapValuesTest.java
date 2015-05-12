@@ -124,7 +124,10 @@ public class PoolObjectPoolObjectMapValuesTest extends PoolObjectPoolObjectMapAb
 		final boolean removed = values.remove( eAC );
 		/*
 		 * FIXME This goddam value cannot be removed, I have no idea why. Others
-		 * can be removed without problem, but this one, no.
+		 * can be removed without problem, but this one, no. <p> This is a known
+		 * problem with the unrerlying TIntIntHashMap. Check
+		 * https://bitbucket.org
+		 * /trove4j/trove/issue/25/_k__v_hashmaptvalueviewremove-is
 		 */
 		assertTrue( "Could not remove an existing value.", removed );
 		assertEquals( "Value collection has not been shrinked by iterator.remove().", initSize - 1, values.size() );
@@ -154,7 +157,7 @@ public class PoolObjectPoolObjectMapValuesTest extends PoolObjectPoolObjectMapAb
 		assertTrue( "Removing values in the collection should change the collection.", changed2 );
 		assertEquals( "Value collection should have been shrinked by this removeAll().", initSize - 2, values.size() );
 	}
-	
+
 	@Test
 	public void testRetainAll()
 	{
