@@ -6,6 +6,8 @@ import gnu.trove.map.hash.TIntObjectHashMap;
 
 import java.util.ArrayList;
 
+import net.trackmate.graph.AllEdges;
+import net.trackmate.graph.util.Graphs;
 import net.trackmate.trackscheme.ScreenEdge.ScreenEdgePool;
 import net.trackmate.trackscheme.ScreenVertex.ScreenVertexPool;
 
@@ -316,12 +318,49 @@ public class VertexOrder
 					final boolean selected = ! v.isSelected();
 					v.setSelected( selected );
 					sv.setSelected( selected );
+					screenVertexPool.releaseRef( sv );
+					graph.releaseRef( v );
+					return;
 				}
 			}
-		}
 
+			/*
+			 * Look for an edge.
+			 */
+
+			final double x0 = lx * xScale;
+			final double y0 = ly * yScale;
+			final double x1 = v.getLayoutX() * xScale;
+			final double y1 = v.getTimePoint() * yScale;
+
+			final AllEdges< TrackSchemeEdge > edges = v.edges();
+			TrackSchemeVertex o = graph.vertexRef();
+			for ( final TrackSchemeEdge edge : edges )
+			{
+				o = Graphs.getOppositeVertex( edge, v, o );
+				final double x2 = o.getLayoutX() * xScale;
+				final double y2 = o.getTimePoint() * yScale;
+				final double d = lineDist( x0, y0, x1, y1, x2, y2 );
+
+				if ( d < SELECT_DISTANCE_TOLERANCE )
+				{
+					final boolean selected = ! edge.isSelected();
+					edge.setSelected( selected );
+
+					ScreenEdge sedge = screenEdges.createRef();
+					sedge = screenEdges.get( edge.getInternalPoolIndex(), sedge );
+					sedge.setSelected( selected );
+
+					graph.releaseRef( o );
+					screenEdges.releaseRef( sedge );
+					break;
+				}
+			}
+
+		}
 		screenVertexPool.releaseRef( sv );
 		graph.releaseRef( v );
+
 	}
 
 	//	private long numCropAndScales = 0;
@@ -431,7 +470,7 @@ public class VertexOrder
 								final int eid = edge.getInternalPoolIndex();
 								final int sourceScreenVertexIndex = v2si;
 								final int targetScreenVertexIndex = v1si;
-								final boolean eselected = false;
+								final boolean eselected = edge.isSelected();
 								screenEdgePool.create( se ).init( eid, sourceScreenVertexIndex, targetScreenVertexIndex, eselected );
 								screenEdges.add( se );
 							}
@@ -461,7 +500,7 @@ public class VertexOrder
 		graph.releaseRef( v1 );
 		graph.releaseRef( v2 );
 
-//		final long t1 = System.currentTimeMillis();
+		//		final long t1 = System.currentTimeMillis();
 		//
 		//		numCropAndScales++;
 		//		sumCropAndScaleTimes += ( t1 - t0 );
@@ -496,5 +535,27 @@ public class VertexOrder
 		}
 		roots.getIndexCollection().sort(); // TODO sort roots by something meaningful...
 		return roots;
+	}
+
+	/**
+	 * Computes the distance of a point <code>A0 (x0, y0)</code> to a line
+	 * defined by two points <code>A1 (x1, y1)</code> and
+	 * <code>A2 (x2, y2)</code>. Returns <code>infinity</code> if the projection
+	 * of <code>A0</code> on the line does not lie between <code>A1</code> and
+	 * <code>A2</code>.
+	 *
+	 * @return the distance from a line to a point.
+	 */
+	private static final double lineDist( double x0, double y0, double x1, double y1, double x2, double y2 )
+	{
+		final double l12sq = ( x2 - x1 ) * ( x2 - x1 ) + ( y2 - y1 ) * ( y2 - y1 );
+
+		final double x = ( ( x0 - x1 ) * ( x2 - x1 ) + ( y0 - y1 ) * ( y2 - y1 ) ) / l12sq;
+		if ( x < 0 || x > 1 ) { return Double.POSITIVE_INFINITY; }
+
+		final double d = Math.abs(
+				( y2 - y1 ) * x0 - ( x2 - x1 ) * y0 + x2 * y1 - y2 * x1
+				) / Math.sqrt( l12sq );
+		return d;
 	}
 }
