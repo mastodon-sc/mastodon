@@ -264,17 +264,16 @@ public class ScreenTransform
 		@Override
 		public void mouseDragged( final MouseEvent e )
 		{
-			synchronized ( transform )
+			final int modifiers = e.getModifiersEx();
+			if ( ( modifiers & ( MouseEvent.BUTTON2_DOWN_MASK | MouseEvent.BUTTON3_DOWN_MASK ) ) != 0 ) // translate
 			{
-				final int modifiers = e.getModifiersEx();
-
-				if ( ( modifiers & ( MouseEvent.BUTTON2_DOWN_MASK | MouseEvent.BUTTON3_DOWN_MASK ) ) != 0 ) // translate
+				synchronized ( transform )
 				{
+
 					final int dX = oX - e.getX();
 					final int dY = oY - e.getY();
 					transform.setScreenTranslated( dX, dY, transformDragStart );
 				}
-
 				update();
 			}
 		}

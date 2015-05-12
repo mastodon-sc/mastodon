@@ -1,15 +1,20 @@
 package net.trackmate.trackscheme;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Graphics;
 import java.awt.GraphicsConfiguration;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
 import javax.swing.JFrame;
 
 import net.imglib2.ui.InteractiveDisplayCanvasComponent;
+import net.imglib2.ui.OverlayRenderer;
 import net.imglib2.ui.PainterThread;
 import net.imglib2.ui.TransformListener;
 import net.imglib2.ui.util.GuiUtil;
@@ -17,30 +22,65 @@ import net.imglib2.util.BenchmarkHelper;
 
 public class ShowTrackScheme implements TransformListener< ScreenTransform >, SelectionListener
 {
-	public class SelectionHandler extends MouseAdapter
+
+	public class SelectionHandler extends MouseAdapter implements MouseListener, MouseMotionListener
 	{
+
+		private final OverlayRenderer selectionBoxOverlay = new SelectionBoxOverlay();
 
 		/**
 		 * Whom to notify when selecting stuff.
 		 */
-		protected SelectionListener selectionListener;
+		private SelectionListener selectionListener;
 
 		/**
 		 * Coordinates where mouse dragging started.
 		 */
-		protected int oX, oY;
+		private int oX, oY;
+
+		/**
+		 * Coordinates where mouse dragging currently is.
+		 */
+		private int eX, eY;
 
 		private ScreenTransform transform;
+
+		private boolean dragStarted = false;
+
 
 		@Override
 		public void mouseClicked( MouseEvent e )
 		{
-			if ( selectionListener != null )
+			if ( e.getButton() == MouseEvent.BUTTON1 )
 			{
-				if ( e.getButton() == MouseEvent.BUTTON1 )
+				selectionListener.selectAt( transform, e.getX(), e.getY() );
+			}
+		}
+
+		@Override
+		public void mouseDragged( MouseEvent e )
+		{
+			if ( e.getButton() == MouseEvent.BUTTON1 )
+			{
+				eX = e.getX();
+				eY = e.getY();
+				if ( dragStarted == false )
 				{
-					selectionListener.selectAt( transform, e.getX(), e.getY() );
+					dragStarted = true;
+					oX = e.getX();
+					oY = e.getY();
 				}
+			}
+			frame.repaint();
+		}
+
+		@Override
+		public void mouseReleased( MouseEvent e )
+		{
+			if ( e.getButton() == MouseEvent.BUTTON1 )
+			{
+				dragStarted = false;
+				frame.repaint();
 			}
 		}
 
@@ -54,6 +94,31 @@ public class ShowTrackScheme implements TransformListener< ScreenTransform >, Se
 			this.transform = transform;
 		}
 
+		public OverlayRenderer getSelectionBoxOverlay()
+		{
+			return selectionBoxOverlay;
+		}
+
+		public class SelectionBoxOverlay implements OverlayRenderer
+		{
+
+			@Override
+			public void drawOverlays( Graphics g )
+			{
+				if ( !dragStarted ) { return; }
+				g.setColor( Color.RED );
+				final int x = Math.min( oX, eX );
+				final int y = Math.min( oY, eY );
+				final int width = Math.abs( eX - oX );
+				final int height = Math.abs( eY - oY );
+				g.drawRect( x, y, width, height );
+			}
+
+			@Override
+			public void setCanvasSize( int width, int height )
+			{}
+
+		}
 	}
 
 	final TrackSchemeGraph graph;
@@ -107,6 +172,7 @@ public class ShowTrackScheme implements TransformListener< ScreenTransform >, Se
 
 		selectionHandler = new SelectionHandler();
 		canvas.addMouseListener( selectionHandler );
+		canvas.addMouseMotionListener( selectionHandler );
 		selectionHandler.setSelectionListener( this );
 
 		final ScreenTransform screenTransform = new ScreenTransform( minX, maxX, minY, maxY, w, h );
@@ -117,6 +183,7 @@ public class ShowTrackScheme implements TransformListener< ScreenTransform >, Se
 		frame.getContentPane().add( canvas, BorderLayout.CENTER );
 		frame.pack();
 		frame.setVisible( true );
+		canvas.addOverlayRenderer( selectionHandler.getSelectionBoxOverlay() );
 		canvas.addOverlayRenderer( overlay );
 	}
 
