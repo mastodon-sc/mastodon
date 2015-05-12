@@ -27,6 +27,13 @@ public class TrackSchemeEdge extends AbstractEdge< TrackSchemeEdge, TrackSchemeV
 		super( pool );
 	}
 
+	@Override
+	protected void setToUninitializedState()
+	{
+		super.setToUninitializedState();
+		setScreenEdgeIndex( -1 );
+	}
+
 	/**
 	 * Get the internal pool index of the associated model vertex.
 	 *
