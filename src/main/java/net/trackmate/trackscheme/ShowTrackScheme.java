@@ -89,13 +89,35 @@ public class ShowTrackScheme implements TransformListener< ScreenTransform >, Se
 		frame.repaint();
 	}
 
+	// =================== TODO ===========================
+
+	public static interface HACK_SelectionListener
+	{
+		void select( TrackSchemeVertex v );
+	}
+
+	private HACK_SelectionListener sl = null;
+
+	public void setSelectionListener( final HACK_SelectionListener sl )
+	{
+		this.sl = sl;
+	}
+
+	// =====================================================
+
 	@Override
 	public void selectAt( final ScreenTransform transform, final int x, final int y )
 	{
 		final double lx = transform.screenToLayoutX( x );
 		final double ly = transform.screenToLayoutY( y );
 
-		order.selectClosest( lx, ly );
+		final TrackSchemeVertex v = graph.vertexRef();
+		if ( order.selectClosest( lx, ly, v ) != null && sl != null )
+		{
+			sl.select( v );
+		}
+		graph.releaseRef( v );
+
 		frame.repaint();
 	}
 

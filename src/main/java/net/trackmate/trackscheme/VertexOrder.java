@@ -229,9 +229,9 @@ public class VertexOrder
 
 	private static final double SELECT_DISTANCE_TOLERANCE = 5.0;
 
-	public void selectClosest( final double lx, final double ly )
+	public TrackSchemeVertex selectClosest( final double lx, final double ly, final TrackSchemeVertex v )
 	{
-		final TrackSchemeVertex v = graph.vertexRef();
+//		final TrackSchemeVertex v = graph.vertexRef();
 		final ScreenVertex sv = screenVertexPool.createRef();
 
 		final double yScale = ( lastLayoutScreenHeight - 1 ) / ( lastLayoutMaxY - lastLayoutMinY );
@@ -290,12 +290,16 @@ public class VertexOrder
 					final boolean selected = ! v.isSelected();
 					v.setSelected( selected );
 					sv.setSelected( selected );
+
+					screenVertexPool.releaseRef( sv );
+					return v;
 				}
 			}
 		}
 
 		screenVertexPool.releaseRef( sv );
-		graph.releaseRef( v );
+//		graph.releaseRef( v );
+		return null;
 	}
 
 	private long numCropAndScales = 0;
