@@ -56,18 +56,19 @@ public class VertexOrder
 		timepoints = new TIntArrayList();
 		timepointToOrderedVertices = new TIntObjectHashMap< TrackSchemeVertexList >();
 
+		final int initialCapacity = 1000;
 
-		screenVertexPool = new ScreenVertex.ScreenVertexPool( 1000000, graph.getVertexPool() );
-		screenVertexPool2 = new ScreenVertex.ScreenVertexPool( 1000000, graph.getVertexPool() );
+		screenVertexPool = new ScreenVertex.ScreenVertexPool( initialCapacity, graph.getVertexPool() );
+		screenVertexPool2 = new ScreenVertex.ScreenVertexPool( initialCapacity, graph.getVertexPool() );
 
-		screenVertices = new ScreenVertexList( screenVertexPool, 1000000 );
-		screenVertices2 = new ScreenVertexList( screenVertexPool2, 1000000 );
+		screenVertices = new ScreenVertexList( screenVertexPool, initialCapacity );
+		screenVertices2 = new ScreenVertexList( screenVertexPool2, initialCapacity );
 
-		screenEdgePool = new ScreenEdge.ScreenEdgePool( 1000000 );
-		screenEdgePool2 = new ScreenEdge.ScreenEdgePool( 1000000 );
+		screenEdgePool = new ScreenEdge.ScreenEdgePool( initialCapacity );
+		screenEdgePool2 = new ScreenEdge.ScreenEdgePool( initialCapacity );
 
-		screenEdges = new ScreenEdgeList( screenEdgePool, 1000000 );
-		screenEdges2 = new ScreenEdgeList( screenEdgePool2, 1000000 );
+		screenEdges = new ScreenEdgeList( screenEdgePool, initialCapacity );
+		screenEdges2 = new ScreenEdgeList( screenEdgePool2, initialCapacity );
 	}
 
 	private void swapPools()
