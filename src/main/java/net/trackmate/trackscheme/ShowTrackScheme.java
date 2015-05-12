@@ -2,8 +2,6 @@ package net.trackmate.trackscheme;
 
 import java.awt.BorderLayout;
 import java.awt.GraphicsConfiguration;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
@@ -14,9 +12,6 @@ import net.imglib2.ui.PainterThread;
 import net.imglib2.ui.TransformListener;
 import net.imglib2.ui.util.GuiUtil;
 import net.imglib2.util.BenchmarkHelper;
-import net.trackmate.graph.listenable.GraphChangeEvent;
-import net.trackmate.graph.listenable.GraphListener;
-import net.trackmate.graph.listenable.ListenableGraphWrapper;
 
 public class ShowTrackScheme implements TransformListener< ScreenTransform >, SelectionListener
 {
@@ -28,13 +23,17 @@ public class ShowTrackScheme implements TransformListener< ScreenTransform >, Se
 
 	final GraphLayoutOverlay overlay;
 
+	final SelectionModel< TrackSchemeVertex, TrackSchemeEdge > selectionModel;
+
 	final MyFrame frame;
+
+	final InteractiveDisplayCanvasComponent< ScreenTransform > canvas;
 
 	private final SelectionHandler selectionHandler;
 
-	private final InteractiveDisplayCanvasComponent< ScreenTransform > canvas;
 
-	private final SelectionModel< TrackSchemeVertex, TrackSchemeEdge > selectionModel;
+
+	private final KeyHandler keyHandler;
 
 	public ShowTrackScheme( final TrackSchemeGraph graph )
 	{
@@ -81,6 +80,8 @@ public class ShowTrackScheme implements TransformListener< ScreenTransform >, Se
 		canvas.addMouseMotionListener( selectionHandler );
 		selectionHandler.setSelectionListener( this );
 
+		keyHandler = new KeyHandler( this );
+
 		final ScreenTransform screenTransform = new ScreenTransform( minX, maxX, minY, maxY, w, h );
 		canvas.getTransformEventHandler().setTransform( screenTransform );
 		canvas.getTransformEventHandler().setTransformListener( this );
@@ -118,6 +119,10 @@ public class ShowTrackScheme implements TransformListener< ScreenTransform >, Se
 		frame.repaint();
 	}
 
+	/*
+	 * STATIC METHODS AND CLASSES
+	 */
+
 	static class MyFrame extends JFrame implements PainterThread.Paintable
 	{
 		private static final long serialVersionUID = 1L;
@@ -148,50 +153,19 @@ public class ShowTrackScheme implements TransformListener< ScreenTransform >, Se
 
 	public static void main( final String[] args )
 	{
-		final TrackSchemeGraph tg = new TrackSchemeGraph();
+		final TrackSchemeGraph graph = new TrackSchemeGraph();
 
-		final TrackSchemeVertex v0 = tg.addVertex().init( "0", 0, false );
-		final TrackSchemeVertex v1 = tg.addVertex().init( "1", 1, false );
-		final TrackSchemeVertex v2 = tg.addVertex().init( "2", 1, false );;
-		final TrackSchemeVertex v3 = tg.addVertex().init( "3", 2, false );;
-		final TrackSchemeVertex v4 = tg.addVertex().init( "4", 3, false );;
-		final TrackSchemeVertex v5 = tg.addVertex().init( "5", 4, false );;
+		final TrackSchemeVertex v0 = graph.addVertex().init( "0", 0, false );
+		final TrackSchemeVertex v1 = graph.addVertex().init( "1", 1, false );
+		final TrackSchemeVertex v2 = graph.addVertex().init( "2", 1, false );;
+		final TrackSchemeVertex v3 = graph.addVertex().init( "3", 2, false );;
+		final TrackSchemeVertex v4 = graph.addVertex().init( "4", 3, false );;
+		final TrackSchemeVertex v5 = graph.addVertex().init( "5", 4, false );;
 
-		tg.addEdge( v0, v1 );
-		tg.addEdge( v0, v2 );
-		tg.addEdge( v1, v3 );
-		tg.addEdge( v4, v5 );
-		final ShowTrackScheme showTrackScheme = new ShowTrackScheme( tg );
-
-		final ListenableGraphWrapper< TrackSchemeVertex, TrackSchemeEdge, TrackSchemeGraph > graph = ListenableGraphWrapper.wrap( tg );
-		graph.addGraphListener( new GraphListener< TrackSchemeVertex, TrackSchemeEdge >()
-		{
-			@Override
-			public void graphChanged( GraphChangeEvent< TrackSchemeVertex, TrackSchemeEdge > event )
-			{
-				System.out.println( "Model changed!" );// DEBUG
-				showTrackScheme.layout.layoutX();
-				showTrackScheme.order.build();
-				showTrackScheme.canvas.repaint();
-			}
-		} );
-
-		showTrackScheme.canvas.addKeyListener( new KeyAdapter()
-		{
-			@Override
-			public void keyPressed( KeyEvent e )
-			{
-				if ( e.getKeyCode() == KeyEvent.VK_D )
-				{
-					final TrackSchemeVertex target = v1;
-					System.out.println( "Removing " + target );// DEBUG
-					graph.beginUpdate();
-					graph.remove( target );
-					graph.endUpdate();
-					System.out.println( "Done" );// DEBUG
-				}
-			}
-		} );
-
+		graph.addEdge( v0, v1 );
+		graph.addEdge( v0, v2 );
+		graph.addEdge( v1, v3 );
+		graph.addEdge( v4, v5 );
+		final ShowTrackScheme showTrackScheme = new ShowTrackScheme( graph );
 	}
 }
