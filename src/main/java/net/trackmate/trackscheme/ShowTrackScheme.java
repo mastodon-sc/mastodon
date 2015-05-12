@@ -34,9 +34,13 @@ public class ShowTrackScheme implements TransformListener< ScreenTransform >, Se
 
 	private final InteractiveDisplayCanvasComponent< ScreenTransform > canvas;
 
+	private final SelectionModel< TrackSchemeVertex, TrackSchemeEdge > selectionModel;
+
 	public ShowTrackScheme( final TrackSchemeGraph graph )
 	{
 		this.graph = graph;
+
+		selectionModel = SelectionModel.create( graph );
 
 		layout = new LineageTreeLayout( graph );
 //		layout.reset();
@@ -71,7 +75,7 @@ public class ShowTrackScheme implements TransformListener< ScreenTransform >, Se
 		final int w = overlay.getWidth();
 		final int h = overlay.getHeight();
 
-		selectionHandler = new DefaultSelectionHandler( graph, order );
+		selectionHandler = new DefaultSelectionHandler( selectionModel, graph, order );
 		canvas.addMouseListener( selectionHandler );
 		canvas.addMouseMotionListener( selectionHandler );
 		selectionHandler.setSelectionListener( this );

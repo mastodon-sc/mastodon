@@ -37,8 +37,11 @@ public class DefaultSelectionHandler extends MouseAdapter implements SelectionHa
 
 	private final TrackSchemeGraph graph;
 
-	public DefaultSelectionHandler( TrackSchemeGraph graph, VertexOrder order )
+	private final SelectionModel< TrackSchemeVertex, TrackSchemeEdge > selectionModel;
+
+	public DefaultSelectionHandler( SelectionModel< TrackSchemeVertex, TrackSchemeEdge > selectionModel, TrackSchemeGraph graph, VertexOrder order )
 	{
+		this.selectionModel = selectionModel;
 		this.graph = graph;
 		this.order = order;
 	}
@@ -94,24 +97,26 @@ public class DefaultSelectionHandler extends MouseAdapter implements SelectionHa
 
 			if ( null != closestEdge )
 			{
-				final boolean selected = !closestEdge.isSelected();
-				closestEdge.setSelected( selected );
-				final ScreenEdge screenEdge = order.getScreenEdgeFor( closestEdge );
-				if ( null != screenEdge )
-				{
-					screenEdge.setSelected( selected );
-				}
+				selectionModel.add( closestEdge );
+//				final boolean selected = !closestEdge.isSelected();
+//				closestEdge.setSelected( selected );
+//				final ScreenEdge screenEdge = order.getScreenEdgeFor( closestEdge );
+//				if ( null != screenEdge )
+//				{
+////					screenEdge.setSelected( selected );
+//				}
 			}
 		}
 		else
 		{
-			final boolean selected = !closestVertex.isSelected();
-			closestVertex.setSelected( selected );
-			final ScreenVertex screenVertex = order.getScreenVertexFor( closestVertex );
-			if ( null != screenVertex )
-			{
-				screenVertex.setSelected( selected );
-			}
+			selectionModel.add( closestVertex );
+//			final boolean selected = !closestVertex.isSelected();
+//			closestVertex.setSelected( selected );
+//			final ScreenVertex screenVertex = order.getScreenVertexFor( closestVertex );
+//			if ( null != screenVertex )
+//			{
+//				screenVertex.setSelected( selected );
+//			}
 		}
 	}
 
@@ -123,28 +128,31 @@ public class DefaultSelectionHandler extends MouseAdapter implements SelectionHa
 		final double ly2 = transform.screenToLayoutY( y2 );
 
 		final RefSet< TrackSchemeVertex > vs = order.getVerticesWithin( lx1, ly1, lx2, ly2 );
+		selectionModel.addAllVertices( vs );
+
 		TrackSchemeVertex t = graph.vertexRef();
-		final boolean selected = true;
+//		final boolean selected = true;
 		for ( final TrackSchemeVertex v : vs )
 		{
-			v.setSelected( selected );
-			final ScreenVertex sv = order.getScreenVertexFor( v );
-			if ( null != sv )
-			{
-				sv.setSelected( selected );
-			}
+//			v.setSelected( selected );
+//			final ScreenVertex sv = order.getScreenVertexFor( v );
+//			if ( null != sv )
+//			{
+//				sv.setSelected( selected );
+//			}
 
 			for ( final TrackSchemeEdge e : v.outgoingEdges() )
 			{
 				t = e.getTarget( t );
 				if ( vs.contains( t ) )
 				{
-					e.setSelected( selected );
-					final ScreenEdge se = order.getScreenEdgeFor( e );
-					if ( null != se )
-					{
-						se.setSelected( selected );
-					}
+					selectionModel.add( e );
+//					e.setSelected( selected );
+//					final ScreenEdge se = order.getScreenEdgeFor( e );
+//					if ( null != se )
+//					{
+//						se.setSelected( selected );
+//					}
 				}
 			}
 		}
