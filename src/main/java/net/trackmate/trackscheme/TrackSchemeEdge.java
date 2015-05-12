@@ -1,7 +1,7 @@
 package net.trackmate.trackscheme;
 
+import static net.trackmate.graph.mempool.ByteUtils.BOOLEAN_SIZE;
 import static net.trackmate.graph.mempool.ByteUtils.INDEX_SIZE;
-import static net.trackmate.graph.mempool.ByteUtils.INT_SIZE;
 import net.trackmate.graph.AbstractEdge;
 import net.trackmate.graph.AbstractEdgePool;
 import net.trackmate.graph.mempool.ByteMappedElement;
@@ -10,11 +10,11 @@ public class TrackSchemeEdge extends AbstractEdge< TrackSchemeEdge, TrackSchemeV
 {
 	protected static final int ORIG_EDGE_INDEX_OFFSET = AbstractEdge.SIZE_IN_BYTES;
 
-	protected static final int SELECTED_OFFSET = ORIG_EDGE_INDEX_OFFSET + INT_SIZE;
+	protected static final int SELECTED_OFFSET = ORIG_EDGE_INDEX_OFFSET + INDEX_SIZE;
 
-	protected static final int SCREENVERTEX_INDEX_OFFSET = SELECTED_OFFSET + INT_SIZE;
+	protected static final int SCREENEDGE_INDEX_OFFSET = SELECTED_OFFSET + BOOLEAN_SIZE;
 
-	protected static final int SIZE_IN_BYTES = SCREENVERTEX_INDEX_OFFSET + INDEX_SIZE;
+	protected static final int SIZE_IN_BYTES = SCREENEDGE_INDEX_OFFSET + INDEX_SIZE;
 
 	@Override
 	public String toString()
@@ -25,7 +25,13 @@ public class TrackSchemeEdge extends AbstractEdge< TrackSchemeEdge, TrackSchemeV
 	TrackSchemeEdge( final AbstractEdgePool< TrackSchemeEdge, TrackSchemeVertex, ByteMappedElement > pool )
 	{
 		super( pool );
-		setSelected( false );
+	}
+
+	@Override
+	protected void setToUninitializedState()
+	{
+		super.setToUninitializedState();
+		setScreenEdgeIndex( -1 );
 	}
 
 	/**
@@ -56,11 +62,11 @@ public class TrackSchemeEdge extends AbstractEdge< TrackSchemeEdge, TrackSchemeV
 
 	public int getScreenVertexIndex()
 	{
-		return access.getInt( SCREENVERTEX_INDEX_OFFSET );
+		return access.getIndex( SCREENEDGE_INDEX_OFFSET );
 	}
 
 	public void setScreenEdgeIndex( final int screenVertexIndex )
 	{
-		access.putInt( screenVertexIndex, SCREENVERTEX_INDEX_OFFSET );
+		access.putIndex( screenVertexIndex, SCREENEDGE_INDEX_OFFSET );
 	}
 }
