@@ -40,9 +40,25 @@ public class SelectionModel< V extends Vertex< E >, E extends Edge< V > >
 		selectedVertices.remove( vertex );
 	}
 
+	public void toggle( V vertex )
+	{
+		if ( !selectedVertices.remove( vertex ) )
+		{
+			selectedVertices.add( vertex );
+		}
+	}
+
 	public void add( E edge )
 	{
 		selectedEdges.add( edge );
+	}
+
+	public void toggle( E edge )
+	{
+		if ( !selectedEdges.remove( edge ) )
+		{
+			selectedEdges.add( edge );
+		}
 	}
 
 	public void addAllEdges( Collection< E > edges )
@@ -66,6 +82,16 @@ public class SelectionModel< V extends Vertex< E >, E extends Edge< V > >
 		selectedVertices.clear();
 	}
 
+	@Override
+	public String toString()
+	{
+		final StringBuilder sb = new StringBuilder();
+		sb.append( super.toString() );
+		sb.append( "\nVertices: " + selectedVertices );
+		sb.append( "\nEdges:    " + selectedEdges );
+		return sb.toString();
+	}
+
 	/*
 	 * STATIC ACCESSOR
 	 */
@@ -74,5 +100,4 @@ public class SelectionModel< V extends Vertex< E >, E extends Edge< V > >
 	{
 		return new SelectionModel< V, E >( graph );
 	}
-
 }

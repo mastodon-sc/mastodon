@@ -75,7 +75,8 @@ public class ShowTrackScheme implements TransformListener< ScreenTransform >, Se
 		final int w = overlay.getWidth();
 		final int h = overlay.getHeight();
 
-		selectionHandler = new DefaultSelectionHandler( selectionModel, graph, order );
+		selectionHandler = new DefaultSelectionHandler( graph, order );
+		selectionHandler.setSelectionModel( selectionModel );
 		canvas.addMouseListener( selectionHandler );
 		canvas.addMouseMotionListener( selectionHandler );
 		selectionHandler.setSelectionListener( this );
