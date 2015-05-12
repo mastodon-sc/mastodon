@@ -25,7 +25,6 @@ public class TrackSchemeEdge extends AbstractEdge< TrackSchemeEdge, TrackSchemeV
 	TrackSchemeEdge( final AbstractEdgePool< TrackSchemeEdge, TrackSchemeVertex, ByteMappedElement > pool )
 	{
 		super( pool );
-		setSelected( false );
 	}
 
 	/**
