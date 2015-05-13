@@ -21,7 +21,7 @@ public class TrackSchemeGraph extends GraphImp< TrackSchemeGraph.TrackSchemeVert
 		super( new TrackSchemeEdgePool( initialCapacity, new TrackSchemeVertexPool( initialCapacity ) ) );
 	}
 
-	static class TrackSchemeVertexPool extends AbstractVertexPool< TrackSchemeVertex, TrackSchemeEdge, ByteMappedElement >
+	public static class TrackSchemeVertexPool extends AbstractVertexPool< TrackSchemeVertex, TrackSchemeEdge, ByteMappedElement >
 	{
 		public TrackSchemeVertexPool( final int initialCapacity )
 		{
@@ -65,7 +65,7 @@ public class TrackSchemeGraph extends GraphImp< TrackSchemeGraph.TrackSchemeVert
 		};
 	}
 
-	static class TrackSchemeEdgePool extends AbstractEdgePool< TrackSchemeEdge, TrackSchemeVertex, ByteMappedElement >
+	public static class TrackSchemeEdgePool extends AbstractEdgePool< TrackSchemeEdge, TrackSchemeVertex, ByteMappedElement >
 	{
 		public TrackSchemeEdgePool( final int initialCapacity, final TrackSchemeVertexPool vertexPool )
 		{
@@ -150,7 +150,7 @@ public class TrackSchemeGraph extends GraphImp< TrackSchemeGraph.TrackSchemeVert
 		return vertexPool;
 	}
 
-	protected TrackSchemeEdgePool getEdgePool()
+	public TrackSchemeEdgePool getEdgePool()
 	{
 		return edgePool;
 	}
