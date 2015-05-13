@@ -1,7 +1,5 @@
 package net.trackmate.graph;
 
-import net.trackmate.graph.mempool.ByteMappedElement;
-
 import org.junit.Before;
 
 public abstract class PoolObjectPoolObjectMapVertexPoolAbstractTest
@@ -18,7 +16,7 @@ public abstract class PoolObjectPoolObjectMapVertexPoolAbstractTest
 
 	protected TestVertex Ek;
 
-	protected PoolObjectPoolObjectMap< TestVertex, TestVertex, ByteMappedElement, ByteMappedElement > map;
+	protected PoolObjectPoolObjectMap< TestVertex, TestVertex > map;
 
 	/**
 	 * Test a map that maps vertices from the same pool.
@@ -40,7 +38,7 @@ public abstract class PoolObjectPoolObjectMapVertexPoolAbstractTest
 		graph.addEdge( Ck, Ek );
 		graph.addEdge( Ek, Ak );
 
-		map = new PoolObjectPoolObjectMap< TestVertex, TestVertex, ByteMappedElement, ByteMappedElement >( graph.vertexPool, graph.vertexPool );
+		map = new PoolObjectPoolObjectMap< TestVertex, TestVertex >( graph.vertexPool, graph.vertexPool );
 		map.put( Bk, Ck );
 		map.put( Ck, Dk );
 		map.put( Dk, Ek );

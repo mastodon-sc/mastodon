@@ -1,9 +1,8 @@
 package net.trackmate.model;
 
 import net.trackmate.graph.PoolObjectSet;
-import net.trackmate.graph.mempool.ByteMappedElement;
 
-public class EdgeSet extends PoolObjectSet< Edge, ByteMappedElement >
+public class EdgeSet extends PoolObjectSet< Edge >
 {
 	public EdgeSet( final SpotCollection c )
 	{

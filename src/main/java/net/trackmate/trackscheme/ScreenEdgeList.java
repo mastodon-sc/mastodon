@@ -2,7 +2,6 @@ package net.trackmate.trackscheme;
 
 import gnu.trove.list.array.TIntArrayList;
 import net.trackmate.graph.PoolObjectList;
-import net.trackmate.graph.mempool.ByteMappedElement;
 import net.trackmate.trackscheme.ScreenEdge.ScreenEdgePool;
 
 /**
@@ -11,7 +10,7 @@ import net.trackmate.trackscheme.ScreenEdge.ScreenEdgePool;
  *
  * @author Tobias Pietzsch <tobias.pietzsch@gmail.com>
  */
-public class ScreenEdgeList extends PoolObjectList< ScreenEdge, ByteMappedElement >
+public class ScreenEdgeList extends PoolObjectList< ScreenEdge >
 {
 	public ScreenEdgeList( final ScreenEdgePool pool )
 	{

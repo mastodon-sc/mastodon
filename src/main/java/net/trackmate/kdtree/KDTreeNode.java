@@ -8,10 +8,11 @@ import java.nio.ByteOrder;
 import net.imglib2.RealLocalizable;
 import net.trackmate.graph.Pool;
 import net.trackmate.graph.PoolObject;
+import net.trackmate.graph.Ref;
 import net.trackmate.graph.mempool.MappedElement;
 
 public class KDTreeNode<
-			O extends PoolObject< O, ? > & RealLocalizable,
+			O extends Ref< O > & RealLocalizable,
 			T extends MappedElement >
 		extends PoolObject< KDTreeNode< O, T >, T >
 		implements RealLocalizable

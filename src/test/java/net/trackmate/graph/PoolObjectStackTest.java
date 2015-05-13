@@ -5,14 +5,13 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
 
-import net.trackmate.graph.mempool.ByteMappedElement;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
 public class PoolObjectStackTest
 {
-	private PoolObjectStack< TestObject, ByteMappedElement > stack;
+	private PoolObjectStack< TestObject > stack;
 
 	private ArrayList< TestObject > objects;
 
@@ -20,7 +19,7 @@ public class PoolObjectStackTest
 	public void noSetup()
 	{
 		final TestObjectPool pool = new TestObjectPool( 10 );
-		stack = new PoolObjectStack< TestObject, ByteMappedElement >( pool );
+		stack = new PoolObjectStack< TestObject >( pool );
 		final TestObject A = pool.create().init( 1 );
 		final TestObject B = pool.create().init( 2 );
 		final TestObject C = pool.create().init( 3 );

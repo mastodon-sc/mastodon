@@ -6,24 +6,22 @@ import java.util.Collection;
 import java.util.Iterator;
 
 import net.trackmate.graph.collection.RefDeque;
-import net.trackmate.graph.mempool.MappedElement;
-import net.trackmate.graph.mempool.MemPool;
 import net.trackmate.graph.util.TIntArrayDeque;
 
-public class PoolObjectDeque< O extends PoolObject< O, T >, T extends MappedElement > implements PoolObjectCollection< O >, RefDeque< O >
+public class PoolObjectDeque< O extends Ref< O > > implements PoolObjectCollection< O >, RefDeque< O >
 {
 
-	private final Pool< O, T > pool;
+	private final RefPool< O > pool;
 
 	private final TIntArrayDeque indices;
 
-	public PoolObjectDeque( final Pool< O, T > pool )
+	public PoolObjectDeque( final RefPool< O > pool )
 	{
 		this.pool = pool;
 		this.indices = new TIntArrayDeque();
 	}
 
-	public PoolObjectDeque( final Pool< O, T > pool, final int initialCapacity )
+	public PoolObjectDeque( final RefPool< O > pool, final int initialCapacity )
 	{
 		this.pool = pool;
 		indices = new TIntArrayDeque( initialCapacity );
@@ -113,8 +111,6 @@ public class PoolObjectDeque< O extends PoolObject< O, T >, T extends MappedElem
 	{
 		return new Iterator< O >()
 		{
-			final MemPool< T > memPool = pool.getMemPool();
-
 			final TIntIterator ii = indices.iterator();
 
 			final O obj = pool.createRef();
@@ -128,8 +124,7 @@ public class PoolObjectDeque< O extends PoolObject< O, T >, T extends MappedElem
 			@Override
 			public O next()
 			{
-				final int index = ii.next();
-				obj.updateAccess( memPool, index );
+				pool.getByInternalPoolIndex( ii.next(), obj );
 				return obj;
 			}
 
@@ -146,8 +141,6 @@ public class PoolObjectDeque< O extends PoolObject< O, T >, T extends MappedElem
 	{
 		return new Iterator< O >()
 		{
-			final MemPool< T > memPool = pool.getMemPool();
-
 			final TIntIterator ii = indices.descendingIterator();
 
 			final O obj = pool.createRef();
@@ -161,8 +154,7 @@ public class PoolObjectDeque< O extends PoolObject< O, T >, T extends MappedElem
 			@Override
 			public O next()
 			{
-				final int index = ii.next();
-				obj.updateAccess( memPool, index );
+				pool.getByInternalPoolIndex( ii.next(), obj );
 				return obj;
 			}
 
@@ -269,7 +261,7 @@ public class PoolObjectDeque< O extends PoolObject< O, T >, T extends MappedElem
 	@Override
 	public O pollFirst( final O obj )
 	{
-		obj.updateAccess( pool.getMemPool(), indices.pollFirst() );
+		pool.getByInternalPoolIndex( indices.pollFirst(), obj );
 		return obj;
 	}
 
@@ -282,7 +274,7 @@ public class PoolObjectDeque< O extends PoolObject< O, T >, T extends MappedElem
 	@Override
 	public O pollLast( final O obj )
 	{
-		obj.updateAccess( pool.getMemPool(), indices.pollLast() );
+		pool.getByInternalPoolIndex( indices.pollLast(), obj );
 		return obj;
 	}
 
@@ -295,7 +287,7 @@ public class PoolObjectDeque< O extends PoolObject< O, T >, T extends MappedElem
 	@Override
 	public O peekFirst( final O obj )
 	{
-		obj.updateAccess( pool.getMemPool(), indices.peekFirst() );
+		pool.getByInternalPoolIndex( indices.peekFirst(), obj );
 		return obj;
 	}
 
@@ -308,7 +300,7 @@ public class PoolObjectDeque< O extends PoolObject< O, T >, T extends MappedElem
 	@Override
 	public O peekLast( final O obj )
 	{
-		obj.updateAccess( pool.getMemPool(), indices.peekLast() );
+		pool.getByInternalPoolIndex( indices.peekLast(), obj );
 		return obj;
 	}
 
@@ -321,7 +313,7 @@ public class PoolObjectDeque< O extends PoolObject< O, T >, T extends MappedElem
 	@Override
 	public O removeFirst( final O obj )
 	{
-		obj.updateAccess( pool.getMemPool(), indices.removeFirst() );
+		pool.getByInternalPoolIndex( indices.removeFirst(), obj );
 		return obj;
 	}
 
@@ -334,7 +326,7 @@ public class PoolObjectDeque< O extends PoolObject< O, T >, T extends MappedElem
 	@Override
 	public O removeLast( final O obj )
 	{
-		obj.updateAccess( pool.getMemPool(), indices.removeLast() );
+		pool.getByInternalPoolIndex( indices.removeLast(), obj );
 		return obj;
 	}
 
@@ -347,7 +339,7 @@ public class PoolObjectDeque< O extends PoolObject< O, T >, T extends MappedElem
 	@Override
 	public O getFirst( final O obj )
 	{
-		obj.updateAccess( pool.getMemPool(), indices.getFirst() );
+		pool.getByInternalPoolIndex( indices.getFirst(), obj );
 		return obj;
 	}
 
@@ -360,7 +352,7 @@ public class PoolObjectDeque< O extends PoolObject< O, T >, T extends MappedElem
 	@Override
 	public O getLast( final O obj )
 	{
-		obj.updateAccess( pool.getMemPool(), indices.getLast() );
+		pool.getByInternalPoolIndex( indices.getLast(), obj );
 		return obj;
 	}
 

@@ -8,9 +8,6 @@ import java.util.Iterator;
 
 import org.junit.Test;
 
-import net.trackmate.graph.PoolObjectDeque;
-import net.trackmate.graph.mempool.ByteMappedElement;
-
 public class PoolObjectDequeTest
 {
 	@Test
@@ -18,7 +15,7 @@ public class PoolObjectDequeTest
 	{
 		final TestObjectPool pool = new TestObjectPool( 10 );
 		final TestObject _ref = pool.createRef();
-		final PoolObjectDeque< TestObject, ByteMappedElement > deque = new PoolObjectDeque< TestObject, ByteMappedElement >( pool );
+		final PoolObjectDeque< TestObject > deque = new PoolObjectDeque< TestObject >( pool );
 
 		deque.addFirst( pool.create( _ref ).init( 10 ) );
 		deque.addFirst( pool.create( _ref ).init( 11 ) );
@@ -30,7 +27,7 @@ public class PoolObjectDequeTest
 	{
 		final TestObjectPool pool = new TestObjectPool( 10 );
 		final TestObject _ref = pool.createRef();
-		final PoolObjectDeque< TestObject, ByteMappedElement > deque = new PoolObjectDeque< TestObject, ByteMappedElement >( pool );
+		final PoolObjectDeque< TestObject > deque = new PoolObjectDeque< TestObject >( pool );
 
 		deque.addLast( pool.create( _ref ).init( 10 ) );
 		deque.addLast( pool.create( _ref ).init( 11 ) );
@@ -42,7 +39,7 @@ public class PoolObjectDequeTest
 	{
 		final TestObjectPool pool = new TestObjectPool( 10 );
 		final TestObject _ref = pool.createRef();
-		final PoolObjectDeque< TestObject, ByteMappedElement > deque = new PoolObjectDeque< TestObject, ByteMappedElement >( pool );
+		final PoolObjectDeque< TestObject > deque = new PoolObjectDeque< TestObject >( pool );
 
 		deque.addFirst( pool.create( _ref ).init( 10 ) );
 		deque.addFirst( pool.create( _ref ).init( 11 ) );
@@ -54,7 +51,7 @@ public class PoolObjectDequeTest
 	{
 		final TestObjectPool pool = new TestObjectPool( 10 );
 		final TestObject _ref = pool.createRef();
-		final PoolObjectDeque< TestObject, ByteMappedElement > deque = new PoolObjectDeque< TestObject, ByteMappedElement >( pool );
+		final PoolObjectDeque< TestObject > deque = new PoolObjectDeque< TestObject >( pool );
 
 		deque.addLast( pool.create( _ref ).init( 10 ) );
 		deque.addLast( pool.create( _ref ).init( 11 ) );
@@ -66,7 +63,7 @@ public class PoolObjectDequeTest
 	{
 		final TestObjectPool pool = new TestObjectPool( 10 );
 		final TestObject _ref = pool.createRef();
-		final PoolObjectDeque< TestObject, ByteMappedElement > deque = new PoolObjectDeque< TestObject, ByteMappedElement >( pool );
+		final PoolObjectDeque< TestObject > deque = new PoolObjectDeque< TestObject >( pool );
 
 		deque.addLast( pool.create( _ref ).init( 10 ) );
 		deque.addLast( pool.create( _ref ).init( 11 ) );
@@ -83,7 +80,7 @@ public class PoolObjectDequeTest
 	{
 		final TestObjectPool pool = new TestObjectPool( 10 );
 		final TestObject _ref = pool.createRef();
-		final PoolObjectDeque< TestObject, ByteMappedElement > deque = new PoolObjectDeque< TestObject, ByteMappedElement >( pool );
+		final PoolObjectDeque< TestObject > deque = new PoolObjectDeque< TestObject >( pool );
 
 		deque.addLast( pool.create( _ref ).init( 10 ) );
 		deque.addLast( pool.create( _ref ).init( 11 ) );
@@ -99,7 +96,7 @@ public class PoolObjectDequeTest
 	public void containsTest()
 	{
 		final TestObjectPool pool = new TestObjectPool( 10 );
-		final PoolObjectDeque< TestObject, ByteMappedElement > deque = new PoolObjectDeque< TestObject, ByteMappedElement >( pool );
+		final PoolObjectDeque< TestObject > deque = new PoolObjectDeque< TestObject >( pool );
 		final TestObject o10 = pool.create().init( 10 );
 		final TestObject o11 = pool.create().init( 11 );
 		final TestObject o29 = pool.create().init( 29 );

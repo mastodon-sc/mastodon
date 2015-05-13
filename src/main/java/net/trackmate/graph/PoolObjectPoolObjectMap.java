@@ -9,9 +9,8 @@ import java.util.Map;
 import java.util.Set;
 
 import net.trackmate.graph.collection.RefRefMap;
-import net.trackmate.graph.mempool.MappedElement;
 
-public class PoolObjectPoolObjectMap< K extends PoolObject< K, TK >, L extends PoolObject< L, TL >, TK extends MappedElement, TL extends MappedElement > implements RefRefMap< K, L >
+public class PoolObjectPoolObjectMap< K extends Ref< K >, L extends Ref< L > > implements RefRefMap< K, L >
 {
 	/**
 	 * Int value used to declare that the requested key is not in the map.
@@ -27,27 +26,27 @@ public class PoolObjectPoolObjectMap< K extends PoolObject< K, TK >, L extends P
 
 	final TIntIntHashMap indexmap;
 
-	private final Pool< K, TK > keyPool;
+	private final RefPool< K > keyPool;
 
-	private final Pool< L, TL > valuePool;
+	private final RefPool< L > valuePool;
 
 	/*
 	 * CONSTRUCTORS
 	 */
 
-	public PoolObjectPoolObjectMap( final Pool< K, TK > keyPool, final Pool< L, TL > valuePool, final int initialCapacity, final float loadFactor )
+	public PoolObjectPoolObjectMap( final RefPool< K > keyPool, final RefPool< L > valuePool, final int initialCapacity, final float loadFactor )
 	{
 		this.indexmap = new TIntIntHashMap( initialCapacity, loadFactor, NO_ENTRY_KEY, NO_ENTRY_VALUE );
 		this.keyPool = keyPool;
 		this.valuePool = valuePool;
 	}
 
-	public PoolObjectPoolObjectMap( final Pool< K, TK > keyPool, final Pool< L, TL > valuePool, final int initialCapacity )
+	public PoolObjectPoolObjectMap( final RefPool< K > keyPool, final RefPool< L > valuePool, final int initialCapacity )
 	{
 		this( keyPool, valuePool, initialCapacity, 0.5f );
 	}
 
-	public PoolObjectPoolObjectMap( final Pool< K, TK > keyPool, final Pool< L, TL > valuePool )
+	public PoolObjectPoolObjectMap( final RefPool< K > keyPool, final RefPool< L > valuePool )
 	{
 		this( keyPool, valuePool, 10 );
 	}
@@ -103,7 +102,7 @@ public class PoolObjectPoolObjectMap< K extends PoolObject< K, TK >, L extends P
 			@SuppressWarnings( "unchecked" )
 			final int index = indexmap.get( ( ( K ) key ).getInternalPoolIndex() );
 			if ( index == NO_ENTRY_VALUE ) { return null; }
-			ref.updateAccess( valuePool.getMemPool(), index );
+			valuePool.getByInternalPoolIndex( index, ref );
 			return ref;
 		}
 		else
@@ -121,7 +120,7 @@ public class PoolObjectPoolObjectMap< K extends PoolObject< K, TK >, L extends P
 	@Override
 	public Set< K > keySet()
 	{
-		return new PoolObjectSet< K, TK >( keyPool, indexmap.keySet() );
+		return new PoolObjectSet< K >( keyPool, indexmap.keySet() );
 	}
 
 	@Override
@@ -129,7 +128,7 @@ public class PoolObjectPoolObjectMap< K extends PoolObject< K, TK >, L extends P
 	{
 		final int index = indexmap.put( key.getInternalPoolIndex(), value.getInternalPoolIndex() );
 		if ( index == NO_ENTRY_VALUE ) { return null; }
-		ref.updateAccess( valuePool.getMemPool(), index );
+		valuePool.getByInternalPoolIndex( index, ref );
 		return ref;
 	}
 
@@ -154,7 +153,7 @@ public class PoolObjectPoolObjectMap< K extends PoolObject< K, TK >, L extends P
 			@SuppressWarnings( "unchecked" )
 			final int index = indexmap.remove( ( ( K ) key ).getInternalPoolIndex() );
 			if ( index == NO_ENTRY_VALUE ) { return null; }
-			ref.updateAccess( valuePool.getMemPool(), index );
+			valuePool.getByInternalPoolIndex( index, ref );
 			return ref;
 		}
 		else
@@ -297,7 +296,7 @@ public class PoolObjectPoolObjectMap< K extends PoolObject< K, TK >, L extends P
 				public L next()
 				{
 					final int index = it.next();
-					ref.updateAccess( valuePool.getMemPool(), index );
+					valuePool.getByInternalPoolIndex( index, ref );
 					return ref;
 				}
 
@@ -365,7 +364,7 @@ public class PoolObjectPoolObjectMap< K extends PoolObject< K, TK >, L extends P
 			for ( int i = 0; i < obj.length; i++ )
 			{
 				final L ref = createValueRef();
-				ref.updateAccess( valuePool.getMemPool(), indices[ i ] );
+				valuePool.getByInternalPoolIndex( indices[ i ], ref );
 				obj[ i ] = ref;
 			}
 			return obj;
@@ -381,7 +380,7 @@ public class PoolObjectPoolObjectMap< K extends PoolObject< K, TK >, L extends P
 			for ( int i = 0; i < indices.length; i++ )
 			{
 				final L ref = createValueRef();
-				ref.updateAccess( valuePool.getMemPool(), indices[ i ] );
+				valuePool.getByInternalPoolIndex( indices[ i ], ref );
 				a[ i ] = ( T ) ref;
 			}
 			for ( int i = indices.length; i < a.length; i++ )

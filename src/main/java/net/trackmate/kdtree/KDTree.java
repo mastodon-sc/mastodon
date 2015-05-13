@@ -7,7 +7,9 @@ import net.imglib2.RealInterval;
 import net.imglib2.RealLocalizable;
 import net.imglib2.RealPositionable;
 import net.trackmate.graph.Pool;
+import net.trackmate.graph.RefPool;
 import net.trackmate.graph.PoolObject;
+import net.trackmate.graph.Ref;
 import net.trackmate.graph.mempool.DoubleMappedElement;
 import net.trackmate.graph.mempool.DoubleMappedElementArray;
 import net.trackmate.graph.mempool.MappedElement;
@@ -26,7 +28,7 @@ import net.trackmate.graph.mempool.SingleArrayMemPool;
  * @author Tobias Pietzsch
  */
 public class KDTree<
-			O extends PoolObject< O, ? > & RealLocalizable,
+			O extends Ref< O > & RealLocalizable,
 			T extends MappedElement >
 		extends Pool< KDTreeNode< O, T >, T >
 		implements RealInterval
@@ -43,8 +45,8 @@ public class KDTree<
 	 *            the pool that contains the {@code objects}.
 	 * @return the tree.
 	 */
-	public static < O extends PoolObject< O, ? > & RealLocalizable >
-			KDTree< O, DoubleMappedElement > kdtree( final Collection< O > objects, final Pool< O, ? > objectPool )
+	public static < O extends Ref< O > & RealLocalizable >
+			KDTree< O, DoubleMappedElement > kdtree( final Collection< O > objects, final RefPool< O > objectPool )
 	{
 		return kdtree( objects, objectPool, defaultPoolFactory );
 	}
@@ -61,8 +63,8 @@ public class KDTree<
 	 *            storage for {@link KDTreeNode nodes}
 	 * @return the tree.
 	 */
-	public static < O extends PoolObject< O, ? > & RealLocalizable, T extends MappedElement >
-			KDTree< O, T > kdtree( final Collection< O > objects, final Pool< O, ? > objectPool, final MemPool.Factory< T > poolFactory )
+	public static < O extends Ref< O > & RealLocalizable, T extends MappedElement >
+			KDTree< O, T > kdtree( final Collection< O > objects, final RefPool< O > objectPool, final MemPool.Factory< T > poolFactory )
 	{
 		if ( objects.isEmpty() )
 			return null;
@@ -72,7 +74,7 @@ public class KDTree<
 	}
 
 	private static final class NodeFactory<
-				O extends PoolObject< O, ? > & RealLocalizable,
+				O extends Ref< O > & RealLocalizable,
 				T extends MappedElement >
 			implements PoolObject.Factory< KDTreeNode< O, T >, T >
 	{
@@ -84,7 +86,7 @@ public class KDTree<
 
 		private final MemPool.Factory< T > poolFactory;
 
-		public NodeFactory( final Collection< O > objects, final Pool< O, ? > objectPool, final MemPool.Factory< T > poolFactory )
+		public NodeFactory( final Collection< O > objects, final RefPool< O > objectPool, final MemPool.Factory< T > poolFactory )
 		{
 			this.poolFactory = poolFactory;
 			this.numDimensions = objects.iterator().next().numDimensions();
@@ -112,7 +114,7 @@ public class KDTree<
 		}
 	};
 
-	private final Pool< O, ? > objectPool;
+	private final RefPool< O > objectPool;
 
 	/**
 	 * the number of dimensions.
@@ -136,7 +138,7 @@ public class KDTree<
 			final NodeFactory< O, T > nodeFactory,
 			final int numDimensions,
 			final Collection< O > objects,
-			final Pool< O, ? > objectPool )
+			final RefPool< O > objectPool )
 	{
 		super( initialCapacity, nodeFactory );
 		this.n = numDimensions;
@@ -186,7 +188,7 @@ public class KDTree<
 		return null;
 	}
 
-	Pool< O, ? > getObjectPool()
+	RefPool< O > getObjectPool()
 	{
 		return objectPool;
 	}

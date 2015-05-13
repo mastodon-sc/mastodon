@@ -6,15 +6,13 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.Collection;
 
-import net.trackmate.graph.mempool.ByteMappedElement;
-
 import org.junit.Before;
 import org.junit.Test;
 
 public class PoolObjectObjectMapTest
 {
 
-	private PoolObjectObjectMap< TestVertex, ByteMappedElement, String > map;
+	private PoolObjectObjectMap< TestVertex, String > map;
 
 	private TestVertex A;
 
@@ -42,7 +40,7 @@ public class PoolObjectObjectMapTest
 		TestVertex E = pool.createRef();
 		E = pool.create( E ).init( 0 );
 
-		map = new PoolObjectObjectMap< TestVertex, ByteMappedElement, String >( pool );
+		map = new PoolObjectObjectMap< TestVertex, String >( pool );
 		map.put( A, "a" );
 		map.put( B, "b" );
 		map.put( C, "c" );
@@ -85,7 +83,7 @@ public class PoolObjectObjectMapTest
 	@Test
 	public void testIsEmpty()
 	{
-		assertTrue( "A new map should be empty, but is not.", new PoolObjectObjectMap< TestVertex, ByteMappedElement, String >( pool ).isEmpty() );
+		assertTrue( "A new map should be empty, but is not.", new PoolObjectObjectMap< TestVertex, String >( pool ).isEmpty() );
 	}
 
 	@Test
@@ -128,7 +126,7 @@ public class PoolObjectObjectMapTest
 	@Test
 	public void testKeySet()
 	{
-		final PoolObjectSet< TestVertex, ByteMappedElement > keySet = map.keySet();
+		final PoolObjectSet< TestVertex > keySet = map.keySet();
 		assertEquals( "Key set does not have the expected size.", 5, keySet.size() );
 		assertTrue( "Key set does not contain the expected key 'A'.", keySet.contains( A ) );
 		assertTrue( "Key set does not contain the expected key 'B'.", keySet.contains( B ) );

@@ -29,16 +29,16 @@ public class KDTreeTest
 
 	MyVertexPool vertexPool;
 
-	PoolObjectList< MyVertex, ByteMappedElement > dataVertices;
+	PoolObjectList< MyVertex > dataVertices;
 
-	PoolObjectList< MyVertex, ByteMappedElement > testVertices;
+	PoolObjectList< MyVertex > testVertices;
 
 	@Before
 	public void createDataVertices()
 	{
 		vertexPool = new MyVertexPool( numDataVertices + numTestVertices );
-		dataVertices = new PoolObjectList< MyVertex, ByteMappedElement >( vertexPool, numDataVertices );
-		testVertices = new PoolObjectList< MyVertex, ByteMappedElement >( vertexPool, numTestVertices );
+		dataVertices = new PoolObjectList< MyVertex >( vertexPool, numDataVertices );
+		testVertices = new PoolObjectList< MyVertex >( vertexPool, numTestVertices );
 
 		final MyVertex vertex = vertexPool.createRef();
 		final int n = vertex.numDimensions();

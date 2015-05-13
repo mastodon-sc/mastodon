@@ -14,28 +14,26 @@ import java.util.NoSuchElementException;
 import java.util.Random;
 
 import net.trackmate.graph.collection.RefList;
-import net.trackmate.graph.mempool.MappedElement;
-import net.trackmate.graph.mempool.MemPool;
 
-public class PoolObjectList< O extends PoolObject< O, T >, T extends MappedElement > implements PoolObjectCollection< O >, RefList< O >
+public class PoolObjectList< O extends Ref< O > > implements PoolObjectCollection< O >, RefList< O >
 {
 	private final TIntArrayList indices;
 
-	private final Pool< O, T > pool;
+	private final RefPool< O > pool;
 
-	public PoolObjectList( final Pool< O, T > pool )
+	public PoolObjectList( final RefPool< O > pool )
 	{
 		this.pool = pool;
 		indices = new TIntArrayList();
 	}
 
-	public PoolObjectList( final Pool< O, T > pool, final int initialCapacity )
+	public PoolObjectList( final RefPool< O > pool, final int initialCapacity )
 	{
 		this.pool = pool;
 		indices = new TIntArrayList( initialCapacity );
 	}
 
-	protected PoolObjectList( final PoolObjectList< O, T > list, final TIntArrayList indexSubList )
+	protected PoolObjectList( final PoolObjectList< O > list, final TIntArrayList indexSubList )
 	{
 		pool = list.pool;
 		indices = indexSubList;
@@ -161,14 +159,14 @@ public class PoolObjectList< O extends PoolObject< O, T >, T extends MappedEleme
 
 	public O getQuick( final int index, final O obj )
 	{
-		obj.updateAccess( pool.getMemPool(), indices.getQuick( index ) );
+		pool.getByInternalPoolIndex( indices.getQuick( index ), obj );
 		return obj;
 	}
 
 	@Override
 	public O get( final int index, final O obj )
 	{
-		obj.updateAccess( pool.getMemPool(), indices.get( index ) );
+		pool.getByInternalPoolIndex( indices.get( index ), obj );
 		return obj;
 	}
 
@@ -197,8 +195,6 @@ public class PoolObjectList< O extends PoolObject< O, T >, T extends MappedEleme
 	{
 		return new Iterator< O >()
 		{
-			final MemPool< T > memPool = pool.getMemPool();
-
 			final TIntIterator ii = indices.iterator();
 
 			final O obj = pool.createRef();
@@ -212,8 +208,7 @@ public class PoolObjectList< O extends PoolObject< O, T >, T extends MappedEleme
 			@Override
 			public O next()
 			{
-				final int index = ii.next();
-				obj.updateAccess( memPool, index );
+				pool.getByInternalPoolIndex( ii.next(), obj );
 				return obj;
 			}
 
@@ -415,7 +410,7 @@ public class PoolObjectList< O extends PoolObject< O, T >, T extends MappedEleme
 	@Override
 	public O remove( final int index, final O obj )
 	{
-		obj.updateAccess( pool.getMemPool(), indices.removeAt( index ) );
+		pool.getByInternalPoolIndex( indices.removeAt( index ), obj );
 		return obj;
 	}
 
@@ -455,9 +450,9 @@ public class PoolObjectList< O extends PoolObject< O, T >, T extends MappedEleme
 	@Override
 	public O set( final int index, final O obj, final O replacedObj )
 	{
-		replacedObj.updateAccess(
-				pool.getMemPool(),
-				indices.set( index, obj.getInternalPoolIndex() ) );
+		pool.getByInternalPoolIndex(
+				indices.set( index, obj.getInternalPoolIndex() ),
+				replacedObj );
 		return replacedObj;
 	}
 
@@ -476,7 +471,7 @@ public class PoolObjectList< O extends PoolObject< O, T >, T extends MappedEleme
 	@Override
 	public List< O > subList( final int fromIndex, final int toIndex )
 	{
-		return new PoolObjectList< O, T >( this, ( TIntArrayList ) indices.subList( fromIndex, toIndex ) );
+		return new PoolObjectList< O >( this, ( TIntArrayList ) indices.subList( fromIndex, toIndex ) );
 	}
 
 	@Override

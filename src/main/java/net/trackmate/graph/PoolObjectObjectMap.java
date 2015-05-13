@@ -7,19 +7,18 @@ import java.util.Map;
 import java.util.Set;
 
 import net.trackmate.graph.collection.RefObjectMap;
-import net.trackmate.graph.mempool.MappedElement;
 
 /**
  * Incomplete!
  * @author Tobias Pietzsch <tobias.pietzsch@gmail.com>
  */
-public class PoolObjectObjectMap< K extends PoolObject< K, T >, T extends MappedElement, O > implements Map< K, O >, RefObjectMap< K, O >
+public class PoolObjectObjectMap< K extends Ref< K >, O > implements Map< K, O >, RefObjectMap< K, O >
 {
 	private final TIntObjectHashMap< O > indexmap;
 
-	private final Pool< K, T > pool;
+	private final RefPool< K > pool;
 
-	public PoolObjectObjectMap( final Pool< K, T > pool )
+	public PoolObjectObjectMap( final RefPool< K > pool )
 	{
 		indexmap = new TIntObjectHashMap< O >();
 		this.pool = pool;
@@ -92,9 +91,9 @@ public class PoolObjectObjectMap< K extends PoolObject< K, T >, T extends Mapped
 	}
 
 	@Override
-	public PoolObjectSet< K, T > keySet()
+	public PoolObjectSet< K > keySet()
 	{
-		return new PoolObjectSet< K, T >( pool, indexmap.keySet() );
+		return new PoolObjectSet< K >( pool, indexmap.keySet() );
 	}
 
 	@Override

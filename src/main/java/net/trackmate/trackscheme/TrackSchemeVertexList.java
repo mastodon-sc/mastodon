@@ -2,9 +2,8 @@ package net.trackmate.trackscheme;
 
 import gnu.trove.list.array.TIntArrayList;
 import net.trackmate.graph.PoolObjectList;
-import net.trackmate.graph.mempool.ByteMappedElement;
 
-public class TrackSchemeVertexList extends PoolObjectList< TrackSchemeVertex, ByteMappedElement >
+public class TrackSchemeVertexList extends PoolObjectList< TrackSchemeVertex >
 {
 	private final TrackSchemeGraph graph;
 

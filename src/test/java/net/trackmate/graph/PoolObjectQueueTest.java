@@ -6,15 +6,13 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
 
-import net.trackmate.graph.mempool.ByteMappedElement;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
 public class PoolObjectQueueTest
 {
-	private PoolObjectQueue< TestObject, ByteMappedElement > queue;
+	private PoolObjectQueue< TestObject > queue;
 
 	private ArrayList< TestObject > objects;
 
@@ -22,7 +20,7 @@ public class PoolObjectQueueTest
 	public void noSetup()
 	{
 		final TestObjectPool pool = new TestObjectPool( 10 );
-		queue = new PoolObjectQueue< TestObject, ByteMappedElement >( pool );
+		queue = new PoolObjectQueue< TestObject >( pool );
 		final TestObject A = pool.create().init( 1 );
 		final TestObject B = pool.create().init( 2 );
 		final TestObject C = pool.create().init( 3 );

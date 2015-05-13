@@ -1,7 +1,6 @@
 package net.trackmate.graph;
 
 import net.trackmate.graph.collection.RefStack;
-import net.trackmate.graph.mempool.MappedElement;
 
 /**
  * A stack implementation for {@link PoolObject}s entirely based on a
@@ -14,7 +13,7 @@ import net.trackmate.graph.mempool.MappedElement;
  * @param <T>
  *            the MappedElement type.
  */
-public class PoolObjectStack< O extends PoolObject< O, T >, T extends MappedElement > extends PoolObjectList< O, T > implements RefStack< O >
+public class PoolObjectStack< O extends Ref< O > > extends PoolObjectList< O > implements RefStack< O >
 {
 
 	/*
@@ -27,7 +26,7 @@ public class PoolObjectStack< O extends PoolObject< O, T >, T extends MappedElem
 	 * @param pool
 	 *            the pool to draw objects from in order to build this stack.
 	 */
-	public PoolObjectStack( final Pool< O, T > pool )
+	public PoolObjectStack( final RefPool< O > pool )
 	{
 		super( pool );
 	}
@@ -40,7 +39,7 @@ public class PoolObjectStack< O extends PoolObject< O, T >, T extends MappedElem
 	 * @param initialCapacity
 	 *            the initial capacity.
 	 */
-	public PoolObjectStack( final Pool< O, T > pool, final int initialCapacity )
+	public PoolObjectStack( final RefPool< O > pool, final int initialCapacity )
 	{
 		super( pool, initialCapacity );
 	}

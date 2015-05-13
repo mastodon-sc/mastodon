@@ -7,13 +7,10 @@ import gnu.trove.list.linked.TIntLinkedList;
 import java.util.Collection;
 import java.util.Iterator;
 
-import net.trackmate.graph.mempool.MappedElement;
-import net.trackmate.graph.mempool.MemPool;
-
-public class PoolObjectQueue< O extends PoolObject< O, T >, T extends MappedElement > implements PoolObjectCollection< O >
+public class PoolObjectQueue< O extends Ref< O > > implements PoolObjectCollection< O >
 {
 
-	private final Pool< O, T > pool;
+	private final RefPool< O > pool;
 
 	private final TIntLinkedList queue;
 
@@ -27,13 +24,13 @@ public class PoolObjectQueue< O extends PoolObject< O, T >, T extends MappedElem
 	 * @param pool
 	 *            the pool to draw objects from in order to build this queue.
 	 */
-	public PoolObjectQueue( final Pool< O, T > pool )
+	public PoolObjectQueue( final RefPool< O > pool )
 	{
 		this.pool = pool;
 		this.queue = new TIntLinkedList();
 	}
 
-	protected PoolObjectQueue( final PoolObjectQueue< O, T > queue, final TIntLinkedList indexSubList )
+	protected PoolObjectQueue( final PoolObjectQueue< O > queue, final TIntLinkedList indexSubList )
 	{
 		this.pool = queue.pool;
 		this.queue = indexSubList;
@@ -176,8 +173,6 @@ public class PoolObjectQueue< O extends PoolObject< O, T >, T extends MappedElem
 	{
 		return new Iterator< O >()
 		{
-			final MemPool< T > memPool = pool.getMemPool();
-
 			final TIntIterator ii = queue.iterator();
 
 			final O obj = pool.createRef();
@@ -191,8 +186,7 @@ public class PoolObjectQueue< O extends PoolObject< O, T >, T extends MappedElem
 			@Override
 			public O next()
 			{
-				final int index = ii.next();
-				obj.updateAccess( memPool, index );
+				pool.getByInternalPoolIndex( ii.next(), obj );
 				return obj;
 			}
 
@@ -214,7 +208,7 @@ public class PoolObjectQueue< O extends PoolObject< O, T >, T extends MappedElem
 
 	public O remove( final int index, final O obj )
 	{
-		obj.updateAccess( pool.getMemPool(), queue.removeAt( index ) );
+		pool.getByInternalPoolIndex(  queue.removeAt( index ), obj );
 		return obj;
 	}
 

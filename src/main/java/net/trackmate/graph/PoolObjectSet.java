@@ -8,28 +8,26 @@ import java.util.Collection;
 import java.util.Iterator;
 
 import net.trackmate.graph.collection.RefSet;
-import net.trackmate.graph.mempool.MappedElement;
-import net.trackmate.graph.mempool.MemPool;
 
-public class PoolObjectSet< O extends PoolObject< O, T >, T extends MappedElement > implements PoolObjectCollection< O >, RefSet< O >
+public class PoolObjectSet< O extends Ref< O > > implements PoolObjectCollection< O >, RefSet< O >
 {
 	private final TIntSet indices;
 
-	private final Pool< O, T > pool;
+	private final RefPool< O > pool;
 
-	public PoolObjectSet( final Pool< O, T > pool )
+	public PoolObjectSet( final RefPool< O > pool )
 	{
 		this.pool = pool;
 		indices = new TIntHashSet();
 	}
 
-	public PoolObjectSet( final Pool< O, T > pool, final int initialCapacity )
+	public PoolObjectSet( final RefPool< O > pool, final int initialCapacity )
 	{
 		this.pool = pool;
 		indices = new TIntHashSet( initialCapacity );
 	}
 
-	protected PoolObjectSet( final Pool< O, T > pool, final TIntSet indices )
+	protected PoolObjectSet( final RefPool< O > pool, final TIntSet indices )
 	{
 		this.pool = pool;
 		this.indices = indices;
@@ -113,8 +111,6 @@ public class PoolObjectSet< O extends PoolObject< O, T >, T extends MappedElemen
 	{
 		return new Iterator< O >()
 		{
-			final MemPool< T > memPool = pool.getMemPool();
-
 			final TIntIterator ii = indices.iterator();
 
 			final O obj = pool.createRef();
@@ -128,8 +124,7 @@ public class PoolObjectSet< O extends PoolObject< O, T >, T extends MappedElemen
 			@Override
 			public O next()
 			{
-				final int index = ii.next();
-				obj.updateAccess( memPool, index );
+				pool.getByInternalPoolIndex( ii.next(), obj );
 				return obj;
 			}
 

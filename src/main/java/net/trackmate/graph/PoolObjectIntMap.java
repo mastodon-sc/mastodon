@@ -15,10 +15,8 @@ import java.util.Map;
 import java.util.Set;
 
 import net.trackmate.graph.collection.RefIntMap;
-import net.trackmate.graph.mempool.MappedElement;
-import net.trackmate.graph.mempool.MemPool;
 
-public class PoolObjectIntMap< K extends PoolObject< K, T >, T extends MappedElement > implements RefIntMap< K >
+public class PoolObjectIntMap< K extends Ref< K > > implements RefIntMap< K >
 {
 
 	private static final int NO_ENTRY_KEY = -1;
@@ -27,19 +25,19 @@ public class PoolObjectIntMap< K extends PoolObject< K, T >, T extends MappedEle
 
 	private final TIntIntHashMap indexmap;
 
-	private final Pool< K, T > pool;
+	private final RefPool< K > pool;
 
 	/*
 	 * CONSTRUCTORS
 	 */
 
-	public PoolObjectIntMap( final Pool< K, T > pool, final int noEntryValue, final int initialCapacity )
+	public PoolObjectIntMap( final RefPool< K > pool, final int noEntryValue, final int initialCapacity )
 	{
 		this.pool = pool;
 		this.indexmap = new TIntIntHashMap( initialCapacity, DEFAULT_LOAD_FACTOR, NO_ENTRY_KEY, noEntryValue );
 	}
 
-	public PoolObjectIntMap( final Pool< K, T > pool, final int noEntryValue )
+	public PoolObjectIntMap( final RefPool< K > pool, final int noEntryValue )
 	{
 		this( pool, noEntryValue, Constants.DEFAULT_CAPACITY );
 	}
@@ -89,7 +87,7 @@ public class PoolObjectIntMap< K extends PoolObject< K, T >, T extends MappedEle
 	@Override
 	public Set< K > keySet()
 	{
-		return new PoolObjectSet< K, T >( pool, indexmap.keySet() );
+		return new PoolObjectSet< K >( pool, indexmap.keySet() );
 	}
 
 	@Override
@@ -205,10 +203,9 @@ public class PoolObjectIntMap< K extends PoolObject< K, T >, T extends MappedEle
 	@Override
 	public boolean forEachKey( final TObjectProcedure< ? super K > procedure, final K ref )
 	{
-		final MemPool< T > memPool = pool.getMemPool();
 		for ( final int id : indexmap.keys() )
 		{
-			ref.updateAccess( memPool, id );
+			pool.getByInternalPoolIndex( id, ref );
 			if ( !procedure.execute( ref ) ) { return false; }
 		}
 		return true;
@@ -230,10 +227,9 @@ public class PoolObjectIntMap< K extends PoolObject< K, T >, T extends MappedEle
 	@Override
 	public boolean forEachEntry( final TObjectIntProcedure< ? super K > procedure, final K ref )
 	{
-		final MemPool< T > memPool = pool.getMemPool();
 		for ( final int id : indexmap.keys() )
 		{
-			ref.updateAccess( memPool, id );
+			pool.getByInternalPoolIndex( id, ref );
 			if ( !procedure.execute( ref, indexmap.get( ref.getInternalPoolIndex() ) ) ) { return false; }
 		}
 		return true;
@@ -256,10 +252,9 @@ public class PoolObjectIntMap< K extends PoolObject< K, T >, T extends MappedEle
 	public boolean retainEntries( final TObjectIntProcedure< ? super K > procedure, final K ref )
 	{
 		boolean modified = false;
-		final MemPool< T > memPool = pool.getMemPool();
 		for ( final int id : indexmap.keys() )
 		{
-			ref.updateAccess( memPool, id );
+			pool.getByInternalPoolIndex( id, ref );
 			if ( !procedure.execute( ref, indexmap.get( ref.getInternalPoolIndex() ) ) )
 			{
 				remove( ref );
@@ -299,13 +294,10 @@ public class PoolObjectIntMap< K extends PoolObject< K, T >, T extends MappedEle
 
 		private final K obj;
 
-		private final MemPool< T > memPool;
-
 		public PoolObjectIntIterator()
 		{
 			this.it = indexmap.iterator();
 			this.obj = createRef();
-			this.memPool = pool.getMemPool();
 		}
 
 		@Override
@@ -330,7 +322,7 @@ public class PoolObjectIntMap< K extends PoolObject< K, T >, T extends MappedEle
 		public K key()
 		{
 			final int id = it.key();
-			obj.updateAccess( memPool, id );
+			pool.getByInternalPoolIndex( id, obj );
 			return obj;
 		}
 

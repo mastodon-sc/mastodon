@@ -1,9 +1,8 @@
 package net.trackmate.model;
 
 import net.trackmate.graph.PoolObjectSet;
-import net.trackmate.graph.mempool.ByteMappedElement;
 
-public class SpotSet extends PoolObjectSet< Spot, ByteMappedElement >
+public class SpotSet extends PoolObjectSet< Spot >
 {
 	public SpotSet( final SpotCollection c )
 	{

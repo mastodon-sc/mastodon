@@ -22,7 +22,7 @@ import net.trackmate.graph.mempool.MemPool.PoolIterator;
  *
  * @author Tobias Pietzsch <tobias.pietzsch@gmail.com>
  */
-public class Pool< O extends PoolObject< O, T >, T extends MappedElement > implements Iterable< O >
+public class Pool< O extends PoolObject< O, T >, T extends MappedElement > implements RefPool< O >, Iterable< O >
 {
 	private final PoolObject.Factory< O, T > objFactory;
 
@@ -60,6 +60,7 @@ public class Pool< O extends PoolObject< O, T >, T extends MappedElement > imple
 		return memPool.size();
 	}
 
+	@Override
 	public O createRef()
 	{
 		return createRef( true );
@@ -76,6 +77,7 @@ public class Pool< O extends PoolObject< O, T >, T extends MappedElement > imple
 			return objFactory.createEmptyRef();
 	}
 
+	@Override
 	public void releaseRef( final O obj )
 	{
 		tmpObjRefs.add( obj );
@@ -86,6 +88,12 @@ public class Pool< O extends PoolObject< O, T >, T extends MappedElement > imple
 	{
 		for ( final PoolObject< ?, ? > obj : objs )
 			obj.releaseRef();
+	}
+
+	@Override
+	public void getByInternalPoolIndex( final int index, final O obj )
+	{
+		obj.updateAccess( memPool, index );
 	}
 
 	@Override
@@ -133,12 +141,6 @@ public class Pool< O extends PoolObject< O, T >, T extends MappedElement > imple
 		obj.updateAccess( memPool, index );
 		obj.setToUninitializedState();
 		return obj;
-	}
-
-	// TODO: this should not be public. provide InternalPoolAccess( Pool ) class that can be used to access it for stuff that knows what it is doing.
-	public void getByInternalPoolIndex( final int index, final O obj )
-	{
-		obj.updateAccess( memPool, index );
 	}
 
 	protected void releaseByInternalPoolIndex( final int index )

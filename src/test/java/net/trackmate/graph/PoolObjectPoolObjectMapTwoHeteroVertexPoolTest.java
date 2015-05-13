@@ -3,7 +3,6 @@ package net.trackmate.graph;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNull;
-import net.trackmate.graph.mempool.ByteMappedElement;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -52,7 +51,7 @@ public class PoolObjectPoolObjectMapTwoHeteroVertexPoolTest extends PoolObjectPo
 		Dk2 = graph2.addVertex().init( 3 );
 		Ek2 = graph2.addVertex().init( 4 );
 
-		map = new PoolObjectPoolObjectMap< TestVertex, TestVertex, ByteMappedElement, ByteMappedElement >( graph.vertexPool, graph2.vertexPool );
+		map = new PoolObjectPoolObjectMap< TestVertex, TestVertex >( graph.vertexPool, graph2.vertexPool );
 		map.put( Bk, Ck2 );
 		map.put( Ck, Dk2 );
 		map.put( Dk, Ek2 );

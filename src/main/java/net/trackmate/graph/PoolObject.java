@@ -21,7 +21,7 @@ import net.trackmate.graph.mempool.MemPool;
  *
  * @author Tobias Pietzsch <tobias.pietzsch@gmail.com>
  */
-public abstract class PoolObject< O extends PoolObject< O, T >, T extends MappedElement >
+public abstract class PoolObject< O extends PoolObject< O, T >, T extends MappedElement > implements Ref< O >
 {
 	/**
 	 * Access to the data.
@@ -65,6 +65,7 @@ public abstract class PoolObject< O extends PoolObject< O, T >, T extends Mapped
 	 * @return the element index that this {@link PoolObject} currently refers
 	 *         to.
 	 */
+	@Override
 	public int getInternalPoolIndex()
 	{
 		return index;
@@ -112,10 +113,11 @@ public abstract class PoolObject< O extends PoolObject< O, T >, T extends Mapped
 	 * @param obj
 	 *            A {@link PoolObject}, usually of the same type as this one.
 	 */
+	@Override
 	@SuppressWarnings( "unchecked" )
 	public O refTo( final O obj )
 	{
-		updateAccess( ( ( PoolObject< O, T > ) obj ).memPool, ( ( PoolObject< O, T > ) obj ).index );
+		updateAccess( obj.memPool, obj.index );
 		return ( O ) this;
 	}
 

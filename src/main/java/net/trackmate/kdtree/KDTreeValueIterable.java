@@ -5,12 +5,12 @@ import gnu.trove.list.array.TIntArrayList;
 import java.util.Iterator;
 
 import net.imglib2.RealLocalizable;
-import net.trackmate.graph.Pool;
-import net.trackmate.graph.PoolObject;
+import net.trackmate.graph.RefPool;
+import net.trackmate.graph.Ref;
 import net.trackmate.graph.mempool.MappedElement;
 import net.trackmate.graph.util.TIntArrayDeque;
 
-public class KDTreeValueIterable< O extends PoolObject< O, ? > & RealLocalizable, T extends MappedElement > implements Iterable< O >
+public class KDTreeValueIterable< O extends Ref< O > & RealLocalizable, T extends MappedElement > implements Iterable< O >
 {
 	private final TIntArrayList nodes;
 
@@ -44,7 +44,7 @@ public class KDTreeValueIterable< O extends PoolObject< O, ? > & RealLocalizable
 
 		private final KDTreeNode< O, T > current;
 
-		private final Pool<O,?> pool;
+		private final RefPool< O > pool;
 
 		private final O obj;
 
@@ -118,7 +118,7 @@ public class KDTreeValueIterable< O extends PoolObject< O, ? > & RealLocalizable
 
 		private final int n;
 
-		private final Pool<O,?> pool;
+		private final RefPool< O > pool;
 
 		private final O obj;
 

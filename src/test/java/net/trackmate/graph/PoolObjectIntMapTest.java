@@ -19,8 +19,6 @@ import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 
-import net.trackmate.graph.mempool.ByteMappedElement;
-
 import org.junit.Before;
 import org.junit.Test;
 
@@ -29,7 +27,7 @@ public class PoolObjectIntMapTest
 
 	private int noEntryValue;
 
-	private PoolObjectIntMap< TestObject, ByteMappedElement > map;
+	private PoolObjectIntMap< TestObject > map;
 
 	private ArrayList< TestObject > notIns;
 
@@ -42,7 +40,7 @@ public class PoolObjectIntMapTest
 	{
 		final TestObjectPool pool = new TestObjectPool( 10 );
 		noEntryValue = -1;
-		map = new PoolObjectIntMap< TestObject, ByteMappedElement >( pool, noEntryValue );
+		map = new PoolObjectIntMap< TestObject >( pool, noEntryValue );
 		final TestObject A = pool.create().init( 1 );
 		final TestObject B = pool.create().init( 2 );
 		final TestObject C = pool.create().init( 3 );
@@ -122,7 +120,7 @@ public class PoolObjectIntMapTest
 	public void testIsEmpty()
 	{
 		final TestObjectPool pool = new TestObjectPool( 10 );
-		final PoolObjectIntMap< TestObject, ByteMappedElement > lmap = new PoolObjectIntMap< TestObject, ByteMappedElement >( pool, noEntryValue );
+		final PoolObjectIntMap< TestObject > lmap = new PoolObjectIntMap< TestObject >( pool, noEntryValue );
 		assertTrue( "Newly created map should be empty.", lmap.isEmpty() );
 	}
 
@@ -275,7 +273,7 @@ public class PoolObjectIntMapTest
 		final int val = map.remove( target );
 		assertEquals( "Map does not have the expected size after removal.", ins.size() - 1, map.size() );
 		assertEquals( "Unexpected value returned by removal.", values[ tindex ], val );
-		
+
 		final TestObject notHere = notIns.get( 1 );
 		final int remove = map.remove( notHere );
 		assertEquals( "Map size should not have changed after trying to remove a non preset mapping.", ins.size() - 1, map.size() );
@@ -287,7 +285,7 @@ public class PoolObjectIntMapTest
 	{
 		final TestObjectPool pool = new TestObjectPool( 10 );
 		final int lNoEntryValue = 1000;
-		final PoolObjectIntMap< TestObject, ByteMappedElement > lmap = new PoolObjectIntMap< TestObject, ByteMappedElement >( pool, lNoEntryValue );
+		final PoolObjectIntMap< TestObject > lmap = new PoolObjectIntMap< TestObject >( pool, lNoEntryValue );
 		assertEquals( "Unexpected 'no_entry_value'.", lNoEntryValue, lmap.getNoEntryValue() );
 	}
 
@@ -566,7 +564,7 @@ public class PoolObjectIntMapTest
 		final int targetVal = map.get( target );
 		final TObjectIntProcedure< TestObject > procedure = new TObjectIntProcedure< TestObject >()
 		{
-			
+
 			@Override
 			public boolean execute( final TestObject key, final int val )
 			{

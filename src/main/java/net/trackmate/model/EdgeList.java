@@ -2,9 +2,8 @@ package net.trackmate.model;
 
 import gnu.trove.list.array.TIntArrayList;
 import net.trackmate.graph.PoolObjectList;
-import net.trackmate.graph.mempool.ByteMappedElement;
 
-public class EdgeList extends PoolObjectList< Edge, ByteMappedElement >
+public class EdgeList extends PoolObjectList< Edge >
 {
 	public EdgeList( final SpotCollection c )
 	{

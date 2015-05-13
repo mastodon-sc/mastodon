@@ -2,7 +2,6 @@ package net.trackmate.graph;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
-import net.trackmate.graph.mempool.ByteMappedElement;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -10,7 +9,7 @@ import org.junit.Test;
 /**
  * This test reproduces the tests from its parent class, but uses a map between
  * two pools that do not belong to the same graph.
- * 
+ *
  * @author Jean-Yves Tinevez - 2015
  */
 public class PoolObjectPoolObjectMapHeteroPoolTest extends PoolObjectPoolObjectMapTest
@@ -42,7 +41,7 @@ public class PoolObjectPoolObjectMapHeteroPoolTest extends PoolObjectPoolObjectM
 		eEA = graph2.addEdge( Ek2, Ak2 );
 
 		// Map each vertex to edge going in.
-		map = new PoolObjectPoolObjectMap< TestVertex, TestEdge, ByteMappedElement, ByteMappedElement >( graph.vertexPool, graph2.edgePool );
+		map = new PoolObjectPoolObjectMap< TestVertex, TestEdge >( graph.vertexPool, graph2.edgePool );
 		map.put( Bk, eAB );
 		map.put( Ck, eAC );
 		map.put( Dk, eBD );

@@ -1,7 +1,5 @@
 package net.trackmate.graph;
 
-import net.trackmate.graph.mempool.ByteMappedElement;
-
 import org.junit.Before;
 
 public class PoolObjectPoolObjectMapAbstractTest
@@ -10,7 +8,7 @@ public class PoolObjectPoolObjectMapAbstractTest
 
 	protected TestVertex Bk;
 
-	protected PoolObjectPoolObjectMap< TestVertex, TestEdge, ByteMappedElement, ByteMappedElement > map;
+	protected PoolObjectPoolObjectMap< TestVertex, TestEdge > map;
 
 	protected TestEdge eEA;
 
@@ -32,7 +30,7 @@ public class PoolObjectPoolObjectMapAbstractTest
 
 	/**
 	 * We test for a key pool and a value pool that are linked in a graph.
-	 * 
+	 *
 	 * @throws Exception
 	 */
 	@Before
@@ -53,7 +51,7 @@ public class PoolObjectPoolObjectMapAbstractTest
 		eEA = graph.addEdge( Ek, Ak );
 
 		// Map each vertex to edge going in.
-		map = new PoolObjectPoolObjectMap< TestVertex, TestEdge, ByteMappedElement, ByteMappedElement >( graph.vertexPool, graph.edgePool );
+		map = new PoolObjectPoolObjectMap< TestVertex, TestEdge >( graph.vertexPool, graph.edgePool );
 		map.put( Bk, eAB );
 		map.put( Ck, eAC );
 		map.put( Dk, eBD );

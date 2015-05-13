@@ -2,7 +2,6 @@ package net.trackmate.trackscheme;
 
 import gnu.trove.list.array.TIntArrayList;
 import net.trackmate.graph.PoolObjectList;
-import net.trackmate.graph.mempool.ByteMappedElement;
 import net.trackmate.trackscheme.ScreenVertex.ScreenVertexPool;
 
 /**
@@ -11,7 +10,7 @@ import net.trackmate.trackscheme.ScreenVertex.ScreenVertexPool;
  *
  * @author Tobias Pietzsch <tobias.pietzsch@gmail.com>
  */
-public class ScreenVertexList extends PoolObjectList< ScreenVertex, ByteMappedElement >
+public class ScreenVertexList extends PoolObjectList< ScreenVertex >
 {
 	public ScreenVertexList( final ScreenVertexPool pool )
 	{

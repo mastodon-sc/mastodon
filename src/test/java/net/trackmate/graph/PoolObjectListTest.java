@@ -6,15 +6,13 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Random;
 
-import net.trackmate.graph.mempool.ByteMappedElement;
-
 import org.junit.Before;
 import org.junit.Test;
 
 public class PoolObjectListTest
 {
 
-	private PoolObjectList< TestObject, ByteMappedElement > list;
+	private PoolObjectList< TestObject > list;
 
 	private ArrayList< TestObject > objects;
 
@@ -23,8 +21,8 @@ public class PoolObjectListTest
 	{
 		final int nobj = 1000;
 		final TestObjectPool pool = new TestObjectPool( nobj );
-		list = new PoolObjectList< TestObject, ByteMappedElement >( pool );
-		
+		list = new PoolObjectList< TestObject >( pool );
+
 		final Random rand = new Random();
 
 		final int[] ids = new int[ nobj ];

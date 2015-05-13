@@ -10,7 +10,6 @@ import java.util.Iterator;
 import java.util.List;
 
 import net.trackmate.graph.collection.RefList;
-import net.trackmate.graph.mempool.ByteMappedElement;
 
 import org.junit.Test;
 
@@ -78,7 +77,7 @@ public class PoolObjectPoolObjectMapValuesTest extends PoolObjectPoolObjectMapAb
 	@Test
 	public void testIsEmpty()
 	{
-		final PoolObjectPoolObjectMap< TestVertex, TestEdge, ByteMappedElement, ByteMappedElement > map2 = new PoolObjectPoolObjectMap< TestVertex, TestEdge, ByteMappedElement, ByteMappedElement >( graph.vertexPool, graph.edgePool );
+		final PoolObjectPoolObjectMap< TestVertex, TestEdge > map2 = new PoolObjectPoolObjectMap< TestVertex, TestEdge >( graph.vertexPool, graph.edgePool );
 		assertTrue( "Value collection of newly created map should be empty.", map2.values().isEmpty() );
 
 		map2.put( Ak, eAB );
@@ -154,7 +153,7 @@ public class PoolObjectPoolObjectMapValuesTest extends PoolObjectPoolObjectMapAb
 		assertTrue( "Removing values in the collection should change the collection.", changed2 );
 		assertEquals( "Value collection should have been shrinked by this removeAll().", initSize - 2, values.size() );
 	}
-	
+
 	@Test
 	public void testRetainAll()
 	{
