@@ -35,6 +35,8 @@ public class ShowTrackScheme implements TransformListener< ScreenTransform >, Se
 
 	private final KeyHandler keyHandler;
 
+	private final CanvasOverlay canvasOverlay;
+
 	public ShowTrackScheme( final TrackSchemeGraph graph )
 	{
 		this.graph = graph;
@@ -86,10 +88,14 @@ public class ShowTrackScheme implements TransformListener< ScreenTransform >, Se
 		canvas.getTransformEventHandler().setTransform( screenTransform );
 		canvas.getTransformEventHandler().setTransformListener( this );
 
+		canvasOverlay = new CanvasOverlay( layout, order );
+
 		frame = new MyFrame( "trackscheme", GuiUtil.getSuitableGraphicsConfiguration( GuiUtil.RGB_COLOR_MODEL ) );
 		frame.getContentPane().add( canvas, BorderLayout.CENTER );
 		frame.pack();
 		frame.setVisible( true );
+
+		canvas.addOverlayRenderer( canvasOverlay );
 		canvas.addOverlayRenderer( selectionHandler.getSelectionOverlay() );
 		canvas.addOverlayRenderer( overlay );
 	}
@@ -98,6 +104,7 @@ public class ShowTrackScheme implements TransformListener< ScreenTransform >, Se
 	public void transformChanged( final ScreenTransform transform )
 	{
 		selectionHandler.setTransform( transform );
+		canvasOverlay.transformChanged( transform );
 
 //		System.out.println( "transformChanged" );
 		final double minX = transform.minX;
@@ -161,11 +168,19 @@ public class ShowTrackScheme implements TransformListener< ScreenTransform >, Se
 		final TrackSchemeVertex v3 = graph.addVertex().init( "3", 2, false );;
 		final TrackSchemeVertex v4 = graph.addVertex().init( "4", 3, false );;
 		final TrackSchemeVertex v5 = graph.addVertex().init( "5", 4, false );;
+		final TrackSchemeVertex v6 = graph.addVertex().init( "6", 3, false );;
+		final TrackSchemeVertex v7 = graph.addVertex().init( "7", 4, false );;
+		final TrackSchemeVertex v8 = graph.addVertex().init( "8", 5, false );;
+		final TrackSchemeVertex v9 = graph.addVertex().init( "9", 2, false );;
 
 		graph.addEdge( v0, v1 );
 		graph.addEdge( v0, v2 );
 		graph.addEdge( v1, v3 );
+		graph.addEdge( v2, v6 );
+		graph.addEdge( v6, v7 );
+		graph.addEdge( v7, v8 );
 		graph.addEdge( v4, v5 );
+		graph.addEdge( v9, v6 );
 		final ShowTrackScheme showTrackScheme = new ShowTrackScheme( graph );
 	}
 }

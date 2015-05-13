@@ -4,9 +4,9 @@ import java.util.Random;
 
 public class LargeModelExample
 {
-	private static final int N_STARTING_CELLS = 50;
+	private static final int N_STARTING_CELLS = 10;
 
-	private static final int N_DIVISIONS = 16;
+	private static final int N_DIVISIONS = 12;
 
 	private static final int N_FRAMES_PER_DIVISION = 7;
 
