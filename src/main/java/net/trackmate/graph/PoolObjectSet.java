@@ -11,7 +11,7 @@ import net.trackmate.graph.collection.RefSet;
 import net.trackmate.graph.mempool.MappedElement;
 import net.trackmate.graph.mempool.MemPool;
 
-public class PoolObjectSet< O extends PoolObject< O, T >, T extends MappedElement > implements PoolObjectCollection< O, T >, RefSet< O >
+public class PoolObjectSet< O extends PoolObject< O, T >, T extends MappedElement > implements PoolObjectCollection< O >, RefSet< O >
 {
 	private final TIntSet indices;
 
@@ -63,7 +63,7 @@ public class PoolObjectSet< O extends PoolObject< O, T >, T extends MappedElemen
 	public boolean addAll( final Collection< ? extends O > objs )
 	{
 		if ( objs instanceof PoolObjectCollection )
-			return indices.addAll( ( ( PoolObjectCollection< ?, ? > ) objs ).getIndexCollection() );
+			return indices.addAll( ( ( PoolObjectCollection< ? > ) objs ).getIndexCollection() );
 		else
 		{
 			boolean changed = false;
@@ -92,7 +92,7 @@ public class PoolObjectSet< O extends PoolObject< O, T >, T extends MappedElemen
 	public boolean containsAll( final Collection< ? > objs )
 	{
 		if ( objs instanceof PoolObjectCollection )
-			return indices.containsAll( ( ( PoolObjectCollection< ?, ? > ) objs ).getIndexCollection() );
+			return indices.containsAll( ( ( PoolObjectCollection< ? > ) objs ).getIndexCollection() );
 		else
 		{
 			for ( final Object obj : objs )
@@ -157,7 +157,7 @@ public class PoolObjectSet< O extends PoolObject< O, T >, T extends MappedElemen
 	public boolean removeAll( final Collection< ? > objs )
 	{
 		if ( objs instanceof PoolObjectCollection )
-			return indices.removeAll( ( ( PoolObjectCollection< ?, ? > ) objs ).getIndexCollection() );
+			return indices.removeAll( ( ( PoolObjectCollection< ? > ) objs ).getIndexCollection() );
 		else
 		{
 			boolean changed = false;
@@ -172,7 +172,7 @@ public class PoolObjectSet< O extends PoolObject< O, T >, T extends MappedElemen
 	public boolean retainAll( final Collection< ? > objs )
 	{
 		if ( objs instanceof PoolObjectCollection )
-			return indices.retainAll( ( ( PoolObjectCollection< ?, ? > ) objs ).getIndexCollection() );
+			return indices.retainAll( ( ( PoolObjectCollection< ? > ) objs ).getIndexCollection() );
 		else
 		{
 			// TODO

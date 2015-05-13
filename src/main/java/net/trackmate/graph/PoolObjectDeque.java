@@ -10,7 +10,7 @@ import net.trackmate.graph.mempool.MappedElement;
 import net.trackmate.graph.mempool.MemPool;
 import net.trackmate.graph.util.TIntArrayDeque;
 
-public class PoolObjectDeque< O extends PoolObject< O, T >, T extends MappedElement > implements PoolObjectCollection< O, T >, RefDeque< O >
+public class PoolObjectDeque< O extends PoolObject< O, T >, T extends MappedElement > implements PoolObjectCollection< O >, RefDeque< O >
 {
 
 	private final Pool< O, T > pool;
@@ -65,7 +65,7 @@ public class PoolObjectDeque< O extends PoolObject< O, T >, T extends MappedElem
 	public boolean addAll( final Collection< ? extends O > objs )
 	{
 		if ( objs instanceof PoolObjectCollection )
-			return indices.addAll( ( ( PoolObjectCollection< ?, ? > ) objs ).getIndexCollection() );
+			return indices.addAll( ( ( PoolObjectCollection< ? > ) objs ).getIndexCollection() );
 		else
 		{
 			for ( final O obj : objs )
@@ -92,7 +92,7 @@ public class PoolObjectDeque< O extends PoolObject< O, T >, T extends MappedElem
 	public boolean containsAll( final Collection< ? > objs )
 	{
 		if ( objs instanceof PoolObjectCollection )
-			return indices.containsAll( ( ( PoolObjectCollection< ?, ? > ) objs ).getIndexCollection() );
+			return indices.containsAll( ( ( PoolObjectCollection< ? > ) objs ).getIndexCollection() );
 		else
 		{
 			for ( final Object obj : objs )
@@ -186,7 +186,7 @@ public class PoolObjectDeque< O extends PoolObject< O, T >, T extends MappedElem
 	public boolean removeAll( final Collection< ? > objs )
 	{
 		if ( objs instanceof PoolObjectCollection )
-			return indices.removeAll( ( ( PoolObjectCollection< ?, ? > ) objs ).getIndexCollection() );
+			return indices.removeAll( ( ( PoolObjectCollection< ? > ) objs ).getIndexCollection() );
 		else
 		{
 			boolean changed = false;
@@ -201,7 +201,7 @@ public class PoolObjectDeque< O extends PoolObject< O, T >, T extends MappedElem
 	public boolean retainAll( final Collection< ? > objs )
 	{
 		if ( objs instanceof PoolObjectCollection )
-			return indices.retainAll( ( ( PoolObjectCollection< ?, ? > ) objs ).getIndexCollection() );
+			return indices.retainAll( ( ( PoolObjectCollection< ? > ) objs ).getIndexCollection() );
 		else
 		{
 			boolean changed = false;

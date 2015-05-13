@@ -10,7 +10,7 @@ import java.util.Iterator;
 import net.trackmate.graph.mempool.MappedElement;
 import net.trackmate.graph.mempool.MemPool;
 
-public class PoolObjectQueue< O extends PoolObject< O, T >, T extends MappedElement > implements PoolObjectCollection< O, T >
+public class PoolObjectQueue< O extends PoolObject< O, T >, T extends MappedElement > implements PoolObjectCollection< O >
 {
 
 	private final Pool< O, T > pool;
@@ -106,11 +106,13 @@ public class PoolObjectQueue< O extends PoolObject< O, T >, T extends MappedElem
 		return element( obj );
 	}
 
+	@Override
 	public O createRef()
 	{
 		return pool.createRef();
 	}
 
+	@Override
 	public void releaseRef( final O obj )
 	{
 		pool.releaseRef( obj );
@@ -126,7 +128,7 @@ public class PoolObjectQueue< O extends PoolObject< O, T >, T extends MappedElem
 	public boolean addAll( final Collection< ? extends O > objs )
 	{
 		if ( objs instanceof PoolObjectCollection )
-			return queue.addAll( ( ( PoolObjectCollection< ?, ? > ) objs ).getIndexCollection() );
+			return queue.addAll( ( ( PoolObjectCollection< ? > ) objs ).getIndexCollection() );
 		else
 		{
 			for ( final O obj : objs )
@@ -153,7 +155,7 @@ public class PoolObjectQueue< O extends PoolObject< O, T >, T extends MappedElem
 	public boolean containsAll( final Collection< ? > objs )
 	{
 		if ( objs instanceof PoolObjectCollection )
-			return queue.containsAll( ( ( PoolObjectCollection< ?, ? > ) objs ).getIndexCollection() );
+			return queue.containsAll( ( ( PoolObjectCollection< ? > ) objs ).getIndexCollection() );
 		else
 		{
 			for ( final Object obj : objs )
@@ -220,7 +222,7 @@ public class PoolObjectQueue< O extends PoolObject< O, T >, T extends MappedElem
 	public boolean removeAll( final Collection< ? > objs )
 	{
 		if ( objs instanceof PoolObjectCollection )
-			return queue.removeAll( ( ( PoolObjectCollection< ?, ? > ) objs ).getIndexCollection() );
+			return queue.removeAll( ( ( PoolObjectCollection< ? > ) objs ).getIndexCollection() );
 		else
 		{
 			boolean changed = false;
@@ -235,7 +237,7 @@ public class PoolObjectQueue< O extends PoolObject< O, T >, T extends MappedElem
 	public boolean retainAll( final Collection< ? > objs )
 	{
 		if ( objs instanceof PoolObjectCollection )
-			return queue.retainAll( ( ( PoolObjectCollection< ?, ? > ) objs ).getIndexCollection() );
+			return queue.retainAll( ( ( PoolObjectCollection< ? > ) objs ).getIndexCollection() );
 		else
 		{
 			boolean changed = false;

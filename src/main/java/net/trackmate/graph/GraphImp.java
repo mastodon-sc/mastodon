@@ -326,24 +326,24 @@ public class GraphImp<
 	@Override
 	public RefIntMap< V > createVertexIntMap(final int noEntryValue )
 	{
-		return new PoolObjectIntMap< V, T>( vertexPool, noEntryValue );
+		return new PoolObjectIntMap< V, T >( vertexPool, noEntryValue );
 	}
 
 	@Override
 	public RefIntMap< V > createVertexIntMap( final int noEntryValue, final int initialCapacity )
 	{
-		return new PoolObjectIntMap< V, T>( vertexPool, noEntryValue, initialCapacity );
+		return new PoolObjectIntMap< V, T >( vertexPool, noEntryValue, initialCapacity );
 	}
 
 	@Override
 	public RefIntMap< E > createEdgeIntMap(final int noEntryValue)
 	{
-		return new PoolObjectIntMap< E, T>( edgePool, noEntryValue );
+		return new PoolObjectIntMap< E, T >( edgePool, noEntryValue );
 	}
 
 	@Override
 	public RefIntMap< E > createEdgeIntMap( final int noEntryValue, final int initialCapacity )
 	{
-		return new PoolObjectIntMap< E, T>( edgePool, noEntryValue, initialCapacity );
+		return new PoolObjectIntMap< E, T >( edgePool, noEntryValue, initialCapacity );
 	}
 }
