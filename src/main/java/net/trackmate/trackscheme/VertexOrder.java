@@ -237,6 +237,7 @@ public class VertexOrder
 			return timepoints.get( timepoints.size() - 1 );
 	}
 
+	// TODO: (unused) REMOVE?
 	public ScreenVertex getScreenVertexFor( final TrackSchemeVertex v )
 	{
 		final int si = v.getScreenVertexIndex();
@@ -246,6 +247,7 @@ public class VertexOrder
 		return null;
 	}
 
+	// TODO: (unused) REMOVE?
 	public ScreenEdge getScreenEdgeFor( final TrackSchemeEdge e )
 	{
 		final int si = e.getScreenEdgeIndex();

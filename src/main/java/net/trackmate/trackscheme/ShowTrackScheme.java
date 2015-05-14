@@ -22,6 +22,8 @@ public class ShowTrackScheme implements TransformListener< ScreenTransform >, Se
 
 	final VertexOrder order;
 
+	private final ScreenTransform currentTransform;
+
 	final GraphLayoutOverlay overlay;
 
 	final SelectionModel< TrackSchemeVertex, TrackSchemeEdge > selectionModel;
@@ -77,6 +79,10 @@ public class ShowTrackScheme implements TransformListener< ScreenTransform >, Se
 		final int w = overlay.getWidth();
 		final int h = overlay.getHeight();
 
+		currentTransform = new ScreenTransform( minX, maxX, minY, maxY, w, h );
+		canvas.getTransformEventHandler().setTransform( currentTransform );
+		canvas.getTransformEventHandler().setTransformListener( this );
+
 		selectionHandler = new DefaultSelectionHandler( graph, order );
 		selectionHandler.setSelectionModel( selectionModel );
 		canvas.addMouseListener( selectionHandler );
@@ -88,10 +94,6 @@ public class ShowTrackScheme implements TransformListener< ScreenTransform >, Se
 		canvas.addMouseMotionListener( zoomHandler );
 
 		keyHandler = new KeyHandler( this );
-
-		final ScreenTransform screenTransform = new ScreenTransform( minX, maxX, minY, maxY, w, h );
-		canvas.getTransformEventHandler().setTransform( screenTransform );
-		canvas.getTransformEventHandler().setTransformListener( this );
 
 		canvasOverlay = new CanvasOverlay( layout, order );
 
@@ -109,17 +111,22 @@ public class ShowTrackScheme implements TransformListener< ScreenTransform >, Se
 	@Override
 	public void transformChanged( final ScreenTransform transform )
 	{
-		zoomHandler.setTransform( transform );
-		selectionHandler.setTransform( transform );
-		canvasOverlay.transformChanged( transform );
+		currentTransform.set( transform );
+		repaint();
+	}
 
-//		System.out.println( "transformChanged" );
-		final double minX = transform.minX;
-		final double maxX = transform.maxX;
-		final double minY = transform.minY;
-		final double maxY = transform.maxY;
-		final int w = transform.screenWidth;
-		final int h = transform.screenHeight;
+	public void repaint()
+	{
+		zoomHandler.setTransform( currentTransform );
+		selectionHandler.setTransform( currentTransform );
+		canvasOverlay.transformChanged( currentTransform );
+
+		final double minX = currentTransform.minX;
+		final double maxX = currentTransform.maxX;
+		final double minY = currentTransform.minY;
+		final double maxY = currentTransform.maxY;
+		final int w = currentTransform.screenWidth;
+		final int h = currentTransform.screenHeight;
 		final ScreenEntities entities = order.cropAndScale( minX, maxX, minY, maxY, w, h );
 		overlay.setScreenEntities( entities );
 		frame.repaint();
@@ -154,7 +161,7 @@ public class ShowTrackScheme implements TransformListener< ScreenTransform >, Se
 			sl.repaint();
 		}
 
-		frame.repaint();
+		repaint();
 	}
 
 	/*
