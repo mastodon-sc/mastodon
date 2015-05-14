@@ -12,6 +12,7 @@ import net.imglib2.ui.PainterThread;
 import net.imglib2.ui.TransformListener;
 import net.imglib2.ui.util.GuiUtil;
 import net.imglib2.util.BenchmarkHelper;
+import net.trackmate.graph.collection.RefSet;
 
 public class ShowTrackScheme implements TransformListener< ScreenTransform >, SelectionListener
 {
@@ -129,6 +130,8 @@ public class ShowTrackScheme implements TransformListener< ScreenTransform >, Se
 	public static interface HACK_SelectionListener
 	{
 		void select( TrackSchemeVertex v );
+
+		public void repaint();
 	}
 
 	private HACK_SelectionListener sl = null;
@@ -138,27 +141,19 @@ public class ShowTrackScheme implements TransformListener< ScreenTransform >, Se
 		this.sl = sl;
 	}
 
-	@Override
-	public void selectAt( final ScreenTransform transform, final int x, final int y )
-	{
-		final double lx = transform.screenToLayoutX( x );
-		final double ly = transform.screenToLayoutY( y );
-
-		final TrackSchemeVertex v = graph.vertexRef();
-		if ( order.selectClosest( lx, ly, v ) != null && sl != null )
-		{
-			sl.select( v );
-		}
-		graph.releaseRef( v );
-
-		frame.repaint();
-	}
-
 	// =====================================================
 
 	@Override
 	public void refresh()
 	{
+		if ( sl != null )
+		{
+			final RefSet< TrackSchemeVertex > selectedVertices = selectionModel.getSelectedVertices();
+			if ( !selectedVertices.isEmpty() )
+				sl.select( selectedVertices.iterator().next() );
+			sl.repaint();
+		}
+
 		frame.repaint();
 	}
 
