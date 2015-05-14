@@ -3,6 +3,7 @@ package net.trackmate.trackscheme;
 import javax.swing.AbstractAction;
 import javax.swing.ActionMap;
 
+// TODO: This is a duplicate of bdv.util.AbstractAction. It should move to some common parent jar.
 public abstract class AbstractNamedAction extends AbstractAction
 {
 	public AbstractNamedAction( final String name )
