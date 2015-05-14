@@ -181,7 +181,7 @@ public class AbstractEdgePool<
 			// find this edge in the target's list of incoming edges and remove it
 			getByInternalPoolIndex( targetInIndex, tmpEdge );
 			int nextTargetEdgeIndex = tmpEdge.getNextTargetEdgeIndex();
-			while( nextTargetEdgeIndex >= 0 )
+			while( nextTargetEdgeIndex != edge.getInternalPoolIndex() )
 			{
 				getByInternalPoolIndex( nextTargetEdgeIndex, tmpEdge );
 				nextTargetEdgeIndex = tmpEdge.getNextTargetEdgeIndex();
