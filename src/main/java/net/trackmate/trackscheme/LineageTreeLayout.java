@@ -1,6 +1,10 @@
 package net.trackmate.trackscheme;
 
+import gnu.trove.list.array.TDoubleArrayList;
+
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 
 /**
  * Layouting of a {@link TrackSchemeGraph} into layout coordinates.
@@ -17,6 +21,13 @@ import java.util.Iterator;
  */
 public class LineageTreeLayout
 {
+	/**
+	 * Stores where a track ends in X position.
+	 */
+	final TDoubleArrayList columns = new TDoubleArrayList();
+
+	List< String > columnNames = new ArrayList< String >();
+
 	private double rightmost;
 
 	private final TrackSchemeGraph graph;
@@ -41,8 +52,15 @@ public class LineageTreeLayout
 		reset();
 		final TrackSchemeVertexList roots = VertexOrder.getOrderedRoots( graph );
 
+		columns.clear();
+		columnNames.clear();
+		columns.add( 0 );
 		for ( final TrackSchemeVertex root : roots )
+		{
 			layoutX( root );
+			columns.add( rightmost );
+			columnNames.add( "Root " + root.getLabel() );
+		}
 	}
 
 	/**
@@ -74,10 +92,14 @@ public class LineageTreeLayout
 			if ( iterator.hasNext() )
 			{
 				while ( iterator.hasNext() )
+				{
 					numLaidOutChildren += layoutNextChild( iterator, child, edge );
+				}
 				final double lastChildX = child.getLayoutX();
 				if ( numLaidOutChildren > 0 )
+				{
 					v.setLayoutX( ( firstChildX + lastChildX ) / 2 );
+				}
 				else
 				{
 					v.setLayoutX( rightmost );
@@ -86,7 +108,9 @@ public class LineageTreeLayout
 			}
 			else
 				if ( numLaidOutChildren > 0 )
+				{
 					v.setLayoutX( firstChildX );
+				}
 				else
 				{
 					v.setLayoutX( rightmost );
@@ -107,6 +131,8 @@ public class LineageTreeLayout
 			return 1;
 		}
 		else
+		{
 			return 0;
+		}
 	}
 }

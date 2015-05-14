@@ -55,6 +55,8 @@ public class GraphLayoutOverlay implements OverlayRenderer
 
 	private final Color selectedVertexFillColor = new Color( 128, 255, 128 );
 
+	private final Color selectedEdgeColor = selectedVertexFillColor.darker();
+
 	private final Color selectedVertexDrawColor = Color.black;
 
 	private final Color simplifiedVertexFillColor = Color.black;
@@ -73,8 +75,7 @@ public class GraphLayoutOverlay implements OverlayRenderer
 		if ( ent != null )
 		{
 			edges = ( ScreenEdgeList ) ent.edges; // TODO: get rid of cast
-			vertices = ( ScreenVertexList ) ent.vertices; // TODO: get rid of
-															// cast
+			vertices = ( ScreenVertexList ) ent.vertices; // TODO: get rid of cast
 			final List< ScreenVertexRange > vertexRanges = ent.vertexRanges;
 			if ( vertices != null )
 			{
@@ -95,9 +96,13 @@ public class GraphLayoutOverlay implements OverlayRenderer
 				{
 					final double d = vertex.getVertexDist();
 					if ( d >= minDisplayVertexDist )
+					{
 						drawVertex( g2, vertex );
+					}
 					else if ( d >= minDisplaySimplifiedVertexDist )
+					{
 						drawVertexSimplified( g2, vertex );
+					}
 				}
 			}
 			if ( vertexRanges != null )
@@ -137,7 +142,9 @@ public class GraphLayoutOverlay implements OverlayRenderer
 		{
 			String label = vertex.getLabel();
 			if ( label.length() > maxLabelLength )
+			{
 				label = label.substring( 0, maxLabelLength - 2 ) + "...";
+			}
 
 			final FontRenderContext frc = g2.getFontRenderContext();
 			final TextLayout layout = new TextLayout( label, font, frc );
@@ -170,6 +177,9 @@ public class GraphLayoutOverlay implements OverlayRenderer
 	{
 		vertices.get( edge.getSourceScreenVertexIndex(), vs );
 		vertices.get( edge.getTargetScreenVertexIndex(), vt );
+
+		final boolean selected = edge.isSelected();
+		g2.setColor( selected ? selectedEdgeColor : edgeColor );
 		g2.drawLine( ( int ) vs.getX(), ( int ) vs.getY(), ( int ) vt.getX(), ( int ) vt.getY() );
 	}
 

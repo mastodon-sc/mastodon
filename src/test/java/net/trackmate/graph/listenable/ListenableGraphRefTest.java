@@ -16,7 +16,6 @@ import org.junit.Test;
 
 public class ListenableGraphRefTest
 {
-
 	private TestVertex root;
 
 	private TestVertex A;
@@ -65,7 +64,7 @@ public class ListenableGraphRefTest
 		eB1 = sourceGraph.addEdge( B, B1 );
 		eB2 = sourceGraph.addEdge( B, B2 );
 		solo = sourceGraph.addVertex().init( 7 );
-		graph = new ListenableGraph< TestVertex, TestEdge >( sourceGraph );
+		graph = ListenableGraphWrapper.wrap( sourceGraph );
 	}
 
 	@Test( expected = RuntimeException.class )
@@ -89,7 +88,7 @@ public class ListenableGraphRefTest
 				throw new RuntimeException( "The event has been fired as expected." );
 			}
 		} );
-		
+
 		graph.beginUpdate();
 		graph.remove( solo );
 		graph.endUpdate();
@@ -111,7 +110,7 @@ public class ListenableGraphRefTest
 
 				final TestVertex actual = event.getVertexRemoved().iterator().next();
 				assertEquals( "Vertex marked as removed is not the expected one.", A, actual );
-				
+
 				for ( final TestEdge edge : event.getEdgeRemoved() )
 				{
 					final TestVertex source;
@@ -171,7 +170,7 @@ public class ListenableGraphRefTest
 				expecteds.add( A2 );
 				expecteds.add( B1 );
 				expecteds.add( B2 );
-				
+
 				final Iterator< TestVertex > iterator = event.getVertexRemoved().iterator();
 				while ( iterator.hasNext() )
 				{
@@ -233,7 +232,7 @@ public class ListenableGraphRefTest
 	public void testVertexAdded()
 	{
 		final int newId = 10000;
-		
+
 		graph.addGraphListener( new GraphListener< TestVertex, TestEdge >()
 		{
 			@Override

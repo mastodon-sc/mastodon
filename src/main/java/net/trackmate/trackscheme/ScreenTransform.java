@@ -54,8 +54,8 @@ public class ScreenTransform
 
 	void setScreenTranslated( final int dX, final int dY, final ScreenTransform source )
 	{
-		final double xInvScale = ( double ) ( maxX - minX ) / ( screenWidth - 1 );
-		final double yInvScale = ( double )  ( maxY - minY ) / ( screenHeight - 1 );
+		final double xInvScale = ( maxX - minX ) / ( screenWidth - 1 );
+		final double yInvScale = ( maxY - minY ) / ( screenHeight - 1 );
 		minX = source.minX + xInvScale * dX;
 		maxX = source.maxX + xInvScale * dX;
 		minY = source.minY + yInvScale * dY;
@@ -64,13 +64,13 @@ public class ScreenTransform
 
 	double screenToLayoutX( final int x )
 	{
-		final double xInvScale = ( double ) ( maxX - minX ) / ( screenWidth - 1 );
+		final double xInvScale = ( maxX - minX ) / ( screenWidth - 1 );
 		return minX + xInvScale * x;
 	}
 
 	double screenToLayoutY( final int y )
 	{
-		final double yInvScale = ( double )  ( maxY - minY ) / ( screenHeight - 1 );
+		final double yInvScale = ( maxY - minY ) / ( screenHeight - 1 );
 		return minY + yInvScale * y;
 	}
 
@@ -80,8 +80,8 @@ public class ScreenTransform
 		final double lY = screenToLayoutY( y );
 		final double newSizeX = ( maxX - minX ) * scale;
 		final double newSizeY = ( maxY - minY ) * scale;
-		final double newXInvScale = newSizeX / ( double ) ( screenWidth - 1 );
-		final double newYInvScale = newSizeY / ( double ) ( screenHeight - 1 );
+		final double newXInvScale = newSizeX / ( screenWidth - 1 );
+		final double newYInvScale = newSizeY / ( screenHeight - 1 );
 		minX = lX - newXInvScale * x;
 		maxX = minX + newSizeX;
 		minY = lY - newYInvScale * y;
@@ -92,7 +92,7 @@ public class ScreenTransform
 	{
 		final double lX = screenToLayoutX( x );
 		final double newSizeX = ( maxX - minX ) * scale;
-		final double newXInvScale = newSizeX / ( double ) ( screenWidth - 1 );
+		final double newXInvScale = newSizeX / ( screenWidth - 1 );
 		minX = lX - newXInvScale * x;
 		maxX = minX + newSizeX;
 	}
@@ -101,7 +101,7 @@ public class ScreenTransform
 	{
 		final double lY = screenToLayoutY( y );
 		final double newSizeY = ( maxY - minY ) * scale;
-		final double newYInvScale = newSizeY / ( double ) ( screenHeight - 1 );
+		final double newYInvScale = newSizeY / ( screenHeight - 1 );
 		minY = lY - newYInvScale * y;
 		maxY = minY + newSizeY;
 	}
@@ -128,7 +128,8 @@ public class ScreenTransform
 		final protected ScreenTransform transform = new ScreenTransform();
 
 		/**
-		 * Copy of {@link #affine current transform} when mouse dragging started.
+		 * Copy of {@link #affine current transform} when mouse dragging
+		 * started.
 		 */
 		final protected ScreenTransform transformDragStart = new ScreenTransform();
 
@@ -136,11 +137,6 @@ public class ScreenTransform
 		 * Whom to notify when the current transform is changed.
 		 */
 		protected TransformListener< ScreenTransform > listener;
-
-		/**
-		 * Whom to notify when selecting stuff.
-		 */
-		protected SelectionListener selectionListener;
 
 		/**
 		 * Coordinates where mouse dragging started.
@@ -154,8 +150,8 @@ public class ScreenTransform
 		protected int canvasW = 1, canvasH = 1;
 
 		/**
-		 * Screen coordinates to keep centered while zooming or rotating with the
-		 * keyboard. For example set these to
+		 * Screen coordinates to keep centered while zooming or rotating with
+		 * the keyboard. For example set these to
 		 * <em>(screen-width/2, screen-height/2)</em>
 		 */
 		protected int centerX = 0, centerY = 0;
@@ -163,7 +159,6 @@ public class ScreenTransform
 		public ScreenTransformEventHandler( final TransformListener< ScreenTransform > listener )
 		{
 			this.listener = listener;
-			this.selectionListener = null;
 		}
 
 		@Override
@@ -187,7 +182,6 @@ public class ScreenTransform
 		@Override
 		public void setCanvasSize( final int width, final int height, final boolean updateTransform )
 		{
-			// TODO Auto-generated method stub
 			canvasW = width;
 			canvasH = height;
 			centerX = width / 2;
@@ -196,7 +190,6 @@ public class ScreenTransform
 			{
 				transform.screenWidth = canvasW;
 				transform.screenHeight = canvasH;
-
 				update();
 			}
 		}
@@ -205,11 +198,6 @@ public class ScreenTransform
 		public void setTransformListener( final TransformListener< ScreenTransform > transformListener )
 		{
 			listener = transformListener;
-		}
-
-		public void setSelectionListener( final SelectionListener selectionListener )
-		{
-			this.selectionListener = selectionListener;
 		}
 
 		@Override
@@ -247,10 +235,7 @@ public class ScreenTransform
 
 		@Override
 		public void keyTyped( final KeyEvent e )
-		{
-			// TODO Auto-generated method stub
-
-		}
+		{}
 
 		// ================ MouseAdapter ============================
 
@@ -262,27 +247,21 @@ public class ScreenTransform
 			synchronized ( transform )
 			{
 				transformDragStart.set( transform );
-
-				if ( selectionListener != null )
-					if ( e.getButton() == MouseEvent.BUTTON1 )
-						selectionListener.selectAt( transform, e.getX(), e.getY() );
 			}
 		}
 
 		@Override
 		public void mouseDragged( final MouseEvent e )
 		{
-			synchronized ( transform )
+			final int modifiers = e.getModifiersEx();
+			if ( ( modifiers & ( MouseEvent.BUTTON2_DOWN_MASK | MouseEvent.BUTTON3_DOWN_MASK ) ) != 0 ) // translate
 			{
-				final int modifiers = e.getModifiersEx();
-
-				if ( ( modifiers & ( MouseEvent.BUTTON2_DOWN_MASK | MouseEvent.BUTTON3_DOWN_MASK ) ) != 0 ) // translate
+				synchronized ( transform )
 				{
 					final int dX = oX - e.getX();
 					final int dY = oY - e.getY();
 					transform.setScreenTranslated( dX, dY, transformDragStart );
 				}
-
 				update();
 			}
 		}
