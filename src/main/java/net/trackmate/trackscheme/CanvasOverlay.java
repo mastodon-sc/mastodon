@@ -58,14 +58,14 @@ public class CanvasOverlay implements OverlayRenderer, TransformListener< Screen
 
 	private final VertexOrder order;
 
-	public CanvasOverlay( LineageTreeLayout layout, VertexOrder order )
+	public CanvasOverlay( final LineageTreeLayout layout, final VertexOrder order )
 	{
 		this.layout = layout;
 		this.order = order;
 	}
 
 	@Override
-	public void drawOverlays( Graphics g )
+	public void drawOverlays( final Graphics g )
 	{
 		g.setColor( WIDGET_COLOR );
 		final FontMetrics fm = g.getFontMetrics( font );
@@ -150,9 +150,7 @@ public class CanvasOverlay implements OverlayRenderer, TransformListener< Screen
 					continue;
 				}
 
-				final int xtext = (
-						Math.min( screenWidth, xline )
-								+ Math.max( 0, xprevline ) - stringWidth ) / 2;
+				final int xtext = ( Math.min( screenWidth, xline ) + Math.max( 0, xprevline ) - stringWidth ) / 2;
 				if ( xtext < 2 * XTEXT )
 				{
 					continue;
@@ -164,11 +162,11 @@ public class CanvasOverlay implements OverlayRenderer, TransformListener< Screen
 	}
 
 	@Override
-	public void setCanvasSize( int width, int height )
+	public void setCanvasSize( final int width, final int height )
 	{}
 
 	@Override
-	public void transformChanged( ScreenTransform transform )
+	public void transformChanged( final ScreenTransform transform )
 	{
 		minX = transform.minX;
 		maxX = transform.maxX;

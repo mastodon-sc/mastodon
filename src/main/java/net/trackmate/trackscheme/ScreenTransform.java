@@ -182,7 +182,6 @@ public class ScreenTransform
 		@Override
 		public void setCanvasSize( final int width, final int height, final boolean updateTransform )
 		{
-			// TODO Auto-generated method stub
 			canvasW = width;
 			canvasH = height;
 			centerX = width / 2;
@@ -191,7 +190,6 @@ public class ScreenTransform
 			{
 				transform.screenWidth = canvasW;
 				transform.screenHeight = canvasH;
-
 				update();
 			}
 		}
@@ -214,9 +212,7 @@ public class ScreenTransform
 		protected void update()
 		{
 			if ( listener != null )
-			{
 				listener.transformChanged( transform );
-			}
 		}
 
 		// ================ KeyListener =============================
@@ -227,26 +223,19 @@ public class ScreenTransform
 		public void keyPressed( final KeyEvent e )
 		{
 			if ( e.getKeyCode() == KeyEvent.VK_SHIFT )
-			{
 				shiftPressed = true;
-			}
 		}
 
 		@Override
 		public void keyReleased( final KeyEvent e )
 		{
 			if ( e.getKeyCode() == KeyEvent.VK_SHIFT )
-			{
 				shiftPressed = false;
-			}
 		}
 
 		@Override
 		public void keyTyped( final KeyEvent e )
-		{
-			// TODO Auto-generated method stub
-
-		}
+		{}
 
 		// ================ MouseAdapter ============================
 
@@ -269,7 +258,6 @@ public class ScreenTransform
 			{
 				synchronized ( transform )
 				{
-
 					final int dX = oX - e.getX();
 					final int dY = oY - e.getY();
 					transform.setScreenTranslated( dX, dY, transformDragStart );
@@ -292,35 +280,23 @@ public class ScreenTransform
 				if ( metaPressed ) // zoom both axes
 				{
 					if ( s > 0 )
-					{
 						transform.scale( 1.0 / dScale, e.getX(), e.getY() );
-					}
 					else
-					{
 						transform.scale( dScale, e.getX(), e.getY() );
-					}
 				}
 				else if ( shiftPressed ) // zoom X axis
 				{
 					if ( s > 0 )
-					{
 						transform.scaleX( 1.0 / dScale, e.getX(), e.getY() );
-					}
 					else
-					{
 						transform.scaleX( dScale, e.getX(), e.getY() );
-					}
 				}
 				else if ( ctrlPressed || altPressed ) // zoom Y axis
 				{
 					if ( s > 0 )
-					{
 						transform.scaleY( 1.0 / dScale, e.getX(), e.getY() );
-					}
 					else
-					{
 						transform.scaleY( dScale, e.getX(), e.getY() );
-					}
 				}
 				else
 				{
