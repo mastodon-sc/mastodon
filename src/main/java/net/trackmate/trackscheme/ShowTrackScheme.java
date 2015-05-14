@@ -31,11 +31,11 @@ public class ShowTrackScheme implements TransformListener< ScreenTransform >, Se
 
 	private final SelectionHandler selectionHandler;
 
-
-
 	private final KeyHandler keyHandler;
 
 	private final CanvasOverlay canvasOverlay;
+
+	private final ZoomBoxHandler zoomHandler;
 
 	public ShowTrackScheme( final TrackSchemeGraph graph )
 	{
@@ -82,6 +82,10 @@ public class ShowTrackScheme implements TransformListener< ScreenTransform >, Se
 		canvas.addMouseMotionListener( selectionHandler );
 		selectionHandler.setSelectionListener( this );
 
+		zoomHandler = new ZoomBoxHandler( this, this );
+		canvas.addMouseListener( zoomHandler );
+		canvas.addMouseMotionListener( zoomHandler );
+
 		keyHandler = new KeyHandler( this );
 
 		final ScreenTransform screenTransform = new ScreenTransform( minX, maxX, minY, maxY, w, h );
@@ -96,13 +100,15 @@ public class ShowTrackScheme implements TransformListener< ScreenTransform >, Se
 		frame.setVisible( true );
 
 		canvas.addOverlayRenderer( canvasOverlay );
-		canvas.addOverlayRenderer( selectionHandler.getSelectionOverlay() );
 		canvas.addOverlayRenderer( overlay );
+		canvas.addOverlayRenderer( zoomHandler.getZoomOverlay() );
+		canvas.addOverlayRenderer( selectionHandler.getSelectionOverlay() );
 	}
 
 	@Override
 	public void transformChanged( final ScreenTransform transform )
 	{
+		zoomHandler.setTransform( transform );
 		selectionHandler.setTransform( transform );
 		canvasOverlay.transformChanged( transform );
 

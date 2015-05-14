@@ -76,7 +76,7 @@ public class DefaultSelectionHandler extends MouseAdapter implements SelectionHa
 	@Override
 	public void mouseDragged( MouseEvent e )
 	{
-		if ( e.getButton() == MouseEvent.BUTTON1 )
+		if ( e.getButton() == MouseEvent.BUTTON1 && !e.isAltDown() )
 		{
 			eX = e.getX();
 			eY = e.getY();
