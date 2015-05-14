@@ -6,7 +6,6 @@ import net.trackmate.graph.Edge;
 import net.trackmate.graph.Graph;
 import net.trackmate.graph.IntPoolObjectMap;
 import net.trackmate.graph.Vertex;
-import net.trackmate.graph.mempool.ByteMappedElement;
 
 public class TrackSchemeUtil
 {
@@ -23,8 +22,8 @@ public class TrackSchemeUtil
 		final TrackSchemeVertex tsv2 = tsg.vertexRef();
 		final TrackSchemeEdge tse = tsg.edgeRef();
 
-		final IntPoolObjectMap< TrackSchemeVertex, ByteMappedElement > idToTrackSchemeVertex =
-				new IntPoolObjectMap< TrackSchemeVertex, ByteMappedElement >( tsg.getVertexPool(), initialCapacity );
+		final IntPoolObjectMap< TrackSchemeVertex > idToTrackSchemeVertex =
+				new IntPoolObjectMap< TrackSchemeVertex >( tsg.getVertexPool(), initialCapacity );
 		final Iterator< V > vi = graph.vertexIterator();
 		while ( vi.hasNext() )
 		{
