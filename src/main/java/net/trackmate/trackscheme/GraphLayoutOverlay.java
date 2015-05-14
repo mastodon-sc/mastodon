@@ -74,9 +74,9 @@ public class GraphLayoutOverlay implements OverlayRenderer
 		final ScreenEntities ent = entities;
 		if ( ent != null )
 		{
-			edges = ( ScreenEdgeList ) ent.edges; // TODO: get rid of cast
-			vertices = ( ScreenVertexList ) ent.vertices; // TODO: get rid of cast
-			final List< ScreenVertexRange > vertexRanges = ent.vertexRanges;
+			edges = ent.getEdges();
+			vertices = ent.getVertices();
+			final List< ScreenVertexRange > vertexRanges = ent.getVertexRanges();
 			if ( vertices != null )
 			{
 				vs = vertices.createRef();

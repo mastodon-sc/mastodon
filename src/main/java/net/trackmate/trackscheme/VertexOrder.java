@@ -4,7 +4,7 @@ import gnu.trove.iterator.TIntIterator;
 import gnu.trove.list.array.TIntArrayList;
 import gnu.trove.map.hash.TIntObjectHashMap;
 
-import java.util.ArrayList;
+import java.util.List;
 
 import net.trackmate.graph.collection.RefSet;
 import net.trackmate.trackscheme.ScreenEdge.ScreenEdgePool;
@@ -13,11 +13,6 @@ import net.trackmate.trackscheme.ScreenVertex.ScreenVertexPool;
 // TODO: build/maintain while adding nodes and edges to the TrackSchemeGraph
 public class VertexOrder
 {
-	/**
-	 * Initial capacity value to use when instantiating the screen pools.
-	 */
-	private static final int INITIAL_CAPACITY = 1000;
-
 	private final TrackSchemeGraph graph;
 
 	/**
@@ -34,21 +29,9 @@ public class VertexOrder
 	 */
 	private final TIntObjectHashMap< TrackSchemeVertexList > timepointToOrderedVertices;
 
-	private ScreenVertexPool screenVertexPool;
+	private ScreenEntities screenEntities;
 
-	private ScreenVertexPool screenVertexPool2;
-
-	private ScreenEdgePool screenEdgePool;
-
-	private ScreenEdgePool screenEdgePool2;
-
-	private ScreenVertexList screenVertices;
-
-	private ScreenVertexList screenVertices2;
-
-	private ScreenEdgeList screenEdges;
-
-	private ScreenEdgeList screenEdges2;
+	private ScreenEntities screenEntities2;
 
 	private double lastLayoutMinX;
 
@@ -67,49 +50,16 @@ public class VertexOrder
 		this.graph = graph;
 		timepoints = new TIntArrayList();
 		timepointToOrderedVertices = new TIntObjectHashMap< TrackSchemeVertexList >();
-
-		screenVertexPool = new ScreenVertex.ScreenVertexPool( INITIAL_CAPACITY, graph.getVertexPool() );
-		screenVertexPool2 = new ScreenVertex.ScreenVertexPool( INITIAL_CAPACITY, graph.getVertexPool() );
-
-		screenVertices = new ScreenVertexList( screenVertexPool, INITIAL_CAPACITY );
-		screenVertices2 = new ScreenVertexList( screenVertexPool2, INITIAL_CAPACITY );
-
-		screenEdgePool = new ScreenEdge.ScreenEdgePool( INITIAL_CAPACITY );
-		screenEdgePool2 = new ScreenEdge.ScreenEdgePool( INITIAL_CAPACITY );
-
-		screenEdges = new ScreenEdgeList( screenEdgePool, INITIAL_CAPACITY );
-		screenEdges2 = new ScreenEdgeList( screenEdgePool2, INITIAL_CAPACITY );
+		screenEntities = new ScreenEntities( graph );
+		screenEntities2 = new ScreenEntities( graph );
 	}
 
 	private void swapPools()
 	{
-		{
-			final ScreenVertexPool tmp = screenVertexPool;
-			screenVertexPool = screenVertexPool2;
-			screenVertexPool2 = tmp;
-			screenVertexPool.clear();
-		}
-
-		{
-			final ScreenVertexList tmp = screenVertices;
-			screenVertices = screenVertices2;
-			screenVertices2 = tmp;
-			screenVertices.resetQuick();
-		}
-
-		{
-			final ScreenEdgePool tmp = screenEdgePool;
-			screenEdgePool = screenEdgePool2;
-			screenEdgePool2 = tmp;
-			screenEdgePool.clear();
-		}
-
-		{
-			final ScreenEdgeList tmp = screenEdges;
-			screenEdges = screenEdges2;
-			screenEdges2 = tmp;
-			screenEdges.resetQuick();
-		}
+			final ScreenEntities tmp = screenEntities;
+			screenEntities = screenEntities2;
+			screenEntities2 = tmp;
+			screenEntities.clear();
 	}
 
 	public void build()
@@ -241,6 +191,7 @@ public class VertexOrder
 	public ScreenVertex getScreenVertexFor( final TrackSchemeVertex v )
 	{
 		final int si = v.getScreenVertexIndex();
+		final ScreenVertexList screenVertices = screenEntities.getVertices();
 		final ScreenVertex sv = screenVertices.createRef();
 		if ( si >= 0 && si < screenVertices.size()
 				&& screenVertices.get( si, sv ).getTrackSchemeVertexId() == v.getInternalPoolIndex() ) { return sv; }
@@ -251,6 +202,7 @@ public class VertexOrder
 	public ScreenEdge getScreenEdgeFor( final TrackSchemeEdge e )
 	{
 		final int si = e.getScreenEdgeIndex();
+		final ScreenEdgeList screenEdges = screenEntities.getEdges();
 		final ScreenEdge se = screenEdges.createRef();
 		if ( si >= 0 && si < screenEdges.size()
 				&& screenEdges.get( si, se ).getTrackSchemeEdgeId() == e.getInternalPoolIndex() ) { return se; }
@@ -259,7 +211,8 @@ public class VertexOrder
 
 	public TrackSchemeVertex getClosestVertex( final double lx, final double ly, final double tolerance, final TrackSchemeVertex v )
 	{
-		final ScreenVertex sv = screenVertexPool.createRef();
+		final ScreenVertexList screenVertices = screenEntities.getVertices();
+		final ScreenVertex sv = screenVertices.createRef();
 
 		final double yScale = ( lastLayoutScreenHeight - 1 ) / ( lastLayoutMaxY - lastLayoutMinY );
 		final double xScale = ( lastLayoutScreenWidth - 1 ) / ( lastLayoutMaxX - lastLayoutMinX );
@@ -314,7 +267,7 @@ public class VertexOrder
 				final double spotradius = ( int ) ( spotdiameter / 2 );
 				if ( closestVertexD < spotradius + tolerance )
 				{
-					screenVertexPool.releaseRef( sv );
+					screenVertices.releaseRef( sv );
 					return v;
 				}
 			}
@@ -325,6 +278,7 @@ public class VertexOrder
 
 	public TrackSchemeEdge getClosestEdge( final double lx, final double ly, final double tolerance, final TrackSchemeEdge e )
 	{
+		final ScreenEdgeList screenEdges = screenEntities.getEdges();
 		final double yScale = ( lastLayoutScreenHeight - 1 ) / ( lastLayoutMaxY - lastLayoutMinY );
 		final double xScale = ( lastLayoutScreenWidth - 1 ) / ( lastLayoutMaxX - lastLayoutMinX );
 
@@ -423,13 +377,17 @@ public class VertexOrder
 		this.lastLayoutScreenHeight = screenHeight;
 
 		swapPools();
+		final ScreenVertexList screenVertices = screenEntities.getVertices();
+		final ScreenEdgeList screenEdges = screenEntities.getEdges();
+		final List< ScreenVertexRange > vertexRanges = screenEntities.getVertexRanges();
+		final ScreenVertexPool screenVertexPool = screenEntities.getVertexPool();
+		final ScreenEdgePool screenEdgePool = screenEntities.getEdgePool();
 
 		final TrackSchemeVertex v1 = graph.vertexRef();
 		final TrackSchemeVertex v2 = graph.vertexRef();
 		final ScreenVertex sv = screenVertexPool.createRef();
 		final ScreenEdge se = screenEdgePool.createRef();
 
-		final ArrayList< ScreenVertexRange > vertexRanges = new ArrayList< ScreenVertexRange >();
 
 		final double yScale = ( screenHeight - 1 ) / ( maxY - minY );
 		final double xScale = ( screenWidth - 1 ) / ( maxX - minX );
@@ -558,7 +516,7 @@ public class VertexOrder
 			sumVertexRangesToPaint = 0;
 		}
 
-		return new ScreenEntities( screenVertices, screenEdges, vertexRanges );
+		return screenEntities;
 	}
 
 	public static TrackSchemeVertexList getOrderedRoots( final TrackSchemeGraph graph )
