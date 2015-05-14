@@ -14,8 +14,6 @@ import gnu.trove.set.TIntSet;
 import java.util.Collection;
 import java.util.Map;
 
-import net.trackmate.graph.mempool.MappedElement;
-
 
 /**
  * WARNING: THIS IS VERY INCOMPLETE!
@@ -25,18 +23,18 @@ import net.trackmate.graph.mempool.MappedElement;
  *
  * @author Tobias Pietzsch <tobias.pietzsch@gmail.com>
  */
-public class IntPoolObjectMap< O extends PoolObject< O, T >, T extends MappedElement > implements TIntObjectMap< O >
+public class IntPoolObjectMap< O extends Ref< O > > implements TIntObjectMap< O >
 {
 	private final TIntIntMap keyToIndexMap;
 
-	private final Pool< O, T > pool;
+	private final RefPool< O > pool;
 
-	public IntPoolObjectMap( final Pool< O, T > pool )
+	public IntPoolObjectMap( final RefPool< O > pool )
 	{
 		this( pool, Constants.DEFAULT_CAPACITY );
 	}
 
-	public IntPoolObjectMap( final Pool< O, T > pool, final int initialCapacity )
+	public IntPoolObjectMap( final RefPool< O> pool, final int initialCapacity )
 	{
 		this.pool = pool;
 		keyToIndexMap = new TIntIntHashMap( initialCapacity, Constants.DEFAULT_LOAD_FACTOR, -1, -1 );
