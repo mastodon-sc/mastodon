@@ -60,7 +60,7 @@ public class TrackSchemeEdge extends AbstractEdge< TrackSchemeEdge, TrackSchemeV
 		access.putBoolean( selected, SELECTED_OFFSET );
 	}
 
-	public int getScreenVertexIndex()
+	public int getScreenEdgeIndex()
 	{
 		return access.getIndex( SCREENEDGE_INDEX_OFFSET );
 	}

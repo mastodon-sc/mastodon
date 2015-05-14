@@ -248,7 +248,7 @@ public class VertexOrder
 
 	public ScreenEdge getScreenEdgeFor( final TrackSchemeEdge e )
 	{
-		final int si = e.getScreenVertexIndex();
+		final int si = e.getScreenEdgeIndex();
 		final ScreenEdge se = screenEdges.createRef();
 		if ( si >= 0 && si < screenEdges.size()
 				&& screenEdges.get( si, se ).getTrackSchemeEdgeId() == e.getInternalPoolIndex() ) { return se; }
