@@ -31,8 +31,6 @@ public class VertexOrder
 
 	private ScreenEntities screenEntities;
 
-	private ScreenEntities screenEntities2;
-
 	private double lastLayoutMinX;
 
 	private double lastLayoutMaxX;
@@ -50,16 +48,6 @@ public class VertexOrder
 		this.graph = graph;
 		timepoints = new TIntArrayList();
 		timepointToOrderedVertices = new TIntObjectHashMap< TrackSchemeVertexList >();
-		screenEntities = new ScreenEntities( graph );
-		screenEntities2 = new ScreenEntities( graph );
-	}
-
-	private void swapPools()
-	{
-			final ScreenEntities tmp = screenEntities;
-			screenEntities = screenEntities2;
-			screenEntities2 = tmp;
-			screenEntities.clear();
 	}
 
 	public void build()
@@ -359,14 +347,16 @@ public class VertexOrder
 	private long sumVertexRangesToPaint = 0;
 	private final long printEveryNRuns = 100;
 
-	public ScreenEntities cropAndScale(
+	public void cropAndScale(
 			final double minX,
 			final double maxX,
 			final double minY,
 			final double maxY,
 			final int screenWidth,
-			final int screenHeight )
+			final int screenHeight,
+			final ScreenEntities screenEntities )
 	{
+		this.screenEntities = screenEntities;
 		final long t0 = System.currentTimeMillis();
 
 		this.lastLayoutMinX = minX;
@@ -376,7 +366,6 @@ public class VertexOrder
 		this.lastLayoutScreenWidth = screenWidth;
 		this.lastLayoutScreenHeight = screenHeight;
 
-		swapPools();
 		final ScreenVertexList screenVertices = screenEntities.getVertices();
 		final ScreenEdgeList screenEdges = screenEntities.getEdges();
 		final List< ScreenVertexRange > vertexRanges = screenEntities.getVertexRanges();
@@ -515,8 +504,6 @@ public class VertexOrder
 			sumVerticesToPaint = 0;
 			sumVertexRangesToPaint = 0;
 		}
-
-		return screenEntities;
 	}
 
 	public static TrackSchemeVertexList getOrderedRoots( final TrackSchemeGraph graph )

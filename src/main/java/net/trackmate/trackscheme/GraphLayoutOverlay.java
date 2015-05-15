@@ -1,5 +1,8 @@
 package net.trackmate.trackscheme;
 
+import static net.trackmate.trackscheme.ScreenVertex.Transition.DISAPPEAR;
+import static net.trackmate.trackscheme.ScreenVertex.Transition.NONE;
+
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
@@ -10,6 +13,7 @@ import java.awt.geom.Rectangle2D;
 import java.util.List;
 
 import net.imglib2.ui.OverlayRenderer;
+import net.trackmate.trackscheme.ScreenVertex.Transition;
 
 /**
  * A {@link OverlayRenderer} that paints {@link ScreenEntities} of a trackscheme
@@ -124,27 +128,35 @@ public class GraphLayoutOverlay implements OverlayRenderer
 
 	private void drawVertex( final Graphics2D g2, final ScreenVertex vertex )
 	{
-		final double spotdiameter = Math.min( vertex.getVertexDist() - 10.0, maxDisplayVertexSize );
-		final double spotradius = ( int ) ( spotdiameter / 2 );
-		final int sd = ( int ) spotdiameter;
+		final Transition transition = vertex.getTransition();
+		final boolean disappear = ( transition == DISAPPEAR );
+		final double ratio = vertex.getInterpolationCompletionRatio();
+		final boolean selected = vertex.isSelected();
+
+		double spotdiameter = Math.min( vertex.getVertexDist() - 10.0, maxDisplayVertexSize );
+		if ( disappear )
+			spotdiameter *= ( 1 + ratio );
+		final double spotradius = spotdiameter / 2;
+
+		final Color fillColor = getColor( selected, transition, ratio, vertexFillColor, selectedVertexFillColor );
+		final Color drawColor = getColor( selected, transition, ratio, vertexDrawColor, selectedVertexDrawColor );
 
 		final double x = vertex.getX();
 		final double y = vertex.getY();
-
-		final boolean selected = vertex.isSelected();
-		g2.setColor( selected ? selectedVertexFillColor : vertexFillColor );
-		g2.fillOval( ( int ) ( x - spotradius ), ( int ) ( y - spotradius ), sd, sd );
-		g2.setColor( selected ? selectedVertexDrawColor : vertexDrawColor );
-		g2.drawOval( ( int ) ( x - spotradius ), ( int ) ( y - spotradius ), sd, sd );
+		final int ox = ( int ) x - ( int ) spotradius;
+		final int oy = ( int ) y - ( int ) spotradius;
+		final int sd = 2 * ( int ) spotradius;
+		g2.setColor( fillColor );
+		g2.fillOval( ox, oy, sd, sd );
+		g2.setColor( drawColor );
+		g2.drawOval( ox, oy, sd, sd );
 
 		final int maxLabelLength = ( int ) ( spotdiameter / avgLabelLetterWidth );
-		if ( maxLabelLength > 2 )
+		if ( maxLabelLength > 2 && !disappear )
 		{
 			String label = vertex.getLabel();
 			if ( label.length() > maxLabelLength )
-			{
 				label = label.substring( 0, maxLabelLength - 2 ) + "...";
-			}
 
 			final FontRenderContext frc = g2.getFontRenderContext();
 			final TextLayout layout = new TextLayout( label, font, frc );
@@ -155,13 +167,53 @@ public class GraphLayoutOverlay implements OverlayRenderer
 		}
 	}
 
+	private Color getColor(
+			final boolean isSelected,
+			final Transition transition,
+			final double completionRatio,
+			final Color normalColor,
+			final Color selectedColor )
+	{
+		if ( transition == NONE )
+			return isSelected ? selectedColor : normalColor;
+		else
+		{
+			int r = normalColor.getRed();
+			int g = normalColor.getGreen();
+			int b = normalColor.getBlue();
+			final double ratio = transition == DISAPPEAR ? completionRatio : 1 - completionRatio;
+			if ( isSelected )
+			{
+				r = ( int ) ( ratio * r + ( 1 - ratio ) * selectedColor.getRed() );
+				g = ( int ) ( ratio * g + ( 1 - ratio ) * selectedColor.getGreen() );
+				b = ( int ) ( ratio * b + ( 1 - ratio ) * selectedColor.getBlue() );
+			}
+			return new Color( r, g, b, ( int ) ( 255 * ( 1 - ratio ) ) );
+		}
+	}
+
 	private void drawVertexSimplified( final Graphics2D g2, final ScreenVertex vertex )
 	{
-		final double spotradius = simplifiedVertexRadius;
+		final Transition transition = vertex.getTransition();
+		final double ratio = vertex.getInterpolationCompletionRatio();
+		final boolean disappear = ( transition == DISAPPEAR );
+		final boolean selected = vertex.isSelected();
+
+		double spotradius = simplifiedVertexRadius;
+		if ( disappear )
+			spotradius *= ( 1 + 3 * ratio );
+
+		final Color fillColor = getColor( selected, transition, ratio,
+				disappear ? selectedSimplifiedVertexFillColor : simplifiedVertexFillColor,
+				selectedSimplifiedVertexFillColor );
+
 		final double x = vertex.getX();
 		final double y = vertex.getY();
-		g2.setColor( vertex.isSelected() ? selectedSimplifiedVertexFillColor : simplifiedVertexFillColor );
-		g2.fillOval( ( int ) ( x - spotradius ), ( int ) ( y - spotradius ), ( int ) ( 2 * spotradius ), ( int ) ( 2 * spotradius ) );
+		g2.setColor( fillColor );
+		final int ox = ( int ) x - ( int ) spotradius;
+		final int oy = ( int ) y - ( int ) spotradius;
+		final int ow = 2 * ( int ) spotradius;
+		g2.fillOval( ox, oy, ow, ow );
 	}
 
 	private void drawVertexRange( final Graphics2D g2, final ScreenVertexRange range )
