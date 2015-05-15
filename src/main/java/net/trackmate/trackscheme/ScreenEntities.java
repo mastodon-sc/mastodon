@@ -57,12 +57,12 @@ public class ScreenEntities
 		return vertexRanges;
 	}
 
-	public ScreenVertexPool getVertexPool()
+	ScreenVertexPool getVertexPool()
 	{
 		return screenVertexPool;
 	}
 
-	public ScreenEdgePool getEdgePool()
+	ScreenEdgePool getEdgePool()
 	{
 		return screenEdgePool;
 	}
