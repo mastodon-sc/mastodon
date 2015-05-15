@@ -1,6 +1,7 @@
 package net.trackmate.trackscheme;
 
 import static net.trackmate.graph.mempool.ByteUtils.BOOLEAN_SIZE;
+import static net.trackmate.graph.mempool.ByteUtils.BYTE_SIZE;
 import static net.trackmate.graph.mempool.ByteUtils.DOUBLE_SIZE;
 import static net.trackmate.graph.mempool.ByteUtils.INDEX_SIZE;
 import net.trackmate.graph.Pool;
@@ -28,11 +29,36 @@ public class ScreenVertex extends PoolObject< ScreenVertex, ByteMappedElement >
 
 	protected static final int SELECTED_OFFSET = VERTEX_DIST_OFFSET + DOUBLE_SIZE;
 
-	protected static final int SIZE_IN_BYTES = SELECTED_OFFSET + BOOLEAN_SIZE;
+	protected static final int TRANSITION_OFFSET = SELECTED_OFFSET + BOOLEAN_SIZE;
+
+	protected static final int IP_SCREENVERTEX_INDEX_OFFSET = TRANSITION_OFFSET + BYTE_SIZE;
+
+	protected static final int IP_RATIO_OFFSET = IP_SCREENVERTEX_INDEX_OFFSET + INDEX_SIZE;
+
+	protected static final int SIZE_IN_BYTES = IP_RATIO_OFFSET + DOUBLE_SIZE;
 
 	private final TrackSchemeVertex vref;
 
 	private final TrackSchemeVertexPool trackSchemeVertexPool;
+
+	public static enum Transition
+	{
+		NONE( 0 ),
+		APPEAR( 1 ),
+		DISAPPEAR( 2 );
+
+		private final byte index;
+
+		private Transition( final int index )
+		{
+			this.index = ( byte ) index;
+		}
+
+		public byte toByte()
+		{
+			return index;
+		}
+	}
 
 	protected ScreenVertex( final Pool< ScreenVertex, ByteMappedElement > pool, final TrackSchemeVertexPool trackSchemeVertexPool )
 	{
@@ -51,6 +77,7 @@ public class ScreenVertex extends PoolObject< ScreenVertex, ByteMappedElement >
 		setX( x );
 		setY( y );
 		setSelected( selected );
+		setTransition( Transition.NONE );
 		return this;
 	}
 
@@ -125,8 +152,14 @@ public class ScreenVertex extends PoolObject< ScreenVertex, ByteMappedElement >
 	 */
 	public String getLabel()
 	{
-		trackSchemeVertexPool.getByInternalPoolIndex( getTrackSchemeVertexId(), vref );
-		return vref.getLabel();
+		final int idx = getTrackSchemeVertexId();
+		if ( idx >= 0 )
+		{
+			trackSchemeVertexPool.getByInternalPoolIndex( idx, vref );
+			return vref.getLabel();
+		}
+		else
+			return "XXX";
 	}
 
 	/**
@@ -142,6 +175,52 @@ public class ScreenVertex extends PoolObject< ScreenVertex, ByteMappedElement >
 	protected void setSelected( final boolean selected )
 	{
 		access.putBoolean( selected, SELECTED_OFFSET );
+	}
+
+	/**
+	 * TODO
+	 *
+	 * @return
+	 */
+	public Transition getTransition()
+	{
+		return Transition.values()[ access.getByte( TRANSITION_OFFSET ) ];
+	}
+
+	protected void setTransition( final Transition t )
+	{
+		access.putByte( t.toByte(), TRANSITION_OFFSET );
+	}
+
+	/**
+	 * Get the internal pool index of the interpolated {@link ScreenVertex} for
+	 * which this {@link ScreenVertex} is the interpolation target.
+	 *
+	 * @return internal pool index of the interpolated {@link ScreenVertex}.
+	 */
+	protected int getInterpolatedScreenVertexIndex()
+	{
+		return access.getIndex( IP_SCREENVERTEX_INDEX_OFFSET );
+	}
+
+	protected void setInterpolatedScreenVertexIndex( final int screenVertexIndex )
+	{
+		access.putIndex( screenVertexIndex, IP_SCREENVERTEX_INDEX_OFFSET );
+	}
+
+	/**
+	 * TODO
+	 *
+	 * @return
+	 */
+	public double getInterpolationCompletionRatio()
+	{
+		return access.getDouble( IP_RATIO_OFFSET );
+	}
+
+	protected void setInterpolationCompletionRatio( final double ratio )
+	{
+		access.putDouble( ratio, IP_RATIO_OFFSET );
 	}
 
 	@Override
@@ -217,5 +296,19 @@ public class ScreenVertex extends PoolObject< ScreenVertex, ByteMappedElement >
 				return SingleArrayMemPool.factory( ByteMappedElementArray.factory );
 			}
 		};
+	}
+
+	@Override
+	public String toString()
+	{
+		return String.format( "ScreenVertex(%d, sv=%d, \"%s\", (%.2f, %.2f), %s, isv=%d%s)",
+				getInternalPoolIndex(),
+				getTrackSchemeVertexId(),
+				getLabel(),
+				getX(),
+				getY(),
+				getTransition().toString(),
+				getInterpolatedScreenVertexIndex(),
+				isSelected() ? ", selected" : "" );
 	}
 }
