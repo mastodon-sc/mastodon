@@ -1,5 +1,6 @@
 package net.trackmate.trackscheme;
 
+import static net.trackmate.trackscheme.ScreenVertex.Transition.APPEAR;
 import static net.trackmate.trackscheme.ScreenVertex.Transition.DISAPPEAR;
 import static net.trackmate.trackscheme.ScreenVertex.Transition.NONE;
 
@@ -230,8 +231,16 @@ public class GraphLayoutOverlay implements OverlayRenderer
 		vertices.get( edge.getSourceScreenVertexIndex(), vs );
 		vertices.get( edge.getTargetScreenVertexIndex(), vt );
 
+		Transition transition = vs.getTransition();
+		double ratio = vs.getInterpolationCompletionRatio();
+		if ( vt.getTransition() == APPEAR )
+		{
+			transition = APPEAR;
+			ratio = vt.getInterpolationCompletionRatio();
+		}
 		final boolean selected = edge.isSelected();
-		g2.setColor( selected ? selectedEdgeColor : edgeColor );
+		final Color drawColor = getColor( selected, transition, ratio, edgeColor, selectedEdgeColor );
+		g2.setColor( drawColor );
 		g2.drawLine( ( int ) vs.getX(), ( int ) vs.getY(), ( int ) vt.getX(), ( int ) vt.getY() );
 	}
 
