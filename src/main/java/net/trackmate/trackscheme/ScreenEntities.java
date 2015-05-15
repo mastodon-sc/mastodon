@@ -73,5 +73,6 @@ public class ScreenEntities
 		screenVertices.resetQuick();
 		screenEdgePool.clear();
 		screenEdges.resetQuick();
+		vertexRanges.clear();
 	}
 }
