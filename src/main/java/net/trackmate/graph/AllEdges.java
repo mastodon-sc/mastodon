@@ -162,7 +162,7 @@ public class AllEdges< E extends AbstractEdge< E, ?, ? > > implements Edges< E >
 		@Override
 		public void remove()
 		{
-			edgePool.release( edge );
+			edgePool.delete( edge );
 		}
 	}
 

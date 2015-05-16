@@ -145,9 +145,9 @@ public class ScreenEdge extends PoolObject< ScreenEdge, ByteMappedElement >
 			return super.create( edge );
 		}
 
-		public void release( final ScreenEdge edge )
+		public void delete( final ScreenEdge edge )
 		{
-			releaseByInternalPoolIndex( edge.getInternalPoolIndex() );
+			deleteByInternalPoolIndex( edge.getInternalPoolIndex() );
 		}
 
 		private static class EdgeFactory implements PoolObject.Factory< ScreenEdge, ByteMappedElement >

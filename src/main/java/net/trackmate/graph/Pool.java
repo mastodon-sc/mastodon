@@ -143,7 +143,7 @@ public class Pool< O extends PoolObject< O, T >, T extends MappedElement > imple
 		return obj;
 	}
 
-	protected void releaseByInternalPoolIndex( final int index )
+	protected void deleteByInternalPoolIndex( final int index )
 	{
 		memPool.free( index );
 	}

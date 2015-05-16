@@ -112,19 +112,19 @@ public class GraphImp<
 	@Override
 	public void remove( final V vertex )
 	{
-		vertexPool.release( vertex );
+		vertexPool.delete( vertex );
 	}
 
 	@Override
 	public void remove( final E edge )
 	{
-		edgePool.release( edge );
+		edgePool.delete( edge );
 	}
 
 	@Override
 	public void removeAllLinkedEdges( final V vertex )
 	{
-		edgePool.releaseAllLinkedEdges( vertex );
+		edgePool.deleteAllLinkedEdges( vertex );
 	}
 
 	@Override
