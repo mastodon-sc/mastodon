@@ -37,10 +37,10 @@ public class AbstractVertexPool<
 		return super.create( vertex );
 	}
 
-	public void release( final V vertex )
+	public void delete( final V vertex )
 	{
 		if ( edgePool != null )
-			edgePool.releaseAllLinkedEdges( vertex );
-		releaseByInternalPoolIndex( vertex.getInternalPoolIndex() );
+			edgePool.deleteAllLinkedEdges( vertex );
+		deleteByInternalPoolIndex( vertex.getInternalPoolIndex() );
 	}
 }

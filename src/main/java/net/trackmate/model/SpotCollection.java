@@ -145,16 +145,16 @@ public class SpotCollection implements Iterable< Spot >
 		return spotPool.get( ID, spot );
 	}
 
-	public void releaseSpot( final Spot spot )
+	public void removeSpot( final Spot spot )
 	{
-		spotPool.release( spot );
+		spotPool.delete( spot );
 	}
 
-	public void releaseSpot( final int ID )
+	public void removeSpot( final int ID )
 	{
 		final Spot tmp = spotPool.createRef();
 		getSpot( ID, tmp );
-		releaseSpot( tmp );
+		removeSpot( tmp );
 		spotPool.releaseRef( tmp );
 	}
 

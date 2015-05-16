@@ -23,9 +23,9 @@ class TestObjectPool extends Pool< TestObject, ByteMappedElement >
 		return super.create( createRef() );
 	}
 
-	public void release( final TestObject obj )
+	public void delete( final TestObject obj )
 	{
-		releaseByInternalPoolIndex( obj.getInternalPoolIndex() );
+		deleteByInternalPoolIndex( obj.getInternalPoolIndex() );
 	}
 
 	private TestObjectPool( final int initialCapacity, final TestObjectPool.TestObjectFactory f )

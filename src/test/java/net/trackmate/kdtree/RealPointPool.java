@@ -28,9 +28,9 @@ class RealPointPool extends Pool< RealPoint, ByteMappedElement > implements Eucl
 		return super.create( createRef() );
 	}
 
-	public void release( final RealPoint obj )
+	public void delete( final RealPoint obj )
 	{
-		releaseByInternalPoolIndex( obj.getInternalPoolIndex() );
+		deleteByInternalPoolIndex( obj.getInternalPoolIndex() );
 	}
 
 	@Override

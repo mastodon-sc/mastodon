@@ -73,18 +73,18 @@ public class AbstractIdVertexPool<
 	}
 
 	@Override
-	public void release( final V vertex )
+	public void delete( final V vertex )
 	{
 		vertexIdToIndexMap.remove( vertex.getId() );
-		super.release( vertex );
+		super.delete( vertex );
 	}
 
-	public void release( final int ID )
+	public void delete( final int ID )
 	{
 		final int index = vertexIdToIndexMap.remove( ID );
 		final V vertex = createRef();
 		getByInternalPoolIndex( index, vertex );
-		super.release( vertex );
+		super.delete( vertex );
 		releaseRef( vertex );
 	}
 

@@ -115,7 +115,7 @@ public class OutgoingEdges< E extends AbstractEdge< E, ?, ? > > implements Edges
 		@Override
 		public void remove()
 		{
-			edgePool.release( edge );
+			edgePool.delete( edge );
 		}
 	}
 }
