@@ -2,6 +2,7 @@ package net.trackmate.trackscheme;
 
 import java.awt.Color;
 import java.awt.Graphics;
+import java.awt.event.InputEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
@@ -28,6 +29,14 @@ import net.trackmate.graph.collection.RefSet;
 public class DefaultSelectionHandler extends MouseAdapter implements SelectionHandler
 {
 	private static final double SELECT_DISTANCE_TOLERANCE = 5.0;
+	
+	private static final int MOUSE_MASK = InputEvent.BUTTON1_DOWN_MASK;
+
+	private static final int MOUSE_MASK_ADDTOSELECTION = InputEvent.BUTTON1_DOWN_MASK | InputEvent.SHIFT_DOWN_MASK;
+
+	private static final int MOUSE_MASK_CLICK = InputEvent.BUTTON1_MASK;
+	
+	private static final int MOUSE_MASK_CLICK_ADDTOSELECTION = InputEvent.BUTTON1_MASK  | InputEvent.SHIFT_MASK;
 
 	private final OverlayRenderer selectionBoxOverlay = new SelectionBoxOverlay();
 
@@ -65,9 +74,9 @@ public class DefaultSelectionHandler extends MouseAdapter implements SelectionHa
 	@Override
 	public void mouseClicked( MouseEvent e )
 	{
-		if ( e.getButton() == MouseEvent.BUTTON1 )
+		if ( e.getModifiers() == MOUSE_MASK_CLICK || e.getModifiers() == MOUSE_MASK_CLICK_ADDTOSELECTION )
 		{
-			final boolean clear = !e.isShiftDown();
+			final boolean clear = !(e.getModifiers() == MOUSE_MASK_CLICK_ADDTOSELECTION);
 			selectAt( transform, e.getX(), e.getY(), clear );
 			selectionListener.refresh();
 		}
@@ -76,7 +85,7 @@ public class DefaultSelectionHandler extends MouseAdapter implements SelectionHa
 	@Override
 	public void mouseDragged( MouseEvent e )
 	{
-		if ( e.getButton() == MouseEvent.BUTTON1 && !e.isAltDown() )
+		if ( e.getModifiersEx() == MOUSE_MASK ||  e.getModifiersEx() == MOUSE_MASK_ADDTOSELECTION )
 		{
 			eX = e.getX();
 			eY = e.getY();
@@ -91,13 +100,13 @@ public class DefaultSelectionHandler extends MouseAdapter implements SelectionHa
 	}
 
 	@Override
-	public void mouseReleased( MouseEvent e )
+	public void mouseReleased(MouseEvent e)
 	{
-		if ( e.getButton() == MouseEvent.BUTTON1 && dragStarted )
+		if (dragStarted)
 		{
 			dragStarted = false;
-			final boolean clear = !e.isShiftDown();
-			selectWithin( transform, oX, oY, eX, eY, clear );
+			final boolean clear = !( ( e.getModifiersEx() & MOUSE_MASK_ADDTOSELECTION ) != 0);
+			selectWithin(transform, oX, oY, eX, eY, clear);
 			selectionListener.refresh();
 		}
 	}
