@@ -1,10 +1,14 @@
 package net.trackmate.trackscheme;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
+
+import javax.swing.Timer;
 
 import net.imglib2.ui.TransformEventHandler;
 import net.imglib2.ui.TransformEventHandlerFactory;
@@ -242,20 +246,30 @@ public class ScreenTransform
 		@Override
 		public void mousePressed( final MouseEvent e )
 		{
-			oX = e.getX();
-			oY = e.getY();
+			final int modifiers = e.getModifiersEx();
+			if ( ( modifiers & ( MouseEvent.BUTTON2_DOWN_MASK | MouseEvent.BUTTON3_DOWN_MASK ) ) != 0 ) // translate
+			{
+				oX = e.getX();
+				oY = e.getY();
+				positionFriction.stop();
+			}
 			synchronized ( transform )
 			{
 				transformDragStart.set( transform );
 			}
 		}
-
+		
 		@Override
 		public void mouseDragged( final MouseEvent e )
 		{
 			final int modifiers = e.getModifiersEx();
 			if ( ( modifiers & ( MouseEvent.BUTTON2_DOWN_MASK | MouseEvent.BUTTON3_DOWN_MASK ) ) != 0 ) // translate
 			{
+				vx = e.getX() - eX;
+				vy = e.getY() - eY;
+				eX = e.getX();
+				eY = e.getY();
+				
 				synchronized ( transform )
 				{
 					final int dX = oX - e.getX();
@@ -263,6 +277,16 @@ public class ScreenTransform
 					transform.setScreenTranslated( dX, dY, transformDragStart );
 				}
 				update();
+			}
+		}
+		
+		@Override
+		public void mouseReleased(MouseEvent e) 
+		{
+			int modifiers = e.getModifiers();
+			if ( ( modifiers & ( MouseEvent.BUTTON2_MASK | MouseEvent.BUTTON3_MASK ) ) != 0 ) // translate
+			{
+				positionFriction.restart();
 			}
 		}
 
@@ -309,5 +333,51 @@ public class ScreenTransform
 			}
 		}
 
+		/*
+		 * FRICTIN STUFF 
+		 */
+
+		private int vx;
+
+		private int vy;
+
+		private int eX;
+
+		private int eY;
+		
+		private final Timer positionFriction = new Timer( 10, new ActionListener()
+		{
+			private final double dt = 1; // s
+			
+			private final double lambda = 0.1; // s-1
+			
+			private final double minV = 0.1;
+
+			@Override
+			public void actionPerformed( final ActionEvent e )
+			{
+				final double dvx = -lambda * vx * dt;
+				final double dvy = -lambda * vy * dt;
+
+				vx += dvx;
+				vy += dvy;
+
+				eX += vx * dt;
+				eY += vy * dt;
+
+				synchronized ( transform )
+				{
+					final int dX = oX - eX;
+					final int dY = oY - eY;
+					transform.setScreenTranslated( dX, dY, transformDragStart );
+				}
+				update();
+				
+				if ( ( vx * vx + vy * vy ) < minV * minV )
+				{
+					positionFriction.stop();
+				}
+			}
+		} );
 	}
 }
