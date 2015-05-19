@@ -281,9 +281,9 @@ public class ScreenTransform
 		}
 		
 		@Override
-		public void mouseReleased(MouseEvent e) 
+		public void mouseReleased(final MouseEvent e) 
 		{
-			int modifiers = e.getModifiers();
+			final int modifiers = e.getModifiers();
 			if ( ( modifiers & ( MouseEvent.BUTTON2_MASK | MouseEvent.BUTTON3_MASK ) ) != 0 ) // translate
 			{
 				positionFriction.restart();
@@ -324,9 +324,20 @@ public class ScreenTransform
 				}
 				else
 				{
-					final int d = s * 15;
+					final int d = s * 30;
 					final boolean dirX = ( modifiers & KeyEvent.SHIFT_DOWN_MASK ) != 0;
-					transform.setScreenTranslated( dirX ? d : 0, dirX ? 0 : d, transform );
+					if ( dirX )
+					{
+						vx = d;
+						vy = 0;
+					}
+					else
+					{
+						vx = 0;
+						vy = d;
+					}
+					positionWheelFriction.restart();
+//					transform.setScreenTranslated( dirX ? d : 0, dirX ? 0 : d, transform );
 				}
 
 				update();
@@ -348,9 +359,9 @@ public class ScreenTransform
 		private final Timer positionFriction = new Timer( 10, new ActionListener()
 		{
 			private final double dt = 1; // s
-			
+
 			private final double lambda = 0.1; // s-1
-			
+
 			private final double minV = 0.1;
 
 			@Override
@@ -372,7 +383,37 @@ public class ScreenTransform
 					transform.setScreenTranslated( dX, dY, transformDragStart );
 				}
 				update();
-				
+
+				if ( ( vx * vx + vy * vy ) < minV * minV )
+				{
+					positionFriction.stop();
+				}
+			}
+		} );
+
+		private final Timer positionWheelFriction = new Timer( 10, new ActionListener()
+		{
+			private final double dt = 1; // s
+
+			private final double lambda = 0.1; // s-1
+
+			private final double minV = 0.1;
+
+			@Override
+			public void actionPerformed( final ActionEvent e )
+			{
+				final double dvx = -lambda * vx * dt;
+				final double dvy = -lambda * vy * dt;
+
+				vx += dvx;
+				vy += dvy;
+
+				synchronized ( transform )
+				{
+					transform.setScreenTranslated( vx, vy, transform );
+				}
+				update();
+
 				if ( ( vx * vx + vy * vy ) < minV * minV )
 				{
 					positionFriction.stop();
