@@ -365,7 +365,7 @@ public class ScreenTransform
 		{
 			private final double dt = 1; // s
 
-			private final double lambda = 0.1; // s-1
+			private final double lambda = 0.02; // s-1
 
 			private final double minV = 0.1;
 
