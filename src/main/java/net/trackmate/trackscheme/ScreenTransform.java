@@ -310,10 +310,20 @@ public class ScreenTransform
 				}
 				else if ( shiftPressed ) // zoom X axis
 				{
-					if ( s > 0 )
-						transform.scaleX( 1.0 / dScale, e.getX(), e.getY() );
-					else
-						transform.scaleX( dScale, e.getX(), e.getY() );
+					eX = e.getX();
+					eY = e.getY();
+					zoomOut = s < 0;
+					zoomSteps += 10 * Math.abs( s );
+					zoomXFriction.restart();
+
+//					if ( s > 0 )
+//					{
+//						transform.scaleX( 1.0 / dScale, e.getX(), e.getY() );
+//					}
+//					else
+//					{
+//						transform.scaleX( dScale, e.getX(), e.getY() );
+//					}
 				}
 				else if ( ctrlPressed || altPressed ) // zoom Y axis
 				{
@@ -356,6 +366,10 @@ public class ScreenTransform
 
 		private int eY;
 		
+		private boolean zoomOut;
+
+		private int zoomSteps = 0;
+
 		private final Timer positionFriction = new Timer( 10, new ActionListener()
 		{
 			private final double dt = 1; // s
@@ -391,6 +405,7 @@ public class ScreenTransform
 			}
 		} );
 
+
 		private final Timer positionWheelFriction = new Timer( 10, new ActionListener()
 		{
 			private final double dt = 1; // s
@@ -417,6 +432,26 @@ public class ScreenTransform
 				if ( ( vx * vx + vy * vy ) < minV * minV )
 				{
 					positionFriction.stop();
+				}
+			}
+		} );
+
+		private final Timer zoomXFriction = new Timer( 10, new ActionListener()
+		{
+			private static final double dScale = .01;
+			@Override
+			public void actionPerformed( final ActionEvent e )
+			{
+				final double zoom = zoomOut ? 1d / ( 1d + zoomSteps * dScale ) : ( 1d + dScale * zoomSteps );
+				zoomSteps--;
+				synchronized ( transform )
+				{
+					transform.scaleX( zoom, eX, eY );
+				}
+				update();
+				if ( zoomSteps < 1 )
+				{
+					zoomXFriction.stop();
 				}
 			}
 		} );
