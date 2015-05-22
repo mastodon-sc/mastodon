@@ -258,7 +258,7 @@ public class ScreenTransform
 				transformDragStart.set( transform );
 			}
 		}
-		
+
 		@Override
 		public void mouseDragged( final MouseEvent e )
 		{
@@ -269,7 +269,7 @@ public class ScreenTransform
 				vy = e.getY() - eY;
 				eX = e.getX();
 				eY = e.getY();
-				
+
 				synchronized ( transform )
 				{
 					final int dX = oX - e.getX();
@@ -279,9 +279,9 @@ public class ScreenTransform
 				update();
 			}
 		}
-		
+
 		@Override
-		public void mouseReleased(final MouseEvent e) 
+		public void mouseReleased( final MouseEvent e )
 		{
 			final int modifiers = e.getModifiers();
 			if ( ( modifiers & ( MouseEvent.BUTTON2_MASK | MouseEvent.BUTTON3_MASK ) ) != 0 ) // translate
@@ -295,42 +295,31 @@ public class ScreenTransform
 		{
 			synchronized ( transform )
 			{
-				final double dScale = 1.1;
 				final int modifiers = e.getModifiersEx();
 				final int s = e.getWheelRotation();
 				final boolean ctrlPressed = ( modifiers & KeyEvent.CTRL_DOWN_MASK ) != 0;
 				final boolean altPressed = ( modifiers & KeyEvent.ALT_DOWN_MASK ) != 0;
 				final boolean metaPressed = ( ( modifiers & KeyEvent.META_DOWN_MASK ) != 0 ) || ( ctrlPressed && shiftPressed );
+
+				eX = e.getX();
+				eY = e.getY();
+				zoomOut = s < 0;
+				zoomSteps += 10 * Math.abs( s );
+
 				if ( metaPressed ) // zoom both axes
 				{
-					if ( s > 0 )
-						transform.scale( 1.0 / dScale, e.getX(), e.getY() );
-					else
-						transform.scale( dScale, e.getX(), e.getY() );
+					zoomType = ZoomType.XY;
+					zoomFriction.restart();
 				}
 				else if ( shiftPressed ) // zoom X axis
 				{
-					eX = e.getX();
-					eY = e.getY();
-					zoomOut = s < 0;
-					zoomSteps += 10 * Math.abs( s );
-					zoomXFriction.restart();
-
-//					if ( s > 0 )
-//					{
-//						transform.scaleX( 1.0 / dScale, e.getX(), e.getY() );
-//					}
-//					else
-//					{
-//						transform.scaleX( dScale, e.getX(), e.getY() );
-//					}
+					zoomType = ZoomType.X;
+					zoomFriction.restart();
 				}
 				else if ( ctrlPressed || altPressed ) // zoom Y axis
 				{
-					if ( s > 0 )
-						transform.scaleY( 1.0 / dScale, e.getX(), e.getY() );
-					else
-						transform.scaleY( dScale, e.getX(), e.getY() );
+					zoomType = ZoomType.Y;
+					zoomFriction.restart();
 				}
 				else
 				{
@@ -347,15 +336,13 @@ public class ScreenTransform
 						vy = d;
 					}
 					positionWheelFriction.restart();
-//					transform.setScreenTranslated( dirX ? d : 0, dirX ? 0 : d, transform );
 				}
-
 				update();
 			}
 		}
 
 		/*
-		 * FRICTIN STUFF 
+		 * FRICTION STUFF
 		 */
 
 		private int vx;
@@ -365,10 +352,12 @@ public class ScreenTransform
 		private int eX;
 
 		private int eY;
-		
+
 		private boolean zoomOut;
 
 		private int zoomSteps = 0;
+
+		private ZoomType zoomType;
 
 		private final Timer positionFriction = new Timer( 10, new ActionListener()
 		{
@@ -405,7 +394,6 @@ public class ScreenTransform
 			}
 		} );
 
-
 		private final Timer positionWheelFriction = new Timer( 10, new ActionListener()
 		{
 			private final double dt = 1; // s
@@ -436,9 +424,10 @@ public class ScreenTransform
 			}
 		} );
 
-		private final Timer zoomXFriction = new Timer( 10, new ActionListener()
+		private final Timer zoomFriction = new Timer( 10, new ActionListener()
 		{
 			private static final double dScale = .01;
+
 			@Override
 			public void actionPerformed( final ActionEvent e )
 			{
@@ -446,14 +435,32 @@ public class ScreenTransform
 				zoomSteps--;
 				synchronized ( transform )
 				{
-					transform.scaleX( zoom, eX, eY );
+					switch ( zoomType )
+					{
+					case X:
+						transform.scaleX( zoom, eX, eY );
+						break;
+					case Y:
+						transform.scaleY( zoom, eX, eY );
+						break;
+					case XY:
+					default:
+						transform.scale( zoom, eX, eY );
+						break;
+					}
 				}
 				update();
 				if ( zoomSteps < 1 )
 				{
-					zoomXFriction.stop();
+					zoomFriction.stop();
 				}
 			}
 		} );
+
+		private enum ZoomType
+		{
+			X, Y, XY;
+		}
 	}
+
 }
