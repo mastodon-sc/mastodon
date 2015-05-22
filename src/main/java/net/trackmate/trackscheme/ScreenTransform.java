@@ -246,12 +246,14 @@ public class ScreenTransform
 		@Override
 		public void mousePressed( final MouseEvent e )
 		{
+			positionFriction.stop();
+			positionWheelFriction.stop();
+			zoomFriction.stop();
 			final int modifiers = e.getModifiersEx();
 			if ( ( modifiers & ( MouseEvent.BUTTON2_DOWN_MASK | MouseEvent.BUTTON3_DOWN_MASK ) ) != 0 ) // translate
 			{
 				oX = e.getX();
 				oY = e.getY();
-				positionFriction.stop();
 			}
 			synchronized ( transform )
 			{
