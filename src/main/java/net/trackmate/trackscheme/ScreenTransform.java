@@ -288,7 +288,10 @@ public class ScreenTransform
 			final int modifiers = e.getModifiers();
 			if ( ( modifiers & ( MouseEvent.BUTTON2_MASK | MouseEvent.BUTTON3_MASK ) ) != 0 ) // translate
 			{
-				positionFriction.restart();
+				if ( Math.abs( vx ) > 0 && Math.abs( vy ) > 0 )
+				{
+					positionFriction.restart();
+				}
 			}
 		}
 
