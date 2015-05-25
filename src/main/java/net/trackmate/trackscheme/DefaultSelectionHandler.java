@@ -29,13 +29,13 @@ import net.trackmate.graph.collection.RefSet;
 public class DefaultSelectionHandler extends MouseAdapter implements SelectionHandler
 {
 	private static final double SELECT_DISTANCE_TOLERANCE = 5.0;
-	
+
 	private static final int MOUSE_MASK = InputEvent.BUTTON1_DOWN_MASK;
 
 	private static final int MOUSE_MASK_ADDTOSELECTION = InputEvent.BUTTON1_DOWN_MASK | InputEvent.SHIFT_DOWN_MASK;
 
 	private static final int MOUSE_MASK_CLICK = InputEvent.BUTTON1_MASK;
-	
+
 	private static final int MOUSE_MASK_CLICK_ADDTOSELECTION = InputEvent.BUTTON1_MASK  | InputEvent.SHIFT_MASK;
 
 	private final OverlayRenderer selectionBoxOverlay = new SelectionBoxOverlay();
@@ -153,7 +153,8 @@ public class DefaultSelectionHandler extends MouseAdapter implements SelectionHa
 		}
 	}
 
-	private void select( TrackSchemeVertex vertex, boolean toggle )
+	@Override
+	public void select( TrackSchemeVertex vertex, boolean toggle )
 	{
 		boolean selected;
 		if ( toggle )
@@ -175,7 +176,8 @@ public class DefaultSelectionHandler extends MouseAdapter implements SelectionHa
 		}
 	}
 
-	private void select( TrackSchemeEdge edge, boolean toggle )
+	@Override
+	public void select( TrackSchemeEdge edge, boolean toggle )
 	{
 		boolean selected;
 		if ( toggle )
@@ -197,7 +199,8 @@ public class DefaultSelectionHandler extends MouseAdapter implements SelectionHa
 		}
 	}
 
-	private void clearSelection()
+	@Override
+	public void clearSelection()
 	{
 		/*
 		 * Rather than iterating over the whole model, it's best to use the
@@ -224,7 +227,8 @@ public class DefaultSelectionHandler extends MouseAdapter implements SelectionHa
 		selectionModel.clearSelection();
 	}
 
-	private void selectWithin( ScreenTransform transform, int x1, int y1, int x2, int y2, boolean clear )
+	@Override
+	public void selectWithin( ScreenTransform transform, int x1, int y1, int x2, int y2, boolean clear )
 	{
 		if ( clear )
 		{
@@ -254,6 +258,12 @@ public class DefaultSelectionHandler extends MouseAdapter implements SelectionHa
 		}
 
 		graph.releaseRef( t );
+	}
+
+	@Override
+	public SelectionModel< TrackSchemeVertex, TrackSchemeEdge > getSelectionModel()
+	{
+		return selectionModel;
 	}
 
 	@Override

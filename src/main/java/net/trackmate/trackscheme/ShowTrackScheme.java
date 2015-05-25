@@ -38,6 +38,8 @@ public class ShowTrackScheme implements TransformListener< ScreenTransform >, Se
 
 	private final ZoomBoxHandler zoomHandler;
 
+	SelectionNavigator selectionNavigator;
+
 	public ShowTrackScheme( final TrackSchemeGraph graph )
 	{
 		this.graph = graph;
@@ -82,6 +84,8 @@ public class ShowTrackScheme implements TransformListener< ScreenTransform >, Se
 		canvas.addMouseListener( selectionHandler );
 		canvas.addMouseMotionListener( selectionHandler );
 		selectionHandler.setSelectionListener( this );
+
+		selectionNavigator = new SelectionNavigator( selectionHandler, this );
 
 		zoomHandler = new ZoomBoxHandler( canvas.getTransformEventHandler(), this );
 		canvas.addMouseListener( zoomHandler );

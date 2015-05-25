@@ -31,6 +31,30 @@ public class ActionBank
 		};
 	}
 
+	public static final AbstractNamedAction getNavigateToChildAction( final ShowTrackScheme trackscheme, final boolean clear )
+	{
+		return new AbstractNamedAction( "navigateToChild" )
+		{
+			@Override
+			public void actionPerformed( final ActionEvent event )
+			{
+				trackscheme.selectionNavigator.child( clear );
+			}
+		};
+	}
+
+	public static final AbstractNamedAction getNavigateToParentAction( final ShowTrackScheme trackscheme, final boolean clear )
+	{
+		return new AbstractNamedAction( "navigateToParent" )
+		{
+			@Override
+			public void actionPerformed( final ActionEvent event )
+			{
+				trackscheme.selectionNavigator.parent( clear );
+			}
+		};
+	}
+
 	private ActionBank()
 	{}
 }
