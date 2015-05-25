@@ -106,6 +106,12 @@ public class ScreenTransform
 		maxY = minY + newSizeY;
 	}
 
+	@Override
+	public String toString()
+	{
+		return "X: " + minX + " -> " + maxX + ", Y: " + minY + " -> " + maxY + ", width = " + screenWidth + ", height = " + screenHeight;
+	}
+
 	public static class ScreenTransformEventHandler extends MouseAdapter implements KeyListener, TransformEventHandler< ScreenTransform >
 	{
 		final static private TransformEventHandlerFactory< ScreenTransform > factory = new TransformEventHandlerFactory< ScreenTransform >()
