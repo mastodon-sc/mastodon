@@ -4,6 +4,8 @@ import java.awt.BorderLayout;
 import java.awt.GraphicsConfiguration;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import javax.swing.JFrame;
 
@@ -40,6 +42,8 @@ public class ShowTrackScheme implements TransformListener< ScreenTransform >, Se
 	private final ZoomBoxHandler zoomHandler;
 
 	SelectionNavigator selectionNavigator;
+
+	private TranslationAnimator currentAnimator;
 
 	public ShowTrackScheme( final TrackSchemeGraph graph )
 	{
@@ -112,21 +116,29 @@ public class ShowTrackScheme implements TransformListener< ScreenTransform >, Se
 		canvas.addOverlayRenderer( selectionHandler.getSelectionOverlay() );
 	}
 
-	public void centerOn( TrackSchemeVertex vertex )
+	public void centerOn( final TrackSchemeVertex vertex )
 	{
 		final double x = vertex.getLayoutX();
 		final int y = vertex.getTimePoint();
 		final TransformEventHandler< ScreenTransform > handler = canvas.getTransformEventHandler();
-
 		final ScreenTransform transform = handler.getTransform();
-		final double deltaX = transform.maxX - transform.minX;
-		final double deltaY = transform.maxY - transform.minY;
 
-		transform.minX = x - deltaX / 2;
-		transform.maxX = x + deltaX / 2;
-		transform.minY = y - deltaY / 2;
-		transform.maxY = y + deltaY / 2;
-		transformChanged( transform );
+		currentAnimator = new TranslationAnimator( transform, x, y, 200 );
+		currentAnimator.setTime( System.currentTimeMillis() );
+
+		final Timer timer = new Timer();
+		timer.scheduleAtFixedRate( new TimerTask()
+		{
+			@Override
+			public void run()
+			{
+				if ( currentAnimator == null || currentAnimator.isComplete() )
+				{
+					timer.cancel();
+				}
+				refresh();
+			}
+		}, 0, 10 );
 	}
 
 	@Override
@@ -135,8 +147,6 @@ public class ShowTrackScheme implements TransformListener< ScreenTransform >, Se
 		zoomHandler.setTransform( transform );
 		selectionHandler.setTransform( transform );
 		canvasOverlay.transformChanged( transform );
-
-		System.out.println( transform );// DEBUG
 
 //		System.out.println( "transformChanged" );
 		final double minX = transform.minX;
@@ -179,6 +189,18 @@ public class ShowTrackScheme implements TransformListener< ScreenTransform >, Se
 			sl.repaint();
 		}
 		frame.repaint();
+
+		synchronized ( this )
+		{
+			if ( currentAnimator != null )
+			{
+				final ScreenTransform transform = currentAnimator.getCurrent( System.currentTimeMillis() );
+				canvas.getTransformEventHandler().setTransform( transform );
+				transformChanged( transform );
+				if ( currentAnimator.isComplete() )
+					currentAnimator = null;
+			}
+		}
 	}
 
 	/*
