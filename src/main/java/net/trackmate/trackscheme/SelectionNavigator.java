@@ -9,6 +9,8 @@ public class SelectionNavigator
 
 	private final SelectionHandler selectionHandler;
 
+	private SelectionListener selectionListener;
+
 	public SelectionNavigator( SelectionHandler selectionHandler, ShowTrackScheme trackscheme )
 	{
 		this.selectionHandler = selectionHandler;
@@ -40,6 +42,7 @@ public class SelectionNavigator
 				selectionHandler.clearSelection();
 			}
 			selectionHandler.select( current, false );
+			selectionListener.refresh();
 		}
 	}
 
@@ -54,7 +57,13 @@ public class SelectionNavigator
 				selectionHandler.clearSelection();
 			}
 			selectionHandler.select( current, false );
+			selectionListener.refresh();
 		}
+	}
+
+	public void setSelectionListener( SelectionListener selectionListener )
+	{
+		this.selectionListener = selectionListener;
 	}
 
 }
