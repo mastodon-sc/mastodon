@@ -11,7 +11,7 @@ public class SelectionNavigator
 
 	private SelectionListener selectionListener;
 
-	public SelectionNavigator( SelectionHandler selectionHandler, ShowTrackScheme trackscheme )
+	public SelectionNavigator( final SelectionHandler selectionHandler, final ShowTrackScheme trackscheme )
 	{
 		this.selectionHandler = selectionHandler;
 		this.trackscheme = trackscheme;
@@ -31,7 +31,7 @@ public class SelectionNavigator
 		}
 	}
 
-	public void child( boolean clear )
+	public void child( final boolean clear )
 	{
 		final Edges< TrackSchemeEdge > edges = takeDefaultVertex().outgoingEdges();
 		if ( edges.size() > 0 )
@@ -46,7 +46,7 @@ public class SelectionNavigator
 		}
 	}
 
-	public void parent( boolean clear )
+	public void parent( final boolean clear )
 	{
 		final Edges< TrackSchemeEdge > edges = takeDefaultVertex().incomingEdges();
 		if ( edges.size() > 0 )
@@ -61,7 +61,41 @@ public class SelectionNavigator
 		}
 	}
 
-	public void setSelectionListener( SelectionListener selectionListener )
+	public void rightSibbling( final boolean clear )
+	{
+		final TrackSchemeVertex current = takeDefaultVertex();
+		final TrackSchemeVertexList vertices = trackscheme.order.timepointToOrderedVertices.get( current.getTimePoint() );
+		final int index = vertices.binarySearch( current.getLayoutX() );
+		if ( index >= 0 && index < vertices.size()-1 )
+		{
+			final TrackSchemeVertex sibbling = vertices.get( index + 1 );
+			if ( clear )
+			{
+				selectionHandler.clearSelection();
+			}
+			selectionHandler.select( sibbling, false );
+			trackscheme.centerOn( sibbling );
+		}
+	}
+
+	public void leftSibbling( final boolean clear )
+	{
+		final TrackSchemeVertex current = takeDefaultVertex();
+		final TrackSchemeVertexList vertices = trackscheme.order.timepointToOrderedVertices.get( current.getTimePoint() );
+		final int index = vertices.binarySearch( current.getLayoutX() );
+		if ( index > 0 && index < vertices.size() )
+		{
+			final TrackSchemeVertex sibbling = vertices.get( index - 1 );
+			if ( clear )
+			{
+				selectionHandler.clearSelection();
+			}
+			selectionHandler.select( sibbling, false );
+			trackscheme.centerOn( sibbling );
+		}
+	}
+
+	public void setSelectionListener( final SelectionListener selectionListener )
 	{
 		this.selectionListener = selectionListener;
 	}

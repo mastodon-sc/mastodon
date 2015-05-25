@@ -35,6 +35,8 @@ public class ActionBank
 	{
 		return new AbstractNamedAction( "navigateToChild" )
 		{
+			private static final long serialVersionUID = 2758338015205616122L;
+
 			@Override
 			public void actionPerformed( final ActionEvent event )
 			{
@@ -47,10 +49,40 @@ public class ActionBank
 	{
 		return new AbstractNamedAction( "navigateToParent" )
 		{
+			private static final long serialVersionUID = -3519859437852750226L;
+
 			@Override
 			public void actionPerformed( final ActionEvent event )
 			{
 				trackscheme.selectionNavigator.parent( clear );
+			}
+		};
+	}
+
+	public static final AbstractNamedAction getNavigateToRightSibblingAction( final ShowTrackScheme trackscheme, final boolean clear )
+	{
+		return new AbstractNamedAction( "navigateToRightSibbling" )
+		{
+			private static final long serialVersionUID = 5817858324118528078L;
+
+			@Override
+			public void actionPerformed( final ActionEvent event )
+			{
+				trackscheme.selectionNavigator.rightSibbling( clear );
+			}
+		};
+	}
+
+	public static final AbstractNamedAction getNavigateToLeftSibblingAction( final ShowTrackScheme trackscheme, final boolean clear )
+	{
+		return new AbstractNamedAction( "navigateToLeftSibbling" )
+		{
+			private static final long serialVersionUID = -4497884382060384048L;
+
+			@Override
+			public void actionPerformed( final ActionEvent event )
+			{
+				trackscheme.selectionNavigator.leftSibbling( clear );
 			}
 		};
 	}
