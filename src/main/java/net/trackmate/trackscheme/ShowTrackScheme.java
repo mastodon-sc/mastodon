@@ -9,6 +9,7 @@ import javax.swing.JFrame;
 
 import net.imglib2.ui.InteractiveDisplayCanvasComponent;
 import net.imglib2.ui.PainterThread;
+import net.imglib2.ui.TransformEventHandler;
 import net.imglib2.ui.TransformListener;
 import net.imglib2.ui.util.GuiUtil;
 import net.imglib2.util.BenchmarkHelper;
@@ -111,12 +112,31 @@ public class ShowTrackScheme implements TransformListener< ScreenTransform >, Se
 		canvas.addOverlayRenderer( selectionHandler.getSelectionOverlay() );
 	}
 
+	public void centerOn( TrackSchemeVertex vertex )
+	{
+		final double x = vertex.getLayoutX();
+		final int y = vertex.getTimePoint();
+		final TransformEventHandler< ScreenTransform > handler = canvas.getTransformEventHandler();
+
+		final ScreenTransform transform = handler.getTransform();
+		final double deltaX = transform.maxX - transform.minX;
+		final double deltaY = transform.maxY - transform.minY;
+
+		transform.minX = x - deltaX / 2;
+		transform.maxX = x + deltaX / 2;
+		transform.minY = y - deltaY / 2;
+		transform.maxY = y + deltaY / 2;
+		transformChanged( transform );
+	}
+
 	@Override
 	public void transformChanged( final ScreenTransform transform )
 	{
 		zoomHandler.setTransform( transform );
 		selectionHandler.setTransform( transform );
 		canvasOverlay.transformChanged( transform );
+
+		System.out.println( transform );// DEBUG
 
 //		System.out.println( "transformChanged" );
 		final double minX = transform.minX;
@@ -158,7 +178,6 @@ public class ShowTrackScheme implements TransformListener< ScreenTransform >, Se
 				sl.select( selectedVertices.iterator().next() );
 			sl.repaint();
 		}
-
 		frame.repaint();
 	}
 

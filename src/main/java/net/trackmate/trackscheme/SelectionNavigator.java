@@ -42,7 +42,7 @@ public class SelectionNavigator
 				selectionHandler.clearSelection();
 			}
 			selectionHandler.select( current, false );
-			selectionListener.refresh();
+			trackscheme.centerOn( current );
 		}
 	}
 
@@ -57,7 +57,7 @@ public class SelectionNavigator
 				selectionHandler.clearSelection();
 			}
 			selectionHandler.select( current, false );
-			selectionListener.refresh();
+			trackscheme.centerOn( current );
 		}
 	}
 
