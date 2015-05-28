@@ -309,7 +309,7 @@ public class ScreenTransform
 				eX = e.getX();
 				eY = e.getY();
 				zoomOut = s < 0;
-				zoomSteps += 10 * Math.abs( s );
+				zoomSteps = ( int ) ( MOUSEWHEEL_ZOOM_SPEED * Math.abs( s ) );
 
 				if ( metaPressed ) // zoom both axes
 				{
@@ -328,7 +328,7 @@ public class ScreenTransform
 				}
 				else
 				{
-					final int d = s * 30;
+					final int d = ( int ) ( s * MOUSEWHEEL_SCROLL_SPEED );
 					final boolean dirX = ( modifiers & KeyEvent.SHIFT_DOWN_MASK ) != 0;
 					if ( dirX )
 					{
@@ -349,6 +349,16 @@ public class ScreenTransform
 		/*
 		 * FRICTION STUFF
 		 */
+
+		/**
+		 * Speed at which the screen scrolls when using the mouse wheel.
+		 */
+		private static final double MOUSEWHEEL_SCROLL_SPEED = 10d;
+
+		/**
+		 * Speed at which the zoom changes when using the mouse wheel.
+		 */
+		private static final double MOUSEWHEEL_ZOOM_SPEED = 1d;
 
 		private int vx;
 
