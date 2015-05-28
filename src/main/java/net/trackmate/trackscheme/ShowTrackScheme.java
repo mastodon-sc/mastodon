@@ -91,7 +91,6 @@ public class ShowTrackScheme implements TransformListener< ScreenTransform >, Se
 		selectionHandler.setSelectionListener( this );
 
 		selectionNavigator = new SelectionNavigator( selectionHandler, this );
-		selectionNavigator.setSelectionListener( this );
 
 		zoomHandler = new ZoomBoxHandler( canvas.getTransformEventHandler(), this );
 		canvas.addMouseListener( zoomHandler );

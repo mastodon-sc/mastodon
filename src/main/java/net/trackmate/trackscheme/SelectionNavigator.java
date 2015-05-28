@@ -9,7 +9,7 @@ public class SelectionNavigator
 
 	private final SelectionHandler selectionHandler;
 
-	private SelectionListener selectionListener;
+	private TrackSchemeVertex lastOne;
 
 	public SelectionNavigator( final SelectionHandler selectionHandler, final ShowTrackScheme trackscheme )
 	{
@@ -23,7 +23,14 @@ public class SelectionNavigator
 		final RefSet< TrackSchemeVertex > vertices = selectionHandler.getSelectionModel().getSelectedVertices();
 		if ( vertices.size() > 0 )
 		{
-			return vertices.iterator().next();
+			if ( lastOne != null && vertices.contains( lastOne ) )
+			{
+				return lastOne;
+			}
+			else
+			{
+				return vertices.iterator().next();
+			}
 		}
 		else
 		{
@@ -43,6 +50,7 @@ public class SelectionNavigator
 			}
 			selectionHandler.select( current, false );
 			trackscheme.centerOn( current );
+			lastOne = current;
 		}
 	}
 
@@ -58,6 +66,7 @@ public class SelectionNavigator
 			}
 			selectionHandler.select( current, false );
 			trackscheme.centerOn( current );
+			lastOne = current;
 		}
 	}
 
@@ -75,6 +84,7 @@ public class SelectionNavigator
 			}
 			selectionHandler.select( sibbling, false );
 			trackscheme.centerOn( sibbling );
+			lastOne = sibbling;
 		}
 	}
 
@@ -92,12 +102,7 @@ public class SelectionNavigator
 			}
 			selectionHandler.select( sibbling, false );
 			trackscheme.centerOn( sibbling );
+			lastOne = sibbling;
 		}
 	}
-
-	public void setSelectionListener( final SelectionListener selectionListener )
-	{
-		this.selectionListener = selectionListener;
-	}
-
 }
