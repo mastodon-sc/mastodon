@@ -52,4 +52,16 @@ public class TrackSchemeUtil
 
 		return tsg;
 	}
+
+	public static TrackSchemeVertexList getOrderedRoots( final TrackSchemeGraph graph )
+	{
+		final TrackSchemeVertexList roots = new TrackSchemeVertexList( graph );
+		for ( final TrackSchemeVertex v : graph.vertices() )
+		{
+			if ( v.incomingEdges().isEmpty() )
+				roots.add( v );
+		}
+		roots.getIndexCollection().sort(); // TODO sort roots by something meaningful...
+		return roots;
+	}
 }

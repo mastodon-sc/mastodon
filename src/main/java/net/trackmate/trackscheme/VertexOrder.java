@@ -55,7 +55,7 @@ public class VertexOrder
 		timepoints.clear();
 		timepointToOrderedVertices.clear();
 
-		final TrackSchemeVertexList roots = getOrderedRoots( graph );
+		final TrackSchemeVertexList roots = TrackSchemeUtil.getOrderedRoots( graph );
 
 		for ( final TrackSchemeVertex root : roots )
 			build( root );
@@ -504,18 +504,6 @@ public class VertexOrder
 			sumVerticesToPaint = 0;
 			sumVertexRangesToPaint = 0;
 		}
-	}
-
-	public static TrackSchemeVertexList getOrderedRoots( final TrackSchemeGraph graph )
-	{
-		final TrackSchemeVertexList roots = new TrackSchemeVertexList( graph );
-		for ( final TrackSchemeVertex v : graph.vertices() )
-		{
-			if ( v.incomingEdges().isEmpty() )
-				roots.add( v );
-		}
-		roots.getIndexCollection().sort(); // TODO sort roots by something meaningful...
-		return roots;
 	}
 
 	/**

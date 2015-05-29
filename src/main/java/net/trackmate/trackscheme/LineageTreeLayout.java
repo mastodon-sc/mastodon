@@ -50,7 +50,7 @@ public class LineageTreeLayout
 	public void layoutX()
 	{
 		reset();
-		final TrackSchemeVertexList roots = VertexOrder.getOrderedRoots( graph );
+		final TrackSchemeVertexList roots = TrackSchemeUtil.getOrderedRoots( graph );
 
 		columns.clear();
 		columnNames.clear();
