@@ -3,7 +3,7 @@ package net.trackmate.kdtree;
 import gnu.trove.list.array.TIntArrayList;
 import net.imglib2.RealLocalizable;
 import net.imglib2.algorithm.kdtree.HyperPlane;
-import net.trackmate.graph.PoolObject;
+import net.trackmate.graph.Ref;
 import net.trackmate.graph.mempool.MappedElement;
 
 /**
@@ -27,7 +27,7 @@ import net.trackmate.graph.mempool.MappedElement;
  *
  * @author Tobias Pietzsch <tobias.pietzsch@gmail.com>
  */
-public class SplitHyperPlaneKDTree< O extends PoolObject< O, ? > & RealLocalizable, T extends MappedElement >
+public class SplitHyperPlaneKDTree< O extends Ref< O > & RealLocalizable, T extends MappedElement >
 {
 	private final KDTree< O, T > tree;
 
