@@ -230,10 +230,11 @@ public class ShowTrackScheme implements TransformListener< ScreenTransform >, Se
 			order.cropAndScale( minX, maxX, minY, maxY, w, h, screenEntities );
 			swapIpEnd();
 			currentAnimator = new ScreenEntitiesAnimator( ANIMATION_MILLISECONDS );
-			currentAnimator.setTime( System.currentTimeMillis() );
+			currentAnimator.animate();
 		}
 		else
 		{
+			currentAnimator = null;
 			swapPools();
 			order.cropAndScale( minX, maxX, minY, maxY, w, h, screenEntities );
 			overlay.setScreenEntities( screenEntities );

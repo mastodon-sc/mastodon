@@ -4,14 +4,18 @@ import static net.trackmate.trackscheme.ScreenVertex.Transition.APPEAR;
 import static net.trackmate.trackscheme.ScreenVertex.Transition.DISAPPEAR;
 import static net.trackmate.trackscheme.ScreenVertex.Transition.NONE;
 
+import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.Stroke;
 import java.awt.font.FontRenderContext;
 import java.awt.font.TextLayout;
 import java.awt.geom.Rectangle2D;
 import java.util.List;
+
+import javax.swing.UIManager;
 
 import net.imglib2.ui.OverlayRenderer;
 import net.trackmate.trackscheme.ScreenVertex.Transition;
@@ -52,6 +56,8 @@ public class GraphLayoutOverlay implements OverlayRenderer
 
 	private final double avgLabelLetterWidth = 5.0;
 
+	private final Color backgroundColor = UIManager.getColor ( "Panel.background" );
+
 	private final Color edgeColor = Color.black;
 
 	private final Color vertexFillColor = Color.white;
@@ -69,6 +75,10 @@ public class GraphLayoutOverlay implements OverlayRenderer
 	private final Color selectedSimplifiedVertexFillColor = new Color( 0, 128, 0 );
 
 	private final Color vertexRangeColor = new Color( 128, 128, 128 );
+
+	private final Stroke normalStroke = new BasicStroke();
+
+	private final Stroke ghostStroke = new BasicStroke( 1.0f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 10.0f, new float[] { 3.0f }, 0.0f );
 
 	@Override
 	public synchronized void drawOverlays( final Graphics g )
@@ -133,6 +143,7 @@ public class GraphLayoutOverlay implements OverlayRenderer
 		final boolean disappear = ( transition == DISAPPEAR );
 		final double ratio = vertex.getInterpolationCompletionRatio();
 		final boolean selected = vertex.isSelected();
+		final boolean ghost = vertex.isGhost();
 
 		double spotdiameter = Math.min( vertex.getVertexDist() - 10.0, maxDisplayVertexSize );
 		if ( disappear )
@@ -147,10 +158,28 @@ public class GraphLayoutOverlay implements OverlayRenderer
 		final int ox = ( int ) x - ( int ) spotradius;
 		final int oy = ( int ) y - ( int ) spotradius;
 		final int sd = 2 * ( int ) spotradius;
-		g2.setColor( fillColor );
-		g2.fillOval( ox, oy, sd, sd );
-		g2.setColor( drawColor );
-		g2.drawOval( ox, oy, sd, sd );
+
+		if ( ghost )
+		{
+			g2.setStroke( ghostStroke );
+			final Color ghostFillColor = new Color(
+					backgroundColor.getRed(),
+					backgroundColor.getGreen(),
+					backgroundColor.getBlue(),
+					fillColor.getAlpha() );
+			g2.setColor( ghostFillColor );
+			g2.fillOval( ox, oy, sd, sd );
+			g2.setColor( drawColor );
+			g2.drawOval( ox, oy, sd, sd );
+		}
+		else
+		{
+			g2.setStroke( normalStroke );
+			g2.setColor( fillColor );
+			g2.fillOval( ox, oy, sd, sd );
+			g2.setColor( drawColor );
+			g2.drawOval( ox, oy, sd, sd );
+		}
 
 		final int maxLabelLength = ( int ) ( spotdiameter / avgLabelLetterWidth );
 		if ( maxLabelLength > 2 && !disappear )
@@ -199,14 +228,13 @@ public class GraphLayoutOverlay implements OverlayRenderer
 		final double ratio = vertex.getInterpolationCompletionRatio();
 		final boolean disappear = ( transition == DISAPPEAR );
 		final boolean selected = vertex.isSelected();
+		final boolean ghost = vertex.isGhost();
 
 		double spotradius = simplifiedVertexRadius;
 		if ( disappear )
 			spotradius *= ( 1 + 3 * ratio );
 
-		final Color fillColor = getColor( selected, transition, ratio,
-				disappear ? selectedSimplifiedVertexFillColor : simplifiedVertexFillColor,
-				selectedSimplifiedVertexFillColor );
+		final Color fillColor = getColor( selected, transition, ratio, simplifiedVertexFillColor, selectedSimplifiedVertexFillColor );
 
 		final double x = vertex.getX();
 		final double y = vertex.getY();
@@ -230,6 +258,8 @@ public class GraphLayoutOverlay implements OverlayRenderer
 	{
 		vertices.get( edge.getSourceScreenVertexIndex(), vs );
 		vertices.get( edge.getTargetScreenVertexIndex(), vt );
+		final boolean selected = edge.isSelected();
+		final boolean ghost = vs.isGhost() || vt.isGhost();
 
 		Transition transition = vs.getTransition();
 		double ratio = vs.getInterpolationCompletionRatio();
@@ -238,9 +268,10 @@ public class GraphLayoutOverlay implements OverlayRenderer
 			transition = APPEAR;
 			ratio = vt.getInterpolationCompletionRatio();
 		}
-		final boolean selected = edge.isSelected();
 		final Color drawColor = getColor( selected, transition, ratio, edgeColor, selectedEdgeColor );
 		g2.setColor( drawColor );
+
+		g2.setStroke( ghost ? ghostStroke : normalStroke );
 		g2.drawLine( ( int ) vs.getX(), ( int ) vs.getY(), ( int ) vt.getX(), ( int ) vt.getY() );
 	}
 

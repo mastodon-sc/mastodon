@@ -440,7 +440,8 @@ public class VertexOrder
 						final int id = v1.getInternalPoolIndex();
 						final double x = ( v1.getLayoutX() - minX ) * xScale;
 						final boolean selected = v1.isSelected();
-						screenVertexPool.create( sv ).init( id, x, y, selected );
+						final boolean ghost = v1.isGhost();
+						screenVertexPool.create( sv ).init( id, x, y, selected, ghost );
 						screenVertices.add( sv );
 
 						minVertexScreenDist = Math.min( minVertexScreenDist, x - prevX );

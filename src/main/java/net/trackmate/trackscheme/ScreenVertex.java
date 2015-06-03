@@ -29,7 +29,9 @@ public class ScreenVertex extends PoolObject< ScreenVertex, ByteMappedElement >
 
 	protected static final int SELECTED_OFFSET = VERTEX_DIST_OFFSET + DOUBLE_SIZE;
 
-	protected static final int TRANSITION_OFFSET = SELECTED_OFFSET + BOOLEAN_SIZE;
+	protected static final int GHOST_OFFSET = SELECTED_OFFSET + BOOLEAN_SIZE;
+
+	protected static final int TRANSITION_OFFSET = GHOST_OFFSET + BOOLEAN_SIZE;
 
 	protected static final int IP_SCREENVERTEX_INDEX_OFFSET = TRANSITION_OFFSET + BYTE_SIZE;
 
@@ -71,12 +73,14 @@ public class ScreenVertex extends PoolObject< ScreenVertex, ByteMappedElement >
 			final int id,
 			final double x,
 			final double y,
-			final boolean selected )
+			final boolean selected,
+			final boolean ghost )
 	{
 		setTrackSchemeVertexId( id );
 		setX( x );
 		setY( y );
 		setSelected( selected );
+		setGhost( ghost );
 		setTransition( Transition.NONE );
 		return this;
 	}
@@ -175,6 +179,21 @@ public class ScreenVertex extends PoolObject< ScreenVertex, ByteMappedElement >
 	protected void setSelected( final boolean selected )
 	{
 		access.putBoolean( selected, SELECTED_OFFSET );
+	}
+
+	/**
+	 * Get the ghost state of the vertex.
+	 *
+	 * @return true, if the vertex is ghosted.
+	 */
+	public boolean isGhost()
+	{
+		return access.getBoolean( GHOST_OFFSET );
+	}
+
+	protected void setGhost( final boolean ghost )
+	{
+		access.putBoolean( ghost, GHOST_OFFSET );
 	}
 
 	/**
