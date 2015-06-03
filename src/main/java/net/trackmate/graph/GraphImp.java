@@ -3,13 +3,6 @@ package net.trackmate.graph;
 import java.util.Iterator;
 
 import net.trackmate.graph.collection.CollectionUtils.CollectionCreator;
-import net.trackmate.graph.collection.RefDeque;
-import net.trackmate.graph.collection.RefIntMap;
-import net.trackmate.graph.collection.RefList;
-import net.trackmate.graph.collection.RefObjectMap;
-import net.trackmate.graph.collection.RefRefMap;
-import net.trackmate.graph.collection.RefSet;
-import net.trackmate.graph.collection.RefStack;
 import net.trackmate.graph.mempool.MappedElement;
 
 public class GraphImp<
@@ -166,183 +159,183 @@ public class GraphImp<
 	}
 
 	@Override
-	public RefSet< V > createVertexSet()
+	public PoolObjectSet< V > createVertexSet()
 	{
 		return new PoolObjectSet< V >( vertexPool );
 	}
 
 	@Override
-	public RefSet< V > createVertexSet( final int initialCapacity )
+	public PoolObjectSet< V > createVertexSet( final int initialCapacity )
 	{
 		return new PoolObjectSet< V >( vertexPool, initialCapacity );
 	}
 
 	@Override
-	public RefSet< E > createEdgeSet()
+	public PoolObjectSet< E > createEdgeSet()
 	{
 		return new PoolObjectSet< E >( edgePool );
 	}
 
 	@Override
-	public RefSet< E > createEdgeSet( final int initialCapacity )
+	public PoolObjectSet< E > createEdgeSet( final int initialCapacity )
 	{
 		return new PoolObjectSet< E >( edgePool, initialCapacity );
 	}
 
 	@Override
-	public RefList< V > createVertexList()
+	public PoolObjectList< V > createVertexList()
 	{
 		return new PoolObjectList< V >( vertexPool );
 	}
 
 	@Override
-	public RefList< V > createVertexList( final int initialCapacity )
+	public PoolObjectList< V > createVertexList( final int initialCapacity )
 	{
 		return new PoolObjectList< V >( vertexPool, initialCapacity );
 	}
 
 	@Override
-	public RefList< E > createEdgeList()
+	public PoolObjectList< E > createEdgeList()
 	{
 		return new PoolObjectList< E >( edgePool );
 	}
 
 	@Override
-	public RefList< E > createEdgeList( final int initialCapacity )
+	public PoolObjectList< E > createEdgeList( final int initialCapacity )
 	{
 		return new PoolObjectList< E >( edgePool, initialCapacity );
 	}
 
 	@Override
-	public RefDeque< V > createVertexDeque()
+	public PoolObjectDeque< V > createVertexDeque()
 	{
 		return new PoolObjectDeque< V >( vertexPool );
 	}
 
 	@Override
-	public RefDeque< V > createVertexDeque( final int initialCapacity )
+	public PoolObjectDeque< V > createVertexDeque( final int initialCapacity )
 	{
 		return new PoolObjectDeque< V >( vertexPool, initialCapacity );
 	}
 
 	@Override
-	public RefDeque< E > createEdgeDeque()
+	public PoolObjectDeque< E > createEdgeDeque()
 	{
 		return new PoolObjectDeque< E >( edgePool );
 	}
 
 	@Override
-	public RefDeque< E > createEdgeDeque( final int initialCapacity )
+	public PoolObjectDeque< E > createEdgeDeque( final int initialCapacity )
 	{
 		return new PoolObjectDeque< E >( edgePool, initialCapacity );
 	}
 
 	@Override
-	public RefStack< V > createVertexStack()
+	public PoolObjectStack< V > createVertexStack()
 	{
 		return new PoolObjectStack< V >( vertexPool );
 	}
 
 	@Override
-	public RefStack< V > createVertexStack( final int initialCapacity )
+	public PoolObjectStack< V > createVertexStack( final int initialCapacity )
 	{
 		return new PoolObjectStack< V >( vertexPool, initialCapacity );
 	}
 
 	@Override
-	public RefStack< E > createEdgeStack()
+	public PoolObjectStack< E > createEdgeStack()
 	{
 		return new PoolObjectStack< E >( edgePool );
 	}
 
 	@Override
-	public RefStack< E > createEdgeStack( final int initialCapacity )
+	public PoolObjectStack< E > createEdgeStack( final int initialCapacity )
 	{
 		return new PoolObjectStack< E >( edgePool, initialCapacity );
 	}
 
 	@SuppressWarnings( { "unchecked", "rawtypes" } )
 	@Override
-	public < O > RefObjectMap< V, O > createVertexObjectMap( final Class< ? extends O > valueClass )
+	public < O > PoolObjectObjectMap< V, O > createVertexObjectMap( final Class< ? extends O > valueClass )
 	{
 		return new PoolObjectObjectMap( vertexPool );
 	}
 
 	@SuppressWarnings( { "rawtypes", "unchecked" } )
 	@Override
-	public < O > RefObjectMap< E, O > createEdgeObjectMap( final Class< ? extends O > valueClass )
+	public < O > PoolObjectObjectMap< E, O > createEdgeObjectMap( final Class< ? extends O > valueClass )
 	{
 		return new PoolObjectObjectMap( edgePool );
 	}
 
 	@Override
-	public RefRefMap< E, E > createEdgeEdgeMap()
+	public PoolObjectPoolObjectMap< E, E > createEdgeEdgeMap()
 	{
 		return new PoolObjectPoolObjectMap< E, E >( edgePool, edgePool );
 	}
 
 	@Override
-	public RefRefMap< E, E > createEdgeEdgeMap( final int initialCapacity )
+	public PoolObjectPoolObjectMap< E, E > createEdgeEdgeMap( final int initialCapacity )
 	{
 		return new PoolObjectPoolObjectMap< E, E >( edgePool, edgePool, initialCapacity );
 	}
 
 	@Override
-	public RefRefMap< V, V > createVertexVertexMap()
+	public PoolObjectPoolObjectMap< V, V > createVertexVertexMap()
 	{
 		return new PoolObjectPoolObjectMap< V, V >( vertexPool, vertexPool );
 	}
 
 	@Override
-	public RefRefMap< V, V > createVertexVertexMap( final int initialCapacity )
+	public PoolObjectPoolObjectMap< V, V > createVertexVertexMap( final int initialCapacity )
 	{
 		return new PoolObjectPoolObjectMap< V, V >( vertexPool, vertexPool, initialCapacity );
 	}
 
 	@Override
-	public RefRefMap< V, E > createVertexEdgeMap()
+	public PoolObjectPoolObjectMap< V, E > createVertexEdgeMap()
 	{
 		return new PoolObjectPoolObjectMap< V, E >( vertexPool, edgePool );
 	}
 
 	@Override
-	public RefRefMap< V, E > createVertexEdgeMap( final int initialCapacity )
+	public PoolObjectPoolObjectMap< V, E > createVertexEdgeMap( final int initialCapacity )
 	{
 		return new PoolObjectPoolObjectMap< V, E >( vertexPool, edgePool, initialCapacity );
 	}
 
 	@Override
-	public RefRefMap< E, V > createEdgeVertexMap()
+	public PoolObjectPoolObjectMap< E, V > createEdgeVertexMap()
 	{
 		return new PoolObjectPoolObjectMap< E, V >( edgePool, vertexPool );
 	}
 
 	@Override
-	public RefRefMap< E, V > createEdgeVertexMap( final int initialCapacity )
+	public PoolObjectPoolObjectMap< E, V > createEdgeVertexMap( final int initialCapacity )
 	{
 		return new PoolObjectPoolObjectMap< E, V >( edgePool, vertexPool, initialCapacity );
 	}
 
 	@Override
-	public RefIntMap< V > createVertexIntMap(final int noEntryValue )
+	public PoolObjectIntMap< V > createVertexIntMap(final int noEntryValue )
 	{
 		return new PoolObjectIntMap< V >( vertexPool, noEntryValue );
 	}
 
 	@Override
-	public RefIntMap< V > createVertexIntMap( final int noEntryValue, final int initialCapacity )
+	public PoolObjectIntMap< V > createVertexIntMap( final int noEntryValue, final int initialCapacity )
 	{
 		return new PoolObjectIntMap< V >( vertexPool, noEntryValue, initialCapacity );
 	}
 
 	@Override
-	public RefIntMap< E > createEdgeIntMap(final int noEntryValue)
+	public PoolObjectIntMap< E > createEdgeIntMap(final int noEntryValue)
 	{
 		return new PoolObjectIntMap< E >( edgePool, noEntryValue );
 	}
 
 	@Override
-	public RefIntMap< E > createEdgeIntMap( final int noEntryValue, final int initialCapacity )
+	public PoolObjectIntMap< E > createEdgeIntMap( final int noEntryValue, final int initialCapacity )
 	{
 		return new PoolObjectIntMap< E >( edgePool, noEntryValue, initialCapacity );
 	}
