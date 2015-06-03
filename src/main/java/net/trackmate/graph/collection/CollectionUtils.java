@@ -11,13 +11,13 @@ import java.util.Map;
 import java.util.Set;
 
 import net.trackmate.graph.Edge;
-import net.trackmate.graph.Graph;
+import net.trackmate.graph.ReadOnlyGraph;
 import net.trackmate.graph.SafePoolObjectIteratorWrapper;
 import net.trackmate.graph.Vertex;
 
 public class CollectionUtils
 {
-	public static < V extends Vertex< ? > > RefSet< V > createVertexSet( final Graph< V, ? > graph )
+	public static < V extends Vertex< ? > > RefSet< V > createVertexSet( final ReadOnlyGraph< V, ? > graph )
 	{
 		if ( graph instanceof CollectionCreator )
 			return ( ( CollectionCreator< V, ? > ) graph ).createVertexSet();
@@ -25,7 +25,7 @@ public class CollectionUtils
 			return wrap( new HashSet< V >() );
 	}
 
-	public static < V extends Vertex< ? > > RefSet< V > createVertexSet( final Graph< V, ? > graph, final int initialCapacity )
+	public static < V extends Vertex< ? > > RefSet< V > createVertexSet( final ReadOnlyGraph< V, ? > graph, final int initialCapacity )
 	{
 		if ( graph instanceof CollectionCreator )
 			return ( ( CollectionCreator< V, ? > ) graph ).createVertexSet( initialCapacity );
@@ -33,7 +33,7 @@ public class CollectionUtils
 			return wrap( new HashSet< V >( initialCapacity ) );
 	}
 
-	public static < E extends Edge< ? > > RefSet< E > createEdgeSet( final Graph< ?, E > graph )
+	public static < E extends Edge< ? > > RefSet< E > createEdgeSet( final ReadOnlyGraph< ?, E > graph )
 	{
 		if ( graph instanceof CollectionCreator )
 			return ( ( CollectionCreator< ?, E > ) graph ).createEdgeSet();
@@ -41,7 +41,7 @@ public class CollectionUtils
 			return wrap( new HashSet< E >() );
 	}
 
-	public static < E extends Edge< ? > > RefSet< E > createEdgeSet( final Graph< ?, E > graph, final int initialCapacity )
+	public static < E extends Edge< ? > > RefSet< E > createEdgeSet( final ReadOnlyGraph< ?, E > graph, final int initialCapacity )
 	{
 		if ( graph instanceof CollectionCreator )
 			return ( ( CollectionCreator< ?, E > ) graph ).createEdgeSet( initialCapacity );
@@ -49,7 +49,7 @@ public class CollectionUtils
 			return wrap( new HashSet< E >( initialCapacity ) );
 	}
 
-	public static < V extends Vertex< ? > > RefList< V > createVertexList( final Graph< V, ? > graph )
+	public static < V extends Vertex< ? > > RefList< V > createVertexList( final ReadOnlyGraph< V, ? > graph )
 	{
 		if ( graph instanceof CollectionCreator )
 			return ( ( CollectionCreator< V, ? > ) graph ).createVertexList();
@@ -57,7 +57,7 @@ public class CollectionUtils
 			return wrap( new ArrayList< V >() );
 	}
 
-	public static < V extends Vertex< ? > > RefList< V > createVertexList( final Graph< V, ? > graph, final int initialCapacity )
+	public static < V extends Vertex< ? > > RefList< V > createVertexList( final ReadOnlyGraph< V, ? > graph, final int initialCapacity )
 	{
 		if ( graph instanceof CollectionCreator )
 			return ( ( CollectionCreator< V, ? > ) graph ).createVertexList( initialCapacity );
@@ -65,7 +65,7 @@ public class CollectionUtils
 			return wrap( new ArrayList< V >( initialCapacity ) );
 	}
 
-	public static < E extends Edge< ? > > RefList< E > createEdgeList( final Graph< ?, E > graph )
+	public static < E extends Edge< ? > > RefList< E > createEdgeList( final ReadOnlyGraph< ?, E > graph )
 	{
 		if ( graph instanceof CollectionCreator )
 			return ( ( CollectionCreator< ?, E > ) graph ).createEdgeList();
@@ -73,7 +73,7 @@ public class CollectionUtils
 			return wrap( new ArrayList< E >() );
 	}
 
-	public static < E extends Edge< ? > > RefList< E > createEdgeList( final Graph< ?, E > graph, final int initialCapacity )
+	public static < E extends Edge< ? > > RefList< E > createEdgeList( final ReadOnlyGraph< ?, E > graph, final int initialCapacity )
 	{
 		if ( graph instanceof CollectionCreator )
 			return ( ( CollectionCreator< ?, E > ) graph ).createEdgeList( initialCapacity );
@@ -81,7 +81,7 @@ public class CollectionUtils
 			return wrap( new ArrayList< E >( initialCapacity ) );
 	}
 
-	public static < V extends Vertex< ? > > RefDeque< V > createVertexDeque( final Graph< V, ? > graph )
+	public static < V extends Vertex< ? > > RefDeque< V > createVertexDeque( final ReadOnlyGraph< V, ? > graph )
 	{
 		if ( graph instanceof CollectionCreator )
 			return ( ( CollectionCreator< V, ? > ) graph ).createVertexDeque();
@@ -89,7 +89,7 @@ public class CollectionUtils
 			return wrap( new ArrayDeque< V >() );
 	}
 
-	public static < V extends Vertex< ? > > RefDeque< V > createVertexDeque( final Graph< V, ? > graph, final int initialCapacity )
+	public static < V extends Vertex< ? > > RefDeque< V > createVertexDeque( final ReadOnlyGraph< V, ? > graph, final int initialCapacity )
 	{
 		if ( graph instanceof CollectionCreator )
 			return ( ( CollectionCreator< V, ? > ) graph ).createVertexDeque( initialCapacity );
@@ -97,7 +97,7 @@ public class CollectionUtils
 			return wrap( new ArrayDeque< V >( initialCapacity ) );
 	}
 
-	public static < E extends Edge< ? > > RefDeque< E > createEdgeDeque( final Graph< ?, E > graph )
+	public static < E extends Edge< ? > > RefDeque< E > createEdgeDeque( final ReadOnlyGraph< ?, E > graph )
 	{
 		if ( graph instanceof CollectionCreator )
 			return ( ( CollectionCreator< ?, E > ) graph ).createEdgeDeque();
@@ -105,7 +105,7 @@ public class CollectionUtils
 			return wrap( new ArrayDeque< E >() );
 	}
 
-	public static < E extends Edge< ? > > RefDeque< E > createEdgeDeque( final Graph< ?, E > graph, final int initialCapacity )
+	public static < E extends Edge< ? > > RefDeque< E > createEdgeDeque( final ReadOnlyGraph< ?, E > graph, final int initialCapacity )
 	{
 		if ( graph instanceof CollectionCreator )
 			return ( ( CollectionCreator< ?, E > ) graph ).createEdgeDeque( initialCapacity );
@@ -113,7 +113,7 @@ public class CollectionUtils
 			return wrap( new ArrayDeque< E >( initialCapacity ) );
 	}
 
-	public static < V extends Vertex< ? > > RefStack< V > createVertexStack( final Graph< V, ? > graph )
+	public static < V extends Vertex< ? > > RefStack< V > createVertexStack( final ReadOnlyGraph< V, ? > graph )
 	{
 		if ( graph instanceof CollectionCreator )
 			return ( ( CollectionCreator< V, ? > ) graph ).createVertexStack();
@@ -121,7 +121,7 @@ public class CollectionUtils
 			return wrapAsStack( new ArrayDeque< V >() );
 	}
 
-	public static < V extends Vertex< ? > > RefStack< V > createVertexStack( final Graph< V, ? > graph, final int initialCapacity )
+	public static < V extends Vertex< ? > > RefStack< V > createVertexStack( final ReadOnlyGraph< V, ? > graph, final int initialCapacity )
 	{
 		if ( graph instanceof CollectionCreator )
 			return ( ( CollectionCreator< V, ? > ) graph ).createVertexStack( initialCapacity );
@@ -129,7 +129,7 @@ public class CollectionUtils
 			return wrapAsStack( new ArrayDeque< V >( initialCapacity ) );
 	}
 
-	public static < E extends Edge< ? > > RefStack< E > createEdgeStack( final Graph< ?, E > graph )
+	public static < E extends Edge< ? > > RefStack< E > createEdgeStack( final ReadOnlyGraph< ?, E > graph )
 	{
 		if ( graph instanceof CollectionCreator )
 			return ( ( CollectionCreator< ?, E > ) graph ).createEdgeStack();
@@ -137,7 +137,7 @@ public class CollectionUtils
 			return wrapAsStack( new ArrayDeque< E >() );
 	}
 
-	public static < E extends Edge< ? > > RefStack< E > createEdgeStack( final Graph< ?, E > graph, final int initialCapacity )
+	public static < E extends Edge< ? > > RefStack< E > createEdgeStack( final ReadOnlyGraph< ?, E > graph, final int initialCapacity )
 	{
 		if ( graph instanceof CollectionCreator )
 			return ( ( CollectionCreator< ?, E > ) graph ).createEdgeStack( initialCapacity );
@@ -145,7 +145,7 @@ public class CollectionUtils
 			return wrapAsStack( new ArrayDeque< E >( initialCapacity ) );
 	}
 
-	public static < E extends Edge< ? >, O > RefObjectMap< E, O > createEdgeObjectMap( final Graph< ?, E > graph, final Class< ? extends O > valueClass )
+	public static < E extends Edge< ? >, O > RefObjectMap< E, O > createEdgeObjectMap( final ReadOnlyGraph< ?, E > graph, final Class< ? extends O > valueClass )
 	{
 		if ( graph instanceof CollectionCreator )
 			return ( ( CollectionCreator< ?, E > ) graph ).createEdgeObjectMap( valueClass );
@@ -153,7 +153,7 @@ public class CollectionUtils
 			return wrap( new HashMap< E, O >() );
 	}
 
-	public static < V extends Vertex< ? >, O > RefObjectMap< V, O > createVertexObjectMap( final Graph< V, ? > graph, final Class< ? extends O > valueClass )
+	public static < V extends Vertex< ? >, O > RefObjectMap< V, O > createVertexObjectMap( final ReadOnlyGraph< V, ? > graph, final Class< ? extends O > valueClass )
 	{
 		if ( graph instanceof CollectionCreator )
 			return ( ( CollectionCreator< V, ? > ) graph ).createVertexObjectMap( valueClass );
@@ -161,7 +161,7 @@ public class CollectionUtils
 			return wrap( new HashMap< V, O >() );
 	}
 
-	public static < V extends Vertex< E >, E extends Edge< V > > RefRefMap< V, E > createVertexEdgeMap( final Graph< V, E > graph )
+	public static < V extends Vertex< E >, E extends Edge< V > > RefRefMap< V, E > createVertexEdgeMap( final ReadOnlyGraph< V, E > graph )
 	{
 		if ( graph instanceof CollectionCreator )
 			return ( ( CollectionCreator< V, E > ) graph ).createVertexEdgeMap();
@@ -169,7 +169,7 @@ public class CollectionUtils
 			return wrap( new HashMap< V, E >() );
 	};
 
-	public static < V extends Vertex< E >, E extends Edge< V > > RefRefMap< V, E > createVertexEdgeMap( final Graph< V, E > graph, final int initialCapacity )
+	public static < V extends Vertex< E >, E extends Edge< V > > RefRefMap< V, E > createVertexEdgeMap( final ReadOnlyGraph< V, E > graph, final int initialCapacity )
 	{
 		if ( graph instanceof CollectionCreator )
 			return ( ( CollectionCreator< V, E > ) graph ).createVertexEdgeMap( initialCapacity );
@@ -177,7 +177,7 @@ public class CollectionUtils
 			return wrap( new HashMap< V, E >( initialCapacity ) );
 	};
 
-	public static < V extends Vertex< E >, E extends Edge< V > > RefRefMap< E, V > createEdgeVertexMap( final Graph< V, E > graph )
+	public static < V extends Vertex< E >, E extends Edge< V > > RefRefMap< E, V > createEdgeVertexMap( final ReadOnlyGraph< V, E > graph )
 	{
 		if ( graph instanceof CollectionCreator )
 			return ( ( CollectionCreator< V, E > ) graph ).createEdgeVertexMap();
@@ -185,7 +185,7 @@ public class CollectionUtils
 			return wrap( new HashMap< E, V >() );
 	}
 
-	public static < V extends Vertex< E >, E extends Edge< V > > RefRefMap< E, V > createEdgeVertexMap( final Graph< V, E > graph, final int initialCapacity )
+	public static < V extends Vertex< E >, E extends Edge< V > > RefRefMap< E, V > createEdgeVertexMap( final ReadOnlyGraph< V, E > graph, final int initialCapacity )
 	{
 		if ( graph instanceof CollectionCreator )
 			return ( ( CollectionCreator< V, E > ) graph ).createEdgeVertexMap();
@@ -193,7 +193,7 @@ public class CollectionUtils
 			return wrap( new HashMap< E, V >() );
 	}
 
-	public static < V extends Vertex< ? >> RefRefMap< V, V > createVertexVertexMap( final Graph< V, ? > graph )
+	public static < V extends Vertex< ? > > RefRefMap< V, V > createVertexVertexMap( final ReadOnlyGraph< V, ? > graph )
 	{
 		if ( graph instanceof CollectionCreator )
 			return ( ( CollectionCreator< V, ? > ) graph ).createVertexVertexMap();
@@ -201,7 +201,7 @@ public class CollectionUtils
 			return wrap( new HashMap< V, V >() );
 	}
 
-	public static < V extends Vertex< ? >> RefRefMap< V, V > createVertexVertexMap( final Graph< V, ? > graph, final int initialCapacity )
+	public static < V extends Vertex< ? > > RefRefMap< V, V > createVertexVertexMap( final ReadOnlyGraph< V, ? > graph, final int initialCapacity )
 	{
 		if ( graph instanceof CollectionCreator )
 			return ( ( CollectionCreator< V, ? > ) graph ).createVertexVertexMap( initialCapacity );
@@ -209,7 +209,7 @@ public class CollectionUtils
 			return wrap( new HashMap< V, V >( initialCapacity ) );
 	}
 
-	public static < E extends Edge< ? >> RefRefMap< E, E > createEdgeEdgeMap( final Graph< ?, E > graph )
+	public static < E extends Edge< ? > > RefRefMap< E, E > createEdgeEdgeMap( final ReadOnlyGraph< ?, E > graph )
 	{
 		if ( graph instanceof CollectionCreator )
 			return ( ( CollectionCreator< ?, E > ) graph ).createEdgeEdgeMap();
@@ -217,7 +217,7 @@ public class CollectionUtils
 			return wrap( new HashMap< E, E >() );
 	}
 
-	public static < E extends Edge< ? >> RefRefMap< E, E > createEdgeEdgeMap( final Graph< ?, E > graph, final int initialCapacity )
+	public static < E extends Edge< ? > > RefRefMap< E, E > createEdgeEdgeMap( final ReadOnlyGraph< ?, E > graph, final int initialCapacity )
 	{
 		if ( graph instanceof CollectionCreator )
 			return ( ( CollectionCreator< ?, E > ) graph ).createEdgeEdgeMap( initialCapacity );
@@ -225,7 +225,7 @@ public class CollectionUtils
 			return wrap( new HashMap< E, E >( initialCapacity ) );
 	}
 
-	public static < V extends Vertex< ? >> RefIntMap< V > createVertexIntMap( final Graph< V, ? > graph, final int noEntryValue )
+	public static < V extends Vertex< ? > > RefIntMap< V > createVertexIntMap( final ReadOnlyGraph< V, ? > graph, final int noEntryValue )
 	{
 		if ( graph instanceof CollectionCreator )
 			return ( ( CollectionCreator< V, ? > ) graph ).createVertexIntMap( noEntryValue );
@@ -233,7 +233,7 @@ public class CollectionUtils
 			return new RefIntMapWrapper< V >( noEntryValue );
 	}
 
-	public static < V extends Vertex< ? >> RefIntMap< V > createVertexIntMap( final Graph< V, ? > graph, final int noEntryValue, final int initialCapacity )
+	public static < V extends Vertex< ? > > RefIntMap< V > createVertexIntMap( final ReadOnlyGraph< V, ? > graph, final int noEntryValue, final int initialCapacity )
 	{
 		if ( graph instanceof CollectionCreator )
 			return ( ( CollectionCreator< V, ? > ) graph ).createVertexIntMap( noEntryValue, initialCapacity );
@@ -241,7 +241,7 @@ public class CollectionUtils
 			return new RefIntMapWrapper< V >( noEntryValue, initialCapacity );
 	}
 
-	public static < E extends Edge< ? >> RefIntMap< E > createEdgeIntMap( final Graph< ?, E > graph, final int noEntryValue )
+	public static < E extends Edge< ? > > RefIntMap< E > createEdgeIntMap( final ReadOnlyGraph< ?, E > graph, final int noEntryValue )
 	{
 		if ( graph instanceof CollectionCreator )
 			return ( ( CollectionCreator< ?, E > ) graph ).createEdgeIntMap( noEntryValue );
@@ -249,7 +249,7 @@ public class CollectionUtils
 			return new RefIntMapWrapper< E >( noEntryValue );
 	}
 
-	public static < E extends Edge< ? >> RefIntMap< E > createEdgeIntMap( final Graph< ?, E > graph, final int noEntryValue, final int initialCapacity )
+	public static < E extends Edge< ? > > RefIntMap< E > createEdgeIntMap( final ReadOnlyGraph< ?, E > graph, final int noEntryValue, final int initialCapacity )
 	{
 		if ( graph instanceof CollectionCreator )
 			return ( ( CollectionCreator< ?, E > ) graph ).createEdgeIntMap( noEntryValue, initialCapacity );
@@ -266,7 +266,7 @@ public class CollectionUtils
 		return iterator;
 	}
 
-	public static interface CollectionCreator< V extends Vertex< E >, E extends Edge< V > > extends Graph< V, E >
+	public static interface CollectionCreator< V extends Vertex< E >, E extends Edge< V > > extends ReadOnlyGraph< V, E >
 	{
 		public RefSet< V > createVertexSet();
 
