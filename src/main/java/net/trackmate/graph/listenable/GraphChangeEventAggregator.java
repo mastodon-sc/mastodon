@@ -5,7 +5,7 @@ import java.util.WeakHashMap;
 import net.trackmate.graph.Edge;
 import net.trackmate.graph.Vertex;
 
-public class GraphChangeEventAggregator< V extends Vertex< E >, E extends Edge< V > > implements GraphListener< V, E >
+public class GraphChangeEventAggregator< V extends Vertex< E >, E extends Edge< V > >
 {
 
 	/**
@@ -31,96 +31,7 @@ public class GraphChangeEventAggregator< V extends Vertex< E >, E extends Edge< 
 		this.graph = graph;
 		this.currentEdit = new GraphChangeEvent< V, E >( graph );
 		this.listeners = new WeakHashMap< GraphChangeEventListener< V, E >, Boolean >();
-		graph.addGraphListener( this );
-	}
-
-	@Override
-	public void vertexAdded( V vertex )
-	{
-		if ( !listening ) { return; }
-		currentEdit.vertexAdded( vertex );
-		if ( updateLevel == 0 )
-		{
-			fireEvent();
-			currentEdit = new GraphChangeEvent< V, E >( graph );
-		}
-	}
-
-	@Override
-	public void vertexRemoved( V vertex )
-	{
-		if ( !listening ) { return; }
-		currentEdit.vertexRemoved( vertex );
-		if ( updateLevel == 0 )
-		{
-			fireEvent();
-			currentEdit = new GraphChangeEvent< V, E >( graph );
-		}
-	}
-
-	@Override
-	public void edgeAdded( E edge )
-	{
-		if ( !listening ) { return; }
-		currentEdit.edgeAdded( edge );
-		if ( updateLevel == 0 )
-		{
-			fireEvent();
-			currentEdit = new GraphChangeEvent< V, E >( graph );
-		}
-	}
-
-	@Override
-	public void edgeRemoved( E edge, V source, V target )
-	{
-		if ( !listening ) { return; }
-		currentEdit.edgeRemoved( edge, source, target );
-		if ( updateLevel == 0 )
-		{
-			fireEvent();
-			currentEdit = new GraphChangeEvent< V, E >( graph );
-		}
-	}
-
-	@Override
-	public void updateBegun()
-	{
-		updateLevel++;
-	}
-
-	@Override
-	public void updateEnded()
-	{
-		updateLevel--;
-
-		if ( !endingUpdate )
-		{
-			endingUpdate = updateLevel == 0;
-			try
-			{
-				if ( endingUpdate && !currentEdit.isEmpty() )
-				{
-					fireEvent();
-					currentEdit = new GraphChangeEvent< V, E >( graph );
-				}
-			}
-			finally
-			{
-				endingUpdate = false;
-			}
-		}
-	}
-
-	@Override
-	public void updatePaused()
-	{
-		listening = false;
-	}
-
-	@Override
-	public void updateResumed()
-	{
-		listening = true;
+		graph.addGraphListener( new Aggregator() );
 	}
 
 	private void fireEvent()
@@ -131,4 +42,96 @@ public class GraphChangeEventAggregator< V extends Vertex< E >, E extends Edge< 
 		}
 	}
 
+	private class Aggregator implements GraphListener< V, E >
+	{
+		@Override
+		public void vertexAdded( V vertex )
+		{
+			if ( !listening ) { return; }
+			currentEdit.vertexAdded( vertex );
+			if ( updateLevel == 0 )
+			{
+				fireEvent();
+				currentEdit = new GraphChangeEvent< V, E >( graph );
+			}
+		}
+
+		@Override
+		public void vertexRemoved( V vertex )
+		{
+			if ( !listening ) { return; }
+			currentEdit.vertexRemoved( vertex );
+			if ( updateLevel == 0 )
+			{
+				fireEvent();
+				currentEdit = new GraphChangeEvent< V, E >( graph );
+			}
+		}
+
+		@Override
+		public void edgeAdded( E edge )
+		{
+			if ( !listening ) { return; }
+			currentEdit.edgeAdded( edge );
+			if ( updateLevel == 0 )
+			{
+				fireEvent();
+				currentEdit = new GraphChangeEvent< V, E >( graph );
+			}
+		}
+
+		@Override
+		public void edgeRemoved( E edge, V source, V target )
+		{
+			if ( !listening ) { return; }
+			currentEdit.edgeRemoved( edge, source, target );
+			if ( updateLevel == 0 )
+			{
+				fireEvent();
+				currentEdit = new GraphChangeEvent< V, E >( graph );
+			}
+		}
+
+		@Override
+		public void updateBegun()
+		{
+			updateLevel++;
+		}
+
+		@Override
+		public void updateEnded()
+		{
+			updateLevel--;
+
+			if ( !endingUpdate )
+			{
+				endingUpdate = updateLevel == 0;
+				try
+				{
+					if ( endingUpdate && !currentEdit.isEmpty() )
+					{
+						fireEvent();
+						currentEdit = new GraphChangeEvent< V, E >( graph );
+					}
+				}
+				finally
+				{
+					endingUpdate = false;
+				}
+			}
+		}
+
+		@Override
+		public void updatePaused()
+		{
+			listening = false;
+		}
+
+		@Override
+		public void updateResumed()
+		{
+			listening = true;
+		}
+
+	}
 }
