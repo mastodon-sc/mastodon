@@ -46,6 +46,8 @@ public class ListenableGraphRefTest
 
 	private TestGraph sourceGraph;
 
+	private GraphChangeEventAggregator< TestVertex, TestEdge > aggregator;
+
 	@Before
 	public void setUp() throws Exception
 	{
@@ -65,12 +67,14 @@ public class ListenableGraphRefTest
 		eB2 = sourceGraph.addEdge( B, B2 );
 		solo = sourceGraph.addVertex().init( 7 );
 		graph = ListenableGraphWrapper.wrap( sourceGraph );
+		aggregator = new GraphChangeEventAggregator< TestVertex, TestEdge >( graph );
+
 	}
 
 	@Test( expected = RuntimeException.class )
 	public void testVertexSoloRemoval()
 	{
-		graph.addGraphListener( new GraphListener< TestVertex, TestEdge >()
+		aggregator.addGraphListener( new GraphChangeEventListener< TestVertex, TestEdge >()
 		{
 			@Override
 			public void graphChanged( final GraphChangeEvent< TestVertex, TestEdge > event )
@@ -97,7 +101,7 @@ public class ListenableGraphRefTest
 	@Test( expected = RuntimeException.class )
 	public void testVertexRemoval()
 	{
-		graph.addGraphListener( new GraphListener< TestVertex, TestEdge >()
+		aggregator.addGraphListener( new GraphChangeEventListener< TestVertex, TestEdge >()
 		{
 			@Override
 			public void graphChanged( final GraphChangeEvent< TestVertex, TestEdge > event )
@@ -154,7 +158,7 @@ public class ListenableGraphRefTest
 	@Test( expected = RuntimeException.class )
 	public void testCoumpoundVertexRemoval()
 	{
-		graph.addGraphListener( new GraphListener< TestVertex, TestEdge >()
+		aggregator.addGraphListener( new GraphChangeEventListener< TestVertex, TestEdge >()
 		{
 			@Override
 			public void graphChanged( final GraphChangeEvent< TestVertex, TestEdge > event )
@@ -233,7 +237,7 @@ public class ListenableGraphRefTest
 	{
 		final int newId = 10000;
 
-		graph.addGraphListener( new GraphListener< TestVertex, TestEdge >()
+		aggregator.addGraphListener( new GraphChangeEventListener< TestVertex, TestEdge >()
 		{
 			@Override
 			public void graphChanged( final GraphChangeEvent< TestVertex, TestEdge > event )
@@ -263,7 +267,7 @@ public class ListenableGraphRefTest
 		final TestVertex source = root;
 		final TestVertex target = solo;
 
-		graph.addGraphListener( new GraphListener< TestVertex, TestEdge >()
+		aggregator.addGraphListener( new GraphChangeEventListener< TestVertex, TestEdge >()
 		{
 			@Override
 			public void graphChanged( final GraphChangeEvent< TestVertex, TestEdge > event )
@@ -295,7 +299,7 @@ public class ListenableGraphRefTest
 		final TestVertex source = A;
 		final TestVertex target = A1;
 
-		graph.addGraphListener( new GraphListener< TestVertex, TestEdge >()
+		aggregator.addGraphListener( new GraphChangeEventListener< TestVertex, TestEdge >()
 		{
 			@Override
 			public void graphChanged( final GraphChangeEvent< TestVertex, TestEdge > event )

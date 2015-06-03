@@ -1,5 +1,6 @@
 package net.trackmate.graph.listenable;
 
+import java.util.Set;
 import java.util.WeakHashMap;
 
 import net.trackmate.graph.Edge;
@@ -32,6 +33,20 @@ public class GraphChangeEventAggregator< V extends Vertex< E >, E extends Edge< 
 		this.currentEdit = new GraphChangeEvent< V, E >( graph );
 		this.listeners = new WeakHashMap< GraphChangeEventListener< V, E >, Boolean >();
 		graph.addGraphListener( new Aggregator() );
+	}
+
+	public boolean addGraphListener( GraphChangeEventListener< V, E > listener ) {
+		return listeners.put( listener, Boolean.TRUE );
+	}
+
+	public boolean removeGraphListener( GraphChangeEventListener< V, E > listener )
+	{
+		return listeners.remove( listener );
+	}
+
+	public Set< GraphChangeEventListener< V, E > > getGraphListeners()
+	{
+		return listeners.keySet();
 	}
 
 	private void fireEvent()
