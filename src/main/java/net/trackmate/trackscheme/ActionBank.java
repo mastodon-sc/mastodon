@@ -14,7 +14,7 @@ public class ActionBank
 			public void actionPerformed( final ActionEvent event )
 			{
 				final SelectionModel< TrackSchemeVertex, TrackSchemeEdge > selectionModel = trackscheme.selectionModel;
-				final TrackSchemeGraph graph = trackscheme.graph;
+				final TrackSchemeGraph graph = trackscheme.getGraph();
 				for ( final TrackSchemeEdge e : selectionModel.getSelectedEdges() )
 				{
 					graph.remove( e );
@@ -24,9 +24,7 @@ public class ActionBank
 					graph.remove( v );
 				}
 				selectionModel.clearSelection();
-				trackscheme.layout.layoutX();
-				trackscheme.order.build();
-				trackscheme.repaint( true );
+				trackscheme.relayout();
 			}
 		};
 	}

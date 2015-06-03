@@ -4,6 +4,7 @@ import java.awt.BorderLayout;
 import java.awt.Graphics;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.util.List;
 
 import javax.swing.JFrame;
 
@@ -19,19 +20,19 @@ public class ShowTrackScheme implements TransformListener< ScreenTransform >, Se
 {
 	private static final long ANIMATION_MILLISECONDS = 250;
 
-	final TrackSchemeGraph graph;
+	private final TrackSchemeGraph graph;
 
-	final LineageTreeLayout layout;
+	private final LineageTreeLayout layout;
 
-	final VertexOrder order;
+	private final VertexOrder order;
 
 	private final ScreenTransform currentTransform;
 
-	final GraphLayoutOverlay overlay;
+	private final GraphLayoutOverlay overlay;
 
 	final SelectionModel< TrackSchemeVertex, TrackSchemeEdge > selectionModel;
 
-	final JFrame frame;
+	private final JFrame frame;
 
 	final InteractiveDisplayCanvasComponent< ScreenTransform > canvas;
 
@@ -57,8 +58,8 @@ public class ShowTrackScheme implements TransformListener< ScreenTransform >, Se
 		selectionModel = SelectionModel.create( graph );
 
 		layout = new LineageTreeLayout( graph );
-//		layout.reset();
-//		layout.layoutX();
+		final TrackSchemeVertexList roots = TrackSchemeUtil.getOrderedRoots( graph );
+		layout.layoutX( roots );
 
 		System.out.println( "benchmarking layout of the full graph:" );
 		BenchmarkHelper.benchmarkAndPrint( 10, true, new Runnable()
@@ -66,8 +67,7 @@ public class ShowTrackScheme implements TransformListener< ScreenTransform >, Se
 			@Override
 			public void run()
 			{
-				layout.reset();
-				layout.layoutX();
+				layout.layoutX( roots );
 			}
 		} );
 		System.out.println();
@@ -75,7 +75,7 @@ public class ShowTrackScheme implements TransformListener< ScreenTransform >, Se
 //		System.out.println( graph );
 
 		order = new VertexOrder( graph );
-		order.build();
+		order.build( roots, layout.getCurrentLayoutTimestamp() );
 //		order.print();
 
 		overlay = new GraphLayoutOverlay();
@@ -187,6 +187,29 @@ public class ShowTrackScheme implements TransformListener< ScreenTransform >, Se
 	public void repaint()
 	{
 		repaint( false );
+	}
+
+	public void relayout()
+	{
+		final TrackSchemeVertexList roots = TrackSchemeUtil.getOrderedRoots( graph );
+		relayout( roots, -1 );
+	}
+
+	public synchronized void relayout( final List< TrackSchemeVertex > layoutRoots, final int mark )
+	{
+		layout.layoutX( layoutRoots, mark );
+		order.build( layoutRoots, layout.getCurrentLayoutTimestamp() );
+		repaint( true );
+	}
+
+	public int getNewLayoutTimestamp()
+	{
+		return layout.nextLayoutTimestamp();
+	}
+
+	public TrackSchemeGraph getGraph()
+	{
+		return graph;
 	}
 
 	public synchronized void repaint( final boolean startAnimation )

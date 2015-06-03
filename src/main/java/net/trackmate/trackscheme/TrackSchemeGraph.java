@@ -1,5 +1,7 @@
 package net.trackmate.trackscheme;
 
+import java.util.Arrays;
+
 import net.trackmate.graph.AbstractEdgePool;
 import net.trackmate.graph.AbstractVertexPool;
 import net.trackmate.graph.GraphImp;
@@ -170,8 +172,7 @@ public class TrackSchemeGraph extends GraphImp< TrackSchemeGraph.TrackSchemeVert
 		System.out.println();
 
 		final LineageTreeLayout layout = new LineageTreeLayout( graph );
-		layout.reset();
-		layout.layoutX( v1 );
+		layout.layoutX( Arrays.asList( v1 ) );
 		System.out.println( graph );
 
 		System.out.println( "done" );

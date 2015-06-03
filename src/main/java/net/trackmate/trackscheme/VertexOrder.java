@@ -43,6 +43,8 @@ public class VertexOrder
 
 	private int lastLayoutScreenHeight;
 
+	private int timestamp;
+
 	public VertexOrder( final TrackSchemeGraph graph )
 	{
 		this.graph = graph;
@@ -50,14 +52,13 @@ public class VertexOrder
 		timepointToOrderedVertices = new TIntObjectHashMap< TrackSchemeVertexList >();
 	}
 
-	public void build()
+	public void build( final List< TrackSchemeVertex > layoutRoots, final int timestamp )
 	{
 		timepoints.clear();
 		timepointToOrderedVertices.clear();
+		this.timestamp = timestamp;
 
-		final TrackSchemeVertexList roots = TrackSchemeUtil.getOrderedRoots( graph );
-
-		for ( final TrackSchemeVertex root : roots )
+		for ( final TrackSchemeVertex root : layoutRoots )
 			build( root );
 	}
 
@@ -80,6 +81,9 @@ public class VertexOrder
 
 	private void build( final TrackSchemeVertex v )
 	{
+		if ( v.getLayoutTimestamp() != timestamp )
+			return;
+
 		final int tp = v.getTimePoint();
 		TrackSchemeVertexList vlist = timepointToOrderedVertices.get( tp );
 		if ( vlist == null )
@@ -91,17 +95,15 @@ public class VertexOrder
 		vlist.add( v );
 
 		final TrackSchemeVertex child = graph.vertexRef();
-		final TrackSchemeEdge edge = graph.edgeRef();
 		for ( final TrackSchemeEdge next : v.outgoingEdges() )
-			buildNextChild( next, child, edge );
-		graph.releaseRef( edge );
+			buildNextChild( next, child );
 		graph.releaseRef( child );
 	}
 
-	private void buildNextChild( final TrackSchemeEdge next, final TrackSchemeVertex child, final TrackSchemeEdge edge )
+	private void buildNextChild( final TrackSchemeEdge next, final TrackSchemeVertex child )
 	{
 		next.getTarget( child );
-		if ( child.incomingEdges().get( 0, edge ).equals( next ) )
+		if ( child.getLayoutInEdgeIndex() == next.getInternalPoolIndex() )
 			build( child );
 	}
 

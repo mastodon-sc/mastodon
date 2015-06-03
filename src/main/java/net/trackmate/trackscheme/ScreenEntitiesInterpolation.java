@@ -39,8 +39,12 @@ public class ScreenEntitiesInterpolation
 		final ScreenVertex vEnd = end.getVertexPool().createRef();
 		for ( final ScreenVertex v : start.getVertices() )
 		{
+			final int vId = v.getTrackSchemeVertexId();
+			if ( vId < 0 )
+				continue;
+
 			current.getVertices().add( current.getVertexPool().create( vCurrent ) );
-			if ( idToEndVertex.get( v.getTrackSchemeVertexId(), vEnd ) != null )
+			if ( idToEndVertex.get( vId, vEnd ) != null )
 				interpolate( v, vEnd, accelRatio, vCurrent );
 			else
 				disappear( v, accelRatio, vCurrent );

@@ -32,35 +32,71 @@ public class LineageTreeLayout
 
 	private final TrackSchemeGraph graph;
 
+	private int timestamp;
+
+	private int mark;
+
 	public LineageTreeLayout( final TrackSchemeGraph graph )
 	{
 		this.graph = graph;
 		rightmost = 0;
-	}
-
-	public void reset()
-	{
-		rightmost = 0;
+		timestamp = 0;
 	}
 
 	/**
-	 * Get ordered list of roots and then call
-	 * {@link #layoutX(TrackSchemeVertex)} for every root.
+	 * Call {@link #layoutX(TrackSchemeVertex)} for every root.
 	 */
-	public void layoutX()
+	public void layoutX( final List< TrackSchemeVertex > layoutRoots )
+	{
+		layoutX( layoutRoots, -1 );
+	}
+
+	/**
+	 * Call {@link #layoutX(TrackSchemeVertex)} for every root.
+	 */
+	public void layoutX( final List< TrackSchemeVertex > layoutRoots, final int mark )
 	{
 		reset();
-		final TrackSchemeVertexList roots = TrackSchemeUtil.getOrderedRoots( graph );
+		++timestamp;
+		this.mark = mark;
 
 		columns.clear();
 		columnNames.clear();
 		columns.add( 0 );
-		for ( final TrackSchemeVertex root : roots )
+		for ( final TrackSchemeVertex root : layoutRoots )
 		{
 			layoutX( root );
 			columns.add( rightmost );
 			columnNames.add( "Root " + root.getLabel() );
 		}
+	}
+
+	/**
+	 * Get the timestamp that was used in the last layout (the timestamp which
+	 * was set in all vertices laid out during last {@link #layoutX(List)}.)
+	 *
+	 * @return timestamp used in last layout.
+	 */
+	public int getCurrentLayoutTimestamp()
+	{
+		return timestamp;
+	}
+
+	/**
+	 * Get a new layout timestamp.
+	 * (The next layout will then use the timestamp after that).
+	 *
+	 * @return
+	 */
+	public int nextLayoutTimestamp()
+	{
+		++timestamp;
+		return timestamp;
+	}
+
+	private void reset()
+	{
+		rightmost = 0;
 	}
 
 	/**
@@ -75,64 +111,65 @@ public class LineageTreeLayout
 	 * @param v
 	 *            root of sub-tree to layout.
 	 */
-	public void layoutX( final TrackSchemeVertex v )
+	private void layoutX( final TrackSchemeVertex v )
 	{
-		if ( v.outgoingEdges().isEmpty() )
+		int numLaidOutChildren = 0;
+		double firstChildX = 0;
+		double lastChildX = 0;
+
+		if ( v.getLayoutTimestamp() < mark )
 		{
-			v.setLayoutX( rightmost );
-			rightmost += 1;
+			v.setGhost( true );
+			v.setLayoutTimestamp( timestamp );
 		}
 		else
 		{
-			final TrackSchemeVertex child = graph.vertexRef();
-			final TrackSchemeEdge edge = graph.edgeRef();
-			final Iterator< TrackSchemeEdge > iterator = v.outgoingEdges().iterator();
-			int numLaidOutChildren = layoutNextChild( iterator, child, edge );
-			final double firstChildX = child.getLayoutX();
-			if ( iterator.hasNext() )
+			v.setGhost( false );
+			v.setLayoutTimestamp( timestamp );
+			if ( !v.outgoingEdges().isEmpty() && !v.isGhost() )
 			{
-				while ( iterator.hasNext() )
+				final TrackSchemeVertex child = graph.vertexRef();
+				final TrackSchemeEdge edge = graph.edgeRef();
+				final Iterator< TrackSchemeEdge > iterator = v.outgoingEdges().iterator();
+				while ( layoutNextChild( iterator, child, edge ) )
 				{
-					numLaidOutChildren += layoutNextChild( iterator, child, edge );
+					if ( ++numLaidOutChildren == 1 )
+						firstChildX = child.getLayoutX();
+					else
+						lastChildX = child.getLayoutX();
 				}
-				final double lastChildX = child.getLayoutX();
-				if ( numLaidOutChildren > 0 )
-				{
-					v.setLayoutX( ( firstChildX + lastChildX ) / 2 );
-				}
-				else
-				{
-					v.setLayoutX( rightmost );
-					rightmost += 1;
-				}
+				graph.releaseRef( edge );
+				graph.releaseRef( child );
 			}
-			else
-				if ( numLaidOutChildren > 0 )
-				{
-					v.setLayoutX( firstChildX );
-				}
-				else
-				{
-					v.setLayoutX( rightmost );
-					rightmost += 1;
-				}
-			graph.releaseRef( edge );
-			graph.releaseRef( child );
+		}
+
+		switch( numLaidOutChildren )
+		{
+		case 0:
+			v.setLayoutX( rightmost );
+			rightmost += 1;
+			break;
+		case 1:
+			v.setLayoutX( firstChildX );
+			break;
+		default:
+			v.setLayoutX( ( firstChildX + lastChildX ) / 2 );
 		}
 	}
 
-	private int layoutNextChild( final Iterator< TrackSchemeEdge > iterator, final TrackSchemeVertex child, final TrackSchemeEdge edge )
+	private boolean layoutNextChild( final Iterator< TrackSchemeEdge > iterator, final TrackSchemeVertex child, final TrackSchemeEdge edge )
 	{
-		final TrackSchemeEdge next = iterator.next();
-		next.getTarget( child );
-		if ( child.incomingEdges().get( 0, edge ).equals( next ) )
+		while ( iterator.hasNext() )
 		{
-			layoutX( child );
-			return 1;
+			final TrackSchemeEdge next = iterator.next();
+			next.getTarget( child );
+			if ( child.getLayoutTimestamp() < timestamp )
+			{
+				child.setLayoutInEdgeIndex( next.getInternalPoolIndex() );
+				layoutX( child );
+				return true;
+			}
 		}
-		else
-		{
-			return 0;
-		}
+		return false;
 	}
 }
