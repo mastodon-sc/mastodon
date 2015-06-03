@@ -11,11 +11,14 @@ import net.trackmate.graph.mempool.ByteMappedElement;
 public class TrackSchemeVertex extends AbstractVertex< TrackSchemeVertex, TrackSchemeEdge, ByteMappedElement >
 {
 	protected static final int ORIG_VERTEX_INDEX_OFFSET = AbstractVertex.SIZE_IN_BYTES;
-	protected static final int X_OFFSET = ORIG_VERTEX_INDEX_OFFSET + INDEX_SIZE;
+	protected static final int LAYOUT_TIMESTAMP_OFFSET = ORIG_VERTEX_INDEX_OFFSET + INDEX_SIZE;
+	protected static final int LAYOUT_IN_EDGE_INDEX_OFFSET = LAYOUT_TIMESTAMP_OFFSET + INT_SIZE;
+	protected static final int X_OFFSET = LAYOUT_IN_EDGE_INDEX_OFFSET + INDEX_SIZE;
 	protected static final int TIMEPOINT_OFFSET = X_OFFSET + DOUBLE_SIZE;
 	protected static final int SCREENVERTEX_INDEX_OFFSET = TIMEPOINT_OFFSET + INT_SIZE;
 	protected static final int SELECTED_OFFSET = SCREENVERTEX_INDEX_OFFSET + INDEX_SIZE;
-	protected static final int SIZE_IN_BYTES = SELECTED_OFFSET + BOOLEAN_SIZE;
+	protected static final int GHOST_OFFSET = SELECTED_OFFSET + BOOLEAN_SIZE;
+	protected static final int SIZE_IN_BYTES = GHOST_OFFSET + BOOLEAN_SIZE;
 
 	private final Labels labels;
 
@@ -39,6 +42,9 @@ public class TrackSchemeVertex extends AbstractVertex< TrackSchemeVertex, TrackS
 		setLayoutX( 0 );
 		setTimePoint( timepoint );
 		setSelected( isSelected );
+		setLayoutTimestamp( -1 );
+		setLayoutInEdgeIndex( 0 );
+		setGhost( false );
 		return this;
 	}
 
@@ -95,7 +101,7 @@ public class TrackSchemeVertex extends AbstractVertex< TrackSchemeVertex, TrackS
 		return access.getIndex( SCREENVERTEX_INDEX_OFFSET );
 	}
 
-	public void setScreenVertexIndex( final int screenVertexIndex )
+	protected void setScreenVertexIndex( final int screenVertexIndex )
 	{
 		access.putIndex( screenVertexIndex, SCREENVERTEX_INDEX_OFFSET );
 	}
@@ -105,7 +111,7 @@ public class TrackSchemeVertex extends AbstractVertex< TrackSchemeVertex, TrackS
 		return access.getDouble( X_OFFSET );
 	}
 
-	public void setLayoutX( final double x )
+	protected void setLayoutX( final double x )
 	{
 		access.putDouble( x, X_OFFSET );
 	}
@@ -118,5 +124,35 @@ public class TrackSchemeVertex extends AbstractVertex< TrackSchemeVertex, TrackS
 	public void setSelected( final boolean selected )
 	{
 		access.putBoolean( selected, SELECTED_OFFSET );
+	}
+
+	public int getLayoutTimestamp()
+	{
+		return access.getInt( LAYOUT_TIMESTAMP_OFFSET );
+	}
+
+	public void setLayoutTimestamp( final int timestamp )
+	{
+		access.putInt( timestamp, LAYOUT_TIMESTAMP_OFFSET );
+	}
+
+	protected int getLayoutInEdgeIndex()
+	{
+		return access.getIndex( LAYOUT_IN_EDGE_INDEX_OFFSET );
+	}
+
+	protected void setLayoutInEdgeIndex( final int index )
+	{
+		access.putIndex( index, LAYOUT_IN_EDGE_INDEX_OFFSET );
+	}
+
+	protected boolean isGhost()
+	{
+		return access.getBoolean( GHOST_OFFSET );
+	}
+
+	protected void setGhost( final boolean ghost )
+	{
+		access.putBoolean( ghost, GHOST_OFFSET );
 	}
 }
