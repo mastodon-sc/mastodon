@@ -99,7 +99,7 @@ public class ShowTrackScheme implements TransformListener< ScreenTransform >, Se
 		canvas.addMouseMotionListener( selectionHandler );
 		selectionHandler.setSelectionListener( this );
 
-		zoomHandler = new ZoomBoxHandler( this, this );
+		zoomHandler = new ZoomBoxHandler( this );
 		canvas.addMouseListener( zoomHandler );
 		canvas.addMouseMotionListener( zoomHandler );
 
@@ -291,7 +291,7 @@ public class ShowTrackScheme implements TransformListener< ScreenTransform >, Se
 	// =====================================================
 
 	@Override
-	public void refresh()
+	public void selectionUpdated()
 	{
 		if ( sl != null )
 		{
@@ -300,7 +300,6 @@ public class ShowTrackScheme implements TransformListener< ScreenTransform >, Se
 				sl.select( selectedVertices.iterator().next() );
 			sl.repaint();
 		}
-
 		repaint();
 	}
 

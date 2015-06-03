@@ -24,22 +24,19 @@ public class ZoomBoxHandler extends MouseAdapter implements TransformListener< S
 	 */
 	private int eX, eY;
 
-	private final TransformListener< ScreenTransform > listener;
-
 	private boolean zoomStarted = false;
 
 	private ScreenTransform transform;
 
-	private final SelectionListener selectionListener;
+	private final ShowTrackScheme trackscheme;
 
-	public ZoomBoxHandler( TransformListener< ScreenTransform > listener, SelectionListener selectionListener )
+	public ZoomBoxHandler( final ShowTrackScheme trackscheme )
 	{
-		this.listener = listener;
-		this.selectionListener = selectionListener;
+		this.trackscheme = trackscheme;
 	}
 
 	@Override
-	public void mouseDragged( MouseEvent e )
+	public void mouseDragged( final MouseEvent e )
 	{
 		if ( e.getButton() == MouseEvent.BUTTON1 && ( e.getModifiersEx() & InputEvent.ALT_DOWN_MASK ) == InputEvent.ALT_DOWN_MASK && !zoomStarted )
 		{
@@ -49,11 +46,11 @@ public class ZoomBoxHandler extends MouseAdapter implements TransformListener< S
 		}
 		eX = e.getX();
 		eY = e.getY();
-		selectionListener.refresh();
+		trackscheme.repaint();
 	}
 
 	@Override
-	public void mouseReleased( MouseEvent e )
+	public void mouseReleased( final MouseEvent e )
 	{
 		if ( zoomStarted )
 		{
@@ -69,17 +66,17 @@ public class ZoomBoxHandler extends MouseAdapter implements TransformListener< S
 			transform.maxY = Math.max( maxY, minY ) + 0.1;
 			transform.minY = Math.min( maxY, minY );
 
-			listener.transformChanged( transform );
+			trackscheme.transformChanged( transform );
 		}
 	}
 
 	@Override
-	public void transformChanged( ScreenTransform transform )
+	public void transformChanged( final ScreenTransform transform )
 	{
 		this.transform = transform;
 	}
 
-	public void setTransform( ScreenTransform transform )
+	public void setTransform( final ScreenTransform transform )
 	{
 		this.transform = transform;
 	}
@@ -91,11 +88,10 @@ public class ZoomBoxHandler extends MouseAdapter implements TransformListener< S
 
 	public class ZoomBoxOverlay implements OverlayRenderer
 	{
-
 		private final Color ZOOM_BOX_COLOR = Color.BLUE.brighter();
 
 		@Override
-		public void drawOverlays( Graphics g )
+		public void drawOverlays( final Graphics g )
 		{
 			if ( zoomStarted )
 			{
@@ -109,8 +105,7 @@ public class ZoomBoxHandler extends MouseAdapter implements TransformListener< S
 		}
 
 		@Override
-		public void setCanvasSize( int width, int height )
+		public void setCanvasSize( final int width, final int height )
 		{}
-
 	}
 }
