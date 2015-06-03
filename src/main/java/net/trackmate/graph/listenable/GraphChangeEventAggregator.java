@@ -27,7 +27,7 @@ public class GraphChangeEventAggregator< V extends Vertex< E >, E extends Edge< 
 
 	private final WeakHashMap< GraphChangeEventListener< V, E >, Boolean > listeners;
 
-	public GraphChangeEventAggregator(ListenableGraph< V, E > graph )
+	public GraphChangeEventAggregator( ListenableGraph< V, E > graph )
 	{
 		this.graph = graph;
 		this.currentEdit = new GraphChangeEvent< V, E >( graph );
@@ -35,13 +35,14 @@ public class GraphChangeEventAggregator< V extends Vertex< E >, E extends Edge< 
 		graph.addGraphListener( new Aggregator() );
 	}
 
-	public boolean addGraphListener( GraphChangeEventListener< V, E > listener ) {
-		return listeners.put( listener, Boolean.TRUE );
+	public boolean addGraphListener( GraphChangeEventListener< V, E > listener )
+	{
+		return listeners.put( listener, Boolean.TRUE ) == null;
 	}
 
 	public boolean removeGraphListener( GraphChangeEventListener< V, E > listener )
 	{
-		return listeners.remove( listener );
+		return listeners.remove( listener ) != null;
 	}
 
 	public Set< GraphChangeEventListener< V, E > > getGraphListeners()
