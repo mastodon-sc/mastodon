@@ -52,7 +52,7 @@ public class CanvasOverlay implements OverlayRenderer, TransformListener< Screen
 
 	private final boolean paintRows = true;
 
-	private final boolean paintColumns = true;
+	private final boolean paintColumns = false;
 
 	private final LineageTreeLayout layout;
 
@@ -85,8 +85,9 @@ public class CanvasOverlay implements OverlayRenderer, TransformListener< Screen
 			int tend = 1 + Math.min( maxTimePoint, ( int ) maxY );
 			tend = ( 1 + tend / stepT ) * stepT;
 
-			final int maxLineX = Math.min( screenWidth,
-					( int ) ( ( layout.columns.get( layout.columns.size() - 1 ) - minX - 0.5 ) * xScale ) );
+			final int maxLineX = screenWidth;
+//			final int maxLineX = Math.min( screenWidth,
+//					( int ) ( ( layout.columns.get( layout.columns.size() - 1 ) - minX - 0.5 ) * xScale ) );
 
 			minLineY = ( int ) ( ( tstart - minY - 0.5 ) * yScale );
 			maxLineY = ( int ) ( ( tend - minY - 0.5 ) * yScale );
