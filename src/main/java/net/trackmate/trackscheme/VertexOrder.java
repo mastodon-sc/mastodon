@@ -5,6 +5,7 @@ import gnu.trove.list.array.TIntArrayList;
 import gnu.trove.map.hash.TIntObjectHashMap;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 
 import net.trackmate.graph.collection.RefSet;
 import net.trackmate.trackscheme.ScreenEdge.ScreenEdgePool;
@@ -559,7 +560,8 @@ public class VertexOrder
 		return new ScreenEntities( screenVertices, screenEdges, vertexRanges );
 	}
 
-	public static TrackSchemeVertexList getOrderedRoots( final TrackSchemeGraph graph )
+	public static TrackSchemeVertexList getOrderedRoots( final TrackSchemeGraph graph  ,
+			Comparator< TrackSchemeVertex > comparator )
 	{
 		final TrackSchemeVertexList roots = new TrackSchemeVertexList( graph );
 		for ( final TrackSchemeVertex v : graph.vertices() )
@@ -567,8 +569,22 @@ public class VertexOrder
 			if ( v.incomingEdges().isEmpty() )
 				roots.add( v );
 		}
-		roots.getIndexCollection().sort(); // TODO sort roots by something meaningful...
+		roots.sort( comparator );
 		return roots;
+	}
+
+	public static TrackSchemeVertexList getOrderedRoots( final TrackSchemeGraph graph )
+	{
+		final Comparator< TrackSchemeVertex > labelComparator = new Comparator< TrackSchemeVertex >()
+		{
+
+			@Override
+			public int compare( TrackSchemeVertex o1, TrackSchemeVertex o2 )
+			{
+				return o1.getLabel().compareTo( o2.getLabel() );
+			}
+		};
+		return getOrderedRoots( graph, labelComparator );
 	}
 
 	/**
