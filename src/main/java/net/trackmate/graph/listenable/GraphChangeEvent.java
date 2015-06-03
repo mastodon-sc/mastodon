@@ -49,11 +49,11 @@ public class GraphChangeEvent< V extends Vertex< E >, E extends Edge< V > >
 		edgeAdded.add( edge );
 	}
 
-	void edgeRemoved( final E edge )
+	void edgeRemoved( final E edge, V source, V target )
 	{
 		edgeRemoved.add( edge );
-		previousEdgeSource.put( edge, edge.getSource() );
-		previousEdgeTarget.put( edge, edge.getTarget() );
+		previousEdgeSource.put( edge, source );
+		previousEdgeTarget.put( edge, target );
 	}
 
 	public boolean isEmpty()
