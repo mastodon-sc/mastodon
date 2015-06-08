@@ -1,32 +1,37 @@
 package net.trackmate.trackscheme;
 
 import java.awt.BorderLayout;
-import java.awt.GraphicsConfiguration;
+import java.awt.Graphics;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
 import javax.swing.JFrame;
 
 import net.imglib2.ui.InteractiveDisplayCanvasComponent;
+import net.imglib2.ui.OverlayRenderer;
 import net.imglib2.ui.PainterThread;
 import net.imglib2.ui.TransformListener;
 import net.imglib2.ui.util.GuiUtil;
 import net.imglib2.util.BenchmarkHelper;
 import net.trackmate.graph.collection.RefSet;
 
-public class ShowTrackScheme implements TransformListener< ScreenTransform >, SelectionListener
+public class ShowTrackScheme implements TransformListener< ScreenTransform >, SelectionListener, PainterThread.Paintable
 {
+	private static final long ANIMATION_MILLISECONDS = 250;
+
 	final TrackSchemeGraph graph;
 
 	final LineageTreeLayout layout;
 
 	final VertexOrder order;
 
+	private final ScreenTransform currentTransform;
+
 	final GraphLayoutOverlay overlay;
 
 	final SelectionModel< TrackSchemeVertex, TrackSchemeEdge > selectionModel;
 
-	final MyFrame frame;
+	final JFrame frame;
 
 	final InteractiveDisplayCanvasComponent< ScreenTransform > canvas;
 
@@ -38,9 +43,16 @@ public class ShowTrackScheme implements TransformListener< ScreenTransform >, Se
 
 	private final ZoomBoxHandler zoomHandler;
 
+	private final PainterThread painterThread;
+
 	public ShowTrackScheme( final TrackSchemeGraph graph )
 	{
 		this.graph = graph;
+
+		screenEntities = new ScreenEntities( graph );
+		screenEntities2 = new ScreenEntities( graph );
+		screenEntitiesIpStart = new ScreenEntities( graph );
+		screenEntitiesIpEnd = new ScreenEntities( graph );
 
 		selectionModel = SelectionModel.create( graph );
 
@@ -77,6 +89,10 @@ public class ShowTrackScheme implements TransformListener< ScreenTransform >, Se
 		final int w = overlay.getWidth();
 		final int h = overlay.getHeight();
 
+		currentTransform = new ScreenTransform( minX, maxX, minY, maxY, w, h );
+		canvas.getTransformEventHandler().setTransform( currentTransform );
+		canvas.getTransformEventHandler().setTransformListener( this );
+
 		selectionHandler = new DefaultSelectionHandler( graph, order );
 		selectionHandler.setSelectionModel( selectionModel );
 		canvas.addMouseListener( selectionHandler );
@@ -89,13 +105,20 @@ public class ShowTrackScheme implements TransformListener< ScreenTransform >, Se
 
 		keyHandler = new KeyHandler( this );
 
-		final ScreenTransform screenTransform = new ScreenTransform( minX, maxX, minY, maxY, w, h );
-		canvas.getTransformEventHandler().setTransform( screenTransform );
-		canvas.getTransformEventHandler().setTransformListener( this );
-
 		canvasOverlay = new CanvasOverlay( layout, order );
 
-		frame = new MyFrame( "trackscheme", GuiUtil.getSuitableGraphicsConfiguration( GuiUtil.RGB_COLOR_MODEL ) );
+		frame = new JFrame( "trackscheme", GuiUtil.getSuitableGraphicsConfiguration( GuiUtil.RGB_COLOR_MODEL ) );
+		painterThread = new PainterThread( this );
+		painterThread.start();
+		frame.setDefaultCloseOperation( JFrame.DISPOSE_ON_CLOSE );
+		frame.addWindowListener( new WindowAdapter()
+		{
+			@Override
+			public void windowClosing( final WindowEvent e )
+			{
+				painterThread.interrupt();
+			}
+		} );
 		frame.getContentPane().add( canvas, BorderLayout.CENTER );
 		frame.pack();
 		frame.setVisible( true );
@@ -104,25 +127,126 @@ public class ShowTrackScheme implements TransformListener< ScreenTransform >, Se
 		canvas.addOverlayRenderer( overlay );
 		canvas.addOverlayRenderer( zoomHandler.getZoomOverlay() );
 		canvas.addOverlayRenderer( selectionHandler.getSelectionOverlay() );
+		canvas.addOverlayRenderer( new OverlayRenderer()
+		{
+			@Override
+			public void setCanvasSize( final int width, final int height )
+			{}
+
+			@Override
+			public void drawOverlays( final Graphics g )
+			{
+				painterThread.requestRepaint();
+			}
+		} );
 	}
 
 	@Override
 	public void transformChanged( final ScreenTransform transform )
 	{
-		zoomHandler.setTransform( transform );
-		selectionHandler.setTransform( transform );
-		canvasOverlay.transformChanged( transform );
+		currentTransform.set( transform );
+		repaint();
+	}
 
-//		System.out.println( "transformChanged" );
-		final double minX = transform.minX;
-		final double maxX = transform.maxX;
-		final double minY = transform.minY;
-		final double maxY = transform.maxY;
-		final int w = transform.screenWidth;
-		final int h = transform.screenHeight;
-		final ScreenEntities entities = order.cropAndScale( minX, maxX, minY, maxY, w, h );
-		overlay.setScreenEntities( entities );
+	// ======== TODO MOVE TO ANIMATOR =====================
+
+	private ScreenEntities screenEntities;
+
+	private ScreenEntities screenEntities2;
+
+	private ScreenEntities screenEntitiesIpStart;
+
+	private ScreenEntities screenEntitiesIpEnd;
+
+	private void swapPools()
+	{
+		final ScreenEntities tmp = screenEntities;
+		screenEntities = screenEntities2;
+		screenEntities2 = tmp;
+		screenEntities.clear();
+	}
+
+	private void swapIpStart()
+	{
+		final ScreenEntities tmp = screenEntities;
+		screenEntities = screenEntitiesIpStart;
+		screenEntitiesIpStart = tmp;
+		screenEntities.clear();
+	}
+
+	private void swapIpEnd()
+	{
+		final ScreenEntities tmp = screenEntities;
+		screenEntities = screenEntitiesIpEnd;
+		screenEntitiesIpEnd = tmp;
+		screenEntities.clear();
+	}
+
+	// ====================================================
+
+	public void repaint()
+	{
+		repaint( false );
+	}
+
+	public synchronized void repaint( final boolean startAnimation )
+	{
+		zoomHandler.setTransform( currentTransform );
+		selectionHandler.setTransform( currentTransform );
+		canvasOverlay.transformChanged( currentTransform );
+
+		final double minX = currentTransform.minX;
+		final double maxX = currentTransform.maxX;
+		final double minY = currentTransform.minY;
+		final double maxY = currentTransform.maxY;
+		final int w = currentTransform.screenWidth;
+		final int h = currentTransform.screenHeight;
+		if ( startAnimation )
+		{
+			swapIpStart();
+			order.cropAndScale( minX, maxX, minY, maxY, w, h, screenEntities );
+			swapIpEnd();
+			currentAnimator = new ScreenEntitiesAnimator( ANIMATION_MILLISECONDS );
+			currentAnimator.setTime( System.currentTimeMillis() );
+		}
+		else
+		{
+			swapPools();
+			order.cropAndScale( minX, maxX, minY, maxY, w, h, screenEntities );
+			overlay.setScreenEntities( screenEntities );
+		}
 		frame.repaint();
+	}
+
+	private class ScreenEntitiesAnimator extends AbstractAnimator
+	{
+		private final ScreenEntitiesInterpolation ip;
+
+		public ScreenEntitiesAnimator( final long duration )
+		{
+			super( duration );
+			ip = new ScreenEntitiesInterpolation( screenEntitiesIpStart, screenEntitiesIpEnd );
+		}
+
+		void animate()
+		{
+			setTime( System.currentTimeMillis() );
+			swapPools();
+			ip.interpolate( ratioComplete(), screenEntities );
+			overlay.setScreenEntities( screenEntities );
+			if ( isComplete() )
+				currentAnimator = null;
+			frame.repaint();
+		}
+	}
+
+	private volatile ScreenEntitiesAnimator currentAnimator;
+
+	@Override
+	public synchronized void paint()
+	{
+		if ( currentAnimator != null )
+			currentAnimator.animate();
 	}
 
 	// =================== TODO ===========================
@@ -154,40 +278,40 @@ public class ShowTrackScheme implements TransformListener< ScreenTransform >, Se
 			sl.repaint();
 		}
 
-		frame.repaint();
+		repaint();
+	}
+
+	public void DEBUG_printPools( final String title, final int from, final int to )
+	{
+		System.out.println( "=== " + title + " ===" );
+
+		System.out.println( "Start");
+		for ( int i = from; i < Math.min( to, screenEntitiesIpStart.getVertices().size() ); ++i )
+			System.out.println( "  " + screenEntitiesIpStart.getVertices().get( i ) );
+		System.out.println();
+
+		System.out.println( "End");
+		for ( int i = from; i < Math.min( to, screenEntitiesIpEnd.getVertices().size() ); ++i )
+			System.out.println( "  " + screenEntitiesIpEnd.getVertices().get( i ) );
+		System.out.println();
+
+		System.out.println( "screenEntities");
+		for ( int i = from; i < Math.min( to, screenEntities.getVertices().size() ); ++i )
+			System.out.println( "  " + screenEntities.getVertices().get( i ) );
+		System.out.println();
+
+		System.out.println( "screenEntities2");
+		for ( int i = from; i < Math.min( to, screenEntities2.getVertices().size() ); ++i )
+			System.out.println( "  " + screenEntities2.getVertices().get( i ) );
+		System.out.println();
+
+		System.out.println();
+		System.out.println();
 	}
 
 	/*
 	 * STATIC METHODS AND CLASSES
 	 */
-
-	static class MyFrame extends JFrame implements PainterThread.Paintable
-	{
-		private static final long serialVersionUID = 1L;
-
-		private final PainterThread painterThread;
-
-		public MyFrame( final String title, final GraphicsConfiguration gc )
-		{
-			super( title, gc );
-			painterThread = new PainterThread( this );
-			setDefaultCloseOperation( JFrame.DISPOSE_ON_CLOSE );
-			addWindowListener( new WindowAdapter()
-			{
-				@Override
-				public void windowClosing( final WindowEvent e )
-				{
-					painterThread.interrupt();
-				}
-			} );
-		}
-
-		@Override
-		public void paint()
-		{
-			repaint();
-		}
-	}
 
 	public static void main( final String[] args )
 	{

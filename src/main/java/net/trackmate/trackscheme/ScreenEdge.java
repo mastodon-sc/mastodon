@@ -61,7 +61,9 @@ public class ScreenEdge extends PoolObject< ScreenEdge, ByteMappedElement >
 	}
 
 	/**
-	 * Get the internal pool index of the source ("from") {@link ScreenVertex}.
+	 * Get the index of the source ("from") {@link ScreenVertex} in the screen
+	 * vertex list {@link ScreenEntities#getVertices()}. This is at the same
+	 * time the internal pool index of the source {@link ScreenVertex}.
 	 *
 	 * @return internal pool index of the source {@link ScreenVertex}.
 	 */
@@ -76,7 +78,9 @@ public class ScreenEdge extends PoolObject< ScreenEdge, ByteMappedElement >
 	}
 
 	/**
-	 * Get the internal pool index of the target ("to") {@link ScreenVertex}.
+	 * Get the index of the target ("to") {@link ScreenVertex} in the screen
+	 * vertex list {@link ScreenEntities#getVertices()}. This is at the same
+	 * time the internal pool index of the target {@link ScreenVertex}.
 	 *
 	 * @return internal pool index of the target {@link ScreenVertex}.
 	 */
@@ -141,9 +145,9 @@ public class ScreenEdge extends PoolObject< ScreenEdge, ByteMappedElement >
 			return super.create( edge );
 		}
 
-		public void release( final ScreenEdge edge )
+		public void delete( final ScreenEdge edge )
 		{
-			releaseByInternalPoolIndex( edge.getInternalPoolIndex() );
+			deleteByInternalPoolIndex( edge.getInternalPoolIndex() );
 		}
 
 		private static class EdgeFactory implements PoolObject.Factory< ScreenEdge, ByteMappedElement >

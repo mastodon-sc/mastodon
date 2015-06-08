@@ -168,11 +168,6 @@ public class DefaultSelectionHandler extends MouseAdapter implements SelectionHa
 		}
 
 		vertex.setSelected( selected );
-		final ScreenVertex screenVertex = order.getScreenVertexFor( vertex );
-		if ( null != screenVertex )
-		{
-			screenVertex.setSelected( selected );
-		}
 	}
 
 	private void select( TrackSchemeEdge edge, boolean toggle )
@@ -190,11 +185,6 @@ public class DefaultSelectionHandler extends MouseAdapter implements SelectionHa
 		}
 
 		edge.setSelected( selected );
-		final ScreenEdge screenEdge = order.getScreenEdgeFor( edge );
-		if ( null != screenEdge )
-		{
-			screenEdge.setSelected( selected );
-		}
 	}
 
 	private void clearSelection()
@@ -204,23 +194,9 @@ public class DefaultSelectionHandler extends MouseAdapter implements SelectionHa
 		 * selection model to deselect what is selected.
 		 */
 		for ( final TrackSchemeVertex vertex : selectionModel.getSelectedVertices() )
-		{
 			vertex.setSelected( false );
-			final ScreenVertex screenVertex = order.getScreenVertexFor( vertex );
-			if ( null != screenVertex )
-			{
-				screenVertex.setSelected( false );
-			}
-		}
 		for ( final TrackSchemeEdge edge : selectionModel.getSelectedEdges() )
-		{
 			edge.setSelected( false );
-			final ScreenEdge screenEdge = order.getScreenEdgeFor( edge );
-			if ( null != screenEdge )
-			{
-				screenEdge.setSelected( false );
-			}
-		}
 		selectionModel.clearSelection();
 	}
 

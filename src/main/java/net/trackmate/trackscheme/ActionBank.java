@@ -30,7 +30,7 @@ public class ActionBank
 				selectionModel.clearSelection();
 				trackscheme.layout.layoutX();
 				trackscheme.order.build();
-				trackscheme.frame.repaint();
+				trackscheme.repaint( true );
 			}
 		};
 	}
