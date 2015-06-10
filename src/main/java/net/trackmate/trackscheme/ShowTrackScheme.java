@@ -4,8 +4,6 @@ import java.awt.BorderLayout;
 import java.awt.Graphics;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.util.Timer;
-import java.util.TimerTask;
 
 import javax.swing.JFrame;
 
@@ -159,20 +157,21 @@ public class ShowTrackScheme implements TransformListener< ScreenTransform >, Se
 
 		transformAnimator = new TranslationAnimator( transform, x, y, 200 );
 		transformAnimator.setTime( System.currentTimeMillis() );
+		refresh();
 
-		final Timer timer = new Timer();
-		timer.scheduleAtFixedRate( new TimerTask()
-		{
-			@Override
-			public void run()
-			{
-				if ( transformAnimator == null || transformAnimator.isComplete() )
-				{
-					timer.cancel();
-				}
-				refresh();
-			}
-		}, 0, 10 );
+//		final Timer timer = new Timer();
+//		timer.scheduleAtFixedRate( new TimerTask()
+//		{
+//			@Override
+//			public void run()
+//			{
+//				if ( transformAnimator == null || transformAnimator.isComplete() )
+//				{
+//					timer.cancel();
+//				}
+//				refresh();
+//			}
+//		}, 0, 10 );
 	}
 
 	@Override
@@ -249,6 +248,7 @@ public class ShowTrackScheme implements TransformListener< ScreenTransform >, Se
 			order.cropAndScale( minX, maxX, minY, maxY, w, h, screenEntities );
 			overlay.setScreenEntities( screenEntities );
 		}
+
 		frame.repaint();
 	}
 
@@ -281,6 +281,15 @@ public class ShowTrackScheme implements TransformListener< ScreenTransform >, Se
 	{
 		if ( entitiesAnimator != null )
 			entitiesAnimator.animate();
+
+		if ( transformAnimator != null )
+		{
+			final ScreenTransform transform = transformAnimator.getCurrent( System.currentTimeMillis() );
+			canvas.getTransformEventHandler().setTransform( transform );
+			transformChanged( transform );
+			if ( transformAnimator.isComplete() )
+				transformAnimator = null;
+		}
 	}
 
 	// =================== TODO ===========================
@@ -313,18 +322,6 @@ public class ShowTrackScheme implements TransformListener< ScreenTransform >, Se
 		}
 
 		repaint();
-
-		synchronized ( this )
-		{
-			if ( transformAnimator != null )
-			{
-				final ScreenTransform transform = transformAnimator.getCurrent( System.currentTimeMillis() );
-				canvas.getTransformEventHandler().setTransform( transform );
-				transformChanged( transform );
-				if ( transformAnimator.isComplete() )
-					transformAnimator = null;
-			}
-		}
 	}
 
 	public void DEBUG_printPools( final String title, final int from, final int to )
