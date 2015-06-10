@@ -14,7 +14,6 @@ import net.imglib2.ui.TransformEventHandler;
 import net.imglib2.ui.TransformListener;
 import net.imglib2.ui.util.GuiUtil;
 import net.imglib2.util.BenchmarkHelper;
-import net.trackmate.graph.collection.RefSet;
 
 public class ShowTrackScheme implements TransformListener< ScreenTransform >, SelectionListener, PainterThread.Paintable
 {
@@ -292,35 +291,9 @@ public class ShowTrackScheme implements TransformListener< ScreenTransform >, Se
 		}
 	}
 
-	// =================== TODO ===========================
-
-	public static interface HACK_SelectionListener
-	{
-		void select( TrackSchemeVertex v );
-
-		public void repaint();
-	}
-
-	private HACK_SelectionListener sl = null;
-
-	public void setSelectionListener( final HACK_SelectionListener sl )
-	{
-		this.sl = sl;
-	}
-
-	// =====================================================
-
 	@Override
 	public void refresh()
 	{
-		if ( sl != null )
-		{
-			final RefSet< TrackSchemeVertex > selectedVertices = selectionModel.getSelectedVertices();
-			if ( !selectedVertices.isEmpty() )
-				sl.select( selectedVertices.iterator().next() );
-			sl.repaint();
-		}
-
 		repaint();
 	}
 
