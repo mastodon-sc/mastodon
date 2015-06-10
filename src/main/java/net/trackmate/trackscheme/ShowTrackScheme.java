@@ -14,6 +14,7 @@ import net.imglib2.ui.TransformEventHandler;
 import net.imglib2.ui.TransformListener;
 import net.imglib2.ui.util.GuiUtil;
 import net.imglib2.util.BenchmarkHelper;
+import net.trackmate.trackscheme.animate.AbstractAnimator;
 
 public class ShowTrackScheme implements TransformListener< ScreenTransform >, SelectionListener, PainterThread.Paintable
 {
