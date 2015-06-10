@@ -2,10 +2,6 @@ package net.trackmate.trackscheme;
 
 import java.awt.event.ActionEvent;
 
-import net.trackmate.graph.IncomingEdges;
-import net.trackmate.graph.OutgoingEdges;
-import net.trackmate.graph.collection.RefSet;
-
 public class ActionBank
 {
 	public static final AbstractNamedAction getDeleteSelectionAction( final ShowTrackScheme trackscheme )
@@ -44,23 +40,7 @@ public class ActionBank
 			@Override
 			public void actionPerformed( final ActionEvent event )
 			{
-				final SelectionModel< TrackSchemeVertex, TrackSchemeEdge > selectionModel = trackscheme.selectionModel;
-				final RefSet< TrackSchemeVertex > vertices = selectionModel.getSelectedVertices();
-				if ( vertices.size() == 1 )
-				{
-					final TrackSchemeVertex vertex = vertices.iterator().next();
-					final OutgoingEdges< TrackSchemeEdge > edges = vertex.outgoingEdges();
-					if ( edges.size() > 0 )
-					{
-						final TrackSchemeEdge edge = edges.get( 0 );
-						final TrackSchemeVertex child = edge.getTarget();
-						selectionModel.clearSelection();
-						vertex.setSelected( false );
-						selectionModel.add( child );
-						child.setSelected( true );
-						trackscheme.refresh();
-					}
-				}
+				trackscheme.selectionNavigator.child( true );
 			}
 		};
 	}
@@ -74,23 +54,91 @@ public class ActionBank
 			@Override
 			public void actionPerformed( final ActionEvent event )
 			{
-				final SelectionModel< TrackSchemeVertex, TrackSchemeEdge > selectionModel = trackscheme.selectionModel;
-				final RefSet< TrackSchemeVertex > vertices = selectionModel.getSelectedVertices();
-				if ( vertices.size() == 1 )
-				{
-					final TrackSchemeVertex vertex = vertices.iterator().next();
-					final IncomingEdges< TrackSchemeEdge > edges = vertex.incomingEdges();
-					if ( edges.size() > 0 )
-					{
-						final TrackSchemeEdge edge = edges.get( 0 );
-						final TrackSchemeVertex child = edge.getSource();
-						selectionModel.clearSelection();
-						vertex.setSelected( false );
-						selectionModel.add( child );
-						child.setSelected( true );
-						trackscheme.refresh();
-					}
-				}
+				trackscheme.selectionNavigator.parent( true );
+			}
+		};
+	}
+
+	public static final AbstractNamedAction getNavigateToRightSibblingAction( final ShowTrackScheme trackscheme )
+	{
+		return new AbstractNamedAction( "navigateToRightSibbling" )
+		{
+			private static final long serialVersionUID = 4628178914912235537L;
+
+			@Override
+			public void actionPerformed( final ActionEvent event )
+			{
+				trackscheme.selectionNavigator.rightSibbling( true );
+			}
+		};
+	}
+
+	public static final AbstractNamedAction getNavigateToLeftSibblingAction( final ShowTrackScheme trackscheme )
+	{
+		return new AbstractNamedAction( "navigateToLeftSibbling" )
+		{
+			private static final long serialVersionUID = -34234313547655566L;
+
+			@Override
+			public void actionPerformed( final ActionEvent event )
+			{
+				trackscheme.selectionNavigator.leftSibbling( true );
+			}
+		};
+	}
+
+	public static final AbstractNamedAction getAddChildToSelectionAction( final ShowTrackScheme trackscheme )
+	{
+		return new AbstractNamedAction( "addChildToSelection" )
+		{
+			private static final long serialVersionUID = 2974983361072182473L;
+
+			@Override
+			public void actionPerformed( final ActionEvent event )
+			{
+				trackscheme.selectionNavigator.child( false );
+			}
+		};
+	}
+
+	public static final AbstractNamedAction getAddParentToSelectionAction( final ShowTrackScheme trackscheme )
+	{
+		return new AbstractNamedAction( "addParentToSelection" )
+		{
+			private static final long serialVersionUID = -1699923865575611814L;
+
+			@Override
+			public void actionPerformed( final ActionEvent event )
+			{
+				trackscheme.selectionNavigator.parent( false );
+			}
+		};
+	}
+
+	public static final AbstractNamedAction getAddRightSibblingToSelectionAction( final ShowTrackScheme trackscheme )
+	{
+		return new AbstractNamedAction( "addRightSibblingToSelection" )
+		{
+			private static final long serialVersionUID = -5851501792062577225L;
+
+			@Override
+			public void actionPerformed( final ActionEvent event )
+			{
+				trackscheme.selectionNavigator.rightSibbling( false );
+			}
+		};
+	}
+
+	public static final AbstractNamedAction getAddLeftSibblingToSelectionAction( final ShowTrackScheme trackscheme )
+	{
+		return new AbstractNamedAction( "addLeftSibblingToSelection" )
+		{
+			private static final long serialVersionUID = 5740293861004609589L;
+
+			@Override
+			public void actionPerformed( final ActionEvent event )
+			{
+				trackscheme.selectionNavigator.leftSibbling( false );
 			}
 		};
 	}

@@ -65,14 +65,14 @@ public class DefaultSelectionHandler extends MouseAdapter implements SelectionHa
 
 	private SelectionModel< TrackSchemeVertex, TrackSchemeEdge > selectionModel;
 
-	public DefaultSelectionHandler( TrackSchemeGraph graph, VertexOrder order )
+	public DefaultSelectionHandler( final TrackSchemeGraph graph, final VertexOrder order )
 	{
 		this.graph = graph;
 		this.order = order;
 	}
 
 	@Override
-	public void mouseClicked( MouseEvent e )
+	public void mouseClicked( final MouseEvent e )
 	{
 		if ( e.getModifiers() == MOUSE_MASK_CLICK || e.getModifiers() == MOUSE_MASK_CLICK_ADDTOSELECTION )
 		{
@@ -83,7 +83,7 @@ public class DefaultSelectionHandler extends MouseAdapter implements SelectionHa
 	}
 
 	@Override
-	public void mouseDragged( MouseEvent e )
+	public void mouseDragged( final MouseEvent e )
 	{
 		if ( e.getModifiersEx() == MOUSE_MASK ||  e.getModifiersEx() == MOUSE_MASK_ADDTOSELECTION )
 		{
@@ -100,7 +100,7 @@ public class DefaultSelectionHandler extends MouseAdapter implements SelectionHa
 	}
 
 	@Override
-	public void mouseReleased(MouseEvent e)
+	public void mouseReleased(final MouseEvent e)
 	{
 		if (dragStarted)
 		{
@@ -111,7 +111,7 @@ public class DefaultSelectionHandler extends MouseAdapter implements SelectionHa
 		}
 	}
 
-	private void selectAt( final ScreenTransform transform, final int x, final int y, boolean clear )
+	private void selectAt( final ScreenTransform transform, final int x, final int y, final boolean clear )
 	{
 		if ( clear )
 		{
@@ -153,7 +153,8 @@ public class DefaultSelectionHandler extends MouseAdapter implements SelectionHa
 		}
 	}
 
-	private void select( TrackSchemeVertex vertex, boolean toggle )
+	@Override
+	public void select( final TrackSchemeVertex vertex, final boolean toggle )
 	{
 		boolean selected;
 		if ( toggle )
@@ -170,7 +171,8 @@ public class DefaultSelectionHandler extends MouseAdapter implements SelectionHa
 		vertex.setSelected( selected );
 	}
 
-	private void select( TrackSchemeEdge edge, boolean toggle )
+	@Override
+	public void select( final TrackSchemeEdge edge, final boolean toggle )
 	{
 		boolean selected;
 		if ( toggle )
@@ -187,7 +189,8 @@ public class DefaultSelectionHandler extends MouseAdapter implements SelectionHa
 		edge.setSelected( selected );
 	}
 
-	private void clearSelection()
+	@Override
+	public void clearSelection()
 	{
 		/*
 		 * Rather than iterating over the whole model, it's best to use the
@@ -200,7 +203,8 @@ public class DefaultSelectionHandler extends MouseAdapter implements SelectionHa
 		selectionModel.clearSelection();
 	}
 
-	private void selectWithin( ScreenTransform transform, int x1, int y1, int x2, int y2, boolean clear )
+	@Override
+	public void selectWithin( final ScreenTransform transform, final int x1, final int y1, final int x2, final int y2, final boolean clear )
 	{
 		if ( clear )
 		{
@@ -233,7 +237,13 @@ public class DefaultSelectionHandler extends MouseAdapter implements SelectionHa
 	}
 
 	@Override
-	public void setSelectionModel( SelectionModel< TrackSchemeVertex, TrackSchemeEdge > selectionModel )
+	public SelectionModel< TrackSchemeVertex, TrackSchemeEdge > getSelectionModel()
+	{
+		return selectionModel;
+	}
+
+	@Override
+	public void setSelectionModel( final SelectionModel< TrackSchemeVertex, TrackSchemeEdge > selectionModel )
 	{
 		this.selectionModel = selectionModel;
 	}
@@ -245,7 +255,7 @@ public class DefaultSelectionHandler extends MouseAdapter implements SelectionHa
 	}
 
 	@Override
-	public void setTransform( ScreenTransform transform )
+	public void setTransform( final ScreenTransform transform )
 	{
 		this.transform = transform;
 	}
@@ -260,7 +270,7 @@ public class DefaultSelectionHandler extends MouseAdapter implements SelectionHa
 	{
 
 		@Override
-		public void drawOverlays( Graphics g )
+		public void drawOverlays( final Graphics g )
 		{
 			if ( !dragStarted ) { return; }
 			g.setColor( Color.RED );
@@ -272,7 +282,7 @@ public class DefaultSelectionHandler extends MouseAdapter implements SelectionHa
 		}
 
 		@Override
-		public void setCanvasSize( int width, int height )
+		public void setCanvasSize( final int width, final int height )
 		{}
 
 	}

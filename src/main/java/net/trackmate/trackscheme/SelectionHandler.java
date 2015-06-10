@@ -43,4 +43,14 @@ public interface SelectionHandler extends MouseListener, MouseMotionListener
 	 */
 	public void setSelectionModel( SelectionModel< TrackSchemeVertex, TrackSchemeEdge > selectionModel );
 
+	public SelectionModel< TrackSchemeVertex, TrackSchemeEdge > getSelectionModel();
+
+	public void selectWithin( ScreenTransform transform, int x1, int y1, int x2, int y2, boolean clear );
+
+	public void clearSelection();
+
+	public void select( TrackSchemeEdge edge, boolean toggle );
+
+	public void select( TrackSchemeVertex vertex, boolean toggle );
+
 }

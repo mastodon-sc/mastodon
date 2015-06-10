@@ -27,7 +27,7 @@ public class VertexOrder
 	 * vertex list: all vertices of a timepoint ordered by natural tree order
 	 * tree roots (including unconnected vertices) are ordered by ID (for now)
 	 */
-	private final TIntObjectHashMap< TrackSchemeVertexList > timepointToOrderedVertices;
+	final TIntObjectHashMap< TrackSchemeVertexList > timepointToOrderedVertices;
 
 	private ScreenEntities screenEntities;
 

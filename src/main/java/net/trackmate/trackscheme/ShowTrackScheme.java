@@ -4,12 +4,15 @@ import java.awt.BorderLayout;
 import java.awt.Graphics;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import javax.swing.JFrame;
 
 import net.imglib2.ui.InteractiveDisplayCanvasComponent;
 import net.imglib2.ui.OverlayRenderer;
 import net.imglib2.ui.PainterThread;
+import net.imglib2.ui.TransformEventHandler;
 import net.imglib2.ui.TransformListener;
 import net.imglib2.ui.util.GuiUtil;
 import net.imglib2.util.BenchmarkHelper;
@@ -44,6 +47,10 @@ public class ShowTrackScheme implements TransformListener< ScreenTransform >, Se
 	private final ZoomBoxHandler zoomHandler;
 
 	private final PainterThread painterThread;
+
+	SelectionNavigator selectionNavigator;
+
+	private TranslationAnimator transformAnimator;
 
 	public ShowTrackScheme( final TrackSchemeGraph graph )
 	{
@@ -99,6 +106,8 @@ public class ShowTrackScheme implements TransformListener< ScreenTransform >, Se
 		canvas.addMouseMotionListener( selectionHandler );
 		selectionHandler.setSelectionListener( this );
 
+		selectionNavigator = new SelectionNavigator( selectionHandler, this );
+
 		zoomHandler = new ZoomBoxHandler( canvas.getTransformEventHandler(), this );
 		canvas.addMouseListener( zoomHandler );
 		canvas.addMouseMotionListener( zoomHandler );
@@ -139,6 +148,31 @@ public class ShowTrackScheme implements TransformListener< ScreenTransform >, Se
 				painterThread.requestRepaint();
 			}
 		} );
+	}
+
+	public void centerOn( final TrackSchemeVertex vertex )
+	{
+		final double x = vertex.getLayoutX();
+		final int y = vertex.getTimePoint();
+		final TransformEventHandler< ScreenTransform > handler = canvas.getTransformEventHandler();
+		final ScreenTransform transform = handler.getTransform();
+
+		transformAnimator = new TranslationAnimator( transform, x, y, 200 );
+		transformAnimator.setTime( System.currentTimeMillis() );
+
+		final Timer timer = new Timer();
+		timer.scheduleAtFixedRate( new TimerTask()
+		{
+			@Override
+			public void run()
+			{
+				if ( transformAnimator == null || transformAnimator.isComplete() )
+				{
+					timer.cancel();
+				}
+				refresh();
+			}
+		}, 0, 10 );
 	}
 
 	@Override
@@ -206,8 +240,8 @@ public class ShowTrackScheme implements TransformListener< ScreenTransform >, Se
 			swapIpStart();
 			order.cropAndScale( minX, maxX, minY, maxY, w, h, screenEntities );
 			swapIpEnd();
-			currentAnimator = new ScreenEntitiesAnimator( ANIMATION_MILLISECONDS );
-			currentAnimator.setTime( System.currentTimeMillis() );
+			entitiesAnimator = new ScreenEntitiesAnimator( ANIMATION_MILLISECONDS );
+			entitiesAnimator.setTime( System.currentTimeMillis() );
 		}
 		else
 		{
@@ -235,18 +269,18 @@ public class ShowTrackScheme implements TransformListener< ScreenTransform >, Se
 			ip.interpolate( ratioComplete(), screenEntities );
 			overlay.setScreenEntities( screenEntities );
 			if ( isComplete() )
-				currentAnimator = null;
+				entitiesAnimator = null;
 			frame.repaint();
 		}
 	}
 
-	private volatile ScreenEntitiesAnimator currentAnimator;
+	private volatile ScreenEntitiesAnimator entitiesAnimator;
 
 	@Override
 	public synchronized void paint()
 	{
-		if ( currentAnimator != null )
-			currentAnimator.animate();
+		if ( entitiesAnimator != null )
+			entitiesAnimator.animate();
 	}
 
 	// =================== TODO ===========================
@@ -279,6 +313,18 @@ public class ShowTrackScheme implements TransformListener< ScreenTransform >, Se
 		}
 
 		repaint();
+
+		synchronized ( this )
+		{
+			if ( transformAnimator != null )
+			{
+				final ScreenTransform transform = transformAnimator.getCurrent( System.currentTimeMillis() );
+				canvas.getTransformEventHandler().setTransform( transform );
+				transformChanged( transform );
+				if ( transformAnimator.isComplete() )
+					transformAnimator = null;
+			}
+		}
 	}
 
 	public void DEBUG_printPools( final String title, final int from, final int to )
