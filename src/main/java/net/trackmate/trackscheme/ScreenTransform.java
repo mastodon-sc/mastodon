@@ -1,13 +1,9 @@
 package net.trackmate.trackscheme;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-
-import javax.swing.Timer;
 
 import net.imglib2.ui.TransformEventHandler;
 import net.imglib2.ui.TransformEventHandlerFactory;
@@ -224,24 +220,6 @@ public class ScreenTransform
 				listener.transformChanged( transform );
 		}
 
-		// ================ KeyListener =============================
-
-		private boolean shiftPressed = false;
-
-		@Override
-		public void keyPressed( final KeyEvent e )
-		{
-			if ( e.getKeyCode() == KeyEvent.VK_SHIFT )
-				shiftPressed = true;
-		}
-
-		@Override
-		public void keyReleased( final KeyEvent e )
-		{
-			if ( e.getKeyCode() == KeyEvent.VK_SHIFT )
-				shiftPressed = false;
-		}
-
 		@Override
 		public void keyTyped( final KeyEvent e )
 		{}
@@ -251,9 +229,6 @@ public class ScreenTransform
 		@Override
 		public void mousePressed( final MouseEvent e )
 		{
-			positionFriction.stop();
-			positionWheelFriction.stop();
-			zoomFriction.stop();
 			final int modifiers = e.getModifiersEx();
 			if ( ( modifiers & ( MouseEvent.BUTTON2_DOWN_MASK | MouseEvent.BUTTON3_DOWN_MASK ) ) != 0 ) // translate
 			{
@@ -272,11 +247,6 @@ public class ScreenTransform
 			final int modifiers = e.getModifiersEx();
 			if ( ( modifiers & ( MouseEvent.BUTTON2_DOWN_MASK | MouseEvent.BUTTON3_DOWN_MASK ) ) != 0 ) // translate
 			{
-				vx = e.getX() - eX;
-				vy = e.getY() - eY;
-				eX = e.getX();
-				eY = e.getY();
-
 				synchronized ( transform )
 				{
 					final int dX = oX - e.getX();
@@ -288,199 +258,11 @@ public class ScreenTransform
 		}
 
 		@Override
-		public void mouseReleased( final MouseEvent e )
-		{
-//			final int modifiers = e.getModifiers();
-//			if ( ( modifiers & ( MouseEvent.BUTTON2_MASK | MouseEvent.BUTTON3_MASK ) ) != 0 ) // translate
-//			{
-//				if ( Math.abs( vx ) > 0 && Math.abs( vy ) > 0 )
-//				{
-//					positionFriction.restart();
-//				}
-//			}
-		}
+		public void keyPressed( final KeyEvent e )
+		{}
 
-//		@Override
-//		public void mouseWheelMoved( final MouseWheelEvent e )
-//		{
-//			synchronized ( transform )
-//			{
-//				final int modifiers = e.getModifiersEx();
-//				final int s = e.getWheelRotation();
-//				final boolean ctrlPressed = ( modifiers & KeyEvent.CTRL_DOWN_MASK ) != 0;
-//				final boolean altPressed = ( modifiers & KeyEvent.ALT_DOWN_MASK ) != 0;
-//				final boolean metaPressed = ( ( modifiers & KeyEvent.META_DOWN_MASK ) != 0 ) || ( ctrlPressed && shiftPressed );
-//
-//				eX = e.getX();
-//				eY = e.getY();
-//				zoomOut = s < 0;
-//				zoomSteps = ( int ) ( MOUSEWHEEL_ZOOM_SPEED * Math.abs( s ) );
-//
-//				if ( metaPressed ) // zoom both axes
-//				{
-//					zoomType = ZoomType.XY;
-//					zoomFriction.restart();
-//				}
-//				else if ( shiftPressed ) // zoom X axis
-//				{
-//					zoomType = ZoomType.X;
-//					zoomFriction.restart();
-//				}
-//				else if ( ctrlPressed || altPressed ) // zoom Y axis
-//				{
-//					zoomType = ZoomType.Y;
-//					zoomFriction.restart();
-//				}
-//				else
-//				{
-//					final int d = ( int ) ( s * MOUSEWHEEL_SCROLL_SPEED );
-//					final boolean dirX = ( modifiers & KeyEvent.SHIFT_DOWN_MASK ) != 0;
-//					if ( dirX )
-//					{
-//						vx = d;
-//						vy = 0;
-//					}
-//					else
-//					{
-//						vx = 0;
-//						vy = d;
-//					}
-//					positionWheelFriction.restart();
-//				}
-//				update();
-//			}
-//		}
-
-		/*
-		 * FRICTION STUFF
-		 */
-
-		/**
-		 * Speed at which the screen scrolls when using the mouse wheel.
-		 */
-		private static final double MOUSEWHEEL_SCROLL_SPEED = 10d;
-
-		/**
-		 * Speed at which the zoom changes when using the mouse wheel.
-		 */
-		private static final double MOUSEWHEEL_ZOOM_SPEED = 1d;
-
-		private int vx;
-
-		private int vy;
-
-		private int eX;
-
-		private int eY;
-
-		private boolean zoomOut;
-
-		private int zoomSteps = 0;
-
-		private ZoomType zoomType;
-
-		private final Timer positionFriction = new Timer( 10, new ActionListener()
-		{
-			private final double dt = 1; // s
-
-			private final double lambda = 0.02; // s-1
-
-			private final double minV = 0.1;
-
-			@Override
-			public void actionPerformed( final ActionEvent e )
-			{
-				final double dvx = -lambda * vx * dt;
-				final double dvy = -lambda * vy * dt;
-
-				vx += dvx;
-				vy += dvy;
-
-				eX += vx * dt;
-				eY += vy * dt;
-
-				synchronized ( transform )
-				{
-					final int dX = oX - eX;
-					final int dY = oY - eY;
-					transform.setScreenTranslated( dX, dY, transformDragStart );
-				}
-				update();
-
-				if ( ( vx * vx + vy * vy ) < minV * minV )
-				{
-					positionFriction.stop();
-				}
-			}
-		} );
-
-		private final Timer positionWheelFriction = new Timer( 10, new ActionListener()
-		{
-			private final double dt = 1; // s
-
-			private final double lambda = 0.1; // s-1
-
-			private final double minV = 0.1;
-
-			@Override
-			public void actionPerformed( final ActionEvent e )
-			{
-				final double dvx = -lambda * vx * dt;
-				final double dvy = -lambda * vy * dt;
-
-				vx += dvx;
-				vy += dvy;
-
-				synchronized ( transform )
-				{
-					transform.setScreenTranslated( vx, vy, transform );
-				}
-				update();
-
-				if ( ( vx * vx + vy * vy ) < minV * minV )
-				{
-					positionFriction.stop();
-				}
-			}
-		} );
-
-		private final Timer zoomFriction = new Timer( 10, new ActionListener()
-		{
-			private static final double dScale = .01;
-
-			@Override
-			public void actionPerformed( final ActionEvent e )
-			{
-				final double zoom = zoomOut ? 1d / ( 1d + zoomSteps * dScale ) : ( 1d + dScale * zoomSteps );
-				zoomSteps--;
-				synchronized ( transform )
-				{
-					switch ( zoomType )
-					{
-					case X:
-						transform.scaleX( zoom, eX, eY );
-						break;
-					case Y:
-						transform.scaleY( zoom, eX, eY );
-						break;
-					case XY:
-					default:
-						transform.scale( zoom, eX, eY );
-						break;
-					}
-				}
-				update();
-				if ( zoomSteps < 1 )
-				{
-					zoomFriction.stop();
-				}
-			}
-		} );
-
-		private enum ZoomType
-		{
-			X, Y, XY;
-		}
+		@Override
+		public void keyReleased( final KeyEvent e )
+		{}
 	}
-
 }

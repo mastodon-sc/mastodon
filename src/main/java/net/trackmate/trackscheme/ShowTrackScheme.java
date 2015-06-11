@@ -2,10 +2,6 @@ package net.trackmate.trackscheme;
 
 import java.awt.BorderLayout;
 import java.awt.Graphics;
-import java.awt.event.KeyEvent;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseWheelEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
@@ -53,7 +49,7 @@ public class ShowTrackScheme implements TransformListener< ScreenTransform >, Se
 
 	SelectionNavigator selectionNavigator;
 
-	private AbstractTransformAnimator< ScreenTransform > transformAnimator;
+	AbstractTransformAnimator< ScreenTransform > transformAnimator;
 
 	public ShowTrackScheme( final TrackSchemeGraph graph )
 	{
@@ -91,7 +87,8 @@ public class ShowTrackScheme implements TransformListener< ScreenTransform >, Se
 		overlay = new GraphLayoutOverlay();
 		overlay.setCanvasSize( 800, 600 );
 
-		canvas = new InteractiveDisplayCanvasComponent< ScreenTransform >( 800, 600, ScreenTransform.ScreenTransformEventHandler.factory() );
+//		canvas = new InteractiveDisplayCanvasComponent< ScreenTransform >( 800, 600, ScreenTransform.ScreenTransformEventHandler.factory() );
+		canvas = new InteractiveDisplayCanvasComponent< ScreenTransform >( 800, 600, InertialTransformHandler.factory( this ) );
 		final double minY = order.getMinTimepoint() - 0.5;
 		final double maxY = order.getMaxTimepoint() + 0.5;
 		final double minX = order.getMinX() - 1.0;
@@ -107,142 +104,6 @@ public class ShowTrackScheme implements TransformListener< ScreenTransform >, Se
 		selectionHandler.setSelectionModel( selectionModel );
 		canvas.addMouseListener( selectionHandler );
 		canvas.addMouseMotionListener( selectionHandler );
-
-		final MouseAdapter inertiaListener = new MouseAdapter()
-		{
-
-			/**
-			 * Speed at which the screen scrolls when using the mouse wheel.
-			 */
-			private static final double MOUSEWHEEL_SCROLL_SPEED = -2e-4;
-
-			/**
-			 * Speed at which the zoom changes when using the mouse wheel.
-			 */
-			private static final double MOUSEWHEEL_ZOOM_SPEED = 1d;
-
-			private double vx0;
-
-			private double vy0;
-
-			private double x0;
-
-			private double y0;
-
-			private long t0;
-
-			private ScreenTransform transform;
-
-			@Override
-			public void mousePressed( final MouseEvent e )
-			{
-				this.transform = currentTransform.copy();
-				vx0 = 0;
-				vy0 = 0;
-			}
-
-			@Override
-			public synchronized void mouseReleased( final MouseEvent e )
-			{
-				final int modifiers = e.getModifiers();
-				if ( ( modifiers & ( MouseEvent.BUTTON2_MASK | MouseEvent.BUTTON3_MASK ) ) != 0 ) // translate
-				{
-					if ( Math.abs( vx0 ) > 0 || Math.abs( vy0 ) > 0 )
-					{
-						transformAnimator = new InertialTranslationAnimator( currentTransform, vx0, vy0, 500 );
-						refresh();
-					}
-				}
-			};
-
-			@Override
-			public void mouseDragged( final MouseEvent e )
-			{
-				final int modifiers = e.getModifiersEx();
-				if ( ( modifiers & ( MouseEvent.BUTTON2_DOWN_MASK | MouseEvent.BUTTON3_DOWN_MASK ) ) != 0 ) // translate
-				{
-					final long t = System.currentTimeMillis();
-					final double x = transform.screenToLayoutX( e.getX() );
-					final double y = transform.screenToLayoutY( e.getY() );
-					vx0 = ( x - x0 ) / ( ( double ) t - t0 );
-					vy0 = ( y - y0 ) / ( ( double ) t - t0 );
-					x0 = x;
-					y0 = y;
-					t0 = t;
-				}
-			}
-
-			@Override
-			public synchronized void mouseWheelMoved( final MouseWheelEvent e )
-			{
-
-				final int modifiers = e.getModifiersEx();
-				final int s = e.getWheelRotation();
-				final boolean ctrlPressed = ( modifiers & KeyEvent.CTRL_DOWN_MASK ) != 0;
-				final boolean altPressed = ( modifiers & KeyEvent.ALT_DOWN_MASK ) != 0;
-				final boolean shiftPressed = ( modifiers & KeyEvent.SHIFT_DOWN_MASK ) != 0;
-				final boolean metaPressed = ( ( modifiers & KeyEvent.META_DOWN_MASK ) != 0 ) || ( ctrlPressed && shiftPressed );
-
-				if ( metaPressed || shiftPressed || ctrlPressed || altPressed )
-				{
-					/*
-					 * Zoom.
-					 */
-
-					final boolean zoomOut = s < 0;
-					final int zoomSteps = ( int ) ( MOUSEWHEEL_ZOOM_SPEED * Math.abs( s ) );
-					final boolean zoomX, zoomY;
-					if ( metaPressed ) // zoom both axes
-					{
-						zoomX = true;
-						zoomY = true;
-					}
-					else if ( shiftPressed ) // zoom X axis
-					{
-						zoomX = true;
-						zoomY = false;
-					}
-					else if ( ctrlPressed || altPressed ) // zoom Y axis
-					{
-						zoomX = false;
-						zoomY = true;
-					}
-					else
-					{
-						zoomX = false;
-						zoomY = false;
-					}
-
-					transformAnimator = new InertialZoomAnimator( currentTransform, zoomSteps, zoomOut, zoomX, zoomY, e.getX(), e.getY(), 500 );
-				}
-				else
-				{
-					/*
-					 * Scroll.
-					 */
-
-					final boolean dirX = ( modifiers & KeyEvent.SHIFT_DOWN_MASK ) != 0;
-					if ( dirX )
-					{
-						vx0 = s * ( currentTransform.maxX - currentTransform.minX ) * MOUSEWHEEL_SCROLL_SPEED;
-						vy0 = 0;
-					}
-					else
-					{
-						vx0 = 0;
-						vy0 = s * ( currentTransform.maxY - currentTransform.minY ) * MOUSEWHEEL_SCROLL_SPEED;
-					}
-					transformAnimator = new InertialTranslationAnimator( currentTransform, vx0, vy0, 500 );
-				}
-
-				refresh();
-
-			}
-		};
-
-		canvas.addMouseListener( inertiaListener );
-		canvas.addMouseMotionListener( inertiaListener );
-		canvas.addMouseWheelListener( inertiaListener );
 
 		selectionHandler.setSelectionListener( this );
 
