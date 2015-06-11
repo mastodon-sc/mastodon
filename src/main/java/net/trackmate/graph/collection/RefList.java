@@ -99,7 +99,7 @@ public interface RefList< O > extends RefCollection< O >, List< O >
 	/**
 	 * Shuffle the elements of the list using the specified random number
 	 * generator.
-	 * 
+	 *
 	 * @param rand
 	 *            a random number generator.
 	 */
@@ -108,15 +108,16 @@ public interface RefList< O > extends RefCollection< O >, List< O >
 	/**
 	 * Sort the values in the list, in ascending order according to the
 	 * specified {@link Comparator}.
-	 * 
+	 *
 	 * @param comparator
 	 *            the comparator to use for ordering.
 	 */
-	public void sort( Comparator< O > comparator );
+	@Override
+	public void sort( Comparator< ? super O > comparator );
 
 	/**
 	 * Swaps the elements at the specified positions in this list.
-	 * 
+	 *
 	 * @param i
 	 *            the index of one element to be swapped.
 	 * @param j

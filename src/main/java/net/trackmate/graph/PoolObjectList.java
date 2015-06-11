@@ -481,14 +481,14 @@ public class PoolObjectList< O extends Ref< O > > implements PoolObjectCollectio
 	}
 
 	@Override
-	public void sort( final Comparator< O > comparator )
+	public void sort( final Comparator< ? super O > comparator )
 	{
 		if ( indices.size() < 2 )
 			return;
 		quicksort( 0, size() - 1, comparator, createRef(), createRef() );
 	}
 
-	private void quicksort( final int low, final int high, final Comparator< O > comparator, final O tmpRef1, final O tmpRef2 )
+	private void quicksort( final int low, final int high, final Comparator< ? super O > comparator, final O tmpRef1, final O tmpRef2 )
 	{
 		final O pivot = get( ( low + high ) / 2, tmpRef1 );
 
