@@ -2,8 +2,10 @@ package net.trackmate.trackscheme;
 
 import java.awt.BorderLayout;
 import java.awt.Graphics;
+import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.event.MouseWheelEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
@@ -108,6 +110,17 @@ public class ShowTrackScheme implements TransformListener< ScreenTransform >, Se
 
 		final MouseAdapter interiaListener = new MouseAdapter()
 		{
+
+			/**
+			 * Speed at which the screen scrolls when using the mouse wheel.
+			 */
+			private static final double MOUSEWHEEL_SCROLL_SPEED = -2e-4;
+
+			/**
+			 * Speed at which the zoom changes when using the mouse wheel.
+			 */
+			private static final double MOUSEWHEEL_ZOOM_SPEED = 1d;
+
 			private double vx0;
 
 			private double vy0;
@@ -129,7 +142,7 @@ public class ShowTrackScheme implements TransformListener< ScreenTransform >, Se
 			}
 
 			@Override
-			public void mouseReleased( final MouseEvent e )
+			public synchronized void mouseReleased( final MouseEvent e )
 			{
 				final int modifiers = e.getModifiers();
 				if ( ( modifiers & ( MouseEvent.BUTTON2_MASK | MouseEvent.BUTTON3_MASK ) ) != 0 ) // translate
@@ -158,10 +171,62 @@ public class ShowTrackScheme implements TransformListener< ScreenTransform >, Se
 					t0 = t;
 				}
 			}
+
+			@Override
+			public synchronized void mouseWheelMoved( final MouseWheelEvent e )
+			{
+
+					final int modifiers = e.getModifiersEx();
+					final int s = e.getWheelRotation();
+					final boolean ctrlPressed = ( modifiers & KeyEvent.CTRL_DOWN_MASK ) != 0;
+					final boolean altPressed = ( modifiers & KeyEvent.ALT_DOWN_MASK ) != 0;
+					final boolean shiftPressed = ( modifiers & KeyEvent.SHIFT_DOWN_MASK ) != 0;
+					final boolean metaPressed = ( ( modifiers & KeyEvent.META_DOWN_MASK ) != 0 ) || ( ctrlPressed && shiftPressed );
+
+//				zoomOut = s < 0;
+//				zoomSteps = ( int ) ( MOUSEWHEEL_ZOOM_SPEED * Math.abs( s ) );
+//
+//				if ( metaPressed ) // zoom both axes
+//				{
+//					zoomType = ZoomType.XY;
+//					zoomFriction.restart();
+//				}
+//				else if ( shiftPressed ) // zoom X axis
+//				{
+//					zoomType = ZoomType.X;
+//					zoomFriction.restart();
+//				}
+//				else if ( ctrlPressed || altPressed ) // zoom Y axis
+//				{
+//					zoomType = ZoomType.Y;
+//					zoomFriction.restart();
+//				}
+//				else
+
+					if ( ctrlPressed || altPressed || shiftPressed || metaPressed ) { return; }
+
+					{
+						final boolean dirX = ( modifiers & KeyEvent.SHIFT_DOWN_MASK ) != 0;
+						if ( dirX )
+						{
+							vx0 = s * ( currentTransform.maxX - currentTransform.minX ) * MOUSEWHEEL_SCROLL_SPEED;
+							vy0 = 0;
+						}
+						else
+						{
+							vx0 = 0;
+							vy0 = s * ( currentTransform.maxY - currentTransform.minY ) * MOUSEWHEEL_SCROLL_SPEED;
+						}
+						transformAnimator = new InertialTranslationAnimator( currentTransform, vx0, vy0, 500 );
+						refresh();
+					}
+
+			}
 		};
 
 		canvas.addMouseListener( interiaListener );
 		canvas.addMouseMotionListener( interiaListener );
+		canvas.addMouseWheelListener( interiaListener );
 
 		selectionHandler.setSelectionListener( this );
 

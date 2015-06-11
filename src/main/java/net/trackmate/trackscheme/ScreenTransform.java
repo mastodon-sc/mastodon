@@ -332,22 +332,22 @@ public class ScreenTransform
 					zoomType = ZoomType.Y;
 					zoomFriction.restart();
 				}
-				else
-				{
-					final int d = ( int ) ( s * MOUSEWHEEL_SCROLL_SPEED );
-					final boolean dirX = ( modifiers & KeyEvent.SHIFT_DOWN_MASK ) != 0;
-					if ( dirX )
-					{
-						vx = d;
-						vy = 0;
-					}
-					else
-					{
-						vx = 0;
-						vy = d;
-					}
-					positionWheelFriction.restart();
-				}
+//				else
+//				{
+//					final int d = ( int ) ( s * MOUSEWHEEL_SCROLL_SPEED );
+//					final boolean dirX = ( modifiers & KeyEvent.SHIFT_DOWN_MASK ) != 0;
+//					if ( dirX )
+//					{
+//						vx = d;
+//						vy = 0;
+//					}
+//					else
+//					{
+//						vx = 0;
+//						vy = d;
+//					}
+//					positionWheelFriction.restart();
+//				}
 				update();
 			}
 		}
