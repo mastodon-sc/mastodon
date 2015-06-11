@@ -98,7 +98,7 @@ public class InertialTransformHandler implements MouseListener, MouseWheelListen
 			if ( Math.abs( vx0 ) > 0 || Math.abs( vy0 ) > 0 )
 			{
 				trackscheme.transformAnimator = new InertialTranslationAnimator( transform, vx0, vy0, 500 );
-				trackscheme.refresh();
+				update();
 			}
 		}
 	};
@@ -117,6 +117,14 @@ public class InertialTransformHandler implements MouseListener, MouseWheelListen
 			x0 = x;
 			y0 = y;
 			t0 = t;
+
+			synchronized ( transform )
+			{
+				final int dX = oX - e.getX();
+				final int dY = oY - e.getY();
+				transform.setScreenTranslated( dX, dY, transformDragStart );
+			}
+			update();
 		}
 	}
 
