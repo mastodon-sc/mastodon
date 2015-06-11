@@ -214,7 +214,6 @@ public class ShowTrackScheme implements TransformListener< ScreenTransform >, Se
 					}
 
 					transformAnimator = new InertialZoomAnimator( currentTransform, zoomSteps, zoomOut, zoomX, zoomY, e.getX(), e.getY(), 500 );
-//					System.out.println( zzom );// DEBUG
 				}
 				else
 				{

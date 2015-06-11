@@ -4,7 +4,7 @@ import net.trackmate.trackscheme.animate.AbstractTransformAnimator;
 
 public class InertialZoomAnimator extends AbstractTransformAnimator< ScreenTransform >
 {
-	private static final double dScale = .01;
+	private static final double dScale = 0.005;
 
 	private final ScreenTransform transformStart;
 
@@ -20,6 +20,8 @@ public class InertialZoomAnimator extends AbstractTransformAnimator< ScreenTrans
 
 	private final int zoomSteps;
 
+	private final ScreenTransform transform;
+
 	public InertialZoomAnimator( final ScreenTransform transformStart, final int zoomSteps, final boolean zoomOut, final boolean zoomX, final boolean zoomY, final int eX, final int eY, final long duration )
 	{
 		super( duration );
@@ -30,6 +32,8 @@ public class InertialZoomAnimator extends AbstractTransformAnimator< ScreenTrans
 		this.zoomY = zoomY;
 		this.eX = eX;
 		this.eY = eY;
+		this.transform = new ScreenTransform();
+		transform.set( transformStart );
 	}
 
 	@Override
@@ -41,10 +45,7 @@ public class InertialZoomAnimator extends AbstractTransformAnimator< ScreenTrans
 			t = 1;
 		}
 
-		final ScreenTransform transform = new ScreenTransform();
-		transform.set( transformStart );
-
-		final double tau = 1 / 3;
+		final double tau = 1 / 3d;
 		final double zoom = zoomOut ? 1d / ( 1d + zoomSteps * dScale * Math.exp( -t / tau ) ) : ( 1d + dScale * zoomSteps * Math.exp( -t / tau ) );
 		if ( zoomX && !zoomY )
 		{
