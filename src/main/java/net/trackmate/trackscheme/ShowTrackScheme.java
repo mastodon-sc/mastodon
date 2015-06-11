@@ -2,6 +2,8 @@ package net.trackmate.trackscheme;
 
 import java.awt.BorderLayout;
 import java.awt.Graphics;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
@@ -15,6 +17,7 @@ import net.imglib2.ui.TransformListener;
 import net.imglib2.ui.util.GuiUtil;
 import net.imglib2.util.BenchmarkHelper;
 import net.trackmate.trackscheme.animate.AbstractAnimator;
+import net.trackmate.trackscheme.animate.AbstractTransformAnimator;
 
 public class ShowTrackScheme implements TransformListener< ScreenTransform >, SelectionListener, PainterThread.Paintable
 {
@@ -48,7 +51,7 @@ public class ShowTrackScheme implements TransformListener< ScreenTransform >, Se
 
 	SelectionNavigator selectionNavigator;
 
-	private TranslationAnimator transformAnimator;
+	private AbstractTransformAnimator< ScreenTransform > transformAnimator;
 
 	public ShowTrackScheme( final TrackSchemeGraph graph )
 	{
@@ -102,6 +105,64 @@ public class ShowTrackScheme implements TransformListener< ScreenTransform >, Se
 		selectionHandler.setSelectionModel( selectionModel );
 		canvas.addMouseListener( selectionHandler );
 		canvas.addMouseMotionListener( selectionHandler );
+
+		final MouseAdapter interiaListener = new MouseAdapter()
+		{
+			private double vx0;
+
+			private double vy0;
+
+			private double x0;
+
+			private double y0;
+
+			private long t0;
+
+			private ScreenTransform transform;
+
+			@Override
+			public void mousePressed( final MouseEvent e )
+			{
+				this.transform = currentTransform.copy();
+				vx0 = 0;
+				vy0 = 0;
+			}
+
+			@Override
+			public void mouseReleased( final MouseEvent e )
+			{
+				final int modifiers = e.getModifiers();
+				if ( ( modifiers & ( MouseEvent.BUTTON2_MASK | MouseEvent.BUTTON3_MASK ) ) != 0 ) // translate
+				{
+					if ( Math.abs( vx0 ) > 0 || Math.abs( vy0 ) > 0 )
+					{
+						transformAnimator = new InertialTranslationAnimator( currentTransform, vx0, vy0, 500 );
+						refresh();
+					}
+				}
+			};
+
+			@Override
+			public void mouseDragged( final MouseEvent e )
+			{
+				final int modifiers = e.getModifiersEx();
+				if ( ( modifiers & ( MouseEvent.BUTTON2_DOWN_MASK | MouseEvent.BUTTON3_DOWN_MASK ) ) != 0 ) // translate
+				{
+					final long t = System.currentTimeMillis();
+					final double x = transform.screenToLayoutX( e.getX() );
+					final double y = transform.screenToLayoutY( e.getY() );
+					vx0 = ( x - x0 ) / ( ( double ) t - t0 );
+					vy0 = ( y - y0 ) / ( ( double ) t - t0 );
+					x0 = x;
+					y0 = y;
+					t0 = t;
+				}
+			}
+		};
+
+		canvas.addMouseListener( interiaListener );
+		canvas.addMouseMotionListener( interiaListener );
+
 		selectionHandler.setSelectionListener( this );
 
 		selectionNavigator = new SelectionNavigator( selectionHandler, this );
@@ -158,20 +219,6 @@ public class ShowTrackScheme implements TransformListener< ScreenTransform >, Se
 		transformAnimator = new TranslationAnimator( transform, x, y, 200 );
 		transformAnimator.setTime( System.currentTimeMillis() );
 		refresh();
-
-//		final Timer timer = new Timer();
-//		timer.scheduleAtFixedRate( new TimerTask()
-//		{
-//			@Override
-//			public void run()
-//			{
-//				if ( transformAnimator == null || transformAnimator.isComplete() )
-//				{
-//					timer.cancel();
-//				}
-//				refresh();
-//			}
-//		}, 0, 10 );
 	}
 
 	@Override
@@ -284,11 +331,11 @@ public class ShowTrackScheme implements TransformListener< ScreenTransform >, Se
 
 		if ( transformAnimator != null )
 		{
-			final ScreenTransform transform = transformAnimator.getCurrent( System.currentTimeMillis() );
-			canvas.getTransformEventHandler().setTransform( transform );
-			transformChanged( transform );
-			if ( transformAnimator.isComplete() )
-				transformAnimator = null;
+				final ScreenTransform transform = transformAnimator.getCurrent( System.currentTimeMillis() );
+				canvas.getTransformEventHandler().setTransform( transform );
+				transformChanged( transform );
+				if ( transformAnimator.isComplete() )
+					transformAnimator = null;
 		}
 	}
 

@@ -291,14 +291,14 @@ public class ScreenTransform
 		@Override
 		public void mouseReleased( final MouseEvent e )
 		{
-			final int modifiers = e.getModifiers();
-			if ( ( modifiers & ( MouseEvent.BUTTON2_MASK | MouseEvent.BUTTON3_MASK ) ) != 0 ) // translate
-			{
-				if ( Math.abs( vx ) > 0 && Math.abs( vy ) > 0 )
-				{
-					positionFriction.restart();
-				}
-			}
+//			final int modifiers = e.getModifiers();
+//			if ( ( modifiers & ( MouseEvent.BUTTON2_MASK | MouseEvent.BUTTON3_MASK ) ) != 0 ) // translate
+//			{
+//				if ( Math.abs( vx ) > 0 && Math.abs( vy ) > 0 )
+//				{
+//					positionFriction.restart();
+//				}
+//			}
 		}
 
 		@Override

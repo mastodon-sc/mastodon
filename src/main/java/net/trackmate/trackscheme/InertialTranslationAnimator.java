@@ -13,13 +13,17 @@ public class InertialTranslationAnimator extends AbstractTransformAnimator< Scre
 
 	private final double vx0;
 
+	private final long d;
+
 	public InertialTranslationAnimator( final ScreenTransform transformStart, final double vx0, final double vy0, final long duration )
 	{
 		super( duration );
-		this.transformStart = transformStart;
-		this.vy0 = vy0;
-		this.vx0 = vx0;
-		this.tau = 0.33d; // in unit of duration
+		this.d = duration;
+		this.transformStart = transformStart.copy();
+		this.vx0 = -vx0;
+		this.vy0 = -vy0;
+		this.tau = 200d; // in ms
+
 	}
 
 	@Override
@@ -34,8 +38,9 @@ public class InertialTranslationAnimator extends AbstractTransformAnimator< Scre
 		final ScreenTransform transform = new ScreenTransform();
 		transform.set( transformStart );
 
-		final double dx = vx0 * Math.exp( -t / tau ) * t;
-		final double dy = vy0 * Math.exp( -t / tau ) * t;
+		final double inc = tau * ( 1 - Math.exp( -t * d / tau ) );
+		final double dx = vx0 * inc;
+		final double dy = vy0 * inc;
 		
 		transform.minX = transform.minX + dx;
 		transform.maxX = transform.maxX + dx;
