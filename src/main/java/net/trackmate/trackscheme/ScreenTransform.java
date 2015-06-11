@@ -6,7 +6,6 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.event.MouseWheelEvent;
 
 import javax.swing.Timer;
 
@@ -301,37 +300,37 @@ public class ScreenTransform
 //			}
 		}
 
-		@Override
-		public void mouseWheelMoved( final MouseWheelEvent e )
-		{
-			synchronized ( transform )
-			{
-				final int modifiers = e.getModifiersEx();
-				final int s = e.getWheelRotation();
-				final boolean ctrlPressed = ( modifiers & KeyEvent.CTRL_DOWN_MASK ) != 0;
-				final boolean altPressed = ( modifiers & KeyEvent.ALT_DOWN_MASK ) != 0;
-				final boolean metaPressed = ( ( modifiers & KeyEvent.META_DOWN_MASK ) != 0 ) || ( ctrlPressed && shiftPressed );
-
-				eX = e.getX();
-				eY = e.getY();
-				zoomOut = s < 0;
-				zoomSteps = ( int ) ( MOUSEWHEEL_ZOOM_SPEED * Math.abs( s ) );
-
-				if ( metaPressed ) // zoom both axes
-				{
-					zoomType = ZoomType.XY;
-					zoomFriction.restart();
-				}
-				else if ( shiftPressed ) // zoom X axis
-				{
-					zoomType = ZoomType.X;
-					zoomFriction.restart();
-				}
-				else if ( ctrlPressed || altPressed ) // zoom Y axis
-				{
-					zoomType = ZoomType.Y;
-					zoomFriction.restart();
-				}
+//		@Override
+//		public void mouseWheelMoved( final MouseWheelEvent e )
+//		{
+//			synchronized ( transform )
+//			{
+//				final int modifiers = e.getModifiersEx();
+//				final int s = e.getWheelRotation();
+//				final boolean ctrlPressed = ( modifiers & KeyEvent.CTRL_DOWN_MASK ) != 0;
+//				final boolean altPressed = ( modifiers & KeyEvent.ALT_DOWN_MASK ) != 0;
+//				final boolean metaPressed = ( ( modifiers & KeyEvent.META_DOWN_MASK ) != 0 ) || ( ctrlPressed && shiftPressed );
+//
+//				eX = e.getX();
+//				eY = e.getY();
+//				zoomOut = s < 0;
+//				zoomSteps = ( int ) ( MOUSEWHEEL_ZOOM_SPEED * Math.abs( s ) );
+//
+//				if ( metaPressed ) // zoom both axes
+//				{
+//					zoomType = ZoomType.XY;
+//					zoomFriction.restart();
+//				}
+//				else if ( shiftPressed ) // zoom X axis
+//				{
+//					zoomType = ZoomType.X;
+//					zoomFriction.restart();
+//				}
+//				else if ( ctrlPressed || altPressed ) // zoom Y axis
+//				{
+//					zoomType = ZoomType.Y;
+//					zoomFriction.restart();
+//				}
 //				else
 //				{
 //					final int d = ( int ) ( s * MOUSEWHEEL_SCROLL_SPEED );
@@ -348,9 +347,9 @@ public class ScreenTransform
 //					}
 //					positionWheelFriction.restart();
 //				}
-				update();
-			}
-		}
+//				update();
+//			}
+//		}
 
 		/*
 		 * FRICTION STUFF

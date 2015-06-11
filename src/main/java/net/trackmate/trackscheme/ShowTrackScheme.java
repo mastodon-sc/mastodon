@@ -108,7 +108,7 @@ public class ShowTrackScheme implements TransformListener< ScreenTransform >, Se
 		canvas.addMouseListener( selectionHandler );
 		canvas.addMouseMotionListener( selectionHandler );
 
-		final MouseAdapter interiaListener = new MouseAdapter()
+		final MouseAdapter inertiaListener = new MouseAdapter()
 		{
 
 			/**
@@ -176,57 +176,74 @@ public class ShowTrackScheme implements TransformListener< ScreenTransform >, Se
 			public synchronized void mouseWheelMoved( final MouseWheelEvent e )
 			{
 
-					final int modifiers = e.getModifiersEx();
-					final int s = e.getWheelRotation();
-					final boolean ctrlPressed = ( modifiers & KeyEvent.CTRL_DOWN_MASK ) != 0;
-					final boolean altPressed = ( modifiers & KeyEvent.ALT_DOWN_MASK ) != 0;
-					final boolean shiftPressed = ( modifiers & KeyEvent.SHIFT_DOWN_MASK ) != 0;
-					final boolean metaPressed = ( ( modifiers & KeyEvent.META_DOWN_MASK ) != 0 ) || ( ctrlPressed && shiftPressed );
+				final int modifiers = e.getModifiersEx();
+				final int s = e.getWheelRotation();
+				final boolean ctrlPressed = ( modifiers & KeyEvent.CTRL_DOWN_MASK ) != 0;
+				final boolean altPressed = ( modifiers & KeyEvent.ALT_DOWN_MASK ) != 0;
+				final boolean shiftPressed = ( modifiers & KeyEvent.SHIFT_DOWN_MASK ) != 0;
+				final boolean metaPressed = ( ( modifiers & KeyEvent.META_DOWN_MASK ) != 0 ) || ( ctrlPressed && shiftPressed );
 
-//				zoomOut = s < 0;
-//				zoomSteps = ( int ) ( MOUSEWHEEL_ZOOM_SPEED * Math.abs( s ) );
-//
-//				if ( metaPressed ) // zoom both axes
-//				{
-//					zoomType = ZoomType.XY;
-//					zoomFriction.restart();
-//				}
-//				else if ( shiftPressed ) // zoom X axis
-//				{
-//					zoomType = ZoomType.X;
-//					zoomFriction.restart();
-//				}
-//				else if ( ctrlPressed || altPressed ) // zoom Y axis
-//				{
-//					zoomType = ZoomType.Y;
-//					zoomFriction.restart();
-//				}
-//				else
+				if ( metaPressed || shiftPressed || ctrlPressed || altPressed )
+				{
+					/*
+					 * Zoom.
+					 */
 
-					if ( ctrlPressed || altPressed || shiftPressed || metaPressed ) { return; }
-
+					final boolean zoomOut = s < 0;
+					final int zoomSteps = ( int ) ( MOUSEWHEEL_ZOOM_SPEED * Math.abs( s ) );
+					final boolean zoomX, zoomY;
+					if ( metaPressed ) // zoom both axes
 					{
-						final boolean dirX = ( modifiers & KeyEvent.SHIFT_DOWN_MASK ) != 0;
-						if ( dirX )
-						{
-							vx0 = s * ( currentTransform.maxX - currentTransform.minX ) * MOUSEWHEEL_SCROLL_SPEED;
-							vy0 = 0;
-						}
-						else
-						{
-							vx0 = 0;
-							vy0 = s * ( currentTransform.maxY - currentTransform.minY ) * MOUSEWHEEL_SCROLL_SPEED;
-						}
-						transformAnimator = new InertialTranslationAnimator( currentTransform, vx0, vy0, 500 );
-						refresh();
+						zoomX = true;
+						zoomY = true;
 					}
+					else if ( shiftPressed ) // zoom X axis
+					{
+						zoomX = true;
+						zoomY = false;
+					}
+					else if ( ctrlPressed || altPressed ) // zoom Y axis
+					{
+						zoomX = false;
+						zoomY = true;
+					}
+					else
+					{
+						zoomX = false;
+						zoomY = false;
+					}
+
+					transformAnimator = new InertialZoomAnimator( currentTransform, zoomSteps, zoomOut, zoomX, zoomY, e.getX(), e.getY(), 500 );
+//					System.out.println( zzom );// DEBUG
+				}
+				else
+				{
+					/*
+					 * Scroll.
+					 */
+
+					final boolean dirX = ( modifiers & KeyEvent.SHIFT_DOWN_MASK ) != 0;
+					if ( dirX )
+					{
+						vx0 = s * ( currentTransform.maxX - currentTransform.minX ) * MOUSEWHEEL_SCROLL_SPEED;
+						vy0 = 0;
+					}
+					else
+					{
+						vx0 = 0;
+						vy0 = s * ( currentTransform.maxY - currentTransform.minY ) * MOUSEWHEEL_SCROLL_SPEED;
+					}
+					transformAnimator = new InertialTranslationAnimator( currentTransform, vx0, vy0, 500 );
+				}
+
+				refresh();
 
 			}
 		};
 
-		canvas.addMouseListener( interiaListener );
-		canvas.addMouseMotionListener( interiaListener );
-		canvas.addMouseWheelListener( interiaListener );
+		canvas.addMouseListener( inertiaListener );
+		canvas.addMouseMotionListener( inertiaListener );
+		canvas.addMouseWheelListener( inertiaListener );
 
 		selectionHandler.setSelectionListener( this );
 
@@ -396,11 +413,11 @@ public class ShowTrackScheme implements TransformListener< ScreenTransform >, Se
 
 		if ( transformAnimator != null )
 		{
-				final ScreenTransform transform = transformAnimator.getCurrent( System.currentTimeMillis() );
-				canvas.getTransformEventHandler().setTransform( transform );
-				transformChanged( transform );
-				if ( transformAnimator.isComplete() )
-					transformAnimator = null;
+			final ScreenTransform transform = transformAnimator.getCurrent( System.currentTimeMillis() );
+			canvas.getTransformEventHandler().setTransform( transform );
+			transformChanged( transform );
+			if ( transformAnimator.isComplete() )
+				transformAnimator = null;
 		}
 	}
 
@@ -414,22 +431,22 @@ public class ShowTrackScheme implements TransformListener< ScreenTransform >, Se
 	{
 		System.out.println( "=== " + title + " ===" );
 
-		System.out.println( "Start");
+		System.out.println( "Start" );
 		for ( int i = from; i < Math.min( to, screenEntitiesIpStart.getVertices().size() ); ++i )
 			System.out.println( "  " + screenEntitiesIpStart.getVertices().get( i ) );
 		System.out.println();
 
-		System.out.println( "End");
+		System.out.println( "End" );
 		for ( int i = from; i < Math.min( to, screenEntitiesIpEnd.getVertices().size() ); ++i )
 			System.out.println( "  " + screenEntitiesIpEnd.getVertices().get( i ) );
 		System.out.println();
 
-		System.out.println( "screenEntities");
+		System.out.println( "screenEntities" );
 		for ( int i = from; i < Math.min( to, screenEntities.getVertices().size() ); ++i )
 			System.out.println( "  " + screenEntities.getVertices().get( i ) );
 		System.out.println();
 
-		System.out.println( "screenEntities2");
+		System.out.println( "screenEntities2" );
 		for ( int i = from; i < Math.min( to, screenEntities2.getVertices().size() ); ++i )
 			System.out.println( "  " + screenEntities2.getVertices().get( i ) );
 		System.out.println();
