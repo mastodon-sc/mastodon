@@ -101,7 +101,7 @@ public class InertialTransformHandler implements MouseListener, MouseWheelListen
 				update();
 			}
 		}
-	};
+	}
 
 	@Override
 	public void mouseDragged( final MouseEvent e )
@@ -110,13 +110,16 @@ public class InertialTransformHandler implements MouseListener, MouseWheelListen
 		if ( ( modifiers & ( MouseEvent.BUTTON2_DOWN_MASK | MouseEvent.BUTTON3_DOWN_MASK ) ) != 0 ) // translate
 		{
 			final long t = System.currentTimeMillis();
-			final double x = transform.screenToLayoutX( e.getX() );
-			final double y = transform.screenToLayoutY( e.getY() );
-			vx0 = ( x - x0 ) / ( ( double ) t - t0 );
-			vy0 = ( y - y0 ) / ( ( double ) t - t0 );
-			x0 = x;
-			y0 = y;
-			t0 = t;
+			if ( t > t0 )
+			{
+				final double x = transformDragStart.screenToLayoutX( e.getX() );
+				final double y = transformDragStart.screenToLayoutY( e.getY() );
+				vx0 = ( x - x0 ) / ( ( double ) t - t0 );
+				vy0 = ( y - y0 ) / ( ( double ) t - t0 );
+				x0 = x;
+				y0 = y;
+				t0 = t;
+			}
 
 			synchronized ( transform )
 			{
