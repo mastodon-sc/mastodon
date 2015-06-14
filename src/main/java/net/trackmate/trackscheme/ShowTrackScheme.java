@@ -43,7 +43,7 @@ public class ShowTrackScheme implements TransformListener< ScreenTransform >, Se
 
 	private final CanvasOverlay canvasOverlay;
 
-	private final ZoomBoxHandler zoomHandler;
+	private final ZoomBoxHandler zoomBoxHandler;
 
 	private final PainterThread painterThread;
 
@@ -97,7 +97,7 @@ public class ShowTrackScheme implements TransformListener< ScreenTransform >, Se
 		final int h = overlay.getHeight();
 
 		currentTransform = new ScreenTransform( minX, maxX, minY, maxY, w, h );
-		canvas.getTransformEventHandler().setTransform( currentTransform );
+		canvas.getTransformEventHandler().setTransform( new ScreenTransform( minX, maxX, minY, maxY, w, h ) );
 		canvas.getTransformEventHandler().setTransformListener( this );
 
 		selectionHandler = new DefaultSelectionHandler( graph, order );
@@ -109,9 +109,9 @@ public class ShowTrackScheme implements TransformListener< ScreenTransform >, Se
 
 		selectionNavigator = new SelectionNavigator( selectionHandler, this );
 
-		zoomHandler = new ZoomBoxHandler( canvas.getTransformEventHandler(), this );
-		canvas.addMouseListener( zoomHandler );
-		canvas.addMouseMotionListener( zoomHandler );
+		zoomBoxHandler = new ZoomBoxHandler( canvas.getTransformEventHandler(), this );
+		canvas.addMouseListener( zoomBoxHandler );
+		canvas.addMouseMotionListener( zoomBoxHandler );
 
 		keyHandler = new KeyHandler( this );
 
@@ -135,7 +135,7 @@ public class ShowTrackScheme implements TransformListener< ScreenTransform >, Se
 
 		canvas.addOverlayRenderer( canvasOverlay );
 		canvas.addOverlayRenderer( overlay );
-		canvas.addOverlayRenderer( zoomHandler.getZoomOverlay() );
+		canvas.addOverlayRenderer( zoomBoxHandler.getZoomOverlay() );
 		canvas.addOverlayRenderer( selectionHandler.getSelectionOverlay() );
 		canvas.addOverlayRenderer( new OverlayRenderer()
 		{
@@ -213,7 +213,7 @@ public class ShowTrackScheme implements TransformListener< ScreenTransform >, Se
 
 	public synchronized void repaint( final boolean startAnimation )
 	{
-		zoomHandler.setTransform( currentTransform );
+		zoomBoxHandler.setTransform( currentTransform );
 		selectionHandler.setTransform( currentTransform );
 		canvasOverlay.transformChanged( currentTransform );
 

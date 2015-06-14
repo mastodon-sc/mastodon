@@ -69,9 +69,26 @@ public class InertialTransformHandler implements MouseListener, MouseWheelListen
 	 */
 	protected int centerX = 0, centerY = 0;
 
+	private boolean inertiaEnabled = true;
+
 	public InertialTransformHandler( final TransformListener< ScreenTransform > transformListener )
 	{
 		listener = transformListener;
+	}
+
+	public void setInertiaEnabled( final boolean inertiaEnabled )
+	{
+		this.inertiaEnabled = inertiaEnabled;
+		if ( !inertiaEnabled )
+		{
+			if ( null != trackscheme.transformAnimator )
+			{
+				synchronized ( trackscheme.transformAnimator )
+				{
+					trackscheme.transformAnimator = null;
+				}
+			}
+		}
 	}
 
 	@Override
@@ -105,7 +122,7 @@ public class InertialTransformHandler implements MouseListener, MouseWheelListen
 		final int modifiers = e.getModifiers();
 		if ( ( modifiers & ( MouseEvent.BUTTON2_MASK | MouseEvent.BUTTON3_MASK ) ) != 0 ) // translate
 		{
-			if ( Math.abs( vx0 ) > 0 || Math.abs( vy0 ) > 0 )
+			if ( inertiaEnabled && ( Math.abs( vx0 ) > 0 || Math.abs( vy0 ) > 0 ) )
 			{
 				trackscheme.transformAnimator = new InertialTranslationAnimator( transform, vx0, vy0, 500 );
 				update();
@@ -181,8 +198,37 @@ public class InertialTransformHandler implements MouseListener, MouseWheelListen
 				zoomY = false;
 			}
 
-			trackscheme.transformAnimator = new InertialZoomAnimator( transform,
-					zoomSteps, zoomOut, zoomX, zoomY, e.getX(), e.getY(), 500 );
+			if ( inertiaEnabled )
+			{
+				trackscheme.transformAnimator = new InertialZoomAnimator( transform,
+						zoomSteps, zoomOut, zoomX, zoomY, e.getX(), e.getY(), 500 );
+			}
+			else
+			{
+				final double dScale = 1.1;
+				if ( zoomX && zoomY )
+				{
+					if ( zoomOut )
+						transform.scale( 1.0 / dScale, e.getX(), e.getY() );
+					else
+						transform.scale( dScale, e.getX(), e.getY() );
+				}
+				else if ( zoomX && !zoomY ) // zoom X axis
+				{
+					if ( zoomOut )
+						transform.scaleX( 1.0 / dScale, e.getX(), e.getY() );
+					else
+						transform.scaleX( dScale, e.getX(), e.getY() );
+				}
+				else if ( !zoomX && zoomY ) // zoom Y axis
+				{
+					if ( zoomOut )
+						transform.scaleY( 1.0 / dScale, e.getX(), e.getY() );
+					else
+						transform.scaleY( dScale, e.getX(), e.getY() );
+				}
+				update();
+			}
 		}
 		else
 		{
@@ -191,19 +237,31 @@ public class InertialTransformHandler implements MouseListener, MouseWheelListen
 			 */
 
 			final boolean dirX = ( modifiers & KeyEvent.SHIFT_DOWN_MASK ) != 0;
-			if ( dirX )
+
+			if ( inertiaEnabled )
 			{
-				vx0 = s * ( transform.maxX - transform.minX ) * MOUSEWHEEL_SCROLL_SPEED;
-				vy0 = 0;
+				if ( dirX )
+				{
+					vx0 = s * ( transform.maxX - transform.minX ) * MOUSEWHEEL_SCROLL_SPEED;
+					vy0 = 0;
+				}
+				else
+				{
+					vx0 = 0;
+					vy0 = s * ( transform.maxY - transform.minY ) * MOUSEWHEEL_SCROLL_SPEED;
+				}
+				trackscheme.transformAnimator = new InertialTranslationAnimator( transform, vx0, vy0, 500 );
 			}
 			else
 			{
-				vx0 = 0;
-				vy0 = s * ( transform.maxY - transform.minY ) * MOUSEWHEEL_SCROLL_SPEED;
+				final int d = s * 15;
+				synchronized ( transform )
+				{
+					transform.setScreenTranslated( dirX ? d : 0, dirX ? 0 : d, transform );
+					update();
+				}
 			}
-			trackscheme.transformAnimator = new InertialTranslationAnimator( transform, vx0, vy0, 500 );
 		}
-
 		trackscheme.refresh();
 	}
 
@@ -214,6 +272,18 @@ public class InertialTransformHandler implements MouseListener, MouseWheelListen
 	{
 		if ( e.getKeyCode() == KeyEvent.VK_SHIFT )
 			shiftPressed = true;
+
+		if ( e.getKeyCode() == KeyEvent.VK_D )
+		{
+			setInertiaEnabled( !inertiaEnabled );
+			if ( !inertiaEnabled && trackscheme.transformAnimator != null )
+			{
+				synchronized ( trackscheme.transformAnimator )
+				{
+					trackscheme.transformAnimator = null;
+				}
+			}
+		}
 	}
 
 	@Override
@@ -225,8 +295,7 @@ public class InertialTransformHandler implements MouseListener, MouseWheelListen
 
 	@Override
 	public void keyTyped( final KeyEvent e )
-	{
-	}
+	{}
 
 	@Override
 	public void mouseClicked( final MouseEvent e )
