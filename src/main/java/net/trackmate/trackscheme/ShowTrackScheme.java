@@ -272,13 +272,16 @@ public class ShowTrackScheme implements TransformListener< ScreenTransform >, Se
 			entitiesAnimator.animate();
 
 		if ( transformAnimator != null )
-		{
-			final ScreenTransform transform = transformAnimator.getCurrent( System.currentTimeMillis() );
-			canvas.getTransformEventHandler().setTransform( transform );
-			transformChanged( transform );
-			if ( transformAnimator.isComplete() )
-				transformAnimator = null;
-		}
+			synchronized ( transformAnimator )
+			{
+				{
+					final ScreenTransform transform = transformAnimator.getCurrent( System.currentTimeMillis() );
+					canvas.getTransformEventHandler().setTransform( transform );
+					transformChanged( transform );
+					if ( transformAnimator.isComplete() )
+						transformAnimator = null;
+				}
+			}
 	}
 
 	@Override

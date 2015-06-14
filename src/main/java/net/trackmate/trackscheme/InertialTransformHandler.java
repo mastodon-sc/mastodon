@@ -82,7 +82,17 @@ public class InertialTransformHandler implements MouseListener, MouseWheelListen
 		{
 			oX = e.getX();
 			oY = e.getY();
+			vx0 = 0.;
+			vy0 = 0.;
+			if ( null != trackscheme.transformAnimator )
+			{
+				synchronized ( trackscheme.transformAnimator )
+				{
+					trackscheme.transformAnimator = null;
+				}
+			}
 		}
+
 		synchronized ( transform )
 		{
 			transformDragStart.set( transform );
