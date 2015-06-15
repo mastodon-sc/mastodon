@@ -4,8 +4,9 @@ import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 
 import net.imglib2.ui.OverlayRenderer;
+import net.imglib2.ui.TransformListener;
 
-public interface SelectionHandler extends MouseListener, MouseMotionListener
+public interface SelectionHandler extends MouseListener, MouseMotionListener, TransformListener< ScreenTransform >
 {
 	/**
 	 * Sets the {@link SelectionListener} that will be notified when this
@@ -15,14 +16,6 @@ public interface SelectionHandler extends MouseListener, MouseMotionListener
 	 *            the {@link SelectionListener} to notify.
 	 */
 	public void setSelectionListener( SelectionListener selectionListener );
-
-	/**
-	 * Updates this handler with the current screen transform.
-	 *
-	 * @param transform
-	 *            the screen transform.
-	 */
-	public void setTransform( ScreenTransform transform );
 
 	/**
 	 * Returns the overlay instance that will paint selection handler widgets on

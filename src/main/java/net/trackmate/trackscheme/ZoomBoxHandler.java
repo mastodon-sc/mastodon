@@ -35,14 +35,14 @@ public class ZoomBoxHandler extends MouseAdapter implements TransformListener< S
 
 	private final ShowTrackScheme trackscheme;
 
-	public ZoomBoxHandler( TransformEventHandler<ScreenTransform> transformEventHandler, ShowTrackScheme selectionListener )
+	public ZoomBoxHandler( final TransformEventHandler<ScreenTransform> transformEventHandler, final ShowTrackScheme selectionListener )
 	{
 		this.transformEventHandler = transformEventHandler;
 		this.trackscheme = selectionListener;
 	}
 
 	@Override
-	public void mouseDragged( MouseEvent e )
+	public void mouseDragged( final MouseEvent e )
 	{
 		if ( (e.getModifiersEx() == MOUSE_MASK ) && !zoomStarted )
 		{
@@ -52,11 +52,11 @@ public class ZoomBoxHandler extends MouseAdapter implements TransformListener< S
 		}
 		eX = e.getX();
 		eY = e.getY();
-		trackscheme.refresh();
+		trackscheme.selectionChanged();
 	}
 
 	@Override
-	public void mouseReleased( MouseEvent e )
+	public void mouseReleased( final MouseEvent e )
 	{
 		if ( zoomStarted )
 		{
@@ -73,17 +73,12 @@ public class ZoomBoxHandler extends MouseAdapter implements TransformListener< S
 			transform.minY = Math.min( maxY, minY );
 
 			transformEventHandler.setTransform( transform );
-			trackscheme.refresh();
+			trackscheme.selectionChanged();
 		}
 	}
 
 	@Override
-	public void transformChanged( ScreenTransform transform )
-	{
-		this.transform = transform;
-	}
-
-	public void setTransform( ScreenTransform transform )
+	public void transformChanged( final ScreenTransform transform )
 	{
 		this.transform = transform;
 	}
@@ -99,7 +94,7 @@ public class ZoomBoxHandler extends MouseAdapter implements TransformListener< S
 		private final Color ZOOM_BOX_COLOR = Color.BLUE.brighter();
 
 		@Override
-		public void drawOverlays( Graphics g )
+		public void drawOverlays( final Graphics g )
 		{
 			if ( zoomStarted )
 			{
@@ -113,7 +108,7 @@ public class ZoomBoxHandler extends MouseAdapter implements TransformListener< S
 		}
 
 		@Override
-		public void setCanvasSize( int width, int height )
+		public void setCanvasSize( final int width, final int height )
 		{}
 
 	}

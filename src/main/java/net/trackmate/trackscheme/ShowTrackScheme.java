@@ -86,6 +86,10 @@ public class ShowTrackScheme implements TransformListener< ScreenTransform >, Se
 
 //		canvas = new InteractiveDisplayCanvasComponent< ScreenTransform >( 800, 600, ScreenTransform.ScreenTransformEventHandler.factory() );
 		canvas = new InteractiveDisplayCanvasComponent< ScreenTransform >( 800, 600, InertialTransformHandler.factory() );
+		canvas.getTransformEventHandler().setTransformListener( canvas );
+		canvas.addTransformListener( this );
+		canvas.addOverlayRenderer( overlay );
+
 		final double minY = order.getMinTimepoint() - 0.5;
 		final double maxY = order.getMaxTimepoint() + 0.5;
 		final double minX = order.getMinX() - 1.0;
@@ -94,25 +98,27 @@ public class ShowTrackScheme implements TransformListener< ScreenTransform >, Se
 		final int h = overlay.getHeight();
 
 		currentTransform = new ScreenTransform( minX, maxX, minY, maxY, w, h );
-		canvas.getTransformEventHandler().setTransform( new ScreenTransform( minX, maxX, minY, maxY, w, h ) );
-		canvas.getTransformEventHandler().setTransformListener( this );
+		canvas.getTransformEventHandler().setTransform( currentTransform );
 
 		selectionHandler = new DefaultSelectionHandler( graph, order );
 		selectionHandler.setSelectionModel( selectionModel );
-		canvas.addMouseListener( selectionHandler );
-		canvas.addMouseMotionListener( selectionHandler );
-
+		canvas.addHandler( selectionHandler );
+		canvas.addTransformListener( selectionHandler );
+		canvas.addOverlayRenderer( selectionHandler.getSelectionOverlay() );
 		selectionHandler.setSelectionListener( this );
 
 		selectionNavigator = new SelectionNavigator( selectionHandler, this );
 
 		zoomBoxHandler = new ZoomBoxHandler( canvas.getTransformEventHandler(), this );
-		canvas.addMouseListener( zoomBoxHandler );
-		canvas.addMouseMotionListener( zoomBoxHandler );
+		canvas.addHandler( zoomBoxHandler );
+		canvas.addTransformListener( zoomBoxHandler );
+		canvas.addOverlayRenderer( zoomBoxHandler.getZoomOverlay() );
 
 		keyHandler = new KeyHandler( this );
 
 		canvasOverlay = new CanvasOverlay( layout, order );
+		canvas.addTransformListener( canvasOverlay );
+		canvas.addOverlayRenderer( canvasOverlay );
 
 		frame = new JFrame( "trackscheme", GuiUtil.getSuitableGraphicsConfiguration( GuiUtil.RGB_COLOR_MODEL ) );
 		painterThread = new PainterThread( this );
@@ -130,10 +136,6 @@ public class ShowTrackScheme implements TransformListener< ScreenTransform >, Se
 		frame.pack();
 		frame.setVisible( true );
 
-		canvas.addOverlayRenderer( canvasOverlay );
-		canvas.addOverlayRenderer( overlay );
-		canvas.addOverlayRenderer( zoomBoxHandler.getZoomOverlay() );
-		canvas.addOverlayRenderer( selectionHandler.getSelectionOverlay() );
 		canvas.addOverlayRenderer( new OverlayRenderer()
 		{
 			@Override
@@ -207,10 +209,6 @@ public class ShowTrackScheme implements TransformListener< ScreenTransform >, Se
 
 	public synchronized void repaint( final boolean startAnimation )
 	{
-		zoomBoxHandler.setTransform( currentTransform );
-		selectionHandler.setTransform( currentTransform );
-		canvasOverlay.transformChanged( currentTransform );
-
 		final double minX = currentTransform.minX;
 		final double maxX = currentTransform.maxX;
 		final double minY = currentTransform.minY;
@@ -269,7 +267,7 @@ public class ShowTrackScheme implements TransformListener< ScreenTransform >, Se
 	}
 
 	@Override
-	public void refresh()
+	public void selectionChanged()
 	{
 		repaint();
 	}

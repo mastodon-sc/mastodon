@@ -55,7 +55,7 @@ public class DefaultSelectionHandler extends MouseAdapter implements SelectionHa
 	 */
 	private int eX, eY;
 
-	private ScreenTransform transform;
+	private final ScreenTransform transform;
 
 	private boolean dragStarted = false;
 
@@ -69,6 +69,7 @@ public class DefaultSelectionHandler extends MouseAdapter implements SelectionHa
 	{
 		this.graph = graph;
 		this.order = order;
+		this.transform = new ScreenTransform();
 	}
 
 	@Override
@@ -78,7 +79,7 @@ public class DefaultSelectionHandler extends MouseAdapter implements SelectionHa
 		{
 			final boolean clear = !(e.getModifiers() == MOUSE_MASK_CLICK_ADDTOSELECTION);
 			selectAt( transform, e.getX(), e.getY(), clear );
-			selectionListener.refresh();
+			selectionListener.selectionChanged();
 		}
 	}
 
@@ -95,7 +96,7 @@ public class DefaultSelectionHandler extends MouseAdapter implements SelectionHa
 				oX = e.getX();
 				oY = e.getY();
 			}
-			selectionListener.refresh();
+			selectionListener.selectionChanged();
 		}
 	}
 
@@ -107,7 +108,7 @@ public class DefaultSelectionHandler extends MouseAdapter implements SelectionHa
 			dragStarted = false;
 			final boolean clear = !( ( e.getModifiersEx() & MOUSE_MASK_ADDTOSELECTION ) != 0);
 			selectWithin(transform, oX, oY, eX, eY, clear);
-			selectionListener.refresh();
+			selectionListener.selectionChanged();
 		}
 	}
 
@@ -255,12 +256,6 @@ public class DefaultSelectionHandler extends MouseAdapter implements SelectionHa
 	}
 
 	@Override
-	public void setTransform( final ScreenTransform transform )
-	{
-		this.transform = transform;
-	}
-
-	@Override
 	public OverlayRenderer getSelectionOverlay()
 	{
 		return selectionBoxOverlay;
@@ -285,5 +280,11 @@ public class DefaultSelectionHandler extends MouseAdapter implements SelectionHa
 		public void setCanvasSize( final int width, final int height )
 		{}
 
+	}
+
+	@Override
+	public void transformChanged( final ScreenTransform transform )
+	{
+		this.transform.set( transform );
 	}
 }
