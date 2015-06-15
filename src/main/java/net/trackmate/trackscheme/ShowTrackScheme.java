@@ -10,12 +10,12 @@ import javax.swing.JFrame;
 import net.imglib2.ui.InteractiveDisplayCanvasComponent;
 import net.imglib2.ui.OverlayRenderer;
 import net.imglib2.ui.PainterThread;
+import net.imglib2.ui.PainterThread.Paintable;
 import net.imglib2.ui.TransformEventHandler;
 import net.imglib2.ui.TransformListener;
 import net.imglib2.ui.util.GuiUtil;
 import net.imglib2.util.BenchmarkHelper;
 import net.trackmate.trackscheme.animate.AbstractAnimator;
-import net.trackmate.trackscheme.animate.AbstractTransformAnimator;
 
 public class ShowTrackScheme implements TransformListener< ScreenTransform >, SelectionListener, PainterThread.Paintable
 {
@@ -48,8 +48,6 @@ public class ShowTrackScheme implements TransformListener< ScreenTransform >, Se
 	private final PainterThread painterThread;
 
 	SelectionNavigator selectionNavigator;
-
-	AbstractTransformAnimator< ScreenTransform > transformAnimator;
 
 	public ShowTrackScheme( final TrackSchemeGraph graph )
 	{
@@ -88,7 +86,7 @@ public class ShowTrackScheme implements TransformListener< ScreenTransform >, Se
 		overlay.setCanvasSize( 800, 600 );
 
 //		canvas = new InteractiveDisplayCanvasComponent< ScreenTransform >( 800, 600, ScreenTransform.ScreenTransformEventHandler.factory() );
-		canvas = new InteractiveDisplayCanvasComponent< ScreenTransform >( 800, 600, InertialTransformHandler.factory( this ) );
+		canvas = new InteractiveDisplayCanvasComponent< ScreenTransform >( 800, 600, InertialTransformHandler.factory() );
 		final double minY = order.getMinTimepoint() - 0.5;
 		final double maxY = order.getMaxTimepoint() + 0.5;
 		final double minX = order.getMinX() - 1.0;
@@ -158,8 +156,8 @@ public class ShowTrackScheme implements TransformListener< ScreenTransform >, Se
 		final TransformEventHandler< ScreenTransform > handler = canvas.getTransformEventHandler();
 		final ScreenTransform transform = handler.getTransform();
 
-		transformAnimator = new TranslationAnimator( transform, x, y, 200 );
-		transformAnimator.setTime( System.currentTimeMillis() );
+//		transformAnimator = new TranslationAnimator( transform, x, y, 200 );
+//		transformAnimator.setTime( System.currentTimeMillis() );
 		refresh();
 	}
 
@@ -270,18 +268,8 @@ public class ShowTrackScheme implements TransformListener< ScreenTransform >, Se
 	{
 		if ( entitiesAnimator != null )
 			entitiesAnimator.animate();
-
-		if ( transformAnimator != null )
-			synchronized ( transformAnimator )
-			{
-				{
-					final ScreenTransform transform = transformAnimator.getCurrent( System.currentTimeMillis() );
-					canvas.getTransformEventHandler().setTransform( transform );
-					transformChanged( transform );
-					if ( transformAnimator.isComplete() )
-						transformAnimator = null;
-				}
-			}
+		
+		( ( Paintable ) canvas.getTransformEventHandler() ).paint();
 	}
 
 	@Override

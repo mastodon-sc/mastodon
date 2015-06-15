@@ -8,11 +8,13 @@ import java.awt.event.MouseMotionListener;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
 
+import net.imglib2.ui.PainterThread.Paintable;
 import net.imglib2.ui.TransformEventHandler;
 import net.imglib2.ui.TransformEventHandlerFactory;
 import net.imglib2.ui.TransformListener;
+import net.trackmate.trackscheme.animate.AbstractTransformAnimator;
 
-public class InertialTransformHandler implements MouseListener, MouseWheelListener, KeyListener, MouseMotionListener, TransformEventHandler< ScreenTransform >
+public class InertialTransformHandler implements MouseListener, MouseWheelListener, KeyListener, MouseMotionListener, TransformEventHandler< ScreenTransform >, Paintable
 {
 	/**
 	 * Speed at which the screen scrolls when using the mouse wheel.
@@ -33,8 +35,6 @@ public class InertialTransformHandler implements MouseListener, MouseWheelListen
 	private double y0;
 
 	private long t0;
-
-	private ShowTrackScheme trackscheme;
 
 	/**
 	 * Current source to screen transform.
@@ -71,6 +71,8 @@ public class InertialTransformHandler implements MouseListener, MouseWheelListen
 
 	private boolean inertiaEnabled = true;
 
+	private AbstractTransformAnimator< ScreenTransform > transformAnimator;
+
 	public InertialTransformHandler( final TransformListener< ScreenTransform > transformListener )
 	{
 		listener = transformListener;
@@ -81,11 +83,11 @@ public class InertialTransformHandler implements MouseListener, MouseWheelListen
 		this.inertiaEnabled = inertiaEnabled;
 		if ( !inertiaEnabled )
 		{
-			if ( null != trackscheme.transformAnimator )
+			if ( null != transformAnimator )
 			{
-				synchronized ( trackscheme.transformAnimator )
+				synchronized ( transformAnimator )
 				{
-					trackscheme.transformAnimator = null;
+					transformAnimator = null;
 				}
 			}
 		}
@@ -101,11 +103,11 @@ public class InertialTransformHandler implements MouseListener, MouseWheelListen
 			oY = e.getY();
 			vx0 = 0.;
 			vy0 = 0.;
-			if ( null != trackscheme.transformAnimator )
+			if ( null != transformAnimator )
 			{
-				synchronized ( trackscheme.transformAnimator )
+				synchronized ( transformAnimator )
 				{
-					trackscheme.transformAnimator = null;
+					transformAnimator = null;
 				}
 			}
 		}
@@ -124,7 +126,7 @@ public class InertialTransformHandler implements MouseListener, MouseWheelListen
 		{
 			if ( inertiaEnabled && ( Math.abs( vx0 ) > 0 || Math.abs( vy0 ) > 0 ) )
 			{
-				trackscheme.transformAnimator = new InertialTranslationAnimator( transform, vx0, vy0, 500 );
+				transformAnimator = new InertialTranslationAnimator( transform, vx0, vy0, 500 );
 				update();
 			}
 		}
@@ -200,7 +202,7 @@ public class InertialTransformHandler implements MouseListener, MouseWheelListen
 
 			if ( inertiaEnabled )
 			{
-				trackscheme.transformAnimator = new InertialZoomAnimator( transform,
+				transformAnimator = new InertialZoomAnimator( transform,
 						zoomSteps, zoomOut, zoomX, zoomY, e.getX(), e.getY(), 500 );
 			}
 			else
@@ -227,7 +229,6 @@ public class InertialTransformHandler implements MouseListener, MouseWheelListen
 					else
 						transform.scaleY( dScale, e.getX(), e.getY() );
 				}
-				update();
 			}
 		}
 		else
@@ -250,7 +251,7 @@ public class InertialTransformHandler implements MouseListener, MouseWheelListen
 					vx0 = 0;
 					vy0 = s * ( transform.maxY - transform.minY ) * MOUSEWHEEL_SCROLL_SPEED;
 				}
-				trackscheme.transformAnimator = new InertialTranslationAnimator( transform, vx0, vy0, 500 );
+				transformAnimator = new InertialTranslationAnimator( transform, vx0, vy0, 500 );
 			}
 			else
 			{
@@ -258,11 +259,10 @@ public class InertialTransformHandler implements MouseListener, MouseWheelListen
 				synchronized ( transform )
 				{
 					transform.setScreenTranslated( dirX ? d : 0, dirX ? 0 : d, transform );
-					update();
 				}
 			}
 		}
-		trackscheme.refresh();
+		update();
 	}
 
 	private boolean shiftPressed = false;
@@ -276,11 +276,11 @@ public class InertialTransformHandler implements MouseListener, MouseWheelListen
 		if ( e.getKeyCode() == KeyEvent.VK_D )
 		{
 			setInertiaEnabled( !inertiaEnabled );
-			if ( !inertiaEnabled && trackscheme.transformAnimator != null )
+			if ( !inertiaEnabled && transformAnimator != null )
 			{
-				synchronized ( trackscheme.transformAnimator )
+				synchronized ( transformAnimator )
 				{
-					trackscheme.transformAnimator = null;
+					transformAnimator = null;
 				}
 			}
 		}
@@ -367,7 +367,7 @@ public class InertialTransformHandler implements MouseListener, MouseWheelListen
 			listener.transformChanged( transform );
 	}
 
-	public static TransformEventHandlerFactory< ScreenTransform > factory( final ShowTrackScheme trackscheme )
+	public static TransformEventHandlerFactory< ScreenTransform > factory()
 	{
 		return new TransformEventHandlerFactory< ScreenTransform >()
 		{
@@ -375,10 +375,22 @@ public class InertialTransformHandler implements MouseListener, MouseWheelListen
 			public TransformEventHandler< ScreenTransform > create( final TransformListener< ScreenTransform > transformListener )
 			{
 				final InertialTransformHandler handler = new InertialTransformHandler( transformListener );
-				handler.trackscheme = trackscheme;
 				return handler;
 			}
 		};
 	}
 
+	@Override
+	public void paint()
+	{
+		if ( transformAnimator != null )
+			synchronized ( transformAnimator )
+			{
+				final ScreenTransform t = transformAnimator.getCurrent( System.currentTimeMillis() );
+				transform.set( t );
+				update();
+				if ( transformAnimator.isComplete() )
+					transformAnimator = null;
+			}
+	}
 }
