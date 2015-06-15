@@ -11,7 +11,6 @@ import net.imglib2.ui.InteractiveDisplayCanvasComponent;
 import net.imglib2.ui.OverlayRenderer;
 import net.imglib2.ui.PainterThread;
 import net.imglib2.ui.PainterThread.Paintable;
-import net.imglib2.ui.TransformEventHandler;
 import net.imglib2.ui.TransformListener;
 import net.imglib2.ui.util.GuiUtil;
 import net.imglib2.util.BenchmarkHelper;
@@ -153,12 +152,9 @@ public class ShowTrackScheme implements TransformListener< ScreenTransform >, Se
 	{
 		final double x = vertex.getLayoutX();
 		final int y = vertex.getTimePoint();
-		final TransformEventHandler< ScreenTransform > handler = canvas.getTransformEventHandler();
-		final ScreenTransform transform = handler.getTransform();
-
-//		transformAnimator = new TranslationAnimator( transform, x, y, 200 );
-//		transformAnimator.setTime( System.currentTimeMillis() );
-		refresh();
+		final InertialTransformHandler handler = ( InertialTransformHandler ) canvas.getTransformEventHandler();
+		handler.moveTo( x, y );
+		repaint();
 	}
 
 	@Override

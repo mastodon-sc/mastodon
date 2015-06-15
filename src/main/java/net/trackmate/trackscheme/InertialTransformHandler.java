@@ -93,6 +93,12 @@ public class InertialTransformHandler implements MouseListener, MouseWheelListen
 		}
 	}
 
+	public void moveTo( final double x, final int y )
+	{
+		transformAnimator = new TranslationAnimator( transform, x, y, 200 );
+		transformAnimator.setTime( System.currentTimeMillis() );
+	}
+
 	@Override
 	public void mousePressed( final MouseEvent e )
 	{
@@ -393,4 +399,6 @@ public class InertialTransformHandler implements MouseListener, MouseWheelListen
 					transformAnimator = null;
 			}
 	}
+
+
 }
