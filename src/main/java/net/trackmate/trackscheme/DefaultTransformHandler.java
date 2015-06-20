@@ -19,7 +19,7 @@ import net.imglib2.ui.TransformEventHandlerFactory;
 import net.imglib2.ui.TransformListener;
 import net.trackmate.trackscheme.animate.AbstractTransformAnimator;
 
-public class InertialTransformHandler implements MouseListener, MouseWheelListener, KeyListener, MouseMotionListener, TransformEventHandler< ScreenTransform >, Paintable
+public class DefaultTransformHandler implements MouseListener, MouseWheelListener, KeyListener, MouseMotionListener, TransformEventHandler< ScreenTransform >, Paintable
 {
 	/**
 	 * Speed at which the screen scrolls when using the mouse wheel.
@@ -81,24 +81,25 @@ public class InertialTransformHandler implements MouseListener, MouseWheelListen
 	 */
 	protected int centerX = 0, centerY = 0;
 
-	private boolean inertiaEnabled = true;
-
 	private AbstractTransformAnimator< ScreenTransform > transformAnimator;
 
 	private final ZoomBoxHandler zoomBoxHandler;
 
-	public InertialTransformHandler( final TransformListener< ScreenTransform > transformListener )
+	private InertiaHandler inertiaHandler;
+
+	public DefaultTransformHandler( final TransformListener< ScreenTransform > transformListener )
 	{
 		listener = transformListener;
 		zoomBoxHandler = new ZoomBoxHandler();
+		inertiaHandler = new InertiaHandler();
 		overlay = new Overlay();
 	}
 
 	public void setInertiaEnabled( final boolean inertiaEnabled )
 	{
-		this.inertiaEnabled = inertiaEnabled;
 		if ( !inertiaEnabled )
 		{
+			inertiaHandler = null;
 			if ( null != transformAnimator )
 			{
 				synchronized ( transformAnimator )
@@ -107,12 +108,31 @@ public class InertialTransformHandler implements MouseListener, MouseWheelListen
 				}
 			}
 		}
+		else
+		{
+			inertiaHandler = new InertiaHandler();
+		}
 	}
 
 	public void moveTo( final double x, final int y )
 	{
-		transformAnimator = new TranslationAnimator( transform, x, y, 200 );
-		transformAnimator.setTime( System.currentTimeMillis() );
+		if ( inertiaHandler != null )
+		{
+			inertiaHandler.moveTo( x, y );
+		}
+		else
+		{
+			synchronized ( transform )
+			{
+				final double deltaX = transform.maxX - transform.minX;
+				transform.minX = x - deltaX / 2;
+				transform.maxX = x + deltaX / 2;
+				final double deltaY = transform.maxY - transform.minY;
+				transform.minY = y - deltaY / 2;
+				transform.maxY = y + deltaY / 2;
+				update();
+			}
+		}
 	}
 
 	@Override
@@ -147,10 +167,9 @@ public class InertialTransformHandler implements MouseListener, MouseWheelListen
 
 		if ( ( modifiers == MouseEvent.BUTTON2_MASK ) || ( modifiers == MouseEvent.BUTTON3_MASK ) ) // translate
 		{
-			if ( inertiaEnabled && ( Math.abs( vx0 ) > 0 || Math.abs( vy0 ) > 0 ) )
+			if ( inertiaHandler != null )
 			{
-				transformAnimator = new InertialTranslationAnimator( transform, vx0, vy0, 500 );
-				update();
+				inertiaHandler.drift();
 			}
 		}
 		else if ( zoomBoxHandler != null )
@@ -231,10 +250,9 @@ public class InertialTransformHandler implements MouseListener, MouseWheelListen
 				zoomY = false;
 			}
 
-			if ( inertiaEnabled )
+			if ( inertiaHandler != null )
 			{
-				transformAnimator = new InertialZoomAnimator( transform,
-						zoomSteps, zoomOut, zoomX, zoomY, e.getX(), e.getY(), 500 );
+				inertiaHandler.zoom( zoomSteps, zoomOut, zoomX, zoomY, e.getX(), e.getY() );
 			}
 			else
 			{
@@ -260,6 +278,7 @@ public class InertialTransformHandler implements MouseListener, MouseWheelListen
 					else
 						transform.scaleY( dScale, e.getX(), e.getY() );
 				}
+				update();
 			}
 		}
 		else
@@ -270,7 +289,7 @@ public class InertialTransformHandler implements MouseListener, MouseWheelListen
 
 			final boolean dirX = ( modifiers & KeyEvent.SHIFT_DOWN_MASK ) != 0;
 
-			if ( inertiaEnabled )
+			if ( inertiaHandler != null )
 			{
 				if ( dirX )
 				{
@@ -282,7 +301,7 @@ public class InertialTransformHandler implements MouseListener, MouseWheelListen
 					vx0 = 0;
 					vy0 = s * ( transform.maxY - transform.minY ) * MOUSEWHEEL_SCROLL_SPEED;
 				}
-				transformAnimator = new InertialTranslationAnimator( transform, vx0, vy0, 500 );
+				inertiaHandler.drift();
 			}
 			else
 			{
@@ -306,10 +325,10 @@ public class InertialTransformHandler implements MouseListener, MouseWheelListen
 		if ( e.getKeyCode() == KeyEvent.VK_SHIFT )
 			shiftPressed = true;
 
-		if ( e.getKeyCode() == KeyEvent.VK_D )
+		if ( e.getKeyCode() == KeyEvent.VK_I )
 		{
-			setInertiaEnabled( !inertiaEnabled );
-			if ( !inertiaEnabled && transformAnimator != null )
+			setInertiaEnabled( inertiaHandler == null );
+			if ( inertiaHandler == null && transformAnimator != null )
 			{
 				synchronized ( transformAnimator )
 				{
@@ -407,7 +426,7 @@ public class InertialTransformHandler implements MouseListener, MouseWheelListen
 			@Override
 			public TransformEventHandler< ScreenTransform > create( final TransformListener< ScreenTransform > transformListener )
 			{
-				final InertialTransformHandler handler = new InertialTransformHandler( transformListener );
+				final DefaultTransformHandler handler = new DefaultTransformHandler( transformListener );
 				return handler;
 			}
 		};
@@ -469,6 +488,32 @@ public class InertialTransformHandler implements MouseListener, MouseWheelListen
 				transform.minY = Math.min( maxY, minY );
 				update();
 			}
+		}
+	}
+
+	private class InertiaHandler
+	{
+
+		private void drift()
+		{
+			if ( Math.abs( vx0 ) > 0 || Math.abs( vy0 ) > 0 )
+			{
+				transformAnimator = new InertialTranslationAnimator( transform, vx0, vy0, 500 );
+				update();
+			}
+		}
+
+		private void moveTo( final double x, final int y )
+		{
+			transformAnimator = new TranslationAnimator( transform, x, y, 200 );
+			update();
+		}
+
+		private void zoom( final int zoomSteps, final boolean zoomOut, final boolean zoomX, final boolean zoomY, final int x, final int y )
+		{
+			transformAnimator = new InertialZoomAnimator( transform,
+					zoomSteps, zoomOut, zoomX, zoomY, x, y, 500 );
+			update();
 		}
 	}
 

@@ -10,7 +10,6 @@ import javax.swing.JFrame;
 import net.imglib2.ui.InteractiveDisplayCanvasComponent;
 import net.imglib2.ui.OverlayRenderer;
 import net.imglib2.ui.PainterThread;
-import net.imglib2.ui.PainterThread.Paintable;
 import net.imglib2.ui.TransformListener;
 import net.imglib2.ui.util.GuiUtil;
 import net.imglib2.util.BenchmarkHelper;
@@ -45,6 +44,8 @@ public class ShowTrackScheme implements TransformListener< ScreenTransform >, Se
 	private final PainterThread painterThread;
 
 	SelectionNavigator selectionNavigator;
+
+	private final DefaultTransformHandler transformHandler;
 
 	public ShowTrackScheme( final TrackSchemeGraph graph )
 	{
@@ -83,11 +84,11 @@ public class ShowTrackScheme implements TransformListener< ScreenTransform >, Se
 		overlay.setCanvasSize( 800, 600 );
 
 
-		canvas = new InteractiveDisplayCanvasComponent< ScreenTransform >( 800, 600, InertialTransformHandler.factory() );
+		canvas = new InteractiveDisplayCanvasComponent< ScreenTransform >( 800, 600, DefaultTransformHandler.factory() );
 		// Factory is useless here because we need to pass the canvas to the
 		// handler and reciprocally.
 
-		final InertialTransformHandler transformHandler = new InertialTransformHandler( canvas );
+		transformHandler = new DefaultTransformHandler( canvas );
 		canvas.setTransformEventHandler( transformHandler );
 		canvas.addOverlayRenderer( transformHandler.getOverlay() );
 		transformHandler.setTransformListener( canvas );
@@ -153,9 +154,7 @@ public class ShowTrackScheme implements TransformListener< ScreenTransform >, Se
 	{
 		final double x = vertex.getLayoutX();
 		final int y = vertex.getTimePoint();
-		final InertialTransformHandler handler = ( InertialTransformHandler ) canvas.getTransformEventHandler();
-		handler.moveTo( x, y );
-		repaint();
+		transformHandler.moveTo( x, y );
 	}
 
 	@Override
@@ -262,7 +261,7 @@ public class ShowTrackScheme implements TransformListener< ScreenTransform >, Se
 		if ( entitiesAnimator != null )
 			entitiesAnimator.animate();
 
-		( ( Paintable ) canvas.getTransformEventHandler() ).paint();
+		transformHandler.paint();
 	}
 
 	@Override
