@@ -42,8 +42,6 @@ public class ShowTrackScheme implements TransformListener< ScreenTransform >, Se
 
 	private final CanvasOverlay canvasOverlay;
 
-	private final ZoomBoxHandler zoomBoxHandler;
-
 	private final PainterThread painterThread;
 
 	SelectionNavigator selectionNavigator;
@@ -84,9 +82,15 @@ public class ShowTrackScheme implements TransformListener< ScreenTransform >, Se
 		overlay = new GraphLayoutOverlay();
 		overlay.setCanvasSize( 800, 600 );
 
-//		canvas = new InteractiveDisplayCanvasComponent< ScreenTransform >( 800, 600, ScreenTransform.ScreenTransformEventHandler.factory() );
+
 		canvas = new InteractiveDisplayCanvasComponent< ScreenTransform >( 800, 600, InertialTransformHandler.factory() );
-		canvas.getTransformEventHandler().setTransformListener( canvas );
+		// Factory is useless here because we need to pass the canvas to the
+		// handler and reciprocally.
+
+		final InertialTransformHandler transformHandler = new InertialTransformHandler( canvas );
+		canvas.setTransformEventHandler( transformHandler );
+		canvas.addOverlayRenderer( transformHandler.getOverlay() );
+		transformHandler.setTransformListener( canvas );
 		canvas.addTransformListener( this );
 		canvas.addOverlayRenderer( overlay );
 
@@ -108,11 +112,6 @@ public class ShowTrackScheme implements TransformListener< ScreenTransform >, Se
 		selectionHandler.setSelectionListener( this );
 
 		selectionNavigator = new SelectionNavigator( selectionHandler, this );
-
-		zoomBoxHandler = new ZoomBoxHandler( canvas.getTransformEventHandler(), this );
-		canvas.addHandler( zoomBoxHandler );
-		canvas.addTransformListener( zoomBoxHandler );
-		canvas.addOverlayRenderer( zoomBoxHandler.getZoomOverlay() );
 
 		keyHandler = new KeyHandler( this );
 
@@ -262,7 +261,7 @@ public class ShowTrackScheme implements TransformListener< ScreenTransform >, Se
 	{
 		if ( entitiesAnimator != null )
 			entitiesAnimator.animate();
-		
+
 		( ( Paintable ) canvas.getTransformEventHandler() ).paint();
 	}
 

@@ -1,13 +1,18 @@
 package net.trackmate.trackscheme;
 
+import java.awt.Color;
+import java.awt.Graphics;
+import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
 
+import net.imglib2.ui.OverlayRenderer;
 import net.imglib2.ui.PainterThread.Paintable;
 import net.imglib2.ui.TransformEventHandler;
 import net.imglib2.ui.TransformEventHandlerFactory;
@@ -36,13 +41,15 @@ public class InertialTransformHandler implements MouseListener, MouseWheelListen
 
 	private long t0;
 
+	private boolean zoomStarted = false;
+
 	/**
 	 * Current source to screen transform.
 	 */
 	final protected ScreenTransform transform = new ScreenTransform();
 
 	/**
-	 * Copy of {@link #affine current transform} when mouse dragging started.
+	 * Copy of current transform when mouse dragging started.
 	 */
 	protected ScreenTransform transformDragStart = new ScreenTransform();
 
@@ -54,7 +61,12 @@ public class InertialTransformHandler implements MouseListener, MouseWheelListen
 	/**
 	 * Coordinates where mouse dragging started.
 	 */
-	protected int oX, oY;
+	private int oX, oY;
+
+	/**
+	 * Coordinates where mouse dragging currently is.
+	 */
+	private int eX, eY;
 
 	/**
 	 * The screen size of the canvas (the component displaying the image and
@@ -73,9 +85,13 @@ public class InertialTransformHandler implements MouseListener, MouseWheelListen
 
 	private AbstractTransformAnimator< ScreenTransform > transformAnimator;
 
+	private final ZoomBoxHandler zoomBoxHandler;
+
 	public InertialTransformHandler( final TransformListener< ScreenTransform > transformListener )
 	{
 		listener = transformListener;
+		zoomBoxHandler = new ZoomBoxHandler();
+		overlay = new Overlay();
 	}
 
 	public void setInertiaEnabled( final boolean inertiaEnabled )
@@ -128,13 +144,18 @@ public class InertialTransformHandler implements MouseListener, MouseWheelListen
 	public synchronized void mouseReleased( final MouseEvent e )
 	{
 		final int modifiers = e.getModifiers();
-		if ( ( modifiers & ( MouseEvent.BUTTON2_MASK | MouseEvent.BUTTON3_MASK ) ) != 0 ) // translate
+
+		if ( ( modifiers == MouseEvent.BUTTON2_MASK ) || ( modifiers == MouseEvent.BUTTON3_MASK ) ) // translate
 		{
 			if ( inertiaEnabled && ( Math.abs( vx0 ) > 0 || Math.abs( vy0 ) > 0 ) )
 			{
 				transformAnimator = new InertialTranslationAnimator( transform, vx0, vy0, 500 );
 				update();
 			}
+		}
+		else if ( zoomBoxHandler != null )
+		{
+			zoomBoxHandler.mouseReleased( e );
 		}
 	}
 
@@ -163,6 +184,10 @@ public class InertialTransformHandler implements MouseListener, MouseWheelListen
 				transform.setScreenTranslated( dX, dY, transformDragStart );
 			}
 			update();
+		}
+		else if ( zoomBoxHandler != null )
+		{
+			zoomBoxHandler.mouseDragged( e );
 		}
 	}
 
@@ -272,6 +297,8 @@ public class InertialTransformHandler implements MouseListener, MouseWheelListen
 	}
 
 	private boolean shiftPressed = false;
+
+	private final OverlayRenderer overlay;
 
 	@Override
 	public void keyPressed( final KeyEvent e )
@@ -386,6 +413,11 @@ public class InertialTransformHandler implements MouseListener, MouseWheelListen
 		};
 	}
 
+	protected OverlayRenderer getOverlay()
+	{
+		return overlay;
+	}
+
 	@Override
 	public void paint()
 	{
@@ -400,5 +432,68 @@ public class InertialTransformHandler implements MouseListener, MouseWheelListen
 			}
 	}
 
+	private class ZoomBoxHandler extends MouseAdapter
+	{
 
+		private static final int MOUSE_MASK = InputEvent.BUTTON1_DOWN_MASK + InputEvent.ALT_DOWN_MASK;
+
+		@Override
+		public void mouseDragged( final MouseEvent e )
+		{
+			if ( ( e.getModifiersEx() == MOUSE_MASK ) && !zoomStarted )
+			{
+				oX = e.getX();
+				oY = e.getY();
+				zoomStarted = true;
+			}
+			eX = e.getX();
+			eY = e.getY();
+			update();
+		}
+
+		@Override
+		public void mouseReleased( final MouseEvent e )
+		{
+			if ( zoomStarted )
+			{
+				zoomStarted = false;
+
+				final double minX = transform.screenToLayoutX( oX );
+				final double minY = transform.screenToLayoutY( oY );
+				final double maxX = transform.screenToLayoutX( eX );
+				final double maxY = transform.screenToLayoutY( eY );
+
+				transform.maxX = Math.max( maxX, minX ) + 0.1;
+				transform.minX = Math.min( maxX, minX );
+				transform.maxY = Math.max( maxY, minY ) + 0.1;
+				transform.minY = Math.min( maxY, minY );
+				update();
+			}
+		}
+	}
+
+	private class Overlay implements OverlayRenderer
+	{
+
+		private final Color ZOOM_BOX_COLOR = Color.BLUE.brighter();
+
+		@Override
+		public void drawOverlays( final Graphics g )
+		{
+			if ( zoomStarted )
+			{
+				g.setColor( ZOOM_BOX_COLOR );
+				final int x = Math.min( oX, eX );
+				final int y = Math.min( oY, eY );
+				final int width = Math.abs( eX - oX );
+				final int height = Math.abs( eY - oY );
+				g.drawRect( x, y, width, height );
+			}
+		}
+
+		@Override
+		public void setCanvasSize( final int width, final int height )
+		{}
+
+	}
 }
