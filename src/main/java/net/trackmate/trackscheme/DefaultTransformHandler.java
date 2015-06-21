@@ -476,17 +476,24 @@ public class DefaultTransformHandler implements MouseListener, MouseWheelListene
 			if ( zoomStarted )
 			{
 				zoomStarted = false;
-
 				final double minX = transform.screenToLayoutX( oX );
 				final double minY = transform.screenToLayoutY( oY );
 				final double maxX = transform.screenToLayoutX( eX );
 				final double maxY = transform.screenToLayoutY( eY );
 
-				transform.maxX = Math.max( maxX, minX ) + 0.1;
-				transform.minX = Math.min( maxX, minX );
-				transform.maxY = Math.max( maxY, minY ) + 0.1;
-				transform.minY = Math.min( maxY, minY );
-				update();
+				if ( inertiaHandler == null )
+				{
+
+					transform.maxX = Math.max( maxX, minX ) + 0.1;
+					transform.minX = Math.min( maxX, minX );
+					transform.maxY = Math.max( maxY, minY ) + 0.1;
+					transform.minY = Math.min( maxY, minY );
+					update();
+				}
+				else
+				{
+					inertiaHandler.zoomTo( minX, minY, maxX + 0.1, maxY + 0.1 );
+				}
 			}
 		}
 	}
@@ -501,6 +508,12 @@ public class DefaultTransformHandler implements MouseListener, MouseWheelListene
 				transformAnimator = new InertialTranslationAnimator( transform, vx0, vy0, 500 );
 				update();
 			}
+		}
+
+		private void zoomTo( final double minX, final double minY, final double maxX, final double maxY )
+		{
+			transformAnimator = new ZoomAnimator( transform, minX, minY, maxX, maxY, 500 );
+			update();
 		}
 
 		private void moveTo( final double x, final int y )
