@@ -34,6 +34,11 @@ public class CanvasOverlay implements OverlayRenderer, TransformListener< Screen
 	 */
 	private static final int XTEXT = 20;
 
+	/**
+	 * Sixe in pixel below which we do not draw column bars.
+	 */
+	private static final int MIN_DRAWING_COLUMN_WIDTH = 30;
+
 	private double minX;
 
 	private double maxX;
@@ -126,15 +131,17 @@ public class CanvasOverlay implements OverlayRenderer, TransformListener< Screen
 			}
 			maxC = Math.min( layout.columns.size(), maxC + 1 );
 
+			double lastX = Double.NEGATIVE_INFINITY;
 			for ( int c = minC; c < maxC; c++ )
 			{
 				final double col = layout.columns.get( c );
 				final int xline = ( int ) ( ( col - minX - 0.5 ) * xScale );
-				if ( xline < 2 * XTEXT )
+				if ( xline < 2 * XTEXT || ( xline - lastX ) < MIN_DRAWING_COLUMN_WIDTH )
 				{
 					continue;
 				}
 				g.drawLine( xline, minLineY, xline, maxLineY );
+				lastX = xline;
 
 				if ( c < 1 )
 				{
