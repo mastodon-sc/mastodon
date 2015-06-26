@@ -70,4 +70,39 @@ public class TrackSchemeStyle
 		return style;
 	}
 
+	public static TrackSchemeStyle modernStyle()
+	{
+		final TrackSchemeStyle style = new TrackSchemeStyle();
+
+		style.edgeColor = Color.WHITE;
+
+		style.vertexDrawColor = style.edgeColor;
+
+		style.vertexFillColor = new Color( 70, 176, 206 );
+
+		style.selectedSimplifiedVertexFillColor = style.vertexFillColor;
+
+		style.simplifiedVertexFillColor = style.vertexFillColor;
+
+		style.selectedVertexFillColor = new Color( 255, 128, 128 );
+
+		style.selectedEdgeColor = style.selectedVertexFillColor.darker();
+
+		style.selectedVertexDrawColor = Color.black;
+
+		style.backgroundColor = new Color( 68, 184, 164 );
+
+		style.decorationColor = style.backgroundColor.darker();
+
+		style.vertexRangeColor = style.edgeColor;
+
+		style.font = new Font( "Calibri", Font.PLAIN, 12 );
+
+		style.edgeStroke = new BasicStroke( 4f );
+
+		style.vertexStroke = style.edgeStroke;
+
+		return style;
+	}
+
 }

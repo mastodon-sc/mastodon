@@ -89,7 +89,7 @@ public class ShowTrackScheme implements TransformListener< ScreenTransform >, Se
 		 * Initialize look and feel.
 		 */
 
-		laf = new DefaultTrackSchemeLAF( order, layout, TrackSchemeStyle.defaultStyle() );
+		laf = new DefaultTrackSchemeLAF( order, layout, TrackSchemeStyle.modernStyle() );
 		overlay = new GraphLayoutOverlay( laf );
 		overlay.setCanvasSize( 800, 600 );
 
