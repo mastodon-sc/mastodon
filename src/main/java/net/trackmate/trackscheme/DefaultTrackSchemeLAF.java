@@ -5,7 +5,6 @@ import static net.trackmate.trackscheme.ScreenVertex.Transition.DISAPPEAR;
 import static net.trackmate.trackscheme.ScreenVertex.Transition.NONE;
 
 import java.awt.Color;
-import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Graphics2D;
 import java.awt.font.FontRenderContext;
@@ -14,6 +13,7 @@ import java.awt.geom.Rectangle2D;
 
 import net.trackmate.trackscheme.ScreenVertex.Transition;
 import net.trackmate.trackscheme.laf.TrackSchemeLAF;
+import net.trackmate.trackscheme.laf.TrackSchemeStyle;
 
 public class DefaultTrackSchemeLAF implements TrackSchemeLAF
 {
@@ -27,7 +27,6 @@ public class DefaultTrackSchemeLAF implements TrackSchemeLAF
 	 */
 	private static final int MIN_TIMELINE_SPACING = 20;
 
-	private static final Color WIDGET_COLOR = Color.YELLOW.darker().darker();
 
 	/**
 	 * Y position for columns labels.
@@ -40,7 +39,7 @@ public class DefaultTrackSchemeLAF implements TrackSchemeLAF
 	private static final int XTEXT = 20;
 
 	/**
-	 * Sixe in pixel below which we do not draw column bars.
+	 * Size in pixel below which we do not draw column bars.
 	 */
 	private static final int MIN_DRAWING_COLUMN_WIDTH = 30;
 
@@ -54,58 +53,42 @@ public class DefaultTrackSchemeLAF implements TrackSchemeLAF
 
 	private static final double avgLabelLetterWidth = 5.0;
 
-	private final Color edgeColor = Color.black;
-
-	private final Color vertexFillColor = Color.white;
-
-	private final Color vertexDrawColor = Color.black;
-
-	private final Color selectedVertexFillColor = new Color( 128, 255, 128 );
-
-	private final Color selectedEdgeColor = selectedVertexFillColor.darker();
-
-	private final Color selectedVertexDrawColor = Color.black;
-
-	private final Color simplifiedVertexFillColor = Color.black;
-
-	private final Color selectedSimplifiedVertexFillColor = new Color( 0, 128, 0 );
-
-	private final Font font = new Font( "SansSerif", Font.PLAIN, 9 );
-
-	private final Color vertexRangeColor = new Color( 128, 128, 128 );
-
-	private int width;
-
-	private int height;
-
-	private double minX;
-
-	private double maxX;
-
-	private double minY;
-
-	private double maxY;
-
-	private double yScale;
-
-	private double xScale;
+	/*
+	 * FIELDS
+	 */
 
 	private final boolean paintRows = true;
 
 	private final boolean paintColumns = true;
 
+	private final VertexOrder order;
+
+	private final LineageTreeLayout layout;
+
+	private final TrackSchemeStyle style;
+
+
 	/*
 	 * CONSTRUCTORS
 	 */
 
-	public DefaultTrackSchemeLAF()
+	public DefaultTrackSchemeLAF( final VertexOrder order, final LineageTreeLayout layout, final TrackSchemeStyle style )
 	{
-		// TODO Auto-generated constructor stub
+		this.order = order;
+		this.layout = layout;
+		this.style = style;
 	}
 
 	/*
 	 * METHODS
 	 */
+
+
+	@Override
+	public void beforeDrawVertex( final Graphics2D g2 )
+	{
+		g2.setStroke( style.vertexStroke );
+	}
 
 	@Override
 	public void drawVertex( final Graphics2D g2, final ScreenVertex vertex )
@@ -113,7 +96,7 @@ public class DefaultTrackSchemeLAF implements TrackSchemeLAF
 		final double d = vertex.getVertexDist();
 		if ( d >= minDisplayVertexDist )
 		{
-			drawVertex( g2, vertex );
+			drawVertexFull( g2, vertex );
 		}
 		else if ( d >= minDisplaySimplifiedVertexDist )
 		{
@@ -122,113 +105,19 @@ public class DefaultTrackSchemeLAF implements TrackSchemeLAF
 	}
 
 	@Override
+	public void beforeDrawVertexRange( final Graphics2D g2 )
+	{
+		g2.setColor( style.vertexRangeColor );
+	}
+
+	@Override
 	public void drawVertexRange( final Graphics2D g2, final ScreenVertexRange range )
 	{
-		g2.setColor( vertexRangeColor );
 		final int x = ( int ) range.getMinX();
 		final int y = ( int ) range.getMinY();
 		final int w = ( int ) range.getMaxX() - x;
 		final int h = ( int ) range.getMaxY() - y;
 		g2.fillRect( x, y, w, h );
-	}
-
-	@Override
-	public void paintBackground( final Graphics2D g2 )
-	{
-		g2.setColor( WIDGET_COLOR );
-		final FontMetrics fm = g2.getFontMetrics( font );
-		g2.setFont( font );
-
-		int minLineY = 0;
-		int maxLineY = height;
-
-		if ( paintRows )
-		{
-			final int fontInc = fm.getHeight() / 2;
-			final int stepT = 1 + MIN_TIMELINE_SPACING / ( int ) ( 1 + yScale );
-			final int maxTimePoint = order.getMaxTimepoint();
-
-			int tstart = Math.max( 0, ( int ) minY - 1 );
-			tstart = ( tstart / stepT ) * stepT;
-			int tend = 1 + Math.min( maxTimePoint, ( int ) maxY );
-			tend = ( 1 + tend / stepT ) * stepT;
-
-			final int maxLineX = Math.min( width,
-					( int ) ( ( layout.columns.get( layout.columns.size() - 1 ) - minX - 0.5 ) * xScale ) );
-
-			minLineY = ( int ) ( ( tstart - minY - 0.5 ) * yScale );
-			maxLineY = ( int ) ( ( tend - minY - 0.5 ) * yScale );
-
-			for ( int t = tstart; t < tend; t = t + stepT )
-			{
-				final int yline = ( int ) ( ( t - minY - 0.5 ) * yScale );
-				g.drawLine( 0, yline, maxLineX, yline );
-
-				final int ytext = ( int ) ( ( t - minY + stepT / 2 ) * yScale ) + fontInc;
-				if ( ytext < 2 * YTEXT )
-				{
-					continue;
-				}
-				g.drawString( "" + t, XTEXT, ytext );
-			}
-
-			// Last line
-			final int yline = ( int ) ( ( tend - minY - 0.5 ) * yScale );
-			g.drawLine( 0, yline, maxLineX, yline );
-
-		}
-
-		if ( paintColumns )
-		{
-			int minC = layout.columns.binarySearch( minX );
-			if ( minC < 0 )
-			{
-				minC = -1 - minC;
-			}
-			minC = Math.max( 0, minC - 1 ); // at least 1 column out
-
-			int maxC = layout.columns.binarySearch( maxX + 0.5, minC, layout.columns.size() );
-			if ( maxC < 0 )
-			{
-				maxC = -1 - maxC;
-			}
-			maxC = Math.min( layout.columns.size(), maxC + 1 );
-
-			double lastX = Double.NEGATIVE_INFINITY;
-			for ( int c = minC; c < maxC; c++ )
-			{
-				final double col = layout.columns.get( c );
-				final int xline = ( int ) ( ( col - minX - 0.5 ) * xScale );
-				if ( xline < 2 * XTEXT || ( xline - lastX ) < MIN_DRAWING_COLUMN_WIDTH )
-				{
-					continue;
-				}
-				g.drawLine( xline, minLineY, xline, maxLineY );
-				lastX = xline;
-
-				if ( c < 1 )
-				{
-					continue;
-				}
-				final int xprevline = ( int ) ( ( layout.columns.get( c - 1 ) - minX - 0.5 ) * xScale );
-				final String str = layout.columnNames.get( c - 1 );
-				final int stringWidth = fm.stringWidth( str );
-
-				final int columnWidth = xline - xprevline;
-				if ( columnWidth < stringWidth + 5 )
-				{
-					continue;
-				}
-
-				final int xtext = ( Math.min( width, xline ) + Math.max( 0, xprevline ) - stringWidth ) / 2;
-				if ( xtext < 2 * XTEXT )
-				{
-					continue;
-				}
-				g2.drawString( str, xtext, YTEXT );
-			}
-
-		}
 	}
 
 	protected void drawVertexSimplified( final Graphics2D g2, final ScreenVertex vertex )
@@ -243,8 +132,8 @@ public class DefaultTrackSchemeLAF implements TrackSchemeLAF
 			spotradius *= ( 1 + 3 * ratio );
 
 		final Color fillColor = getColor( selected, transition, ratio,
-				disappear ? selectedSimplifiedVertexFillColor : simplifiedVertexFillColor,
-				selectedSimplifiedVertexFillColor );
+				disappear ? style.selectedSimplifiedVertexFillColor : style.simplifiedVertexFillColor,
+				style.selectedSimplifiedVertexFillColor );
 
 		final double x = vertex.getX();
 		final double y = vertex.getY();
@@ -267,8 +156,8 @@ public class DefaultTrackSchemeLAF implements TrackSchemeLAF
 			spotdiameter *= ( 1 + ratio );
 		final double spotradius = spotdiameter / 2;
 
-		final Color fillColor = getColor( selected, transition, ratio, vertexFillColor, selectedVertexFillColor );
-		final Color drawColor = getColor( selected, transition, ratio, vertexDrawColor, selectedVertexDrawColor );
+		final Color fillColor = getColor( selected, transition, ratio, style.vertexFillColor, style.selectedVertexFillColor );
+		final Color drawColor = getColor( selected, transition, ratio, style.vertexDrawColor, style.selectedVertexDrawColor );
 
 		final double x = vertex.getX();
 		final double y = vertex.getY();
@@ -288,7 +177,7 @@ public class DefaultTrackSchemeLAF implements TrackSchemeLAF
 				label = label.substring( 0, maxLabelLength - 2 ) + "...";
 
 			final FontRenderContext frc = g2.getFontRenderContext();
-			final TextLayout layout = new TextLayout( label, font, frc );
+			final TextLayout layout = new TextLayout( label, style.font, frc );
 			final Rectangle2D bounds = layout.getBounds();
 			final float tx = ( float ) ( x - bounds.getCenterX() );
 			final float ty = ( float ) ( y - bounds.getCenterY() );
@@ -297,9 +186,14 @@ public class DefaultTrackSchemeLAF implements TrackSchemeLAF
 	}
 
 	@Override
+	public void beforeDrawEdge( final Graphics2D g2 )
+	{
+		g2.setStroke( style.edgeStroke );
+	}
+
+	@Override
 	public void drawEdge( final Graphics2D g2, final ScreenEdge edge, final ScreenVertex vs, final ScreenVertex vt )
 	{
-
 		Transition transition = vs.getTransition();
 		double ratio = vs.getInterpolationCompletionRatio();
 		if ( vt.getTransition() == APPEAR )
@@ -308,7 +202,7 @@ public class DefaultTrackSchemeLAF implements TrackSchemeLAF
 			ratio = vt.getInterpolationCompletionRatio();
 		}
 		final boolean selected = edge.isSelected();
-		final Color drawColor = getColor( selected, transition, ratio, edgeColor, selectedEdgeColor );
+		final Color drawColor = getColor( selected, transition, ratio, style.edgeColor, style.selectedEdgeColor );
 		g2.setColor( drawColor );
 		g2.drawLine( ( int ) vs.getX(), ( int ) vs.getY(), ( int ) vt.getX(), ( int ) vt.getY() );
 	}
@@ -339,16 +233,104 @@ public class DefaultTrackSchemeLAF implements TrackSchemeLAF
 	}
 
 	@Override
-	public void transformChanged( final ScreenTransform transform )
+	public void paintBackground( final Graphics2D g2, final double minX, final double maxX, final double minY, final double maxY,
+			final int width, final int height, final double xScale, final double yScale )
 	{
-		minX = transform.minX;
-		maxX = transform.maxX;
-		minY = transform.minY;
-		maxY = transform.maxY;
-		width = transform.screenWidth;
-		height = transform.screenHeight;
-		yScale = ( height - 1 ) / ( maxY - minY );
-		xScale = ( width - 1 ) / ( maxX - minX );
-	}
+		g2.setColor( style.backgroundColor );
+		g2.fillRect( 0, 0, width, height );
 
+		g2.setColor( style.decorationColor );
+		final FontMetrics fm = g2.getFontMetrics( style.font );
+		g2.setFont( style.font );
+
+		int minLineY = 0;
+		int maxLineY = height;
+
+		if ( paintRows )
+		{
+			final int fontInc = fm.getHeight() / 2;
+			final int stepT = 1 + MIN_TIMELINE_SPACING / ( int ) ( 1 + yScale );
+			final int maxTimePoint = order.getMaxTimepoint();
+
+			int tstart = Math.max( 0, ( int ) minY - 1 );
+			tstart = ( tstart / stepT ) * stepT;
+			int tend = 1 + Math.min( maxTimePoint, ( int ) maxY );
+			tend = ( 1 + tend / stepT ) * stepT;
+
+			final int maxLineX = Math.min( width,
+					( int ) ( ( layout.columns.get( layout.columns.size() - 1 ) - minX - 0.5 ) * xScale ) );
+
+			minLineY = ( int ) ( ( tstart - minY - 0.5 ) * yScale );
+			maxLineY = ( int ) ( ( tend - minY - 0.5 ) * yScale );
+
+			for ( int t = tstart; t < tend; t = t + stepT )
+			{
+				final int yline = ( int ) ( ( t - minY - 0.5 ) * yScale );
+				g2.drawLine( 0, yline, maxLineX, yline );
+
+				final int ytext = ( int ) ( ( t - minY + stepT / 2 ) * yScale ) + fontInc;
+				if ( ytext < 2 * YTEXT )
+				{
+					continue;
+				}
+				g2.drawString( "" + t, XTEXT, ytext );
+			}
+
+			// Last line
+			final int yline = ( int ) ( ( tend - minY - 0.5 ) * yScale );
+			g2.drawLine( 0, yline, maxLineX, yline );
+
+		}
+
+		if ( paintColumns )
+		{
+			int minC = layout.columns.binarySearch( minX );
+			if ( minC < 0 )
+			{
+				minC = -1 - minC;
+			}
+			minC = Math.max( 0, minC - 1 ); // at least 1 column out
+
+			int maxC = layout.columns.binarySearch( maxX + 0.5, minC, layout.columns.size() );
+			if ( maxC < 0 )
+			{
+				maxC = -1 - maxC;
+			}
+			maxC = Math.min( layout.columns.size(), maxC + 1 );
+
+			double lastX = Double.NEGATIVE_INFINITY;
+			for ( int c = minC; c < maxC; c++ )
+			{
+				final double col = layout.columns.get( c );
+				final int xline = ( int ) ( ( col - minX - 0.5 ) * xScale );
+				if ( xline < 2 * XTEXT || ( xline - lastX ) < MIN_DRAWING_COLUMN_WIDTH )
+				{
+					continue;
+				}
+				g2.drawLine( xline, minLineY, xline, maxLineY );
+				lastX = xline;
+
+				if ( c < 1 )
+				{
+					continue;
+				}
+				final int xprevline = ( int ) ( ( layout.columns.get( c - 1 ) - minX - 0.5 ) * xScale );
+				final String str = layout.columnNames.get( c - 1 );
+				final int stringWidth = fm.stringWidth( str );
+
+				final int columnWidth = xline - xprevline;
+				if ( columnWidth < stringWidth + 5 )
+				{
+					continue;
+				}
+
+				final int xtext = ( Math.min( width, xline ) + Math.max( 0, xprevline ) - stringWidth ) / 2;
+				if ( xtext < 2 * XTEXT )
+				{
+					continue;
+				}
+				g2.drawString( str, xtext, YTEXT );
+			}
+		}
+	}
 }

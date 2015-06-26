@@ -14,6 +14,8 @@ import net.imglib2.ui.TransformListener;
 import net.imglib2.ui.util.GuiUtil;
 import net.imglib2.util.BenchmarkHelper;
 import net.trackmate.trackscheme.animate.AbstractAnimator;
+import net.trackmate.trackscheme.laf.TrackSchemeLAF;
+import net.trackmate.trackscheme.laf.TrackSchemeStyle;
 
 public class ShowTrackScheme implements TransformListener< ScreenTransform >, SelectionListener, PainterThread.Paintable
 {
@@ -37,6 +39,7 @@ public class ShowTrackScheme implements TransformListener< ScreenTransform >, Se
 
 	private final SelectionHandler selectionHandler;
 
+	@SuppressWarnings( "unused" )
 	private final KeyHandler keyHandler;
 
 	private final CanvasOverlay canvasOverlay;
@@ -46,6 +49,8 @@ public class ShowTrackScheme implements TransformListener< ScreenTransform >, Se
 	SelectionNavigator selectionNavigator;
 
 	private final DefaultTransformHandler transformHandler;
+
+	private final TrackSchemeLAF laf;
 
 	public ShowTrackScheme( final TrackSchemeGraph graph )
 	{
@@ -80,20 +85,25 @@ public class ShowTrackScheme implements TransformListener< ScreenTransform >, Se
 		order.build();
 //		order.print();
 
-		overlay = new GraphLayoutOverlay();
+		/*
+		 * Initialize look and feel.
+		 */
+
+		laf = new DefaultTrackSchemeLAF( order, layout, TrackSchemeStyle.defaultStyle() );
+		overlay = new GraphLayoutOverlay( laf );
 		overlay.setCanvasSize( 800, 600 );
 
+		/*
+		 * Canvas and transform.
+		 */
 
 		canvas = new InteractiveDisplayCanvasComponent< ScreenTransform >( 800, 600, DefaultTransformHandler.factory() );
 		// Factory is useless here because we need to pass the canvas to the
 		// handler and reciprocally.
-
 		transformHandler = new DefaultTransformHandler( canvas );
 		canvas.setTransformEventHandler( transformHandler );
-		canvas.addOverlayRenderer( transformHandler.getOverlay() );
 		transformHandler.setTransformListener( canvas );
 		canvas.addTransformListener( this );
-		canvas.addOverlayRenderer( overlay );
 
 		final double minY = order.getMinTimepoint() - 0.5;
 		final double maxY = order.getMaxTimepoint() + 0.5;
@@ -105,20 +115,39 @@ public class ShowTrackScheme implements TransformListener< ScreenTransform >, Se
 		currentTransform = new ScreenTransform( minX, maxX, minY, maxY, w, h );
 		canvas.getTransformEventHandler().setTransform( currentTransform );
 
+		/*
+		 * Other handlers
+		 */
+
 		selectionHandler = new DefaultSelectionHandler( graph, order );
 		selectionHandler.setSelectionModel( selectionModel );
 		canvas.addHandler( selectionHandler );
 		canvas.addTransformListener( selectionHandler );
-		canvas.addOverlayRenderer( selectionHandler.getSelectionOverlay() );
 		selectionHandler.setSelectionListener( this );
-
 		selectionNavigator = new SelectionNavigator( selectionHandler, this );
-
 		keyHandler = new KeyHandler( this );
 
-		canvasOverlay = new CanvasOverlay( layout, order );
+		/*
+		 * Painting decoration order.
+		 */
+
+		// 0. Background decorations.
+		canvasOverlay = new CanvasOverlay( laf );
 		canvas.addTransformListener( canvasOverlay );
 		canvas.addOverlayRenderer( canvasOverlay );
+
+		// 1. Transform handler decorations.
+		canvas.addOverlayRenderer( transformHandler.getOverlay() );
+
+		// 2. Selection decorations.
+		canvas.addOverlayRenderer( selectionHandler.getSelectionOverlay() );
+
+		// Last. Content painting.
+		canvas.addOverlayRenderer( overlay );
+
+		/*
+		 * Main frame and painter thread.
+		 */
 
 		frame = new JFrame( "trackscheme", GuiUtil.getSuitableGraphicsConfiguration( GuiUtil.RGB_COLOR_MODEL ) );
 		painterThread = new PainterThread( this );
@@ -135,6 +164,10 @@ public class ShowTrackScheme implements TransformListener< ScreenTransform >, Se
 		frame.getContentPane().add( canvas, BorderLayout.CENTER );
 		frame.pack();
 		frame.setVisible( true );
+
+		/*
+		 * Animation mechanism hacks as a painting loop.
+		 */
 
 		canvas.addOverlayRenderer( new OverlayRenderer()
 		{
@@ -326,6 +359,6 @@ public class ShowTrackScheme implements TransformListener< ScreenTransform >, Se
 		graph.addEdge( v4, v5 );
 		graph.addEdge( v9, v6 );
 
-		final ShowTrackScheme showTrackScheme = new ShowTrackScheme( graph );
+		new ShowTrackScheme( graph );
 	}
 }

@@ -13,6 +13,9 @@ import net.trackmate.trackscheme.ScreenVertex.ScreenVertexPool;
 // TODO: build/maintain while adding nodes and edges to the TrackSchemeGraph
 public class VertexOrder
 {
+
+	public static final double maxDisplayVertexSize = 100.0;
+
 	private final TrackSchemeGraph graph;
 
 	/**
@@ -251,7 +254,9 @@ public class VertexOrder
 			final int si = v.getScreenVertexIndex();
 			if ( si >= 0 && si < screenVertices.size() && screenVertices.get( si, sv ).getTrackSchemeVertexId() == v.getInternalPoolIndex() )
 			{
-				final double spotdiameter = Math.min( sv.getVertexDist() - 10.0, GraphLayoutOverlay.maxDisplayVertexSize );
+				// FIXME move to common method in LAF.
+				final double spotdiameter = Math.min( sv.getVertexDist() - 10.0, maxDisplayVertexSize );
+
 				final double spotradius = ( int ) ( spotdiameter / 2 );
 				if ( closestVertexD < spotradius + tolerance )
 				{
