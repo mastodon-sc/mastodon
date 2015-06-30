@@ -74,23 +74,23 @@ public class TrackSchemeStyle
 	{
 		final TrackSchemeStyle style = new TrackSchemeStyle();
 
+		style.backgroundColor = new Color( 163, 199, 197 );
+
 		style.edgeColor = Color.WHITE;
 
-		style.vertexDrawColor = style.edgeColor;
-
-		style.vertexFillColor = new Color( 70, 176, 206 );
-
-		style.selectedSimplifiedVertexFillColor = style.vertexFillColor;
-
-		style.simplifiedVertexFillColor = style.vertexFillColor;
+		style.vertexFillColor = new Color( 64, 106, 102 );
 
 		style.selectedVertexFillColor = new Color( 255, 128, 128 );
 
+		style.selectedVertexDrawColor = Color.BLACK;
+
+		style.vertexDrawColor = style.edgeColor;
+
+		style.simplifiedVertexFillColor = style.vertexFillColor;
+
 		style.selectedEdgeColor = style.selectedVertexFillColor.darker();
 
-		style.selectedVertexDrawColor = Color.black;
-
-		style.backgroundColor = new Color( 68, 184, 164 );
+		style.selectedSimplifiedVertexFillColor = style.selectedVertexFillColor;
 
 		style.decorationColor = style.backgroundColor.darker();
 
@@ -98,7 +98,42 @@ public class TrackSchemeStyle
 
 		style.font = new Font( "Calibri", Font.PLAIN, 12 );
 
-		style.edgeStroke = new BasicStroke( 4f );
+		style.edgeStroke = new BasicStroke();
+
+		style.vertexStroke = style.edgeStroke;
+
+		return style;
+	}
+
+	public static TrackSchemeStyle howMuchDoYouKnowStyle()
+	{
+		final TrackSchemeStyle style = new TrackSchemeStyle();
+
+		style.backgroundColor = new Color( 163, 199, 197 );
+
+		style.vertexFillColor = new Color( 225, 216, 183 );
+
+		style.edgeColor = Color.DARK_GRAY;
+
+		style.selectedVertexFillColor = new Color( 53, 107, 154 );
+
+		style.selectedVertexDrawColor = Color.WHITE;
+
+		style.vertexDrawColor = style.edgeColor;
+
+		style.simplifiedVertexFillColor = style.edgeColor; // style.vertexFillColor;
+
+		style.selectedEdgeColor = Color.WHITE;
+
+		style.selectedSimplifiedVertexFillColor = style.selectedVertexFillColor;
+
+		style.decorationColor = style.backgroundColor.darker();
+
+		style.vertexRangeColor = style.edgeColor;
+
+		style.font = new Font( "Calibri", Font.PLAIN, 12 );
+
+		style.edgeStroke = new BasicStroke();
 
 		style.vertexStroke = style.edgeStroke;
 
