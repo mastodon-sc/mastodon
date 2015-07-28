@@ -355,6 +355,41 @@ public class ActionBank
 		};
 	}
 
+	/*
+	 * SELECT.
+	 */
+
+	public static final AbstractNamedAction getSelectVertexAtCenterAction(final ShowTrackScheme trackscheme, final boolean clear)
+	{
+		return new AbstractNamedAction( "selectVertexAtCenterClear_" + clear )
+		{
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public void actionPerformed( final ActionEvent event )
+			{
+				final ScreenTransform t = trackscheme.transformHandler.transform;
+				final double x = 0.5 * ( t.minX + t.maxX );
+				final double y = 0.5 * ( t.minY + t.maxY );
+
+				final TrackSchemeVertex vertex = trackscheme.order.getClosestVertex( x, y, Double.POSITIVE_INFINITY, trackscheme.graph.vertexRef() );
+				if ( null != vertex )
+				{
+					if ( clear )
+					{
+						trackscheme.selectionHandler.clearSelection();
+						trackscheme.selectionHandler.select( vertex, false );
+					}
+					else
+					{
+						trackscheme.selectionHandler.select( vertex, true );
+					}
+					trackscheme.repaint();
+				}
+			}
+		};
+	}
+
 	private ActionBank()
 	{}
 }

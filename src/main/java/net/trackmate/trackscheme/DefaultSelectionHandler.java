@@ -171,7 +171,7 @@ public class DefaultSelectionHandler extends MouseAdapter implements SelectionHa
 
 		vertex.setSelected( selected );
 	}
-
+	
 	@Override
 	public void select( final TrackSchemeEdge edge, final boolean toggle )
 	{

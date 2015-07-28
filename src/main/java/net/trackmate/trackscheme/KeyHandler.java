@@ -61,6 +61,16 @@ public class KeyHandler
 		registerAction( shiftArrowLeft, ActionBank.getAddLeftSibblingToSelectionAction( trackscheme ) );
 
 		/*
+		 * SELECT
+		 */
+
+		final KeyStroke keypad5 = KeyStroke.getKeyStroke( KeyEvent.VK_NUMPAD5, 0 );
+		registerAction( keypad5, ActionBank.getSelectVertexAtCenterAction( trackscheme, true ) );
+
+		final KeyStroke shiftKeypad5 = KeyStroke.getKeyStroke( KeyEvent.VK_NUMPAD5, InputEvent.SHIFT_DOWN_MASK );
+		registerAction( shiftKeypad5, ActionBank.getSelectVertexAtCenterAction( trackscheme, false ) );
+
+		/*
 		 * ZOOM.
 		 */
 

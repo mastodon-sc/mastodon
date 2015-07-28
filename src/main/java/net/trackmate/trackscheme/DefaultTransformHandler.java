@@ -569,7 +569,7 @@ public class DefaultTransformHandler implements MouseListener, MouseWheelListene
 		zoomY( factor, xloc, yloc );
 	}
 
-	public void moveTo( final double x, final int y )
+	public void moveTo( final double x, final double y )
 	{
 		if ( inertiaHandler != null )
 		{
@@ -598,7 +598,7 @@ public class DefaultTransformHandler implements MouseListener, MouseWheelListene
 		final double deltaY = transform.maxY - transform.minY;
 		final double targetX = currentX + x * deltaX;
 		final double targetY = currentY + y * deltaY;
-		moveTo( targetX, ( int ) targetY );
+		moveTo( targetX, targetY );
 	}
 
 	/*
@@ -623,7 +623,7 @@ public class DefaultTransformHandler implements MouseListener, MouseWheelListene
 			update();
 		}
 
-		private void moveTo( final double x, final int y )
+		private void moveTo( final double x, final double y )
 		{
 			transformAnimator = new TranslationAnimator( transform, x, y, 200 );
 			update();

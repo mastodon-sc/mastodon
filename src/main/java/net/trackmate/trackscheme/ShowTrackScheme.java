@@ -37,7 +37,7 @@ public class ShowTrackScheme implements TransformListener< ScreenTransform >, Se
 
 	final InteractiveDisplayCanvasComponent< ScreenTransform > canvas;
 
-	private final SelectionHandler selectionHandler;
+	final SelectionHandler selectionHandler;
 
 	@SuppressWarnings( "unused" )
 	private final KeyHandler keyHandler;
