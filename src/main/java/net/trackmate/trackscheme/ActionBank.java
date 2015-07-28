@@ -390,6 +390,34 @@ public class ActionBank
 		};
 	}
 
+	/*
+	 * RESET VIEW.
+	 */
+
+	public static final AbstractNamedAction getResetViewAction( final ShowTrackScheme trackscheme )
+	{
+		return new AbstractNamedAction( "resetView" )
+		{
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public void actionPerformed( final ActionEvent e )
+			{
+				final double minY = trackscheme.order.getMinTimepoint() - 0.5;
+				final double maxY = trackscheme.order.getMaxTimepoint() + 0.5;
+				final double minX = trackscheme.order.getMinX() - 1.0;
+				final double maxX = trackscheme.order.getMaxX() + 1.0;
+				final ScreenTransform transform = trackscheme.transformHandler.getTransform();
+				transform.minX = minX;
+				transform.minY = minY;
+				transform.maxX = maxX;
+				transform.maxY = maxY;
+				trackscheme.transformHandler.setTransform( transform );
+				trackscheme.transformHandler.update();
+			}
+		};
+	}
+
 	private ActionBank()
 	{}
 }

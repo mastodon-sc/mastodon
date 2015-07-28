@@ -160,6 +160,13 @@ public class KeyHandler
 		final KeyStroke metaKeypad1 = KeyStroke.getKeyStroke( KeyEvent.VK_NUMPAD1, InputEvent.META_DOWN_MASK );
 		registerAction( metaKeypad1, ActionBank.getMoveDownLeftAction( trackscheme, MOVE_SPEED ) );
 
+		/*
+		 * RESET VIEW
+		 */
+
+		final KeyStroke keypad0 = KeyStroke.getKeyStroke( KeyEvent.VK_NUMPAD0, 0 );
+		registerAction( keypad0, ActionBank.getResetViewAction( trackscheme ) );
+
 	}
 
 	private void registerAction( final KeyStroke ks, final AbstractNamedAction action )
