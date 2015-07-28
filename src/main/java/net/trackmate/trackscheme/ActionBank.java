@@ -157,7 +157,7 @@ public class ActionBank
 
 	public static final AbstractNamedAction getZoomOutAction( final ShowTrackScheme trackscheme, final double zoomSpeed )
 	{
-		return new AbstractNamedAction( "zoomOut" )
+		return new AbstractNamedAction( "zoomOut_" + zoomSpeed )
 		{
 			private static final long serialVersionUID = 1L;
 
@@ -171,7 +171,7 @@ public class ActionBank
 
 	public static final AbstractNamedAction getZoomInAction( final ShowTrackScheme trackscheme, final double zoomSpeed )
 	{
-		return new AbstractNamedAction( "zoomIn" )
+		return new AbstractNamedAction( "zoomIn_" + zoomSpeed )
 		{
 			private static final long serialVersionUID = 1L;
 
@@ -183,37 +183,9 @@ public class ActionBank
 		};
 	}
 
-	public static final AbstractNamedAction getZoomOutQuickAction( final ShowTrackScheme trackscheme, final double zoomSpeed )
+	public static final AbstractNamedAction getZoomOutXAction( final ShowTrackScheme trackscheme, final double zoomSpeed )
 	{
-		return new AbstractNamedAction( "zoomOutQuick" )
-		{
-			private static final long serialVersionUID = 1L;
-
-			@Override
-			public void actionPerformed( final ActionEvent event )
-			{
-				trackscheme.transformHandler.zoom( zoomSpeed );
-			}
-		};
-	}
-
-	public static final AbstractNamedAction getZoomInQuickAction( final ShowTrackScheme trackscheme, final double zoomSpeed )
-	{
-		return new AbstractNamedAction( "zoomInQuick" )
-		{
-			private static final long serialVersionUID = 1L;
-
-			@Override
-			public void actionPerformed( final ActionEvent event )
-			{
-				trackscheme.transformHandler.zoom( 1 / zoomSpeed );
-			}
-		};
-	}
-
-	public static final AbstractNamedAction getZoomOutXQuickAction( final ShowTrackScheme trackscheme, final double zoomSpeed )
-	{
-		return new AbstractNamedAction( "zoomOutXQuick" )
+		return new AbstractNamedAction( "zoomOutX_" + zoomSpeed )
 		{
 			private static final long serialVersionUID = 1L;
 
@@ -225,9 +197,9 @@ public class ActionBank
 		};
 	}
 
-	public static final AbstractNamedAction getZoomInXQuickAction( final ShowTrackScheme trackscheme, final double zoomSpeed )
+	public static final AbstractNamedAction getZoomInXAction( final ShowTrackScheme trackscheme, final double zoomSpeed )
 	{
-		return new AbstractNamedAction( "zoomInXQuick" )
+		return new AbstractNamedAction( "zoomInX_" + zoomSpeed )
 		{
 			private static final long serialVersionUID = 1L;
 
@@ -239,9 +211,9 @@ public class ActionBank
 		};
 	}
 
-	public static final AbstractNamedAction getZoomOutYQuickAction( final ShowTrackScheme trackscheme, final double zoomSpeed )
+	public static final AbstractNamedAction getZoomOutYAction( final ShowTrackScheme trackscheme, final double zoomSpeed )
 	{
-		return new AbstractNamedAction( "zoomOutYQuick" )
+		return new AbstractNamedAction( "zoomOutY_" + zoomSpeed )
 		{
 			private static final long serialVersionUID = 1L;
 
@@ -253,9 +225,9 @@ public class ActionBank
 		};
 	}
 
-	public static final AbstractNamedAction getZoomInYQuickAction( final ShowTrackScheme trackscheme, final double zoomSpeed )
+	public static final AbstractNamedAction getZoomInYAction( final ShowTrackScheme trackscheme, final double zoomSpeed )
 	{
-		return new AbstractNamedAction( "zoomInYQuick" )
+		return new AbstractNamedAction( "zoomInY_" + zoomSpeed )
 		{
 			private static final long serialVersionUID = 1L;
 
@@ -267,6 +239,121 @@ public class ActionBank
 		};
 	}
 
+	/*
+	 * MOVE.
+	 */
+
+	public static final AbstractNamedAction getMoveLeftAction( final ShowTrackScheme trackscheme, final double speed )
+	{
+		return new AbstractNamedAction( "moveLeft_" + speed )
+		{
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public void actionPerformed( final ActionEvent event )
+			{
+				trackscheme.transformHandler.moveBy( -speed, 0. );
+			}
+		};
+	}
+
+	public static final AbstractNamedAction getMoveUpLeftAction( final ShowTrackScheme trackscheme, final double speed )
+	{
+		return new AbstractNamedAction( "moveUpLeft_" + speed )
+		{
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public void actionPerformed( final ActionEvent event )
+			{
+				trackscheme.transformHandler.moveBy( -speed, -speed );
+			}
+		};
+	}
+
+	public static final AbstractNamedAction getMoveUpAction( final ShowTrackScheme trackscheme, final double speed )
+	{
+		return new AbstractNamedAction( "moveUp_" + speed )
+		{
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public void actionPerformed( final ActionEvent event )
+			{
+				trackscheme.transformHandler.moveBy( 0., -speed );
+			}
+		};
+	}
+
+	public static final AbstractNamedAction getMoveUpRightAction( final ShowTrackScheme trackscheme, final double speed )
+	{
+		return new AbstractNamedAction( "moveUpRight_" + speed )
+		{
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public void actionPerformed( final ActionEvent event )
+			{
+				trackscheme.transformHandler.moveBy( speed, -speed );
+			}
+		};
+	}
+
+	public static final AbstractNamedAction getMoveRightAction( final ShowTrackScheme trackscheme, final double speed )
+	{
+		return new AbstractNamedAction( "moveRight_" + speed )
+		{
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public void actionPerformed( final ActionEvent event )
+			{
+				trackscheme.transformHandler.moveBy( speed, 0. );
+			}
+		};
+	}
+
+	public static final AbstractNamedAction getMoveDownRightAction( final ShowTrackScheme trackscheme, final double speed )
+	{
+		return new AbstractNamedAction( "moveDownRight_" + speed )
+		{
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public void actionPerformed( final ActionEvent event )
+			{
+				trackscheme.transformHandler.moveBy( speed, speed );
+			}
+		};
+	}
+
+	public static final AbstractNamedAction getMoveDownAction( final ShowTrackScheme trackscheme, final double speed )
+	{
+		return new AbstractNamedAction( "moveDown_" + speed )
+		{
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public void actionPerformed( final ActionEvent event )
+			{
+				trackscheme.transformHandler.moveBy( 0., speed );
+			}
+		};
+	}
+
+	public static final AbstractNamedAction getMoveDownLeftAction( final ShowTrackScheme trackscheme, final double speed )
+	{
+		return new AbstractNamedAction( "moveDownLeft_" + speed )
+		{
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public void actionPerformed( final ActionEvent event )
+			{
+				trackscheme.transformHandler.moveBy( -speed, speed );
+			}
+		};
+	}
 
 	private ActionBank()
 	{}

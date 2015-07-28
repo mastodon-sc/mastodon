@@ -116,26 +116,6 @@ public class DefaultTransformHandler implements MouseListener, MouseWheelListene
 		}
 	}
 
-	public void moveTo( final double x, final int y )
-	{
-		if ( inertiaHandler != null )
-		{
-			inertiaHandler.moveTo( x, y );
-		}
-		else
-		{
-			synchronized ( transform )
-			{
-				final double deltaX = transform.maxX - transform.minX;
-				transform.minX = x - deltaX / 2;
-				transform.maxX = x + deltaX / 2;
-				final double deltaY = transform.maxY - transform.minY;
-				transform.minY = y - deltaY / 2;
-				transform.maxY = y + deltaY / 2;
-				update();
-			}
-		}
-	}
 
 	@Override
 	public void mousePressed( final MouseEvent e )
@@ -587,6 +567,38 @@ public class DefaultTransformHandler implements MouseListener, MouseWheelListene
 		final int xloc = transform.screenWidth / 2;
 		final int yloc = transform.screenHeight / 2;
 		zoomY( factor, xloc, yloc );
+	}
+
+	public void moveTo( final double x, final int y )
+	{
+		if ( inertiaHandler != null )
+		{
+			inertiaHandler.moveTo( x, y );
+		}
+		else
+		{
+			synchronized ( transform )
+			{
+				final double deltaX = transform.maxX - transform.minX;
+				transform.minX = x - deltaX / 2;
+				transform.maxX = x + deltaX / 2;
+				final double deltaY = transform.maxY - transform.minY;
+				transform.minY = y - deltaY / 2;
+				transform.maxY = y + deltaY / 2;
+				update();
+			}
+		}
+	}
+
+	public void moveBy( final double x, final double y )
+	{
+		final double currentX = 0.5 * ( transform.minX + transform.maxX );
+		final double currentY = 0.5 * ( transform.minY + transform.maxY );
+		final double deltaX = transform.maxX - transform.minX;
+		final double deltaY = transform.maxY - transform.minY;
+		final double targetX = currentX + x * deltaX;
+		final double targetY = currentY + y * deltaY;
+		moveTo( targetX, ( int ) targetY );
 	}
 
 	/*

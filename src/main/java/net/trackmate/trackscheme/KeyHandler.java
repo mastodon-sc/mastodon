@@ -11,6 +11,10 @@ public class KeyHandler
 
 	private static final double ZOOM_SPEED_QUICK = 2.;
 
+	private static final double MOVE_SPEED = 0.05;
+
+	private static final double MOVE_SPEED_QUICK = 0.5;
+
 	private final ShowTrackScheme trackscheme;
 
 	public KeyHandler( final ShowTrackScheme trackscheme )
@@ -63,10 +67,10 @@ public class KeyHandler
 		// All.
 
 		final KeyStroke plusKeypad = KeyStroke.getKeyStroke( KeyEvent.VK_ADD, 0 );
-		registerAction( plusKeypad, ActionBank.getZoomInQuickAction( trackscheme, ZOOM_SPEED_QUICK ) );
+		registerAction( plusKeypad, ActionBank.getZoomInAction( trackscheme, ZOOM_SPEED_QUICK ) );
 
 		final KeyStroke minusKeypad = KeyStroke.getKeyStroke( KeyEvent.VK_SUBTRACT, 0 );
-		registerAction( minusKeypad, ActionBank.getZoomOutQuickAction( trackscheme, ZOOM_SPEED_QUICK ) );
+		registerAction( minusKeypad, ActionBank.getZoomOutAction( trackscheme, ZOOM_SPEED_QUICK ) );
 
 		final KeyStroke metaPlusKeypad = KeyStroke.getKeyStroke( KeyEvent.VK_ADD, InputEvent.META_DOWN_MASK );
 		registerAction( metaPlusKeypad, ActionBank.getZoomInAction( trackscheme, ZOOM_SPEED ) );
@@ -77,18 +81,74 @@ public class KeyHandler
 		// X.
 
 		final KeyStroke shiftPlusKeypad = KeyStroke.getKeyStroke( KeyEvent.VK_ADD, InputEvent.SHIFT_DOWN_MASK );
-		registerAction( shiftPlusKeypad, ActionBank.getZoomInXQuickAction( trackscheme, ZOOM_SPEED_QUICK ) );
+		registerAction( shiftPlusKeypad, ActionBank.getZoomInXAction( trackscheme, ZOOM_SPEED_QUICK ) );
 
 		final KeyStroke shiftMinusKeypad = KeyStroke.getKeyStroke( KeyEvent.VK_SUBTRACT, InputEvent.SHIFT_DOWN_MASK );
-		registerAction( shiftMinusKeypad, ActionBank.getZoomOutXQuickAction( trackscheme, ZOOM_SPEED_QUICK ) );
+		registerAction( shiftMinusKeypad, ActionBank.getZoomOutXAction( trackscheme, ZOOM_SPEED_QUICK ) );
 
 		// Y.
 
-		final KeyStroke altPlusKeypad = KeyStroke.getKeyStroke( KeyEvent.VK_ADD, InputEvent.CTRL_DOWN_MASK );
-		registerAction( altPlusKeypad, ActionBank.getZoomInYQuickAction( trackscheme, ZOOM_SPEED_QUICK ) );
+		final KeyStroke ctrlPlusKeypad = KeyStroke.getKeyStroke( KeyEvent.VK_ADD, InputEvent.CTRL_DOWN_MASK );
+		registerAction( ctrlPlusKeypad, ActionBank.getZoomInYAction( trackscheme, ZOOM_SPEED_QUICK ) );
 
-		final KeyStroke altMinusKeypad = KeyStroke.getKeyStroke( KeyEvent.VK_SUBTRACT, InputEvent.CTRL_DOWN_MASK );
-		registerAction( altMinusKeypad, ActionBank.getZoomOutYQuickAction( trackscheme, ZOOM_SPEED_QUICK ) );
+		final KeyStroke ctrlMinusKeypad = KeyStroke.getKeyStroke( KeyEvent.VK_SUBTRACT, InputEvent.CTRL_DOWN_MASK );
+		registerAction( ctrlMinusKeypad, ActionBank.getZoomOutYAction( trackscheme, ZOOM_SPEED_QUICK ) );
+
+		/*
+		 * MOVE.
+		 */
+
+		//
+
+		final KeyStroke keypad4 = KeyStroke.getKeyStroke( KeyEvent.VK_NUMPAD4, 0 );
+		registerAction( keypad4, ActionBank.getMoveLeftAction( trackscheme, MOVE_SPEED_QUICK ) );
+
+		final KeyStroke keypad7 = KeyStroke.getKeyStroke( KeyEvent.VK_NUMPAD7, 0 );
+		registerAction( keypad7, ActionBank.getMoveUpLeftAction( trackscheme, MOVE_SPEED_QUICK ) );
+
+		final KeyStroke keypad8 = KeyStroke.getKeyStroke( KeyEvent.VK_NUMPAD8, 0 );
+		registerAction( keypad8, ActionBank.getMoveUpAction( trackscheme, MOVE_SPEED_QUICK ) );
+
+		final KeyStroke keypad9 = KeyStroke.getKeyStroke( KeyEvent.VK_NUMPAD9, 0 );
+		registerAction( keypad9, ActionBank.getMoveUpRightAction( trackscheme, MOVE_SPEED_QUICK ) );
+
+		final KeyStroke keypad6 = KeyStroke.getKeyStroke( KeyEvent.VK_NUMPAD6, 0 );
+		registerAction( keypad6, ActionBank.getMoveRightAction( trackscheme, MOVE_SPEED_QUICK ) );
+
+		final KeyStroke keypad3 = KeyStroke.getKeyStroke( KeyEvent.VK_NUMPAD3, 0 );
+		registerAction( keypad3, ActionBank.getMoveDownRightAction( trackscheme, MOVE_SPEED_QUICK ) );
+
+		final KeyStroke keypad2 = KeyStroke.getKeyStroke( KeyEvent.VK_NUMPAD2, 0 );
+		registerAction( keypad2, ActionBank.getMoveDownAction( trackscheme, MOVE_SPEED_QUICK ) );
+
+		final KeyStroke keypad1 = KeyStroke.getKeyStroke( KeyEvent.VK_NUMPAD1, 0 );
+		registerAction( keypad1, ActionBank.getMoveDownLeftAction( trackscheme, MOVE_SPEED_QUICK ) );
+
+		// Slow
+
+		final KeyStroke metaKeypad4 = KeyStroke.getKeyStroke( KeyEvent.VK_NUMPAD4, InputEvent.META_DOWN_MASK );
+		registerAction( metaKeypad4, ActionBank.getMoveLeftAction( trackscheme, MOVE_SPEED ) );
+
+		final KeyStroke metaKeypad7 = KeyStroke.getKeyStroke( KeyEvent.VK_NUMPAD7, InputEvent.META_DOWN_MASK );
+		registerAction( metaKeypad7, ActionBank.getMoveUpLeftAction( trackscheme, MOVE_SPEED ) );
+
+		final KeyStroke metaKeypad8 = KeyStroke.getKeyStroke( KeyEvent.VK_NUMPAD8, InputEvent.META_DOWN_MASK );
+		registerAction( metaKeypad8, ActionBank.getMoveUpAction( trackscheme, MOVE_SPEED ) );
+
+		final KeyStroke metaKeypad9 = KeyStroke.getKeyStroke( KeyEvent.VK_NUMPAD9, InputEvent.META_DOWN_MASK );
+		registerAction( metaKeypad9, ActionBank.getMoveUpRightAction( trackscheme, MOVE_SPEED ) );
+
+		final KeyStroke metaKeypad6 = KeyStroke.getKeyStroke( KeyEvent.VK_NUMPAD6, InputEvent.META_DOWN_MASK );
+		registerAction( metaKeypad6, ActionBank.getMoveRightAction( trackscheme, MOVE_SPEED ) );
+
+		final KeyStroke metaKeypad3 = KeyStroke.getKeyStroke( KeyEvent.VK_NUMPAD3, InputEvent.META_DOWN_MASK );
+		registerAction( metaKeypad3, ActionBank.getMoveDownRightAction( trackscheme, MOVE_SPEED ) );
+
+		final KeyStroke metaKeypad2 = KeyStroke.getKeyStroke( KeyEvent.VK_NUMPAD2, InputEvent.META_DOWN_MASK );
+		registerAction( metaKeypad2, ActionBank.getMoveDownAction( trackscheme, MOVE_SPEED ) );
+
+		final KeyStroke metaKeypad1 = KeyStroke.getKeyStroke( KeyEvent.VK_NUMPAD1, InputEvent.META_DOWN_MASK );
+		registerAction( metaKeypad1, ActionBank.getMoveDownLeftAction( trackscheme, MOVE_SPEED ) );
 
 	}
 
@@ -96,21 +156,6 @@ public class KeyHandler
 	{
 		trackscheme.canvas.getInputMap().put( ks, action.name() );
 		AbstractNamedAction.put( trackscheme.canvas.getActionMap(), action );
-
-//		trackscheme.canvas.addKeyListener( new KeyAdapter()
-//		{
-//			@Override
-//			public void keyPressed( final KeyEvent e )
-//			{
-//				System.out.println( "Pressed " + e );// DEBUG
-//			};
-//
-//			@Override
-//			public void keyTyped( final KeyEvent e )
-//			{
-//				System.out.println( "Typed " + e );// DEBUG
-//			};
-//		} );
 	}
 
 
