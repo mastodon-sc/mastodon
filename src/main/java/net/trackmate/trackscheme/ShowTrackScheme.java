@@ -48,7 +48,7 @@ public class ShowTrackScheme implements TransformListener< ScreenTransform >, Se
 
 	SelectionNavigator selectionNavigator;
 
-	private final DefaultTransformHandler transformHandler;
+	final DefaultTransformHandler transformHandler;
 
 	private final TrackSchemeLAF laf;
 

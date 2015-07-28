@@ -4,6 +4,10 @@ import java.awt.event.ActionEvent;
 
 public class ActionBank
 {
+	/*
+	 * EDIT MODEL.
+	 */
+
 	public static final AbstractNamedAction getDeleteSelectionAction( final ShowTrackScheme trackscheme )
 	{
 		return new AbstractNamedAction( "deleteSelection" )
@@ -30,6 +34,10 @@ public class ActionBank
 			}
 		};
 	}
+
+	/*
+	 * NAVIGATE WITH SELECTION.
+	 */
 
 	public static final AbstractNamedAction getNavigateToChildAction( final ShowTrackScheme trackscheme )
 	{
@@ -142,6 +150,123 @@ public class ActionBank
 			}
 		};
 	}
+
+	/*
+	 * ZOOM.
+	 */
+
+	public static final AbstractNamedAction getZoomOutAction( final ShowTrackScheme trackscheme, final double zoomSpeed )
+	{
+		return new AbstractNamedAction( "zoomOut" )
+		{
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public void actionPerformed( final ActionEvent event )
+			{
+				trackscheme.transformHandler.zoom( zoomSpeed );
+			}
+		};
+	}
+
+	public static final AbstractNamedAction getZoomInAction( final ShowTrackScheme trackscheme, final double zoomSpeed )
+	{
+		return new AbstractNamedAction( "zoomIn" )
+		{
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public void actionPerformed( final ActionEvent event )
+			{
+				trackscheme.transformHandler.zoom( 1 / zoomSpeed );
+			}
+		};
+	}
+
+	public static final AbstractNamedAction getZoomOutQuickAction( final ShowTrackScheme trackscheme, final double zoomSpeed )
+	{
+		return new AbstractNamedAction( "zoomOutQuick" )
+		{
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public void actionPerformed( final ActionEvent event )
+			{
+				trackscheme.transformHandler.zoom( zoomSpeed );
+			}
+		};
+	}
+
+	public static final AbstractNamedAction getZoomInQuickAction( final ShowTrackScheme trackscheme, final double zoomSpeed )
+	{
+		return new AbstractNamedAction( "zoomInQuick" )
+		{
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public void actionPerformed( final ActionEvent event )
+			{
+				trackscheme.transformHandler.zoom( 1 / zoomSpeed );
+			}
+		};
+	}
+
+	public static final AbstractNamedAction getZoomOutXQuickAction( final ShowTrackScheme trackscheme, final double zoomSpeed )
+	{
+		return new AbstractNamedAction( "zoomOutXQuick" )
+		{
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public void actionPerformed( final ActionEvent event )
+			{
+				trackscheme.transformHandler.zoomX( zoomSpeed );
+			}
+		};
+	}
+
+	public static final AbstractNamedAction getZoomInXQuickAction( final ShowTrackScheme trackscheme, final double zoomSpeed )
+	{
+		return new AbstractNamedAction( "zoomInXQuick" )
+		{
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public void actionPerformed( final ActionEvent event )
+			{
+				trackscheme.transformHandler.zoomX( 1 / zoomSpeed );
+			}
+		};
+	}
+
+	public static final AbstractNamedAction getZoomOutYQuickAction( final ShowTrackScheme trackscheme, final double zoomSpeed )
+	{
+		return new AbstractNamedAction( "zoomOutYQuick" )
+		{
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public void actionPerformed( final ActionEvent event )
+			{
+				trackscheme.transformHandler.zoomY( zoomSpeed );
+			}
+		};
+	}
+
+	public static final AbstractNamedAction getZoomInYQuickAction( final ShowTrackScheme trackscheme, final double zoomSpeed )
+	{
+		return new AbstractNamedAction( "zoomInYQuick" )
+		{
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public void actionPerformed( final ActionEvent event )
+			{
+				trackscheme.transformHandler.zoomY( 1 / zoomSpeed );
+			}
+		};
+	}
+
 
 	private ActionBank()
 	{}

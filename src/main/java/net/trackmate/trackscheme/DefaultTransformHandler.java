@@ -31,6 +31,8 @@ public class DefaultTransformHandler implements MouseListener, MouseWheelListene
 	 */
 	private static final double MOUSEWHEEL_ZOOM_SPEED = 1d;
 
+	private static final double ZOOM_SCALE = 1.1;
+
 	private double vx0;
 
 	private double vy0;
@@ -256,27 +258,26 @@ public class DefaultTransformHandler implements MouseListener, MouseWheelListene
 			}
 			else
 			{
-				final double dScale = 1.1;
 				if ( zoomX && zoomY )
 				{
 					if ( zoomOut )
-						transform.scale( 1.0 / dScale, e.getX(), e.getY() );
+						zoom( 1.0 / ZOOM_SCALE, e.getX(), e.getY() );
 					else
-						transform.scale( dScale, e.getX(), e.getY() );
+						zoom( ZOOM_SCALE, e.getX(), e.getY() );
 				}
 				else if ( zoomX && !zoomY ) // zoom X axis
 				{
 					if ( zoomOut )
-						transform.scaleX( 1.0 / dScale, e.getX(), e.getY() );
+						zoomX( 1.0 / ZOOM_SCALE, e.getX(), e.getY() );
 					else
-						transform.scaleX( dScale, e.getX(), e.getY() );
+						zoomX( ZOOM_SCALE, e.getX(), e.getY() );
 				}
 				else if ( !zoomX && zoomY ) // zoom Y axis
 				{
 					if ( zoomOut )
-						transform.scaleY( 1.0 / dScale, e.getX(), e.getY() );
+						zoomY( 1.0 / ZOOM_SCALE, e.getX(), e.getY() );
 					else
-						transform.scaleY( dScale, e.getX(), e.getY() );
+						zoomY( ZOOM_SCALE, e.getX(), e.getY() );
 				}
 				update();
 			}
@@ -501,6 +502,96 @@ public class DefaultTransformHandler implements MouseListener, MouseWheelListene
 			}
 		}
 	}
+
+	/*
+	 * UI METHODS.
+	 */
+
+	public void zoom( final double factor, final int xloc, final int yloc )
+	{
+		if ( inertiaHandler != null )
+		{
+			if ( factor < 1 )
+			{
+				inertiaHandler.zoom( ( int ) ( 40 * factor ), true, true, true, xloc, yloc );
+			}
+			else
+			{
+				inertiaHandler.zoom( ( int ) ( 10 * factor ), false, true, true, xloc, yloc );
+			}
+		}
+		else
+		{
+			transform.scale( factor, xloc, yloc );
+			update();
+
+		}
+	}
+
+	public void zoom( final double factor )
+	{
+		final int xloc = transform.screenWidth / 2;
+		final int yloc = transform.screenHeight / 2;
+		zoom( factor, xloc, yloc );
+	}
+
+	public void zoomX( final double factor, final int xloc, final int yloc )
+	{
+		if ( inertiaHandler != null )
+		{
+			if ( factor < 1 )
+			{
+				inertiaHandler.zoom( ( int ) ( 100 * factor ), true, true, false, xloc, yloc );
+			}
+			else
+			{
+				inertiaHandler.zoom( ( int ) ( 25 * factor ), false, true, false, xloc, yloc );
+			}
+		}
+		else
+		{
+			transform.scaleX( factor, xloc, yloc );
+			update();
+		}
+	}
+
+	public void zoomX( final double factor )
+	{
+		final int xloc = transform.screenWidth / 2;
+		final int yloc = transform.screenHeight / 2;
+		zoomX( factor, xloc, yloc );
+	}
+
+	public void zoomY( final double factor, final int xloc, final int yloc )
+	{
+		if ( inertiaHandler != null )
+		{
+			if ( factor < 1 )
+			{
+				inertiaHandler.zoom( ( int ) ( 100 * factor ), true, false, true, xloc, yloc );
+			}
+			else
+			{
+				inertiaHandler.zoom( ( int ) ( 25 * factor ), false, false, true, xloc, yloc );
+			}
+		}
+		else
+		{
+			transform.scaleY( factor, xloc, yloc );
+			update();
+		}
+	}
+
+	public void zoomY( final double factor )
+	{
+		final int xloc = transform.screenWidth / 2;
+		final int yloc = transform.screenHeight / 2;
+		zoomY( factor, xloc, yloc );
+	}
+
+	/*
+	 * INNER CLASSES.
+	 */
 
 	private class InertiaHandler
 	{
