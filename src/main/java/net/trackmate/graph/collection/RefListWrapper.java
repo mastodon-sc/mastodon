@@ -99,7 +99,7 @@ public class RefListWrapper< O > extends AbstractRefCollectionWrapper< O, List< 
 	}
 
 	@Override
-	public void sort( final Comparator< O > comparator )
+	public void sort( final Comparator< ? super O > comparator )
 	{
 		Collections.sort( collection, comparator );
 	}

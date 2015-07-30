@@ -2,6 +2,7 @@ package net.trackmate.trackscheme;
 
 import java.awt.Color;
 import java.awt.Graphics;
+import java.awt.event.InputEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
@@ -28,6 +29,14 @@ import net.trackmate.graph.collection.RefSet;
 public class DefaultSelectionHandler extends MouseAdapter implements SelectionHandler
 {
 	private static final double SELECT_DISTANCE_TOLERANCE = 5.0;
+	
+	private static final int MOUSE_MASK = InputEvent.BUTTON1_DOWN_MASK;
+
+	private static final int MOUSE_MASK_ADDTOSELECTION = InputEvent.BUTTON1_DOWN_MASK | InputEvent.SHIFT_DOWN_MASK;
+
+	private static final int MOUSE_MASK_CLICK = InputEvent.BUTTON1_MASK;
+	
+	private static final int MOUSE_MASK_CLICK_ADDTOSELECTION = InputEvent.BUTTON1_MASK  | InputEvent.SHIFT_MASK;
 
 	private final OverlayRenderer selectionBoxOverlay = new SelectionBoxOverlay();
 
@@ -46,7 +55,7 @@ public class DefaultSelectionHandler extends MouseAdapter implements SelectionHa
 	 */
 	private int eX, eY;
 
-	private ScreenTransform transform;
+	private final ScreenTransform transform;
 
 	private boolean dragStarted = false;
 
@@ -60,23 +69,24 @@ public class DefaultSelectionHandler extends MouseAdapter implements SelectionHa
 	{
 		this.graph = graph;
 		this.order = order;
+		this.transform = new ScreenTransform();
 	}
 
 	@Override
 	public void mouseClicked( final MouseEvent e )
 	{
-		if ( e.getButton() == MouseEvent.BUTTON1 )
+		if ( e.getModifiers() == MOUSE_MASK_CLICK || e.getModifiers() == MOUSE_MASK_CLICK_ADDTOSELECTION )
 		{
-			final boolean clear = !e.isShiftDown();
+			final boolean clear = !(e.getModifiers() == MOUSE_MASK_CLICK_ADDTOSELECTION);
 			selectAt( transform, e.getX(), e.getY(), clear );
-			selectionListener.selectionUpdated();
+			selectionListener.selectionChanged();
 		}
 	}
 
 	@Override
 	public void mouseDragged( final MouseEvent e )
 	{
-		if ( e.getButton() == MouseEvent.BUTTON1 && !e.isAltDown() )
+		if ( e.getModifiersEx() == MOUSE_MASK ||  e.getModifiersEx() == MOUSE_MASK_ADDTOSELECTION )
 		{
 			eX = e.getX();
 			eY = e.getY();
@@ -86,18 +96,19 @@ public class DefaultSelectionHandler extends MouseAdapter implements SelectionHa
 				oX = e.getX();
 				oY = e.getY();
 			}
+			selectionListener.selectionChanged();
 		}
 	}
 
 	@Override
 	public void mouseReleased( final MouseEvent e )
 	{
-		if ( e.getButton() == MouseEvent.BUTTON1 && dragStarted )
+		if (dragStarted)
 		{
 			dragStarted = false;
-			final boolean clear = !e.isShiftDown();
-			selectWithin( transform, oX, oY, eX, eY, clear );
-			selectionListener.selectionUpdated();
+			final boolean clear = !( ( e.getModifiersEx() & MOUSE_MASK_ADDTOSELECTION ) != 0);
+			selectWithin(transform, oX, oY, eX, eY, clear);
+			selectionListener.selectionChanged();
 		}
 	}
 
@@ -143,7 +154,8 @@ public class DefaultSelectionHandler extends MouseAdapter implements SelectionHa
 		}
 	}
 
-	private void select( final TrackSchemeVertex vertex, final boolean toggle )
+	@Override
+	public void select( final TrackSchemeVertex vertex, final boolean toggle )
 	{
 		boolean selected;
 		if ( toggle )
@@ -159,8 +171,9 @@ public class DefaultSelectionHandler extends MouseAdapter implements SelectionHa
 
 		vertex.setSelected( selected );
 	}
-
-	private void select( final TrackSchemeEdge edge, final boolean toggle )
+	
+	@Override
+	public void select( final TrackSchemeEdge edge, final boolean toggle )
 	{
 		boolean selected;
 		if ( toggle )
@@ -177,7 +190,8 @@ public class DefaultSelectionHandler extends MouseAdapter implements SelectionHa
 		edge.setSelected( selected );
 	}
 
-	private void clearSelection()
+	@Override
+	public void clearSelection()
 	{
 		/*
 		 * Rather than iterating over the whole model, it's best to use the
@@ -190,7 +204,8 @@ public class DefaultSelectionHandler extends MouseAdapter implements SelectionHa
 		selectionModel.clearSelection();
 	}
 
-	private void selectWithin( final ScreenTransform transform, final int x1, final int y1, final int x2, final int y2, final boolean clear )
+	@Override
+	public void selectWithin( final ScreenTransform transform, final int x1, final int y1, final int x2, final int y2, final boolean clear )
 	{
 		if ( clear )
 		{
@@ -223,6 +238,12 @@ public class DefaultSelectionHandler extends MouseAdapter implements SelectionHa
 	}
 
 	@Override
+	public SelectionModel< TrackSchemeVertex, TrackSchemeEdge > getSelectionModel()
+	{
+		return selectionModel;
+	}
+
+	@Override
 	public void setSelectionModel( final SelectionModel< TrackSchemeVertex, TrackSchemeEdge > selectionModel )
 	{
 		this.selectionModel = selectionModel;
@@ -232,12 +253,6 @@ public class DefaultSelectionHandler extends MouseAdapter implements SelectionHa
 	public void setSelectionListener( final SelectionListener selectionListener )
 	{
 		this.selectionListener = selectionListener;
-	}
-
-	@Override
-	public void setTransform( final ScreenTransform transform )
-	{
-		this.transform = transform;
 	}
 
 	@Override
@@ -265,5 +280,11 @@ public class DefaultSelectionHandler extends MouseAdapter implements SelectionHa
 		public void setCanvasSize( final int width, final int height )
 		{}
 
+	}
+
+	@Override
+	public void transformChanged( final ScreenTransform transform )
+	{
+		this.transform.set( transform );
 	}
 }

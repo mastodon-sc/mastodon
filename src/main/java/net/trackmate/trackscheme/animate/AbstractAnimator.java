@@ -1,13 +1,10 @@
-package net.trackmate.trackscheme;
-
-//TODO: This is a duplicate of bdv.viewer.animate.AbstractAnimator. It should move to some common parent jar.
+package net.trackmate.trackscheme.animate;
 
 /**
- * Mother abstract class for animators that can animate the current view in a
- * {@link ViewerFrame} instance. The time unit for animation duration, start time
- * and current time is not specified, or example you can use <b>ms</b> obtained
- * from {@link System#currentTimeMillis()} or a frame number when rendering
- * movies.
+ * Mother abstract class for animators that can animate the current view. The
+ * time unit for animation duration, start time and current time is not
+ * specified, or example you can use <b>ms</b> obtained from
+ * {@link System#currentTimeMillis()} or a frame number when rendering movies.
  *
  * @author Tobias Pietzsch &lt;tobias.pietzsch@gmail.com&gt;
  * @author Jean-Yves Tinevez &lt;jeanyves.tinevez@gmail.com&gt;
@@ -41,15 +38,15 @@ public class AbstractAnimator
 	}
 
 	/**
-	 * Sets the current time for the animation.
-	 * The first call starts the animation.
+	 * Sets the current time for the animation. The first call starts the
+	 * animation.
 	 *
 	 * @param time
 	 *            current time (in time units)
 	 */
 	public void setTime( final long time )
 	{
-		if ( ! started )
+		if ( !started )
 		{
 			started = true;
 			startTime = time;

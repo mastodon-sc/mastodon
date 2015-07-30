@@ -3,7 +3,8 @@ package net.trackmate.trackscheme;
 public interface SelectionListener
 {
 	/**
-	 * Refresh the view after selection changes.
+	 * Is called when the selection managed has changed.
 	 */
-	public void selectionUpdated();
+
+	public void selectionChanged();
 }
