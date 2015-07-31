@@ -28,10 +28,6 @@
 			<artifactId>imglib2-ui</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>net.imglib2</groupId>
-			<artifactId>imglib2-algorithm</artifactId>
-		</dependency>
-		<dependency>
 			<groupId>net.sf.trove4j</groupId>
 			<artifactId>trove4j</artifactId>
 			<version>3.0.3</version>
@@ -61,6 +57,11 @@
 			<groupId>sc.fiji</groupId>
 			<artifactId>bigdataviewer-core</artifactId>
 			<version>1.2.0</version>
+		</dependency>
+		<dependency>
+			<groupId>net.imglib2</groupId>
+			<artifactId>imglib2-algorithm</artifactId>
+			<version>0.2.2-SNAPSHOT</version>
 		</dependency>
 	</dependencies>
 
@@ -112,4 +113,7 @@
 		<url>https://github.com/fiji/TrackMate3</url>
 	</scm>
 
+	<properties>
+		<enforcer.skip>true</enforcer.skip>
+	</properties>
 </project>
