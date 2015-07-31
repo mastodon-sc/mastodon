@@ -52,6 +52,16 @@
 			<groupId>org.jdom</groupId>
 			<artifactId>jdom2</artifactId>
 		</dependency>
+		<dependency>
+			<groupId>sc.fiji</groupId>
+			<artifactId>spim_data</artifactId>
+			<version>1.0.0-beta-7</version>
+		</dependency>
+		<dependency>
+			<groupId>sc.fiji</groupId>
+			<artifactId>bigdataviewer-core</artifactId>
+			<version>1.2.0</version>
+		</dependency>
 	</dependencies>
 
 	<developers>
