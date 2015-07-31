@@ -23,11 +23,11 @@ public class ShowTrackScheme implements TransformListener< ScreenTransform >, Se
 {
 	private static final long ANIMATION_MILLISECONDS = 250;
 
-	private final TrackSchemeGraph graph;
+	final TrackSchemeGraph graph;
 
 	private final LineageTreeLayout layout;
 
-	private final VertexOrder order;
+	final VertexOrder order;
 
 	private final ScreenTransform currentTransform;
 
