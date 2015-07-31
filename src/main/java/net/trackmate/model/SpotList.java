@@ -5,14 +5,14 @@ import net.trackmate.graph.PoolObjectList;
 
 public class SpotList extends PoolObjectList< Spot >
 {
-	public SpotList( final SpotCollection c )
+	public SpotList( final ModelGraph c )
 	{
-		super( c.spotPool );
+		super( c.getVertexPool() );
 	}
 
-	public SpotList( final SpotCollection c, final int initialCapacity )
+	public SpotList( final ModelGraph c, final int initialCapacity )
 	{
-		super( c.spotPool, initialCapacity );
+		super( c.getVertexPool(), initialCapacity );
 	}
 
 	protected SpotList( final SpotList list, final TIntArrayList indexSubList )

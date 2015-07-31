@@ -2,15 +2,16 @@ package net.trackmate;
 
 import java.util.List;
 
+import net.trackmate.model.Model;
+import net.trackmate.model.ModelGraph;
 import net.trackmate.model.Spot;
-import net.trackmate.model.SpotCollection;
 import net.trackmate.model.SpotList;
 
 public class CreateLargeModelExample
 {
 	private static final int N_STARTING_CELLS = 50;
 
-	private static final int N_DIVISIONS = 14;
+	private static final int N_DIVISIONS = 16;
 
 	private static final int N_FRAMES_PER_DIVISION = 5;
 
@@ -18,22 +19,22 @@ public class CreateLargeModelExample
 
 	private static final double RADIUS = 3;
 
-	private final SpotCollection spotCollection;
+	private final Model model;
 
 	public CreateLargeModelExample()
 	{
-		this.spotCollection = new SpotCollection( 2866900 );
+		this.model = new Model( new ModelGraph( 2866900 ) );
 		final long start = System.currentTimeMillis();
 		run();
 		final long end = System.currentTimeMillis();
 		System.out.println( "Model created in " + ( end - start ) + " ms." );
-		System.out.println( "Total number of spots: " + spotCollection.numSpots() );
-		final int lastFrame = spotCollection.keySet().last();
-		System.out.println( "Total number of cells in the last frame: " + spotCollection.getAll( lastFrame ).size() );
+		System.out.println( "Total number of spots: " + model.getGraph().numSpots() );
+		final int lastFrame = model.frames().last();
+		System.out.println( "Total number of cells in the last frame: " + model.getSpots( lastFrame ).size() );
 
-		final List< Spot > lastTwo = new SpotList( spotCollection );
-		lastTwo.addAll( spotCollection.getAll( lastFrame ) );
-		lastTwo.addAll( spotCollection.getAll( lastFrame - 1 ) );
+		final List< Spot > lastTwo = new SpotList( model.getGraph() );
+		lastTwo.addAll( model.getSpots( lastFrame ) );
+		lastTwo.addAll( model.getSpots( lastFrame - 1 ) );
 		System.out.println( "Total number of cells in the last two frames: " + lastTwo.size() );
 
 		System.out.println( String.format( "Total memory used by the model: %.1f MB", ( Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory() ) / 1e6d ) );
@@ -41,7 +42,7 @@ public class CreateLargeModelExample
 
 	public void run()
 	{
-		final Spot mother = spotCollection.getTmpSpotRef();
+		final Spot mother = model.getGraph().vertexRef();
 		for ( int ic = 0; ic < N_STARTING_CELLS; ic++ )
 		{
 			final double angle = 2d * ic * Math.PI / N_STARTING_CELLS;
@@ -53,34 +54,32 @@ public class CreateLargeModelExample
 			final double y = nframes * VELOCITY + vy;
 			final double z = N_DIVISIONS * VELOCITY;
 
-			spotCollection.createSpot( mother ).init( x, y, z, RADIUS, angle );
-			spotCollection.addSpotTo( mother, 0 );
+			model.createSpot( 0, x, y, z, RADIUS, mother );
 
 			addBranch( mother, vx, vy, 1 );
 		}
-		spotCollection.releaseTmpSpotRef( mother );
+		model.getGraph().releaseRef( mother );
 	}
 
 	private void addBranch( final Spot start, final double vx, final double vy, final int iteration )
 	{
 		if ( iteration >= N_DIVISIONS ) { return; }
 
-		final Spot previousSpot = spotCollection.getTmpSpotRef();
-		final Spot spot = spotCollection.getTmpSpotRef();
-		final Spot daughter = spotCollection.getTmpSpotRef();
+		final Spot previousSpot = model.getGraph().vertexRef();
+		final Spot spot = model.getGraph().vertexRef();
+		final Spot daughter = model.getGraph().vertexRef();
 
 		// Extend
-		previousSpot.referenceTo( start );
+		previousSpot.refTo( start );
 		for ( int it = 0; it < N_FRAMES_PER_DIVISION; it++ )
 		{
 			final double x = previousSpot.getDoublePosition( 0 ) + vx;
 			final double y = previousSpot.getDoublePosition( 1 ) + vy;
 			final double z = previousSpot.getDoublePosition( 2 );
-			spotCollection.createSpot( spot ).init( x, y, z, RADIUS, iteration );
-			final int frame = previousSpot.getFrame() + 1;
-			spotCollection.addSpotTo( spot, frame );
-			spotCollection.addEdge( previousSpot, spot ).init( iteration );
-			previousSpot.referenceTo( spot );
+			final int frame = previousSpot.getTimePoint();
+			model.createSpot( frame, x, y, z, RADIUS, spot );
+			model.createLink( previousSpot, spot );
+			previousSpot.refTo( spot );
 		}
 
 		// Divide
@@ -103,18 +102,16 @@ public class CreateLargeModelExample
 				z = previousSpot.getDoublePosition( 2 );
 			}
 
-			spotCollection.createSpot( daughter ).init( x, y, z, RADIUS, sign );
-			final int frame = previousSpot.getFrame() + 1;
-			daughter.setFrame( frame );
-			spotCollection.addSpotTo( daughter, frame );
-			spotCollection.addEdge( previousSpot, daughter ).init( sign );
+			final int frame = previousSpot.getTimePoint() + 1;
+			model.createSpot( frame, x, y, z, RADIUS, daughter );
+			model.createLink( previousSpot, daughter );
 
 			addBranch( daughter, vx, vy, iteration + 1 );
 		}
 
-		spotCollection.releaseTmpSpotRef( previousSpot );
-		spotCollection.releaseTmpSpotRef( spot );
-		spotCollection.releaseTmpSpotRef( daughter );
+		model.getGraph().releaseRef( previousSpot );
+		model.getGraph().releaseRef( spot );
+		model.getGraph().releaseRef( daughter );
 	}
 
 	public static void main( final String[] args )

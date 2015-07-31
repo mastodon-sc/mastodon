@@ -5,14 +5,14 @@ import net.trackmate.graph.PoolObjectList;
 
 public class LinkList extends PoolObjectList< Link >
 {
-	public LinkList( final SpotCollection c )
+	public LinkList( final ModelGraph c )
 	{
-		super( c.linkPool );
+		super( c.getLinkPool() );
 	}
 
-	public LinkList( final SpotCollection c, final int initialCapacity )
+	public LinkList( final ModelGraph c, final int initialCapacity )
 	{
-		super( c.linkPool, initialCapacity );
+		super( c.getLinkPool(), initialCapacity );
 	}
 
 	protected LinkList( final LinkList list, final TIntArrayList indexSubList )

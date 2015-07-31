@@ -4,13 +4,13 @@ import net.trackmate.graph.PoolObjectSet;
 
 public class SpotSet extends PoolObjectSet< Spot >
 {
-	public SpotSet( final SpotCollection c )
+	public SpotSet( final ModelGraph c )
 	{
-		super( c.spotPool );
+		super( c.getVertexPool() );
 	}
 
-	public SpotSet( final SpotCollection c, final int initialCapacity )
+	public SpotSet( final ModelGraph c, final int initialCapacity )
 	{
-		super( c.spotPool, initialCapacity );
+		super( c.getVertexPool(), initialCapacity );
 	}
 }
