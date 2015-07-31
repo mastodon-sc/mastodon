@@ -28,6 +28,7 @@ import net.trackmate.bdv.wrapper.OverlayVertex;
 import net.trackmate.bdv.wrapper.SpatialSearch;
 import net.trackmate.bdv.wrapper.SpotOverlayProperties;
 import net.trackmate.graph.PoolObjectList;
+import net.trackmate.graph.listenable.GraphListener;
 import net.trackmate.io.RawIO;
 import net.trackmate.model.Link;
 import net.trackmate.model.Model;
@@ -115,35 +116,89 @@ public class Launcher
 		bdv.getViewer().addRenderTransformListener( tracksOverlay );
 		setupContextTrackscheme( bdv, overlayGraph, trackscheme );
 
+		final boolean flag = model.addGraphListener( new GraphListener< Spot, Link >()
+		{
+
+			@Override
+			public void vertexRemoved( final Spot vertex )
+			{
+				System.out.println( "Removed spot: " + vertex );// DEBUG
+			}
+
+			@Override
+			public void vertexAdded( final Spot vertex )
+			{
+				System.out.println( "Added spot: " + vertex );// DEBUG
+			}
+
+			@Override
+			public void updateResumed()
+			{
+				System.out.println( "Update resumed." );// DEBUG
+			}
+
+			@Override
+			public void updatePaused()
+			{
+				System.out.println( "Update paused." );// DEBUG
+			}
+
+			@Override
+			public void updateEnded()
+			{
+				System.out.println( "Update ended." );// DEBUG
+			}
+
+			@Override
+			public void updateBegun()
+			{
+				System.out.println( "Update begun." );// DEBUG
+			}
+
+			@Override
+			public void edgeRemoved( final Link edge, final Spot source, final Spot target )
+			{
+				// TODO Auto-generated method stub
+
+			}
+
+			@Override
+			public void edgeAdded( final Link edge )
+			{
+				// TODO Auto-generated method stub
+
+			}
+		} );
+		System.out.println( "Listener registered: " + flag );// DEBUG
+		System.out.println( model.listenableGraph.getGraphListeners() );// DEBUG
+
 		final ViewerPanel viewer = bdv.getViewer();
 		viewer.getDisplay().addMouseListener( new MouseAdapter()
 		{
 			@Override
 			public void mouseClicked( final MouseEvent e )
 			{
-				// Check if the mouse is not off-screen
-				final Point mouseScreenLocation = e.getPoint();
-				// MouseInfo.getPointerInfo().getLocation();
-				final Point viewerPosition = viewer.getLocationOnScreen();
-				final Dimension viewerSize = viewer.getSize();
-				if ( mouseScreenLocation.x < viewerPosition.x || mouseScreenLocation.y < viewerPosition.y || mouseScreenLocation.x > viewerPosition.x + viewerSize.width || mouseScreenLocation.y > viewerPosition.y + viewerSize.height ) { return; }
+				new Thread( "Add spot" )
+				{
+					@Override
+					public void run()
+					{
+						// Check if the mouse is not off-screen
+						final Point mouseScreenLocation = e.getPoint();
+						// MouseInfo.getPointerInfo().getLocation();
+						final Point viewerPosition = viewer.getLocationOnScreen();
+						final Dimension viewerSize = viewer.getSize();
+						if ( mouseScreenLocation.x < viewerPosition.x || mouseScreenLocation.y < viewerPosition.y || mouseScreenLocation.x > viewerPosition.x + viewerSize.width || mouseScreenLocation.y > viewerPosition.y + viewerSize.height ) { return; }
 
-				final ViewerState state = viewer.getState();
-				final int timepoint = state.getCurrentTimepoint();
-				final int sourceId = state.getCurrentSource();
+						final ViewerState state = viewer.getState();
+						final int timepoint = state.getCurrentTimepoint();
 
-				// Ok, then create this spot, wherever it is.
-				final double[] coordinates = new double[ 3 ];
-				viewer.getGlobalMouseCoordinates( RealPoint.wrap( coordinates ) );
-
-				final Spot spot = model.createSpot( timepoint, coordinates[ 0 ], coordinates[ 1 ], coordinates[ 2 ], 5d, model.getGraph().vertexRef() );
-				System.out.println( spot );// DEBUG
-				/*
-				 * TODO: this has no effect, because the overlay and trackscheme
-				 * do not know that a spot was created in the model. The model
-				 * should be listenable, and TrackScheme and the overlay should
-				 * register as listeners.
-				 */
+						// Ok, then create this spot, wherever it is.
+						final double[] coordinates = new double[ 3 ];
+						viewer.getGlobalMouseCoordinates( RealPoint.wrap( coordinates ) );
+						model.createSpot( timepoint, coordinates[ 0 ], coordinates[ 1 ], coordinates[ 2 ], 5d, model.getGraph().vertexRef() );
+					};
+				}.start();
 			}
 		} );
 	}
