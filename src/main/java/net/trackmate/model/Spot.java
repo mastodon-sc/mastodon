@@ -9,7 +9,7 @@ import net.trackmate.graph.AbstractIdVertexPool;
 import net.trackmate.graph.mempool.ByteMappedElement;
 import net.trackmate.model.AdditionalFeatures.Feature;
 
-public class Spot extends AbstractIdVertex< Spot, Edge, ByteMappedElement > implements RealLocalizable
+public class Spot extends AbstractIdVertex< Spot, Link, ByteMappedElement > implements RealLocalizable
 {
 	protected static final int X_OFFSET = AbstractIdVertex.SIZE_IN_BYTES;
 	protected static final int Y_OFFSET = X_OFFSET + DOUBLE_SIZE;

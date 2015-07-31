@@ -25,18 +25,18 @@ public class SpotCollectionExample
 			}
 //			System.out.println( graph + "\n" );
 
-			graph.addEdge( spots.get( 0 ), spots.get( 1 ) );
-			graph.addEdge( spots.get( 0 ), spots.get( 2 ) );
-			graph.addEdge( spots.get( 0 ), spots.get( 4 ) );
-			graph.addEdge( spots.get( 1 ), spots.get( 3 ) );
-			graph.addEdge( spots.get( 1 ), spots.get( 4 ) );
+			graph.addLink( spots.get( 0 ), spots.get( 1 ) );
+			graph.addLink( spots.get( 0 ), spots.get( 2 ) );
+			graph.addLink( spots.get( 0 ), spots.get( 4 ) );
+			graph.addLink( spots.get( 1 ), spots.get( 3 ) );
+			graph.addLink( spots.get( 1 ), spots.get( 4 ) );
 			System.out.println( graph );
 		}
 		else
 		{
 			final Spot s0 = graph.createEmptySpotRef();
 			final Spot s1 = graph.createEmptySpotRef();
-			final Edge e0 = graph.createEmptyEdgeRef();
+			final Link e0 = graph.createEmptyLinkRef();
 
 			for ( int i = 0; i < 5; ++i )
 			{
@@ -47,19 +47,19 @@ public class SpotCollectionExample
 			}
 //			System.out.println( graph + "\n" );
 
-			graph.addEdge( spots.get( 0, s0 ), spots.get( 1, s1 ), e0 );
-			graph.addEdge( spots.get( 0, s0 ), spots.get( 2, s1 ), e0 );
-			graph.addEdge( spots.get( 0, s0 ), spots.get( 4, s1 ), e0 );
-			graph.addEdge( spots.get( 1, s0 ), spots.get( 3, s1 ), e0 );
-			graph.addEdge( spots.get( 1, s0 ), spots.get( 4, s1 ), e0 );
+			graph.addLink( spots.get( 0, s0 ), spots.get( 1, s1 ), e0 );
+			graph.addLink( spots.get( 0, s0 ), spots.get( 2, s1 ), e0 );
+			graph.addLink( spots.get( 0, s0 ), spots.get( 4, s1 ), e0 );
+			graph.addLink( spots.get( 1, s0 ), spots.get( 3, s1 ), e0 );
+			graph.addLink( spots.get( 1, s0 ), spots.get( 4, s1 ), e0 );
 			System.out.println( graph );
 		}
 
 		for ( final Spot spot : graph )
 		{
 			System.out.println( spot );
-			for ( final Edge edge : spot.outgoingEdges() )
-				System.out.println( "  " + edge );
+			for ( final Link link : spot.outgoingEdges() )
+				System.out.println( "  " + link );
 			System.out.println();
 		}
 	}

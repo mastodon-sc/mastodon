@@ -19,11 +19,11 @@ public class SpotCollection implements Iterable< Spot >
 {
 	private static final Factory< ByteMappedElement > poolFactory = SingleArrayMemPool.factory( ByteMappedElementArray.factory );
 
-	final AbstractIdVertexPool< Spot, Edge, ByteMappedElement > spotPool;
+	final AbstractIdVertexPool< Spot, Link, ByteMappedElement > spotPool;
 
-	final AbstractEdgePool< Edge, Spot, ByteMappedElement > edgePool;
+	final AbstractEdgePool< Link, Spot, ByteMappedElement > linkPool;
 
-	private final Graph< Spot, Edge > graph;
+	private final Graph< Spot, Link > graph;
 
 	final AdditionalFeatures additionalSpotFeatures;
 
@@ -50,18 +50,18 @@ public class SpotCollection implements Iterable< Spot >
 		}
 	};
 
-	final PoolObject.Factory< Edge, ByteMappedElement > edgeFactory = new PoolObject.Factory< Edge, ByteMappedElement >()
+	final PoolObject.Factory< Link, ByteMappedElement > edgeFactory = new PoolObject.Factory< Link, ByteMappedElement >()
 	{
 		@Override
 		public int getSizeInBytes()
 		{
-			return Edge.SIZE_IN_BYTES;
+			return Link.SIZE_IN_BYTES;
 		}
 
 		@Override
-		public Edge createEmptyRef()
+		public Link createEmptyRef()
 		{
-			return new Edge( edgePool, additionalEdgeFeatures );
+			return new Link( linkPool, additionalEdgeFeatures );
 		}
 
 		@Override
@@ -78,15 +78,15 @@ public class SpotCollection implements Iterable< Spot >
 
 	public SpotCollection( final int initialCapacity )
 	{
-		spotPool = new AbstractIdVertexPool< Spot, Edge, ByteMappedElement >( initialCapacity, spotFactory );
-		edgePool = new AbstractEdgePool< Edge, Spot, ByteMappedElement >( initialCapacity, edgeFactory, spotPool );
-		spotPool.linkEdgePool( edgePool );
+		spotPool = new AbstractIdVertexPool< Spot, Link, ByteMappedElement >( initialCapacity, spotFactory );
+		linkPool = new AbstractEdgePool< Link, Spot, ByteMappedElement >( initialCapacity, edgeFactory, spotPool );
+		spotPool.linkEdgePool( linkPool );
 		additionalSpotFeatures = new AdditionalFeatures( initialCapacity );
 		additionalEdgeFeatures = new AdditionalFeatures( initialCapacity );
-		graph = GraphImp.create( spotPool, edgePool );
+		graph = GraphImp.create( spotPool, linkPool );
 	}
 
-	public Graph< Spot, Edge > getGraph()
+	public Graph< Spot, Link > getGraph()
 	{
 		return graph;
 	}
@@ -96,15 +96,15 @@ public class SpotCollection implements Iterable< Spot >
 		return spotPool.size();
 	}
 
-	public int numEdges()
+	public int numLinks()
 	{
-		return edgePool.size();
+		return linkPool.size();
 	}
 
 	public void clear()
 	{
 		spotPool.clear();
-		edgePool.clear();
+		linkPool.clear();
 	}
 
 	public Spot createEmptySpotRef()
@@ -158,31 +158,31 @@ public class SpotCollection implements Iterable< Spot >
 		spotPool.releaseRef( tmp );
 	}
 
-	public Edge createEmptyEdgeRef()
+	public Link createEmptyLinkRef()
 	{
-		return edgePool.createRef();
+		return linkPool.createRef();
 	}
 
-	public Edge getEdge( final Spot source, final Spot target )
+	public Link getLink( final Spot source, final Spot target )
 	{
-		return edgePool.getEdge( source, target, edgePool.createRef() );
-	}
-
-	// garbage-free version
-	public Edge getEdge( final Spot source, final Spot target, final Edge edge )
-	{
-		return edgePool.getEdge( source, target, edge );
-	}
-
-	public Edge addEdge( final Spot source, final Spot target )
-	{
-		return edgePool.addEdge( source, target, edgePool.createRef() );
+		return linkPool.getEdge( source, target, linkPool.createRef() );
 	}
 
 	// garbage-free version
-	public Edge addEdge( final Spot source, final Spot target, final Edge edge )
+	public Link getLink( final Spot source, final Spot target, final Link link )
 	{
-		return edgePool.addEdge( source, target, edge );
+		return linkPool.getEdge( source, target, link );
+	}
+
+	public Link addLink( final Spot source, final Spot target )
+	{
+		return linkPool.addEdge( source, target, linkPool.createRef() );
+	}
+
+	// garbage-free version
+	public Link addLink( final Spot source, final Spot target, final Link edge )
+	{
+		return linkPool.addEdge( source, target, edge );
 	}
 
 	@Override
@@ -191,9 +191,9 @@ public class SpotCollection implements Iterable< Spot >
 		return spotPool.iterator( createEmptySpotRef() );
 	}
 
-	public Iterable< Edge > edges()
+	public Iterable< Link > links()
 	{
-		return edgePool;
+		return linkPool;
 	}
 
 	public Spot getTmpSpotRef()
@@ -212,20 +212,20 @@ public class SpotCollection implements Iterable< Spot >
 			spotPool.releaseRef( spot );
 	}
 
-	public Edge getTmpEdgeRef()
+	public Link getTmpLinkRef()
 	{
-		return edgePool.createRef();
+		return linkPool.createRef();
 	}
 
-	public void releaseTmpEdgeRef( final Edge edge )
+	public void releaseTmpLinkRef( final Link link )
 	{
-		edgePool.releaseRef( edge );
+		linkPool.releaseRef( link );
 	}
 
-	public void releaseTmpEdgeRef( final Edge... edges )
+	public void releaseTmpLinkRef( final Link... links )
 	{
-		for ( final Edge edge : edges )
-			edgePool.releaseRef( edge );
+		for ( final Link link : links )
+			linkPool.releaseRef( link );
 	}
 
 	@Override
@@ -236,9 +236,9 @@ public class SpotCollection implements Iterable< Spot >
 		for ( final Spot spot : this )
 			sb.append( "    " + spot + "\n" );
 		sb.append( "  },\n" );
-		sb.append( "  edges = {\n" );
-		for ( final Edge edge : edges() )
-			sb.append( "    " + edge + "\n" );
+		sb.append( "  links = {\n" );
+		for ( final Link link : links() )
+			sb.append( "    " + link + "\n" );
 		sb.append( "  }\n" );
 		sb.append( "}" );
 		return sb.toString();

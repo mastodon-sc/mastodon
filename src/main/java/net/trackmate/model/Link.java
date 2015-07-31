@@ -6,14 +6,14 @@ import net.trackmate.graph.AbstractEdgePool;
 import net.trackmate.graph.mempool.ByteMappedElement;
 import net.trackmate.model.AdditionalFeatures.Feature;
 
-public class Edge extends AbstractEdge< Edge, Spot, ByteMappedElement >
+public class Link extends AbstractEdge< Link, Spot, ByteMappedElement >
 {
 	protected static final int WEIGHT_OFFSET = AbstractEdge.SIZE_IN_BYTES;
 	protected static final int SIZE_IN_BYTES = WEIGHT_OFFSET + DOUBLE_SIZE;
 
 	private final AdditionalFeatures additionalFeatures;
 
-	public Edge init( final double weight )
+	public Link init( final double weight )
 	{
 		setWeight( weight );
 		return this;
@@ -47,12 +47,12 @@ public class Edge extends AbstractEdge< Edge, Spot, ByteMappedElement >
 	@Override
 	public String toString()
 	{
-		return String.format( "Edge( %d -> %d )", getSource().getId(), getTarget().getId() );
+		return String.format( "Link( %d -> %d )", getSource().getId(), getTarget().getId() );
 	}
 
-	Edge( final AbstractEdgePool< Edge, Spot, ByteMappedElement > pool, final AdditionalFeatures additionalEdgeFeatures )
+	Link( final AbstractEdgePool< Link, Spot, ByteMappedElement > pool, final AdditionalFeatures additionalLinkFeatures )
 	{
 		super( pool );
-		this.additionalFeatures = additionalEdgeFeatures;
+		this.additionalFeatures = additionalLinkFeatures;
 	}
 }
