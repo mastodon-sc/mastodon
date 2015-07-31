@@ -1,8 +1,8 @@
 package net.trackmate.graph.listenable;
 
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Set;
-import java.util.WeakHashMap;
 
 import net.trackmate.graph.Edge;
 import net.trackmate.graph.Graph;
@@ -35,7 +35,7 @@ public class ListenableGraphWrapper< V extends Vertex< E >, E extends Edge< V >,
 	 * STATIC ACCESSOR
 	 */
 
-	public static final < V extends Vertex< E >, E extends Edge< V >, G extends Graph< V, E > > ListenableGraphWrapper< V, E, G > wrap( G graph )
+	public static final < V extends Vertex< E >, E extends Edge< V >, G extends Graph< V, E > > ListenableGraphWrapper< V, E, G > wrap( final G graph )
 	{
 		return new ListenableGraphWrapper< V, E, G >( graph );
 	}
@@ -46,7 +46,7 @@ public class ListenableGraphWrapper< V extends Vertex< E >, E extends Edge< V >,
 
 	private final G graph;
 
-	private final WeakHashMap< GraphListener< V, E >, Boolean > listeners;
+	private final HashMap< GraphListener< V, E >, Boolean > listeners;
 
 	/*
 	 * CONSTRUCTOR
@@ -55,7 +55,7 @@ public class ListenableGraphWrapper< V extends Vertex< E >, E extends Edge< V >,
 	public ListenableGraphWrapper( final G graph )
 	{
 		this.graph = graph;
-		this.listeners = new WeakHashMap< GraphListener< V, E >, Boolean >();
+		this.listeners = new HashMap< GraphListener< V, E >, Boolean >();
 	}
 
 	/*
@@ -78,7 +78,7 @@ public class ListenableGraphWrapper< V extends Vertex< E >, E extends Edge< V >,
 	@Override
 	public boolean addGraphListener( final GraphListener< V, E > listener )
 	{
-		return null != listeners.put( listener, Boolean.TRUE );
+		return null == listeners.put( listener, Boolean.TRUE );
 	}
 
 	@Override
