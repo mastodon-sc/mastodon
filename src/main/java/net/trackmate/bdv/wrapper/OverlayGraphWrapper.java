@@ -75,6 +75,14 @@ public class OverlayGraphWrapper< V extends Vertex< E >, E extends Edge< V > >
 		return spots;
 	}
 
+	public void add( final int timepoint, final int id )
+	{
+		final OverlayVertexWrapper< V, E > obj = vertexRef();
+		trackSchemeGraph.getVertexPool().getByInternalPoolIndex( id, obj.tsv );
+		obj.updateModelVertexRef();
+		getSpots( timepoint ).add( obj );
+	}
+
 	public void HACK_updateTimepointSets()
 	{
 		timepointToSpots.clear();

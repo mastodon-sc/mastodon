@@ -28,7 +28,6 @@ import net.trackmate.bdv.wrapper.OverlayVertex;
 import net.trackmate.bdv.wrapper.SpatialSearch;
 import net.trackmate.bdv.wrapper.SpotOverlayProperties;
 import net.trackmate.graph.PoolObjectList;
-import net.trackmate.graph.listenable.GraphListener;
 import net.trackmate.io.RawIO;
 import net.trackmate.model.Link;
 import net.trackmate.model.Model;
@@ -116,62 +115,6 @@ public class Launcher
 		bdv.getViewer().addRenderTransformListener( tracksOverlay );
 		setupContextTrackscheme( bdv, overlayGraph, trackscheme );
 
-		final boolean flag = model.addGraphListener( new GraphListener< Spot, Link >()
-		{
-
-			@Override
-			public void vertexRemoved( final Spot vertex )
-			{
-				System.out.println( "Removed spot: " + vertex );// DEBUG
-			}
-
-			@Override
-			public void vertexAdded( final Spot vertex )
-			{
-				System.out.println( "Added spot: " + vertex );// DEBUG
-			}
-
-			@Override
-			public void updateResumed()
-			{
-				System.out.println( "Update resumed." );// DEBUG
-			}
-
-			@Override
-			public void updatePaused()
-			{
-				System.out.println( "Update paused." );// DEBUG
-			}
-
-			@Override
-			public void updateEnded()
-			{
-				System.out.println( "Update ended." );// DEBUG
-			}
-
-			@Override
-			public void updateBegun()
-			{
-				System.out.println( "Update begun." );// DEBUG
-			}
-
-			@Override
-			public void edgeRemoved( final Link edge, final Spot source, final Spot target )
-			{
-				// TODO Auto-generated method stub
-
-			}
-
-			@Override
-			public void edgeAdded( final Link edge )
-			{
-				// TODO Auto-generated method stub
-
-			}
-		} );
-		System.out.println( "Listener registered: " + flag );// DEBUG
-		System.out.println( model.listenableGraph.getGraphListeners() );// DEBUG
-
 		final ViewerPanel viewer = bdv.getViewer();
 		viewer.getDisplay().addMouseListener( new MouseAdapter()
 		{
@@ -196,7 +139,12 @@ public class Launcher
 						// Ok, then create this spot, wherever it is.
 						final double[] coordinates = new double[ 3 ];
 						viewer.getGlobalMouseCoordinates( RealPoint.wrap( coordinates ) );
-						model.createSpot( timepoint, coordinates[ 0 ], coordinates[ 1 ], coordinates[ 2 ], 5d, model.getGraph().vertexRef() );
+
+						final Spot spot = model.createSpot( timepoint, coordinates[ 0 ], coordinates[ 1 ], coordinates[ 2 ], 50d, model.getGraph().vertexRef() );
+						final int id = graph.getIdBimap().getVertexId( spot );
+
+						final TrackSchemeVertex tsv = tsg.addVertex().init( id, "New! " + id, timepoint, true );
+						overlayGraph.add( timepoint, id );
 					};
 				}.start();
 			}
