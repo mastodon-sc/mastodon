@@ -46,18 +46,6 @@ public class ListenableGraphWrapper< V extends Vertex< E >, E extends Edge< V >,
 
 	private final G graph;
 
-	/**
-	 * Counter for the depth of nested transactions. Each call to beginUpdate
-	 * increments this counter and each call to endUpdate decrements it. When
-	 * the counter reaches 0, the transaction is closed and the respective
-	 * events are fired. Initial value is 0.
-	 */
-	private transient int updateLevel = 0;
-
-	private transient boolean endingUpdate = false;
-
-	private GraphChangeEvent< V, E > currentEdit;
-
 	private final WeakHashMap< GraphListener< V, E >, Boolean > listeners;
 
 	/*
@@ -67,49 +55,12 @@ public class ListenableGraphWrapper< V extends Vertex< E >, E extends Edge< V >,
 	public ListenableGraphWrapper( final G graph )
 	{
 		this.graph = graph;
-		this.currentEdit = new GraphChangeEvent< V, E >( graph );
 		this.listeners = new WeakHashMap< GraphListener< V, E >, Boolean >();
 	}
 
 	/*
 	 * METHODS EVENT HANDLING
 	 */
-
-	public void beginUpdate()
-	{
-		updateLevel++;
-	}
-
-	public void endUpdate()
-	{
-		updateLevel--;
-
-		if ( !endingUpdate )
-		{
-			endingUpdate = updateLevel == 0;
-			try
-			{
-				if ( endingUpdate && !currentEdit.isEmpty() )
-				{
-					fireEvent();
-					currentEdit = new GraphChangeEvent< V, E >( graph );
-				}
-			}
-			finally
-			{
-				endingUpdate = false;
-			}
-		}
-	}
-
-
-	private void fireEvent()
-	{
-		for ( final GraphListener< V, E > listener : listeners.keySet() )
-		{
-			listener.graphChanged( currentEdit );
-		}
-	}
 
 	/*
 	 * EXPOSE WRAPPED GRAPH. With the right type.
@@ -150,7 +101,10 @@ public class ListenableGraphWrapper< V extends Vertex< E >, E extends Edge< V >,
 	public V addVertex()
 	{
 		final V v = graph.addVertex();
-		currentEdit.vertexAdded( v );
+		for ( final GraphListener< V, E > listener : listeners.keySet() )
+		{
+			listener.vertexAdded( v );
+		}
 		return v;
 	}
 
@@ -158,7 +112,10 @@ public class ListenableGraphWrapper< V extends Vertex< E >, E extends Edge< V >,
 	public V addVertex( final V vertex )
 	{
 		final V v = graph.addVertex( vertex );
-		currentEdit.vertexAdded( v );
+		for ( final GraphListener< V, E > listener : listeners.keySet() )
+		{
+			listener.vertexAdded( v );
+		}
 		return v;
 	}
 
@@ -166,7 +123,10 @@ public class ListenableGraphWrapper< V extends Vertex< E >, E extends Edge< V >,
 	public E addEdge( final V source, final V target )
 	{
 		final E e = graph.addEdge( source, target );
-		currentEdit.edgeAdded( e );
+		for ( final GraphListener< V, E > listener : listeners.keySet() )
+		{
+			listener.edgeAdded( e );
+		}
 		return e;
 	}
 
@@ -174,7 +134,10 @@ public class ListenableGraphWrapper< V extends Vertex< E >, E extends Edge< V >,
 	public E addEdge( final V source, final V target, final E edge )
 	{
 		final E e = graph.addEdge( source, target, edge );
-		currentEdit.edgeAdded( e );
+		for ( final GraphListener< V, E > listener : listeners.keySet() )
+		{
+			listener.edgeAdded( e );
+		}
 		return e;
 	}
 
@@ -183,16 +146,25 @@ public class ListenableGraphWrapper< V extends Vertex< E >, E extends Edge< V >,
 	{
 		for ( final E edge : vertex.edges() )
 		{
-			currentEdit.edgeRemoved( edge );
+			for ( final GraphListener< V, E > listener : listeners.keySet() )
+			{
+				listener.edgeRemoved( edge, edge.getSource(), edge.getTarget() );
+			}
 		}
-		currentEdit.vertexRemoved( vertex );
+		for ( final GraphListener< V, E > listener : listeners.keySet() )
+		{
+			listener.vertexRemoved( vertex );
+		}
 		graph.remove( vertex );
 	}
 
 	@Override
 	public void remove( final E edge )
 	{
-		currentEdit.edgeRemoved( edge );
+		for ( final GraphListener< V, E > listener : listeners.keySet() )
+		{
+			listener.edgeRemoved( edge, edge.getSource(), edge.getTarget() );
+		}
 		graph.remove( edge );
 	}
 
@@ -201,9 +173,48 @@ public class ListenableGraphWrapper< V extends Vertex< E >, E extends Edge< V >,
 	{
 		for ( final E edge : vertex.edges() )
 		{
-			currentEdit.edgeRemoved( edge );
+			for ( final GraphListener< V, E > listener : listeners.keySet() )
+			{
+				listener.edgeRemoved( edge, edge.getSource(), edge.getTarget() );
+			}
 		}
 		graph.removeAllLinkedEdges( vertex );
+	}
+
+	@Override
+	public void beginUpdate()
+	{
+		for ( final GraphListener< V, E > listener : listeners.keySet() )
+		{
+			listener.updateBegun();
+		}
+	}
+
+	@Override
+	public void endUpdate()
+	{
+		for ( final GraphListener< V, E > listener : listeners.keySet() )
+		{
+			listener.updateEnded();
+		}
+	}
+
+	@Override
+	public void pauseUpdate()
+	{
+		for ( final GraphListener< V, E > listener : listeners.keySet() )
+		{
+			listener.updatePaused();
+		}
+	}
+
+	@Override
+	public void resumeUpdate()
+	{
+		for ( final GraphListener< V, E > listener : listeners.keySet() )
+		{
+			listener.updateResumed();
+		}
 	}
 
 	/*

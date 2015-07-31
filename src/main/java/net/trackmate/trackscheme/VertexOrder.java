@@ -4,6 +4,7 @@ import gnu.trove.iterator.TIntIterator;
 import gnu.trove.list.array.TIntArrayList;
 import gnu.trove.map.hash.TIntObjectHashMap;
 
+import java.util.Comparator;
 import java.util.List;
 
 import net.trackmate.graph.collection.RefSet;
@@ -512,6 +513,33 @@ public class VertexOrder
 			sumVerticesToPaint = 0;
 			sumVertexRangesToPaint = 0;
 		}
+	}
+
+	public static TrackSchemeVertexList getOrderedRoots( final TrackSchemeGraph graph  ,
+			final Comparator< TrackSchemeVertex > comparator )
+	{
+		final TrackSchemeVertexList roots = new TrackSchemeVertexList( graph );
+		for ( final TrackSchemeVertex v : graph.vertices() )
+		{
+			if ( v.incomingEdges().isEmpty() )
+				roots.add( v );
+		}
+		roots.sort( comparator );
+		return roots;
+	}
+
+	public static TrackSchemeVertexList getOrderedRoots( final TrackSchemeGraph graph )
+	{
+		final Comparator< TrackSchemeVertex > labelComparator = new Comparator< TrackSchemeVertex >()
+		{
+
+			@Override
+			public int compare( final TrackSchemeVertex o1, final TrackSchemeVertex o2 )
+			{
+				return o1.getLabel().compareTo( o2.getLabel() );
+			}
+		};
+		return getOrderedRoots( graph, labelComparator );
 	}
 
 	/**

@@ -17,4 +17,8 @@ public interface ListenableGraph< V extends Vertex< E >, E extends Edge< V > > e
 	public void beginUpdate();
 
 	public void endUpdate();
+
+	public void pauseUpdate();
+
+	public void resumeUpdate();
 }

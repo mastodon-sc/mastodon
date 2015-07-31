@@ -25,7 +25,9 @@ public class LargeModelExample
 		final long t0 = System.currentTimeMillis();
 		for ( int i = 0; i < N_STARTING_CELLS; ++i )
 		{
-			final TrackSchemeVertex mother = graph.addVertex().init( Integer.toString( ++labelGenerator ), 0, false );
+//			String label = Integer.toString( ++labelGenerator );
+			final String label = generateRandomString( 3 );
+			final TrackSchemeVertex mother = graph.addVertex().init( label, 0, false );
 			addBranch( mother, 1 );
 		}
 		final long t1 = System.currentTimeMillis();
@@ -72,4 +74,17 @@ public class LargeModelExample
 		graph.releaseRef( previousSpot );
 	}
 
+	public static String generateRandomString( int length )
+	{
+		final StringBuffer buffer = new StringBuffer();
+		final String characters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+		final int charactersLength = characters.length();
+
+		for ( int i = 0; i < length; i++ )
+		{
+			final double index = Math.random() * charactersLength;
+			buffer.append( characters.charAt( ( int ) index ) );
+		}
+		return buffer.toString();
+	}
 }

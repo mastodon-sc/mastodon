@@ -9,7 +9,8 @@ import net.trackmate.graph.Edge;
 import net.trackmate.graph.Vertex;
 import net.trackmate.graph.collection.RefSet;
 import net.trackmate.graph.listenable.GraphChangeEvent;
-import net.trackmate.graph.listenable.GraphListener;
+import net.trackmate.graph.listenable.GraphChangeEventAggregator;
+import net.trackmate.graph.listenable.GraphChangeEventListener;
 import net.trackmate.graph.listenable.ListenableGraph;
 import net.trackmate.graph.traversal.BreadthFirstSearch;
 import net.trackmate.graph.traversal.SearchListener;
@@ -26,7 +27,7 @@ import net.trackmate.graph.util.TIntArrayDeque;
  * @param <E>
  *            the type of the graph edges iterated.
  */
-public class ConnectedComponentsDynamicDefault< V extends Vertex< E >, E extends Edge< V > > extends AbstractGraphAlgorithm< V, E > implements GraphListener< V, E >
+public class ConnectedComponentsDynamicDefault< V extends Vertex< E >, E extends Edge< V > > extends AbstractGraphAlgorithm< V, E > implements GraphChangeEventListener< V, E >
 {
 	private final TIntObjectHashMap< RefSet< V >> ccMap;
 
@@ -44,7 +45,8 @@ public class ConnectedComponentsDynamicDefault< V extends Vertex< E >, E extends
 		this.bfs = new BreadthFirstSearch< V, E >( graph, false );
 		this.sl = new VertexFinderListener();
 		bfs.setTraversalListener( sl );
-		graph.addGraphListener( this );
+		final GraphChangeEventAggregator< V, E > aggregator = new GraphChangeEventAggregator< V, E >( graph );
+		aggregator.addGraphListener( this );
 		init();
 	}
 
