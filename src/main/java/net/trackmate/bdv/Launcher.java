@@ -1,6 +1,10 @@
 package net.trackmate.bdv;
 
+import java.awt.Dimension;
+import java.awt.Point;
 import java.awt.event.ActionEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.io.File;
 import java.io.IOException;
 
@@ -10,6 +14,7 @@ import javax.swing.InputMap;
 import javax.swing.KeyStroke;
 
 import mpicbg.spim.data.SpimDataException;
+import net.imglib2.RealPoint;
 import net.imglib2.algorithm.kdtree.ConvexPolytope;
 import net.imglib2.algorithm.kdtree.HyperPlane;
 import net.imglib2.realtransform.AffineTransform3D;
@@ -48,9 +53,12 @@ public class Launcher
 		 * Settings.
 		 */
 
-		final String bdvFile = "/Volumes/Data/BDV_MVD_5v_final.xml";
-		final String modelFile = "/Volumes/Data/model-small.raw";
-		final int timepointIndex = 50;
+//		final String bdvFile = "/Volumes/Data/BDV_MVD_5v_final.xml";
+//		final String modelFile = "/Volumes/Data/model-small.raw";
+//		final int timepointIndex = 50;
+		final String bdvFile = "D:/Users/Jean-Yves/Development/Data/drosophila.xml";
+		final String modelFile = null;
+		final int timepointIndex = 1;
 
 		/*
 		 * Load BDV.
@@ -64,7 +72,15 @@ public class Launcher
 		 * Load model.
 		 */
 
-		final Model model = RawIO.read( new File( modelFile ) );
+		final Model model;
+		if ( null != modelFile )
+		{
+			model = RawIO.read( new File( modelFile ) );
+		}
+		else
+		{
+			model = new Model( new ModelGraph() );
+		}
 
 		/*
 		 * Build TrackScheme.
@@ -98,6 +114,38 @@ public class Launcher
 		bdv.getViewer().getDisplay().addOverlayRenderer( tracksOverlay );
 		bdv.getViewer().addRenderTransformListener( tracksOverlay );
 		setupContextTrackscheme( bdv, overlayGraph, trackscheme );
+
+		final ViewerPanel viewer = bdv.getViewer();
+		viewer.getDisplay().addMouseListener( new MouseAdapter()
+		{
+			@Override
+			public void mouseClicked( final MouseEvent e )
+			{
+				// Check if the mouse is not off-screen
+				final Point mouseScreenLocation = e.getPoint();
+				// MouseInfo.getPointerInfo().getLocation();
+				final Point viewerPosition = viewer.getLocationOnScreen();
+				final Dimension viewerSize = viewer.getSize();
+				if ( mouseScreenLocation.x < viewerPosition.x || mouseScreenLocation.y < viewerPosition.y || mouseScreenLocation.x > viewerPosition.x + viewerSize.width || mouseScreenLocation.y > viewerPosition.y + viewerSize.height ) { return; }
+
+				final ViewerState state = viewer.getState();
+				final int timepoint = state.getCurrentTimepoint();
+				final int sourceId = state.getCurrentSource();
+
+				// Ok, then create this spot, wherever it is.
+				final double[] coordinates = new double[ 3 ];
+				viewer.getGlobalMouseCoordinates( RealPoint.wrap( coordinates ) );
+
+				final Spot spot = model.createSpot( timepoint, coordinates[ 0 ], coordinates[ 1 ], coordinates[ 2 ], 5d, model.getGraph().vertexRef() );
+				System.out.println( spot );// DEBUG
+				/*
+				 * TODO: this has no effect, because the overlay and trackscheme
+				 * do not know that a spot was created in the model. The model
+				 * should be listenable, and TrackScheme and the overlay should
+				 * register as listeners.
+				 */
+			}
+		} );
 	}
 
 	private static final void centerViewOn( final Spot spot, final ViewerPanel viewer )
