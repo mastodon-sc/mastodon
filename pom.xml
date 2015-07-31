@@ -48,6 +48,10 @@
 			<artifactId>imglib2-ij</artifactId>
 			<scope>test</scope>
 		</dependency>
+		<dependency>
+			<groupId>org.jdom</groupId>
+			<artifactId>jdom2</artifactId>
+		</dependency>
 	</dependencies>
 
 	<developers>
