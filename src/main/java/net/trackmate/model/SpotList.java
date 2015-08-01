@@ -3,7 +3,7 @@ package net.trackmate.model;
 import gnu.trove.list.array.TIntArrayList;
 import net.trackmate.graph.PoolObjectList;
 
-public class SpotList extends PoolObjectList< Spot >
+public class SpotList extends PoolObjectList< SpotCovariance >
 {
 	public SpotList( final ModelGraph c )
 	{

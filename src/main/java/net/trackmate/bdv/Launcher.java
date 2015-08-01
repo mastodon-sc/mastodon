@@ -32,7 +32,7 @@ import net.trackmate.io.RawIO;
 import net.trackmate.model.Link;
 import net.trackmate.model.Model;
 import net.trackmate.model.ModelGraph;
-import net.trackmate.model.Spot;
+import net.trackmate.model.SpotCovariance;
 import net.trackmate.trackscheme.ShowTrackScheme;
 import net.trackmate.trackscheme.ShowTrackScheme.HACK_SelectionListener;
 import net.trackmate.trackscheme.TrackSchemeGraph;
@@ -79,19 +79,19 @@ public class Launcher
 		}
 		else
 		{
-			model = new Model( new ModelGraph() );
+			model = new Model( new ModelGraph< SpotCovariance >( new ModelGraph.SpotCovarianceFactory() ) );
 		}
 
 		/*
 		 * Build TrackScheme.
 		 */
 
-		final ModelGraph graph = model.getGraph();
+		final ModelGraph< SpotCovariance > graph = model.getGraph();
 		final TrackSchemeGraph tsg = TrackSchemeUtil.buildTrackSchemeGraph( graph, graph.getIdBimap() );
 		final ShowTrackScheme trackscheme = new ShowTrackScheme( tsg );
 		trackscheme.setSelectionListener( new HACK_SelectionListener()
 		{
-			final Spot spot = graph.vertexRef();
+			final SpotCovariance spot = graph.vertexRef();
 
 			@Override
 			public void select( final TrackSchemeVertex v )
@@ -107,8 +107,8 @@ public class Launcher
 			}
 		} );
 
-		final OverlayGraphWrapper< Spot, Link > overlayGraph =
-				new OverlayGraphWrapper< Spot, Link >( tsg, graph, graph.getIdBimap(), SpotOverlayProperties.instance );
+		final OverlayGraphWrapper< SpotCovariance, Link< SpotCovariance > > overlayGraph =
+				new OverlayGraphWrapper< SpotCovariance, Link< SpotCovariance > >( tsg, graph, graph.getIdBimap(), SpotOverlayProperties.instance );
 		overlayGraph.HACK_updateTimepointSets();
 		final TracksOverlay tracksOverlay = new TracksOverlay( overlayGraph, bdv.getViewer(), model.frames().size() );
 		bdv.getViewer().getDisplay().addOverlayRenderer( tracksOverlay );
@@ -140,7 +140,7 @@ public class Launcher
 						final double[] coordinates = new double[ 3 ];
 						viewer.getGlobalMouseCoordinates( RealPoint.wrap( coordinates ) );
 
-						final Spot spot = model.createSpot( timepoint, coordinates[ 0 ], coordinates[ 1 ], coordinates[ 2 ], 5d, model.getGraph().vertexRef() );
+						final SpotCovariance spot = model.createSpot( timepoint, coordinates[ 0 ], coordinates[ 1 ], coordinates[ 2 ], 5d, model.getGraph().vertexRef() );
 						final int id = graph.getIdBimap().getVertexId( spot );
 
 						final TrackSchemeVertex tsv = tsg.addVertex().init( id, "New! " + id, timepoint, true );
@@ -151,7 +151,7 @@ public class Launcher
 		} );
 	}
 
-	private static final void centerViewOn( final Spot spot, final ViewerPanel viewer )
+	private static final void centerViewOn( final SpotCovariance spot, final ViewerPanel viewer )
 	{
 		final ViewerState state = viewer.getState();
 		final InteractiveDisplayCanvasComponent< AffineTransform3D > display = viewer.getDisplay();
@@ -179,7 +179,7 @@ public class Launcher
 	private static void setupContextTrackscheme(
 			final BigDataViewer bdv,
 			// TODO: should the overlayGraph parameter be more generic?
-			final OverlayGraphWrapper< Spot, Link > overlayGraph,
+			final OverlayGraphWrapper< SpotCovariance, Link< SpotCovariance > > overlayGraph,
 			final ShowTrackScheme trackScheme )
 	{
 		final ContextTrackscheme< ?, ? > context = ContextTrackscheme.create( overlayGraph, trackScheme );

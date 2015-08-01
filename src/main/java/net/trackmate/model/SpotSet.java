@@ -2,7 +2,7 @@ package net.trackmate.model;
 
 import net.trackmate.graph.PoolObjectSet;
 
-public class SpotSet extends PoolObjectSet< Spot >
+public class SpotSet extends PoolObjectSet< SpotCovariance >
 {
 	public SpotSet( final ModelGraph c )
 	{

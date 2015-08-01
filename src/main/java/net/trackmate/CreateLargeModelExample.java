@@ -4,7 +4,7 @@ import java.util.List;
 
 import net.trackmate.model.Model;
 import net.trackmate.model.ModelGraph;
-import net.trackmate.model.Spot;
+import net.trackmate.model.SpotCovariance;
 import net.trackmate.model.SpotList;
 
 public class CreateLargeModelExample
@@ -23,7 +23,7 @@ public class CreateLargeModelExample
 
 	public CreateLargeModelExample()
 	{
-		this.model = new Model( new ModelGraph( 2866900 ) );
+		this.model = new Model( new ModelGraph< SpotCovariance >( new ModelGraph.SpotCovarianceFactory(), 2866900 ) );
 		final long start = System.currentTimeMillis();
 		run();
 		final long end = System.currentTimeMillis();
@@ -32,7 +32,7 @@ public class CreateLargeModelExample
 		final int lastFrame = model.frames().last();
 		System.out.println( "Total number of cells in the last frame: " + model.getSpots( lastFrame ).size() );
 
-		final List< Spot > lastTwo = new SpotList( model.getGraph() );
+		final List< SpotCovariance > lastTwo = new SpotList( model.getGraph() );
 		lastTwo.addAll( model.getSpots( lastFrame ) );
 		lastTwo.addAll( model.getSpots( lastFrame - 1 ) );
 		System.out.println( "Total number of cells in the last two frames: " + lastTwo.size() );
@@ -42,7 +42,7 @@ public class CreateLargeModelExample
 
 	public void run()
 	{
-		final Spot mother = model.getGraph().vertexRef();
+		final SpotCovariance mother = model.getGraph().vertexRef();
 		for ( int ic = 0; ic < N_STARTING_CELLS; ic++ )
 		{
 			final double angle = 2d * ic * Math.PI / N_STARTING_CELLS;
@@ -61,13 +61,13 @@ public class CreateLargeModelExample
 		model.getGraph().releaseRef( mother );
 	}
 
-	private void addBranch( final Spot start, final double vx, final double vy, final int iteration )
+	private void addBranch( final SpotCovariance start, final double vx, final double vy, final int iteration )
 	{
 		if ( iteration >= N_DIVISIONS ) { return; }
 
-		final Spot previousSpot = model.getGraph().vertexRef();
-		final Spot spot = model.getGraph().vertexRef();
-		final Spot daughter = model.getGraph().vertexRef();
+		final SpotCovariance previousSpot = model.getGraph().vertexRef();
+		final SpotCovariance spot = model.getGraph().vertexRef();
+		final SpotCovariance daughter = model.getGraph().vertexRef();
 
 		// Extend
 		previousSpot.refTo( start );

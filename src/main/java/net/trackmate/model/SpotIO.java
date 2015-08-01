@@ -8,24 +8,24 @@ public class SpotIO
 
 	public static final int getNumBytes()
 	{
-		return Spot.SIZE_IN_BYTES - Spot.X_OFFSET;
+		return SpotCovariance.SIZE_IN_BYTES - SpotCovariance.X_OFFSET;
 	}
 
-	public static final void getBytes( final Spot spot, final byte[] bytes )
+	public static final void getBytes( final SpotCovariance spot, final byte[] bytes )
 	{
-		final int n = Spot.SIZE_IN_BYTES - Spot.X_OFFSET;
+		final int n = SpotCovariance.SIZE_IN_BYTES - SpotCovariance.X_OFFSET;
 		for ( int i = 0; i < n; ++i )
-			bytes[ i ] = spot.getAccess().getByte( Spot.X_OFFSET + i );
+			bytes[ i ] = spot.getAccess().getByte( SpotCovariance.X_OFFSET + i );
 	}
 
-	public static final void setBytes( final Spot spot, final byte[] bytes )
+	public static final void setBytes( final SpotCovariance spot, final byte[] bytes )
 	{
-		final int n = Spot.SIZE_IN_BYTES - Spot.X_OFFSET;
+		final int n = SpotCovariance.SIZE_IN_BYTES - SpotCovariance.X_OFFSET;
 		for ( int i = 0; i < n; ++i )
-			spot.getAccess().putByte( bytes[ i ], Spot.X_OFFSET + i );
+			spot.getAccess().putByte( bytes[ i ], SpotCovariance.X_OFFSET + i );
 	}
 
-	public static final void getSpotByInternalID( final ModelGraph graph, final int id, final Spot ref )
+	public static final void getSpotByInternalID( final ModelGraph graph, final int id, final SpotCovariance ref )
 	{
 		graph.getVertexPool().getByInternalPoolIndex( id, ref );
 	}

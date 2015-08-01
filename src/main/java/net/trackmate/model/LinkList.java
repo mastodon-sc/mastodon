@@ -3,26 +3,26 @@ package net.trackmate.model;
 import gnu.trove.list.array.TIntArrayList;
 import net.trackmate.graph.PoolObjectList;
 
-public class LinkList extends PoolObjectList< Link >
+public class LinkList< V extends Spot< V > > extends PoolObjectList< Link< V > >
 {
-	public LinkList( final ModelGraph c )
+	public LinkList( final ModelGraph< V > c )
 	{
 		super( c.getLinkPool() );
 	}
 
-	public LinkList( final ModelGraph c, final int initialCapacity )
+	public LinkList( final ModelGraph< V > c, final int initialCapacity )
 	{
 		super( c.getLinkPool(), initialCapacity );
 	}
 
-	protected LinkList( final LinkList list, final TIntArrayList indexSubList )
+	protected LinkList( final LinkList< V > list, final TIntArrayList indexSubList )
 	{
 		super( list, indexSubList );
 	}
 
 	@Override
-	public LinkList subList( final int fromIndex, final int toIndex )
+	public LinkList< V > subList( final int fromIndex, final int toIndex )
 	{
-		return new LinkList( this, ( TIntArrayList ) getIndexCollection().subList( fromIndex, fromIndex ) );
+		return new LinkList< V >( this, ( TIntArrayList ) getIndexCollection().subList( fromIndex, fromIndex ) );
 	}
 }

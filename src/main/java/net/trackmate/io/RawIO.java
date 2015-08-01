@@ -13,7 +13,7 @@ import java.util.Iterator;
 import net.trackmate.model.Link;
 import net.trackmate.model.Model;
 import net.trackmate.model.ModelGraph;
-import net.trackmate.model.Spot;
+import net.trackmate.model.SpotCovariance;
 import net.trackmate.model.SpotIO;
 
 public class RawIO
@@ -23,17 +23,17 @@ public class RawIO
 		final FileOutputStream fos = new FileOutputStream( file );
 		final ObjectOutputStream oos = new ObjectOutputStream( fos );
 
-		final ModelGraph graph = model.getGraph();
+		final ModelGraph< SpotCovariance > graph = model.getGraph();
 		final int numSpots = graph.numSpots();
 		oos.writeInt( numSpots );
 
-		final Iterator< Spot > spotIterator = graph.vertexIterator();
+		final Iterator< SpotCovariance > spotIterator = graph.vertexIterator();
 		final byte[] bytes = new byte[ SpotIO.getNumBytes() ];
 		final TIntIntHashMap internalIndexToFileIndex = new TIntIntHashMap( 2 * numSpots, 0.75f, -1, -1 );
 		int i = 0;
 		while( spotIterator.hasNext() )
 		{
-			final Spot spot = spotIterator.next();
+			final SpotCovariance spot = spotIterator.next();
 			SpotIO.getBytes( spot, bytes );
 			oos.write( bytes );
 
@@ -45,11 +45,11 @@ public class RawIO
 		final int numLinks = graph.numLinks();
 		oos.writeInt( numLinks );
 
-		final Iterator< Link > edgeIterator = graph.edgeIterator();
-		final Spot spot = graph.vertexRef();
+		final Iterator< Link< SpotCovariance > > edgeIterator = graph.edgeIterator();
+		final SpotCovariance spot = graph.vertexRef();
 		while( edgeIterator.hasNext() )
 		{
-			final Link link = edgeIterator.next();
+			final Link< SpotCovariance > link = edgeIterator.next();
 			final int from = internalIndexToFileIndex.get( link.getSource( spot ).getInternalPoolIndex() );
 			final int to = internalIndexToFileIndex.get( link.getTarget( spot ).getInternalPoolIndex() );
 			oos.writeInt( from );
@@ -65,10 +65,10 @@ public class RawIO
 		final ObjectInputStream ois = new ObjectInputStream( fis );
 
 		final int numSpots = ois.readInt();
-		final ModelGraph graph = new ModelGraph( numSpots );
-		final Spot spot1 = graph.vertexRef();
-		final Spot spot2 = graph.vertexRef();
-		final Link link = graph.edgeRef();
+		final ModelGraph< SpotCovariance > graph = new ModelGraph< SpotCovariance >( new ModelGraph.SpotCovarianceFactory(), numSpots );
+		final SpotCovariance spot1 = graph.vertexRef();
+		final SpotCovariance spot2 = graph.vertexRef();
+		final Link< SpotCovariance > link = graph.edgeRef();
 
 		final byte[] bytes = new byte[ SpotIO.getNumBytes() ];
 		final TIntIntHashMap fileIndexToInternalIndex = new TIntIntHashMap( 2 * numSpots, 0.75f, -1, -1 );
@@ -95,10 +95,10 @@ public class RawIO
 		ois.close();
 
 		final Model model = new Model( graph );
-		final Iterator< Spot > spotIterator = graph.vertexIterator();
+		final Iterator< SpotCovariance > spotIterator = graph.vertexIterator();
 		while( spotIterator.hasNext() )
 		{
-			final Spot spot = spotIterator.next();
+			final SpotCovariance spot = spotIterator.next();
 			final int t = spot.getTimePointId();
 			model.getSpots( t ).add( spot );
 		}

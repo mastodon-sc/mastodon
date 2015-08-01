@@ -11,72 +11,44 @@ import net.trackmate.graph.mempool.SingleArrayMemPool;
 import net.trackmate.trackscheme.GraphIdBimap;
 import net.trackmate.trackscheme.PoolObjectIdBimap;
 
-public class ModelGraph extends GraphImp< ModelGraph.SpotPool, ModelGraph.LinkPool, Spot, Link, ByteMappedElement >
+public class ModelGraph< V extends Spot< V >> extends GraphImp< ModelGraph.SpotPool< V >, ModelGraph.LinkPool< V >, V, Link< V >, ByteMappedElement >
 {
-	public ModelGraph()
+	public ModelGraph( final SpotFactory< V > spotFactory )
 	{
-		this( 10000 );
+		this( spotFactory, 10000 );
 	}
 
-	public ModelGraph( final int initialCapacity )
+	public ModelGraph( final SpotFactory< V > spotFactory, final int initialCapacity )
 	{
-		super( new LinkPool( initialCapacity, new SpotPool( initialCapacity ) ) );
+		super( new LinkPool< V >( initialCapacity, new SpotPool< V >( initialCapacity, spotFactory ) ) );
 	}
 
-	static class SpotPool extends AbstractVertexPool< Spot, Link, ByteMappedElement >
+	static class SpotPool< V extends Spot< V >> extends AbstractVertexPool< V, Link< V >, ByteMappedElement >
 	{
-		public SpotPool( final int initialCapacity )
-		{
-			this( initialCapacity, new SpotFactory() );
-		}
-
-		private SpotPool( final int initialCapacity, final SpotFactory f )
+		private SpotPool( final int initialCapacity, final SpotFactory< V > f )
 		{
 			super( initialCapacity, f );
-			f.spotPool = this;
+			f.setSpotPool( this );
 		}
-
-		private static class SpotFactory implements PoolObject.Factory< Spot, ByteMappedElement >
-		{
-			private SpotPool spotPool;
-
-			@Override
-			public int getSizeInBytes()
-			{
-				return Spot.SIZE_IN_BYTES;
-			}
-
-			@Override
-			public Spot createEmptyRef()
-			{
-				return new Spot( spotPool );
-			}
-
-			@Override
-			public MemPool.Factory< ByteMappedElement > getMemPoolFactory()
-			{
-				return SingleArrayMemPool.factory( ByteMappedElementArray.factory );
-			}
-		};
 	}
 
-	static class LinkPool extends AbstractEdgePool< Link, Spot, ByteMappedElement >
+	static class LinkPool< V extends Spot< V > > extends AbstractEdgePool< Link< V >, V, ByteMappedElement >
 	{
-		public LinkPool( final int initialCapacity, final SpotPool vertexPool )
+		public LinkPool( final int initialCapacity, final SpotPool< V > vertexPool )
 		{
-			this( initialCapacity, new SpotEdgeFactory(), vertexPool );
+			this( initialCapacity, new SpotEdgeFactory< V >(), vertexPool );
 			vertexPool.linkEdgePool( this );
 		}
 
-		private LinkPool( final int initialCapacity, final SpotEdgeFactory f, final SpotPool vertexPool )
+		private LinkPool( final int initialCapacity, final SpotEdgeFactory< V > f, final SpotPool< V > vertexPool )
 		{
 			super( initialCapacity, f, vertexPool );
 			f.linkPool = this;
 		}
 
-		private static class SpotEdgeFactory implements PoolObject.Factory< Link, ByteMappedElement >
+		private static class SpotEdgeFactory< V extends Spot< V > > implements PoolObject.Factory< Link< V >, ByteMappedElement >
 		{
-			private LinkPool linkPool;
+			private LinkPool< V > linkPool;
 
 			@Override
 			public int getSizeInBytes()
@@ -85,9 +57,9 @@ public class ModelGraph extends GraphImp< ModelGraph.SpotPool, ModelGraph.LinkPo
 			}
 
 			@Override
-			public Link createEmptyRef()
+			public Link< V > createEmptyRef()
 			{
-				return new Link( linkPool );
+				return new Link< V >( linkPool );
 			}
 
 			@Override
@@ -114,12 +86,12 @@ public class ModelGraph extends GraphImp< ModelGraph.SpotPool, ModelGraph.LinkPo
 		edgePool.clear();
 	}
 
-	public Iterable< Spot > vertices()
+	public Iterable< V > vertices()
 	{
 		return vertexPool;
 	}
 
-	public Iterable< Link > links()
+	public Iterable< Link< V > > links()
 	{
 		return edgePool;
 	}
@@ -127,40 +99,74 @@ public class ModelGraph extends GraphImp< ModelGraph.SpotPool, ModelGraph.LinkPo
 	@Override
 	public String toString()
 	{
-		final StringBuffer sb = new StringBuffer( "SpotCollection {\n" );
+		final StringBuffer sb = new StringBuffer( "ModelGraph {\n" );
 		sb.append( "  spots = {\n" );
-		for ( final Spot spot : vertices() )
+		for ( final V spot : vertices() )
 			sb.append( "    " + spot + "\n" );
 		sb.append( "  },\n" );
 		sb.append( "  links = {\n" );
-		for ( final Link link : links() )
+		for ( final Link< V > link : links() )
 			sb.append( "    " + link + "\n" );
 		sb.append( "  }\n" );
 		sb.append( "}" );
 		return sb.toString();
 	}
 
-	protected SpotPool getVertexPool()
+	protected SpotPool< V > getVertexPool()
 	{
 		return vertexPool;
 	}
 
-	protected LinkPool getLinkPool()
+	protected LinkPool< V > getLinkPool()
 	{
 		return edgePool;
 	}
 
-	public GraphIdBimap< Spot, Link > getIdBimap()
+	public GraphIdBimap< V, Link< V > > getIdBimap()
 	{
-		return new GraphIdBimap< Spot, Link >(
-				new PoolObjectIdBimap< Spot >( vertexPool ),
-				new PoolObjectIdBimap< Link >( edgePool ) );
+		return new GraphIdBimap< V, Link< V > >(
+				new PoolObjectIdBimap< V >( vertexPool ),
+				new PoolObjectIdBimap< Link< V > >( edgePool ) );
 	}
 
 	public static void main( final String[] args )
 	{
-		final ModelGraph graph = new ModelGraph();
+		final ModelGraph< SpotCovariance > graph = new ModelGraph< SpotCovariance >( new SpotCovarianceFactory() );
 		System.out.println( graph );
 		System.out.println( "done" );
 	}
+
+	public static interface SpotFactory< V extends Spot< V >> extends PoolObject.Factory< V, ByteMappedElement >
+	{
+		public void setSpotPool( SpotPool< V > spotPool );
+	}
+
+	public static class SpotCovarianceFactory implements SpotFactory< SpotCovariance >
+	{
+		private SpotPool< SpotCovariance > spotPool;
+
+		@Override
+		public int getSizeInBytes()
+		{
+			return SpotCovariance.SIZE_IN_BYTES;
+		}
+
+		@Override
+		public SpotCovariance createEmptyRef()
+		{
+			return new SpotCovariance( spotPool );
+		}
+
+		@Override
+		public MemPool.Factory< ByteMappedElement > getMemPoolFactory()
+		{
+			return SingleArrayMemPool.factory( ByteMappedElementArray.factory );
+		}
+
+		@Override
+		public void setSpotPool( final SpotPool< SpotCovariance > spotPool )
+		{
+			this.spotPool = spotPool;
+		}
+	};
 }

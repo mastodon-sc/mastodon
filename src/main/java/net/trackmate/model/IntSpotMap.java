@@ -2,7 +2,7 @@ package net.trackmate.model;
 
 import net.trackmate.graph.IntPoolObjectMap;
 
-public class IntSpotMap extends IntPoolObjectMap< Spot >
+public class IntSpotMap extends IntPoolObjectMap< SpotCovariance >
 {
 	public IntSpotMap( final ModelGraph graph )
 	{

@@ -11,9 +11,9 @@ public class Model
 {
 	private final Map< Integer, SpotSet > timepointToSpots;
 
-	private final ModelGraph graph;
+	private final ModelGraph< SpotCovariance > graph;
 
-	public Model( final ModelGraph graph )
+	public Model( final ModelGraph< SpotCovariance > graph )
 	{
 		this.graph = graph;
 		timepointToSpots = new HashMap< Integer, SpotSet >();
@@ -36,41 +36,41 @@ public class Model
 	}
 
 	// TODO should not be public
-	public ModelGraph getGraph()
+	public ModelGraph< SpotCovariance > getGraph()
 	{
 		return graph;
 	}
 
-	public Spot createSpot( final int timepoint, final AffineTransform3D transform, final double nu, final double[] m, final double[] W, final Spot ref )
+	public SpotCovariance createSpot( final int timepoint, final AffineTransform3D transform, final double nu, final double[] m, final double[] W, final SpotCovariance ref )
 	{
-		final Spot spot = graph.addVertex( ref );
+		final SpotCovariance spot = graph.addVertex( ref );
 		spot.init( timepoint, transform, nu, m, W );
 		getSpots( timepoint ).add( spot );
 		return spot;
 	}
 
-	public Spot createSpot( final int timepoint, final double x, final double y, final double z, final double radius, final Spot ref )
+	public SpotCovariance createSpot( final int timepoint, final double x, final double y, final double z, final double radius, final SpotCovariance ref )
 	{
-		final Spot spot = graph.addVertex( ref );
+		final SpotCovariance spot = graph.addVertex( ref );
 		spot.init( timepoint, x, y, z, radius );
 		getSpots( timepoint ).add( spot );
 		return spot;
 	}
 
-	public Spot createSpot( final int timepoint, final double[] pos, final double[][] cov, final Spot ref )
+	public SpotCovariance createSpot( final int timepoint, final double[] pos, final double[][] cov, final SpotCovariance ref )
 	{
-		final Spot spot = graph.addVertex( ref );
+		final SpotCovariance spot = graph.addVertex( ref );
 		spot.init( timepoint, pos, cov );
 		getSpots( timepoint ).add( spot );
 		return spot;
 	}
 
-	public Link createLink( final Spot source, final Spot target)
+	public Link< SpotCovariance > createLink( final SpotCovariance source, final SpotCovariance target )
 	{
 		return graph.addEdge( source, target );
 	}
 
-	public Link createLink( final Spot source, final Spot target, final Link ref )
+	public Link< SpotCovariance > createLink( final SpotCovariance source, final SpotCovariance target, final Link ref )
 	{
 		return graph.addEdge( source, target, ref );
 	}

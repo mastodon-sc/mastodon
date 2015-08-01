@@ -92,9 +92,9 @@ public class OverlayVertexWrapper< V extends Vertex< E >, E extends Edge< V > >
 	}
 
 	@Override
-	public double getBoundingSphereRadiusSquared()
+	public double getRadius()
 	{
-		return overlayProperties.getBoundingSphereRadiusSquared( mv );
+		return overlayProperties.getRadius( mv );
 	}
 
 	@Override
