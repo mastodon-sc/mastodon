@@ -140,7 +140,7 @@ public class Launcher
 						final double[] coordinates = new double[ 3 ];
 						viewer.getGlobalMouseCoordinates( RealPoint.wrap( coordinates ) );
 
-						final Spot spot = model.createSpot( timepoint, coordinates[ 0 ], coordinates[ 1 ], coordinates[ 2 ], 50d, model.getGraph().vertexRef() );
+						final Spot spot = model.createSpot( timepoint, coordinates[ 0 ], coordinates[ 1 ], coordinates[ 2 ], 5d, model.getGraph().vertexRef() );
 						final int id = graph.getIdBimap().getVertexId( spot );
 
 						final TrackSchemeVertex tsv = tsg.addVertex().init( id, "New! " + id, timepoint, true );

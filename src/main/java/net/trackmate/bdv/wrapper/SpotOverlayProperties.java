@@ -41,5 +41,11 @@ public class SpotOverlayProperties implements OverlayProperties< Spot >
 		v.getCovariance( mat );
 	}
 
+	@Override
+	public double getBoundingSphereRadiusSquared( final Spot v )
+	{
+		return v.getBoundingSphereRadiusSquared();
+	}
+
 	public static final SpotOverlayProperties instance = new SpotOverlayProperties();
 }

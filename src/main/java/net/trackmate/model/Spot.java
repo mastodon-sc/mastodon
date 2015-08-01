@@ -47,6 +47,10 @@ public class Spot extends AbstractVertex< Spot, Link, ByteMappedElement > implem
 		setX( x );
 		setY( y );
 		setZ( z );
+		final double[][] T = new double[ 3 ][ 3 ];
+		for ( int r = 0; r < 3; ++r )
+			T[ r ][ r ] = radius * radius;
+		setCovariance( T );
 		setBoundingSphereRadiusSquared( radius * radius );
 		setTimePointId( timepointId );
 		return this;
@@ -241,7 +245,7 @@ public class Spot extends AbstractVertex< Spot, Link, ByteMappedElement > implem
 
 	/**
 	 * Exposes the underlying ByteMappedElement for efficient IO operations.
-	 * 
+	 *
 	 * @return the underlying spot access object.
 	 */
 	ByteMappedElement getAccess()

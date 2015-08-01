@@ -1,5 +1,6 @@
 package net.trackmate.bdv.wrapper;
 
+
 public interface OverlayProperties< V >
 {
 	public void localize( V v, final float[] position );
@@ -13,4 +14,7 @@ public interface OverlayProperties< V >
 	public int numDimensions( V v );
 
 	public void getCovariance( V v, double[][] mat );
+
+	public double getBoundingSphereRadiusSquared( V v );
+
 }
