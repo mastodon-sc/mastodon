@@ -9,22 +9,22 @@ import net.imglib2.realtransform.AffineTransform3D;
 
 public class Model
 {
-	private final Map< Integer, SpotSet > timepointToSpots;
+	private final Map< Integer, SpotSet< SpotCovariance > > timepointToSpots;
 
 	private final ModelGraph< SpotCovariance > graph;
 
 	public Model( final ModelGraph< SpotCovariance > graph )
 	{
 		this.graph = graph;
-		timepointToSpots = new HashMap< Integer, SpotSet >();
+		timepointToSpots = new HashMap< Integer, SpotSet< SpotCovariance > >();
 	}
 
-	public SpotSet getSpots( final int timepoint )
+	public SpotSet< SpotCovariance > getSpots( final int timepoint )
 	{
-		SpotSet spots = timepointToSpots.get( timepoint );
+		SpotSet< SpotCovariance > spots = timepointToSpots.get( timepoint );
 		if ( null == spots )
 		{
-			spots = new SpotSet( graph );
+			spots = new SpotSet< SpotCovariance >( graph );
 			timepointToSpots.put( timepoint, spots );
 		}
 		return spots;
@@ -70,7 +70,7 @@ public class Model
 		return graph.addEdge( source, target );
 	}
 
-	public Link< SpotCovariance > createLink( final SpotCovariance source, final SpotCovariance target, final Link ref )
+	public Link< SpotCovariance > createLink( final SpotCovariance source, final SpotCovariance target, final Link< SpotCovariance > ref )
 	{
 		return graph.addEdge( source, target, ref );
 	}

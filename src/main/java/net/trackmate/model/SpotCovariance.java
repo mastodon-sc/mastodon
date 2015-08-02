@@ -9,7 +9,14 @@ import net.trackmate.graph.mempool.ByteMappedElement;
 import Jama.EigenvalueDecomposition;
 import Jama.Matrix;
 
-public class SpotCovariance extends Spot< SpotCovariance >
+/**
+ * {@link AbstractSpot} implementation where the spot shape is stored in a
+ * covariance matrix.
+ *
+ * @author Tobias Pietzsch
+ *
+ */
+public class SpotCovariance extends AbstractSpot< SpotCovariance >
 {
 	protected static final int COVARIANCE_OFFSET = TP_OFFSET + INT_SIZE;
 	protected static final int PRECISION_OFFSET = COVARIANCE_OFFSET + 6 * DOUBLE_SIZE;
@@ -121,7 +128,7 @@ public class SpotCovariance extends Spot< SpotCovariance >
 	@Override
 	public String toString()
 	{
-		return String.format( "Spot( %d, X=%.2f, Y=%.2f, Z=%.2f )", getInternalPoolIndex(), getX(), getY(), getZ() );
+		return String.format( "CovarianceSpot( %d, X=%.2f, Y=%.2f, Z=%.2f, tp=%d )", getInternalPoolIndex(), getX(), getY(), getZ(), getTimePoint() );
 	}
 
 	SpotCovariance( final AbstractVertexPool< SpotCovariance, Link< SpotCovariance >, ByteMappedElement > pool )

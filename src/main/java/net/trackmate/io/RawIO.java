@@ -28,7 +28,7 @@ public class RawIO
 		oos.writeInt( numSpots );
 
 		final Iterator< SpotCovariance > spotIterator = graph.vertexIterator();
-		final byte[] bytes = new byte[ SpotIO.getNumBytes() ];
+		final byte[] bytes = new byte[ SpotIO.getSpotCovarianceNumBytes() ];
 		final TIntIntHashMap internalIndexToFileIndex = new TIntIntHashMap( 2 * numSpots, 0.75f, -1, -1 );
 		int i = 0;
 		while( spotIterator.hasNext() )
@@ -70,7 +70,7 @@ public class RawIO
 		final SpotCovariance spot2 = graph.vertexRef();
 		final Link< SpotCovariance > link = graph.edgeRef();
 
-		final byte[] bytes = new byte[ SpotIO.getNumBytes() ];
+		final byte[] bytes = new byte[ SpotIO.getSpotCovarianceNumBytes() ];
 		final TIntIntHashMap fileIndexToInternalIndex = new TIntIntHashMap( 2 * numSpots, 0.75f, -1, -1 );
 		for ( int i = 0; i < numSpots; ++i )
 		{

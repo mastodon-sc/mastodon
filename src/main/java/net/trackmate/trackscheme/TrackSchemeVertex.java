@@ -67,7 +67,7 @@ public class TrackSchemeVertex extends AbstractVertex< TrackSchemeVertex, TrackS
 	@Override
 	public String toString()
 	{
-		return String.format( "Spot( ID=%d, LABEL=%s, X=%.2f, TIMEPOINT=%d, SELECTED=%s )", getModelVertexId(), getLabel(), getLayoutX(), getTimePoint(), isSelected() ? "true" : "false" );
+		return String.format( "AbstractSpot( ID=%d, LABEL=%s, X=%.2f, TIMEPOINT=%d, SELECTED=%s )", getModelVertexId(), getLabel(), getLayoutX(), getTimePoint(), isSelected() ? "true" : "false" );
 	}
 
 	TrackSchemeVertex( final AbstractVertexPool< TrackSchemeVertex, ?, ByteMappedElement > pool, final Labels labels )

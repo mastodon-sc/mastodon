@@ -3,7 +3,7 @@ package net.trackmate.model;
 import gnu.trove.list.array.TIntArrayList;
 import net.trackmate.graph.PoolObjectList;
 
-public class LinkList< V extends Spot< V > > extends PoolObjectList< Link< V > >
+public class LinkList< V extends AbstractSpot< V > > extends PoolObjectList< Link< V > >
 {
 	public LinkList( final ModelGraph< V > c )
 	{

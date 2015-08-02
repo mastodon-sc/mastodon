@@ -11,7 +11,7 @@ import net.trackmate.graph.mempool.SingleArrayMemPool;
 import net.trackmate.trackscheme.GraphIdBimap;
 import net.trackmate.trackscheme.PoolObjectIdBimap;
 
-public class ModelGraph< V extends Spot< V >> extends GraphImp< ModelGraph.SpotPool< V >, ModelGraph.LinkPool< V >, V, Link< V >, ByteMappedElement >
+public class ModelGraph< V extends AbstractSpot< V >> extends GraphImp< ModelGraph.SpotPool< V >, ModelGraph.LinkPool< V >, V, Link< V >, ByteMappedElement >
 {
 	public ModelGraph( final SpotFactory< V > spotFactory )
 	{
@@ -23,7 +23,7 @@ public class ModelGraph< V extends Spot< V >> extends GraphImp< ModelGraph.SpotP
 		super( new LinkPool< V >( initialCapacity, new SpotPool< V >( initialCapacity, spotFactory ) ) );
 	}
 
-	static class SpotPool< V extends Spot< V >> extends AbstractVertexPool< V, Link< V >, ByteMappedElement >
+	static class SpotPool< V extends AbstractSpot< V >> extends AbstractVertexPool< V, Link< V >, ByteMappedElement >
 	{
 		private SpotPool( final int initialCapacity, final SpotFactory< V > f )
 		{
@@ -32,7 +32,7 @@ public class ModelGraph< V extends Spot< V >> extends GraphImp< ModelGraph.SpotP
 		}
 	}
 
-	static class LinkPool< V extends Spot< V > > extends AbstractEdgePool< Link< V >, V, ByteMappedElement >
+	static class LinkPool< V extends AbstractSpot< V > > extends AbstractEdgePool< Link< V >, V, ByteMappedElement >
 	{
 		public LinkPool( final int initialCapacity, final SpotPool< V > vertexPool )
 		{
@@ -46,7 +46,7 @@ public class ModelGraph< V extends Spot< V >> extends GraphImp< ModelGraph.SpotP
 			f.linkPool = this;
 		}
 
-		private static class SpotEdgeFactory< V extends Spot< V > > implements PoolObject.Factory< Link< V >, ByteMappedElement >
+		private static class SpotEdgeFactory< V extends AbstractSpot< V > > implements PoolObject.Factory< Link< V >, ByteMappedElement >
 		{
 			private LinkPool< V > linkPool;
 
@@ -136,7 +136,7 @@ public class ModelGraph< V extends Spot< V >> extends GraphImp< ModelGraph.SpotP
 		System.out.println( "done" );
 	}
 
-	public static interface SpotFactory< V extends Spot< V >> extends PoolObject.Factory< V, ByteMappedElement >
+	public static interface SpotFactory< V extends AbstractSpot< V >> extends PoolObject.Factory< V, ByteMappedElement >
 	{
 		public void setSpotPool( SpotPool< V > spotPool );
 	}

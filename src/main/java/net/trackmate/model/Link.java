@@ -4,7 +4,7 @@ import net.trackmate.graph.AbstractEdge;
 import net.trackmate.graph.AbstractEdgePool;
 import net.trackmate.graph.mempool.ByteMappedElement;
 
-public class Link< V extends Spot< V > > extends AbstractEdge< Link< V >, V, ByteMappedElement >
+public class Link< V extends AbstractSpot< V > > extends AbstractEdge< Link< V >, V, ByteMappedElement >
 {
 	protected static final int SIZE_IN_BYTES = AbstractEdge.SIZE_IN_BYTES;
 
