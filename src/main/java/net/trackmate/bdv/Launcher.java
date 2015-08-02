@@ -28,11 +28,11 @@ import net.trackmate.bdv.wrapper.OverlayVertex;
 import net.trackmate.bdv.wrapper.SpatialSearch;
 import net.trackmate.bdv.wrapper.SpotOverlayProperties;
 import net.trackmate.graph.PoolObjectList;
-import net.trackmate.io.RawIO;
 import net.trackmate.model.Link;
-import net.trackmate.model.Model;
 import net.trackmate.model.ModelGraph;
-import net.trackmate.model.SpotCovariance;
+import net.trackmate.model.tgmm.RawIO;
+import net.trackmate.model.tgmm.SpotCovariance;
+import net.trackmate.model.tgmm.TgmmModel;
 import net.trackmate.trackscheme.ShowTrackScheme;
 import net.trackmate.trackscheme.ShowTrackScheme.HACK_SelectionListener;
 import net.trackmate.trackscheme.TrackSchemeGraph;
@@ -72,14 +72,14 @@ public class Launcher
 		 * Load model.
 		 */
 
-		final Model model;
+		final TgmmModel model;
 		if ( null != modelFile )
 		{
 			model = RawIO.read( new File( modelFile ) );
 		}
 		else
 		{
-			model = new Model( new ModelGraph< SpotCovariance >( new ModelGraph.SpotCovarianceFactory() ) );
+			model = new TgmmModel();
 		}
 
 		/*
@@ -140,9 +140,10 @@ public class Launcher
 						final double[] coordinates = new double[ 3 ];
 						viewer.getGlobalMouseCoordinates( RealPoint.wrap( coordinates ) );
 
-						final SpotCovariance spot = model.createSpot( timepoint, coordinates[ 0 ], coordinates[ 1 ], coordinates[ 2 ], 5d, model.getGraph().vertexRef() );
+						final double[][] cov = new double[ 3 ][ 3 ];
+						cov[ 0 ][ 0 ] = cov[ 1 ][ 1 ] = cov[ 2 ][ 2 ] = 5d * 5d;
+						final SpotCovariance spot = model.createSpot( timepoint, coordinates, cov, model.getGraph().vertexRef() );
 						final int id = graph.getIdBimap().getVertexId( spot );
-
 						final TrackSchemeVertex tsv = tsg.addVertex().init( id, "New! " + id, timepoint, true );
 						overlayGraph.add( timepoint, id );
 					};

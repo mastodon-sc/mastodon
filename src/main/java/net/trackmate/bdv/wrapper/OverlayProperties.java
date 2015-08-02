@@ -13,7 +13,4 @@ public interface OverlayProperties< V >
 	public int numDimensions( V v );
 
 	public void getCovariance( V v, double[][] mat );
-
-	public double getRadius( V v );
-
 }

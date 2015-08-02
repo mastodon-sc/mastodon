@@ -92,12 +92,6 @@ public class OverlayVertexWrapper< V extends Vertex< E >, E extends Edge< V > >
 	}
 
 	@Override
-	public double getRadius()
-	{
-		return overlayProperties.getRadius( mv );
-	}
-
-	@Override
 	public boolean isSelected()
 	{
 		return tsv.isSelected();

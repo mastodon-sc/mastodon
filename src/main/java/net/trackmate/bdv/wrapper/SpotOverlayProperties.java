@@ -1,6 +1,6 @@
 package net.trackmate.bdv.wrapper;
 
-import net.trackmate.model.SpotCovariance;
+import net.trackmate.model.tgmm.SpotCovariance;
 
 
 public class SpotOverlayProperties implements OverlayProperties< SpotCovariance >
@@ -39,12 +39,6 @@ public class SpotOverlayProperties implements OverlayProperties< SpotCovariance 
 	public void getCovariance( final SpotCovariance v, final double[][] mat )
 	{
 		v.getCovariance( mat );
-	}
-
-	@Override
-	public double getRadius( final SpotCovariance v )
-	{
-		return v.getRadius();
 	}
 
 	public static final SpotOverlayProperties instance = new SpotOverlayProperties();

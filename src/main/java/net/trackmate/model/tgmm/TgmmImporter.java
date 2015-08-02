@@ -1,4 +1,4 @@
-package net.trackmate.io.tgmm;
+package net.trackmate.model.tgmm;
 
 import static net.trackmate.io.XmlHelpers.getDoubleArrayAttribute;
 import static net.trackmate.io.XmlHelpers.getDoubleAttribute;
@@ -15,13 +15,11 @@ import mpicbg.spim.data.sequence.TimePoint;
 import mpicbg.spim.data.sequence.TimePoints;
 import mpicbg.spim.data.sequence.TimePointsPattern;
 import net.imglib2.realtransform.AffineTransform3D;
-import net.trackmate.io.RawIO;
 import net.trackmate.model.IntSpotMap;
 import net.trackmate.model.Link;
-import net.trackmate.model.Model;
 import net.trackmate.model.ModelGraph;
-import net.trackmate.model.SpotCovariance;
 import net.trackmate.model.SpotSet;
+import net.trackmate.model.tgmm.TgmmModel.SpotCovarianceFactory;
 
 import org.jdom2.Document;
 import org.jdom2.Element;
@@ -51,13 +49,13 @@ public class TgmmImporter
 	 *            the setup ID of the desired transform in the
 	 *            ViewRegistrations.
 	 * @param model
-	 *            the {@link Model} to update with the read tracks/
-	 * @return the {@link Model} specified above.
+	 *            the {@link TgmmModel} to update with the read tracks/
+	 * @return the {@link TgmmModel} specified above.
 	 *
 	 * @throws JDOMException
 	 * @throws IOException
 	 */
-	public static Model read( final String tgmmFileNameFormat, final TimePoints timepointsToRead, final ViewRegistrations viewRegistrations, final int setupID, final Model model ) throws JDOMException, IOException
+	public static TgmmModel read( final String tgmmFileNameFormat, final TimePoints timepointsToRead, final ViewRegistrations viewRegistrations, final int setupID, final TgmmModel model ) throws JDOMException, IOException
 	{
 		final ModelGraph< SpotCovariance > sc = model.getGraph();
 		final SpotCovariance spot = sc.vertexRef();
@@ -65,15 +63,15 @@ public class TgmmImporter
 		final SpotCovariance tmp = sc.vertexRef();
 		final Link< SpotCovariance > edge = sc.edgeRef();
 
-		SpotSet previousFrame = null;
-		IntSpotMap idToSpot = new IntSpotMap( sc, 2000 );
-		IntSpotMap previousIdToSpot = new IntSpotMap( sc, 2000 );
+		SpotSet< SpotCovariance > previousFrame = null;
+		IntSpotMap< SpotCovariance > idToSpot = new IntSpotMap< SpotCovariance >( sc, 2000 );
+		IntSpotMap< SpotCovariance > previousIdToSpot = new IntSpotMap< SpotCovariance >( sc, 2000 );
 
 		for ( final TimePoint timepoint : timepointsToRead.getTimePointsOrdered() )
 		{
 			final int timepointId = timepoint.getId();
 			final AffineTransform3D transform = viewRegistrations.getViewRegistration( timepointId, setupID ).getModel();
-			final SpotSet frame = model.getSpots( timepointId );
+			final SpotSet< SpotCovariance > frame = model.getSpots( timepointId );
 			final String tgmmFileName = String.format( tgmmFileNameFormat, timepointId );
 			System.out.println( tgmmFileName );
 
@@ -109,7 +107,7 @@ public class TgmmImporter
 			previousFrame = frame;
 
 			previousIdToSpot.clear();
-			final IntSpotMap m = previousIdToSpot;
+			final IntSpotMap< SpotCovariance > m = previousIdToSpot;
 			previousIdToSpot = idToSpot;
 			idToSpot = m;
 		}
@@ -144,7 +142,7 @@ public class TgmmImporter
 		System.out.println( " Done." );
 
 		System.out.println( "Reading the model." );
-		Model model = new Model( new ModelGraph< SpotCovariance >( new ModelGraph.SpotCovarianceFactory() ) );
+		TgmmModel model = new TgmmModel( new ModelGraph< SpotCovariance >( new SpotCovarianceFactory() ) );
 		model = read( tgmmFiles, timepoints, viewRegistrations, setupID, model );
 		final long end = System.currentTimeMillis();
 		System.out.println( "Done  in " + ( end - start ) / 1000d + " s." );

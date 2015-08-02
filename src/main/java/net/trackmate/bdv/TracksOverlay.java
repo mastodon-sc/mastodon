@@ -200,8 +200,7 @@ public class TracksOverlay implements OverlayRenderer, TransformListener< Affine
 			transform.apply( lPos, gPos );
 
 			final double z = gPos[ 2 ];
-//			final double sd = sliceDistance( z, sliceDistanceCutoff );
-			final double sd = sliceDistance( z, spot.getRadius() );
+			final double sd = sliceDistance( z, sliceDistanceCutoff );
 			if ( sd > -1 && sd < 1 )
 			{
 				final double[][] S = new double[ 3 ][ 3 ];

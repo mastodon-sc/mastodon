@@ -13,19 +13,19 @@ import net.trackmate.trackscheme.PoolObjectIdBimap;
 
 public class ModelGraph< V extends AbstractSpot< V >> extends GraphImp< ModelGraph.SpotPool< V >, ModelGraph.LinkPool< V >, V, Link< V >, ByteMappedElement >
 {
-	public ModelGraph( final SpotFactory< V > spotFactory )
+	public ModelGraph( final SpotFactoryI< V > spotFactory )
 	{
 		this( spotFactory, 10000 );
 	}
 
-	public ModelGraph( final SpotFactory< V > spotFactory, final int initialCapacity )
+	public ModelGraph( final SpotFactoryI< V > spotFactory, final int initialCapacity )
 	{
 		super( new LinkPool< V >( initialCapacity, new SpotPool< V >( initialCapacity, spotFactory ) ) );
 	}
 
-	static class SpotPool< V extends AbstractSpot< V >> extends AbstractVertexPool< V, Link< V >, ByteMappedElement >
+	public static class SpotPool< V extends AbstractSpot< V >> extends AbstractVertexPool< V, Link< V >, ByteMappedElement >
 	{
-		private SpotPool( final int initialCapacity, final SpotFactory< V > f )
+		private SpotPool( final int initialCapacity, final SpotFactoryI< V > f )
 		{
 			super( initialCapacity, f );
 			f.setSpotPool( this );
@@ -112,7 +112,7 @@ public class ModelGraph< V extends AbstractSpot< V >> extends GraphImp< ModelGra
 		return sb.toString();
 	}
 
-	protected SpotPool< V > getVertexPool()
+	public SpotPool< V > getVertexPool()
 	{
 		return vertexPool;
 	}
@@ -129,44 +129,8 @@ public class ModelGraph< V extends AbstractSpot< V >> extends GraphImp< ModelGra
 				new PoolObjectIdBimap< Link< V > >( edgePool ) );
 	}
 
-	public static void main( final String[] args )
-	{
-		final ModelGraph< SpotCovariance > graph = new ModelGraph< SpotCovariance >( new SpotCovarianceFactory() );
-		System.out.println( graph );
-		System.out.println( "done" );
-	}
-
-	public static interface SpotFactory< V extends AbstractSpot< V >> extends PoolObject.Factory< V, ByteMappedElement >
+	public static interface SpotFactoryI< V extends AbstractSpot< V >> extends PoolObject.Factory< V, ByteMappedElement >
 	{
 		public void setSpotPool( SpotPool< V > spotPool );
 	}
-
-	public static class SpotCovarianceFactory implements SpotFactory< SpotCovariance >
-	{
-		private SpotPool< SpotCovariance > spotPool;
-
-		@Override
-		public int getSizeInBytes()
-		{
-			return SpotCovariance.SIZE_IN_BYTES;
-		}
-
-		@Override
-		public SpotCovariance createEmptyRef()
-		{
-			return new SpotCovariance( spotPool );
-		}
-
-		@Override
-		public MemPool.Factory< ByteMappedElement > getMemPoolFactory()
-		{
-			return SingleArrayMemPool.factory( ByteMappedElementArray.factory );
-		}
-
-		@Override
-		public void setSpotPool( final SpotPool< SpotCovariance > spotPool )
-		{
-			this.spotPool = spotPool;
-		}
-	};
 }

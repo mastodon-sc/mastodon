@@ -81,7 +81,7 @@ public class AbstractSpot< V extends AbstractSpot< V >> extends AbstractVertex< 
 		return getTimePointId();
 	}
 
-	AbstractSpot( final AbstractVertexPool< V, Link< V >, ByteMappedElement > pool )
+	protected AbstractSpot( final AbstractVertexPool< V, Link< V >, ByteMappedElement > pool )
 	{
 		super( pool );
 	}
@@ -127,7 +127,7 @@ public class AbstractSpot< V extends AbstractSpot< V >> extends AbstractVertex< 
 	 *
 	 * @return the underlying spot access object.
 	 */
-	ByteMappedElement getAccess()
+	public ByteMappedElement getAccess()
 	{
 		return access;
 	}
