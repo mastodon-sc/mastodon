@@ -49,14 +49,6 @@ public class Model
 		return spot;
 	}
 
-	public SpotCovariance createSpot( final int timepoint, final double x, final double y, final double z, final double radius, final SpotCovariance ref )
-	{
-		final SpotCovariance spot = graph.addVertex( ref );
-		spot.init( timepoint, x, y, z, radius );
-		getSpots( timepoint ).add( spot );
-		return spot;
-	}
-
 	public SpotCovariance createSpot( final int timepoint, final double[] pos, final double[][] cov, final SpotCovariance ref )
 	{
 		final SpotCovariance spot = graph.addVertex( ref );

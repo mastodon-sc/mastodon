@@ -27,23 +27,12 @@ public class AbstractSpot< V extends AbstractSpot< V >> extends AbstractVertex< 
 	protected static final int Y_OFFSET = X_OFFSET + DOUBLE_SIZE;
 	protected static final int Z_OFFSET = Y_OFFSET + DOUBLE_SIZE;
 	protected static final int TP_OFFSET = Z_OFFSET + DOUBLE_SIZE;
-	protected static final int RADIUS_OFFSET = TP_OFFSET + DOUBLE_SIZE;
-	protected static final int SIZE_IN_BYTES = RADIUS_OFFSET + INT_SIZE;
+	protected static final int SIZE_IN_BYTES = TP_OFFSET + INT_SIZE;
 
 	@Override
 	protected void setToUninitializedState()
 	{
 		super.setToUninitializedState();
-	}
-
-	AbstractSpot< V > init( final int timepointId, final double x, final double y, final double z, final double radius )
-	{
-		setX( x );
-		setY( y );
-		setZ( z );
-		setTimePointId( timepointId );
-		setRadius( radius );
-		return this;
 	}
 
 	public double getX()
@@ -90,16 +79,6 @@ public class AbstractSpot< V extends AbstractSpot< V >> extends AbstractVertex< 
 	public int getTimePoint()
 	{
 		return getTimePointId();
-	}
-
-	public void setRadius( final double radius )
-	{
-		access.putDouble( radius, RADIUS_OFFSET );
-	}
-
-	public double getRadius()
-	{
-		return access.getDouble( RADIUS_OFFSET );
 	}
 
 	AbstractSpot( final AbstractVertexPool< V, Link< V >, ByteMappedElement > pool )

@@ -67,7 +67,7 @@ public class SpotCovariance extends AbstractSpot< SpotCovariance >
 		double max = 0;
 		for ( int k = 0; k < eigVals.length; k++ )
 			max = Math.max( max, eigVals[ k ] );
-		final double boundingSphereRadiusSquared = max * nSigmasSquared;
+//		final double boundingSphereRadiusSquared = max * nSigmasSquared;
 
 		setX( pos[ 0 ] );
 		setY( pos[ 1 ] );
@@ -75,7 +75,6 @@ public class SpotCovariance extends AbstractSpot< SpotCovariance >
 		setCovariance( S );
 		setPrecision( covMat.inverse().getArray() );
 		setTimePointId( timepointId );
-		setRadius( Math.sqrt( boundingSphereRadiusSquared ) );
 		return this;
 	}
 
