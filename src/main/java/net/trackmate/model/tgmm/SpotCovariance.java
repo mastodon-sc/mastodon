@@ -1,7 +1,6 @@
 package net.trackmate.model.tgmm;
 
 import static net.trackmate.graph.mempool.ByteUtils.DOUBLE_SIZE;
-import static net.trackmate.graph.mempool.ByteUtils.INT_SIZE;
 import net.imglib2.realtransform.AffineTransform3D;
 import net.imglib2.util.LinAlgHelpers;
 import net.trackmate.graph.AbstractVertexPool;
@@ -22,7 +21,7 @@ public class SpotCovariance extends AbstractSpot< SpotCovariance >
 {
 	// Copied to be package-visible.
 	protected static final int X_OFFSET = AbstractSpot.X_OFFSET; 
-	protected static final int COVARIANCE_OFFSET = TP_OFFSET + INT_SIZE;
+	protected static final int COVARIANCE_OFFSET = AbstractSpot.SIZE_IN_BYTES;
 	protected static final int PRECISION_OFFSET = COVARIANCE_OFFSET + 6 * DOUBLE_SIZE;
 	protected static final int SIZE_IN_BYTES = PRECISION_OFFSET + 6 * DOUBLE_SIZE;
 

@@ -1,10 +1,6 @@
-package net.trackmate.bdv;
+package net.trackmate.model.tgmm.view;
 
-import java.awt.Dimension;
-import java.awt.Point;
 import java.awt.event.ActionEvent;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 import java.io.File;
 import java.io.IOException;
 
@@ -14,7 +10,6 @@ import javax.swing.InputMap;
 import javax.swing.KeyStroke;
 
 import mpicbg.spim.data.SpimDataException;
-import net.imglib2.RealPoint;
 import net.imglib2.algorithm.kdtree.ConvexPolytope;
 import net.imglib2.algorithm.kdtree.HyperPlane;
 import net.imglib2.realtransform.AffineTransform3D;
@@ -26,7 +21,7 @@ import net.trackmate.bdv.wrapper.OverlayGraph;
 import net.trackmate.bdv.wrapper.OverlayGraphWrapper;
 import net.trackmate.bdv.wrapper.OverlayVertex;
 import net.trackmate.bdv.wrapper.SpatialSearch;
-import net.trackmate.bdv.wrapper.SpotOverlayProperties;
+import net.trackmate.bdv.wrapper.VertexLocalizer;
 import net.trackmate.graph.PoolObjectList;
 import net.trackmate.model.Link;
 import net.trackmate.model.ModelGraph;
@@ -53,27 +48,30 @@ public class Launcher
 		 * Settings.
 		 */
 
-//		final String bdvFile = "/Volumes/Data/BDV_MVD_5v_final.xml";
-//		final String modelFile = "/Volumes/Data/model-small.raw";
-//		final int timepointIndex = 50;
-		final String bdvFile = "D:/Users/Jean-Yves/Development/Data/drosophila.xml";
-		final String modelFile = null;
-		final int timepointIndex = 1;
+		final String bdvFile = "/Volumes/Data/BDV_MVD_5v_final.xml";
+		final String modelFile = "/Volumes/Data/model-small.raw";
+		final int timepointIndex = 10;
+//		final String bdvFile = "D:/Users/Jean-Yves/Development/Data/drosophila.xml";
+//		final String modelFile = null;
+//		final int timepointIndex = 1;
 
 		/*
 		 * Load BDV.
 		 */
 
+		System.out.println( "Launching viewer." );
 		System.setProperty( "apple.laf.useScreenMenuBar", "true" );
 		final BigDataViewer bdv = BigDataViewer.open( bdvFile, new File( bdvFile ).getName(), new ProgressWriterConsole() );
 		bdv.getViewer().setTimepoint( timepointIndex );
+		System.out.println( "Done." );
 
 		/*
 		 * Load model.
 		 */
 
+		System.out.println( "Loading TGMM model." );
 		final TgmmModel model;
-		if ( null != modelFile )
+		if ( null != modelFile && modelFile.length() > 0 )
 		{
 			model = RawIO.read( new File( modelFile ) );
 		}
@@ -81,6 +79,7 @@ public class Launcher
 		{
 			model = new TgmmModel();
 		}
+		System.out.println( "Done." );
 
 		/*
 		 * Build TrackScheme.
@@ -108,48 +107,21 @@ public class Launcher
 		} );
 
 		final OverlayGraphWrapper< SpotCovariance, Link< SpotCovariance > > overlayGraph =
-				new OverlayGraphWrapper< SpotCovariance, Link< SpotCovariance > >( tsg, graph, graph.getIdBimap(), SpotOverlayProperties.instance );
+				new OverlayGraphWrapper< SpotCovariance, Link< SpotCovariance > >(
+						tsg,
+						graph,
+						graph.getIdBimap(),
+						new VertexLocalizer.DefaultVertexLocalizer< SpotCovariance >() );
 		overlayGraph.HACK_updateTimepointSets();
-		final TracksOverlay tracksOverlay = new TracksOverlay( overlayGraph, bdv.getViewer(), model.frames().size() );
+
+		final TracksOverlaySpotCovariance tracksOverlay = new TracksOverlaySpotCovariance(
+				overlayGraph,
+				bdv.getViewer(),
+				model.frames().size() );
+
 		bdv.getViewer().getDisplay().addOverlayRenderer( tracksOverlay );
 		bdv.getViewer().addRenderTransformListener( tracksOverlay );
 		setupContextTrackscheme( bdv, overlayGraph, trackscheme );
-
-		final ViewerPanel viewer = bdv.getViewer();
-		viewer.getDisplay().addMouseListener( new MouseAdapter()
-		{
-			@Override
-			public void mouseClicked( final MouseEvent e )
-			{
-				new Thread( "Add spot" )
-				{
-					@Override
-					public void run()
-					{
-						// Check if the mouse is not off-screen
-						final Point mouseScreenLocation = e.getPoint();
-						// MouseInfo.getPointerInfo().getLocation();
-						final Point viewerPosition = viewer.getLocationOnScreen();
-						final Dimension viewerSize = viewer.getSize();
-						if ( mouseScreenLocation.x < viewerPosition.x || mouseScreenLocation.y < viewerPosition.y || mouseScreenLocation.x > viewerPosition.x + viewerSize.width || mouseScreenLocation.y > viewerPosition.y + viewerSize.height ) { return; }
-
-						final ViewerState state = viewer.getState();
-						final int timepoint = state.getCurrentTimepoint();
-
-						// Ok, then create this spot, wherever it is.
-						final double[] coordinates = new double[ 3 ];
-						viewer.getGlobalMouseCoordinates( RealPoint.wrap( coordinates ) );
-
-						final double[][] cov = new double[ 3 ][ 3 ];
-						cov[ 0 ][ 0 ] = cov[ 1 ][ 1 ] = cov[ 2 ][ 2 ] = 5d * 5d;
-						final SpotCovariance spot = model.createSpot( timepoint, coordinates, cov, model.getGraph().vertexRef() );
-						final int id = graph.getIdBimap().getVertexId( spot );
-						final TrackSchemeVertex tsv = tsg.addVertex().init( id, "New! " + id, timepoint, true );
-						overlayGraph.add( timepoint, id );
-					};
-				}.start();
-			}
-		} );
 	}
 
 	private static final void centerViewOn( final SpotCovariance spot, final ViewerPanel viewer )

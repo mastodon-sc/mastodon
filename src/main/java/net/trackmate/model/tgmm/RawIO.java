@@ -75,7 +75,6 @@ public class RawIO
 			ois.readFully( bytes );
 			graph.addVertex( spot1 );
 			SpotCovarianceIO.setBytes( spot1, bytes );
-
 			final int internalPoolIndex = spot1.getInternalPoolIndex();
 			fileIndexToInternalIndex.put( i, internalPoolIndex );
 		}
@@ -83,8 +82,10 @@ public class RawIO
 		final int numEdges = ois.readInt();
 		for ( int i = 0; i < numEdges; ++i )
 		{
-			final int from = fileIndexToInternalIndex.get( ois.readInt() );
-			final int to = fileIndexToInternalIndex.get( ois.readInt() );
+			final int fromID = ois.readInt();
+			final int from = fileIndexToInternalIndex.get( fromID );
+			final int toID = ois.readInt();
+			final int to = fileIndexToInternalIndex.get( toID );
 			SpotCovarianceIO.getSpotByInternalID( graph, from, spot1 );
 			SpotCovarianceIO.getSpotByInternalID( graph, to, spot2 );
 			graph.addEdge( spot1, spot2, link );
@@ -102,5 +103,13 @@ public class RawIO
 		}
 
 		return model;
+	}
+
+	public static void main( final String[] args ) throws IOException
+	{
+		final String modelFile = "/Volumes/Data/model-small.raw";
+		System.out.println( "Reading " + modelFile );
+		final TgmmModel model = read( new File( modelFile ) );
+		System.out.println( model );
 	}
 }

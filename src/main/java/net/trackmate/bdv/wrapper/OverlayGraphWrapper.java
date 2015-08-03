@@ -37,8 +37,6 @@ public class OverlayGraphWrapper< V extends Vertex< E >, E extends Edge< V > >
 
 	final GraphIdBimap< V, E > idmap;
 
-	final OverlayProperties< V > overlayProperties;
-
 	private final Map< Integer, RefSet< OverlayVertexWrapper< V, E > > > timepointToSpots;
 
 	private final Map< Integer, MySpatialSearch > timepointToSpatialSearch;
@@ -49,18 +47,20 @@ public class OverlayGraphWrapper< V extends Vertex< E >, E extends Edge< V > >
 	private final ConcurrentLinkedQueue< OverlayEdgeWrapper< V, E > > tmpEdgeRefs =
 			new ConcurrentLinkedQueue< OverlayEdgeWrapper< V, E > >();
 
+	VertexLocalizer< V > localizer;
+
 	public OverlayGraphWrapper(
 			final TrackSchemeGraph trackSchemeGraph,
 			final Graph< V, E > modelGraph,
 			final GraphIdBimap< V, E > idmap,
-			final OverlayProperties< V > overlayProperties )
+			final VertexLocalizer< V > localizer )
 	{
 		this.trackSchemeGraph = trackSchemeGraph;
 		this.modelGraph = modelGraph;
 		this.idmap = idmap;
-		this.overlayProperties = overlayProperties;
-		timepointToSpots = new HashMap< Integer, RefSet< OverlayVertexWrapper< V, E > > >();
-		timepointToSpatialSearch = new HashMap< Integer, MySpatialSearch >();
+		this.timepointToSpots = new HashMap< Integer, RefSet< OverlayVertexWrapper< V, E > > >();
+		this.timepointToSpatialSearch = new HashMap< Integer, MySpatialSearch >();
+		this.localizer = localizer;
 	}
 
 	@Override

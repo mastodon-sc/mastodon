@@ -1,4 +1,4 @@
-package net.trackmate.bdv;
+package net.trackmate.model.tgmm.view;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
@@ -13,25 +13,27 @@ import net.imglib2.type.numeric.ARGBType;
 import net.imglib2.ui.OverlayRenderer;
 import net.imglib2.ui.TransformListener;
 import net.imglib2.util.LinAlgHelpers;
-import net.trackmate.bdv.wrapper.OverlayEdge;
-import net.trackmate.bdv.wrapper.OverlayGraph;
-import net.trackmate.bdv.wrapper.OverlayVertex;
+import net.trackmate.bdv.wrapper.OverlayEdgeWrapper;
+import net.trackmate.bdv.wrapper.OverlayGraphWrapper;
+import net.trackmate.bdv.wrapper.OverlayVertexWrapper;
 import net.trackmate.graph.collection.RefSet;
+import net.trackmate.model.Link;
+import net.trackmate.model.tgmm.SpotCovariance;
 import Jama.EigenvalueDecomposition;
 import Jama.Matrix;
 import bdv.viewer.ViewerPanel;
 
-public class TracksOverlay implements OverlayRenderer, TransformListener< AffineTransform3D >
+public class TracksOverlaySpotCovariance implements OverlayRenderer, TransformListener< AffineTransform3D >
 {
 	private final AffineTransform3D transform;
 
-	private final OverlayGraph< ?, ? > model;
+	private final OverlayGraphWrapper< SpotCovariance, Link< SpotCovariance >> model;
 
 	private final ViewerPanel viewer;
 
-	public TracksOverlay( final OverlayGraph< ?, ? > model, final ViewerPanel viewer, final int tpSize )
+	public TracksOverlaySpotCovariance( final OverlayGraphWrapper< SpotCovariance, Link< SpotCovariance >> overlayGraph, final ViewerPanel viewer, final int tpSize )
 	{
-		this.model = model;
+		this.model = overlayGraph;
 		this.viewer = viewer;
 		this.transform = new AffineTransform3D();
 	}
@@ -119,11 +121,6 @@ public class TracksOverlay implements OverlayRenderer, TransformListener< Affine
 	@Override
 	public void drawOverlays( final Graphics g )
 	{
-		drawOverlaysImp( g, model );
-	}
-
-	private < V extends OverlayVertex< V, E >, E extends OverlayEdge< E, V > > void drawOverlaysImp( final Graphics g, final OverlayGraph< V, E > model )
-	{
 		final Graphics2D graphics = ( Graphics2D ) g;
 
 		final int currentTimepoint = viewer.getState().getCurrentTimepoint();
@@ -134,7 +131,7 @@ public class TracksOverlay implements OverlayRenderer, TransformListener< Affine
 //		graphics.setStroke( new BasicStroke( 2, BasicStroke.CAP_BUTT, BasicStroke.JOIN_ROUND ) );
 		graphics.setStroke( new BasicStroke() );
 
-		final V target = model.vertexRef();
+		final OverlayVertexWrapper< SpotCovariance, Link< SpotCovariance >> target = model.vertexRef();
 		final double[] lPos = new double[ 3 ];
 		final double[] gPos = new double[ 3 ];
 
@@ -149,19 +146,19 @@ public class TracksOverlay implements OverlayRenderer, TransformListener< Affine
 
 		for ( int timepointId = 0; timepointId < currentTimepoint; ++timepointId )
 		{
-			final RefSet< V > spots = model.getSpots( timepointId );
+			final RefSet< OverlayVertexWrapper< SpotCovariance, Link< SpotCovariance >> > spots = model.getSpots( timepointId );
 			final int t = timepointId;
-			for ( final V spot : spots )
+			for ( final OverlayVertexWrapper< SpotCovariance, Link< SpotCovariance >> spot : spots )
 			{
-				spot.localize( lPos );
+				spot.get().localize( lPos );
 				transform.apply( lPos, gPos );
 				final int x0 = ( int ) gPos[ 0 ];
 				final int y0 = ( int ) gPos[ 1 ];
 				final double z0 = gPos[ 2 ];
-				for ( final E edge : spot.outgoingEdges() )
+				for ( final OverlayEdgeWrapper< SpotCovariance, Link< SpotCovariance >> edge : spot.outgoingEdges() )
 				{
 					edge.getTarget( target );
-					target.localize( lPos );
+					target.get().localize( lPos );
 					transform.apply( lPos, gPos );
 					final int x1 = ( int ) gPos[ 0 ];
 					final int y1 = ( int ) gPos[ 1 ];
@@ -192,11 +189,11 @@ public class TracksOverlay implements OverlayRenderer, TransformListener< Affine
 //		graphics.setStroke( new BasicStroke( 2, BasicStroke.CAP_BUTT, BasicStroke.JOIN_ROUND ) );
 
 		final int t = currentTimepoint;
-		final RefSet< V > spots = model.getSpots( t );
+		final RefSet< OverlayVertexWrapper< SpotCovariance, Link< SpotCovariance >> > spots = model.getSpots( t );
 		final AffineTransform torig = graphics.getTransform();
-		for ( final V spot : spots )
+		for ( final OverlayVertexWrapper< SpotCovariance, Link< SpotCovariance >> spot : spots )
 		{
-			spot.localize( lPos );
+			spot.get().localize( lPos );
 			transform.apply( lPos, gPos );
 
 			final double z = gPos[ 2 ];
@@ -204,7 +201,7 @@ public class TracksOverlay implements OverlayRenderer, TransformListener< Affine
 			if ( sd > -1 && sd < 1 )
 			{
 				final double[][] S = new double[ 3 ][ 3 ];
-				spot.getCovariance( S );
+				spot.get().getCovariance( S );
 
 				final double[][] T = new double[ 3 ][ 3 ];
 				for ( int r = 0; r < 3; ++r )

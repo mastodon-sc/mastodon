@@ -2,6 +2,7 @@ package net.trackmate.bdv.wrapper;
 
 import java.util.Iterator;
 
+import net.imglib2.RealLocalizable;
 import net.trackmate.graph.Edge;
 import net.trackmate.graph.Edges;
 import net.trackmate.graph.Vertex;
@@ -9,13 +10,13 @@ import net.trackmate.trackscheme.TrackSchemeEdge;
 import net.trackmate.trackscheme.TrackSchemeVertex;
 
 public class OverlayVertexWrapper< V extends Vertex< E >, E extends Edge< V > >
-	implements OverlayVertex< OverlayVertexWrapper< V, E >, OverlayEdgeWrapper< V, E > >, HasTrackSchemeVertex
+		implements OverlayVertex< OverlayVertexWrapper< V, E >, OverlayEdgeWrapper< V, E > >, HasTrackSchemeVertex, RealLocalizable
 {
 	private final OverlayGraphWrapper< V, E > wrapper;
 
 	final TrackSchemeVertex tsv;
 
-	V mv;
+	private V mv;
 
 	private final EdgesWrapper incomingEdges;
 
@@ -23,17 +24,17 @@ public class OverlayVertexWrapper< V extends Vertex< E >, E extends Edge< V > >
 
 	private final EdgesWrapper edges;
 
-	private final OverlayProperties< V > overlayProperties;
+	private final VertexLocalizer< V > localizer;
 
-	OverlayVertexWrapper( final OverlayGraphWrapper< V, E > wrapper )
+	protected OverlayVertexWrapper( final OverlayGraphWrapper< V, E > wrapper )
 	{
 		this.wrapper = wrapper;
-		tsv = wrapper.trackSchemeGraph.vertexRef();
-		mv = wrapper.modelGraph.vertexRef();
-		incomingEdges = new EdgesWrapper( tsv.incomingEdges() );
-		outgoingEdges = new EdgesWrapper( tsv.outgoingEdges() );
-		edges = new EdgesWrapper( tsv.edges() );
-		overlayProperties = wrapper.overlayProperties;
+		this.tsv = wrapper.trackSchemeGraph.vertexRef();
+		this.mv = wrapper.modelGraph.vertexRef();
+		this.localizer = wrapper.localizer;
+		this.incomingEdges = new EdgesWrapper( tsv.incomingEdges() );
+		this.outgoingEdges = new EdgesWrapper( tsv.outgoingEdges() );
+		this.edges = new EdgesWrapper( tsv.edges() );
 	}
 
 	void updateModelVertexRef()
@@ -55,40 +56,14 @@ public class OverlayVertexWrapper< V extends Vertex< E >, E extends Edge< V > >
 		return this;
 	}
 
-	@Override
-	public void localize( final float[] position )
+	/**
+	 * Exposes the wrapped vertex.
+	 * 
+	 * @return the wrapped vertex.
+	 */
+	public V get()
 	{
-		overlayProperties.localize( mv, position );
-	}
-
-	@Override
-	public void localize( final double[] position )
-	{
-		overlayProperties.localize( mv, position );
-	}
-
-	@Override
-	public float getFloatPosition( final int d )
-	{
-		return overlayProperties.getFloatPosition( mv, d );
-	}
-
-	@Override
-	public double getDoublePosition( final int d )
-	{
-		return overlayProperties.getDoublePosition( mv, d );
-	}
-
-	@Override
-	public int numDimensions()
-	{
-		return overlayProperties.numDimensions( mv );
-	}
-
-	@Override
-	public void getCovariance( final double[][] mat )
-	{
-		overlayProperties.getCovariance( mv, mat );
+		return mv;
 	}
 
 	@Override
@@ -216,5 +191,41 @@ public class OverlayVertexWrapper< V extends Vertex< E >, E extends Edge< V > >
 		{
 			throw new UnsupportedOperationException();
 		}
+	}
+
+	/*
+	 * REALLOCALIZABLE.
+	 * 
+	 * We rely on VertexLocalizer.
+	 */
+
+	@Override
+	public int numDimensions()
+	{
+		return localizer.numDimensions( mv );
+	}
+
+	@Override
+	public void localize( final float[] position )
+	{
+		localizer.localize( mv, position );
+	}
+
+	@Override
+	public void localize( final double[] position )
+	{
+		localizer.localize( mv, position );
+	}
+
+	@Override
+	public float getFloatPosition( final int d )
+	{
+		return localizer.getFloatPosition( mv, d );
+	}
+
+	@Override
+	public double getDoublePosition( final int d )
+	{
+		return localizer.getDoublePosition( mv, d );
 	}
 }
