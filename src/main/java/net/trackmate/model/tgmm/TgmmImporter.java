@@ -124,8 +124,8 @@ public class TgmmImporter
 		final String tgmmFiles = "/Volumes/Data/TGMM_TL0-528_xmls_curated/GMEMfinalResult_frame%04d.xml";
 		final String bdvFile = "/Volumes/Data/BDV_MVD_5v_final.xml";
 		final int setupID = 1;
-		final String target = "/Volumes/Data/model-small.raw";
-		final TimePoints timepoints = new TimePointsPattern( "1-100" );
+		final String target = "/Volumes/Data/model.raw";
+		final TimePoints timepoints = new TimePointsPattern( "1-528" );
 
 		System.out.println( "Started reading TGMM files." );
 		System.out.println( " - TGMM files:\t\t" + tgmmFiles );

@@ -41,7 +41,9 @@ public class TracksOverlaySpotCovariance implements OverlayRenderer, TransformLi
 
 	public static final boolean DEFAULT_DRAW_SPOTS = true;
 
-	private static final boolean DEFAULT_DRAW_LINKS = true;
+	public static final boolean DEFAULT_DRAW_LINKS = true;
+
+	public static final boolean DEFAULT_DRAW_ELLIPSE = true;
 
 	/*
 	 * DISPLAY SETTINGS FIELDS.
@@ -58,6 +60,8 @@ public class TracksOverlaySpotCovariance implements OverlayRenderer, TransformLi
 	private boolean drawSpots = DEFAULT_DRAW_SPOTS;
 
 	private boolean drawLinks = DEFAULT_DRAW_LINKS;
+
+	private boolean drawSpotEllipse = DEFAULT_DRAW_ELLIPSE;
 
 	/*
 	 * FIELDS.
@@ -172,14 +176,10 @@ public class TracksOverlaySpotCovariance implements OverlayRenderer, TransformLi
 		final double[] lPos = new double[ 3 ];
 		final double[] gPos = new double[ 3 ];
 
-//		final double sliceDistanceCutoff = 100;
 		final double sliceDistanceFade = 0.2;
-
-//		final double timepointDistanceCutoff = 20;
 		final double timepointDistanceFade = 0.5;
 
 		final double nSigmas = 2;
-		final boolean drawEllipsoidProjection = true;
 
 		if ( drawLinks )
 		{
@@ -241,6 +241,10 @@ public class TracksOverlaySpotCovariance implements OverlayRenderer, TransformLi
 			final RefSet< OverlayVertexWrapper< SpotCovariance, Link< SpotCovariance >> > spots = model.getSpots( t );
 			final AffineTransform torig = graphics.getTransform();
 
+			final double[][] S = new double[ 3 ][ 3 ];
+			final double[][] T = new double[ 3 ][ 3 ];
+			final double[][] TS = new double[ 3 ][ 3 ];
+
 			for ( final OverlayVertexWrapper< SpotCovariance, Link< SpotCovariance >> spot : spots )
 			{
 				spot.get().localize( lPos );
@@ -250,28 +254,25 @@ public class TracksOverlaySpotCovariance implements OverlayRenderer, TransformLi
 				final double sd = sliceDistance( z, focusLimit );
 				if ( sd > -1 && sd < 1 )
 				{
-					final double[][] S = new double[ 3 ][ 3 ];
-					spot.get().getCovariance( S );
-
-					final double[][] T = new double[ 3 ][ 3 ];
-					for ( int r = 0; r < 3; ++r )
-						for ( int c = 0; c < 3; ++c )
-							T[ r ][ c ] = transform.get( r, c );
-
-					final double[][] TS = new double[ 3 ][ 3 ];
-					LinAlgHelpers.mult( T, S, TS );
-					LinAlgHelpers.multABT( TS, T, S );
-					// We need make S exactly symmetric or jama
-					// eigendecomposition
-					// will not return orthogonal V.
-					S[ 0 ][ 1 ] = S[ 1 ][ 0 ];
-					S[ 0 ][ 2 ] = S[ 2 ][ 0 ];
-					S[ 1 ][ 2 ] = S[ 2 ][ 1 ];
-					// now S is spot covariance transformed into view
-					// coordinates.
-
-					if ( drawEllipsoidProjection )
+					if ( drawSpotEllipse )
 					{
+						spot.get().getCovariance( S );
+
+						for ( int r = 0; r < 3; ++r )
+							for ( int c = 0; c < 3; ++c )
+								T[ r ][ c ] = transform.get( r, c );
+
+						LinAlgHelpers.mult( T, S, TS );
+						LinAlgHelpers.multABT( TS, T, S );
+						// We need make S exactly symmetric or jama
+						// eigendecomposition
+						// will not return orthogonal V.
+						S[ 0 ][ 1 ] = S[ 1 ][ 0 ];
+						S[ 0 ][ 2 ] = S[ 2 ][ 0 ];
+						S[ 1 ][ 2 ] = S[ 2 ][ 1 ];
+						// now S is spot covariance transformed into view
+						// coordinates.
+
 						final double[][] S2 = new double[ 2 ][ 2 ];
 						for ( int r = 0; r < 2; ++r )
 							for ( int c = 0; c < 2; ++c )
@@ -289,6 +290,12 @@ public class TracksOverlaySpotCovariance implements OverlayRenderer, TransformLi
 						graphics.setColor( getColor( sd, 0, sliceDistanceFade, timepointDistanceFade, spot.isSelected() ) );
 						graphics.draw( new Ellipse2D.Double( -w, -h, 2 * w, 2 * h ) );
 						graphics.setTransform( torig );
+
+					}
+					else
+					{
+						graphics.setColor( getColor( sd, 0, sliceDistanceFade, timepointDistanceFade, spot.isSelected() ) );
+						graphics.drawRect( ( int ) ( gPos[ 0 ] - 2.5 ), ( int ) ( gPos[ 1 ] - 2.5 ), 5, 5 );
 					}
 				}
 			}
@@ -334,5 +341,10 @@ public class TracksOverlaySpotCovariance implements OverlayRenderer, TransformLi
 	public void setDrawLinks( final boolean drawLinks )
 	{
 		this.drawLinks = drawLinks;
+	}
+
+	public void setDrawSpotEllipse( final boolean drawSpotEllipse )
+	{
+		this.drawSpotEllipse = drawSpotEllipse;
 	}
 }

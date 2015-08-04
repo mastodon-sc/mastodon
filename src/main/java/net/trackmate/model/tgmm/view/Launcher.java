@@ -30,6 +30,7 @@ import net.trackmate.model.ModelGraph;
 import net.trackmate.model.tgmm.RawIO;
 import net.trackmate.model.tgmm.SpotCovariance;
 import net.trackmate.model.tgmm.TgmmModel;
+import net.trackmate.model.tgmm.view.DisplaySettingsPanel.SpotOverlayStyle;
 import net.trackmate.trackscheme.ShowTrackScheme;
 import net.trackmate.trackscheme.ShowTrackScheme.HACK_SelectionListener;
 import net.trackmate.trackscheme.TrackSchemeGraph;
@@ -190,6 +191,11 @@ public class Launcher
 						{
 							tracksOverlay.setDrawLinks( false );
 						}
+						else if ( e.equals( configPanel.spotStyleChanged ) )
+						{
+							tracksOverlay.setDrawSpotEllipse( configPanel.getSelectedSpotOverlayStyle() == SpotOverlayStyle.ELLIPSE );
+						}
+
 						bdv.getViewer().getDisplay().repaint();
 					};
 				}.start();
