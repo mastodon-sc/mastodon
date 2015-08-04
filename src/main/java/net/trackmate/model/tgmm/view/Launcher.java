@@ -1,12 +1,14 @@
 package net.trackmate.model.tgmm.view;
 
 import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
 
 import javax.swing.AbstractAction;
 import javax.swing.ActionMap;
 import javax.swing.InputMap;
+import javax.swing.JFrame;
 import javax.swing.KeyStroke;
 
 import mpicbg.spim.data.SpimDataException;
@@ -122,6 +124,79 @@ public class Launcher
 		bdv.getViewer().getDisplay().addOverlayRenderer( tracksOverlay );
 		bdv.getViewer().addRenderTransformListener( tracksOverlay );
 		setupContextTrackscheme( bdv, overlayGraph, trackscheme );
+
+		/*
+		 * Display config panel.
+		 */
+
+		final JFrame configFrame = new JFrame( "Display settings" );
+		configFrame.setSize( 600, 400 );
+		final DisplaySettingsPanel configPanel = new DisplaySettingsPanel();
+		configPanel.addActionListener( new ActionListener()
+		{
+			@Override
+			public void actionPerformed( final ActionEvent e )
+			{
+				new Thread( "Display settings updater thread." )
+				{
+					@Override
+					public void run()
+					{
+						if ( e.equals( configPanel.antialiasingOn ) )
+						{
+							tracksOverlay.setAntialising( true );
+						}
+						else if ( e.equals( configPanel.antialiasingOff ) )
+						{
+							tracksOverlay.setAntialising( false );
+						}
+						else if ( e.equals( configPanel.gradientOn ) )
+						{
+							tracksOverlay.setUseGradient( true );
+						}
+						else if ( e.equals( configPanel.gradientOff ) )
+						{
+							tracksOverlay.setUseGradient( false );
+						}
+						else if ( e.equals( configPanel.limitFocusRangeOn ) || e.equals( configPanel.focusRangeChanged ) )
+						{
+							tracksOverlay.setFocusLimit( configPanel.getLimitFocusRange() );
+						}
+						else if ( e.equals( configPanel.limitFocusRangeOff ) )
+						{
+							tracksOverlay.setFocusLimit( Double.POSITIVE_INFINITY );
+						}
+						else if ( e.equals( configPanel.limitTimeRangeOn ) || e.equals( configPanel.timeRangeChanged ) )
+						{
+							tracksOverlay.setTimeLimit( configPanel.getLimitTimeRange() );
+						}
+						else if ( e.equals( configPanel.limitTimeRangeOff ) )
+						{
+							tracksOverlay.setTimeLimit( Double.POSITIVE_INFINITY );
+						}
+						else if ( e.equals( configPanel.drawSpotsOn ) )
+						{
+							tracksOverlay.setDrawSpots( true );
+						}
+						else if ( e.equals( configPanel.drawSpotsOff ) )
+						{
+							tracksOverlay.setDrawSpots( false );
+						}
+						else if ( e.equals( configPanel.drawLinksOn ) )
+						{
+							tracksOverlay.setDrawLinks( true );
+						}
+						else if ( e.equals( configPanel.drawLinksOff ) )
+						{
+							tracksOverlay.setDrawLinks( false );
+						}
+						bdv.getViewer().getDisplay().repaint();
+					};
+				}.start();
+			}
+		} );
+		configFrame.getContentPane().add( configPanel );
+		configFrame.setVisible( true );
 	}
 
 	private static final void centerViewOn( final SpotCovariance spot, final ViewerPanel viewer )

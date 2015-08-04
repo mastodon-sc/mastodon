@@ -2,6 +2,7 @@ package net.trackmate.model.tgmm.view;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
+import java.awt.GradientPaint;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
@@ -25,6 +26,43 @@ import bdv.viewer.ViewerPanel;
 
 public class TracksOverlaySpotCovariance implements OverlayRenderer, TransformListener< AffineTransform3D >
 {
+
+	/*
+	 * PUBLIC DISPLAY CONFIG DEFAULTS.
+	 */
+
+	public static final double DEFAULT_LIMIT_TIME_RANGE = 20.;
+
+	public static final double DEFAULT_LIMIT_FOCUS_RANGE = 100.;
+
+	public static final Object DEFAULT_ALIASING_MODE = RenderingHints.VALUE_ANTIALIAS_ON;
+
+	public static final boolean DEFAULT_USE_GRADIENT = false;
+
+	public static final boolean DEFAULT_DRAW_SPOTS = true;
+
+	private static final boolean DEFAULT_DRAW_LINKS = true;
+
+	/*
+	 * DISPLAY SETTINGS FIELDS.
+	 */
+
+	private Object antialiasing = DEFAULT_ALIASING_MODE;
+
+	private boolean useGradient = DEFAULT_USE_GRADIENT;
+
+	private double focusLimit = DEFAULT_LIMIT_FOCUS_RANGE;
+
+	private double timeLimit = DEFAULT_LIMIT_TIME_RANGE;
+
+	private boolean drawSpots = DEFAULT_DRAW_SPOTS;
+
+	private boolean drawLinks = DEFAULT_DRAW_LINKS;
+
+	/*
+	 * FIELDS.
+	 */
+
 	private final AffineTransform3D transform;
 
 	private final OverlayGraphWrapper< SpotCovariance, Link< SpotCovariance >> model;
@@ -125,8 +163,7 @@ public class TracksOverlaySpotCovariance implements OverlayRenderer, TransformLi
 
 		final int currentTimepoint = viewer.getState().getCurrentTimepoint();
 
-//		graphics.setRenderingHint( RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON );
-		graphics.setRenderingHint( RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF );
+		graphics.setRenderingHint( RenderingHints.KEY_ANTIALIASING, antialiasing );
 
 //		graphics.setStroke( new BasicStroke( 2, BasicStroke.CAP_BUTT, BasicStroke.JOIN_ROUND ) );
 		graphics.setStroke( new BasicStroke() );
@@ -135,108 +172,124 @@ public class TracksOverlaySpotCovariance implements OverlayRenderer, TransformLi
 		final double[] lPos = new double[ 3 ];
 		final double[] gPos = new double[ 3 ];
 
-		final double sliceDistanceCutoff = 100;
+//		final double sliceDistanceCutoff = 100;
 		final double sliceDistanceFade = 0.2;
 
-		final double timepointDistanceCutoff = 20;
+//		final double timepointDistanceCutoff = 20;
 		final double timepointDistanceFade = 0.5;
 
 		final double nSigmas = 2;
 		final boolean drawEllipsoidProjection = true;
 
-		for ( int timepointId = 0; timepointId < currentTimepoint; ++timepointId )
+		if ( drawLinks )
 		{
-			final RefSet< OverlayVertexWrapper< SpotCovariance, Link< SpotCovariance >> > spots = model.getSpots( timepointId );
-			final int t = timepointId;
-			for ( final OverlayVertexWrapper< SpotCovariance, Link< SpotCovariance >> spot : spots )
+
+			graphics.setPaint( getColor( 0, 0, sliceDistanceFade, timepointDistanceFade, false ) );
+			for ( int timepointId = Math.max( 0, currentTimepoint - ( int ) timeLimit ); timepointId < currentTimepoint; ++timepointId )
 			{
-				spot.get().localize( lPos );
-				transform.apply( lPos, gPos );
-				final int x0 = ( int ) gPos[ 0 ];
-				final int y0 = ( int ) gPos[ 1 ];
-				final double z0 = gPos[ 2 ];
-				for ( final OverlayEdgeWrapper< SpotCovariance, Link< SpotCovariance >> edge : spot.outgoingEdges() )
+				final RefSet< OverlayVertexWrapper< SpotCovariance, Link< SpotCovariance >> > spots = model.getSpots( timepointId );
+				final int t = timepointId;
+				for ( final OverlayVertexWrapper< SpotCovariance, Link< SpotCovariance >> spot : spots )
 				{
-					edge.getTarget( target );
-					target.get().localize( lPos );
+					spot.get().localize( lPos );
 					transform.apply( lPos, gPos );
-					final int x1 = ( int ) gPos[ 0 ];
-					final int y1 = ( int ) gPos[ 1 ];
-
-					final double z1 = gPos[ 2 ];
-
-
-					final double td0 = timeDistance( t, currentTimepoint, timepointDistanceCutoff );
-					final double td1 = timeDistance( t+1, currentTimepoint, timepointDistanceCutoff );
-					final double sd0 = sliceDistance( z0, sliceDistanceCutoff );
-					final double sd1 = sliceDistance( z1, sliceDistanceCutoff );
-
-					if ( td0 > -1 )
+					final int x0 = ( int ) gPos[ 0 ];
+					final int y0 = ( int ) gPos[ 1 ];
+					final double z0 = gPos[ 2 ];
+					for ( final OverlayEdgeWrapper< SpotCovariance, Link< SpotCovariance >> edge : spot.outgoingEdges() )
 					{
-						if ( ( sd0 > -1 && sd0 < 1 ) || ( sd1 > -1 && sd1 < 1 ) )
+						edge.getTarget( target );
+						target.get().localize( lPos );
+						transform.apply( lPos, gPos );
+						final int x1 = ( int ) gPos[ 0 ];
+						final int y1 = ( int ) gPos[ 1 ];
+
+						final double z1 = gPos[ 2 ];
+
+						final double td0 = timeDistance( t, currentTimepoint, timeLimit );
+						final double td1 = timeDistance( t + 1, currentTimepoint, timeLimit );
+						final double sd0 = sliceDistance( z0, focusLimit );
+						final double sd1 = sliceDistance( z1, focusLimit );
+
+						if ( td0 > -1 )
 						{
-							final Color c0 = getColor( sd0, td0, sliceDistanceFade, timepointDistanceFade, false );
-							final Color c1 = getColor( sd1, td1, sliceDistanceFade, timepointDistanceFade, false );
-//							graphics.setPaint( new GradientPaint( x0, y0, c0, x1, y1, c1 ) );
-							graphics.drawLine( x0, y0, x1, y1 );
+							if ( ( sd0 > -1 && sd0 < 1 ) || ( sd1 > -1 && sd1 < 1 ) )
+							{
+								final Color c1 = getColor( sd1, td1, sliceDistanceFade, timepointDistanceFade, false );
+								if ( useGradient )
+								{
+									final Color c0 = getColor( sd0, td0, sliceDistanceFade, timepointDistanceFade, false );
+									graphics.setPaint( new GradientPaint( x0, y0, c0, x1, y1, c1 ) );
+								}
+								else
+								{
+									graphics.setPaint( c1 );
+								}
+								graphics.drawLine( x0, y0, x1, y1 );
+							}
 						}
 					}
 				}
 			}
 		}
 
-		graphics.setStroke( new BasicStroke() );
-//		graphics.setStroke( new BasicStroke( 2, BasicStroke.CAP_BUTT, BasicStroke.JOIN_ROUND ) );
-
-		final int t = currentTimepoint;
-		final RefSet< OverlayVertexWrapper< SpotCovariance, Link< SpotCovariance >> > spots = model.getSpots( t );
-		final AffineTransform torig = graphics.getTransform();
-		for ( final OverlayVertexWrapper< SpotCovariance, Link< SpotCovariance >> spot : spots )
+		if ( drawSpots )
 		{
-			spot.get().localize( lPos );
-			transform.apply( lPos, gPos );
+//		graphics.setStroke( new BasicStroke( 2, BasicStroke.CAP_BUTT, BasicStroke.JOIN_ROUND ) );
+			graphics.setStroke( new BasicStroke() );
+			final int t = currentTimepoint;
+			final RefSet< OverlayVertexWrapper< SpotCovariance, Link< SpotCovariance >> > spots = model.getSpots( t );
+			final AffineTransform torig = graphics.getTransform();
 
-			final double z = gPos[ 2 ];
-			final double sd = sliceDistance( z, sliceDistanceCutoff );
-			if ( sd > -1 && sd < 1 )
+			for ( final OverlayVertexWrapper< SpotCovariance, Link< SpotCovariance >> spot : spots )
 			{
-				final double[][] S = new double[ 3 ][ 3 ];
-				spot.get().getCovariance( S );
+				spot.get().localize( lPos );
+				transform.apply( lPos, gPos );
 
-				final double[][] T = new double[ 3 ][ 3 ];
-				for ( int r = 0; r < 3; ++r )
-					for ( int c = 0; c < 3; ++c )
-						T[ r ][ c ] = transform.get( r, c );
-
-				final double[][] TS = new double[ 3 ][ 3 ];
-				LinAlgHelpers.mult( T, S, TS );
-				LinAlgHelpers.multABT( TS, T, S );
-				// We need make S exactly symmetric or jama eigendecomposition
-				// will not return orthogonal V.
-				S[ 0 ][ 1 ] = S[ 1 ][ 0 ];
-				S[ 0 ][ 2 ] = S[ 2 ][ 0 ];
-				S[ 1 ][ 2 ] = S[ 2 ][ 1 ];
-				// now S is spot covariance transformed into view coordinates.
-
-				if ( drawEllipsoidProjection )
+				final double z = gPos[ 2 ];
+				final double sd = sliceDistance( z, focusLimit );
+				if ( sd > -1 && sd < 1 )
 				{
-					final double[][] S2 = new double[ 2 ][ 2 ];
-					for ( int r = 0; r < 2; ++r )
-						for ( int c = 0; c < 2; ++c )
-							S2[ r ][ c ] = S[ r ][ c ];
-					final EigenvalueDecomposition eig2 = new Matrix( S2 ).eig();
-					final double[] eigVals2 = eig2.getRealEigenvalues();
-					final double w = nSigmas * Math.sqrt( eigVals2[ 0 ] );
-					final double h = nSigmas * Math.sqrt( eigVals2[ 1 ] );
-					final Matrix V2 = eig2.getV();
-					final double c = V2.getArray()[ 0 ][ 0 ];
-					final double s = V2.getArray()[ 1 ][ 0 ];
-					final double theta = Math.atan2( s, c );
-					graphics.translate( gPos[ 0 ], gPos[ 1 ] );
-					graphics.rotate( theta );
-					graphics.setColor( getColor( sd, 0, sliceDistanceFade, timepointDistanceFade, spot.isSelected() ) );
-					graphics.draw( new Ellipse2D.Double( -w, -h, 2 * w, 2 * h ) );
-					graphics.setTransform( torig );
+					final double[][] S = new double[ 3 ][ 3 ];
+					spot.get().getCovariance( S );
+
+					final double[][] T = new double[ 3 ][ 3 ];
+					for ( int r = 0; r < 3; ++r )
+						for ( int c = 0; c < 3; ++c )
+							T[ r ][ c ] = transform.get( r, c );
+
+					final double[][] TS = new double[ 3 ][ 3 ];
+					LinAlgHelpers.mult( T, S, TS );
+					LinAlgHelpers.multABT( TS, T, S );
+					// We need make S exactly symmetric or jama
+					// eigendecomposition
+					// will not return orthogonal V.
+					S[ 0 ][ 1 ] = S[ 1 ][ 0 ];
+					S[ 0 ][ 2 ] = S[ 2 ][ 0 ];
+					S[ 1 ][ 2 ] = S[ 2 ][ 1 ];
+					// now S is spot covariance transformed into view
+					// coordinates.
+
+					if ( drawEllipsoidProjection )
+					{
+						final double[][] S2 = new double[ 2 ][ 2 ];
+						for ( int r = 0; r < 2; ++r )
+							for ( int c = 0; c < 2; ++c )
+								S2[ r ][ c ] = S[ r ][ c ];
+						final EigenvalueDecomposition eig2 = new Matrix( S2 ).eig();
+						final double[] eigVals2 = eig2.getRealEigenvalues();
+						final double w = nSigmas * Math.sqrt( eigVals2[ 0 ] );
+						final double h = nSigmas * Math.sqrt( eigVals2[ 1 ] );
+						final Matrix V2 = eig2.getV();
+						final double c = V2.getArray()[ 0 ][ 0 ];
+						final double s = V2.getArray()[ 1 ][ 0 ];
+						final double theta = Math.atan2( s, c );
+						graphics.translate( gPos[ 0 ], gPos[ 1 ] );
+						graphics.rotate( theta );
+						graphics.setColor( getColor( sd, 0, sliceDistanceFade, timepointDistanceFade, spot.isSelected() ) );
+						graphics.draw( new Ellipse2D.Double( -w, -h, 2 * w, 2 * h ) );
+						graphics.setTransform( torig );
+					}
 				}
 			}
 		}
@@ -251,5 +304,35 @@ public class TracksOverlaySpotCovariance implements OverlayRenderer, TransformLi
 	public void transformChanged( final AffineTransform3D t )
 	{
 		transform.set( t );
+	}
+
+	public void setAntialising( final boolean antialiasing )
+	{
+		this.antialiasing = antialiasing ? RenderingHints.VALUE_ANTIALIAS_ON : RenderingHints.VALUE_ANTIALIAS_OFF;
+	}
+
+	public void setUseGradient( final boolean useGradient )
+	{
+		this.useGradient = useGradient;
+	}
+
+	public void setFocusLimit( final double focusLimit )
+	{
+		this.focusLimit = focusLimit;
+	}
+
+	public void setTimeLimit( final double timeLimit )
+	{
+		this.timeLimit = timeLimit;
+	}
+
+	public void setDrawSpots( final boolean drawSpots )
+	{
+		this.drawSpots = drawSpots;
+	}
+
+	public void setDrawLinks( final boolean drawLinks )
+	{
+		this.drawLinks = drawLinks;
 	}
 }
