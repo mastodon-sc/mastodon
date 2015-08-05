@@ -3,7 +3,7 @@ package net.trackmate.kdtree;
 import net.imglib2.RealLocalizable;
 import net.imglib2.Sampler;
 import net.imglib2.neighborsearch.NearestNeighborSearch;
-import net.trackmate.graph.PoolObject;
+import net.trackmate.graph.Ref;
 import net.trackmate.graph.mempool.MappedElement;
 
 /**
@@ -12,7 +12,7 @@ import net.trackmate.graph.mempool.MappedElement;
  *
  * @author Tobias Pietzsch
  */
-public final class NearestNeighborSearchOnKDTree< O extends PoolObject< O, ? > & RealLocalizable, T extends MappedElement >
+public final class NearestNeighborSearchOnKDTree< O extends Ref< O > & RealLocalizable, T extends MappedElement >
 	implements NearestNeighborSearch< O >, Sampler< O >
 {
 	private final KDTree< O, T > tree;
