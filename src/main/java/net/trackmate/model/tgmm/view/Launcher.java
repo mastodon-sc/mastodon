@@ -28,6 +28,7 @@ import net.trackmate.trackscheme.ShowTrackScheme.HACK_SelectionListener;
 import net.trackmate.trackscheme.TrackSchemeGraph;
 import net.trackmate.trackscheme.TrackSchemeUtil;
 import net.trackmate.trackscheme.TrackSchemeVertex;
+import net.trackmate.trackscheme.laf.TrackSchemeStyle;
 import bdv.BigDataViewer;
 import bdv.export.ProgressWriterConsole;
 import bdv.viewer.InputActionBindings;
@@ -222,6 +223,11 @@ public class Launcher
 			context.setUseCrop( useCrop );
 		}
 
+		public void setTrackSchemeStyle( final TrackSchemeStyle selectedTrackSchemeStyle )
+		{
+			context.setTrackSchemeStyle( selectedTrackSchemeStyle );
+		}
+
 		@Override
 		public void transformChanged( final AffineTransform3D transform )
 		{
@@ -338,6 +344,11 @@ public class Launcher
 					{
 						tl.setContextWindow( configPanel.getContextWindow() );
 						tl.transformChanged( null );
+					}
+					else if ( e == configPanel.trackschemeStyleChanged )
+					{
+						tl.setTrackSchemeStyle( configPanel.getSelectedTrackSchemeStyle() );
+						trackscheme.repaint();
 					}
 
 					bdv.getViewer().getDisplay().repaint();

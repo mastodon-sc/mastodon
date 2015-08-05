@@ -10,8 +10,10 @@ import net.trackmate.bdv.wrapper.OverlayVertex;
 import net.trackmate.bdv.wrapper.SpatialSearch;
 import net.trackmate.graph.PoolObjectList;
 import net.trackmate.graph.collection.RefSet;
+import net.trackmate.trackscheme.DefaultTrackSchemeLAF;
 import net.trackmate.trackscheme.ShowTrackScheme;
 import net.trackmate.trackscheme.TrackSchemeVertex;
+import net.trackmate.trackscheme.laf.TrackSchemeStyle;
 
 class ContextTrackScheme< V extends OverlayVertex< V, E > & HasTrackSchemeVertex, E extends OverlayEdge< E, V > >
 {
@@ -116,6 +118,11 @@ class ContextTrackScheme< V extends OverlayVertex< V, E > & HasTrackSchemeVertex
 		this.useCrop = useCrop;
 	}
 
+	public void setTrackSchemeStyle( final TrackSchemeStyle trackschemeStyle )
+	{
+		( ( DefaultTrackSchemeLAF ) trackscheme.getLookAndFeel() ).setTrackSchemeStyle( trackschemeStyle );
+	}
+
 	public static < V extends OverlayVertex< V, E > & HasTrackSchemeVertex, E extends OverlayEdge< E, V > >
 			ContextTrackScheme< V, E > create(
 					final OverlayGraph< V, E > graph,
@@ -123,6 +130,7 @@ class ContextTrackScheme< V extends OverlayVertex< V, E > & HasTrackSchemeVertex
 	{
 		return new ContextTrackScheme< V, E >( graph, trackScheme );
 	}
+
 
 
 }

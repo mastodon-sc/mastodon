@@ -23,6 +23,8 @@ public class ShowTrackScheme implements TransformListener< ScreenTransform >, Se
 {
 	private static final long ANIMATION_MILLISECONDS = 250;
 
+	public static final TrackSchemeStyle DEFAULT_TRAKSCHEME_STYLE = TrackSchemeStyle.defaultStyle();
+
 	final TrackSchemeGraph graph;
 
 	private final LineageTreeLayout layout;
@@ -90,7 +92,7 @@ public class ShowTrackScheme implements TransformListener< ScreenTransform >, Se
 		 * Initialize look and feel.
 		 */
 
-		laf = new TrackSchemeGhostLAF( order, layout, TrackSchemeStyle.howMuchDoYouKnowStyle() );
+		laf = new TrackSchemeGhostLAF( order, layout, DEFAULT_TRAKSCHEME_STYLE );
 		overlay = new GraphLayoutOverlay( laf );
 		overlay.setCanvasSize( 800, 600 );
 
@@ -260,6 +262,11 @@ public class ShowTrackScheme implements TransformListener< ScreenTransform >, Se
 	public TrackSchemeGraph getGraph()
 	{
 		return graph;
+	}
+
+	public TrackSchemeLAF getLookAndFeel()
+	{
+		return laf;
 	}
 
 	public synchronized void repaint( final boolean startAnimation )

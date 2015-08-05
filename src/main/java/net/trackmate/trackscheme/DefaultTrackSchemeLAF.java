@@ -65,7 +65,7 @@ public class DefaultTrackSchemeLAF implements TrackSchemeLAF
 
 	private final LineageTreeLayout layout;
 
-	protected final TrackSchemeStyle style;
+	protected TrackSchemeStyle style;
 
 
 	/*
@@ -83,6 +83,10 @@ public class DefaultTrackSchemeLAF implements TrackSchemeLAF
 	 * METHODS
 	 */
 
+	public void setTrackSchemeStyle( final TrackSchemeStyle style )
+	{
+		this.style = style;
+	}
 
 	@Override
 	public void beforeDrawVertex( final Graphics2D g2 )

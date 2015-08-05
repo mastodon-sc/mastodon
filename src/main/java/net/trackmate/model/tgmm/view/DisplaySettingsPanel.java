@@ -25,6 +25,9 @@ import javax.swing.LayoutStyle.ComponentPlacement;
 import javax.swing.SwingConstants;
 import javax.swing.border.LineBorder;
 
+import net.trackmate.trackscheme.ShowTrackScheme;
+import net.trackmate.trackscheme.laf.TrackSchemeStyle;
+
 public class DisplaySettingsPanel extends JPanel
 {
 	/*
@@ -90,6 +93,8 @@ public class DisplaySettingsPanel extends JPanel
 
 	final ActionEvent contextWindowChanged = new ActionEvent( this, 17, "ContextWindowChanged" );
 
+	final ActionEvent trackschemeStyleChanged = new ActionEvent( this, 18, "TrackSchemeStyleChanged" );
+
 	/*
 	 * OTHER CONSTANTS
 	 */
@@ -118,6 +123,7 @@ public class DisplaySettingsPanel extends JPanel
 
 	private final HashSet< ActionListener > listeners = new HashSet< ActionListener >();
 
+	private final JComboBox comboBoxTrackSchemeStyles;
 
 	/**
 	 * Create the panel.
@@ -199,20 +205,38 @@ public class DisplaySettingsPanel extends JPanel
 		final JLabel lblLiveContext = new JLabel( "Live context." );
 		lblLiveContext.setFont( FONT.deriveFont( Font.BOLD ) );
 
+		final JLabel lblTrackschemeColorScheme = new JLabel( "TrackScheme color scheme." );
+		lblTrackschemeColorScheme.setFont( FONT.deriveFont( Font.BOLD ) );
+
+
+		comboBoxTrackSchemeStyles = new JComboBox( TrackSchemeStyle.AvailableStyles.values() );
+		comboBoxTrackSchemeStyles.setSelectedItem( ShowTrackScheme.DEFAULT_TRAKSCHEME_STYLE );
+		comboBoxTrackSchemeStyles.setFont( FONT );
+		comboBoxTrackSchemeStyles.addActionListener( new ActionListener()
+		{
+			@Override
+			public void actionPerformed( final ActionEvent e )
+			{
+				fireAction( trackschemeStyleChanged );
+			}
+		} );
+
 		final GroupLayout gl_panelTrackScheme = new GroupLayout( panelTrackScheme );
 		gl_panelTrackScheme.setHorizontalGroup(
 				gl_panelTrackScheme.createParallelGroup( Alignment.LEADING )
 						.addGroup( gl_panelTrackScheme.createSequentialGroup()
 								.addContainerGap()
 								.addGroup( gl_panelTrackScheme.createParallelGroup( Alignment.LEADING )
+										.addComponent( lblTrackschemeColorScheme, GroupLayout.DEFAULT_SIZE, 248, Short.MAX_VALUE )
 										.addGroup( gl_panelTrackScheme.createSequentialGroup()
 												.addComponent( chckbxUseLiveContext, GroupLayout.PREFERRED_SIZE, 134, GroupLayout.PREFERRED_SIZE )
 												.addPreferredGap( ComponentPlacement.RELATED )
 												.addComponent( textFieldContextTrackScheme, 65, 65, 65 )
 												.addPreferredGap( ComponentPlacement.RELATED )
 												.addComponent( lblFrames ) )
-										.addComponent( lblLiveContext ) )
-								.addContainerGap( GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE ) )
+										.addComponent( lblLiveContext )
+										.addComponent( comboBoxTrackSchemeStyles, 0, 248, Short.MAX_VALUE ) )
+								.addContainerGap() )
 				);
 		gl_panelTrackScheme.setVerticalGroup(
 				gl_panelTrackScheme.createParallelGroup( Alignment.LEADING )
@@ -224,7 +248,11 @@ public class DisplaySettingsPanel extends JPanel
 										.addComponent( chckbxUseLiveContext )
 										.addComponent( textFieldContextTrackScheme, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE )
 										.addComponent( lblFrames ) )
-								.addContainerGap( 337, Short.MAX_VALUE ) )
+								.addPreferredGap( ComponentPlacement.RELATED )
+								.addComponent( lblTrackschemeColorScheme )
+								.addPreferredGap( ComponentPlacement.RELATED )
+								.addComponent( comboBoxTrackSchemeStyles, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE )
+								.addContainerGap( 285, Short.MAX_VALUE ) )
 				);
 		panelTrackScheme.setLayout( gl_panelTrackScheme );
 
@@ -482,6 +510,11 @@ public class DisplaySettingsPanel extends JPanel
 		return SpotOverlayStyle.values()[ comboBoxStyle.getSelectedIndex() ];
 	}
 
+	public TrackSchemeStyle getSelectedTrackSchemeStyle()
+	{
+		return TrackSchemeStyle.AvailableStyles.values()[ comboBoxTrackSchemeStyles.getSelectedIndex() ].getStyle();
+	}
+
 	public double getFocusRange()
 	{
 		try
@@ -611,5 +644,4 @@ public class DisplaySettingsPanel extends JPanel
 		frame.setVisible( true );
 
 	}
-
 }

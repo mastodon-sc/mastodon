@@ -7,6 +7,34 @@ import java.awt.Stroke;
 
 public class TrackSchemeStyle
 {
+	public static enum AvailableStyles
+	{
+		DEFAULT( "Default", defaultStyle() ),
+		MODERN( "Modern", modernStyle() ),
+		HOWMUCH( "Pastel", howMuchDoYouKnowStyle() );
+
+		private final String name;
+
+		private final TrackSchemeStyle style;
+
+		AvailableStyles( final String name, final TrackSchemeStyle style )
+		{
+			this.name = name;
+			this.style = style;
+		}
+		
+		@Override
+		public String toString()
+		{
+			return name;
+		}
+
+		public TrackSchemeStyle getStyle()
+		{
+			return style;
+		}
+	}
+
 	public Color edgeColor;
 
 	public Color vertexFillColor;
