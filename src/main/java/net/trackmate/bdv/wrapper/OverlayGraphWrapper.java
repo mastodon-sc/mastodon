@@ -5,6 +5,7 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
+import net.imglib2.RealLocalizable;
 import net.imglib2.algorithm.kdtree.ConvexPolytope;
 import net.trackmate.graph.Edge;
 import net.trackmate.graph.Graph;
@@ -15,6 +16,7 @@ import net.trackmate.graph.collection.RefSet;
 import net.trackmate.graph.mempool.DoubleMappedElement;
 import net.trackmate.kdtree.ClipConvexPolytopeKDTree;
 import net.trackmate.kdtree.KDTree;
+import net.trackmate.kdtree.NearestNeighborSearchOnKDTree;
 import net.trackmate.trackscheme.GraphIdBimap;
 import net.trackmate.trackscheme.TrackSchemeGraph;
 import net.trackmate.trackscheme.TrackSchemeVertex;
@@ -197,11 +199,14 @@ public class OverlayGraphWrapper< V extends Vertex< E >, E extends Edge< V > >
 
 		private final ClipConvexPolytopeKDTree< OverlayVertexWrapper< V, E >, DoubleMappedElement > clip;
 
+		private final NearestNeighborSearchOnKDTree< OverlayVertexWrapper< V, E >, DoubleMappedElement > nearestNeighborSearch;
+
 		private MySpatialSearch( final int timepoint )
 		{
 			this.timepoint = timepoint;
 			kdtree = KDTree.kdtree( getSpots( timepoint ), vertexPool );
 			clip = kdtree == null ? null : new ClipConvexPolytopeKDTree< OverlayVertexWrapper< V, E >, DoubleMappedElement >( kdtree );
+			nearestNeighborSearch = kdtree == null ? null : new NearestNeighborSearchOnKDTree< OverlayVertexWrapper< V, E >, DoubleMappedElement >( kdtree );
 		}
 
 		@Override
@@ -218,6 +223,24 @@ public class OverlayGraphWrapper< V extends Vertex< E >, E extends Edge< V > >
 				return clip.getInsideValues();
 			else
 				return null;
+		}
+
+		@Override
+		public void search( final RealLocalizable p )
+		{
+			nearestNeighborSearch.search( p );
+		}
+
+		@Override
+		public OverlayVertexWrapper< V, E > nearestNeighbor()
+		{
+			return nearestNeighborSearch.get();
+		}
+
+		@Override
+		public double nearestNeighborSquareDistance()
+		{
+			return nearestNeighborSearch.getSquareDistance();
 		}
 	}
 
