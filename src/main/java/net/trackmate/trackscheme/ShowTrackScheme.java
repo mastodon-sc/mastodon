@@ -269,6 +269,11 @@ public class ShowTrackScheme implements TransformListener< ScreenTransform >, Se
 		return laf;
 	}
 
+	public SelectionModel< TrackSchemeVertex, TrackSchemeEdge > getSelectionModel()
+	{
+		return selectionModel;
+	}
+
 	public synchronized void repaint( final boolean startAnimation )
 	{
 		final double minX = currentTransform.minX;

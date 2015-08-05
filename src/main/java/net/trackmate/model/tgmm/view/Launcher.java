@@ -93,8 +93,11 @@ public class Launcher
 			@Override
 			public void select( final TrackSchemeVertex v )
 			{
-				graph.getIdBimap().getVertex( v.getModelVertexId(), spot );
-				centerViewOn( spot, bdv.getViewer() );
+				if ( trackscheme.getSelectionModel().getSelectedVertices().size() == 1 )
+				{
+					graph.getIdBimap().getVertex( v.getModelVertexId(), spot );
+					centerViewOn( spot, bdv.getViewer() );
+				}
 			}
 
 			@Override
