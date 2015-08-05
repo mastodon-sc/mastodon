@@ -75,7 +75,7 @@ public class CreateLargeModelExample
 			final double x = previousSpot.getDoublePosition( 0 ) + vx;
 			final double y = previousSpot.getDoublePosition( 1 ) + vy;
 			final double z = previousSpot.getDoublePosition( 2 );
-			final int frame = previousSpot.getTimePoint();
+			final int frame = previousSpot.getTimepoint();
 			model.createSpot( frame, x, y, z, RADIUS, spot );
 			model.createLink( previousSpot, spot );
 			previousSpot.refTo( spot );
@@ -101,7 +101,7 @@ public class CreateLargeModelExample
 				z = previousSpot.getDoublePosition( 2 );
 			}
 
-			final int frame = previousSpot.getTimePoint() + 1;
+			final int frame = previousSpot.getTimepoint() + 1;
 			model.createSpot( frame, x, y, z, RADIUS, daughter );
 			model.createLink( previousSpot, daughter );
 

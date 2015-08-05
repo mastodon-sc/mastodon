@@ -10,5 +10,5 @@ package net.trackmate.trackscheme;
  */
 public interface HasTimepoint
 {
-	public int getTimePoint();
+	public int getTimepoint();
 }

@@ -30,7 +30,7 @@ public class TrackSchemeUtil
 			final V v = vi.next();
 			final int id = idmap.getVertexId( v );
 			final String label = Integer.toString( id );
-			final int timepoint = v.getTimePoint();
+			final int timepoint = v.getTimepoint();
 			tsg.addVertex( tsv ).init( id, label, timepoint, false );
 			idToTrackSchemeVertex.put( id, tsv );
 		}

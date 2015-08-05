@@ -16,7 +16,7 @@ class ContextTrackScheme< V extends OverlayVertex< V, E > & HasTrackSchemeVertex
 {
 	private final OverlayGraph< V, E > graph;
 
-	private final ShowTrackScheme trackScheme;
+	private final ShowTrackScheme trackscheme;
 
 	private final PoolObjectList< TrackSchemeVertex > roots;
 
@@ -25,7 +25,7 @@ class ContextTrackScheme< V extends OverlayVertex< V, E > & HasTrackSchemeVertex
 			final ShowTrackScheme trackScheme )
 	{
 		this.graph = graph;
-		this.trackScheme = trackScheme;
+		this.trackscheme = trackScheme;
 		roots = trackScheme.getGraph().createVertexList();
 	}
 
@@ -48,7 +48,7 @@ class ContextTrackScheme< V extends OverlayVertex< V, E > & HasTrackSchemeVertex
 				new HyperPlane( 0, -1, 0, -height ) );
 		final ConvexPolytope tcrop = ConvexPolytope.transform( crop, viewerTransform.inverse() );
 
-		final int mark = trackScheme.getNewLayoutTimestamp();
+		final int mark = trackscheme.getNewLayoutTimestamp();
 
 		// mark vertices in crop region with timestamp and find roots.
 		roots.clear();
@@ -71,7 +71,7 @@ class ContextTrackScheme< V extends OverlayVertex< V, E > & HasTrackSchemeVertex
 											// meaningful...
 
 		// layout and repaint
-		trackScheme.relayout( roots, mark );
+		trackscheme.relayout( roots, mark );
 	}
 
 	public static < V extends OverlayVertex< V, E > & HasTrackSchemeVertex, E extends OverlayEdge< E, V > >

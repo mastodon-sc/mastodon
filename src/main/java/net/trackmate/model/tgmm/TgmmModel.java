@@ -44,7 +44,7 @@ public class TgmmModel
 		return spots;
 	}
 
-	public SortedSet< Integer > frames()
+	public SortedSet< Integer > timepoints()
 	{
 		return new TreeSet< Integer >( timepointToSpots.keySet() );
 	}

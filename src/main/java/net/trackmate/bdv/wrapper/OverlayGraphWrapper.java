@@ -90,7 +90,7 @@ public class OverlayGraphWrapper< V extends Vertex< E >, E extends Edge< V > >
 		for ( final TrackSchemeVertex tsv : trackSchemeGraph.vertices() )
 		{
 			vertexPool.getByInternalPoolIndex( tsv.getInternalPoolIndex(), v );
-			getSpots( v.getTimePoint() ).add( v );
+			getSpots( v.getTimepoint() ).add( v );
 		}
 		releaseRef( v );
 

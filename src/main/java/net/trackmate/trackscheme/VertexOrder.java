@@ -88,7 +88,7 @@ public class VertexOrder
 		if ( v.getLayoutTimestamp() != timestamp )
 			return;
 
-		final int tp = v.getTimePoint();
+		final int tp = v.getTimepoint();
 		TrackSchemeVertexList vlist = timepointToOrderedVertices.get( tp );
 		if ( vlist == null )
 		{
@@ -231,7 +231,7 @@ public class VertexOrder
 
 				vertexList.get( left, v );
 				double diffx = ( lx - v.getLayoutX() ) * xScale;
-				double diffy = ( ly - v.getTimePoint() ) * yScale;
+				double diffy = ( ly - v.getTimepoint() ) * yScale;
 				double d = Math.sqrt( diffx * diffx + diffy * diffy );
 				if ( d < closestVertexD )
 				{
@@ -241,7 +241,7 @@ public class VertexOrder
 
 				vertexList.get( right, v );
 				diffx = ( lx - v.getLayoutX() ) * xScale;
-				diffy = ( ly - v.getTimePoint() ) * yScale;
+				diffy = ( ly - v.getTimepoint() ) * yScale;
 				d = Math.sqrt( diffx * diffx + diffy * diffy );
 				if ( d < closestVertexD )
 				{
@@ -297,8 +297,8 @@ public class VertexOrder
 				continue;
 			}
 
-			final double y1 = s.getTimePoint() * yScale;
-			final double y2 = t.getTimePoint() * yScale;
+			final double y1 = s.getTimepoint() * yScale;
+			final double y2 = t.getTimepoint() * yScale;
 
 			if ( ( y0 < y1 - tolerance && y0 < y2 - tolerance )
 					|| ( y0 > y1 + tolerance && y0 > y2 + tolerance ) )

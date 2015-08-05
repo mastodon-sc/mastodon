@@ -73,9 +73,9 @@ public class OverlayVertexWrapper< V extends Vertex< E >, E extends Edge< V > >
 	}
 
 	@Override
-	public int getTimePoint()
+	public int getTimepoint()
 	{
-		return tsv.getTimePoint();
+		return tsv.getTimepoint();
 	}
 
 	@Override

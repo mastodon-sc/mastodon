@@ -98,7 +98,7 @@ public class RawIO
 		while( spotIterator.hasNext() )
 		{
 			final SpotCovariance spot = spotIterator.next();
-			final int t = spot.getTimePointId();
+			final int t = spot.getTimepointId();
 			model.getSpots( t ).add( spot );
 		}
 

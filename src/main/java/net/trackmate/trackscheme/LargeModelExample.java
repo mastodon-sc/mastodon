@@ -56,7 +56,7 @@ public class LargeModelExample
 		{
 			if ( rand.nextDouble() < TERMINATION_PROBABILITY ) { return; }
 
-			graph.addVertex( spot ).init( Integer.toString( ++labelGenerator ), previousSpot.getTimePoint() + 1, false );
+			graph.addVertex( spot ).init( Integer.toString( ++labelGenerator ), previousSpot.getTimepoint() + 1, false );
 			graph.addEdge( previousSpot, spot, edge );
 			previousSpot.refTo( spot );
 		}
@@ -64,7 +64,7 @@ public class LargeModelExample
 		// Divide
 		for ( int id = 0; id < 2; id++ )
 		{
-			graph.addVertex( spot ).init( Integer.toString( ++labelGenerator ), previousSpot.getTimePoint() + 1, false );
+			graph.addVertex( spot ).init( Integer.toString( ++labelGenerator ), previousSpot.getTimepoint() + 1, false );
 			graph.addEdge( previousSpot, spot, edge );
 			addBranch( spot, iteration + 1 );
 		}

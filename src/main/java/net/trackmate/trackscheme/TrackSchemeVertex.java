@@ -40,7 +40,7 @@ public class TrackSchemeVertex extends AbstractVertex< TrackSchemeVertex, TrackS
 		setModelVertexId( modelVertexId );
 		setLabel( label );
 		setLayoutX( 0 );
-		setTimePoint( timepoint );
+		setTimepoint( timepoint );
 		setSelected( isSelected );
 		setLayoutTimestamp( -1 );
 		setLayoutInEdgeIndex( 0 );
@@ -67,7 +67,7 @@ public class TrackSchemeVertex extends AbstractVertex< TrackSchemeVertex, TrackS
 	@Override
 	public String toString()
 	{
-		return String.format( "AbstractSpot( ID=%d, LABEL=%s, X=%.2f, TIMEPOINT=%d, SELECTED=%s )", getModelVertexId(), getLabel(), getLayoutX(), getTimePoint(), isSelected() ? "true" : "false" );
+		return String.format( "AbstractSpot( ID=%d, LABEL=%s, X=%.2f, TIMEPOINT=%d, SELECTED=%s )", getModelVertexId(), getLabel(), getLayoutX(), getTimepoint(), isSelected() ? "true" : "false" );
 	}
 
 	TrackSchemeVertex( final AbstractVertexPool< TrackSchemeVertex, ?, ByteMappedElement > pool, final Labels labels )
@@ -86,12 +86,12 @@ public class TrackSchemeVertex extends AbstractVertex< TrackSchemeVertex, TrackS
 		labels.putLabel( label, getInternalPoolIndex() );
 	}
 
-	public int getTimePoint()
+	public int getTimepoint()
 	{
 		return access.getInt( TIMEPOINT_OFFSET );
 	}
 
-	protected void setTimePoint( final int timepoint )
+	protected void setTimepoint( final int timepoint )
 	{
 		access.putInt( timepoint, TIMEPOINT_OFFSET );
 	}

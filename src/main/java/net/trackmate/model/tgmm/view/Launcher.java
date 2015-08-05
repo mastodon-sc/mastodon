@@ -112,7 +112,7 @@ public class Launcher
 		final TracksOverlaySpotCovariance tracksOverlay = new TracksOverlaySpotCovariance(
 				overlayGraph,
 				bdv.getViewer(),
-				model.frames().size() );
+				model.timepoints().size() );
 
 		bdv.getViewer().getDisplay().addOverlayRenderer( tracksOverlay );
 		bdv.getViewer().addRenderTransformListener( tracksOverlay );
@@ -202,7 +202,7 @@ public class Launcher
 		final ViewerState state = viewer.getState();
 		final InteractiveDisplayCanvasComponent< AffineTransform3D > display = viewer.getDisplay();
 
-		final int tp = spot.getTimePointId();
+		final int tp = spot.getTimepointId();
 		viewer.setTimepoint( tp );
 
 		final AffineTransform3D t = new AffineTransform3D();
@@ -225,9 +225,9 @@ public class Launcher
 	private static void setupContextTrackscheme(
 			final BigDataViewer bdv,
 			final OverlayGraphWrapper< SpotCovariance, Link< SpotCovariance > > overlayGraph,
-			final ShowTrackScheme trackScheme )
+			final ShowTrackScheme trackscheme )
 	{
-		final ContextTrackScheme< ?, ? > context = ContextTrackScheme.create( overlayGraph, trackScheme );
+		final ContextTrackScheme< ?, ? > context = ContextTrackScheme.create( overlayGraph, trackscheme );
 
 		final String REFRESH_CONTEXT_TRACKSCHEME = "refresh context trackscheme";
 		final InputMap inputMap = new InputMap();

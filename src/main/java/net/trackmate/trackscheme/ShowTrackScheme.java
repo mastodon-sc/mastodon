@@ -187,7 +187,7 @@ public class ShowTrackScheme implements TransformListener< ScreenTransform >, Se
 	public void centerOn( final TrackSchemeVertex vertex )
 	{
 		final double x = vertex.getLayoutX();
-		final int y = vertex.getTimePoint();
+		final int y = vertex.getTimepoint();
 		transformHandler.moveTo( x, y );
 	}
 

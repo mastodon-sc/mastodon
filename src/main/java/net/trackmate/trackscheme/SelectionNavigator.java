@@ -73,7 +73,7 @@ public class SelectionNavigator
 	public void rightSibbling( final boolean clear )
 	{
 		final TrackSchemeVertex current = takeDefaultVertex();
-		final TrackSchemeVertexList vertices = trackscheme.order.timepointToOrderedVertices.get( current.getTimePoint() );
+		final TrackSchemeVertexList vertices = trackscheme.order.timepointToOrderedVertices.get( current.getTimepoint() );
 		final int index = vertices.binarySearch( current.getLayoutX() );
 		if ( index >= 0 && index < vertices.size()-1 )
 		{
@@ -91,7 +91,7 @@ public class SelectionNavigator
 	public void leftSibbling( final boolean clear )
 	{
 		final TrackSchemeVertex current = takeDefaultVertex();
-		final TrackSchemeVertexList vertices = trackscheme.order.timepointToOrderedVertices.get( current.getTimePoint() );
+		final TrackSchemeVertexList vertices = trackscheme.order.timepointToOrderedVertices.get( current.getTimepoint() );
 		final int index = vertices.binarySearch( current.getLayoutX() );
 		if ( index > 0 && index < vertices.size() )
 		{

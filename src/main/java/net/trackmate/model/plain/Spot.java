@@ -28,7 +28,7 @@ public class Spot extends AbstractSpot< Spot >
 	@Override
 	public String toString()
 	{
-		return String.format( "Spot( %d, X=%.2f, Y=%.2f, Z=%.2f, tp=%d )", getInternalPoolIndex(), getX(), getY(), getZ(), getTimePoint() );
+		return String.format( "Spot( %d, X=%.2f, Y=%.2f, Z=%.2f, tp=%d )", getInternalPoolIndex(), getX(), getY(), getZ(), getTimepoint() );
 	}
 
 	Spot init( final int timepointId, final double x, final double y, final double z, final double radius )
@@ -36,7 +36,7 @@ public class Spot extends AbstractSpot< Spot >
 		setX( x );
 		setY( y );
 		setZ( z );
-		setTimePointId( timepointId );
+		setTimepointId( timepointId );
 		setRadius( radius );
 		return this;
 	}

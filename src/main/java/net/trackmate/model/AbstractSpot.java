@@ -65,20 +65,20 @@ public class AbstractSpot< V extends AbstractSpot< V >> extends AbstractVertex< 
 		access.putDouble( z, Z_OFFSET );
 	}
 
-	public int getTimePointId()
+	public int getTimepointId()
 	{
 		return access.getInt( TP_OFFSET );
 	}
 
-	public void setTimePointId( final int tp )
+	public void setTimepointId( final int tp )
 	{
 		access.putInt( tp, TP_OFFSET );
 	}
 
 	@Override
-	public int getTimePoint()
+	public int getTimepoint()
 	{
-		return getTimePointId();
+		return getTimepointId();
 	}
 
 	protected AbstractSpot( final AbstractVertexPool< V, Link< V >, ByteMappedElement > pool )

@@ -40,7 +40,7 @@ public class SpotCovariance extends AbstractSpot< SpotCovariance >
 		setY( pos[ 1 ] );
 		setZ( pos[ 2 ] );
 		setCovariance( cov );
-		setTimePointId( timepointId );
+		setTimepointId( timepointId );
 		return this;
 	}
 
@@ -77,7 +77,7 @@ public class SpotCovariance extends AbstractSpot< SpotCovariance >
 		setZ( pos[ 2 ] );
 		setCovariance( S );
 		setPrecision( covMat.inverse().getArray() );
-		setTimePointId( timepointId );
+		setTimepointId( timepointId );
 		return this;
 	}
 
@@ -130,7 +130,7 @@ public class SpotCovariance extends AbstractSpot< SpotCovariance >
 	@Override
 	public String toString()
 	{
-		return String.format( "CovarianceSpot( %d, X=%.2f, Y=%.2f, Z=%.2f, tp=%d )", getInternalPoolIndex(), getX(), getY(), getZ(), getTimePoint() );
+		return String.format( "CovarianceSpot( %d, X=%.2f, Y=%.2f, Z=%.2f, tp=%d )", getInternalPoolIndex(), getX(), getY(), getZ(), getTimepoint() );
 	}
 
 	SpotCovariance( final AbstractVertexPool< SpotCovariance, Link< SpotCovariance >, ByteMappedElement > pool )
