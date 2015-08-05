@@ -2,6 +2,7 @@ package net.trackmate.model.tgmm.view;
 
 import java.awt.Color;
 import java.awt.Font;
+import java.awt.RenderingHints;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
@@ -83,6 +84,12 @@ public class DisplaySettingsPanel extends JPanel
 
 	final ActionEvent drawLinksOff = new ActionEvent( this, 14, "DrawLinksOff" );
 
+	final ActionEvent trackschemeContextOn = new ActionEvent( this, 15, "TrackschemeContextOn" );
+
+	final ActionEvent trackschemeContextOff = new ActionEvent( this, 16, "TrackschemeContextOff" );
+
+	final ActionEvent contextWindowChanged = new ActionEvent( this, 17, "ContextWindowChanged" );
+
 	/*
 	 * OTHER CONSTANTS
 	 */
@@ -101,6 +108,8 @@ public class DisplaySettingsPanel extends JPanel
 
 	private final JFormattedTextField textFieldLimitTimeRange;
 
+	private final JFormattedTextField textFieldContextTrackScheme;
+
 	private final JCheckBox chckbxLimitTimeRange;
 
 	private final JCheckBox chckbxLimitFocusRange;
@@ -108,6 +117,7 @@ public class DisplaySettingsPanel extends JPanel
 	private final JComboBox comboBoxStyle;
 
 	private final HashSet< ActionListener > listeners = new HashSet< ActionListener >();
+
 
 	/**
 	 * Create the panel.
@@ -132,12 +142,12 @@ public class DisplaySettingsPanel extends JPanel
 						.addGroup( groupLayout.createSequentialGroup()
 								.addContainerGap()
 								.addGroup( groupLayout.createParallelGroup( Alignment.LEADING )
-										.addComponent( panelBDVOverlay, GroupLayout.DEFAULT_SIZE, 236, Short.MAX_VALUE )
-										.addComponent( lblBDVOverlay, GroupLayout.DEFAULT_SIZE, 236, Short.MAX_VALUE ) )
+										.addComponent( lblBDVOverlay, GroupLayout.DEFAULT_SIZE, 239, Short.MAX_VALUE )
+										.addComponent( panelBDVOverlay, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE ) )
 								.addPreferredGap( ComponentPlacement.RELATED )
-								.addGroup( groupLayout.createParallelGroup( Alignment.LEADING )
-										.addComponent( panelTrackScheme, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE )
-										.addComponent( lblTrackscheme, GroupLayout.DEFAULT_SIZE, 293, Short.MAX_VALUE ) )
+								.addGroup( groupLayout.createParallelGroup( Alignment.TRAILING )
+										.addComponent( lblTrackscheme, GroupLayout.DEFAULT_SIZE, 283, Short.MAX_VALUE )
+										.addComponent( panelTrackScheme, GroupLayout.DEFAULT_SIZE, 259, Short.MAX_VALUE ) )
 								.addContainerGap() )
 				);
 		groupLayout.setVerticalGroup(
@@ -148,11 +158,75 @@ public class DisplaySettingsPanel extends JPanel
 										.addComponent( lblBDVOverlay )
 										.addComponent( lblTrackscheme ) )
 								.addPreferredGap( ComponentPlacement.RELATED )
-								.addGroup( groupLayout.createParallelGroup( Alignment.TRAILING )
-										.addComponent( panelBDVOverlay, GroupLayout.DEFAULT_SIZE, 393, Short.MAX_VALUE )
-										.addComponent( panelTrackScheme, GroupLayout.DEFAULT_SIZE, 368, Short.MAX_VALUE ) )
+								.addGroup( groupLayout.createParallelGroup( Alignment.LEADING )
+										.addComponent( panelBDVOverlay, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE )
+										.addComponent( panelTrackScheme, GroupLayout.DEFAULT_SIZE, 392, Short.MAX_VALUE ) )
 								.addContainerGap() )
 				);
+
+		final JCheckBox chckbxUseLiveContext = new JCheckBox( "Use live context" );
+		chckbxUseLiveContext.setFont( FONT );
+		chckbxUseLiveContext.setSelected( Launcher.DEFAULT_USE_TRACKSCHEME_CONTEXT );
+
+		textFieldContextTrackScheme = new JFormattedTextField( new Double( ContextTrackScheme.DEFAULT_CONTEXT_WINDOW ) );
+		textFieldContextTrackScheme.setHorizontalAlignment( SwingConstants.CENTER );
+		textFieldContextTrackScheme.setColumns( 5 );
+		textFieldContextTrackScheme.setFont( FONT );
+		textFieldContextTrackScheme.addActionListener( new ActionListener()
+		{
+			@Override
+			public void actionPerformed( final ActionEvent e )
+			{
+				if ( textFieldContextTrackScheme.isEditValid() )
+					fireAction( contextWindowChanged );
+			}
+		} );
+		textFieldContextTrackScheme.addFocusListener( new MyFocusListener( textFieldContextTrackScheme, contextWindowChanged ) );
+
+		final JLabel lblFrames = new JLabel( "frames." );
+		lblFrames.setFont( FONT );
+
+		chckbxUseLiveContext.addItemListener( new CheckBoxEnablingListener( new JComponent[] { textFieldContextTrackScheme, lblFrames } ) );
+		chckbxUseLiveContext.addActionListener( new ActionListener()
+		{
+			@Override
+			public void actionPerformed( final ActionEvent e )
+			{
+				fireAction( chckbxUseLiveContext.isSelected() ? trackschemeContextOn : trackschemeContextOff );
+			}
+		} );
+
+		final JLabel lblLiveContext = new JLabel( "Live context." );
+		lblLiveContext.setFont( FONT.deriveFont( Font.BOLD ) );
+
+		final GroupLayout gl_panelTrackScheme = new GroupLayout( panelTrackScheme );
+		gl_panelTrackScheme.setHorizontalGroup(
+				gl_panelTrackScheme.createParallelGroup( Alignment.LEADING )
+						.addGroup( gl_panelTrackScheme.createSequentialGroup()
+								.addContainerGap()
+								.addGroup( gl_panelTrackScheme.createParallelGroup( Alignment.LEADING )
+										.addGroup( gl_panelTrackScheme.createSequentialGroup()
+												.addComponent( chckbxUseLiveContext, GroupLayout.PREFERRED_SIZE, 134, GroupLayout.PREFERRED_SIZE )
+												.addPreferredGap( ComponentPlacement.RELATED )
+												.addComponent( textFieldContextTrackScheme, 65, 65, 65 )
+												.addPreferredGap( ComponentPlacement.RELATED )
+												.addComponent( lblFrames ) )
+										.addComponent( lblLiveContext ) )
+								.addContainerGap( GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE ) )
+				);
+		gl_panelTrackScheme.setVerticalGroup(
+				gl_panelTrackScheme.createParallelGroup( Alignment.LEADING )
+						.addGroup( gl_panelTrackScheme.createSequentialGroup()
+								.addContainerGap()
+								.addComponent( lblLiveContext )
+								.addPreferredGap( ComponentPlacement.RELATED )
+								.addGroup( gl_panelTrackScheme.createParallelGroup( Alignment.BASELINE )
+										.addComponent( chckbxUseLiveContext )
+										.addComponent( textFieldContextTrackScheme, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE )
+										.addComponent( lblFrames ) )
+								.addContainerGap( 337, Short.MAX_VALUE ) )
+				);
+		panelTrackScheme.setLayout( gl_panelTrackScheme );
 
 		final JLabel lblDepthOdDrawing = new JLabel( "Depth of drawing." );
 		lblDepthOdDrawing.setFont( FONT.deriveFont( Font.BOLD ) );
@@ -223,7 +297,7 @@ public class DisplaySettingsPanel extends JPanel
 
 		final JCheckBox chckbxDrawSpots = new JCheckBox( "Draw spots" );
 		chckbxDrawSpots.setFont( FONT );
-		chckbxDrawSpots.setSelected( true ); // TODO
+		chckbxDrawSpots.setSelected( TracksOverlaySpotCovariance.DEFAULT_DRAW_SPOTS );
 		chckbxDrawSpots.addActionListener( new ActionListener()
 		{
 			@Override
@@ -235,7 +309,7 @@ public class DisplaySettingsPanel extends JPanel
 
 		final JCheckBox chckbxDrawLinks = new JCheckBox( "Draw links" );
 		chckbxDrawLinks.setFont( FONT );
-		chckbxDrawLinks.setSelected( true ); // TODO
+		chckbxDrawLinks.setSelected( TracksOverlaySpotCovariance.DEFAULT_DRAW_ELLIPSE );
 		chckbxDrawLinks.addActionListener( new ActionListener()
 		{
 			@Override
@@ -261,10 +335,7 @@ public class DisplaySettingsPanel extends JPanel
 		panelOverlayContent.setLayout( gl_panelOverlayContent );
 
 		final JCheckBox chckbxAntialiasing = new JCheckBox( "Antialiasing" );
-		chckbxAntialiasing.setSelected( true ); // TracksOverlaySpotCovariance.DEFAULT_ALIASING_MODE
-												// ==
-												// RenderingHints.VALUE_ANTIALIAS_ON
-												// );
+		chckbxAntialiasing.setSelected( TracksOverlaySpotCovariance.DEFAULT_ALIASING_MODE == RenderingHints.VALUE_ANTIALIAS_ON );
 		chckbxAntialiasing.setFont( FONT );
 		chckbxAntialiasing.addActionListener( new ActionListener()
 		{
@@ -276,8 +347,7 @@ public class DisplaySettingsPanel extends JPanel
 		} );
 
 		final JCheckBox chckbxGradient = new JCheckBox( "Gradient" );
-		chckbxGradient.setSelected( true ); // TracksOverlaySpotCovariance.DEFAULT_USE_GRADIENT
-											// );
+		chckbxGradient.setSelected( TracksOverlaySpotCovariance.DEFAULT_USE_GRADIENT );
 		chckbxGradient.setFont( FONT );
 		chckbxGradient.addActionListener( new ActionListener()
 		{
@@ -412,7 +482,7 @@ public class DisplaySettingsPanel extends JPanel
 		return SpotOverlayStyle.values()[ comboBoxStyle.getSelectedIndex() ];
 	}
 
-	public double getLimitFocusRange()
+	public double getFocusRange()
 	{
 		try
 		{
@@ -423,7 +493,7 @@ public class DisplaySettingsPanel extends JPanel
 		return Math.abs( ( Double ) textFieldLimitFocusRange.getValue() );
 	}
 
-	public double getLimitTimeRange()
+	public double getTimeRange()
 	{
 		try
 		{
@@ -433,6 +503,18 @@ public class DisplaySettingsPanel extends JPanel
 		{}
 		return Math.abs( ( Double ) textFieldLimitTimeRange.getValue() );
 	}
+
+	public int getContextWindow()
+	{
+		try
+		{
+			textFieldContextTrackScheme.commitEdit();
+		}
+		catch ( final ParseException e )
+		{}
+		return ( int ) Math.abs( ( Double ) textFieldContextTrackScheme.getValue() );
+	}
+
 
 	public boolean addActionListener( final ActionListener listener )
 	{
@@ -529,4 +611,5 @@ public class DisplaySettingsPanel extends JPanel
 		frame.setVisible( true );
 
 	}
+
 }

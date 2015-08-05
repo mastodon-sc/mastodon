@@ -323,12 +323,12 @@ public class TracksOverlaySpotCovariance implements OverlayRenderer, TransformLi
 		this.useGradient = useGradient;
 	}
 
-	public void setFocusLimit( final double focusLimit )
+	public void setFocusRange( final double focusLimit )
 	{
 		this.focusLimit = focusLimit;
 	}
 
-	public void setTimeLimit( final double timeLimit )
+	public void setTimeRange( final double timeLimit )
 	{
 		this.timeLimit = timeLimit;
 	}

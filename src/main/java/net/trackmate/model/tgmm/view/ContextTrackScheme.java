@@ -9,16 +9,25 @@ import net.trackmate.bdv.wrapper.OverlayGraph;
 import net.trackmate.bdv.wrapper.OverlayVertex;
 import net.trackmate.bdv.wrapper.SpatialSearch;
 import net.trackmate.graph.PoolObjectList;
+import net.trackmate.graph.collection.RefSet;
 import net.trackmate.trackscheme.ShowTrackScheme;
 import net.trackmate.trackscheme.TrackSchemeVertex;
 
 class ContextTrackScheme< V extends OverlayVertex< V, E > & HasTrackSchemeVertex, E extends OverlayEdge< E, V > >
 {
+	public static final int DEFAULT_CONTEXT_WINDOW = 10;
+
 	private final OverlayGraph< V, E > graph;
 
 	private final ShowTrackScheme trackscheme;
 
 	private final PoolObjectList< TrackSchemeVertex > roots;
+
+	private int contextWindow = DEFAULT_CONTEXT_WINDOW;
+
+	private double focusRange = TracksOverlaySpotCovariance.DEFAULT_LIMIT_FOCUS_RANGE;
+
+	private boolean useCrop;
 
 	public ContextTrackScheme(
 			final OverlayGraph< V, E > graph,
@@ -35,43 +44,76 @@ class ContextTrackScheme< V extends OverlayVertex< V, E > & HasTrackSchemeVertex
 			final int width,
 			final int height )
 	{
-		final int depth = 200;
-		final int minTimepoint = timepoint - 2;
-		final int maxTimepoint = timepoint + 2;
-
-		final ConvexPolytope crop = new ConvexPolytope(
-				new HyperPlane( 0, 0, 1, -depth ),
-				new HyperPlane( 0, 0, -1, -depth ),
-				new HyperPlane( 1, 0, 0, 0 ),
-				new HyperPlane( -1, 0, 0, -width ),
-				new HyperPlane( 0, 1, 0, 0 ),
-				new HyperPlane( 0, -1, 0, -height ) );
-		final ConvexPolytope tcrop = ConvexPolytope.transform( crop, viewerTransform.inverse() );
-
-		final int mark = trackscheme.getNewLayoutTimestamp();
+		final int minTimepoint = timepoint - contextWindow;
+		final int maxTimepoint = timepoint + contextWindow;
 
 		// mark vertices in crop region with timestamp and find roots.
+		final int mark = trackscheme.getNewLayoutTimestamp();
 		roots.clear();
-		for ( int t = minTimepoint; t <= maxTimepoint; ++t )
+		if ( useCrop )
 		{
-			final SpatialSearch< V > search = graph.getSpatialSearch( t );
-			if ( search != null )
+			final ConvexPolytope crop = new ConvexPolytope(
+					new HyperPlane( 0, 0, 1, -focusRange ),
+					new HyperPlane( 0, 0, -1, -focusRange ),
+					new HyperPlane( 1, 0, 0, 0 ),
+					new HyperPlane( -1, 0, 0, -width ),
+					new HyperPlane( 0, 1, 0, 0 ),
+					new HyperPlane( 0, -1, 0, -height ) );
+			final ConvexPolytope tcrop = ConvexPolytope.transform( crop, viewerTransform.inverse() );
+			for ( int t = minTimepoint; t <= maxTimepoint; ++t )
 			{
-				search.clip( tcrop );
-				for ( final V v : search.getInsideVertices() )
+				final SpatialSearch< V > search = graph.getSpatialSearch( t );
+				if ( search != null )
 				{
-					final TrackSchemeVertex tv = v.getTrackSchemeVertex();
-					tv.setLayoutTimestamp( mark );
-					if ( t == minTimepoint || tv.incomingEdges().isEmpty() )
-						roots.add( tv );
+					search.clip( tcrop );
+					for ( final V v : search.getInsideVertices() )
+					{
+						final TrackSchemeVertex tv = v.getTrackSchemeVertex();
+						tv.setLayoutTimestamp( mark );
+						if ( t == minTimepoint || tv.incomingEdges().isEmpty() )
+							roots.add( tv );
+					}
 				}
 			}
 		}
+		else
+		{
+			for ( int t = minTimepoint; t <= maxTimepoint; ++t )
+			{
+				final RefSet< V > spots = graph.getSpots( t );
+				if ( spots != null )
+				{
+					for ( final V v : spots )
+					{
+						final TrackSchemeVertex tv = v.getTrackSchemeVertex();
+						tv.setLayoutTimestamp( mark );
+						if ( t == minTimepoint || tv.incomingEdges().isEmpty() )
+							roots.add( tv );
+					}
+				}
+			}
+		}
+
 		roots.getIndexCollection().sort(); // TODO sort roots by something
 											// meaningful...
 
 		// layout and repaint
 		trackscheme.relayout( roots, mark );
+	}
+
+	public void setContextWindow( final int contextWindow )
+	{
+		this.contextWindow = contextWindow;
+	}
+
+	public void setFocusRange( final double focusRange )
+	{
+		this.focusRange = focusRange;
+	}
+
+	public void setUseCrop( final boolean useCrop )
+	{
+		this.useCrop = useCrop;
 	}
 
 	public static < V extends OverlayVertex< V, E > & HasTrackSchemeVertex, E extends OverlayEdge< E, V > >
@@ -81,4 +123,6 @@ class ContextTrackScheme< V extends OverlayVertex< V, E > & HasTrackSchemeVertex
 	{
 		return new ContextTrackScheme< V, E >( graph, trackScheme );
 	}
+
+
 }

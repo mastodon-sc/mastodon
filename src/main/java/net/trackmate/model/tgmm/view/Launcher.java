@@ -37,6 +37,8 @@ import bdv.viewer.state.ViewerState;
 
 public class Launcher
 {
+	public static final boolean DEFAULT_USE_TRACKSCHEME_CONTEXT = false;
+
 	public static void main( final String[] args ) throws IOException, SpimDataException
 	{
 		/*
@@ -116,7 +118,8 @@ public class Launcher
 
 		bdv.getViewer().getDisplay().addOverlayRenderer( tracksOverlay );
 		bdv.getViewer().addRenderTransformListener( tracksOverlay );
-		setupContextTrackscheme( bdv, overlayGraph, trackscheme );
+		final ContextTransformListener tl = setupContextTrackscheme( bdv, overlayGraph, trackscheme );
+		tl.setEnabled( DEFAULT_USE_TRACKSCHEME_CONTEXT );
 
 		/*
 		 * Display config panel.
@@ -125,74 +128,7 @@ public class Launcher
 		final JFrame configFrame = new JFrame( "Display settings" );
 		configFrame.setSize( 600, 400 );
 		final DisplaySettingsPanel configPanel = new DisplaySettingsPanel();
-		configPanel.addActionListener( new ActionListener()
-		{
-			@Override
-			public void actionPerformed( final ActionEvent e )
-			{
-				new Thread( "Display settings updater thread." )
-				{
-					@Override
-					public void run()
-					{
-						if ( e.equals( configPanel.antialiasingOn ) )
-						{
-							tracksOverlay.setAntialising( true );
-						}
-						else if ( e.equals( configPanel.antialiasingOff ) )
-						{
-							tracksOverlay.setAntialising( false );
-						}
-						else if ( e.equals( configPanel.gradientOn ) )
-						{
-							tracksOverlay.setUseGradient( true );
-						}
-						else if ( e.equals( configPanel.gradientOff ) )
-						{
-							tracksOverlay.setUseGradient( false );
-						}
-						else if ( e.equals( configPanel.limitFocusRangeOn ) || e.equals( configPanel.focusRangeChanged ) )
-						{
-							tracksOverlay.setFocusLimit( configPanel.getLimitFocusRange() );
-						}
-						else if ( e.equals( configPanel.limitFocusRangeOff ) )
-						{
-							tracksOverlay.setFocusLimit( Double.POSITIVE_INFINITY );
-						}
-						else if ( e.equals( configPanel.limitTimeRangeOn ) || e.equals( configPanel.timeRangeChanged ) )
-						{
-							tracksOverlay.setTimeLimit( configPanel.getLimitTimeRange() );
-						}
-						else if ( e.equals( configPanel.limitTimeRangeOff ) )
-						{
-							tracksOverlay.setTimeLimit( Double.POSITIVE_INFINITY );
-						}
-						else if ( e.equals( configPanel.drawSpotsOn ) )
-						{
-							tracksOverlay.setDrawSpots( true );
-						}
-						else if ( e.equals( configPanel.drawSpotsOff ) )
-						{
-							tracksOverlay.setDrawSpots( false );
-						}
-						else if ( e.equals( configPanel.drawLinksOn ) )
-						{
-							tracksOverlay.setDrawLinks( true );
-						}
-						else if ( e.equals( configPanel.drawLinksOff ) )
-						{
-							tracksOverlay.setDrawLinks( false );
-						}
-						else if ( e.equals( configPanel.spotStyleChanged ) )
-						{
-							tracksOverlay.setDrawSpotEllipse( configPanel.getSelectedSpotOverlayStyle() == SpotOverlayStyle.ELLIPSE );
-						}
-
-						bdv.getViewer().getDisplay().repaint();
-					};
-				}.start();
-			}
-		} );
+		configPanel.addActionListener( new DisplaySettingsListener( configPanel, tracksOverlay, bdv, trackscheme, tl ) );
 		configFrame.getContentPane().add( configPanel );
 		configFrame.setVisible( true );
 	}
@@ -222,7 +158,7 @@ public class Launcher
 		viewer.setTransformAnimator( new TranslationAnimator( t, target, 300 ) );
 	}
 
-	private static void setupContextTrackscheme(
+	private static ContextTransformListener setupContextTrackscheme(
 			final BigDataViewer bdv,
 			final OverlayGraphWrapper< SpotCovariance, Link< SpotCovariance > > overlayGraph,
 			final ShowTrackScheme trackscheme )
@@ -247,19 +183,166 @@ public class Launcher
 		bindings.addActionMap( "trackscheme", actionMap );
 		bindings.addInputMap( "trackscheme", inputMap );
 
-		bdv.getViewer().addRenderTransformListener( new TransformListener< AffineTransform3D >()
+		final ContextTransformListener tl = new ContextTransformListener( context, bdv );
+		bdv.getViewer().addRenderTransformListener( tl );
+		return tl;
+	}
+
+	private static final class ContextTransformListener implements TransformListener< AffineTransform3D >
+	{
+		private final ContextTrackScheme< ?, ? > context;
+
+		private final BigDataViewer bdv;
+
+		private boolean enabled;
+
+		public ContextTransformListener( final ContextTrackScheme< ?, ? > context, final BigDataViewer bdv )
 		{
-			@Override
-			public void transformChanged( final AffineTransform3D transform )
+			this.context = context;
+			this.bdv = bdv;
+		}
+
+		public void setEnabled( final boolean enabled )
+		{
+			this.enabled = enabled;
+		}
+
+		public void setContextWindow( final int contextWindow )
+		{
+			context.setContextWindow( contextWindow );
+		}
+
+		public void setFocusRange( final double focusRange )
+		{
+			context.setFocusRange( focusRange );
+		}
+
+		public void setUseCrop( final boolean useCrop )
+		{
+			context.setUseCrop( useCrop );
+		}
+
+		@Override
+		public void transformChanged( final AffineTransform3D transform )
+		{
+			if ( !enabled )
+				return;
+
+			final ViewerState state = bdv.getViewer().getState();
+			final int timepoint = state.getCurrentTimepoint();
+			final AffineTransform3D viewerTransform = new AffineTransform3D();
+			state.getViewerTransform( viewerTransform );
+			final int width = bdv.getViewer().getWidth();
+			final int height = bdv.getViewer().getHeight();
+			context.buildContext( timepoint, viewerTransform, width, height );
+		}
+	}
+
+	private static final class DisplaySettingsListener implements ActionListener
+	{
+		private final DisplaySettingsPanel configPanel;
+
+		private final TracksOverlaySpotCovariance tracksOverlay;
+
+		private final BigDataViewer bdv;
+
+		private final ContextTransformListener tl;
+
+		private final ShowTrackScheme trackscheme;
+
+		public DisplaySettingsListener( final DisplaySettingsPanel configPanel, final TracksOverlaySpotCovariance tracksOverlay, final BigDataViewer bdv, final ShowTrackScheme trackscheme, final ContextTransformListener tl )
+		{
+			this.configPanel = configPanel;
+			this.tracksOverlay = tracksOverlay;
+			this.bdv = bdv;
+			this.trackscheme = trackscheme;
+			this.tl = tl;
+		}
+
+		@Override
+		public void actionPerformed( final ActionEvent e )
+		{
+			new Thread( "Display settings updater thread." )
 			{
-				final ViewerState state = bdv.getViewer().getState();
-				final int timepoint = state.getCurrentTimepoint();
-				final AffineTransform3D viewerTransform = new AffineTransform3D();
-				state.getViewerTransform( viewerTransform );
-				final int width = bdv.getViewer().getWidth();
-				final int height = bdv.getViewer().getHeight();
-				context.buildContext( timepoint, viewerTransform, width, height );
-			}
-		} );
+				@Override
+				public void run()
+				{
+					if ( e == configPanel.antialiasingOn )
+					{
+						tracksOverlay.setAntialising( true );
+					}
+					else if ( e == configPanel.antialiasingOff )
+					{
+						tracksOverlay.setAntialising( false );
+					}
+					else if ( e == configPanel.gradientOn )
+					{
+						tracksOverlay.setUseGradient( true );
+					}
+					else if ( e == configPanel.gradientOff )
+					{
+						tracksOverlay.setUseGradient( false );
+					}
+					else if ( e == configPanel.limitFocusRangeOn || e == configPanel.focusRangeChanged )
+					{
+						tracksOverlay.setFocusRange( configPanel.getFocusRange() );
+						tl.setUseCrop( true );
+						tl.setFocusRange( configPanel.getFocusRange() );
+						tl.transformChanged( null );
+					}
+					else if ( e == configPanel.limitFocusRangeOff )
+					{
+						tracksOverlay.setFocusRange( Double.POSITIVE_INFINITY );
+						tl.setUseCrop( false );
+						tl.transformChanged( null );
+					}
+					else if ( e == configPanel.limitTimeRangeOn || e == configPanel.timeRangeChanged )
+					{
+						tracksOverlay.setTimeRange( configPanel.getTimeRange() );
+					}
+					else if ( e == configPanel.limitTimeRangeOff )
+					{
+						tracksOverlay.setTimeRange( Double.POSITIVE_INFINITY );
+					}
+					else if ( e == configPanel.drawSpotsOn )
+					{
+						tracksOverlay.setDrawSpots( true );
+					}
+					else if ( e == configPanel.drawSpotsOff )
+					{
+						tracksOverlay.setDrawSpots( false );
+					}
+					else if ( e == configPanel.drawLinksOn )
+					{
+						tracksOverlay.setDrawLinks( true );
+					}
+					else if ( e == configPanel.drawLinksOff )
+					{
+						tracksOverlay.setDrawLinks( false );
+					}
+					else if ( e == configPanel.spotStyleChanged )
+					{
+						tracksOverlay.setDrawSpotEllipse( configPanel.getSelectedSpotOverlayStyle() == SpotOverlayStyle.ELLIPSE );
+					}
+					else if ( e == configPanel.trackschemeContextOn )
+					{
+						tl.setEnabled( true );
+						tl.transformChanged( null );
+					}
+					else if ( e == configPanel.trackschemeContextOff )
+					{
+						tl.setEnabled( false );
+						trackscheme.relayout();
+					}
+					else if ( e == configPanel.contextWindowChanged )
+					{
+						tl.setContextWindow( configPanel.getContextWindow() );
+						tl.transformChanged( null );
+					}
+
+					bdv.getViewer().getDisplay().repaint();
+				};
+			}.start();
+		}
 	}
 }
