@@ -12,19 +12,11 @@ import javax.swing.JFrame;
 import javax.swing.KeyStroke;
 
 import mpicbg.spim.data.SpimDataException;
-import net.imglib2.algorithm.kdtree.ConvexPolytope;
-import net.imglib2.algorithm.kdtree.HyperPlane;
 import net.imglib2.realtransform.AffineTransform3D;
 import net.imglib2.ui.InteractiveDisplayCanvasComponent;
 import net.imglib2.ui.TransformListener;
-import net.trackmate.bdv.wrapper.HasTrackSchemeVertex;
-import net.trackmate.bdv.wrapper.OverlayEdge;
-import net.trackmate.bdv.wrapper.OverlayGraph;
 import net.trackmate.bdv.wrapper.OverlayGraphWrapper;
-import net.trackmate.bdv.wrapper.OverlayVertex;
-import net.trackmate.bdv.wrapper.SpatialSearch;
 import net.trackmate.bdv.wrapper.VertexLocalizer;
-import net.trackmate.graph.PoolObjectList;
 import net.trackmate.model.Link;
 import net.trackmate.model.ModelGraph;
 import net.trackmate.model.tgmm.RawIO;
@@ -232,11 +224,10 @@ public class Launcher
 
 	private static void setupContextTrackscheme(
 			final BigDataViewer bdv,
-			// TODO: should the overlayGraph parameter be more generic?
 			final OverlayGraphWrapper< SpotCovariance, Link< SpotCovariance > > overlayGraph,
 			final ShowTrackScheme trackScheme )
 	{
-		final ContextTrackscheme< ?, ? > context = ContextTrackscheme.create( overlayGraph, trackScheme );
+		final ContextTrackScheme< ?, ? > context = ContextTrackScheme.create( overlayGraph, trackScheme );
 
 		final String REFRESH_CONTEXT_TRACKSCHEME = "refresh context trackscheme";
 		final InputMap inputMap = new InputMap();
@@ -270,76 +261,5 @@ public class Launcher
 				context.buildContext( timepoint, viewerTransform, width, height );
 			}
 		} );
-	}
-
-	private static class ContextTrackscheme< V extends OverlayVertex< V, E > & HasTrackSchemeVertex, E extends OverlayEdge< E, V > >
-	{
-		private final OverlayGraph< V, E > graph;
-
-		private final ShowTrackScheme trackScheme;
-
-		private final PoolObjectList< TrackSchemeVertex > roots;
-
-		public ContextTrackscheme(
-				final OverlayGraph< V, E > graph,
-				final ShowTrackScheme trackScheme )
-		{
-			this.graph = graph;
-			this.trackScheme = trackScheme;
-			roots = trackScheme.getGraph().createVertexList();
-		}
-
-		public void buildContext(
-				final int timepoint,
-				final AffineTransform3D viewerTransform,
-				final int width,
-				final int height )
-		{
-			final int depth = 200;
-			final int minTimepoint = timepoint - 2;
-			final int maxTimepoint = timepoint + 2;
-
-			final ConvexPolytope crop = new ConvexPolytope(
-					new HyperPlane( 0, 0, 1, -depth ),
-					new HyperPlane( 0, 0, -1, -depth ),
-					new HyperPlane( 1, 0, 0, 0 ),
-					new HyperPlane( -1, 0, 0, -width ),
-					new HyperPlane( 0, 1, 0, 0 ),
-					new HyperPlane( 0, -1, 0, -height ) );
-			final ConvexPolytope tcrop = ConvexPolytope.transform( crop, viewerTransform.inverse() );
-
-			final int mark = trackScheme.getNewLayoutTimestamp();
-
-			// mark vertices in crop region with timestamp and find roots.
-			roots.clear();
-			for ( int t = minTimepoint; t <= maxTimepoint; ++t )
-			{
-				final SpatialSearch< V > search = graph.getSpatialSearch( t );
-				if ( search != null )
-				{
-					search.clip( tcrop );
-					for ( final V v : search.getInsideVertices() )
-					{
-						final TrackSchemeVertex tv = v.getTrackSchemeVertex();
-						tv.setLayoutTimestamp( mark );
-						if ( t == minTimepoint || tv.incomingEdges().isEmpty() )
-							roots.add( tv );
-					}
-				}
-			}
-			roots.getIndexCollection().sort(); // TODO sort roots by something
-												// meaningful...
-
-			// layout and repaint
-			trackScheme.relayout( roots, mark );
-		}
-
-		public static < V extends OverlayVertex< V, E > & HasTrackSchemeVertex, E extends OverlayEdge< E, V > >
-				ContextTrackscheme< V, E > create(
-						final OverlayGraph< V, E > graph,
-						final ShowTrackScheme trackScheme )
-		{
-			return new ContextTrackscheme< V, E >( graph, trackScheme );
-		}
 	}
 }
