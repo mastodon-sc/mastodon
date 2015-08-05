@@ -274,6 +274,12 @@ public class ShowTrackScheme implements TransformListener< ScreenTransform >, Se
 		return selectionModel;
 	}
 
+	public SelectionHandler getSelectionHandler()
+	{
+		return selectionHandler;
+	}
+
+
 	public synchronized void repaint( final boolean startAnimation )
 	{
 		final double minX = currentTransform.minX;
@@ -421,4 +427,5 @@ public class ShowTrackScheme implements TransformListener< ScreenTransform >, Se
 
 		new ShowTrackScheme( graph );
 	}
+
 }
