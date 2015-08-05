@@ -382,7 +382,7 @@ public class ActionBank
 					{
 						trackscheme.selectionHandler.select( vertex, true );
 					}
-					trackscheme.repaint();
+					trackscheme.selectionChanged();
 				}
 			}
 		};

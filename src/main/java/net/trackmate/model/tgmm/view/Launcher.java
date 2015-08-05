@@ -189,6 +189,10 @@ public class Launcher
 		return tl;
 	}
 
+	/**
+	 * Listen to changed that affect TrackScheme, interpret it, and forward it
+	 * to TrackScheme.
+	 */
 	private static final class ContextTransformListener implements TransformListener< AffineTransform3D >
 	{
 		private final ContextTrackScheme< ?, ? > context;
@@ -244,6 +248,9 @@ public class Launcher
 		}
 	}
 
+	/**
+	 * Listen to display settings changes and forward it to adequate target.
+	 */
 	private static final class DisplaySettingsListener implements ActionListener
 	{
 		private final DisplaySettingsPanel configPanel;
