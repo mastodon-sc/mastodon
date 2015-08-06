@@ -80,7 +80,6 @@ public class DefaultSelectionHandler extends MouseAdapter implements SelectionHa
 		{
 			final boolean clear = !(e.getModifiers() == MOUSE_MASK_CLICK_ADDTOSELECTION);
 			selectAt( transform, e.getX(), e.getY(), clear );
-			fireSelectionChanged();
 		}
 	}
 
@@ -97,7 +96,6 @@ public class DefaultSelectionHandler extends MouseAdapter implements SelectionHa
 				oX = e.getX();
 				oY = e.getY();
 			}
-			fireSelectionChanged();
 		}
 	}
 
@@ -109,7 +107,6 @@ public class DefaultSelectionHandler extends MouseAdapter implements SelectionHa
 			dragStarted = false;
 			final boolean clear = !( ( e.getModifiersEx() & MOUSE_MASK_ADDTOSELECTION ) != 0);
 			selectWithin(transform, oX, oY, eX, eY, clear);
-			fireSelectionChanged();
 		}
 	}
 
@@ -159,36 +156,42 @@ public class DefaultSelectionHandler extends MouseAdapter implements SelectionHa
 	public void select( final TrackSchemeVertex vertex, final boolean toggle )
 	{
 		boolean selected;
+		boolean changed;
 		if ( toggle )
 		{
 			selected = !vertex.isSelected();
 			selectionModel.toggle( vertex );
+			changed = true;
 		}
 		else
 		{
 			selected = true;
-			selectionModel.add( vertex );
+			changed = selectionModel.add( vertex );
 		}
-
 		vertex.setSelected( selected );
+		if ( changed )
+			fireSelectionChanged();
 	}
 	
 	@Override
 	public void select( final TrackSchemeEdge edge, final boolean toggle )
 	{
 		boolean selected;
+		boolean changed;
 		if ( toggle )
 		{
 			selected = !edge.isSelected();
 			selectionModel.toggle( edge );
+			changed = true;
 		}
 		else
 		{
 			selected = true;
-			selectionModel.add( edge );
+			changed = selectionModel.add( edge );
 		}
-
 		edge.setSelected( selected );
+		if ( changed )
+			fireSelectionChanged();
 	}
 
 	@Override
@@ -202,7 +205,9 @@ public class DefaultSelectionHandler extends MouseAdapter implements SelectionHa
 			vertex.setSelected( false );
 		for ( final TrackSchemeEdge edge : selectionModel.getSelectedEdges() )
 			edge.setSelected( false );
-		selectionModel.clearSelection();
+		final boolean changed = selectionModel.clearSelection();
+		if ( changed )
+			fireSelectionChanged();
 	}
 
 	@Override
@@ -223,19 +228,22 @@ public class DefaultSelectionHandler extends MouseAdapter implements SelectionHa
 		TrackSchemeVertex t = graph.vertexRef();
 		for ( final TrackSchemeVertex v : vs )
 		{
-			select( v, false );
+			selectionModel.add( v );
+			v.setSelected( true );
 
 			for ( final TrackSchemeEdge e : v.outgoingEdges() )
 			{
 				t = e.getTarget( t );
 				if ( vs.contains( t ) )
 				{
-					select( e, false );
+					selectionModel.add( e );
+					e.setSelected( true );
 				}
 			}
 		}
 
 		graph.releaseRef( t );
+		fireSelectionChanged();
 	}
 
 	@Override

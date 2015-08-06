@@ -2,8 +2,6 @@ package net.trackmate.model.tgmm.view;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 import java.io.File;
 import java.io.IOException;
 
@@ -14,13 +12,10 @@ import javax.swing.JFrame;
 import javax.swing.KeyStroke;
 
 import mpicbg.spim.data.SpimDataException;
-import net.imglib2.RealPoint;
 import net.imglib2.realtransform.AffineTransform3D;
 import net.imglib2.ui.InteractiveDisplayCanvasComponent;
 import net.imglib2.ui.TransformListener;
 import net.trackmate.bdv.wrapper.OverlayGraphWrapper;
-import net.trackmate.bdv.wrapper.OverlayVertexWrapper;
-import net.trackmate.bdv.wrapper.SpatialSearch;
 import net.trackmate.bdv.wrapper.VertexLocalizer;
 import net.trackmate.model.Link;
 import net.trackmate.model.ModelGraph;
@@ -28,8 +23,10 @@ import net.trackmate.model.tgmm.RawIO;
 import net.trackmate.model.tgmm.SpotCovariance;
 import net.trackmate.model.tgmm.TgmmModel;
 import net.trackmate.model.tgmm.view.DisplaySettingsPanel.SpotOverlayStyle;
+import net.trackmate.trackscheme.SelectionListener;
+import net.trackmate.trackscheme.SelectionModel;
 import net.trackmate.trackscheme.ShowTrackScheme;
-import net.trackmate.trackscheme.ShowTrackScheme.HACK_SelectionListener;
+import net.trackmate.trackscheme.TrackSchemeEdge;
 import net.trackmate.trackscheme.TrackSchemeGraph;
 import net.trackmate.trackscheme.TrackSchemeUtil;
 import net.trackmate.trackscheme.TrackSchemeVertex;
@@ -67,7 +64,8 @@ public class Launcher
 		System.out.println( "Launching viewer." );
 		System.setProperty( "apple.laf.useScreenMenuBar", "true" );
 		final BigDataViewer bdv = BigDataViewer.open( bdvFile, new File( bdvFile ).getName(), new ProgressWriterConsole() );
-		bdv.getViewer().setTimepoint( timepointIndex );
+		final ViewerPanel viewer = bdv.getViewer();
+		viewer.setTimepoint( timepointIndex );
 		System.out.println( "Done." );
 
 		/*
@@ -93,24 +91,23 @@ public class Launcher
 		final ModelGraph< SpotCovariance > graph = model.getGraph();
 		final TrackSchemeGraph tsg = TrackSchemeUtil.buildTrackSchemeGraph( graph, graph.getIdBimap() );
 		final ShowTrackScheme trackscheme = new ShowTrackScheme( tsg );
-		trackscheme.setSelectionListener( new HACK_SelectionListener()
+
+		trackscheme.getSelectionHandler().addSelectionListener( new SelectionListener()
 		{
+			private final SelectionModel< TrackSchemeVertex, TrackSchemeEdge > selectionModel = trackscheme.getSelectionHandler().getSelectionModel();
+
 			final SpotCovariance spot = graph.vertexRef();
 
 			@Override
-			public void select( final TrackSchemeVertex v )
+			public void selectionChanged()
 			{
-				if ( trackscheme.getSelectionModel().getSelectedVertices().size() == 1 )
+				if ( selectionModel.getSelectedVertices().size() == 1 )
 				{
+					final TrackSchemeVertex v = selectionModel.getSelectedVertices().iterator().next();
 					graph.getIdBimap().getVertex( v.getModelVertexId(), spot );
 					centerViewOn( spot, bdv.getViewer() );
 				}
-			}
-
-			@Override
-			public void repaint()
-			{
-				bdv.getViewer().getDisplay().repaint();
+				viewer.repaint();
 			}
 		} );
 
@@ -127,7 +124,6 @@ public class Launcher
 				bdv.getViewer(),
 				model.timepoints().size() );
 
-		final ViewerPanel viewer = bdv.getViewer();
 		viewer.getDisplay().addOverlayRenderer( tracksOverlay );
 		viewer.addRenderTransformListener( tracksOverlay );
 		final ContextTransformListener tl = setupContextTrackscheme( bdv, overlayGraph, trackscheme );
@@ -137,56 +133,7 @@ public class Launcher
 		 * Catch mouse events on BDV.
 		 */
 
-		viewer.getDisplay().addMouseListener( new MouseAdapter()
-		{
-			private final AffineTransform3D t = new AffineTransform3D();
-
-			private final RealPoint from = new RealPoint( 3 );
-
-			private final RealPoint to = new RealPoint( 3 );
-			
-			@Override
-			public void mouseClicked( final MouseEvent e )
-			{
-				final ViewerState state = viewer.getState();
-				state.getViewerTransform( t );
-				from.setPosition( e.getX(), 0 );
-				from.setPosition( e.getY(), 1 );
-				from.setPosition( 0., 2 );
-				t.applyInverse( to, from );
-
-				final int timepoint = state.getCurrentTimepoint();
-				final SpatialSearch< OverlayVertexWrapper< SpotCovariance, Link< SpotCovariance > > > search =
-						overlayGraph.getSpatialSearch( timepoint );
-				search.search( to );
-
-				final double sqDist = search.nearestNeighborSquareDistance();
-				if ( sqDist < CLICK_TOLERANCE * CLICK_TOLERANCE )
-				{
-					final OverlayVertexWrapper< SpotCovariance, Link< SpotCovariance >> v = search.nearestNeighbor();
-					/*
-					 * TODO: I should have used the boundingSphereSquareRadius I
-					 * arrogantly deleted from Tobias work a while ago as
-					 * tolerance distance.
-					 */
-
-					final TrackSchemeVertex tv = v.getTrackSchemeVertex();
-					if ( e.isShiftDown() )
-					{
-						trackscheme.getSelectionHandler().select( tv, true );
-					}
-					else
-					{
-						trackscheme.getSelectionHandler().clearSelection();
-						trackscheme.getSelectionHandler().select( tv, false );
-						centerViewOn( v.get(), bdv.getViewer() );
-						trackscheme.centerOn( tv );
-					}
-					trackscheme.repaint();
-					viewer.repaint();
-				}
-			};
-		} );
+		viewer.getDisplay().addHandler( new ModelEditHandler( model, overlayGraph, viewer, trackscheme ) );
 
 		/*
 		 * Display config panel.

@@ -14,7 +14,7 @@ public class SelectionModel< V extends Vertex< E >, E extends Edge< V > >
 
 	private final RefSet< E > selectedEdges;
 
-	public SelectionModel( Graph< V, E > graph )
+	public SelectionModel( final Graph< V, E > graph )
 	{
 		this.selectedVertices = CollectionUtils.createVertexSet( graph );
 		this.selectedEdges = CollectionUtils.createEdgeSet( graph );
@@ -30,17 +30,17 @@ public class SelectionModel< V extends Vertex< E >, E extends Edge< V > >
 		return selectedVertices;
 	}
 
-	public void add( V vertex )
+	public boolean add( final V vertex )
 	{
-		selectedVertices.add( vertex );
+		return selectedVertices.add( vertex );
 	}
 
-	public void remove( V vertex )
+	public boolean remove( final V vertex )
 	{
-		selectedVertices.remove( vertex );
+		return selectedVertices.remove( vertex );
 	}
 
-	public void toggle( V vertex )
+	public void toggle( final V vertex )
 	{
 		if ( !selectedVertices.remove( vertex ) )
 		{
@@ -48,12 +48,12 @@ public class SelectionModel< V extends Vertex< E >, E extends Edge< V > >
 		}
 	}
 
-	public void add( E edge )
+	public boolean add( final E edge )
 	{
-		selectedEdges.add( edge );
+		return selectedEdges.add( edge );
 	}
 
-	public void toggle( E edge )
+	public void toggle( final E edge )
 	{
 		if ( !selectedEdges.remove( edge ) )
 		{
@@ -61,25 +61,27 @@ public class SelectionModel< V extends Vertex< E >, E extends Edge< V > >
 		}
 	}
 
-	public void addAllEdges( Collection< E > edges )
+	public boolean addAllEdges( final Collection< E > edges )
 	{
-		selectedEdges.addAll( edges );
+		return selectedEdges.addAll( edges );
 	}
 
-	public void addAllVertices( Collection< V > vertices )
+	public boolean addAllVertices( final Collection< V > vertices )
 	{
-		selectedVertices.addAll( vertices );
+		return selectedVertices.addAll( vertices );
 	}
 
-	public void remove( E edge )
+	public boolean remove( final E edge )
 	{
-		selectedEdges.remove( edge );
+		return selectedEdges.remove( edge );
 	}
 
-	public void clearSelection()
+	public boolean clearSelection()
 	{
+		if ( selectedEdges.isEmpty() && selectedVertices.isEmpty() ) { return false; }
 		selectedEdges.clear();
 		selectedVertices.clear();
+		return true;
 	}
 
 	@Override
@@ -96,7 +98,7 @@ public class SelectionModel< V extends Vertex< E >, E extends Edge< V > >
 	 * STATIC ACCESSOR
 	 */
 
-	public static final < V extends Vertex< E >, E extends Edge< V > > SelectionModel< V, E > create( Graph< V, E > graph )
+	public static final < V extends Vertex< E >, E extends Edge< V > > SelectionModel< V, E > create( final Graph< V, E > graph )
 	{
 		return new SelectionModel< V, E >( graph );
 	}

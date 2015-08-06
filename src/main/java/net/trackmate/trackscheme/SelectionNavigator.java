@@ -52,7 +52,6 @@ public class SelectionNavigator
 			trackscheme.centerOn( current );
 			lastOne = current;
 		}
-		trackscheme.selectionChanged();
 	}
 
 	public void parent( final boolean clear )
@@ -69,7 +68,6 @@ public class SelectionNavigator
 			trackscheme.centerOn( current );
 			lastOne = current;
 		}
-		trackscheme.selectionChanged();
 	}
 
 	public void rightSibbling( final boolean clear )
@@ -88,7 +86,6 @@ public class SelectionNavigator
 			trackscheme.centerOn( sibbling );
 			lastOne = sibbling;
 		}
-		trackscheme.selectionChanged();
 	}
 
 	public void leftSibbling( final boolean clear )
@@ -107,6 +104,5 @@ public class SelectionNavigator
 			trackscheme.centerOn( sibbling );
 			lastOne = sibbling;
 		}
-		trackscheme.selectionChanged();
 	}
 }
