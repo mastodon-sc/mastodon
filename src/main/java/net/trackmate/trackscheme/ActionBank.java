@@ -17,18 +17,25 @@ public class ActionBank
 			@Override
 			public void actionPerformed( final ActionEvent event )
 			{
-				final SelectionModel< TrackSchemeVertex, TrackSchemeEdge > selectionModel = trackscheme.selectionModel;
-				final TrackSchemeGraph graph = trackscheme.getGraph();
-				for ( final TrackSchemeEdge e : selectionModel.getSelectedEdges() )
+				new Thread( this.name() )
 				{
-					graph.remove( e );
-				}
-				for ( final TrackSchemeVertex v : selectionModel.getSelectedVertices() )
-				{
-					graph.remove( v );
-				}
-				selectionModel.clearSelection();
-				trackscheme.relayout();
+					@Override
+					public void run()
+					{
+						final SelectionModel< TrackSchemeVertex, TrackSchemeEdge > selectionModel = trackscheme.selectionModel;
+						final TrackSchemeGraph graph = trackscheme.getGraph();
+						for ( final TrackSchemeEdge e : selectionModel.getSelectedEdges() )
+						{
+							graph.remove( e );
+						}
+						for ( final TrackSchemeVertex v : selectionModel.getSelectedVertices() )
+						{
+							graph.remove( v );
+						}
+						selectionModel.clearSelection();
+						trackscheme.relayout();
+					}
+				}.start();
 			}
 		};
 	}
@@ -46,7 +53,14 @@ public class ActionBank
 			@Override
 			public void actionPerformed( final ActionEvent event )
 			{
-				trackscheme.selectionNavigator.child( true );
+				new Thread( this.name() )
+				{
+					@Override
+					public void run()
+					{
+						trackscheme.selectionNavigator.child( true );
+					}
+				}.start();
 			}
 		};
 	}
@@ -60,7 +74,14 @@ public class ActionBank
 			@Override
 			public void actionPerformed( final ActionEvent event )
 			{
-				trackscheme.selectionNavigator.parent( true );
+				new Thread( this.name() )
+				{
+					@Override
+					public void run()
+					{
+						trackscheme.selectionNavigator.parent( true );
+					}
+				}.start();
 			}
 		};
 	}
@@ -74,7 +95,14 @@ public class ActionBank
 			@Override
 			public void actionPerformed( final ActionEvent event )
 			{
-				trackscheme.selectionNavigator.rightSibbling( true );
+				new Thread( this.name() )
+				{
+					@Override
+					public void run()
+					{
+						trackscheme.selectionNavigator.rightSibbling( true );
+					}
+				}.start();
 			}
 		};
 	}
@@ -88,7 +116,14 @@ public class ActionBank
 			@Override
 			public void actionPerformed( final ActionEvent event )
 			{
-				trackscheme.selectionNavigator.leftSibbling( true );
+				new Thread( this.name() )
+				{
+					@Override
+					public void run()
+					{
+						trackscheme.selectionNavigator.leftSibbling( true );
+					}
+				}.start();
 			}
 		};
 	}
@@ -102,7 +137,14 @@ public class ActionBank
 			@Override
 			public void actionPerformed( final ActionEvent event )
 			{
-				trackscheme.selectionNavigator.child( false );
+				new Thread( this.name() )
+				{
+					@Override
+					public void run()
+					{
+						trackscheme.selectionNavigator.child( false );
+					}
+				}.start();
 			}
 		};
 	}
@@ -116,7 +158,14 @@ public class ActionBank
 			@Override
 			public void actionPerformed( final ActionEvent event )
 			{
-				trackscheme.selectionNavigator.parent( false );
+				new Thread( this.name() )
+				{
+					@Override
+					public void run()
+					{
+						trackscheme.selectionNavigator.parent( false );
+					}
+				}.start();
 			}
 		};
 	}
@@ -130,7 +179,14 @@ public class ActionBank
 			@Override
 			public void actionPerformed( final ActionEvent event )
 			{
-				trackscheme.selectionNavigator.rightSibbling( false );
+				new Thread( this.name() )
+				{
+					@Override
+					public void run()
+					{
+						trackscheme.selectionNavigator.rightSibbling( false );
+					}
+				}.start();
 			}
 		};
 	}
@@ -144,7 +200,14 @@ public class ActionBank
 			@Override
 			public void actionPerformed( final ActionEvent event )
 			{
-				trackscheme.selectionNavigator.leftSibbling( false );
+				new Thread( this.name() )
+				{
+					@Override
+					public void run()
+					{
+						trackscheme.selectionNavigator.leftSibbling( false );
+					}
+				}.start();
 			}
 		};
 	}
@@ -162,7 +225,14 @@ public class ActionBank
 			@Override
 			public void actionPerformed( final ActionEvent event )
 			{
-				trackscheme.transformHandler.zoom( zoomSpeed );
+				new Thread( this.name() )
+				{
+					@Override
+					public void run()
+					{
+						trackscheme.transformHandler.zoom( zoomSpeed );
+					}
+				}.start();
 			}
 		};
 	}
@@ -176,7 +246,14 @@ public class ActionBank
 			@Override
 			public void actionPerformed( final ActionEvent event )
 			{
-				trackscheme.transformHandler.zoom( 1 / zoomSpeed );
+				new Thread( this.name() )
+				{
+					@Override
+					public void run()
+					{
+						trackscheme.transformHandler.zoom( 1 / zoomSpeed );
+					}
+				}.start();
 			}
 		};
 	}
@@ -190,7 +267,14 @@ public class ActionBank
 			@Override
 			public void actionPerformed( final ActionEvent event )
 			{
-				trackscheme.transformHandler.zoomX( zoomSpeed );
+				new Thread( this.name() )
+				{
+					@Override
+					public void run()
+					{
+						trackscheme.transformHandler.zoomX( zoomSpeed );
+					}
+				}.start();
 			}
 		};
 	}
@@ -204,7 +288,14 @@ public class ActionBank
 			@Override
 			public void actionPerformed( final ActionEvent event )
 			{
-				trackscheme.transformHandler.zoomX( 1 / zoomSpeed );
+				new Thread( this.name() )
+				{
+					@Override
+					public void run()
+					{
+						trackscheme.transformHandler.zoomX( 1 / zoomSpeed );
+					}
+				}.start();
 			}
 		};
 	}
@@ -218,7 +309,14 @@ public class ActionBank
 			@Override
 			public void actionPerformed( final ActionEvent event )
 			{
-				trackscheme.transformHandler.zoomY( zoomSpeed );
+				new Thread( this.name() )
+				{
+					@Override
+					public void run()
+					{
+						trackscheme.transformHandler.zoomY( zoomSpeed );
+					}
+				}.start();
 			}
 		};
 	}
@@ -232,7 +330,14 @@ public class ActionBank
 			@Override
 			public void actionPerformed( final ActionEvent event )
 			{
-				trackscheme.transformHandler.zoomY( 1 / zoomSpeed );
+				new Thread( this.name() )
+				{
+					@Override
+					public void run()
+					{
+						trackscheme.transformHandler.zoomY( 1 / zoomSpeed );
+					}
+				}.start();
 			}
 		};
 	}
@@ -250,7 +355,14 @@ public class ActionBank
 			@Override
 			public void actionPerformed( final ActionEvent event )
 			{
-				trackscheme.transformHandler.moveBy( -speed, 0. );
+				new Thread( this.name() )
+				{
+					@Override
+					public void run()
+					{
+						trackscheme.transformHandler.moveBy( -speed, 0. );
+					}
+				}.start();
 			}
 		};
 	}
@@ -264,7 +376,14 @@ public class ActionBank
 			@Override
 			public void actionPerformed( final ActionEvent event )
 			{
-				trackscheme.transformHandler.moveBy( -speed, -speed );
+				new Thread( this.name() )
+				{
+					@Override
+					public void run()
+					{
+						trackscheme.transformHandler.moveBy( -speed, -speed );
+					}
+				}.start();
 			}
 		};
 	}
@@ -278,7 +397,14 @@ public class ActionBank
 			@Override
 			public void actionPerformed( final ActionEvent event )
 			{
-				trackscheme.transformHandler.moveBy( 0., -speed );
+				new Thread( this.name() )
+				{
+					@Override
+					public void run()
+					{
+						trackscheme.transformHandler.moveBy( 0., -speed );
+					}
+				}.start();
 			}
 		};
 	}
@@ -292,7 +418,14 @@ public class ActionBank
 			@Override
 			public void actionPerformed( final ActionEvent event )
 			{
-				trackscheme.transformHandler.moveBy( speed, -speed );
+				new Thread( this.name() )
+				{
+					@Override
+					public void run()
+					{
+						trackscheme.transformHandler.moveBy( speed, -speed );
+					}
+				}.start();
 			}
 		};
 	}
@@ -306,7 +439,14 @@ public class ActionBank
 			@Override
 			public void actionPerformed( final ActionEvent event )
 			{
-				trackscheme.transformHandler.moveBy( speed, 0. );
+				new Thread( this.name() )
+				{
+					@Override
+					public void run()
+					{
+						trackscheme.transformHandler.moveBy( speed, 0. );
+					}
+				}.start();
 			}
 		};
 	}
@@ -320,7 +460,14 @@ public class ActionBank
 			@Override
 			public void actionPerformed( final ActionEvent event )
 			{
-				trackscheme.transformHandler.moveBy( speed, speed );
+				new Thread( this.name() )
+				{
+					@Override
+					public void run()
+					{
+						trackscheme.transformHandler.moveBy( speed, speed );
+					}
+				}.start();
 			}
 		};
 	}
@@ -334,7 +481,14 @@ public class ActionBank
 			@Override
 			public void actionPerformed( final ActionEvent event )
 			{
-				trackscheme.transformHandler.moveBy( 0., speed );
+				new Thread( this.name() )
+				{
+					@Override
+					public void run()
+					{
+						trackscheme.transformHandler.moveBy( 0., speed );
+					}
+				}.start();
 			}
 		};
 	}
@@ -348,7 +502,14 @@ public class ActionBank
 			@Override
 			public void actionPerformed( final ActionEvent event )
 			{
-				trackscheme.transformHandler.moveBy( -speed, speed );
+				new Thread( this.name() )
+				{
+					@Override
+					public void run()
+					{
+						trackscheme.transformHandler.moveBy( -speed, speed );
+					}
+				}.start();
 			}
 		};
 	}
@@ -357,7 +518,7 @@ public class ActionBank
 	 * SELECT.
 	 */
 
-	public static final AbstractNamedAction getSelectVertexAtCenterAction(final ShowTrackScheme trackscheme, final boolean clear)
+	public static final AbstractNamedAction getSelectVertexAtCenterAction( final ShowTrackScheme trackscheme, final boolean clear )
 	{
 		return new AbstractNamedAction( "selectVertexAtCenterClear_" + clear )
 		{
@@ -366,24 +527,31 @@ public class ActionBank
 			@Override
 			public void actionPerformed( final ActionEvent event )
 			{
-				final ScreenTransform t = trackscheme.transformHandler.transform;
-				final double x = 0.5 * ( t.minX + t.maxX );
-				final double y = 0.5 * ( t.minY + t.maxY );
-
-				final TrackSchemeVertex vertex = trackscheme.order.getClosestVertex( x, y, Double.POSITIVE_INFINITY, trackscheme.graph.vertexRef() );
-				if ( null != vertex )
+				new Thread( this.name() )
 				{
-					if ( clear )
+					@Override
+					public void run()
 					{
-						trackscheme.selectionHandler.clearSelection();
-						trackscheme.selectionHandler.select( vertex, false );
+						final ScreenTransform t = trackscheme.transformHandler.transform;
+						final double x = 0.5 * ( t.minX + t.maxX );
+						final double y = 0.5 * ( t.minY + t.maxY );
+
+						final TrackSchemeVertex vertex = trackscheme.order.getClosestVertex( x, y, Double.POSITIVE_INFINITY, trackscheme.graph.vertexRef() );
+						if ( null != vertex )
+						{
+							if ( clear )
+							{
+								trackscheme.selectionHandler.clearSelection();
+								trackscheme.selectionHandler.select( vertex, false );
+							}
+							else
+							{
+								trackscheme.selectionHandler.select( vertex, true );
+							}
+							trackscheme.selectionChanged();
+						}
 					}
-					else
-					{
-						trackscheme.selectionHandler.select( vertex, true );
-					}
-					trackscheme.selectionChanged();
-				}
+				}.start();
 			}
 		};
 	}
@@ -401,17 +569,24 @@ public class ActionBank
 			@Override
 			public void actionPerformed( final ActionEvent e )
 			{
-				final double minY = trackscheme.order.getMinTimepoint() - 0.5;
-				final double maxY = trackscheme.order.getMaxTimepoint() + 0.5;
-				final double minX = trackscheme.order.getMinX() - 1.0;
-				final double maxX = trackscheme.order.getMaxX() + 1.0;
-				final ScreenTransform transform = trackscheme.transformHandler.getTransform();
-				transform.minX = minX;
-				transform.minY = minY;
-				transform.maxX = maxX;
-				transform.maxY = maxY;
-				trackscheme.transformHandler.setTransform( transform );
-				trackscheme.transformHandler.update();
+				new Thread( this.name() )
+				{
+					@Override
+					public void run()
+					{
+						final double minY = trackscheme.order.getMinTimepoint() - 0.5;
+						final double maxY = trackscheme.order.getMaxTimepoint() + 0.5;
+						final double minX = trackscheme.order.getMinX() - 1.0;
+						final double maxX = trackscheme.order.getMaxX() + 1.0;
+						final ScreenTransform transform = trackscheme.transformHandler.getTransform();
+						transform.minX = minX;
+						transform.minY = minY;
+						transform.maxX = maxX;
+						transform.maxY = maxY;
+						trackscheme.transformHandler.setTransform( transform );
+						trackscheme.transformHandler.update();
+					}
+				}.start();
 			}
 		};
 	}
