@@ -91,26 +91,6 @@ public class Launcher
 		final ModelGraph< SpotCovariance > graph = model.getGraph();
 		final TrackSchemeGraph tsg = TrackSchemeUtil.buildTrackSchemeGraph( graph, graph.getIdBimap() );
 		final ShowTrackScheme trackscheme = new ShowTrackScheme( tsg );
-
-		trackscheme.getSelectionHandler().addSelectionListener( new SelectionListener()
-		{
-			private final SelectionModel< TrackSchemeVertex, TrackSchemeEdge > selectionModel = trackscheme.getSelectionHandler().getSelectionModel();
-
-			final SpotCovariance spot = graph.vertexRef();
-
-			@Override
-			public void selectionChanged()
-			{
-				if ( selectionModel.getSelectedVertices().size() == 1 )
-				{
-					final TrackSchemeVertex v = selectionModel.getSelectedVertices().iterator().next();
-					graph.getIdBimap().getVertex( v.getModelVertexId(), spot );
-					centerViewOn( spot, bdv.getViewer() );
-				}
-				viewer.repaint();
-			}
-		} );
-
 		final OverlayGraphWrapper< SpotCovariance, Link< SpotCovariance > > overlayGraph =
 				new OverlayGraphWrapper< SpotCovariance, Link< SpotCovariance > >(
 						tsg,
@@ -129,6 +109,38 @@ public class Launcher
 		final ContextTransformListener tl = setupContextTrackscheme( bdv, overlayGraph, trackscheme );
 		tl.setEnabled( DEFAULT_USE_TRACKSCHEME_CONTEXT );
 
+		/*
+		 * Center views on single selected vertex.
+		 */
+		
+		trackscheme.getSelectionHandler().addSelectionListener( new SelectionListener()
+		{
+			private final SelectionModel< TrackSchemeVertex, TrackSchemeEdge > selectionModel = trackscheme.getSelectionHandler().getSelectionModel();
+
+			final SpotCovariance spot = graph.vertexRef();
+
+			@Override
+			public void selectionChanged()
+			{
+				if ( selectionModel.getSelectedVertices().size() == 1 )
+				{
+					final TrackSchemeVertex v = selectionModel.getSelectedVertices().iterator().next();
+					graph.getIdBimap().getVertex( v.getModelVertexId(), spot );
+					centerViewOn( spot, bdv.getViewer() );
+
+					if ( !tl.isEnabled() )
+					{
+						/*
+						 * TrackScheme context is not one, so we center
+						 * TrackScheme on vertex selection.
+						 */
+						trackscheme.centerOn( v );
+					}
+				}
+				viewer.repaint();
+			}
+		} );
+		
 		/*
 		 * Catch mouse events on BDV.
 		 */
@@ -218,6 +230,11 @@ public class Launcher
 		{
 			this.context = context;
 			this.bdv = bdv;
+		}
+
+		public boolean isEnabled()
+		{
+			return this.enabled;
 		}
 
 		public void setEnabled( final boolean enabled )
@@ -368,6 +385,7 @@ public class Launcher
 					else if ( e == configPanel.trackschemeAutoscaleContextOn )
 					{
 						tl.setAutoscale( true );
+						tl.transformChanged( null );
 					}
 					else if ( e == configPanel.trackschemeAutoscaleContextOff )
 					{

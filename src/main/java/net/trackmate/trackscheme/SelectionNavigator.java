@@ -49,7 +49,6 @@ public class SelectionNavigator
 				selectionHandler.clearSelection();
 			}
 			selectionHandler.select( current, false );
-			trackscheme.centerOn( current );
 			lastOne = current;
 		}
 	}
@@ -65,7 +64,6 @@ public class SelectionNavigator
 				selectionHandler.clearSelection();
 			}
 			selectionHandler.select( current, false );
-			trackscheme.centerOn( current );
 			lastOne = current;
 		}
 	}
@@ -83,7 +81,6 @@ public class SelectionNavigator
 				selectionHandler.clearSelection();
 			}
 			selectionHandler.select( sibbling, false );
-			trackscheme.centerOn( sibbling );
 			lastOne = sibbling;
 		}
 	}
@@ -101,7 +98,6 @@ public class SelectionNavigator
 				selectionHandler.clearSelection();
 			}
 			selectionHandler.select( sibbling, false );
-			trackscheme.centerOn( sibbling );
 			lastOne = sibbling;
 		}
 	}

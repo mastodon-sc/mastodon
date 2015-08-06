@@ -186,13 +186,6 @@ public class ShowTrackScheme implements TransformListener< ScreenTransform >, Se
 		} );
 	}
 
-	public void centerOn( final TrackSchemeVertex vertex )
-	{
-		final double x = vertex.getLayoutX();
-		final int y = vertex.getTimepoint();
-		transformHandler.moveTo( x, y );
-	}
-
 	@Override
 	public void transformChanged( final ScreenTransform transform )
 	{
@@ -279,6 +272,12 @@ public class ShowTrackScheme implements TransformListener< ScreenTransform >, Se
 		return selectionHandler;
 	}
 
+	public void centerOn( final TrackSchemeVertex vertex )
+	{
+		final double x = vertex.getLayoutX();
+		final int y = vertex.getTimepoint();
+		transformHandler.moveTo( x, y );
+	}
 
 	public synchronized void repaint( final boolean startAnimation )
 	{
