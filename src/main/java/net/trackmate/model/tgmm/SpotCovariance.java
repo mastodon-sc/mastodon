@@ -13,6 +13,9 @@ import Jama.Matrix;
 /**
  * {@link AbstractSpot} implementation where the spot shape is stored in a
  * covariance matrix.
+ * 
+ * TODO Discuss with Tobias: is there a good reason to store the precision
+ * matrix?
  *
  * @author Tobias Pietzsch
  *
@@ -23,7 +26,8 @@ public class SpotCovariance extends AbstractSpot< SpotCovariance >
 	protected static final int X_OFFSET = AbstractSpot.X_OFFSET; 
 	protected static final int COVARIANCE_OFFSET = AbstractSpot.SIZE_IN_BYTES;
 	protected static final int PRECISION_OFFSET = COVARIANCE_OFFSET + 6 * DOUBLE_SIZE;
-	protected static final int SIZE_IN_BYTES = PRECISION_OFFSET + 6 * DOUBLE_SIZE;
+	protected static final int BOUNDING_SPHERE_RADIUS_SQUARED_OFFSET = PRECISION_OFFSET + 6 * DOUBLE_SIZE;
+	protected static final int SIZE_IN_BYTES = BOUNDING_SPHERE_RADIUS_SQUARED_OFFSET + DOUBLE_SIZE;
 
 	public static final double nSigmas = 2;
 	public static final double nSigmasSquared = nSigmas * nSigmas;
@@ -34,12 +38,45 @@ public class SpotCovariance extends AbstractSpot< SpotCovariance >
 		super.setToUninitializedState();
 	}
 
-	SpotCovariance init( final int timepointId, final double[] pos, final double[][] cov )
+	SpotCovariance init( final int timepointId, final double[] pos, final double radius )
 	{
+		final double eigVal = radius * radius / nSigmasSquared;
+		final double[][] cov = new double[][] {
+			{eigVal, 0., 0.},
+			{0., eigVal,  0.},
+			{0., 0., eigVal}
+		};
+		final double[][] prec = new double[][] {
+				{ 1. / eigVal, 0., 0. },
+				{ 0., 1. / eigVal, 0. },
+				{ 0., 0., 1. / eigVal }
+		};
 		setX( pos[ 0 ] );
 		setY( pos[ 1 ] );
 		setZ( pos[ 2 ] );
 		setCovariance( cov );
+		setPrecision( prec );
+		setBoundingSphereRadiusSquared( radius * radius );
+		setTimepointId( timepointId );
+		return this;
+	}
+
+	SpotCovariance init( final int timepointId, final double[] pos, final double[][] cov )
+	{
+		final Matrix covMat = new Matrix( cov );
+		final EigenvalueDecomposition eig = covMat.eig();
+		final double[] eigVals = eig.getRealEigenvalues();
+		double max = 0;
+		for ( int k = 0; k < eigVals.length; k++ )
+			max = Math.max( max, eigVals[ k ] );
+		final double boundingSphereRadiusSquared = max * nSigmasSquared;
+
+		setX( pos[ 0 ] );
+		setY( pos[ 1 ] );
+		setZ( pos[ 2 ] );
+		setCovariance( cov );
+		setPrecision( covMat.inverse().getArray() );
+		setBoundingSphereRadiusSquared( boundingSphereRadiusSquared );
 		setTimepointId( timepointId );
 		return this;
 	}
@@ -70,7 +107,7 @@ public class SpotCovariance extends AbstractSpot< SpotCovariance >
 		double max = 0;
 		for ( int k = 0; k < eigVals.length; k++ )
 			max = Math.max( max, eigVals[ k ] );
-//		final double boundingSphereRadiusSquared = max * nSigmasSquared;
+		final double boundingSphereRadiusSquared = max * nSigmasSquared;
 
 		setX( pos[ 0 ] );
 		setY( pos[ 1 ] );
@@ -78,6 +115,7 @@ public class SpotCovariance extends AbstractSpot< SpotCovariance >
 		setCovariance( S );
 		setPrecision( covMat.inverse().getArray() );
 		setTimepointId( timepointId );
+		setBoundingSphereRadiusSquared( boundingSphereRadiusSquared );
 		return this;
 	}
 
@@ -125,6 +163,16 @@ public class SpotCovariance extends AbstractSpot< SpotCovariance >
 		access.putDouble( mat[ 1 ][ 1 ], PRECISION_OFFSET + 3 * DOUBLE_SIZE );
 		access.putDouble( mat[ 1 ][ 2 ], PRECISION_OFFSET + 4 * DOUBLE_SIZE );
 		access.putDouble( mat[ 2 ][ 2 ], PRECISION_OFFSET + 5 * DOUBLE_SIZE );
+	}
+
+	public double getBoundingSphereRadiusSquared()
+	{
+		return access.getDouble( BOUNDING_SPHERE_RADIUS_SQUARED_OFFSET );
+	}
+
+	public void setBoundingSphereRadiusSquared( final double r2 )
+	{
+		access.putDouble( r2, BOUNDING_SPHERE_RADIUS_SQUARED_OFFSET );
 	}
 
 	@Override
