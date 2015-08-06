@@ -5,6 +5,7 @@ import java.awt.Graphics;
 import java.awt.event.InputEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.HashSet;
 
 import net.imglib2.ui.OverlayRenderer;
 import net.trackmate.graph.collection.RefSet;
@@ -43,7 +44,7 @@ public class DefaultSelectionHandler extends MouseAdapter implements SelectionHa
 	/**
 	 * Whom to notify when selecting stuff.
 	 */
-	private SelectionListener selectionListener;
+	private final HashSet< SelectionListener > selectionListeners = new HashSet< SelectionListener >();
 
 	/**
 	 * Coordinates where mouse dragging started.
@@ -79,7 +80,7 @@ public class DefaultSelectionHandler extends MouseAdapter implements SelectionHa
 		{
 			final boolean clear = !(e.getModifiers() == MOUSE_MASK_CLICK_ADDTOSELECTION);
 			selectAt( transform, e.getX(), e.getY(), clear );
-			selectionListener.selectionChanged();
+			fireSelectionChanged();
 		}
 	}
 
@@ -96,7 +97,7 @@ public class DefaultSelectionHandler extends MouseAdapter implements SelectionHa
 				oX = e.getX();
 				oY = e.getY();
 			}
-			selectionListener.selectionChanged();
+			fireSelectionChanged();
 		}
 	}
 
@@ -108,7 +109,7 @@ public class DefaultSelectionHandler extends MouseAdapter implements SelectionHa
 			dragStarted = false;
 			final boolean clear = !( ( e.getModifiersEx() & MOUSE_MASK_ADDTOSELECTION ) != 0);
 			selectWithin(transform, oX, oY, eX, eY, clear);
-			selectionListener.selectionChanged();
+			fireSelectionChanged();
 		}
 	}
 
@@ -250,15 +251,23 @@ public class DefaultSelectionHandler extends MouseAdapter implements SelectionHa
 	}
 
 	@Override
-	public void setSelectionListener( final SelectionListener selectionListener )
+	public boolean addSelectionListener( final SelectionListener selectionListener )
 	{
-		this.selectionListener = selectionListener;
+		return selectionListeners.add( selectionListener );
 	}
 
 	@Override
 	public OverlayRenderer getSelectionOverlay()
 	{
 		return selectionBoxOverlay;
+	}
+
+	private void fireSelectionChanged()
+	{
+		for ( final SelectionListener selectionListener : selectionListeners )
+		{
+			selectionListener.selectionChanged();
+		}
 	}
 
 	public class SelectionBoxOverlay implements OverlayRenderer

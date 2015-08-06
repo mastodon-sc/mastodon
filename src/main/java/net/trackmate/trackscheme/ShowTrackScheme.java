@@ -126,7 +126,7 @@ public class ShowTrackScheme implements TransformListener< ScreenTransform >, Se
 		selectionHandler.setSelectionModel( selectionModel );
 		canvas.addHandler( selectionHandler );
 		canvas.addTransformListener( selectionHandler );
-		selectionHandler.setSelectionListener( this );
+		selectionHandler.addSelectionListener( this );
 		selectionNavigator = new SelectionNavigator( selectionHandler, this );
 		keyHandler = new KeyHandler( this );
 

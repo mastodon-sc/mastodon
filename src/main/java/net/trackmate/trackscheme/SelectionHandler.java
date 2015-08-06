@@ -9,13 +9,13 @@ import net.imglib2.ui.TransformListener;
 public interface SelectionHandler extends MouseListener, MouseMotionListener, TransformListener< ScreenTransform >
 {
 	/**
-	 * Sets the {@link SelectionListener} that will be notified when this
-	 * handler modifies the selection.
+	 * Adds the specified {@link SelectionListener} to the set that will be
+	 * notified when this handler modifies the selection.
 	 *
 	 * @param selectionListener
 	 *            the {@link SelectionListener} to notify.
 	 */
-	public void setSelectionListener( SelectionListener selectionListener );
+	public boolean addSelectionListener( SelectionListener selectionListener );
 
 	/**
 	 * Returns the overlay instance that will paint selection handler widgets on
