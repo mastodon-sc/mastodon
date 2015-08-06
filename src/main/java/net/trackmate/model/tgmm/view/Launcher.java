@@ -245,6 +245,11 @@ public class Launcher
 			context.setTrackSchemeStyle( selectedTrackSchemeStyle );
 		}
 
+		public void setAutoscale( final boolean autoscale )
+		{
+			context.setAutoscale( autoscale );
+		}
+
 		@Override
 		public void transformChanged( final AffineTransform3D transform )
 		{
@@ -359,6 +364,14 @@ public class Launcher
 					{
 						tl.setEnabled( false );
 						trackscheme.relayout();
+					}
+					else if ( e == configPanel.trackschemeAutoscaleContextOn )
+					{
+						tl.setAutoscale( true );
+					}
+					else if ( e == configPanel.trackschemeAutoscaleContextOff )
+					{
+						tl.setAutoscale( false );
 					}
 					else if ( e == configPanel.contextWindowChanged )
 					{

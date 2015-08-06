@@ -10,6 +10,8 @@ import net.trackmate.bdv.wrapper.OverlayVertex;
 import net.trackmate.bdv.wrapper.SpatialSearch;
 import net.trackmate.graph.PoolObjectList;
 import net.trackmate.graph.collection.RefSet;
+import net.trackmate.trackscheme.AbstractNamedAction;
+import net.trackmate.trackscheme.ActionBank;
 import net.trackmate.trackscheme.DefaultTrackSchemeLAF;
 import net.trackmate.trackscheme.ShowTrackScheme;
 import net.trackmate.trackscheme.TrackSchemeVertex;
@@ -18,6 +20,8 @@ import net.trackmate.trackscheme.laf.TrackSchemeStyle;
 class ContextTrackScheme< V extends OverlayVertex< V, E > & HasTrackSchemeVertex, E extends OverlayEdge< E, V > >
 {
 	public static final int DEFAULT_CONTEXT_WINDOW = 10;
+
+	public static final boolean DEFAULT_AUTOSCALE = false;
 
 	private final OverlayGraph< V, E > graph;
 
@@ -31,13 +35,18 @@ class ContextTrackScheme< V extends OverlayVertex< V, E > & HasTrackSchemeVertex
 
 	private boolean useCrop;
 
+	private boolean autoscale = DEFAULT_AUTOSCALE;
+
+	private final AbstractNamedAction resetViewAction;
+
 	public ContextTrackScheme(
 			final OverlayGraph< V, E > graph,
 			final ShowTrackScheme trackScheme )
 	{
 		this.graph = graph;
 		this.trackscheme = trackScheme;
-		roots = trackScheme.getGraph().createVertexList();
+		this.roots = trackScheme.getGraph().createVertexList();
+		this.resetViewAction = ActionBank.getResetViewAction( trackscheme );
 	}
 
 	public void buildContext(
@@ -101,6 +110,11 @@ class ContextTrackScheme< V extends OverlayVertex< V, E > & HasTrackSchemeVertex
 
 		// layout and repaint
 		trackscheme.relayout( roots, mark );
+
+		if ( autoscale )
+		{
+			resetViewAction.actionPerformed( null );
+		}
 	}
 
 	public void setContextWindow( final int contextWindow )
@@ -118,6 +132,11 @@ class ContextTrackScheme< V extends OverlayVertex< V, E > & HasTrackSchemeVertex
 		this.useCrop = useCrop;
 	}
 
+	public void setAutoscale( final boolean autoscale )
+	{
+		this.autoscale = autoscale;
+	}
+
 	public void setTrackSchemeStyle( final TrackSchemeStyle trackschemeStyle )
 	{
 		( ( DefaultTrackSchemeLAF ) trackscheme.getLookAndFeel() ).setTrackSchemeStyle( trackschemeStyle );
@@ -130,7 +149,4 @@ class ContextTrackScheme< V extends OverlayVertex< V, E > & HasTrackSchemeVertex
 	{
 		return new ContextTrackScheme< V, E >( graph, trackScheme );
 	}
-
-
-
 }

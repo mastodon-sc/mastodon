@@ -87,13 +87,17 @@ public class DisplaySettingsPanel extends JPanel
 
 	final ActionEvent drawLinksOff = new ActionEvent( this, 14, "DrawLinksOff" );
 
-	final ActionEvent trackschemeContextOn = new ActionEvent( this, 15, "TrackschemeContextOn" );
+	final ActionEvent trackschemeContextOn = new ActionEvent( this, 15, "TrackSchemeContextOn" );
 
-	final ActionEvent trackschemeContextOff = new ActionEvent( this, 16, "TrackschemeContextOff" );
+	final ActionEvent trackschemeContextOff = new ActionEvent( this, 16, "TrackSchemeContextOff" );
 
 	final ActionEvent contextWindowChanged = new ActionEvent( this, 17, "ContextWindowChanged" );
 
 	final ActionEvent trackschemeStyleChanged = new ActionEvent( this, 18, "TrackSchemeStyleChanged" );
+
+	final ActionEvent trackschemeAutoscaleContextOn = new ActionEvent( this, 19, "TrackSchemeAutoscaleContextOn" );
+
+	final ActionEvent trackschemeAutoscaleContextOff = new ActionEvent( this, 20, "TrackSchemeAutoscaleContextOff" );
 
 	/*
 	 * OTHER CONSTANTS
@@ -188,11 +192,12 @@ public class DisplaySettingsPanel extends JPanel
 			}
 		} );
 		textFieldContextTrackScheme.addFocusListener( new MyFocusListener( textFieldContextTrackScheme, contextWindowChanged ) );
+		textFieldContextTrackScheme.setEnabled( chckbxUseLiveContext.isSelected() );
 
 		final JLabel lblFrames = new JLabel( "frames." );
 		lblFrames.setFont( FONT );
+		lblFrames.setEnabled( chckbxUseLiveContext.isSelected() );
 
-		chckbxUseLiveContext.addItemListener( new CheckBoxEnablingListener( new JComponent[] { textFieldContextTrackScheme, lblFrames } ) );
 		chckbxUseLiveContext.addActionListener( new ActionListener()
 		{
 			@Override
@@ -221,13 +226,28 @@ public class DisplaySettingsPanel extends JPanel
 			}
 		} );
 
+		final JCheckBox chckbxAutoscale = new JCheckBox( "Autoscale" );
+		chckbxAutoscale.setEnabled( chckbxUseLiveContext.isSelected() );
+		chckbxAutoscale.setHorizontalAlignment( SwingConstants.TRAILING );
+		chckbxAutoscale.setHorizontalTextPosition( SwingConstants.LEFT );
+		chckbxAutoscale.setFont( FONT );
+		chckbxAutoscale.addActionListener( new ActionListener()
+		{
+			@Override
+			public void actionPerformed( final ActionEvent e )
+			{
+				fireAction( chckbxAutoscale.isSelected() ? trackschemeAutoscaleContextOn : trackschemeAutoscaleContextOff );
+			}
+		} );
+
+		chckbxUseLiveContext.addItemListener( new CheckBoxEnablingListener( new JComponent[] { textFieldContextTrackScheme, lblFrames, chckbxAutoscale } ) );
+
 		final GroupLayout gl_panelTrackScheme = new GroupLayout( panelTrackScheme );
 		gl_panelTrackScheme.setHorizontalGroup(
 				gl_panelTrackScheme.createParallelGroup( Alignment.LEADING )
 						.addGroup( gl_panelTrackScheme.createSequentialGroup()
 								.addContainerGap()
 								.addGroup( gl_panelTrackScheme.createParallelGroup( Alignment.LEADING )
-										.addComponent( lblTrackschemeColorScheme, GroupLayout.DEFAULT_SIZE, 248, Short.MAX_VALUE )
 										.addGroup( gl_panelTrackScheme.createSequentialGroup()
 												.addComponent( chckbxUseLiveContext, GroupLayout.PREFERRED_SIZE, 134, GroupLayout.PREFERRED_SIZE )
 												.addPreferredGap( ComponentPlacement.RELATED )
@@ -235,7 +255,9 @@ public class DisplaySettingsPanel extends JPanel
 												.addPreferredGap( ComponentPlacement.RELATED )
 												.addComponent( lblFrames ) )
 										.addComponent( lblLiveContext )
-										.addComponent( comboBoxTrackSchemeStyles, 0, 248, Short.MAX_VALUE ) )
+										.addComponent( lblTrackschemeColorScheme, GroupLayout.DEFAULT_SIZE, 248, Short.MAX_VALUE )
+										.addComponent( comboBoxTrackSchemeStyles, 0, 248, Short.MAX_VALUE )
+										.addComponent( chckbxAutoscale, Alignment.TRAILING, GroupLayout.PREFERRED_SIZE, 167, GroupLayout.PREFERRED_SIZE ) )
 								.addContainerGap() )
 				);
 		gl_panelTrackScheme.setVerticalGroup(
@@ -249,10 +271,12 @@ public class DisplaySettingsPanel extends JPanel
 										.addComponent( textFieldContextTrackScheme, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE )
 										.addComponent( lblFrames ) )
 								.addPreferredGap( ComponentPlacement.RELATED )
+								.addComponent( chckbxAutoscale )
+								.addPreferredGap( ComponentPlacement.UNRELATED )
 								.addComponent( lblTrackschemeColorScheme )
 								.addPreferredGap( ComponentPlacement.RELATED )
 								.addComponent( comboBoxTrackSchemeStyles, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE )
-								.addContainerGap( 285, Short.MAX_VALUE ) )
+								.addContainerGap( 259, Short.MAX_VALUE ) )
 				);
 		panelTrackScheme.setLayout( gl_panelTrackScheme );
 
