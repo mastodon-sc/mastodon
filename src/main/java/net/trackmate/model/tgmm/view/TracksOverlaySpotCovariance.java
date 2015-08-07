@@ -322,7 +322,7 @@ public class TracksOverlaySpotCovariance implements OverlayRenderer, TransformLi
 					else
 					{
 						graphics.setColor( getColor( sd, 0, sliceDistanceFade, timepointDistanceFade, spot.isSelected() ) );
-						graphics.drawRect( ( int ) ( gPos[ 0 ] - 2.5 ), ( int ) ( gPos[ 1 ] - 2.5 ), 5, 5 );
+						graphics.fillOval( ( int ) ( gPos[ 0 ] - 2.5 ), ( int ) ( gPos[ 1 ] - 2.5 ), 5, 5 );
 					}
 				}
 			}

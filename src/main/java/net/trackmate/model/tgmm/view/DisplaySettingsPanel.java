@@ -37,7 +37,7 @@ public class DisplaySettingsPanel extends JPanel
 	public static enum SpotOverlayStyle
 	{
 		ELLIPSE( "Ellipses" ),
-		SQUARE( "Squares" );
+		DOTS( "Dots" );
 
 		private final String name;
 
