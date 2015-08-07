@@ -166,6 +166,7 @@ public class TracksOverlaySpotCovariance implements OverlayRenderer, TransformLi
 		final Graphics2D graphics = ( Graphics2D ) g;
 
 		final int currentTimepoint = viewer.getState().getCurrentTimepoint();
+		viewer.getState().getViewerTransform( transform );
 
 		graphics.setRenderingHint( RenderingHints.KEY_ANTIALIASING, antialiasing );
 
@@ -175,6 +176,8 @@ public class TracksOverlaySpotCovariance implements OverlayRenderer, TransformLi
 		final OverlayVertexWrapper< SpotCovariance, Link< SpotCovariance >> target = model.vertexRef();
 		final double[] lPos = new double[ 3 ];
 		final double[] gPos = new double[ 3 ];
+		final double[] lPos2 = new double[ 3 ];
+		final double[] gPos2 = new double[ 3 ];
 
 		final double sliceDistanceFade = 0.2;
 		final double timepointDistanceFade = 0.5;
@@ -249,47 +252,71 @@ public class TracksOverlaySpotCovariance implements OverlayRenderer, TransformLi
 			{
 				spot.get().localize( lPos );
 				transform.apply( lPos, gPos );
-
 				final double z = gPos[ 2 ];
+				
 				final double sd = sliceDistance( z, focusLimit );
-				if ( sd > -1 && sd < 1 )
+				if ( sd > -1 && sd < 1 ) 
 				{
 					if ( drawSpotEllipse )
 					{
-						spot.get().getCovariance( S );
+						/*
+						 * Go to extensive length to compute a physical distance
+						 * to plane.
+						 */
+						gPos2[ 0 ] = gPos[ 0 ];
+						gPos2[ 1 ] = gPos[ 1 ];
+						gPos2[ 2 ] = 0;
+						transform.applyInverse( lPos2, gPos2 );
+						double sum = 0;
+						for ( int d = 0; d < lPos2.length; d++ )
+						{
+							final double dx = lPos[ d ] - lPos2[ d ];
+							sum += dx * dx;
+						}
 
-						for ( int r = 0; r < 3; ++r )
-							for ( int c = 0; c < 3; ++c )
-								T[ r ][ c ] = transform.get( r, c );
+						final double rd = Math.sqrt( sum );
+						if ( rd > Math.sqrt( spot.get().getBoundingSphereRadiusSquared() ) )
+						{
+							graphics.setColor( getColor( sd, 0, sliceDistanceFade, timepointDistanceFade, spot.isSelected() ) );
+							graphics.fillOval( ( int ) ( gPos[ 0 ] - 2.5 ), ( int ) ( gPos[ 1 ] - 2.5 ), 5, 5 );
+						}
+						else
+						{
+							spot.get().getCovariance( S );
 
-						LinAlgHelpers.mult( T, S, TS );
-						LinAlgHelpers.multABT( TS, T, S );
-						// We need make S exactly symmetric or jama
-						// eigendecomposition
-						// will not return orthogonal V.
-						S[ 0 ][ 1 ] = S[ 1 ][ 0 ];
-						S[ 0 ][ 2 ] = S[ 2 ][ 0 ];
-						S[ 1 ][ 2 ] = S[ 2 ][ 1 ];
-						// now S is spot covariance transformed into view
-						// coordinates.
+							for ( int r = 0; r < 3; ++r )
+								for ( int c = 0; c < 3; ++c )
+									T[ r ][ c ] = transform.get( r, c );
 
-						final double[][] S2 = new double[ 2 ][ 2 ];
-						for ( int r = 0; r < 2; ++r )
-							for ( int c = 0; c < 2; ++c )
-								S2[ r ][ c ] = S[ r ][ c ];
-						final EigenvalueDecomposition eig2 = new Matrix( S2 ).eig();
-						final double[] eigVals2 = eig2.getRealEigenvalues();
-						final double w = nSigmas * Math.sqrt( eigVals2[ 0 ] );
-						final double h = nSigmas * Math.sqrt( eigVals2[ 1 ] );
-						final Matrix V2 = eig2.getV();
-						final double c = V2.getArray()[ 0 ][ 0 ];
-						final double s = V2.getArray()[ 1 ][ 0 ];
-						final double theta = Math.atan2( s, c );
-						graphics.translate( gPos[ 0 ], gPos[ 1 ] );
-						graphics.rotate( theta );
-						graphics.setColor( getColor( sd, 0, sliceDistanceFade, timepointDistanceFade, spot.isSelected() ) );
-						graphics.draw( new Ellipse2D.Double( -w, -h, 2 * w, 2 * h ) );
-						graphics.setTransform( torig );
+							LinAlgHelpers.mult( T, S, TS );
+							LinAlgHelpers.multABT( TS, T, S );
+							// We need make S exactly symmetric or jama
+							// eigendecomposition
+							// will not return orthogonal V.
+							S[ 0 ][ 1 ] = S[ 1 ][ 0 ];
+							S[ 0 ][ 2 ] = S[ 2 ][ 0 ];
+							S[ 1 ][ 2 ] = S[ 2 ][ 1 ];
+							// now S is spot covariance transformed into view
+							// coordinates.
+
+							final double[][] S2 = new double[ 2 ][ 2 ];
+							for ( int r = 0; r < 2; ++r )
+								for ( int c = 0; c < 2; ++c )
+									S2[ r ][ c ] = S[ r ][ c ];
+							final EigenvalueDecomposition eig2 = new Matrix( S2 ).eig();
+							final double[] eigVals2 = eig2.getRealEigenvalues();
+							final double w = nSigmas * Math.sqrt( eigVals2[ 0 ] );
+							final double h = nSigmas * Math.sqrt( eigVals2[ 1 ] );
+							final Matrix V2 = eig2.getV();
+							final double c = V2.getArray()[ 0 ][ 0 ];
+							final double s = V2.getArray()[ 1 ][ 0 ];
+							final double theta = Math.atan2( s, c );
+							graphics.translate( gPos[ 0 ], gPos[ 1 ] );
+							graphics.rotate( theta );
+							graphics.setColor( getColor( sd, 0, sliceDistanceFade, timepointDistanceFade, spot.isSelected() ) );
+							graphics.draw( new Ellipse2D.Double( -w, -h, 2 * w, 2 * h ) );
+							graphics.setTransform( torig );
+						}
 
 					}
 					else
