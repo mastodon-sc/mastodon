@@ -32,6 +32,15 @@ public class ModelEditHandler implements MouseListener, MouseMotionListener
 {
 	private static final double DEFAULT_RADIUS = 10.;
 
+	/**
+	 * By how portion of the current radius we change this radius for every
+	 * change request.
+	 */
+	private static final double RADIUS_CHANGE_FACTOR = 0.1;
+
+	/** The radius below which a spot cannot go. */
+	private static final double MIN_RADIUS = 2.;
+
 	private final ViewerPanel viewer;
 
 	private final TgmmModel model;
@@ -59,9 +68,9 @@ public class ModelEditHandler implements MouseListener, MouseMotionListener
 	private final RealPoint to = new RealPoint( 3 );
 
 	/**
-	 * Radius used to creaate new spots.
+	 * Radius used to create new spots.
 	 */
-	private final double radius = DEFAULT_RADIUS;
+	private double radius = DEFAULT_RADIUS;
 
 	/**
 	 * A reference used in PoolObjectCollection methods.
@@ -102,6 +111,10 @@ public class ModelEditHandler implements MouseListener, MouseMotionListener
 		actions.add( new CreateSpotAction() );
 		actions.add( new SelectMovedSpotAction() );
 		actions.add( new DeSelectMovedSpotAction() );
+		actions.add( new ChangeSpotRadiusAction( true, true ) );
+		actions.add( new ChangeSpotRadiusAction( true, false ) );
+		actions.add( new ChangeSpotRadiusAction( false, true ) );
+		actions.add( new ChangeSpotRadiusAction( false, false ) );
 
 		for ( final AbstractNamedDefaultKeyStrokeAction action : actions )
 		{
@@ -206,6 +219,23 @@ public class ModelEditHandler implements MouseListener, MouseMotionListener
 		viewer.repaint();
 	}
 
+	private OverlayVertexWrapper< SpotCovariance, Link< SpotCovariance >> getSpotUnderMouse()
+	{
+		viewer.getGlobalMouseCoordinates( to );
+		final ViewerState state = viewer.getState();
+		final int timepoint = state.getCurrentTimepoint();
+
+		final SpatialSearch< OverlayVertexWrapper< SpotCovariance, Link< SpotCovariance > > > search =
+				wrapper.getSpatialSearch( timepoint );
+		search.search( to );
+
+		final OverlayVertexWrapper< SpotCovariance, Link< SpotCovariance >> v = search.nearestNeighbor();
+		if ( null == v || search.nearestNeighborSquareDistance() > v.get().getBoundingSphereRadiusSquared() )
+			return null;
+
+		return v;
+	}
+
 	/*
 	 * PRIVATE METHODS
 	 */
@@ -245,25 +275,12 @@ public class ModelEditHandler implements MouseListener, MouseMotionListener
 			if ( moving )
 				return;
 			moving = true;
-			
-			viewer.getGlobalMouseCoordinates( to );
-			final ViewerState state = viewer.getState();
-			final int timepoint = state.getCurrentTimepoint();
 
-			final SpatialSearch< OverlayVertexWrapper< SpotCovariance, Link< SpotCovariance > > > search =
-					wrapper.getSpatialSearch( timepoint );
-			search.search( to );
-
-			final OverlayVertexWrapper< SpotCovariance, Link< SpotCovariance >> v = search.nearestNeighbor();
+			final OverlayVertexWrapper< SpotCovariance, Link< SpotCovariance >> v = getSpotUnderMouse();
 			if ( null == v )
 				return;
 
-			final double boundingSphereRadiusSquared = v.get().getBoundingSphereRadiusSquared();
-			final double sqDist = search.nearestNeighborSquareDistance();
-			if ( sqDist < boundingSphereRadiusSquared )
-			{
-				movedSpot = v.get();
-			}
+			movedSpot = v.get();
 		}
 	}
 
@@ -284,6 +301,53 @@ public class ModelEditHandler implements MouseListener, MouseMotionListener
 		}
 	}
 
+	private class ChangeSpotRadiusAction extends AbstractNamedDefaultKeyStrokeAction
+	{
+		private static final long serialVersionUID = 1L;
+
+		private final double factor;
+
+		public ChangeSpotRadiusAction( final boolean fast, final boolean increase )
+		{
+			super(
+					fast ?
+							increase ? "increaseSpotRadiusFast" : "decreaseSpotRadiusFast"
+							:
+							increase ? "increaseSpotRadius" : "decreaseSpotRadius",
+					fast ?
+							increase ? KeyStroke.getKeyStroke( "shift E" ) : KeyStroke.getKeyStroke( "shift Q" )
+							:
+							increase ? KeyStroke.getKeyStroke( 'e' ) : KeyStroke.getKeyStroke( 'q' ) );
+
+			this.factor = increase ?
+					fast ? 10. : 1.
+					:
+					fast ? -5. : -1.;
+		}
+
+		@Override
+		public void actionPerformed( final ActionEvent e )
+		{
+			final OverlayVertexWrapper< SpotCovariance, Link< SpotCovariance >> v = getSpotUnderMouse();
+			if ( null == v )
+				return;
+
+			final SpotCovariance spot = v.get();
+
+			double rad = Math.sqrt( spot.getBoundingSphereRadiusSquared() );
+			rad += factor * RADIUS_CHANGE_FACTOR * rad;
+
+			if ( rad < MIN_RADIUS )
+			{
+				rad = MIN_RADIUS;
+			}
+
+			radius = rad;
+			spot.editRadius( radius );
+			viewer.getDisplay().repaint();
+		}
+
+	}
 	
 	private class CreateSpotAction extends AbstractNamedDefaultKeyStrokeAction
 	{
@@ -307,6 +371,7 @@ public class ModelEditHandler implements MouseListener, MouseMotionListener
 			final ViewerState state = viewer.getState();
 			final int timepoint = state.getCurrentTimepoint();
 			final SpotCovariance spot = model.createSpot( timepoint, loc, radius, ref );
+
 			/*
 			 * FIXME How to keep this in sync with the wrapper and TrackScheme?
 			 * Discuss with @tpietzsch. Do this manually here? Have the model
@@ -314,14 +379,10 @@ public class ModelEditHandler implements MouseListener, MouseMotionListener
 			 */
 
 			final int id = idBimap.getVertexId( spot );
-			final TrackSchemeVertex tv = trackscheme.getGraph().addVertex().init( id, "Created!", timepoint, false );
+			trackscheme.getGraph().addVertex().init( id, "Created!", timepoint, false );
 			wrapper.add( timepoint, id );
 			trackscheme.relayout();
 			repaint();
-
-			System.out.println( trackscheme.getGraph() );// DEBUG
-			System.out.println( model.getGraph() );// DEBUG
-
 		}
 	}
 

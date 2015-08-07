@@ -275,7 +275,7 @@ public class TracksOverlaySpotCovariance implements OverlayRenderer, TransformLi
 						}
 
 						final double rd = Math.sqrt( sum );
-						if ( rd > Math.sqrt( spot.get().getBoundingSphereRadiusSquared() ) )
+						if ( rd * rd > spot.get().getBoundingSphereRadiusSquared() )
 						{
 							graphics.setColor( getColor( sd, 0, sliceDistanceFade, timepointDistanceFade, spot.isSelected() ) );
 							graphics.fillOval( ( int ) ( gPos[ 0 ] - 2.5 ), ( int ) ( gPos[ 1 ] - 2.5 ), 5, 5 );

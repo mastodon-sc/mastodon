@@ -40,24 +40,11 @@ public class SpotCovariance extends AbstractSpot< SpotCovariance >
 
 	SpotCovariance init( final int timepointId, final double[] pos, final double radius )
 	{
-		final double eigVal = radius * radius / nSigmasSquared;
-		final double[][] cov = new double[][] {
-			{eigVal, 0., 0.},
-			{0., eigVal,  0.},
-			{0., 0., eigVal}
-		};
-		final double[][] prec = new double[][] {
-				{ 1. / eigVal, 0., 0. },
-				{ 0., 1. / eigVal, 0. },
-				{ 0., 0., 1. / eigVal }
-		};
 		setX( pos[ 0 ] );
 		setY( pos[ 1 ] );
 		setZ( pos[ 2 ] );
-		setCovariance( cov );
-		setPrecision( prec );
-		setBoundingSphereRadiusSquared( radius * radius );
 		setTimepointId( timepointId );
+		editRadius( radius );
 		return this;
 	}
 
@@ -173,6 +160,31 @@ public class SpotCovariance extends AbstractSpot< SpotCovariance >
 	public void setBoundingSphereRadiusSquared( final double r2 )
 	{
 		access.putDouble( r2, BOUNDING_SPHERE_RADIUS_SQUARED_OFFSET );
+	}
+
+	/**
+	 * Change the radius of this spot. <b>Careful</b>: this erases the
+	 * covariance matrix and replace it by values adequate for a sphere.
+	 * 
+	 * @param radius
+	 *            the radius to set.
+	 */
+	public void editRadius( final double radius )
+	{
+		final double eigVal = radius * radius / nSigmasSquared;
+		final double[][] cov = new double[][] {
+				{ eigVal, 0., 0. },
+				{ 0., eigVal, 0. },
+				{ 0., 0., eigVal }
+		};
+		final double[][] prec = new double[][] {
+				{ 1. / eigVal, 0., 0. },
+				{ 0., 1. / eigVal, 0. },
+				{ 0., 0., 1. / eigVal }
+		};
+		setCovariance( cov );
+		setPrecision( prec );
+		setBoundingSphereRadiusSquared( radius * radius );
 	}
 
 	@Override
