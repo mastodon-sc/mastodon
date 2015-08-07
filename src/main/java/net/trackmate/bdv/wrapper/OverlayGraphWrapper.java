@@ -77,6 +77,18 @@ public class OverlayGraphWrapper< V extends Vertex< E >, E extends Edge< V > >
 		return spots;
 	}
 
+	@Override
+	public SpatialSearch< OverlayVertexWrapper< V, E > > getSpatialSearch( final int timepoint )
+	{
+		MySpatialSearch search = timepointToSpatialSearch.get( timepoint );
+		if ( null == search )
+		{
+			search = new MySpatialSearch( timepoint );
+			timepointToSpatialSearch.put( timepoint, search );
+		}
+		return search;
+	}
+
 	public void add( final int timepoint, final int id )
 	{
 		final OverlayVertexWrapper< V, E > obj = vertexRef();
@@ -184,12 +196,6 @@ public class OverlayGraphWrapper< V extends Vertex< E >, E extends Edge< V > >
 		}
 	};
 
-	@Override
-	public SpatialSearch< OverlayVertexWrapper< V, E > > getSpatialSearch( final int timepoint )
-	{
-		return timepointToSpatialSearch.get( timepoint );
-	}
-
 	// TODO: should comprise KDTree and recent additions; KDTree should be rebuild asynchronously
 	private class MySpatialSearch implements SpatialSearch< OverlayVertexWrapper< V, E > >
 	{
@@ -228,19 +234,26 @@ public class OverlayGraphWrapper< V extends Vertex< E >, E extends Edge< V > >
 		@Override
 		public void search( final RealLocalizable p )
 		{
-			nearestNeighborSearch.search( p );
+			if ( null != nearestNeighborSearch )
+				nearestNeighborSearch.search( p );
 		}
 
 		@Override
 		public OverlayVertexWrapper< V, E > nearestNeighbor()
 		{
-			return nearestNeighborSearch.get();
+			if ( null != nearestNeighborSearch )
+				return nearestNeighborSearch.get();
+			else
+				return null;
 		}
 
 		@Override
 		public double nearestNeighborSquareDistance()
 		{
-			return nearestNeighborSearch.getSquareDistance();
+			if ( null != nearestNeighborSearch )
+				return nearestNeighborSearch.getSquareDistance();
+			else
+				return Double.NaN;
 		}
 	}
 
