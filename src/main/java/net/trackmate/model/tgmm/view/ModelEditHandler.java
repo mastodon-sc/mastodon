@@ -296,6 +296,7 @@ public class ModelEditHandler implements MouseListener, MouseMotionListener
 		@Override
 		public void actionPerformed( final ActionEvent e )
 		{
+			wrapper.updateSearchFor( movedSpot.getTimepointId() );
 			movedSpot = null;
 			moving = false;
 		}

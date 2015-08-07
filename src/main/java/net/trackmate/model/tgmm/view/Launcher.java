@@ -51,10 +51,10 @@ public class Launcher
 		 */
 
 		final String bdvFile = "/Volumes/Data/BDV_MVD_5v_final.xml";
-//		final String modelFile = "/Volumes/Data/model.raw";
+		final String modelFile = "/Volumes/Data/model.raw";
 		final int timepointIndex = 10;
 //		final String bdvFile = "D:/Users/Jean-Yves/Development/Data/drosophila.xml";
-		final String modelFile = "";
+//		final String modelFile = "";
 //		final int timepointIndex = 1;
 
 		/*
