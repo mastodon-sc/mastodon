@@ -1,7 +1,16 @@
 package net.trackmate.model.tgmm.view;
 
+import java.awt.Point;
+import java.awt.event.ActionEvent;
+import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionListener;
+import java.util.HashSet;
+
+import javax.swing.ActionMap;
+import javax.swing.InputMap;
+import javax.swing.KeyStroke;
 
 import net.imglib2.RealPoint;
 import net.imglib2.realtransform.AffineTransform3D;
@@ -11,14 +20,18 @@ import net.trackmate.bdv.wrapper.SpatialSearch;
 import net.trackmate.model.Link;
 import net.trackmate.model.tgmm.SpotCovariance;
 import net.trackmate.model.tgmm.TgmmModel;
+import net.trackmate.trackscheme.AbstractNamedDefaultKeyStrokeAction;
+import net.trackmate.trackscheme.GraphIdBimap;
 import net.trackmate.trackscheme.SelectionHandler;
 import net.trackmate.trackscheme.ShowTrackScheme;
 import net.trackmate.trackscheme.TrackSchemeVertex;
 import bdv.viewer.ViewerPanel;
 import bdv.viewer.state.ViewerState;
 
-public class ModelEditHandler implements MouseListener
+public class ModelEditHandler implements MouseListener, MouseMotionListener
 {
+	private static final double DEFAULT_RADIUS = 10.;
+
 	private final ViewerPanel viewer;
 
 	private final TgmmModel model;
@@ -45,6 +58,31 @@ public class ModelEditHandler implements MouseListener
 	 */
 	private final RealPoint to = new RealPoint( 3 );
 
+	/**
+	 * Radius used to creaate new spots.
+	 */
+	private final double radius = DEFAULT_RADIUS;
+
+	/**
+	 * A reference used in PoolObjectCollection methods.
+	 */
+	private final SpotCovariance ref;
+
+	/**
+	 * The spot currently moved by the mouse.
+	 */
+	private SpotCovariance movedSpot;
+
+	private final ActionMap actionMap;
+
+	private final InputMap inputMap;
+
+	private boolean moving = false;
+
+	/*
+	 * CONSTRUCTOR
+	 */
+
 	public ModelEditHandler( final TgmmModel model, final OverlayGraphWrapper< SpotCovariance, Link< SpotCovariance > > wrapper, final ViewerPanel viewer, final ShowTrackScheme trackscheme )
 	{
 		this.model = model;
@@ -52,7 +90,39 @@ public class ModelEditHandler implements MouseListener
 		this.viewer = viewer;
 		this.trackscheme = trackscheme;
 		this.selectionHandler = trackscheme.getSelectionHandler();
+		this.ref = model.getGraph().vertexRef();
+		this.actionMap = new ActionMap();
+		this.inputMap = new InputMap();
+		install();
 	}
+
+	private void install()
+	{
+		final HashSet< AbstractNamedDefaultKeyStrokeAction > actions = new HashSet< AbstractNamedDefaultKeyStrokeAction >();
+		actions.add( new CreateSpotAction() );
+		actions.add( new SelectMovedSpotAction() );
+		actions.add( new DeSelectMovedSpotAction() );
+
+		for ( final AbstractNamedDefaultKeyStrokeAction action : actions )
+		{
+			actionMap.put( action.name(), action );
+			inputMap.put( action.getDefaultKeyStroke(), action.name() );
+		}
+	}
+
+	public ActionMap getActionMap()
+	{
+		return actionMap;
+	}
+
+	public InputMap getDefaultInputMap()
+	{
+		return inputMap;
+	}
+
+	/*
+	 * MOUSE METHODS.
+	 */
 
 	@Override
 	public void mouseClicked( final MouseEvent e )
@@ -63,18 +133,15 @@ public class ModelEditHandler implements MouseListener
 			public void run()
 			{
 				final ViewerState state = viewer.getState();
-				state.getViewerTransform( t );
-				from.setPosition( e.getX(), 0 );
-				from.setPosition( e.getY(), 1 );
-				from.setPosition( 0., 2 );
-				t.applyInverse( to, from );
-
 				final int timepoint = state.getCurrentTimepoint();
 				final SpatialSearch< OverlayVertexWrapper< SpotCovariance, Link< SpotCovariance > > > search =
 						wrapper.getSpatialSearch( timepoint );
+				viewToData( e.getPoint(), state );
 				search.search( to );
-
 				final OverlayVertexWrapper< SpotCovariance, Link< SpotCovariance >> v = search.nearestNeighbor();
+				if ( null == v )
+					return;
+
 				final double boundingSphereRadiusSquared = v.get().getBoundingSphereRadiusSquared();
 				final double sqDist = search.nearestNeighborSquareDistance();
 				if ( sqDist < boundingSphereRadiusSquared )
@@ -97,30 +164,36 @@ public class ModelEditHandler implements MouseListener
 
 	@Override
 	public void mouseEntered( final MouseEvent e )
-	{
-		// TODO Auto-generated method stub
-
-	}
+	{}
 
 	@Override
 	public void mouseExited( final MouseEvent e )
-	{
-		// TODO Auto-generated method stub
-
-	}
+	{}
 
 	@Override
 	public void mousePressed( final MouseEvent e )
-	{
-		// TODO Auto-generated method stub
-
-	}
+	{}
 
 	@Override
 	public void mouseReleased( final MouseEvent e )
-	{
-		// TODO Auto-generated method stub
+	{}
 
+	@Override
+	public void mouseDragged( final MouseEvent e )
+	{}
+
+	@Override
+	public void mouseMoved( final MouseEvent e )
+	{
+		if ( !moving || movedSpot == null )
+			return;
+
+		final ViewerState state = viewer.getState();
+		viewToData( e.getPoint(), state );
+
+		movedSpot.setX( to.getDoublePosition( 0 ) );
+		movedSpot.setY( to.getDoublePosition( 1 ) );
+		movedSpot.setZ( to.getDoublePosition( 2 ) );
 	}
 
 	/*
@@ -132,4 +205,124 @@ public class ModelEditHandler implements MouseListener
 		trackscheme.repaint();
 		viewer.repaint();
 	}
+
+	/*
+	 * PRIVATE METHODS
+	 */
+	
+	/**
+	 * Places the data coordinates corresponding to the specified point (in view
+	 * coordinates) in to the {@link #to} field.
+	 * 
+	 * @param ml
+	 * @param state
+	 */
+	private final void viewToData( final Point ml, final ViewerState state )
+	{
+		state.getViewerTransform( t );
+		from.setPosition( ml.getX(), 0 );
+		from.setPosition( ml.getY(), 1 );
+		from.setPosition( 0., 2 );
+		t.applyInverse( to, from );
+	}
+
+	/*
+	 * ACTIONS
+	 */
+
+	private class SelectMovedSpotAction extends AbstractNamedDefaultKeyStrokeAction
+	{
+		private static final long serialVersionUID = 1L;
+
+		public SelectMovedSpotAction()
+		{
+			super( "selectMovedSpot", KeyStroke.getKeyStroke( ' ' ) );
+		}
+
+		@Override
+		public void actionPerformed( final ActionEvent e )
+		{
+			if ( moving )
+				return;
+			moving = true;
+			
+			viewer.getGlobalMouseCoordinates( to );
+			final ViewerState state = viewer.getState();
+			final int timepoint = state.getCurrentTimepoint();
+
+			final SpatialSearch< OverlayVertexWrapper< SpotCovariance, Link< SpotCovariance > > > search =
+					wrapper.getSpatialSearch( timepoint );
+			search.search( to );
+
+			final OverlayVertexWrapper< SpotCovariance, Link< SpotCovariance >> v = search.nearestNeighbor();
+			if ( null == v )
+				return;
+
+			final double boundingSphereRadiusSquared = v.get().getBoundingSphereRadiusSquared();
+			final double sqDist = search.nearestNeighborSquareDistance();
+			if ( sqDist < boundingSphereRadiusSquared )
+			{
+				movedSpot = v.get();
+			}
+		}
+	}
+
+	private class DeSelectMovedSpotAction extends AbstractNamedDefaultKeyStrokeAction
+	{
+		private static final long serialVersionUID = 1L;
+
+		public DeSelectMovedSpotAction()
+		{
+			super( "deSelectMovedSpot", KeyStroke.getKeyStroke( KeyEvent.VK_SPACE, 0, true ) );
+		}
+
+		@Override
+		public void actionPerformed( final ActionEvent e )
+		{
+			movedSpot = null;
+			moving = false;
+		}
+	}
+
+	
+	private class CreateSpotAction extends AbstractNamedDefaultKeyStrokeAction
+	{
+		private static final long serialVersionUID = 1L;
+
+		private final double[] loc = new double[ 3 ];
+
+		private final GraphIdBimap< SpotCovariance, Link< SpotCovariance >> idBimap;
+
+		public CreateSpotAction()
+		{
+			super( "createSpot", KeyStroke.getKeyStroke( 'a' ) );
+			this.idBimap = model.getGraph().getIdBimap();
+		}
+
+		@Override
+		public void actionPerformed( final ActionEvent e )
+		{
+			viewer.getGlobalMouseCoordinates( to );
+			to.localize( loc );
+			final ViewerState state = viewer.getState();
+			final int timepoint = state.getCurrentTimepoint();
+			final SpotCovariance spot = model.createSpot( timepoint, loc, radius, ref );
+			/*
+			 * FIXME How to keep this in sync with the wrapper and TrackScheme?
+			 * Discuss with @tpietzsch. Do this manually here? Have the model
+			 * implements Listenable? Right now I am doing this manually.
+			 */
+
+			final int id = idBimap.getVertexId( spot );
+			final TrackSchemeVertex tv = trackscheme.getGraph().addVertex().init( id, "Created!", timepoint, false );
+			wrapper.add( timepoint, id );
+			trackscheme.relayout();
+			repaint();
+
+			System.out.println( trackscheme.getGraph() );// DEBUG
+			System.out.println( model.getGraph() );// DEBUG
+
+		}
+	}
+
 }

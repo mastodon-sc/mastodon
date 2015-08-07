@@ -95,6 +95,11 @@ public class OverlayGraphWrapper< V extends Vertex< E >, E extends Edge< V > >
 		trackSchemeGraph.getVertexPool().getByInternalPoolIndex( id, obj.tsv );
 		obj.updateModelVertexRef();
 		getSpots( timepoint ).add( obj );
+		timepointToSpatialSearch.put( timepoint, new MySpatialSearch( timepoint ) );
+		/*
+		 * FIXME Discuss with @tpietzsch: Could the spatial search be updated
+		 * incrementally?
+		 */
 	}
 
 	public void HACK_updateTimepointSets()

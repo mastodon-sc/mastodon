@@ -70,6 +70,15 @@ public class TgmmModel
 		return spot;
 	}
 
+	public SpotCovariance createSpot( final int timepointId, final double[] pos, final double radius, final SpotCovariance ref )
+	{
+		final SpotCovariance spot = graph.addVertex( ref );
+		spot.init( timepointId, pos, radius );
+		getSpots( timepointId ).add( spot );
+		return spot;
+	}
+
+
 	public Link< SpotCovariance > createLink( final SpotCovariance source, final SpotCovariance target )
 	{
 		return graph.addEdge( source, target );
@@ -107,5 +116,5 @@ public class TgmmModel
 		{
 			this.spotPool = spotPool;
 		}
-	};
+	}
 }

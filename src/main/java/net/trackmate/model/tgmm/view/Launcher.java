@@ -51,10 +51,10 @@ public class Launcher
 		 */
 
 		final String bdvFile = "/Volumes/Data/BDV_MVD_5v_final.xml";
-		final String modelFile = "/Volumes/Data/model-small.raw";
+//		final String modelFile = "/Volumes/Data/model.raw";
 		final int timepointIndex = 10;
 //		final String bdvFile = "D:/Users/Jean-Yves/Development/Data/drosophila.xml";
-//		final String modelFile = null;
+		final String modelFile = "";
 //		final int timepointIndex = 1;
 
 		/*
@@ -72,7 +72,7 @@ public class Launcher
 		 * Load model.
 		 */
 
-		System.out.println( "Loading TGMM model." );
+		System.out.println( "Loading/Instantiating TGMM model." );
 		final TgmmModel model;
 		if ( null != modelFile && modelFile.length() > 0 )
 		{
@@ -145,7 +145,10 @@ public class Launcher
 		 * Catch mouse events on BDV.
 		 */
 
-		viewer.getDisplay().addHandler( new ModelEditHandler( model, overlayGraph, viewer, trackscheme ) );
+		final ModelEditHandler meh = new ModelEditHandler( model, overlayGraph, viewer, trackscheme );
+		viewer.getDisplay().addHandler( meh );
+		bdv.getViewerFrame().getKeybindings().addActionMap( "editModel", meh.getActionMap() );
+		bdv.getViewerFrame().getKeybindings().addInputMap( "editModel", meh.getDefaultInputMap() );
 
 		/*
 		 * Display config panel.
