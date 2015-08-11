@@ -14,6 +14,7 @@ import javax.swing.KeyStroke;
 import mpicbg.spim.data.SpimDataException;
 import net.imglib2.realtransform.AffineTransform3D;
 import net.imglib2.ui.InteractiveDisplayCanvasComponent;
+import net.imglib2.ui.OverlayRenderer;
 import net.imglib2.ui.TransformListener;
 import net.trackmate.bdv.wrapper.OverlayGraphWrapper;
 import net.trackmate.bdv.wrapper.VertexLocalizer;
@@ -51,10 +52,10 @@ public class Launcher
 		 */
 
 		final String bdvFile = "/Volumes/Data/BDV_MVD_5v_final.xml";
-		final String modelFile = "/Volumes/Data/model.raw";
+//		final String modelFile = "/Volumes/Data/model-small.raw";
 		final int timepointIndex = 10;
 //		final String bdvFile = "D:/Users/Jean-Yves/Development/Data/drosophila.xml";
-//		final String modelFile = "";
+		final String modelFile = "";
 //		final int timepointIndex = 1;
 
 		/*
@@ -149,6 +150,10 @@ public class Launcher
 		viewer.getDisplay().addHandler( meh );
 		bdv.getViewerFrame().getKeybindings().addActionMap( "editModel", meh.getActionMap() );
 		bdv.getViewerFrame().getKeybindings().addInputMap( "editModel", meh.getDefaultInputMap() );
+		if ( meh instanceof OverlayRenderer )
+		{
+			viewer.getDisplay().addOverlayRenderer( meh );
+		}
 
 		/*
 		 * Display config panel.
