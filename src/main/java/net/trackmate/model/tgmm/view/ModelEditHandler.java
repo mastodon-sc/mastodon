@@ -105,6 +105,7 @@ public class ModelEditHandler implements MouseListener, MouseMotionListener, Ove
 
 	private final LinkCreator linkCreator;
 
+	private final SpotCreator spotCreator;
 
 	/*
 	 * CONSTRUCTOR
@@ -119,20 +120,20 @@ public class ModelEditHandler implements MouseListener, MouseMotionListener, Ove
 		this.trackscheme = trackscheme;
 		this.selectionHandler = trackscheme.getSelectionHandler();
 		this.ref = model.getGraph().vertexRef();
+		this.tsv = trackscheme.getGraph().vertexRef();
 		this.actionMap = new ActionMap();
 		this.inputMap = new InputMap();
 		this.overlay = new GhostOverlay();
-		this.spotMover = new SpotMover( 'v' );
+		this.spotMover = new SpotMover( ' ' );
 		this.linkedSpotCreator = new LinkedSpotCreator( 'A' );
 		this.linkCreator = new LinkCreator( 'l' );
-		this.tsv = trackscheme.getGraph().vertexRef();
+		this.spotCreator = new SpotCreator( 'a' );
 		install();
 	}
 
 	private void install()
 	{
 		final HashSet< AbstractNamedDefaultKeyStrokeAction > actions = new HashSet< AbstractNamedDefaultKeyStrokeAction >();
-		actions.add( new CreateSpotAction() );
 		actions.add( new ChangeSpotRadiusAction( true, true ) );
 		actions.add( new ChangeSpotRadiusAction( true, false ) );
 		actions.add( new ChangeSpotRadiusAction( false, true ) );
@@ -246,6 +247,10 @@ public class ModelEditHandler implements MouseListener, MouseMotionListener, Ove
 		{
 			linkCreator.create();
 		}
+		else if ( e.getKeyChar() == spotCreator.key )
+		{
+			spotCreator.create();
+		}
 	}
 
 	@Override
@@ -293,6 +298,10 @@ public class ModelEditHandler implements MouseListener, MouseMotionListener, Ove
 		else if ( Character.toLowerCase( e.getKeyChar() ) == Character.toLowerCase( linkCreator.key ) )
 		{
 			linkCreator.release();
+		}
+		else if ( Character.toLowerCase( e.getKeyChar() ) == Character.toLowerCase( spotCreator.key ) )
+		{
+			spotCreator.release();
 		}
 	}
 
@@ -624,22 +633,22 @@ public class ModelEditHandler implements MouseListener, MouseMotionListener, Ove
 
 	}
 	
-	private class CreateSpotAction extends AbstractNamedDefaultKeyStrokeAction
+	private class SpotCreator
 	{
-		private static final long serialVersionUID = 1L;
 
 		private final double[] loc = new double[ 3 ];
 
 		private final GraphIdBimap< SpotCovariance, Link< SpotCovariance >> idBimap;
 
-		public CreateSpotAction()
+		private final char key;
+
+		public SpotCreator( final char key )
 		{
-			super( "createSpot", KeyStroke.getKeyStroke( 'a' ) );
+			this.key = key;
 			this.idBimap = model.getGraph().getIdBimap();
 		}
 
-		@Override
-		public void actionPerformed( final ActionEvent e )
+		private void create()
 		{
 			viewer.getGlobalMouseCoordinates( to );
 			to.localize( loc );
@@ -658,6 +667,26 @@ public class ModelEditHandler implements MouseListener, MouseMotionListener, Ove
 			wrapper.add( timepoint, id );
 			trackscheme.relayout();
 			repaint();
+			spotMover.movedSpot = spot;
+			spotMover.moving = true;
+		}
+
+		private void release()
+		{
+			final SpotCovariance spot = spotMover.movedSpot;
+			final TrackSchemeVertex tv = getTrackSchemeVertex( spot );
+			String str;
+			if ( null == tv.getLabel() || tv.getLabel() == "" )
+		{
+				str = "created spot " + tv.getLabel() + " at X=%.1f, Y=%.1f, Z=%.1f, t=%d";
+			}
+			else
+			{
+				str = "created spot ID=" + tv.getInternalPoolIndex() + " at X=%.1f, Y=%.1f, Z=%.1f, t=%d";
+			}
+			viewer.showMessage( String.format( str, spot.getX(), spot.getY(), spot.getZ(), spot.getTimepoint() ) );
+			spotMover.movedSpot = null;
+			spotMover.moving = false;
 		}
 	}
 
