@@ -88,6 +88,11 @@ public class ModelEditHandler implements MouseListener, MouseMotionListener, Ove
 	 */
 	private final SpotCovariance ref;
 
+	/**
+	 * Used as a ref for {@link TrackSchemeVertex} retrievals.
+	 */
+	private final TrackSchemeVertex tsv;
+
 	private final ActionMap actionMap;
 
 	private final InputMap inputMap;
@@ -99,6 +104,7 @@ public class ModelEditHandler implements MouseListener, MouseMotionListener, Ove
 	private final LinkedSpotCreator linkedSpotCreator;
 
 	private final LinkCreator linkCreator;
+
 
 	/*
 	 * CONSTRUCTOR
@@ -119,6 +125,7 @@ public class ModelEditHandler implements MouseListener, MouseMotionListener, Ove
 		this.spotMover = new SpotMover( 'v' );
 		this.linkedSpotCreator = new LinkedSpotCreator( 'A' );
 		this.linkCreator = new LinkCreator( 'l' );
+		this.tsv = trackscheme.getGraph().vertexRef();
 		install();
 	}
 
@@ -136,6 +143,13 @@ public class ModelEditHandler implements MouseListener, MouseMotionListener, Ove
 			actionMap.put( action.name(), action );
 			inputMap.put( action.getDefaultKeyStroke(), action.name() );
 		}
+	}
+
+	private TrackSchemeVertex getTrackSchemeVertex( final SpotCovariance spot )
+	{
+		final int id = model.getGraph().getIdBimap().getVertexId( spot );
+		trackscheme.getGraph().getVertexPool().getByInternalPoolIndex( id, tsv );
+		return tsv;
 	}
 
 	public ActionMap getActionMap()
@@ -239,10 +253,41 @@ public class ModelEditHandler implements MouseListener, MouseMotionListener, Ove
 	{
 		if ( Character.toLowerCase( e.getKeyChar() ) == Character.toLowerCase( spotMover.key ) )
 		{
+			if ( spotMover.movedSpot != null )
+			{
+				final SpotCovariance spot = spotMover.movedSpot;
+				final TrackSchemeVertex tv = getTrackSchemeVertex( spot );
+				String str;
+				if ( null == tv.getLabel() || tv.getLabel() == "" )
+				{
+					str = "moved spot " + tv.getLabel() + " to X=%.1f, Y=%.1f, Z=%.1f, t=%d";
+				}
+				else
+				{
+					str = "moved spot ID=" + tv.getInternalPoolIndex() + " to X=%.1f, Y=%.1f, Z=%.1f, t=%d";
+				}
+				viewer.showMessage( String.format( str, spot.getX(), spot.getY(), spot.getZ(), spot.getTimepoint() ) );
+			}
 			spotMover.release();
+
 		}
 		else if ( Character.toLowerCase( e.getKeyChar() ) == Character.toLowerCase( linkedSpotCreator.key ) )
 		{
+			if ( spotMover.movedSpot != null )
+			{
+				final SpotCovariance spot = spotMover.movedSpot;
+				final TrackSchemeVertex tv = getTrackSchemeVertex( spot );
+				String str;
+				if ( null == tv.getLabel() || tv.getLabel() == "" )
+				{
+					str = "created spot " + tv.getLabel() + " at X=%.1f, Y=%.1f, Z=%.1f, t=%d";
+				}
+				else
+				{
+					str = "created spot ID=" + tv.getInternalPoolIndex() + " at X=%.1f, Y=%.1f, Z=%.1f, t=%d";
+				}
+				viewer.showMessage( String.format( str, spot.getX(), spot.getY(), spot.getZ(), spot.getTimepoint() ) );
+			}
 			linkedSpotCreator.release();
 		}
 		else if ( Character.toLowerCase( e.getKeyChar() ) == Character.toLowerCase( linkCreator.key ) )
@@ -340,7 +385,7 @@ public class ModelEditHandler implements MouseListener, MouseMotionListener, Ove
 			if ( movedSpot == null )
 				return;
 
-			wrapper.updateSearchFor( movedSpot.getTimepointId() );
+			wrapper.updateSearchFor( movedSpot.getTimepoint() );
 			moving = false;
 			movedSpot = null;
 		}
@@ -400,7 +445,7 @@ public class ModelEditHandler implements MouseListener, MouseMotionListener, Ove
 			to.localize( loc );
 			final SpotCovariance spot = model.createSpot( newTimePoint, loc, radius, ref );
 			final int id = idBimap.getVertexId( spot );
-			final TrackSchemeVertex tsgt = trackscheme.getGraph().addVertex().init( id, "Created!", newTimePoint, false );
+			final TrackSchemeVertex tsgt = trackscheme.getGraph().addVertex().init( id, "" + id, newTimePoint, false );
 			wrapper.add( newTimePoint, id );
 			trackscheme.relayout();
 
@@ -494,6 +539,28 @@ public class ModelEditHandler implements MouseListener, MouseMotionListener, Ove
 			{
 				model.createLink( source.get(), target.get() );
 				trackscheme.getGraph().addEdge( source.getTrackSchemeVertex(), target.getTrackSchemeVertex() );
+
+				String str = "created link from spot ";
+				if ( source.getTrackSchemeVertex().getLabel() == null || source.getTrackSchemeVertex().getLabel() == "" )
+				{
+					str += "ID=" + source.getInternalPoolIndex();
+				}
+				else
+				{
+					str += source.getTrackSchemeVertex().getLabel();
+				}
+				str += " at t=" + source.getTimepoint() + " to spot ";
+				if ( target.getTrackSchemeVertex().getLabel() == null || target.getTrackSchemeVertex().getLabel() == "" )
+				{
+					str += "ID=" + target.getInternalPoolIndex();
+				}
+				else
+				{
+					str += target.getTrackSchemeVertex().getLabel();
+				}
+				str += " at t=" + target.getTimepoint();
+				viewer.showMessage( str );
+
 				target = null;
 			}
 			creating = false;
@@ -587,7 +654,7 @@ public class ModelEditHandler implements MouseListener, MouseMotionListener, Ove
 			 */
 
 			final int id = idBimap.getVertexId( spot );
-			trackscheme.getGraph().addVertex().init( id, "Created!", timepoint, false );
+			trackscheme.getGraph().addVertex().init( id, "" + id, timepoint, false );
 			wrapper.add( timepoint, id );
 			trackscheme.relayout();
 			repaint();
@@ -637,8 +704,7 @@ public class ModelEditHandler implements MouseListener, MouseMotionListener, Ove
 
 		private boolean ghostLink = false;
 
-
-		public GhostOverlay()
+		private GhostOverlay()
 		{
 			final float dash[] = { 4.0f };
 			stroke = new BasicStroke( 1.0f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 10.0f, dash, 0.0f );
