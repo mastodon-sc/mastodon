@@ -51,11 +51,12 @@ public class Launcher
 		 * Settings.
 		 */
 
-		final String bdvFile = "/Volumes/Data/BDV_MVD_5v_final.xml";
-		final String modelFile = "/Volumes/Data/model-small.raw";
-		final int timepointIndex = 10;
 //		final String bdvFile = "D:/Users/Jean-Yves/Development/Data/drosophila.xml";
+		final String bdvFile = "/Volumes/Data/BDV_MVD_5v_final.xml";
+		final String modelFile = "/Volumes/Data/model.raw";
+//		final String modelFile = "/Volumes/Data/model-small.raw";
 //		final String modelFile = "";
+		final int timepointIndex = 10;
 //		final int timepointIndex = 1;
 
 		/*
@@ -109,6 +110,7 @@ public class Launcher
 		viewer.addRenderTransformListener( tracksOverlay );
 		final ContextTransformListener tl = setupContextTrackscheme( bdv, overlayGraph, trackscheme );
 		tl.setEnabled( DEFAULT_USE_TRACKSCHEME_CONTEXT );
+		viewer.repaint();
 
 		/*
 		 * Center views on single selected vertex.
