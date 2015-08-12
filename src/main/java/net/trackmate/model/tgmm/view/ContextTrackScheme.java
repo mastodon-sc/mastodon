@@ -77,7 +77,12 @@ class ContextTrackScheme< V extends OverlayVertex< V, E > & HasTrackSchemeVertex
 				if ( search != null )
 				{
 					search.clip( tcrop );
-					for ( final V v : search.getInsideVertices() )
+					final Iterable< V > vs = search.getInsideVertices();
+					if ( null == vs )
+					{
+						continue;
+					}
+					for ( final V v : vs )
 					{
 						final TrackSchemeVertex tv = v.getTrackSchemeVertex();
 						tv.setLayoutTimestamp( mark );
