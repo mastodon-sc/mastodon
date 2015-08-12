@@ -28,6 +28,7 @@ import net.trackmate.bdv.wrapper.SpatialSearch;
 import net.trackmate.model.Link;
 import net.trackmate.model.tgmm.SpotCovariance;
 import net.trackmate.model.tgmm.TgmmModel;
+import net.trackmate.model.tgmm.view.ModelEditListener.ModelEditEvent;
 import net.trackmate.trackscheme.AbstractNamedDefaultKeyStrokeAction;
 import net.trackmate.trackscheme.GraphIdBimap;
 import net.trackmate.trackscheme.SelectionHandler;
@@ -93,6 +94,8 @@ public class ModelEditHandler implements MouseListener, MouseMotionListener, Ove
 
 	private final SpotCreator spotCreator;
 
+	private final HashSet< ModelEditListener > listeners = new HashSet< ModelEditListener >();
+
 	/*
 	 * CONSTRUCTOR
 	 */
@@ -142,6 +145,11 @@ public class ModelEditHandler implements MouseListener, MouseMotionListener, Ove
 		return inputMap;
 	}
 
+	public boolean addModelEditListener( final ModelEditListener listener )
+	{
+		return listeners.add( listener );
+	}
+
 	/*
 	 * MOUSE METHODS.
 	 */
@@ -176,7 +184,8 @@ public class ModelEditHandler implements MouseListener, MouseMotionListener, Ove
 						selectionHandler.clearSelection();
 						selectionHandler.select( tv, false );
 					}
-					repaint();
+					viewer.repaint();
+					trackscheme.repaint();
 				}
 			}
 		}.start();
@@ -235,9 +244,9 @@ public class ModelEditHandler implements MouseListener, MouseMotionListener, Ove
 	{
 		if ( Character.toLowerCase( e.getKeyChar() ) == Character.toLowerCase( spotMover.key ) )
 		{
-			if ( spotMover.movedSpot != null )
+			if ( spotMover.get() != null )
 			{
-				final SpotCovariance spot = spotMover.movedSpot;
+				final SpotCovariance spot = spotMover.get();
 				final TrackSchemeVertex tv = getTrackSchemeVertex( spot );
 				String str;
 				if ( null == tv.getLabel() || tv.getLabel() == "" )
@@ -290,10 +299,13 @@ public class ModelEditHandler implements MouseListener, MouseMotionListener, Ove
 	 * PRIVATE METHODS.
 	 */
 
-	private void repaint()
+	private void fireModelEditEvent()
 	{
-		trackscheme.repaint();
-		viewer.repaint();
+		final ModelEditEvent event = new ModelEditEvent();
+		for ( final ModelEditListener listener : listeners )
+		{
+			listener.modelEdited( event );
+		}
 	}
 
 	private OverlayVertexWrapper< SpotCovariance, Link< SpotCovariance >> getSpotUnderMouse()
@@ -385,6 +397,11 @@ public class ModelEditHandler implements MouseListener, MouseMotionListener, Ove
 			movedSpot = spot;
 		}
 
+		private SpotCovariance get()
+		{
+			return movedSpot;
+		}
+
 		private void release()
 		{
 			if ( movedSpot == null )
@@ -446,7 +463,6 @@ public class ModelEditHandler implements MouseListener, MouseMotionListener, Ove
 			to.localize( loc );
 			final SpotCovariance spot = createSpot( loc, newTimePoint );
 			createLink( v.get(), spot );
-			repaint();
 
 			// Make new spot moveable.
 			spotMover.grab( spot );
@@ -456,7 +472,7 @@ public class ModelEditHandler implements MouseListener, MouseMotionListener, Ove
 		{
 			spotMover.release();
 			overlay.clear();
-			repaint();
+			fireModelEditEvent();
 		}
 	}
 
@@ -557,7 +573,7 @@ public class ModelEditHandler implements MouseListener, MouseMotionListener, Ove
 			creating = false;
 			source = null;
 			overlay.clear();
-			repaint();
+			fireModelEditEvent();
 		}
 
 	}
@@ -630,13 +646,12 @@ public class ModelEditHandler implements MouseListener, MouseMotionListener, Ove
 			viewer.getGlobalMouseCoordinates( to );
 			to.localize( loc );
 			final SpotCovariance spot = createSpot( loc, viewer.getState().getCurrentTimepoint() );
-			repaint();
 			spotMover.grab( spot );
 		}
 
 		private void release()
 		{
-			final SpotCovariance spot = spotMover.movedSpot;
+			final SpotCovariance spot = spotMover.get();
 			final TrackSchemeVertex tv = getTrackSchemeVertex( spot );
 			String str;
 			if ( null == tv.getLabel() || tv.getLabel() == "" )
@@ -649,6 +664,7 @@ public class ModelEditHandler implements MouseListener, MouseMotionListener, Ove
 			}
 			viewer.showMessage( String.format( str, spot.getX(), spot.getY(), spot.getZ(), spot.getTimepoint() ) );
 			spotMover.release();
+			fireModelEditEvent();
 		}
 	}
 

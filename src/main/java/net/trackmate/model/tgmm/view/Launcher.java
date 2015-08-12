@@ -52,10 +52,10 @@ public class Launcher
 		 */
 
 		final String bdvFile = "/Volumes/Data/BDV_MVD_5v_final.xml";
-//		final String modelFile = "/Volumes/Data/model-small.raw";
+		final String modelFile = "/Volumes/Data/model-small.raw";
 		final int timepointIndex = 10;
 //		final String bdvFile = "D:/Users/Jean-Yves/Development/Data/drosophila.xml";
-		final String modelFile = "";
+//		final String modelFile = "";
 //		final int timepointIndex = 1;
 
 		/*
@@ -143,7 +143,7 @@ public class Launcher
 		} );
 		
 		/*
-		 * Catch mouse events on BDV.
+		 * Model editor.
 		 */
 
 		final ModelEditHandler meh = new ModelEditHandler( model, overlayGraph, viewer, trackscheme );
@@ -154,6 +154,21 @@ public class Launcher
 		{
 			viewer.getDisplay().addOverlayRenderer( meh );
 		}
+		meh.addModelEditListener( new ModelEditListener()
+		{
+			@Override
+			public void modelEdited( final ModelEditEvent event )
+			{
+				if ( !tl.isEnabled() )
+				{
+					trackscheme.relayout();
+				}
+				else
+				{
+					tl.transformChanged( null );
+				}
+			}
+		} );
 
 		/*
 		 * Display config panel.
