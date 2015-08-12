@@ -57,4 +57,10 @@ public class OverlayEdgeWrapper< V extends Vertex< E >, E extends Edge< V > >
 		vertex.updateModelVertexRef();
 		return vertex;
 	}
+
+	@Override
+	public boolean isSelected()
+	{
+		return tse.isSelected();
+	}
 }

@@ -218,10 +218,10 @@ public class TracksOverlaySpotCovariance implements OverlayRenderer, TransformLi
 						{
 							if ( ( sd0 > -1 && sd0 < 1 ) || ( sd1 > -1 && sd1 < 1 ) )
 							{
-								final Color c1 = getColor( sd1, td1, sliceDistanceFade, timepointDistanceFade, false );
+								final Color c1 = getColor( sd1, td1, sliceDistanceFade, timepointDistanceFade, edge.isSelected() );
 								if ( useGradient )
 								{
-									final Color c0 = getColor( sd0, td0, sliceDistanceFade, timepointDistanceFade, false );
+									final Color c0 = getColor( sd0, td0, sliceDistanceFade, timepointDistanceFade, edge.isSelected() );
 									graphics.setPaint( new GradientPaint( x0, y0, c0, x1, y1, c1 ) );
 								}
 								else
