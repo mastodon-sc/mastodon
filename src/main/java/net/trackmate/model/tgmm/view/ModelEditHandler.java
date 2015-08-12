@@ -127,6 +127,7 @@ public class ModelEditHandler implements MouseListener, MouseMotionListener, Ove
 		actions.add( new ChangeSpotRadiusAction( true, false ) );
 		actions.add( new ChangeSpotRadiusAction( false, true ) );
 		actions.add( new ChangeSpotRadiusAction( false, false ) );
+		actions.add( new DeleteSpotAction() );
 
 		for ( final AbstractNamedDefaultKeyStrokeAction action : actions )
 		{
@@ -343,8 +344,16 @@ public class ModelEditHandler implements MouseListener, MouseMotionListener, Ove
 		final int id = idBimap.getVertexId( spot );
 		trackscheme.getGraph().addVertex().init( id, "" + id, timepoint, false );
 		wrapper.add( timepoint, id );
-		wrapper.updateSearchFor( timepoint );
 		return spot;
+	}
+
+	private boolean deleteSpot( final SpotCovariance spot )
+	{
+		final int timepoint = spot.getTimepoint();
+		trackscheme.getGraph().remove( getTrackSchemeVertex( spot ) );
+		final boolean ok = model.deleteSpot( spot );
+		wrapper.refresh( timepoint );
+		return ok;
 	}
 
 	private Link< SpotCovariance > createLink( final SpotCovariance source, final SpotCovariance target )
@@ -581,6 +590,48 @@ public class ModelEditHandler implements MouseListener, MouseMotionListener, Ove
 	/*
 	 * ACTIONS
 	 */
+
+	private class DeleteSpotAction extends AbstractNamedDefaultKeyStrokeAction
+	{
+		private static final long serialVersionUID = 1L;
+
+		public DeleteSpotAction()
+		{
+			super( "deleteSpot", KeyStroke.getKeyStroke( 'd' ) );
+		}
+
+		@Override
+		public void actionPerformed( final ActionEvent e )
+		{
+			final OverlayVertexWrapper< SpotCovariance, Link< SpotCovariance >> v = getSpotUnderMouse();
+			if ( null == v )
+				return;
+
+			final SpotCovariance spot = v.get();
+			final boolean deleted = deleteSpot( spot );
+			String str;
+			if ( deleted )
+			{
+				str = "removed spot ";
+			}
+			else
+			{
+				str = "problem removing spot ";
+			}
+			if ( getTrackSchemeVertex( spot ).getLabel() == null || getTrackSchemeVertex( spot ).getLabel() == "" )
+			{
+				str += "ID=" + spot.getInternalPoolIndex();
+			}
+			else
+			{
+				str += getTrackSchemeVertex( spot ).getLabel();
+			}
+			str += " from t=" + spot.getTimepoint();
+			fireModelEditEvent();
+			viewer.showMessage( str );
+		}
+
+	}
 
 	private class ChangeSpotRadiusAction extends AbstractNamedDefaultKeyStrokeAction
 	{

@@ -78,6 +78,12 @@ public class TgmmModel
 		return spot;
 	}
 
+	public boolean deleteSpot( final SpotCovariance spot )
+	{
+		graph.remove( spot );
+		final int timepoint = spot.getTimepoint();
+		return getSpots( timepoint ).remove( spot );
+	}
 
 	public Link< SpotCovariance > createLink( final SpotCovariance source, final SpotCovariance target )
 	{
@@ -117,4 +123,5 @@ public class TgmmModel
 			this.spotPool = spotPool;
 		}
 	}
+
 }
