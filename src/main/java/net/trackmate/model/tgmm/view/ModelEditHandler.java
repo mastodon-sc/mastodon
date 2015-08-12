@@ -4,7 +4,6 @@ import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
@@ -33,6 +32,7 @@ import net.trackmate.trackscheme.AbstractNamedDefaultKeyStrokeAction;
 import net.trackmate.trackscheme.GraphIdBimap;
 import net.trackmate.trackscheme.SelectionHandler;
 import net.trackmate.trackscheme.ShowTrackScheme;
+import net.trackmate.trackscheme.TrackSchemeGraph;
 import net.trackmate.trackscheme.TrackSchemeVertex;
 import Jama.EigenvalueDecomposition;
 import Jama.Matrix;
@@ -62,16 +62,7 @@ public class ModelEditHandler implements MouseListener, MouseMotionListener, Ove
 
 	private final OverlayGraphWrapper< SpotCovariance, Link< SpotCovariance >> wrapper;
 
-	/**
-	 * Used to read current transform from {@link #viewer} state, that
-	 * transforms data coordinates into user (viewer) coordinates.
-	 */
-	private final AffineTransform3D t = new AffineTransform3D();
-
-	/**
-	 * Used to store position in user (viewer) coordinates.
-	 */
-	private final RealPoint from = new RealPoint( 3 );
+	private final GraphIdBimap< SpotCovariance, Link< SpotCovariance >> idBimap;
 
 	/**
 	 * Used to store position in data coordinates.
@@ -87,11 +78,6 @@ public class ModelEditHandler implements MouseListener, MouseMotionListener, Ove
 	 * A reference used in PoolObjectCollection methods.
 	 */
 	private final SpotCovariance ref;
-
-	/**
-	 * Used as a ref for {@link TrackSchemeVertex} retrievals.
-	 */
-	private final TrackSchemeVertex tsv;
 
 	private final ActionMap actionMap;
 
@@ -115,12 +101,12 @@ public class ModelEditHandler implements MouseListener, MouseMotionListener, Ove
 	public ModelEditHandler( final TgmmModel model, final OverlayGraphWrapper< SpotCovariance, Link< SpotCovariance > > wrapper, final ViewerPanel viewer, final ShowTrackScheme trackscheme )
 	{
 		this.model = model;
+		this.idBimap = model.getGraph().getIdBimap();
 		this.wrapper = wrapper;
 		this.viewer = viewer;
 		this.trackscheme = trackscheme;
 		this.selectionHandler = trackscheme.getSelectionHandler();
 		this.ref = model.getGraph().vertexRef();
-		this.tsv = trackscheme.getGraph().vertexRef();
 		this.actionMap = new ActionMap();
 		this.inputMap = new InputMap();
 		this.overlay = new GhostOverlay();
@@ -146,13 +132,6 @@ public class ModelEditHandler implements MouseListener, MouseMotionListener, Ove
 		}
 	}
 
-	private TrackSchemeVertex getTrackSchemeVertex( final SpotCovariance spot )
-	{
-		final int id = model.getGraph().getIdBimap().getVertexId( spot );
-		trackscheme.getGraph().getVertexPool().getByInternalPoolIndex( id, tsv );
-		return tsv;
-	}
-
 	public ActionMap getActionMap()
 	{
 		return actionMap;
@@ -175,11 +154,9 @@ public class ModelEditHandler implements MouseListener, MouseMotionListener, Ove
 			@Override
 			public void run()
 			{
-				final ViewerState state = viewer.getState();
-				final int timepoint = state.getCurrentTimepoint();
 				final SpatialSearch< OverlayVertexWrapper< SpotCovariance, Link< SpotCovariance > > > search =
-						wrapper.getSpatialSearch( timepoint );
-				viewToData( e.getPoint(), state );
+						wrapper.getSpatialSearch( viewer.getState().getCurrentTimepoint() );
+				viewer.getGlobalMouseCoordinates( to );
 				search.search( to );
 				final OverlayVertexWrapper< SpotCovariance, Link< SpotCovariance >> v = search.nearestNeighbor();
 				if ( null == v )
@@ -335,25 +312,42 @@ public class ModelEditHandler implements MouseListener, MouseMotionListener, Ove
 
 		return v;
 	}
-
-	/*
-	 * PRIVATE METHODS
-	 */
 	
 	/**
-	 * Places the data coordinates corresponding to the specified point (in view
-	 * coordinates) in to the {@link #to} field.
+	 * Creates a new {@link SpotCovariance} at the specified location and
+	 * timepoint. Also makes sure it is properly added to the
+	 * {@link TrackSchemeGraph} with the right id, and that the spatial search
+	 * is updated with the new spot.
 	 * 
-	 * @param ml
-	 * @param state
+	 * @param loc
+	 *            the spatial location of the spot in global coordinates.
+	 * @param timepoint
+	 *            the timepoint to add it to.
+	 * @return the spot created.
 	 */
-	private final void viewToData( final Point ml, final ViewerState state )
+	private SpotCovariance createSpot( final double[] loc, final int timepoint )
 	{
-		state.getViewerTransform( t );
-		from.setPosition( ml.getX(), 0 );
-		from.setPosition( ml.getY(), 1 );
-		from.setPosition( 0., 2 );
-		t.applyInverse( to, from );
+		final SpotCovariance spot = model.createSpot( timepoint, loc, radius, ref );
+		final int id = idBimap.getVertexId( spot );
+		trackscheme.getGraph().addVertex().init( id, "" + id, timepoint, false );
+		wrapper.add( timepoint, id );
+		wrapper.updateSearchFor( timepoint );
+		return spot;
+	}
+
+	private Link< SpotCovariance > createLink( final SpotCovariance source, final SpotCovariance target )
+	{
+		final Link< SpotCovariance > link = model.createLink( source, target );
+		trackscheme.getGraph().addEdge( getTrackSchemeVertex( source ), getTrackSchemeVertex( target ) );
+		return link;
+	}
+
+	private TrackSchemeVertex getTrackSchemeVertex( final SpotCovariance spot )
+	{
+		final int id = model.getGraph().getIdBimap().getVertexId( spot );
+		final TrackSchemeVertex tsv = trackscheme.getGraph().vertexRef();
+		trackscheme.getGraph().getVertexPool().getByInternalPoolIndex( id, tsv );
+		return tsv;
 	}
 
 	/*
@@ -369,8 +363,6 @@ public class ModelEditHandler implements MouseListener, MouseMotionListener, Ove
 
 		private final char key;
 
-		private boolean moving = false;
-
 		public SpotMover( final char key )
 		{
 			this.key = key;
@@ -378,15 +370,19 @@ public class ModelEditHandler implements MouseListener, MouseMotionListener, Ove
 
 		private void grab()
 		{
-			if ( moving )
+			if ( null != movedSpot )
 				return;
 
 			final OverlayVertexWrapper< SpotCovariance, Link< SpotCovariance >> v = getSpotUnderMouse();
 			if ( null == v )
 				return;
 
-			moving = true;
-			movedSpot = v.get();
+			grab( v.get() );
+		}
+
+		private void grab( final SpotCovariance spot )
+		{
+			movedSpot = spot;
 		}
 
 		private void release()
@@ -395,13 +391,12 @@ public class ModelEditHandler implements MouseListener, MouseMotionListener, Ove
 				return;
 
 			wrapper.updateSearchFor( movedSpot.getTimepoint() );
-			moving = false;
 			movedSpot = null;
 		}
 		
 		private void move()
 		{
-			if ( !moving || movedSpot == null )
+			if ( movedSpot == null )
 				return;
 
 			viewer.getGlobalMouseCoordinates( to );
@@ -409,6 +404,7 @@ public class ModelEditHandler implements MouseListener, MouseMotionListener, Ove
 			movedSpot.setY( to.getDoublePosition( 1 ) );
 			movedSpot.setZ( to.getDoublePosition( 2 ) );
 		}
+
 	}
 
 	private class LinkedSpotCreator
@@ -417,12 +413,9 @@ public class ModelEditHandler implements MouseListener, MouseMotionListener, Ove
 
 		private final char key;
 
-		private final GraphIdBimap< SpotCovariance, Link< SpotCovariance >> idBimap;
-
 		private LinkedSpotCreator( final char key )
 		{
 			this.key = key;
-			this.idBimap = model.getGraph().getIdBimap();
 		}
 
 		private void create()
@@ -434,8 +427,7 @@ public class ModelEditHandler implements MouseListener, MouseMotionListener, Ove
 			final OverlayVertexWrapper< SpotCovariance, Link< SpotCovariance >> v = getSpotUnderMouse();
 			if ( null == v )
 				return;
-			overlay.ghostSpot = v;
-			final TrackSchemeVertex tsgs = v.getTrackSchemeVertex();
+			overlay.paint( v );
 
 			/*
 			 * Move to next timepoint.
@@ -452,26 +444,18 @@ public class ModelEditHandler implements MouseListener, MouseMotionListener, Ove
 
 			viewer.getGlobalMouseCoordinates( to );
 			to.localize( loc );
-			final SpotCovariance spot = model.createSpot( newTimePoint, loc, radius, ref );
-			final int id = idBimap.getVertexId( spot );
-			final TrackSchemeVertex tsgt = trackscheme.getGraph().addVertex().init( id, "" + id, newTimePoint, false );
-			wrapper.add( newTimePoint, id );
-			trackscheme.relayout();
-
-			model.createLink( v.get(), spot );
-			trackscheme.getGraph().addEdge( tsgs, tsgt );
-
+			final SpotCovariance spot = createSpot( loc, newTimePoint );
+			createLink( v.get(), spot );
 			repaint();
 
-			spotMover.movedSpot = spot;
-			spotMover.moving = true;
-
+			// Make new spot moveable.
+			spotMover.grab( spot );
 		}
 
 		private void release()
 		{
 			spotMover.release();
-			overlay.ghostSpot = null;
+			overlay.clear();
 			repaint();
 		}
 	}
@@ -485,6 +469,8 @@ public class ModelEditHandler implements MouseListener, MouseMotionListener, Ove
 		private OverlayVertexWrapper< SpotCovariance, Link< SpotCovariance >> target;
 
 		private OverlayVertexWrapper< SpotCovariance, Link< SpotCovariance >> source;
+
+		private double[] linkTarget;
 
 		private LinkCreator( final char key )
 		{
@@ -500,12 +486,11 @@ public class ModelEditHandler implements MouseListener, MouseMotionListener, Ove
 			final OverlayVertexWrapper< SpotCovariance, Link< SpotCovariance >> v = getSpotUnderMouse();
 			if ( null == v )
 				return;
-			overlay.ghostSpot = v;
-			overlay.ghostLink = true;
+			overlay.paint( v );
+			linkTarget = overlay.setPaintGhostLink( true );
 			viewer.getGlobalMouseCoordinates( to );
-			to.localize( overlay.lPos2 );
+			to.localize( linkTarget );
 			creating = true;
-			overlay.ghostLink = true;
 			source = v;
 			target = null;
 			viewer.setTimepoint( viewer.getState().getCurrentTimepoint() + 1 );
@@ -524,7 +509,7 @@ public class ModelEditHandler implements MouseListener, MouseMotionListener, Ove
 			final OverlayVertexWrapper< SpotCovariance, Link< SpotCovariance >> v = search.nearestNeighbor();
 			if ( v == null )
 			{
-				to.localize( overlay.lPos2 );
+				to.localize( linkTarget );
 				return;
 			}
 
@@ -533,12 +518,12 @@ public class ModelEditHandler implements MouseListener, MouseMotionListener, Ove
 			final double snapSqDist = target.get().getBoundingSphereRadiusSquared();
 			if ( sqDist < snapSqDist )
 			{
-				target.localize( overlay.lPos2 );
+				target.localize( linkTarget );
 			}
 			else
 			{
 				target = null;
-				to.localize( overlay.lPos2 );
+				to.localize( linkTarget );
 			}
 		}
 
@@ -546,9 +531,7 @@ public class ModelEditHandler implements MouseListener, MouseMotionListener, Ove
 		{
 			if ( null != target )
 			{
-				model.createLink( source.get(), target.get() );
-				trackscheme.getGraph().addEdge( source.getTrackSchemeVertex(), target.getTrackSchemeVertex() );
-
+				createLink( source.get(), target.get() );
 				String str = "created link from spot ";
 				if ( source.getTrackSchemeVertex().getLabel() == null || source.getTrackSchemeVertex().getLabel() == "" )
 				{
@@ -569,13 +552,11 @@ public class ModelEditHandler implements MouseListener, MouseMotionListener, Ove
 				}
 				str += " at t=" + target.getTimepoint();
 				viewer.showMessage( str );
-
 				target = null;
 			}
 			creating = false;
 			source = null;
-			overlay.ghostLink = false;
-			overlay.ghostSpot = null;
+			overlay.clear();
 			repaint();
 		}
 
@@ -635,40 +616,22 @@ public class ModelEditHandler implements MouseListener, MouseMotionListener, Ove
 	
 	private class SpotCreator
 	{
-
 		private final double[] loc = new double[ 3 ];
-
-		private final GraphIdBimap< SpotCovariance, Link< SpotCovariance >> idBimap;
 
 		private final char key;
 
 		public SpotCreator( final char key )
 		{
 			this.key = key;
-			this.idBimap = model.getGraph().getIdBimap();
 		}
 
 		private void create()
 		{
 			viewer.getGlobalMouseCoordinates( to );
 			to.localize( loc );
-			final ViewerState state = viewer.getState();
-			final int timepoint = state.getCurrentTimepoint();
-			final SpotCovariance spot = model.createSpot( timepoint, loc, radius, ref );
-
-			/*
-			 * FIXME How to keep this in sync with the wrapper and TrackScheme?
-			 * Discuss with @tpietzsch. Do this manually here? Have the model
-			 * implements Listenable? Right now I am doing this manually.
-			 */
-
-			final int id = idBimap.getVertexId( spot );
-			trackscheme.getGraph().addVertex().init( id, "" + id, timepoint, false );
-			wrapper.add( timepoint, id );
-			trackscheme.relayout();
+			final SpotCovariance spot = createSpot( loc, viewer.getState().getCurrentTimepoint() );
 			repaint();
-			spotMover.movedSpot = spot;
-			spotMover.moving = true;
+			spotMover.grab( spot );
 		}
 
 		private void release()
@@ -685,8 +648,7 @@ public class ModelEditHandler implements MouseListener, MouseMotionListener, Ove
 				str = "created spot ID=" + tv.getInternalPoolIndex() + " at X=%.1f, Y=%.1f, Z=%.1f, t=%d";
 			}
 			viewer.showMessage( String.format( str, spot.getX(), spot.getY(), spot.getZ(), spot.getTimepoint() ) );
-			spotMover.movedSpot = null;
-			spotMover.moving = false;
+			spotMover.release();
 		}
 	}
 
@@ -731,7 +693,7 @@ public class ModelEditHandler implements MouseListener, MouseMotionListener, Ove
 
 		private final Color color = Color.WHITE;
 
-		private boolean ghostLink = false;
+		private boolean paintGhostLink = false;
 
 		private GhostOverlay()
 		{
@@ -739,11 +701,44 @@ public class ModelEditHandler implements MouseListener, MouseMotionListener, Ove
 			stroke = new BasicStroke( 1.0f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 10.0f, dash, 0.0f );
 		}
 
+		/**
+		 * Sets the {@link OverlayVertexWrapper} to paint as a "ghost" by this
+		 * overlay. If <code>null</code>, will not paint anything.
+		 * 
+		 * @param ovw
+		 *            the {@link OverlayVertexWrapper} to paint as a "ghost".
+		 */
+		private void paint( final OverlayVertexWrapper< SpotCovariance, Link< SpotCovariance >> ovw )
+		{
+			this.ghostSpot = ovw;
+		}
+
+		/**
+		 * Sets whether the ghost link should be painted. Write the link target
+		 * position (in global coordinates) in the returned double array
+		 * instance.
+		 * 
+		 * @param doPaint
+		 *            if <code>true</code>, the ghost link will be painted.
+		 * @return the double array instance into which the link target
+		 *         coordinates should be written.
+		 */
+		private double[] setPaintGhostLink( final boolean doPaint )
+		{
+			this.paintGhostLink = doPaint;
+			return lPos2;
+		}
+
+		private void clear()
+		{
+			this.paintGhostLink = false;
+			this.ghostSpot = null;
+		}
 
 		@Override
 		public void drawOverlays( final Graphics g )
 		{
-			if ( null == ghostSpot && !ghostLink )
+			if ( null == ghostSpot && !paintGhostLink )
 				return;
 
 			final Graphics2D graphics = ( Graphics2D ) g;
@@ -788,7 +783,7 @@ public class ModelEditHandler implements MouseListener, MouseMotionListener, Ove
 				graphics.setTransform( torig );
 			}
 			
-			if ( ghostLink )
+			if ( paintGhostLink )
 			{
 				final int x1 = ( int ) gPos1[ 0 ];
 				final int y1 = ( int ) gPos1[ 1 ];
