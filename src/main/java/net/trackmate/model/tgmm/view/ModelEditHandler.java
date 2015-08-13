@@ -25,6 +25,7 @@ import net.imglib2.util.LinAlgHelpers;
 import net.trackmate.bdv.wrapper.OverlayGraphWrapper;
 import net.trackmate.bdv.wrapper.OverlayVertexWrapper;
 import net.trackmate.bdv.wrapper.SpatialSearch;
+import net.trackmate.graph.util.Graphs;
 import net.trackmate.model.Link;
 import net.trackmate.model.tgmm.SpotCovariance;
 import net.trackmate.model.tgmm.TgmmModel;
@@ -33,6 +34,7 @@ import net.trackmate.trackscheme.AbstractNamedDefaultKeyStrokeAction;
 import net.trackmate.trackscheme.GraphIdBimap;
 import net.trackmate.trackscheme.SelectionHandler;
 import net.trackmate.trackscheme.ShowTrackScheme;
+import net.trackmate.trackscheme.TrackSchemeEdge;
 import net.trackmate.trackscheme.TrackSchemeGraph;
 import net.trackmate.trackscheme.TrackSchemeVertex;
 import Jama.EigenvalueDecomposition;
@@ -96,6 +98,8 @@ public class ModelEditHandler implements MouseListener, MouseMotionListener, Ove
 
 	private final HashSet< ModelEditListener > listeners = new HashSet< ModelEditListener >();
 
+	private final LinkRemover linkRemover;
+
 	/*
 	 * CONSTRUCTOR
 	 */
@@ -117,6 +121,7 @@ public class ModelEditHandler implements MouseListener, MouseMotionListener, Ove
 		this.linkedSpotCreator = new LinkedSpotCreator( 's' );
 		this.linkCreator = new LinkCreator( 'a' );
 		this.spotCreator = new SpotCreator( 'a' );
+		this.linkRemover = new LinkRemover( 'd' );
 		install();
 	}
 
@@ -127,7 +132,7 @@ public class ModelEditHandler implements MouseListener, MouseMotionListener, Ove
 		actions.add( new ChangeSpotRadiusAction( true, false ) );
 		actions.add( new ChangeSpotRadiusAction( false, true ) );
 		actions.add( new ChangeSpotRadiusAction( false, false ) );
-		actions.add( new DeleteSpotAction() );
+//		actions.add( new DeleteSpotAction() );
 
 		for ( final AbstractNamedDefaultKeyStrokeAction action : actions )
 		{
@@ -217,33 +222,41 @@ public class ModelEditHandler implements MouseListener, MouseMotionListener, Ove
 	{
 		spotMover.move();
 		linkCreator.move();
+		linkRemover.findTarget();
 	}
 
 	@Override
 	public void keyPressed( final KeyEvent e )
 	{
-		if ( Character.toLowerCase( e.getKeyChar() ) == Character.toLowerCase( spotCreator.key ) )
+		final char key = e.getKeyChar();
+
+		if ( Character.toLowerCase( key ) == Character.toLowerCase( spotCreator.key ) )
 		{
 			spotCreator.create();
 		}
-		if ( !spotCreator.creating && Character.toLowerCase( e.getKeyChar() ) == Character.toLowerCase( linkCreator.key ) )
+		if ( !spotCreator.creating && Character.toLowerCase( key ) == Character.toLowerCase( linkCreator.key ) )
 		{
 			linkCreator.create( !e.isShiftDown() );
 		}
-		if ( e.getKeyChar() == spotMover.key )
+		if ( key == spotMover.key )
 		{
 			spotMover.grab();
 		}
-		if ( Character.toLowerCase( e.getKeyChar() ) == Character.toLowerCase( linkedSpotCreator.key ) )
+		if ( Character.toLowerCase( key ) == Character.toLowerCase( linkedSpotCreator.key ) )
 		{
 			linkedSpotCreator.create( !e.isShiftDown() );
+		}
+		if ( key == linkRemover.key )
+		{
+			linkRemover.findSource();
 		}
 	}
 
 	@Override
 	public void keyReleased( final KeyEvent e )
 	{
-		if ( Character.toLowerCase( e.getKeyChar() ) == Character.toLowerCase( spotMover.key ) )
+		final char key = e.getKeyChar();
+		if ( Character.toLowerCase( key ) == Character.toLowerCase( spotMover.key ) )
 		{
 			if ( spotMover.get() != null )
 			{
@@ -263,7 +276,7 @@ public class ModelEditHandler implements MouseListener, MouseMotionListener, Ove
 			spotMover.release();
 
 		}
-		if ( Character.toLowerCase( e.getKeyChar() ) == Character.toLowerCase( linkedSpotCreator.key ) )
+		if ( Character.toLowerCase( key ) == Character.toLowerCase( linkedSpotCreator.key ) )
 		{
 			if ( spotMover.movedSpot != null )
 			{
@@ -282,13 +295,17 @@ public class ModelEditHandler implements MouseListener, MouseMotionListener, Ove
 			}
 			linkedSpotCreator.release();
 		}
-		if ( Character.toLowerCase( e.getKeyChar() ) == Character.toLowerCase( linkCreator.key ) )
+		if ( Character.toLowerCase( key ) == Character.toLowerCase( linkCreator.key ) )
 		{
 			linkCreator.release();
 		}
-		if ( Character.toLowerCase( e.getKeyChar() ) == Character.toLowerCase( spotCreator.key ) )
+		if ( Character.toLowerCase( key ) == Character.toLowerCase( spotCreator.key ) )
 		{
 			spotCreator.release();
+		}
+		if ( Character.toLowerCase( key ) == Character.toLowerCase( linkRemover.key ) )
+		{
+			linkRemover.release();
 		}
 	}
 
@@ -326,6 +343,20 @@ public class ModelEditHandler implements MouseListener, MouseMotionListener, Ove
 		return v;
 	}
 	
+	private OverlayVertexWrapper< SpotCovariance, Link< SpotCovariance >> getMouseClosestSpot()
+	{
+		viewer.getGlobalMouseCoordinates( to );
+		final ViewerState state = viewer.getState();
+		final int timepoint = state.getCurrentTimepoint();
+
+		final SpatialSearch< OverlayVertexWrapper< SpotCovariance, Link< SpotCovariance > > > search =
+				wrapper.getSpatialSearch( timepoint );
+		search.search( to );
+
+		final OverlayVertexWrapper< SpotCovariance, Link< SpotCovariance >> v = search.nearestNeighbor();
+		return v;
+	}
+
 	/**
 	 * Creates a new {@link SpotCovariance} at the specified location and
 	 * timepoint. Also makes sure it is properly added to the
@@ -380,6 +411,19 @@ public class ModelEditHandler implements MouseListener, MouseMotionListener, Ove
 		final Link< SpotCovariance > link = model.createLink( s, t );
 		trackscheme.getGraph().addEdge( getTrackSchemeVertex( s ), getTrackSchemeVertex( t ) );
 		return link;
+	}
+
+	private void deleteLink( final SpotCovariance source, final SpotCovariance target )
+	{
+		final TrackSchemeVertex ts = getTrackSchemeVertex( source );
+		final TrackSchemeVertex tt = getTrackSchemeVertex( target );
+		TrackSchemeEdge tedge = trackscheme.getGraph().getEdge( ts, tt );
+		if ( null == tedge )
+		{
+			tedge = trackscheme.getGraph().getEdge( tt, ts );
+		}
+		trackscheme.getGraph().remove( tedge );
+		model.removeLink( source, target );
 	}
 
 	private TrackSchemeVertex getTrackSchemeVertex( final SpotCovariance spot )
@@ -520,7 +564,7 @@ public class ModelEditHandler implements MouseListener, MouseMotionListener, Ove
 			final OverlayVertexWrapper< SpotCovariance, Link< SpotCovariance >> v = getSpotUnderMouse();
 			if ( null == v )
 				return;
-			overlay.paint( v );
+			overlay.paint( v.get() );
 
 			/*
 			 * Move to next timepoint.
@@ -576,7 +620,7 @@ public class ModelEditHandler implements MouseListener, MouseMotionListener, Ove
 			if ( creating || null == v )
 				return;
 
-			overlay.paint( v );
+			overlay.paint( v.get() );
 			linkTarget = overlay.setPaintGhostLink( true );
 			viewer.getGlobalMouseCoordinates( to );
 			to.localize( linkTarget );
@@ -657,7 +701,149 @@ public class ModelEditHandler implements MouseListener, MouseMotionListener, Ove
 			overlay.clear();
 			fireModelEditEvent();
 		}
+	}
 
+	private class LinkRemover
+	{
+		private final char key;
+
+		private boolean removing = false;
+
+		private SpotCovariance source;
+
+		private final AffineTransform3D t = new AffineTransform3D();
+
+		private final RealPoint sview = new RealPoint( 3 );
+
+		private final RealPoint tview = new RealPoint( 3 );
+
+		private final RealPoint eview = new RealPoint( 3 );
+
+		private SpotCovariance choice;
+
+		private LinkRemover( final char key )
+		{
+			this.key = key;
+		}
+
+		private void findSource()
+		{
+			if ( removing || getSpotUnderMouse() != null )
+				return;
+
+			removing = true;
+			source = getMouseClosestSpot().get();
+			source.localize( overlay.setPaintGhostLink( true ) );
+		}
+
+		private void findTarget()
+		{
+			if ( !removing )
+				return;
+
+			viewer.getState().getViewerTransform( t );
+			viewer.getGlobalMouseCoordinates( to );
+			t.applyInverse( eview, to );
+
+			// source coords in view space.
+			to.setPosition( source );
+			t.applyInverse( sview, to );
+
+			double min = Double.POSITIVE_INFINITY;
+			choice = null;
+			for ( final Link< SpotCovariance > link : source.edges() )
+			{
+				/*
+				 * Compute distance of mouse to link segment.
+				 */
+
+				final SpotCovariance target = Graphs.getOppositeVertex( link, source, model.getGraph().vertexRef() );
+				to.setPosition( target );
+				t.applyInverse( tview, to );
+				// We only care for XY projection.
+				final double d2 = sqdist( sview, tview );
+				final double t = (
+						( eview.getDoublePosition( 0 ) - sview.getDoublePosition( 0 ) ) * ( tview.getDoublePosition( 0 ) - sview.getDoublePosition( 0 ) )
+								+
+						( eview.getDoublePosition( 1 ) - sview.getDoublePosition( 1 ) ) * ( tview.getDoublePosition( 1 ) - sview.getDoublePosition( 1 ) )
+						) / d2;
+				
+				final double dist2;
+				if (t < 0)
+				{
+					dist2 = sqdist( sview, eview );
+				}
+				else if ( t > 1 )
+				{
+					dist2 = sqdist( tview, eview );
+				}
+				else
+				{
+					final double xproj = sview.getDoublePosition( 0 ) + t * ( tview.getDoublePosition( 0 ) - sview.getDoublePosition( 0 ) );
+					final double yproj = sview.getDoublePosition( 1 ) + t * ( tview.getDoublePosition( 1 ) - sview.getDoublePosition( 1 ) );
+					final RealPoint proj = new RealPoint( xproj, yproj, 0. );
+					dist2 = sqdist( proj, eview );
+				}
+
+				if ( dist2 < min )
+				{
+					min = dist2;
+					choice = target;
+				}
+			}
+
+			if ( null == choice )
+				return;
+
+			overlay.paint( choice );
+		}
+
+		private void release()
+		{
+			if ( !removing )
+				return;
+
+			if ( null != choice )
+			{
+				deleteLink( source, choice );
+				String str = "removed link from spot ";
+				if ( getTrackSchemeVertex( source ).getLabel() == null || getTrackSchemeVertex( source ).getLabel() == "" )
+				{
+					str += "ID=" + source.getInternalPoolIndex();
+				}
+				else
+				{
+					str += getTrackSchemeVertex( source ).getLabel();
+				}
+				str += " at t=" + source.getTimepoint() + " to spot ";
+				if ( getTrackSchemeVertex( choice ).getLabel() == null || getTrackSchemeVertex( choice ).getLabel() == "" )
+				{
+					str += "ID=" + choice.getInternalPoolIndex();
+				}
+				else
+				{
+					str += getTrackSchemeVertex( choice ).getLabel();
+				}
+				str += " at t=" + choice.getTimepoint();
+				viewer.showMessage( str );
+				choice = null;
+			}
+			source = null;
+			removing = false;
+			overlay.clear();
+			fireModelEditEvent();
+		}
+
+		private final double sqdist( final RealPoint p1, final RealPoint p2 )
+		{
+			double s = 0;
+			for ( int d = 0; d < 2; d++ )
+			{
+				final double dx = p2.getDoublePosition( d ) - p1.getDoublePosition( d );
+				s += dx * dx;
+			}
+			return s;
+		}
 	}
 
 	/*
@@ -771,7 +957,7 @@ public class ModelEditHandler implements MouseListener, MouseMotionListener, Ove
 	private class GhostOverlay implements OverlayRenderer
 	{
 
-		private OverlayVertexWrapper< SpotCovariance, Link< SpotCovariance > > ghostSpot;
+		private SpotCovariance ghostSpot;
 
 		private final AffineTransform3D transform = new AffineTransform3D();
 
@@ -804,15 +990,15 @@ public class ModelEditHandler implements MouseListener, MouseMotionListener, Ove
 		}
 
 		/**
-		 * Sets the {@link OverlayVertexWrapper} to paint as a "ghost" by this
-		 * overlay. If <code>null</code>, will not paint anything.
+		 * Sets the spot to paint as a "ghost" by this overlay. If
+		 * <code>null</code>, will not paint anything.
 		 * 
-		 * @param ovw
-		 *            the {@link OverlayVertexWrapper} to paint as a "ghost".
+		 * @param spot
+		 *            the spot to paint as a "ghost".
 		 */
-		private void paint( final OverlayVertexWrapper< SpotCovariance, Link< SpotCovariance >> ovw )
+		private void paint( final SpotCovariance spot )
 		{
-			this.ghostSpot = ovw;
+			this.ghostSpot = spot;
 		}
 
 		/**
@@ -852,10 +1038,10 @@ public class ModelEditHandler implements MouseListener, MouseMotionListener, Ove
 
 			if ( null != ghostSpot )
 			{
-				ghostSpot.get().localize( lPos1 );
+				ghostSpot.localize( lPos1 );
 				transform.apply( lPos1, gPos1 );
 
-				ghostSpot.get().getCovariance( S );
+				ghostSpot.getCovariance( S );
 				for ( int r = 0; r < 3; ++r )
 					for ( int c = 0; c < 3; ++c )
 						T[ r ][ c ] = transform.get( r, c );

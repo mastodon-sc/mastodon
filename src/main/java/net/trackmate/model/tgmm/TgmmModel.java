@@ -95,6 +95,16 @@ public class TgmmModel
 		return graph.addEdge( source, target, ref );
 	}
 
+	public void removeLink( final SpotCovariance source, final SpotCovariance target )
+	{
+		Link< SpotCovariance > link = graph.getEdge( source, target );
+		if ( null == link )
+		{
+			link = graph.getEdge( target, source );
+		}
+		graph.remove( link );
+	}
+
 	static class SpotCovarianceFactory implements SpotFactoryI< SpotCovariance >
 	{
 		private SpotPool< SpotCovariance > spotPool;
@@ -123,5 +133,4 @@ public class TgmmModel
 			this.spotPool = spotPool;
 		}
 	}
-
 }
