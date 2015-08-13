@@ -93,7 +93,7 @@ public class DefaultTransformHandler implements MouseListener, MouseWheelListene
 	{
 		listener = transformListener;
 		zoomBoxHandler = new ZoomBoxHandler();
-		inertiaHandler = new InertiaHandler();
+		inertiaHandler = null;
 		overlay = new Overlay();
 	}
 
