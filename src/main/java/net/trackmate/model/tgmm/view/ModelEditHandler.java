@@ -28,6 +28,7 @@ import net.imglib2.util.LinAlgHelpers;
 import net.trackmate.bdv.wrapper.OverlayGraphWrapper;
 import net.trackmate.bdv.wrapper.OverlayVertexWrapper;
 import net.trackmate.bdv.wrapper.SpatialSearch;
+import net.trackmate.graph.PoolObjectSet;
 import net.trackmate.graph.util.Graphs;
 import net.trackmate.model.Link;
 import net.trackmate.model.tgmm.SpotCovariance;
@@ -135,7 +136,7 @@ public class ModelEditHandler implements MouseListener, MouseMotionListener, Ove
 		actions.add( new ChangeSpotRadiusAction( true, false ) );
 		actions.add( new ChangeSpotRadiusAction( false, true ) );
 		actions.add( new ChangeSpotRadiusAction( false, false ) );
-//		actions.add( new DeleteSpotAction() );
+		actions.add( new DeleteSpotAction() );
 
 		for ( final AbstractNamedDefaultKeyStrokeAction action : actions )
 		{
@@ -381,12 +382,20 @@ public class ModelEditHandler implements MouseListener, MouseMotionListener, Ove
 		return spot;
 	}
 
-	private boolean deleteSpot( final SpotCovariance spot )
+	private boolean deleteSpot( final OverlayVertexWrapper< SpotCovariance, Link< SpotCovariance >> v )
 	{
-		final int timepoint = spot.getTimepoint();
-		trackscheme.getGraph().remove( getTrackSchemeVertex( spot ) );
-		final boolean ok = model.deleteSpot( spot );
-		wrapper.refresh( timepoint );
+		final int timepoint = v.getTimepoint();
+		/*
+		 * Raw remove: We have to directly play on the indices array of the
+		 * PoolObjectSet. Indeed, The OverlayVertexWrapper is NOT a PoolObject,
+		 * therefore attempts to remove an OverlayVertexWrapper from the
+		 * PoolObjectSet will always fail (see the code method).
+		 */
+		final PoolObjectSet< OverlayVertexWrapper< SpotCovariance, Link< SpotCovariance >>> set = ( PoolObjectSet< OverlayVertexWrapper< SpotCovariance, Link< SpotCovariance >>> ) wrapper.getSpots( timepoint );
+		set.getIndexCollection().remove( v.getInternalPoolIndex() );
+		trackscheme.getGraph().remove( v.getTrackSchemeVertex() );
+		final boolean ok = model.deleteSpot( v.get() );
+		wrapper.updateSearchFor( timepoint );
 		return ok;
 	}
 
@@ -869,8 +878,8 @@ public class ModelEditHandler implements MouseListener, MouseMotionListener, Ove
 			if ( null == v )
 				return;
 
+			final boolean deleted = deleteSpot( v );
 			final SpotCovariance spot = v.get();
-			final boolean deleted = deleteSpot( spot );
 			String str;
 			if ( deleted )
 			{

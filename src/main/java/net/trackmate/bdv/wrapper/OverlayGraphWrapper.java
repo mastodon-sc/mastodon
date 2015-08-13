@@ -91,16 +91,11 @@ public class OverlayGraphWrapper< V extends Vertex< E >, E extends Edge< V > >
 
 	public void add( final int timepoint, final int id )
 	{
+		// FIXME ugly hack.
 		final OverlayVertexWrapper< V, E > obj = vertexRef();
 		trackSchemeGraph.getVertexPool().getByInternalPoolIndex( id, obj.tsv );
 		obj.updateModelVertexRef();
 		getSpots( timepoint ).add( obj );
-		updateSearchFor( timepoint );
-	}
-
-	public void refresh( final int timepoint )
-	{
-		timepointToSpots.put( timepoint, new PoolObjectSet< OverlayVertexWrapper< V, E > >( vertexPool ) );
 		updateSearchFor( timepoint );
 	}
 
