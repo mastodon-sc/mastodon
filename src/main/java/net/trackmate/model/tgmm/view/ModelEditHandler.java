@@ -114,8 +114,8 @@ public class ModelEditHandler implements MouseListener, MouseMotionListener, Ove
 		this.inputMap = new InputMap();
 		this.overlay = new GhostOverlay();
 		this.spotMover = new SpotMover( ' ' );
-		this.linkedSpotCreator = new LinkedSpotCreator( 'A' );
-		this.linkCreator = new LinkCreator( 'l' );
+		this.linkedSpotCreator = new LinkedSpotCreator( 's' );
+		this.linkCreator = new LinkCreator( 'a' );
 		this.spotCreator = new SpotCreator( 'a' );
 		install();
 	}
@@ -222,21 +222,21 @@ public class ModelEditHandler implements MouseListener, MouseMotionListener, Ove
 	@Override
 	public void keyPressed( final KeyEvent e )
 	{
+		if ( Character.toLowerCase( e.getKeyChar() ) == Character.toLowerCase( spotCreator.key ) )
+		{
+			spotCreator.create();
+		}
+		if ( !spotCreator.creating && Character.toLowerCase( e.getKeyChar() ) == Character.toLowerCase( linkCreator.key ) )
+		{
+			linkCreator.create( !e.isShiftDown() );
+		}
 		if ( e.getKeyChar() == spotMover.key )
 		{
 			spotMover.grab();
 		}
-		else if ( e.getKeyChar() == linkedSpotCreator.key && e.isShiftDown() )
+		if ( Character.toLowerCase( e.getKeyChar() ) == Character.toLowerCase( linkedSpotCreator.key ) )
 		{
-			linkedSpotCreator.create();
-		}
-		else if ( e.getKeyChar() == linkCreator.key )
-		{
-			linkCreator.create();
-		}
-		else if ( e.getKeyChar() == spotCreator.key )
-		{
-			spotCreator.create();
+			linkedSpotCreator.create( !e.isShiftDown() );
 		}
 	}
 
@@ -263,7 +263,7 @@ public class ModelEditHandler implements MouseListener, MouseMotionListener, Ove
 			spotMover.release();
 
 		}
-		else if ( Character.toLowerCase( e.getKeyChar() ) == Character.toLowerCase( linkedSpotCreator.key ) )
+		if ( Character.toLowerCase( e.getKeyChar() ) == Character.toLowerCase( linkedSpotCreator.key ) )
 		{
 			if ( spotMover.movedSpot != null )
 			{
@@ -282,11 +282,11 @@ public class ModelEditHandler implements MouseListener, MouseMotionListener, Ove
 			}
 			linkedSpotCreator.release();
 		}
-		else if ( Character.toLowerCase( e.getKeyChar() ) == Character.toLowerCase( linkCreator.key ) )
+		if ( Character.toLowerCase( e.getKeyChar() ) == Character.toLowerCase( linkCreator.key ) )
 		{
 			linkCreator.release();
 		}
-		else if ( Character.toLowerCase( e.getKeyChar() ) == Character.toLowerCase( spotCreator.key ) )
+		if ( Character.toLowerCase( e.getKeyChar() ) == Character.toLowerCase( spotCreator.key ) )
 		{
 			spotCreator.release();
 		}
@@ -358,8 +358,27 @@ public class ModelEditHandler implements MouseListener, MouseMotionListener, Ove
 
 	private Link< SpotCovariance > createLink( final SpotCovariance source, final SpotCovariance target )
 	{
-		final Link< SpotCovariance > link = model.createLink( source, target );
-		trackscheme.getGraph().addEdge( getTrackSchemeVertex( source ), getTrackSchemeVertex( target ) );
+		final SpotCovariance s, t;
+		final int ttp = target.getTimepoint();
+		final int stp = source.getTimepoint();
+		if ( stp == ttp )
+		{
+			viewer.showMessage( "cannot create a link between two spots belonging to the same timepoint" );
+			return null;
+		}
+		if ( ttp > stp )
+		{
+			s = source;
+			t = target;
+		}
+		else
+		{
+			s = target;
+			t = source;
+		}
+
+		final Link< SpotCovariance > link = model.createLink( s, t );
+		trackscheme.getGraph().addEdge( getTrackSchemeVertex( s ), getTrackSchemeVertex( t ) );
 		return link;
 	}
 
@@ -430,7 +449,55 @@ public class ModelEditHandler implements MouseListener, MouseMotionListener, Ove
 			movedSpot.setY( to.getDoublePosition( 1 ) );
 			movedSpot.setZ( to.getDoublePosition( 2 ) );
 		}
+	}
 
+	private class SpotCreator
+	{
+		private final double[] loc = new double[ 3 ];
+
+		private final char key;
+
+		private boolean creating = false;
+
+		public SpotCreator( final char key )
+		{
+			this.key = key;
+		}
+
+		private void create()
+		{
+			// Only create if there is no spot under mouse.
+			if ( creating || null != getSpotUnderMouse() )
+				return;
+
+			viewer.getGlobalMouseCoordinates( to );
+			to.localize( loc );
+			final SpotCovariance spot = createSpot( loc, viewer.getState().getCurrentTimepoint() );
+			spotMover.grab( spot );
+			creating = true;
+		}
+
+		private void release()
+		{
+			if ( !creating )
+				return;
+
+			final SpotCovariance spot = spotMover.get();
+			final TrackSchemeVertex tv = getTrackSchemeVertex( spot );
+			String str;
+			if ( null == tv.getLabel() || tv.getLabel() == "" )
+			{
+				str = "created spot " + tv.getLabel() + " at X=%.1f, Y=%.1f, Z=%.1f, t=%d";
+			}
+			else
+			{
+				str = "created spot ID=" + tv.getInternalPoolIndex() + " at X=%.1f, Y=%.1f, Z=%.1f, t=%d";
+			}
+			viewer.showMessage( String.format( str, spot.getX(), spot.getY(), spot.getZ(), spot.getTimepoint() ) );
+			spotMover.release();
+			creating = false;
+			fireModelEditEvent();
+		}
 	}
 
 	private class LinkedSpotCreator
@@ -444,7 +511,7 @@ public class ModelEditHandler implements MouseListener, MouseMotionListener, Ove
 			this.key = key;
 		}
 
-		private void create()
+		private void create( final boolean forward )
 		{
 			/*
 			 * Check if a spot is within radius.
@@ -461,7 +528,7 @@ public class ModelEditHandler implements MouseListener, MouseMotionListener, Ove
 
 			final ViewerState state = viewer.getState();
 			final int timepoint = state.getCurrentTimepoint();
-			final int newTimePoint = timepoint + 1;
+			final int newTimePoint = forward ? timepoint + 1 : timepoint - 1;
 			viewer.setTimepoint( newTimePoint );
 
 			/*
@@ -502,15 +569,13 @@ public class ModelEditHandler implements MouseListener, MouseMotionListener, Ove
 			this.key = key;
 		}
 
-		private void create()
+		private void create( final boolean forward )
 		{
-			/*
-			 * Check if a spot is within radius.
-			 */
-
+			// Check if a spot is within radius.
 			final OverlayVertexWrapper< SpotCovariance, Link< SpotCovariance >> v = getSpotUnderMouse();
-			if ( null == v )
+			if ( creating || null == v )
 				return;
+
 			overlay.paint( v );
 			linkTarget = overlay.setPaintGhostLink( true );
 			viewer.getGlobalMouseCoordinates( to );
@@ -518,7 +583,10 @@ public class ModelEditHandler implements MouseListener, MouseMotionListener, Ove
 			creating = true;
 			source = v;
 			target = null;
-			viewer.setTimepoint( viewer.getState().getCurrentTimepoint() + 1 );
+			creating = true;
+			final int timepoint = viewer.getState().getCurrentTimepoint();
+			final int newTimepoint = forward ? timepoint + 1 : timepoint - 1;
+			viewer.setTimepoint( newTimepoint  );
 		}
 
 		private void move()
@@ -554,9 +622,14 @@ public class ModelEditHandler implements MouseListener, MouseMotionListener, Ove
 
 		private void release()
 		{
+			if ( !creating )
+				return;
+
 			if ( null != target )
 			{
-				createLink( source.get(), target.get() );
+				if ( null == createLink( source.get(), target.get() ) )
+					return;
+
 				String str = "created link from spot ";
 				if ( source.getTrackSchemeVertex().getLabel() == null || source.getTrackSchemeVertex().getLabel() == "" )
 				{
@@ -681,44 +754,6 @@ public class ModelEditHandler implements MouseListener, MouseMotionListener, Ove
 
 	}
 	
-	private class SpotCreator
-	{
-		private final double[] loc = new double[ 3 ];
-
-		private final char key;
-
-		public SpotCreator( final char key )
-		{
-			this.key = key;
-		}
-
-		private void create()
-		{
-			viewer.getGlobalMouseCoordinates( to );
-			to.localize( loc );
-			final SpotCovariance spot = createSpot( loc, viewer.getState().getCurrentTimepoint() );
-			spotMover.grab( spot );
-		}
-
-		private void release()
-		{
-			final SpotCovariance spot = spotMover.get();
-			final TrackSchemeVertex tv = getTrackSchemeVertex( spot );
-			String str;
-			if ( null == tv.getLabel() || tv.getLabel() == "" )
-		{
-				str = "created spot " + tv.getLabel() + " at X=%.1f, Y=%.1f, Z=%.1f, t=%d";
-			}
-			else
-			{
-				str = "created spot ID=" + tv.getInternalPoolIndex() + " at X=%.1f, Y=%.1f, Z=%.1f, t=%d";
-			}
-			viewer.showMessage( String.format( str, spot.getX(), spot.getY(), spot.getZ(), spot.getTimepoint() ) );
-			spotMover.release();
-			fireModelEditEvent();
-		}
-	}
-
 	/*
 	 * OVERLAY FOR CURRENT EDIT.
 	 */
