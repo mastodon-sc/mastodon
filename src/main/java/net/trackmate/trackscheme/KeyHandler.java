@@ -29,8 +29,8 @@ public class KeyHandler
 		 * EDIT MODEL.
 		 */
 
-		final KeyStroke ks = KeyStroke.getKeyStroke( 'd' );
-		registerAction( ks, ActionBank.getDeleteSelectionAction( trackscheme ) );
+//		final KeyStroke ks = KeyStroke.getKeyStroke( 'd' );
+//		registerAction( ks, ActionBank.getDeleteSelectionAction( trackscheme ) );
 
 		/*
 		 * NAVIGATE.
