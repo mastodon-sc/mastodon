@@ -53,8 +53,8 @@ public class Launcher
 
 //		final String bdvFile = "D:/Users/Jean-Yves/Development/Data/drosophila.xml";
 		final String bdvFile = "/Volumes/Data/BDV_MVD_5v_final.xml";
-		final String modelFile = "/Volumes/Data/model.raw";
-//		final String modelFile = "/Volumes/Data/model-small.raw";
+//		final String modelFile = "/Volumes/Data/model.raw";
+		final String modelFile = "/Volumes/Data/model-small.raw";
 //		final String modelFile = "";
 		final int timepointIndex = 10;
 //		final int timepointIndex = 1;
@@ -395,7 +395,9 @@ public class Launcher
 					}
 					else if ( e == configPanel.spotStyleChanged )
 					{
-						tracksOverlay.setDrawSpotEllipse( configPanel.getSelectedSpotOverlayStyle() == SpotOverlayStyle.ELLIPSE );
+						final SpotOverlayStyle style = configPanel.getSelectedSpotOverlayStyle();
+						tracksOverlay.setDrawSpotEllipse( style == SpotOverlayStyle.ELLIPSE_PROJECTION || style == SpotOverlayStyle.ELLIPSE_INTERSECTION );
+						tracksOverlay.setDrawSliceIntersection( style == SpotOverlayStyle.ELLIPSE_INTERSECTION );
 					}
 					else if ( e == configPanel.trackschemeContextOn )
 					{

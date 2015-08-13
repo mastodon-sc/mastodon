@@ -45,6 +45,8 @@ public class TracksOverlaySpotCovariance implements OverlayRenderer, TransformLi
 
 	public static final boolean DEFAULT_DRAW_ELLIPSE = true;
 
+	public static final boolean DEFAULT_DRAW_SLICE_INTERSECTION = true;
+
 	/*
 	 * DISPLAY SETTINGS FIELDS.
 	 */
@@ -63,6 +65,8 @@ public class TracksOverlaySpotCovariance implements OverlayRenderer, TransformLi
 
 	private boolean drawSpotEllipse = DEFAULT_DRAW_ELLIPSE;
 
+	private boolean drawSliceIntersection = DEFAULT_DRAW_SLICE_INTERSECTION;
+
 	/*
 	 * FIELDS.
 	 */
@@ -72,8 +76,6 @@ public class TracksOverlaySpotCovariance implements OverlayRenderer, TransformLi
 	private final OverlayGraphWrapper< SpotCovariance, Link< SpotCovariance >> model;
 
 	private final ViewerPanel viewer;
-
-	private final boolean drawEllipsoidSliceIntersection = true;
 
 	public TracksOverlaySpotCovariance( final OverlayGraphWrapper< SpotCovariance, Link< SpotCovariance >> overlayGraph, final ViewerPanel viewer, final int tpSize )
 	{
@@ -304,7 +306,7 @@ public class TracksOverlaySpotCovariance implements OverlayRenderer, TransformLi
 							 * coordinates.
 							 */
 
-							if ( drawEllipsoidSliceIntersection )
+							if ( drawSliceIntersection )
 							{
 								final EigenvalueDecomposition eig = new Matrix( S ).eig();
 								final double[] eigVals = eig.getRealEigenvalues();
@@ -381,6 +383,8 @@ public class TracksOverlaySpotCovariance implements OverlayRenderer, TransformLi
 							}
 							else
 							{
+								// Just draw ellipsoid projections on the view
+								// plane.
 
 								final double[][] S2 = new double[ 2 ][ 2 ];
 								for ( int r = 0; r < 2; ++r )
@@ -458,5 +462,10 @@ public class TracksOverlaySpotCovariance implements OverlayRenderer, TransformLi
 	public void setDrawSpotEllipse( final boolean drawSpotEllipse )
 	{
 		this.drawSpotEllipse = drawSpotEllipse;
+	}
+
+	public void setDrawSliceIntersection( final boolean drawSliceIntersection )
+	{
+		this.drawSliceIntersection = drawSliceIntersection;
 	}
 }
