@@ -4,6 +4,7 @@ import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.Stroke;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
@@ -13,6 +14,8 @@ import java.awt.event.MouseMotionListener;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Ellipse2D;
 import java.util.HashSet;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import javax.swing.ActionMap;
 import javax.swing.InputMap;
@@ -977,7 +980,7 @@ public class ModelEditHandler implements MouseListener, MouseMotionListener, Ove
 
 		private final double nSigmas = SpotCovariance.nSigmas;
 
-		private final BasicStroke stroke;
+		private final StrokeAlterner stroke;
 
 		private final Color color = Color.WHITE;
 
@@ -985,8 +988,7 @@ public class ModelEditHandler implements MouseListener, MouseMotionListener, Ove
 
 		private GhostOverlay()
 		{
-			final float dash[] = { 4.0f };
-			stroke = new BasicStroke( 1.0f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 10.0f, dash, 0.0f );
+			stroke = new StrokeAlterner();
 		}
 
 		/**
@@ -999,6 +1001,14 @@ public class ModelEditHandler implements MouseListener, MouseMotionListener, Ove
 		private void paint( final SpotCovariance spot )
 		{
 			this.ghostSpot = spot;
+			if ( null != spot )
+			{
+				stroke.start();
+			}
+			else
+			{
+				stroke.stop();
+			}
 		}
 
 		/**
@@ -1013,6 +1023,10 @@ public class ModelEditHandler implements MouseListener, MouseMotionListener, Ove
 		 */
 		private double[] setPaintGhostLink( final boolean doPaint )
 		{
+			if ( doPaint )
+			{
+				stroke.start();
+			}
 			this.paintGhostLink = doPaint;
 			return lPos2;
 		}
@@ -1021,6 +1035,8 @@ public class ModelEditHandler implements MouseListener, MouseMotionListener, Ove
 		{
 			this.paintGhostLink = false;
 			this.ghostSpot = null;
+			stroke.stop();
+			viewer.repaint();
 		}
 
 		@Override
@@ -1031,7 +1047,7 @@ public class ModelEditHandler implements MouseListener, MouseMotionListener, Ove
 
 			final Graphics2D graphics = ( Graphics2D ) g;
 			graphics.setColor( color );
-			graphics.setStroke( stroke );
+			graphics.setStroke( stroke.get() );
 			final AffineTransform torig = graphics.getTransform();
 
 			viewer.getState().getViewerTransform( transform );
@@ -1088,7 +1104,57 @@ public class ModelEditHandler implements MouseListener, MouseMotionListener, Ove
 		@Override
 		public void setCanvasSize( final int width, final int height )
 		{}
-	}
 
+		private class StrokeAlterner
+		{
+			private final BasicStroke[] strokes;
+
+			private int index;
+
+			private Timer timer;
+
+			private StrokeAlterner()
+			{
+				final float dash[] = { 12.0f, 8.0f };
+				this.strokes = new BasicStroke[]
+				{
+						new BasicStroke( 1.5f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 10.0f, dash, 0.0f ),
+						new BasicStroke( 1.5f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 10.0f, dash, 4.0f ),
+						new BasicStroke( 1.5f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 10.0f, dash, 8.0f ),
+						new BasicStroke( 1.5f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 10.0f, dash, 12.0f ),
+						new BasicStroke( 1.5f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 10.0f, dash, 16.0f ),
+				};
+				this.index = 0;
+			}
+
+			private void start()
+			{
+				if ( timer != null )
+					return;
+				timer = new Timer();
+				timer.schedule( new TimerTask()
+				{
+					@Override
+					public void run()
+					{
+						if ( ++index >= strokes.length )
+							index = 0;
+						viewer.repaint();
+					}
+				}, 500, 500 );
+			}
+
+			private void stop()
+			{
+				timer.cancel();
+				timer = null;
+			}
+
+			private Stroke get()
+			{
+				return strokes[ index ];
+			}
+		}
+	}
 
 }
