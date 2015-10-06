@@ -8,7 +8,7 @@
 	<parent>
 		<groupId>sc.fiji</groupId>
 		<artifactId>pom-fiji</artifactId>
-		<version>10.1.0</version>
+		<version>15.7.1</version>
 	</parent>
 
 	<groupId>net.trackmate</groupId>
@@ -17,6 +17,23 @@
 
 	<name>TrackMate3</name>
 	<description>This is the prototype code for the 3rd version of TrackMate, planned for mid 2017.</description>
+
+	<properties>
+		<scijava.jvm.version>1.8</scijava.jvm.version>
+		<enforcer.skip>true</enforcer.skip>
+	</properties>
+
+	<build>
+		<plugins>
+			<plugin>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<configuration>
+					<source>1.8</source>
+					<target>1.8</target>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
 
 	<dependencies>
 		<dependency>
@@ -112,8 +129,4 @@
 		<tag>HEAD</tag>
 		<url>https://github.com/fiji/TrackMate3</url>
 	</scm>
-
-	<properties>
-		<enforcer.skip>true</enforcer.skip>
-	</properties>
 </project>
