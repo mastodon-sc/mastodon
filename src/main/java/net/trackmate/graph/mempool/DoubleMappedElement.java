@@ -20,18 +20,18 @@ public class DoubleMappedElement implements MappedElement
 
 	/**
 	 * The current base offset (in bytes) into the underlying
-	 * {@link ByteMappedElementArray#data storage array}.
+	 * {@link DoubleMappedElementArray#data storage array}.
 	 */
 	private int baseOffset;
 
 	/**
-	 * Contains the {@link ByteMappedElementArray#data storage array}.
+	 * Contains the {@link DoubleMappedElementArray#data storage array}.
 	 */
 	private DoubleMappedElementArray dataArray;
 
 	/**
 	 * Create a new proxy for representing element is in the given
-	 * {@link ByteMappedElementArray}.
+	 * {@link DoubleMappedElementArray}.
 	 *
 	 * @param dataArray
 	 *            initial storage.
