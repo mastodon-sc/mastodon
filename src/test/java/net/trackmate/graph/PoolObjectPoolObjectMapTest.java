@@ -15,7 +15,7 @@ import org.junit.Test;
 
 /**
  * Test map from vertices to edges, both belong to the same graph.
- * 
+ *
  * @author Jean-Yves Tinevez - 2015
  */
 public class PoolObjectPoolObjectMapTest extends PoolObjectPoolObjectMapAbstractTest
@@ -153,12 +153,12 @@ public class PoolObjectPoolObjectMapTest extends PoolObjectPoolObjectMapAbstract
 		final TestEdge ref = graph.edgeRef();
 
 		// Remove a non existing mapping
-		final TestEdge remove = map.remove( Ak, ref );
+		final TestEdge remove = map.removeWithRef( Ak, ref );
 		assertNull( "Removing a non-exiting mapping should return null.", remove );
 		assertEquals( "Map size should not have changed.", size, map.size() );
 
 		// Remove an existing mapping
-		final TestEdge remove2 = map.remove( Bk, ref );
+		final TestEdge remove2 = map.removeWithRef( Bk, ref );
 		assertEquals( "Did not retrieve the expected value upong key removal.", eAB, remove2 );
 		assertEquals( "Map size should have decreased by 1.", size - 1, map.size() );
 	}

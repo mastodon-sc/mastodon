@@ -115,7 +115,7 @@ public class RefMapWrapper< K, L > implements RefRefMap< K, L >
 	}
 
 	@Override
-	public L remove( final Object key, final L ref )
+	public L removeWithRef( final Object key, final L ref )
 	{
 		return remove( key );
 	}

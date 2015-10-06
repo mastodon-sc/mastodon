@@ -146,7 +146,7 @@ public class PoolObjectPoolObjectMap< K extends Ref< K >, L extends Ref< L > > i
 	}
 
 	@Override
-	public L remove( final Object key, final L ref )
+	public L removeWithRef( final Object key, final L ref )
 	{
 		if ( key != null && key instanceof PoolObject )
 		{
@@ -165,7 +165,7 @@ public class PoolObjectPoolObjectMap< K extends Ref< K >, L extends Ref< L > > i
 	@Override
 	public L remove( final Object key )
 	{
-		return remove( key, valuePool.createRef() );
+		return removeWithRef( key, valuePool.createRef() );
 	}
 
 	@Override

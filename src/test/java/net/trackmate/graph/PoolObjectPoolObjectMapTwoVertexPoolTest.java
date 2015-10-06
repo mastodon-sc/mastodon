@@ -149,12 +149,12 @@ public class PoolObjectPoolObjectMapTwoVertexPoolTest extends PoolObjectPoolObje
 		final TestVertex ref = graph.vertexRef();
 
 		// Remove a non existing mapping
-		final TestVertex remove = map.remove( Ak, ref );
+		final TestVertex remove = map.removeWithRef( Ak, ref );
 		assertNull( "Removing a non-exiting mapping should return null.", remove );
 		assertEquals( "Map size should not have changed.", size, map.size() );
 
 		// Remove an existing mapping
-		final TestVertex remove2 = map.remove( Bk, ref );
+		final TestVertex remove2 = map.removeWithRef( Bk, ref );
 		assertEquals( "Did not retrieve the expected value upong key removal.", Ck, remove2 );
 		assertEquals( "Map size should have decreased by 1.", size - 1, map.size() );
 	}

@@ -13,7 +13,7 @@ public interface RefRefMap< K, L > extends RefObjectMap< K, L >
 
 	public L put( K key, L value, L ref );
 
-	public L remove( Object key, L ref );
+	public L removeWithRef( Object key, L ref );
 
 	public L get( Object key, L ref );
 
