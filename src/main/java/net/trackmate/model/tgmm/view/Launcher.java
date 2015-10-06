@@ -52,10 +52,12 @@ public class Launcher
 		 */
 
 //		final String bdvFile = "D:/Users/Jean-Yves/Development/Data/drosophila.xml";
-		final String bdvFile = "/Volumes/Data/BDV_MVD_5v_final.xml";
+//		final String bdvFile = "/Volumes/Data/BDV_MVD_5v_final.xml";
+		final String bdvFile = "/Users/pietzsch/TGMM/data/tifs/datasethdf5.xml";
 //		final String modelFile = "/Volumes/Data/model.raw";
-		final String modelFile = "/Volumes/Data/model-small.raw";
-//		final String modelFile = "";
+//		final String modelFile = "/Volumes/Data/model-small.raw";
+		final String modelFile = "/Users/pietzsch/TGMM/data/tifs/model_jy.raw";
+		//		final String modelFile = "";
 		final int timepointIndex = 10;
 //		final int timepointIndex = 1;
 
@@ -115,7 +117,7 @@ public class Launcher
 		/*
 		 * Center views on single selected vertex.
 		 */
-		
+
 		trackscheme.getSelectionHandler().addSelectionListener( new SelectionListener()
 		{
 			private final SelectionModel< TrackSchemeVertex, TrackSchemeEdge > selectionModel = trackscheme.getSelectionHandler().getSelectionModel();
@@ -143,7 +145,7 @@ public class Launcher
 				viewer.repaint();
 			}
 		} );
-		
+
 		/*
 		 * Model editor.
 		 */
