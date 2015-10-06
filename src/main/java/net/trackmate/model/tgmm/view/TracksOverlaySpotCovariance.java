@@ -170,7 +170,6 @@ public class TracksOverlaySpotCovariance implements OverlayRenderer, TransformLi
 		final Graphics2D graphics = ( Graphics2D ) g;
 
 		final int currentTimepoint = viewer.getState().getCurrentTimepoint();
-		viewer.getState().getViewerTransform( transform );
 
 		graphics.setRenderingHint( RenderingHints.KEY_ANTIALIASING, antialiasing );
 
@@ -257,9 +256,9 @@ public class TracksOverlaySpotCovariance implements OverlayRenderer, TransformLi
 				spot.get().localize( lPos );
 				transform.apply( lPos, gPos );
 				final double z = gPos[ 2 ];
-				
+
 				final double sd = sliceDistance( z, focusLimit );
-				if ( sd > -1 && sd < 1 ) 
+				if ( sd > -1 && sd < 1 )
 				{
 					if ( drawSpotEllipse )
 					{
