@@ -8,8 +8,10 @@ import net.imglib2.RealLocalizable;
 import net.imglib2.RealPositionable;
 import net.trackmate.graph.Pool;
 import net.trackmate.graph.PoolObject;
+import net.trackmate.graph.PoolObjectPoolObjectMap;
 import net.trackmate.graph.Ref;
 import net.trackmate.graph.RefPool;
+import net.trackmate.graph.collection.RefRefMap;
 import net.trackmate.graph.mempool.DoubleMappedElement;
 import net.trackmate.graph.mempool.DoubleMappedElementArray;
 import net.trackmate.graph.mempool.MappedElement;
@@ -71,6 +73,29 @@ public class KDTree<
 		final KDTree< O, T > kdtree = new NodeFactory< O, T >( objects, objectPool, poolFactory ).kdtree;
 		kdtree.build( objects );
 		return kdtree;
+	}
+
+	/**
+	 * TODO
+	 *
+	 * @param kdtree
+	 * @return
+	 */
+	public static < O extends Ref< O > & RealLocalizable, T extends MappedElement >
+			RefRefMap< O, KDTreeNode< O, T > > createRefToKDTreeNodeMap( final KDTree< O, T > kdtree )
+	{
+		final RefPool< O > objPool = kdtree.getObjectPool();
+		final O o = objPool.createRef();
+		final KDTreeNode< O, T > n = kdtree.createRef();
+		final RefRefMap< O, KDTreeNode< O, T > > map = new PoolObjectPoolObjectMap< O, KDTreeNode< O, T > >( objPool, kdtree );
+		for ( final KDTreeNode< O, T > node : kdtree )
+		{
+			objPool.getByInternalPoolIndex( node.getDataIndex(), o );
+			map.put( o, node, n );
+		}
+		objPool.releaseRef( o );
+		kdtree.releaseRef( n );
+		return map;
 	}
 
 	private static final class NodeFactory<
