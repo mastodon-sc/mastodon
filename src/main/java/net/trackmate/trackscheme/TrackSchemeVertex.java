@@ -51,8 +51,7 @@ public class TrackSchemeVertex extends AbstractVertex< TrackSchemeVertex, TrackS
 	/**
 	 * Get the internal pool index of the associated model vertex.
 	 *
-	 * @return the internal pool index of the associated
-	 *         {@link TrackSchemeVertex}.
+	 * @return the internal pool index of the associated model vertex.
 	 */
 	public int getModelVertexId()
 	{
