@@ -51,15 +51,9 @@ public class Launcher
 		 * Settings.
 		 */
 
-//		final String bdvFile = "D:/Users/Jean-Yves/Development/Data/drosophila.xml";
-//		final String bdvFile = "/Volumes/Data/BDV_MVD_5v_final.xml";
 		final String bdvFile = "/Users/pietzsch/TGMM/data/tifs/datasethdf5.xml";
-//		final String modelFile = "/Volumes/Data/model.raw";
-//		final String modelFile = "/Volumes/Data/model-small.raw";
 		final String modelFile = "/Users/pietzsch/TGMM/data/tifs/model_jy.raw";
-		//		final String modelFile = "";
 		final int timepointIndex = 10;
-//		final int timepointIndex = 1;
 
 		/*
 		 * Load BDV.
@@ -184,6 +178,9 @@ public class Launcher
 		configPanel.addActionListener( new DisplaySettingsListener( configPanel, tracksOverlay, bdv, trackscheme, tl ) );
 		configFrame.getContentPane().add( configPanel );
 		configFrame.setVisible( true );
+
+		configFrame.setLocation( 800, 0 );
+		trackscheme.getFrame().setLocation( 800, 400 );
 	}
 
 	private static final void centerViewOn( final SpotCovariance spot, final ViewerPanel viewer )

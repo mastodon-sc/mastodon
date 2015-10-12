@@ -396,6 +396,11 @@ public class ShowTrackScheme implements TransformListener< ScreenTransform >, Se
 		System.out.println();
 	}
 
+	public JFrame getFrame()
+	{
+		return frame;
+	}
+
 	/*
 	 * STATIC METHODS AND CLASSES
 	 */
