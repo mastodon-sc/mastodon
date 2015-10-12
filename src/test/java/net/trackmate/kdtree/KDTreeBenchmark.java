@@ -1,5 +1,7 @@
 package net.trackmate.kdtree;
 
+import static net.trackmate.kdtree.KDTreeNodeFlags.NODE_INVALID_FLAG;
+
 import java.util.Random;
 
 import net.imglib2.RealLocalizable;
@@ -70,9 +72,33 @@ public class KDTreeBenchmark
 		kdtree = KDTree.kdtree( dataVertices, vertexPool );
 	}
 
+	public void markInvalid()
+	{
+		final int numInvalidDataVertices = numDataVertices / 2;
+		final Random rnd = new Random( 124 );
+		final KDTreeNode< MyVertex, DoubleMappedElement > node = kdtree.createRef();
+		for ( int i = 0; i < numInvalidDataVertices; ++i )
+		{
+			final int j = rnd.nextInt( kdtree.size() );
+			kdtree.getByInternalPoolIndex( j, node );
+			node.setFlag( NODE_INVALID_FLAG );
+		}
+	}
+
 	public void nearestNeighborSearch( final int numRuns )
 	{
 		final NearestNeighborSearchOnKDTree< MyVertex, DoubleMappedElement > kd = new NearestNeighborSearchOnKDTree< MyVertex, DoubleMappedElement >( kdtree );
+		for ( int i = 0; i < numRuns; ++i )
+			for ( final RealLocalizable t : testVertices )
+			{
+				kd.search( t );
+				kd.getSampler().get();
+			}
+	}
+
+	public void nearestValidNeighborSearch( final int numRuns )
+	{
+		final NearestValidNeighborSearchOnKDTree< MyVertex, DoubleMappedElement > kd = new NearestValidNeighborSearchOnKDTree< MyVertex, DoubleMappedElement >( kdtree );
 		for ( int i = 0; i < numRuns; ++i )
 			for ( final RealLocalizable t : testVertices )
 			{
@@ -114,6 +140,8 @@ public class KDTreeBenchmark
 			}
 		} );
 
+		b.markInvalid();
+
 		System.out.println( "nearestNeighborSearch()" );
 		BenchmarkHelper.benchmarkAndPrint( 10, printIndividualTimes, new Runnable()
 		{
@@ -121,6 +149,16 @@ public class KDTreeBenchmark
 			public void run()
 			{
 				b.nearestNeighborSearch( 10 );
+			}
+		} );
+
+		System.out.println( "nearestValidNeighborSearch()" );
+		BenchmarkHelper.benchmarkAndPrint( 10, printIndividualTimes, new Runnable()
+		{
+			@Override
+			public void run()
+			{
+				b.nearestValidNeighborSearch( 10 );
 			}
 		} );
 
