@@ -327,6 +327,7 @@ public class ClipConvexPolytopeKDTree< O extends Ref< O > & RealLocalizable, T e
 			else
 				clip( currentIndex, recursionDepth + 1 );
 		}
+
 		private void clip( final int currentIndex, final int recursionDepth )
 		{
 			// consider the current node
@@ -375,6 +376,5 @@ public class ClipConvexPolytopeKDTree< O extends Ref< O > & RealLocalizable, T e
 				xmin[ sd ] = min;
 			}
 		}
-
 	}
 }

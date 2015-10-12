@@ -9,7 +9,7 @@ import net.trackmate.graph.Vertex;
 
 public class TrackSchemeUtil
 {
-	// TODO: maybe move and rename to TraackSchemeGraph.build()
+	// TODO: maybe move and rename to TrackSchemeGraph.build()
 	public static < V extends Vertex< E > & HasTimepoint, E extends Edge< V > >
 	TrackSchemeGraph buildTrackSchemeGraph(
 			final Graph< V, E > graph,
