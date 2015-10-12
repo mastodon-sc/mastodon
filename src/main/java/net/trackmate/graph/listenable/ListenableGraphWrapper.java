@@ -1,5 +1,6 @@
 package net.trackmate.graph.listenable;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Set;
@@ -279,6 +280,18 @@ public class ListenableGraphWrapper< V extends Vertex< E >, E extends Edge< V >,
 	public Iterator< E > edgeIterator()
 	{
 		return graph.edgeIterator();
+	}
+
+	@Override
+	public Collection< V > vertices()
+	{
+		return graph.vertices();
+	}
+
+	@Override
+	public Collection< E > edges()
+	{
+		return graph.edges();
 	}
 
 	/*

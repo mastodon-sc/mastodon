@@ -1,5 +1,6 @@
 package net.trackmate.bdv.wrapper;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -291,6 +292,20 @@ public class OverlayGraphWrapper< V extends Vertex< E >, E extends Edge< V > >
 
 	@Override
 	public Iterator< OverlayEdgeWrapper< V, E > > edgeIterator()
+	{
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Collection< OverlayVertexWrapper< V, E > > vertices()
+	{
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Collection< OverlayEdgeWrapper< V, E > > edges()
 	{
 		// TODO Auto-generated method stub
 		return null;

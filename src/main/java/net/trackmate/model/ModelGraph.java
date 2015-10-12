@@ -86,14 +86,9 @@ public class ModelGraph< V extends AbstractSpot< V >> extends GraphImp< ModelGra
 		edgePool.clear();
 	}
 
-	public Iterable< V > vertices()
-	{
-		return vertexPool;
-	}
-
 	public Iterable< Link< V > > links()
 	{
-		return edgePool;
+		return edges();
 	}
 
 	@Override

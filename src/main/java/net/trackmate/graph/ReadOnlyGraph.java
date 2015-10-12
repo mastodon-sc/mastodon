@@ -1,5 +1,6 @@
 package net.trackmate.graph;
 
+import java.util.Collection;
 import java.util.Iterator;
 
 /**
@@ -38,13 +39,32 @@ public interface ReadOnlyGraph< V extends Vertex< E >, E extends Edge< V > >
 	 *
 	 * @return a new {@link Iterator}.
 	 */
+	@Deprecated
 	public Iterator< V > vertexIterator();
+
+	/**
+	 * TODO
+	 *
+	 * returns unmodifiable collection. Only isEmpty(), size(), iterator() are guaranteed to be implemented.
+	 *
+	 * @return unmodifiable collection of vertices.
+	 */
+	public Collection< V > vertices();
 
 	/**
 	 * Returns an iterator that will iterate over all the edges of this graph.
 	 *
 	 * @return a new {@link Iterator}.
 	 */
+	@Deprecated
 	public Iterator< E > edgeIterator();
 
+	/**
+	 * TODO
+	 *
+	 * returns unmodifiable collection. Only isEmpty(), size(), iterator() are guaranteed to be implemented.
+	 *
+	 * @return unmodifiable collection of edges.
+	 */
+	public Collection< E > edges();
 }

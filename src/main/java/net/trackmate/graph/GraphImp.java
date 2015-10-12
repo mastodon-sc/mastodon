@@ -1,5 +1,6 @@
 package net.trackmate.graph;
 
+import java.util.Collection;
 import java.util.Iterator;
 
 import net.trackmate.graph.collection.CollectionUtils.CollectionCreator;
@@ -38,6 +39,36 @@ public class GraphImp<
 	protected final VP vertexPool;
 
 	protected final EP edgePool;
+
+	private final Collection< V > vertices = new MyAbstractCollection< V >()
+	{
+		@Override
+		public Iterator< V > iterator()
+		{
+			return vertexPool.iterator();
+		}
+
+		@Override
+		public int size()
+		{
+			return vertexPool.size();
+		}
+	};
+
+	private final Collection< E > edges = new MyAbstractCollection< E >()
+	{
+		@Override
+		public Iterator< E > iterator()
+		{
+			return edgePool.iterator();
+		}
+
+		@Override
+		public int size()
+		{
+			return edgePool.size();
+		}
+	};
 
 	public GraphImp( final VP vertexPool, final EP edgePool )
 	{
@@ -93,13 +124,25 @@ public class GraphImp<
 	@Override
 	public Iterator< V > vertexIterator()
 	{
-		return vertexPool.iterator();
+		return vertices.iterator();
 	}
 
 	@Override
 	public Iterator< E > edgeIterator()
 	{
-		return edgePool.iterator();
+		return edges.iterator();
+	}
+
+	@Override
+	public Collection< V > vertices()
+	{
+		return vertices;
+	}
+
+	@Override
+	public Collection< E > edges()
+	{
+		return edges;
 	}
 
 	@Override
@@ -338,5 +381,74 @@ public class GraphImp<
 	public PoolObjectIntMap< E > createEdgeIntMap( final int noEntryValue, final int initialCapacity )
 	{
 		return new PoolObjectIntMap< E >( edgePool, noEntryValue, initialCapacity );
+	}
+
+	private static abstract class MyAbstractCollection< O > implements Collection< O >
+	{
+		@Override
+		public boolean isEmpty()
+		{
+			return size() == 0;
+		}
+
+		@Override
+		public boolean contains( final Object o )
+		{
+			throw new UnsupportedOperationException();
+		}
+
+		@Override
+		public Object[] toArray()
+		{
+			throw new UnsupportedOperationException();
+		}
+
+		@Override
+		public < T > T[] toArray( final T[] a )
+		{
+			throw new UnsupportedOperationException();
+		}
+
+		@Override
+		public boolean add( final O e )
+		{
+			throw new UnsupportedOperationException();
+		}
+
+		@Override
+		public boolean remove( final Object o )
+		{
+			throw new UnsupportedOperationException();
+		}
+
+		@Override
+		public boolean containsAll( final Collection< ? > c )
+		{
+			throw new UnsupportedOperationException();
+		}
+
+		@Override
+		public boolean addAll( final Collection< ? extends O > c )
+		{
+			throw new UnsupportedOperationException();
+		}
+
+		@Override
+		public boolean removeAll( final Collection< ? > c )
+		{
+			throw new UnsupportedOperationException();
+		}
+
+		@Override
+		public boolean retainAll( final Collection< ? > c )
+		{
+			throw new UnsupportedOperationException();
+		}
+
+		@Override
+		public void clear()
+		{
+			throw new UnsupportedOperationException();
+		}
 	}
 }

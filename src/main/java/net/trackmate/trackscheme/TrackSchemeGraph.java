@@ -121,16 +121,6 @@ public class TrackSchemeGraph extends GraphImp< TrackSchemeGraph.TrackSchemeVert
 		edgePool.clear();
 	}
 
-	public Iterable< TrackSchemeVertex > vertices()
-	{
-		return vertexPool;
-	}
-
-	public Iterable< TrackSchemeEdge > edges()
-	{
-		return edgePool;
-	}
-
 	@Override
 	public String toString()
 	{
