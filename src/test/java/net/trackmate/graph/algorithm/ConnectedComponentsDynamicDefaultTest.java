@@ -194,10 +194,10 @@ public class ConnectedComponentsDynamicDefaultTest
 		{
 			final int previouSize = ccd.nComponents();
 			final TestEdge eIJ = edges.get( 3 );
-			graph.beginUpdate();
+//			graph.beginUpdate();
 			graph.remove( eIJ );
 			assertEquals( "Dynamic connected components should not know of the change before endUpdate().", previouSize, ccd.nComponents() );
-			graph.endUpdate();
+//			graph.endUpdate();
 
 			assertEquals( "Removing start central edge should generate 2 new components.", previouSize + 1, ccd.nComponents() );
 			final TestVertex H = vertices.get( 7 );
@@ -213,9 +213,9 @@ public class ConnectedComponentsDynamicDefaultTest
 		{
 			final int previouSize = ccd.nComponents();
 			final TestEdge eKL = edges.get( 4 );
-			graph.beginUpdate();
+//			graph.beginUpdate();
 			graph.remove( eKL );
-			graph.endUpdate();
+//			graph.endUpdate();
 
 			assertEquals( "Removing last edge should not generate a new component.", previouSize, ccd.nComponents() );
 			final TestVertex K = vertices.get( 10 );
@@ -233,12 +233,12 @@ public class ConnectedComponentsDynamicDefaultTest
 		{
 			final int previouSize = ccd.nComponents();
 			final TestVertex C = vertices.get( 2 );
-			graph.beginUpdate();
+//			graph.beginUpdate();
 			graph.remove( C );
 			// Since we did not endUpdate, ccd should not know about this.
 			assertEquals( "Dynamic connected components should not know of the change before endUpdate().", previouSize, ccd.nComponents() );
 			// endUpdate
-			graph.endUpdate();
+//			graph.endUpdate();
 
 			final int idOfC = ccd.idOf( C );
 			assertEquals( "A deleted vertex should not be present in the connected components set.", -1, idOfC );
@@ -264,9 +264,9 @@ public class ConnectedComponentsDynamicDefaultTest
 		{
 			final int previouSize = ccd.nComponents();
 			final TestEdge eNO = edges.get( 6 );
-			graph.beginUpdate();
+//			graph.beginUpdate();
 			graph.remove( eNO );
-			graph.endUpdate();
+//			graph.endUpdate();
 
 			assertEquals( "Removing the only edge of a CC should delete a component.", previouSize - 1, ccd.nComponents() );
 			final TestVertex N = vertices.get( 13 );
@@ -283,9 +283,9 @@ public class ConnectedComponentsDynamicDefaultTest
 		{
 			final int previouSize = ccd.nComponents();
 			final TestEdge ePQ = edges.get( 7 );
-			graph.beginUpdate();
+//			graph.beginUpdate();
 			graph.remove( ePQ );
-			graph.endUpdate();
+//			graph.endUpdate();
 
 			assertEquals( "Removing an edge in a loop CC should not change anything.", previouSize, ccd.nComponents() );
 			final TestVertex P = vertices.get( 15 );
@@ -298,10 +298,10 @@ public class ConnectedComponentsDynamicDefaultTest
 		{
 			final int previouSize = ccd.nComponents();
 			final TestVertex U = vertices.get( 20 );
-			graph.beginUpdate();
+//			graph.beginUpdate();
 			graph.remove( U );
 			// endUpdate
-			graph.endUpdate();
+//			graph.endUpdate();
 
 			final int idOfU = ccd.idOf( U );
 			assertEquals( "A deleted vertex should not be present in the connected components set.", -1, idOfU );

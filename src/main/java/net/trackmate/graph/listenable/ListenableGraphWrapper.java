@@ -3,7 +3,6 @@ package net.trackmate.graph.listenable;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.Set;
 
 import net.trackmate.graph.Edge;
 import net.trackmate.graph.Graph;
@@ -88,11 +87,11 @@ public class ListenableGraphWrapper< V extends Vertex< E >, E extends Edge< V >,
 		return null != listeners.remove( listener );
 	}
 
-	@Override
-	public Set< GraphListener< V, E >> getGraphListeners()
-	{
-		return listeners.keySet();
-	}
+//	@Override
+//	public Set< GraphListener< V, E >> getGraphListeners()
+//	{
+//		return listeners.keySet();
+//	}
 
 	/*
 	 * GRAPH METHODS TO LISTEN TO
@@ -149,7 +148,7 @@ public class ListenableGraphWrapper< V extends Vertex< E >, E extends Edge< V >,
 		{
 			for ( final GraphListener< V, E > listener : listeners.keySet() )
 			{
-				listener.edgeRemoved( edge, edge.getSource(), edge.getTarget() );
+				listener.edgeRemoved( edge );
 			}
 		}
 		for ( final GraphListener< V, E > listener : listeners.keySet() )
@@ -164,7 +163,7 @@ public class ListenableGraphWrapper< V extends Vertex< E >, E extends Edge< V >,
 	{
 		for ( final GraphListener< V, E > listener : listeners.keySet() )
 		{
-			listener.edgeRemoved( edge, edge.getSource(), edge.getTarget() );
+			listener.edgeRemoved( edge );
 		}
 		graph.remove( edge );
 	}
@@ -176,47 +175,47 @@ public class ListenableGraphWrapper< V extends Vertex< E >, E extends Edge< V >,
 		{
 			for ( final GraphListener< V, E > listener : listeners.keySet() )
 			{
-				listener.edgeRemoved( edge, edge.getSource(), edge.getTarget() );
+				listener.edgeRemoved( edge );
 			}
 		}
 		graph.removeAllLinkedEdges( vertex );
 	}
 
-	@Override
-	public void beginUpdate()
-	{
-		for ( final GraphListener< V, E > listener : listeners.keySet() )
-		{
-			listener.updateBegun();
-		}
-	}
-
-	@Override
-	public void endUpdate()
-	{
-		for ( final GraphListener< V, E > listener : listeners.keySet() )
-		{
-			listener.updateEnded();
-		}
-	}
-
-	@Override
-	public void pauseUpdate()
-	{
-		for ( final GraphListener< V, E > listener : listeners.keySet() )
-		{
-			listener.updatePaused();
-		}
-	}
-
-	@Override
-	public void resumeUpdate()
-	{
-		for ( final GraphListener< V, E > listener : listeners.keySet() )
-		{
-			listener.updateResumed();
-		}
-	}
+//	@Override
+//	public void beginUpdate()
+//	{
+//		for ( final GraphListener< V, E > listener : listeners.keySet() )
+//		{
+//			listener.updateBegun();
+//		}
+//	}
+//
+//	@Override
+//	public void endUpdate()
+//	{
+//		for ( final GraphListener< V, E > listener : listeners.keySet() )
+//		{
+//			listener.updateEnded();
+//		}
+//	}
+//
+//	@Override
+//	public void pauseUpdate()
+//	{
+//		for ( final GraphListener< V, E > listener : listeners.keySet() )
+//		{
+//			listener.updatePaused();
+//		}
+//	}
+//
+//	@Override
+//	public void resumeUpdate()
+//	{
+//		for ( final GraphListener< V, E > listener : listeners.keySet() )
+//		{
+//			listener.updateResumed();
+//		}
+//	}
 
 	/*
 	 * OTHER GRAPH METHODS

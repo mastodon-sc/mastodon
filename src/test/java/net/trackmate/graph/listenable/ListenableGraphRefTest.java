@@ -93,9 +93,9 @@ public class ListenableGraphRefTest
 			}
 		} );
 
-		graph.beginUpdate();
+//		graph.beginUpdate();
 		graph.remove( solo );
-		graph.endUpdate();
+//		graph.endUpdate();
 	}
 
 	@Test( expected = RuntimeException.class )
@@ -150,9 +150,9 @@ public class ListenableGraphRefTest
 			}
 		} );
 
-		graph.beginUpdate();
+//		graph.beginUpdate();
 		graph.remove( A );
-		graph.endUpdate();
+//		graph.endUpdate();
 	}
 
 	@Test( expected = RuntimeException.class )
@@ -224,12 +224,12 @@ public class ListenableGraphRefTest
 			}
 		} );
 
-		graph.beginUpdate();
+//		graph.beginUpdate();
 		graph.remove( A1 );
 		graph.remove( A2 );
 		graph.remove( B1 );
 		graph.remove( B2 );
-		graph.endUpdate();
+//		graph.endUpdate();
 	}
 
 	@Test( expected = RuntimeException.class )
@@ -256,9 +256,9 @@ public class ListenableGraphRefTest
 			}
 		} );
 
-		graph.beginUpdate();
+//		graph.beginUpdate();
 		graph.addVertex().init( newId );
-		graph.endUpdate();
+//		graph.endUpdate();
 	}
 
 	@Test( expected = RuntimeException.class )
@@ -287,9 +287,9 @@ public class ListenableGraphRefTest
 			}
 		} );
 
-		graph.beginUpdate();
+//		graph.beginUpdate();
 		graph.addEdge( source, target );
-		graph.endUpdate();
+//		graph.endUpdate();
 	}
 
 	@Test( expected = RuntimeException.class )
@@ -328,9 +328,9 @@ public class ListenableGraphRefTest
 			}
 		} );
 
-		graph.beginUpdate();
+//		graph.beginUpdate();
 		graph.remove( edge );
-		graph.endUpdate();
+//		graph.endUpdate();
 	}
 
 }

@@ -27,7 +27,7 @@ public class GraphChangeEventAggregator< V extends Vertex< E >, E extends Edge< 
 
 	private final WeakHashMap< GraphChangeEventListener< V, E >, Boolean > listeners;
 
-	public GraphChangeEventAggregator( ListenableGraph< V, E > graph )
+	public GraphChangeEventAggregator( final ListenableGraph< V, E > graph )
 	{
 		this.graph = graph;
 		this.currentEdit = new GraphChangeEvent< V, E >( graph );
@@ -35,12 +35,12 @@ public class GraphChangeEventAggregator< V extends Vertex< E >, E extends Edge< 
 		graph.addGraphListener( new Aggregator() );
 	}
 
-	public boolean addGraphListener( GraphChangeEventListener< V, E > listener )
+	public boolean addGraphListener( final GraphChangeEventListener< V, E > listener )
 	{
 		return listeners.put( listener, Boolean.TRUE ) == null;
 	}
 
-	public boolean removeGraphListener( GraphChangeEventListener< V, E > listener )
+	public boolean removeGraphListener( final GraphChangeEventListener< V, E > listener )
 	{
 		return listeners.remove( listener ) != null;
 	}
@@ -61,7 +61,7 @@ public class GraphChangeEventAggregator< V extends Vertex< E >, E extends Edge< 
 	private class Aggregator implements GraphListener< V, E >
 	{
 		@Override
-		public void vertexAdded( V vertex )
+		public void vertexAdded( final V vertex )
 		{
 			if ( !listening ) { return; }
 			currentEdit.vertexAdded( vertex );
@@ -73,7 +73,7 @@ public class GraphChangeEventAggregator< V extends Vertex< E >, E extends Edge< 
 		}
 
 		@Override
-		public void vertexRemoved( V vertex )
+		public void vertexRemoved( final V vertex )
 		{
 			if ( !listening ) { return; }
 			currentEdit.vertexRemoved( vertex );
@@ -85,7 +85,7 @@ public class GraphChangeEventAggregator< V extends Vertex< E >, E extends Edge< 
 		}
 
 		@Override
-		public void edgeAdded( E edge )
+		public void edgeAdded( final E edge )
 		{
 			if ( !listening ) { return; }
 			currentEdit.edgeAdded( edge );
@@ -97,10 +97,10 @@ public class GraphChangeEventAggregator< V extends Vertex< E >, E extends Edge< 
 		}
 
 		@Override
-		public void edgeRemoved( E edge, V source, V target )
+		public void edgeRemoved( final E edge )
 		{
 			if ( !listening ) { return; }
-			currentEdit.edgeRemoved( edge, source, target );
+			currentEdit.edgeRemoved( edge, edge.getSource(), edge.getTarget() );
 			if ( updateLevel == 0 )
 			{
 				fireEvent();
@@ -108,46 +108,46 @@ public class GraphChangeEventAggregator< V extends Vertex< E >, E extends Edge< 
 			}
 		}
 
-		@Override
-		public void updateBegun()
-		{
-			updateLevel++;
-		}
-
-		@Override
-		public void updateEnded()
-		{
-			updateLevel--;
-
-			if ( !endingUpdate )
-			{
-				endingUpdate = updateLevel == 0;
-				try
-				{
-					if ( endingUpdate && !currentEdit.isEmpty() )
-					{
-						fireEvent();
-						currentEdit = new GraphChangeEvent< V, E >( graph );
-					}
-				}
-				finally
-				{
-					endingUpdate = false;
-				}
-			}
-		}
-
-		@Override
-		public void updatePaused()
-		{
-			listening = false;
-		}
-
-		@Override
-		public void updateResumed()
-		{
-			listening = true;
-		}
+//		@Override
+//		public void updateBegun()
+//		{
+//			updateLevel++;
+//		}
+//
+//		@Override
+//		public void updateEnded()
+//		{
+//			updateLevel--;
+//
+//			if ( !endingUpdate )
+//			{
+//				endingUpdate = updateLevel == 0;
+//				try
+//				{
+//					if ( endingUpdate && !currentEdit.isEmpty() )
+//					{
+//						fireEvent();
+//						currentEdit = new GraphChangeEvent< V, E >( graph );
+//					}
+//				}
+//				finally
+//				{
+//					endingUpdate = false;
+//				}
+//			}
+//		}
+//
+//		@Override
+//		public void updatePaused()
+//		{
+//			listening = false;
+//		}
+//
+//		@Override
+//		public void updateResumed()
+//		{
+//			listening = true;
+//		}
 
 	}
 }
