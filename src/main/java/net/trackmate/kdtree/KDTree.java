@@ -68,8 +68,6 @@ public class KDTree<
 	public static < O extends Ref< O > & RealLocalizable, T extends MappedElement >
 			KDTree< O, T > kdtree( final Collection< O > objects, final RefPool< O > objectPool, final MemPool.Factory< T > poolFactory )
 	{
-		if ( objects.isEmpty() )
-			return null;
 		final KDTree< O, T > kdtree = new NodeFactory< O, T >( objects, objectPool, poolFactory ).kdtree;
 		kdtree.build( objects );
 		return kdtree;

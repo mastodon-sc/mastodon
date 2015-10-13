@@ -36,6 +36,8 @@ public final class NearestValidNeighborSearchOnKDTree< O extends Ref< O > & Real
 	{
 		n = tree.numDimensions();
 		pos = new double[ n ];
+		bestPointNodeIndex = -1;
+		bestSquDistance = Double.MAX_VALUE;
 		this.tree = tree;
 		this.node = tree.createRef();
 		this.obj = tree.getObjectPool().createRef();
@@ -51,6 +53,9 @@ public final class NearestValidNeighborSearchOnKDTree< O extends Ref< O > & Real
 	@Override
 	public void search( final RealLocalizable p )
 	{
+		if ( tree.size() == 0 )
+			return;
+
 		if ( fastDoubleSearch != null )
 		{
 			fastDoubleSearch.search( p );
@@ -99,6 +104,9 @@ public final class NearestValidNeighborSearchOnKDTree< O extends Ref< O > & Real
 	@Override
 	public RealLocalizable getPosition()
 	{
+		if ( bestPointNodeIndex == -1 )
+			return null;
+
 		tree.getByInternalPoolIndex( bestPointNodeIndex, node );
 		return node;
 	}
@@ -118,6 +126,9 @@ public final class NearestValidNeighborSearchOnKDTree< O extends Ref< O > & Real
 	@Override
 	public O get()
 	{
+		if ( bestPointNodeIndex == -1 )
+			return null;
+
 		tree.getByInternalPoolIndex( bestPointNodeIndex, node );
 		tree.getObjectPool().getByInternalPoolIndex( node.getDataIndex(), obj );
 		return obj;

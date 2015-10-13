@@ -75,6 +75,9 @@ public class SplitHyperPlaneKDTree< O extends Ref< O > & RealLocalizable, T exte
 
 	public void split( final HyperPlane plane )
 	{
+		if ( tree.size() == 0 )
+			return;
+
 		initNewSearch();
 		System.arraycopy( plane.getNormal(), 0, normal, 0, n );
 		m = plane.getDistance();
@@ -86,6 +89,9 @@ public class SplitHyperPlaneKDTree< O extends Ref< O > & RealLocalizable, T exte
 
 	public void split( final double[] plane )
 	{
+		if ( tree.size() == 0 )
+			return;
+
 		initNewSearch();
 		System.arraycopy( plane, 0, normal, 0, n );
 		m = plane[ n ];

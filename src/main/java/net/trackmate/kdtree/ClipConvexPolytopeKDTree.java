@@ -98,6 +98,9 @@ public class ClipConvexPolytopeKDTree< O extends Ref< O > & RealLocalizable, T e
 
 	public void clip( final ConvexPolytope polytope )
 	{
+		if ( tree.size() == 0 )
+			return;
+
 		final Collection< ? extends HyperPlane > planes = polytope.getHyperplanes();
 		initNewSearch( planes.size() );
 		int i = 0;
@@ -121,6 +124,9 @@ public class ClipConvexPolytopeKDTree< O extends Ref< O > & RealLocalizable, T e
 
 	public void clip( final double[][] planes )
 	{
+		if ( tree.size() == 0 )
+			return;
+
 		initNewSearch( planes.length );
 		for ( int i = 0; i < nPlanes; ++i )
 		{
