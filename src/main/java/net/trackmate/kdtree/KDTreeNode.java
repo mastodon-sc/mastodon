@@ -160,19 +160,14 @@ public class KDTreeNode<
 		return sum;
 	}
 
-	public boolean isFlagSet( final KDTreeNodeFlag flag )
+	public boolean isValid()
 	{
-		return ( getFlags() & flag.intValue() ) != 0;
+		return getFlags() == 0;
 	}
 
-	public void setFlag( final KDTreeNodeFlag flag )
+	public void setValid( final boolean valid )
 	{
-		setFlags( getFlags() | flag.intValue() );
-	}
-
-	public void clearFlag( final KDTreeNodeFlag flag )
-	{
-		setFlags( getFlags() & ~flag.intValue() );
+		setFlags( valid ? 0 : 1 );
 	}
 
 	@Override

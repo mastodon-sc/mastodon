@@ -1,6 +1,5 @@
 package net.trackmate.kdtree;
 
-import static net.trackmate.kdtree.KDTreeNodeFlags.NODE_INVALID_FLAG;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
@@ -193,7 +192,7 @@ public class KDTreeTest
 		final KDTree< MyVertex, DoubleMappedElement > kdtree = KDTree.kdtree( dataVertices, vertexPool );
 		final RefRefMap< MyVertex, KDTreeNode< MyVertex, DoubleMappedElement > > map = KDTree.createRefToKDTreeNodeMap( kdtree );
 		for ( final MyVertex invalid : invalidDataVertices )
-			map.get( invalid ).setFlag( NODE_INVALID_FLAG );
+			map.get( invalid ).setValid( false );
 		final NearestValidNeighborSearchOnKDTree< MyVertex, DoubleMappedElement > kd = new NearestValidNeighborSearchOnKDTree< MyVertex, DoubleMappedElement >( kdtree );
 		final MyVertex nnExhaustive = vertexPool.createRef();
 		for ( final RealLocalizable t : testVertices )
@@ -212,7 +211,7 @@ public class KDTreeTest
 		final KDTree< MyVertex, ByteMappedElement > kdtree = KDTree.kdtree( dataVertices, vertexPool, SingleArrayMemPool.factory( ByteMappedElementArray.factory ) );
 		final RefRefMap< MyVertex, KDTreeNode< MyVertex, ByteMappedElement > > map = KDTree.createRefToKDTreeNodeMap( kdtree );
 		for ( final MyVertex invalid : invalidDataVertices )
-			map.get( invalid ).setFlag( NODE_INVALID_FLAG );
+			map.get( invalid ).setValid( false );
 		final NearestValidNeighborSearchOnKDTree< MyVertex, ByteMappedElement > kd = new NearestValidNeighborSearchOnKDTree< MyVertex, ByteMappedElement >( kdtree );
 		final MyVertex nnExhaustive = vertexPool.createRef();
 		for ( final RealLocalizable t : testVertices )

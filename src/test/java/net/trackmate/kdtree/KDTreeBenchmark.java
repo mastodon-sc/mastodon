@@ -1,7 +1,5 @@
 package net.trackmate.kdtree;
 
-import static net.trackmate.kdtree.KDTreeNodeFlags.NODE_INVALID_FLAG;
-
 import java.util.Random;
 
 import net.imglib2.RealLocalizable;
@@ -81,7 +79,7 @@ public class KDTreeBenchmark
 		{
 			final int j = rnd.nextInt( kdtree.size() );
 			kdtree.getByInternalPoolIndex( j, node );
-			node.setFlag( NODE_INVALID_FLAG );
+			node.setValid( false );
 		}
 	}
 

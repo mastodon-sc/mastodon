@@ -1,6 +1,5 @@
 package net.trackmate.kdtree;
 
-import static net.trackmate.kdtree.KDTreeNodeFlags.NODE_INVALID_FLAG;
 import net.imglib2.RealLocalizable;
 import net.imglib2.Sampler;
 import net.imglib2.neighborsearch.NearestNeighborSearch;
@@ -75,7 +74,7 @@ public final class NearestValidNeighborSearchOnKDTree< O extends Ref< O > & Real
 		// consider the current node
 		tree.getByInternalPoolIndex( currentNodeIndex, node );
 		final double distance = node.squDistanceTo( pos );
-		if ( distance < bestSquDistance && !node.isFlagSet( NODE_INVALID_FLAG ) )
+		if ( distance < bestSquDistance && node.isValid() )
 		{
 			bestSquDistance = distance;
 			bestPointNodeIndex = currentNodeIndex;
@@ -188,14 +187,13 @@ public final class NearestValidNeighborSearchOnKDTree< O extends Ref< O > & Real
 			int depth = 0;
 			double bestSquDistanceL = Double.MAX_VALUE;
 			int bestIndexL = 0;
-			final int INVALID = KDTreeNodeFlags.NODE_INVALID_FLAG.intValue();
 			while ( true )
 			{
 				final double distance = squDistance( currentIndex );
 				if ( distance < bestSquDistanceL )
 				{
 					final int flags = ( int ) ( Double.doubleToRawLongBits( doubles[ currentIndex + n + 1 ] ) >> 32 );
-					if ( ( flags & INVALID ) == 0 )
+					if ( flags == 0 ) // if node is valid
 					{
 						bestSquDistanceL = distance;
 						bestIndexL = currentIndex;

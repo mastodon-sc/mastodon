@@ -95,7 +95,7 @@ public class KDTreeValidValueIterable< O extends Ref< O > & RealLocalizable, T e
 				else
 					return false;
 
-				if ( ! current.isFlagSet( KDTreeNodeFlags.NODE_INVALID_FLAG ) )
+				if ( current.isValid() )
 				{
 					pool.getByInternalPoolIndex( current.getDataIndex(), nextref );
 					return true;
@@ -127,8 +127,6 @@ public class KDTreeValidValueIterable< O extends Ref< O > & RealLocalizable, T e
 
 	private class DoublesIter implements Iterator< O >
 	{
-		private final int INVALID = KDTreeNodeFlags.NODE_INVALID_FLAG.intValue();
-
 		private int nextNodeIndex;
 
 		private int nextSubtreeIndex;
@@ -195,7 +193,7 @@ public class KDTreeValidValueIterable< O extends Ref< O > & RealLocalizable, T e
 					return false;
 
 				final int flags = ( int ) ( Double.doubleToRawLongBits( doubles[ currentIndex + n + 1 ] ) >> 32 );
-				if ( ( flags & INVALID ) == 0 )
+				if ( flags == 0 ) // if node is valid
 				{
 					final int objIndex = ( int ) ( Double.doubleToRawLongBits( doubles[ currentIndex + n + 1 ] ) & 0xffffffff );
 					pool.getByInternalPoolIndex( objIndex, nextref );

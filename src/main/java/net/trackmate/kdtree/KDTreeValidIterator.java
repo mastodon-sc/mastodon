@@ -1,7 +1,5 @@
 package net.trackmate.kdtree;
 
-import static net.trackmate.kdtree.KDTreeNodeFlags.NODE_INVALID_FLAG;
-
 import java.util.Iterator;
 
 import net.imglib2.RealLocalizable;
@@ -46,7 +44,7 @@ public class KDTreeValidIterator<
 		while ( kdtreeIter.hasNext() )
 		{
 			final KDTreeNode< O, T > n = kdtreeIter.next();
-			if ( !n.isFlagSet( NODE_INVALID_FLAG ) )
+			if ( n.isValid() )
 			{
 				objPool.getByInternalPoolIndex( n.getDataIndex(), nextref );
 				return true;
