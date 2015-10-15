@@ -155,6 +155,16 @@ public class ClipConvexPolytopeKDTree< O extends Ref< O > & RealLocalizable, T e
 		return new KDTreeValueIterable< O, T >( outNodes, outSubtrees, tree, fastDoubleSearch != null );
 	}
 
+	public Iterable< O > getValidInsideValues()
+	{
+		return new KDTreeValidValueIterable< O, T >( inNodes, inSubtrees, tree, fastDoubleSearch != null );
+	}
+
+	public Iterable< O > getValidOutsideValues()
+	{
+		return new KDTreeValidValueIterable< O, T >( outNodes, outSubtrees, tree, fastDoubleSearch != null );
+	}
+
 	private void initNewSearch( final int nPlanes )
 	{
 		this.nPlanes = nPlanes;
