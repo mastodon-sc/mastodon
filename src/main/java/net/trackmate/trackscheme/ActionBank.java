@@ -86,9 +86,9 @@ public class ActionBank
 		};
 	}
 
-	public static final AbstractNamedAction getNavigateToRightSibblingAction( final ShowTrackScheme trackscheme )
+	public static final AbstractNamedAction getNavigateToRightSiblingAction( final ShowTrackScheme trackscheme )
 	{
-		return new AbstractNamedAction( "navigateToRightSibbling" )
+		return new AbstractNamedAction( "navigateToRightSibling" )
 		{
 			private static final long serialVersionUID = 4628178914912235537L;
 
@@ -100,16 +100,16 @@ public class ActionBank
 					@Override
 					public void run()
 					{
-						trackscheme.selectionNavigator.rightSibbling( true );
+						trackscheme.selectionNavigator.rightSibling( true );
 					}
 				}.start();
 			}
 		};
 	}
 
-	public static final AbstractNamedAction getNavigateToLeftSibblingAction( final ShowTrackScheme trackscheme )
+	public static final AbstractNamedAction getNavigateToLeftSiblingAction( final ShowTrackScheme trackscheme )
 	{
-		return new AbstractNamedAction( "navigateToLeftSibbling" )
+		return new AbstractNamedAction( "navigateToLeftSibling" )
 		{
 			private static final long serialVersionUID = -34234313547655566L;
 
@@ -121,7 +121,7 @@ public class ActionBank
 					@Override
 					public void run()
 					{
-						trackscheme.selectionNavigator.leftSibbling( true );
+						trackscheme.selectionNavigator.leftSibling( true );
 					}
 				}.start();
 			}
@@ -170,9 +170,9 @@ public class ActionBank
 		};
 	}
 
-	public static final AbstractNamedAction getAddRightSibblingToSelectionAction( final ShowTrackScheme trackscheme )
+	public static final AbstractNamedAction getAddRightSiblingToSelectionAction( final ShowTrackScheme trackscheme )
 	{
-		return new AbstractNamedAction( "addRightSibblingToSelection" )
+		return new AbstractNamedAction( "addRightSiblingToSelection" )
 		{
 			private static final long serialVersionUID = -5851501792062577225L;
 
@@ -184,16 +184,16 @@ public class ActionBank
 					@Override
 					public void run()
 					{
-						trackscheme.selectionNavigator.rightSibbling( false );
+						trackscheme.selectionNavigator.rightSibling( false );
 					}
 				}.start();
 			}
 		};
 	}
 
-	public static final AbstractNamedAction getAddLeftSibblingToSelectionAction( final ShowTrackScheme trackscheme )
+	public static final AbstractNamedAction getAddLeftSiblingToSelectionAction( final ShowTrackScheme trackscheme )
 	{
-		return new AbstractNamedAction( "addLeftSibblingToSelection" )
+		return new AbstractNamedAction( "addLeftSiblingToSelection" )
 		{
 			private static final long serialVersionUID = 5740293861004609589L;
 
@@ -205,7 +205,7 @@ public class ActionBank
 					@Override
 					public void run()
 					{
-						trackscheme.selectionNavigator.leftSibbling( false );
+						trackscheme.selectionNavigator.leftSibling( false );
 					}
 				}.start();
 			}

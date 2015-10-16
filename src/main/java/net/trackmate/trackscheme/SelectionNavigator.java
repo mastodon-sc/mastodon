@@ -68,37 +68,37 @@ public class SelectionNavigator
 		}
 	}
 
-	public void rightSibbling( final boolean clear )
+	public void rightSibling( final boolean clear )
 	{
 		final TrackSchemeVertex current = takeDefaultVertex();
 		final TrackSchemeVertexList vertices = trackscheme.order.timepointToOrderedVertices.get( current.getTimepoint() );
 		final int index = vertices.binarySearch( current.getLayoutX() );
 		if ( index >= 0 && index < vertices.size()-1 )
 		{
-			final TrackSchemeVertex sibbling = vertices.get( index + 1 );
+			final TrackSchemeVertex sibling = vertices.get( index + 1 );
 			if ( clear )
 			{
 				selectionHandler.clearSelection();
 			}
-			selectionHandler.select( sibbling, false );
-			lastOne = sibbling;
+			selectionHandler.select( sibling, false );
+			lastOne = sibling;
 		}
 	}
 
-	public void leftSibbling( final boolean clear )
+	public void leftSibling( final boolean clear )
 	{
 		final TrackSchemeVertex current = takeDefaultVertex();
 		final TrackSchemeVertexList vertices = trackscheme.order.timepointToOrderedVertices.get( current.getTimepoint() );
 		final int index = vertices.binarySearch( current.getLayoutX() );
 		if ( index > 0 && index < vertices.size() )
 		{
-			final TrackSchemeVertex sibbling = vertices.get( index - 1 );
+			final TrackSchemeVertex sibling = vertices.get( index - 1 );
 			if ( clear )
 			{
 				selectionHandler.clearSelection();
 			}
-			selectionHandler.select( sibbling, false );
-			lastOne = sibbling;
+			selectionHandler.select( sibling, false );
+			lastOne = sibling;
 		}
 	}
 }

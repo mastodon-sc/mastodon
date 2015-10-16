@@ -43,10 +43,10 @@ public class KeyHandler
 		registerAction( arrowUp, ActionBank.getNavigateToParentAction( trackscheme ) );
 
 		final KeyStroke arrowRight = KeyStroke.getKeyStroke( KeyEvent.VK_RIGHT, 0 );
-		registerAction( arrowRight, ActionBank.getNavigateToRightSibblingAction( trackscheme ) );
+		registerAction( arrowRight, ActionBank.getNavigateToRightSiblingAction( trackscheme ) );
 
 		final KeyStroke arrowLeft = KeyStroke.getKeyStroke( KeyEvent.VK_LEFT, 0 );
-		registerAction( arrowLeft, ActionBank.getNavigateToLeftSibblingAction( trackscheme ) );
+		registerAction( arrowLeft, ActionBank.getNavigateToLeftSiblingAction( trackscheme ) );
 
 		final KeyStroke shiftArrowDown = KeyStroke.getKeyStroke( KeyEvent.VK_DOWN, InputEvent.SHIFT_DOWN_MASK );
 		registerAction( shiftArrowDown, ActionBank.getAddChildToSelectionAction( trackscheme ) );
@@ -55,10 +55,10 @@ public class KeyHandler
 		registerAction( shiftArrowUp, ActionBank.getAddParentToSelectionAction( trackscheme ) );
 
 		final KeyStroke shiftArrowRight = KeyStroke.getKeyStroke( KeyEvent.VK_RIGHT, InputEvent.SHIFT_DOWN_MASK );
-		registerAction( shiftArrowRight, ActionBank.getAddRightSibblingToSelectionAction( trackscheme ) );
+		registerAction( shiftArrowRight, ActionBank.getAddRightSiblingToSelectionAction( trackscheme ) );
 
 		final KeyStroke shiftArrowLeft = KeyStroke.getKeyStroke( KeyEvent.VK_LEFT, InputEvent.SHIFT_DOWN_MASK );
-		registerAction( shiftArrowLeft, ActionBank.getAddLeftSibblingToSelectionAction( trackscheme ) );
+		registerAction( shiftArrowLeft, ActionBank.getAddLeftSiblingToSelectionAction( trackscheme ) );
 
 		/*
 		 * SELECT
