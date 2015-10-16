@@ -1,6 +1,5 @@
-package net.trackmate.trackscheme;
+package net.trackmate.graph;
 
-import net.trackmate.graph.PoolObject;
 
 /**
  * Bidirectional mapping between integer IDs and objects.

@@ -2,14 +2,14 @@ package net.trackmate.model;
 
 import net.trackmate.graph.AbstractEdgePool;
 import net.trackmate.graph.AbstractVertexPool;
+import net.trackmate.graph.GraphIdBimap;
 import net.trackmate.graph.GraphImp;
 import net.trackmate.graph.PoolObject;
+import net.trackmate.graph.PoolObjectIdBimap;
 import net.trackmate.graph.mempool.ByteMappedElement;
 import net.trackmate.graph.mempool.ByteMappedElementArray;
 import net.trackmate.graph.mempool.MemPool;
 import net.trackmate.graph.mempool.SingleArrayMemPool;
-import net.trackmate.trackscheme.GraphIdBimap;
-import net.trackmate.trackscheme.PoolObjectIdBimap;
 
 public class ModelGraph< V extends AbstractSpot< V >> extends GraphImp< ModelGraph.SpotPool< V >, ModelGraph.LinkPool< V >, V, Link< V >, ByteMappedElement >
 {

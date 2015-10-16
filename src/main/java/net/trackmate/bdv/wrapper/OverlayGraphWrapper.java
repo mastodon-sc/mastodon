@@ -10,6 +10,7 @@ import net.imglib2.RealLocalizable;
 import net.imglib2.algorithm.kdtree.ConvexPolytope;
 import net.trackmate.graph.Edge;
 import net.trackmate.graph.Graph;
+import net.trackmate.graph.GraphIdBimap;
 import net.trackmate.graph.PoolObjectSet;
 import net.trackmate.graph.RefPool;
 import net.trackmate.graph.Vertex;
@@ -18,7 +19,6 @@ import net.trackmate.graph.mempool.DoubleMappedElement;
 import net.trackmate.kdtree.ClipConvexPolytopeKDTree;
 import net.trackmate.kdtree.KDTree;
 import net.trackmate.kdtree.NearestNeighborSearchOnKDTree;
-import net.trackmate.trackscheme.GraphIdBimap;
 import net.trackmate.trackscheme.TrackSchemeGraph;
 import net.trackmate.trackscheme.TrackSchemeVertex;
 

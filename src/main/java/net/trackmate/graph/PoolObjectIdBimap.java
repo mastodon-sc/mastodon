@@ -1,7 +1,5 @@
-package net.trackmate.trackscheme;
+package net.trackmate.graph;
 
-import net.trackmate.graph.Pool;
-import net.trackmate.graph.PoolObject;
 
 /**
  * Bidirectional mapping between {@link PoolObject}s and their internal pool

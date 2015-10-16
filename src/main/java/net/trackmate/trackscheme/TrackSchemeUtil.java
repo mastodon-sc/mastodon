@@ -4,6 +4,7 @@ import java.util.Iterator;
 
 import net.trackmate.graph.Edge;
 import net.trackmate.graph.Graph;
+import net.trackmate.graph.GraphIdBimap;
 import net.trackmate.graph.IntPoolObjectMap;
 import net.trackmate.graph.Vertex;
 

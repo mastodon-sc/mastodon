@@ -1,7 +1,5 @@
-package net.trackmate.trackscheme;
+package net.trackmate.graph;
 
-import net.trackmate.graph.Edge;
-import net.trackmate.graph.Vertex;
 
 /**
  * Bidirectional mappings between integer IDs and vertices and integer IDs
@@ -28,6 +26,7 @@ public class GraphIdBimap< V, E >
 		this.edgeBimap = edgeBimap;
 
 	}
+
 	public int getVertexId( final V v )
 	{
 		return vertexBimap.getId( v );
@@ -46,5 +45,15 @@ public class GraphIdBimap< V, E >
 	public E getEdge( final int id, final E ref )
 	{
 		return edgeBimap.getObject( id, ref );
+	}
+
+	public IdBimap< V > vertexIdBimap()
+	{
+		return vertexBimap;
+	}
+
+	public IdBimap< E > edgeIdBimap()
+	{
+		return edgeBimap;
 	}
 }
