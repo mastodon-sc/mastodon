@@ -10,6 +10,7 @@ public class TrackSchemeVertexList extends PoolObjectList< TrackSchemeVertex >
 	private double cachedMinLayoutXDistance;
 
 	// TODO: needs to be reset to false when the graph is laid out again.
+	// TODO: needs to be reset when the list is modified.
 	private boolean cachedMinLayoutXDistanceValid;
 
 	public TrackSchemeVertexList( final TrackSchemeGraph graph )
