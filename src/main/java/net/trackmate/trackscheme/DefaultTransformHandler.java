@@ -19,7 +19,10 @@ import net.imglib2.ui.TransformEventHandlerFactory;
 import net.imglib2.ui.TransformListener;
 import net.trackmate.trackscheme.animate.AbstractTransformAnimator;
 
-public class DefaultTransformHandler implements MouseListener, MouseWheelListener, KeyListener, MouseMotionListener, TransformEventHandler< ScreenTransform >, Paintable
+public class DefaultTransformHandler
+		implements MouseListener, MouseWheelListener, KeyListener, MouseMotionListener,
+		TransformEventHandler< ScreenTransform >,
+		Paintable
 {
 	/**
 	 * Speed at which the screen scrolls when using the mouse wheel.

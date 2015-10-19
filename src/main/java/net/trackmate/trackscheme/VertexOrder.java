@@ -188,7 +188,8 @@ public class VertexOrder
 		final ScreenVertexList screenVertices = screenEntities.getVertices();
 		final ScreenVertex sv = screenVertices.createRef();
 		if ( si >= 0 && si < screenVertices.size()
-				&& screenVertices.get( si, sv ).getTrackSchemeVertexId() == v.getInternalPoolIndex() ) { return sv; }
+				&& screenVertices.get( si, sv ).getTrackSchemeVertexId() == v.getInternalPoolIndex() )
+			return sv;
 		return null;
 	}
 
@@ -199,7 +200,8 @@ public class VertexOrder
 		final ScreenEdgeList screenEdges = screenEntities.getEdges();
 		final ScreenEdge se = screenEdges.createRef();
 		if ( si >= 0 && si < screenEdges.size()
-				&& screenEdges.get( si, se ).getTrackSchemeEdgeId() == e.getInternalPoolIndex() ) { return se; }
+				&& screenEdges.get( si, se ).getTrackSchemeEdgeId() == e.getInternalPoolIndex() )
+			return se;
 		return null;
 	}
 
