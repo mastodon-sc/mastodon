@@ -14,7 +14,7 @@ import java.util.List;
  * coordinates of vertices are given by the timepoint.)
  *
  * <p>
- * See {@link VertexOrder}. for transforming layout coordinates to screen
+ * See {@link VertexOrder} for transforming layout coordinates to screen
  * coordinates.
  *
  * @author Tobias Pietzsch <tobias.pietzsch@gmail.com>
@@ -44,22 +44,43 @@ public class LineageTreeLayout
 	}
 
 	/**
-	 * Call {@link #layoutX(TrackSchemeVertex)} for every root.
+	 * Layout graph in trackscheme coordinates starting from specified roots.
+	 * <p>
+	 * This calls {@link #layoutX(List, int)} with parameter {@code mark = -1},
+	 * that is, no vertices will me marked as ghosts.
+	 *
+	 * @param layoutRoots
+	 *            root vertices from which to start layout.
 	 */
 	public void layoutX( final List< TrackSchemeVertex > layoutRoots )
 	{
 		layoutX( layoutRoots, -1 );
 	}
 
+	// TODO: add javadoc ref to context trackscheme class
 	/**
-	 * Call {@link #layoutX(TrackSchemeVertex)} for every root.
+	 * Layout graph in trackscheme coordinates starting from specified roots.
+	 * <p>
+	 * {@code mark} is used to check for active vertices. When the context
+	 * trackscheme determines the set of vertices that should be visible in the
+	 * layout, it sets their layout timestamp to a value higher than that used
+	 * in any previous layout (see{@link #nextLayoutTimestamp()}). During
+	 * layout, it is checked whether a vertex's
+	 * {@link TrackSchemeVertex#getLayoutTimestamp() timestamp} is &ge;
+	 * {@code mark}. Otherwise the vertex is marked as a ghost and treated as a
+	 * leaf node in the layout.
+	 *
+	 * @param layoutRoots
+	 *            root vertices from which to start layout.
+	 * @param mark
+	 *            timestamp value that was used to mark active vertices.
 	 */
 	public void layoutX( final List< TrackSchemeVertex > layoutRoots, final int mark )
 	{
-		reset();
 		++timestamp;
 		this.mark = mark;
 
+		rightmost = 0;
 		columns.clear();
 		columnNames.clear();
 		columns.add( 0 );
@@ -73,7 +94,8 @@ public class LineageTreeLayout
 
 	/**
 	 * Get the timestamp that was used in the last layout (the timestamp which
-	 * was set in all vertices laid out during last {@link #layoutX(List)}.)
+	 * was set in all vertices laid out during last {@link #layoutX(List)} resp.
+	 * {@link #layoutX(List, int)}.)
 	 *
 	 * @return timestamp used in last layout.
 	 */
@@ -82,21 +104,18 @@ public class LineageTreeLayout
 		return timestamp;
 	}
 
+	// TODO: add javadoc ref to context trackscheme class
 	/**
-	 * Get a new layout timestamp.
-	 * (The next layout will then use the timestamp after that).
+	 * Get a new layout timestamp for external use. The next layout will then
+	 * use the timestamp after that. This is used by context trackscheme to mark
+	 * active vertices.
 	 *
-	 * @return
+	 * @return the timestamp which would have been used for the next layout.
 	 */
 	public int nextLayoutTimestamp()
 	{
 		++timestamp;
 		return timestamp;
-	}
-
-	private void reset()
-	{
-		rightmost = 0;
 	}
 
 	/**
@@ -106,6 +125,8 @@ public class LineageTreeLayout
 	 * <li>non-leafs are centered between first and last child's layoutX
 	 * <li>for layout of vertices with more then one parent, only first incoming
 	 * edge counts as parent edge
+	 * <li>in-active vertices (marked with a timestamp &lt; the current
+	 * {@link #mark}) are marked as ghosts and treated as leafs.
 	 * </ul>
 	 *
 	 * @param v
@@ -117,30 +138,24 @@ public class LineageTreeLayout
 		double firstChildX = 0;
 		double lastChildX = 0;
 
-		if ( v.getLayoutTimestamp() < mark )
+		final boolean ghost = v.getLayoutTimestamp() < mark;
+		v.setGhost( ghost );
+		v.setLayoutTimestamp( timestamp );
+
+		if ( !v.outgoingEdges().isEmpty() && !ghost )
 		{
-			v.setGhost( true );
-			v.setLayoutTimestamp( timestamp );
-		}
-		else
-		{
-			v.setGhost( false );
-			v.setLayoutTimestamp( timestamp );
-			if ( !v.outgoingEdges().isEmpty() && !v.isGhost() )
+			final TrackSchemeVertex child = graph.vertexRef();
+			final TrackSchemeEdge edge = graph.edgeRef();
+			final Iterator< TrackSchemeEdge > iterator = v.outgoingEdges().iterator();
+			while ( layoutNextChild( iterator, child, edge ) )
 			{
-				final TrackSchemeVertex child = graph.vertexRef();
-				final TrackSchemeEdge edge = graph.edgeRef();
-				final Iterator< TrackSchemeEdge > iterator = v.outgoingEdges().iterator();
-				while ( layoutNextChild( iterator, child, edge ) )
-				{
-					if ( ++numLaidOutChildren == 1 )
-						firstChildX = child.getLayoutX();
-					else
-						lastChildX = child.getLayoutX();
-				}
-				graph.releaseRef( edge );
-				graph.releaseRef( child );
+				if ( ++numLaidOutChildren == 1 )
+					firstChildX = child.getLayoutX();
+				else
+					lastChildX = child.getLayoutX();
 			}
+			graph.releaseRef( edge );
+			graph.releaseRef( child );
 		}
 
 		switch( numLaidOutChildren )
