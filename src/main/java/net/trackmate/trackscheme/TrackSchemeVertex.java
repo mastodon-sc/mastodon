@@ -100,6 +100,12 @@ public class TrackSchemeVertex extends AbstractVertex< TrackSchemeVertex, TrackS
 		access.putInt( timepoint, TIMEPOINT_OFFSET );
 	}
 
+	/**
+	 * Internal pool index of last {@link ScreenVertex} that was created for
+	 * this vertex. Used for lookup when creating {@link ScreenEdge}s.
+	 *
+	 * @return internal pool index of associated {@link ScreenVertex}.
+	 */
 	public int getScreenVertexIndex()
 	{
 		return access.getIndex( SCREENVERTEX_INDEX_OFFSET );
@@ -120,6 +126,7 @@ public class TrackSchemeVertex extends AbstractVertex< TrackSchemeVertex, TrackS
 		access.putDouble( x, X_OFFSET );
 	}
 
+	// TODO: should be removed
 	public boolean isSelected()
 	{
 		return access.getBoolean( SELECTED_OFFSET );
@@ -130,6 +137,13 @@ public class TrackSchemeVertex extends AbstractVertex< TrackSchemeVertex, TrackS
 		access.putBoolean( selected, SELECTED_OFFSET );
 	}
 
+	/**
+	 * Layout timestamp is set when this vertex is layouted (assigned a
+	 * {@link #getLayoutX() coordinate}). It is also used to mark active
+	 * vertices before a partial layout.
+	 *
+	 * @return layout timestamp.
+	 */
 	public int getLayoutTimestamp()
 	{
 		return access.getInt( LAYOUT_TIMESTAMP_OFFSET );
@@ -140,6 +154,16 @@ public class TrackSchemeVertex extends AbstractVertex< TrackSchemeVertex, TrackS
 		access.putInt( timestamp, LAYOUT_TIMESTAMP_OFFSET );
 	}
 
+	/**
+	 * internal pool index of first (and only) edge through which this vertex
+	 * was touched in last layout.
+	 * <p>
+	 * TODO: this would not be needed if VertexOrder would be build directly
+	 * during layout.
+	 *
+	 * @return internal pool index of first (and only) edge through which this
+	 *         vertex was touched in last layout.
+	 */
 	protected int getLayoutInEdgeIndex()
 	{
 		return access.getIndex( LAYOUT_IN_EDGE_INDEX_OFFSET );
@@ -150,6 +174,12 @@ public class TrackSchemeVertex extends AbstractVertex< TrackSchemeVertex, TrackS
 		access.putIndex( index, LAYOUT_IN_EDGE_INDEX_OFFSET );
 	}
 
+	/**
+	 * A vertex is set to <em>ghost</em> if it is hit during a partial layout
+	 * and is marked with a timestamp &lt; the current mark.
+	 *
+	 * @return whether this vertex is a ghost
+	 */
 	protected boolean isGhost()
 	{
 		return access.getBoolean( GHOST_OFFSET );

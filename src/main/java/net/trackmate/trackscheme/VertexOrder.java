@@ -459,6 +459,7 @@ public class VertexOrder
 						{
 							edge.getSource( v2 );
 							final int v2si = v2.getScreenVertexIndex();
+							// TODO: additionally to checking for id ref consistency, the following should be decided by layout timestamp
 							if ( v2si >= 0 && v2si < screenVertices.size() && screenVertices.get( v2si, sv ).getTrackSchemeVertexId() == v2.getInternalPoolIndex() )
 							{
 								final int eid = edge.getInternalPoolIndex();

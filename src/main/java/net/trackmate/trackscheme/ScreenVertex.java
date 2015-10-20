@@ -133,7 +133,8 @@ public class ScreenVertex extends PoolObject< ScreenVertex, ByteMappedElement >
 
 	/**
 	 * (Estimate of) the distance to the closest vertex on screen.
-	 * Center-to-center distance.
+	 * Center-to-center distance. This is used to determine how large the vertex
+	 * should be painted.
 	 *
 	 * @return distance to the closest vertex on screen.
 	 */

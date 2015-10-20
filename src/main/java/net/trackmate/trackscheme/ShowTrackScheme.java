@@ -172,6 +172,7 @@ public class ShowTrackScheme implements TransformListener< ScreenTransform >, Se
 		 * Animation mechanism hacks as a painting loop.
 		 */
 
+		// TODO make animation loop more straightforward
 		canvas.addOverlayRenderer( new OverlayRenderer()
 		{
 			@Override
