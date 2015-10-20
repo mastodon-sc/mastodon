@@ -3,7 +3,6 @@ package net.trackmate.graph;
 
 /**
  * Bidirectional mapping between integer IDs and objects.
- *
  * <p>
  * Implementations:
  * <ul>
@@ -12,9 +11,6 @@ package net.trackmate.graph;
  * <li>a mapping between Java objects and IDs that are assigned upon first
  * access. Not implemented yet.</li>
  * </ul>
- *
- * <p>
- * TODO: in which package should this be?
  *
  * @param <O>
  *            the object type.

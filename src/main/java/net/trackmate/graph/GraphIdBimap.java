@@ -5,9 +5,6 @@ package net.trackmate.graph;
  * Bidirectional mappings between integer IDs and vertices and integer IDs
  * and edges.
  *
- * <p>
- * TODO: in which package should this be?
- *
  * @param <V>
  *            the {@link Vertex} type.
  * @param <E>
@@ -24,7 +21,6 @@ public class GraphIdBimap< V, E >
 	{
 		this.vertexBimap = vertexBimap;
 		this.edgeBimap = edgeBimap;
-
 	}
 
 	public int getVertexId( final V v )

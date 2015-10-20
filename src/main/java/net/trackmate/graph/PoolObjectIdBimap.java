@@ -5,9 +5,6 @@ package net.trackmate.graph;
  * Bidirectional mapping between {@link PoolObject}s and their internal pool
  * indices.
  *
- * <p>
- * TODO: in which package should this be?
- *
  * @param <O>
  *            the {@link PoolObject} type.
  *
