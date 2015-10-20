@@ -23,7 +23,7 @@ public class GraphChangeEventAggregator< V extends Vertex< E >, E extends Edge< 
 
 	private final ListenableGraph< V, E > graph;
 
-	private boolean listening = true;
+	private final boolean listening = true;
 
 	private final WeakHashMap< GraphChangeEventListener< V, E >, Boolean > listeners;
 

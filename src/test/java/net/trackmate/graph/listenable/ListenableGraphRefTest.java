@@ -42,7 +42,7 @@ public class ListenableGraphRefTest
 
 	private TestVertex solo;
 
-	private ListenableGraph< TestVertex, TestEdge > graph;
+	private ListenableGraphWrapper< TestVertex, TestEdge, TestGraph > graph;
 
 	private TestGraph sourceGraph;
 

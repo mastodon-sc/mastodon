@@ -1,7 +1,7 @@
 package net.trackmate.graph.listenable;
 
 import net.trackmate.graph.Edge;
-import net.trackmate.graph.Graph;
+import net.trackmate.graph.ReadOnlyGraph;
 import net.trackmate.graph.Vertex;
 import net.trackmate.graph.collection.CollectionUtils;
 import net.trackmate.graph.collection.RefRefMap;
@@ -9,7 +9,7 @@ import net.trackmate.graph.collection.RefSet;
 
 public class GraphChangeEvent< V extends Vertex< E >, E extends Edge< V > >
 {
-	private final Graph< V, E > source;
+	private final ReadOnlyGraph< V, E > source;
 
 	private final RefSet< V > vertexAdded;
 
@@ -23,7 +23,7 @@ public class GraphChangeEvent< V extends Vertex< E >, E extends Edge< V > >
 
 	private final RefRefMap< E, V > previousEdgeTarget;
 
-	GraphChangeEvent( final Graph< V, E > source )
+	GraphChangeEvent( final ReadOnlyGraph< V, E > source )
 	{
 		this.source = source;
 		this.vertexAdded = CollectionUtils.createVertexSet( source );
@@ -49,7 +49,7 @@ public class GraphChangeEvent< V extends Vertex< E >, E extends Edge< V > >
 		edgeAdded.add( edge );
 	}
 
-	void edgeRemoved( final E edge, V source, V target )
+	void edgeRemoved( final E edge, final V source, final V target )
 	{
 		edgeRemoved.add( edge );
 		previousEdgeSource.put( edge, source );
@@ -64,7 +64,7 @@ public class GraphChangeEvent< V extends Vertex< E >, E extends Edge< V > >
 				&& vertexRemoved.isEmpty();
 	}
 
-	public Graph< V, E > getSource()
+	public ReadOnlyGraph< V, E > getSource()
 	{
 		return source;
 	}

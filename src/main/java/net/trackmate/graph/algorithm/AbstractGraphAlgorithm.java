@@ -4,6 +4,7 @@ import java.util.Iterator;
 
 import net.trackmate.graph.Edge;
 import net.trackmate.graph.Graph;
+import net.trackmate.graph.ReadOnlyGraph;
 import net.trackmate.graph.Vertex;
 import net.trackmate.graph.collection.CollectionUtils;
 import net.trackmate.graph.collection.RefDeque;
@@ -27,13 +28,13 @@ import net.trackmate.graph.collection.RefStack;
  */
 public abstract class AbstractGraphAlgorithm< V extends Vertex< E >, E extends Edge< V > >
 {
-	protected final Graph< V, E > graph;
+	protected final ReadOnlyGraph< V, E > graph;
 
 	private final Assigner< V > vertexAssigner;
 
 	private final Assigner< E > edgeAssigner;
 
-	public AbstractGraphAlgorithm( final Graph< V, E > graph )
+	public AbstractGraphAlgorithm( final ReadOnlyGraph< V, E > graph )
 	{
 		this.graph = graph;
 		final V v = graph.vertexRef();

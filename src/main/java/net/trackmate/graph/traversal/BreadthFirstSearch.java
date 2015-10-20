@@ -2,7 +2,7 @@ package net.trackmate.graph.traversal;
 
 import net.trackmate.graph.Edge;
 import net.trackmate.graph.Edges;
-import net.trackmate.graph.Graph;
+import net.trackmate.graph.ReadOnlyGraph;
 import net.trackmate.graph.Vertex;
 import net.trackmate.graph.collection.RefDeque;
 import net.trackmate.graph.collection.RefIntMap;
@@ -29,7 +29,7 @@ public class BreadthFirstSearch< V extends Vertex< E >, E extends Edge< V > > ex
 
 	private final boolean directed;
 
-	public BreadthFirstSearch( final Graph< V, E > graph, final boolean directed )
+	public BreadthFirstSearch( final ReadOnlyGraph< V, E > graph, final boolean directed )
 	{
 		super( graph );
 		this.directed = directed;

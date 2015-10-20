@@ -6,6 +6,7 @@ import java.util.Iterator;
 import net.trackmate.graph.Edge;
 import net.trackmate.graph.Edges;
 import net.trackmate.graph.Graph;
+import net.trackmate.graph.ReadOnlyGraph;
 import net.trackmate.graph.Vertex;
 import net.trackmate.graph.collection.RefObjectMap;
 import net.trackmate.graph.collection.RefSet;
@@ -40,7 +41,7 @@ public class TreeOutputter< V extends Vertex< E >, E extends Edge< V > > extends
 
 	private RefSet< V > visited;
 
-	public TreeOutputter( final Graph< V, E > graph )
+	public TreeOutputter( final ReadOnlyGraph< V, E > graph )
 	{
 		super( graph );
 	}

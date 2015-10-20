@@ -10,7 +10,6 @@ import net.trackmate.graph.TestEdge;
 import net.trackmate.graph.TestGraph;
 import net.trackmate.graph.TestVertex;
 import net.trackmate.graph.collection.RefSet;
-import net.trackmate.graph.listenable.ListenableGraph;
 import net.trackmate.graph.listenable.ListenableGraphWrapper;
 
 import org.junit.Before;
@@ -19,7 +18,7 @@ import org.junit.Test;
 public class ConnectedComponentsDynamicDefaultTest
 {
 
-	private ListenableGraph< TestVertex, TestEdge > graph;
+	private ListenableGraphWrapper< TestVertex, TestEdge, TestGraph > graph;
 
 	private List< TestVertex > vertices;
 

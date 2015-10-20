@@ -2,6 +2,7 @@ package net.trackmate.graph.traversal;
 
 import net.trackmate.graph.Edge;
 import net.trackmate.graph.Graph;
+import net.trackmate.graph.ReadOnlyGraph;
 import net.trackmate.graph.Vertex;
 import net.trackmate.graph.collection.RefStack;
 
@@ -22,7 +23,7 @@ public class DepthFirstIterator< V extends Vertex< E >, E extends Edge< V > > ex
 {
 	private final RefStack< V > stack;
 
-	public DepthFirstIterator( final V root, final Graph< V, E > graph )
+	public DepthFirstIterator( final V root, final ReadOnlyGraph< V, E > graph )
 	{
 		super( graph );
 		stack = createVertexStack();

@@ -5,7 +5,7 @@ import java.util.Iterator;
 import java.util.Set;
 
 import net.trackmate.graph.Edge;
-import net.trackmate.graph.Graph;
+import net.trackmate.graph.ReadOnlyGraph;
 import net.trackmate.graph.Vertex;
 import net.trackmate.graph.collection.RefSet;
 import net.trackmate.graph.util.Graphs;
@@ -31,14 +31,14 @@ public class ConnectedComponents< V extends Vertex< E >, E extends Edge< V > > e
 
 	private final int minimalSize;
 
-	public ConnectedComponents( final Graph< V, E > graph, final int minimalSize )
+	public ConnectedComponents( final ReadOnlyGraph< V, E > graph, final int minimalSize )
 	{
 		super( graph );
 		this.minimalSize = minimalSize;
 		this.visited = createVertexSet();
 	}
 
-	public ConnectedComponents( final Graph< V, E > graph )
+	public ConnectedComponents( final ReadOnlyGraph< V, E > graph )
 	{
 		this( graph, 2 );
 	}
