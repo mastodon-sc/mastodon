@@ -209,4 +209,10 @@ public class Selection< V extends Vertex< E >, E extends Edge< V > > implements 
 	{
 		setSelected( e, false );
 	}
+
+	@Override
+	public void graphRebuilt()
+	{
+		clearSelection();
+	}
 }

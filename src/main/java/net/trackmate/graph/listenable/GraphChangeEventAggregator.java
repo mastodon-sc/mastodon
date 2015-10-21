@@ -108,6 +108,13 @@ public class GraphChangeEventAggregator< V extends Vertex< E >, E extends Edge< 
 			}
 		}
 
+		@Override
+		public void graphRebuilt()
+		{
+			// TODO Auto-generated method stub
+
+		}
+
 //		@Override
 //		public void updateBegun()
 //		{

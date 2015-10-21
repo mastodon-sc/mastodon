@@ -5,6 +5,11 @@ import net.trackmate.graph.Vertex;
 
 public interface GraphListener< V extends Vertex< E >, E extends Edge< V > >
 {
+	/**
+	 * Called when the graph has been changed completely, for example, when it is loaded from a file.
+	 * This should lead to a re-initialization of the listener.
+	 */
+	public void graphRebuilt();
 
 	/**
 	 * Called when a vertex was added to the graph.
