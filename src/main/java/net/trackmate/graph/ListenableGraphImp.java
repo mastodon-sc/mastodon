@@ -39,10 +39,13 @@ public class ListenableGraphImp<
 
 	protected final ArrayList< GraphListener< V, E > > listeners;
 
+	protected boolean emitEvents;
+
 	public ListenableGraphImp( final VP vertexPool, final EP edgePool )
 	{
 		super( vertexPool, edgePool );
 		listeners = new ArrayList< GraphListener<V,E> >();
+		emitEvents = true;
 	}
 
 	@SuppressWarnings( "unchecked" )
@@ -50,14 +53,16 @@ public class ListenableGraphImp<
 	{
 		super( edgePool );
 		listeners = new ArrayList< GraphListener<V,E> >();
+		emitEvents = true;
 	}
 
 	@Override
 	public V addVertex()
 	{
 		final V v = vertexPool.create( vertexRef() );
-		for ( final GraphListener< V, E > listener : listeners )
-			listener.vertexAdded( v );
+		if ( emitEvents )
+			for ( final GraphListener< V, E > listener : listeners )
+				listener.vertexAdded( v );
 		return v;
 	}
 
@@ -65,8 +70,9 @@ public class ListenableGraphImp<
 	public V addVertex( final V vertex )
 	{
 		vertexPool.create( vertex );
-		for ( final GraphListener< V, E > listener : listeners )
-			listener.vertexAdded( vertex );
+		if ( emitEvents )
+			for ( final GraphListener< V, E > listener : listeners )
+				listener.vertexAdded( vertex );
 		return vertex;
 	}
 
@@ -74,8 +80,9 @@ public class ListenableGraphImp<
 	public E addEdge( final V source, final V target )
 	{
 		final E edge = edgePool.addEdge( source, target, edgeRef() );
-		for ( final GraphListener< V, E > listener : listeners )
-			listener.edgeAdded( edge );
+		if ( emitEvents )
+			for ( final GraphListener< V, E > listener : listeners )
+				listener.edgeAdded( edge );
 		return edge;
 	}
 
@@ -83,36 +90,42 @@ public class ListenableGraphImp<
 	public E addEdge( final V source, final V target, final E edge )
 	{
 		edgePool.addEdge( source, target, edge );
-		for ( final GraphListener< V, E > listener : listeners )
-			listener.edgeAdded( edge );
+		if ( emitEvents )
+			for ( final GraphListener< V, E > listener : listeners )
+				listener.edgeAdded( edge );
 		return edge;
 	}
 
 	@Override
 	public void remove( final V vertex )
 	{
-		for ( final E edge : vertex.edges() )
+		if ( emitEvents )
+		{
+			for ( final E edge : vertex.edges() )
+				for ( final GraphListener< V, E > listener : listeners )
+					listener.edgeRemoved( edge );
 			for ( final GraphListener< V, E > listener : listeners )
-				listener.edgeRemoved( edge );
-		for ( final GraphListener< V, E > listener : listeners )
-			listener.vertexRemoved( vertex );
+				listener.vertexRemoved( vertex );
+		}
 		vertexPool.delete( vertex );
 	}
 
 	@Override
 	public void remove( final E edge )
 	{
-		for ( final GraphListener< V, E > listener : listeners )
-			listener.edgeRemoved( edge );
+		if ( emitEvents )
+			for ( final GraphListener< V, E > listener : listeners )
+				listener.edgeRemoved( edge );
 		edgePool.delete( edge );
 	}
 
 	@Override
 	public void removeAllLinkedEdges( final V vertex )
 	{
-		for ( final E edge : vertex.edges() )
-			for ( final GraphListener< V, E > listener : listeners )
-				listener.edgeRemoved( edge );
+		if ( emitEvents )
+			for ( final E edge : vertex.edges() )
+				for ( final GraphListener< V, E > listener : listeners )
+					listener.edgeRemoved( edge );
 		edgePool.deleteAllLinkedEdges( vertex );
 	}
 
@@ -131,5 +144,28 @@ public class ListenableGraphImp<
 	public boolean removeGraphListener( final GraphListener< V, E > listener )
 	{
 		return listeners.remove( listener );
+	}
+
+	/**
+	 * Pause sending events to {@link GraphListener}s. This is called before
+	 * large modifications to the graph are made, for example when the graph is
+	 * loaded from a file.
+	 */
+	protected void pauseListeners()
+	{
+		emitEvents = false;
+	}
+
+	/**
+	 * Resume sending events to {@link GraphListener}s, and send
+	 * {@link GraphListener#graphRebuilt()} to all registered listeners. This is
+	 * called after large modifications to the graph are made, for example when
+	 * the graph is loaded from a file.
+	 */
+	protected void resumeListeners()
+	{
+		emitEvents = true;
+		for ( final GraphListener< V, E > listener : listeners )
+			listener.graphRebuilt();
 	}
 }
