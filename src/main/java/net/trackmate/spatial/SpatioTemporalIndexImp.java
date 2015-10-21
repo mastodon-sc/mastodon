@@ -16,7 +16,6 @@ import net.trackmate.graph.collection.CollectionUtils;
 import net.trackmate.graph.collection.RefSet;
 import net.trackmate.graph.listenable.GraphListener;
 import net.trackmate.graph.listenable.ListenableGraph;
-import net.trackmate.trackscheme.HasTimepoint;
 
 /**
  * Maintain a spatio-temporal index of all vertices of a graph.

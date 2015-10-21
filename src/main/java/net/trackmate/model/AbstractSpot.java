@@ -6,7 +6,7 @@ import net.imglib2.RealLocalizable;
 import net.trackmate.graph.AbstractVertex;
 import net.trackmate.graph.AbstractVertexPool;
 import net.trackmate.graph.mempool.ByteMappedElement;
-import net.trackmate.trackscheme.HasTimepoint;
+import net.trackmate.spatial.HasTimepoint;
 
 /**
  * Base class for specialized vertices that are part of a graph, and are used to

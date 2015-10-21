@@ -1,4 +1,4 @@
-package net.trackmate.trackscheme;
+package net.trackmate.spatial;
 
 /**
  * Something (e.g., a spot) that has a timepoint.

@@ -7,6 +7,7 @@ import net.trackmate.graph.Graph;
 import net.trackmate.graph.GraphIdBimap;
 import net.trackmate.graph.IntPoolObjectMap;
 import net.trackmate.graph.Vertex;
+import net.trackmate.spatial.HasTimepoint;
 
 public class TrackSchemeUtil
 {
