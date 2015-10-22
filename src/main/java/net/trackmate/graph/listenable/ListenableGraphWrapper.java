@@ -9,6 +9,7 @@ import net.trackmate.graph.Graph;
 import net.trackmate.graph.Vertex;
 import net.trackmate.graph.collection.CollectionUtils;
 import net.trackmate.graph.collection.CollectionUtils.CollectionCreator;
+import net.trackmate.graph.collection.IntRefMap;
 import net.trackmate.graph.collection.RefDeque;
 import net.trackmate.graph.collection.RefIntMap;
 import net.trackmate.graph.collection.RefList;
@@ -480,5 +481,17 @@ public class ListenableGraphWrapper< V extends Vertex< E >, E extends Edge< V >,
 	public RefIntMap< E > createEdgeIntMap( final int noEntryValue, final int initialCapacity )
 	{
 		return CollectionUtils.createEdgeIntMap( graph, noEntryValue, initialCapacity );
+	}
+
+	@Override
+	public IntRefMap< V > createIntVertexMap( final int noEntryKey )
+	{
+		return CollectionUtils.createIntVertexMap( graph, noEntryKey );
+	}
+
+	@Override
+	public IntRefMap< V > createIntVertexMap( final int noEntryKey, final int initialCapacity )
+	{
+		return CollectionUtils.createIntVertexMap( graph, noEntryKey, initialCapacity );
 	}
 }

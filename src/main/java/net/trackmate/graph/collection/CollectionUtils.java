@@ -241,6 +241,22 @@ public class CollectionUtils
 			return new RefIntMapWrapper< V >( noEntryValue, initialCapacity );
 	}
 
+	public static < V extends Vertex< ? > > IntRefMap< V > createIntVertexMap( final ReadOnlyGraph< V, ? > graph, final int noEntryKey )
+	{
+		if ( graph instanceof CollectionCreator )
+			return ( ( CollectionCreator< V, ? > ) graph ).createIntVertexMap( noEntryKey );
+		else
+			return new IntRefMapWrapper< V >( noEntryKey );
+	}
+
+	public static < V extends Vertex< ? > > IntRefMap< V > createIntVertexMap( final ReadOnlyGraph< V, ? > graph, final int noEntryKey, final int initialCapacity )
+	{
+		if ( graph instanceof CollectionCreator )
+			return ( ( CollectionCreator< V, ? > ) graph ).createIntVertexMap( noEntryKey, initialCapacity );
+		else
+			return new IntRefMapWrapper< V >( noEntryKey, initialCapacity );
+	}
+
 	public static < E extends Edge< ? > > RefIntMap< E > createEdgeIntMap( final ReadOnlyGraph< ?, E > graph, final int noEntryValue )
 	{
 		if ( graph instanceof CollectionCreator )
@@ -327,6 +343,10 @@ public class CollectionUtils
 		public RefIntMap< E > createEdgeIntMap( int noEntryValue );
 
 		public RefIntMap< E > createEdgeIntMap( int noEntryValue, int initialCapacity );
+
+		public IntRefMap< V > createIntVertexMap( int noEntryKey );
+
+		public IntRefMap< V > createIntVertexMap( int noEntryKey, int initialCapacity );
 	}
 
 	private static < O > RefSet< O > wrap( final Set< O > set )

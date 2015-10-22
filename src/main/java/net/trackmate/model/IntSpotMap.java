@@ -6,11 +6,11 @@ public class IntSpotMap< V extends AbstractSpot< V >> extends IntPoolObjectMap< 
 {
 	public IntSpotMap( final ModelGraph< V > graph )
 	{
-		super( graph.getVertexPool() );
+		super( graph.getVertexPool(), -1 );
 	}
 
 	public IntSpotMap( final ModelGraph< V > graph, final int initialCapacity )
 	{
-		super( graph.getVertexPool(), initialCapacity );
+		super( graph.getVertexPool(), -1, initialCapacity );
 	}
 }

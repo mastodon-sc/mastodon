@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.Iterator;
 
 import net.trackmate.graph.collection.CollectionUtils.CollectionCreator;
+import net.trackmate.graph.collection.IntRefMap;
 import net.trackmate.graph.mempool.MappedElement;
 
 public class GraphImp<
@@ -381,6 +382,18 @@ public class GraphImp<
 	public PoolObjectIntMap< E > createEdgeIntMap( final int noEntryValue, final int initialCapacity )
 	{
 		return new PoolObjectIntMap< E >( edgePool, noEntryValue, initialCapacity );
+	}
+
+	@Override
+	public IntRefMap< V > createIntVertexMap( final int noEntryKey )
+	{
+		return new IntPoolObjectMap< V >( vertexPool, noEntryKey );
+	}
+
+	@Override
+	public IntRefMap< V > createIntVertexMap( final int noEntryKey, final int initialCapacity )
+	{
+		return new IntPoolObjectMap< V >( vertexPool, noEntryKey, initialCapacity );
 	}
 
 	private static abstract class MyAbstractCollection< O > implements Collection< O >

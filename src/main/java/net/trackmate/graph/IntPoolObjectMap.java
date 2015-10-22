@@ -14,32 +14,45 @@ import gnu.trove.set.TIntSet;
 import java.util.Collection;
 import java.util.Map;
 
+import net.trackmate.graph.collection.IntRefMap;
+
 
 /**
  * WARNING: THIS IS VERY INCOMPLETE!
  *
- * @param <O>
- * @param <T>
+ * @param <V>
+ *            value type.
  *
  * @author Tobias Pietzsch <tobias.pietzsch@gmail.com>
  */
-public class IntPoolObjectMap< O extends Ref< O > > implements TIntObjectMap< O >
+public class IntPoolObjectMap< V extends Ref< V > > implements IntRefMap< V >
 {
 	private final TIntIntMap keyToIndexMap;
 
-	private final RefPool< O > pool;
+	private final RefPool< V > pool;
 
-	public IntPoolObjectMap( final RefPool< O > pool )
+	public IntPoolObjectMap( final RefPool< V > pool, final int noEntryKey )
 	{
-		this( pool, Constants.DEFAULT_CAPACITY );
+		this( pool, noEntryKey, Constants.DEFAULT_CAPACITY );
 	}
 
-	public IntPoolObjectMap( final RefPool< O> pool, final int initialCapacity )
+	public IntPoolObjectMap( final RefPool< V> pool, final int noEntryKey, final int initialCapacity )
 	{
 		this.pool = pool;
-		keyToIndexMap = new TIntIntHashMap( initialCapacity, Constants.DEFAULT_LOAD_FACTOR, -1, -1 );
+		keyToIndexMap = new TIntIntHashMap( initialCapacity, Constants.DEFAULT_LOAD_FACTOR, noEntryKey, -1 );
 	}
 
+	@Override
+	public V createRef()
+	{
+		return pool.createRef();
+	}
+
+	@Override
+	public void releaseRef( final V obj )
+	{
+		pool.releaseRef( obj );
+	}
 
 	@Override
 	public void clear()
@@ -48,12 +61,13 @@ public class IntPoolObjectMap< O extends Ref< O > > implements TIntObjectMap< O 
 	}
 
 	@Override
-	public O get( final int key )
+	public V get( final int key )
 	{
 		return get( key, pool.createRef() );
 	}
 
-	public O get( final int key, final O obj )
+	@Override
+	public V get( final int key, final V obj )
 	{
 		final int index = keyToIndexMap.get( key );
 		if ( index >= 0 )
@@ -72,12 +86,13 @@ public class IntPoolObjectMap< O extends Ref< O > > implements TIntObjectMap< O 
 	}
 
 	@Override
-	public O put( final int key, final O obj )
+	public V put( final int key, final V obj )
 	{
 		return put( key, obj, pool.createRef() );
 	}
 
-	public O put( final int key, final O obj, final O replacedObj )
+	@Override
+	public V put( final int key, final V obj, final V replacedObj )
 	{
 		final int old = keyToIndexMap.put( key, obj.getInternalPoolIndex() );
 		if ( old >= 0 )
@@ -125,28 +140,28 @@ public class IntPoolObjectMap< O extends Ref< O > > implements TIntObjectMap< O 
 	}
 
 	@Override
-	public O putIfAbsent( final int key, final O value )
+	public V putIfAbsent( final int key, final V value )
 	{
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public O remove( final int key )
+	public V remove( final int key )
 	{
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public void putAll( final Map< ? extends Integer, ? extends O > m )
+	public void putAll( final Map< ? extends Integer, ? extends V > m )
 	{
 		// TODO Auto-generated method stub
 
 	}
 
 	@Override
-	public void putAll( final TIntObjectMap< ? extends O > map )
+	public void putAll( final TIntObjectMap< ? extends V > map )
 	{
 		// TODO Auto-generated method stub
 
@@ -174,7 +189,7 @@ public class IntPoolObjectMap< O extends Ref< O > > implements TIntObjectMap< O 
 	}
 
 	@Override
-	public Collection< O > valueCollection()
+	public Collection< V > valueCollection()
 	{
 		// TODO Auto-generated method stub
 		return null;
@@ -188,14 +203,14 @@ public class IntPoolObjectMap< O extends Ref< O > > implements TIntObjectMap< O 
 	}
 
 	@Override
-	public O[] values( final O[] array )
+	public V[] values( final V[] array )
 	{
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public TIntObjectIterator< O > iterator()
+	public TIntObjectIterator< V > iterator()
 	{
 		// TODO Auto-generated method stub
 		return null;
@@ -209,28 +224,28 @@ public class IntPoolObjectMap< O extends Ref< O > > implements TIntObjectMap< O 
 	}
 
 	@Override
-	public boolean forEachValue( final TObjectProcedure< ? super O > procedure )
+	public boolean forEachValue( final TObjectProcedure< ? super V > procedure )
 	{
 		// TODO Auto-generated method stub
 		return false;
 	}
 
 	@Override
-	public boolean forEachEntry( final TIntObjectProcedure< ? super O > procedure )
+	public boolean forEachEntry( final TIntObjectProcedure< ? super V > procedure )
 	{
 		// TODO Auto-generated method stub
 		return false;
 	}
 
 	@Override
-	public void transformValues( final TObjectFunction< O, O > function )
+	public void transformValues( final TObjectFunction< V, V > function )
 	{
 		// TODO Auto-generated method stub
 
 	}
 
 	@Override
-	public boolean retainEntries( final TIntObjectProcedure< ? super O > procedure )
+	public boolean retainEntries( final TIntObjectProcedure< ? super V > procedure )
 	{
 		// TODO Auto-generated method stub
 		return false;
