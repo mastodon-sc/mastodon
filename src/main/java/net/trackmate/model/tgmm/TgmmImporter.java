@@ -15,7 +15,8 @@ import mpicbg.spim.data.sequence.TimePoint;
 import mpicbg.spim.data.sequence.TimePoints;
 import mpicbg.spim.data.sequence.TimePointsPattern;
 import net.imglib2.realtransform.AffineTransform3D;
-import net.trackmate.model.IntSpotMap;
+import net.trackmate.graph.collection.CollectionUtils;
+import net.trackmate.graph.collection.IntRefMap;
 import net.trackmate.model.Link;
 import net.trackmate.model.ModelGraph;
 import net.trackmate.model.SpotSet;
@@ -64,8 +65,8 @@ public class TgmmImporter
 		final Link< SpotCovariance > edge = sc.edgeRef();
 
 		SpotSet< SpotCovariance > previousFrame = null;
-		IntSpotMap< SpotCovariance > idToSpot = new IntSpotMap< SpotCovariance >( sc, 2000 );
-		IntSpotMap< SpotCovariance > previousIdToSpot = new IntSpotMap< SpotCovariance >( sc, 2000 );
+		IntRefMap< SpotCovariance > idToSpot = CollectionUtils.createIntVertexMap( sc, -1, 2000 );
+		IntRefMap< SpotCovariance > previousIdToSpot = CollectionUtils.createIntVertexMap( sc, -1, 2000 );
 
 		for ( final TimePoint timepoint : timepointsToRead.getTimePointsOrdered() )
 		{
@@ -107,7 +108,7 @@ public class TgmmImporter
 			previousFrame = frame;
 
 			previousIdToSpot.clear();
-			final IntSpotMap< SpotCovariance > m = previousIdToSpot;
+			final IntRefMap< SpotCovariance > m = previousIdToSpot;
 			previousIdToSpot = idToSpot;
 			idToSpot = m;
 		}
