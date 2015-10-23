@@ -105,6 +105,25 @@ public class IntPoolObjectMap< V extends Ref< V > > implements IntRefMap< V >
 	}
 
 	@Override
+	public V remove( final int key )
+	{
+		return remove( key, pool.createRef() );
+	}
+
+	@Override
+	public V remove( final int key, final V obj )
+	{
+		final int old = keyToIndexMap.remove( key );
+		if ( old >= 0 )
+		{
+			pool.getByInternalPoolIndex( old, obj );
+			return obj;
+		}
+		else
+			return null;
+	}
+
+	@Override
 	public int size()
 	{
 		return keyToIndexMap.size();
@@ -141,13 +160,6 @@ public class IntPoolObjectMap< V extends Ref< V > > implements IntRefMap< V >
 
 	@Override
 	public V putIfAbsent( final int key, final V value )
-	{
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public V remove( final int key )
 	{
 		// TODO Auto-generated method stub
 		return null;

@@ -86,4 +86,56 @@ public interface IntRefMap< V > extends TIntObjectMap< V >
 	 * @see #getNoEntryKey()
 	 */
 	public V put( final int key, final V value, final V replacedObj );
+
+
+    /**
+     * Removes the mapping for a key from this map if it is present
+     * (optional operation).   More formally, if this map contains a mapping
+     * from key <tt>k</tt> to value <tt>v</tt> such that
+     * <code>key.equals(k)</code>, that mapping
+     * is removed.  (The map can contain at most one such mapping.)
+     *
+     * <p>Returns the value to which this map previously associated the key,
+     * or <tt>null</tt> if the map contained no mapping for the key.
+     *
+     * <p>If this map permits null values, then a return value of
+     * <tt>null</tt> does not <i>necessarily</i> indicate that the map
+     * contained no mapping for the key; it's also possible that the map
+     * explicitly mapped the key to <tt>null</tt>.
+     *
+     * <p>The map will not contain a mapping for the specified key once the
+     * call returns.
+     *
+     * @param key key whose mapping is to be removed from the map
+     * @return the previous <tt>int</tt> value associated with <tt>key</tt>, or
+     *         <tt>null</tt> if there was no mapping for <tt>key</tt>.
+     * @throws UnsupportedOperationException if the <tt>remove</tt> operation
+     *         is not supported by this map
+     * @throws ClassCastException if the key is of an inappropriate type for
+     *         this map (optional)
+     * @throws NullPointerException if the specified key is null and this
+     *         map does not permit null keys (optional)
+     */
+
+	/**
+	 * Removes the mapping for a key from this map if it is present. Returns the
+	 * value to which this map previously associated the key. or {@code null} if
+	 * the map contained no mapping for the key.
+	 *
+	 * <p>
+	 * This method is a (potentially) allocation-free version of
+	 * {@link #remove(int)}.
+	 *
+	 * @param key
+	 *            the key whose associated value is to be returned.
+	 * @param obj
+	 *            an object reference that can be used for retrieval. Depending
+	 *            on concrete implementation, this object can be cleared,
+	 *            ignored or re-used.
+	 * @return the previous value associated with the specified key, or
+	 *         {@code null} if the map contained no mapping for the key. The
+	 *         object actually returned might be the one specified as parameter
+	 *         {@code replacedObj}, depending on concrete implementation.
+	 */
+	public V remove( final int key, final V obj );
 }

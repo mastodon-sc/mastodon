@@ -43,4 +43,10 @@ public class IntRefMapWrapper< K > extends TIntObjectHashMap< K > implements Int
 	{
 		return put( key, value );
 	}
+
+	@Override
+	public K remove( final int key, final K obj )
+	{
+		return remove( key );
+	}
 }
