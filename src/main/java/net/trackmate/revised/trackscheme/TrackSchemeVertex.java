@@ -43,7 +43,7 @@ public class TrackSchemeVertex extends AbstractVertex< TrackSchemeVertex, TrackS
 		setScreenVertexIndex( -1 );
 	}
 
-	public TrackSchemeVertex init( final int modelVertexId, final String label, final int timepoint )
+	public TrackSchemeVertex init( final int modelVertexId, final int timepoint )
 	{
 		setModelVertexId( modelVertexId );
 		setLayoutX( 0 );

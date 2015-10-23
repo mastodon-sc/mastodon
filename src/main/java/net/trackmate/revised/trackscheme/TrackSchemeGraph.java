@@ -3,19 +3,24 @@ package net.trackmate.revised.trackscheme;
 import net.trackmate.graph.AbstractEdgePool;
 import net.trackmate.graph.AbstractVertexPool;
 import net.trackmate.graph.Edge;
+import net.trackmate.graph.GraphIdBimap;
 import net.trackmate.graph.GraphImp;
+import net.trackmate.graph.IntPoolObjectMap;
 import net.trackmate.graph.PoolObject;
 import net.trackmate.graph.RefPool;
 import net.trackmate.graph.Vertex;
+import net.trackmate.graph.collection.IntRefMap;
 import net.trackmate.graph.listenable.GraphListener;
 import net.trackmate.graph.listenable.ListenableGraph;
 import net.trackmate.graph.mempool.ByteMappedElement;
 import net.trackmate.graph.mempool.ByteMappedElementArray;
 import net.trackmate.graph.mempool.MemPool;
 import net.trackmate.graph.mempool.SingleArrayMemPool;
+import net.trackmate.revised.trackscheme.ModelGraphProperties.ModelVertexProperties;
+import net.trackmate.spatial.HasTimepoint;
 
 public class TrackSchemeGraph<
-		V extends Vertex< E >,
+		V extends Vertex< E > & HasTimepoint,
 		E extends Edge< V > >
 	extends GraphImp<
 				TrackSchemeGraph.TrackSchemeVertexPool,
@@ -23,23 +28,152 @@ public class TrackSchemeGraph<
 				TrackSchemeVertex, TrackSchemeEdge, ByteMappedElement >
 	implements GraphListener< V, E >
 {
+	private final ListenableGraph< V, E > modelGraph;
+
+	private final GraphIdBimap< V, E > idmap;
+
+	// TODO: create IntPoolObjectArrayMap that assumes dense key range (internal pool indices of modelGraph)
+	private final IntRefMap< TrackSchemeVertex > idToTrackSchemeVertex;
+
+	private final IntRefMap< TrackSchemeEdge > idToTrackSchemeEdge;
+
+	private final ModelVertexProperties modelVertexProperties;
+
+	private V mv;
+
+	private final TrackSchemeVertex tsv;
+
+	private final TrackSchemeVertex tsv2;
+
+	private final TrackSchemeEdge tse;
+
 	public TrackSchemeGraph(
 			final ListenableGraph< V, E > modelGraph,
+			final GraphIdBimap< V, E > idmap,
 			final ModelGraphProperties modelGraphProperties )
 	{
-		this( modelGraph, modelGraphProperties, 10000 );
+		this( modelGraph, idmap, modelGraphProperties, 10000 );
 	}
 
 	public TrackSchemeGraph(
 			final ListenableGraph< V, E > modelGraph,
+			final GraphIdBimap< V, E > idmap,
 			final ModelGraphProperties modelGraphProperties,
 			final int initialCapacity )
 	{
 		super( new TrackSchemeEdgePool(
 				modelGraphProperties, initialCapacity,
 				new TrackSchemeVertexPool( modelGraphProperties, initialCapacity ) ) );
+		this.modelGraph = modelGraph;
+		this.idmap = idmap;
+		idToTrackSchemeVertex =	new IntPoolObjectMap< TrackSchemeVertex >( vertexPool, -1 );
+		idToTrackSchemeEdge = new IntPoolObjectMap< TrackSchemeEdge >( edgePool, -1 );
+		mv = modelGraph.vertexRef();
+		tsv = vertexRef();
+		tsv2 = vertexRef();
+		tse = edgeRef();
+		modelVertexProperties = modelGraphProperties.createVertexProperties();
 		modelGraph.addGraphListener( this );
+		graphRebuilt();
 	}
+
+	public RefPool< TrackSchemeVertex > getVertexPool()
+	{
+		return vertexPool;
+	}
+
+	public RefPool< TrackSchemeEdge > getEdgePool()
+	{
+		return edgePool;
+	}
+
+	@Override
+	public String toString()
+	{
+		final StringBuffer sb = new StringBuffer( "TrackSchemeGraph {\n" );
+		sb.append( "  vertices = {\n" );
+		for ( final TrackSchemeVertex vertex : vertices() )
+			sb.append( "    " + vertex + "\n" );
+		sb.append( "  },\n" );
+		sb.append( "  edges = {\n" );
+		for ( final TrackSchemeEdge edge : edges() )
+			sb.append( "    " + edge + "\n" );
+		sb.append( "  }\n" );
+		sb.append( "}" );
+		return sb.toString();
+	}
+
+	/*
+	 * GraphListener
+	 */
+
+	@Override
+	public void graphRebuilt()
+	{
+		idToTrackSchemeVertex.clear();
+		idToTrackSchemeEdge.clear();
+
+		for ( final V v : modelGraph.vertices() )
+		{
+			final int id = idmap.getVertexId( v );
+			final int timepoint = v.getTimepoint();
+			addVertex( tsv ).init( id, timepoint );
+			idToTrackSchemeVertex.put( id, tsv );
+		}
+		for ( final E e : modelGraph.edges() )
+		{
+			final int id = idmap.getEdgeId( e );
+			idToTrackSchemeVertex.get( idmap.getVertexId( e.getSource( mv ) ), tsv );
+			idToTrackSchemeVertex.get( idmap.getVertexId( e.getTarget( mv ) ), tsv2 );
+			addEdge( tsv, tsv2, tse );
+			idToTrackSchemeEdge.put( id, tse );
+		}
+	}
+
+	@Override
+	public void vertexAdded( final V vertex )
+	{
+		final int id = idmap.getVertexId( vertex );
+		addVertex( tsv ).init( id, vertex.getTimepoint() );
+		idToTrackSchemeVertex.put( id, tsv );
+	}
+
+	@Override
+	public void vertexRemoved( final V vertex )
+	{
+		final int id = idmap.getVertexId( vertex );
+		if ( idToTrackSchemeVertex.remove( id, tsv ) != null )
+			this.remove( tsv );
+	}
+
+	@Override
+	public void edgeAdded( final E edge )
+	{
+		final int id = idmap.getEdgeId( edge );
+		idToTrackSchemeVertex.get( idmap.getVertexId( edge.getSource( mv ) ), tsv );
+		idToTrackSchemeVertex.get( idmap.getVertexId( edge.getTarget( mv ) ), tsv2 );
+		addEdge( tsv, tsv2, tse );
+		idToTrackSchemeEdge.put( id, tse );
+	}
+
+	@Override
+	public void edgeRemoved( final E edge )
+	{
+		final int id = idmap.getEdgeId( edge );
+		if ( idToTrackSchemeEdge.remove( id, tse ) != null )
+			this.remove( tse );
+	}
+
+//	@Override // TODO: should be implemented for some listener interface
+	public void vertexTimepointChanged( final V vertex )
+	{
+		idToTrackSchemeVertex.get( idmap.getVertexId( vertex ), tsv );
+		tsv.setTimepoint( vertex.getTimepoint() );
+	}
+
+	/*
+	 * vertex and edge pools
+	 */
 
 	static class TrackSchemeVertexPool extends AbstractVertexPool< TrackSchemeVertex, TrackSchemeEdge, ByteMappedElement >
 	{
@@ -128,76 +262,5 @@ public class TrackSchemeGraph<
 				return SingleArrayMemPool.factory( ByteMappedElementArray.factory );
 			}
 		};
-	}
-
-	public RefPool< TrackSchemeVertex > getVertexPool()
-	{
-		return vertexPool;
-	}
-
-	public RefPool< TrackSchemeEdge > getEdgePool()
-	{
-		return edgePool;
-	}
-
-	@Override
-	public String toString()
-	{
-		final StringBuffer sb = new StringBuffer( "TrackSchemeGraph {\n" );
-		sb.append( "  vertices = {\n" );
-		for ( final TrackSchemeVertex vertex : vertices() )
-			sb.append( "    " + vertex + "\n" );
-		sb.append( "  },\n" );
-		sb.append( "  edges = {\n" );
-		for ( final TrackSchemeEdge edge : edges() )
-			sb.append( "    " + edge + "\n" );
-		sb.append( "  }\n" );
-		sb.append( "}" );
-		return sb.toString();
-	}
-
-	/*
-	 * GraphListener
-	 */
-
-	@Override
-	public void graphRebuilt()
-	{
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void vertexAdded( final V vertex )
-	{
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void vertexRemoved( final V vertex )
-	{
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void edgeAdded( final E edge )
-	{
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void edgeRemoved( final E edge )
-	{
-		// TODO Auto-generated method stub
-
-	}
-
-//	@Override // TODO: should be implemented for some listener interface
-	public void vertexTimepointChanged( final V vertex )
-	{
-		// TODO
 	}
 }
