@@ -9,9 +9,7 @@ import net.trackmate.revised.trackscheme.ModelGraphProperties.ModelEdgePropertie
 public class TrackSchemeEdge extends AbstractEdge< TrackSchemeEdge, TrackSchemeVertex, ByteMappedElement >
 {
 	protected static final int ORIG_EDGE_INDEX_OFFSET = AbstractEdge.SIZE_IN_BYTES;
-
 	protected static final int SCREENEDGE_INDEX_OFFSET = ORIG_EDGE_INDEX_OFFSET + INDEX_SIZE;
-
 	protected static final int SIZE_IN_BYTES = SCREENEDGE_INDEX_OFFSET + INDEX_SIZE;
 
 	private final ModelEdgeProperties props;
