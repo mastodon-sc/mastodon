@@ -31,7 +31,7 @@ public class TrackSchemeVertex extends AbstractVertex< TrackSchemeVertex, TrackS
 	protected static final int X_OFFSET = LAYOUT_IN_EDGE_INDEX_OFFSET + INDEX_SIZE;
 	protected static final int TIMEPOINT_OFFSET = X_OFFSET + DOUBLE_SIZE;
 	protected static final int SCREENVERTEX_INDEX_OFFSET = TIMEPOINT_OFFSET + INT_SIZE;
-	protected static final int GHOST_OFFSET = SCREENVERTEX_INDEX_OFFSET + BOOLEAN_SIZE;
+	protected static final int GHOST_OFFSET = SCREENVERTEX_INDEX_OFFSET + INDEX_SIZE;
 	protected static final int SIZE_IN_BYTES = GHOST_OFFSET + BOOLEAN_SIZE;
 
 	private final ModelVertexProperties props;
