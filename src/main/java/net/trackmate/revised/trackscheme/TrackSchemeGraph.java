@@ -7,9 +7,11 @@ import net.trackmate.graph.GraphIdBimap;
 import net.trackmate.graph.GraphImp;
 import net.trackmate.graph.IntPoolObjectArrayMap;
 import net.trackmate.graph.PoolObject;
+import net.trackmate.graph.PoolObjectSet;
 import net.trackmate.graph.RefPool;
 import net.trackmate.graph.Vertex;
 import net.trackmate.graph.collection.IntRefMap;
+import net.trackmate.graph.collection.RefSet;
 import net.trackmate.graph.listenable.GraphListener;
 import net.trackmate.graph.listenable.ListenableGraph;
 import net.trackmate.graph.mempool.ByteMappedElement;
@@ -37,6 +39,8 @@ public class TrackSchemeGraph<
 	private final IntRefMap< TrackSchemeEdge > idToTrackSchemeEdge;
 
 	private final ModelVertexProperties modelVertexProperties;
+
+	private final RefSet< TrackSchemeVertex > roots;
 
 	private V mv;
 
@@ -67,6 +71,7 @@ public class TrackSchemeGraph<
 		this.idmap = idmap;
 		idToTrackSchemeVertex =	new IntPoolObjectArrayMap< TrackSchemeVertex >( vertexPool );
 		idToTrackSchemeEdge = new IntPoolObjectArrayMap< TrackSchemeEdge >( edgePool );
+		roots = new PoolObjectSet< TrackSchemeVertex >( vertexPool );
 		mv = modelGraph.vertexRef();
 		tsv = vertexRef();
 		tsv2 = vertexRef();
@@ -98,6 +103,11 @@ public class TrackSchemeGraph<
 		for ( final TrackSchemeEdge edge : edges() )
 			sb.append( "    " + edge + "\n" );
 		sb.append( "  }\n" );
+		sb.append( "},\n" );
+		sb.append( "  roots = {\n" );
+		for ( final TrackSchemeVertex vertex : roots )
+			sb.append( "    " + vertex + "\n" );
+		sb.append( "  },\n" );
 		sb.append( "}" );
 		return sb.toString();
 	}
@@ -118,6 +128,8 @@ public class TrackSchemeGraph<
 			final int timepoint = v.getTimepoint();
 			addVertex( tsv ).init( id, timepoint );
 			idToTrackSchemeVertex.put( id, tsv );
+			if ( v.incomingEdges().isEmpty() )
+				roots.add( tsv );
 		}
 		for ( final E e : modelGraph.edges() )
 		{
@@ -135,6 +147,7 @@ public class TrackSchemeGraph<
 		final int id = idmap.getVertexId( vertex );
 		addVertex( tsv ).init( id, vertex.getTimepoint() );
 		idToTrackSchemeVertex.put( id, tsv );
+		roots.add( tsv );
 	}
 
 	@Override
@@ -142,7 +155,11 @@ public class TrackSchemeGraph<
 	{
 		final int id = idmap.getVertexId( vertex );
 		if ( idToTrackSchemeVertex.remove( id, tsv ) != null )
+		{
+			if ( tsv.incomingEdges().isEmpty() )
+				roots.remove( tsv );
 			this.remove( tsv );
+		}
 	}
 
 	@Override
@@ -151,6 +168,8 @@ public class TrackSchemeGraph<
 		final int id = idmap.getEdgeId( edge );
 		idToTrackSchemeVertex.get( idmap.getVertexId( edge.getSource( mv ) ), tsv );
 		idToTrackSchemeVertex.get( idmap.getVertexId( edge.getTarget( mv ) ), tsv2 );
+		if ( tsv2.incomingEdges().isEmpty() )
+			roots.remove( tsv2 );
 		addEdge( tsv, tsv2, tse );
 		idToTrackSchemeEdge.put( id, tse );
 	}
@@ -160,7 +179,11 @@ public class TrackSchemeGraph<
 	{
 		final int id = idmap.getEdgeId( edge );
 		if ( idToTrackSchemeEdge.remove( id, tse ) != null )
+		{
+			if ( tse.getTarget( tsv ).incomingEdges().size() == 1 )
+				roots.add( tsv );
 			this.remove( tse );
+		}
 	}
 
 //	@Override // TODO: should be implemented for some listener interface
