@@ -1,8 +1,8 @@
 package net.trackmate.revised.trackscheme;
 
 import net.trackmate.graph.Edge;
-import net.trackmate.graph.Graph;
 import net.trackmate.graph.GraphIdBimap;
+import net.trackmate.graph.ReadOnlyGraph;
 import net.trackmate.graph.Vertex;
 import net.trackmate.revised.model.HasLabel;
 import net.trackmate.revised.ui.selection.Selection;
@@ -14,14 +14,14 @@ public class DefaultModelGraphProperties<
 		E extends Edge< V > >
 	implements ModelGraphProperties
 {
-	private final Graph< V, E > graph;
+	private final ReadOnlyGraph< V, E > graph;
 
 	private final GraphIdBimap< V, E > idmap;
 
 	private final Selection< V, E > selection;
 
 	public DefaultModelGraphProperties(
-			final Graph< V, E > graph,
+			final ReadOnlyGraph< V, E > graph,
 			final GraphIdBimap< V, E > idmap,
 			final Selection< V, E > selection )
 	{
@@ -53,7 +53,7 @@ public class DefaultModelGraphProperties<
 		private final V v;
 
 		private VertexProps(
-				final Graph< V, ? > graph,
+				final ReadOnlyGraph< V, ? > graph,
 				final GraphIdBimap< V, ? > idmap,
 				final Selection< V, ? > selection )
 		{
@@ -85,7 +85,7 @@ public class DefaultModelGraphProperties<
 
 		private final E e;
 
-		private EdgeProps( final Graph< ?, E > graph, final GraphIdBimap< ?, E > idmap, final Selection< ?, E > selection )
+		private EdgeProps( final ReadOnlyGraph< ?, E > graph, final GraphIdBimap< ?, E > idmap, final Selection< ?, E > selection )
 		{
 			this.idmap = idmap;
 			this.selection = selection;
