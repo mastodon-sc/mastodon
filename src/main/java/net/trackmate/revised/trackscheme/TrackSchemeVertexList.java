@@ -3,6 +3,15 @@ package net.trackmate.revised.trackscheme;
 import gnu.trove.list.array.TIntArrayList;
 import net.trackmate.graph.PoolObjectList;
 
+/**
+ * A list of {@link TrackSchemeVertex}. The vertices are assumed to be ordered
+ * by {@link TrackSchemeVertex#getLayoutX() layoutX} and belong to the same
+ * timepoint. {@link TrackSchemeVertexList} provides binary search (by
+ * {@link TrackSchemeVertex#getLayoutX() layoutX}), computation of
+ * {@code layoutX} range and density, and computation of dense vertex ranges.
+ *
+ * @author Tobias Pietzsch &lt;tobias.pietzsch@gmail.com&gt;
+ */
 public class TrackSchemeVertexList extends PoolObjectList< TrackSchemeVertex >
 {
 	private final TrackSchemeGraph< ?, ? > graph;

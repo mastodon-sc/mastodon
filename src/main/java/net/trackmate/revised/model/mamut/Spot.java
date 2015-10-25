@@ -4,6 +4,7 @@ import static net.trackmate.graph.mempool.ByteUtils.DOUBLE_SIZE;
 import net.trackmate.graph.AbstractVertexPool;
 import net.trackmate.graph.mempool.ByteMappedElement;
 import net.trackmate.revised.model.AbstractSpot3D;
+import net.trackmate.revised.model.HasLabel;
 import Jama.EigenvalueDecomposition;
 import Jama.Matrix;
 
@@ -16,7 +17,7 @@ import Jama.Matrix;
  *
  * @author Tobias Pietzsch
  */
-public class Spot extends AbstractSpot3D< Spot, Link, ByteMappedElement >
+public class Spot extends AbstractSpot3D< Spot, Link, ByteMappedElement > implements HasLabel
 {
 	// Copied to be package-visible.
 	protected static final int X_OFFSET = AbstractSpot3D.X_OFFSET;
@@ -102,6 +103,12 @@ public class Spot extends AbstractSpot3D< Spot, Link, ByteMappedElement >
 	protected void setBoundingSphereRadiusSquared( final double r2 )
 	{
 		access.putDouble( r2, BOUNDING_SPHERE_RADIUS_SQUARED_OFFSET );
+	}
+
+	@Override
+	public String getLabel()
+	{
+		return Integer.toString( getInternalPoolIndex() );
 	}
 
 	@Override
