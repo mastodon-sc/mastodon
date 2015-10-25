@@ -5,7 +5,7 @@ import net.trackmate.graph.AbstractVertexPool;
 import net.trackmate.graph.Edge;
 import net.trackmate.graph.GraphIdBimap;
 import net.trackmate.graph.GraphImp;
-import net.trackmate.graph.IntPoolObjectMap;
+import net.trackmate.graph.IntPoolObjectArrayMap;
 import net.trackmate.graph.PoolObject;
 import net.trackmate.graph.RefPool;
 import net.trackmate.graph.Vertex;
@@ -32,7 +32,6 @@ public class TrackSchemeGraph<
 
 	private final GraphIdBimap< V, E > idmap;
 
-	// TODO: create IntPoolObjectArrayMap that assumes dense key range (internal pool indices of modelGraph)
 	private final IntRefMap< TrackSchemeVertex > idToTrackSchemeVertex;
 
 	private final IntRefMap< TrackSchemeEdge > idToTrackSchemeEdge;
@@ -66,8 +65,8 @@ public class TrackSchemeGraph<
 				new TrackSchemeVertexPool( modelGraphProperties, initialCapacity ) ) );
 		this.modelGraph = modelGraph;
 		this.idmap = idmap;
-		idToTrackSchemeVertex =	new IntPoolObjectMap< TrackSchemeVertex >( vertexPool, -1 );
-		idToTrackSchemeEdge = new IntPoolObjectMap< TrackSchemeEdge >( edgePool, -1 );
+		idToTrackSchemeVertex =	new IntPoolObjectArrayMap< TrackSchemeVertex >( vertexPool );
+		idToTrackSchemeEdge = new IntPoolObjectArrayMap< TrackSchemeEdge >( edgePool );
 		mv = modelGraph.vertexRef();
 		tsv = vertexRef();
 		tsv2 = vertexRef();
