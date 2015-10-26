@@ -1,12 +1,11 @@
 package net.trackmate.revised.trackscheme.display;
 
-import java.util.ArrayList;
-
 import net.trackmate.graph.PoolObjectList;
 import net.trackmate.graph.collection.RefList;
 import net.trackmate.revised.trackscheme.TrackSchemeGraph;
 import net.trackmate.revised.trackscheme.display.ScreenEdge.ScreenEdgePool;
 import net.trackmate.revised.trackscheme.display.ScreenVertex.ScreenVertexPool;
+import net.trackmate.revised.trackscheme.display.ScreenVertexRange.ScreenVertexRangePool;
 
 /**
  * A collection of layouted screen objects to paint. Comprises lists of
@@ -21,15 +20,17 @@ public class ScreenEntities
 	 */
 	private static final int DEFAULT_CAPACITY = 1000;
 
-	private final ScreenVertexPool screenVertexPool;
+	private final ScreenVertexPool vertexPool;
 
-	private final ScreenEdgePool screenEdgePool;
+	private final ScreenEdgePool edgePool;
 
-	private final PoolObjectList< ScreenVertex > screenVertices;
+	private final ScreenVertexRangePool rangePool;
 
-	private final PoolObjectList< ScreenEdge > screenEdges;
+	private final PoolObjectList< ScreenVertex > vertices;
 
-	private final ArrayList< ScreenVertexRange > vertexRanges;
+	private final PoolObjectList< ScreenEdge > edges;
+
+	private final PoolObjectList< ScreenVertexRange > ranges;
 
 	public ScreenEntities( final TrackSchemeGraph< ?, ? > graph)
 	{
@@ -38,44 +39,51 @@ public class ScreenEntities
 
 	public ScreenEntities( final TrackSchemeGraph< ?, ? > graph, final int initialCapacity )
 	{
-		screenVertexPool = new ScreenVertex.ScreenVertexPool( initialCapacity, graph.getVertexPool() );
-		screenVertices = new PoolObjectList< ScreenVertex >( screenVertexPool, initialCapacity );
-		screenEdgePool = new ScreenEdge.ScreenEdgePool( initialCapacity );
-		screenEdges = new PoolObjectList< ScreenEdge >( screenEdgePool, initialCapacity );
-		vertexRanges = new ArrayList< ScreenVertexRange >( initialCapacity );
+		vertexPool = new ScreenVertexPool( initialCapacity, graph.getVertexPool() );
+		vertices = new PoolObjectList< ScreenVertex >( vertexPool, initialCapacity );
+		edgePool = new ScreenEdgePool( initialCapacity );
+		edges = new PoolObjectList< ScreenEdge >( edgePool, initialCapacity );
+		rangePool = new ScreenVertexRangePool( initialCapacity );
+		ranges = new PoolObjectList< ScreenVertexRange >( rangePool, initialCapacity );
 	}
 
 	public RefList< ScreenVertex > getVertices()
 	{
-		return screenVertices;
+		return vertices;
 	}
 
 	public RefList< ScreenEdge > getEdges()
 	{
-		return screenEdges;
+		return edges;
 	}
 
-	public ArrayList< ScreenVertexRange > getVertexRanges()
+	public RefList< ScreenVertexRange > getRanges()
 	{
-		return vertexRanges;
+		return ranges;
 	}
 
 	ScreenVertexPool getVertexPool()
 	{
-		return screenVertexPool;
+		return vertexPool;
 	}
 
 	ScreenEdgePool getEdgePool()
 	{
-		return screenEdgePool;
+		return edgePool;
+	}
+
+	ScreenVertexRangePool getRangePool()
+	{
+		return rangePool;
 	}
 
 	public void clear()
 	{
-		screenVertexPool.clear();
-		screenVertices.resetQuick();
-		screenEdgePool.clear();
-		screenEdges.resetQuick();
-		vertexRanges.clear();
+		vertexPool.clear();
+		vertices.resetQuick();
+		edgePool.clear();
+		edges.resetQuick();
+		rangePool.clear();
+		ranges.resetQuick();
 	}
 }

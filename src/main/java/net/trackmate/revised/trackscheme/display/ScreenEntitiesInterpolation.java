@@ -78,7 +78,7 @@ public class ScreenEntitiesInterpolation
 		// Interpolate dense vertex ranges
 		// ===============================
 		// For now, simply use the dense ranges of the interpolation target.
-		current.getVertexRanges().addAll( end.getVertexRanges() );
+		current.getRanges().addAll( end.getRanges() );
 
 		// clean up
 		current.getVertexPool().releaseRef( vCurrent );
