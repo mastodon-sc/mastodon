@@ -154,6 +154,16 @@ public class LineageTreeLayout
 		return timestamp;
 	}
 
+	TIntArrayList getTimepoints()
+	{
+		return timepoints;
+	}
+
+	TrackSchemeVertexList getOrderedVertices( final int timepoint )
+	{
+		return timepointToOrderedVertices.get( timepoint );
+	}
+
 	/**
 	 * Recursively lay out vertices such that
 	 * <ul>
