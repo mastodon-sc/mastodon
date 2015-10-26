@@ -1,7 +1,7 @@
-package net.trackmate.revised.trackscheme.display;
+package net.trackmate.revised.trackscheme;
 
 import net.trackmate.graph.IntPoolObjectMap;
-import net.trackmate.revised.trackscheme.display.ScreenVertex.Transition;
+import net.trackmate.revised.trackscheme.ScreenVertex.Transition;
 
 public class ScreenEntitiesInterpolation
 {

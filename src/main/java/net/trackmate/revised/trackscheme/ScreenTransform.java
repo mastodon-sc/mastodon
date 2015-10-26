@@ -1,4 +1,4 @@
-package net.trackmate.revised.trackscheme.display;
+package net.trackmate.revised.trackscheme;
 
 
 public class ScreenTransform

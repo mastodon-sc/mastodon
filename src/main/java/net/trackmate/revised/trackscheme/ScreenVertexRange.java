@@ -1,4 +1,4 @@
-package net.trackmate.revised.trackscheme.display;
+package net.trackmate.revised.trackscheme;
 
 import static net.trackmate.graph.mempool.ByteUtils.DOUBLE_SIZE;
 import net.trackmate.graph.Pool;

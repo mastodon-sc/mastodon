@@ -1,11 +1,10 @@
-package net.trackmate.revised.trackscheme.display;
+package net.trackmate.revised.trackscheme;
 
 import net.trackmate.graph.PoolObjectList;
 import net.trackmate.graph.collection.RefList;
-import net.trackmate.revised.trackscheme.TrackSchemeGraph;
-import net.trackmate.revised.trackscheme.display.ScreenEdge.ScreenEdgePool;
-import net.trackmate.revised.trackscheme.display.ScreenVertex.ScreenVertexPool;
-import net.trackmate.revised.trackscheme.display.ScreenVertexRange.ScreenVertexRangePool;
+import net.trackmate.revised.trackscheme.ScreenEdge.ScreenEdgePool;
+import net.trackmate.revised.trackscheme.ScreenVertex.ScreenVertexPool;
+import net.trackmate.revised.trackscheme.ScreenVertexRange.ScreenVertexRangePool;
 
 /**
  * A collection of layouted screen objects to paint. Comprises lists of

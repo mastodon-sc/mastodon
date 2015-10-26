@@ -1,4 +1,4 @@
-package net.trackmate.revised.trackscheme.display;
+package net.trackmate.revised.trackscheme;
 
 import static net.trackmate.graph.mempool.ByteUtils.BOOLEAN_SIZE;
 import static net.trackmate.graph.mempool.ByteUtils.BYTE_SIZE;
@@ -11,7 +11,6 @@ import net.trackmate.graph.mempool.ByteMappedElement;
 import net.trackmate.graph.mempool.ByteMappedElementArray;
 import net.trackmate.graph.mempool.MemPool;
 import net.trackmate.graph.mempool.SingleArrayMemPool;
-import net.trackmate.revised.trackscheme.TrackSchemeVertex;
 import net.trackmate.trackscheme.Labels;
 
 /**
