@@ -89,23 +89,23 @@ public class ScreenVertexRange extends PoolObject< ScreenVertexRange, ByteMapped
 		private ScreenVertexRangePool( final int initialCapacity, final ScreenVertexRangeFactory f )
 		{
 			super( initialCapacity, f );
-			f.edgePool = this;
+			f.pool = this;
 		}
 
 		@Override
-		public ScreenVertexRange create( final ScreenVertexRange edge )
+		public ScreenVertexRange create( final ScreenVertexRange range )
 		{
-			return super.create( edge );
+			return super.create( range );
 		}
 
-		public void delete( final ScreenVertexRange edge )
+		public void delete( final ScreenVertexRange range )
 		{
-			deleteByInternalPoolIndex( edge.getInternalPoolIndex() );
+			deleteByInternalPoolIndex( range.getInternalPoolIndex() );
 		}
 
 		private static class ScreenVertexRangeFactory implements PoolObject.Factory< ScreenVertexRange, ByteMappedElement >
 		{
-			private ScreenVertexRangePool edgePool;
+			private ScreenVertexRangePool pool;
 
 			@Override
 			public int getSizeInBytes()
@@ -116,7 +116,7 @@ public class ScreenVertexRange extends PoolObject< ScreenVertexRange, ByteMapped
 			@Override
 			public ScreenVertexRange createEmptyRef()
 			{
-				return new ScreenVertexRange( edgePool );
+				return new ScreenVertexRange( pool );
 			}
 
 			@Override
