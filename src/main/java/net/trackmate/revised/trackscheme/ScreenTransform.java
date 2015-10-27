@@ -1,19 +1,24 @@
 package net.trackmate.revised.trackscheme;
 
-
+/**
+ * Defines a bounding box in trackscheme layout coordinates, and a
+ * transformation to screen coordinates.
+ *
+ * @author Tobias Pietzsch &lt;tobias.pietzsch@gmail.com&gt;
+ */
 public class ScreenTransform
 {
-	double minX;
+	private double minX;
 
-	double maxX;
+	private double maxX;
 
-	double minY;
+	private double minY;
 
-	double maxY;
+	private double maxY;
 
-	int screenWidth;
+	private int screenWidth;
 
-	int screenHeight;
+	private int screenHeight;
 
 	public ScreenTransform()
 	{}
@@ -28,9 +33,19 @@ public class ScreenTransform
 		this.screenHeight = screenHeight;
 	}
 
+	public ScreenTransform( final ScreenTransform t )
+	{
+		this.minX = t.minX;
+		this.maxX = t.maxX;
+		this.minY = t.minY;
+		this.maxY = t.maxY;
+		this.screenWidth = t.screenWidth;
+		this.screenHeight = t.screenHeight;
+	}
+
 	public ScreenTransform copy()
 	{
-		return new ScreenTransform( minX, maxX, minY, maxY, screenWidth, screenHeight );
+		return new ScreenTransform( this );
 	}
 
 	public void set( final ScreenTransform t )
@@ -43,59 +58,138 @@ public class ScreenTransform
 		this.screenHeight = t.screenHeight;
 	}
 
-	void setScreenTranslated( final int dX, final int dY, final ScreenTransform source )
+	/**
+	 * TODO
+	 * @return
+	 */
+	public double getMinX()
 	{
-		final double xInvScale = ( maxX - minX ) / ( screenWidth - 1 );
-		final double yInvScale = ( maxY - minY ) / ( screenHeight - 1 );
-		minX = source.minX + xInvScale * dX;
-		maxX = source.maxX + xInvScale * dX;
-		minY = source.minY + yInvScale * dY;
-		maxY = source.maxY + yInvScale * dY;
+		return minX;
 	}
 
-	double screenToLayoutX( final int x )
+	/**
+	 * TODO
+	 * @return
+	 */
+	public double getMaxX()
 	{
-		final double xInvScale = ( maxX - minX ) / ( screenWidth - 1 );
-		return minX + xInvScale * x;
+		return maxX;
 	}
 
-	double screenToLayoutY( final int y )
+	/**
+	 * TODO
+	 * @return
+	 */
+	public double getMinY()
 	{
-		final double yInvScale = ( maxY - minY ) / ( screenHeight - 1 );
-		return minY + yInvScale * y;
+		return minY;
 	}
 
-	void scale( final double scale, final int x, final int y )
+	/**
+	 * TODO
+	 * @return
+	 */
+	public double getMaxY()
 	{
-		final double lX = screenToLayoutX( x );
-		final double lY = screenToLayoutY( y );
-		final double newSizeX = ( maxX - minX ) * scale;
-		final double newSizeY = ( maxY - minY ) * scale;
-		final double newXInvScale = newSizeX / ( screenWidth - 1 );
-		final double newYInvScale = newSizeY / ( screenHeight - 1 );
-		minX = lX - newXInvScale * x;
-		maxX = minX + newSizeX;
-		minY = lY - newYInvScale * y;
-		maxY = minY + newSizeY;
+		return maxY;
 	}
 
-	void scaleX( final double scale, final int x, final int y )
+	/**
+	 * TODO
+	 * @return
+	 */
+	public int getScreenWidth()
 	{
-		final double lX = screenToLayoutX( x );
-		final double newSizeX = ( maxX - minX ) * scale;
-		final double newXInvScale = newSizeX / ( screenWidth - 1 );
-		minX = lX - newXInvScale * x;
-		maxX = minX + newSizeX;
+		return screenWidth;
 	}
 
-	void scaleY( final double scale, final int x, final int y )
+	/**
+	 * TODO
+	 * @return
+	 */
+	public int getScreenHeight()
 	{
-		final double lY = screenToLayoutY( y );
-		final double newSizeY = ( maxY - minY ) * scale;
-		final double newYInvScale = newSizeY / ( screenHeight - 1 );
-		minY = lY - newYInvScale * y;
-		maxY = minY + newSizeY;
+		return screenHeight;
 	}
+
+	/**
+	 * Compute the x scale factor. This is the factor by which layout <em>x</em>
+	 * coordinates have to be multiplied to obtain screen <em>x</em>
+	 * coordinates.
+	 *
+	 * @return the x scale factor.
+	 */
+	public double getXScale()
+	{
+		return ( screenWidth - 1 ) / ( maxX - minX );
+	}
+
+	/**
+	 * Compute the y scale factor. This is the factor by which layout <em>y</em>
+	 * coordinates have to be multiplied to obtain screen <em>y</em>
+	 * coordinates.
+	 *
+	 * @return the y scale factor.
+	 */
+	public double getYScale()
+	{
+		return ( screenHeight - 1 ) / ( maxY - minY );
+	}
+
+// TODO remove?
+//	void setScreenTranslated( final int dX, final int dY, final ScreenTransform source )
+//	{
+//		final double xInvScale = ( maxX - minX ) / ( screenWidth - 1 );
+//		final double yInvScale = ( maxY - minY ) / ( screenHeight - 1 );
+//		minX = source.minX + xInvScale * dX;
+//		maxX = source.maxX + xInvScale * dX;
+//		minY = source.minY + yInvScale * dY;
+//		maxY = source.maxY + yInvScale * dY;
+//	}
+//
+//	double screenToLayoutX( final int x )
+//	{
+//		final double xInvScale = ( maxX - minX ) / ( screenWidth - 1 );
+//		return minX + xInvScale * x;
+//	}
+//
+//	double screenToLayoutY( final int y )
+//	{
+//		final double yInvScale = ( maxY - minY ) / ( screenHeight - 1 );
+//		return minY + yInvScale * y;
+//	}
+//
+//	void scale( final double scale, final int x, final int y )
+//	{
+//		final double lX = screenToLayoutX( x );
+//		final double lY = screenToLayoutY( y );
+//		final double newSizeX = ( maxX - minX ) * scale;
+//		final double newSizeY = ( maxY - minY ) * scale;
+//		final double newXInvScale = newSizeX / ( screenWidth - 1 );
+//		final double newYInvScale = newSizeY / ( screenHeight - 1 );
+//		minX = lX - newXInvScale * x;
+//		maxX = minX + newSizeX;
+//		minY = lY - newYInvScale * y;
+//		maxY = minY + newSizeY;
+//	}
+//
+//	void scaleX( final double scale, final int x, final int y )
+//	{
+//		final double lX = screenToLayoutX( x );
+//		final double newSizeX = ( maxX - minX ) * scale;
+//		final double newXInvScale = newSizeX / ( screenWidth - 1 );
+//		minX = lX - newXInvScale * x;
+//		maxX = minX + newSizeX;
+//	}
+//
+//	void scaleY( final double scale, final int x, final int y )
+//	{
+//		final double lY = screenToLayoutY( y );
+//		final double newSizeY = ( maxY - minY ) * scale;
+//		final double newYInvScale = newSizeY / ( screenHeight - 1 );
+//		minY = lY - newYInvScale * y;
+//		maxY = minY + newSizeY;
+//	}
 
 	@Override
 	public String toString()

@@ -1,11 +1,17 @@
 package net.trackmate.revised.trackscheme;
 
+import gnu.trove.iterator.TIntIterator;
 import gnu.trove.list.array.TIntArrayList;
 import gnu.trove.map.TIntObjectMap;
 import gnu.trove.map.hash.TIntObjectHashMap;
 
 import java.util.Iterator;
 import java.util.List;
+
+import net.trackmate.graph.collection.RefList;
+import net.trackmate.revised.trackscheme.ScreenEdge.ScreenEdgePool;
+import net.trackmate.revised.trackscheme.ScreenVertex.ScreenVertexPool;
+import net.trackmate.revised.trackscheme.ScreenVertexRange.ScreenVertexRangePool;
 
 /**
  * Layouting of a {@link TrackSchemeGraph} into layout coordinates.
@@ -154,15 +160,152 @@ public class LineageTreeLayout
 		return timestamp;
 	}
 
-	TIntArrayList getTimepoints()
+	/**
+	 * Crop a region of the current layout, transform it to screen coordinates,
+	 * and create {@link ScreenEntities} for display.
+	 *
+	 * @param transform
+	 *            specifies the transformation from layout to screen coordinates
+	 *            and the crop region.
+	 * @param screenEntities
+	 *            the transformed screen entities (vertices, edges, ranges) are
+	 *            stored here.
+	 */
+	public void cropAndScale(
+			final ScreenTransform transform,
+			final ScreenEntities screenEntities )
 	{
-		return timepoints;
+		final double minX = transform.getMinX();
+		final double maxX = transform.getMaxX();
+		final double minY = transform.getMinY();
+		final double maxY = transform.getMaxY();
+		final double xScale = transform.getXScale();
+		final double yScale = transform.getYScale();
+
+		final RefList< ScreenVertex > screenVertices = screenEntities.getVertices();
+		final RefList< ScreenEdge > screenEdges = screenEntities.getEdges();
+		final RefList< ScreenVertexRange > vertexRanges = screenEntities.getRanges();
+		final ScreenVertexPool screenVertexPool = screenEntities.getVertexPool();
+		final ScreenEdgePool screenEdgePool = screenEntities.getEdgePool();
+		final ScreenVertexRangePool screenRangePool = screenEntities.getRangePool();
+
+		final TrackSchemeVertex v1 = graph.vertexRef();
+		final TrackSchemeVertex v2 = graph.vertexRef();
+		final ScreenVertex sv = screenVertexPool.createRef();
+		final ScreenEdge se = screenEdgePool.createRef();
+		final ScreenVertexRange sr = screenRangePool.createRef();
+
+		final double allowedMinD = 2.0 / xScale;
+
+		final TIntIterator iter = timepoints.iterator();
+		while ( iter.hasNext() )
+		{
+			final int timepoint = iter.next();
+			if ( timepoint + 1 >= minY && timepoint - 1 <= maxY )
+			{
+				final int timepointStartScreenVertexIndex = screenVertices.size();
+				// screen y of vertices of timepoint
+				final double y = ( timepoint - minY ) * yScale;
+				// screen y of vertices of (timepoint-1)
+				final double prevY = ( timepoint - 1 - minY ) * yScale;
+				final TrackSchemeVertexList vertexList = timepointToOrderedVertices.get( timepoint );
+				// largest index of vertex with layoutX <= minX
+				int minIndex = vertexList.binarySearch( minX );
+				// include vertex before that (may be appears partially on
+				// screen, and may be needed to paint edge to vertex in other
+				// timepoint)
+				minIndex--;
+				if ( minIndex < 0 )
+					minIndex = 0;
+				// largest index of vertex with layoutX <= maxX
+				int maxIndex = vertexList.binarySearch( maxX, minIndex, vertexList.size() );
+				// include vertex after that (may be appears partially on
+				// screen, and may be needed to paint edge to vertex in other
+				// timepoint)
+				if ( maxIndex < vertexList.size() - 1 )
+					maxIndex++;
+
+				final double minLayoutX = vertexList.getMinLayoutXDistance();
+				TIntArrayList denseRanges = vertexList.getDenseRanges( minIndex, maxIndex + 1, minLayoutX, allowedMinD, 3, v1 );
+				if ( denseRanges == null )
+					denseRanges = new TIntArrayList();
+				denseRanges.add( maxIndex + 1 );
+
+				final TIntIterator riter = denseRanges.iterator();
+				int nextRangeStart = riter.next();
+
+				double prevX = Double.NEGATIVE_INFINITY;
+				double minVertexScreenDist = yScale;
+				for ( int i = minIndex; i <= maxIndex; ++i )
+				{
+					if ( i < nextRangeStart )
+					{
+						vertexList.get( i, v1 );
+						final int v1si = screenVertices.size();
+						v1.setScreenVertexIndex( v1si );
+						final int id = v1.getInternalPoolIndex();
+						final double x = ( v1.getLayoutX() - minX ) * xScale;
+						final boolean selected = v1.isSelected();
+						final boolean ghost = v1.isGhost();
+						screenVertexPool.create( sv ).init( id, x, y, selected, ghost );
+						screenVertices.add( sv );
+
+						minVertexScreenDist = Math.min( minVertexScreenDist, x - prevX );
+						prevX = x;
+
+						for ( final TrackSchemeEdge edge : v1.incomingEdges() )
+						{
+							edge.getSource( v2 );
+							final int v2si = v2.getScreenVertexIndex();
+							// TODO: additionally to checking for id ref consistency, the following should be decided by layout timestamp
+							if ( v2si >= 0 && v2si < screenVertices.size() && screenVertices.get( v2si, sv ).getTrackSchemeVertexId() == v2.getInternalPoolIndex() )
+							{
+								final int eid = edge.getInternalPoolIndex();
+								final int sourceScreenVertexIndex = v2si;
+								final int targetScreenVertexIndex = v1si;
+								final boolean eselected = edge.isSelected();
+								screenEdgePool.create( se ).init( eid, sourceScreenVertexIndex, targetScreenVertexIndex, eselected );
+								screenEdges.add( se );
+								final int sei = se.getInternalPoolIndex();
+								edge.setScreenEdgeIndex( sei );
+							}
+						}
+					}
+					else
+					{
+						final int rangeMinIndex = nextRangeStart;
+						final int rangeMaxIndex = riter.next();
+						nextRangeStart = riter.next();
+						i = rangeMaxIndex;
+						final double svMinX = ( vertexList.get( rangeMinIndex, v1 ).getLayoutX() - minX ) * xScale;
+						final double svMaxX = ( vertexList.get( rangeMaxIndex, v1 ).getLayoutX() - minX ) * xScale; // TODO: make minimum width (maybe only when painting...)
+						vertexRanges.add( screenRangePool.create( sr ).init( svMinX, svMaxX, prevY, y ) );
+						minVertexScreenDist = 0;
+					}
+				}
+				for ( int i = timepointStartScreenVertexIndex; i < screenVertices.size(); ++i )
+				{
+					screenVertices.get( i, sv ).setVertexDist( minVertexScreenDist );
+				}
+			}
+		}
+
+		screenEdgePool.releaseRef( se );
+		screenVertexPool.releaseRef( sv );
+		graph.releaseRef( v1 );
+		graph.releaseRef( v2 );
 	}
 
-	TrackSchemeVertexList getOrderedVertices( final int timepoint )
-	{
-		return timepointToOrderedVertices.get( timepoint );
-	}
+// TODO remove?
+//	TIntArrayList getTimepoints()
+//	{
+//		return timepoints;
+//	}
+//
+//	TrackSchemeVertexList getOrderedVertices( final int timepoint )
+//	{
+//		return timepointToOrderedVertices.get( timepoint );
+//	}
 
 	/**
 	 * Recursively lay out vertices such that
