@@ -179,8 +179,8 @@ public class LineageTreeLayout
 		final double maxX = transform.getMaxX();
 		final double minY = transform.getMinY();
 		final double maxY = transform.getMaxY();
-		final double xScale = transform.getXScale();
-		final double yScale = transform.getYScale();
+		final double xScale = transform.getScaleX();
+		final double yScale = transform.getScaleY();
 
 		final RefList< ScreenVertex > screenVertices = screenEntities.getVertices();
 		final RefList< ScreenEdge > screenEdges = screenEntities.getEdges();

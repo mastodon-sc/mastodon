@@ -1,12 +1,18 @@
 package net.trackmate.revised.trackscheme;
 
+import net.imglib2.RealLocalizable;
+import net.imglib2.RealPositionable;
+import net.imglib2.realtransform.InvertibleRealTransform;
+
 /**
- * Defines a bounding box in trackscheme layout coordinates, and a
- * transformation to screen coordinates.
+ * A transformation from trackscheme layout coordinates to screen coordinates.
+ * <p>
+ * It is defined by a bounding box in trackscheme layout coordinates, and the
+ * size of the screen that this should be mapped to.
  *
  * @author Tobias Pietzsch &lt;tobias.pietzsch@gmail.com&gt;
  */
-public class ScreenTransform
+public class ScreenTransform implements InvertibleRealTransform
 {
 	private double minX;
 
@@ -20,6 +26,10 @@ public class ScreenTransform
 
 	private int screenHeight;
 
+	private double scaleX;
+
+	private double scaleY;
+
 	public ScreenTransform()
 	{}
 
@@ -31,6 +41,7 @@ public class ScreenTransform
 		this.maxY = maxY;
 		this.screenWidth = screenWidth;
 		this.screenHeight = screenHeight;
+		update();
 	}
 
 	public ScreenTransform( final ScreenTransform t )
@@ -41,8 +52,11 @@ public class ScreenTransform
 		this.maxY = t.maxY;
 		this.screenWidth = t.screenWidth;
 		this.screenHeight = t.screenHeight;
+		this.scaleX = t.scaleX;
+		this.scaleY = t.scaleY;
 	}
 
+	@Override
 	public ScreenTransform copy()
 	{
 		return new ScreenTransform( this );
@@ -56,6 +70,14 @@ public class ScreenTransform
 		this.maxY = t.maxY;
 		this.screenWidth = t.screenWidth;
 		this.screenHeight = t.screenHeight;
+		this.scaleX = t.scaleX;
+		this.scaleY = t.scaleY;
+	}
+
+	private void update()
+	{
+		scaleX = ( screenWidth - 1 ) / ( maxX - minX );
+		scaleY = ( screenHeight - 1 ) / ( maxY - minY );
 	}
 
 	/**
@@ -119,9 +141,9 @@ public class ScreenTransform
 	 *
 	 * @return the x scale factor.
 	 */
-	public double getXScale()
+	public double getScaleX()
 	{
-		return ( screenWidth - 1 ) / ( maxX - minX );
+		return scaleX;
 	}
 
 	/**
@@ -131,9 +153,9 @@ public class ScreenTransform
 	 *
 	 * @return the y scale factor.
 	 */
-	public double getYScale()
+	public double getScaleY()
 	{
-		return ( screenHeight - 1 ) / ( maxY - minY );
+		return scaleY;
 	}
 
 // TODO remove?
@@ -147,53 +169,193 @@ public class ScreenTransform
 //		maxY = source.maxY + yInvScale * dY;
 //	}
 //
-//	double screenToLayoutX( final int x )
-//	{
-//		final double xInvScale = ( maxX - minX ) / ( screenWidth - 1 );
-//		return minX + xInvScale * x;
-//	}
-//
-//	double screenToLayoutY( final int y )
-//	{
-//		final double yInvScale = ( maxY - minY ) / ( screenHeight - 1 );
-//		return minY + yInvScale * y;
-//	}
-//
-//	void scale( final double scale, final int x, final int y )
-//	{
-//		final double lX = screenToLayoutX( x );
-//		final double lY = screenToLayoutY( y );
-//		final double newSizeX = ( maxX - minX ) * scale;
-//		final double newSizeY = ( maxY - minY ) * scale;
-//		final double newXInvScale = newSizeX / ( screenWidth - 1 );
-//		final double newYInvScale = newSizeY / ( screenHeight - 1 );
-//		minX = lX - newXInvScale * x;
-//		maxX = minX + newSizeX;
-//		minY = lY - newYInvScale * y;
-//		maxY = minY + newSizeY;
-//	}
-//
-//	void scaleX( final double scale, final int x, final int y )
-//	{
-//		final double lX = screenToLayoutX( x );
-//		final double newSizeX = ( maxX - minX ) * scale;
-//		final double newXInvScale = newSizeX / ( screenWidth - 1 );
-//		minX = lX - newXInvScale * x;
-//		maxX = minX + newSizeX;
-//	}
-//
-//	void scaleY( final double scale, final int x, final int y )
-//	{
-//		final double lY = screenToLayoutY( y );
-//		final double newSizeY = ( maxY - minY ) * scale;
-//		final double newYInvScale = newSizeY / ( screenHeight - 1 );
-//		minY = lY - newYInvScale * y;
-//		maxY = minY + newSizeY;
-//	}
+	public double screenToLayoutX( final double x )
+	{
+		return minX + x / scaleX;
+	}
+
+	public double screenToLayoutY( final double y )
+	{
+		return minY + y / scaleY;
+	}
+
+	public double layoutToScreenX( final double x )
+	{
+		return ( x - minX ) * scaleX;
+	}
+
+	public double layoutToScreenY( final double y )
+	{
+		return ( y - minY ) * scaleY;
+	}
+
+	/**
+	 * Zoom by specified scale factor, keeping {@code screenCenterX, screenCenterY} fixed.
+	 *
+	 * @param scale
+	 * @param screenCenterX
+	 * @param screenCenterY
+	 */
+	public void zoom( final double scale, final double screenCenterX, final double screenCenterY )
+	{
+		zoomX( scale, screenCenterX );
+		zoomY( scale, screenCenterY );
+	}
+
+	/**
+	 * Zoom in X by specified scale factor, keeping {@code screenCenterX} fixed.
+	 *
+	 * @param scale
+	 * @param screenCenterX
+	 */
+	public void zoomX( final double scale, final double screenCenterX )
+	{
+		final double lX = screenToLayoutX( screenCenterX );
+		final double newSizeX = ( maxX - minX ) * scale;
+		scaleX = ( screenWidth - 1 ) / newSizeX;
+		minX = lX - screenCenterX / scaleX;
+		maxX = minX + newSizeX;
+	}
+
+	/**
+	 * Zoom in Y by specified scale factor, keeping {@code screenCenterY} fixed.
+	 *
+	 * @param scale
+	 * @param screenCenterY
+	 */
+	public void zoomY( final double scale, final double screenCenterX )
+	{
+		final double lY = screenToLayoutY( screenCenterX );
+		final double newSizeY = ( maxY - minY ) * scale;
+		scaleY = ( screenHeight - 1 ) / newSizeY;
+		minY = lY - screenCenterX / scaleY;
+		maxY = minY + newSizeY;
+	}
 
 	@Override
 	public String toString()
 	{
 		return "X: " + minX + " -> " + maxX + ", Y: " + minY + " -> " + maxY + ", width = " + screenWidth + ", height = " + screenHeight;
+	}
+
+	@Override
+	public int numSourceDimensions()
+	{
+		return 2;
+	}
+
+	@Override
+	public int numTargetDimensions()
+	{
+		return 2;
+	}
+
+	@Override
+	public void apply( final double[] source, final double[] target )
+	{
+		target[ 0 ] = layoutToScreenX( source[ 0 ] );
+		target[ 1 ] = layoutToScreenY( source[ 1 ] );
+	}
+
+	@Override
+	public void apply( final float[] source, final float[] target )
+	{
+		target[ 0 ] = ( float ) layoutToScreenX( source[ 0 ] );
+		target[ 1 ] = ( float ) layoutToScreenY( source[ 1 ] );
+	}
+
+	@Override
+	public void apply( final RealLocalizable source, final RealPositionable target )
+	{
+		target.setPosition( layoutToScreenX( source.getDoublePosition( 0 ) ), 0 );
+		target.setPosition( layoutToScreenY( source.getDoublePosition( 1 ) ), 1 );
+	}
+
+	@Override
+	public void applyInverse( final double[] source, final double[] target )
+	{
+		source[ 0 ] = screenToLayoutX( target[ 0 ] );
+		source[ 1 ] = screenToLayoutY( target[ 1 ] );
+	}
+
+	@Override
+	public void applyInverse( final float[] source, final float[] target )
+	{
+		source[ 0 ] = ( float ) screenToLayoutX( target[ 0 ] );
+		source[ 1 ] = ( float ) screenToLayoutY( target[ 1 ] );
+	}
+
+	@Override
+	public void applyInverse( final RealPositionable source, final RealLocalizable target )
+	{
+		source.setPosition( screenToLayoutX( target.getDoublePosition( 0 ) ), 0 );
+		source.setPosition( screenToLayoutY( target.getDoublePosition( 1 ) ), 1 );
+	}
+
+	@Override
+	public InvertibleRealTransform inverse()
+	{
+		return new InvertibleRealTransform()
+		{
+			@Override
+			public int numTargetDimensions()
+			{
+				return 2;
+			}
+
+			@Override
+			public int numSourceDimensions()
+			{
+				return 2;
+			}
+
+			@Override
+			public void apply( final RealLocalizable source, final RealPositionable target )
+			{
+				ScreenTransform.this.applyInverse( target, source );
+			}
+
+			@Override
+			public void apply( final float[] source, final float[] target )
+			{
+				ScreenTransform.this.applyInverse( target, source );
+			}
+
+			@Override
+			public void apply( final double[] source, final double[] target )
+			{
+				ScreenTransform.this.applyInverse( target, source );
+			}
+
+			@Override
+			public InvertibleRealTransform inverse()
+			{
+				return ScreenTransform.this;
+			}
+
+			@Override
+			public InvertibleRealTransform copy()
+			{
+				return ScreenTransform.this.copy().inverse();
+			}
+
+			@Override
+			public void applyInverse( final RealPositionable source, final RealLocalizable target )
+			{
+				ScreenTransform.this.apply( target, source );
+			}
+
+			@Override
+			public void applyInverse( final float[] source, final float[] target )
+			{
+				ScreenTransform.this.apply( target, source );
+			}
+
+			@Override
+			public void applyInverse( final double[] source, final double[] target )
+			{
+				ScreenTransform.this.apply( target, source );
+			}
+		};
 	}
 }
