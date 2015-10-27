@@ -3,7 +3,7 @@ package net.trackmate.revised.trackscheme;
 import net.trackmate.graph.IntPoolObjectMap;
 import net.trackmate.revised.trackscheme.ScreenVertex.Transition;
 
-public class ScreenEntitiesInterpolation
+public class ScreenEntitiesInterpolator
 {
 	private final ScreenEntities start;
 
@@ -13,7 +13,7 @@ public class ScreenEntitiesInterpolation
 
 	private final IntPoolObjectMap< ScreenVertex > idToEndVertex;
 
-	public ScreenEntitiesInterpolation( final ScreenEntities start, final ScreenEntities end )
+	public ScreenEntitiesInterpolator( final ScreenEntities start, final ScreenEntities end )
 	{
 		this.start = start;
 		this.end = end;

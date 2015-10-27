@@ -12,7 +12,7 @@ package net.trackmate.trackscheme.animate;
 public class AbstractAnimator
 {
 	/** Expected duration length of the animation (in time units). */
-	private final long duration;
+	private long duration;
 
 	/** Start time of the animation (in time units). */
 	private long startTime;
@@ -37,6 +37,13 @@ public class AbstractAnimator
 		complete = 0;
 	}
 
+	protected void reset( final long duration )
+	{
+		this.duration = duration;
+		started = false;
+		complete = 0;
+	}
+
 	/**
 	 * Sets the current time for the animation. The first call starts the
 	 * animation.
@@ -52,9 +59,16 @@ public class AbstractAnimator
 			startTime = time;
 		}
 
-		complete = ( time - startTime ) / ( double ) duration;
-		if ( complete >= 1 )
+		if ( duration <= 0 )
+		{
 			complete = 1;
+		}
+		else
+		{
+			complete = ( time - startTime ) / ( double ) duration;
+			if ( complete >= 1 )
+				complete = 1;
+		}
 	}
 
 	/**

@@ -91,6 +91,11 @@ public class TrackSchemeGraph<
 		return edgePool;
 	}
 
+	public RefSet< TrackSchemeVertex > getRoots()
+	{
+		return roots;
+	}
+
 	@Override
 	public String toString()
 	{

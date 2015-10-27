@@ -5,6 +5,7 @@ import gnu.trove.list.array.TIntArrayList;
 import gnu.trove.map.TIntObjectMap;
 import gnu.trove.map.hash.TIntObjectHashMap;
 
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
@@ -49,7 +50,7 @@ public class LineageTreeLayout
 
 	/**
 	 * The timestamp used in the current layout. This is incremted at the
-	 * beginning of {@link #layoutX(List, int)}. It is also incremented when
+	 * beginning of {@link #layout(List, int)}. It is also incremented when
 	 * {@link #nextLayoutTimestamp()} is called.
 	 */
 	private int timestamp;
@@ -90,17 +91,28 @@ public class LineageTreeLayout
 	}
 
 	/**
+	 * Layout graph in trackscheme coordinates starting from the graphs roots.
+	 * <p>
+	 * This calls {@link #layout(List, int)} with parameter {@code mark = -1},
+	 * that is, no vertices will me marked as ghosts.
+	 */
+	public void layout()
+	{
+		layout( graph.getRoots(), -1 );
+	}
+
+	/**
 	 * Layout graph in trackscheme coordinates starting from specified roots.
 	 * <p>
-	 * This calls {@link #layoutX(List, int)} with parameter {@code mark = -1},
+	 * This calls {@link #layout(List, int)} with parameter {@code mark = -1},
 	 * that is, no vertices will me marked as ghosts.
 	 *
 	 * @param layoutRoots
 	 *            root vertices from which to start layout.
 	 */
-	public void layoutX( final List< TrackSchemeVertex > layoutRoots )
+	public void layout( final Collection< TrackSchemeVertex > layoutRoots )
 	{
-		layoutX( layoutRoots, -1 );
+		layout( layoutRoots, -1 );
 	}
 
 	// TODO: add javadoc ref to context trackscheme class
@@ -121,7 +133,7 @@ public class LineageTreeLayout
 	 * @param mark
 	 *            timestamp value that was used to mark active vertices.
 	 */
-	public void layoutX( final List< TrackSchemeVertex > layoutRoots, final int mark )
+	public void layout( final Collection< TrackSchemeVertex > layoutRoots, final int mark )
 	{
 		++timestamp;
 		rightmost = 0;
@@ -136,8 +148,8 @@ public class LineageTreeLayout
 
 	/**
 	 * Get the timestamp that was used in the last layout (the timestamp which
-	 * was set in all vertices laid out during last {@link #layoutX(List)} resp.
-	 * {@link #layoutX(List, int)}.)
+	 * was set in all vertices laid out during last {@link #layout(List)} resp.
+	 * {@link #layout(List, int)}.)
 	 *
 	 * @return timestamp used in last layout.
 	 */

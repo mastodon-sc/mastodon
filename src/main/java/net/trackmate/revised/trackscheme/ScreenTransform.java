@@ -31,7 +31,9 @@ public class ScreenTransform implements InvertibleRealTransform
 	private double scaleY;
 
 	public ScreenTransform()
-	{}
+	{
+		this ( 0, 1, 0, 1, 1, 1 );
+	}
 
 	public ScreenTransform( final double minX, final double maxX, final double minY, final double maxY, final int screenWidth, final int screenHeight )
 	{
@@ -135,7 +137,7 @@ public class ScreenTransform implements InvertibleRealTransform
 	}
 
 	/**
-	 * Compute the x scale factor. This is the factor by which layout <em>x</em>
+	 * Get the x scale factor. This is the factor by which layout <em>x</em>
 	 * coordinates have to be multiplied to obtain screen <em>x</em>
 	 * coordinates.
 	 *
@@ -147,7 +149,7 @@ public class ScreenTransform implements InvertibleRealTransform
 	}
 
 	/**
-	 * Compute the y scale factor. This is the factor by which layout <em>y</em>
+	 * Get the y scale factor. This is the factor by which layout <em>y</em>
 	 * coordinates have to be multiplied to obtain screen <em>y</em>
 	 * coordinates.
 	 *
@@ -158,17 +160,19 @@ public class ScreenTransform implements InvertibleRealTransform
 		return scaleY;
 	}
 
-// TODO remove?
-//	void setScreenTranslated( final int dX, final int dY, final ScreenTransform source )
-//	{
-//		final double xInvScale = ( maxX - minX ) / ( screenWidth - 1 );
-//		final double yInvScale = ( maxY - minY ) / ( screenHeight - 1 );
-//		minX = source.minX + xInvScale * dX;
-//		maxX = source.maxX + xInvScale * dX;
-//		minY = source.minY + yInvScale * dY;
-//		maxY = source.maxY + yInvScale * dY;
-//	}
-//
+	/**
+	 * Set the screen size.
+	 *
+	 * @param w
+	 * @param h
+	 */
+	public void setScreenSize( final int w, final int h )
+	{
+		this.screenWidth = w;
+		this.screenHeight = h;
+		update();
+	}
+
 	public double screenToLayoutX( final double x )
 	{
 		return minX + x / scaleX;
@@ -190,7 +194,8 @@ public class ScreenTransform implements InvertibleRealTransform
 	}
 
 	/**
-	 * Zoom by specified scale factor, keeping {@code screenCenterX, screenCenterY} fixed.
+	 * Zoom by specified scale factor, keeping screen coordinates
+	 * {@code (screenCenterX, screenCenterY)} fixed.
 	 *
 	 * @param scale
 	 * @param screenCenterX
@@ -203,7 +208,8 @@ public class ScreenTransform implements InvertibleRealTransform
 	}
 
 	/**
-	 * Zoom in X by specified scale factor, keeping {@code screenCenterX} fixed.
+	 * Zoom in X by specified scale factor, keeping screen X coordinate
+	 * {@code screenCenterX} fixed.
 	 *
 	 * @param scale
 	 * @param screenCenterX
@@ -218,7 +224,8 @@ public class ScreenTransform implements InvertibleRealTransform
 	}
 
 	/**
-	 * Zoom in Y by specified scale factor, keeping {@code screenCenterY} fixed.
+	 * Zoom in Y by specified scale factor, keeping screen Y coordinate
+	 * {@code screenCenterY} fixed.
 	 *
 	 * @param scale
 	 * @param screenCenterY
@@ -230,6 +237,42 @@ public class ScreenTransform implements InvertibleRealTransform
 		scaleY = ( screenHeight - 1 ) / newSizeY;
 		minY = lY - screenCenterX / scaleY;
 		maxY = minY + newSizeY;
+	}
+
+	/**
+	 * Translate such that screen coordinates move by {@code (dX, dY)}
+	 *
+	 * @param dX
+	 * @param dY
+	 */
+	public void shift( final int dX, final int dY )
+	{
+		shiftX( dX );
+		shiftY( dY );
+	}
+
+	/**
+	 * Translate such that screen coordinates move by {@code dX} in X.
+	 *
+	 * @param dX
+	 */
+	public void shiftX( final int dX )
+	{
+		final double lX = dX / scaleX;
+		minX += lX;
+		maxX += lX;
+	}
+
+	/**
+	 * Translate such that screen coordinates move by {@code dY} in Y.
+	 *
+	 * @param dY
+	 */
+	public void shiftY( final int dY )
+	{
+		final double lY = dY / scaleY;
+		minY += lY;
+		maxY += lY;
 	}
 
 	@Override
