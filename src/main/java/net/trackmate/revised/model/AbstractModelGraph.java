@@ -7,6 +7,7 @@ import net.trackmate.graph.AbstractVertexPool;
 import net.trackmate.graph.GraphIdBimap;
 import net.trackmate.graph.ListenableGraphImp;
 import net.trackmate.graph.PoolObjectIdBimap;
+import net.trackmate.graph.RefPool;
 import net.trackmate.graph.listenable.GraphListener;
 import net.trackmate.graph.mempool.MappedElement;
 
@@ -18,6 +19,19 @@ public class AbstractModelGraph<
 		T extends MappedElement >
 	extends ListenableGraphImp< VP, EP, V, E, T >
 {
+	/**
+	 * TODO: This should be removed! It is currently only needed to construct
+	 * SpatioTemporalIndexImp, which in turn needs it for KDTree. This should
+	 * all be rather implemented using RefCollection and IdBimap.
+	 */
+	public RefPool< V > getVertexPool()
+	{
+		return vertexPool;
+	}
+
+
+
+
 	protected final GraphIdBimap< V, E > idmap;
 
 	public AbstractModelGraph( final VP vertexPool, final EP edgePool )
