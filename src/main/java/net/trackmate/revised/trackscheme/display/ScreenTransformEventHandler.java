@@ -206,7 +206,6 @@ public class ScreenTransformEventHandler extends MouseAdapter implements KeyList
 			else
 			{
 				final int d = s * 15;
-				transform.set( transformDragStart );
 				if ( ( modifiers & KeyEvent.SHIFT_DOWN_MASK ) != 0 )
 					transform.shiftX( d );
 				else

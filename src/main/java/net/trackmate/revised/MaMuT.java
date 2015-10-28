@@ -10,6 +10,7 @@ import net.trackmate.revised.model.mamut.Model;
 import net.trackmate.revised.model.mamut.Spot;
 import net.trackmate.revised.trackscheme.DefaultModelGraphProperties;
 import net.trackmate.revised.trackscheme.TrackSchemeGraph;
+import net.trackmate.revised.trackscheme.display.TrackSchemeFrame;
 import net.trackmate.revised.ui.selection.Selection;
 
 public class MaMuT
@@ -85,9 +86,27 @@ public class MaMuT
 		System.out.println( trackSchemeGraph );
 	}
 
-	public static void main( final String[] args )
+	public static void main4( final String[] args ) throws IOException
 	{
-		main1( args );
-		main2( args );
+		final File modelFile = new File( "/Users/pietzsch/TGMM/data/tifs/model_revised.raw" );
+
+		final Model model = new Model();
+		model.loadRaw( modelFile );
+
+
+		final ListenableGraph< Spot, Link > graph = model.getGraph();
+		final GraphIdBimap< Spot, Link > idmap = model.getGraphIdBimap();
+		final Selection< Spot, Link > selection = new Selection<>( graph, idmap );
+		final DefaultModelGraphProperties< Spot, Link > properties = new DefaultModelGraphProperties<>( graph, idmap, selection );
+		final TrackSchemeGraph< Spot, Link > trackSchemeGraph = new TrackSchemeGraph<>( graph, idmap, properties );
+
+		final TrackSchemeFrame frame = new TrackSchemeFrame( trackSchemeGraph );
+		frame.getTrackschemePanel().graphChanged();
+		frame.setVisible( true );
+	}
+
+	public static void main( final String[] args ) throws IOException
+	{
+		main4( args );
 	}
 }

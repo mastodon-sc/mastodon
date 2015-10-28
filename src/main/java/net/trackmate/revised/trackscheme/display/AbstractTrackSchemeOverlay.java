@@ -16,7 +16,7 @@ import net.trackmate.revised.trackscheme.ScreenVertexRange;
  * It has no layout capabilities of its own, just paints layouted screen
  * objects.
  *
- * @author Tobias Pietzsch <tobias.pietzsch@gmail.com>
+ * @author Tobias Pietzsch &lt;tobias.pietzsch@gmail.com&gt;
  */
 public abstract class AbstractTrackSchemeOverlay implements OverlayRenderer
 {
@@ -73,8 +73,6 @@ public abstract class AbstractTrackSchemeOverlay implements OverlayRenderer
 			vertices.releaseRef( vs );
 			vertices.releaseRef( vt );
 		}
-
-
 	}
 
 	@Override

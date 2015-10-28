@@ -94,7 +94,7 @@ public class TrackSchemeOptions
 
 		private int height = 600;
 
-		private TransformEventHandlerFactory< ScreenTransform > transformEventHandlerFactory = null;//TransformEventHandler3D.factory();
+		private TransformEventHandlerFactory< ScreenTransform > transformEventHandlerFactory = ScreenTransformEventHandler.factory();
 
 		private long animationDurationMillis = 250;
 

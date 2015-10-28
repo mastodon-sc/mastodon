@@ -15,6 +15,7 @@ import net.trackmate.revised.trackscheme.ScreenEntitiesInterpolator;
 import net.trackmate.revised.trackscheme.ScreenTransform;
 import net.trackmate.revised.trackscheme.TrackSchemeGraph;
 import net.trackmate.revised.trackscheme.display.TrackSchemeOptions.Values;
+import net.trackmate.revised.trackscheme.display.laf.DefaultTrackSchemeOverlay;
 import net.trackmate.trackscheme.animate.AbstractAnimator;
 
 public class TrackSchemePanel extends JPanel implements TransformListener< ScreenTransform >, PainterThread.Paintable
@@ -48,6 +49,8 @@ public class TrackSchemePanel extends JPanel implements TransformListener< Scree
 
 	private final PainterThread painterThread;
 
+	private final AbstractTrackSchemeOverlay graphOverlay;
+
 	// TODO rename
 	private final Flags flags;
 
@@ -60,6 +63,9 @@ public class TrackSchemePanel extends JPanel implements TransformListener< Scree
 		final int h = options.getHeight();
 		display = new InteractiveDisplayCanvasComponent< ScreenTransform >(	w, h, options.getTransformEventHandlerFactory() );
 		display.addTransformListener( this );
+
+		graphOverlay = new DefaultTrackSchemeOverlay( optional );
+		display.addOverlayRenderer( graphOverlay );
 
 		// This should be the last OverlayRenderer in display.
 		// It triggers repainting if there is currently an ongoing animation.
@@ -82,7 +88,16 @@ public class TrackSchemePanel extends JPanel implements TransformListener< Scree
 		painterThread = new PainterThread( this );
 		flags = new Flags();
 
+		add( display, BorderLayout.CENTER );
 		painterThread.start();
+	}
+
+	/**
+	 * Stop the {@link #painterThread}.
+	 */
+	public void stop()
+	{
+		painterThread.interrupt();
 	}
 
 	/**
@@ -90,7 +105,8 @@ public class TrackSchemePanel extends JPanel implements TransformListener< Scree
 	 */
 	void checkAnimate()
 	{
-		painterThread.requestRepaint();
+		if ( !entityAnimator.isComplete() )
+			painterThread.requestRepaint();
 	}
 
 	@Override
@@ -112,7 +128,7 @@ public class TrackSchemePanel extends JPanel implements TransformListener< Scree
 		}
 
 		entityAnimator.setTime( System.currentTimeMillis() );
-//		graphOverlay.setEntities( entityAnimator.getPaintEntities() );
+		graphOverlay.setScreenEntities( entityAnimator.getPaintEntities() );
 		display.repaint();
 	}
 

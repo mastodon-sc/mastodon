@@ -82,7 +82,7 @@ public class ScreenEntitiesInterpolator
 
 		// Interpolate screenTransform
 		// ===========================
-		current.screenTransform().interpolate( start.screenTransform(), end.screenTransform(), currentRatio );
+		current.screenTransform().interpolate( start.screenTransform(), end.screenTransform(), accelRatio );
 
 		// clean up
 		current.getVertexPool().releaseRef( vCurrent );
