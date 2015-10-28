@@ -24,7 +24,25 @@ public abstract class AbstractTrackSchemeOverlay implements OverlayRenderer
 
 	private int height;
 
+	/**
+	 * The {@link ScreenEntities} that are actually drawn on the canvas.
+	 */
 	private ScreenEntities entities;
+
+	/**
+	 * {@link ScreenEntities} that have been previously
+	 * {@link #setScreenEntities(ScreenEntities) set} for painting. Whenever new
+	 * entities are set, these are stored here and marked {@link #pending}. Whenever
+	 * entities are painted and new entities are pending, the new entities are painted
+	 * to the screen. Before doing this, the entities previously used for painting
+	 * are swapped into {@link #pendingEntities}. This is used for double-buffering.
+	 */
+	private ScreenEntities pendingEntities;
+
+	/**
+	 * Whether new entitites are pending.
+	 */
+	private boolean pending;
 
 	public AbstractTrackSchemeOverlay( final TrackSchemeOptions options )
 	{
@@ -93,23 +111,37 @@ public abstract class AbstractTrackSchemeOverlay implements OverlayRenderer
 	}
 
 	/**
-	 * Set the current {@link ScreenEntities}.
+	 * Set the {@link ScreenEntities} to paint.
 	 *
 	 * @param entities
-	 *            current {@link ScreenEntities}.
+	 *            {@link ScreenEntities} to paint.
 	 */
-	public synchronized void setScreenEntities( final ScreenEntities entities )
+	public synchronized ScreenEntities setScreenEntities( final ScreenEntities entities )
 	{
-		this.entities = entities;
+		final ScreenEntities tmp = pendingEntities;
+		pendingEntities = entities;
+		pending = true;
+		return tmp;
 	}
 
 	/**
-	 * Provides subclass access to current {@link ScreenEntities}.
+	 * Provides subclass access to {@link ScreenEntities} to paint.
+	 * Implements double-buffering.
 	 *
 	 * @return current {@link ScreenEntities}.
 	 */
 	protected synchronized ScreenEntities getScreenEntities()
 	{
+		synchronized ( this )
+		{
+			if ( pending )
+			{
+				final ScreenEntities tmp = entities;
+				entities = pendingEntities;
+				pendingEntities = tmp;
+				pending = false;
+			}
+		}
 		return entities;
 	}
 

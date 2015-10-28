@@ -20,6 +20,8 @@ import net.trackmate.trackscheme.animate.AbstractAnimator;
 
 public class TrackSchemePanel extends JPanel implements TransformListener< ScreenTransform >, PainterThread.Paintable
 {
+	private final TrackSchemeGraph< ?, ? > graph;
+
 	/**
 	 * trackscheme options.
 	 */
@@ -57,6 +59,7 @@ public class TrackSchemePanel extends JPanel implements TransformListener< Scree
 	public TrackSchemePanel( final TrackSchemeGraph< ?, ? > graph, final TrackSchemeOptions optional )
 	{
 		super( new BorderLayout(), false );
+		this.graph = graph;
 		options = optional.values;
 
 		final int w = options.getWidth();
@@ -84,7 +87,7 @@ public class TrackSchemePanel extends JPanel implements TransformListener< Scree
 
 		screenTransform = new ScreenTransform();
 		layout = new LineageTreeLayout( graph );
-		entityAnimator = new ScreenEntityAnimator( graph );
+		entityAnimator = new ScreenEntityAnimator();
 		painterThread = new PainterThread( this );
 		flags = new Flags();
 
@@ -128,7 +131,7 @@ public class TrackSchemePanel extends JPanel implements TransformListener< Scree
 		}
 
 		entityAnimator.setTime( System.currentTimeMillis() );
-		graphOverlay.setScreenEntities( entityAnimator.getPaintEntities() );
+		entityAnimator.setPaintEntities( graphOverlay );
 		display.repaint();
 	}
 
@@ -162,10 +165,11 @@ public class TrackSchemePanel extends JPanel implements TransformListener< Scree
 
 		private ScreenEntitiesInterpolator interpolator;
 
-		public ScreenEntityAnimator( final TrackSchemeGraph< ?, ? > graph )
+		private final int capacity = 1000;
+
+		public ScreenEntityAnimator()
 		{
 			super( 0 );
-			final int capacity = 1000;
 			screenEntities = new ScreenEntities( graph, capacity );
 			screenEntities2 = new ScreenEntities( graph, capacity );
 			screenEntitiesIpStart = new ScreenEntities( graph, capacity );
@@ -243,12 +247,16 @@ public class TrackSchemePanel extends JPanel implements TransformListener< Scree
 		}
 
 		/**
-		 * Get entities for painting.
+		 * Set entities for painting into the specified DoubleB
 		 * @return
 		 */
-		public ScreenEntities getPaintEntities()
+		public void setPaintEntities( final AbstractTrackSchemeOverlay overlay )
 		{
-			return screenEntities;
+			final ScreenEntities tmp = overlay.setScreenEntities( screenEntities );
+			if ( tmp == null )
+				screenEntities = new ScreenEntities( graph, capacity );
+			else
+				screenEntities = tmp;
 		}
 	}
 
