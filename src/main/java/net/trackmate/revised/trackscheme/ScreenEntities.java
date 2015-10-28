@@ -31,6 +31,11 @@ public class ScreenEntities
 
 	private final PoolObjectList< ScreenVertexRange > ranges;
 
+	/**
+	 * transform used to generate these {@link ScreenEntities}
+	 */
+	private final ScreenTransform screenTransform;
+
 	public ScreenEntities( final TrackSchemeGraph< ?, ? > graph)
 	{
 		this( graph, DEFAULT_CAPACITY );
@@ -44,6 +49,7 @@ public class ScreenEntities
 		edges = new PoolObjectList< ScreenEdge >( edgePool, initialCapacity );
 		rangePool = new ScreenVertexRangePool( initialCapacity );
 		ranges = new PoolObjectList< ScreenVertexRange >( rangePool, initialCapacity );
+		screenTransform = new ScreenTransform();
 	}
 
 	public RefList< ScreenVertex > getVertices()
@@ -61,6 +67,11 @@ public class ScreenEntities
 		return ranges;
 	}
 
+	public void getScreenTransform( final ScreenTransform t )
+	{
+		t.set( screenTransform );
+	}
+
 	ScreenVertexPool getVertexPool()
 	{
 		return vertexPool;
@@ -74,6 +85,11 @@ public class ScreenEntities
 	ScreenVertexRangePool getRangePool()
 	{
 		return rangePool;
+	}
+
+	ScreenTransform screenTransform()
+	{
+		return screenTransform;
 	}
 
 	public void clear()

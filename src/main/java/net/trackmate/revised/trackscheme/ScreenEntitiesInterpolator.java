@@ -80,6 +80,10 @@ public class ScreenEntitiesInterpolator
 		// For now, simply use the dense ranges of the interpolation target.
 		current.getRanges().addAll( end.getRanges() );
 
+		// Interpolate screenTransform
+		// ===========================
+		current.screenTransform().interpolate( start.screenTransform(), end.screenTransform(), currentRatio );
+
 		// clean up
 		current.getVertexPool().releaseRef( vCurrent );
 		start.getVertexPool().releaseRef( vStart );
