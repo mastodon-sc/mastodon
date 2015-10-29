@@ -111,6 +111,8 @@ public class SpatioTemporalIndexImp<
 	}
 
 	/**
+	 * TODO: Rebuilding of SpatioTemporalIndex must be called periodically from somewhere!
+	 *
 	 * Rebuild one {@link SpatialIndexData} for which the
 	 * {@link SpatialIndexData#modCount()} exceeds the specified maximum.
 	 */
