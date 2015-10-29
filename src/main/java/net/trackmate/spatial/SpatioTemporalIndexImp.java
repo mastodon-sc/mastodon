@@ -107,7 +107,7 @@ public class SpatioTemporalIndexImp<
 	public SpatialIndex< V > getSpatialIndex( final int fromTimepoint, final int toTimepoint )
 	{
 		// TODO Auto-generated method stub
-		return null;
+		throw new UnsupportedOperationException( "not implemented yet" );
 	}
 
 	/**
