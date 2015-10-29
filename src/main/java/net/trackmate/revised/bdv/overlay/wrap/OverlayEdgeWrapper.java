@@ -55,4 +55,11 @@ public class OverlayEdgeWrapper< V extends Vertex< E >, E extends Edge< V > >
 		vertex.wv = we.getTarget( vertex.wv );
 		return vertex;
 	}
+
+	@Override
+	public boolean isSelected()
+	{
+		// TODO
+		return false;
+	}
 }

@@ -6,4 +6,5 @@ import net.trackmate.graph.Ref;
 public interface OverlayEdge< O extends OverlayEdge< O, V >, V extends OverlayVertex< V, ? > >
 		extends Edge< V >, Ref< O >
 {
+	public boolean isSelected();
 }

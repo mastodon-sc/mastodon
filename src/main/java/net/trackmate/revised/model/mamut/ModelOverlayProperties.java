@@ -47,6 +47,12 @@ public class ModelOverlayProperties implements OverlayProperties< Spot >
 	}
 
 	@Override
+	public double getBoundingSphereRadiusSquared( final Spot v )
+	{
+		return v.getBoundingSphereRadiusSquared();
+	}
+
+	@Override
 	public int getTimepoint( final Spot v )
 	{
 		return v.getTimepoint();

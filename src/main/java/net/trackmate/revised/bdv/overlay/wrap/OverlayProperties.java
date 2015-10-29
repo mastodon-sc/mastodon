@@ -14,5 +14,7 @@ public interface OverlayProperties< V >
 
 	public void getCovariance( V v, double[][] mat );
 
+	public double getBoundingSphereRadiusSquared( V v );
+
 	public int getTimepoint( V v );
 }
