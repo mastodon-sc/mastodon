@@ -3,19 +3,20 @@ package net.trackmate.revised;
 import java.io.File;
 import java.io.IOException;
 
-import net.imglib2.Point;
-import net.imglib2.neighborsearch.NearestNeighborSearch;
 import net.trackmate.graph.GraphIdBimap;
 import net.trackmate.graph.listenable.ListenableGraph;
+import net.trackmate.revised.bdv.overlay.OverlayGraph;
+import net.trackmate.revised.bdv.overlay.wrap.OverlayGraphWrapper;
 import net.trackmate.revised.model.AbstractModelGraph;
 import net.trackmate.revised.model.mamut.Link;
 import net.trackmate.revised.model.mamut.Model;
+import net.trackmate.revised.model.mamut.ModelOverlayProperties;
 import net.trackmate.revised.model.mamut.Spot;
 import net.trackmate.revised.trackscheme.DefaultModelGraphProperties;
 import net.trackmate.revised.trackscheme.TrackSchemeGraph;
 import net.trackmate.revised.trackscheme.display.TrackSchemeFrame;
 import net.trackmate.revised.ui.selection.Selection;
-import net.trackmate.spatial.SpatialIndex;
+import net.trackmate.spatial.SpatioTemporalIndex;
 import net.trackmate.spatial.SpatioTemporalIndexImp;
 
 public class MaMuT
@@ -98,26 +99,29 @@ public class MaMuT
 		final Model model = new Model();
 		model.loadRaw( modelFile );
 
+		/*
+		 * TrackSchemeGraph listening to model
+		 */
 		final ListenableGraph< Spot, Link > graph = model.getGraph();
 		final GraphIdBimap< Spot, Link > idmap = model.getGraphIdBimap();
 		final Selection< Spot, Link > selection = new Selection<>( graph, idmap );
 		final DefaultModelGraphProperties< Spot, Link > properties = new DefaultModelGraphProperties<>( graph, idmap, selection );
 		final TrackSchemeGraph< Spot, Link > trackSchemeGraph = new TrackSchemeGraph<>( graph, idmap, properties );
 
+		/*
+		 * SpatioTemporalIndex of model spots
+		 */
+		final SpatioTemporalIndex< Spot > index = new SpatioTemporalIndexImp<>( model.getGraph(), ( ( AbstractModelGraph ) model.getGraph() ).getVertexPool() );
+
+		/*
+		 * BDV OverlayGraph
+		 */
+		final OverlayGraph< ?, ? > overlayGraph = new OverlayGraphWrapper<>( model.getGraph(), model.getGraphIdBimap(), index, new ModelOverlayProperties() );
 
 
 		/*
-		 * Testing SpatioTemporalIndex...
+		 * show TrackSchemeFrame
 		 */
-		final SpatioTemporalIndexImp< Spot, Link > index = new SpatioTemporalIndexImp< Spot, Link >( model.getGraph(), ( ( AbstractModelGraph ) model.getGraph() ).getVertexPool() );
-		final SpatialIndex< Spot > si = index.getSpatialIndex( 10 );
-		final NearestNeighborSearch< Spot > s = si.getNearestNeighborSearch();
-		s.search( new Point( 1, 1, 1 ) );
-		System.out.println( "distance = " + s.getDistance() );
-		System.out.println( "spot = " + s.getSampler().get() );
-
-
-
 		final TrackSchemeFrame frame = new TrackSchemeFrame( trackSchemeGraph );
 		frame.getTrackschemePanel().graphChanged();
 		frame.setVisible( true );

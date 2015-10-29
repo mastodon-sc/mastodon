@@ -76,7 +76,7 @@ public class AbstractSpot3D<
 		access.putDouble( z, Z_OFFSET );
 	}
 
-	public int getTimepointId()
+	protected int getTimepointId()
 	{
 		return access.getInt( TP_OFFSET );
 	}
