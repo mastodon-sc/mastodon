@@ -1,18 +1,13 @@
 package net.trackmate.revised.bdv.overlay.wrap;
 
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.Iterator;
-import java.util.Map;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 import net.trackmate.graph.Edge;
 import net.trackmate.graph.GraphIdBimap;
-import net.trackmate.graph.PoolObjectSet;
 import net.trackmate.graph.ReadOnlyGraph;
-import net.trackmate.graph.RefPool;
 import net.trackmate.graph.Vertex;
-import net.trackmate.graph.collection.RefSet;
 import net.trackmate.revised.bdv.overlay.OverlayGraph;
 import net.trackmate.spatial.HasTimepoint;
 import net.trackmate.spatial.SpatioTemporalIndex;
@@ -35,50 +30,24 @@ public class OverlayGraphWrapper< V extends Vertex< E > & HasTimepoint, E extend
 
 	final OverlayProperties< V > overlayProperties;
 
-	private final Map< Integer, RefSet< OverlayVertexWrapper< V, E > > > timepointToSpots;
+	private final ConcurrentLinkedQueue< OverlayVertexWrapper< V, E > > tmpVertexRefs;
 
-	private final ConcurrentLinkedQueue< OverlayVertexWrapper< V, E > > tmpVertexRefs =
-			new ConcurrentLinkedQueue< OverlayVertexWrapper< V, E > >();
+	private final ConcurrentLinkedQueue< OverlayEdgeWrapper< V, E > > tmpEdgeRefs;
 
-	private final ConcurrentLinkedQueue< OverlayEdgeWrapper< V, E > > tmpEdgeRefs =
-			new ConcurrentLinkedQueue< OverlayEdgeWrapper< V, E > >();
+	private final SpatioTemporalIndexWrapper< V, E > wrappedIndex;
 
 	public OverlayGraphWrapper(
 			final ReadOnlyGraph< V, E > graph,
 			final GraphIdBimap< V, E > idmap,
+			final SpatioTemporalIndex< V > graphIndex,
 			final OverlayProperties< V > overlayProperties )
 	{
 		this.wrappedGraph = graph;
 		this.idmap = idmap;
 		this.overlayProperties = overlayProperties;
-		timepointToSpots = new HashMap< Integer, RefSet< OverlayVertexWrapper< V, E > > >();
-	}
-
-	@Override
-	public RefSet< OverlayVertexWrapper< V, E > > getSpots( final int timepoint )
-	{
-		RefSet< OverlayVertexWrapper< V, E > > spots = timepointToSpots.get( timepoint );
-		if ( null == spots )
-		{
-			spots = new PoolObjectSet< OverlayVertexWrapper< V, E > >( vertexPool );
-			timepointToSpots.put( timepoint, spots );
-		}
-		return spots;
-	}
-
-
-
-	// TODO: REMOVE
-	public void HACK_updateTimepointSets()
-	{
-		timepointToSpots.clear();
-		final OverlayVertexWrapper< V, E > v = vertexRef();
-		for ( final V mv : wrappedGraph.vertices() )
-		{
-			vertexPool.getByInternalPoolIndex( idmap.getVertexId( mv ), v );
-			getSpots( v.getTimepoint() ).add( v );
-		}
-		releaseRef( v );
+		tmpVertexRefs =	new ConcurrentLinkedQueue< OverlayVertexWrapper< V, E > >();
+		tmpEdgeRefs = new ConcurrentLinkedQueue< OverlayEdgeWrapper< V, E > >();
+		this.wrappedIndex = new SpatioTemporalIndexWrapper< V, E >( this, graphIndex );
 	}
 
 	@Override
@@ -107,6 +76,7 @@ public class OverlayGraphWrapper< V extends Vertex< E > & HasTimepoint, E extend
 		tmpEdgeRefs.add( ref );
 	}
 
+	@SuppressWarnings( "unchecked" )
 	@Override
 	public void releaseRef( final OverlayVertexWrapper< V, E >... refs )
 	{
@@ -114,54 +84,13 @@ public class OverlayGraphWrapper< V extends Vertex< E > & HasTimepoint, E extend
 			tmpVertexRefs.add( ref );
 	}
 
+	@SuppressWarnings( "unchecked" )
 	@Override
 	public void releaseRef( final OverlayEdgeWrapper< V, E >... refs )
 	{
 		for ( final OverlayEdgeWrapper< V, E > ref : refs )
 			tmpEdgeRefs.add( ref );
 	}
-
-	private final RefPool< OverlayVertexWrapper< V, E > > vertexPool = new RefPool< OverlayVertexWrapper< V, E > >()
-	{
-		@Override
-		public OverlayVertexWrapper< V, E > createRef()
-		{
-			return vertexRef();
-		}
-
-		@Override
-		public void releaseRef( final OverlayVertexWrapper< V, E > obj )
-		{
-			OverlayGraphWrapper.this.releaseRef( obj );
-		}
-
-		@Override
-		public void getByInternalPoolIndex( final int index, final OverlayVertexWrapper< V, E > obj )
-		{
-			obj.wv = idmap.getVertex( index, obj.wv );
-		}
-	};
-
-	private final RefPool< OverlayEdgeWrapper< V, E > > edgePool = new RefPool< OverlayEdgeWrapper< V, E > >()
-	{
-		@Override
-		public OverlayEdgeWrapper< V, E > createRef()
-		{
-			return edgeRef();
-		}
-
-		@Override
-		public void releaseRef( final OverlayEdgeWrapper< V, E > obj )
-		{
-			OverlayGraphWrapper.this.releaseRef( obj );
-		}
-
-		@Override
-		public void getByInternalPoolIndex( final int index, final OverlayEdgeWrapper< V, E > obj )
-		{
-			obj.we = idmap.getEdge( index, obj.we );
-		}
-	};
 
 	@Override
 	public OverlayEdgeWrapper< V, E > getEdge( final OverlayVertexWrapper< V, E > source, final OverlayVertexWrapper< V, E > target )
@@ -180,15 +109,13 @@ public class OverlayGraphWrapper< V extends Vertex< E > & HasTimepoint, E extend
 	@Override
 	public Iterator< OverlayVertexWrapper< V, E > > vertexIterator()
 	{
-		// TODO Auto-generated method stub
-		return null;
+		return vertices().iterator();
 	}
 
 	@Override
 	public Iterator< OverlayEdgeWrapper< V, E > > edgeIterator()
 	{
-		// TODO Auto-generated method stub
-		return null;
+		return edges().iterator();
 	}
 
 	@Override
@@ -208,11 +135,8 @@ public class OverlayGraphWrapper< V extends Vertex< E > & HasTimepoint, E extend
 	@Override
 	public SpatioTemporalIndex< OverlayVertexWrapper< V, E > > getIndex()
 	{
-		// TODO Auto-generated method stub
-		return null;
+		return wrappedIndex;
 	}
-
-
 
 	V wrappedVertexRef()
 	{
