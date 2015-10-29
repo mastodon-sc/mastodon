@@ -3,9 +3,11 @@ package net.trackmate.revised;
 import java.io.File;
 import java.io.IOException;
 
+import mpicbg.spim.data.SpimDataException;
 import net.trackmate.graph.GraphIdBimap;
 import net.trackmate.graph.listenable.ListenableGraph;
 import net.trackmate.revised.bdv.overlay.OverlayGraph;
+import net.trackmate.revised.bdv.overlay.OverlayGraphRenderer;
 import net.trackmate.revised.bdv.overlay.wrap.OverlayGraphWrapper;
 import net.trackmate.revised.model.AbstractModelGraph;
 import net.trackmate.revised.model.mamut.Link;
@@ -18,6 +20,10 @@ import net.trackmate.revised.trackscheme.display.TrackSchemeFrame;
 import net.trackmate.revised.ui.selection.Selection;
 import net.trackmate.spatial.SpatioTemporalIndex;
 import net.trackmate.spatial.SpatioTemporalIndexImp;
+import bdv.BigDataViewer;
+import bdv.export.ProgressWriterConsole;
+import bdv.viewer.ViewerOptions;
+import bdv.viewer.ViewerPanel;
 
 public class MaMuT
 {
@@ -92,12 +98,16 @@ public class MaMuT
 		System.out.println( trackSchemeGraph );
 	}
 
-	public static void main4( final String[] args ) throws IOException
+	public static void main4( final String[] args ) throws IOException, SpimDataException
 	{
-		final File modelFile = new File( "/Users/pietzsch/TGMM/data/tifs/model_revised.raw" );
+		final String bdvFile = "/Users/pietzsch/TGMM/data/tifs/datasethdf5.xml";
+		final String modelFile = "/Users/pietzsch/TGMM/data/tifs/model_revised.raw";
+		final int initialTimepointIndex = 10;
 
 		final Model model = new Model();
-		model.loadRaw( modelFile );
+		model.loadRaw( new File( modelFile ) );
+
+		System.setProperty( "apple.laf.useScreenMenuBar", "true" );
 
 		/*
 		 * TrackSchemeGraph listening to model
@@ -114,20 +124,26 @@ public class MaMuT
 		final SpatioTemporalIndex< Spot > index = new SpatioTemporalIndexImp<>( model.getGraph(), ( ( AbstractModelGraph ) model.getGraph() ).getVertexPool() );
 
 		/*
-		 * BDV OverlayGraph
-		 */
-		final OverlayGraph< ?, ? > overlayGraph = new OverlayGraphWrapper<>( model.getGraph(), model.getGraphIdBimap(), index, new ModelOverlayProperties() );
-
-
-		/*
 		 * show TrackSchemeFrame
 		 */
 		final TrackSchemeFrame frame = new TrackSchemeFrame( trackSchemeGraph );
 		frame.getTrackschemePanel().graphChanged();
 		frame.setVisible( true );
+
+		/*
+		 * show BDV frame
+		 */
+		final OverlayGraph< ?, ? > overlayGraph = new OverlayGraphWrapper<>( model.getGraph(), model.getGraphIdBimap(), index, new ModelOverlayProperties() );
+		final BigDataViewer bdv = BigDataViewer.open( bdvFile, new File( bdvFile ).getName(), new ProgressWriterConsole(), ViewerOptions.options() );
+		final ViewerPanel viewer = bdv.getViewer();
+		viewer.setTimepoint( initialTimepointIndex );
+		final OverlayGraphRenderer< ?, ? > tracksOverlay = new OverlayGraphRenderer<>( viewer, overlayGraph );
+		viewer.getDisplay().addOverlayRenderer( tracksOverlay );
+		viewer.addRenderTransformListener( tracksOverlay );
+		viewer.repaint();
 	}
 
-	public static void main( final String[] args ) throws IOException
+	public static void main( final String[] args ) throws IOException, SpimDataException
 	{
 		main4( args );
 	}
