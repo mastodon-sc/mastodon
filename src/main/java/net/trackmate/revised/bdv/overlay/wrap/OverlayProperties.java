@@ -13,4 +13,6 @@ public interface OverlayProperties< V >
 	public int numDimensions( V v );
 
 	public void getCovariance( V v, double[][] mat );
+
+	public int getTimepoint( V v );
 }

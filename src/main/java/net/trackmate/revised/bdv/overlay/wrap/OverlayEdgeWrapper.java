@@ -3,9 +3,8 @@ package net.trackmate.revised.bdv.overlay.wrap;
 import net.trackmate.graph.Edge;
 import net.trackmate.graph.Vertex;
 import net.trackmate.revised.bdv.overlay.OverlayEdge;
-import net.trackmate.spatial.HasTimepoint;
 
-public class OverlayEdgeWrapper< V extends Vertex< E > & HasTimepoint, E extends Edge< V > >
+public class OverlayEdgeWrapper< V extends Vertex< E >, E extends Edge< V > >
 	implements OverlayEdge< OverlayEdgeWrapper< V, E >, OverlayVertexWrapper< V, E > >
 {
 	private final OverlayGraphWrapper< V, E > wrapper;

@@ -9,7 +9,7 @@ import net.trackmate.spatial.HasTimepoint;
 import net.trackmate.spatial.SpatialIndex;
 import net.trackmate.spatial.SpatioTemporalIndex;
 
-public class SpatioTemporalIndexWrapper< V extends Vertex< E > & HasTimepoint, E extends Edge< V > >
+public class SpatioTemporalIndexWrapper< V extends Vertex< E >, E extends Edge< V > >
 	implements SpatioTemporalIndex< OverlayVertexWrapper< V, E > >
 {
 	private final OverlayGraphWrapper< V, E > graphWrapper;

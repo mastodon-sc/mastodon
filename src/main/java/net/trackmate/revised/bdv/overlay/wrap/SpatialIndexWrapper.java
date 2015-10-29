@@ -9,10 +9,9 @@ import net.imglib2.neighborsearch.NearestNeighborSearch;
 import net.trackmate.graph.Edge;
 import net.trackmate.graph.Vertex;
 import net.trackmate.spatial.ClipConvexPolytope;
-import net.trackmate.spatial.HasTimepoint;
 import net.trackmate.spatial.SpatialIndex;
 
-public class SpatialIndexWrapper< V extends Vertex< E > & HasTimepoint, E extends Edge< V > >
+public class SpatialIndexWrapper< V extends Vertex< E >, E extends Edge< V > >
 	implements SpatialIndex< OverlayVertexWrapper< V, E > >
 {
 	private final OverlayGraphWrapper< V, E > graphWrapper;

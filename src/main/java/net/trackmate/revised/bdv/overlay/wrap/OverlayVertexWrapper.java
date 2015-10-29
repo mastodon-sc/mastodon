@@ -6,9 +6,8 @@ import net.trackmate.graph.Edge;
 import net.trackmate.graph.Edges;
 import net.trackmate.graph.Vertex;
 import net.trackmate.revised.bdv.overlay.OverlayVertex;
-import net.trackmate.spatial.HasTimepoint;
 
-public class OverlayVertexWrapper< V extends Vertex< E > & HasTimepoint, E extends Edge< V > >
+public class OverlayVertexWrapper< V extends Vertex< E >, E extends Edge< V > >
 	implements OverlayVertex< OverlayVertexWrapper< V, E >, OverlayEdgeWrapper< V, E > >
 {
 	private final OverlayGraphWrapper< V, E > wrapper;
@@ -93,7 +92,7 @@ public class OverlayVertexWrapper< V extends Vertex< E > & HasTimepoint, E exten
 	@Override
 	public int getTimepoint()
 	{
-		return wv.getTimepoint();
+		return overlayProperties.getTimepoint( wv );
 	}
 
 	@Override

@@ -9,7 +9,6 @@ import net.trackmate.graph.GraphIdBimap;
 import net.trackmate.graph.ReadOnlyGraph;
 import net.trackmate.graph.Vertex;
 import net.trackmate.revised.bdv.overlay.OverlayGraph;
-import net.trackmate.spatial.HasTimepoint;
 import net.trackmate.spatial.SpatioTemporalIndex;
 
 /**
@@ -21,7 +20,7 @@ import net.trackmate.spatial.SpatioTemporalIndex;
  *
  * @author Tobias Pietzsch <tobias.pietzsch@gmail.com>
  */
-public class OverlayGraphWrapper< V extends Vertex< E > & HasTimepoint, E extends Edge< V > >
+public class OverlayGraphWrapper< V extends Vertex< E >, E extends Edge< V > >
 	implements OverlayGraph< OverlayVertexWrapper< V, E >, OverlayEdgeWrapper< V, E > >
 {
 	final ReadOnlyGraph< V, E > wrappedGraph;

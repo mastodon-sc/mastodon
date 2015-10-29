@@ -5,11 +5,8 @@ import java.util.Iterator;
 import net.trackmate.graph.Edge;
 import net.trackmate.graph.GraphIdBimap;
 import net.trackmate.graph.Vertex;
-import net.trackmate.spatial.HasTimepoint;
 
-public class OverlayEdgeIteratorWrapper<
-		V extends Vertex< E > & HasTimepoint,
-		E extends Edge< V > >
+public class OverlayEdgeIteratorWrapper< V extends Vertex< E >, E extends Edge< V > >
 	implements Iterator< OverlayEdgeWrapper< V, E > >
 {
 	private final OverlayEdgeWrapper< V, E > edge;
