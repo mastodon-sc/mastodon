@@ -35,6 +35,7 @@ import net.trackmate.trackscheme.laf.TrackSchemeStyle;
 import bdv.BigDataViewer;
 import bdv.export.ProgressWriterConsole;
 import bdv.viewer.InputActionBindings;
+import bdv.viewer.ViewerOptions;
 import bdv.viewer.ViewerPanel;
 import bdv.viewer.animate.TranslationAnimator;
 import bdv.viewer.state.ViewerState;
@@ -61,7 +62,7 @@ public class Launcher
 
 		System.out.println( "Launching viewer." );
 		System.setProperty( "apple.laf.useScreenMenuBar", "true" );
-		final BigDataViewer bdv = BigDataViewer.open( bdvFile, new File( bdvFile ).getName(), new ProgressWriterConsole() );
+		final BigDataViewer bdv = BigDataViewer.open( bdvFile, new File( bdvFile ).getName(), new ProgressWriterConsole(), new ViewerOptions() );
 		final ViewerPanel viewer = bdv.getViewer();
 		viewer.setTimepoint( timepointIndex );
 		System.out.println( "Done." );
