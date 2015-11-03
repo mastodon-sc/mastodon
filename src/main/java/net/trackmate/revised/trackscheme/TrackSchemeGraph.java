@@ -117,6 +117,11 @@ public class TrackSchemeGraph<
 		return sb.toString();
 	}
 
+	TrackSchemeVertex getTrackSchemeVertexForModelId( final int modelId, final TrackSchemeVertex ref )
+	{
+		return idToTrackSchemeVertex.get( modelId, ref );
+	}
+
 	/*
 	 * GraphListener
 	 */

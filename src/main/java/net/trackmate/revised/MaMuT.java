@@ -15,8 +15,11 @@ import net.trackmate.revised.model.mamut.Model;
 import net.trackmate.revised.model.mamut.ModelOverlayProperties;
 import net.trackmate.revised.model.mamut.Spot;
 import net.trackmate.revised.trackscheme.DefaultModelGraphProperties;
+import net.trackmate.revised.trackscheme.DefaultModelHighlightProperties;
 import net.trackmate.revised.trackscheme.TrackSchemeGraph;
+import net.trackmate.revised.trackscheme.TrackSchemeHighlight;
 import net.trackmate.revised.trackscheme.display.TrackSchemeFrame;
+import net.trackmate.revised.ui.selection.HighlightModel;
 import net.trackmate.revised.ui.selection.Selection;
 import net.trackmate.spatial.SpatioTemporalIndex;
 import net.trackmate.spatial.SpatioTemporalIndexImp;
@@ -119,6 +122,13 @@ public class MaMuT
 		final TrackSchemeGraph< Spot, Link > trackSchemeGraph = new TrackSchemeGraph<>( graph, idmap, properties );
 
 		/*
+		 * TrackSchemeHighlight wrapped HighlightModel
+		 */
+		final HighlightModel< Spot, Link > highlightModel = new HighlightModel< Spot, Link  >( idmap );
+		final DefaultModelHighlightProperties< Spot, Link > highlightProperties = new DefaultModelHighlightProperties< Spot, Link >( graph, idmap, highlightModel );
+		final TrackSchemeHighlight< Spot, Link > trackSchemeHighlight = new TrackSchemeHighlight< Spot, Link >( highlightProperties, trackSchemeGraph );
+
+		/*
 		 * SpatioTemporalIndex of model spots
 		 */
 		final SpatioTemporalIndex< Spot > index = new SpatioTemporalIndexImp<>( model.getGraph(), ( ( AbstractModelGraph ) model.getGraph() ).getVertexPool() );
@@ -126,7 +136,7 @@ public class MaMuT
 		/*
 		 * show TrackSchemeFrame
 		 */
-		final TrackSchemeFrame frame = new TrackSchemeFrame( trackSchemeGraph );
+		final TrackSchemeFrame frame = new TrackSchemeFrame( trackSchemeGraph, trackSchemeHighlight );
 		frame.getTrackschemePanel().graphChanged();
 		frame.setVisible( true );
 

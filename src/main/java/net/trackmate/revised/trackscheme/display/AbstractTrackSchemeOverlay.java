@@ -3,12 +3,15 @@ package net.trackmate.revised.trackscheme.display;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 
+import net.imglib2.RealLocalizable;
+import net.imglib2.RealPoint;
 import net.imglib2.ui.OverlayRenderer;
 import net.trackmate.graph.collection.RefList;
 import net.trackmate.revised.trackscheme.ScreenEdge;
 import net.trackmate.revised.trackscheme.ScreenEntities;
 import net.trackmate.revised.trackscheme.ScreenVertex;
 import net.trackmate.revised.trackscheme.ScreenVertexRange;
+import net.trackmate.revised.trackscheme.TrackSchemeHighlight;
 
 /**
  * An {@link OverlayRenderer} that paints {@link ScreenEntities} of a trackscheme
@@ -44,8 +47,13 @@ public abstract class AbstractTrackSchemeOverlay implements OverlayRenderer
 	 */
 	private boolean pending;
 
-	public AbstractTrackSchemeOverlay( final TrackSchemeOptions options )
+	protected final TrackSchemeHighlight< ?, ? > highlight;
+
+	protected int highlightedVertexId;
+
+	public AbstractTrackSchemeOverlay( final TrackSchemeHighlight< ?, ? > highlight, final TrackSchemeOptions options )
 	{
+		this.highlight = highlight;
 		width = options.values.getWidth();
 		height = options.values.getHeight();
 		entities = null;
@@ -59,6 +67,8 @@ public abstract class AbstractTrackSchemeOverlay implements OverlayRenderer
 		final ScreenEntities ent = getScreenEntities();
 		if ( ent != null )
 		{
+			highlightedVertexId = highlight.getHighlightedVertexId();
+
 			paintBackground( g2, ent );
 
 			final RefList< ScreenEdge > edges = ent.getEdges();
@@ -91,6 +101,24 @@ public abstract class AbstractTrackSchemeOverlay implements OverlayRenderer
 			vertices.releaseRef( vs );
 			vertices.releaseRef( vt );
 		}
+	}
+
+	public void mouseOverHighlight( final int x, final int y )
+	{
+		final ScreenEntities ent = getScreenEntities();
+		if ( ent != null )
+		{
+			final RealPoint pos = new RealPoint( x, y );
+			for ( final ScreenVertex v : ent.getVertices() )
+			{
+				if ( isInsidePaintedVertex( pos, v ) )
+				{
+					highlight.highlightVertex( v.getTrackSchemeVertexId() );
+					return;
+				}
+			}
+		}
+		highlight.highlightVertex( -1 );
 	}
 
 	@Override
@@ -144,6 +172,8 @@ public abstract class AbstractTrackSchemeOverlay implements OverlayRenderer
 		}
 		return entities;
 	}
+
+	protected abstract boolean isInsidePaintedVertex( final RealLocalizable pos, final ScreenVertex vertex );
 
 	protected abstract void paintBackground( Graphics2D g2, ScreenEntities screenEntities );
 

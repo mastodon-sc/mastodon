@@ -14,11 +14,13 @@ import net.trackmate.revised.trackscheme.ScreenEntities;
 import net.trackmate.revised.trackscheme.ScreenEntitiesInterpolator;
 import net.trackmate.revised.trackscheme.ScreenTransform;
 import net.trackmate.revised.trackscheme.TrackSchemeGraph;
+import net.trackmate.revised.trackscheme.TrackSchemeHighlight;
 import net.trackmate.revised.trackscheme.display.TrackSchemeOptions.Values;
 import net.trackmate.revised.trackscheme.display.laf.DefaultTrackSchemeOverlay;
+import net.trackmate.revised.ui.selection.HighlightListener;
 import net.trackmate.trackscheme.animate.AbstractAnimator;
 
-public class TrackSchemePanel extends JPanel implements TransformListener< ScreenTransform >, PainterThread.Paintable
+public class TrackSchemePanel extends JPanel implements TransformListener< ScreenTransform >, PainterThread.Paintable, HighlightListener
 {
 	private final TrackSchemeGraph< ?, ? > graph;
 
@@ -56,7 +58,10 @@ public class TrackSchemePanel extends JPanel implements TransformListener< Scree
 	// TODO rename
 	private final Flags flags;
 
-	public TrackSchemePanel( final TrackSchemeGraph< ?, ? > graph, final TrackSchemeOptions optional )
+	public TrackSchemePanel(
+			final TrackSchemeGraph< ?, ? > graph,
+			final TrackSchemeHighlight< ?, ? > highlight,
+			final TrackSchemeOptions optional )
 	{
 		super( new BorderLayout(), false );
 		this.graph = graph;
@@ -67,7 +72,8 @@ public class TrackSchemePanel extends JPanel implements TransformListener< Scree
 		display = new InteractiveDisplayCanvasComponent< ScreenTransform >(	w, h, options.getTransformEventHandlerFactory() );
 		display.addTransformListener( this );
 
-		graphOverlay = new DefaultTrackSchemeOverlay( optional );
+		graphOverlay = new DefaultTrackSchemeOverlay( highlight, optional );
+		highlight.addHighlightListener( this );
 		display.addOverlayRenderer( graphOverlay );
 
 		// This should be the last OverlayRenderer in display.
@@ -90,6 +96,8 @@ public class TrackSchemePanel extends JPanel implements TransformListener< Scree
 		entityAnimator = new ScreenEntityAnimator();
 		painterThread = new PainterThread( this );
 		flags = new Flags();
+
+		display.addMouseMotionListener( new MouseOverListener( graphOverlay ) );
 
 		add( display, BorderLayout.CENTER );
 		painterThread.start();
@@ -151,6 +159,12 @@ public class TrackSchemePanel extends JPanel implements TransformListener< Scree
 	{
 		flags.setGraphChanged();
 		painterThread.requestRepaint();
+	}
+
+	@Override
+	public void highlightChanged()
+	{
+		display.repaint();
 	}
 
 	protected class ScreenEntityAnimator extends AbstractAnimator
@@ -247,8 +261,9 @@ public class TrackSchemePanel extends JPanel implements TransformListener< Scree
 		}
 
 		/**
-		 * Set entities for painting into the specified DoubleB
-		 * @return
+		 * Set entities for painting into the specified double-buffered
+		 * {@link AbstractTrackSchemeOverlay}. (This swaps
+		 * {@link #screenEntities} with pending entities from the overlay.)
 		 */
 		public void setPaintEntities( final AbstractTrackSchemeOverlay overlay )
 		{

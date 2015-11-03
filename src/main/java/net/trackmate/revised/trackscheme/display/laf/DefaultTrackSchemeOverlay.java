@@ -11,12 +11,14 @@ import java.awt.font.FontRenderContext;
 import java.awt.font.TextLayout;
 import java.awt.geom.Rectangle2D;
 
+import net.imglib2.RealLocalizable;
 import net.trackmate.revised.trackscheme.ScreenEdge;
 import net.trackmate.revised.trackscheme.ScreenEntities;
 import net.trackmate.revised.trackscheme.ScreenTransform;
 import net.trackmate.revised.trackscheme.ScreenVertex;
 import net.trackmate.revised.trackscheme.ScreenVertex.Transition;
 import net.trackmate.revised.trackscheme.ScreenVertexRange;
+import net.trackmate.revised.trackscheme.TrackSchemeHighlight;
 import net.trackmate.revised.trackscheme.display.AbstractTrackSchemeOverlay;
 import net.trackmate.revised.trackscheme.display.TrackSchemeOptions;
 
@@ -68,14 +70,14 @@ public class DefaultTrackSchemeOverlay extends AbstractTrackSchemeOverlay
 
 	protected TrackSchemeStyle style = TrackSchemeStyle.defaultStyle();
 
-	public DefaultTrackSchemeOverlay( final TrackSchemeOptions options )
+	public DefaultTrackSchemeOverlay( final TrackSchemeHighlight< ?, ? > highlight, final TrackSchemeOptions options )
 	{
-		super( options );
+		super( highlight, options );
 	}
 
 	// TODO: get these from somewhere
-	int minTimepoint = 0;
-	int maxTimepoint = 50;
+	int minTimepoint = 0; // TODO: get these from somewhere
+	int maxTimepoint = 50; // TODO: get these from somewhere
 
 	@Override
 	protected void paintBackground( final Graphics2D g2, final ScreenEntities screenEntities )
@@ -147,6 +149,25 @@ public class DefaultTrackSchemeOverlay extends AbstractTrackSchemeOverlay
 	}
 
 	@Override
+	protected boolean isInsidePaintedVertex( final RealLocalizable pos, final ScreenVertex vertex )
+	{
+		final double d = vertex.getVertexDist();
+		double radius = 0;
+		if ( d >= minDisplayVertexDist )
+		{
+			final double spotdiameter = Math.min( vertex.getVertexDist() - 10.0, maxDisplayVertexSize );
+			radius = spotdiameter / 2;
+		}
+		else if ( d >= minDisplaySimplifiedVertexDist )
+		{
+			radius = simplifiedVertexRadius;
+		}
+		final double x = pos.getDoublePosition( 0 ) - vertex.getX();
+		final double y = pos.getDoublePosition( 1 ) - vertex.getY();
+		return ( x * x + y * y < radius * radius );
+	}
+
+	@Override
 	protected void beforeDrawVertexRange( final Graphics2D g2 )
 	{
 		g2.setColor( style.vertexRangeColor );
@@ -213,9 +234,22 @@ public class DefaultTrackSchemeOverlay extends AbstractTrackSchemeOverlay
 		final Transition transition = vertex.getTransition();
 		final boolean disappear = ( transition == DISAPPEAR );
 		final double ratio = vertex.getInterpolationCompletionRatio();
-		final boolean selected = vertex.isSelected();
+
+
+		// TODO: FIX!!!
+		// TODO: FIX!!!
+		// TODO: FIX!!!
+		// TODO: FIX!!!
+		final boolean highlighted = ( highlightedVertexId >= 0 ) && ( vertex.getTrackSchemeVertexId() == highlightedVertexId );
+		final boolean selected = vertex.isSelected() || highlighted; // TODO: FIX!!!
+		// TODO: FIX!!!
+		// TODO: FIX!!!
+		// TODO: FIX!!!
+		// TODO: FIX!!!
 
 		double spotdiameter = Math.min( vertex.getVertexDist() - 10.0, maxDisplayVertexSize );
+		if ( highlighted )
+			spotdiameter += 10.0;
 		if ( disappear )
 			spotdiameter *= ( 1 + ratio );
 		final double spotradius = spotdiameter / 2;
