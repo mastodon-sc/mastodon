@@ -9,6 +9,7 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
+import net.imglib2.RealLocalizable;
 import net.trackmate.graph.collection.RefList;
 import net.trackmate.revised.trackscheme.ScreenEdge.ScreenEdgePool;
 import net.trackmate.revised.trackscheme.ScreenVertex.ScreenVertexPool;
@@ -307,6 +308,62 @@ public class LineageTreeLayout
 		screenVertexPool.releaseRef( sv );
 		graph.releaseRef( v1 );
 		graph.releaseRef( v2 );
+	}
+
+	/**
+	 * Get the active vertex with the minimal distance to the specified layout
+	 * coordinates. The distance is computed as the Euclidean distance in layout
+	 * space distorted by the specified aspect ratio.
+	 *
+	 * @param layoutPos
+	 *            layout coordinates.
+	 * @param aspectRatio
+	 *            The <em>X/Y</em> ratio of screen vector <em>(1,1)</em>
+	 *            transformed into layout coordinates <em>(X,Y)</em>.
+	 * @param v
+	 *            ref to store the result.
+	 * @return the closest active vertex to the specified coordinates, or
+	 *         {@code null} if there are no active vertices.
+	 */
+	public TrackSchemeVertex getClosestActiveVertex( final RealLocalizable layoutPos, final double ratioXtoY, final TrackSchemeVertex v )
+	{
+		final double lx = layoutPos.getDoublePosition( 0 );
+		final double ly = layoutPos.getDoublePosition( 1 );
+
+		double closestVertexSquareDist = Double.POSITIVE_INFINITY;
+		int closestVertexIndex = -1;
+
+// TODO: intead of only forward iteration through timepoints, should pick a good starting tp and then search forwards and backwards until diffy * diffy < closestVertexSquareDist.
+		final TIntIterator tpIter = timepoints.iterator();
+		while( tpIter.hasNext() )
+		{
+			final int tp = tpIter.next();
+			final double diffy = ( ly - tp ) * ratioXtoY;
+			if ( diffy * diffy < closestVertexSquareDist )
+			{
+				final TrackSchemeVertexList vertexList = timepointToOrderedVertices.get( tp );
+				final int left = vertexList.binarySearch( lx );
+				final int begin = Math.min( 0, left );
+				final int end = Math.min( begin + 2, vertexList.size() );
+				for ( int x = begin; x < end; ++x )
+				{
+					vertexList.get( x, v );
+					final double diffx = ( lx - v.getLayoutX() );
+					final double d2 = diffx * diffx + diffy * diffy;
+					if ( d2 < closestVertexSquareDist )
+					{
+						closestVertexSquareDist = d2;
+						closestVertexIndex = v.getInternalPoolIndex();
+					}
+				}
+			}
+		}
+
+		if ( closestVertexIndex < 0 )
+			return null;
+
+		graph.getVertexPool().getByInternalPoolIndex( closestVertexIndex, v );
+		return v;
 	}
 
 // TODO remove?
