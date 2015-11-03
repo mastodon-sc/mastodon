@@ -49,7 +49,7 @@ public class LineageTreeLayout
 	private double rightmost;
 
 	/**
-	 * The timestamp used in the current layout. This is incremted at the
+	 * The timestamp used in the current layout. This is incremented at the
 	 * beginning of {@link #layout(List, int)}. It is also incremented when
 	 * {@link #nextLayoutTimestamp()} is called.
 	 */
