@@ -6,6 +6,7 @@ import java.io.IOException;
 import mpicbg.spim.data.SpimDataException;
 import net.trackmate.graph.GraphIdBimap;
 import net.trackmate.graph.listenable.ListenableGraph;
+import net.trackmate.revised.bdv.overlay.MouseOverListener;
 import net.trackmate.revised.bdv.overlay.OverlayGraphRenderer;
 import net.trackmate.revised.bdv.overlay.wrap.OverlayGraphWrapper;
 import net.trackmate.revised.bdv.overlay.wrap.OverlayHighlightWrapper;
@@ -192,6 +193,8 @@ public class MaMuT
 				viewer.getDisplay().repaint();
 			}
 		} );
+		final MouseOverListener mouseOver = new MouseOverListener( tracksOverlay );
+		viewer.getDisplay().addHandler( mouseOver );
 		return bdv;
 	}
 

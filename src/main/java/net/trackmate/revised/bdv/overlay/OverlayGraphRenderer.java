@@ -9,6 +9,8 @@ import java.awt.RenderingHints;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Ellipse2D;
 
+import net.imglib2.RealPoint;
+import net.imglib2.neighborsearch.NearestNeighborSearch;
 import net.imglib2.realtransform.AffineTransform3D;
 import net.imglib2.type.numeric.ARGBType;
 import net.imglib2.ui.OverlayRenderer;
@@ -54,6 +56,50 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 		}
 	}
 
+	public void mouseOverHighlight( final int x, final int y )
+	{
+		final AffineTransform3D transform = new AffineTransform3D();
+		synchronized ( renderTransform )
+		{
+			transform.set( renderTransform );
+		}
+
+		// TODO: fix in BDV. This is stupid, BDV should have addTimepointListener() or something similar.
+		final int currentTimepoint = viewer.getState().getCurrentTimepoint();
+
+		final RealPoint lPos = new RealPoint( 3 );
+		final RealPoint gPos = new RealPoint( 3 );
+		lPos.setPosition( x, 0 );
+		lPos.setPosition( y, 1 );
+		transform.applyInverse( gPos, lPos );
+
+		final NearestNeighborSearch< V > nns = graph.getIndex().getSpatialIndex( currentTimepoint ).getNearestNeighborSearch();
+		nns.search( gPos );
+		final V v = nns.getSampler().get();
+		if ( v != null )
+		{
+			final ScreenVertexMath svm = new ScreenVertexMath( nSigmas );
+			svm.init( v, transform );
+			if ( drawSliceIntersection )
+			{
+				if ( svm.containsGlobal( gPos ) )
+				{
+					highlight.highlightVertex( v );
+					return;
+				}
+			}
+			else
+			{
+				if ( svm.projectionContainsView( new double[] { x, y } ) )
+				{
+					highlight.highlightVertex( v );
+					return;
+				}
+			}
+		}
+		highlight.highlightVertex( null );
+	}
+
 	/*
 	 * PUBLIC DISPLAY CONFIG DEFAULTS.
 	 */
@@ -72,7 +118,7 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 
 	public static final boolean DEFAULT_DRAW_ELLIPSE = true;
 
-	public static final boolean DEFAULT_DRAW_SLICE_INTERSECTION = true;
+	public static final boolean DEFAULT_DRAW_SLICE_INTERSECTION = false;//true;
 
 	/*
 	 * DISPLAY SETTINGS FIELDS.
@@ -93,6 +139,8 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 	private final boolean drawSpotEllipse = DEFAULT_DRAW_ELLIPSE;
 
 	private final boolean drawSliceIntersection = DEFAULT_DRAW_SLICE_INTERSECTION;
+
+	private final double nSigmas = 2;
 
 	/**
 	 * Return signed distance of p to z=0 plane, truncated at cutoff and scaled
@@ -201,8 +249,6 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 
 		final double sliceDistanceFade = 0.2;
 		final double timepointDistanceFade = 0.5;
-
-		final double nSigmas = 2;
 
 		/*
 		 * Let z = orthogonal distance to viewer plane in viewer coordinate

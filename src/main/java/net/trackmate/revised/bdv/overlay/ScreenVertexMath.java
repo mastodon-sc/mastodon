@@ -43,6 +43,11 @@ public class ScreenVertexMath
 	private final double[][] vS = new double[ 3 ][ 3 ];
 
 	/**
+	 * precision of 2D ellipse obtained by projecting ellipsoid to z=0 plane.
+	 */
+	private final double[][] vP = new double[ 2 ][ 2 ];
+
+	/**
 	 * center of 2D ellipse obtained by projecting ellipsoid to z=0 plane.
 	 */
 	private final double[] projectCenter = new double[ 2 ];
@@ -89,6 +94,8 @@ public class ScreenVertexMath
 
 	private boolean precisionComputed;
 
+	private boolean projectedPrecisionComputed;
+
 	// tmp
 	private final JamaEigenvalueDecomposition eig2 = new JamaEigenvalueDecomposition( 2 );
 
@@ -109,6 +116,15 @@ public class ScreenVertexMath
 
 	// tmp
 	private final double[] diff = new double[ 3 ];
+
+	// tmp
+	private final double[] vn2 = new double[ 2 ];
+
+	// tmp
+	private final double[] vm2 = new double[ 2 ];
+
+	// tmp
+	private final double[] diff2 = new double[ 2 ];
 
 	// tmp
 	private final double[][] AAT = new double[ 2 ][ 2 ];
@@ -197,7 +213,23 @@ public class ScreenVertexMath
 		computePrecision();
 		LinAlgHelpers.subtract( pos, p, diff );
 		LinAlgHelpers.mult( P, diff, vn );
-		final double d2 = LinAlgHelpers.dot( p, vn );
+		final double d2 = LinAlgHelpers.dot( diff, vn );
+		return d2 < nSigmas * nSigmas;
+	}
+
+	public boolean projectionContainsView( final RealLocalizable p )
+	{
+		p.localize( vm2 );
+		return containsGlobal( vm2 );
+	}
+
+	public boolean projectionContainsView( final double[] p )
+	{
+		computeProjectedPrecision();
+		diff2[ 0 ] = vPos[ 0 ] - p[ 0 ];
+		diff2[ 1 ] = vPos[ 1 ] - p[ 1 ];
+		LinAlgHelpers.mult( vP, diff2, vn2 );
+		final double d2 = LinAlgHelpers.dot( diff2, vn2 );
 		return d2 < nSigmas * nSigmas;
 	}
 
@@ -208,6 +240,15 @@ public class ScreenVertexMath
 
 		invertSymmetric3x3( S, P );
 		precisionComputed = true;
+	}
+
+	private void computeProjectedPrecision()
+	{
+		if ( projectedPrecisionComputed )
+			return;
+
+		invertSymmetric2x2( vS, vP );
+		projectedPrecisionComputed = true;
 	}
 
 	private void computeProjection()
@@ -323,11 +364,19 @@ public class ScreenVertexMath
 
 		final double Dinv = 1.0 / ( ( m[ 0 ][ 0 ] * a00 ) + ( m[ 1 ][ 0 ] * a01 ) + ( m[ 0 ][ 2 ] * a02 ) );
 
-		inverse[0][0] = a00 * Dinv;
-		inverse[1][0] = inverse[0][1] = a01 * Dinv;
-		inverse[2][0] = inverse[0][2] = a02 * Dinv;
-		inverse[1][1] = a11 * Dinv;
-		inverse[2][1] = inverse[1][2] = a12 * Dinv;
-		inverse[2][2] = a22 * Dinv;
+		inverse[ 0 ][ 0 ] = a00 * Dinv;
+		inverse[ 1 ][ 0 ] = inverse[ 0 ][ 1 ] = a01 * Dinv;
+		inverse[ 2 ][ 0 ] = inverse[ 0 ][ 2 ] = a02 * Dinv;
+		inverse[ 1 ][ 1 ] = a11 * Dinv;
+		inverse[ 2 ][ 1 ] = inverse[ 1 ][ 2 ] = a12 * Dinv;
+		inverse[ 2 ][ 2 ] = a22 * Dinv;
+	}
+
+	public static void invertSymmetric2x2( final double[][] m, final double[][] inverse )
+	{
+		final double Dinv = 1.0 / ( m[ 0 ][ 0 ] * m[ 1 ][ 1 ] - m[ 1 ][ 0 ] * m[ 1 ][ 0 ] );
+		inverse[ 0 ][ 0 ] = m[ 1 ][ 1 ] * Dinv;
+		inverse[ 1 ][ 0 ] = inverse[ 0 ][ 1 ] = -m[ 1 ][ 0 ] * Dinv;
+		inverse[ 1 ][ 1 ] = m[ 0 ][ 0 ] * Dinv;
 	}
 }
