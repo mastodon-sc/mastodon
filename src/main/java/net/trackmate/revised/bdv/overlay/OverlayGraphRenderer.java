@@ -201,13 +201,21 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 		final V target = graph.vertexRef();
 		final double[] lPos = new double[ 3 ];
 		final double[] gPos = new double[ 3 ];
-		final double[] lPos2 = new double[ 3 ];
-		final double[] gPos2 = new double[ 3 ];
 
 		final double sliceDistanceFade = 0.2;
 		final double timepointDistanceFade = 0.5;
 
 		final double nSigmas = 2;
+
+		/*
+		 * Let z = orthogonal distance to viewer plane in viewer coordinate
+		 * system, and let zg = orthogonal distance to viewer plane in global
+		 * coordinate system. Then zScale * z = zg,
+		 */
+		final double zScale = Math.sqrt(
+				transform.inverse().get( 0, 2 ) * transform.inverse().get( 0, 2 ) +
+				transform.inverse().get( 1, 2 ) * transform.inverse().get( 1, 2 ) +
+				transform.inverse().get( 2, 2 ) * transform.inverse().get( 2, 2 ) );
 
 		if ( drawLinks )
 		{
@@ -283,22 +291,7 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 				{
 					if ( drawSpotEllipse )
 					{
-						/*
-						 * Go to extensive length to compute a physical distance
-						 * to plane.
-						 */
-						gPos2[ 0 ] = gPos[ 0 ];
-						gPos2[ 1 ] = gPos[ 1 ];
-						gPos2[ 2 ] = 0;
-						transform.applyInverse( lPos2, gPos2 );
-						double sum = 0;
-						for ( int d = 0; d < lPos2.length; d++ )
-						{
-							final double dx = lPos[ d ] - lPos2[ d ];
-							sum += dx * dx;
-						}
-
-						final double rd = Math.sqrt( sum );
+						final double rd = zScale * z;
 						if ( rd * rd > vertex.getBoundingSphereRadiusSquared() )
 						{
 							graphics.setColor( getColor( sd, 0, sliceDistanceFade, timepointDistanceFade, vertex.isSelected() ) );
