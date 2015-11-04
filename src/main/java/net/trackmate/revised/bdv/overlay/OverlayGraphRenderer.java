@@ -13,9 +13,6 @@ import net.imglib2.realtransform.AffineTransform3D;
 import net.imglib2.type.numeric.ARGBType;
 import net.imglib2.ui.OverlayRenderer;
 import net.imglib2.ui.TransformListener;
-import net.imglib2.util.LinAlgHelpers;
-import Jama.EigenvalueDecomposition;
-import Jama.Matrix;
 import bdv.viewer.ViewerPanel;
 
 
@@ -217,6 +214,8 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 				transform.inverse().get( 1, 2 ) * transform.inverse().get( 1, 2 ) +
 				transform.inverse().get( 2, 2 ) * transform.inverse().get( 2, 2 ) );
 
+		final ScreenVertexMath screenVertexMath = new ScreenVertexMath( nSigmas );
+
 		if ( drawLinks )
 		{
 
@@ -275,16 +274,15 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 			final int t = currentTimepoint;
 			final AffineTransform torig = graphics.getTransform();
 
-			final double[][] S = new double[ 3 ][ 3 ];
-			final double[][] T = new double[ 3 ][ 3 ];
-			final double[][] TS = new double[ 3 ][ 3 ];
-
 			for ( final V vertex : graph.getIndex().getSpatialIndex( t ) )
 			{
 				final boolean isHighlighted = vertex.equals( highlighted );
-				vertex.localize( lPos );
-				transform.apply( lPos, gPos );
-				final double z = gPos[ 2 ];
+
+				screenVertexMath.init( vertex, transform );
+
+				final double x = screenVertexMath.getViewPos()[ 0 ];
+				final double y = screenVertexMath.getViewPos()[ 1 ];
+				final double z = screenVertexMath.getViewPos()[ 2 ];
 
 				final double sd = sliceDistance( z, focusLimit );
 				if ( sd > -1 && sd < 1 )
@@ -295,130 +293,46 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 						if ( rd * rd > vertex.getBoundingSphereRadiusSquared() )
 						{
 							graphics.setColor( getColor( sd, 0, sliceDistanceFade, timepointDistanceFade, vertex.isSelected() ) );
-							graphics.fillOval( ( int ) ( gPos[ 0 ] - 2.5 ), ( int ) ( gPos[ 1 ] - 2.5 ), 5, 5 );
+							graphics.fillOval( ( int ) ( x - 2.5 ), ( int ) ( y - 2.5 ), 5, 5 );
 						}
 						else
 						{
-							vertex.getCovariance( S );
-
-							for ( int r = 0; r < 3; ++r )
-								for ( int c = 0; c < 3; ++c )
-									T[ r ][ c ] = transform.get( r, c );
-
-							LinAlgHelpers.mult( T, S, TS );
-							LinAlgHelpers.multABT( TS, T, S );
-							/*
-							 * We need make S exactly symmetric or jama
-							 * eigendecomposition will not return orthogonal V.
-							 */
-							S[ 0 ][ 1 ] = S[ 1 ][ 0 ];
-							S[ 0 ][ 2 ] = S[ 2 ][ 0 ];
-							S[ 1 ][ 2 ] = S[ 2 ][ 1 ];
-							/*
-							 * now S is spot covariance transformed into view
-							 * coordinates.
-							 */
-
 							if ( drawSliceIntersection )
 							{
-								final EigenvalueDecomposition eig = new Matrix( S ).eig();
-								final double[] eigVals = eig.getRealEigenvalues();
-								final double[][] V = eig.getV().getArray();
-								final double[][] D = new double[ 3 ][ 3 ];
-								for ( int i = 0; i < 3; ++i )
-									D[ i ][ i ] = Math.sqrt( eigVals[ i ] );
-								LinAlgHelpers.mult( V, D, T );
-								for ( int i = 0; i < 3; ++i )
-									D[ i ][ i ] = 1.0 / D[ i ][ i ];
-								LinAlgHelpers.multABT( D, V, TS );
-								/*
-								 * now T and TS transform from unit sphere to
-								 * covariance ellipsoid and vice versa
-								 */
-
-								final double[] vx = new double[ 3 ];
-								final double[] vy = new double[ 3 ];
-								final double[] vz = new double[ 3 ];
-								LinAlgHelpers.getCol( 0, TS, vx );
-								LinAlgHelpers.getCol( 1, TS, vy );
-								LinAlgHelpers.getCol( 2, TS, vz );
-
-								final double c2 = LinAlgHelpers.squareLength( vx );
-								final double c = Math.sqrt( c2 );
-								final double a = LinAlgHelpers.dot( vx, vy ) / c;
-								final double a2 = a * a;
-								final double b2 = LinAlgHelpers.squareLength( vy ) - a2;
-
-								final double[][] AAT = new double[ 2 ][ 2 ];
-								AAT[ 0 ][ 0 ] = 1.0 / c2 + a2 / ( b2 * c2 );
-								AAT[ 0 ][ 1 ] = -a / ( b2 * c );
-								AAT[ 1 ][ 0 ] = AAT[ 0 ][ 1 ];
-								AAT[ 1 ][ 1 ] = 1.0 / b2;
-								/*
-								 * now AAT is the 2D covariance ellipsoid of
-								 * transformed unit circle
-								 */
-
-								final double[] vn = new double[ 3 ];
-								LinAlgHelpers.cross( vx, vy, vn );
-								LinAlgHelpers.normalize( vn );
-								LinAlgHelpers.scale( vz, z, vz );
-								final double d = LinAlgHelpers.dot( vn, vz ) / nSigmas;
-								if ( d >= 1 )
+								if ( !screenVertexMath.intersectsViewPlane() )
 								{
 									graphics.setColor( getColor( sd, 0, sliceDistanceFade, timepointDistanceFade, vertex.isSelected() ) );
-									graphics.fillOval( ( int ) ( gPos[ 0 ] - 2.5 ), ( int ) ( gPos[ 1 ] - 2.5 ), 5, 5 );
-									continue;
+									graphics.fillOval( ( int ) ( x - 2.5 ), ( int ) ( y - 2.5 ), 5, 5 );
 								}
+								else
+								{
+									final double[] tr = screenVertexMath.getIntersectCenter();
+									final double theta = screenVertexMath.getIntersectTheta();
+									final Ellipse2D ellipse = screenVertexMath.getIntersectEllipse();
 
-								final double radius = Math.sqrt( 1.0 - d * d );
-								LinAlgHelpers.scale( vn, LinAlgHelpers.dot( vn, vz ), vn );
-								LinAlgHelpers.subtract( vz, vn, vz );
-								LinAlgHelpers.mult( T, vz, vn );
-								final double xshift = vn[ 0 ];
-								final double yshift = vn[ 1 ];
-
-								final EigenvalueDecomposition eig2 = new Matrix( AAT ).eig();
-								final double[] eigVals2 = eig2.getRealEigenvalues();
-								final double w = nSigmas * Math.sqrt( eigVals2[ 0 ] ) * radius;
-								final double h = nSigmas * Math.sqrt( eigVals2[ 1 ] ) * radius;
-								final Matrix V2 = eig2.getV();
-								final double ci = V2.getArray()[ 0 ][ 0 ];
-								final double si = V2.getArray()[ 1 ][ 0 ];
-								final double theta = Math.atan2( si, ci );
-
-								graphics.translate( gPos[ 0 ] + xshift, gPos[ 1 ] + yshift );
-								graphics.rotate( theta );
-								graphics.setColor( getColor( 0, 0, sliceDistanceFade, timepointDistanceFade, vertex.isSelected() ) );
-								if ( isHighlighted )
-									graphics.setStroke( highlightedVertexStroke );
-								graphics.draw( new Ellipse2D.Double( -w, -h, 2 * w, 2 * h ) );
-								if ( isHighlighted )
-									graphics.setStroke( defaultVertexStroke );
-								graphics.setTransform( torig );
-
+									graphics.translate( tr[ 0 ], tr[ 1 ] );
+									graphics.rotate( theta );
+									graphics.setColor( getColor( 0, 0, sliceDistanceFade, timepointDistanceFade, vertex.isSelected() ) );
+									if ( isHighlighted )
+										graphics.setStroke( highlightedVertexStroke );
+									graphics.draw( ellipse );
+									if ( isHighlighted )
+										graphics.setStroke( defaultVertexStroke );
+									graphics.setTransform( torig );
+								}
 							}
 							else
 							{
-								// Just draw ellipsoid projections on the view plane.
-								final double[][] S2 = new double[ 2 ][ 2 ];
-								for ( int r = 0; r < 2; ++r )
-									for ( int c = 0; c < 2; ++c )
-										S2[ r ][ c ] = S[ r ][ c ];
-								final EigenvalueDecomposition eig2 = new Matrix( S2 ).eig();
-								final double[] eigVals2 = eig2.getRealEigenvalues();
-								final double w = nSigmas * Math.sqrt( eigVals2[ 0 ] );
-								final double h = nSigmas * Math.sqrt( eigVals2[ 1 ] );
-								final Matrix V2 = eig2.getV();
-								final double c = V2.getArray()[ 0 ][ 0 ];
-								final double s = V2.getArray()[ 1 ][ 0 ];
-								final double theta = Math.atan2( s, c );
-								graphics.translate( gPos[ 0 ], gPos[ 1 ] );
+								final double[] tr = screenVertexMath.getProjectCenter();
+								final double theta = screenVertexMath.getProjectTheta();
+								final Ellipse2D ellipse = screenVertexMath.getProjectEllipse();
+
+								graphics.translate( tr[ 0 ], tr[ 1 ] );
 								graphics.rotate( theta );
 								graphics.setColor( getColor( sd, 0, sliceDistanceFade, timepointDistanceFade, vertex.isSelected() ) );
 								if ( isHighlighted )
 									graphics.setStroke( highlightedVertexStroke );
-								graphics.draw( new Ellipse2D.Double( -w, -h, 2 * w, 2 * h ) );
+								graphics.draw( ellipse );
 								if ( isHighlighted )
 									graphics.setStroke( defaultVertexStroke );
 								graphics.setTransform( torig );
@@ -428,7 +342,7 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 					else
 					{
 						graphics.setColor( getColor( sd, 0, sliceDistanceFade, timepointDistanceFade, vertex.isSelected() ) );
-						graphics.fillOval( ( int ) ( gPos[ 0 ] - 2.5 ), ( int ) ( gPos[ 1 ] - 2.5 ), 5, 5 );
+						graphics.fillOval( ( int ) ( x - 2.5 ), ( int ) ( x - 2.5 ), 5, 5 );
 					}
 				}
 			}
