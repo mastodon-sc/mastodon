@@ -416,12 +416,14 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 								graphics.translate( gPos[ 0 ], gPos[ 1 ] );
 								graphics.rotate( theta );
 								graphics.setColor( getColor( sd, 0, sliceDistanceFade, timepointDistanceFade, vertex.isSelected() ) );
+								if ( isHighlighted )
+									graphics.setStroke( highlightedVertexStroke );
 								graphics.draw( new Ellipse2D.Double( -w, -h, 2 * w, 2 * h ) );
+								if ( isHighlighted )
+									graphics.setStroke( defaultVertexStroke );
 								graphics.setTransform( torig );
 							}
-
 						}
-
 					}
 					else
 					{
