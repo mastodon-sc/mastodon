@@ -121,6 +121,19 @@ public class OverlayVertexWrapper< V extends Vertex< E >, E extends Edge< V > >
 		return edges;
 	}
 
+	@Override
+	public int hashCode()
+	{
+		return wv.hashCode();
+	}
+
+	@Override
+	public boolean equals( final Object obj )
+	{
+		return obj instanceof OverlayVertexWrapper< ?, ? > &&
+				wv.equals( ( ( OverlayVertexWrapper< ?, ? > ) obj ).wv );
+	}
+
 	private class EdgesWrapper implements Edges< OverlayEdgeWrapper< V, E > >
 	{
 		private final Edges< E > edges;

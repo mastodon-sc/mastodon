@@ -6,9 +6,9 @@ import java.io.IOException;
 import mpicbg.spim.data.SpimDataException;
 import net.trackmate.graph.GraphIdBimap;
 import net.trackmate.graph.listenable.ListenableGraph;
-import net.trackmate.revised.bdv.overlay.OverlayGraph;
 import net.trackmate.revised.bdv.overlay.OverlayGraphRenderer;
 import net.trackmate.revised.bdv.overlay.wrap.OverlayGraphWrapper;
+import net.trackmate.revised.bdv.overlay.wrap.OverlayHighlightWrapper;
 import net.trackmate.revised.model.AbstractModelGraph;
 import net.trackmate.revised.model.mamut.Link;
 import net.trackmate.revised.model.mamut.Model;
@@ -19,12 +19,16 @@ import net.trackmate.revised.trackscheme.DefaultModelHighlightProperties;
 import net.trackmate.revised.trackscheme.TrackSchemeGraph;
 import net.trackmate.revised.trackscheme.TrackSchemeHighlight;
 import net.trackmate.revised.trackscheme.display.TrackSchemeFrame;
+import net.trackmate.revised.ui.selection.HighlightListener;
 import net.trackmate.revised.ui.selection.HighlightModel;
 import net.trackmate.revised.ui.selection.Selection;
 import net.trackmate.spatial.SpatioTemporalIndex;
 import net.trackmate.spatial.SpatioTemporalIndexImp;
 import bdv.BigDataViewer;
 import bdv.export.ProgressWriterConsole;
+import bdv.spimdata.SpimDataMinimal;
+import bdv.spimdata.XmlIoSpimDataMinimal;
+import bdv.tools.InitializeViewerState;
 import bdv.viewer.ViewerOptions;
 import bdv.viewer.ViewerPanel;
 
@@ -141,16 +145,54 @@ public class MaMuT
 		frame.setVisible( true );
 
 		/*
-		 * show BDV frame
+		 * show BDV frame(s)
 		 */
-		final OverlayGraph< ?, ? > overlayGraph = new OverlayGraphWrapper<>( model.getGraph(), model.getGraphIdBimap(), index, new ModelOverlayProperties() );
-		final BigDataViewer bdv = BigDataViewer.open( bdvFile, new File( bdvFile ).getName(), new ProgressWriterConsole(), ViewerOptions.options() );
+		final SpimDataMinimal spimData = new XmlIoSpimDataMinimal().load( bdvFile );
+		final String windowTitle = new File( bdvFile ).getName();
+
+		for ( int i = 0; i < 2; ++i )
+		{
+			final BigDataViewer bdv = openBDV( model, highlightModel, index, spimData, windowTitle, initialTimepointIndex, bdvFile );
+			final ViewerPanel viewer = bdv.getViewer();
+			viewer.repaint();
+		}
+	}
+
+	public static BigDataViewer openBDV(
+			final Model model,
+			final HighlightModel< Spot, Link > highlightModel,
+			final SpatioTemporalIndex< Spot > index,
+			final SpimDataMinimal spimData,
+			final String windowTitle,
+			final int initialTimepointIndex,
+			final String bdvFile )
+	{
+		final OverlayGraphWrapper< Spot, Link > overlayGraph = new OverlayGraphWrapper<>(
+				model.getGraph(),
+				model.getGraphIdBimap(),
+				index,
+				new ModelOverlayProperties() );
+		final OverlayHighlightWrapper< Spot, Link > overlayHighlight = new OverlayHighlightWrapper<>(
+				model.getGraph(),
+				model.getGraphIdBimap(),
+				highlightModel );
+		final BigDataViewer bdv = BigDataViewer.open( spimData, windowTitle, new ProgressWriterConsole(), ViewerOptions.options() );
+		if ( !bdv.tryLoadSettings( bdvFile ) )
+			InitializeViewerState.initBrightness( 0.001, 0.999, bdv.getViewer(), bdv.getSetupAssignments() );
 		final ViewerPanel viewer = bdv.getViewer();
 		viewer.setTimepoint( initialTimepointIndex );
-		final OverlayGraphRenderer< ?, ? > tracksOverlay = new OverlayGraphRenderer<>( viewer, overlayGraph );
+		final OverlayGraphRenderer< ?, ? > tracksOverlay = new OverlayGraphRenderer<>( viewer, overlayGraph, overlayHighlight );
 		viewer.getDisplay().addOverlayRenderer( tracksOverlay );
 		viewer.addRenderTransformListener( tracksOverlay );
-		viewer.repaint();
+		overlayHighlight.addHighlightListener( new HighlightListener()
+		{
+			@Override
+			public void highlightChanged()
+			{
+				viewer.getDisplay().repaint();
+			}
+		} );
+		return bdv;
 	}
 
 	public static void main( final String[] args ) throws IOException, SpimDataException

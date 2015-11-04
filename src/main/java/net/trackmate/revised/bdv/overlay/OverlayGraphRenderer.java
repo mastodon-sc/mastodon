@@ -34,10 +34,13 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 
 	private final OverlayGraph< V, E > graph;
 
-	public OverlayGraphRenderer( final ViewerPanel viewer, final OverlayGraph< V, E > graph )
+	private final OverlayHighlight< V, E > highlight;
+
+	public OverlayGraphRenderer( final ViewerPanel viewer, final OverlayGraph< V, E > graph, final OverlayHighlight< V, E > highlight )
 	{
 		this.viewer = viewer;
 		this.graph = graph;
+		this.highlight = highlight;
 		renderTransform = new AffineTransform3D();
 	}
 
@@ -178,6 +181,8 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 	public void drawOverlays( final Graphics g )
 	{
 		final Graphics2D graphics = ( Graphics2D ) g;
+		final BasicStroke defaultVertexStroke = new BasicStroke();
+		final BasicStroke highlightedVertexStroke = new BasicStroke( 5 );
 
 		final AffineTransform3D transform = new AffineTransform3D();
 		synchronized ( renderTransform )
@@ -256,8 +261,9 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 
 		if ( drawSpots )
 		{
-//		graphics.setStroke( new BasicStroke( 2, BasicStroke.CAP_BUTT, BasicStroke.JOIN_ROUND ) );
-			graphics.setStroke( new BasicStroke() );
+			final V highlighted = highlight.getHighlightedVertex( target );
+
+			graphics.setStroke( defaultVertexStroke );
 			final int t = currentTimepoint;
 			final AffineTransform torig = graphics.getTransform();
 
@@ -267,6 +273,7 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 
 			for ( final V vertex : graph.getIndex().getSpatialIndex( t ) )
 			{
+				final boolean isHighlighted = vertex.equals( highlighted );
 				vertex.localize( lPos );
 				transform.apply( lPos, gPos );
 				final double z = gPos[ 2 ];
@@ -390,7 +397,11 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 								graphics.translate( gPos[ 0 ] + xshift, gPos[ 1 ] + yshift );
 								graphics.rotate( theta );
 								graphics.setColor( getColor( 0, 0, sliceDistanceFade, timepointDistanceFade, vertex.isSelected() ) );
+								if ( isHighlighted )
+									graphics.setStroke( highlightedVertexStroke );
 								graphics.draw( new Ellipse2D.Double( -w, -h, 2 * w, 2 * h ) );
+								if ( isHighlighted )
+									graphics.setStroke( defaultVertexStroke );
 								graphics.setTransform( torig );
 
 							}
