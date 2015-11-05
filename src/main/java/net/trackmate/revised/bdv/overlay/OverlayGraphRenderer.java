@@ -193,8 +193,24 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 				( int ) ( 255 * a ) );
 	}
 
+	/**
+	 * TODO
+	 *
+	 * @param sd sliceDistande, between -1 and 1. see {@link #sliceDistance(double, double)}.
+	 * @param td timeDistande, between -1 and 1. see {@link #timeDistance(double, double)}.
+	 * @param sdFade between 0 and 1, from which |sd| value color starts to fade (alpha value decreases).
+	 * @param tdFade between 0 and 1, from which |td| value color starts to fade (alpha value decreases).
+	 * @param isSelected whether to use selected or un-selected color scheme.
+	 * @return vertex/edge color.
+	 */
 	private static Color getColor( final double sd, final double td, final double sdFade, final double tdFade, final boolean isSelected )
 	{
+		/*
+		 * |sf| = {                  0  for  |sd| <= sdFade,
+		 *          linear from 0 to 1  for  |sd| = sdFade to |sd| = 1 }
+		 *
+		 * sgn(sf) = sgn(sd)
+		 */
 		final double sf;
 		if ( sd > 0 )
 		{
