@@ -7,4 +7,6 @@ public interface OverlayGraph< V extends OverlayVertex< V, E >, E extends Overla
 		extends ReadOnlyGraph< V, E >
 {
 	public SpatioTemporalIndex< V > getIndex();
+
+	public double getMaxBoundingSphereRadiusSquared( final int timepoint );
 }

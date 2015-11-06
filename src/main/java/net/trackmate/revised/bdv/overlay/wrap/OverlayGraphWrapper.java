@@ -137,6 +137,12 @@ public class OverlayGraphWrapper< V extends Vertex< E >, E extends Edge< V > >
 		return wrappedIndex;
 	}
 
+	@Override
+	public double getMaxBoundingSphereRadiusSquared( final int timepoint )
+	{
+		return overlayProperties.getMaxBoundingSphereRadiusSquared( timepoint );
+	}
+
 	V wrappedVertexRef()
 	{
 		return wrappedGraph.vertexRef();
