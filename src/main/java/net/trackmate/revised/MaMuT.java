@@ -10,7 +10,6 @@ import net.trackmate.revised.bdv.overlay.MouseOverListener;
 import net.trackmate.revised.bdv.overlay.OverlayGraphRenderer;
 import net.trackmate.revised.bdv.overlay.wrap.OverlayGraphWrapper;
 import net.trackmate.revised.bdv.overlay.wrap.OverlayHighlightWrapper;
-import net.trackmate.revised.model.AbstractModelGraph;
 import net.trackmate.revised.model.mamut.Link;
 import net.trackmate.revised.model.mamut.Model;
 import net.trackmate.revised.model.mamut.ModelOverlayProperties;
@@ -23,8 +22,6 @@ import net.trackmate.revised.trackscheme.display.TrackSchemeFrame;
 import net.trackmate.revised.ui.selection.HighlightListener;
 import net.trackmate.revised.ui.selection.HighlightModel;
 import net.trackmate.revised.ui.selection.Selection;
-import net.trackmate.spatial.SpatioTemporalIndex;
-import net.trackmate.spatial.SpatioTemporalIndexImp;
 import bdv.BigDataViewer;
 import bdv.export.ProgressWriterConsole;
 import bdv.spimdata.SpimDataMinimal;
@@ -134,11 +131,6 @@ public class MaMuT
 		final TrackSchemeHighlight< Spot, Link > trackSchemeHighlight = new TrackSchemeHighlight< Spot, Link >( highlightProperties, trackSchemeGraph );
 
 		/*
-		 * SpatioTemporalIndex of model spots
-		 */
-		final SpatioTemporalIndex< Spot > index = new SpatioTemporalIndexImp<>( model.getGraph(), ( ( AbstractModelGraph ) model.getGraph() ).getVertexPool() );
-
-		/*
 		 * show TrackSchemeFrame
 		 */
 		final TrackSchemeFrame frame = new TrackSchemeFrame( trackSchemeGraph, trackSchemeHighlight );
@@ -153,7 +145,7 @@ public class MaMuT
 
 		for ( int i = 0; i < 2; ++i )
 		{
-			final BigDataViewer bdv = openBDV( model, highlightModel, index, spimData, windowTitle, initialTimepointIndex, bdvFile );
+			final BigDataViewer bdv = openBDV( model, highlightModel, spimData, windowTitle, initialTimepointIndex, bdvFile );
 			final ViewerPanel viewer = bdv.getViewer();
 			viewer.repaint();
 		}
@@ -162,7 +154,6 @@ public class MaMuT
 	public static BigDataViewer openBDV(
 			final Model model,
 			final HighlightModel< Spot, Link > highlightModel,
-			final SpatioTemporalIndex< Spot > index,
 			final SpimDataMinimal spimData,
 			final String windowTitle,
 			final int initialTimepointIndex,
@@ -171,7 +162,7 @@ public class MaMuT
 		final OverlayGraphWrapper< Spot, Link > overlayGraph = new OverlayGraphWrapper<>(
 				model.getGraph(),
 				model.getGraphIdBimap(),
-				index,
+				model.getSpatioTemporalIndex(),
 				new ModelOverlayProperties() );
 		final OverlayHighlightWrapper< Spot, Link > overlayHighlight = new OverlayHighlightWrapper<>(
 				model.getGraph(),

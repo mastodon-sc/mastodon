@@ -8,13 +8,10 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 
 import net.trackmate.graph.AbstractEdge;
-import net.trackmate.graph.AbstractEdgePool;
 import net.trackmate.graph.AbstractVertex;
-import net.trackmate.graph.AbstractVertexPool;
 import net.trackmate.graph.GraphIdBimap;
 import net.trackmate.graph.ReadOnlyGraph;
 import net.trackmate.graph.listenable.ListenableGraph;
-import net.trackmate.graph.mempool.MappedElement;
 import net.trackmate.io.RawGraphIO;
 
 
@@ -28,11 +25,9 @@ import net.trackmate.io.RawGraphIO;
  * @author Tobias Pietzsch &lt;tobias.pietzsch@gmail.com&gt;
  */
 public class AbstractModel<
-		VP extends AbstractVertexPool< V, E, T >,
-		EP extends AbstractEdgePool< E, V, T >,
-		V extends AbstractVertex< V, E, T >,
-		E extends AbstractEdge< E, V, T >,
-		T extends MappedElement >
+		MG extends AbstractModelGraph< ?, ?, V, E, ? >,
+		V extends AbstractVertex< V, E, ? >,
+		E extends AbstractEdge< E, V, ? > >
 {
 	public ListenableGraph< V, E > getGraph()
 	{
@@ -44,9 +39,9 @@ public class AbstractModel<
 		return modelGraph.idmap;
 	}
 
-	protected final AbstractModelGraph< VP, EP, V, E, T > modelGraph;
+	protected final MG modelGraph;
 
-	protected AbstractModel( final AbstractModelGraph< VP, EP, V, E, T > modelGraph )
+	protected AbstractModel( final MG modelGraph )
 	{
 		this.modelGraph = modelGraph;
 	}

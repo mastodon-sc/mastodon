@@ -4,8 +4,9 @@ import java.io.File;
 import java.io.IOException;
 
 import net.trackmate.graph.ReadOnlyGraph;
-import net.trackmate.graph.mempool.ByteMappedElement;
 import net.trackmate.revised.model.AbstractModel;
+import net.trackmate.spatial.SpatioTemporalIndex;
+import net.trackmate.spatial.SpatioTemporalIndexImp;
 
 /**
  * Manages the model graph.
@@ -16,11 +17,17 @@ import net.trackmate.revised.model.AbstractModel;
  *
  * @author Tobias Pietzsch &lt;tobias.pietzsch@gmail.com&gt;
  */
-public class Model extends AbstractModel< ModelGraph.SpotPool, ModelGraph.LinkPool, Spot, Link, ByteMappedElement >
+public class Model extends AbstractModel< ModelGraph, Spot, Link >
 {
+	/*
+	 * SpatioTemporalIndex of model spots
+	 */
+	private final SpatioTemporalIndex< Spot > index;
+
 	public Model()
 	{
 		super( new ModelGraph() );
+		index = new SpatioTemporalIndexImp<>( modelGraph, modelGraph.getVertexPool() );
 	}
 
 	public Spot addSpot( final int timepointId, final double[] pos, final double[][] cov, final Spot ref )
@@ -42,5 +49,10 @@ public class Model extends AbstractModel< ModelGraph.SpotPool, ModelGraph.LinkPo
 	public void saveRaw( final File file ) throws IOException
 	{
 		super.saveRaw( file, ModelSerializer.getInstance() );
+	}
+
+	public SpatioTemporalIndex< Spot > getSpatioTemporalIndex()
+	{
+		return index;
 	}
 }
