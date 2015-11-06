@@ -211,6 +211,16 @@ class SpatialIndexData< O extends Ref< O > & RealLocalizable >
 		return false;
 	}
 
+	/**
+	 * Get number of objects in the index.
+	 *
+	 * @return number of objects in the index.
+	 */
+	public int size()
+	{
+		return size;
+	}
+
 	static class Iter< O extends Ref< O > > implements Iterator< O >
 	{
 		private final O ref;
@@ -480,6 +490,5 @@ class SpatialIndexData< O extends Ref< O > & RealLocalizable >
 				inside.add( p );
 			}
 		}
-
 	}
 }

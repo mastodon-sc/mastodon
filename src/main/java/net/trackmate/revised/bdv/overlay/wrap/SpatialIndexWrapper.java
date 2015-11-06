@@ -42,6 +42,18 @@ public class SpatialIndexWrapper< V extends Vertex< E >, E extends Edge< V > >
 		return new CCP();
 	}
 
+	@Override
+	public int size()
+	{
+		return wrappedIndex.size();
+	}
+
+	@Override
+	public boolean isEmpty()
+	{
+		return wrappedIndex.isEmpty();
+	}
+
 	class NNS implements NearestNeighborSearch< OverlayVertexWrapper< V, E > >,	Sampler< OverlayVertexWrapper< V, E > >
 	{
 		private final NearestNeighborSearch< V > wrappedNNS;

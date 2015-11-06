@@ -61,11 +61,22 @@ public class SpatialIndexImp< O extends Ref< O > & RealLocalizable > implements 
 		return data.getNearestNeighborSearch();
 	}
 
-
 	@Override
 	public ClipConvexPolytope< O > getClipConvexPolytope()
 	{
 		return data.getClipConvexPolytope();
+	}
+
+	@Override
+	public int size()
+	{
+		return data.size();
+	}
+
+	@Override
+	public boolean isEmpty()
+	{
+		return size() == 0;
 	}
 
 	/**
