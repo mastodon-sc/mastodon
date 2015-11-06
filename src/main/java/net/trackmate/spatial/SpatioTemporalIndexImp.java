@@ -13,7 +13,7 @@ import net.trackmate.graph.Ref;
 import net.trackmate.graph.RefPool;
 import net.trackmate.graph.Vertex;
 import net.trackmate.graph.collection.CollectionUtils;
-import net.trackmate.graph.collection.RefSet;
+import net.trackmate.graph.collection.RefList;
 import net.trackmate.graph.listenable.GraphListener;
 import net.trackmate.graph.listenable.ListenableGraph;
 
@@ -62,26 +62,26 @@ public class SpatioTemporalIndexImp<
 
 	private void init()
 	{
-		final TIntObjectHashMap< RefSet< V > > timepointToVertices = new TIntObjectHashMap< RefSet< V > >( 10, 0.5f, NO_ENTRY_KEY );
-	    for ( final V v : graph.vertices() )
-	    {
-	    	RefSet< V > vs = timepointToVertices.get( v.getTimepoint() );
-	    	if ( vs == null )
-	    	{
-	    		vs = CollectionUtils.createVertexSet( graph );
-	    		timepointToVertices.put( v.getTimepoint(), vs );
-	    	}
-	    	vs.add( v );
-	    }
+		final TIntObjectHashMap< RefList< V > > timepointToVertices = new TIntObjectHashMap< RefList< V > >( 10, 0.5f, NO_ENTRY_KEY );
+		for ( final V v : graph.vertices() )
+		{
+			RefList< V > vs = timepointToVertices.get( v.getTimepoint() );
+			if ( vs == null )
+			{
+				vs = CollectionUtils.createVertexList( graph );
+				timepointToVertices.put( v.getTimepoint(), vs );
+			}
+			vs.add( v );
+		}
 
-	    final TIntObjectIterator< RefSet< V > > i = timepointToVertices.iterator();
-	    while( i.hasNext() )
-	    {
-	    	i.advance();
-	    	final int timepoint = i.key();
-	    	final SpatialIndexImp< V > data = new SpatialIndexImp< V >( i.value(), vertexPool );
-	    	timepointToSpatialIndex.put( timepoint, data );
-	    }
+		final TIntObjectIterator< RefList< V > > i = timepointToVertices.iterator();
+		while ( i.hasNext() )
+		{
+			i.advance();
+			final int timepoint = i.key();
+			final SpatialIndexImp< V > data = new SpatialIndexImp< V >( i.value(), vertexPool );
+			timepointToSpatialIndex.put( timepoint, data );
+		}
 	}
 
 	@Override
