@@ -17,4 +17,6 @@ public interface OverlayProperties< V >
 	public double getBoundingSphereRadiusSquared( V v );
 
 	public int getTimepoint( V v );
+
+	public double getMaxBoundingSphereRadiusSquared( int timepoint );
 }

@@ -10,6 +10,7 @@ import net.trackmate.revised.bdv.overlay.MouseOverListener;
 import net.trackmate.revised.bdv.overlay.OverlayGraphRenderer;
 import net.trackmate.revised.bdv.overlay.wrap.OverlayGraphWrapper;
 import net.trackmate.revised.bdv.overlay.wrap.OverlayHighlightWrapper;
+import net.trackmate.revised.model.mamut.BoundingSphereRadiusStatistics;
 import net.trackmate.revised.model.mamut.Link;
 import net.trackmate.revised.model.mamut.Model;
 import net.trackmate.revised.model.mamut.ModelOverlayProperties;
@@ -110,6 +111,7 @@ public class MaMuT
 		final int initialTimepointIndex = 10;
 
 		final Model model = new Model();
+		final BoundingSphereRadiusStatistics radiusStats = new BoundingSphereRadiusStatistics( model );
 		model.loadRaw( new File( modelFile ) );
 
 		System.setProperty( "apple.laf.useScreenMenuBar", "true" );
@@ -145,7 +147,7 @@ public class MaMuT
 
 		for ( int i = 0; i < 2; ++i )
 		{
-			final BigDataViewer bdv = openBDV( model, highlightModel, spimData, windowTitle, initialTimepointIndex, bdvFile );
+			final BigDataViewer bdv = openBDV( model, highlightModel, radiusStats, spimData, windowTitle, initialTimepointIndex, bdvFile );
 			final ViewerPanel viewer = bdv.getViewer();
 			viewer.repaint();
 		}
@@ -154,6 +156,7 @@ public class MaMuT
 	public static BigDataViewer openBDV(
 			final Model model,
 			final HighlightModel< Spot, Link > highlightModel,
+			final BoundingSphereRadiusStatistics radiusStats,
 			final SpimDataMinimal spimData,
 			final String windowTitle,
 			final int initialTimepointIndex,
@@ -163,7 +166,7 @@ public class MaMuT
 				model.getGraph(),
 				model.getGraphIdBimap(),
 				model.getSpatioTemporalIndex(),
-				new ModelOverlayProperties() );
+				new ModelOverlayProperties( radiusStats ) );
 		final OverlayHighlightWrapper< Spot, Link > overlayHighlight = new OverlayHighlightWrapper<>(
 				model.getGraph(),
 				model.getGraphIdBimap(),

@@ -10,6 +10,13 @@ import net.trackmate.revised.bdv.overlay.wrap.OverlayProperties;
  */
 public class ModelOverlayProperties implements OverlayProperties< Spot >
 {
+	private final BoundingSphereRadiusStatistics radiusStats;
+
+	public ModelOverlayProperties( final BoundingSphereRadiusStatistics radiusStats )
+	{
+		this.radiusStats = radiusStats;
+	}
+
 	@Override
 	public void localize( final Spot v, final float[] position )
 	{
@@ -56,5 +63,19 @@ public class ModelOverlayProperties implements OverlayProperties< Spot >
 	public int getTimepoint( final Spot v )
 	{
 		return v.getTimepoint();
+	}
+
+	@Override
+	public double getMaxBoundingSphereRadiusSquared( final int timepoint )
+	{
+		radiusStats.readLock().lock();
+		try
+		{
+			return radiusStats.getMaxBoundingSphereRadiusSquared( timepoint );
+		}
+		finally
+		{
+			radiusStats.readLock().unlock();
+		}
 	}
 }
