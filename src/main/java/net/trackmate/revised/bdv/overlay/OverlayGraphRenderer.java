@@ -140,6 +140,7 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 					svm.init( v, transform );
 					if ( svm.projectionContainsView( xy ) )
 					{
+						found = true;
 						v.localize( vPos );
 						final double d = LinAlgHelpers.squareDistance( vPos, gPos );
 						if ( d < minDist )
@@ -148,7 +149,6 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 							minV.refTo( v );
 						}
 					}
-					found = true;
 				}
 				if ( found )
 				{
