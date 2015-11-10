@@ -2,6 +2,7 @@ package net.trackmate.revised.bdv.overlay;
 
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.event.MouseWheelEvent;
 
 public class MouseOverListener extends MouseAdapter
 {
@@ -15,12 +16,18 @@ public class MouseOverListener extends MouseAdapter
 	@Override
 	public void mouseExited( final MouseEvent e )
 	{
-		// TODO Auto-generated method stub
-		super.mouseExited( e );
 	}
 
 	@Override
 	public void mouseMoved( final MouseEvent e )
+	{
+		final int x = e.getX();
+		final int y = e.getY();
+		graphOverlay.mouseOverHighlight( x, y );
+	}
+
+	@Override
+	public void mouseWheelMoved( final MouseWheelEvent e )
 	{
 		final int x = e.getX();
 		final int y = e.getY();
