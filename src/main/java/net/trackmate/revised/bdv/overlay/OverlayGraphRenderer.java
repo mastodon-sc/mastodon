@@ -91,6 +91,10 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 		// TODO: fix in BDV. This is stupid, BDV should have addTimepointListener() or something similar.
 		final int currentTimepoint = viewer.getState().getCurrentTimepoint();
 
+		final double maxDepth = isFocusLimitViewRelative ?
+				focusLimit :
+				focusLimit * Affine3DHelpers.extractScale( transform, 0 );
+
 		final double[] lPos = new double[] { x, y, 0 };
 		final double[] gPos = new double[ 3 ];
 		final ScreenVertexMath svm = new ScreenVertexMath( nSigmas );
@@ -100,28 +104,13 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 		index.readLock().lock();
 		try
 		{
-			if ( drawSliceIntersection )
-			{
-				final NearestNeighborSearch< V > nns = index.getSpatialIndex( currentTimepoint ).getNearestNeighborSearch();
-				nns.search( RealPoint.wrap( gPos ) );
-				final V v = nns.getSampler().get();
-				if ( v != null )
-				{
-					svm.init( v, transform );
-					if ( svm.containsGlobal( gPos ) )
-					{
-						highlight.highlightVertex( v );
-						return;
-					}
-				}
-			}
-			else // drawSliceProjection
+			if ( drawEllipsoidSliceProjection )
 			{
 				final double globalToViewerScale = Affine3DHelpers.extractScale( transform, 0 );
 				final double border = globalToViewerScale * Math.sqrt( graph.getMaxBoundingSphereRadiusSquared( currentTimepoint ) );
 				final ConvexPolytope cropPolytopeViewer = new ConvexPolytope(
-						new HyperPlane(  0,  0,  1, -focusLimit ),
-						new HyperPlane(  0,  0, -1, -focusLimit ),
+						new HyperPlane(  0,  0,  1, -maxDepth ),
+						new HyperPlane(  0,  0, -1, -maxDepth ),
 						new HyperPlane(  1,  0,  0, x - border ),
 						new HyperPlane( -1,  0,  0, -x - border ),
 						new HyperPlane(  0,  1,  0, y - border ),
@@ -158,6 +147,21 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 				}
 				graph.releaseRef( minV );
 			}
+			else if ( drawEllipsoidSliceIntersection )
+			{
+				final NearestNeighborSearch< V > nns = index.getSpatialIndex( currentTimepoint ).getNearestNeighborSearch();
+				nns.search( RealPoint.wrap( gPos ) );
+				final V v = nns.getSampler().get();
+				if ( v != null )
+				{
+					svm.init( v, transform );
+					if ( svm.containsGlobal( gPos ) )
+					{
+						highlight.highlightVertex( v );
+						return;
+					}
+				}
+			}
 		}
 		finally
 		{
@@ -181,11 +185,11 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 
 	public static final boolean DEFAULT_DRAW_SPOTS = true;
 
-	public static final boolean DEFAULT_DRAW_LINKS = false;//true;
+	public static final boolean DEFAULT_DRAW_LINKS = true;
 
 	public static final boolean DEFAULT_DRAW_ELLIPSE = true;
 
-	public static final boolean DEFAULT_DRAW_SLICE_INTERSECTION = false;//true;
+	public static final boolean DEFAULT_DRAW_SLICE_INTERSECTION = true;
 
 	/*
 	 * DISPLAY SETTINGS FIELDS.
@@ -195,18 +199,94 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 
 	private final boolean useGradient = DEFAULT_USE_GRADIENT;
 
-	private final double focusLimit = DEFAULT_LIMIT_FOCUS_RANGE;
-
 	private final double timeLimit = DEFAULT_LIMIT_TIME_RANGE;
 
-	private final boolean drawSpots = DEFAULT_DRAW_SPOTS;
-
+	/**
+	 * Whether to draw links (at all).
+	 * For specific settings, see TODO
+	 */
 	private final boolean drawLinks = DEFAULT_DRAW_LINKS;
 
-	private final boolean drawSpotEllipse = DEFAULT_DRAW_ELLIPSE;
 
-	private final boolean drawSliceIntersection = DEFAULT_DRAW_SLICE_INTERSECTION;
+	/**
+	 * Whether to draw spots (at all).
+	 * For specific settings, see TODO
+	 */
+	private final boolean drawSpots = DEFAULT_DRAW_SPOTS;
 
+	/**
+	 * Whether to draw the intersections of spot ellipsoids with the view plane.
+	 */
+	private final boolean drawEllipsoidSliceProjection = !DEFAULT_DRAW_SLICE_INTERSECTION;
+
+	/**
+	 * Whether to draw the projections of spot ellipsoids onto the view plane.
+	 */
+	private final boolean drawEllipsoidSliceIntersection = DEFAULT_DRAW_SLICE_INTERSECTION;
+
+	/**
+	 * Whether to draw spot centers.
+	 */
+	private final boolean drawPoints = !DEFAULT_DRAW_ELLIPSE || (DEFAULT_DRAW_ELLIPSE && DEFAULT_DRAW_SLICE_INTERSECTION);
+
+	/**
+	 * Whether to draw spot centers also for those points that are visible as ellipses.
+	 */
+	private final boolean drawPointsForEllipses = false;
+
+	/**
+	 * Maximum distance from view plane up to which to draw spots.
+	 *
+	 * <p>
+	 * Depending on {@link #isFocusLimitViewRelative}, the distance is
+	 * either in the current view coordinate system or in the global coordinate
+	 * system. If {@code isFocusLimitViewRelative() == true} then the
+	 * distance is in current view coordinates. For example, a value of 100
+	 * means that spots will be visible up to 100 pixel widths from the view
+	 * plane. Thus, the effective focus range depends on the current zoom level.
+	 * If {@code isFocusLimitViewRelative() == false} then the distance
+	 * is in global coordinates. A value of 100 means that spots will be visible
+	 * up to 100 units (of the global coordinate system) from the view plane.
+	 *
+	 * <p>
+	 * Ellipsoids are drawn increasingly translucent the closer they are
+	 * to {@link #focusLimit}. See {@link #ellipsoidFadeDepth}.
+	 */
+	private final double focusLimit = DEFAULT_LIMIT_FOCUS_RANGE;
+
+	/**
+	 * Whether the {@link #focusLimit} is relative to the the current
+	 * view coordinate system.
+	 *
+	 * <p>
+	 * If {@code true} then the distance is in current view coordinates. For
+	 * example, a value of 100 means that spots will be visible up to 100 pixel
+	 * widths from the view plane. Thus, the effective focus range depends on
+	 * the current zoom level. If {@code false} then the distance is in global
+	 * coordinates. A value of 100 means that spots will be visible up to 100
+	 * units (of the global coordinate system) from the view plane.
+	 */
+	private final boolean isFocusLimitViewRelative = false;
+
+	/**
+	 * The ratio of {@link #focusLimit} at which ellipsoids start to
+	 * fade. Ellipsoids are drawn increasingly translucent the closer they are
+	 * to {@link #focusLimit}. Up to ratio {@link #ellipsoidFadeDepth}
+	 * they are fully opaque, then their alpha value goes to 0 linearly.
+	 */
+	private final double ellipsoidFadeDepth = 0.2;
+
+	/**
+	 * The ratio of {@link #focusLimit} at which points start to
+	 * fade. Points are drawn increasingly translucent the closer they are
+	 * to {@link #focusLimit}. Up to ratio {@link #pointFadeDepth}
+	 * they are fully opaque, then their alpha value goes to 0 linearly.
+	 */
+	private final double pointFadeDepth = 0.2;
+
+	/*
+	 * TODO: Should be removed (nSigmas == 1 always), and the scaling should be moved to the Spot (handle when importing TGMM files)
+	 */
 	private final double nSigmas = 2;
 
 	/**
@@ -321,14 +401,17 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 		// TODO: fix in BDV. This is stupid, BDV should have addTimepointListener() or something similar.
 		final int currentTimepoint = viewer.getState().getCurrentTimepoint();
 
+		final double maxDepth = isFocusLimitViewRelative ?
+				focusLimit :
+				focusLimit * Affine3DHelpers.extractScale( transform, 0 );
 
 		// TODO: acquire SpatialIndex.readLock()
 
 		final double globalToViewerScale = Affine3DHelpers.extractScale( transform, 0 );
 		final double border = globalToViewerScale * Math.sqrt( graph.getMaxBoundingSphereRadiusSquared( currentTimepoint ) );
 		final ConvexPolytope visiblePolytopeViewer = new ConvexPolytope(
-				new HyperPlane(  0,  0,  1, -focusLimit ),
-				new HyperPlane(  0,  0, -1, -focusLimit ),
+				new HyperPlane(  0,  0,  1, -maxDepth ),
+				new HyperPlane(  0,  0, -1, -maxDepth ),
 				new HyperPlane(  1,  0,  0, -border ),
 				new HyperPlane( -1,  0,  0, -width - border ),
 				new HyperPlane(  0,  1,  0, -border ),
@@ -344,18 +427,8 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 		final double[] lPos = new double[ 3 ];
 		final double[] gPos = new double[ 3 ];
 
-		final double sliceDistanceFade = 0.2;
+		final double sliceDistanceFade = ellipsoidFadeDepth;
 		final double timepointDistanceFade = 0.5;
-
-//		/*
-//		 * Let z = orthogonal distance to viewer plane in viewer coordinate
-//		 * system, and let zg = orthogonal distance to viewer plane in global
-//		 * coordinate system. Then zScale * z = zg,
-//		 */
-//		final double zScale = Math.sqrt(
-//				transform.inverse().get( 0, 2 ) * transform.inverse().get( 0, 2 ) +
-//				transform.inverse().get( 1, 2 ) * transform.inverse().get( 1, 2 ) +
-//				transform.inverse().get( 2, 2 ) * transform.inverse().get( 2, 2 ) );
 
 		final ScreenVertexMath screenVertexMath = new ScreenVertexMath( nSigmas );
 
@@ -387,8 +460,8 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 
 						final double td0 = timeDistance( t, currentTimepoint, timeLimit );
 						final double td1 = timeDistance( t + 1, currentTimepoint, timeLimit );
-						final double sd0 = sliceDistance( z0, focusLimit );
-						final double sd1 = sliceDistance( z1, focusLimit );
+						final double sd0 = sliceDistance( z0, maxDepth );
+						final double sd1 = sliceDistance( z1, maxDepth );
 
 						if ( td0 > -1 )
 						{
@@ -433,65 +506,54 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 				final double y = screenVertexMath.getViewPos()[ 1 ];
 				final double z = screenVertexMath.getViewPos()[ 2 ];
 
-				final double sd = sliceDistance( z, focusLimit );
+				final double sd = sliceDistance( z, maxDepth );
 				if ( sd > -1 && sd < 1 )
 				{
-					if ( drawSpotEllipse )
+					if ( drawEllipsoidSliceIntersection )
 					{
-//						final double rd = zScale * z;
-//						if ( rd * rd > vertex.getBoundingSphereRadiusSquared() )
-//						{
-//							graphics.setColor( getColor( sd, 0, sliceDistanceFade, timepointDistanceFade, vertex.isSelected() ) );
-//							graphics.fillOval( ( int ) ( x - 2.5 ), ( int ) ( y - 2.5 ), 5, 5 );
-//						}
-//						else
+						if ( screenVertexMath.intersectsViewPlane() )
 						{
-							if ( drawSliceIntersection )
-							{
-								if ( !screenVertexMath.intersectsViewPlane() )
-								{
-									graphics.setColor( getColor( sd, 0, sliceDistanceFade, timepointDistanceFade, vertex.isSelected() ) );
-									graphics.fillOval( ( int ) ( x - 2.5 ), ( int ) ( y - 2.5 ), 5, 5 );
-								}
-								else
-								{
-									final double[] tr = screenVertexMath.getIntersectCenter();
-									final double theta = screenVertexMath.getIntersectTheta();
-									final Ellipse2D ellipse = screenVertexMath.getIntersectEllipse();
+							final double[] tr = screenVertexMath.getIntersectCenter();
+							final double theta = screenVertexMath.getIntersectTheta();
+							final Ellipse2D ellipse = screenVertexMath.getIntersectEllipse();
 
-									graphics.translate( tr[ 0 ], tr[ 1 ] );
-									graphics.rotate( theta );
-									graphics.setColor( getColor( 0, 0, sliceDistanceFade, timepointDistanceFade, vertex.isSelected() ) );
-									if ( isHighlighted )
-										graphics.setStroke( highlightedVertexStroke );
-									graphics.draw( ellipse );
-									if ( isHighlighted )
-										graphics.setStroke( defaultVertexStroke );
-									graphics.setTransform( torig );
-								}
-							}
-							else
-							{
-								final double[] tr = screenVertexMath.getProjectCenter();
-								final double theta = screenVertexMath.getProjectTheta();
-								final Ellipse2D ellipse = screenVertexMath.getProjectEllipse();
-
-								graphics.translate( tr[ 0 ], tr[ 1 ] );
-								graphics.rotate( theta );
-								graphics.setColor( getColor( sd, 0, sliceDistanceFade, timepointDistanceFade, vertex.isSelected() ) );
-								if ( isHighlighted )
-									graphics.setStroke( highlightedVertexStroke );
-								graphics.draw( ellipse );
-								if ( isHighlighted )
-									graphics.setStroke( defaultVertexStroke );
-								graphics.setTransform( torig );
-							}
+							graphics.translate( tr[ 0 ], tr[ 1 ] );
+							graphics.rotate( theta );
+							graphics.setColor( getColor( 0, 0, ellipsoidFadeDepth, timepointDistanceFade, vertex.isSelected() ) );
+							if ( isHighlighted )
+								graphics.setStroke( highlightedVertexStroke );
+							graphics.draw( ellipse );
+							if ( isHighlighted )
+								graphics.setStroke( defaultVertexStroke );
+							graphics.setTransform( torig );
 						}
 					}
-					else
+
+					if ( drawEllipsoidSliceProjection )
 					{
-						graphics.setColor( getColor( sd, 0, sliceDistanceFade, timepointDistanceFade, vertex.isSelected() ) );
-						graphics.fillOval( ( int ) ( x - 2.5 ), ( int ) ( x - 2.5 ), 5, 5 );
+						final double[] tr = screenVertexMath.getProjectCenter();
+						final double theta = screenVertexMath.getProjectTheta();
+						final Ellipse2D ellipse = screenVertexMath.getProjectEllipse();
+
+						graphics.translate( tr[ 0 ], tr[ 1 ] );
+						graphics.rotate( theta );
+						graphics.setColor( getColor( sd, 0, ellipsoidFadeDepth, timepointDistanceFade, vertex.isSelected() ) );
+						if ( isHighlighted )
+							graphics.setStroke( highlightedVertexStroke );
+						graphics.draw( ellipse );
+						if ( isHighlighted )
+							graphics.setStroke( defaultVertexStroke );
+						graphics.setTransform( torig );
+					}
+
+					final boolean drawPoint = drawPoints && (
+							( !drawEllipsoidSliceIntersection && !drawEllipsoidSliceProjection )
+							|| drawPointsForEllipses
+							|| ( drawEllipsoidSliceIntersection && !screenVertexMath.intersectsViewPlane() ) );
+					if ( drawPoint )
+					{
+						graphics.setColor( getColor( sd, 0, pointFadeDepth, timepointDistanceFade, vertex.isSelected() ) );
+						graphics.fillOval( ( int ) ( x - 2.5 ), ( int ) ( y - 2.5 ), 5, 5 );
 					}
 				}
 			}
