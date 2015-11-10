@@ -153,6 +153,7 @@ public class ScreenVertexMath
 		projectionComputed = false;
 		intersectionComputed = false;
 		precisionComputed = false;
+		projectedPrecisionComputed = false;
 	}
 
 	public double[] getViewPos()
@@ -220,7 +221,7 @@ public class ScreenVertexMath
 	public boolean projectionContainsView( final RealLocalizable p )
 	{
 		p.localize( vm2 );
-		return containsGlobal( vm2 );
+		return projectionContainsView( vm2 );
 	}
 
 	public boolean projectionContainsView( final double[] p )
@@ -320,7 +321,7 @@ public class ScreenVertexMath
 		LinAlgHelpers.normalize( vn );
 		LinAlgHelpers.scale( vz, z, vz );
 		final double d = LinAlgHelpers.dot( vn, vz ) / nSigmas;
-		if ( d >= 1 )
+		if ( Math.abs( d ) >= 1 )
 		{
 			intersectsViewPlane = false;
 		}
