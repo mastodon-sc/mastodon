@@ -302,19 +302,6 @@ public class ScreenVertexMath
 		final double[] vx = TS[ 0 ];
 		final double[] vy = TS[ 1 ];
 		final double[] vz = TS[ 2 ];
-		final double c2 = LinAlgHelpers.squareLength( vx );
-		final double c = Math.sqrt( c2 );
-		final double a = LinAlgHelpers.dot( vx, vy ) / c;
-		final double a2 = a * a;
-		final double b2 = LinAlgHelpers.squareLength( vy ) - a2;
-
-		AAT[ 0 ][ 0 ] = 1.0 / c2 + a2 / ( b2 * c2 );
-		AAT[ 0 ][ 1 ] = -a / ( b2 * c );
-		AAT[ 1 ][ 0 ] = AAT[ 0 ][ 1 ];
-		AAT[ 1 ][ 1 ] = 1.0 / b2;
-		/*
-		 * now AAT is the 2D covariance ellipsoid of transformed unit circle
-		 */
 
 		final double z = vPos[ 2 ];
 		LinAlgHelpers.cross( vx, vy, vn );
@@ -335,6 +322,19 @@ public class ScreenVertexMath
 			LinAlgHelpers.mult( T, vz, vn );
 			final double xshift = vn[ 0 ];
 			final double yshift = vn[ 1 ];
+
+			final double c2 = LinAlgHelpers.squareLength( vx );
+			final double c = Math.sqrt( c2 );
+			final double a = LinAlgHelpers.dot( vx, vy ) / c;
+			final double a2 = a * a;
+			final double b2 = LinAlgHelpers.squareLength( vy ) - a2;
+			AAT[ 0 ][ 0 ] = 1.0 / c2 + a2 / ( b2 * c2 );
+			AAT[ 0 ][ 1 ] = -a / ( b2 * c );
+			AAT[ 1 ][ 0 ] = AAT[ 0 ][ 1 ];
+			AAT[ 1 ][ 1 ] = 1.0 / b2;
+			/*
+			 * now AAT is the 2D covariance ellipsoid of transformed unit circle
+			 */
 
 			eig2.decomposeSymmetric( AAT );
 			final double[] eigVals2 = eig2.getRealEigenvalues();
