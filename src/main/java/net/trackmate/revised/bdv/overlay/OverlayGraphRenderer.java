@@ -10,11 +10,18 @@ import java.awt.geom.AffineTransform;
 import java.awt.geom.Ellipse2D;
 
 import net.imglib2.RealPoint;
+import net.imglib2.algorithm.kdtree.ConvexPolytope;
+import net.imglib2.algorithm.kdtree.HyperPlane;
 import net.imglib2.neighborsearch.NearestNeighborSearch;
 import net.imglib2.realtransform.AffineTransform3D;
 import net.imglib2.type.numeric.ARGBType;
 import net.imglib2.ui.OverlayRenderer;
 import net.imglib2.ui.TransformListener;
+import net.imglib2.util.LinAlgHelpers;
+import net.trackmate.spatial.ClipConvexPolytope;
+import net.trackmate.spatial.SpatialIndex;
+import net.trackmate.spatial.SpatioTemporalIndex;
+import bdv.util.Affine3DHelpers;
 import bdv.viewer.ViewerPanel;
 
 
@@ -26,6 +33,10 @@ import bdv.viewer.ViewerPanel;
 public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends OverlayEdge< E, V > >
 		implements OverlayRenderer, TransformListener< AffineTransform3D >
 {
+	private int width;
+
+	private int height;
+
 	private final AffineTransform3D renderTransform;
 
 	// TODO: remove. Only needed to get timepoint. there should be a better way to do that.
@@ -45,7 +56,20 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 
 	@Override
 	public void setCanvasSize( final int width, final int height )
-	{}
+	{
+		this.width = width;
+		this.height = height;
+	}
+
+	public int getWidth()
+	{
+		return width;
+	}
+
+	public int getHeight()
+	{
+		return height;
+	}
 
 	@Override
 	public void transformChanged( final AffineTransform3D transform )
@@ -67,36 +91,79 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 		// TODO: fix in BDV. This is stupid, BDV should have addTimepointListener() or something similar.
 		final int currentTimepoint = viewer.getState().getCurrentTimepoint();
 
-		final RealPoint lPos = new RealPoint( 3 );
-		final RealPoint gPos = new RealPoint( 3 );
-		lPos.setPosition( x, 0 );
-		lPos.setPosition( y, 1 );
+		final double[] lPos = new double[] { x, y, 0 };
+		final double[] gPos = new double[ 3 ];
+		final ScreenVertexMath svm = new ScreenVertexMath( nSigmas );
 		transform.applyInverse( gPos, lPos );
 
-		final NearestNeighborSearch< V > nns = graph.getIndex().getSpatialIndex( currentTimepoint ).getNearestNeighborSearch();
-		nns.search( gPos );
-		final V v = nns.getSampler().get();
-		if ( v != null )
+		final SpatioTemporalIndex< V > index = graph.getIndex();
+		index.readLock().lock();
+		try
 		{
-			final ScreenVertexMath svm = new ScreenVertexMath( nSigmas );
-			svm.init( v, transform );
 			if ( drawSliceIntersection )
 			{
-				if ( svm.containsGlobal( gPos ) )
+				final NearestNeighborSearch< V > nns = index.getSpatialIndex( currentTimepoint ).getNearestNeighborSearch();
+				nns.search( RealPoint.wrap( gPos ) );
+				final V v = nns.getSampler().get();
+				if ( v != null )
 				{
-					highlight.highlightVertex( v );
-					return;
+					svm.init( v, transform );
+					if ( svm.containsGlobal( gPos ) )
+					{
+						highlight.highlightVertex( v );
+						return;
+					}
 				}
 			}
-			else
+			else // drawSliceProjection
 			{
-				if ( svm.projectionContainsView( new double[] { x, y } ) )
+				final double globalToViewerScale = Affine3DHelpers.extractScale( transform, 0 );
+				final double border = globalToViewerScale * Math.sqrt( graph.getMaxBoundingSphereRadiusSquared( currentTimepoint ) );
+				final ConvexPolytope cropPolytopeViewer = new ConvexPolytope(
+						new HyperPlane(  0,  0,  1, -focusLimit ),
+						new HyperPlane(  0,  0, -1, -focusLimit ),
+						new HyperPlane(  1,  0,  0, x - border ),
+						new HyperPlane( -1,  0,  0, -x - border ),
+						new HyperPlane(  0,  1,  0, y - border ),
+						new HyperPlane(  0, -1,  0, -y - border ) );
+				final ConvexPolytope cropPolytopeGlobal = ConvexPolytope.transform( cropPolytopeViewer, transform.inverse() );
+				final ClipConvexPolytope< V > ccp = index.getSpatialIndex( currentTimepoint ).getClipConvexPolytope();
+				ccp.clip( cropPolytopeGlobal );
+
+				final double[] xy = new double[] { x, y };
+				final double[] vPos = new double[ 3 ];
+				double minDist = Double.MAX_VALUE;
+				final V minV = graph.vertexRef();
+				boolean found = false;
+				for ( final V v : ccp.getInsideValues() )
 				{
-					highlight.highlightVertex( v );
+					svm.init( v, transform );
+					if ( svm.projectionContainsView( xy ) )
+					{
+						v.localize( vPos );
+						final double d = LinAlgHelpers.squareDistance( vPos, gPos );
+						if ( d < minDist )
+						{
+							minDist = d;
+							minV.refTo( v );
+						}
+					}
+					found = true;
+				}
+				if ( found )
+				{
+					highlight.highlightVertex( minV );
+					graph.releaseRef( minV );
 					return;
 				}
+				graph.releaseRef( minV );
 			}
 		}
+		finally
+		{
+			index.readLock().unlock();
+		}
+
 		highlight.highlightVertex( null );
 	}
 
@@ -114,7 +181,7 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 
 	public static final boolean DEFAULT_DRAW_SPOTS = true;
 
-	public static final boolean DEFAULT_DRAW_LINKS = true;
+	public static final boolean DEFAULT_DRAW_LINKS = false;//true;
 
 	public static final boolean DEFAULT_DRAW_ELLIPSE = true;
 
@@ -254,6 +321,20 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 		// TODO: fix in BDV. This is stupid, BDV should have addTimepointListener() or something similar.
 		final int currentTimepoint = viewer.getState().getCurrentTimepoint();
 
+
+		// TODO: acquire SpatialIndex.readLock()
+
+		final double globalToViewerScale = Affine3DHelpers.extractScale( transform, 0 );
+		final double border = globalToViewerScale * Math.sqrt( graph.getMaxBoundingSphereRadiusSquared( currentTimepoint ) );
+		final ConvexPolytope visiblePolytopeViewer = new ConvexPolytope(
+				new HyperPlane(  0,  0,  1, -focusLimit ),
+				new HyperPlane(  0,  0, -1, -focusLimit ),
+				new HyperPlane(  1,  0,  0, -border ),
+				new HyperPlane( -1,  0,  0, -width - border ),
+				new HyperPlane(  0,  1,  0, -border ),
+				new HyperPlane(  0, -1,  0, -height - border ) );
+		final ConvexPolytope visiblePolytopeGlobal = ConvexPolytope.transform( visiblePolytopeViewer, transform.inverse() );
+
 		graphics.setRenderingHint( RenderingHints.KEY_ANTIALIASING, antialiasing );
 
 //		graphics.setStroke( new BasicStroke( 2, BasicStroke.CAP_BUTT, BasicStroke.JOIN_ROUND ) );
@@ -266,15 +347,15 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 		final double sliceDistanceFade = 0.2;
 		final double timepointDistanceFade = 0.5;
 
-		/*
-		 * Let z = orthogonal distance to viewer plane in viewer coordinate
-		 * system, and let zg = orthogonal distance to viewer plane in global
-		 * coordinate system. Then zScale * z = zg,
-		 */
-		final double zScale = Math.sqrt(
-				transform.inverse().get( 0, 2 ) * transform.inverse().get( 0, 2 ) +
-				transform.inverse().get( 1, 2 ) * transform.inverse().get( 1, 2 ) +
-				transform.inverse().get( 2, 2 ) * transform.inverse().get( 2, 2 ) );
+//		/*
+//		 * Let z = orthogonal distance to viewer plane in viewer coordinate
+//		 * system, and let zg = orthogonal distance to viewer plane in global
+//		 * coordinate system. Then zScale * z = zg,
+//		 */
+//		final double zScale = Math.sqrt(
+//				transform.inverse().get( 0, 2 ) * transform.inverse().get( 0, 2 ) +
+//				transform.inverse().get( 1, 2 ) * transform.inverse().get( 1, 2 ) +
+//				transform.inverse().get( 2, 2 ) * transform.inverse().get( 2, 2 ) );
 
 		final ScreenVertexMath screenVertexMath = new ScreenVertexMath( nSigmas );
 
@@ -284,7 +365,10 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 			graphics.setPaint( getColor( 0, 0, sliceDistanceFade, timepointDistanceFade, false ) );
 			for ( int t = Math.max( 0, currentTimepoint - ( int ) timeLimit ); t < currentTimepoint; ++t )
 			{
-				for ( final V vertex : graph.getIndex().getSpatialIndex( t ) )
+				final SpatialIndex< V > si = graph.getIndex().getSpatialIndex( t );
+				final ClipConvexPolytope< V > ccp = si.getClipConvexPolytope();
+				ccp.clip( visiblePolytopeGlobal );
+				for ( final V vertex : ccp.getInsideValues() )
 				{
 					vertex.localize( lPos );
 					transform.apply( lPos, gPos );
@@ -336,7 +420,10 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 			final int t = currentTimepoint;
 			final AffineTransform torig = graphics.getTransform();
 
-			for ( final V vertex : graph.getIndex().getSpatialIndex( t ) )
+			final SpatialIndex< V > si = graph.getIndex().getSpatialIndex( t );
+			final ClipConvexPolytope< V > ccp = si.getClipConvexPolytope();
+			ccp.clip( visiblePolytopeGlobal );
+			for ( final V vertex : ccp.getInsideValues() )
 			{
 				final boolean isHighlighted = vertex.equals( highlighted );
 
@@ -351,13 +438,13 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 				{
 					if ( drawSpotEllipse )
 					{
-						final double rd = zScale * z;
-						if ( rd * rd > vertex.getBoundingSphereRadiusSquared() )
-						{
-							graphics.setColor( getColor( sd, 0, sliceDistanceFade, timepointDistanceFade, vertex.isSelected() ) );
-							graphics.fillOval( ( int ) ( x - 2.5 ), ( int ) ( y - 2.5 ), 5, 5 );
-						}
-						else
+//						final double rd = zScale * z;
+//						if ( rd * rd > vertex.getBoundingSphereRadiusSquared() )
+//						{
+//							graphics.setColor( getColor( sd, 0, sliceDistanceFade, timepointDistanceFade, vertex.isSelected() ) );
+//							graphics.fillOval( ( int ) ( x - 2.5 ), ( int ) ( y - 2.5 ), 5, 5 );
+//						}
+//						else
 						{
 							if ( drawSliceIntersection )
 							{
