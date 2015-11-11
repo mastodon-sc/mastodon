@@ -55,6 +55,8 @@ public abstract class AbstractTrackSchemeOverlay implements OverlayRenderer
 
 	private int maxTimepoint = 100;
 
+	private int currentTimepoint = 0;
+
 	public AbstractTrackSchemeOverlay( final TrackSchemeHighlight< ?, ? > highlight, final TrackSchemeOptions options )
 	{
 		this.highlight = highlight;
@@ -154,6 +156,16 @@ public abstract class AbstractTrackSchemeOverlay implements OverlayRenderer
 		this.maxTimepoint = maxTimepoint;
 	}
 
+	/**
+	 * Set the current timepoint.
+	 *
+	 * @param timepoint
+	 */
+	public void setCurrentTimepoint( final int timepoint )
+	{
+		this.currentTimepoint  = timepoint;
+	}
+
 	protected int getMinTimepoint()
 	{
 		return minTimepoint;
@@ -162,6 +174,11 @@ public abstract class AbstractTrackSchemeOverlay implements OverlayRenderer
 	protected int getMaxTimepoint()
 	{
 		return maxTimepoint;
+	}
+
+	protected int getCurrentTimepoint()
+	{
+		return currentTimepoint;
 	}
 
 	/**

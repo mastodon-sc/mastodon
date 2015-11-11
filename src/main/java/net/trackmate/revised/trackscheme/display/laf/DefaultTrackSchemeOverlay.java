@@ -64,6 +64,8 @@ public class DefaultTrackSchemeOverlay extends AbstractTrackSchemeOverlay
 	 * FIELDS
 	 */
 
+	private final boolean highlightCurrentTimepoint = true;
+
 	private final boolean paintRows = true;
 
 	private final boolean paintColumns = true;
@@ -75,22 +77,11 @@ public class DefaultTrackSchemeOverlay extends AbstractTrackSchemeOverlay
 		super( highlight, options );
 	}
 
-	// TODO: get these from somewhere
-	int minTimepoint = 0; // TODO: get these from somewhere
-	int maxTimepoint = 50; // TODO: get these from somewhere
-
 	@Override
 	protected void paintBackground( final Graphics2D g2, final ScreenEntities screenEntities )
 	{
 		final int width = getWidth();
 		final int height = getHeight();
-
-		g2.setColor( style.backgroundColor );
-		g2.fillRect( 0, 0, width, height );
-
-		g2.setColor( style.decorationColor );
-		final FontMetrics fm = g2.getFontMetrics( style.font );
-		g2.setFont( style.font );
 
 		final ScreenTransform screenTransform = new ScreenTransform();
 		screenEntities.getScreenTransform( screenTransform );
@@ -98,8 +89,24 @@ public class DefaultTrackSchemeOverlay extends AbstractTrackSchemeOverlay
 		final double minY = screenTransform.getMinY();
 		final double maxY = screenTransform.getMaxY();
 
+		g2.setColor( style.backgroundColor );
+		g2.fillRect( 0, 0, width, height );
+
+		if ( highlightCurrentTimepoint )
+		{
+			final double t = getCurrentTimepoint();
+			final int y = ( int ) Math.round( yScale * ( t - minY - 0.5 ) );
+			final int h = Math.max( 1, ( int ) Math.round( yScale ) );
+			g2.setColor( style.currentTimepointColor );
+			g2.fillRect( 0, y, width, h );
+		}
+
 		if ( paintRows )
 		{
+			g2.setColor( style.decorationColor );
+			final FontMetrics fm = g2.getFontMetrics( style.font );
+			g2.setFont( style.font );
+
 			final int fontInc = fm.getHeight() / 2;
 			final int stepT = 1 + MIN_TIMELINE_SPACING / ( int ) ( 1 + yScale );
 

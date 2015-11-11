@@ -59,6 +59,8 @@ public class TrackSchemeStyle
 
 	public Color backgroundColor;
 
+	public Color currentTimepointColor;
+
 	public Color decorationColor;
 
 	public Color vertexRangeColor;
@@ -123,6 +125,12 @@ public class TrackSchemeStyle
 		return this;
 	}
 
+	public TrackSchemeStyle currentTimepointColor( final Color c )
+	{
+		currentTimepointColor = c;
+		return this;
+	}
+
 	public TrackSchemeStyle decorationColor( final Color c )
 	{
 		decorationColor = c;
@@ -161,6 +169,7 @@ public class TrackSchemeStyle
 		final Color fill = new Color( 128, 255, 128 );
 		return new TrackSchemeStyle().
 				backgroundColor( Color.LIGHT_GRAY ).
+				currentTimepointColor( new Color( 217, 217, 217 ) ).
 				vertexFillColor( Color.WHITE ).
 				selectedVertexFillColor( fill ).
 				simplifiedVertexFillColor( Color.BLACK ).
@@ -183,6 +192,7 @@ public class TrackSchemeStyle
 		final Color selfill = new Color( 255, 128, 128 );
 		return new TrackSchemeStyle().
 				backgroundColor( bg ).
+				currentTimepointColor( bg.brighter() ).
 				vertexFillColor( fill ).
 				selectedVertexFillColor( selfill ).
 				simplifiedVertexFillColor( fill ).
@@ -204,6 +214,7 @@ public class TrackSchemeStyle
 		final Color fill = new Color( 53, 107, 154 );
 		return new TrackSchemeStyle().
 				backgroundColor( bg ).
+				currentTimepointColor( bg.brighter() ).
 				vertexFillColor( fill ).
 				selectedVertexFillColor( fill ).
 				simplifiedVertexFillColor( Color.DARK_GRAY ).

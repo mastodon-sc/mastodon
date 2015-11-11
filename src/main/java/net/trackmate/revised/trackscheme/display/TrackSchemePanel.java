@@ -25,8 +25,13 @@ import net.trackmate.revised.trackscheme.display.TrackSchemeOptions.Values;
 import net.trackmate.revised.trackscheme.display.laf.DefaultTrackSchemeOverlay;
 import net.trackmate.revised.ui.selection.HighlightListener;
 import net.trackmate.trackscheme.animate.AbstractAnimator;
+import bdv.viewer.TimePointListener;
 
-public class TrackSchemePanel extends JPanel implements TransformListener< ScreenTransform >, PainterThread.Paintable, HighlightListener
+public class TrackSchemePanel extends JPanel implements
+		TransformListener< ScreenTransform >,
+		PainterThread.Paintable,
+		HighlightListener,
+		TimePointListener
 {
 	private final TrackSchemeGraph< ?, ? > graph;
 
@@ -278,6 +283,13 @@ public class TrackSchemePanel extends JPanel implements TransformListener< Scree
 		xScrollBar.setValues( xval, xext, xmin, xmax );
 		yScrollBar.setValues( yval, yext, ymin, ymax );
 		ignoreScrollBarChanges = false;
+	}
+
+	@Override
+	public void timePointChanged( final int timepoint )
+	{
+		graphOverlay.setCurrentTimepoint( timepoint );
+		display.repaint();
 	}
 
 	@Override
