@@ -16,10 +16,7 @@ import net.trackmate.trackscheme.ScreenVertex;
 
 
 /**
- *
- * TODO: Should not have a copy (currently non-existing) of the model vertex label. Rather ScreenVertex should have the copy.
- * TODO: need some kind of ModelVertexProperties that provides label and selected state.
- *
+ * TODO javadoc
  *
  * @author Tobias Pietzsch &lt;tobias.pietzsch@gmail.com&gt;
  */
@@ -169,8 +166,8 @@ public class TrackSchemeVertex extends AbstractVertex< TrackSchemeVertex, TrackS
 	 * internal pool index of first (and only) edge through which this vertex
 	 * was touched in last layout.
 	 * <p>
-	 * TODO: this would not be needed if VertexOrder would be build directly
-	 * during layout.
+	 * TODO: REMOVE? This is not be needed because VertexOrder is built directly
+	 * during layout now.
 	 *
 	 * @return internal pool index of first (and only) edge through which this
 	 *         vertex was touched in last layout.
