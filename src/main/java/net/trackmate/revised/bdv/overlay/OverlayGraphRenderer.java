@@ -22,7 +22,7 @@ import net.trackmate.spatial.ClipConvexPolytope;
 import net.trackmate.spatial.SpatialIndex;
 import net.trackmate.spatial.SpatioTemporalIndex;
 import bdv.util.Affine3DHelpers;
-import bdv.viewer.ViewerPanel;
+import bdv.viewer.TimePointListener;
 
 
 /**
@@ -31,7 +31,7 @@ import bdv.viewer.ViewerPanel;
  * @author Tobias Pietzsch &lt;tobias.pietzsch@gmail.com&gt;
  */
 public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends OverlayEdge< E, V > >
-		implements OverlayRenderer, TransformListener< AffineTransform3D >
+		implements OverlayRenderer, TransformListener< AffineTransform3D >, TimePointListener
 {
 	private int width;
 
@@ -39,16 +39,14 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 
 	private final AffineTransform3D renderTransform;
 
-	// TODO: remove. Only needed to get timepoint. there should be a better way to do that.
-	private final ViewerPanel viewer;
+	private int renderTimepoint;
 
 	private final OverlayGraph< V, E > graph;
 
 	private final OverlayHighlight< V, E > highlight;
 
-	public OverlayGraphRenderer( final ViewerPanel viewer, final OverlayGraph< V, E > graph, final OverlayHighlight< V, E > highlight )
+	public OverlayGraphRenderer( final OverlayGraph< V, E > graph, final OverlayHighlight< V, E > highlight )
 	{
-		this.viewer = viewer;
 		this.graph = graph;
 		this.highlight = highlight;
 		renderTransform = new AffineTransform3D();
@@ -80,6 +78,12 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 		}
 	}
 
+	@Override
+	public void timePointChanged( final int timepoint )
+	{
+		renderTimepoint = timepoint;
+	}
+
 	public void mouseOverHighlight( final int x, final int y )
 	{
 		final AffineTransform3D transform = new AffineTransform3D();
@@ -88,8 +92,7 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 			transform.set( renderTransform );
 		}
 
-		// TODO: fix in BDV. This is stupid, BDV should have addTimepointListener() or something similar.
-		final int currentTimepoint = viewer.getState().getCurrentTimepoint();
+		final int currentTimepoint = renderTimepoint;
 
 		final double maxDepth = isFocusLimitViewRelative ?
 				focusLimit :
@@ -398,8 +401,7 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 			transform.set( renderTransform );
 		}
 
-		// TODO: fix in BDV. This is stupid, BDV should have addTimepointListener() or something similar.
-		final int currentTimepoint = viewer.getState().getCurrentTimepoint();
+		final int currentTimepoint = renderTimepoint;
 
 		final double maxDepth = isFocusLimitViewRelative ?
 				focusLimit :

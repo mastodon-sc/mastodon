@@ -195,9 +195,10 @@ public class MaMuT
 			InitializeViewerState.initBrightness( 0.001, 0.999, bdv.getViewer(), bdv.getSetupAssignments() );
 		final ViewerPanel viewer = bdv.getViewer();
 		viewer.setTimepoint( initialTimepointIndex );
-		final OverlayGraphRenderer< ?, ? > tracksOverlay = new OverlayGraphRenderer<>( viewer, overlayGraph, overlayHighlight );
+		final OverlayGraphRenderer< ?, ? > tracksOverlay = new OverlayGraphRenderer<>( overlayGraph, overlayHighlight );
 		viewer.getDisplay().addOverlayRenderer( tracksOverlay );
 		viewer.addRenderTransformListener( tracksOverlay );
+		viewer.addTimePointListener( tracksOverlay );
 		overlayHighlight.addHighlightListener( new HighlightListener()
 		{
 			@Override
