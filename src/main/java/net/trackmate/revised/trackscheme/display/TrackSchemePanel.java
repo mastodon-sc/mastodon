@@ -1,9 +1,15 @@
 package net.trackmate.revised.trackscheme.display;
 
 import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.awt.Graphics;
+import java.awt.event.AdjustmentEvent;
+import java.awt.event.AdjustmentListener;
 
+import javax.swing.Box;
 import javax.swing.JPanel;
+import javax.swing.JScrollBar;
+import javax.swing.UIManager;
 
 import net.imglib2.ui.InteractiveDisplayCanvasComponent;
 import net.imglib2.ui.OverlayRenderer;
@@ -34,6 +40,10 @@ public class TrackSchemePanel extends JPanel implements TransformListener< Scree
 	 */
 	private final InteractiveDisplayCanvasComponent< ScreenTransform > display;
 
+	private final JScrollBar xScrollBar;
+
+	private final JScrollBar yScrollBar;
+
 	/**
 	 * The current transform from layout to screen coordinates.
 	 */
@@ -55,8 +65,48 @@ public class TrackSchemePanel extends JPanel implements TransformListener< Scree
 
 	private final AbstractTrackSchemeOverlay graphOverlay;
 
+	/**
+	 * TODO
+	 */
 	// TODO rename
 	private final Flags flags;
+
+	/**
+	 * Minimum timepoint in dataset.
+	 */
+	private double layoutMinY;
+
+	/**
+	 * Maximum timepoint in dataset.
+	 */
+	private double layoutMaxY;
+
+	/**
+	 * Minimum layoutX coordinate in current layout.
+	 */
+	private double layoutMinX;
+
+	/**
+	 * <aximum layoutX coordinate in current layout.
+	 */
+	private double layoutMaxX;
+
+	/**
+	 * Ratio of {@link #xScrollBar} values to layoutX coordinates.
+	 */
+	private double xScrollScale;
+
+	/**
+	 * Ratio of {@link #yScrollBar} values to layoutY (timepoint) coordinates.
+	 */
+	private double yScrollScale;
+
+	/**
+	 * If {@code true}, then scroll-bar {@link AdjustmentListener}s ignore
+	 * events (when {@link #screenTransform} is changed by means other than the
+	 * user dragging the scroll-bar).
+	 */
+	private boolean ignoreScrollBarChanges;
 
 	public TrackSchemePanel(
 			final TrackSchemeGraph< ?, ? > graph,
@@ -99,7 +149,55 @@ public class TrackSchemePanel extends JPanel implements TransformListener< Scree
 
 		display.addMouseMotionListener( new MouseOverListener( graphOverlay ) );
 
+		xScrollBar = new JScrollBar( JScrollBar.HORIZONTAL );
+		yScrollBar = new JScrollBar( JScrollBar.VERTICAL );
+		xScrollBar.addAdjustmentListener( new AdjustmentListener()
+		{
+			@Override
+			public void adjustmentValueChanged( final AdjustmentEvent e )
+			{
+				if ( ignoreScrollBarChanges )
+					return;
+
+				final double s = xScrollBar.getValue() / xScrollScale;
+				synchronized ( screenTransform )
+				{
+					screenTransform.shiftLayoutX( s - screenTransform.getMinX() );
+					display.getTransformEventHandler().setTransform( screenTransform );
+				}
+				flags.setTransformChanged();
+				painterThread.requestRepaint();
+			}
+		} );
+		yScrollBar.addAdjustmentListener( new AdjustmentListener()
+		{
+			@Override
+			public void adjustmentValueChanged( final AdjustmentEvent e )
+			{
+				if ( ignoreScrollBarChanges )
+					return;
+
+				final double s = yScrollBar.getValue() / yScrollScale;
+				synchronized ( screenTransform )
+				{
+					screenTransform.shiftLayoutY( s - screenTransform.getMinY() );
+					display.getTransformEventHandler().setTransform( screenTransform );
+				}
+				flags.setTransformChanged();
+				painterThread.requestRepaint();
+			}
+		} );
+
+
 		add( display, BorderLayout.CENTER );
+
+		add( yScrollBar, BorderLayout.EAST );
+		final JPanel xScrollPanel = new JPanel( new BorderLayout() );
+		xScrollPanel.add( xScrollBar, BorderLayout.CENTER );
+		final int space = ( Integer ) UIManager.getDefaults().get( "ScrollBar.width" );
+		xScrollPanel.add( Box.createRigidArea( new Dimension( space, 0 ) ), BorderLayout.EAST );
+		add( xScrollPanel, BorderLayout.SOUTH );
+
 		painterThread.start();
 	}
 
@@ -109,6 +207,18 @@ public class TrackSchemePanel extends JPanel implements TransformListener< Scree
 	public void stop()
 	{
 		painterThread.interrupt();
+	}
+
+	/**
+	 * Set the timepoint range of the dataset.
+	 *
+	 * @param minTimepoint
+	 * @param maxTimepoint
+	 */
+	public void setTimepointRange( final int minTimepoint, final int maxTimepoint )
+	{
+		layoutMinY = minTimepoint;
+		layoutMaxY = maxTimepoint;
 	}
 
 	/**
@@ -123,15 +233,23 @@ public class TrackSchemePanel extends JPanel implements TransformListener< Scree
 	@Override
 	public void paint()
 	{
+		final ScreenTransform transform = new ScreenTransform();
+		synchronized( screenTransform )
+		{
+			transform.set( screenTransform );
+		}
+
 		final Flags flags = this.flags.clear();
 		if ( flags.graphChanged )
 		{
 			layout.layout();
-			entityAnimator.startAnimation( screenTransform, 0 );
+			layoutMinX = layout.getCurrentLayoutMinX();
+			layoutMaxX = layout.getCurrentLayoutMaxX();
+			entityAnimator.startAnimation( transform, 0 );
 		}
 		else if ( flags.transformChanged )
 		{
-			entityAnimator.startAnimation( screenTransform, 0 );
+			entityAnimator.startAnimation( transform, 0 );
 		}
 		else if ( flags.contextChanged )
 		{
@@ -141,6 +259,24 @@ public class TrackSchemePanel extends JPanel implements TransformListener< Scree
 		entityAnimator.setTime( System.currentTimeMillis() );
 		entityAnimator.setPaintEntities( graphOverlay );
 		display.repaint();
+
+		// adjust scrollbars sizes
+		final ScreenTransform t = new ScreenTransform();
+		entityAnimator.getLastComputedScreenEntities().getScreenTransform( t );
+		xScrollScale = 10000.0 / ( layoutMaxX - layoutMinX + 2 );
+		final int xval = ( int ) ( xScrollScale * t.getMinX() );
+		final int xext = ( int ) ( xScrollScale * ( t.getMaxX() - t.getMinX() ) );
+		final int xmin = ( int ) ( xScrollScale * ( layoutMinX - 1 ) );
+		final int xmax = ( int ) ( xScrollScale * ( layoutMaxX + 1 ) );
+		yScrollScale = 10000.0 / ( layoutMaxY - layoutMinY + 2 );
+		final int yval = ( int ) ( yScrollScale * t.getMinY() );
+		final int yext = ( int ) ( yScrollScale * ( t.getMaxY() - t.getMinY() ) );
+		final int ymin = ( int ) ( yScrollScale * ( layoutMinY - 1 ) );
+		final int ymax = ( int ) ( yScrollScale * ( layoutMaxY + 1 ) );
+		ignoreScrollBarChanges = true;
+		xScrollBar.setValues( xval, xext, xmin, xmax );
+		yScrollBar.setValues( yval, yext, ymin, ymax );
+		ignoreScrollBarChanges = false;
 	}
 
 	@Override
@@ -178,6 +314,8 @@ public class TrackSchemePanel extends JPanel implements TransformListener< Scree
 		private ScreenEntities screenEntitiesIpEnd;
 
 		private ScreenEntitiesInterpolator interpolator;
+
+		private ScreenEntities lastComputedScreenEntities;
 
 		private final int capacity = 1000;
 
@@ -245,6 +383,7 @@ public class TrackSchemePanel extends JPanel implements TransformListener< Scree
 				swapPools();
 				layout.cropAndScale( transform, screenEntities );
 			}
+			lastComputedScreenEntities = screenEntities;
 		}
 
 		@Override
@@ -257,6 +396,7 @@ public class TrackSchemePanel extends JPanel implements TransformListener< Scree
 				interpolator.interpolate( ratioComplete(), screenEntities );
 				if ( isComplete() )
 					interpolator = null;
+				lastComputedScreenEntities = screenEntities;
 			}
 		}
 
@@ -272,6 +412,11 @@ public class TrackSchemePanel extends JPanel implements TransformListener< Scree
 				screenEntities = new ScreenEntities( graph, capacity );
 			else
 				screenEntities = tmp;
+		}
+
+		private ScreenEntities getLastComputedScreenEntities()
+		{
+			return lastComputedScreenEntities;
 		}
 	}
 

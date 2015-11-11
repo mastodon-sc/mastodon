@@ -82,6 +82,18 @@ public class LineageTreeLayout
 	 */
 	private final TIntObjectMap< TrackSchemeVertexList > timepointToOrderedVertices;
 
+	/**
+	 * the minimum layoutX coordinate assigned to any vertex in the current
+	 * layout.
+	 */
+	private double currentLayoutMinX;
+
+	/**
+	 * the maximum layoutX coordinate assigned to any vertex in the current
+	 * layout.
+	 */
+	private double currentLayoutMaxX;
+
 	public LineageTreeLayout( final TrackSchemeGraph< ?, ? > graph )
 	{
 		this.graph = graph;
@@ -145,6 +157,32 @@ public class LineageTreeLayout
 		{
 			layoutX( root );
 		}
+		currentLayoutMinX = 0;
+		currentLayoutMaxX = rightmost - 1;
+	}
+
+	/**
+	 * Get the minimum layoutX coordinate assigned to any vertex in the current
+	 * layout (last call of one of the {@code layout(...)} methods).
+	 *
+	 * @return the minimum layoutX coordinate assigned to any vertex in the
+	 *         current layout
+	 */
+	public double getCurrentLayoutMinX()
+	{
+		return currentLayoutMinX;
+	}
+
+	/**
+	 * Get the maximum layoutX coordinate assigned to any vertex in the current
+	 * layout (last call of one of the {@code layout(...)} methods).
+	 *
+	 * @return the maximum layoutX coordinate assigned to any vertex in the
+	 *         current layout
+	 */
+	public double getCurrentLayoutMaxX()
+	{
+		return currentLayoutMaxX;
 	}
 
 	/**

@@ -276,6 +276,28 @@ public class ScreenTransform implements InvertibleRealTransform
 	}
 
 	/**
+	 * Translate such that layout coordinates move by {@code dX} in X.
+	 *
+	 * @param dX
+	 */
+	public void shiftLayoutX( final double dX )
+	{
+		minX += dX;
+		maxX += dX;
+	}
+
+	/**
+	 * Translate such that layout coordinates move by {@code dY} in Y.
+	 *
+	 * @param dY
+	 */
+	public void shiftLayoutY( final double dY )
+	{
+		minY += dY;
+		maxY += dY;
+	}
+
+	/**
 	 * Set this transform to linear interpolation {@code (1 - ratio) * start + ratio * end}.
 	 */
 	public void interpolate( final ScreenTransform start, final ScreenTransform end, final double ratio )

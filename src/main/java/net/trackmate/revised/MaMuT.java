@@ -2,8 +2,10 @@ package net.trackmate.revised;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 
 import mpicbg.spim.data.SpimDataException;
+import mpicbg.spim.data.sequence.TimePoint;
 import net.trackmate.graph.GraphIdBimap;
 import net.trackmate.graph.listenable.ListenableGraph;
 import net.trackmate.revised.bdv.overlay.MouseOverListener;
@@ -110,9 +112,26 @@ public class MaMuT
 		final String modelFile = "/Users/pietzsch/TGMM/data/tifs/model_revised.raw";
 		final int initialTimepointIndex = 10;
 
+		/*
+		 * Load Model
+		 */
 		final Model model = new Model();
 		final BoundingSphereRadiusStatistics radiusStats = new BoundingSphereRadiusStatistics( model );
 		model.loadRaw( new File( modelFile ) );
+
+		/*
+		 * Load SpimData
+		 */
+		final SpimDataMinimal spimData = new XmlIoSpimDataMinimal().load( bdvFile );
+		final List< TimePoint > timePointsOrdered = spimData.getSequenceDescription().getTimePoints().getTimePointsOrdered();
+		final int minTimepoint = 0;
+		final int maxTimepoint = timePointsOrdered.size() - 1;
+		/*
+		 * TODO: (?) For now, we use timepoint indices in MaMuT model, instead
+		 * of IDs/names. This is because BDV also displays timepoint index, and
+		 * it would be confusing to have different labels in TrackScheme. If
+		 * this is changed in the future, then probably only in the model files.
+		 */
 
 		System.setProperty( "apple.laf.useScreenMenuBar", "true" );
 
@@ -136,13 +155,13 @@ public class MaMuT
 		 * show TrackSchemeFrame
 		 */
 		final TrackSchemeFrame frame = new TrackSchemeFrame( trackSchemeGraph, trackSchemeHighlight );
+		frame.getTrackschemePanel().setTimepointRange( minTimepoint, maxTimepoint );
 		frame.getTrackschemePanel().graphChanged();
 		frame.setVisible( true );
 
 		/*
 		 * show BDV frame(s)
 		 */
-		final SpimDataMinimal spimData = new XmlIoSpimDataMinimal().load( bdvFile );
 		final String windowTitle = new File( bdvFile ).getName();
 
 		for ( int i = 0; i < 2; ++i )
