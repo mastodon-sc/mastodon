@@ -211,14 +211,15 @@ public class TrackSchemeStyle
 	public static TrackSchemeStyle howMuchDoYouKnowStyle()
 	{
 		final Color bg = new Color( 163, 199, 197 );
-		final Color fill = new Color( 53, 107, 154 );
+		final Color fill = new Color( 225, 216, 183 );
+		final Color selfill = new Color( 53, 107, 154 );
 		return new TrackSchemeStyle().
 				backgroundColor( bg ).
 				currentTimepointColor( bg.brighter() ).
 				vertexFillColor( fill ).
-				selectedVertexFillColor( fill ).
+				selectedVertexFillColor( selfill ).
 				simplifiedVertexFillColor( Color.DARK_GRAY ).
-				selectedSimplifiedVertexFillColor( fill ).
+				selectedSimplifiedVertexFillColor( selfill ).
 				vertexDrawColor( Color.DARK_GRAY ).
 				selectedVertexDrawColor( Color.WHITE ).
 				edgeColor( Color.DARK_GRAY ).
