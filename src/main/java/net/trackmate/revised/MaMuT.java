@@ -164,12 +164,20 @@ public class MaMuT
 		 */
 		final String windowTitle = new File( bdvFile ).getName();
 
-		for ( int i = 0; i < 2; ++i )
-		{
-			final BigDataViewer bdv = openBDV( model, highlightModel, radiusStats, spimData, windowTitle, initialTimepointIndex, bdvFile );
-			final ViewerPanel viewer = bdv.getViewer();
-			viewer.repaint();
-		}
+//		for ( int i = 0; i < 2; ++i )
+//		{
+		final BigDataViewer bdv = openBDV( model, highlightModel, radiusStats, spimData, windowTitle, initialTimepointIndex, bdvFile );
+		final ViewerPanel viewer = bdv.getViewer();
+
+		/*
+		 * TODO: this is still wrong. There should be one central entity syncing
+		 * time for several BDV frames and TrackSchemePanel should listen to
+		 * that. Ideally windows should be configurable to "share" timepoints or
+		 * not.
+		 */
+		viewer.addTimePointListener( frame.getTrackschemePanel() );
+		viewer.repaint();
+//		}
 	}
 
 	public static BigDataViewer openBDV(
