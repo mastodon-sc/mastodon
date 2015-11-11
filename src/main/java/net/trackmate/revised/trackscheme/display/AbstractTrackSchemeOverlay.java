@@ -51,6 +51,10 @@ public abstract class AbstractTrackSchemeOverlay implements OverlayRenderer
 
 	protected int highlightedVertexId;
 
+	private int minTimepoint = 0;
+
+	private int maxTimepoint = 100;
+
 	public AbstractTrackSchemeOverlay( final TrackSchemeHighlight< ?, ? > highlight, final TrackSchemeOptions options )
 	{
 		this.highlight = highlight;
@@ -136,6 +140,28 @@ public abstract class AbstractTrackSchemeOverlay implements OverlayRenderer
 	public int getHeight()
 	{
 		return height;
+	}
+
+	/**
+	 * Set the timepoint range of the dataset.
+	 *
+	 * @param minTimepoint
+	 * @param maxTimepoint
+	 */
+	public void setTimepointRange( final int minTimepoint, final int maxTimepoint )
+	{
+		this.minTimepoint = minTimepoint;
+		this.maxTimepoint = maxTimepoint;
+	}
+
+	protected int getMinTimepoint()
+	{
+		return minTimepoint;
+	}
+
+	protected int getMaxTimepoint()
+	{
+		return maxTimepoint;
 	}
 
 	/**

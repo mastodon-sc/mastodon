@@ -103,9 +103,9 @@ public class DefaultTrackSchemeOverlay extends AbstractTrackSchemeOverlay
 			final int fontInc = fm.getHeight() / 2;
 			final int stepT = 1 + MIN_TIMELINE_SPACING / ( int ) ( 1 + yScale );
 
-			int tstart = Math.max( 0, ( int ) minY - 1 );
+			int tstart = Math.max( getMinTimepoint(), ( int ) minY - 1 );
 			tstart = ( tstart / stepT ) * stepT;
-			int tend = 1 + Math.min( maxTimepoint, ( int ) maxY );
+			int tend = Math.min( getMaxTimepoint(), 1 + ( int ) maxY );
 			tend = ( 1 + tend / stepT ) * stepT;
 
 			for ( int t = tstart; t < tend; t = t + stepT )

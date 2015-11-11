@@ -219,6 +219,7 @@ public class TrackSchemePanel extends JPanel implements TransformListener< Scree
 	{
 		layoutMinY = minTimepoint;
 		layoutMaxY = maxTimepoint;
+		graphOverlay.setTimepointRange( minTimepoint, maxTimepoint );
 	}
 
 	/**
