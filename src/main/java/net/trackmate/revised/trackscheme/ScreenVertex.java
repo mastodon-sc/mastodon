@@ -239,6 +239,29 @@ public class ScreenVertex extends PoolObject< ScreenVertex, ByteMappedElement >
 	protected void setToUninitializedState()
 	{}
 
+	/**
+	 * Set all fields as in specified {@link ScreenVertex} (which is possibly
+	 * from another pool).
+	 * <p>
+	 * ONLY USE THIS FOR {@link ScreenEntities#set(ScreenEntities)}!
+	 *
+	 * @param v
+	 * @return {@code this}.
+	 */
+	ScreenVertex cloneFrom( final ScreenVertex v )
+	{
+		setTrackSchemeVertexId( v.getTrackSchemeVertexId() );
+		setX( v.getX() );
+		setY( v.getY() );
+		setVertexDist( v.getVertexDist() );
+		setSelected( v.isSelected() );
+		setGhost( v.isGhost() );
+		setTransition( v.getTransition() );
+		setInterpolatedScreenVertexIndex( v.getInterpolatedScreenVertexIndex() );
+		setInterpolationCompletionRatio( v.getInterpolationCompletionRatio() );
+		return this;
+	}
+
 	@Override
 	public boolean equals( final Object obj )
 	{

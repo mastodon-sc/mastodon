@@ -1,5 +1,7 @@
 package net.trackmate.revised.trackscheme;
 
+import java.util.ArrayList;
+
 import net.trackmate.graph.AbstractEdgePool;
 import net.trackmate.graph.AbstractVertexPool;
 import net.trackmate.graph.Edge;
@@ -12,6 +14,7 @@ import net.trackmate.graph.RefPool;
 import net.trackmate.graph.Vertex;
 import net.trackmate.graph.collection.IntRefMap;
 import net.trackmate.graph.collection.RefSet;
+import net.trackmate.graph.listenable.GraphChangeListener;
 import net.trackmate.graph.listenable.GraphListener;
 import net.trackmate.graph.listenable.ListenableGraph;
 import net.trackmate.graph.mempool.ByteMappedElement;
@@ -28,7 +31,7 @@ public class TrackSchemeGraph<
 				TrackSchemeGraph.TrackSchemeVertexPool,
 				TrackSchemeGraph.TrackSchemeEdgePool,
 				TrackSchemeVertex, TrackSchemeEdge, ByteMappedElement >
-	implements GraphListener< V, E >
+	implements GraphListener< V, E >, GraphChangeListener
 {
 	private final ListenableGraph< V, E > modelGraph;
 
@@ -49,6 +52,8 @@ public class TrackSchemeGraph<
 	private final TrackSchemeVertex tsv2;
 
 	private final TrackSchemeEdge tse;
+
+	private final ArrayList< GraphChangeListener > listeners;
 
 	public TrackSchemeGraph(
 			final ListenableGraph< V, E > modelGraph,
@@ -76,8 +81,10 @@ public class TrackSchemeGraph<
 		tsv = vertexRef();
 		tsv2 = vertexRef();
 		tse = edgeRef();
+		listeners = new ArrayList< GraphChangeListener >();
 		modelVertexProperties = modelGraphProperties.createVertexProperties();
 		modelGraph.addGraphListener( this );
+		modelGraph.addGraphChangeListener( this );
 		graphRebuilt();
 	}
 
@@ -120,6 +127,32 @@ public class TrackSchemeGraph<
 	TrackSchemeVertex getTrackSchemeVertexForModelId( final int modelId, final TrackSchemeVertex ref )
 	{
 		return idToTrackSchemeVertex.get( modelId, ref );
+	}
+
+	public boolean addGraphChangeListener( final GraphChangeListener listener )
+	{
+		if ( ! listeners.contains( listener ) )
+		{
+			listeners.add( listener );
+			return true;
+		}
+		return false;
+	}
+
+	public boolean removeGraphChangeListener( final GraphChangeListener listener )
+	{
+		return listeners.remove( listener );
+	}
+
+	/*
+	 * GraphChangeListener
+	 */
+
+	@Override
+	public void graphChanged()
+	{
+		for ( final GraphChangeListener l : listeners )
+			l.graphChanged();
 	}
 
 	/*
@@ -196,7 +229,7 @@ public class TrackSchemeGraph<
 		}
 	}
 
-//	@Override // TODO: should be implemented for some listener interface
+//	@Override // TODO: should be implemented for some listener interface, or REMOVE? (vertices never change timepoint?)
 	public void vertexTimepointChanged( final V vertex )
 	{
 		idToTrackSchemeVertex.get( idmap.getVertexId( vertex ), tsv );

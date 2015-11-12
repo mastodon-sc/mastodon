@@ -78,7 +78,10 @@ public class ScreenEntitiesInterpolator
 		// Interpolate dense vertex ranges
 		// ===============================
 		// For now, simply use the dense ranges of the interpolation target.
-		current.getRanges().addAll( end.getRanges() );
+		final ScreenVertexRange rRef = current.getRangePool().createRef();
+		for ( final ScreenVertexRange r : end.getRanges() )
+			current.getRanges().add( current.getRangePool().create( rRef ).cloneFrom( r ) );
+		current.getRangePool().releaseRef( rRef );
 
 		// Interpolate screenTransform
 		// ===========================

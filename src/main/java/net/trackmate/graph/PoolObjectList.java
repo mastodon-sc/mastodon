@@ -69,6 +69,7 @@ public class PoolObjectList< O extends Ref< O > > implements PoolObjectCollectio
 		indices.insert( index, obj.getInternalPoolIndex() );
 	}
 
+	// TODO: consider throwing exception in addAll if objs are not from same pool
 	@Override
 	public boolean addAll( final Collection< ? extends O > objs )
 	{

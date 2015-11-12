@@ -101,4 +101,26 @@ public class ScreenEntities
 		rangePool.clear();
 		ranges.resetQuick();
 	}
+
+	public void set( final ScreenEntities ent )
+	{
+		clear();
+
+		final ScreenVertex vRef = vertexPool.createRef();
+		for ( final ScreenVertex v : ent.getVertices() )
+			vertices.add( vertexPool.create( vRef ).cloneFrom( v ) );
+		vertexPool.releaseRef( vRef );
+
+		final ScreenEdge eRef = edgePool.createRef();
+		for ( final ScreenEdge e : ent.getEdges() )
+			edges.add( edgePool.create( eRef ).cloneFrom( e ) );
+		edgePool.releaseRef( eRef );
+
+		final ScreenVertexRange rRef = rangePool.createRef();
+		for ( final ScreenVertexRange r : ent.getRanges() )
+			ranges.add( rangePool.create( rRef ).cloneFrom( r ) );
+		rangePool.releaseRef( rRef );
+
+		screenTransform().set( ent.screenTransform );
+	}
 }

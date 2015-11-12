@@ -2,6 +2,7 @@ package net.trackmate.graph.listenable;
 
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 
 import net.trackmate.graph.Edge;
@@ -49,6 +50,8 @@ public class ListenableGraphWrapper< V extends Vertex< E >, E extends Edge< V >,
 
 	private final HashMap< GraphListener< V, E >, Boolean > listeners;
 
+	private final HashSet< GraphChangeListener > changeListeners;
+
 	/*
 	 * CONSTRUCTOR
 	 */
@@ -57,6 +60,7 @@ public class ListenableGraphWrapper< V extends Vertex< E >, E extends Edge< V >,
 	{
 		this.graph = graph;
 		this.listeners = new HashMap< GraphListener< V, E >, Boolean >();
+		this.changeListeners = new HashSet< GraphChangeListener >();
 	}
 
 	/*
@@ -87,6 +91,18 @@ public class ListenableGraphWrapper< V extends Vertex< E >, E extends Edge< V >,
 	{
 		return null != listeners.remove( listener );
 	}
+
+	@Override
+	public boolean addGraphChangeListener( final GraphChangeListener listener )
+	{
+		return changeListeners.add( listener );
+	}
+
+	@Override
+	public boolean removeGraphChangeListener( final GraphChangeListener listener )
+	{
+		return changeListeners.remove( listener );
+}
 
 //	@Override
 //	public Set< GraphListener< V, E >> getGraphListeners()

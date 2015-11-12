@@ -11,6 +11,10 @@ public interface ListenableGraph< V extends Vertex< E >, E extends Edge< V > > e
 
 	public boolean removeGraphListener( GraphListener< V, E > listener );
 
+	public boolean addGraphChangeListener( GraphChangeListener listener );
+
+	public boolean removeGraphChangeListener( GraphChangeListener listener );
+
 //	public Set< GraphListener< V, E > > getGraphListeners();
 //
 //	public void beginUpdate();

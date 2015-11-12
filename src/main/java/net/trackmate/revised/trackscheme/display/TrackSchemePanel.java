@@ -15,6 +15,7 @@ import net.imglib2.ui.InteractiveDisplayCanvasComponent;
 import net.imglib2.ui.OverlayRenderer;
 import net.imglib2.ui.PainterThread;
 import net.imglib2.ui.TransformListener;
+import net.trackmate.graph.listenable.GraphChangeListener;
 import net.trackmate.revised.trackscheme.LineageTreeLayout;
 import net.trackmate.revised.trackscheme.ScreenEntities;
 import net.trackmate.revised.trackscheme.ScreenEntitiesInterpolator;
@@ -31,8 +32,11 @@ public class TrackSchemePanel extends JPanel implements
 		TransformListener< ScreenTransform >,
 		PainterThread.Paintable,
 		HighlightListener,
-		TimePointListener
+		TimePointListener,
+		GraphChangeListener
 {
+	private static final long ANIMATION_MILLISECONDS = 250;
+
 	private final TrackSchemeGraph< ?, ? > graph;
 
 	/**
@@ -121,6 +125,8 @@ public class TrackSchemePanel extends JPanel implements
 		super( new BorderLayout(), false );
 		this.graph = graph;
 		options = optional.values;
+
+		graph.addGraphChangeListener( this );
 
 		final int w = options.getWidth();
 		final int h = options.getHeight();
@@ -251,7 +257,7 @@ public class TrackSchemePanel extends JPanel implements
 			layout.layout();
 			layoutMinX = layout.getCurrentLayoutMinX();
 			layoutMaxX = layout.getCurrentLayoutMaxX();
-			entityAnimator.startAnimation( transform, 0 );
+			entityAnimator.startAnimation( transform, ANIMATION_MILLISECONDS );
 		}
 		else if ( flags.transformChanged )
 		{
@@ -303,7 +309,7 @@ public class TrackSchemePanel extends JPanel implements
 		painterThread.requestRepaint();
 	}
 
-//	@Override // TODO: should be some listener interface. rename?
+	@Override
 	public void graphChanged()
 	{
 		flags.setGraphChanged();
@@ -322,7 +328,7 @@ public class TrackSchemePanel extends JPanel implements
 
 		private ScreenEntities screenEntities2;
 
-		private ScreenEntities screenEntitiesIpStart;
+		private final ScreenEntities screenEntitiesIpStart;
 
 		private ScreenEntities screenEntitiesIpEnd;
 
@@ -356,11 +362,9 @@ public class TrackSchemePanel extends JPanel implements
 		/**
 		 * Swap screenEntities and screenEntitiesIpStart.
 		 */
-		private void swapIpStart()
+		private void copyIpStart()
 		{
-			final ScreenEntities tmp = screenEntities;
-			screenEntities = screenEntitiesIpStart;
-			screenEntitiesIpStart = tmp;
+			screenEntitiesIpStart.set( lastComputedScreenEntities );
 			screenEntities.clear();
 		}
 
@@ -385,7 +389,7 @@ public class TrackSchemePanel extends JPanel implements
 			reset( duration );
 			if (duration > 0 )
 			{
-				swapIpStart();
+				copyIpStart();
 				layout.cropAndScale( transform, screenEntities );
 				swapIpEnd();
 				interpolator = new ScreenEntitiesInterpolator( screenEntitiesIpStart, screenEntitiesIpEnd );
@@ -425,6 +429,7 @@ public class TrackSchemePanel extends JPanel implements
 				screenEntities = new ScreenEntities( graph, capacity );
 			else
 				screenEntities = tmp;
+			screenEntities.clear();
 		}
 
 		private ScreenEntities getLastComputedScreenEntities()

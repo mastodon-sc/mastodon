@@ -35,9 +35,10 @@ public class TrackSchemeHighlight<
 			return -1;
 		else
 		{
-			final TrackSchemeVertex v = graph.vertexRef();
-			final int id = graph.getTrackSchemeVertexForModelId( mid, v ).getInternalPoolIndex();
-			graph.releaseRef( v );
+			final TrackSchemeVertex ref = graph.vertexRef();
+			final TrackSchemeVertex v = graph.getTrackSchemeVertexForModelId( mid, ref );
+			final int id = ( v == null ) ? -1 : v.getInternalPoolIndex();
+			graph.releaseRef( ref );
 			return id;
 		}
 	}
