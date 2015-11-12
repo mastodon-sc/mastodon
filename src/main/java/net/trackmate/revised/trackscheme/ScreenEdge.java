@@ -109,6 +109,24 @@ public class ScreenEdge extends PoolObject< ScreenEdge, ByteMappedElement >
 	protected void setToUninitializedState()
 	{}
 
+	/**
+	 * Set all fields as in specified {@link ScreenEdge} (which is possibly
+	 * from another pool).
+	 * <p>
+	 * ONLY USE THIS FOR {@link ScreenEntities#set(ScreenEntities)}!
+	 *
+	 * @param e
+	 * @return {@code this}.
+	 */
+	ScreenEdge cloneFrom( final ScreenEdge e )
+	{
+		setTrackSchemeEdgeId( e.getTrackSchemeEdgeId() );
+		setSourceScreenVertexIndex( e.getSourceScreenVertexIndex() );
+		setTargetScreenVertexIndex( e.getTargetScreenVertexIndex() );
+		setSelected( e.isSelected() );
+		return this;
+	}
+
 	@Override
 	public boolean equals( final Object obj )
 	{

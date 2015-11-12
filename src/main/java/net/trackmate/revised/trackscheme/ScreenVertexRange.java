@@ -79,6 +79,22 @@ public class ScreenVertexRange extends PoolObject< ScreenVertexRange, ByteMapped
 	protected void setToUninitializedState()
 	{}
 
+	/**
+	 * Set all fields as in specified {@link ScreenVertexRange} (which is
+	 * possibly from another pool).
+	 *
+	 * @param r
+	 * @return {@code this}.
+	 */
+	ScreenVertexRange cloneFrom( final ScreenVertexRange r )
+	{
+		setMinX( r.getMinX() );
+		setMaxX( r.getMaxX() );
+		setMinY( r.getMinY() );
+		setMaxY( r.getMaxY() );
+		return this;
+	}
+
 	public static class ScreenVertexRangePool extends Pool< ScreenVertexRange, ByteMappedElement >
 	{
 		public ScreenVertexRangePool( final int initialCapacity )

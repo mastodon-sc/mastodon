@@ -326,7 +326,7 @@ public class TrackSchemePanel extends JPanel implements
 
 		private ScreenEntities screenEntities2;
 
-		private ScreenEntities screenEntitiesIpStart;
+		private final ScreenEntities screenEntitiesIpStart;
 
 		private ScreenEntities screenEntitiesIpEnd;
 
@@ -360,11 +360,9 @@ public class TrackSchemePanel extends JPanel implements
 		/**
 		 * Swap screenEntities and screenEntitiesIpStart.
 		 */
-		private void swapIpStart()
+		private void copyIpStart()
 		{
-			final ScreenEntities tmp = screenEntities;
-			screenEntities = screenEntitiesIpStart;
-			screenEntitiesIpStart = tmp;
+			screenEntitiesIpStart.set( lastComputedScreenEntities );
 			screenEntities.clear();
 		}
 
@@ -389,7 +387,7 @@ public class TrackSchemePanel extends JPanel implements
 			reset( duration );
 			if (duration > 0 )
 			{
-				swapIpStart();
+				copyIpStart();
 				layout.cropAndScale( transform, screenEntities );
 				swapIpEnd();
 				interpolator = new ScreenEntitiesInterpolator( screenEntitiesIpStart, screenEntitiesIpEnd );
@@ -429,6 +427,7 @@ public class TrackSchemePanel extends JPanel implements
 				screenEntities = new ScreenEntities( graph, capacity );
 			else
 				screenEntities = tmp;
+			screenEntities.clear();
 		}
 
 		private ScreenEntities getLastComputedScreenEntities()
