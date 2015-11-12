@@ -100,7 +100,7 @@ public class SpatioTemporalIndexImp<
 	@Override
 	public SpatialIndex< V > getSpatialIndex( final int timepoint )
 	{
-		return timepointToSpatialIndex.get( timepoint );
+		return getSpatialIndexImp( timepoint );
 	}
 
 	@Override
@@ -146,14 +146,7 @@ public class SpatioTemporalIndexImp<
 		writeLock.lock();
 		try
 		{
-			final int tp = vertex.getTimepoint();
-			SpatialIndexImp< V > index = timepointToSpatialIndex.get( tp );
-			if ( index == null )
-			{
-				index = new SpatialIndexImp< V >( CollectionUtils.createVertexSet( graph ), vertexPool );
-				timepointToSpatialIndex.put( tp, index );
-			}
-			index.add( vertex );
+			getSpatialIndexImp( vertex.getTimepoint() ).add( vertex );
 		}
 		finally
 		{
@@ -202,5 +195,16 @@ public class SpatioTemporalIndexImp<
 	public void vertexPositionChanged( final V vertex )
 	{
 		vertexAdded( vertex );
+	}
+
+	private SpatialIndexImp< V > getSpatialIndexImp( final int timepoint )
+	{
+		SpatialIndexImp< V > index = timepointToSpatialIndex.get( timepoint );
+		if ( index == null )
+		{
+			index = new SpatialIndexImp< V >( CollectionUtils.createVertexSet( graph ), vertexPool );
+			timepointToSpatialIndex.put( timepoint, index );
+		}
+		return index;
 	}
 }
