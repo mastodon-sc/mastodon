@@ -169,7 +169,7 @@ public final class NearestValidNeighborSearchOnKDTree< O extends Ref< O > & Real
 		{
 			n = tree.numDimensions();
 			nodeSizeInDoubles = n + 2;
-			final int depth = ( int ) ( Math.log( tree.size() ) / Math.log( 2 ) ) + 2;
+			final int depth = Math.max( 0, ( int ) ( Math.log( tree.size() ) / Math.log( 2 ) ) + 2 );
 			pos = new double[ n ];
 			doubles = tree.getDoubles();
 			doublesRootIndex = tree.rootIndex * nodeSizeInDoubles;

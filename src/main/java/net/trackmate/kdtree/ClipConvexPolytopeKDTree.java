@@ -77,7 +77,7 @@ public class ClipConvexPolytopeKDTree< O extends Ref< O > & RealLocalizable, T e
 		n = tree.numDimensions();
 		xmin = new double[ n ];
 		xmax = new double[ n ];
-		final int depth = ( int ) ( Math.log( tree.size() ) / Math.log( 2 ) ) + 2;
+		final int depth = Math.max( 0, ( int ) ( Math.log( tree.size() ) / Math.log( 2 ) ) + 2 );
 		activeStack = new ArrayList< boolean[] >( depth );
 		psStack = new ArrayList< boolean[] >( depth );
 		inNodes = new TIntArrayList();
