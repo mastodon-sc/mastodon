@@ -15,6 +15,7 @@ import net.imglib2.ui.InteractiveDisplayCanvasComponent;
 import net.imglib2.ui.OverlayRenderer;
 import net.imglib2.ui.PainterThread;
 import net.imglib2.ui.TransformListener;
+import net.trackmate.graph.listenable.GraphChangeListener;
 import net.trackmate.revised.trackscheme.LineageTreeLayout;
 import net.trackmate.revised.trackscheme.ScreenEntities;
 import net.trackmate.revised.trackscheme.ScreenEntitiesInterpolator;
@@ -31,7 +32,8 @@ public class TrackSchemePanel extends JPanel implements
 		TransformListener< ScreenTransform >,
 		PainterThread.Paintable,
 		HighlightListener,
-		TimePointListener
+		TimePointListener,
+		GraphChangeListener
 {
 	private final TrackSchemeGraph< ?, ? > graph;
 
@@ -121,6 +123,8 @@ public class TrackSchemePanel extends JPanel implements
 		super( new BorderLayout(), false );
 		this.graph = graph;
 		options = optional.values;
+
+		graph.addGraphChangeListener( this );
 
 		final int w = options.getWidth();
 		final int h = options.getHeight();
@@ -303,7 +307,7 @@ public class TrackSchemePanel extends JPanel implements
 		painterThread.requestRepaint();
 	}
 
-//	@Override // TODO: should be some listener interface. rename?
+	@Override
 	public void graphChanged()
 	{
 		flags.setGraphChanged();
