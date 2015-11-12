@@ -229,7 +229,7 @@ public class TrackSchemeGraph<
 		}
 	}
 
-//	@Override // TODO: should be implemented for some listener interface
+//	@Override // TODO: should be implemented for some listener interface, or REMOVE? (vertices never change timepoint?)
 	public void vertexTimepointChanged( final V vertex )
 	{
 		idToTrackSchemeVertex.get( idmap.getVertexId( vertex ), tsv );
