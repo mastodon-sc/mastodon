@@ -364,7 +364,8 @@ public class TrackSchemePanel extends JPanel implements
 		 */
 		private void copyIpStart()
 		{
-			screenEntitiesIpStart.set( lastComputedScreenEntities );
+			if ( null != lastComputedScreenEntities )
+				screenEntitiesIpStart.set( lastComputedScreenEntities );
 			screenEntities.clear();
 		}
 
