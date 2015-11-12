@@ -35,6 +35,8 @@ public class TrackSchemePanel extends JPanel implements
 		TimePointListener,
 		GraphChangeListener
 {
+	private static final long ANIMATION_MILLISECONDS = 250;
+
 	private final TrackSchemeGraph< ?, ? > graph;
 
 	/**
@@ -255,7 +257,7 @@ public class TrackSchemePanel extends JPanel implements
 			layout.layout();
 			layoutMinX = layout.getCurrentLayoutMinX();
 			layoutMaxX = layout.getCurrentLayoutMaxX();
-			entityAnimator.startAnimation( transform, 0 );
+			entityAnimator.startAnimation( transform, ANIMATION_MILLISECONDS );
 		}
 		else if ( flags.transformChanged )
 		{
