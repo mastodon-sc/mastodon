@@ -157,7 +157,7 @@ public class SpatioTemporalIndexImp<
 		}
 		finally
 		{
-			writeLock.lock();
+			writeLock.unlock();
 		}
 	}
 
