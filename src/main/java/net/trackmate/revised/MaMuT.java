@@ -7,6 +7,7 @@ import java.util.List;
 import mpicbg.spim.data.SpimDataException;
 import mpicbg.spim.data.sequence.TimePoint;
 import net.trackmate.graph.GraphIdBimap;
+import net.trackmate.graph.listenable.GraphChangeListener;
 import net.trackmate.graph.listenable.ListenableGraph;
 import net.trackmate.revised.bdv.overlay.MouseOverListener;
 import net.trackmate.revised.bdv.overlay.OverlayGraphRenderer;
@@ -211,6 +212,14 @@ public class MaMuT
 		{
 			@Override
 			public void highlightChanged()
+			{
+				viewer.getDisplay().repaint();
+			}
+		} );
+		model.getGraph().addGraphChangeListener( new GraphChangeListener()
+		{
+			@Override
+			public void graphChanged()
 			{
 				viewer.getDisplay().repaint();
 			}
