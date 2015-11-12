@@ -2,6 +2,7 @@ package net.trackmate.graph;
 
 import java.util.ArrayList;
 
+import net.trackmate.graph.listenable.GraphChangeListener;
 import net.trackmate.graph.listenable.GraphListener;
 import net.trackmate.graph.listenable.ListenableGraph;
 import net.trackmate.graph.mempool.MappedElement;
@@ -39,12 +40,15 @@ public class ListenableGraphImp<
 
 	protected final ArrayList< GraphListener< V, E > > listeners;
 
+	protected final ArrayList< GraphChangeListener > changeListeners;
+
 	protected boolean emitEvents;
 
 	public ListenableGraphImp( final VP vertexPool, final EP edgePool )
 	{
 		super( vertexPool, edgePool );
 		listeners = new ArrayList< GraphListener<V,E> >();
+		changeListeners = new ArrayList< GraphChangeListener >();
 		emitEvents = true;
 	}
 
@@ -53,6 +57,7 @@ public class ListenableGraphImp<
 	{
 		super( edgePool );
 		listeners = new ArrayList< GraphListener<V,E> >();
+		changeListeners = new ArrayList< GraphChangeListener >();
 		emitEvents = true;
 	}
 
@@ -146,6 +151,23 @@ public class ListenableGraphImp<
 		return listeners.remove( listener );
 	}
 
+	@Override
+	public boolean addGraphChangeListener( final GraphChangeListener listener )
+	{
+		if ( ! changeListeners.contains( listener ) )
+		{
+			changeListeners.add( listener );
+			return true;
+		}
+		return false;
+	}
+
+	@Override
+	public boolean removeGraphChangeListener( final GraphChangeListener listener )
+	{
+		return changeListeners.remove( listener );
+	}
+
 	/**
 	 * Pause sending events to {@link GraphListener}s. This is called before
 	 * large modifications to the graph are made, for example when the graph is
@@ -167,5 +189,17 @@ public class ListenableGraphImp<
 		emitEvents = true;
 		for ( final GraphListener< V, E > listener : listeners )
 			listener.graphRebuilt();
+	}
+
+	/**
+	 * Send {@link GraphChangeListener#graphChanged() graphChanged} event to all
+	 * {@link GraphChangeListener} (if sending events is not currently
+	 * {@link #pauseListeners() paused}).
+	 */
+	protected void emitGraphChanged()
+	{
+		if ( emitEvents )
+			for ( final GraphChangeListener listener : changeListeners )
+				listener.graphChanged();
 	}
 }
