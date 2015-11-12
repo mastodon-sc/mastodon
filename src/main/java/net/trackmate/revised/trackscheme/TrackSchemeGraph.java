@@ -129,6 +129,11 @@ public class TrackSchemeGraph<
 		return idToTrackSchemeVertex.get( modelId, ref );
 	}
 
+	TrackSchemeEdge getTrackSchemeEdgeForModelId( final int modelId, final TrackSchemeEdge ref )
+	{
+		return idToTrackSchemeEdge.get( modelId, ref );
+	}
+
 	public boolean addGraphChangeListener( final GraphChangeListener listener )
 	{
 		if ( ! listeners.contains( listener ) )
