@@ -112,7 +112,14 @@ public class KDTree<
 		public NodeFactory( final Collection< O > objects, final RefPool< O > objectPool, final MemPool.Factory< T > poolFactory )
 		{
 			this.poolFactory = poolFactory;
-			this.numDimensions = objects.iterator().next().numDimensions();
+			if ( objects.isEmpty() )
+			{
+				final O ref = objectPool.createRef();
+				this.numDimensions = ref.numDimensions();
+				objectPool.releaseRef( ref );
+			}
+			else
+				this.numDimensions = objects.iterator().next().numDimensions();
 			this.sizeInBytes = KDTreeNode.sizeInBytes( numDimensions );
 			final int capacity = objects.size();
 			kdtree = new KDTree< O, T >( capacity, this, numDimensions, objects, objectPool );
