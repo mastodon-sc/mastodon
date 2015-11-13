@@ -61,6 +61,53 @@ public class TrackSchemeSelection< V extends Vertex< E > & HasTimepoint, E exten
 		props.setVertexSelected( id, selected );
 	}
 
+	public void setVertexSelected( final int id, final boolean selected )
+	{
+		final TrackSchemeVertex ref = graph.vertexRef();
+		graph.getVertexPool().getByInternalPoolIndex( id, ref );
+		props.setVertexSelected( ref.getModelVertexId(), selected );
+		graph.releaseRef( ref );
+	}
+
+	public void setEdgeSelected( final int id, final boolean selected )
+	{
+		final TrackSchemeEdge ref = graph.edgeRef();
+		graph.getEdgePool().getByInternalPoolIndex( id, ref );
+		props.setEdgeSelected( ref.getModelEdgeId(), selected );
+		graph.releaseRef( ref );
+	}
+
+	public void toggleVertex( final int id )
+	{
+		final TrackSchemeVertex ref = graph.vertexRef();
+		graph.getVertexPool().getByInternalPoolIndex( id, ref );
+		props.toggleVertexSelected( ref.getModelVertexId() );
+		graph.releaseRef( ref );
+	}
+
+	public boolean isVertexSelected( final int id )
+	{
+		final TrackSchemeVertex ref = graph.vertexRef();
+		graph.getVertexPool().getByInternalPoolIndex( id, ref );
+		final int modelVertexId = ref.getModelVertexId();
+		graph.releaseRef( ref );
+		return props.isVertexSelected( modelVertexId );
+	}
+
+	public boolean isEdgeSelected( final int id )
+	{
+		final TrackSchemeEdge ref = graph.edgeRef();
+		graph.getEdgePool().getByInternalPoolIndex( id, ref );
+		final int modelEdgeId = ref.getModelEdgeId();
+		graph.releaseRef( ref );
+		return props.isEdgeSelected( modelEdgeId );
+	}
+
+	public void clearSelection()
+	{
+		props.clearSelection();
+	}
+
 	public void setSelected( final TrackSchemeEdge edge, final boolean selected )
 	{
 		final int id = edge.getModelEdgeId();
@@ -76,4 +123,5 @@ public class TrackSchemeSelection< V extends Vertex< E > & HasTimepoint, E exten
 	{
 		return props.removeSelectionListener( l );
 	}
+
 }

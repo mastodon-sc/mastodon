@@ -5,6 +5,8 @@ import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.event.AdjustmentEvent;
 import java.awt.event.AdjustmentListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 
 import javax.swing.Box;
 import javax.swing.JPanel;
@@ -22,9 +24,11 @@ import net.trackmate.revised.trackscheme.ScreenEntitiesInterpolator;
 import net.trackmate.revised.trackscheme.ScreenTransform;
 import net.trackmate.revised.trackscheme.TrackSchemeGraph;
 import net.trackmate.revised.trackscheme.TrackSchemeHighlight;
+import net.trackmate.revised.trackscheme.TrackSchemeSelection;
 import net.trackmate.revised.trackscheme.display.TrackSchemeOptions.Values;
 import net.trackmate.revised.trackscheme.display.laf.DefaultTrackSchemeOverlay;
 import net.trackmate.revised.ui.selection.HighlightListener;
+import net.trackmate.revised.ui.selection.SelectionListener;
 import net.trackmate.trackscheme.animate.AbstractAnimator;
 import bdv.viewer.TimePointListener;
 
@@ -33,8 +37,10 @@ public class TrackSchemePanel extends JPanel implements
 		PainterThread.Paintable,
 		HighlightListener,
 		TimePointListener,
-		GraphChangeListener
+		GraphChangeListener,
+		SelectionListener
 {
+
 	private static final long ANIMATION_MILLISECONDS = 250;
 
 	private final TrackSchemeGraph< ?, ? > graph;
@@ -117,13 +123,17 @@ public class TrackSchemePanel extends JPanel implements
 	 */
 	private boolean ignoreScrollBarChanges;
 
+	private final TrackSchemeSelection< ?, ? > selection;
+
 	public TrackSchemePanel(
 			final TrackSchemeGraph< ?, ? > graph,
 			final TrackSchemeHighlight< ?, ? > highlight,
+			final TrackSchemeSelection< ?, ? > selection,
 			final TrackSchemeOptions optional )
 	{
 		super( new BorderLayout(), false );
 		this.graph = graph;
+		this.selection = selection;
 		options = optional.values;
 
 		graph.addGraphChangeListener( this );
@@ -134,6 +144,7 @@ public class TrackSchemePanel extends JPanel implements
 		display.addTransformListener( this );
 
 		highlight.addHighlightListener( this );
+		selection.addSelectionListener( this );
 
 		graphOverlay = new DefaultTrackSchemeOverlay( highlight, optional );
 		display.addOverlayRenderer( graphOverlay );
@@ -160,6 +171,8 @@ public class TrackSchemePanel extends JPanel implements
 		flags = new Flags();
 
 		display.addMouseMotionListener( new MouseOverListener( graphOverlay, highlight ) );
+
+		display.addMouseListener( new SelectionHandler() );
 
 		xScrollBar = new JScrollBar( JScrollBar.HORIZONTAL );
 		yScrollBar = new JScrollBar( JScrollBar.VERTICAL );
@@ -323,6 +336,13 @@ public class TrackSchemePanel extends JPanel implements
 		display.repaint();
 	}
 
+	@Override
+	public void selectionChanged()
+	{
+		flags.setGraphChanged();
+		painterThread.requestRepaint();
+	}
+
 	protected class ScreenEntityAnimator extends AbstractAnimator
 	{
 		private ScreenEntities screenEntities;
@@ -483,5 +503,48 @@ public class TrackSchemePanel extends JPanel implements
 			contextChanged = false;
 			return copy;
 		}
+	}
+
+	private class SelectionHandler implements MouseListener
+	{
+
+		@Override
+		public void mouseClicked( final MouseEvent e )
+		{
+			final int id = graphOverlay.getVertexIdAt( e.getX(), e.getY() );
+			if ( id < 0 )
+			{
+				if ( !e.isShiftDown() )
+					selection.clearSelection();
+				return;
+			}
+
+			if ( e.isShiftDown() )
+			{
+				selection.toggleVertex( id );
+			}
+			else
+			{
+				selection.clearSelection();
+				selection.setVertexSelected( id, true );
+			}
+		}
+
+		@Override
+		public void mousePressed( final MouseEvent e )
+		{}
+
+		@Override
+		public void mouseReleased( final MouseEvent e )
+		{}
+
+		@Override
+		public void mouseEntered( final MouseEvent e )
+		{}
+
+		@Override
+		public void mouseExited( final MouseEvent e )
+		{}
+
 	}
 }

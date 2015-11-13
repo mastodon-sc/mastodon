@@ -3,9 +3,6 @@ package net.trackmate.revised.trackscheme;
 import gnu.trove.impl.unmodifiable.TUnmodifiableIntSet;
 import gnu.trove.set.TIntSet;
 import gnu.trove.set.hash.TIntHashSet;
-
-import java.util.ArrayList;
-
 import net.trackmate.graph.Edge;
 import net.trackmate.graph.GraphIdBimap;
 import net.trackmate.graph.ReadOnlyGraph;
@@ -17,8 +14,6 @@ import net.trackmate.revised.ui.selection.SelectionListener;
 public class DefaultModelSelectionProperties< V extends Vertex< E >, E extends Edge< V > > implements ModelSelectionProperties
 {
 	private final Selection< V, E > selection;
-
-	private final ArrayList< SelectionListener > listeners;
 
 	private final ReadOnlyGraph< V, E > graph;
 
@@ -32,19 +27,18 @@ public class DefaultModelSelectionProperties< V extends Vertex< E >, E extends E
 		this.graph = graph;
 		this.idmap = idmap;
 		this.selection = selection;
-		this.listeners = new ArrayList< SelectionListener >();
 	}
 
 	@Override
 	public boolean addSelectionListener( final SelectionListener l )
 	{
-		return listeners.add( l );
+		return selection.addSelectionListener( l );
 	}
 
 	@Override
 	public boolean removeSelectionListener( final SelectionListener l )
 	{
-		return listeners.remove( l );
+		return selection.removeSelectionListener( l );
 	}
 
 	@Override
@@ -77,7 +71,7 @@ public class DefaultModelSelectionProperties< V extends Vertex< E >, E extends E
 		final V ref = graph.vertexRef();
 		final V v = idmap.getVertex( vertexId, ref );
 		selection.setSelected( v, selected );
-		graph.releaseRef( v );
+		graph.releaseRef( ref );
 	}
 
 	@Override
@@ -86,7 +80,7 @@ public class DefaultModelSelectionProperties< V extends Vertex< E >, E extends E
 		final E ref = graph.edgeRef();
 		final E e = idmap.getEdge( edgeId, ref );
 		selection.setSelected( e, selected );
-		graph.releaseRef( e );
+		graph.releaseRef( ref );
 	}
 
 	@Override
@@ -95,7 +89,7 @@ public class DefaultModelSelectionProperties< V extends Vertex< E >, E extends E
 		final V ref = graph.vertexRef();
 		final V v = idmap.getVertex( vertexId, ref );
 		final boolean selected = selection.isSelected( v );
-		graph.releaseRef( v );
+		graph.releaseRef( ref );
 		return selected;
 	}
 
@@ -105,7 +99,31 @@ public class DefaultModelSelectionProperties< V extends Vertex< E >, E extends E
 		final E ref = graph.edgeRef();
 		final E e = idmap.getEdge( edgeId, ref );
 		final boolean selected = selection.isSelected( e );
-		graph.releaseRef( e );
+		graph.releaseRef( ref );
 		return selected;
+	}
+
+	@Override
+	public void toggleVertexSelected( final int vertexId )
+	{
+		final V ref = graph.vertexRef();
+		final V v = idmap.getVertex( vertexId, ref );
+		selection.toggle( v );
+		graph.releaseRef( ref );
+	}
+
+	@Override
+	public void toggleEdgeSelected( final int edgeId )
+	{
+		final E ref = graph.edgeRef();
+		final E e = idmap.getEdge( edgeId, ref );
+		selection.toggle( e );
+		graph.releaseRef( ref );
+	}
+
+	@Override
+	public void clearSelection()
+	{
+		selection.clearSelection();
 	}
 }
