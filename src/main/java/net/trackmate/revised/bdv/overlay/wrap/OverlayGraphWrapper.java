@@ -36,7 +36,7 @@ public class OverlayGraphWrapper< V extends Vertex< E >, E extends Edge< V > >
 
 	private final SpatioTemporalIndexWrapper< V, E > wrappedIndex;
 
-	private final Selection< V, E > selection;
+	final Selection< V, E > selection;
 
 	public OverlayGraphWrapper(
 			final ReadOnlyGraph< V, E > graph,
@@ -58,7 +58,7 @@ public class OverlayGraphWrapper< V extends Vertex< E >, E extends Edge< V > >
 	public OverlayVertexWrapper< V, E > vertexRef()
 	{
 		final OverlayVertexWrapper< V, E > ref = tmpVertexRefs.poll();
-		return ref == null ? new OverlayVertexWrapper< V, E >( this, selection ) : ref;
+		return ref == null ? new OverlayVertexWrapper< V, E >( this ) : ref;
 	}
 
 	@Override

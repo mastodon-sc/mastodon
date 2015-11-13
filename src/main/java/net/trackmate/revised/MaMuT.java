@@ -11,8 +11,11 @@ import net.trackmate.graph.listenable.GraphChangeListener;
 import net.trackmate.graph.listenable.ListenableGraph;
 import net.trackmate.revised.bdv.overlay.MouseOverListener;
 import net.trackmate.revised.bdv.overlay.OverlayGraphRenderer;
+import net.trackmate.revised.bdv.overlay.wrap.MouseSelectionHandler;
+import net.trackmate.revised.bdv.overlay.wrap.OverlayEdgeWrapper;
 import net.trackmate.revised.bdv.overlay.wrap.OverlayGraphWrapper;
 import net.trackmate.revised.bdv.overlay.wrap.OverlayHighlightWrapper;
+import net.trackmate.revised.bdv.overlay.wrap.OverlayVertexWrapper;
 import net.trackmate.revised.model.mamut.BoundingSphereRadiusStatistics;
 import net.trackmate.revised.model.mamut.Link;
 import net.trackmate.revised.model.mamut.Model;
@@ -28,6 +31,7 @@ import net.trackmate.revised.trackscheme.display.TrackSchemeFrame;
 import net.trackmate.revised.ui.selection.HighlightListener;
 import net.trackmate.revised.ui.selection.HighlightModel;
 import net.trackmate.revised.ui.selection.Selection;
+import net.trackmate.revised.ui.selection.SelectionListener;
 import bdv.BigDataViewer;
 import bdv.export.ProgressWriterConsole;
 import bdv.spimdata.SpimDataMinimal;
@@ -230,7 +234,7 @@ public class MaMuT
 			InitializeViewerState.initBrightness( 0.001, 0.999, bdv.getViewer(), bdv.getSetupAssignments() );
 		final ViewerPanel viewer = bdv.getViewer();
 		viewer.setTimepoint( initialTimepointIndex );
-		final OverlayGraphRenderer< ?, ? > tracksOverlay = new OverlayGraphRenderer<>( overlayGraph, overlayHighlight );
+		final OverlayGraphRenderer< OverlayVertexWrapper< Spot, Link >, OverlayEdgeWrapper< Spot, Link >> tracksOverlay = new OverlayGraphRenderer<>( overlayGraph, overlayHighlight );
 		viewer.getDisplay().addOverlayRenderer( tracksOverlay );
 		viewer.addRenderTransformListener( tracksOverlay );
 		viewer.addTimePointListener( tracksOverlay );
@@ -250,8 +254,21 @@ public class MaMuT
 				viewer.getDisplay().repaint();
 			}
 		} );
-		final MouseOverListener< ?, ? > mouseOver = new MouseOverListener( overlayHighlight, tracksOverlay, overlayGraph );
+		selection.addSelectionListener( new SelectionListener()
+		{
+			@Override
+			public void selectionChanged()
+			{
+				viewer.getDisplay().repaint();
+			}
+		} );
+
+		final MouseOverListener< OverlayVertexWrapper< Spot, Link >, OverlayEdgeWrapper< Spot, Link >> mouseOver = new MouseOverListener< OverlayVertexWrapper< Spot, Link >, OverlayEdgeWrapper< Spot, Link >>( overlayHighlight, tracksOverlay, overlayGraph );
 		viewer.getDisplay().addHandler( mouseOver );
+
+		final MouseSelectionHandler< Spot, Link > mouseSelectionListener = new MouseSelectionHandler< Spot, Link >( overlayGraph, tracksOverlay, selection );
+		viewer.getDisplay().addHandler( mouseSelectionListener );
+
 		return bdv;
 	}
 

@@ -25,15 +25,15 @@ public class OverlayVertexWrapper< V extends Vertex< E >, E extends Edge< V > >
 
 	private final Selection< V, E > selection;
 
-	OverlayVertexWrapper( final OverlayGraphWrapper< V, E > wrapper, final Selection< V, E > selection )
+	OverlayVertexWrapper( final OverlayGraphWrapper< V, E > wrapper )
 	{
 		this.wrapper = wrapper;
-		this.selection = selection;
 		wv = wrapper.wrappedGraph.vertexRef();
 		incomingEdges = new EdgesWrapper( wv.incomingEdges() );
 		outgoingEdges = new EdgesWrapper( wv.outgoingEdges() );
 		edges = new EdgesWrapper( wv.edges() );
 		overlayProperties = wrapper.overlayProperties;
+		selection = wrapper.selection;
 	}
 
 	@Override
