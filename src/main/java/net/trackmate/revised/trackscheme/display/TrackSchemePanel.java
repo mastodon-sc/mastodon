@@ -5,8 +5,6 @@ import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.event.AdjustmentEvent;
 import java.awt.event.AdjustmentListener;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 
 import javax.swing.Box;
 import javax.swing.JPanel;
@@ -172,7 +170,9 @@ public class TrackSchemePanel extends JPanel implements
 
 		display.addMouseMotionListener( new MouseOverListener( graphOverlay, highlight ) );
 
-		display.addMouseListener( new SelectionHandler() );
+		final MouseSelectionHandler mouseSelectionHandler = new MouseSelectionHandler( graphOverlay, selection, display );
+		display.addHandler( mouseSelectionHandler );
+		display.addOverlayRenderer( mouseSelectionHandler );
 
 		xScrollBar = new JScrollBar( JScrollBar.HORIZONTAL );
 		yScrollBar = new JScrollBar( JScrollBar.VERTICAL );
@@ -503,48 +503,5 @@ public class TrackSchemePanel extends JPanel implements
 			contextChanged = false;
 			return copy;
 		}
-	}
-
-	private class SelectionHandler implements MouseListener
-	{
-
-		@Override
-		public void mouseClicked( final MouseEvent e )
-		{
-			final int id = graphOverlay.getVertexIdAt( e.getX(), e.getY() );
-			if ( id < 0 )
-			{
-				if ( !e.isShiftDown() )
-					selection.clearSelection();
-				return;
-			}
-
-			if ( e.isShiftDown() )
-			{
-				selection.toggleVertex( id );
-			}
-			else
-			{
-				selection.clearSelection();
-				selection.setVertexSelected( id, true );
-			}
-		}
-
-		@Override
-		public void mousePressed( final MouseEvent e )
-		{}
-
-		@Override
-		public void mouseReleased( final MouseEvent e )
-		{}
-
-		@Override
-		public void mouseEntered( final MouseEvent e )
-		{}
-
-		@Override
-		public void mouseExited( final MouseEvent e )
-		{}
-
 	}
 }
