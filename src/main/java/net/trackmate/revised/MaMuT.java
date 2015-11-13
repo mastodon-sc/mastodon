@@ -250,7 +250,7 @@ public class MaMuT
 				viewer.getDisplay().repaint();
 			}
 		} );
-		final MouseOverListener mouseOver = new MouseOverListener( tracksOverlay );
+		final MouseOverListener< ?, ? > mouseOver = new MouseOverListener( overlayHighlight, tracksOverlay, overlayGraph );
 		viewer.getDisplay().addHandler( mouseOver );
 		return bdv;
 	}

@@ -84,7 +84,7 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 		renderTimepoint = timepoint;
 	}
 
-	public void mouseOverHighlight( final int x, final int y )
+	public V getVertexAt( final int x, final int y, final V ref )
 	{
 		final AffineTransform3D transform = new AffineTransform3D();
 		synchronized ( renderTransform )
@@ -125,7 +125,6 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 				final double[] xy = new double[] { x, y };
 				final double[] vPos = new double[ 3 ];
 				double minDist = Double.MAX_VALUE;
-				final V minV = graph.vertexRef();
 				boolean found = false;
 				for ( final V v : ccp.getInsideValues() )
 				{
@@ -138,17 +137,12 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 						if ( d < minDist )
 						{
 							minDist = d;
-							minV.refTo( v );
+							ref.refTo( v );
 						}
 					}
 				}
-				if ( found )
-				{
-					highlight.highlightVertex( minV );
-					graph.releaseRef( minV );
-					return;
-				}
-				graph.releaseRef( minV );
+				if ( found ) { return ref; }
+				return null;
 			}
 			else if ( drawEllipsoidSliceIntersection )
 			{
@@ -160,18 +154,18 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 					svm.init( v, transform );
 					if ( svm.containsGlobal( gPos ) )
 					{
-						highlight.highlightVertex( v );
-						return;
+						ref.refTo( v );
+						return ref;
 					}
 				}
+				return null;
 			}
 		}
 		finally
 		{
 			index.readLock().unlock();
 		}
-
-		highlight.highlightVertex( null );
+		return null;
 	}
 
 	/*
