@@ -33,8 +33,8 @@ public class CreateLargeModelExample
 			final double vy = VELOCITY * Math.sin( angle );
 
 			final int nframes = N_DIVISIONS * N_FRAMES_PER_DIVISION;
-			final double x = nframes * VELOCITY + vx;
-			final double y = nframes * VELOCITY + vy;
+			final double x = 0.; // nframes * VELOCITY + vx;
+			final double y = 0.; // nframes * VELOCITY + vy;
 			final double z = N_DIVISIONS * VELOCITY;
 
 			final double[] pos = new double[] { x, y, z };

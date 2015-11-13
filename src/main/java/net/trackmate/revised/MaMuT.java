@@ -20,8 +20,10 @@ import net.trackmate.revised.model.mamut.ModelOverlayProperties;
 import net.trackmate.revised.model.mamut.Spot;
 import net.trackmate.revised.trackscheme.DefaultModelGraphProperties;
 import net.trackmate.revised.trackscheme.DefaultModelHighlightProperties;
+import net.trackmate.revised.trackscheme.DefaultModelSelectionProperties;
 import net.trackmate.revised.trackscheme.TrackSchemeGraph;
 import net.trackmate.revised.trackscheme.TrackSchemeHighlight;
+import net.trackmate.revised.trackscheme.TrackSchemeSelection;
 import net.trackmate.revised.trackscheme.display.TrackSchemeFrame;
 import net.trackmate.revised.ui.selection.HighlightListener;
 import net.trackmate.revised.ui.selection.HighlightModel;
@@ -111,7 +113,7 @@ public class MaMuT
 	{
 		//		final String bdvFile = "/Users/pietzsch/TGMM/data/tifs/datasethdf5.xml";
 		//		final String modelFile = "/Users/pietzsch/TGMM/data/tifs/model_revised.raw";
-		final String bdvFile = "/Volumes/Data/BDV_MVD_5v_final.xml";
+		final String bdvFile = "D:/Users/Jean-Yves/Desktop/mitosis.xml";
 		final String modelFile = ""; // "/Volumes/Data/model_revised.raw";
 		final int initialTimepointIndex = 10;
 
@@ -164,9 +166,16 @@ public class MaMuT
 		final TrackSchemeHighlight< Spot, Link > trackSchemeHighlight = new TrackSchemeHighlight< Spot, Link >( highlightProperties, trackSchemeGraph );
 
 		/*
+		 * TrackScheme selection
+		 */
+
+		final DefaultModelSelectionProperties< Spot, Link > selectionProperties = new DefaultModelSelectionProperties< Spot, Link >( graph, idmap, selection );
+		final TrackSchemeSelection< Spot, Link > trackSchemeSelection = new TrackSchemeSelection< Spot, Link >( selectionProperties, trackSchemeGraph );
+
+		/*
 		 * show TrackSchemeFrame
 		 */
-		final TrackSchemeFrame frame = new TrackSchemeFrame( trackSchemeGraph, trackSchemeHighlight );
+		final TrackSchemeFrame frame = new TrackSchemeFrame( trackSchemeGraph, trackSchemeHighlight, trackSchemeSelection );
 		frame.getTrackschemePanel().setTimepointRange( minTimepoint, maxTimepoint );
 		frame.getTrackschemePanel().graphChanged();
 		frame.setVisible( true );
@@ -178,7 +187,7 @@ public class MaMuT
 
 //		for ( int i = 0; i < 2; ++i )
 //		{
-		final BigDataViewer bdv = openBDV( model, highlightModel, radiusStats, spimData, windowTitle, initialTimepointIndex, bdvFile );
+		final BigDataViewer bdv = openBDV( model, highlightModel, selection, radiusStats, spimData, windowTitle, initialTimepointIndex, bdvFile );
 		final ViewerPanel viewer = bdv.getViewer();
 
 		/*
@@ -195,21 +204,27 @@ public class MaMuT
 	public static BigDataViewer openBDV(
 			final Model model,
 			final HighlightModel< Spot, Link > highlightModel,
+			final Selection< Spot, Link > selection,
 			final BoundingSphereRadiusStatistics radiusStats,
 			final SpimDataMinimal spimData,
 			final String windowTitle,
 			final int initialTimepointIndex,
-			final String bdvFile )
+			final String bdvFile
+			)
 	{
+
 		final OverlayGraphWrapper< Spot, Link > overlayGraph = new OverlayGraphWrapper<>(
 				model.getGraph(),
 				model.getGraphIdBimap(),
 				model.getSpatioTemporalIndex(),
+				selection,
 				new ModelOverlayProperties( radiusStats ) );
+
 		final OverlayHighlightWrapper< Spot, Link > overlayHighlight = new OverlayHighlightWrapper<>(
 				model.getGraph(),
 				model.getGraphIdBimap(),
 				highlightModel );
+
 		final BigDataViewer bdv = BigDataViewer.open( spimData, windowTitle, new ProgressWriterConsole(), ViewerOptions.options() );
 		if ( !bdv.tryLoadSettings( bdvFile ) )
 			InitializeViewerState.initBrightness( 0.001, 0.999, bdv.getViewer(), bdv.getSetupAssignments() );
