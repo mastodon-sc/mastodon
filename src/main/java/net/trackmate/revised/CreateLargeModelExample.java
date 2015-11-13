@@ -6,7 +6,7 @@ import net.trackmate.revised.model.mamut.Spot;
 
 public class CreateLargeModelExample
 {
-	private static final int N_STARTING_CELLS = 50;
+	private static final int N_STARTING_CELLS = 6;
 
 	private static final int N_DIVISIONS = 10; // 16;
 
@@ -66,7 +66,7 @@ public class CreateLargeModelExample
 			pos[ 0 ] = previousSpot.getDoublePosition( 0 ) + vx;
 			pos[ 1 ] = previousSpot.getDoublePosition( 1 ) + vy;
 			pos[ 2 ] = previousSpot.getDoublePosition( 2 );
-			final int frame = previousSpot.getTimepoint();
+			final int frame = previousSpot.getTimepoint() + 1;
 
 			model.addSpot( frame, pos, cov, spot );
 			model.addLink( previousSpot, spot, link );
