@@ -57,6 +57,7 @@ public abstract class AbstractTrackSchemeOverlay implements OverlayRenderer
 
 	private int currentTimepoint = 0;
 
+
 	public AbstractTrackSchemeOverlay( final TrackSchemeHighlight< ?, ? > highlight, final TrackSchemeOptions options )
 	{
 		this.highlight = highlight;
@@ -109,7 +110,40 @@ public abstract class AbstractTrackSchemeOverlay implements OverlayRenderer
 		}
 	}
 
-	public void mouseOverHighlight( final int x, final int y )
+	public int getEdgeIdAt( final int x, final int y, final double tolerance )
+	{
+		final ScreenEntities ent = getScreenEntities();
+		if ( ent != null )
+		{
+			final RealPoint pos = new RealPoint( x, y );
+			final RefList< ScreenVertex > vertices = ent.getVertices();
+			final ScreenVertex vt = vertices.createRef();
+			final ScreenVertex vs = vertices.createRef();
+			for ( final ScreenEdge e : ent.getEdges() )
+			{
+				vertices.get( e.getSourceScreenVertexIndex(), vs );
+				vertices.get( e.getTargetScreenVertexIndex(), vt );
+				if ( distanceToPaintedEdge( pos, e, vs, vt ) <= tolerance ) { return e.getTrackSchemeEdgeId(); }
+			}
+		}
+		return -1;
+	}
+
+	/**
+	 * Returns the id of the TrackScheme vertex currently painted on this
+	 * display at screen coordinates specified by <code>x</code> and
+	 * <code>y</code>.
+	 * <p>
+	 * This method exists to facilitate writing mouse handlers.
+	 * 
+	 * @param x
+	 *            the x screen coordinate
+	 * @param y
+	 *            the y screen coordinate
+	 * @return the ID of the TrackScheme vertex at <code>(x, y)</code>. Returns
+	 *         -1 if there is no vertex at this position.
+	 */
+	public int getVertexIdAt( final int x, final int y )
 	{
 		final ScreenEntities ent = getScreenEntities();
 		if ( ent != null )
@@ -117,14 +151,10 @@ public abstract class AbstractTrackSchemeOverlay implements OverlayRenderer
 			final RealPoint pos = new RealPoint( x, y );
 			for ( final ScreenVertex v : ent.getVertices() )
 			{
-				if ( isInsidePaintedVertex( pos, v ) )
-				{
-					highlight.highlightVertex( v.getTrackSchemeVertexId() );
-					return;
-				}
+				if ( isInsidePaintedVertex( pos, v ) ) { return v.getTrackSchemeVertexId(); }
 			}
 		}
-		highlight.highlightVertex( -1 );
+		return -1;
 	}
 
 	@Override
@@ -218,6 +248,8 @@ public abstract class AbstractTrackSchemeOverlay implements OverlayRenderer
 
 	protected abstract boolean isInsidePaintedVertex( final RealLocalizable pos, final ScreenVertex vertex );
 
+	protected abstract double distanceToPaintedEdge( final RealLocalizable pos, final ScreenEdge edge, ScreenVertex source, ScreenVertex target );
+
 	protected abstract void paintBackground( Graphics2D g2, ScreenEntities screenEntities );
 
 	protected abstract void beforeDrawVertex( Graphics2D g2 );
@@ -231,4 +263,5 @@ public abstract class AbstractTrackSchemeOverlay implements OverlayRenderer
 	protected abstract void beforeDrawEdge( Graphics2D g2 );
 
 	protected abstract void drawEdge( Graphics2D g2, ScreenEdge edge, ScreenVertex vs, ScreenVertex vt );
+
 }

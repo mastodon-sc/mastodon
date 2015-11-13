@@ -3,20 +3,18 @@ package net.trackmate.revised.trackscheme.display;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
+import net.trackmate.revised.trackscheme.TrackSchemeHighlight;
+
 public class MouseOverListener extends MouseAdapter
 {
 	private final AbstractTrackSchemeOverlay graphOverlay;
 
-	public MouseOverListener( final AbstractTrackSchemeOverlay graphOverlay )
+	private final TrackSchemeHighlight< ?, ? > highlight;
+
+	public MouseOverListener( final AbstractTrackSchemeOverlay graphOverlay, final TrackSchemeHighlight< ?, ? > highlight )
 	{
 		this.graphOverlay = graphOverlay;
-	}
-
-	@Override
-	public void mouseExited( final MouseEvent e )
-	{
-		// TODO Auto-generated method stub
-		super.mouseExited( e );
+		this.highlight = highlight;
 	}
 
 	@Override
@@ -24,6 +22,13 @@ public class MouseOverListener extends MouseAdapter
 	{
 		final int x = e.getX();
 		final int y = e.getY();
-		graphOverlay.mouseOverHighlight( x, y );
+
+		final int id = graphOverlay.getVertexIdAt( x, y );
+		if ( id >= 0 )
+		{
+			highlight.highlightVertex( id );
+			return;
+		}
+		highlight.highlightVertex( -1 );
 	}
 }

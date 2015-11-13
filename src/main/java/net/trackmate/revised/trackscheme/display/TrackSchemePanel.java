@@ -133,8 +133,9 @@ public class TrackSchemePanel extends JPanel implements
 		display = new InteractiveDisplayCanvasComponent< ScreenTransform >(	w, h, options.getTransformEventHandlerFactory() );
 		display.addTransformListener( this );
 
-		graphOverlay = new DefaultTrackSchemeOverlay( highlight, optional );
 		highlight.addHighlightListener( this );
+
+		graphOverlay = new DefaultTrackSchemeOverlay( highlight, optional );
 		display.addOverlayRenderer( graphOverlay );
 
 		// This should be the last OverlayRenderer in display.
@@ -158,7 +159,7 @@ public class TrackSchemePanel extends JPanel implements
 		painterThread = new PainterThread( this );
 		flags = new Flags();
 
-		display.addMouseMotionListener( new MouseOverListener( graphOverlay ) );
+		display.addMouseMotionListener( new MouseOverListener( graphOverlay, highlight ) );
 
 		xScrollBar = new JScrollBar( JScrollBar.HORIZONTAL );
 		yScrollBar = new JScrollBar( JScrollBar.VERTICAL );

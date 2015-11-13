@@ -109,16 +109,27 @@ public class MaMuT
 
 	public static void main4( final String[] args ) throws IOException, SpimDataException
 	{
-		final String bdvFile = "/Users/pietzsch/TGMM/data/tifs/datasethdf5.xml";
-		final String modelFile = "/Users/pietzsch/TGMM/data/tifs/model_revised.raw";
+		//		final String bdvFile = "/Users/pietzsch/TGMM/data/tifs/datasethdf5.xml";
+		//		final String modelFile = "/Users/pietzsch/TGMM/data/tifs/model_revised.raw";
+		final String bdvFile = "/Volumes/Data/BDV_MVD_5v_final.xml";
+		final String modelFile = ""; // "/Volumes/Data/model_revised.raw";
 		final int initialTimepointIndex = 10;
 
 		/*
 		 * Load Model
 		 */
-		final Model model = new Model();
+
+		final Model model;
+		if ( null != modelFile && !modelFile.isEmpty() )
+		{
+			model = new Model();
+			model.loadRaw( new File( modelFile ) );
+		}
+		else
+		{
+			model = new CreateLargeModelExample().run();
+		}
 		final BoundingSphereRadiusStatistics radiusStats = new BoundingSphereRadiusStatistics( model );
-		model.loadRaw( new File( modelFile ) );
 
 		/*
 		 * Load SpimData

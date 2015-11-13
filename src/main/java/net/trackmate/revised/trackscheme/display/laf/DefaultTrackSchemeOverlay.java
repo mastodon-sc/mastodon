@@ -12,6 +12,7 @@ import java.awt.font.TextLayout;
 import java.awt.geom.Rectangle2D;
 
 import net.imglib2.RealLocalizable;
+import net.trackmate.revised.Util;
 import net.trackmate.revised.trackscheme.ScreenEdge;
 import net.trackmate.revised.trackscheme.ScreenEntities;
 import net.trackmate.revised.trackscheme.ScreenTransform;
@@ -153,6 +154,19 @@ public class DefaultTrackSchemeOverlay extends AbstractTrackSchemeOverlay
 		{
 			drawVertexSimplified( g2, vertex );
 		}
+	}
+
+	@Override
+	protected double distanceToPaintedEdge( final RealLocalizable pos, final ScreenEdge edge, final ScreenVertex source, final ScreenVertex target )
+	{
+		final double x0 = pos.getDoublePosition( 0 );
+		final double y0 = pos.getDoublePosition( 1 );
+		final double x1 = source.getX();
+		final double y1 = source.getY();
+		final double x2 = target.getX();
+		final double y2 = target.getY();
+		final double d = Util.segmentDist( x0, y0, x1, y1, x2, y2 );
+		return d;
 	}
 
 	@Override

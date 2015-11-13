@@ -10,8 +10,6 @@ import javax.swing.WindowConstants;
 import net.imglib2.ui.util.GuiUtil;
 import net.trackmate.revised.trackscheme.TrackSchemeGraph;
 import net.trackmate.revised.trackscheme.TrackSchemeHighlight;
-import bdv.viewer.SourceAndConverter;
-import bdv.viewer.ViewerOptions;
 
 public class TrackSchemeFrame extends JFrame
 {
