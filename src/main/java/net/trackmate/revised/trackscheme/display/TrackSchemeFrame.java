@@ -11,6 +11,8 @@ import net.imglib2.ui.util.GuiUtil;
 import net.trackmate.revised.trackscheme.TrackSchemeGraph;
 import net.trackmate.revised.trackscheme.TrackSchemeHighlight;
 import net.trackmate.revised.trackscheme.TrackSchemeSelection;
+import bdv.viewer.SourceAndConverter;
+import bdv.viewer.ViewerOptions;
 
 public class TrackSchemeFrame extends JFrame
 {
@@ -19,7 +21,7 @@ public class TrackSchemeFrame extends JFrame
 	public TrackSchemeFrame(
 			final TrackSchemeGraph< ?, ? > graph,
 			final TrackSchemeHighlight< ?, ? > highlight,
-			final TrackSchemeSelection< ?, ? > selection )
+			final TrackSchemeSelection selection )
 	{
 		this( graph, highlight, selection, TrackSchemeOptions.options() );
 	}
@@ -38,7 +40,7 @@ public class TrackSchemeFrame extends JFrame
 	public TrackSchemeFrame(
 			final TrackSchemeGraph< ?, ? > graph,
 			final TrackSchemeHighlight< ?, ? > highlight,
-			final TrackSchemeSelection< ?, ? > selection,
+			final TrackSchemeSelection selection,
 			final TrackSchemeOptions optional )
 	{
 		super( "TrackScheme", GuiUtil.getSuitableGraphicsConfiguration( GuiUtil.RGB_COLOR_MODEL ) );

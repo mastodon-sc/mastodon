@@ -2,20 +2,17 @@ package net.trackmate.revised.trackscheme;
 
 import gnu.trove.iterator.TIntIterator;
 import gnu.trove.set.TIntSet;
-import net.trackmate.graph.Edge;
 import net.trackmate.graph.PoolObjectSet;
-import net.trackmate.graph.Vertex;
 import net.trackmate.graph.collection.RefSet;
 import net.trackmate.revised.ui.selection.SelectionListener;
-import net.trackmate.spatial.HasTimepoint;
 
-public class TrackSchemeSelection< V extends Vertex< E > & HasTimepoint, E extends Edge< V > >
+public class TrackSchemeSelection
 {
 	private final ModelSelectionProperties props;
 
-	private final TrackSchemeGraph< V, E > graph;
+	private final TrackSchemeGraph< ?, ? > graph;
 
-	public TrackSchemeSelection( final ModelSelectionProperties props, final TrackSchemeGraph< V, E > graph )
+	public TrackSchemeSelection( final ModelSelectionProperties props, final TrackSchemeGraph< ?, ? > graph )
 	{
 		this.props = props;
 		this.graph = graph;

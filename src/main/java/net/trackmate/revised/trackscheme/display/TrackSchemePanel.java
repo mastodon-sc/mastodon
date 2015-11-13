@@ -123,12 +123,12 @@ public class TrackSchemePanel extends JPanel implements
 	 */
 	private boolean ignoreScrollBarChanges;
 
-	private final TrackSchemeSelection< ?, ? > selection;
+	private final TrackSchemeSelection selection;
 
 	public TrackSchemePanel(
 			final TrackSchemeGraph< ?, ? > graph,
 			final TrackSchemeHighlight< ?, ? > highlight,
-			final TrackSchemeSelection< ?, ? > selection,
+			final TrackSchemeSelection selection,
 			final TrackSchemeOptions optional )
 	{
 		super( new BorderLayout(), false );
