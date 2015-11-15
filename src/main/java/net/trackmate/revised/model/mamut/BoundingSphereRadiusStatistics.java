@@ -9,6 +9,13 @@ import net.trackmate.graph.listenable.GraphListener;
 import net.trackmate.graph.listenable.ListenableGraph;
 import net.trackmate.spatial.SpatialIndex;
 
+/**
+ * A class that serves statistics about the maximum bounding radius amongst all
+ * the spots of a time-point in a model. This class listens to changes in the
+ * graph it monitors through the {@link GraphListener} interface.
+ *
+ * @author Tobias Pietzsch
+ */
 public class BoundingSphereRadiusStatistics implements GraphListener< Spot, Link >
 {
 	/**
@@ -27,6 +34,15 @@ public class BoundingSphereRadiusStatistics implements GraphListener< Spot, Link
 
     private final Lock writeLock;
 
+	/**
+	 * Creates a new statistics object from the specified model. After this
+	 * constructor returns, statistics are immediately available. The returned
+	 * instance is registered as a listener to changes in the graph the
+	 * specified model wraps.
+	 *
+	 * @param model
+	 *            the model to build statistics for.
+	 */
 	public BoundingSphereRadiusStatistics( final Model model )
 	{
 		this.model = model;
@@ -39,11 +55,41 @@ public class BoundingSphereRadiusStatistics implements GraphListener< Spot, Link
 		init();
 	}
 
+	/**
+	 * Exposes the {@link Lock} of this class.
+	 *
+	 * @return the lock.
+	 */
 	public Lock readLock()
 	{
 		return readLock;
 	}
 
+	/**
+	 * Returns the maximal bounding sphere radius squared amongst all the spots
+	 * of the specified time-point.
+	 * <p>
+	 * It is best to acquire the <code>read lock</code> prior to executing this
+	 * method, in case another thread updates this statistics object. A typical
+	 * call would be wrapped as follow:
+	 *
+	 * <pre>
+	 * radiusStats.readLock().lock();
+	 * double maxRadius;
+	 * try
+	 * {
+	 * 	maxRadius = radiusStats.getMaxBoundingSphereRadiusSquared( timepoint );
+	 * }
+	 * finally
+	 * {
+	 * 	radiusStats.readLock().unlock();
+	 * }
+	 * </pre>
+	 *
+	 *
+	 * @param timepoint
+	 * @return
+	 */
 	public double getMaxBoundingSphereRadiusSquared( final int timepoint )
 	{
 		final Stats stats = timepointToStats.get( timepoint );
