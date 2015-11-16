@@ -5,6 +5,8 @@ import java.awt.event.MouseListener;
 
 public class MouseSelectionHandler< V extends OverlayVertex< V, E >, E extends OverlayEdge< E, V > > implements MouseListener
 {
+	private static final double SELECT_DISTANCE_TOLERANCE = 5.0;
+
 	private final OverlayGraphRenderer< V, E > renderer;
 
 	private final OverlayGraph< V, E > overlayGraph;
@@ -22,24 +24,47 @@ public class MouseSelectionHandler< V extends OverlayVertex< V, E >, E extends O
 	public void mouseClicked( final MouseEvent e )
 	{
 		final V ref = overlayGraph.vertexRef();
-		final V v = renderer.getVertexAt( e.getX(), e.getY(), ref );
-		if ( v == null )
+		final V vertex = renderer.getVertexAt( e.getX(), e.getY(), ref );
+		if ( vertex == null )
 		{
-			if ( !e.isShiftDown() )
+			// Let's see if we can select and edge.
+			final E edge = renderer.getEdgeAt( e.getX(), e.getY(), SELECT_DISTANCE_TOLERANCE, ref );
+			if ( edge == null )
+			{
+				if ( !e.isShiftDown() )
+					selection.clearSelection();
+				overlayGraph.releaseRef( ref );
+				return;
+			}
+
+			if ( e.isShiftDown() )
+			{
+
+				selection.toggle( edge );
+			}
+			else
+			{
 				selection.clearSelection();
-			return;
-		}
+				selection.setSelected( edge, true );
+			}
 
-		if ( e.isShiftDown() )
-		{
-
-			selection.toggle( v );
 		}
 		else
 		{
-			selection.clearSelection();
-			selection.setSelected( v, true );
+			if ( e.isShiftDown() )
+			{
+
+				selection.toggle( vertex );
+			}
+			else
+			{
+				selection.clearSelection();
+				selection.setSelected( vertex, true );
+			}
+
 		}
+
+		overlayGraph.releaseRef( ref );
 	}
 
 	@Override
