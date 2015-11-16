@@ -9,9 +9,9 @@ public class MouseOverListener extends MouseAdapter
 {
 	private final AbstractTrackSchemeOverlay graphOverlay;
 
-	private final TrackSchemeHighlight< ?, ? > highlight;
+	private final TrackSchemeHighlight highlight;
 
-	public MouseOverListener( final AbstractTrackSchemeOverlay graphOverlay, final TrackSchemeHighlight< ?, ? > highlight )
+	public MouseOverListener( final AbstractTrackSchemeOverlay graphOverlay, final TrackSchemeHighlight highlight )
 	{
 		this.graphOverlay = graphOverlay;
 		this.highlight = highlight;

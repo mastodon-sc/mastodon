@@ -48,7 +48,7 @@ public abstract class AbstractTrackSchemeOverlay implements OverlayRenderer
 	 */
 	private boolean pending;
 
-	protected final TrackSchemeHighlight< ?, ? > highlight;
+	protected final TrackSchemeHighlight highlight;
 
 	protected int highlightedVertexId;
 
@@ -59,7 +59,7 @@ public abstract class AbstractTrackSchemeOverlay implements OverlayRenderer
 	private int currentTimepoint = 0;
 
 
-	public AbstractTrackSchemeOverlay( final TrackSchemeHighlight< ?, ? > highlight, final TrackSchemeOptions options )
+	public AbstractTrackSchemeOverlay( final TrackSchemeHighlight highlight, final TrackSchemeOptions options )
 	{
 		this.highlight = highlight;
 		width = options.values.getWidth();

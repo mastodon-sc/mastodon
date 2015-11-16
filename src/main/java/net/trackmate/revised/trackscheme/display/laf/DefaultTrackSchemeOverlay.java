@@ -73,7 +73,7 @@ public class DefaultTrackSchemeOverlay extends AbstractTrackSchemeOverlay
 
 	protected TrackSchemeStyle style = TrackSchemeStyle.defaultStyle();
 
-	public DefaultTrackSchemeOverlay( final TrackSchemeHighlight< ?, ? > highlight, final TrackSchemeOptions options )
+	public DefaultTrackSchemeOverlay( final TrackSchemeHighlight highlight, final TrackSchemeOptions options )
 	{
 		super( highlight, options );
 	}

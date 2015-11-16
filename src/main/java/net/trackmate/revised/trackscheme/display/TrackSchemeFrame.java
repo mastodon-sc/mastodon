@@ -20,7 +20,7 @@ public class TrackSchemeFrame extends JFrame
 
 	public TrackSchemeFrame(
 			final TrackSchemeGraph< ?, ? > graph,
-			final TrackSchemeHighlight< ?, ? > highlight,
+			final TrackSchemeHighlight highlight,
 			final TrackSchemeSelection selection )
 	{
 		this( graph, highlight, selection, TrackSchemeOptions.options() );
@@ -39,7 +39,7 @@ public class TrackSchemeFrame extends JFrame
 	 */
 	public TrackSchemeFrame(
 			final TrackSchemeGraph< ?, ? > graph,
-			final TrackSchemeHighlight< ?, ? > highlight,
+			final TrackSchemeHighlight highlight,
 			final TrackSchemeSelection selection,
 			final TrackSchemeOptions optional )
 	{

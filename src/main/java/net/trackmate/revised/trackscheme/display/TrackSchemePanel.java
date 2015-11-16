@@ -125,7 +125,7 @@ public class TrackSchemePanel extends JPanel implements
 
 	public TrackSchemePanel(
 			final TrackSchemeGraph< ?, ? > graph,
-			final TrackSchemeHighlight< ?, ? > highlight,
+			final TrackSchemeHighlight highlight,
 			final TrackSchemeSelection selection,
 			final TrackSchemeOptions optional )
 	{
