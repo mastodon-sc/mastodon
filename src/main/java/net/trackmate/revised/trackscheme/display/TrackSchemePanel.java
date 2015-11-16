@@ -346,6 +346,7 @@ public class TrackSchemePanel extends JPanel implements
 			screenEntitiesIpStart = new ScreenEntities( graph, capacity );
 			screenEntitiesIpEnd = new ScreenEntities( graph, capacity );
 			interpolator = null;
+			lastComputedScreenEntities = screenEntities;
 		}
 
 		/**
@@ -364,8 +365,7 @@ public class TrackSchemePanel extends JPanel implements
 		 */
 		private void copyIpStart()
 		{
-			if ( null != lastComputedScreenEntities )
-				screenEntitiesIpStart.set( lastComputedScreenEntities );
+			screenEntitiesIpStart.set( lastComputedScreenEntities );
 			screenEntities.clear();
 		}
 
