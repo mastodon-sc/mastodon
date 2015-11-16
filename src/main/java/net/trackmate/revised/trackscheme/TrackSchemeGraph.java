@@ -24,6 +24,33 @@ import net.trackmate.graph.mempool.SingleArrayMemPool;
 import net.trackmate.revised.trackscheme.ModelGraphProperties.ModelVertexProperties;
 import net.trackmate.spatial.HasTimepoint;
 
+/**
+ * A specialized graph to be used in the TrackScheme application.
+ * <p>
+ * A {@link TrackSchemeGraph} wraps a model graph and is meant to be used in a
+ * TrackScheme application, where the graph is laid out in a
+ * hierarchical-temporal way. The {@link TrackSchemeVertex} class this graph
+ * relies on offers facilities for the graph layout.
+ * <p>
+ * Though the model graph is wrapped in this TrackSchemeGraph, its structure is
+ * duplicated here and kept in sync thank to the {@link GraphListener}
+ * interface.
+ * <p>
+ * The corresponding model vertex can be retrieved from its matching
+ * TrackSchemeVertex, through the later id. We therefore require the
+ * bidirectional id map of the wrapped graph at construction.
+ * <p>
+ * TrackScheme vertices expose the same properties than their model vertex
+ * counterparts. They do so by sharing the same instance of
+ * {@link ModelGraphProperties} that of the model graph.
+ * 
+ * @author Tobias Pietzsch
+ *
+ * @param <V>
+ *            the type of the vertices of the wrapped model graph.
+ * @param <E>
+ *            the type of the edges of the wrapped model graph.
+ */
 public class TrackSchemeGraph<
 		V extends Vertex< E > & HasTimepoint,
 		E extends Edge< V > >
@@ -55,6 +82,16 @@ public class TrackSchemeGraph<
 
 	private final ArrayList< GraphChangeListener > listeners;
 
+	/**
+	 * Creates a new TrackSchemeGraph with a default initial capacity.
+	 * 
+	 * @param modelGraph
+	 *            the model graph to wrap.
+	 * @param idmap
+	 *            the bidirectional id map of the model graph.
+	 * @param modelGraphProperties
+	 *            the properties of the model graph.
+	 */
 	public TrackSchemeGraph(
 			final ListenableGraph< V, E > modelGraph,
 			final GraphIdBimap< V, E > idmap,
@@ -63,6 +100,18 @@ public class TrackSchemeGraph<
 		this( modelGraph, idmap, modelGraphProperties, 10000 );
 	}
 
+	/**
+	 * Creates a new TrackSchemeGraph.
+	 * 
+	 * @param modelGraph
+	 *            the model graph to wrap.
+	 * @param idmap
+	 *            the bidirectional id map of the model graph.
+	 * @param modelGraphProperties
+	 *            the properties of the model graph.
+	 * @param initialCapacity
+	 *            the initial capacity for the graph storage.
+	 */
 	public TrackSchemeGraph(
 			final ListenableGraph< V, E > modelGraph,
 			final GraphIdBimap< V, E > idmap,
@@ -88,16 +137,42 @@ public class TrackSchemeGraph<
 		graphRebuilt();
 	}
 
+	/**
+	 * Exposes the {@link RefPool} for the TrackScheme vertices of this
+	 * TrackSchemeGraph.
+	 * 
+	 * @return the vertex pool.
+	 */
 	public RefPool< TrackSchemeVertex > getVertexPool()
 	{
 		return vertexPool;
 	}
 
+	/**
+	 * Exposes the {@link RefPool} for the TrackScheme edges of this
+	 * TrackSchemeGraph.
+	 * 
+	 * @return the edge pool.
+	 */
 	public RefPool< TrackSchemeEdge > getEdgePool()
 	{
 		return edgePool;
 	}
 
+	/**
+	 * Returns the roots of this graph.
+	 * <p>
+	 * Roots are defined as the vertices that have no incoming edges. Therefore
+	 * a single connected-component of the graph may have several roots.
+	 * <p>
+	 * To be properly used in TrackScheme, it is best to adopt the convention
+	 * where all edges are directed along time: They should depart from the
+	 * earliest vertex in time, and point to the latest vertex in time. Then,
+	 * the roots of the graph corresponds to vertices that appear as time
+	 * increases.
+	 * 
+	 * @return the roots of the graph, as a set of vertices.
+	 */
 	public RefSet< TrackSchemeVertex > getRoots()
 	{
 		return roots;
@@ -124,11 +199,32 @@ public class TrackSchemeGraph<
 		return sb.toString();
 	}
 
+	/**
+	 * Returns the vertex in this TrackSchemeGraph that corresponds to the model
+	 * vertex with the specified id.
+	 * 
+	 * @param modelId
+	 *            the id of the vertex in the model graph.
+	 * @param ref
+	 *            a TrackSchemeVertex reference.
+	 * @return the TrackSchemeVertex corresponding to the model vertex with the
+	 *         specified id.
+	 */
 	TrackSchemeVertex getTrackSchemeVertexForModelId( final int modelId, final TrackSchemeVertex ref )
 	{
 		return idToTrackSchemeVertex.get( modelId, ref );
 	}
 
+	/**
+	 * Adds a GraphChangeListener that will be notified when this
+	 * TrackSchemeGraph changes.
+	 * 
+	 * @param listener
+	 *            the {@link GraphChangeListener} to register.
+	 * @return <code>true</code> if the listener was added to the list of
+	 *         listeners. <code>false</code> if the listener was already
+	 *         registered prior to this call.
+	 */
 	public boolean addGraphChangeListener( final GraphChangeListener listener )
 	{
 		if ( ! listeners.contains( listener ) )
@@ -139,6 +235,15 @@ public class TrackSchemeGraph<
 		return false;
 	}
 
+	/**
+	 * Removes the specified GraphChangeListener from the list of listeners to
+	 * be notified when this TrackSchemeGraph changes.
+	 * 
+	 * @param listener
+	 *            the listener to remove.
+	 * @return <code>true</code> if the listener was present in the list of
+	 *         listeners and was successfully removed from it.
+	 */
 	public boolean removeGraphChangeListener( final GraphChangeListener listener )
 	{
 		return listeners.remove( listener );
