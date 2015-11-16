@@ -273,7 +273,7 @@ public class TrackSchemePanel extends JPanel implements
 			layoutMaxX = layout.getCurrentLayoutMaxX();
 			entityAnimator.startAnimation( transform, ANIMATION_MILLISECONDS );
 		}
-		else if ( flags.transformChanged )
+		else if ( flags.transformChanged || flags.selectionChanged )
 		{
 			entityAnimator.startAnimation( transform, 0 );
 		}
@@ -339,7 +339,7 @@ public class TrackSchemePanel extends JPanel implements
 	@Override
 	public void selectionChanged()
 	{
-		flags.setGraphChanged();
+		flags.setSelectionChanged();
 		painterThread.requestRepaint();
 	}
 
@@ -463,12 +463,14 @@ public class TrackSchemePanel extends JPanel implements
 	protected static class Flags
 	{
 		private boolean transformChanged;
+		private boolean selectionChanged;
 		private boolean graphChanged;
 		private boolean contextChanged;
 
 		public Flags()
 		{
 			transformChanged = false;
+			selectionChanged = false;
 			graphChanged = false;
 			contextChanged = false;
 		}
@@ -476,6 +478,7 @@ public class TrackSchemePanel extends JPanel implements
 		public Flags( final Flags f )
 		{
 			transformChanged = f.transformChanged;
+			selectionChanged = f.selectionChanged;
 			graphChanged = f.graphChanged;
 			contextChanged = f.contextChanged;
 		}
@@ -483,6 +486,11 @@ public class TrackSchemePanel extends JPanel implements
 		public synchronized void setTransformChanged()
 		{
 			transformChanged = true;
+		}
+
+		public synchronized void setSelectionChanged()
+		{
+			selectionChanged = true;
 		}
 
 		public synchronized void setGraphChanged()
@@ -499,6 +507,7 @@ public class TrackSchemePanel extends JPanel implements
 		{
 			final Flags copy = new Flags( this );
 			transformChanged = false;
+			selectionChanged = false;
 			graphChanged = false;
 			contextChanged = false;
 			return copy;
