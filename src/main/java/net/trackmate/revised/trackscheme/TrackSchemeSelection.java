@@ -18,6 +18,7 @@ public class TrackSchemeSelection
 		this.graph = graph;
 	}
 
+	// TODO unused. remove?
 	public RefSet< TrackSchemeVertex > getSelectedVertices()
 	{
 		final TIntSet verticesIds = props.getSelectedVerticesIds();
@@ -35,6 +36,7 @@ public class TrackSchemeSelection
 		return vertexSet;
 	}
 
+	// TODO unused. remove?
 	public RefSet< TrackSchemeEdge > getSelectedEdges()
 	{
 		final TIntSet edgesIds = props.getSelectedEdgesIds();
@@ -52,6 +54,7 @@ public class TrackSchemeSelection
 		return edgeSet;
 	}
 
+	// TODO unused. remove?
 	public void setSelected( final TrackSchemeVertex vertex, final boolean selected )
 	{
 		final int id = vertex.getModelVertexId();
@@ -82,6 +85,7 @@ public class TrackSchemeSelection
 		graph.releaseRef( ref );
 	}
 
+	// TODO unused. remove?
 	public boolean isVertexSelected( final int id )
 	{
 		final TrackSchemeVertex ref = graph.vertexRef();
@@ -91,6 +95,7 @@ public class TrackSchemeSelection
 		return props.isVertexSelected( modelVertexId );
 	}
 
+	// TODO unused. remove?
 	public boolean isEdgeSelected( final int id )
 	{
 		final TrackSchemeEdge ref = graph.edgeRef();
@@ -105,6 +110,7 @@ public class TrackSchemeSelection
 		props.clearSelection();
 	}
 
+	// TODO unused. remove?
 	public void setSelected( final TrackSchemeEdge edge, final boolean selected )
 	{
 		final int id = edge.getModelEdgeId();
