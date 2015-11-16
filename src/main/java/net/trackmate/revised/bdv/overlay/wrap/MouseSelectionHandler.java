@@ -8,6 +8,12 @@ import net.trackmate.graph.Vertex;
 import net.trackmate.revised.bdv.overlay.OverlayGraphRenderer;
 import net.trackmate.revised.ui.selection.Selection;
 
+/*
+ * TODO: MouseSelectionHandler should be in package net.trackmate.revised.bdv.overlay.
+ * Like this, it breaks proper encapsulation: OverlayGraphRenderer shouldn't care what it displays, but this fixes the selection part to OverlayGraphWrapper etc.
+ * We should have net.trackmate.revised.bdv.overlay.OverlaySelection analogous to net.trackmate.revised.bdv.overlay.OverlayHighlight.
+ * There should be net.trackmate.revised.bdv.overlay.wrap.OverlaySelectionWrapper analogous to net.trackmate.revised.bdv.overlay.wrap.OverlayHighlightWrapper.
+ */
 public class MouseSelectionHandler< V extends Vertex< E >, E extends Edge< V > > implements MouseListener
 {
 
