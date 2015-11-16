@@ -138,7 +138,8 @@ public class MouseSelectionHandler implements MouseListener, MouseMotionListener
 		public void drawOverlays( final Graphics g )
 		{
 			System.out.println( "Draw drag = " + dragStarted );// DEBUG
-			if ( !dragStarted ) { return; }
+			if ( !dragStarted )
+				return;
 			g.setColor( Color.RED );
 			final int x = Math.min( oX, eX );
 			final int y = Math.min( oY, eY );
