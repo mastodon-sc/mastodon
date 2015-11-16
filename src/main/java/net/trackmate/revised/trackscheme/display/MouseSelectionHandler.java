@@ -88,8 +88,8 @@ public class MouseSelectionHandler implements MouseListener, MouseMotionListener
 				dragStarted = true;
 				oX = e.getX();
 				oY = e.getY();
-				display.repaint();
 			}
+			display.repaint();
 		}
 	}
 
