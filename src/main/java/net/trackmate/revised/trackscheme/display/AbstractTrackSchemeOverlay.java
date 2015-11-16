@@ -12,6 +12,7 @@ import net.trackmate.revised.trackscheme.ScreenEntities;
 import net.trackmate.revised.trackscheme.ScreenVertex;
 import net.trackmate.revised.trackscheme.ScreenVertexRange;
 import net.trackmate.revised.trackscheme.TrackSchemeHighlight;
+import net.trackmate.revised.trackscheme.TrackSchemeVertex;
 
 /**
  * An {@link OverlayRenderer} that paints {@link ScreenEntities} of a trackscheme
@@ -130,18 +131,18 @@ public abstract class AbstractTrackSchemeOverlay implements OverlayRenderer
 	}
 
 	/**
-	 * Returns the id of the TrackScheme vertex currently painted on this
-	 * display at screen coordinates specified by <code>x</code> and
-	 * <code>y</code>.
+	 * Returns the internal pool index of the {@link TrackSchemeVertex}
+	 * currently painted on this display at screen coordinates specified by
+	 * {@code x} and {@code y}.
 	 * <p>
 	 * This method exists to facilitate writing mouse handlers.
-	 * 
+	 *
 	 * @param x
 	 *            the x screen coordinate
 	 * @param y
 	 *            the y screen coordinate
-	 * @return the ID of the TrackScheme vertex at <code>(x, y)</code>. Returns
-	 *         -1 if there is no vertex at this position.
+	 * @return the internal pool index of the {@link TrackSchemeVertex} at
+	 *         {@code (x, y)}, or -1 if there is no vertex at this position.
 	 */
 	public int getVertexIdAt( final int x, final int y )
 	{
@@ -150,9 +151,8 @@ public abstract class AbstractTrackSchemeOverlay implements OverlayRenderer
 		{
 			final RealPoint pos = new RealPoint( x, y );
 			for ( final ScreenVertex v : ent.getVertices() )
-			{
-				if ( isInsidePaintedVertex( pos, v ) ) { return v.getTrackSchemeVertexId(); }
-			}
+				if ( isInsidePaintedVertex( pos, v ) )
+					return v.getTrackSchemeVertexId();
 		}
 		return -1;
 	}
