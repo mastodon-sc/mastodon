@@ -8,7 +8,22 @@ import net.trackmate.revised.model.HasLabel;
 import net.trackmate.revised.ui.selection.Selection;
 import net.trackmate.spatial.HasTimepoint;
 
-
+/**
+ * A default implementation of {@link ModelGraphProperties} for {@link Vertex}
+ * that implements the {@link HasLabel} and {@link HasTimepoint} interfaces.
+ * <p>
+ * This class relies on a {@link Selection} object to determine the selected
+ * state of vertices and edges, and on the {@link HasLabel#getLabel()} method
+ * for the vertex string labels. Since we access properties via edge and vertex
+ * ids, we need to have the bidirectional id map for the graph.
+ * 
+ * @author Tobias Pietzsch
+ * 
+ * @param <V>
+ *            the type of the graph vertices.
+ * @param <E>
+ *            the type of the graph edges.
+ */
 public class DefaultModelGraphProperties<
 		V extends Vertex< E > & HasTimepoint & HasLabel,
 		E extends Edge< V > >
@@ -20,6 +35,18 @@ public class DefaultModelGraphProperties<
 
 	private final Selection< V, E > selection;
 
+	/**
+	 * Creates a new graph properties object.
+	 * 
+	 * @param graph
+	 *            the graph.
+	 * @param idmap
+	 *            the bidirectional id map between vertices and their id and
+	 *            between edges and their id.
+	 * @param selection
+	 *            a selection object that will be used to determine the selected
+	 *            state of vertices and edges.
+	 */
 	public DefaultModelGraphProperties(
 			final ReadOnlyGraph< V, E > graph,
 			final GraphIdBimap< V, E > idmap,
