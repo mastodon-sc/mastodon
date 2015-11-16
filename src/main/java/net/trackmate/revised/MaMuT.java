@@ -10,11 +10,12 @@ import net.trackmate.graph.GraphIdBimap;
 import net.trackmate.graph.listenable.GraphChangeListener;
 import net.trackmate.graph.listenable.ListenableGraph;
 import net.trackmate.revised.bdv.overlay.MouseOverListener;
+import net.trackmate.revised.bdv.overlay.MouseSelectionHandler;
 import net.trackmate.revised.bdv.overlay.OverlayGraphRenderer;
-import net.trackmate.revised.bdv.overlay.wrap.MouseSelectionHandler;
 import net.trackmate.revised.bdv.overlay.wrap.OverlayEdgeWrapper;
 import net.trackmate.revised.bdv.overlay.wrap.OverlayGraphWrapper;
 import net.trackmate.revised.bdv.overlay.wrap.OverlayHighlightWrapper;
+import net.trackmate.revised.bdv.overlay.wrap.OverlaySelectionWrapper;
 import net.trackmate.revised.bdv.overlay.wrap.OverlayVertexWrapper;
 import net.trackmate.revised.model.mamut.BoundingSphereRadiusStatistics;
 import net.trackmate.revised.model.mamut.Link;
@@ -167,7 +168,7 @@ public class MaMuT
 		 */
 		final HighlightModel< Spot, Link > highlightModel = new HighlightModel< Spot, Link  >( idmap );
 		final DefaultModelHighlightProperties< Spot, Link > highlightProperties = new DefaultModelHighlightProperties< Spot, Link >( graph, idmap, highlightModel );
-		final TrackSchemeHighlight< Spot, Link > trackSchemeHighlight = new TrackSchemeHighlight< Spot, Link >( highlightProperties, trackSchemeGraph );
+		final TrackSchemeHighlight trackSchemeHighlight = new TrackSchemeHighlight( highlightProperties, trackSchemeGraph );
 
 		/*
 		 * TrackScheme selection
@@ -229,6 +230,11 @@ public class MaMuT
 				model.getGraphIdBimap(),
 				highlightModel );
 
+		final OverlaySelectionWrapper< Spot, Link > overlaySelection = new OverlaySelectionWrapper< Spot, Link >(
+				overlayGraph,
+				model.getGraphIdBimap(),
+				selection );
+
 		final BigDataViewer bdv = BigDataViewer.open( spimData, windowTitle, new ProgressWriterConsole(), ViewerOptions.options() );
 		if ( !bdv.tryLoadSettings( bdvFile ) )
 			InitializeViewerState.initBrightness( 0.001, 0.999, bdv.getViewer(), bdv.getSetupAssignments() );
@@ -263,10 +269,12 @@ public class MaMuT
 			}
 		} );
 
-		final MouseOverListener< OverlayVertexWrapper< Spot, Link >, OverlayEdgeWrapper< Spot, Link >> mouseOver = new MouseOverListener< OverlayVertexWrapper< Spot, Link >, OverlayEdgeWrapper< Spot, Link >>( overlayHighlight, tracksOverlay, overlayGraph );
+		final MouseOverListener< OverlayVertexWrapper< Spot, Link >, OverlayEdgeWrapper< Spot, Link >> mouseOver =
+				new MouseOverListener< OverlayVertexWrapper< Spot, Link >, OverlayEdgeWrapper< Spot, Link >>( overlayHighlight, tracksOverlay, overlayGraph );
 		viewer.getDisplay().addHandler( mouseOver );
 
-		final MouseSelectionHandler< Spot, Link > mouseSelectionListener = new MouseSelectionHandler< Spot, Link >( overlayGraph, tracksOverlay, selection );
+		final MouseSelectionHandler< OverlayVertexWrapper< Spot, Link >, OverlayEdgeWrapper< Spot, Link >> mouseSelectionListener =
+				new MouseSelectionHandler< OverlayVertexWrapper< Spot, Link >, OverlayEdgeWrapper< Spot, Link >>( overlayGraph, tracksOverlay, overlaySelection );
 		viewer.getDisplay().addHandler( mouseSelectionListener );
 
 		return bdv;
