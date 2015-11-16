@@ -34,8 +34,8 @@ public class MouseOverListener< V extends OverlayVertex< V, E >, E extends Overl
 		final int y = e.getY();
 		final V ref = graph.vertexRef();
 		final V v = graphOverlay.getVertexAt( x, y, ref );
-		graph.releaseRef( ref );
 		highlight.highlightVertex( v );
+		graph.releaseRef( ref );
 
 	}
 
@@ -46,7 +46,7 @@ public class MouseOverListener< V extends OverlayVertex< V, E >, E extends Overl
 		final int y = e.getY();
 		final V ref = graph.vertexRef();
 		final V v = graphOverlay.getVertexAt( x, y, ref );
-		graph.releaseRef( ref );
 		highlight.highlightVertex( v );
+		graph.releaseRef( ref );
 	}
 }
