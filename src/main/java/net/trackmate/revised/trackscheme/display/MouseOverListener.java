@@ -24,11 +24,6 @@ public class MouseOverListener extends MouseAdapter
 		final int y = e.getY();
 
 		final int id = graphOverlay.getVertexIdAt( x, y );
-		if ( id >= 0 )
-		{
-			highlight.highlightVertex( id );
-			return;
-		}
-		highlight.highlightVertex( -1 );
+		highlight.highlightVertex( id );
 	}
 }
