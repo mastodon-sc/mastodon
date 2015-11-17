@@ -115,7 +115,6 @@ public class Selection< V extends Vertex< E >, E extends Edge< V > > implements 
 	public synchronized void toggle( final V v )
 	{
 		setSelected( v, !isSelected( v ) );
-		notifyListeners();
 	}
 
 	/**
@@ -125,7 +124,6 @@ public class Selection< V extends Vertex< E >, E extends Edge< V > > implements 
 	public synchronized void toggle( final E e )
 	{
 		setSelected( e, !isSelected( e ) );
-		notifyListeners();
 	}
 
 	/**
