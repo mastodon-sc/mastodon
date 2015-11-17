@@ -85,7 +85,7 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 		renderTimepoint = timepoint;
 	}
 
-	public E getEdgeAt( final int x, final int y, final double tolerance, final V ref )
+	public E getEdgeAt( final int x, final int y, final double tolerance, final E ref )
 	{
 		final AffineTransform3D transform = new AffineTransform3D();
 		synchronized ( renderTransform )
@@ -121,6 +121,7 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 			final double[] lPosT = new double[ 3 ];
 			final double[] gPosS = new double[ 3 ];
 			final double[] lPosS = new double[ 3 ];
+			final V vertexRef = graph.vertexRef();
 
 			for ( int t = Math.max( 0, currentTimepoint - ( int ) timeLimit ); t < currentTimepoint; ++t )
 			{
@@ -135,12 +136,17 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 					final double y1 = gPosS[ 1 ];
 					for ( final E edge : source.outgoingEdges() )
 					{
-						final V target = edge.getTarget( ref );
+						final V target = edge.getTarget( vertexRef );
 						target.localize( lPosT );
 						transform.apply( lPosT, gPosT );
 						final double x2 = gPosT[ 0 ];
 						final double y2 = gPosT[ 1 ];
-						if ( Util.segmentDist( x, y, x1, y1, x2, y2 ) <= tolerance ) { return edge; }
+						if ( Util.segmentDist( x, y, x1, y1, x2, y2 ) <= tolerance )
+						{
+							ref.refTo( edge );
+							graph.releaseRef( vertexRef );
+							return ref;
+						}
 					}
 				}
 			}
