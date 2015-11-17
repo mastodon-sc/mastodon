@@ -230,9 +230,7 @@ public class MaMuT
 				model.getGraphIdBimap(),
 				highlightModel );
 
-		final OverlaySelectionWrapper< Spot, Link > overlaySelection = new OverlaySelectionWrapper< Spot, Link >(
-				overlayGraph,
-				model.getGraphIdBimap(),
+		final OverlaySelectionWrapper< Spot, Link > overlaySelection = new OverlaySelectionWrapper<>(
 				selection );
 
 		final BigDataViewer bdv = BigDataViewer.open( spimData, windowTitle, new ProgressWriterConsole(), ViewerOptions.options() );
