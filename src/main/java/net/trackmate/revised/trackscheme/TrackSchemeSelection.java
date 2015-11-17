@@ -85,6 +85,14 @@ public class TrackSchemeSelection
 		graph.releaseRef( ref );
 	}
 
+	public void toggleEdge( final int id )
+	{
+		final TrackSchemeEdge ref = graph.edgeRef();
+		graph.getEdgePool().getByInternalPoolIndex( id, ref );
+		props.toggleEdgeSelected( ref.getModelEdgeId() );
+		graph.releaseRef( ref );
+	}
+
 	// TODO unused. remove?
 	public boolean isVertexSelected( final int id )
 	{

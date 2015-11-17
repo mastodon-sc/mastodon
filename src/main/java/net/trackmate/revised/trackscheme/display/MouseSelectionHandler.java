@@ -56,22 +56,38 @@ public class MouseSelectionHandler implements MouseListener, MouseMotionListener
 	{
 		final boolean clear = !( e.getModifiers() == MOUSE_MASK_CLICK_ADDTOSELECTION );
 
-		final int id = graphOverlay.getVertexIdAt( e.getX(), e.getY() );
-		if ( id < 0 )
+		final int vertexId = graphOverlay.getVertexIdAt( e.getX(), e.getY() );
+		if ( vertexId < 0 )
 		{
+			// See if we can select an edge.
+			final int edgeId = graphOverlay.getEdgeIdAt( e.getX(), e.getY(), SELECT_DISTANCE_TOLERANCE );
+			if ( edgeId < 0 )
+			{
+				if ( clear )
+					selection.clearSelection();
+				return;
+			}
 			if ( clear )
+			{
 				selection.clearSelection();
-			return;
-		}
-
-		if ( clear )
-		{
-			selection.clearSelection();
-			selection.setVertexSelected( id, true );
+				selection.setEdgeSelected( edgeId, true );
+			}
+			else
+			{
+				selection.toggleEdge( edgeId );
+			}
 		}
 		else
 		{
-			selection.toggleVertex( id );
+			if ( clear )
+			{
+				selection.clearSelection();
+				selection.setVertexSelected( vertexId, true );
+			}
+			else
+			{
+				selection.toggleVertex( vertexId );
+			}
 		}
 	}
 
