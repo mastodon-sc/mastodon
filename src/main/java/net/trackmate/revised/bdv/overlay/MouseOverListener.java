@@ -6,20 +6,20 @@ import java.awt.event.MouseWheelEvent;
 
 public class MouseOverListener< V extends OverlayVertex< V, E >, E extends OverlayEdge< E, V > > extends MouseAdapter
 {
-	private final OverlayGraphRenderer< V, E > graphOverlay;
+	private final OverlayGraph< V, E > overlayGraph;
 
-	private final OverlayGraph< V, E > graph;
+	private final OverlayGraphRenderer< V, E > renderer;
 
 	private final OverlayHighlight< V, E > highlight;
 
 	public MouseOverListener(
-			final OverlayHighlight< V, E > highlight,
-			final OverlayGraphRenderer< V, E > graphOverlay,
-			final OverlayGraph< V, E > graph )
+			final OverlayGraph< V, E > overlayGraph,
+			final OverlayGraphRenderer< V, E > renderer,
+			final OverlayHighlight< V, E > highlight )
 	{
 		this.highlight = highlight;
-		this.graphOverlay = graphOverlay;
-		this.graph = graph;
+		this.renderer = renderer;
+		this.overlayGraph = overlayGraph;
 	}
 
 	@Override
@@ -31,10 +31,10 @@ public class MouseOverListener< V extends OverlayVertex< V, E >, E extends Overl
 	{
 		final int x = e.getX();
 		final int y = e.getY();
-		final V ref = graph.vertexRef();
-		final V v = graphOverlay.getVertexAt( x, y, ref );
+		final V ref = overlayGraph.vertexRef();
+		final V v = renderer.getVertexAt( x, y, ref );
 		highlight.highlightVertex( v );
-		graph.releaseRef( ref );
+		overlayGraph.releaseRef( ref );
 	}
 
 	@Override
@@ -42,9 +42,9 @@ public class MouseOverListener< V extends OverlayVertex< V, E >, E extends Overl
 	{
 		final int x = e.getX();
 		final int y = e.getY();
-		final V ref = graph.vertexRef();
-		final V v = graphOverlay.getVertexAt( x, y, ref );
+		final V ref = overlayGraph.vertexRef();
+		final V v = renderer.getVertexAt( x, y, ref );
 		highlight.highlightVertex( v );
-		graph.releaseRef( ref );
+		overlayGraph.releaseRef( ref );
 	}
 }

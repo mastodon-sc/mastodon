@@ -7,16 +7,19 @@ public class MouseSelectionHandler< V extends OverlayVertex< V, E >, E extends O
 {
 	private static final double SELECT_DISTANCE_TOLERANCE = 5.0;
 
-	private final OverlayGraphRenderer< V, E > renderer;
-
 	private final OverlayGraph< V, E > overlayGraph;
+
+	private final OverlayGraphRenderer< V, E > renderer;
 
 	private final OverlaySelection< V, E > selection;
 
-	public MouseSelectionHandler( final OverlayGraph< V, E > overlayGraph, final OverlayGraphRenderer< V, E > renderer, final OverlaySelection< V, E > selection )
+	public MouseSelectionHandler(
+			final OverlayGraph< V, E > overlayGraph,
+			final OverlayGraphRenderer< V, E > renderer,
+			final OverlaySelection< V, E > selection )
 	{
-		this.renderer = renderer;
 		this.overlayGraph = overlayGraph;
+		this.renderer = renderer;
 		this.selection = selection;
 	}
 

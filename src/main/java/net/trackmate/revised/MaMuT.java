@@ -265,7 +265,7 @@ public class MaMuT
 			}
 		} );
 
-		final MouseOverListener< ?, ? > mouseOver = new MouseOverListener<>( overlayHighlight, tracksOverlay, overlayGraph );
+		final MouseOverListener< ?, ? > mouseOver = new MouseOverListener<>( overlayGraph, tracksOverlay, overlayHighlight );
 		viewer.getDisplay().addHandler( mouseOver );
 
 		final MouseSelectionHandler< ?, ? > mouseSelectionListener = new MouseSelectionHandler<>( overlayGraph, tracksOverlay, overlaySelection );
