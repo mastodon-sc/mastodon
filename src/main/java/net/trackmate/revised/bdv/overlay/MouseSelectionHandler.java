@@ -45,7 +45,7 @@ public class MouseSelectionHandler< V extends OverlayVertex< V, E >, E extends O
 			if ( e.isShiftDown() )
 			{
 
-				selection.toggle( edge );
+				selection.toggleSelected( edge );
 			}
 			else
 			{
@@ -59,7 +59,7 @@ public class MouseSelectionHandler< V extends OverlayVertex< V, E >, E extends O
 			if ( e.isShiftDown() )
 			{
 
-				selection.toggle( vertex );
+				selection.toggleSelected( vertex );
 			}
 			else
 			{

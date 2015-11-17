@@ -13,9 +13,9 @@ public interface OverlaySelection< O extends OverlayVertex< O, E >, E extends Ov
 
 	public void setSelected( E edge, boolean selected );
 
-	public void toggle( O vertex );
+	public void toggleSelected( O vertex );
 
-	public void toggle( E edge );
+	public void toggleSelected( E edge );
 
 	public boolean isVertexSelected( O vertex );
 

@@ -68,13 +68,13 @@ public class OverlaySelectionWrapper< V extends Vertex< E >, E extends Edge< V >
 	}
 
 	@Override
-	public void toggle( final OverlayVertexWrapper< V, E > vertex )
+	public void toggleSelected( final OverlayVertexWrapper< V, E > vertex )
 	{
 		wrappedSelectionModel.toggle( vertex.wv );
 	}
 
 	@Override
-	public void toggle( final OverlayEdgeWrapper< V, E > edge )
+	public void toggleSelected( final OverlayEdgeWrapper< V, E > edge )
 	{
 		wrappedSelectionModel.toggle( edge.we );
 	}
