@@ -222,8 +222,7 @@ public class MaMuT
 				model.getGraph(),
 				model.getGraphIdBimap(),
 				model.getSpatioTemporalIndex(),
-				selection,
-				new ModelOverlayProperties( radiusStats ) );
+				new ModelOverlayProperties( radiusStats, selection ) );
 
 		final OverlayHighlightWrapper< Spot, Link > overlayHighlight = new OverlayHighlightWrapper<>(
 				model.getGraphIdBimap(),
@@ -257,7 +256,7 @@ public class MaMuT
 				viewer.getDisplay().repaint();
 			}
 		} );
-		selection.addSelectionListener( new SelectionListener()
+		overlaySelection.addSelectionListener( new SelectionListener()
 		{
 			@Override
 			public void selectionChanged()

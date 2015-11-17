@@ -9,7 +9,6 @@ import net.trackmate.graph.GraphIdBimap;
 import net.trackmate.graph.ReadOnlyGraph;
 import net.trackmate.graph.Vertex;
 import net.trackmate.revised.bdv.overlay.OverlayGraph;
-import net.trackmate.revised.ui.selection.Selection;
 import net.trackmate.spatial.SpatioTemporalIndex;
 
 /**
@@ -28,7 +27,7 @@ public class OverlayGraphWrapper< V extends Vertex< E >, E extends Edge< V > >
 
 	final GraphIdBimap< V, E > idmap;
 
-	final OverlayProperties< V > overlayProperties;
+	final OverlayProperties< V, E > overlayProperties;
 
 	private final ConcurrentLinkedQueue< OverlayVertexWrapper< V, E > > tmpVertexRefs;
 
@@ -36,18 +35,14 @@ public class OverlayGraphWrapper< V extends Vertex< E >, E extends Edge< V > >
 
 	private final SpatioTemporalIndexWrapper< V, E > wrappedIndex;
 
-	final Selection< V, E > selection;
-
 	public OverlayGraphWrapper(
 			final ReadOnlyGraph< V, E > graph,
 			final GraphIdBimap< V, E > idmap,
 			final SpatioTemporalIndex< V > graphIndex,
-			final Selection< V, E > selection,
-			final OverlayProperties< V > overlayProperties )
+			final OverlayProperties< V, E > overlayProperties )
 	{
 		this.wrappedGraph = graph;
 		this.idmap = idmap;
-		this.selection = selection;
 		this.overlayProperties = overlayProperties;
 		tmpVertexRefs =	new ConcurrentLinkedQueue< OverlayVertexWrapper< V, E > >();
 		tmpEdgeRefs = new ConcurrentLinkedQueue< OverlayEdgeWrapper< V, E > >();

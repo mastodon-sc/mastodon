@@ -11,10 +11,13 @@ public class OverlayEdgeWrapper< V extends Vertex< E >, E extends Edge< V > >
 
 	E we;
 
+	private final OverlayProperties< V, E > overlayProperties;
+
 	OverlayEdgeWrapper( final OverlayGraphWrapper< V, E > wrapper )
 	{
 		this.wrapper = wrapper;
 		we = wrapper.wrappedEdgeRef();
+		overlayProperties = wrapper.overlayProperties;
 	}
 
 	@Override
@@ -59,6 +62,6 @@ public class OverlayEdgeWrapper< V extends Vertex< E >, E extends Edge< V > >
 	@Override
 	public boolean isSelected()
 	{
-		return wrapper.selection.isSelected( we );
+		return overlayProperties.isEdgeSelected( we );
 	}
 }

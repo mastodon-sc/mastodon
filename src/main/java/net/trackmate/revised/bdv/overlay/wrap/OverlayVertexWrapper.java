@@ -6,7 +6,6 @@ import net.trackmate.graph.Edge;
 import net.trackmate.graph.Edges;
 import net.trackmate.graph.Vertex;
 import net.trackmate.revised.bdv.overlay.OverlayVertex;
-import net.trackmate.revised.ui.selection.Selection;
 
 public class OverlayVertexWrapper< V extends Vertex< E >, E extends Edge< V > >
 	implements OverlayVertex< OverlayVertexWrapper< V, E >, OverlayEdgeWrapper< V, E > >
@@ -21,9 +20,7 @@ public class OverlayVertexWrapper< V extends Vertex< E >, E extends Edge< V > >
 
 	private final EdgesWrapper edges;
 
-	private final OverlayProperties< V > overlayProperties;
-
-	private final Selection< V, E > selection;
+	private final OverlayProperties< V, E > overlayProperties;
 
 	OverlayVertexWrapper( final OverlayGraphWrapper< V, E > wrapper )
 	{
@@ -33,7 +30,6 @@ public class OverlayVertexWrapper< V extends Vertex< E >, E extends Edge< V > >
 		outgoingEdges = new EdgesWrapper( wv.outgoingEdges() );
 		edges = new EdgesWrapper( wv.edges() );
 		overlayProperties = wrapper.overlayProperties;
-		selection = wrapper.selection;
 	}
 
 	@Override
@@ -94,7 +90,7 @@ public class OverlayVertexWrapper< V extends Vertex< E >, E extends Edge< V > >
 	@Override
 	public boolean isSelected()
 	{
-		return selection.isSelected( wv );
+		return overlayProperties.isVertexSelected( wv );
 	}
 
 	@Override
