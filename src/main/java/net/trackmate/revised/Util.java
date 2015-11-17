@@ -5,9 +5,9 @@ public class Util
 	/**
 	 * Computes the distance of a point <code>A0 (x0, y0)</code> to a segment
 	 * defined by two points <code>A1 (x1, y1)</code> and
-	 * <code>A2 (x2, y2)</code>. Returns <code>infinity</code> if the projection
-	 * of <code>A0</code> on the segment does not lie between <code>A1</code>
-	 * and <code>A2</code>.
+	 * <code>A2 (x2, y2)</code>. If the projection of <code>A0</code> on the
+	 * segment does not lie between <code>A1</code> and <code>A2</code>, this
+	 * method returns the distance to the closest segment end-point.
 	 *
 	 * @param x0
 	 *            x coordinate of point A0.
@@ -28,7 +28,8 @@ public class Util
 		final double l12sq = ( x2 - x1 ) * ( x2 - x1 ) + ( y2 - y1 ) * ( y2 - y1 );
 
 		final double x = ( ( x0 - x1 ) * ( x2 - x1 ) + ( y0 - y1 ) * ( y2 - y1 ) ) / l12sq;
-		if ( x < 0 || x > 1 ) { return Double.POSITIVE_INFINITY; }
+		if ( x < 0 ) { return Math.sqrt( ( x0 - x1 ) * ( x0 - x1 ) + ( y0 - y1 ) * ( y0 - y1 ) ); }
+		if ( x > 1 ) { return Math.sqrt( ( x0 - x2 ) * ( x0 - x2 ) + ( y0 - y2 ) * ( y0 - y2 ) ); }
 
 		final double d = Math.abs(
 				( y2 - y1 ) * x0 - ( x2 - x1 ) * y0 + x2 * y1 - y2 * x1
