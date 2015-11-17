@@ -24,8 +24,7 @@ public class MouseOverListener< V extends OverlayVertex< V, E >, E extends Overl
 
 	@Override
 	public void mouseExited( final MouseEvent e )
-	{
-	}
+	{}
 
 	@Override
 	public void mouseMoved( final MouseEvent e )
@@ -36,7 +35,6 @@ public class MouseOverListener< V extends OverlayVertex< V, E >, E extends Overl
 		final V v = graphOverlay.getVertexAt( x, y, ref );
 		highlight.highlightVertex( v );
 		graph.releaseRef( ref );
-
 	}
 
 	@Override

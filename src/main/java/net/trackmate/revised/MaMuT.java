@@ -240,7 +240,7 @@ public class MaMuT
 			InitializeViewerState.initBrightness( 0.001, 0.999, bdv.getViewer(), bdv.getSetupAssignments() );
 		final ViewerPanel viewer = bdv.getViewer();
 		viewer.setTimepoint( initialTimepointIndex );
-		final OverlayGraphRenderer< OverlayVertexWrapper< Spot, Link >, OverlayEdgeWrapper< Spot, Link >> tracksOverlay = new OverlayGraphRenderer<>( overlayGraph, overlayHighlight );
+		final OverlayGraphRenderer< OverlayVertexWrapper< Spot, Link >, OverlayEdgeWrapper< Spot, Link > > tracksOverlay = new OverlayGraphRenderer<>( overlayGraph, overlayHighlight );
 		viewer.getDisplay().addOverlayRenderer( tracksOverlay );
 		viewer.addRenderTransformListener( tracksOverlay );
 		viewer.addTimePointListener( tracksOverlay );
@@ -269,12 +269,12 @@ public class MaMuT
 			}
 		} );
 
-		final MouseOverListener< OverlayVertexWrapper< Spot, Link >, OverlayEdgeWrapper< Spot, Link >> mouseOver =
-				new MouseOverListener< OverlayVertexWrapper< Spot, Link >, OverlayEdgeWrapper< Spot, Link >>( overlayHighlight, tracksOverlay, overlayGraph );
+		final MouseOverListener< OverlayVertexWrapper< Spot, Link >, OverlayEdgeWrapper< Spot, Link > > mouseOver =
+				new MouseOverListener< OverlayVertexWrapper< Spot, Link >, OverlayEdgeWrapper< Spot, Link > >( overlayHighlight, tracksOverlay, overlayGraph );
 		viewer.getDisplay().addHandler( mouseOver );
 
-		final MouseSelectionHandler< OverlayVertexWrapper< Spot, Link >, OverlayEdgeWrapper< Spot, Link >> mouseSelectionListener =
-				new MouseSelectionHandler< OverlayVertexWrapper< Spot, Link >, OverlayEdgeWrapper< Spot, Link >>( overlayGraph, tracksOverlay, overlaySelection );
+		final MouseSelectionHandler< OverlayVertexWrapper< Spot, Link >, OverlayEdgeWrapper< Spot, Link > > mouseSelectionListener =
+				new MouseSelectionHandler< OverlayVertexWrapper< Spot, Link >, OverlayEdgeWrapper< Spot, Link > >( overlayGraph, tracksOverlay, overlaySelection );
 		viewer.getDisplay().addHandler( mouseSelectionListener );
 
 		return bdv;
