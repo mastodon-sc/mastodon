@@ -144,7 +144,7 @@ public class TrackSchemePanel extends JPanel implements
 		highlight.addHighlightListener( this );
 		selection.addSelectionListener( this );
 
-		graphOverlay = new DefaultTrackSchemeOverlay( highlight, optional );
+		graphOverlay = new DefaultTrackSchemeOverlay( graph, highlight, optional );
 		display.addOverlayRenderer( graphOverlay );
 
 		// This should be the last OverlayRenderer in display.
