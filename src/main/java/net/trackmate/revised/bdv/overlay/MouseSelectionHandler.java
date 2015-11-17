@@ -27,7 +27,12 @@ public class MouseSelectionHandler< V extends OverlayVertex< V, E >, E extends O
 		final V vertex = renderer.getVertexAt( e.getX(), e.getY(), ref );
 		if ( vertex == null )
 		{
-			// Let's see if we can select and edge.
+			// Let's see if we can select an edge.
+			/*
+			 * TODO: shouldn't take V ref but E ref. A temporary V ref can be
+			 * created and released in getEdgeAt(), but an E ref should be
+			 * passed in for the return value.
+			 */
 			final E edge = renderer.getEdgeAt( e.getX(), e.getY(), SELECT_DISTANCE_TOLERANCE, ref );
 			if ( edge == null )
 			{
