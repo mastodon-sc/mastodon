@@ -226,7 +226,6 @@ public class MaMuT
 				new ModelOverlayProperties( radiusStats ) );
 
 		final OverlayHighlightWrapper< Spot, Link > overlayHighlight = new OverlayHighlightWrapper<>(
-				model.getGraph(),
 				model.getGraphIdBimap(),
 				highlightModel );
 
