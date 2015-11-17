@@ -184,7 +184,7 @@ public class TrackSchemeGraph<
 			final int id = idmap.getEdgeId( e );
 			idToTrackSchemeVertex.get( idmap.getVertexId( e.getSource( mv ) ), tsv );
 			idToTrackSchemeVertex.get( idmap.getVertexId( e.getTarget( mv ) ), tsv2 );
-			addEdge( tsv, tsv2, tse );
+			addEdge( tsv, tsv2, tse ).init( id );
 			idToTrackSchemeEdge.put( id, tse );
 		}
 	}
@@ -218,7 +218,7 @@ public class TrackSchemeGraph<
 		idToTrackSchemeVertex.get( idmap.getVertexId( edge.getTarget( mv ) ), tsv2 );
 		if ( tsv2.incomingEdges().isEmpty() )
 			roots.remove( tsv2 );
-		addEdge( tsv, tsv2, tse );
+		addEdge( tsv, tsv2, tse ).init( id );
 		idToTrackSchemeEdge.put( id, tse );
 	}
 

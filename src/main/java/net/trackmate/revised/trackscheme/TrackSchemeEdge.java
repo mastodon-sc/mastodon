@@ -35,6 +35,12 @@ public class TrackSchemeEdge extends AbstractEdge< TrackSchemeEdge, TrackSchemeV
 		setScreenEdgeIndex( -1 );
 	}
 
+	public TrackSchemeEdge init( final int modelEdgeId )
+	{
+		setModelEdgeId( modelEdgeId );
+		return this;
+	}
+
 	/**
 	 * TODO: fix javadoc, see TrackSchemeVertex.getModelVertexId()
 	 *
