@@ -198,6 +198,9 @@ class SpatialIndexData< O extends Ref< O > & RealLocalizable >
 			if ( n.isValid() )
 			{
 				n.setValid( false );
+				final KDTreeNode< O, DoubleMappedElement > ref = nodeMap.createValueRef();
+				nodeMap.removeWithRef( obj, ref );
+				nodeMap.releaseValueRef( ref );
 				--size;
 				return true;
 			}
