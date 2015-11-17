@@ -7,6 +7,7 @@ import net.trackmate.graph.GraphIdBimap;
 import net.trackmate.graph.Vertex;
 import net.trackmate.graph.listenable.GraphListener;
 
+//TODO: should HighlightModel be an interface
 public class HighlightModel< V extends Vertex< E >, E extends Edge< V > > implements GraphListener< V, E >
 {
 	private final GraphIdBimap< V, E > idmap;

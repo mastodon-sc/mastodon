@@ -14,6 +14,7 @@ import net.trackmate.graph.listenable.ListenableGraph;
 
 
 // TODO: less severe synchronization
+// TODO: should Selection be an interface
 public class Selection< V extends Vertex< E >, E extends Edge< V > > implements GraphListener< V, E >
 {
 	private final ListenableGraph< V, E > graph;
