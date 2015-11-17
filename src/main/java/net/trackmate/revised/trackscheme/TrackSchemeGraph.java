@@ -21,7 +21,6 @@ import net.trackmate.graph.mempool.ByteMappedElement;
 import net.trackmate.graph.mempool.ByteMappedElementArray;
 import net.trackmate.graph.mempool.MemPool;
 import net.trackmate.graph.mempool.SingleArrayMemPool;
-import net.trackmate.revised.trackscheme.ModelGraphProperties.ModelVertexProperties;
 import net.trackmate.spatial.HasTimepoint;
 
 public class TrackSchemeGraph<
@@ -40,8 +39,6 @@ public class TrackSchemeGraph<
 	private final IntRefMap< TrackSchemeVertex > idToTrackSchemeVertex;
 
 	private final IntRefMap< TrackSchemeEdge > idToTrackSchemeEdge;
-
-	private final ModelVertexProperties modelVertexProperties;
 
 	private final RefSet< TrackSchemeVertex > roots;
 
@@ -82,7 +79,6 @@ public class TrackSchemeGraph<
 		tsv2 = vertexRef();
 		tse = edgeRef();
 		listeners = new ArrayList< GraphChangeListener >();
-		modelVertexProperties = modelGraphProperties.createVertexProperties();
 		modelGraph.addGraphListener( this );
 		modelGraph.addGraphChangeListener( this );
 		graphRebuilt();
