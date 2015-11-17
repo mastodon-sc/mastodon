@@ -265,12 +265,10 @@ public class MaMuT
 			}
 		} );
 
-		final MouseOverListener< OverlayVertexWrapper< Spot, Link >, OverlayEdgeWrapper< Spot, Link > > mouseOver =
-				new MouseOverListener< OverlayVertexWrapper< Spot, Link >, OverlayEdgeWrapper< Spot, Link > >( overlayHighlight, tracksOverlay, overlayGraph );
+		final MouseOverListener< ?, ? > mouseOver = new MouseOverListener<>( overlayHighlight, tracksOverlay, overlayGraph );
 		viewer.getDisplay().addHandler( mouseOver );
 
-		final MouseSelectionHandler< OverlayVertexWrapper< Spot, Link >, OverlayEdgeWrapper< Spot, Link > > mouseSelectionListener =
-				new MouseSelectionHandler< OverlayVertexWrapper< Spot, Link >, OverlayEdgeWrapper< Spot, Link > >( overlayGraph, tracksOverlay, overlaySelection );
+		final MouseSelectionHandler< ?, ? > mouseSelectionListener = new MouseSelectionHandler<>( overlayGraph, tracksOverlay, overlaySelection );
 		viewer.getDisplay().addHandler( mouseSelectionListener );
 
 		return bdv;
