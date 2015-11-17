@@ -7,10 +7,15 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 
+import net.imglib2.RealPoint;
 import net.imglib2.ui.InteractiveDisplayCanvasComponent;
 import net.imglib2.ui.OverlayRenderer;
+import net.imglib2.util.Util;
+import net.trackmate.revised.trackscheme.LineageTreeLayout;
 import net.trackmate.revised.trackscheme.ScreenTransform;
+import net.trackmate.revised.trackscheme.TrackSchemeGraph;
 import net.trackmate.revised.trackscheme.TrackSchemeSelection;
+import net.trackmate.revised.trackscheme.TrackSchemeVertex;
 
 public class MouseSelectionHandler implements MouseListener, MouseMotionListener, OverlayRenderer
 {
@@ -44,15 +49,36 @@ public class MouseSelectionHandler implements MouseListener, MouseMotionListener
 
 	private final InteractiveDisplayCanvasComponent< ScreenTransform > display;
 
-	public MouseSelectionHandler( final AbstractTrackSchemeOverlay graphOverlay, final TrackSchemeSelection selection, final InteractiveDisplayCanvasComponent< ScreenTransform > display )
+	private final LineageTreeLayout layout;
+
+	private final TrackSchemeGraph< ?, ? > graph;
+
+	public MouseSelectionHandler( final AbstractTrackSchemeOverlay graphOverlay, final TrackSchemeSelection selection, final InteractiveDisplayCanvasComponent< ScreenTransform > display, final LineageTreeLayout layout, final TrackSchemeGraph< ?, ? > graph )
 	{
 		this.graphOverlay = graphOverlay;
 		this.selection = selection;
 		this.display = display;
+		this.layout = layout;
+		this.graph = graph;
 	}
 
 	@Override
 	public void mouseClicked( final MouseEvent e )
+	{
+		final ScreenTransform transform = display.getTransformEventHandler().getTransform();
+
+		final double[] mousePos = new double[] { e.getX(), e.getY(), 0 };
+		final double[] layoutPos = new double[ 3 ];
+		transform.applyInverse( layoutPos, mousePos );
+		
+		final double ratioXtoY = transform.getScaleX() / transform.getScaleY();
+		
+		final TrackSchemeVertex ref = graph.vertexRef();
+		final TrackSchemeVertex vertex = layout.getClosestActiveVertex( RealPoint.wrap( layoutPos ), ratioXtoY, ref );
+		System.out.println( "At layout position " + Util.printCoordinates( layoutPos ) + ", closest vertex is " + vertex.getLabel() );// DEBUG
+	}
+
+	private void select( final MouseEvent e )
 	{
 		final boolean clear = !( e.getModifiers() == MOUSE_MASK_CLICK_ADDTOSELECTION );
 

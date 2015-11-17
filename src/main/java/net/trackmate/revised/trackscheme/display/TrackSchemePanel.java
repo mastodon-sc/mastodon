@@ -170,7 +170,7 @@ public class TrackSchemePanel extends JPanel implements
 
 		display.addMouseMotionListener( new MouseOverListener( graphOverlay, highlight ) );
 
-		final MouseSelectionHandler mouseSelectionHandler = new MouseSelectionHandler( graphOverlay, selection, display );
+		final MouseSelectionHandler mouseSelectionHandler = new MouseSelectionHandler( graphOverlay, selection, display, layout, graph );
 		display.addHandler( mouseSelectionHandler );
 		display.addOverlayRenderer( mouseSelectionHandler );
 

@@ -7,7 +7,6 @@ import gnu.trove.map.hash.TIntObjectHashMap;
 
 import java.util.Collection;
 import java.util.Iterator;
-import java.util.List;
 
 import net.imglib2.RealLocalizable;
 import net.trackmate.graph.collection.RefList;
@@ -363,7 +362,7 @@ public class LineageTreeLayout
 	 * @return the closest active vertex to the specified coordinates, or
 	 *         {@code null} if there are no active vertices.
 	 */
-	public TrackSchemeVertex getClosestActiveVertex( final RealLocalizable layoutPos, final double ratioXtoY, final TrackSchemeVertex v )
+	public TrackSchemeVertex getClosestActiveVertex( final RealLocalizable layoutPos, final double ratioXtoY, final TrackSchemeVertex ref )
 	{
 		final double lx = layoutPos.getDoublePosition( 0 );
 		final double ly = layoutPos.getDoublePosition( 1 );
@@ -381,17 +380,17 @@ public class LineageTreeLayout
 			{
 				final TrackSchemeVertexList vertexList = timepointToOrderedVertices.get( tp );
 				final int left = vertexList.binarySearch( lx );
-				final int begin = Math.min( 0, left );
+				final int begin = Math.max( 0, Math.min( 0, left ) );
 				final int end = Math.min( begin + 2, vertexList.size() );
 				for ( int x = begin; x < end; ++x )
 				{
-					vertexList.get( x, v );
-					final double diffx = ( lx - v.getLayoutX() );
+					vertexList.get( x, ref );
+					final double diffx = ( lx - ref.getLayoutX() );
 					final double d2 = diffx * diffx + diffy * diffy;
 					if ( d2 < closestVertexSquareDist )
 					{
 						closestVertexSquareDist = d2;
-						closestVertexIndex = v.getInternalPoolIndex();
+						closestVertexIndex = ref.getInternalPoolIndex();
 					}
 				}
 			}
@@ -400,8 +399,8 @@ public class LineageTreeLayout
 		if ( closestVertexIndex < 0 )
 			return null;
 
-		graph.getVertexPool().getByInternalPoolIndex( closestVertexIndex, v );
-		return v;
+		graph.getVertexPool().getByInternalPoolIndex( closestVertexIndex, ref );
+		return ref;
 	}
 
 // TODO remove?
