@@ -10,6 +10,7 @@ import java.util.Iterator;
 
 import net.imglib2.RealLocalizable;
 import net.trackmate.graph.collection.RefList;
+import net.trackmate.revised.TIntAlternatingIterator;
 import net.trackmate.revised.trackscheme.ScreenEdge.ScreenEdgePool;
 import net.trackmate.revised.trackscheme.ScreenVertex.ScreenVertexPool;
 import net.trackmate.revised.trackscheme.ScreenVertexRange.ScreenVertexRangePool;
@@ -370,8 +371,7 @@ public class LineageTreeLayout
 		double closestVertexSquareDist = Double.POSITIVE_INFINITY;
 		int closestVertexIndex = -1;
 
-// TODO: intead of only forward iteration through timepoints, should pick a good starting tp and then search forwards and backwards until diffy * diffy < closestVertexSquareDist.
-		final TIntIterator tpIter = timepoints.iterator();
+		final TIntIterator tpIter = new TIntAlternatingIterator( timepoints, ( int ) ly );
 		while( tpIter.hasNext() )
 		{
 			final int tp = tpIter.next();
@@ -380,7 +380,7 @@ public class LineageTreeLayout
 			{
 				final TrackSchemeVertexList vertexList = timepointToOrderedVertices.get( tp );
 				final int left = vertexList.binarySearch( lx );
-				final int begin = Math.max( 0, Math.min( 0, left ) );
+				final int begin = Math.max( 0, left );
 				final int end = Math.min( begin + 2, vertexList.size() );
 				for ( int x = begin; x < end; ++x )
 				{
@@ -402,17 +402,6 @@ public class LineageTreeLayout
 		graph.getVertexPool().getByInternalPoolIndex( closestVertexIndex, ref );
 		return ref;
 	}
-
-// TODO remove?
-//	TIntArrayList getTimepoints()
-//	{
-//		return timepoints;
-//	}
-//
-//	TrackSchemeVertexList getOrderedVertices( final int timepoint )
-//	{
-//		return timepointToOrderedVertices.get( timepoint );
-//	}
 
 	/**
 	 * Recursively lay out vertices such that
