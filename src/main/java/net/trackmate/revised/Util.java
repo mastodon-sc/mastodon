@@ -1,5 +1,7 @@
 package net.trackmate.revised;
 
+import net.trackmate.revised.trackscheme.ScreenTransform;
+
 public class Util
 {
 	/**
@@ -35,6 +37,23 @@ public class Util
 				( y2 - y1 ) * x0 - ( x2 - x1 ) * y0 + x2 * y1 - y2 * x1
 				) / Math.sqrt( l12sq );
 		return d;
+	}
+
+	public static final double getXtoYRatio( final ScreenTransform transform )
+	{
+		final double[] mousePos = new double[] { 0, 0 };
+		final double[] layoutPos = new double[ 2 ];
+		transform.applyInverse( layoutPos, mousePos );
+		final double x0 = layoutPos[ 0 ];
+		final double y0 = layoutPos[ 1 ];
+
+		mousePos[ 0 ] = 1;
+		mousePos[ 1 ] = 1;
+		transform.applyInverse( layoutPos, mousePos );
+		final double x1 = layoutPos[ 0 ];
+		final double y1 = layoutPos[ 1 ];
+
+		return ( x1 - x0 ) / ( y1 - y0 );
 	}
 
 	private Util()
