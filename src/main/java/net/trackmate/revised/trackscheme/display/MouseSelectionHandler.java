@@ -7,12 +7,14 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 
-import net.imglib2.RealPoint;
+import javax.swing.SwingUtilities;
+
 import net.imglib2.ui.InteractiveDisplayCanvasComponent;
 import net.imglib2.ui.OverlayRenderer;
-import net.imglib2.util.Util;
+import net.trackmate.graph.collection.RefSet;
 import net.trackmate.revised.trackscheme.LineageTreeLayout;
 import net.trackmate.revised.trackscheme.ScreenTransform;
+import net.trackmate.revised.trackscheme.TrackSchemeEdge;
 import net.trackmate.revised.trackscheme.TrackSchemeGraph;
 import net.trackmate.revised.trackscheme.TrackSchemeSelection;
 import net.trackmate.revised.trackscheme.TrackSchemeVertex;
@@ -65,17 +67,27 @@ public class MouseSelectionHandler implements MouseListener, MouseMotionListener
 	@Override
 	public void mouseClicked( final MouseEvent e )
 	{
-}
+		if ( e.getModifiers() == MOUSE_MASK_CLICK || e.getModifiers() == MOUSE_MASK_CLICK_ADDTOSELECTION )
+		{
+			SwingUtilities.invokeLater( new Runnable()
+			{
+				@Override
+				public void run()
+				{
+					final boolean clear = !( e.getModifiers() == MOUSE_MASK_CLICK_ADDTOSELECTION );
+					select( e.getX(), e.getY(), clear );
+				}
+			} );
+		}
+	}
 
-	private void select( final MouseEvent e )
+	private void select( final int x, final int y, final boolean clear )
 	{
-		final boolean clear = !( e.getModifiers() == MOUSE_MASK_CLICK_ADDTOSELECTION );
-
-		final int vertexId = graphOverlay.getVertexIdAt( e.getX(), e.getY() );
+		final int vertexId = graphOverlay.getVertexIdAt( x, y );
 		if ( vertexId < 0 )
 		{
 			// See if we can select an edge.
-			final int edgeId = graphOverlay.getEdgeIdAt( e.getX(), e.getY(), SELECT_DISTANCE_TOLERANCE );
+			final int edgeId = graphOverlay.getEdgeIdAt( x, y, SELECT_DISTANCE_TOLERANCE );
 			if ( edgeId < 0 )
 			{
 				if ( clear )
@@ -133,24 +145,20 @@ public class MouseSelectionHandler implements MouseListener, MouseMotionListener
 
 			display.repaint();
 			final boolean clear = !( ( e.getModifiersEx() & MOUSE_MASK_ADDTOSELECTION ) != 0 );
+			SwingUtilities.invokeLater( new Runnable()
+			{
+				@Override
+				public void run()
+				{
+					selectWithin( oX, oY, eX, eY, clear );
+				}
+			} );
 		}
 	}
 
 	@Override
 	public void mousePressed( final MouseEvent e )
-	{
-		final ScreenTransform transform = display.getTransformEventHandler().getTransform();
-
-		final double[] mousePos = new double[] { e.getX(), e.getY() };
-		final double[] layoutPos = new double[ 2 ];
-		transform.applyInverse( layoutPos, mousePos );
-
-		final double ratioXtoY = getXtoYRatio( transform );
-
-		final TrackSchemeVertex ref = graph.vertexRef();
-		final TrackSchemeVertex vertex = layout.getClosestActiveVertex( RealPoint.wrap( layoutPos ), ratioXtoY, ref );
-		System.out.println( "At layout position " + Util.printCoordinates( layoutPos ) + ", closest vertex is " + vertex.getLabel() );// DEBUG
-	}
+	{}
 
 	@Override
 	public void mouseEntered( final MouseEvent e )
@@ -174,30 +182,46 @@ public class MouseSelectionHandler implements MouseListener, MouseMotionListener
 	public void setCanvasSize( final int width, final int height )
 	{}
 
-	private static final double getXtoYRatio( final ScreenTransform transform )
+	/*
+	 * PRIVATE METHODS AND CLASSES
+	 */
+
+	private void selectWithin( final int x1, final int y1, final int x2, final int y2, final boolean clear )
 	{
-		final double[] mousePos = new double[] { 0, 0 };
-		final double[] layoutPos = new double[ 2 ];
-		transform.applyInverse( layoutPos, mousePos );
-		final double x0 = layoutPos[ 0 ];
-		final double y0 = layoutPos[ 1 ];
+		final ScreenTransform transform = display.getTransformEventHandler().getTransform();
 
-		mousePos[ 0 ] = 1;
-		mousePos[ 1 ] = 1;
-		transform.applyInverse( layoutPos, mousePos );
-		final double x1 = layoutPos[ 0 ];
-		final double y1 = layoutPos[ 1 ];
+		if ( clear )
+		{
+			selection.clearSelection();
+		}
 
-		return ( x1 - x0 ) / ( y1 - y0 );
+		final double lx1 = transform.screenToLayoutX( x1 );
+		final double ly1 = transform.screenToLayoutY( y1 );
+		final double lx2 = transform.screenToLayoutX( x2 );
+		final double ly2 = transform.screenToLayoutY( y2 );
+
+		final RefSet< TrackSchemeVertex > vs = layout.getVerticesWithin( lx1, ly1, lx2, ly2 );
+		final TrackSchemeVertex ref = graph.vertexRef();
+		for ( final TrackSchemeVertex v : vs )
+		{
+			selection.setVertexSelected( v.getInternalPoolIndex(), true );
+			for ( final TrackSchemeEdge e : v.outgoingEdges() )
+			{
+				final TrackSchemeVertex t = e.getTarget( ref );
+				if ( vs.contains( t ) )
+				{
+					selection.setEdgeSelected( e.getInternalPoolIndex(), true );
+				}
+			}
+		}
+		graph.releaseRef( ref );
 	}
 
 	private class SelectionBoxOverlay implements OverlayRenderer
 	{
-
 		@Override
 		public void drawOverlays( final Graphics g )
 		{
-			System.out.println( "Draw drag = " + dragStarted );// DEBUG
 			if ( !dragStarted )
 				return;
 			g.setColor( Color.RED );

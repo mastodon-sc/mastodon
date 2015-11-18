@@ -10,6 +10,7 @@ import java.util.Iterator;
 
 import net.imglib2.RealLocalizable;
 import net.trackmate.graph.collection.RefList;
+import net.trackmate.graph.collection.RefSet;
 import net.trackmate.revised.TIntAlternatingIterator;
 import net.trackmate.revised.trackscheme.ScreenEdge.ScreenEdgePool;
 import net.trackmate.revised.trackscheme.ScreenVertex.ScreenVertexPool;
@@ -349,7 +350,7 @@ public class LineageTreeLayout
 	}
 
 	/**
-	 * Get the active vertex with the minimal distance to the specified layout
+	 * Get the vertex with the minimal distance to the specified layout
 	 * coordinates. The distance is computed as the Euclidean distance in layout
 	 * space distorted by the specified aspect ratio.
 	 *
@@ -360,10 +361,10 @@ public class LineageTreeLayout
 	 *            transformed into layout coordinates <em>(X,Y)</em>.
 	 * @param v
 	 *            ref to store the result.
-	 * @return the closest active vertex to the specified coordinates, or
-	 *         {@code null} if there are no active vertices.
+	 * @return the closest vertex to the specified coordinates, or {@code null}
+	 *         if there are no vertices.
 	 */
-	public TrackSchemeVertex getClosestActiveVertex( final RealLocalizable layoutPos, final double ratioXtoY, final TrackSchemeVertex ref )
+	public TrackSchemeVertex getClosestVertex( final RealLocalizable layoutPos, final double ratioXtoY, final TrackSchemeVertex ref )
 	{
 		final double lx = layoutPos.getDoublePosition( 0 );
 		final double ly = layoutPos.getDoublePosition( 1 );
@@ -401,6 +402,53 @@ public class LineageTreeLayout
 
 		graph.getVertexPool().getByInternalPoolIndex( closestVertexIndex, ref );
 		return ref;
+	}
+
+	/**
+	 * Returns the set of all the vertices in the rectangle with two corners
+	 * <code>(lx1, ly1)</code> and <code>(lx2, ly2)</code> in layout
+	 * coordinates.
+	 * 
+	 * @param lx1
+	 *            the x coordinate of the first corner.
+	 * @param ly1
+	 *            the y coordinate of the first corner.
+	 * @param lx2
+	 *            the x coordinate of the second corner.
+	 * @param ly2
+	 *            the y coordinate of the second corner.
+	 * @return a new set.
+	 */
+	public RefSet< TrackSchemeVertex > getVerticesWithin( final double lx1, final double ly1, final double lx2, final double ly2 )
+	{
+		final int tStart = Math.max( 0, ( int ) Math.ceil( Math.min( ly1, ly2 ) ) );
+		final int tEnd = ( int ) Math.floor( Math.max( ly1, ly2 ) );
+		final double x1 = Math.min( lx1, lx2 );
+		final double x2 = Math.max( lx1, lx2 );
+
+		TrackSchemeVertex v = graph.vertexRef();
+		final RefSet< TrackSchemeVertex > vertexSet = graph.createVertexSet();
+
+		final TIntIterator tpIter = timepoints.subList( tStart, tEnd + 1 ).iterator();
+		while ( tpIter.hasNext() )
+		{
+			final TrackSchemeVertexList vertexList = timepointToOrderedVertices.get( tpIter.next() );
+			int left = vertexList.binarySearch( x1 ) + 1;
+			if ( left < 0 )
+				left = 0;
+
+			int right = vertexList.binarySearch( x2, left, vertexList.size() );
+			if ( right >= vertexList.size() )
+				right = vertexList.size() - 1;
+
+			for ( int i = left; i <= right; i++ )
+			{
+				v = vertexList.get( i, v );
+				vertexSet.add( v );
+			}
+		}
+		graph.releaseRef( v );
+		return vertexSet;
 	}
 
 	/**
