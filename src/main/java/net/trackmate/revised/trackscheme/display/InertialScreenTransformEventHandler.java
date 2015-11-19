@@ -5,6 +5,8 @@ import java.awt.event.KeyListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import net.imglib2.ui.TransformEventHandler;
 import net.imglib2.ui.TransformEventHandlerFactory;
@@ -132,11 +134,6 @@ public class InertialScreenTransformEventHandler extends MouseAdapter implements
 	{
 		if ( listener != null )
 			listener.transformChanged( transform );
-
-		if ( null != updaterThread )
-		{
-			updaterThread.requestUpdate();
-		}
 	}
 
 	// ================ KeyListener =============================
@@ -219,9 +216,6 @@ public class InertialScreenTransformEventHandler extends MouseAdapter implements
 				@Override
 				public void update()
 				{
-					System.out.println( animator.isComplete() );// DEBUG
-					System.out.println( animator.ratioComplete() );// DEBUG
-
 					if ( animator.isComplete() )
 					{
 						updaterThread = null;
@@ -229,7 +223,6 @@ public class InertialScreenTransformEventHandler extends MouseAdapter implements
 					}
 					final long t = System.currentTimeMillis();
 					final ScreenTransform c = animator.getCurrent( t );
-					System.out.println( t );// DEBUG
 					synchronized ( transform )
 					{
 						transform.set( c );
@@ -238,6 +231,29 @@ public class InertialScreenTransformEventHandler extends MouseAdapter implements
 				}
 			} );
 			updaterThread.start();
+
+			final Timer timer = new Timer();
+			timer.schedule( new TimerTask()
+			{
+				@Override
+				public void run()
+				{
+					if (animator.isComplete())
+					{
+						timer.cancel();
+						try
+						{
+							updaterThread.join();
+							updaterThread = null;
+						}
+						catch ( final InterruptedException e )
+						{
+							e.printStackTrace();
+						}
+					}
+					updaterThread.requestUpdate();
+				}
+			}, 0, 10 );
 		}
 
 	}
