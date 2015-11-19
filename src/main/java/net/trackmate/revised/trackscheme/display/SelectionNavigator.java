@@ -74,7 +74,7 @@ public class SelectionNavigator
 		final Edges< TrackSchemeEdge > edges = v.incomingEdges();
 		if ( edges.size() > 0 )
 		{
-			final TrackSchemeVertex current = edges.get( 0 ).getTarget();
+			final TrackSchemeVertex current = edges.get( 0 ).getSource();
 			if ( clear )
 			{
 				selection.clearSelection();
@@ -109,7 +109,7 @@ public class SelectionNavigator
 		graph.getVertexPool().getByInternalPoolIndex( takeDefaultVertex(), v );
 		final TrackSchemeVertexList vertices = layout.getTimepointToOrderedVertices().get( v.getTimepoint() );
 		final int index = vertices.binarySearch( v.getLayoutX() );
-		if ( index >= 0 && index < vertices.size() - 1 )
+		if ( index > 0 && index < vertices.size() )
 		{
 			final TrackSchemeVertex sibling = vertices.get( index - 1 );
 			if ( clear )

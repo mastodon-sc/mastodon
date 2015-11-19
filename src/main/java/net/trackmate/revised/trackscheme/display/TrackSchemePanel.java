@@ -170,6 +170,8 @@ public class TrackSchemePanel extends JPanel implements
 		flags = new Flags();
 
 		final SelectionNavigator selectionNavigator = new SelectionNavigator( graph, layout, selection );
+		final KeyHandler keyHandler = new KeyHandler( display, selectionNavigator );
+		display.addHandler( keyHandler );
 
 		display.addMouseMotionListener( new MouseOverListener( graphOverlay, highlight ) );
 
