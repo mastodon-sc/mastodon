@@ -1,9 +1,12 @@
 package net.trackmate.revised.trackscheme;
 
+import gnu.trove.set.TIntSet;
+import gnu.trove.set.hash.TIntHashSet;
 import net.trackmate.graph.Edge;
 import net.trackmate.graph.GraphIdBimap;
 import net.trackmate.graph.ReadOnlyGraph;
 import net.trackmate.graph.Vertex;
+import net.trackmate.graph.collection.RefSet;
 import net.trackmate.revised.ui.selection.Selection;
 import net.trackmate.revised.ui.selection.SelectionListener;
 
@@ -97,5 +100,17 @@ public class DefaultModelSelectionProperties< V extends Vertex< E >, E extends E
 	public void clearSelection()
 	{
 		selection.clearSelection();
+	}
+
+	@Override
+	public TIntSet getSelectedVertexIds()
+	{
+		final RefSet< V > vertices = selection.getSelectedVertices();
+		final TIntHashSet ids = new TIntHashSet( vertices.size() );
+		for ( final V v : vertices )
+		{
+			ids.add( idmap.getVertexId( v ) );
+		}
+		return ids;
 	}
 }

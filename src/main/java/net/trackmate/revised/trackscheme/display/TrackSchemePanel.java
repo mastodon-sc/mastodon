@@ -141,6 +141,7 @@ public class TrackSchemePanel extends JPanel implements
 		display = new InteractiveDisplayCanvasComponent< ScreenTransform >(	w, h, options.getTransformEventHandlerFactory() );
 		display.addTransformListener( this );
 
+
 		highlight.addHighlightListener( this );
 		selection.addSelectionListener( this );
 
@@ -167,6 +168,8 @@ public class TrackSchemePanel extends JPanel implements
 		entityAnimator = new ScreenEntityAnimator();
 		painterThread = new PainterThread( this );
 		flags = new Flags();
+
+		final SelectionNavigator selectionNavigator = new SelectionNavigator( graph, layout, selection );
 
 		display.addMouseMotionListener( new MouseOverListener( graphOverlay, highlight ) );
 

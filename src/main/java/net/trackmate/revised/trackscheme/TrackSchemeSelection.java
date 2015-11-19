@@ -1,5 +1,8 @@
 package net.trackmate.revised.trackscheme;
 
+import gnu.trove.iterator.TIntIterator;
+import gnu.trove.set.TIntSet;
+import gnu.trove.set.hash.TIntHashSet;
 import net.trackmate.revised.ui.selection.SelectionListener;
 
 public class TrackSchemeSelection
@@ -61,5 +64,22 @@ public class TrackSchemeSelection
 		return props.removeSelectionListener( l );
 	}
 
+	public TIntSet getSelectedVertexIds()
+	{
+		// Model ids.
+		final TIntSet ids = props.getSelectedVertexIds();
+		// TrackSchemeVertex internal pool id.
+		final TIntHashSet set = new TIntHashSet( ids.size() );
 
+		final TIntIterator it = ids.iterator();
+		final TrackSchemeVertex ref = graph.vertexRef();
+		while ( it.hasNext() )
+		{
+			final int id = it.next();
+			final TrackSchemeVertex v = graph.getTrackSchemeVertexForModelId( id, ref );
+			set.add( v.getInternalPoolIndex() );
+		}
+		graph.releaseRef( ref );
+		return set;
+	}
 }

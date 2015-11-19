@@ -408,7 +408,7 @@ public class LineageTreeLayout
 	 * Returns the set of all the vertices in the rectangle with two corners
 	 * <code>(lx1, ly1)</code> and <code>(lx2, ly2)</code> in layout
 	 * coordinates.
-	 * 
+	 *
 	 * @param lx1
 	 *            the x coordinate of the first corner.
 	 * @param ly1
@@ -449,6 +449,11 @@ public class LineageTreeLayout
 		}
 		graph.releaseRef( v );
 		return vertexSet;
+	}
+
+	public TIntObjectMap< TrackSchemeVertexList > getTimepointToOrderedVertices()
+	{
+		return timepointToOrderedVertices;
 	}
 
 	/**

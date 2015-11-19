@@ -61,7 +61,7 @@ public class TrackSchemeVertexList extends PoolObjectList< TrackSchemeVertex >
 	 * @return the largest index of a vertex with {@code layoutX <= value} in
 	 *         the sorted list.
 	 */
-	protected int binarySearch( final double value )
+	public int binarySearch( final double value )
 	{
 		return binarySearch( value, 0, size() );
 	}
