@@ -1,6 +1,5 @@
 package net.trackmate.revised.trackscheme.display.animate;
 
-import bdv.viewer.animate.AbstractAnimator;
 
 /**
  * Mother abstract class for animators that animate the current view by
@@ -28,15 +27,6 @@ public abstract class AbstractTransformAnimator< A > extends AbstractAnimator
 		super( duration );
 	}
 
-	/**
-	 * Returns an {@link AffineTransform3D} that can be used to set the
-	 * viewpoint of a {@link ViewerFrame} instance, for the time specified.
-	 *
-	 * @param time
-	 *            the target absolute time for which the transform should be
-	 *            generated (in time units).
-	 * @return viewer transform for the given time.
-	 */
 	public A getCurrent( final long time )
 	{
 		setTime( time );

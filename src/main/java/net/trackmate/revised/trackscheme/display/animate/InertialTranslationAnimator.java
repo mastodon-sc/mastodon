@@ -22,8 +22,7 @@ public class InertialTranslationAnimator extends AbstractTransformAnimator< Scre
 		this.transformStart = transformStart.copy();
 		this.vx0 = -vx0;
 		this.vy0 = -vy0;
-		this.tau = 200d; // in ms
-
+		this.tau = duration / 5.; // in ms, t = 5.
 	}
 
 	@Override
@@ -41,7 +40,7 @@ public class InertialTranslationAnimator extends AbstractTransformAnimator< Scre
 		final double inc = tau * ( 1 - Math.exp( -t * d / tau ) );
 		final double dx = vx0 * inc;
 		final double dy = vy0 * inc;
-		
+
 		transform.shiftLayoutX( dx );
 		transform.shiftLayoutY( dy );
 

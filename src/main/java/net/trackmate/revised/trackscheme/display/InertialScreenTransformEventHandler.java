@@ -12,6 +12,7 @@ import net.imglib2.ui.TransformEventHandler;
 import net.imglib2.ui.TransformEventHandlerFactory;
 import net.imglib2.ui.TransformListener;
 import net.trackmate.revised.trackscheme.ScreenTransform;
+import net.trackmate.revised.trackscheme.display.animate.AbstractTransformAnimator;
 import net.trackmate.revised.trackscheme.display.animate.InertialTranslationAnimator;
 import net.trackmate.revised.trackscheme.display.animate.UpdaterThread;
 import net.trackmate.revised.trackscheme.display.animate.UpdaterThread.Updatable;
@@ -76,11 +77,28 @@ public class InertialScreenTransformEventHandler extends MouseAdapter implements
 
 	private double vy0;
 
-	private UpdaterThread updaterThread;
+	private final UpdaterThread updaterThread;
+
+	private AbstractTransformAnimator< ScreenTransform > animator;
 
 	public InertialScreenTransformEventHandler( final TransformListener< ScreenTransform > listener )
 	{
 		this.listener = listener;
+		this.updaterThread = new UpdaterThread( new Updatable()
+		{
+			@Override
+			public void update()
+			{
+				final long t = System.currentTimeMillis();
+				final ScreenTransform c = animator.getCurrent( t );
+				synchronized ( transform )
+				{
+					transform.set( c );
+				}
+				InertialScreenTransformEventHandler.this.update();
+			}
+		} );
+		updaterThread.start();
 	}
 
 	@Override
@@ -169,6 +187,14 @@ public class InertialScreenTransformEventHandler extends MouseAdapter implements
 		{
 			transformDragStart.set( transform );
 		}
+		animator = null;
+	}
+
+	@Override
+	public void mouseClicked( final MouseEvent e )
+	{
+		vx0 = 0;
+		vy0 = 0;
 	}
 
 	@Override
@@ -208,50 +234,21 @@ public class InertialScreenTransformEventHandler extends MouseAdapter implements
 		final int modifiers = e.getModifiers();
 		if ( ( modifiers == MouseEvent.BUTTON2_MASK ) || ( modifiers == MouseEvent.BUTTON3_MASK ) ) // translate
 		{
-			System.out.println( String.format( "Release. V = (%.1e, %.1e) l/ms.", vx0, vy0 ) );// DEBUG
-
-			final InertialTranslationAnimator animator = new InertialTranslationAnimator( transform, vx0, vy0, 500 );
-			updaterThread = new UpdaterThread( new Updatable()
-			{
-				@Override
-				public void update()
-				{
-					if ( animator.isComplete() )
-					{
-						updaterThread = null;
-						return;
-					}
-					final long t = System.currentTimeMillis();
-					final ScreenTransform c = animator.getCurrent( t );
-					synchronized ( transform )
-					{
-						transform.set( c );
-					}
-					InertialScreenTransformEventHandler.this.update();
-				}
-			} );
-			updaterThread.start();
-
+			animator = new InertialTranslationAnimator( transform, vx0, vy0, 500 );
 			final Timer timer = new Timer();
 			timer.schedule( new TimerTask()
 			{
 				@Override
 				public void run()
 				{
-					if (animator.isComplete())
+					if ( null == animator || animator.isComplete() )
 					{
 						timer.cancel();
-						try
-						{
-							updaterThread.join();
-							updaterThread = null;
-						}
-						catch ( final InterruptedException e )
-						{
-							e.printStackTrace();
-						}
 					}
-					updaterThread.requestUpdate();
+					else
+					{
+						updaterThread.requestUpdate();
+					}
 				}
 			}, 0, 10 );
 		}
