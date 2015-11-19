@@ -14,6 +14,7 @@ import net.imglib2.ui.TransformListener;
 import net.trackmate.revised.trackscheme.ScreenTransform;
 import net.trackmate.revised.trackscheme.display.animate.AbstractTransformAnimator;
 import net.trackmate.revised.trackscheme.display.animate.InertialTranslationAnimator;
+import net.trackmate.revised.trackscheme.display.animate.InertialZoomAnimator;
 import net.trackmate.revised.trackscheme.display.animate.UpdaterThread;
 import net.trackmate.revised.trackscheme.display.animate.UpdaterThread.Updatable;
 
@@ -27,6 +28,11 @@ public class InertialScreenTransformEventHandler extends MouseAdapter implements
 			return new InertialScreenTransformEventHandler( transformListener );
 		}
 	};
+
+	/**
+	 * The delay in ms between inertial movements updates.
+	 */
+	private static final long INERTIAL_ANIMATION_PERIOD = 20;
 
 	public static TransformEventHandlerFactory< ScreenTransform > factory()
 	{
@@ -66,16 +72,6 @@ public class InertialScreenTransformEventHandler extends MouseAdapter implements
 	 * <em>(screen-width/2, screen-height/2)</em>
 	 */
 	protected int centerX = 0, centerY = 0;
-
-	private double x0;
-
-	private double y0;
-
-	private long t0;
-
-	private double vx0;
-
-	private double vy0;
 
 	private final UpdaterThread updaterThread;
 
@@ -178,6 +174,16 @@ public class InertialScreenTransformEventHandler extends MouseAdapter implements
 
 	// ================ MouseAdapter ============================
 
+	private double x0;
+
+	private double y0;
+
+	private long t0;
+
+	private double vx0;
+
+	private double vy0;
+
 	@Override
 	public void mousePressed( final MouseEvent e )
 	{
@@ -234,7 +240,7 @@ public class InertialScreenTransformEventHandler extends MouseAdapter implements
 		final int modifiers = e.getModifiers();
 		if ( ( modifiers == MouseEvent.BUTTON2_MASK ) || ( modifiers == MouseEvent.BUTTON3_MASK ) ) // translate
 		{
-			animator = new InertialTranslationAnimator( transform, vx0, vy0, 500 );
+			animator = new InertialTranslationAnimator( transform, vx0, vy0, 400 );
 			final Timer timer = new Timer();
 			timer.schedule( new TimerTask()
 			{
@@ -250,9 +256,8 @@ public class InertialScreenTransformEventHandler extends MouseAdapter implements
 						updaterThread.requestUpdate();
 					}
 				}
-			}, 0, 10 );
+			}, 0, INERTIAL_ANIMATION_PERIOD );
 		}
-
 	}
 
 	@Override
@@ -260,32 +265,63 @@ public class InertialScreenTransformEventHandler extends MouseAdapter implements
 	{
 		synchronized ( transform )
 		{
+			final int s = e.getWheelRotation();
 			final double dScale = 1.1;
 			final int modifiers = e.getModifiersEx();
-			final int s = e.getWheelRotation();
 			final boolean ctrlPressed = ( modifiers & KeyEvent.CTRL_DOWN_MASK ) != 0;
 			final boolean altPressed = ( modifiers & KeyEvent.ALT_DOWN_MASK ) != 0;
 			final boolean metaPressed = ( ( modifiers & KeyEvent.META_DOWN_MASK ) != 0 ) || ( ctrlPressed && shiftPressed );
-			if ( metaPressed ) // zoom both axes
+
+			final boolean zoomX = shiftPressed;
+			final boolean zoomY = ctrlPressed || altPressed;
+			final boolean zoomXY = metaPressed;
+			final boolean zoom = zoomX || zoomY || zoomXY;
+
+			if ( zoom )
 			{
-				if ( s > 0 )
-					transform.zoom( 1.0 / dScale, e.getX(), e.getY() );
+				final int eX = e.getX();
+				final int eY = e.getY();
+				final boolean zoomOut = s > 0;
+
+				if ( zoomXY ) // zoom both axes
+				{
+					if ( zoomOut )
+						transform.zoom( 1.0 / dScale, eX, eY );
+					else
+						transform.zoom( dScale, eX, eY );
+				}
+				else if ( zoomX ) // zoom X axis
+				{
+					if ( zoomOut )
+						transform.zoomX( 1.0 / dScale, eX );
+					else
+						transform.zoomX( dScale, eX );
+				}
 				else
-					transform.zoom( dScale, e.getX(), e.getY() );
-			}
-			else if ( shiftPressed ) // zoom X axis
-			{
-				if ( s > 0 )
-					transform.zoomX( 1.0 / dScale, e.getX() );
-				else
-					transform.zoomX( dScale, e.getX() );
-			}
-			else if ( ctrlPressed || altPressed ) // zoom Y axis
-			{
-				if ( s > 0 )
-					transform.zoomY( 1.0 / dScale, e.getY() );
-				else
-					transform.zoomY( dScale, e.getY() );
+				{
+					// zoom Y axis
+					if ( zoomOut )
+						transform.zoomY( 1.0 / dScale, eY );
+					else
+						transform.zoomY( dScale, eY );
+				}
+				animator = new InertialZoomAnimator( transform, !zoomOut ? -s : s, zoomOut, zoomX, zoomY, eX, eY, 400 );
+				final Timer timer = new Timer();
+				timer.schedule( new TimerTask()
+				{
+					@Override
+					public void run()
+					{
+						if ( null == animator || animator.isComplete() )
+						{
+							timer.cancel();
+						}
+						else
+						{
+							updaterThread.requestUpdate();
+						}
+					}
+				}, 0, INERTIAL_ANIMATION_PERIOD );
 			}
 			else
 			{

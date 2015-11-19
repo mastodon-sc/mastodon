@@ -22,7 +22,7 @@ public class InertialTranslationAnimator extends AbstractTransformAnimator< Scre
 		this.transformStart = transformStart.copy();
 		this.vx0 = -vx0;
 		this.vy0 = -vy0;
-		this.tau = duration / 5.; // in ms, t = 5.
+		this.tau = duration / 3.; // in ms.
 	}
 
 	@Override
