@@ -38,6 +38,16 @@ public class InertialScreenTransformEventHandler extends MouseAdapter implements
 	 */
 	private static final long INERTIAL_ANIMATION_PERIOD = 20;
 
+	/**
+	 * Sets the maximal zoom level in X.
+	 */
+	private static final double MIN_SIBLINGS_ON_CANVAS = 3.;
+
+	/**
+	 * Sets the maximal zoom level in Y.
+	 */
+	private static final double MIN_TIMEPOINTS_ON_CANVAS = 3.;
+
 	public static TransformEventHandlerFactory< ScreenTransform > factory()
 	{
 		return factory;
@@ -154,11 +164,13 @@ public class InertialScreenTransformEventHandler extends MouseAdapter implements
 		final double[] layoutPosC = new double[ 2 ];
 		transform.applyInverse( layoutPosC, screenPosC );
 
+		final double sxratio = transform.getScaleX() / canvasW;
+		final double syratio = transform.getScaleY() / canvasH;
 		final double tlx = layoutPosC[ 0 ] - boundXMin;
 		final double tly = layoutPosC[ 1 ] - boundYMin;
 		final double brx = -layoutPosC[ 0 ] + boundXMax;
 		final double bry = -layoutPosC[ 1 ] + boundYMax;
-		if ( tlx < 0 || tly < 0 || brx < 0 || bry < 0 )
+		if ( tlx < 0 || tly < 0 || brx < 0 || bry < 0 || sxratio > 1 / MIN_SIBLINGS_ON_CANVAS || syratio > 1 / MIN_TIMEPOINTS_ON_CANVAS )
 		{
 			synchronized ( transform )
 			{
@@ -170,6 +182,11 @@ public class InertialScreenTransformEventHandler extends MouseAdapter implements
 					transform.shiftLayoutX( brx );
 				if ( bry < 0 )
 					transform.shiftLayoutY( bry );
+				if ( sxratio > 1 / MIN_SIBLINGS_ON_CANVAS )
+					transform.zoomX( sxratio * MIN_SIBLINGS_ON_CANVAS, canvasW / 2 );
+				if ( syratio > 1 / MIN_TIMEPOINTS_ON_CANVAS )
+					transform.zoomY( syratio * MIN_TIMEPOINTS_ON_CANVAS, canvasH / 2 );
+
 			}
 		}
 
