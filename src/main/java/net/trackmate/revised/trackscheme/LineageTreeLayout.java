@@ -11,7 +11,7 @@ import java.util.Iterator;
 import net.imglib2.RealLocalizable;
 import net.trackmate.graph.collection.RefList;
 import net.trackmate.graph.collection.RefSet;
-import net.trackmate.revised.TIntAlternatingIterator;
+import net.trackmate.graph.util.TIntAlternatingIterator;
 import net.trackmate.revised.trackscheme.ScreenEdge.ScreenEdgePool;
 import net.trackmate.revised.trackscheme.ScreenVertex.ScreenVertexPool;
 import net.trackmate.revised.trackscheme.ScreenVertexRange.ScreenVertexRangePool;
