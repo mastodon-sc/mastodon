@@ -1,5 +1,7 @@
 package net.trackmate.revised.trackscheme.display;
 
+import gnu.trove.list.array.TIntArrayList;
+
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseAdapter;
@@ -11,6 +13,8 @@ import java.util.TimerTask;
 import net.imglib2.ui.TransformEventHandler;
 import net.imglib2.ui.TransformEventHandlerFactory;
 import net.imglib2.ui.TransformListener;
+import net.trackmate.revised.trackscheme.LineageTreeLayout;
+import net.trackmate.revised.trackscheme.LineageTreeLayout.LayoutListener;
 import net.trackmate.revised.trackscheme.ScreenTransform;
 import net.trackmate.revised.trackscheme.display.animate.AbstractTransformAnimator;
 import net.trackmate.revised.trackscheme.display.animate.InertialTranslationAnimator;
@@ -18,7 +22,7 @@ import net.trackmate.revised.trackscheme.display.animate.InertialZoomAnimator;
 import net.trackmate.revised.trackscheme.display.animate.UpdaterThread;
 import net.trackmate.revised.trackscheme.display.animate.UpdaterThread.Updatable;
 
-public class InertialScreenTransformEventHandler extends MouseAdapter implements KeyListener, TransformEventHandler< ScreenTransform >
+public class InertialScreenTransformEventHandler extends MouseAdapter implements KeyListener, TransformEventHandler< ScreenTransform >, LayoutListener
 {
 	final static private TransformEventHandlerFactory< ScreenTransform > factory = new TransformEventHandlerFactory< ScreenTransform >()
 	{
@@ -146,6 +150,29 @@ public class InertialScreenTransformEventHandler extends MouseAdapter implements
 	 */
 	protected void update()
 	{
+		final double[] screenPosC = new double[] { centerX, centerY };
+		final double[] layoutPosC = new double[ 2 ];
+		transform.applyInverse( layoutPosC, screenPosC );
+
+		final double tlx = layoutPosC[ 0 ] - boundXMin;
+		final double tly = layoutPosC[ 1 ] - boundYMin;
+		final double brx = -layoutPosC[ 0 ] + boundXMax;
+		final double bry = -layoutPosC[ 1 ] + boundYMax;
+		if ( tlx < 0 || tly < 0 || brx < 0 || bry < 0 )
+		{
+			synchronized ( transform )
+			{
+				if ( tlx < 0 )
+					transform.shiftLayoutX( -tlx );
+				if ( tly < 0 )
+					transform.shiftLayoutY( -tly );
+				if ( brx < 0 )
+					transform.shiftLayoutX( brx );
+				if ( bry < 0 )
+					transform.shiftLayoutY( bry );
+			}
+		}
+
 		if ( listener != null )
 			listener.transformChanged( transform );
 	}
@@ -231,6 +258,7 @@ public class InertialScreenTransformEventHandler extends MouseAdapter implements
 				transform.shift( dX, dY );
 			}
 			update();
+
 		}
 	}
 
@@ -333,6 +361,24 @@ public class InertialScreenTransformEventHandler extends MouseAdapter implements
 			}
 			update();
 		}
+	}
+
+	private double boundXMax = 1.;
+
+	private double boundYMax = 1.;
+
+	private double boundXMin = 2.;
+
+	private double boundYMin = 2.;
+
+	@Override
+	public void layoutChanged( final LineageTreeLayout layout )
+	{
+		boundXMin = layout.getCurrentLayoutMinX();
+		boundXMax = layout.getCurrentLayoutMaxX();
+		final TIntArrayList timepoints = layout.getTimepoints();
+		boundYMin = timepoints.getQuick( 0 );
+		boundYMax = timepoints.getQuick( timepoints.size() - 1 );
 	}
 
 }

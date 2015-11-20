@@ -14,9 +14,11 @@ import javax.swing.UIManager;
 import net.imglib2.ui.InteractiveDisplayCanvasComponent;
 import net.imglib2.ui.OverlayRenderer;
 import net.imglib2.ui.PainterThread;
+import net.imglib2.ui.TransformEventHandler;
 import net.imglib2.ui.TransformListener;
 import net.trackmate.graph.listenable.GraphChangeListener;
 import net.trackmate.revised.trackscheme.LineageTreeLayout;
+import net.trackmate.revised.trackscheme.LineageTreeLayout.LayoutListener;
 import net.trackmate.revised.trackscheme.ScreenEntities;
 import net.trackmate.revised.trackscheme.ScreenEntitiesInterpolator;
 import net.trackmate.revised.trackscheme.ScreenTransform;
@@ -165,6 +167,12 @@ public class TrackSchemePanel extends JPanel implements
 
 		screenTransform = new ScreenTransform();
 		layout = new LineageTreeLayout( graph );
+		final TransformEventHandler< ScreenTransform > tevl = display.getTransformEventHandler();
+		if ( tevl instanceof LayoutListener )
+		{
+			final LayoutListener ll = ( LayoutListener ) tevl;
+			layout.addLayoutListener( ll );
+		}
 		entityAnimator = new ScreenEntityAnimator();
 		painterThread = new PainterThread( this );
 		flags = new Flags();
