@@ -56,7 +56,8 @@ public class InertialScreenTransformEventHandler extends MouseAdapter implements
 	/**
 	 * Current source to screen transform.
 	 */
-	final protected ScreenTransform transform = new ScreenTransform();
+	// Startup with a decent zoom level.
+	final protected ScreenTransform transform = new ScreenTransform( 0, 20, 0, 10, 800, 600 );
 
 	/**
 	 * Copy of {@link #affine current transform} when mouse dragging
