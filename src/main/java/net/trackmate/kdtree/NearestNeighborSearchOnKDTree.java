@@ -52,7 +52,7 @@ public final class NearestNeighborSearchOnKDTree< O extends Ref< O > & RealLocal
 	@Override
 	public void search( final RealLocalizable p )
 	{
-		if ( tree.size() == 0 )
+		if ( tree.size() <= 0 )
 			return;
 
 		if ( fastDoubleSearch != null )
@@ -169,7 +169,8 @@ public final class NearestNeighborSearchOnKDTree< O extends Ref< O > & RealLocal
 		{
 			n = tree.numDimensions();
 			nodeSizeInDoubles = n + 2;
-			final int depth = ( int ) ( Math.log( tree.size() ) / Math.log( 2 ) ) + 2;
+			final int depth = ( tree.size() <= 0 ) ? 0 :
+				( int ) ( Math.log( tree.size() ) / Math.log( 2 ) ) + 2;
 			pos = new double[ n ];
 			doubles = tree.getDoubles();
 			doublesRootIndex = tree.rootIndex * nodeSizeInDoubles;
