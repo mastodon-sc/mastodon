@@ -2,6 +2,16 @@ package net.trackmate.revised.trackscheme;
 
 import net.trackmate.revised.ui.selection.SelectionListener;
 
+/*
+ * TODO: consider replacing/adding API to use TrackSchemeVertex instead of IDs, as discussed in email:
+ *
+ * ModelSelectionProperties informs TrackSchemeSelection, which translates IDs
+ * it to corresponding TrackSchemeVertex and TrackSchemeEdge. This is the place
+ * to change it: Instead of
+ *    public void setEdgeSelected( final int id, final boolean selected )
+ * TrackSchemeSelection should have
+ *    public void setEdgeSelected( final TrackSchemeEdge edge, final boolean selected ) etc.
+ */
 public class TrackSchemeSelection
 {
 	private final ModelSelectionProperties props;
