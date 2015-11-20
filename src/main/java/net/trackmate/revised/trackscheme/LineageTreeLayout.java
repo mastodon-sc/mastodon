@@ -5,6 +5,7 @@ import gnu.trove.list.array.TIntArrayList;
 import gnu.trove.map.TIntObjectMap;
 import gnu.trove.map.hash.TIntObjectHashMap;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 
@@ -160,6 +161,7 @@ public class LineageTreeLayout
 		}
 		currentLayoutMinX = 0;
 		currentLayoutMaxX = rightmost - 1;
+		notifyListeners();
 	}
 
 	/**
@@ -456,6 +458,11 @@ public class LineageTreeLayout
 		return timepointToOrderedVertices;
 	}
 
+	public TIntArrayList getTimepoints()
+	{
+		return timepoints;
+	}
+
 	/**
 	 * Recursively lay out vertices such that
 	 * <ul>
@@ -540,4 +547,37 @@ public class LineageTreeLayout
 		}
 		vlist.add( v );
 	}
+
+	private final ArrayList< LayoutListener > listeners = new ArrayList< LayoutListener >();
+
+	public boolean addLayoutListener( final LayoutListener l )
+	{
+		return listeners.add( l );
+	}
+
+	public boolean removeLayoutListener( final LayoutListener l )
+	{
+		return listeners.remove( l );
+	}
+
+	private void notifyListeners()
+	{
+		for ( final LayoutListener l : listeners )
+		{
+			l.layoutChanged( this );
+		}
+	}
+
+	public interface LayoutListener
+	{
+
+		/**
+		 * Notifies after the layout has been done.
+		 *
+		 * @param layout
+		 *            the layout.
+		 */
+		public void layoutChanged( LineageTreeLayout layout );
+	}
+
 }
