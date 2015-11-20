@@ -48,6 +48,10 @@ public class TrackSchemeFrame extends JFrame
 
 		trackschemePanel = new TrackSchemePanel( graph, highlight, selection, optional );
 		add( trackschemePanel, BorderLayout.CENTER );
+
+		final NavigationLocksPanel navigationLocksPanel = new NavigationLocksPanel();
+		add( navigationLocksPanel, BorderLayout.NORTH );
+
 		pack();
 		setDefaultCloseOperation( WindowConstants.DISPOSE_ON_CLOSE );
 		addWindowListener( new WindowAdapter()
