@@ -2,6 +2,8 @@ package net.trackmate.revised;
 
 import net.trackmate.revised.trackscheme.ScreenTransform;
 
+// TODO rename to something more specifice, e.g., "GeometryUtils"
+// TODO move (to package ...trackscheme.util ?)
 public class Util
 {
 	/**
@@ -39,6 +41,8 @@ public class Util
 		return d;
 	}
 
+	// TODO: should be a member of ScreenTransform
+	// TODO: can probably be computed easier directly from ScreenTransform members. ( scaleX / scaleY ?)
 	public static final double getXtoYRatio( final ScreenTransform transform )
 	{
 		final double[] mousePos = new double[] { 0, 0 };
