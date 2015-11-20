@@ -350,7 +350,7 @@ public class LineageTreeLayout
 	}
 
 	/**
-	 * Get the vertex with the minimal distance to the specified layout
+	 * Get the active vertex with the minimal distance to the specified layout
 	 * coordinates. The distance is computed as the Euclidean distance in layout
 	 * space distorted by the specified aspect ratio.
 	 *
@@ -361,10 +361,10 @@ public class LineageTreeLayout
 	 *            transformed into layout coordinates <em>(X,Y)</em>.
 	 * @param v
 	 *            ref to store the result.
-	 * @return the closest vertex to the specified coordinates, or {@code null}
-	 *         if there are no vertices.
+	 * @return the closest active vertex to the specified coordinates, or
+	 *         {@code null} if there are no active vertices.
 	 */
-	public TrackSchemeVertex getClosestVertex( final RealLocalizable layoutPos, final double ratioXtoY, final TrackSchemeVertex ref )
+	public TrackSchemeVertex getClosestActiveVertex( final RealLocalizable layoutPos, final double ratioXtoY, final TrackSchemeVertex ref )
 	{
 		final double lx = layoutPos.getDoublePosition( 0 );
 		final double ly = layoutPos.getDoublePosition( 1 );
@@ -408,7 +408,7 @@ public class LineageTreeLayout
 	 * Returns the set of all the vertices in the rectangle with two corners
 	 * <code>(lx1, ly1)</code> and <code>(lx2, ly2)</code> in layout
 	 * coordinates.
-	 * 
+	 *
 	 * @param lx1
 	 *            the x coordinate of the first corner.
 	 * @param ly1
