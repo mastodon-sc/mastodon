@@ -1,4 +1,4 @@
-package net.trackmate.revised;
+package net.trackmate.revised.model.mamut.tm2;
 
 import java.io.File;
 import java.io.IOException;
@@ -17,7 +17,6 @@ import fiji.plugin.trackmate.io.TmXmlReader;
 
 public class TrackMateImporter
 {
-
 	public Model importTrackMate( final File file )
 	{
 		final TmXmlReader reader = new TmXmlReader( file );
@@ -26,7 +25,7 @@ public class TrackMateImporter
 			System.err.println( reader.getErrorMessage() );
 			return null;
 		}
-		
+
 		final fiji.plugin.trackmate.Model m = reader.getModel();
 		final TrackModel tm = m.getTrackModel();
 		final Set< Integer > trackIDs = tm.trackIDs( true );
@@ -38,7 +37,7 @@ public class TrackMateImporter
 		final Spot ref1 = model.getGraph().vertexRef();
 		final Spot ref2 = model.getGraph().vertexRef();
 		final Link edgeRef = model.getGraph().edgeRef();
-		
+
 		for ( final Integer trackID : trackIDs )
 		{
 			final IntRefMap< Spot > map = CollectionUtils.createIntVertexMap( model.getGraph(), -1 );
@@ -78,7 +77,7 @@ public class TrackMateImporter
 
 		return model;
 	}
-	
+
 	public static void main( final String[] args ) throws IOException
 	{
 		final File file = new File( "/Users/tinevez/Projects/JYTinevez/CelegansLineage/Data/LSM700U/10-03-29-3hours.xml" );
@@ -91,8 +90,5 @@ public class TrackMateImporter
 		model.saveRaw( target );
 		final long end = System.currentTimeMillis();
 		System.out.println( "Total time: " + ( end - start ) / 1000 + " s." );
-
-
 	}
-	
 }
