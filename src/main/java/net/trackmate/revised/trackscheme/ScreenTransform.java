@@ -161,6 +161,16 @@ public class ScreenTransform implements InvertibleRealTransform
 	}
 
 	/**
+	 * Returns the distortion factor between layout X and Y layout coordinates.
+	 *
+	 * @return the X/Y coordinate ratio factor.
+	 */
+	public double getXtoYRatio()
+	{
+		return scaleY / scaleX;
+	}
+
+	/**
 	 * Set the screen size.
 	 *
 	 * @param w
