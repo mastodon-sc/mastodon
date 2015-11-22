@@ -44,6 +44,7 @@ public class NavigationHandler
 	 */
 	public void notifyListeners( final TIntSet fromGroups, final int modelVertexId )
 	{
+
 		// Make sure listeners are notified only once even if they belong to
 		// several groups.
 		final HashSet< NavigationListener > toNotify = new HashSet< NavigationListener >();

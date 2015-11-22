@@ -1,5 +1,6 @@
 package net.trackmate.revised;
 
+import java.awt.BorderLayout;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
@@ -12,6 +13,7 @@ import net.trackmate.graph.listenable.ListenableGraph;
 import net.trackmate.revised.bdv.overlay.MouseOverListener;
 import net.trackmate.revised.bdv.overlay.MouseSelectionHandler;
 import net.trackmate.revised.bdv.overlay.OverlayGraphRenderer;
+import net.trackmate.revised.bdv.overlay.wrap.BDVNavigationLock;
 import net.trackmate.revised.bdv.overlay.wrap.OverlayEdgeWrapper;
 import net.trackmate.revised.bdv.overlay.wrap.OverlayGraphWrapper;
 import net.trackmate.revised.bdv.overlay.wrap.OverlayHighlightWrapper;
@@ -38,6 +40,7 @@ import bdv.export.ProgressWriterConsole;
 import bdv.spimdata.SpimDataMinimal;
 import bdv.spimdata.XmlIoSpimDataMinimal;
 import bdv.tools.InitializeViewerState;
+import bdv.viewer.ViewerFrame;
 import bdv.viewer.ViewerOptions;
 import bdv.viewer.ViewerPanel;
 
@@ -124,8 +127,7 @@ public class MaMuT
 
 //		for ( int i = 0; i < 2; ++i )
 //		{
-		final BigDataViewer bdv = openBDV( model, highlightModel, selection, radiusStats, spimData, windowTitle, initialTimepointIndex, bdvFile );
-		final ViewerPanel viewer = bdv.getViewer();
+		final BigDataViewer bdv = openBDV( model, highlightModel, selection, navigationHandler, radiusStats, spimData, windowTitle, initialTimepointIndex, bdvFile );
 
 		/*
 		 * TODO: this is still wrong. There should be one central entity syncing
@@ -133,6 +135,7 @@ public class MaMuT
 		 * that. Ideally windows should be configurable to "share" timepoints or
 		 * not.
 		 */
+		final ViewerPanel viewer = bdv.getViewer();
 		viewer.addTimePointListener( frame.getTrackschemePanel() );
 		viewer.repaint();
 //		}
@@ -142,7 +145,7 @@ public class MaMuT
 			final Model model,
 			final HighlightModel< Spot, Link > highlightModel,
 			final Selection< Spot, Link > selection,
-			final BoundingSphereRadiusStatistics radiusStats,
+			final NavigationHandler navigationHandler, final BoundingSphereRadiusStatistics radiusStats,
 			final SpimDataMinimal spimData,
 			final String windowTitle,
 			final int initialTimepointIndex,
@@ -202,6 +205,12 @@ public class MaMuT
 
 		final MouseSelectionHandler< ?, ? > mouseSelectionListener = new MouseSelectionHandler<>( overlayGraph, tracksOverlay, overlaySelection );
 		viewer.getDisplay().addHandler( mouseSelectionListener );
+
+		final ViewerFrame viewerFrame = bdv.getViewerFrame();
+		final BDVNavigationLock< Spot, Link > lockPanel = new BDVNavigationLock< Spot, Link >( viewer, navigationHandler, overlayGraph );
+		navigationHandler.addNavigationListener( lockPanel );
+		viewerFrame.add( lockPanel, BorderLayout.NORTH );
+		viewerFrame.pack();
 
 		return bdv;
 	}
