@@ -2,6 +2,7 @@ package net.trackmate.revised.bdv.overlay.wrap;
 
 import gnu.trove.set.hash.TIntHashSet;
 
+import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
@@ -10,11 +11,11 @@ import java.awt.event.ActionListener;
 import javax.swing.ImageIcon;
 import javax.swing.JPanel;
 import javax.swing.JToggleButton;
+import javax.swing.SwingConstants;
 
 import net.imglib2.realtransform.AffineTransform3D;
 import net.trackmate.graph.Edge;
 import net.trackmate.graph.Vertex;
-import net.trackmate.revised.NavigationHandler;
 import net.trackmate.revised.NavigationListener;
 import net.trackmate.revised.trackscheme.display.NavigationLocksPanel;
 import bdv.viewer.ViewerPanel;
@@ -30,28 +31,27 @@ public class BDVNavigationLock< V extends Vertex< E >, E extends Edge< V > > ext
 
 	private static final Font FONT = new Font( "Arial", Font.PLAIN, 10 );
 
-	private static final int N_LOCKS = 5;
+	private static final int N_LOCKS = 3;
 
 	private final TIntHashSet groups;
-
-	private final NavigationHandler handler;
 
 	private final ViewerPanel panel;
 
 	private final OverlayGraphWrapper< V, E > graph;
 
-	public BDVNavigationLock( final ViewerPanel panel, final NavigationHandler handler, final OverlayGraphWrapper< V, E > graph )
+	public BDVNavigationLock( final ViewerPanel panel, final OverlayGraphWrapper< V, E > graph )
 	{
 		this.panel = panel;
-		this.handler = handler;
 		this.graph = graph;
 		this.groups = new TIntHashSet();
 
-		setLayout( new FlowLayout( FlowLayout.LEADING ) );
+		setLayout( new FlowLayout( FlowLayout.LEADING, 0, 0 ) );
 		for ( int i = 0; i < N_LOCKS; i++ )
 		{
 			final int lockId = i;
 			final JToggleButton button = new JToggleButton( "" + ( i + 1 ), UNLOCK_ICON, false );
+			button.setPreferredSize( new Dimension( 60, 20 ) );
+			button.setHorizontalAlignment( SwingConstants.LEFT );
 			button.setFont( FONT );
 			button.setOpaque( false );
 			button.setContentAreaFilled( false );
@@ -78,11 +78,6 @@ public class BDVNavigationLock< V extends Vertex< E >, E extends Edge< V > > ext
 			groups.add( lockId );
 		else
 			groups.remove( lockId );
-	}
-
-	void navigateTo( final int modelVertexId )
-	{
-		handler.notifyListeners( groups, modelVertexId );
 	}
 
 	@Override

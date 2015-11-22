@@ -2,6 +2,7 @@ package net.trackmate.revised.trackscheme.display;
 
 import gnu.trove.set.hash.TIntHashSet;
 
+import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
@@ -10,6 +11,7 @@ import java.awt.event.ActionListener;
 import javax.swing.ImageIcon;
 import javax.swing.JPanel;
 import javax.swing.JToggleButton;
+import javax.swing.SwingConstants;
 
 import net.trackmate.revised.NavigationHandler;
 import net.trackmate.revised.NavigationListener;
@@ -25,7 +27,7 @@ public class NavigationLocksPanel extends JPanel implements NavigationListener
 
 	private static final Font FONT = new Font( "Arial", Font.PLAIN, 10 );
 
-	private static final int N_LOCKS = 5;
+	private static final int N_LOCKS = 3;
 
 	private final NavigationHandler handler;
 
@@ -45,6 +47,8 @@ public class NavigationLocksPanel extends JPanel implements NavigationListener
 			final int lockId = i;
 			final JToggleButton button = new JToggleButton( "" + ( i + 1 ), UNLOCK_ICON, false );
 			button.setFont( FONT );
+			button.setPreferredSize( new Dimension( 60, 20 ) );
+			button.setHorizontalAlignment( SwingConstants.LEFT );
 			button.setOpaque( false );
 			button.setContentAreaFilled( false );
 			button.setBorderPainted( false );

@@ -207,7 +207,7 @@ public class MaMuT
 		viewer.getDisplay().addHandler( mouseSelectionListener );
 
 		final ViewerFrame viewerFrame = bdv.getViewerFrame();
-		final BDVNavigationLock< Spot, Link > lockPanel = new BDVNavigationLock< Spot, Link >( viewer, navigationHandler, overlayGraph );
+		final BDVNavigationLock< Spot, Link > lockPanel = new BDVNavigationLock< Spot, Link >( viewer, overlayGraph );
 		navigationHandler.addNavigationListener( lockPanel );
 		viewerFrame.add( lockPanel, BorderLayout.NORTH );
 		viewerFrame.pack();
