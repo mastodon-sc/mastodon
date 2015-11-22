@@ -71,6 +71,8 @@ public class TrackSchemeStyle
 
 	public Stroke vertexStroke;
 
+	public Stroke highlightStroke;
+
 	public TrackSchemeStyle edgeColor( final Color c )
 	{
 		edgeColor = c;
@@ -161,6 +163,12 @@ public class TrackSchemeStyle
 		return this;
 	}
 
+	public TrackSchemeStyle highlightStroke( final Stroke s )
+	{
+		highlightStroke = s;
+		return this;
+	}
+
 	private TrackSchemeStyle()
 	{}
 
@@ -182,7 +190,8 @@ public class TrackSchemeStyle
 				vertexRangeColor( new Color( 128, 128, 128 ) ).
 				font( new Font( "SansSerif", Font.PLAIN, 9 ) ).
 				edgeStroke( new BasicStroke() ).
-				vertexStroke( new BasicStroke() );
+				vertexStroke( new BasicStroke() ).
+				highlightStroke( new BasicStroke( 3f ) );
 	}
 
 	public static TrackSchemeStyle modernStyle()
@@ -205,7 +214,8 @@ public class TrackSchemeStyle
 				vertexRangeColor( Color.WHITE ).
 				font( new Font( "Calibri", Font.PLAIN, 12 ) ).
 				edgeStroke( new BasicStroke() ).
-				vertexStroke( new BasicStroke() );
+				vertexStroke( new BasicStroke() ).
+				highlightStroke( new BasicStroke( 3f ) );
 	}
 
 	public static TrackSchemeStyle howMuchDoYouKnowStyle()
@@ -228,6 +238,7 @@ public class TrackSchemeStyle
 				vertexRangeColor( Color.DARK_GRAY ).
 				font( new Font( "Calibri", Font.PLAIN, 12 ) ).
 				edgeStroke( new BasicStroke() ).
-				vertexStroke( new BasicStroke() );
+				vertexStroke( new BasicStroke() ).
+				highlightStroke( new BasicStroke( 3f ) );
 	}
 }

@@ -36,7 +36,6 @@ public class DefaultTrackSchemeOverlay extends AbstractTrackSchemeOverlay
 	 */
 	private static final int MIN_TIMELINE_SPACING = 20;
 
-
 	/**
 	 * Y position for columns labels.
 	 */
@@ -142,8 +141,7 @@ public class DefaultTrackSchemeOverlay extends AbstractTrackSchemeOverlay
 	@Override
 	protected void beforeDrawVertex( final Graphics2D g2 )
 	{
-		// TODO Auto-generated method stub
-
+		g2.setStroke( style.vertexStroke );
 	}
 
 	@Override
@@ -260,17 +258,8 @@ public class DefaultTrackSchemeOverlay extends AbstractTrackSchemeOverlay
 		final boolean disappear = ( transition == DISAPPEAR );
 		final double ratio = vertex.getInterpolationCompletionRatio();
 
-
-		// TODO: FIX!!!
-		// TODO: FIX!!!
-		// TODO: FIX!!!
-		// TODO: FIX!!!
 		final boolean highlighted = ( highlightedVertexId >= 0 ) && ( vertex.getTrackSchemeVertexId() == highlightedVertexId );
-		final boolean selected = vertex.isSelected() || highlighted; // TODO: FIX!!!
-		// TODO: FIX!!!
-		// TODO: FIX!!!
-		// TODO: FIX!!!
-		// TODO: FIX!!!
+		final boolean selected = vertex.isSelected();
 
 		double spotdiameter = Math.min( vertex.getVertexDist() - 10.0, maxDisplayVertexSize );
 		if ( highlighted )
@@ -290,7 +279,11 @@ public class DefaultTrackSchemeOverlay extends AbstractTrackSchemeOverlay
 		g2.setColor( fillColor );
 		g2.fillOval( ox, oy, sd, sd );
 		g2.setColor( drawColor );
+		if ( highlighted )
+			g2.setStroke( style.highlightStroke );
 		g2.drawOval( ox, oy, sd, sd );
+		if ( highlighted )
+			g2.setStroke( style.vertexStroke );
 
 		final int maxLabelLength = ( int ) ( spotdiameter / avgLabelLetterWidth );
 		if ( maxLabelLength > 2 && !disappear )
