@@ -59,7 +59,7 @@ public class TrackSchemeFrame extends JFrame
 		final HighlightNavigator highlightNavigator = new HighlightNavigator( graph, trackschemePanel.layout, highlight, navigationLocksPanel );
 		trackschemePanel.display.addTransformListener( highlightNavigator );
 
-		final KeyHandler keyHandler = new KeyHandler( trackschemePanel.display, highlightNavigator );
+		final KeyHandler keyHandler = new KeyHandler( trackschemePanel.display, highlightNavigator, highlight, selection );
 		trackschemePanel.display.addHandler( keyHandler );
 
 		pack();

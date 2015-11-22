@@ -2,13 +2,42 @@ package net.trackmate.revised.trackscheme.display;
 
 import java.awt.event.ActionEvent;
 
+import net.trackmate.revised.trackscheme.TrackSchemeHighlight;
+import net.trackmate.revised.trackscheme.TrackSchemeSelection;
 import bdv.util.AbstractNamedAction;
 
 public class TrackSchemeActionBank
 {
 
 	/*
-	 * NAVIGATE WITH SELECTION.
+	 * SELECT CURRENT HIGHLIGHT
+	 */
+
+	public static final AbstractNamedAction getToggleSelectionOfHighlightAction( final TrackSchemeHighlight highlight, final TrackSchemeSelection selection )
+	{
+		return new AbstractNamedAction( "toggleSelectionOfHighlight" )
+		{
+			private static final long serialVersionUID = -8558462430720129257L;
+
+			@Override
+			public void actionPerformed( final ActionEvent event )
+			{
+				new Thread( this.name() )
+				{
+					@Override
+					public void run()
+					{
+						final int id = highlight.getHighlightedVertexId();
+						if ( id >= 0 )
+							selection.toggleVertex( id );
+					}
+				}.start();
+			}
+		};
+	}
+
+	/*
+	 * NAVIGATE WITH HIGHLIGHT.
 	 */
 
 	public static final AbstractNamedAction getNavigateToChildAction( final HighlightNavigator selectionNavigator )
@@ -95,7 +124,7 @@ public class TrackSchemeActionBank
 		};
 	}
 
-	public static final AbstractNamedAction getAddChildToSelectionAction( final HighlightNavigator selectionNavigator )
+	public static final AbstractNamedAction getAddChildToSelectionAction( final HighlightNavigator selectionNavigator, final TrackSchemeSelection selection )
 	{
 		return new AbstractNamedAction( "addChildToSelection" )
 		{
@@ -109,14 +138,16 @@ public class TrackSchemeActionBank
 					@Override
 					public void run()
 					{
-						selectionNavigator.child();
+						final int id = selectionNavigator.child();
+						if ( id >= 0 )
+							selection.setVertexSelected( id, true );
 					}
 				}.start();
 			}
 		};
 	}
 
-	public static final AbstractNamedAction getAddParentToSelectionAction( final HighlightNavigator selectionNavigator )
+	public static final AbstractNamedAction getAddParentToSelectionAction( final HighlightNavigator selectionNavigator, final TrackSchemeSelection selection )
 	{
 		return new AbstractNamedAction( "addParentToSelection" )
 		{
@@ -130,14 +161,16 @@ public class TrackSchemeActionBank
 					@Override
 					public void run()
 					{
-						selectionNavigator.parent();
+						final int id = selectionNavigator.parent();
+						if ( id >= 0 )
+							selection.setVertexSelected( id, true );
 					}
 				}.start();
 			}
 		};
 	}
 
-	public static final AbstractNamedAction getAddRightSiblingToSelectionAction( final HighlightNavigator selectionNavigator )
+	public static final AbstractNamedAction getAddRightSiblingToSelectionAction( final HighlightNavigator selectionNavigator, final TrackSchemeSelection selection )
 	{
 		return new AbstractNamedAction( "addRightSiblingToSelection" )
 		{
@@ -151,14 +184,16 @@ public class TrackSchemeActionBank
 					@Override
 					public void run()
 					{
-						selectionNavigator.rightSibling();
+						final int id = selectionNavigator.rightSibling();
+						if ( id >= 0 )
+							selection.setVertexSelected( id, true );
 					}
 				}.start();
 			}
 		};
 	}
 
-	public static final AbstractNamedAction getAddLeftSiblingToSelectionAction( final HighlightNavigator selectionNavigator )
+	public static final AbstractNamedAction getAddLeftSiblingToSelectionAction( final HighlightNavigator selectionNavigator, final TrackSchemeSelection selection )
 	{
 		return new AbstractNamedAction( "addLeftSiblingToSelection" )
 		{
@@ -172,7 +207,9 @@ public class TrackSchemeActionBank
 					@Override
 					public void run()
 					{
-						selectionNavigator.leftSibling();
+						final int id = selectionNavigator.leftSibling();
+						if ( id >= 0 )
+							selection.setVertexSelected( id, true );
 					}
 				}.start();
 			}

@@ -29,66 +29,94 @@ public class HighlightNavigator implements TransformListener< ScreenTransform >
 		this.lockPanel = lockPanel;
 	}
 
-	public void child()
+	public int child()
 	{
 		final int id = getVertexId();
 		final TrackSchemeVertex ref = graph.vertexRef();
 		graph.getVertexPool().getByInternalPoolIndex( id, ref );
 		final Edges< TrackSchemeEdge > edges = ref.outgoingEdges();
+		int childId;
 		if ( edges.size() > 0 )
 		{
 			final TrackSchemeVertex current = edges.get( 0 ).getTarget( ref );
 			highlight.highlightVertex( current.getInternalPoolIndex() );
 			navigateTo( current );
+			childId = current.getInternalPoolIndex();
+		}
+		else
+		{
+			childId = -1;
 		}
 		graph.releaseRef( ref );
+		return childId;
 	}
 
-	public void parent()
+	public int parent()
 	{
 		final int id = getVertexId();
 		final TrackSchemeVertex ref = graph.vertexRef();
 		graph.getVertexPool().getByInternalPoolIndex( id, ref );
 		final Edges< TrackSchemeEdge > edges = ref.incomingEdges();
+		final int childId;
 		if ( edges.size() > 0 )
 		{
 			final TrackSchemeVertex current = edges.get( 0 ).getSource( ref );
 			highlight.highlightVertex( current.getInternalPoolIndex() );
 			navigateTo( current );
+			childId = current.getInternalPoolIndex();
+		}
+		else
+		{
+			childId = -1;
 		}
 		graph.releaseRef( ref );
+		return childId;
 	}
 
-	public void rightSibling()
+	public int rightSibling()
 	{
 		final int id = getVertexId();
 		final TrackSchemeVertex ref = graph.vertexRef();
 		graph.getVertexPool().getByInternalPoolIndex( id, ref );
 		final TrackSchemeVertexList vertices = layout.getTimepointToOrderedVertices().get( ref.getTimepoint() );
 		final int index = vertices.binarySearch( ref.getLayoutX() );
+		final int siblingId;
 		if ( index >= 0 && index < vertices.size()-1 )
 		{
 			final TrackSchemeVertex sibling = vertices.get( index + 1, ref );
 			highlight.highlightVertex( sibling.getInternalPoolIndex() );
 			navigateTo( sibling );
+			siblingId = sibling.getInternalPoolIndex();
+		}
+		else
+		{
+			siblingId = -1;
 		}
 		graph.releaseRef( ref );
+		return siblingId;
 	}
 
-	public void leftSibling()
+	public int leftSibling()
 	{
 		final int id = getVertexId();
 		final TrackSchemeVertex ref = graph.vertexRef();
 		graph.getVertexPool().getByInternalPoolIndex( id, ref );
 		final TrackSchemeVertexList vertices = layout.getTimepointToOrderedVertices().get( ref.getTimepoint() );
 		final int index = vertices.binarySearch( ref.getLayoutX() );
+		int siblingId;
 		if ( index > 0 && index < vertices.size() )
 		{
 			final TrackSchemeVertex sibling = vertices.get( index - 1, ref );
 			highlight.highlightVertex( sibling.getInternalPoolIndex() );
 			navigateTo( sibling );
+			siblingId = sibling.getInternalPoolIndex();
+		}
+		else
+		{
+			siblingId = -1;
 		}
 		graph.releaseRef( ref );
+		return siblingId;
 	}
 
 	private void navigateTo( final TrackSchemeVertex current )

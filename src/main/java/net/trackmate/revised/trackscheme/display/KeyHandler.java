@@ -7,6 +7,8 @@ import javax.swing.KeyStroke;
 
 import net.imglib2.ui.InteractiveDisplayCanvasComponent;
 import net.trackmate.revised.trackscheme.ScreenTransform;
+import net.trackmate.revised.trackscheme.TrackSchemeHighlight;
+import net.trackmate.revised.trackscheme.TrackSchemeSelection;
 import bdv.util.AbstractNamedAction;
 
 public class KeyHandler
@@ -15,10 +17,20 @@ public class KeyHandler
 
 	private final HighlightNavigator selectionNavigator;
 
-	public KeyHandler( final InteractiveDisplayCanvasComponent< ScreenTransform > display, final HighlightNavigator selectionNavigator )
+	private final TrackSchemeHighlight highlight;
+
+	private final TrackSchemeSelection selection;
+
+	public KeyHandler(
+			final InteractiveDisplayCanvasComponent< ScreenTransform > display,
+			final HighlightNavigator selectionNavigator,
+			final TrackSchemeHighlight highlight,
+			final TrackSchemeSelection selection )
 	{
 		this.display = display;
 		this.selectionNavigator = selectionNavigator;
+		this.highlight = highlight;
+		this.selection = selection;
 		install();
 	}
 
@@ -41,16 +53,19 @@ public class KeyHandler
 		registerAction( arrowLeft, TrackSchemeActionBank.getNavigateToLeftSiblingAction( selectionNavigator ) );
 
 		final KeyStroke shiftArrowDown = KeyStroke.getKeyStroke( KeyEvent.VK_DOWN, InputEvent.SHIFT_DOWN_MASK );
-		registerAction( shiftArrowDown, TrackSchemeActionBank.getAddChildToSelectionAction( selectionNavigator ) );
+		registerAction( shiftArrowDown, TrackSchemeActionBank.getAddChildToSelectionAction( selectionNavigator, selection ) );
 
 		final KeyStroke shiftArrowUp = KeyStroke.getKeyStroke( KeyEvent.VK_UP, InputEvent.SHIFT_DOWN_MASK );
-		registerAction( shiftArrowUp, TrackSchemeActionBank.getAddParentToSelectionAction( selectionNavigator ) );
+		registerAction( shiftArrowUp, TrackSchemeActionBank.getAddParentToSelectionAction( selectionNavigator, selection ) );
 
 		final KeyStroke shiftArrowRight = KeyStroke.getKeyStroke( KeyEvent.VK_RIGHT, InputEvent.SHIFT_DOWN_MASK );
-		registerAction( shiftArrowRight, TrackSchemeActionBank.getAddRightSiblingToSelectionAction( selectionNavigator ) );
+		registerAction( shiftArrowRight, TrackSchemeActionBank.getAddRightSiblingToSelectionAction( selectionNavigator, selection ) );
 
 		final KeyStroke shiftArrowLeft = KeyStroke.getKeyStroke( KeyEvent.VK_LEFT, InputEvent.SHIFT_DOWN_MASK );
-		registerAction( shiftArrowLeft, TrackSchemeActionBank.getAddLeftSiblingToSelectionAction( selectionNavigator ) );
+		registerAction( shiftArrowLeft, TrackSchemeActionBank.getAddLeftSiblingToSelectionAction( selectionNavigator, selection ) );
+
+		final KeyStroke spaceKey = KeyStroke.getKeyStroke( KeyEvent.VK_SPACE, 0 );
+		registerAction( spaceKey, TrackSchemeActionBank.getToggleSelectionOfHighlightAction( highlight, selection ) );
 	}
 
 	private void registerAction( final KeyStroke ks, final AbstractNamedAction action )
