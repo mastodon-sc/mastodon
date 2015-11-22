@@ -120,12 +120,12 @@ public class TrackSchemeGraph<
 		return sb.toString();
 	}
 
-	TrackSchemeVertex getTrackSchemeVertexForModelId( final int modelId, final TrackSchemeVertex ref )
+	public TrackSchemeVertex getTrackSchemeVertexForModelId( final int modelId, final TrackSchemeVertex ref )
 	{
 		return idToTrackSchemeVertex.get( modelId, ref );
 	}
 
-	TrackSchemeEdge getTrackSchemeEdgeForModelId( final int modelId, final TrackSchemeEdge ref )
+	public TrackSchemeEdge getTrackSchemeEdgeForModelId( final int modelId, final TrackSchemeEdge ref )
 	{
 		return idToTrackSchemeEdge.get( modelId, ref );
 	}
