@@ -11,7 +11,7 @@ public class TrackSchemeActionBank
 	 * NAVIGATE WITH SELECTION.
 	 */
 
-	public static final AbstractNamedAction getNavigateToChildAction( final SelectionNavigator selectionNavigator )
+	public static final AbstractNamedAction getNavigateToChildAction( final HighlightNavigator selectionNavigator )
 	{
 		return new AbstractNamedAction( "navigateToChild" )
 		{
@@ -25,14 +25,14 @@ public class TrackSchemeActionBank
 					@Override
 					public void run()
 					{
-						selectionNavigator.child( true );
+						selectionNavigator.child();
 					}
 				}.start();
 			}
 		};
 	}
 
-	public static final AbstractNamedAction getNavigateToParentAction( final SelectionNavigator selectionNavigator )
+	public static final AbstractNamedAction getNavigateToParentAction( final HighlightNavigator selectionNavigator )
 	{
 		return new AbstractNamedAction( "navigateToParent" )
 		{
@@ -46,14 +46,14 @@ public class TrackSchemeActionBank
 					@Override
 					public void run()
 					{
-						selectionNavigator.parent( true );
+						selectionNavigator.parent();
 					}
 				}.start();
 			}
 		};
 	}
 
-	public static final AbstractNamedAction getNavigateToRightSiblingAction( final SelectionNavigator selectionNavigator )
+	public static final AbstractNamedAction getNavigateToRightSiblingAction( final HighlightNavigator selectionNavigator )
 	{
 		return new AbstractNamedAction( "navigateToRightSibling" )
 		{
@@ -67,14 +67,14 @@ public class TrackSchemeActionBank
 					@Override
 					public void run()
 					{
-						selectionNavigator.rightSibling( true );
+						selectionNavigator.rightSibling();
 					}
 				}.start();
 			}
 		};
 	}
 
-	public static final AbstractNamedAction getNavigateToLeftSiblingAction( final SelectionNavigator selectionNavigator )
+	public static final AbstractNamedAction getNavigateToLeftSiblingAction( final HighlightNavigator selectionNavigator )
 	{
 		return new AbstractNamedAction( "navigateToLeftSibling" )
 		{
@@ -88,14 +88,14 @@ public class TrackSchemeActionBank
 					@Override
 					public void run()
 					{
-						selectionNavigator.leftSibling( true );
+						selectionNavigator.leftSibling();
 					}
 				}.start();
 			}
 		};
 	}
 
-	public static final AbstractNamedAction getAddChildToSelectionAction( final SelectionNavigator selectionNavigator )
+	public static final AbstractNamedAction getAddChildToSelectionAction( final HighlightNavigator selectionNavigator )
 	{
 		return new AbstractNamedAction( "addChildToSelection" )
 		{
@@ -109,14 +109,14 @@ public class TrackSchemeActionBank
 					@Override
 					public void run()
 					{
-						selectionNavigator.child( false );
+						selectionNavigator.child();
 					}
 				}.start();
 			}
 		};
 	}
 
-	public static final AbstractNamedAction getAddParentToSelectionAction( final SelectionNavigator selectionNavigator )
+	public static final AbstractNamedAction getAddParentToSelectionAction( final HighlightNavigator selectionNavigator )
 	{
 		return new AbstractNamedAction( "addParentToSelection" )
 		{
@@ -130,14 +130,14 @@ public class TrackSchemeActionBank
 					@Override
 					public void run()
 					{
-						selectionNavigator.parent( false );
+						selectionNavigator.parent();
 					}
 				}.start();
 			}
 		};
 	}
 
-	public static final AbstractNamedAction getAddRightSiblingToSelectionAction( final SelectionNavigator selectionNavigator )
+	public static final AbstractNamedAction getAddRightSiblingToSelectionAction( final HighlightNavigator selectionNavigator )
 	{
 		return new AbstractNamedAction( "addRightSiblingToSelection" )
 		{
@@ -151,14 +151,14 @@ public class TrackSchemeActionBank
 					@Override
 					public void run()
 					{
-						selectionNavigator.rightSibling( false );
+						selectionNavigator.rightSibling();
 					}
 				}.start();
 			}
 		};
 	}
 
-	public static final AbstractNamedAction getAddLeftSiblingToSelectionAction( final SelectionNavigator selectionNavigator )
+	public static final AbstractNamedAction getAddLeftSiblingToSelectionAction( final HighlightNavigator selectionNavigator )
 	{
 		return new AbstractNamedAction( "addLeftSiblingToSelection" )
 		{
@@ -172,7 +172,7 @@ public class TrackSchemeActionBank
 					@Override
 					public void run()
 					{
-						selectionNavigator.leftSibling( false );
+						selectionNavigator.leftSibling();
 					}
 				}.start();
 			}

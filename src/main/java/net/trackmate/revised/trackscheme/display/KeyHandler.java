@@ -13,9 +13,9 @@ public class KeyHandler
 {
 	private final InteractiveDisplayCanvasComponent< ScreenTransform > display;
 
-	private final SelectionNavigator selectionNavigator;
+	private final HighlightNavigator selectionNavigator;
 
-	public KeyHandler( final InteractiveDisplayCanvasComponent< ScreenTransform > display, final SelectionNavigator selectionNavigator )
+	public KeyHandler( final InteractiveDisplayCanvasComponent< ScreenTransform > display, final HighlightNavigator selectionNavigator )
 	{
 		this.display = display;
 		this.selectionNavigator = selectionNavigator;

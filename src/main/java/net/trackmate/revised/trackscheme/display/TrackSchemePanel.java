@@ -178,7 +178,7 @@ public class TrackSchemePanel extends JPanel implements
 		painterThread = new PainterThread( this );
 		flags = new Flags();
 
-		final SelectionNavigator selectionNavigator = new SelectionNavigator( graph, layout, selection );
+		final HighlightNavigator selectionNavigator = new HighlightNavigator( graph, layout, highlight );
 		final KeyHandler keyHandler = new KeyHandler( display, selectionNavigator );
 		display.addHandler( keyHandler );
 
