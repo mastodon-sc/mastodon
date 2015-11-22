@@ -31,8 +31,6 @@ public class MouseSelectionHandler implements MouseListener, MouseMotionListener
 
 	private static final int MOUSE_MASK_CLICK_ADDTOSELECTION = InputEvent.BUTTON1_MASK | InputEvent.SHIFT_MASK;
 
-	private final OverlayRenderer selectionBoxOverlay = new SelectionBoxOverlay();
-
 	private final AbstractTrackSchemeOverlay graphOverlay;
 
 	private final TrackSchemeSelection selection;
@@ -172,10 +170,20 @@ public class MouseSelectionHandler implements MouseListener, MouseMotionListener
 	public void mouseMoved( final MouseEvent e )
 	{}
 
+	/**
+	 * Draws the selection box, if there is one.
+	 */
 	@Override
 	public void drawOverlays( final Graphics g )
 	{
-		selectionBoxOverlay.drawOverlays( g );
+		if ( !dragStarted )
+			return;
+		g.setColor( Color.RED );
+		final int x = Math.min( oX, eX );
+		final int y = Math.min( oY, eY );
+		final int width = Math.abs( eX - oX );
+		final int height = Math.abs( eY - oY );
+		g.drawRect( x, y, width, height );
 	}
 
 	@Override
@@ -183,7 +191,7 @@ public class MouseSelectionHandler implements MouseListener, MouseMotionListener
 	{}
 
 	/*
-	 * PRIVATE METHODS AND CLASSES
+	 * PRIVATE METHODS
 	 */
 
 	private void selectWithin( final int x1, final int y1, final int x2, final int y2, final boolean clear )
@@ -215,25 +223,5 @@ public class MouseSelectionHandler implements MouseListener, MouseMotionListener
 			}
 		}
 		graph.releaseRef( ref );
-	}
-
-	private class SelectionBoxOverlay implements OverlayRenderer
-	{
-		@Override
-		public void drawOverlays( final Graphics g )
-		{
-			if ( !dragStarted )
-				return;
-			g.setColor( Color.RED );
-			final int x = Math.min( oX, eX );
-			final int y = Math.min( oY, eY );
-			final int width = Math.abs( eX - oX );
-			final int height = Math.abs( eY - oY );
-			g.drawRect( x, y, width, height );
-		}
-
-		@Override
-		public void setCanvasSize( final int width, final int height )
-		{}
 	}
 }

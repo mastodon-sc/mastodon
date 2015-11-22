@@ -100,7 +100,7 @@ public class HighlightNavigator implements TransformListener< ScreenTransform >
 	private int getPanelCenterClosestVertex()
 	{
 		final TrackSchemeVertex ref = graph.vertexRef();
-		final TrackSchemeVertex v = layout.getClosestVertex( centerPos, ratioXtoY, ref );
+		final TrackSchemeVertex v = layout.getClosestActiveVertex( centerPos, ratioXtoY, ref );
 		final int id = v.getInternalPoolIndex();
 		graph.releaseRef( ref );
 		return id;

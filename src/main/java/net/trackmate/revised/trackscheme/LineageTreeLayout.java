@@ -12,7 +12,7 @@ import java.util.Iterator;
 import net.imglib2.RealLocalizable;
 import net.trackmate.graph.collection.RefList;
 import net.trackmate.graph.collection.RefSet;
-import net.trackmate.revised.TIntAlternatingIterator;
+import net.trackmate.graph.util.TIntAlternatingIterator;
 import net.trackmate.revised.trackscheme.ScreenEdge.ScreenEdgePool;
 import net.trackmate.revised.trackscheme.ScreenVertex.ScreenVertexPool;
 import net.trackmate.revised.trackscheme.ScreenVertexRange.ScreenVertexRangePool;
@@ -352,21 +352,21 @@ public class LineageTreeLayout
 	}
 
 	/**
-	 * Get the vertex with the minimal distance to the specified layout
+	 * Get the active vertex with the minimal distance to the specified layout
 	 * coordinates. The distance is computed as the Euclidean distance in layout
 	 * space distorted by the specified aspect ratio.
 	 *
 	 * @param layoutPos
 	 *            layout coordinates.
-	 * @param aspectRatio
+	 * @param aspectRatioXtoY
 	 *            The <em>X/Y</em> ratio of screen vector <em>(1,1)</em>
 	 *            transformed into layout coordinates <em>(X,Y)</em>.
-	 * @param v
+	 * @param ref
 	 *            ref to store the result.
-	 * @return the closest vertex to the specified coordinates, or {@code null}
-	 *         if there are no vertices.
+	 * @return the closest active vertex to the specified coordinates, or
+	 *         {@code null} if there are no active vertices.
 	 */
-	public TrackSchemeVertex getClosestVertex( final RealLocalizable layoutPos, final double ratioXtoY, final TrackSchemeVertex ref )
+	public TrackSchemeVertex getClosestActiveVertex( final RealLocalizable layoutPos, final double aspectRatioXtoY, final TrackSchemeVertex ref )
 	{
 		final double lx = layoutPos.getDoublePosition( 0 );
 		final double ly = layoutPos.getDoublePosition( 1 );
@@ -378,7 +378,7 @@ public class LineageTreeLayout
 		while( tpIter.hasNext() )
 		{
 			final int tp = tpIter.next();
-			final double diffy = ( ly - tp ) * ratioXtoY;
+			final double diffy = ( ly - tp ) * aspectRatioXtoY;
 			if ( diffy * diffy < closestVertexSquareDist )
 			{
 				final TrackSchemeVertexList vertexList = timepointToOrderedVertices.get( tp );

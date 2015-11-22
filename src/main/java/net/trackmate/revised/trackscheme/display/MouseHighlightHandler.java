@@ -5,13 +5,13 @@ import java.awt.event.MouseEvent;
 
 import net.trackmate.revised.trackscheme.TrackSchemeHighlight;
 
-public class MouseOverListener extends MouseAdapter
+public class MouseHighlightHandler extends MouseAdapter
 {
 	private final AbstractTrackSchemeOverlay graphOverlay;
 
 	private final TrackSchemeHighlight highlight;
 
-	public MouseOverListener( final AbstractTrackSchemeOverlay graphOverlay, final TrackSchemeHighlight highlight )
+	public MouseHighlightHandler( final AbstractTrackSchemeOverlay graphOverlay, final TrackSchemeHighlight highlight )
 	{
 		this.graphOverlay = graphOverlay;
 		this.highlight = highlight;

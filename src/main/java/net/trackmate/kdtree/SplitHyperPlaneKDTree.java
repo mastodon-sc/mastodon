@@ -75,7 +75,7 @@ public class SplitHyperPlaneKDTree< O extends Ref< O > & RealLocalizable, T exte
 
 	public void split( final HyperPlane plane )
 	{
-		if ( tree.size() == 0 )
+		if ( tree.size() <= 0 )
 			return;
 
 		initNewSearch();
@@ -89,7 +89,7 @@ public class SplitHyperPlaneKDTree< O extends Ref< O > & RealLocalizable, T exte
 
 	public void split( final double[] plane )
 	{
-		if ( tree.size() == 0 )
+		if ( tree.size() <= 0 )
 			return;
 
 		initNewSearch();

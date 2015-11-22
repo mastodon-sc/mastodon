@@ -77,7 +77,8 @@ public class ClipConvexPolytopeKDTree< O extends Ref< O > & RealLocalizable, T e
 		n = tree.numDimensions();
 		xmin = new double[ n ];
 		xmax = new double[ n ];
-		final int depth = Math.max( 0, ( int ) ( Math.log( tree.size() ) / Math.log( 2 ) ) + 2 );
+		final int depth = ( tree.size() <= 0 ) ? 0 :
+			( int ) ( Math.log( tree.size() ) / Math.log( 2 ) ) + 2;
 		activeStack = new ArrayList< boolean[] >( depth );
 		psStack = new ArrayList< boolean[] >( depth );
 		inNodes = new TIntArrayList();
@@ -98,7 +99,7 @@ public class ClipConvexPolytopeKDTree< O extends Ref< O > & RealLocalizable, T e
 
 	public void clip( final ConvexPolytope polytope )
 	{
-		if ( tree.size() == 0 )
+		if ( tree.size() <= 0 )
 			return;
 
 		final Collection< ? extends HyperPlane > planes = polytope.getHyperplanes();
@@ -124,7 +125,7 @@ public class ClipConvexPolytopeKDTree< O extends Ref< O > & RealLocalizable, T e
 
 	public void clip( final double[][] planes )
 	{
-		if ( tree.size() == 0 )
+		if ( tree.size() <= 0 )
 			return;
 
 		initNewSearch( planes.length );
