@@ -429,6 +429,8 @@ public class LineageTreeLayout
 		TrackSchemeVertex v = graph.vertexRef();
 		final RefSet< TrackSchemeVertex > vertexSet = graph.createVertexSet();
 
+		// TODO: fix. this breaks if tStart, tEnd falls outside of timepoints range.
+		// TODO: fix. tStart and tEnd cannot be simply treated as indices into timepoints. Use binary search instead.
 		final TIntIterator tpIter = timepoints.subList( tStart, tEnd + 1 ).iterator();
 		while ( tpIter.hasNext() )
 		{
