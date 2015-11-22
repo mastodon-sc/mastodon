@@ -287,22 +287,7 @@ public class InertialScreenTransformEventHandler extends MouseAdapter implements
 		if ( ( modifiers == MouseEvent.BUTTON2_MASK ) || ( modifiers == MouseEvent.BUTTON3_MASK ) ) // translate
 		{
 			animator = new InertialTranslationAnimator( transform, vx0, vy0, 400 );
-			final Timer timer = new Timer();
-			timer.schedule( new TimerTask()
-			{
-				@Override
-				public void run()
-				{
-					if ( null == animator || animator.isComplete() )
-					{
-						timer.cancel();
-					}
-					else
-					{
-						updaterThread.requestUpdate();
-					}
-				}
-			}, 0, INERTIAL_ANIMATION_PERIOD );
+			runAnimation();
 		}
 	}
 
@@ -352,22 +337,7 @@ public class InertialScreenTransformEventHandler extends MouseAdapter implements
 						transform.zoomY( dScale, eY );
 				}
 				animator = new InertialZoomAnimator( transform, !zoomOut ? -s : s, zoomOut, zoomX, zoomY, eX, eY, 400 );
-				final Timer timer = new Timer();
-				timer.schedule( new TimerTask()
-				{
-					@Override
-					public void run()
-					{
-						if ( null == animator || animator.isComplete() )
-						{
-							timer.cancel();
-						}
-						else
-						{
-							updaterThread.requestUpdate();
-						}
-					}
-				}, 0, INERTIAL_ANIMATION_PERIOD );
+				runAnimation();
 			}
 			else
 			{
@@ -376,8 +346,8 @@ public class InertialScreenTransformEventHandler extends MouseAdapter implements
 					transform.shiftX( d );
 				else
 					transform.shiftY( d );
+				update();
 			}
-			update();
 		}
 	}
 
@@ -388,6 +358,8 @@ public class InertialScreenTransformEventHandler extends MouseAdapter implements
 	private double boundXMin = 2.;
 
 	private double boundYMin = 2.;
+
+	private Timer timer;
 
 	@Override
 	public void layoutChanged( final LineageTreeLayout layout )
@@ -411,13 +383,45 @@ public class InertialScreenTransformEventHandler extends MouseAdapter implements
 		final double cy = ( maxY + minY ) / 2;
 		final double dy = ly - cy;
 
-		synchronized ( transform )
-		{
-			transform.shiftLayoutX( dx );
-			transform.shiftLayoutY( dy );
-		}
-		update();
+		final ScreenTransform tstart = new ScreenTransform( transform );
+		final ScreenTransform tend = new ScreenTransform( transform );
+		tend.shiftLayoutX( dx );
+		tend.shiftLayoutY( dy );
 
+		animator = new AbstractTransformAnimator< ScreenTransform >( 200 )
+		{
+			@Override
+			protected ScreenTransform get( final double t )
+			{
+				transform.interpolate( tstart, tend, t );
+				return transform;
+			}
+		};
+		runAnimation();
 	}
 
+	private void runAnimation()
+	{
+		if ( null != timer )
+		{
+			timer.cancel();
+		}
+		timer = new Timer();
+		timer.schedule( new TimerTask()
+		{
+			@Override
+			public void run()
+			{
+				if ( null == animator || animator.isComplete() )
+				{
+					timer.cancel();
+				}
+				else
+				{
+					updaterThread.requestUpdate();
+				}
+			}
+		}, 0, INERTIAL_ANIMATION_PERIOD );
+		update();
+	}
 }
