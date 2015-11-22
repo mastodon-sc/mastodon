@@ -19,16 +19,19 @@ public class HighlightNavigator implements TransformListener< ScreenTransform >
 
 	private final TrackSchemeHighlight highlight;
 
-	public HighlightNavigator( final TrackSchemeGraph< ?, ? > graph, final LineageTreeLayout layout, final TrackSchemeHighlight highlight )
+	private final NavigationLocksPanel lockPanel;
+
+	public HighlightNavigator( final TrackSchemeGraph< ?, ? > graph, final LineageTreeLayout layout, final TrackSchemeHighlight highlight, final NavigationLocksPanel lockPanel )
 	{
 		this.graph = graph;
 		this.layout = layout;
 		this.highlight = highlight;
+		this.lockPanel = lockPanel;
 	}
 
 	public void child()
 	{
-		final int id = highlight.getHighlightedVertexId();
+		final int id = getVertexId();
 		final TrackSchemeVertex ref = graph.vertexRef();
 		graph.getVertexPool().getByInternalPoolIndex( id, ref );
 		final Edges< TrackSchemeEdge > edges = ref.outgoingEdges();
@@ -43,7 +46,7 @@ public class HighlightNavigator implements TransformListener< ScreenTransform >
 
 	public void parent()
 	{
-		final int id = highlight.getHighlightedVertexId();
+		final int id = getVertexId();
 		final TrackSchemeVertex ref = graph.vertexRef();
 		graph.getVertexPool().getByInternalPoolIndex( id, ref );
 		final Edges< TrackSchemeEdge > edges = ref.incomingEdges();
@@ -58,7 +61,7 @@ public class HighlightNavigator implements TransformListener< ScreenTransform >
 
 	public void rightSibling()
 	{
-		final int id = highlight.getHighlightedVertexId();
+		final int id = getVertexId();
 		final TrackSchemeVertex ref = graph.vertexRef();
 		graph.getVertexPool().getByInternalPoolIndex( id, ref );
 		final TrackSchemeVertexList vertices = layout.getTimepointToOrderedVertices().get( ref.getTimepoint() );
@@ -74,7 +77,7 @@ public class HighlightNavigator implements TransformListener< ScreenTransform >
 
 	public void leftSibling()
 	{
-		final int id = highlight.getHighlightedVertexId();
+		final int id = getVertexId();
 		final TrackSchemeVertex ref = graph.vertexRef();
 		graph.getVertexPool().getByInternalPoolIndex( id, ref );
 		final TrackSchemeVertexList vertices = layout.getTimepointToOrderedVertices().get( ref.getTimepoint() );
@@ -90,14 +93,21 @@ public class HighlightNavigator implements TransformListener< ScreenTransform >
 
 	private void navigateTo( final TrackSchemeVertex current )
 	{
-		System.out.println( "Navigate to " + current );// DEBUG
+		lockPanel.navigateTo( current.getModelVertexId() );
 	}
 
 	private final RealPoint centerPos = new RealPoint( 2 );
 
 	private double ratioXtoY;
 
-	private int getPanelCenterClosestVertex()
+	private int getVertexId()
+	{
+		final int id = highlight.getHighlightedVertexId();
+		if ( id < 0 ) { return getPanelCenterClosestVertexId(); }
+		return id;
+	}
+
+	private int getPanelCenterClosestVertexId()
 	{
 		final TrackSchemeVertex ref = graph.vertexRef();
 		final TrackSchemeVertex v = layout.getClosestActiveVertex( centerPos, ratioXtoY, ref );
@@ -111,7 +121,7 @@ public class HighlightNavigator implements TransformListener< ScreenTransform >
 	{
 		centerPos.setPosition( (transform.getMaxX() + transform.getMinX() ) / 2., 0 );
 		centerPos.setPosition( (transform.getMaxY() + transform.getMinY() ) / 2., 1 );
-//		ratioXtoY = transform.get
+		ratioXtoY = transform.getXtoYRatio();
 	}
 
 }

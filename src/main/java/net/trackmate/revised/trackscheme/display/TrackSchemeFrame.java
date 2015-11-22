@@ -52,10 +52,15 @@ public class TrackSchemeFrame extends JFrame
 		trackschemePanel = new TrackSchemePanel( graph, highlight, selection, optional );
 		add( trackschemePanel, BorderLayout.CENTER );
 
-		final NavigationLocksPanel navigationLocksPanel = new NavigationLocksPanel( trackschemePanel, navigationHandler, selection, graph.getVertexPool() );
-		selection.addSelectionListener( navigationLocksPanel );
+		final NavigationLocksPanel navigationLocksPanel = new NavigationLocksPanel( trackschemePanel, navigationHandler );
 		navigationHandler.addNavigationListener( navigationLocksPanel );
 		add( navigationLocksPanel, BorderLayout.NORTH );
+
+		final HighlightNavigator highlightNavigator = new HighlightNavigator( graph, trackschemePanel.layout, highlight, navigationLocksPanel );
+		trackschemePanel.display.addTransformListener( highlightNavigator );
+
+		final KeyHandler keyHandler = new KeyHandler( trackschemePanel.display, highlightNavigator );
+		trackschemePanel.display.addHandler( keyHandler );
 
 		pack();
 		setDefaultCloseOperation( WindowConstants.DISPOSE_ON_CLOSE );

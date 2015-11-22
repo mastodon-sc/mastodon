@@ -54,7 +54,7 @@ public class TrackSchemePanel extends JPanel implements
 	/**
 	 * Canvas used for displaying the trackscheme graph.
 	 */
-	private final InteractiveDisplayCanvasComponent< ScreenTransform > display;
+	final InteractiveDisplayCanvasComponent< ScreenTransform > display;
 
 	private final JScrollBar xScrollBar;
 
@@ -68,7 +68,7 @@ public class TrackSchemePanel extends JPanel implements
 	/**
 	 * layout the {@link TrackSchemeGraph} into layout coordinates.
 	 */
-	private final LineageTreeLayout layout;
+	final LineageTreeLayout layout;
 
 	/**
 	 * compute {@link ScreenEntities} from {@link LineageTreeLayout} using the
@@ -177,10 +177,6 @@ public class TrackSchemePanel extends JPanel implements
 		entityAnimator = new ScreenEntityAnimator();
 		painterThread = new PainterThread( this );
 		flags = new Flags();
-
-		final HighlightNavigator selectionNavigator = new HighlightNavigator( graph, layout, highlight );
-		final KeyHandler keyHandler = new KeyHandler( display, selectionNavigator );
-		display.addHandler( keyHandler );
 
 		display.addMouseMotionListener( new MouseHighlightHandler( graphOverlay, highlight ) );
 
