@@ -8,6 +8,7 @@ import javax.swing.JFrame;
 import javax.swing.WindowConstants;
 
 import net.imglib2.ui.util.GuiUtil;
+import net.trackmate.revised.NavigationHandler;
 import net.trackmate.revised.trackscheme.TrackSchemeGraph;
 import net.trackmate.revised.trackscheme.TrackSchemeHighlight;
 import net.trackmate.revised.trackscheme.TrackSchemeSelection;
@@ -21,9 +22,10 @@ public class TrackSchemeFrame extends JFrame
 	public TrackSchemeFrame(
 			final TrackSchemeGraph< ?, ? > graph,
 			final TrackSchemeHighlight highlight,
-			final TrackSchemeSelection selection )
+			final TrackSchemeSelection selection,
+			final NavigationHandler navigationHandler)
 	{
-		this( graph, highlight, selection, TrackSchemeOptions.options() );
+		this( graph, highlight, selection, navigationHandler, TrackSchemeOptions.options() );
 	}
 
 	/**
@@ -41,6 +43,7 @@ public class TrackSchemeFrame extends JFrame
 			final TrackSchemeGraph< ?, ? > graph,
 			final TrackSchemeHighlight highlight,
 			final TrackSchemeSelection selection,
+			final NavigationHandler navigationHandler,
 			final TrackSchemeOptions optional )
 	{
 		super( "TrackScheme", GuiUtil.getSuitableGraphicsConfiguration( GuiUtil.RGB_COLOR_MODEL ) );
@@ -49,7 +52,9 @@ public class TrackSchemeFrame extends JFrame
 		trackschemePanel = new TrackSchemePanel( graph, highlight, selection, optional );
 		add( trackschemePanel, BorderLayout.CENTER );
 
-		final NavigationLocksPanel navigationLocksPanel = new NavigationLocksPanel();
+		final NavigationLocksPanel navigationLocksPanel = new NavigationLocksPanel( trackschemePanel, navigationHandler, selection, graph.getVertexPool() );
+		selection.addSelectionListener( navigationLocksPanel );
+		navigationHandler.addNavigationListener( navigationLocksPanel );
 		add( navigationLocksPanel, BorderLayout.NORTH );
 
 		pack();

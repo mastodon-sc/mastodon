@@ -25,6 +25,7 @@ import net.trackmate.revised.trackscheme.ScreenTransform;
 import net.trackmate.revised.trackscheme.TrackSchemeGraph;
 import net.trackmate.revised.trackscheme.TrackSchemeHighlight;
 import net.trackmate.revised.trackscheme.TrackSchemeSelection;
+import net.trackmate.revised.trackscheme.TrackSchemeVertex;
 import net.trackmate.revised.trackscheme.display.TrackSchemeOptions.Values;
 import net.trackmate.revised.trackscheme.display.laf.DefaultTrackSchemeOverlay;
 import net.trackmate.revised.ui.selection.HighlightListener;
@@ -354,6 +355,17 @@ public class TrackSchemePanel extends JPanel implements
 	{
 		flags.setSelectionChanged();
 		painterThread.requestRepaint();
+	}
+
+	public void centerOn( final int modelVertexId )
+	{
+		final TrackSchemeVertex v = graph.vertexRef();
+		graph.getTrackSchemeVertexForModelId( modelVertexId, v );
+		final double lx = v.getLayoutX();
+		final double ly = v.getTimepoint();
+
+		final InertialScreenTransformEventHandler transformEventHandler = ( InertialScreenTransformEventHandler ) display.getTransformEventHandler();
+		transformEventHandler.centerOn( lx, ly );
 	}
 
 	protected class ScreenEntityAnimator extends AbstractAnimator

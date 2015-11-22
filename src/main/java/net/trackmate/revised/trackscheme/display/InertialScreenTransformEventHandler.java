@@ -399,4 +399,25 @@ public class InertialScreenTransformEventHandler extends MouseAdapter implements
 		boundYMax = timepoints.getQuick( timepoints.size() - 1 );
 	}
 
+	public void centerOn( final double lx, final double ly )
+	{
+		final double minX = transform.getMinX();
+		final double maxX = transform.getMaxX();
+		final double cx = ( maxX + minX ) / 2;
+		final double dx = lx - cx;
+
+		final double minY = transform.getMinY();
+		final double maxY = transform.getMaxY();
+		final double cy = ( maxY + minY ) / 2;
+		final double dy = ly - cy;
+
+		synchronized ( transform )
+		{
+			transform.shiftLayoutX( dx );
+			transform.shiftLayoutY( dy );
+		}
+		update();
+
+	}
+
 }

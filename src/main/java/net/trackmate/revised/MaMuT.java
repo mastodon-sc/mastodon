@@ -45,8 +45,8 @@ public class MaMuT
 {
 	public static void main4( final String[] args ) throws IOException, SpimDataException
 	{
-		final String bdvFile = "/Volumes/Data/datasethdf5.xml";
-		final String modelFile = "/Volumes/Data/model_revised.raw";
+		final String bdvFile = "samples/datasethdf5.xml";
+		final String modelFile = "samples/model_revised.raw";
 		final int initialTimepointIndex = 10;
 
 		/*
@@ -82,6 +82,11 @@ public class MaMuT
 		System.setProperty( "apple.laf.useScreenMenuBar", "true" );
 
 		/*
+		 * Navigation handler.
+		 */
+		final NavigationHandler navigationHandler = new NavigationHandler();
+
+		/*
 		 * TrackSchemeGraph listening to model
 		 */
 		final ListenableGraph< Spot, Link > graph = model.getGraph();
@@ -107,7 +112,7 @@ public class MaMuT
 		/*
 		 * show TrackSchemeFrame
 		 */
-		final TrackSchemeFrame frame = new TrackSchemeFrame( trackSchemeGraph, trackSchemeHighlight, trackSchemeSelection );
+		final TrackSchemeFrame frame = new TrackSchemeFrame( trackSchemeGraph, trackSchemeHighlight, trackSchemeSelection, navigationHandler );
 		frame.getTrackschemePanel().setTimepointRange( minTimepoint, maxTimepoint );
 		frame.getTrackschemePanel().graphChanged();
 		frame.setVisible( true );
