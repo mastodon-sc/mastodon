@@ -16,6 +16,8 @@ import net.imglib2.ui.OverlayRenderer;
 import net.imglib2.ui.PainterThread;
 import net.imglib2.ui.TransformEventHandler;
 import net.imglib2.ui.TransformListener;
+import net.trackmate.graph.IdBimap;
+import net.trackmate.graph.Vertex;
 import net.trackmate.graph.listenable.GraphChangeListener;
 import net.trackmate.revised.trackscheme.LineageTreeLayout;
 import net.trackmate.revised.trackscheme.LineageTreeLayout.LayoutListener;
@@ -34,14 +36,14 @@ import net.trackmate.revised.ui.selection.SelectionListener;
 import net.trackmate.trackscheme.animate.AbstractAnimator;
 import bdv.viewer.TimePointListener;
 
-public class TrackSchemePanel extends JPanel implements
+public class TrackSchemePanel<V extends Vertex< ? >> extends JPanel implements
 		TransformListener< ScreenTransform >,
 		PainterThread.Paintable,
 		HighlightListener,
 		TimePointListener,
 		GraphChangeListener,
 		SelectionListener,
-		NavigationListener
+		NavigationListener< V >
 {
 
 	private static final long ANIMATION_MILLISECONDS = 250;
@@ -128,14 +130,18 @@ public class TrackSchemePanel extends JPanel implements
 
 	private final TrackSchemeSelection selection;
 
+	private final IdBimap< V > vertexIdBimap;
+
 	public TrackSchemePanel(
 			final TrackSchemeGraph< ?, ? > graph,
+			final IdBimap< V > vertexIdBimap,
 			final TrackSchemeHighlight highlight,
 			final TrackSchemeSelection selection,
 			final TrackSchemeOptions optional )
 	{
 		super( new BorderLayout(), false );
 		this.graph = graph;
+		this.vertexIdBimap = vertexIdBimap;
 		this.selection = selection;
 		options = optional.values;
 
@@ -356,15 +362,16 @@ public class TrackSchemePanel extends JPanel implements
 	}
 
 	@Override
-	public void navigateToVertex( final int modelVertexId )
+	public void navigateToVertex( final V vertex )
 	{
-		final TrackSchemeVertex v = graph.vertexRef();
-		graph.getTrackSchemeVertexForModelId( modelVertexId, v );
-		final double lx = v.getLayoutX();
-		final double ly = v.getTimepoint();
+		final TrackSchemeVertex ref = graph.vertexRef();
+		final TrackSchemeVertex tv = graph.getTrackSchemeVertexForModelId( vertexIdBimap.getId( vertex ), ref );
+		final double lx = tv.getLayoutX();
+		final double ly = tv.getTimepoint();
 
 		final InertialScreenTransformEventHandler transformEventHandler = ( InertialScreenTransformEventHandler ) display.getTransformEventHandler();
 		transformEventHandler.centerOn( lx, ly );
+		graph.releaseRef( ref );
 	}
 
 	protected class ScreenEntityAnimator extends AbstractAnimator

@@ -6,6 +6,8 @@ import gnu.trove.set.TIntSet;
 import java.util.HashMap;
 import java.util.HashSet;
 
+import net.trackmate.graph.Vertex;
+
 /**
  *
  * @author Jean-Yves Tinevez
@@ -13,9 +15,9 @@ import java.util.HashSet;
  * @param <V>
  *            the type of the model vertices.
  */
-public class NavigationHandler
+public class NavigationHandler< V extends Vertex< ? > >
 {
-	private final HashMap< NavigationListener, NavigationGroupReceiver > listeners = new HashMap< NavigationListener, NavigationGroupReceiver >();
+	private final HashMap< NavigationListener< V >, NavigationGroupReceiver > listeners = new HashMap< NavigationListener< V >, NavigationGroupReceiver >();
 
 	/**
 	 * Registers the specified listener to this handler. The specified
@@ -28,12 +30,12 @@ public class NavigationHandler
 	 *            the {@link NavigationGroupReceiver} that determines to what groups it
 	 *            belongs.
 	 */
-	public void addNavigationListener( final NavigationListener l, final NavigationGroupReceiver g )
+	public void addNavigationListener( final NavigationListener< V > l, final NavigationGroupReceiver g )
 	{
 		listeners.put( l, g );
 	}
 
-	public boolean removeNavigationListener( final NavigationListener l )
+	public boolean removeNavigationListener( final NavigationListener< V > l )
 	{
 		return listeners.remove( l ) != null;
 	}
@@ -45,19 +47,19 @@ public class NavigationHandler
 	 *
 	 * @param fromGroups
 	 *            the listener groups to notify.
-	 * @param modelVertexId
-	 *            the model if of the vertex to center on.
+	 * @param vertex
+	 *            the model vertex to center on.
 	 */
-	public void notifyListeners( final TIntSet fromGroups, final int modelVertexId )
+	public void notifyListeners( final TIntSet fromGroups, final V vertex )
 	{
 		// Make sure listeners are notified only once even if they belong to
 		// several groups.
-		final HashSet< NavigationListener > toNotify = new HashSet< NavigationListener >();
+		final HashSet< NavigationListener< V > > toNotify = new HashSet< NavigationListener< V > >();
 		final TIntIterator it = fromGroups.iterator();
 		while ( it.hasNext() )
 		{
 			final int group = it.next();
-			for ( final NavigationListener l : listeners.keySet() )
+			for ( final NavigationListener< V > l : listeners.keySet() )
 			{
 				final NavigationGroupReceiver g = listeners.get( l );
 				if ( g.isInGroup( group ) )
@@ -67,9 +69,9 @@ public class NavigationHandler
 			}
 		}
 
-		for ( final NavigationListener l : toNotify )
+		for ( final NavigationListener< V > l : toNotify )
 		{
-			l.navigateToVertex( modelVertexId );
+			l.navigateToVertex( vertex );
 		}
 	}
 }

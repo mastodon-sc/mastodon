@@ -22,7 +22,7 @@ import net.trackmate.revised.ui.selection.NavigationListener;
 import bdv.viewer.ViewerPanel;
 import bdv.viewer.animate.TranslationAnimator;
 
-public class BDVNavigationLock< V extends Vertex< E >, E extends Edge< V > > extends JPanel implements NavigationListener, NavigationGroupReceiver
+public class BDVNavigationLock< V extends Vertex< E >, E extends Edge< V > > extends JPanel implements NavigationListener< V >, NavigationGroupReceiver
 {
 	private static final long serialVersionUID = 1L;
 
@@ -82,14 +82,11 @@ public class BDVNavigationLock< V extends Vertex< E >, E extends Edge< V > > ext
 	}
 
 	@Override
-	public void navigateToVertex( final int modelVertexId )
+	public void navigateToVertex( final V vertex )
 	{
 
-		final V ref = graph.wrappedGraph.vertexRef();
-		final V v = graph.idmap.getVertex( modelVertexId, ref );
-
 		final OverlayVertexWrapper< V, E > ov = graph.vertexRef();
-		ov.wv = v;
+		ov.wv = vertex;
 		final double[] gPos = new double[ 3 ];
 		ov.localize( gPos );
 
@@ -111,7 +108,6 @@ public class BDVNavigationLock< V extends Vertex< E >, E extends Edge< V > > ext
 		panel.requestRepaint();
 
 		graph.releaseRef( ov );
-		graph.wrappedGraph.releaseRef( ref );
 	}
 
 	@Override

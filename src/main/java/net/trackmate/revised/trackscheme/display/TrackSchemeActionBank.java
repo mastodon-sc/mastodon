@@ -2,8 +2,11 @@ package net.trackmate.revised.trackscheme.display;
 
 import java.awt.event.ActionEvent;
 
+import net.trackmate.graph.Edge;
+import net.trackmate.graph.Vertex;
 import net.trackmate.revised.trackscheme.TrackSchemeHighlight;
 import net.trackmate.revised.trackscheme.TrackSchemeSelection;
+import net.trackmate.spatial.HasTimepoint;
 import bdv.util.AbstractNamedAction;
 
 public class TrackSchemeActionBank
@@ -40,7 +43,7 @@ public class TrackSchemeActionBank
 	 * NAVIGATE WITH HIGHLIGHT.
 	 */
 
-	public static final AbstractNamedAction getNavigateToChildAction( final HighlightNavigator selectionNavigator )
+	public static final < V extends Vertex< E > & HasTimepoint, E extends Edge< V > > AbstractNamedAction getNavigateToChildAction( final HighlightNavigator< V, E > selectionNavigator )
 	{
 		return new AbstractNamedAction( "navigateToChild" )
 		{
@@ -61,7 +64,7 @@ public class TrackSchemeActionBank
 		};
 	}
 
-	public static final AbstractNamedAction getNavigateToParentAction( final HighlightNavigator selectionNavigator )
+	public static final < V extends Vertex< E > & HasTimepoint, E extends Edge< V > > AbstractNamedAction getNavigateToParentAction( final HighlightNavigator< V, E > selectionNavigator )
 	{
 		return new AbstractNamedAction( "navigateToParent" )
 		{
@@ -82,7 +85,7 @@ public class TrackSchemeActionBank
 		};
 	}
 
-	public static final AbstractNamedAction getNavigateToRightSiblingAction( final HighlightNavigator selectionNavigator )
+	public static final < V extends Vertex< E > & HasTimepoint, E extends Edge< V > > AbstractNamedAction getNavigateToRightSiblingAction( final HighlightNavigator< V, E > selectionNavigator )
 	{
 		return new AbstractNamedAction( "navigateToRightSibling" )
 		{
@@ -103,7 +106,7 @@ public class TrackSchemeActionBank
 		};
 	}
 
-	public static final AbstractNamedAction getNavigateToLeftSiblingAction( final HighlightNavigator selectionNavigator )
+	public static final < V extends Vertex< E > & HasTimepoint, E extends Edge< V > > AbstractNamedAction getNavigateToLeftSiblingAction( final HighlightNavigator< V, E > selectionNavigator )
 	{
 		return new AbstractNamedAction( "navigateToLeftSibling" )
 		{
@@ -124,7 +127,7 @@ public class TrackSchemeActionBank
 		};
 	}
 
-	public static final AbstractNamedAction getAddChildToSelectionAction( final HighlightNavigator selectionNavigator, final TrackSchemeSelection selection )
+	public static final < V extends Vertex< E > & HasTimepoint, E extends Edge< V > > AbstractNamedAction getAddChildToSelectionAction( final HighlightNavigator< V, E > selectionNavigator, final TrackSchemeSelection selection )
 	{
 		return new AbstractNamedAction( "addChildToSelection" )
 		{
@@ -147,7 +150,7 @@ public class TrackSchemeActionBank
 		};
 	}
 
-	public static final AbstractNamedAction getAddParentToSelectionAction( final HighlightNavigator selectionNavigator, final TrackSchemeSelection selection )
+	public static final < V extends Vertex< E > & HasTimepoint, E extends Edge< V > > AbstractNamedAction getAddParentToSelectionAction( final HighlightNavigator< V, E > selectionNavigator, final TrackSchemeSelection selection )
 	{
 		return new AbstractNamedAction( "addParentToSelection" )
 		{
@@ -170,7 +173,7 @@ public class TrackSchemeActionBank
 		};
 	}
 
-	public static final AbstractNamedAction getAddRightSiblingToSelectionAction( final HighlightNavigator selectionNavigator, final TrackSchemeSelection selection )
+	public static final < V extends Vertex< E > & HasTimepoint, E extends Edge< V > > AbstractNamedAction getAddRightSiblingToSelectionAction( final HighlightNavigator< V, E > selectionNavigator, final TrackSchemeSelection selection )
 	{
 		return new AbstractNamedAction( "addRightSiblingToSelection" )
 		{
@@ -193,7 +196,7 @@ public class TrackSchemeActionBank
 		};
 	}
 
-	public static final AbstractNamedAction getAddLeftSiblingToSelectionAction( final HighlightNavigator selectionNavigator, final TrackSchemeSelection selection )
+	public static final < V extends Vertex< E > & HasTimepoint, E extends Edge< V > > AbstractNamedAction getAddLeftSiblingToSelectionAction( final HighlightNavigator< V, E > selectionNavigator, final TrackSchemeSelection selection )
 	{
 		return new AbstractNamedAction( "addLeftSiblingToSelection" )
 		{

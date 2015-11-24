@@ -2,7 +2,11 @@ package net.trackmate.revised.trackscheme.display;
 
 import net.imglib2.RealPoint;
 import net.imglib2.ui.TransformListener;
+import net.trackmate.graph.Edge;
 import net.trackmate.graph.Edges;
+import net.trackmate.graph.IdBimap;
+import net.trackmate.graph.ReadOnlyGraph;
+import net.trackmate.graph.Vertex;
 import net.trackmate.revised.trackscheme.LineageTreeLayout;
 import net.trackmate.revised.trackscheme.ScreenTransform;
 import net.trackmate.revised.trackscheme.TrackSchemeEdge;
@@ -12,27 +16,38 @@ import net.trackmate.revised.trackscheme.TrackSchemeVertex;
 import net.trackmate.revised.trackscheme.TrackSchemeVertexList;
 import net.trackmate.revised.ui.selection.NavigationGroupEmitter;
 import net.trackmate.revised.ui.selection.NavigationHandler;
+import net.trackmate.spatial.HasTimepoint;
 
-public class HighlightNavigator implements TransformListener< ScreenTransform >
+public class HighlightNavigator< V extends Vertex< E > & HasTimepoint, E extends Edge< V > > implements TransformListener< ScreenTransform >
 {
-	private final TrackSchemeGraph< ?, ? > graph;
+	private final TrackSchemeGraph< V, E > graph;
 
 	private final LineageTreeLayout layout;
 
 	private final TrackSchemeHighlight highlight;
 
-	private final NavigationHandler navigationHandler;
+	private final NavigationHandler< V > navigationHandler;
 
 	private final NavigationGroupEmitter navigationGroup;
 
+	private final IdBimap< V > vertexIdBimap;
+
+	private final ReadOnlyGraph< V, E > modelGraph;
+
 	public HighlightNavigator(
-			final TrackSchemeGraph< ?, ? > graph,
+			final TrackSchemeGraph< V, E > graph,
+			final ReadOnlyGraph< V, E > modelGraph,
+			final IdBimap< V > vertexIdBimap,
 			final LineageTreeLayout layout,
 			final TrackSchemeHighlight highlight,
 			final NavigationGroupEmitter navigationGroup,
-			final NavigationHandler navigationHandler )
+			final NavigationHandler< V > navigationHandler )
 	{
 		this.graph = graph;
+		// Now we need the model graph, nut only to generate empty refs.
+		// Isn't it spoiled?
+		this.modelGraph = modelGraph;
+		this.vertexIdBimap = vertexIdBimap;
 		this.layout = layout;
 		this.highlight = highlight;
 		this.navigationGroup = navigationGroup;
@@ -131,7 +146,10 @@ public class HighlightNavigator implements TransformListener< ScreenTransform >
 
 	private void navigateTo( final TrackSchemeVertex current )
 	{
-		navigationHandler.notifyListeners( navigationGroup.getGroups(), current.getModelVertexId() );
+		final V ref = modelGraph.vertexRef();
+		final V v = vertexIdBimap.getObject( current.getModelVertexId(), ref );
+		navigationHandler.notifyListeners( navigationGroup.getGroups(), v );
+		modelGraph.releaseRef( ref );
 	}
 
 	private final RealPoint centerPos = new RealPoint( 2 );

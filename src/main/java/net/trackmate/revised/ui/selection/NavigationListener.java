@@ -1,16 +1,17 @@
 package net.trackmate.revised.ui.selection;
 
+import net.trackmate.graph.Vertex;
+
 /**
  * @author Jean-Yves Tinevez
  */
-public interface NavigationListener
+public interface NavigationListener< V extends Vertex< ? > >
 {
 	/**
-	 * Changes the view managed by the listener to display the vertex with the
-	 * specified id.
+	 * Changes the view managed by the listener to display the specified vertex.
 	 *
-	 * @param modelVertexId
-	 *            the vertex model id.
+	 * @param vertex
+	 *            the vertex to navigate to.
 	 */
-	public void navigateToVertex( int modelVertexId );
+	public void navigateToVertex( V vertex );
 }

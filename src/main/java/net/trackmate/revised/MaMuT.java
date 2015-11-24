@@ -88,7 +88,7 @@ public class MaMuT
 		/*
 		 * Navigation handler.
 		 */
-		final NavigationHandler navigationHandler = new NavigationHandler();
+		final NavigationHandler< Spot > navigationHandler = new NavigationHandler< Spot >();
 
 		/*
 		 * TrackSchemeGraph listening to model
@@ -116,7 +116,7 @@ public class MaMuT
 		/*
 		 * show TrackSchemeFrame
 		 */
-		final TrackSchemeFrame frame = new TrackSchemeFrame( trackSchemeGraph, trackSchemeHighlight, trackSchemeSelection, navigationHandler );
+		final TrackSchemeFrame< Spot, Link > frame = new TrackSchemeFrame< Spot, Link >( trackSchemeGraph, graph, idmap, trackSchemeHighlight, trackSchemeSelection, navigationHandler );
 		frame.getTrackschemePanel().setTimepointRange( minTimepoint, maxTimepoint );
 		frame.getTrackschemePanel().graphChanged();
 		frame.setVisible( true );
@@ -146,7 +146,8 @@ public class MaMuT
 			final Model model,
 			final HighlightModel< Spot, Link > highlightModel,
 			final Selection< Spot, Link > selection,
-			final NavigationHandler navigationHandler, final BoundingSphereRadiusStatistics radiusStats,
+			final NavigationHandler< Spot > navigationHandler,
+			final BoundingSphereRadiusStatistics radiusStats,
 			final SpimDataMinimal spimData,
 			final String windowTitle,
 			final int initialTimepointIndex,
