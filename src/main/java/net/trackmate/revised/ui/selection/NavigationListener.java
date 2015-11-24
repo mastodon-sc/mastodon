@@ -1,4 +1,4 @@
-package net.trackmate.revised;
+package net.trackmate.revised.ui.selection;
 
 /**
  * @author Jean-Yves Tinevez

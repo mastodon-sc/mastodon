@@ -8,10 +8,10 @@ import javax.swing.JFrame;
 import javax.swing.WindowConstants;
 
 import net.imglib2.ui.util.GuiUtil;
-import net.trackmate.revised.NavigationHandler;
 import net.trackmate.revised.trackscheme.TrackSchemeGraph;
 import net.trackmate.revised.trackscheme.TrackSchemeHighlight;
 import net.trackmate.revised.trackscheme.TrackSchemeSelection;
+import net.trackmate.revised.ui.selection.NavigationHandler;
 import bdv.viewer.SourceAndConverter;
 import bdv.viewer.ViewerOptions;
 

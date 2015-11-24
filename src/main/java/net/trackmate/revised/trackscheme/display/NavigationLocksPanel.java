@@ -13,8 +13,8 @@ import javax.swing.JPanel;
 import javax.swing.JToggleButton;
 import javax.swing.SwingConstants;
 
-import net.trackmate.revised.NavigationHandler;
-import net.trackmate.revised.NavigationListener;
+import net.trackmate.revised.ui.selection.NavigationHandler;
+import net.trackmate.revised.ui.selection.NavigationListener;
 
 public class NavigationLocksPanel extends JPanel implements NavigationListener
 {

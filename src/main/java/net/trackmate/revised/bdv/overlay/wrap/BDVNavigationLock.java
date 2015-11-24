@@ -16,8 +16,8 @@ import javax.swing.SwingConstants;
 import net.imglib2.realtransform.AffineTransform3D;
 import net.trackmate.graph.Edge;
 import net.trackmate.graph.Vertex;
-import net.trackmate.revised.NavigationListener;
 import net.trackmate.revised.trackscheme.display.NavigationLocksPanel;
+import net.trackmate.revised.ui.selection.NavigationListener;
 import bdv.viewer.ViewerPanel;
 import bdv.viewer.animate.TranslationAnimator;
 

@@ -1,4 +1,4 @@
-package net.trackmate.revised;
+package net.trackmate.revised.ui.selection;
 
 import gnu.trove.iterator.TIntIterator;
 import gnu.trove.set.TIntSet;
