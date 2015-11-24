@@ -46,7 +46,7 @@ import bdv.viewer.ViewerPanel;
 
 public class MaMuT
 {
-	public static void main4( final String[] args ) throws IOException, SpimDataException
+	public static void main( final String[] args ) throws IOException, SpimDataException
 	{
 		final String bdvFile = "samples/datasethdf5.xml";
 		final String modelFile = "samples/model_revised.raw";
@@ -213,10 +213,5 @@ public class MaMuT
 		viewerFrame.pack();
 
 		return bdv;
-	}
-
-	public static void main( final String[] args ) throws IOException, SpimDataException
-	{
-		main4( args );
 	}
 }
