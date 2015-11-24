@@ -431,7 +431,13 @@ public class LineageTreeLayout
 		TrackSchemeVertex v = graph.vertexRef();
 		final RefSet< TrackSchemeVertex > vertexSet = graph.createVertexSet();
 
-		final TIntIterator tpIter = timepoints.subList( tStart, tEnd + 1 ).iterator();
+		int iStart = timepoints.binarySearch( tStart );
+		if ( iStart < 0 )
+			iStart = -( 1 + iStart );
+		int iEnd = timepoints.binarySearch( tEnd );
+		if ( iEnd < 0 )
+			iEnd = -( 1 + iEnd );
+		final TIntIterator tpIter = timepoints.subList( iStart, iEnd + 1 ).iterator();
 		while ( tpIter.hasNext() )
 		{
 			final TrackSchemeVertexList vertexList = timepointToOrderedVertices.get( tpIter.next() );
