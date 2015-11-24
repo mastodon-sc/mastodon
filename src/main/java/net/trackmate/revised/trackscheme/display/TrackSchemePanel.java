@@ -29,6 +29,7 @@ import net.trackmate.revised.trackscheme.TrackSchemeVertex;
 import net.trackmate.revised.trackscheme.display.TrackSchemeOptions.Values;
 import net.trackmate.revised.trackscheme.display.laf.DefaultTrackSchemeOverlay;
 import net.trackmate.revised.ui.selection.HighlightListener;
+import net.trackmate.revised.ui.selection.NavigationListener;
 import net.trackmate.revised.ui.selection.SelectionListener;
 import net.trackmate.trackscheme.animate.AbstractAnimator;
 import bdv.viewer.TimePointListener;
@@ -39,7 +40,8 @@ public class TrackSchemePanel extends JPanel implements
 		HighlightListener,
 		TimePointListener,
 		GraphChangeListener,
-		SelectionListener
+		SelectionListener,
+		NavigationListener
 {
 
 	private static final long ANIMATION_MILLISECONDS = 250;
@@ -353,7 +355,8 @@ public class TrackSchemePanel extends JPanel implements
 		painterThread.requestRepaint();
 	}
 
-	public void centerOn( final int modelVertexId )
+	@Override
+	public void navigateToVertex( final int modelVertexId )
 	{
 		final TrackSchemeVertex v = graph.vertexRef();
 		graph.getTrackSchemeVertexForModelId( modelVertexId, v );

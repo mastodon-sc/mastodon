@@ -3,7 +3,7 @@ package net.trackmate.revised.ui.selection;
 import gnu.trove.iterator.TIntIterator;
 import gnu.trove.set.TIntSet;
 
-import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 
 /**
@@ -15,21 +15,27 @@ import java.util.HashSet;
  */
 public class NavigationHandler
 {
+	private final HashMap< NavigationListener, NavigationGroupReceiver > listeners = new HashMap< NavigationListener, NavigationGroupReceiver >();
 
-	private final ArrayList< NavigationListener > listeners = new ArrayList< NavigationListener >();
-
-	public NavigationHandler()
+	/**
+	 * Registers the specified listener to this handler. The specified
+	 * {@link NavigationGroupReceiver} will be used to determine to what groups this
+	 * listener belongs to when passing navigation events.
+	 *
+	 * @param l
+	 *            the {@link NavigationListener} to register.
+	 * @param g
+	 *            the {@link NavigationGroupReceiver} that determines to what groups it
+	 *            belongs.
+	 */
+	public void addNavigationListener( final NavigationListener l, final NavigationGroupReceiver g )
 	{
-	}
-
-	public boolean addNavigationListener( final NavigationListener l )
-	{
-		return listeners.add( l );
+		listeners.put( l, g );
 	}
 
 	public boolean removeNavigationListener( final NavigationListener l )
 	{
-		return listeners.remove( l );
+		return listeners.remove( l ) != null;
 	}
 
 	/**
@@ -44,7 +50,6 @@ public class NavigationHandler
 	 */
 	public void notifyListeners( final TIntSet fromGroups, final int modelVertexId )
 	{
-
 		// Make sure listeners are notified only once even if they belong to
 		// several groups.
 		final HashSet< NavigationListener > toNotify = new HashSet< NavigationListener >();
@@ -52,9 +57,10 @@ public class NavigationHandler
 		while ( it.hasNext() )
 		{
 			final int group = it.next();
-			for ( final NavigationListener l : listeners )
+			for ( final NavigationListener l : listeners.keySet() )
 			{
-				if ( l.isInGroup( group ) )
+				final NavigationGroupReceiver g = listeners.get( l );
+				if ( g.isInGroup( group ) )
 				{
 					toNotify.add( l );
 				}

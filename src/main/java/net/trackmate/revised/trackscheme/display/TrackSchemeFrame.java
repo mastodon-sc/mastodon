@@ -52,11 +52,11 @@ public class TrackSchemeFrame extends JFrame
 		trackschemePanel = new TrackSchemePanel( graph, highlight, selection, optional );
 		add( trackschemePanel, BorderLayout.CENTER );
 
-		final NavigationLocksPanel navigationLocksPanel = new NavigationLocksPanel( trackschemePanel, navigationHandler );
-		navigationHandler.addNavigationListener( navigationLocksPanel );
+		final NavigationLocksPanel navigationLocksPanel = new NavigationLocksPanel();
+		navigationHandler.addNavigationListener( trackschemePanel, navigationLocksPanel );
 		add( navigationLocksPanel, BorderLayout.NORTH );
 
-		final HighlightNavigator highlightNavigator = new HighlightNavigator( graph, trackschemePanel.layout, highlight, navigationLocksPanel );
+		final HighlightNavigator highlightNavigator = new HighlightNavigator( graph, trackschemePanel.layout, highlight, navigationLocksPanel, navigationHandler );
 		trackschemePanel.display.addTransformListener( highlightNavigator );
 
 		final KeyHandler keyHandler = new KeyHandler( trackschemePanel.display, highlightNavigator, highlight, selection );

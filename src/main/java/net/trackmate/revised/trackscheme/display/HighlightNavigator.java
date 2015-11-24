@@ -10,6 +10,8 @@ import net.trackmate.revised.trackscheme.TrackSchemeGraph;
 import net.trackmate.revised.trackscheme.TrackSchemeHighlight;
 import net.trackmate.revised.trackscheme.TrackSchemeVertex;
 import net.trackmate.revised.trackscheme.TrackSchemeVertexList;
+import net.trackmate.revised.ui.selection.NavigationGroupEmitter;
+import net.trackmate.revised.ui.selection.NavigationHandler;
 
 public class HighlightNavigator implements TransformListener< ScreenTransform >
 {
@@ -19,14 +21,22 @@ public class HighlightNavigator implements TransformListener< ScreenTransform >
 
 	private final TrackSchemeHighlight highlight;
 
-	private final NavigationLocksPanel lockPanel;
+	private final NavigationHandler navigationHandler;
 
-	public HighlightNavigator( final TrackSchemeGraph< ?, ? > graph, final LineageTreeLayout layout, final TrackSchemeHighlight highlight, final NavigationLocksPanel lockPanel )
+	private final NavigationGroupEmitter navigationGroup;
+
+	public HighlightNavigator(
+			final TrackSchemeGraph< ?, ? > graph,
+			final LineageTreeLayout layout,
+			final TrackSchemeHighlight highlight,
+			final NavigationGroupEmitter navigationGroup,
+			final NavigationHandler navigationHandler )
 	{
 		this.graph = graph;
 		this.layout = layout;
 		this.highlight = highlight;
-		this.lockPanel = lockPanel;
+		this.navigationGroup = navigationGroup;
+		this.navigationHandler = navigationHandler;
 	}
 
 	public int child()
@@ -121,7 +131,7 @@ public class HighlightNavigator implements TransformListener< ScreenTransform >
 
 	private void navigateTo( final TrackSchemeVertex current )
 	{
-		lockPanel.navigateTo( current.getModelVertexId() );
+		navigationHandler.notifyListeners( navigationGroup.getGroups(), current.getModelVertexId() );
 	}
 
 	private final RealPoint centerPos = new RealPoint( 2 );

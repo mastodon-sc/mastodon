@@ -1,5 +1,6 @@
 package net.trackmate.revised.trackscheme.display;
 
+import gnu.trove.set.TIntSet;
 import gnu.trove.set.hash.TIntHashSet;
 
 import java.awt.Dimension;
@@ -13,10 +14,10 @@ import javax.swing.JPanel;
 import javax.swing.JToggleButton;
 import javax.swing.SwingConstants;
 
-import net.trackmate.revised.ui.selection.NavigationHandler;
-import net.trackmate.revised.ui.selection.NavigationListener;
+import net.trackmate.revised.ui.selection.NavigationGroupEmitter;
+import net.trackmate.revised.ui.selection.NavigationGroupReceiver;
 
-public class NavigationLocksPanel extends JPanel implements NavigationListener
+public class NavigationLocksPanel extends JPanel implements NavigationGroupReceiver, NavigationGroupEmitter
 {
 
 	private static final long serialVersionUID = 1L;
@@ -29,16 +30,10 @@ public class NavigationLocksPanel extends JPanel implements NavigationListener
 
 	private static final int N_LOCKS = 3;
 
-	private final NavigationHandler handler;
-
 	private final TIntHashSet groups;
 
-	private final TrackSchemePanel panel;
-
-	public NavigationLocksPanel( final TrackSchemePanel panel, final NavigationHandler handler )
+	public NavigationLocksPanel()
 	{
-		this.panel = panel;
-		this.handler = handler;
 		this.groups = new TIntHashSet();
 
 		setLayout( new FlowLayout( FlowLayout.LEADING ) );
@@ -76,21 +71,16 @@ public class NavigationLocksPanel extends JPanel implements NavigationListener
 			groups.remove( lockId );
 	}
 
-	void navigateTo( final int modelVertexId )
-	{
-		handler.notifyListeners( groups, modelVertexId );
-	}
-
-	@Override
-	public void navigateToVertex( final int modelVertexId )
-	{
-		panel.centerOn( modelVertexId );
-	}
-
 	@Override
 	public boolean isInGroup( final int group )
 	{
 		return groups.contains( group );
+	}
+
+	@Override
+	public TIntSet getGroups()
+	{
+		return groups;
 	}
 
 }

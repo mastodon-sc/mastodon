@@ -17,11 +17,12 @@ import net.imglib2.realtransform.AffineTransform3D;
 import net.trackmate.graph.Edge;
 import net.trackmate.graph.Vertex;
 import net.trackmate.revised.trackscheme.display.NavigationLocksPanel;
+import net.trackmate.revised.ui.selection.NavigationGroupReceiver;
 import net.trackmate.revised.ui.selection.NavigationListener;
 import bdv.viewer.ViewerPanel;
 import bdv.viewer.animate.TranslationAnimator;
 
-public class BDVNavigationLock< V extends Vertex< E >, E extends Edge< V > > extends JPanel implements NavigationListener
+public class BDVNavigationLock< V extends Vertex< E >, E extends Edge< V > > extends JPanel implements NavigationListener, NavigationGroupReceiver
 {
 	private static final long serialVersionUID = 1L;
 
