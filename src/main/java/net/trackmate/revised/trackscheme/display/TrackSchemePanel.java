@@ -16,8 +16,6 @@ import net.imglib2.ui.OverlayRenderer;
 import net.imglib2.ui.PainterThread;
 import net.imglib2.ui.TransformEventHandler;
 import net.imglib2.ui.TransformListener;
-import net.trackmate.graph.IdBimap;
-import net.trackmate.graph.Vertex;
 import net.trackmate.graph.listenable.GraphChangeListener;
 import net.trackmate.revised.trackscheme.LineageTreeLayout;
 import net.trackmate.revised.trackscheme.LineageTreeLayout.LayoutListener;
@@ -26,6 +24,7 @@ import net.trackmate.revised.trackscheme.ScreenEntitiesInterpolator;
 import net.trackmate.revised.trackscheme.ScreenTransform;
 import net.trackmate.revised.trackscheme.TrackSchemeGraph;
 import net.trackmate.revised.trackscheme.TrackSchemeHighlight;
+import net.trackmate.revised.trackscheme.TrackSchemeNavigation;
 import net.trackmate.revised.trackscheme.TrackSchemeSelection;
 import net.trackmate.revised.trackscheme.TrackSchemeVertex;
 import net.trackmate.revised.trackscheme.display.TrackSchemeOptions.Values;
@@ -36,14 +35,14 @@ import net.trackmate.revised.ui.selection.SelectionListener;
 import net.trackmate.trackscheme.animate.AbstractAnimator;
 import bdv.viewer.TimePointListener;
 
-public class TrackSchemePanel<V extends Vertex< ? >> extends JPanel implements
+public class TrackSchemePanel extends JPanel implements
 		TransformListener< ScreenTransform >,
 		PainterThread.Paintable,
 		HighlightListener,
 		TimePointListener,
 		GraphChangeListener,
 		SelectionListener,
-		NavigationListener< V >
+		NavigationListener< TrackSchemeVertex >
 {
 
 	private static final long ANIMATION_MILLISECONDS = 250;
@@ -58,7 +57,7 @@ public class TrackSchemePanel<V extends Vertex< ? >> extends JPanel implements
 	/**
 	 * Canvas used for displaying the trackscheme graph.
 	 */
-	final InteractiveDisplayCanvasComponent< ScreenTransform > display;
+	private final InteractiveDisplayCanvasComponent< ScreenTransform > display;
 
 	private final JScrollBar xScrollBar;
 
@@ -72,7 +71,7 @@ public class TrackSchemePanel<V extends Vertex< ? >> extends JPanel implements
 	/**
 	 * layout the {@link TrackSchemeGraph} into layout coordinates.
 	 */
-	final LineageTreeLayout layout;
+	private final LineageTreeLayout layout;
 
 	/**
 	 * compute {@link ScreenEntities} from {@link LineageTreeLayout} using the
@@ -130,22 +129,23 @@ public class TrackSchemePanel<V extends Vertex< ? >> extends JPanel implements
 
 	private final TrackSchemeSelection selection;
 
-	private final IdBimap< V > vertexIdBimap;
+	private final TrackSchemeNavigation navigation;
 
 	public TrackSchemePanel(
 			final TrackSchemeGraph< ?, ? > graph,
-			final IdBimap< V > vertexIdBimap,
 			final TrackSchemeHighlight highlight,
 			final TrackSchemeSelection selection,
+			final TrackSchemeNavigation navigation,
 			final TrackSchemeOptions optional )
 	{
 		super( new BorderLayout(), false );
 		this.graph = graph;
-		this.vertexIdBimap = vertexIdBimap;
 		this.selection = selection;
+		this.navigation = navigation;
 		options = optional.values;
 
 		graph.addGraphChangeListener( this );
+		navigation.addNavigationListener( this );
 
 		final int w = options.getWidth();
 		final int h = options.getHeight();
@@ -362,16 +362,29 @@ public class TrackSchemePanel<V extends Vertex< ? >> extends JPanel implements
 	}
 
 	@Override
-	public void navigateToVertex( final V vertex )
+	public void navigateToVertex( final TrackSchemeVertex v )
 	{
-		final TrackSchemeVertex ref = graph.vertexRef();
-		final TrackSchemeVertex tv = graph.getTrackSchemeVertexForModelId( vertexIdBimap.getId( vertex ), ref );
-		final double lx = tv.getLayoutX();
-		final double ly = tv.getTimepoint();
+		final double lx = v.getLayoutX();
+		final double ly = v.getTimepoint();
 
+		/*
+		 * TODO: This will fail if there is a different transform event handler.
+		 * TODO: Also it shouldn't require display here.
+		 * TODO: Instead it should be routed through a new interface that forwards to InertialScreenTransformEventHandler or does whatever is appropriate (e.g. ignores it).
+		 */
 		final InertialScreenTransformEventHandler transformEventHandler = ( InertialScreenTransformEventHandler ) display.getTransformEventHandler();
+
 		transformEventHandler.centerOn( lx, ly );
-		graph.releaseRef( ref );
+	}
+
+	protected InteractiveDisplayCanvasComponent< ScreenTransform > getDisplay()
+	{
+		return display;
+	}
+
+	protected LineageTreeLayout getLineageTreeLayout()
+	{
+		return layout;
 	}
 
 	protected class ScreenEntityAnimator extends AbstractAnimator

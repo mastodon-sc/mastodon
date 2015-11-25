@@ -2,56 +2,36 @@ package net.trackmate.revised.trackscheme.display;
 
 import net.imglib2.RealPoint;
 import net.imglib2.ui.TransformListener;
-import net.trackmate.graph.Edge;
 import net.trackmate.graph.Edges;
-import net.trackmate.graph.IdBimap;
-import net.trackmate.graph.ReadOnlyGraph;
-import net.trackmate.graph.Vertex;
 import net.trackmate.revised.trackscheme.LineageTreeLayout;
 import net.trackmate.revised.trackscheme.ScreenTransform;
 import net.trackmate.revised.trackscheme.TrackSchemeEdge;
 import net.trackmate.revised.trackscheme.TrackSchemeGraph;
 import net.trackmate.revised.trackscheme.TrackSchemeHighlight;
+import net.trackmate.revised.trackscheme.TrackSchemeNavigation;
 import net.trackmate.revised.trackscheme.TrackSchemeVertex;
 import net.trackmate.revised.trackscheme.TrackSchemeVertexList;
-import net.trackmate.revised.ui.selection.NavigationGroupEmitter;
-import net.trackmate.revised.ui.selection.NavigationHandler;
-import net.trackmate.spatial.HasTimepoint;
 
-public class HighlightNavigator< V extends Vertex< E > & HasTimepoint, E extends Edge< V > > implements TransformListener< ScreenTransform >
+public class HighlightNavigator implements TransformListener< ScreenTransform >
 {
-	private final TrackSchemeGraph< V, E > graph;
+	private final TrackSchemeGraph< ?, ? > graph;
 
 	private final LineageTreeLayout layout;
 
 	private final TrackSchemeHighlight highlight;
 
-	private final NavigationHandler< V > navigationHandler;
-
-	private final NavigationGroupEmitter navigationGroup;
-
-	private final IdBimap< V > vertexIdBimap;
-
-	private final ReadOnlyGraph< V, E > modelGraph;
+	private final TrackSchemeNavigation navigation;
 
 	public HighlightNavigator(
-			final TrackSchemeGraph< V, E > graph,
-			final ReadOnlyGraph< V, E > modelGraph,
-			final IdBimap< V > vertexIdBimap,
+			final TrackSchemeGraph< ?, ? > graph,
 			final LineageTreeLayout layout,
 			final TrackSchemeHighlight highlight,
-			final NavigationGroupEmitter navigationGroup,
-			final NavigationHandler< V > navigationHandler )
+			final TrackSchemeNavigation navigation )
 	{
 		this.graph = graph;
-		// Now we need the model graph, nut only to generate empty refs.
-		// Isn't it spoiled?
-		this.modelGraph = modelGraph;
-		this.vertexIdBimap = vertexIdBimap;
 		this.layout = layout;
 		this.highlight = highlight;
-		this.navigationGroup = navigationGroup;
-		this.navigationHandler = navigationHandler;
+		this.navigation = navigation;
 	}
 
 	public int child()
@@ -146,10 +126,7 @@ public class HighlightNavigator< V extends Vertex< E > & HasTimepoint, E extends
 
 	private void navigateTo( final TrackSchemeVertex current )
 	{
-		final V ref = modelGraph.vertexRef();
-		final V v = vertexIdBimap.getObject( current.getModelVertexId(), ref );
-		navigationHandler.notifyListeners( navigationGroup.getGroups(), v );
-		modelGraph.releaseRef( ref );
+		navigation.notifyListeners( current );
 	}
 
 	private final RealPoint centerPos = new RealPoint( 2 );

@@ -26,13 +26,19 @@ import net.trackmate.revised.model.mamut.ModelOverlayProperties;
 import net.trackmate.revised.model.mamut.Spot;
 import net.trackmate.revised.trackscheme.DefaultModelGraphProperties;
 import net.trackmate.revised.trackscheme.DefaultModelHighlightProperties;
+import net.trackmate.revised.trackscheme.DefaultModelNavigationProperties;
 import net.trackmate.revised.trackscheme.DefaultModelSelectionProperties;
+import net.trackmate.revised.trackscheme.ModelHighlightProperties;
+import net.trackmate.revised.trackscheme.ModelNavigationProperties;
+import net.trackmate.revised.trackscheme.ModelSelectionProperties;
 import net.trackmate.revised.trackscheme.TrackSchemeGraph;
 import net.trackmate.revised.trackscheme.TrackSchemeHighlight;
+import net.trackmate.revised.trackscheme.TrackSchemeNavigation;
 import net.trackmate.revised.trackscheme.TrackSchemeSelection;
 import net.trackmate.revised.trackscheme.display.TrackSchemeFrame;
 import net.trackmate.revised.ui.selection.HighlightListener;
 import net.trackmate.revised.ui.selection.HighlightModel;
+import net.trackmate.revised.ui.selection.NavigationGroupHandlerImp;
 import net.trackmate.revised.ui.selection.NavigationHandler;
 import net.trackmate.revised.ui.selection.Selection;
 import net.trackmate.revised.ui.selection.SelectionListener;
@@ -103,20 +109,29 @@ public class MaMuT
 		 * TrackSchemeHighlight wrapped HighlightModel
 		 */
 		final HighlightModel< Spot, Link > highlightModel = new HighlightModel< Spot, Link  >( idmap );
-		final DefaultModelHighlightProperties< Spot, Link > highlightProperties = new DefaultModelHighlightProperties< Spot, Link >( graph, idmap, highlightModel );
+		final ModelHighlightProperties highlightProperties = new DefaultModelHighlightProperties< Spot, Link >( graph, idmap, highlightModel );
 		final TrackSchemeHighlight trackSchemeHighlight = new TrackSchemeHighlight( highlightProperties, trackSchemeGraph );
 
 		/*
 		 * TrackScheme selection
 		 */
 
-		final DefaultModelSelectionProperties< Spot, Link > selectionProperties = new DefaultModelSelectionProperties< Spot, Link >( graph, idmap, selection );
+		final ModelSelectionProperties selectionProperties = new DefaultModelSelectionProperties< Spot, Link >( graph, idmap, selection );
 		final TrackSchemeSelection trackSchemeSelection = new TrackSchemeSelection( selectionProperties, trackSchemeGraph );
+
+		/*
+		 * TrackScheme navigation
+		 */
+
+		// TODO replace by NaviagtionHandlerImp interface once it is cleaned up
+		final NavigationGroupHandlerImp groups = new NavigationGroupHandlerImp();
+		final ModelNavigationProperties navigationProperties = new DefaultModelNavigationProperties< Spot, Link >( graph, idmap, navigationHandler, groups );
+		final TrackSchemeNavigation trackSchemeNavigation = new TrackSchemeNavigation( navigationProperties, groups, trackSchemeGraph );
 
 		/*
 		 * show TrackSchemeFrame
 		 */
-		final TrackSchemeFrame< Spot, Link > frame = new TrackSchemeFrame< Spot, Link >( trackSchemeGraph, graph, idmap, trackSchemeHighlight, trackSchemeSelection, navigationHandler );
+		final TrackSchemeFrame frame = new TrackSchemeFrame( trackSchemeGraph, trackSchemeHighlight, trackSchemeSelection, trackSchemeNavigation );
 		frame.getTrackschemePanel().setTimepointRange( minTimepoint, maxTimepoint );
 		frame.getTrackschemePanel().graphChanged();
 		frame.setVisible( true );

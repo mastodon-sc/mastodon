@@ -1,8 +1,5 @@
 package net.trackmate.revised.trackscheme.display;
 
-import gnu.trove.set.TIntSet;
-import gnu.trove.set.hash.TIntHashSet;
-
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
@@ -14,12 +11,10 @@ import javax.swing.JPanel;
 import javax.swing.JToggleButton;
 import javax.swing.SwingConstants;
 
-import net.trackmate.revised.ui.selection.NavigationGroupEmitter;
-import net.trackmate.revised.ui.selection.NavigationGroupReceiver;
+import net.trackmate.revised.ui.selection.NavigationGroupHandler;
 
-public class NavigationLocksPanel extends JPanel implements NavigationGroupReceiver, NavigationGroupEmitter
+public class NavigationLocksPanel extends JPanel
 {
-
 	private static final long serialVersionUID = 1L;
 
 	private static final ImageIcon LOCK_ICON = new ImageIcon( NavigationLocksPanel.class.getResource( "lock.png" ) );
@@ -30,11 +25,15 @@ public class NavigationLocksPanel extends JPanel implements NavigationGroupRecei
 
 	private static final int N_LOCKS = 3;
 
-	private final TIntHashSet groups;
+	private final NavigationGroupHandler groupHandler;
 
-	public NavigationLocksPanel()
+	/*
+	 * TODO: NavigationGroupHandler should also have NavigationGroupEmmitter&Reveiver methods, so that button state can be set from the actual group membership state.
+	 * TODO: This is then general enough to be reused in BDV window as well.
+	 */
+	public NavigationLocksPanel( final NavigationGroupHandler groupHandler )
 	{
-		this.groups = new TIntHashSet();
+		this.groupHandler = groupHandler;
 
 		setLayout( new FlowLayout( FlowLayout.LEADING ) );
 		for ( int i = 0; i < N_LOCKS; i++ )
@@ -52,35 +51,12 @@ public class NavigationLocksPanel extends JPanel implements NavigationGroupRecei
 				@Override
 				public void actionPerformed( final ActionEvent e )
 				{
-					if ( button.isSelected() )
-						button.setIcon( LOCK_ICON );
-					else
-						button.setIcon( UNLOCK_ICON );
-					activateGroup( lockId, button.isSelected() );
+					final boolean active = button.isSelected();
+					button.setIcon( active ? LOCK_ICON : UNLOCK_ICON );
+					groupHandler.setGroupActive( lockId, active );
 				}
 			} );
 			add( button );
 		}
 	}
-
-	protected void activateGroup( final int lockId, final boolean activate )
-	{
-		if ( activate )
-			groups.add( lockId );
-		else
-			groups.remove( lockId );
-	}
-
-	@Override
-	public boolean isInGroup( final int group )
-	{
-		return groups.contains( group );
-	}
-
-	@Override
-	public TIntSet getGroups()
-	{
-		return groups;
-	}
-
 }
