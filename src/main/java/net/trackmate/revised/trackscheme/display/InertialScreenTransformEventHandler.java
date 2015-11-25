@@ -400,7 +400,7 @@ public class InertialScreenTransformEventHandler extends MouseAdapter implements
 		runAnimation();
 	}
 
-	private void runAnimation()
+	private synchronized void runAnimation()
 	{
 		if ( null != timer )
 		{
