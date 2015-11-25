@@ -17,7 +17,7 @@ import net.trackmate.graph.Vertex;
  */
 public class NavigationHandler< V extends Vertex< ? > >
 {
-	private final HashMap< NavigationListener< V >, NavigationGroupReceiver > listeners = new HashMap< NavigationListener< V >, NavigationGroupReceiver >();
+	private final HashMap< NavigationListener< V >, NavigationGroupHandler > listeners = new HashMap< NavigationListener< V >, NavigationGroupHandler >();
 
 	/**
 	 * Registers the specified listener to this handler. The specified
@@ -30,7 +30,7 @@ public class NavigationHandler< V extends Vertex< ? > >
 	 *            the {@link NavigationGroupReceiver} that determines to what groups it
 	 *            belongs.
 	 */
-	public void addNavigationListener( final NavigationListener< V > l, final NavigationGroupReceiver g )
+	public void addNavigationListener( final NavigationListener< V > l, final NavigationGroupHandler g )
 	{
 		listeners.put( l, g );
 	}
@@ -61,7 +61,7 @@ public class NavigationHandler< V extends Vertex< ? > >
 			final int group = it.next();
 			for ( final NavigationListener< V > l : listeners.keySet() )
 			{
-				final NavigationGroupReceiver g = listeners.get( l );
+				final NavigationGroupHandler g = listeners.get( l );
 				if ( g.isInGroup( group ) )
 				{
 					toNotify.add( l );

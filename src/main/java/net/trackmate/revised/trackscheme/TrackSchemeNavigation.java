@@ -4,8 +4,6 @@ import java.util.HashSet;
 import java.util.Set;
 
 import net.trackmate.revised.ui.selection.NavigationGroupHandler;
-import net.trackmate.revised.ui.selection.NavigationGroupHandlerImp;
-import net.trackmate.revised.ui.selection.NavigationGroupReceiver;
 import net.trackmate.revised.ui.selection.NavigationListener;
 
 public class TrackSchemeNavigation implements
@@ -15,13 +13,13 @@ public class TrackSchemeNavigation implements
 
 	private final ModelNavigationProperties props;
 
-	private final NavigationGroupHandlerImp groups;
+	private final NavigationGroupHandler groups;
 
 	private final TrackSchemeGraph< ?, ? > graph;
 
 	public TrackSchemeNavigation(
 			final ModelNavigationProperties props,
-			final NavigationGroupHandlerImp groups, // TODO replace by NavigationGroupHandler interface once it is cleaned up
+			final NavigationGroupHandler groups,
 			final TrackSchemeGraph< ?, ? > graph )
 	{
 		this.props = props;

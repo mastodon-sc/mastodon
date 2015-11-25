@@ -3,7 +3,7 @@ package net.trackmate.revised.ui.selection;
 import gnu.trove.set.TIntSet;
 import gnu.trove.set.hash.TIntHashSet;
 
-public class NavigationGroupHandlerImp implements NavigationGroupReceiver, NavigationGroupEmitter, NavigationGroupHandler
+public class NavigationGroupHandlerImp implements NavigationGroupHandler
 {
 	private final TIntSet groups = new TIntHashSet();
 

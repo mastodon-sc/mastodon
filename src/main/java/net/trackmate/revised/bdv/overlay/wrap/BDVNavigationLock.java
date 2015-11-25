@@ -1,5 +1,6 @@
 package net.trackmate.revised.bdv.overlay.wrap;
 
+import gnu.trove.set.TIntSet;
 import gnu.trove.set.hash.TIntHashSet;
 
 import java.awt.Dimension;
@@ -17,12 +18,12 @@ import net.imglib2.realtransform.AffineTransform3D;
 import net.trackmate.graph.Edge;
 import net.trackmate.graph.Vertex;
 import net.trackmate.revised.trackscheme.display.NavigationLocksPanel;
-import net.trackmate.revised.ui.selection.NavigationGroupReceiver;
+import net.trackmate.revised.ui.selection.NavigationGroupHandler;
 import net.trackmate.revised.ui.selection.NavigationListener;
 import bdv.viewer.ViewerPanel;
 import bdv.viewer.animate.TranslationAnimator;
 
-public class BDVNavigationLock< V extends Vertex< E >, E extends Edge< V > > extends JPanel implements NavigationListener< V >, NavigationGroupReceiver
+public class BDVNavigationLock< V extends Vertex< E >, E extends Edge< V > > extends JPanel implements NavigationListener< V >, NavigationGroupHandler
 {
 	private static final long serialVersionUID = 1L;
 
@@ -114,6 +115,21 @@ public class BDVNavigationLock< V extends Vertex< E >, E extends Edge< V > > ext
 	public boolean isInGroup( final int group )
 	{
 		return groups.contains( group );
+	}
+
+	@Override
+	public void setGroupActive( final int lockId, final boolean activate )
+	{
+		if ( activate )
+			groups.add( lockId );
+		else
+			groups.remove( lockId );
+	}
+
+	@Override
+	public TIntSet getGroups()
+	{
+		return groups;
 	}
 
 }
