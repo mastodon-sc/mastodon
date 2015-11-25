@@ -8,5 +8,9 @@ public interface NavigationGroupHandler
 
 	public TIntSet getGroups();
 
-	public boolean isInGroup( int group );
+	public boolean isGroupActive( int group );
+
+	public boolean addNavigationGroupChangeListener( NavigationGroupChangeListener l );
+
+	public boolean removeNavigationGroupChangeListener( NavigationGroupChangeListener l );
 }

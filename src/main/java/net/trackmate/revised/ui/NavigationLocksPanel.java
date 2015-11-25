@@ -1,19 +1,21 @@
-package net.trackmate.revised.trackscheme.display;
+package net.trackmate.revised.ui;
 
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.HashMap;
 
 import javax.swing.ImageIcon;
 import javax.swing.JPanel;
 import javax.swing.JToggleButton;
 import javax.swing.SwingConstants;
 
+import net.trackmate.revised.ui.selection.NavigationGroupChangeListener;
 import net.trackmate.revised.ui.selection.NavigationGroupHandler;
 
-public class NavigationLocksPanel extends JPanel
+public class NavigationLocksPanel extends JPanel implements NavigationGroupChangeListener
 {
 	private static final long serialVersionUID = 1L;
 
@@ -25,21 +27,17 @@ public class NavigationLocksPanel extends JPanel
 
 	private static final int N_LOCKS = 3;
 
-	private final NavigationGroupHandler groupHandler;
+	private final HashMap< Integer, JToggleButton > buttons;
 
-	/*
-	 * TODO: NavigationGroupHandler should also have NavigationGroupEmmitter&Reveiver methods, so that button state can be set from the actual group membership state.
-	 * TODO: This is then general enough to be reused in BDV window as well.
-	 */
 	public NavigationLocksPanel( final NavigationGroupHandler groupHandler )
 	{
-		this.groupHandler = groupHandler;
-
+		this.buttons = new HashMap<>();
 		setLayout( new FlowLayout( FlowLayout.LEADING ) );
 		for ( int i = 0; i < N_LOCKS; i++ )
 		{
 			final int lockId = i;
-			final JToggleButton button = new JToggleButton( "" + ( i + 1 ), UNLOCK_ICON, false );
+			final boolean isActive = groupHandler.isGroupActive( lockId );
+			final JToggleButton button = new JToggleButton( "" + ( i + 1 ), isActive ? LOCK_ICON : UNLOCK_ICON, isActive );
 			button.setFont( FONT );
 			button.setPreferredSize( new Dimension( 60, 20 ) );
 			button.setHorizontalAlignment( SwingConstants.LEFT );
@@ -57,6 +55,18 @@ public class NavigationLocksPanel extends JPanel
 				}
 			} );
 			add( button );
+			buttons.put( Integer.valueOf( lockId ), button );
 		}
+		groupHandler.addNavigationGroupChangeListener( this );
+	}
+
+	@Override
+	public void navigationGroupChanged( final int groupId, final boolean activated )
+	{
+		final JToggleButton button = buttons.get( Integer.valueOf( groupId ) );
+		if ( null == button )
+			return;
+
+		button.setIcon( activated ? LOCK_ICON : UNLOCK_ICON );
 	}
 }

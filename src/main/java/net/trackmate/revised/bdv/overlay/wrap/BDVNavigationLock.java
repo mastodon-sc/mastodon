@@ -8,6 +8,7 @@ import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.HashSet;
 
 import javax.swing.ImageIcon;
 import javax.swing.JPanel;
@@ -17,7 +18,8 @@ import javax.swing.SwingConstants;
 import net.imglib2.realtransform.AffineTransform3D;
 import net.trackmate.graph.Edge;
 import net.trackmate.graph.Vertex;
-import net.trackmate.revised.trackscheme.display.NavigationLocksPanel;
+import net.trackmate.revised.ui.NavigationLocksPanel;
+import net.trackmate.revised.ui.selection.NavigationGroupChangeListener;
 import net.trackmate.revised.ui.selection.NavigationGroupHandler;
 import net.trackmate.revised.ui.selection.NavigationListener;
 import bdv.viewer.ViewerPanel;
@@ -112,7 +114,7 @@ public class BDVNavigationLock< V extends Vertex< E >, E extends Edge< V > > ext
 	}
 
 	@Override
-	public boolean isInGroup( final int group )
+	public boolean isGroupActive( final int group )
 	{
 		return groups.contains( group );
 	}
@@ -132,4 +134,17 @@ public class BDVNavigationLock< V extends Vertex< E >, E extends Edge< V > > ext
 		return groups;
 	}
 
+	private final HashSet< NavigationGroupChangeListener > listeners = new HashSet< NavigationGroupChangeListener >();
+
+	@Override
+	public boolean addNavigationGroupChangeListener( final NavigationGroupChangeListener l )
+	{
+		return listeners.add( l );
+	}
+
+	@Override
+	public boolean removeNavigationGroupChangeListener( final NavigationGroupChangeListener l )
+	{
+		return listeners.remove( l );
+	}
 }

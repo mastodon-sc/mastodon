@@ -5,7 +5,7 @@ import net.trackmate.graph.Edge;
 import net.trackmate.graph.GraphIdBimap;
 import net.trackmate.graph.ReadOnlyGraph;
 import net.trackmate.graph.Vertex;
-import net.trackmate.revised.ui.selection.NavigationGroupHandlerImp;
+import net.trackmate.revised.ui.selection.NavigationGroupHandler;
 import net.trackmate.revised.ui.selection.NavigationHandler;
 import net.trackmate.revised.ui.selection.NavigationListener;
 
@@ -25,7 +25,7 @@ public class DefaultModelNavigationProperties< V extends Vertex< E >, E extends 
 			final ReadOnlyGraph< V, E > graph,
 			final GraphIdBimap< V, E > idmap,
 			final NavigationHandler< V > navigation,
-			final NavigationGroupHandlerImp groups ) // TODO replace by NavigationGroupHandler interface once it is cleaned up
+			final NavigationGroupHandler groups )
 	{
 		this.graph = graph;
 		this.idmap = idmap;

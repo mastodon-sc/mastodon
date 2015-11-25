@@ -38,6 +38,7 @@ import net.trackmate.revised.trackscheme.TrackSchemeSelection;
 import net.trackmate.revised.trackscheme.display.TrackSchemeFrame;
 import net.trackmate.revised.ui.selection.HighlightListener;
 import net.trackmate.revised.ui.selection.HighlightModel;
+import net.trackmate.revised.ui.selection.NavigationGroupHandler;
 import net.trackmate.revised.ui.selection.NavigationGroupHandlerImp;
 import net.trackmate.revised.ui.selection.NavigationHandler;
 import net.trackmate.revised.ui.selection.Selection;
@@ -123,8 +124,7 @@ public class MaMuT
 		 * TrackScheme navigation
 		 */
 
-		// TODO replace by NaviagtionHandlerImp interface once it is cleaned up
-		final NavigationGroupHandlerImp groups = new NavigationGroupHandlerImp();
+		final NavigationGroupHandler groups = new NavigationGroupHandlerImp();
 		final ModelNavigationProperties navigationProperties = new DefaultModelNavigationProperties< Spot, Link >( graph, idmap, navigationHandler, groups );
 		final TrackSchemeNavigation trackSchemeNavigation = new TrackSchemeNavigation( navigationProperties, groups, trackSchemeGraph );
 

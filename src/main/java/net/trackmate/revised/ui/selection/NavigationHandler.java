@@ -62,7 +62,7 @@ public class NavigationHandler< V extends Vertex< ? > >
 			for ( final NavigationListener< V > l : listeners.keySet() )
 			{
 				final NavigationGroupHandler g = listeners.get( l );
-				if ( g.isInGroup( group ) )
+				if ( g.isGroupActive( group ) )
 				{
 					toNotify.add( l );
 				}

@@ -12,8 +12,7 @@ import net.trackmate.revised.trackscheme.TrackSchemeGraph;
 import net.trackmate.revised.trackscheme.TrackSchemeHighlight;
 import net.trackmate.revised.trackscheme.TrackSchemeNavigation;
 import net.trackmate.revised.trackscheme.TrackSchemeSelection;
-import bdv.viewer.SourceAndConverter;
-import bdv.viewer.ViewerOptions;
+import net.trackmate.revised.ui.NavigationLocksPanel;
 
 public class TrackSchemeFrame extends JFrame
 {
