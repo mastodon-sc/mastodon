@@ -450,12 +450,17 @@ public class TrackSchemePanel extends JPanel implements
 		 */
 		public void setPaintEntities( final AbstractTrackSchemeOverlay overlay )
 		{
-			final ScreenEntities tmp = overlay.setScreenEntities( screenEntities );
-			if ( tmp == null )
-				screenEntities = new ScreenEntities( graph, capacity );
-			else
-				screenEntities = tmp;
-			screenEntities.clear();
+			if ( lastComputedScreenEntities == screenEntities )
+			{
+				final ScreenEntities tmp = overlay.setScreenEntities( screenEntities );
+				if ( tmp == null )
+				{
+					screenEntities = new ScreenEntities( graph, capacity );
+				}
+				else
+					screenEntities = tmp;
+				screenEntities.clear();
+			}
 		}
 
 		private ScreenEntities getLastComputedScreenEntities()
