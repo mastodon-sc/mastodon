@@ -1,31 +1,26 @@
 package net.trackmate.revised.bdv.overlay.wrap;
 
 import net.imglib2.realtransform.AffineTransform3D;
+import net.trackmate.graph.Edge;
 import net.trackmate.graph.Vertex;
 import net.trackmate.revised.bdv.overlay.OverlayNavigation;
 import bdv.viewer.ViewerPanel;
 import bdv.viewer.animate.TranslationAnimator;
 
-public class OverlayNavigationWrapper< V extends Vertex< ? >> implements OverlayNavigation< OverlayVertexWrapper< V, ? > >
+public class OverlayNavigationWrapper< V extends Vertex< E >, E extends Edge< V >> implements OverlayNavigation< V, OverlayVertexWrapper< V, E > >
 {
-
-	// TODO TODO
-	/*
-	 * This is not right. This guy should be the actual navigation listener and
-	 * use the wrapping to transform modelvertex -> overlayvertex, and move to
-	 * this point. here it emulates what is in OverlayHighlightWrapper, but this
-	 * is not what we want
-	 */
-
 	private final ViewerPanel panel;
 
-	public OverlayNavigationWrapper( final ViewerPanel panel )
+	private final OverlayGraphWrapper< V, E > graph;
+
+	public OverlayNavigationWrapper( final ViewerPanel panel, final OverlayGraphWrapper< V, E > graph )
 	{
 		this.panel = panel;
+		this.graph = graph;
 	}
 
 	@Override
-	public void navigateTo( final OverlayVertexWrapper< V, ? > vertex )
+	public void navigateToOverlayVertex( final OverlayVertexWrapper< V, E > vertex )
 	{
 		final double[] gPos = new double[ 3 ];
 		vertex.localize( gPos );
@@ -48,4 +43,12 @@ public class OverlayNavigationWrapper< V extends Vertex< ? >> implements Overlay
 		panel.requestRepaint();
 	}
 
+	@Override
+	public void navigateToVertex( final V vertex )
+	{
+		final OverlayVertexWrapper< V, E > ref = graph.vertexRef();
+		ref.wv = vertex;
+		navigateToOverlayVertex( ref );
+		graph.releaseRef( ref );
+	}
 }

@@ -13,10 +13,11 @@ import net.trackmate.graph.listenable.ListenableGraph;
 import net.trackmate.revised.bdv.overlay.MouseOverListener;
 import net.trackmate.revised.bdv.overlay.MouseSelectionHandler;
 import net.trackmate.revised.bdv.overlay.OverlayGraphRenderer;
-import net.trackmate.revised.bdv.overlay.wrap.BDVNavigationLock;
+import net.trackmate.revised.bdv.overlay.OverlayNavigation;
 import net.trackmate.revised.bdv.overlay.wrap.OverlayEdgeWrapper;
 import net.trackmate.revised.bdv.overlay.wrap.OverlayGraphWrapper;
 import net.trackmate.revised.bdv.overlay.wrap.OverlayHighlightWrapper;
+import net.trackmate.revised.bdv.overlay.wrap.OverlayNavigationWrapper;
 import net.trackmate.revised.bdv.overlay.wrap.OverlaySelectionWrapper;
 import net.trackmate.revised.bdv.overlay.wrap.OverlayVertexWrapper;
 import net.trackmate.revised.model.mamut.BoundingSphereRadiusStatistics;
@@ -36,6 +37,7 @@ import net.trackmate.revised.trackscheme.TrackSchemeHighlight;
 import net.trackmate.revised.trackscheme.TrackSchemeNavigation;
 import net.trackmate.revised.trackscheme.TrackSchemeSelection;
 import net.trackmate.revised.trackscheme.display.TrackSchemeFrame;
+import net.trackmate.revised.ui.NavigationLocksPanel;
 import net.trackmate.revised.ui.selection.HighlightListener;
 import net.trackmate.revised.ui.selection.HighlightModel;
 import net.trackmate.revised.ui.selection.NavigationGroupHandler;
@@ -224,8 +226,12 @@ public class MaMuT
 		viewer.getDisplay().addHandler( mouseSelectionListener );
 
 		final ViewerFrame viewerFrame = bdv.getViewerFrame();
-		final BDVNavigationLock< Spot, Link > lockPanel = new BDVNavigationLock< Spot, Link >( viewer, overlayGraph );
-		navigationHandler.addNavigationListener( lockPanel, lockPanel );
+		final NavigationGroupHandler groupHandler = new NavigationGroupHandlerImp();
+		final NavigationLocksPanel lockPanel = new NavigationLocksPanel( groupHandler );
+		final OverlayNavigation< Spot, OverlayVertexWrapper< Spot, Link >> navigation =
+				new OverlayNavigationWrapper< Spot, Link >( viewer, overlayGraph );
+		navigationHandler.addNavigationListener( navigation, groupHandler );
+		
 		viewerFrame.add( lockPanel, BorderLayout.NORTH );
 		viewerFrame.pack();
 
