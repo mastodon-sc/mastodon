@@ -53,13 +53,24 @@ public class MouseSelectionHandler implements MouseListener, MouseMotionListener
 
 	private final TrackSchemeGraph< ?, ? > graph;
 
-	public MouseSelectionHandler( final AbstractTrackSchemeOverlay graphOverlay, final TrackSchemeSelection selection, final InteractiveDisplayCanvasComponent< ScreenTransform > display, final LineageTreeLayout layout, final TrackSchemeGraph< ?, ? > graph )
+	private final TrackSchemeVertex vertex;
+
+	private final TrackSchemeEdge edge;
+
+	public MouseSelectionHandler(
+			final AbstractTrackSchemeOverlay graphOverlay,
+			final TrackSchemeSelection selection,
+			final InteractiveDisplayCanvasComponent< ScreenTransform > display,
+			final LineageTreeLayout layout,
+			final TrackSchemeGraph< ?, ? > graph )
 	{
 		this.graphOverlay = graphOverlay;
 		this.selection = selection;
 		this.display = display;
 		this.layout = layout;
 		this.graph = graph;
+		vertex = graph.vertexRef();
+		edge = graph.edgeRef();
 	}
 
 	@Override
@@ -72,50 +83,12 @@ public class MouseSelectionHandler implements MouseListener, MouseMotionListener
 				@Override
 				public void run()
 				{
-					final boolean clear = !( e.getModifiers() == MOUSE_MASK_CLICK_ADDTOSELECTION );
-					select( e.getX(), e.getY(), clear );
+					final boolean addToSelection = ( e.getModifiers() == MOUSE_MASK_CLICK_ADDTOSELECTION );
+					select( e.getX(), e.getY(), addToSelection );
 				}
 			} );
 		}
 	}
-
-	private void select( final int x, final int y, final boolean clear )
-	{
-		final int vertexId = graphOverlay.getVertexIdAt( x, y );
-		if ( vertexId < 0 )
-		{
-			// See if we can select an edge.
-			final int edgeId = graphOverlay.getEdgeIdAt( x, y, SELECT_DISTANCE_TOLERANCE );
-			if ( edgeId < 0 )
-			{
-				if ( clear )
-					selection.clearSelection();
-				return;
-			}
-			if ( clear )
-			{
-				selection.clearSelection();
-				selection.setEdgeSelected( edgeId, true );
-			}
-			else
-			{
-				selection.toggleEdge( edgeId );
-			}
-		}
-		else
-		{
-			if ( clear )
-			{
-				selection.clearSelection();
-				selection.setVertexSelected( vertexId, true );
-			}
-			else
-			{
-				selection.toggleVertex( vertexId );
-			}
-		}
-	}
-
 
 	@Override
 	public void mouseDragged( final MouseEvent e )
@@ -142,13 +115,13 @@ public class MouseSelectionHandler implements MouseListener, MouseMotionListener
 			dragStarted = false;
 
 			display.repaint();
-			final boolean clear = !( ( e.getModifiersEx() & MOUSE_MASK_ADDTOSELECTION ) != 0 );
+			final boolean addToSelection = ( ( e.getModifiersEx() & MOUSE_MASK_ADDTOSELECTION ) != 0 );
 			SwingUtilities.invokeLater( new Runnable()
 			{
 				@Override
 				public void run()
 				{
-					selectWithin( oX, oY, eX, eY, clear );
+					selectWithin( oX, oY, eX, eY, addToSelection );
 				}
 			} );
 		}
@@ -194,11 +167,11 @@ public class MouseSelectionHandler implements MouseListener, MouseMotionListener
 	 * PRIVATE METHODS
 	 */
 
-	private void selectWithin( final int x1, final int y1, final int x2, final int y2, final boolean clear )
+	private void selectWithin( final int x1, final int y1, final int x2, final int y2, final boolean addToSelection )
 	{
 		final ScreenTransform transform = display.getTransformEventHandler().getTransform();
 
-		if ( clear )
+		if ( !addToSelection )
 		{
 			selection.clearSelection();
 		}
@@ -209,19 +182,48 @@ public class MouseSelectionHandler implements MouseListener, MouseMotionListener
 		final double ly2 = transform.screenToLayoutY( y2 );
 
 		final RefSet< TrackSchemeVertex > vs = layout.getVerticesWithin( lx1, ly1, lx2, ly2 );
-		final TrackSchemeVertex ref = graph.vertexRef();
 		for ( final TrackSchemeVertex v : vs )
 		{
-			selection.setVertexSelected( v.getInternalPoolIndex(), true );
+			selection.setSelected( v, true );
 			for ( final TrackSchemeEdge e : v.outgoingEdges() )
 			{
-				final TrackSchemeVertex t = e.getTarget( ref );
+				final TrackSchemeVertex t = e.getTarget( vertex );
 				if ( vs.contains( t ) )
 				{
-					selection.setEdgeSelected( e.getInternalPoolIndex(), true );
+					selection.setSelected( e, true );
 				}
 			}
 		}
-		graph.releaseRef( ref );
+	}
+
+	private void select( final int x, final int y, final boolean addToSelection )
+	{
+		// See if we can select a vertex.
+		final int vertexId = graphOverlay.getVertexIdAt( x, y );
+		if ( vertexId >= 0 )
+		{
+			graph.getVertexPool().getByInternalPoolIndex( vertexId, vertex );
+			final boolean selected = vertex.isSelected();
+			if ( !addToSelection )
+				selection.clearSelection();
+			selection.setSelected( vertex, !selected );
+			return;
+		}
+
+		// See if we can select an edge.
+		final int edgeId = graphOverlay.getEdgeIdAt( x, y, SELECT_DISTANCE_TOLERANCE );
+		if ( edgeId >= 0 )
+		{
+			graph.getEdgePool().getByInternalPoolIndex( edgeId, edge );
+			final boolean selected = edge.isSelected();
+			if ( !addToSelection )
+				selection.clearSelection();
+			selection.setSelected( edge, !selected );
+			return;
+		}
+
+		// Nothing found. clear selection if addToSelection == false
+		if ( !addToSelection )
+			selection.clearSelection();
 	}
 }

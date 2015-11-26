@@ -102,7 +102,7 @@ public class MaMuT
 		 */
 
 		final DefaultModelSelectionProperties< Spot, Link > selectionProperties = new DefaultModelSelectionProperties< Spot, Link >( graph, idmap, selection );
-		final TrackSchemeSelection trackSchemeSelection = new TrackSchemeSelection( selectionProperties, trackSchemeGraph );
+		final TrackSchemeSelection trackSchemeSelection = new TrackSchemeSelection( selectionProperties );
 
 		/*
 		 * show TrackSchemeFrame
