@@ -3,6 +3,7 @@ package net.trackmate.revised.trackscheme.display.laf;
 import static net.trackmate.revised.trackscheme.ScreenVertex.Transition.APPEAR;
 import static net.trackmate.revised.trackscheme.ScreenVertex.Transition.DISAPPEAR;
 import static net.trackmate.revised.trackscheme.ScreenVertex.Transition.NONE;
+import gnu.trove.list.TDoubleList;
 
 import java.awt.Color;
 import java.awt.FontMetrics;
@@ -12,7 +13,9 @@ import java.awt.font.TextLayout;
 import java.awt.geom.Rectangle2D;
 
 import net.imglib2.RealLocalizable;
+import net.trackmate.graph.collection.RefList;
 import net.trackmate.revised.Util;
+import net.trackmate.revised.trackscheme.LineageTreeLayout;
 import net.trackmate.revised.trackscheme.ScreenEdge;
 import net.trackmate.revised.trackscheme.ScreenEntities;
 import net.trackmate.revised.trackscheme.ScreenTransform;
@@ -21,6 +24,7 @@ import net.trackmate.revised.trackscheme.ScreenVertex.Transition;
 import net.trackmate.revised.trackscheme.ScreenVertexRange;
 import net.trackmate.revised.trackscheme.TrackSchemeGraph;
 import net.trackmate.revised.trackscheme.TrackSchemeHighlight;
+import net.trackmate.revised.trackscheme.TrackSchemeVertex;
 import net.trackmate.revised.trackscheme.display.AbstractTrackSchemeOverlay;
 import net.trackmate.revised.trackscheme.display.TrackSchemeOptions;
 
@@ -74,12 +78,16 @@ public class DefaultTrackSchemeOverlay extends AbstractTrackSchemeOverlay
 
 	protected TrackSchemeStyle style = TrackSchemeStyle.defaultStyle();
 
+	private final LineageTreeLayout layout;
+
 	public DefaultTrackSchemeOverlay(
 			final TrackSchemeGraph< ?, ? > graph,
+			final LineageTreeLayout layout,
 			final TrackSchemeHighlight highlight,
 			final TrackSchemeOptions options )
 	{
 		super( graph, highlight, options );
+		this.layout = layout;
 	}
 
 	@Override
@@ -91,6 +99,8 @@ public class DefaultTrackSchemeOverlay extends AbstractTrackSchemeOverlay
 		final ScreenTransform screenTransform = new ScreenTransform();
 		screenEntities.getScreenTransform( screenTransform );
 		final double yScale = screenTransform.getScaleY();
+		final double minX = screenTransform.getMinX();
+		final double maxX = screenTransform.getMaxX();
 		final double minY = screenTransform.getMinY();
 		final double maxY = screenTransform.getMaxY();
 
@@ -106,20 +116,24 @@ public class DefaultTrackSchemeOverlay extends AbstractTrackSchemeOverlay
 			g2.fillRect( 0, y, width, h );
 		}
 
+		/*
+		 * DECORATIONS
+		 */
+
+		g2.setColor( style.decorationColor );
+		final FontMetrics fm = g2.getFontMetrics( style.font );
+		g2.setFont( style.font );
+
+		final int stepT = 1 + MIN_TIMELINE_SPACING / ( int ) ( 1 + yScale );
+		int tstart = Math.max( getMinTimepoint(), ( int ) minY - 1 );
+		tstart = ( tstart / stepT ) * stepT;
+		int tend = Math.min( getMaxTimepoint(), 1 + ( int ) maxY );
+		tend = ( 1 + tend / stepT ) * stepT;
+
 		if ( paintRows )
 		{
-			g2.setColor( style.decorationColor );
-			final FontMetrics fm = g2.getFontMetrics( style.font );
-			g2.setFont( style.font );
 
 			final int fontInc = fm.getHeight() / 2;
-			final int stepT = 1 + MIN_TIMELINE_SPACING / ( int ) ( 1 + yScale );
-
-			int tstart = Math.max( getMinTimepoint(), ( int ) minY - 1 );
-			tstart = ( tstart / stepT ) * stepT;
-			int tend = Math.min( getMaxTimepoint(), 1 + ( int ) maxY );
-			tend = ( 1 + tend / stepT ) * stepT;
-
 			for ( int t = tstart; t < tend; t = t + stepT )
 			{
 				final int yline = ( int ) ( ( t - minY - 0.5 ) * yScale );
@@ -136,6 +150,87 @@ public class DefaultTrackSchemeOverlay extends AbstractTrackSchemeOverlay
 			// Last line
 			final int yline = ( int ) ( ( tend - minY - 0.5 ) * yScale );
 			g2.drawLine( 0, yline, width, yline );
+		}
+
+		if ( paintColumns )
+		{
+			final double xScale = screenTransform.getScaleX();
+
+			final int minLineY = ( int ) ( ( tstart - minY - 0.5 ) * yScale );
+			final int maxLineY = ( int ) ( ( tend - minY - 0.5 ) * yScale );
+
+			final TDoubleList columnX = layout.getCurrentLayoutColumnX();
+			final RefList< TrackSchemeVertex > columnRoots = layout.getCurrentLayoutColumnRoot();
+
+			int minC = columnX.binarySearch( minX );
+			if ( minC < 0 )
+			{
+				minC = -1 - minC;
+			}
+			minC = Math.max( 0, minC - 1 ); // at least 1 column out
+
+			int maxC = columnX.binarySearch( maxX + 0.5, minC, columnX.size() );
+			if ( maxC < 0 )
+			{
+				maxC = -1 - maxC;
+			}
+			maxC = Math.min( columnX.size(), maxC + 1 );
+
+			double lastX = Double.NEGATIVE_INFINITY;
+			for ( int c = minC; c < maxC; c++ )
+			{
+				final double col = columnX.get( c );
+				final int xline = ( int ) ( ( col - minX - 0.5 ) * xScale );
+				if ( xline < 2 * XTEXT || ( xline - lastX ) < MIN_DRAWING_COLUMN_WIDTH )
+				{
+					continue;
+				}
+				g2.drawLine( xline, minLineY, xline, maxLineY );
+				lastX = xline;
+
+				if ( c < 1 )
+				{
+					continue;
+				}
+				final int xprevline = ( int ) ( ( columnX.get( c - 1 ) - minX - 0.5 ) * xScale );
+				final String str = columnRoots.get( c - 1 ).getLabel();
+				final int stringWidth = fm.stringWidth( str );
+
+				final int columnWidth = xline - xprevline;
+				if ( columnWidth < stringWidth + 5 )
+				{
+					continue;
+				}
+
+				final int xtext = ( Math.min( width, xline ) + Math.max( 0, xprevline ) - stringWidth ) / 2;
+				if ( xtext < 2 * XTEXT )
+				{
+					continue;
+				}
+				g2.drawString( str, xtext, YTEXT );
+			}
+
+			// Last column?
+			final int nCols = columnX.size();
+			if ( maxC == nCols )
+			{
+				final int xline = ( int ) ( ( layout.getCurrentLayoutMaxX() - minX + 0.5 ) * xScale );
+				g2.drawLine( xline, minLineY, xline, maxLineY );
+
+				final int xprevline = ( int ) ( ( columnX.get( nCols - 1 ) - minX - 0.5 ) * xScale );
+				final String str = columnRoots.get( nCols - 1 ).getLabel();
+				final int stringWidth = fm.stringWidth( str );
+
+				final int columnWidth = xline - xprevline;
+				if ( columnWidth >= stringWidth + 5 )
+				{
+					final int xtext = ( Math.min( width, xline ) + Math.max( 0, xprevline ) - stringWidth ) / 2;
+					if ( xtext >= 2 * XTEXT )
+					{
+						g2.drawString( str, xtext, YTEXT );
+					}
+				}
+			}
 		}
 	}
 

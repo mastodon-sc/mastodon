@@ -144,7 +144,9 @@ public class TrackSchemePanel extends JPanel implements
 		highlight.addHighlightListener( this );
 		selection.addSelectionListener( this );
 
-		graphOverlay = new DefaultTrackSchemeOverlay( graph, highlight, optional );
+		layout = new LineageTreeLayout( graph );
+
+		graphOverlay = new DefaultTrackSchemeOverlay( graph, layout, highlight, optional );
 		display.addOverlayRenderer( graphOverlay );
 
 		// This should be the last OverlayRenderer in display.
@@ -163,7 +165,6 @@ public class TrackSchemePanel extends JPanel implements
 		} );
 
 		screenTransform = new ScreenTransform();
-		layout = new LineageTreeLayout( graph );
 		entityAnimator = new ScreenEntityAnimator();
 		painterThread = new PainterThread( this );
 		flags = new Flags();

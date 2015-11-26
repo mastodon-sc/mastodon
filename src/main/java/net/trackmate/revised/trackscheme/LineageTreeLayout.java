@@ -1,6 +1,8 @@
 package net.trackmate.revised.trackscheme;
 
 import gnu.trove.iterator.TIntIterator;
+import gnu.trove.list.TDoubleList;
+import gnu.trove.list.array.TDoubleArrayList;
 import gnu.trove.list.array.TIntArrayList;
 import gnu.trove.map.TIntObjectMap;
 import gnu.trove.map.hash.TIntObjectHashMap;
@@ -84,16 +86,26 @@ public class LineageTreeLayout
 	private final TIntObjectMap< TrackSchemeVertexList > timepointToOrderedVertices;
 
 	/**
-	 * the minimum layoutX coordinate assigned to any vertex in the current
+	 * The minimum layoutX coordinate assigned to any vertex in the current
 	 * layout.
 	 */
 	private double currentLayoutMinX;
 
 	/**
-	 * the maximum layoutX coordinate assigned to any vertex in the current
+	 * The maximum layoutX coordinate assigned to any vertex in the current
 	 * layout.
 	 */
 	private double currentLayoutMaxX;
+
+	/**
+	 * The column layout X coordinates.
+	 */
+	private final TDoubleList currentLayoutColumnX;
+
+	/**
+	 * The list of roots for each column.
+	 */
+	private final RefList< TrackSchemeVertex > currentLayoutColumnRoot;
 
 	public LineageTreeLayout( final TrackSchemeGraph< ?, ? > graph )
 	{
@@ -102,6 +114,8 @@ public class LineageTreeLayout
 		timestamp = 0;
 		timepoints = new TIntArrayList();
 		timepointToOrderedVertices = new TIntObjectHashMap< TrackSchemeVertexList >();
+		currentLayoutColumnX = new TDoubleArrayList();
+		currentLayoutColumnRoot = graph.createVertexList();
 	}
 
 	/**
@@ -153,10 +167,14 @@ public class LineageTreeLayout
 		rightmost = 0;
 		timepoints.clear();
 		timepointToOrderedVertices.clear();
+		currentLayoutColumnX.clear();
+		currentLayoutColumnRoot.clear();
 		this.mark = mark;
 		for ( final TrackSchemeVertex root : layoutRoots )
 		{
+			currentLayoutColumnX.add( rightmost );
 			layoutX( root );
+			currentLayoutColumnRoot.add( root );
 		}
 		currentLayoutMinX = 0;
 		currentLayoutMaxX = rightmost - 1;
@@ -184,6 +202,31 @@ public class LineageTreeLayout
 	public double getCurrentLayoutMaxX()
 	{
 		return currentLayoutMaxX;
+	}
+
+	/**
+	 * Returns the columns X positions in layout coordinates. The values stored
+	 * in the list returned are the left positions of the i<sup>th</sup> column.
+	 * The list is ordered from left to right and has strictly increasing
+	 * values.
+	 *
+	 * @return the column left X position.
+	 */
+	public TDoubleList getCurrentLayoutColumnX()
+	{
+		return currentLayoutColumnX;
+	}
+
+	/**
+	 * Returns the list of columns root. The vertices stored in the list
+	 * returned are the root of the i<sup>th</sup> column. The list is ordered
+	 * from left to right.
+	 *
+	 * @return the column roots.
+	 */
+	public RefList< TrackSchemeVertex > getCurrentLayoutColumnRoot()
+	{
+		return currentLayoutColumnRoot;
 	}
 
 	/**
