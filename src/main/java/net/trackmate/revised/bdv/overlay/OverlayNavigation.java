@@ -1,9 +1,10 @@
 package net.trackmate.revised.bdv.overlay;
 
-import net.trackmate.graph.Vertex;
-import net.trackmate.revised.ui.selection.NavigationListener;
+import net.trackmate.revised.ui.selection.NavigationGroupHandler;
 
-public interface OverlayNavigation< V extends Vertex< ? >, O extends OverlayVertex< ?, ? > > extends NavigationListener< V >
+public interface OverlayNavigation< O extends OverlayVertex< ?, ? > >
 {
 	public void navigateToOverlayVertex( O vertex );
+
+	public void notifyListeners( NavigationGroupHandler groups, O vertex );
 }

@@ -10,10 +10,10 @@ import mpicbg.spim.data.sequence.TimePoint;
 import net.trackmate.graph.GraphIdBimap;
 import net.trackmate.graph.listenable.GraphChangeListener;
 import net.trackmate.graph.listenable.ListenableGraph;
+import net.trackmate.revised.bdv.overlay.MouseNavigationHandler;
 import net.trackmate.revised.bdv.overlay.MouseOverListener;
 import net.trackmate.revised.bdv.overlay.MouseSelectionHandler;
 import net.trackmate.revised.bdv.overlay.OverlayGraphRenderer;
-import net.trackmate.revised.bdv.overlay.OverlayNavigation;
 import net.trackmate.revised.bdv.overlay.wrap.OverlayEdgeWrapper;
 import net.trackmate.revised.bdv.overlay.wrap.OverlayGraphWrapper;
 import net.trackmate.revised.bdv.overlay.wrap.OverlayHighlightWrapper;
@@ -225,12 +225,15 @@ public class MaMuT
 		final MouseSelectionHandler< ?, ? > mouseSelectionListener = new MouseSelectionHandler<>( overlayGraph, tracksOverlay, overlaySelection );
 		viewer.getDisplay().addHandler( mouseSelectionListener );
 
-		final ViewerFrame viewerFrame = bdv.getViewerFrame();
 		final NavigationGroupHandler groupHandler = new NavigationGroupHandlerImp();
+		final OverlayNavigationWrapper< Spot, Link > navigation =
+				new OverlayNavigationWrapper< Spot, Link >( viewer, overlayGraph, navigationHandler, groupHandler );
+
+		final MouseNavigationHandler< ?, ? > mouseNavigationHandler = new MouseNavigationHandler<>( overlayGraph, tracksOverlay, navigation, groupHandler );
+		viewer.getDisplay().addHandler( mouseNavigationHandler );
+
+		final ViewerFrame viewerFrame = bdv.getViewerFrame();
 		final NavigationLocksPanel lockPanel = new NavigationLocksPanel( groupHandler );
-		final OverlayNavigation< Spot, OverlayVertexWrapper< Spot, Link >> navigation =
-				new OverlayNavigationWrapper< Spot, Link >( viewer, overlayGraph );
-		navigationHandler.addNavigationListener( navigation, groupHandler );
 		
 		viewerFrame.add( lockPanel, BorderLayout.NORTH );
 		viewerFrame.pack();
