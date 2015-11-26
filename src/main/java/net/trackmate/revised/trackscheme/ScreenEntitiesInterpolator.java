@@ -20,15 +20,15 @@ public class ScreenEntitiesInterpolator
 		this.start = start;
 		this.end = end;
 
-		idToStartVertex = new IntPoolObjectMap< ScreenVertex >( start.getVertexPool(), -1 );
+		idToStartVertex = new IntPoolObjectMap< ScreenVertex >( start.getVertexPool(), -1, start.getVertices().size() );
 		for ( final ScreenVertex v : start.getVertices() )
 			idToStartVertex.put( v.getTrackSchemeVertexId(), v );
 
-		idToEndVertex = new IntPoolObjectMap< ScreenVertex >( end.getVertexPool(), -1 );
+		idToEndVertex = new IntPoolObjectMap< ScreenVertex >( end.getVertexPool(), -1, end.getVertices().size() );
 		for ( final ScreenVertex v : end.getVertices() )
 			idToEndVertex.put( v.getTrackSchemeVertexId(), v );
 
-		idToStartEdge = new IntPoolObjectMap< ScreenEdge >( start.getEdgePool(), -1 );
+		idToStartEdge = new IntPoolObjectMap< ScreenEdge >( start.getEdgePool(), -1, start.getEdges().size() );
 		for ( final ScreenEdge e : start.getEdges() )
 			idToStartEdge.put( e.getTrackSchemeEdgeId(), e );
 	}
@@ -40,8 +40,8 @@ public class ScreenEntitiesInterpolator
 		// Interpolate vertices
 		// ====================
 		// Each interpolated vertex either moves, appears, disappears, gets selected or gets de-selected.
-		final ScreenVertex vCurrent = current.getVertexPool().createRef();
-		final ScreenVertex vStart = start.getVertexPool().createRef();
+		final ScreenVertex currentVertex = current.getVertexPool().createRef();
+		final ScreenVertex startVertexRef = start.getVertexPool().createRef();
 		final ScreenVertex vEnd = end.getVertexPool().createRef();
 		for ( final ScreenVertex v : start.getVertices() )
 		{
@@ -49,33 +49,33 @@ public class ScreenEntitiesInterpolator
 			if ( vId < 0 )
 				continue;
 
-			current.getVertices().add( current.getVertexPool().create( vCurrent ) );
+			current.getVertices().add( current.getVertexPool().create( currentVertex ) );
 			if ( idToEndVertex.get( vId, vEnd ) != null )
-				interpolate( v, vEnd, accelRatio, vCurrent );
+				interpolate( v, vEnd, accelRatio, currentVertex );
 			else
-				disappear( v, accelRatio, vCurrent );
+				disappear( v, accelRatio, currentVertex );
 		}
-		for ( final ScreenVertex v : end.getVertices() )
+		for ( final ScreenVertex endVertex : end.getVertices() )
 		{
-			final ScreenVertex vs = idToStartVertex.get( v.getTrackSchemeVertexId(), vStart );
-			if ( vs == null )
+			final ScreenVertex startVertex = idToStartVertex.get( endVertex.getTrackSchemeVertexId(), startVertexRef );
+			if ( startVertex == null )
 			{
-				current.getVertices().add( current.getVertexPool().create( vCurrent ) );
-				appear( v, accelRatio, vCurrent );
+				current.getVertices().add( current.getVertexPool().create( currentVertex ) );
+				appear( endVertex, accelRatio, currentVertex );
 			}
 			else
 			{
 				// Becomes selected
-				if ( v.isSelected() && !vs.isSelected() )
+				if ( endVertex.isSelected() && !startVertex.isSelected() )
 				{
-					current.getVertices().add( current.getVertexPool().create( vCurrent ) );
-					select( v, accelRatio, vCurrent );
+					current.getVertices().add( current.getVertexPool().create( currentVertex ) );
+					select( endVertex, accelRatio, currentVertex );
 				}
 				// Becomes de-selected
-				if ( !v.isSelected() && vs.isSelected() )
+				if ( !endVertex.isSelected() && startVertex.isSelected() )
 				{
-					current.getVertices().add( current.getVertexPool().create( vCurrent ) );
-					deselect( v, accelRatio, vCurrent );
+					current.getVertices().add( current.getVertexPool().create( currentVertex ) );
+					deselect( endVertex, accelRatio, currentVertex );
 				}
 			}
 		}
@@ -127,8 +127,8 @@ public class ScreenEntitiesInterpolator
 		current.screenTransform().interpolate( start.screenTransform(), end.screenTransform(), accelRatio );
 
 		// clean up
-		current.getVertexPool().releaseRef( vCurrent );
-		start.getVertexPool().releaseRef( vStart );
+		current.getVertexPool().releaseRef( currentVertex );
+		start.getVertexPool().releaseRef( startVertexRef );
 		end.getVertexPool().releaseRef( vEnd );
 		current.getEdgePool().releaseRef( eCurrent );
 		current.getEdgePool().releaseRef( eStart );
