@@ -99,10 +99,7 @@ public class DefaultTrackSchemeOverlay extends AbstractTrackSchemeOverlay
 		final ScreenTransform screenTransform = new ScreenTransform();
 		screenEntities.getScreenTransform( screenTransform );
 		final double yScale = screenTransform.getScaleY();
-		final double minX = screenTransform.getMinX();
-		final double maxX = screenTransform.getMaxX();
 		final double minY = screenTransform.getMinY();
-		final double maxY = screenTransform.getMaxY();
 
 		g2.setColor( style.backgroundColor );
 		g2.fillRect( 0, 0, width, height );
@@ -115,12 +112,26 @@ public class DefaultTrackSchemeOverlay extends AbstractTrackSchemeOverlay
 			g2.setColor( style.currentTimepointColor );
 			g2.fillRect( 0, y, width, h );
 		}
+	}
+
+	@Override
+	protected void paintDecoration( final Graphics2D g2, final ScreenEntities screenEntities )
+	{
+		final int width = getWidth();
+		final int height = getHeight();
+
+		final ScreenTransform screenTransform = new ScreenTransform();
+		screenEntities.getScreenTransform( screenTransform );
+		final double yScale = screenTransform.getScaleY();
+		final double minX = screenTransform.getMinX();
+		final double maxX = screenTransform.getMaxX();
+		final double minY = screenTransform.getMinY();
+		final double maxY = screenTransform.getMaxY();
 
 		/*
 		 * DECORATIONS
 		 */
 
-		g2.setColor( style.decorationColor );
 		final FontMetrics fm = g2.getFontMetrics( style.font );
 		g2.setFont( style.font );
 
@@ -132,8 +143,22 @@ public class DefaultTrackSchemeOverlay extends AbstractTrackSchemeOverlay
 
 		if ( paintRows )
 		{
+			final int eraseWidth = ( int ) ( 2.5 * XTEXT );
+
+			g2.setColor( style.backgroundColor );
+			g2.fillRect( 0, 0, eraseWidth, height );
+
+			if ( highlightCurrentTimepoint )
+			{
+				final double t = getCurrentTimepoint();
+				final int y = ( int ) Math.round( yScale * ( t - minY - 0.5 ) );
+				final int h = Math.max( 1, ( int ) Math.round( yScale ) );
+				g2.setColor( style.currentTimepointColor );
+				g2.fillRect( 0, y, eraseWidth, h );
+			}
 
 			final int fontInc = fm.getHeight() / 2;
+			g2.setColor( style.decorationColor );
 			for ( int t = tstart; t < tend; t = t + stepT )
 			{
 				final int yline = ( int ) ( ( t - minY - 0.5 ) * yScale );
@@ -154,8 +179,11 @@ public class DefaultTrackSchemeOverlay extends AbstractTrackSchemeOverlay
 
 		if ( paintColumns )
 		{
-			final double xScale = screenTransform.getScaleX();
+			g2.setColor( style.backgroundColor );
+			g2.fillRect( 0, 0, width, 2 * YTEXT );
+			g2.setColor( style.decorationColor );
 
+			final double xScale = screenTransform.getScaleX();
 			final int minLineY = ( int ) ( ( tstart - minY - 0.5 ) * yScale );
 			final int maxLineY = ( int ) ( ( tend - minY - 0.5 ) * yScale );
 

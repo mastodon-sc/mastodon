@@ -111,6 +111,8 @@ public abstract class AbstractTrackSchemeOverlay implements OverlayRenderer
 
 		vertices.releaseRef( vs );
 		vertices.releaseRef( vt );
+
+		paintDecoration( g2, entities );
 	}
 
 	public int getEdgeIdAt( final int x, final int y, final double tolerance )
@@ -261,4 +263,6 @@ public abstract class AbstractTrackSchemeOverlay implements OverlayRenderer
 	protected abstract void beforeDrawEdge( Graphics2D g2 );
 
 	protected abstract void drawEdge( Graphics2D g2, ScreenEdge edge, ScreenVertex vs, ScreenVertex vt );
+
+	protected abstract void paintDecoration( Graphics2D g2, ScreenEntities screenEntities );
 }
