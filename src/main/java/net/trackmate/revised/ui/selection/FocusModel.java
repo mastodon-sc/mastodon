@@ -9,7 +9,7 @@ import net.trackmate.graph.listenable.GraphListener;
 
 /**
  * Class to manage the model vertex that has the "focus", regardless of how this
- * focuss is used.
+ * focus is used.
  *
  * @param <V>
  *            type of model vertices.
