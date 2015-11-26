@@ -7,8 +7,6 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 
-import javax.swing.SwingUtilities;
-
 import net.imglib2.ui.InteractiveDisplayCanvasComponent;
 import net.imglib2.ui.OverlayRenderer;
 import net.trackmate.graph.collection.RefSet;
@@ -78,15 +76,8 @@ public class MouseSelectionHandler implements MouseListener, MouseMotionListener
 	{
 		if ( e.getModifiers() == MOUSE_MASK_CLICK || e.getModifiers() == MOUSE_MASK_CLICK_ADDTOSELECTION )
 		{
-			SwingUtilities.invokeLater( new Runnable()
-			{
-				@Override
-				public void run()
-				{
-					final boolean addToSelection = ( e.getModifiers() == MOUSE_MASK_CLICK_ADDTOSELECTION );
-					select( e.getX(), e.getY(), addToSelection );
-				}
-			} );
+			final boolean addToSelection = ( e.getModifiers() == MOUSE_MASK_CLICK_ADDTOSELECTION );
+			select( e.getX(), e.getY(), addToSelection );
 		}
 	}
 
@@ -116,14 +107,7 @@ public class MouseSelectionHandler implements MouseListener, MouseMotionListener
 
 			display.repaint();
 			final boolean addToSelection = ( ( e.getModifiersEx() & MOUSE_MASK_ADDTOSELECTION ) != 0 );
-			SwingUtilities.invokeLater( new Runnable()
-			{
-				@Override
-				public void run()
-				{
-					selectWithin( oX, oY, eX, eY, addToSelection );
-				}
-			} );
+			selectWithin( oX, oY, eX, eY, addToSelection );
 		}
 	}
 
@@ -171,6 +155,8 @@ public class MouseSelectionHandler implements MouseListener, MouseMotionListener
 	{
 		final ScreenTransform transform = display.getTransformEventHandler().getTransform();
 
+		selection.pauseListeners();
+
 		if ( !addToSelection )
 		{
 			selection.clearSelection();
@@ -194,10 +180,14 @@ public class MouseSelectionHandler implements MouseListener, MouseMotionListener
 				}
 			}
 		}
+
+		selection.resumeListeners();
 	}
 
 	private void select( final int x, final int y, final boolean addToSelection )
 	{
+		selection.pauseListeners();
+
 		// See if we can select a vertex.
 		final int vertexId = graphOverlay.getVertexIdAt( x, y );
 		if ( vertexId >= 0 )
@@ -207,6 +197,7 @@ public class MouseSelectionHandler implements MouseListener, MouseMotionListener
 			if ( !addToSelection )
 				selection.clearSelection();
 			selection.setSelected( vertex, !selected );
+			selection.resumeListeners();
 			return;
 		}
 
@@ -219,11 +210,14 @@ public class MouseSelectionHandler implements MouseListener, MouseMotionListener
 			if ( !addToSelection )
 				selection.clearSelection();
 			selection.setSelected( edge, !selected );
+			selection.resumeListeners();
 			return;
 		}
 
 		// Nothing found. clear selection if addToSelection == false
 		if ( !addToSelection )
 			selection.clearSelection();
+
+		selection.resumeListeners();
 	}
 }
