@@ -51,10 +51,26 @@ public class ScreenEntitiesInterpolator
 		}
 		for ( final ScreenVertex v : end.getVertices() )
 		{
-			if ( idToStartVertex.get( v.getTrackSchemeVertexId(), vStart ) == null )
+			final ScreenVertex vs = idToStartVertex.get( v.getTrackSchemeVertexId(), vStart );
+			if ( vs == null )
 			{
 				current.getVertices().add( current.getVertexPool().create( vCurrent ) );
 				appear( v, accelRatio, vCurrent );
+			}
+			else
+			{
+				// Becomes selected
+				if ( v.isSelected() && !vs.isSelected() )
+				{
+					current.getVertices().add( current.getVertexPool().create( vCurrent ) );
+					select( v, accelRatio, vCurrent );
+				}
+				// Becomes de-selected
+				if ( !v.isSelected() && vs.isSelected() )
+				{
+					current.getVertices().add( current.getVertexPool().create( vCurrent ) );
+					deselect( v, accelRatio, vCurrent );
+				}
 			}
 		}
 
@@ -92,6 +108,32 @@ public class ScreenEntitiesInterpolator
 		start.getVertexPool().releaseRef( vStart );
 		end.getVertexPool().releaseRef( vEnd );
 		current.getEdgePool().releaseRef( eCurrent );
+	}
+
+	private void select( final ScreenVertex v, final double ratio, final ScreenVertex vCurrent )
+	{
+		vCurrent.setTrackSchemeVertexId( v.getTrackSchemeVertexId() );
+		vCurrent.setSelected( v.isSelected() );
+		vCurrent.setGhost( v.isGhost() );
+		vCurrent.setVertexDist( v.getVertexDist() );
+		vCurrent.setX( v.getX() );
+		vCurrent.setY( v.getY() );
+		vCurrent.setTransition( Transition.SELECTING );
+		vCurrent.setInterpolationCompletionRatio( ratio );
+		v.setInterpolatedScreenVertexIndex( vCurrent.getInternalPoolIndex() );
+	}
+
+	private void deselect( final ScreenVertex v, final double ratio, final ScreenVertex vCurrent )
+	{
+		vCurrent.setTrackSchemeVertexId( v.getTrackSchemeVertexId() );
+		vCurrent.setSelected( v.isSelected() );
+		vCurrent.setGhost( v.isGhost() );
+		vCurrent.setVertexDist( v.getVertexDist() );
+		vCurrent.setX( v.getX() );
+		vCurrent.setY( v.getY() );
+		vCurrent.setTransition( Transition.DESELECTING );
+		vCurrent.setInterpolationCompletionRatio( ratio );
+		v.setInterpolatedScreenVertexIndex( vCurrent.getInternalPoolIndex() );
 	}
 
 	private void interpolate( final ScreenVertex vStart, final ScreenVertex vEnd, final double ratio, final ScreenVertex vCurrent )

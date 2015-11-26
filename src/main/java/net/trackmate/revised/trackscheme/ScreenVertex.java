@@ -39,7 +39,9 @@ public class ScreenVertex extends PoolObject< ScreenVertex, ByteMappedElement >
 	{
 		NONE( 0 ),
 		APPEAR( 1 ),
-		DISAPPEAR( 2 );
+		DISAPPEAR( 2 ),
+		SELECTING( 3 ),
+		DESELECTING( 4 ), ;
 
 		private final byte index;
 

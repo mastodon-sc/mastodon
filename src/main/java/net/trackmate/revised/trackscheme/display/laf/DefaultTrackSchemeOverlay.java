@@ -317,6 +317,20 @@ public class DefaultTrackSchemeOverlay extends AbstractTrackSchemeOverlay
 	{
 		if ( transition == NONE )
 			return isSelected ? selectedColor : normalColor;
+		else if ( transition == Transition.SELECTING || transition == Transition.DESELECTING )
+		{
+			final double ratio = ( transition == Transition.SELECTING ) ? completionRatio : ( 1 - completionRatio );
+			final int rn = normalColor.getRed();
+			final int gn = normalColor.getGreen();
+			final int bn = normalColor.getBlue();
+			final int rs = selectedColor.getRed();
+			final int gs = selectedColor.getGreen();
+			final int bs = selectedColor.getBlue();
+			final int r = ( int ) ( ratio * rs + ( 1 - ratio ) * rn );
+			final int g = ( int ) ( ratio * gs + ( 1 - ratio ) * gn );
+			final int b = ( int ) ( ratio * bs + ( 1 - ratio ) * bn );
+			return new Color( r, g, b );
+		}
 		else
 		{
 			int r = normalColor.getRed();

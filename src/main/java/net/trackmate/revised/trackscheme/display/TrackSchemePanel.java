@@ -273,9 +273,13 @@ public class TrackSchemePanel extends JPanel implements
 			layoutMaxX = layout.getCurrentLayoutMaxX();
 			entityAnimator.startAnimation( transform, ANIMATION_MILLISECONDS );
 		}
-		else if ( flags.transformChanged || flags.selectionChanged )
+		else if ( flags.transformChanged )
 		{
 			entityAnimator.startAnimation( transform, 0 );
+		}
+		else if ( flags.selectionChanged )
+		{
+			entityAnimator.startAnimation( transform, ANIMATION_MILLISECONDS );
 		}
 		else if ( flags.contextChanged )
 		{
@@ -511,6 +515,18 @@ public class TrackSchemePanel extends JPanel implements
 			graphChanged = false;
 			contextChanged = false;
 			return copy;
+		}
+
+		@Override
+		public String toString()
+		{
+			final StringBuilder str = new StringBuilder(super.toString());
+			str.append( '\n' );
+			str.append( "  - transformChanged: " + transformChanged + "\n" );
+			str.append( "  - selectionChanged: " + selectionChanged + "\n" );
+			str.append( "  - graphChanged:     " + graphChanged + "\n" );
+			str.append( "  - contextChanged:   " + contextChanged + "\n" );
+			return str.toString();
 		}
 	}
 }
