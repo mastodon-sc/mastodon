@@ -72,17 +72,21 @@ public class FocusModel< V extends Vertex< E >, E extends Edge< V > > implements
 	public void graphRebuilt()
 	{
 		focusVertex( null );
+// TODO: notifyListeners(); ? (This may change the layout and we might want to re-center on the focused vertex
 	}
 
 	@Override
 	public void vertexAdded( final V vertex )
-	{}
+	{
+// TODO: notifyListeners(); ? (This may change the layout and we might want to re-center on the focused vertex
+	}
 
 	@Override
 	public synchronized void vertexRemoved( final V vertex )
 	{
 		if ( focusVertexId == idmap.getVertexId( vertex ) )
 			focusVertex( null );
+// TODO: notifyListeners(); ? (This may change the layout and we might want to re-center on the focused vertex
 	}
 
 	@Override
