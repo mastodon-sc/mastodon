@@ -25,6 +25,7 @@ import net.trackmate.revised.trackscheme.TrackSchemeHighlight;
 import net.trackmate.revised.trackscheme.TrackSchemeSelection;
 import net.trackmate.revised.trackscheme.display.TrackSchemeOptions.Values;
 import net.trackmate.revised.trackscheme.display.laf.DefaultTrackSchemeOverlay;
+import net.trackmate.revised.trackscheme.util.TrackSchemeUtil;
 import net.trackmate.revised.ui.selection.HighlightListener;
 import net.trackmate.revised.ui.selection.SelectionListener;
 import net.trackmate.trackscheme.animate.AbstractAnimator;
@@ -269,7 +270,7 @@ public class TrackSchemePanel extends JPanel implements
 		final Flags flags = this.flags.clear();
 		if ( flags.graphChanged )
 		{
-			layout.layout();
+			layout.layout( TrackSchemeUtil.labelComparator() );
 			layoutMinX = layout.getCurrentLayoutMinX();
 			layoutMaxX = layout.getCurrentLayoutMaxX();
 			entityAnimator.startAnimation( transform, ANIMATION_MILLISECONDS );

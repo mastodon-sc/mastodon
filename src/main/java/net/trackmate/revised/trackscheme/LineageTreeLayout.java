@@ -8,9 +8,11 @@ import gnu.trove.map.TIntObjectMap;
 import gnu.trove.map.hash.TIntObjectHashMap;
 
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.Iterator;
 
 import net.imglib2.RealLocalizable;
+import net.trackmate.graph.PoolObjectList;
 import net.trackmate.graph.collection.RefList;
 import net.trackmate.graph.collection.RefSet;
 import net.trackmate.graph.util.TIntAlternatingIterator;
@@ -116,6 +118,25 @@ public class LineageTreeLayout
 		timepointToOrderedVertices = new TIntObjectHashMap< TrackSchemeVertexList >();
 		currentLayoutColumnX = new TDoubleArrayList();
 		currentLayoutColumnRoot = graph.createVertexList();
+	}
+
+	/**
+	 * Layout graph in trackscheme coordinates starting from the graphs roots.
+	 * The roots are sorted using the specified comparator.
+	 * <p>
+	 * This calls {@link #layout(List, int)} with parameter {@code mark = -1},
+	 * that is, no vertices will me marked as ghosts.
+	 *
+	 * @param comparator
+	 *            the comparator used to sort roots.
+	 */
+	public void layout( final Comparator< TrackSchemeVertex > comparator )
+	{
+		final RefSet< TrackSchemeVertex > r = graph.getRoots();
+		final PoolObjectList< TrackSchemeVertex > roots = graph.createVertexList( r.size() );
+		roots.addAll( r );
+		roots.sort( comparator );
+		layout( roots, -1 );
 	}
 
 	/**

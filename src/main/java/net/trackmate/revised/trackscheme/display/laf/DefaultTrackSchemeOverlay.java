@@ -212,7 +212,7 @@ public class DefaultTrackSchemeOverlay extends AbstractTrackSchemeOverlay
 
 			// Last column?
 			final int nCols = columnX.size();
-			if ( maxC == nCols )
+			if ( maxC == nCols && nCols > 0 )
 			{
 				final int xline = ( int ) ( ( layout.getCurrentLayoutMaxX() - minX + 0.5 ) * xScale );
 				g2.drawLine( xline, minLineY, xline, maxLineY );
