@@ -217,12 +217,17 @@ public class DefaultTrackSchemeOverlay extends AbstractTrackSchemeOverlay
 	@Override
 	public void drawEdge( final Graphics2D g2, final ScreenEdge edge, final ScreenVertex vs, final ScreenVertex vt )
 	{
-		Transition transition = vs.getTransition();
-		double ratio = vs.getInterpolationCompletionRatio();
+		Transition transition = edge.getTransition();
+		double ratio = edge.getInterpolationCompletionRatio();
 		if ( vt.getTransition() == APPEAR )
 		{
 			transition = APPEAR;
 			ratio = vt.getInterpolationCompletionRatio();
+		}
+		if ( vs.getTransition() == APPEAR || vs.getTransition() == DISAPPEAR )
+		{
+			transition = vs.getTransition();
+			ratio = vs.getInterpolationCompletionRatio();
 		}
 		final boolean selected = edge.isSelected();
 		final Color drawColor = getColor( selected, transition, ratio, style.edgeColor, style.selectedEdgeColor );

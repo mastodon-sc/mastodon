@@ -39,7 +39,7 @@ public class TrackSchemePanel extends JPanel implements
 		SelectionListener
 {
 
-	private static final long ANIMATION_MILLISECONDS = 250;
+	private static final long ANIMATION_MILLISECONDS = 1250;
 
 	private final TrackSchemeGraph< ?, ? > graph;
 
@@ -147,6 +147,18 @@ public class TrackSchemePanel extends JPanel implements
 		graphOverlay = new DefaultTrackSchemeOverlay( graph, highlight, optional );
 		display.addOverlayRenderer( graphOverlay );
 
+		screenTransform = new ScreenTransform();
+		layout = new LineageTreeLayout( graph );
+		entityAnimator = new ScreenEntityAnimator();
+		painterThread = new PainterThread( this );
+		flags = new Flags();
+
+		display.addMouseMotionListener( new MouseHighlightHandler( graphOverlay, highlight ) );
+
+		final MouseSelectionHandler mouseSelectionHandler = new MouseSelectionHandler( graphOverlay, selection, display, layout, graph );
+		display.addHandler( mouseSelectionHandler );
+		display.addOverlayRenderer( mouseSelectionHandler );
+
 		// This should be the last OverlayRenderer in display.
 		// It triggers repainting if there is currently an ongoing animation.
 		display.addOverlayRenderer( new OverlayRenderer()
@@ -161,18 +173,6 @@ public class TrackSchemePanel extends JPanel implements
 				checkAnimate();
 			}
 		} );
-
-		screenTransform = new ScreenTransform();
-		layout = new LineageTreeLayout( graph );
-		entityAnimator = new ScreenEntityAnimator();
-		painterThread = new PainterThread( this );
-		flags = new Flags();
-
-		display.addMouseMotionListener( new MouseHighlightHandler( graphOverlay, highlight ) );
-
-		final MouseSelectionHandler mouseSelectionHandler = new MouseSelectionHandler( graphOverlay, selection, display, layout, graph );
-		display.addHandler( mouseSelectionHandler );
-		display.addOverlayRenderer( mouseSelectionHandler );
 
 		xScrollBar = new JScrollBar( JScrollBar.HORIZONTAL );
 		yScrollBar = new JScrollBar( JScrollBar.VERTICAL );

@@ -13,7 +13,6 @@ import net.trackmate.revised.trackscheme.ScreenVertex;
 import net.trackmate.revised.trackscheme.ScreenVertexRange;
 import net.trackmate.revised.trackscheme.TrackSchemeGraph;
 import net.trackmate.revised.trackscheme.TrackSchemeHighlight;
-import net.trackmate.revised.trackscheme.TrackSchemeVertex;
 
 /**
  * An {@link OverlayRenderer} that paints {@link ScreenEntities} of a trackscheme

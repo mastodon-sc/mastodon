@@ -13,18 +13,24 @@ public class ScreenEntitiesInterpolator
 
 	private final IntPoolObjectMap< ScreenVertex > idToEndVertex;
 
+	private final IntPoolObjectMap< ScreenEdge > idToStartEdge;
+
 	public ScreenEntitiesInterpolator( final ScreenEntities start, final ScreenEntities end )
 	{
 		this.start = start;
 		this.end = end;
 
-		idToStartVertex = new IntPoolObjectMap< ScreenVertex >( start.getVertexPool(), start.getVertices().size() );
+		idToStartVertex = new IntPoolObjectMap< ScreenVertex >( start.getVertexPool(), -1 );
 		for ( final ScreenVertex v : start.getVertices() )
 			idToStartVertex.put( v.getTrackSchemeVertexId(), v );
 
-		idToEndVertex = new IntPoolObjectMap< ScreenVertex >( end.getVertexPool(), end.getVertices().size() );
+		idToEndVertex = new IntPoolObjectMap< ScreenVertex >( end.getVertexPool(), -1 );
 		for ( final ScreenVertex v : end.getVertices() )
 			idToEndVertex.put( v.getTrackSchemeVertexId(), v );
+
+		idToStartEdge = new IntPoolObjectMap< ScreenEdge >( start.getEdgePool(), -1 );
+		for ( final ScreenEdge e : start.getEdges() )
+			idToStartEdge.put( e.getTrackSchemeEdgeId(), e );
 	}
 
 	public void interpolate( final double currentRatio, final ScreenEntities current )
@@ -33,7 +39,7 @@ public class ScreenEntitiesInterpolator
 
 		// Interpolate vertices
 		// ====================
-		// Each interpolated vertex either moves, appears, or disappears.
+		// Each interpolated vertex either moves, appears, disappears, gets selected or gets de-selected.
 		final ScreenVertex vCurrent = current.getVertexPool().createRef();
 		final ScreenVertex vStart = start.getVertexPool().createRef();
 		final ScreenVertex vEnd = end.getVertexPool().createRef();
@@ -79,17 +85,34 @@ public class ScreenEntitiesInterpolator
 		// For now, only edges between non-disappearing interpolated vertices
 		// are added.
 		final ScreenEdge eCurrent = current.getEdgePool().createRef();
+		final ScreenEdge eStart = start.getEdgePool().createRef();
 		for ( final ScreenEdge e : end.getEdges() )
 		{
 			final int sourceIndex = end.getVertices().get( e.getSourceScreenVertexIndex(), vEnd ).getInterpolatedScreenVertexIndex();
 			final int targetIndex = end.getVertices().get( e.getTargetScreenVertexIndex(), vEnd ).getInterpolatedScreenVertexIndex();
-			current.getEdges().add( current.getEdgePool().create( eCurrent ) );
-			eCurrent.init(
+			current.getEdges().add( current.getEdgePool().create( eCurrent ).init(
 					e.getTrackSchemeEdgeId(),
 					sourceIndex,
 					targetIndex,
-					e.isSelected() );
+					e.isSelected() ) );
+			final ScreenEdge se2 = idToStartEdge.get( eCurrent.getTrackSchemeEdgeId(), eStart );
+			if ( se2 != null )
+			{
+				// Becomes selected
+				if ( e.isSelected() && !se2.isSelected() )
+				{
+					eCurrent.setTransition( Transition.SELECTING );
+					eCurrent.setInterpolationCompletionRatio( accelRatio );
+				}
+				// Becomes de-selected
+				if ( !e.isSelected() && se2.isSelected() )
+				{
+					eCurrent.setTransition( Transition.DESELECTING );
+					eCurrent.setInterpolationCompletionRatio( accelRatio );
+				}
+			}
 		}
+
 
 		// Interpolate dense vertex ranges
 		// ===============================
@@ -108,6 +131,7 @@ public class ScreenEntitiesInterpolator
 		start.getVertexPool().releaseRef( vStart );
 		end.getVertexPool().releaseRef( vEnd );
 		current.getEdgePool().releaseRef( eCurrent );
+		current.getEdgePool().releaseRef( eStart );
 	}
 
 	private void select( final ScreenVertex v, final double ratio, final ScreenVertex vCurrent )
