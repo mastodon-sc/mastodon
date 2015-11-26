@@ -45,4 +45,20 @@ public class TrackSchemeSelection
 	{
 		return props.removeSelectionListener( l );
 	}
+
+	@Override
+	public String toString()
+	{
+		return super.toString() + "\n:" + props.toString();
+	}
+
+	public void resumeListeners()
+	{
+		props.resumeListeners();
+	}
+
+	public void pauseListeners()
+	{
+		props.pauseListeners();
+	}
 }

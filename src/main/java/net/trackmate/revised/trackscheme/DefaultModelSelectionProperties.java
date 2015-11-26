@@ -38,6 +38,18 @@ public class DefaultModelSelectionProperties< V extends Vertex< E >, E extends E
 	}
 
 	@Override
+	public void resumeListeners()
+	{
+		selection.resumeListeners();
+	}
+
+	@Override
+	public void pauseListeners()
+	{
+		selection.pauseListeners();
+	}
+
+	@Override
 	public void setVertexSelected( final int vertexId, final boolean selected )
 	{
 		final V ref = graph.vertexRef();
@@ -97,5 +109,11 @@ public class DefaultModelSelectionProperties< V extends Vertex< E >, E extends E
 	public void clearSelection()
 	{
 		selection.clearSelection();
+	}
+
+	@Override
+	public String toString()
+	{
+		return super.toString() + "\n:" + selection;
 	}
 }

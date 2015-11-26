@@ -31,6 +31,18 @@ public class Selection< V extends Vertex< E >, E extends Edge< V > > implements 
 
 	private final ArrayList< SelectionListener > listeners;
 
+	/**
+	 * If <code>false</code>, listeners will not be notified when a
+	 * selection-change event happens.
+	 */
+	private boolean emitEvents;
+
+	/**
+	 * Is <code>true</code> if a selection-change event happened while the
+	 * listeners were paused.
+	 */
+	private boolean shouldEmitEvent;
+
 	public Selection( final ListenableGraph< V, E > graph, final GraphIdBimap< V, E > idmap )
 	{
 		this.graph = graph;
@@ -40,6 +52,8 @@ public class Selection< V extends Vertex< E >, E extends Edge< V > > implements 
 		vertexBits = new BitSet();
 		edgeBits = new BitSet();
 		this.listeners = new ArrayList< SelectionListener >();
+		emitEvents = true;
+		shouldEmitEvent = false;
 	}
 
 	/**
@@ -256,8 +270,28 @@ public class Selection< V extends Vertex< E >, E extends Edge< V > > implements 
 
 	private void notifyListeners()
 	{
+		if ( emitEvents )
 		for ( final SelectionListener l : listeners )
 			l.selectionChanged();
+		else
+			shouldEmitEvent = true;
+	}
+
+	public void resumeListeners()
+	{
+		emitEvents = true;
+		if ( shouldEmitEvent )
+		{
+			// Catchup.
+			for ( final SelectionListener l : listeners )
+				l.selectionChanged();
+			shouldEmitEvent = false;
+		}
+	}
+
+	public void pauseListeners()
+	{
+		emitEvents = false;
 	}
 
 }
