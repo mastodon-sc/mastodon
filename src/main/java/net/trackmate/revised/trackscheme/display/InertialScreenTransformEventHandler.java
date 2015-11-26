@@ -22,7 +22,13 @@ import net.trackmate.revised.trackscheme.display.animate.InertialZoomAnimator;
 import net.trackmate.revised.trackscheme.display.animate.UpdaterThread;
 import net.trackmate.revised.trackscheme.display.animate.UpdaterThread.Updatable;
 
-public class InertialScreenTransformEventHandler extends MouseAdapter implements KeyListener, TransformEventHandler< ScreenTransform >, LayoutListener
+public class InertialScreenTransformEventHandler
+	extends MouseAdapter
+	implements
+		KeyListener,
+		TransformEventHandler< ScreenTransform >,
+		LayoutListener,
+		Updatable
 {
 	final static private TransformEventHandlerFactory< ScreenTransform > factory = new TransformEventHandlerFactory< ScreenTransform >()
 	{
@@ -88,6 +94,19 @@ public class InertialScreenTransformEventHandler extends MouseAdapter implements
 	 */
 	protected int centerX = 0, centerY = 0;
 
+	/**
+	 * Timer that runs {@link #currentTimerTask}.
+	 */
+	private final Timer timer;
+
+	/**
+	 * The task running the current animation.
+	 */
+	private TimerTask currentTimerTask;
+
+	/**
+	 * Thread that calls {@link #update()} when requested by the current
+	 */
 	private final UpdaterThread updaterThread;
 
 	private AbstractTransformAnimator< ScreenTransform > animator;
@@ -95,21 +114,10 @@ public class InertialScreenTransformEventHandler extends MouseAdapter implements
 	public InertialScreenTransformEventHandler( final TransformListener< ScreenTransform > listener )
 	{
 		this.listener = listener;
-		this.updaterThread = new UpdaterThread( new Updatable()
-		{
-			@Override
-			public void update()
-			{
-				final long t = System.currentTimeMillis();
-				final ScreenTransform c = animator.getCurrent( t );
-				synchronized ( transform )
-				{
-					transform.set( c );
-				}
-				InertialScreenTransformEventHandler.this.update();
-			}
-		} );
+		this.updaterThread = new UpdaterThread( this );
 		updaterThread.start();
+		timer = new Timer();
+		currentTimerTask = null;
 	}
 
 	@Override
@@ -140,7 +148,7 @@ public class InertialScreenTransformEventHandler extends MouseAdapter implements
 		synchronized ( transform )
 		{
 			transform.setScreenSize( canvasW, canvasH );
-			update();
+			notifyListeners();
 		}
 	}
 
@@ -159,7 +167,7 @@ public class InertialScreenTransformEventHandler extends MouseAdapter implements
 	/**
 	 * notifies {@link #listener} that the current transform changed.
 	 */
-	protected void update()
+	protected void notifyListeners()
 	{
 		final double[] screenPosC = new double[] { centerX, centerY };
 		final double[] layoutPosC = new double[ 2 ];
@@ -275,7 +283,7 @@ public class InertialScreenTransformEventHandler extends MouseAdapter implements
 				transform.set( transformDragStart );
 				transform.shift( dX, dY );
 			}
-			update();
+			notifyListeners();
 
 		}
 	}
@@ -346,7 +354,7 @@ public class InertialScreenTransformEventHandler extends MouseAdapter implements
 					transform.shiftX( d );
 				else
 					transform.shiftY( d );
-				update();
+				notifyListeners();
 			}
 		}
 	}
@@ -358,8 +366,6 @@ public class InertialScreenTransformEventHandler extends MouseAdapter implements
 	private double boundXMin = 2.;
 
 	private double boundYMin = 2.;
-
-	private Timer timer;
 
 	@Override
 	public void layoutChanged( final LineageTreeLayout layout )
@@ -400,28 +406,40 @@ public class InertialScreenTransformEventHandler extends MouseAdapter implements
 		runAnimation();
 	}
 
+	@Override
+	public void update()
+	{
+		final long t = System.currentTimeMillis();
+		final ScreenTransform c = animator.getCurrent( t );
+		synchronized ( transform )
+		{
+			transform.set( c );
+		}
+		InertialScreenTransformEventHandler.this.notifyListeners();
+	}
+
 	private synchronized void runAnimation()
 	{
-		if ( null != timer )
-		{
-			timer.cancel();
-		}
-		timer = new Timer();
-		timer.schedule( new TimerTask()
+		if ( currentTimerTask != null )
+			currentTimerTask.cancel();
+		timer.purge();
+		currentTimerTask = new TimerTask()
 		{
 			@Override
 			public void run()
 			{
 				if ( null == animator || animator.isComplete() )
 				{
-					timer.cancel();
+					cancel();
+					currentTimerTask = null;
 				}
 				else
 				{
 					updaterThread.requestUpdate();
 				}
 			}
-		}, 0, INERTIAL_ANIMATION_PERIOD );
-		update();
+		};
+		timer.schedule( currentTimerTask, 0, INERTIAL_ANIMATION_PERIOD );
+		notifyListeners();
 	}
 }
