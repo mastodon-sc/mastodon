@@ -8,6 +8,7 @@ import javax.swing.JFrame;
 import javax.swing.WindowConstants;
 
 import net.imglib2.ui.util.GuiUtil;
+import net.trackmate.revised.trackscheme.TrackSchemeFocus;
 import net.trackmate.revised.trackscheme.TrackSchemeGraph;
 import net.trackmate.revised.trackscheme.TrackSchemeHighlight;
 import net.trackmate.revised.trackscheme.TrackSchemeNavigation;
@@ -21,10 +22,11 @@ public class TrackSchemeFrame extends JFrame
 	public TrackSchemeFrame(
 			final TrackSchemeGraph< ?, ? > graph,
 			final TrackSchemeHighlight highlight,
+			final TrackSchemeFocus focus,
 			final TrackSchemeSelection selection,
 			final TrackSchemeNavigation navigation )
 	{
-		this( graph, highlight, selection, navigation, TrackSchemeOptions.options() );
+		this( graph, highlight, focus, selection, navigation, TrackSchemeOptions.options() );
 	}
 
 	/**
@@ -41,6 +43,7 @@ public class TrackSchemeFrame extends JFrame
 	public TrackSchemeFrame(
 			final TrackSchemeGraph< ?, ? > graph,
 			final TrackSchemeHighlight highlight,
+			final TrackSchemeFocus focus,
 			final TrackSchemeSelection selection,
 			final TrackSchemeNavigation navigation,
 			final TrackSchemeOptions optional )
@@ -48,16 +51,17 @@ public class TrackSchemeFrame extends JFrame
 		super( "TrackScheme", GuiUtil.getSuitableGraphicsConfiguration( GuiUtil.RGB_COLOR_MODEL ) );
 		getRootPane().setDoubleBuffered( true );
 
-		trackschemePanel = new TrackSchemePanel( graph, highlight, selection, navigation, optional );
+		trackschemePanel = new TrackSchemePanel(
+				graph,
+				highlight,
+				focus,
+				selection,
+				navigation,
+				optional );
 		add( trackschemePanel, BorderLayout.CENTER );
 
 		final NavigationLocksPanel navigationLocksPanel = new NavigationLocksPanel( navigation.getGroupHandler() );
 		add( navigationLocksPanel, BorderLayout.NORTH );
-
-		final HighlightNavigator highlightNavigator = new HighlightNavigator( graph, trackschemePanel.getLineageTreeLayout(), highlight, navigation );
-		trackschemePanel.getDisplay().addTransformListener( highlightNavigator );
-
-		new KeyHandler( trackschemePanel.getDisplay(), highlightNavigator, highlight, selection );
 
 		pack();
 		setDefaultCloseOperation( WindowConstants.DISPOSE_ON_CLOSE );

@@ -25,19 +25,23 @@ import net.trackmate.revised.model.mamut.Link;
 import net.trackmate.revised.model.mamut.Model;
 import net.trackmate.revised.model.mamut.ModelOverlayProperties;
 import net.trackmate.revised.model.mamut.Spot;
+import net.trackmate.revised.trackscheme.DefaultModelFocusProperties;
 import net.trackmate.revised.trackscheme.DefaultModelGraphProperties;
 import net.trackmate.revised.trackscheme.DefaultModelHighlightProperties;
 import net.trackmate.revised.trackscheme.DefaultModelNavigationProperties;
 import net.trackmate.revised.trackscheme.DefaultModelSelectionProperties;
+import net.trackmate.revised.trackscheme.ModelFocusProperties;
 import net.trackmate.revised.trackscheme.ModelHighlightProperties;
 import net.trackmate.revised.trackscheme.ModelNavigationProperties;
 import net.trackmate.revised.trackscheme.ModelSelectionProperties;
+import net.trackmate.revised.trackscheme.TrackSchemeFocus;
 import net.trackmate.revised.trackscheme.TrackSchemeGraph;
 import net.trackmate.revised.trackscheme.TrackSchemeHighlight;
 import net.trackmate.revised.trackscheme.TrackSchemeNavigation;
 import net.trackmate.revised.trackscheme.TrackSchemeSelection;
 import net.trackmate.revised.trackscheme.display.TrackSchemeFrame;
 import net.trackmate.revised.ui.NavigationLocksPanel;
+import net.trackmate.revised.ui.selection.FocusModel;
 import net.trackmate.revised.ui.selection.HighlightListener;
 import net.trackmate.revised.ui.selection.HighlightModel;
 import net.trackmate.revised.ui.selection.NavigationGroupHandler;
@@ -111,6 +115,7 @@ public class MaMuT
 		/*
 		 * TrackSchemeHighlight wrapped HighlightModel
 		 */
+
 		final HighlightModel< Spot, Link > highlightModel = new HighlightModel< Spot, Link  >( idmap );
 		final ModelHighlightProperties highlightProperties = new DefaultModelHighlightProperties< Spot, Link >( graph, idmap, highlightModel );
 		final TrackSchemeHighlight trackSchemeHighlight = new TrackSchemeHighlight( highlightProperties, trackSchemeGraph );
@@ -131,9 +136,22 @@ public class MaMuT
 		final TrackSchemeNavigation trackSchemeNavigation = new TrackSchemeNavigation( navigationProperties, groups, trackSchemeGraph );
 
 		/*
+		 * TrackScheme focus
+		 */
+
+		final FocusModel< Spot, Link > focusModel = new FocusModel<>( idmap );
+		final ModelFocusProperties focusProperties = new DefaultModelFocusProperties<>( graph, idmap, focusModel );
+		final TrackSchemeFocus trackSchemeFocus = new TrackSchemeFocus( focusProperties, trackSchemeGraph );
+
+		/*
 		 * show TrackSchemeFrame
 		 */
-		final TrackSchemeFrame frame = new TrackSchemeFrame( trackSchemeGraph, trackSchemeHighlight, trackSchemeSelection, trackSchemeNavigation );
+		final TrackSchemeFrame frame = new TrackSchemeFrame(
+				trackSchemeGraph,
+				trackSchemeHighlight,
+				trackSchemeFocus,
+				trackSchemeSelection,
+				trackSchemeNavigation );
 		frame.getTrackschemePanel().setTimepointRange( minTimepoint, maxTimepoint );
 		frame.getTrackschemePanel().graphChanged();
 		frame.setVisible( true );

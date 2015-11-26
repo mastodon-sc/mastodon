@@ -22,6 +22,7 @@ import net.trackmate.revised.trackscheme.LineageTreeLayout.LayoutListener;
 import net.trackmate.revised.trackscheme.ScreenEntities;
 import net.trackmate.revised.trackscheme.ScreenEntitiesInterpolator;
 import net.trackmate.revised.trackscheme.ScreenTransform;
+import net.trackmate.revised.trackscheme.TrackSchemeFocus;
 import net.trackmate.revised.trackscheme.TrackSchemeGraph;
 import net.trackmate.revised.trackscheme.TrackSchemeHighlight;
 import net.trackmate.revised.trackscheme.TrackSchemeNavigation;
@@ -29,6 +30,7 @@ import net.trackmate.revised.trackscheme.TrackSchemeSelection;
 import net.trackmate.revised.trackscheme.TrackSchemeVertex;
 import net.trackmate.revised.trackscheme.display.TrackSchemeOptions.Values;
 import net.trackmate.revised.trackscheme.display.laf.DefaultTrackSchemeOverlay;
+import net.trackmate.revised.ui.selection.FocusListener;
 import net.trackmate.revised.ui.selection.HighlightListener;
 import net.trackmate.revised.ui.selection.NavigationListener;
 import net.trackmate.revised.ui.selection.SelectionListener;
@@ -39,6 +41,7 @@ public class TrackSchemePanel extends JPanel implements
 		TransformListener< ScreenTransform >,
 		PainterThread.Paintable,
 		HighlightListener,
+		FocusListener,
 		TimePointListener,
 		GraphChangeListener,
 		SelectionListener,
@@ -131,15 +134,19 @@ public class TrackSchemePanel extends JPanel implements
 
 	private final TrackSchemeNavigation navigation;
 
+	private final TrackSchemeFocus focus;
+
 	public TrackSchemePanel(
 			final TrackSchemeGraph< ?, ? > graph,
 			final TrackSchemeHighlight highlight,
+			final TrackSchemeFocus focus,
 			final TrackSchemeSelection selection,
 			final TrackSchemeNavigation navigation,
 			final TrackSchemeOptions optional )
 	{
 		super( new BorderLayout(), false );
 		this.graph = graph;
+		this.focus = focus;
 		this.selection = selection;
 		this.navigation = navigation;
 		options = optional.values;
@@ -152,11 +159,11 @@ public class TrackSchemePanel extends JPanel implements
 		display = new InteractiveDisplayCanvasComponent< ScreenTransform >(	w, h, options.getTransformEventHandlerFactory() );
 		display.addTransformListener( this );
 
-
 		highlight.addHighlightListener( this );
+		focus.addFocusListener( this );
 		selection.addSelectionListener( this );
 
-		graphOverlay = new DefaultTrackSchemeOverlay( graph, highlight, optional );
+		graphOverlay = new DefaultTrackSchemeOverlay( graph, highlight, focus, optional );
 		display.addOverlayRenderer( graphOverlay );
 
 		// This should be the last OverlayRenderer in display.
@@ -191,6 +198,12 @@ public class TrackSchemePanel extends JPanel implements
 		final MouseSelectionHandler mouseSelectionHandler = new MouseSelectionHandler( graphOverlay, selection, display, layout, graph );
 		display.addHandler( mouseSelectionHandler );
 		display.addOverlayRenderer( mouseSelectionHandler );
+
+		final TrackSchemeNavigator navigator = new TrackSchemeNavigator( graph, layout, focus, navigation );
+		display.addTransformListener( navigator );
+		final FocusHandler focusHandler = new FocusHandler( navigator, navigation, focus, selection, graph, graphOverlay );
+		focusHandler.installOn( display );
+		display.addHandler( focusHandler );
 
 		xScrollBar = new JScrollBar( JScrollBar.HORIZONTAL );
 		yScrollBar = new JScrollBar( JScrollBar.VERTICAL );
@@ -350,6 +363,12 @@ public class TrackSchemePanel extends JPanel implements
 
 	@Override
 	public void highlightChanged()
+	{
+		display.repaint();
+	}
+
+	@Override
+	public void focusChanged()
 	{
 		display.repaint();
 	}

@@ -19,6 +19,7 @@ import net.trackmate.revised.trackscheme.ScreenTransform;
 import net.trackmate.revised.trackscheme.ScreenVertex;
 import net.trackmate.revised.trackscheme.ScreenVertex.Transition;
 import net.trackmate.revised.trackscheme.ScreenVertexRange;
+import net.trackmate.revised.trackscheme.TrackSchemeFocus;
 import net.trackmate.revised.trackscheme.TrackSchemeGraph;
 import net.trackmate.revised.trackscheme.TrackSchemeHighlight;
 import net.trackmate.revised.trackscheme.display.AbstractTrackSchemeOverlay;
@@ -76,9 +77,10 @@ public class DefaultTrackSchemeOverlay extends AbstractTrackSchemeOverlay
 	public DefaultTrackSchemeOverlay(
 			final TrackSchemeGraph< ?, ? > graph,
 			final TrackSchemeHighlight highlight,
+			final TrackSchemeFocus focus,
 			final TrackSchemeOptions options )
 	{
-		super( graph, highlight, options );
+		super( graph, highlight, focus, options );
 	}
 
 	@Override
@@ -259,6 +261,7 @@ public class DefaultTrackSchemeOverlay extends AbstractTrackSchemeOverlay
 		final double ratio = vertex.getInterpolationCompletionRatio();
 
 		final boolean highlighted = ( highlightedVertexId >= 0 ) && ( vertex.getTrackSchemeVertexId() == highlightedVertexId );
+		final boolean focused = ( focusedVertexId >= 0 ) && ( vertex.getTrackSchemeVertexId() == focusedVertexId );
 		final boolean selected = vertex.isSelected();
 
 		double spotdiameter = Math.min( vertex.getVertexDist() - 10.0, maxDisplayVertexSize );
@@ -278,11 +281,13 @@ public class DefaultTrackSchemeOverlay extends AbstractTrackSchemeOverlay
 		final int sd = 2 * ( int ) spotradius;
 		g2.setColor( fillColor );
 		g2.fillOval( ox, oy, sd, sd );
+
 		g2.setColor( drawColor );
-		if ( highlighted )
+		// Display style of focused vertex == highlighted vertex
+		if ( highlighted || focused )
 			g2.setStroke( style.highlightStroke );
 		g2.drawOval( ox, oy, sd, sd );
-		if ( highlighted )
+		if ( highlighted || focused )
 			g2.setStroke( style.vertexStroke );
 
 		final int maxLabelLength = ( int ) ( spotdiameter / avgLabelLetterWidth );

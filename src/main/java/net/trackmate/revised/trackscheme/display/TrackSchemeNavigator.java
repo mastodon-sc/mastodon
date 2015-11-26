@@ -6,31 +6,31 @@ import net.trackmate.graph.Edges;
 import net.trackmate.revised.trackscheme.LineageTreeLayout;
 import net.trackmate.revised.trackscheme.ScreenTransform;
 import net.trackmate.revised.trackscheme.TrackSchemeEdge;
+import net.trackmate.revised.trackscheme.TrackSchemeFocus;
 import net.trackmate.revised.trackscheme.TrackSchemeGraph;
-import net.trackmate.revised.trackscheme.TrackSchemeHighlight;
 import net.trackmate.revised.trackscheme.TrackSchemeNavigation;
 import net.trackmate.revised.trackscheme.TrackSchemeVertex;
 import net.trackmate.revised.trackscheme.TrackSchemeVertexList;
 
-public class HighlightNavigator implements TransformListener< ScreenTransform >
+public class TrackSchemeNavigator implements TransformListener< ScreenTransform >
 {
 	private final TrackSchemeGraph< ?, ? > graph;
 
 	private final LineageTreeLayout layout;
 
-	private final TrackSchemeHighlight highlight;
-
 	private final TrackSchemeNavigation navigation;
 
-	public HighlightNavigator(
+	private final TrackSchemeFocus focus;
+
+	public TrackSchemeNavigator(
 			final TrackSchemeGraph< ?, ? > graph,
 			final LineageTreeLayout layout,
-			final TrackSchemeHighlight highlight,
+			final TrackSchemeFocus focus,
 			final TrackSchemeNavigation navigation )
 	{
 		this.graph = graph;
 		this.layout = layout;
-		this.highlight = highlight;
+		this.focus = focus;
 		this.navigation = navigation;
 	}
 
@@ -44,7 +44,7 @@ public class HighlightNavigator implements TransformListener< ScreenTransform >
 		if ( edges.size() > 0 )
 		{
 			final TrackSchemeVertex current = edges.get( 0 ).getTarget( ref );
-			highlight.highlightVertex( current.getInternalPoolIndex() );
+			focus.focusVertex( current.getInternalPoolIndex() );
 			navigateTo( current );
 			childId = current.getInternalPoolIndex();
 		}
@@ -66,7 +66,7 @@ public class HighlightNavigator implements TransformListener< ScreenTransform >
 		if ( edges.size() > 0 )
 		{
 			final TrackSchemeVertex current = edges.get( 0 ).getSource( ref );
-			highlight.highlightVertex( current.getInternalPoolIndex() );
+			focus.focusVertex( current.getInternalPoolIndex() );
 			navigateTo( current );
 			childId = current.getInternalPoolIndex();
 		}
@@ -89,7 +89,7 @@ public class HighlightNavigator implements TransformListener< ScreenTransform >
 		if ( index >= 0 && index < vertices.size()-1 )
 		{
 			final TrackSchemeVertex sibling = vertices.get( index + 1, ref );
-			highlight.highlightVertex( sibling.getInternalPoolIndex() );
+			focus.focusVertex( sibling.getInternalPoolIndex() );
 			navigateTo( sibling );
 			siblingId = sibling.getInternalPoolIndex();
 		}
@@ -112,7 +112,7 @@ public class HighlightNavigator implements TransformListener< ScreenTransform >
 		if ( index > 0 && index < vertices.size() )
 		{
 			final TrackSchemeVertex sibling = vertices.get( index - 1, ref );
-			highlight.highlightVertex( sibling.getInternalPoolIndex() );
+			focus.focusVertex( sibling.getInternalPoolIndex() );
 			navigateTo( sibling );
 			siblingId = sibling.getInternalPoolIndex();
 		}
@@ -135,7 +135,7 @@ public class HighlightNavigator implements TransformListener< ScreenTransform >
 
 	private int getVertexId()
 	{
-		final int id = highlight.getHighlightedVertexId();
+		final int id = focus.getFocusedVertexId();
 		if ( id < 0 ) { return getPanelCenterClosestVertexId(); }
 		return id;
 	}

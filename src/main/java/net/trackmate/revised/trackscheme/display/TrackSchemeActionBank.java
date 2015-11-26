@@ -2,7 +2,7 @@ package net.trackmate.revised.trackscheme.display;
 
 import java.awt.event.ActionEvent;
 
-import net.trackmate.revised.trackscheme.TrackSchemeHighlight;
+import net.trackmate.revised.trackscheme.TrackSchemeFocus;
 import net.trackmate.revised.trackscheme.TrackSchemeSelection;
 import bdv.util.AbstractNamedAction;
 
@@ -10,14 +10,14 @@ public class TrackSchemeActionBank
 {
 
 	/*
-	 * SELECT CURRENT HIGHLIGHT
+	 * SELECT CURRENT FOCUS
 	 */
 
-	public static final AbstractNamedAction getToggleSelectionOfHighlightAction( final TrackSchemeHighlight highlight, final TrackSchemeSelection selection )
+	public static final AbstractNamedAction getToggleSelectionOfHighlightAction( final TrackSchemeFocus focus, final TrackSchemeSelection selection )
 	{
-		return new AbstractNamedAction( "toggleSelectionOfHighlight" )
+		return new AbstractNamedAction( "toggleSelectionOfFocus" )
 		{
-			private static final long serialVersionUID = -8558462430720129257L;
+			private static final long serialVersionUID = 3749694022046537514L;
 
 			@Override
 			public void actionPerformed( final ActionEvent event )
@@ -27,7 +27,7 @@ public class TrackSchemeActionBank
 					@Override
 					public void run()
 					{
-						final int id = highlight.getHighlightedVertexId();
+						final int id = focus.getFocusedVertexId();
 						if ( id >= 0 )
 							selection.toggleVertex( id );
 					}
@@ -40,7 +40,7 @@ public class TrackSchemeActionBank
 	 * NAVIGATE WITH HIGHLIGHT.
 	 */
 
-	public static final AbstractNamedAction getNavigateToChildAction( final HighlightNavigator selectionNavigator )
+	public static final AbstractNamedAction getNavigateToChildAction( final TrackSchemeNavigator selectionNavigator )
 	{
 		return new AbstractNamedAction( "navigateToChild" )
 		{
@@ -61,7 +61,7 @@ public class TrackSchemeActionBank
 		};
 	}
 
-	public static final AbstractNamedAction getNavigateToParentAction( final HighlightNavigator selectionNavigator )
+	public static final AbstractNamedAction getNavigateToParentAction( final TrackSchemeNavigator selectionNavigator )
 	{
 		return new AbstractNamedAction( "navigateToParent" )
 		{
@@ -82,7 +82,7 @@ public class TrackSchemeActionBank
 		};
 	}
 
-	public static final AbstractNamedAction getNavigateToRightSiblingAction( final HighlightNavigator selectionNavigator )
+	public static final AbstractNamedAction getNavigateToRightSiblingAction( final TrackSchemeNavigator selectionNavigator )
 	{
 		return new AbstractNamedAction( "navigateToRightSibling" )
 		{
@@ -103,7 +103,7 @@ public class TrackSchemeActionBank
 		};
 	}
 
-	public static final AbstractNamedAction getNavigateToLeftSiblingAction( final HighlightNavigator selectionNavigator )
+	public static final AbstractNamedAction getNavigateToLeftSiblingAction( final TrackSchemeNavigator selectionNavigator )
 	{
 		return new AbstractNamedAction( "navigateToLeftSibling" )
 		{
@@ -124,7 +124,7 @@ public class TrackSchemeActionBank
 		};
 	}
 
-	public static final AbstractNamedAction getAddChildToSelectionAction( final HighlightNavigator selectionNavigator, final TrackSchemeSelection selection )
+	public static final AbstractNamedAction getAddChildToSelectionAction( final TrackSchemeNavigator selectionNavigator, final TrackSchemeSelection selection )
 	{
 		return new AbstractNamedAction( "addChildToSelection" )
 		{
@@ -147,7 +147,7 @@ public class TrackSchemeActionBank
 		};
 	}
 
-	public static final AbstractNamedAction getAddParentToSelectionAction( final HighlightNavigator selectionNavigator, final TrackSchemeSelection selection )
+	public static final AbstractNamedAction getAddParentToSelectionAction( final TrackSchemeNavigator selectionNavigator, final TrackSchemeSelection selection )
 	{
 		return new AbstractNamedAction( "addParentToSelection" )
 		{
@@ -170,7 +170,7 @@ public class TrackSchemeActionBank
 		};
 	}
 
-	public static final AbstractNamedAction getAddRightSiblingToSelectionAction( final HighlightNavigator selectionNavigator, final TrackSchemeSelection selection )
+	public static final AbstractNamedAction getAddRightSiblingToSelectionAction( final TrackSchemeNavigator selectionNavigator, final TrackSchemeSelection selection )
 	{
 		return new AbstractNamedAction( "addRightSiblingToSelection" )
 		{
@@ -193,7 +193,7 @@ public class TrackSchemeActionBank
 		};
 	}
 
-	public static final AbstractNamedAction getAddLeftSiblingToSelectionAction( final HighlightNavigator selectionNavigator, final TrackSchemeSelection selection )
+	public static final AbstractNamedAction getAddLeftSiblingToSelectionAction( final TrackSchemeNavigator selectionNavigator, final TrackSchemeSelection selection )
 	{
 		return new AbstractNamedAction( "addLeftSiblingToSelection" )
 		{
