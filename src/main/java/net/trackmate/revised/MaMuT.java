@@ -247,12 +247,12 @@ public class MaMuT
 		final OverlayNavigationWrapper< Spot, Link > navigation =
 				new OverlayNavigationWrapper< Spot, Link >( viewer, overlayGraph, navigationHandler, groupHandler );
 
-		final MouseNavigationHandler< ?, ? > mouseNavigationHandler = new MouseNavigationHandler<>( overlayGraph, tracksOverlay, navigation, groupHandler );
+		final MouseNavigationHandler< ?, ? > mouseNavigationHandler = new MouseNavigationHandler<>( overlayGraph, tracksOverlay, navigation );
 		viewer.getDisplay().addHandler( mouseNavigationHandler );
 
 		final ViewerFrame viewerFrame = bdv.getViewerFrame();
 		final NavigationLocksPanel lockPanel = new NavigationLocksPanel( groupHandler );
-		
+
 		viewerFrame.add( lockPanel, BorderLayout.NORTH );
 		viewerFrame.pack();
 

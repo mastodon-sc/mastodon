@@ -18,6 +18,8 @@ public class OverlayNavigationWrapper< V extends Vertex< E >, E extends Edge< V 
 
 	private final NavigationHandler< V > navigation;
 
+	private final NavigationGroupHandler groups;
+
 	public OverlayNavigationWrapper(
 			final ViewerPanel panel,
 			final OverlayGraphWrapper< V, E > graph,
@@ -27,6 +29,7 @@ public class OverlayNavigationWrapper< V extends Vertex< E >, E extends Edge< V 
 		this.panel = panel;
 		this.graph = graph;
 		this.navigation = navigation;
+		this.groups = groups;
 		navigation.addNavigationListener( this, groups );
 	}
 
@@ -64,8 +67,8 @@ public class OverlayNavigationWrapper< V extends Vertex< E >, E extends Edge< V 
 	}
 
 	@Override
-	public void notifyListeners( final NavigationGroupHandler fromFroups, final OverlayVertexWrapper< V, E > vertex )
+	public void notifyListeners( final OverlayVertexWrapper< V, E > vertex )
 	{
-		navigation.notifyListeners( fromFroups.getGroups(), vertex.wv );
+		navigation.notifyListeners( groups.getGroups(), vertex.wv );
 	}
 }
