@@ -383,6 +383,7 @@ public class TrackSchemePanel extends JPanel implements
 	@Override
 	public void navigateToVertex( final TrackSchemeVertex v )
 	{
+		focus.focusVertex( v.getInternalPoolIndex() );
 		final double lx = v.getLayoutX();
 		final double ly = v.getTimepoint();
 
