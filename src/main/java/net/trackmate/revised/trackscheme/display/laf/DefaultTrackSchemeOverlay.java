@@ -236,10 +236,15 @@ public class DefaultTrackSchemeOverlay extends AbstractTrackSchemeOverlay
 		final double ratio = vertex.getInterpolationCompletionRatio();
 		final boolean disappear = ( transition == DISAPPEAR );
 		final boolean selected = vertex.isSelected();
+		final boolean highlighted = ( highlightedVertexId >= 0 ) && ( vertex.getTrackSchemeVertexId() == highlightedVertexId );
+		final boolean focused = ( focusedVertexId >= 0 ) && ( vertex.getTrackSchemeVertexId() == focusedVertexId );
 
 		double spotradius = simplifiedVertexRadius;
 		if ( disappear )
 			spotradius *= ( 1 + 3 * ratio );
+
+		if (highlighted)
+			spotradius *= 2;
 
 		final Color fillColor = getColor( selected, transition, ratio,
 				disappear ? style.selectedSimplifiedVertexFillColor : style.simplifiedVertexFillColor,
@@ -251,7 +256,11 @@ public class DefaultTrackSchemeOverlay extends AbstractTrackSchemeOverlay
 		final int ox = ( int ) x - ( int ) spotradius;
 		final int oy = ( int ) y - ( int ) spotradius;
 		final int ow = 2 * ( int ) spotradius;
-		g2.fillOval( ox, oy, ow, ow );
+
+		if ( focused )
+			g2.fillRect( ox, oy, ow, ow );
+		else
+			g2.fillOval( ox, oy, ow, ow );
 	}
 
 	protected void drawVertexFull( final Graphics2D g2, final ScreenVertex vertex )
@@ -283,12 +292,15 @@ public class DefaultTrackSchemeOverlay extends AbstractTrackSchemeOverlay
 		g2.fillOval( ox, oy, sd, sd );
 
 		g2.setColor( drawColor );
-		// Display style of focused vertex == highlighted vertex
-		if ( highlighted || focused )
+		if ( highlighted )
 			g2.setStroke( style.highlightStroke );
+		if ( focused )
+			g2.setStroke( style.focusStroke );
+		// An animation might be better for the focus, but for now this is it.
 		g2.drawOval( ox, oy, sd, sd );
 		if ( highlighted || focused )
 			g2.setStroke( style.vertexStroke );
+
 
 		final int maxLabelLength = ( int ) ( spotdiameter / avgLabelLetterWidth );
 		if ( maxLabelLength > 2 && !disappear )
