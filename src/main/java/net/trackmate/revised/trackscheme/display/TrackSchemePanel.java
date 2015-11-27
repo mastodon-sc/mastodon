@@ -396,11 +396,13 @@ public class TrackSchemePanel extends JPanel implements
 		transformEventHandler.centerOn( lx, ly );
 	}
 
+	// TODO unused, remove
 	protected InteractiveDisplayCanvasComponent< ScreenTransform > getDisplay()
 	{
 		return display;
 	}
 
+	// TODO unused, remove
 	protected LineageTreeLayout getLineageTreeLayout()
 	{
 		return layout;
