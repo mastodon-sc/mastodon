@@ -1,11 +1,9 @@
 package net.trackmate.revised.trackscheme;
 
-import gnu.trove.set.TIntSet;
 import net.trackmate.graph.Edge;
 import net.trackmate.graph.GraphIdBimap;
 import net.trackmate.graph.ReadOnlyGraph;
 import net.trackmate.graph.Vertex;
-import net.trackmate.revised.ui.selection.NavigationGroupHandler;
 import net.trackmate.revised.ui.selection.NavigationHandler;
 import net.trackmate.revised.ui.selection.NavigationListener;
 
@@ -24,20 +22,19 @@ public class DefaultModelNavigationProperties< V extends Vertex< E >, E extends 
 	public DefaultModelNavigationProperties(
 			final ReadOnlyGraph< V, E > graph,
 			final GraphIdBimap< V, E > idmap,
-			final NavigationHandler< V > navigation,
-			final NavigationGroupHandler groups )
+			final NavigationHandler< V > navigation )
 	{
 		this.graph = graph;
 		this.idmap = idmap;
 		this.navigation = navigation;
-		navigation.addNavigationListener( this, groups );
+		navigation.addNavigationListener( this );
 	}
 
 	@Override
-	public void notifyListeners( final TIntSet fromGroups, final int modelVertexId )
+	public void notifyNavigateToVertex( final int modelVertexId )
 	{
 		final V ref = graph.vertexRef();
-		navigation.notifyListeners( fromGroups, idmap.getVertex( modelVertexId, ref ) );
+		navigation.notifyNavigateToVertex( idmap.getVertex( modelVertexId, ref ) );
 		graph.releaseRef( ref );
 	}
 

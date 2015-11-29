@@ -4,7 +4,6 @@ import net.imglib2.realtransform.AffineTransform3D;
 import net.trackmate.graph.Edge;
 import net.trackmate.graph.Vertex;
 import net.trackmate.revised.bdv.overlay.OverlayNavigation;
-import net.trackmate.revised.ui.selection.NavigationGroupHandler;
 import net.trackmate.revised.ui.selection.NavigationHandler;
 import net.trackmate.revised.ui.selection.NavigationListener;
 import bdv.viewer.ViewerPanel;
@@ -18,19 +17,15 @@ public class OverlayNavigationWrapper< V extends Vertex< E >, E extends Edge< V 
 
 	private final NavigationHandler< V > navigation;
 
-	private final NavigationGroupHandler groups;
-
 	public OverlayNavigationWrapper(
 			final ViewerPanel panel,
 			final OverlayGraphWrapper< V, E > graph,
-			final NavigationHandler< V > navigation,
-			final NavigationGroupHandler groups )
+			final NavigationHandler< V > navigation )
 	{
 		this.panel = panel;
 		this.graph = graph;
 		this.navigation = navigation;
-		this.groups = groups;
-		navigation.addNavigationListener( this, groups );
+		navigation.addNavigationListener( this );
 	}
 
 	@Override
@@ -67,8 +62,8 @@ public class OverlayNavigationWrapper< V extends Vertex< E >, E extends Edge< V 
 	}
 
 	@Override
-	public void notifyListeners( final OverlayVertexWrapper< V, E > vertex )
+	public void notifyNavigateToVertex( final OverlayVertexWrapper< V, E > vertex )
 	{
-		navigation.notifyListeners( groups.getGroups(), vertex.wv );
+		navigation.notifyNavigateToVertex( vertex.wv );
 	}
 }

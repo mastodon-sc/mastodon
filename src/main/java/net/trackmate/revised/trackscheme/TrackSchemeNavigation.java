@@ -3,7 +3,6 @@ package net.trackmate.revised.trackscheme;
 import java.util.HashSet;
 import java.util.Set;
 
-import net.trackmate.revised.ui.selection.NavigationGroupHandler;
 import net.trackmate.revised.ui.selection.NavigationListener;
 
 public class TrackSchemeNavigation implements
@@ -13,17 +12,13 @@ public class TrackSchemeNavigation implements
 
 	private final ModelNavigationProperties props;
 
-	private final NavigationGroupHandler groups;
-
 	private final TrackSchemeGraph< ?, ? > graph;
 
 	public TrackSchemeNavigation(
 			final ModelNavigationProperties props,
-			final NavigationGroupHandler groups,
 			final TrackSchemeGraph< ?, ? > graph )
 	{
 		this.props = props;
-		this.groups = groups;
 		this.graph = graph;
 
 		props.forwardNavigationEventsTo( this );
@@ -51,9 +46,9 @@ public class TrackSchemeNavigation implements
 	}
 
 	// forward tp ModelNavigationProperties
-	public void notifyListeners( final TrackSchemeVertex v )
+	public void notifyNavigateToVertex( final TrackSchemeVertex v )
 	{
-		props.notifyListeners( groups.getGroups(), v.getModelVertexId() );
+		props.notifyNavigateToVertex( v.getModelVertexId() );
 	}
 
 	/*
@@ -68,10 +63,5 @@ public class TrackSchemeNavigation implements
 		for ( final NavigationListener< TrackSchemeVertex > l : listeners )
 			l.navigateToVertex( v );
 		graph.releaseRef( ref );
-	}
-
-	public NavigationGroupHandler getGroupHandler()
-	{
-		return groups;
 	}
 }

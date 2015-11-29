@@ -40,12 +40,12 @@ import net.trackmate.revised.trackscheme.TrackSchemeHighlight;
 import net.trackmate.revised.trackscheme.TrackSchemeNavigation;
 import net.trackmate.revised.trackscheme.TrackSchemeSelection;
 import net.trackmate.revised.trackscheme.display.TrackSchemeFrame;
-import net.trackmate.revised.ui.NavigationLocksPanel;
+import net.trackmate.revised.ui.grouping.GroupHandle;
+import net.trackmate.revised.ui.grouping.GroupManager;
+import net.trackmate.revised.ui.grouping.GroupLocksPanel;
 import net.trackmate.revised.ui.selection.FocusModel;
 import net.trackmate.revised.ui.selection.HighlightListener;
 import net.trackmate.revised.ui.selection.HighlightModel;
-import net.trackmate.revised.ui.selection.NavigationGroupHandler;
-import net.trackmate.revised.ui.selection.NavigationGroupHandlerImp;
 import net.trackmate.revised.ui.selection.NavigationHandler;
 import net.trackmate.revised.ui.selection.Selection;
 import net.trackmate.revised.ui.selection.SelectionListener;
@@ -98,10 +98,12 @@ public class MaMuT
 
 		System.setProperty( "apple.laf.useScreenMenuBar", "true" );
 
+		final GroupManager groupManager = new GroupManager();
+
 		/*
-		 * Navigation handler.
+		 * TrackScheme GroupHandle
 		 */
-		final NavigationHandler< Spot > navigationHandler = new NavigationHandler< Spot >();
+		final GroupHandle trackSchemeGroupHandle = groupManager.createGroupHandle();
 
 		/*
 		 * TrackSchemeGraph listening to model
@@ -131,9 +133,9 @@ public class MaMuT
 		 * TrackScheme navigation
 		 */
 
-		final NavigationGroupHandler groups = new NavigationGroupHandlerImp();
-		final ModelNavigationProperties navigationProperties = new DefaultModelNavigationProperties< Spot, Link >( graph, idmap, navigationHandler, groups );
-		final TrackSchemeNavigation trackSchemeNavigation = new TrackSchemeNavigation( navigationProperties, groups, trackSchemeGraph );
+		final NavigationHandler< Spot > navigationHandler = new NavigationHandler< Spot >( trackSchemeGroupHandle );
+		final ModelNavigationProperties navigationProperties = new DefaultModelNavigationProperties< Spot, Link >( graph, idmap, navigationHandler );
+		final TrackSchemeNavigation trackSchemeNavigation = new TrackSchemeNavigation( navigationProperties, trackSchemeGraph );
 
 		/*
 		 * TrackScheme focus
@@ -151,7 +153,8 @@ public class MaMuT
 				trackSchemeHighlight,
 				trackSchemeFocus,
 				trackSchemeSelection,
-				trackSchemeNavigation );
+				trackSchemeNavigation,
+				trackSchemeGroupHandle );
 		frame.getTrackschemePanel().setTimepointRange( minTimepoint, maxTimepoint );
 		frame.getTrackschemePanel().graphChanged();
 		frame.setVisible( true );
@@ -163,7 +166,7 @@ public class MaMuT
 
 //		for ( int i = 0; i < 2; ++i )
 //		{
-		final BigDataViewer bdv = openBDV( model, highlightModel, selection, navigationHandler, radiusStats, spimData, windowTitle, initialTimepointIndex, bdvFile );
+		final BigDataViewer bdv = openBDV( model, highlightModel, selection, groupManager, radiusStats, spimData, windowTitle, initialTimepointIndex, bdvFile );
 
 		/*
 		 * TODO: this is still wrong. There should be one central entity syncing
@@ -181,7 +184,7 @@ public class MaMuT
 			final Model model,
 			final HighlightModel< Spot, Link > highlightModel,
 			final Selection< Spot, Link > selection,
-			final NavigationHandler< Spot > navigationHandler,
+			final GroupManager groupManager,
 			final BoundingSphereRadiusStatistics radiusStats,
 			final SpimDataMinimal spimData,
 			final String windowTitle,
@@ -189,6 +192,7 @@ public class MaMuT
 			final String bdvFile
 			)
 	{
+		final GroupHandle bdvGroupHandle = groupManager.createGroupHandle();
 
 		final OverlayGraphWrapper< Spot, Link > overlayGraph = new OverlayGraphWrapper<>(
 				model.getGraph(),
@@ -243,15 +247,15 @@ public class MaMuT
 		final MouseSelectionHandler< ?, ? > mouseSelectionListener = new MouseSelectionHandler<>( overlayGraph, tracksOverlay, overlaySelection );
 		viewer.getDisplay().addHandler( mouseSelectionListener );
 
-		final NavigationGroupHandler groupHandler = new NavigationGroupHandlerImp();
+		final NavigationHandler< Spot > navigationHandler = new NavigationHandler<>( bdvGroupHandle );
 		final OverlayNavigationWrapper< Spot, Link > navigation =
-				new OverlayNavigationWrapper< Spot, Link >( viewer, overlayGraph, navigationHandler, groupHandler );
+				new OverlayNavigationWrapper< Spot, Link >( viewer, overlayGraph, navigationHandler );
 
 		final MouseNavigationHandler< ?, ? > mouseNavigationHandler = new MouseNavigationHandler<>( overlayGraph, tracksOverlay, navigation );
 		viewer.getDisplay().addHandler( mouseNavigationHandler );
 
 		final ViewerFrame viewerFrame = bdv.getViewerFrame();
-		final NavigationLocksPanel lockPanel = new NavigationLocksPanel( groupHandler );
+		final GroupLocksPanel lockPanel = new GroupLocksPanel( bdvGroupHandle );
 
 		viewerFrame.add( lockPanel, BorderLayout.NORTH );
 		viewerFrame.pack();

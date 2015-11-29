@@ -1,77 +1,47 @@
 package net.trackmate.revised.ui.selection;
 
-import gnu.trove.iterator.TIntIterator;
-import gnu.trove.set.TIntSet;
-
-import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Set;
 
 import net.trackmate.graph.Vertex;
+import net.trackmate.revised.ui.grouping.GroupHandle;
 
-/**
- *
- * @author Jean-Yves Tinevez
- *
- * @param <V>
- *            the type of the model vertices.
- */
+// TODO remove "extends Vertex< ? > ?"
 public class NavigationHandler< V extends Vertex< ? > >
 {
-	private final HashMap< NavigationListener< V >, NavigationGroupHandler > listeners = new HashMap< NavigationListener< V >, NavigationGroupHandler >();
+	private final GroupHandle group;
+
+	private final Set< NavigationListener< V > > listeners;
+
+	public NavigationHandler( final GroupHandle groupHandle )
+	{
+		this.group = groupHandle;
+		this.listeners = new HashSet<>();
+		group.add( this );
+	}
 
 	/**
-	 * Registers the specified listener to this handler. The specified
-	 * {@link NavigationGroupReceiver} will be used to determine to what groups this
-	 * listener belongs to when passing navigation events.
+	 * Registers the specified listener to this handler. The listener is
+	 * notified of {@code navigateToVertex} events originating from any
+	 * NavigationHandler in a shared group with this {@link NavigationHandler}.
 	 *
 	 * @param l
 	 *            the {@link NavigationListener} to register.
-	 * @param g
-	 *            the {@link NavigationGroupReceiver} that determines to what groups it
-	 *            belongs.
 	 */
-	public void addNavigationListener( final NavigationListener< V > l, final NavigationGroupHandler g )
+	public void addNavigationListener( final NavigationListener< V > l )
 	{
-		listeners.put( l, g );
+		listeners.add( l );
 	}
 
 	public boolean removeNavigationListener( final NavigationListener< V > l )
 	{
-		return listeners.remove( l ) != null;
+		return listeners.remove( l );
 	}
 
-	/**
-	 * Notifies the registered listeners of this handler to center the view they
-	 * managed on the vertex with the specified model id. Only the listener that
-	 * belong to the specified groups will be notified.
-	 *
-	 * @param fromGroups
-	 *            the listener groups to notify.
-	 * @param vertex
-	 *            the model vertex to center on.
-	 */
-	public void notifyListeners( final TIntSet fromGroups, final V vertex )
+	public void notifyNavigateToVertex( final V vertex )
 	{
-		// Make sure listeners are notified only once even if they belong to
-		// several groups.
-		final HashSet< NavigationListener< V > > toNotify = new HashSet< NavigationListener< V > >();
-		final TIntIterator it = fromGroups.iterator();
-		while ( it.hasNext() )
-		{
-			final int group = it.next();
-			for ( final NavigationListener< V > l : listeners.keySet() )
-			{
-				final NavigationGroupHandler g = listeners.get( l );
-				if ( g.isGroupActive( group ) )
-				{
-					toNotify.add( l );
-				}
-			}
-		}
-
-		for ( final NavigationListener< V > l : toNotify )
-		{
-			l.navigateToVertex( vertex );
-		}
+		for( final NavigationHandler< V > handler : group.allInSharedGroups( this ) )
+			for ( final NavigationListener< V > listener : handler.listeners )
+				listener.navigateToVertex( vertex );
 	}
 }

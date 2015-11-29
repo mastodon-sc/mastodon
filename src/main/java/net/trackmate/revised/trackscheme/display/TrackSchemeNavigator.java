@@ -126,7 +126,7 @@ public class TrackSchemeNavigator implements TransformListener< ScreenTransform 
 
 	private void navigateTo( final TrackSchemeVertex current )
 	{
-		navigation.notifyListeners( current );
+		navigation.notifyNavigateToVertex( current );
 	}
 
 	private final RealPoint centerPos = new RealPoint( 2 );

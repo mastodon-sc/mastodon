@@ -63,7 +63,7 @@ public class FocusHandler extends MouseAdapter
 					// Double click: We navigate to the clicked vertex.
 					final TrackSchemeVertex ref = graph.vertexRef();
 					graph.getVertexPool().getByInternalPoolIndex( vertexId, ref );
-					navigation.notifyListeners( ref );
+					navigation.notifyNavigateToVertex( ref );
 					graph.releaseRef( ref );
 				}
 			}

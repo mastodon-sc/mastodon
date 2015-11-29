@@ -32,7 +32,7 @@ public class MouseNavigationHandler< V extends OverlayVertex< V, E >, E extends 
 		final V vertex = renderer.getVertexAt( e.getX(), e.getY(), ref );
 		if ( vertex != null )
 		{
-			navigation.notifyListeners( vertex );
+			navigation.notifyNavigateToVertex( vertex );
 		}
 		overlayGraph.releaseRef( ref );
 	}

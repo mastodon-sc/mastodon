@@ -13,7 +13,10 @@ import net.trackmate.revised.trackscheme.TrackSchemeGraph;
 import net.trackmate.revised.trackscheme.TrackSchemeHighlight;
 import net.trackmate.revised.trackscheme.TrackSchemeNavigation;
 import net.trackmate.revised.trackscheme.TrackSchemeSelection;
-import net.trackmate.revised.ui.NavigationLocksPanel;
+import net.trackmate.revised.ui.grouping.GroupHandle;
+import net.trackmate.revised.ui.grouping.GroupLocksPanel;
+import bdv.viewer.SourceAndConverter;
+import bdv.viewer.ViewerOptions;
 
 public class TrackSchemeFrame extends JFrame
 {
@@ -24,9 +27,10 @@ public class TrackSchemeFrame extends JFrame
 			final TrackSchemeHighlight highlight,
 			final TrackSchemeFocus focus,
 			final TrackSchemeSelection selection,
-			final TrackSchemeNavigation navigation )
+			final TrackSchemeNavigation navigation,
+			final GroupHandle groupHandle )
 	{
-		this( graph, highlight, focus, selection, navigation, TrackSchemeOptions.options() );
+		this( graph, highlight, focus, selection, navigation, groupHandle, TrackSchemeOptions.options() );
 	}
 
 	/**
@@ -46,6 +50,7 @@ public class TrackSchemeFrame extends JFrame
 			final TrackSchemeFocus focus,
 			final TrackSchemeSelection selection,
 			final TrackSchemeNavigation navigation,
+			final GroupHandle groupHandle,
 			final TrackSchemeOptions optional )
 	{
 		super( "TrackScheme", GuiUtil.getSuitableGraphicsConfiguration( GuiUtil.RGB_COLOR_MODEL ) );
@@ -60,7 +65,7 @@ public class TrackSchemeFrame extends JFrame
 				optional );
 		add( trackschemePanel, BorderLayout.CENTER );
 
-		final NavigationLocksPanel navigationLocksPanel = new NavigationLocksPanel( navigation.getGroupHandler() );
+		final GroupLocksPanel navigationLocksPanel = new GroupLocksPanel( groupHandle );
 		add( navigationLocksPanel, BorderLayout.NORTH );
 
 		pack();
