@@ -1,14 +1,13 @@
 package net.trackmate.revised.trackscheme;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.ArrayList;
 
 import net.trackmate.revised.ui.selection.NavigationListener;
 
 public class TrackSchemeNavigation implements
 		ModelNavigationListener
 {
-	private final Set< NavigationListener< TrackSchemeVertex > > listeners = new HashSet< NavigationListener< TrackSchemeVertex > >();
+	private final ArrayList< NavigationListener< TrackSchemeVertex > > listeners = new ArrayList< NavigationListener< TrackSchemeVertex > >();
 
 	private final ModelNavigationProperties props;
 
@@ -26,18 +25,23 @@ public class TrackSchemeNavigation implements
 
 	/**
 	 * Registers the specified listener to this handler. The specified
-	 * {@link NavigationGroupReceiver} will be used to determine to what groups this
-	 * listener belongs to when passing navigation events.
+	 * {@link NavigationGroupReceiver} will be used to determine to what groups
+	 * this listener belongs to when passing navigation events.
 	 *
-	 * @param l
+	 * @param listener
 	 *            the {@link NavigationListener} to register.
-	 * @param g
-	 *            the {@link NavigationGroupReceiver} that determines to what groups it
-	 *            belongs.
+	 * @return <code>true</code> if the specified listener was added to the
+	 *         listeners of this handler. <code>false</code> if the specified
+	 *         listener was already registered.
 	 */
-	public boolean addNavigationListener( final NavigationListener< TrackSchemeVertex > l )
+	public boolean addNavigationListener( final NavigationListener< TrackSchemeVertex > listener )
 	{
-		return listeners.add( l );
+		if ( !listeners.contains( listener ) )
+		{
+			listeners.add( listener );
+			return true;
+		}
+		return false;
 	}
 
 	public boolean removeNavigationListener( final NavigationListener< TrackSchemeVertex > l )

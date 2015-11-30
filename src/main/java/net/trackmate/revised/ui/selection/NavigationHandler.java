@@ -1,7 +1,6 @@
 package net.trackmate.revised.ui.selection;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.ArrayList;
 
 import net.trackmate.graph.Vertex;
 import net.trackmate.revised.ui.grouping.GroupHandle;
@@ -11,12 +10,12 @@ public class NavigationHandler< V extends Vertex< ? > >
 {
 	private final GroupHandle group;
 
-	private final Set< NavigationListener< V > > listeners;
+	private final ArrayList< NavigationListener< V > > listeners;
 
 	public NavigationHandler( final GroupHandle groupHandle )
 	{
 		this.group = groupHandle;
-		this.listeners = new HashSet<>();
+		this.listeners = new ArrayList<>();
 		group.add( this );
 	}
 
@@ -25,12 +24,20 @@ public class NavigationHandler< V extends Vertex< ? > >
 	 * notified of {@code navigateToVertex} events originating from any
 	 * NavigationHandler in a shared group with this {@link NavigationHandler}.
 	 *
-	 * @param l
+	 * @param listener
 	 *            the {@link NavigationListener} to register.
+	 * @return <code>true</code> if the specified listener was added to the
+	 *         listeners of this handler. <code>false</code> if the specified
+	 *         listener was already registered.
 	 */
-	public void addNavigationListener( final NavigationListener< V > l )
+	public boolean addNavigationListener( final NavigationListener< V > listener )
 	{
-		listeners.add( l );
+		if ( !listeners.contains( listener ) )
+		{
+			listeners.add( listener );
+			return true;
+		}
+		return false;
 	}
 
 	public boolean removeNavigationListener( final NavigationListener< V > l )
