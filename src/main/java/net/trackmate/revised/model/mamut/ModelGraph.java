@@ -106,8 +106,8 @@ class ModelGraph extends AbstractModelGraph< ModelGraph.SpotPool, ModelGraph.Lin
 	}
 
 	@Override
-	protected void emitGraphChanged()
+	protected void notifyGraphChanged()
 	{
-		super.emitGraphChanged();
+		super.notifyGraphChanged();
 	}
 }
