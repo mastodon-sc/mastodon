@@ -244,9 +244,14 @@ public class Selection< V extends Vertex< E >, E extends Edge< V > > implements 
 		clearSelection();
 	}
 
-	public boolean addSelectionListener( final SelectionListener l )
+	public boolean addSelectionListener( final SelectionListener listener )
 	{
-		return listeners.add( l );
+		if ( !listeners.contains( listener ) )
+		{
+			listeners.add( listener );
+			return true;
+		}
+		return false;
 	}
 
 	public boolean removeSelectionListener( final SelectionListener l )
