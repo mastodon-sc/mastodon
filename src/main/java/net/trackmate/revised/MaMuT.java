@@ -10,9 +10,13 @@ import net.trackmate.graph.GraphIdBimap;
 import net.trackmate.graph.listenable.GraphChangeListener;
 import net.trackmate.graph.listenable.ListenableGraph;
 import net.trackmate.revised.bdv.overlay.MouseOverListener;
+import net.trackmate.revised.bdv.overlay.MouseSelectionHandler;
 import net.trackmate.revised.bdv.overlay.OverlayGraphRenderer;
+import net.trackmate.revised.bdv.overlay.wrap.OverlayEdgeWrapper;
 import net.trackmate.revised.bdv.overlay.wrap.OverlayGraphWrapper;
 import net.trackmate.revised.bdv.overlay.wrap.OverlayHighlightWrapper;
+import net.trackmate.revised.bdv.overlay.wrap.OverlaySelectionWrapper;
+import net.trackmate.revised.bdv.overlay.wrap.OverlayVertexWrapper;
 import net.trackmate.revised.model.mamut.BoundingSphereRadiusStatistics;
 import net.trackmate.revised.model.mamut.Link;
 import net.trackmate.revised.model.mamut.Model;
@@ -20,12 +24,15 @@ import net.trackmate.revised.model.mamut.ModelOverlayProperties;
 import net.trackmate.revised.model.mamut.Spot;
 import net.trackmate.revised.trackscheme.DefaultModelGraphProperties;
 import net.trackmate.revised.trackscheme.DefaultModelHighlightProperties;
+import net.trackmate.revised.trackscheme.DefaultModelSelectionProperties;
 import net.trackmate.revised.trackscheme.TrackSchemeGraph;
 import net.trackmate.revised.trackscheme.TrackSchemeHighlight;
+import net.trackmate.revised.trackscheme.TrackSchemeSelection;
 import net.trackmate.revised.trackscheme.display.TrackSchemeFrame;
 import net.trackmate.revised.ui.selection.HighlightListener;
 import net.trackmate.revised.ui.selection.HighlightModel;
 import net.trackmate.revised.ui.selection.Selection;
+import net.trackmate.revised.ui.selection.SelectionListener;
 import bdv.BigDataViewer;
 import bdv.export.ProgressWriterConsole;
 import bdv.spimdata.SpimDataMinimal;
@@ -36,89 +43,27 @@ import bdv.viewer.ViewerPanel;
 
 public class MaMuT
 {
-	public static void main1( final String[] args )
+	public static void main( final String[] args ) throws IOException, SpimDataException
 	{
-		final Model model = new Model();
-		final double[] pos = new double[] { 0, 0, 0 };
-		final double[][] cov = new double[][] { { 1, 0, 0 }, { 0, 1, 0 }, { 0, 0, 1 } };
-
-		final ListenableGraph< Spot, Link > graph = model.getGraph();
-		final GraphIdBimap< Spot, Link > idmap = model.getGraphIdBimap();
-		final Selection< Spot, Link > selection = new Selection<>( graph, idmap );
-		final DefaultModelGraphProperties< Spot, Link > properties = new DefaultModelGraphProperties<>( graph, idmap, selection );
-		final TrackSchemeGraph< Spot, Link > trackSchemeGraph = new TrackSchemeGraph<>( graph, idmap, properties );
-
-		final Spot s0 = model.addSpot( 0, pos, cov, model.getGraph().vertexRef() );
-		final Spot s1 = model.addSpot( 1, pos, cov, model.getGraph().vertexRef() );
-		final Spot s2 = model.addSpot( 1, pos, cov, model.getGraph().vertexRef() );
-		final Spot s3 = model.addSpot( 2, pos, cov, model.getGraph().vertexRef() );
-		final Spot s4 = model.addSpot( 2, pos, cov, model.getGraph().vertexRef() );
-		final Spot s5 = model.addSpot( 3, pos, cov, model.getGraph().vertexRef() );
-
-		final Link l0 = model.addLink( s0, s1, model.getGraph().edgeRef() );
-		final Link l1 = model.addLink( s0, s2, model.getGraph().edgeRef() );
-		final Link l2 = model.addLink( s2, s3, model.getGraph().edgeRef() );
-		final Link l3 = model.addLink( s4, s5, model.getGraph().edgeRef() );
-
-		System.out.println( trackSchemeGraph );
-	}
-
-	public static void main2( final String[] args )
-	{
-		final Model model = new Model();
-		final double[] pos = new double[] { 0, 0, 0 };
-		final double[][] cov = new double[][] { { 1, 0, 0 }, { 0, 1, 0 }, { 0, 0, 1 } };
-
-		final Spot s0 = model.addSpot( 0, pos, cov, model.getGraph().vertexRef() );
-		final Spot s1 = model.addSpot( 1, pos, cov, model.getGraph().vertexRef() );
-		final Spot s2 = model.addSpot( 1, pos, cov, model.getGraph().vertexRef() );
-		final Spot s3 = model.addSpot( 2, pos, cov, model.getGraph().vertexRef() );
-		final Spot s4 = model.addSpot( 2, pos, cov, model.getGraph().vertexRef() );
-		final Spot s5 = model.addSpot( 3, pos, cov, model.getGraph().vertexRef() );
-
-		final Link l0 = model.addLink( s0, s1, model.getGraph().edgeRef() );
-		final Link l1 = model.addLink( s0, s2, model.getGraph().edgeRef() );
-		final Link l2 = model.addLink( s2, s3, model.getGraph().edgeRef() );
-		final Link l3 = model.addLink( s4, s5, model.getGraph().edgeRef() );
-
-		final ListenableGraph< Spot, Link > graph = model.getGraph();
-		final GraphIdBimap< Spot, Link > idmap = model.getGraphIdBimap();
-		final Selection< Spot, Link > selection = new Selection<>( graph, idmap );
-		final DefaultModelGraphProperties< Spot, Link > properties = new DefaultModelGraphProperties<>( graph, idmap, selection );
-		final TrackSchemeGraph< Spot, Link > trackSchemeGraph = new TrackSchemeGraph<>( graph, idmap, properties );
-
-		System.out.println( trackSchemeGraph );
-	}
-
-	public static void main3( final String[] args ) throws IOException
-	{
-		final File modelFile = new File( "/Users/pietzsch/TGMM/data/tifs/model_revised.raw" );
-
-		final Model model = new Model();
-		model.loadRaw( modelFile );
-
-
-		final ListenableGraph< Spot, Link > graph = model.getGraph();
-		final GraphIdBimap< Spot, Link > idmap = model.getGraphIdBimap();
-		final Selection< Spot, Link > selection = new Selection<>( graph, idmap );
-		final DefaultModelGraphProperties< Spot, Link > properties = new DefaultModelGraphProperties<>( graph, idmap, selection );
-		final TrackSchemeGraph< Spot, Link > trackSchemeGraph = new TrackSchemeGraph<>( graph, idmap, properties );
-
-		System.out.println( trackSchemeGraph );
-	}
-
-	public static void main4( final String[] args ) throws IOException, SpimDataException
-	{
-		final String bdvFile = "/Users/pietzsch/TGMM/data/tifs/datasethdf5.xml";
-		final String modelFile = "/Users/pietzsch/TGMM/data/tifs/model_revised.raw";
+		final String bdvFile = "samples/datasethdf5.xml";
+		final String modelFile = "samples/model_revised.raw";
 		final int initialTimepointIndex = 10;
 
 		/*
 		 * Load Model
 		 */
-		final Model model = new Model();
+
+		final Model model;
+		if ( null != modelFile && !modelFile.isEmpty() )
+		{
+			model = new Model();
+			model.loadRaw( new File( modelFile ) );
+		}
+		else
+		{
+			model = new CreateLargeModelExample().run();
+		}
 		final BoundingSphereRadiusStatistics radiusStats = new BoundingSphereRadiusStatistics( model );
-		model.loadRaw( new File( modelFile ) );
 
 		/*
 		 * Load SpimData
@@ -150,12 +95,19 @@ public class MaMuT
 		 */
 		final HighlightModel< Spot, Link > highlightModel = new HighlightModel< Spot, Link  >( idmap );
 		final DefaultModelHighlightProperties< Spot, Link > highlightProperties = new DefaultModelHighlightProperties< Spot, Link >( graph, idmap, highlightModel );
-		final TrackSchemeHighlight< Spot, Link > trackSchemeHighlight = new TrackSchemeHighlight< Spot, Link >( highlightProperties, trackSchemeGraph );
+		final TrackSchemeHighlight trackSchemeHighlight = new TrackSchemeHighlight( highlightProperties, trackSchemeGraph );
+
+		/*
+		 * TrackScheme selection
+		 */
+
+		final DefaultModelSelectionProperties< Spot, Link > selectionProperties = new DefaultModelSelectionProperties< Spot, Link >( graph, idmap, selection );
+		final TrackSchemeSelection trackSchemeSelection = new TrackSchemeSelection( selectionProperties );
 
 		/*
 		 * show TrackSchemeFrame
 		 */
-		final TrackSchemeFrame frame = new TrackSchemeFrame( trackSchemeGraph, trackSchemeHighlight );
+		final TrackSchemeFrame frame = new TrackSchemeFrame( trackSchemeGraph, trackSchemeHighlight, trackSchemeSelection );
 		frame.getTrackschemePanel().setTimepointRange( minTimepoint, maxTimepoint );
 		frame.getTrackschemePanel().graphChanged();
 		frame.setVisible( true );
@@ -167,7 +119,7 @@ public class MaMuT
 
 //		for ( int i = 0; i < 2; ++i )
 //		{
-		final BigDataViewer bdv = openBDV( model, highlightModel, radiusStats, spimData, windowTitle, initialTimepointIndex, bdvFile );
+		final BigDataViewer bdv = openBDV( model, highlightModel, selection, radiusStats, spimData, windowTitle, initialTimepointIndex, bdvFile );
 		final ViewerPanel viewer = bdv.getViewer();
 
 		/*
@@ -184,27 +136,34 @@ public class MaMuT
 	public static BigDataViewer openBDV(
 			final Model model,
 			final HighlightModel< Spot, Link > highlightModel,
+			final Selection< Spot, Link > selection,
 			final BoundingSphereRadiusStatistics radiusStats,
 			final SpimDataMinimal spimData,
 			final String windowTitle,
 			final int initialTimepointIndex,
-			final String bdvFile )
+			final String bdvFile
+			)
 	{
+
 		final OverlayGraphWrapper< Spot, Link > overlayGraph = new OverlayGraphWrapper<>(
 				model.getGraph(),
 				model.getGraphIdBimap(),
 				model.getSpatioTemporalIndex(),
-				new ModelOverlayProperties( radiusStats ) );
+				new ModelOverlayProperties( radiusStats, selection ) );
+
 		final OverlayHighlightWrapper< Spot, Link > overlayHighlight = new OverlayHighlightWrapper<>(
-				model.getGraph(),
 				model.getGraphIdBimap(),
 				highlightModel );
+
+		final OverlaySelectionWrapper< Spot, Link > overlaySelection = new OverlaySelectionWrapper<>(
+				selection );
+
 		final BigDataViewer bdv = BigDataViewer.open( spimData, windowTitle, new ProgressWriterConsole(), ViewerOptions.options() );
 		if ( !bdv.tryLoadSettings( bdvFile ) )
 			InitializeViewerState.initBrightness( 0.001, 0.999, bdv.getViewer(), bdv.getSetupAssignments() );
 		final ViewerPanel viewer = bdv.getViewer();
 		viewer.setTimepoint( initialTimepointIndex );
-		final OverlayGraphRenderer< ?, ? > tracksOverlay = new OverlayGraphRenderer<>( overlayGraph, overlayHighlight );
+		final OverlayGraphRenderer< OverlayVertexWrapper< Spot, Link >, OverlayEdgeWrapper< Spot, Link > > tracksOverlay = new OverlayGraphRenderer<>( overlayGraph, overlayHighlight );
 		viewer.getDisplay().addOverlayRenderer( tracksOverlay );
 		viewer.addRenderTransformListener( tracksOverlay );
 		viewer.addTimePointListener( tracksOverlay );
@@ -224,13 +183,21 @@ public class MaMuT
 				viewer.getDisplay().repaint();
 			}
 		} );
-		final MouseOverListener mouseOver = new MouseOverListener( tracksOverlay );
-		viewer.getDisplay().addHandler( mouseOver );
-		return bdv;
-	}
+		overlaySelection.addSelectionListener( new SelectionListener()
+		{
+			@Override
+			public void selectionChanged()
+			{
+				viewer.getDisplay().repaint();
+			}
+		} );
 
-	public static void main( final String[] args ) throws IOException, SpimDataException
-	{
-		main4( args );
+		final MouseOverListener< ?, ? > mouseOver = new MouseOverListener<>( overlayGraph, tracksOverlay, overlayHighlight );
+		viewer.getDisplay().addHandler( mouseOver );
+
+		final MouseSelectionHandler< ?, ? > mouseSelectionListener = new MouseSelectionHandler<>( overlayGraph, tracksOverlay, overlaySelection );
+		viewer.getDisplay().addHandler( mouseSelectionListener );
+
+		return bdv;
 	}
 }

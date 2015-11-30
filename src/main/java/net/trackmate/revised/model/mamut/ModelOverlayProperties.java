@@ -2,19 +2,23 @@ package net.trackmate.revised.model.mamut;
 
 import net.trackmate.revised.bdv.overlay.OverlayGraph;
 import net.trackmate.revised.bdv.overlay.wrap.OverlayProperties;
+import net.trackmate.revised.ui.selection.Selection;
 
 /**
  * Provides spot {@link OverlayProperties properties} for BDV {@link OverlayGraph}.
  *
  * @author Tobias Pietzsch &lt;tobias.pietzsch@gmail.com&gt;
  */
-public class ModelOverlayProperties implements OverlayProperties< Spot >
+public class ModelOverlayProperties implements OverlayProperties< Spot, Link >
 {
 	private final BoundingSphereRadiusStatistics radiusStats;
 
-	public ModelOverlayProperties( final BoundingSphereRadiusStatistics radiusStats )
+	private final Selection< Spot, Link > selection;
+
+	public ModelOverlayProperties( final BoundingSphereRadiusStatistics radiusStats, final Selection< Spot, Link > selection )
 	{
 		this.radiusStats = radiusStats;
+		this.selection = selection;
 	}
 
 	@Override
@@ -63,6 +67,18 @@ public class ModelOverlayProperties implements OverlayProperties< Spot >
 	public int getTimepoint( final Spot v )
 	{
 		return v.getTimepoint();
+	}
+
+	@Override
+	public boolean isVertexSelected( final Spot v )
+	{
+		return selection.isSelected( v );
+	}
+
+	@Override
+	public boolean isEdgeSelected( final Link e )
+	{
+		return selection.isSelected( e );
 	}
 
 	@Override

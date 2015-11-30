@@ -2,7 +2,6 @@ package net.trackmate.revised.bdv.overlay.wrap;
 
 import net.trackmate.graph.Edge;
 import net.trackmate.graph.GraphIdBimap;
-import net.trackmate.graph.ReadOnlyGraph;
 import net.trackmate.graph.Vertex;
 import net.trackmate.revised.bdv.overlay.OverlayHighlight;
 import net.trackmate.revised.ui.selection.HighlightListener;
@@ -11,18 +10,14 @@ import net.trackmate.revised.ui.selection.HighlightModel;
 public class OverlayHighlightWrapper< V extends Vertex< E >, E extends Edge< V > >
 	implements OverlayHighlight< OverlayVertexWrapper< V, E >, OverlayEdgeWrapper< V, E > >
 {
-	final ReadOnlyGraph< V, E > wrappedGraph;
+	private final GraphIdBimap< V, E > idmap;
 
-	final GraphIdBimap< V, E > idmap;
-
-	final HighlightModel< V, E > wrappedHighlightModel;
+	private final HighlightModel< V, E > wrappedHighlightModel;
 
 	public OverlayHighlightWrapper(
-			final ReadOnlyGraph< V, E > graph,
 			final GraphIdBimap< V, E > idmap,
 			final HighlightModel< V, E > highlight )
 	{
-		this.wrappedGraph = graph;
 		this.idmap = idmap;
 		this.wrappedHighlightModel = highlight;
 	}

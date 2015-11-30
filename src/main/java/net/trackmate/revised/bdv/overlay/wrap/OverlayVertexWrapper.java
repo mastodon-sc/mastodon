@@ -20,7 +20,7 @@ public class OverlayVertexWrapper< V extends Vertex< E >, E extends Edge< V > >
 
 	private final EdgesWrapper edges;
 
-	private final OverlayProperties< V > overlayProperties;
+	private final OverlayProperties< V, E > overlayProperties;
 
 	OverlayVertexWrapper( final OverlayGraphWrapper< V, E > wrapper )
 	{
@@ -90,9 +90,7 @@ public class OverlayVertexWrapper< V extends Vertex< E >, E extends Edge< V > >
 	@Override
 	public boolean isSelected()
 	{
-		// TODO
-		// return tsv.isSelected();
-		return false;
+		return overlayProperties.isVertexSelected( wv );
 	}
 
 	@Override

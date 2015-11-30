@@ -1,21 +1,16 @@
 package net.trackmate.revised.trackscheme;
 
-import net.trackmate.graph.Edge;
-import net.trackmate.graph.Vertex;
 import net.trackmate.revised.ui.selection.HighlightListener;
 import net.trackmate.revised.ui.selection.HighlightModel;
-import net.trackmate.spatial.HasTimepoint;
 
 
-public class TrackSchemeHighlight<
-		V extends Vertex< E > & HasTimepoint,
-		E extends Edge< V > >
+public class TrackSchemeHighlight
 {
 	private final ModelHighlightProperties props;
 
-	private final TrackSchemeGraph< V, E > graph;
+	private final TrackSchemeGraph< ?, ? > graph;
 
-	public TrackSchemeHighlight( final ModelHighlightProperties props, final TrackSchemeGraph< V, E > graph )
+	public TrackSchemeHighlight( final ModelHighlightProperties props, final TrackSchemeGraph< ?, ? > graph )
 	{
 		this.props = props;
 		this.graph = graph;

@@ -1,5 +1,6 @@
 package net.trackmate.revised.ui.selection;
 
+import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.Collection;
 
@@ -28,6 +29,8 @@ import net.trackmate.graph.listenable.ListenableGraph;
  * @param <E>
  *            the type of the edges.
  */
+// TODO: less severe synchronization
+// TODO: should Selection be an interface
 public class Selection< V extends Vertex< E >, E extends Edge< V > > implements GraphListener< V, E >
 {
 	private final ListenableGraph< V, E > graph;
@@ -41,6 +44,8 @@ public class Selection< V extends Vertex< E >, E extends Edge< V > > implements 
 	private final BitSet vertexBits;
 
 	private final BitSet edgeBits;
+
+	private final ArrayList< SelectionListener > listeners;
 
 	/**
 	 * Creates a new selection for the specified graph.
@@ -62,6 +67,7 @@ public class Selection< V extends Vertex< E >, E extends Edge< V > > implements 
 		selectedEdges = CollectionUtils.createEdgeSet( graph );
 		vertexBits = new BitSet();
 		edgeBits = new BitSet();
+		this.listeners = new ArrayList< SelectionListener >();
 	}
 
 	/**
@@ -105,6 +111,7 @@ public class Selection< V extends Vertex< E >, E extends Edge< V > > implements 
 				selectedVertices.add( v );
 			else
 				selectedVertices.remove( v );
+			notifyListeners();
 		}
 	}
 
@@ -125,6 +132,7 @@ public class Selection< V extends Vertex< E >, E extends Edge< V > > implements 
 				selectedEdges.add( e );
 			else
 				selectedEdges.remove( e );
+			notifyListeners();
 		}
 	}
 
@@ -163,9 +171,19 @@ public class Selection< V extends Vertex< E >, E extends Edge< V > > implements 
 		for ( final E e : edges )
 			edgeBits.set( idmap.getEdgeId( e ), selected );
 		if ( selected )
-			return selectedEdges.addAll( edges );
+		{
+			final boolean changed = selectedEdges.addAll( edges );
+			if ( changed )
+				notifyListeners();
+			return changed;
+		}
 		else
-			return selectedEdges.removeAll( edges );
+		{
+			final boolean changed = selectedEdges.removeAll( edges );
+			if ( changed )
+				notifyListeners();
+			return changed;
+		}
 	}
 
 	/**
@@ -181,9 +199,19 @@ public class Selection< V extends Vertex< E >, E extends Edge< V > > implements 
 		for ( final V v : vertices )
 			vertexBits.set( idmap.getVertexId( v ), selected );
 		if ( selected )
-			return selectedVertices.addAll( vertices );
+		{
+			final boolean changed = selectedVertices.addAll( vertices );
+			if ( changed )
+				notifyListeners();
+			return changed;
+		}
 		else
-			return selectedVertices.removeAll( vertices );
+		{
+			final boolean changed = selectedVertices.removeAll( vertices );
+			if ( changed )
+				notifyListeners();
+			return changed;
+		}
 	}
 
 	/**
@@ -200,6 +228,7 @@ public class Selection< V extends Vertex< E >, E extends Edge< V > > implements 
 			return false;
 		selectedEdges.clear();
 		selectedVertices.clear();
+		notifyListeners();
 		return true;
 	}
 
@@ -266,4 +295,21 @@ public class Selection< V extends Vertex< E >, E extends Edge< V > > implements 
 	{
 		clearSelection();
 	}
+
+	public boolean addSelectionListener( final SelectionListener l )
+	{
+		return listeners.add( l );
+	}
+
+	public boolean removeSelectionListener( final SelectionListener l )
+	{
+		return listeners.remove( l );
+	}
+
+	private void notifyListeners()
+	{
+		for ( final SelectionListener l : listeners )
+			l.selectionChanged();
+	}
+
 }

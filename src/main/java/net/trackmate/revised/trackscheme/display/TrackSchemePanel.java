@@ -22,9 +22,11 @@ import net.trackmate.revised.trackscheme.ScreenEntitiesInterpolator;
 import net.trackmate.revised.trackscheme.ScreenTransform;
 import net.trackmate.revised.trackscheme.TrackSchemeGraph;
 import net.trackmate.revised.trackscheme.TrackSchemeHighlight;
+import net.trackmate.revised.trackscheme.TrackSchemeSelection;
 import net.trackmate.revised.trackscheme.display.TrackSchemeOptions.Values;
 import net.trackmate.revised.trackscheme.display.laf.DefaultTrackSchemeOverlay;
 import net.trackmate.revised.ui.selection.HighlightListener;
+import net.trackmate.revised.ui.selection.SelectionListener;
 import net.trackmate.trackscheme.animate.AbstractAnimator;
 import bdv.viewer.TimePointListener;
 
@@ -33,8 +35,10 @@ public class TrackSchemePanel extends JPanel implements
 		PainterThread.Paintable,
 		HighlightListener,
 		TimePointListener,
-		GraphChangeListener
+		GraphChangeListener,
+		SelectionListener
 {
+
 	private static final long ANIMATION_MILLISECONDS = 250;
 
 	private final TrackSchemeGraph< ?, ? > graph;
@@ -117,13 +121,17 @@ public class TrackSchemePanel extends JPanel implements
 	 */
 	private boolean ignoreScrollBarChanges;
 
+	private final TrackSchemeSelection selection;
+
 	public TrackSchemePanel(
 			final TrackSchemeGraph< ?, ? > graph,
-			final TrackSchemeHighlight< ?, ? > highlight,
+			final TrackSchemeHighlight highlight,
+			final TrackSchemeSelection selection,
 			final TrackSchemeOptions optional )
 	{
 		super( new BorderLayout(), false );
 		this.graph = graph;
+		this.selection = selection;
 		options = optional.values;
 
 		graph.addGraphChangeListener( this );
@@ -133,8 +141,10 @@ public class TrackSchemePanel extends JPanel implements
 		display = new InteractiveDisplayCanvasComponent< ScreenTransform >(	w, h, options.getTransformEventHandlerFactory() );
 		display.addTransformListener( this );
 
-		graphOverlay = new DefaultTrackSchemeOverlay( highlight, optional );
 		highlight.addHighlightListener( this );
+		selection.addSelectionListener( this );
+
+		graphOverlay = new DefaultTrackSchemeOverlay( graph, highlight, optional );
 		display.addOverlayRenderer( graphOverlay );
 
 		// This should be the last OverlayRenderer in display.
@@ -158,7 +168,11 @@ public class TrackSchemePanel extends JPanel implements
 		painterThread = new PainterThread( this );
 		flags = new Flags();
 
-		display.addMouseMotionListener( new MouseOverListener( graphOverlay ) );
+		display.addMouseMotionListener( new MouseHighlightHandler( graphOverlay, highlight ) );
+
+		final MouseSelectionHandler mouseSelectionHandler = new MouseSelectionHandler( graphOverlay, selection, display, layout, graph );
+		display.addHandler( mouseSelectionHandler );
+		display.addOverlayRenderer( mouseSelectionHandler );
 
 		xScrollBar = new JScrollBar( JScrollBar.HORIZONTAL );
 		yScrollBar = new JScrollBar( JScrollBar.VERTICAL );
@@ -259,7 +273,7 @@ public class TrackSchemePanel extends JPanel implements
 			layoutMaxX = layout.getCurrentLayoutMaxX();
 			entityAnimator.startAnimation( transform, ANIMATION_MILLISECONDS );
 		}
-		else if ( flags.transformChanged )
+		else if ( flags.transformChanged || flags.selectionChanged )
 		{
 			entityAnimator.startAnimation( transform, 0 );
 		}
@@ -322,6 +336,13 @@ public class TrackSchemePanel extends JPanel implements
 		display.repaint();
 	}
 
+	@Override
+	public void selectionChanged()
+	{
+		flags.setSelectionChanged();
+		painterThread.requestRepaint();
+	}
+
 	protected class ScreenEntityAnimator extends AbstractAnimator
 	{
 		private ScreenEntities screenEntities;
@@ -346,6 +367,7 @@ public class TrackSchemePanel extends JPanel implements
 			screenEntitiesIpStart = new ScreenEntities( graph, capacity );
 			screenEntitiesIpEnd = new ScreenEntities( graph, capacity );
 			interpolator = null;
+			lastComputedScreenEntities = screenEntities;
 		}
 
 		/**
@@ -364,8 +386,7 @@ public class TrackSchemePanel extends JPanel implements
 		 */
 		private void copyIpStart()
 		{
-			if ( null != lastComputedScreenEntities )
-				screenEntitiesIpStart.set( lastComputedScreenEntities );
+			screenEntitiesIpStart.set( lastComputedScreenEntities );
 			screenEntities.clear();
 		}
 
@@ -425,12 +446,17 @@ public class TrackSchemePanel extends JPanel implements
 		 */
 		public void setPaintEntities( final AbstractTrackSchemeOverlay overlay )
 		{
-			final ScreenEntities tmp = overlay.setScreenEntities( screenEntities );
-			if ( tmp == null )
-				screenEntities = new ScreenEntities( graph, capacity );
-			else
-				screenEntities = tmp;
-			screenEntities.clear();
+			if ( lastComputedScreenEntities == screenEntities )
+			{
+				final ScreenEntities tmp = overlay.setScreenEntities( screenEntities );
+				if ( tmp == null )
+				{
+					screenEntities = new ScreenEntities( graph, capacity );
+				}
+				else
+					screenEntities = tmp;
+				screenEntities.clear();
+			}
 		}
 
 		private ScreenEntities getLastComputedScreenEntities()
@@ -442,12 +468,14 @@ public class TrackSchemePanel extends JPanel implements
 	protected static class Flags
 	{
 		private boolean transformChanged;
+		private boolean selectionChanged;
 		private boolean graphChanged;
 		private boolean contextChanged;
 
 		public Flags()
 		{
 			transformChanged = false;
+			selectionChanged = false;
 			graphChanged = false;
 			contextChanged = false;
 		}
@@ -455,6 +483,7 @@ public class TrackSchemePanel extends JPanel implements
 		public Flags( final Flags f )
 		{
 			transformChanged = f.transformChanged;
+			selectionChanged = f.selectionChanged;
 			graphChanged = f.graphChanged;
 			contextChanged = f.contextChanged;
 		}
@@ -462,6 +491,11 @@ public class TrackSchemePanel extends JPanel implements
 		public synchronized void setTransformChanged()
 		{
 			transformChanged = true;
+		}
+
+		public synchronized void setSelectionChanged()
+		{
+			selectionChanged = true;
 		}
 
 		public synchronized void setGraphChanged()
@@ -478,6 +512,7 @@ public class TrackSchemePanel extends JPanel implements
 		{
 			final Flags copy = new Flags( this );
 			transformChanged = false;
+			selectionChanged = false;
 			graphChanged = false;
 			contextChanged = false;
 			return copy;

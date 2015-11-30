@@ -7,10 +7,11 @@ import gnu.trove.map.hash.TIntObjectHashMap;
 
 import java.util.Collection;
 import java.util.Iterator;
-import java.util.List;
 
 import net.imglib2.RealLocalizable;
 import net.trackmate.graph.collection.RefList;
+import net.trackmate.graph.collection.RefSet;
+import net.trackmate.graph.util.TIntAlternatingIterator;
 import net.trackmate.revised.trackscheme.ScreenEdge.ScreenEdgePool;
 import net.trackmate.revised.trackscheme.ScreenVertex.ScreenVertexPool;
 import net.trackmate.revised.trackscheme.ScreenVertexRange.ScreenVertexRangePool;
@@ -355,15 +356,15 @@ public class LineageTreeLayout
 	 *
 	 * @param layoutPos
 	 *            layout coordinates.
-	 * @param aspectRatio
+	 * @param aspectRatioXtoY
 	 *            The <em>X/Y</em> ratio of screen vector <em>(1,1)</em>
 	 *            transformed into layout coordinates <em>(X,Y)</em>.
-	 * @param v
+	 * @param ref
 	 *            ref to store the result.
 	 * @return the closest active vertex to the specified coordinates, or
 	 *         {@code null} if there are no active vertices.
 	 */
-	public TrackSchemeVertex getClosestActiveVertex( final RealLocalizable layoutPos, final double ratioXtoY, final TrackSchemeVertex v )
+	public TrackSchemeVertex getClosestActiveVertex( final RealLocalizable layoutPos, final double aspectRatioXtoY, final TrackSchemeVertex ref )
 	{
 		final double lx = layoutPos.getDoublePosition( 0 );
 		final double ly = layoutPos.getDoublePosition( 1 );
@@ -371,27 +372,26 @@ public class LineageTreeLayout
 		double closestVertexSquareDist = Double.POSITIVE_INFINITY;
 		int closestVertexIndex = -1;
 
-// TODO: intead of only forward iteration through timepoints, should pick a good starting tp and then search forwards and backwards until diffy * diffy < closestVertexSquareDist.
-		final TIntIterator tpIter = timepoints.iterator();
+		final TIntIterator tpIter = new TIntAlternatingIterator( timepoints, ( int ) ly );
 		while( tpIter.hasNext() )
 		{
 			final int tp = tpIter.next();
-			final double diffy = ( ly - tp ) * ratioXtoY;
+			final double diffy = ( ly - tp ) * aspectRatioXtoY;
 			if ( diffy * diffy < closestVertexSquareDist )
 			{
 				final TrackSchemeVertexList vertexList = timepointToOrderedVertices.get( tp );
 				final int left = vertexList.binarySearch( lx );
-				final int begin = Math.min( 0, left );
+				final int begin = Math.max( 0, left );
 				final int end = Math.min( begin + 2, vertexList.size() );
 				for ( int x = begin; x < end; ++x )
 				{
-					vertexList.get( x, v );
-					final double diffx = ( lx - v.getLayoutX() );
+					vertexList.get( x, ref );
+					final double diffx = ( lx - ref.getLayoutX() );
 					final double d2 = diffx * diffx + diffy * diffy;
 					if ( d2 < closestVertexSquareDist )
 					{
 						closestVertexSquareDist = d2;
-						closestVertexIndex = v.getInternalPoolIndex();
+						closestVertexIndex = ref.getInternalPoolIndex();
 					}
 				}
 			}
@@ -400,20 +400,48 @@ public class LineageTreeLayout
 		if ( closestVertexIndex < 0 )
 			return null;
 
-		graph.getVertexPool().getByInternalPoolIndex( closestVertexIndex, v );
-		return v;
+		graph.getVertexPool().getByInternalPoolIndex( closestVertexIndex, ref );
+		return ref;
 	}
 
-// TODO remove?
-//	TIntArrayList getTimepoints()
-//	{
-//		return timepoints;
-//	}
-//
-//	TrackSchemeVertexList getOrderedVertices( final int timepoint )
-//	{
-//		return timepointToOrderedVertices.get( timepoint );
-//	}
+	/**
+	 * Returns the set of all the vertices in the rectangle with two corners
+	 * <code>(lx1, ly1)</code> and <code>(lx2, ly2)</code> in layout
+	 * coordinates.
+	 *
+	 * @param lx1
+	 *            the x coordinate of the first corner.
+	 * @param ly1
+	 *            the y coordinate of the first corner.
+	 * @param lx2
+	 *            the x coordinate of the second corner.
+	 * @param ly2
+	 *            the y coordinate of the second corner.
+	 * @return a new set.
+	 */
+	public RefSet< TrackSchemeVertex > getVerticesWithin( final double lx1, final double ly1, final double lx2, final double ly2 )
+	{
+		final int tStart = ( int ) Math.ceil( Math.min( ly1, ly2 ) );
+		final int tEnd = ( int ) Math.floor( Math.max( ly1, ly2 ) ) + 1;
+		final double x1 = Math.min( lx1, lx2 ) - 1;
+		final double x2 = Math.max( lx1, lx2 );
+
+		final RefSet< TrackSchemeVertex > vertexSet = graph.createVertexSet();
+		int start = timepoints.binarySearch( tStart );
+		if ( start < 0 )
+			start = -start - 1;
+		int end = timepoints.binarySearch( tEnd );
+		if ( end < 0 )
+			end = -end - 1;
+		for ( int tpIndex = start; tpIndex < end; ++tpIndex )
+		{
+			final TrackSchemeVertexList vertexList = timepointToOrderedVertices.get( timepoints.get( tpIndex ) );
+			final int left = vertexList.binarySearch( x1 ) + 1;
+			final int right = vertexList.binarySearch( x2, left, vertexList.size() );
+			vertexSet.addAll( vertexList.subList( left, right + 1 ) );
+		}
+		return vertexSet;
+	}
 
 	/**
 	 * Recursively lay out vertices such that

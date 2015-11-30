@@ -36,7 +36,7 @@ public class ScreenEntities
 	 */
 	private final ScreenTransform screenTransform;
 
-	public ScreenEntities( final TrackSchemeGraph< ?, ? > graph)
+	public ScreenEntities( final TrackSchemeGraph< ?, ? > graph )
 	{
 		this( graph, DEFAULT_CAPACITY );
 	}

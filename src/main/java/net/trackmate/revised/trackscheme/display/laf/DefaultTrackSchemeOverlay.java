@@ -12,12 +12,14 @@ import java.awt.font.TextLayout;
 import java.awt.geom.Rectangle2D;
 
 import net.imglib2.RealLocalizable;
+import net.trackmate.revised.Util;
 import net.trackmate.revised.trackscheme.ScreenEdge;
 import net.trackmate.revised.trackscheme.ScreenEntities;
 import net.trackmate.revised.trackscheme.ScreenTransform;
 import net.trackmate.revised.trackscheme.ScreenVertex;
 import net.trackmate.revised.trackscheme.ScreenVertex.Transition;
 import net.trackmate.revised.trackscheme.ScreenVertexRange;
+import net.trackmate.revised.trackscheme.TrackSchemeGraph;
 import net.trackmate.revised.trackscheme.TrackSchemeHighlight;
 import net.trackmate.revised.trackscheme.display.AbstractTrackSchemeOverlay;
 import net.trackmate.revised.trackscheme.display.TrackSchemeOptions;
@@ -72,9 +74,12 @@ public class DefaultTrackSchemeOverlay extends AbstractTrackSchemeOverlay
 
 	protected TrackSchemeStyle style = TrackSchemeStyle.defaultStyle();
 
-	public DefaultTrackSchemeOverlay( final TrackSchemeHighlight< ?, ? > highlight, final TrackSchemeOptions options )
+	public DefaultTrackSchemeOverlay(
+			final TrackSchemeGraph< ?, ? > graph,
+			final TrackSchemeHighlight highlight,
+			final TrackSchemeOptions options )
 	{
-		super( highlight, options );
+		super( graph, highlight, options );
 	}
 
 	@Override
@@ -153,6 +158,19 @@ public class DefaultTrackSchemeOverlay extends AbstractTrackSchemeOverlay
 		{
 			drawVertexSimplified( g2, vertex );
 		}
+	}
+
+	@Override
+	protected double distanceToPaintedEdge( final RealLocalizable pos, final ScreenEdge edge, final ScreenVertex source, final ScreenVertex target )
+	{
+		final double x0 = pos.getDoublePosition( 0 );
+		final double y0 = pos.getDoublePosition( 1 );
+		final double x1 = source.getX();
+		final double y1 = source.getY();
+		final double x2 = target.getX();
+		final double y2 = target.getY();
+		final double d = Util.segmentDist( x0, y0, x1, y1, x2, y2 );
+		return d;
 	}
 
 	@Override

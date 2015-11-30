@@ -10,6 +10,7 @@ import javax.swing.WindowConstants;
 import net.imglib2.ui.util.GuiUtil;
 import net.trackmate.revised.trackscheme.TrackSchemeGraph;
 import net.trackmate.revised.trackscheme.TrackSchemeHighlight;
+import net.trackmate.revised.trackscheme.TrackSchemeSelection;
 import bdv.viewer.SourceAndConverter;
 import bdv.viewer.ViewerOptions;
 
@@ -19,9 +20,10 @@ public class TrackSchemeFrame extends JFrame
 
 	public TrackSchemeFrame(
 			final TrackSchemeGraph< ?, ? > graph,
-			final TrackSchemeHighlight< ?, ? > highlight )
+			final TrackSchemeHighlight highlight,
+			final TrackSchemeSelection selection )
 	{
-		this( graph, highlight, TrackSchemeOptions.options() );
+		this( graph, highlight, selection, TrackSchemeOptions.options() );
 	}
 
 	/**
@@ -37,13 +39,14 @@ public class TrackSchemeFrame extends JFrame
 	 */
 	public TrackSchemeFrame(
 			final TrackSchemeGraph< ?, ? > graph,
-			final TrackSchemeHighlight< ?, ? > highlight,
+			final TrackSchemeHighlight highlight,
+			final TrackSchemeSelection selection,
 			final TrackSchemeOptions optional )
 	{
 		super( "TrackScheme", GuiUtil.getSuitableGraphicsConfiguration( GuiUtil.RGB_COLOR_MODEL ) );
 		getRootPane().setDoubleBuffered( true );
 
-		trackschemePanel = new TrackSchemePanel( graph, highlight, optional );
+		trackschemePanel = new TrackSchemePanel( graph, highlight, selection, optional );
 		add( trackschemePanel, BorderLayout.CENTER );
 		pack();
 		setDefaultCloseOperation( WindowConstants.DISPOSE_ON_CLOSE );

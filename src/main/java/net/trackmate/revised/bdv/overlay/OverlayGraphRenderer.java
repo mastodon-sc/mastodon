@@ -18,6 +18,7 @@ import net.imglib2.type.numeric.ARGBType;
 import net.imglib2.ui.OverlayRenderer;
 import net.imglib2.ui.TransformListener;
 import net.imglib2.util.LinAlgHelpers;
+import net.trackmate.revised.Util;
 import net.trackmate.spatial.ClipConvexPolytope;
 import net.trackmate.spatial.SpatialIndex;
 import net.trackmate.spatial.SpatioTemporalIndex;
@@ -84,7 +85,80 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 		renderTimepoint = timepoint;
 	}
 
-	public void mouseOverHighlight( final int x, final int y )
+	public E getEdgeAt( final int x, final int y, final double tolerance, final E ref )
+	{
+		final AffineTransform3D transform = new AffineTransform3D();
+		synchronized ( renderTransform )
+		{
+			transform.set( renderTransform );
+		}
+
+		final int currentTimepoint = renderTimepoint;
+		final double globalToViewerScale = Affine3DHelpers.extractScale( transform, 0 );
+
+		final double border = globalToViewerScale * Math.sqrt( graph.getMaxBoundingSphereRadiusSquared( currentTimepoint ) );
+		final double maxDepth = isFocusLimitViewRelative ?
+				focusLimit :
+				focusLimit * Affine3DHelpers.extractScale( transform, 0 );
+		final ConvexPolytope visiblePolytopeViewer = new ConvexPolytope(
+				new HyperPlane( 0, 0, 1, -maxDepth ),
+				new HyperPlane( 0, 0, -1, -maxDepth ),
+				new HyperPlane( 1, 0, 0, -border ),
+				new HyperPlane( -1, 0, 0, -width - border ),
+				new HyperPlane( 0, 1, 0, -border ),
+				new HyperPlane( 0, -1, 0, -height - border ) );
+		final ConvexPolytope visiblePolytopeGlobal = ConvexPolytope.transform( visiblePolytopeViewer, transform.inverse() );
+
+		final double[] lPosClick = new double[] { x, y, 0 };
+		final double[] gPosClick = new double[ 3 ];
+		transform.applyInverse( gPosClick, lPosClick );
+
+		final SpatioTemporalIndex< V > index = graph.getIndex();
+		index.readLock().lock();
+		try
+		{
+			final double[] gPosT = new double[ 3 ];
+			final double[] lPosT = new double[ 3 ];
+			final double[] gPosS = new double[ 3 ];
+			final double[] lPosS = new double[ 3 ];
+			final V vertexRef = graph.vertexRef();
+
+			for ( int t = Math.max( 0, currentTimepoint - ( int ) timeLimit ); t < currentTimepoint; ++t )
+			{
+				final SpatialIndex< V > si = graph.getIndex().getSpatialIndex( t );
+				final ClipConvexPolytope< V > ccp = si.getClipConvexPolytope();
+				ccp.clip( visiblePolytopeGlobal );
+				for ( final V source : ccp.getInsideValues() )
+				{
+					source.localize( lPosS );
+					transform.apply( lPosS, gPosS );
+					final double x1 = gPosS[ 0 ];
+					final double y1 = gPosS[ 1 ];
+					for ( final E edge : source.outgoingEdges() )
+					{
+						final V target = edge.getTarget( vertexRef );
+						target.localize( lPosT );
+						transform.apply( lPosT, gPosT );
+						final double x2 = gPosT[ 0 ];
+						final double y2 = gPosT[ 1 ];
+						if ( Util.segmentDist( x, y, x1, y1, x2, y2 ) <= tolerance )
+						{
+							ref.refTo( edge );
+							graph.releaseRef( vertexRef );
+							return ref;
+						}
+					}
+				}
+			}
+		}
+		finally
+		{
+			index.readLock().unlock();
+		}
+		return null;
+	}
+
+	public V getVertexAt( final int x, final int y, final V ref )
 	{
 		final AffineTransform3D transform = new AffineTransform3D();
 		synchronized ( renderTransform )
@@ -125,7 +199,6 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 				final double[] xy = new double[] { x, y };
 				final double[] vPos = new double[ 3 ];
 				double minDist = Double.MAX_VALUE;
-				final V minV = graph.vertexRef();
 				boolean found = false;
 				for ( final V v : ccp.getInsideValues() )
 				{
@@ -138,17 +211,12 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 						if ( d < minDist )
 						{
 							minDist = d;
-							minV.refTo( v );
+							ref.refTo( v );
 						}
 					}
 				}
-				if ( found )
-				{
-					highlight.highlightVertex( minV );
-					graph.releaseRef( minV );
-					return;
-				}
-				graph.releaseRef( minV );
+				if ( found ) { return ref; }
+				return null;
 			}
 			else if ( drawEllipsoidSliceIntersection )
 			{
@@ -160,18 +228,18 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 					svm.init( v, transform );
 					if ( svm.containsGlobal( gPos ) )
 					{
-						highlight.highlightVertex( v );
-						return;
+						ref.refTo( v );
+						return ref;
 					}
 				}
+				return null;
 			}
 		}
 		finally
 		{
 			index.readLock().unlock();
 		}
-
-		highlight.highlightVertex( null );
+		return null;
 	}
 
 	/*
@@ -436,7 +504,6 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 
 		if ( drawLinks )
 		{
-
 			graphics.setPaint( getColor( 0, 0, sliceDistanceFade, timepointDistanceFade, false ) );
 			for ( int t = Math.max( 0, currentTimepoint - ( int ) timeLimit ); t < currentTimepoint; ++t )
 			{

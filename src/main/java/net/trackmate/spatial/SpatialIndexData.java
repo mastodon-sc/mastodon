@@ -318,6 +318,7 @@ class SpatialIndexData< O extends Ref< O > & RealLocalizable >
 			}
 
 			final double[] p = new double[ n ];
+			pos.localize( p );
 			for ( final O v : added )
 			{
 				double sum = 0;

@@ -155,17 +155,17 @@ public class TgmmImporter
 
 	public static void main( final String[] args ) throws ParseException, SpimDataException, JDOMException, IOException
 	{
-//		final String tgmmFiles = "/Volumes/Data/TGMM_TL0-528_xmls_curated/GMEMfinalResult_frame%04d.xml";
-		final String tgmmFiles = "/Users/pietzsch/Downloads/data/TGMMruns_testRunToCheckOutput/XML_finalResult_lht/GMEMfinalResult_frame%04d.xml";
-//		final String bdvFile = "/Volumes/Data/BDV_MVD_5v_final.xml";
-		final String bdvFile = "/Users/pietzsch/TGMM/data/tifs/datasethdf5.xml";
-//		final int setupID = 1;
-		final int setupID = 0;
-//		final String target = "/Volumes/Data/model-small.raw";
-		final String target = "/Users/pietzsch/TGMM/data/tifs/model_revised.raw";
-//		final TimePoints timepoints = new TimePointsPattern( "1-528" );
-//		final TimePoints timepoints = new TimePointsPattern( "1-100" );
-		final TimePoints timepoints = new TimePointsPattern( "0-30" );
+//		final String tgmmFiles = "/Users/pietzsch/Downloads/data/TGMMruns_testRunToCheckOutput/XML_finalResult_lht/GMEMfinalResult_frame%04d.xml";
+//		final String bdvFile = "/Users/pietzsch/TGMM/data/tifs/datasethdf5.xml";
+//		final int setupID = 0;
+//		final String target = "/Users/pietzsch/TGMM/data/tifs/model_revised.raw";
+//		final TimePoints timepoints = new TimePointsPattern( "0-30" );
+
+		final String tgmmFiles = "/Volumes/Data/TGMM_TL0-528_xmls_curated/GMEMfinalResult_frame%04d.xml";
+		final String bdvFile = "/Volumes/Data/BDV_MVD_5v_final.xml";
+		final int setupID = 1;
+		final String target = "/Volumes/Data/model_revised.raw";
+		final TimePoints timepoints = new TimePointsPattern( "1-528" );
 
 		System.out.println( "Started reading TGMM files." );
 		System.out.println( " - TGMM files:\t\t" + tgmmFiles );

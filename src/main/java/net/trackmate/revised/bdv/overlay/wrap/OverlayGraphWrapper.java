@@ -27,7 +27,7 @@ public class OverlayGraphWrapper< V extends Vertex< E >, E extends Edge< V > >
 
 	final GraphIdBimap< V, E > idmap;
 
-	final OverlayProperties< V > overlayProperties;
+	final OverlayProperties< V, E > overlayProperties;
 
 	private final ConcurrentLinkedQueue< OverlayVertexWrapper< V, E > > tmpVertexRefs;
 
@@ -39,7 +39,7 @@ public class OverlayGraphWrapper< V extends Vertex< E >, E extends Edge< V > >
 			final ReadOnlyGraph< V, E > graph,
 			final GraphIdBimap< V, E > idmap,
 			final SpatioTemporalIndex< V > graphIndex,
-			final OverlayProperties< V > overlayProperties )
+			final OverlayProperties< V, E > overlayProperties )
 	{
 		this.wrappedGraph = graph;
 		this.idmap = idmap;

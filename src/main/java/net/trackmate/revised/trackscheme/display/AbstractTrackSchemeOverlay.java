@@ -11,7 +11,9 @@ import net.trackmate.revised.trackscheme.ScreenEdge;
 import net.trackmate.revised.trackscheme.ScreenEntities;
 import net.trackmate.revised.trackscheme.ScreenVertex;
 import net.trackmate.revised.trackscheme.ScreenVertexRange;
+import net.trackmate.revised.trackscheme.TrackSchemeGraph;
 import net.trackmate.revised.trackscheme.TrackSchemeHighlight;
+import net.trackmate.revised.trackscheme.TrackSchemeVertex;
 
 /**
  * An {@link OverlayRenderer} that paints {@link ScreenEntities} of a trackscheme
@@ -30,7 +32,7 @@ public abstract class AbstractTrackSchemeOverlay implements OverlayRenderer
 	/**
 	 * The {@link ScreenEntities} that are actually drawn on the canvas.
 	 */
-	private ScreenEntities entities;
+	protected final ScreenEntities entities;
 
 	/**
 	 * {@link ScreenEntities} that have been previously
@@ -47,7 +49,7 @@ public abstract class AbstractTrackSchemeOverlay implements OverlayRenderer
 	 */
 	private boolean pending;
 
-	protected final TrackSchemeHighlight< ?, ? > highlight;
+	protected final TrackSchemeHighlight highlight;
 
 	protected int highlightedVertexId;
 
@@ -57,12 +59,16 @@ public abstract class AbstractTrackSchemeOverlay implements OverlayRenderer
 
 	private int currentTimepoint = 0;
 
-	public AbstractTrackSchemeOverlay( final TrackSchemeHighlight< ?, ? > highlight, final TrackSchemeOptions options )
+
+	public AbstractTrackSchemeOverlay(
+			final TrackSchemeGraph< ?, ? > graph,
+			final TrackSchemeHighlight highlight,
+			final TrackSchemeOptions options )
 	{
 		this.highlight = highlight;
 		width = options.values.getWidth();
 		height = options.values.getHeight();
-		entities = null;
+		entities = new ScreenEntities( graph );
 	}
 
 	@Override
@@ -70,61 +76,85 @@ public abstract class AbstractTrackSchemeOverlay implements OverlayRenderer
 	{
 		final Graphics2D g2 = ( Graphics2D ) g;
 
-		final ScreenEntities ent = getScreenEntities();
-		if ( ent != null )
+		swapScreenEntities();
+
+		highlightedVertexId = highlight.getHighlightedVertexId();
+
+		paintBackground( g2, entities );
+
+		final RefList< ScreenEdge > edges = entities.getEdges();
+		final RefList< ScreenVertex > vertices = entities.getVertices();
+		final RefList< ScreenVertexRange > vertexRanges = entities.getRanges();
+
+		final ScreenVertex vt = vertices.createRef();
+		final ScreenVertex vs = vertices.createRef();
+
+		beforeDrawEdge( g2 );
+		for ( final ScreenEdge edge : edges )
 		{
-			highlightedVertexId = highlight.getHighlightedVertexId();
-
-			paintBackground( g2, ent );
-
-			final RefList< ScreenEdge > edges = ent.getEdges();
-			final RefList< ScreenVertex > vertices = ent.getVertices();
-			final RefList< ScreenVertexRange > vertexRanges = ent.getRanges();
-
-			final ScreenVertex vt = vertices.createRef();
-			final ScreenVertex vs = vertices.createRef();
-
-			beforeDrawEdge( g2 );
-			for ( final ScreenEdge edge : edges )
-			{
-				vertices.get( edge.getSourceScreenVertexIndex(), vs );
-				vertices.get( edge.getTargetScreenVertexIndex(), vt );
-				drawEdge( g2, edge, vs, vt );
-			}
-
-			beforeDrawVertex( g2 );
-			for ( final ScreenVertex vertex : vertices )
-			{
-				drawVertex( g2, vertex );
-			}
-
-			beforeDrawVertexRange( g2 );
-			for ( final ScreenVertexRange range : vertexRanges )
-			{
-				drawVertexRange( g2, range );
-			}
-
-			vertices.releaseRef( vs );
-			vertices.releaseRef( vt );
+			vertices.get( edge.getSourceScreenVertexIndex(), vs );
+			vertices.get( edge.getTargetScreenVertexIndex(), vt );
+			drawEdge( g2, edge, vs, vt );
 		}
+
+		beforeDrawVertex( g2 );
+		for ( final ScreenVertex vertex : vertices )
+		{
+			drawVertex( g2, vertex );
+		}
+
+		beforeDrawVertexRange( g2 );
+		for ( final ScreenVertexRange range : vertexRanges )
+		{
+			drawVertexRange( g2, range );
+		}
+
+		vertices.releaseRef( vs );
+		vertices.releaseRef( vt );
 	}
 
-	public void mouseOverHighlight( final int x, final int y )
+	public int getEdgeIdAt( final int x, final int y, final double tolerance )
 	{
-		final ScreenEntities ent = getScreenEntities();
-		if ( ent != null )
+		synchronized ( entities )
 		{
 			final RealPoint pos = new RealPoint( x, y );
-			for ( final ScreenVertex v : ent.getVertices() )
+			final RefList< ScreenVertex > vertices = entities.getVertices();
+			final ScreenVertex vt = vertices.createRef();
+			final ScreenVertex vs = vertices.createRef();
+			for ( final ScreenEdge e : entities.getEdges() )
 			{
-				if ( isInsidePaintedVertex( pos, v ) )
-				{
-					highlight.highlightVertex( v.getTrackSchemeVertexId() );
-					return;
-				}
+				vertices.get( e.getSourceScreenVertexIndex(), vs );
+				vertices.get( e.getTargetScreenVertexIndex(), vt );
+				if ( distanceToPaintedEdge( pos, e, vs, vt ) <= tolerance ) { return e.getTrackSchemeEdgeId(); }
 			}
 		}
-		highlight.highlightVertex( -1 );
+		return -1;
+	}
+
+	/**
+	 * Returns the internal pool index of the {@link TrackSchemeVertex}
+	 * currently painted on this display at screen coordinates specified by
+	 * {@code x} and {@code y}.
+	 * <p>
+	 * This method exists to facilitate writing mouse handlers.
+	 *
+	 * @param x
+	 *            the x screen coordinate
+	 * @param y
+	 *            the y screen coordinate
+	 * @return the internal pool index of the {@link TrackSchemeVertex} at
+	 *         {@code (x, y)}, or -1 if there is no vertex at this position.
+	 */
+	public int getVertexIdAt( final int x, final int y )
+	{
+		synchronized ( entities )
+		{
+			final RealPoint pos = new RealPoint( x, y );
+			for ( final ScreenVertex v : entities.getVertices() )
+				if ( isInsidePaintedVertex( pos, v ) )
+					return v.getTrackSchemeVertexId();
+			return -1;
+		}
 	}
 
 	@Override
@@ -201,15 +231,13 @@ public abstract class AbstractTrackSchemeOverlay implements OverlayRenderer
 	 *
 	 * @return current {@link ScreenEntities}.
 	 */
-	protected synchronized ScreenEntities getScreenEntities()
+	private synchronized ScreenEntities swapScreenEntities()
 	{
-		synchronized ( this )
+		if ( pending )
 		{
-			if ( pending )
+			synchronized ( entities )
 			{
-				final ScreenEntities tmp = entities;
-				entities = pendingEntities;
-				pendingEntities = tmp;
+				entities.set( pendingEntities );
 				pending = false;
 			}
 		}
@@ -217,6 +245,8 @@ public abstract class AbstractTrackSchemeOverlay implements OverlayRenderer
 	}
 
 	protected abstract boolean isInsidePaintedVertex( final RealLocalizable pos, final ScreenVertex vertex );
+
+	protected abstract double distanceToPaintedEdge( final RealLocalizable pos, final ScreenEdge edge, ScreenVertex source, ScreenVertex target );
 
 	protected abstract void paintBackground( Graphics2D g2, ScreenEntities screenEntities );
 

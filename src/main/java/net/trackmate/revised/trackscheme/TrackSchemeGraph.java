@@ -21,7 +21,6 @@ import net.trackmate.graph.mempool.ByteMappedElement;
 import net.trackmate.graph.mempool.ByteMappedElementArray;
 import net.trackmate.graph.mempool.MemPool;
 import net.trackmate.graph.mempool.SingleArrayMemPool;
-import net.trackmate.revised.trackscheme.ModelGraphProperties.ModelVertexProperties;
 import net.trackmate.spatial.HasTimepoint;
 
 /**
@@ -67,8 +66,6 @@ public class TrackSchemeGraph<
 	private final IntRefMap< TrackSchemeVertex > idToTrackSchemeVertex;
 
 	private final IntRefMap< TrackSchemeEdge > idToTrackSchemeEdge;
-
-	private final ModelVertexProperties modelVertexProperties;
 
 	private final RefSet< TrackSchemeVertex > roots;
 
@@ -131,7 +128,6 @@ public class TrackSchemeGraph<
 		tsv2 = vertexRef();
 		tse = edgeRef();
 		listeners = new ArrayList< GraphChangeListener >();
-		modelVertexProperties = modelGraphProperties.createVertexProperties();
 		modelGraph.addGraphListener( this );
 		modelGraph.addGraphChangeListener( this );
 		graphRebuilt();
@@ -215,6 +211,11 @@ public class TrackSchemeGraph<
 		return idToTrackSchemeVertex.get( modelId, ref );
 	}
 
+	TrackSchemeEdge getTrackSchemeEdgeForModelId( final int modelId, final TrackSchemeEdge ref )
+	{
+		return idToTrackSchemeEdge.get( modelId, ref );
+	}
+
 	/**
 	 * Adds a GraphChangeListener that will be notified when this
 	 * TrackSchemeGraph changes.
@@ -284,7 +285,7 @@ public class TrackSchemeGraph<
 			final int id = idmap.getEdgeId( e );
 			idToTrackSchemeVertex.get( idmap.getVertexId( e.getSource( mv ) ), tsv );
 			idToTrackSchemeVertex.get( idmap.getVertexId( e.getTarget( mv ) ), tsv2 );
-			addEdge( tsv, tsv2, tse );
+			addEdge( tsv, tsv2, tse ).init( id );
 			idToTrackSchemeEdge.put( id, tse );
 		}
 	}
@@ -318,7 +319,7 @@ public class TrackSchemeGraph<
 		idToTrackSchemeVertex.get( idmap.getVertexId( edge.getTarget( mv ) ), tsv2 );
 		if ( tsv2.incomingEdges().isEmpty() )
 			roots.remove( tsv2 );
-		addEdge( tsv, tsv2, tse );
+		addEdge( tsv, tsv2, tse ).init( id );
 		idToTrackSchemeEdge.put( id, tse );
 	}
 
