@@ -24,6 +24,17 @@ import net.trackmate.revised.trackscheme.TrackSchemeHighlight;
 import net.trackmate.revised.trackscheme.display.AbstractTrackSchemeOverlay;
 import net.trackmate.revised.trackscheme.display.TrackSchemeOptions;
 
+/**
+ * An AbstractTrackSchemeOverlay implementation that:
+ * <ul>
+ * <li>draws vertex as circles with the label inside.
+ * <li>offers two sizes of vertices (full and simplified).
+ * <li>draws edges as lines.
+ * </ul>
+ * <p>
+ * Colors and strokes can be configured separately, using a
+ * {@link TrackSchemeStyle}.
+ */
 public class DefaultTrackSchemeOverlay extends AbstractTrackSchemeOverlay
 {
 	/*

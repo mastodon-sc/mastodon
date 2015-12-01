@@ -13,13 +13,40 @@ import net.trackmate.revised.trackscheme.ScreenVertex;
 import net.trackmate.revised.trackscheme.ScreenVertexRange;
 import net.trackmate.revised.trackscheme.TrackSchemeGraph;
 import net.trackmate.revised.trackscheme.TrackSchemeHighlight;
-import net.trackmate.revised.trackscheme.TrackSchemeVertex;
 
 /**
- * An {@link OverlayRenderer} that paints {@link ScreenEntities} of a trackscheme
- * graph. Comprises methods to paint vertices, edges, and dense vertex ranges.
- * It has no layout capabilities of its own, just paints layouted screen
- * objects.
+ * An {@link OverlayRenderer} that paints {@link ScreenEntities} of a
+ * TrackScheme graph. Comprises methods to paint vertices, edges, and dense
+ * vertex ranges. It has no layout capabilities of its own; it just paints
+ * laid-out screen objects.
+ * <p>
+ * It takes the laid-out {@link ScreenEntities} that it receives with the method
+ * {@link #setScreenEntities(ScreenEntities)}, and can deal separately with
+ * {@link ScreenVertex} and {@link ScreenVertexRange}.
+ * <p>
+ * This class is abstract and the details of how to paint vertices, edges and
+ * background are delegated to concrete implementations. When the
+ * {@link #drawOverlays(Graphics)} method is called, the following sequence of
+ * abstract methods is executed:
+ * <ol>
+ * <li>{@link #paintBackground(Graphics2D, ScreenEntities)} to paint background
+ * decorations.
+ * <li> {@link #beforeDrawEdge(Graphics2D)} to configure the Graphics2D object
+ * prior to painting edges.
+ * <li> {@link #drawEdge(Graphics2D, ScreenEdge, ScreenVertex, ScreenVertex)} for
+ * each edge.
+ * <li>{@link #beforeDrawVertex(Graphics2D)} to configure the Graphics2D object
+ * prior to painting vertices.
+ * <li> {@link #drawVertex(Graphics2D, ScreenVertex)} for each vertex.
+ * <li> {@link #beforeDrawVertexRange(Graphics2D)} to configure the Graphics2D
+ * object prior to painting vertex ranges.
+ * <li>{@link #drawVertexRange(Graphics2D, ScreenVertexRange)} for each vertex
+ * range.
+ * </ol>
+ * <p>
+ * It also offers facilities to interrogate what has been painted where, to
+ * facilitate writing user interfaces. For instance, it can return the
+ * TrackScheme edge or vertex id near a screen xy coordinate.
  *
  * @author Tobias Pietzsch &lt;tobias.pietzsch@gmail.com&gt;
  */
@@ -59,7 +86,16 @@ public abstract class AbstractTrackSchemeOverlay implements OverlayRenderer
 
 	private int currentTimepoint = 0;
 
-
+	/**
+	 * Creates a new overlay for the specified TrackScheme graph.
+	 * 
+	 * @param graph
+	 *            the graph to paint.
+	 * @param highlight
+	 *            the highlight model that indicates what vertex is highlighted.
+	 * @param options
+	 *            options for TrackScheme look.
+	 */
 	public AbstractTrackSchemeOverlay(
 			final TrackSchemeGraph< ?, ? > graph,
 			final TrackSchemeHighlight highlight,
@@ -113,6 +149,22 @@ public abstract class AbstractTrackSchemeOverlay implements OverlayRenderer
 		vertices.releaseRef( vt );
 	}
 
+	/**
+	 * Returns the internal pool index of the TrackSchemeEdge currently painted
+	 * on this display at screen coordinates specified by {@code x} and
+	 * {@code y} and within a distance tolerance.
+	 * <p>
+	 * This method exists to facilitate writing mouse handlers.
+	 *
+	 * @param x
+	 *            the x screen coordinate
+	 * @param y
+	 *            the y screen coordinate
+	 * @param tolerance
+	 *            the maximal distance to the closest edge.
+	 * @return the internal pool index of the TrackSchemeEdge at {@code (x, y)},
+	 *         or -1 if there is no edge within the distance tolerance.
+	 */
 	public int getEdgeIdAt( final int x, final int y, final double tolerance )
 	{
 		synchronized ( entities )
@@ -164,11 +216,21 @@ public abstract class AbstractTrackSchemeOverlay implements OverlayRenderer
 		this.height = height;
 	}
 
+	/**
+	 * Returns the width of this overlay.
+	 * 
+	 * @return the width.
+	 */
 	public int getWidth()
 	{
 		return width;
 	}
 
+	/**
+	 * Returns the hight of this overlay.
+	 * 
+	 * @return the height.
+	 */
 	public int getHeight()
 	{
 		return height;
@@ -178,7 +240,9 @@ public abstract class AbstractTrackSchemeOverlay implements OverlayRenderer
 	 * Set the timepoint range of the dataset.
 	 *
 	 * @param minTimepoint
+	 *            the smallest timepoint to display.
 	 * @param maxTimepoint
+	 *            the largest timepoint to display.
 	 */
 	public void setTimepointRange( final int minTimepoint, final int maxTimepoint )
 	{
@@ -187,7 +251,7 @@ public abstract class AbstractTrackSchemeOverlay implements OverlayRenderer
 	}
 
 	/**
-	 * Set the current timepoint.
+	 * Sets the current timepoint.
 	 *
 	 * @param timepoint
 	 */
@@ -196,16 +260,31 @@ public abstract class AbstractTrackSchemeOverlay implements OverlayRenderer
 		this.currentTimepoint  = timepoint;
 	}
 
+	/**
+	 * Returns the smallest timepoint displayed.
+	 * 
+	 * @return the smallest timepoint displayed.
+	 */
 	protected int getMinTimepoint()
 	{
 		return minTimepoint;
 	}
 
+	/**
+	 * Returns the largest timepoint displayed.
+	 * 
+	 * @return the largest timepoint displayed.
+	 */
 	protected int getMaxTimepoint()
 	{
 		return maxTimepoint;
 	}
 
+	/**
+	 * Returns the timepoint currently displayed on this overlay.
+	 * 
+	 * @return the timepoint currently displayed.
+	 */
 	protected int getCurrentTimepoint()
 	{
 		return currentTimepoint;
@@ -244,21 +323,100 @@ public abstract class AbstractTrackSchemeOverlay implements OverlayRenderer
 		return entities;
 	}
 
+	/**
+	 * Returns <code>true</code> if the specified <b>layout</b> coordinates are
+	 * inside a painted vertex. As the vertex painting shape is implemented by
+	 * possibly different concrete classes, they should return whether a point
+	 * is inside a vertex or not.
+	 * 
+	 * @param pos
+	 *            the layout position.
+	 * @param vertex
+	 *            the vertex.
+	 * @return <code>true</code> if the position is inside the vertex painted.
+	 */
 	protected abstract boolean isInsidePaintedVertex( final RealLocalizable pos, final ScreenVertex vertex );
 
+	/**
+	 * Returns the distance from a <b>layout</b> position to a specified edge.
+	 * 
+	 * @param pos
+	 *            the layout position.
+	 * @param edge
+	 *            the edge.
+	 * @param source
+	 *            the edge source vertex.
+	 * @param target
+	 *            the edge target vertex.
+	 * @return the distance from the specified position to the edge.
+	 */
 	protected abstract double distanceToPaintedEdge( final RealLocalizable pos, final ScreenEdge edge, ScreenVertex source, ScreenVertex target );
 
+	/**
+	 * Paints background decorations.
+	 * 
+	 * @param g2
+	 *            the graphics object.
+	 * @param screenEntities
+	 *            the screen entities to paint.
+	 */
 	protected abstract void paintBackground( Graphics2D g2, ScreenEntities screenEntities );
 
+	/**
+	 * Configures the graphics object prior to drawing vertices.
+	 * 
+	 * @param g2
+	 *            the graphics object.
+	 */
 	protected abstract void beforeDrawVertex( Graphics2D g2 );
 
+	/**
+	 * Paints the specified vertex.
+	 * 
+	 * @param g2
+	 *            the graphics object.
+	 * @param vertex
+	 *            the vertex to paint.
+	 */
 	protected abstract void drawVertex( Graphics2D g2, ScreenVertex vertex );
 
+	/**
+	 * Configures the graphics object prior to drawing vertex ranges.
+	 * 
+	 * @param g2
+	 *            the graphics object.
+	 */
 	protected abstract void beforeDrawVertexRange( Graphics2D g2 );
 
+	/**
+	 * Paints the specified vertex range.
+	 * 
+	 * @param g2
+	 *            the graphics object.
+	 * @param range
+	 *            the vertex range to paint.
+	 */
 	protected abstract void drawVertexRange( Graphics2D g2, ScreenVertexRange range );
 
+	/**
+	 * Configures the graphics object prior to drawing edges.
+	 * 
+	 * @param g2
+	 *            the graphics object.
+	 */
 	protected abstract void beforeDrawEdge( Graphics2D g2 );
 
+	/**
+	 * Paints the specified edge.
+	 * 
+	 * @param g2
+	 *            the graphics object.
+	 * @param edge
+	 *            the edge to paint.
+	 * @param vs
+	 *            the edge source vertex.
+	 * @param vt
+	 *            the edge target vertex.
+	 */
 	protected abstract void drawEdge( Graphics2D g2, ScreenEdge edge, ScreenVertex vs, ScreenVertex vt );
 }
