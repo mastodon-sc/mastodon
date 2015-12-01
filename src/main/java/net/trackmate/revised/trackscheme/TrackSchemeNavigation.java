@@ -24,9 +24,7 @@ public class TrackSchemeNavigation implements
 	}
 
 	/**
-	 * Registers the specified listener to this handler. The specified
-	 * {@link NavigationGroupReceiver} will be used to determine to what groups
-	 * this listener belongs to when passing navigation events.
+	 * Registers the specified listener to this handler.
 	 *
 	 * @param listener
 	 *            the {@link NavigationListener} to register.
