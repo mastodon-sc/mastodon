@@ -558,7 +558,12 @@ public class LineageTreeLayout
 
 	public boolean addLayoutListener( final LayoutListener l )
 	{
-		return listeners.add( l );
+		if ( ! listeners.contains( l ) )
+		{
+			listeners.add( l );
+			return true;
+		}
+		return false;
 	}
 
 	public boolean removeLayoutListener( final LayoutListener l )
