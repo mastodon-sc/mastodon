@@ -62,6 +62,17 @@ public class AbstractModel<
 		this.modelGraph = modelGraph;
 	}
 
+	/**
+	 * Clears this model and loads the model from the specified raw file using
+	 * the specified serializer.
+	 *
+	 * @param file
+	 *            the raw file to load.
+	 * @param serializer
+	 *            the serializer used for reading individual vertices.
+	 * @throws IOException
+	 *             if an I/O error occurs while reading the file.
+	 */
 	protected void loadRaw( final File file, final RawGraphIO.Serializer< V, E > serializer ) throws IOException
 	{
 		final FileInputStream fis = new FileInputStream( file );
@@ -73,6 +84,17 @@ public class AbstractModel<
 		modelGraph.resumeListeners();
 	}
 
+	/**
+	 * Saves this model to the specified raw file using the specified
+	 * serializer.
+	 *
+	 * @param file
+	 *            the raw file to save.
+	 * @param serializer
+	 *            the serializer used for writing individual vertices.
+	 * @throws IOException
+	 *             if an I/O error occurs while writing the file.
+	 */
 	protected void saveRaw( final File file, final RawGraphIO.Serializer< V, E > serializer ) throws IOException
 	{
 		final FileOutputStream fos = new FileOutputStream( file );

@@ -83,7 +83,7 @@ public class Model extends AbstractModel< ModelGraph, Spot, Link >
 	}
 
 	/**
-	 * Clears this model and load the model from the specified raw file.
+	 * Clears this model and loads the model from the specified raw file.
 	 *
 	 * @param file
 	 *            the raw file to load.
