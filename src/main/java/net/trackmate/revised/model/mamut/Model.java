@@ -59,7 +59,7 @@ public class Model extends AbstractModel< ModelGraph, Spot, Link >
 	 */
 	public Spot addSpot( final int timepointId, final double[] pos, final double[][] cov, final Spot ref )
 	{
-		return modelGraph.emitVertexAdded( modelGraph.addVertex( ref ).init( timepointId, pos, cov ) );
+		return modelGraph.notifyVertexAdded( modelGraph.addVertex( ref ).init( timepointId, pos, cov ) );
 	}
 
 	/**

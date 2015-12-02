@@ -2,6 +2,7 @@ package net.trackmate.revised.trackscheme.display;
 
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.RenderingHints;
 
 import net.imglib2.RealLocalizable;
 import net.imglib2.RealPoint;
@@ -11,8 +12,11 @@ import net.trackmate.revised.trackscheme.ScreenEdge;
 import net.trackmate.revised.trackscheme.ScreenEntities;
 import net.trackmate.revised.trackscheme.ScreenVertex;
 import net.trackmate.revised.trackscheme.ScreenVertexRange;
+import net.trackmate.revised.trackscheme.TrackSchemeEdge;
+import net.trackmate.revised.trackscheme.TrackSchemeFocus;
 import net.trackmate.revised.trackscheme.TrackSchemeGraph;
 import net.trackmate.revised.trackscheme.TrackSchemeHighlight;
+import net.trackmate.revised.trackscheme.TrackSchemeVertex;
 
 /**
  * An {@link OverlayRenderer} that paints {@link ScreenEntities} of a
@@ -76,9 +80,15 @@ public abstract class AbstractTrackSchemeOverlay implements OverlayRenderer
 	 */
 	private boolean pending;
 
+	private final TrackSchemeGraph< ?, ? > graph;
+
 	protected final TrackSchemeHighlight highlight;
 
 	protected int highlightedVertexId;
+
+	protected final TrackSchemeFocus focus;
+
+	protected int focusedVertexId;
 
 	private int minTimepoint = 0;
 
@@ -99,9 +109,12 @@ public abstract class AbstractTrackSchemeOverlay implements OverlayRenderer
 	public AbstractTrackSchemeOverlay(
 			final TrackSchemeGraph< ?, ? > graph,
 			final TrackSchemeHighlight highlight,
+			final TrackSchemeFocus focus,
 			final TrackSchemeOptions options )
 	{
+		this.graph = graph;
 		this.highlight = highlight;
+		this.focus = focus;
 		width = options.values.getWidth();
 		height = options.values.getHeight();
 		entities = new ScreenEntities( graph );
@@ -111,10 +124,19 @@ public abstract class AbstractTrackSchemeOverlay implements OverlayRenderer
 	public void drawOverlays( final Graphics g )
 	{
 		final Graphics2D g2 = ( Graphics2D ) g;
+		g2.setRenderingHint( RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON );
 
 		swapScreenEntities();
 
-		highlightedVertexId = highlight.getHighlightedVertexId();
+		final TrackSchemeVertex ref = graph.vertexRef();
+
+		final TrackSchemeVertex h = highlight.getHighlightedVertex( ref );
+		highlightedVertexId = ( h == null ) ? -1 : h.getInternalPoolIndex();
+
+		final TrackSchemeVertex f = focus.getFocusedVertex( ref );
+		focusedVertexId = ( f == null ) ? -1 : f.getInternalPoolIndex();
+
+		graph.releaseRef( ref );
 
 		paintBackground( g2, entities );
 
@@ -161,11 +183,12 @@ public abstract class AbstractTrackSchemeOverlay implements OverlayRenderer
 	 * @param y
 	 *            the y screen coordinate
 	 * @param tolerance
+	 * @param ref
 	 *            the maximal distance to the closest edge.
 	 * @return the internal pool index of the TrackSchemeEdge at {@code (x, y)},
 	 *         or -1 if there is no edge within the distance tolerance.
 	 */
-	public int getEdgeIdAt( final int x, final int y, final double tolerance )
+	public TrackSchemeEdge getEdgeAt( final int x, final int y, final double tolerance, final TrackSchemeEdge ref )
 	{
 		synchronized ( entities )
 		{
@@ -173,39 +196,64 @@ public abstract class AbstractTrackSchemeOverlay implements OverlayRenderer
 			final RefList< ScreenVertex > vertices = entities.getVertices();
 			final ScreenVertex vt = vertices.createRef();
 			final ScreenVertex vs = vertices.createRef();
+
+			int i = -1;
 			for ( final ScreenEdge e : entities.getEdges() )
 			{
 				vertices.get( e.getSourceScreenVertexIndex(), vs );
 				vertices.get( e.getTargetScreenVertexIndex(), vt );
-				if ( distanceToPaintedEdge( pos, e, vs, vt ) <= tolerance ) { return e.getTrackSchemeEdgeId(); }
+				if ( distanceToPaintedEdge( pos, e, vs, vt ) <= tolerance )
+				{
+					i = e.getTrackSchemeEdgeId();
+					break;
+				}
 			}
+
+			vertices.releaseRef( vs );
+			vertices.releaseRef( vt );
+
+			if ( i < 0 )
+				return null;
+
+			graph.getEdgePool().getByInternalPoolIndex( i, ref );
+			return ref;
 		}
-		return -1;
 	}
 
 	/**
-	 * Returns the internal pool index of the {@link TrackSchemeVertex}
-	 * currently painted on this display at screen coordinates specified by
-	 * {@code x} and {@code y}.
+	 * Returns the {@link TrackSchemeVertex} currently painted on this display
+	 * at screen coordinates specified by {@code x} and {@code y}.
 	 * <p>
 	 * This method exists to facilitate writing mouse handlers.
+	 * <p>
+	 * Note that this really only looks at vertices that are individually
+	 * painted on the screen. Vertices inside dense ranges are ignored.
 	 *
 	 * @param x
 	 *            the x screen coordinate
 	 * @param y
 	 *            the y screen coordinate
-	 * @return the internal pool index of the {@link TrackSchemeVertex} at
-	 *         {@code (x, y)}, or -1 if there is no vertex at this position.
+	 * @param ref
+	 *            a reference that will be used to retrieve the result.
+	 * @return the {@link TrackSchemeVertex} at
+	 *         {@code (x, y)}, or {@code null} if there is no vertex at this position.
 	 */
-	public int getVertexIdAt( final int x, final int y )
+	public TrackSchemeVertex getVertexAt( final int x, final int y, final TrackSchemeVertex ref )
 	{
 		synchronized ( entities )
 		{
 			final RealPoint pos = new RealPoint( x, y );
 			for ( final ScreenVertex v : entities.getVertices() )
 				if ( isInsidePaintedVertex( pos, v ) )
-					return v.getTrackSchemeVertexId();
-			return -1;
+				{
+					final int i = v.getTrackSchemeVertexId();
+					if ( i >= 0 )
+					{
+						graph.getVertexPool().getByInternalPoolIndex( i, ref );
+						return ref;
+					}
+				}
+			return null;
 		}
 	}
 

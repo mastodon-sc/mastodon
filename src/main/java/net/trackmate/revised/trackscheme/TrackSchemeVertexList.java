@@ -55,13 +55,16 @@ public class TrackSchemeVertexList extends PoolObjectList< TrackSchemeVertex >
 	 * layoutX} {@code <= value}. This assumes that the
 	 * {@link TrackSchemeVertexList} is ordered by
 	 * {@link TrackSchemeVertex#getLayoutX() layoutX}.
+	 * <p>
+	 * For the returned index <em>i</em>, it holds that <em>-1 &le; i &lt;</em>
+	 * {@code size()}.
 	 *
 	 * @param value
 	 *            the value to search for
 	 * @return the largest index of a vertex with {@code layoutX <= value} in
 	 *         the sorted list.
 	 */
-	protected int binarySearch( final double value )
+	public int binarySearch( final double value )
 	{
 		return binarySearch( value, 0, size() );
 	}
@@ -72,6 +75,9 @@ public class TrackSchemeVertexList extends PoolObjectList< TrackSchemeVertex >
 	 * layoutX} {@code <= value}. This assumes that the
 	 * {@link TrackSchemeVertexList} is ordered by
 	 * {@link TrackSchemeVertex#getLayoutX() layoutX}.
+	 * <p>
+	 * For the returned index <em>i</em>, it holds that {@code fromIndex}
+	 * <em>- 1 &le; i &lt;</em> {@code toIndex}.
 	 *
 	 * @param value
 	 *            the value to search for

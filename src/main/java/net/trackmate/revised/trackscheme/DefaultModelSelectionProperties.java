@@ -1,9 +1,12 @@
 package net.trackmate.revised.trackscheme;
 
+import gnu.trove.set.TIntSet;
+import gnu.trove.set.hash.TIntHashSet;
 import net.trackmate.graph.Edge;
 import net.trackmate.graph.GraphIdBimap;
 import net.trackmate.graph.ReadOnlyGraph;
 import net.trackmate.graph.Vertex;
+import net.trackmate.graph.collection.RefSet;
 import net.trackmate.revised.ui.selection.Selection;
 import net.trackmate.revised.ui.selection.SelectionListener;
 

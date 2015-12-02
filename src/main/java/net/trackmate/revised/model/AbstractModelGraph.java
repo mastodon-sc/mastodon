@@ -75,7 +75,7 @@ public class AbstractModelGraph<
 	 *            {@link GraphListener#vertexAdded(net.trackmate.graph.Vertex)}.
 	 * @return the specified {@code vertex} argument.
 	 */
-	public V emitVertexAdded( final V vertex )
+	public V notifyVertexAdded( final V vertex )
 	{
 		if ( emitEvents )
 			for ( final GraphListener< V, E > listener : listeners )

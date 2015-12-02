@@ -10,51 +10,35 @@ public class TrackSchemeHighlight
 
 	private final TrackSchemeGraph< ?, ? > graph;
 
-	public TrackSchemeHighlight( final ModelHighlightProperties props, final TrackSchemeGraph< ?, ? > graph )
+	public TrackSchemeHighlight(
+			final ModelHighlightProperties props,
+			final TrackSchemeGraph< ?, ? > graph )
 	{
 		this.props = props;
 		this.graph = graph;
 	}
 
 	/**
-	 * Get internal pool index of {@link TrackSchemeVertex} that is currently
-	 * highlighted. Forwards to the model {@link HighlightModel}.
+	 * Get the {@link TrackSchemeVertex} that is currently highlighted. Forwards
+	 * to the model {@link HighlightModel}.
 	 *
-	 * @return internal id of {@link TrackSchemeVertex} that is currently
-	 *         highlighted.
+	 * @return currently highlighted vertex.
 	 */
-	public int getHighlightedVertexId()
+	public TrackSchemeVertex getHighlightedVertex( final TrackSchemeVertex ref )
 	{
-		final int mid = props.getHighlightedVertexId();
-		if ( mid < 0 )
-			return -1;
-		else
-		{
-			final TrackSchemeVertex ref = graph.vertexRef();
-			final TrackSchemeVertex v = graph.getTrackSchemeVertexForModelId( mid, ref );
-			final int id = ( v == null ) ? -1 : v.getInternalPoolIndex();
-			graph.releaseRef( ref );
-			return id;
-		}
+		return graph.getTrackSchemeVertexForModelId( props.getHighlightedVertexId(), ref );
 	}
 
 	/**
+	 * highlight vertex.
 	 *
-	 * @param trackSchemeVertexId internal pool index of TrackSchemeVertex to highlight or {@code <0} to clear highlight.
+	 * @param v
+	 *            vertex to highlight, or {@code null} to clear highlight.
 	 */
-	public void highlightVertex( final int trackSchemeVertexId )
+	// TODO: rename notifyHighlightVertex ?
+	public void highlightVertex( final TrackSchemeVertex v )
 	{
-		if ( trackSchemeVertexId < 0 )
-		{
-			props.highlightVertex( -1 );
-		}
-		else
-		{
-			final TrackSchemeVertex v = graph.vertexRef();
-			graph.getVertexPool().getByInternalPoolIndex( trackSchemeVertexId, v );
-			props.highlightVertex( v.getModelVertexId() );
-			graph.releaseRef( v );
-		}
+		props.highlightVertex( ( v == null ) ? -1 : v.getModelVertexId() );
 	}
 
 	public boolean addHighlightListener( final HighlightListener l )

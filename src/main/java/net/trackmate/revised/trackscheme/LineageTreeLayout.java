@@ -5,6 +5,7 @@ import gnu.trove.list.array.TIntArrayList;
 import gnu.trove.map.TIntObjectMap;
 import gnu.trove.map.hash.TIntObjectHashMap;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 
@@ -160,6 +161,7 @@ public class LineageTreeLayout
 		}
 		currentLayoutMinX = 0;
 		currentLayoutMaxX = rightmost - 1;
+		notifyListeners();
 	}
 
 	/**
@@ -419,6 +421,7 @@ public class LineageTreeLayout
 	 *            the y coordinate of the second corner.
 	 * @return a new set.
 	 */
+	// TODO rename getActiveVerticesWithin
 	public RefSet< TrackSchemeVertex > getVerticesWithin( final double lx1, final double ly1, final double lx2, final double ly2 )
 	{
 		final int tStart = ( int ) Math.ceil( Math.min( ly1, ly2 ) );
@@ -441,6 +444,16 @@ public class LineageTreeLayout
 			vertexSet.addAll( vertexList.subList( left, right + 1 ) );
 		}
 		return vertexSet;
+	}
+
+	public TIntObjectMap< TrackSchemeVertexList > getTimepointToOrderedVertices()
+	{
+		return timepointToOrderedVertices;
+	}
+
+	public TIntArrayList getTimepoints()
+	{
+		return timepoints;
 	}
 
 	/**
@@ -527,4 +540,42 @@ public class LineageTreeLayout
 		}
 		vlist.add( v );
 	}
+
+	private final ArrayList< LayoutListener > listeners = new ArrayList< LayoutListener >();
+
+	public boolean addLayoutListener( final LayoutListener l )
+	{
+		if ( ! listeners.contains( l ) )
+		{
+			listeners.add( l );
+			return true;
+		}
+		return false;
+	}
+
+	public boolean removeLayoutListener( final LayoutListener l )
+	{
+		return listeners.remove( l );
+	}
+
+	private void notifyListeners()
+	{
+		for ( final LayoutListener l : listeners )
+		{
+			l.layoutChanged( this );
+		}
+	}
+
+	public interface LayoutListener
+	{
+
+		/**
+		 * Notifies after the layout has been done.
+		 *
+		 * @param layout
+		 *            the layout.
+		 */
+		public void layoutChanged( LineageTreeLayout layout );
+	}
+
 }
