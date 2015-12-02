@@ -15,6 +15,7 @@ import net.trackmate.revised.trackscheme.ScreenVertexRange;
 import net.trackmate.revised.trackscheme.TrackSchemeFocus;
 import net.trackmate.revised.trackscheme.TrackSchemeGraph;
 import net.trackmate.revised.trackscheme.TrackSchemeHighlight;
+import net.trackmate.revised.trackscheme.TrackSchemeVertex;
 
 /**
  * An {@link OverlayRenderer} that paints {@link ScreenEntities} of a trackscheme
@@ -50,6 +51,8 @@ public abstract class AbstractTrackSchemeOverlay implements OverlayRenderer
 	 */
 	private boolean pending;
 
+	private final TrackSchemeGraph< ?, ? > graph;
+
 	protected final TrackSchemeHighlight highlight;
 
 	protected int highlightedVertexId;
@@ -65,12 +68,14 @@ public abstract class AbstractTrackSchemeOverlay implements OverlayRenderer
 	private int currentTimepoint = 0;
 
 
+
 	public AbstractTrackSchemeOverlay(
 			final TrackSchemeGraph< ?, ? > graph,
 			final TrackSchemeHighlight highlight,
 			final TrackSchemeFocus focus,
 			final TrackSchemeOptions options )
 	{
+		this.graph = graph;
 		this.highlight = highlight;
 		this.focus = focus;
 		width = options.values.getWidth();
@@ -87,7 +92,11 @@ public abstract class AbstractTrackSchemeOverlay implements OverlayRenderer
 		swapScreenEntities();
 
 		highlightedVertexId = highlight.getHighlightedVertexId();
-		focusedVertexId = focus.getFocusedVertexId();
+
+		final TrackSchemeVertex ref = graph.vertexRef();
+		final TrackSchemeVertex f = focus.getFocusedVertex( ref );
+		focusedVertexId = ( f == null ) ? -1 : f.getInternalPoolIndex();
+		graph.releaseRef( ref );
 
 		paintBackground( g2, entities );
 

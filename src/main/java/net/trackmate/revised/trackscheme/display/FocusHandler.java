@@ -55,22 +55,23 @@ public class FocusHandler extends MouseAdapter
 			final int vertexId = graphOverlay.getVertexIdAt( e.getX(), e.getY() );
 			if ( vertexId >= 0 )
 			{
+				final TrackSchemeVertex ref = graph.vertexRef();
+				graph.getVertexPool().getByInternalPoolIndex( vertexId, ref );
+
 				// Single click: We set the focus to the clicked vertex but do not navigate.
-				focus.focusVertex( vertexId );
+				focus.focusVertex( ref );
 
 				if ( e.getClickCount() == 2 )
 				{
 					// Double click: We navigate to the clicked vertex.
-					final TrackSchemeVertex ref = graph.vertexRef();
-					graph.getVertexPool().getByInternalPoolIndex( vertexId, ref );
 					navigation.notifyNavigateToVertex( ref );
-					graph.releaseRef( ref );
 				}
+				graph.releaseRef( ref );
 			}
 			else
 			{
 				// Click outside. We clear the focus.
-				focus.focusVertex( -1 );
+				focus.focusVertex( null );
 			}
 		}
 	}
@@ -95,19 +96,19 @@ public class FocusHandler extends MouseAdapter
 		registerAction( arrowLeft, TrackSchemeActionBank.getNavigateToLeftSiblingAction( navigator ), component );
 
 		final KeyStroke shiftArrowDown = KeyStroke.getKeyStroke( KeyEvent.VK_DOWN, InputEvent.SHIFT_DOWN_MASK );
-		registerAction( shiftArrowDown, TrackSchemeActionBank.getAddChildToSelectionAction( navigator, selection ), component );
+		registerAction( shiftArrowDown, TrackSchemeActionBank.getAddChildToSelectionAction( graph, navigator, selection ), component );
 
 		final KeyStroke shiftArrowUp = KeyStroke.getKeyStroke( KeyEvent.VK_UP, InputEvent.SHIFT_DOWN_MASK );
-		registerAction( shiftArrowUp, TrackSchemeActionBank.getAddParentToSelectionAction( navigator, selection ), component );
+		registerAction( shiftArrowUp, TrackSchemeActionBank.getAddParentToSelectionAction( graph, navigator, selection ), component );
 
 		final KeyStroke shiftArrowRight = KeyStroke.getKeyStroke( KeyEvent.VK_RIGHT, InputEvent.SHIFT_DOWN_MASK );
-		registerAction( shiftArrowRight, TrackSchemeActionBank.getAddRightSiblingToSelectionAction( navigator, selection ), component );
+		registerAction( shiftArrowRight, TrackSchemeActionBank.getAddRightSiblingToSelectionAction( graph, navigator, selection ), component );
 
 		final KeyStroke shiftArrowLeft = KeyStroke.getKeyStroke( KeyEvent.VK_LEFT, InputEvent.SHIFT_DOWN_MASK );
-		registerAction( shiftArrowLeft, TrackSchemeActionBank.getAddLeftSiblingToSelectionAction( navigator, selection ), component );
+		registerAction( shiftArrowLeft, TrackSchemeActionBank.getAddLeftSiblingToSelectionAction( graph, navigator, selection ), component );
 
 		final KeyStroke spaceKey = KeyStroke.getKeyStroke( KeyEvent.VK_SPACE, 0 );
-		registerAction( spaceKey, TrackSchemeActionBank.getToggleSelectionOfHighlightAction( focus, selection ), component );
+		registerAction( spaceKey, TrackSchemeActionBank.getToggleSelectionOfHighlightAction( graph, focus, selection ), component );
 	}
 
 	private void registerAction( final KeyStroke ks, final AbstractNamedAction action, final JComponent component )

@@ -3,7 +3,9 @@ package net.trackmate.revised.trackscheme.display;
 import java.awt.event.ActionEvent;
 
 import net.trackmate.revised.trackscheme.TrackSchemeFocus;
+import net.trackmate.revised.trackscheme.TrackSchemeGraph;
 import net.trackmate.revised.trackscheme.TrackSchemeSelection;
+import net.trackmate.revised.trackscheme.TrackSchemeVertex;
 import bdv.util.AbstractNamedAction;
 
 public class TrackSchemeActionBank
@@ -13,25 +15,25 @@ public class TrackSchemeActionBank
 	 * SELECT CURRENT FOCUS
 	 */
 
-	public static final AbstractNamedAction getToggleSelectionOfHighlightAction( final TrackSchemeFocus focus, final TrackSchemeSelection selection )
+	// TODO: rename getToggleSelectionOfFocusedAction
+	public static final AbstractNamedAction getToggleSelectionOfHighlightAction(
+			final TrackSchemeGraph< ?, ? > graph,
+			final TrackSchemeFocus focus,
+			final TrackSchemeSelection selection )
 	{
 		return new AbstractNamedAction( "toggleSelectionOfFocus" )
 		{
 			private static final long serialVersionUID = 3749694022046537514L;
 
+
 			@Override
 			public void actionPerformed( final ActionEvent event )
 			{
-				new Thread( this.name() )
-				{
-					@Override
-					public void run()
-					{
-						final int id = focus.getFocusedVertexId();
-						if ( id >= 0 )
-							selection.toggleVertex( id );
-					}
-				}.start();
+				final TrackSchemeVertex ref = graph.vertexRef();
+				final TrackSchemeVertex v = focus.getFocusedVertex( ref );
+				if ( v != null )
+					selection.toggleSelected( v );
+				graph.releaseRef( ref );
 			}
 		};
 	}
@@ -40,7 +42,7 @@ public class TrackSchemeActionBank
 	 * NAVIGATE WITH HIGHLIGHT.
 	 */
 
-	public static final AbstractNamedAction getNavigateToChildAction( final TrackSchemeNavigator selectionNavigator )
+	public static final AbstractNamedAction getNavigateToChildAction( final TrackSchemeNavigator navigator )
 	{
 		return new AbstractNamedAction( "navigateToChild" )
 		{
@@ -49,19 +51,12 @@ public class TrackSchemeActionBank
 			@Override
 			public void actionPerformed( final ActionEvent event )
 			{
-				new Thread( this.name() )
-				{
-					@Override
-					public void run()
-					{
-						selectionNavigator.child();
-					}
-				}.start();
+				navigator.child();
 			}
 		};
 	}
 
-	public static final AbstractNamedAction getNavigateToParentAction( final TrackSchemeNavigator selectionNavigator )
+	public static final AbstractNamedAction getNavigateToParentAction( final TrackSchemeNavigator navigator )
 	{
 		return new AbstractNamedAction( "navigateToParent" )
 		{
@@ -70,19 +65,12 @@ public class TrackSchemeActionBank
 			@Override
 			public void actionPerformed( final ActionEvent event )
 			{
-				new Thread( this.name() )
-				{
-					@Override
-					public void run()
-					{
-						selectionNavigator.parent();
-					}
-				}.start();
+				navigator.parent();
 			}
 		};
 	}
 
-	public static final AbstractNamedAction getNavigateToRightSiblingAction( final TrackSchemeNavigator selectionNavigator )
+	public static final AbstractNamedAction getNavigateToRightSiblingAction( final TrackSchemeNavigator navigator )
 	{
 		return new AbstractNamedAction( "navigateToRightSibling" )
 		{
@@ -91,19 +79,12 @@ public class TrackSchemeActionBank
 			@Override
 			public void actionPerformed( final ActionEvent event )
 			{
-				new Thread( this.name() )
-				{
-					@Override
-					public void run()
-					{
-						selectionNavigator.rightSibling();
-					}
-				}.start();
+				navigator.rightSibling();
 			}
 		};
 	}
 
-	public static final AbstractNamedAction getNavigateToLeftSiblingAction( final TrackSchemeNavigator selectionNavigator )
+	public static final AbstractNamedAction getNavigateToLeftSiblingAction( final TrackSchemeNavigator navigator )
 	{
 		return new AbstractNamedAction( "navigateToLeftSibling" )
 		{
@@ -112,19 +93,15 @@ public class TrackSchemeActionBank
 			@Override
 			public void actionPerformed( final ActionEvent event )
 			{
-				new Thread( this.name() )
-				{
-					@Override
-					public void run()
-					{
-						selectionNavigator.leftSibling();
-					}
-				}.start();
+				navigator.leftSibling();
 			}
 		};
 	}
 
-	public static final AbstractNamedAction getAddChildToSelectionAction( final TrackSchemeNavigator selectionNavigator, final TrackSchemeSelection selection )
+	public static final AbstractNamedAction getAddChildToSelectionAction(
+			final TrackSchemeGraph< ?, ? > graph,
+			final TrackSchemeNavigator navigator,
+			final TrackSchemeSelection selection )
 	{
 		return new AbstractNamedAction( "addChildToSelection" )
 		{
@@ -133,21 +110,19 @@ public class TrackSchemeActionBank
 			@Override
 			public void actionPerformed( final ActionEvent event )
 			{
-				new Thread( this.name() )
-				{
-					@Override
-					public void run()
-					{
-						final int id = selectionNavigator.child();
-						if ( id >= 0 )
-							selection.setVertexSelected( id, true );
-					}
-				}.start();
+				final TrackSchemeVertex ref = graph.vertexRef();
+				final TrackSchemeVertex v = navigator.child( ref );
+				if ( v != null )
+					selection.setSelected( v, true );
+				graph.releaseRef( ref );
 			}
 		};
 	}
 
-	public static final AbstractNamedAction getAddParentToSelectionAction( final TrackSchemeNavigator selectionNavigator, final TrackSchemeSelection selection )
+	public static final AbstractNamedAction getAddParentToSelectionAction(
+			final TrackSchemeGraph< ?, ? > graph,
+			final TrackSchemeNavigator navigator,
+			final TrackSchemeSelection selection )
 	{
 		return new AbstractNamedAction( "addParentToSelection" )
 		{
@@ -156,21 +131,19 @@ public class TrackSchemeActionBank
 			@Override
 			public void actionPerformed( final ActionEvent event )
 			{
-				new Thread( this.name() )
-				{
-					@Override
-					public void run()
-					{
-						final int id = selectionNavigator.parent();
-						if ( id >= 0 )
-							selection.setVertexSelected( id, true );
-					}
-				}.start();
+				final TrackSchemeVertex ref = graph.vertexRef();
+				final TrackSchemeVertex v = navigator.parent( ref );
+				if ( v != null )
+					selection.setSelected( v, true );
+				graph.releaseRef( ref );
 			}
 		};
 	}
 
-	public static final AbstractNamedAction getAddRightSiblingToSelectionAction( final TrackSchemeNavigator selectionNavigator, final TrackSchemeSelection selection )
+	public static final AbstractNamedAction getAddRightSiblingToSelectionAction(
+			final TrackSchemeGraph< ?, ? > graph,
+			final TrackSchemeNavigator navigator,
+			final TrackSchemeSelection selection )
 	{
 		return new AbstractNamedAction( "addRightSiblingToSelection" )
 		{
@@ -179,21 +152,19 @@ public class TrackSchemeActionBank
 			@Override
 			public void actionPerformed( final ActionEvent event )
 			{
-				new Thread( this.name() )
-				{
-					@Override
-					public void run()
-					{
-						final int id = selectionNavigator.rightSibling();
-						if ( id >= 0 )
-							selection.setVertexSelected( id, true );
-					}
-				}.start();
+				final TrackSchemeVertex ref = graph.vertexRef();
+				final TrackSchemeVertex v = navigator.rightSibling( ref );
+				if ( v != null )
+					selection.setSelected( v, true );
+				graph.releaseRef( ref );
 			}
 		};
 	}
 
-	public static final AbstractNamedAction getAddLeftSiblingToSelectionAction( final TrackSchemeNavigator selectionNavigator, final TrackSchemeSelection selection )
+	public static final AbstractNamedAction getAddLeftSiblingToSelectionAction(
+			final TrackSchemeGraph< ?, ? > graph,
+			final TrackSchemeNavigator navigator,
+			final TrackSchemeSelection selection )
 	{
 		return new AbstractNamedAction( "addLeftSiblingToSelection" )
 		{
@@ -202,16 +173,11 @@ public class TrackSchemeActionBank
 			@Override
 			public void actionPerformed( final ActionEvent event )
 			{
-				new Thread( this.name() )
-				{
-					@Override
-					public void run()
-					{
-						final int id = selectionNavigator.leftSibling();
-						if ( id >= 0 )
-							selection.setVertexSelected( id, true );
-					}
-				}.start();
+				final TrackSchemeVertex ref = graph.vertexRef();
+				final TrackSchemeVertex v = navigator.leftSibling( ref );
+				if ( v != null )
+					selection.setSelected( v, true );
+				graph.releaseRef( ref );
 			}
 		};
 	}

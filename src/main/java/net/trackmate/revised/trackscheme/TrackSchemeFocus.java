@@ -1,6 +1,7 @@
 package net.trackmate.revised.trackscheme;
 
 import net.trackmate.revised.ui.selection.FocusListener;
+import net.trackmate.revised.ui.selection.FocusModel;
 
 
 public class TrackSchemeFocus
@@ -9,53 +10,35 @@ public class TrackSchemeFocus
 
 	private final TrackSchemeGraph< ?, ? > graph;
 
-	public TrackSchemeFocus( final ModelFocusProperties props, final TrackSchemeGraph< ?, ? > graph )
+	public TrackSchemeFocus(
+			final ModelFocusProperties props,
+			final TrackSchemeGraph< ?, ? > graph )
 	{
 		this.props = props;
 		this.graph = graph;
 	}
 
 	/**
-	 * Get internal pool index of {@link TrackSchemeVertex} that is currently
-	 * highlighted. Forwards to the model {@link FocusModel}.
+	 * Get the {@link TrackSchemeVertex} that is currently focused. Forwards to
+	 * the model {@link FocusModel}.
 	 *
-	 * @return internal id of {@link TrackSchemeVertex} that is currently
-	 *         focused.
+	 * @return currently focused vertex.
 	 */
-	public int getFocusedVertexId()
+	public TrackSchemeVertex getFocusedVertex( final TrackSchemeVertex ref )
 	{
-		final int mid = props.getFocusedVertexId();
-		if ( mid < 0 )
-			return -1;
-		else
-		{
-			final TrackSchemeVertex ref = graph.vertexRef();
-			final TrackSchemeVertex v = graph.getTrackSchemeVertexForModelId( mid, ref );
-			final int id = ( v == null ) ? -1 : v.getInternalPoolIndex();
-			graph.releaseRef( ref );
-			return id;
-		}
+		return graph.getTrackSchemeVertexForModelId( props.getFocusedVertexId(), ref );
 	}
 
 	/**
+	 * focus vertex.
 	 *
-	 * @param trackSchemeVertexId
-	 *            internal pool index of TrackSchemeVertex to focus on or
-	 *            {@code <0} to clear focus.
+	 * @param v
+	 *            vertex to focus on, or {@code null} to clear focus.
 	 */
-	public void focusVertex( final int trackSchemeVertexId )
+	// TODO: rename notifyFocusVertex
+	public void focusVertex( final TrackSchemeVertex v )
 	{
-		if ( trackSchemeVertexId < 0 )
-		{
-			props.focusVertex( -1 );
-		}
-		else
-		{
-			final TrackSchemeVertex v = graph.vertexRef();
-			graph.getVertexPool().getByInternalPoolIndex( trackSchemeVertexId, v );
-			props.focusVertex( v.getModelVertexId() );
-			graph.releaseRef( v );
-		}
+		props.focusVertex( ( v == null ) ? -1 : v.getModelVertexId() );
 	}
 
 	public boolean addFocusListener( final FocusListener l )

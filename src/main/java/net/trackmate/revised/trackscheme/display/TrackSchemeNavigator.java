@@ -34,119 +34,112 @@ public class TrackSchemeNavigator implements TransformListener< ScreenTransform 
 		this.navigation = navigation;
 	}
 
-	public int child()
+	public void child()
 	{
-		final int id = getVertexId();
 		final TrackSchemeVertex ref = graph.vertexRef();
-		graph.getVertexPool().getByInternalPoolIndex( id, ref );
-		final Edges< TrackSchemeEdge > edges = ref.outgoingEdges();
-		int childId;
-		if ( edges.size() > 0 )
-		{
-			final TrackSchemeVertex current = edges.get( 0 ).getTarget( ref );
-			focus.focusVertex( current.getInternalPoolIndex() );
-			navigateTo( current );
-			childId = current.getInternalPoolIndex();
-		}
-		else
-		{
-			childId = -1;
-		}
+		child( ref );
 		graph.releaseRef( ref );
-		return childId;
 	}
 
-	public int parent()
+	public TrackSchemeVertex child( final TrackSchemeVertex ref )
 	{
-		final int id = getVertexId();
-		final TrackSchemeVertex ref = graph.vertexRef();
-		graph.getVertexPool().getByInternalPoolIndex( id, ref );
-		final Edges< TrackSchemeEdge > edges = ref.incomingEdges();
-		final int childId;
-		if ( edges.size() > 0 )
-		{
-			final TrackSchemeVertex current = edges.get( 0 ).getSource( ref );
-			focus.focusVertex( current.getInternalPoolIndex() );
-			navigateTo( current );
-			childId = current.getInternalPoolIndex();
-		}
-		else
-		{
-			childId = -1;
-		}
-		graph.releaseRef( ref );
-		return childId;
+		final TrackSchemeVertex vertex = getFocusedVertex( ref );
+		if ( vertex == null )
+			return null;
+
+		final Edges< TrackSchemeEdge > edges = vertex.outgoingEdges();
+		final TrackSchemeVertex current = edges.isEmpty()
+				? null
+				: edges.get( 0 ).getTarget( ref );
+		focus.focusVertex( current );
+		navigateTo( current );
+		return current;
 	}
 
-	public int rightSibling()
+	public void parent()
 	{
-		final int id = getVertexId();
 		final TrackSchemeVertex ref = graph.vertexRef();
-		graph.getVertexPool().getByInternalPoolIndex( id, ref );
-		final TrackSchemeVertexList vertices = layout.getTimepointToOrderedVertices().get( ref.getTimepoint() );
-		final int index = vertices.binarySearch( ref.getLayoutX() );
-		final int siblingId;
-		if ( index >= 0 && index < vertices.size()-1 )
-		{
-			final TrackSchemeVertex sibling = vertices.get( index + 1, ref );
-			focus.focusVertex( sibling.getInternalPoolIndex() );
-			navigateTo( sibling );
-			siblingId = sibling.getInternalPoolIndex();
-		}
-		else
-		{
-			siblingId = -1;
-		}
+		parent( ref );
 		graph.releaseRef( ref );
-		return siblingId;
 	}
 
-	public int leftSibling()
+	public TrackSchemeVertex parent( final TrackSchemeVertex ref )
 	{
-		final int id = getVertexId();
+		final TrackSchemeVertex vertex = getFocusedVertex( ref );
+		if ( vertex == null )
+			return null;
+
+		final Edges< TrackSchemeEdge > edges = vertex.incomingEdges();
+		final TrackSchemeVertex current = edges.isEmpty()
+				? null
+				: edges.get( 0 ).getSource( ref );
+		focus.focusVertex( current );
+		navigateTo( current );
+		return current;
+	}
+
+	public void rightSibling()
+	{
 		final TrackSchemeVertex ref = graph.vertexRef();
-		graph.getVertexPool().getByInternalPoolIndex( id, ref );
-		final TrackSchemeVertexList vertices = layout.getTimepointToOrderedVertices().get( ref.getTimepoint() );
-		final int index = vertices.binarySearch( ref.getLayoutX() );
-		int siblingId;
-		if ( index > 0 && index < vertices.size() )
-		{
-			final TrackSchemeVertex sibling = vertices.get( index - 1, ref );
-			focus.focusVertex( sibling.getInternalPoolIndex() );
-			navigateTo( sibling );
-			siblingId = sibling.getInternalPoolIndex();
-		}
-		else
-		{
-			siblingId = -1;
-		}
+		rightSibling( ref );
 		graph.releaseRef( ref );
-		return siblingId;
+	}
+
+	public TrackSchemeVertex rightSibling( final TrackSchemeVertex ref )
+	{
+		final TrackSchemeVertex vertex = getFocusedVertex( ref );
+		if ( vertex == null )
+			return null;
+
+		final TrackSchemeVertexList vertices = layout.getTimepointToOrderedVertices().get( vertex.getTimepoint() );
+		final int index = vertices.binarySearch( vertex.getLayoutX() );
+		final TrackSchemeVertex sibling = ( index < vertices.size() - 1 )
+				? vertices.get( index + 1, ref )
+				: null;
+		focus.focusVertex( sibling );
+		navigateTo( sibling );
+		return sibling;
+	}
+
+	public void leftSibling()
+	{
+		final TrackSchemeVertex ref = graph.vertexRef();
+		leftSibling( ref );
+		graph.releaseRef( ref );
+	}
+
+	public TrackSchemeVertex leftSibling( final TrackSchemeVertex ref )
+	{
+		final TrackSchemeVertex vertex = getFocusedVertex( ref );
+		if ( vertex == null )
+			return null;
+
+		final TrackSchemeVertexList vertices = layout.getTimepointToOrderedVertices().get( vertex.getTimepoint() );
+		final int index = vertices.binarySearch( vertex.getLayoutX() );
+		final TrackSchemeVertex sibling = ( index > 0 )
+				? vertices.get( index - 1, ref )
+				: null;
+		focus.focusVertex( sibling );
+		navigateTo( sibling );
+		return sibling;
 	}
 
 	private void navigateTo( final TrackSchemeVertex current )
 	{
-		navigation.notifyNavigateToVertex( current );
+		if ( current != null )
+			navigation.notifyNavigateToVertex( current );
 	}
 
 	private final RealPoint centerPos = new RealPoint( 2 );
 
 	private double ratioXtoY;
 
-	private int getVertexId()
+	private TrackSchemeVertex getFocusedVertex( final TrackSchemeVertex ref )
 	{
-		final int id = focus.getFocusedVertexId();
-		if ( id < 0 ) { return getPanelCenterClosestVertexId(); }
-		return id;
-	}
-
-	private int getPanelCenterClosestVertexId()
-	{
-		final TrackSchemeVertex ref = graph.vertexRef();
-		final TrackSchemeVertex v = layout.getClosestActiveVertex( centerPos, ratioXtoY, ref );
-		final int id = v.getInternalPoolIndex();
-		graph.releaseRef( ref );
-		return id;
+		final TrackSchemeVertex vertex = focus.getFocusedVertex( ref );
+		return ( vertex != null )
+				? vertex
+				: layout.getClosestActiveVertex( centerPos, ratioXtoY, ref );
 	}
 
 	@Override
