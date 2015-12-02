@@ -35,7 +35,7 @@ public class TrackSchemeFocus
 	 * @param v
 	 *            vertex to focus on, or {@code null} to clear focus.
 	 */
-	// TODO: rename notifyFocusVertex
+	// TODO: rename notifyFocusVertex ?
 	public void focusVertex( final TrackSchemeVertex v )
 	{
 		props.focusVertex( ( v == null ) ? -1 : v.getModelVertexId() );

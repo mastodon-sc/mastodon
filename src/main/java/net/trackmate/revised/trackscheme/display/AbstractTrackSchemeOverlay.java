@@ -91,11 +91,14 @@ public abstract class AbstractTrackSchemeOverlay implements OverlayRenderer
 
 		swapScreenEntities();
 
-		highlightedVertexId = highlight.getHighlightedVertexId();
-
 		final TrackSchemeVertex ref = graph.vertexRef();
+
+		final TrackSchemeVertex h = highlight.getHighlightedVertex( ref );
+		highlightedVertexId = ( h == null ) ? -1 : h.getInternalPoolIndex();
+
 		final TrackSchemeVertex f = focus.getFocusedVertex( ref );
 		focusedVertexId = ( f == null ) ? -1 : f.getInternalPoolIndex();
+
 		graph.releaseRef( ref );
 
 		paintBackground( g2, entities );
