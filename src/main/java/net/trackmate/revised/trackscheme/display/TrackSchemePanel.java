@@ -383,7 +383,7 @@ public class TrackSchemePanel extends JPanel implements
 	@Override
 	public void navigateToVertex( final TrackSchemeVertex v )
 	{
-		focus.focusVertex( v );
+		focus.focusVertex( v ); // TODO: focusVertex is done here AND in TrackSchemeNavigator.rightSibling(). Once is enough. Which one?
 		final double lx = v.getLayoutX();
 		final double ly = v.getTimepoint();
 
