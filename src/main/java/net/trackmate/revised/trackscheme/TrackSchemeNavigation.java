@@ -47,7 +47,7 @@ public class TrackSchemeNavigation implements
 		return listeners.remove( l );
 	}
 
-	// forward tp ModelNavigationProperties
+	// forward to ModelNavigationProperties
 	public void notifyNavigateToVertex( final TrackSchemeVertex v )
 	{
 		props.notifyNavigateToVertex( v.getModelVertexId() );
