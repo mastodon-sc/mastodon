@@ -11,8 +11,12 @@ import net.trackmate.spatial.SpatialIndex;
 
 /**
  * A class that serves statistics about the maximum bounding radius amongst all
- * the spots of a time-point in a model. This class listens to changes in the
- * graph it monitors through the {@link GraphListener} interface.
+ * the spots of a time-point in a model. This class keeps up to date with
+ * changes in the graph it monitors by registering as a {@link GraphListener}.
+ * <p>
+ * Read and write (changes to the monitored graph) operations are protected with
+ * a {@link ReentrantReadWriteLock}. Multiple clients can hold the read lock
+ * simultaneously (but this blocks updates to the graph).
  *
  * @author Tobias Pietzsch
  */
@@ -35,7 +39,7 @@ public class BoundingSphereRadiusStatistics implements GraphListener< Spot, Link
     private final Lock writeLock;
 
 	/**
-	 * Creates a new statistics object from the specified model. After this
+	 * Creates a new statistics object for the specified model. After this
 	 * constructor returns, statistics are immediately available. The returned
 	 * instance is registered as a listener to changes in the graph the
 	 * specified model wraps.
@@ -56,9 +60,12 @@ public class BoundingSphereRadiusStatistics implements GraphListener< Spot, Link
 	}
 
 	/**
-	 * Exposes the {@link Lock} of this class.
+	 * Exposes the read {@link Lock} of this class. Clients of the class should
+	 * {@link Lock#lock() acquire} the lock before
+	 * {@link #getMaxBoundingSphereRadiusSquared(int) using} it and
+	 * {@link Lock#unlock() release} the lock afterwards.
 	 *
-	 * @return the lock.
+	 * @return the read lock.
 	 */
 	public Lock readLock()
 	{
@@ -69,9 +76,9 @@ public class BoundingSphereRadiusStatistics implements GraphListener< Spot, Link
 	 * Returns the maximal bounding sphere radius squared amongst all the spots
 	 * of the specified time-point.
 	 * <p>
-	 * It is best to acquire the <code>read lock</code> prior to executing this
-	 * method, in case another thread updates this statistics object. A typical
-	 * call would be wrapped as follow:
+	 * It is best to acquire the {@link #readLock() read lock} prior to
+	 * executing this method, in case another thread updates this statistics
+	 * object. A typical call would be wrapped as follow:
 	 *
 	 * <pre>
 	 * radiusStats.readLock().lock();
@@ -85,7 +92,6 @@ public class BoundingSphereRadiusStatistics implements GraphListener< Spot, Link
 	 * 	radiusStats.readLock().unlock();
 	 * }
 	 * </pre>
-	 *
 	 *
 	 * @param timepoint
 	 * @return
