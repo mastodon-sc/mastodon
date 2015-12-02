@@ -101,16 +101,4 @@ public class DefaultModelSelectionProperties< V extends Vertex< E >, E extends E
 	{
 		selection.clearSelection();
 	}
-
-	@Override
-	public TIntSet getSelectedVertexIds()
-	{
-		final RefSet< V > vertices = selection.getSelectedVertices();
-		final TIntHashSet ids = new TIntHashSet( vertices.size() );
-		for ( final V v : vertices )
-		{
-			ids.add( idmap.getVertexId( v ) );
-		}
-		return ids;
-	}
 }
