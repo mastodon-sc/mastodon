@@ -41,8 +41,8 @@ import net.trackmate.revised.trackscheme.TrackSchemeNavigation;
 import net.trackmate.revised.trackscheme.TrackSchemeSelection;
 import net.trackmate.revised.trackscheme.display.TrackSchemeFrame;
 import net.trackmate.revised.ui.grouping.GroupHandle;
-import net.trackmate.revised.ui.grouping.GroupManager;
 import net.trackmate.revised.ui.grouping.GroupLocksPanel;
+import net.trackmate.revised.ui.grouping.GroupManager;
 import net.trackmate.revised.ui.selection.FocusModel;
 import net.trackmate.revised.ui.selection.HighlightListener;
 import net.trackmate.revised.ui.selection.HighlightModel;
@@ -127,7 +127,7 @@ public class MaMuT
 		 */
 
 		final ModelSelectionProperties selectionProperties = new DefaultModelSelectionProperties< Spot, Link >( graph, idmap, selection );
-		final TrackSchemeSelection trackSchemeSelection = new TrackSchemeSelection( selectionProperties, trackSchemeGraph );
+		final TrackSchemeSelection trackSchemeSelection = new TrackSchemeSelection( selectionProperties );
 
 		/*
 		 * TrackScheme navigation

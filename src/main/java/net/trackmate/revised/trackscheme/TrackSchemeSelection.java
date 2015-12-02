@@ -1,62 +1,34 @@
 package net.trackmate.revised.trackscheme;
 
-import gnu.trove.iterator.TIntIterator;
-import gnu.trove.set.TIntSet;
-import gnu.trove.set.hash.TIntHashSet;
 import net.trackmate.revised.ui.selection.SelectionListener;
 
-/*
- * TODO: consider replacing/adding API to use TrackSchemeVertex instead of IDs, as discussed in email:
- *
- * ModelSelectionProperties informs TrackSchemeSelection, which translates IDs
- * it to corresponding TrackSchemeVertex and TrackSchemeEdge. This is the place
- * to change it: Instead of
- *    public void setEdgeSelected( final int id, final boolean selected )
- * TrackSchemeSelection should have
- *    public void setEdgeSelected( final TrackSchemeEdge edge, final boolean selected ) etc.
- */
 public class TrackSchemeSelection
 {
 	private final ModelSelectionProperties props;
 
-	private final TrackSchemeGraph< ?, ? > graph;
-
-	public TrackSchemeSelection( final ModelSelectionProperties props, final TrackSchemeGraph< ?, ? > graph )
+	public TrackSchemeSelection( final ModelSelectionProperties props )
 	{
 		this.props = props;
-		this.graph = graph;
 	}
 
-	public void setVertexSelected( final int id, final boolean selected )
+	public void setSelected( final TrackSchemeVertex v, final boolean selected )
 	{
-		final TrackSchemeVertex ref = graph.vertexRef();
-		graph.getVertexPool().getByInternalPoolIndex( id, ref );
-		props.setVertexSelected( ref.getModelVertexId(), selected );
-		graph.releaseRef( ref );
+		props.setVertexSelected( v.getModelVertexId(), selected );
 	}
 
-	public void setEdgeSelected( final int id, final boolean selected )
+	public void setSelected( final TrackSchemeEdge e, final boolean selected )
 	{
-		final TrackSchemeEdge ref = graph.edgeRef();
-		graph.getEdgePool().getByInternalPoolIndex( id, ref );
-		props.setEdgeSelected( ref.getModelEdgeId(), selected );
-		graph.releaseRef( ref );
+		props.setEdgeSelected( e.getModelEdgeId(), selected );
 	}
 
-	public void toggleVertex( final int id )
+	public void toggleSelected( final TrackSchemeVertex v )
 	{
-		final TrackSchemeVertex ref = graph.vertexRef();
-		graph.getVertexPool().getByInternalPoolIndex( id, ref );
-		props.toggleVertexSelected( ref.getModelVertexId() );
-		graph.releaseRef( ref );
+		props.toggleVertexSelected( v.getModelVertexId() );
 	}
 
-	public void toggleEdge( final int id )
+	public void toggleSelected( final TrackSchemeEdge e )
 	{
-		final TrackSchemeEdge ref = graph.edgeRef();
-		graph.getEdgePool().getByInternalPoolIndex( id, ref );
-		props.toggleEdgeSelected( ref.getModelEdgeId() );
-		graph.releaseRef( ref );
+		props.toggleEdgeSelected( e.getModelEdgeId() );
 	}
 
 	public void clearSelection()
@@ -72,24 +44,5 @@ public class TrackSchemeSelection
 	public boolean removeSelectionListener( final SelectionListener l )
 	{
 		return props.removeSelectionListener( l );
-	}
-
-	public TIntSet getSelectedVertexIds()
-	{
-		// Model ids.
-		final TIntSet ids = props.getSelectedVertexIds();
-		// TrackSchemeVertex internal pool id.
-		final TIntHashSet set = new TIntHashSet( ids.size() );
-
-		final TIntIterator it = ids.iterator();
-		final TrackSchemeVertex ref = graph.vertexRef();
-		while ( it.hasNext() )
-		{
-			final int id = it.next();
-			final TrackSchemeVertex v = graph.getTrackSchemeVertexForModelId( id, ref );
-			set.add( v.getInternalPoolIndex() );
-		}
-		graph.releaseRef( ref );
-		return set;
 	}
 }

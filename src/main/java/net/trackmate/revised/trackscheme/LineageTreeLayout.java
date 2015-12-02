@@ -423,39 +423,25 @@ public class LineageTreeLayout
 	 */
 	public RefSet< TrackSchemeVertex > getVerticesWithin( final double lx1, final double ly1, final double lx2, final double ly2 )
 	{
-		final int tStart = Math.max( 0, ( int ) Math.ceil( Math.min( ly1, ly2 ) ) );
-		final int tEnd = ( int ) Math.floor( Math.max( ly1, ly2 ) );
-		final double x1 = Math.min( lx1, lx2 );
+		final int tStart = ( int ) Math.ceil( Math.min( ly1, ly2 ) );
+		final int tEnd = ( int ) Math.floor( Math.max( ly1, ly2 ) ) + 1;
+		final double x1 = Math.min( lx1, lx2 ) - 1;
 		final double x2 = Math.max( lx1, lx2 );
 
-		TrackSchemeVertex v = graph.vertexRef();
 		final RefSet< TrackSchemeVertex > vertexSet = graph.createVertexSet();
-
-		int iStart = timepoints.binarySearch( tStart );
-		if ( iStart < 0 )
-			iStart = -( 1 + iStart );
-		int iEnd = timepoints.binarySearch( tEnd );
-		if ( iEnd < 0 )
-			iEnd = -( 1 + iEnd );
-		final TIntIterator tpIter = timepoints.subList( iStart, iEnd + 1 ).iterator();
-		while ( tpIter.hasNext() )
+		int start = timepoints.binarySearch( tStart );
+		if ( start < 0 )
+			start = -start - 1;
+		int end = timepoints.binarySearch( tEnd );
+		if ( end < 0 )
+			end = -end - 1;
+		for ( int tpIndex = start; tpIndex < end; ++tpIndex )
 		{
-			final TrackSchemeVertexList vertexList = timepointToOrderedVertices.get( tpIter.next() );
-			int left = vertexList.binarySearch( x1 ) + 1;
-			if ( left < 0 )
-				left = 0;
-
-			int right = vertexList.binarySearch( x2, left, vertexList.size() );
-			if ( right >= vertexList.size() )
-				right = vertexList.size() - 1;
-
-			for ( int i = left; i <= right; i++ )
-			{
-				v = vertexList.get( i, v );
-				vertexSet.add( v );
-			}
+			final TrackSchemeVertexList vertexList = timepointToOrderedVertices.get( timepoints.get( tpIndex ) );
+			final int left = vertexList.binarySearch( x1 ) + 1;
+			final int right = vertexList.binarySearch( x2, left, vertexList.size() );
+			vertexSet.addAll( vertexList.subList( left, right + 1 ) );
 		}
-		graph.releaseRef( v );
 		return vertexSet;
 	}
 
