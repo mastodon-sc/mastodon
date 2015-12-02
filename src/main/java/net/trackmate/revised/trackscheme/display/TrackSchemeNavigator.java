@@ -48,9 +48,11 @@ public class TrackSchemeNavigator implements TransformListener< ScreenTransform 
 			return null;
 
 		final Edges< TrackSchemeEdge > edges = vertex.outgoingEdges();
-		final TrackSchemeVertex current = edges.isEmpty()
-				? null
-				: edges.get( 0 ).getTarget( ref );
+		if ( edges.isEmpty() )
+			// this is already the bottom-most vertex
+			return vertex;
+
+		final TrackSchemeVertex current = edges.get( 0 ).getTarget( ref );
 		focus.focusVertex( current );
 		navigateTo( current );
 		return current;
@@ -70,9 +72,11 @@ public class TrackSchemeNavigator implements TransformListener< ScreenTransform 
 			return null;
 
 		final Edges< TrackSchemeEdge > edges = vertex.incomingEdges();
-		final TrackSchemeVertex current = edges.isEmpty()
-				? null
-				: edges.get( 0 ).getSource( ref );
+		if ( edges.isEmpty() )
+			// this is already the top-most vertex
+			return vertex;
+
+		final TrackSchemeVertex current = edges.get( 0 ).getSource( ref );
 		focus.focusVertex( current );
 		navigateTo( current );
 		return current;
@@ -93,6 +97,11 @@ public class TrackSchemeNavigator implements TransformListener< ScreenTransform 
 
 		final TrackSchemeVertexList vertices = layout.getTimepointToOrderedVertices().get( vertex.getTimepoint() );
 		final int index = vertices.binarySearch( vertex.getLayoutX() );
+
+		if ( index == vertices.size() - 1 )
+			// this is already the right-most vertex
+			return vertex;
+
 		final TrackSchemeVertex sibling = ( index < vertices.size() - 1 )
 				? vertices.get( index + 1, ref )
 				: null;
@@ -116,6 +125,11 @@ public class TrackSchemeNavigator implements TransformListener< ScreenTransform 
 
 		final TrackSchemeVertexList vertices = layout.getTimepointToOrderedVertices().get( vertex.getTimepoint() );
 		final int index = vertices.binarySearch( vertex.getLayoutX() );
+
+		if ( index == 0 )
+			// this is already the left-most vertex
+			return vertex;
+
 		final TrackSchemeVertex sibling = ( index > 0 )
 				? vertices.get( index - 1, ref )
 				: null;
