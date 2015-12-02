@@ -421,6 +421,7 @@ public class LineageTreeLayout
 	 *            the y coordinate of the second corner.
 	 * @return a new set.
 	 */
+	// TODO rename getActiveVerticesWithin
 	public RefSet< TrackSchemeVertex > getVerticesWithin( final double lx1, final double ly1, final double lx2, final double ly2 )
 	{
 		final int tStart = ( int ) Math.ceil( Math.min( ly1, ly2 ) );
