@@ -31,15 +31,8 @@ public class MouseHighlightHandler extends MouseAdapter
 		final int x = e.getX();
 		final int y = e.getY();
 
-		final int id = graphOverlay.getVertexIdAt( x, y );
-		if ( id >= 0 )
-		{
-			final TrackSchemeVertex ref = graph.vertexRef();
-			graph.getVertexPool().getByInternalPoolIndex( id, ref );
-			highlight.highlightVertex( ref );
-			graph.releaseRef( ref );
-		}
-		else
-			highlight.highlightVertex( null );
+		final TrackSchemeVertex ref = graph.vertexRef();
+		highlight.highlightVertex( graphOverlay.getVertexAt( x, y, ref ) );
+		graph.releaseRef( ref );
 	}
 }

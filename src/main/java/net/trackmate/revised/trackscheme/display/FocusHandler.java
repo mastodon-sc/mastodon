@@ -52,27 +52,19 @@ public class FocusHandler extends MouseAdapter
 	{
 		if ( e.getModifiers() == MOUSE_MASK_CLICK )
 		{
-			final int vertexId = graphOverlay.getVertexIdAt( e.getX(), e.getY() );
-			if ( vertexId >= 0 )
-			{
-				final TrackSchemeVertex ref = graph.vertexRef();
-				graph.getVertexPool().getByInternalPoolIndex( vertexId, ref );
+			final TrackSchemeVertex ref = graph.vertexRef();
+			final TrackSchemeVertex vertex = graphOverlay.getVertexAt( e.getX(), e.getY(), ref );
 
-				// Single click: We set the focus to the clicked vertex but do not navigate.
-				focus.focusVertex( ref );
+			// Single click: We set the focus to the clicked vertex but do not navigate.
+			focus.focusVertex( vertex );
 
-				if ( e.getClickCount() == 2 )
-				{
-					// Double click: We navigate to the clicked vertex.
-					navigation.notifyNavigateToVertex( ref );
-				}
-				graph.releaseRef( ref );
-			}
-			else
+			if ( vertex != null && e.getClickCount() == 2 )
 			{
-				// Click outside. We clear the focus.
-				focus.focusVertex( null );
+				// Double click: We navigate to the clicked vertex.
+				navigation.notifyNavigateToVertex( ref );
 			}
+
+			graph.releaseRef( ref );
 		}
 	}
 
