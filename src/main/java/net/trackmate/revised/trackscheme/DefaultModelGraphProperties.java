@@ -16,13 +16,13 @@ import net.trackmate.spatial.HasTimepoint;
  * state of vertices and edges, and on the {@link HasLabel#getLabel()} method
  * for the vertex string labels. Since we access properties via edge and vertex
  * ids, we need to have the bidirectional id map for the graph.
- * 
- * @author Tobias Pietzsch
- * 
+ *
  * @param <V>
  *            the type of the graph vertices.
  * @param <E>
  *            the type of the graph edges.
+ *
+ * @author Tobias Pietzsch &lt;tobias.pietzsch@gmail.com&gt;
  */
 public class DefaultModelGraphProperties<
 		V extends Vertex< E > & HasTimepoint & HasLabel,
@@ -37,7 +37,7 @@ public class DefaultModelGraphProperties<
 
 	/**
 	 * Creates a new graph properties object.
-	 * 
+	 *
 	 * @param graph
 	 *            the graph.
 	 * @param idmap

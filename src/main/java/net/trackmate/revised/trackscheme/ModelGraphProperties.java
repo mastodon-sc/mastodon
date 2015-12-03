@@ -1,78 +1,88 @@
 package net.trackmate.revised.trackscheme;
 
+import net.trackmate.graph.GraphIdBimap;
+import net.trackmate.graph.Ref;
+
+
 /**
- * Interface for classes that offer graph properties.
+ * Interface for classes that access model graph properties.
  * <p>
- * Graph properties store vertex and edge properties distinct from the graph
- * structure itself, and are therefore stored elsewhere.
+ * To make {@link TrackSchemeGraph} adaptable to various model graph type
+ * without requiring the graph to implement specific interfaces, we access
+ * properties of model vertices and edges (for example the label of a vertex)
+ * through {@link ModelGraphProperties}.
  * <p>
  * This class only offers read access to properties. They must be set elsewhere.
- * Edge and vertex properties are accessed through the edge and vertex id.
- * 
- * @author Tobias Pietzsch
+ * Edge and vertex properties are accessed through the edge and vertex ID (see
+ * {@link GraphIdBimap}).
+ *
+ * @author Tobias Pietzsch &lt;tobias.pietzsch@gmail.com&gt;
  */
 public interface ModelGraphProperties
 {
 
 	/**
-	 * Interface for classes that offer edge properties.
+	 * Interface for accessor classes that offer edge properties.
 	 * <p>
-	 * Properties can only be read via this class. Writing property values must
-	 * be done elsewhere.
+	 * It is safe to assume that there will never be concurrent calls to a
+	 * single {@link ModelEdgeProperties} instance. Therefore, for example the
+	 * instance can re-use a single {@link Ref} instance instead of creating and
+	 * releasing {@link Ref}s in each {@link #isSelected(int)} call.
+	 * <p>
+	 * Properties can only be read via this interface. Writing property values
+	 * must be done elsewhere.
 	 * <p>
 	 * Edge properties are features defined for individual edges. They are
 	 * distinct from the core graph properties of the edges in the graph, such
-	 * as source vertex and target vertex. It therefore makes sense not to store
-	 * them in the graph. Properties can be numerical, boolean, alphanumerical,
-	 * etc.
-	 * <p>
-	 * This interface is for classes where properties are accessed via the edges
-	 * <code>int</code> id.
-	 * 
-	 * @author Tobias Pietzsch
+	 * as source vertex and target vertex. They may be stored in the graph
+	 * objects themselves (for example labels) or separately (for example
+	 * {@code selected} state).
 	 */
 	public static interface ModelEdgeProperties
 	{
 		/**
-		 * Returns the selected state of the edge with the specified id.
-		 * 
+		 * Returns the selected state of the model edge with the specified id
+		 * (see {@link GraphIdBimap}).
+		 *
 		 * @param id
 		 *            the id of the edge.
-		 * @return the edge selected state.
+		 * @return whether the edge is selected.
 		 */
 		boolean isSelected( int id );
 	}
 
 	/**
-	 * Interface for classes that offer vertex properties.
+	 * Interface for accessor classes that offer vertex properties.
 	 * <p>
-	 * Properties can only be read via this class. Writing property values must
-	 * be done elsewhere.
+	 * It is safe to assume that there will never be concurrent calls to a
+	 * single {@link ModelVertexProperties} instance. Therefore, for example the
+	 * instance can re-use a single {@link Ref} instance instead of creating and
+	 * releasing {@link Ref}s in each {@link #isSelected(int)} call.
+	 * <p>
+	 * Properties can only be read via this interface. Writing property values
+	 * must be done elsewhere.
 	 * <p>
 	 * Vertex properties are features defined for individual vertices. They are
 	 * distinct from the core graph properties of the vertices in the graph,
-	 * such as edges, etc. It therefore makes sense not to store them in the
-	 * graph. Properties can be numerical, boolean, alphanumerical, etc.
-	 * <p>
-	 * This interface is for classes where properties are accessed via the
-	 * vertices <code>int</code> id.
-	 * 
-	 * @author Tobias Pietzsch
+	 * such as edges, etc. They may be stored in the graph objects themselves
+	 * (for example labels) or separately (for example {@code selected} state).
 	 */
 	public static interface ModelVertexProperties
 	{
 		/**
-		 * Returns the selected state of the vertex with the specified id.
-		 * 
+		 * Returns the selected state of the vertex with the specified id (see
+		 * {@link GraphIdBimap}).
+		 *
 		 * @param id
 		 *            the id of the vertex.
-		 * @return the vertex selected state.
+		 * @return whether the vertex is selected.
 		 */
 		public boolean isSelected( int id );
 
 		/**
-		 * Returns the label of the vertex with the specified id.
-		 * 
+		 * Returns the label of the vertex with the specified id (see
+		 * {@link GraphIdBimap}).
+		 *
 		 * @param id
 		 *            the id of the vertex.
 		 * @return the vertex label.
@@ -82,15 +92,15 @@ public interface ModelGraphProperties
 
 	/**
 	 * Returns a new {@link ModelVertexProperties} for the model graph.
-	 * 
-	 * @return a new ModelVertexProperties.
+	 *
+	 * @return a new ModelVertexProperties instance.
 	 */
 	public ModelVertexProperties createVertexProperties();
 
 	/**
 	 * Returns a new {@link ModelEdgeProperties} for the model graph.
-	 * 
-	 * @return a new ModelEdgeProperties.
+	 *
+	 * @return a new ModelEdgeProperties instance.
 	 */
 	public ModelEdgeProperties createEdgeProperties();
 }
