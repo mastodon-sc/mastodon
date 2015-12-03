@@ -26,29 +26,53 @@ import net.trackmate.spatial.HasTimepoint;
 /**
  * A specialized graph to be used in the TrackScheme application.
  * <p>
- * A {@link TrackSchemeGraph} wraps a model graph and is meant to be used in a
- * TrackScheme application, where the graph is laid out in a
- * hierarchical-temporal way. The {@link TrackSchemeVertex} class this graph
- * relies on offers facilities for the graph layout.
+ * A {@link TrackSchemeGraph} wraps a model graph, where the graph is laid out
+ * in a hierarchical-temporal way.
  * <p>
- * Though the model graph is wrapped in this TrackSchemeGraph, its structure is
- * duplicated here and kept in sync thank to the {@link GraphListener}
- * interface.
+ * The {@link TrackSchemeGraph} duplicates the structure of the the model graph
+ * using {@link TrackSchemeVertex} and {@link TrackSchemeEdge} objects. The
+ * structure is kept in sync with the model graph by registering as a
+ * {@link GraphListener}.
  * <p>
- * The corresponding model vertex can be retrieved from its matching
- * TrackSchemeVertex, through the later id. We therefore require the
- * bidirectional id map of the wrapped graph at construction.
+ * The vertices and edges of the {@link TrackSchemeGraph} expose properties
+ * related to graph {@link LineageTreeLayout layout} (such as layout
+ * coordinates) and painting (such as whether the vertex is selected). Some of
+ * these (layout coordinates) are stored in the {@link TrackSchemeGraph}
+ * entities, while others (label, selected state) are backed by the model
+ * entities.
  * <p>
- * TrackScheme vertices expose the same properties than their model vertex
- * counterparts. They do so by sharing the same instance of
- * {@link ModelGraphProperties} that of the model graph.
- * 
- * @author Tobias Pietzsch
+ * A mapping between vertices of the model graph and {@link TrackSchemeVertex
+ * vertices} of the {@link TrackSchemeGraph} is established through unique IDs
+ * assigned to model vertices. For this, we require a {@link GraphIdBimap
+ * bidirectional map} from model graph entities to unique IDs. The
+ * {@link TrackSchemeGraph} then maintains a map from unique model IDs to
+ * {@link TrackSchemeVertex} allowing to go from a model vertex to the
+ * corresponding {@link TrackSchemeVertex}. Vice versa, allowing to go from a
+ * {@link TrackSchemeVertex} to the corresponding model vertex, each
+ * {@link TrackSchemeVertex} stores the unique ID of its corresponding model
+ * vertex.
+ * <p>
+ * Through the model-ID bimap, {@link TrackSchemeGraph} is decoupled from the
+ * model graph implementation. The model graph might be stored as pool objects
+ * or plain objects, or it might be a wrapper around a graph stored in a
+ * database. The only requirements on the model graph is that its vertices
+ * implement {@link HasTimepoint}. Other properties (such as vertex labels or
+ * selection states) are accessed through {@link ModelGraphProperties} that know
+ * how to retrieve/compute them for a given model vertex/edge ID. We provide a
+ * default implementation of {@link DefaultModelGraphProperties} that should be
+ * applicable for almost all model graphs.
+ * <p>
+ * {@link TrackSchemeGraph} registers as a {@link GraphChangeListener} with the
+ * model graph and forwards {@link GraphChangeListener#graphChanged()
+ * graphChanged} events such that interested clients can register with the
+ * {@link TrackSchemeGraph} and do not have to know the model graph.
  *
  * @param <V>
  *            the type of the vertices of the wrapped model graph.
  * @param <E>
  *            the type of the edges of the wrapped model graph.
+ *
+ * @author Tobias Pietzsch &lt;tobias.pietzsch@gmail.com&gt;
  */
 public class TrackSchemeGraph<
 		V extends Vertex< E > & HasTimepoint,
@@ -81,7 +105,7 @@ public class TrackSchemeGraph<
 
 	/**
 	 * Creates a new TrackSchemeGraph with a default initial capacity.
-	 * 
+	 *
 	 * @param modelGraph
 	 *            the model graph to wrap.
 	 * @param idmap
@@ -98,14 +122,15 @@ public class TrackSchemeGraph<
 	}
 
 	/**
-	 * Creates a new TrackSchemeGraph.
-	 * 
+	 * Creates a new {@link TrackSchemeGraph} that reproduces the current model graph structure.
+	 * It registers as a {@link GraphListener} to keep in sync with changes the model graph.
+	 *
 	 * @param modelGraph
 	 *            the model graph to wrap.
 	 * @param idmap
 	 *            the bidirectional id map of the model graph.
 	 * @param modelGraphProperties
-	 *            the properties of the model graph.
+	 *            an accessor for properties of the model graph.
 	 * @param initialCapacity
 	 *            the initial capacity for the graph storage.
 	 */
@@ -136,7 +161,7 @@ public class TrackSchemeGraph<
 	/**
 	 * Exposes the {@link RefPool} for the TrackScheme vertices of this
 	 * TrackSchemeGraph.
-	 * 
+	 *
 	 * @return the vertex pool.
 	 */
 	public RefPool< TrackSchemeVertex > getVertexPool()
@@ -147,7 +172,7 @@ public class TrackSchemeGraph<
 	/**
 	 * Exposes the {@link RefPool} for the TrackScheme edges of this
 	 * TrackSchemeGraph.
-	 * 
+	 *
 	 * @return the edge pool.
 	 */
 	public RefPool< TrackSchemeEdge > getEdgePool()
@@ -166,7 +191,7 @@ public class TrackSchemeGraph<
 	 * earliest vertex in time, and point to the latest vertex in time. Then,
 	 * the roots of the graph corresponds to vertices that appear as time
 	 * increases.
-	 * 
+	 *
 	 * @return the roots of the graph, as a set of vertices.
 	 */
 	public RefSet< TrackSchemeVertex > getRoots()
@@ -198,7 +223,7 @@ public class TrackSchemeGraph<
 	/**
 	 * Returns the vertex in this TrackSchemeGraph that corresponds to the model
 	 * vertex with the specified id.
-	 * 
+	 *
 	 * @param modelId
 	 *            the id of the vertex in the model graph.
 	 * @param ref
@@ -219,7 +244,7 @@ public class TrackSchemeGraph<
 	/**
 	 * Adds a GraphChangeListener that will be notified when this
 	 * TrackSchemeGraph changes.
-	 * 
+	 *
 	 * @param listener
 	 *            the {@link GraphChangeListener} to register.
 	 * @return <code>true</code> if the listener was added to the list of
@@ -239,7 +264,7 @@ public class TrackSchemeGraph<
 	/**
 	 * Removes the specified GraphChangeListener from the list of listeners to
 	 * be notified when this TrackSchemeGraph changes.
-	 * 
+	 *
 	 * @param listener
 	 *            the listener to remove.
 	 * @return <code>true</code> if the listener was present in the list of
