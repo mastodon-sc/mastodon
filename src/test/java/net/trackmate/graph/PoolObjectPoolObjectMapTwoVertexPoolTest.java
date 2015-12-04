@@ -141,8 +141,8 @@ public class PoolObjectPoolObjectMapTwoVertexPoolTest extends PoolObjectPoolObje
 		final int initSize = map.size();
 		map.putAll( extraMap );
 		assertEquals( "Map after putAll does not have the expected size.", initSize + 1, map.size() );
-		assertEquals( "New mapping is not right.", Bk, map.get( Ak ) );
-		assertEquals( "New mapping is not right.", Ak, map.get( Bk ) );
+		assertEquals( "New mapping is not right.", Bk.getInternalPoolIndex(), map.get( Ak ).getInternalPoolIndex() );
+		assertEquals( "New mapping is not right.", Ak.getInternalPoolIndex(), map.get( Bk ).getInternalPoolIndex() );
 	}
 
 	@Test
