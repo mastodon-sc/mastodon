@@ -141,32 +141,32 @@ public class PoolObjectIntMapTest
 		assertFalse( "After removal from key set, map should not contain correspinding mapping.", map.containsKey( target ) );
 	}
 
-	@Test
-	public void testKeys()
-	{
-		final TestObject[] keys = ( TestObject[] ) map.keys();
-		Arrays.sort( keys );
-		for ( final TestObject in : ins )
-		{
-			final int index = Arrays.binarySearch( keys, in );
-			assertTrue( "Did not find expected key " + in + " in key set.", index >= 0 );
-		}
-		assertEquals( "Key set does not have the expected size.", ins.size(), keys.length );
-	}
+//	@Test
+//	public void testKeys()
+//	{
+//		final TestObject[] keys = ( TestObject[] ) map.keys();
+//		Arrays.sort( keys );
+//		for ( final TestObject in : ins )
+//		{
+//			final int index = Arrays.binarySearch( keys, in );
+//			assertTrue( "Did not find expected key " + in + " in key set.", index >= 0 );
+//		}
+//		assertEquals( "Key set does not have the expected size.", ins.size(), keys.length );
+//	}
 
-	@Test
-	public void testKeysKArray()
-	{
-		TestObject[] keys = new TestObject[ 2 * ins.size() ];
-		keys = map.keys( keys );
-		Arrays.sort( keys );
-		for ( final TestObject in : ins )
-		{
-			final int index = Arrays.binarySearch( keys, in );
-			assertTrue( "Did not find expected key " + in + " in key set.", index >= 0 );
-		}
-		assertEquals( "Key set does not have the expected size.", 2 * ins.size(), keys.length );
-	}
+//	@Test
+//	public void testKeysKArray()
+//	{
+//		TestObject[] keys = new TestObject[ 2 * ins.size() ];
+//		keys = map.keys( keys );
+//		Arrays.sort( keys );
+//		for ( final TestObject in : ins )
+//		{
+//			final int index = Arrays.binarySearch( keys, in );
+//			assertTrue( "Did not find expected key " + in + " in key set.", index >= 0 );
+//		}
+//		assertEquals( "Key set does not have the expected size.", 2 * ins.size(), keys.length );
+//	}
 
 	@Test
 	public void testPut()
