@@ -62,7 +62,7 @@ public class TopologicalSort< V extends Vertex< E >, E extends Edge< V > > exten
 
 	private void fetchList()
 	{
-		final Iterator< V > vit = graph.vertexIterator();
+		final Iterator< V > vit = graph.vertices().iterator();
 		while ( vit.hasNext() && !failed )
 		{
 			final V v1 = vit.next();
@@ -73,7 +73,6 @@ public class TopologicalSort< V extends Vertex< E >, E extends Edge< V > > exten
 		}
 		marked = null;
 		temporaryMarked = null;
-
 	}
 
 	private void visit( final V vertex )

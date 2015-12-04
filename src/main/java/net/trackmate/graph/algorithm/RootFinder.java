@@ -1,7 +1,5 @@
 package net.trackmate.graph.algorithm;
 
-import java.util.Iterator;
-
 import net.trackmate.graph.Edge;
 import net.trackmate.graph.Graph;
 import net.trackmate.graph.Vertex;
@@ -30,17 +28,15 @@ public class RootFinder< V extends Vertex< E >, E extends Edge< V > > extends Ab
 
 	private void fetchRoots()
 	{
-		final Iterator< V > iterator = graph.vertexIterator();
-		while ( iterator.hasNext() )
+		for ( final V v : graph.vertices() )
 		{
-			final V v = iterator.next();
 			if ( v.incomingEdges().isEmpty() )
 			{
 				roots.add( v );
 			}
 		}
 	}
-	
+
 	@SuppressWarnings( { "rawtypes", "unchecked" } )
 	public static < V extends Vertex< ? >> RefSet< V > getRoots( final Graph< V, ? > graph )
 	{

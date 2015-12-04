@@ -1,7 +1,5 @@
 package net.trackmate.trackscheme;
 
-import java.util.Iterator;
-
 import net.trackmate.graph.Edge;
 import net.trackmate.graph.Graph;
 import net.trackmate.graph.GraphIdBimap;
@@ -26,10 +24,8 @@ public class TrackSchemeUtil
 
 		final IntPoolObjectMap< TrackSchemeVertex > idToTrackSchemeVertex =
 				new IntPoolObjectMap< TrackSchemeVertex >( tsg.getVertexPool(), initialCapacity );
-		final Iterator< V > vi = graph.vertexIterator();
-		while ( vi.hasNext() )
+		for ( final V v : graph.vertices() )
 		{
-			final V v = vi.next();
 			final int id = idmap.getVertexId( v );
 			final String label = Integer.toString( id );
 			final int timepoint = v.getTimepoint();
@@ -38,10 +34,9 @@ public class TrackSchemeUtil
 		}
 
 		final V v = graph.vertexRef();
-		final Iterator< E > ei = graph.edgeIterator();
-		while ( ei.hasNext() )
+
+		for ( final E e : graph.edges() )
 		{
-			final E e = ei.next();
 			idToTrackSchemeVertex.get( idmap.getVertexId( e.getSource( v ) ), tsv );
 			idToTrackSchemeVertex.get( idmap.getVertexId( e.getTarget( v ) ), tsv2 );
 			tsg.addEdge( tsv, tsv2, tse );
