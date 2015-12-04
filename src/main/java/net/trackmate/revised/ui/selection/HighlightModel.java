@@ -12,7 +12,7 @@ import net.trackmate.graph.listenable.GraphListener;
  * <p>
  * A highlighted vertex is a vertex that is drawn in a salient manner across all
  * the views opened on a single model. It is meant to quickly highlight a single
- * vertex on all views while the mouse is overing above its representation in
+ * vertex on all views while the mouse is hovering above its representation in
  * any view.
  *
  * @param <V>
@@ -32,7 +32,7 @@ public class HighlightModel< V extends Vertex< E >, E extends Edge< V > > implem
 	/**
 	 * Creates a new highlight model for the graph with the specified
 	 * bidirectional map.
-	 * 
+	 *
 	 * @param idmap
 	 *            the graph bidirectional map from vertices and edges to their
 	 *            id.
@@ -46,9 +46,9 @@ public class HighlightModel< V extends Vertex< E >, E extends Edge< V > > implem
 
 	/**
 	 * Sets the specified vertex highlighted in this model.
-	 * 
+	 *
 	 * @param vertex
-	 *            the vertex to highlight.
+	 *            the vertex to highlight, or {@code null} to clear highlight.
 	 */
 	public synchronized void highlightVertex( final V vertex )
 	{
@@ -62,10 +62,11 @@ public class HighlightModel< V extends Vertex< E >, E extends Edge< V > > implem
 
 	/**
 	 * Returns the vertex highlighted in this model.
-	 * 
+	 *
 	 * @param ref
 	 *            a vertex reference used for retrieval.
-	 * @return the highlighted vertex.
+	 * @return the highlighted vertex, or {@code null} if no vertex is
+	 *         highlighted.
 	 */
 	public synchronized V getHighlightedVertex( final V ref )
 	{
@@ -76,7 +77,7 @@ public class HighlightModel< V extends Vertex< E >, E extends Edge< V > > implem
 	/**
 	 * Registers a HighlightListener to this highlight model, that will be
 	 * notified when the highlighted vertex changes.
-	 * 
+	 *
 	 * @param listener
 	 *            the listener to register.
 	 * @return {@code true} if the listener was successfully registered.
@@ -95,7 +96,7 @@ public class HighlightModel< V extends Vertex< E >, E extends Edge< V > > implem
 	/**
 	 * Removes the specified listener from the listeners of this highlight
 	 * model.
-	 * 
+	 *
 	 * @param listener
 	 *            the listener to remove.
 	 * @return {@code true} if the listener was present in the listeners of

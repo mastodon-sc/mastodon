@@ -7,7 +7,7 @@ package net.trackmate.revised.ui.selection;
 public interface SelectionListener
 {
 	/**
-	 * Notifies when the selection of a registered model has changed.
+	 * Notifies when the selection has changed.
 	 */
 	public void selectionChanged();
 }

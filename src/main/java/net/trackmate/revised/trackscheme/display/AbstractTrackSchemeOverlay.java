@@ -98,11 +98,14 @@ public abstract class AbstractTrackSchemeOverlay implements OverlayRenderer
 
 	/**
 	 * Creates a new overlay for the specified TrackScheme graph.
-	 * 
+	 *
 	 * @param graph
 	 *            the graph to paint.
 	 * @param highlight
-	 *            the highlight model that indicates what vertex is highlighted.
+	 *            the highlight model that indicates which vertex is
+	 *            highlighted.
+	 * @param focus
+	 *            the focus model that indicates which vertex is focused.
 	 * @param options
 	 *            options for TrackScheme look.
 	 */
@@ -172,21 +175,25 @@ public abstract class AbstractTrackSchemeOverlay implements OverlayRenderer
 	}
 
 	/**
-	 * Returns the internal pool index of the TrackSchemeEdge currently painted
-	 * on this display at screen coordinates specified by {@code x} and
-	 * {@code y} and within a distance tolerance.
+	 * Returns the {@link TrackSchemeEdge} currently painted on this display at
+	 * screen coordinates specified by {@code x} and {@code y} and within a
+	 * distance tolerance.
 	 * <p>
 	 * This method exists to facilitate writing mouse handlers.
+	 * <p>
+	 * Note that this really only looks at edges that are individually painted
+	 * on the screen. Edges inside dense ranges are ignored.
 	 *
 	 * @param x
 	 *            the x screen coordinate
 	 * @param y
 	 *            the y screen coordinate
 	 * @param tolerance
-	 * @param ref
 	 *            the maximal distance to the closest edge.
-	 * @return the internal pool index of the TrackSchemeEdge at {@code (x, y)},
-	 *         or -1 if there is no edge within the distance tolerance.
+	 * @param ref
+	 *            a reference that will be used to retrieve the result.
+	 * @return the {@link TrackSchemeEdge} at {@code (x, y)}, or {@code null} if
+	 *         there is no edge within the distance tolerance.
 	 */
 	public TrackSchemeEdge getEdgeAt( final int x, final int y, final double tolerance, final TrackSchemeEdge ref )
 	{
@@ -266,7 +273,7 @@ public abstract class AbstractTrackSchemeOverlay implements OverlayRenderer
 
 	/**
 	 * Returns the width of this overlay.
-	 * 
+	 *
 	 * @return the width.
 	 */
 	public int getWidth()
@@ -276,7 +283,7 @@ public abstract class AbstractTrackSchemeOverlay implements OverlayRenderer
 
 	/**
 	 * Returns the hight of this overlay.
-	 * 
+	 *
 	 * @return the height.
 	 */
 	public int getHeight()
@@ -288,9 +295,9 @@ public abstract class AbstractTrackSchemeOverlay implements OverlayRenderer
 	 * Set the timepoint range of the dataset.
 	 *
 	 * @param minTimepoint
-	 *            the smallest timepoint to display.
+	 *            the smallest timepoint of the dataset.
 	 * @param maxTimepoint
-	 *            the largest timepoint to display.
+	 *            the largest timepoint of the dataset.
 	 */
 	public void setTimepointRange( final int minTimepoint, final int maxTimepoint )
 	{
@@ -302,6 +309,7 @@ public abstract class AbstractTrackSchemeOverlay implements OverlayRenderer
 	 * Sets the current timepoint.
 	 *
 	 * @param timepoint
+	 *            the current timepoint.
 	 */
 	public void setCurrentTimepoint( final int timepoint )
 	{
@@ -309,9 +317,9 @@ public abstract class AbstractTrackSchemeOverlay implements OverlayRenderer
 	}
 
 	/**
-	 * Returns the smallest timepoint displayed.
-	 * 
-	 * @return the smallest timepoint displayed.
+	 * Returns the smallest timepoint of the dataset.
+	 *
+	 * @return the smallest timepoint of the dataset.
 	 */
 	protected int getMinTimepoint()
 	{
@@ -319,9 +327,9 @@ public abstract class AbstractTrackSchemeOverlay implements OverlayRenderer
 	}
 
 	/**
-	 * Returns the largest timepoint displayed.
-	 * 
-	 * @return the largest timepoint displayed.
+	 * Returns the largest timepoint of the dataset.
+	 *
+	 * @return the largest timepoint of the dataset.
 	 */
 	protected int getMaxTimepoint()
 	{
@@ -329,9 +337,9 @@ public abstract class AbstractTrackSchemeOverlay implements OverlayRenderer
 	}
 
 	/**
-	 * Returns the timepoint currently displayed on this overlay.
-	 * 
-	 * @return the timepoint currently displayed.
+	 * Returns the current timepoint.
+	 *
+	 * @return the current timepoint.
 	 */
 	protected int getCurrentTimepoint()
 	{
@@ -376,7 +384,7 @@ public abstract class AbstractTrackSchemeOverlay implements OverlayRenderer
 	 * inside a painted vertex. As the vertex painting shape is implemented by
 	 * possibly different concrete classes, they should return whether a point
 	 * is inside a vertex or not.
-	 * 
+	 *
 	 * @param pos
 	 *            the layout position.
 	 * @param vertex
@@ -387,7 +395,7 @@ public abstract class AbstractTrackSchemeOverlay implements OverlayRenderer
 
 	/**
 	 * Returns the distance from a <b>layout</b> position to a specified edge.
-	 * 
+	 *
 	 * @param pos
 	 *            the layout position.
 	 * @param edge
@@ -402,7 +410,7 @@ public abstract class AbstractTrackSchemeOverlay implements OverlayRenderer
 
 	/**
 	 * Paints background decorations.
-	 * 
+	 *
 	 * @param g2
 	 *            the graphics object.
 	 * @param screenEntities
@@ -412,7 +420,7 @@ public abstract class AbstractTrackSchemeOverlay implements OverlayRenderer
 
 	/**
 	 * Configures the graphics object prior to drawing vertices.
-	 * 
+	 *
 	 * @param g2
 	 *            the graphics object.
 	 */
@@ -420,7 +428,7 @@ public abstract class AbstractTrackSchemeOverlay implements OverlayRenderer
 
 	/**
 	 * Paints the specified vertex.
-	 * 
+	 *
 	 * @param g2
 	 *            the graphics object.
 	 * @param vertex
@@ -430,7 +438,7 @@ public abstract class AbstractTrackSchemeOverlay implements OverlayRenderer
 
 	/**
 	 * Configures the graphics object prior to drawing vertex ranges.
-	 * 
+	 *
 	 * @param g2
 	 *            the graphics object.
 	 */
@@ -438,7 +446,7 @@ public abstract class AbstractTrackSchemeOverlay implements OverlayRenderer
 
 	/**
 	 * Paints the specified vertex range.
-	 * 
+	 *
 	 * @param g2
 	 *            the graphics object.
 	 * @param range
@@ -448,7 +456,7 @@ public abstract class AbstractTrackSchemeOverlay implements OverlayRenderer
 
 	/**
 	 * Configures the graphics object prior to drawing edges.
-	 * 
+	 *
 	 * @param g2
 	 *            the graphics object.
 	 */
@@ -456,7 +464,7 @@ public abstract class AbstractTrackSchemeOverlay implements OverlayRenderer
 
 	/**
 	 * Paints the specified edge.
-	 * 
+	 *
 	 * @param g2
 	 *            the graphics object.
 	 * @param edge

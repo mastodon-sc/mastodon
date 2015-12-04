@@ -1,7 +1,7 @@
 package net.trackmate.revised.ui.selection;
 
 /**
- * Interface for listener of the {@link HighlightListener}.
+ * Interface for listener of the {@link HighlightModel}.
  */
 public interface HighlightListener
 {
