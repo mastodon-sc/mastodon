@@ -84,7 +84,6 @@ public class PoolObjectPoolObjectMap< K extends Ref< K >, L extends Ref< L > > i
 	@Override
 	public Set< java.util.Map.Entry< K, L >> entrySet()
 	{
-		// TODO
 		throw new UnsupportedOperationException();
 	}
 
@@ -141,8 +140,11 @@ public class PoolObjectPoolObjectMap< K extends Ref< K >, L extends Ref< L > > i
 	@Override
 	public void putAll( final Map< ? extends K, ? extends L > m )
 	{
-		// TODO
-		throw new UnsupportedOperationException();
+		// Pedestrian.
+		for ( final K key : m.keySet() )
+		{
+			indexmap.put( key.getInternalPoolIndex(), m.get( key ).getInternalPoolIndex() );
+		}
 	}
 
 	@Override

@@ -5,7 +5,6 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
 import java.util.Set;
 
@@ -49,12 +48,6 @@ public class PoolObjectPoolObjectMapTwoVertexPoolTest extends PoolObjectPoolObje
 	{
 		assertFalse( "Map should not contain a value for vertex Bk.", map.containsValue( Bk ) );
 		assertTrue( "Map should contain a value for vertex Ak.", map.containsValue( Ak ) );
-	}
-
-	@Test
-	public void testEntrySet()
-	{
-		fail( "Not yet implemented" );
 	}
 
 	@Test
@@ -139,7 +132,17 @@ public class PoolObjectPoolObjectMapTwoVertexPoolTest extends PoolObjectPoolObje
 	@Test
 	public void testPutAll()
 	{
-		fail( "Not yet implemented" );
+		final PoolObjectPoolObjectMap< TestVertex, TestVertex > extraMap = new PoolObjectPoolObjectMap< TestVertex, TestVertex >( graph.vertexPool, graph.vertexPool );
+		extraMap.put( Ak, Bk );
+		// Careful to add 1 mapping not already present in the map.
+		extraMap.put( Bk, Ak );
+		// Change one mapping.
+
+		final int initSize = map.size();
+		map.putAll( extraMap );
+		assertEquals( "Map after putAll does not have the expected size.", initSize + 1, map.size() );
+		assertEquals( "New mapping is not right.", Bk, map.get( Ak ) );
+		assertEquals( "New mapping is not right.", Ak, map.get( Bk ) );
 	}
 
 	@Test
