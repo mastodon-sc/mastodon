@@ -1,7 +1,6 @@
 package net.trackmate.graph.algorithm;
 
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.Set;
 
 import net.trackmate.graph.Edge;
@@ -31,16 +30,37 @@ public class ConnectedComponents< V extends Vertex< E >, E extends Edge< V > > e
 
 	private final int minimalSize;
 
+	/**
+	 * Creates a new connected-components algorithm.
+	 *
+	 * @param graph
+	 *            the graph to inspect.
+	 * @param minimalSize
+	 *            the minimal size for the components. Components with a size
+	 *            smaller that this one will be ignored, and won't be present in
+	 *            the set returned by {@link #get()}.
+	 */
 	public ConnectedComponents( final ReadOnlyGraph< V, E > graph, final int minimalSize )
 	{
 		super( graph );
+		if ( minimalSize < 1 )
+			throw new IllegalArgumentException( "Minimal size cannot be lower than 1, was " + minimalSize + "." );
 		this.minimalSize = minimalSize;
 		this.visited = createVertexSet();
 	}
 
+	/**
+	 * Creates a new connected-components algorithm with a minimal size of 1.
+	 * <p>
+	 * With this minimal size, all the vertices of the graph will be returned in
+	 * the set of components.
+	 *
+	 * @param graph
+	 *            the graph to inspect.
+	 */
 	public ConnectedComponents( final ReadOnlyGraph< V, E > graph )
 	{
-		this( graph, 2 );
+		this( graph, 1 );
 	}
 
 	private void visit( final V v, final RefSet< V > currentComponent )
@@ -62,8 +82,10 @@ public class ConnectedComponents< V extends Vertex< E >, E extends Edge< V > > e
 	 * Returns the set of connected components of the graph. Edges are traversed
 	 * regardless of their direction.
 	 * <p>
-	 * It is ensured that all the vertices of the graph will be found exactly
-	 * once in the connected component set.
+	 * Unless they belong to a component of size below
+	 * {@link ConnectedComponents#minimalSize}, it is ensured that all the
+	 * vertices of the graph will be found exactly once in the connected
+	 * component set.
 	 * <p>
 	 * The returned connected components are a snapshot of the graph
 	 * connectivity when this method is called. Subsequent calls to this method
@@ -77,10 +99,8 @@ public class ConnectedComponents< V extends Vertex< E >, E extends Edge< V > > e
 		final HashSet< RefSet< V >> components = new HashSet< RefSet< V > >();
 		visited.clear();
 
-		final Iterator< V > it = graph.vertexIterator();
-		while ( it.hasNext() )
+		for ( final V v : graph.vertices() )
 		{
-			final V v = it.next();
 			if ( visited.contains( v ) )
 			{
 				continue;
