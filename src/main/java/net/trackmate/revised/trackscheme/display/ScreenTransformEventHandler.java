@@ -33,7 +33,7 @@ public class ScreenTransformEventHandler extends MouseAdapter implements KeyList
 	final protected ScreenTransform transform = new ScreenTransform();
 
 	/**
-	 * Copy of {@link #affine current transform} when mouse dragging
+	 * Copy of {@link #transform current transform} when mouse dragging
 	 * started.
 	 */
 	final protected ScreenTransform transformDragStart = new ScreenTransform();

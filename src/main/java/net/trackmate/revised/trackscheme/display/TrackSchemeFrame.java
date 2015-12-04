@@ -15,8 +15,6 @@ import net.trackmate.revised.trackscheme.TrackSchemeNavigation;
 import net.trackmate.revised.trackscheme.TrackSchemeSelection;
 import net.trackmate.revised.ui.grouping.GroupHandle;
 import net.trackmate.revised.ui.grouping.GroupLocksPanel;
-import bdv.viewer.SourceAndConverter;
-import bdv.viewer.ViewerOptions;
 
 public class TrackSchemeFrame extends JFrame
 {
@@ -33,17 +31,6 @@ public class TrackSchemeFrame extends JFrame
 		this( graph, highlight, focus, selection, navigation, groupHandle, TrackSchemeOptions.options() );
 	}
 
-	/**
-	 *
-	 * @param sources
-	 *            the {@link SourceAndConverter sources} to display.
-	 * @param numTimePoints
-	 *            number of available timepoints.
-	 * @param cache
-	 *            handle to cache. This is used to control io timing.
-	 * @param optional
-	 *            optional parameters. See {@link ViewerOptions#options()}.
-	 */
 	public TrackSchemeFrame(
 			final TrackSchemeGraph< ?, ? > graph,
 			final TrackSchemeHighlight highlight,

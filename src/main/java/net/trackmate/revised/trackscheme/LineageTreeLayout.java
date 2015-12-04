@@ -40,7 +40,7 @@ import net.trackmate.revised.trackscheme.ScreenVertexRange.ScreenVertexRangePool
  *
  *
  *
- * @author Tobias Pietzsch <tobias.pietzsch@gmail.com>
+ * @author Tobias Pietzsch &lt;tobias.pietzsch@gmail.com&gt;
  */
 public class LineageTreeLayout
 {
@@ -108,7 +108,7 @@ public class LineageTreeLayout
 	/**
 	 * Layout graph in trackscheme coordinates starting from the graphs roots.
 	 * <p>
-	 * This calls {@link #layout(List, int)} with parameter {@code mark = -1},
+	 * This calls {@link #layout(Collection, int)} with parameter {@code mark = -1},
 	 * that is, no vertices will me marked as ghosts.
 	 */
 	public void layout()
@@ -119,7 +119,7 @@ public class LineageTreeLayout
 	/**
 	 * Layout graph in trackscheme coordinates starting from specified roots.
 	 * <p>
-	 * This calls {@link #layout(List, int)} with parameter {@code mark = -1},
+	 * This calls {@link #layout(Collection, int)} with parameter {@code mark = -1},
 	 * that is, no vertices will me marked as ghosts.
 	 *
 	 * @param layoutRoots
@@ -190,8 +190,8 @@ public class LineageTreeLayout
 
 	/**
 	 * Get the timestamp that was used in the last layout (the timestamp which
-	 * was set in all vertices laid out during last {@link #layout(List)} resp.
-	 * {@link #layout(List, int)}.)
+	 * was set in all vertices laid out during last {@link #layout(Collection)} resp.
+	 * {@link #layout(Collection, int)}.)
 	 *
 	 * @return timestamp used in last layout.
 	 */
@@ -408,7 +408,7 @@ public class LineageTreeLayout
 
 	/**
 	 * Returns the set of all the vertices in the rectangle with two corners
-	 * <code>(lx1, ly1)</code> and <code>(lx2, ly2)</code> in layout
+	 * {@code (lx1, ly1)} and {@code (lx2, ly2)} in layout
 	 * coordinates.
 	 *
 	 * @param lx1

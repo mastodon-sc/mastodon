@@ -18,7 +18,7 @@ import net.trackmate.spatial.SpatioTemporalIndex;
  * @param <V>
  * @param <E>
  *
- * @author Tobias Pietzsch <tobias.pietzsch@gmail.com>
+ * @author Tobias Pietzsch &lt;tobias.pietzsch@gmail.com&gt;
  */
 public class OverlayGraphWrapper< V extends Vertex< E >, E extends Edge< V > >
 	implements OverlayGraph< OverlayVertexWrapper< V, E >, OverlayEdgeWrapper< V, E > >

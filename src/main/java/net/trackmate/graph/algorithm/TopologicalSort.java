@@ -12,7 +12,7 @@ import net.trackmate.graph.collection.RefSet;
  * A topological order sort for a direct acyclic graph.
  * <p>
  * If the graph provided is not acyclic, the flag returned by the
- * {@link #hasFailed()} method set to <code>true</code> to indicate the problem.
+ * {@link #hasFailed()} method set to {@code true} to indicate the problem.
  *
  * @author Jean-Yves Tinevez
  *
@@ -50,9 +50,9 @@ public class TopologicalSort< V extends Vertex< E >, E extends Edge< V > > exten
 	}
 
 	/**
-	 * Returns <code>true</code> if the graph iterated has a cycle.
+	 * Returns {@code true} if the graph iterated has a cycle.
 	 *
-	 * @return <code>true</code> if the graph iterated is not a directed acyclic
+	 * @return {@code true} if the graph iterated is not a directed acyclic
 	 *         graph.
 	 */
 	public boolean hasFailed()

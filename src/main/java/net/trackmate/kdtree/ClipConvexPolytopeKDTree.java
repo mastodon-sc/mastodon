@@ -19,8 +19,8 @@ import net.trackmate.graph.mempool.MappedElement;
  * <p>
  * Construct with the {@link KDTree}. Call {@link #clip(ConvexPolytope)} to
  * partition with respect to a {@link ConvexPolytope}. Then call
- * {@link #getInsideNodes()} and {@link #getOutsideNodes()} to get the sets of
- * nodes inside and outside the polytope, respectively.
+ * {@link #getInsideValues()} and {@link #getOutsideValues()} to get the sets of
+ * node values inside and outside the polytope, respectively.
  *
  * <p>
  * The algorithm is described in <a
@@ -31,7 +31,7 @@ import net.trackmate.graph.mempool.MappedElement;
  * @param <T>
  *            the MappedElement type of the {@link KDTreeNode tree nodes}.
  *
- * @author Tobias Pietzsch <tobias.pietzsch@gmail.com>
+ * @author Tobias Pietzsch &lt;tobias.pietzsch@gmail.com&gt;
  */
 public class ClipConvexPolytopeKDTree< O extends Ref< O > & RealLocalizable, T extends MappedElement >
 {

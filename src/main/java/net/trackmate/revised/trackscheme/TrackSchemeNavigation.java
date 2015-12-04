@@ -28,8 +28,8 @@ public class TrackSchemeNavigation implements
 	 *
 	 * @param listener
 	 *            the {@link NavigationListener} to register.
-	 * @return <code>true</code> if the specified listener was added to the
-	 *         listeners of this handler. <code>false</code> if the specified
+	 * @return {@code true} if the specified listener was added to the
+	 *         listeners of this handler. {@code false} if the specified
 	 *         listener was already registered.
 	 */
 	public boolean addNavigationListener( final NavigationListener< TrackSchemeVertex > listener )

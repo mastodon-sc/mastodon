@@ -6,7 +6,7 @@ import gnu.trove.map.hash.TIntObjectHashMap;
 /**
  * Store labels of {@link TrackSchemeVertex}.
  *
- * @author Tobias Pietzsch <tobias.pietzsch@gmail.com>
+ * @author Tobias Pietzsch &lt;tobias.pietzsch@gmail.com&gt;
  */
 public class Labels
 {

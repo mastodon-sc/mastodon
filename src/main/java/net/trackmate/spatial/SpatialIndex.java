@@ -23,7 +23,7 @@ public interface SpatialIndex< T > extends Iterable< T >
 	/**
 	 * Check whether this index contains no objects.
 	 *
-	 * @return <code>true</code> if this index is empty.
+	 * @return {@code true} if this index is empty.
 	 */
 	public boolean isEmpty();
 

@@ -42,15 +42,15 @@ public class Graphs
 	 * More precisely:
 	 * <ul>
 	 * <li>The first list is sorted according to the specified comparator.
-	 * <li>The second list has its elements rearranged so that is <code>O</code>
-	 * and <code>P</code> share the same index in <code>listO</code> and
-	 * <code>listP</code>, then they also share the same index after sort.
+	 * <li>The second list has its elements rearranged so that is {@code O}
+	 * and {@code P} share the same index in {@code listO} and
+	 * {@code listP}, then they also share the same index after sort.
 	 * </ul>
 	 * 
 	 * @param listO
 	 *            the first list, that will be sorted.
 	 * @param comparatorO
-	 *            the comparator used to sort the first list. <code>null</code>
+	 *            the comparator used to sort the first list. {@code null}
 	 *            is not permitted.
 	 * @param listP
 	 *            the second list, rearranged according to the sort order of the

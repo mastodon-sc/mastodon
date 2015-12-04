@@ -17,8 +17,8 @@ import net.trackmate.graph.traversal.SearchListener;
 import net.trackmate.graph.util.TIntArrayDeque;
 
 /**
- * No Holm & de Lichtenbertg, because our tracks will be trees 90% of the time.
- * Another class will do Holm & de Lichtenbertg.
+ * No Holm &amp; de Lichtenbertg, because our tracks will be trees 90% of the time.
+ * Another class will do Holm &amp; de Lichtenbertg.
  *
  * @author Jean-Yves Tinevez
  *
@@ -298,7 +298,7 @@ public class ConnectedComponentsDynamicDefault< V extends Vertex< E >, E extends
 	 * Returns a new array containing the ids of the connected components of the
 	 * graph.
 	 *
-	 * @return a new <code>int</code> array.
+	 * @return a new {@code int} array.
 	 */
 	public int[] ids()
 	{
@@ -317,7 +317,7 @@ public class ConnectedComponentsDynamicDefault< V extends Vertex< E >, E extends
 
 	/**
 	 * Returns the connected component with the specified id, or
-	 * <code>null</code> if the specified id does not exist.
+	 * {@code null} if the specified id does not exist.
 	 *
 	 * @param id
 	 *            the id of the connected component.

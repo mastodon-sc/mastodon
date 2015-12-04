@@ -10,7 +10,7 @@ import sun.misc.Unsafe;
  * Helper methods to encode and decode different data types ({@code long, double}
  * etc.) from bytes at an offset in a {@code double[]} array.
  *
- * @author Tobias Pietzsch <tobias.pietzsch@gmail.com>
+ * @author Tobias Pietzsch &lt;tobias.pietzsch@gmail.com&gt;
  */
 @SuppressWarnings( "restriction" )
 public class DoubleUtils

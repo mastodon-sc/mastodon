@@ -28,7 +28,7 @@ import net.trackmate.graph.collection.IntRefMap;
  * @param <V>
  *            value type.
  *
- * @author Tobias Pietzsch <tobias.pietzsch@gmail.com>
+ * @author Tobias Pietzsch &lt;tobias.pietzsch@gmail.com&gt;
  */
 public class IntPoolObjectArrayMap< V extends Ref< V > > implements IntRefMap< V >
 {

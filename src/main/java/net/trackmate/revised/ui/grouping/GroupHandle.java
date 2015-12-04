@@ -12,9 +12,6 @@ import java.util.Set;
 /**
  * TODO: javadoc
  *
- * @param <T>
- *            recursive type of this class.
- *
  * @author Tobias Pietzsch &lt;tobias.pietzsch@gmail.com&gt;
  */
 public class GroupHandle

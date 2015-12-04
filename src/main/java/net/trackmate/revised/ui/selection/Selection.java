@@ -217,7 +217,7 @@ public class Selection< V extends Vertex< E >, E extends Edge< V > > implements 
 	/**
 	 * Clears this selection.
 	 *
-	 * @return <code>true</code> if this selection was not empty prior to
+	 * @return {@code true} if this selection was not empty prior to
 	 *         calling this method.
 	 */
 	public synchronized boolean clearSelection()

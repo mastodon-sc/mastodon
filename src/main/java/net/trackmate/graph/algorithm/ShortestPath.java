@@ -47,7 +47,7 @@ public class ShortestPath< V extends Vertex< E >, E extends Edge< V > > extends 
 	 * @param to
 	 *            the vertex to reach.
 	 * @return a new {@link RefList}, containing the path found <b>in reverse
-	 *         order</b> (<code>to → from</code>). Returns <code>null</code> if
+	 *         order</b> ({@code to → from}). Returns {@code null} if
 	 *         a path cannot be found between the specified vertices.
 	 */
 	public RefList< V > findPath( final V from, final V to )

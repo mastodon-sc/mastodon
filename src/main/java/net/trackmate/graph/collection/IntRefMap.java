@@ -17,7 +17,7 @@ public interface IntRefMap< V > extends TIntObjectMap< V >
 	/**
 	 * Creates an object reference that can be used for processing with this
 	 * map. Depending on concrete implementation, the object return can be
-	 * <code>null</code>.
+	 * {@code null}.
 	 *
 	 * @return a new object empty reference.
 	 */
@@ -92,7 +92,7 @@ public interface IntRefMap< V > extends TIntObjectMap< V >
      * Removes the mapping for a key from this map if it is present
      * (optional operation).   More formally, if this map contains a mapping
      * from key <tt>k</tt> to value <tt>v</tt> such that
-     * <code>key.equals(k)</code>, that mapping
+     * {@code key.equals(k)}, that mapping
      * is removed.  (The map can contain at most one such mapping.)
      *
      * <p>Returns the value to which this map previously associated the key,

@@ -13,9 +13,6 @@ import java.util.Set;
 /**
  * TODO: javadoc
  *
- * @param <T>
- *            the specific {@link GroupHandle} type handled by this manages.
- *
  * @author Tobias Pietzsch &lt;tobias.pietzsch@gmail.com&gt;
  */
 public class GroupManager

@@ -7,7 +7,7 @@ package net.trackmate.spatial;
  * <p>
  * TODO: in which package should this be?
  *
- * @author Tobias Pietzsch <tobias.pietzsch@gmail.com>
+ * @author Tobias Pietzsch &lt;tobias.pietzsch@gmail.com&gt;
  */
 public interface HasTimepoint
 {

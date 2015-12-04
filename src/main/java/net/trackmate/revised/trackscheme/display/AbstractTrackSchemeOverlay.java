@@ -372,7 +372,7 @@ public abstract class AbstractTrackSchemeOverlay implements OverlayRenderer
 	}
 
 	/**
-	 * Returns <code>true</code> if the specified <b>layout</b> coordinates are
+	 * Returns {@code true} if the specified <b>layout</b> coordinates are
 	 * inside a painted vertex. As the vertex painting shape is implemented by
 	 * possibly different concrete classes, they should return whether a point
 	 * is inside a vertex or not.
@@ -381,7 +381,7 @@ public abstract class AbstractTrackSchemeOverlay implements OverlayRenderer
 	 *            the layout position.
 	 * @param vertex
 	 *            the vertex.
-	 * @return <code>true</code> if the position is inside the vertex painted.
+	 * @return {@code true} if the position is inside the vertex painted.
 	 */
 	protected abstract boolean isInsidePaintedVertex( final RealLocalizable pos, final ScreenVertex vertex );
 

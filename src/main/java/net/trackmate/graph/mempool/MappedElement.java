@@ -23,7 +23,7 @@ package net.trackmate.graph.mempool;
  * the reference to the memory area must be updated in addition to the base
  * offset.
  *
- * @author Tobias Pietzsch <tobias.pietzsch@gmail.com>
+ * @author Tobias Pietzsch &lt;tobias.pietzsch@gmail.com&gt;
  */
 public interface MappedElement
 {

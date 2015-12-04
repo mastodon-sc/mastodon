@@ -79,8 +79,8 @@ public class HighlightModel< V extends Vertex< E >, E extends Edge< V > > implem
 	 * 
 	 * @param listener
 	 *            the listener to register.
-	 * @return <code>true</code> if the listener was successfully registered.
-	 *         <code>false</code> if it was already registered.
+	 * @return {@code true} if the listener was successfully registered.
+	 *         {@code false} if it was already registered.
 	 */
 	public boolean addHighlightListener( final HighlightListener listener )
 	{
@@ -98,7 +98,7 @@ public class HighlightModel< V extends Vertex< E >, E extends Edge< V > > implem
 	 * 
 	 * @param listener
 	 *            the listener to remove.
-	 * @return <code>true</code> if the listener was present in the listeners of
+	 * @return {@code true} if the listener was present in the listeners of
 	 *         this model and was succesfully removed.
 	 */
 	public boolean removeHighlightListener( final HighlightListener listener )

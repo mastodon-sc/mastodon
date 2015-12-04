@@ -50,7 +50,7 @@ public class Model extends AbstractModel< ModelGraph, Spot, Link >
 	 *            the position of the spot.
 	 * @param cov
 	 *            the covariance matrix that determines the shape of the
-	 *            ellipsoid, as a <code>double[][]</code> (line, column). Since
+	 *            ellipsoid, as a {@code double[][]} (line, column). Since
 	 *            the covariance matrix is symmetric, only the top-left of the
 	 *            specified matrix is read.
 	 * @param ref
@@ -65,7 +65,7 @@ public class Model extends AbstractModel< ModelGraph, Spot, Link >
 	/**
 	 * Creates and adds a new link between two spots to this model.
 	 * <p>
-	 * Links are <b>directed edges<b> in the graph, so the source spot and the
+	 * Links are <em>directed edges</em> in the graph, so the source spot and the
 	 * target spot matters, depending on the convention for this model
 	 * application.
 	 *
@@ -110,7 +110,7 @@ public class Model extends AbstractModel< ModelGraph, Spot, Link >
 
 	/**
 	 * Exposes the spatio-temporal index of this model.
-	 * 
+	 *
 	 * @return the spatio-temporal index.
 	 */
 	public SpatioTemporalIndex< Spot > getSpatioTemporalIndex()

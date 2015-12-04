@@ -12,7 +12,7 @@ import net.trackmate.graph.mempool.SingleArrayMemPool;
 /**
  * Layouted edge.
  *
- * @author Tobias Pietzsch <tobias.pietzsch@gmail.com>
+ * @author Tobias Pietzsch &lt;tobias.pietzsch@gmail.com&gt;
  */
 public class ScreenEdge extends PoolObject< ScreenEdge, ByteMappedElement >
 {

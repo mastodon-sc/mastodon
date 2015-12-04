@@ -109,7 +109,7 @@ public class TrackSchemePanel extends JPanel implements
 	private double layoutMinX;
 
 	/**
-	 * <aximum layoutX coordinate in current layout.
+	 * Maximum layoutX coordinate in current layout.
 	 */
 	private double layoutMaxX;
 

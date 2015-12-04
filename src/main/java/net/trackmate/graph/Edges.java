@@ -8,7 +8,7 @@ import java.util.Iterator;
  * @param <E>
  *            the {@link Edge} type of the {@link Graph}.
  *
- * @author Tobias Pietzsch <tobias.pietzsch@gmail.com>
+ * @author Tobias Pietzsch &lt;tobias.pietzsch@gmail.com&gt;
  */
 public interface Edges< E extends Edge< ? > > extends Iterable< E >
 {

@@ -247,8 +247,8 @@ public class TrackSchemeGraph<
 	 *
 	 * @param listener
 	 *            the {@link GraphChangeListener} to register.
-	 * @return <code>true</code> if the listener was added to the list of
-	 *         listeners. <code>false</code> if the listener was already
+	 * @return {@code true} if the listener was added to the list of
+	 *         listeners. {@code false} if the listener was already
 	 *         registered prior to this call.
 	 */
 	public boolean addGraphChangeListener( final GraphChangeListener listener )
@@ -267,7 +267,7 @@ public class TrackSchemeGraph<
 	 *
 	 * @param listener
 	 *            the listener to remove.
-	 * @return <code>true</code> if the listener was present in the list of
+	 * @return {@code true} if the listener was present in the list of
 	 *         listeners and was successfully removed from it.
 	 */
 	public boolean removeGraphChangeListener( final GraphChangeListener listener )

@@ -13,8 +13,8 @@ import net.trackmate.graph.mempool.MappedElement;
  * <p>
  * Construct with the {@link KDTree}. Call {@link #split(HyperPlane)} to
  * partition with respect to a {@link HyperPlane}. Then call
- * {@link #getAboveNodes()} and {@link #getBelowNodes()} to get the sets of
- * nodes above and below the hyperplane, respectively.
+ * {@link #getAboveValues()} and {@link #getBelowValues()} to get the sets of
+ * node values above and below the hyperplane, respectively.
  *
  * <p>
  * The algorithm is described in <a
@@ -25,7 +25,7 @@ import net.trackmate.graph.mempool.MappedElement;
  * @param <T>
  *            the MappedElement type of the {@link KDTreeNode tree nodes}.
  *
- * @author Tobias Pietzsch <tobias.pietzsch@gmail.com>
+ * @author Tobias Pietzsch &lt;tobias.pietzsch@gmail.com&gt;
  */
 public class SplitHyperPlaneKDTree< O extends Ref< O > & RealLocalizable, T extends MappedElement >
 {

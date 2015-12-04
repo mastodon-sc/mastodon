@@ -17,7 +17,7 @@ import java.util.List;
  * See {@link VertexOrder} for transforming layout coordinates to screen
  * coordinates.
  *
- * @author Tobias Pietzsch <tobias.pietzsch@gmail.com>
+ * @author Tobias Pietzsch &lt;tobias.pietzsch@gmail.com&gt;
  */
 public class LineageTreeLayout
 {

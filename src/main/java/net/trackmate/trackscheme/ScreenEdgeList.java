@@ -8,7 +8,7 @@ import net.trackmate.trackscheme.ScreenEdge.ScreenEdgePool;
  * A {@link PoolObjectList} of {@link ScreenEdge}. This is just a no-generics
  * convenience class for {@code PoolObjectList<ScreenEdge, ByteMappedElement>}
  *
- * @author Tobias Pietzsch <tobias.pietzsch@gmail.com>
+ * @author Tobias Pietzsch &lt;tobias.pietzsch@gmail.com&gt;
  */
 public class ScreenEdgeList extends PoolObjectList< ScreenEdge >
 {

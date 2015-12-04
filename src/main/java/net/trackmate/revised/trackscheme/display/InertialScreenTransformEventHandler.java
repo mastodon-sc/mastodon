@@ -66,7 +66,7 @@ public class InertialScreenTransformEventHandler
 	final protected ScreenTransform transform = new ScreenTransform( 0, 20, 0, 10, 800, 600 );
 
 	/**
-	 * Copy of {@link #affine current transform} when mouse dragging
+	 * Copy of {@link #transform current transform} when mouse dragging
 	 * started.
 	 */
 	final protected ScreenTransform transformDragStart = new ScreenTransform();
