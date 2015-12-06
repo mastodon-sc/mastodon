@@ -2,6 +2,7 @@ package net.trackmate.graph;
 
 import gnu.trove.function.TObjectFunction;
 import gnu.trove.impl.Constants;
+import gnu.trove.iterator.TIntIterator;
 import gnu.trove.iterator.TIntObjectIterator;
 import gnu.trove.list.array.TIntArrayList;
 import gnu.trove.map.TIntObjectMap;
@@ -32,6 +33,14 @@ import net.trackmate.graph.collection.IntRefMap;
  */
 public class IntPoolObjectArrayMap< V extends Ref< V > > implements IntRefMap< V >
 {
+	/**
+	 * Int value for no entry. We use -1 because ref objects cannot have an
+	 * internal pool index lower than 0.
+	 */
+	private static final int NO_ENTRY_VALUE = -1;
+
+	private static final int NO_ENTRY_KEY = -1;
+
 	private final TIntArrayList keyToIndexMap;
 
 	private final RefPool< V > pool;
@@ -46,7 +55,7 @@ public class IntPoolObjectArrayMap< V extends Ref< V > > implements IntRefMap< V
 	public IntPoolObjectArrayMap( final RefPool< V> pool, final int initialCapacity )
 	{
 		this.pool = pool;
-		keyToIndexMap = new TIntArrayList( initialCapacity );
+		keyToIndexMap = new TIntArrayList( initialCapacity, NO_ENTRY_VALUE );
 		size = 0;
 	}
 
@@ -148,55 +157,61 @@ public class IntPoolObjectArrayMap< V extends Ref< V > > implements IntRefMap< V
 		return size;
 	}
 
-
-
-	// === TODO === UNIMPLEMENTED ========
-
-
-
-
-
 	@Override
 	public int getNoEntryKey()
 	{
-		// TODO Auto-generated method stub
-		return 0;
+		return NO_ENTRY_KEY;
 	}
 
 	@Override
 	public boolean containsKey( final int key )
 	{
-		// TODO Auto-generated method stub
-		return false;
+		return size > key && keyToIndexMap.get( key ) >= 0;
 	}
 
 	@Override
 	public boolean containsValue( final Object value )
 	{
-		// TODO Auto-generated method stub
-		return false;
+		if ( value != null && value instanceof Ref )
+			return keyToIndexMap.contains( ( ( Ref< ? > ) value ).getInternalPoolIndex() );
+		else
+			return false;
 	}
 
 	@Override
 	public V putIfAbsent( final int key, final V value )
 	{
-		// TODO Auto-generated method stub
+		if ( containsKey( key ) )
+			return get( key );
+		put( key, value );
 		return null;
 	}
 
 	@Override
 	public void putAll( final Map< ? extends Integer, ? extends V > m )
 	{
-		// TODO Auto-generated method stub
-
+		final V ref = pool.createRef();
+		for ( final Integer key : m.keySet() )
+		{
+			put( key, m.get( key ), ref );
+		}
+		pool.releaseRef( ref );
 	}
 
 	@Override
 	public void putAll( final TIntObjectMap< ? extends V > map )
 	{
-		// TODO Auto-generated method stub
-
+		final V ref = pool.createRef();
+		final TIntIterator it = map.keySet().iterator();
+		while(it.hasNext())
+		{
+			final int key = it.next();
+			put( key, map.get( key ), ref );
+		}
+		pool.releaseRef( ref );
 	}
+
+	// === TODO === UNIMPLEMENTED ========
 
 	@Override
 	public TIntSet keySet()
