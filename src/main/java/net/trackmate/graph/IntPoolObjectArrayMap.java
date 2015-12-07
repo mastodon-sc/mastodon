@@ -166,7 +166,7 @@ public class IntPoolObjectArrayMap< V extends Ref< V > > implements IntRefMap< V
 	@Override
 	public boolean containsKey( final int key )
 	{
-		return size > key && keyToIndexMap.get( key ) >= 0;
+		return keyToIndexMap.size() > key && keyToIndexMap.get( key ) >= 0;
 	}
 
 	@Override
@@ -223,15 +223,23 @@ public class IntPoolObjectArrayMap< V extends Ref< V > > implements IntRefMap< V
 	@Override
 	public int[] keys()
 	{
-		// TODO Auto-generated method stub
-		return null;
+		final int[] array = new int[ size ];
+		return keys( array );
 	}
 
 	@Override
 	public int[] keys( final int[] array )
 	{
-		// TODO Auto-generated method stub
-		return null;
+		final TIntIterator it = keyToIndexMap.iterator();
+		int index = 0;
+		while ( it.hasNext() )
+		{
+			final int val = it.next();
+			if ( val < 0 )
+				continue;
+			array[ index++ ] = val;
+		}
+		return array;
 	}
 
 	@Override
@@ -295,5 +303,26 @@ public class IntPoolObjectArrayMap< V extends Ref< V > > implements IntRefMap< V
 	{
 		// TODO Auto-generated method stub
 		return false;
+	}
+
+	@Override
+	public String toString()
+	{
+		if ( size < 1 )
+			return super.toString() + " {}";
+
+		final StringBuilder str = new StringBuilder();
+		str.append( super.toString() );
+		str.append( " { " );
+		final int[] keys = keys();
+		final V ref = pool.createRef();
+		str.append( keys[0] + " -> " + get( keys[0], ref ) );
+		for ( int i = 1; i < keys.length; i++ )
+		{
+			final int key = keys[ i ];
+			str.append( ", " + key + " -> " + get( key, ref ) );
+		}
+		str.append( " }" );
+		return str.toString();
 	}
 }
