@@ -14,6 +14,7 @@ import gnu.trove.set.TIntSet;
 
 import java.util.Collection;
 import java.util.ConcurrentModificationException;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.NoSuchElementException;
 
@@ -248,8 +249,7 @@ public class IntPoolObjectArrayMap< V extends Ref< V > > implements IntRefMap< V
 	@Override
 	public Collection< V > valueCollection()
 	{
-		// TODO Auto-generated method stub
-		return null;
+		return new ValueCollection();
 	}
 
 	@Override
@@ -627,4 +627,171 @@ public class IntPoolObjectArrayMap< V extends Ref< V > > implements IntRefMap< V
 			return true;
 		}
 	}
+
+	private class ValueCollection implements Collection< V >
+	{
+
+		@Override
+		public boolean add( final V value )
+		{
+			throw new UnsupportedOperationException( "add is not supported for valueCollection view." );
+		}
+
+		@Override
+		public boolean addAll( final Collection< ? extends V > c )
+		{
+			throw new UnsupportedOperationException( "addAll is not supported for valueCollection view." );
+		}
+
+		@Override
+		public void clear()
+		{
+			IntPoolObjectArrayMap.this.clear();
+		}
+
+		@Override
+		public boolean contains( final Object value )
+		{
+			return IntPoolObjectArrayMap.this.containsValue( value );
+		}
+
+		@Override
+		public boolean containsAll( final Collection< ? > c )
+		{
+			for ( final Object value : c )
+			{
+				if ( !contains( value ) )
+					return false;
+			}
+			return true;
+		}
+
+		@Override
+		public boolean isEmpty()
+		{
+			return IntPoolObjectArrayMap.this.isEmpty();
+		}
+
+		@Override
+		public Iterator< V > iterator()
+		{
+			return new Iterator< V >()
+			{
+				/** Reference to pass PoolObject instance. */
+				private final V ref = pool.createRef();
+
+				/** Index of element to be returned by subsequent call to next. */
+				private int cursor = 0;
+
+				/**
+				 * Index of element returned by most recent call to next or
+				 * previous. Reset to -1 if this element is deleted by a call to
+				 * remove.
+				 */
+				int lastRet = -1;
+
+				/** {@inheritDoc} */
+				@Override
+				public boolean hasNext()
+				{
+					return cursor < keyToIndexMap.size();
+				}
+
+				/** {@inheritDoc} */
+				@Override
+				public V next()
+				{
+					try
+					{
+						while ( keyToIndexMap.get( cursor ) < 0 )
+						{
+							cursor++;
+						}
+						final int next = keyToIndexMap.get( cursor );
+						lastRet = cursor++;
+						// Advance to next now.
+						while ( cursor < keyToIndexMap.size() && keyToIndexMap.get( cursor ) < 0 )
+						{
+							cursor++;
+						}
+						if ( cursor >= keyToIndexMap.size() )
+							cursor = Integer.MAX_VALUE;
+
+						pool.getByInternalPoolIndex( next, ref );
+						return ref;
+					}
+					catch ( final IndexOutOfBoundsException e )
+					{
+						throw new NoSuchElementException();
+					}
+				}
+
+				/** {@inheritDoc} */
+				@Override
+				public void remove()
+				{
+					if ( lastRet == -1 )
+						throw new IllegalStateException();
+
+					try
+					{
+						final V ref = pool.createRef();
+						IntPoolObjectArrayMap.this.remove( lastRet, ref );
+						pool.releaseRef( ref );
+						if ( lastRet < cursor )
+							cursor--;
+						lastRet = -1;
+					}
+					catch ( final IndexOutOfBoundsException e )
+					{
+						throw new ConcurrentModificationException();
+					}
+				}
+			};
+		}
+
+		@Override
+		public boolean remove( final Object o )
+		{
+			// TODO Auto-generated method stub
+			return false;
+		}
+
+		@Override
+		public boolean removeAll( final Collection< ? > c )
+		{
+			// TODO Auto-generated method stub
+			return false;
+		}
+
+		@Override
+		public boolean retainAll( final Collection< ? > c )
+		{
+			// TODO Auto-generated method stub
+			return false;
+		}
+
+		@Override
+		public int size()
+		{
+			// TODO Auto-generated method stub
+			return 0;
+		}
+
+		@Override
+		public Object[] toArray()
+		{
+			// TODO Auto-generated method stub
+			return null;
+		}
+
+		@Override
+		public < T > T[] toArray( final T[] a )
+		{
+			// TODO Auto-generated method stub
+			return null;
+		}
+
+	}
+
 }
