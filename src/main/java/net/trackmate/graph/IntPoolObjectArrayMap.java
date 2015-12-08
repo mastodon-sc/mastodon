@@ -382,7 +382,7 @@ public class IntPoolObjectArrayMap< V extends Ref< V > > implements IntRefMap< V
 				@Override
 				public boolean hasNext()
 				{
-					return cursor < size();
+					return cursor < keyToIndexMap.size() ;
 				}
 
 				/** {@inheritDoc} */
@@ -402,6 +402,8 @@ public class IntPoolObjectArrayMap< V extends Ref< V > > implements IntRefMap< V
 						{
 							cursor++;
 						}
+						if ( cursor >= keyToIndexMap.size() )
+							cursor = Integer.MAX_VALUE;
 						return next;
 					}
 					catch ( final IndexOutOfBoundsException e )
@@ -419,7 +421,9 @@ public class IntPoolObjectArrayMap< V extends Ref< V > > implements IntRefMap< V
 
 					try
 					{
-						keyToIndexMap.set( lastRet, NO_ENTRY_KEY );
+						final V ref = pool.createRef();
+						IntPoolObjectArrayMap.this.remove( lastRet, ref );
+						pool.releaseRef( ref );
 						if ( lastRet < cursor )
 							cursor--;
 						lastRet = -1;
