@@ -5,10 +5,16 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import gnu.trove.function.TObjectFunction;
+import gnu.trove.iterator.TIntObjectIterator;
+import gnu.trove.procedure.TIntObjectProcedure;
+import gnu.trove.procedure.TIntProcedure;
+import gnu.trove.procedure.TObjectProcedure;
 
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -32,12 +38,13 @@ public class IntPoolObjectArrayMapTest
 		final TestVertex ref = pool.createRef();
 		for ( int i = 0; i < 10; i++ )
 		{
-			final TestVertex a = pool.create( ref ).init( i );
+			final int id = 20 + i;
+			final TestVertex a = pool.create( ref ).init( id );
 			truthMap.put( Integer.valueOf( a.getId() ), Integer.valueOf( a.getInternalPoolIndex() ) );
 		}
 
 		map = new IntPoolObjectArrayMap<>( pool );
-		storedIds = new int[] { 2, 3, 6, 8 };
+		storedIds = new int[] { 22, 23, 26, 28 };
 		for ( final int id : storedIds )
 		{
 			final Integer poolIndex = truthMap.get( id );
@@ -115,7 +122,7 @@ public class IntPoolObjectArrayMapTest
 	@Test
 	public void testPutIntV()
 	{
-		final int key = 5;
+		final int key = 25;
 		assertTrue( "Map should not yet contain a mapping for key " + key, !map.containsKey( key ) );
 
 		final Integer poolIndex = truthMap.get( key );
@@ -130,7 +137,7 @@ public class IntPoolObjectArrayMapTest
 	@Test
 	public void testPutIntVV()
 	{
-		final int key = 5;
+		final int key = 25;
 		assertTrue( "Map should not yet contain a mapping for key " + key, !map.containsKey( key ) );
 
 		final Integer poolIndex = truthMap.get( key );
@@ -147,7 +154,7 @@ public class IntPoolObjectArrayMapTest
 	@Test
 	public void testRemoveInt()
 	{
-		final int key = 6;
+		final int key = 26;
 		final int size = map.size();
 		assertTrue( "Map should contain a mapping for key " + key, map.containsKey( key ) );
 		final TestVertex removed = map.remove( key );
@@ -163,7 +170,7 @@ public class IntPoolObjectArrayMapTest
 	@Test
 	public void testRemoveIntV()
 	{
-		final int key = 6;
+		final int key = 26;
 		final int size = map.size();
 		assertTrue( "Map should contain a mapping for key " + key, map.containsKey( key ) );
 		final TestVertex ref = map.createRef();
@@ -182,7 +189,7 @@ public class IntPoolObjectArrayMapTest
 	public void testSize()
 	{
 		assertEquals( "Unexpected map size.", storedIds.length, map.size() );
-		final int[] toAdd = new int[] { 4, 5 };
+		final int[] toAdd = new int[] { 24, 25 };
 		final TestVertex ref1 = map.createRef();
 		final TestVertex ref2 = map.createRef();
 		for ( final int add : toAdd )
@@ -224,97 +231,293 @@ public class IntPoolObjectArrayMapTest
 	@Test
 	public void testContainsValue()
 	{
-		fail( "Not yet implemented" );
+		final TestVertex ref = pool.createRef();
+		for ( final int id : storedIds )
+		{
+			final Integer poolIndex = truthMap.get( id );
+			pool.getByInternalPoolIndex( poolIndex, ref );
+			assertTrue( "Map should contain the value " + ref, map.containsValue( ref ) );
+		}
+		Arrays.sort( storedIds );
+		for ( final Integer id : truthMap.keySet() )
+		{
+			if ( Arrays.binarySearch( storedIds, id ) < 0 )
+			{
+				final Integer poolIndex = truthMap.get( id );
+				pool.getByInternalPoolIndex( poolIndex, ref );
+				assertFalse( "Map should not contain the value " + ref, map.containsValue( ref ) );
+			}
+		}
+		pool.releaseRef( ref );
 	}
 
 	@Test
 	public void testPutIfAbsent()
 	{
-		fail( "Not yet implemented" );
+		final int index = 100;
+		final TestVertex ref1 = pool.createRef();
+		final TestVertex ref2 = pool.createRef();
+		final TestVertex vertex = pool.create( ref1 ).init( index );
+		final TestVertex absent = map.putIfAbsent( index, vertex );
+		assertNull( "There was not a mapping for index " + index + " before; returned object should be null.", absent );
+		assertEquals( "Unexpected mapping for new key " + index, vertex, map.get( index, ref2 ) );
+
+		final int existingMapping = storedIds[ 0 ];
+		final TestVertex absent2 = map.putIfAbsent( existingMapping, vertex );
+		assertNotNull( "There was a mapping for index " + existingMapping + " before; returned object should not be null.", absent2 );
+
+		final Integer poolIndex = truthMap.get( existingMapping );
+		pool.getByInternalPoolIndex( poolIndex, ref1 );
+		assertEquals( "Returned object by putIfAbsent is unexpected.", ref1, absent2 );
+
+		pool.releaseRef( ref1 );
+		pool.releaseRef( ref2 );
 	}
 
 	@Test
 	public void testPutAllMapOfQextendsIntegerQextendsV()
 	{
-		fail( "Not yet implemented" );
+		final Map< Integer, TestVertex > m = new HashMap<>();
+		final int[] newIds = new int[] { 101, 102 };
+		for ( final int id : newIds )
+		{
+			m.put( id, pool.create( pool.createRef() ).init( id ) );
+		}
+
+		final int size = map.size();
+		map.putAll( m );
+		assertEquals( "Map does not have the expected size after putAll.", size + m.size(), map.size() );
+		for ( final int key : m.keySet() )
+		{
+			final TestVertex v = m.get( key );
+			assertTrue( "Map should now contain a mapping for key " + key, map.containsKey( key ) );
+			assertTrue( "Map should now contain a mapping for value " + v, map.containsValue( v ) );
+			assertEquals( "New mapping is different than in the source map.", m.get( key ), v );
+		}
 	}
 
 	@Test
 	public void testPutAllTIntObjectMapOfQextendsV()
 	{
-		fail( "Not yet implemented" );
-	}
+		final IntPoolObjectArrayMap< TestVertex > m = new IntPoolObjectArrayMap<>( pool );
+		final int[] newIds = new int[] { 101, 102 };
+		final TestVertex ref = pool.createRef();
+		for ( final int id : newIds )
+		{
+			m.put( id, pool.create( ref ).init( id ) );
+		}
 
-	@Test
-	public void testKeySet()
-	{
-		fail( "Not yet implemented" );
+		final int size = map.size();
+		map.putAll( m );
+		assertEquals( "Map does not have the expected size after putAll.", size + m.size(), map.size() );
+		for ( final int key : m.keys() )
+		{
+			final TestVertex v = m.get( key );
+			assertTrue( "Map should now contain a mapping for key " + key, map.containsKey( key ) );
+			assertTrue( "Map should now contain a mapping for value " + v, map.containsValue( v ) );
+			assertEquals( "New mapping is different than in the source map.", m.get( key ), v );
+		}
+
+		pool.releaseRef( ref );
 	}
 
 	@Test
 	public void testKeys()
 	{
-		fail( "Not yet implemented" );
+		final int[] keys = map.keys();
+		assertEquals( "Key array does not have the expected length.", map.size(), keys.length );
+		// We know they are in the right order.
+		for ( int i = 0; i < keys.length; i++ )
+		{
+			assertEquals( "Unexpected key returned by keys().", storedIds[ i ], keys[ i ] );
+		}
 	}
 
 	@Test
 	public void testKeysIntArray()
 	{
-		fail( "Not yet implemented" );
-	}
+		final int[] arr = new int[ 100 ];
+		final int[] keys = map.keys( arr );
+		assertEquals( "Returned array and passed array are not the same instance.", arr, keys );
+		// They should since arr is larger than the map size.
 
-	@Test
-	public void testValueCollection()
-	{
-		fail( "Not yet implemented" );
+		// We know they are in the right order.
+		for ( int i = 0; i < storedIds.length; i++ )
+		{
+			assertEquals( "Unexpected key returned by keys().", storedIds[ i ], keys[ i ] );
+		}
+		for ( int i = storedIds.length; i < keys.length; i++ )
+		{
+			assertEquals( "Unexpected key returned by keys().", map.getNoEntryKey(), keys[ i ] );
+		}
 	}
 
 	@Test
 	public void testValues()
 	{
-		fail( "Not yet implemented" );
+		final Object[] values = map.values();
+		assertEquals( "values() array is not of the expected length.", map.size(), values.length );
+		for ( final Object obj : values )
+		{
+			assertTrue( "Object returned by values() is not of the expected class.", obj instanceof TestVertex );
+			assertTrue( "Object returned by values() should be in the map.", map.containsValue( obj ) );
+		}
 	}
 
 	@Test
 	public void testValuesVArray()
 	{
-		fail( "Not yet implemented" );
+		final TestVertex[] arr = new TestVertex[ 100 ];
+		final TestVertex[] values = map.values( arr );
+		assertEquals( "Returned array and passed array are not the same instance.", arr.hashCode(), values.hashCode() );
+		for ( int i = 0; i < map.size(); i++ )
+		{
+			final TestVertex v = values[ i ];
+			assertTrue( "Object returned by values() should be in the map.", map.containsValue( v ) );
+		}
+		for ( int i = map.size(); i < values.length; i++ )
+		{
+			assertNull( "Remaining elements should be null.", values[ i ] );
+		}
 	}
 
 	@Test
 	public void testIterator()
 	{
-		fail( "Not yet implemented" );
+		// Test iterate in the right order.
+		final TIntObjectIterator< TestVertex > it = map.iterator();
+		final TestVertex ref = pool.createRef();
+		int index = 0;
+		while ( it.hasNext() )
+		{
+			final int key = storedIds[ index++ ];
+			final int poolIndex = truthMap.get( key );
+			pool.getByInternalPoolIndex( poolIndex, ref );
+
+			it.advance();
+			assertEquals( "Iterator returns unexpected key.", key, it.key() );
+			assertEquals( "Iterator returns unexpected value.", ref, it.value() );
+		}
+
+		// Test iterator removal.
+		// Remove the 6.
+		final int size = map.size();
+		final TIntObjectIterator< TestVertex > it2 = map.iterator();
+		it2.advance(); // 2
+		it2.advance(); // 3
+		it2.advance(); // 6
+		final TestVertex val = it2.value();
+		it2.remove();
+		assertEquals( "Map does not have the expected size after removal by keyset iterator.", size - 1, map.size() );
+		assertFalse( "Map should not contain a mapping for key " + val + " after removal by keyset iterator.", map.containsValue( val ) );
+
+		// Remove all.
+		final TIntObjectIterator< TestVertex > it3 = map.iterator();
+		while ( it3.hasNext() )
+		{
+			it3.advance();
+			it3.remove();
+		}
+		assertTrue( "Map should be empty after removing all content with keyset iterator.", map.isEmpty() );
 	}
 
 	@Test
 	public void testForEachKey()
 	{
-		fail( "Not yet implemented" );
+		final AtomicInteger ai = new AtomicInteger( 0 );
+		final TIntProcedure proc = new TIntProcedure()
+		{
+			@Override
+			public boolean execute( final int value )
+			{
+				ai.incrementAndGet();
+				assertTrue( "Iterated key is not contained in the map.", map.containsKey( value ) );
+				return true;
+			}
+		};
+		final boolean ok = map.forEachKey( proc );
+		assertTrue( "ForEach procedure should have terminated ok.", ok );
+		assertEquals( "All the values have not been iterated through.", map.size(), ai.get() );
 	}
 
 	@Test
 	public void testForEachValue()
 	{
-		fail( "Not yet implemented" );
+		final AtomicInteger ai = new AtomicInteger( 0 );
+		final TObjectProcedure< TestVertex > proc = new TObjectProcedure< TestVertex >()
+		{
+			@Override
+			public boolean execute( final TestVertex value )
+			{
+				ai.incrementAndGet();
+				assertTrue( "Iterated value is not contained in the map.", map.containsValue( value ) );
+				return true;
+			}
+		};
+		final boolean ok = map.forEachValue( proc );
+		assertTrue( "ForEach procedure should have terminated ok.", ok );
+		assertEquals( "All the values have not been iterated through.", map.size(), ai.get() );
 	}
 
 	@Test
 	public void testForEachEntry()
 	{
-		fail( "Not yet implemented" );
+		final AtomicInteger ai = new AtomicInteger( 0 );
+		final TIntObjectProcedure< TestVertex > proc = new TIntObjectProcedure< TestVertex >()
+		{
+			@Override
+			public boolean execute( final int key, final TestVertex value )
+			{
+				ai.incrementAndGet();
+				assertTrue( "Iterated key is not contained in the map.", map.containsKey( key ) );
+				assertTrue( "Iterated value is not contained in the map.", map.containsValue( value ) );
+				return true;
+			}
+		};
+		final boolean ok = map.forEachEntry( proc );
+		assertTrue( "ForEach procedure should have terminated ok.", ok );
+		assertEquals( "All the values have not been iterated through.", map.size(), ai.get() );
 	}
 
 	@Test
 	public void testTransformValues()
 	{
-		fail( "Not yet implemented" );
+		final TestVertex ref = pool.createRef();
+		final TestVertex vertex = pool.create( ref ).init( 100 );
+		final TObjectFunction< TestVertex, TestVertex > function = new TObjectFunction< TestVertex, TestVertex >()
+		{
+			@Override
+			public TestVertex execute( final TestVertex value )
+			{
+				return vertex;
+			}
+		};
+		map.transformValues( function );
+
+		for ( final TestVertex value : map.valueCollection() )
+		{
+			assertEquals( "Unexpected value after change.", vertex, value );
+		}
 	}
 
 	@Test
 	public void testRetainEntries()
 	{
-		fail( "Not yet implemented" );
-	}
+		final TIntObjectProcedure< TestVertex > proc = new TIntObjectProcedure< TestVertex >()
+		{
 
+			@Override
+			public boolean execute( final int a, final TestVertex b )
+			{
+				return b.getId() == storedIds[ 0 ];
+			}
+		};
+		final boolean changed = map.retainEntries( proc );
+		assertTrue( "RetainEntries should have changed the map.", changed );
+		assertEquals( "There should be only 1 mapping left.", 1, map.size() );
+		final TIntObjectIterator< TestVertex > it = map.iterator();
+		it.advance();
+		final TestVertex value = it.value();
+		assertEquals( "Remaining value is not the right one.", storedIds[ 0 ], value.getId() );
+	}
 }

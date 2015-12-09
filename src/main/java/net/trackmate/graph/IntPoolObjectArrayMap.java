@@ -262,62 +262,140 @@ public class IntPoolObjectArrayMap< V extends Ref< V > > implements IntRefMap< V
 		return new ValueCollection();
 	}
 
-	// === TODO === UNIMPLEMENTED ========
-
 	@Override
 	public Object[] values()
 	{
-		// TODO Auto-generated method stub
-		return null;
+		return valueCollection().toArray();
 	}
 
 	@Override
 	public V[] values( final V[] array )
 	{
-		// TODO Auto-generated method stub
-		return null;
+		return valueCollection().toArray( array );
 	}
 
 	@Override
 	public TIntObjectIterator< V > iterator()
 	{
-		// TODO Auto-generated method stub
-		return null;
+		return new TIntObjectIterator< V >()
+		{
+
+			private final V ref = pool.createRef();
+
+			private int cursor = -1;
+
+			@Override
+			public void advance()
+			{
+				cursor++;
+				while ( keyToIndexMap.get( cursor ) < 0 )
+				{
+					cursor++;
+				}
+			}
+
+			@Override
+			public boolean hasNext()
+			{
+				int explorer = cursor + 1;
+				while ( explorer < keyToIndexMap.size() )
+				{
+					if ( keyToIndexMap.get( explorer ) != NO_ENTRY_VALUE )
+						return true;
+					explorer++;
+				}
+				return false;
+			}
+
+			@Override
+			public void remove()
+			{
+				IntPoolObjectArrayMap.this.remove( cursor );
+			}
+
+			@Override
+			public int key()
+			{
+				return cursor;
+			}
+
+			@Override
+			public V value()
+			{
+				final int poolIndex = keyToIndexMap.get( cursor );
+				pool.getByInternalPoolIndex( poolIndex, ref );
+				return ref;
+			}
+
+			@Override
+			public V setValue( final V val )
+			{
+				final V v = put( cursor, val, ref );
+				return v;
+			}
+		};
 	}
 
 	@Override
 	public boolean forEachKey( final TIntProcedure procedure )
 	{
-		// TODO Auto-generated method stub
-		return false;
+		return keySet().forEach( procedure );
 	}
 
 	@Override
 	public boolean forEachValue( final TObjectProcedure< ? super V > procedure )
 	{
-		// TODO Auto-generated method stub
-		return false;
+		final TIntObjectIterator< V > it = iterator();
+		while ( it.hasNext() )
+		{
+			it.advance();
+			if ( !procedure.execute( it.value() ) )
+				return false;
+		}
+		return true;
 	}
 
 	@Override
 	public boolean forEachEntry( final TIntObjectProcedure< ? super V > procedure )
 	{
-		// TODO Auto-generated method stub
-		return false;
+		final TIntObjectIterator< V > it = iterator();
+		while ( it.hasNext() )
+		{
+			it.advance();
+			if ( !procedure.execute( it.key(), it.value() ) )
+				return false;
+		}
+		return true;
 	}
 
 	@Override
 	public void transformValues( final TObjectFunction< V, V > function )
 	{
-		// TODO Auto-generated method stub
-
+		final TIntObjectIterator< V > it = iterator();
+		while ( it.hasNext() )
+		{
+			it.advance();
+			final V newValue = function.execute( it.value() );
+			it.setValue( newValue );
+		}
 	}
 
 	@Override
 	public boolean retainEntries( final TIntObjectProcedure< ? super V > procedure )
 	{
-		// TODO Auto-generated method stub
-		return false;
+		final TIntObjectIterator< V > it = iterator();
+		boolean changed = false;
+		while ( it.hasNext() )
+		{
+			it.advance();
+			if ( !procedure.execute( it.key(), it.value() ) )
+			{
+				it.remove();
+				changed = true;
+
+			}
+		}
+		return changed;
 	}
 
 	@Override
