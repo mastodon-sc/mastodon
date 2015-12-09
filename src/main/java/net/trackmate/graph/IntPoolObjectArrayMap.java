@@ -42,11 +42,11 @@ public class IntPoolObjectArrayMap< V extends Ref< V > > implements IntRefMap< V
 	 * Int value for no entry. We use -1 because ref objects cannot have an
 	 * internal pool index lower than 0.
 	 */
-	private static final int NO_ENTRY_VALUE = -1;
+	private static final int NO_ENTRY_VALUE = -2;
 
 	private static final int NO_ENTRY_KEY = -1;
 
-	private final TIntArrayList keyToIndexMap;
+	final TIntArrayList keyToIndexMap;
 
 	private final RefPool< V > pool;
 
@@ -120,7 +120,7 @@ public class IntPoolObjectArrayMap< V extends Ref< V > > implements IntRefMap< V
 	private V putIndex( final int key, final int objInternalPoolIndex, final V replacedObj )
 	{
 		while ( key >= keyToIndexMap.size() )
-			keyToIndexMap.add( -1 );
+			keyToIndexMap.add( NO_ENTRY_VALUE );
 
 		if ( objInternalPoolIndex < 0 )
 			--size;
@@ -153,7 +153,7 @@ public class IntPoolObjectArrayMap< V extends Ref< V > > implements IntRefMap< V
 	@Override
 	public V remove( final int key, final V obj )
 	{
-		return putIndex( key, -1, obj );
+		return putIndex( key, NO_ENTRY_VALUE, obj );
 	}
 
 	@Override
@@ -232,25 +232,37 @@ public class IntPoolObjectArrayMap< V extends Ref< V > > implements IntRefMap< V
 	@Override
 	public int[] keys( final int[] array )
 	{
-		final TIntIterator it = keyToIndexMap.iterator();
-		int index = 0;
-		while ( it.hasNext() )
+		final int[] arr;
+		if ( array.length < size() )
 		{
-			final int val = it.next();
+			arr = new int[ size() ];
+		}
+		else
+		{
+			arr = array;
+		}
+		int index = 0;
+		for ( int i = 0; i < keyToIndexMap.size(); i++ )
+		{
+			final int val = keyToIndexMap.get( i );
 			if ( val < 0 )
 				continue;
-			array[ index++ ] = val;
+			arr[ index++ ] = i;
 		}
-		return array;
+		for ( int i = index; i < array.length; i++ )
+		{
+			arr[ i ] = NO_ENTRY_KEY;
+		}
+		return arr;
 	}
-
-	// === TODO === UNIMPLEMENTED ========
 
 	@Override
 	public Collection< V > valueCollection()
 	{
 		return new ValueCollection();
 	}
+
+	// === TODO === UNIMPLEMENTED ========
 
 	@Override
 	public Object[] values()
@@ -359,7 +371,7 @@ public class IntPoolObjectArrayMap< V extends Ref< V > > implements IntRefMap< V
 		{
 			if ( entry == NO_ENTRY_KEY )
 				return false;
-			return keyToIndexMap.contains( entry );
+			return keyToIndexMap.size() > entry && keyToIndexMap.get( entry ) != NO_ENTRY_VALUE;
 		}
 
 		@Override
@@ -395,7 +407,7 @@ public class IntPoolObjectArrayMap< V extends Ref< V > > implements IntRefMap< V
 						{
 							cursor++;
 						}
-						final int next = keyToIndexMap.get( cursor );
+						final int next = cursor;
 						lastRet = cursor++;
 						// Advance to next now.
 						while ( cursor < keyToIndexMap.size() && keyToIndexMap.get( cursor ) < 0 )
@@ -618,9 +630,9 @@ public class IntPoolObjectArrayMap< V extends Ref< V > > implements IntRefMap< V
 			for ( int i = 0; i < keyToIndexMap.size(); i++ )
 			{
 				final int val = keyToIndexMap.get( i );
-				if ( val == NO_ENTRY_KEY )
+				if ( val == NO_ENTRY_VALUE )
 					continue;
-				final boolean ok = procedure.execute( val );
+				final boolean ok = procedure.execute( i );
 				if ( !ok )
 					return false;
 			}

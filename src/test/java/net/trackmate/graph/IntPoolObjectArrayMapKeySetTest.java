@@ -38,12 +38,13 @@ public class IntPoolObjectArrayMapKeySetTest
 		final TestVertex ref = pool.createRef();
 		for ( int i = 0; i < 10; i++ )
 		{
-			final TestVertex a = pool.create( ref ).init( i );
+			final int id = 20 + i;
+			final TestVertex a = pool.create( ref ).init( id );
 			truthMap.put( Integer.valueOf( a.getId() ), Integer.valueOf( a.getInternalPoolIndex() ) );
 		}
 
 		map = new IntPoolObjectArrayMap<>( pool );
-		storedIds = new int[] { 2, 3, 6, 8 };
+		storedIds = new int[] { 22, 23, 26, 28 };
 		for ( final int id : storedIds )
 		{
 			final Integer poolIndex = truthMap.get( id );
@@ -85,7 +86,7 @@ public class IntPoolObjectArrayMapKeySetTest
 		{
 			assertTrue( "Keyset should contain value " + i, keySet.contains( i ) );
 		}
-		for ( int i = 10; i < 20; i++ )
+		for ( int i = 100; i < 120; i++ )
 		{
 			assertFalse( "Keyset should not contain value " + i, keySet.contains( i ) );
 		}
@@ -145,11 +146,17 @@ public class IntPoolObjectArrayMapKeySetTest
 	@Test
 	public void testToArrayInt()
 	{
-		final int[] arr = new int[ keySet.size() ];
+		final int[] arr = new int[ 100 + keySet.size() ];
 		final int[] array = keySet.toArray( arr );
-		for ( int i = 0; i < array.length; i++ )
+		assertEquals( "The returned array is not the right instance.", arr, array );
+
+		for ( int i = 0; i < storedIds.length; i++ )
 		{
 			assertEquals( "Unexpected value for array returned by keysey.toArray().", storedIds[ i ], array[ i ] );
+		}
+		for ( int i = storedIds.length; i < arr.length; i++ )
+		{
+			assertEquals( "Remaining slots should have the map no-entry key.", map.getNoEntryKey(), array[ i ] );
 		}
 	}
 
@@ -227,79 +234,79 @@ public class IntPoolObjectArrayMapKeySetTest
 	@Test
 	public void testRetainAllCollection()
 	{
-		final Collection< Integer > c = Arrays.asList( new Integer[] { 2, 3, 9 } );
+		final Collection< Integer > c = Arrays.asList( new Integer[] { 22, 23, 29 } );
 		final boolean changed = keySet.retainAll( c );
 		assertTrue( "Removal should have changed the keyset.", changed );
 		assertEquals( "Map does not have the expected size after retainAll on keyset.", 2, map.size() );
-		assertTrue( "Map should contain mappting for key 2 after retainAll().", map.containsKey( 2 ) );
-		assertTrue( "Map should contain mappting for key 3 after retainAll().", map.containsKey( 3 ) );
-		assertFalse( "Map should not contain mappting for key 6 after retainAll().", map.containsKey( 6 ) );
-		assertFalse( "Map should not contain mappting for key 8 after retainAll().", map.containsKey( 8 ) );
+		assertTrue( "Map should contain mappting for key 2 after retainAll().", map.containsKey( 22 ) );
+		assertTrue( "Map should contain mappting for key 3 after retainAll().", map.containsKey( 23 ) );
+		assertFalse( "Map should not contain mappting for key 6 after retainAll().", map.containsKey( 26 ) );
+		assertFalse( "Map should not contain mappting for key 8 after retainAll().", map.containsKey( 28 ) );
 	}
 
 	@Test
 	public void testRetainAllTIntCollection()
 	{
-		final TIntArrayList c = TIntArrayList.wrap( new int[] { 2, 3, 9 } );
+		final TIntArrayList c = TIntArrayList.wrap( new int[] { 22, 23, 29 } );
 		final boolean changed = keySet.retainAll( c );
 		assertTrue( "Removal should have changed the keyset.", changed );
 		assertEquals( "Map does not have the expected size after retainAll on keyset.", 2, map.size() );
-		assertTrue( "Map should contain mappting for key 2 after retainAll().", map.containsKey( 2 ) );
-		assertTrue( "Map should contain mappting for key 3 after retainAll().", map.containsKey( 3 ) );
-		assertFalse( "Map should not contain mappting for key 6 after retainAll().", map.containsKey( 6 ) );
-		assertFalse( "Map should not contain mappting for key 8 after retainAll().", map.containsKey( 8 ) );
+		assertTrue( "Map should contain mappting for key 2 after retainAll().", map.containsKey( 22 ) );
+		assertTrue( "Map should contain mappting for key 3 after retainAll().", map.containsKey( 23 ) );
+		assertFalse( "Map should not contain mappting for key 6 after retainAll().", map.containsKey( 26 ) );
+		assertFalse( "Map should not contain mappting for key 8 after retainAll().", map.containsKey( 28 ) );
 	}
 
 	@Test
 	public void testRetainAllInt()
 	{
-		final int[] c = new int[] { 2, 3, 9 };
+		final int[] c = new int[] { 22, 23, 29 };
 		final boolean changed = keySet.retainAll( c );
 		assertTrue( "Removal should have changed the keyset.", changed );
 		assertEquals( "Map does not have the expected size after retainAll on keyset.", 2, map.size() );
-		assertTrue( "Map should contain mappting for key 2 after retainAll().", map.containsKey( 2 ) );
-		assertTrue( "Map should contain mappting for key 3 after retainAll().", map.containsKey( 3 ) );
-		assertFalse( "Map should not contain mappting for key 6 after retainAll().", map.containsKey( 6 ) );
-		assertFalse( "Map should not contain mappting for key 8 after retainAll().", map.containsKey( 8 ) );
+		assertTrue( "Map should contain mappting for key 2 after retainAll().", map.containsKey( 22 ) );
+		assertTrue( "Map should contain mappting for key 3 after retainAll().", map.containsKey( 23 ) );
+		assertFalse( "Map should not contain mappting for key 6 after retainAll().", map.containsKey( 26 ) );
+		assertFalse( "Map should not contain mappting for key 8 after retainAll().", map.containsKey( 28 ) );
 	}
 
 	@Test
 	public void testRemoveAllCollection()
 	{
-		final Collection< Integer > c = Arrays.asList( new Integer[] { 2, 3, 9 } );
+		final Collection< Integer > c = Arrays.asList( new Integer[] { 22, 23, 29 } );
 		final boolean changed = keySet.removeAll( c );
 		assertTrue( "Removal should have changed the keyset.", changed );
 		assertEquals( "Map does not have the expected size after removeAll on keyset.", 2, map.size() );
-		assertTrue( "Map should contain mappting for key 6 after removeAll().", map.containsKey( 6 ) );
-		assertTrue( "Map should contain mappting for key 8 after removeAll().", map.containsKey( 8 ) );
-		assertFalse( "Map should not contain mappting for key 2 after removeAll().", map.containsKey( 2 ) );
-		assertFalse( "Map should not contain mappting for key 3 after removeAll().", map.containsKey( 3 ) );
+		assertTrue( "Map should contain mappting for key 6 after removeAll().", map.containsKey( 26 ) );
+		assertTrue( "Map should contain mappting for key 8 after removeAll().", map.containsKey( 28 ) );
+		assertFalse( "Map should not contain mappting for key 2 after removeAll().", map.containsKey( 22 ) );
+		assertFalse( "Map should not contain mappting for key 3 after removeAll().", map.containsKey( 23 ) );
 	}
 
 	@Test
 	public void testRemoveAllTIntCollection()
 	{
-		final TIntArrayList c = TIntArrayList.wrap( new int[] { 2, 3, 9 } );
+		final TIntArrayList c = TIntArrayList.wrap( new int[] { 22, 23, 29 } );
 		final boolean changed = keySet.removeAll( c );
 		assertTrue( "Removal should have changed the keyset.", changed );
 		assertEquals( "Map does not have the expected size after removeAll on keyset.", 2, map.size() );
-		assertTrue( "Map should contain mappting for key 6 after removeAll().", map.containsKey( 6 ) );
-		assertTrue( "Map should contain mappting for key 8 after removeAll().", map.containsKey( 8 ) );
-		assertFalse( "Map should not contain mappting for key 2 after removeAll().", map.containsKey( 2 ) );
-		assertFalse( "Map should not contain mappting for key 3 after removeAll().", map.containsKey( 3 ) );
+		assertTrue( "Map should contain mappting for key 6 after removeAll().", map.containsKey( 26 ) );
+		assertTrue( "Map should contain mappting for key 8 after removeAll().", map.containsKey( 28 ) );
+		assertFalse( "Map should not contain mappting for key 2 after removeAll().", map.containsKey( 22 ) );
+		assertFalse( "Map should not contain mappting for key 3 after removeAll().", map.containsKey( 23 ) );
 	}
 
 	@Test
 	public void testRemoveAllInt()
 	{
-		final int[] c = new int[] { 2, 3, 9 };
+		final int[] c = new int[] { 22, 23, 29 };
 		final boolean changed = keySet.removeAll( c );
 		assertTrue( "Removal should have changed the keyset.", changed );
 		assertEquals( "Map does not have the expected size after removeAll on keyset.", 2, map.size() );
-		assertTrue( "Map should contain mappting for key 6 after removeAll().", map.containsKey( 6 ) );
-		assertTrue( "Map should contain mappting for key 8 after removeAll().", map.containsKey( 8 ) );
-		assertFalse( "Map should not contain mappting for key 2 after removeAll().", map.containsKey( 2 ) );
-		assertFalse( "Map should not contain mappting for key 3 after removeAll().", map.containsKey( 3 ) );
+		assertTrue( "Map should contain mappting for key 6 after removeAll().", map.containsKey( 26 ) );
+		assertTrue( "Map should contain mappting for key 8 after removeAll().", map.containsKey( 28 ) );
+		assertFalse( "Map should not contain mappting for key 2 after removeAll().", map.containsKey( 22 ) );
+		assertFalse( "Map should not contain mappting for key 3 after removeAll().", map.containsKey( 23 ) );
 	}
 
 	@Test
