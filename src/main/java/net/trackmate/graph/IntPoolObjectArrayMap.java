@@ -751,47 +751,85 @@ public class IntPoolObjectArrayMap< V extends Ref< V > > implements IntRefMap< V
 		}
 
 		@Override
-		public boolean remove( final Object o )
+		public boolean remove( final Object obj )
 		{
-			// TODO Auto-generated method stub
-			return false;
+			if ( obj instanceof PoolObject )
+			{
+				final PoolObject< ?, ? > o = ( PoolObject< ?, ? > ) obj;
+				final int val = o.getInternalPoolIndex();
+				final int key = keyToIndexMap.indexOf( val );
+				if (key < 0) return false;
+
+				--size;
+				keyToIndexMap.set( key, NO_ENTRY_KEY );
+				return true;
+			}
+			else
+				return false;
 		}
 
 		@Override
 		public boolean removeAll( final Collection< ? > c )
 		{
-			// TODO Auto-generated method stub
-			return false;
+			boolean changed = false;
+			for ( final Object obj : c )
+			{
+				changed = remove( obj ) || changed;
+			}
+			return changed;
 		}
 
 		@Override
 		public boolean retainAll( final Collection< ? > c )
 		{
-			// TODO Auto-generated method stub
-			return false;
+			boolean changed = false;
+			for ( final Object obj : this )
+			{
+				if ( c.contains( obj ) )
+					continue;
+				changed = remove( obj ) || changed;
+			}
+			return changed;
 		}
 
 		@Override
 		public int size()
 		{
-			// TODO Auto-generated method stub
-			return 0;
+			return IntPoolObjectArrayMap.this.size();
 		}
 
 		@Override
 		public Object[] toArray()
 		{
-			// TODO Auto-generated method stub
-			return null;
+			return toArray( new Object[ size() ] );
 		}
 
+		@SuppressWarnings( "unchecked" )
 		@Override
 		public < T > T[] toArray( final T[] a )
 		{
-			// TODO Auto-generated method stub
-			return null;
+			final Object[] arr;
+			if ( a.length < size() )
+			{
+				arr = new Object[ size() ];
+			}
+			else
+			{
+				arr = a;
+			}
+
+			int i = 0;
+			for ( final int key : keys() )
+			{
+				final V ref = pool.createRef();
+				arr[ i++ ] = get( key, ref );
+			}
+			// nullify the rest.
+			for ( int j = i; j < arr.length; j++ )
+			{
+				arr[ j ] = null;
+			}
+			return ( T[] ) arr;
 		}
-
 	}
-
 }
