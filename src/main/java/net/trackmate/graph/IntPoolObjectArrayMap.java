@@ -21,32 +21,38 @@ import java.util.NoSuchElementException;
 import net.trackmate.graph.collection.IntRefMap;
 
 /**
- * WARNING: THIS IS VERY INCOMPLETE!
- *
+ * A {@link IntRefMap} implementation backed by a {@link TIntArrayList}.
  * <p>
- * A {@link IntRefMap} implementation backed by a {@link TIntArrayList}. It is
- * assumed that keys are internal pool indices of some {@link RefPool}, i.e.,
- * keys are <em>&ge;0</em> and not arbitrarily large. This is intended to
- * provide efficient mappings between graphs, for example a model graph and the
- * corresponding trackscheme graph.
+ * It is assumed that keys are internal pool indices of some {@link RefPool},
+ * <i>i.e.</i>, keys are <em>&ge;0</em> and not arbitrarily large. This is
+ * intended to provide efficient mappings between graphs, for example a model
+ * graph and the corresponding TrackScheme graph.
+ * <p>
+ * Another side effect of the backing implementation is that the order of
+ * iteration is deterministic, and corresponds to the natural order of the
+ * <code>int</code> keys.
  *
  * @param <V>
  *            value type.
  *
  * @author Tobias Pietzsch &lt;tobias.pietzsch@gmail.com&gt;
+ * @author Jean-Yves Tinevez &lt;jeanyves.tinevez@gmail.com&gt;
  */
 public class IntPoolObjectArrayMap< V extends Ref< V > > implements IntRefMap< V >
 {
 
 	/**
-	 * Int value for no entry. We use -1 because ref objects cannot have an
-	 * internal pool index lower than 0.
+	 * Int value for no entry. We use a negative value because ref objects
+	 * cannot have an internal pool index lower than 0.
 	 */
 	private static final int NO_ENTRY_VALUE = -2;
 
+	/**
+	 * Int value for no key.
+	 */
 	private static final int NO_ENTRY_KEY = -1;
 
-	final TIntArrayList keyToIndexMap;
+	private final TIntArrayList keyToIndexMap;
 
 	private final RefPool< V > pool;
 
@@ -420,7 +426,7 @@ public class IntPoolObjectArrayMap< V extends Ref< V > > implements IntRefMap< V
 	}
 
 	/*
-	 * PRIVATE CLASS
+	 * PRIVATE CLASSES
 	 */
 
 	private final class KeySetView implements TIntSet
