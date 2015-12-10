@@ -2,8 +2,8 @@ package net.trackmate.graph;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 import gnu.trove.set.TIntSet;
 
 import java.util.ArrayList;
@@ -217,7 +217,7 @@ public class PoolObjectSetTest
 		final boolean changed = set.removeAll( smallList );
 		assertFalse( "Removing small collection of non-present values should not change the set.", changed );
 		assertEquals( "Removing small collection of non-present values should not change the set size.", size, set.size() );
-		
+
 		// In the set + 1 not in the set
 		smallList.clear();
 		for ( int i = 0; i < 2; i = i + 2 )
@@ -237,25 +237,86 @@ public class PoolObjectSetTest
 	@Test
 	public void testRetainAll()
 	{
-		fail( "Not yet implemented" );
+		// Retain with a list that contains the whole set.
+		final int size = set.size();
+		final boolean changed1 = set.retainAll( list );
+		assertFalse( "Retaining large collection of all present values should not change the set.", changed1 );
+		assertEquals( "Retaining small collection of present values should not change the set size.", size, set.size() );
+
+		final ArrayList< TestVertex > smallList = new ArrayList< TestVertex >( 2 );
+
+		// In the set + 1 not in the set
+		for ( int i = 0; i < 2; i = i + 2 )
+		{
+			smallList.add( list.get( i ) );
+		}
+		smallList.add( list.get( 9 ) );
+		final boolean changed2 = set.retainAll( smallList );
+		assertTrue( "Retaining small collection of present values should change the set.", changed2 );
+		assertEquals( "Retaining small collection of present values should change the set size.", smallList.size() - 1, set.size() );
+		for ( final TestVertex v : set )
+		{
+			assertTrue( "All values of the set should not be in the small collection.", smallList.contains( v ) );
+		}
+
+		// Not in the set.
+		smallList.clear();
+		for ( int i = 1; i < 2; i = i + 2 )
+		{
+			smallList.add( list.get( i ) );
+		}
+		final boolean changed = set.retainAll( smallList );
+		assertTrue( "Retaining small collection of non-present values should change the set.", changed );
+		assertEquals( "Retaining small collection of non-present values should change the set size to 0.", 0, set.size() );
+		assertTrue( "The set should now be empty.", set.isEmpty() );
 	}
 
 	@Test
 	public void testSize()
 	{
-		fail( "Not yet implemented" );
+		final int size = 5; // hardcoded.
+		assertEquals( "Set is expected to have a size of " + size, size, set.size() );
+		set.remove( list.get( 0 ) );
+		assertEquals( "Set size is expected to decrease by 1 after 1 element removal.", size - 1, set.size() );
+		set.add( list.get( 1 ) );
+		set.add( list.get( 3 ) );
+		assertEquals( "Set size is expected to increase by 2 after adding 2 elements.", size + 1, set.size() );
+		set.add( list.get( 2 ) );
+		assertEquals( "Set size is expected not to change after adding an element already present.", size + 1, set.size() );
+		set.clear();
+		assertEquals( "Set size is expected be 0 after clearing.", 0, set.size() );
 	}
 
 	@Test
 	public void testToArray()
 	{
-		fail( "Not yet implemented" );
+		final Object[] array = set.toArray();
+		assertEquals( "Created array does not have the expected length.", set.size(), array.length );
+		for ( final Object obj : array )
+		{
+			assertTrue( "Unexpected object in the array returned by toArray(): ", set.contains( obj ) );
+		}
 	}
 
 	@Test
 	public void testToArrayAArray()
 	{
-		fail( "Not yet implemented" );
-	}
+		final TestVertex[] arr = new TestVertex[ 100 ];
+		// Initialize it with non-null values.
+		final TestVertex v = pool.create( pool.createRef() ).init( 100 );
+		for ( int i = 0; i < arr.length; i++ )
+		{
+			arr[ i ] = v;
+		}
 
+		final TestVertex[] array = set.toArray( arr );
+		for ( int i = 0; i < set.size(); i++ )
+		{
+			assertTrue( "Unexpected object in the array returned by toArray(): " + array[ i ], set.contains( array[ i ] ) );
+		}
+		for ( int j = set.size(); j < array.length; j++ )
+		{
+			assertNull( "Remaining array slots should be null.", array[ j ] );
+		}
+	}
 }
