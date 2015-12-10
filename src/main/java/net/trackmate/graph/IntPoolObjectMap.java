@@ -51,7 +51,27 @@ public class IntPoolObjectMap< V extends Ref< V > > implements IntRefMap< V >
 	public IntPoolObjectMap( final RefPool< V> pool, final int noEntryKey, final int initialCapacity )
 	{
 		this.pool = pool;
-		keyToIndexMap = new TIntIntHashMap( initialCapacity, Constants.DEFAULT_LOAD_FACTOR, noEntryKey, -1 );
+		keyToIndexMap = new TIntIntHashMap( initialCapacity, Constants.DEFAULT_LOAD_FACTOR, noEntryKey, -1 )
+		{
+			// We need to do this to honor exactly the contract on toArray(int[]).
+			@Override
+			public TIntSet keySet()
+			{
+				return new TIntIntHashMap.TKeyView()
+				{
+					@Override
+					public int[] toArray( final int[] dest )
+					{
+						final int[] arr = super.toArray( dest );
+						for ( int i = size(); i < arr.length; i++ )
+						{
+							arr[ i ] = noEntryKey;
+						}
+						return arr;
+					}
+				};
+			}
+		};
 	}
 
 	@Override
