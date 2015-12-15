@@ -275,6 +275,31 @@ public class IntPoolObjectArrayMapTest
 	}
 
 	@Test
+	public void testPutIfAbsentIntVV()
+	{
+		final int index = 100;
+		final TestVertex ref1 = pool.createRef();
+		final TestVertex ref2 = pool.createRef();
+		final TestVertex vertex = pool.create( ref1 ).init( index );
+		final TestVertex absent = map.putIfAbsent( index, vertex, ref2 );
+		assertNull( "There was not a mapping for index " + index + " before; returned object should be null.", absent );
+		assertEquals( "Unexpected mapping for new key " + index, vertex, map.get( index, ref2 ) );
+
+		final int existingMapping = storedIds[ 0 ];
+		final TestVertex ref3 = pool.createRef();
+		final TestVertex absent2 = map.putIfAbsent( existingMapping, vertex, ref3 );
+		assertNotNull( "There was a mapping for index " + existingMapping + " before; returned object should not be null.", absent2 );
+
+		final Integer poolIndex = truthMap.get( existingMapping );
+		pool.getByInternalPoolIndex( poolIndex, ref1 );
+		assertEquals( "Returned object by putIfAbsent is unexpected.", ref1, absent2 );
+
+		pool.releaseRef( ref1 );
+		pool.releaseRef( ref2 );
+		pool.releaseRef( ref3 );
+	}
+
+	@Test
 	public void testPutAllMapOfQextendsIntegerQextendsV()
 	{
 		final Map< Integer, TestVertex > m = new HashMap<>();

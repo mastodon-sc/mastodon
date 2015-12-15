@@ -192,9 +192,15 @@ public class IntPoolObjectArrayMap< V extends Ref< V > > implements IntRefMap< V
 	@Override
 	public V putIfAbsent( final int key, final V value )
 	{
+		return put( key, value, createRef() );
+	}
+
+	@Override
+	public V putIfAbsent( final int key, final V value, final V obj )
+	{
 		if ( containsKey( key ) )
-			return get( key );
-		put( key, value );
+			return get( key, obj );
+		put( key, value, obj );
 		return null;
 	}
 
