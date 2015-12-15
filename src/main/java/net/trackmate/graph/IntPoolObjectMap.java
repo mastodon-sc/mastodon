@@ -185,12 +185,17 @@ public class IntPoolObjectMap< V extends Ref< V > > implements IntRefMap< V >
 	@Override
 	public V putIfAbsent( final int key, final V value )
 	{
+		return put( key, value, createRef() );
+	}
+
+	@Override
+	public V putIfAbsent( final int key, final V value, final V obj )
+	{
 		final int replaced = keyToIndexMap.putIfAbsent( key, value.getInternalPoolIndex() );
 		if ( replaced >= 0 )
 		{
-			final V old = pool.createRef();
-			pool.getByInternalPoolIndex( replaced, old );
-			return old;
+			pool.getByInternalPoolIndex( replaced, obj );
+			return obj;
 		}
 		else
 			return null;
