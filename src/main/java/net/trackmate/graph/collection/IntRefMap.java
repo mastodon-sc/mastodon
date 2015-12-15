@@ -4,7 +4,7 @@ import gnu.trove.map.TIntObjectMap;
 
 /**
  * Interface for maps from {@code int} keys to Object values, where the Objects
- * are potentially {@link Ref}s.
+ * are potentially {@link net.trackmate.graph.Ref}s.
  *
  * @author Tobias Pietzsch &lt;tobias.pietzsch@gmail.com&gt;
  *
@@ -113,7 +113,7 @@ public interface IntRefMap< V > extends TIntObjectMap< V >
 	 * associated with a value.
 	 * <p>
 	 * This method is a (potentially) allocation-free version of
-	 * {@link #putIfAbsent(int, V)}.
+	 * {@link #putIfAbsent(int, Object)}.
 	 *
 	 * @param key
 	 *            key with which the specified value is to be associated.
