@@ -1,8 +1,10 @@
 package net.trackmate.revised.trackscheme.display.laf;
 
 import static net.trackmate.revised.trackscheme.ScreenVertex.Transition.APPEAR;
+import static net.trackmate.revised.trackscheme.ScreenVertex.Transition.DESELECTING;
 import static net.trackmate.revised.trackscheme.ScreenVertex.Transition.DISAPPEAR;
 import static net.trackmate.revised.trackscheme.ScreenVertex.Transition.NONE;
+import static net.trackmate.revised.trackscheme.ScreenVertex.Transition.SELECTING;
 
 import java.awt.Color;
 import java.awt.FontMetrics;
@@ -343,9 +345,9 @@ public class DefaultTrackSchemeOverlay extends AbstractTrackSchemeOverlay
 	{
 		if ( transition == NONE )
 			return isSelected ? selectedColor : normalColor;
-		else if ( transition == Transition.SELECTING || transition == Transition.DESELECTING )
+		else if ( transition == SELECTING || transition == DESELECTING )
 		{
-			final double ratio = ( transition == Transition.SELECTING ) ? completionRatio : ( 1 - completionRatio );
+			final double ratio = ( transition == SELECTING ) ? completionRatio : ( 1 - completionRatio );
 			final int rn = normalColor.getRed();
 			final int gn = normalColor.getGreen();
 			final int bn = normalColor.getBlue();

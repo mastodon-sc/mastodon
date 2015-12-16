@@ -4,6 +4,8 @@ import static net.trackmate.graph.mempool.ByteUtils.BOOLEAN_SIZE;
 import static net.trackmate.graph.mempool.ByteUtils.BYTE_SIZE;
 import static net.trackmate.graph.mempool.ByteUtils.DOUBLE_SIZE;
 import static net.trackmate.graph.mempool.ByteUtils.INDEX_SIZE;
+import static net.trackmate.revised.trackscheme.ScreenVertex.Transition.NONE;
+
 import net.trackmate.graph.Pool;
 import net.trackmate.graph.PoolObject;
 import net.trackmate.graph.RefPool;
@@ -75,7 +77,7 @@ public class ScreenVertex extends PoolObject< ScreenVertex, ByteMappedElement >
 		setY( y );
 		setSelected( selected );
 		setGhost( ghost );
-		setTransition( Transition.NONE );
+		setTransition( NONE );
 		return this;
 	}
 

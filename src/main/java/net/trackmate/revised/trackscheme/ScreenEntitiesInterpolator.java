@@ -1,7 +1,12 @@
 package net.trackmate.revised.trackscheme;
 
+import static net.trackmate.revised.trackscheme.ScreenVertex.Transition.APPEAR;
+import static net.trackmate.revised.trackscheme.ScreenVertex.Transition.DESELECTING;
+import static net.trackmate.revised.trackscheme.ScreenVertex.Transition.DISAPPEAR;
+import static net.trackmate.revised.trackscheme.ScreenVertex.Transition.NONE;
+import static net.trackmate.revised.trackscheme.ScreenVertex.Transition.SELECTING;
+
 import net.trackmate.graph.IntPoolObjectMap;
-import net.trackmate.revised.trackscheme.ScreenVertex.Transition;
 
 public class ScreenEntitiesInterpolator
 {
@@ -101,13 +106,13 @@ public class ScreenEntitiesInterpolator
 				// Becomes selected
 				if ( e.isSelected() && !se2.isSelected() )
 				{
-					eCurrent.setTransition( Transition.SELECTING );
+					eCurrent.setTransition( SELECTING );
 					eCurrent.setInterpolationCompletionRatio( accelRatio );
 				}
 				// Becomes de-selected
 				if ( !e.isSelected() && se2.isSelected() )
 				{
-					eCurrent.setTransition( Transition.DESELECTING );
+					eCurrent.setTransition( DESELECTING );
 					eCurrent.setInterpolationCompletionRatio( accelRatio );
 				}
 			}
@@ -142,7 +147,7 @@ public class ScreenEntitiesInterpolator
 		vCurrent.setVertexDist( v.getVertexDist() );
 		vCurrent.setX( v.getX() );
 		vCurrent.setY( v.getY() );
-		vCurrent.setTransition( Transition.SELECTING );
+		vCurrent.setTransition( SELECTING );
 		vCurrent.setInterpolationCompletionRatio( ratio );
 		v.setInterpolatedScreenVertexIndex( vCurrent.getInternalPoolIndex() );
 	}
@@ -155,7 +160,7 @@ public class ScreenEntitiesInterpolator
 		vCurrent.setVertexDist( v.getVertexDist() );
 		vCurrent.setX( v.getX() );
 		vCurrent.setY( v.getY() );
-		vCurrent.setTransition( Transition.DESELECTING );
+		vCurrent.setTransition( DESELECTING );
 		vCurrent.setInterpolationCompletionRatio( ratio );
 		v.setInterpolatedScreenVertexIndex( vCurrent.getInternalPoolIndex() );
 	}
@@ -168,7 +173,7 @@ public class ScreenEntitiesInterpolator
 		vCurrent.setVertexDist( vEnd.getVertexDist() );
 		vCurrent.setX( ratio * vEnd.getX() + ( 1 - ratio ) * vStart.getX() );
 		vCurrent.setY( ratio * vEnd.getY() + ( 1 - ratio ) * vStart.getY() );
-		vCurrent.setTransition( Transition.NONE );
+		vCurrent.setTransition( NONE );
 		vEnd.setInterpolatedScreenVertexIndex( vCurrent.getInternalPoolIndex() );
 	}
 
@@ -180,7 +185,7 @@ public class ScreenEntitiesInterpolator
 		vCurrent.setVertexDist( vStart.getVertexDist() );
 		vCurrent.setX( vStart.getX() );
 		vCurrent.setY( vStart.getY() );
-		vCurrent.setTransition( Transition.DISAPPEAR );
+		vCurrent.setTransition( DISAPPEAR );
 		vCurrent.setInterpolationCompletionRatio( ratio );
 	}
 
@@ -192,7 +197,7 @@ public class ScreenEntitiesInterpolator
 		vCurrent.setVertexDist( vEnd.getVertexDist() );
 		vCurrent.setX( vEnd.getX() );
 		vCurrent.setY( vEnd.getY() );
-		vCurrent.setTransition( Transition.APPEAR );
+		vCurrent.setTransition( APPEAR );
 		vCurrent.setInterpolationCompletionRatio( ratio );
 		vEnd.setInterpolatedScreenVertexIndex( vCurrent.getInternalPoolIndex() );
 	}
