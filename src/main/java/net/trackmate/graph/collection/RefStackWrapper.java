@@ -8,7 +8,7 @@ import java.util.Iterator;
  *
  * @param <O> the type of elements maintained by this stack.
  *
- * @author Tobias Pietzsch <tobias.pietzsch@gmail.com>
+ * @author Tobias Pietzsch &lt;tobias.pietzsch@gmail.com&gt;
  */
 public class RefStackWrapper< O > extends AbstractRefCollectionWrapper< O, Deque< O > > implements RefStack< O >
 {

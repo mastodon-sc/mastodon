@@ -20,7 +20,7 @@ import net.trackmate.graph.mempool.MemPool.PoolIterator;
  *            the MappedElement type of the {@link PoolObject}, for example
  *            {@link ByteMappedElement}.
  *
- * @author Tobias Pietzsch <tobias.pietzsch@gmail.com>
+ * @author Tobias Pietzsch &lt;tobias.pietzsch@gmail.com&gt;
  */
 public class Pool< O extends PoolObject< O, T >, T extends MappedElement > implements RefPool< O >, Iterable< O >
 {

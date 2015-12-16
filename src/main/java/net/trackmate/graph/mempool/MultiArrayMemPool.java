@@ -5,7 +5,7 @@ package net.trackmate.graph.mempool;
  *
  * TODO: implement
  *
- * @author Tobias Pietzsch <tobias.pietzsch@gmail.com>
+ * @author Tobias Pietzsch &lt;tobias.pietzsch@gmail.com&gt;
  */
 public class MultiArrayMemPool< A extends MappedElementArray< A, T >, T extends MappedElement > extends MemPool< T >
 {

@@ -14,13 +14,13 @@ import net.trackmate.graph.collection.RefSet;
  * A {@link SelectionHandler} that implements the previous TrackMate TrackScheme
  * selection behavior:
  * <ul>
- * <li> <code>Single-click</code> on a vertex or an edge to replace the selection
+ * <li> {@code Single-click} on a vertex or an edge to replace the selection
  * by this vertex or edge.
- * <li> <code>Single-click</code> elsewhere to clear the selection.
- * <li> <code>Click and drag</code> to draw a box around selection.
- * <li> <code>Shift - Single-click</code> to toggle selection with the target
+ * <li> {@code Single-click} elsewhere to clear the selection.
+ * <li> {@code Click and drag} to draw a box around selection.
+ * <li> {@code Shift - Single-click} to toggle selection with the target
  * vertex or edge.
- * <li> <code>Shift - Click and drag</code> to add a box content to the current
+ * <li> {@code Shift - Click and drag} to add a box content to the current
  * selection.
  * </ul>
  * <p>

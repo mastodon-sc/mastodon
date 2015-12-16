@@ -15,7 +15,7 @@ package net.trackmate.graph;
  * @param <O>
  *            the object type.
  *
- * @author Tobias Pietzsch <tobias.pietzsch@gmail.com>
+ * @author Tobias Pietzsch &lt;tobias.pietzsch@gmail.com&gt;
  */
 public interface IdBimap< O >
 {

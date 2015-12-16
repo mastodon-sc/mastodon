@@ -10,8 +10,6 @@ import net.trackmate.graph.collection.RefStack;
  *
  * @param <O>
  *            recursive type of the {@link PoolObject}s stored in this stack.
- * @param <T>
- *            the MappedElement type.
  */
 public class PoolObjectStack< O extends Ref< O > > extends PoolObjectList< O > implements RefStack< O >
 {

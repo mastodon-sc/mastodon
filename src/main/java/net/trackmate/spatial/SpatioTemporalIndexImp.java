@@ -18,12 +18,20 @@ import net.trackmate.graph.listenable.GraphListener;
 import net.trackmate.graph.listenable.ListenableGraph;
 
 /**
- * Maintain a spatio-temporal index of all vertices of a graph.
- *
+ * Maintain a spatio-temporal index of all the vertices of a graph.
+ * <p>
+ * This class specializes for vertices that are {@link RealLocalizable} for
+ * spatial searches and partitioning. The temporal information is fetched
+ * directly from the vertices themselves, which should therefore implement the
+ * {@link HasTimepoint} interface. Finally, the vertices are pool objects and
+ * implement the {@link Ref} interface.
+ * <p>
  * TODO: figure out locking and locking API.
  *
  * @param <V>
+ *            the type of the vertices in the graph.
  * @param <E>
+ *            the type of the edges in the graph.
  *
  * @author Tobias Pietzsch &lt;tobias.pietzsch@gmail.com&gt;
  */
@@ -48,6 +56,20 @@ public class SpatioTemporalIndexImp<
 
     private final Lock writeLock;
 
+	/**
+	 * Creates a new spatio-temporal index for the specified graph, using the
+	 * specified vertex pool. The temporal information is fetched directly from
+	 * the vertices.
+	 * <p>
+	 * At construction, this instance registers as a listener of the specified
+	 * graph and updates itself following changes in the graph. When this
+	 * constructor returns, the spatio-temporal index can be immediately used.
+	 *
+	 * @param graph
+	 *            the graph to build the spatio-temporal index for.
+	 * @param vertexPool
+	 *            the {@link RefPool} of the vertices of the graph.
+	 */
 	public SpatioTemporalIndexImp( final ListenableGraph< V, E > graph, final RefPool< V > vertexPool )
 	{
 		this.graph = graph;

@@ -196,7 +196,7 @@ public class ListenableGraphImp<
 	 * {@link GraphChangeListener} (if sending events is not currently
 	 * {@link #pauseListeners() paused}).
 	 */
-	protected void emitGraphChanged()
+	protected void notifyGraphChanged()
 	{
 		if ( emitEvents )
 			for ( final GraphChangeListener listener : changeListeners )

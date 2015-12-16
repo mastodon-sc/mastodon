@@ -13,7 +13,7 @@ import net.trackmate.trackscheme.laf.TrackSchemeLAF;
  * It has no layout capabilities of its own, just paints layouted screen
  * objects.
  *
- * @author Tobias Pietzsch <tobias.pietzsch@gmail.com>
+ * @author Tobias Pietzsch &lt;tobias.pietzsch@gmail.com&gt;
  */
 public class GraphLayoutOverlay implements OverlayRenderer
 {

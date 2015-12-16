@@ -189,10 +189,8 @@ public class MouseSelectionHandler implements MouseListener, MouseMotionListener
 		selection.pauseListeners();
 
 		// See if we can select a vertex.
-		final int vertexId = graphOverlay.getVertexIdAt( x, y );
-		if ( vertexId >= 0 )
+		if ( graphOverlay.getVertexAt( x, y, vertex ) != null )
 		{
-			graph.getVertexPool().getByInternalPoolIndex( vertexId, vertex );
 			final boolean selected = vertex.isSelected();
 			if ( !addToSelection )
 				selection.clearSelection();
@@ -202,10 +200,8 @@ public class MouseSelectionHandler implements MouseListener, MouseMotionListener
 		}
 
 		// See if we can select an edge.
-		final int edgeId = graphOverlay.getEdgeIdAt( x, y, SELECT_DISTANCE_TOLERANCE );
-		if ( edgeId >= 0 )
+		if ( graphOverlay.getEdgeAt( x, y, SELECT_DISTANCE_TOLERANCE, edge ) != null )
 		{
-			graph.getEdgePool().getByInternalPoolIndex( edgeId, edge );
 			final boolean selected = edge.isSelected();
 			if ( !addToSelection )
 				selection.clearSelection();

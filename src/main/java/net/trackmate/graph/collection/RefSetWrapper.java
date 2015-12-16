@@ -7,7 +7,7 @@ import java.util.Set;
  *
  * @param <O> the type of elements maintained by this set
  *
- * @author Tobias Pietzsch <tobias.pietzsch@gmail.com>
+ * @author Tobias Pietzsch &lt;tobias.pietzsch@gmail.com&gt;
  */
 public class RefSetWrapper< O > extends AbstractRefCollectionWrapper< O, Set< O > > implements RefSet< O >
 {

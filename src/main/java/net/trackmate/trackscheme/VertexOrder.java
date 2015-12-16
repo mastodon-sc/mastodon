@@ -546,11 +546,11 @@ public class VertexOrder
 	}
 
 	/**
-	 * Computes the distance of a point <code>A0 (x0, y0)</code> to a line
-	 * defined by two points <code>A1 (x1, y1)</code> and
-	 * <code>A2 (x2, y2)</code>. Returns <code>infinity</code> if the projection
-	 * of <code>A0</code> on the line does not lie between <code>A1</code> and
-	 * <code>A2</code>.
+	 * Computes the distance of a point {@code A0 (x0, y0)} to a line
+	 * defined by two points {@code A1 (x1, y1)} and
+	 * {@code A2 (x2, y2)}. Returns {@code infinity} if the projection
+	 * of {@code A0} on the line does not lie between {@code A1} and
+	 * {@code A2}.
 	 *
 	 * @return the distance from a line to a point.
 	 */

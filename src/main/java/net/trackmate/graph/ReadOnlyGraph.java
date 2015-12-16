@@ -13,7 +13,7 @@ import java.util.Iterator;
  * @param <E>
  *            the {@link Edge} type of the {@link ReadOnlyGraph}.
  *
- * @author Tobias Pietzsch <tobias.pietzsch@gmail.com>
+ * @author Tobias Pietzsch &lt;tobias.pietzsch@gmail.com&gt;
  */
 public interface ReadOnlyGraph< V extends Vertex< E >, E extends Edge< V > >
 {

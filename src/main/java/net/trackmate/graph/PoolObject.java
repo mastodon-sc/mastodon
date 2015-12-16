@@ -19,7 +19,7 @@ import net.trackmate.graph.mempool.MemPool;
  * @param <T>
  *            the MappedElement type, for example {@link ByteMappedElement}.
  *
- * @author Tobias Pietzsch <tobias.pietzsch@gmail.com>
+ * @author Tobias Pietzsch &lt;tobias.pietzsch@gmail.com&gt;
  */
 public abstract class PoolObject< O extends PoolObject< O, T >, T extends MappedElement > implements Ref< O >
 {

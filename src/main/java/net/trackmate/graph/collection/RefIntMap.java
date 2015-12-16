@@ -6,7 +6,7 @@ import gnu.trove.procedure.TObjectProcedure;
 import net.trackmate.graph.PoolObject;
 
 /**
- * Interface for maps that associate a key to a simple <code>int</code> value.
+ * Interface for maps that associate a key to a simple {@code int} value.
  * <p>
  * This interface and its implementations exist to take advantage of the compact
  * data storage offered on one side by the Trove library for standard object,
@@ -26,7 +26,7 @@ public interface RefIntMap< K > extends TObjectIntMap< K >
 	/**
 	 * Creates an object reference that can be used for processing with this
 	 * map. Depending on concrete implementation, the object return can be
-	 * <code>null</code>.
+	 * {@code null}.
 	 *
 	 * @return a new object empty reference.
 	 */
@@ -45,12 +45,12 @@ public interface RefIntMap< K > extends TObjectIntMap< K >
 	 * Executes <tt>procedure</tt> for each key in the map.
 	 *
 	 * @param procedure
-	 *            a <code>TIntProcedure</code> value.
+	 *            a {@code TIntProcedure} value.
 	 * @param ref
 	 *            an object reference that can be used for retrieval. Depending
 	 *            on concrete implementation, this object can be cleared,
 	 *            ignored or re-used.
-	 * @return <code>false</code> if the loop over the keys terminated because
+	 * @return {@code false} if the loop over the keys terminated because
 	 *         the procedure returned false for some key.
 	 */
 	public boolean forEachKey( TObjectProcedure< ? super K > procedure, K ref );
@@ -59,12 +59,12 @@ public interface RefIntMap< K > extends TObjectIntMap< K >
 	 * Executes <tt>procedure</tt> for each key/value entry in the map.
 	 *
 	 * @param procedure
-	 *            a <code>TOIntIntProcedure</code> value.
+	 *            a {@code TOIntIntProcedure} value.
 	 * @param ref
 	 *            an object reference that can be used for retrieval. Depending
 	 *            on concrete implementation, this object can be cleared,
 	 *            ignored or re-used.
-	 * @return <code>false</code> if the loop over the entries terminated
+	 * @return {@code false} if the loop over the entries terminated
 	 *         because the procedure returned false for some entry.
 	 */
 	public boolean forEachEntry( TObjectIntProcedure< ? super K > procedure, K ref );
@@ -79,7 +79,7 @@ public interface RefIntMap< K > extends TObjectIntMap< K >
 	 *            an object reference that can be used for retrieval. Depending
 	 *            on concrete implementation, this object can be cleared,
 	 *            ignored or re-used.
-	 * @return <code>true</code> if the map was modified.
+	 * @return {@code true} if the map was modified.
 	 */
 	public boolean retainEntries( TObjectIntProcedure< ? super K > procedure, K ref );
 

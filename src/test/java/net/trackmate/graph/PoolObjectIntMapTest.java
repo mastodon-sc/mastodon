@@ -2,6 +2,7 @@ package net.trackmate.graph;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import gnu.trove.TIntCollection;
 import gnu.trove.function.TIntFunction;
@@ -144,12 +145,10 @@ public class PoolObjectIntMapTest
 	@Test
 	public void testKeys()
 	{
-		final TestObject[] keys = ( TestObject[] ) map.keys();
-		Arrays.sort( keys );
-		for ( final TestObject in : ins )
+		final Object[] keys = map.keys();
+		for ( final Object key : keys )
 		{
-			final int index = Arrays.binarySearch( keys, in );
-			assertTrue( "Did not find expected key " + in + " in key set.", index >= 0 );
+			assertTrue( "Did not find the returned key " + key + " in object list the map was built with.", ins.contains( key ) );
 		}
 		assertEquals( "Key set does not have the expected size.", ins.size(), keys.length );
 	}
@@ -157,13 +156,16 @@ public class PoolObjectIntMapTest
 	@Test
 	public void testKeysKArray()
 	{
-		TestObject[] keys = new TestObject[ 2 * ins.size() ];
-		keys = map.keys( keys );
-		Arrays.sort( keys );
-		for ( final TestObject in : ins )
+		final TestObject[] array = new TestObject[ 2 * ins.size() ];
+		final TestObject[] keys = map.keys( array );
+		for ( int i = 0; i < map.size(); i++ )
 		{
-			final int index = Arrays.binarySearch( keys, in );
-			assertTrue( "Did not find expected key " + in + " in key set.", index >= 0 );
+			final TestObject key = keys[ i ];
+			assertTrue( "Did not find the returned key " + key + " in object list the map was built with.", ins.contains( key ) );
+		}
+		for ( int i = map.size(); i < keys.length; i++ )
+		{
+			assertNull( "Remaining elements should be null.", keys[ i ] );
 		}
 		assertEquals( "Key set does not have the expected size.", 2 * ins.size(), keys.length );
 	}

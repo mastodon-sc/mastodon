@@ -12,7 +12,23 @@ import net.trackmate.graph.collection.RefSet;
 import net.trackmate.graph.listenable.GraphListener;
 import net.trackmate.graph.listenable.ListenableGraph;
 
-
+/**
+ * A class that manages a selection of vertices and edges of a graph.
+ * <p>
+ * Created instances register themselves as a {@link GraphListener} to always
+ * return consistent results. For instance, if a vertex marked as selected in
+ * this class is later removed from the graph, the
+ * {@link #getSelectedVertices()} method will not return it.
+ * <p>
+ * TODO: less severe synchronization
+ *
+ * @author Tobias Pietzsch
+ *
+ * @param <V>
+ *            the type of the vertices.
+ * @param <E>
+ *            the type of the edges.
+ */
 // TODO: less severe synchronization
 // TODO: should Selection be an interface
 public class Selection< V extends Vertex< E >, E extends Edge< V > > implements GraphListener< V, E >
@@ -43,6 +59,18 @@ public class Selection< V extends Vertex< E >, E extends Edge< V > > implements 
 	 */
 	private boolean shouldEmitEvent;
 
+	/**
+	 * Creates a new selection for the specified graph.
+	 * <p>
+	 * This returned instance registers itself as a {@link GraphListener} of the
+	 * graph.
+	 *
+	 * @param graph
+	 *            the graph.
+	 * @param idmap
+	 *            the bidirectional id map, used to efficiently stores the
+	 *            selected state of edges and vertices.
+	 */
 	public Selection( final ListenableGraph< V, E > graph, final GraphIdBimap< V, E > idmap )
 	{
 		this.graph = graph;
@@ -57,7 +85,7 @@ public class Selection< V extends Vertex< E >, E extends Edge< V > > implements 
 	}
 
 	/**
-	 * Get selected state of a vertex.
+	 * Get the selected state of a vertex.
 	 *
 	 * @param v
 	 *            a vertex.
@@ -69,7 +97,7 @@ public class Selection< V extends Vertex< E >, E extends Edge< V > > implements 
 	}
 
 	/**
-	 * Get selected state of an edge.
+	 * Get the selected state of an edge.
 	 *
 	 * @param e
 	 *            an edge.
@@ -81,7 +109,7 @@ public class Selection< V extends Vertex< E >, E extends Edge< V > > implements 
 	}
 
 	/**
-	 * Set selected state of a vertex.
+	 * Sets the selected state of a vertex.
 	 *
 	 * @param v
 	 *            a vertex.
@@ -102,7 +130,7 @@ public class Selection< V extends Vertex< E >, E extends Edge< V > > implements 
 	}
 
 	/**
-	 * Set selected state of an edge.
+	 * Sets the selected state of an edge.
 	 *
 	 * @param e
 	 *            an edge.
@@ -123,8 +151,10 @@ public class Selection< V extends Vertex< E >, E extends Edge< V > > implements 
 	}
 
 	/**
-	 * TODO
+	 * Toggles the selected state of a vertex.
+	 *
 	 * @param v
+	 *            a vertex.
 	 */
 	public synchronized void toggle( final V v )
 	{
@@ -132,8 +162,10 @@ public class Selection< V extends Vertex< E >, E extends Edge< V > > implements 
 	}
 
 	/**
-	 * TODO
+	 * Toggles the selected state of an edge.
+	 *
 	 * @param e
+	 *            an edge.
 	 */
 	public synchronized void toggle( final E e )
 	{
@@ -141,10 +173,12 @@ public class Selection< V extends Vertex< E >, E extends Edge< V > > implements 
 	}
 
 	/**
-	 * TODO
+	 * Sets the selected state of a collection of edges.
+	 *
 	 * @param edges
+	 *            the edge collection.
 	 * @param selected
-	 * @return
+	 *            selected state to set for specified edge collection.
 	 */
 	public synchronized boolean setEdgesSelected( final Collection< E > edges, final boolean selected )
 	{
@@ -167,10 +201,12 @@ public class Selection< V extends Vertex< E >, E extends Edge< V > > implements 
 	}
 
 	/**
-	 * TODO
-	 * @param edges
+	 * Sets the selected state of a collection of vertices.
+	 *
+	 * @param vertices
+	 *            the vertex collection.
 	 * @param selected
-	 * @return
+	 *            selected state to set for specified vertex collection.
 	 */
 	public synchronized boolean setVerticesSelected( final Collection< V > vertices, final boolean selected )
 	{
@@ -192,6 +228,12 @@ public class Selection< V extends Vertex< E >, E extends Edge< V > > implements 
 		}
 	}
 
+	/**
+	 * Clears this selection.
+	 *
+	 * @return {@code true} if this selection was not empty prior to
+	 *         calling this method.
+	 */
 	public synchronized boolean clearSelection()
 	{
 		vertexBits.clear();
@@ -204,6 +246,11 @@ public class Selection< V extends Vertex< E >, E extends Edge< V > > implements 
 		return true;
 	}
 
+	/**
+	 * Get the selected edges.
+	 *
+	 * @return a <b>new</b> {@link RefSet} containing the selected edges.
+	 */
 	public synchronized RefSet< E > getSelectedEdges()
 	{
 		final RefSet< E > set = CollectionUtils.createEdgeSet( graph );
@@ -211,6 +258,11 @@ public class Selection< V extends Vertex< E >, E extends Edge< V > > implements 
 		return set;
 	}
 
+	/**
+	 * Get the selected vertices.
+	 *
+	 * @return a <b>new</b> {@link RefSet} containing the selected vertices.
+	 */
 	public synchronized RefSet< V > getSelectedVertices()
 	{
 		final RefSet< V > set = CollectionUtils.createVertexSet( graph );
@@ -258,9 +310,14 @@ public class Selection< V extends Vertex< E >, E extends Edge< V > > implements 
 		clearSelection();
 	}
 
-	public boolean addSelectionListener( final SelectionListener l )
+	public boolean addSelectionListener( final SelectionListener listener )
 	{
-		return listeners.add( l );
+		if ( !listeners.contains( listener ) )
+		{
+			listeners.add( listener );
+			return true;
+		}
+		return false;
 	}
 
 	public boolean removeSelectionListener( final SelectionListener l )

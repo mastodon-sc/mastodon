@@ -4,7 +4,7 @@ package net.trackmate.graph.mempool;
  * A {@link MappedElementArray} that stores {@link ByteMappedElement
  * ByteMappedElements} in a {@code byte[]} array.
  *
- * @author Tobias Pietzsch <tobias.pietzsch@gmail.com>
+ * @author Tobias Pietzsch &lt;tobias.pietzsch@gmail.com&gt;
  */
 public class ByteMappedElementArray implements MappedElementArray< ByteMappedElementArray, ByteMappedElement >
 {

@@ -21,7 +21,7 @@ import java.util.Iterator;
  * @param <T>
  *            the {@link MappedElement} type stored in this pool.
  *
- * @author Tobias Pietzsch <tobias.pietzsch@gmail.com>
+ * @author Tobias Pietzsch &lt;tobias.pietzsch@gmail.com&gt;
  */
 public abstract class MemPool< T extends MappedElement >
 {
@@ -172,7 +172,7 @@ public abstract class MemPool< T extends MappedElement >
 	 * Get a {@link PoolIterator} of this pool.
 	 *
 	 * <p>
-	 * A {@link PoolIterator} is not an {@link Iterator Iterator<T>} of the
+	 * A {@link PoolIterator} is not an {@link Iterator Iterator&lt;T&gt;} of the
 	 * allocated elements themselves, but rather an iterator of their element
 	 * indices.
 	 */

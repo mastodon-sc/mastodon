@@ -9,7 +9,7 @@ package net.trackmate.graph.mempool;
  * {@link ByteMappedElementArray}s but they all must have the same
  * bytesPerElement.
  *
- * @author Tobias Pietzsch <tobias.pietzsch@gmail.com>
+ * @author Tobias Pietzsch &lt;tobias.pietzsch@gmail.com&gt;
  */
 public class ByteMappedElement implements MappedElement
 {

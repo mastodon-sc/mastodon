@@ -22,8 +22,6 @@ public class ConnectedComponentsTest
 
 	private TestGraph graph;
 
-	private int nVertices;
-
 	private int idLoop;
 
 	private int idTree;
@@ -132,19 +130,6 @@ public class ConnectedComponentsTest
 			final TestVertex target = vList.get( iTarget );
 			graph.addEdge( source, target );
 		}
-
-		/*
-		 * Count vertices
-		 */
-
-		final Iterator< TestVertex > vertexIterator = graph.vertexIterator();
-		int graphCounter = 0;
-		while ( vertexIterator.hasNext() )
-		{
-			vertexIterator.next();
-			graphCounter++;
-		}
-		nVertices = graphCounter;
 	}
 
 	@Test
@@ -152,7 +137,6 @@ public class ConnectedComponentsTest
 	{
 		final ConnectedComponents< TestVertex, TestEdge > cc = new ConnectedComponents< TestVertex, TestEdge >( graph );
 		final Set< RefSet< TestVertex >> components = cc.get();
-
 		final TIntHashSet componentIds = new TIntHashSet( components.size() );
 
 		int counter = 0;
@@ -178,7 +162,7 @@ public class ConnectedComponentsTest
 		/*
 		 * Check that we did not forget any vertex.
 		 */
-		assertEquals( "Connected components do not span the whole graph.", nVertices, counter );
+		assertEquals( "Connected components do not span the whole graph.", graph.vertices().size(), counter );
 
 		/*
 		 * Link two components and reuse the same algo instance.
@@ -211,7 +195,7 @@ public class ConnectedComponentsTest
 				}
 			}
 		}
-		assertEquals( "Connected components do not span the whole graph.", nVertices, counter );
+		assertEquals( "Connected components do not span the whole graph.", graph.vertices().size(), counter );
 
 	}
 

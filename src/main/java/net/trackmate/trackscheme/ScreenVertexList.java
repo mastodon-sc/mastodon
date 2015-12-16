@@ -8,7 +8,7 @@ import net.trackmate.trackscheme.ScreenVertex.ScreenVertexPool;
  * A {@link PoolObjectList} of {@link ScreenVertex}. This is just a no-generics
  * convenience class for {@code PoolObjectList<ScreenVertex, ByteMappedElement>}
  *
- * @author Tobias Pietzsch <tobias.pietzsch@gmail.com>
+ * @author Tobias Pietzsch &lt;tobias.pietzsch@gmail.com&gt;
  */
 public class ScreenVertexList extends PoolObjectList< ScreenVertex >
 {

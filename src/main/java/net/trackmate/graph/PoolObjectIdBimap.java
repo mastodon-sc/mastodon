@@ -8,7 +8,7 @@ package net.trackmate.graph;
  * @param <O>
  *            the {@link PoolObject} type.
  *
- * @author Tobias Pietzsch <tobias.pietzsch@gmail.com>
+ * @author Tobias Pietzsch &lt;tobias.pietzsch@gmail.com&gt;
  */
 public class PoolObjectIdBimap< O extends PoolObject< O, ? > > implements IdBimap< O >
 {

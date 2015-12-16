@@ -24,7 +24,7 @@ import net.trackmate.graph.collection.RefStack;
  * @param <E>
  *            the {@link Edge} type of the {@link Graph}.
  *
- * @author Tobias Pietzsch <tobias.pietzsch@gmail.com>
+ * @author Tobias Pietzsch &lt;tobias.pietzsch@gmail.com&gt;
  */
 public abstract class AbstractGraphAlgorithm< V extends Vertex< E >, E extends Edge< V > >
 {

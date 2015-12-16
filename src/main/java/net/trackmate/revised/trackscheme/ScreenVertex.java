@@ -16,7 +16,7 @@ import net.trackmate.trackscheme.Labels;
 /**
  * Layouted vertex.
  *
- * @author Tobias Pietzsch <tobias.pietzsch@gmail.com>
+ * @author Tobias Pietzsch &lt;tobias.pietzsch@gmail.com&gt;
  */
 public class ScreenVertex extends PoolObject< ScreenVertex, ByteMappedElement >
 {

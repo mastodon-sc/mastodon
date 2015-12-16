@@ -41,7 +41,7 @@ public class TgmmImporter
 	 *            a string that can be parsed by
 	 *            {@link String#format(String, Object...)} to generate target
 	 *            TGMM filenames. Example:
-	 *            <code>/Volumes/Data/TGMM_TL0-528_xmls_curated/GMEMfinalResult_frame%04d.xml</code>
+	 *            {@code /Volumes/Data/TGMM_TL0-528_xmls_curated/GMEMfinalResult_frame%04d.xml}
 	 * @param timepointsToRead
 	 *            the desired time-points to read.
 	 * @param viewRegistrations
