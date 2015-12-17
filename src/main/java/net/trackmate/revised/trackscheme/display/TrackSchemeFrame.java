@@ -9,7 +9,11 @@ import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
 import javax.swing.WindowConstants;
 
+import bdv.BehaviourTransformEventHandler;
+import bdv.behaviour.MouseAndKeyHandler;
 import bdv.viewer.InputActionBindings;
+import bdv.viewer.TriggerBehaviourBindings;
+import net.imglib2.ui.TransformEventHandler;
 import net.imglib2.ui.util.GuiUtil;
 import net.trackmate.revised.trackscheme.TrackSchemeFocus;
 import net.trackmate.revised.trackscheme.TrackSchemeGraph;
@@ -24,6 +28,8 @@ public class TrackSchemeFrame extends JFrame
 	private final TrackSchemePanel trackschemePanel;
 
 	private final InputActionBindings keybindings;
+
+	private final TriggerBehaviourBindings triggerbindings;
 
 	public TrackSchemeFrame(
 			final TrackSchemeGraph< ?, ? > graph,
@@ -74,6 +80,16 @@ public class TrackSchemeFrame extends JFrame
 		keybindings = new InputActionBindings();
 		SwingUtilities.replaceUIActionMap( getRootPane(), keybindings.getConcatenatedActionMap() );
 		SwingUtilities.replaceUIInputMap( getRootPane(), JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT, keybindings.getConcatenatedInputMap() );
+
+		triggerbindings = new TriggerBehaviourBindings();
+		final MouseAndKeyHandler mouseAndKeyHandler = new MouseAndKeyHandler();
+		mouseAndKeyHandler.setInputMap( triggerbindings.getConcatenatedInputTriggerMap() );
+		mouseAndKeyHandler.setBehaviourMap( triggerbindings.getConcatenatedBehaviourMap() );
+		trackschemePanel.getDisplay().addHandler( mouseAndKeyHandler );
+
+		final TransformEventHandler< ? > tfHandler = trackschemePanel.getDisplay().getTransformEventHandler();
+		if ( tfHandler instanceof BehaviourTransformEventHandler )
+			( ( BehaviourTransformEventHandler< ? > ) tfHandler ).install( triggerbindings );
 	}
 
 	public TrackSchemePanel getTrackschemePanel()
@@ -84,5 +100,10 @@ public class TrackSchemeFrame extends JFrame
 	public InputActionBindings getKeybindings()
 	{
 		return keybindings;
+	}
+
+	public TriggerBehaviourBindings getTriggerbindings()
+	{
+		return triggerbindings;
 	}
 }
