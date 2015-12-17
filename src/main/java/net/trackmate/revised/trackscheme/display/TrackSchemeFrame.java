@@ -4,9 +4,12 @@ import java.awt.BorderLayout;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
+import javax.swing.JComponent;
 import javax.swing.JFrame;
+import javax.swing.SwingUtilities;
 import javax.swing.WindowConstants;
 
+import bdv.viewer.InputActionBindings;
 import net.imglib2.ui.util.GuiUtil;
 import net.trackmate.revised.trackscheme.TrackSchemeFocus;
 import net.trackmate.revised.trackscheme.TrackSchemeGraph;
@@ -19,6 +22,8 @@ import net.trackmate.revised.ui.grouping.GroupLocksPanel;
 public class TrackSchemeFrame extends JFrame
 {
 	private final TrackSchemePanel trackschemePanel;
+
+	private final InputActionBindings keybindings;
 
 	public TrackSchemeFrame(
 			final TrackSchemeGraph< ?, ? > graph,
@@ -65,10 +70,19 @@ public class TrackSchemeFrame extends JFrame
 				trackschemePanel.stop();
 			}
 		} );
+
+		keybindings = new InputActionBindings();
+		SwingUtilities.replaceUIActionMap( getRootPane(), keybindings.getConcatenatedActionMap() );
+		SwingUtilities.replaceUIInputMap( getRootPane(), JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT, keybindings.getConcatenatedInputMap() );
 	}
 
 	public TrackSchemePanel getTrackschemePanel()
 	{
 		return trackschemePanel;
+	}
+
+	public InputActionBindings getKeybindings()
+	{
+		return keybindings;
 	}
 }
