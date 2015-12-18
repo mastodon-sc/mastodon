@@ -59,7 +59,7 @@ public class LineageTreeLayout
 	private int timestamp;
 
 	/**
-	 * The mark timestamp for the current layout. Context trackscheme to marks
+	 * The mark timestamp for the current layout. Context trackscheme marks
 	 * vertices as active before layout by setting their
 	 * {@link TrackSchemeVertex#getLayoutTimestamp() layout timestamp} to a mark
 	 * value that is higher than any previously assigned timestamp. During
