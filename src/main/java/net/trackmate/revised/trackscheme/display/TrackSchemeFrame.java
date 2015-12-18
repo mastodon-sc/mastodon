@@ -10,7 +10,10 @@ import javax.swing.SwingUtilities;
 import javax.swing.WindowConstants;
 
 import bdv.BehaviourTransformEventHandler;
+import bdv.behaviour.KeyStrokeAdder;
 import bdv.behaviour.MouseAndKeyHandler;
+import bdv.behaviour.io.InputTriggerConfig;
+import bdv.util.KeyProperties;
 import bdv.viewer.InputActionBindings;
 import bdv.viewer.TriggerBehaviourBindings;
 import net.imglib2.ui.TransformEventHandler;
@@ -81,6 +84,9 @@ public class TrackSchemeFrame extends JFrame
 		SwingUtilities.replaceUIActionMap( getRootPane(), keybindings.getConcatenatedActionMap() );
 		SwingUtilities.replaceUIInputMap( getRootPane(), JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT, keybindings.getConcatenatedInputMap() );
 
+		final KeyStrokeAdder.Factory keyProperties = getKeyConfig( optional );
+		trackschemePanel.getNavigator().installActionBindings( keybindings, keyProperties );
+
 		triggerbindings = new TriggerBehaviourBindings();
 		final MouseAndKeyHandler mouseAndKeyHandler = new MouseAndKeyHandler();
 		mouseAndKeyHandler.setInputMap( triggerbindings.getConcatenatedInputTriggerMap() );
@@ -90,6 +96,12 @@ public class TrackSchemeFrame extends JFrame
 		final TransformEventHandler< ? > tfHandler = trackschemePanel.getDisplay().getTransformEventHandler();
 		if ( tfHandler instanceof BehaviourTransformEventHandler )
 			( ( BehaviourTransformEventHandler< ? > ) tfHandler ).install( triggerbindings );
+	}
+
+	protected KeyStrokeAdder.Factory getKeyConfig( final TrackSchemeOptions optional )
+	{
+		final InputTriggerConfig conf = optional.values.getInputTriggerConfig();
+		return conf != null ? conf : KeyProperties.readPropertyFile();
 	}
 
 	public TrackSchemePanel getTrackschemePanel()

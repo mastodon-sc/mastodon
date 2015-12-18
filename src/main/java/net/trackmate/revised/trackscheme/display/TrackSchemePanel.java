@@ -11,6 +11,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollBar;
 import javax.swing.UIManager;
 
+import bdv.viewer.TimePointListener;
 import net.imglib2.ui.InteractiveDisplayCanvasComponent;
 import net.imglib2.ui.OverlayRenderer;
 import net.imglib2.ui.PainterThread;
@@ -35,7 +36,6 @@ import net.trackmate.revised.ui.selection.HighlightListener;
 import net.trackmate.revised.ui.selection.NavigationListener;
 import net.trackmate.revised.ui.selection.SelectionListener;
 import net.trackmate.trackscheme.animate.AbstractAnimator;
-import bdv.viewer.TimePointListener;
 
 public class TrackSchemePanel extends JPanel implements
 		TransformListener< ScreenTransform >,
@@ -130,11 +130,11 @@ public class TrackSchemePanel extends JPanel implements
 	 */
 	private boolean ignoreScrollBarChanges;
 
-	private final TrackSchemeSelection selection;
-
-	private final TrackSchemeNavigation navigation;
+//	private final TrackSchemeSelection selection;
 
 	private final TrackSchemeFocus focus;
+
+	private final TrackSchemeNavigator navigator;
 
 	public TrackSchemePanel(
 			final TrackSchemeGraph< ?, ? > graph,
@@ -147,8 +147,7 @@ public class TrackSchemePanel extends JPanel implements
 		super( new BorderLayout(), false );
 		this.graph = graph;
 		this.focus = focus;
-		this.selection = selection;
-		this.navigation = navigation;
+//		this.selection = selection;
 		options = optional.values;
 
 		graph.addGraphChangeListener( this );
@@ -199,10 +198,9 @@ public class TrackSchemePanel extends JPanel implements
 		display.addHandler( mouseSelectionHandler );
 		display.addOverlayRenderer( mouseSelectionHandler );
 
-		final TrackSchemeNavigator navigator = new TrackSchemeNavigator( graph, layout, focus, navigation, selection );
+		navigator = new TrackSchemeNavigator( graph, layout, focus, navigation, selection );
 		display.addTransformListener( navigator );
-		final FocusHandler focusHandler = new FocusHandler( navigator, navigation, focus, selection, graph, graphOverlay );
-		focusHandler.installOn( display );
+		final FocusHandler focusHandler = new FocusHandler( navigation, focus, graph, graphOverlay );
 		display.addHandler( focusHandler );
 
 		xScrollBar = new JScrollBar( JScrollBar.HORIZONTAL );
@@ -411,6 +409,11 @@ public class TrackSchemePanel extends JPanel implements
 	protected LineageTreeLayout getLineageTreeLayout()
 	{
 		return layout;
+	}
+
+	public TrackSchemeNavigator getNavigator()
+	{
+		return navigator;
 	}
 
 	protected class ScreenEntityAnimator extends AbstractAnimator

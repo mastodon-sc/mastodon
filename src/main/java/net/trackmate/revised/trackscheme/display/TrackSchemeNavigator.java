@@ -1,5 +1,14 @@
 package net.trackmate.revised.trackscheme.display;
 
+import java.awt.event.ActionEvent;
+
+import javax.swing.ActionMap;
+import javax.swing.InputMap;
+
+import bdv.behaviour.KeyStrokeAdder;
+import bdv.util.AbstractNamedAction;
+import bdv.util.AbstractNamedAction.NamedActionAdder;
+import bdv.viewer.InputActionBindings;
 import net.imglib2.RealPoint;
 import net.imglib2.ui.TransformListener;
 import net.trackmate.revised.trackscheme.LineageTreeLayout;
@@ -12,6 +21,24 @@ import net.trackmate.revised.trackscheme.TrackSchemeVertex;
 
 public class TrackSchemeNavigator implements TransformListener< ScreenTransform >
 {
+	public static final String NAVIGATE_CHILD_NAME = "ts navigate to child";
+	public static final String NAVIGATE_PARENT_NAME = "ts navigate to parent";
+	public static final String NAVIGATE_LEFT_NAME = "ts navigate left";
+	public static final String NAVIGATE_RIGHT_NAME = "ts navigate right";
+	public static final String SELECT_NAVIGATE_CHILD_NAME = "ts select navigate to child";
+	public static final String SELECT_NAVIGATE_PARENT_NAME = "ts select navigate to parent";
+	public static final String SELECT_NAVIGATE_LEFT_NAME = "ts select navigate left";
+	public static final String SELECT_NAVIGATE_RIGHT_NAME = "ts select navigate right";
+	public static final String TOGGLE_FOCUS_SELECTION_NAME = "ts toggle focus selection";
+
+	public static enum Direction
+	{
+		CHILD,
+		PARENT,
+		LEFT_SIBLING,
+		RIGHT_SIBLING
+	}
+
 	private final TrackSchemeGraph< ?, ? > graph;
 
 	private final LineageTreeLayout layout;
@@ -21,6 +48,8 @@ public class TrackSchemeNavigator implements TransformListener< ScreenTransform 
 	private final TrackSchemeFocus focus;
 
 	private final TrackSchemeSelection selection;
+
+	private final ActionMap actionMap;
 
 	public TrackSchemeNavigator(
 			final TrackSchemeGraph< ?, ? > graph,
@@ -34,41 +63,47 @@ public class TrackSchemeNavigator implements TransformListener< ScreenTransform 
 		this.focus = focus;
 		this.navigation = navigation;
 		this.selection = selection;
+
+		actionMap = new ActionMap();
+		final NamedActionAdder adder = new NamedActionAdder( actionMap );
+		adder.put( new SelectAndFocusNeighborAction( NAVIGATE_CHILD_NAME, Direction.CHILD, false ) );
+		adder.put( new SelectAndFocusNeighborAction( NAVIGATE_PARENT_NAME, Direction.PARENT, false ) );
+		adder.put( new SelectAndFocusNeighborAction( NAVIGATE_LEFT_NAME, Direction.LEFT_SIBLING, false ) );
+		adder.put( new SelectAndFocusNeighborAction( NAVIGATE_RIGHT_NAME, Direction.RIGHT_SIBLING, false ) );
+		adder.put( new SelectAndFocusNeighborAction( SELECT_NAVIGATE_CHILD_NAME, Direction.CHILD, true ) );
+		adder.put( new SelectAndFocusNeighborAction( SELECT_NAVIGATE_PARENT_NAME, Direction.PARENT, true ) );
+		adder.put( new SelectAndFocusNeighborAction( SELECT_NAVIGATE_LEFT_NAME, Direction.LEFT_SIBLING, true ) );
+		adder.put( new SelectAndFocusNeighborAction( SELECT_NAVIGATE_RIGHT_NAME, Direction.RIGHT_SIBLING, true ) );
+		adder.put( new ToggleFocusSelectionAction() );
 	}
 
-	public static enum Direction
+	public void installActionBindings( final InputActionBindings keybindings, final KeyStrokeAdder.Factory keyConfig )
 	{
-		CHILD,
-		PARENT,
-		LEFT_SIBLING,
-		RIGHT_SIBLING
+		final InputMap inputMap = new InputMap();
+		final KeyStrokeAdder adder = keyConfig.keyStrokeAdder( inputMap, "ts" );
+
+		adder.put( NAVIGATE_CHILD_NAME, "DOWN" );
+		adder.put( NAVIGATE_PARENT_NAME, "UP" );
+		adder.put( NAVIGATE_LEFT_NAME, "LEFT" );
+		adder.put( NAVIGATE_RIGHT_NAME, "RIGHT" );
+		adder.put( SELECT_NAVIGATE_CHILD_NAME, "shift DOWN" );
+		adder.put( SELECT_NAVIGATE_PARENT_NAME, "shift UP" );
+		adder.put( SELECT_NAVIGATE_LEFT_NAME, "shift LEFT" );
+		adder.put( SELECT_NAVIGATE_RIGHT_NAME, "shift RIGHT" );
+		adder.put( TOGGLE_FOCUS_SELECTION_NAME, "SPACE" );
+
+		keybindings.addActionMap( "navigator", actionMap );
+		keybindings.addInputMap( "navigator", inputMap );
 	}
 
-	public void focusNeighbor( final Direction direction )
+	private void selectAndFocusNeighbor( final Direction direction, final boolean select )
 	{
 		final TrackSchemeVertex ref = graph.vertexRef();
-		selectAndFocusNeighborImpl( direction, false, ref );
+		selectAndFocusNeighbor( direction, select, ref );
 		graph.releaseRef( ref );
 	}
 
-//	public TrackSchemeVertex focusNeighbor( final Direction direction, final TrackSchemeVertex ref )
-//	{
-//		return selectAndFocusNeighborImpl( direction, false, ref );
-//	}
-
-	public void selectAndFocusNeighbor( final Direction direction )
-	{
-		final TrackSchemeVertex ref = graph.vertexRef();
-		selectAndFocusNeighborImpl( direction, true, ref );
-		graph.releaseRef( ref );
-	}
-
-//	public TrackSchemeVertex selectAndFocusNeighbor( final Direction direction, final TrackSchemeVertex ref )
-//	{
-//		return selectAndFocusNeighborImpl( direction, true, ref );
-//	}
-
-	private TrackSchemeVertex selectAndFocusNeighborImpl( final Direction direction, final boolean select, final TrackSchemeVertex ref )
+	private TrackSchemeVertex selectAndFocusNeighbor( final Direction direction, final boolean select, final TrackSchemeVertex ref )
 	{
 		final TrackSchemeVertex vertex = getFocusedVertex( ref );
 		if ( vertex == null )
@@ -97,15 +132,18 @@ public class TrackSchemeNavigator implements TransformListener< ScreenTransform 
 		if ( current != null )
 		{
 			focus.focusVertex( current );
-			navigateTo( current );
+			navigation.notifyNavigateToVertex( current );
 		}
 		return current;
 	}
 
-	private void navigateTo( final TrackSchemeVertex current )
+	private void toggleSelectionOfFocusedVertex()
 	{
-		if ( current != null )
-			navigation.notifyNavigateToVertex( current );
+		final TrackSchemeVertex ref = graph.vertexRef();
+		final TrackSchemeVertex v = focus.getFocusedVertex( ref );
+		if ( v != null )
+			selection.toggleSelected( v );
+		graph.releaseRef( ref );
 	}
 
 	private final RealPoint centerPos = new RealPoint( 2 );
@@ -126,5 +164,51 @@ public class TrackSchemeNavigator implements TransformListener< ScreenTransform 
 		centerPos.setPosition( (transform.getMaxX() + transform.getMinX() ) / 2., 0 );
 		centerPos.setPosition( (transform.getMaxY() + transform.getMinY() ) / 2., 1 );
 		ratioXtoY = transform.getXtoYRatio();
+	}
+
+	/*
+	 * SELECT CURRENT FOCUS
+	 */
+
+	private class ToggleFocusSelectionAction extends AbstractNamedAction
+	{
+		private static final long serialVersionUID = 1L;
+
+		public ToggleFocusSelectionAction()
+		{
+			super( TOGGLE_FOCUS_SELECTION_NAME );
+		}
+
+		@Override
+		public void actionPerformed( final ActionEvent e )
+		{
+			toggleSelectionOfFocusedVertex();
+		}
+	}
+
+	/*
+	 * NAVIGATE WITH HIGHLIGHT.
+	 */
+
+	private class SelectAndFocusNeighborAction extends AbstractNamedAction
+	{
+		private static final long serialVersionUID = 1L;
+
+		private final Direction direction;
+
+		private final boolean select;
+
+		public SelectAndFocusNeighborAction( final String name, final Direction direction, final boolean select )
+		{
+			super( name );
+			this.direction = direction;
+			this.select = select;
+		}
+
+		@Override
+		public void actionPerformed( final ActionEvent e )
+		{
+			selectAndFocusNeighbor( direction, select );
+		}
 	}
 }
