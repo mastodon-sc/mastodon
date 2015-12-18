@@ -5,7 +5,6 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
 import java.util.Set;
 
@@ -53,12 +52,6 @@ public class PoolObjectPoolObjectMapTest extends PoolObjectPoolObjectMapAbstract
 	{
 		assertFalse( "Map should not contain a key for edge E->A.", map.containsValue( eEA ) );
 		assertTrue( "Map should contain a key for edge A->B.", map.containsValue( eAB ) );
-	}
-
-	@Test
-	public void testEntrySet()
-	{
-		fail( "Not yet implemented" );
 	}
 
 	@Test
@@ -143,7 +136,17 @@ public class PoolObjectPoolObjectMapTest extends PoolObjectPoolObjectMapAbstract
 	@Test
 	public void testPutAll()
 	{
-		fail( "Not yet implemented" );
+		final PoolObjectPoolObjectMap< TestVertex, TestEdge > extraMap = new PoolObjectPoolObjectMap< TestVertex, TestEdge >( graph.vertexPool, graph.edgePool );
+		extraMap.put( Ak, eAB );
+		// Careful to add 1 mapping not already present in the map.
+		extraMap.put( Bk, eAC );
+		// Change one mapping.
+
+		final int initSize = map.size();
+		map.putAll( extraMap );
+		assertEquals( "Map after putAll does not have the expected size.", initSize + 1, map.size() );
+		assertEquals( "New mapping is not right.", eAB, map.get( Ak ) );
+		assertEquals( "New mapping is not right.", eAC, map.get( Bk ) );
 	}
 
 	@Test

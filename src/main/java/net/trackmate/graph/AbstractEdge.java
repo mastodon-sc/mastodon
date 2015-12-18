@@ -10,7 +10,7 @@ import net.trackmate.graph.mempool.MappedElement;
  * @param <V>
  * @param <T>
  *
- * @author Tobias Pietzsch <tobias.pietzsch@gmail.com>
+ * @author Tobias Pietzsch &lt;tobias.pietzsch@gmail.com&gt;
  */
 public class AbstractEdge< E extends AbstractEdge< E, V, T >, V extends AbstractVertex< V, ?, ? >, T extends MappedElement >
 		extends PoolObject< E, T >

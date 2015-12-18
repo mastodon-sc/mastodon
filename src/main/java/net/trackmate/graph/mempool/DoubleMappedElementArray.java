@@ -4,7 +4,7 @@ package net.trackmate.graph.mempool;
  * A {@link MappedElementArray} that stores {@link DoubleMappedElement
  * DoubleMappedElements} in a {@code double[]} array.
  *
- * @author Tobias Pietzsch <tobias.pietzsch@gmail.com>
+ * @author Tobias Pietzsch &lt;tobias.pietzsch@gmail.com&gt;
  */
 public class DoubleMappedElementArray implements MappedElementArray< DoubleMappedElementArray, DoubleMappedElement >
 {

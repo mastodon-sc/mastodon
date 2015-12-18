@@ -39,7 +39,7 @@ public abstract class GraphSearch< T extends GraphSearch< T, V, E >, V extends V
 	 * {@link SearchListener} aborts the search by calling the {@link #abort()}
 	 * method on this search.
 	 *
-	 * @param vertex
+	 * @param start
 	 *            the vertex to start the search with.
 	 */
 	public void start( final V start )
@@ -54,13 +54,13 @@ public abstract class GraphSearch< T extends GraphSearch< T, V, E >, V extends V
 	/**
 	 * Sets the {@link SearchListener} to use for next search.
 	 * <p>
-	 * If it is not <code>null</code>, this listener will be notified in proper
+	 * If it is not {@code null}, this listener will be notified in proper
 	 * order when discovering vertices, crossing edges and finishing processing
-	 * vertices. If <code>null</code>, there are no notifications.
+	 * vertices. If {@code null}, there are no notifications.
 	 *
 	 * @param searchListener
 	 *            the search listener to use for next search. Can be
-	 *            <code>null</code>.
+	 *            {@code null}.
 	 */
 	public void setTraversalListener( final SearchListener< V, E, T > searchListener )
 	{
@@ -71,13 +71,13 @@ public abstract class GraphSearch< T extends GraphSearch< T, V, E >, V extends V
 	 * Sets the comparator to use for next search.
 	 * <p>
 	 * This comparator is used when several children of the current vertex can
-	 * be visited. If the specified comparator is not <code>null</code>, it is
+	 * be visited. If the specified comparator is not {@code null}, it is
 	 * used to sort these children, which are then visited according to the
-	 * order it sets. If it is <code>null</code>, the order is unspecified.
+	 * order it sets. If it is {@code null}, the order is unspecified.
 	 *
 	 * @param comparator
 	 *            the vertex comparator to use for next search. Can be
-	 *            <code>null</code>.
+	 *            {@code null}.
 	 */
 	public void setComparator( final Comparator< V > comparator )
 	{
@@ -93,10 +93,10 @@ public abstract class GraphSearch< T extends GraphSearch< T, V, E >, V extends V
 	}
 
 	/**
-	 * Returns <code>true</code> if the search was aborted before its normal
+	 * Returns {@code true} if the search was aborted before its normal
 	 * completion.
 	 *
-	 * @return <code>true</code> if the search was aborted.
+	 * @return {@code true} if the search was aborted.
 	 */
 	public boolean wasAborted()
 	{
@@ -105,7 +105,7 @@ public abstract class GraphSearch< T extends GraphSearch< T, V, E >, V extends V
 
 	/**
 	 * Returns the parent of the specified vertex in the current search tree.
-	 * Returns <code>null</code> if the specified vertex has not been visited
+	 * Returns {@code null} if the specified vertex has not been visited
 	 * yet.
 	 *
 	 * @param child

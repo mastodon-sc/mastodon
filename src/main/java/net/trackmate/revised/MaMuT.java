@@ -1,5 +1,6 @@
 package net.trackmate.revised;
 
+import java.awt.BorderLayout;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
@@ -9,12 +10,14 @@ import mpicbg.spim.data.sequence.TimePoint;
 import net.trackmate.graph.GraphIdBimap;
 import net.trackmate.graph.listenable.GraphChangeListener;
 import net.trackmate.graph.listenable.ListenableGraph;
+import net.trackmate.revised.bdv.overlay.MouseNavigationHandler;
 import net.trackmate.revised.bdv.overlay.MouseOverListener;
 import net.trackmate.revised.bdv.overlay.MouseSelectionHandler;
 import net.trackmate.revised.bdv.overlay.OverlayGraphRenderer;
 import net.trackmate.revised.bdv.overlay.wrap.OverlayEdgeWrapper;
 import net.trackmate.revised.bdv.overlay.wrap.OverlayGraphWrapper;
 import net.trackmate.revised.bdv.overlay.wrap.OverlayHighlightWrapper;
+import net.trackmate.revised.bdv.overlay.wrap.OverlayNavigationWrapper;
 import net.trackmate.revised.bdv.overlay.wrap.OverlaySelectionWrapper;
 import net.trackmate.revised.bdv.overlay.wrap.OverlayVertexWrapper;
 import net.trackmate.revised.model.mamut.BoundingSphereRadiusStatistics;
@@ -22,15 +25,28 @@ import net.trackmate.revised.model.mamut.Link;
 import net.trackmate.revised.model.mamut.Model;
 import net.trackmate.revised.model.mamut.ModelOverlayProperties;
 import net.trackmate.revised.model.mamut.Spot;
+import net.trackmate.revised.trackscheme.DefaultModelFocusProperties;
 import net.trackmate.revised.trackscheme.DefaultModelGraphProperties;
 import net.trackmate.revised.trackscheme.DefaultModelHighlightProperties;
+import net.trackmate.revised.trackscheme.DefaultModelNavigationProperties;
 import net.trackmate.revised.trackscheme.DefaultModelSelectionProperties;
+import net.trackmate.revised.trackscheme.ModelFocusProperties;
+import net.trackmate.revised.trackscheme.ModelHighlightProperties;
+import net.trackmate.revised.trackscheme.ModelNavigationProperties;
+import net.trackmate.revised.trackscheme.ModelSelectionProperties;
+import net.trackmate.revised.trackscheme.TrackSchemeFocus;
 import net.trackmate.revised.trackscheme.TrackSchemeGraph;
 import net.trackmate.revised.trackscheme.TrackSchemeHighlight;
+import net.trackmate.revised.trackscheme.TrackSchemeNavigation;
 import net.trackmate.revised.trackscheme.TrackSchemeSelection;
 import net.trackmate.revised.trackscheme.display.TrackSchemeFrame;
+import net.trackmate.revised.ui.grouping.GroupHandle;
+import net.trackmate.revised.ui.grouping.GroupLocksPanel;
+import net.trackmate.revised.ui.grouping.GroupManager;
+import net.trackmate.revised.ui.selection.FocusModel;
 import net.trackmate.revised.ui.selection.HighlightListener;
 import net.trackmate.revised.ui.selection.HighlightModel;
+import net.trackmate.revised.ui.selection.NavigationHandler;
 import net.trackmate.revised.ui.selection.Selection;
 import net.trackmate.revised.ui.selection.SelectionListener;
 import bdv.BigDataViewer;
@@ -38,6 +54,7 @@ import bdv.export.ProgressWriterConsole;
 import bdv.spimdata.SpimDataMinimal;
 import bdv.spimdata.XmlIoSpimDataMinimal;
 import bdv.tools.InitializeViewerState;
+import bdv.viewer.ViewerFrame;
 import bdv.viewer.ViewerOptions;
 import bdv.viewer.ViewerPanel;
 
@@ -81,6 +98,13 @@ public class MaMuT
 
 		System.setProperty( "apple.laf.useScreenMenuBar", "true" );
 
+		final GroupManager groupManager = new GroupManager();
+
+		/*
+		 * TrackScheme GroupHandle
+		 */
+		final GroupHandle trackSchemeGroupHandle = groupManager.createGroupHandle();
+
 		/*
 		 * TrackSchemeGraph listening to model
 		 */
@@ -93,21 +117,44 @@ public class MaMuT
 		/*
 		 * TrackSchemeHighlight wrapped HighlightModel
 		 */
+
 		final HighlightModel< Spot, Link > highlightModel = new HighlightModel< Spot, Link  >( idmap );
-		final DefaultModelHighlightProperties< Spot, Link > highlightProperties = new DefaultModelHighlightProperties< Spot, Link >( graph, idmap, highlightModel );
+		final ModelHighlightProperties highlightProperties = new DefaultModelHighlightProperties< Spot, Link >( graph, idmap, highlightModel );
 		final TrackSchemeHighlight trackSchemeHighlight = new TrackSchemeHighlight( highlightProperties, trackSchemeGraph );
 
 		/*
 		 * TrackScheme selection
 		 */
 
-		final DefaultModelSelectionProperties< Spot, Link > selectionProperties = new DefaultModelSelectionProperties< Spot, Link >( graph, idmap, selection );
+		final ModelSelectionProperties selectionProperties = new DefaultModelSelectionProperties< Spot, Link >( graph, idmap, selection );
 		final TrackSchemeSelection trackSchemeSelection = new TrackSchemeSelection( selectionProperties );
+
+		/*
+		 * TrackScheme navigation
+		 */
+
+		final NavigationHandler< Spot > navigationHandler = new NavigationHandler< Spot >( trackSchemeGroupHandle );
+		final ModelNavigationProperties navigationProperties = new DefaultModelNavigationProperties< Spot, Link >( graph, idmap, navigationHandler );
+		final TrackSchemeNavigation trackSchemeNavigation = new TrackSchemeNavigation( navigationProperties, trackSchemeGraph );
+
+		/*
+		 * TrackScheme focus
+		 */
+
+		final FocusModel< Spot, Link > focusModel = new FocusModel<>( idmap );
+		final ModelFocusProperties focusProperties = new DefaultModelFocusProperties<>( graph, idmap, focusModel );
+		final TrackSchemeFocus trackSchemeFocus = new TrackSchemeFocus( focusProperties, trackSchemeGraph );
 
 		/*
 		 * show TrackSchemeFrame
 		 */
-		final TrackSchemeFrame frame = new TrackSchemeFrame( trackSchemeGraph, trackSchemeHighlight, trackSchemeSelection );
+		final TrackSchemeFrame frame = new TrackSchemeFrame(
+				trackSchemeGraph,
+				trackSchemeHighlight,
+				trackSchemeFocus,
+				trackSchemeSelection,
+				trackSchemeNavigation,
+				trackSchemeGroupHandle );
 		frame.getTrackschemePanel().setTimepointRange( minTimepoint, maxTimepoint );
 		frame.getTrackschemePanel().graphChanged();
 		frame.setVisible( true );
@@ -119,8 +166,7 @@ public class MaMuT
 
 //		for ( int i = 0; i < 2; ++i )
 //		{
-		final BigDataViewer bdv = openBDV( model, highlightModel, selection, radiusStats, spimData, windowTitle, initialTimepointIndex, bdvFile );
-		final ViewerPanel viewer = bdv.getViewer();
+		final BigDataViewer bdv = openBDV( model, highlightModel, selection, groupManager, radiusStats, spimData, windowTitle, initialTimepointIndex, bdvFile );
 
 		/*
 		 * TODO: this is still wrong. There should be one central entity syncing
@@ -128,6 +174,7 @@ public class MaMuT
 		 * that. Ideally windows should be configurable to "share" timepoints or
 		 * not.
 		 */
+		final ViewerPanel viewer = bdv.getViewer();
 		viewer.addTimePointListener( frame.getTrackschemePanel() );
 		viewer.repaint();
 //		}
@@ -137,6 +184,7 @@ public class MaMuT
 			final Model model,
 			final HighlightModel< Spot, Link > highlightModel,
 			final Selection< Spot, Link > selection,
+			final GroupManager groupManager,
 			final BoundingSphereRadiusStatistics radiusStats,
 			final SpimDataMinimal spimData,
 			final String windowTitle,
@@ -144,6 +192,7 @@ public class MaMuT
 			final String bdvFile
 			)
 	{
+		final GroupHandle bdvGroupHandle = groupManager.createGroupHandle();
 
 		final OverlayGraphWrapper< Spot, Link > overlayGraph = new OverlayGraphWrapper<>(
 				model.getGraph(),
@@ -197,6 +246,19 @@ public class MaMuT
 
 		final MouseSelectionHandler< ?, ? > mouseSelectionListener = new MouseSelectionHandler<>( overlayGraph, tracksOverlay, overlaySelection );
 		viewer.getDisplay().addHandler( mouseSelectionListener );
+
+		final NavigationHandler< Spot > navigationHandler = new NavigationHandler<>( bdvGroupHandle );
+		final OverlayNavigationWrapper< Spot, Link > navigation =
+				new OverlayNavigationWrapper< Spot, Link >( viewer, overlayGraph, navigationHandler );
+
+		final MouseNavigationHandler< ?, ? > mouseNavigationHandler = new MouseNavigationHandler<>( overlayGraph, tracksOverlay, navigation );
+		viewer.getDisplay().addHandler( mouseNavigationHandler );
+
+		final ViewerFrame viewerFrame = bdv.getViewerFrame();
+		final GroupLocksPanel lockPanel = new GroupLocksPanel( bdvGroupHandle );
+
+		viewerFrame.add( lockPanel, BorderLayout.NORTH );
+		viewerFrame.pack();
 
 		return bdv;
 	}

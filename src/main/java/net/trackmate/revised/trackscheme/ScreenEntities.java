@@ -10,7 +10,7 @@ import net.trackmate.revised.trackscheme.ScreenVertexRange.ScreenVertexRangePool
  * A collection of layouted screen objects to paint. Comprises lists of
  * {@link ScreenVertex}, {@link ScreenEdge}, and {@link ScreenVertexRange}.
  *
- * @author Tobias Pietzsch <tobias.pietzsch@gmail.com>
+ * @author Tobias Pietzsch &lt;tobias.pietzsch@gmail.com&gt;
  */
 public class ScreenEntities
 {

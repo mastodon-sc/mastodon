@@ -11,7 +11,7 @@ import net.imglib2.algorithm.kdtree.ConvexPolytope;
  * @param <T>
  *            type of points (usually {@link RealLocalizable}).
  *
- * @author Tobias Pietzsch <tobias.pietzsch@gmail.com>
+ * @author Tobias Pietzsch &lt;tobias.pietzsch@gmail.com&gt;
  */
 public interface ClipConvexPolytope< T > extends EuclideanSpace
 {

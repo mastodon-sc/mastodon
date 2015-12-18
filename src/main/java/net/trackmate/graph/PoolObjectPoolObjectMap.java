@@ -24,7 +24,7 @@ public class PoolObjectPoolObjectMap< K extends Ref< K >, L extends Ref< L > > i
 	 */
 	private static final int NO_ENTRY_VALUE = -2;
 
-	final TIntIntHashMap indexmap;
+	private final TIntIntHashMap indexmap;
 
 	private final RefPool< K > keyPool;
 
@@ -84,7 +84,6 @@ public class PoolObjectPoolObjectMap< K extends Ref< K >, L extends Ref< L > > i
 	@Override
 	public Set< java.util.Map.Entry< K, L >> entrySet()
 	{
-		// TODO
 		throw new UnsupportedOperationException();
 	}
 
@@ -141,8 +140,24 @@ public class PoolObjectPoolObjectMap< K extends Ref< K >, L extends Ref< L > > i
 	@Override
 	public void putAll( final Map< ? extends K, ? extends L > m )
 	{
-		// TODO
-		throw new UnsupportedOperationException();
+		if ( m instanceof RefRefMap )
+		{
+			@SuppressWarnings( "unchecked" )
+			final RefRefMap< K, L > rm = ( RefRefMap< K, L > ) m;
+			final L ref = rm.createValueRef();
+			for ( final K key : rm.keySet() )
+			{
+				indexmap.put( key.getInternalPoolIndex(), rm.get( key, ref ).getInternalPoolIndex() );
+			}
+			rm.releaseValueRef( ref );
+		}
+		else
+		{
+			for ( final K key : m.keySet() )
+			{
+				indexmap.put( key.getInternalPoolIndex(), m.get( key ).getInternalPoolIndex() );
+			}
+		}
 	}
 
 	@Override

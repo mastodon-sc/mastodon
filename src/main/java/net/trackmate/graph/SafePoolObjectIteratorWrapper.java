@@ -10,7 +10,7 @@ import java.util.Iterator;
  * @param <O>
  *            type of {@link PoolObject} iterated over.
  *
- * @author Tobias Pietzsch <tobias.pietzsch@gmail.com>
+ * @author Tobias Pietzsch &lt;tobias.pietzsch@gmail.com&gt;
  */
 public class SafePoolObjectIteratorWrapper< O extends PoolObject< O, ? > > implements Iterator< O >
 {

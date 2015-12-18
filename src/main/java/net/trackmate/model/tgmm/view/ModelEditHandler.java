@@ -1002,7 +1002,7 @@ public class ModelEditHandler implements MouseListener, MouseMotionListener, Ove
 
 		/**
 		 * Sets the spot to paint as a "ghost" by this overlay. If
-		 * <code>null</code>, will not paint anything.
+		 * {@code null}, will not paint anything.
 		 * 
 		 * @param spot
 		 *            the spot to paint as a "ghost".
@@ -1026,7 +1026,7 @@ public class ModelEditHandler implements MouseListener, MouseMotionListener, Ove
 		 * instance.
 		 * 
 		 * @param doPaint
-		 *            if <code>true</code>, the ghost link will be painted.
+		 *            if {@code true}, the ghost link will be painted.
 		 * @return the double array instance into which the link target
 		 *         coordinates should be written.
 		 */

@@ -131,7 +131,7 @@ public class PoolObjectSet< O extends Ref< O > > implements PoolObjectCollection
 			@Override
 			public void remove()
 			{
-				throw new UnsupportedOperationException();
+				ii.remove();
 			}
 		};
 	}
@@ -170,8 +170,18 @@ public class PoolObjectSet< O extends Ref< O > > implements PoolObjectCollection
 			return indices.retainAll( ( ( PoolObjectCollection< ? > ) objs ).getIndexCollection() );
 		else
 		{
-			// TODO
-			throw new UnsupportedOperationException( "not yet implemented" );
+			boolean changed = false;
+			final Iterator< O > it = iterator();
+			while ( it.hasNext() )
+			{
+				final O o = it.next();
+				if ( !objs.contains( o ) )
+				{
+					it.remove();
+					changed = true;
+				}
+			}
+			return changed;
 		}
 	}
 
@@ -184,15 +194,39 @@ public class PoolObjectSet< O extends Ref< O > > implements PoolObjectCollection
 	@Override
 	public Object[] toArray()
 	{
-		// TODO
-		throw new UnsupportedOperationException( "not yet implemented" );
+		final Object[] objs = new Object[ size() ];
+		return toArray( objs );
 	}
 
+	@SuppressWarnings( "unchecked" )
 	@Override
 	public < A > A[] toArray( final A[] a )
 	{
-		// TODO
-		throw new UnsupportedOperationException( "not yet implemented" );
+		final A[] array;
+		if ( a.length < size() )
+		{
+			array = ( A[] ) new Object[ size() ];
+		}
+		else
+		{
+			array = a;
+		}
+		final TIntIterator it = indices.iterator();
+		int index = 0;
+		while ( it.hasNext() )
+		{
+			final int poolIndex = it.next();
+			final O obj = pool.createRef();
+			pool.getByInternalPoolIndex( poolIndex, obj );
+			array[ index++ ] = ( A ) obj;
+		}
+
+		// nullify the rest
+		for ( int i = index; i < array.length; i++ )
+		{
+			array[ i ] = null;
+		}
+		return array;
 	}
 
 	@Override

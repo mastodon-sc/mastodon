@@ -15,8 +15,8 @@ import net.trackmate.graph.RefPool;
  *
  * TODO: figure out locking and locking API.
  *
- * @param <V>
- * @param <E>
+ * @param <O>
+ *            type of objects in the index
  *
  * @author Tobias Pietzsch &lt;tobias.pietzsch@gmail.com&gt;
  */

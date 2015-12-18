@@ -69,7 +69,7 @@ public interface RefStack< O > extends RefCollection< O >
 
 	/**
 	 * Returns the 1-based position where an object is on this stack. If the
-	 * object <code>obj</code> occurs as an item in this stack, this method
+	 * object {@code obj} occurs as an item in this stack, this method
 	 * returns the distance from the top of the stack of the occurrence nearest
 	 * the top of the stack; the topmost item on the stack is considered to be
 	 * at distance 1.

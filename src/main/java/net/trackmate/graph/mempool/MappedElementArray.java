@@ -8,7 +8,7 @@ package net.trackmate.graph.mempool;
  * @param <T>
  *            the {@link MappedElement} type stored in this array.
  *
- * @author Tobias Pietzsch <tobias.pietzsch@gmail.com>
+ * @author Tobias Pietzsch &lt;tobias.pietzsch@gmail.com&gt;
  */
 public interface MappedElementArray< A extends MappedElementArray< A, T >, T extends MappedElement >
 {

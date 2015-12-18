@@ -14,19 +14,26 @@ import javax.swing.UIManager;
 import net.imglib2.ui.InteractiveDisplayCanvasComponent;
 import net.imglib2.ui.OverlayRenderer;
 import net.imglib2.ui.PainterThread;
+import net.imglib2.ui.TransformEventHandler;
 import net.imglib2.ui.TransformListener;
 import net.trackmate.graph.listenable.GraphChangeListener;
 import net.trackmate.revised.trackscheme.LineageTreeLayout;
+import net.trackmate.revised.trackscheme.LineageTreeLayout.LayoutListener;
 import net.trackmate.revised.trackscheme.ScreenEntities;
 import net.trackmate.revised.trackscheme.ScreenEntitiesInterpolator;
 import net.trackmate.revised.trackscheme.ScreenTransform;
+import net.trackmate.revised.trackscheme.TrackSchemeFocus;
 import net.trackmate.revised.trackscheme.TrackSchemeGraph;
 import net.trackmate.revised.trackscheme.TrackSchemeHighlight;
+import net.trackmate.revised.trackscheme.TrackSchemeNavigation;
 import net.trackmate.revised.trackscheme.TrackSchemeSelection;
+import net.trackmate.revised.trackscheme.TrackSchemeVertex;
 import net.trackmate.revised.trackscheme.display.TrackSchemeOptions.Values;
 import net.trackmate.revised.trackscheme.display.laf.DefaultTrackSchemeOverlay;
 import net.trackmate.revised.trackscheme.util.TrackSchemeUtil;
+import net.trackmate.revised.ui.selection.FocusListener;
 import net.trackmate.revised.ui.selection.HighlightListener;
+import net.trackmate.revised.ui.selection.NavigationListener;
 import net.trackmate.revised.ui.selection.SelectionListener;
 import net.trackmate.trackscheme.animate.AbstractAnimator;
 import bdv.viewer.TimePointListener;
@@ -35,9 +42,11 @@ public class TrackSchemePanel extends JPanel implements
 		TransformListener< ScreenTransform >,
 		PainterThread.Paintable,
 		HighlightListener,
+		FocusListener,
 		TimePointListener,
 		GraphChangeListener,
-		SelectionListener
+		SelectionListener,
+		NavigationListener< TrackSchemeVertex >
 {
 
 	private static final long ANIMATION_MILLISECONDS = 250;
@@ -101,7 +110,7 @@ public class TrackSchemePanel extends JPanel implements
 	private double layoutMinX;
 
 	/**
-	 * <aximum layoutX coordinate in current layout.
+	 * Maximum layoutX coordinate in current layout.
 	 */
 	private double layoutMaxX;
 
@@ -124,18 +133,27 @@ public class TrackSchemePanel extends JPanel implements
 
 	private final TrackSchemeSelection selection;
 
+	private final TrackSchemeNavigation navigation;
+
+	private final TrackSchemeFocus focus;
+
 	public TrackSchemePanel(
 			final TrackSchemeGraph< ?, ? > graph,
 			final TrackSchemeHighlight highlight,
+			final TrackSchemeFocus focus,
 			final TrackSchemeSelection selection,
+			final TrackSchemeNavigation navigation,
 			final TrackSchemeOptions optional )
 	{
 		super( new BorderLayout(), false );
 		this.graph = graph;
+		this.focus = focus;
 		this.selection = selection;
+		this.navigation = navigation;
 		options = optional.values;
 
 		graph.addGraphChangeListener( this );
+		navigation.addNavigationListener( this );
 
 		final int w = options.getWidth();
 		final int h = options.getHeight();
@@ -143,11 +161,11 @@ public class TrackSchemePanel extends JPanel implements
 		display.addTransformListener( this );
 
 		highlight.addHighlightListener( this );
+		focus.addFocusListener( this );
 		selection.addSelectionListener( this );
 
 		layout = new LineageTreeLayout( graph );
-
-		graphOverlay = new DefaultTrackSchemeOverlay( graph, layout, highlight, optional );
+		graphOverlay = new DefaultTrackSchemeOverlay( graph, layout, highlight, focus, optional );
 		display.addOverlayRenderer( graphOverlay );
 
 		// This should be the last OverlayRenderer in display.
@@ -166,15 +184,27 @@ public class TrackSchemePanel extends JPanel implements
 		} );
 
 		screenTransform = new ScreenTransform();
+		final TransformEventHandler< ScreenTransform > tevl = display.getTransformEventHandler();
+		if ( tevl instanceof LayoutListener )
+		{
+			final LayoutListener ll = ( LayoutListener ) tevl;
+			layout.addLayoutListener( ll );
+		}
 		entityAnimator = new ScreenEntityAnimator();
 		painterThread = new PainterThread( this );
 		flags = new Flags();
 
-		display.addMouseMotionListener( new MouseHighlightHandler( graphOverlay, highlight ) );
+		display.addMouseMotionListener( new MouseHighlightHandler( graphOverlay, highlight, graph ) );
 
 		final MouseSelectionHandler mouseSelectionHandler = new MouseSelectionHandler( graphOverlay, selection, display, layout, graph );
 		display.addHandler( mouseSelectionHandler );
 		display.addOverlayRenderer( mouseSelectionHandler );
+
+		final TrackSchemeNavigator navigator = new TrackSchemeNavigator( graph, layout, focus, navigation );
+		display.addTransformListener( navigator );
+		final FocusHandler focusHandler = new FocusHandler( navigator, navigation, focus, selection, graph, graphOverlay );
+		focusHandler.installOn( display );
+		display.addHandler( focusHandler );
 
 		xScrollBar = new JScrollBar( JScrollBar.HORIZONTAL );
 		yScrollBar = new JScrollBar( JScrollBar.VERTICAL );
@@ -275,9 +305,13 @@ public class TrackSchemePanel extends JPanel implements
 			layoutMaxX = layout.getCurrentLayoutMaxX();
 			entityAnimator.startAnimation( transform, ANIMATION_MILLISECONDS );
 		}
-		else if ( flags.transformChanged || flags.selectionChanged )
+		else if ( flags.transformChanged )
 		{
 			entityAnimator.startAnimation( transform, 0 );
+		}
+		else if ( flags.selectionChanged )
+		{
+			entityAnimator.startAnimation( transform, ANIMATION_MILLISECONDS );
 		}
 		else if ( flags.contextChanged )
 		{
@@ -339,10 +373,45 @@ public class TrackSchemePanel extends JPanel implements
 	}
 
 	@Override
+	public void focusChanged()
+	{
+		display.repaint();
+	}
+
+	@Override
 	public void selectionChanged()
 	{
 		flags.setSelectionChanged();
 		painterThread.requestRepaint();
+	}
+
+	@Override
+	public void navigateToVertex( final TrackSchemeVertex v )
+	{
+		focus.focusVertex( v ); // TODO: focusVertex is done here AND in TrackSchemeNavigator.rightSibling(). Once is enough. Which one?
+		final double lx = v.getLayoutX();
+		final double ly = v.getTimepoint();
+
+		/*
+		 * TODO: This will fail if there is a different transform event handler.
+		 * TODO: Also it shouldn't require display here.
+		 * TODO: Instead it should be routed through a new interface that forwards to InertialScreenTransformEventHandler or does whatever is appropriate (e.g. ignores it).
+		 */
+		final InertialScreenTransformEventHandler transformEventHandler = ( InertialScreenTransformEventHandler ) display.getTransformEventHandler();
+
+		transformEventHandler.centerOn( lx, ly );
+	}
+
+	// TODO unused, remove
+	protected InteractiveDisplayCanvasComponent< ScreenTransform > getDisplay()
+	{
+		return display;
+	}
+
+	// TODO unused, remove
+	protected LineageTreeLayout getLineageTreeLayout()
+	{
+		return layout;
 	}
 
 	protected class ScreenEntityAnimator extends AbstractAnimator
@@ -518,6 +587,18 @@ public class TrackSchemePanel extends JPanel implements
 			graphChanged = false;
 			contextChanged = false;
 			return copy;
+		}
+
+		@Override
+		public String toString()
+		{
+			final StringBuilder str = new StringBuilder(super.toString());
+			str.append( '\n' );
+			str.append( "  - transformChanged: " + transformChanged + "\n" );
+			str.append( "  - selectionChanged: " + selectionChanged + "\n" );
+			str.append( "  - graphChanged:     " + graphChanged + "\n" );
+			str.append( "  - contextChanged:   " + contextChanged + "\n" );
+			return str.toString();
 		}
 	}
 }

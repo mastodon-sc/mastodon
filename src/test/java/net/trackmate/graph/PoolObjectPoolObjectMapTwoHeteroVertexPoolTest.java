@@ -175,4 +175,21 @@ public class PoolObjectPoolObjectMapTwoHeteroVertexPoolTest extends PoolObjectPo
 		assertEquals( "Map size should have decreased by 1.", size - 1, map.size() );
 	}
 
+	@Override
+	@Test
+	public void testPutAll()
+	{
+		final PoolObjectPoolObjectMap< TestVertex, TestVertex > extraMap = new PoolObjectPoolObjectMap< TestVertex, TestVertex >( graph.vertexPool, graph2.vertexPool );
+		extraMap.put( Ak, Bk2 );
+		// Careful to add 1 mapping not already present in the map.
+		extraMap.put( Bk, Ak2 );
+		// Change one mapping.
+
+		final int initSize = map.size();
+		map.putAll( extraMap );
+		assertEquals( "Map after putAll does not have the expected size.", initSize + 1, map.size() );
+		assertEquals( "New mapping is not right.", Bk2, map.get( Ak ) );
+		assertEquals( "New mapping is not right.", Ak2, map.get( Bk ) );
+	}
+
 }

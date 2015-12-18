@@ -1,8 +1,10 @@
 package net.trackmate.revised.trackscheme.display.laf;
 
 import static net.trackmate.revised.trackscheme.ScreenVertex.Transition.APPEAR;
+import static net.trackmate.revised.trackscheme.ScreenVertex.Transition.DESELECTING;
 import static net.trackmate.revised.trackscheme.ScreenVertex.Transition.DISAPPEAR;
 import static net.trackmate.revised.trackscheme.ScreenVertex.Transition.NONE;
+import static net.trackmate.revised.trackscheme.ScreenVertex.Transition.SELECTING;
 import gnu.trove.list.TDoubleList;
 
 import java.awt.Color;
@@ -22,12 +24,24 @@ import net.trackmate.revised.trackscheme.ScreenTransform;
 import net.trackmate.revised.trackscheme.ScreenVertex;
 import net.trackmate.revised.trackscheme.ScreenVertex.Transition;
 import net.trackmate.revised.trackscheme.ScreenVertexRange;
+import net.trackmate.revised.trackscheme.TrackSchemeFocus;
 import net.trackmate.revised.trackscheme.TrackSchemeGraph;
 import net.trackmate.revised.trackscheme.TrackSchemeHighlight;
 import net.trackmate.revised.trackscheme.TrackSchemeVertex;
 import net.trackmate.revised.trackscheme.display.AbstractTrackSchemeOverlay;
 import net.trackmate.revised.trackscheme.display.TrackSchemeOptions;
 
+/**
+ * An AbstractTrackSchemeOverlay implementation that:
+ * <ul>
+ * <li>draws vertex as circles with the label inside.
+ * <li>offers two sizes of vertices (full and simplified).
+ * <li>draws edges as lines.
+ * </ul>
+ * <p>
+ * Colors and strokes can be configured separately, using a
+ * {@link TrackSchemeStyle}.
+ */
 public class DefaultTrackSchemeOverlay extends AbstractTrackSchemeOverlay
 {
 	/*
@@ -39,7 +53,6 @@ public class DefaultTrackSchemeOverlay extends AbstractTrackSchemeOverlay
 	 * drawn.
 	 */
 	private static final int MIN_TIMELINE_SPACING = 20;
-
 
 	/**
 	 * Y position for columns labels.
@@ -84,9 +97,10 @@ public class DefaultTrackSchemeOverlay extends AbstractTrackSchemeOverlay
 			final TrackSchemeGraph< ?, ? > graph,
 			final LineageTreeLayout layout,
 			final TrackSchemeHighlight highlight,
+			final TrackSchemeFocus focus,
 			final TrackSchemeOptions options )
 	{
-		super( graph, highlight, options );
+		super( graph, highlight, focus, options );
 		this.layout = layout;
 	}
 
@@ -265,8 +279,7 @@ public class DefaultTrackSchemeOverlay extends AbstractTrackSchemeOverlay
 	@Override
 	protected void beforeDrawVertex( final Graphics2D g2 )
 	{
-		// TODO Auto-generated method stub
-
+		g2.setStroke( style.vertexStroke );
 	}
 
 	@Override
@@ -340,12 +353,17 @@ public class DefaultTrackSchemeOverlay extends AbstractTrackSchemeOverlay
 	@Override
 	public void drawEdge( final Graphics2D g2, final ScreenEdge edge, final ScreenVertex vs, final ScreenVertex vt )
 	{
-		Transition transition = vs.getTransition();
-		double ratio = vs.getInterpolationCompletionRatio();
+		Transition transition = edge.getTransition();
+		double ratio = edge.getInterpolationCompletionRatio();
 		if ( vt.getTransition() == APPEAR )
 		{
 			transition = APPEAR;
 			ratio = vt.getInterpolationCompletionRatio();
+		}
+		if ( vs.getTransition() == APPEAR || vs.getTransition() == DISAPPEAR )
+		{
+			transition = vs.getTransition();
+			ratio = vs.getInterpolationCompletionRatio();
 		}
 		final boolean selected = edge.isSelected();
 		final Color drawColor = getColor( selected, transition, ratio, style.edgeColor, style.selectedEdgeColor );
@@ -359,10 +377,15 @@ public class DefaultTrackSchemeOverlay extends AbstractTrackSchemeOverlay
 		final double ratio = vertex.getInterpolationCompletionRatio();
 		final boolean disappear = ( transition == DISAPPEAR );
 		final boolean selected = vertex.isSelected();
+		final boolean highlighted = ( highlightedVertexId >= 0 ) && ( vertex.getTrackSchemeVertexId() == highlightedVertexId );
+		final boolean focused = ( focusedVertexId >= 0 ) && ( vertex.getTrackSchemeVertexId() == focusedVertexId );
 
 		double spotradius = simplifiedVertexRadius;
 		if ( disappear )
 			spotradius *= ( 1 + 3 * ratio );
+
+		if (highlighted)
+			spotradius *= 2;
 
 		final Color fillColor = getColor( selected, transition, ratio,
 				disappear ? style.selectedSimplifiedVertexFillColor : style.simplifiedVertexFillColor,
@@ -374,7 +397,11 @@ public class DefaultTrackSchemeOverlay extends AbstractTrackSchemeOverlay
 		final int ox = ( int ) x - ( int ) spotradius;
 		final int oy = ( int ) y - ( int ) spotradius;
 		final int ow = 2 * ( int ) spotradius;
-		g2.fillOval( ox, oy, ow, ow );
+
+		if ( focused )
+			g2.fillRect( ox, oy, ow, ow );
+		else
+			g2.fillOval( ox, oy, ow, ow );
 	}
 
 	protected void drawVertexFull( final Graphics2D g2, final ScreenVertex vertex )
@@ -383,17 +410,9 @@ public class DefaultTrackSchemeOverlay extends AbstractTrackSchemeOverlay
 		final boolean disappear = ( transition == DISAPPEAR );
 		final double ratio = vertex.getInterpolationCompletionRatio();
 
-
-		// TODO: FIX!!!
-		// TODO: FIX!!!
-		// TODO: FIX!!!
-		// TODO: FIX!!!
 		final boolean highlighted = ( highlightedVertexId >= 0 ) && ( vertex.getTrackSchemeVertexId() == highlightedVertexId );
-		final boolean selected = vertex.isSelected() || highlighted; // TODO: FIX!!!
-		// TODO: FIX!!!
-		// TODO: FIX!!!
-		// TODO: FIX!!!
-		// TODO: FIX!!!
+		final boolean focused = ( focusedVertexId >= 0 ) && ( vertex.getTrackSchemeVertexId() == focusedVertexId );
+		final boolean selected = vertex.isSelected();
 
 		double spotdiameter = Math.min( vertex.getVertexDist() - 10.0, maxDisplayVertexSize );
 		if ( highlighted )
@@ -412,8 +431,17 @@ public class DefaultTrackSchemeOverlay extends AbstractTrackSchemeOverlay
 		final int sd = 2 * ( int ) spotradius;
 		g2.setColor( fillColor );
 		g2.fillOval( ox, oy, sd, sd );
+
 		g2.setColor( drawColor );
+		if ( highlighted )
+			g2.setStroke( style.highlightStroke );
+		if ( focused )
+			g2.setStroke( style.focusStroke );
+		// An animation might be better for the focus, but for now this is it.
 		g2.drawOval( ox, oy, sd, sd );
+		if ( highlighted || focused )
+			g2.setStroke( style.vertexStroke );
+
 
 		final int maxLabelLength = ( int ) ( spotdiameter / avgLabelLetterWidth );
 		if ( maxLabelLength > 2 && !disappear )
@@ -440,6 +468,20 @@ public class DefaultTrackSchemeOverlay extends AbstractTrackSchemeOverlay
 	{
 		if ( transition == NONE )
 			return isSelected ? selectedColor : normalColor;
+		else if ( transition == SELECTING || transition == DESELECTING )
+		{
+			final double ratio = ( transition == SELECTING ) ? completionRatio : ( 1 - completionRatio );
+			final int rn = normalColor.getRed();
+			final int gn = normalColor.getGreen();
+			final int bn = normalColor.getBlue();
+			final int rs = selectedColor.getRed();
+			final int gs = selectedColor.getGreen();
+			final int bs = selectedColor.getBlue();
+			final int r = ( int ) ( ratio * rs + ( 1 - ratio ) * rn );
+			final int g = ( int ) ( ratio * gs + ( 1 - ratio ) * gn );
+			final int b = ( int ) ( ratio * bs + ( 1 - ratio ) * bn );
+			return new Color( r, g, b );
+		}
 		else
 		{
 			int r = normalColor.getRed();

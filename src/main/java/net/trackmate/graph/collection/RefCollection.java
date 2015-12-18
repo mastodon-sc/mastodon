@@ -8,14 +8,14 @@ import java.util.Collection;
  * @param <O>
  *            the type of the object to manage in this collection.
  *
- * @author Tobias Pietzsch <tobias.pietzsch@gmail.com>
+ * @author Tobias Pietzsch &lt;tobias.pietzsch@gmail.com&gt;
  */
 public interface RefCollection< O > extends Collection< O >
 {
 	/**
 	 * Generates an object reference that can be used for retrieval. Depending
 	 * on concrete implementation, this object returned can be
-	 * <code>null.</code>
+	 * {@code null.}
 	 * 
 	 * @return a new, uninitialized, reference object.
 	 */

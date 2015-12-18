@@ -22,4 +22,8 @@ public interface ModelSelectionProperties
 	public boolean removeSelectionListener( final SelectionListener l );
 
 	public void clearSelection();
+
+	public void resumeListeners();
+
+	public void pauseListeners();
 }

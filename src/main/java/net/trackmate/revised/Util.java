@@ -6,10 +6,10 @@ package net.trackmate.revised;
 public class Util
 {
 	/**
-	 * Computes the distance of a point <code>A0 (x0, y0)</code> to a segment
-	 * defined by two points <code>A1 (x1, y1)</code> and
-	 * <code>A2 (x2, y2)</code>. If the projection of <code>A0</code> on the
-	 * segment does not lie between <code>A1</code> and <code>A2</code>, this
+	 * Computes the distance of a point {@code A0 (x0, y0)} to a segment
+	 * defined by two points {@code A1 (x1, y1)} and
+	 * {@code A2 (x2, y2)}. If the projection of {@code A0} on the
+	 * segment does not lie between {@code A1} and {@code A2}, this
 	 * method returns the distance to the closest segment end-point.
 	 *
 	 * @param x0

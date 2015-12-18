@@ -6,7 +6,7 @@ package net.trackmate.graph;
  * @param <V>
  *            the {@link Vertex} type of the {@link Graph}.
  *
- * @author Tobias Pietzsch <tobias.pietzsch@gmail.com>
+ * @author Tobias Pietzsch &lt;tobias.pietzsch@gmail.com&gt;
  */
 public interface Edge< V extends Vertex< ? > >
 {

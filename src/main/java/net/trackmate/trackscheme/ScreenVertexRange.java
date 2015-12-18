@@ -5,7 +5,7 @@ package net.trackmate.trackscheme;
  *
  * TODO: make this a PoolObject.
  *
- * @author Tobias Pietzsch <tobias.pietzsch@gmail.com>
+ * @author Tobias Pietzsch &lt;tobias.pietzsch@gmail.com&gt;
  */
 public class ScreenVertexRange
 {

@@ -863,7 +863,6 @@ public class JamaEigenvalueDecomposition
 
    /** Check for symmetry, then construct the eigenvalue decomposition
        Structure to access D and V.
-   @param Arg    Square matrix
    */
 
    public JamaEigenvalueDecomposition( final int numDimensions ) {

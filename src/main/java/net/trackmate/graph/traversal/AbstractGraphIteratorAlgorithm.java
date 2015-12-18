@@ -125,7 +125,7 @@ public abstract class AbstractGraphIteratorAlgorithm< V extends Vertex< E >, E e
 	/**
 	 * Returns whether more elements can be fetched for processing.
 	 *
-	 * @return <code>false</code> if there are no more vertices to process.
+	 * @return {@code false} if there are no more vertices to process.
 	 */
 	protected abstract boolean canFetch();
 }

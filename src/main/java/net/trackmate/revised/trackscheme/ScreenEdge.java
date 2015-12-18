@@ -1,18 +1,23 @@
 package net.trackmate.revised.trackscheme;
 
 import static net.trackmate.graph.mempool.ByteUtils.BOOLEAN_SIZE;
+import static net.trackmate.graph.mempool.ByteUtils.BYTE_SIZE;
+import static net.trackmate.graph.mempool.ByteUtils.DOUBLE_SIZE;
 import static net.trackmate.graph.mempool.ByteUtils.INDEX_SIZE;
+import static net.trackmate.revised.trackscheme.ScreenVertex.Transition.NONE;
+
 import net.trackmate.graph.Pool;
 import net.trackmate.graph.PoolObject;
 import net.trackmate.graph.mempool.ByteMappedElement;
 import net.trackmate.graph.mempool.ByteMappedElementArray;
 import net.trackmate.graph.mempool.MemPool;
 import net.trackmate.graph.mempool.SingleArrayMemPool;
+import net.trackmate.revised.trackscheme.ScreenVertex.Transition;
 
 /**
  * Layouted edge.
  *
- * @author Tobias Pietzsch <tobias.pietzsch@gmail.com>
+ * @author Tobias Pietzsch &lt;tobias.pietzsch@gmail.com&gt;
  */
 public class ScreenEdge extends PoolObject< ScreenEdge, ByteMappedElement >
 {
@@ -20,7 +25,9 @@ public class ScreenEdge extends PoolObject< ScreenEdge, ByteMappedElement >
 	protected static final int SOURCE_SCREEN_VERTEX_INDEX_OFFSET = ORIG_EDGE_INDEX_OFFSET + INDEX_SIZE;
 	protected static final int TARGET_SCREEN_VERTEX_INDEX_OFFSET = SOURCE_SCREEN_VERTEX_INDEX_OFFSET + INDEX_SIZE;
 	protected static final int SELECTED_OFFSET = TARGET_SCREEN_VERTEX_INDEX_OFFSET + INDEX_SIZE;
-	protected static final int SIZE_IN_BYTES = SELECTED_OFFSET + BOOLEAN_SIZE;
+	protected static final int TRANSITION_OFFSET = SELECTED_OFFSET + BOOLEAN_SIZE;
+	protected static final int IP_RATIO_OFFSET = TRANSITION_OFFSET + BYTE_SIZE;
+	protected static final int SIZE_IN_BYTES = IP_RATIO_OFFSET + DOUBLE_SIZE;
 
 	protected ScreenEdge( final Pool< ScreenEdge, ByteMappedElement > pool )
 	{
@@ -37,7 +44,28 @@ public class ScreenEdge extends PoolObject< ScreenEdge, ByteMappedElement >
 		setSourceScreenVertexIndex( sourceScreenVertexIndex );
 		setTargetScreenVertexIndex( targetScreenVertexIndex );
 		setSelected( selected );
+		setTransition( NONE );
 		return this;
+	}
+
+	public Transition getTransition()
+	{
+		return Transition.values()[ access.getByte( TRANSITION_OFFSET ) ];
+	}
+
+	protected void setTransition( final Transition t )
+	{
+		access.putByte( t.toByte(), TRANSITION_OFFSET );
+	}
+
+	public double getInterpolationCompletionRatio()
+	{
+		return access.getDouble( IP_RATIO_OFFSET );
+	}
+
+	protected void setInterpolationCompletionRatio( final double ratio )
+	{
+		access.putDouble( ratio, IP_RATIO_OFFSET );
 	}
 
 	/**
@@ -124,6 +152,8 @@ public class ScreenEdge extends PoolObject< ScreenEdge, ByteMappedElement >
 		setSourceScreenVertexIndex( e.getSourceScreenVertexIndex() );
 		setTargetScreenVertexIndex( e.getTargetScreenVertexIndex() );
 		setSelected( e.isSelected() );
+		setTransition( e.getTransition() );
+		setInterpolationCompletionRatio( e.getInterpolationCompletionRatio() );
 		return this;
 	}
 

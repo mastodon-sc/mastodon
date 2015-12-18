@@ -238,7 +238,7 @@ public class ScreenTransform implements InvertibleRealTransform
 	 * {@code screenCenterY} fixed.
 	 *
 	 * @param scale
-	 * @param screenCenterY
+	 * @param screenCenterX
 	 */
 	public void zoomY( final double scale, final double screenCenterX )
 	{

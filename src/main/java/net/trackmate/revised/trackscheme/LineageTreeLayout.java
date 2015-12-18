@@ -7,6 +7,7 @@ import gnu.trove.list.array.TIntArrayList;
 import gnu.trove.map.TIntObjectMap;
 import gnu.trove.map.hash.TIntObjectHashMap;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.Iterator;
@@ -43,7 +44,7 @@ import net.trackmate.revised.trackscheme.ScreenVertexRange.ScreenVertexRangePool
  *
  *
  *
- * @author Tobias Pietzsch <tobias.pietzsch@gmail.com>
+ * @author Tobias Pietzsch &lt;tobias.pietzsch@gmail.com&gt;
  */
 public class LineageTreeLayout
 {
@@ -142,7 +143,7 @@ public class LineageTreeLayout
 	/**
 	 * Layout graph in trackscheme coordinates starting from the graphs roots.
 	 * <p>
-	 * This calls {@link #layout(List, int)} with parameter {@code mark = -1},
+	 * This calls {@link #layout(Collection, int)} with parameter {@code mark = -1},
 	 * that is, no vertices will me marked as ghosts.
 	 */
 	public void layout()
@@ -153,7 +154,7 @@ public class LineageTreeLayout
 	/**
 	 * Layout graph in trackscheme coordinates starting from specified roots.
 	 * <p>
-	 * This calls {@link #layout(List, int)} with parameter {@code mark = -1},
+	 * This calls {@link #layout(Collection, int)} with parameter {@code mark = -1},
 	 * that is, no vertices will me marked as ghosts.
 	 *
 	 * @param layoutRoots
@@ -199,6 +200,7 @@ public class LineageTreeLayout
 		}
 		currentLayoutMinX = 0;
 		currentLayoutMaxX = rightmost - 1;
+		notifyListeners();
 	}
 
 	/**
@@ -252,8 +254,8 @@ public class LineageTreeLayout
 
 	/**
 	 * Get the timestamp that was used in the last layout (the timestamp which
-	 * was set in all vertices laid out during last {@link #layout(List)} resp.
-	 * {@link #layout(List, int)}.)
+	 * was set in all vertices laid out during last {@link #layout(Collection)} resp.
+	 * {@link #layout(Collection, int)}.)
 	 *
 	 * @return timestamp used in last layout.
 	 */
@@ -470,7 +472,7 @@ public class LineageTreeLayout
 
 	/**
 	 * Returns the set of all the vertices in the rectangle with two corners
-	 * <code>(lx1, ly1)</code> and <code>(lx2, ly2)</code> in layout
+	 * {@code (lx1, ly1)} and {@code (lx2, ly2)} in layout
 	 * coordinates.
 	 *
 	 * @param lx1
@@ -483,6 +485,7 @@ public class LineageTreeLayout
 	 *            the y coordinate of the second corner.
 	 * @return a new set.
 	 */
+	// TODO rename getActiveVerticesWithin
 	public RefSet< TrackSchemeVertex > getVerticesWithin( final double lx1, final double ly1, final double lx2, final double ly2 )
 	{
 		final int tStart = ( int ) Math.ceil( Math.min( ly1, ly2 ) );
@@ -505,6 +508,16 @@ public class LineageTreeLayout
 			vertexSet.addAll( vertexList.subList( left, right + 1 ) );
 		}
 		return vertexSet;
+	}
+
+	public TIntObjectMap< TrackSchemeVertexList > getTimepointToOrderedVertices()
+	{
+		return timepointToOrderedVertices;
+	}
+
+	public TIntArrayList getTimepoints()
+	{
+		return timepoints;
 	}
 
 	/**
@@ -591,4 +604,42 @@ public class LineageTreeLayout
 		}
 		vlist.add( v );
 	}
+
+	private final ArrayList< LayoutListener > listeners = new ArrayList< LayoutListener >();
+
+	public boolean addLayoutListener( final LayoutListener l )
+	{
+		if ( ! listeners.contains( l ) )
+		{
+			listeners.add( l );
+			return true;
+		}
+		return false;
+	}
+
+	public boolean removeLayoutListener( final LayoutListener l )
+	{
+		return listeners.remove( l );
+	}
+
+	private void notifyListeners()
+	{
+		for ( final LayoutListener l : listeners )
+		{
+			l.layoutChanged( this );
+		}
+	}
+
+	public interface LayoutListener
+	{
+
+		/**
+		 * Notifies after the layout has been done.
+		 *
+		 * @param layout
+		 *            the layout.
+		 */
+		public void layoutChanged( LineageTreeLayout layout );
+	}
+
 }

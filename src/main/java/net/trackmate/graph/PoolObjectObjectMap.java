@@ -10,7 +10,7 @@ import net.trackmate.graph.collection.RefObjectMap;
 
 /**
  * Incomplete!
- * @author Tobias Pietzsch <tobias.pietzsch@gmail.com>
+ * @author Tobias Pietzsch &lt;tobias.pietzsch@gmail.com&gt;
  */
 public class PoolObjectObjectMap< K extends Ref< K >, O > implements Map< K, O >, RefObjectMap< K, O >
 {

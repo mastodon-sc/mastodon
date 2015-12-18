@@ -9,7 +9,7 @@ import net.trackmate.graph.collection.RefStack;
 /**
  * A Depth-first iterator, that traverses edges only following their direction.
  * <p>
- * With <code>A -> B</code>, the iterator will move from A to B, but not from B
+ * With {@code A -> B}, the iterator will move from A to B, but not from B
  * to A.
  *
  * @author Jean-Yves Tinevez

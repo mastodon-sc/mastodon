@@ -7,6 +7,8 @@ import java.awt.Stroke;
 
 public class TrackSchemeStyle
 {
+	private static final Stroke DEFAULT_FOCUS_STROKE = new BasicStroke( 2f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 1f, new float[] { 8f, 3f }, 0 );
+
 	// TODO: move AvailableStyles to UI or wherever it is needed
 	public static enum AvailableStyles
 	{
@@ -70,6 +72,10 @@ public class TrackSchemeStyle
 	public Stroke edgeStroke;
 
 	public Stroke vertexStroke;
+
+	public Stroke highlightStroke;
+
+	public Stroke focusStroke;
 
 	public TrackSchemeStyle edgeColor( final Color c )
 	{
@@ -161,6 +167,18 @@ public class TrackSchemeStyle
 		return this;
 	}
 
+	public TrackSchemeStyle highlightStroke( final Stroke s )
+	{
+		highlightStroke = s;
+		return this;
+	}
+
+	public TrackSchemeStyle focusStroke( final Stroke s )
+	{
+		focusStroke = s;
+		return this;
+	}
+
 	private TrackSchemeStyle()
 	{}
 
@@ -182,7 +200,9 @@ public class TrackSchemeStyle
 				vertexRangeColor( new Color( 128, 128, 128 ) ).
 				font( new Font( "SansSerif", Font.PLAIN, 9 ) ).
 				edgeStroke( new BasicStroke() ).
-				vertexStroke( new BasicStroke() );
+				vertexStroke( new BasicStroke() ).
+				highlightStroke( new BasicStroke( 3f ) ).
+				focusStroke( DEFAULT_FOCUS_STROKE );
 	}
 
 	public static TrackSchemeStyle modernStyle()
@@ -205,7 +225,9 @@ public class TrackSchemeStyle
 				vertexRangeColor( Color.WHITE ).
 				font( new Font( "Calibri", Font.PLAIN, 12 ) ).
 				edgeStroke( new BasicStroke() ).
-				vertexStroke( new BasicStroke() );
+				vertexStroke( new BasicStroke() ).
+				highlightStroke( new BasicStroke( 3f ) ).
+				focusStroke( DEFAULT_FOCUS_STROKE );
 	}
 
 	public static TrackSchemeStyle howMuchDoYouKnowStyle()
@@ -228,6 +250,8 @@ public class TrackSchemeStyle
 				vertexRangeColor( Color.DARK_GRAY ).
 				font( new Font( "Calibri", Font.PLAIN, 12 ) ).
 				edgeStroke( new BasicStroke() ).
-				vertexStroke( new BasicStroke() );
+				vertexStroke( new BasicStroke() ).
+				highlightStroke( new BasicStroke( 3f ) ).
+				focusStroke( DEFAULT_FOCUS_STROKE );
 	}
 }

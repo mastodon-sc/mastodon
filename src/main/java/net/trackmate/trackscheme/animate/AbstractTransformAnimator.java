@@ -1,13 +1,11 @@
 package net.trackmate.trackscheme.animate;
 
-import net.imglib2.realtransform.AffineTransform3D;
 
 /**
- * Mother abstract class for animators that animate the current view by
- * modifying the viewer transform. The time unit for animation duration, start
- * time and current time is not specified, or example you can use <b>ms</b>
- * obtained from {@link System#currentTimeMillis()} or a frame number when
- * rendering movies.
+ * Mother abstract class for animators that animate a transformation. The time
+ * unit for animation duration, start time and current time is not specified, or
+ * example you can use <b>ms</b> obtained from
+ * {@link System#currentTimeMillis()} or a frame number when rendering movies.
  *
  * @author Tobias Pietzsch &lt;tobias.pietzsch@gmail.com&gt;
  * @author Jean-Yves Tinevez &lt;jeanyves.tinevez@gmail.com&gt;
@@ -29,8 +27,7 @@ public abstract class AbstractTransformAnimator< A > extends AbstractAnimator
 	}
 
 	/**
-	 * Returns an {@link AffineTransform3D} that can be used to set the
-	 * viewpoint of a {@link ViewerFrame} instance, for the time specified.
+	 * Returns a transform for the time specified.
 	 *
 	 * @param time
 	 *            the target absolute time for which the transform should be

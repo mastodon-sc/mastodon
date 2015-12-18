@@ -9,6 +9,17 @@ import net.trackmate.graph.listenable.GraphListener;
 import net.trackmate.graph.listenable.ListenableGraph;
 import net.trackmate.spatial.SpatialIndex;
 
+/**
+ * A class that serves statistics about the maximum bounding radius amongst all
+ * the spots of a time-point in a model. This class keeps up to date with
+ * changes in the graph it monitors by registering as a {@link GraphListener}.
+ * <p>
+ * Read and write (changes to the monitored graph) operations are protected with
+ * a {@link ReentrantReadWriteLock}. Multiple clients can hold the read lock
+ * simultaneously (but this blocks updates to the graph).
+ *
+ * @author Tobias Pietzsch
+ */
 public class BoundingSphereRadiusStatistics implements GraphListener< Spot, Link >
 {
 	/**
@@ -27,6 +38,15 @@ public class BoundingSphereRadiusStatistics implements GraphListener< Spot, Link
 
     private final Lock writeLock;
 
+	/**
+	 * Creates a new statistics object for the specified model. After this
+	 * constructor returns, statistics are immediately available. The returned
+	 * instance is registered as a listener to changes in the graph the
+	 * specified model wraps.
+	 *
+	 * @param model
+	 *            the model to build statistics for.
+	 */
 	public BoundingSphereRadiusStatistics( final Model model )
 	{
 		this.model = model;
@@ -39,11 +59,43 @@ public class BoundingSphereRadiusStatistics implements GraphListener< Spot, Link
 		init();
 	}
 
+	/**
+	 * Exposes the read {@link Lock} of this class. Clients of the class should
+	 * {@link Lock#lock() acquire} the lock before
+	 * {@link #getMaxBoundingSphereRadiusSquared(int) using} it and
+	 * {@link Lock#unlock() release} the lock afterwards.
+	 *
+	 * @return the read lock.
+	 */
 	public Lock readLock()
 	{
 		return readLock;
 	}
 
+	/**
+	 * Returns the maximal bounding sphere radius squared amongst all the spots
+	 * of the specified time-point.
+	 * <p>
+	 * It is best to acquire the {@link #readLock() read lock} prior to
+	 * executing this method, in case another thread updates this statistics
+	 * object. A typical call would be wrapped as follow:
+	 *
+	 * <pre>
+	 * radiusStats.readLock().lock();
+	 * double maxRadius;
+	 * try
+	 * {
+	 * 	maxRadius = radiusStats.getMaxBoundingSphereRadiusSquared( timepoint );
+	 * }
+	 * finally
+	 * {
+	 * 	radiusStats.readLock().unlock();
+	 * }
+	 * </pre>
+	 *
+	 * @param timepoint
+	 * @return
+	 */
 	public double getMaxBoundingSphereRadiusSquared( final int timepoint )
 	{
 		final Stats stats = timepointToStats.get( timepoint );

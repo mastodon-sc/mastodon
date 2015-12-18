@@ -80,7 +80,7 @@ public class PoolObjectQueue< O extends Ref< O > > implements PoolObjectCollecti
 	 *            the pool object ref to update with the content of the top
 	 *            item.
 	 * @return the given object, updated to be the item at the top of this
-	 *         queue, or <code>null</code> if this queue is empty.
+	 *         queue, or {@code null} if this queue is empty.
 	 */
 	public O peek( final O obj )
 	{
@@ -92,9 +92,9 @@ public class PoolObjectQueue< O extends Ref< O > > implements PoolObjectCollecti
 
 	/**
 	 * Retrieves and removes the head of this queue, or returns
-	 * <code>null</code> if this queue is empty.
+	 * {@code null} if this queue is empty.
 	 *
-	 * @return the head of this queue, or <code>null</code> if this queue is
+	 * @return the head of this queue, or {@code null} if this queue is
 	 *         empty
 	 */
 	public O poll( final O obj )
