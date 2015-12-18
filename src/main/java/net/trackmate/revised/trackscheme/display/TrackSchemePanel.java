@@ -199,7 +199,7 @@ public class TrackSchemePanel extends JPanel implements
 		display.addHandler( mouseSelectionHandler );
 		display.addOverlayRenderer( mouseSelectionHandler );
 
-		final TrackSchemeNavigator navigator = new TrackSchemeNavigator( graph, layout, focus, navigation );
+		final TrackSchemeNavigator navigator = new TrackSchemeNavigator( graph, layout, focus, navigation, selection );
 		display.addTransformListener( navigator );
 		final FocusHandler focusHandler = new FocusHandler( navigator, navigation, focus, selection, graph, graphOverlay );
 		focusHandler.installOn( display );

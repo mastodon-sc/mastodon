@@ -1,12 +1,17 @@
 package net.trackmate.revised.trackscheme.display;
 
+import static net.trackmate.revised.trackscheme.display.TrackSchemeNavigator.Direction.CHILD;
+import static net.trackmate.revised.trackscheme.display.TrackSchemeNavigator.Direction.LEFT_SIBLING;
+import static net.trackmate.revised.trackscheme.display.TrackSchemeNavigator.Direction.PARENT;
+import static net.trackmate.revised.trackscheme.display.TrackSchemeNavigator.Direction.RIGHT_SIBLING;
+
 import java.awt.event.ActionEvent;
 
+import bdv.util.AbstractNamedAction;
 import net.trackmate.revised.trackscheme.TrackSchemeFocus;
 import net.trackmate.revised.trackscheme.TrackSchemeGraph;
 import net.trackmate.revised.trackscheme.TrackSchemeSelection;
 import net.trackmate.revised.trackscheme.TrackSchemeVertex;
-import bdv.util.AbstractNamedAction;
 
 public class TrackSchemeActionBank
 {
@@ -51,7 +56,7 @@ public class TrackSchemeActionBank
 			@Override
 			public void actionPerformed( final ActionEvent event )
 			{
-				navigator.child();
+				navigator.focusNeighbor( CHILD );
 			}
 		};
 	}
@@ -65,7 +70,7 @@ public class TrackSchemeActionBank
 			@Override
 			public void actionPerformed( final ActionEvent event )
 			{
-				navigator.parent();
+				navigator.focusNeighbor( PARENT );
 			}
 		};
 	}
@@ -79,7 +84,7 @@ public class TrackSchemeActionBank
 			@Override
 			public void actionPerformed( final ActionEvent event )
 			{
-				navigator.rightSibling();
+				navigator.focusNeighbor( RIGHT_SIBLING );
 			}
 		};
 	}
@@ -93,7 +98,7 @@ public class TrackSchemeActionBank
 			@Override
 			public void actionPerformed( final ActionEvent event )
 			{
-				navigator.leftSibling();
+				navigator.focusNeighbor( LEFT_SIBLING );
 			}
 		};
 	}
@@ -110,11 +115,7 @@ public class TrackSchemeActionBank
 			@Override
 			public void actionPerformed( final ActionEvent event )
 			{
-				final TrackSchemeVertex ref = graph.vertexRef();
-				final TrackSchemeVertex v = navigator.child( ref );
-				if ( v != null )
-					selection.setSelected( v, true );
-				graph.releaseRef( ref );
+				navigator.selectAndFocusNeighbor( CHILD );
 			}
 		};
 	}
@@ -131,11 +132,7 @@ public class TrackSchemeActionBank
 			@Override
 			public void actionPerformed( final ActionEvent event )
 			{
-				final TrackSchemeVertex ref = graph.vertexRef();
-				final TrackSchemeVertex v = navigator.parent( ref );
-				if ( v != null )
-					selection.setSelected( v, true );
-				graph.releaseRef( ref );
+				navigator.selectAndFocusNeighbor( PARENT );
 			}
 		};
 	}
@@ -152,11 +149,7 @@ public class TrackSchemeActionBank
 			@Override
 			public void actionPerformed( final ActionEvent event )
 			{
-				final TrackSchemeVertex ref = graph.vertexRef();
-				final TrackSchemeVertex v = navigator.rightSibling( ref );
-				if ( v != null )
-					selection.setSelected( v, true );
-				graph.releaseRef( ref );
+				navigator.selectAndFocusNeighbor( RIGHT_SIBLING );
 			}
 		};
 	}
@@ -173,11 +166,7 @@ public class TrackSchemeActionBank
 			@Override
 			public void actionPerformed( final ActionEvent event )
 			{
-				final TrackSchemeVertex ref = graph.vertexRef();
-				final TrackSchemeVertex v = navigator.leftSibling( ref );
-				if ( v != null )
-					selection.setSelected( v, true );
-				graph.releaseRef( ref );
+				navigator.selectAndFocusNeighbor( LEFT_SIBLING );
 			}
 		};
 	}
