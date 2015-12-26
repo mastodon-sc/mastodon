@@ -426,7 +426,7 @@ public class LineageTreeLayout
 	{
 		final int tStart = ( int ) Math.ceil( Math.min( ly1, ly2 ) );
 		final int tEnd = ( int ) Math.floor( Math.max( ly1, ly2 ) ) + 1;
-		final double x1 = Math.min( lx1, lx2 ) - 1;
+		final double x1 = Math.min( lx1, lx2 );
 		final double x2 = Math.max( lx1, lx2 );
 
 		final RefSet< TrackSchemeVertex > vertexSet = graph.createVertexSet();
