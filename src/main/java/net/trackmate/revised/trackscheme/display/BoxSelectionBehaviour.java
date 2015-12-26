@@ -122,6 +122,12 @@ public class BoxSelectionBehaviour implements DragBehaviour, OverlayRenderer
 		for ( final TrackSchemeVertex v : vs )
 		{
 			selection.setSelected( v, true );
+
+			/*
+			 * TODO: should we really select edges here? When selecting with
+			 * shift+arrow keys, we don't select edges. It seems inconsistent
+			 * and not really important.
+			 */
 			for ( final TrackSchemeEdge e : v.outgoingEdges() )
 			{
 				final TrackSchemeVertex t = e.getTarget( ref );
