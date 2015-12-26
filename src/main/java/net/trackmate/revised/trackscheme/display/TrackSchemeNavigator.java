@@ -19,6 +19,34 @@ import net.trackmate.revised.trackscheme.TrackSchemeNavigation;
 import net.trackmate.revised.trackscheme.TrackSchemeSelection;
 import net.trackmate.revised.trackscheme.TrackSchemeVertex;
 
+/**
+ * TODO: RENAME.
+ *
+ * TODO: All focus/selection related stuff could be moved to this class.
+ *
+ * TODO: Decide on Focus/Selection behaviour. There are two options:
+ *
+ * 1) Finder-like: Selection is tied to the focus. When moving the focus with
+ * arrow keys, the selection moves with the focus. When clicking a vertex it is
+ * focused and selected, The focused vertex is always selected. Focus still
+ * exists independent of selection: multiple vertices can be selected, but only
+ * one of them can have the focus. When extending the selection with shift+arrow
+ * keys, the vertex to which the focus moves should be selected. When box
+ * selection is drawn, the selected vertex closest to the position where the
+ * drag ended should receive the focus.
+ *
+ * 2) Norton-Commander-like: Selection is independent of focus. Moveing the
+ * focus with arrow keys doesn't alter selection. Space key toggles selection of
+ * focused vertex. When extending the selection with shift+arrow keys, the
+ * selection of the currently focused vertex is toggled, then the focus is
+ * moved.
+ *
+ * Both options should be implemented both options and leave it to the user to
+ * enable whatever he prefers.
+ *
+ * @author Tobias Pietzsch &lt;tobias.pietzsch@gmail.com&gt;
+ * @author Jean-Yves Tinevez &lt;jeanyves.tinevez@gmail.com&gt;
+ */
 public class TrackSchemeNavigator implements TransformListener< ScreenTransform >
 {
 	public static final String NAVIGATE_CHILD_NAME = "ts navigate to child";
@@ -190,6 +218,12 @@ public class TrackSchemeNavigator implements TransformListener< ScreenTransform 
 	 * NAVIGATE WITH HIGHLIGHT.
 	 */
 
+	/**
+	 * Action to focus a neighbor (parent, child, left sibling, right sibling) of the currently focused vertex.
+	 * Possibly, the currently focused vertex is added to the selection.
+	 *
+	 * @author Tobias Pietzsch &lt;tobias.pietzsch@gmail.com&gt;
+	 */
 	private class SelectAndFocusNeighborAction extends AbstractNamedAction
 	{
 		private static final long serialVersionUID = 1L;
@@ -198,6 +232,15 @@ public class TrackSchemeNavigator implements TransformListener< ScreenTransform 
 
 		private final boolean select;
 
+		/**
+		 * @param name
+		 *            the name of this action (used as {@link ActionMap} key).
+		 * @param direction
+		 *            which neighbor to focus.
+		 * @param select
+		 *            if {@code true}, the currently focussed vertex is added to
+		 *            the selection (before moving the focus).
+		 */
 		public SelectAndFocusNeighborAction( final String name, final Direction direction, final boolean select )
 		{
 			super( name );
