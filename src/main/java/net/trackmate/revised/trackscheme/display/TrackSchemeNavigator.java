@@ -195,9 +195,12 @@ public class TrackSchemeNavigator implements TransformListener< ScreenTransform 
 	}
 
 	/*
-	 * SELECT CURRENT FOCUS
+	 * ACTIONS
 	 */
 
+	/**
+	 * Action to toggle the selected state of the currently focused vertex.
+	 */
 	private class ToggleFocusSelectionAction extends AbstractNamedAction
 	{
 		private static final long serialVersionUID = 1L;
@@ -214,15 +217,10 @@ public class TrackSchemeNavigator implements TransformListener< ScreenTransform 
 		}
 	}
 
-	/*
-	 * NAVIGATE WITH HIGHLIGHT.
-	 */
-
 	/**
-	 * Action to focus a neighbor (parent, child, left sibling, right sibling) of the currently focused vertex.
-	 * Possibly, the currently focused vertex is added to the selection.
-	 *
-	 * @author Tobias Pietzsch &lt;tobias.pietzsch@gmail.com&gt;
+	 * Action to focus a neighbor (parent, child, left sibling, right sibling)
+	 * of the currently focused vertex. Possibly, the currently focused vertex
+	 * is added to the selection.
 	 */
 	private class SelectAndFocusNeighborAction extends AbstractNamedAction
 	{
