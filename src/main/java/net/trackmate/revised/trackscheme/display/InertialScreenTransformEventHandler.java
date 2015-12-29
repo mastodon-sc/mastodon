@@ -1,7 +1,5 @@
 package net.trackmate.revised.trackscheme.display;
 
-import gnu.trove.list.array.TIntArrayList;
-
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseAdapter;
@@ -10,6 +8,7 @@ import java.awt.event.MouseWheelEvent;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import gnu.trove.list.array.TIntArrayList;
 import net.imglib2.ui.TransformEventHandler;
 import net.imglib2.ui.TransformEventHandlerFactory;
 import net.imglib2.ui.TransformListener;
@@ -19,16 +18,13 @@ import net.trackmate.revised.trackscheme.ScreenTransform;
 import net.trackmate.revised.trackscheme.display.animate.AbstractTransformAnimator;
 import net.trackmate.revised.trackscheme.display.animate.InertialTranslationAnimator;
 import net.trackmate.revised.trackscheme.display.animate.InertialZoomAnimator;
-import net.trackmate.revised.trackscheme.display.animate.UpdaterThread;
-import net.trackmate.revised.trackscheme.display.animate.UpdaterThread.Updatable;
 
 public class InertialScreenTransformEventHandler
 	extends MouseAdapter
 	implements
 		KeyListener,
 		TransformEventHandler< ScreenTransform >,
-		LayoutListener,
-		Updatable
+		LayoutListener
 {
 	final static private TransformEventHandlerFactory< ScreenTransform > factory = new TransformEventHandlerFactory< ScreenTransform >()
 	{
@@ -104,18 +100,11 @@ public class InertialScreenTransformEventHandler
 	 */
 	private TimerTask currentTimerTask;
 
-	/**
-	 * Thread that calls {@link #update()} when requested by the current
-	 */
-	private final UpdaterThread updaterThread;
-
 	private AbstractTransformAnimator< ScreenTransform > animator;
 
 	public InertialScreenTransformEventHandler( final TransformListener< ScreenTransform > listener )
 	{
 		this.listener = listener;
-		this.updaterThread = new UpdaterThread( this );
-		updaterThread.start();
 		timer = new Timer();
 		currentTimerTask = null;
 	}
@@ -406,8 +395,7 @@ public class InertialScreenTransformEventHandler
 		runAnimation();
 	}
 
-	@Override
-	public void update()
+	void animate()
 	{
 		final long t = System.currentTimeMillis();
 		final ScreenTransform c = animator.getCurrent( t );
@@ -415,7 +403,7 @@ public class InertialScreenTransformEventHandler
 		{
 			transform.set( c );
 		}
-		InertialScreenTransformEventHandler.this.notifyListeners();
+		notifyListeners();
 	}
 
 	private synchronized void runAnimation()
@@ -435,11 +423,10 @@ public class InertialScreenTransformEventHandler
 				}
 				else
 				{
-					updaterThread.requestUpdate();
+					animate();
 				}
 			}
 		};
 		timer.schedule( currentTimerTask, 0, INERTIAL_ANIMATION_PERIOD );
-		notifyListeners();
 	}
 }
