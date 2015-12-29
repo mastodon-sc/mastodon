@@ -105,7 +105,7 @@ public class InertialScreenTransformEventHandler
 	public InertialScreenTransformEventHandler( final TransformListener< ScreenTransform > listener )
 	{
 		this.listener = listener;
-		timer = new Timer();
+		timer = new Timer( "TrackScheme transform animation", true );
 		currentTimerTask = null;
 	}
 
