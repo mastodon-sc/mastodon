@@ -95,6 +95,10 @@ public class TrackSchemeFrame extends JFrame
 		final InputTriggerConfig inputConf = getKeyConfig( optional );
 		trackschemePanel.getNavigator().installActionBindings( keybindings, inputConf );
 		trackschemePanel.getSelectionBehaviours().installBehaviourBindings( triggerbindings, inputConf );
+
+		final EditFocusVertexBehaviour editFocus = new EditFocusVertexBehaviour( focus, graph, trackschemePanel.getDisplay() );
+		trackschemePanel.getDisplay().addTransformListener( editFocus );
+		editFocus.installActionBindings( keybindings, inputConf );
 	}
 
 	protected InputTriggerConfig getKeyConfig( final TrackSchemeOptions optional )
