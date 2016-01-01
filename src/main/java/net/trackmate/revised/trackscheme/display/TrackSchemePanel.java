@@ -136,6 +136,8 @@ public class TrackSchemePanel extends JPanel implements
 
 	private final TrackSchemeNavigator navigator;
 
+	private final SelectionBehaviours selectionBehaviours;
+
 	public TrackSchemePanel(
 			final TrackSchemeGraph< ?, ? > graph,
 			final TrackSchemeHighlight highlight,
@@ -194,14 +196,11 @@ public class TrackSchemePanel extends JPanel implements
 
 		display.addMouseMotionListener( new MouseHighlightHandler( graphOverlay, highlight, graph ) );
 
-		final MouseSelectionHandler mouseSelectionHandler = new MouseSelectionHandler( graphOverlay, selection, display, layout, graph );
-		display.addHandler( mouseSelectionHandler );
-		display.addOverlayRenderer( mouseSelectionHandler );
-
 		navigator = new TrackSchemeNavigator( graph, layout, focus, navigation, selection );
 		display.addTransformListener( navigator );
-		final FocusHandler focusHandler = new FocusHandler( navigation, focus, graph, graphOverlay );
-		display.addHandler( focusHandler );
+
+		selectionBehaviours = new SelectionBehaviours( display, graph, layout, graphOverlay, focus, navigation, selection );
+		display.addTransformListener( selectionBehaviours );
 
 		xScrollBar = new JScrollBar( JScrollBar.HORIZONTAL );
 		yScrollBar = new JScrollBar( JScrollBar.VERTICAL );
@@ -414,6 +413,11 @@ public class TrackSchemePanel extends JPanel implements
 	public TrackSchemeNavigator getNavigator()
 	{
 		return navigator;
+	}
+
+	public SelectionBehaviours getSelectionBehaviours()
+	{
+		return selectionBehaviours;
 	}
 
 	protected class ScreenEntityAnimator extends AbstractAnimator
