@@ -5,6 +5,7 @@ import java.util.concurrent.RejectedExecutionException;
 /**
  * Thread to update stuff.
  */
+// TODO: unused. remove?
 final public class UpdaterThread extends Thread
 {
 	public static interface Updatable

@@ -398,7 +398,7 @@ public class TrackSchemePanel extends JPanel implements
 		transformEventHandler.centerOn( lx, ly );
 	}
 
-	// TODO unused, remove
+	// TODO remove??? revise TrackSchemePanel / TrackSchemeFrame construction.
 	protected InteractiveDisplayCanvasComponent< ScreenTransform > getDisplay()
 	{
 		return display;
@@ -410,11 +410,13 @@ public class TrackSchemePanel extends JPanel implements
 		return layout;
 	}
 
+	// TODO remove. revise TrackSchemePanel / TrackSchemeFrame construction
 	public TrackSchemeNavigator getNavigator()
 	{
 		return navigator;
 	}
 
+	// TODO remove. revise TrackSchemePanel / TrackSchemeFrame construction
 	public SelectionBehaviours getSelectionBehaviours()
 	{
 		return selectionBehaviours;
