@@ -266,7 +266,7 @@ public class ScreenTransform implements InvertibleRealTransform
 	 *
 	 * @param dX
 	 */
-	public void shiftX( final int dX )
+	public void shiftX( final double dX )
 	{
 		final double lX = dX / scaleX;
 		minX += lX;
@@ -278,7 +278,7 @@ public class ScreenTransform implements InvertibleRealTransform
 	 *
 	 * @param dY
 	 */
-	public void shiftY( final int dY )
+	public void shiftY( final double dY )
 	{
 		final double lY = dY / scaleY;
 		minY += lY;
