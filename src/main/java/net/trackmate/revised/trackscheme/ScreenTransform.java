@@ -76,6 +76,17 @@ public class ScreenTransform implements InvertibleRealTransform
 		this.scaleY = t.scaleY;
 	}
 
+	public void set( final double minX, final double maxX, final double minY, final double maxY, final int screenWidth, final int screenHeight )
+	{
+		this.minX = minX;
+		this.maxX = maxX;
+		this.minY = minY;
+		this.maxY = maxY;
+		this.screenWidth = screenWidth;
+		this.screenHeight = screenHeight;
+		update();
+	}
+
 	private void update()
 	{
 		scaleX = ( screenWidth - 1 ) / ( maxX - minX );
