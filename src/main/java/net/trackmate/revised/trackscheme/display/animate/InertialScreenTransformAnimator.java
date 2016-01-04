@@ -8,6 +8,8 @@ public class InertialScreenTransformAnimator extends AbstractTransformAnimator< 
 
 	private final ScreenTransform t1;
 
+	private final ScreenTransform transform = new ScreenTransform();
+
 	private static final double s = 3.;
 
 	private final double tau;
@@ -23,7 +25,7 @@ public class InertialScreenTransformAnimator extends AbstractTransformAnimator< 
 	 * @param dt
 	 *            duration of interval.
 	 * @param duration
-	 *            duration of inertial animation (same units as {@code dt}.
+	 *            duration of inertial animation (same units as {@code dt}).
 	 */
 	public InertialScreenTransformAnimator( final ScreenTransform t0, final ScreenTransform t1, final long dt, final long duration )
 	{
@@ -42,7 +44,6 @@ public class InertialScreenTransformAnimator extends AbstractTransformAnimator< 
 		if ( t > 1 )
 			t = 1;
 
-		final ScreenTransform transform = new ScreenTransform();
 		final double inc = tau * ( 1 - Math.exp( -t * s ) );
 		transform.interpolate( t0, t1, 1 + inc );
 		return transform;
