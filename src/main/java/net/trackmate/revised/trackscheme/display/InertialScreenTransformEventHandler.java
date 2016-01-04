@@ -21,6 +21,7 @@ import net.trackmate.revised.trackscheme.LineageTreeLayout.LayoutListener;
 import net.trackmate.revised.trackscheme.ScreenTransform;
 import net.trackmate.revised.trackscheme.display.animate.AbstractTransformAnimator;
 import net.trackmate.revised.trackscheme.display.animate.InertialScreenTransformAnimator;
+import net.trackmate.revised.trackscheme.display.animate.InterpolateScreenTransformAnimator;
 
 public class InertialScreenTransformEventHandler
 	implements
@@ -397,34 +398,32 @@ public class InertialScreenTransformEventHandler
 		}
 	}
 
+	private final ScreenTransform tstart = new ScreenTransform();
+
+	private final ScreenTransform tend = new ScreenTransform();
+
 	public void centerOn( final double lx, final double ly )
 	{
-		final double minX = transform.getMinX();
-		final double maxX = transform.getMaxX();
+		synchronized( transform )
+		{
+			tstart.set( transform );
+		}
+
+		final double minX = tstart.getMinX();
+		final double maxX = tstart.getMaxX();
 		final double cx = ( maxX + minX ) / 2;
 		final double dx = lx - cx;
 
-		final double minY = transform.getMinY();
-		final double maxY = transform.getMaxY();
+		final double minY = tstart.getMinY();
+		final double maxY = tstart.getMaxY();
 		final double cy = ( maxY + minY ) / 2;
 		final double dy = ly - cy;
 
-		final ScreenTransform tstart = new ScreenTransform( transform );
-		final ScreenTransform tend = new ScreenTransform( transform );
+		tend.set( tstart );
 		tend.shiftLayoutX( dx );
 		tend.shiftLayoutY( dy );
 
-		animator = new AbstractTransformAnimator< ScreenTransform >( 200 )
-		{
-			private final ScreenTransform tf = new ScreenTransform();
-
-			@Override
-			protected ScreenTransform get( final double t )
-			{
-				tf.interpolate( tstart, tend, t );
-				return tf;
-			}
-		};
+		animator = new InterpolateScreenTransformAnimator( tstart, tend, 200 );
 		runAnimation();
 	}
 
