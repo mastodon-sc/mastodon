@@ -342,8 +342,11 @@ public class TrackSchemePanel extends JPanel implements
 	@Override
 	public void timePointChanged( final int timepoint )
 	{
-		graphOverlay.setCurrentTimepoint( timepoint );
-		display.repaint();
+		if ( graphOverlay.getCurrentTimepoint() != timepoint )
+		{
+			graphOverlay.setCurrentTimepoint( timepoint );
+			display.repaint();
+		}
 	}
 
 	@Override
@@ -386,7 +389,9 @@ public class TrackSchemePanel extends JPanel implements
 	@Override
 	public void navigateToVertex( final TrackSchemeVertex v )
 	{
-		focus.focusVertex( v ); // TODO: focusVertex is done here AND in TrackSchemeNavigator.rightSibling(). Once is enough. Which one?
+		focus.focusVertex( v );
+		graphOverlay.setCurrentTimepoint( v.getTimepoint() );
+
 		final double lx = v.getLayoutX();
 		final double ly = v.getTimepoint();
 

@@ -159,7 +159,7 @@ public class TrackSchemeNavigator implements TransformListener< ScreenTransform 
 
 		if ( current != null )
 		{
-			focus.focusVertex( current );
+//			focus.focusVertex( current ); // TODO: can this be safely removed? focus is set through navigation.notifyNavigateToVertex() --> TrackSchemePanel.navigateToVertext()
 			navigation.notifyNavigateToVertex( current );
 		}
 		return current;
