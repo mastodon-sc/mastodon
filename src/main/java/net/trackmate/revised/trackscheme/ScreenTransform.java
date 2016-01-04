@@ -327,8 +327,8 @@ public class ScreenTransform implements InvertibleRealTransform
 		this.maxX = (1 - ratio) * start.maxX + ratio * end.maxX;
 		this.minY = (1 - ratio) * start.minY + ratio * end.minY;
 		this.maxY = (1 - ratio) * start.maxY + ratio * end.maxY;
-		this.screenWidth = ( int ) ( (1 - ratio) * start.screenWidth + ratio * end.screenWidth );
-		this.screenHeight = ( int ) ( (1 - ratio) * start.screenHeight + ratio * end.screenHeight );
+		this.screenWidth = ( int ) Math.round( ( (1 - ratio) * start.screenWidth + ratio * end.screenWidth ) );
+		this.screenHeight = ( int ) Math.round( ( (1 - ratio) * start.screenHeight + ratio * end.screenHeight ) );
 		update();
 	}
 
