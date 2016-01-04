@@ -194,7 +194,9 @@ public class TrackSchemePanel extends JPanel implements
 		painterThread = new PainterThread( this );
 		flags = new Flags();
 
-		display.addMouseMotionListener( new MouseHighlightHandler( graphOverlay, highlight, graph ) );
+		final MouseHighlightHandler highlightHandler = new MouseHighlightHandler( graphOverlay, highlight, graph );
+		display.addMouseMotionListener( highlightHandler );
+		display.addTransformListener( highlightHandler );
 
 		navigator = new TrackSchemeNavigator( graph, layout, focus, navigation, selection );
 		display.addTransformListener( navigator );
