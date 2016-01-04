@@ -84,20 +84,9 @@ public class InertialScreenTransformEventHandler
 	final private ScreenTransform transform = new ScreenTransform( -10000, 10000, -10000, 10000, 800, 600 );
 
 	/**
-	 * Copy of {@link #transform current transform} when mouse dragging
-	 * started.
-	 */
-	final private ScreenTransform transformDragStart = new ScreenTransform();
-
-	/**
 	 * Whom to notify when the current transform is changed.
 	 */
 	private TransformListener< ScreenTransform > listener;
-
-	/**
-	 * Coordinates where mouse dragging started.
-	 */
-	private int oX, oY;
 
 	/**
 	 * Timer that runs {@link #currentTimerTask}.
@@ -263,8 +252,15 @@ public class InertialScreenTransformEventHandler
 			super( name, defaultTriggers );
 		}
 
+		/**
+		 * Coordinates where mouse dragging started.
+		 */
+		private int oX, oY;
+
 		final private ScreenTransform previousTransform = new ScreenTransform();
+
 		private long previousTime = 0;
+
 		private long dt = 0;
 
 		@Override
@@ -275,7 +271,6 @@ public class InertialScreenTransformEventHandler
 			{
 				oX = x;
 				oY = y;
-				transformDragStart.set( transform );
 				previousTransform.set( transform );
 				previousTime = t;
 				dt = 0;
@@ -297,7 +292,8 @@ public class InertialScreenTransformEventHandler
 
 				final int dX = oX - x;
 				final int dY = oY - y;
-				transform.set( transformDragStart );
+				oX = x;
+				oY = y;
 				transform.shift( dX, dY );
 				constrainTransform( transform );
 			}
