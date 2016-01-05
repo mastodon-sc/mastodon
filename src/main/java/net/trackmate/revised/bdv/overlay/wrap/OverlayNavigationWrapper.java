@@ -1,13 +1,15 @@
 package net.trackmate.revised.bdv.overlay.wrap;
 
+import bdv.viewer.ViewerPanel;
+import bdv.viewer.animate.TranslationAnimator;
 import net.imglib2.realtransform.AffineTransform3D;
 import net.trackmate.graph.Edge;
 import net.trackmate.graph.Vertex;
+import net.trackmate.revised.bdv.overlay.OverlayGraphRenderer;
 import net.trackmate.revised.bdv.overlay.OverlayNavigation;
+import net.trackmate.revised.bdv.overlay.ScreenVertexMath;
 import net.trackmate.revised.ui.selection.NavigationHandler;
 import net.trackmate.revised.ui.selection.NavigationListener;
-import bdv.viewer.ViewerPanel;
-import bdv.viewer.animate.TranslationAnimator;
 
 public class OverlayNavigationWrapper< V extends Vertex< E >, E extends Edge< V >> implements OverlayNavigation< OverlayVertexWrapper< V, E > >, NavigationListener< V >
 {
@@ -31,25 +33,42 @@ public class OverlayNavigationWrapper< V extends Vertex< E >, E extends Edge< V 
 	@Override
 	public void navigateToOverlayVertex( final OverlayVertexWrapper< V, E > vertex )
 	{
-		final double[] gPos = new double[ 3 ];
-		vertex.localize( gPos );
+		final AffineTransform3D t = panel.getDisplay().getTransformEventHandler().getTransform();
+		final ScreenVertexMath screenVertexMath = new ScreenVertexMath( OverlayGraphRenderer.nSigmas );
+		screenVertexMath.init( vertex, t );
 
+		// Always move in T.
 		final int tp = vertex.getTimepoint();
 		panel.setTimepoint( tp );
 
-		final AffineTransform3D t = panel.getDisplay().getTransformEventHandler().getTransform();
 		final int width = panel.getWidth();
 		final int height = panel.getHeight();
+		final double[] vPos = screenVertexMath.getViewPos();
+		if ( vPos[ 0 ] < 0 || vPos[ 0 ] > width || vPos[ 1 ] < 0 || vPos[ 1 ] > height )
+		{
+			final double dx = width / 2 - vPos[ 0 ] + t.get( 0, 3 );
+			final double dy = height / 2 - vPos[ 1 ] + t.get( 1, 3 );
+			final double dz = -vPos[ 2 ] + t.get( 2, 3 );
+			final double[] target = new double[] { dx, dy, dz };
+			final TranslationAnimator animator = new TranslationAnimator( t, target, 300 );
+			animator.setTime( System.currentTimeMillis() );
+			panel.setTransformAnimator( animator );
+			panel.requestRepaint();
 
-		final double dx = width / 2 - ( t.get( 0, 0 ) * gPos[ 0 ] + t.get( 0, 1 ) * gPos[ 1 ] + t.get( 0, 2 ) * gPos[ 2 ] );
-		final double dy = height / 2 - ( t.get( 1, 0 ) * gPos[ 0 ] + t.get( 1, 1 ) * gPos[ 1 ] + t.get( 1, 2 ) * gPos[ 2 ] );
-		final double dz = -( t.get( 2, 0 ) * gPos[ 0 ] + t.get( 2, 1 ) * gPos[ 1 ] + t.get( 2, 2 ) * gPos[ 2 ] );
+		}
+		else if ( !screenVertexMath.intersectsViewPlane() )
+		{
+			// If X & Y are good but not Z, we only translate in Z.
+			final double dx = t.get( 0, 3 );
+			final double dy = t.get( 1, 3 );
+			final double dz = -vPos[ 2 ] + t.get( 2, 3 );
+			final double[] target = new double[] { dx, dy, dz };
+			final TranslationAnimator animator = new TranslationAnimator( t, target, 300 );
+			animator.setTime( System.currentTimeMillis() );
+			panel.setTransformAnimator( animator );
+			panel.requestRepaint();
+		}
 
-		final double[] target = new double[] { dx, dy, dz };
-		final TranslationAnimator animator = new TranslationAnimator( t, target, 300 );
-		animator.setTime( System.currentTimeMillis() );
-		panel.setTransformAnimator( animator );
-		panel.requestRepaint();
 	}
 
 	@Override
@@ -67,3 +86,4 @@ public class OverlayNavigationWrapper< V extends Vertex< E >, E extends Edge< V 
 		navigation.notifyNavigateToVertex( vertex.wv );
 	}
 }
+
