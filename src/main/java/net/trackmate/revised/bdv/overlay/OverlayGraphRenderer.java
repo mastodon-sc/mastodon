@@ -9,6 +9,8 @@ import java.awt.RenderingHints;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Ellipse2D;
 
+import bdv.util.Affine3DHelpers;
+import bdv.viewer.TimePointListener;
 import net.imglib2.RealPoint;
 import net.imglib2.algorithm.kdtree.ConvexPolytope;
 import net.imglib2.algorithm.kdtree.HyperPlane;
@@ -22,8 +24,6 @@ import net.trackmate.revised.Util;
 import net.trackmate.spatial.ClipConvexPolytope;
 import net.trackmate.spatial.SpatialIndex;
 import net.trackmate.spatial.SpatioTemporalIndex;
-import bdv.util.Affine3DHelpers;
-import bdv.viewer.TimePointListener;
 
 
 /**
@@ -358,7 +358,7 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 	/*
 	 * TODO: Should be removed (nSigmas == 1 always), and the scaling should be moved to the Spot (handle when importing TGMM files)
 	 */
-	private final double nSigmas = 2;
+	public static final double nSigmas = 2;
 
 	/**
 	 * Return signed distance of p to z=0 plane, truncated at cutoff and scaled
