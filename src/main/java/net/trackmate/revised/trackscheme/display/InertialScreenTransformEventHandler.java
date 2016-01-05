@@ -58,6 +58,30 @@ public class InertialScreenTransformEventHandler
 
 	private static final double EPSILON = 0.0000000001;
 
+	// ...JY settings...
+//	private static final double borderRatioX = 0.5;
+//	private static final double borderRatioY = 0.5;
+//	private static final double maxSizeFactorX = 8;
+//	private static final double maxSizeFactorY = 8;
+//	private static final double boundXLayoutBorder = 0;
+//	private static final double boundYLayoutBorder = 0;
+
+	// ...TP settings...
+	private static final double borderRatioX = 0;
+	private static final double borderRatioY = 0;
+	private static final double maxSizeFactorX = 1;
+	private static final double maxSizeFactorY = 1;
+	private static final double boundXLayoutBorder = 1;
+	private static final double boundYLayoutBorder = 1;
+
+	// ...still something else...
+//	private static final double borderRatioX = 0.1;
+//	private static final double borderRatioY = 0.1;
+//	private static final double maxSizeFactorX = 1 / 0.8;
+//	private static final double maxSizeFactorY = 1 / 0.8;
+//	private static final double boundXLayoutBorder = 0;
+//	private static final double boundYLayoutBorder = 0;
+
 	public static TransformEventHandlerFactory< ScreenTransform > factory( final InputTriggerConfig config )
 	{
 		return new TransformEventHandlerFactory< ScreenTransform >()
@@ -77,6 +101,8 @@ public class InertialScreenTransformEventHandler
 	private final InputTriggerAdder inputAdder;
 
 	private double boundXMin, boundXMax, boundYMin, boundYMax;
+
+	private double maxSizeX, maxSizeY;
 
 	/**
 	 * Current source to screen transform.
@@ -174,11 +200,11 @@ public class InertialScreenTransformEventHandler
 	{
 		synchronized ( transform )
 		{
-			boundXMin = layout.getCurrentLayoutMinX() - 1;
-			boundXMax = layout.getCurrentLayoutMaxX() + 1;
+			boundXMin = layout.getCurrentLayoutMinX() - boundXLayoutBorder;
+			boundXMax = layout.getCurrentLayoutMaxX() + boundXLayoutBorder;
 			final TIntArrayList timepoints = layout.getTimepoints();
-			boundYMin = timepoints.getQuick( 0 ) - 1;
-			boundYMax = timepoints.getQuick( timepoints.size() - 1 ) + 1;
+			boundYMin = timepoints.getQuick( 0 ) - boundYLayoutBorder;
+			boundYMax = timepoints.getQuick( timepoints.size() - 1 ) + boundYLayoutBorder;
 
 			if ( boundXMax - boundXMin < MIN_SIBLINGS_ON_CANVAS )
 			{
@@ -194,6 +220,9 @@ public class InertialScreenTransformEventHandler
 				boundYMax = c + MIN_TIMEPOINTS_ON_CANVAS / 2;
 			}
 
+			maxSizeX = ( boundXMax - boundXMin ) * maxSizeFactorX;
+			maxSizeY = ( boundYMax - boundYMin ) * maxSizeFactorY;
+
 			constrainTransform( transform );
 			notifyListeners();
 		}
@@ -204,16 +233,19 @@ public class InertialScreenTransformEventHandler
 	 */
 	private void notifyListeners()
 	{
+		System.out.println( transform );
 		if ( listener != null )
 			listener.transformChanged( transform );
 	}
 
 	private void constrainTransform( final ScreenTransform transform )
 	{
-		ConstrainScreenTransform.constrainTransform(
+		ConstrainScreenTransform.constrainTransform2(
 				transform,
 				MIN_SIBLINGS_ON_CANVAS, MIN_TIMEPOINTS_ON_CANVAS,
-				boundXMin, boundXMax, boundYMin, boundYMax );
+				maxSizeX, maxSizeY,
+				boundXMin, boundXMax, boundYMin, boundYMax,
+				borderRatioX, borderRatioY );
 	}
 
 	private boolean hasMinSizeX( final ScreenTransform transform )
@@ -224,6 +256,16 @@ public class InertialScreenTransformEventHandler
 	private boolean hasMinSizeY( final ScreenTransform transform )
 	{
 		return ConstrainScreenTransform.hasMinSizeY( transform, MIN_TIMEPOINTS_ON_CANVAS + EPSILON );
+	}
+
+	private boolean hasMaxSizeX( final ScreenTransform transform )
+	{
+		return ConstrainScreenTransform.hasMaxSizeX( transform, maxSizeX );
+	}
+
+	private boolean hasMaxSizeY( final ScreenTransform transform )
+	{
+		return ConstrainScreenTransform.hasMaxSizeY( transform, maxSizeY );
 	}
 
 	private abstract class SelfRegisteringBehaviour implements Behaviour
@@ -296,8 +338,8 @@ public class InertialScreenTransformEventHandler
 				oY = y;
 				transform.shift( dX, dY );
 				constrainTransform( transform );
+				notifyListeners();
 			}
-			notifyListeners();
 		}
 
 		@Override
@@ -349,22 +391,38 @@ public class InertialScreenTransformEventHandler
 
 				if ( axis == ScrollAxis.X || axis == ScrollAxis.XY )
 				{
-					if ( ! ( zoomIn && hasMinSizeX( transform ) ) )
-						transform.zoomX( dScale, x );
+					if ( zoomIn )
+					{
+						if ( !hasMinSizeX( transform ) )
+							transform.zoomX( dScale, x );
+					}
+					else
+					{
+						if ( !hasMaxSizeX( transform ) )
+							transform.zoomX( dScale, x );
+					}
 				}
 
 				if ( axis == ScrollAxis.Y || axis == ScrollAxis.XY )
 				{
-					if ( ! ( zoomIn && hasMinSizeY( transform ) ) )
-						transform.zoomY( dScale, y );
+					if ( zoomIn )
+					{
+						if ( !hasMinSizeY( transform ) )
+							transform.zoomY( dScale, y );
+					}
+					else
+					{
+						if ( !hasMaxSizeY( transform ) )
+							transform.zoomY( dScale, y );
+					}
 				}
 
 				constrainTransform( transform );
 
 				if ( enableInertialZoom )
 					animator = new InertialScreenTransformAnimator( previousTransform, transform, 50, 400 );
+				notifyListeners();
 			}
-			notifyListeners();
 
 			if ( enableInertialZoom )
 				runAnimation();
@@ -389,8 +447,8 @@ public class InertialScreenTransformEventHandler
 				else
 					transform.shiftY( d );
 				constrainTransform( transform );
+				notifyListeners();
 			}
-			notifyListeners();
 		}
 	}
 
@@ -431,8 +489,8 @@ public class InertialScreenTransformEventHandler
 		synchronized ( transform )
 		{
 			transform.set( c );
+			notifyListeners();
 		}
-		notifyListeners();
 	}
 
 	private synchronized void runAnimation()
