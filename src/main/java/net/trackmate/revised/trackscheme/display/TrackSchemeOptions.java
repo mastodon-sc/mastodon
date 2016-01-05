@@ -28,6 +28,7 @@
  */
 package net.trackmate.revised.trackscheme.display;
 
+import bdv.behaviour.io.InputTriggerConfig;
 import net.imglib2.ui.TransformEventHandlerFactory;
 import net.trackmate.revised.trackscheme.ScreenTransform;
 
@@ -86,6 +87,19 @@ public class TrackSchemeOptions
 	}
 
 	/**
+	 * TODO javadoc
+	 * TODO is this config option necessary?
+	 *
+	 * @param c
+	 * @return
+	 */
+	public TrackSchemeOptions inputTriggerConfig( final InputTriggerConfig c )
+	{
+		values.inputTriggerConfig = c;
+		return this;
+	}
+
+	/**
 	 * Read-only {@link TrackSchemeOptions} values.
 	 */
 	public static class Values
@@ -94,10 +108,11 @@ public class TrackSchemeOptions
 
 		private int height = 600;
 
-		//		private TransformEventHandlerFactory< ScreenTransform > transformEventHandlerFactory = ScreenTransformEventHandler.factory();
-		private TransformEventHandlerFactory< ScreenTransform > transformEventHandlerFactory = InertialScreenTransformEventHandler.factory();
+		private TransformEventHandlerFactory< ScreenTransform > transformEventHandlerFactory = InertialScreenTransformEventHandler.factory( new InputTriggerConfig() );
 
 		private long animationDurationMillis = 250;
+
+		private InputTriggerConfig inputTriggerConfig = null;
 
 		public TrackSchemeOptions optionsFromValues()
 		{
@@ -105,7 +120,8 @@ public class TrackSchemeOptions
 				width( width ).
 				height( height ).
 				transformEventHandlerFactory( transformEventHandlerFactory ).
-				animationDurationMillis( animationDurationMillis );
+				animationDurationMillis( animationDurationMillis ).
+				inputTriggerConfig( inputTriggerConfig );
 		}
 
 		public int getWidth()
@@ -126,6 +142,11 @@ public class TrackSchemeOptions
 		public long getAnimationDurationMillis()
 		{
 			return animationDurationMillis;
+		}
+
+		public InputTriggerConfig getInputTriggerConfig()
+		{
+			return inputTriggerConfig;
 		}
 	}
 }
