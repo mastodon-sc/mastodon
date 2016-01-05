@@ -11,6 +11,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollBar;
 import javax.swing.UIManager;
 
+import bdv.viewer.TimePointListener;
 import net.imglib2.ui.InteractiveDisplayCanvasComponent;
 import net.imglib2.ui.OverlayRenderer;
 import net.imglib2.ui.PainterThread;
@@ -35,7 +36,6 @@ import net.trackmate.revised.ui.selection.HighlightListener;
 import net.trackmate.revised.ui.selection.NavigationListener;
 import net.trackmate.revised.ui.selection.SelectionListener;
 import net.trackmate.trackscheme.animate.AbstractAnimator;
-import bdv.viewer.TimePointListener;
 
 public class TrackSchemePanel extends JPanel implements
 		TransformListener< ScreenTransform >,
@@ -391,14 +391,23 @@ public class TrackSchemePanel extends JPanel implements
 		final double lx = v.getLayoutX();
 		final double ly = v.getTimepoint();
 
-		/*
-		 * TODO: This will fail if there is a different transform event handler.
-		 * TODO: Also it shouldn't require display here.
-		 * TODO: Instead it should be routed through a new interface that forwards to InertialScreenTransformEventHandler or does whatever is appropriate (e.g. ignores it).
-		 */
-		final InertialScreenTransformEventHandler transformEventHandler = ( InertialScreenTransformEventHandler ) display.getTransformEventHandler();
-
-		transformEventHandler.centerOn( lx, ly );
+		// Only navigate to the specified vertex if not is currently displayed.
+		if ( screenTransform.getMaxX() < lx || screenTransform.getMinX() > lx
+				|| screenTransform.getMaxY() < ly || screenTransform.getMinY() > ly )
+		{
+			/*
+			 * TODO: This will fail if there is a different transform event
+			 * handler.
+			 * 
+			 * TODO: Also it shouldn't require display here.
+			 * 
+			 * TODO: Instead it should be routed through a new interface that
+			 * forwards to InertialScreenTransformEventHandler or does whatever
+			 * is appropriate (e.g. ignores it).
+			 */
+			final InertialScreenTransformEventHandler transformEventHandler = ( InertialScreenTransformEventHandler ) display.getTransformEventHandler();
+			transformEventHandler.centerOn( lx, ly );
+		}
 	}
 
 	// TODO unused, remove
