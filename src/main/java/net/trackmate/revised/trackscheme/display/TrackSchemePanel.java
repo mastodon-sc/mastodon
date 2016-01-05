@@ -33,6 +33,7 @@ import net.trackmate.revised.trackscheme.display.TrackSchemeOptions.Values;
 import net.trackmate.revised.trackscheme.display.laf.DefaultTrackSchemeOverlay;
 import net.trackmate.revised.ui.selection.FocusListener;
 import net.trackmate.revised.ui.selection.HighlightListener;
+import net.trackmate.revised.ui.selection.NavigationEtiquette;
 import net.trackmate.revised.ui.selection.NavigationListener;
 import net.trackmate.revised.ui.selection.SelectionListener;
 import net.trackmate.trackscheme.animate.AbstractAnimator;
@@ -391,9 +392,11 @@ public class TrackSchemePanel extends JPanel implements
 		final double lx = v.getLayoutX();
 		final double ly = v.getTimepoint();
 
-		// Only navigate to the specified vertex if not is currently displayed.
-		if ( screenTransform.getMaxX() < lx || screenTransform.getMinX() > lx
-				|| screenTransform.getMaxY() < ly || screenTransform.getMinY() > ly )
+		// With MINIMAL etiquette, only navigate to the specified vertex if not
+		// is currently displayed.
+		if ( options.getNavigationEtiquette() == NavigationEtiquette.CENTERING ||
+				( screenTransform.getMaxX() < lx || screenTransform.getMinX() > lx
+				|| screenTransform.getMaxY() < ly || screenTransform.getMinY() > ly ) )
 		{
 			/*
 			 * TODO: This will fail if there is a different transform event

@@ -1,5 +1,8 @@
 package net.trackmate.revised.bdv.overlay.wrap;
 
+import static net.trackmate.revised.ui.selection.NavigationEtiquette.CENTERING;
+import static net.trackmate.revised.ui.selection.NavigationEtiquette.MINIMAL;
+
 import bdv.viewer.ViewerPanel;
 import bdv.viewer.animate.TranslationAnimator;
 import net.imglib2.realtransform.AffineTransform3D;
@@ -8,6 +11,7 @@ import net.trackmate.graph.Vertex;
 import net.trackmate.revised.bdv.overlay.OverlayGraphRenderer;
 import net.trackmate.revised.bdv.overlay.OverlayNavigation;
 import net.trackmate.revised.bdv.overlay.ScreenVertexMath;
+import net.trackmate.revised.ui.selection.NavigationEtiquette;
 import net.trackmate.revised.ui.selection.NavigationHandler;
 import net.trackmate.revised.ui.selection.NavigationListener;
 
@@ -18,6 +22,8 @@ public class OverlayNavigationWrapper< V extends Vertex< E >, E extends Edge< V 
 	private final OverlayGraphWrapper< V, E > graph;
 
 	private final NavigationHandler< V > navigation;
+
+	private final NavigationEtiquette navigationEtiquette = MINIMAL;
 
 	public OverlayNavigationWrapper(
 			final ViewerPanel panel,
@@ -44,7 +50,7 @@ public class OverlayNavigationWrapper< V extends Vertex< E >, E extends Edge< V 
 		final int width = panel.getWidth();
 		final int height = panel.getHeight();
 		final double[] vPos = screenVertexMath.getViewPos();
-		if ( vPos[ 0 ] < 0 || vPos[ 0 ] > width || vPos[ 1 ] < 0 || vPos[ 1 ] > height )
+		if ( navigationEtiquette == CENTERING || ( vPos[ 0 ] < 0 || vPos[ 0 ] > width || vPos[ 1 ] < 0 || vPos[ 1 ] > height ) )
 		{
 			final double dx = width / 2 - vPos[ 0 ] + t.get( 0, 3 );
 			final double dy = height / 2 - vPos[ 1 ] + t.get( 1, 3 );
@@ -54,7 +60,6 @@ public class OverlayNavigationWrapper< V extends Vertex< E >, E extends Edge< V 
 			animator.setTime( System.currentTimeMillis() );
 			panel.setTransformAnimator( animator );
 			panel.requestRepaint();
-
 		}
 		else if ( !screenVertexMath.intersectsViewPlane() )
 		{

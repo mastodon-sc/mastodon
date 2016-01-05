@@ -30,6 +30,7 @@ package net.trackmate.revised.trackscheme.display;
 
 import net.imglib2.ui.TransformEventHandlerFactory;
 import net.trackmate.revised.trackscheme.ScreenTransform;
+import net.trackmate.revised.ui.selection.NavigationEtiquette;
 
 /**
  * Optional parameters for {@link TrackSchemePanel}.
@@ -85,6 +86,12 @@ public class TrackSchemeOptions
 		return this;
 	}
 
+	public TrackSchemeOptions navigationEtiquette( final NavigationEtiquette navigationEtiquette )
+	{
+		values.navigationEtiquette = navigationEtiquette;
+		return this;
+	}
+
 	/**
 	 * Read-only {@link TrackSchemeOptions} values.
 	 */
@@ -98,6 +105,8 @@ public class TrackSchemeOptions
 		private TransformEventHandlerFactory< ScreenTransform > transformEventHandlerFactory = InertialScreenTransformEventHandler.factory();
 
 		private long animationDurationMillis = 250;
+
+		private NavigationEtiquette navigationEtiquette = NavigationEtiquette.MINIMAL;
 
 		public TrackSchemeOptions optionsFromValues()
 		{
@@ -126,6 +135,11 @@ public class TrackSchemeOptions
 		public long getAnimationDurationMillis()
 		{
 			return animationDurationMillis;
+		}
+
+		public NavigationEtiquette getNavigationEtiquette()
+		{
+			return navigationEtiquette;
 		}
 	}
 }
