@@ -233,7 +233,6 @@ public class InertialScreenTransformEventHandler
 	 */
 	private void notifyListeners()
 	{
-		System.out.println( transform );
 		if ( listener != null )
 			listener.transformChanged( transform );
 	}
