@@ -1,5 +1,8 @@
 package net.trackmate.revised.trackscheme;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import net.trackmate.graph.PoolObjectList;
 import net.trackmate.graph.collection.RefList;
 import net.trackmate.revised.trackscheme.ScreenEdge.ScreenEdgePool;
@@ -31,10 +34,13 @@ public class ScreenEntities
 
 	private final PoolObjectList< ScreenVertexRange > ranges;
 
+	private ArrayList< ScreenColumn > columns;
+
 	/**
 	 * transform used to generate these {@link ScreenEntities}
 	 */
 	private final ScreenTransform screenTransform;
+
 
 	public ScreenEntities( final TrackSchemeGraph< ?, ? > graph )
 	{
@@ -49,6 +55,7 @@ public class ScreenEntities
 		edges = new PoolObjectList< ScreenEdge >( edgePool, initialCapacity );
 		rangePool = new ScreenVertexRangePool( initialCapacity );
 		ranges = new PoolObjectList< ScreenVertexRange >( rangePool, initialCapacity );
+		columns = new ArrayList< >( initialCapacity );
 		screenTransform = new ScreenTransform();
 	}
 
@@ -100,6 +107,7 @@ public class ScreenEntities
 		edges.resetQuick();
 		rangePool.clear();
 		ranges.resetQuick();
+		columns.clear();
 	}
 
 	public void set( final ScreenEntities ent )
@@ -121,6 +129,18 @@ public class ScreenEntities
 			ranges.add( rangePool.create( rRef ).cloneFrom( r ) );
 		rangePool.releaseRef( rRef );
 
+		columns.addAll( ent.getColumns() );
+
 		screenTransform().set( ent.screenTransform );
+	}
+
+	public List< ScreenColumn > getColumns()
+	{
+		return columns;
+	}
+
+	public void setColumns( final List< ScreenColumn > columns )
+	{
+		this.columns = new ArrayList< >( columns );
 	}
 }

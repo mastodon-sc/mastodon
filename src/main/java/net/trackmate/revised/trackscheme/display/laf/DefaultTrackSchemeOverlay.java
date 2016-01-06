@@ -5,7 +5,6 @@ import static net.trackmate.revised.trackscheme.ScreenVertex.Transition.DESELECT
 import static net.trackmate.revised.trackscheme.ScreenVertex.Transition.DISAPPEAR;
 import static net.trackmate.revised.trackscheme.ScreenVertex.Transition.NONE;
 import static net.trackmate.revised.trackscheme.ScreenVertex.Transition.SELECTING;
-import gnu.trove.list.TDoubleList;
 
 import java.awt.Color;
 import java.awt.FontMetrics;
@@ -13,11 +12,11 @@ import java.awt.Graphics2D;
 import java.awt.font.FontRenderContext;
 import java.awt.font.TextLayout;
 import java.awt.geom.Rectangle2D;
+import java.util.List;
 
 import net.imglib2.RealLocalizable;
-import net.trackmate.graph.collection.RefList;
 import net.trackmate.revised.Util;
-import net.trackmate.revised.trackscheme.LineageTreeLayout;
+import net.trackmate.revised.trackscheme.ScreenColumn;
 import net.trackmate.revised.trackscheme.ScreenEdge;
 import net.trackmate.revised.trackscheme.ScreenEntities;
 import net.trackmate.revised.trackscheme.ScreenTransform;
@@ -27,7 +26,6 @@ import net.trackmate.revised.trackscheme.ScreenVertexRange;
 import net.trackmate.revised.trackscheme.TrackSchemeFocus;
 import net.trackmate.revised.trackscheme.TrackSchemeGraph;
 import net.trackmate.revised.trackscheme.TrackSchemeHighlight;
-import net.trackmate.revised.trackscheme.TrackSchemeVertex;
 import net.trackmate.revised.trackscheme.display.AbstractTrackSchemeOverlay;
 import net.trackmate.revised.trackscheme.display.TrackSchemeOptions;
 
@@ -64,11 +62,6 @@ public class DefaultTrackSchemeOverlay extends AbstractTrackSchemeOverlay
 	 */
 	private static final int XTEXT = 20;
 
-	/**
-	 * Size in pixel below which we do not draw column bars.
-	 */
-	private static final int MIN_DRAWING_COLUMN_WIDTH = 30;
-
 	public static final double simplifiedVertexRadius = 3.0;
 
 	public static final double minDisplayVertexDist = 20.0;
@@ -91,17 +84,13 @@ public class DefaultTrackSchemeOverlay extends AbstractTrackSchemeOverlay
 
 	protected TrackSchemeStyle style = TrackSchemeStyle.defaultStyle();
 
-	private final LineageTreeLayout layout;
-
 	public DefaultTrackSchemeOverlay(
 			final TrackSchemeGraph< ?, ? > graph,
-			final LineageTreeLayout layout,
 			final TrackSchemeHighlight highlight,
 			final TrackSchemeFocus focus,
 			final TrackSchemeOptions options )
 	{
 		super( graph, highlight, focus, options );
-		this.layout = layout;
 	}
 
 	@Override
@@ -137,8 +126,6 @@ public class DefaultTrackSchemeOverlay extends AbstractTrackSchemeOverlay
 		final ScreenTransform screenTransform = new ScreenTransform();
 		screenEntities.getScreenTransform( screenTransform );
 		final double yScale = screenTransform.getScaleY();
-		final double minX = screenTransform.getMinX();
-		final double maxX = screenTransform.getMaxX();
 		final double minY = screenTransform.getMinY();
 		final double maxY = screenTransform.getMaxY();
 
@@ -197,81 +184,24 @@ public class DefaultTrackSchemeOverlay extends AbstractTrackSchemeOverlay
 			g2.fillRect( 0, 0, width, 2 * YTEXT );
 			g2.setColor( style.decorationColor );
 
-			final double xScale = screenTransform.getScaleX();
 			final int minLineY = ( int ) ( ( tstart - minY - 0.5 ) * yScale );
 			final int maxLineY = ( int ) ( ( tend - minY - 0.5 ) * yScale );
-
-			final TDoubleList columnX = layout.getCurrentLayoutColumnX();
-			final RefList< TrackSchemeVertex > columnRoots = layout.getCurrentLayoutColumnRoot();
-
-			int minC = columnX.binarySearch( minX );
-			if ( minC < 0 )
+			final List< ScreenColumn > columns = screenEntities.getColumns();
+			for ( final ScreenColumn column : columns )
 			{
-				minC = -1 - minC;
-			}
-			minC = Math.max( 0, minC - 1 ); // at least 1 column out
+				g2.drawLine( column.xLeft, minLineY, column.xLeft, maxLineY );
+				g2.drawLine( column.xLeft + column.width, minLineY, column.xLeft + column.width, maxLineY );
 
-			int maxC = columnX.binarySearch( maxX + 0.5, minC, columnX.size() );
-			if ( maxC < 0 )
-			{
-				maxC = -1 - maxC;
-			}
-			maxC = Math.min( columnX.size(), maxC + 1 );
-
-			double lastX = Double.NEGATIVE_INFINITY;
-			for ( int c = minC; c < maxC; c++ )
-			{
-				final double col = columnX.get( c );
-				final int xline = ( int ) ( ( col - minX - 0.5 ) * xScale );
-				if ( xline < 2 * XTEXT || ( xline - lastX ) < MIN_DRAWING_COLUMN_WIDTH )
-				{
-					continue;
-				}
-				g2.drawLine( xline, minLineY, xline, maxLineY );
-				lastX = xline;
-
-				if ( c < 1 )
-				{
-					continue;
-				}
-				final int xprevline = ( int ) ( ( columnX.get( c - 1 ) - minX - 0.5 ) * xScale );
-				final String str = columnRoots.get( c - 1 ).getLabel();
+				final String str = column.label;
 				final int stringWidth = fm.stringWidth( str );
-
-				final int columnWidth = xline - xprevline;
-				if ( columnWidth < stringWidth + 5 )
-				{
+				if ( column.width < stringWidth + 5 || ( width - column.xLeft ) < stringWidth + 5 )
 					continue;
-				}
 
-				final int xtext = ( Math.min( width, xline ) + Math.max( 0, xprevline ) - stringWidth ) / 2;
+				final int xtext = ( Math.min( column.xLeft + column.width, width ) + Math.max( 0, column.xLeft ) - stringWidth ) / 2;
 				if ( xtext < 2 * XTEXT )
-				{
 					continue;
-				}
+
 				g2.drawString( str, xtext, YTEXT );
-			}
-
-			// Last column?
-			final int nCols = columnX.size();
-			if ( maxC == nCols && nCols > 0 )
-			{
-				final int xline = ( int ) ( ( layout.getCurrentLayoutMaxX() - minX + 0.5 ) * xScale );
-				g2.drawLine( xline, minLineY, xline, maxLineY );
-
-				final int xprevline = ( int ) ( ( columnX.get( nCols - 1 ) - minX - 0.5 ) * xScale );
-				final String str = columnRoots.get( nCols - 1 ).getLabel();
-				final int stringWidth = fm.stringWidth( str );
-
-				final int columnWidth = xline - xprevline;
-				if ( columnWidth >= stringWidth + 5 )
-				{
-					final int xtext = ( Math.min( width, xline ) + Math.max( 0, xprevline ) - stringWidth ) / 2;
-					if ( xtext >= 2 * XTEXT )
-					{
-						g2.drawString( str, xtext, YTEXT );
-					}
-				}
 			}
 		}
 	}

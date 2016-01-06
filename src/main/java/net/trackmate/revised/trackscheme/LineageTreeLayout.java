@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.Iterator;
+import java.util.List;
 
 import gnu.trove.iterator.TIntIterator;
 import gnu.trove.list.TDoubleList;
@@ -48,6 +49,11 @@ import net.trackmate.revised.trackscheme.ScreenVertexRange.ScreenVertexRangePool
  */
 public class LineageTreeLayout
 {
+	/**
+	 * The width below which a column line will not generate a screen entity.
+	 */
+	private static final double MIN_COLUMN_WIDTH = 30;
+
 	private final TrackSchemeGraph< ?, ? > graph;
 
 	/**
@@ -198,6 +204,7 @@ public class LineageTreeLayout
 			layoutX( root );
 			currentLayoutColumnRoot.add( root );
 		}
+		currentLayoutColumnX.add( rightmost );
 		currentLayoutMinX = 0;
 		currentLayoutMaxX = rightmost - 1;
 		notifyListeners();
@@ -225,31 +232,6 @@ public class LineageTreeLayout
 	public double getCurrentLayoutMaxX()
 	{
 		return currentLayoutMaxX;
-	}
-
-	/**
-	 * Returns the columns X positions in layout coordinates. The values stored
-	 * in the list returned are the left positions of the i<sup>th</sup> column.
-	 * The list is ordered from left to right and has strictly increasing
-	 * values.
-	 *
-	 * @return the column left X position.
-	 */
-	public TDoubleList getCurrentLayoutColumnX()
-	{
-		return currentLayoutColumnX;
-	}
-
-	/**
-	 * Returns the list of columns root. The vertices stored in the list
-	 * returned are the root of the i<sup>th</sup> column. The list is ordered
-	 * from left to right.
-	 *
-	 * @return the column roots.
-	 */
-	public RefList< TrackSchemeVertex > getCurrentLayoutColumnRoot()
-	{
-		return currentLayoutColumnRoot;
 	}
 
 	/**
@@ -307,6 +289,7 @@ public class LineageTreeLayout
 		final ScreenVertexPool screenVertexPool = screenEntities.getVertexPool();
 		final ScreenEdgePool screenEdgePool = screenEntities.getEdgePool();
 		final ScreenVertexRangePool screenRangePool = screenEntities.getRangePool();
+		final List< ScreenColumn > screenColumns = screenEntities.getColumns();
 
 		final TrackSchemeVertex v1 = graph.vertexRef();
 		final TrackSchemeVertex v2 = graph.vertexRef();
@@ -407,6 +390,40 @@ public class LineageTreeLayout
 					screenVertices.get( i, sv ).setVertexDist( minVertexScreenDist );
 				}
 			}
+		}
+
+		/*
+		 * Columns
+		 */
+
+		int minC = currentLayoutColumnX.binarySearch( minX );
+		if ( minC < 0 )
+		{
+			minC = -1 - minC;
+		}
+		minC = Math.max( 0, minC - 1 ); // at least 1 column out
+
+		int maxC = currentLayoutColumnX.binarySearch( maxX + 0.5, minC, currentLayoutColumnX.size() );
+		if ( maxC < 0 )
+		{
+			maxC = -1 - maxC;
+		}
+		maxC = Math.min( currentLayoutColumnX.size(), maxC + 1 );
+
+		// Build screen columns.
+		for ( int ic = minC + 1; ic < maxC; ic++ )
+		{
+			final double cLeft = currentLayoutColumnX.get( ic - 1 );
+			final double cRight = currentLayoutColumnX.get( ic );
+			final int xRight = ( int ) ( ( cRight - minX - 0.5 ) * xScale );
+			final int xLeft = ( int ) ( ( cLeft - minX - 0.5 ) * xScale );
+			final int columnWidth = xRight - xLeft;
+			if ( columnWidth < MIN_COLUMN_WIDTH )
+				continue;
+
+			final TrackSchemeVertex root = currentLayoutColumnRoot.get( ic - 1 );
+			final ScreenColumn column = new ScreenColumn( root.getLabel(), xLeft, columnWidth );
+			screenColumns.add( column );
 		}
 
 		screenEdgePool.releaseRef( se );

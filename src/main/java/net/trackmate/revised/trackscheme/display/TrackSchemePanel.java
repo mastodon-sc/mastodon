@@ -166,7 +166,8 @@ public class TrackSchemePanel extends JPanel implements
 		selection.addSelectionListener( this );
 
 		layout = new LineageTreeLayout( graph );
-		graphOverlay = new DefaultTrackSchemeOverlay( graph, layout, highlight, focus, optional );
+
+		graphOverlay = new DefaultTrackSchemeOverlay( graph, highlight, focus, optional );
 		display.addOverlayRenderer( graphOverlay );
 
 		// This should be the last OverlayRenderer in display.

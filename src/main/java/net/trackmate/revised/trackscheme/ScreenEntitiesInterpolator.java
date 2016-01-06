@@ -131,12 +131,18 @@ public class ScreenEntitiesInterpolator
 		// ===========================
 		current.screenTransform().interpolate( start.screenTransform(), end.screenTransform(), accelRatio );
 
+		// Interpolate columns
+		// ===================
+		// For now, do not interpolate, just copy the end columns.
+		current.setColumns( end.getColumns() );
+
 		// clean up
 		current.getVertexPool().releaseRef( currentVertex );
 		start.getVertexPool().releaseRef( startVertexRef );
 		end.getVertexPool().releaseRef( vEnd );
 		current.getEdgePool().releaseRef( eCurrent );
 		current.getEdgePool().releaseRef( eStart );
+
 	}
 
 	private void select( final ScreenVertex v, final double ratio, final ScreenVertex vCurrent )
