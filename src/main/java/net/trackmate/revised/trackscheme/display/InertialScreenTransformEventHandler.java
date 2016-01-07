@@ -385,8 +385,7 @@ public class InertialScreenTransformEventHandler
 
 			synchronized ( transform )
 			{
-				if ( enableInertialZoom )
-					previousTransform.set( transform );
+				previousTransform.set( transform );
 
 				if ( axis == ScrollAxis.X || axis == ScrollAxis.XY )
 				{
@@ -417,10 +416,13 @@ public class InertialScreenTransformEventHandler
 				}
 
 				constrainTransform( transform );
-
-				if ( enableInertialZoom )
-					animator = new InertialScreenTransformAnimator( previousTransform, transform, 50, 400 );
-				notifyListeners();
+				ConstrainScreenTransform.removeJitter( transform, previousTransform );
+				if ( !transform.equals( previousTransform ) )
+				{
+					if ( enableInertialZoom )
+						animator = new InertialScreenTransformAnimator( previousTransform, transform, 50, 400 );
+					notifyListeners();
+				}
 			}
 
 			if ( enableInertialZoom )
@@ -430,6 +432,8 @@ public class InertialScreenTransformEventHandler
 
 	private class TranslateScrollBehaviour extends SelfRegisteringBehaviour implements ScrollBehaviour
 	{
+		private final ScreenTransform previousTransform = new ScreenTransform();
+
 		public TranslateScrollBehaviour( final String name, final String... defaultTriggers )
 		{
 			super( name, defaultTriggers );
@@ -440,13 +444,17 @@ public class InertialScreenTransformEventHandler
 		{
 			synchronized ( transform )
 			{
+				previousTransform.set( transform );
 				final double d = wheelRotation * 15;
 				if ( isHorizontal )
 					transform.shiftX( d );
 				else
 					transform.shiftY( d );
 				constrainTransform( transform );
-				notifyListeners();
+
+				ConstrainScreenTransform.removeJitter( transform, previousTransform );
+				if ( !transform.equals( previousTransform ) )
+					notifyListeners();
 			}
 		}
 	}
@@ -475,9 +483,14 @@ public class InertialScreenTransformEventHandler
 		tend.set( tstart );
 		tend.shiftLayoutX( dx );
 		tend.shiftLayoutY( dy );
+		constrainTransform( tend );
 
-		animator = new InterpolateScreenTransformAnimator( tstart, tend, 200 );
-		runAnimation();
+		ConstrainScreenTransform.removeJitter( tend, tstart );
+		if ( !tend.equals( tstart ) )
+		{
+			animator = new InterpolateScreenTransformAnimator( tstart, tend, 200 );
+			runAnimation();
+		}
 	}
 
 	private void animate()

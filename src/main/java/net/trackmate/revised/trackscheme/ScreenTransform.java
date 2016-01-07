@@ -458,4 +458,19 @@ public class ScreenTransform implements InvertibleRealTransform
 			}
 		};
 	}
+
+	@Override
+	public boolean equals( final Object obj )
+	{
+		if ( obj == null || !( obj instanceof ScreenTransform ) )
+			return false;
+
+		final ScreenTransform t = ( ScreenTransform ) obj;
+		return t.minX == minX &&
+				t.maxX == maxX &&
+				t.minY == minY &&
+				t.maxY == maxY &&
+				t.screenWidth == screenWidth &&
+				t.screenHeight == screenHeight;
+	}
 }

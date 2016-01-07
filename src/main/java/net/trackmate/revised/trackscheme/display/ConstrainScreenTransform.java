@@ -187,6 +187,27 @@ public class ConstrainScreenTransform
 		transform.set( minX, maxX, minY, maxY, screenWidth, screenHeight );
 	}
 
+	private static final double JITTER_EPSILON = 0.0000000001;
+
+	/**
+	 * If the difference between {@code transform} and {@code reference} is
+	 * extremely small, set {@code transform = reference}.
+	 *
+	 * @param transform
+	 * @param reference
+	 */
+	public static void removeJitter( final ScreenTransform transform, final ScreenTransform reference )
+	{
+		if ( Math.abs( transform.getMinX() - reference.getMinX() ) < JITTER_EPSILON &&
+				Math.abs( transform.getMaxX() - reference.getMaxX() ) < JITTER_EPSILON &&
+				Math.abs( transform.getMinY() - reference.getMinY() ) < JITTER_EPSILON &&
+				Math.abs( transform.getMaxY() - reference.getMaxY() ) < JITTER_EPSILON &&
+				transform.getScreenWidth() == reference.getScreenWidth() &&
+				transform.getScreenHeight() == reference.getScreenHeight() )
+			transform.set( reference );
+	}
+
+
 	/**
 	 * Check whether the given {@link ScreenTransform} covers an area having
 	 * width less or equal to the specified {@code minSizeX}.
