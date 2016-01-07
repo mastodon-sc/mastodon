@@ -136,11 +136,11 @@ public class TrackSchemePanel extends JPanel implements
 
 	private final NavigationEtiquette navigationEtiquette;
 
-	private final NavigationHandler centeringNavigationHandler;
+	private final NavigationBehaviour centeringNavigationBehaviour;
 
-	private final NavigationHandler centerIfInvisibleNavigationHandler;
+	private final NavigationBehaviour centerIfInvisibleNavigationBehaviour;
 
-	private final NavigationHandler minimalNavigationHandler;
+	private final NavigationBehaviour minimalNavigationBehaviour;
 
 	public TrackSchemePanel(
 			final TrackSchemeGraph< ?, ? > graph,
@@ -170,9 +170,9 @@ public class TrackSchemePanel extends JPanel implements
 		 * handler.
 		 */
 		final InertialScreenTransformEventHandler transformEventHandler = ( InertialScreenTransformEventHandler ) display.getTransformEventHandler();
-		centeringNavigationHandler = new CenteringNavigationHandler( transformEventHandler );
-		centerIfInvisibleNavigationHandler = new CenterIfInvisibleNavigationHandler( transformEventHandler );
-		minimalNavigationHandler = new MinimalNavigationHandler( transformEventHandler, 100, 100 );
+		centeringNavigationBehaviour = new CenteringNavigationBehaviour( transformEventHandler );
+		centerIfInvisibleNavigationBehaviour = new CenterIfInvisibleNavigationBehaviour( transformEventHandler );
+		minimalNavigationBehaviour = new MinimalNavigationBehaviour( transformEventHandler, 100, 100 );
 
 		highlight.addHighlightListener( this );
 		focus.addFocusListener( this );
@@ -406,18 +406,18 @@ public class TrackSchemePanel extends JPanel implements
 		focus.focusVertex( v );
 		graphOverlay.setCurrentTimepoint( v.getTimepoint() );
 
-		final NavigationHandler navigationHandler;
+		final NavigationBehaviour navigationBehaviour;
 		switch( navigationEtiquette )
 		{
 		case MINIMAL:
-			navigationHandler = minimalNavigationHandler;
+			navigationBehaviour = minimalNavigationBehaviour;
 			break;
 		case CENTER_IF_INVISIBLE:
-			navigationHandler = centerIfInvisibleNavigationHandler;
+			navigationBehaviour = centerIfInvisibleNavigationBehaviour;
 			break;
 		case CENTERING:
 		default:
-			navigationHandler = centeringNavigationHandler;
+			navigationBehaviour = centeringNavigationBehaviour;
 			break;
 		}
 
@@ -426,23 +426,23 @@ public class TrackSchemePanel extends JPanel implements
 		{
 			transform.set( screenTransform );
 		}
-		navigationHandler.navigateToVertex( v, transform );
+		navigationBehaviour.navigateToVertex( v, transform );
 	}
 
 	/**
 	 * TODO: Let NavigationHandler.navigateToVertex return a target transform
 	 * instead of talking to the TransformEventHandler directly.
 	 */
-	interface NavigationHandler
+	interface NavigationBehaviour
 	{
 		public void navigateToVertex( final TrackSchemeVertex v, final ScreenTransform currentTransform );
 	}
 
-	static class CenteringNavigationHandler implements NavigationHandler
+	static class CenteringNavigationBehaviour implements NavigationBehaviour
 	{
 		private final InertialScreenTransformEventHandler transformEventHandler;
 
-		public CenteringNavigationHandler( final InertialScreenTransformEventHandler transformEventHandler )
+		public CenteringNavigationBehaviour( final InertialScreenTransformEventHandler transformEventHandler )
 		{
 			this.transformEventHandler = transformEventHandler;
 		}
@@ -456,11 +456,11 @@ public class TrackSchemePanel extends JPanel implements
 		}
 	}
 
-	static class CenterIfInvisibleNavigationHandler implements NavigationHandler
+	static class CenterIfInvisibleNavigationBehaviour implements NavigationBehaviour
 	{
 		private final InertialScreenTransformEventHandler transformEventHandler;
 
-		public CenterIfInvisibleNavigationHandler( final InertialScreenTransformEventHandler transformEventHandler )
+		public CenterIfInvisibleNavigationBehaviour( final InertialScreenTransformEventHandler transformEventHandler )
 		{
 			this.transformEventHandler = transformEventHandler;
 		}
@@ -480,7 +480,7 @@ public class TrackSchemePanel extends JPanel implements
 		}
 	}
 
-	static class MinimalNavigationHandler implements NavigationHandler
+	static class MinimalNavigationBehaviour implements NavigationBehaviour
 	{
 		private final InertialScreenTransformEventHandler transformEventHandler;
 
@@ -488,7 +488,7 @@ public class TrackSchemePanel extends JPanel implements
 
 		private final int screenBorderY;
 
-		public MinimalNavigationHandler( final InertialScreenTransformEventHandler transformEventHandler, final int screenBorderX, final int screenBorderY )
+		public MinimalNavigationBehaviour( final InertialScreenTransformEventHandler transformEventHandler, final int screenBorderX, final int screenBorderY )
 		{
 			this.transformEventHandler = transformEventHandler;
 			this.screenBorderX = screenBorderX;
