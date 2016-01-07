@@ -1,4 +1,4 @@
-package gun.trove.map;
+package gnu.trove.map;
 
 import java.io.Externalizable;
 import java.io.IOException;
