@@ -433,12 +433,12 @@ public class TrackSchemePanel extends JPanel implements
 	 * TODO: Let NavigationHandler.navigateToVertex return a target transform
 	 * instead of talking to the TransformEventHandler directly.
 	 */
-	public interface NavigationHandler
+	interface NavigationHandler
 	{
 		public void navigateToVertex( final TrackSchemeVertex v, final ScreenTransform currentTransform );
 	}
 
-	public static class CenteringNavigationHandler implements NavigationHandler
+	static class CenteringNavigationHandler implements NavigationHandler
 	{
 		private final InertialScreenTransformEventHandler transformEventHandler;
 
@@ -456,7 +456,7 @@ public class TrackSchemePanel extends JPanel implements
 		}
 	}
 
-	public static class CenterIfInvisibleNavigationHandler implements NavigationHandler
+	static class CenterIfInvisibleNavigationHandler implements NavigationHandler
 	{
 		private final InertialScreenTransformEventHandler transformEventHandler;
 
@@ -480,7 +480,7 @@ public class TrackSchemePanel extends JPanel implements
 		}
 	}
 
-	public static class MinimalNavigationHandler implements NavigationHandler
+	static class MinimalNavigationHandler implements NavigationHandler
 	{
 		private final InertialScreenTransformEventHandler transformEventHandler;
 
