@@ -1,14 +1,13 @@
 package net.trackmate.revised.trackscheme;
 
-import gnu.trove.iterator.TIntIterator;
-import gnu.trove.list.array.TIntArrayList;
-import gnu.trove.map.TIntObjectMap;
-import gnu.trove.map.hash.TIntObjectHashMap;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 
+import gnu.trove.iterator.TIntIterator;
+import gnu.trove.list.array.TIntArrayList;
+import gnu.trove.map.TIntObjectArrayMap;
+import gnu.trove.map.TIntObjectMap;
 import net.imglib2.RealLocalizable;
 import net.trackmate.graph.collection.RefList;
 import net.trackmate.graph.collection.RefSet;
@@ -73,8 +72,6 @@ public class LineageTreeLayout
 	 */
 	private final TIntArrayList timepoints;
 
-
-	// TODO: replace by TIntObjectArrayMap (assuming timepoints are more or less 0 based indices)
 	/**
 	 * Maps timepoint to {@link TrackSchemeVertexList} that contains all
 	 * layouted vertices of that timepoint ordered by ascending layout X
@@ -102,7 +99,7 @@ public class LineageTreeLayout
 		rightmost = 0;
 		timestamp = 0;
 		timepoints = new TIntArrayList();
-		timepointToOrderedVertices = new TIntObjectHashMap< TrackSchemeVertexList >();
+		timepointToOrderedVertices = new TIntObjectArrayMap< >();
 	}
 
 	/**
