@@ -54,11 +54,6 @@ public class TrackSchemePanel extends JPanel implements
 	private final TrackSchemeGraph< ?, ? > graph;
 
 	/**
-	 * trackscheme options.
-	 */
-	private final Values options;
-
-	/**
 	 * Canvas used for displaying the trackscheme graph.
 	 */
 	private final InteractiveDisplayCanvasComponent< ScreenTransform > display;
@@ -139,6 +134,12 @@ public class TrackSchemePanel extends JPanel implements
 
 	private final SelectionBehaviours selectionBehaviours;
 
+	private final NavigationEtiquette navigationEtiquette;
+
+	private final NavigationHandler centeringNavigationHandler;
+
+	private final NavigationHandler minimalNavigationHandler;
+
 	public TrackSchemePanel(
 			final TrackSchemeGraph< ?, ? > graph,
 			final TrackSchemeHighlight highlight,
@@ -150,8 +151,8 @@ public class TrackSchemePanel extends JPanel implements
 		super( new BorderLayout(), false );
 		this.graph = graph;
 		this.focus = focus;
-//		this.selection = selection;
-		options = optional.values;
+
+		final Values options = optional.values;
 
 		graph.addGraphChangeListener( this );
 		navigation.addNavigationListener( this );
@@ -160,6 +161,15 @@ public class TrackSchemePanel extends JPanel implements
 		final int h = options.getHeight();
 		display = new InteractiveDisplayCanvasComponent< ScreenTransform >(	w, h, options.getTransformEventHandlerFactory() );
 		display.addTransformListener( this );
+
+		navigationEtiquette = options.getNavigationEtiquette();
+		/*
+		 * TODO: This will fail if there is a different transform event
+		 * handler.
+		 */
+		final InertialScreenTransformEventHandler transformEventHandler = ( InertialScreenTransformEventHandler ) display.getTransformEventHandler();
+		centeringNavigationHandler = new CenteringNavigationHandler( transformEventHandler );
+		minimalNavigationHandler = new MinimalNavigationHandler( transformEventHandler );
 
 		highlight.addHighlightListener( this );
 		focus.addFocusListener( this );
@@ -393,27 +403,70 @@ public class TrackSchemePanel extends JPanel implements
 		focus.focusVertex( v );
 		graphOverlay.setCurrentTimepoint( v.getTimepoint() );
 
-		final double lx = v.getLayoutX();
-		final double ly = v.getTimepoint();
+		final NavigationHandler navigationHandler;
+		switch( navigationEtiquette )
+		{
+		case MINIMAL:
+			navigationHandler = minimalNavigationHandler;
+			break;
+		case CENTERING:
+		default:
+			navigationHandler = centeringNavigationHandler;
+			break;
+		}
+
+		final ScreenTransform transform = new ScreenTransform();
+		synchronized( screenTransform )
+		{
+			transform.set( screenTransform );
+		}
+		navigationHandler.navigateToVertex( v, transform );
+	}
+
+	public interface NavigationHandler
+	{
+		public void navigateToVertex( final TrackSchemeVertex v, final ScreenTransform currentTransform );
+	}
+
+	public static class CenteringNavigationHandler implements NavigationHandler
+	{
+		private final InertialScreenTransformEventHandler transformEventHandler;
+
+		public CenteringNavigationHandler( final InertialScreenTransformEventHandler transformEventHandler )
+		{
+			this.transformEventHandler = transformEventHandler;
+		}
+
+		@Override
+		public void navigateToVertex( final TrackSchemeVertex v, final ScreenTransform currentTransform )
+		{
+			final double lx = v.getLayoutX();
+			final double ly = v.getTimepoint();
+			transformEventHandler.centerOn( lx, ly );
+		}
+	}
+
+	public static class MinimalNavigationHandler implements NavigationHandler
+	{
+		private final InertialScreenTransformEventHandler transformEventHandler;
+
+		public MinimalNavigationHandler( final InertialScreenTransformEventHandler transformEventHandler )
+		{
+			this.transformEventHandler = transformEventHandler;
+		}
 
 		// With MINIMAL etiquette, only navigate to the specified vertex if not
 		// is currently displayed.
-		if ( options.getNavigationEtiquette() == NavigationEtiquette.CENTERING ||
-				( screenTransform.getMaxX() < lx || screenTransform.getMinX() > lx
-				|| screenTransform.getMaxY() < ly || screenTransform.getMinY() > ly ) )
+		@Override
+		public void navigateToVertex( final TrackSchemeVertex v, final ScreenTransform currentTransform )
 		{
-			/*
-			 * TODO: This will fail if there is a different transform event
-			 * handler.
-			 * 
-			 * TODO: Also it shouldn't require display here.
-			 * 
-			 * TODO: Instead it should be routed through a new interface that
-			 * forwards to InertialScreenTransformEventHandler or does whatever
-			 * is appropriate (e.g. ignores it).
-			 */
-			final InertialScreenTransformEventHandler transformEventHandler = ( InertialScreenTransformEventHandler ) display.getTransformEventHandler();
-			transformEventHandler.centerOn( lx, ly );
+			final double lx = v.getLayoutX();
+			final double ly = v.getTimepoint();
+			if ( currentTransform.getMaxX() < lx || currentTransform.getMinX() > lx
+					|| currentTransform.getMaxY() < ly || currentTransform.getMinY() > ly )
+			{
+				transformEventHandler.centerOn( lx, ly );
+			}
 		}
 	}
 
