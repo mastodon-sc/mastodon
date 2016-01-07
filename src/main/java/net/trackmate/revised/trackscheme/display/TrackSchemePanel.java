@@ -527,12 +527,6 @@ public class TrackSchemePanel extends JPanel implements
 		return display;
 	}
 
-	// TODO unused, remove
-	protected LineageTreeLayout getLineageTreeLayout()
-	{
-		return layout;
-	}
-
 	// TODO remove. revise TrackSchemePanel / TrackSchemeFrame construction
 	public TrackSchemeNavigator getNavigator()
 	{
