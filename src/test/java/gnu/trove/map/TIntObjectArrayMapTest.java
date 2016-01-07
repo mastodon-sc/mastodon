@@ -20,7 +20,6 @@ import gnu.trove.map.hash.TIntObjectHashMap;
 import gnu.trove.procedure.TIntObjectProcedure;
 import gnu.trove.procedure.TIntProcedure;
 import gnu.trove.procedure.TObjectProcedure;
-import net.trackmate.graph.TestVertex;
 
 public class TIntObjectArrayMapTest
 {
@@ -270,7 +269,7 @@ public class TIntObjectArrayMapTest
 		assertEquals( "values() array is not of the expected length.", map.size(), values.length );
 		for ( final Object obj : values )
 		{
-			assertTrue( "Object returned by values() is not of the expected class.", obj instanceof TestVertex );
+			assertTrue( "Object returned by values() is not of the expected class.", obj instanceof String );
 			assertTrue( "Object returned by values() should be in the map.", map.containsValue( obj ) );
 		}
 	}
@@ -417,7 +416,7 @@ public class TIntObjectArrayMapTest
 			@Override
 			public boolean execute( final int a, final String b )
 			{
-				return Integer.valueOf( b ) == storedIds[ 0 ];
+				return b.equals( "i" );
 			}
 		};
 		final boolean changed = map.retainEntries( proc );
@@ -426,6 +425,6 @@ public class TIntObjectArrayMapTest
 		final TIntObjectIterator< String > it = map.iterator();
 		it.advance();
 		final String value = it.value();
-		assertEquals( "Remaining value is not the right one.", storedIds[ 0 ], ( int ) Integer.valueOf( value ) );
+		assertEquals( "Remaining value is not the right one.", "i", value );
 	}
 }
