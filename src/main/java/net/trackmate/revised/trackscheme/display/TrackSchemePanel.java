@@ -429,6 +429,10 @@ public class TrackSchemePanel extends JPanel implements
 		navigationHandler.navigateToVertex( v, transform );
 	}
 
+	/**
+	 * TODO: Let NavigationHandler.navigateToVertex return a target transform
+	 * instead of talking to the TransformEventHandler directly.
+	 */
 	public interface NavigationHandler
 	{
 		public void navigateToVertex( final TrackSchemeVertex v, final ScreenTransform currentTransform );
