@@ -1,9 +1,5 @@
 package gnu.trove.map;
 
-import java.io.Externalizable;
-import java.io.IOException;
-import java.io.ObjectInput;
-import java.io.ObjectOutput;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map;
@@ -16,7 +12,7 @@ import gnu.trove.procedure.TIntProcedure;
 import gnu.trove.procedure.TObjectProcedure;
 import gnu.trove.set.TIntSet;
 
-public class TIntObjectArrayMap< V > implements TIntObjectMap< V >, Externalizable
+public class TIntObjectArrayMap< V > implements TIntObjectMap< V >
 {
 
 	/**
@@ -327,24 +323,6 @@ public class TIntObjectArrayMap< V > implements TIntObjectMap< V >, Externalizab
 		return changed;
 	}
 
-	/*
-	 * EXTERNALIZABLE
-	 */
-
-	@Override
-	public void readExternal( final ObjectInput in ) throws IOException, ClassNotFoundException
-	{
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void writeExternal( final ObjectOutput out ) throws IOException
-	{
-		// TODO Auto-generated method stub
-
-	}
-
 	@Override
 	public String toString()
 	{
@@ -365,3 +343,4 @@ public class TIntObjectArrayMap< V > implements TIntObjectMap< V >, Externalizab
 		return str.toString();
 	}
 }
+
