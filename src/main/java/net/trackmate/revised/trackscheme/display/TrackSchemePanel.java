@@ -131,11 +131,13 @@ public class TrackSchemePanel extends JPanel implements
 	 */
 	private boolean ignoreScrollBarChanges;
 
-	private final TrackSchemeSelection selection;
-
-	private final TrackSchemeNavigation navigation;
+//	private final TrackSchemeSelection selection;
 
 	private final TrackSchemeFocus focus;
+
+	private final TrackSchemeNavigator navigator;
+
+	private final SelectionBehaviours selectionBehaviours;
 
 	public TrackSchemePanel(
 			final TrackSchemeGraph< ?, ? > graph,
@@ -148,8 +150,7 @@ public class TrackSchemePanel extends JPanel implements
 		super( new BorderLayout(), false );
 		this.graph = graph;
 		this.focus = focus;
-		this.selection = selection;
-		this.navigation = navigation;
+//		this.selection = selection;
 		options = optional.values;
 
 		graph.addGraphChangeListener( this );
@@ -194,17 +195,15 @@ public class TrackSchemePanel extends JPanel implements
 		painterThread = new PainterThread( this );
 		flags = new Flags();
 
-		display.addMouseMotionListener( new MouseHighlightHandler( graphOverlay, highlight, graph ) );
+		final MouseHighlightHandler highlightHandler = new MouseHighlightHandler( graphOverlay, highlight, graph );
+		display.addMouseMotionListener( highlightHandler );
+		display.addTransformListener( highlightHandler );
 
-		final MouseSelectionHandler mouseSelectionHandler = new MouseSelectionHandler( graphOverlay, selection, display, layout, graph );
-		display.addHandler( mouseSelectionHandler );
-		display.addOverlayRenderer( mouseSelectionHandler );
-
-		final TrackSchemeNavigator navigator = new TrackSchemeNavigator( graph, layout, focus, navigation );
+		navigator = new TrackSchemeNavigator( graph, layout, focus, navigation, selection );
 		display.addTransformListener( navigator );
-		final FocusHandler focusHandler = new FocusHandler( navigator, navigation, focus, selection, graph, graphOverlay );
-		focusHandler.installOn( display );
-		display.addHandler( focusHandler );
+
+		selectionBehaviours = new SelectionBehaviours( display, graph, layout, graphOverlay, focus, navigation, selection );
+		display.addTransformListener( selectionBehaviours );
 
 		xScrollBar = new JScrollBar( JScrollBar.HORIZONTAL );
 		yScrollBar = new JScrollBar( JScrollBar.VERTICAL );
@@ -344,8 +343,11 @@ public class TrackSchemePanel extends JPanel implements
 	@Override
 	public void timePointChanged( final int timepoint )
 	{
-		graphOverlay.setCurrentTimepoint( timepoint );
-		display.repaint();
+		if ( graphOverlay.getCurrentTimepoint() != timepoint )
+		{
+			graphOverlay.setCurrentTimepoint( timepoint );
+			display.repaint();
+		}
 	}
 
 	@Override
@@ -388,7 +390,9 @@ public class TrackSchemePanel extends JPanel implements
 	@Override
 	public void navigateToVertex( final TrackSchemeVertex v )
 	{
-		focus.focusVertex( v ); // TODO: focusVertex is done here AND in TrackSchemeNavigator.rightSibling(). Once is enough. Which one?
+		focus.focusVertex( v );
+		graphOverlay.setCurrentTimepoint( v.getTimepoint() );
+
 		final double lx = v.getLayoutX();
 		final double ly = v.getTimepoint();
 
@@ -413,7 +417,7 @@ public class TrackSchemePanel extends JPanel implements
 		}
 	}
 
-	// TODO unused, remove
+	// TODO remove??? revise TrackSchemePanel / TrackSchemeFrame construction.
 	protected InteractiveDisplayCanvasComponent< ScreenTransform > getDisplay()
 	{
 		return display;
@@ -423,6 +427,18 @@ public class TrackSchemePanel extends JPanel implements
 	protected LineageTreeLayout getLineageTreeLayout()
 	{
 		return layout;
+	}
+
+	// TODO remove. revise TrackSchemePanel / TrackSchemeFrame construction
+	public TrackSchemeNavigator getNavigator()
+	{
+		return navigator;
+	}
+
+	// TODO remove. revise TrackSchemePanel / TrackSchemeFrame construction
+	public SelectionBehaviours getSelectionBehaviours()
+	{
+		return selectionBehaviours;
 	}
 
 	protected class ScreenEntityAnimator extends AbstractAnimator
