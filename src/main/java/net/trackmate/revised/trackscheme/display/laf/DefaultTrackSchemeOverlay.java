@@ -87,6 +87,7 @@ public class DefaultTrackSchemeOverlay extends AbstractTrackSchemeOverlay
 	protected void paintBackground( final Graphics2D g2, final ScreenEntities screenEntities )
 	{
 		final int width = getWidth();
+		final int height = getHeight();
 
 		final ScreenTransform screenTransform = new ScreenTransform();
 		screenEntities.getScreenTransform( screenTransform );
@@ -103,6 +104,8 @@ public class DefaultTrackSchemeOverlay extends AbstractTrackSchemeOverlay
 			g2.fillRect( 0, y, width, h );
 		}
 
+		g2.setColor( style.decorationColor );
+
 		final int stepT = 1 + MIN_TIMELINE_SPACING / ( int ) ( 1 + yScale );
 		int tstart = Math.max( getMinTimepoint(), ( int ) minY - 1 );
 		tstart = ( tstart / stepT ) * stepT;
@@ -111,7 +114,6 @@ public class DefaultTrackSchemeOverlay extends AbstractTrackSchemeOverlay
 
 		if ( paintRows )
 		{
-			g2.setColor( style.decorationColor );
 			for ( int t = tstart; t < tend; t = t + stepT )
 			{
 				final int yline = ( int ) ( ( t - minY - 0.5 ) * yScale );
@@ -125,7 +127,6 @@ public class DefaultTrackSchemeOverlay extends AbstractTrackSchemeOverlay
 
 		if ( paintColumns )
 		{
-			g2.setColor( style.decorationColor );
 			final int maxLineY = ( int ) ( ( tend - minY - 0.5 ) * yScale );
 			final List< ScreenColumn > columns = screenEntities.getColumns();
 			for ( final ScreenColumn column : columns )
@@ -138,7 +139,11 @@ public class DefaultTrackSchemeOverlay extends AbstractTrackSchemeOverlay
 
 	@Override
 	protected void paintDecoration( final Graphics2D g2, final ScreenEntities screenEntities )
-	{}
+	{
+		g2.setColor( style.decorationColor );
+		g2.drawLine( 0, 0, getWidth(), 0 );
+		g2.drawLine( 0, 0, 0, getHeight() );
+	}
 
 	@Override
 	protected void beforeDrawVertex( final Graphics2D g2 )

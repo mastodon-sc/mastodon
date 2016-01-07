@@ -283,8 +283,10 @@ public class TrackSchemePanel extends JPanel implements
 				final Graphics2D g2 = ( Graphics2D ) g;
 				g2.setRenderingHint( RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON );
 
+				g2.drawLine( 0, 0, 0, getHeight() );
+
 				final FontMetrics fm = g.getFontMetrics( graphOverlay.getFont() );
-				g.setFont( graphOverlay.getFont() );
+				g2.setFont( graphOverlay.getFont() );
 
 				final Iterator< ScreenColumn > it = entityAnimator.getLastComputedScreenEntities().getColumns().iterator();
 				while ( it.hasNext() )
@@ -299,6 +301,9 @@ public class TrackSchemePanel extends JPanel implements
 						continue;
 
 					final int xtext = ( Math.min( column.xLeft + column.width, getWidth() ) + Math.max( 0, column.xLeft ) - stringWidth ) / 2;
+					if ( xtext < stringWidth / 2 )
+						continue;
+
 					g.drawString( str, xtext, HEADER_HEIGHT / 2 );
 				}
 			}
@@ -317,15 +322,18 @@ public class TrackSchemePanel extends JPanel implements
 			@Override
 			protected void paintComponent( final Graphics g )
 			{
-				final Graphics2D g2 = ( Graphics2D ) g;
-				g2.setRenderingHint( RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON );
-
-				final FontMetrics fm = g.getFontMetrics( graphOverlay.getFont() );
-				g.setFont( graphOverlay.getFont() );
-
 				final double yScale = screenTransform.getScaleY();
 				final double minY = screenTransform.getMinY();
 				final double maxY = screenTransform.getMaxY();
+
+				final Graphics2D g2 = ( Graphics2D ) g;
+				g2.setRenderingHint( RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON );
+
+				g2.setColor( getForeground() );
+				g2.drawLine( 0, 0, getWidth(), 0 );
+
+				final FontMetrics fm = g.getFontMetrics( graphOverlay.getFont() );
+				g.setFont( graphOverlay.getFont() );
 
 				final int stepT = 1 + MIN_TIMELINE_SPACING / ( int ) ( 1 + yScale );
 				int tstart = Math.max( graphOverlay.getMinTimepoint(), ( int ) minY - 1 );
