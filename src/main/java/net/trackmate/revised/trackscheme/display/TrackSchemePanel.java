@@ -8,7 +8,6 @@ import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.awt.event.AdjustmentEvent;
 import java.awt.event.AdjustmentListener;
-import java.util.Iterator;
 
 import javax.swing.Box;
 import javax.swing.JPanel;
@@ -288,10 +287,11 @@ public class TrackSchemePanel extends JPanel implements
 				final FontMetrics fm = g.getFontMetrics( graphOverlay.getFont() );
 				g2.setFont( graphOverlay.getFont() );
 
-				final Iterator< ScreenColumn > it = entityAnimator.getLastComputedScreenEntities().getColumns().iterator();
-				while ( it.hasNext() )
+				// Avoid ConcurrentModificationException. We assume there is a
+				// small (<1000) number of columns.
+				final ScreenColumn[] it = entityAnimator.getLastComputedScreenEntities().getColumns().toArray( new ScreenColumn[] {} );
+				for ( final ScreenColumn column : it )
 				{
-					final ScreenColumn column = it.next();
 					g2.drawLine( column.xLeft, 0, column.xLeft, getWidth() );
 					g2.drawLine( column.xLeft + column.width, 0, column.xLeft + column.width, getWidth() );
 
