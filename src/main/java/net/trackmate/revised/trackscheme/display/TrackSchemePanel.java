@@ -2,9 +2,13 @@ package net.trackmate.revised.trackscheme.display;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
+import java.awt.FontMetrics;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.RenderingHints;
 import java.awt.event.AdjustmentEvent;
 import java.awt.event.AdjustmentListener;
+import java.util.Iterator;
 
 import javax.swing.Box;
 import javax.swing.JPanel;
@@ -20,6 +24,7 @@ import net.imglib2.ui.TransformListener;
 import net.trackmate.graph.listenable.GraphChangeListener;
 import net.trackmate.revised.trackscheme.LineageTreeLayout;
 import net.trackmate.revised.trackscheme.LineageTreeLayout.LayoutListener;
+import net.trackmate.revised.trackscheme.ScreenColumn;
 import net.trackmate.revised.trackscheme.ScreenEntities;
 import net.trackmate.revised.trackscheme.ScreenEntitiesInterpolator;
 import net.trackmate.revised.trackscheme.ScreenTransform;
@@ -50,6 +55,16 @@ public class TrackSchemePanel extends JPanel implements
 {
 
 	private static final long ANIMATION_MILLISECONDS = 250;
+
+	private static final int HEADER_WIDTH = 25;
+
+	private static final int HEADER_HEIGHT = 20;
+
+	/**
+	 * If the time rows are smaller than this size in pixels, they won't be
+	 * drawn.
+	 */
+	private static final int MIN_TIMELINE_SPACING = 20;
 
 	private final TrackSchemeGraph< ?, ? > graph;
 
@@ -138,6 +153,10 @@ public class TrackSchemePanel extends JPanel implements
 	private final TrackSchemeNavigator navigator;
 
 	private final SelectionBehaviours selectionBehaviours;
+
+	private final JPanel columnHeader;
+
+	private final JPanel rowHeader;
 
 	public TrackSchemePanel(
 			final TrackSchemeGraph< ?, ? > graph,
@@ -253,7 +272,83 @@ public class TrackSchemePanel extends JPanel implements
 		xScrollPanel.add( xScrollBar, BorderLayout.CENTER );
 		final int space = ( Integer ) UIManager.getDefaults().get( "ScrollBar.width" );
 		xScrollPanel.add( Box.createRigidArea( new Dimension( space, 0 ) ), BorderLayout.EAST );
+		xScrollPanel.add( Box.createRigidArea( new Dimension( HEADER_WIDTH, 0 ) ), BorderLayout.WEST );
 		add( xScrollPanel, BorderLayout.SOUTH );
+
+		columnHeader = new JPanel()
+		{
+			@Override
+			protected void paintComponent( final Graphics g )
+			{
+				final Graphics2D g2 = ( Graphics2D ) g;
+				g2.setRenderingHint( RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON );
+
+				final FontMetrics fm = g.getFontMetrics( graphOverlay.getFont() );
+				g.setFont( graphOverlay.getFont() );
+
+				final Iterator< ScreenColumn > it = entityAnimator.getLastComputedScreenEntities().getColumns().iterator();
+				while ( it.hasNext() )
+				{
+					final ScreenColumn column = it.next();
+					g2.drawLine( column.xLeft, 0, column.xLeft, getWidth() );
+					g2.drawLine( column.xLeft + column.width, 0, column.xLeft + column.width, getWidth() );
+
+					final String str = column.label;
+					final int stringWidth = fm.stringWidth( str );
+					if ( column.width < stringWidth + 5 || ( getWidth() - column.xLeft ) < stringWidth + 5 )
+						continue;
+
+					final int xtext = ( Math.min( column.xLeft + column.width, getWidth() ) + Math.max( 0, column.xLeft ) - stringWidth ) / 2;
+					g.drawString( str, xtext, HEADER_HEIGHT / 2 );
+				}
+			}
+		};
+		columnHeader.setPreferredSize( new Dimension( HEADER_WIDTH, HEADER_HEIGHT ) );
+		columnHeader.setOpaque( false );
+		final JPanel columnHeaderPanel = new JPanel( new BorderLayout() );
+		columnHeaderPanel.add( Box.createRigidArea( new Dimension( HEADER_WIDTH, 0 ) ), BorderLayout.WEST );
+		columnHeaderPanel.add( columnHeader, BorderLayout.CENTER );
+		columnHeaderPanel.add( Box.createRigidArea( new Dimension( space, 0 ) ), BorderLayout.EAST );
+		columnHeaderPanel.setOpaque( false );
+		add( columnHeaderPanel, BorderLayout.NORTH );
+
+		rowHeader = new JPanel()
+		{
+			@Override
+			protected void paintComponent( final Graphics g )
+			{
+				final Graphics2D g2 = ( Graphics2D ) g;
+				g2.setRenderingHint( RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON );
+
+				final FontMetrics fm = g.getFontMetrics( graphOverlay.getFont() );
+				g.setFont( graphOverlay.getFont() );
+
+				final double yScale = screenTransform.getScaleY();
+				final double minY = screenTransform.getMinY();
+				final double maxY = screenTransform.getMaxY();
+
+				final int stepT = 1 + MIN_TIMELINE_SPACING / ( int ) ( 1 + yScale );
+				int tstart = Math.max( graphOverlay.getMinTimepoint(), ( int ) minY - 1 );
+				tstart = ( tstart / stepT ) * stepT;
+				int tend = Math.min( graphOverlay.getMaxTimepoint(), 1 + ( int ) maxY );
+				tend = ( 1 + tend / stepT ) * stepT;
+
+				final int fontInc = fm.getHeight() / 2;
+				for ( int t = tstart; t < tend; t = t + stepT )
+				{
+					final int yline = ( int ) ( ( t - minY - 0.5 ) * yScale );
+					g2.drawLine( 0, yline, getWidth(), yline );
+
+					final int ytext = ( int ) ( ( t - minY + stepT / 2 ) * yScale ) + fontInc;
+					g2.drawString( "" + t, 5, ytext );
+				}
+			}
+		};
+		rowHeader.setPreferredSize( new Dimension( HEADER_WIDTH, HEADER_HEIGHT ) );
+		rowHeader.setOpaque( false );
+		add( rowHeader, BorderLayout.WEST );
+
+		styleChanged();
 
 		painterThread.start();
 	}
@@ -286,6 +381,23 @@ public class TrackSchemePanel extends JPanel implements
 	{
 		if ( !entityAnimator.isComplete() )
 			painterThread.requestRepaint();
+	}
+
+	/**
+	 * Refresh this panel component with the most recent style settings. TODO
+	 * change visibility and use when there is a view configuration.
+	 */
+	private void styleChanged()
+	{
+		columnHeader.setBackground( graphOverlay.getBackground() );
+		columnHeader.setForeground( graphOverlay.getForeground() );
+		columnHeader.setFont( graphOverlay.getFont() );
+		rowHeader.setBackground( graphOverlay.getBackground() );
+		rowHeader.setForeground( graphOverlay.getForeground() );
+		rowHeader.setFont( graphOverlay.getFont() );
+		setBackground( graphOverlay.getBackground() );
+		setFont( graphOverlay.getFont() );
+		painterThread.requestRepaint();
 	}
 
 	@Override
@@ -321,6 +433,8 @@ public class TrackSchemePanel extends JPanel implements
 		entityAnimator.setTime( System.currentTimeMillis() );
 		entityAnimator.setPaintEntities( graphOverlay );
 		display.repaint();
+		columnHeader.repaint();
+		rowHeader.repaint();
 
 		// adjust scrollbars sizes
 		final ScreenTransform t = new ScreenTransform();

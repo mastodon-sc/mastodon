@@ -1,5 +1,7 @@
 package net.trackmate.revised.trackscheme.display;
 
+import java.awt.Color;
+import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
@@ -479,4 +481,26 @@ public abstract class AbstractTrackSchemeOverlay implements OverlayRenderer
 	protected abstract void drawEdge( Graphics2D g2, ScreenEdge edge, ScreenVertex vs, ScreenVertex vt );
 
 	protected abstract void paintDecoration( Graphics2D g2, ScreenEntities screenEntities );
+
+	/**
+	 * Returns the font that should be used to draw text on this overlay.
+	 * 
+	 * @return the font.
+	 */
+	protected abstract Font getFont();
+
+	/**
+	 * Returns the color used to paint the background of this overlay.
+	 * 
+	 * @return the background color.
+	 */
+	protected abstract Color getBackground();
+
+	/**
+	 * Returns the color used to paint the foreground of this overlay.
+	 * 
+	 * @return the foreground color.
+	 */
+	protected abstract Color getForeground();
+
 }

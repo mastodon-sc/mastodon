@@ -7,7 +7,7 @@ import static net.trackmate.revised.trackscheme.ScreenVertex.Transition.NONE;
 import static net.trackmate.revised.trackscheme.ScreenVertex.Transition.SELECTING;
 
 import java.awt.Color;
-import java.awt.FontMetrics;
+import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.font.FontRenderContext;
 import java.awt.font.TextLayout;
@@ -52,16 +52,6 @@ public class DefaultTrackSchemeOverlay extends AbstractTrackSchemeOverlay
 	 */
 	private static final int MIN_TIMELINE_SPACING = 20;
 
-	/**
-	 * Y position for columns labels.
-	 */
-	private static final int YTEXT = 20;
-
-	/**
-	 * X position for time labels.
-	 */
-	private static final int XTEXT = 20;
-
 	public static final double simplifiedVertexRadius = 3.0;
 
 	public static final double minDisplayVertexDist = 20.0;
@@ -97,15 +87,12 @@ public class DefaultTrackSchemeOverlay extends AbstractTrackSchemeOverlay
 	protected void paintBackground( final Graphics2D g2, final ScreenEntities screenEntities )
 	{
 		final int width = getWidth();
-		final int height = getHeight();
 
 		final ScreenTransform screenTransform = new ScreenTransform();
 		screenEntities.getScreenTransform( screenTransform );
 		final double yScale = screenTransform.getScaleY();
 		final double minY = screenTransform.getMinY();
-
-		g2.setColor( style.backgroundColor );
-		g2.fillRect( 0, 0, width, height );
+		final double maxY = screenTransform.getMaxY();
 
 		if ( highlightCurrentTimepoint )
 		{
@@ -115,26 +102,6 @@ public class DefaultTrackSchemeOverlay extends AbstractTrackSchemeOverlay
 			g2.setColor( style.currentTimepointColor );
 			g2.fillRect( 0, y, width, h );
 		}
-	}
-
-	@Override
-	protected void paintDecoration( final Graphics2D g2, final ScreenEntities screenEntities )
-	{
-		final int width = getWidth();
-		final int height = getHeight();
-
-		final ScreenTransform screenTransform = new ScreenTransform();
-		screenEntities.getScreenTransform( screenTransform );
-		final double yScale = screenTransform.getScaleY();
-		final double minY = screenTransform.getMinY();
-		final double maxY = screenTransform.getMaxY();
-
-		/*
-		 * DECORATIONS
-		 */
-
-		final FontMetrics fm = g2.getFontMetrics( style.font );
-		g2.setFont( style.font );
 
 		final int stepT = 1 + MIN_TIMELINE_SPACING / ( int ) ( 1 + yScale );
 		int tstart = Math.max( getMinTimepoint(), ( int ) minY - 1 );
@@ -144,33 +111,11 @@ public class DefaultTrackSchemeOverlay extends AbstractTrackSchemeOverlay
 
 		if ( paintRows )
 		{
-			final int eraseWidth = ( int ) ( 2.5 * XTEXT );
-
-			g2.setColor( style.backgroundColor );
-			g2.fillRect( 0, 0, eraseWidth, height );
-
-			if ( highlightCurrentTimepoint )
-			{
-				final double t = getCurrentTimepoint();
-				final int y = ( int ) Math.round( yScale * ( t - minY - 0.5 ) );
-				final int h = Math.max( 1, ( int ) Math.round( yScale ) );
-				g2.setColor( style.currentTimepointColor );
-				g2.fillRect( 0, y, eraseWidth, h );
-			}
-
-			final int fontInc = fm.getHeight() / 2;
 			g2.setColor( style.decorationColor );
 			for ( int t = tstart; t < tend; t = t + stepT )
 			{
 				final int yline = ( int ) ( ( t - minY - 0.5 ) * yScale );
 				g2.drawLine( 0, yline, width, yline );
-
-				final int ytext = ( int ) ( ( t - minY + stepT / 2 ) * yScale ) + fontInc;
-				if ( ytext < 2 * YTEXT )
-				{
-					continue;
-				}
-				g2.drawString( "" + t, XTEXT, ytext );
 			}
 
 			// Last line
@@ -180,31 +125,20 @@ public class DefaultTrackSchemeOverlay extends AbstractTrackSchemeOverlay
 
 		if ( paintColumns )
 		{
-			g2.setColor( style.backgroundColor );
-			g2.fillRect( 0, 0, width, 2 * YTEXT );
 			g2.setColor( style.decorationColor );
-
-			final int minLineY = ( int ) ( ( tstart - minY - 0.5 ) * yScale );
 			final int maxLineY = ( int ) ( ( tend - minY - 0.5 ) * yScale );
 			final List< ScreenColumn > columns = screenEntities.getColumns();
 			for ( final ScreenColumn column : columns )
 			{
-				g2.drawLine( column.xLeft, minLineY, column.xLeft, maxLineY );
-				g2.drawLine( column.xLeft + column.width, minLineY, column.xLeft + column.width, maxLineY );
-
-				final String str = column.label;
-				final int stringWidth = fm.stringWidth( str );
-				if ( column.width < stringWidth + 5 || ( width - column.xLeft ) < stringWidth + 5 )
-					continue;
-
-				final int xtext = ( Math.min( column.xLeft + column.width, width ) + Math.max( 0, column.xLeft ) - stringWidth ) / 2;
-				if ( xtext < 2 * XTEXT )
-					continue;
-
-				g2.drawString( str, xtext, YTEXT );
+				g2.drawLine( column.xLeft, 0, column.xLeft, maxLineY );
+				g2.drawLine( column.xLeft + column.width, 0, column.xLeft + column.width, maxLineY );
 			}
 		}
 	}
+
+	@Override
+	protected void paintDecoration( final Graphics2D g2, final ScreenEntities screenEntities )
+	{}
 
 	@Override
 	protected void beforeDrawVertex( final Graphics2D g2 )
@@ -427,4 +361,23 @@ public class DefaultTrackSchemeOverlay extends AbstractTrackSchemeOverlay
 			return new Color( r, g, b, ( int ) ( 255 * ( 1 - ratio ) ) );
 		}
 	}
+
+	@Override
+	protected Font getFont()
+	{
+		return style.font;
+	}
+
+	@Override
+	protected Color getBackground()
+	{
+		return style.backgroundColor;
+	}
+
+	@Override
+	protected Color getForeground()
+	{
+		return style.decorationColor;
+	}
+
 }
