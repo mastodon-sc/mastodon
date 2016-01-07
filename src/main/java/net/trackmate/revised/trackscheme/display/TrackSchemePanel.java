@@ -138,7 +138,7 @@ public class TrackSchemePanel extends JPanel implements
 
 	private final NavigationHandler centeringNavigationHandler;
 
-	private final NavigationHandler minimalNavigationHandler;
+	private final NavigationHandler centerIfInvisibleNavigationHandler;
 
 	public TrackSchemePanel(
 			final TrackSchemeGraph< ?, ? > graph,
@@ -169,7 +169,7 @@ public class TrackSchemePanel extends JPanel implements
 		 */
 		final InertialScreenTransformEventHandler transformEventHandler = ( InertialScreenTransformEventHandler ) display.getTransformEventHandler();
 		centeringNavigationHandler = new CenteringNavigationHandler( transformEventHandler );
-		minimalNavigationHandler = new MinimalNavigationHandler( transformEventHandler );
+		centerIfInvisibleNavigationHandler = new CenterIfInvisibleNavigationHandler( transformEventHandler );
 
 		highlight.addHighlightListener( this );
 		focus.addFocusListener( this );
@@ -406,8 +406,8 @@ public class TrackSchemePanel extends JPanel implements
 		final NavigationHandler navigationHandler;
 		switch( navigationEtiquette )
 		{
-		case MINIMAL:
-			navigationHandler = minimalNavigationHandler;
+		case CENTER_IF_INVISIBLE:
+			navigationHandler = centerIfInvisibleNavigationHandler;
 			break;
 		case CENTERING:
 		default:
@@ -446,16 +446,16 @@ public class TrackSchemePanel extends JPanel implements
 		}
 	}
 
-	public static class MinimalNavigationHandler implements NavigationHandler
+	public static class CenterIfInvisibleNavigationHandler implements NavigationHandler
 	{
 		private final InertialScreenTransformEventHandler transformEventHandler;
 
-		public MinimalNavigationHandler( final InertialScreenTransformEventHandler transformEventHandler )
+		public CenterIfInvisibleNavigationHandler( final InertialScreenTransformEventHandler transformEventHandler )
 		{
 			this.transformEventHandler = transformEventHandler;
 		}
 
-		// With MINIMAL etiquette, only navigate to the specified vertex if not
+		// With CENTER_IF_INVISIBLE etiquette, only navigate to the specified vertex if not
 		// is currently displayed.
 		@Override
 		public void navigateToVertex( final TrackSchemeVertex v, final ScreenTransform currentTransform )

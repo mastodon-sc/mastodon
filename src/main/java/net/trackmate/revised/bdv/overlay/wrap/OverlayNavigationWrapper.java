@@ -1,7 +1,7 @@
 package net.trackmate.revised.bdv.overlay.wrap;
 
 import static net.trackmate.revised.ui.selection.NavigationEtiquette.CENTERING;
-import static net.trackmate.revised.ui.selection.NavigationEtiquette.MINIMAL;
+import static net.trackmate.revised.ui.selection.NavigationEtiquette.CENTER_IF_INVISIBLE;
 
 import bdv.viewer.ViewerPanel;
 import bdv.viewer.animate.TranslationAnimator;
@@ -23,7 +23,7 @@ public class OverlayNavigationWrapper< V extends Vertex< E >, E extends Edge< V 
 
 	private final NavigationHandler< V > navigation;
 
-	private final NavigationEtiquette navigationEtiquette = MINIMAL;
+	private final NavigationEtiquette navigationEtiquette = CENTER_IF_INVISIBLE;
 
 	public OverlayNavigationWrapper(
 			final ViewerPanel panel,

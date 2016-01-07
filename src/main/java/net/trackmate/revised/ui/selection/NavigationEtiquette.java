@@ -7,11 +7,11 @@ package net.trackmate.revised.ui.selection;
 /**
  * Enum listing the configurable kind of behaviors that can be chosen when
  * centering.
- * 
+ *
  * @author Jean-Yves Tinevez
  */
 public enum NavigationEtiquette
 {
 	CENTERING,
-	MINIMAL;
+	CENTER_IF_INVISIBLE;
 }
