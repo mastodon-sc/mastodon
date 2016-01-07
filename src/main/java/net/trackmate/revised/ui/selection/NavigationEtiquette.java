@@ -13,5 +13,6 @@ package net.trackmate.revised.ui.selection;
 public enum NavigationEtiquette
 {
 	CENTERING,
-	CENTER_IF_INVISIBLE;
+	CENTER_IF_INVISIBLE,
+	MINIMAL;
 }

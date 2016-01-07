@@ -140,6 +140,8 @@ public class TrackSchemePanel extends JPanel implements
 
 	private final NavigationHandler centerIfInvisibleNavigationHandler;
 
+	private final NavigationHandler minimalNavigationHandler;
+
 	public TrackSchemePanel(
 			final TrackSchemeGraph< ?, ? > graph,
 			final TrackSchemeHighlight highlight,
@@ -170,6 +172,7 @@ public class TrackSchemePanel extends JPanel implements
 		final InertialScreenTransformEventHandler transformEventHandler = ( InertialScreenTransformEventHandler ) display.getTransformEventHandler();
 		centeringNavigationHandler = new CenteringNavigationHandler( transformEventHandler );
 		centerIfInvisibleNavigationHandler = new CenterIfInvisibleNavigationHandler( transformEventHandler );
+		minimalNavigationHandler = new MinimalNavigationHandler( transformEventHandler, 100, 100 );
 
 		highlight.addHighlightListener( this );
 		focus.addFocusListener( this );
@@ -406,6 +409,9 @@ public class TrackSchemePanel extends JPanel implements
 		final NavigationHandler navigationHandler;
 		switch( navigationEtiquette )
 		{
+		case MINIMAL:
+			navigationHandler = minimalNavigationHandler;
+			break;
 		case CENTER_IF_INVISIBLE:
 			navigationHandler = centerIfInvisibleNavigationHandler;
 			break;
@@ -466,6 +472,64 @@ public class TrackSchemePanel extends JPanel implements
 					|| currentTransform.getMaxY() < ly || currentTransform.getMinY() > ly )
 			{
 				transformEventHandler.centerOn( lx, ly );
+			}
+		}
+	}
+
+	public static class MinimalNavigationHandler implements NavigationHandler
+	{
+		private final InertialScreenTransformEventHandler transformEventHandler;
+
+		private final int screenBorderX;
+
+		private final int screenBorderY;
+
+		public MinimalNavigationHandler( final InertialScreenTransformEventHandler transformEventHandler, final int screenBorderX, final int screenBorderY )
+		{
+			this.transformEventHandler = transformEventHandler;
+			this.screenBorderX = screenBorderX;
+			this.screenBorderY = screenBorderY;
+		}
+
+		// With CENTER_IF_INVISIBLE etiquette, only navigate to the specified vertex if not
+		// is currently displayed.
+		@Override
+		public void navigateToVertex( final TrackSchemeVertex v, final ScreenTransform currentTransform )
+		{
+			final double lx = v.getLayoutX();
+			final double ly = v.getTimepoint();
+
+			/*
+			 * TODO: check for compatibility of screenBorder and screenWidth,
+			 * screenHeight. Fall back to CENTER_IF_INVISIBLE if screen size too
+			 * small.
+			 */
+//			final int screenWidth = currentTransform.getScreenWidth();
+//			final int screenHeight = currentTransform.getScreenHeight();
+
+			final double minX = currentTransform.getMinX();
+			final double maxX = currentTransform.getMaxX();
+			final double minY = currentTransform.getMinY();
+			final double maxY = currentTransform.getMaxY();
+			final double bx = screenBorderX / currentTransform.getScaleX();
+			final double by = screenBorderY / currentTransform.getScaleY();
+
+			double sx = 0;
+			if ( lx > maxX - bx )
+				sx = lx - maxX + bx;
+			else if ( lx < minX + bx )
+				sx = lx - minX - bx;
+			double sy = 0;
+			if ( ly > maxY - by )
+				sy = ly - maxY + by;
+			else if ( ly < minY + by )
+				sy = ly - minY - by;
+
+			if ( sx != 0 || sy != 0 )
+			{
+				final double cx = ( minX + maxX ) / 2 + sx;
+				final double cy = ( minY + maxY ) / 2 + sy;
+				transformEventHandler.centerOn( cx, cy );
 			}
 		}
 	}

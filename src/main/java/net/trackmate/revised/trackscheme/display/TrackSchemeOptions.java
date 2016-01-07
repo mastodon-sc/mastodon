@@ -121,7 +121,7 @@ public class TrackSchemeOptions
 
 		private InputTriggerConfig inputTriggerConfig = null;
 
-		private NavigationEtiquette navigationEtiquette = NavigationEtiquette.CENTER_IF_INVISIBLE;
+		private NavigationEtiquette navigationEtiquette = NavigationEtiquette.MINIMAL;
 
 		public TrackSchemeOptions optionsFromValues()
 		{
