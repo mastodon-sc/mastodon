@@ -92,7 +92,19 @@ public class ConstrainScreenTransform
 	}
 
 	/**
-	 * TODO: javadoc!!!
+	 * Modify a {@link ScreenTransform}, such that it covers at least the
+	 * {@code minSize} and at most the {@code maxSize} (in trackscheme layout
+	 * coordinates). The {@code (minBound, maxBound)} interval specifies the
+	 * bounds of the layouted graph in trackscheme layout coordinates.
+	 * <p>
+	 * Make sure that the {@code transform} does not move too far outside the
+	 * visible screen area minus {@code borderRatio}, in the following way: If
+	 * the transformed {@code (minBound, maxBound)} interval is larger than the
+	 * allowed area, the {@code minBoundX} may be transformed only such that
+	 * {@code x <= width * borderRatioX}, and analogously for the other bounds.
+	 * If the transformed {@code (minBound, maxBound)} interval is smaller than
+	 * the allowed area, the {@code minBoundX} may be transformed only such that
+	 * {@code x >= width * borderRatioX}, and analogously for the other bounds.
 	 *
 	 * @param transform
 	 * @param minSizeX
