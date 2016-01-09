@@ -134,13 +134,9 @@ public class TrackSchemePanel extends JPanel implements
 
 	private final SelectionBehaviours selectionBehaviours;
 
-	private final NavigationEtiquette navigationEtiquette;
+	private NavigationEtiquette navigationEtiquette;
 
-	private final NavigationBehaviour centeringNavigationBehaviour;
-
-	private final NavigationBehaviour centerIfInvisibleNavigationBehaviour;
-
-	private final NavigationBehaviour minimalNavigationBehaviour;
+	private NavigationBehaviour navigationBehaviour;
 
 	public TrackSchemePanel(
 			final TrackSchemeGraph< ?, ? > graph,
@@ -163,16 +159,6 @@ public class TrackSchemePanel extends JPanel implements
 		final int h = options.getHeight();
 		display = new InteractiveDisplayCanvasComponent< ScreenTransform >(	w, h, options.getTransformEventHandlerFactory() );
 		display.addTransformListener( this );
-
-		navigationEtiquette = options.getNavigationEtiquette();
-		/*
-		 * TODO: This will fail if there is a different transform event
-		 * handler.
-		 */
-		final InertialScreenTransformEventHandler transformEventHandler = ( InertialScreenTransformEventHandler ) display.getTransformEventHandler();
-		centeringNavigationBehaviour = new CenteringNavigationBehaviour( transformEventHandler );
-		centerIfInvisibleNavigationBehaviour = new CenterIfInvisibleNavigationBehaviour( transformEventHandler );
-		minimalNavigationBehaviour = new MinimalNavigationBehaviour( transformEventHandler, 100, 100 );
 
 		highlight.addHighlightListener( this );
 		focus.addFocusListener( this );
@@ -266,6 +252,8 @@ public class TrackSchemePanel extends JPanel implements
 		final int space = ( Integer ) UIManager.getDefaults().get( "ScrollBar.width" );
 		xScrollPanel.add( Box.createRigidArea( new Dimension( space, 0 ) ), BorderLayout.EAST );
 		add( xScrollPanel, BorderLayout.SOUTH );
+
+		setNavigationEtiquette( options.getNavigationEtiquette() );
 
 		painterThread.start();
 	}
@@ -400,26 +388,40 @@ public class TrackSchemePanel extends JPanel implements
 		painterThread.requestRepaint();
 	}
 
+	public NavigationEtiquette getNavigationEtiquette()
+	{
+		return navigationEtiquette;
+	}
+
+	public void setNavigationEtiquette( final NavigationEtiquette navigationEtiquette )
+	{
+		this.navigationEtiquette = navigationEtiquette;
+
+		/*
+		 * TODO: This will fail if there is a different transform event
+		 * handler.
+		 */
+		final InertialScreenTransformEventHandler transformEventHandler = ( InertialScreenTransformEventHandler ) display.getTransformEventHandler();
+		switch( navigationEtiquette )
+		{
+		case MINIMAL:
+			navigationBehaviour = new MinimalNavigationBehaviour( transformEventHandler, 100, 100 );
+			break;
+		case CENTER_IF_INVISIBLE:
+			navigationBehaviour = new CenterIfInvisibleNavigationBehaviour( transformEventHandler );
+			break;
+		case CENTERING:
+		default:
+			navigationBehaviour = new CenteringNavigationBehaviour( transformEventHandler );
+			break;
+		}
+	}
+
 	@Override
 	public void navigateToVertex( final TrackSchemeVertex v )
 	{
 		focus.focusVertex( v );
 		graphOverlay.setCurrentTimepoint( v.getTimepoint() );
-
-		final NavigationBehaviour navigationBehaviour;
-		switch( navigationEtiquette )
-		{
-		case MINIMAL:
-			navigationBehaviour = minimalNavigationBehaviour;
-			break;
-		case CENTER_IF_INVISIBLE:
-			navigationBehaviour = centerIfInvisibleNavigationBehaviour;
-			break;
-		case CENTERING:
-		default:
-			navigationBehaviour = centeringNavigationBehaviour;
-			break;
-		}
 
 		final ScreenTransform transform = new ScreenTransform();
 		synchronized( screenTransform )
@@ -438,7 +440,7 @@ public class TrackSchemePanel extends JPanel implements
 		public void navigateToVertex( final TrackSchemeVertex v, final ScreenTransform currentTransform );
 	}
 
-	static class CenteringNavigationBehaviour implements NavigationBehaviour
+	private static class CenteringNavigationBehaviour implements NavigationBehaviour
 	{
 		private final InertialScreenTransformEventHandler transformEventHandler;
 
@@ -456,7 +458,7 @@ public class TrackSchemePanel extends JPanel implements
 		}
 	}
 
-	static class CenterIfInvisibleNavigationBehaviour implements NavigationBehaviour
+	private static class CenterIfInvisibleNavigationBehaviour implements NavigationBehaviour
 	{
 		private final InertialScreenTransformEventHandler transformEventHandler;
 
@@ -480,7 +482,7 @@ public class TrackSchemePanel extends JPanel implements
 		}
 	}
 
-	static class MinimalNavigationBehaviour implements NavigationBehaviour
+	private static class MinimalNavigationBehaviour implements NavigationBehaviour
 	{
 		private final InertialScreenTransformEventHandler transformEventHandler;
 
@@ -495,8 +497,6 @@ public class TrackSchemePanel extends JPanel implements
 			this.screenBorderY = screenBorderY;
 		}
 
-		// With CENTER_IF_INVISIBLE etiquette, only navigate to the specified vertex if not
-		// is currently displayed.
 		@Override
 		public void navigateToVertex( final TrackSchemeVertex v, final ScreenTransform currentTransform )
 		{
