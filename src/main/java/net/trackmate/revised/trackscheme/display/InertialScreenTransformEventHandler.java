@@ -239,7 +239,7 @@ public class InertialScreenTransformEventHandler
 
 	private void constrainTransform( final ScreenTransform transform )
 	{
-		ConstrainScreenTransform.constrainTransform2(
+		ConstrainScreenTransform.constrainTransform(
 				transform,
 				MIN_SIBLINGS_ON_CANVAS, MIN_TIMEPOINTS_ON_CANVAS,
 				maxSizeX, maxSizeY,
