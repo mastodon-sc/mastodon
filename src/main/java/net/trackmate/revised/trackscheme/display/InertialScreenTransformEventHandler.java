@@ -1,15 +1,18 @@
 package net.trackmate.revised.trackscheme.display;
 
-import gnu.trove.list.array.TIntArrayList;
-
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseWheelEvent;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import bdv.BehaviourTransformEventHandler;
+import bdv.behaviour.Behaviour;
+import bdv.behaviour.BehaviourMap;
+import bdv.behaviour.DragBehaviour;
+import bdv.behaviour.InputTriggerAdder;
+import bdv.behaviour.InputTriggerMap;
+import bdv.behaviour.ScrollBehaviour;
+import bdv.behaviour.io.InputTriggerConfig;
+import bdv.viewer.TriggerBehaviourBindings;
+import gnu.trove.list.array.TIntArrayList;
 import net.imglib2.ui.TransformEventHandler;
 import net.imglib2.ui.TransformEventHandlerFactory;
 import net.imglib2.ui.TransformListener;
@@ -17,27 +20,26 @@ import net.trackmate.revised.trackscheme.LineageTreeLayout;
 import net.trackmate.revised.trackscheme.LineageTreeLayout.LayoutListener;
 import net.trackmate.revised.trackscheme.ScreenTransform;
 import net.trackmate.revised.trackscheme.display.animate.AbstractTransformAnimator;
-import net.trackmate.revised.trackscheme.display.animate.InertialTranslationAnimator;
-import net.trackmate.revised.trackscheme.display.animate.InertialZoomAnimator;
-import net.trackmate.revised.trackscheme.display.animate.UpdaterThread;
-import net.trackmate.revised.trackscheme.display.animate.UpdaterThread.Updatable;
+import net.trackmate.revised.trackscheme.display.animate.InertialScreenTransformAnimator;
+import net.trackmate.revised.trackscheme.display.animate.InterpolateScreenTransformAnimator;
 
 public class InertialScreenTransformEventHandler
-	extends MouseAdapter
 	implements
-		KeyListener,
+		BehaviourTransformEventHandler< ScreenTransform >,
 		TransformEventHandler< ScreenTransform >,
-		LayoutListener,
-		Updatable
+		LayoutListener
 {
-	final static private TransformEventHandlerFactory< ScreenTransform > factory = new TransformEventHandlerFactory< ScreenTransform >()
-	{
-		@Override
-		public TransformEventHandler< ScreenTransform > create( final TransformListener< ScreenTransform > transformListener )
-		{
-			return new InertialScreenTransformEventHandler( transformListener );
-		}
-	};
+	/*
+	 * Configuration options
+	 */
+
+	private final double zoomScrollSensitivity = 0.05;
+
+	private final boolean enableInertialZoom = false;
+
+	private final boolean enableIntertialTranslate = true;
+
+
 
 	/**
 	 * The delay in ms between inertial movements updates.
@@ -47,52 +49,70 @@ public class InertialScreenTransformEventHandler
 	/**
 	 * Sets the maximal zoom level in X.
 	 */
-	private static final double MIN_SIBLINGS_ON_CANVAS = 3.;
+	private static final double MIN_SIBLINGS_ON_CANVAS = 4;
 
 	/**
 	 * Sets the maximal zoom level in Y.
 	 */
-	private static final double MIN_TIMEPOINTS_ON_CANVAS = 3.;
+	private static final double MIN_TIMEPOINTS_ON_CANVAS = 4;
 
-	public static TransformEventHandlerFactory< ScreenTransform > factory()
+	private static final double EPSILON = 0.0000000001;
+
+	// ...JY settings...
+//	private static final double borderRatioX = 0.5;
+//	private static final double borderRatioY = 0.5;
+//	private static final double maxSizeFactorX = 8;
+//	private static final double maxSizeFactorY = 8;
+//	private static final double boundXLayoutBorder = 0;
+//	private static final double boundYLayoutBorder = 0;
+
+	// ...TP settings...
+	private static final double borderRatioX = 0;
+	private static final double borderRatioY = 0;
+	private static final double maxSizeFactorX = 1;
+	private static final double maxSizeFactorY = 1;
+	private static final double boundXLayoutBorder = 1;
+	private static final double boundYLayoutBorder = 1;
+
+	// ...still something else...
+//	private static final double borderRatioX = 0.1;
+//	private static final double borderRatioY = 0.1;
+//	private static final double maxSizeFactorX = 1 / 0.8;
+//	private static final double maxSizeFactorY = 1 / 0.8;
+//	private static final double boundXLayoutBorder = 0;
+//	private static final double boundYLayoutBorder = 0;
+
+	public static TransformEventHandlerFactory< ScreenTransform > factory( final InputTriggerConfig config )
 	{
-		return factory;
+		return new TransformEventHandlerFactory< ScreenTransform >()
+		{
+			@Override
+			public TransformEventHandler< ScreenTransform > create( final TransformListener< ScreenTransform > transformListener )
+			{
+				return new InertialScreenTransformEventHandler( transformListener, config );
+			}
+		};
 	}
+
+	private final BehaviourMap behaviourMap = new BehaviourMap();
+
+	private final InputTriggerMap inputMap = new InputTriggerMap();
+
+	private final InputTriggerAdder inputAdder;
+
+	private double boundXMin, boundXMax, boundYMin, boundYMax;
+
+	private double maxSizeX, maxSizeY;
 
 	/**
 	 * Current source to screen transform.
 	 */
-	// Startup with a decent zoom level.
-	final protected ScreenTransform transform = new ScreenTransform( 0, 20, 0, 10, 800, 600 );
-
-	/**
-	 * Copy of {@link #transform current transform} when mouse dragging
-	 * started.
-	 */
-	final protected ScreenTransform transformDragStart = new ScreenTransform();
+	final private ScreenTransform transform = new ScreenTransform( -10000, 10000, -10000, 10000, 800, 600 );
 
 	/**
 	 * Whom to notify when the current transform is changed.
 	 */
-	protected TransformListener< ScreenTransform > listener;
-
-	/**
-	 * Coordinates where mouse dragging started.
-	 */
-	protected int oX, oY;
-
-	/**
-	 * The screen size of the canvas (the component displaying the image and
-	 * generating mouse events).
-	 */
-	protected int canvasW = 1, canvasH = 1;
-
-	/**
-	 * Screen coordinates to keep centered while zooming or rotating with
-	 * the keyboard. For example set these to
-	 * <em>(screen-width/2, screen-height/2)</em>
-	 */
-	protected int centerX = 0, centerY = 0;
+	private TransformListener< ScreenTransform > listener;
 
 	/**
 	 * Timer that runs {@link #currentTimerTask}.
@@ -104,20 +124,28 @@ public class InertialScreenTransformEventHandler
 	 */
 	private TimerTask currentTimerTask;
 
-	/**
-	 * Thread that calls {@link #update()} when requested by the current
-	 */
-	private final UpdaterThread updaterThread;
-
 	private AbstractTransformAnimator< ScreenTransform > animator;
 
-	public InertialScreenTransformEventHandler( final TransformListener< ScreenTransform > listener )
+	public InertialScreenTransformEventHandler( final TransformListener< ScreenTransform > listener, final InputTriggerConfig config )
 	{
 		this.listener = listener;
-		this.updaterThread = new UpdaterThread( this );
-		updaterThread.start();
-		timer = new Timer();
+
+		timer = new Timer( "TrackScheme transform animation", true );
 		currentTimerTask = null;
+
+		final String DRAG_TRANSLATE = "drag translate";
+		final String SCROLL_TRANSLATE = "scroll translate";
+		final String ZOOM_X = "zoom horizontal";
+		final String ZOOM_Y = "zoom vertical";
+		final String ZOOM_XY = "zoom";
+
+		inputAdder = config.inputTriggerAdder( inputMap, "ts" );
+
+		new TranslateDragBehaviour( DRAG_TRANSLATE, "button2", "button3" ).register();
+		new TranslateScrollBehaviour( SCROLL_TRANSLATE, "scroll" ).register();
+		new ZoomScrollBehaviour( ZOOM_X, ScrollAxis.X, "shift scroll" ).register();
+		new ZoomScrollBehaviour( ZOOM_Y, ScrollAxis.Y, "ctrl scroll", "alt scroll" ).register();
+		new ZoomScrollBehaviour( ZOOM_XY, ScrollAxis.XY, "meta scroll", "ctrl shift scroll" ).register();
 	}
 
 	@Override
@@ -141,13 +169,9 @@ public class InertialScreenTransformEventHandler
 	@Override
 	public void setCanvasSize( final int width, final int height, final boolean updateTransform )
 	{
-		canvasW = width;
-		canvasH = height;
-		centerX = width / 2;
-		centerY = height / 2;
 		synchronized ( transform )
 		{
-			transform.setScreenSize( canvasW, canvasH );
+			transform.setScreenSize( width, height );
 			notifyListeners();
 		}
 	}
@@ -164,258 +188,321 @@ public class InertialScreenTransformEventHandler
 		return null;
 	}
 
-	/**
-	 * notifies {@link #listener} that the current transform changed.
-	 */
-	protected void notifyListeners()
-	{
-		final double[] screenPosC = new double[] { centerX, centerY };
-		final double[] layoutPosC = new double[ 2 ];
-		transform.applyInverse( layoutPosC, screenPosC );
-
-		final double sxratio = transform.getScaleX() / canvasW;
-		final double syratio = transform.getScaleY() / canvasH;
-		final double tlx = layoutPosC[ 0 ] - boundXMin;
-		final double tly = layoutPosC[ 1 ] - boundYMin;
-		final double brx = -layoutPosC[ 0 ] + boundXMax;
-		final double bry = -layoutPosC[ 1 ] + boundYMax;
-		if ( tlx < 0 || tly < 0 || brx < 0 || bry < 0 || sxratio > 1 / MIN_SIBLINGS_ON_CANVAS || syratio > 1 / MIN_TIMEPOINTS_ON_CANVAS )
-		{
-			synchronized ( transform )
-			{
-				if ( tlx < 0 )
-					transform.shiftLayoutX( -tlx );
-				if ( tly < 0 )
-					transform.shiftLayoutY( -tly );
-				if ( brx < 0 )
-					transform.shiftLayoutX( brx );
-				if ( bry < 0 )
-					transform.shiftLayoutY( bry );
-				if ( sxratio > 1 / MIN_SIBLINGS_ON_CANVAS )
-					transform.zoomX( sxratio * MIN_SIBLINGS_ON_CANVAS, canvasW / 2 );
-				if ( syratio > 1 / MIN_TIMEPOINTS_ON_CANVAS )
-					transform.zoomY( syratio * MIN_TIMEPOINTS_ON_CANVAS, canvasH / 2 );
-
-			}
-		}
-
-		if ( listener != null )
-			listener.transformChanged( transform );
-	}
-
-	// ================ KeyListener =============================
-
-	private boolean shiftPressed = false;
-
 	@Override
-	public void keyPressed( final KeyEvent e )
+	public void install( final TriggerBehaviourBindings bindings )
 	{
-		if ( e.getKeyCode() == KeyEvent.VK_SHIFT )
-			shiftPressed = true;
+		bindings.addBehaviourMap( "transform", behaviourMap );
+		bindings.addInputTriggerMap( "transform", inputMap );
 	}
-
-	@Override
-	public void keyReleased( final KeyEvent e )
-	{
-		if ( e.getKeyCode() == KeyEvent.VK_SHIFT )
-			shiftPressed = false;
-	}
-
-	@Override
-	public void keyTyped( final KeyEvent e )
-	{}
-
-	// ================ MouseAdapter ============================
-
-	private double x0;
-
-	private double y0;
-
-	private long t0;
-
-	private double vx0;
-
-	private double vy0;
-
-	@Override
-	public void mousePressed( final MouseEvent e )
-	{
-		oX = e.getX();
-		oY = e.getY();
-		synchronized ( transform )
-		{
-			transformDragStart.set( transform );
-		}
-		animator = null;
-	}
-
-	@Override
-	public void mouseClicked( final MouseEvent e )
-	{
-		vx0 = 0;
-		vy0 = 0;
-	}
-
-	@Override
-	public void mouseDragged( final MouseEvent e )
-	{
-		final int modifiers = e.getModifiersEx();
-		if ( ( modifiers & ( MouseEvent.BUTTON2_DOWN_MASK | MouseEvent.BUTTON3_DOWN_MASK ) ) != 0 ) // translate
-		{
-
-			final long t = e.getWhen();
-			if ( t > t0 )
-			{
-				final double x = transformDragStart.screenToLayoutX( e.getX() );
-				final double y = transformDragStart.screenToLayoutY( e.getY() );
-				final long dt = t-t0;
-				vx0 = ( x - x0 ) / dt;
-				vy0 = ( y - y0 ) / dt;
-				x0 = x;
-				y0 = y;
-				t0 = t;
-			}
-
-			synchronized ( transform )
-			{
-				final int dX = oX - e.getX();
-				final int dY = oY - e.getY();
-				transform.set( transformDragStart );
-				transform.shift( dX, dY );
-			}
-			notifyListeners();
-
-		}
-	}
-
-	@Override
-	public void mouseReleased( final MouseEvent e )
-	{
-		final int modifiers = e.getModifiers();
-		if ( ( modifiers == MouseEvent.BUTTON2_MASK ) || ( modifiers == MouseEvent.BUTTON3_MASK ) ) // translate
-		{
-			animator = new InertialTranslationAnimator( transform, vx0, vy0, 400 );
-			runAnimation();
-		}
-	}
-
-	@Override
-	public void mouseWheelMoved( final MouseWheelEvent e )
-	{
-		synchronized ( transform )
-		{
-			final int s = e.getWheelRotation();
-			final double dScale = 1.1;
-			final int modifiers = e.getModifiersEx();
-			final boolean ctrlPressed = ( modifiers & KeyEvent.CTRL_DOWN_MASK ) != 0;
-			final boolean altPressed = ( modifiers & KeyEvent.ALT_DOWN_MASK ) != 0;
-			final boolean metaPressed = ( ( modifiers & KeyEvent.META_DOWN_MASK ) != 0 ) || ( ctrlPressed && shiftPressed );
-
-			final boolean zoomX = shiftPressed;
-			final boolean zoomY = ctrlPressed || altPressed;
-			final boolean zoomXY = metaPressed;
-			final boolean zoom = zoomX || zoomY || zoomXY;
-
-			if ( zoom )
-			{
-				final int eX = e.getX();
-				final int eY = e.getY();
-				final boolean zoomOut = s > 0;
-
-				if ( zoomXY ) // zoom both axes
-				{
-					if ( zoomOut )
-						transform.zoom( 1.0 / dScale, eX, eY );
-					else
-						transform.zoom( dScale, eX, eY );
-				}
-				else if ( zoomX ) // zoom X axis
-				{
-					if ( zoomOut )
-						transform.zoomX( 1.0 / dScale, eX );
-					else
-						transform.zoomX( dScale, eX );
-				}
-				else
-				{
-					// zoom Y axis
-					if ( zoomOut )
-						transform.zoomY( 1.0 / dScale, eY );
-					else
-						transform.zoomY( dScale, eY );
-				}
-				animator = new InertialZoomAnimator( transform, !zoomOut ? -s : s, zoomOut, zoomX, zoomY, eX, eY, 400 );
-				runAnimation();
-			}
-			else
-			{
-				final int d = s * 15;
-				if ( ( modifiers & KeyEvent.SHIFT_DOWN_MASK ) != 0 )
-					transform.shiftX( d );
-				else
-					transform.shiftY( d );
-				notifyListeners();
-			}
-		}
-	}
-
-	private double boundXMax = 1.;
-
-	private double boundYMax = 1.;
-
-	private double boundXMin = 2.;
-
-	private double boundYMin = 2.;
 
 	@Override
 	public void layoutChanged( final LineageTreeLayout layout )
 	{
-		boundXMin = layout.getCurrentLayoutMinX();
-		boundXMax = layout.getCurrentLayoutMaxX();
-		final TIntArrayList timepoints = layout.getTimepoints();
-		boundYMin = timepoints.getQuick( 0 );
-		boundYMax = timepoints.getQuick( timepoints.size() - 1 );
+		synchronized ( transform )
+		{
+			boundXMin = layout.getCurrentLayoutMinX() - boundXLayoutBorder;
+			boundXMax = layout.getCurrentLayoutMaxX() + boundXLayoutBorder;
+			final TIntArrayList timepoints = layout.getTimepoints();
+			boundYMin = timepoints.getQuick( 0 ) - boundYLayoutBorder;
+			boundYMax = timepoints.getQuick( timepoints.size() - 1 ) + boundYLayoutBorder;
+
+			if ( boundXMax - boundXMin < MIN_SIBLINGS_ON_CANVAS )
+			{
+				final double c = (boundXMax + boundXMin) / 2;
+				boundXMin = c - MIN_SIBLINGS_ON_CANVAS / 2;
+				boundXMax = c + MIN_SIBLINGS_ON_CANVAS / 2;
+			}
+
+			if ( boundYMax - boundYMin < MIN_TIMEPOINTS_ON_CANVAS )
+			{
+				final double c = (boundYMax + boundYMin) / 2;
+				boundYMin = c - MIN_TIMEPOINTS_ON_CANVAS / 2;
+				boundYMax = c + MIN_TIMEPOINTS_ON_CANVAS / 2;
+			}
+
+			maxSizeX = ( boundXMax - boundXMin ) * maxSizeFactorX;
+			maxSizeY = ( boundYMax - boundYMin ) * maxSizeFactorY;
+
+			constrainTransform( transform );
+			notifyListeners();
+		}
 	}
+
+	/**
+	 * notifies {@link #listener} that the current transform changed.
+	 */
+	private void notifyListeners()
+	{
+		if ( listener != null )
+			listener.transformChanged( transform );
+	}
+
+	private void constrainTransform( final ScreenTransform transform )
+	{
+		ConstrainScreenTransform.constrainTransform(
+				transform,
+				MIN_SIBLINGS_ON_CANVAS, MIN_TIMEPOINTS_ON_CANVAS,
+				maxSizeX, maxSizeY,
+				boundXMin, boundXMax, boundYMin, boundYMax,
+				borderRatioX, borderRatioY );
+	}
+
+	private boolean hasMinSizeX( final ScreenTransform transform )
+	{
+		return ConstrainScreenTransform.hasMinSizeX( transform, MIN_SIBLINGS_ON_CANVAS + EPSILON );
+	}
+
+	private boolean hasMinSizeY( final ScreenTransform transform )
+	{
+		return ConstrainScreenTransform.hasMinSizeY( transform, MIN_TIMEPOINTS_ON_CANVAS + EPSILON );
+	}
+
+	private boolean hasMaxSizeX( final ScreenTransform transform )
+	{
+		return ConstrainScreenTransform.hasMaxSizeX( transform, maxSizeX );
+	}
+
+	private boolean hasMaxSizeY( final ScreenTransform transform )
+	{
+		return ConstrainScreenTransform.hasMaxSizeY( transform, maxSizeY );
+	}
+
+	private abstract class SelfRegisteringBehaviour implements Behaviour
+	{
+		private final String name;
+
+		private final String[] defaultTriggers;
+
+		public SelfRegisteringBehaviour( final String name, final String ... defaultTriggers )
+		{
+			this.name = name;
+			this.defaultTriggers = defaultTriggers;
+		}
+
+		public void register()
+		{
+			behaviourMap.put( name, this );
+			inputAdder.put( name, defaultTriggers );
+		}
+	}
+
+	private class TranslateDragBehaviour extends SelfRegisteringBehaviour implements DragBehaviour
+	{
+		public TranslateDragBehaviour( final String name, final String... defaultTriggers )
+		{
+			super( name, defaultTriggers );
+		}
+
+		/**
+		 * Coordinates where mouse dragging started.
+		 */
+		private int oX, oY;
+
+		final private ScreenTransform previousTransform = new ScreenTransform();
+
+		private long previousTime = 0;
+
+		private long dt = 0;
+
+		@Override
+		public void init( final int x, final int y )
+		{
+			final long t = System.currentTimeMillis();
+			synchronized ( transform )
+			{
+				oX = x;
+				oY = y;
+				previousTransform.set( transform );
+				previousTime = t;
+				dt = 0;
+			}
+		}
+
+		@Override
+		public void drag( final int x, final int y )
+		{
+			final long t = System.currentTimeMillis();
+			synchronized ( transform )
+			{
+				if ( t > previousTime )
+				{
+					previousTransform.set( transform );
+					dt = t - previousTime;
+					previousTime = t;
+				}
+
+				final int dX = oX - x;
+				final int dY = oY - y;
+				oX = x;
+				oY = y;
+				transform.shift( dX, dY );
+				constrainTransform( transform );
+				notifyListeners();
+			}
+		}
+
+		@Override
+		public void end( final int x, final int y )
+		{
+			if ( enableIntertialTranslate && dt > 0 )
+			{
+				synchronized ( transform )
+				{
+					animator = new InertialScreenTransformAnimator( previousTransform, transform, dt, 400 );
+				}
+				runAnimation();
+			}
+		}
+	}
+
+	private static enum ScrollAxis
+	{
+		X, Y, XY
+	}
+
+	private class ZoomScrollBehaviour extends SelfRegisteringBehaviour implements ScrollBehaviour
+	{
+		private final ScrollAxis axis;
+
+		private final ScreenTransform previousTransform = new ScreenTransform();
+
+		public ZoomScrollBehaviour( final String name, final ScrollAxis axis, final String... defaultTriggers )
+		{
+			super( name, defaultTriggers );
+			this.axis = axis;
+		}
+
+		@Override
+		public void scroll( final double wheelRotation, final boolean isHorizontal, final int x, final int y )
+		{
+			if ( isHorizontal )
+				return;
+
+			final boolean zoomIn = wheelRotation < 0;
+			double dScale = 1.0 + Math.abs( wheelRotation ) * zoomScrollSensitivity;
+			if ( zoomIn )
+				dScale = 1.0 / dScale;
+
+			synchronized ( transform )
+			{
+				previousTransform.set( transform );
+
+				if ( axis == ScrollAxis.X || axis == ScrollAxis.XY )
+				{
+					if ( zoomIn )
+					{
+						if ( !hasMinSizeX( transform ) )
+							transform.zoomX( dScale, x );
+					}
+					else
+					{
+						if ( !hasMaxSizeX( transform ) )
+							transform.zoomX( dScale, x );
+					}
+				}
+
+				if ( axis == ScrollAxis.Y || axis == ScrollAxis.XY )
+				{
+					if ( zoomIn )
+					{
+						if ( !hasMinSizeY( transform ) )
+							transform.zoomY( dScale, y );
+					}
+					else
+					{
+						if ( !hasMaxSizeY( transform ) )
+							transform.zoomY( dScale, y );
+					}
+				}
+
+				constrainTransform( transform );
+				ConstrainScreenTransform.removeJitter( transform, previousTransform );
+				if ( !transform.equals( previousTransform ) )
+				{
+					if ( enableInertialZoom )
+						animator = new InertialScreenTransformAnimator( previousTransform, transform, 50, 400 );
+					notifyListeners();
+				}
+			}
+
+			if ( enableInertialZoom )
+				runAnimation();
+		}
+	}
+
+	private class TranslateScrollBehaviour extends SelfRegisteringBehaviour implements ScrollBehaviour
+	{
+		private final ScreenTransform previousTransform = new ScreenTransform();
+
+		public TranslateScrollBehaviour( final String name, final String... defaultTriggers )
+		{
+			super( name, defaultTriggers );
+		}
+
+		@Override
+		public void scroll( final double wheelRotation, final boolean isHorizontal, final int x, final int y )
+		{
+			synchronized ( transform )
+			{
+				previousTransform.set( transform );
+				final double d = wheelRotation * 15;
+				if ( isHorizontal )
+					transform.shiftX( d );
+				else
+					transform.shiftY( d );
+				constrainTransform( transform );
+
+				ConstrainScreenTransform.removeJitter( transform, previousTransform );
+				if ( !transform.equals( previousTransform ) )
+					notifyListeners();
+			}
+		}
+	}
+
+	private final ScreenTransform tstart = new ScreenTransform();
+
+	private final ScreenTransform tend = new ScreenTransform();
 
 	public void centerOn( final double lx, final double ly )
 	{
-		final double minX = transform.getMinX();
-		final double maxX = transform.getMaxX();
+		synchronized( transform )
+		{
+			tstart.set( transform );
+		}
+
+		final double minX = tstart.getMinX();
+		final double maxX = tstart.getMaxX();
 		final double cx = ( maxX + minX ) / 2;
 		final double dx = lx - cx;
 
-		final double minY = transform.getMinY();
-		final double maxY = transform.getMaxY();
+		final double minY = tstart.getMinY();
+		final double maxY = tstart.getMaxY();
 		final double cy = ( maxY + minY ) / 2;
 		final double dy = ly - cy;
 
-		final ScreenTransform tstart = new ScreenTransform( transform );
-		final ScreenTransform tend = new ScreenTransform( transform );
+		tend.set( tstart );
 		tend.shiftLayoutX( dx );
 		tend.shiftLayoutY( dy );
+		constrainTransform( tend );
 
-		animator = new AbstractTransformAnimator< ScreenTransform >( 200 )
+		ConstrainScreenTransform.removeJitter( tend, tstart );
+		if ( !tend.equals( tstart ) )
 		{
-			@Override
-			protected ScreenTransform get( final double t )
-			{
-				transform.interpolate( tstart, tend, t );
-				return transform;
-			}
-		};
-		runAnimation();
+			animator = new InterpolateScreenTransformAnimator( tstart, tend, 200 );
+			runAnimation();
+		}
 	}
 
-	@Override
-	public void update()
+	private void animate()
 	{
 		final long t = System.currentTimeMillis();
 		final ScreenTransform c = animator.getCurrent( t );
+		constrainTransform( c );
 		synchronized ( transform )
 		{
 			transform.set( c );
+			notifyListeners();
 		}
-		InertialScreenTransformEventHandler.this.notifyListeners();
 	}
 
 	private synchronized void runAnimation()
@@ -435,11 +522,10 @@ public class InertialScreenTransformEventHandler
 				}
 				else
 				{
-					updaterThread.requestUpdate();
+					animate();
 				}
 			}
 		};
 		timer.schedule( currentTimerTask, 0, INERTIAL_ANIMATION_PERIOD );
-		notifyListeners();
 	}
 }

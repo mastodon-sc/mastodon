@@ -11,6 +11,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollBar;
 import javax.swing.UIManager;
 
+import bdv.viewer.TimePointListener;
 import net.imglib2.ui.InteractiveDisplayCanvasComponent;
 import net.imglib2.ui.OverlayRenderer;
 import net.imglib2.ui.PainterThread;
@@ -32,10 +33,10 @@ import net.trackmate.revised.trackscheme.display.TrackSchemeOptions.Values;
 import net.trackmate.revised.trackscheme.display.laf.DefaultTrackSchemeOverlay;
 import net.trackmate.revised.ui.selection.FocusListener;
 import net.trackmate.revised.ui.selection.HighlightListener;
+import net.trackmate.revised.ui.selection.NavigationEtiquette;
 import net.trackmate.revised.ui.selection.NavigationListener;
 import net.trackmate.revised.ui.selection.SelectionListener;
 import net.trackmate.trackscheme.animate.AbstractAnimator;
-import bdv.viewer.TimePointListener;
 
 public class TrackSchemePanel extends JPanel implements
 		TransformListener< ScreenTransform >,
@@ -51,11 +52,6 @@ public class TrackSchemePanel extends JPanel implements
 	private static final long ANIMATION_MILLISECONDS = 250;
 
 	private final TrackSchemeGraph< ?, ? > graph;
-
-	/**
-	 * trackscheme options.
-	 */
-	private final Values options;
 
 	/**
 	 * Canvas used for displaying the trackscheme graph.
@@ -130,11 +126,17 @@ public class TrackSchemePanel extends JPanel implements
 	 */
 	private boolean ignoreScrollBarChanges;
 
-	private final TrackSchemeSelection selection;
-
-	private final TrackSchemeNavigation navigation;
+//	private final TrackSchemeSelection selection;
 
 	private final TrackSchemeFocus focus;
+
+	private final TrackSchemeNavigator navigator;
+
+	private final SelectionBehaviours selectionBehaviours;
+
+	private NavigationEtiquette navigationEtiquette;
+
+	private NavigationBehaviour navigationBehaviour;
 
 	public TrackSchemePanel(
 			final TrackSchemeGraph< ?, ? > graph,
@@ -147,9 +149,8 @@ public class TrackSchemePanel extends JPanel implements
 		super( new BorderLayout(), false );
 		this.graph = graph;
 		this.focus = focus;
-		this.selection = selection;
-		this.navigation = navigation;
-		options = optional.values;
+
+		final Values options = optional.values;
 
 		graph.addGraphChangeListener( this );
 		navigation.addNavigationListener( this );
@@ -193,17 +194,15 @@ public class TrackSchemePanel extends JPanel implements
 		painterThread = new PainterThread( this );
 		flags = new Flags();
 
-		display.addMouseMotionListener( new MouseHighlightHandler( graphOverlay, highlight, graph ) );
+		final MouseHighlightHandler highlightHandler = new MouseHighlightHandler( graphOverlay, highlight, graph );
+		display.addMouseMotionListener( highlightHandler );
+		display.addTransformListener( highlightHandler );
 
-		final MouseSelectionHandler mouseSelectionHandler = new MouseSelectionHandler( graphOverlay, selection, display, layout, graph );
-		display.addHandler( mouseSelectionHandler );
-		display.addOverlayRenderer( mouseSelectionHandler );
-
-		final TrackSchemeNavigator navigator = new TrackSchemeNavigator( graph, layout, focus, navigation );
+		navigator = new TrackSchemeNavigator( graph, layout, focus, navigation, selection );
 		display.addTransformListener( navigator );
-		final FocusHandler focusHandler = new FocusHandler( navigator, navigation, focus, selection, graph, graphOverlay );
-		focusHandler.installOn( display );
-		display.addHandler( focusHandler );
+
+		selectionBehaviours = new SelectionBehaviours( display, graph, layout, graphOverlay, focus, navigation, selection );
+		display.addTransformListener( selectionBehaviours );
 
 		xScrollBar = new JScrollBar( JScrollBar.HORIZONTAL );
 		yScrollBar = new JScrollBar( JScrollBar.VERTICAL );
@@ -253,6 +252,8 @@ public class TrackSchemePanel extends JPanel implements
 		final int space = ( Integer ) UIManager.getDefaults().get( "ScrollBar.width" );
 		xScrollPanel.add( Box.createRigidArea( new Dimension( space, 0 ) ), BorderLayout.EAST );
 		add( xScrollPanel, BorderLayout.SOUTH );
+
+		setNavigationEtiquette( options.getNavigationEtiquette() );
 
 		painterThread.start();
 	}
@@ -343,8 +344,11 @@ public class TrackSchemePanel extends JPanel implements
 	@Override
 	public void timePointChanged( final int timepoint )
 	{
-		graphOverlay.setCurrentTimepoint( timepoint );
-		display.repaint();
+		if ( graphOverlay.getCurrentTimepoint() != timepoint )
+		{
+			graphOverlay.setCurrentTimepoint( timepoint );
+			display.repaint();
+		}
 	}
 
 	@Override
@@ -384,24 +388,157 @@ public class TrackSchemePanel extends JPanel implements
 		painterThread.requestRepaint();
 	}
 
+	public NavigationEtiquette getNavigationEtiquette()
+	{
+		return navigationEtiquette;
+	}
+
+	public void setNavigationEtiquette( final NavigationEtiquette navigationEtiquette )
+	{
+		this.navigationEtiquette = navigationEtiquette;
+
+		/*
+		 * TODO: This will fail if there is a different transform event
+		 * handler.
+		 */
+		final InertialScreenTransformEventHandler transformEventHandler = ( InertialScreenTransformEventHandler ) display.getTransformEventHandler();
+		switch( navigationEtiquette )
+		{
+		case MINIMAL:
+			navigationBehaviour = new MinimalNavigationBehaviour( transformEventHandler, 100, 100 );
+			break;
+		case CENTER_IF_INVISIBLE:
+			navigationBehaviour = new CenterIfInvisibleNavigationBehaviour( transformEventHandler );
+			break;
+		case CENTERING:
+		default:
+			navigationBehaviour = new CenteringNavigationBehaviour( transformEventHandler );
+			break;
+		}
+	}
+
 	@Override
 	public void navigateToVertex( final TrackSchemeVertex v )
 	{
-		focus.focusVertex( v ); // TODO: focusVertex is done here AND in TrackSchemeNavigator.rightSibling(). Once is enough. Which one?
-		final double lx = v.getLayoutX();
-		final double ly = v.getTimepoint();
+		focus.focusVertex( v );
+		graphOverlay.setCurrentTimepoint( v.getTimepoint() );
 
-		/*
-		 * TODO: This will fail if there is a different transform event handler.
-		 * TODO: Also it shouldn't require display here.
-		 * TODO: Instead it should be routed through a new interface that forwards to InertialScreenTransformEventHandler or does whatever is appropriate (e.g. ignores it).
-		 */
-		final InertialScreenTransformEventHandler transformEventHandler = ( InertialScreenTransformEventHandler ) display.getTransformEventHandler();
-
-		transformEventHandler.centerOn( lx, ly );
+		final ScreenTransform transform = new ScreenTransform();
+		synchronized( screenTransform )
+		{
+			transform.set( screenTransform );
+		}
+		navigationBehaviour.navigateToVertex( v, transform );
 	}
 
-	// TODO unused, remove
+	/**
+	 * TODO: Let NavigationHandler.navigateToVertex return a target transform
+	 * instead of talking to the TransformEventHandler directly.
+	 */
+	interface NavigationBehaviour
+	{
+		public void navigateToVertex( final TrackSchemeVertex v, final ScreenTransform currentTransform );
+	}
+
+	private static class CenteringNavigationBehaviour implements NavigationBehaviour
+	{
+		private final InertialScreenTransformEventHandler transformEventHandler;
+
+		public CenteringNavigationBehaviour( final InertialScreenTransformEventHandler transformEventHandler )
+		{
+			this.transformEventHandler = transformEventHandler;
+		}
+
+		@Override
+		public void navigateToVertex( final TrackSchemeVertex v, final ScreenTransform currentTransform )
+		{
+			final double lx = v.getLayoutX();
+			final double ly = v.getTimepoint();
+			transformEventHandler.centerOn( lx, ly );
+		}
+	}
+
+	private static class CenterIfInvisibleNavigationBehaviour implements NavigationBehaviour
+	{
+		private final InertialScreenTransformEventHandler transformEventHandler;
+
+		public CenterIfInvisibleNavigationBehaviour( final InertialScreenTransformEventHandler transformEventHandler )
+		{
+			this.transformEventHandler = transformEventHandler;
+		}
+
+		// With CENTER_IF_INVISIBLE etiquette, only navigate to the specified vertex if not
+		// is currently displayed.
+		@Override
+		public void navigateToVertex( final TrackSchemeVertex v, final ScreenTransform currentTransform )
+		{
+			final double lx = v.getLayoutX();
+			final double ly = v.getTimepoint();
+			if ( currentTransform.getMaxX() < lx || currentTransform.getMinX() > lx
+					|| currentTransform.getMaxY() < ly || currentTransform.getMinY() > ly )
+			{
+				transformEventHandler.centerOn( lx, ly );
+			}
+		}
+	}
+
+	private static class MinimalNavigationBehaviour implements NavigationBehaviour
+	{
+		private final InertialScreenTransformEventHandler transformEventHandler;
+
+		private final int screenBorderX;
+
+		private final int screenBorderY;
+
+		public MinimalNavigationBehaviour( final InertialScreenTransformEventHandler transformEventHandler, final int screenBorderX, final int screenBorderY )
+		{
+			this.transformEventHandler = transformEventHandler;
+			this.screenBorderX = screenBorderX;
+			this.screenBorderY = screenBorderY;
+		}
+
+		@Override
+		public void navigateToVertex( final TrackSchemeVertex v, final ScreenTransform currentTransform )
+		{
+			final double lx = v.getLayoutX();
+			final double ly = v.getTimepoint();
+
+			/*
+			 * TODO: check for compatibility of screenBorder and screenWidth,
+			 * screenHeight. Fall back to CENTER_IF_INVISIBLE if screen size too
+			 * small.
+			 */
+//			final int screenWidth = currentTransform.getScreenWidth();
+//			final int screenHeight = currentTransform.getScreenHeight();
+
+			final double minX = currentTransform.getMinX();
+			final double maxX = currentTransform.getMaxX();
+			final double minY = currentTransform.getMinY();
+			final double maxY = currentTransform.getMaxY();
+			final double bx = screenBorderX / currentTransform.getScaleX();
+			final double by = screenBorderY / currentTransform.getScaleY();
+
+			double sx = 0;
+			if ( lx > maxX - bx )
+				sx = lx - maxX + bx;
+			else if ( lx < minX + bx )
+				sx = lx - minX - bx;
+			double sy = 0;
+			if ( ly > maxY - by )
+				sy = ly - maxY + by;
+			else if ( ly < minY + by )
+				sy = ly - minY - by;
+
+			if ( sx != 0 || sy != 0 )
+			{
+				final double cx = ( minX + maxX ) / 2 + sx;
+				final double cy = ( minY + maxY ) / 2 + sy;
+				transformEventHandler.centerOn( cx, cy );
+			}
+		}
+	}
+
+	// TODO remove??? revise TrackSchemePanel / TrackSchemeFrame construction.
 	protected InteractiveDisplayCanvasComponent< ScreenTransform > getDisplay()
 	{
 		return display;
@@ -411,6 +548,18 @@ public class TrackSchemePanel extends JPanel implements
 	protected LineageTreeLayout getLineageTreeLayout()
 	{
 		return layout;
+	}
+
+	// TODO remove. revise TrackSchemePanel / TrackSchemeFrame construction
+	public TrackSchemeNavigator getNavigator()
+	{
+		return navigator;
+	}
+
+	// TODO remove. revise TrackSchemePanel / TrackSchemeFrame construction
+	public SelectionBehaviours getSelectionBehaviours()
+	{
+		return selectionBehaviours;
 	}
 
 	protected class ScreenEntityAnimator extends AbstractAnimator

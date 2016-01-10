@@ -9,6 +9,7 @@ import gnu.trove.list.array.TIntArrayList;
 import gnu.trove.map.TIntObjectArrayMap;
 import gnu.trove.map.TIntObjectMap;
 import net.imglib2.RealLocalizable;
+import net.trackmate.graph.Edges;
 import net.trackmate.graph.collection.RefList;
 import net.trackmate.graph.collection.RefSet;
 import net.trackmate.graph.util.TIntAlternatingIterator;
@@ -58,7 +59,7 @@ public class LineageTreeLayout
 	private int timestamp;
 
 	/**
-	 * The mark timestamp for the current layout. Context trackscheme to marks
+	 * The mark timestamp for the current layout. Context trackscheme marks
 	 * vertices as active before layout by setting their
 	 * {@link TrackSchemeVertex#getLayoutTimestamp() layout timestamp} to a mark
 	 * value that is higher than any previously assigned timestamp. During
@@ -441,6 +442,90 @@ public class LineageTreeLayout
 			vertexSet.addAll( vertexList.subList( left, right + 1 ) );
 		}
 		return vertexSet;
+	}
+
+	/**
+	 * Get the first active child of {@code vertex}.
+	 *
+	 * @param vertex
+	 * 			  query vertex.
+	 * @param ref
+	 *            ref to store the result.
+	 * @return the first active child of {@code vertex}, or
+	 *         {@code null} if {@code vertex} is there are no active children.
+	 */
+	public TrackSchemeVertex getFirstActiveChild( final TrackSchemeVertex vertex, final TrackSchemeVertex ref )
+	{
+		final Edges< TrackSchemeEdge > edges = vertex.outgoingEdges();
+		for ( final TrackSchemeEdge edge : edges )
+		{
+			final TrackSchemeVertex child = edge.getTarget( ref );
+			final boolean active = child.getLayoutTimestamp() == timestamp && !child.isGhost();
+			if ( active )
+				return child;
+		}
+		return null;
+	}
+
+	/**
+	 * Get the first active parent of {@code vertex}.
+	 *
+	 * @param vertex
+	 * 			  query vertex.
+	 * @param ref
+	 *            ref to store the result.
+	 * @return the first active parent of {@code vertex}, or
+	 *         {@code null} if {@code vertex} is there are no active parents.
+	 */
+	public TrackSchemeVertex getFirstActiveParent( final TrackSchemeVertex vertex, final TrackSchemeVertex ref )
+	{
+		final Edges< TrackSchemeEdge > edges = vertex.incomingEdges();
+		for ( final TrackSchemeEdge edge : edges )
+		{
+			final TrackSchemeVertex parent = edge.getSource( ref );
+			final boolean active = parent.getLayoutTimestamp() == timestamp && !parent.isGhost();
+			if ( active )
+				return parent;
+		}
+		return null;
+	}
+
+	/**
+	 * Get the active vertex laid out left of {@code vertex}.
+	 *
+	 * @param vertex
+	 * 			  query vertex.
+	 * @param ref
+	 *            ref to store the result.
+	 * @return the active vertex laid out left of {@code vertex}, or
+	 *         {@code null} if {@code vertex} is the left-most active vertex.
+	 */
+	public TrackSchemeVertex getLeftSibling( final TrackSchemeVertex vertex, final TrackSchemeVertex ref )
+	{
+		final TrackSchemeVertexList vertices = timepointToOrderedVertices.get( vertex.getTimepoint() );
+		final int index = vertices.binarySearch( vertex.getLayoutX() );
+		return ( index > 0 )
+				? vertices.get( index - 1, ref )
+				: null;
+	}
+
+	/**
+	 * Get the active vertex laid out right of {@code vertex}.
+	 *
+	 * @param vertex
+	 * 			  query vertex.
+	 * @param ref
+	 *            ref to store the result.
+	 * @return the active vertex laid out right of {@code vertex}, or
+	 *         {@code null} if {@code vertex} is the right-most active vertex.
+	 */
+	public TrackSchemeVertex getRightSibling( final TrackSchemeVertex vertex, final TrackSchemeVertex ref )
+	{
+		final TrackSchemeVertexList vertices = timepointToOrderedVertices.get( vertex.getTimepoint() );
+		final int index = vertices.binarySearch( vertex.getLayoutX() );
+		return ( index < vertices.size() - 1 )
+				? vertices.get( index + 1, ref )
+				: null;
 	}
 
 	public TIntObjectMap< TrackSchemeVertexList > getTimepointToOrderedVertices()

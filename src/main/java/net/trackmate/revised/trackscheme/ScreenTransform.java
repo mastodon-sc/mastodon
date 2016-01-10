@@ -76,6 +76,17 @@ public class ScreenTransform implements InvertibleRealTransform
 		this.scaleY = t.scaleY;
 	}
 
+	public void set( final double minX, final double maxX, final double minY, final double maxY, final int screenWidth, final int screenHeight )
+	{
+		this.minX = minX;
+		this.maxX = maxX;
+		this.minY = minY;
+		this.maxY = maxY;
+		this.screenWidth = screenWidth;
+		this.screenHeight = screenHeight;
+		update();
+	}
+
 	private void update()
 	{
 		scaleX = ( screenWidth - 1 ) / ( maxX - minX );
@@ -266,7 +277,7 @@ public class ScreenTransform implements InvertibleRealTransform
 	 *
 	 * @param dX
 	 */
-	public void shiftX( final int dX )
+	public void shiftX( final double dX )
 	{
 		final double lX = dX / scaleX;
 		minX += lX;
@@ -278,7 +289,7 @@ public class ScreenTransform implements InvertibleRealTransform
 	 *
 	 * @param dY
 	 */
-	public void shiftY( final int dY )
+	public void shiftY( final double dY )
 	{
 		final double lY = dY / scaleY;
 		minY += lY;
@@ -316,8 +327,8 @@ public class ScreenTransform implements InvertibleRealTransform
 		this.maxX = (1 - ratio) * start.maxX + ratio * end.maxX;
 		this.minY = (1 - ratio) * start.minY + ratio * end.minY;
 		this.maxY = (1 - ratio) * start.maxY + ratio * end.maxY;
-		this.screenWidth = ( int ) ( (1 - ratio) * start.screenWidth + ratio * end.screenWidth );
-		this.screenHeight = ( int ) ( (1 - ratio) * start.screenHeight + ratio * end.screenHeight );
+		this.screenWidth = ( int ) Math.round( ( (1 - ratio) * start.screenWidth + ratio * end.screenWidth ) );
+		this.screenHeight = ( int ) Math.round( ( (1 - ratio) * start.screenHeight + ratio * end.screenHeight ) );
 		update();
 	}
 
@@ -446,5 +457,20 @@ public class ScreenTransform implements InvertibleRealTransform
 				ScreenTransform.this.apply( target, source );
 			}
 		};
+	}
+
+	@Override
+	public boolean equals( final Object obj )
+	{
+		if ( obj == null || !( obj instanceof ScreenTransform ) )
+			return false;
+
+		final ScreenTransform t = ( ScreenTransform ) obj;
+		return t.minX == minX &&
+				t.maxX == maxX &&
+				t.minY == minY &&
+				t.maxY == maxY &&
+				t.screenWidth == screenWidth &&
+				t.screenHeight == screenHeight;
 	}
 }
