@@ -44,12 +44,17 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 
 	private final OverlayGraph< V, E > graph;
 
+	private final SpatioTemporalIndex< V > index;;
+
 	private final OverlayHighlight< V, E > highlight;
 
-	public OverlayGraphRenderer( final OverlayGraph< V, E > graph, final OverlayHighlight< V, E > highlight )
+	public OverlayGraphRenderer(
+			final OverlayGraph< V, E > graph,
+			final OverlayHighlight< V, E > highlight )
 	{
 		this.graph = graph;
 		this.highlight = highlight;
+		index = graph.getIndex();
 		renderTransform = new AffineTransform3D();
 	}
 
@@ -105,7 +110,6 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 		final double[] gPosClick = new double[ 3 ];
 		transform.applyInverse( gPosClick, lPosClick );
 
-		final SpatioTemporalIndex< V > index = graph.getIndex();
 		index.readLock().lock();
 		try
 		{
@@ -117,7 +121,7 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 
 			for ( int t = Math.max( 0, currentTimepoint - ( int ) timeLimit ); t < currentTimepoint; ++t )
 			{
-				final SpatialIndex< V > si = graph.getIndex().getSpatialIndex( t );
+				final SpatialIndex< V > si = index.getSpatialIndex( t );
 				final ClipConvexPolytope< V > ccp = si.getClipConvexPolytope();
 				ccp.clip( visiblePolytopeGlobal );
 				for ( final V source : ccp.getInsideValues() )
@@ -169,7 +173,6 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 		final ScreenVertexMath svm = new ScreenVertexMath( nSigmas );
 		transform.applyInverse( gPos, lPos );
 
-		final SpatioTemporalIndex< V > index = graph.getIndex();
 		index.readLock().lock();
 		try
 		{
@@ -499,7 +502,7 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 			graphics.setPaint( getColor( 0, 0, sliceDistanceFade, timepointDistanceFade, false ) );
 			for ( int t = Math.max( 0, currentTimepoint - ( int ) timeLimit ); t < currentTimepoint; ++t )
 			{
-				final SpatialIndex< V > si = graph.getIndex().getSpatialIndex( t );
+				final SpatialIndex< V > si = index.getSpatialIndex( t );
 				final ClipConvexPolytope< V > ccp = si.getClipConvexPolytope();
 				ccp.clip( visiblePolytopeGlobal );
 				for ( final V vertex : ccp.getInsideValues() )
@@ -554,7 +557,7 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 			final int t = currentTimepoint;
 			final AffineTransform torig = graphics.getTransform();
 
-			final SpatialIndex< V > si = graph.getIndex().getSpatialIndex( t );
+			final SpatialIndex< V > si = index.getSpatialIndex( t );
 			final ClipConvexPolytope< V > ccp = si.getClipConvexPolytope();
 			ccp.clip( visiblePolytopeGlobal );
 			for ( final V vertex : ccp.getInsideValues() )
