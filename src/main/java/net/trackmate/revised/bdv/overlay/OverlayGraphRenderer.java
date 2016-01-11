@@ -405,7 +405,7 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 	 * TODO
 	 *
 	 * @param sd sliceDistande, between -1 and 1. see {@link #sliceDistance(double, double)}.
-	 * @param td timeDistande, between -1 and 1. see {@link #timeDistance(double, double)}.
+	 * @param td timeDistande, between -1 and 1. see {@link #timeDistance(double, double, double)}.
 	 * @param sdFade between 0 and 1, from which |sd| value color starts to fade (alpha value decreases).
 	 * @param tdFade between 0 and 1, from which |td| value color starts to fade (alpha value decreases).
 	 * @param isSelected whether to use selected or un-selected color scheme.
