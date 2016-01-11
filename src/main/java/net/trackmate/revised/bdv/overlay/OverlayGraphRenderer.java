@@ -60,16 +60,6 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 		this.height = height;
 	}
 
-	public int getWidth()
-	{
-		return width;
-	}
-
-	public int getHeight()
-	{
-		return height;
-	}
-
 	@Override
 	public void transformChanged( final AffineTransform3D transform )
 	{
