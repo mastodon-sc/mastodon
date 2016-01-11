@@ -84,12 +84,14 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 		}
 
 		final int currentTimepoint = renderTimepoint;
+
+		final double maxDepth = isFocusLimitViewRelative
+				? focusLimit
+				: focusLimit * Affine3DHelpers.extractScale( transform, 0 );
+
 		final double globalToViewerScale = Affine3DHelpers.extractScale( transform, 0 );
 
 		final double border = globalToViewerScale * Math.sqrt( graph.getMaxBoundingSphereRadiusSquared( currentTimepoint ) );
-		final double maxDepth = isFocusLimitViewRelative ?
-				focusLimit :
-				focusLimit * Affine3DHelpers.extractScale( transform, 0 );
 		final ConvexPolytope visiblePolytopeViewer = new ConvexPolytope(
 				new HyperPlane( 0, 0, 1, -maxDepth ),
 				new HyperPlane( 0, 0, -1, -maxDepth ),
@@ -158,9 +160,9 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 
 		final int currentTimepoint = renderTimepoint;
 
-		final double maxDepth = isFocusLimitViewRelative ?
-				focusLimit :
-				focusLimit * Affine3DHelpers.extractScale( transform, 0 );
+		final double maxDepth = isFocusLimitViewRelative
+				? focusLimit
+				: focusLimit * Affine3DHelpers.extractScale( transform, 0 );
 
 		final double[] lPos = new double[] { x, y, 0 };
 		final double[] gPos = new double[ 3 ];
@@ -461,9 +463,9 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 
 		final int currentTimepoint = renderTimepoint;
 
-		final double maxDepth = isFocusLimitViewRelative ?
-				focusLimit :
-				focusLimit * Affine3DHelpers.extractScale( transform, 0 );
+		final double maxDepth = isFocusLimitViewRelative
+				? focusLimit
+				: focusLimit * Affine3DHelpers.extractScale( transform, 0 );
 
 		// TODO: acquire SpatialIndex.readLock()
 
