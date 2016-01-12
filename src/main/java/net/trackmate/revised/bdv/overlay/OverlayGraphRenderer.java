@@ -28,7 +28,7 @@ import net.trackmate.spatial.SpatioTemporalIndex;
 
 
 /**
- * TODO: Review and revise. Should use SpatialIndex search to determine what to paint.
+ * TODO: Review and revise.
  *
  * @author Tobias Pietzsch &lt;tobias.pietzsch@gmail.com&gt;
  */
@@ -554,9 +554,6 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 				? focusLimit
 				: focusLimit * Affine3DHelpers.extractScale( transform, 0 );
 
-		// TODO: acquire SpatialIndex.readLock()
-
-		final ConvexPolytope visiblePolytopeGlobal = getVisiblePolytopeGlobal( transform, currentTimepoint );
 
 		graphics.setRenderingHint( RenderingHints.KEY_ANTIALIASING, antialiasing );
 
@@ -572,93 +569,113 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 
 		final ScreenVertexMath screenVertexMath = new ScreenVertexMath( nSigmas );
 
-		if ( drawLinks )
+		index.readLock().lock();
+		try
 		{
-			graphics.setPaint( getColor( 0, 0, sliceDistanceFade, timepointDistanceFade, false ) );
-			for ( int t = Math.max( 0, currentTimepoint - timeLimit ); t < currentTimepoint; ++t )
+			if ( drawLinks )
 			{
-				final SpatialIndex< V > si = index.getSpatialIndex( t );
-				final ClipConvexPolytope< V > ccp = si.getClipConvexPolytope();
-				ccp.clip( visiblePolytopeGlobal );
-				for ( final V vertex : ccp.getInsideValues() )
+				graphics.setPaint( getColor( 0, 0, sliceDistanceFade, timepointDistanceFade, false ) );
+				for ( int t = Math.max( 0, currentTimepoint - timeLimit ); t < currentTimepoint; ++t )
 				{
-					vertex.localize( lPos );
-					transform.apply( lPos, gPos );
-					final int x0 = ( int ) gPos[ 0 ];
-					final int y0 = ( int ) gPos[ 1 ];
-					final double z0 = gPos[ 2 ];
-					for ( final E edge : vertex.outgoingEdges() )
+					final SpatialIndex< V > si = index.getSpatialIndex( t );
+					final ClipConvexPolytope< V > ccp = si.getClipConvexPolytope();
+					ccp.clip( getVisiblePolytopeGlobal( transform, t ) );
+					for ( final V vertex : ccp.getInsideValues() )
 					{
-						edge.getTarget( target );
-						target.localize( lPos );
+						vertex.localize( lPos );
 						transform.apply( lPos, gPos );
-						final int x1 = ( int ) gPos[ 0 ];
-						final int y1 = ( int ) gPos[ 1 ];
-
-						final double z1 = gPos[ 2 ];
-
-						final double td0 = timeDistance( t, currentTimepoint, timeLimit );
-						final double td1 = timeDistance( t + 1, currentTimepoint, timeLimit );
-						final double sd0 = sliceDistance( z0, maxDepth );
-						final double sd1 = sliceDistance( z1, maxDepth );
-
-						if ( td0 > -1 )
+						final int x0 = ( int ) gPos[ 0 ];
+						final int y0 = ( int ) gPos[ 1 ];
+						final double z0 = gPos[ 2 ];
+						for ( final E edge : vertex.outgoingEdges() )
 						{
-							if ( ( sd0 > -1 && sd0 < 1 ) || ( sd1 > -1 && sd1 < 1 ) )
+							edge.getTarget( target );
+							target.localize( lPos );
+							transform.apply( lPos, gPos );
+							final int x1 = ( int ) gPos[ 0 ];
+							final int y1 = ( int ) gPos[ 1 ];
+
+							final double z1 = gPos[ 2 ];
+
+							final double td0 = timeDistance( t, currentTimepoint, timeLimit );
+							final double td1 = timeDistance( t + 1, currentTimepoint, timeLimit );
+							final double sd0 = sliceDistance( z0, maxDepth );
+							final double sd1 = sliceDistance( z1, maxDepth );
+
+							if ( td0 > -1 )
 							{
-								final Color c1 = getColor( sd1, td1, sliceDistanceFade, timepointDistanceFade, edge.isSelected() );
-								if ( useGradient )
+								if ( ( sd0 > -1 && sd0 < 1 ) || ( sd1 > -1 && sd1 < 1 ) )
 								{
-									final Color c0 = getColor( sd0, td0, sliceDistanceFade, timepointDistanceFade, edge.isSelected() );
-									graphics.setPaint( new GradientPaint( x0, y0, c0, x1, y1, c1 ) );
+									final Color c1 = getColor( sd1, td1, sliceDistanceFade, timepointDistanceFade, edge.isSelected() );
+									if ( useGradient )
+									{
+										final Color c0 = getColor( sd0, td0, sliceDistanceFade, timepointDistanceFade, edge.isSelected() );
+										graphics.setPaint( new GradientPaint( x0, y0, c0, x1, y1, c1 ) );
+									}
+									else
+									{
+										graphics.setPaint( c1 );
+									}
+									graphics.drawLine( x0, y0, x1, y1 );
 								}
-								else
-								{
-									graphics.setPaint( c1 );
-								}
-								graphics.drawLine( x0, y0, x1, y1 );
 							}
 						}
 					}
 				}
 			}
-		}
 
-		if ( drawSpots )
-		{
-			final V highlighted = highlight.getHighlightedVertex( target );
-
-			graphics.setStroke( defaultVertexStroke );
-			final int t = currentTimepoint;
-			final AffineTransform torig = graphics.getTransform();
-
-			final SpatialIndex< V > si = index.getSpatialIndex( t );
-			final ClipConvexPolytope< V > ccp = si.getClipConvexPolytope();
-			ccp.clip( visiblePolytopeGlobal );
-			for ( final V vertex : ccp.getInsideValues() )
+			if ( drawSpots )
 			{
-				final boolean isHighlighted = vertex.equals( highlighted );
+				final V highlighted = highlight.getHighlightedVertex( target );
 
-				screenVertexMath.init( vertex, transform );
+				graphics.setStroke( defaultVertexStroke );
+				final AffineTransform torig = graphics.getTransform();
 
-				final double x = screenVertexMath.getViewPos()[ 0 ];
-				final double y = screenVertexMath.getViewPos()[ 1 ];
-				final double z = screenVertexMath.getViewPos()[ 2 ];
-
-				final double sd = sliceDistance( z, maxDepth );
-				if ( sd > -1 && sd < 1 )
+				final SpatialIndex< V > si = index.getSpatialIndex( currentTimepoint );
+				final ClipConvexPolytope< V > ccp = si.getClipConvexPolytope();
+				ccp.clip( getVisiblePolytopeGlobal( transform, currentTimepoint ) );
+				for ( final V vertex : ccp.getInsideValues() )
 				{
-					if ( drawEllipsoidSliceIntersection )
+					final boolean isHighlighted = vertex.equals( highlighted );
+
+					screenVertexMath.init( vertex, transform );
+
+					final double x = screenVertexMath.getViewPos()[ 0 ];
+					final double y = screenVertexMath.getViewPos()[ 1 ];
+					final double z = screenVertexMath.getViewPos()[ 2 ];
+
+					final double sd = sliceDistance( z, maxDepth );
+					if ( sd > -1 && sd < 1 )
 					{
-						if ( screenVertexMath.intersectsViewPlane() )
+						if ( drawEllipsoidSliceIntersection )
 						{
-							final double[] tr = screenVertexMath.getIntersectCenter();
-							final double theta = screenVertexMath.getIntersectTheta();
-							final Ellipse2D ellipse = screenVertexMath.getIntersectEllipse();
+							if ( screenVertexMath.intersectsViewPlane() )
+							{
+								final double[] tr = screenVertexMath.getIntersectCenter();
+								final double theta = screenVertexMath.getIntersectTheta();
+								final Ellipse2D ellipse = screenVertexMath.getIntersectEllipse();
+
+								graphics.translate( tr[ 0 ], tr[ 1 ] );
+								graphics.rotate( theta );
+								graphics.setColor( getColor( 0, 0, ellipsoidFadeDepth, timepointDistanceFade, vertex.isSelected() ) );
+								if ( isHighlighted )
+									graphics.setStroke( highlightedVertexStroke );
+								graphics.draw( ellipse );
+								if ( isHighlighted )
+									graphics.setStroke( defaultVertexStroke );
+								graphics.setTransform( torig );
+							}
+						}
+
+						if ( drawEllipsoidSliceProjection )
+						{
+							final double[] tr = screenVertexMath.getProjectCenter();
+							final double theta = screenVertexMath.getProjectTheta();
+							final Ellipse2D ellipse = screenVertexMath.getProjectEllipse();
 
 							graphics.translate( tr[ 0 ], tr[ 1 ] );
 							graphics.rotate( theta );
-							graphics.setColor( getColor( 0, 0, ellipsoidFadeDepth, timepointDistanceFade, vertex.isSelected() ) );
+							graphics.setColor( getColor( sd, 0, ellipsoidFadeDepth, timepointDistanceFade, vertex.isSelected() ) );
 							if ( isHighlighted )
 								graphics.setStroke( highlightedVertexStroke );
 							graphics.draw( ellipse );
@@ -666,36 +683,22 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 								graphics.setStroke( defaultVertexStroke );
 							graphics.setTransform( torig );
 						}
-					}
 
-					if ( drawEllipsoidSliceProjection )
-					{
-						final double[] tr = screenVertexMath.getProjectCenter();
-						final double theta = screenVertexMath.getProjectTheta();
-						final Ellipse2D ellipse = screenVertexMath.getProjectEllipse();
-
-						graphics.translate( tr[ 0 ], tr[ 1 ] );
-						graphics.rotate( theta );
-						graphics.setColor( getColor( sd, 0, ellipsoidFadeDepth, timepointDistanceFade, vertex.isSelected() ) );
-						if ( isHighlighted )
-							graphics.setStroke( highlightedVertexStroke );
-						graphics.draw( ellipse );
-						if ( isHighlighted )
-							graphics.setStroke( defaultVertexStroke );
-						graphics.setTransform( torig );
-					}
-
-					final boolean drawPoint = drawPoints && (
-							( !drawEllipsoidSliceIntersection && !drawEllipsoidSliceProjection )
-							|| drawPointsForEllipses
-							|| ( drawEllipsoidSliceIntersection && !screenVertexMath.intersectsViewPlane() ) );
-					if ( drawPoint )
-					{
-						graphics.setColor( getColor( sd, 0, pointFadeDepth, timepointDistanceFade, vertex.isSelected() ) );
-						graphics.fillOval( ( int ) ( x - 2.5 ), ( int ) ( y - 2.5 ), 5, 5 );
+						final boolean drawPoint = drawPoints && ( ( !drawEllipsoidSliceIntersection && !drawEllipsoidSliceProjection )
+								|| drawPointsForEllipses
+								|| ( drawEllipsoidSliceIntersection && !screenVertexMath.intersectsViewPlane() ) );
+						if ( drawPoint )
+						{
+							graphics.setColor( getColor( sd, 0, pointFadeDepth, timepointDistanceFade, vertex.isSelected() ) );
+							graphics.fillOval( ( int ) ( x - 2.5 ), ( int ) ( y - 2.5 ), 5, 5 );
+						}
 					}
 				}
 			}
+		}
+		finally
+		{
+			index.readLock().unlock();
 		}
 		graph.releaseRef( target );
 	}
