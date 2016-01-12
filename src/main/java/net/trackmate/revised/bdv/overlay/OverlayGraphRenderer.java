@@ -11,6 +11,7 @@ import java.awt.geom.Ellipse2D;
 
 import bdv.util.Affine3DHelpers;
 import bdv.viewer.TimePointListener;
+import net.imglib2.RealInterval;
 import net.imglib2.RealPoint;
 import net.imglib2.algorithm.kdtree.ConvexPolytope;
 import net.imglib2.algorithm.kdtree.HyperPlane;
@@ -90,21 +91,7 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 
 		final int currentTimepoint = renderTimepoint;
 
-		final double maxDepth = isFocusLimitViewRelative
-				? focusLimit
-				: focusLimit * Affine3DHelpers.extractScale( transform, 0 );
-
-		final double globalToViewerScale = Affine3DHelpers.extractScale( transform, 0 );
-
-		final double border = globalToViewerScale * Math.sqrt( graph.getMaxBoundingSphereRadiusSquared( currentTimepoint ) );
-		final ConvexPolytope visiblePolytopeViewer = new ConvexPolytope(
-				new HyperPlane( 0, 0, 1, -maxDepth ),
-				new HyperPlane( 0, 0, -1, -maxDepth ),
-				new HyperPlane( 1, 0, 0, -border ),
-				new HyperPlane( -1, 0, 0, -width - border ),
-				new HyperPlane( 0, 1, 0, -border ),
-				new HyperPlane( 0, -1, 0, -height - border ) );
-		final ConvexPolytope visiblePolytopeGlobal = ConvexPolytope.transform( visiblePolytopeViewer, transform.inverse() );
+		final ConvexPolytope visiblePolytopeGlobal = getVisiblePolytopeGlobal( transform, currentTimepoint );
 
 		final double[] lPosClick = new double[] { x, y, 0 };
 		final double[] gPosClick = new double[ 3 ];
@@ -164,10 +151,6 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 
 		final int currentTimepoint = renderTimepoint;
 
-		final double maxDepth = isFocusLimitViewRelative
-				? focusLimit
-				: focusLimit * Affine3DHelpers.extractScale( transform, 0 );
-
 		final double[] lPos = new double[] { x, y, 0 };
 		final double[] gPos = new double[ 3 ];
 		final ScreenVertexMath svm = new ScreenVertexMath( nSigmas );
@@ -178,16 +161,7 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 		{
 			if ( drawEllipsoidSliceProjection )
 			{
-				final double globalToViewerScale = Affine3DHelpers.extractScale( transform, 0 );
-				final double border = globalToViewerScale * Math.sqrt( graph.getMaxBoundingSphereRadiusSquared( currentTimepoint ) );
-				final ConvexPolytope cropPolytopeViewer = new ConvexPolytope(
-						new HyperPlane(  0,  0,  1, -maxDepth ),
-						new HyperPlane(  0,  0, -1, -maxDepth ),
-						new HyperPlane(  1,  0,  0, x - border ),
-						new HyperPlane( -1,  0,  0, -x - border ),
-						new HyperPlane(  0,  1,  0, y - border ),
-						new HyperPlane(  0, -1,  0, -y - border ) );
-				final ConvexPolytope cropPolytopeGlobal = ConvexPolytope.transform( cropPolytopeViewer, transform.inverse() );
+				final ConvexPolytope cropPolytopeGlobal = getSurroundingPolytopeGlobal( x, y, transform, currentTimepoint );
 				final ClipConvexPolytope< V > ccp = index.getSpatialIndex( currentTimepoint ).getClipConvexPolytope();
 				ccp.clip( cropPolytopeGlobal );
 
@@ -455,6 +429,112 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 		return new Color( truncRGBA( r, g, 0.1, ( 1 + tf ) * ( 1 - Math.abs( sf ) ) ), true );
 	}
 
+	/**
+	 * Get the {@link ConvexPolytope} bounding the visible region of global
+	 * space, extended by a large enough border to ensure that it contains
+	 * center of every ellipsoid that intersects the visible volume.
+	 *
+	 * @param transform
+	 * @param timepoint
+	 * @return
+	 */
+	private ConvexPolytope getVisiblePolytopeGlobal(
+			final AffineTransform3D transform,
+			final int timepoint )
+	{
+		final double globalToViewerScale = Affine3DHelpers.extractScale( transform, 0 );
+		final double maxDepth = isFocusLimitViewRelative
+				? focusLimit
+				: focusLimit * globalToViewerScale;
+		final double border = globalToViewerScale * Math.sqrt( graph.getMaxBoundingSphereRadiusSquared( timepoint ) );
+
+		return getPolytopeGlobal( transform,
+				-border,
+				width + border,
+				-border,
+				height + border,
+				-maxDepth,
+				maxDepth );
+	}
+
+	/**
+	 * Get the {@link ConvexPolytope} around the specified viewer coordinate
+	 * that is large enough border to ensure that it contains center of every
+	 * ellipsoid containing the specified coordinate.
+	 *
+	 * @param x
+	 *            position on the z=0 plane in viewer coordinates.
+	 * @param y
+	 *            position on the z=0 plane in viewer coordinates.
+	 * @param transform
+	 * @param timepoint
+	 * @return
+	 */
+	private ConvexPolytope getSurroundingPolytopeGlobal(
+			final double x,
+			final double y,
+			final AffineTransform3D transform,
+			final int timepoint )
+	{
+		final double globalToViewerScale = Affine3DHelpers.extractScale( transform, 0 );
+		final double maxDepth = isFocusLimitViewRelative
+				? focusLimit
+				: focusLimit * globalToViewerScale;
+		final double border = globalToViewerScale * Math.sqrt( graph.getMaxBoundingSphereRadiusSquared( timepoint ) );
+		return getPolytopeGlobal( transform,
+				x - border, x + border,
+				y - border, y + border,
+				-maxDepth, maxDepth );
+	}
+
+	/**
+	 * Get the {@link ConvexPolytope} described by the specified interval in
+	 * viewer coordinates, transformed to global coordinates.
+	 *
+	 * @param transform
+	 * @param viewerInterval
+	 * @return
+	 */
+	private static ConvexPolytope getPolytopeGlobal(
+			final AffineTransform3D transform,
+			final RealInterval viewerInterval )
+	{
+		return getPolytopeGlobal( transform,
+				viewerInterval.realMin( 0 ), viewerInterval.realMax( 0 ),
+				viewerInterval.realMin( 1 ), viewerInterval.realMax( 1 ),
+				viewerInterval.realMin( 2 ), viewerInterval.realMax( 2 ) );
+	}
+
+	/**
+	 * Get the {@link ConvexPolytope} described by the specified interval in
+	 * viewer coordinates, transformed to global coordinates.
+	 *
+	 * @param transform
+	 * @param viewerMinX
+	 * @param viewerMaxX
+	 * @param viewerMinY
+	 * @param viewerMaxY
+	 * @param viewerMinZ
+	 * @param viewerMaxZ
+	 * @return
+	 */
+	private static ConvexPolytope getPolytopeGlobal(
+			final AffineTransform3D transform,
+			final double viewerMinX, final double viewerMaxX,
+			final double viewerMinY, final double viewerMaxY,
+			final double viewerMinZ, final double viewerMaxZ )
+	{
+		final ConvexPolytope polytopeViewer = new ConvexPolytope(
+				new HyperPlane(  1,  0,  0, viewerMinX ),
+				new HyperPlane( -1,  0,  0, -viewerMaxX ),
+				new HyperPlane(  0,  1,  0, viewerMinY ),
+				new HyperPlane(  0, -1,  0, -viewerMaxY ),
+				new HyperPlane(  0,  0,  1, viewerMinZ),
+				new HyperPlane(  0,  0, -1, -viewerMaxZ ) );
+		final ConvexPolytope polytopeGlobal = ConvexPolytope.transform( polytopeViewer, transform.inverse() );
+		return polytopeGlobal;
+	}
+
 	@Override
 	public void drawOverlays( final Graphics g )
 	{
@@ -476,16 +556,7 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 
 		// TODO: acquire SpatialIndex.readLock()
 
-		final double globalToViewerScale = Affine3DHelpers.extractScale( transform, 0 );
-		final double border = globalToViewerScale * Math.sqrt( graph.getMaxBoundingSphereRadiusSquared( currentTimepoint ) );
-		final ConvexPolytope visiblePolytopeViewer = new ConvexPolytope(
-				new HyperPlane(  0,  0,  1, -maxDepth ),
-				new HyperPlane(  0,  0, -1, -maxDepth ),
-				new HyperPlane(  1,  0,  0, -border ),
-				new HyperPlane( -1,  0,  0, -width - border ),
-				new HyperPlane(  0,  1,  0, -border ),
-				new HyperPlane(  0, -1,  0, -height - border ) );
-		final ConvexPolytope visiblePolytopeGlobal = ConvexPolytope.transform( visiblePolytopeViewer, transform.inverse() );
+		final ConvexPolytope visiblePolytopeGlobal = getVisiblePolytopeGlobal( transform, currentTimepoint );
 
 		graphics.setRenderingHint( RenderingHints.KEY_ANTIALIASING, antialiasing );
 
