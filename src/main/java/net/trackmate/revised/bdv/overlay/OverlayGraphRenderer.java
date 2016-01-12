@@ -119,7 +119,7 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 			final double[] lPosS = new double[ 3 ];
 			final V vertexRef = graph.vertexRef();
 
-			for ( int t = Math.max( 0, currentTimepoint - ( int ) timeLimit ); t < currentTimepoint; ++t )
+			for ( int t = Math.max( 0, currentTimepoint - timeLimit ); t < currentTimepoint; ++t )
 			{
 				final SpatialIndex< V > si = index.getSpatialIndex( t );
 				final ClipConvexPolytope< V > ccp = si.getClipConvexPolytope();
@@ -241,7 +241,7 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 	 * PUBLIC DISPLAY CONFIG DEFAULTS.
 	 */
 
-	public static final double DEFAULT_LIMIT_TIME_RANGE = 20.;
+	public static final int DEFAULT_LIMIT_TIME_RANGE = 20;
 
 	public static final double DEFAULT_LIMIT_FOCUS_RANGE = 100.;
 
@@ -265,7 +265,11 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 
 	private final boolean useGradient = DEFAULT_USE_GRADIENT;
 
-	private final double timeLimit = DEFAULT_LIMIT_TIME_RANGE;
+	/**
+	 * Maximum number of timepoints into the past for which outgoing edges
+	 * should be drawn.
+	 */
+	private final int timeLimit = DEFAULT_LIMIT_TIME_RANGE;
 
 	/**
 	 * Whether to draw links (at all).
@@ -500,7 +504,7 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 		if ( drawLinks )
 		{
 			graphics.setPaint( getColor( 0, 0, sliceDistanceFade, timepointDistanceFade, false ) );
-			for ( int t = Math.max( 0, currentTimepoint - ( int ) timeLimit ); t < currentTimepoint; ++t )
+			for ( int t = Math.max( 0, currentTimepoint - timeLimit ); t < currentTimepoint; ++t )
 			{
 				final SpatialIndex< V > si = index.getSpatialIndex( t );
 				final ClipConvexPolytope< V > ccp = si.getClipConvexPolytope();
