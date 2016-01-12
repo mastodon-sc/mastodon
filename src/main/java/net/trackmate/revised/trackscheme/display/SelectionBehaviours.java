@@ -25,7 +25,7 @@ import net.trackmate.revised.trackscheme.TrackSchemeSelection;
 import net.trackmate.revised.trackscheme.TrackSchemeVertex;
 
 /**
- * TODO: Merge with TrackSchemeNavigator into one class that does everything related to focus & selection?
+ * TODO: Merge with TrackSchemeNavigator into one class that does everything related to focus and selection?
  *
  * TODO: javadoc
  *

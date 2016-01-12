@@ -154,7 +154,7 @@ public class ConstrainScreenTransform
 	 * width less or equal to the specified {@code minSizeY}.
 	 *
 	 * @param transform
-	 * @param minSizeX
+	 * @param minSizeY
 	 * @return true, iff {@code transform} covers less than or equal to
 	 *         {@code minSizeY}.
 	 */
@@ -186,7 +186,7 @@ public class ConstrainScreenTransform
 	 * width greater or equal to the specified {@code maxSizeY}.
 	 *
 	 * @param transform
-	 * @param maxSizeX
+	 * @param maxSizeY
 	 * @return true, iff {@code transform} covers greater than or equal to
 	 *         {@code maxSizeY}.
 	 */
