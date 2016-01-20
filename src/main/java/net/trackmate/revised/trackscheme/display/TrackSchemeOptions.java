@@ -28,7 +28,8 @@
  */
 package net.trackmate.revised.trackscheme.display;
 
-import bdv.behaviour.io.InputTriggerConfig;
+import org.scijava.ui.behaviour.io.InputTriggerConfig;
+
 import net.imglib2.ui.TransformEventHandlerFactory;
 import net.trackmate.revised.trackscheme.ScreenTransform;
 import net.trackmate.revised.ui.selection.NavigationEtiquette;

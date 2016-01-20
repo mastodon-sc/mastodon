@@ -18,7 +18,8 @@ import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 
-import bdv.behaviour.KeyStrokeAdder;
+import org.scijava.ui.behaviour.KeyStrokeAdder;
+
 import bdv.util.AbstractNamedAction;
 import bdv.viewer.InputActionBindings;
 import net.imglib2.ui.TransformListener;

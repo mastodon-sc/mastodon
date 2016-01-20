@@ -9,9 +9,10 @@ import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
 import javax.swing.WindowConstants;
 
+import org.scijava.ui.behaviour.MouseAndKeyHandler;
+import org.scijava.ui.behaviour.io.InputTriggerConfig;
+
 import bdv.BehaviourTransformEventHandler;
-import bdv.behaviour.MouseAndKeyHandler;
-import bdv.behaviour.io.InputTriggerConfig;
 import bdv.viewer.InputActionBindings;
 import bdv.viewer.TriggerBehaviourBindings;
 import net.imglib2.ui.TransformEventHandler;

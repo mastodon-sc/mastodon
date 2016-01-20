@@ -3,14 +3,15 @@ package net.trackmate.revised.trackscheme.display;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import org.scijava.ui.behaviour.Behaviour;
+import org.scijava.ui.behaviour.BehaviourMap;
+import org.scijava.ui.behaviour.DragBehaviour;
+import org.scijava.ui.behaviour.InputTriggerAdder;
+import org.scijava.ui.behaviour.InputTriggerMap;
+import org.scijava.ui.behaviour.ScrollBehaviour;
+import org.scijava.ui.behaviour.io.InputTriggerConfig;
+
 import bdv.BehaviourTransformEventHandler;
-import bdv.behaviour.Behaviour;
-import bdv.behaviour.BehaviourMap;
-import bdv.behaviour.DragBehaviour;
-import bdv.behaviour.InputTriggerAdder;
-import bdv.behaviour.InputTriggerMap;
-import bdv.behaviour.ScrollBehaviour;
-import bdv.behaviour.io.InputTriggerConfig;
 import bdv.viewer.TriggerBehaviourBindings;
 import gnu.trove.list.array.TIntArrayList;
 import net.imglib2.ui.TransformEventHandler;

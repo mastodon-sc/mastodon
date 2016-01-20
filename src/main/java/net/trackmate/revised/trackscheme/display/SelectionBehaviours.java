@@ -3,13 +3,14 @@ package net.trackmate.revised.trackscheme.display;
 import java.awt.Color;
 import java.awt.Graphics;
 
-import bdv.behaviour.BehaviourMap;
-import bdv.behaviour.ClickBehaviour;
-import bdv.behaviour.DragBehaviour;
-import bdv.behaviour.InputTriggerAdder;
-import bdv.behaviour.InputTriggerMap;
-import bdv.behaviour.util.AbstractNamedBehaviour;
-import bdv.behaviour.util.AbstractNamedBehaviour.NamedBehaviourAdder;
+import org.scijava.ui.behaviour.BehaviourMap;
+import org.scijava.ui.behaviour.ClickBehaviour;
+import org.scijava.ui.behaviour.DragBehaviour;
+import org.scijava.ui.behaviour.InputTriggerAdder;
+import org.scijava.ui.behaviour.InputTriggerMap;
+import org.scijava.ui.behaviour.util.AbstractNamedBehaviour;
+import org.scijava.ui.behaviour.util.AbstractNamedBehaviour.NamedBehaviourAdder;
+
 import bdv.viewer.TriggerBehaviourBindings;
 import net.imglib2.ui.InteractiveDisplayCanvasComponent;
 import net.imglib2.ui.OverlayRenderer;
