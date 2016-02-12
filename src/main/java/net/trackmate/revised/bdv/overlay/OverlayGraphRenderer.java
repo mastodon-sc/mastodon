@@ -83,12 +83,7 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 
 	public E getEdgeAt( final int x, final int y, final double tolerance, final E ref )
 	{
-		final AffineTransform3D transform = new AffineTransform3D();
-		synchronized ( renderTransform )
-		{
-			transform.set( renderTransform );
-		}
-
+		final AffineTransform3D transform = getRenderTransformCopy();
 		final int currentTimepoint = renderTimepoint;
 
 		final ConvexPolytope visiblePolytopeGlobal = getVisiblePolytopeGlobal( transform, currentTimepoint );
@@ -143,12 +138,7 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 
 	public V getVertexAt( final int x, final int y, final V ref )
 	{
-		final AffineTransform3D transform = new AffineTransform3D();
-		synchronized ( renderTransform )
-		{
-			transform.set( renderTransform );
-		}
-
+		final AffineTransform3D transform = getRenderTransformCopy();
 		final int currentTimepoint = renderTimepoint;
 
 		final double[] lPos = new double[] { x, y, 0 };
@@ -310,7 +300,7 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 	 * coordinates. A value of 100 means that spots will be visible up to 100
 	 * units (of the global coordinate system) from the view plane.
 	 */
-	private final boolean isFocusLimitViewRelative = false;
+	private final boolean isFocusLimitViewRelative = true;
 
 	/**
 	 * The ratio of {@link #focusLimit} at which ellipsoids start to
@@ -537,6 +527,20 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 		return polytopeGlobal;
 	}
 
+	/**
+	 * TODO
+	 * @return
+	 */
+	private AffineTransform3D getRenderTransformCopy()
+	{
+		final AffineTransform3D transform = new AffineTransform3D();
+		synchronized ( renderTransform )
+		{
+			transform.set( renderTransform );
+		}
+		return transform;
+	}
+
 	@Override
 	public void drawOverlays( final Graphics g )
 	{
@@ -544,12 +548,7 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 		final BasicStroke defaultVertexStroke = new BasicStroke();
 		final BasicStroke highlightedVertexStroke = new BasicStroke( 5 );
 
-		final AffineTransform3D transform = new AffineTransform3D();
-		synchronized ( renderTransform )
-		{
-			transform.set( renderTransform );
-		}
-
+		final AffineTransform3D transform = getRenderTransformCopy();
 		final int currentTimepoint = renderTimepoint;
 
 		final double maxDepth = isFocusLimitViewRelative
