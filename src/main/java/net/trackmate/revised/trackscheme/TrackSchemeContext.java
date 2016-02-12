@@ -6,6 +6,15 @@ import java.util.concurrent.locks.Lock;
 import net.trackmate.graph.GraphIdBimap;
 import net.trackmate.revised.trackscheme.context.Context;
 
+/**
+ * Wraps a {@link Context} on model vertices as a {@link Context} of
+ * {@link TrackSchemeVertex TrackSchemeVertices}.
+ *
+ * @param <V>
+ *            model vertex type.
+ *
+ * @author Tobias Pietzsch &lt;tobias.pietzsch@gmail.com&gt;
+ */
 public class TrackSchemeContext< V > implements
 		Context< TrackSchemeVertex >
 {

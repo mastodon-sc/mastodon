@@ -11,6 +11,17 @@ import net.trackmate.revised.trackscheme.context.ContextListener;
 import net.trackmate.spatial.ClipConvexPolytope;
 import net.trackmate.spatial.SpatioTemporalIndex;
 
+/**
+ * Listens to BDV transform and timepoint changes and notifies a
+ * {@link ContextListener} about those. Implements the {@link Context} interface
+ * that can be queried by the {@link ContextListener} for contained vertices
+ * etc.
+ *
+ * @param <V>
+ *            model vertex type
+ *
+ * @author Tobias Pietzsch &lt;tobias.pietzsch@gmail.com&gt;
+ */
 public class BdvContext< V > implements
 		TransformListener< AffineTransform3D >,
 		TimePointListener,
