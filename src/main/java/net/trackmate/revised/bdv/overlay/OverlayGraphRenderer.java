@@ -438,7 +438,7 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 	 * @param timepoint
 	 * @return
 	 */
-	private ConvexPolytope getVisiblePolytopeGlobal(
+	ConvexPolytope getVisiblePolytopeGlobal(
 			final AffineTransform3D transform,
 			final int timepoint )
 	{

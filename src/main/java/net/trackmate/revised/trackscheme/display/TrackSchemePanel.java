@@ -17,6 +17,9 @@ import net.imglib2.ui.OverlayRenderer;
 import net.imglib2.ui.PainterThread;
 import net.imglib2.ui.TransformEventHandler;
 import net.imglib2.ui.TransformListener;
+import net.trackmate.graph.PoolObjectList;
+import net.trackmate.graph.collection.CollectionUtils;
+import net.trackmate.graph.collection.RefList;
 import net.trackmate.graph.listenable.GraphChangeListener;
 import net.trackmate.revised.trackscheme.LineageTreeLayout;
 import net.trackmate.revised.trackscheme.LineageTreeLayout.LayoutListener;
@@ -29,6 +32,8 @@ import net.trackmate.revised.trackscheme.TrackSchemeHighlight;
 import net.trackmate.revised.trackscheme.TrackSchemeNavigation;
 import net.trackmate.revised.trackscheme.TrackSchemeSelection;
 import net.trackmate.revised.trackscheme.TrackSchemeVertex;
+import net.trackmate.revised.trackscheme.context.Context;
+import net.trackmate.revised.trackscheme.context.ContextListener;
 import net.trackmate.revised.trackscheme.display.TrackSchemeOptions.Values;
 import net.trackmate.revised.trackscheme.display.laf.DefaultTrackSchemeOverlay;
 import net.trackmate.revised.ui.selection.FocusListener;
@@ -46,7 +51,8 @@ public class TrackSchemePanel extends JPanel implements
 		TimePointListener,
 		GraphChangeListener,
 		SelectionListener,
-		NavigationListener< TrackSchemeVertex >
+		NavigationListener< TrackSchemeVertex >,
+		ContextListener< TrackSchemeVertex >
 {
 
 	private static final long ANIMATION_MILLISECONDS = 250;
@@ -315,7 +321,8 @@ public class TrackSchemePanel extends JPanel implements
 		}
 		else if ( flags.contextChanged )
 		{
-			System.out.println( "if ( flags.contextChanged ): NOT IMPLEMENTED ");
+			buildContext( context );
+			entityAnimator.startAnimation( transform, ANIMATION_MILLISECONDS );
 		}
 
 		entityAnimator.setTime( System.currentTimeMillis() );
@@ -387,6 +394,60 @@ public class TrackSchemePanel extends JPanel implements
 		flags.setSelectionChanged();
 		painterThread.requestRepaint();
 	}
+
+
+
+	// TODO: THIS IS FOR TESTING ONLY
+	private Context< TrackSchemeVertex > context;
+
+	// TODO: THIS IS FOR TESTING ONLY
+	@Override
+	public void contextChanged( final Context< TrackSchemeVertex > context )
+	{
+		this.context = context;
+		flags.setContextChanged();
+		painterThread.requestRepaint();
+	}
+
+	// TODO: THIS IS FOR TESTING ONLY
+	private final int contextWindow = 2;
+
+	// TODO: THIS IS FOR TESTING ONLY
+	private void buildContext( final Context< TrackSchemeVertex > context )
+	{
+		final int timepoint = context.getTimepoint();
+		final int minTimepoint = timepoint - contextWindow;
+		final int maxTimepoint = timepoint + contextWindow;
+
+		// mark vertices in crop region with timestamp and find roots.
+		final int mark = layout.nextLayoutTimestamp();
+		final RefList< TrackSchemeVertex > roots = CollectionUtils.createVertexList( graph );
+
+		context.readLock().lock();
+		try
+		{
+			for ( int t = minTimepoint; t <= maxTimepoint; ++t )
+			{
+				for ( final TrackSchemeVertex tv : context.getInsideVertices( t ) )
+				{
+					tv.setLayoutTimestamp( mark );
+					if ( t == minTimepoint || tv.incomingEdges().isEmpty() )
+						roots.add( tv );
+				}
+			}
+		}
+		finally
+		{
+			context.readLock().unlock();
+		}
+
+		// TODO sort roots by something meaningful...
+		( ( PoolObjectList< TrackSchemeVertex > ) roots ).getIndexCollection().sort();
+
+		layout.layout( roots, mark );
+	}
+
+
 
 	public NavigationEtiquette getNavigationEtiquette()
 	{
@@ -544,10 +605,16 @@ public class TrackSchemePanel extends JPanel implements
 		return display;
 	}
 
-	// TODO unused, remove
-	protected LineageTreeLayout getLineageTreeLayout()
+	// TODO is this needed? does it have to be public?
+	public LineageTreeLayout getLineageTreeLayout()
 	{
 		return layout;
+	}
+
+	// TODO is this needed? does it have to be public?
+	public TrackSchemeGraph< ?, ? > getGraph()
+	{
+		return graph;
 	}
 
 	// TODO remove. revise TrackSchemePanel / TrackSchemeFrame construction
