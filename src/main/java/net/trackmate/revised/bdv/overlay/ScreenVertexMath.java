@@ -352,6 +352,7 @@ public class ScreenVertexMath
 		intersectionComputed = true;
 	}
 
+	// TODO: move to imglib2 LinAlgHelpers
 	public static void invertSymmetric3x3( final double[][] m, final double[][] inverse )
 	{
 		final double a00 = m[ 2 ][ 2 ] * m[ 1 ][ 1 ] - m[ 1 ][ 2 ] * m[ 1 ][ 2 ];
@@ -373,6 +374,7 @@ public class ScreenVertexMath
 		inverse[ 2 ][ 2 ] = a22 * Dinv;
 	}
 
+	// TODO: move to imglib2 LinAlgHelpers
 	public static void invertSymmetric2x2( final double[][] m, final double[][] inverse )
 	{
 		final double Dinv = 1.0 / ( m[ 0 ][ 0 ] * m[ 1 ][ 1 ] - m[ 1 ][ 0 ] * m[ 1 ][ 0 ] );
