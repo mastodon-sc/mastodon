@@ -45,7 +45,7 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 
 	private final OverlayGraph< V, E > graph;
 
-	private final SpatioTemporalIndex< V > index;;
+	private final SpatioTemporalIndex< V > index;
 
 	private final OverlayHighlight< V, E > highlight;
 
