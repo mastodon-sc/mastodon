@@ -495,7 +495,8 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 	 * @param viewerInterval
 	 * @return
 	 */
-	private static ConvexPolytope getPolytopeGlobal(
+	// TODO: move to Utility class
+	public static ConvexPolytope getPolytopeGlobal(
 			final AffineTransform3D transform,
 			final RealInterval viewerInterval )
 	{
@@ -518,7 +519,8 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 	 * @param viewerMaxZ
 	 * @return
 	 */
-	private static ConvexPolytope getPolytopeGlobal(
+	// TODO: move to Utility class
+	public static ConvexPolytope getPolytopeGlobal(
 			final AffineTransform3D transform,
 			final double viewerMinX, final double viewerMaxX,
 			final double viewerMinY, final double viewerMaxY,
