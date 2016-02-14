@@ -20,11 +20,12 @@ import mpicbg.spim.data.sequence.TimePoint;
 import net.trackmate.graph.GraphIdBimap;
 import net.trackmate.graph.listenable.GraphChangeListener;
 import net.trackmate.graph.listenable.ListenableGraph;
-import net.trackmate.revised.bdv.overlay.BdvContext;
 import net.trackmate.revised.bdv.overlay.MouseNavigationHandler;
 import net.trackmate.revised.bdv.overlay.MouseOverListener;
 import net.trackmate.revised.bdv.overlay.MouseSelectionHandler;
+import net.trackmate.revised.bdv.overlay.OverlayContext;
 import net.trackmate.revised.bdv.overlay.OverlayGraphRenderer;
+import net.trackmate.revised.bdv.overlay.wrap.OverlayContextWrapper;
 import net.trackmate.revised.bdv.overlay.wrap.OverlayEdgeWrapper;
 import net.trackmate.revised.bdv.overlay.wrap.OverlayGraphWrapper;
 import net.trackmate.revised.bdv.overlay.wrap.OverlayHighlightWrapper;
@@ -64,7 +65,6 @@ import net.trackmate.revised.ui.selection.HighlightModel;
 import net.trackmate.revised.ui.selection.NavigationHandler;
 import net.trackmate.revised.ui.selection.Selection;
 import net.trackmate.revised.ui.selection.SelectionListener;
-import net.trackmate.spatial.SpatioTemporalIndex;
 
 public class WindowManager
 {
@@ -213,6 +213,11 @@ public class WindowManager
 		final MouseNavigationHandler< ?, ? > mouseNavigationHandler = new MouseNavigationHandler<>( overlayGraph, tracksOverlay, navigation );
 		viewer.getDisplay().addHandler( mouseNavigationHandler );
 
+		final OverlayContext< OverlayVertexWrapper< Spot, Link > > overlayContext = new OverlayContext<>( overlayGraph, tracksOverlay );
+		viewer.addRenderTransformListener( overlayContext );
+		viewer.addTimePointListener( overlayContext );
+		new OverlayContextWrapper<>( overlayContext, new BdvContextAdapter() );
+
 		final ViewerFrame viewerFrame = bdv.getViewerFrame();
 		final GroupLocksPanel lockPanel = new GroupLocksPanel( bdvGroupHandle );
 
@@ -337,12 +342,6 @@ public class WindowManager
 		tsWindows.add( new TsWindow( frame, groupHandle ) );
 	}
 
-	public void TEST_setupContext_TEST()
-	{
-		for ( final BdvWindow bdvWindow : bdvWindows )
-			new BdvContextAdapter( bdvWindow, model.getSpatioTemporalIndex() );
-	}
-
 	public void buildContext( final Context< Spot > context, final int id )
 	{
 		for ( final TsWindow tsWindow : tsWindows )
@@ -352,20 +351,9 @@ public class WindowManager
 		}
 	}
 
-
-
 	private class BdvContextAdapter implements ContextListener< Spot >
 	{
-		private final int id;
-
-		public BdvContextAdapter( final BdvWindow bdvWindow, final SpatioTemporalIndex< Spot > modelIndex )
-		{
-			this.id = 0; // TODO
-			final BdvContext r = new BdvContext<>( bdvWindow.getTracksOverlay(), modelIndex, this );
-			final ViewerPanel viewer = bdvWindow.getViewerFrame().getViewerPanel();
-			viewer.addTimePointListener( r );
-			viewer.addRenderTransformListener( r );
-		}
+		private final int id = 0; // TODO
 
 		@Override
 		public void contextChanged( final Context< Spot > context )
@@ -396,6 +384,5 @@ public class WindowManager
 		wm.createBigDataViewer();
 		wm.createTrackScheme();
 		wm.bdvWindows.get( 0 ).getViewerFrame().getViewerPanel().setTimepoint( 15 );
-		wm.TEST_setupContext_TEST();
 	}
 }
