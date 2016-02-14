@@ -8,8 +8,19 @@ import net.imglib2.util.LinAlgHelpers;
 import net.trackmate.revised.bdv.overlay.util.JamaEigenvalueDecomposition;
 
 /**
- * Computations to extract information from {@link OverlayVertex} and
- * current viewer transform for painting.
+ * Computations to extract information from {@link OverlayVertex} and current
+ * viewer transform for painting.
+ * <p>
+ * One instance is used repeatedly for multiple {@link OverlayVertex
+ * OverlayVertices} as follows:
+ * <ol>
+ * <li>Call {@link #init(OverlayVertex, AffineTransform3D)} with the
+ * {@link OverlayVertex} and the current viewer transform. This resets internal
+ * state.
+ * <li>Call any of the getters (e.g., {@link #getIntersectEllipse()}). This
+ * triggers all necessary computations to provide the requested value.
+ * Intermediate results are cached.
+ * </ol>
  *
  * @author Tobias Pietzsch &lt;tobias.pietzsch@gmail.com&gt;
  */
@@ -134,6 +145,14 @@ public class ScreenVertexMath
 		this.nSigmas = nSigmas;
 	}
 
+	/**
+	 * (Re-)initialize for a new {@code vertex} and the given viewer transform.
+	 * Resets the state of this {@link ScreenVertexMath}, discarding all cached
+	 * computed values.
+	 *
+	 * @param vertex
+	 * @param viewerTransform
+	 */
 	public void init( final OverlayVertex< ?, ? > vertex, final AffineTransform3D viewerTransform )
 	{
 		this.transform = viewerTransform;
@@ -156,59 +175,126 @@ public class ScreenVertexMath
 		projectedPrecisionComputed = false;
 	}
 
+	/**
+	 * Get spot position in viewer coordinate system.
+	 *
+	 * @return spot position in viewer coordinate system.
+	 */
 	public double[] getViewPos()
 	{
 		return vPos;
 	}
 
+	/**
+	 * Get center of 2D ellipse obtained by projecting ellipsoid to z=0 plane.
+	 *
+	 * @return center of 2D ellipse obtained by projecting ellipsoid to z=0
+	 *         plane.
+	 */
 	public double[] getProjectCenter()
 	{
 		computeProjection();
 		return projectCenter;
 	}
 
+	/**
+	 * Get the rotation angle (in radian) of 2D ellipse obtained by projecting
+	 * ellipsoid to z=0 plane.
+	 *
+	 * @return rotation angle of 2D ellipse obtained by projecting ellipsoid to
+	 *         z=0 plane.
+	 */
 	public double getProjectTheta()
 	{
 		computeProjection();
 		return projectTheta;
 	}
 
+	/**
+	 * Get the 2D ellipse obtained by projecting ellipsoid to z=0 plane. To draw
+	 * it, you need to translate by {@link #getProjectCenter()} and rotate by
+	 * {@link #getProjectTheta()}.
+	 *
+	 * @return 2D ellipse obtained by projecting ellipsoid to z=0 plane.
+	 */
 	public Ellipse2D getProjectEllipse()
 	{
 		computeProjection();
 		return projectEllipse;
 	}
 
+	/**
+	 * Test whether the ellipsoid intersects the z=0 plane.
+	 *
+	 * @return {@code true} iff the ellipsoid intersects the z=0 plane.
+	 */
 	public boolean intersectsViewPlane()
 	{
 		computeIntersection();
 		return intersectsViewPlane;
 	}
 
+	/**
+	 * Get center of 2D ellipse obtained by intersecting ellipsoid with z=0
+	 * plane.
+	 *
+	 * @return center of 2D ellipse obtained by intersecting ellipsoid with z=0
+	 *         plane.
+	 */
 	public double[] getIntersectCenter()
 	{
 		computeIntersection();
 		return intersectCenter;
 	}
 
+	/**
+	 * Get the rotation angle ( in radian) of 2D ellipse obtained by
+	 * intersecting ellipsoid with z=0 plane.
+	 *
+	 * @return rotation angle of 2D ellipse obtained by intersecting ellipsoid
+	 *         with z=0 plane.
+	 */
 	public double getIntersectTheta()
 	{
 		computeIntersection();
 		return intersectTheta;
 	}
 
+	/**
+	 * Get the 2D ellipse obtained by intersecting ellipsoid with z=0 plane. To
+	 * draw it, you need to translate by {@link #getIntersectCenter()} and
+	 * rotate by {@link #getIntersectTheta()}.
+	 *
+	 * @return 2D ellipse obtained by intersecting ellipsoid with z=0 plane.
+	 */
 	public Ellipse2D getIntersectEllipse()
 	{
 		computeIntersection();
 		return intersectEllipse;
 	}
 
+	/**
+	 * Test whether the given 3D point {@code p} in global coordinates lies
+	 * within the ellipsoid.
+	 *
+	 * @param p
+	 *            the point to test.
+	 * @return {@code true} iff the given point lies within the ellipsoid.
+	 */
 	public boolean containsGlobal( final RealLocalizable p )
 	{
 		p.localize( vm );
 		return containsGlobal( vm );
 	}
 
+	/**
+	 * Test whether the given 3D point {@code p} in global coordinates lies
+	 * within the ellipsoid.
+	 *
+	 * @param p
+	 *            the point to test.
+	 * @return {@code true} iff the given point lies within the ellipsoid.
+	 */
 	public boolean containsGlobal( final double[] p )
 	{
 		computePrecision();
@@ -218,12 +304,30 @@ public class ScreenVertexMath
 		return d2 < nSigmas * nSigmas;
 	}
 
+	/**
+	 * Test whether the given 2D point {@code p} in view coordinates lies within
+	 * the ellipse obtained by projecting ellipsoid to z=0 plane.
+	 *
+	 * @param p
+	 *            the point to test.
+	 * @return {@code true} iff the given point lies within the projected
+	 *         ellipsoid.
+	 */
 	public boolean projectionContainsView( final RealLocalizable p )
 	{
 		p.localize( vm2 );
 		return projectionContainsView( vm2 );
 	}
 
+	/**
+	 * Test whether the given 2D point {@code p} in view coordinates lies within
+	 * the ellipse obtained by projecting ellipsoid to z=0 plane.
+	 *
+	 * @param p
+	 *            the point to test.
+	 * @return {@code true} iff the given point lies within the projected
+	 *         ellipsoid.
+	 */
 	public boolean projectionContainsView( final double[] p )
 	{
 		computeProjectedPrecision();
@@ -353,6 +457,14 @@ public class ScreenVertexMath
 	}
 
 	// TODO: move to imglib2 LinAlgHelpers
+	/**
+	 * Invert a (invertible) symmetric 3x3 matrix.
+	 *
+	 * @param m
+	 *            symmetric matrix to invert.
+	 * @param inverse
+	 *            inverse of {@code m} is stored here.
+	 */
 	public static void invertSymmetric3x3( final double[][] m, final double[][] inverse )
 	{
 		final double a00 = m[ 2 ][ 2 ] * m[ 1 ][ 1 ] - m[ 1 ][ 2 ] * m[ 1 ][ 2 ];
@@ -375,6 +487,14 @@ public class ScreenVertexMath
 	}
 
 	// TODO: move to imglib2 LinAlgHelpers
+	/**
+	 * Invert a (invertible) symmetric 2x2 matrix.
+	 *
+	 * @param m
+	 *            symmetric matrix to invert.
+	 * @param inverse
+	 *            inverse of {@code m} is stored here.
+	 */
 	public static void invertSymmetric2x2( final double[][] m, final double[][] inverse )
 	{
 		final double Dinv = 1.0 / ( m[ 0 ][ 0 ] * m[ 1 ][ 1 ] - m[ 1 ][ 0 ] * m[ 1 ][ 0 ] );
