@@ -209,7 +209,7 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 
 	public static final double DEFAULT_LIMIT_FOCUS_RANGE = 100.;
 
-	public static final Object DEFAULT_ALIASING_MODE = RenderingHints.VALUE_ANTIALIAS_ON;
+	public static final boolean DEFAULT_USE_ANTI_ALIASING = true;
 
 	public static final boolean DEFAULT_USE_GRADIENT = false;
 
@@ -225,7 +225,7 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 	 * DISPLAY SETTINGS FIELDS.
 	 */
 
-	private final Object antialiasing = DEFAULT_ALIASING_MODE;
+	private final boolean useAntialiasing = DEFAULT_USE_ANTI_ALIASING;
 
 	private final boolean useGradient = DEFAULT_USE_GRADIENT;
 
@@ -556,7 +556,10 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 				: focusLimit * Affine3DHelpers.extractScale( transform, 0 );
 
 
-		graphics.setRenderingHint( RenderingHints.KEY_ANTIALIASING, antialiasing );
+		graphics.setRenderingHint( RenderingHints.KEY_ANTIALIASING,
+				useAntialiasing
+						? RenderingHints.VALUE_ANTIALIAS_ON
+						: RenderingHints.VALUE_ANTIALIAS_OFF );
 
 //		graphics.setStroke( new BasicStroke( 2, BasicStroke.CAP_BUTT, BasicStroke.JOIN_ROUND ) );
 		graphics.setStroke( new BasicStroke() );
