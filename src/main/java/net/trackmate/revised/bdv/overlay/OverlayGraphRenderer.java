@@ -649,6 +649,7 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 					final double z = screenVertexMath.getViewPos()[ 2 ];
 
 					final double sd = sliceDistance( z, maxDepth );
+					// TODO the ( sd > -1 && sd < 1 ) is why some ellipsoids are not drawn although they intersect the viewer plane
 					if ( sd > -1 && sd < 1 )
 					{
 						if ( drawEllipsoidSliceIntersection )
