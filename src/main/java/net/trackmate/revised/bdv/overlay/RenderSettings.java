@@ -1,5 +1,7 @@
 package net.trackmate.revised.bdv.overlay;
 
+import java.util.concurrent.CopyOnWriteArrayList;
+
 public class RenderSettings
 {
 	/*
@@ -21,6 +23,13 @@ public class RenderSettings
 	public static final double DEFAULT_ELLIPSOID_FADE_DEPTH = 0.2;
 	public static final double DEFAULT_POINT_FADE_DEPTH = 0.2;
 
+	public interface UpdateListener
+	{
+		public void renderSettingsChanged();
+	}
+
+	private final CopyOnWriteArrayList< UpdateListener > updateListeners;
+
 	public RenderSettings()
 	{
 		useAntialiasing = DEFAULT_USE_ANTI_ALIASING;
@@ -36,9 +45,11 @@ public class RenderSettings
 		isFocusLimitViewRelative = DEFAULT_IS_FOCUS_LIMIT_RELATIVE;
 		ellipsoidFadeDepth = DEFAULT_ELLIPSOID_FADE_DEPTH;
 		pointFadeDepth = DEFAULT_POINT_FADE_DEPTH;
+
+		updateListeners = new CopyOnWriteArrayList< UpdateListener >();
 	}
 
-	public void set( final RenderSettings settings )
+	public synchronized void set( final RenderSettings settings )
 	{
 		useAntialiasing = settings.useAntialiasing;
 		useGradient = settings.useGradient;
@@ -53,6 +64,24 @@ public class RenderSettings
 		isFocusLimitViewRelative = settings.isFocusLimitViewRelative;
 		ellipsoidFadeDepth = settings.ellipsoidFadeDepth;
 		pointFadeDepth = settings.pointFadeDepth;
+		notifyListeners();
+	}
+
+	private void notifyListeners()
+	{
+		System.out.println( "notifyListeners" );
+		for ( final UpdateListener l : updateListeners )
+			l.renderSettingsChanged();
+	}
+
+	public void addUpdateListener( final UpdateListener l )
+	{
+		updateListeners.add( l );
+	}
+
+	public void removeUpdateListener( final UpdateListener l )
+	{
+		updateListeners.remove( l );
 	}
 
 	/*
@@ -173,9 +202,13 @@ public class RenderSettings
 	 *
 	 * @param useAntialiasing
 	 */
-	public void setUseAntialiasing( final boolean useAntialiasing )
+	public synchronized void setUseAntialiasing( final boolean useAntialiasing )
 	{
-		this.useAntialiasing = useAntialiasing;
+		if ( this.useAntialiasing != useAntialiasing )
+		{
+			this.useAntialiasing = useAntialiasing;
+			notifyListeners();
+		}
 	}
 
 	/**
@@ -199,9 +232,13 @@ public class RenderSettings
 	 * @param useGradient
 	 *            whether to use a gradient for drawing links.
 	 */
-	public void setUseGradient( final boolean useGradient )
+	public synchronized void setUseGradient( final boolean useGradient )
 	{
-		this.useGradient = useGradient;
+		if ( this.useGradient != useGradient )
+		{
+			this.useGradient = useGradient;
+			notifyListeners();
+		}
 	}
 
 	/**
@@ -222,9 +259,13 @@ public class RenderSettings
 	 * @param timeLimit
 	 *            maximum number of timepoints into the past to draw links.
 	 */
-	public void setTimeLimit( final int timeLimit )
+	public synchronized void setTimeLimit( final int timeLimit )
 	{
-		this.timeLimit = timeLimit;
+		if ( this.timeLimit != timeLimit )
+		{
+			this.timeLimit = timeLimit;
+			notifyListeners();
+		}
 	}
 
 	/**
@@ -245,9 +286,13 @@ public class RenderSettings
 	 * @param drawLinks
 	 *            whether to draw links.
 	 */
-	public void setDrawLinks( final boolean drawLinks )
+	public synchronized void setDrawLinks( final boolean drawLinks )
 	{
-		this.drawLinks = drawLinks;
+		if ( this.drawLinks != drawLinks )
+		{
+			this.drawLinks = drawLinks;
+			notifyListeners();
+		}
 	}
 
 	/**
@@ -264,9 +309,13 @@ public class RenderSettings
 	 * @param drawSpots
 	 *            whether to draw spots.
 	 */
-	public void setDrawSpots( final boolean drawSpots )
+	public synchronized void setDrawSpots( final boolean drawSpots )
 	{
-		this.drawSpots = drawSpots;
+		if ( this.drawSpots != drawSpots )
+		{
+			this.drawSpots = drawSpots;
+			notifyListeners();
+		}
 	}
 
 	/**
@@ -289,9 +338,13 @@ public class RenderSettings
 	 *            whether to draw projections of spot ellipsoids onto the view
 	 *            plane.
 	 */
-	public void setDrawEllipsoidSliceProjection( final boolean drawEllipsoidSliceProjection )
+	public synchronized void setDrawEllipsoidSliceProjection( final boolean drawEllipsoidSliceProjection )
 	{
-		this.drawEllipsoidSliceProjection = drawEllipsoidSliceProjection;
+		if ( this.drawEllipsoidSliceProjection != drawEllipsoidSliceProjection )
+		{
+			this.drawEllipsoidSliceProjection = drawEllipsoidSliceProjection;
+			notifyListeners();
+		}
 	}
 
 	/**
@@ -314,16 +367,21 @@ public class RenderSettings
 	 *            whether to draw intersections of spot ellipsoids with the view
 	 *            plane.
 	 */
-	public void setDrawEllipsoidSliceIntersection( final boolean drawEllipsoidSliceIntersection )
+	public synchronized void setDrawEllipsoidSliceIntersection( final boolean drawEllipsoidSliceIntersection )
 	{
-		this.drawEllipsoidSliceIntersection = drawEllipsoidSliceIntersection;
+		if ( this.drawEllipsoidSliceIntersection != drawEllipsoidSliceIntersection )
+		{
+			this.drawEllipsoidSliceIntersection = drawEllipsoidSliceIntersection;
+			notifyListeners();
+		}
 	}
 
 	/**
 	 * Get whether spot centers are drawn.
 	 * <p>
 	 * Note that spot centers are usually only drawn, if no ellipse for the spot
-	 * was drawn (unless {@link #getDrawPointsForEllipses()} {@code == true}).
+	 * was drawn (unless {@link #getDrawSpotCentersForEllipses()}
+	 * {@code == true}).
 	 *
 	 * @return whether spot centers are drawn.
 	 */
@@ -336,14 +394,19 @@ public class RenderSettings
 	 * Set whether spot centers are drawn.
 	 * <p>
 	 * Note that spot centers are usually only drawn, if no ellipse for the spot
-	 * was drawn (unless {@link #getDrawPointsForEllipses()} {@code == true}).
+	 * was drawn (unless {@link #getDrawSpotCentersForEllipses()}
+	 * {@code == true}).
 	 *
 	 * @param drawPoints
 	 *            whether spot centers are drawn.
 	 */
-	public void setDrawSpotCenters( final boolean drawPoints )
+	public synchronized void setDrawSpotCenters( final boolean drawPoints )
 	{
-		this.drawPoints = drawPoints;
+		if ( this.drawPoints != drawPoints )
+		{
+			this.drawPoints = drawPoints;
+			notifyListeners();
+		}
 	}
 
 	/**
@@ -353,7 +416,7 @@ public class RenderSettings
 	 * @return whether spot centers are also drawn for those points that are
 	 *         visible as ellipses.
 	 */
-	public boolean getDrawPointsForEllipses()
+	public boolean getDrawSpotCentersForEllipses()
 	{
 		return drawPointsForEllipses;
 	}
@@ -366,9 +429,13 @@ public class RenderSettings
 	 *            whether spot centers are also drawn for those points that are
 	 *            visible as ellipses.
 	 */
-	public void setDrawPointsForEllipses( final boolean drawPointsForEllipses )
+	public synchronized void setDrawSpotCentersForEllipses( final boolean drawPointsForEllipses )
 	{
-		this.drawPointsForEllipses = drawPointsForEllipses;
+		if ( this.drawPointsForEllipses != drawPointsForEllipses )
+		{
+			this.drawPointsForEllipses = drawPointsForEllipses;
+			notifyListeners();
+		}
 	}
 
 	/**
@@ -404,9 +471,13 @@ public class RenderSettings
 	 *            the maximum distance from the view plane up to which to spots
 	 *            are drawn.
 	 */
-	public void setFocusLimit( final double focusLimit )
+	public synchronized void setFocusLimit( final double focusLimit )
 	{
-		this.focusLimit = focusLimit;
+		if ( this.focusLimit != focusLimit )
+		{
+			this.focusLimit = focusLimit;
+			notifyListeners();
+		}
 	}
 
 	/**
@@ -436,9 +507,13 @@ public class RenderSettings
 	 *            whether the {@link #getFocusLimit()} is relative to the the
 	 *            current view coordinate system.
 	 */
-	public void setFocusLimitViewRelative( final boolean isFocusLimitViewRelative )
+	public synchronized void setFocusLimitViewRelative( final boolean isFocusLimitViewRelative )
 	{
-		this.isFocusLimitViewRelative = isFocusLimitViewRelative;
+		if ( this.isFocusLimitViewRelative != isFocusLimitViewRelative )
+		{
+			this.isFocusLimitViewRelative = isFocusLimitViewRelative;
+			notifyListeners();
+		}
 	}
 
 	/**
@@ -463,9 +538,13 @@ public class RenderSettings
 	 *            the ratio of {@link #getFocusLimit()} at which ellipsoids
 	 *            start to fade.
 	 */
-	public void setEllipsoidFadeDepth( final double ellipsoidFadeDepth )
+	public synchronized void setEllipsoidFadeDepth( final double ellipsoidFadeDepth )
 	{
-		this.ellipsoidFadeDepth = ellipsoidFadeDepth;
+		if ( this.ellipsoidFadeDepth != ellipsoidFadeDepth )
+		{
+			this.ellipsoidFadeDepth = ellipsoidFadeDepth;
+			notifyListeners();
+		}
 	}
 
 	/**
@@ -490,8 +569,12 @@ public class RenderSettings
 	 *            the ratio of {@link #getFocusLimit()} at which points start to
 	 *            fade.
 	 */
-	public void setPointFadeDepth( final double pointFadeDepth )
+	public synchronized void setPointFadeDepth( final double pointFadeDepth )
 	{
-		this.pointFadeDepth = pointFadeDepth;
+		if ( this.pointFadeDepth != pointFadeDepth )
+		{
+			this.pointFadeDepth = pointFadeDepth;
+			notifyListeners();
+		}
 	}
 }
