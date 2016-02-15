@@ -6,12 +6,23 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.swing.ActionMap;
+import javax.swing.InputMap;
+
+import org.scijava.ui.behaviour.KeyStrokeAdder;
+import org.scijava.ui.behaviour.io.InputTriggerConfig;
+import org.scijava.ui.behaviour.io.yaml.YamlConfigIO;
+
+import bdv.BehaviourTransformEventHandler3D;
 import bdv.BigDataViewer;
 import bdv.export.ProgressWriterConsole;
 import bdv.spimdata.SpimDataMinimal;
 import bdv.spimdata.XmlIoSpimDataMinimal;
 import bdv.tools.InitializeViewerState;
+import bdv.tools.ToggleDialogAction;
+import bdv.util.AbstractNamedAction;
 import bdv.viewer.TimePointListener;
+import bdv.viewer.TriggerBehaviourBindings;
 import bdv.viewer.ViewerFrame;
 import bdv.viewer.ViewerOptions;
 import bdv.viewer.ViewerPanel;
@@ -25,6 +36,8 @@ import net.trackmate.revised.bdv.overlay.MouseOverListener;
 import net.trackmate.revised.bdv.overlay.MouseSelectionHandler;
 import net.trackmate.revised.bdv.overlay.OverlayContext;
 import net.trackmate.revised.bdv.overlay.OverlayGraphRenderer;
+import net.trackmate.revised.bdv.overlay.RenderSettings;
+import net.trackmate.revised.bdv.overlay.ui.RenderSettingsDialog;
 import net.trackmate.revised.bdv.overlay.wrap.OverlayContextWrapper;
 import net.trackmate.revised.bdv.overlay.wrap.OverlayEdgeWrapper;
 import net.trackmate.revised.bdv.overlay.wrap.OverlayGraphWrapper;
@@ -72,6 +85,8 @@ public class WindowManager
 
 	private final SpimDataMinimal spimData;
 
+	private final InputTriggerConfig keyconf;
+
 	final int minTimepoint;
 
 	final int maxTimepoint;
@@ -86,11 +101,12 @@ public class WindowManager
 
 	public WindowManager(
 			final SpimDataMinimal spimData,
-			final Model model
-			)
+			final Model model,
+			final InputTriggerConfig keyconf )
 	{
 		this.spimData = spimData;
 		this.model = model;
+		this.keyconf = keyconf;
 		groupManager = new GroupManager();
 
 		final ListenableGraph< Spot, Link > graph = model.getGraph();
@@ -164,7 +180,10 @@ public class WindowManager
 				selection );
 
 		final String windowTitle = "BigDataViewer";
-		final BigDataViewer bdv = BigDataViewer.open( spimData, windowTitle, new ProgressWriterConsole(), ViewerOptions.options() );
+		final BigDataViewer bdv = BigDataViewer.open( spimData, windowTitle, new ProgressWriterConsole(),
+				ViewerOptions.options().
+				transformEventHandlerFactory( BehaviourTransformEventHandler3D.factory( keyconf ) ).
+				inputTriggerConfig( keyconf ) );
 
 //		if ( !bdv.tryLoadSettings( bdvFile ) ) // TODO
 			InitializeViewerState.initBrightness( 0.001, 0.999, bdv.getViewer(), bdv.getSetupAssignments() );
@@ -220,7 +239,6 @@ public class WindowManager
 
 		final ViewerFrame viewerFrame = bdv.getViewerFrame();
 		final GroupLocksPanel lockPanel = new GroupLocksPanel( bdvGroupHandle );
-
 		viewerFrame.add( lockPanel, BorderLayout.NORTH );
 		viewerFrame.pack();
 
@@ -232,6 +250,23 @@ public class WindowManager
 		 */
 		viewer.addTimePointListener( tpl );
 //		viewer.repaint(); // TODO remove?
+
+
+
+		// RenderSettingsDialog triggered by "R"
+		final RenderSettings renderSettings = new RenderSettings(); // TODO should be in overlay eventually
+		final String RENDER_SETTINGS = "render settings";
+		final RenderSettingsDialog renderSettingsDialog = new RenderSettingsDialog( viewerFrame, renderSettings );
+		final ActionMap actionMap = new ActionMap();
+		AbstractNamedAction.put( actionMap, new ToggleDialogAction( RENDER_SETTINGS, renderSettingsDialog ) );
+		final InputMap inputMap = new InputMap();
+		final KeyStrokeAdder a = keyconf.keyStrokeAdder( inputMap, "mamut" );
+		a.put( RENDER_SETTINGS, "R" );
+		viewerFrame.getKeybindings().addActionMap( "mamut", actionMap );
+		viewerFrame.getKeybindings().addInputMap( "mamut", inputMap );
+
+
+
 
 		final BdvWindow bdvWindow = new BdvWindow( viewerFrame, tracksOverlay, bdvGroupHandle );
 		bdvWindows.add( bdvWindow );
@@ -378,9 +413,22 @@ public class WindowManager
 		 */
 		final SpimDataMinimal spimData = new XmlIoSpimDataMinimal().load( bdvFile );
 
+		/*
+		 * Load keyconfig
+		 */
+		InputTriggerConfig keyconf;
+		try
+		{
+			keyconf = new InputTriggerConfig( YamlConfigIO.read( "samples/keyconf.yaml" ) );
+		}
+		catch ( final IOException e )
+		{
+			keyconf = new InputTriggerConfig();
+		}
+
 		System.setProperty( "apple.laf.useScreenMenuBar", "true" );
 
-		final WindowManager wm = new WindowManager( spimData, model );
+		final WindowManager wm = new WindowManager( spimData, model, keyconf );
 		wm.createBigDataViewer();
 		wm.createTrackScheme();
 		wm.bdvWindows.get( 0 ).getViewerFrame().getViewerPanel().setTimepoint( 15 );
