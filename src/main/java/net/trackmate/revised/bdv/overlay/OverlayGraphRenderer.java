@@ -57,6 +57,7 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 		this.highlight = highlight;
 		index = graph.getIndex();
 		renderTransform = new AffineTransform3D();
+		setRenderSettings( new RenderSettings() ); // default RenderSettings
 	}
 
 	@Override
@@ -201,72 +202,74 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 		return null;
 	}
 
-	/*
-	 * PUBLIC DISPLAY CONFIG DEFAULTS.
+	void setRenderSettings( final RenderSettings settings )
+	{
+		antialiasing = settings.getUseAntialiasing()
+				? RenderingHints.VALUE_ANTIALIAS_ON
+				: RenderingHints.VALUE_ANTIALIAS_OFF;
+		useGradient = settings.getUseGradient();
+		timeLimit = settings.getTimeLimit();
+		drawLinks = settings.getDrawLinks();
+		drawSpots = settings.getDrawSpots();
+		drawEllipsoidSliceProjection = settings.getDrawEllipsoidSliceProjection();
+		drawEllipsoidSliceIntersection = settings.getDrawEllipsoidSliceIntersection();
+		drawPoints = settings.getDrawSpotCenters();
+		drawPointsForEllipses = settings.getDrawSpotCentersForEllipses();
+		focusLimit = settings.getFocusLimit();
+		isFocusLimitViewRelative = settings.getFocusLimitViewRelative();
+		ellipsoidFadeDepth = settings.getEllipsoidFadeDepth();
+		pointFadeDepth = settings.getPointFadeDepth();
+	}
+
+	/**
+	 * Antialiasing {@link RenderingHints}.
 	 */
+	private Object antialiasing;
 
-	public static final int DEFAULT_LIMIT_TIME_RANGE = 20;
-
-	public static final double DEFAULT_LIMIT_FOCUS_RANGE = 100.;
-
-	public static final boolean DEFAULT_USE_ANTI_ALIASING = true;
-
-	public static final boolean DEFAULT_USE_GRADIENT = false;
-
-	public static final boolean DEFAULT_DRAW_SPOTS = true;
-
-	public static final boolean DEFAULT_DRAW_LINKS = true;
-
-	public static final boolean DEFAULT_DRAW_ELLIPSE = true;
-
-	public static final boolean DEFAULT_DRAW_SLICE_INTERSECTION = true;
-
-	/*
-	 * DISPLAY SETTINGS FIELDS.
+	/**
+	 * If {@code true}, draw links using a gradient from source color to target
+	 * color. If {@code false}, draw links using the target color.
 	 */
-
-	private final boolean useAntialiasing = DEFAULT_USE_ANTI_ALIASING;
-
-	private final boolean useGradient = DEFAULT_USE_GRADIENT;
+	private boolean useGradient;
 
 	/**
 	 * Maximum number of timepoints into the past for which outgoing edges
 	 * should be drawn.
 	 */
-	private final int timeLimit = DEFAULT_LIMIT_TIME_RANGE;
+	private int timeLimit;
 
 	/**
 	 * Whether to draw links (at all).
 	 * For specific settings, see TODO
 	 */
-	private final boolean drawLinks = DEFAULT_DRAW_LINKS;
+	private boolean drawLinks;
 
 
 	/**
 	 * Whether to draw spots (at all).
 	 * For specific settings, see TODO
 	 */
-	private final boolean drawSpots = DEFAULT_DRAW_SPOTS;
+	private boolean drawSpots;
 
 	/**
 	 * Whether to draw the intersections of spot ellipsoids with the view plane.
 	 */
-	private final boolean drawEllipsoidSliceProjection = !DEFAULT_DRAW_SLICE_INTERSECTION;
+	private boolean drawEllipsoidSliceProjection;
 
 	/**
 	 * Whether to draw the projections of spot ellipsoids onto the view plane.
 	 */
-	private final boolean drawEllipsoidSliceIntersection = DEFAULT_DRAW_SLICE_INTERSECTION;
+	private boolean drawEllipsoidSliceIntersection;
 
 	/**
 	 * Whether to draw spot centers.
 	 */
-	private final boolean drawPoints = !DEFAULT_DRAW_ELLIPSE || (DEFAULT_DRAW_ELLIPSE && DEFAULT_DRAW_SLICE_INTERSECTION);
+	private boolean drawPoints;
 
 	/**
 	 * Whether to draw spot centers also for those points that are visible as ellipses.
 	 */
-	private final boolean drawPointsForEllipses = false;
+	private boolean drawPointsForEllipses;
 
 	/**
 	 * Maximum distance from view plane up to which to draw spots.
@@ -286,7 +289,7 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 	 * Ellipsoids are drawn increasingly translucent the closer they are
 	 * to {@link #focusLimit}. See {@link #ellipsoidFadeDepth}.
 	 */
-	private final double focusLimit = DEFAULT_LIMIT_FOCUS_RANGE;
+	private double focusLimit;
 
 	/**
 	 * Whether the {@link #focusLimit} is relative to the the current
@@ -300,7 +303,7 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 	 * coordinates. A value of 100 means that spots will be visible up to 100
 	 * units (of the global coordinate system) from the view plane.
 	 */
-	private final boolean isFocusLimitViewRelative = true;
+	private boolean isFocusLimitViewRelative;
 
 	/**
 	 * The ratio of {@link #focusLimit} at which ellipsoids start to
@@ -308,7 +311,7 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 	 * to {@link #focusLimit}. Up to ratio {@link #ellipsoidFadeDepth}
 	 * they are fully opaque, then their alpha value goes to 0 linearly.
 	 */
-	private final double ellipsoidFadeDepth = 0.2;
+	private double ellipsoidFadeDepth;
 
 	/**
 	 * The ratio of {@link #focusLimit} at which points start to
@@ -316,7 +319,7 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 	 * to {@link #focusLimit}. Up to ratio {@link #pointFadeDepth}
 	 * they are fully opaque, then their alpha value goes to 0 linearly.
 	 */
-	private final double pointFadeDepth = 0.2;
+	private double pointFadeDepth;
 
 	/*
 	 * TODO: Should be removed (nSigmas == 1 always), and the scaling should be moved to the Spot (handle when importing TGMM files)
@@ -556,10 +559,7 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 				: focusLimit * Affine3DHelpers.extractScale( transform, 0 );
 
 
-		graphics.setRenderingHint( RenderingHints.KEY_ANTIALIASING,
-				useAntialiasing
-						? RenderingHints.VALUE_ANTIALIAS_ON
-						: RenderingHints.VALUE_ANTIALIAS_OFF );
+		graphics.setRenderingHint( RenderingHints.KEY_ANTIALIASING, antialiasing );
 
 //		graphics.setStroke( new BasicStroke( 2, BasicStroke.CAP_BUTT, BasicStroke.JOIN_ROUND ) );
 		graphics.setStroke( new BasicStroke() );
