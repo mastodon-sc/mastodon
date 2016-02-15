@@ -543,31 +543,30 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 					final double x = screenVertexMath.getViewPos()[ 0 ];
 					final double y = screenVertexMath.getViewPos()[ 1 ];
 					final double z = screenVertexMath.getViewPos()[ 2 ];
-
 					final double sd = sliceDistance( z, maxDepth );
-					// TODO the ( sd > -1 && sd < 1 ) is why some ellipsoids are not drawn although they intersect the viewer plane
+
+					if ( drawEllipsoidSliceIntersection )
+					{
+						if ( screenVertexMath.intersectsViewPlane() )
+						{
+							final double[] tr = screenVertexMath.getIntersectCenter();
+							final double theta = screenVertexMath.getIntersectTheta();
+							final Ellipse2D ellipse = screenVertexMath.getIntersectEllipse();
+
+							graphics.translate( tr[ 0 ], tr[ 1 ] );
+							graphics.rotate( theta );
+							graphics.setColor( getColor( 0, 0, ellipsoidFadeDepth, timepointDistanceFade, vertex.isSelected() ) );
+							if ( isHighlighted )
+								graphics.setStroke( highlightedVertexStroke );
+							graphics.draw( ellipse );
+							if ( isHighlighted )
+								graphics.setStroke( defaultVertexStroke );
+							graphics.setTransform( torig );
+						}
+					}
+
 					if ( sd > -1 && sd < 1 )
 					{
-						if ( drawEllipsoidSliceIntersection )
-						{
-							if ( screenVertexMath.intersectsViewPlane() )
-							{
-								final double[] tr = screenVertexMath.getIntersectCenter();
-								final double theta = screenVertexMath.getIntersectTheta();
-								final Ellipse2D ellipse = screenVertexMath.getIntersectEllipse();
-
-								graphics.translate( tr[ 0 ], tr[ 1 ] );
-								graphics.rotate( theta );
-								graphics.setColor( getColor( 0, 0, ellipsoidFadeDepth, timepointDistanceFade, vertex.isSelected() ) );
-								if ( isHighlighted )
-									graphics.setStroke( highlightedVertexStroke );
-								graphics.draw( ellipse );
-								if ( isHighlighted )
-									graphics.setStroke( defaultVertexStroke );
-								graphics.setTransform( torig );
-							}
-						}
-
 						if ( drawEllipsoidSliceProjection )
 						{
 							final double[] tr = screenVertexMath.getProjectCenter();
