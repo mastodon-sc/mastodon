@@ -37,6 +37,7 @@ import net.trackmate.revised.bdv.overlay.MouseSelectionHandler;
 import net.trackmate.revised.bdv.overlay.OverlayContext;
 import net.trackmate.revised.bdv.overlay.OverlayGraphRenderer;
 import net.trackmate.revised.bdv.overlay.RenderSettings;
+import net.trackmate.revised.bdv.overlay.RenderSettings.UpdateListener;
 import net.trackmate.revised.bdv.overlay.ui.RenderSettingsDialog;
 import net.trackmate.revised.bdv.overlay.wrap.OverlayContextWrapper;
 import net.trackmate.revised.bdv.overlay.wrap.OverlayEdgeWrapper;
@@ -235,7 +236,7 @@ public class WindowManager
 		final OverlayContext< OverlayVertexWrapper< Spot, Link > > overlayContext = new OverlayContext<>( overlayGraph, tracksOverlay );
 		viewer.addRenderTransformListener( overlayContext );
 		viewer.addTimePointListener( overlayContext );
-		new OverlayContextWrapper<>( overlayContext, new BdvContextAdapter() );
+		final OverlayContextWrapper overlayContextWrapper = new OverlayContextWrapper<>( overlayContext, new BdvContextAdapter() );
 
 		final ViewerFrame viewerFrame = bdv.getViewerFrame();
 		final GroupLocksPanel lockPanel = new GroupLocksPanel( bdvGroupHandle );
@@ -252,7 +253,7 @@ public class WindowManager
 //		viewer.repaint(); // TODO remove?
 
 
-
+		// TODO revise
 		// RenderSettingsDialog triggered by "R"
 		final RenderSettings renderSettings = new RenderSettings(); // TODO should be in overlay eventually
 		final String RENDER_SETTINGS = "render settings";
@@ -264,9 +265,17 @@ public class WindowManager
 		a.put( RENDER_SETTINGS, "R" );
 		viewerFrame.getKeybindings().addActionMap( "mamut", actionMap );
 		viewerFrame.getKeybindings().addInputMap( "mamut", inputMap );
-
-
-
+		renderSettings.addUpdateListener( new UpdateListener()
+		{
+			@Override
+			public void renderSettingsChanged()
+			{
+				tracksOverlay.setRenderSettings( renderSettings );
+				// TODO: less hacky way of triggering repaint and context update
+				viewer.repaint();
+				overlayContextWrapper.contextChanged( overlayContext );
+			}
+		} );
 
 		final BdvWindow bdvWindow = new BdvWindow( viewerFrame, tracksOverlay, bdvGroupHandle );
 		bdvWindows.add( bdvWindow );

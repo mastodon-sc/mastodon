@@ -82,7 +82,7 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 		renderTimepoint = timepoint;
 	}
 
-	void setRenderSettings( final RenderSettings settings )
+	public void setRenderSettings( final RenderSettings settings )
 	{
 		antialiasing = settings.getUseAntialiasing()
 				? RenderingHints.VALUE_ANTIALIAS_ON
