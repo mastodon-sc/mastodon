@@ -82,126 +82,6 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 		renderTimepoint = timepoint;
 	}
 
-	public E getEdgeAt( final int x, final int y, final double tolerance, final E ref )
-	{
-		final AffineTransform3D transform = getRenderTransformCopy();
-		final int currentTimepoint = renderTimepoint;
-
-		final ConvexPolytope visiblePolytopeGlobal = getVisiblePolytopeGlobal( transform, currentTimepoint );
-
-		final double[] lPosClick = new double[] { x, y, 0 };
-		final double[] gPosClick = new double[ 3 ];
-		transform.applyInverse( gPosClick, lPosClick );
-
-		index.readLock().lock();
-		try
-		{
-			final double[] gPosT = new double[ 3 ];
-			final double[] lPosT = new double[ 3 ];
-			final double[] gPosS = new double[ 3 ];
-			final double[] lPosS = new double[ 3 ];
-			final V vertexRef = graph.vertexRef();
-
-			for ( int t = Math.max( 0, currentTimepoint - timeLimit ); t < currentTimepoint; ++t )
-			{
-				final SpatialIndex< V > si = index.getSpatialIndex( t );
-				final ClipConvexPolytope< V > ccp = si.getClipConvexPolytope();
-				ccp.clip( visiblePolytopeGlobal );
-				for ( final V source : ccp.getInsideValues() )
-				{
-					source.localize( lPosS );
-					transform.apply( lPosS, gPosS );
-					final double x1 = gPosS[ 0 ];
-					final double y1 = gPosS[ 1 ];
-					for ( final E edge : source.outgoingEdges() )
-					{
-						final V target = edge.getTarget( vertexRef );
-						target.localize( lPosT );
-						transform.apply( lPosT, gPosT );
-						final double x2 = gPosT[ 0 ];
-						final double y2 = gPosT[ 1 ];
-						if ( Util.segmentDist( x, y, x1, y1, x2, y2 ) <= tolerance )
-						{
-							ref.refTo( edge );
-							graph.releaseRef( vertexRef );
-							return ref;
-						}
-					}
-				}
-			}
-		}
-		finally
-		{
-			index.readLock().unlock();
-		}
-		return null;
-	}
-
-	public V getVertexAt( final int x, final int y, final V ref )
-	{
-		final AffineTransform3D transform = getRenderTransformCopy();
-		final int currentTimepoint = renderTimepoint;
-
-		final double[] lPos = new double[] { x, y, 0 };
-		final double[] gPos = new double[ 3 ];
-		final ScreenVertexMath svm = new ScreenVertexMath( nSigmas );
-		transform.applyInverse( gPos, lPos );
-
-		index.readLock().lock();
-		try
-		{
-			if ( drawEllipsoidSliceProjection )
-			{
-				final ConvexPolytope cropPolytopeGlobal = getSurroundingPolytopeGlobal( x, y, transform, currentTimepoint );
-				final ClipConvexPolytope< V > ccp = index.getSpatialIndex( currentTimepoint ).getClipConvexPolytope();
-				ccp.clip( cropPolytopeGlobal );
-
-				final double[] xy = new double[] { x, y };
-				final double[] vPos = new double[ 3 ];
-				double minDist = Double.MAX_VALUE;
-				boolean found = false;
-				for ( final V v : ccp.getInsideValues() )
-				{
-					svm.init( v, transform );
-					if ( svm.projectionContainsView( xy ) )
-					{
-						found = true;
-						v.localize( vPos );
-						final double d = LinAlgHelpers.squareDistance( vPos, gPos );
-						if ( d < minDist )
-						{
-							minDist = d;
-							ref.refTo( v );
-						}
-					}
-				}
-				if ( found ) { return ref; }
-				return null;
-			}
-			else if ( drawEllipsoidSliceIntersection )
-			{
-				final NearestNeighborSearch< V > nns = index.getSpatialIndex( currentTimepoint ).getNearestNeighborSearch();
-				nns.search( RealPoint.wrap( gPos ) );
-				final V v = nns.getSampler().get();
-				if ( v != null )
-				{
-					svm.init( v, transform );
-					if ( svm.containsGlobal( gPos ) )
-					{
-						ref.refTo( v );
-						return ref;
-					}
-				}
-				return null;
-			}
-		}
-		finally
-		{
-			index.readLock().unlock();
-		}
-		return null;
-	}
-
 	void setRenderSettings( final RenderSettings settings )
 	{
 		antialiasing = settings.getUseAntialiasing()
@@ -423,64 +303,6 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 	}
 
 	/**
-	 * Get the {@link ConvexPolytope} bounding the visible region of global
-	 * space, extended by a large enough border to ensure that it contains
-	 * center of every ellipsoid that intersects the visible volume.
-	 *
-	 * @param transform
-	 * @param timepoint
-	 * @return
-	 */
-	ConvexPolytope getVisiblePolytopeGlobal(
-			final AffineTransform3D transform,
-			final int timepoint )
-	{
-		final double globalToViewerScale = Affine3DHelpers.extractScale( transform, 0 );
-		final double maxDepth = isFocusLimitViewRelative
-				? focusLimit
-				: focusLimit * globalToViewerScale;
-		final double border = globalToViewerScale * Math.sqrt( graph.getMaxBoundingSphereRadiusSquared( timepoint ) );
-
-		return getPolytopeGlobal( transform,
-				-border,
-				width + border,
-				-border,
-				height + border,
-				-maxDepth,
-				maxDepth );
-	}
-
-	/**
-	 * Get the {@link ConvexPolytope} around the specified viewer coordinate
-	 * that is large enough border to ensure that it contains center of every
-	 * ellipsoid containing the specified coordinate.
-	 *
-	 * @param x
-	 *            position on the z=0 plane in viewer coordinates.
-	 * @param y
-	 *            position on the z=0 plane in viewer coordinates.
-	 * @param transform
-	 * @param timepoint
-	 * @return
-	 */
-	private ConvexPolytope getSurroundingPolytopeGlobal(
-			final double x,
-			final double y,
-			final AffineTransform3D transform,
-			final int timepoint )
-	{
-		final double globalToViewerScale = Affine3DHelpers.extractScale( transform, 0 );
-		final double maxDepth = isFocusLimitViewRelative
-				? focusLimit
-				: focusLimit * globalToViewerScale;
-		final double border = globalToViewerScale * Math.sqrt( graph.getMaxBoundingSphereRadiusSquared( timepoint ) );
-		return getPolytopeGlobal( transform,
-				x - border, x + border,
-				y - border, y + border,
-				-maxDepth, maxDepth );
-	}
-
-	/**
 	 * Get the {@link ConvexPolytope} described by the specified interval in
 	 * viewer coordinates, transformed to global coordinates.
 	 *
@@ -542,6 +364,64 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 			transform.set( renderTransform );
 		}
 		return transform;
+	}
+
+	/**
+	 * Get the {@link ConvexPolytope} bounding the visible region of global
+	 * space, extended by a large enough border to ensure that it contains
+	 * center of every ellipsoid that intersects the visible volume.
+	 *
+	 * @param transform
+	 * @param timepoint
+	 * @return
+	 */
+	ConvexPolytope getVisiblePolytopeGlobal(
+			final AffineTransform3D transform,
+			final int timepoint )
+	{
+		final double globalToViewerScale = Affine3DHelpers.extractScale( transform, 0 );
+		final double maxDepth = isFocusLimitViewRelative
+				? focusLimit
+				: focusLimit * globalToViewerScale;
+		final double border = globalToViewerScale * Math.sqrt( graph.getMaxBoundingSphereRadiusSquared( timepoint ) );
+
+		return getPolytopeGlobal( transform,
+				-border,
+				width + border,
+				-border,
+				height + border,
+				-maxDepth,
+				maxDepth );
+	}
+
+	/**
+	 * Get the {@link ConvexPolytope} around the specified viewer coordinate
+	 * that is large enough border to ensure that it contains center of every
+	 * ellipsoid containing the specified coordinate.
+	 *
+	 * @param x
+	 *            position on the z=0 plane in viewer coordinates.
+	 * @param y
+	 *            position on the z=0 plane in viewer coordinates.
+	 * @param transform
+	 * @param timepoint
+	 * @return
+	 */
+	private ConvexPolytope getSurroundingPolytopeGlobal(
+			final double x,
+			final double y,
+			final AffineTransform3D transform,
+			final int timepoint )
+	{
+		final double globalToViewerScale = Affine3DHelpers.extractScale( transform, 0 );
+		final double maxDepth = isFocusLimitViewRelative
+				? focusLimit
+				: focusLimit * globalToViewerScale;
+		final double border = globalToViewerScale * Math.sqrt( graph.getMaxBoundingSphereRadiusSquared( timepoint ) );
+		return getPolytopeGlobal( transform,
+				x - border, x + border,
+				y - border, y + border,
+				-maxDepth, maxDepth );
 	}
 
 	@Override
@@ -706,5 +586,125 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 			index.readLock().unlock();
 		}
 		graph.releaseRef( target );
+	}
+
+	public E getEdgeAt( final int x, final int y, final double tolerance, final E ref )
+	{
+		final AffineTransform3D transform = getRenderTransformCopy();
+		final int currentTimepoint = renderTimepoint;
+
+		final ConvexPolytope visiblePolytopeGlobal = getVisiblePolytopeGlobal( transform, currentTimepoint );
+
+		final double[] lPosClick = new double[] { x, y, 0 };
+		final double[] gPosClick = new double[ 3 ];
+		transform.applyInverse( gPosClick, lPosClick );
+
+		index.readLock().lock();
+		try
+		{
+			final double[] gPosT = new double[ 3 ];
+			final double[] lPosT = new double[ 3 ];
+			final double[] gPosS = new double[ 3 ];
+			final double[] lPosS = new double[ 3 ];
+			final V vertexRef = graph.vertexRef();
+
+			for ( int t = Math.max( 0, currentTimepoint - timeLimit ); t < currentTimepoint; ++t )
+			{
+				final SpatialIndex< V > si = index.getSpatialIndex( t );
+				final ClipConvexPolytope< V > ccp = si.getClipConvexPolytope();
+				ccp.clip( visiblePolytopeGlobal );
+				for ( final V source : ccp.getInsideValues() )
+				{
+					source.localize( lPosS );
+					transform.apply( lPosS, gPosS );
+					final double x1 = gPosS[ 0 ];
+					final double y1 = gPosS[ 1 ];
+					for ( final E edge : source.outgoingEdges() )
+					{
+						final V target = edge.getTarget( vertexRef );
+						target.localize( lPosT );
+						transform.apply( lPosT, gPosT );
+						final double x2 = gPosT[ 0 ];
+						final double y2 = gPosT[ 1 ];
+						if ( Util.segmentDist( x, y, x1, y1, x2, y2 ) <= tolerance )
+						{
+							ref.refTo( edge );
+							graph.releaseRef( vertexRef );
+							return ref;
+						}
+					}
+				}
+			}
+		}
+		finally
+		{
+			index.readLock().unlock();
+		}
+		return null;
+	}
+
+	public V getVertexAt( final int x, final int y, final V ref )
+	{
+		final AffineTransform3D transform = getRenderTransformCopy();
+		final int currentTimepoint = renderTimepoint;
+
+		final double[] lPos = new double[] { x, y, 0 };
+		final double[] gPos = new double[ 3 ];
+		final ScreenVertexMath svm = new ScreenVertexMath( nSigmas );
+		transform.applyInverse( gPos, lPos );
+
+		index.readLock().lock();
+		try
+		{
+			if ( drawEllipsoidSliceProjection )
+			{
+				final ConvexPolytope cropPolytopeGlobal = getSurroundingPolytopeGlobal( x, y, transform, currentTimepoint );
+				final ClipConvexPolytope< V > ccp = index.getSpatialIndex( currentTimepoint ).getClipConvexPolytope();
+				ccp.clip( cropPolytopeGlobal );
+
+				final double[] xy = new double[] { x, y };
+				final double[] vPos = new double[ 3 ];
+				double minDist = Double.MAX_VALUE;
+				boolean found = false;
+				for ( final V v : ccp.getInsideValues() )
+				{
+					svm.init( v, transform );
+					if ( svm.projectionContainsView( xy ) )
+					{
+						found = true;
+						v.localize( vPos );
+						final double d = LinAlgHelpers.squareDistance( vPos, gPos );
+						if ( d < minDist )
+						{
+							minDist = d;
+							ref.refTo( v );
+						}
+					}
+				}
+				if ( found ) { return ref; }
+				return null;
+			}
+			else if ( drawEllipsoidSliceIntersection )
+			{
+				final NearestNeighborSearch< V > nns = index.getSpatialIndex( currentTimepoint ).getNearestNeighborSearch();
+				nns.search( RealPoint.wrap( gPos ) );
+				final V v = nns.getSampler().get();
+				if ( v != null )
+				{
+					svm.init( v, transform );
+					if ( svm.containsGlobal( gPos ) )
+					{
+						ref.refTo( v );
+						return ref;
+					}
+				}
+				return null;
+			}
+		}
+		finally
+		{
+			index.readLock().unlock();
+		}
+		return null;
 	}
 }
