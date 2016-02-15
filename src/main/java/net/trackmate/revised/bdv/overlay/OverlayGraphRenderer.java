@@ -353,6 +353,42 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 	}
 
 	/**
+	 * Get the {@link ConvexPolytope} around the specified viewer coordinate
+	 * range that is large enough border to ensure that it contains center of
+	 * every ellipsoid touching the specified coordinate range.
+	 *
+	 * @param xMin
+	 *            minimum X position on the z=0 plane in viewer coordinates.
+	 * @param xMax
+	 *            maximum X position on the z=0 plane in viewer coordinates.
+	 * @param yMin
+	 *            minimum Y position on the z=0 plane in viewer coordinates.
+	 * @param yMax
+	 *            maximum Y position on the z=0 plane in viewer coordinates.
+	 * @param transform
+	 * @param timepoint
+	 * @return
+	 */
+	private ConvexPolytope getOverlappingPolytopeGlobal(
+			final double xMin,
+			final double xMax,
+			final double yMin,
+			final double yMax,
+			final AffineTransform3D transform,
+			final int timepoint )
+	{
+		final double globalToViewerScale = Affine3DHelpers.extractScale( transform, 0 );
+		final double maxDepth = isFocusLimitViewRelative
+				? focusLimit
+				: focusLimit * globalToViewerScale;
+		final double border = globalToViewerScale * Math.sqrt( graph.getMaxBoundingSphereRadiusSquared( timepoint ) );
+		return getPolytopeGlobal( transform,
+				xMin - border, xMax + border,
+				yMin - border, yMax + border,
+				-maxDepth, maxDepth );
+	}
+
+	/**
 	 * TODO
 	 * @return
 	 */
@@ -379,19 +415,7 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 			final AffineTransform3D transform,
 			final int timepoint )
 	{
-		final double globalToViewerScale = Affine3DHelpers.extractScale( transform, 0 );
-		final double maxDepth = isFocusLimitViewRelative
-				? focusLimit
-				: focusLimit * globalToViewerScale;
-		final double border = globalToViewerScale * Math.sqrt( graph.getMaxBoundingSphereRadiusSquared( timepoint ) );
-
-		return getPolytopeGlobal( transform,
-				-border,
-				width + border,
-				-border,
-				height + border,
-				-maxDepth,
-				maxDepth );
+		return getOverlappingPolytopeGlobal( 0, width, 0, height, transform, timepoint );
 	}
 
 	/**
@@ -413,15 +437,7 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 			final AffineTransform3D transform,
 			final int timepoint )
 	{
-		final double globalToViewerScale = Affine3DHelpers.extractScale( transform, 0 );
-		final double maxDepth = isFocusLimitViewRelative
-				? focusLimit
-				: focusLimit * globalToViewerScale;
-		final double border = globalToViewerScale * Math.sqrt( graph.getMaxBoundingSphereRadiusSquared( timepoint ) );
-		return getPolytopeGlobal( transform,
-				x - border, x + border,
-				y - border, y + border,
-				-maxDepth, maxDepth );
+		return getOverlappingPolytopeGlobal( x, x, y, y, transform, timepoint );
 	}
 
 	@Override
