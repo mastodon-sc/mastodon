@@ -27,7 +27,7 @@ import net.trackmate.revised.trackscheme.ScreenVertexRange.ScreenVertexRangePool
  * <ul>
  * <li>leafs are assigned layoutX = 0, 1, 2, ...
  * <li>non-leafs are centered between first and last child's layoutX
- * <li>for layout of vertices with more then one parent, only first incoming
+ * <li>for layout of vertices with more than one parent, only first incoming
  * edge counts as parent edge
  * <li>in-active vertices (marked with a timestamp &lt; the current
  * {@link #mark}) are marked as ghosts and treated as leafs.
@@ -135,7 +135,7 @@ public class LineageTreeLayout
 	 * {@code mark} is used to check for active vertices. When the context
 	 * trackscheme determines the set of vertices that should be visible in the
 	 * layout, it sets their layout timestamp to a value higher than that used
-	 * in any previous layout (see{@link #nextLayoutTimestamp()}). During
+	 * in any previous layout (see {@link #nextLayoutTimestamp()}). During
 	 * layout, it is checked whether a vertex's
 	 * {@link TrackSchemeVertex#getLayoutTimestamp() timestamp} is &ge;
 	 * {@code mark}. Otherwise the vertex is marked as a ghost and treated as a
@@ -452,7 +452,7 @@ public class LineageTreeLayout
 	 * @param ref
 	 *            ref to store the result.
 	 * @return the first active child of {@code vertex}, or
-	 *         {@code null} if {@code vertex} is there are no active children.
+	 *         {@code null} if {@code vertex} has no active children.
 	 */
 	public TrackSchemeVertex getFirstActiveChild( final TrackSchemeVertex vertex, final TrackSchemeVertex ref )
 	{
@@ -475,7 +475,7 @@ public class LineageTreeLayout
 	 * @param ref
 	 *            ref to store the result.
 	 * @return the first active parent of {@code vertex}, or
-	 *         {@code null} if {@code vertex} is there are no active parents.
+	 *         {@code null} if {@code vertex} has no active parents.
 	 */
 	public TrackSchemeVertex getFirstActiveParent( final TrackSchemeVertex vertex, final TrackSchemeVertex ref )
 	{
