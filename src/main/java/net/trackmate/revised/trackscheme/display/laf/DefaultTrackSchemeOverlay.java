@@ -1,7 +1,6 @@
 package net.trackmate.revised.trackscheme.display.laf;
 
 import static net.trackmate.revised.trackscheme.ScreenVertex.Transition.APPEAR;
-import static net.trackmate.revised.trackscheme.ScreenVertex.Transition.DESELECTING;
 import static net.trackmate.revised.trackscheme.ScreenVertex.Transition.DISAPPEAR;
 import static net.trackmate.revised.trackscheme.ScreenVertex.Transition.NONE;
 import static net.trackmate.revised.trackscheme.ScreenVertex.Transition.SELECTING;
@@ -243,7 +242,10 @@ public class DefaultTrackSchemeOverlay extends AbstractTrackSchemeOverlay
 			ratio = vs.getInterpolationCompletionRatio();
 		}
 		final boolean selected = edge.isSelected();
-		final Color drawColor = getColor( selected, transition, ratio, style.edgeColor, style.selectedEdgeColor );
+		final boolean ghost = vs.isGhost() && vt.isGhost();
+		final Color drawColor = getColor( selected, ghost, transition, ratio,
+				style.edgeColor, style.selectedEdgeColor,
+				style.ghostEdgeColor, style.ghostSelectedEdgeColor );
 		g2.setColor( drawColor );
 		g2.drawLine( ( int ) vs.getX(), ( int ) vs.getY(), ( int ) vt.getX(), ( int ) vt.getY() );
 	}
@@ -251,11 +253,13 @@ public class DefaultTrackSchemeOverlay extends AbstractTrackSchemeOverlay
 	protected void drawVertexSimplified( final Graphics2D g2, final ScreenVertex vertex )
 	{
 		final Transition transition = vertex.getTransition();
-		final double ratio = vertex.getInterpolationCompletionRatio();
 		final boolean disappear = ( transition == DISAPPEAR );
-		final boolean selected = vertex.isSelected();
+		final double ratio = vertex.getInterpolationCompletionRatio();
+
 		final boolean highlighted = ( highlightedVertexId >= 0 ) && ( vertex.getTrackSchemeVertexId() == highlightedVertexId );
 		final boolean focused = ( focusedVertexId >= 0 ) && ( vertex.getTrackSchemeVertexId() == focusedVertexId );
+		final boolean selected = vertex.isSelected();
+		final boolean ghost = vertex.isGhost();
 
 		double spotradius = simplifiedVertexRadius;
 		if ( disappear )
@@ -264,9 +268,11 @@ public class DefaultTrackSchemeOverlay extends AbstractTrackSchemeOverlay
 		if (highlighted)
 			spotradius *= 2;
 
-		final Color fillColor = getColor( selected, transition, ratio,
+		final Color fillColor = getColor( selected, ghost, transition, ratio,
 				disappear ? style.selectedSimplifiedVertexFillColor : style.simplifiedVertexFillColor,
-				style.selectedSimplifiedVertexFillColor );
+				style.selectedSimplifiedVertexFillColor,
+				disappear ? style.ghostSelectedSimplifiedVertexFillColor : style.ghostSimplifiedVertexFillColor,
+				style.ghostSelectedSimplifiedVertexFillColor );
 
 		final double x = vertex.getX();
 		final double y = vertex.getY();
@@ -290,6 +296,7 @@ public class DefaultTrackSchemeOverlay extends AbstractTrackSchemeOverlay
 		final boolean highlighted = ( highlightedVertexId >= 0 ) && ( vertex.getTrackSchemeVertexId() == highlightedVertexId );
 		final boolean focused = ( focusedVertexId >= 0 ) && ( vertex.getTrackSchemeVertexId() == focusedVertexId );
 		final boolean selected = vertex.isSelected();
+		final boolean ghost = vertex.isGhost();
 
 		double spotdiameter = Math.min( vertex.getVertexDist() - 10.0, maxDisplayVertexSize );
 		if ( highlighted )
@@ -298,8 +305,12 @@ public class DefaultTrackSchemeOverlay extends AbstractTrackSchemeOverlay
 			spotdiameter *= ( 1 + ratio );
 		final double spotradius = spotdiameter / 2;
 
-		final Color fillColor = getColor( selected, transition, ratio, style.vertexFillColor, style.selectedVertexFillColor );
-		final Color drawColor = getColor( selected, transition, ratio, style.vertexDrawColor, style.selectedVertexDrawColor );
+		final Color fillColor = getColor( selected, ghost, transition, ratio,
+				style.vertexFillColor, style.selectedVertexFillColor,
+				style.ghostVertexFillColor, style.ghostSelectedVertexFillColor );
+		final Color drawColor = getColor( selected, ghost, transition, ratio,
+				style.vertexDrawColor, style.selectedVertexDrawColor,
+				style.ghostVertexDrawColor, style.ghostSelectedVertexDrawColor );
 
 		final double x = vertex.getX();
 		final double y = vertex.getY();
@@ -312,13 +323,14 @@ public class DefaultTrackSchemeOverlay extends AbstractTrackSchemeOverlay
 		g2.setColor( drawColor );
 		if ( highlighted )
 			g2.setStroke( style.highlightStroke );
-		if ( focused )
+		else if ( focused )
+			// An animation might be better for the focus, but for now this is it.
 			g2.setStroke( style.focusStroke );
-		// An animation might be better for the focus, but for now this is it.
+		else if ( ghost )
+			g2.setStroke( style.vertexGhostStroke );
 		g2.drawOval( ox, oy, sd, sd );
-		if ( highlighted || focused )
+		if ( highlighted || focused || ghost )
 			g2.setStroke( style.vertexStroke );
-
 
 		final int maxLabelLength = ( int ) ( spotdiameter / avgLabelLetterWidth );
 		if ( maxLabelLength > 2 && !disappear )
@@ -338,40 +350,41 @@ public class DefaultTrackSchemeOverlay extends AbstractTrackSchemeOverlay
 
 	protected Color getColor(
 			final boolean isSelected,
+			final boolean isGhost,
 			final Transition transition,
 			final double completionRatio,
 			final Color normalColor,
-			final Color selectedColor )
+			final Color selectedColor,
+			final Color ghostNormalColor,
+			final Color ghostSelectedColor )
 	{
 		if ( transition == NONE )
-			return isSelected ? selectedColor : normalColor;
-		else if ( transition == SELECTING || transition == DESELECTING )
-		{
-			final double ratio = ( transition == SELECTING ) ? completionRatio : ( 1 - completionRatio );
-			final int rn = normalColor.getRed();
-			final int gn = normalColor.getGreen();
-			final int bn = normalColor.getBlue();
-			final int rs = selectedColor.getRed();
-			final int gs = selectedColor.getGreen();
-			final int bs = selectedColor.getBlue();
-			final int r = ( int ) ( ratio * rs + ( 1 - ratio ) * rn );
-			final int g = ( int ) ( ratio * gs + ( 1 - ratio ) * gn );
-			final int b = ( int ) ( ratio * bs + ( 1 - ratio ) * bn );
-			return new Color( r, g, b );
-		}
+			return isGhost
+					? ( isSelected ? ghostSelectedColor : ghostNormalColor )
+					: ( isSelected ? selectedColor : normalColor );
 		else
 		{
+			final double ratio = ( transition == APPEAR || transition == SELECTING )
+					? 1 - completionRatio
+					: completionRatio;
+			final boolean fade = ( transition == APPEAR || transition == DISAPPEAR );
 			int r = normalColor.getRed();
 			int g = normalColor.getGreen();
 			int b = normalColor.getBlue();
-			final double ratio = transition == DISAPPEAR ? completionRatio : 1 - completionRatio;
-			if ( isSelected )
+			int a = normalColor.getAlpha();
+			if ( isSelected || !fade )
 			{
 				r = ( int ) ( ratio * r + ( 1 - ratio ) * selectedColor.getRed() );
 				g = ( int ) ( ratio * g + ( 1 - ratio ) * selectedColor.getGreen() );
 				b = ( int ) ( ratio * b + ( 1 - ratio ) * selectedColor.getBlue() );
+				a = ( int ) ( ratio * a + ( 1 - ratio ) * selectedColor.getAlpha() );
 			}
-			return new Color( r, g, b, ( int ) ( 255 * ( 1 - ratio ) ) );
+			if ( fade )
+				a = ( int ) ( a * ( 1 - ratio ) );
+			final Color color = new Color( r, g, b, a );
+			return isGhost
+					? TrackSchemeStyle.mixGhostColor( color, style.backgroundColor )
+					: color;
 		}
 	}
 }
