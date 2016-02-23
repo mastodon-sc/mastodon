@@ -13,7 +13,6 @@ import org.scijava.ui.behaviour.io.InputTriggerConfig;
 
 import bdv.BehaviourTransformEventHandler;
 import bdv.viewer.TriggerBehaviourBindings;
-import gnu.trove.list.array.TIntArrayList;
 import net.imglib2.ui.TransformEventHandler;
 import net.imglib2.ui.TransformEventHandlerFactory;
 import net.imglib2.ui.TransformListener;
@@ -101,8 +100,22 @@ public class InertialScreenTransformEventHandler
 
 	private final InputTriggerAdder inputAdder;
 
+	/**
+	 * Current boundaries to enforce for the transform.
+	 *
+	 * See {@link #layoutChanged(LineageTreeLayout)} and
+	 * {@link #setLayoutRangeY(double, double)} for computation of the X and Y
+	 * range, respectively.
+	 *
+	 * See
+	 * {@link ConstrainScreenTransform#constrainTransform(ScreenTransform, double, double, double, double, double, double, double, double, double, double)}
+	 * for details on enforcing transform boundaries.
+	 */
 	private double boundXMin, boundXMax, boundYMin, boundYMax;
 
+	/**
+	 * Current maximum size to enforce for the transform.
+	 */
 	private double maxSizeX, maxSizeY;
 
 	/**
@@ -203,9 +216,6 @@ public class InertialScreenTransformEventHandler
 		{
 			boundXMin = layout.getCurrentLayoutMinX() - boundXLayoutBorder;
 			boundXMax = layout.getCurrentLayoutMaxX() + boundXLayoutBorder;
-			final TIntArrayList timepoints = layout.getTimepoints();
-			boundYMin = timepoints.getQuick( 0 ) - boundYLayoutBorder;
-			boundYMax = timepoints.getQuick( timepoints.size() - 1 ) + boundYLayoutBorder;
 
 			if ( boundXMax - boundXMin < MIN_SIBLINGS_ON_CANVAS )
 			{
@@ -214,19 +224,26 @@ public class InertialScreenTransformEventHandler
 				boundXMax = c + MIN_SIBLINGS_ON_CANVAS / 2;
 			}
 
-			if ( boundYMax - boundYMin < MIN_TIMEPOINTS_ON_CANVAS )
-			{
-				final double c = (boundYMax + boundYMin) / 2;
-				boundYMin = c - MIN_TIMEPOINTS_ON_CANVAS / 2;
-				boundYMax = c + MIN_TIMEPOINTS_ON_CANVAS / 2;
-			}
-
 			maxSizeX = ( boundXMax - boundXMin ) * maxSizeFactorX;
-			maxSizeY = ( boundYMax - boundYMin ) * maxSizeFactorY;
 
 			constrainTransform( transform );
 			notifyListeners();
 		}
+	}
+
+	public void setLayoutRangeY( final double layoutMinY, final double layoutMaxY )
+	{
+		boundYMin = layoutMinY - boundYLayoutBorder;
+		boundYMax = layoutMaxY + boundYLayoutBorder;
+
+		if ( boundYMax - boundYMin < MIN_TIMEPOINTS_ON_CANVAS )
+		{
+			final double c = (boundYMax + boundYMin) / 2;
+			boundYMin = c - MIN_TIMEPOINTS_ON_CANVAS / 2;
+			boundYMax = c + MIN_TIMEPOINTS_ON_CANVAS / 2;
+		}
+
+		maxSizeY = ( boundYMax - boundYMin ) * maxSizeFactorY;
 	}
 
 	/**

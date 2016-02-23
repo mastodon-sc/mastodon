@@ -284,6 +284,10 @@ public class TrackSchemePanel extends JPanel implements
 		layoutMinY = minTimepoint;
 		layoutMaxY = maxTimepoint;
 		graphOverlay.setTimepointRange( minTimepoint, maxTimepoint );
+
+		// TODO: THIS IS FOR TESTING ONLY
+		final InertialScreenTransformEventHandler teh = ( InertialScreenTransformEventHandler ) display.getTransformEventHandler();
+		teh.setLayoutRangeY( minTimepoint, maxTimepoint );
 	}
 
 	/**
