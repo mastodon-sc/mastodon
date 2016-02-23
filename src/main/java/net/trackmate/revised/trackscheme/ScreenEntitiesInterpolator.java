@@ -45,8 +45,8 @@ public class ScreenEntitiesInterpolator
 		// Interpolate vertices
 		// ====================
 		// Each interpolated vertex either moves, appears, disappears, gets selected or gets de-selected.
-		final ScreenVertex currentVertex = current.getVertexPool().createRef();
-		final ScreenVertex startVertexRef = start.getVertexPool().createRef();
+		final ScreenVertex vCurrent = current.getVertexPool().createRef();
+		final ScreenVertex vStart = start.getVertexPool().createRef();
 		final ScreenVertex vEnd = end.getVertexPool().createRef();
 		for ( final ScreenVertex v : start.getVertices() )
 		{
@@ -54,33 +54,33 @@ public class ScreenEntitiesInterpolator
 			if ( vId < 0 )
 				continue;
 
-			current.getVertices().add( current.getVertexPool().create( currentVertex ) );
+			current.getVertices().add( current.getVertexPool().create( vCurrent ) );
 			if ( idToEndVertex.get( vId, vEnd ) != null )
-				interpolate( v, vEnd, accelRatio, currentVertex );
+				interpolate( v, vEnd, accelRatio, vCurrent );
 			else
-				disappear( v, accelRatio, currentVertex );
+				disappear( v, accelRatio, vCurrent );
 		}
-		for ( final ScreenVertex endVertex : end.getVertices() )
+		for ( final ScreenVertex v : end.getVertices() )
 		{
-			final ScreenVertex startVertex = idToStartVertex.get( endVertex.getTrackSchemeVertexId(), startVertexRef );
+			final ScreenVertex startVertex = idToStartVertex.get( v.getTrackSchemeVertexId(), vStart );
 			if ( startVertex == null )
 			{
-				current.getVertices().add( current.getVertexPool().create( currentVertex ) );
-				appear( endVertex, accelRatio, currentVertex );
+				current.getVertices().add( current.getVertexPool().create( vCurrent ) );
+				appear( v, accelRatio, vCurrent );
 			}
 			else
 			{
 				// Becomes selected
-				if ( endVertex.isSelected() && !startVertex.isSelected() )
+				if ( v.isSelected() && !startVertex.isSelected() )
 				{
-					current.getVertices().add( current.getVertexPool().create( currentVertex ) );
-					select( endVertex, accelRatio, currentVertex );
+					current.getVertices().add( current.getVertexPool().create( vCurrent ) );
+					select( v, accelRatio, vCurrent );
 				}
 				// Becomes de-selected
-				if ( !endVertex.isSelected() && startVertex.isSelected() )
+				if ( !v.isSelected() && startVertex.isSelected() )
 				{
-					current.getVertices().add( current.getVertexPool().create( currentVertex ) );
-					deselect( endVertex, accelRatio, currentVertex );
+					current.getVertices().add( current.getVertexPool().create( vCurrent ) );
+					deselect( v, accelRatio, vCurrent );
 				}
 			}
 		}
@@ -132,8 +132,8 @@ public class ScreenEntitiesInterpolator
 		current.screenTransform().interpolate( start.screenTransform(), end.screenTransform(), accelRatio );
 
 		// clean up
-		current.getVertexPool().releaseRef( currentVertex );
-		start.getVertexPool().releaseRef( startVertexRef );
+		current.getVertexPool().releaseRef( vCurrent );
+		start.getVertexPool().releaseRef( vStart );
 		end.getVertexPool().releaseRef( vEnd );
 		current.getEdgePool().releaseRef( eCurrent );
 		current.getEdgePool().releaseRef( eStart );
