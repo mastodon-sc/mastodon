@@ -26,6 +26,7 @@ import net.trackmate.revised.trackscheme.LineageTreeLayout.LayoutListener;
 import net.trackmate.revised.trackscheme.ScreenEntities;
 import net.trackmate.revised.trackscheme.ScreenEntitiesInterpolator;
 import net.trackmate.revised.trackscheme.ScreenTransform;
+import net.trackmate.revised.trackscheme.TrackSchemeEdge;
 import net.trackmate.revised.trackscheme.TrackSchemeFocus;
 import net.trackmate.revised.trackscheme.TrackSchemeGraph;
 import net.trackmate.revised.trackscheme.TrackSchemeHighlight;
@@ -322,6 +323,8 @@ public class TrackSchemePanel extends JPanel implements
 		else if ( flags.contextChanged )
 		{
 			buildContext( context );
+			layoutMinX = layout.getCurrentLayoutMinX();
+			layoutMaxX = layout.getCurrentLayoutMaxX();
 			entityAnimator.startAnimation( transform, ANIMATION_MILLISECONDS );
 		}
 
@@ -420,6 +423,7 @@ public class TrackSchemePanel extends JPanel implements
 		final int maxTimepoint = timepoint + contextWindow;
 
 		// mark vertices in crop region with timestamp and find roots.
+		final int ghostmark = layout.nextLayoutTimestamp();
 		final int mark = layout.nextLayoutTimestamp();
 		final RefList< TrackSchemeVertex > roots = CollectionUtils.createVertexList( graph );
 
@@ -431,8 +435,10 @@ public class TrackSchemePanel extends JPanel implements
 				for ( final TrackSchemeVertex tv : context.getInsideVertices( t ) )
 				{
 					tv.setLayoutTimestamp( mark );
-					if ( t == minTimepoint || tv.incomingEdges().isEmpty() )
+					if ( t == minTimepoint )
 						roots.add( tv );
+					else
+						buildContextTraceParents( tv, ghostmark, minTimepoint, roots );
 				}
 			}
 		}
@@ -447,7 +453,39 @@ public class TrackSchemePanel extends JPanel implements
 		layout.layout( roots, mark );
 	}
 
-
+	/**
+	 * Follow backwards along incoming edges until
+	 * <ul>
+	 * <li>(A) a vertex is reached that is already marked with ghostmark or
+	 * mark, or
+	 * <li>(B) vertex is reached that has timepoint <= minTimepoint.
+	 * </ul>
+	 *
+	 * Mark all recursively visited vertices as ghosts. In case (B), add the
+	 * final vertex to set of roots.
+	 */
+	private void buildContextTraceParents( final TrackSchemeVertex tv, final int ghostmark, final int minTimepoint, final RefList< TrackSchemeVertex > roots )
+	{
+		if( tv.incomingEdges().isEmpty() )
+			roots.add( tv );
+		else
+		{
+			final TrackSchemeVertex ref = graph.vertexRef();
+			for ( final TrackSchemeEdge te : tv.incomingEdges() )
+			{
+				final TrackSchemeVertex parent = te.getSource( ref );
+				if ( parent.getLayoutTimestamp() < ghostmark )
+				{
+					parent.setLayoutTimestamp( ghostmark );
+					if ( parent.getTimepoint() <= minTimepoint )
+						roots.add( parent );
+					else
+						buildContextTraceParents( parent, ghostmark, minTimepoint, roots );
+				}
+			}
+			graph.releaseRef( ref );
+		}
+	}
 
 	public NavigationEtiquette getNavigationEtiquette()
 	{

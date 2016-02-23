@@ -29,10 +29,13 @@ import net.trackmate.revised.trackscheme.ScreenVertexRange.ScreenVertexRangePool
  * <li>non-leafs are centered between first and last child's layoutX
  * <li>for layout of vertices with more than one parent, only first incoming
  * edge counts as parent edge
- * <li>in-active vertices (marked with a timestamp &lt; the current
- * {@link #mark}) are marked as ghosts and treated as leafs.
+ * <li>vertices marked with a timestamp &lt; the current
+ * {@link #mark} are marked as ghosts.
+ * <li>additionally, vertices marked with a timestamp &lt; the current
+ * {@link #mark}<em>-1</em> are treated as leafs.
  * </ul>
  *
+ * We call vertices contained in the current layout <em>active</em>.
  *
  *
  *
@@ -60,11 +63,12 @@ public class LineageTreeLayout
 
 	/**
 	 * The mark timestamp for the current layout. Context trackscheme marks
-	 * vertices as active before layout by setting their
+	 * vertices that should be laid out by setting their
 	 * {@link TrackSchemeVertex#getLayoutTimestamp() layout timestamp} to a mark
 	 * value that is higher than any previously assigned timestamp. During
-	 * layout, in-active vertices (marked with a timestamp &lt; the current
-	 * {@link #mark}) are marked as ghosts and treated as leafs.
+	 * layout, vertices marked with a timestamp &lt; {@link #mark}) are marked
+	 * as ghosts. Additionally, vertices marked with a timestamp &lt;
+	 * {@link #mark}<em>-1</em> are treated as leafs.
 	 */
 	private int mark;
 
@@ -132,19 +136,22 @@ public class LineageTreeLayout
 	/**
 	 * Layout graph in trackscheme coordinates starting from specified roots.
 	 * <p>
-	 * {@code mark} is used to check for active vertices. When the context
-	 * trackscheme determines the set of vertices that should be visible in the
-	 * layout, it sets their layout timestamp to a value higher than that used
-	 * in any previous layout (see {@link #nextLayoutTimestamp()}). During
+	 * {@code mark} is used to check for vertices to be laid out. When the
+	 * context trackscheme determines the set of vertices that should be visible
+	 * in the layout, it sets their layout timestamp to a value higher than that
+	 * used in any previous layout (see {@link #nextLayoutTimestamp()}). During
 	 * layout, it is checked whether a vertex's
-	 * {@link TrackSchemeVertex#getLayoutTimestamp() timestamp} is &ge;
-	 * {@code mark}. Otherwise the vertex is marked as a ghost and treated as a
-	 * leaf node in the layout.
+	 * {@link TrackSchemeVertex#getLayoutTimestamp() timestamp} &lt;
+	 * {@code mark}. In this case, the vertex is marked as a ghost. If
+	 * additionally the vertex's {@link TrackSchemeVertex#getLayoutTimestamp()
+	 * timestamp} &lt; {@code mark-1}, it is treated as a leaf node in the
+	 * layout.
 	 *
 	 * @param layoutRoots
 	 *            root vertices from which to start layout.
 	 * @param mark
-	 *            timestamp value that was used to mark active vertices.
+	 *            timestamp value that was used to mark vertices to be laid out.
+	 *            (Ghost vertices were marked with {@code mark-1}.)
 	 */
 	public void layout( final Collection< TrackSchemeVertex > layoutRoots, final int mark )
 	{
@@ -202,7 +209,7 @@ public class LineageTreeLayout
 	/**
 	 * Get a new layout timestamp for external use. The next layout will then
 	 * use the timestamp after that. This is used by context trackscheme to mark
-	 * active vertices.
+	 * vertices to be laid out.
 	 *
 	 * @return the timestamp which would have been used for the next layout.
 	 */
@@ -460,7 +467,7 @@ public class LineageTreeLayout
 		for ( final TrackSchemeEdge edge : edges )
 		{
 			final TrackSchemeVertex child = edge.getTarget( ref );
-			final boolean active = child.getLayoutTimestamp() == timestamp && !child.isGhost();
+			final boolean active = child.getLayoutTimestamp() == timestamp;
 			if ( active )
 				return child;
 		}
@@ -483,7 +490,7 @@ public class LineageTreeLayout
 		for ( final TrackSchemeEdge edge : edges )
 		{
 			final TrackSchemeVertex parent = edge.getSource( ref );
-			final boolean active = parent.getLayoutTimestamp() == timestamp && !parent.isGhost();
+			final boolean active = parent.getLayoutTimestamp() == timestamp;
 			if ( active )
 				return parent;
 		}
@@ -545,8 +552,10 @@ public class LineageTreeLayout
 	 * <li>non-leafs are centered between first and last child's layoutX
 	 * <li>for layout of vertices with more then one parent, only first incoming
 	 * edge counts as parent edge
-	 * <li>in-active vertices (marked with a timestamp &lt; the current
-	 * {@link #mark}) are marked as ghosts and treated as leafs.
+	 * <li>vertices marked with a timestamp &lt; the current {@link #mark} are
+	 * marked as ghosts.
+	 * <li>additionally, vertices marked with a timestamp &lt; the current
+	 * {@link #mark}<em>-1</em> are treated as leafs.
 	 * </ul>
 	 *
 	 * @param v
@@ -559,10 +568,11 @@ public class LineageTreeLayout
 		double lastChildX = 0;
 
 		final boolean ghost = v.getLayoutTimestamp() < mark;
+		final boolean terminate = v.getLayoutTimestamp() < mark - 1;
 		v.setGhost( ghost );
 		v.setLayoutTimestamp( timestamp );
 
-		if ( !v.outgoingEdges().isEmpty() && !ghost )
+		if ( !v.outgoingEdges().isEmpty() && !terminate )
 		{
 			final TrackSchemeVertex child = graph.vertexRef();
 			final TrackSchemeEdge edge = graph.edgeRef();
@@ -659,5 +669,4 @@ public class LineageTreeLayout
 		 */
 		public void layoutChanged( LineageTreeLayout layout );
 	}
-
 }
