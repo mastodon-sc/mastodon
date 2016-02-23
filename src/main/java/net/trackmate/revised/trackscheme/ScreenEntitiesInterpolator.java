@@ -62,26 +62,10 @@ public class ScreenEntitiesInterpolator
 		}
 		for ( final ScreenVertex v : end.getVertices() )
 		{
-			final ScreenVertex startVertex = idToStartVertex.get( v.getTrackSchemeVertexId(), vStart );
-			if ( startVertex == null )
+			if ( idToStartVertex.get( v.getTrackSchemeVertexId(), vStart ) == null )
 			{
 				current.getVertices().add( current.getVertexPool().create( vCurrent ) );
 				appear( v, accelRatio, vCurrent );
-			}
-			else
-			{
-				// Becomes selected
-				if ( v.isSelected() && !startVertex.isSelected() )
-				{
-					current.getVertices().add( current.getVertexPool().create( vCurrent ) );
-					select( v, accelRatio, vCurrent );
-				}
-				// Becomes de-selected
-				if ( !v.isSelected() && startVertex.isSelected() )
-				{
-					current.getVertices().add( current.getVertexPool().create( vCurrent ) );
-					deselect( v, accelRatio, vCurrent );
-				}
 			}
 		}
 
@@ -95,24 +79,18 @@ public class ScreenEntitiesInterpolator
 		{
 			final int sourceIndex = end.getVertices().get( e.getSourceScreenVertexIndex(), vEnd ).getInterpolatedScreenVertexIndex();
 			final int targetIndex = end.getVertices().get( e.getTargetScreenVertexIndex(), vEnd ).getInterpolatedScreenVertexIndex();
+			final boolean endSelected = e.isSelected();
 			current.getEdges().add( current.getEdgePool().create( eCurrent ).init(
 					e.getTrackSchemeEdgeId(),
 					sourceIndex,
 					targetIndex,
-					e.isSelected() ) );
-			final ScreenEdge se2 = idToStartEdge.get( eCurrent.getTrackSchemeEdgeId(), eStart );
-			if ( se2 != null )
+					endSelected ) );
+			if ( idToStartEdge.get( e.getTrackSchemeEdgeId(), eStart ) != null )
 			{
-				// Becomes selected
-				if ( e.isSelected() && !se2.isSelected() )
+				// changing selection state?
+				if ( endSelected != eStart.isSelected() )
 				{
-					eCurrent.setTransition( SELECTING );
-					eCurrent.setInterpolationCompletionRatio( accelRatio );
-				}
-				// Becomes de-selected
-				if ( !e.isSelected() && se2.isSelected() )
-				{
-					eCurrent.setTransition( DESELECTING );
+					eCurrent.setTransition( endSelected ? SELECTING : DESELECTING );
 					eCurrent.setInterpolationCompletionRatio( accelRatio );
 				}
 			}
@@ -139,41 +117,22 @@ public class ScreenEntitiesInterpolator
 		current.getEdgePool().releaseRef( eStart );
 	}
 
-	private void select( final ScreenVertex v, final double ratio, final ScreenVertex vCurrent )
-	{
-		vCurrent.setTrackSchemeVertexId( v.getTrackSchemeVertexId() );
-		vCurrent.setSelected( v.isSelected() );
-		vCurrent.setGhost( v.isGhost() );
-		vCurrent.setVertexDist( v.getVertexDist() );
-		vCurrent.setX( v.getX() );
-		vCurrent.setY( v.getY() );
-		vCurrent.setTransition( SELECTING );
-		vCurrent.setInterpolationCompletionRatio( ratio );
-		v.setInterpolatedScreenVertexIndex( vCurrent.getInternalPoolIndex() );
-	}
-
-	private void deselect( final ScreenVertex v, final double ratio, final ScreenVertex vCurrent )
-	{
-		vCurrent.setTrackSchemeVertexId( v.getTrackSchemeVertexId() );
-		vCurrent.setSelected( v.isSelected() );
-		vCurrent.setGhost( v.isGhost() );
-		vCurrent.setVertexDist( v.getVertexDist() );
-		vCurrent.setX( v.getX() );
-		vCurrent.setY( v.getY() );
-		vCurrent.setTransition( DESELECTING );
-		vCurrent.setInterpolationCompletionRatio( ratio );
-		v.setInterpolatedScreenVertexIndex( vCurrent.getInternalPoolIndex() );
-	}
-
 	private void interpolate( final ScreenVertex vStart, final ScreenVertex vEnd, final double ratio, final ScreenVertex vCurrent )
 	{
 		vCurrent.setTrackSchemeVertexId( vEnd.getTrackSchemeVertexId() );
-		vCurrent.setSelected( vEnd.isSelected() );
+		final boolean endSelected = vEnd.isSelected();
+		vCurrent.setSelected( endSelected );
 		vCurrent.setGhost( vEnd.isGhost() );
 		vCurrent.setVertexDist( vEnd.getVertexDist() );
 		vCurrent.setX( ratio * vEnd.getX() + ( 1 - ratio ) * vStart.getX() );
 		vCurrent.setY( ratio * vEnd.getY() + ( 1 - ratio ) * vStart.getY() );
-		vCurrent.setTransition( NONE );
+		vCurrent.setTransition(
+				( vStart.isSelected() == endSelected )
+						? NONE
+						: ( endSelected
+								? SELECTING
+								: DESELECTING ) );
+		vCurrent.setInterpolationCompletionRatio( ratio );
 		vEnd.setInterpolatedScreenVertexIndex( vCurrent.getInternalPoolIndex() );
 	}
 
