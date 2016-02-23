@@ -667,7 +667,7 @@ public class TrackSchemePanel extends JPanel implements
 		return selectionBehaviours;
 	}
 
-	protected class ScreenEntityAnimator extends AbstractAnimator
+	class ScreenEntityAnimator extends AbstractAnimator
 	{
 		private ScreenEntities screenEntities;
 
@@ -789,7 +789,7 @@ public class TrackSchemePanel extends JPanel implements
 		}
 	}
 
-	protected static class Flags
+	static class Flags
 	{
 		private boolean transformChanged;
 		private boolean selectionChanged;
