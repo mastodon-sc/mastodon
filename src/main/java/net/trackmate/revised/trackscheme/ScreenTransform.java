@@ -2,6 +2,8 @@ package net.trackmate.revised.trackscheme;
 
 import net.imglib2.RealLocalizable;
 import net.imglib2.RealPositionable;
+import net.imglib2.concatenate.Concatenable;
+import net.imglib2.concatenate.PreConcatenable;
 import net.imglib2.realtransform.InvertibleRealTransform;
 
 /**
@@ -12,7 +14,7 @@ import net.imglib2.realtransform.InvertibleRealTransform;
  *
  * @author Tobias Pietzsch &lt;tobias.pietzsch@gmail.com&gt;
  */
-public class ScreenTransform implements InvertibleRealTransform
+public class ScreenTransform implements InvertibleRealTransform, Concatenable< ScreenTransform >, PreConcatenable< ScreenTransform >
 {
 	private double minX;
 
@@ -393,70 +395,13 @@ public class ScreenTransform implements InvertibleRealTransform
 	}
 
 	@Override
-	public InvertibleRealTransform inverse()
+	public ScreenTransform inverse()
 	{
-		return new InvertibleRealTransform()
-		{
-			@Override
-			public int numTargetDimensions()
-			{
-				return 2;
-			}
-
-			@Override
-			public int numSourceDimensions()
-			{
-				return 2;
-			}
-
-			@Override
-			public void apply( final RealLocalizable source, final RealPositionable target )
-			{
-				ScreenTransform.this.applyInverse( target, source );
-			}
-
-			@Override
-			public void apply( final float[] source, final float[] target )
-			{
-				ScreenTransform.this.applyInverse( target, source );
-			}
-
-			@Override
-			public void apply( final double[] source, final double[] target )
-			{
-				ScreenTransform.this.applyInverse( target, source );
-			}
-
-			@Override
-			public InvertibleRealTransform inverse()
-			{
-				return ScreenTransform.this;
-			}
-
-			@Override
-			public InvertibleRealTransform copy()
-			{
-				return ScreenTransform.this.copy().inverse();
-			}
-
-			@Override
-			public void applyInverse( final RealPositionable source, final RealLocalizable target )
-			{
-				ScreenTransform.this.apply( target, source );
-			}
-
-			@Override
-			public void applyInverse( final float[] source, final float[] target )
-			{
-				ScreenTransform.this.apply( target, source );
-			}
-
-			@Override
-			public void applyInverse( final double[] source, final double[] target )
-			{
-				ScreenTransform.this.apply( target, source );
-			}
-		};
+		final double iMinX = -minX * scaleX;
+		final double iMaxX = ( screenWidth - 1 - minX ) * scaleX;
+		final double iMinY = -minY * scaleY;
+		final double iMaxY = ( screenHeight - 1 - minY ) * scaleY;
+		return new ScreenTransform( iMinX, iMaxX, iMinY, iMaxY, screenWidth, screenHeight );
 	}
 
 	@Override
@@ -472,5 +417,37 @@ public class ScreenTransform implements InvertibleRealTransform
 				t.maxY == maxY &&
 				t.screenWidth == screenWidth &&
 				t.screenHeight == screenHeight;
+	}
+
+	@Override
+	public ScreenTransform concatenate( final ScreenTransform a )
+	{
+		final double cMinX = a.minX + minX / scaleX;
+		final double cMaxX = ( screenWidth - 1 ) / ( a.scaleX * scaleX ) + cMinX;
+		final double cMinY = a.minY + minY / scaleY;
+		final double cMaxY = ( screenHeight - 1 ) / ( a.scaleY * scaleY ) + cMinY;
+		return new ScreenTransform( cMinX, cMaxX, cMinY, cMaxY, screenWidth, screenHeight );
+	}
+
+	@Override
+	public Class< ScreenTransform > getConcatenableClass()
+	{
+		return ScreenTransform.class;
+	}
+
+	@Override
+	public ScreenTransform preConcatenate( final ScreenTransform a )
+	{
+		final double cMinX = minX + a.minX / a.scaleX;
+		final double cMaxX = ( screenWidth - 1 ) / ( scaleX * a.scaleX ) + cMinX;
+		final double cMinY = minY + a.minY / a.scaleY;
+		final double cMaxY = ( screenHeight - 1 ) / ( scaleY * a.scaleY ) + cMinY;
+		return new ScreenTransform( cMinX, cMaxX, cMinY, cMaxY, screenWidth, screenHeight );
+	}
+
+	@Override
+	public Class< ScreenTransform > getPreConcatenableClass()
+	{
+		return ScreenTransform.class;
 	}
 }
