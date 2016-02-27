@@ -34,7 +34,7 @@ public class ScreenTransform implements InvertibleRealTransform, Concatenable< S
 
 	public ScreenTransform()
 	{
-		this ( 0, 1, 0, 1, 1, 1 );
+		this ( 0, 1, 0, 1, 2, 2 );
 	}
 
 	public ScreenTransform( final double minX, final double maxX, final double minY, final double maxY, final int screenWidth, final int screenHeight )
@@ -422,9 +422,9 @@ public class ScreenTransform implements InvertibleRealTransform, Concatenable< S
 	@Override
 	public ScreenTransform concatenate( final ScreenTransform a )
 	{
-		final double cMinX = a.minX + minX / scaleX;
+		final double cMinX = a.minX + minX / a.scaleX;
 		final double cMaxX = ( screenWidth - 1 ) / ( a.scaleX * scaleX ) + cMinX;
-		final double cMinY = a.minY + minY / scaleY;
+		final double cMinY = a.minY + minY / a.scaleY;
 		final double cMaxY = ( screenHeight - 1 ) / ( a.scaleY * scaleY ) + cMinY;
 		return new ScreenTransform( cMinX, cMaxX, cMinY, cMaxY, screenWidth, screenHeight );
 	}
@@ -438,9 +438,9 @@ public class ScreenTransform implements InvertibleRealTransform, Concatenable< S
 	@Override
 	public ScreenTransform preConcatenate( final ScreenTransform a )
 	{
-		final double cMinX = minX + a.minX / a.scaleX;
+		final double cMinX = minX + a.minX / scaleX;
 		final double cMaxX = ( screenWidth - 1 ) / ( scaleX * a.scaleX ) + cMinX;
-		final double cMinY = minY + a.minY / a.scaleY;
+		final double cMinY = minY + a.minY / scaleY;
 		final double cMaxY = ( screenHeight - 1 ) / ( scaleY * a.scaleY ) + cMinY;
 		return new ScreenTransform( cMinX, cMaxX, cMinY, cMaxY, screenWidth, screenHeight );
 	}
