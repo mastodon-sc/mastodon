@@ -324,13 +324,10 @@ public class TrackSchemePanel extends JPanel implements
 		{
 //			System.out.println( "paint: transformChanged" );
 //			entityAnimator.startAnimation( transform, 0 );
-			if ( context != null )
+			if ( context != null && contextLayout.buildContext( context, transform, false ) )
 			{
-				if ( contextLayout.buildContext( context, transform, false ) )
-				{
-					layoutMinX = layout.getCurrentLayoutMinX();
-					layoutMaxX = layout.getCurrentLayoutMaxX();
-				}
+				layoutMinX = layout.getCurrentLayoutMinX();
+				layoutMaxX = layout.getCurrentLayoutMaxX();
 				entityAnimator.continueAnimation( transform, ANIMATION_MILLISECONDS );
 			}
 			else
