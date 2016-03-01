@@ -18,8 +18,9 @@ import bdv.tools.brightness.SliderPanelDouble;
 import bdv.util.BoundedValue;
 import bdv.util.BoundedValueDouble;
 import net.trackmate.revised.bdv.overlay.RenderSettings;
+import net.trackmate.revised.bdv.overlay.RenderSettings.UpdateListener;
 
-public class RenderSettingsPanel extends JPanel
+public class RenderSettingsPanel extends JPanel implements UpdateListener
 {
 	private static final long serialVersionUID = 1L;
 
@@ -335,6 +336,8 @@ public class RenderSettingsPanel extends JPanel
 		c.gridx = 1;
 		add( new JLabel( "center point fade depth" ), c );
 
+
+		renderSettings.addUpdateListener( this );
 		update();
 	}
 
@@ -362,4 +365,9 @@ public class RenderSettingsPanel extends JPanel
 		}
 	}
 
+	@Override
+	public void renderSettingsChanged()
+	{
+		update();
+	}
 }
