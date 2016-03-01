@@ -229,10 +229,16 @@ public class LineageTreeLayout
 	 * @param screenEntities
 	 *            the transformed screen entities (vertices, edges, ranges) are
 	 *            stored here.
+	 * @param decorationsOffsetX
+	 *            the screen entities are shifted in X by this amount.
+	 * @param decorationsOffsetY
+	 *            the screen entities are shifted in Y by this amount.
 	 */
 	public void cropAndScale(
 			final ScreenTransform transform,
-			final ScreenEntities screenEntities )
+			final ScreenEntities screenEntities,
+			final int decorationsOffsetX,
+			final int decorationsOffsetY )
 	{
 		final double minX = transform.getMinX();
 		final double maxX = transform.getMaxX();
@@ -265,9 +271,9 @@ public class LineageTreeLayout
 			{
 				final int timepointStartScreenVertexIndex = screenVertices.size();
 				// screen y of vertices of timepoint
-				final double y = ( timepoint - minY ) * yScale;
+				final double y = ( timepoint - minY ) * yScale + decorationsOffsetY;
 				// screen y of vertices of (timepoint-1)
-				final double prevY = ( timepoint - 1 - minY ) * yScale;
+				final double prevY = ( timepoint - 1 - minY ) * yScale + decorationsOffsetY;
 				final TrackSchemeVertexList vertexList = timepointToOrderedVertices.get( timepoint );
 				// largest index of vertex with layoutX <= minX
 				int minIndex = vertexList.binarySearch( minX );
@@ -304,7 +310,7 @@ public class LineageTreeLayout
 						final int v1si = screenVertices.size();
 						v1.setScreenVertexIndex( v1si );
 						final int id = v1.getInternalPoolIndex();
-						final double x = ( v1.getLayoutX() - minX ) * xScale;
+						final double x = ( v1.getLayoutX() - minX ) * xScale + decorationsOffsetX;
 						final boolean selected = v1.isSelected();
 						final boolean ghost = v1.isGhost();
 						screenVertexPool.create( sv ).init( id, x, y, selected, ghost );
@@ -337,8 +343,8 @@ public class LineageTreeLayout
 						final int rangeMaxIndex = riter.next();
 						nextRangeStart = riter.next();
 						i = rangeMaxIndex;
-						final double svMinX = ( vertexList.get( rangeMinIndex, v1 ).getLayoutX() - minX ) * xScale;
-						final double svMaxX = ( vertexList.get( rangeMaxIndex, v1 ).getLayoutX() - minX ) * xScale; // TODO: make minimum width (maybe only when painting...)
+						final double svMinX = ( vertexList.get( rangeMinIndex, v1 ).getLayoutX() - minX ) * xScale + decorationsOffsetX;
+						final double svMaxX = ( vertexList.get( rangeMaxIndex, v1 ).getLayoutX() - minX ) * xScale + decorationsOffsetX; // TODO: make minimum width (maybe only when painting...)
 						vertexRanges.add( screenRangePool.create( sr ).init( svMinX, svMaxX, prevY, y ) );
 						minVertexScreenDist = 0;
 					}

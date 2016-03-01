@@ -17,6 +17,7 @@ import net.trackmate.revised.trackscheme.TrackSchemeFocus;
 import net.trackmate.revised.trackscheme.TrackSchemeGraph;
 import net.trackmate.revised.trackscheme.TrackSchemeHighlight;
 import net.trackmate.revised.trackscheme.TrackSchemeVertex;
+import net.trackmate.revised.trackscheme.display.OffsetDecorations.OffsetDecorationsListener;
 
 /**
  * An {@link OverlayRenderer} that paints {@link ScreenEntities} of a
@@ -54,7 +55,7 @@ import net.trackmate.revised.trackscheme.TrackSchemeVertex;
  *
  * @author Tobias Pietzsch &lt;tobias.pietzsch@gmail.com&gt;
  */
-public abstract class AbstractTrackSchemeOverlay implements OverlayRenderer
+public abstract class AbstractTrackSchemeOverlay implements OverlayRenderer, OffsetDecorationsListener
 {
 	private int width;
 
@@ -95,6 +96,14 @@ public abstract class AbstractTrackSchemeOverlay implements OverlayRenderer
 	private int maxTimepoint = 100;
 
 	private int currentTimepoint = 0;
+
+	protected boolean isDecorationsVisibleX;
+
+	protected int decorationsWidth;
+
+	protected boolean isDecorationsVisibleY;
+
+	protected int decorationsHeight;
 
 	/**
 	 * Creates a new overlay for the specified TrackScheme graph.
@@ -169,6 +178,8 @@ public abstract class AbstractTrackSchemeOverlay implements OverlayRenderer
 		{
 			drawVertexRange( g2, range );
 		}
+
+		paintDecorations( g2, entities );
 
 		vertices.releaseRef( vs );
 		vertices.releaseRef( vt );
@@ -269,6 +280,15 @@ public abstract class AbstractTrackSchemeOverlay implements OverlayRenderer
 	{
 		this.width = width;
 		this.height = height;
+	}
+
+	@Override
+	public void updateDecorationsVisibility( final boolean isVisibleX, final int width, final boolean isVisibleY, final int height )
+	{
+		isDecorationsVisibleX = isVisibleX;
+		decorationsWidth = width;
+		isDecorationsVisibleY = isVisibleY;
+		decorationsHeight = height;
 	}
 
 	/**
@@ -417,6 +437,16 @@ public abstract class AbstractTrackSchemeOverlay implements OverlayRenderer
 	 *            the screen entities to paint.
 	 */
 	protected abstract void paintBackground( Graphics2D g2, ScreenEntities screenEntities );
+
+	/**
+	 * Paints overlay decorations.
+	 *
+	 * @param g2
+	 *            the graphics object.
+	 * @param screenEntities
+	 *            the screen entities to paint.
+	 */
+	protected abstract void paintDecorations( Graphics2D g2, ScreenEntities screenEntities );
 
 	/**
 	 * Configures the graphics object prior to drawing vertices.

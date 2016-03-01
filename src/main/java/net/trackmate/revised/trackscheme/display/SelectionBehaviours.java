@@ -24,6 +24,7 @@ import net.trackmate.revised.trackscheme.TrackSchemeGraph;
 import net.trackmate.revised.trackscheme.TrackSchemeNavigation;
 import net.trackmate.revised.trackscheme.TrackSchemeSelection;
 import net.trackmate.revised.trackscheme.TrackSchemeVertex;
+import net.trackmate.revised.trackscheme.display.OffsetDecorations.OffsetDecorationsListener;
 
 /**
  * TODO: Merge with TrackSchemeNavigator into one class that does everything related to focus and selection?
@@ -33,7 +34,7 @@ import net.trackmate.revised.trackscheme.TrackSchemeVertex;
  * @author Tobias Pietzsch &lt;tobias.pietzsch@gmail.com&gt;
  * @author Jean-Yves Tinevez &lt;jeanyves.tinevez@gmail.com&gt;
  */
-public class SelectionBehaviours implements TransformListener< ScreenTransform >
+public class SelectionBehaviours implements TransformListener< ScreenTransform >, OffsetDecorationsListener
 {
 	public static final String FOCUS_VERTEX_NAME = "ts click focus vertex";
 	public static final String NAVIGATE_TO_VERTEX_NAME = "ts click navigate to vertex";
@@ -65,6 +66,16 @@ public class SelectionBehaviours implements TransformListener< ScreenTransform >
 	private final BoxSelectionBehaviour boxSelect;
 
 	private final BoxSelectionBehaviour boxSelectAdd;
+
+	/**
+	 * current decorations width.
+	 */
+	private int decorationsWidth;
+
+	/**
+	 * current decorations height.
+	 */
+	private int decorationsHeight;
 
 	public SelectionBehaviours(
 			final InteractiveDisplayCanvasComponent< ScreenTransform > display,
@@ -120,6 +131,13 @@ public class SelectionBehaviours implements TransformListener< ScreenTransform >
 		{
 			screenTransform.set( transform );
 		}
+	}
+
+	@Override
+	public void updateDecorationsVisibility( final boolean isVisibleX, final int width, final boolean isVisibleY, final int height )
+	{
+		decorationsWidth = isVisibleX ? width : 0;
+		decorationsHeight = isVisibleY ? height : 0;
 	}
 
 	/*
@@ -215,6 +233,9 @@ public class SelectionBehaviours implements TransformListener< ScreenTransform >
 		@Override
 		public void click( final int x, final int y )
 		{
+			if ( x < decorationsWidth || y < decorationsHeight )
+				return;
+
 			final TrackSchemeVertex ref = graph.vertexRef();
 			final TrackSchemeVertex vertex = graphOverlay.getVertexAt( x, y, ref );
 			if ( vertex != null )
@@ -246,6 +267,9 @@ public class SelectionBehaviours implements TransformListener< ScreenTransform >
 		@Override
 		public void click( final int x, final int y )
 		{
+			if ( x < decorationsWidth || y < decorationsHeight )
+				return;
+
 			final TrackSchemeVertex ref = graph.vertexRef();
 			final TrackSchemeVertex vertex = graphOverlay.getVertexAt( x, y, ref );
 			if ( vertex != null )
@@ -275,6 +299,9 @@ public class SelectionBehaviours implements TransformListener< ScreenTransform >
 		@Override
 		public void click( final int x, final int y )
 		{
+			if ( x < decorationsWidth || y < decorationsHeight )
+				return;
+
 			select( x, y, addToSelection );
 		}
 	}
@@ -301,6 +328,8 @@ public class SelectionBehaviours implements TransformListener< ScreenTransform >
 
 		private boolean dragging = false;
 
+		private boolean ignore = false;
+
 		private final boolean addToSelection;
 
 		public BoxSelectionBehaviour( final String name, final boolean addToSelection )
@@ -315,11 +344,15 @@ public class SelectionBehaviours implements TransformListener< ScreenTransform >
 			oX = x;
 			oY = y;
 			dragging = false;
+			ignore = x < decorationsWidth || y < decorationsHeight;
 		}
 
 		@Override
 		public void drag( final int x, final int y )
 		{
+			if ( ignore )
+				return;
+
 			eX = x;
 			eY = y;
 			if ( !dragging )
@@ -333,12 +366,20 @@ public class SelectionBehaviours implements TransformListener< ScreenTransform >
 		@Override
 		public void end( final int x, final int y )
 		{
+			if ( ignore )
+				return;
+
 			if ( dragging )
 			{
 				dragging = false;
 				display.removeOverlayRenderer( this );
 				display.repaint();
-				selectWithin( oX, oY, eX, eY, addToSelection );
+				selectWithin(
+						oX - decorationsWidth,
+						oY - decorationsHeight,
+						eX - decorationsWidth,
+						eY - decorationsHeight,
+						addToSelection );
 			}
 		}
 

@@ -99,6 +99,7 @@ public class TrackSchemeFrame extends JFrame
 
 		final EditFocusVertexBehaviour editFocus = new EditFocusVertexBehaviour( focus, graph, trackschemePanel.getDisplay() );
 		trackschemePanel.getDisplay().addTransformListener( editFocus );
+		trackschemePanel.getOffsetDecorations().addOffsetDecorationsListener( editFocus );
 		editFocus.installActionBindings( keybindings, inputConf );
 	}
 

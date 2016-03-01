@@ -27,12 +27,13 @@ import net.trackmate.revised.trackscheme.ScreenTransform;
 import net.trackmate.revised.trackscheme.TrackSchemeFocus;
 import net.trackmate.revised.trackscheme.TrackSchemeGraph;
 import net.trackmate.revised.trackscheme.TrackSchemeVertex;
+import net.trackmate.revised.trackscheme.display.OffsetDecorations.OffsetDecorationsListener;
 
 /**
  *
  * @author Jean-Yves Tinevez &lt;jeanyves.tinevez@gmail.com&gt;
  */
-public class EditFocusVertexBehaviour extends AbstractNamedAction implements TransformListener< ScreenTransform >
+public class EditFocusVertexBehaviour extends AbstractNamedAction implements TransformListener< ScreenTransform >, OffsetDecorationsListener
 {
 	public static final String EDIT_FOCUS_NAME = "ts edit focused vertex label";
 
@@ -49,6 +50,16 @@ public class EditFocusVertexBehaviour extends AbstractNamedAction implements Tra
 	private final FontMetrics fontMetrics;
 
 	private final TrackSchemeFocus focus;
+
+	/**
+	 * current decorations width.
+	 */
+	private int decorationsWidth;
+
+	/**
+	 * current decorations height.
+	 */
+	private int decorationsHeight;
 
 	public EditFocusVertexBehaviour(
 			final TrackSchemeFocus focus,
@@ -108,6 +119,13 @@ public class EditFocusVertexBehaviour extends AbstractNamedAction implements Tra
 			editor.reposition();
 			display.repaint();
 		}
+	}
+
+	@Override
+	public void updateDecorationsVisibility( final boolean isVisibleX, final int width, final boolean isVisibleY, final int height )
+	{
+		decorationsWidth = isVisibleX ? width : 0;
+		decorationsHeight = isVisibleY ? height : 0;
 	}
 
 	private class Editor extends JTextField
@@ -207,6 +225,8 @@ public class EditFocusVertexBehaviour extends AbstractNamedAction implements Tra
 
 			final double[] screenPos = new double[ 2 ];
 			screenTransform.apply( new double[] { lx, ly }, screenPos );
+			screenPos[ 0 ] += decorationsWidth;
+			screenPos[ 1 ] += decorationsHeight;
 
 			final int h = fontMetrics.getHeight() + 10;
 			final int w = fontMetrics.stringWidth( getText() ) + 30;

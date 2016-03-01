@@ -153,6 +153,25 @@ public class DefaultTrackSchemeOverlay extends AbstractTrackSchemeOverlay
 	}
 
 	@Override
+	protected void paintDecorations( final Graphics2D g2, final ScreenEntities screenEntities )
+	{
+		final int width = getWidth();
+		final int height = getHeight();
+
+		if ( isDecorationsVisibleX )
+		{
+			g2.setColor( style.decorationColor );
+			g2.drawLine( decorationsWidth, 0, decorationsWidth, height );
+		}
+
+		if ( isDecorationsVisibleY )
+		{
+			g2.setColor( style.decorationColor );
+			g2.drawLine( 0, decorationsHeight, width, decorationsHeight );
+		}
+	}
+
+	@Override
 	protected void beforeDrawVertex( final Graphics2D g2 )
 	{
 		g2.setStroke( style.vertexStroke );
