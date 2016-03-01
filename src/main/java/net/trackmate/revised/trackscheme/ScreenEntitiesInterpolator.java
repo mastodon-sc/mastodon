@@ -20,7 +20,57 @@ public class ScreenEntitiesInterpolator
 
 	private final IntPoolObjectMap< ScreenEdge > idToStartEdge;
 
+	private final ScreenTransform incrementalStartTransform;
+
+	/**
+	 * Create an interpolator between two sets of {@link ScreenEntities}.
+	 *
+	 * @param start
+	 *            start of the interpolation.
+	 * @param end
+	 *            end of the interpolation.
+	 */
 	public ScreenEntitiesInterpolator( final ScreenEntities start, final ScreenEntities end )
+	{
+		this( start, end, false );
+	}
+
+	/**
+	 * Create an interpolator between two sets of {@link ScreenEntities}.
+	 * Optionally, the {@code start} {@link ScreenEntities} can be modified such
+	 * that their transform matches the {@code end} {@link ScreenEntities}.
+	 *
+	 * @param start
+	 *            start of the interpolation.
+	 * @param end
+	 *            end of the interpolation.
+	 * @param useIncrementalStartTransform
+	 *            if {@code true}, modify the {@code start}
+	 *            {@link ScreenEntities} such that their transform matches the
+	 *            {@code end} {@link ScreenEntities}.
+	 */
+	public ScreenEntitiesInterpolator( final ScreenEntities start, final ScreenEntities end, final boolean useIncrementalStartTransform )
+	{
+		this( start, end,
+				useIncrementalStartTransform
+						? end.screenTransform().concatenate( start.screenTransform().inverse() )
+						: null );
+	}
+
+	/**
+	 * Create an interpolator between two sets of {@link ScreenEntities}.
+	 * Optionally, an incremental {@link ScreenTransform} can be specified, that
+	 * is applied to the {@code start} {@link ScreenEntities} (on top of the
+	 * transform that was used to create them).
+	 *
+	 * @param start
+	 *            start of the interpolation.
+	 * @param end
+	 *            end of the interpolation.
+	 * @param incrementalStartTransform
+	 *            optional incremental transform of start entities.
+	 */
+	public ScreenEntitiesInterpolator( final ScreenEntities start, final ScreenEntities end, final ScreenTransform incrementalStartTransform )
 	{
 		this.start = start;
 		this.end = end;
@@ -36,6 +86,8 @@ public class ScreenEntitiesInterpolator
 		idToStartEdge = new IntPoolObjectMap< ScreenEdge >( start.getEdgePool(), -1, start.getEdges().size() );
 		for ( final ScreenEdge e : start.getEdges() )
 			idToStartEdge.put( e.getTrackSchemeEdgeId(), e );
+
+		this.incrementalStartTransform = incrementalStartTransform;
 	}
 
 	public void interpolate( final double currentRatio, final ScreenEntities current )
@@ -107,7 +159,10 @@ public class ScreenEntitiesInterpolator
 
 		// Interpolate screenTransform
 		// ===========================
-		current.screenTransform().interpolate( start.screenTransform(), end.screenTransform(), accelRatio );
+		ScreenTransform startTransform = start.screenTransform();
+		if ( incrementalStartTransform != null )
+			startTransform = incrementalStartTransform.concatenate( start.screenTransform() );
+		current.screenTransform().interpolate( startTransform, end.screenTransform(), accelRatio );
 
 		// clean up
 		current.getVertexPool().releaseRef( vCurrent );
@@ -124,8 +179,15 @@ public class ScreenEntitiesInterpolator
 		vCurrent.setSelected( endSelected );
 		vCurrent.setGhost( vEnd.isGhost() );
 		vCurrent.setVertexDist( vEnd.getVertexDist() );
-		vCurrent.setX( ratio * vEnd.getX() + ( 1 - ratio ) * vStart.getX() );
-		vCurrent.setY( ratio * vEnd.getY() + ( 1 - ratio ) * vStart.getY() );
+		double startX = vStart.getX();
+		double startY = vStart.getY();
+		if ( incrementalStartTransform != null )
+		{
+			startX = incrementalStartTransform.layoutToScreenX( startX );
+			startY = incrementalStartTransform.layoutToScreenY( startY );
+		}
+		vCurrent.setX( ratio * vEnd.getX() + ( 1 - ratio ) * startX );
+		vCurrent.setY( ratio * vEnd.getY() + ( 1 - ratio ) * startY );
 		vCurrent.setTransition(
 				( vStart.isSelected() == endSelected )
 						? NONE
@@ -142,8 +204,15 @@ public class ScreenEntitiesInterpolator
 		vCurrent.setSelected( vStart.isSelected() );
 		vCurrent.setGhost( vStart.isGhost() );
 		vCurrent.setVertexDist( vStart.getVertexDist() );
-		vCurrent.setX( vStart.getX() );
-		vCurrent.setY( vStart.getY() );
+		double startX = vStart.getX();
+		double startY = vStart.getY();
+		if ( incrementalStartTransform != null )
+		{
+			startX = incrementalStartTransform.layoutToScreenX( startX );
+			startY = incrementalStartTransform.layoutToScreenY( startY );
+		}
+		vCurrent.setX( startX );
+		vCurrent.setY( startY );
 		vCurrent.setTransition( DISAPPEAR );
 		vCurrent.setInterpolationCompletionRatio( ratio );
 	}
