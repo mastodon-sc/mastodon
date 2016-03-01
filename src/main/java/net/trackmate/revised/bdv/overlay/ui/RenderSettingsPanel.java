@@ -233,7 +233,7 @@ public class RenderSettingsPanel extends JPanel
 			@Override
 			public void actionPerformed( final ActionEvent e )
 			{
-				renderSettings.setDrawEllipsoidSliceProjection( centersForEllipsesBox.isSelected() );
+				renderSettings.setDrawSpotCentersForEllipses( centersForEllipsesBox.isSelected() );
 			}
 		} );
 		c.anchor = GridBagConstraints.LINE_END;
