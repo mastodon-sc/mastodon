@@ -32,29 +32,7 @@ public class ScreenEntitiesInterpolator
 	 */
 	public ScreenEntitiesInterpolator( final ScreenEntities start, final ScreenEntities end )
 	{
-		this( start, end, false );
-	}
-
-	/**
-	 * Create an interpolator between two sets of {@link ScreenEntities}.
-	 * Optionally, the {@code start} {@link ScreenEntities} can be modified such
-	 * that their transform matches the {@code end} {@link ScreenEntities}.
-	 *
-	 * @param start
-	 *            start of the interpolation.
-	 * @param end
-	 *            end of the interpolation.
-	 * @param useIncrementalStartTransform
-	 *            if {@code true}, modify the {@code start}
-	 *            {@link ScreenEntities} such that their transform matches the
-	 *            {@code end} {@link ScreenEntities}.
-	 */
-	public ScreenEntitiesInterpolator( final ScreenEntities start, final ScreenEntities end, final boolean useIncrementalStartTransform )
-	{
-		this( start, end,
-				useIncrementalStartTransform
-						? end.screenTransform().concatenate( start.screenTransform().inverse() )
-						: null );
+		this( start, end, null );
 	}
 
 	/**
@@ -88,6 +66,18 @@ public class ScreenEntitiesInterpolator
 			idToStartEdge.put( e.getTrackSchemeEdgeId(), e );
 
 		this.incrementalStartTransform = incrementalStartTransform;
+	}
+
+	public static ScreenTransform getIncrementalY( final ScreenEntities start, final ScreenEntities end )
+	{
+		final ScreenTransform t = end.screenTransform().concatenate( start.screenTransform().inverse() );
+		t.set( 0, t.getScreenWidth() -1, t.getMinY(), t.getMaxY(), t.getScreenWidth(), t.getScreenHeight() );
+		return t;
+	}
+
+	public static ScreenTransform getIncrementalXY( final ScreenEntities start, final ScreenEntities end )
+	{
+		return end.screenTransform().concatenate( start.screenTransform().inverse() );
 	}
 
 	public void interpolate( final double currentRatio, final ScreenEntities current )
