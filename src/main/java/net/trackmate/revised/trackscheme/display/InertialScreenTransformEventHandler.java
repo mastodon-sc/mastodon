@@ -119,6 +119,12 @@ public class InertialScreenTransformEventHandler
 	private double maxSizeX, maxSizeY;
 
 	/**
+	 * Whether the transform should stay fully zoomed out in X when the
+	 * {@link #layoutChanged(LineageTreeLayout) layout changes}.
+	 */
+	private boolean stayFullyZoomedOut;
+
+	/**
 	 * Current source to screen transform.
 	 */
 	final private ScreenTransform transform = new ScreenTransform( -10000, 10000, -10000, 10000, 800, 600 );
@@ -226,6 +232,8 @@ public class InertialScreenTransformEventHandler
 
 			maxSizeX = ( boundXMax - boundXMin ) * maxSizeFactorX;
 
+			if ( stayFullyZoomedOut )
+				zoomOutFullyX( transform );
 			constrainTransform( transform );
 			notifyListeners();
 		}
@@ -263,6 +271,15 @@ public class InertialScreenTransformEventHandler
 				maxSizeX, maxSizeY,
 				boundXMin, boundXMax, boundYMin, boundYMax,
 				borderRatioX, borderRatioY );
+	}
+
+	private void zoomOutFullyX( final ScreenTransform transform )
+	{
+		ConstrainScreenTransform.zoomOutFullyX(
+				transform,
+				maxSizeX,
+				boundXMin, boundXMax,
+				borderRatioX );
 	}
 
 	private boolean hasMinSizeX( final ScreenTransform transform )
@@ -432,6 +449,8 @@ public class InertialScreenTransformEventHandler
 							transform.zoomY( dScale, y );
 					}
 				}
+
+				stayFullyZoomedOut = hasMaxSizeX( transform );
 
 				constrainTransform( transform );
 				ConstrainScreenTransform.removeJitter( transform, previousTransform );
