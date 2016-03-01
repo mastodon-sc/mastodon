@@ -236,7 +236,7 @@ public class WindowManager
 		final OverlayContext< OverlayVertexWrapper< Spot, Link > > overlayContext = new OverlayContext<>( overlayGraph, tracksOverlay );
 		viewer.addRenderTransformListener( overlayContext );
 		viewer.addTimePointListener( overlayContext );
-		final OverlayContextWrapper overlayContextWrapper = new OverlayContextWrapper<>( overlayContext, new BdvContextAdapter() );
+		final OverlayContextWrapper< Spot, Link > overlayContextWrapper = new OverlayContextWrapper<>( overlayContext, new BdvContextAdapter() );
 
 		final ViewerFrame viewerFrame = bdv.getViewerFrame();
 		final GroupLocksPanel lockPanel = new GroupLocksPanel( bdvGroupHandle );
