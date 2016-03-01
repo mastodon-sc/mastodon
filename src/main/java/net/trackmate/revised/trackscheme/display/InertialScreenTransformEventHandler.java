@@ -534,6 +534,8 @@ public class InertialScreenTransformEventHandler
 	{
 		final long t = System.currentTimeMillis();
 		final ScreenTransform c = animator.getCurrent( t );
+		if ( stayFullyZoomedOut )
+			zoomOutFullyX( c );
 		constrainTransform( c );
 		synchronized ( transform )
 		{
