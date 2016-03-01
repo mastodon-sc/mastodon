@@ -9,5 +9,6 @@ public interface Context< V >
 	public Iterable< V > getInsideVertices( final int timepoint );
 
 	// TODO: revise. not clear yet how timepoints and context interact
+	// TODO: probably just remove
 	public int getTimepoint();
 }
