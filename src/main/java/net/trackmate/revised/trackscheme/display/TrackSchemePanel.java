@@ -17,16 +17,13 @@ import net.imglib2.ui.OverlayRenderer;
 import net.imglib2.ui.PainterThread;
 import net.imglib2.ui.TransformEventHandler;
 import net.imglib2.ui.TransformListener;
-import net.trackmate.graph.PoolObjectList;
-import net.trackmate.graph.collection.CollectionUtils;
-import net.trackmate.graph.collection.RefList;
 import net.trackmate.graph.listenable.GraphChangeListener;
+import net.trackmate.revised.trackscheme.ContextLayout;
 import net.trackmate.revised.trackscheme.LineageTreeLayout;
 import net.trackmate.revised.trackscheme.LineageTreeLayout.LayoutListener;
 import net.trackmate.revised.trackscheme.ScreenEntities;
 import net.trackmate.revised.trackscheme.ScreenEntitiesInterpolator;
 import net.trackmate.revised.trackscheme.ScreenTransform;
-import net.trackmate.revised.trackscheme.TrackSchemeEdge;
 import net.trackmate.revised.trackscheme.TrackSchemeFocus;
 import net.trackmate.revised.trackscheme.TrackSchemeGraph;
 import net.trackmate.revised.trackscheme.TrackSchemeHighlight;
@@ -78,6 +75,11 @@ public class TrackSchemePanel extends JPanel implements
 	 * layout the {@link TrackSchemeGraph} into layout coordinates.
 	 */
 	private final LineageTreeLayout layout;
+
+	/**
+	 * TODO
+	 */
+	private final ContextLayout contextLayout;
 
 	/**
 	 * compute {@link ScreenEntities} from {@link LineageTreeLayout} using the
@@ -191,6 +193,7 @@ public class TrackSchemePanel extends JPanel implements
 
 		screenTransform = new ScreenTransform();
 		layout = new LineageTreeLayout( graph );
+		contextLayout = new ContextLayout( graph, layout );
 		final TransformEventHandler< ScreenTransform > tevl = display.getTransformEventHandler();
 		if ( tevl instanceof LayoutListener )
 		{
@@ -311,6 +314,7 @@ public class TrackSchemePanel extends JPanel implements
 		final Flags flags = this.flags.clear();
 		if ( flags.graphChanged )
 		{
+//			System.out.println( "paint: graphChanged" );
 			layout.layout();
 			layoutMinX = layout.getCurrentLayoutMinX();
 			layoutMaxX = layout.getCurrentLayoutMaxX();
@@ -318,17 +322,34 @@ public class TrackSchemePanel extends JPanel implements
 		}
 		else if ( flags.transformChanged )
 		{
-			entityAnimator.startAnimation( transform, 0 );
+//			System.out.println( "paint: transformChanged" );
+//			entityAnimator.startAnimation( transform, 0 );
+			if ( context != null )
+			{
+				if ( contextLayout.buildContext( context, transform, false ) )
+				{
+					layoutMinX = layout.getCurrentLayoutMinX();
+					layoutMaxX = layout.getCurrentLayoutMaxX();
+				}
+				entityAnimator.continueAnimation( transform, ANIMATION_MILLISECONDS );
+			}
+			else
+				entityAnimator.startAnimation( transform, 0 );
+//			entityAnimator.startAnimation( transform, ANIMATION_MILLISECONDS );
 		}
 		else if ( flags.selectionChanged )
 		{
+//			System.out.println( "paint: selectionChanged" );
 			entityAnimator.startAnimation( transform, ANIMATION_MILLISECONDS );
 		}
 		else if ( flags.contextChanged )
 		{
-			buildContext( context );
-			layoutMinX = layout.getCurrentLayoutMinX();
-			layoutMaxX = layout.getCurrentLayoutMaxX();
+//			System.out.println( "paint: contextChanged" );
+			if ( contextLayout.buildContext( context, transform, true ) )
+			{
+				layoutMinX = layout.getCurrentLayoutMinX();
+				layoutMaxX = layout.getCurrentLayoutMaxX();
+			}
 			entityAnimator.startAnimation( transform, ANIMATION_MILLISECONDS );
 		}
 
@@ -370,6 +391,9 @@ public class TrackSchemePanel extends JPanel implements
 	{
 		synchronized( screenTransform )
 		{
+			if ( screenTransform.equals( transform ) )
+				return;
+//			TODO
 			screenTransform.set( transform );
 		}
 		flags.setTransformChanged();
@@ -414,81 +438,6 @@ public class TrackSchemePanel extends JPanel implements
 		this.context = context;
 		flags.setContextChanged();
 		painterThread.requestRepaint();
-	}
-
-	// TODO: THIS IS FOR TESTING ONLY
-	private final int contextWindow = 2;
-
-	// TODO: THIS IS FOR TESTING ONLY
-	private void buildContext( final Context< TrackSchemeVertex > context )
-	{
-		final int timepoint = context.getTimepoint();
-		final int minTimepoint = timepoint - contextWindow;
-		final int maxTimepoint = timepoint + contextWindow;
-
-		// mark vertices in crop region with timestamp and find roots.
-		final int ghostmark = layout.nextLayoutTimestamp();
-		final int mark = layout.nextLayoutTimestamp();
-		final RefList< TrackSchemeVertex > roots = CollectionUtils.createVertexList( graph );
-
-		context.readLock().lock();
-		try
-		{
-			for ( int t = minTimepoint; t <= maxTimepoint; ++t )
-			{
-				for ( final TrackSchemeVertex tv : context.getInsideVertices( t ) )
-				{
-					tv.setLayoutTimestamp( mark );
-					if ( t == minTimepoint )
-						roots.add( tv );
-					else
-						buildContextTraceParents( tv, ghostmark, minTimepoint, roots );
-				}
-			}
-		}
-		finally
-		{
-			context.readLock().unlock();
-		}
-
-		// TODO sort roots by something meaningful...
-		( ( PoolObjectList< TrackSchemeVertex > ) roots ).getIndexCollection().sort();
-
-		layout.layout( roots, mark );
-	}
-
-	/**
-	 * Follow backwards along incoming edges until
-	 * <ul>
-	 * <li>(A) a vertex is reached that is already marked with ghostmark or
-	 * mark, or
-	 * <li>(B) vertex is reached that has timepoint <= minTimepoint.
-	 * </ul>
-	 *
-	 * Mark all recursively visited vertices as ghosts. In case (B), add the
-	 * final vertex to set of roots.
-	 */
-	private void buildContextTraceParents( final TrackSchemeVertex tv, final int ghostmark, final int minTimepoint, final RefList< TrackSchemeVertex > roots )
-	{
-		if( tv.incomingEdges().isEmpty() )
-			roots.add( tv );
-		else
-		{
-			final TrackSchemeVertex ref = graph.vertexRef();
-			for ( final TrackSchemeEdge te : tv.incomingEdges() )
-			{
-				final TrackSchemeVertex parent = te.getSource( ref );
-				if ( parent.getLayoutTimestamp() < ghostmark )
-				{
-					parent.setLayoutTimestamp( ghostmark );
-					if ( parent.getTimepoint() <= minTimepoint )
-						roots.add( parent );
-					else
-						buildContextTraceParents( parent, ghostmark, minTimepoint, roots );
-				}
-			}
-			graph.releaseRef( ref );
-		}
 	}
 
 	public NavigationEtiquette getNavigationEtiquette()
@@ -749,8 +698,28 @@ public class TrackSchemePanel extends JPanel implements
 				interpolator = null;
 				swapPools();
 				layout.cropAndScale( transform, screenEntities );
+				lastComputedScreenEntities = screenEntities;
 			}
-			lastComputedScreenEntities = screenEntities;
+		}
+
+		public void continueAnimation( final ScreenTransform transform, final long duration )
+		{
+			if ( interpolator != null )
+			{
+				layout.cropAndScale( transform, screenEntities );
+				swapIpEnd();
+				interpolator = new ScreenEntitiesInterpolator(
+						screenEntitiesIpStart,
+						screenEntitiesIpEnd,
+						ScreenEntitiesInterpolator.getIncrementalY( screenEntitiesIpStart, screenEntitiesIpEnd ) );
+			}
+			else
+			{
+				startAnimation( transform, duration );
+//				swapPools();
+//				layout.cropAndScale( transform, screenEntities );
+//				lastComputedScreenEntities = screenEntities;
+			}
 		}
 
 		@Override
