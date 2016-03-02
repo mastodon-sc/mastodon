@@ -222,8 +222,9 @@ public class TrackSchemePanel extends JPanel implements
 		offsetDecorations.addOffsetDecorationsListener( graphOverlay );
 		offsetDecorations.addOffsetDecorationsListener( selectionBehaviours );
 		offsetDecorations.addOffsetDecorationsListener( highlightHandler );
-		offsetDecorations.setDecorationsVisibleX( true, 50 );
-		offsetDecorations.setDecorationsVisibleY( true, 50 );
+		offsetDecorations.setDecorationsVisibleX( true, 25 );
+		offsetDecorations.setDecorationsVisibleY( true, 20 );
+//		offsetDecorations.setDecorationsVisibleY( false, 0 );
 
 		xScrollBar = new JScrollBar( JScrollBar.HORIZONTAL );
 		yScrollBar = new JScrollBar( JScrollBar.VERTICAL );

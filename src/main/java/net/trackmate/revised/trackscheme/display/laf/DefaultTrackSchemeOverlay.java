@@ -84,6 +84,10 @@ public class DefaultTrackSchemeOverlay extends AbstractTrackSchemeOverlay
 
 	private final boolean paintColumns = true;
 
+	private final boolean paintHeaderShadow = true;
+
+	private final Color[] shadowColors;
+
 	protected TrackSchemeStyle style = TrackSchemeStyle.defaultStyle();
 
 	public DefaultTrackSchemeOverlay(
@@ -93,6 +97,13 @@ public class DefaultTrackSchemeOverlay extends AbstractTrackSchemeOverlay
 			final TrackSchemeOptions options )
 	{
 		super( graph, highlight, focus, options );
+
+		final int[] shadowAlphas = new int[] { 28, 22, 17, 12, 8, 6, 3 };
+//		final int[] shadowAlphas = new int[] { 44, 35, 28, 22, 17, 12, 8, 6, 3 };
+//		final int[] shadowAlphas = new int[] { 78, 44, 35, 28, 22, 17, 12, 8, 6, 3, 1 };
+		shadowColors = new Color[ shadowAlphas.length ];
+		for ( int i = 0; i < shadowAlphas.length; ++i )
+			shadowColors[ i ] = new Color( 0, 0, 0, shadowAlphas[ i ] );
 	}
 
 	@Override
@@ -113,7 +124,7 @@ public class DefaultTrackSchemeOverlay extends AbstractTrackSchemeOverlay
 		if ( highlightCurrentTimepoint )
 		{
 			final double t = getCurrentTimepoint();
-			final int y = ( int ) Math.round( yScale * ( t - minY - 0.5 ) );
+			final int y = ( int ) Math.round( yScale * ( t - minY - 0.5 ) ) + decorationsHeight;
 			final int h = Math.max( 1, ( int ) Math.round( yScale ) );
 			g2.setColor( style.currentTimepointColor );
 			g2.fillRect( 0, y, width, h );
@@ -122,10 +133,7 @@ public class DefaultTrackSchemeOverlay extends AbstractTrackSchemeOverlay
 		if ( paintRows )
 		{
 			g2.setColor( style.decorationColor );
-			final FontMetrics fm = g2.getFontMetrics( style.font );
-			g2.setFont( style.font );
 
-			final int fontInc = fm.getHeight() / 2;
 			final int stepT = 1 + MIN_TIMELINE_SPACING / ( int ) ( 1 + yScale );
 
 			int tstart = Math.max( getMinTimepoint(), ( int ) minY - 1 );
@@ -135,19 +143,12 @@ public class DefaultTrackSchemeOverlay extends AbstractTrackSchemeOverlay
 
 			for ( int t = tstart; t < tend; t = t + stepT )
 			{
-				final int yline = ( int ) ( ( t - minY - 0.5 ) * yScale );
+				final int yline = ( int ) ( ( t - minY - 0.5 ) * yScale ) + decorationsHeight;
 				g2.drawLine( 0, yline, width, yline );
-
-				final int ytext = ( int ) ( ( t - minY + stepT / 2 ) * yScale ) + fontInc;
-				if ( ytext < 2 * YTEXT )
-				{
-					continue;
-				}
-				g2.drawString( "" + t, XTEXT, ytext );
 			}
 
 			// Last line
-			final int yline = ( int ) ( ( tend - minY - 0.5 ) * yScale );
+			final int yline = ( int ) ( ( tend - minY - 0.5 ) * yScale ) + decorationsHeight;
 			g2.drawLine( 0, yline, width, yline );
 		}
 	}
@@ -158,16 +159,71 @@ public class DefaultTrackSchemeOverlay extends AbstractTrackSchemeOverlay
 		final int width = getWidth();
 		final int height = getHeight();
 
+		final ScreenTransform screenTransform = new ScreenTransform();
+		screenEntities.getScreenTransform( screenTransform );
+		final double yScale = screenTransform.getScaleY();
+		final double minY = screenTransform.getMinY();
+		final double maxY = screenTransform.getMaxY();
+
 		if ( isDecorationsVisibleX )
 		{
-			g2.setColor( style.decorationColor );
-			g2.drawLine( decorationsWidth, 0, decorationsWidth, height );
+			g2.setColor( style.headerBackgroundColor );
+			g2.fillRect( 0, 0, decorationsWidth, height );
+
+			if ( paintHeaderShadow )
+			{
+				for ( int i = 0; i < shadowColors.length; ++i )
+				{
+					g2.setColor( shadowColors[ i ] );
+					g2.fillRect( decorationsWidth + i, decorationsHeight + i, 1, height - decorationsHeight - i );
+				}
+			}
+
+			if ( highlightCurrentTimepoint )
+			{
+				final double t = getCurrentTimepoint();
+				final int y = ( int ) Math.round( yScale * ( t - minY - 0.5 ) ) + decorationsHeight;
+				final int h = Math.max( 1, ( int ) Math.round( yScale ) );
+				g2.setColor( style.headerCurrentTimepointColor );
+				g2.fillRect( 0, y, decorationsWidth, h );
+			}
+
+			g2.setColor( style.headerDecorationColor );
+			final FontMetrics fm = g2.getFontMetrics( style.headerFont );
+			g2.setFont( style.headerFont );
+
+			final int fontInc = fm.getHeight() / 2;
+			final int stepT = 1 + MIN_TIMELINE_SPACING / ( int ) ( 1 + yScale );
+
+			int tstart = Math.max( getMinTimepoint(), ( int ) minY - 1 );
+			tstart = ( tstart / stepT ) * stepT;
+			int tend = Math.min( getMaxTimepoint(), 1 + ( int ) maxY );
+			tend = ( 1 + tend / stepT ) * stepT;
+
+			for ( int t = tstart; t <= tend; t = t + stepT )
+			{
+				final int yline = ( int ) ( ( t - minY - 0.5 ) * yScale ) + decorationsHeight;
+				g2.drawLine( 0, yline, decorationsWidth, yline );
+
+				final int ytext = ( int ) ( ( t - minY ) * yScale ) + fontInc + decorationsHeight;
+				g2.drawString( "" + t, 5, ytext );
+			}
 		}
 
 		if ( isDecorationsVisibleY )
 		{
-			g2.setColor( style.decorationColor );
-			g2.drawLine( 0, decorationsHeight, width, decorationsHeight );
+			g2.setColor( style.headerBackgroundColor );
+			g2.fillRect( decorationsWidth, 0, width - decorationsWidth, decorationsHeight );
+
+			if ( paintHeaderShadow )
+			{
+				for ( int i = 0; i < shadowColors.length; ++i )
+				{
+					g2.setColor( shadowColors[ i ] );
+					g2.fillRect( decorationsWidth + i, decorationsHeight + i, width - decorationsWidth - i, 1 );
+				}
+			}
+
 		}
 	}
 

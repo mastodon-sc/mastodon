@@ -286,9 +286,9 @@ public abstract class AbstractTrackSchemeOverlay implements OverlayRenderer, Off
 	public void updateDecorationsVisibility( final boolean isVisibleX, final int width, final boolean isVisibleY, final int height )
 	{
 		isDecorationsVisibleX = isVisibleX;
-		decorationsWidth = width;
+		decorationsWidth = isVisibleX ? width : 0;
 		isDecorationsVisibleY = isVisibleY;
-		decorationsHeight = height;
+		decorationsHeight = isVisibleY ? height : 0;
 	}
 
 	/**
