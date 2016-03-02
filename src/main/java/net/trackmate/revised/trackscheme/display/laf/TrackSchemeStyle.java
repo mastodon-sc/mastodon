@@ -85,7 +85,15 @@ public class TrackSchemeStyle
 
 	public Color vertexRangeColor;
 
+	public Color headerBackgroundColor;
+
+	public Color headerDecorationColor;
+
+	public Color headerCurrentTimepointColor;
+
 	public Font font;
+
+	public Font headerFont;
 
 	public Stroke edgeStroke;
 
@@ -203,9 +211,33 @@ public class TrackSchemeStyle
 		return this;
 	}
 
+	public TrackSchemeStyle headerBackgroundColor( final Color c )
+	{
+		headerBackgroundColor = c;
+		return this;
+	}
+
+	public TrackSchemeStyle headerDecorationColor( final Color c )
+	{
+		headerDecorationColor = c;
+		return this;
+	}
+
+	public TrackSchemeStyle headerCurrentTimepointColor( final Color c )
+	{
+		headerCurrentTimepointColor = c;
+		return this;
+	}
+
 	public TrackSchemeStyle font( final Font f )
 	{
 		font = f;
+		return this;
+	}
+
+	public TrackSchemeStyle headerFont( final Font f )
+	{
+		headerFont = f;
 		return this;
 	}
 
@@ -264,7 +296,11 @@ public class TrackSchemeStyle
 				selectedEdgeColor( fill.darker() ).
 				decorationColor( Color.YELLOW.darker().darker() ).
 				vertexRangeColor( new Color( 128, 128, 128 ) ).
+				headerBackgroundColor( new Color( 217, 217, 217 ) ). // new Color( 238, 238, 238 ) ).
+				headerDecorationColor( Color.DARK_GRAY ).
+				headerCurrentTimepointColor( Color.WHITE ).
 				font( new Font( "SansSerif", Font.PLAIN, 9 ) ).
+				headerFont( new Font( "SansSerif", Font.PLAIN, 9 ) ).
 				edgeStroke( new BasicStroke() ).
 				edgeGhostStroke( DEFAULT_GHOST_STROKE ).
 				vertexStroke( new BasicStroke() ).
@@ -291,7 +327,11 @@ public class TrackSchemeStyle
 				selectedEdgeColor( selfill.darker() ).
 				decorationColor( bg.darker() ).
 				vertexRangeColor( Color.WHITE ).
+				headerBackgroundColor( bg.brighter() ).
+				headerDecorationColor( bg ).
+				headerCurrentTimepointColor( bg.darker() ).
 				font( new Font( "Calibri", Font.PLAIN, 12 ) ).
+				headerFont( new Font( "Calibri", Font.PLAIN, 12 ) ).
 				edgeStroke( new BasicStroke() ).
 				edgeGhostStroke( DEFAULT_GHOST_STROKE ).
 				vertexStroke( new BasicStroke() ).
@@ -318,7 +358,11 @@ public class TrackSchemeStyle
 				selectedEdgeColor( Color.WHITE ).
 				decorationColor( bg.darker() ).
 				vertexRangeColor( Color.DARK_GRAY ).
+				headerBackgroundColor( bg.brighter() ).
+				headerDecorationColor( bg ).
+				headerCurrentTimepointColor( bg.darker() ).
 				font( new Font( "Calibri", Font.PLAIN, 12 ) ).
+				headerFont( new Font( "Calibri", Font.PLAIN, 12 ) ).
 				edgeStroke( new BasicStroke() ).
 				edgeGhostStroke( DEFAULT_GHOST_STROKE ).
 				vertexStroke( new BasicStroke() ).
