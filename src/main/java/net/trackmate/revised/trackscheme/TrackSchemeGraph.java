@@ -295,6 +295,7 @@ public class TrackSchemeGraph<
 	{
 		idToTrackSchemeVertex.clear();
 		idToTrackSchemeEdge.clear();
+		roots.clear();
 
 		for ( final V v : modelGraph.vertices() )
 		{
