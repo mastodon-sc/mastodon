@@ -3,8 +3,11 @@ package net.trackmate.revised.trackscheme;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.List;
 
 import gnu.trove.iterator.TIntIterator;
+import gnu.trove.list.TDoubleList;
+import gnu.trove.list.array.TDoubleArrayList;
 import gnu.trove.list.array.TIntArrayList;
 import gnu.trove.map.TIntObjectArrayMap;
 import gnu.trove.map.TIntObjectMap;
@@ -98,6 +101,21 @@ public class LineageTreeLayout
 	 */
 	private double currentLayoutMaxX;
 
+	/**
+	 * The width below which a column line will not generate a screen entity.
+	 */
+	private static final double MIN_COLUMN_WIDTH = 30;
+
+	/**
+	 * The column layout X coordinates.
+	 */
+	private final TDoubleList currentLayoutColumnX;
+
+	/**
+	 * The list of roots for each column.
+	 */
+	private final RefList< TrackSchemeVertex > currentLayoutColumnRoot;
+
 	public LineageTreeLayout( final TrackSchemeGraph< ?, ? > graph )
 	{
 		this.graph = graph;
@@ -105,6 +123,8 @@ public class LineageTreeLayout
 		timestamp = 0;
 		timepoints = new TIntArrayList();
 		timepointToOrderedVertices = new TIntObjectArrayMap< >();
+		currentLayoutColumnX = new TDoubleArrayList();
+		currentLayoutColumnRoot = graph.createVertexList();
 	}
 
 	/**
@@ -159,11 +179,16 @@ public class LineageTreeLayout
 		rightmost = 0;
 		timepoints.clear();
 		timepointToOrderedVertices.clear();
+		currentLayoutColumnX.clear();
+		currentLayoutColumnRoot.clear();
+		currentLayoutColumnRoot.addAll( layoutRoots );
 		this.mark = mark;
 		for ( final TrackSchemeVertex root : layoutRoots )
 		{
+			currentLayoutColumnX.add( rightmost );
 			layoutX( root );
 		}
+		currentLayoutColumnX.add( rightmost );
 		currentLayoutMinX = 0;
 		currentLayoutMaxX = rightmost - 1;
 		notifyListeners();
@@ -360,6 +385,41 @@ public class LineageTreeLayout
 		screenVertexPool.releaseRef( sv );
 		graph.releaseRef( v1 );
 		graph.releaseRef( v2 );
+
+		/*
+		 * Columns
+		 */
+
+		final List< ScreenColumn > screenColumns = screenEntities.getColumns();
+		int minC = currentLayoutColumnX.binarySearch( minX );
+		if ( minC < 0 )
+		{
+			minC = -1 - minC;
+		}
+		minC = Math.max( 0, minC - 1 ); // at least 1 column out
+
+		int maxC = currentLayoutColumnX.binarySearch( maxX + 0.5, minC, currentLayoutColumnX.size() );
+		if ( maxC < 0 )
+		{
+			maxC = -1 - maxC;
+		}
+		maxC = Math.min( currentLayoutColumnX.size(), maxC + 1 );
+
+		// Build screen columns.
+		for ( int ic = minC + 1; ic < maxC; ic++ )
+		{
+			final double cLeft = currentLayoutColumnX.get( ic - 1 );
+			final double cRight = currentLayoutColumnX.get( ic );
+			final int xRight = ( int ) ( ( cRight - minX - 0.5 ) * xScale + decorationsOffsetX );
+			final int xLeft = ( int ) ( ( cLeft - minX - 0.5 ) * xScale + decorationsOffsetX );
+			final int columnWidth = xRight - xLeft;
+			if ( columnWidth < MIN_COLUMN_WIDTH )
+				continue;
+
+			final TrackSchemeVertex root = currentLayoutColumnRoot.get( ic - 1 );
+			final ScreenColumn column = new ScreenColumn( root.getLabel(), xLeft, columnWidth );
+			screenColumns.add( column );
+		}
 	}
 
 	/**

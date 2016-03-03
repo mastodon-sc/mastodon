@@ -138,7 +138,6 @@ public class ScreenEntitiesInterpolator
 			}
 		}
 
-
 		// Interpolate dense vertex ranges
 		// ===============================
 		// For now, simply use the dense ranges of the interpolation target.
@@ -146,6 +145,11 @@ public class ScreenEntitiesInterpolator
 		for ( final ScreenVertexRange r : end.getRanges() )
 			current.getRanges().add( current.getRangePool().create( rRef ).cloneFrom( r ) );
 		current.getRangePool().releaseRef( rRef );
+
+		// Interpolate columns
+		// ===================
+		// For now, do not interpolate, just copy the end columns.
+		current.getColumns().addAll( end.getColumns() );
 
 		// Interpolate screenTransform
 		// ===========================
