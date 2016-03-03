@@ -406,15 +406,17 @@ public class LineageTreeLayout
 		maxC = Math.min( currentLayoutColumnX.size(), maxC + 1 );
 
 		// Build screen columns.
+		final double scaledMinWidth = MIN_COLUMN_WIDTH / xScale;
 		for ( int ic = minC + 1; ic < maxC; ic++ )
 		{
 			final double cLeft = currentLayoutColumnX.get( ic - 1 );
 			final double cRight = currentLayoutColumnX.get( ic );
+			if ( cRight - cLeft < scaledMinWidth )
+				continue;
+
 			final int xRight = ( int ) ( ( cRight - minX - 0.5 ) * xScale + decorationsOffsetX );
 			final int xLeft = ( int ) ( ( cLeft - minX - 0.5 ) * xScale + decorationsOffsetX );
 			final int columnWidth = xRight - xLeft;
-			if ( columnWidth < MIN_COLUMN_WIDTH )
-				continue;
 
 			final TrackSchemeVertex root = currentLayoutColumnRoot.get( ic - 1 );
 			final ScreenColumn column = new ScreenColumn( root.getLabel(), xLeft, columnWidth );
