@@ -181,16 +181,27 @@ public class LineageTreeLayout
 		timepointToOrderedVertices.clear();
 		currentLayoutColumnX.clear();
 		currentLayoutColumnRoot.clear();
-		currentLayoutColumnRoot.addAll( layoutRoots );
+		final TrackSchemeVertex previousGraphRoot = graph.vertexRef();
+		final TrackSchemeVertex currentGraphRoot = graph.vertexRef();
 		this.mark = mark;
+		boolean first = true;
+		currentLayoutColumnX.add( rightmost );
 		for ( final TrackSchemeVertex root : layoutRoots )
 		{
-			currentLayoutColumnX.add( rightmost );
 			layoutX( root );
+			getGraphRoot( root, currentGraphRoot );
+			if ( first || !currentGraphRoot.equals( previousGraphRoot ) )
+			{
+				currentLayoutColumnRoot.add( currentGraphRoot );
+				currentLayoutColumnX.add( rightmost );
+				first = false;
+				previousGraphRoot.refTo( currentGraphRoot );
+			}
 		}
-		currentLayoutColumnX.add( rightmost );
 		currentLayoutMinX = 0;
 		currentLayoutMaxX = rightmost - 1;
+		graph.releaseRef( previousGraphRoot );
+		graph.releaseRef( currentGraphRoot );
 		notifyListeners();
 	}
 
@@ -699,6 +710,17 @@ public class LineageTreeLayout
 			timepoints.insert( -( 1 + timepoints.binarySearch( tp ) ), tp );
 		}
 		vlist.add( v );
+	}
+
+	/**
+	 * Layout roots are not graph roots necessarily. This helper finds the
+	 * <em>graph</em> root of a given vertex.
+	 */
+	private void getGraphRoot( final TrackSchemeVertex v, final TrackSchemeVertex graphRoot )
+	{
+		graphRoot.refTo( v );
+		while ( ! graphRoot.incomingEdges().isEmpty() )
+			graphRoot.incomingEdges().iterator().next().getSource( graphRoot );
 	}
 
 	private final ArrayList< LayoutListener > listeners = new ArrayList< LayoutListener >();
