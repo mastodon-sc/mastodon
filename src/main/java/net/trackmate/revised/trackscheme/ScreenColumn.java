@@ -10,17 +10,17 @@ public class ScreenColumn
 	/**
 	 * The label of the column.
 	 */
-	public String label;
+	public final String label;
 
 	/**
 	 * The screen X coordinate of the column left border.
 	 */
-	public int xLeft;
+	public final int xLeft;
 
 	/**
 	 * The width of the column, in screen units.
 	 */
-	public int width;
+	public final int width;
 
 	public ScreenColumn( final String label, final int xLeft, final int width )
 	{
