@@ -14,6 +14,7 @@ import java.awt.geom.Rectangle2D;
 
 import net.imglib2.RealLocalizable;
 import net.trackmate.revised.Util;
+import net.trackmate.revised.trackscheme.ScreenColumn;
 import net.trackmate.revised.trackscheme.ScreenEdge;
 import net.trackmate.revised.trackscheme.ScreenEntities;
 import net.trackmate.revised.trackscheme.ScreenTransform;
@@ -151,6 +152,17 @@ public class DefaultTrackSchemeOverlay extends AbstractTrackSchemeOverlay
 			final int yline = ( int ) ( ( tend - minY - 0.5 ) * yScale ) + decorationsHeight;
 			g2.drawLine( 0, yline, width, yline );
 		}
+
+		if ( paintColumns )
+		{
+			g2.setColor( style.decorationColor );
+
+			for ( final ScreenColumn column : screenEntities.getColumns() )
+			{
+				g2.drawLine( column.xLeft, 0, column.xLeft, height );
+				g2.drawLine( column.xLeft + column.width, 0, column.xLeft + column.width, height );
+			}
+		}
 	}
 
 	@Override
@@ -168,7 +180,7 @@ public class DefaultTrackSchemeOverlay extends AbstractTrackSchemeOverlay
 		if ( isDecorationsVisibleX )
 		{
 			g2.setColor( style.headerBackgroundColor );
-			g2.fillRect( 0, 0, decorationsWidth, height );
+			g2.fillRect( 0, decorationsHeight, decorationsWidth, height - decorationsHeight );
 
 			if ( paintHeaderShadow )
 			{
@@ -224,6 +236,33 @@ public class DefaultTrackSchemeOverlay extends AbstractTrackSchemeOverlay
 				}
 			}
 
+			g2.setColor( style.headerDecorationColor );
+			final FontMetrics fm = g2.getFontMetrics( style.headerFont );
+			g2.setFont( style.headerFont );
+
+			for ( final ScreenColumn column : screenEntities.getColumns() )
+			{
+				g2.drawLine( column.xLeft, 0, column.xLeft, decorationsHeight );
+				g2.drawLine( column.xLeft + column.width, 0, column.xLeft + column.width, decorationsHeight );
+
+				final String str = column.label;
+				final int stringWidth = fm.stringWidth( str );
+
+				final int boundedMin = Math.max( decorationsWidth, column.xLeft );
+				final int boundedMax = Math.min( column.xLeft + column.width, width );
+				final int boundedWidth = boundedMax - boundedMin;
+				if ( boundedWidth >= stringWidth + 5  )
+				{
+					final int xtext = ( boundedMin + boundedMax - stringWidth ) / 2;
+					g2.drawString( str, xtext, decorationsHeight / 2 );
+				}
+			}
+		}
+
+		if ( isDecorationsVisibleX && isDecorationsVisibleY )
+		{
+			g2.setColor( style.headerBackgroundColor );
+			g2.fillRect( 0, 0, decorationsWidth, decorationsHeight );
 		}
 	}
 
