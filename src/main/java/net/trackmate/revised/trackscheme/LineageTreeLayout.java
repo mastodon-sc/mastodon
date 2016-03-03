@@ -115,7 +115,7 @@ public class LineageTreeLayout
 	 */
 	public void layout()
 	{
-		layout( graph.getRoots(), -1 );
+		layout( LexicographicalVertexOrder.sort( graph, graph.getRoots() ), -1 );
 	}
 
 	/**

@@ -1,6 +1,5 @@
 package net.trackmate.revised.trackscheme;
 
-import net.trackmate.graph.PoolObjectList;
 import net.trackmate.graph.collection.CollectionUtils;
 import net.trackmate.graph.collection.RefList;
 import net.trackmate.revised.trackscheme.context.Context;
@@ -78,10 +77,7 @@ public class ContextLayout
 			context.readLock().unlock();
 		}
 
-		// TODO sort roots by something meaningful...
-		( ( PoolObjectList< TrackSchemeVertex > ) roots ).getIndexCollection().sort();
-
-		layout.layout( roots, mark );
+		layout.layout( LexicographicalVertexOrder.sort( graph, roots ), mark );
 
 		return true;
 	}
