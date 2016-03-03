@@ -9,7 +9,7 @@ import gnu.trove.list.array.TIntArrayList;
 import net.trackmate.graph.PoolObjectList;
 import net.trackmate.graph.collection.RefCollection;
 import net.trackmate.graph.collection.RefList;
-import net.trackmate.revised.trackscheme.util.AlphanumComparator;
+import net.trackmate.revised.trackscheme.util.AlphanumCompare;
 
 /**
  * Lexicographically order {@link TrackSchemeVertex} for root sorting in
@@ -98,8 +98,7 @@ public class LexicographicalVertexOrder
 		@Override
 		public int compareTo( final VertexKey o )
 		{
-			final int rc = AlphanumComparator.instance.compare( rootName, o.rootName );
-//			final int rc = rootName.compareTo( o.rootName );
+			final int rc = AlphanumCompare.compare( rootName, o.rootName );
 			if ( rc == 0 )
 			{
 				final TIntIterator it = edgeSequence.iterator();
