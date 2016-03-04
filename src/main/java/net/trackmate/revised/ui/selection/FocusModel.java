@@ -47,7 +47,7 @@ public class FocusModel< V extends Vertex< E >, E extends Edge< V > > implements
 				null : idmap.getVertex( focusVertexId, ref );
 	}
 
-	public boolean addFocusListener( final FocusListener listener )
+	public synchronized boolean addFocusListener( final FocusListener listener )
 	{
 		if ( ! listeners.contains( listener ) )
 		{
@@ -57,7 +57,7 @@ public class FocusModel< V extends Vertex< E >, E extends Edge< V > > implements
 		return false;
 	}
 
-	public boolean removeFocusListener( final FocusListener listener )
+	public synchronized boolean removeFocusListener( final FocusListener listener )
 	{
 		return listeners.remove( listener );
 	}

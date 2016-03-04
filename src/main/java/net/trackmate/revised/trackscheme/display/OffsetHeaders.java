@@ -50,7 +50,7 @@ public class OffsetHeaders
 	 *         listeners of this handler. {@code false} if the specified
 	 *         listener was already registered.
 	 */
-	public boolean addOffsetHeadersListener( final OffsetHeadersListener l )
+	public synchronized boolean addOffsetHeadersListener( final OffsetHeadersListener l )
 	{
 		if ( !listeners.contains( l ) )
 		{
@@ -61,7 +61,7 @@ public class OffsetHeaders
 		return false;
 	}
 
-	public boolean removeOffsetHeadersListener( final OffsetHeadersListener l )
+	public synchronized boolean removeOffsetHeadersListener( final OffsetHeadersListener l )
 	{
 		return listeners.remove( l );
 	}

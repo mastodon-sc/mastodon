@@ -310,7 +310,7 @@ public class Selection< V extends Vertex< E >, E extends Edge< V > > implements 
 		clearSelection();
 	}
 
-	public boolean addSelectionListener( final SelectionListener listener )
+	public synchronized boolean addSelectionListener( final SelectionListener listener )
 	{
 		if ( !listeners.contains( listener ) )
 		{
@@ -320,7 +320,7 @@ public class Selection< V extends Vertex< E >, E extends Edge< V > > implements 
 		return false;
 	}
 
-	public boolean removeSelectionListener( final SelectionListener l )
+	public synchronized boolean removeSelectionListener( final SelectionListener l )
 	{
 		return listeners.remove( l );
 	}

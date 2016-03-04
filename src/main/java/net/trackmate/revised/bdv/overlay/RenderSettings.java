@@ -1,6 +1,6 @@
 package net.trackmate.revised.bdv.overlay;
 
-import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.ArrayList;
 
 public class RenderSettings
 {
@@ -28,7 +28,7 @@ public class RenderSettings
 		public void renderSettingsChanged();
 	}
 
-	private final CopyOnWriteArrayList< UpdateListener > updateListeners;
+	private final ArrayList< UpdateListener > updateListeners;
 
 	public RenderSettings()
 	{
@@ -46,7 +46,7 @@ public class RenderSettings
 		ellipsoidFadeDepth = DEFAULT_ELLIPSOID_FADE_DEPTH;
 		pointFadeDepth = DEFAULT_POINT_FADE_DEPTH;
 
-		updateListeners = new CopyOnWriteArrayList< UpdateListener >();
+		updateListeners = new ArrayList< UpdateListener >();
 	}
 
 	public synchronized void set( final RenderSettings settings )
@@ -69,19 +69,23 @@ public class RenderSettings
 
 	private void notifyListeners()
 	{
-		System.out.println( "notifyListeners" );
 		for ( final UpdateListener l : updateListeners )
 			l.renderSettingsChanged();
 	}
 
-	public void addUpdateListener( final UpdateListener l )
+	public synchronized boolean addUpdateListener( final UpdateListener l )
 	{
-		updateListeners.add( l );
+		if ( !updateListeners.contains( l ) )
+		{
+			updateListeners.add( l );
+			return true;
+		}
+		return false;
 	}
 
-	public void removeUpdateListener( final UpdateListener l )
+	public synchronized boolean removeUpdateListener( final UpdateListener l )
 	{
-		updateListeners.remove( l );
+		return updateListeners.remove( l );
 	}
 
 	/*

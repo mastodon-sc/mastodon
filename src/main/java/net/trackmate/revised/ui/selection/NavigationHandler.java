@@ -30,7 +30,7 @@ public class NavigationHandler< V extends Vertex< ? > >
 	 *         listeners of this handler. {@code false} if the specified
 	 *         listener was already registered.
 	 */
-	public boolean addNavigationListener( final NavigationListener< V > listener )
+	public synchronized boolean addNavigationListener( final NavigationListener< V > listener )
 	{
 		if ( !listeners.contains( listener ) )
 		{
@@ -40,7 +40,7 @@ public class NavigationHandler< V extends Vertex< ? > >
 		return false;
 	}
 
-	public boolean removeNavigationListener( final NavigationListener< V > l )
+	public synchronized boolean removeNavigationListener( final NavigationListener< V > l )
 	{
 		return listeners.remove( l );
 	}

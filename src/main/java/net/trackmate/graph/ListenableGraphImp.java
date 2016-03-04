@@ -135,7 +135,7 @@ public class ListenableGraphImp<
 	}
 
 	@Override
-	public boolean addGraphListener( final GraphListener< V, E > listener )
+	public synchronized boolean addGraphListener( final GraphListener< V, E > listener )
 	{
 		if ( ! listeners.contains( listener ) )
 		{
@@ -146,13 +146,13 @@ public class ListenableGraphImp<
 	}
 
 	@Override
-	public boolean removeGraphListener( final GraphListener< V, E > listener )
+	public synchronized boolean removeGraphListener( final GraphListener< V, E > listener )
 	{
 		return listeners.remove( listener );
 	}
 
 	@Override
-	public boolean addGraphChangeListener( final GraphChangeListener listener )
+	public synchronized boolean addGraphChangeListener( final GraphChangeListener listener )
 	{
 		if ( ! changeListeners.contains( listener ) )
 		{
@@ -163,7 +163,7 @@ public class ListenableGraphImp<
 	}
 
 	@Override
-	public boolean removeGraphChangeListener( final GraphChangeListener listener )
+	public synchronized boolean removeGraphChangeListener( final GraphChangeListener listener )
 	{
 		return changeListeners.remove( listener );
 	}

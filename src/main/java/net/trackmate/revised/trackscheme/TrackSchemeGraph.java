@@ -251,7 +251,7 @@ public class TrackSchemeGraph<
 	 *         listeners. {@code false} if the listener was already
 	 *         registered prior to this call.
 	 */
-	public boolean addGraphChangeListener( final GraphChangeListener listener )
+	public synchronized boolean addGraphChangeListener( final GraphChangeListener listener )
 	{
 		if ( ! listeners.contains( listener ) )
 		{
@@ -270,7 +270,7 @@ public class TrackSchemeGraph<
 	 * @return {@code true} if the listener was present in the list of
 	 *         listeners and was successfully removed from it.
 	 */
-	public boolean removeGraphChangeListener( final GraphChangeListener listener )
+	public synchronized boolean removeGraphChangeListener( final GraphChangeListener listener )
 	{
 		return listeners.remove( listener );
 	}

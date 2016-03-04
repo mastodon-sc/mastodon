@@ -725,7 +725,7 @@ public class LineageTreeLayout
 
 	private final ArrayList< LayoutListener > listeners = new ArrayList< LayoutListener >();
 
-	public boolean addLayoutListener( final LayoutListener l )
+	public synchronized boolean addLayoutListener( final LayoutListener l )
 	{
 		if ( ! listeners.contains( l ) )
 		{
@@ -735,7 +735,7 @@ public class LineageTreeLayout
 		return false;
 	}
 
-	public boolean removeLayoutListener( final LayoutListener l )
+	public synchronized boolean removeLayoutListener( final LayoutListener l )
 	{
 		return listeners.remove( l );
 	}

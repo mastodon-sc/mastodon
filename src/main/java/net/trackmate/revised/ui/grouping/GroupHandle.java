@@ -1,13 +1,13 @@
 package net.trackmate.revised.ui.grouping;
 
-import gnu.trove.TCollections;
-import gnu.trove.set.TIntSet;
-import gnu.trove.set.hash.TIntHashSet;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
+
+import gnu.trove.TCollections;
+import gnu.trove.set.TIntSet;
+import gnu.trove.set.hash.TIntHashSet;
 
 /**
  * TODO: javadoc
@@ -56,7 +56,7 @@ public class GroupHandle
 		return groupIds.contains( groupId );
 	}
 
-	public boolean addGroupChangeListener( final GroupChangeListener listener )
+	public synchronized boolean addGroupChangeListener( final GroupChangeListener listener )
 	{
 		if ( ! listeners.contains( listener ) )
 		{
@@ -66,7 +66,7 @@ public class GroupHandle
 		return false;
 	}
 
-	public boolean removeGroupChangeListener( final GroupChangeListener listener )
+	public synchronized boolean removeGroupChangeListener( final GroupChangeListener listener )
 	{
 		return listeners.remove( listener );
 	}

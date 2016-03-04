@@ -32,7 +32,7 @@ public class TrackSchemeNavigation implements
 	 *         listeners of this handler. {@code false} if the specified
 	 *         listener was already registered.
 	 */
-	public boolean addNavigationListener( final NavigationListener< TrackSchemeVertex > listener )
+	public synchronized boolean addNavigationListener( final NavigationListener< TrackSchemeVertex > listener )
 	{
 		if ( !listeners.contains( listener ) )
 		{
@@ -42,7 +42,7 @@ public class TrackSchemeNavigation implements
 		return false;
 	}
 
-	public boolean removeNavigationListener( final NavigationListener< TrackSchemeVertex > l )
+	public synchronized boolean removeNavigationListener( final NavigationListener< TrackSchemeVertex > l )
 	{
 		return listeners.remove( l );
 	}
