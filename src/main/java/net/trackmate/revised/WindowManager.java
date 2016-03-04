@@ -61,16 +61,17 @@ import net.trackmate.revised.trackscheme.ModelFocusProperties;
 import net.trackmate.revised.trackscheme.ModelHighlightProperties;
 import net.trackmate.revised.trackscheme.ModelNavigationProperties;
 import net.trackmate.revised.trackscheme.ModelSelectionProperties;
-import net.trackmate.revised.trackscheme.TrackSchemeContext;
+import net.trackmate.revised.trackscheme.TrackSchemeContextListener;
 import net.trackmate.revised.trackscheme.TrackSchemeFocus;
 import net.trackmate.revised.trackscheme.TrackSchemeGraph;
 import net.trackmate.revised.trackscheme.TrackSchemeHighlight;
 import net.trackmate.revised.trackscheme.TrackSchemeNavigation;
 import net.trackmate.revised.trackscheme.TrackSchemeSelection;
 import net.trackmate.revised.trackscheme.context.Context;
+import net.trackmate.revised.trackscheme.context.ContextChooser;
 import net.trackmate.revised.trackscheme.context.ContextListener;
+import net.trackmate.revised.trackscheme.context.ContextProvider;
 import net.trackmate.revised.trackscheme.display.TrackSchemeFrame;
-import net.trackmate.revised.trackscheme.display.TrackSchemePanel;
 import net.trackmate.revised.ui.grouping.GroupHandle;
 import net.trackmate.revised.ui.grouping.GroupLocksPanel;
 import net.trackmate.revised.ui.grouping.GroupManager;
@@ -130,6 +131,8 @@ public class WindowManager
 
 	private final List< BdvWindow > bdvWindows = new ArrayList<>();
 
+	private final List< ContextProvider< Spot > > contextProviders = new ArrayList<>();
+
 	public static class BdvWindow
 	{
 		private final ViewerFrame viewerFrame;
@@ -138,14 +141,18 @@ public class WindowManager
 
 		private final GroupHandle groupHandle;
 
+		private final ContextProvider< Spot > contextProvider;
+
 		public BdvWindow(
 				final ViewerFrame viewerFrame,
 				final OverlayGraphRenderer< ?, ? > tracksOverlay,
-				final GroupHandle groupHandle )
+				final GroupHandle groupHandle,
+				final ContextProvider< Spot > contextProvider )
 		{
 			this.viewerFrame = viewerFrame;
 			this.tracksOverlay = tracksOverlay;
 			this.groupHandle = groupHandle;
+			this.contextProvider = contextProvider;
 		}
 
 		public ViewerFrame getViewerFrame()
@@ -162,19 +169,33 @@ public class WindowManager
 		{
 			return groupHandle;
 		}
+
+		public ContextProvider< Spot > getContextProvider()
+		{
+			return contextProvider;
+		}
 	}
 
 	private synchronized void addBdvWindow( final BdvWindow w )
 	{
 		System.out.println( "add bdv" );
 		bdvWindows.add( w );
+		contextProviders.add( w.getContextProvider() );
+		for ( final TsWindow tsw : tsWindows )
+			tsw.getContextChooser().updateContextProviders( contextProviders );
 	}
 
 	private synchronized void removeBdvWindow( final BdvWindow w )
 	{
 		System.out.println( "remove bdv" );
 		bdvWindows.remove( w );
+		contextProviders.remove( w.getContextProvider() );
+		for ( final TsWindow tsw : tsWindows )
+			tsw.getContextChooser().updateContextProviders( contextProviders );
 	}
+
+	// TODO
+	private int bdvName = 1;
 
 	public void createBigDataViewer()
 	{
@@ -193,7 +214,7 @@ public class WindowManager
 		final OverlaySelectionWrapper< Spot, Link > overlaySelection = new OverlaySelectionWrapper<>(
 				selection );
 
-		final String windowTitle = "BigDataViewer";
+		final String windowTitle = "BigDataViewer " + (bdvName++);
 		final BigDataViewer bdv = BigDataViewer.open( spimData, windowTitle, new ProgressWriterConsole(),
 				ViewerOptions.options().
 				transformEventHandlerFactory( BehaviourTransformEventHandler3D.factory( keyconf ) ).
@@ -249,7 +270,10 @@ public class WindowManager
 		final OverlayContext< OverlayVertexWrapper< Spot, Link > > overlayContext = new OverlayContext<>( overlayGraph, tracksOverlay );
 		viewer.addRenderTransformListener( overlayContext );
 		viewer.addTimePointListener( overlayContext );
-		final OverlayContextWrapper< Spot, Link > overlayContextWrapper = new OverlayContextWrapper<>( overlayContext, new BdvContextAdapter() );
+		final BdvContextAdapter< Spot > contextProvider = new BdvContextAdapter<>( windowTitle );
+		final OverlayContextWrapper< Spot, Link > overlayContextWrapper = new OverlayContextWrapper<>(
+				overlayContext,
+				contextProvider );
 
 		final ViewerFrame viewerFrame = bdv.getViewerFrame();
 		final GroupLocksPanel lockPanel = new GroupLocksPanel( bdvGroupHandle );
@@ -290,7 +314,7 @@ public class WindowManager
 			}
 		} );
 
-		final BdvWindow bdvWindow = new BdvWindow( viewerFrame, tracksOverlay, bdvGroupHandle );
+		final BdvWindow bdvWindow = new BdvWindow( viewerFrame, tracksOverlay, bdvGroupHandle, contextProvider );
 		viewerFrame.addWindowListener( new WindowAdapter()
 		{
 			@Override
@@ -311,12 +335,16 @@ public class WindowManager
 
 		private final GroupHandle groupHandle;
 
+		private final ContextChooser< Spot > contextChooser;
+
 		public TsWindow(
 				final TrackSchemeFrame trackSchemeFrame,
-				final GroupHandle groupHandle )
+				final GroupHandle groupHandle,
+				final ContextChooser< Spot > contextChooser )
 		{
 			this.trackSchemeFrame = trackSchemeFrame;
 			this.groupHandle = groupHandle;
+			this.contextChooser = contextChooser;
 		}
 
 		public TrackSchemeFrame getTrackSchemeFrame()
@@ -328,6 +356,25 @@ public class WindowManager
 		{
 			return groupHandle;
 		}
+
+		public ContextChooser< Spot > getContextChooser()
+		{
+			return contextChooser;
+		}
+	}
+
+	private synchronized void addTsWindow( final TsWindow w )
+	{
+		System.out.println( "add ts" );
+		tsWindows.add( w );
+		w.getContextChooser().updateContextProviders( contextProviders );
+	}
+
+	private synchronized void removeTsWindow( final TsWindow w )
+	{
+		System.out.println( "remove ts" );
+		tsWindows.remove( w );
+		w.getContextChooser().updateContextProviders( new ArrayList<>() );
 	}
 
 	// TODO testing only
@@ -391,6 +438,14 @@ public class WindowManager
 		final TrackSchemeFocus trackSchemeFocus = new TrackSchemeFocus( focusProperties, trackSchemeGraph );
 
 		/*
+		 * TrackScheme ContextChooser
+		 */
+		final TrackSchemeContextListener< Spot > contextListener = new TrackSchemeContextListener< >(
+				idmap,
+				trackSchemeGraph );
+		final ContextChooser< Spot > contextChooser = new ContextChooser<>( contextListener );
+
+		/*
 		 * show TrackSchemeFrame
 		 */
 		final TrackSchemeFrame frame = new TrackSchemeFrame(
@@ -399,31 +454,69 @@ public class WindowManager
 				trackSchemeFocus,
 				trackSchemeSelection,
 				trackSchemeNavigation,
-				groupHandle );
+				groupHandle,
+				contextChooser );
 		frame.getTrackschemePanel().setTimepointRange( minTimepoint, maxTimepoint );
 		frame.getTrackschemePanel().graphChanged();
+		contextListener.setContextListener( frame.getTrackschemePanel() );
 		frame.setVisible( true );
 
-		tsWindows.add( new TsWindow( frame, groupHandle ) );
-	}
-
-	public void buildContext( final Context< Spot > context, final int id )
-	{
-		for ( final TsWindow tsWindow : tsWindows )
+		final TsWindow tsWindow = new TsWindow( frame, groupHandle, contextChooser );
+		frame.addWindowListener( new WindowAdapter()
 		{
-			final TrackSchemePanel panel = tsWindow.getTrackSchemeFrame().getTrackschemePanel();
-			panel.contextChanged( new TrackSchemeContext< Spot >( model.getGraphIdBimap(), panel.getGraph(), context ) );
-		}
+			@Override
+			public void windowClosing( final WindowEvent e )
+			{
+				removeTsWindow( tsWindow );
+			}
+		} );
+		addTsWindow( tsWindow );
 	}
 
-	private class BdvContextAdapter implements ContextListener< Spot >
+	public static class BdvContextAdapter< V > implements ContextListener< V >, ContextProvider< V >
 	{
-		private final int id = 0; // TODO
+		private final String contextProviderName;
+
+		private final ArrayList< ContextListener< V > > listeners;
+
+		private Context< V > context;
+
+		public BdvContextAdapter( final String contextProviderName )
+		{
+			this.contextProviderName = contextProviderName;
+			listeners = new ArrayList<>();
+		}
 
 		@Override
-		public void contextChanged( final Context< Spot > context )
+		public String getContextProviderName()
 		{
-			buildContext( context, id );
+			return contextProviderName;
+		}
+
+		@Override
+		public synchronized boolean addContextListener( final ContextListener< V > l )
+		{
+			if ( !listeners.contains( l ) )
+			{
+				listeners.add( l );
+				l.contextChanged( context );
+				return true;
+			}
+			return false;
+		}
+
+		@Override
+		public synchronized boolean removeContextListener( final ContextListener< V > l )
+		{
+			return listeners.remove( l );
+		}
+
+		@Override
+		public synchronized void contextChanged( final Context< V > context )
+		{
+			this.context = context;
+			for ( final ContextListener< V > l : listeners )
+				l.contextChanged( context );
 		}
 	}
 

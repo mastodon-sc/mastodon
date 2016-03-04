@@ -4,8 +4,11 @@ import java.awt.BorderLayout;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
+import javax.swing.Box;
+import javax.swing.BoxLayout;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
+import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 import javax.swing.WindowConstants;
 
@@ -22,6 +25,8 @@ import net.trackmate.revised.trackscheme.TrackSchemeGraph;
 import net.trackmate.revised.trackscheme.TrackSchemeHighlight;
 import net.trackmate.revised.trackscheme.TrackSchemeNavigation;
 import net.trackmate.revised.trackscheme.TrackSchemeSelection;
+import net.trackmate.revised.trackscheme.context.ContextChooser;
+import net.trackmate.revised.trackscheme.context.ContextChooserPanel;
 import net.trackmate.revised.ui.grouping.GroupHandle;
 import net.trackmate.revised.ui.grouping.GroupLocksPanel;
 
@@ -39,9 +44,10 @@ public class TrackSchemeFrame extends JFrame
 			final TrackSchemeFocus focus,
 			final TrackSchemeSelection selection,
 			final TrackSchemeNavigation navigation,
-			final GroupHandle groupHandle )
+			final GroupHandle groupHandle,
+			final ContextChooser< ? > contextChooser )
 	{
-		this( graph, highlight, focus, selection, navigation, groupHandle, TrackSchemeOptions.options() );
+		this( graph, highlight, focus, selection, navigation, groupHandle, contextChooser, TrackSchemeOptions.options() );
 	}
 
 	public TrackSchemeFrame(
@@ -51,6 +57,7 @@ public class TrackSchemeFrame extends JFrame
 			final TrackSchemeSelection selection,
 			final TrackSchemeNavigation navigation,
 			final GroupHandle groupHandle,
+			final ContextChooser< ? > contextChooser,
 			final TrackSchemeOptions optional )
 	{
 		super( "TrackScheme", GuiUtil.getSuitableGraphicsConfiguration( GuiUtil.RGB_COLOR_MODEL ) );
@@ -65,8 +72,17 @@ public class TrackSchemeFrame extends JFrame
 				optional );
 		add( trackschemePanel, BorderLayout.CENTER );
 
+		final JPanel settingsPanel = new JPanel();
+		settingsPanel.setLayout( new BoxLayout( settingsPanel, BoxLayout.LINE_AXIS ) );
+
 		final GroupLocksPanel navigationLocksPanel = new GroupLocksPanel( groupHandle );
-		add( navigationLocksPanel, BorderLayout.NORTH );
+		settingsPanel.add( navigationLocksPanel );
+		settingsPanel.add( Box.createHorizontalGlue() );
+
+		final ContextChooserPanel< ? > contextChooserPanel = new ContextChooserPanel<>( contextChooser );
+		settingsPanel.add( contextChooserPanel );
+
+		add( settingsPanel, BorderLayout.NORTH );
 
 		pack();
 		setDefaultCloseOperation( WindowConstants.DISPOSE_ON_CLOSE );

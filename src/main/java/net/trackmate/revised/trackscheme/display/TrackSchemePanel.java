@@ -354,7 +354,13 @@ public class TrackSchemePanel extends JPanel implements
 		else if ( flags.contextChanged )
 		{
 //			System.out.println( "paint: contextChanged" );
-			if ( contextLayout.buildContext( context, transform, true ) )
+			if ( context == null )
+			{
+				layout.layout();
+				layoutMinX = layout.getCurrentLayoutMinX();
+				layoutMaxX = layout.getCurrentLayoutMaxX();
+			}
+			else if ( contextLayout.buildContext( context, transform, true ) )
 			{
 				layoutMinX = layout.getCurrentLayoutMinX();
 				layoutMaxX = layout.getCurrentLayoutMaxX();
@@ -444,6 +450,9 @@ public class TrackSchemePanel extends JPanel implements
 	@Override
 	public void contextChanged( final Context< TrackSchemeVertex > context )
 	{
+		if ( this.context == null && context == null )
+			return;
+
 		this.context = context;
 		flags.setContextChanged();
 		painterThread.requestRepaint();
