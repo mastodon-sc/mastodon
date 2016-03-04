@@ -30,9 +30,9 @@ public class GroupLocksPanel extends JPanel implements GroupChangeListener
 
 	public GroupLocksPanel( final GroupHandle groupHandle )
 	{
+		super( new FlowLayout( FlowLayout.LEADING ) );
 		this.groupHandle = groupHandle;
 		this.buttons = new ArrayList<>();
-		setLayout( new FlowLayout( FlowLayout.LEADING ) );
 		for ( int i = 0; i < N_LOCKS; i++ )
 		{
 			final int lockId = i;
