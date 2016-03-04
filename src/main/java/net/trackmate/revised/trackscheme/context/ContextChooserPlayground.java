@@ -48,7 +48,6 @@ public class ContextChooserPlayground
 		final ContextChooser< Integer > contextChooser = new ContextChooser<>( contextListener );
 		contextChooser.updateContextProviders( providers );
 		final ContextChooserPanel< Integer > contextChooserPanel = new ContextChooserPanel<>( contextChooser );
-		contextChooser.addUpdateListener( contextChooserPanel );
 
 		final JFrame frame = new JFrame( "choose context" );
 		frame.add( contextChooserPanel );

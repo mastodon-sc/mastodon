@@ -55,6 +55,7 @@ public class ContextChooserPanel< V > extends JPanel implements ContextChooser.U
 		} );
 		add( new JLabel( "context:" ) );
 		add( comboBox );
+		contextChooser.addUpdateListener( this );
 	}
 
 	@Override
