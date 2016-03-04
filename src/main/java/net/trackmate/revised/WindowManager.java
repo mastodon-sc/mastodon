@@ -1,6 +1,8 @@
 package net.trackmate.revised;
 
 import java.awt.BorderLayout;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -22,7 +24,6 @@ import bdv.tools.InitializeViewerState;
 import bdv.tools.ToggleDialogAction;
 import bdv.util.AbstractNamedAction;
 import bdv.viewer.TimePointListener;
-import bdv.viewer.TriggerBehaviourBindings;
 import bdv.viewer.ViewerFrame;
 import bdv.viewer.ViewerOptions;
 import bdv.viewer.ViewerPanel;
@@ -163,6 +164,18 @@ public class WindowManager
 		}
 	}
 
+	private synchronized void addBdvWindow( final BdvWindow w )
+	{
+		System.out.println( "add bdv" );
+		bdvWindows.add( w );
+	}
+
+	private synchronized void removeBdvWindow( final BdvWindow w )
+	{
+		System.out.println( "remove bdv" );
+		bdvWindows.remove( w );
+	}
+
 	public void createBigDataViewer()
 	{
 		final GroupHandle bdvGroupHandle = groupManager.createGroupHandle();
@@ -278,7 +291,15 @@ public class WindowManager
 		} );
 
 		final BdvWindow bdvWindow = new BdvWindow( viewerFrame, tracksOverlay, bdvGroupHandle );
-		bdvWindows.add( bdvWindow );
+		viewerFrame.addWindowListener( new WindowAdapter()
+		{
+			@Override
+			public void windowClosing( final WindowEvent e )
+			{
+				removeBdvWindow( bdvWindow );
+			}
+		} );
+		addBdvWindow( bdvWindow );
 	}
 
 
@@ -440,6 +461,7 @@ public class WindowManager
 		final WindowManager wm = new WindowManager( spimData, model, keyconf );
 		wm.createBigDataViewer();
 		wm.createTrackScheme();
+//		wm.createBigDataViewer();
 		wm.bdvWindows.get( 0 ).getViewerFrame().getViewerPanel().setTimepoint( 15 );
 	}
 }
