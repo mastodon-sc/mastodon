@@ -6,7 +6,7 @@ import javax.swing.JFrame;
 
 public class ContextChooserPlayground
 {
-	public static void main( final String[] args )
+	public static void mainX( final String[] args )
 	{
 		final ArrayList< ContextProvider< Integer > > providers = new ArrayList<>();
 		for ( int i = 0; i < 3; ++i )
@@ -21,15 +21,17 @@ public class ContextChooserPlayground
 				}
 
 				@Override
-				public void addContextListener( final ContextListener< Integer > listener )
+				public boolean addContextListener( final ContextListener< Integer > listener )
 				{
 					System.out.println( name + " : addContextListener " + listener );
+					return true;
 				}
 
 				@Override
-				public void removeContextListener( final ContextListener< Integer > listener )
+				public boolean removeContextListener( final ContextListener< Integer > listener )
 				{
 					System.out.println( name + " : removeContextListener " + listener );
+					return true;
 				}
 			} );
 		}

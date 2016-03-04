@@ -4,7 +4,7 @@ public interface ContextProvider< V >
 {
 	public String getContextProviderName();
 
-	public void addContextListener( ContextListener< V > listener );
+	public boolean addContextListener( ContextListener< V > listener );
 
-	public void removeContextListener( ContextListener< V > listener );
+	public boolean removeContextListener( ContextListener< V > listener );
 }

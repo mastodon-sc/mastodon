@@ -19,14 +19,17 @@ public class ContextChooser< V >
 		}
 
 		@Override
-		public void addContextListener( final ContextListener< V > listener )
+		public boolean addContextListener( final ContextListener< V > listener )
 		{
 			listener.contextChanged( null );
+			return true;
 		}
 
 		@Override
-		public void removeContextListener( final ContextListener< V > listener )
-		{}
+		public boolean removeContextListener( final ContextListener< V > listener )
+		{
+			return true;
+		}
 	};
 
 	private final ContextListener< V > listener;
