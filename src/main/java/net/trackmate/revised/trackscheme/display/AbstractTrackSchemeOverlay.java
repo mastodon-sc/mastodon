@@ -17,7 +17,7 @@ import net.trackmate.revised.trackscheme.TrackSchemeFocus;
 import net.trackmate.revised.trackscheme.TrackSchemeGraph;
 import net.trackmate.revised.trackscheme.TrackSchemeHighlight;
 import net.trackmate.revised.trackscheme.TrackSchemeVertex;
-import net.trackmate.revised.trackscheme.display.OffsetDecorations.OffsetDecorationsListener;
+import net.trackmate.revised.trackscheme.display.OffsetHeaders.OffsetHeadersListener;
 
 /**
  * An {@link OverlayRenderer} that paints {@link ScreenEntities} of a
@@ -55,7 +55,7 @@ import net.trackmate.revised.trackscheme.display.OffsetDecorations.OffsetDecorat
  *
  * @author Tobias Pietzsch &lt;tobias.pietzsch@gmail.com&gt;
  */
-public abstract class AbstractTrackSchemeOverlay implements OverlayRenderer, OffsetDecorationsListener
+public abstract class AbstractTrackSchemeOverlay implements OverlayRenderer, OffsetHeadersListener
 {
 	private int width;
 
@@ -97,13 +97,13 @@ public abstract class AbstractTrackSchemeOverlay implements OverlayRenderer, Off
 
 	private int currentTimepoint = 0;
 
-	protected boolean isDecorationsVisibleX;
+	protected boolean isHeaderVisibleX;
 
-	protected int decorationsWidth;
+	protected int headerWidth;
 
-	protected boolean isDecorationsVisibleY;
+	protected boolean isHeaderVisibleY;
 
-	protected int decorationsHeight;
+	protected int headerHeight;
 
 	/**
 	 * Creates a new overlay for the specified TrackScheme graph.
@@ -283,12 +283,12 @@ public abstract class AbstractTrackSchemeOverlay implements OverlayRenderer, Off
 	}
 
 	@Override
-	public void updateDecorationsVisibility( final boolean isVisibleX, final int width, final boolean isVisibleY, final int height )
+	public void updateHeadersVisibility( final boolean isVisibleX, final int width, final boolean isVisibleY, final int height )
 	{
-		isDecorationsVisibleX = isVisibleX;
-		decorationsWidth = isVisibleX ? width : 0;
-		isDecorationsVisibleY = isVisibleY;
-		decorationsHeight = isVisibleY ? height : 0;
+		isHeaderVisibleX = isVisibleX;
+		headerWidth = isVisibleX ? width : 0;
+		isHeaderVisibleY = isVisibleY;
+		headerHeight = isVisibleY ? height : 0;
 	}
 
 	/**

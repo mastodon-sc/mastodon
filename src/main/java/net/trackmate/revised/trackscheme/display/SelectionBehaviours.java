@@ -24,7 +24,7 @@ import net.trackmate.revised.trackscheme.TrackSchemeGraph;
 import net.trackmate.revised.trackscheme.TrackSchemeNavigation;
 import net.trackmate.revised.trackscheme.TrackSchemeSelection;
 import net.trackmate.revised.trackscheme.TrackSchemeVertex;
-import net.trackmate.revised.trackscheme.display.OffsetDecorations.OffsetDecorationsListener;
+import net.trackmate.revised.trackscheme.display.OffsetHeaders.OffsetHeadersListener;
 
 /**
  * TODO: Merge with TrackSchemeNavigator into one class that does everything related to focus and selection?
@@ -34,7 +34,7 @@ import net.trackmate.revised.trackscheme.display.OffsetDecorations.OffsetDecorat
  * @author Tobias Pietzsch &lt;tobias.pietzsch@gmail.com&gt;
  * @author Jean-Yves Tinevez &lt;jeanyves.tinevez@gmail.com&gt;
  */
-public class SelectionBehaviours implements TransformListener< ScreenTransform >, OffsetDecorationsListener
+public class SelectionBehaviours implements TransformListener< ScreenTransform >, OffsetHeadersListener
 {
 	public static final String FOCUS_VERTEX_NAME = "ts click focus vertex";
 	public static final String NAVIGATE_TO_VERTEX_NAME = "ts click navigate to vertex";
@@ -68,14 +68,14 @@ public class SelectionBehaviours implements TransformListener< ScreenTransform >
 	private final BoxSelectionBehaviour boxSelectAdd;
 
 	/**
-	 * current decorations width.
+	 * current width of vertical header.
 	 */
-	private int decorationsWidth;
+	private int headerWidth;
 
 	/**
-	 * current decorations height.
+	 * current height of horizontal header.
 	 */
-	private int decorationsHeight;
+	private int headerHeight;
 
 	public SelectionBehaviours(
 			final InteractiveDisplayCanvasComponent< ScreenTransform > display,
@@ -134,10 +134,10 @@ public class SelectionBehaviours implements TransformListener< ScreenTransform >
 	}
 
 	@Override
-	public void updateDecorationsVisibility( final boolean isVisibleX, final int width, final boolean isVisibleY, final int height )
+	public void updateHeadersVisibility( final boolean isVisibleX, final int width, final boolean isVisibleY, final int height )
 	{
-		decorationsWidth = isVisibleX ? width : 0;
-		decorationsHeight = isVisibleY ? height : 0;
+		headerWidth = isVisibleX ? width : 0;
+		headerHeight = isVisibleY ? height : 0;
 	}
 
 	/*
@@ -233,7 +233,7 @@ public class SelectionBehaviours implements TransformListener< ScreenTransform >
 		@Override
 		public void click( final int x, final int y )
 		{
-			if ( x < decorationsWidth || y < decorationsHeight )
+			if ( x < headerWidth || y < headerHeight )
 				return;
 
 			final TrackSchemeVertex ref = graph.vertexRef();
@@ -267,7 +267,7 @@ public class SelectionBehaviours implements TransformListener< ScreenTransform >
 		@Override
 		public void click( final int x, final int y )
 		{
-			if ( x < decorationsWidth || y < decorationsHeight )
+			if ( x < headerWidth || y < headerHeight )
 				return;
 
 			final TrackSchemeVertex ref = graph.vertexRef();
@@ -299,7 +299,7 @@ public class SelectionBehaviours implements TransformListener< ScreenTransform >
 		@Override
 		public void click( final int x, final int y )
 		{
-			if ( x < decorationsWidth || y < decorationsHeight )
+			if ( x < headerWidth || y < headerHeight )
 				return;
 
 			select( x, y, addToSelection );
@@ -344,7 +344,7 @@ public class SelectionBehaviours implements TransformListener< ScreenTransform >
 			oX = x;
 			oY = y;
 			dragging = false;
-			ignore = x < decorationsWidth || y < decorationsHeight;
+			ignore = x < headerWidth || y < headerHeight;
 		}
 
 		@Override
@@ -375,10 +375,10 @@ public class SelectionBehaviours implements TransformListener< ScreenTransform >
 				display.removeOverlayRenderer( this );
 				display.repaint();
 				selectWithin(
-						oX - decorationsWidth,
-						oY - decorationsHeight,
-						eX - decorationsWidth,
-						eY - decorationsHeight,
+						oX - headerWidth,
+						oY - headerHeight,
+						eX - headerWidth,
+						eY - headerHeight,
 						addToSelection );
 			}
 		}

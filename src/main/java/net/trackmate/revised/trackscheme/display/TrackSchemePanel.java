@@ -143,7 +143,7 @@ public class TrackSchemePanel extends JPanel implements
 
 	private final SelectionBehaviours selectionBehaviours;
 
-	private final OffsetDecorations offsetDecorations;
+	private final OffsetHeaders offsetHeaders;
 
 	private NavigationEtiquette navigationEtiquette;
 
@@ -217,13 +217,13 @@ public class TrackSchemePanel extends JPanel implements
 		selectionBehaviours = new SelectionBehaviours( display, graph, layout, graphOverlay, focus, navigation, selection );
 		display.addTransformListener( selectionBehaviours );
 
-		offsetDecorations = new OffsetDecorations();
-		offsetDecorations.addOffsetDecorationsListener( ( InertialScreenTransformEventHandler ) display.getTransformEventHandler() );
-		offsetDecorations.addOffsetDecorationsListener( graphOverlay );
-		offsetDecorations.addOffsetDecorationsListener( selectionBehaviours );
-		offsetDecorations.addOffsetDecorationsListener( highlightHandler );
-		offsetDecorations.setDecorationsVisibleX( true, 25 );
-		offsetDecorations.setDecorationsVisibleY( true, 20 );
+		offsetHeaders = new OffsetHeaders();
+		offsetHeaders.addOffsetHeadersListener( ( InertialScreenTransformEventHandler ) display.getTransformEventHandler() );
+		offsetHeaders.addOffsetHeadersListener( graphOverlay );
+		offsetHeaders.addOffsetHeadersListener( selectionBehaviours );
+		offsetHeaders.addOffsetHeadersListener( highlightHandler );
+		offsetHeaders.setHeaderVisibleX( true, 25 );
+		offsetHeaders.setHeaderVisibleY( true, 20 );
 //		offsetDecorations.setDecorationsVisibleY( false, 0 );
 
 		xScrollBar = new JScrollBar( JScrollBar.HORIZONTAL );
@@ -606,9 +606,9 @@ public class TrackSchemePanel extends JPanel implements
 	}
 
 	// TODO remove??? revise TrackSchemePanel / TrackSchemeFrame construction.
-	protected OffsetDecorations getOffsetDecorations()
+	protected OffsetHeaders getOffsetDecorations()
 	{
-		return offsetDecorations;
+		return offsetHeaders;
 	}
 
 	// TODO is this needed? does it have to be public?
@@ -704,7 +704,7 @@ public class TrackSchemePanel extends JPanel implements
 			if (duration > 0 )
 			{
 				copyIpStart();
-				layout.cropAndScale( transform, screenEntities, offsetDecorations.getWidth(), offsetDecorations.getHeight() );
+				layout.cropAndScale( transform, screenEntities, offsetHeaders.getWidth(), offsetHeaders.getHeight() );
 				swapIpEnd();
 				interpolator = new ScreenEntitiesInterpolator( screenEntitiesIpStart, screenEntitiesIpEnd );
 			}
@@ -712,7 +712,7 @@ public class TrackSchemePanel extends JPanel implements
 			{
 				interpolator = null;
 				swapPools();
-				layout.cropAndScale( transform, screenEntities, offsetDecorations.getWidth(), offsetDecorations.getHeight() );
+				layout.cropAndScale( transform, screenEntities, offsetHeaders.getWidth(), offsetHeaders.getHeight() );
 				lastComputedScreenEntities = screenEntities;
 			}
 		}
@@ -721,7 +721,7 @@ public class TrackSchemePanel extends JPanel implements
 		{
 			if ( interpolator != null )
 			{
-				layout.cropAndScale( transform, screenEntities, offsetDecorations.getWidth(), offsetDecorations.getHeight() );
+				layout.cropAndScale( transform, screenEntities, offsetHeaders.getWidth(), offsetHeaders.getHeight() );
 				swapIpEnd();
 				interpolator = new ScreenEntitiesInterpolator(
 						screenEntitiesIpStart,

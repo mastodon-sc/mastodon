@@ -19,7 +19,7 @@ import net.imglib2.ui.TransformListener;
 import net.trackmate.revised.trackscheme.LineageTreeLayout;
 import net.trackmate.revised.trackscheme.LineageTreeLayout.LayoutListener;
 import net.trackmate.revised.trackscheme.ScreenTransform;
-import net.trackmate.revised.trackscheme.display.OffsetDecorations.OffsetDecorationsListener;
+import net.trackmate.revised.trackscheme.display.OffsetHeaders.OffsetHeadersListener;
 import net.trackmate.revised.trackscheme.display.animate.AbstractTransformAnimator;
 import net.trackmate.revised.trackscheme.display.animate.InertialScreenTransformAnimator;
 import net.trackmate.revised.trackscheme.display.animate.InterpolateScreenTransformAnimator;
@@ -29,7 +29,7 @@ public class InertialScreenTransformEventHandler
 		BehaviourTransformEventHandler< ScreenTransform >,
 		TransformEventHandler< ScreenTransform >,
 		LayoutListener,
-		OffsetDecorationsListener
+		OffsetHeadersListener
 {
 	/*
 	 * Configuration options
@@ -131,14 +131,14 @@ public class InertialScreenTransformEventHandler
 	private int canvasHeight;
 
 	/**
-	 * current decorations width.
+	 * current width of vertical header.
 	 */
-	private int decorationsWidth;
+	private int headerWidth;
 
 	/**
-	 * current decorations height.
+	 * current height of horizontal header.
 	 */
-	private int decorationsHeight;
+	private int headerHeight;
 
 	/**
 	 * Whether the transform should stay fully zoomed out in X when the
@@ -217,10 +217,10 @@ public class InertialScreenTransformEventHandler
 	}
 
 	@Override
-	public void updateDecorationsVisibility( final boolean isVisibleX, final int width, final boolean isVisibleY, final int height )
+	public void updateHeadersVisibility( final boolean isVisibleX, final int width, final boolean isVisibleY, final int height )
 	{
-		decorationsWidth = isVisibleX ? width : 0;
-		decorationsHeight = isVisibleY ? height : 0;
+		headerWidth = isVisibleX ? width : 0;
+		headerHeight = isVisibleY ? height : 0;
 		updateTransformScreenSize();
 	}
 
@@ -229,8 +229,8 @@ public class InertialScreenTransformEventHandler
 		synchronized ( transform )
 		{
 			transform.setScreenSize(
-					Math.max( canvasWidth - decorationsWidth, 1 ),
-					Math.max( canvasHeight - decorationsHeight, 1 ) );
+					Math.max( canvasWidth - headerWidth, 1 ),
+					Math.max( canvasHeight - headerHeight, 1 ) );
 			notifyListeners();
 		}
 	}
@@ -452,8 +452,8 @@ public class InertialScreenTransformEventHandler
 			if ( isHorizontal )
 				return;
 
-			final int x = wx - decorationsWidth;
-			final int y = wy - decorationsHeight;
+			final int x = wx - headerWidth;
+			final int y = wy - headerHeight;
 
 			final boolean zoomIn = wheelRotation < 0;
 			double dScale = 1.0 + Math.abs( wheelRotation ) * zoomScrollSensitivity;

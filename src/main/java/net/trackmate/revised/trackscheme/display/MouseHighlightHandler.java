@@ -9,9 +9,9 @@ import net.trackmate.revised.trackscheme.ScreenTransform;
 import net.trackmate.revised.trackscheme.TrackSchemeGraph;
 import net.trackmate.revised.trackscheme.TrackSchemeHighlight;
 import net.trackmate.revised.trackscheme.TrackSchemeVertex;
-import net.trackmate.revised.trackscheme.display.OffsetDecorations.OffsetDecorationsListener;
+import net.trackmate.revised.trackscheme.display.OffsetHeaders.OffsetHeadersListener;
 
-public class MouseHighlightHandler implements MouseMotionListener, MouseListener, TransformListener< ScreenTransform >,	OffsetDecorationsListener
+public class MouseHighlightHandler implements MouseMotionListener, MouseListener, TransformListener< ScreenTransform >, OffsetHeadersListener
 {
 	private final AbstractTrackSchemeOverlay graphOverlay;
 
@@ -22,14 +22,14 @@ public class MouseHighlightHandler implements MouseMotionListener, MouseListener
 	private int x, y;
 
 	/**
-	 * current decorations width.
+	 * current width of vertical header.
 	 */
-	private int decorationsWidth;
+	private int headerWidth;
 
 	/**
-	 * current decorations height.
+	 * current height of horizontal header.
 	 */
-	private int decorationsHeight;
+	private int headerHeight;
 
 	public MouseHighlightHandler(
 			final AbstractTrackSchemeOverlay graphOverlay,
@@ -64,15 +64,15 @@ public class MouseHighlightHandler implements MouseMotionListener, MouseListener
 	}
 
 	@Override
-	public void updateDecorationsVisibility( final boolean isVisibleX, final int width, final boolean isVisibleY, final int height )
+	public void updateHeadersVisibility( final boolean isVisibleX, final int width, final boolean isVisibleY, final int height )
 	{
-		decorationsWidth = isVisibleX ? width : 0;
-		decorationsHeight = isVisibleY ? height : 0;
+		headerWidth = isVisibleX ? width : 0;
+		headerHeight = isVisibleY ? height : 0;
 	}
 
 	private void highlight()
 	{
-		if ( x < decorationsWidth || y < decorationsHeight )
+		if ( x < headerWidth || y < headerHeight )
 			highlight.highlightVertex( null );
 		else
 		{

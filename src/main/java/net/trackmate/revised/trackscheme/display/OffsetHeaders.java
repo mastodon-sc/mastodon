@@ -2,14 +2,14 @@ package net.trackmate.revised.trackscheme.display;
 
 import java.util.ArrayList;
 
-public class OffsetDecorations
+public class OffsetHeaders
 {
-	public interface OffsetDecorationsListener
+	public interface OffsetHeadersListener
 	{
-		public void updateDecorationsVisibility( boolean isVisibleX, int width, boolean isVisibleY, int height );
+		public void updateHeadersVisibility( boolean isVisibleX, int width, boolean isVisibleY, int height );
 	}
 
-	private final ArrayList< OffsetDecorationsListener > listeners = new ArrayList< OffsetDecorationsListener >();
+	private final ArrayList< OffsetHeadersListener > listeners = new ArrayList< OffsetHeadersListener >();
 
 	private boolean isVisibleX;
 
@@ -19,7 +19,7 @@ public class OffsetDecorations
 
 	private int height;
 
-	public OffsetDecorations()
+	public OffsetHeaders()
 	{
 		isVisibleX = false;
 		isVisibleY = false;
@@ -27,14 +27,14 @@ public class OffsetDecorations
 		height = 50;
 	}
 
-	public void setDecorationsVisibleX( final boolean isVisibleX, final int width )
+	public void setHeaderVisibleX( final boolean isVisibleX, final int width )
 	{
 		this.isVisibleX = isVisibleX;
 		this.width = width;
 		notifyListeners();
 	}
 
-	public void setDecorationsVisibleY( final boolean isVisibleY, final int height )
+	public void setHeaderVisibleY( final boolean isVisibleY, final int height )
 	{
 		this.isVisibleY = isVisibleY;
 		this.height = height;
@@ -45,31 +45,31 @@ public class OffsetDecorations
 	 * Registers the specified listener.
 	 *
 	 * @param l
-	 *            the {@link OffsetDecorationsListener} to register.
+	 *            the {@link OffsetHeadersListener} to register.
 	 * @return {@code true} if the specified listener was added to the
 	 *         listeners of this handler. {@code false} if the specified
 	 *         listener was already registered.
 	 */
-	public boolean addOffsetDecorationsListener( final OffsetDecorationsListener l )
+	public boolean addOffsetHeadersListener( final OffsetHeadersListener l )
 	{
 		if ( !listeners.contains( l ) )
 		{
 			listeners.add( l );
-			l.updateDecorationsVisibility( isVisibleX, width, isVisibleY, height );
+			l.updateHeadersVisibility( isVisibleX, width, isVisibleY, height );
 			return true;
 		}
 		return false;
 	}
 
-	public boolean removeOffsetDecorationsListener( final OffsetDecorationsListener l )
+	public boolean removeOffsetHeadersListener( final OffsetHeadersListener l )
 	{
 		return listeners.remove( l );
 	}
 
 	private void notifyListeners()
 	{
-		for ( final OffsetDecorationsListener l : listeners )
-			l.updateDecorationsVisibility( isVisibleX, width, isVisibleY, height );
+		for ( final OffsetHeadersListener l : listeners )
+			l.updateHeadersVisibility( isVisibleX, width, isVisibleY, height );
 	}
 
 	public boolean isVisibleX()

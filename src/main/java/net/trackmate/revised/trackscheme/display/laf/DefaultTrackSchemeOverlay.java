@@ -125,7 +125,7 @@ public class DefaultTrackSchemeOverlay extends AbstractTrackSchemeOverlay
 		if ( highlightCurrentTimepoint )
 		{
 			final double t = getCurrentTimepoint();
-			final int y = ( int ) Math.round( yScale * ( t - minY - 0.5 ) ) + decorationsHeight;
+			final int y = ( int ) Math.round( yScale * ( t - minY - 0.5 ) ) + headerHeight;
 			final int h = Math.max( 1, ( int ) Math.round( yScale ) );
 			g2.setColor( style.currentTimepointColor );
 			g2.fillRect( 0, y, width, h );
@@ -144,12 +144,12 @@ public class DefaultTrackSchemeOverlay extends AbstractTrackSchemeOverlay
 
 			for ( int t = tstart; t < tend; t = t + stepT )
 			{
-				final int yline = ( int ) ( ( t - minY - 0.5 ) * yScale ) + decorationsHeight;
+				final int yline = ( int ) ( ( t - minY - 0.5 ) * yScale ) + headerHeight;
 				g2.drawLine( 0, yline, width, yline );
 			}
 
 			// Last line
-			final int yline = ( int ) ( ( tend - minY - 0.5 ) * yScale ) + decorationsHeight;
+			final int yline = ( int ) ( ( tend - minY - 0.5 ) * yScale ) + headerHeight;
 			g2.drawLine( 0, yline, width, yline );
 		}
 
@@ -177,27 +177,27 @@ public class DefaultTrackSchemeOverlay extends AbstractTrackSchemeOverlay
 		final double minY = screenTransform.getMinY();
 		final double maxY = screenTransform.getMaxY();
 
-		if ( isDecorationsVisibleX )
+		if ( isHeaderVisibleX )
 		{
 			g2.setColor( style.headerBackgroundColor );
-			g2.fillRect( 0, decorationsHeight, decorationsWidth, height - decorationsHeight );
+			g2.fillRect( 0, headerHeight, headerWidth, height - headerHeight );
 
 			if ( paintHeaderShadow )
 			{
 				for ( int i = 0; i < shadowColors.length; ++i )
 				{
 					g2.setColor( shadowColors[ i ] );
-					g2.fillRect( decorationsWidth + i, decorationsHeight + i, 1, height - decorationsHeight - i );
+					g2.fillRect( headerWidth + i, headerHeight + i, 1, height - headerHeight - i );
 				}
 			}
 
 			if ( highlightCurrentTimepoint )
 			{
 				final double t = getCurrentTimepoint();
-				final int y = ( int ) Math.round( yScale * ( t - minY - 0.5 ) ) + decorationsHeight;
+				final int y = ( int ) Math.round( yScale * ( t - minY - 0.5 ) ) + headerHeight;
 				final int h = Math.max( 1, ( int ) Math.round( yScale ) );
 				g2.setColor( style.headerCurrentTimepointColor );
-				g2.fillRect( 0, y, decorationsWidth, h );
+				g2.fillRect( 0, y, headerWidth, h );
 			}
 
 			g2.setColor( style.headerDecorationColor );
@@ -214,25 +214,25 @@ public class DefaultTrackSchemeOverlay extends AbstractTrackSchemeOverlay
 
 			for ( int t = tstart; t <= tend; t = t + stepT )
 			{
-				final int yline = ( int ) ( ( t - minY - 0.5 ) * yScale ) + decorationsHeight;
-				g2.drawLine( 0, yline, decorationsWidth, yline );
+				final int yline = ( int ) ( ( t - minY - 0.5 ) * yScale ) + headerHeight;
+				g2.drawLine( 0, yline, headerWidth, yline );
 
-				final int ytext = ( int ) ( ( t - minY ) * yScale ) + fontInc + decorationsHeight;
+				final int ytext = ( int ) ( ( t - minY ) * yScale ) + fontInc + headerHeight;
 				g2.drawString( "" + t, 5, ytext );
 			}
 		}
 
-		if ( isDecorationsVisibleY )
+		if ( isHeaderVisibleY )
 		{
 			g2.setColor( style.headerBackgroundColor );
-			g2.fillRect( decorationsWidth, 0, width - decorationsWidth, decorationsHeight );
+			g2.fillRect( headerWidth, 0, width - headerWidth, headerHeight );
 
 			if ( paintHeaderShadow )
 			{
 				for ( int i = 0; i < shadowColors.length; ++i )
 				{
 					g2.setColor( shadowColors[ i ] );
-					g2.fillRect( decorationsWidth + i, decorationsHeight + i, width - decorationsWidth - i, 1 );
+					g2.fillRect( headerWidth + i, headerHeight + i, width - headerWidth - i, 1 );
 				}
 			}
 
@@ -242,27 +242,27 @@ public class DefaultTrackSchemeOverlay extends AbstractTrackSchemeOverlay
 
 			for ( final ScreenColumn column : screenEntities.getColumns() )
 			{
-				g2.drawLine( column.xLeft, 0, column.xLeft, decorationsHeight );
-				g2.drawLine( column.xLeft + column.width, 0, column.xLeft + column.width, decorationsHeight );
+				g2.drawLine( column.xLeft, 0, column.xLeft, headerHeight );
+				g2.drawLine( column.xLeft + column.width, 0, column.xLeft + column.width, headerHeight );
 
 				final String str = column.label;
 				final int stringWidth = fm.stringWidth( str );
 
-				final int boundedMin = Math.max( decorationsWidth, column.xLeft );
+				final int boundedMin = Math.max( headerWidth, column.xLeft );
 				final int boundedMax = Math.min( column.xLeft + column.width, width );
 				final int boundedWidth = boundedMax - boundedMin;
 				if ( boundedWidth >= stringWidth + 5  )
 				{
 					final int xtext = ( boundedMin + boundedMax - stringWidth ) / 2;
-					g2.drawString( str, xtext, decorationsHeight / 2 );
+					g2.drawString( str, xtext, headerHeight / 2 );
 				}
 			}
 		}
 
-		if ( isDecorationsVisibleX && isDecorationsVisibleY )
+		if ( isHeaderVisibleX && isHeaderVisibleY )
 		{
 			g2.setColor( style.headerBackgroundColor );
-			g2.fillRect( 0, 0, decorationsWidth, decorationsHeight );
+			g2.fillRect( 0, 0, headerWidth, headerHeight );
 		}
 	}
 
