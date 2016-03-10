@@ -214,7 +214,7 @@ public class WindowManager
 		final OverlaySelectionWrapper< Spot, Link > overlaySelection = new OverlaySelectionWrapper<>(
 				selection );
 
-		final String windowTitle = "BigDataViewer " + (bdvName++);
+		final String windowTitle = "BigDataViewer " + (bdvName++); // TODO: use JY naming scheme
 		final BigDataViewer bdv = BigDataViewer.open( spimData, windowTitle, new ProgressWriterConsole(),
 				ViewerOptions.options().
 				transformEventHandlerFactory( BehaviourTransformEventHandler3D.factory( keyconf ) ).
