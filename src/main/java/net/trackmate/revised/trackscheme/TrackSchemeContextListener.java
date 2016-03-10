@@ -95,12 +95,6 @@ public class TrackSchemeContextListener< V > implements ContextListener< V >
 		}
 
 		@Override
-		public int getTimepoint()
-		{
-			return context.getTimepoint();
-		}
-
-		@Override
 		public Iterable< TrackSchemeVertex > getInsideVertices( final int timepoint )
 		{
 			final Iterable< V > insideVertices = context.getInsideVertices( timepoint );

@@ -60,12 +60,6 @@ public class OverlayContextWrapper< V extends Vertex< E >, E extends Edge< V > >
 	}
 
 	@Override
-	public int getTimepoint()
-	{
-		return context.getTimepoint();
-	}
-
-	@Override
 	public void contextChanged( final Context< OverlayVertexWrapper< V, E > > context )
 	{
 		contextListener.contextChanged( this );

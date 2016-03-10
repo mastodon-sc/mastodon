@@ -266,7 +266,6 @@ public class WindowManager
 
 		final OverlayContext< OverlayVertexWrapper< Spot, Link > > overlayContext = new OverlayContext<>( overlayGraph, tracksOverlay );
 		viewer.addRenderTransformListener( overlayContext );
-		viewer.addTimePointListener( overlayContext );
 		final BdvContextAdapter< Spot > contextProvider = new BdvContextAdapter<>( windowTitle );
 		final OverlayContextWrapper< Spot, Link > overlayContextWrapper = new OverlayContextWrapper<>(
 				overlayContext,
