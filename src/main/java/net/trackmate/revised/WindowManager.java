@@ -81,58 +81,9 @@ import net.trackmate.revised.ui.selection.SelectionListener;
 
 public class WindowManager
 {
-	private final SpimDataMinimal spimData;
-
-	private final Model model;
-
-	private final InputTriggerConfig keyconf;
-
-	private final GroupManager groupManager;
-
-	private final SharedBigDataViewerData sharedBdvData;
-
-	private final int minTimepoint;
-
-	private final int maxTimepoint;
-
-	private final Selection< Spot, Link > selection;
-
-	private final HighlightModel< Spot, Link > highlightModel;
-
-	final BoundingSphereRadiusStatistics radiusStats;
-
-	public WindowManager(
-			final SpimDataMinimal spimData,
-			final Model model,
-			final InputTriggerConfig keyconf )
-	{
-		this.spimData = spimData;
-		this.model = model;
-		this.keyconf = keyconf;
-
-		groupManager = new GroupManager();
-		sharedBdvData = new SharedBigDataViewerData( spimData, ViewerOptions.options().inputTriggerConfig( keyconf ) );
-
-		final ListenableGraph< Spot, Link > graph = model.getGraph();
-		final GraphIdBimap< Spot, Link > idmap = model.getGraphIdBimap();
-		selection = new Selection<>( graph, idmap );
-		highlightModel = new HighlightModel< Spot, Link  >( idmap );
-		radiusStats = new BoundingSphereRadiusStatistics( model );
-
-		minTimepoint = 0;
-		maxTimepoint = sharedBdvData.getNumTimepoints() - 1;
-		/*
-		 * TODO: (?) For now, we use timepoint indices in MaMuT model, instead
-		 * of IDs/names. This is because BDV also displays timepoint index, and
-		 * it would be confusing to have different labels in TrackScheme. If
-		 * this is changed in the future, then probably only in the model files.
-		 */
-	}
-
-	private final List< BdvWindow > bdvWindows = new ArrayList<>();
-
-	private final List< ContextProvider< Spot > > contextProviders = new ArrayList<>();
-
+	/**
+	 * Information for one BigDataViewer window.
+	 */
 	public static class BdvWindow
 	{
 		private final ViewerFrame viewerFrame;
@@ -176,9 +127,167 @@ public class WindowManager
 		}
 	}
 
+	/**
+	 * Information for one TrackScheme window.
+	 */
+	public static class TsWindow
+	{
+		private final TrackSchemeFrame trackSchemeFrame;
+
+		private final GroupHandle groupHandle;
+
+		private final ContextChooser< Spot > contextChooser;
+
+		public TsWindow(
+				final TrackSchemeFrame trackSchemeFrame,
+				final GroupHandle groupHandle,
+				final ContextChooser< Spot > contextChooser )
+		{
+			this.trackSchemeFrame = trackSchemeFrame;
+			this.groupHandle = groupHandle;
+			this.contextChooser = contextChooser;
+		}
+
+		public TrackSchemeFrame getTrackSchemeFrame()
+		{
+			return trackSchemeFrame;
+		}
+
+		public GroupHandle getGroupHandle()
+		{
+			return groupHandle;
+		}
+
+		public ContextChooser< Spot > getContextChooser()
+		{
+			return contextChooser;
+		}
+	}
+
+	/**
+	 * TODO!!! related to {@link OverlayContextWrapper}
+	 *
+	 * @param <V>
+	 *
+	 * @author Tobias Pietzsch &lt;tobias.pietzsch@gmail.com&gt;
+	 */
+	public static class BdvContextAdapter< V > implements ContextListener< V >, ContextProvider< V >
+	{
+		private final String contextProviderName;
+
+		private final ArrayList< ContextListener< V > > listeners;
+
+		private Context< V > context;
+
+		public BdvContextAdapter( final String contextProviderName )
+		{
+			this.contextProviderName = contextProviderName;
+			listeners = new ArrayList<>();
+		}
+
+		@Override
+		public String getContextProviderName()
+		{
+			return contextProviderName;
+		}
+
+		@Override
+		public synchronized boolean addContextListener( final ContextListener< V > l )
+		{
+			if ( !listeners.contains( l ) )
+			{
+				listeners.add( l );
+				l.contextChanged( context );
+				return true;
+			}
+			return false;
+		}
+
+		@Override
+		public synchronized boolean removeContextListener( final ContextListener< V > l )
+		{
+			return listeners.remove( l );
+		}
+
+		@Override
+		public synchronized void contextChanged( final Context< V > context )
+		{
+			this.context = context;
+			for ( final ContextListener< V > l : listeners )
+				l.contextChanged( context );
+		}
+	}
+
+	private final Model model;
+
+	private final InputTriggerConfig keyconf;
+
+	private final GroupManager groupManager;
+
+	private final SharedBigDataViewerData sharedBdvData;
+
+	private final int minTimepoint;
+
+	private final int maxTimepoint;
+
+	private final Selection< Spot, Link > selection;
+
+	private final HighlightModel< Spot, Link > highlightModel;
+
+	private final BoundingSphereRadiusStatistics radiusStats;
+
+	/**
+	 * All currently open BigDataViewer windows.
+	 */
+	private final List< BdvWindow > bdvWindows = new ArrayList<>();
+
+	/**
+	 * The {@link ContextProvider}s of all currently open BigDataViewer windows.
+	 */
+	private final List< ContextProvider< Spot > > contextProviders = new ArrayList<>();
+
+	/**
+	 * All currently open TrackScheme windows.
+	 */
+	private final List< TsWindow > tsWindows = new ArrayList<>();
+
+	public WindowManager(
+			final SpimDataMinimal spimData,
+			final Model model,
+			final InputTriggerConfig keyconf )
+	{
+		this.model = model;
+		this.keyconf = keyconf;
+
+		groupManager = new GroupManager();
+		sharedBdvData = new SharedBigDataViewerData( spimData, ViewerOptions.options().inputTriggerConfig( keyconf ) );
+
+		final ListenableGraph< Spot, Link > graph = model.getGraph();
+		final GraphIdBimap< Spot, Link > idmap = model.getGraphIdBimap();
+		selection = new Selection<>( graph, idmap );
+		highlightModel = new HighlightModel< Spot, Link  >( idmap );
+		radiusStats = new BoundingSphereRadiusStatistics( model );
+
+		minTimepoint = 0;
+		maxTimepoint = sharedBdvData.getNumTimepoints() - 1;
+		/*
+		 * TODO: (?) For now, we use timepoint indices in MaMuT model, instead
+		 * of IDs/names. This is because BDV also displays timepoint index, and
+		 * it would be confusing to have different labels in TrackScheme. If
+		 * this is changed in the future, then probably only in the model files.
+		 */
+	}
+
 	private synchronized void addBdvWindow( final BdvWindow w )
 	{
-		System.out.println( "add bdv" );
+		w.getViewerFrame().addWindowListener( new WindowAdapter()
+		{
+			@Override
+			public void windowClosing( final WindowEvent e )
+			{
+				removeBdvWindow( w );
+			}
+		} );
 		bdvWindows.add( w );
 		contextProviders.add( w.getContextProvider() );
 		for ( final TsWindow tsw : tsWindows )
@@ -187,11 +296,30 @@ public class WindowManager
 
 	private synchronized void removeBdvWindow( final BdvWindow w )
 	{
-		System.out.println( "remove bdv" );
 		bdvWindows.remove( w );
 		contextProviders.remove( w.getContextProvider() );
 		for ( final TsWindow tsw : tsWindows )
 			tsw.getContextChooser().updateContextProviders( contextProviders );
+	}
+
+	private synchronized void addTsWindow( final TsWindow w )
+	{
+		w.getTrackSchemeFrame().addWindowListener( new WindowAdapter()
+		{
+			@Override
+			public void windowClosing( final WindowEvent e )
+			{
+				removeTsWindow( w );
+			}
+		} );
+		tsWindows.add( w );
+		w.getContextChooser().updateContextProviders( contextProviders );
+	}
+
+	private synchronized void removeTsWindow( final TsWindow w )
+	{
+		tsWindows.remove( w );
+		w.getContextChooser().updateContextProviders( new ArrayList<>() );
 	}
 
 	// TODO
@@ -311,66 +439,7 @@ public class WindowManager
 		} );
 
 		final BdvWindow bdvWindow = new BdvWindow( viewerFrame, tracksOverlay, bdvGroupHandle, contextProvider );
-		viewerFrame.addWindowListener( new WindowAdapter()
-		{
-			@Override
-			public void windowClosing( final WindowEvent e )
-			{
-				removeBdvWindow( bdvWindow );
-			}
-		} );
 		addBdvWindow( bdvWindow );
-	}
-
-
-	private final List< TsWindow > tsWindows = new ArrayList<>();
-
-	public static class TsWindow
-	{
-		private final TrackSchemeFrame trackSchemeFrame;
-
-		private final GroupHandle groupHandle;
-
-		private final ContextChooser< Spot > contextChooser;
-
-		public TsWindow(
-				final TrackSchemeFrame trackSchemeFrame,
-				final GroupHandle groupHandle,
-				final ContextChooser< Spot > contextChooser )
-		{
-			this.trackSchemeFrame = trackSchemeFrame;
-			this.groupHandle = groupHandle;
-			this.contextChooser = contextChooser;
-		}
-
-		public TrackSchemeFrame getTrackSchemeFrame()
-		{
-			return trackSchemeFrame;
-		}
-
-		public GroupHandle getGroupHandle()
-		{
-			return groupHandle;
-		}
-
-		public ContextChooser< Spot > getContextChooser()
-		{
-			return contextChooser;
-		}
-	}
-
-	private synchronized void addTsWindow( final TsWindow w )
-	{
-		System.out.println( "add ts" );
-		tsWindows.add( w );
-		w.getContextChooser().updateContextProviders( contextProviders );
-	}
-
-	private synchronized void removeTsWindow( final TsWindow w )
-	{
-		System.out.println( "remove ts" );
-		tsWindows.remove( w );
-		w.getContextChooser().updateContextProviders( new ArrayList<>() );
 	}
 
 	// TODO testing only
@@ -458,62 +527,7 @@ public class WindowManager
 		frame.setVisible( true );
 
 		final TsWindow tsWindow = new TsWindow( frame, groupHandle, contextChooser );
-		frame.addWindowListener( new WindowAdapter()
-		{
-			@Override
-			public void windowClosing( final WindowEvent e )
-			{
-				removeTsWindow( tsWindow );
-			}
-		} );
 		addTsWindow( tsWindow );
-	}
-
-	public static class BdvContextAdapter< V > implements ContextListener< V >, ContextProvider< V >
-	{
-		private final String contextProviderName;
-
-		private final ArrayList< ContextListener< V > > listeners;
-
-		private Context< V > context;
-
-		public BdvContextAdapter( final String contextProviderName )
-		{
-			this.contextProviderName = contextProviderName;
-			listeners = new ArrayList<>();
-		}
-
-		@Override
-		public String getContextProviderName()
-		{
-			return contextProviderName;
-		}
-
-		@Override
-		public synchronized boolean addContextListener( final ContextListener< V > l )
-		{
-			if ( !listeners.contains( l ) )
-			{
-				listeners.add( l );
-				l.contextChanged( context );
-				return true;
-			}
-			return false;
-		}
-
-		@Override
-		public synchronized boolean removeContextListener( final ContextListener< V > l )
-		{
-			return listeners.remove( l );
-		}
-
-		@Override
-		public synchronized void contextChanged( final Context< V > context )
-		{
-			this.context = context;
-			for ( final ContextListener< V > l : listeners )
-				l.contextChanged( context );
-		}
 	}
 
 	public static void main( final String[] args ) throws IOException, SpimDataException
