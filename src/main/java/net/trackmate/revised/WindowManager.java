@@ -15,7 +15,6 @@ import org.scijava.ui.behaviour.KeyStrokeAdder;
 import org.scijava.ui.behaviour.io.InputTriggerConfig;
 import org.scijava.ui.behaviour.io.yaml.YamlConfigIO;
 
-import bdv.BehaviourTransformEventHandler3D;
 import bdv.BigDataViewer;
 import bdv.export.ProgressWriterConsole;
 import bdv.spimdata.SpimDataMinimal;
@@ -216,9 +215,7 @@ public class WindowManager
 
 		final String windowTitle = "BigDataViewer " + (bdvName++); // TODO: use JY naming scheme
 		final BigDataViewer bdv = BigDataViewer.open( spimData, windowTitle, new ProgressWriterConsole(),
-				ViewerOptions.options().
-				transformEventHandlerFactory( BehaviourTransformEventHandler3D.factory( keyconf ) ).
-				inputTriggerConfig( keyconf ) );
+				ViewerOptions.options().inputTriggerConfig( keyconf ) );
 
 //		if ( !bdv.tryLoadSettings( bdvFile ) ) // TODO
 			InitializeViewerState.initBrightness( 0.001, 0.999, bdv.getViewer(), bdv.getSetupAssignments() );
