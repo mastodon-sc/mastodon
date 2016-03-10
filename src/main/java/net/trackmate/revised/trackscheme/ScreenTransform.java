@@ -9,8 +9,34 @@ import net.imglib2.realtransform.InvertibleRealTransform;
 /**
  * A transformation from trackscheme layout coordinates to screen coordinates.
  * <p>
- * It is defined by a bounding box in trackscheme layout coordinates, and the
- * size of the screen that this should be mapped to.
+ * It is defined by a bounding box in layout coordinates, and the size of the
+ * screen that this should be mapped to. The forward direction of this transform
+ * maps layout coordinates to screen coordinates. The inverse transformation
+ * maps screen coordinates to layout coordinates.
+ * <p>
+ * Screen coordinates:
+ *
+ * <pre>
+ *   0
+ * 0 +----------------------+ screenWidth
+ *   |                      |
+ *   |                      |
+ *   |                      |
+ *   +----------------------+
+ *   screenHeight
+ * </pre>
+ * <p>
+ * Layout coordinates:
+ *
+ * <pre>
+ *      minY
+ * minX +----------------------+ maxX
+ *      |                      |
+ *      |                      |
+ *      |                      |
+ *      +----------------------+
+ *      maxY
+ * </pre>
  *
  * @author Tobias Pietzsch &lt;tobias.pietzsch@gmail.com&gt;
  */
@@ -32,11 +58,30 @@ public class ScreenTransform implements InvertibleRealTransform, Concatenable< S
 
 	private double scaleY;
 
+	/**
+	 * Instantiate a new blank transform.
+	 */
 	public ScreenTransform()
 	{
 		this ( 0, 1, 0, 1, 2, 2 );
 	}
 
+	/**
+	 * Instantiate a new transform.
+	 *
+	 * @param minX
+	 *            the minimal X layout position displayed on screen.
+	 * @param maxX
+	 *            the maximal X layout position displayed on screen.
+	 * @param minY
+	 *            the minimal Y layout position displayed on screen.
+	 * @param maxY
+	 *            the maximal Y layout position displayed on screen.
+	 * @param screenWidth
+	 *            the screen width.
+	 * @param screenHeight
+	 *            the screen height.
+	 */
 	public ScreenTransform( final double minX, final double maxX, final double minY, final double maxY, final int screenWidth, final int screenHeight )
 	{
 		this.minX = minX;
@@ -48,6 +93,12 @@ public class ScreenTransform implements InvertibleRealTransform, Concatenable< S
 		update();
 	}
 
+	/**
+	 * Instantiate a new transform as a copy of the specified transform.
+	 *
+	 * @param t
+	 *            the transform to copy values from.
+	 */
 	public ScreenTransform( final ScreenTransform t )
 	{
 		this.minX = t.minX;
@@ -60,12 +111,22 @@ public class ScreenTransform implements InvertibleRealTransform, Concatenable< S
 		this.scaleY = t.scaleY;
 	}
 
+	/**
+	 * Returns a new copy of this transform.
+	 */
 	@Override
 	public ScreenTransform copy()
 	{
 		return new ScreenTransform( this );
 	}
 
+	/**
+	 * Set all the values of this transform from the values of the specified
+	 * transform.
+	 *
+	 * @param t
+	 *            the transform to copy values from.
+	 */
 	public void set( final ScreenTransform t )
 	{
 		this.minX = t.minX;
@@ -89,6 +150,9 @@ public class ScreenTransform implements InvertibleRealTransform, Concatenable< S
 		update();
 	}
 
+	/**
+	 * Recompute {@link #scaleX} and {@link #scaleY}.
+	 */
 	private void update()
 	{
 		scaleX = ( screenWidth - 1 ) / ( maxX - minX );
@@ -96,8 +160,9 @@ public class ScreenTransform implements InvertibleRealTransform, Concatenable< S
 	}
 
 	/**
-	 * TODO
-	 * @return
+	 * Returns the minimal X layout position displayed on screen.
+	 *
+	 * @return the minimal X layout position.
 	 */
 	public double getMinX()
 	{
@@ -105,8 +170,9 @@ public class ScreenTransform implements InvertibleRealTransform, Concatenable< S
 	}
 
 	/**
-	 * TODO
-	 * @return
+	 * Returns the maximal X layout position displayed on screen.
+	 *
+	 * @return the maximal X layout position.
 	 */
 	public double getMaxX()
 	{
@@ -114,8 +180,9 @@ public class ScreenTransform implements InvertibleRealTransform, Concatenable< S
 	}
 
 	/**
-	 * TODO
-	 * @return
+	 * Returns the minimal Y layout position displayed on screen.
+	 *
+	 * @return the minimal Y layout position.
 	 */
 	public double getMinY()
 	{
@@ -123,8 +190,9 @@ public class ScreenTransform implements InvertibleRealTransform, Concatenable< S
 	}
 
 	/**
-	 * TODO
-	 * @return
+	 * Returns the maximal Y layout position displayed on screen.
+	 *
+	 * @return the maximal Y layout position.
 	 */
 	public double getMaxY()
 	{
@@ -132,8 +200,9 @@ public class ScreenTransform implements InvertibleRealTransform, Concatenable< S
 	}
 
 	/**
-	 * TODO
-	 * @return
+	 * Returns the screen width of this transform.
+	 *
+	 * @return the screen width.
 	 */
 	public int getScreenWidth()
 	{
@@ -141,8 +210,9 @@ public class ScreenTransform implements InvertibleRealTransform, Concatenable< S
 	}
 
 	/**
-	 * TODO
-	 * @return
+	 * Returns the screen height of this transform.
+	 *
+	 * @return the screen height.
 	 */
 	public int getScreenHeight()
 	{
@@ -150,11 +220,11 @@ public class ScreenTransform implements InvertibleRealTransform, Concatenable< S
 	}
 
 	/**
-	 * Get the x scale factor. This is the factor by which layout <em>x</em>
-	 * coordinates have to be multiplied to obtain screen <em>x</em>
+	 * Get the X scale factor. This is the factor by which layout <em>X</em>
+	 * coordinates have to be multiplied to obtain screen <em>X</em>
 	 * coordinates.
 	 *
-	 * @return the x scale factor.
+	 * @return the X scale factor.
 	 */
 	public double getScaleX()
 	{
@@ -162,11 +232,11 @@ public class ScreenTransform implements InvertibleRealTransform, Concatenable< S
 	}
 
 	/**
-	 * Get the y scale factor. This is the factor by which layout <em>y</em>
-	 * coordinates have to be multiplied to obtain screen <em>y</em>
+	 * Get the Y scale factor. This is the factor by which layout <em>Y</em>
+	 * coordinates have to be multiplied to obtain screen <em>Y</em>
 	 * coordinates.
 	 *
-	 * @return the y scale factor.
+	 * @return the Y scale factor.
 	 */
 	public double getScaleY()
 	{
@@ -187,7 +257,9 @@ public class ScreenTransform implements InvertibleRealTransform, Concatenable< S
 	 * Set the screen size.
 	 *
 	 * @param w
+	 *            the screen width.
 	 * @param h
+	 *            the screen height.
 	 */
 	public void setScreenSize( final int w, final int h )
 	{
@@ -196,21 +268,49 @@ public class ScreenTransform implements InvertibleRealTransform, Concatenable< S
 		update();
 	}
 
+	/**
+	 * Convert the specified screen X position to a layout X position.
+	 *
+	 * @param x
+	 *            the screen X position.
+	 * @return the layout X position.
+	 */
 	public double screenToLayoutX( final double x )
 	{
 		return minX + x / scaleX;
 	}
 
+	/**
+	 * Convert the specified screen Y position to a layout Y position.
+	 *
+	 * @param y
+	 *            the screen Y position.
+	 * @return the layout Y position.
+	 */
 	public double screenToLayoutY( final double y )
 	{
 		return minY + y / scaleY;
 	}
 
+	/**
+	 * Convert the specified layout X position to a screen X position.
+	 *
+	 * @param x
+	 *            the layout X position.
+	 * @return the screen X position.
+	 */
 	public double layoutToScreenX( final double x )
 	{
 		return ( x - minX ) * scaleX;
 	}
 
+	/**
+	 * Convert the specified layout Y position to a screen Y position.
+	 *
+	 * @param y
+	 *            the layout Y position.
+	 * @return the screen Y position.
+	 */
 	public double layoutToScreenY( final double y )
 	{
 		return ( y - minY ) * scaleY;
@@ -221,8 +321,12 @@ public class ScreenTransform implements InvertibleRealTransform, Concatenable< S
 	 * {@code (screenCenterX, screenCenterY)} fixed.
 	 *
 	 * @param scale
+	 *            the factor by which to zoom. Use values larger than 1 to zoom
+	 *            out, and smaller than 1 to zoom in.
 	 * @param screenCenterX
+	 *            the X screen coordinate to keep fixed while zooming.
 	 * @param screenCenterY
+	 *            the Y screen coordinate to keep fixed while zooming.
 	 */
 	public void zoom( final double scale, final double screenCenterX, final double screenCenterY )
 	{
@@ -235,7 +339,10 @@ public class ScreenTransform implements InvertibleRealTransform, Concatenable< S
 	 * {@code screenCenterX} fixed.
 	 *
 	 * @param scale
+	 *            the factor by which to zoom. Use values larger than 1 to zoom
+	 *            out, and smaller than 1 to zoom in.
 	 * @param screenCenterX
+	 *            the X screen coordinate to keep fixed while zooming.
 	 */
 	public void zoomX( final double scale, final double screenCenterX )
 	{
@@ -251,14 +358,17 @@ public class ScreenTransform implements InvertibleRealTransform, Concatenable< S
 	 * {@code screenCenterY} fixed.
 	 *
 	 * @param scale
-	 * @param screenCenterX
+	 *            the factor by which to zoom. Use values larger than 1 to zoom
+	 *            out, and smaller than 1 to zoom in.
+	 * @param screenCenterY
+	 *            the Y screen coordinate to keep fixed while zooming.
 	 */
-	public void zoomY( final double scale, final double screenCenterX )
+	public void zoomY( final double scale, final double screenCenterY )
 	{
-		final double lY = screenToLayoutY( screenCenterX );
+		final double lY = screenToLayoutY( screenCenterY );
 		final double newSizeY = ( maxY - minY ) * scale;
 		scaleY = ( screenHeight - 1 ) / newSizeY;
-		minY = lY - screenCenterX / scaleY;
+		minY = lY - screenCenterY / scaleY;
 		maxY = minY + newSizeY;
 	}
 
@@ -266,7 +376,9 @@ public class ScreenTransform implements InvertibleRealTransform, Concatenable< S
 	 * Translate such that screen coordinates move by {@code (dX, dY)}
 	 *
 	 * @param dX
+	 *            the amount, in screen coordinates, to move along the X axis.
 	 * @param dY
+	 *            the amount, in screen coordinates, to move along the Y axis.
 	 */
 	public void shift( final int dX, final int dY )
 	{
@@ -278,6 +390,7 @@ public class ScreenTransform implements InvertibleRealTransform, Concatenable< S
 	 * Translate such that screen coordinates move by {@code dX} in X.
 	 *
 	 * @param dX
+	 *            the amount, in screen coordinates, to move along the X axis.
 	 */
 	public void shiftX( final double dX )
 	{
@@ -290,6 +403,7 @@ public class ScreenTransform implements InvertibleRealTransform, Concatenable< S
 	 * Translate such that screen coordinates move by {@code dY} in Y.
 	 *
 	 * @param dY
+	 *            the amount, in screen coordinates, to move along the Y axis.
 	 */
 	public void shiftY( final double dY )
 	{
@@ -302,6 +416,7 @@ public class ScreenTransform implements InvertibleRealTransform, Concatenable< S
 	 * Translate such that layout coordinates move by {@code dX} in X.
 	 *
 	 * @param dX
+	 *            the amount, in layout coordinates, to move along the X axis.
 	 */
 	public void shiftLayoutX( final double dX )
 	{
@@ -313,6 +428,7 @@ public class ScreenTransform implements InvertibleRealTransform, Concatenable< S
 	 * Translate such that layout coordinates move by {@code dY} in Y.
 	 *
 	 * @param dY
+	 *            the amount, in layout coordinates, to move along the Y axis.
 	 */
 	public void shiftLayoutY( final double dY )
 	{
@@ -321,7 +437,15 @@ public class ScreenTransform implements InvertibleRealTransform, Concatenable< S
 	}
 
 	/**
-	 * Set this transform to linear interpolation {@code (1 - ratio) * start + ratio * end}.
+	 * Sets this transform to the linear interpolation
+	 * {@code (1 - ratio) * start + ratio * end}.
+	 *
+	 * @param start
+	 *            the starting transform.
+	 * @param end
+	 *            the ending transform.
+	 * @param ratio
+	 *            the ratio of interpolation, must be between 0 and 1.
 	 */
 	public void interpolate( final ScreenTransform start, final ScreenTransform end, final double ratio )
 	{
@@ -329,8 +453,8 @@ public class ScreenTransform implements InvertibleRealTransform, Concatenable< S
 		this.maxX = (1 - ratio) * start.maxX + ratio * end.maxX;
 		this.minY = (1 - ratio) * start.minY + ratio * end.minY;
 		this.maxY = (1 - ratio) * start.maxY + ratio * end.maxY;
-		this.screenWidth = ( int ) Math.round( ( (1 - ratio) * start.screenWidth + ratio * end.screenWidth ) );
-		this.screenHeight = ( int ) Math.round( ( (1 - ratio) * start.screenHeight + ratio * end.screenHeight ) );
+		this.screenWidth = ( int ) ( (1 - ratio) * start.screenWidth + ratio * end.screenWidth );
+		this.screenHeight = ( int ) ( (1 - ratio) * start.screenHeight + ratio * end.screenHeight );
 		update();
 	}
 
