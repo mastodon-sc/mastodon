@@ -15,11 +15,8 @@ import org.scijava.ui.behaviour.KeyStrokeAdder;
 import org.scijava.ui.behaviour.io.InputTriggerConfig;
 import org.scijava.ui.behaviour.io.yaml.YamlConfigIO;
 
-import bdv.BigDataViewer;
-import bdv.export.ProgressWriterConsole;
 import bdv.spimdata.SpimDataMinimal;
 import bdv.spimdata.XmlIoSpimDataMinimal;
-import bdv.tools.InitializeViewerState;
 import bdv.tools.ToggleDialogAction;
 import bdv.util.AbstractNamedAction;
 import bdv.viewer.TimePointListener;
@@ -27,10 +24,11 @@ import bdv.viewer.ViewerFrame;
 import bdv.viewer.ViewerOptions;
 import bdv.viewer.ViewerPanel;
 import mpicbg.spim.data.SpimDataException;
-import mpicbg.spim.data.sequence.TimePoint;
 import net.trackmate.graph.GraphIdBimap;
 import net.trackmate.graph.listenable.GraphChangeListener;
 import net.trackmate.graph.listenable.ListenableGraph;
+import net.trackmate.revised.bdv.BigDataViewerMaMuT;
+import net.trackmate.revised.bdv.SharedBigDataViewerData;
 import net.trackmate.revised.bdv.overlay.MouseNavigationHandler;
 import net.trackmate.revised.bdv.overlay.MouseOverListener;
 import net.trackmate.revised.bdv.overlay.MouseSelectionHandler;
@@ -83,17 +81,19 @@ import net.trackmate.revised.ui.selection.SelectionListener;
 
 public class WindowManager
 {
-	private final GroupManager groupManager;
-
 	private final SpimDataMinimal spimData;
+
+	private final Model model;
 
 	private final InputTriggerConfig keyconf;
 
-	final int minTimepoint;
+	private final GroupManager groupManager;
 
-	final int maxTimepoint;
+	private final SharedBigDataViewerData sharedBdvData;
 
-	private final Model model;
+	private final int minTimepoint;
+
+	private final int maxTimepoint;
 
 	private final Selection< Spot, Link > selection;
 
@@ -109,7 +109,9 @@ public class WindowManager
 		this.spimData = spimData;
 		this.model = model;
 		this.keyconf = keyconf;
+
 		groupManager = new GroupManager();
+		sharedBdvData = new SharedBigDataViewerData( spimData, ViewerOptions.options().inputTriggerConfig( keyconf ) );
 
 		final ListenableGraph< Spot, Link > graph = model.getGraph();
 		final GraphIdBimap< Spot, Link > idmap = model.getGraphIdBimap();
@@ -117,9 +119,8 @@ public class WindowManager
 		highlightModel = new HighlightModel< Spot, Link  >( idmap );
 		radiusStats = new BoundingSphereRadiusStatistics( model );
 
-		final List< TimePoint > timePointsOrdered = spimData.getSequenceDescription().getTimePoints().getTimePointsOrdered();
 		minTimepoint = 0;
-		maxTimepoint = timePointsOrdered.size() - 1;
+		maxTimepoint = sharedBdvData.getNumTimepoints() - 1;
 		/*
 		 * TODO: (?) For now, we use timepoint indices in MaMuT model, instead
 		 * of IDs/names. This is because BDV also displays timepoint index, and
@@ -214,11 +215,10 @@ public class WindowManager
 				selection );
 
 		final String windowTitle = "BigDataViewer " + (bdvName++); // TODO: use JY naming scheme
-		final BigDataViewer bdv = BigDataViewer.open( spimData, windowTitle, new ProgressWriterConsole(),
-				ViewerOptions.options().inputTriggerConfig( keyconf ) );
+		final BigDataViewerMaMuT bdv = BigDataViewerMaMuT.open( sharedBdvData, windowTitle );
 
 //		if ( !bdv.tryLoadSettings( bdvFile ) ) // TODO
-			InitializeViewerState.initBrightness( 0.001, 0.999, bdv.getViewer(), bdv.getSetupAssignments() );
+//			InitializeViewerState.initBrightness( 0.001, 0.999, bdv.getViewer(), bdv.getSetupAssignments() );
 
 		final ViewerPanel viewer = bdv.getViewer();
 		viewer.setTimepoint( currentTimepoint );
@@ -548,9 +548,9 @@ public class WindowManager
 		System.setProperty( "apple.laf.useScreenMenuBar", "true" );
 
 		final WindowManager wm = new WindowManager( spimData, model, keyconf );
-		wm.createBigDataViewer();
-		wm.createTrackScheme();
-//		wm.createBigDataViewer();
-		wm.bdvWindows.get( 0 ).getViewerFrame().getViewerPanel().setTimepoint( 15 );
+
+		final MainWindow mw = new MainWindow( wm );
+		mw.pack();
+		mw.setVisible( true );
 	}
 }
