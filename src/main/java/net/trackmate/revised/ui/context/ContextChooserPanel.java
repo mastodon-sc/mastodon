@@ -1,4 +1,4 @@
-package net.trackmate.revised.trackscheme.context;
+package net.trackmate.revised.ui.context;
 
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
@@ -8,6 +8,10 @@ import javax.swing.DefaultComboBoxModel;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+
+import net.trackmate.revised.context.ContextChooser;
+import net.trackmate.revised.context.ContextProvider;
+import net.trackmate.revised.context.ContextChooser.UpdateListener;
 
 public class ContextChooserPanel< V > extends JPanel implements ContextChooser.UpdateListener
 {

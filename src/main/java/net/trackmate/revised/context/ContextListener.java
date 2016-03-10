@@ -1,4 +1,4 @@
-package net.trackmate.revised.trackscheme.context;
+package net.trackmate.revised.context;
 
 public interface ContextListener< V >
 {

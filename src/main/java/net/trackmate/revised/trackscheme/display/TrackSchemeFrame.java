@@ -20,13 +20,13 @@ import bdv.viewer.InputActionBindings;
 import bdv.viewer.TriggerBehaviourBindings;
 import net.imglib2.ui.TransformEventHandler;
 import net.imglib2.ui.util.GuiUtil;
+import net.trackmate.revised.context.ContextChooser;
 import net.trackmate.revised.trackscheme.TrackSchemeFocus;
 import net.trackmate.revised.trackscheme.TrackSchemeGraph;
 import net.trackmate.revised.trackscheme.TrackSchemeHighlight;
 import net.trackmate.revised.trackscheme.TrackSchemeNavigation;
 import net.trackmate.revised.trackscheme.TrackSchemeSelection;
-import net.trackmate.revised.trackscheme.context.ContextChooser;
-import net.trackmate.revised.trackscheme.context.ContextChooserPanel;
+import net.trackmate.revised.ui.context.ContextChooserPanel;
 import net.trackmate.revised.ui.grouping.GroupHandle;
 import net.trackmate.revised.ui.grouping.GroupLocksPanel;
 

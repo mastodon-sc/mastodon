@@ -2,7 +2,7 @@ package net.trackmate.revised.trackscheme;
 
 import net.trackmate.graph.collection.CollectionUtils;
 import net.trackmate.graph.collection.RefList;
-import net.trackmate.revised.trackscheme.context.Context;
+import net.trackmate.revised.context.Context;
 
 public class ContextLayout
 {

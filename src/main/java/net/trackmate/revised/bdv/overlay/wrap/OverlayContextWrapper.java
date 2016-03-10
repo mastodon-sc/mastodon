@@ -6,8 +6,8 @@ import java.util.concurrent.locks.Lock;
 import net.trackmate.graph.Edge;
 import net.trackmate.graph.Vertex;
 import net.trackmate.revised.bdv.overlay.OverlayContext;
-import net.trackmate.revised.trackscheme.context.Context;
-import net.trackmate.revised.trackscheme.context.ContextListener;
+import net.trackmate.revised.context.Context;
+import net.trackmate.revised.context.ContextListener;
 
 public class OverlayContextWrapper< V extends Vertex< E >, E extends Edge< V > >
 		implements Context< V >, ContextListener< OverlayVertexWrapper< V, E > >

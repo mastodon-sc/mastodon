@@ -5,8 +5,8 @@ import java.util.concurrent.locks.Lock;
 import net.imglib2.algorithm.kdtree.ConvexPolytope;
 import net.imglib2.realtransform.AffineTransform3D;
 import net.imglib2.ui.TransformListener;
-import net.trackmate.revised.trackscheme.context.Context;
-import net.trackmate.revised.trackscheme.context.ContextListener;
+import net.trackmate.revised.context.Context;
+import net.trackmate.revised.context.ContextListener;
 import net.trackmate.spatial.ClipConvexPolytope;
 import net.trackmate.spatial.SpatioTemporalIndex;
 

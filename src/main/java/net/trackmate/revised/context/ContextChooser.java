@@ -1,4 +1,4 @@
-package net.trackmate.revised.trackscheme.context;
+package net.trackmate.revised.context;
 
 import java.util.ArrayList;
 import java.util.Collection;

@@ -4,8 +4,8 @@ import java.util.Iterator;
 import java.util.concurrent.locks.Lock;
 
 import net.trackmate.graph.GraphIdBimap;
-import net.trackmate.revised.trackscheme.context.Context;
-import net.trackmate.revised.trackscheme.context.ContextListener;
+import net.trackmate.revised.context.Context;
+import net.trackmate.revised.context.ContextListener;
 
 /**
  * A {@link ContextListener} on vertice type {@code V} that wraps {@link Context
