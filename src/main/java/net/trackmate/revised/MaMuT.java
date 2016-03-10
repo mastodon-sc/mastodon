@@ -5,6 +5,14 @@ import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
+import bdv.BigDataViewer;
+import bdv.export.ProgressWriterConsole;
+import bdv.spimdata.SpimDataMinimal;
+import bdv.spimdata.XmlIoSpimDataMinimal;
+import bdv.tools.InitializeViewerState;
+import bdv.viewer.ViewerFrame;
+import bdv.viewer.ViewerOptions;
+import bdv.viewer.ViewerPanel;
 import mpicbg.spim.data.SpimDataException;
 import mpicbg.spim.data.sequence.TimePoint;
 import net.trackmate.graph.GraphIdBimap;
@@ -34,11 +42,13 @@ import net.trackmate.revised.trackscheme.ModelFocusProperties;
 import net.trackmate.revised.trackscheme.ModelHighlightProperties;
 import net.trackmate.revised.trackscheme.ModelNavigationProperties;
 import net.trackmate.revised.trackscheme.ModelSelectionProperties;
+import net.trackmate.revised.trackscheme.TrackSchemeContextListener;
 import net.trackmate.revised.trackscheme.TrackSchemeFocus;
 import net.trackmate.revised.trackscheme.TrackSchemeGraph;
 import net.trackmate.revised.trackscheme.TrackSchemeHighlight;
 import net.trackmate.revised.trackscheme.TrackSchemeNavigation;
 import net.trackmate.revised.trackscheme.TrackSchemeSelection;
+import net.trackmate.revised.trackscheme.context.ContextChooser;
 import net.trackmate.revised.trackscheme.display.TrackSchemeFrame;
 import net.trackmate.revised.ui.grouping.GroupHandle;
 import net.trackmate.revised.ui.grouping.GroupLocksPanel;
@@ -49,14 +59,6 @@ import net.trackmate.revised.ui.selection.HighlightModel;
 import net.trackmate.revised.ui.selection.NavigationHandler;
 import net.trackmate.revised.ui.selection.Selection;
 import net.trackmate.revised.ui.selection.SelectionListener;
-import bdv.BigDataViewer;
-import bdv.export.ProgressWriterConsole;
-import bdv.spimdata.SpimDataMinimal;
-import bdv.spimdata.XmlIoSpimDataMinimal;
-import bdv.tools.InitializeViewerState;
-import bdv.viewer.ViewerFrame;
-import bdv.viewer.ViewerOptions;
-import bdv.viewer.ViewerPanel;
 
 public class MaMuT
 {
@@ -146,6 +148,14 @@ public class MaMuT
 		final TrackSchemeFocus trackSchemeFocus = new TrackSchemeFocus( focusProperties, trackSchemeGraph );
 
 		/*
+		 * TrackScheme ContextChooser
+		 */
+		final TrackSchemeContextListener< Spot > contextListener = new TrackSchemeContextListener< >(
+				idmap,
+				trackSchemeGraph );
+		final ContextChooser< Spot > contextChooser = new ContextChooser<>( contextListener );
+
+		/*
 		 * show TrackSchemeFrame
 		 */
 		final TrackSchemeFrame frame = new TrackSchemeFrame(
@@ -154,7 +164,8 @@ public class MaMuT
 				trackSchemeFocus,
 				trackSchemeSelection,
 				trackSchemeNavigation,
-				trackSchemeGroupHandle );
+				trackSchemeGroupHandle,
+				contextChooser );
 		frame.getTrackschemePanel().setTimepointRange( minTimepoint, maxTimepoint );
 		frame.getTrackschemePanel().graphChanged();
 		frame.setVisible( true );
