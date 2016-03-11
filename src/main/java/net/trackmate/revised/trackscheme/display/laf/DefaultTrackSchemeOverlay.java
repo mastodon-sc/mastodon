@@ -89,15 +89,17 @@ public class DefaultTrackSchemeOverlay extends AbstractTrackSchemeOverlay
 
 	private final Color[] shadowColors;
 
-	protected TrackSchemeStyle style = TrackSchemeStyle.defaultStyle();
+	private final TrackSchemeStyle style;
 
 	public DefaultTrackSchemeOverlay(
 			final TrackSchemeGraph< ?, ? > graph,
 			final TrackSchemeHighlight highlight,
 			final TrackSchemeFocus focus,
-			final TrackSchemeOptions options )
+			final TrackSchemeOptions options,
+			final TrackSchemeStyle style )
 	{
 		super( graph, highlight, focus, options );
+		this.style = style;
 
 		final int[] shadowAlphas = new int[] { 28, 22, 17, 12, 8, 6, 3 };
 //		final int[] shadowAlphas = new int[] { 44, 35, 28, 22, 17, 12, 8, 6, 3 };

@@ -34,6 +34,7 @@ import net.trackmate.revised.trackscheme.TrackSchemeSelection;
 import net.trackmate.revised.trackscheme.TrackSchemeVertex;
 import net.trackmate.revised.trackscheme.display.TrackSchemeOptions.Values;
 import net.trackmate.revised.trackscheme.display.laf.DefaultTrackSchemeOverlay;
+import net.trackmate.revised.trackscheme.display.laf.TrackSchemeStyle;
 import net.trackmate.revised.ui.selection.FocusListener;
 import net.trackmate.revised.ui.selection.HighlightListener;
 import net.trackmate.revised.ui.selection.NavigationEtiquette;
@@ -175,7 +176,9 @@ public class TrackSchemePanel extends JPanel implements
 		focus.addFocusListener( this );
 		selection.addSelectionListener( this );
 
-		graphOverlay = new DefaultTrackSchemeOverlay( graph, highlight, focus, optional );
+		style = TrackSchemeStyle.defaultStyle();
+		graphOverlay = new DefaultTrackSchemeOverlay( graph, highlight, focus, optional, style );
+
 		display.addOverlayRenderer( graphOverlay );
 
 		// This should be the last OverlayRenderer in display.
@@ -612,6 +615,15 @@ public class TrackSchemePanel extends JPanel implements
 	protected InteractiveDisplayCanvasComponent< ScreenTransform > getDisplay()
 	{
 		return display;
+	}
+
+	// TODO: THIS IS FOR TESTING ONLY
+	private TrackSchemeStyle style;
+
+	// TODO remove??? revise TrackSchemePanel / TrackSchemeFrame construction.
+	public void setTrackSchemeStyle( final TrackSchemeStyle s )
+	{
+		style.set( s );
 	}
 
 	// TODO remove??? revise TrackSchemePanel / TrackSchemeFrame construction.

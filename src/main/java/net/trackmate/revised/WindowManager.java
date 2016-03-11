@@ -69,6 +69,8 @@ import net.trackmate.revised.trackscheme.TrackSchemeHighlight;
 import net.trackmate.revised.trackscheme.TrackSchemeNavigation;
 import net.trackmate.revised.trackscheme.TrackSchemeSelection;
 import net.trackmate.revised.trackscheme.display.TrackSchemeFrame;
+import net.trackmate.revised.trackscheme.display.laf.TrackSchemeStyle;
+import net.trackmate.revised.trackscheme.display.ui.TrackSchemeStylePanel.TrackSchemeStyleDialog;
 import net.trackmate.revised.ui.grouping.GroupHandle;
 import net.trackmate.revised.ui.grouping.GroupLocksPanel;
 import net.trackmate.revised.ui.grouping.GroupManager;
@@ -525,6 +527,29 @@ public class WindowManager
 		frame.getTrackschemePanel().graphChanged();
 		contextListener.setContextListener( frame.getTrackschemePanel() );
 		frame.setVisible( true );
+
+		// TODO revise
+		// TrackSchemeStyleDialog triggered by "R"
+		final TrackSchemeStyle style = TrackSchemeStyle.defaultStyle();
+		final String TRACK_SCHEME_STYLE_SETTINGS = "render settings";
+		final TrackSchemeStyleDialog trackSchemeStyleDialog = new TrackSchemeStyleDialog( frame, style );
+		final ActionMap actionMap = new ActionMap();
+		AbstractNamedAction.put( actionMap, new ToggleDialogAction( TRACK_SCHEME_STYLE_SETTINGS, trackSchemeStyleDialog ) );
+		final InputMap inputMap = new InputMap();
+		final KeyStrokeAdder a = keyconf.keyStrokeAdder( inputMap, "mamut" );
+		a.put( TRACK_SCHEME_STYLE_SETTINGS, "R" );
+		frame.getKeybindings().addActionMap( "mamut", actionMap );
+		frame.getKeybindings().addInputMap( "mamut", inputMap );
+		style.addUpdateListener( new TrackSchemeStyle.UpdateListener()
+		{
+			@Override
+			public void trackSchemeStyleChanged()
+			{
+				frame.getTrackschemePanel().setTrackSchemeStyle( style );
+				// TODO: less hacky way of triggering repaint
+				frame.getTrackschemePanel().repaint();
+			}
+		} );
 
 		final TsWindow tsWindow = new TsWindow( frame, groupHandle, contextChooser );
 		addTsWindow( tsWindow );

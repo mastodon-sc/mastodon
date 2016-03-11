@@ -4,6 +4,7 @@ import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Stroke;
+import java.util.ArrayList;
 
 public class TrackSchemeStyle
 {
@@ -134,6 +135,7 @@ public class TrackSchemeStyle
 	{
 		edgeColor = c;
 		updateGhostColors();
+		notifyListeners();
 		return this;
 	}
 
@@ -141,6 +143,7 @@ public class TrackSchemeStyle
 	{
 		vertexFillColor = c;
 		updateGhostColors();
+		notifyListeners();
 		return this;
 	}
 
@@ -148,6 +151,7 @@ public class TrackSchemeStyle
 	{
 		vertexDrawColor = c;
 		updateGhostColors();
+		notifyListeners();
 		return this;
 	}
 
@@ -155,6 +159,7 @@ public class TrackSchemeStyle
 	{
 		selectedVertexFillColor = c;
 		updateGhostColors();
+		notifyListeners();
 		return this;
 	}
 
@@ -162,6 +167,7 @@ public class TrackSchemeStyle
 	{
 		selectedEdgeColor = c;
 		updateGhostColors();
+		notifyListeners();
 		return this;
 	}
 
@@ -169,6 +175,7 @@ public class TrackSchemeStyle
 	{
 		selectedVertexDrawColor = c;
 		updateGhostColors();
+		notifyListeners();
 		return this;
 	}
 
@@ -176,6 +183,7 @@ public class TrackSchemeStyle
 	{
 		simplifiedVertexFillColor = c;
 		updateGhostColors();
+		notifyListeners();
 		return this;
 	}
 
@@ -183,6 +191,7 @@ public class TrackSchemeStyle
 	{
 		selectedSimplifiedVertexFillColor = c;
 		updateGhostColors();
+		notifyListeners();
 		return this;
 	}
 
@@ -190,95 +199,176 @@ public class TrackSchemeStyle
 	{
 		backgroundColor = c;
 		updateGhostColors();
+		notifyListeners();
 		return this;
 	}
 
 	public TrackSchemeStyle currentTimepointColor( final Color c )
 	{
 		currentTimepointColor = c;
+		notifyListeners();
 		return this;
 	}
 
 	public TrackSchemeStyle decorationColor( final Color c )
 	{
 		decorationColor = c;
+		notifyListeners();
 		return this;
 	}
 
 	public TrackSchemeStyle vertexRangeColor( final Color c )
 	{
 		vertexRangeColor = c;
+		notifyListeners();
 		return this;
 	}
 
 	public TrackSchemeStyle headerBackgroundColor( final Color c )
 	{
 		headerBackgroundColor = c;
+		notifyListeners();
 		return this;
 	}
 
 	public TrackSchemeStyle headerDecorationColor( final Color c )
 	{
 		headerDecorationColor = c;
+		notifyListeners();
 		return this;
 	}
 
 	public TrackSchemeStyle headerCurrentTimepointColor( final Color c )
 	{
 		headerCurrentTimepointColor = c;
+		notifyListeners();
 		return this;
 	}
 
 	public TrackSchemeStyle font( final Font f )
 	{
 		font = f;
+		notifyListeners();
 		return this;
 	}
 
 	public TrackSchemeStyle headerFont( final Font f )
 	{
 		headerFont = f;
+		notifyListeners();
 		return this;
 	}
 
 	public TrackSchemeStyle edgeStroke( final Stroke s )
 	{
 		edgeStroke = s;
+		notifyListeners();
 		return this;
 	}
 
 	public TrackSchemeStyle edgeGhostStroke( final Stroke s )
 	{
 		edgeGhostStroke = s;
+		notifyListeners();
 		return this;
 	}
 
 	public TrackSchemeStyle vertexStroke( final Stroke s )
 	{
 		vertexStroke = s;
+		notifyListeners();
 		return this;
 	}
 
 	public TrackSchemeStyle vertexGhostStroke( final Stroke s )
 	{
 		vertexGhostStroke = s;
+		notifyListeners();
 		return this;
 	}
 
 	public TrackSchemeStyle highlightStroke( final Stroke s )
 	{
 		highlightStroke = s;
+		notifyListeners();
 		return this;
 	}
 
 	public TrackSchemeStyle focusStroke( final Stroke s )
 	{
 		focusStroke = s;
+		notifyListeners();
 		return this;
 	}
 
 	private TrackSchemeStyle()
-	{}
+	{
+		updateListeners = new ArrayList<>();
+	}
+
+	public synchronized void set( final TrackSchemeStyle style )
+	{
+		this.edgeColor = style.edgeColor;
+		this.vertexFillColor = style.vertexFillColor;
+		this.vertexDrawColor = style.vertexDrawColor;
+		this.selectedVertexFillColor = style.selectedVertexFillColor;
+		this.selectedEdgeColor = style.selectedEdgeColor;
+		this.selectedVertexDrawColor = style.selectedVertexDrawColor;
+		this.simplifiedVertexFillColor = style.simplifiedVertexFillColor;
+		this.selectedSimplifiedVertexFillColor = style.selectedSimplifiedVertexFillColor;
+		this.ghostEdgeColor = style.ghostEdgeColor;
+		this.ghostVertexFillColor = style.ghostVertexFillColor;
+		this.ghostVertexDrawColor = style.ghostVertexDrawColor;
+		this.ghostSelectedVertexFillColor = style.ghostSelectedVertexFillColor;
+		this.ghostSelectedEdgeColor = style.ghostSelectedEdgeColor;
+		this.ghostSelectedVertexDrawColor = style.ghostSelectedVertexDrawColor;
+		this.ghostSimplifiedVertexFillColor = style.ghostSimplifiedVertexFillColor;
+		this.ghostSelectedSimplifiedVertexFillColor = style.ghostSelectedSimplifiedVertexFillColor;
+		this.backgroundColor = style.backgroundColor;
+		this.currentTimepointColor = style.currentTimepointColor;
+		this.decorationColor = style.decorationColor;
+		this.vertexRangeColor = style.vertexRangeColor;
+		this.headerBackgroundColor = style.headerBackgroundColor;
+		this.headerDecorationColor = style.headerDecorationColor;
+		this.headerCurrentTimepointColor = style.headerCurrentTimepointColor;
+		this.font = style.font;
+		this.headerFont = style.headerFont;
+		this.edgeStroke = style.edgeStroke;
+		this.edgeGhostStroke = style.edgeGhostStroke;
+		this.vertexStroke = style.vertexStroke;
+		this.vertexGhostStroke = style.vertexGhostStroke;
+		this.highlightStroke = style.highlightStroke;
+		this.focusStroke = style.focusStroke;
+		notifyListeners();
+	}
+
+	public interface UpdateListener
+	{
+		public void trackSchemeStyleChanged();
+	}
+
+	private final ArrayList< UpdateListener > updateListeners;
+
+	private void notifyListeners()
+	{
+		for ( final UpdateListener l : updateListeners )
+			l.trackSchemeStyleChanged();
+	}
+
+	public synchronized boolean addUpdateListener( final UpdateListener l )
+	{
+		if ( !updateListeners.contains( l ) )
+		{
+			updateListeners.add( l );
+			return true;
+		}
+		return false;
+	}
+
+	public synchronized boolean removeUpdateListener( final UpdateListener l )
+	{
+		return updateListeners.remove( l );
+	}
 
 	public static TrackSchemeStyle defaultStyle()
 	{
