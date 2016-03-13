@@ -25,6 +25,7 @@ import javax.swing.BoxLayout;
 import javax.swing.Icon;
 import javax.swing.InputMap;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JColorChooser;
 import javax.swing.JComponent;
 import javax.swing.JDialog;
@@ -55,11 +56,13 @@ public class TrackSchemeStylePanel extends JPanel
 		c.insets = new Insets( 0, 5, 0, 5 );
 		c.ipadx = 0;
 		c.ipady = 0;
-		c.gridwidth = 1;
+		c.gridy = 0;
 
 		final List< ColorSetter > styleColors = styleColors( style );
+		final List< BooleanSetter > styleBooleans = styleBooleans( style );
 
-		c.gridy = 0;
+		c.gridx = 0;
+		c.gridwidth = 2;
 		c.fill = GridBagConstraints.HORIZONTAL;
 		for ( final ColorSetter colorSetter : styleColors )
 		{
@@ -90,12 +93,7 @@ public class TrackSchemeStylePanel extends JPanel
 				}
 			} );
 			c.anchor = GridBagConstraints.LINE_END;
-			c.gridx = 0;
 			add( button, c );
-//			button.setFont( new JLabel().getFont() );
-//			c.anchor = GridBagConstraints.LINE_START;
-//			c.gridx = 1;
-//			add( new JLabel( colorSetter.getLabel() ), c );
 			c.gridy++;
 
 			if ( colorSetter.skip > 0 )
@@ -104,6 +102,28 @@ public class TrackSchemeStylePanel extends JPanel
 				c.gridy++;
 			}
 		}
+
+		add( Box.createVerticalStrut( 15 ), c );
+		c.gridy++;
+
+		for ( final BooleanSetter booleanSetter : styleBooleans )
+		{
+			final JCheckBox checkbox = new JCheckBox( booleanSetter.getLabel(), booleanSetter.get() );
+			checkbox.addActionListener( new ActionListener()
+			{
+				@Override
+				public void actionPerformed( final ActionEvent e )
+				{
+					booleanSetter.set( checkbox.isSelected() );
+				}
+			} );
+			add( checkbox, c );
+			c.gridy++;
+		}
+//		c.anchor = GridBagConstraints.LINE_START;
+//		c.gridx = 1;
+//		add( new JLabel( colorSetter.getLabel() ), c );
+
 	}
 
 	private static abstract class ColorSetter
@@ -136,6 +156,25 @@ public class TrackSchemeStylePanel extends JPanel
 		public abstract Color getColor();
 
 		public abstract void setColor( Color c );
+	}
+
+	private static abstract class BooleanSetter
+	{
+		private final String label;
+
+		public BooleanSetter( final String label )
+		{
+			this.label = label;
+		}
+
+		public String getLabel()
+		{
+			return label;
+		}
+
+		public abstract boolean get();
+
+		public abstract void set( boolean b );
 	}
 
 	private static List< ColorSetter > styleColors( final TrackSchemeStyle style )
@@ -200,6 +239,28 @@ public class TrackSchemeStylePanel extends JPanel
 				new ColorSetter( "headerCurrentTimepointColor" ) {
 					@Override public Color getColor() { return style.headerCurrentTimepointColor; }
 					@Override public void setColor( final Color c ) { style.headerCurrentTimepointColor( c ); }
+				}
+		} );
+	}
+
+	private static List< BooleanSetter > styleBooleans( final TrackSchemeStyle style )
+	{
+		return Arrays.asList( new BooleanSetter[] {
+				new BooleanSetter( "highlightCurrentTimepoint ") {
+					@Override public boolean get() { return style.highlightCurrentTimepoint; }
+					@Override public void set( final boolean b ) { style.highlightCurrentTimepoint( b ); }
+				},
+				new BooleanSetter( "paintRows ") {
+					@Override public boolean get() { return style.paintRows; }
+					@Override public void set( final boolean b ) { style.paintRows( b ); }
+				},
+				new BooleanSetter( "paintColumns ") {
+					@Override public boolean get() { return style.paintColumns; }
+					@Override public void set( final boolean b ) { style.paintColumns( b ); }
+				},
+				new BooleanSetter( "paintHeaderShadow ") {
+					@Override public boolean get() { return style.paintHeaderShadow; }
+					@Override public void set( final boolean b ) { style.paintHeaderShadow( b ); }
 				}
 		} );
 	}
