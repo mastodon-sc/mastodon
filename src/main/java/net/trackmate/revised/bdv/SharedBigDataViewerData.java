@@ -4,9 +4,9 @@ import java.util.ArrayList;
 
 import org.scijava.ui.behaviour.io.InputTriggerConfig;
 
+import bdv.BehaviourTransformEventHandler3D.BehaviourTransformEventHandler3DFactory;
 import bdv.BigDataViewer;
 import bdv.ViewerImgLoader;
-import bdv.BehaviourTransformEventHandler3D.BehaviourTransformEventHandler3DFactory;
 import bdv.img.cache.Cache;
 import bdv.spimdata.WrapBasicImgLoader;
 import bdv.tools.InitializeViewerState;
@@ -14,10 +14,11 @@ import bdv.tools.bookmarks.Bookmarks;
 import bdv.tools.brightness.BrightnessDialog;
 import bdv.tools.brightness.ConverterSetup;
 import bdv.tools.brightness.MinMaxGroup;
+import bdv.tools.brightness.RealARGBColorConverterSetup;
 import bdv.tools.brightness.SetupAssignments;
+import bdv.viewer.RequestRepaint;
 import bdv.viewer.SourceAndConverter;
 import bdv.viewer.ViewerOptions;
-import bdv.viewer.state.SourceGroup;
 import bdv.viewer.state.ViewerState;
 import mpicbg.spim.data.generic.AbstractSpimData;
 import mpicbg.spim.data.generic.sequence.AbstractSequenceDescription;
@@ -46,7 +47,8 @@ public class SharedBigDataViewerData
 
 		public SharedBigDataViewerData(
 				final AbstractSpimData< ? > spimData,
-				final ViewerOptions options )
+				final ViewerOptions options,
+				final RequestRepaint requestRepaint )
 		{
 			if ( WrapBasicImgLoader.wrapImgLoaderIfNecessary( spimData ) )
 			{
@@ -71,6 +73,10 @@ public class SharedBigDataViewerData
 			converterSetups = new ArrayList<>();
 			sources = new ArrayList<>();
 			BigDataViewer.initSetups( spimData, converterSetups, sources );
+
+			for ( final ConverterSetup cs : converterSetups )
+				if ( RealARGBColorConverterSetup.class.isInstance( cs ) )
+					( ( RealARGBColorConverterSetup ) cs ).setViewer( requestRepaint );
 
 			setupAssignments = new SetupAssignments( converterSetups, 0, 65535 );
 			if ( setupAssignments.getMinMaxGroups().size() > 0 )

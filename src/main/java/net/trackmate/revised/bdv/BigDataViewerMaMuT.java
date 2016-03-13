@@ -55,7 +55,6 @@ import bdv.tools.bookmarks.BookmarksEditor;
 import bdv.tools.brightness.BrightnessDialog;
 import bdv.tools.brightness.ConverterSetup;
 import bdv.tools.brightness.MinMaxGroup;
-import bdv.tools.brightness.RealARGBColorConverterSetup;
 import bdv.tools.brightness.SetupAssignments;
 import bdv.viewer.NavigationActions;
 import bdv.viewer.ViewerFrame;
@@ -131,11 +130,6 @@ public class BigDataViewerMaMuT
 		if ( windowTitle != null )
 			viewerFrame.setTitle( windowTitle );
 		viewer = viewerFrame.getViewerPanel();
-
-		// TODO: change in bigdataviewer-core: ConverterSetups should allow to register multiple ViewerPanels or a generic Repainter
-		for ( final ConverterSetup cs : converterSetups )
-			if ( RealARGBColorConverterSetup.class.isInstance( cs ) )
-				( ( RealARGBColorConverterSetup ) cs ).setViewer( viewer );
 
 		bookmarkEditor = new BookmarksEditor( viewer, viewerFrame.getKeybindings(), shared.getBookmarks() );
 

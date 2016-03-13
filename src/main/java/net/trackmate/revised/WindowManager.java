@@ -19,6 +19,7 @@ import bdv.spimdata.SpimDataMinimal;
 import bdv.spimdata.XmlIoSpimDataMinimal;
 import bdv.tools.ToggleDialogAction;
 import bdv.util.AbstractNamedAction;
+import bdv.viewer.RequestRepaint;
 import bdv.viewer.TimePointListener;
 import bdv.viewer.ViewerFrame;
 import bdv.viewer.ViewerOptions;
@@ -262,7 +263,16 @@ public class WindowManager
 		this.keyconf = keyconf;
 
 		groupManager = new GroupManager();
-		sharedBdvData = new SharedBigDataViewerData( spimData, ViewerOptions.options().inputTriggerConfig( keyconf ) );
+		final RequestRepaint requestRepaint = new RequestRepaint()
+		{
+			@Override
+			public void requestRepaint()
+			{
+				for ( final BdvWindow w : bdvWindows )
+					w.getViewerFrame().getViewerPanel().requestRepaint();
+			}
+		};
+		sharedBdvData = new SharedBigDataViewerData( spimData, ViewerOptions.options().inputTriggerConfig( keyconf ), requestRepaint );
 
 		final ListenableGraph< Spot, Link > graph = model.getGraph();
 		final GraphIdBimap< Spot, Link > idmap = model.getGraphIdBimap();
