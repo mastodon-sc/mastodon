@@ -108,6 +108,14 @@ public class TrackSchemeStyle
 
 	public Stroke focusStroke;
 
+	public boolean highlightCurrentTimepoint;
+
+	public boolean paintRows;
+
+	public boolean paintColumns;
+
+	public boolean paintHeaderShadow;
+
 	static Color mixGhostColor( final Color color, final Color backgroundColor )
 	{
 		return ( color == null || backgroundColor == null )
@@ -301,6 +309,34 @@ public class TrackSchemeStyle
 		return this;
 	}
 
+	public TrackSchemeStyle highlightCurrentTimepoint( final boolean b )
+	{
+		highlightCurrentTimepoint = b;
+		notifyListeners();
+		return this;
+	}
+
+	public TrackSchemeStyle paintRows( final boolean b )
+	{
+		paintRows = b;
+		notifyListeners();
+		return this;
+	}
+
+	public TrackSchemeStyle paintColumns( final boolean b )
+	{
+		paintColumns = b;
+		notifyListeners();
+		return this;
+	}
+
+	public TrackSchemeStyle paintHeaderShadow( final boolean b )
+	{
+		paintHeaderShadow = b;
+		notifyListeners();
+		return this;
+	}
+
 	private TrackSchemeStyle()
 	{
 		updateListeners = new ArrayList<>();
@@ -339,6 +375,10 @@ public class TrackSchemeStyle
 		this.vertexGhostStroke = style.vertexGhostStroke;
 		this.highlightStroke = style.highlightStroke;
 		this.focusStroke = style.focusStroke;
+		this.highlightCurrentTimepoint = style.highlightCurrentTimepoint;
+		this.paintRows = style.paintRows;
+		this.paintColumns = style.paintColumns;
+		this.paintHeaderShadow = style.paintHeaderShadow;
 		notifyListeners();
 	}
 
@@ -396,7 +436,11 @@ public class TrackSchemeStyle
 				vertexStroke( new BasicStroke() ).
 				vertexGhostStroke( DEFAULT_GHOST_STROKE ).
 				highlightStroke( new BasicStroke( 3f ) ).
-				focusStroke( DEFAULT_FOCUS_STROKE );
+				focusStroke( DEFAULT_FOCUS_STROKE ).
+				highlightCurrentTimepoint( true ).
+				paintRows( true ).
+				paintColumns( true ).
+				paintHeaderShadow( true );
 	}
 
 	public static TrackSchemeStyle modernStyle()
@@ -427,7 +471,11 @@ public class TrackSchemeStyle
 				vertexStroke( new BasicStroke() ).
 				vertexGhostStroke( DEFAULT_GHOST_STROKE ).
 				highlightStroke( new BasicStroke( 3f ) ).
-				focusStroke( DEFAULT_FOCUS_STROKE );
+				focusStroke( DEFAULT_FOCUS_STROKE ).
+				highlightCurrentTimepoint( true ).
+				paintRows( true ).
+				paintColumns( true ).
+				paintHeaderShadow( true );
 	}
 
 	public static TrackSchemeStyle howMuchDoYouKnowStyle()
@@ -458,6 +506,10 @@ public class TrackSchemeStyle
 				vertexStroke( new BasicStroke() ).
 				vertexGhostStroke( DEFAULT_GHOST_STROKE ).
 				highlightStroke( new BasicStroke( 3f ) ).
-				focusStroke( DEFAULT_FOCUS_STROKE );
+				focusStroke( DEFAULT_FOCUS_STROKE ).
+				highlightCurrentTimepoint( true ).
+				paintRows( true ).
+				paintColumns( true ).
+				paintHeaderShadow( true );
 	}
 }

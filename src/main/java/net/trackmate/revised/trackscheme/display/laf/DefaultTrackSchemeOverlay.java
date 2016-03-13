@@ -79,14 +79,6 @@ public class DefaultTrackSchemeOverlay extends AbstractTrackSchemeOverlay
 	 * FIELDS
 	 */
 
-	private final boolean highlightCurrentTimepoint = true;
-
-	private final boolean paintRows = true;
-
-	private final boolean paintColumns = true;
-
-	private final boolean paintHeaderShadow = true;
-
 	private final Color[] shadowColors;
 
 	private final TrackSchemeStyle style;
@@ -124,7 +116,7 @@ public class DefaultTrackSchemeOverlay extends AbstractTrackSchemeOverlay
 		g2.setColor( style.backgroundColor );
 		g2.fillRect( 0, 0, width, height );
 
-		if ( highlightCurrentTimepoint )
+		if ( style.highlightCurrentTimepoint )
 		{
 			final double t = getCurrentTimepoint();
 			final int y = ( int ) Math.round( yScale * ( t - minY - 0.5 ) ) + headerHeight;
@@ -133,7 +125,7 @@ public class DefaultTrackSchemeOverlay extends AbstractTrackSchemeOverlay
 			g2.fillRect( 0, y, width, h );
 		}
 
-		if ( paintRows )
+		if ( style.paintRows )
 		{
 			g2.setColor( style.decorationColor );
 
@@ -155,7 +147,7 @@ public class DefaultTrackSchemeOverlay extends AbstractTrackSchemeOverlay
 			g2.drawLine( 0, yline, width, yline );
 		}
 
-		if ( paintColumns )
+		if ( style.paintColumns )
 		{
 			g2.setColor( style.decorationColor );
 
@@ -184,7 +176,7 @@ public class DefaultTrackSchemeOverlay extends AbstractTrackSchemeOverlay
 			g2.setColor( style.headerBackgroundColor );
 			g2.fillRect( 0, headerHeight, headerWidth, height - headerHeight );
 
-			if ( paintHeaderShadow )
+			if ( style.paintHeaderShadow )
 			{
 				for ( int i = 0; i < shadowColors.length; ++i )
 				{
@@ -193,7 +185,7 @@ public class DefaultTrackSchemeOverlay extends AbstractTrackSchemeOverlay
 				}
 			}
 
-			if ( highlightCurrentTimepoint )
+			if ( style.highlightCurrentTimepoint )
 			{
 				final double t = getCurrentTimepoint();
 				final int y = ( int ) Math.round( yScale * ( t - minY - 0.5 ) ) + headerHeight;
@@ -229,7 +221,7 @@ public class DefaultTrackSchemeOverlay extends AbstractTrackSchemeOverlay
 			g2.setColor( style.headerBackgroundColor );
 			g2.fillRect( headerWidth, 0, width - headerWidth, headerHeight );
 
-			if ( paintHeaderShadow )
+			if ( style.paintHeaderShadow )
 			{
 				for ( int i = 0; i < shadowColors.length; ++i )
 				{
