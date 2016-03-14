@@ -579,4 +579,9 @@ public class WindowManager
 			}
 		} );
 	}
+
+	public Model getModel()
+	{
+		return model;
+	}
 }

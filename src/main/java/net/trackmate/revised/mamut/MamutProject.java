@@ -11,7 +11,7 @@ public class MamutProject
 
 	private final File datasetXmlFile;
 
-	private final File rawModelFile;
+	private File rawModelFile;
 
 	public MamutProject(
 			final File basePath,
@@ -48,5 +48,10 @@ public class MamutProject
 	public File getRawModelFile()
 	{
 		return rawModelFile;
+	}
+
+	public void setRawModelFile( final File rawModelFile )
+	{
+		this.rawModelFile = rawModelFile;
 	}
 }
