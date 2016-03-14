@@ -1,22 +1,20 @@
-package net.trackmate.revised;
+package net.trackmate.revised.mamut;
 
 import java.awt.BorderLayout;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.ActionMap;
 import javax.swing.InputMap;
+import javax.swing.JFrame;
+import javax.swing.SwingUtilities;
 
 import org.scijava.ui.behaviour.KeyStrokeAdder;
 import org.scijava.ui.behaviour.io.InputTriggerConfig;
-import org.scijava.ui.behaviour.io.yaml.YamlConfigIO;
 
 import bdv.spimdata.SpimDataMinimal;
-import bdv.spimdata.XmlIoSpimDataMinimal;
 import bdv.tools.ToggleDialogAction;
 import bdv.util.AbstractNamedAction;
 import bdv.viewer.RequestRepaint;
@@ -24,7 +22,6 @@ import bdv.viewer.TimePointListener;
 import bdv.viewer.ViewerFrame;
 import bdv.viewer.ViewerOptions;
 import bdv.viewer.ViewerPanel;
-import mpicbg.spim.data.SpimDataException;
 import net.trackmate.graph.GraphIdBimap;
 import net.trackmate.graph.listenable.GraphChangeListener;
 import net.trackmate.graph.listenable.ListenableGraph;
@@ -565,41 +562,21 @@ public class WindowManager
 		addTsWindow( tsWindow );
 	}
 
-	public static void main( final String[] args ) throws IOException, SpimDataException
+	public void closeAllWindows()
 	{
-		final String bdvFile = "samples/datasethdf5.xml";
-		final String modelFile = "samples/model_revised.raw";
-
-		/*
-		 * Load Model
-		 */
-		final Model model = new Model();
-		model.loadRaw( new File( modelFile ) );
-
-		/*
-		 * Load SpimData
-		 */
-		final SpimDataMinimal spimData = new XmlIoSpimDataMinimal().load( bdvFile );
-
-		/*
-		 * Load keyconfig
-		 */
-		InputTriggerConfig keyconf;
-		try
+		final ArrayList< JFrame > frames = new ArrayList<>();
+		for ( final BdvWindow w : bdvWindows )
+			frames.add( w.getViewerFrame() );
+		for ( final TsWindow w : tsWindows )
+			frames.add( w.getTrackSchemeFrame() );
+		SwingUtilities.invokeLater( new Runnable()
 		{
-			keyconf = new InputTriggerConfig( YamlConfigIO.read( "samples/keyconf.yaml" ) );
-		}
-		catch ( final IOException e )
-		{
-			keyconf = new InputTriggerConfig();
-		}
-
-		System.setProperty( "apple.laf.useScreenMenuBar", "true" );
-
-		final WindowManager wm = new WindowManager( spimData, model, keyconf );
-
-		final MainWindow mw = new MainWindow( wm );
-		mw.pack();
-		mw.setVisible( true );
+			@Override
+			public void run()
+			{
+				for ( final JFrame f : frames )
+					f.dispatchEvent( new WindowEvent( f, WindowEvent.WINDOW_CLOSING ) );
+			}
+		} );
 	}
 }
