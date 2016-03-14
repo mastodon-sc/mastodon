@@ -228,6 +228,10 @@ public class TrackSchemeStyleIO
 			mapping.put( "vertexGhostStroke", s.vertexGhostStroke );
 			mapping.put( "highlightStroke", s.highlightStroke );
 			mapping.put( "focusStroke", s.focusStroke );
+			mapping.put( "highlightCurrentTimepoint", s.highlightCurrentTimepoint );
+			mapping.put( "paintRows", s.paintRows );
+			mapping.put( "paintColumns", s.paintColumns );
+			mapping.put( "paintHeaderShadow", s.paintHeaderShadow );
 
 			final Node node = representMapping( getTag(), mapping, getDefaultFlowStyle() );
 			return node;
@@ -274,6 +278,11 @@ public class TrackSchemeStyleIO
 				s.vertexGhostStroke( ( Stroke ) mapping.get( "vertexGhostStroke" ) );
 				s.highlightStroke( ( Stroke ) mapping.get( "highlightStroke" ) );
 				s.focusStroke( ( Stroke ) mapping.get( "focusStroke" ) );
+
+				s.highlightCurrentTimepoint( ( boolean ) mapping.get( "highlightCurrentTimepoint" ) );
+				s.paintRows( ( boolean ) mapping.get( "paintRows" ) );
+				s.paintColumns( ( boolean ) mapping.get( "paintColumns" ) );
+				s.paintHeaderShadow( ( boolean ) mapping.get( "paintHeaderShadow" ) );
 
 				return s;
 			}
