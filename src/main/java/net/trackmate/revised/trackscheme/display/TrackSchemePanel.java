@@ -53,6 +53,7 @@ public class TrackSchemePanel extends JPanel implements
 		NavigationListener< TrackSchemeVertex >,
 		ContextListener< TrackSchemeVertex >
 {
+	private static final long serialVersionUID = 1L;
 
 	private static final long ANIMATION_MILLISECONDS = 250;
 
