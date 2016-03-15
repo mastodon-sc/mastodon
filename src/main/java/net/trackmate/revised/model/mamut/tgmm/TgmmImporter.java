@@ -69,7 +69,26 @@ public class TgmmImporter extends AbstractModelImporter< Model >
 				timepointsToRead,
 				viewRegistrations,
 				setupID,
-				model );
+				model,
+				null );
+	}
+
+	public static void read(
+			final String tgmmFileNameFormat,
+			final TimePoints timepointsToRead,
+			final ViewRegistrations viewRegistrations,
+			final int setupID,
+			final Model model,
+			final double[][] useThisCovariance )
+		throws JDOMException, IOException
+	{
+		new TgmmImporter(
+				tgmmFileNameFormat,
+				timepointsToRead,
+				viewRegistrations,
+				setupID,
+				model,
+				useThisCovariance );
 	}
 
 	private TgmmImporter(
@@ -77,21 +96,22 @@ public class TgmmImporter extends AbstractModelImporter< Model >
 			final TimePoints timepointsToRead,
 			final ViewRegistrations viewRegistrations,
 			final int setupID,
-			final Model model )
+			final Model model,
+			final double[][] useThisCovariance )
 		throws JDOMException, IOException
 	{
 		super( model );
 		startImport();
 
 		// TODO rename graph
-		final ReadOnlyGraph< Spot, Link > sc = model.getGraph();
-		final Spot spot = sc.vertexRef();
-		final Spot parent = sc.vertexRef();
-		final Spot tmp = sc.vertexRef();
-		final Link edge = sc.edgeRef();
+		final ReadOnlyGraph< Spot, Link > graph = model.getGraph();
+		final Spot spot = graph.vertexRef();
+		final Spot parent = graph.vertexRef();
+		final Spot tmp = graph.vertexRef();
+		final Link edge = graph.edgeRef();
 
-		IntRefMap< Spot > idToSpot = CollectionUtils.createIntVertexMap( sc, -1, 2000 );
-		IntRefMap< Spot > previousIdToSpot = CollectionUtils.createIntVertexMap( sc, -1, 2000 );
+		IntRefMap< Spot > idToSpot = CollectionUtils.createIntVertexMap( graph, -1, 2000 );
+		IntRefMap< Spot > previousIdToSpot = CollectionUtils.createIntVertexMap( graph, -1, 2000 );
 
 		for ( final TimePoint timepoint : timepointsToRead.getTimePointsOrdered() )
 		{
@@ -116,10 +136,11 @@ public class TgmmImporter extends AbstractModelImporter< Model >
 //					final int lineage = getIntAttribute( elem, "lineage" );
 					final int parentId = getIntAttribute( elem, "parent" );
 
+					final double[][] S = ( useThisCovariance != null ) ? useThisCovariance : getCovariance( transform, nu, W );
 					model.addSpot(
 							timepointId,
 							getPosition( transform, m ),
-							getCovariance( transform, nu, W ),
+							S,
 							spot );
 					idToSpot.put( id, spot, tmp );
 
@@ -138,10 +159,10 @@ public class TgmmImporter extends AbstractModelImporter< Model >
 			idToSpot = m;
 		}
 
-		sc.releaseRef( spot );
-		sc.releaseRef( parent );
-		sc.releaseRef( tmp );
-		sc.releaseRef( edge );
+		graph.releaseRef( spot );
+		graph.releaseRef( parent );
+		graph.releaseRef( tmp );
+		graph.releaseRef( edge );
 
 		finishImport();
 	}

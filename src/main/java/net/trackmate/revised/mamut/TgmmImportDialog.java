@@ -14,6 +14,7 @@ import java.util.List;
 
 import javax.swing.Box;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JDialog;
 import javax.swing.JFileChooser;
 import javax.swing.JLabel;
@@ -44,6 +45,10 @@ public class TgmmImportDialog extends JDialog
 
 	private final JTextField timepointPatternTextField;
 
+	private final JCheckBox covCheckBox;
+
+	private final JTextField covTextField;
+
 	private AbstractSpimData< ? > spimData;
 
 	private Model model;
@@ -66,7 +71,7 @@ public class TgmmImportDialog extends JDialog
 		c.gridy = 0;
 		c.gridx = 0;
 		content.add( new JLabel( "import from" ), c );
-		pathTextField = new JTextField( "/Users/pietzsch/Downloads/data/TGMMruns_testRunToCheckOutput/XML_finalResult_lht/" );
+		pathTextField = new JTextField( "/Users/pietzsch/Desktop/data/TGMM_METTE/13-03-12-Platenaries_curated_tracking/xml" );
 		c.gridx = 1;
 		content.add( pathTextField, c );
 		pathTextField.setColumns( 20 );
@@ -77,7 +82,7 @@ public class TgmmImportDialog extends JDialog
 		c.gridy++;
 		c.gridx = 0;
 		content.add( new JLabel( "filename pattern" ), c );
-		filenamePatternTextField = new JTextField( "GMEMfinalResult_frame%04d.xml" );
+		filenamePatternTextField = new JTextField( "PlantenariesTGMM%04d.xml" );
 		c.gridx = 1;
 		content.add( filenamePatternTextField, c );
 
@@ -95,6 +100,18 @@ public class TgmmImportDialog extends JDialog
 		timepointPatternTextField = new JTextField( "0" );
 		c.gridx = 1;
 		content.add( timepointPatternTextField, c );
+
+		c.gridy++;
+		c.gridx = 0;
+		content.add(  Box.createVerticalStrut( 15 ), c );
+
+		c.gridy++;
+		c.gridx = 0;
+		covCheckBox = new JCheckBox( "set covariance" );
+		content.add( covCheckBox, c );
+		covTextField = new JTextField( "1" );
+		c.gridx = 1;
+		content.add( covTextField, c );
 
 		c.gridy++;
 		c.gridx = 0;
@@ -175,7 +192,13 @@ public class TgmmImportDialog extends JDialog
 			final AbstractSequenceDescription< ?, ?, ? > seq = spimData.getSequenceDescription();
 			final int setupID = seq.getViewSetupsOrdered().get( setupIndex ).getId();
 
-			TgmmImporter.read( tgmmFiles, timepoints, viewRegistrations, setupID, model );
+			if ( covCheckBox.isSelected() )
+			{
+				final double[][] cov = parseCov( covTextField.getText() );
+				TgmmImporter.read( tgmmFiles, timepoints, viewRegistrations, setupID, model, cov );
+			}
+			else
+				TgmmImporter.read( tgmmFiles, timepoints, viewRegistrations, setupID, model );
 		}
 		catch ( final ParseException e )
 		{
@@ -185,6 +208,40 @@ public class TgmmImportDialog extends JDialog
 		{
 			e.printStackTrace();
 		}
+	}
+
+	private double[][] parseCov( final String text ) throws ParseException
+	{
+		try
+		{
+			final String[] entries = text.split( "\\s+" );
+			if ( entries.length == 1 )
+			{
+				if ( !entries[ 0 ].isEmpty() )
+				{
+					final double v = Double.parseDouble( entries[ 0 ] );
+					return new double[][] { { v, 0, 0 }, { 0, v, 0 }, { 0, 0, v } };
+				}
+			}
+			else if ( entries.length == 3 )
+			{
+				final double[][] m = new double[ 3 ][ 3 ];
+				for ( int r = 0; r < 3; ++r )
+					m[ r ][ r ] = Double.parseDouble( entries[ r ] );
+				return m;
+			}
+			else if ( entries.length == 9 )
+			{
+				final double[][] m = new double[ 3 ][ 3 ];
+				for ( int r = 0; r < 3; ++r )
+					for ( int c = 0; c < 3; ++c )
+						m[ r ][ c ] = Double.parseDouble( entries[ r * 3 + c ] );
+				return m;
+			}
+		}
+		catch ( final Exception e )
+		{}
+		throw new ParseException( "Cannot parse: '" + text + "'", 0 );
 	}
 
 	public synchronized void showImportDialog( final AbstractSpimData< ? > spimData, final Model model )
