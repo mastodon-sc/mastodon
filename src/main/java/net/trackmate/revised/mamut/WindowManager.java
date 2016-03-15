@@ -22,6 +22,7 @@ import bdv.viewer.TimePointListener;
 import bdv.viewer.ViewerFrame;
 import bdv.viewer.ViewerOptions;
 import bdv.viewer.ViewerPanel;
+import mpicbg.spim.data.generic.AbstractSpimData;
 import net.trackmate.graph.GraphIdBimap;
 import net.trackmate.graph.listenable.GraphChangeListener;
 import net.trackmate.graph.listenable.ListenableGraph;
@@ -583,5 +584,10 @@ public class WindowManager
 	public Model getModel()
 	{
 		return model;
+	}
+
+	public AbstractSpimData< ? > getSpimData()
+	{
+		return sharedBdvData.getSpimData();
 	}
 }

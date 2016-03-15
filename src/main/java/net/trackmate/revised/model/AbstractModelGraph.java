@@ -94,4 +94,10 @@ public class AbstractModelGraph<
 	{
 		super.resumeListeners();
 	}
+
+	@Override
+	protected void notifyGraphChanged()
+	{
+		super.notifyGraphChanged();
+	}
 }

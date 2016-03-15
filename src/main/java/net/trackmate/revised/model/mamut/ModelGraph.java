@@ -104,10 +104,4 @@ class ModelGraph extends AbstractModelGraph< ModelGraph.SpotPool, ModelGraph.Lin
 	{
 		return vertexPool;
 	}
-
-	@Override
-	protected void notifyGraphChanged()
-	{
-		super.notifyGraphChanged();
-	}
 }

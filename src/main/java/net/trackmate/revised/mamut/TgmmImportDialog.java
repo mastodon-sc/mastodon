@@ -1,0 +1,230 @@
+package net.trackmate.revised.mamut;
+
+import java.awt.BorderLayout;
+import java.awt.Frame;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.File;
+import java.io.IOException;
+import java.text.ParseException;
+import java.util.List;
+
+import javax.swing.Box;
+import javax.swing.JButton;
+import javax.swing.JDialog;
+import javax.swing.JFileChooser;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JSpinner;
+import javax.swing.JTextField;
+import javax.swing.SpinnerNumberModel;
+import javax.swing.WindowConstants;
+
+import org.jdom2.JDOMException;
+
+import mpicbg.spim.data.generic.AbstractSpimData;
+import mpicbg.spim.data.generic.sequence.AbstractSequenceDescription;
+import mpicbg.spim.data.registration.ViewRegistrations;
+import mpicbg.spim.data.sequence.TimePoint;
+import mpicbg.spim.data.sequence.TimePoints;
+import mpicbg.spim.data.sequence.TimePointsPattern;
+import net.trackmate.revised.model.mamut.Model;
+import net.trackmate.revised.model.mamut.tgmm.TgmmImporter;
+
+public class TgmmImportDialog extends JDialog
+{
+	private final JTextField pathTextField;
+
+	private final JTextField filenamePatternTextField;
+
+	private final JSpinner spinnerSetup;
+
+	private final JTextField timepointPatternTextField;
+
+	private AbstractSpimData< ? > spimData;
+
+	private Model model;
+
+	public TgmmImportDialog( final Frame owner )
+	{
+		super( owner, true );
+
+		final JPanel content = new JPanel();
+		getContentPane().add( content, BorderLayout.CENTER );
+		content.setLayout( new GridBagLayout() );
+
+		final GridBagConstraints c = new GridBagConstraints();
+		c.insets = new Insets( 0, 5, 0, 5 );
+		c.ipadx = 0;
+		c.ipady = 0;
+		c.gridwidth = 1;
+		c.fill = GridBagConstraints.HORIZONTAL;
+
+		c.gridy = 0;
+		c.gridx = 0;
+		content.add( new JLabel( "import from" ), c );
+		pathTextField = new JTextField( "/Users/pietzsch/Downloads/data/TGMMruns_testRunToCheckOutput/XML_finalResult_lht/" );
+		c.gridx = 1;
+		content.add( pathTextField, c );
+		pathTextField.setColumns( 20 );
+		final JButton browseButton = new JButton( "Browse" );
+		c.gridx = 2;
+		content.add( browseButton, c );
+
+		c.gridy++;
+		c.gridx = 0;
+		content.add( new JLabel( "filename pattern" ), c );
+		filenamePatternTextField = new JTextField( "GMEMfinalResult_frame%04d.xml" );
+		c.gridx = 1;
+		content.add( filenamePatternTextField, c );
+
+		c.gridy++;
+		c.gridx = 0;
+		content.add( new JLabel( "transform of setup" ), c );
+		spinnerSetup = new JSpinner();
+		spinnerSetup.setModel( new SpinnerNumberModel( 0, 0, 0, 1 ) );
+		c.gridx = 1;
+		content.add( spinnerSetup, c );
+
+		c.gridy++;
+		c.gridx = 0;
+		content.add( new JLabel( "timepoint pattern" ), c );
+		timepointPatternTextField = new JTextField( "0" );
+		c.gridx = 1;
+		content.add( timepointPatternTextField, c );
+
+		c.gridy++;
+		c.gridx = 0;
+		content.add(  Box.createVerticalStrut( 15 ), c );
+
+		c.gridy++;
+		c.gridx = 1;
+		c.fill = GridBagConstraints.NONE;
+		c.anchor = GridBagConstraints.EAST;
+		final JButton importButton = new JButton( "Import" );
+		content.add( importButton, c );
+
+		c.gridx = 2;
+		c.anchor = GridBagConstraints.WEST;
+		final JButton cancelButton = new JButton( "Cancel" );
+		content.add( cancelButton, c );
+
+		final JFileChooser fileChooser = new JFileChooser();
+		fileChooser.setMultiSelectionEnabled( false );
+		fileChooser.setFileSelectionMode( JFileChooser.DIRECTORIES_ONLY );
+
+		browseButton.addActionListener( new ActionListener()
+		{
+			@Override
+			public void actionPerformed( final ActionEvent e )
+			{
+				fileChooser.setSelectedFile( new File( pathTextField.getText() ) );
+				final int returnVal = fileChooser.showOpenDialog( null );
+				if ( returnVal == JFileChooser.APPROVE_OPTION )
+				{
+					final File file = fileChooser.getSelectedFile();
+					pathTextField.setText( file.getAbsolutePath() );
+				}
+			}
+		} );
+
+		importButton.addActionListener( new ActionListener()
+		{
+			@Override
+			public void actionPerformed( final ActionEvent e )
+			{
+				importButton.setEnabled( false );
+				cancelButton.setEnabled( false );
+				doImport();
+				setVisible( false );
+				importButton.setEnabled( true );
+				cancelButton.setEnabled( true );
+			}
+		} );
+
+		cancelButton.addActionListener( new ActionListener()
+		{
+			@Override
+			public void actionPerformed( final ActionEvent e )
+			{
+				setVisible( false );
+			}
+		} );
+
+		pack();
+		setDefaultCloseOperation( WindowConstants.HIDE_ON_CLOSE );
+	}
+
+	private void doImport()
+	{
+		try
+		{
+			String tgmmFiles = pathTextField.getText();
+			if ( !tgmmFiles.endsWith( "/" ) )
+				tgmmFiles = tgmmFiles + "/";
+			tgmmFiles = tgmmFiles + filenamePatternTextField.getText();
+
+			final TimePoints timepoints = new TimePointsPattern( timepointPatternTextField.getText() );
+
+			final ViewRegistrations viewRegistrations = spimData.getViewRegistrations();
+
+			final int setupIndex = ( Integer ) spinnerSetup.getValue();
+			final AbstractSequenceDescription< ?, ?, ? > seq = spimData.getSequenceDescription();
+			final int setupID = seq.getViewSetupsOrdered().get( setupIndex ).getId();
+
+			TgmmImporter.read( tgmmFiles, timepoints, viewRegistrations, setupID, model );
+		}
+		catch ( final ParseException e )
+		{
+			e.printStackTrace();
+		}
+		catch ( JDOMException | IOException e )
+		{
+			e.printStackTrace();
+		}
+	}
+
+	public synchronized void showImportDialog( final AbstractSpimData< ? > spimData, final Model model )
+	{
+		this.spimData = spimData;
+		this.model = model;
+
+		final AbstractSequenceDescription< ?, ?, ? > seq = spimData.getSequenceDescription();
+		final int numSetups = seq.getViewSetupsOrdered().size();
+		spinnerSetup.setModel( new SpinnerNumberModel( 0, 0, numSetups - 1, 1 ) );
+
+		final List< TimePoint > tps = seq.getTimePoints().getTimePointsOrdered();
+		final int first = tps.get( 0 ).getId();
+		boolean isOrdered = true;
+		for ( int i = 1; i < tps.size(); ++i )
+		{
+			if ( tps.get( i ).getId() != tps.get( i - 1 ).getId() + 1 )
+			{
+				isOrdered = false;
+				break;
+			}
+		}
+		final String pattern;
+		if ( isOrdered )
+		{
+			final int last = tps.get( tps.size() - 1 ).getId();
+			pattern = Integer.toString( first ) + "-" + Integer.toString( last );
+		}
+		else
+		{
+			final StringBuilder sb = new StringBuilder();
+			sb.append( tps.get( 0 ).getId() );
+			for ( int i = 1; i < tps.size(); ++i )
+			{
+				sb.append( "," );
+				sb.append( tps.get( i ).getId() );
+			}
+			pattern = sb.toString();
+		}
+		timepointPatternTextField.setText( pattern );
+		setVisible( true );
+	}
+}

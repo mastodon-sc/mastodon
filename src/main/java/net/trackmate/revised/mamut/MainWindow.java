@@ -13,6 +13,7 @@ import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
+import javax.swing.WindowConstants;
 import javax.swing.filechooser.FileFilter;
 
 import org.scijava.ui.behaviour.io.InputTriggerConfig;
@@ -36,6 +37,8 @@ public class MainWindow extends JFrame
 	private final JFileChooser fileChooser;
 
 	private File proposedProjectFile;
+
+	private TgmmImportDialog tgmmImportDialog;
 
 	public MainWindow( final InputTriggerConfig keyconf )
 	{
@@ -70,8 +73,10 @@ public class MainWindow extends JFrame
 			}
 		} );
 
+		tgmmImportDialog = new TgmmImportDialog( this );
+
 		final JPanel buttonsPanel = new JPanel();
-		buttonsPanel.setLayout( new GridLayout( 8, 1 ) );
+		buttonsPanel.setLayout( new GridLayout( 7, 1 ) );
 		final JButton bdvButton = new JButton( "bdv" );
 		bdvButton.addActionListener( new ActionListener()
 		{
@@ -102,6 +107,7 @@ public class MainWindow extends JFrame
 			@Override
 			public void actionPerformed( final ActionEvent e )
 			{
+				tgmmImportDialog.showImportDialog( windowManager.getSpimData(), windowManager.getModel() );
 			}
 		} );
 		buttonsPanel.add( importButton );
@@ -273,10 +279,15 @@ public class MainWindow extends JFrame
 		System.setProperty( "apple.laf.useScreenMenuBar", "true" );
 
 		final MainWindow mw = new MainWindow( keyconf );
+		mw.setDefaultCloseOperation( WindowConstants.EXIT_ON_CLOSE );
 		mw.pack();
 		mw.setVisible( true );
 
-		mw.open( project );
+//		mw.open( project );
+		mw.fileChooser.setSelectedFile( new File( "/Users/pietzsch/TGMM/data/tifs/datasethdf5.xml" ) );
+		mw.createProject();
+		mw.windowManager.createBigDataViewer();
+		mw.windowManager.createTrackScheme();
 	}
 
 }
