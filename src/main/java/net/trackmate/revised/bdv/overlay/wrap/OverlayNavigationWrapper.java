@@ -5,7 +5,6 @@ import bdv.viewer.animate.TranslationAnimator;
 import net.imglib2.realtransform.AffineTransform3D;
 import net.trackmate.graph.Edge;
 import net.trackmate.graph.Vertex;
-import net.trackmate.revised.bdv.overlay.OverlayGraphRenderer;
 import net.trackmate.revised.bdv.overlay.OverlayNavigation;
 import net.trackmate.revised.bdv.overlay.ScreenVertexMath;
 import net.trackmate.revised.ui.selection.NavigationEtiquette;
@@ -113,7 +112,7 @@ public class OverlayNavigationWrapper< V extends Vertex< E >, E extends Edge< V 
 
 	private class CenteringNavigationBehaviour implements NavigationBehaviour< V, E >
 	{
-		private final ScreenVertexMath screenVertexMath = new ScreenVertexMath( OverlayGraphRenderer.nSigmas );
+		private final ScreenVertexMath screenVertexMath = new ScreenVertexMath();
 
 		@Override
 		public double[] navigateToVertex( final OverlayVertexWrapper< V, E > vertex, final AffineTransform3D t )
@@ -133,7 +132,7 @@ public class OverlayNavigationWrapper< V extends Vertex< E >, E extends Edge< V 
 
 	private class CenterIfInvisibleNavigationBehaviour implements NavigationBehaviour< V, E >
 	{
-		private final ScreenVertexMath screenVertexMath = new ScreenVertexMath( OverlayGraphRenderer.nSigmas );
+		private final ScreenVertexMath screenVertexMath = new ScreenVertexMath();
 
 		@Override
 		public double[] navigateToVertex( final OverlayVertexWrapper< V, E > vertex, final AffineTransform3D t )
@@ -157,7 +156,7 @@ public class OverlayNavigationWrapper< V extends Vertex< E >, E extends Edge< V 
 
 	private class MinimalNavigationBehaviour implements NavigationBehaviour< V, E >
 	{
-		private final ScreenVertexMath screenVertexMath = new ScreenVertexMath( OverlayGraphRenderer.nSigmas );
+		private final ScreenVertexMath screenVertexMath = new ScreenVertexMath();
 
 		private final int screenBorderX;
 

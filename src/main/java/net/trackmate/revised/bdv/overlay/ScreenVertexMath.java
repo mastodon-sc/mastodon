@@ -97,8 +97,6 @@ public class ScreenVertexMath
 	 */
 	private Ellipse2D intersectEllipse;
 
-	private final double nSigmas;
-
 	private boolean projectionComputed;
 
 	private boolean intersectionComputed;
@@ -139,11 +137,6 @@ public class ScreenVertexMath
 
 	// tmp
 	private final double[][] AAT = new double[ 2 ][ 2 ];
-
-	public ScreenVertexMath( final double nSigmas )
-	{
-		this.nSigmas = nSigmas;
-	}
 
 	/**
 	 * (Re-)initialize for a new {@code vertex} and the given viewer transform.
@@ -301,7 +294,7 @@ public class ScreenVertexMath
 		LinAlgHelpers.subtract( pos, p, diff );
 		LinAlgHelpers.mult( P, diff, vn );
 		final double d2 = LinAlgHelpers.dot( diff, vn );
-		return d2 < nSigmas * nSigmas;
+		return d2 < 1;
 	}
 
 	/**
@@ -335,7 +328,7 @@ public class ScreenVertexMath
 		diff2[ 1 ] = vPos[ 1 ] - p[ 1 ];
 		LinAlgHelpers.mult( vP, diff2, vn2 );
 		final double d2 = LinAlgHelpers.dot( diff2, vn2 );
-		return d2 < nSigmas * nSigmas;
+		return d2 < 1;
 	}
 
 	private void computePrecision()
@@ -367,8 +360,8 @@ public class ScreenVertexMath
 		 */
 		eig2.decomposeSymmetric( vS );
 		final double[] eigVals2 = eig2.getRealEigenvalues();
-		final double w = nSigmas * Math.sqrt( eigVals2[ 0 ] );
-		final double h = nSigmas * Math.sqrt( eigVals2[ 1 ] );
+		final double w = Math.sqrt( eigVals2[ 0 ] );
+		final double h = Math.sqrt( eigVals2[ 1 ] );
 		final double c = eig2.getV()[ 0 ][ 0 ];
 		final double s = eig2.getV()[ 1 ][ 0 ];
 
@@ -411,7 +404,7 @@ public class ScreenVertexMath
 		LinAlgHelpers.cross( vx, vy, vn );
 		LinAlgHelpers.normalize( vn );
 		LinAlgHelpers.scale( vz, z, vz );
-		final double d = LinAlgHelpers.dot( vn, vz ) / nSigmas;
+		final double d = LinAlgHelpers.dot( vn, vz );
 		if ( Math.abs( d ) >= 1 )
 		{
 			intersectsViewPlane = false;
@@ -442,8 +435,8 @@ public class ScreenVertexMath
 
 			eig2.decomposeSymmetric( AAT );
 			final double[] eigVals2 = eig2.getRealEigenvalues();
-			final double w = nSigmas * Math.sqrt( eigVals2[ 0 ] ) * radius;
-			final double h = nSigmas * Math.sqrt( eigVals2[ 1 ] ) * radius;
+			final double w = Math.sqrt( eigVals2[ 0 ] ) * radius;
+			final double h = Math.sqrt( eigVals2[ 1 ] ) * radius;
 			final double ci = eig2.getV()[ 0 ][ 0 ];
 			final double si = eig2.getV()[ 1 ][ 0 ];
 

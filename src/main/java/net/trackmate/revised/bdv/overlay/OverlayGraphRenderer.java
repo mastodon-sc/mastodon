@@ -201,11 +201,6 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 	 */
 	private double pointFadeDepth;
 
-	/*
-	 * TODO: Should be removed (nSigmas == 1 always), and the scaling should be moved to the Spot (handle when importing TGMM files)
-	 */
-	public static final double nSigmas = 2;
-
 	/**
 	 * Return signed distance of p to z=0 plane, truncated at cutoff and scaled
 	 * by 1/cutoff. A point on the plane has d=0. A Point that is at cutoff or
@@ -467,7 +462,7 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 		final double sliceDistanceFade = ellipsoidFadeDepth;
 		final double timepointDistanceFade = 0.5;
 
-		final ScreenVertexMath screenVertexMath = new ScreenVertexMath( nSigmas );
+		final ScreenVertexMath screenVertexMath = new ScreenVertexMath();
 
 		index.readLock().lock();
 		try
@@ -665,7 +660,7 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 
 		final double[] lPos = new double[] { x, y, 0 };
 		final double[] gPos = new double[ 3 ];
-		final ScreenVertexMath svm = new ScreenVertexMath( nSigmas );
+		final ScreenVertexMath svm = new ScreenVertexMath();
 		transform.applyInverse( gPos, lPos );
 
 		index.readLock().lock();
