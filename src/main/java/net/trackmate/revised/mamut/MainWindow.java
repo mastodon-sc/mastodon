@@ -283,9 +283,11 @@ public class MainWindow extends JFrame
 		mw.pack();
 		mw.setVisible( true );
 
-//		mw.open( project );
-		mw.fileChooser.setSelectedFile( new File( "/Users/pietzsch/TGMM/data/tifs/datasethdf5.xml" ) );
-		mw.createProject();
+		mw.open( project );
+//		mw.fileChooser.setSelectedFile( new File( "/Users/pietzsch/Desktop/data/TGMM_METTE/project.xml" ) );
+//		mw.fileChooser.setSelectedFile( new File( "/Users/pietzsch/TGMM/data/tifs/datasethdf5.xml" ) );
+//		mw.loadProject( new File( "/Users/pietzsch/Desktop/data/TGMM_METTE/project.xml" ) );
+//		mw.createProject();
 		mw.windowManager.createBigDataViewer();
 		mw.windowManager.createTrackScheme();
 	}

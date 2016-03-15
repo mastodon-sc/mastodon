@@ -49,6 +49,8 @@ public class TgmmImportDialog extends JDialog
 
 	private final JTextField covTextField;
 
+	private final JTextField nSigmasTextField;
+
 	private AbstractSpimData< ? > spimData;
 
 	private Model model;
@@ -71,7 +73,7 @@ public class TgmmImportDialog extends JDialog
 		c.gridy = 0;
 		c.gridx = 0;
 		content.add( new JLabel( "import from" ), c );
-		pathTextField = new JTextField( "/Users/pietzsch/Desktop/data/TGMM_METTE/13-03-12-Platenaries_curated_tracking/xml" );
+		pathTextField = new JTextField( "/Users/pietzsch/Downloads/data/TGMMruns_testRunToCheckOutput/XML_finalResult_lht/" );
 		c.gridx = 1;
 		content.add( pathTextField, c );
 		pathTextField.setColumns( 20 );
@@ -82,7 +84,7 @@ public class TgmmImportDialog extends JDialog
 		c.gridy++;
 		c.gridx = 0;
 		content.add( new JLabel( "filename pattern" ), c );
-		filenamePatternTextField = new JTextField( "PlantenariesTGMM%04d.xml" );
+		filenamePatternTextField = new JTextField( "GMEMfinalResult_frame%04d.xml" );
 		c.gridx = 1;
 		content.add( filenamePatternTextField, c );
 
@@ -112,6 +114,13 @@ public class TgmmImportDialog extends JDialog
 		covTextField = new JTextField( "1" );
 		c.gridx = 1;
 		content.add( covTextField, c );
+
+		c.gridy++;
+		c.gridx = 0;
+		content.add( new JLabel( "cov scale" ), c );
+		nSigmasTextField = new JTextField( "2" );
+		c.gridx = 1;
+		content.add( nSigmasTextField, c );
 
 		c.gridy++;
 		c.gridx = 0;
@@ -192,13 +201,15 @@ public class TgmmImportDialog extends JDialog
 			final AbstractSequenceDescription< ?, ?, ? > seq = spimData.getSequenceDescription();
 			final int setupID = seq.getViewSetupsOrdered().get( setupIndex ).getId();
 
+			final double nSigmas = Double.parseDouble( nSigmasTextField.getText() );
+
 			if ( covCheckBox.isSelected() )
 			{
 				final double[][] cov = parseCov( covTextField.getText() );
-				TgmmImporter.read( tgmmFiles, timepoints, viewRegistrations, setupID, model, cov );
+				TgmmImporter.read( tgmmFiles, timepoints, viewRegistrations, setupID, nSigmas, cov, model );
 			}
 			else
-				TgmmImporter.read( tgmmFiles, timepoints, viewRegistrations, setupID, model );
+				TgmmImporter.read( tgmmFiles, timepoints, viewRegistrations, setupID, nSigmas, model );
 		}
 		catch ( final ParseException e )
 		{

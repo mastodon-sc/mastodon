@@ -61,6 +61,7 @@ public class TgmmImporter extends AbstractModelImporter< Model >
 			final TimePoints timepointsToRead,
 			final ViewRegistrations viewRegistrations,
 			final int setupID,
+			final double nSigmas,
 			final Model model )
 		throws JDOMException, IOException
 	{
@@ -69,8 +70,9 @@ public class TgmmImporter extends AbstractModelImporter< Model >
 				timepointsToRead,
 				viewRegistrations,
 				setupID,
-				model,
-				null );
+				nSigmas,
+				null,
+				model );
 	}
 
 	public static void read(
@@ -78,8 +80,9 @@ public class TgmmImporter extends AbstractModelImporter< Model >
 			final TimePoints timepointsToRead,
 			final ViewRegistrations viewRegistrations,
 			final int setupID,
-			final Model model,
-			final double[][] useThisCovariance )
+			final double nSigmas,
+			final double[][] useThisCovariance,
+			final Model model )
 		throws JDOMException, IOException
 	{
 		new TgmmImporter(
@@ -87,8 +90,9 @@ public class TgmmImporter extends AbstractModelImporter< Model >
 				timepointsToRead,
 				viewRegistrations,
 				setupID,
-				model,
-				useThisCovariance );
+				nSigmas,
+				useThisCovariance,
+				model );
 	}
 
 	private TgmmImporter(
@@ -96,8 +100,9 @@ public class TgmmImporter extends AbstractModelImporter< Model >
 			final TimePoints timepointsToRead,
 			final ViewRegistrations viewRegistrations,
 			final int setupID,
-			final Model model,
-			final double[][] useThisCovariance )
+			final double nSigmas,
+			final double[][] useThisCovariance,
+			final Model model )
 		throws JDOMException, IOException
 	{
 		super( model );
@@ -136,7 +141,7 @@ public class TgmmImporter extends AbstractModelImporter< Model >
 //					final int lineage = getIntAttribute( elem, "lineage" );
 					final int parentId = getIntAttribute( elem, "parent" );
 
-					final double[][] S = ( useThisCovariance != null ) ? useThisCovariance : getCovariance( transform, nu, W );
+					final double[][] S = ( useThisCovariance != null ) ? useThisCovariance : getCovariance( transform, nu / ( nSigmas * nSigmas ), W );
 					model.addSpot(
 							timepointId,
 							getPosition( transform, m ),
@@ -225,7 +230,7 @@ public class TgmmImporter extends AbstractModelImporter< Model >
 
 		System.out.println( "Reading the model." );
 		final Model model = new Model();
-		read( tgmmFiles, timepoints, viewRegistrations, setupID, model );
+		read( tgmmFiles, timepoints, viewRegistrations, setupID, 2, model );
 		final long end = System.currentTimeMillis();
 		System.out.println( "Done  in " + ( end - start ) / 1000d + " s." );
 
