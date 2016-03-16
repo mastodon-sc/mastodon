@@ -49,12 +49,16 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 
 	private final OverlayHighlight< V, E > highlight;
 
+	private final OverlayFocus< V, E > focus;
+
 	public OverlayGraphRenderer(
 			final OverlayGraph< V, E > graph,
-			final OverlayHighlight< V, E > highlight )
+			final OverlayHighlight< V, E > highlight,
+			final OverlayFocus< V, E > focus )
 	{
 		this.graph = graph;
 		this.highlight = highlight;
+		this.focus = focus;
 		index = graph.getIndex();
 		renderTransform = new AffineTransform3D();
 		setRenderSettings( new RenderSettings() ); // default RenderSettings
@@ -441,6 +445,7 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 		final Graphics2D graphics = ( Graphics2D ) g;
 		final BasicStroke defaultVertexStroke = new BasicStroke();
 		final BasicStroke highlightedVertexStroke = new BasicStroke( 5 );
+		final BasicStroke focusedVertexStroke = new BasicStroke( 2f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 1f, new float[] { 8f, 3f }, 0 );
 
 		final AffineTransform3D transform = getRenderTransformCopy();
 		final int currentTimepoint = renderTimepoint;
@@ -456,6 +461,8 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 		graphics.setStroke( new BasicStroke() );
 
 		final V target = graph.vertexRef();
+		final V ref1 = graph.vertexRef();
+		final V ref2 = graph.vertexRef();
 		final double[] lPos = new double[ 3 ];
 		final double[] gPos = new double[ 3 ];
 
@@ -521,7 +528,8 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 
 			if ( drawSpots )
 			{
-				final V highlighted = highlight.getHighlightedVertex( target );
+				final V highlighted = highlight.getHighlightedVertex( ref1 );
+				final V focused = focus.getFocusedVertex( ref2 );
 
 				graphics.setStroke( defaultVertexStroke );
 				final AffineTransform torig = graphics.getTransform();
@@ -532,6 +540,7 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 				for ( final V vertex : ccp.getInsideValues() )
 				{
 					final boolean isHighlighted = vertex.equals( highlighted );
+					final boolean isFocused = vertex.equals( focused );
 
 					screenVertexMath.init( vertex, transform );
 
@@ -553,8 +562,10 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 							graphics.setColor( getColor( 0, 0, ellipsoidFadeDepth, timepointDistanceFade, vertex.isSelected() ) );
 							if ( isHighlighted )
 								graphics.setStroke( highlightedVertexStroke );
+							else if ( isFocused )
+								graphics.setStroke( focusedVertexStroke );
 							graphics.draw( ellipse );
-							if ( isHighlighted )
+							if ( isHighlighted || isFocused )
 								graphics.setStroke( defaultVertexStroke );
 							graphics.setTransform( torig );
 						}
@@ -573,8 +584,10 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 							graphics.setColor( getColor( sd, 0, ellipsoidFadeDepth, timepointDistanceFade, vertex.isSelected() ) );
 							if ( isHighlighted )
 								graphics.setStroke( highlightedVertexStroke );
+							else if ( isFocused )
+								graphics.setStroke( focusedVertexStroke );
 							graphics.draw( ellipse );
-							if ( isHighlighted )
+							if ( isHighlighted || isFocused )
 								graphics.setStroke( defaultVertexStroke );
 							graphics.setTransform( torig );
 						}
@@ -596,6 +609,8 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 			index.readLock().unlock();
 		}
 		graph.releaseRef( target );
+		graph.releaseRef( ref1 );
+		graph.releaseRef( ref2 );
 	}
 
 	public E getEdgeAt( final int x, final int y, final double tolerance, final E ref )

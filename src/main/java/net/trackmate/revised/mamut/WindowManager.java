@@ -29,14 +29,15 @@ import net.trackmate.graph.listenable.ListenableGraph;
 import net.trackmate.revised.bdv.BigDataViewerMaMuT;
 import net.trackmate.revised.bdv.SharedBigDataViewerData;
 import net.trackmate.revised.bdv.overlay.MouseOverListener;
-import net.trackmate.revised.bdv.overlay.SelectionBehaviours;
 import net.trackmate.revised.bdv.overlay.OverlayContext;
 import net.trackmate.revised.bdv.overlay.OverlayGraphRenderer;
 import net.trackmate.revised.bdv.overlay.RenderSettings;
 import net.trackmate.revised.bdv.overlay.RenderSettings.UpdateListener;
+import net.trackmate.revised.bdv.overlay.SelectionBehaviours;
 import net.trackmate.revised.bdv.overlay.ui.RenderSettingsDialog;
 import net.trackmate.revised.bdv.overlay.wrap.OverlayContextWrapper;
 import net.trackmate.revised.bdv.overlay.wrap.OverlayEdgeWrapper;
+import net.trackmate.revised.bdv.overlay.wrap.OverlayFocusWrapper;
 import net.trackmate.revised.bdv.overlay.wrap.OverlayGraphWrapper;
 import net.trackmate.revised.bdv.overlay.wrap.OverlayHighlightWrapper;
 import net.trackmate.revised.bdv.overlay.wrap.OverlayNavigationWrapper;
@@ -72,6 +73,7 @@ import net.trackmate.revised.trackscheme.display.ui.TrackSchemeStylePanel.TrackS
 import net.trackmate.revised.ui.grouping.GroupHandle;
 import net.trackmate.revised.ui.grouping.GroupLocksPanel;
 import net.trackmate.revised.ui.grouping.GroupManager;
+import net.trackmate.revised.ui.selection.FocusListener;
 import net.trackmate.revised.ui.selection.FocusModel;
 import net.trackmate.revised.ui.selection.HighlightListener;
 import net.trackmate.revised.ui.selection.HighlightModel;
@@ -234,6 +236,8 @@ public class WindowManager
 
 	private final HighlightModel< Spot, Link > highlightModel;
 
+	private final FocusModel< Spot, Link > focusModel;
+
 	private final BoundingSphereRadiusStatistics radiusStats;
 
 	/**
@@ -276,6 +280,7 @@ public class WindowManager
 		selection = new Selection<>( graph, idmap );
 		highlightModel = new HighlightModel< Spot, Link  >( idmap );
 		radiusStats = new BoundingSphereRadiusStatistics( model );
+		focusModel = new FocusModel<>( idmap );
 
 		minTimepoint = 0;
 		maxTimepoint = sharedBdvData.getNumTimepoints() - 1;
@@ -348,6 +353,10 @@ public class WindowManager
 				model.getGraphIdBimap(),
 				highlightModel );
 
+		final OverlayFocusWrapper< Spot, Link > overlayFocus = new OverlayFocusWrapper<>(
+				model.getGraphIdBimap(),
+				focusModel );
+
 		final OverlaySelectionWrapper< Spot, Link > overlaySelection = new OverlaySelectionWrapper<>(
 				selection );
 
@@ -364,7 +373,10 @@ public class WindowManager
 //			InitializeViewerState.initBrightness( 0.001, 0.999, bdv.getViewer(), bdv.getSetupAssignments() );
 
 		viewer.setTimepoint( currentTimepoint );
-		final OverlayGraphRenderer< OverlayVertexWrapper< Spot, Link >, OverlayEdgeWrapper< Spot, Link > > tracksOverlay = new OverlayGraphRenderer<>( overlayGraph, overlayHighlight );
+		final OverlayGraphRenderer< OverlayVertexWrapper< Spot, Link >, OverlayEdgeWrapper< Spot, Link > > tracksOverlay = new OverlayGraphRenderer<>(
+				overlayGraph,
+				overlayHighlight,
+				overlayFocus );
 		viewer.getDisplay().addOverlayRenderer( tracksOverlay );
 		viewer.addRenderTransformListener( tracksOverlay );
 		viewer.addTimePointListener( tracksOverlay );
@@ -372,6 +384,14 @@ public class WindowManager
 		{
 			@Override
 			public void highlightChanged()
+			{
+				viewer.getDisplay().repaint();
+			}
+		} );
+		overlayFocus.addFocusListener( new FocusListener()
+		{
+			@Override
+			public void focusChanged()
 			{
 				viewer.getDisplay().repaint();
 			}
@@ -507,7 +527,6 @@ public class WindowManager
 		/*
 		 * TrackScheme focus
 		 */
-		final FocusModel< Spot, Link > focusModel = new FocusModel<>( idmap );
 		final ModelFocusProperties focusProperties = new DefaultModelFocusProperties<>( graph, idmap, focusModel );
 		final TrackSchemeFocus trackSchemeFocus = new TrackSchemeFocus( focusProperties, trackSchemeGraph );
 

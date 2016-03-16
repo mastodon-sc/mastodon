@@ -21,9 +21,10 @@ import net.trackmate.graph.GraphIdBimap;
 import net.trackmate.graph.listenable.GraphChangeListener;
 import net.trackmate.graph.listenable.ListenableGraph;
 import net.trackmate.revised.bdv.overlay.MouseOverListener;
-import net.trackmate.revised.bdv.overlay.SelectionBehaviours;
 import net.trackmate.revised.bdv.overlay.OverlayGraphRenderer;
+import net.trackmate.revised.bdv.overlay.SelectionBehaviours;
 import net.trackmate.revised.bdv.overlay.wrap.OverlayEdgeWrapper;
+import net.trackmate.revised.bdv.overlay.wrap.OverlayFocusWrapper;
 import net.trackmate.revised.bdv.overlay.wrap.OverlayGraphWrapper;
 import net.trackmate.revised.bdv.overlay.wrap.OverlayHighlightWrapper;
 import net.trackmate.revised.bdv.overlay.wrap.OverlayNavigationWrapper;
@@ -54,6 +55,7 @@ import net.trackmate.revised.trackscheme.display.TrackSchemeFrame;
 import net.trackmate.revised.ui.grouping.GroupHandle;
 import net.trackmate.revised.ui.grouping.GroupLocksPanel;
 import net.trackmate.revised.ui.grouping.GroupManager;
+import net.trackmate.revised.ui.selection.FocusListener;
 import net.trackmate.revised.ui.selection.FocusModel;
 import net.trackmate.revised.ui.selection.HighlightListener;
 import net.trackmate.revised.ui.selection.HighlightModel;
@@ -178,7 +180,7 @@ public class MaMuT
 
 //		for ( int i = 0; i < 2; ++i )
 //		{
-		final BigDataViewer bdv = openBDV( model, highlightModel, selection, groupManager, radiusStats, spimData, windowTitle, initialTimepointIndex, bdvFile );
+		final BigDataViewer bdv = openBDV( model, highlightModel, focusModel, selection, groupManager, radiusStats, spimData, windowTitle, initialTimepointIndex, bdvFile );
 
 		/*
 		 * TODO: this is still wrong. There should be one central entity syncing
@@ -195,6 +197,7 @@ public class MaMuT
 	public static BigDataViewer openBDV(
 			final Model model,
 			final HighlightModel< Spot, Link > highlightModel,
+			final FocusModel< Spot, Link > focusModel,
 			final Selection< Spot, Link > selection,
 			final GroupManager groupManager,
 			final BoundingSphereRadiusStatistics radiusStats,
@@ -216,6 +219,10 @@ public class MaMuT
 				model.getGraphIdBimap(),
 				highlightModel );
 
+		final OverlayFocusWrapper< Spot, Link > overlayFocus = new OverlayFocusWrapper<>(
+				model.getGraphIdBimap(),
+				focusModel );
+
 		final OverlaySelectionWrapper< Spot, Link > overlaySelection = new OverlaySelectionWrapper<>(
 				selection );
 
@@ -225,7 +232,10 @@ public class MaMuT
 		final ViewerFrame viewerFrame = bdv.getViewerFrame();
 		final ViewerPanel viewer = bdv.getViewer();
 		viewer.setTimepoint( initialTimepointIndex );
-		final OverlayGraphRenderer< OverlayVertexWrapper< Spot, Link >, OverlayEdgeWrapper< Spot, Link > > tracksOverlay = new OverlayGraphRenderer<>( overlayGraph, overlayHighlight );
+		final OverlayGraphRenderer< OverlayVertexWrapper< Spot, Link >, OverlayEdgeWrapper< Spot, Link > > tracksOverlay = new OverlayGraphRenderer<>(
+				overlayGraph,
+				overlayHighlight,
+				overlayFocus );
 		viewer.getDisplay().addOverlayRenderer( tracksOverlay );
 		viewer.addRenderTransformListener( tracksOverlay );
 		viewer.addTimePointListener( tracksOverlay );
@@ -233,6 +243,14 @@ public class MaMuT
 		{
 			@Override
 			public void highlightChanged()
+			{
+				viewer.getDisplay().repaint();
+			}
+		} );
+		overlayFocus.addFocusListener( new FocusListener()
+		{
+			@Override
+			public void focusChanged()
 			{
 				viewer.getDisplay().repaint();
 			}
