@@ -199,8 +199,6 @@ public class SelectionBehaviours implements TransformListener< ScreenTransform >
 			if ( !addToSelection )
 				selection.clearSelection();
 			selection.setSelected( edge, !selected );
-			selection.resumeListeners();
-			return;
 		}
 		// Nothing found. clear selection if addToSelection == false
 		else if ( !addToSelection )

@@ -28,9 +28,8 @@ import net.trackmate.graph.listenable.GraphChangeListener;
 import net.trackmate.graph.listenable.ListenableGraph;
 import net.trackmate.revised.bdv.BigDataViewerMaMuT;
 import net.trackmate.revised.bdv.SharedBigDataViewerData;
-import net.trackmate.revised.bdv.overlay.MouseNavigationHandler;
 import net.trackmate.revised.bdv.overlay.MouseOverListener;
-import net.trackmate.revised.bdv.overlay.MouseSelectionHandler;
+import net.trackmate.revised.bdv.overlay.SelectionBehaviours;
 import net.trackmate.revised.bdv.overlay.OverlayContext;
 import net.trackmate.revised.bdv.overlay.OverlayGraphRenderer;
 import net.trackmate.revised.bdv.overlay.RenderSettings;
@@ -354,11 +353,16 @@ public class WindowManager
 
 		final String windowTitle = "BigDataViewer " + (bdvName++); // TODO: use JY naming scheme
 		final BigDataViewerMaMuT bdv = BigDataViewerMaMuT.open( sharedBdvData, windowTitle );
+		final ViewerFrame viewerFrame = bdv.getViewerFrame();
+		final ViewerPanel viewer = bdv.getViewer();
+
+
+		// TODO: It's ok to create the wrappers here, but wiring up Listeners should be done elsewhere
+
 
 //		if ( !bdv.tryLoadSettings( bdvFile ) ) // TODO
 //			InitializeViewerState.initBrightness( 0.001, 0.999, bdv.getViewer(), bdv.getSetupAssignments() );
 
-		final ViewerPanel viewer = bdv.getViewer();
 		viewer.setTimepoint( currentTimepoint );
 		final OverlayGraphRenderer< OverlayVertexWrapper< Spot, Link >, OverlayEdgeWrapper< Spot, Link > > tracksOverlay = new OverlayGraphRenderer<>( overlayGraph, overlayHighlight );
 		viewer.getDisplay().addOverlayRenderer( tracksOverlay );
@@ -392,15 +396,11 @@ public class WindowManager
 		final MouseOverListener< ?, ? > mouseOver = new MouseOverListener<>( overlayGraph, tracksOverlay, overlayHighlight );
 		viewer.getDisplay().addHandler( mouseOver );
 
-		final MouseSelectionHandler< ?, ? > mouseSelectionListener = new MouseSelectionHandler<>( overlayGraph, tracksOverlay, overlaySelection );
-		viewer.getDisplay().addHandler( mouseSelectionListener );
-
 		final NavigationHandler< Spot > navigationHandler = new NavigationHandler<>( bdvGroupHandle );
 		final OverlayNavigationWrapper< Spot, Link > navigation =
 				new OverlayNavigationWrapper< Spot, Link >( viewer, overlayGraph, navigationHandler );
-
-		final MouseNavigationHandler< ?, ? > mouseNavigationHandler = new MouseNavigationHandler<>( overlayGraph, tracksOverlay, navigation );
-		viewer.getDisplay().addHandler( mouseNavigationHandler );
+		final SelectionBehaviours< ?, ? > selectionBehaviours = new SelectionBehaviours<>( overlayGraph, tracksOverlay, overlaySelection, navigation );
+		selectionBehaviours.installBehaviourBindings( viewerFrame.getTriggerbindings(), keyconf );
 
 		final OverlayContext< OverlayVertexWrapper< Spot, Link > > overlayContext = new OverlayContext<>( overlayGraph, tracksOverlay );
 		viewer.addRenderTransformListener( overlayContext );
@@ -409,7 +409,6 @@ public class WindowManager
 				overlayContext,
 				contextProvider );
 
-		final ViewerFrame viewerFrame = bdv.getViewerFrame();
 		final GroupLocksPanel lockPanel = new GroupLocksPanel( bdvGroupHandle );
 		viewerFrame.add( lockPanel, BorderLayout.NORTH );
 		viewerFrame.pack();

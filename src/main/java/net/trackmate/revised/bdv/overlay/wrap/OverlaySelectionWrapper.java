@@ -41,18 +41,6 @@ public class OverlaySelectionWrapper< V extends Vertex< E >, E extends Edge< V >
 	}
 
 	@Override
-	public boolean isVertexSelected( final OverlayVertexWrapper< V, E > vertex )
-	{
-		return wrappedSelectionModel.isSelected( vertex.wv );
-	}
-
-	@Override
-	public boolean isEdgeSelected( final OverlayEdgeWrapper< V, E > edge )
-	{
-		return wrappedSelectionModel.isSelected( edge.we );
-	}
-
-	@Override
 	public void clearSelection()
 	{
 		wrappedSelectionModel.clearSelection();
@@ -68,5 +56,17 @@ public class OverlaySelectionWrapper< V extends Vertex< E >, E extends Edge< V >
 	public boolean removeSelectionListener( final SelectionListener l )
 	{
 		return wrappedSelectionModel.removeSelectionListener( l );
+	}
+
+	@Override
+	public void pauseListeners()
+	{
+		wrappedSelectionModel.pauseListeners();
+	}
+
+	@Override
+	public void resumeListeners()
+	{
+		wrappedSelectionModel.resumeListeners();
 	}
 }

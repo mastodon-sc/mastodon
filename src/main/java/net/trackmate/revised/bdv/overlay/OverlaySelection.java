@@ -12,13 +12,13 @@ public interface OverlaySelection< O extends OverlayVertex< ?, ? >, E extends Ov
 
 	public void toggleSelected( E edge );
 
-	public boolean isVertexSelected( O vertex );
-
-	public boolean isEdgeSelected( E edge );
-
 	public void clearSelection();
 
 	public boolean addSelectionListener( final SelectionListener l );
 
 	public boolean removeSelectionListener( final SelectionListener l );
+
+	public void pauseListeners();
+
+	public void resumeListeners();
 }
