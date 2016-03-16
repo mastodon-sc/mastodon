@@ -19,6 +19,8 @@ public class MouseHighlightHandler implements MouseMotionListener, MouseListener
 
 	private final TrackSchemeGraph< ?, ? > graph;
 
+	private boolean mouseInside;
+
 	private int x, y;
 
 	/**
@@ -60,7 +62,8 @@ public class MouseHighlightHandler implements MouseMotionListener, MouseListener
 	@Override
 	public void transformChanged( final ScreenTransform t )
 	{
-		highlight();
+		if ( mouseInside )
+			highlight();
 	}
 
 	@Override
@@ -84,10 +87,7 @@ public class MouseHighlightHandler implements MouseMotionListener, MouseListener
 
 	@Override
 	public void mouseClicked( final MouseEvent e )
-	{
-		// TODO Auto-generated method stub
-
-	}
+	{}
 
 	@Override
 	public void mousePressed( final MouseEvent e )
@@ -99,11 +99,14 @@ public class MouseHighlightHandler implements MouseMotionListener, MouseListener
 
 	@Override
 	public void mouseEntered( final MouseEvent e )
-	{}
+	{
+		mouseInside = true;
+	}
 
 	@Override
 	public void mouseExited( final MouseEvent e )
 	{
 		highlight.highlightVertex( null );
+		mouseInside = false;
 	}
 }
