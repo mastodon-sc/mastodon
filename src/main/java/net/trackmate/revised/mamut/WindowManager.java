@@ -28,7 +28,7 @@ import net.trackmate.graph.listenable.GraphChangeListener;
 import net.trackmate.graph.listenable.ListenableGraph;
 import net.trackmate.revised.bdv.BigDataViewerMaMuT;
 import net.trackmate.revised.bdv.SharedBigDataViewerData;
-import net.trackmate.revised.bdv.overlay.MouseOverListener;
+import net.trackmate.revised.bdv.overlay.MouseHighlightHandler;
 import net.trackmate.revised.bdv.overlay.OverlayContext;
 import net.trackmate.revised.bdv.overlay.OverlayGraphRenderer;
 import net.trackmate.revised.bdv.overlay.RenderSettings;
@@ -413,7 +413,7 @@ public class WindowManager
 			}
 		} );
 
-		final MouseOverListener< ?, ? > mouseOver = new MouseOverListener<>( overlayGraph, tracksOverlay, overlayHighlight );
+		final MouseHighlightHandler< ?, ? > mouseOver = new MouseHighlightHandler<>( overlayGraph, tracksOverlay, overlayHighlight );
 		viewer.getDisplay().addHandler( mouseOver );
 
 		final NavigationHandler< Spot > navigationHandler = new NavigationHandler<>( bdvGroupHandle );

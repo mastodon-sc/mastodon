@@ -20,7 +20,7 @@ import mpicbg.spim.data.sequence.TimePoint;
 import net.trackmate.graph.GraphIdBimap;
 import net.trackmate.graph.listenable.GraphChangeListener;
 import net.trackmate.graph.listenable.ListenableGraph;
-import net.trackmate.revised.bdv.overlay.MouseOverListener;
+import net.trackmate.revised.bdv.overlay.MouseHighlightHandler;
 import net.trackmate.revised.bdv.overlay.OverlayGraphRenderer;
 import net.trackmate.revised.bdv.overlay.SelectionBehaviours;
 import net.trackmate.revised.bdv.overlay.wrap.OverlayEdgeWrapper;
@@ -272,7 +272,7 @@ public class MaMuT
 			}
 		} );
 
-		final MouseOverListener< ?, ? > mouseOver = new MouseOverListener<>( overlayGraph, tracksOverlay, overlayHighlight );
+		final MouseHighlightHandler< ?, ? > mouseOver = new MouseHighlightHandler<>( overlayGraph, tracksOverlay, overlayHighlight );
 		viewer.getDisplay().addHandler( mouseOver );
 
 		final NavigationHandler< Spot > navigationHandler = new NavigationHandler<>( bdvGroupHandle );

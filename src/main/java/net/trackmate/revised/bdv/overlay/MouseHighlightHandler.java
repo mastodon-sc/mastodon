@@ -4,7 +4,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
 
-public class MouseOverListener< V extends OverlayVertex< V, E >, E extends OverlayEdge< E, V > > extends MouseAdapter
+public class MouseHighlightHandler< V extends OverlayVertex< V, E >, E extends OverlayEdge< E, V > > extends MouseAdapter
 {
 	private final OverlayGraph< V, E > overlayGraph;
 
@@ -12,7 +12,7 @@ public class MouseOverListener< V extends OverlayVertex< V, E >, E extends Overl
 
 	private final OverlayHighlight< V, E > highlight;
 
-	public MouseOverListener(
+	public MouseHighlightHandler(
 			final OverlayGraph< V, E > overlayGraph,
 			final OverlayGraphRenderer< V, E > renderer,
 			final OverlayHighlight< V, E > highlight )
