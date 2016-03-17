@@ -16,7 +16,7 @@ public class OverlayEdgeWrapper< V extends Vertex< E >, E extends Edge< V > >
 	OverlayEdgeWrapper( final OverlayGraphWrapper< V, E > wrapper )
 	{
 		this.wrapper = wrapper;
-		we = wrapper.wrappedEdgeRef();
+		we = wrapper.wrappedGraph.edgeRef();
 		overlayProperties = wrapper.overlayProperties;
 	}
 

@@ -148,16 +148,6 @@ public class OverlayGraphWrapper< V extends Vertex< E >, E extends Edge< V > > i
 		return overlayProperties.getMaxBoundingSphereRadiusSquared( timepoint );
 	}
 
-	V wrappedVertexRef()
-	{
-		return wrappedGraph.vertexRef();
-	}
-
-	E wrappedEdgeRef()
-	{
-		return wrappedGraph.edgeRef();
-	}
-
 	private final RefPool< OverlayVertexWrapper< V, E > > vertexPool = new RefPool< OverlayVertexWrapper< V, E > >()
 	{
 		@Override
