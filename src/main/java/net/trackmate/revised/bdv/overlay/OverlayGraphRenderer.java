@@ -384,7 +384,7 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 		return getPolytopeGlobal( transform,
 				xMin - border, xMax + border,
 				yMin - border, yMax + border,
-				-maxDepth, maxDepth );
+				-maxDepth - border, maxDepth + border );
 	}
 
 	/**
