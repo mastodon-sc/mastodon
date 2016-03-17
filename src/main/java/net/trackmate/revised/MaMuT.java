@@ -272,8 +272,9 @@ public class MaMuT
 			}
 		} );
 
-		final MouseHighlightHandler< ?, ? > mouseOver = new MouseHighlightHandler<>( overlayGraph, tracksOverlay, overlayHighlight );
-		viewer.getDisplay().addHandler( mouseOver );
+		final MouseHighlightHandler< ?, ? > highlightHandler = new MouseHighlightHandler<>( overlayGraph, tracksOverlay, overlayHighlight );
+		viewer.getDisplay().addHandler( highlightHandler );
+		viewer.addRenderTransformListener( highlightHandler );
 
 		final NavigationHandler< Spot > navigationHandler = new NavigationHandler<>( bdvGroupHandle );
 		final OverlayNavigationWrapper< Spot, Link > navigation =
