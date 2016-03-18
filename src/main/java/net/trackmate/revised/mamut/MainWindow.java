@@ -245,8 +245,6 @@ public class MainWindow extends JFrame
 			try
 			{
 				final File file = fileChooser.getSelectedFile();
-				final SpimDataMinimal spimData = new XmlIoSpimDataMinimal().load(
-						file.getAbsolutePath() );
 				open( new MamutProject( file.getParentFile(), file, null ) );
 			}
 			catch ( final IOException | SpimDataException e )

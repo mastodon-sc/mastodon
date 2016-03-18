@@ -16,8 +16,7 @@ public class MamutProject
 	public MamutProject(
 			final File basePath,
 			final File datasetXmlFile,
-			final File rawModelFile
-			)
+			final File rawModelFile )
 	{
 		this.basePath = basePath;
 		this.datasetXmlFile = datasetXmlFile;
