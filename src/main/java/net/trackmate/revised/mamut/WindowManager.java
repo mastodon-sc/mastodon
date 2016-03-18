@@ -261,6 +261,7 @@ public class WindowManager
 	private final List< TsWindow > tsWindows = new ArrayList<>();
 
 	public WindowManager(
+			final String spimDataXmlFilename,
 			final SpimDataMinimal spimData,
 			final Model model,
 			final InputTriggerConfig keyconf )
@@ -278,7 +279,7 @@ public class WindowManager
 					w.getViewerFrame().getViewerPanel().requestRepaint();
 			}
 		};
-		sharedBdvData = new SharedBigDataViewerData( spimData, ViewerOptions.options().inputTriggerConfig( keyconf ), requestRepaint );
+		sharedBdvData = new SharedBigDataViewerData( spimDataXmlFilename, spimData, ViewerOptions.options().inputTriggerConfig( keyconf ), requestRepaint );
 
 		final ListenableGraph< Spot, Link > graph = model.getGraph();
 		final GraphIdBimap< Spot, Link > idmap = model.getGraphIdBimap();

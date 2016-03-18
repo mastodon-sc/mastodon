@@ -161,15 +161,15 @@ public class MainWindow extends JFrame
 		/*
 		 * Load SpimData
 		 */
-		final SpimDataMinimal spimData = new XmlIoSpimDataMinimal().load(
-				project.getDatasetXmlFile().getAbsolutePath() );
+		final String spimDataXmlFilename = project.getDatasetXmlFile().getAbsolutePath();
+		final SpimDataMinimal spimData = new XmlIoSpimDataMinimal().load( spimDataXmlFilename );
 
 		this.project = project;
 
 		if ( windowManager != null )
 			windowManager.closeAllWindows();
 
-		windowManager = new WindowManager( spimData, model, keyconf );
+		windowManager = new WindowManager( spimDataXmlFilename, spimData, model, keyconf );
 	}
 
 	public void saveProject( final File projectFile ) throws IOException
