@@ -3,6 +3,8 @@ package net.trackmate.revised.mamut;
 import java.awt.BorderLayout;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -13,6 +15,9 @@ import javax.swing.SwingUtilities;
 
 import org.scijava.ui.behaviour.KeyStrokeAdder;
 import org.scijava.ui.behaviour.io.InputTriggerConfig;
+import org.scijava.ui.behaviour.io.InputTriggerDescription;
+import org.scijava.ui.behaviour.io.InputTriggerDescriptionsBuilder;
+import org.scijava.ui.behaviour.io.yaml.YamlConfigIO;
 
 import bdv.spimdata.SpimDataMinimal;
 import bdv.tools.ToggleDialogAction;
@@ -608,5 +613,37 @@ public class WindowManager
 	public AbstractSpimData< ? > getSpimData()
 	{
 		return sharedBdvData.getSpimData();
+	}
+
+
+	// TODO: move somewhere else. make bdvWindows, tsWindows accessible.
+	public static class DumpInputConfig
+	{
+		private static List< InputTriggerDescription > buildDescriptions( final WindowManager wm ) throws IOException
+		{
+			final InputTriggerDescriptionsBuilder builder = new InputTriggerDescriptionsBuilder();
+
+			final ViewerFrame viewerFrame = wm.bdvWindows.get( 0 ).viewerFrame;
+			builder.addMap( viewerFrame.getKeybindings().getConcatenatedInputMap(), "bdv" );
+			builder.addMap( viewerFrame.getTriggerbindings().getConcatenatedInputTriggerMap(), "bdv" );
+
+			final TrackSchemeFrame trackschemeFrame = wm.tsWindows.get( 0 ).trackSchemeFrame;
+			builder.addMap( trackschemeFrame.getKeybindings().getConcatenatedInputMap(), "ts" );
+			builder.addMap( trackschemeFrame.getTriggerbindings().getConcatenatedInputTriggerMap(), "ts" );
+
+			return builder.getDescriptions();
+		}
+
+		public static boolean mkdirs( final String fileName )
+		{
+			final File dir = new File( fileName ).getParentFile();
+			return dir == null ? false : dir.mkdirs();
+		}
+
+		public static void writeToYaml( final String fileName, final WindowManager wm ) throws IOException
+		{
+			mkdirs( fileName );
+			YamlConfigIO.write(  buildDescriptions( wm ), fileName );
+		}
 	}
 }

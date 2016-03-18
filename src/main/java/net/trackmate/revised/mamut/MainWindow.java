@@ -290,6 +290,6 @@ public class MainWindow extends JFrame
 //		mw.createProject();
 		mw.windowManager.createBigDataViewer();
 		mw.windowManager.createTrackScheme();
+//		WindowManager.DumpInputConfig.writeToYaml( System.getProperty( "user.home" ) + "/.tm3/mamutkeyconfig.yaml", mw.windowManager );
 	}
-
 }
