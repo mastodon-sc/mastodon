@@ -9,8 +9,8 @@ import net.trackmate.revised.context.ContextListener;
 
 /**
  * A {@link ContextListener} on vertice type {@code V} that wraps {@link Context
- * Context<V>} and forwards them to a {@link ContextListener ContextListener
- * <TrackSchemeVertex>}.
+ * Context&lt;V&gt;} and forwards them to a {@link ContextListener ContextListener
+ * &lt;TrackSchemeVertex&gt;}.
  *
  * @param <V>
  *            model vertex type.
