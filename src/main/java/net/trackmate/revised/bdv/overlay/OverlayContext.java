@@ -2,12 +2,10 @@ package net.trackmate.revised.bdv.overlay;
 
 import java.util.concurrent.locks.Lock;
 
-import net.imglib2.algorithm.kdtree.ConvexPolytope;
 import net.imglib2.realtransform.AffineTransform3D;
 import net.imglib2.ui.TransformListener;
 import net.trackmate.revised.context.Context;
 import net.trackmate.revised.context.ContextListener;
-import net.trackmate.spatial.ClipConvexPolytope;
 import net.trackmate.spatial.SpatioTemporalIndex;
 
 public class OverlayContext< V extends OverlayVertex< V, ? > > implements
@@ -40,10 +38,11 @@ public class OverlayContext< V extends OverlayVertex< V, ? > > implements
 	@Override
 	public Iterable< V > getInsideVertices( final int timepoint )
 	{
-		final ConvexPolytope visiblePolytope = renderer.getVisiblePolytopeGlobal( transform, timepoint );
-		final ClipConvexPolytope< V > ccp = index.getSpatialIndex( timepoint ).getClipConvexPolytope();
-		ccp.clip( visiblePolytope );
-		return ccp.getInsideValues();
+//		final ConvexPolytope visiblePolytope = renderer.getVisiblePolytopeGlobal( transform, timepoint );
+//		final ClipConvexPolytope< V > ccp = index.getSpatialIndex( timepoint ).getClipConvexPolytope();
+//		ccp.clip( visiblePolytope );
+//		return ccp.getInsideValues();
+		return renderer.getVisibleVertices( transform, timepoint );
 	}
 
 	private final AffineTransform3D transform = new AffineTransform3D();

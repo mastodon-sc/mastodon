@@ -21,6 +21,9 @@ import net.imglib2.type.numeric.ARGBType;
 import net.imglib2.ui.OverlayRenderer;
 import net.imglib2.ui.TransformListener;
 import net.imglib2.util.LinAlgHelpers;
+import net.trackmate.graph.collection.CollectionUtils;
+import net.trackmate.graph.collection.RefCollection;
+import net.trackmate.graph.collection.RefList;
 import net.trackmate.revised.Util;
 import net.trackmate.spatial.ClipConvexPolytope;
 import net.trackmate.spatial.SpatialIndex;
@@ -731,5 +734,76 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 			index.readLock().unlock();
 		}
 		return null;
+	}
+
+	/**
+	 * Get all vertices that would be visible with the current display settings
+	 * and the specified {@code transform} and {@code timepoint}. This is used
+	 * to compute {@link OverlayContext}.
+	 * <p>
+	 * Note, that it doesn't lock the {@link SpatioTemporalIndex}: we assumed,
+	 * that this is already done by the caller.
+	 * <p>
+	 * TODO: The above means that the index is locked for longer than
+	 * necessary.Revisit this and once it is clear how contexts are used in
+	 * practice.
+	 *
+	 * @param transform
+	 * @param timepoint
+	 * @return vertices that would be visible with the current display settings
+	 *         and the specified {@code transform} and {@code timepoint}.
+	 */
+	RefCollection< V > getVisibleVertices( final AffineTransform3D transform, final int timepoint )
+	{
+		final RefList< V > contextList = CollectionUtils.createVertexList( graph );
+		final double maxDepth = isFocusLimitViewRelative
+				? focusLimit
+				: focusLimit * Affine3DHelpers.extractScale( transform, 0 );
+		final boolean drawPointAlways = drawPoints
+				&& ( ( !drawEllipsoidSliceIntersection && !drawEllipsoidSliceProjection )
+						|| drawPointsForEllipses );
+		final boolean drawPointMaybe = drawPoints
+				&& !drawEllipsoidSliceProjection && drawEllipsoidSliceIntersection;
+		final ScreenVertexMath svm = new ScreenVertexMath();
+
+		final ClipConvexPolytope< V > ccp = index.getSpatialIndex( timepoint ).getClipConvexPolytope();
+		final ConvexPolytope visiblePolytope = getVisiblePolytopeGlobal( transform, timepoint );
+		ccp.clip( visiblePolytope );
+		for ( final V vertex : ccp.getInsideValues() )
+		{
+			svm.init( vertex, transform );
+
+			if ( drawEllipsoidSliceIntersection )
+			{
+				if ( svm.intersectsViewPlane()
+						&& svm.intersectionIntersectsViewInterval( 0, width, 0, height ) )
+				{
+					contextList.add( vertex );
+					continue;
+				}
+			}
+
+			final double z = svm.getViewPos()[ 2 ];
+			final double sd = sliceDistance( z, maxDepth );
+			if ( -1 < sd && sd < 1 )
+			{
+				if ( drawEllipsoidSliceProjection
+						&& svm.projectionIntersectsViewInterval( 0, width, 0, height ) )
+				{
+					contextList.add( vertex );
+					continue;
+				}
+
+				if ( drawPointAlways || ( drawPointMaybe && !svm.intersectsViewPlane() ) )
+				{
+					final double x = svm.getViewPos()[ 0 ];
+					final double y = svm.getViewPos()[ 1 ];
+					if ( 0 <= x && x <= width && 0 <= y && y <= height )
+						contextList.add( vertex );
+				}
+			}
+		}
+
+		return contextList;
 	}
 }
