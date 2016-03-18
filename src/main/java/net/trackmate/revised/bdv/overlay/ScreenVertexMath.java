@@ -135,8 +135,15 @@ public class ScreenVertexMath
 	// tmp
 	private final double[] diff2 = new double[ 2 ];
 
-	// tmp
-	private final double[][] AAT = new double[ 2 ][ 2 ];
+	/**
+	 * covariance of 2D ellipse obtained by intersecting ellipsoid with z=0 plane.
+	 */
+	private final double[][] iS = new double[ 2 ][ 2 ];
+
+	/**
+	 * precision of 2D ellipse obtained by intersecting ellipsoid with z=0 plane.
+	 */
+	private final double[][] iP = new double[ 2 ][ 2 ];
 
 	/**
 	 * (Re-)initialize for a new {@code vertex} and the given viewer transform.
@@ -331,6 +338,94 @@ public class ScreenVertexMath
 		return d2 < 1;
 	}
 
+	/**
+	 * Test whether the projection of the ellipsoid onto the z=0 plane
+	 * intersects the rectangle defined by
+	 * {@code minX <= x <= maxX, minY <= y <= minX}.
+	 *
+	 * @param minX
+	 * @param maxX
+	 * @param minY
+	 * @param maxY
+	 * @return
+	 */
+	public boolean projectionIntersectsViewInterval( final double minX, final double maxX, final double minY, final double maxY )
+	{
+		computeProjection();
+		computeProjectedPrecision();
+
+		final double e0 = ( maxX - minX ) / 2;
+		final double e1 = ( maxY - minY ) / 2;
+
+		// Compute the increase in extents for R’.
+		final double l0 = Math.sqrt( vS[ 0 ][ 0 ] );
+		final double l1 = Math.sqrt( vS[ 1 ][ 1 ] );
+
+		// Transform the ellipse center to rectangle coordinate system.
+		diff2[ 0 ] = ( minX + maxX ) / 2;
+		diff2[ 1 ] = ( minY + maxY ) / 2;
+		LinAlgHelpers.subtract( projectCenter, diff2, vn2 );
+
+		if ( Math.abs( vn2[ 0 ] ) <= e0 + l0 && Math.abs( vn2[ 1 ] ) <= e1 + l1 )
+		{
+			final double s0 = ( vn2[ 0 ] >= 0 ) ? 1 : -1;
+			final double s1 = ( vn2[ 1 ] >= 0 ) ? 1 : -1;
+			vn2[ 0 ] -= s0 * e0;
+			vn2[ 1 ] -= s1 * e1;
+			vm2[ 0 ] = vP[ 0 ][ 0 ] * vn2[ 0 ] + vP[ 0 ][ 1 ] * vn2[ 1 ];
+			vm2[ 1 ] = vP[ 1 ][ 0 ] * vn2[ 0 ] + vP[ 1 ][ 1 ] * vn2[ 1 ];
+			if ( s0 * vm2[ 0 ] <= 0 || s1 * vm2[ 1 ] <= 0 )
+				return true;
+			return LinAlgHelpers.dot( vn2, vm2 ) <= 1;
+		}
+
+		return false;
+	}
+
+	/**
+	 * Test whether the intersection of the ellipsoid with the z=0 plane
+	 * intersects the rectangle defined by
+	 * {@code minX <= x <= maxX, minY <= y <= minX}.
+	 *
+	 * @param minX
+	 * @param maxX
+	 * @param minY
+	 * @param maxY
+	 * @return
+	 */
+	public boolean intersectionIntersectsViewInterval( final double minX, final double maxX, final double minY, final double maxY )
+	{
+		computeIntersection();
+
+		final double e0 = ( maxX - minX ) / 2;
+		final double e1 = ( maxY - minY ) / 2;
+
+		// Compute the increase in extents for R’.
+		final double l0 = Math.sqrt( iS[ 0 ][ 0 ] );
+		final double l1 = Math.sqrt( iS[ 1 ][ 1 ] );
+
+		// Transform the ellipse center to rectangle coordinate system.
+		diff2[ 0 ] = ( minX + maxX ) / 2;
+		diff2[ 1 ] = ( minY + maxY ) / 2;
+		LinAlgHelpers.subtract( intersectCenter, diff2, vn2 );
+
+		if ( Math.abs( vn2[ 0 ] ) <= e0 + l0 && Math.abs( vn2[ 1 ] ) <= e1 + l1 )
+		{
+			final double s0 = ( vn2[ 0 ] >= 0 ) ? 1 : -1;
+			final double s1 = ( vn2[ 1 ] >= 0 ) ? 1 : -1;
+			vn2[ 0 ] -= s0 * e0;
+			vn2[ 1 ] -= s1 * e1;
+			invertSymmetric2x2( iS, iP );
+			vm2[ 0 ] = iP[ 0 ][ 0 ] * vn2[ 0 ] + iP[ 0 ][ 1 ] * vn2[ 1 ];
+			vm2[ 1 ] = iP[ 1 ][ 0 ] * vn2[ 0 ] + iP[ 1 ][ 1 ] * vn2[ 1 ];
+			if ( s0 * vm2[ 0 ] <= 0 || s1 * vm2[ 1 ] <= 0 )
+				return true;
+			return LinAlgHelpers.dot( vn2, vm2 ) <= 1;
+		}
+
+		return false;
+	}
+
 	private void computePrecision()
 	{
 		if ( precisionComputed )
@@ -413,7 +508,7 @@ public class ScreenVertexMath
 		{
 			intersectsViewPlane = true;
 
-			final double radius = Math.sqrt( 1.0 - d * d );
+			final double radius2 = 1.0 - d * d;
 			LinAlgHelpers.scale( vn, LinAlgHelpers.dot( vn, vz ), vn );
 			LinAlgHelpers.subtract( vz, vn, vz );
 			LinAlgHelpers.mult( T, vz, vn );
@@ -425,18 +520,18 @@ public class ScreenVertexMath
 			final double a = LinAlgHelpers.dot( vx, vy ) / c;
 			final double a2 = a * a;
 			final double b2 = LinAlgHelpers.squareLength( vy ) - a2;
-			AAT[ 0 ][ 0 ] = 1.0 / c2 + a2 / ( b2 * c2 );
-			AAT[ 0 ][ 1 ] = -a / ( b2 * c );
-			AAT[ 1 ][ 0 ] = AAT[ 0 ][ 1 ];
-			AAT[ 1 ][ 1 ] = 1.0 / b2;
+			iS[ 0 ][ 0 ] = radius2 * ( 1.0 / c2 + a2 / ( b2 * c2 ) );
+			iS[ 0 ][ 1 ] = radius2 * -a / ( b2 * c );
+			iS[ 1 ][ 0 ] = iS[ 0 ][ 1 ];
+			iS[ 1 ][ 1 ] = radius2 / b2;
 			/*
-			 * now AAT is the 2D covariance ellipsoid of transformed unit circle
+			 * now iS is the 2D covariance ellipsoid of transformed circle with radius
 			 */
 
-			eig2.decomposeSymmetric( AAT );
+			eig2.decomposeSymmetric( iS );
 			final double[] eigVals2 = eig2.getRealEigenvalues();
-			final double w = Math.sqrt( eigVals2[ 0 ] ) * radius;
-			final double h = Math.sqrt( eigVals2[ 1 ] ) * radius;
+			final double w = Math.sqrt( eigVals2[ 0 ] );
+			final double h = Math.sqrt( eigVals2[ 1 ] );
 			final double ci = eig2.getV()[ 0 ][ 0 ];
 			final double si = eig2.getV()[ 1 ][ 0 ];
 
