@@ -256,6 +256,51 @@ public class MainWindow extends JFrame
 		}
 	}
 
+	/**
+	 * Try to load {@link InputTriggerConfig} from files in this order:
+	 * <ol>
+	 * <li>"mamutkeyconfig.yaml" in the current directory.
+	 * <li>".tm3/mamutkeyconfig.yaml" in the user's home directory.
+	 * </ol>
+	 */
+	static InputTriggerConfig getInputTriggerConfig()
+	{
+		InputTriggerConfig conf = null;
+
+		// try "mamutkeyconfig.yaml" in current directory
+		if ( new File( "mamutkeyconfig.yaml" ).isFile() )
+		{
+			try
+			{
+				conf = new InputTriggerConfig( YamlConfigIO.read( "mamutkeyconfig.yaml" ) );
+			}
+			catch ( final IOException e )
+			{}
+		}
+
+		// try "~/.tm3/mamutkeyconfig.yaml"
+		if ( conf == null )
+		{
+			final String fn = System.getProperty( "user.home" ) + "/.tm3/mamutkeyconfig.yaml";
+			if ( new File( fn ).isFile() )
+			{
+				try
+				{
+					conf = new InputTriggerConfig( YamlConfigIO.read( fn ) );
+				}
+				catch ( final IOException e )
+				{}
+			}
+		}
+
+		if ( conf == null )
+		{
+			conf = new InputTriggerConfig();
+		}
+
+		return conf;
+	}
+
 	public static void main( final String[] args ) throws IOException, SpimDataException
 	{
 		final String bdvFile = "samples/datasethdf5.xml";
@@ -263,21 +308,10 @@ public class MainWindow extends JFrame
 		final MamutProject project = new MamutProject( new File( "." ), new File( bdvFile ), new File( modelFile ) );
 //		final MamutProject project = new MamutProjectIO().load( "samples/mamutproject.xml" );
 
-		/*
-		 * Load keyconfig
-		 */
-		InputTriggerConfig keyconf;
-		try
-		{
-			keyconf = new InputTriggerConfig( YamlConfigIO.read( "samples/keyconf.yaml" ) );
-		}
-		catch ( final IOException e )
-		{
-			keyconf = new InputTriggerConfig();
-		}
 
 		System.setProperty( "apple.laf.useScreenMenuBar", "true" );
 
+		final InputTriggerConfig keyconf = getInputTriggerConfig();
 		final MainWindow mw = new MainWindow( keyconf );
 		mw.setDefaultCloseOperation( WindowConstants.EXIT_ON_CLOSE );
 		mw.pack();
