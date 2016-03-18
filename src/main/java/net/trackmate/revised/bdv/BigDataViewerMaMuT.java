@@ -59,7 +59,6 @@ import bdv.tools.brightness.SetupAssignments;
 import bdv.viewer.NavigationActions;
 import bdv.viewer.ViewerFrame;
 import bdv.viewer.ViewerPanel;
-import mpicbg.spim.data.generic.AbstractSpimData;
 
 public class BigDataViewerMaMuT
 {
@@ -96,24 +95,9 @@ public class BigDataViewerMaMuT
 
 	/**
 	 *
-	 * @param converterSetups
-	 *            list of {@link ConverterSetup} that control min/max and color
-	 *            of sources.
-	 * @param sources
-	 *            list of pairs of source of some type and converter from that
-	 *            type to ARGB.
-	 * @param spimData
-	 *            may be null. The {@link AbstractSpimData} of the dataset (if
-	 *            there is one). If it exists, it is used to set up a "Crop"
-	 *            dialog.
-	 * @param numTimepoints
-	 *            the number of timepoints in the dataset.
-	 * @param cache
-	 *            handle to cache. This is used to control io timing.
+	 * @param shared
 	 * @param windowTitle
 	 *            title of the viewer window.
-	 * @param options
-	 *            optional parameters.
 	 */
 	public BigDataViewerMaMuT(
 			final SharedBigDataViewerData shared,
