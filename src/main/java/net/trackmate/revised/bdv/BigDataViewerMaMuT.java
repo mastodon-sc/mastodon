@@ -28,34 +28,17 @@
  */
 package net.trackmate.revised.bdv;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.util.ArrayList;
-
 import javax.swing.ActionMap;
-import javax.swing.JFileChooser;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
-import javax.swing.filechooser.FileFilter;
 
-import org.jdom2.Document;
-import org.jdom2.Element;
-import org.jdom2.JDOMException;
-import org.jdom2.input.SAXBuilder;
-import org.jdom2.output.Format;
-import org.jdom2.output.XMLOutputter;
 import org.scijava.ui.behaviour.io.InputTriggerConfig;
 
 import bdv.tools.InitializeViewerState;
 import bdv.tools.VisibilityAndGroupingDialog;
 import bdv.tools.bookmarks.BookmarksEditor;
 import bdv.tools.brightness.BrightnessDialog;
-import bdv.tools.brightness.ConverterSetup;
-import bdv.tools.brightness.MinMaxGroup;
-import bdv.tools.brightness.SetupAssignments;
 import bdv.viewer.NavigationActions;
 import bdv.viewer.ViewerFrame;
 import bdv.viewer.ViewerPanel;
@@ -66,17 +49,11 @@ public class BigDataViewerMaMuT
 
 	private final ViewerPanel viewer;
 
-	private final SetupAssignments setupAssignments;
-
 	private final BrightnessDialog brightnessDialog;
 
 	private final VisibilityAndGroupingDialog activeSourcesDialog;
 
 	private final BookmarksEditor bookmarkEditor;
-
-	private final JFileChooser fileChooser;
-
-	private File proposedSettingsFile;
 
 	public void initSetBookmark()
 	{
@@ -104,7 +81,6 @@ public class BigDataViewerMaMuT
 			final String windowTitle )
 	{
 		final InputTriggerConfig inputTriggerConfig = shared.getInputTriggerConfig();
-		final ArrayList< ConverterSetup > converterSetups = shared.getConverterSetups();
 
 		viewerFrame = new ViewerFrame(
 				shared.getSources(),
@@ -117,60 +93,17 @@ public class BigDataViewerMaMuT
 
 		bookmarkEditor = new BookmarksEditor( viewer, viewerFrame.getKeybindings(), shared.getBookmarks() );
 
-		setupAssignments = new SetupAssignments( converterSetups, 0, 65535 );
-		if ( setupAssignments.getMinMaxGroups().size() > 0 )
-		{
-			final MinMaxGroup group = setupAssignments.getMinMaxGroups().get( 0 );
-			for ( final ConverterSetup setup : setupAssignments.getConverterSetups() )
-				setupAssignments.moveSetupToGroup( setup, group );
-		}
-
 		brightnessDialog = shared.getBrightnessDialog();
 		activeSourcesDialog = new VisibilityAndGroupingDialog( viewerFrame, viewer.getVisibilityAndGrouping() );
-
-		fileChooser = new JFileChooser();
-		fileChooser.setFileFilter( new FileFilter()
-		{
-			@Override
-			public String getDescription()
-			{
-				return "xml files";
-			}
-
-			@Override
-			public boolean accept( final File f )
-			{
-				if ( f.isDirectory() )
-					return true;
-				if ( f.isFile() )
-				{
-					final String s = f.getName();
-					final int i = s.lastIndexOf( '.' );
-					if ( i > 0 && i < s.length() - 1 )
-					{
-						final String ext = s.substring( i + 1 ).toLowerCase();
-						return ext.equals( "xml" );
-					}
-				}
-				return false;
-			}
-		} );
 
 		NavigationActions.installActionBindings( viewerFrame.getKeybindings(), viewer, inputTriggerConfig );
 		BigDataViewerActionsMaMuT.installActionBindings( viewerFrame.getKeybindings(), this, inputTriggerConfig );
 
 		final JMenuBar menubar = new JMenuBar();
+		final ActionMap actionMap = viewerFrame.getKeybindings().getConcatenatedActionMap();
+
 		JMenu menu = new JMenu( "File" );
 		menubar.add( menu );
-
-		final ActionMap actionMap = viewerFrame.getKeybindings().getConcatenatedActionMap();
-		final JMenuItem miLoadSettings = new JMenuItem( actionMap.get( BigDataViewerActionsMaMuT.LOAD_SETTINGS ) );
-		miLoadSettings.setText( "Load settings" );
-		menu.add( miLoadSettings );
-
-		final JMenuItem miSaveSettings = new JMenuItem( actionMap.get( BigDataViewerActionsMaMuT.SAVE_SETTINGS ) );
-		miSaveSettings.setText( "Save settings" );
-		menu.add( miSaveSettings );
 
 		menu = new JMenu( "Settings" );
 		menubar.add( menu );
@@ -216,105 +149,4 @@ public class BigDataViewerMaMuT
 	{
 		return activeSourcesDialog;
 	}
-
-	public boolean tryLoadSettings( final String xmlFilename )
-	{
-		proposedSettingsFile = null;
-		if( xmlFilename.startsWith( "http://" ) )
-		{
-			// load settings.xml from the BigDataServer
-			final String settings = xmlFilename + "settings";
-			{
-				try
-				{
-					loadSettings( settings );
-					return true;
-				}
-				catch ( final FileNotFoundException e )
-				{}
-				catch ( final Exception e )
-				{
-					e.printStackTrace();
-				}
-			}
-		}
-		else if ( xmlFilename.endsWith( ".xml" ) )
-		{
-			final String settings = xmlFilename.substring( 0, xmlFilename.length() - ".xml".length() ) + ".settings" + ".xml";
-			proposedSettingsFile = new File( settings );
-			if ( proposedSettingsFile.isFile() )
-			{
-				try
-				{
-					loadSettings( settings );
-					return true;
-				}
-				catch ( final Exception e )
-				{
-					e.printStackTrace();
-				}
-			}
-		}
-		return false;
-	}
-
-	protected void saveSettings()
-	{
-		fileChooser.setSelectedFile( proposedSettingsFile );
-		final int returnVal = fileChooser.showSaveDialog( null );
-		if ( returnVal == JFileChooser.APPROVE_OPTION )
-		{
-			proposedSettingsFile = fileChooser.getSelectedFile();
-			try
-			{
-				saveSettings( proposedSettingsFile.getCanonicalPath() );
-			}
-			catch ( final IOException e )
-			{
-				e.printStackTrace();
-			}
-		}
-	}
-
-	protected void saveSettings( final String xmlFilename ) throws IOException
-	{
-		final Element root = new Element( "Settings" );
-		root.addContent( viewer.stateToXml() );
-		root.addContent( setupAssignments.toXml() );
-//		root.addContent( bookmarks.toXml() );
-		final Document doc = new Document( root );
-		final XMLOutputter xout = new XMLOutputter( Format.getPrettyFormat() );
-		xout.output( doc, new FileWriter( xmlFilename ) );
-	}
-
-	protected void loadSettings()
-	{
-		fileChooser.setSelectedFile( proposedSettingsFile );
-		final int returnVal = fileChooser.showOpenDialog( null );
-		if ( returnVal == JFileChooser.APPROVE_OPTION )
-		{
-			proposedSettingsFile = fileChooser.getSelectedFile();
-			try
-			{
-				loadSettings( proposedSettingsFile.getCanonicalPath() );
-			}
-			catch ( final Exception e )
-			{
-				e.printStackTrace();
-			}
-		}
-	}
-
-	protected void loadSettings( final String xmlFilename ) throws IOException, JDOMException
-	{
-		final SAXBuilder sax = new SAXBuilder();
-		final Document doc = sax.build( xmlFilename );
-		final Element root = doc.getRootElement();
-		viewer.stateFromXml( root );
-		setupAssignments.restoreFromXml( root );
-//		bookmarks.resstoreFromXml( root );
-		activeSourcesDialog.update();
-		viewer.requestRepaint();
-	}
 }
-

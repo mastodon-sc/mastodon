@@ -44,8 +44,6 @@ public class BigDataViewerActionsMaMuT
 {
 	public static final String BRIGHTNESS_SETTINGS = "brightness settings";
 	public static final String VISIBILITY_AND_GROUPING = "visibility and grouping";
-	public static final String SAVE_SETTINGS = "save settings";
-	public static final String LOAD_SETTINGS = "load settings";
 	public static final String SET_BOOKMARK = "set bookmark";
 	public static final String GO_TO_BOOKMARK = "go to bookmark";
 	public static final String GO_TO_BOOKMARK_ROTATION = "go to bookmark rotation";
@@ -77,8 +75,6 @@ public class BigDataViewerActionsMaMuT
 
 		map.put( BRIGHTNESS_SETTINGS, "S" );
 		map.put( VISIBILITY_AND_GROUPING, "F6" );
-		map.put( SAVE_SETTINGS, "F11" );
-		map.put( LOAD_SETTINGS, "F12" );
 		map.put( GO_TO_BOOKMARK, "B" );
 		map.put( GO_TO_BOOKMARK_ROTATION, "O" );
 		map.put( SET_BOOKMARK, "shift B" );
@@ -96,8 +92,6 @@ public class BigDataViewerActionsMaMuT
 		map.put( new SetBookmarkAction( bdv ) );
 		map.put( new GoToBookmarkAction( bdv ) );
 		map.put( new GoToBookmarkRotationAction( bdv ) );
-		map.put( new SaveSettingsAction( bdv ) );
-		map.put( new LoadSettingsAction( bdv ) );
 
 		return actionMap;
 	}
@@ -158,38 +152,6 @@ public class BigDataViewerActionsMaMuT
 		public void actionPerformed( final ActionEvent e )
 		{
 			bdv.initGoToBookmarkRotation();
-		}
-
-		private static final long serialVersionUID = 1L;
-	}
-
-	public static class SaveSettingsAction extends ViewerAction
-	{
-		public SaveSettingsAction( final BigDataViewerMaMuT bdv )
-		{
-			super( SAVE_SETTINGS, bdv );
-		}
-
-		@Override
-		public void actionPerformed( final ActionEvent e )
-		{
-			bdv.saveSettings();
-		}
-
-		private static final long serialVersionUID = 1L;
-	}
-
-	public static class LoadSettingsAction extends ViewerAction
-	{
-		public LoadSettingsAction( final BigDataViewerMaMuT bdv )
-		{
-			super( LOAD_SETTINGS, bdv );
-		}
-
-		@Override
-		public void actionPerformed( final ActionEvent e )
-		{
-			bdv.loadSettings();
 		}
 
 		private static final long serialVersionUID = 1L;
