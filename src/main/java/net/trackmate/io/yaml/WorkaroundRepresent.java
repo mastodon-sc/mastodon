@@ -21,19 +21,19 @@ public abstract class WorkaroundRepresent implements Represent
 		this.clazz = clazz;
 	}
 
-	protected Node representSequence( final Tag tag, final Iterable< ? extends Object > sequence, final Boolean flowStyle )
+	protected Node representSequence( final Tag tag, final Iterable< ? > sequence, final Boolean flowStyle )
 	{
 		return r.representSequence( tag, sequence, flowStyle );
 	}
 
-	protected Node representMapping( final Tag tag, final Map< ? extends Object, Object > mapping, final Boolean flowStyle )
+	protected Node representMapping( final Tag tag, final Map< ?, ? > mapping, final Boolean flowStyle )
 	{
 		return r.representMapping( tag, mapping, flowStyle );
 	}
 
 	protected Boolean getDefaultFlowStyle()
 	{
-		return r.getDefaultFlowStyle();
+		return r.getDefaultFlowStyle().getStyleBoolean();
 	}
 
 	protected Tag getTag()

@@ -9,13 +9,13 @@ import org.yaml.snakeyaml.nodes.SequenceNode;
 
 public class WorkaroundConstructor extends Constructor
 {
-	public WorkaroundConstructor( final Class< ? extends Object > theRoot )
+	public WorkaroundConstructor( final Class< ? > theRoot )
 	{
 		super( theRoot );
 	}
 
 	@Override
-	protected List< ? extends Object > constructSequence( final SequenceNode node )
+	protected List< ? > constructSequence( final SequenceNode node )
 	{
 		return super.constructSequence( node );
 	}

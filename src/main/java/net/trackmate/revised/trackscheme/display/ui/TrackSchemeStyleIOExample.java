@@ -27,7 +27,7 @@ public class TrackSchemeStyleIOExample
 		final String dump = yaml.dump( style );
 		System.out.println( dump );
 
-		final Object load = yaml.load( dump );
+		final TrackSchemeStyle load = yaml.loadAs( dump, TrackSchemeStyle.class );
 
 		final String dump2 = yaml.dump( load );
 		System.out.println( dump2 );

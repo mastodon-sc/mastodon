@@ -20,7 +20,7 @@ public abstract class AbstractWorkaroundConstruct extends AbstractConstruct
 		this.tag = tag;
 	}
 
-	protected List< ? extends Object > constructSequence( final SequenceNode node )
+	protected List< ? > constructSequence( final SequenceNode node )
 	{
 		return c.constructSequence( node );
 	}

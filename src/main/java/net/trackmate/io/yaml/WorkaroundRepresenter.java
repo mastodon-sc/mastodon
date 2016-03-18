@@ -9,22 +9,15 @@ import org.yaml.snakeyaml.representer.Representer;
 public class WorkaroundRepresenter extends Representer
 {
 	@Override
-	protected Node representSequence( final Tag tag, final Iterable< ? extends Object > sequence, final Boolean flowStyle )
+	protected Node representSequence( final Tag tag, final Iterable< ? > sequence, final Boolean flowStyle )
 	{
-		// TODO Auto-generated method stub
 		return super.representSequence( tag, sequence, flowStyle );
 	}
 
 	@Override
-	protected Node representMapping( final Tag tag, final Map< ? extends Object, Object > mapping, final Boolean flowStyle )
+	protected Node representMapping( final Tag tag, final Map< ?, ? > mapping, final Boolean flowStyle )
 	{
-		// TODO Auto-generated method stub
 		return super.representMapping( tag, mapping, flowStyle );
-	}
-
-	protected Boolean getDefaultFlowStyle()
-	{
-		return defaultFlowStyle;
 	}
 
 	protected void putRepresent( final WorkaroundRepresent r )
