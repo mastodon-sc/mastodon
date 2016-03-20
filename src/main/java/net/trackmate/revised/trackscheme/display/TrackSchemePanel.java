@@ -347,7 +347,8 @@ public class TrackSchemePanel extends JPanel implements
 				entityAnimator.continueAnimation( transform, ANIMATION_MILLISECONDS );
 			}
 			else
-				entityAnimator.startAnimation( transform, 0 );
+				entityAnimator.continueAnimation( transform, 0 );
+//				entityAnimator.startAnimation( transform, 0 );
 //			entityAnimator.startAnimation( transform, ANIMATION_MILLISECONDS );
 		}
 		else if ( flags.selectionChanged )
