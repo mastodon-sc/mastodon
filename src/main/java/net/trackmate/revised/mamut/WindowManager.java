@@ -586,6 +586,7 @@ public class WindowManager
 
 		final TsWindow tsWindow = new TsWindow( frame, groupHandle, contextChooser );
 		addTsWindow( tsWindow );
+		frame.getTrackschemePanel().repaint();
 	}
 
 	public void closeAllWindows()
