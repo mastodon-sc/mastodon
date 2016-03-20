@@ -73,6 +73,7 @@ import net.trackmate.revised.trackscheme.TrackSchemeHighlight;
 import net.trackmate.revised.trackscheme.TrackSchemeNavigation;
 import net.trackmate.revised.trackscheme.TrackSchemeSelection;
 import net.trackmate.revised.trackscheme.display.TrackSchemeFrame;
+import net.trackmate.revised.trackscheme.display.TrackSchemeOptions;
 import net.trackmate.revised.trackscheme.display.laf.TrackSchemeStyle;
 import net.trackmate.revised.trackscheme.display.ui.TrackSchemeStylePanel.TrackSchemeStyleDialog;
 import net.trackmate.revised.ui.grouping.GroupHandle;
@@ -555,7 +556,8 @@ public class WindowManager
 				trackSchemeSelection,
 				trackSchemeNavigation,
 				groupHandle,
-				contextChooser );
+				contextChooser,
+				TrackSchemeOptions.options().inputTriggerConfig( keyconf ) );
 		frame.getTrackschemePanel().setTimepointRange( minTimepoint, maxTimepoint );
 		frame.getTrackschemePanel().graphChanged();
 		contextListener.setContextListener( frame.getTrackschemePanel() );
