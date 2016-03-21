@@ -7,7 +7,7 @@ import net.trackmate.revised.ui.selection.NavigationListener;
 public class TrackSchemeNavigation implements
 		ModelNavigationListener
 {
-	private final ArrayList< NavigationListener< TrackSchemeVertex > > listeners = new ArrayList< NavigationListener< TrackSchemeVertex > >();
+	private final ArrayList< NavigationListener< TrackSchemeVertex, TrackSchemeEdge > > listeners;
 
 	private final ModelNavigationProperties props;
 
@@ -19,6 +19,7 @@ public class TrackSchemeNavigation implements
 	{
 		this.props = props;
 		this.graph = graph;
+		this.listeners = new ArrayList<>();
 
 		props.forwardNavigationEventsTo( this );
 	}
@@ -32,7 +33,7 @@ public class TrackSchemeNavigation implements
 	 *         listeners of this handler. {@code false} if the specified
 	 *         listener was already registered.
 	 */
-	public synchronized boolean addNavigationListener( final NavigationListener< TrackSchemeVertex > listener )
+	public synchronized boolean addNavigationListener( final NavigationListener< TrackSchemeVertex, TrackSchemeEdge > listener )
 	{
 		if ( !listeners.contains( listener ) )
 		{
@@ -42,7 +43,7 @@ public class TrackSchemeNavigation implements
 		return false;
 	}
 
-	public synchronized boolean removeNavigationListener( final NavigationListener< TrackSchemeVertex > l )
+	public synchronized boolean removeNavigationListener( final NavigationListener< TrackSchemeVertex, TrackSchemeEdge > l )
 	{
 		return listeners.remove( l );
 	}
@@ -55,15 +56,26 @@ public class TrackSchemeNavigation implements
 
 	/*
 	 * ModelNavigationListener implementation
-	 * converts forwarded model id events to TrackSchemeVertex
+	 * converts forwarded model id events to TrackSchemeVertex/Edge
 	 */
+
 	@Override
 	public void navigateToVertex( final int mid )
 	{
 		final TrackSchemeVertex ref = graph.vertexRef();
 		final TrackSchemeVertex v = graph.getTrackSchemeVertexForModelId( mid, ref );
-		for ( final NavigationListener< TrackSchemeVertex > l : listeners )
+		for ( final NavigationListener< TrackSchemeVertex, TrackSchemeEdge > l : listeners )
 			l.navigateToVertex( v );
+		graph.releaseRef( ref );
+	}
+
+	@Override
+	public void navigateToEdge( final int mid )
+	{
+		final TrackSchemeEdge ref = graph.edgeRef();
+		final TrackSchemeEdge e = graph.getTrackSchemeEdgeForModelId( mid, ref );
+		for ( final NavigationListener< TrackSchemeVertex, TrackSchemeEdge > l : listeners )
+			l.navigateToEdge( e );
 		graph.releaseRef( ref );
 	}
 }

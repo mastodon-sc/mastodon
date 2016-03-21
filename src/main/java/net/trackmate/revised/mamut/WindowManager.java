@@ -424,7 +424,7 @@ public class WindowManager
 		viewer.getDisplay().addHandler( highlightHandler );
 		viewer.addRenderTransformListener( highlightHandler );
 
-		final NavigationHandler< Spot > navigationHandler = new NavigationHandler<>( bdvGroupHandle );
+		final NavigationHandler< Spot, Link > navigationHandler = new NavigationHandler<>( bdvGroupHandle );
 		final OverlayNavigationWrapper< Spot, Link > navigation =
 				new OverlayNavigationWrapper< Spot, Link >( viewer, overlayGraph, navigationHandler );
 		final SelectionBehaviours< ?, ? > selectionBehaviours = new SelectionBehaviours<>( overlayGraph, tracksOverlay, overlaySelection, navigation );
@@ -528,7 +528,7 @@ public class WindowManager
 		/*
 		 * TrackScheme navigation
 		 */
-		final NavigationHandler< Spot > navigationHandler = new NavigationHandler< Spot >( groupHandle );
+		final NavigationHandler< Spot, Link > navigationHandler = new NavigationHandler<>( groupHandle );
 		final ModelNavigationProperties navigationProperties = new DefaultModelNavigationProperties< Spot, Link >( graph, idmap, navigationHandler );
 		final TrackSchemeNavigation trackSchemeNavigation = new TrackSchemeNavigation( navigationProperties, trackSchemeGraph );
 

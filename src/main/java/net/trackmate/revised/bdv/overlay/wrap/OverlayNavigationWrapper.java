@@ -11,13 +11,25 @@ import net.trackmate.revised.ui.selection.NavigationEtiquette;
 import net.trackmate.revised.ui.selection.NavigationHandler;
 import net.trackmate.revised.ui.selection.NavigationListener;
 
-public class OverlayNavigationWrapper< V extends Vertex< E >, E extends Edge< V > > implements OverlayNavigation< OverlayVertexWrapper< V, E > >, NavigationListener< V >
+/**
+ * TODO: javadoc
+ * TODO: explain: how is the NavigationListener, Handler, Wrapper, etc interrelated.
+ * TODO: NavigationListener to what? see Constructor: navigation.addNavigationListener( this );
+ *
+ * @param <V>
+ * @param <E>
+ *
+ * @author Tobias Pietzsch &lt;tobias.pietzsch@gmail.com&gt;
+ */
+public class OverlayNavigationWrapper< V extends Vertex< E >, E extends Edge< V > > implements
+		OverlayNavigation< OverlayVertexWrapper< V, E >, OverlayEdgeWrapper< V, E > >,
+		NavigationListener< V, E >
 {
 	private final ViewerPanel panel;
 
 	private final OverlayGraphWrapper< V, E > graph;
 
-	private final NavigationHandler< V > navigation;
+	private final NavigationHandler< V, E > navigation;
 
 	private NavigationEtiquette navigationEtiquette;
 
@@ -26,7 +38,7 @@ public class OverlayNavigationWrapper< V extends Vertex< E >, E extends Edge< V 
 	public OverlayNavigationWrapper(
 			final ViewerPanel panel,
 			final OverlayGraphWrapper< V, E > graph,
-			final NavigationHandler< V > navigation )
+			final NavigationHandler< V, E > navigation )
 	{
 		this.panel = panel;
 		this.graph = graph;
@@ -72,6 +84,14 @@ public class OverlayNavigationWrapper< V extends Vertex< E >, E extends Edge< V 
 		graph.releaseRef( ref );
 	}
 
+	@Override
+	public void navigateToEdge( final E edge )
+	{
+		// TODO Auto-generated method stub
+		System.out.println( "TODO" );
+		new Throwable().printStackTrace( System.out );
+	}
+
 	/*
 	 * OverlayNavigation< OverlayVertexWrapper< V, E > >
 	 */
@@ -99,6 +119,12 @@ public class OverlayNavigationWrapper< V extends Vertex< E >, E extends Edge< V 
 	public void notifyNavigateToVertex( final OverlayVertexWrapper< V, E > vertex )
 	{
 		navigation.notifyNavigateToVertex( vertex.wv );
+	}
+
+	@Override
+	public void notifyNavigateToEdge( final OverlayEdgeWrapper< V, E > edge )
+	{
+		navigation.notifyNavigateToEdge( edge.we );
 	}
 
 	/*
@@ -194,4 +220,3 @@ public class OverlayNavigationWrapper< V extends Vertex< E >, E extends Edge< V 
 		}
 	}
 }
-

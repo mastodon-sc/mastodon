@@ -138,7 +138,7 @@ public class MaMuT
 		 * TrackScheme navigation
 		 */
 
-		final NavigationHandler< Spot > navigationHandler = new NavigationHandler< Spot >( trackSchemeGroupHandle );
+		final NavigationHandler< Spot, Link > navigationHandler = new NavigationHandler<>( trackSchemeGroupHandle );
 		final ModelNavigationProperties navigationProperties = new DefaultModelNavigationProperties< Spot, Link >( graph, idmap, navigationHandler );
 		final TrackSchemeNavigation trackSchemeNavigation = new TrackSchemeNavigation( navigationProperties, trackSchemeGraph );
 
@@ -276,7 +276,7 @@ public class MaMuT
 		viewer.getDisplay().addHandler( highlightHandler );
 		viewer.addRenderTransformListener( highlightHandler );
 
-		final NavigationHandler< Spot > navigationHandler = new NavigationHandler<>( bdvGroupHandle );
+		final NavigationHandler< Spot, Link > navigationHandler = new NavigationHandler<>( bdvGroupHandle );
 		final OverlayNavigationWrapper< Spot, Link > navigation =
 				new OverlayNavigationWrapper< Spot, Link >( viewer, overlayGraph, navigationHandler );
 		final SelectionBehaviours< ?, ? > selectionBehaviours = new SelectionBehaviours<>( overlayGraph, tracksOverlay, overlaySelection, navigation );

@@ -23,7 +23,7 @@ public class SelectionBehaviours< V extends OverlayVertex< V, E >, E extends Ove
 
 	private final OverlaySelection< V, E > selection;
 
-	private final OverlayNavigation< V > navigation;
+	private final OverlayNavigation< V, E > navigation;
 
 	private final BehaviourMap behaviourMap;
 
@@ -31,7 +31,7 @@ public class SelectionBehaviours< V extends OverlayVertex< V, E >, E extends Ove
 			final OverlayGraph< V, E > overlayGraph,
 			final OverlayGraphRenderer< V, E > renderer,
 			final OverlaySelection< V, E > selection,
-			final OverlayNavigation< V > navigation )
+			final OverlayNavigation< V, E > navigation )
 	{
 		this.overlayGraph = overlayGraph;
 		this.renderer = renderer;
@@ -67,7 +67,6 @@ public class SelectionBehaviours< V extends OverlayVertex< V, E >, E extends Ove
 	{
 		selection.pauseListeners();
 
-
 		final V vertex = overlayGraph.vertexRef();
 		final E edge = overlayGraph.edgeRef();
 
@@ -95,6 +94,26 @@ public class SelectionBehaviours< V extends OverlayVertex< V, E >, E extends Ove
 		overlayGraph.releaseRef( edge );
 
 		selection.resumeListeners();
+	}
+
+	private void navigate( final int x, final int y )
+	{
+		final V vertex = overlayGraph.vertexRef();
+		final E edge = overlayGraph.edgeRef();
+
+		// See if we can select a vertex.
+		if ( renderer.getVertexAt( x, y, vertex ) != null )
+		{
+			navigation.notifyNavigateToVertex( vertex );
+		}
+		// See if we can select an edge.
+		else if ( renderer.getEdgeAt( x, y, EDGE_SELECT_DISTANCE_TOLERANCE, edge ) != null )
+		{
+			navigation.notifyNavigateToEdge( edge );
+		}
+
+		overlayGraph.releaseRef( vertex );
+		overlayGraph.releaseRef( edge );
 	}
 
 	/*
@@ -134,12 +153,7 @@ public class SelectionBehaviours< V extends OverlayVertex< V, E >, E extends Ove
 		@Override
 		public void click( final int x, final int y )
 		{
-			final V vertex = overlayGraph.vertexRef();
-			if ( renderer.getVertexAt( x, y, vertex ) != null )
-			{
-				navigation.notifyNavigateToVertex( vertex );
-			}
-			overlayGraph.releaseRef( vertex );
+			navigate( x, y );
 		}
 	}
 

@@ -9,20 +9,20 @@ import net.trackmate.revised.ui.selection.NavigationListener;
 
 public class DefaultModelNavigationProperties< V extends Vertex< E >, E extends Edge< V > > implements
 		ModelNavigationProperties,
-		NavigationListener< V >
+		NavigationListener< V, E >
 {
 	private final ReadOnlyGraph< V, E > graph;
 
 	private final GraphIdBimap< V, E > idmap;
 
-	private final NavigationHandler< V > navigation;
+	private final NavigationHandler< V, E > navigation;
 
 	private ModelNavigationListener modelNavigationListener;
 
 	public DefaultModelNavigationProperties(
 			final ReadOnlyGraph< V, E > graph,
 			final GraphIdBimap< V, E > idmap,
-			final NavigationHandler< V > navigation )
+			final NavigationHandler< V, E > navigation )
 	{
 		this.graph = graph;
 		this.idmap = idmap;
@@ -49,5 +49,12 @@ public class DefaultModelNavigationProperties< V extends Vertex< E >, E extends 
 	{
 		if ( modelNavigationListener != null )
 			modelNavigationListener.navigateToVertex( idmap.getVertexId( vertex ) );
+	}
+
+	@Override
+	public void navigateToEdge( final E edge )
+	{
+		if ( modelNavigationListener != null )
+			modelNavigationListener.navigateToEdge( idmap.getEdgeId( edge ) );
 	}
 }

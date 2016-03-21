@@ -9,4 +9,6 @@ package net.trackmate.revised.trackscheme;
 public interface ModelNavigationListener
 {
 	public void navigateToVertex( int modelVertexId );
+
+	public void navigateToEdge( int modelEdgeId );
 }

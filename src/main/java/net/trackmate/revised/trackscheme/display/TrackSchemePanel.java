@@ -26,6 +26,7 @@ import net.trackmate.revised.trackscheme.LineageTreeLayout.LayoutListener;
 import net.trackmate.revised.trackscheme.ScreenEntities;
 import net.trackmate.revised.trackscheme.ScreenEntitiesInterpolator;
 import net.trackmate.revised.trackscheme.ScreenTransform;
+import net.trackmate.revised.trackscheme.TrackSchemeEdge;
 import net.trackmate.revised.trackscheme.TrackSchemeFocus;
 import net.trackmate.revised.trackscheme.TrackSchemeGraph;
 import net.trackmate.revised.trackscheme.TrackSchemeHighlight;
@@ -50,7 +51,7 @@ public class TrackSchemePanel extends JPanel implements
 		TimePointListener,
 		GraphChangeListener,
 		SelectionListener,
-		NavigationListener< TrackSchemeVertex >,
+		NavigationListener< TrackSchemeVertex, TrackSchemeEdge >,
 		ContextListener< TrackSchemeVertex >
 {
 	private static final long serialVersionUID = 1L;
@@ -504,6 +505,14 @@ public class TrackSchemePanel extends JPanel implements
 			transform.set( screenTransform );
 		}
 		navigationBehaviour.navigateToVertex( v, transform );
+	}
+
+	@Override
+	public void navigateToEdge( final TrackSchemeEdge edge )
+	{
+		// TODO Auto-generated method stub
+		System.out.println( "TODO" );
+		new Throwable().printStackTrace( System.out );
 	}
 
 	/**
