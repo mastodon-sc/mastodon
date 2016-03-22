@@ -54,6 +54,12 @@ public class TrackSchemeNavigation implements
 		props.notifyNavigateToVertex( v.getModelVertexId() );
 	}
 
+	// forward to ModelNavigationProperties
+	public void notifyNavigateToEdge( final TrackSchemeEdge e )
+	{
+		props.notifyNavigateToEdge( e.getModelEdgeId() );
+	}
+
 	/*
 	 * ModelNavigationListener implementation
 	 * converts forwarded model id events to TrackSchemeVertex/Edge

@@ -15,5 +15,7 @@ public interface ModelNavigationProperties
 {
 	public void notifyNavigateToVertex( final int modelVertexId );
 
+	public void notifyNavigateToEdge( final int modelEdgeId );
+
 	public void forwardNavigationEventsTo( final ModelNavigationListener listener );
 }

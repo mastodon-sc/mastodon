@@ -39,6 +39,14 @@ public class DefaultModelNavigationProperties< V extends Vertex< E >, E extends 
 	}
 
 	@Override
+	public void notifyNavigateToEdge( final int modelEdgeId )
+	{
+		final E ref = graph.edgeRef();
+		navigation.notifyNavigateToEdge( idmap.getEdge( modelEdgeId, ref ) );
+		graph.releaseRef( ref );
+	}
+
+	@Override
 	public void forwardNavigationEventsTo( final ModelNavigationListener listener )
 	{
 		this.modelNavigationListener = listener;

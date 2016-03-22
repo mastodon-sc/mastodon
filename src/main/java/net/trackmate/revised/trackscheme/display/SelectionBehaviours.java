@@ -210,6 +210,27 @@ public class SelectionBehaviours implements TransformListener< ScreenTransform >
 		selection.resumeListeners();
 	}
 
+	private void navigate( final int x, final int y )
+	{
+		final TrackSchemeVertex vertex = graph.vertexRef();
+		final TrackSchemeEdge edge = graph.edgeRef();
+
+		// See if we can select a vertex.
+		if ( graphOverlay.getVertexAt( x, y, vertex ) != null )
+		{
+			navigation.notifyNavigateToVertex( vertex );
+		}
+		// See if we can select an edge.
+		else if ( graphOverlay.getEdgeAt( x, y, EDGE_SELECT_DISTANCE_TOLERANCE, edge ) != null )
+		{
+			navigation.notifyNavigateToEdge( edge );
+		}
+
+		graph.releaseRef( vertex );
+		graph.releaseRef( edge );
+	}
+
+
 	/*
 	 * BEHAVIOURS
 	 */
@@ -268,13 +289,7 @@ public class SelectionBehaviours implements TransformListener< ScreenTransform >
 			if ( x < headerWidth || y < headerHeight )
 				return;
 
-			final TrackSchemeVertex ref = graph.vertexRef();
-			final TrackSchemeVertex vertex = graphOverlay.getVertexAt( x, y, ref );
-			if ( vertex != null )
-			{
-				navigation.notifyNavigateToVertex( vertex );
-			}
-			graph.releaseRef( ref );
+			navigate( x, y );
 		}
 	}
 
