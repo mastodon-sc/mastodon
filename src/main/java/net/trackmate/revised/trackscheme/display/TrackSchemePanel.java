@@ -510,9 +510,18 @@ public class TrackSchemePanel extends JPanel implements
 	@Override
 	public void navigateToEdge( final TrackSchemeEdge edge )
 	{
-		// TODO Auto-generated method stub
-		System.out.println( "TODO" );
-		new Throwable().printStackTrace( System.out );
+		// TODO: focus target vertex?
+
+		final TrackSchemeVertex target = edge.getTarget( graph.vertexRef() );
+		graphOverlay.setCurrentTimepoint( target.getTimepoint() );
+		graph.releaseRef( target );
+
+		final ScreenTransform transform = new ScreenTransform();
+		synchronized( screenTransform )
+		{
+			transform.set( screenTransform );
+		}
+		navigationBehaviour.navigateToEdge( edge, transform );
 	}
 
 	/**
@@ -522,6 +531,8 @@ public class TrackSchemePanel extends JPanel implements
 	interface NavigationBehaviour
 	{
 		public void navigateToVertex( final TrackSchemeVertex v, final ScreenTransform currentTransform );
+
+		public void navigateToEdge( final TrackSchemeEdge e, final ScreenTransform currentTransform );
 	}
 
 	private static class CenteringNavigationBehaviour implements NavigationBehaviour
@@ -539,6 +550,14 @@ public class TrackSchemePanel extends JPanel implements
 			final double lx = v.getLayoutX();
 			final double ly = v.getTimepoint();
 			transformEventHandler.centerOn( lx, ly );
+		}
+
+		@Override
+		public void navigateToEdge( final TrackSchemeEdge e, final ScreenTransform currentTransform )
+		{
+			// TODO Auto-generated method stub
+			System.err.println( "not implemented: CenteringNavigationBehaviour.navigateToEdge()" );
+			new Throwable().printStackTrace( System.out );
 		}
 	}
 
@@ -563,6 +582,14 @@ public class TrackSchemePanel extends JPanel implements
 			{
 				transformEventHandler.centerOn( lx, ly );
 			}
+		}
+
+		@Override
+		public void navigateToEdge( final TrackSchemeEdge e, final ScreenTransform currentTransform )
+		{
+			// TODO Auto-generated method stub
+			System.err.println( "not implemented: CenterIfInvisibleNavigationBehaviour.navigateToEdge()" );
+			new Throwable().printStackTrace( System.out );
 		}
 	}
 
@@ -612,6 +639,59 @@ public class TrackSchemePanel extends JPanel implements
 				sy = ly - maxY + by;
 			else if ( ly < minY + by )
 				sy = ly - minY - by;
+
+			if ( sx != 0 || sy != 0 )
+			{
+				final double cx = ( minX + maxX ) / 2 + sx;
+				final double cy = ( minY + maxY ) / 2 + sy;
+				transformEventHandler.centerOn( cx, cy );
+			}
+		}
+
+		@Override
+		public void navigateToEdge( final TrackSchemeEdge e, final ScreenTransform currentTransform )
+		{
+			/*
+			 * TODO: check for compatibility of screenBorder and screenWidth,
+			 * screenHeight. Fall back to CENTER_IF_INVISIBLE if screen size too
+			 * small.
+			 */
+//			final int screenWidth = currentTransform.getScreenWidth();
+//			final int screenHeight = currentTransform.getScreenHeight();
+
+			final double minX = currentTransform.getMinX();
+			final double maxX = currentTransform.getMaxX();
+			final double minY = currentTransform.getMinY();
+			final double maxY = currentTransform.getMaxY();
+			final double bx = screenBorderX / currentTransform.getScaleX();
+			final double by = screenBorderY / currentTransform.getScaleY();
+
+			final TrackSchemeVertex source = e.getSource(); // TODO: use vertex ref
+			final TrackSchemeVertex target = e.getTarget(); // TODO: use vertex ref
+			final double sourceX = source.getLayoutX();
+			final double targetX = target.getLayoutX();
+			final double eMinX = Math.min( sourceX, targetX );
+			final double eMaxX = Math.max( sourceX, targetX );
+			final double eMinY = source.getTimepoint();
+			final double eMaxY = target.getTimepoint();
+			final double lx = 0.5 * ( eMinX + eMaxX );
+			final double ly = 0.5 * ( eMinY + eMaxY );
+
+			double sx = 0;
+			if ( ( eMaxX - eMinX ) > ( maxX - minX - 2 * bx ) )
+				sx = lx - ( minX + maxX ) / 2;
+			else if ( eMaxX > maxX - bx )
+				sx = eMaxX - maxX + bx;
+			else if ( eMinX < minX + bx )
+				sx = eMinX - minX - bx;
+
+			double sy = 0;
+			if ( ( eMaxY - eMinY ) > ( maxY - minY - 2 * by ) )
+				sy = ly - ( minY + maxY ) / 2;
+			else if ( eMaxY > maxY - by )
+				sy = eMaxY - maxY + by;
+			else if ( eMinY < minY + by )
+				sy = eMinY - minY - by;
 
 			if ( sx != 0 || sy != 0 )
 			{
