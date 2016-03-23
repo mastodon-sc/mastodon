@@ -108,6 +108,8 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 		pointFadeDepth = settings.getPointFadeDepth();
 	}
 
+	public static final double pointRadius = 2.5;
+
 	/**
 	 * Antialiasing {@link RenderingHints}.
 	 */
@@ -604,13 +606,23 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 							graphics.setTransform( torig );
 						}
 
+						// TODO: use simplified drawPointMaybe and drawPointAlways from getVisibleVertices()
 						final boolean drawPoint = drawPoints && ( ( !drawEllipsoidSliceIntersection && !drawEllipsoidSliceProjection )
 								|| drawPointsForEllipses
 								|| ( drawEllipsoidSliceIntersection && !screenVertexMath.intersectsViewPlane() ) );
 						if ( drawPoint )
 						{
 							graphics.setColor( getColor( sd, 0, pointFadeDepth, timepointDistanceFade, vertex.isSelected() ) );
-							graphics.fillOval( ( int ) ( x - 2.5 ), ( int ) ( y - 2.5 ), 5, 5 );
+							double radius = pointRadius;
+							if ( isHighlighted || isFocused )
+								radius *= 2;
+							final int ox = ( int ) ( x - radius );
+							final int oy = ( int ) ( y - radius );
+							final int ow = ( int ) ( 2 * radius );
+							if ( isFocused )
+								graphics.fillRect( ox, oy, ow, ow );
+							else
+								graphics.fillOval( ox, oy, ow, ow );
 						}
 					}
 				}
@@ -680,7 +692,7 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 		return null;
 	}
 
-	public V getVertexAt( final int x, final int y, final V ref )
+	public V getVertexAt( final int x, final int y, final double tolerance, final V ref )
 	{
 		final AffineTransform3D transform = getRenderTransformCopy();
 		final int currentTimepoint = renderTimepoint;
@@ -690,59 +702,70 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 		final ScreenVertexMath svm = new ScreenVertexMath();
 		transform.applyInverse( gPos, lPos );
 
-		index.readLock().lock();
-		try
-		{
-			if ( drawEllipsoidSliceProjection )
-			{
-				final ConvexPolytope cropPolytopeGlobal = getSurroundingPolytopeGlobal( x, y, transform, currentTimepoint );
-				final ClipConvexPolytope< V > ccp = index.getSpatialIndex( currentTimepoint ).getClipConvexPolytope();
-				ccp.clip( cropPolytopeGlobal );
+		boolean found = false;
 
-				final double[] xy = new double[] { x, y };
-				final double[] vPos = new double[ 3 ];
-				double minDist = Double.MAX_VALUE;
-				boolean found = false;
-				for ( final V v : ccp.getInsideValues() )
+		index.readLock().lock();
+
+		if ( drawEllipsoidSliceProjection )
+		{
+			final ConvexPolytope cropPolytopeGlobal = getSurroundingPolytopeGlobal( x, y, transform, currentTimepoint );
+			final ClipConvexPolytope< V > ccp = index.getSpatialIndex( currentTimepoint ).getClipConvexPolytope();
+			ccp.clip( cropPolytopeGlobal );
+
+			final double[] xy = new double[] { x, y };
+			final double[] vPos = new double[ 3 ];
+			double minDist = Double.MAX_VALUE;
+			for ( final V v : ccp.getInsideValues() )
+			{
+				svm.init( v, transform );
+				if ( svm.projectionContainsView( xy ) )
 				{
-					svm.init( v, transform );
-					if ( svm.projectionContainsView( xy ) )
+					found = true;
+					v.localize( vPos );
+					final double d = LinAlgHelpers.squareDistance( vPos, gPos );
+					if ( d < minDist )
 					{
-						found = true;
-						v.localize( vPos );
-						final double d = LinAlgHelpers.squareDistance( vPos, gPos );
-						if ( d < minDist )
-						{
-							minDist = d;
-							ref.refTo( v );
-						}
+						minDist = d;
+						ref.refTo( v );
 					}
 				}
-				if ( found ) { return ref; }
-				return null;
 			}
-			else if ( drawEllipsoidSliceIntersection )
+		}
+
+		if ( !found )
+		{
+			final NearestNeighborSearch< V > nns = index.getSpatialIndex( currentTimepoint ).getNearestNeighborSearch();
+			nns.search( RealPoint.wrap( gPos ) );
+			final V v = nns.getSampler().get();
+			if ( v != null )
 			{
-				final NearestNeighborSearch< V > nns = index.getSpatialIndex( currentTimepoint ).getNearestNeighborSearch();
-				nns.search( RealPoint.wrap( gPos ) );
-				final V v = nns.getSampler().get();
-				if ( v != null )
+				svm.init( v, transform );
+				if ( drawEllipsoidSliceIntersection )
 				{
-					svm.init( v, transform );
 					if ( svm.containsGlobal( gPos ) )
 					{
+						found = true;
 						ref.refTo( v );
-						return ref;
 					}
 				}
-				return null;
+				if ( !found && drawPoints )
+				{
+					final double[] p = svm.getViewPos();
+					final double dx = p[ 0 ] - x;
+					final double dy = p[ 1 ] - y;
+					final double dr = pointRadius + tolerance;
+					if ( dx * dx + dy * dy <= dr * dr )
+					{
+						found = true;
+						ref.refTo( v );
+					}
+				}
 			}
 		}
-		finally
-		{
-			index.readLock().unlock();
-		}
-		return null;
+
+		index.readLock().unlock();
+
+		return found ? ref : null;
 	}
 
 	/**

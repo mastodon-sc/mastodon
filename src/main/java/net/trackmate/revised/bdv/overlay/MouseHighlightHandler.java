@@ -58,7 +58,7 @@ public class MouseHighlightHandler< V extends OverlayVertex< V, E >, E extends O
 		final E edge = overlayGraph.edgeRef();
 
 		// See if we can find a vertex.
-		if ( renderer.getVertexAt( x, y, vertex ) != null )
+		if ( renderer.getVertexAt( x, y, SelectionBehaviours.POINT_SELECT_DISTANCE_TOLERANCE, vertex ) != null )
 			highlight.highlightVertex( vertex );
 		// See if we can find an edge.
 		else if ( renderer.getEdgeAt( x, y, SelectionBehaviours.EDGE_SELECT_DISTANCE_TOLERANCE, edge ) != null )

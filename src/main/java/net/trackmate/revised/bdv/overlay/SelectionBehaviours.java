@@ -17,6 +17,8 @@ public class SelectionBehaviours< V extends OverlayVertex< V, E >, E extends Ove
 
 	public static final double EDGE_SELECT_DISTANCE_TOLERANCE = 5.0;
 
+	public static final double POINT_SELECT_DISTANCE_TOLERANCE = 5.0;
+
 	private final OverlayGraph< V, E > overlayGraph;
 
 	private final OverlayGraphRenderer< V, E > renderer;
@@ -71,7 +73,7 @@ public class SelectionBehaviours< V extends OverlayVertex< V, E >, E extends Ove
 		final E edge = overlayGraph.edgeRef();
 
 		// See if we can select a vertex.
-		if ( renderer.getVertexAt( x, y, vertex ) != null )
+		if ( renderer.getVertexAt( x, y, POINT_SELECT_DISTANCE_TOLERANCE, vertex ) != null )
 		{
 			final boolean selected = vertex.isSelected();
 			if ( !addToSelection )
@@ -102,7 +104,7 @@ public class SelectionBehaviours< V extends OverlayVertex< V, E >, E extends Ove
 		final E edge = overlayGraph.edgeRef();
 
 		// See if we can find a vertex.
-		if ( renderer.getVertexAt( x, y, vertex ) != null )
+		if ( renderer.getVertexAt( x, y, POINT_SELECT_DISTANCE_TOLERANCE, vertex ) != null )
 		{
 			navigation.notifyNavigateToVertex( vertex );
 		}
