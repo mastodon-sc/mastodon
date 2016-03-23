@@ -64,4 +64,17 @@ public class OverlayEdgeWrapper< V extends Vertex< E >, E extends Edge< V > >
 	{
 		return overlayProperties.isEdgeSelected( we );
 	}
+
+	@Override
+	public int hashCode()
+	{
+		return we.hashCode();
+	}
+
+	@Override
+	public boolean equals( final Object obj )
+	{
+		return obj instanceof OverlayEdgeWrapper< ?, ? > &&
+				we.equals( ( ( OverlayEdgeWrapper< ?, ? > ) obj ).we );
+	}
 }

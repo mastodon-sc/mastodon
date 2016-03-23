@@ -54,10 +54,20 @@ public class MouseHighlightHandler< V extends OverlayVertex< V, E >, E extends O
 
 	private void highlight()
 	{
-		final V ref = overlayGraph.vertexRef();
-		final V v = renderer.getVertexAt( x, y, ref );
-		highlight.highlightVertex( v );
-		overlayGraph.releaseRef( ref );
+		final V vertex = overlayGraph.vertexRef();
+		final E edge = overlayGraph.edgeRef();
+
+		// See if we can find a vertex.
+		if ( renderer.getVertexAt( x, y, vertex ) != null )
+			highlight.highlightVertex( vertex );
+		// See if we can find an edge.
+		else if ( renderer.getEdgeAt( x, y, SelectionBehaviours.EDGE_SELECT_DISTANCE_TOLERANCE, edge ) != null )
+			highlight.highlightEdge( edge );
+		else
+			highlight.clearHighlight();
+
+		overlayGraph.releaseRef( vertex );
+		overlayGraph.releaseRef( edge );
 	}
 
 	@Override
@@ -81,7 +91,7 @@ public class MouseHighlightHandler< V extends OverlayVertex< V, E >, E extends O
 	@Override
 	public void mouseExited( final MouseEvent e )
 	{
-		highlight.highlightVertex( null );
+		highlight.clearHighlight();
 		mouseInside = false;
 	}
 }

@@ -447,8 +447,10 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 	{
 		final Graphics2D graphics = ( Graphics2D ) g;
 		final BasicStroke defaultVertexStroke = new BasicStroke();
-		final BasicStroke highlightedVertexStroke = new BasicStroke( 5 );
+		final BasicStroke highlightedVertexStroke = new BasicStroke( 4f );
 		final BasicStroke focusedVertexStroke = new BasicStroke( 2f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 1f, new float[] { 8f, 3f }, 0 );
+		final BasicStroke defaultEdgeStroke = new BasicStroke();
+		final BasicStroke highlightedEdgeStroke = new BasicStroke( 3f );
 
 		final AffineTransform3D transform = getRenderTransformCopy();
 		final int currentTimepoint = renderTimepoint;
@@ -460,12 +462,10 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 
 		graphics.setRenderingHint( RenderingHints.KEY_ANTIALIASING, antialiasing );
 
-//		graphics.setStroke( new BasicStroke( 2, BasicStroke.CAP_BUTT, BasicStroke.JOIN_ROUND ) );
-		graphics.setStroke( new BasicStroke() );
-
 		final V target = graph.vertexRef();
 		final V ref1 = graph.vertexRef();
 		final V ref2 = graph.vertexRef();
+		final E ref3 = graph.edgeRef();
 		final double[] lPos = new double[ 3 ];
 		final double[] gPos = new double[ 3 ];
 
@@ -479,7 +479,10 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 		{
 			if ( drawLinks )
 			{
-				graphics.setPaint( getColor( 0, 0, sliceDistanceFade, timepointDistanceFade, false ) );
+				final E highlighted = highlight.getHighlightedEdge( ref3 );
+
+				graphics.setStroke( defaultEdgeStroke );
+
 				for ( int t = Math.max( 0, currentTimepoint - timeLimit ); t < currentTimepoint; ++t )
 				{
 					final SpatialIndex< V > si = index.getSpatialIndex( t );
@@ -494,6 +497,8 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 						final double z0 = gPos[ 2 ];
 						for ( final E edge : vertex.outgoingEdges() )
 						{
+							final boolean isHighlighted = edge.equals( highlighted );
+
 							edge.getTarget( target );
 							target.localize( lPos );
 							transform.apply( lPos, gPos );
@@ -521,7 +526,11 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 									{
 										graphics.setPaint( c1 );
 									}
+									if ( isHighlighted )
+										graphics.setStroke( highlightedEdgeStroke );
 									graphics.drawLine( x0, y0, x1, y1 );
+									if ( isHighlighted )
+										graphics.setStroke( defaultEdgeStroke );
 								}
 							}
 						}

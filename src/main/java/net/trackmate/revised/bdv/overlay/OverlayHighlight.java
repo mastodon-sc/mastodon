@@ -2,11 +2,17 @@ package net.trackmate.revised.bdv.overlay;
 
 import net.trackmate.revised.ui.selection.HighlightListener;
 
-public interface OverlayHighlight< O extends OverlayVertex< ?, ? >, E extends OverlayEdge< ?, ? > >
+public interface OverlayHighlight< V extends OverlayVertex< ?, ? >, E extends OverlayEdge< ?, ? > >
 {
-	public O getHighlightedVertex( O ref );
+	public V getHighlightedVertex( V ref );
 
-	public void highlightVertex( O vertex );
+	public E getHighlightedEdge( E ref );
+
+	public void highlightVertex( V vertex );
+
+	public void highlightEdge( E edge );
+
+	public void clearHighlight();
 
 	public boolean addHighlightListener( final HighlightListener l );
 

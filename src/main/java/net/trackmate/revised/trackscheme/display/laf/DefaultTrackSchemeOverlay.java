@@ -50,24 +50,11 @@ public class DefaultTrackSchemeOverlay extends AbstractTrackSchemeOverlay
 	 */
 	private static final int MIN_TIMELINE_SPACING = 20;
 
-	/**
-	 * Y position for columns labels.
-	 */
-	private static final int YTEXT = 20;
+	public static final double simplifiedVertexRadius = 2.5;
 
-	/**
-	 * X position for time labels.
-	 */
-	private static final int XTEXT = 20;
+	public static final double simplifiedVertexSelectTolerance = 3.5;
 
-	/**
-	 * Size in pixel below which we do not draw column bars.
-	 */
-	private static final int MIN_DRAWING_COLUMN_WIDTH = 30;
-
-	public static final double simplifiedVertexRadius = 3.0;
-
-	public static final double minDisplayVertexDist = 20.0;
+	public static final double minDisplayVertexDist = 17.0;
 
 	public static final double maxDisplayVertexSize = 100.0;
 
@@ -271,15 +258,14 @@ public class DefaultTrackSchemeOverlay extends AbstractTrackSchemeOverlay
 	{
 		final double d = vertex.getVertexDist();
 		if ( d >= minDisplayVertexDist )
-		{
 			drawVertexFull( g2, vertex );
-		}
 		else if ( d >= minDisplaySimplifiedVertexDist )
-		{
 			drawVertexSimplified( g2, vertex );
-		}
+		else
+			drawVertexSimplifiedIfHighlighted( g2, vertex );
 	}
 
+	// TODO: take double x, y instead of RealLocalizable parameter
 	@Override
 	protected double distanceToPaintedEdge( final RealLocalizable pos, final ScreenEdge edge, final ScreenVertex source, final ScreenVertex target )
 	{
@@ -293,6 +279,7 @@ public class DefaultTrackSchemeOverlay extends AbstractTrackSchemeOverlay
 		return d;
 	}
 
+	// TODO: take double x, y instead of RealLocalizable parameter
 	@Override
 	protected boolean isInsidePaintedVertex( final RealLocalizable pos, final ScreenVertex vertex )
 	{
@@ -305,7 +292,7 @@ public class DefaultTrackSchemeOverlay extends AbstractTrackSchemeOverlay
 		}
 		else if ( d >= minDisplaySimplifiedVertexDist )
 		{
-			radius = simplifiedVertexRadius;
+			radius = simplifiedVertexRadius + simplifiedVertexSelectTolerance;
 		}
 		final double x = pos.getDoublePosition( 0 ) - vertex.getX();
 		final double y = pos.getDoublePosition( 1 ) - vertex.getY();
@@ -349,13 +336,20 @@ public class DefaultTrackSchemeOverlay extends AbstractTrackSchemeOverlay
 			transition = vs.getTransition();
 			ratio = vs.getInterpolationCompletionRatio();
 		}
+		final boolean highlighted = ( highlightedEdgeId >= 0 ) && ( edge.getTrackSchemeEdgeId() == highlightedEdgeId );
 		final boolean selected = edge.isSelected();
 		final boolean ghost = vs.isGhost() && vt.isGhost();
 		final Color drawColor = getColor( selected, ghost, transition, ratio,
 				style.edgeColor, style.selectedEdgeColor,
 				style.ghostEdgeColor, style.ghostSelectedEdgeColor );
 		g2.setColor( drawColor );
+		if ( highlighted )
+			g2.setStroke( style.edgeHighlightStroke );
+		else if ( ghost )
+			g2.setStroke( style.edgeGhostStroke );
 		g2.drawLine( ( int ) vs.getX(), ( int ) vs.getY(), ( int ) vt.getX(), ( int ) vt.getY() );
+		if ( highlighted || ghost )
+			g2.setStroke( style.edgeStroke );
 	}
 
 	protected void drawVertexSimplified( final Graphics2D g2, final ScreenVertex vertex )
@@ -373,8 +367,8 @@ public class DefaultTrackSchemeOverlay extends AbstractTrackSchemeOverlay
 		if ( disappear )
 			spotradius *= ( 1 + 3 * ratio );
 
-		if (highlighted)
-			spotradius *= 2;
+		if ( highlighted || focused )
+			spotradius *= 1.5;
 
 		final Color fillColor = getColor( selected, ghost, transition, ratio,
 				disappear ? style.selectedSimplifiedVertexFillColor : style.simplifiedVertexFillColor,
@@ -393,6 +387,43 @@ public class DefaultTrackSchemeOverlay extends AbstractTrackSchemeOverlay
 			g2.fillRect( ox, oy, ow, ow );
 		else
 			g2.fillOval( ox, oy, ow, ow );
+	}
+
+	protected void drawVertexSimplifiedIfHighlighted( final Graphics2D g2, final ScreenVertex vertex )
+	{
+		final boolean highlighted = ( highlightedVertexId >= 0 ) && ( vertex.getTrackSchemeVertexId() == highlightedVertexId );
+		final boolean focused = ( focusedVertexId >= 0 ) && ( vertex.getTrackSchemeVertexId() == focusedVertexId );
+		if ( highlighted || focused )
+		{
+			final Transition transition = vertex.getTransition();
+			final boolean disappear = ( transition == DISAPPEAR );
+			final double ratio = vertex.getInterpolationCompletionRatio();
+
+			final boolean selected = vertex.isSelected();
+			final boolean ghost = vertex.isGhost();
+
+			double spotradius = simplifiedVertexRadius;
+			if ( disappear )
+				spotradius *= ( 1 + 3 * ratio );
+
+			final Color fillColor = getColor( selected, ghost, transition, ratio,
+					disappear ? style.selectedSimplifiedVertexFillColor : style.simplifiedVertexFillColor,
+					style.selectedSimplifiedVertexFillColor,
+					disappear ? style.ghostSelectedSimplifiedVertexFillColor : style.ghostSimplifiedVertexFillColor,
+					style.ghostSelectedSimplifiedVertexFillColor );
+
+			final double x = vertex.getX();
+			final double y = vertex.getY();
+			g2.setColor( fillColor );
+			final int ox = ( int ) x - ( int ) spotradius;
+			final int oy = ( int ) y - ( int ) spotradius;
+			final int ow = 2 * ( int ) spotradius;
+
+			if ( focused )
+				g2.fillRect( ox, oy, ow, ow );
+			else
+				g2.fillOval( ox, oy, ow, ow );
+		}
 	}
 
 	protected void drawVertexFull( final Graphics2D g2, final ScreenVertex vertex )
@@ -430,7 +461,7 @@ public class DefaultTrackSchemeOverlay extends AbstractTrackSchemeOverlay
 
 		g2.setColor( drawColor );
 		if ( highlighted )
-			g2.setStroke( style.highlightStroke );
+			g2.setStroke( style.vertexHighlightStroke );
 		else if ( focused )
 			// An animation might be better for the focus, but for now this is it.
 			g2.setStroke( style.focusStroke );

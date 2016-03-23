@@ -100,11 +100,13 @@ public class TrackSchemeStyle
 
 	public Stroke edgeGhostStroke;
 
+	public Stroke edgeHighlightStroke;
+
 	public Stroke vertexStroke;
 
 	public Stroke vertexGhostStroke;
 
-	public Stroke highlightStroke;
+	public Stroke vertexHighlightStroke;
 
 	public Stroke focusStroke;
 
@@ -281,6 +283,13 @@ public class TrackSchemeStyle
 		return this;
 	}
 
+	public TrackSchemeStyle edgeHighlightStroke( final Stroke s )
+	{
+		edgeHighlightStroke = s;
+		notifyListeners();
+		return this;
+	}
+
 	public TrackSchemeStyle vertexStroke( final Stroke s )
 	{
 		vertexStroke = s;
@@ -295,9 +304,9 @@ public class TrackSchemeStyle
 		return this;
 	}
 
-	public TrackSchemeStyle highlightStroke( final Stroke s )
+	public TrackSchemeStyle vertexHighlightStroke( final Stroke s )
 	{
-		highlightStroke = s;
+		vertexHighlightStroke = s;
 		notifyListeners();
 		return this;
 	}
@@ -371,9 +380,10 @@ public class TrackSchemeStyle
 		this.headerFont = style.headerFont;
 		this.edgeStroke = style.edgeStroke;
 		this.edgeGhostStroke = style.edgeGhostStroke;
+		this.edgeHighlightStroke = style.edgeHighlightStroke;
 		this.vertexStroke = style.vertexStroke;
 		this.vertexGhostStroke = style.vertexGhostStroke;
-		this.highlightStroke = style.highlightStroke;
+		this.vertexHighlightStroke = style.vertexHighlightStroke;
 		this.focusStroke = style.focusStroke;
 		this.highlightCurrentTimepoint = style.highlightCurrentTimepoint;
 		this.paintRows = style.paintRows;
@@ -433,9 +443,10 @@ public class TrackSchemeStyle
 				headerFont( new Font( "SansSerif", Font.PLAIN, 9 ) ).
 				edgeStroke( new BasicStroke() ).
 				edgeGhostStroke( DEFAULT_GHOST_STROKE ).
+				edgeHighlightStroke( new BasicStroke( 2f ) ).
 				vertexStroke( new BasicStroke() ).
 				vertexGhostStroke( DEFAULT_GHOST_STROKE ).
-				highlightStroke( new BasicStroke( 3f ) ).
+				vertexHighlightStroke( new BasicStroke( 3f ) ).
 				focusStroke( DEFAULT_FOCUS_STROKE ).
 				highlightCurrentTimepoint( true ).
 				paintRows( true ).
@@ -468,9 +479,10 @@ public class TrackSchemeStyle
 				headerFont( new Font( "Calibri", Font.PLAIN, 12 ) ).
 				edgeStroke( new BasicStroke() ).
 				edgeGhostStroke( DEFAULT_GHOST_STROKE ).
+				edgeHighlightStroke( new BasicStroke( 2f ) ).
 				vertexStroke( new BasicStroke() ).
 				vertexGhostStroke( DEFAULT_GHOST_STROKE ).
-				highlightStroke( new BasicStroke( 3f ) ).
+				vertexHighlightStroke( new BasicStroke( 3f ) ).
 				focusStroke( DEFAULT_FOCUS_STROKE ).
 				highlightCurrentTimepoint( true ).
 				paintRows( true ).
@@ -503,9 +515,10 @@ public class TrackSchemeStyle
 				headerFont( new Font( "Calibri", Font.PLAIN, 12 ) ).
 				edgeStroke( new BasicStroke() ).
 				edgeGhostStroke( DEFAULT_GHOST_STROKE ).
+				edgeHighlightStroke( new BasicStroke( 2f ) ).
 				vertexStroke( new BasicStroke() ).
 				vertexGhostStroke( DEFAULT_GHOST_STROKE ).
-				highlightStroke( new BasicStroke( 3f ) ).
+				vertexHighlightStroke( new BasicStroke( 3f ) ).
 				focusStroke( DEFAULT_FOCUS_STROKE ).
 				highlightCurrentTimepoint( true ).
 				paintRows( true ).

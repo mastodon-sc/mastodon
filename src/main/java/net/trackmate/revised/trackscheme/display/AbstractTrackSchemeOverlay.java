@@ -87,6 +87,8 @@ public abstract class AbstractTrackSchemeOverlay implements OverlayRenderer, Off
 
 	protected int highlightedVertexId;
 
+	protected int highlightedEdgeId;
+
 	protected final TrackSchemeFocus focus;
 
 	protected int focusedVertexId;
@@ -141,9 +143,13 @@ public abstract class AbstractTrackSchemeOverlay implements OverlayRenderer, Off
 		swapScreenEntities();
 
 		final TrackSchemeVertex ref = graph.vertexRef();
+		final TrackSchemeEdge eref = graph.edgeRef();
 
 		final TrackSchemeVertex h = highlight.getHighlightedVertex( ref );
 		highlightedVertexId = ( h == null ) ? -1 : h.getInternalPoolIndex();
+
+		final TrackSchemeEdge he = highlight.getHighlightedEdge( eref );
+		highlightedEdgeId = ( he == null ) ? -1 : he.getInternalPoolIndex();
 
 		final TrackSchemeVertex f = focus.getFocusedVertex( ref );
 		focusedVertexId = ( f == null ) ? -1 : f.getInternalPoolIndex();
@@ -260,17 +266,34 @@ public abstract class AbstractTrackSchemeOverlay implements OverlayRenderer, Off
 	{
 		synchronized ( entities )
 		{
+			double d2Best = Double.POSITIVE_INFINITY;
+			int iBest = -1;
 			final RealPoint pos = new RealPoint( x, y );
 			for ( final ScreenVertex v : entities.getVertices() )
+			{
 				if ( isInsidePaintedVertex( pos, v ) )
 				{
 					final int i = v.getTrackSchemeVertexId();
 					if ( i >= 0 )
 					{
-						graph.getVertexPool().getByInternalPoolIndex( i, ref );
-						return ref;
+						final double dx = v.getX() - x;
+						final double dy = v.getY() - y;
+						final double d2 = dx * dx + dy * dy;
+						if ( d2 < d2Best )
+						{
+							d2Best = d2;
+							iBest = i;
+						}
 					}
 				}
+			}
+
+			if ( iBest >= 0 )
+			{
+				graph.getVertexPool().getByInternalPoolIndex( iBest, ref );
+				return ref;
+			}
+
 			return null;
 		}
 	}

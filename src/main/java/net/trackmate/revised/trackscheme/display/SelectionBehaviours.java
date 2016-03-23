@@ -43,7 +43,7 @@ public class SelectionBehaviours implements TransformListener< ScreenTransform >
 	public static final String BOX_SELECT_NAME = "ts box selection";
 	public static final String BOX_ADD_SELECT_NAME = "ts box add to selection";
 
-	private static final double EDGE_SELECT_DISTANCE_TOLERANCE = 5.0;
+	public static final double EDGE_SELECT_DISTANCE_TOLERANCE = 5.0;
 
 	private final InteractiveDisplayCanvasComponent< ScreenTransform > display;
 

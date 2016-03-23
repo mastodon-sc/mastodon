@@ -27,6 +27,8 @@ public class HighlightModel< V extends Vertex< E >, E extends Edge< V > > implem
 
 	private int highlightedVertexId;
 
+	private int highlightedEdgeId;
+
 	private final ArrayList< HighlightListener > listeners;
 
 	/**
@@ -41,6 +43,7 @@ public class HighlightModel< V extends Vertex< E >, E extends Edge< V > > implem
 	{
 		this.idmap = idmap;
 		highlightedVertexId = -1;
+		highlightedEdgeId = -1;
 		listeners = new ArrayList< HighlightListener >();
 	}
 
@@ -53,11 +56,53 @@ public class HighlightModel< V extends Vertex< E >, E extends Edge< V > > implem
 	public synchronized void highlightVertex( final V vertex )
 	{
 		final int id = ( vertex == null ) ? - 1 : idmap.getVertexId( vertex );
-		if ( highlightedVertexId != id )
+		if ( id < 0 )
+			clearHighlight();
+		else if ( highlightedVertexId != id )
 		{
 			highlightedVertexId = id;
+			highlightedEdgeId = -1;
 			notifyListeners();
 		}
+	}
+
+	/**
+	 * Sets the specified edge highlighted in this model.
+	 *
+	 * @param edge
+	 *            the edge to highlight, or {@code null} to clear highlight.
+	 */
+	public synchronized void highlightEdge( final E edge )
+	{
+		final int id = ( edge == null ) ? - 1 : idmap.getEdgeId( edge );
+		if ( id < 0 )
+			clearHighlight();
+		else if ( highlightedEdgeId != id )
+		{
+			highlightedVertexId = -1;
+			highlightedEdgeId = id;
+			notifyListeners();
+		}
+	}
+
+	/**
+	 * Clear highlight.
+	 */
+	public synchronized void clearHighlight()
+	{
+		boolean notify = false;
+		if ( highlightedEdgeId >= 0 )
+		{
+			highlightedEdgeId = -1;
+			notify = true;
+		}
+		if ( highlightedVertexId >= 0 )
+		{
+			highlightedVertexId = -1;
+			notify = true;
+		}
+		if ( notify )
+			notifyListeners();
 	}
 
 	/**
@@ -72,6 +117,20 @@ public class HighlightModel< V extends Vertex< E >, E extends Edge< V > > implem
 	{
 		return ( highlightedVertexId < 0 ) ?
 				null : idmap.getVertex( highlightedVertexId, ref );
+	}
+
+	/**
+	 * Returns the edge highlighted in this model.
+	 *
+	 * @param ref
+	 *            an edge reference used for retrieval.
+	 * @return the highlighted edge, or {@code null} if no edge is
+	 *         highlighted.
+	 */
+	public synchronized E getHighlightedEdge( final E ref )
+	{
+		return ( highlightedEdgeId < 0 ) ?
+				null : idmap.getEdge( highlightedEdgeId, ref );
 	}
 
 	/**

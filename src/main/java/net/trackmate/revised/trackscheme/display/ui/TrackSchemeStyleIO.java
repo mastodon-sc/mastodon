@@ -224,9 +224,10 @@ public class TrackSchemeStyleIO
 			mapping.put( "headerFont", s.headerFont );
 			mapping.put( "edgeStroke", s.edgeStroke );
 			mapping.put( "edgeGhostStroke", s.edgeGhostStroke );
+			mapping.put( "edgeHighlightStroke", s.edgeHighlightStroke );
 			mapping.put( "vertexStroke", s.vertexStroke );
 			mapping.put( "vertexGhostStroke", s.vertexGhostStroke );
-			mapping.put( "highlightStroke", s.highlightStroke );
+			mapping.put( "vertexHighlightStroke", s.vertexHighlightStroke );
 			mapping.put( "focusStroke", s.focusStroke );
 			mapping.put( "highlightCurrentTimepoint", s.highlightCurrentTimepoint );
 			mapping.put( "paintRows", s.paintRows );
@@ -274,9 +275,10 @@ public class TrackSchemeStyleIO
 
 				s.edgeStroke( ( Stroke ) mapping.get( "edgeStroke" ) );
 				s.edgeGhostStroke( ( Stroke ) mapping.get( "edgeGhostStroke" ) );
+				s.edgeHighlightStroke( ( Stroke ) mapping.get( "edgeHighlightStroke" ) );
 				s.vertexStroke( ( Stroke ) mapping.get( "vertexStroke" ) );
 				s.vertexGhostStroke( ( Stroke ) mapping.get( "vertexGhostStroke" ) );
-				s.highlightStroke( ( Stroke ) mapping.get( "highlightStroke" ) );
+				s.vertexHighlightStroke( ( Stroke ) mapping.get( "vertexHighlightStroke" ) );
 				s.focusStroke( ( Stroke ) mapping.get( "focusStroke" ) );
 
 				s.highlightCurrentTimepoint( ( boolean ) mapping.get( "highlightCurrentTimepoint" ) );

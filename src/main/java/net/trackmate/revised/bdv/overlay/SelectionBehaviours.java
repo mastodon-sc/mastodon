@@ -15,7 +15,7 @@ public class SelectionBehaviours< V extends OverlayVertex< V, E >, E extends Ove
 	public static final String SELECT_NAME = "bdv click select";
 	public static final String ADD_SELECT_NAME = "bdv click add to selection";
 
-	private static final double EDGE_SELECT_DISTANCE_TOLERANCE = 5.0;
+	public static final double EDGE_SELECT_DISTANCE_TOLERANCE = 5.0;
 
 	private final OverlayGraph< V, E > overlayGraph;
 
@@ -101,12 +101,12 @@ public class SelectionBehaviours< V extends OverlayVertex< V, E >, E extends Ove
 		final V vertex = overlayGraph.vertexRef();
 		final E edge = overlayGraph.edgeRef();
 
-		// See if we can select a vertex.
+		// See if we can find a vertex.
 		if ( renderer.getVertexAt( x, y, vertex ) != null )
 		{
 			navigation.notifyNavigateToVertex( vertex );
 		}
-		// See if we can select an edge.
+		// See if we can find an edge.
 		else if ( renderer.getEdgeAt( x, y, EDGE_SELECT_DISTANCE_TOLERANCE, edge ) != null )
 		{
 			navigation.notifyNavigateToEdge( edge );

@@ -6,6 +6,7 @@ import java.awt.event.MouseMotionListener;
 
 import net.imglib2.ui.TransformListener;
 import net.trackmate.revised.trackscheme.ScreenTransform;
+import net.trackmate.revised.trackscheme.TrackSchemeEdge;
 import net.trackmate.revised.trackscheme.TrackSchemeGraph;
 import net.trackmate.revised.trackscheme.TrackSchemeHighlight;
 import net.trackmate.revised.trackscheme.TrackSchemeVertex;
@@ -76,12 +77,23 @@ public class MouseHighlightHandler implements MouseMotionListener, MouseListener
 	private void highlight()
 	{
 		if ( x < headerWidth || y < headerHeight )
-			highlight.highlightVertex( null );
+			highlight.clearHighlight();
 		else
 		{
-			final TrackSchemeVertex ref = graph.vertexRef();
-			highlight.highlightVertex( graphOverlay.getVertexAt( x, y, ref ) );
-			graph.releaseRef( ref );
+			final TrackSchemeVertex vertex = graph.vertexRef();
+			final TrackSchemeEdge edge = graph.edgeRef();
+
+			// See if we can find a vertex.
+			if ( graphOverlay.getVertexAt( x, y, vertex ) != null )
+				highlight.highlightVertex( vertex );
+			// See if we can find an edge.
+			else if ( graphOverlay.getEdgeAt( x, y, SelectionBehaviours.EDGE_SELECT_DISTANCE_TOLERANCE, edge ) != null )
+				highlight.highlightEdge( edge );
+			else
+				highlight.clearHighlight();
+
+			graph.releaseRef( vertex );
+			graph.releaseRef( edge );
 		}
 	}
 
@@ -106,7 +118,7 @@ public class MouseHighlightHandler implements MouseMotionListener, MouseListener
 	@Override
 	public void mouseExited( final MouseEvent e )
 	{
-		highlight.highlightVertex( null );
+		highlight.clearHighlight();
 		mouseInside = false;
 	}
 }

@@ -41,16 +41,45 @@ public class DefaultModelHighlightProperties<
 	}
 
 	@Override
+	public int getHighlightedEdgeId()
+	{
+		final E e = graph.edgeRef();
+		final E h = highlight.getHighlightedEdge( e );
+		final int id = ( h == null ) ? -1 : idmap.getEdgeId( e );
+		graph.releaseRef( e );
+		return id;
+	}
+
+	@Override
 	public void highlightVertex( final int id )
 	{
 		if ( id < 0 )
-			highlight.highlightVertex( null );
+			highlight.clearHighlight();
 		else
 		{
 			final V v = graph.vertexRef();
 			highlight.highlightVertex( idmap.getVertex( id, v ) );
 			graph.releaseRef( v );
 		}
+	}
+
+	@Override
+	public void highlightEdge( final int id )
+	{
+		if ( id < 0 )
+			highlight.clearHighlight();
+		else
+		{
+			final E e = graph.edgeRef();
+			highlight.highlightEdge( idmap.getEdge( id, e ) );
+			graph.releaseRef( e );
+		}
+	}
+
+	@Override
+	public void clearHighlight()
+	{
+		highlight.clearHighlight();
 	}
 
 	@Override
