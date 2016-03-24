@@ -147,7 +147,7 @@ public class DefaultTrackSchemeOverlay extends AbstractTrackSchemeOverlay
 	}
 
 	@Override
-	protected void paintDecorations( final Graphics2D g2, final ScreenEntities screenEntities )
+	protected void paintHeaders( final Graphics2D g2, final ScreenEntities screenEntities )
 	{
 		final int width = getWidth();
 		final int height = getHeight();

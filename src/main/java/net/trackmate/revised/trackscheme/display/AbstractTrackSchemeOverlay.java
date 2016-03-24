@@ -185,7 +185,7 @@ public abstract class AbstractTrackSchemeOverlay implements OverlayRenderer, Off
 			drawVertexRange( g2, range );
 		}
 
-		paintDecorations( g2, entities );
+		paintHeaders( g2, entities );
 
 		vertices.releaseRef( vs );
 		vertices.releaseRef( vt );
@@ -469,7 +469,7 @@ public abstract class AbstractTrackSchemeOverlay implements OverlayRenderer, Off
 	 * @param screenEntities
 	 *            the screen entities to paint.
 	 */
-	protected abstract void paintDecorations( Graphics2D g2, ScreenEntities screenEntities );
+	protected abstract void paintHeaders( Graphics2D g2, ScreenEntities screenEntities );
 
 	/**
 	 * Configures the graphics object prior to drawing vertices.
