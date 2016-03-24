@@ -16,7 +16,6 @@ import javax.swing.Box;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JDialog;
-import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JSpinner;
@@ -34,6 +33,7 @@ import mpicbg.spim.data.sequence.TimePoints;
 import mpicbg.spim.data.sequence.TimePointsPattern;
 import net.trackmate.revised.model.mamut.Model;
 import net.trackmate.revised.model.mamut.tgmm.TgmmImporter;
+import net.trackmate.revised.ui.util.FileChooser;
 
 public class TgmmImportDialog extends JDialog
 {
@@ -138,22 +138,20 @@ public class TgmmImportDialog extends JDialog
 		final JButton cancelButton = new JButton( "Cancel" );
 		content.add( cancelButton, c );
 
-		final JFileChooser fileChooser = new JFileChooser();
-		fileChooser.setMultiSelectionEnabled( false );
-		fileChooser.setFileSelectionMode( JFileChooser.DIRECTORIES_ONLY );
-
 		browseButton.addActionListener( new ActionListener()
 		{
 			@Override
 			public void actionPerformed( final ActionEvent e )
 			{
-				fileChooser.setSelectedFile( new File( pathTextField.getText() ) );
-				final int returnVal = fileChooser.showOpenDialog( null );
-				if ( returnVal == JFileChooser.APPROVE_OPTION )
-				{
-					final File file = fileChooser.getSelectedFile();
+				final File file = FileChooser.chooseFile(
+						TgmmImportDialog.this,
+						pathTextField.getText(),
+						null,
+						null,
+						FileChooser.DialogType.LOAD,
+						FileChooser.SelectionMode.DIRECTORIES_ONLY );
+				if ( file != null )
 					pathTextField.setText( file.getAbsolutePath() );
-				}
 			}
 		} );
 

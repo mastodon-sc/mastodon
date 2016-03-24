@@ -1,4 +1,4 @@
-package net.trackmate.revised.ui;
+package net.trackmate.revised.ui.util;
 
 import java.awt.Component;
 import java.awt.Dialog;
@@ -31,7 +31,17 @@ public class FileChooser
 			final String selectedFile,
 			final DialogType dialogType )
 	{
-		return chooseFile( parent, selectedFile, null, null, dialogType, SelectionMode.FILES_ONLY );
+		return chooseFile( parent, selectedFile, null, null, dialogType );
+	}
+
+	public static File chooseFile(
+			final Component parent,
+			final String selectedFile,
+			final FileFilter fileFilter,
+			final String dialogTitle,
+			final DialogType dialogType )
+	{
+		return chooseFile( parent, selectedFile, fileFilter, dialogTitle, dialogType, SelectionMode.FILES_ONLY );
 	}
 
 	public static File chooseFile(

@@ -10,11 +10,9 @@ import java.io.IOException;
 
 import javax.swing.Box;
 import javax.swing.JButton;
-import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.WindowConstants;
-import javax.swing.filechooser.FileFilter;
 
 import org.scijava.ui.behaviour.io.InputTriggerConfig;
 import org.scijava.ui.behaviour.io.yaml.YamlConfigIO;
@@ -23,6 +21,8 @@ import bdv.spimdata.SpimDataMinimal;
 import bdv.spimdata.XmlIoSpimDataMinimal;
 import mpicbg.spim.data.SpimDataException;
 import net.trackmate.revised.model.mamut.Model;
+import net.trackmate.revised.ui.util.FileChooser;
+import net.trackmate.revised.ui.util.XmlFileFilter;
 
 public class MainWindow extends JFrame
 {
@@ -34,44 +34,14 @@ public class MainWindow extends JFrame
 
 	private WindowManager windowManager;
 
-	private final JFileChooser fileChooser;
-
 	private File proposedProjectFile;
 
-	private TgmmImportDialog tgmmImportDialog;
+	private final TgmmImportDialog tgmmImportDialog;
 
 	public MainWindow( final InputTriggerConfig keyconf )
 	{
 		super( "test" );
 		this.keyconf = keyconf;
-
-		fileChooser = new JFileChooser();
-		fileChooser.setFileFilter( new FileFilter()
-		{
-			@Override
-			public String getDescription()
-			{
-				return "xml files";
-			}
-
-			@Override
-			public boolean accept( final File f )
-			{
-				if ( f.isDirectory() )
-					return true;
-				if ( f.isFile() )
-				{
-					final String s = f.getName();
-					final int i = s.lastIndexOf( '.' );
-					if ( i > 0 && i < s.length() - 1 )
-					{
-						final String ext = s.substring( i + 1 ).toLowerCase();
-						return ext.equals( "xml" );
-					}
-				}
-				return false;
-			}
-		} );
 
 		tgmmImportDialog = new TgmmImportDialog( this );
 
@@ -200,57 +170,68 @@ public class MainWindow extends JFrame
 
 	public void saveProject()
 	{
-		fileChooser.setDialogTitle( "Save MaMuT Project File" );
-		fileChooser.setSelectedFile( proposedProjectFile );
-		final int returnVal = fileChooser.showSaveDialog( null );
-		if ( returnVal == JFileChooser.APPROVE_OPTION )
+		final String fn = proposedProjectFile == null ? null : proposedProjectFile.getAbsolutePath();
+		final File file = FileChooser.chooseFile(
+				this,
+				fn,
+				new XmlFileFilter(),
+				"Save MaMuT Project File",
+				FileChooser.DialogType.SAVE );
+		if ( file == null )
+			return;
+
+		try
 		{
-			proposedProjectFile = fileChooser.getSelectedFile();
-			try
-			{
-				saveProject( proposedProjectFile );
-			}
-			catch ( final IOException e )
-			{
-				e.printStackTrace();
-			}
+			proposedProjectFile = file;
+			saveProject( proposedProjectFile );
+		}
+		catch ( final IOException e )
+		{
+			e.printStackTrace();
 		}
 	}
 
 	public void loadProject()
 	{
-		fileChooser.setDialogTitle( "Open MaMuT Project File" );
-		fileChooser.setSelectedFile( proposedProjectFile );
-		final int returnVal = fileChooser.showOpenDialog( null );
-		if ( returnVal == JFileChooser.APPROVE_OPTION )
+		final String fn = proposedProjectFile == null ? null : proposedProjectFile.getAbsolutePath();
+		final File file = FileChooser.chooseFile(
+				this,
+				fn,
+				new XmlFileFilter(),
+				"Open MaMuT Project File",
+				FileChooser.DialogType.LOAD );
+		if ( file == null )
+			return;
+
+		try
 		{
-			try
-			{
-				proposedProjectFile = fileChooser.getSelectedFile();
-				loadProject( proposedProjectFile );
-			}
-			catch ( final IOException | SpimDataException e )
-			{
-				e.printStackTrace();
-			}
+			proposedProjectFile = file;
+			loadProject( proposedProjectFile );
+		}
+		catch ( final IOException | SpimDataException e )
+		{
+			e.printStackTrace();
 		}
 	}
 
 	public void createProject()
 	{
-		fileChooser.setDialogTitle( "Open BigDataViewer File" );
-		final int returnVal = fileChooser.showOpenDialog( null );
-		if ( returnVal == JFileChooser.APPROVE_OPTION )
+		final File file = FileChooser.chooseFile(
+				this,
+				null,
+				new XmlFileFilter(),
+				"Open BigDataViewer File",
+				FileChooser.DialogType.LOAD );
+		if ( file == null )
+			return;
+
+		try
 		{
-			try
-			{
-				final File file = fileChooser.getSelectedFile();
-				open( new MamutProject( file.getParentFile(), file, null ) );
-			}
-			catch ( final IOException | SpimDataException e )
-			{
-				e.printStackTrace();
-			}
+			open( new MamutProject( file.getParentFile(), file, null ) );
+		}
+		catch ( final IOException | SpimDataException e )
+		{
+			e.printStackTrace();
 		}
 	}
 
