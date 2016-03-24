@@ -185,7 +185,8 @@ public class DefaultTrackSchemeOverlay extends AbstractTrackSchemeOverlay
 			final FontMetrics fm = g2.getFontMetrics( style.headerFont );
 			g2.setFont( style.headerFont );
 
-			final int fontInc = fm.getHeight() / 2;
+			final int fontHeight = fm.getHeight();
+			final int fontInc = fontHeight / 2;
 			final int stepT = 1 + MIN_TIMELINE_SPACING / ( int ) ( 1 + yScale );
 
 			int tstart = Math.max( getMinTimepoint(), ( int ) minY - 1 );
@@ -198,7 +199,9 @@ public class DefaultTrackSchemeOverlay extends AbstractTrackSchemeOverlay
 				final int yline = ( int ) ( ( t - minY - 0.5 ) * yScale ) + headerHeight;
 				g2.drawLine( 0, yline, headerWidth, yline );
 
-				final int ytext = ( int ) ( ( t - minY ) * yScale ) + fontInc + headerHeight;
+				final int ytext = Math.max(
+						( int ) ( ( t - minY ) * yScale ) + fontInc + headerHeight,
+						yline + fontHeight );
 				g2.drawString( "" + t, 5, ytext );
 			}
 		}
