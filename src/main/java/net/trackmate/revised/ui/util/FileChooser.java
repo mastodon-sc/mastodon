@@ -113,9 +113,9 @@ public class FileChooser
 			 * Otherwise use null as parent.
 			 */
 			final FileDialog fd;
-			if ( parent != null || parent instanceof Frame )
+			if ( parent != null && parent instanceof Frame )
 				fd = new FileDialog( ( Frame ) parent, title, fdMode );
-			else if ( parent != null || parent instanceof Dialog )
+			else if ( parent != null && parent instanceof Dialog )
 				fd = new FileDialog( ( Dialog ) parent, title, fdMode );
 			else
 				fd = new FileDialog( ( Frame ) null, title, fdMode );
