@@ -496,15 +496,18 @@ public class TrackSchemePanel extends JPanel implements
 	@Override
 	public void navigateToVertex( final TrackSchemeVertex v )
 	{
-		focus.focusVertex( v );
-		graphOverlay.setCurrentTimepoint( v.getTimepoint() );
-
-		final ScreenTransform transform = new ScreenTransform();
-		synchronized( screenTransform )
+		if ( v.getLayoutTimestamp() == layout.getCurrentLayoutTimestamp() )
 		{
-			transform.set( screenTransform );
+			focus.focusVertex( v );
+			graphOverlay.setCurrentTimepoint( v.getTimepoint() );
+
+			final ScreenTransform transform = new ScreenTransform();
+			synchronized( screenTransform )
+			{
+				transform.set( screenTransform );
+			}
+			navigationBehaviour.navigateToVertex( v, transform );
 		}
-		navigationBehaviour.navigateToVertex( v, transform );
 	}
 
 	@Override
@@ -512,16 +515,22 @@ public class TrackSchemePanel extends JPanel implements
 	{
 		// TODO: focus target vertex?
 
+		final TrackSchemeVertex source = edge.getSource( graph.vertexRef() );
 		final TrackSchemeVertex target = edge.getTarget( graph.vertexRef() );
-		graphOverlay.setCurrentTimepoint( target.getTimepoint() );
-		graph.releaseRef( target );
-
-		final ScreenTransform transform = new ScreenTransform();
-		synchronized( screenTransform )
+		final int clts = layout.getCurrentLayoutTimestamp();
+		if ( target.getLayoutTimestamp() == clts && source.getLayoutTimestamp() == clts )
 		{
-			transform.set( screenTransform );
+			graphOverlay.setCurrentTimepoint( target.getTimepoint() );
+
+			final ScreenTransform transform = new ScreenTransform();
+			synchronized ( screenTransform )
+			{
+				transform.set( screenTransform );
+			}
+			navigationBehaviour.navigateToEdge( edge, source, target, transform );
 		}
-		navigationBehaviour.navigateToEdge( edge, transform );
+		graph.releaseRef( source );
+		graph.releaseRef( target );
 	}
 
 	/**
@@ -532,7 +541,7 @@ public class TrackSchemePanel extends JPanel implements
 	{
 		public void navigateToVertex( final TrackSchemeVertex v, final ScreenTransform currentTransform );
 
-		public void navigateToEdge( final TrackSchemeEdge e, final ScreenTransform currentTransform );
+		public void navigateToEdge( final TrackSchemeEdge e, final TrackSchemeVertex source, final TrackSchemeVertex target, final ScreenTransform currentTransform );
 	}
 
 	private static class CenteringNavigationBehaviour implements NavigationBehaviour
@@ -553,7 +562,7 @@ public class TrackSchemePanel extends JPanel implements
 		}
 
 		@Override
-		public void navigateToEdge( final TrackSchemeEdge e, final ScreenTransform currentTransform )
+		public void navigateToEdge( final TrackSchemeEdge e, final TrackSchemeVertex source, final TrackSchemeVertex target, final ScreenTransform currentTransform )
 		{
 			// TODO Auto-generated method stub
 			System.err.println( "not implemented: CenteringNavigationBehaviour.navigateToEdge()" );
@@ -585,7 +594,7 @@ public class TrackSchemePanel extends JPanel implements
 		}
 
 		@Override
-		public void navigateToEdge( final TrackSchemeEdge e, final ScreenTransform currentTransform )
+		public void navigateToEdge( final TrackSchemeEdge e, final TrackSchemeVertex source, final TrackSchemeVertex target, final ScreenTransform currentTransform )
 		{
 			// TODO Auto-generated method stub
 			System.err.println( "not implemented: CenterIfInvisibleNavigationBehaviour.navigateToEdge()" );
@@ -649,7 +658,7 @@ public class TrackSchemePanel extends JPanel implements
 		}
 
 		@Override
-		public void navigateToEdge( final TrackSchemeEdge e, final ScreenTransform currentTransform )
+		public void navigateToEdge( final TrackSchemeEdge e, final TrackSchemeVertex source, final TrackSchemeVertex target, final ScreenTransform currentTransform )
 		{
 			/*
 			 * TODO: check for compatibility of screenBorder and screenWidth,
@@ -666,8 +675,6 @@ public class TrackSchemePanel extends JPanel implements
 			final double bx = screenBorderX / currentTransform.getScaleX();
 			final double by = screenBorderY / currentTransform.getScaleY();
 
-			final TrackSchemeVertex source = e.getSource(); // TODO: use vertex ref
-			final TrackSchemeVertex target = e.getTarget(); // TODO: use vertex ref
 			final double sourceX = source.getLayoutX();
 			final double targetX = target.getLayoutX();
 			final double eMinX = Math.min( sourceX, targetX );
