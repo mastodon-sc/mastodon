@@ -4,6 +4,19 @@ import net.trackmate.graph.collection.CollectionUtils;
 import net.trackmate.graph.collection.RefList;
 import net.trackmate.revised.context.Context;
 
+/**
+ * Algorithm:
+ * <ol>
+ * <li>Mark vertices in context with {@code mark}.
+ * <li>Mark vertices attached to them with {@code ghostmark = mark - 1}.
+ * <li>Use {@link LineageTreeLayout#layout(java.util.Collection, int)} to layout
+ * vertices that have been marked like this. (After that, all active (laid out)
+ * vertices (also ghosts) will have been marked with the
+ * {@link LineageTreeLayout#getCurrentLayoutTimestamp()}).
+ * </ol>
+ *
+ * @author Tobias Pietzsch &lt;tobias.pietzsch@gmail.com&gt;
+ */
 public class ContextLayout
 {
 	private final TrackSchemeGraph< ?, ? > graph;
