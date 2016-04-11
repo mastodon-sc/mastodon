@@ -28,6 +28,8 @@
  */
 package net.trackmate.revised.bdv;
 
+import java.util.Arrays;
+
 import javax.swing.ActionMap;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
@@ -92,6 +94,7 @@ public class BigDataViewerMaMuT
 		viewer = viewerFrame.getViewerPanel();
 
 		bookmarkEditor = new BookmarksEditor( viewer, viewerFrame.getKeybindings(), shared.getBookmarks() );
+		bookmarkEditor.setInputMapsToBlock( Arrays.asList( "all" ) );
 
 		brightnessDialog = shared.getBrightnessDialog();
 		activeSourcesDialog = new VisibilityAndGroupingDialog( viewerFrame, viewer.getVisibilityAndGrouping() );
