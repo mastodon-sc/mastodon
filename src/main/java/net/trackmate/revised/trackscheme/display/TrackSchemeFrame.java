@@ -3,6 +3,7 @@ package net.trackmate.revised.trackscheme.display;
 import java.awt.BorderLayout;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.lang.reflect.InvocationTargetException;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -29,10 +30,15 @@ import net.trackmate.revised.trackscheme.TrackSchemeSelection;
 import net.trackmate.revised.ui.context.ContextChooserPanel;
 import net.trackmate.revised.ui.grouping.GroupHandle;
 import net.trackmate.revised.ui.grouping.GroupLocksPanel;
+import net.trackmate.revised.ui.util.InvokeOnEDT;
 
 public class TrackSchemeFrame extends JFrame
 {
 	private final TrackSchemePanel trackschemePanel;
+
+	private final JPanel settingsPanel;
+
+	private boolean isSettingsPanelVisible;
 
 	private final InputActionBindings keybindings;
 
@@ -72,7 +78,7 @@ public class TrackSchemeFrame extends JFrame
 				optional );
 		add( trackschemePanel, BorderLayout.CENTER );
 
-		final JPanel settingsPanel = new JPanel();
+		settingsPanel = new JPanel();
 		settingsPanel.setLayout( new BoxLayout( settingsPanel, BoxLayout.LINE_AXIS ) );
 
 		final GroupLocksPanel navigationLocksPanel = new GroupLocksPanel( groupHandle );
@@ -83,6 +89,7 @@ public class TrackSchemeFrame extends JFrame
 		settingsPanel.add( contextChooserPanel );
 
 		add( settingsPanel, BorderLayout.NORTH );
+		isSettingsPanelVisible = true;
 
 		pack();
 		setDefaultCloseOperation( WindowConstants.DISPOSE_ON_CLOSE );
@@ -117,6 +124,10 @@ public class TrackSchemeFrame extends JFrame
 		trackschemePanel.getDisplay().addTransformListener( editFocus );
 		trackschemePanel.getOffsetDecorations().addOffsetHeadersListener( editFocus );
 		editFocus.installActionBindings( keybindings, inputConf );
+
+		// TODO: This should be constructed in WindowManager as part of larger package of actions to install
+		final ToggleSettingsPanelAction toggleSettings = new ToggleSettingsPanelAction( this );
+		toggleSettings.installActionBindings( keybindings, inputConf );
 	}
 
 	protected InputTriggerConfig getKeyConfig( final TrackSchemeOptions optional )
@@ -138,5 +149,36 @@ public class TrackSchemeFrame extends JFrame
 	public TriggerBehaviourBindings getTriggerbindings()
 	{
 		return triggerbindings;
+	}
+
+	public boolean isSettingsPanelVisible()
+	{
+		return isSettingsPanelVisible;
+	}
+
+	public void setSettingsPanelVisible( final boolean visible )
+	{
+		try
+		{
+			InvokeOnEDT.invokeAndWait( () -> setSettingsPanelVisibleSynchronized( visible ) );
+		}
+		catch ( InvocationTargetException | InterruptedException e )
+		{
+			e.printStackTrace();
+		}
+	}
+
+	private synchronized void setSettingsPanelVisibleSynchronized( final boolean visible )
+	{
+		if ( isSettingsPanelVisible != visible )
+		{
+			isSettingsPanelVisible = visible;
+			if ( visible )
+				add( settingsPanel, BorderLayout.NORTH );
+			else
+				remove( settingsPanel );
+			invalidate();
+			pack();
+		}
 	}
 }
