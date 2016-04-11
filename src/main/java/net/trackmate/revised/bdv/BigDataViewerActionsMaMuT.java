@@ -47,6 +47,7 @@ public class BigDataViewerActionsMaMuT
 	public static final String SET_BOOKMARK = "set bookmark";
 	public static final String GO_TO_BOOKMARK = "go to bookmark";
 	public static final String GO_TO_BOOKMARK_ROTATION = "go to bookmark rotation";
+	public static final String TOGGLE_SETTINGS_PANEL_NAME = "bdv toggle settings panel";
 
 	/**
 	 * Create BigDataViewer actions and install them in the specified
@@ -78,6 +79,7 @@ public class BigDataViewerActionsMaMuT
 		map.put( GO_TO_BOOKMARK, "B" );
 		map.put( GO_TO_BOOKMARK_ROTATION, "O" );
 		map.put( SET_BOOKMARK, "shift B" );
+		map.put( TOGGLE_SETTINGS_PANEL_NAME, "T" );
 
 		return inputMap;
 	}
@@ -92,6 +94,7 @@ public class BigDataViewerActionsMaMuT
 		map.put( new SetBookmarkAction( bdv ) );
 		map.put( new GoToBookmarkAction( bdv ) );
 		map.put( new GoToBookmarkRotationAction( bdv ) );
+		map.put( new ToggleSettingsPanelAction( bdv ) );
 
 		return actionMap;
 	}
@@ -152,6 +155,23 @@ public class BigDataViewerActionsMaMuT
 		public void actionPerformed( final ActionEvent e )
 		{
 			bdv.initGoToBookmarkRotation();
+		}
+
+		private static final long serialVersionUID = 1L;
+	}
+
+	public static class ToggleSettingsPanelAction extends ViewerAction
+	{
+		public ToggleSettingsPanelAction( final BigDataViewerMaMuT bdv )
+		{
+			super( TOGGLE_SETTINGS_PANEL_NAME, bdv );
+		}
+
+		@Override
+		public void actionPerformed( final ActionEvent e )
+		{
+			final boolean visible = !bdv.isSettingsPanelVisible();
+			bdv.setSettingsPanelVisible( visible );
 		}
 
 		private static final long serialVersionUID = 1L;

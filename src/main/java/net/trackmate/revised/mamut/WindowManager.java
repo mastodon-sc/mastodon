@@ -1,6 +1,5 @@
 package net.trackmate.revised.mamut;
 
-import java.awt.BorderLayout;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
@@ -77,7 +76,6 @@ import net.trackmate.revised.trackscheme.display.TrackSchemeOptions;
 import net.trackmate.revised.trackscheme.display.laf.TrackSchemeStyle;
 import net.trackmate.revised.trackscheme.display.ui.TrackSchemeStylePanel.TrackSchemeStyleDialog;
 import net.trackmate.revised.ui.grouping.GroupHandle;
-import net.trackmate.revised.ui.grouping.GroupLocksPanel;
 import net.trackmate.revised.ui.grouping.GroupManager;
 import net.trackmate.revised.ui.selection.FocusListener;
 import net.trackmate.revised.ui.selection.FocusModel;
@@ -368,7 +366,7 @@ public class WindowManager
 				selection );
 
 		final String windowTitle = "BigDataViewer " + (bdvName++); // TODO: use JY naming scheme
-		final BigDataViewerMaMuT bdv = BigDataViewerMaMuT.open( sharedBdvData, windowTitle );
+		final BigDataViewerMaMuT bdv = BigDataViewerMaMuT.open( sharedBdvData, windowTitle, bdvGroupHandle );
 		final ViewerFrame viewerFrame = bdv.getViewerFrame();
 		final ViewerPanel viewer = bdv.getViewer();
 
@@ -436,10 +434,6 @@ public class WindowManager
 		final OverlayContextWrapper< Spot, Link > overlayContextWrapper = new OverlayContextWrapper<>(
 				overlayContext,
 				contextProvider );
-
-		final GroupLocksPanel lockPanel = new GroupLocksPanel( bdvGroupHandle );
-		viewerFrame.add( lockPanel, BorderLayout.NORTH );
-		viewerFrame.pack();
 
 		/*
 		 * TODO: this is still wrong. There should be one central entity syncing

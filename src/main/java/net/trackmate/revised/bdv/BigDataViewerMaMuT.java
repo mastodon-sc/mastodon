@@ -28,12 +28,17 @@
  */
 package net.trackmate.revised.bdv;
 
+import java.awt.BorderLayout;
+import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
 
 import javax.swing.ActionMap;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
+import javax.swing.JPanel;
 
 import org.scijava.ui.behaviour.io.InputTriggerConfig;
 
@@ -44,12 +49,19 @@ import bdv.tools.brightness.BrightnessDialog;
 import bdv.viewer.NavigationActions;
 import bdv.viewer.ViewerFrame;
 import bdv.viewer.ViewerPanel;
+import net.trackmate.revised.ui.grouping.GroupHandle;
+import net.trackmate.revised.ui.grouping.GroupLocksPanel;
+import net.trackmate.revised.ui.util.InvokeOnEDT;
 
 public class BigDataViewerMaMuT
 {
 	private final ViewerFrame viewerFrame;
 
 	private final ViewerPanel viewer;
+
+	private final JPanel settingsPanel;
+
+	private boolean isSettingsPanelVisible;
 
 	private final BrightnessDialog brightnessDialog;
 
@@ -77,10 +89,12 @@ public class BigDataViewerMaMuT
 	 * @param shared
 	 * @param windowTitle
 	 *            title of the viewer window.
+	 * @param groupHandle
 	 */
 	public BigDataViewerMaMuT(
 			final SharedBigDataViewerData shared,
-			final String windowTitle )
+			final String windowTitle,
+			final GroupHandle groupHandle )
 	{
 		final InputTriggerConfig inputTriggerConfig = shared.getInputTriggerConfig();
 
@@ -123,11 +137,22 @@ public class BigDataViewerMaMuT
 		menubar.add( menu );
 
 		viewerFrame.setJMenuBar( menubar );
+
+		settingsPanel = new JPanel();
+		settingsPanel.setLayout( new BoxLayout( settingsPanel, BoxLayout.LINE_AXIS ) );
+
+		final GroupLocksPanel navigationLocksPanel = new GroupLocksPanel( groupHandle );
+		settingsPanel.add( navigationLocksPanel );
+		settingsPanel.add( Box.createHorizontalGlue() );
+
+		viewerFrame.add( settingsPanel, BorderLayout.NORTH );
+		isSettingsPanelVisible = true;
+
 	}
 
-	public static BigDataViewerMaMuT open( final SharedBigDataViewerData shared, final String windowTitle )
+	public static BigDataViewerMaMuT open( final SharedBigDataViewerData shared, final String windowTitle, final GroupHandle groupHandle )
 	{
-		final BigDataViewerMaMuT bdv = new BigDataViewerMaMuT( shared, windowTitle );
+		final BigDataViewerMaMuT bdv = new BigDataViewerMaMuT( shared, windowTitle, groupHandle );
 		bdv.viewerFrame.setVisible( true );
 		InitializeViewerState.initTransform( bdv.viewer );
 		return bdv;
@@ -151,5 +176,36 @@ public class BigDataViewerMaMuT
 	public VisibilityAndGroupingDialog getActiveSourcesDialog()
 	{
 		return activeSourcesDialog;
+	}
+
+	public boolean isSettingsPanelVisible()
+	{
+		return isSettingsPanelVisible;
+	}
+
+	public void setSettingsPanelVisible( final boolean visible )
+	{
+		try
+		{
+			InvokeOnEDT.invokeAndWait( () -> setSettingsPanelVisibleSynchronized( visible ) );
+		}
+		catch ( InvocationTargetException | InterruptedException e )
+		{
+			e.printStackTrace();
+		}
+	}
+
+	private synchronized void setSettingsPanelVisibleSynchronized( final boolean visible )
+	{
+		if ( isSettingsPanelVisible != visible )
+		{
+			isSettingsPanelVisible = visible;
+			if ( visible )
+				viewerFrame.add( settingsPanel, BorderLayout.NORTH );
+			else
+				viewerFrame.remove( settingsPanel );
+			viewerFrame.invalidate();
+			viewerFrame.pack();
+		}
 	}
 }
