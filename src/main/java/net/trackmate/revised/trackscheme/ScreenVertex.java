@@ -13,7 +13,6 @@ import net.trackmate.graph.mempool.ByteMappedElement;
 import net.trackmate.graph.mempool.ByteMappedElementArray;
 import net.trackmate.graph.mempool.MemPool;
 import net.trackmate.graph.mempool.SingleArrayMemPool;
-import net.trackmate.trackscheme.Labels;
 
 /**
  * Layouted vertex.
@@ -309,11 +308,8 @@ public class ScreenVertex extends PoolObject< ScreenVertex, ByteMappedElement >
 
 			private final RefPool< TrackSchemeVertex > trackSchemeVertexPool;
 
-			private final Labels labels;
-
 			public VertexFactory( final int initialCapacity, final RefPool< TrackSchemeVertex > trackSchemeVertexPool )
 			{
-				labels = new Labels( initialCapacity );
 				this.trackSchemeVertexPool = trackSchemeVertexPool;
 			}
 
