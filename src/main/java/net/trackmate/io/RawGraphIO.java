@@ -40,6 +40,12 @@ public class RawGraphIO
 		public void getBytes( final V vertex, final byte[] bytes );
 
 		public void setBytes( final V vertex, final byte[] bytes );
+
+		public int getEdgeNumBytes();
+
+		public void getBytes( final E edge, final byte[] bytes );
+
+		public void setBytes( final E edge, final byte[] bytes );
 	}
 
 	public static < V extends Vertex< E >, E extends Edge< V > >
@@ -54,14 +60,18 @@ public class RawGraphIO
 		oos.writeInt( numVertices );
 
 		final Iterator< V > vertexIterator = graph.vertices().iterator();
-		final byte[] bytes = new byte[ io.getVertexNumBytes() ];
+		final byte[] vbytes = new byte[ io.getVertexNumBytes() ];
+		final boolean writeVertexBytes = io.getVertexNumBytes() > 0;
 		final TIntIntHashMap idToFileIndex = new TIntIntHashMap( 2 * numVertices, 0.75f, -1, -1 );
 		int i = 0;
 		while( vertexIterator.hasNext() )
 		{
 			final V v = vertexIterator.next();
-			io.getBytes( v, bytes );
-			oos.write( bytes );
+			if ( writeVertexBytes )
+			{
+				io.getBytes( v, vbytes );
+				oos.write( vbytes );
+			}
 
 			final int id = idmap.getVertexId( v );
 			idToFileIndex.put( id, i );
@@ -72,14 +82,25 @@ public class RawGraphIO
 		oos.writeInt( numEdges );
 
 		final Iterator< E > edgeIterator = graph.edges().iterator();
+		final byte[] ebytes = new byte[ io.getEdgeNumBytes() ];
+		final boolean writeEdgeBytes = io.getEdgeNumBytes() > 0;
 		final V v = graph.vertexRef();
 		while( edgeIterator.hasNext() )
 		{
 			final E e = edgeIterator.next();
 			final int from = idToFileIndex.get( idmap.getVertexId( e.getSource( v ) ) );
 			final int to = idToFileIndex.get( idmap.getVertexId( e.getTarget( v ) ) );
+			final int sourceOutIndex = e.getSourceOutIndex();
+			final int targetInIndex = e.getTargetInIndex();
 			oos.writeInt( from );
 			oos.writeInt( to );
+			oos.writeInt( sourceOutIndex );
+			oos.writeInt( targetInIndex );
+			if ( writeEdgeBytes )
+			{
+				io.getBytes( e, ebytes );
+				oos.write( ebytes );
+			}
 		}
 
 		graph.releaseRef( v );
@@ -98,24 +119,37 @@ public class RawGraphIO
 		final V v2 = graph.vertexRef();
 		final E e = graph.edgeRef();
 
-		final byte[] bytes = new byte[ io.getVertexNumBytes() ];
+		final byte[] vbytes = new byte[ io.getVertexNumBytes() ];
+		final boolean readVertexBytes = io.getVertexNumBytes() > 0;
 		final TIntIntHashMap fileIndexToId = new TIntIntHashMap( 2 * numVertices, 0.75f, -1, -1 );
 		for ( int i = 0; i < numVertices; ++i )
 		{
-			ois.readFully( bytes );
 			graph.addVertex( v1 );
-			io.setBytes( v1, bytes );
+			if ( readVertexBytes )
+			{
+				ois.readFully( vbytes );
+				io.setBytes( v1, vbytes );
+			}
 			fileIndexToId.put( i, idmap.getVertexId( v1 ) );
 		}
 
 		final int numEdges = ois.readInt();
+		final byte[] ebytes = new byte[ io.getEdgeNumBytes() ];
+		final boolean readEdgeBytes = io.getEdgeNumBytes() > 0;
 		for ( int i = 0; i < numEdges; ++i )
 		{
 			final int from = fileIndexToId.get( ois.readInt() );
 			final int to = fileIndexToId.get( ois.readInt() );
+			final int sourceOutIndex = ois.readInt();
+			final int targetInIndex = ois.readInt();
 			idmap.getVertex( from, v1 );
 			idmap.getVertex( to, v2 );
-			graph.addEdge( v1, v2, e );
+			graph.insertEdge( v1, sourceOutIndex, v2, targetInIndex, e );
+			if ( readEdgeBytes )
+			{
+				ois.readFully( ebytes );
+				io.setBytes( e, ebytes );
+			}
 		}
 
 		graph.releaseRef( v1 );
