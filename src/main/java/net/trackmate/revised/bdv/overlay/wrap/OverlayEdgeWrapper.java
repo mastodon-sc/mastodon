@@ -47,6 +47,12 @@ public class OverlayEdgeWrapper< V extends Vertex< E >, E extends Edge< V > >
 	}
 
 	@Override
+	public int getSourceOutIndex()
+	{
+		return we.getSourceOutIndex();
+	}
+
+	@Override
 	public OverlayVertexWrapper< V, E > getTarget()
 	{
 		return getTarget( wrapper.vertexRef() );
@@ -57,6 +63,12 @@ public class OverlayEdgeWrapper< V extends Vertex< E >, E extends Edge< V > >
 	{
 		vertex.wv = we.getTarget( vertex.wv );
 		return vertex;
+	}
+
+	@Override
+	public int getTargetInIndex()
+	{
+		return we.getTargetInIndex();
 	}
 
 	@Override

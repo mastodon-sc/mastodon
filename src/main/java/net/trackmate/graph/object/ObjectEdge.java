@@ -28,6 +28,19 @@ public class ObjectEdge< K > implements Edge< ObjectVertex< K > >
 	}
 
 	@Override
+	public int getSourceOutIndex()
+	{
+		int outIndex = 0;
+		for ( final Object e : source.outgoingEdges() )
+		{
+			if ( e.equals( this ) )
+				break;
+			++outIndex;
+		}
+		return outIndex;
+	}
+
+	@Override
 	public ObjectVertex< K > getTarget()
 	{
 		return target;
@@ -37,6 +50,19 @@ public class ObjectEdge< K > implements Edge< ObjectVertex< K > >
 	public ObjectVertex< K > getTarget( final ObjectVertex< K > vertex )
 	{
 		return target;
+	}
+
+	@Override
+	public int getTargetInIndex()
+	{
+		int inIndex = 0;
+		for ( final Object e : target.incomingEdges() )
+		{
+			if ( e.equals( this ) )
+				break;
+			++inIndex;
+		}
+		return inIndex;
 	}
 
 	@Override
@@ -50,5 +76,4 @@ public class ObjectEdge< K > implements Edge< ObjectVertex< K > >
 		sb.append( ")" );
 		return sb.toString();
 	}
-
 }

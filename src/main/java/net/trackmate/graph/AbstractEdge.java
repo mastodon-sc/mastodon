@@ -91,6 +91,22 @@ public class AbstractEdge< E extends AbstractEdge< E, V, T >, V extends Abstract
 	}
 
 	@Override
+	public int getSourceOutIndex()
+	{
+		final V ref = vertexPool.createRef();
+		final V source = getSource( ref );
+		int outIndex = 0;
+		for ( final Object e : source.outgoingEdges() )
+		{
+			if ( e.equals( this ) )
+				break;
+			++outIndex;
+		}
+		vertexPool.releaseRef( ref );
+		return outIndex;
+	}
+
+	@Override
 	public V getTarget()
 	{
 		return getTarget( vertexPool.createRef() );
@@ -101,5 +117,21 @@ public class AbstractEdge< E extends AbstractEdge< E, V, T >, V extends Abstract
 	{
 		vertexPool.getByInternalPoolIndex( getTargetVertexInternalPoolIndex(), vertex );
 		return vertex;
+	}
+
+	@Override
+	public int getTargetInIndex()
+	{
+		final V ref = vertexPool.createRef();
+		final V target = getTarget( ref );
+		int inIndex = 0;
+		for ( final Object e : target.incomingEdges() )
+		{
+			if ( e.equals( this ) )
+				break;
+			++inIndex;
+		}
+		vertexPool.releaseRef( ref );
+		return inIndex;
 	}
 }

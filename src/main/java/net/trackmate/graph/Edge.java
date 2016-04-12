@@ -33,6 +33,17 @@ public interface Edge< V extends Vertex< ? > >
 	public V getSource( final V vertex );
 
 	/**
+	 * Get the index of this edge in the list of {@link Vertex#outgoingEdges()
+	 * outgoing} edges of its source ("from") vertex.
+	 * <p>
+	 * Optional operation implemented by graphs that maintain edge order.
+	 *
+	 * @return the index of this edge in the list of outgoing edges of its
+	 *         source.
+	 */
+	public int getSourceOutIndex();
+
+	/**
 	 * Get the target ("to") vertex of the edge in a new proxy object.
 	 *
 	 * <p>
@@ -53,4 +64,15 @@ public interface Edge< V extends Vertex< ? > >
 	 * @return {@code vertex} (the target vertex).
 	 */
 	public V getTarget( final V vertex );
+
+	/**
+	 * Get the index of this edge in the list of {@link Vertex#incomingEdges()
+	 * incoming} edges of its target ("to") vertex.
+	 * <p>
+	 * Optional operation implemented by graphs that maintain edge order.
+	 *
+	 * @return the index of this edge in the list of incoming edges of its
+	 *         target.
+	 */
+	public int getTargetInIndex();
 }
