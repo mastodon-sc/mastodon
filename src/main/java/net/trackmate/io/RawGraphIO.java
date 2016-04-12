@@ -12,8 +12,6 @@ import net.trackmate.graph.GraphIdBimap;
 import net.trackmate.graph.ReadOnlyGraph;
 import net.trackmate.graph.Vertex;
 
-// TODO: add support for edge attribute serialization
-// TODO: serialization needs to reflect respect edge ordering
 // TODO: add support for featuremaps
 
 /**
