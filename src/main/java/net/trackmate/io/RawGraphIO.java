@@ -1,12 +1,11 @@
 package net.trackmate.io;
 
-import gnu.trove.map.hash.TIntIntHashMap;
-
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.Iterator;
 
+import gnu.trove.map.hash.TIntIntHashMap;
 import net.trackmate.graph.Edge;
 import net.trackmate.graph.Graph;
 import net.trackmate.graph.GraphIdBimap;
@@ -14,6 +13,8 @@ import net.trackmate.graph.ReadOnlyGraph;
 import net.trackmate.graph.Vertex;
 
 // TODO: add support for edge attribute serialization
+// TODO: serialization needs to reflect respect edge ordering
+// TODO: add support for featuremaps
 
 /**
  * Write/read a {@link Graph} to/from an ObjectStream. For each {@link Graph}
