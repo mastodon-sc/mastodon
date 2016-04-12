@@ -102,6 +102,16 @@ public class ListenableGraphImp<
 	}
 
 	@Override
+	public E insertEdge( final V source, final int sourceOutIndex, final V target, final int targetInIndex, final E edge )
+	{
+		edgePool.insertEdge( source, sourceOutIndex, target, targetInIndex, edge );
+		if ( emitEvents )
+			for ( final GraphListener< V, E > listener : listeners )
+				listener.edgeAdded( edge );
+		return edge;
+	}
+
+	@Override
 	public void remove( final V vertex )
 	{
 		if ( emitEvents )

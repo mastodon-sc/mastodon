@@ -50,6 +50,26 @@ public class ObjectGraph< K > implements Graph< ObjectVertex< K >, ObjectEdge< K
 	}
 
 	@Override
+	public ObjectEdge< K > insertEdge( final ObjectVertex< K > source, final int sourceOutIndex, final ObjectVertex< K > target, final int targetInIndex )
+	{
+		if ( !vertices.contains( source ) ) { throw new IllegalArgumentException( "Source vertex " + source + " does not belong to this graph." ); }
+		if ( !vertices.contains( target ) ) { throw new IllegalArgumentException( "Target vertex " + target + " does not belong to this graph." ); }
+		final ObjectEdge< K > edge = new ObjectEdge< K >( source, target );
+		source.outgoingEdges().add( Math.min( Math.max( 0, sourceOutIndex ), source.outgoingEdges().size() ), edge );
+		source.edges().add( edge );
+		target.incomingEdges().add( Math.min( Math.max( 0, targetInIndex ), target.incomingEdges().size() ), edge );
+		target.edges().add( edge );
+		edges.add( edge );
+		return edge;
+	}
+
+	@Override
+	public ObjectEdge< K > insertEdge( final ObjectVertex< K > source, final int sourceOutIndex, final ObjectVertex< K > target, final int targetInIndex, final ObjectEdge< K > edge )
+	{
+		return insertEdge( source, sourceOutIndex, target, targetInIndex );
+	}
+
+	@Override
 	public ObjectEdge< K > getEdge( final ObjectVertex< K > source, final ObjectVertex< K > target )
 	{
 		for ( final ObjectEdge< K > e : source.outgoingEdges() )

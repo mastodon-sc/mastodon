@@ -72,6 +72,52 @@ public class AbstractEdgePool<
 		return edge;
 	}
 
+	public E insertEdge( final AbstractVertex< ?, ?, ? > source, final int sourceOutInsertAt, final AbstractVertex< ?, ?, ? > target, final int targetInInsertAt, final E edge )
+	{
+		if ( getEdge( source, target, edge ) != null )
+			return null;
+
+		create( edge );
+		edge.setSourceVertexInternalPoolIndex( source.getInternalPoolIndex() );
+		edge.setTargetVertexInternalPoolIndex( target.getInternalPoolIndex() );
+
+		final E tmp = createRef();
+
+		int nextSourceEdgeIndex = source.getFirstOutEdgeIndex();
+		int insertIndex = 0;
+		while( nextSourceEdgeIndex >= 0 && insertIndex < sourceOutInsertAt )
+		{
+			getByInternalPoolIndex( nextSourceEdgeIndex, tmp );
+			nextSourceEdgeIndex = tmp.getNextSourceEdgeIndex();
+			++insertIndex;
+		}
+		edge.setNextSourceEdgeIndex( nextSourceEdgeIndex );
+		if ( insertIndex == 0 )
+			source.setFirstOutEdgeIndex( edge.getInternalPoolIndex() );
+		else
+			tmp.setNextSourceEdgeIndex( edge.getInternalPoolIndex() );
+
+
+
+		int nextTargetEdgeIndex = target.getFirstInEdgeIndex();
+		insertIndex = 0;
+		while( nextTargetEdgeIndex >= 0 && insertIndex < targetInInsertAt )
+		{
+			getByInternalPoolIndex( nextTargetEdgeIndex, tmp );
+			nextTargetEdgeIndex = tmp.getNextTargetEdgeIndex();
+			++insertIndex;
+		}
+		edge.setNextTargetEdgeIndex( nextTargetEdgeIndex );
+		if ( insertIndex == 0 )
+			target.setFirstInEdgeIndex( edge.getInternalPoolIndex() );
+		else
+			tmp.setNextTargetEdgeIndex( edge.getInternalPoolIndex() );
+
+		releaseRef( tmp );
+		return edge;
+	}
+
+
 	public E getEdge( final AbstractVertex< ?, ?, ? > source, final AbstractVertex< ?, ?, ? > target, final E edge )
 	{
 		int nextSourceEdgeIndex = source.getFirstOutEdgeIndex();

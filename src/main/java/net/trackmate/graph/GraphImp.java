@@ -111,6 +111,18 @@ public class GraphImp<
 	}
 
 	@Override
+	public E insertEdge( final V source, final int sourceOutIndex, final V target, final int targetInIndex )
+	{
+		return edgePool.insertEdge( source, sourceOutIndex, target, targetInIndex, edgeRef() );
+	}
+
+	@Override
+	public E insertEdge( final V source, final int sourceOutIndex, final V target, final int targetInIndex, final E edge )
+	{
+		return edgePool.insertEdge( source, sourceOutIndex, target, targetInIndex, edge );
+	}
+
+	@Override
 	public E getEdge( final V source, final V target )
 	{
 		return edgePool.getEdge( source, target, edgeRef() );
