@@ -1,11 +1,9 @@
 package net.trackmate.revised.model.mamut;
 
 import static net.trackmate.graph.mempool.ByteUtils.DOUBLE_SIZE;
-
-import Jama.EigenvalueDecomposition;
-import Jama.Matrix;
 import net.trackmate.graph.AbstractVertexPool;
 import net.trackmate.graph.mempool.ByteMappedElement;
+import net.trackmate.revised.bdv.overlay.util.JamaEigenvalueDecomposition;
 import net.trackmate.revised.model.AbstractSpot3D;
 import net.trackmate.revised.model.HasLabel;
 
@@ -54,10 +52,11 @@ public class Spot extends AbstractSpot3D< Spot, Link, ByteMappedElement > implem
 		return this;
 	}
 
+	private final JamaEigenvalueDecomposition eig = new JamaEigenvalueDecomposition( 3 );
+
 	Spot init( final int timepointId, final double[] pos, final double[][] cov )
 	{
-		final Matrix covMat = new Matrix( cov );
-		final EigenvalueDecomposition eig = covMat.eig();
+		eig.decomposeSymmetric( cov );
 		final double[] eigVals = eig.getRealEigenvalues();
 		double max = 0;
 		for ( int k = 0; k < eigVals.length; k++ )
@@ -131,5 +130,21 @@ public class Spot extends AbstractSpot3D< Spot, Link, ByteMappedElement > implem
 	protected ByteMappedElement getAccess()
 	{
 		return access;
+	}
+
+	/**
+	 * Exposes raw covariance entries for undo.
+	 */
+	protected double getFlattenedCovarianceEntry( final int index )
+	{
+		return access.getDouble( COVARIANCE_OFFSET + index * DOUBLE_SIZE );
+	}
+
+	/**
+	 * Exposes raw covariance entries for undo.
+	 */
+	protected void setFlattenedCovarianceEntry( final double entry, final int index )
+	{
+		access.putDouble( entry, COVARIANCE_OFFSET + index * DOUBLE_SIZE );
 	}
 }
