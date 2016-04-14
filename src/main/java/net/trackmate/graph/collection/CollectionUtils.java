@@ -145,18 +145,18 @@ public class CollectionUtils
 			return wrapAsStack( new ArrayDeque< E >( initialCapacity ) );
 	}
 
-	public static < E extends Edge< ? >, O > RefObjectMap< E, O > createEdgeObjectMap( final ReadOnlyGraph< ?, E > graph, final Class< ? extends O > valueClass )
+	public static < E extends Edge< ? >, O > RefObjectMap< E, O > createEdgeObjectMap( final ReadOnlyGraph< ?, E > graph )
 	{
 		if ( graph instanceof MapCreator )
-			return ( ( MapCreator< ?, E > ) graph ).createEdgeObjectMap( valueClass );
+			return ( ( MapCreator< ?, E > ) graph ).createEdgeObjectMap();
 		else
 			return wrap( new HashMap< E, O >() );
 	}
 
-	public static < V extends Vertex< ? >, O > RefObjectMap< V, O > createVertexObjectMap( final ReadOnlyGraph< V, ? > graph, final Class< ? extends O > valueClass )
+	public static < V extends Vertex< ? >, O > RefObjectMap< V, O > createVertexObjectMap( final ReadOnlyGraph< V, ? > graph )
 	{
 		if ( graph instanceof MapCreator )
-			return ( ( MapCreator< V, ? > ) graph ).createVertexObjectMap( valueClass );
+			return ( ( MapCreator< V, ? > ) graph ).createVertexObjectMap();
 		else
 			return wrap( new HashMap< V, O >() );
 	}
@@ -329,9 +329,9 @@ public class CollectionUtils
 
 	public static interface MapCreator< V extends Vertex< E >, E extends Edge< V > > extends ReadOnlyGraph< V, E >
 	{
-		public < O > RefObjectMap< V, O > createVertexObjectMap( Class< ? extends O > valueClass );
+		public < O > RefObjectMap< V, O > createVertexObjectMap();
 
-		public < O > RefObjectMap< E, O > createEdgeObjectMap( Class< ? extends O > valueClass );
+		public < O > RefObjectMap< E, O > createEdgeObjectMap();
 
 		public RefRefMap< V, E > createVertexEdgeMap();
 

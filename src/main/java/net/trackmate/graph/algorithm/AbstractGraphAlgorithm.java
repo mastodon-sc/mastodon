@@ -165,14 +165,14 @@ public abstract class AbstractGraphAlgorithm< V extends Vertex< E >, E extends E
 		return CollectionUtils.createEdgeStack( graph, initialCapacity );
 	}
 
-	protected < O > RefObjectMap< V, O > createVertexObjectMap( final Class< ? extends O > valueClass )
+	protected < O > RefObjectMap< V, O > createVertexObjectMap()
 	{
-		return CollectionUtils.createVertexObjectMap( graph, valueClass );
+		return CollectionUtils.createVertexObjectMap( graph);
 	}
 
-	protected < O > RefObjectMap< E, O > createEdgeObjectMap( final Class< ? extends O > valueClass )
+	protected < O > RefObjectMap< E, O > createEdgeObjectMap()
 	{
-		return CollectionUtils.createEdgeObjectMap( graph, valueClass );
+		return CollectionUtils.createEdgeObjectMap( graph );
 	}
 
 	protected RefRefMap< V, E > createVertexEdgeMap()

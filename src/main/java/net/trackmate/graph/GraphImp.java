@@ -310,18 +310,16 @@ public class GraphImp<
 		return new PoolObjectStack< E >( edgePool, initialCapacity );
 	}
 
-	@SuppressWarnings( { "unchecked", "rawtypes" } )
 	@Override
-	public < O > PoolObjectObjectMap< V, O > createVertexObjectMap( final Class< ? extends O > valueClass )
+	public < O > PoolObjectObjectMap< V, O > createVertexObjectMap()
 	{
-		return new PoolObjectObjectMap( vertexPool );
+		return new PoolObjectObjectMap<>( vertexPool );
 	}
 
-	@SuppressWarnings( { "rawtypes", "unchecked" } )
 	@Override
-	public < O > PoolObjectObjectMap< E, O > createEdgeObjectMap( final Class< ? extends O > valueClass )
+	public < O > PoolObjectObjectMap< E, O > createEdgeObjectMap()
 	{
-		return new PoolObjectObjectMap( edgePool );
+		return new PoolObjectObjectMap<>( edgePool );
 	}
 
 	@Override

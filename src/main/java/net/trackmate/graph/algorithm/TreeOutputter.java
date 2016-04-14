@@ -94,7 +94,7 @@ public class TreeOutputter< V extends Vertex< E >, E extends Edge< V > > extends
 		 * Iterate into the tree.
 		 */
 
-		final RefObjectMap< V, Integer > writeTo = createVertexObjectMap( Integer.class );
+		final RefObjectMap< V, Integer > writeTo = createVertexObjectMap();
 		final Iterator< V > it = new DepthFirstIterator< V, E >( root, graph );
 		visited.clear();
 		while ( it.hasNext() )
@@ -276,7 +276,7 @@ public class TreeOutputter< V extends Vertex< E >, E extends Edge< V > > extends
 
 	private RefObjectMap< V, Integer > recursiveCumSum( final V root, final Function< V, Integer > fun )
 	{
-		final RefObjectMap< V, Integer > sumMap = createVertexObjectMap( Integer.class );
+		final RefObjectMap< V, Integer > sumMap = createVertexObjectMap();
 		recurse( root, sumMap, fun );
 		return sumMap;
 	}
@@ -311,7 +311,7 @@ public class TreeOutputter< V extends Vertex< E >, E extends Edge< V > > extends
 
 	private RefObjectMap< V, Integer > depth( final V root )
 	{
-		final RefObjectMap< V, Integer > depthMap = createVertexObjectMap( Integer.class );
+		final RefObjectMap< V, Integer > depthMap = createVertexObjectMap();
 		depthMap.put( root, Integer.valueOf( 0 ) );
 		recurseDepth( root, depthMap );
 		return depthMap;
