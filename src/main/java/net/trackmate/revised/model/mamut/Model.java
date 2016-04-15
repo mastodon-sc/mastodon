@@ -37,6 +37,7 @@ public class Model extends AbstractModel< ModelGraph, Spot, Link >
 	public Model()
 	{
 		super( new ModelGraph() );
+		modelGraph.setModel( this );
 		index = new SpatioTemporalIndexImp<>( modelGraph, modelGraph.getVertexPool() );
 	}
 

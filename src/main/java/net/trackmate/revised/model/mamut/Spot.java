@@ -1,12 +1,13 @@
 package net.trackmate.revised.model.mamut;
 
 import static net.trackmate.graph.mempool.ByteUtils.DOUBLE_SIZE;
+
+import Jama.EigenvalueDecomposition;
+import Jama.Matrix;
 import net.trackmate.graph.AbstractVertexPool;
 import net.trackmate.graph.mempool.ByteMappedElement;
 import net.trackmate.revised.model.AbstractSpot3D;
 import net.trackmate.revised.model.HasLabel;
-import Jama.EigenvalueDecomposition;
-import Jama.Matrix;
 
 
 // TODO: replace Jama stuff by something that doesn't allocate extra memory
@@ -117,9 +118,9 @@ public class Spot extends AbstractSpot3D< Spot, Link, ByteMappedElement > implem
 		return String.format( "Spot( %d, X=%.2f, Y=%.2f, Z=%.2f, tp=%d )", getInternalPoolIndex(), getX(), getY(), getZ(), getTimepoint() );
 	}
 
-	Spot( final AbstractVertexPool< Spot, Link, ByteMappedElement > pool )
+	Spot( final AbstractVertexPool< Spot, Link, ByteMappedElement > pool, final Model model )
 	{
-		super( pool );
+		super( pool, model );
 	}
 
 	/**

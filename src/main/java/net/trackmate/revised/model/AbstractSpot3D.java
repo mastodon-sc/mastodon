@@ -2,6 +2,10 @@ package net.trackmate.revised.model;
 
 import static net.trackmate.graph.mempool.ByteUtils.DOUBLE_SIZE;
 import static net.trackmate.graph.mempool.ByteUtils.INT_SIZE;
+
+import java.util.HashMap;
+import java.util.Map;
+
 import net.imglib2.RealLocalizable;
 import net.trackmate.graph.AbstractEdge;
 import net.trackmate.graph.AbstractVertex;
@@ -92,9 +96,27 @@ public class AbstractSpot3D<
 		return getTimepointId();
 	}
 
-	protected AbstractSpot3D( final AbstractVertexPool< V, E, T > pool )
+	private final AbstractModel< ?, V, ? > model;
+
+	private final Map< VertexFeature< ?, V, ? >, FeatureValue< ? > > featureValues;
+
+	@SuppressWarnings( "unchecked" )
+	public < F extends FeatureValue< ? >, M > F feature( final VertexFeature< M, V, F > feature )
+	{
+		F fv = ( F ) featureValues.get( feature );
+		if ( fv == null )
+		{
+			fv = feature.createFeatureValue( model.getVertexFeature( feature ), ( V ) this );
+			featureValues.put( feature, fv );
+		}
+		return fv;
+	}
+
+	protected AbstractSpot3D( final AbstractVertexPool< V, E, T > pool, final AbstractModel< ?, V, ? > model )
 	{
 		super( pool );
+		this.model = model;
+		featureValues = new HashMap<>();
 	}
 
 	// === RealLocalizable ===

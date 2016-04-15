@@ -9,6 +9,8 @@ import net.trackmate.graph.mempool.MemPool;
 import net.trackmate.graph.mempool.SingleArrayMemPool;
 import net.trackmate.revised.model.AbstractModelGraph;
 
+
+public // TODO: remove, temporarily made public for designing Features framework
 class ModelGraph extends AbstractModelGraph< ModelGraph.SpotPool, ModelGraph.LinkPool, Spot, Link, ByteMappedElement >
 {
 	public ModelGraph()
@@ -19,6 +21,18 @@ class ModelGraph extends AbstractModelGraph< ModelGraph.SpotPool, ModelGraph.Lin
 	public ModelGraph( final int initialCapacity )
 	{
 		super( new LinkPool( initialCapacity, new SpotPool( initialCapacity ) ) );
+	}
+
+	/**
+	 * This MUST BE CALLED by the {@link Model} after constructing the
+	 * {@link ModelGraph}. We need to know model such that new {@link Spot}
+	 * references can connect to the model's feature maps.
+	 *
+	 * @param model
+	 */
+	void setModel( final Model model )
+	{
+		vertexPool.model = model;
 	}
 
 	static class SpotPool extends AbstractVertexPool< Spot, Link, ByteMappedElement >
@@ -34,6 +48,8 @@ class ModelGraph extends AbstractModelGraph< ModelGraph.SpotPool, ModelGraph.Lin
 			f.vertexPool = this;
 		}
 
+		Model model;
+
 		private static class SpotFactory implements PoolObject.Factory< Spot, ByteMappedElement >
 		{
 			private SpotPool vertexPool;
@@ -47,7 +63,7 @@ class ModelGraph extends AbstractModelGraph< ModelGraph.SpotPool, ModelGraph.Lin
 			@Override
 			public Spot createEmptyRef()
 			{
-				return new Spot( vertexPool );
+				return new Spot( vertexPool, vertexPool.model );
 			}
 
 			@Override
