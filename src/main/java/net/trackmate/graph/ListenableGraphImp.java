@@ -52,7 +52,6 @@ public class ListenableGraphImp<
 		emitEvents = true;
 	}
 
-	@SuppressWarnings( "unchecked" )
 	public ListenableGraphImp( final EP edgePool )
 	{
 		super( edgePool );
