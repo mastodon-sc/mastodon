@@ -1,4 +1,4 @@
-package net.trackmate.revised;
+package net.trackmate.graph.revised;
 
 import net.trackmate.revised.model.mamut.Link;
 import net.trackmate.revised.model.mamut.Model;
@@ -8,7 +8,7 @@ public class CreateLargeModelExample
 {
 	private static final int N_STARTING_CELLS = 6;
 
-	private static final int N_DIVISIONS = 10; // 16;
+	private static final int N_DIVISIONS = 17;
 
 	private static final int N_FRAMES_PER_DIVISION = 5;
 
@@ -25,14 +25,19 @@ public class CreateLargeModelExample
 
 	public Model run()
 	{
+		return run( N_STARTING_CELLS, N_DIVISIONS, N_FRAMES_PER_DIVISION );
+	}
+
+	public Model run( final int nStartingCells, final int nDivisions, final int nFramesPerDivision )
+	{
 		final Spot mother = model.getGraph().vertexRef();
-		for ( int ic = 0; ic < N_STARTING_CELLS; ic++ )
+		for ( int ic = 0; ic < nStartingCells; ic++ )
 		{
 			final double angle = 2d * ic * Math.PI / N_STARTING_CELLS;
 			final double vx = VELOCITY * Math.cos( angle );
 			final double vy = VELOCITY * Math.sin( angle );
 
-			final int nframes = N_DIVISIONS * N_FRAMES_PER_DIVISION;
+//			final int nframes = N_DIVISIONS * N_FRAMES_PER_DIVISION;
 			final double x = 0.; // nframes * VELOCITY + vx;
 			final double y = 0.; // nframes * VELOCITY + vy;
 			final double z = N_DIVISIONS * VELOCITY;
@@ -41,15 +46,15 @@ public class CreateLargeModelExample
 			final double[][] cov = new double[][] { { RADIUS, 0, 0 }, { 0, RADIUS, 0 }, { 0, 0, RADIUS } };
 			model.addSpot( 0, pos, cov, mother );
 
-			addBranch( mother, vx, vy, 1 );
+			addBranch( mother, vx, vy, 1, nDivisions, nFramesPerDivision );
 		}
 		model.getGraph().releaseRef( mother );
 		return model;
 	}
 
-	private void addBranch( final Spot start, final double vx, final double vy, final int iteration )
+	private void addBranch( final Spot start, final double vx, final double vy, final int iteration, final int nDivisions, final int nFramesPerDivision )
 	{
-		if ( iteration >= N_DIVISIONS ) { return; }
+		if ( iteration >= nDivisions ) { return; }
 
 		final Spot previousSpot = model.getGraph().vertexRef();
 		final Spot spot = model.getGraph().vertexRef();
@@ -61,7 +66,7 @@ public class CreateLargeModelExample
 
 		// Extend
 		previousSpot.refTo( start );
-		for ( int it = 0; it < N_FRAMES_PER_DIVISION; it++ )
+		for ( int it = 0; it < nFramesPerDivision; it++ )
 		{
 			pos[ 0 ] = previousSpot.getDoublePosition( 0 ) + vx;
 			pos[ 1 ] = previousSpot.getDoublePosition( 1 ) + vy;
@@ -84,12 +89,12 @@ public class CreateLargeModelExample
 			{
 				x = previousSpot.getDoublePosition( 0 );
 				y = previousSpot.getDoublePosition( 1 );
-				z = previousSpot.getDoublePosition( 2 ) + sign * VELOCITY * ( 1 - 0.5d * iteration / N_DIVISIONS ) * 2;
+				z = previousSpot.getDoublePosition( 2 ) + sign * VELOCITY * ( 1 - 0.5d * iteration / nDivisions ) * 2;
 			}
 			else
 			{
-				x = previousSpot.getDoublePosition( 0 ) - sign * vy * ( 1 - 0.5d * iteration / N_DIVISIONS ) * 2;
-				y = previousSpot.getDoublePosition( 1 ) + sign * vx * ( 1 - 0.5d * iteration / N_DIVISIONS )* 2;
+				x = previousSpot.getDoublePosition( 0 ) - sign * vy * ( 1 - 0.5d * iteration / nDivisions ) * 2;
+				y = previousSpot.getDoublePosition( 1 ) + sign * vx * ( 1 - 0.5d * iteration / nDivisions ) * 2;
 				z = previousSpot.getDoublePosition( 2 );
 			}
 
@@ -102,7 +107,7 @@ public class CreateLargeModelExample
 			model.addSpot( frame, pos, cov, daughter );
 			model.addLink( previousSpot, daughter, link );
 
-			addBranch( daughter, vx, vy, iteration + 1 );
+			addBranch( daughter, vx, vy, iteration + 1, nDivisions, nFramesPerDivision );
 		}
 
 		model.getGraph().releaseRef( previousSpot );
