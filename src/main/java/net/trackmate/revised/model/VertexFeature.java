@@ -6,16 +6,16 @@ import net.trackmate.graph.Vertex;
 // Features must have unique names!
 public abstract class VertexFeature< M, V extends Vertex< ? >, F extends FeatureValue< ? > >
 {
-	private final String name;
+	private final String key;
 
-	public VertexFeature( final String name )
+	public VertexFeature( final String key )
 	{
-		this.name = name;
+		this.key = key;
 	}
 
-	public String getName()
+	public String getKey()
 	{
-		return name;
+		return key;
 	}
 
 	/*
@@ -39,13 +39,13 @@ public abstract class VertexFeature< M, V extends Vertex< ? >, F extends Feature
 	@Override
 	public int hashCode()
 	{
-		return name.hashCode();
+		return key.hashCode();
 	}
 
 	@Override
 	public boolean equals( final Object obj )
 	{
 		return obj instanceof VertexFeature
-				&& ( ( VertexFeature< ?, ?, ? > ) obj ).name.equals( name );
+				&& ( ( VertexFeature< ?, ?, ? > ) obj ).key.equals( key );
 	}
 }
