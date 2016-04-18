@@ -3,7 +3,8 @@ package net.trackmate.revised.model;
 import net.trackmate.graph.ReadOnlyGraph;
 import net.trackmate.graph.Vertex;
 
-// Features must have unique names!
+// Features must have unique keys!
+// TODO: move Features to net.trackmate.graph? requires making methods public, but this is quite general.
 public abstract class VertexFeature< M, V extends Vertex< ? >, F extends FeatureValue< ? > >
 {
 	private final String key;
