@@ -3,8 +3,8 @@ package net.trackmate.io;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.util.Iterator;
 
+import gnu.trove.map.TIntIntMap;
 import gnu.trove.map.hash.TIntIntHashMap;
 import net.trackmate.graph.Edge;
 import net.trackmate.graph.Graph;
@@ -46,8 +46,37 @@ public class RawGraphIO
 		public void setBytes( final E edge, final byte[] bytes );
 	}
 
+	public static final class FileIdMap< V extends Vertex< E >, E extends Edge< V > >
+	{
+		private final TIntIntMap vertexIdToFileIndex;
+
+		private final TIntIntMap edgeIdToFileIndex;
+
+		private final GraphIdBimap< V, E > idmap;
+
+		public FileIdMap(
+				final TIntIntMap vertexIdToFileIndex,
+				final TIntIntMap edgeIdToFileIndex,
+				final GraphIdBimap< V, E > idmap )
+		{
+			this.vertexIdToFileIndex = vertexIdToFileIndex;
+			this.edgeIdToFileIndex = edgeIdToFileIndex;
+			this.idmap = idmap;
+		}
+
+		public int getVertexId( final V v )
+		{
+			return vertexIdToFileIndex.get( idmap.getVertexId( v ) );
+		}
+
+		public int getEdgeId( final E e )
+		{
+			return edgeIdToFileIndex.get( idmap.getEdgeId( e ) );
+		}
+	}
+
 	public static < V extends Vertex< E >, E extends Edge< V > >
-			void write(
+			FileIdMap< V, E > write(
 					final ReadOnlyGraph< V, E > graph,
 					final GraphIdBimap< V, E > idmap,
 					final Serializer< V, E > io,
@@ -57,14 +86,12 @@ public class RawGraphIO
 		final int numVertices = graph.vertices().size();
 		oos.writeInt( numVertices );
 
-		final Iterator< V > vertexIterator = graph.vertices().iterator();
 		final byte[] vbytes = new byte[ io.getVertexNumBytes() ];
 		final boolean writeVertexBytes = io.getVertexNumBytes() > 0;
-		final TIntIntHashMap idToFileIndex = new TIntIntHashMap( 2 * numVertices, 0.75f, -1, -1 );
+		final TIntIntHashMap vertexIdToFileIndex = new TIntIntHashMap( 2 * numVertices, 0.75f, -1, -1 );
 		int i = 0;
-		while( vertexIterator.hasNext() )
+		for ( final V v : graph.vertices() )
 		{
-			final V v = vertexIterator.next();
 			if ( writeVertexBytes )
 			{
 				io.getBytes( v, vbytes );
@@ -72,36 +99,42 @@ public class RawGraphIO
 			}
 
 			final int id = idmap.getVertexId( v );
-			idToFileIndex.put( id, i );
+			vertexIdToFileIndex.put( id, i );
 			++i;
 		}
 
 		final int numEdges = graph.edges().size();
 		oos.writeInt( numEdges );
 
-		final Iterator< E > edgeIterator = graph.edges().iterator();
 		final byte[] ebytes = new byte[ io.getEdgeNumBytes() ];
 		final boolean writeEdgeBytes = io.getEdgeNumBytes() > 0;
 		final V v = graph.vertexRef();
-		while( edgeIterator.hasNext() )
+		final TIntIntHashMap edgeIdToFileIndex = new TIntIntHashMap( 2 * numVertices, 0.75f, -1, -1 );
+		i = 0;
+		for( final E e : graph.edges() )
 		{
-			final E e = edgeIterator.next();
-			final int from = idToFileIndex.get( idmap.getVertexId( e.getSource( v ) ) );
-			final int to = idToFileIndex.get( idmap.getVertexId( e.getTarget( v ) ) );
+			final int from = vertexIdToFileIndex.get( idmap.getVertexId( e.getSource( v ) ) );
+			final int to = vertexIdToFileIndex.get( idmap.getVertexId( e.getTarget( v ) ) );
 			final int sourceOutIndex = e.getSourceOutIndex();
 			final int targetInIndex = e.getTargetInIndex();
 			oos.writeInt( from );
 			oos.writeInt( to );
 			oos.writeInt( sourceOutIndex );
 			oos.writeInt( targetInIndex );
+
 			if ( writeEdgeBytes )
 			{
 				io.getBytes( e, ebytes );
 				oos.write( ebytes );
 			}
-		}
 
+			final int id = idmap.getEdgeId( e );
+			edgeIdToFileIndex.put( id, i );
+			++i;
+		}
 		graph.releaseRef( v );
+
+		return new FileIdMap<>( vertexIdToFileIndex, edgeIdToFileIndex, idmap );
 	}
 
 	public static < V extends Vertex< E >, E extends Edge< V > >
