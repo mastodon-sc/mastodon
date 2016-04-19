@@ -13,7 +13,10 @@ import net.trackmate.graph.AbstractVertex;
 import net.trackmate.graph.GraphIdBimap;
 import net.trackmate.graph.ReadOnlyGraph;
 import net.trackmate.graph.listenable.ListenableGraph;
+import net.trackmate.io.RawFeatureIO;
 import net.trackmate.io.RawGraphIO;
+import net.trackmate.io.RawGraphIO.FileIdToGraphMap;
+import net.trackmate.io.RawGraphIO.GraphToFileIdMap;
 
 /**
  * Manages the model graph.
@@ -106,13 +109,18 @@ public class AbstractModel<
 	 * @throws IOException
 	 *             if an I/O error occurs while reading the file.
 	 */
-	protected void loadRaw( final File file, final RawGraphIO.Serializer< V, E > serializer ) throws IOException
+	protected void loadRaw(
+			final File file,
+			final RawGraphIO.Serializer< V, E > serializer,
+			final RawFeatureIO.FeatureSerializers< V, E > featureIoRegistry )
+					throws IOException
 	{
 		final FileInputStream fis = new FileInputStream( file );
 		final ObjectInputStream ois = new ObjectInputStream( fis );
 		modelGraph.pauseListeners();
 		modelGraph.clear();
-		RawGraphIO.read( modelGraph, modelGraph.idmap, serializer, ois );
+		final FileIdToGraphMap< V, E > fileIdMap = RawGraphIO.read( modelGraph, modelGraph.idmap, serializer, ois );
+		RawFeatureIO.readFeatureMaps( fileIdMap, vertexFeatureMaps, featureIoRegistry, ois );
 		ois.close();
 		modelGraph.resumeListeners();
 	}
@@ -128,11 +136,16 @@ public class AbstractModel<
 	 * @throws IOException
 	 *             if an I/O error occurs while writing the file.
 	 */
-	protected void saveRaw( final File file, final RawGraphIO.Serializer< V, E > serializer ) throws IOException
+	protected void saveRaw(
+			final File file,
+			final RawGraphIO.Serializer< V, E > serializer,
+			final RawFeatureIO.FeatureSerializers< V, E > featureIoRegistry )
+					throws IOException
 	{
 		final FileOutputStream fos = new FileOutputStream( file );
 		final ObjectOutputStream oos = new ObjectOutputStream( fos );
-		RawGraphIO.write( modelGraph, modelGraph.idmap, serializer, oos );
+		final GraphToFileIdMap< V, E > fileIdMap = RawGraphIO.write( modelGraph, modelGraph.idmap, serializer, oos );
+		RawFeatureIO.writeFeatureMaps( fileIdMap, vertexFeatureMaps, featureIoRegistry, oos );
 		oos.close();
 	}
 }
