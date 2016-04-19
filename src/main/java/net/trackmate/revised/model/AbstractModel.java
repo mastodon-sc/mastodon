@@ -6,7 +6,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.util.HashMap;
 import java.util.Map;
 
 import net.trackmate.graph.AbstractEdge;
@@ -70,7 +69,7 @@ public class AbstractModel<
 	protected AbstractModel( final MG modelGraph )
 	{
 		this.modelGraph = modelGraph;
-		vertexFeatureMaps = new HashMap<>();
+		vertexFeatureMaps = new UniqueHashcodeArrayMap<>();
 	}
 
 	/*

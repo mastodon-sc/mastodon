@@ -3,7 +3,6 @@ package net.trackmate.revised.model;
 import static net.trackmate.graph.mempool.ByteUtils.DOUBLE_SIZE;
 import static net.trackmate.graph.mempool.ByteUtils.INT_SIZE;
 
-import java.util.HashMap;
 import java.util.Map;
 
 import net.imglib2.RealLocalizable;
@@ -116,7 +115,7 @@ public class AbstractSpot3D<
 	{
 		super( pool );
 		this.model = model;
-		featureValues = new HashMap<>();
+		featureValues = new UniqueHashcodeArrayMap<>();
 	}
 
 	// === RealLocalizable ===
