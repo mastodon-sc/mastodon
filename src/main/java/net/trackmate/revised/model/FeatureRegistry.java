@@ -55,6 +55,11 @@ public final class FeatureRegistry
 		return newId;
 	}
 
+	public static synchronized VertexFeature< ?, ?, ? > getVertexFeature( final String key )
+	{
+		return vertexFeatures.get( key );
+	}
+
 	private FeatureRegistry()
 	{};
 }
