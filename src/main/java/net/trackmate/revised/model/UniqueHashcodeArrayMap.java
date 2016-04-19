@@ -1,7 +1,9 @@
 package net.trackmate.revised.model;
 
+import java.util.AbstractSet;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
@@ -32,6 +34,8 @@ public final class UniqueHashcodeArrayMap< K, V > implements Map< K, V >
 	private final TIntObjectArrayMap< V > map;
 
 	private final HashSet< K > keySet;
+
+	private EntrySet entrySet;
 
 	public UniqueHashcodeArrayMap()
 	{
@@ -97,7 +101,7 @@ public final class UniqueHashcodeArrayMap< K, V > implements Map< K, V >
 	@Override
 	public void putAll( final Map< ? extends K, ? extends V > m )
 	{
-		for ( final Map.Entry< ? extends K, ? extends V > kv : m.entrySet() )
+		for ( final Entry< ? extends K, ? extends V > kv : m.entrySet() )
 			map.put( kv.getKey().hashCode(), kv.getValue() );
 	}
 
@@ -120,8 +124,58 @@ public final class UniqueHashcodeArrayMap< K, V > implements Map< K, V >
 	}
 
 	@Override
-	public Set< Map.Entry< K, V > > entrySet()
+	public Set< Entry< K, V > > entrySet()
 	{
-		throw new UnsupportedOperationException( "not implemented (yet?)" );
+		return ( entrySet == null ) ? ( entrySet = new EntrySet() ) : entrySet;
+	}
+
+	final class EntrySet extends AbstractSet< Entry< K, V > >
+	{
+		@Override
+		public Iterator< Entry< K, V > > iterator()
+		{
+			final Iterator< K > kiter = keySet().iterator();
+
+			return new Iterator< Entry< K, V > >()
+			{
+				@Override
+				public boolean hasNext()
+				{
+					return kiter.hasNext();
+				}
+
+				@Override
+				public Entry< K, V > next()
+				{
+					final K key = kiter.next();
+					return new Entry< K, V >()
+					{
+						@Override
+						public K getKey()
+						{
+							return key;
+						}
+
+						@Override
+						public V getValue()
+						{
+							return UniqueHashcodeArrayMap.this.get( key );
+						}
+
+						@Override
+						public V setValue( final V value )
+						{
+							return UniqueHashcodeArrayMap.this.put( key, value );
+						}
+					};
+				}
+			};
+		}
+
+		@Override
+		public int size()
+		{
+			return UniqueHashcodeArrayMap.this.size();
+		}
 	}
 }
