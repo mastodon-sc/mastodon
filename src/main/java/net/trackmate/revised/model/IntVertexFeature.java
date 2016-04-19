@@ -4,13 +4,14 @@ import gnu.trove.map.TObjectIntMap;
 import net.trackmate.graph.ReadOnlyGraph;
 import net.trackmate.graph.Vertex;
 import net.trackmate.graph.collection.CollectionUtils;
+import net.trackmate.revised.model.FeatureRegistry.DuplicateKeyException;
 import net.trackmate.revised.model.IntVertexFeature.IntFeatureValue;
 
 public final class IntVertexFeature< V extends Vertex< ? > > extends VertexFeature< TObjectIntMap< V >, V, IntFeatureValue< V > >
 {
 	private final int noEntryValue;
 
-	public IntVertexFeature( final String name, final int noEntryValue )
+	public IntVertexFeature( final String name, final int noEntryValue ) throws DuplicateKeyException
 	{
 		super( name );
 		this.noEntryValue = noEntryValue;

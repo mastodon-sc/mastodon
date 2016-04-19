@@ -5,10 +5,11 @@ import java.util.Map;
 import net.trackmate.graph.ReadOnlyGraph;
 import net.trackmate.graph.Vertex;
 import net.trackmate.graph.collection.CollectionUtils;
+import net.trackmate.revised.model.FeatureRegistry.DuplicateKeyException;
 
 public final class ObjVertexFeature< V extends Vertex< ? >, O > extends VertexFeature< Map< V, O >, V, FeatureValue< O > >
 {
-	public ObjVertexFeature( final String name )
+	public ObjVertexFeature( final String name ) throws DuplicateKeyException
 	{
 		super( name );
 	}
