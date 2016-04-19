@@ -1,11 +1,13 @@
 package net.trackmate.graph;
 
-import gnu.trove.map.hash.TIntObjectHashMap;
-
+import java.util.AbstractSet;
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
+import gnu.trove.iterator.TIntObjectIterator;
+import gnu.trove.map.hash.TIntObjectHashMap;
 import net.trackmate.graph.collection.RefObjectMap;
 
 /**
@@ -17,6 +19,8 @@ public class PoolObjectObjectMap< K extends Ref< K >, O > implements Map< K, O >
 	private final TIntObjectHashMap< O > indexmap;
 
 	private final RefPool< K > pool;
+
+	private EntrySet entrySet;
 
 	public PoolObjectObjectMap( final RefPool< K > pool )
 	{
@@ -106,8 +110,7 @@ public class PoolObjectObjectMap< K extends Ref< K >, O > implements Map< K, O >
 	@Override
 	public Set< Entry< K, O > > entrySet()
 	{
-		// TODO
-		throw new UnsupportedOperationException();
+		return ( entrySet == null ) ? ( entrySet = new EntrySet() ) : entrySet;
 	}
 
 	@Override
@@ -120,5 +123,60 @@ public class PoolObjectObjectMap< K extends Ref< K >, O > implements Map< K, O >
 	public void releaseRef( final K obj )
 	{
 		pool.releaseRef( obj );
+	}
+
+	final class EntrySet extends AbstractSet< Entry< K, O > >
+	{
+		@Override
+		public Iterator< Entry< K, O > > iterator()
+		{
+			final TIntObjectIterator< O > iter = indexmap.iterator();
+
+			final Entry< K, O > entry = new Entry< K, O >()
+			{
+				final K ref = createRef();
+
+				@Override
+				public K getKey()
+				{
+					pool.getByInternalPoolIndex( iter.key(), ref );
+					return ref;
+				}
+
+				@Override
+				public O getValue()
+				{
+					return iter.value();
+				}
+
+				@Override
+				public O setValue( final O value )
+				{
+					return iter.setValue( value );
+				}
+			};
+
+			return new Iterator< Entry< K, O > >()
+			{
+				@Override
+				public boolean hasNext()
+				{
+					return iter.hasNext();
+				}
+
+				@Override
+				public Entry< K, O > next()
+				{
+					iter.advance();
+					return entry;
+				}
+			};
+		}
+
+		@Override
+		public int size()
+		{
+			return PoolObjectObjectMap.this.size();
+		}
 	}
 }
