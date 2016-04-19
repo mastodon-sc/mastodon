@@ -63,4 +63,10 @@ public abstract class VertexFeature< M, V extends Vertex< ? >, F extends Feature
 		return obj instanceof VertexFeature
 				&& ( ( VertexFeature< ?, ?, ? > ) obj ).key.equals( key );
 	}
+
+	@Override
+	public String toString()
+	{
+        return getClass().getName() + "(\"" + key + "\")";
+	}
 }
