@@ -2,6 +2,7 @@ package net.trackmate.graph.revised;
 
 import java.util.Random;
 
+import net.imglib2.util.BenchmarkHelper;
 import net.trackmate.revised.model.IntVertexFeature;
 import net.trackmate.revised.model.mamut.Model;
 import net.trackmate.revised.model.mamut.Spot;
@@ -13,7 +14,7 @@ public class FeaturesBenchmark
 
 	public static void main( final String[] args )
 	{
-		final int N_RUNS = 10;
+		final int N_RUNS = 100;
 
 		System.out.println( "Creating model." );
 		final long s = System.currentTimeMillis();
@@ -26,27 +27,21 @@ public class FeaturesBenchmark
 
 		final IntVertexFeature< Spot > POSITIVE_NUMBER = new IntVertexFeature< >( "POS_NUMBER", -1 );
 
+		System.out.println();
 		final long s1 = System.currentTimeMillis();
-		for ( int i = 0; i < N_RUNS; i++ )
-		{
-			putFeatureValue( model, POSITIVE_NUMBER );
-		}
+		BenchmarkHelper.benchmarkAndPrint( N_RUNS, false, () -> putFeatureValue( model, POSITIVE_NUMBER ) );
 		final long e1 = System.currentTimeMillis();
 		System.out.println( String.format( "Put a int feature value in %d spots in %.1f ms.", size, ( ( double ) e1 - s1 ) / N_RUNS ) );
 
+		System.out.println();
 		final long s2 = System.currentTimeMillis();
-		for ( int i = 0; i < N_RUNS; i++ )
-		{
-			readGraphValue( model, storage );
-		}
+		BenchmarkHelper.benchmarkAndPrint( N_RUNS, false, () -> readGraphValue( model, storage ) );
 		final long e2 = System.currentTimeMillis();
 		System.out.println( String.format( "Read a int graph value in %d spots in %.1f ms.", size, ( ( double ) e2 - s2 ) / N_RUNS ) );
 
+		System.out.println();
 		final long s3 = System.currentTimeMillis();
-		for ( int i = 0; i < N_RUNS; i++ )
-		{
-			readFeatureValue( model, storage, POSITIVE_NUMBER );
-		}
+		BenchmarkHelper.benchmarkAndPrint( N_RUNS, false, () -> readFeatureValue( model, storage, POSITIVE_NUMBER ) );
 		final long e3 = System.currentTimeMillis();
 		System.out.println( String.format( "Read a int feature value in %d spots in %.1f ms.", size, ( ( double ) e3 - s3 ) / N_RUNS ) );
 
@@ -65,7 +60,7 @@ public class FeaturesBenchmark
 	{
 		for ( final Spot spot : model.getGraph().vertices() )
 		{
-			spot.feature( feature ).set( ran.nextInt() );
+			spot.feature( feature ).set( spot.getTimepoint() );
 		}
 	}
 
