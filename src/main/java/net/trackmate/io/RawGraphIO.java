@@ -46,7 +46,7 @@ public class RawGraphIO
 		public void setBytes( final E edge, final byte[] bytes );
 	}
 
-	public static final class FileIdMap< V extends Vertex< E >, E extends Edge< V > >
+	public static final class GraphToFileIdMap< V extends Vertex< E >, E extends Edge< V > >
 	{
 		private final TIntIntMap vertexIdToFileIndex;
 
@@ -54,7 +54,7 @@ public class RawGraphIO
 
 		private final GraphIdBimap< V, E > idmap;
 
-		public FileIdMap(
+		public GraphToFileIdMap(
 				final TIntIntMap vertexIdToFileIndex,
 				final TIntIntMap edgeIdToFileIndex,
 				final GraphIdBimap< V, E > idmap )
@@ -75,8 +75,57 @@ public class RawGraphIO
 		}
 	}
 
+	public static final class FileIdToGraphMap< V extends Vertex< E >, E extends Edge< V > >
+	{
+		private final TIntIntMap fileIndexToVertexId;
+
+		private final TIntIntMap fileIndexToEdgeId;
+
+		private final GraphIdBimap< V, E > idmap;
+
+		public FileIdToGraphMap(
+				final TIntIntMap fileIndexToVertexId,
+				final TIntIntMap fileIndexToEdgeId,
+				final GraphIdBimap< V, E > idmap )
+		{
+			this.fileIndexToVertexId = fileIndexToVertexId;
+			this.fileIndexToEdgeId = fileIndexToEdgeId;
+			this.idmap = idmap;
+		}
+
+		public V getVertex( final int id, final V ref )
+		{
+			return idmap.getVertex( fileIndexToVertexId.get( id ), ref );
+		}
+
+		public E getEdge( final int id, final E ref )
+		{
+			return idmap.getEdge( fileIndexToEdgeId.get( id ), ref );
+		}
+
+		public V vertexRef()
+		{
+			return idmap.vertexIdBimap().createRef();
+		}
+
+		public E edgeRef()
+		{
+			return idmap.edgeIdBimap().createRef();
+		}
+
+		public void releaseRef( final V ref )
+		{
+			idmap.vertexIdBimap().releaseRef( ref );
+		}
+
+		public void releaseRef( final E ref )
+		{
+			idmap.edgeIdBimap().releaseRef( ref );
+		}
+	}
+
 	public static < V extends Vertex< E >, E extends Edge< V > >
-			FileIdMap< V, E > write(
+			GraphToFileIdMap< V, E > write(
 					final ReadOnlyGraph< V, E > graph,
 					final GraphIdBimap< V, E > idmap,
 					final Serializer< V, E > io,
@@ -109,7 +158,7 @@ public class RawGraphIO
 		final byte[] ebytes = new byte[ io.getEdgeNumBytes() ];
 		final boolean writeEdgeBytes = io.getEdgeNumBytes() > 0;
 		final V v = graph.vertexRef();
-		final TIntIntHashMap edgeIdToFileIndex = new TIntIntHashMap( 2 * numVertices, 0.75f, -1, -1 );
+		final TIntIntHashMap edgeIdToFileIndex = new TIntIntHashMap( 2 * numEdges, 0.75f, -1, -1 );
 		i = 0;
 		for( final E e : graph.edges() )
 		{
@@ -134,11 +183,11 @@ public class RawGraphIO
 		}
 		graph.releaseRef( v );
 
-		return new FileIdMap<>( vertexIdToFileIndex, edgeIdToFileIndex, idmap );
+		return new GraphToFileIdMap<>( vertexIdToFileIndex, edgeIdToFileIndex, idmap );
 	}
 
 	public static < V extends Vertex< E >, E extends Edge< V > >
-			void read(
+			FileIdToGraphMap< V, E > read(
 					final Graph< V, E > graph,
 					final GraphIdBimap< V, E > idmap,
 					final Serializer< V, E > io,
@@ -152,7 +201,7 @@ public class RawGraphIO
 
 		final byte[] vbytes = new byte[ io.getVertexNumBytes() ];
 		final boolean readVertexBytes = io.getVertexNumBytes() > 0;
-		final TIntIntHashMap fileIndexToId = new TIntIntHashMap( 2 * numVertices, 0.75f, -1, -1 );
+		final TIntIntHashMap fileIndexToVertexId = new TIntIntHashMap( 2 * numVertices, 0.75f, -1, -1 );
 		for ( int i = 0; i < numVertices; ++i )
 		{
 			graph.addVertex( v1 );
@@ -161,16 +210,17 @@ public class RawGraphIO
 				ois.readFully( vbytes );
 				io.setBytes( v1, vbytes );
 			}
-			fileIndexToId.put( i, idmap.getVertexId( v1 ) );
+			fileIndexToVertexId.put( i, idmap.getVertexId( v1 ) );
 		}
 
 		final int numEdges = ois.readInt();
 		final byte[] ebytes = new byte[ io.getEdgeNumBytes() ];
 		final boolean readEdgeBytes = io.getEdgeNumBytes() > 0;
+		final TIntIntHashMap fileIndexToEdgeId = new TIntIntHashMap( 2 * numEdges, 0.75f, -1, -1 );
 		for ( int i = 0; i < numEdges; ++i )
 		{
-			final int from = fileIndexToId.get( ois.readInt() );
-			final int to = fileIndexToId.get( ois.readInt() );
+			final int from = fileIndexToVertexId.get( ois.readInt() );
+			final int to = fileIndexToVertexId.get( ois.readInt() );
 			final int sourceOutIndex = ois.readInt();
 			final int targetInIndex = ois.readInt();
 			idmap.getVertex( from, v1 );
@@ -181,10 +231,13 @@ public class RawGraphIO
 				ois.readFully( ebytes );
 				io.setBytes( e, ebytes );
 			}
+			fileIndexToEdgeId.put( i, idmap.getEdgeId( e ) );
 		}
 
 		graph.releaseRef( v1 );
 		graph.releaseRef( v2 );
 		graph.releaseRef( e );
+
+		return new FileIdToGraphMap<>( fileIndexToVertexId, fileIndexToEdgeId, idmap );
 	}
 }
