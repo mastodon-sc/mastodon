@@ -74,13 +74,13 @@ public class Model extends AbstractModel< ModelGraph, Spot, Link >
 	 *            the source spot the link.
 	 * @param target
 	 *            the target spot the link.
-	 * @param edge
+	 * @param ref
 	 *            a {@link Link} reference, used to create the link.
 	 * @return the link created.
 	 */
-	public Link addLink( final Spot source, final Spot target, final Link edge )
+	public Link addLink( final Spot source, final Spot target, final Link ref )
 	{
-		return modelGraph.addEdge( source, target, edge );
+		return modelGraph.addEdge( source, target, ref );
 	}
 
 	/**
