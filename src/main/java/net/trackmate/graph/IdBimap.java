@@ -22,4 +22,8 @@ public interface IdBimap< O >
 	public int getId( O o );
 
 	public O getObject( int id, O ref );
+
+	public O createRef();
+
+	public void releaseRef( final O ref );
 }

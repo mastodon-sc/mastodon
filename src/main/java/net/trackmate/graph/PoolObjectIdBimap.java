@@ -30,4 +30,16 @@ public class PoolObjectIdBimap< O extends PoolObject< O, ? > > implements IdBima
 		pool.getByInternalPoolIndex( id, ref );
 		return ref;
 	}
+
+	@Override
+	public O createRef()
+	{
+		return pool.createRef();
+	}
+
+	@Override
+	public void releaseRef( final O ref )
+	{
+		pool.releaseRef( ref );
+	}
 }
