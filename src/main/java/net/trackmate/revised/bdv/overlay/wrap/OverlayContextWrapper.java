@@ -8,7 +8,16 @@ import net.trackmate.graph.Vertex;
 import net.trackmate.revised.bdv.overlay.OverlayContext;
 import net.trackmate.revised.context.Context;
 import net.trackmate.revised.context.ContextListener;
+import net.trackmate.revised.mamut.WindowManager.BdvContextAdapter;
 
+/**
+ * TODO!!! related to {@link BdvContextAdapter}
+ *
+ * @param <V>
+ * @param <E>
+ *
+ * @author Tobias Pietzsch &lt;tobias.pietzsch@gmail.com&gt;
+ */
 public class OverlayContextWrapper< V extends Vertex< E >, E extends Edge< V > >
 		implements Context< V >, ContextListener< OverlayVertexWrapper< V, E > >
 {
