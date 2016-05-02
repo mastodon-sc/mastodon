@@ -20,7 +20,6 @@ import org.scijava.ui.behaviour.io.yaml.YamlConfigIO;
 
 import bdv.spimdata.SpimDataMinimal;
 import bdv.tools.ToggleDialogAction;
-import bdv.util.AbstractNamedAction;
 import bdv.viewer.RequestRepaint;
 import bdv.viewer.TimePointListener;
 import bdv.viewer.ViewerFrame;
@@ -451,7 +450,7 @@ public class WindowManager
 		final String RENDER_SETTINGS = "render settings";
 		final RenderSettingsDialog renderSettingsDialog = new RenderSettingsDialog( viewerFrame, renderSettings );
 		final ActionMap actionMap = new ActionMap();
-		AbstractNamedAction.put( actionMap, new ToggleDialogAction( RENDER_SETTINGS, renderSettingsDialog ) );
+		new ToggleDialogAction( RENDER_SETTINGS, renderSettingsDialog ).put( actionMap );
 		final InputMap inputMap = new InputMap();
 		final KeyStrokeAdder a = keyconf.keyStrokeAdder( inputMap, "mamut" );
 		a.put( RENDER_SETTINGS, "R" );
@@ -563,7 +562,7 @@ public class WindowManager
 		final String TRACK_SCHEME_STYLE_SETTINGS = "render settings";
 		final TrackSchemeStyleDialog trackSchemeStyleDialog = new TrackSchemeStyleDialog( frame, style );
 		final ActionMap actionMap = new ActionMap();
-		AbstractNamedAction.put( actionMap, new ToggleDialogAction( TRACK_SCHEME_STYLE_SETTINGS, trackSchemeStyleDialog ) );
+		new ToggleDialogAction( TRACK_SCHEME_STYLE_SETTINGS, trackSchemeStyleDialog ).put( actionMap );
 		final InputMap inputMap = new InputMap();
 		final KeyStrokeAdder a = keyconf.keyStrokeAdder( inputMap, "mamut" );
 		a.put( TRACK_SCHEME_STYLE_SETTINGS, "R" );
