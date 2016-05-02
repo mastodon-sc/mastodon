@@ -24,17 +24,6 @@ public class GraphFeatures< V extends Vertex< E >, E extends Edge< V > >
 		vertexFeatureMaps = new UniqueHashcodeArrayMap<>();
 	}
 
-	/*
-	 * TODO: It's not clear whether we should register features automatically
-	 * when they are used for the first time. It seems easier for the user, but
-	 * maybe also more confusing?
-	 *
-	 * However this requires more consideration for how to deal with new
-	 * features appearing in a half-built model. Probably it would be good to
-	 * call {@link VertexFeature#addVertex(net.trackmate.graph.Vertex, Object)}
-	 * for all existing vertices?
-	 */
-
 	@SuppressWarnings( "unchecked" )
 	public < M > M getVertexFeature( final VertexFeature< M, V, ? > feature )
 	{
