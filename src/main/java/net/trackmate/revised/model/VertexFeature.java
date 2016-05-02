@@ -67,6 +67,6 @@ public abstract class VertexFeature< M, V extends Vertex< ? >, F extends Feature
 	@Override
 	public String toString()
 	{
-        return getClass().getName() + "(\"" + key + "\")";
+		return getClass().getName() + "(\"" + key + "\")";
 	}
 }
