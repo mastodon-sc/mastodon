@@ -5,7 +5,8 @@ import java.io.IOException;
 import java.util.Random;
 
 import net.trackmate.io.FeatureSerializers;
-import net.trackmate.io.RawFeatureIO;
+import net.trackmate.io.IntVertexFeatureSerializer;
+import net.trackmate.io.StringVertexFeatureSerializer;
 import net.trackmate.revised.model.IntVertexFeature;
 import net.trackmate.revised.model.ObjVertexFeature;
 
@@ -22,8 +23,8 @@ public class Features
 
 
 	static {
-		FeatureSerializers.put( LABEL, new RawFeatureIO.ObjVertexFeatureSerializer<>() );
-		FeatureSerializers.put( TRACKLENGTH, new RawFeatureIO.IntVertexFeatureSerializer<>() );
+		FeatureSerializers.put( LABEL, new StringVertexFeatureSerializer<>() );
+		FeatureSerializers.put( TRACKLENGTH, new IntVertexFeatureSerializer<>() );
 	}
 
 	private Features() {};
@@ -37,13 +38,13 @@ public class Features
 		final double[] pos = new double[ 3 ];
 		final double[][] cov = new double[ 3 ][ 3 ];
 
-		for ( int i = 0; i < 100000; ++i )
+		for ( int i = 0; i < 1000000; ++i )
 		{
 			for ( int d = 0; d < 3; ++d )
 				pos[ d ] = random.nextDouble();
 			final Spot spot = model.addSpot( 0, pos, cov, ref );
 
-			spot.feature( LABEL ).set( "the vertex label " + i );
+//			spot.feature( LABEL ).set( "the vertex label " + i );
 			spot.feature( TRACKLENGTH ).set( 3 );
 		}
 //		System.out.println( "label = " + spot.feature( LABEL ).get() );
@@ -72,9 +73,9 @@ public class Features
 			t1 = System.currentTimeMillis();
 			System.out.println( "loaded in " + ( t1 - t0 ) + " ms" );
 
-			final Spot next = model.getGraph().vertices().iterator().next();
-			System.out.println( next.feature( LABEL ).get() );
-			System.out.println( next.feature( TRACKLENGTH ).get() );
+//			final Spot next = model.getGraph().vertices().iterator().next();
+//			System.out.println( next.feature( LABEL ).get() );
+//			System.out.println( next.feature( TRACKLENGTH ).get() );
 		}
 		catch ( final IOException e )
 		{

@@ -4,12 +4,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
 
-import gnu.trove.map.TObjectIntMap;
-import gnu.trove.map.hash.TIntIntHashMap;
-import gnu.trove.map.hash.TIntObjectHashMap;
 import net.trackmate.graph.Vertex;
 import net.trackmate.io.RawGraphIO.FileIdToGraphMap;
 import net.trackmate.io.RawGraphIO.GraphToFileIdMap;
@@ -20,10 +15,12 @@ import net.trackmate.revised.model.VertexFeature;
 public class RawFeatureIO
 {
 	/**
-	 * TODO
+	 * De/serialize a feature map of type {@code M}.
 	 *
+	 * @param <M>
+	 *            the feature map type
 	 * @param <V>
-	 * @param <E>
+	 *            the vertex type
 	 *
 	 * @author Tobias Pietzsch &lt;tobias.pietzsch@gmail.com&gt;
 	 */
@@ -40,75 +37,6 @@ public class RawFeatureIO
 				final M featureMap,
 				final ObjectInputStream ois )
 						throws IOException, ClassNotFoundException;
-	}
-
-	public static class ObjVertexFeatureSerializer< V extends Vertex< ? >, O > implements Serializer< Map< V, O >, V >
-	{
-		@Override
-		public void writeFeatureMap(
-				final GraphToFileIdMap< V, ? > idmap,
-				final Map< V, O > featureMap,
-				final ObjectOutputStream oos )
-						throws IOException
-		{
-			final TIntObjectHashMap< O > fmap = new TIntObjectHashMap< >();
-			for ( final Entry< V, O > e : featureMap.entrySet() )
-				fmap.put( idmap.getVertexId( e.getKey() ), e.getValue() );
-			oos.writeObject( fmap );
-		}
-
-		@Override
-		public void readFeatureMap(
-				final FileIdToGraphMap< V, ? > idmap,
-				final Map< V, O > featureMap,
-				final ObjectInputStream ois )
-						throws IOException, ClassNotFoundException
-		{
-			@SuppressWarnings( "unchecked" )
-			final TIntObjectHashMap< O > fmap = ( TIntObjectHashMap< O > ) ois.readObject();
-			featureMap.clear();
-			final V ref = idmap.vertexRef();
-			fmap.forEachEntry( ( final int key, final O value ) -> {
-				featureMap.put( idmap.getVertex( key, ref ), value );
-				return true;
-			} );
-			idmap.releaseRef( ref );
-		}
-	}
-
-	public static class IntVertexFeatureSerializer< V extends Vertex< ? > > implements Serializer< TObjectIntMap< V >, V >
-	{
-		@Override
-		public void writeFeatureMap(
-				final GraphToFileIdMap< V, ? > idmap,
-				final TObjectIntMap< V > featureMap,
-				final ObjectOutputStream oos )
-						throws IOException
-		{
-			final TIntIntHashMap fmap = new TIntIntHashMap();
-			featureMap.forEachEntry( ( final V key, final int value ) -> {
-				fmap.put( idmap.getVertexId( key ), value );
-				return true;
-			} );
-			oos.writeObject( fmap );
-		}
-
-		@Override
-		public void readFeatureMap(
-				final FileIdToGraphMap< V, ? > idmap,
-				final TObjectIntMap< V > featureMap,
-				final ObjectInputStream ois )
-						throws IOException, ClassNotFoundException
-		{
-			final TIntIntHashMap fmap = ( TIntIntHashMap ) ois.readObject();
-			featureMap.clear();
-			final V ref = idmap.vertexRef();
-			fmap.forEachEntry( ( final int key, final int value ) -> {
-				featureMap.put( idmap.getVertex( key, ref ), value );
-				return true;
-			} );
-			idmap.releaseRef( ref );
-		}
 	}
 
 	public static < V extends Vertex< ? > > void writeFeatureMaps(
