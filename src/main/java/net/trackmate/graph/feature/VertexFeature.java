@@ -1,8 +1,8 @@
-package net.trackmate.revised.model;
+package net.trackmate.graph.feature;
 
 import net.trackmate.graph.ReadOnlyGraph;
 import net.trackmate.graph.Vertex;
-import net.trackmate.revised.model.FeatureRegistry.DuplicateKeyException;
+import net.trackmate.graph.feature.FeatureRegistry.DuplicateKeyException;
 
 // Features must have unique keys!
 // TODO: move Features to net.trackmate.graph? requires making methods public, but this is quite general.

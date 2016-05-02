@@ -1,4 +1,4 @@
-package net.trackmate.revised.model;
+package net.trackmate.graph.util;
 
 import java.util.AbstractSet;
 import java.util.Collection;
@@ -8,6 +8,8 @@ import java.util.Map;
 import java.util.Set;
 
 import gnu.trove.map.TIntObjectArrayMap;
+import net.trackmate.graph.feature.VertexFeature;
+import net.trackmate.revised.model.AbstractModel;
 
 /**
  * A {@link Map} from {@code K} to {@code V} which is backed by a

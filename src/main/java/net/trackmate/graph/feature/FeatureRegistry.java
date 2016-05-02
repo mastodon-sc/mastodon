@@ -1,4 +1,4 @@
-package net.trackmate.revised.model;
+package net.trackmate.graph.feature;
 
 import java.util.HashMap;
 import java.util.Map;

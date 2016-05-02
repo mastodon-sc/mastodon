@@ -1,4 +1,4 @@
-package net.trackmate.revised.model;
+package net.trackmate.graph.feature;
 
 public interface FeatureValue< T >
 {

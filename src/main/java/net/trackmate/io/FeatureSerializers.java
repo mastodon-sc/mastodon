@@ -3,8 +3,8 @@ package net.trackmate.io;
 import java.util.HashMap;
 
 import net.trackmate.graph.Vertex;
+import net.trackmate.graph.feature.VertexFeature;
 import net.trackmate.io.RawFeatureIO.Serializer;
-import net.trackmate.revised.model.VertexFeature;
 
 public class FeatureSerializers
 {

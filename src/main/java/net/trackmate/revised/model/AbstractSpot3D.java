@@ -9,8 +9,11 @@ import net.imglib2.RealLocalizable;
 import net.trackmate.graph.AbstractEdge;
 import net.trackmate.graph.AbstractVertex;
 import net.trackmate.graph.AbstractVertexPool;
+import net.trackmate.graph.feature.FeatureValue;
+import net.trackmate.graph.feature.VertexFeature;
 import net.trackmate.graph.mempool.ByteMappedElement;
 import net.trackmate.graph.mempool.MappedElement;
+import net.trackmate.graph.util.UniqueHashcodeArrayMap;
 import net.trackmate.spatial.HasTimepoint;
 
 /**

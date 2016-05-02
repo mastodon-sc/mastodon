@@ -6,11 +6,11 @@ import java.io.ObjectOutputStream;
 import java.util.List;
 
 import net.trackmate.graph.Vertex;
+import net.trackmate.graph.feature.FeatureRegistry;
+import net.trackmate.graph.feature.GraphFeatures;
+import net.trackmate.graph.feature.VertexFeature;
 import net.trackmate.io.RawGraphIO.FileIdToGraphMap;
 import net.trackmate.io.RawGraphIO.GraphToFileIdMap;
-import net.trackmate.revised.model.FeatureRegistry;
-import net.trackmate.revised.model.GraphFeatures;
-import net.trackmate.revised.model.VertexFeature;
 
 public class RawFeatureIO
 {

@@ -1,10 +1,11 @@
-package net.trackmate.revised.model;
+package net.trackmate.graph.feature;
 
 import java.util.Map;
 
 import net.trackmate.graph.Edge;
 import net.trackmate.graph.ReadOnlyGraph;
 import net.trackmate.graph.Vertex;
+import net.trackmate.graph.util.UniqueHashcodeArrayMap;
 
 public class GraphFeatures< V extends Vertex< E >, E extends Edge< V > >
 {

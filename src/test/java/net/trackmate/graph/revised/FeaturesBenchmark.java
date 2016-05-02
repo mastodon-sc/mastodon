@@ -3,7 +3,7 @@ package net.trackmate.graph.revised;
 import java.util.Random;
 
 import net.imglib2.util.BenchmarkHelper;
-import net.trackmate.revised.model.IntVertexFeature;
+import net.trackmate.graph.feature.IntVertexFeature;
 import net.trackmate.revised.model.mamut.Model;
 import net.trackmate.revised.model.mamut.Spot;
 
