@@ -17,7 +17,7 @@ public abstract class VertexFeature< M, V extends Vertex< ? >, F extends Feature
 	 */
 	private final int id;
 
-	public VertexFeature( final String key ) throws DuplicateKeyException
+	protected VertexFeature( final String key ) throws DuplicateKeyException
 	{
 		this.key = key;
 		this.id = FeatureRegistry.getUniqueVertexFeatureId( key );

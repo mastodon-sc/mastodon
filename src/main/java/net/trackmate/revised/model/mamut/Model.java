@@ -5,9 +5,6 @@ import java.io.IOException;
 
 import net.imglib2.RealLocalizable;
 import net.trackmate.graph.ReadOnlyGraph;
-import net.trackmate.io.RawFeatureIO;
-import net.trackmate.io.RawFeatureIO.IntVertexFeatureSerializer;
-import net.trackmate.io.RawFeatureIO.ObjVertexFeatureSerializer;
 import net.trackmate.revised.model.AbstractModel;
 import net.trackmate.spatial.SpatioTemporalIndex;
 import net.trackmate.spatial.SpatioTemporalIndexImp;
@@ -96,10 +93,7 @@ public class Model extends AbstractModel< ModelGraph, Spot, Link >
 	 */
 	public void loadRaw( final File file ) throws IOException
 	{
-		final RawFeatureIO.FeatureSerializers< Spot, Link > featureIoRegistry = new RawFeatureIO.FeatureSerializers<>();
-		featureIoRegistry.vertexMapSerializers.put( Features.LABEL, new ObjVertexFeatureSerializer< Spot, String >() );
-		featureIoRegistry.vertexMapSerializers.put( Features.TRACKLENGTH, new IntVertexFeatureSerializer< Spot >() );
-		super.loadRaw( file, ModelSerializer.getInstance(), featureIoRegistry );
+		super.loadRaw( file, ModelSerializer.getInstance() );
 	}
 
 	/**
@@ -112,10 +106,7 @@ public class Model extends AbstractModel< ModelGraph, Spot, Link >
 	 */
 	public void saveRaw( final File file ) throws IOException
 	{
-		final RawFeatureIO.FeatureSerializers< Spot, Link > featureIoRegistry = new RawFeatureIO.FeatureSerializers<>();
-		featureIoRegistry.vertexMapSerializers.put( Features.LABEL, new ObjVertexFeatureSerializer< Spot, String >() );
-		featureIoRegistry.vertexMapSerializers.put( Features.TRACKLENGTH, new IntVertexFeatureSerializer< Spot >() );
-		super.saveRaw( file, ModelSerializer.getInstance(), featureIoRegistry );
+		super.saveRaw( file, ModelSerializer.getInstance() );
 	}
 
 	/**

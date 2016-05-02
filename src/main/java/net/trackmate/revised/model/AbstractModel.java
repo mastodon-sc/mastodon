@@ -6,7 +6,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
 
 import net.trackmate.graph.AbstractEdge;
 import net.trackmate.graph.AbstractVertex;
@@ -17,6 +18,7 @@ import net.trackmate.io.RawFeatureIO;
 import net.trackmate.io.RawGraphIO;
 import net.trackmate.io.RawGraphIO.FileIdToGraphMap;
 import net.trackmate.io.RawGraphIO.GraphToFileIdMap;
+import net.trackmate.revised.model.mamut.Features;
 
 /**
  * Manages the model graph.
@@ -61,41 +63,17 @@ public class AbstractModel<
 
 	protected final MG modelGraph;
 
-	/**
-	 * Maps {@link VertexFeature} to feature-map objects, that are usually
-	 * {@code Map<V,T>} with the type {@code T} of feature values. The reason
-	 * this is not fixed to {@code Map<V,?>} is that for example primitive
-	 * features might want to use Trove maps instead.
-	 */
-	private final Map< VertexFeature< ?, V, ? >, Object > vertexFeatureMaps;
+	protected final GraphFeatures< V, E > features;
 
 	protected AbstractModel( final MG modelGraph )
 	{
 		this.modelGraph = modelGraph;
-		vertexFeatureMaps = new UniqueHashcodeArrayMap<>();
+		features = new GraphFeatures<>( modelGraph );
 	}
 
-	/*
-	 * TODO: It's not clear whether we should register features automatically
-	 * when they are used for the first time. It seems easier for the user, but
-	 * maybe also more confusing?
-	 *
-	 * However this requires more consideration for how to deal with new
-	 * features appearing in a half-built model. Probably it would be good to
-	 * call {@link VertexFeature#addVertex(net.trackmate.graph.Vertex, Object)}
-	 * for all existing vertices?
-	 */
-
-	@SuppressWarnings( "unchecked" )
 	protected < M > M getVertexFeature( final VertexFeature< M, V, ? > feature )
 	{
-		M fmap = ( M ) vertexFeatureMaps.get( feature );
-		if ( fmap == null )
-		{
-			fmap = feature.createFeatureMap( modelGraph );
-			vertexFeatureMaps.put( feature, fmap );
-		}
-		return fmap;
+		return features.getVertexFeature( feature );
 	}
 
 	/**
@@ -111,8 +89,7 @@ public class AbstractModel<
 	 */
 	protected void loadRaw(
 			final File file,
-			final RawGraphIO.Serializer< V, E > serializer,
-			final RawFeatureIO.FeatureSerializers< V, E > featureIoRegistry )
+			final RawGraphIO.Serializer< V, E > serializer )
 					throws IOException
 	{
 		final FileInputStream fis = new FileInputStream( file );
@@ -120,7 +97,7 @@ public class AbstractModel<
 		modelGraph.pauseListeners();
 		modelGraph.clear();
 		final FileIdToGraphMap< V, E > fileIdMap = RawGraphIO.read( modelGraph, modelGraph.idmap, serializer, ois );
-		RawFeatureIO.readFeatureMaps( fileIdMap, vertexFeatureMaps, featureIoRegistry, ois );
+		RawFeatureIO.readFeatureMaps( fileIdMap, features, ois );
 		ois.close();
 		modelGraph.resumeListeners();
 	}
@@ -138,14 +115,16 @@ public class AbstractModel<
 	 */
 	protected void saveRaw(
 			final File file,
-			final RawGraphIO.Serializer< V, E > serializer,
-			final RawFeatureIO.FeatureSerializers< V, E > featureIoRegistry )
+			final RawGraphIO.Serializer< V, E > serializer )
 					throws IOException
 	{
 		final FileOutputStream fos = new FileOutputStream( file );
 		final ObjectOutputStream oos = new ObjectOutputStream( fos );
 		final GraphToFileIdMap< V, E > fileIdMap = RawGraphIO.write( modelGraph, modelGraph.idmap, serializer, oos );
-		RawFeatureIO.writeFeatureMaps( fileIdMap, vertexFeatureMaps, featureIoRegistry, oos );
+		final List< VertexFeature< ?, V, ? > > featuresToSerialize = new ArrayList<>();
+		featuresToSerialize.add( ( VertexFeature< ?, V, ? > ) Features.LABEL );
+		featuresToSerialize.add( ( VertexFeature< ?, V, ? > ) Features.TRACKLENGTH );
+		RawFeatureIO.writeFeatureMaps( fileIdMap, features, featuresToSerialize, oos );
 		oos.close();
 	}
 }
