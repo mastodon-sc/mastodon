@@ -29,8 +29,17 @@ public final class IntVertexFeature< V extends Vertex< ? > > extends VertexFeatu
 		featureMap.remove( vertex );
 	}
 
+	// TODO: make protected
+	// TODO: make protected
+	// TODO: make protected
+	// TODO: make protected
+	// TODO: make protected
+	// TODO: make protected
+	// TODO: make protected
+	// TODO: make protected
+	// TODO: make protected
 	@Override
-	protected IntFeatureValue< V > createFeatureValue( final TObjectIntMap< V > featureMap, final V vertex )
+	public IntFeatureValue< V > createFeatureValue( final TObjectIntMap< V > featureMap, final V vertex )
 	{
 		return new IntFeatureValue<>( featureMap, vertex );
 	};

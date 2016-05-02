@@ -41,7 +41,16 @@ public abstract class VertexFeature< M, V extends Vertex< ? >, F extends Feature
 
 	protected abstract void deleteVertex( final V vertex, final M featureMap );
 
-	protected abstract F createFeatureValue( M featureMap, V vertex );
+	// TODO: make protected
+	// TODO: make protected
+	// TODO: make protected
+	// TODO: make protected
+	// TODO: make protected
+	// TODO: make protected
+	// TODO: make protected
+	// TODO: make protected
+	// TODO: make protected
+	public abstract F createFeatureValue( M featureMap, V vertex );
 
 	// TODO: for storing feature values for undo/redo
 //	protected TIntObjectMap< F > createIdFeatureMap();

@@ -26,8 +26,17 @@ public final class ObjVertexFeature< V extends Vertex< ? >, O > extends VertexFe
 		featureMap.remove( vertex );
 	}
 
+	// TODO: make protected
+	// TODO: make protected
+	// TODO: make protected
+	// TODO: make protected
+	// TODO: make protected
+	// TODO: make protected
+	// TODO: make protected
+	// TODO: make protected
+	// TODO: make protected
 	@Override
-	protected FeatureValue< O > createFeatureValue( final Map< V, O > featureMap, final V vertex )
+	public FeatureValue< O > createFeatureValue( final Map< V, O > featureMap, final V vertex )
 	{
 		return new ObjFeatureValue<>( featureMap, vertex );
 	}
