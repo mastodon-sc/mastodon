@@ -3,17 +3,13 @@ package net.trackmate.revised.model;
 import static net.trackmate.graph.mempool.ByteUtils.DOUBLE_SIZE;
 import static net.trackmate.graph.mempool.ByteUtils.INT_SIZE;
 
-import java.util.Map;
-
 import net.imglib2.RealLocalizable;
 import net.trackmate.graph.AbstractEdge;
 import net.trackmate.graph.AbstractVertex;
 import net.trackmate.graph.AbstractVertexPool;
-import net.trackmate.graph.feature.FeatureValue;
-import net.trackmate.graph.feature.VertexFeature;
+import net.trackmate.graph.AbstractVertexWithFeatures;
 import net.trackmate.graph.mempool.ByteMappedElement;
 import net.trackmate.graph.mempool.MappedElement;
-import net.trackmate.graph.util.UniqueHashcodeArrayMap;
 import net.trackmate.spatial.HasTimepoint;
 
 /**
@@ -37,7 +33,7 @@ public class AbstractSpot3D<
 		V extends AbstractSpot3D< V, E, T >,
 		E extends AbstractEdge< E, ?, ? >,
 		T extends MappedElement >
-	extends AbstractVertex< V, E, T >
+	extends AbstractVertexWithFeatures< V, E, T >
 	implements RealLocalizable, HasTimepoint
 {
 	protected static final int X_OFFSET = AbstractVertex.SIZE_IN_BYTES;
@@ -98,27 +94,9 @@ public class AbstractSpot3D<
 		return getTimepointId();
 	}
 
-	private final AbstractModel< ?, V, ? > model;
-
-	private final Map< VertexFeature< ?, V, ? >, FeatureValue< ? > > featureValues;
-
-	@SuppressWarnings( "unchecked" )
-	public < F extends FeatureValue< ? >, M > F feature( final VertexFeature< M, V, F > feature )
-	{
-		F fv = ( F ) featureValues.get( feature );
-		if ( fv == null )
-		{
-			fv = feature.createFeatureValue( model.getVertexFeature( feature ), ( V ) this );
-			featureValues.put( feature, fv );
-		}
-		return fv;
-	}
-
 	protected AbstractSpot3D( final AbstractVertexPool< V, E, T > pool, final AbstractModel< ?, V, ? > model )
 	{
 		super( pool );
-		this.model = model;
-		featureValues = new UniqueHashcodeArrayMap<>();
 	}
 
 	// === RealLocalizable ===

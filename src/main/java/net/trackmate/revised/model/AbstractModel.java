@@ -11,10 +11,10 @@ import java.util.List;
 
 import net.trackmate.graph.AbstractEdge;
 import net.trackmate.graph.AbstractVertex;
+import net.trackmate.graph.GraphFeatures;
 import net.trackmate.graph.GraphIdBimap;
 import net.trackmate.graph.ReadOnlyGraph;
-import net.trackmate.graph.feature.GraphFeatures;
-import net.trackmate.graph.feature.VertexFeature;
+import net.trackmate.graph.VertexFeature;
 import net.trackmate.graph.listenable.ListenableGraph;
 import net.trackmate.io.RawFeatureIO;
 import net.trackmate.io.RawGraphIO;
@@ -70,12 +70,7 @@ public class AbstractModel<
 	protected AbstractModel( final MG modelGraph )
 	{
 		this.modelGraph = modelGraph;
-		features = new GraphFeatures<>( modelGraph );
-	}
-
-	protected < M > M getVertexFeature( final VertexFeature< M, V, ? > feature )
-	{
-		return features.getVertexFeature( feature );
+		features = null; // TODO
 	}
 
 	/**

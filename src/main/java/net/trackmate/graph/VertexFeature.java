@@ -1,8 +1,6 @@
-package net.trackmate.graph.feature;
+package net.trackmate.graph;
 
-import net.trackmate.graph.ReadOnlyGraph;
-import net.trackmate.graph.Vertex;
-import net.trackmate.graph.feature.FeatureRegistry.DuplicateKeyException;
+import net.trackmate.graph.FeatureRegistry.DuplicateKeyException;
 
 // Features must have unique keys!
 // TODO: move Features to net.trackmate.graph? requires making methods public, but this is quite general.
@@ -36,28 +34,22 @@ public abstract class VertexFeature< M, V extends Vertex< ? >, F extends Feature
 
 	protected abstract M createFeatureMap( final ReadOnlyGraph< V, ? > graph );
 
-	protected void addVertex( final V vertex, final M featureMap )
-	{}
+	protected abstract F createFeatureValue( M featureMap, V vertex );
 
-	protected abstract void deleteVertex( final V vertex, final M featureMap );
-
-	// TODO: make protected
-	// TODO: make protected
-	// TODO: make protected
-	// TODO: make protected
-	// TODO: make protected
-	// TODO: make protected
-	// TODO: make protected
-	// TODO: make protected
-	// TODO: make protected
-	public abstract F createFeatureValue( M featureMap, V vertex );
+	protected abstract FeatureCleanup< V > createFeatureCleanup( M featureMap );
 
 	// TODO: for storing feature values for undo/redo
 //	protected TIntObjectMap< F > createIdFeatureMap();
 
-	protected int getUniqueId()
+	// TODO: remove?
+//	protected int getUniqueId()
+//	{
+//		return id;
+//	}
+
+	public static interface FeatureCleanup< V >
 	{
-		return id;
+		public void delete( final V vertex );
 	}
 
 	@Override

@@ -1,10 +1,9 @@
-package net.trackmate.graph.feature;
+package net.trackmate.graph;
 
+import java.util.ArrayList;
 import java.util.Map;
 
-import net.trackmate.graph.Edge;
-import net.trackmate.graph.ReadOnlyGraph;
-import net.trackmate.graph.Vertex;
+import net.trackmate.graph.VertexFeature.FeatureCleanup;
 import net.trackmate.graph.util.UniqueHashcodeArrayMap;
 
 public class GraphFeatures< V extends Vertex< E >, E extends Edge< V > >
@@ -19,10 +18,13 @@ public class GraphFeatures< V extends Vertex< E >, E extends Edge< V > >
 	 */
 	private final Map< VertexFeature< ?, V, ? >, Object > vertexFeatureMaps;
 
+	private final ArrayList< FeatureCleanup< V > > vertexFeatureCleanups;
+
 	public GraphFeatures( final ReadOnlyGraph< V, E > graph )
 	{
 		this.graph = graph;
 		vertexFeatureMaps = new UniqueHashcodeArrayMap<>();
+		vertexFeatureCleanups = new ArrayList<>();
 	}
 
 	@SuppressWarnings( "unchecked" )
@@ -33,12 +35,29 @@ public class GraphFeatures< V extends Vertex< E >, E extends Edge< V > >
 		{
 			fmap = feature.createFeatureMap( graph );
 			vertexFeatureMaps.put( feature, fmap );
+			vertexFeatureCleanups.add( feature.createFeatureCleanup( fmap ) );
 		}
 		return fmap;
 	}
 
+	// TODO
+	// TODO
+	// TODO
+	// TODO
+	// TODO
+	// TODO
+	// TODO
+	// TODO
+	// TODO: someone needs to call this!!!
 	public void clear()
 	{
 		vertexFeatureMaps.clear();
+		vertexFeatureCleanups.clear();
+	}
+
+	void delete( final V vertex )
+	{
+		for ( final FeatureCleanup< V > cleanup : vertexFeatureCleanups )
+			cleanup.delete( vertex );
 	}
 }

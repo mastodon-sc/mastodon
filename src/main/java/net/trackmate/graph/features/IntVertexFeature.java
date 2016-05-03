@@ -1,11 +1,13 @@
-package net.trackmate.graph.feature;
+package net.trackmate.graph.features;
 
 import gnu.trove.map.TObjectIntMap;
+import net.trackmate.graph.FeatureRegistry.DuplicateKeyException;
+import net.trackmate.graph.FeatureValue;
 import net.trackmate.graph.ReadOnlyGraph;
 import net.trackmate.graph.Vertex;
+import net.trackmate.graph.VertexFeature;
 import net.trackmate.graph.collection.CollectionUtils;
-import net.trackmate.graph.feature.FeatureRegistry.DuplicateKeyException;
-import net.trackmate.graph.feature.IntVertexFeature.IntFeatureValue;
+import net.trackmate.graph.features.IntVertexFeature.IntFeatureValue;
 
 public final class IntVertexFeature< V extends Vertex< ? > > extends VertexFeature< TObjectIntMap< V >, V, IntFeatureValue< V > >
 {
@@ -24,22 +26,19 @@ public final class IntVertexFeature< V extends Vertex< ? > > extends VertexFeatu
 	}
 
 	@Override
-	protected void deleteVertex( final V vertex, final TObjectIntMap< V > featureMap )
+	protected FeatureCleanup< V > createFeatureCleanup( final TObjectIntMap< V > featureMap )
 	{
-		featureMap.remove( vertex );
+		return new FeatureCleanup< V >() {
+			@Override
+			public void delete( final V vertex )
+			{
+				featureMap.remove( vertex );
+			}
+		};
 	}
 
-	// TODO: make protected
-	// TODO: make protected
-	// TODO: make protected
-	// TODO: make protected
-	// TODO: make protected
-	// TODO: make protected
-	// TODO: make protected
-	// TODO: make protected
-	// TODO: make protected
 	@Override
-	public IntFeatureValue< V > createFeatureValue( final TObjectIntMap< V > featureMap, final V vertex )
+	protected IntFeatureValue< V > createFeatureValue( final TObjectIntMap< V > featureMap, final V vertex )
 	{
 		return new IntFeatureValue<>( featureMap, vertex );
 	};

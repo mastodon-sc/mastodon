@@ -1,4 +1,4 @@
-package net.trackmate.graph.feature;
+package net.trackmate.graph;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -17,7 +17,7 @@ public final class FeatureRegistry
 
 	private static Map< String, VertexFeature< ?, ?, ? > > vertexFeatures = new HashMap<>();
 
-	public static class DuplicateKeyException extends RuntimeException
+	public static final class DuplicateKeyException extends RuntimeException
 	{
 		private static final long serialVersionUID = 1L;
 
@@ -32,7 +32,7 @@ public final class FeatureRegistry
 		}
 	}
 
-	protected static synchronized void registerVertexFeature( final VertexFeature< ?, ?, ? > feature ) throws DuplicateKeyException
+	static synchronized void registerVertexFeature( final VertexFeature< ?, ?, ? > feature ) throws DuplicateKeyException
 	{
 		final String key = feature.getKey();
 		if ( vertexFeatures.containsKey( key ) )

@@ -4,8 +4,8 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Random;
 
-import net.trackmate.graph.feature.IntVertexFeature;
-import net.trackmate.graph.feature.ObjVertexFeature;
+import net.trackmate.graph.features.IntVertexFeature;
+import net.trackmate.graph.features.ObjVertexFeature;
 import net.trackmate.io.FeatureSerializers;
 import net.trackmate.io.IntVertexFeatureSerializer;
 import net.trackmate.io.StringVertexFeatureSerializer;

@@ -1,11 +1,13 @@
-package net.trackmate.graph.feature;
+package net.trackmate.graph.features;
 
 import java.util.Map;
 
+import net.trackmate.graph.FeatureRegistry.DuplicateKeyException;
+import net.trackmate.graph.FeatureValue;
 import net.trackmate.graph.ReadOnlyGraph;
 import net.trackmate.graph.Vertex;
+import net.trackmate.graph.VertexFeature;
 import net.trackmate.graph.collection.CollectionUtils;
-import net.trackmate.graph.feature.FeatureRegistry.DuplicateKeyException;
 
 public final class ObjVertexFeature< V extends Vertex< ? >, O > extends VertexFeature< Map< V, O >, V, FeatureValue< O > >
 {
@@ -21,22 +23,19 @@ public final class ObjVertexFeature< V extends Vertex< ? >, O > extends VertexFe
 	}
 
 	@Override
-	protected void deleteVertex( final V vertex, final Map< V, O > featureMap )
+	protected FeatureCleanup< V > createFeatureCleanup( final Map< V, O > featureMap )
 	{
-		featureMap.remove( vertex );
-	}
+		return new FeatureCleanup< V >(){
+			@Override
+			public void delete( final V vertex )
+			{
+				featureMap.remove( vertex );
+			}
+		};
+	};
 
-	// TODO: make protected
-	// TODO: make protected
-	// TODO: make protected
-	// TODO: make protected
-	// TODO: make protected
-	// TODO: make protected
-	// TODO: make protected
-	// TODO: make protected
-	// TODO: make protected
 	@Override
-	public FeatureValue< O > createFeatureValue( final Map< V, O > featureMap, final V vertex )
+	protected FeatureValue< O > createFeatureValue( final Map< V, O > featureMap, final V vertex )
 	{
 		return new ObjFeatureValue<>( featureMap, vertex );
 	}
@@ -70,5 +69,5 @@ public final class ObjVertexFeature< V extends Vertex< ? >, O > extends VertexFe
 		{
 			return featureMap.containsKey( vertex );
 		}
-	};
+	}
 }
