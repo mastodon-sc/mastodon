@@ -1,7 +1,7 @@
 package net.trackmate.revised.model.mamut;
 
 import net.trackmate.graph.AbstractEdgePool;
-import net.trackmate.graph.AbstractVertexPool;
+import net.trackmate.graph.AbstractVertexWithFeaturesPool;
 import net.trackmate.graph.PoolObject;
 import net.trackmate.graph.mempool.ByteMappedElement;
 import net.trackmate.graph.mempool.ByteMappedElementArray;
@@ -23,19 +23,7 @@ class ModelGraph extends AbstractModelGraph< ModelGraph.SpotPool, ModelGraph.Lin
 		super( new LinkPool( initialCapacity, new SpotPool( initialCapacity ) ) );
 	}
 
-	/**
-	 * This MUST BE CALLED by the {@link Model} after constructing the
-	 * {@link ModelGraph}. We need to know model such that new {@link Spot}
-	 * references can connect to the model's feature maps.
-	 *
-	 * @param model
-	 */
-	void setModel( final Model model )
-	{
-		vertexPool.model = model;
-	}
-
-	static class SpotPool extends AbstractVertexPool< Spot, Link, ByteMappedElement >
+	static class SpotPool extends AbstractVertexWithFeaturesPool< Spot, Link, ByteMappedElement >
 	{
 		SpotPool( final int initialCapacity )
 		{
@@ -47,8 +35,6 @@ class ModelGraph extends AbstractModelGraph< ModelGraph.SpotPool, ModelGraph.Lin
 			super( initialCapacity, f );
 			f.vertexPool = this;
 		}
-
-		Model model;
 
 		private static class SpotFactory implements PoolObject.Factory< Spot, ByteMappedElement >
 		{
@@ -63,7 +49,7 @@ class ModelGraph extends AbstractModelGraph< ModelGraph.SpotPool, ModelGraph.Lin
 			@Override
 			public Spot createEmptyRef()
 			{
-				return new Spot( vertexPool, vertexPool.model );
+				return new Spot( vertexPool );
 			}
 
 			@Override

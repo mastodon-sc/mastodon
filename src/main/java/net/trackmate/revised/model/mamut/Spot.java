@@ -118,9 +118,9 @@ public class Spot extends AbstractSpot3D< Spot, Link, ByteMappedElement > implem
 		return String.format( "Spot( %d, X=%.2f, Y=%.2f, Z=%.2f, tp=%d )", getInternalPoolIndex(), getX(), getY(), getZ(), getTimepoint() );
 	}
 
-	Spot( final AbstractVertexPool< Spot, Link, ByteMappedElement > pool, final Model model )
+	Spot( final AbstractVertexPool< Spot, Link, ByteMappedElement > pool )
 	{
-		super( pool, model );
+		super( pool );
 	}
 
 	/**

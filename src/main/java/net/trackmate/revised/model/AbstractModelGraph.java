@@ -3,7 +3,9 @@ package net.trackmate.revised.model;
 import net.trackmate.graph.AbstractEdge;
 import net.trackmate.graph.AbstractEdgePool;
 import net.trackmate.graph.AbstractVertex;
-import net.trackmate.graph.AbstractVertexPool;
+import net.trackmate.graph.AbstractVertexWithFeatures;
+import net.trackmate.graph.AbstractVertexWithFeaturesPool;
+import net.trackmate.graph.GraphFeatures;
 import net.trackmate.graph.GraphIdBimap;
 import net.trackmate.graph.ListenableGraphImp;
 import net.trackmate.graph.PoolObjectIdBimap;
@@ -11,14 +13,16 @@ import net.trackmate.graph.listenable.GraphListener;
 import net.trackmate.graph.mempool.MappedElement;
 
 public class AbstractModelGraph<
-		VP extends AbstractVertexPool< V, E, T >,
+		VP extends AbstractVertexWithFeaturesPool< V, E, T >,
 		EP extends AbstractEdgePool< E, V, T >,
-		V extends AbstractVertex< V, E, T >,
+		V extends AbstractVertexWithFeatures< V, E, T >,
 		E extends AbstractEdge< E, V, T >,
 		T extends MappedElement >
 	extends ListenableGraphImp< VP, EP, V, E, T >
 {
 	protected final GraphIdBimap< V, E > idmap;
+
+	protected final GraphFeatures< V, E > features;
 
 	public AbstractModelGraph( final VP vertexPool, final EP edgePool )
 	{
@@ -26,6 +30,8 @@ public class AbstractModelGraph<
 		idmap = new GraphIdBimap< V, E >(
 					new PoolObjectIdBimap< V >( vertexPool ),
 					new PoolObjectIdBimap< E >( edgePool ) );
+		features = new GraphFeatures<>( this );
+		vertexPool.linkFeatures( features );
 	}
 
 	public AbstractModelGraph( final EP edgePool )
@@ -34,6 +40,8 @@ public class AbstractModelGraph<
 		idmap = new GraphIdBimap< V, E >(
 				new PoolObjectIdBimap< V >( vertexPool ),
 				new PoolObjectIdBimap< E >( edgePool ) );
+		features = new GraphFeatures<>( this );
+		vertexPool.linkFeatures( features );
 	}
 
 	protected void clear()

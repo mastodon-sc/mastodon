@@ -10,8 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import net.trackmate.graph.AbstractEdge;
-import net.trackmate.graph.AbstractVertex;
-import net.trackmate.graph.GraphFeatures;
+import net.trackmate.graph.AbstractVertexWithFeatures;
 import net.trackmate.graph.GraphIdBimap;
 import net.trackmate.graph.ReadOnlyGraph;
 import net.trackmate.graph.VertexFeature;
@@ -34,7 +33,7 @@ import net.trackmate.revised.model.mamut.Features;
  */
 public class AbstractModel<
 		MG extends AbstractModelGraph< ?, ?, V, E, ? >,
-		V extends AbstractVertex< V, E, ? >,
+		V extends AbstractVertexWithFeatures< V, E, ? >,
 		E extends AbstractEdge< E, V, ? > >
 {
 
@@ -65,12 +64,9 @@ public class AbstractModel<
 
 	protected final MG modelGraph;
 
-	protected final GraphFeatures< V, E > features;
-
 	protected AbstractModel( final MG modelGraph )
 	{
 		this.modelGraph = modelGraph;
-		features = null; // TODO
 	}
 
 	/**
@@ -94,7 +90,7 @@ public class AbstractModel<
 		modelGraph.pauseListeners();
 		modelGraph.clear();
 		final FileIdToGraphMap< V, E > fileIdMap = RawGraphIO.read( modelGraph, modelGraph.idmap, serializer, ois );
-		RawFeatureIO.readFeatureMaps( fileIdMap, features, ois );
+		RawFeatureIO.readFeatureMaps( fileIdMap, modelGraph.features, ois );
 		ois.close();
 		modelGraph.resumeListeners();
 	}
@@ -121,7 +117,7 @@ public class AbstractModel<
 		final List< VertexFeature< ?, V, ? > > featuresToSerialize = new ArrayList<>();
 		featuresToSerialize.add( ( VertexFeature< ?, V, ? > ) Features.LABEL );
 		featuresToSerialize.add( ( VertexFeature< ?, V, ? > ) Features.TRACKLENGTH );
-		RawFeatureIO.writeFeatureMaps( fileIdMap, features, featuresToSerialize, oos );
+		RawFeatureIO.writeFeatureMaps( fileIdMap, modelGraph.features, featuresToSerialize, oos );
 		oos.close();
 	}
 }

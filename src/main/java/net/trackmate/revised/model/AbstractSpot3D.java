@@ -94,7 +94,7 @@ public class AbstractSpot3D<
 		return getTimepointId();
 	}
 
-	protected AbstractSpot3D( final AbstractVertexPool< V, E, T > pool, final AbstractModel< ?, V, ? > model )
+	protected AbstractSpot3D( final AbstractVertexPool< V, E, T > pool )
 	{
 		super( pool );
 	}
