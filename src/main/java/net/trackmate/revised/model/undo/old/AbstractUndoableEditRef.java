@@ -1,4 +1,4 @@
-package net.trackmate.revised.model.undo;
+package net.trackmate.revised.model.undo.old;
 
 import net.trackmate.graph.Pool;
 import net.trackmate.graph.PoolObject;

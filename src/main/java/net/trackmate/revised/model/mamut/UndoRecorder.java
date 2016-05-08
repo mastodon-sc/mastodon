@@ -4,9 +4,9 @@ import net.trackmate.graph.GraphIdBimap;
 import net.trackmate.graph.listenable.GraphListener;
 import net.trackmate.revised.model.mamut.RemoveLinkUndoableEdit.RemoveLinkUndoableEditPool;
 import net.trackmate.revised.model.mamut.RemoveSpotUndoableEdit.RemoveSpotUndoableEditPool;
-import net.trackmate.revised.model.undo.PolymorphicUndoableEdit;
-import net.trackmate.revised.model.undo.PolymorphicUndoableEdit.PolymorphicUndoableEditList;
-import net.trackmate.revised.model.undo.UndoableEdit;
+import net.trackmate.revised.model.undo.old.PolymorphicUndoableEdit;
+import net.trackmate.revised.model.undo.old.UndoableEdit;
+import net.trackmate.revised.model.undo.old.PolymorphicUndoableEdit.PolymorphicUndoableEditList;
 import net.trackmate.revised.undo.UndoIdBimap;
 
 /**

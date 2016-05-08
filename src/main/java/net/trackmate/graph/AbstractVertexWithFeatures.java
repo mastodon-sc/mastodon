@@ -28,6 +28,7 @@ public class AbstractVertexWithFeatures< V extends AbstractVertexWithFeatures< V
 
 	private final Map< VertexFeature< ?, V, ? >, FeatureValue< ? > > featureValues;
 
+	@SuppressWarnings( "unchecked" )
 	@Override
 	public < F extends FeatureValue< ? >, M > F feature( final VertexFeature< M, V, F > feature )
 	{

@@ -1,17 +1,17 @@
-package net.trackmate.revised.model.undo;
+package net.trackmate.revised.model.undo.old;
 
 import static net.trackmate.graph.mempool.ByteUtils.BOOLEAN_SIZE;
 import static net.trackmate.graph.mempool.ByteUtils.INT_SIZE;
 
 import net.trackmate.graph.AbstractEdge;
-import net.trackmate.graph.AbstractVertex;
+import net.trackmate.graph.AbstractVertexWithFeatures;
 import net.trackmate.graph.mempool.MappedElement;
 import net.trackmate.revised.model.AbstractModelGraph;
 import net.trackmate.revised.undo.UndoIdBimap;
 
 public abstract class AbstractRemoveVertexUndoableEdit<
 		A extends AbstractRemoveVertexUndoableEdit< A, V, E, T >,
-		V extends AbstractVertex< V, E, T >,
+		V extends AbstractVertexWithFeatures< V, E, T >,
 		E extends AbstractEdge< E, V, T >,
 		T extends MappedElement >
 	extends AbstractUndoableEditRef< A >

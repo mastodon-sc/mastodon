@@ -91,4 +91,16 @@ public class UndoIdBimap< O > implements IdBimap< O >
 		else
 			return idmap.getObject( objectId, ref );
 	}
+
+	@Override
+	public O createRef()
+	{
+		return idmap.createRef();
+	}
+
+	@Override
+	public void releaseRef( final O ref )
+	{
+		idmap.releaseRef( ref );
+	}
 }

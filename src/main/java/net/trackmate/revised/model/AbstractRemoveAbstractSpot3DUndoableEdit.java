@@ -4,7 +4,7 @@ import static net.trackmate.graph.mempool.ByteUtils.DOUBLE_SIZE;
 import static net.trackmate.graph.mempool.ByteUtils.INT_SIZE;
 import net.trackmate.graph.AbstractEdge;
 import net.trackmate.graph.mempool.MappedElement;
-import net.trackmate.revised.model.undo.AbstractRemoveVertexUndoableEdit;
+import net.trackmate.revised.model.undo.old.AbstractRemoveVertexUndoableEdit;
 import net.trackmate.revised.undo.UndoIdBimap;
 
 public abstract class AbstractRemoveAbstractSpot3DUndoableEdit<

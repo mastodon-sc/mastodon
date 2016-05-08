@@ -1,12 +1,12 @@
-package net.trackmate.revised.model.undo;
+package net.trackmate.revised.model.undo.old;
 
 import static net.trackmate.graph.mempool.ByteUtils.INT_SIZE;
-import gnu.trove.impl.Constants;
-import gnu.trove.map.TObjectIntMap;
-import gnu.trove.map.hash.TObjectIntHashMap;
 
 import java.util.ArrayList;
 
+import gnu.trove.impl.Constants;
+import gnu.trove.map.TObjectIntMap;
+import gnu.trove.map.hash.TObjectIntHashMap;
 import net.trackmate.graph.Pool;
 import net.trackmate.graph.PoolObject;
 import net.trackmate.graph.PoolObjectList;
@@ -171,8 +171,6 @@ public class PolymorphicUndoableEdit
 
 		private final TObjectIntMap< Class< ? > > classToTypeIndex;
 
-		private final ArrayList< UndoableEdit > nonRefEdits;
-
 		public PolymorphicUndoableEditList( final int initialCapacity )
 		{
 			this( initialCapacity, new Factory() );
@@ -215,7 +213,6 @@ public class PolymorphicUndoableEdit
 			f.pool = this;
 			types = f.types;
 			classToTypeIndex = f.classToTypeIndex;
-			nonRefEdits = f.nonRefEdits;
 		}
 
 		private static class Factory implements PoolObject.Factory< PolymorphicUndoableEdit, ByteMappedElement >

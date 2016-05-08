@@ -1,6 +1,6 @@
 package net.trackmate.revised.model.mamut;
 
-import net.trackmate.revised.model.undo.UndoableEdit;
+import net.trackmate.revised.model.undo.old.UndoableEdit;
 import net.trackmate.revised.undo.UndoIdBimap;
 
 //TODO: remove this class. Only left here for showing how non-Ref UndoableEdits are implemented

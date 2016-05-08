@@ -19,6 +19,7 @@ public class AbstractModelGraph<
 		E extends AbstractEdge< E, V, T >,
 		T extends MappedElement >
 	extends ListenableGraphImp< VP, EP, V, E, T >
+	implements ModelGraph_HACK_FIX_ME< V, E >
 {
 	protected final GraphIdBimap< V, E > idmap;
 
@@ -83,6 +84,7 @@ public class AbstractModelGraph<
 	 *            {@link GraphListener#vertexAdded(net.trackmate.graph.Vertex)}.
 	 * @return the specified {@code vertex} argument.
 	 */
+	@Override
 	public V notifyVertexAdded( final V vertex )
 	{
 		if ( emitEvents )

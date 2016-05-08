@@ -5,7 +5,7 @@ import net.trackmate.graph.mempool.ByteMappedElement;
 import net.trackmate.graph.mempool.ByteMappedElementArray;
 import net.trackmate.graph.mempool.MemPool;
 import net.trackmate.graph.mempool.SingleArrayMemPool;
-import net.trackmate.revised.model.undo.AbstractRemoveEdgeUndoableEdit;
+import net.trackmate.revised.model.undo.old.AbstractRemoveEdgeUndoableEdit;
 import net.trackmate.revised.undo.UndoIdBimap;
 
 public class RemoveLinkUndoableEdit
