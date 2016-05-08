@@ -20,7 +20,7 @@ public class GraphFeatures< V extends Vertex< E >, E extends Edge< V > >
 
 	private final ArrayList< FeatureCleanup< V > > vertexFeatureCleanups;
 
-	private final ArrayList< CreateFeatureMapListener > listeners;
+	private final ArrayList< CreateFeatureMapListener< V, E > > listeners;
 
 	public GraphFeatures( final ReadOnlyGraph< V, E > graph )
 	{
@@ -98,7 +98,7 @@ public class GraphFeatures< V extends Vertex< E >, E extends Edge< V > >
 	 * @return {@code true} if the listener was present in the listeners of this
 	 *         model and was successfully removed.
 	 */
-	public synchronized boolean removeCreateFeatureMapListener( final CreateFeatureMapListener listener )
+	public synchronized boolean removeCreateFeatureMapListener( final CreateFeatureMapListener< V, E > listener )
 	{
 		return listeners.remove( listener );
 	}
