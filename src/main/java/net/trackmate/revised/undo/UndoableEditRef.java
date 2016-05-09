@@ -7,13 +7,13 @@ import static net.trackmate.graph.mempool.ByteUtils.LONG_SIZE;
 import gnu.trove.map.TIntObjectArrayMap;
 import net.trackmate.graph.Edge;
 import net.trackmate.graph.PoolObject;
-import net.trackmate.graph.VertexWithFeatures;
+import net.trackmate.graph.Vertex;
 import net.trackmate.graph.mempool.ByteMappedElement;
 import net.trackmate.revised.undo.UndoableEditList.ClearableUndoableEdit;
 import net.trackmate.revised.undo.UndoableEditList.UndoableEditType;
 
 public class UndoableEditRef<
-			V extends VertexWithFeatures< V, E >,
+			V extends Vertex< E >,
 			E extends Edge< V > >
 		extends PoolObject< UndoableEditRef< V, E >, ByteMappedElement >
 		implements UndoableEdit
@@ -64,12 +64,12 @@ public class UndoableEditRef<
 		getEdit().clear();
 	}
 
-	public byte getTypeIndex()
+	protected byte getTypeIndex()
 	{
 		return access.getByte( TYPE_INDEX_OFFSET );
 	}
 
-	public void setTypeIndex( final byte id )
+	protected void setTypeIndex( final byte id )
 	{
 		access.putByte( id, TYPE_INDEX_OFFSET );
 	}

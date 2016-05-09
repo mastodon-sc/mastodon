@@ -20,7 +20,7 @@ public class UndoRecorder< V extends VertexWithFeatures< V, E >, E extends Edge<
 
 	private boolean recording;
 
-	private final UndoableEditList< V, E > edits;
+	private final DefaultUndoableEditList< V, E > edits;
 
 	public UndoRecorder(
 			final ModelGraph_HACK_FIX_ME< V, E > graph,
@@ -30,7 +30,7 @@ public class UndoRecorder< V extends VertexWithFeatures< V, E >, E extends Edge<
 	{
 		final UndoIdBimap< V > vertexUndoIdBimap = new UndoIdBimap<>( idmap.vertexIdBimap() );
 		final UndoIdBimap< E > edgeUndoIdBimap = new UndoIdBimap<>( idmap.edgeIdBimap() );
-		edits = new UndoableEditList<>( defaultCapacity, graph, graphFeatures, serializer, vertexUndoIdBimap, edgeUndoIdBimap );
+		edits = new DefaultUndoableEditList<>( defaultCapacity, graph, graphFeatures, serializer, vertexUndoIdBimap, edgeUndoIdBimap );
 		recording = true;
 		graph.addGraphListener( this );
 	}
