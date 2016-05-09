@@ -550,16 +550,23 @@ public class UndoableEditRef<
 
 		public void recordAddEdge( final E edge )
 		{
-			System.out.println( "NOT IMPLEMENTED YET." );
+			final UndoableEditRef< V, E > ref = createRef();
+			create( ref ).addEdge.init( edge );
+			releaseRef( ref );
 		}
 
 		public void recordRemoveEdge( final E edge )
 		{
-			System.out.println( "NOT IMPLEMENTED YET." );
+			final UndoableEditRef< V, E > ref = createRef();
+			create( ref ).removeEdge.init( edge );
+			releaseRef( ref );
 		}
 
 		public void recordOther( final UndoableEdit undoableEdit )
 		{
+//			final UndoableEditRef< V, E > ref = createRef();
+//			create( ref ).ot
+//			releaseRef( ref );
 			System.out.println( "NOT IMPLEMENTED YET." );
 		}
 
