@@ -6,7 +6,6 @@ import net.trackmate.graph.GraphIdBimap;
 import net.trackmate.graph.VertexWithFeatures;
 import net.trackmate.graph.listenable.GraphListener;
 import net.trackmate.revised.model.ModelGraph_HACK_FIX_ME;
-import net.trackmate.revised.undo.UndoableEditRef.UndoableEditList;
 
 /**
  * TODO: javadoc
