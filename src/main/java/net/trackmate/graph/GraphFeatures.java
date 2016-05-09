@@ -20,14 +20,14 @@ public class GraphFeatures< V extends Vertex< E >, E extends Edge< V > >
 
 	private final ArrayList< FeatureCleanup< V > > vertexFeatureCleanups;
 
-	private final ArrayList< CreateFeatureMapListener< V, E > > listeners;
+	private final ArrayList< CreateFeatureMapListener< V, E > > createFeatureMapListeners;
 
 	public GraphFeatures( final ReadOnlyGraph< V, E > graph )
 	{
 		this.graph = graph;
 		vertexFeatureMaps = new UniqueHashcodeArrayMap<>();
 		vertexFeatureCleanups = new ArrayList<>();
-		listeners = new ArrayList<>();
+		createFeatureMapListeners = new ArrayList<>();
 	}
 
 	@SuppressWarnings( "unchecked" )
@@ -39,6 +39,8 @@ public class GraphFeatures< V extends Vertex< E >, E extends Edge< V > >
 			fmap = feature.createFeatureMap( graph );
 			vertexFeatureMaps.put( feature, fmap );
 			vertexFeatureCleanups.add( feature.createFeatureCleanup( fmap ) );
+			for ( final CreateFeatureMapListener< V, E > l : createFeatureMapListeners )
+				l.createFeatureMap( feature, fmap );
 		}
 		return fmap;
 	}
@@ -81,9 +83,9 @@ public class GraphFeatures< V extends Vertex< E >, E extends Edge< V > >
 	 */
 	public boolean addCreateFeatureMapListener( final CreateFeatureMapListener< V, E > listener )
 	{
-		if ( ! listeners.contains( listener ) )
+		if ( ! createFeatureMapListeners.contains( listener ) )
 		{
-			listeners.add( listener );
+			createFeatureMapListeners.add( listener );
 			return true;
 		}
 		return false;
@@ -100,6 +102,6 @@ public class GraphFeatures< V extends Vertex< E >, E extends Edge< V > >
 	 */
 	public synchronized boolean removeCreateFeatureMapListener( final CreateFeatureMapListener< V, E > listener )
 	{
-		return listeners.remove( listener );
+		return createFeatureMapListeners.remove( listener );
 	}
 }
