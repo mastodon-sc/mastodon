@@ -1,4 +1,4 @@
-package net.trackmate.revised.undo;
+package net.trackmate.undo;
 
 import static net.trackmate.graph.mempool.ByteUtils.BOOLEAN_SIZE;
 import static net.trackmate.graph.mempool.ByteUtils.BYTE_SIZE;
@@ -9,8 +9,8 @@ import net.trackmate.graph.Edge;
 import net.trackmate.graph.PoolObject;
 import net.trackmate.graph.Vertex;
 import net.trackmate.graph.mempool.ByteMappedElement;
-import net.trackmate.revised.undo.UndoableEditList.ClearableUndoableEdit;
-import net.trackmate.revised.undo.UndoableEditList.UndoableEditType;
+import net.trackmate.undo.UndoableEditList.ClearableUndoableEdit;
+import net.trackmate.undo.UndoableEditList.UndoableEditType;
 
 public class UndoableEditRef<
 			V extends Vertex< E >,

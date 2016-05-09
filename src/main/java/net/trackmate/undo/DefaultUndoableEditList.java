@@ -1,10 +1,11 @@
-package net.trackmate.revised.undo;
+package net.trackmate.undo;
 
 import net.trackmate.graph.Edge;
 import net.trackmate.graph.GraphFeatures;
 import net.trackmate.graph.VertexWithFeatures;
 import net.trackmate.revised.model.ModelGraph_HACK_FIX_ME;
 
+// TODO: move to model.undo ?
 public class DefaultUndoableEditList<
 			V extends VertexWithFeatures< V, E >,
 			E extends Edge< V > >

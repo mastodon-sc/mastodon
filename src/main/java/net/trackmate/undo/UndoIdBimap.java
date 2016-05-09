@@ -1,4 +1,4 @@
-package net.trackmate.revised.undo;
+package net.trackmate.undo;
 
 import gnu.trove.impl.Constants;
 import gnu.trove.map.TIntIntMap;

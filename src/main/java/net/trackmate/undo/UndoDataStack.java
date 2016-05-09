@@ -1,4 +1,4 @@
-package net.trackmate.revised.undo;
+package net.trackmate.undo;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;

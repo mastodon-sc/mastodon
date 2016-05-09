@@ -1,4 +1,4 @@
-package net.trackmate.revised.model.undo.old;
+package net.trackmate.undo;
 
 public interface UndoableEdit
 {

@@ -1,4 +1,4 @@
-package net.trackmate.revised.undo;
+package net.trackmate.undo;
 
 import net.trackmate.graph.Edge;
 import net.trackmate.graph.GraphFeatures;
@@ -10,7 +10,7 @@ import net.trackmate.revised.model.ModelGraph_HACK_FIX_ME;
 /**
  * TODO: javadoc
  * TODO: figure out, when mappings can be removed from UndoIdBimaps.
- * TODO: generalize and move to package net.trackmate.revised.model.undo once all UndoableEdits are implemented
+ * TODO: move to package model.undo
  *
  * @author Tobias Pietzsch &lt;tobias.pietzsch@gmail.com&gt;
  */

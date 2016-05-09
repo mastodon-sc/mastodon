@@ -1,4 +1,4 @@
-package net.trackmate.revised.undo;
+package net.trackmate.undo;
 
 import java.util.ArrayList;
 
@@ -12,6 +12,7 @@ import net.trackmate.graph.mempool.ByteMappedElementArray;
 import net.trackmate.graph.mempool.MemPool;
 import net.trackmate.graph.mempool.SingleArrayMemPool;
 
+// TODO: truncating earliest UndoableEdits in the list to avoid growing without bounds
 public class UndoableEditList<
 			V extends Vertex< E >,
 			E extends Edge< V > >

@@ -34,13 +34,10 @@ public class Model extends AbstractModel< ModelGraph, Spot, Link >
 	 */
 	private final SpatioTemporalIndex< Spot > index;
 
-	private final UndoRecorder undoRecorder;
-
 	public Model()
 	{
 		super( new ModelGraph() );
 		index = new SpatioTemporalIndexImp<>( modelGraph, modelGraph.getVertexPool() );
-		undoRecorder = new UndoRecorder( modelGraph, getGraphIdBimap() );
 	}
 
 	/**
