@@ -146,7 +146,7 @@ public class GraphFeatures< V extends Vertex< E >, E extends Edge< V > >
 		return featureChangeListeners.remove( listener );
 	}
 
-	public void notifyBeforeFeatureChange( final VertexFeature< ?, V, ? > feature, final V vertex )
+	void notifyBeforeFeatureChange( final VertexFeature< ?, V, ? > feature, final V vertex )
 	{
 		for ( final FeatureChangeListener< V, E > l : featureChangeListeners )
 			l.beforeFeatureChange( feature, vertex );
