@@ -63,6 +63,8 @@ public class UndoableEditRef<
 			final UndoSerializer< V, E > serializer,
 			final UndoIdBimap< V > vertexUndoIdBimap,
 			final UndoIdBimap< E > edgeUndoIdBimap,
+			final UndoDataStack dataStack,
+			final UndoFeatureStore< V, E > featureStore,
 			final ArrayList< UndoableEdit > nonRefEdits
 			)
 	{
@@ -71,10 +73,9 @@ public class UndoableEditRef<
 		this.serializer = serializer;
 		this.vertexUndoIdBimap = vertexUndoIdBimap;
 		this.edgeUndoIdBimap = edgeUndoIdBimap;
+		this.dataStack = dataStack;
+		this.featureStore = featureStore;
 		this.nonRefEdits = nonRefEdits;
-
-		dataStack = new UndoDataStack( 1024 * 1024 * 32 );
-		featureStore = new UndoFeatureStore<>( graphFeatures );
 
 		addRemoveVertex = new AddRemoveVertexRecord();
 		addRemoveEdge = new AddRemoveEdgeRecord();
@@ -477,8 +478,6 @@ public class UndoableEditRef<
 				E extends Edge< V > >
 			extends Pool< UndoableEditRef< V, E >, ByteMappedElement >
 	{
-		private final ArrayList< UndoableEdit > nonRefEdits = new ArrayList<>();
-
 		public UndoableEditList(
 				final int initialCapacity,
 				final ModelGraph_HACK_FIX_ME< V, E > graph,
@@ -602,6 +601,20 @@ public class UndoableEditRef<
 			super.deleteByInternalPoolIndex( index );
 		}
 
+		private final ModelGraph_HACK_FIX_ME< V, E > graph;
+
+		private final UndoSerializer< V, E > serializer;
+
+		private final UndoIdBimap< V > vertexUndoIdBimap;
+
+		private final UndoIdBimap< E > edgeUndoIdBimap;
+
+		private final UndoDataStack dataStack;
+
+		private final UndoFeatureStore< V, E > featureStore;
+
+		private final ArrayList< UndoableEdit > nonRefEdits;
+
 		private UndoableEditList(
 				final int initialCapacity,
 				final Factory< V, E > f,
@@ -613,12 +626,24 @@ public class UndoableEditRef<
 		{
 			super( initialCapacity, f );
 			f.pool = this;
+
+			this.graph = graph;
+			this.serializer = serializer;
+			this.vertexUndoIdBimap = vertexUndoIdBimap;
+			this.edgeUndoIdBimap = edgeUndoIdBimap;
+			this.dataStack = new UndoDataStack( 1024 * 1024 * 32 );
+			this.featureStore = new UndoFeatureStore<>( graphFeatures );
+			this.nonRefEdits = new ArrayList<>();
+
 			f.graph = graph;
 			f.graphFeatures = graphFeatures;
 			f.serializer = serializer;
 			f.vertexUndoIdBimap = vertexUndoIdBimap;
 			f.edgeUndoIdBimap = edgeUndoIdBimap;
+			f.dataStack = dataStack;
+			f.featureStore = featureStore;
 			f.nonRefEdits = nonRefEdits;
+
 		}
 
 		private static class Factory<
@@ -638,6 +663,10 @@ public class UndoableEditRef<
 
 			private UndoIdBimap< E > edgeUndoIdBimap;
 
+			private UndoDataStack dataStack;
+
+			private UndoFeatureStore< V, E > featureStore;
+
 			private ArrayList< UndoableEdit > nonRefEdits;
 
 			@Override
@@ -656,6 +685,8 @@ public class UndoableEditRef<
 						serializer,
 						vertexUndoIdBimap,
 						edgeUndoIdBimap,
+						dataStack,
+						featureStore,
 						nonRefEdits );
 			}
 
