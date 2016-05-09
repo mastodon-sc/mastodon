@@ -7,6 +7,7 @@ import gnu.trove.map.TIntObjectMap;
 import gnu.trove.map.hash.TIntObjectHashMap;
 import net.trackmate.graph.FeatureRegistry.DuplicateKeyException;
 import net.trackmate.graph.FeatureValue;
+import net.trackmate.graph.GraphFeatures;
 import net.trackmate.graph.ReadOnlyGraph;
 import net.trackmate.graph.Vertex;
 import net.trackmate.graph.VertexFeature;
@@ -38,26 +39,33 @@ public final class ObjVertexFeature< V extends Vertex< ? >, O > extends VertexFe
 	};
 
 	@Override
-	protected FeatureValue< O > createFeatureValue( final Map< V, O > featureMap, final V vertex )
+	protected FeatureValue< O > createFeatureValue( final V vertex, final GraphFeatures< V, ? > graphFeatures )
 	{
-		return new ObjFeatureValue<>( featureMap, vertex );
+		return new ObjFeatureValue<>(
+				graphFeatures.getVertexFeature( this ),
+				vertex,
+				new NotifyValueChange<>( graphFeatures, this, vertex ) );
 	}
 
-	public static final class ObjFeatureValue< V, O > implements FeatureValue< O >
+	public static final class ObjFeatureValue< V extends Vertex< ? >, O > implements FeatureValue< O >
 	{
 		private final Map< V, O > featureMap;
 
 		private final V vertex;
 
-		protected ObjFeatureValue( final Map< V, O > featureMap, final V vertex )
+		private final NotifyValueChange< ? > notify;
+
+		protected ObjFeatureValue( final Map< V, O > featureMap, final V vertex, final NotifyValueChange< ? > notify )
 		{
 			this.featureMap = featureMap;
 			this.vertex = vertex;
+			this.notify = notify;
 		}
 
 		@Override
 		public void set( final O value )
 		{
+			notify.notifyBeforeFeatureChange();
 			featureMap.put( vertex, value );
 		}
 
@@ -108,6 +116,17 @@ public final class ObjVertexFeature< V extends Vertex< ? >, O > extends VertexFe
 			final O value = undoMap.get( undoId );
 			if ( value != null )
 				featureMap.put( vertex, value );
+			// TODO: CLEAR feature if not present in undoMap !?
+			// TODO
+			// TODO
+			// TODO
+			// TODO
+			// TODO
+			// TODO
+			// TODO
+			// TODO
+			// TODO
+			// TODO
 		}
 
 		@Override

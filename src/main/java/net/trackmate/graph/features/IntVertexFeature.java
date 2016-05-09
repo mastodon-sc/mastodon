@@ -6,6 +6,7 @@ import gnu.trove.map.TObjectIntMap;
 import gnu.trove.map.hash.TIntIntHashMap;
 import net.trackmate.graph.FeatureRegistry.DuplicateKeyException;
 import net.trackmate.graph.FeatureValue;
+import net.trackmate.graph.GraphFeatures;
 import net.trackmate.graph.ReadOnlyGraph;
 import net.trackmate.graph.Vertex;
 import net.trackmate.graph.VertexFeature;
@@ -41,31 +42,47 @@ public final class IntVertexFeature< V extends Vertex< ? > > extends VertexFeatu
 	}
 
 	@Override
-	protected IntFeatureValue< V > createFeatureValue( final TObjectIntMap< V > featureMap, final V vertex )
+	protected IntFeatureValue< V > createFeatureValue( final V vertex, final GraphFeatures< V, ? > graphFeatures )
 	{
-		return new IntFeatureValue<>( featureMap, vertex );
+		return new IntFeatureValue<>(
+				graphFeatures.getVertexFeature( this ),
+				vertex,
+				new NotifyValueChange<>( graphFeatures, this, vertex ) );
 	};
 
-	public static final class IntFeatureValue< V > implements FeatureValue< Integer >
+	public static final class IntFeatureValue< V extends Vertex< ? > > implements FeatureValue< Integer >
 	{
 		private final TObjectIntMap< V > featureMap;
 
 		private final V vertex;
 
-		protected IntFeatureValue( final TObjectIntMap< V > featureMap, final V vertex )
+		private final NotifyValueChange< ? > notify;
+
+		protected IntFeatureValue( final TObjectIntMap< V > featureMap, final V vertex, final NotifyValueChange< ? > notify )
 		{
 			this.featureMap = featureMap;
 			this.vertex = vertex;
+			this.notify = notify;
 		}
 
 		@Override
 		public void set( final Integer value )
 		{
+			// TODO
+			// TODO
+			// TODO
+			// TODO
+			// TODO
+			// TODO
+			// TODO
+			// TODO
+			// TODO handle null, forward to set( int ).
 			featureMap.put( vertex, value );
 		}
 
 		public void set( final int value )
 		{
+			notify.notifyBeforeFeatureChange();
 			featureMap.put( vertex, value );
 		}
 
@@ -125,6 +142,17 @@ public final class IntVertexFeature< V extends Vertex< ? > > extends VertexFeatu
 			final int value = undoMap.get( undoId );
 			if ( value != noEntryValue )
 				featureMap.put( vertex, value );
+			// TODO: CLEAR feature if not present in undoMap !?
+			// TODO
+			// TODO
+			// TODO
+			// TODO
+			// TODO
+			// TODO
+			// TODO
+			// TODO
+			// TODO
+			// TODO
 		}
 
 		@Override

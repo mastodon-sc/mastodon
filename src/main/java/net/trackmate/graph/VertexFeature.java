@@ -34,7 +34,7 @@ public abstract class VertexFeature< M, V extends Vertex< ? >, F extends Feature
 
 	protected abstract M createFeatureMap( final ReadOnlyGraph< V, ? > graph );
 
-	protected abstract F createFeatureValue( M featureMap, V vertex );
+	protected abstract F createFeatureValue( V vertex, GraphFeatures< V, ? > graphFeatures );
 
 	protected abstract FeatureCleanup< V > createFeatureCleanup( M featureMap );
 
@@ -92,6 +92,27 @@ public abstract class VertexFeature< M, V extends Vertex< ? >, F extends Feature
 		 * @param undoId
 		 */
 		public void clear( int undoId );
+	}
+
+	protected static class NotifyValueChange< V extends Vertex< ? > >
+	{
+		private final GraphFeatures< V, ? > graphFeatures;
+
+		private final VertexFeature< ?, V, ? > feature;
+
+		private final V vertex;
+
+		public NotifyValueChange( final GraphFeatures< V, ? > graphFeatures, final VertexFeature< ?, V, ? > feature, final V vertex )
+		{
+			this.graphFeatures = graphFeatures;
+			this.feature = feature;
+			this.vertex = vertex;
+		}
+
+		public void notifyBeforeFeatureChange()
+		{
+			graphFeatures.notifyBeforeFeatureChange( feature, vertex );
+		}
 	}
 
 	@Override

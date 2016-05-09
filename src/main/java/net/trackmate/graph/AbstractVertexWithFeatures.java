@@ -35,7 +35,7 @@ public class AbstractVertexWithFeatures< V extends AbstractVertexWithFeatures< V
 		F fv = ( F ) featureValues.get( feature );
 		if ( fv == null )
 		{
-			fv = feature.createFeatureValue( features.getVertexFeature( feature ), ( V ) this );
+			fv = feature.createFeatureValue( ( V ) this, features );
 			featureValues.put( feature, fv );
 		}
 		return fv;

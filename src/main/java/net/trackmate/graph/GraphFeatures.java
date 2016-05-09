@@ -22,12 +22,15 @@ public class GraphFeatures< V extends Vertex< E >, E extends Edge< V > >
 
 	private final ArrayList< CreateFeatureMapListener< V, E > > createFeatureMapListeners;
 
+	private final ArrayList< FeatureChangeListener< V, E > > featureChangeListeners;
+
 	public GraphFeatures( final ReadOnlyGraph< V, E > graph )
 	{
 		this.graph = graph;
 		vertexFeatureMaps = new UniqueHashcodeArrayMap<>();
 		vertexFeatureCleanups = new ArrayList<>();
 		createFeatureMapListeners = new ArrayList<>();
+		featureChangeListeners = new ArrayList<>();
 	}
 
 	@SuppressWarnings( "unchecked" )
@@ -100,8 +103,52 @@ public class GraphFeatures< V extends Vertex< E >, E extends Edge< V > >
 	 * @return {@code true} if the listener was present in the listeners of this
 	 *         model and was successfully removed.
 	 */
-	public synchronized boolean removeCreateFeatureMapListener( final CreateFeatureMapListener< V, E > listener )
+	public boolean removeCreateFeatureMapListener( final CreateFeatureMapListener< V, E > listener )
 	{
 		return createFeatureMapListeners.remove( listener );
+	}
+
+	public interface FeatureChangeListener< V extends Vertex< E >, E extends Edge< V > >
+	{
+		public void beforeFeatureChange( final VertexFeature< ?, V, ? > feature, V vertex );
+	}
+
+	/**
+	 * Register a {@link FeatureChangeListener} that will be notified when
+	 * feature values are changed.
+	 *
+	 * @param listener
+	 *            the listener to register.
+	 * @return {@code true} if the listener was successfully registered.
+	 *         {@code false} if it was already registered.
+	 */
+	public boolean addFeatureChangeListener( final FeatureChangeListener< V, E > listener )
+	{
+		if ( ! featureChangeListeners.contains( listener ) )
+		{
+			featureChangeListeners.add( listener );
+			return true;
+		}
+		return false;
+	}
+
+	/**
+	 * Removes the specified {@link FeatureChangeListener} from the set of
+	 * listeners.
+	 *
+	 * @param listener
+	 *            the listener to remove.
+	 * @return {@code true} if the listener was present in the listeners of this
+	 *         model and was successfully removed.
+	 */
+	public boolean removeFeatureChangeListener( final FeatureChangeListener< V, E > listener )
+	{
+		return featureChangeListeners.remove( listener );
+	}
+
+	public void notifyBeforeFeatureChange( final VertexFeature< ?, V, ? > feature, final V vertex )
+	{
+		for ( final FeatureChangeListener< V, E > l : featureChangeListeners )
+			l.beforeFeatureChange( feature, vertex );
 	}
 }
