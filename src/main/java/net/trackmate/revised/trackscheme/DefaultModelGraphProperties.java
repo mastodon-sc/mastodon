@@ -96,6 +96,12 @@ public class DefaultModelGraphProperties<
 		}
 
 		@Override
+		public void setLabel( final int id, final String label )
+		{
+			idmap.getVertex( id, v ).setLabel( label );
+		}
+
+		@Override
 		public boolean isSelected( final int id )
 		{
 			return selection.isSelected( idmap.getVertex( id, v ) );

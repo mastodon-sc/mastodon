@@ -4,6 +4,7 @@ import static net.trackmate.graph.mempool.ByteUtils.BOOLEAN_SIZE;
 import static net.trackmate.graph.mempool.ByteUtils.DOUBLE_SIZE;
 import static net.trackmate.graph.mempool.ByteUtils.INDEX_SIZE;
 import static net.trackmate.graph.mempool.ByteUtils.INT_SIZE;
+
 import net.trackmate.graph.AbstractVertex;
 import net.trackmate.graph.AbstractVertexPool;
 import net.trackmate.graph.GraphIdBimap;
@@ -88,14 +89,19 @@ public class TrackSchemeVertex extends AbstractVertex< TrackSchemeVertex, TrackS
 	}
 
 	/**
-	 * TODO javadoc
-	 *
-	 * label of associated model vertex
-	 * @return
+	 * Get label of associated model vertex
 	 */
 	public String getLabel()
 	{
 		return props.getLabel( getModelVertexId() );
+	}
+
+	/**
+	 * Set label of associated model vertex
+	 */
+	public void setLabel( final String label )
+	{
+		props.setLabel( getModelVertexId(), label );
 	}
 
 	/**

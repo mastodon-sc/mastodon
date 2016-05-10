@@ -88,6 +88,17 @@ public interface ModelGraphProperties
 		 * @return the vertex label.
 		 */
 		public String getLabel( int id );
+
+		/**
+		 * Set the label of the vertex with the specified id (see
+		 * {@link GraphIdBimap}).
+		 *
+		 * @param id
+		 *            the id of the vertex.
+		 * @param label
+		 *            the label to set.
+		 */
+		public void setLabel( int id, String label );
 	}
 
 	/**

@@ -12,7 +12,16 @@ public interface HasLabel
 {
 	/**
 	 * Get the label.
+	 *
 	 * @return the label.
 	 */
 	public String getLabel();
+
+	/**
+	 * Set the label.
+	 *
+	 * @param label
+	 *            the label.
+	 */
+	public void setLabel( String label );
 }

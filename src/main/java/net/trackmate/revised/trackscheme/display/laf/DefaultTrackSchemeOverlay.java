@@ -481,12 +481,15 @@ public class DefaultTrackSchemeOverlay extends AbstractTrackSchemeOverlay
 			if ( label.length() > maxLabelLength )
 				label = label.substring( 0, maxLabelLength - 2 ) + "...";
 
-			final FontRenderContext frc = g2.getFontRenderContext();
-			final TextLayout layout = new TextLayout( label, style.font, frc );
-			final Rectangle2D bounds = layout.getBounds();
-			final float tx = ( float ) ( x - bounds.getCenterX() );
-			final float ty = ( float ) ( y - bounds.getCenterY() );
-			layout.draw( g2, tx, ty );
+			if ( ! label.isEmpty() )
+			{
+				final FontRenderContext frc = g2.getFontRenderContext();
+				final TextLayout layout = new TextLayout( label, style.font, frc );
+				final Rectangle2D bounds = layout.getBounds();
+				final float tx = ( float ) ( x - bounds.getCenterX() );
+				final float ty = ( float ) ( y - bounds.getCenterY() );
+				layout.draw( g2, tx, ty );
+			}
 		}
 	}
 

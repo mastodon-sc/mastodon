@@ -1,6 +1,8 @@
 package net.trackmate.revised.model.mamut;
 
 import static net.trackmate.graph.mempool.ByteUtils.DOUBLE_SIZE;
+import static net.trackmate.revised.model.mamut.Features.LABEL;
+
 import net.trackmate.graph.AbstractVertexPool;
 import net.trackmate.graph.mempool.ByteMappedElement;
 import net.trackmate.revised.bdv.overlay.util.JamaEigenvalueDecomposition;
@@ -108,7 +110,16 @@ public class Spot extends AbstractSpot3D< Spot, Link, ByteMappedElement > implem
 	@Override
 	public String getLabel()
 	{
-		return Integer.toString( getInternalPoolIndex() );
+		if ( feature( LABEL ).isSet() )
+			return feature( LABEL ).get();
+		else
+			return Integer.toString( getInternalPoolIndex() );
+	}
+
+	@Override
+	public void setLabel( final String label )
+	{
+		feature( LABEL ).set( label );
 	}
 
 	@Override

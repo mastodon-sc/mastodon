@@ -1,6 +1,7 @@
 package net.trackmate.revised.trackscheme.display;
 
 import java.awt.Color;
+import java.awt.Container;
 import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.event.ActionEvent;
@@ -9,12 +10,17 @@ import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.util.ArrayList;
+import java.util.Arrays;
 
+import javax.swing.AbstractAction;
+import javax.swing.Action;
 import javax.swing.ActionMap;
 import javax.swing.BorderFactory;
 import javax.swing.InputMap;
 import javax.swing.JComponent;
 import javax.swing.JTextField;
+import javax.swing.KeyStroke;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 
@@ -104,6 +110,7 @@ public class EditFocusVertexBehaviour extends AbstractNamedAction implements Tra
 		editor = new Editor( vertex );
 		// vertex ref will have to be released in the editor class.
 		display.add( editor );
+		editor.blockKeys();
 		display.repaint();
 	}
 
@@ -174,6 +181,11 @@ public class EditFocusVertexBehaviour extends AbstractNamedAction implements Tra
 				public void keyTyped( final KeyEvent e )
 				{
 					reposition();
+					final InputMap im1 = getInputMap( WHEN_ANCESTOR_OF_FOCUSED_COMPONENT );
+					final InputMap im2 = getInputMap( WHEN_IN_FOCUSED_WINDOW );
+					final InputMap im3 = getInputMap( WHEN_FOCUSED );
+					final ActionMap am = getActionMap();
+					System.out.println(  );
 				}
 
 				@Override
@@ -202,9 +214,48 @@ public class EditFocusVertexBehaviour extends AbstractNamedAction implements Tra
 
 		}
 
+		/**
+		 * Adapted from Jan Funke's code in
+		 * https://github.com/saalfeldlab/bigcat/blob/janh5/src/main/java/bdv/bigcat/ui/BigCatTable.java#L112-L143
+		 */
+		private void blockKeys()
+		{
+			// Get all keystrokes that are mapped to actions in higher components
+			final ArrayList< KeyStroke > allTableKeys = new ArrayList< KeyStroke >();
+			for ( Container c = this; c != null; c = c.getParent() )
+			{
+				if ( c instanceof JComponent )
+				{
+					final InputMap inputMap = ( ( JComponent ) c ).getInputMap( JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT );
+					final KeyStroke[] tableKeys = inputMap.allKeys();
+					if ( tableKeys != null )
+						allTableKeys.addAll( Arrays.asList( tableKeys ) );
+				}
+			}
+
+			// An action that does nothing. We can not just map to "none",
+			// as this is not interrupting the action-name -> action search.
+			// We have to map to a proper action, "nothing" in this case.
+			final Action nada = new AbstractAction()
+			{
+				private static final long serialVersionUID = 1L;
+
+				@Override
+				public void actionPerformed( final ActionEvent e )
+				{}
+			};
+			getActionMap().put( "nothing", nada );
+
+			// Replace every table key binding with nothing, thus creating an
+			// event-barrier.
+			final InputMap inputMap = getInputMap( JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT );
+			for ( final KeyStroke key : allTableKeys )
+				inputMap.put( key, "nothing" );
+		}
+
 		private void commit()
 		{
-			System.out.println( "TODO Change TrackScheme vertex " + vertex.getLabel() + " label to " + getText() );// DEBUG
+			vertex.setLabel( getText().trim() );
 		}
 
 		private void kill()
