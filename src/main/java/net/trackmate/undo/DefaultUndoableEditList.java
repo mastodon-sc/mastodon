@@ -1,7 +1,9 @@
 package net.trackmate.undo;
 
 import net.trackmate.graph.Edge;
+import net.trackmate.graph.FeatureRegistry;
 import net.trackmate.graph.GraphFeatures;
+import net.trackmate.graph.VertexFeature;
 import net.trackmate.graph.VertexWithFeatures;
 import net.trackmate.revised.model.ModelGraph_HACK_FIX_ME;
 
@@ -65,6 +67,13 @@ public class DefaultUndoableEditList<
 		releaseRef( ref );
 	}
 
+	public void recordSetFeature( final VertexFeature< ?, V, ? > feature, final V vertex )
+	{
+		final UndoableEditRef< V, E > ref = createRef();
+		create( ref ).getEdit( setFeature ).init( feature, vertex );
+		releaseRef( ref );
+	}
+
 	protected final AddVertexType addVertex = new AddVertexType();
 
 	protected final RemoveVertexType removeVertex = new RemoveVertexType();
@@ -72,6 +81,8 @@ public class DefaultUndoableEditList<
 	protected final AddEdgeType addEdge = new AddEdgeType();
 
 	protected final RemoveEdgeType removeEdge = new RemoveEdgeType();
+
+	protected final SetFeatureType setFeature = new SetFeatureType();
 
 	protected class AddVertexType extends UndoableEditTypeImp< AddVertex >
 	{
@@ -95,7 +106,7 @@ public class DefaultUndoableEditList<
 		public void init( final V vertex )
 		{
 			super.init();
-			addRemoveVertex.record( vertex, ref );
+			addRemoveVertex.initAdd( vertex, ref );
 		}
 
 		@Override
@@ -133,7 +144,7 @@ public class DefaultUndoableEditList<
 		public void init( final V vertex )
 		{
 			super.init();
-			addRemoveVertex.record( vertex, ref );
+			addRemoveVertex.initRemove( vertex, ref );
 		}
 
 		@Override
@@ -158,17 +169,20 @@ public class DefaultUndoableEditList<
 			data = new byte[ serializer.getVertexNumBytes() ];;
 		}
 
-		/**
-		 * Record the data of vertex.
-		 *
-		 * <p>
-		 * It doesn't matter whether the vertex is added or removed. The
-		 * recorded data is the same in both cases.
-		 *
-		 * @param vertex
-		 * @param ref
-		 */
-		public synchronized void record( final V vertex, final UndoableEditRef< V, E > ref )
+		public void initAdd( final V vertex, final UndoableEditRef< V, E > ref )
+		{
+			final int vi = vertexUndoIdBimap.getId( vertex );
+			final int fi = featureStore.createFeatureUndoId();
+
+			final int dataIndex = dataStack.getNextDataIndex();
+			dataStack.out.writeInt( vi );
+			dataStack.out.writeInt( fi );
+			dataStack.out.skip( data.length );
+
+			ref.setDataIndex( dataIndex );
+		}
+
+		public void initRemove( final V vertex, final UndoableEditRef< V, E > ref )
 		{
 			final int vi = vertexUndoIdBimap.getId( vertex );
 			final int fi = featureStore.createFeatureUndoId();
@@ -187,11 +201,21 @@ public class DefaultUndoableEditList<
 		{
 			dataStack.setDataIndex( dataIndex );
 			final int vi = dataStack.in.readInt();
+			final int fi = dataStack.in.readInt();
 
-			final V ref = graph.vertexRef();
-			final V vertex = vertexUndoIdBimap.getObject( vi, ref );
+			final V vref = graph.vertexRef();
+			final V vertex = vertexUndoIdBimap.getObject( vi, vref );
+			serializer.getBytes( vertex, data );
+			featureStore.storeAll( fi, vertex );
+
+			dataStack.setDataIndex( dataIndex );
+//			dataStack.out.writeInt( vi );
+//			dataStack.out.writeInt( fi );
+			dataStack.out.skip( 8 );
+			dataStack.out.write( data );
+
 			graph.remove( vertex );
-			graph.releaseRef( ref );
+			graph.releaseRef( vref );
 		}
 
 		public synchronized void doAddVertex( final long dataIndex )
@@ -233,7 +257,7 @@ public class DefaultUndoableEditList<
 		public void init( final E edge )
 		{
 			super.init();
-			addRemoveEdge.record( edge, ref );
+			addRemoveEdge.initAdd( edge, ref );
 		}
 
 		@Override
@@ -271,7 +295,7 @@ public class DefaultUndoableEditList<
 		public void init( final E edge )
 		{
 			super.init();
-			addRemoveEdge.record( edge, ref );
+			addRemoveEdge.initRemove( edge, ref );
 		}
 
 		@Override
@@ -296,17 +320,24 @@ public class DefaultUndoableEditList<
 			data = new byte[ serializer.getEdgeNumBytes() ];;
 		}
 
-		/**
-		 * Record the data of edge.
-		 *
-		 * <p>
-		 * It doesn't matter whether the edge is added or removed. The
-		 * recorded data is the same in both cases.
-		 *
-		 * @param edge
-		 * @param ref
-		 */
-		public void record( final E edge, final UndoableEditRef< V, E > ref )
+		public void initAdd( final E edge, final UndoableEditRef< V, E > ref )
+		{
+			final int ei = edgeUndoIdBimap.getId( edge );
+			final int fi = featureStore.createFeatureUndoId();
+
+			final int dataIndex = dataStack.getNextDataIndex();
+			dataStack.out.writeInt( ei );
+			dataStack.out.writeInt( fi );
+//			dataStack.out.writeInt( si );
+//			dataStack.out.writeInt( sOutIndex );
+//			dataStack.out.writeInt( ti );
+//			dataStack.out.writeInt( tInIndex );
+			dataStack.out.skip( 16 + data.length );
+
+			ref.setDataIndex( dataIndex );
+		}
+
+		public void initRemove( final E edge, final UndoableEditRef< V, E > ref )
 		{
 			final V vref = graph.vertexRef();
 			final int ei = edgeUndoIdBimap.getId( edge );
@@ -328,7 +359,6 @@ public class DefaultUndoableEditList<
 			dataStack.out.writeInt( tInIndex );
 			dataStack.out.write( data );
 
-			ref.setUndoPoint( false );
 			ref.setDataIndex( dataIndex );
 		}
 
@@ -336,9 +366,30 @@ public class DefaultUndoableEditList<
 		{
 			dataStack.setDataIndex( dataIndex );
 			final int ei = dataStack.in.readInt();
+			final int fi = dataStack.in.readInt();
 
 			final E ref = graph.edgeRef();
 			final E edge = edgeUndoIdBimap.getObject( ei, ref );
+
+			final V vref = graph.vertexRef();
+			final int si = vertexUndoIdBimap.getId( edge.getSource( vref ) );
+			final int sOutIndex = edge.getSourceOutIndex();
+			final int ti = vertexUndoIdBimap.getId( edge.getTarget( vref ) );
+			final int tInIndex = edge.getTargetInIndex();
+			graph.releaseRef( vref );
+			serializer.getBytes( edge, data );
+			featureStore.storeAll( fi, edge );
+
+			dataStack.setDataIndex( dataIndex );
+//			dataStack.out.writeInt( ei );
+//			dataStack.out.writeInt( fi );
+			dataStack.out.skip( 8 );
+			dataStack.out.writeInt( si );
+			dataStack.out.writeInt( sOutIndex );
+			dataStack.out.writeInt( ti );
+			dataStack.out.writeInt( tInIndex );
+			dataStack.out.write( data );
+
 			graph.remove( edge );
 			graph.releaseRef( ref );
 		}
@@ -367,6 +418,69 @@ public class DefaultUndoableEditList<
 			graph.releaseRef( eref );
 			graph.releaseRef( vref2 );
 			graph.releaseRef( vref1 );
+		}
+	}
+
+	protected class SetFeatureType extends UndoableEditTypeImp< SetFeature >
+	{
+		@Override
+		public SetFeature createInstance( final UndoableEditRef< V, E > ref )
+		{
+			return new SetFeature( ref, typeIndex() );
+		}
+	}
+
+	private class SetFeature extends AbstractClearableUndoableEdit
+	{
+		SetFeature( final UndoableEditRef< V, E > ref, final int typeIndex )
+		{
+			super( ref, typeIndex );
+		}
+
+		public void init( final VertexFeature< ?, V, ? > feature, final V vertex )
+		{
+			super.init();
+
+			final int vi = vertexUndoIdBimap.getId( vertex );
+			final int fi = featureStore.createFeatureUndoId();
+			final int fuid = feature.getUniqueFeatureId();
+			featureStore.store( fi, feature, vertex );
+
+			final int dataIndex = dataStack.getNextDataIndex();
+			dataStack.out.writeInt( vi );
+			dataStack.out.writeInt( fi );
+			dataStack.out.writeInt( fuid );
+
+			ref.setDataIndex( dataIndex );
+		}
+
+		@Override
+		public void redo()
+		{
+			/*
+			 * Redo und Undo are the same operation: When "crossing" the
+			 * SetFeature from either direction, swap the feature value and the
+			 * stored value.
+			 */
+			undo();
+		}
+
+		@Override
+		public void undo()
+		{
+			final long dataIndex = ref.getDataIndex();
+
+			dataStack.setDataIndex( dataIndex );
+			final int vi = dataStack.in.readInt();
+			final int fi = dataStack.in.readInt();
+			final int fuid = dataStack.in.readInt();
+
+			final V ref = graph.vertexRef();
+			final V vertex = vertexUndoIdBimap.getObject( vi, ref );
+			@SuppressWarnings( "unchecked" )
+			final VertexFeature< ?, V, ? > feature = ( VertexFeature< ?, V, ? > ) FeatureRegistry.getVertexFeature( fuid );
+			featureStore.swap( fi, feature, vertex );
+			graph.releaseRef( ref );
 		}
 	}
 }

@@ -142,17 +142,24 @@ public final class IntVertexFeature< V extends Vertex< ? > > extends VertexFeatu
 			final int value = undoMap.get( undoId );
 			if ( value != noEntryValue )
 				featureMap.put( vertex, value );
-			// TODO: CLEAR feature if not present in undoMap !?
-			// TODO
-			// TODO
-			// TODO
-			// TODO
-			// TODO
-			// TODO
-			// TODO
-			// TODO
-			// TODO
-			// TODO
+			else
+				featureMap.remove( vertex );
+		}
+
+		@Override
+		public void swap( final int undoId, final V vertex )
+		{
+			final int undoValue = undoMap.get( undoId );
+			final int featureValue = featureMap.get( vertex );
+			if ( featureValue != noEntryValue )
+				undoMap.put( undoId, featureValue );
+			else
+				undoMap.remove( undoId );
+			if ( undoValue != noEntryValue )
+				featureMap.put( vertex, undoValue );
+			else
+				featureMap.remove( vertex );
+
 		}
 
 		@Override

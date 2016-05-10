@@ -16,13 +16,25 @@ public interface UndoSerializer< V extends Vertex< E >, E extends Edge< V > >
 {
 	public int getVertexNumBytes();
 
+	/**
+	 * Store data from {@code vertex} into {@code bytes}.
+	 */
 	public void getBytes( final V vertex, final byte[] bytes );
 
+	/**
+	 * Restore data from {@code bytes} into {@code vertex}.
+	 */
 	public void setBytes( final V vertex, final byte[] bytes );
 
 	public int getEdgeNumBytes();
 
+	/**
+	 * Store data from {@code edge} into {@code bytes}.
+	 */
 	public void getBytes( final E edge, final byte[] bytes );
 
+	/**
+	 * Restore data from {@code bytes} into {@code edge}.
+	 */
 	public void setBytes( final E edge, final byte[] bytes );
 }

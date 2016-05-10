@@ -1,8 +1,9 @@
 package net.trackmate.revised.model.mamut;
 
 import net.trackmate.io.RawGraphIO.Serializer;
+import net.trackmate.undo.UndoSerializer;
 
-class ModelSerializer implements Serializer< Spot, Link >
+class ModelSerializer implements Serializer< Spot, Link >, UndoSerializer< Spot, Link >
 {
 	private final int VERTEX_NUM_BYTES = Spot.SIZE_IN_BYTES - Spot.X_OFFSET;
 	private final int VERTEX_DATA_START = Spot.X_OFFSET;

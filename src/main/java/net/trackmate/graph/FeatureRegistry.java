@@ -3,6 +3,9 @@ package net.trackmate.graph;
 import java.util.HashMap;
 import java.util.Map;
 
+import gnu.trove.map.TIntObjectArrayMap;
+import gnu.trove.map.TIntObjectMap;
+
 /**
  * Assign unique IDs to features.
  *
@@ -16,6 +19,8 @@ public final class FeatureRegistry
 	private static Map< String, Integer > vertexFeatureKeyIds = new HashMap<>();
 
 	private static Map< String, VertexFeature< ?, ?, ? > > vertexFeatures = new HashMap<>();
+
+	private static TIntObjectMap< VertexFeature< ?, ?, ? > > vertexFeaturesById = new TIntObjectArrayMap< VertexFeature< ?, ?, ? > >();
 
 	public static final class DuplicateKeyException extends RuntimeException
 	{
@@ -38,6 +43,7 @@ public final class FeatureRegistry
 		if ( vertexFeatures.containsKey( key ) )
 			throw new DuplicateKeyException( String.format( "vertex feature key \"%s\" already exists", key ) );
 		vertexFeatures.put( key, feature );
+		vertexFeaturesById.put( feature.getUniqueFeatureId(), feature );
 	}
 
 	/**
@@ -58,6 +64,11 @@ public final class FeatureRegistry
 	public static synchronized VertexFeature< ?, ?, ? > getVertexFeature( final String key )
 	{
 		return vertexFeatures.get( key );
+	}
+
+	public static synchronized VertexFeature< ?, ?, ? > getVertexFeature( final int uniqueId )
+	{
+		return vertexFeaturesById.get( uniqueId );
 	}
 
 	private FeatureRegistry()

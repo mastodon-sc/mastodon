@@ -5,6 +5,7 @@ import java.util.Map;
 
 import net.trackmate.graph.VertexFeature.FeatureCleanup;
 import net.trackmate.graph.util.UniqueHashcodeArrayMap;
+import net.trackmate.io.RawFeatureIO;
 
 public class GraphFeatures< V extends Vertex< E >, E extends Edge< V > >
 {
@@ -33,6 +34,11 @@ public class GraphFeatures< V extends Vertex< E >, E extends Edge< V > >
 		featureChangeListeners = new ArrayList<>();
 	}
 
+	/**
+	 * FOR INTERNAL USE ONLY.
+	 *
+	 * This is only public because it needs to be accessed from {@link RawFeatureIO}.
+	 */
 	@SuppressWarnings( "unchecked" )
 	public < M > M getVertexFeature( final VertexFeature< M, V, ? > feature )
 	{
@@ -106,11 +112,6 @@ public class GraphFeatures< V extends Vertex< E >, E extends Edge< V > >
 	public boolean removeCreateFeatureMapListener( final CreateFeatureMapListener< V, E > listener )
 	{
 		return createFeatureMapListeners.remove( listener );
-	}
-
-	public interface FeatureChangeListener< V extends Vertex< E >, E extends Edge< V > >
-	{
-		public void beforeFeatureChange( final VertexFeature< ?, V, ? > feature, V vertex );
 	}
 
 	/**

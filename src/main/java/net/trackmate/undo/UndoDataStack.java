@@ -27,7 +27,8 @@ class UndoDataStack
 	public UndoDataStack( final int capacity )
 	{
 		buf = new byte[ capacity ];
-		out = new WrappedDataOutput( new DataOutputStream( new Out() ) );
+		final Out o = new Out();
+		out = new WrappedDataOutput( new DataOutputStream( o ), o );
 		in = new WrappedDataInput( new DataInputStream( new In() ) );
 	}
 
@@ -160,6 +161,17 @@ class UndoDataStack
 					( ( off + len ) - b.length > 0 ) ) { throw new IndexOutOfBoundsException(); }
 			ensureCapacity( wcount + len );
 			System.arraycopy( b, off, buf, wcount, len );
+			wcount += len;
+		}
+
+		/**
+		 * skip {@code len} bytes.
+		 *
+		 * @param len
+		 */
+		public void skip( final int len )
+		{
+			ensureCapacity( wcount + len );
 			wcount += len;
 		}
 
@@ -298,9 +310,22 @@ class UndoDataStack
 	{
 		private final DataOutput dataOutput;
 
-		WrappedDataOutput( final DataOutput dataOutput )
+		private final Out out;
+
+		WrappedDataOutput( final DataOutput dataOutput, final Out out )
 		{
 			this.dataOutput = dataOutput;
+			this.out = out;
+		}
+
+		/**
+		 * skip {@code len} bytes.
+		 *
+		 * @param len
+		 */
+		public void skip( final int len )
+		{
+			out.skip( len );
 		}
 
 		public void write( final int b )

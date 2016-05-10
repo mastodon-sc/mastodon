@@ -1,8 +1,10 @@
 package net.trackmate.undo;
 
 import net.trackmate.graph.Edge;
+import net.trackmate.graph.FeatureChangeListener;
 import net.trackmate.graph.GraphFeatures;
 import net.trackmate.graph.GraphIdBimap;
+import net.trackmate.graph.VertexFeature;
 import net.trackmate.graph.VertexWithFeatures;
 import net.trackmate.graph.listenable.GraphListener;
 import net.trackmate.revised.model.ModelGraph_HACK_FIX_ME;
@@ -14,7 +16,8 @@ import net.trackmate.revised.model.ModelGraph_HACK_FIX_ME;
  *
  * @author Tobias Pietzsch &lt;tobias.pietzsch@gmail.com&gt;
  */
-public class UndoRecorder< V extends VertexWithFeatures< V, E >, E extends Edge< V > > implements GraphListener< V, E >
+public class UndoRecorder< V extends VertexWithFeatures< V, E >, E extends Edge< V > >
+		implements GraphListener< V, E >, FeatureChangeListener< V, E >
 {
 	private static final int defaultCapacity = 1000;
 
@@ -97,6 +100,16 @@ public class UndoRecorder< V extends VertexWithFeatures< V, E >, E extends Edge<
 		{
 			System.out.println( "Model.UndoRecorder.edgeRemoved()" );
 			edits.recordRemoveEdge( edge );
+		}
+	}
+
+	@Override
+	public void beforeFeatureChange( final VertexFeature< ?, V, ? > feature, final V vertex )
+	{
+		if ( recording )
+		{
+			System.out.println( "Model.UndoRecorder.beforeFeatureChange()" );
+			edits.recordSetFeature( feature, vertex );
 		}
 	}
 }

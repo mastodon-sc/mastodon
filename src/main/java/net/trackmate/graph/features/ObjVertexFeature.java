@@ -116,17 +116,23 @@ public final class ObjVertexFeature< V extends Vertex< ? >, O > extends VertexFe
 			final O value = undoMap.get( undoId );
 			if ( value != null )
 				featureMap.put( vertex, value );
-			// TODO: CLEAR feature if not present in undoMap !?
-			// TODO
-			// TODO
-			// TODO
-			// TODO
-			// TODO
-			// TODO
-			// TODO
-			// TODO
-			// TODO
-			// TODO
+			else
+				featureMap.remove( vertex );
+		}
+
+		@Override
+		public void swap( final int undoId, final V vertex )
+		{
+			final O undoValue = undoMap.get( undoId );
+			final O featureValue = featureMap.get( vertex );
+			if ( featureValue != null )
+				undoMap.put( undoId, featureValue );
+			else
+				undoMap.remove( undoId );
+			if ( undoValue != null )
+				featureMap.put( vertex, undoValue );
+			else
+				featureMap.remove( vertex );
 		}
 
 		@Override
