@@ -6,7 +6,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.util.ArrayList;
 import java.util.List;
 
 import net.trackmate.graph.AbstractEdge;
@@ -19,7 +18,6 @@ import net.trackmate.io.RawFeatureIO;
 import net.trackmate.io.RawGraphIO;
 import net.trackmate.io.RawGraphIO.FileIdToGraphMap;
 import net.trackmate.io.RawGraphIO.GraphToFileIdMap;
-import net.trackmate.revised.model.mamut.Features;
 
 /**
  * Manages the model graph.
@@ -108,15 +106,13 @@ public class AbstractModel<
 	 */
 	protected void saveRaw(
 			final File file,
-			final RawGraphIO.Serializer< V, E > serializer )
+			final RawGraphIO.Serializer< V, E > serializer,
+			final List< VertexFeature< ?, V, ? > > featuresToSerialize )
 					throws IOException
 	{
 		final FileOutputStream fos = new FileOutputStream( file );
 		final ObjectOutputStream oos = new ObjectOutputStream( fos );
 		final GraphToFileIdMap< V, E > fileIdMap = RawGraphIO.write( modelGraph, modelGraph.idmap, serializer, oos );
-		final List< VertexFeature< ?, V, ? > > featuresToSerialize = new ArrayList<>();
-		featuresToSerialize.add( ( VertexFeature< ?, V, ? > ) Features.LABEL );
-		featuresToSerialize.add( ( VertexFeature< ?, V, ? > ) Features.TRACKLENGTH );
 		RawFeatureIO.writeFeatureMaps( fileIdMap, modelGraph.features, featuresToSerialize, oos );
 		oos.close();
 	}

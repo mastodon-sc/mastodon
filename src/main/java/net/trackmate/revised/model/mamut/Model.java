@@ -2,9 +2,12 @@ package net.trackmate.revised.model.mamut;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import net.imglib2.RealLocalizable;
 import net.trackmate.graph.ReadOnlyGraph;
+import net.trackmate.graph.VertexFeature;
 import net.trackmate.revised.model.AbstractModel;
 import net.trackmate.spatial.SpatioTemporalIndex;
 import net.trackmate.spatial.SpatioTemporalIndexImp;
@@ -34,10 +37,15 @@ public class Model extends AbstractModel< ModelGraph, Spot, Link >
 	 */
 	private final SpatioTemporalIndex< Spot > index;
 
+	private final List< VertexFeature< ?, Spot, ? > > featuresToSerialize;
+
 	public Model()
 	{
 		super( new ModelGraph() );
 		index = new SpatioTemporalIndexImp<>( modelGraph, modelGraph.getVertexPool() );
+
+		featuresToSerialize = new ArrayList<>();
+		featuresToSerialize.add( Features.LABEL );
 	}
 
 	/**
@@ -105,7 +113,7 @@ public class Model extends AbstractModel< ModelGraph, Spot, Link >
 	 */
 	public void saveRaw( final File file ) throws IOException
 	{
-		super.saveRaw( file, ModelSerializer.getInstance() );
+		super.saveRaw( file, ModelSerializer.getInstance(), featuresToSerialize );
 	}
 
 	/**
