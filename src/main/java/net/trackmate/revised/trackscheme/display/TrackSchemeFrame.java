@@ -31,6 +31,7 @@ import net.trackmate.revised.ui.context.ContextChooserPanel;
 import net.trackmate.revised.ui.grouping.GroupHandle;
 import net.trackmate.revised.ui.grouping.GroupLocksPanel;
 import net.trackmate.revised.ui.util.InvokeOnEDT;
+import net.trackmate.undo.UndoPointMarker;
 
 public class TrackSchemeFrame extends JFrame
 {
@@ -46,16 +47,19 @@ public class TrackSchemeFrame extends JFrame
 
 	private final EditFocusVertexBehaviour editFocusVertex;
 
+	private final UndoPointMarker undoPointMarker;
+
 	public TrackSchemeFrame(
 			final TrackSchemeGraph< ?, ? > graph,
 			final TrackSchemeHighlight highlight,
 			final TrackSchemeFocus focus,
 			final TrackSchemeSelection selection,
 			final TrackSchemeNavigation navigation,
+			final UndoPointMarker undoPointMarker,
 			final GroupHandle groupHandle,
 			final ContextChooser< ? > contextChooser )
 	{
-		this( graph, highlight, focus, selection, navigation, groupHandle, contextChooser, TrackSchemeOptions.options() );
+		this( graph, highlight, focus, selection, navigation, undoPointMarker, groupHandle, contextChooser, TrackSchemeOptions.options() );
 	}
 
 	public TrackSchemeFrame(
@@ -64,11 +68,13 @@ public class TrackSchemeFrame extends JFrame
 			final TrackSchemeFocus focus,
 			final TrackSchemeSelection selection,
 			final TrackSchemeNavigation navigation,
+			final UndoPointMarker undoPointMarker,
 			final GroupHandle groupHandle,
 			final ContextChooser< ? > contextChooser,
 			final TrackSchemeOptions optional )
 	{
 		super( "TrackScheme", GuiUtil.getSuitableGraphicsConfiguration( GuiUtil.RGB_COLOR_MODEL ) );
+		this.undoPointMarker = undoPointMarker;
 		getRootPane().setDoubleBuffered( true );
 
 		trackschemePanel = new TrackSchemePanel(
@@ -122,7 +128,7 @@ public class TrackSchemeFrame extends JFrame
 		trackschemePanel.getNavigator().installActionBindings( keybindings, inputConf );
 		trackschemePanel.getSelectionBehaviours().installBehaviourBindings( triggerbindings, inputConf );
 
-		editFocusVertex = new EditFocusVertexBehaviour( focus, graph, trackschemePanel.getDisplay() );
+		editFocusVertex = new EditFocusVertexBehaviour( focus, graph, undoPointMarker, trackschemePanel.getDisplay() );
 		trackschemePanel.getDisplay().addTransformListener( editFocusVertex );
 		trackschemePanel.getOffsetDecorations().addOffsetHeadersListener( editFocusVertex );
 

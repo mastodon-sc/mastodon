@@ -434,6 +434,8 @@ public class WindowManager
 				overlayContext,
 				contextProvider );
 
+		UndoActions.installActionBindings( viewerFrame.getKeybindings(), model, keyconf );
+
 		/*
 		 * TODO: this is still wrong. There should be one central entity syncing
 		 * time for several BDV frames and TrackSchemePanel should listen to
@@ -548,6 +550,7 @@ public class WindowManager
 				trackSchemeFocus,
 				trackSchemeSelection,
 				trackSchemeNavigation,
+				model,
 				groupHandle,
 				contextChooser,
 				TrackSchemeOptions.options().inputTriggerConfig( keyconf ) );
@@ -555,6 +558,8 @@ public class WindowManager
 		frame.getTrackschemePanel().graphChanged();
 		contextListener.setContextListener( frame.getTrackschemePanel() );
 		frame.setVisible( true );
+
+		UndoActions.installActionBindings( frame.getKeybindings(), model, keyconf );
 
 		// TODO revise
 		// TrackSchemeStyleDialog triggered by "R"

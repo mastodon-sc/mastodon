@@ -11,6 +11,7 @@ import net.trackmate.graph.VertexFeature;
 import net.trackmate.revised.model.AbstractModel;
 import net.trackmate.spatial.SpatioTemporalIndex;
 import net.trackmate.spatial.SpatioTemporalIndexImp;
+import net.trackmate.undo.UndoPointMarker;
 import net.trackmate.undo.UndoRecorder;
 
 /**
@@ -31,7 +32,7 @@ import net.trackmate.undo.UndoRecorder;
  *
  * @author Tobias Pietzsch &lt;tobias.pietzsch@gmail.com&gt;
  */
-public class Model extends AbstractModel< ModelGraph, Spot, Link >
+public class Model extends AbstractModel< ModelGraph, Spot, Link > implements UndoPointMarker
 {
 	/*
 	 * SpatioTemporalIndex of model spots
@@ -129,5 +130,23 @@ public class Model extends AbstractModel< ModelGraph, Spot, Link >
 	public SpatioTemporalIndex< Spot > getSpatioTemporalIndex()
 	{
 		return index;
+	}
+
+	public void undo()
+	{
+		undoRecorder.undo();
+		modelGraph.notifyGraphChanged();
+	}
+
+	public void redo()
+	{
+		undoRecorder.redo();
+		modelGraph.notifyGraphChanged();
+	}
+
+	@Override
+	public void setUndoPoint()
+	{
+		undoRecorder.setUndoPoint();
 	}
 }

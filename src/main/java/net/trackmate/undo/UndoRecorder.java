@@ -17,7 +17,7 @@ import net.trackmate.revised.model.ModelGraph_HACK_FIX_ME;
  * @author Tobias Pietzsch &lt;tobias.pietzsch@gmail.com&gt;
  */
 public class UndoRecorder< V extends VertexWithFeatures< V, E >, E extends Edge< V > >
-		implements GraphListener< V, E >, FeatureChangeListener< V, E >
+		implements GraphListener< V, E >, FeatureChangeListener< V, E >, UndoPointMarker
 {
 	private static final int defaultCapacity = 1000;
 
@@ -39,6 +39,7 @@ public class UndoRecorder< V extends VertexWithFeatures< V, E >, E extends Edge<
 		graphFeatures.addFeatureChangeListener( this );
 	}
 
+	@Override
 	public void setUndoPoint()
 	{
 		edits.setUndoPoint();
@@ -46,6 +47,7 @@ public class UndoRecorder< V extends VertexWithFeatures< V, E >, E extends Edge<
 
 	public void undo()
 	{
+		System.out.println( "UndoRecorder.undo()" );
 		recording = false;
 		edits.undo();
 		recording = true;
@@ -53,6 +55,7 @@ public class UndoRecorder< V extends VertexWithFeatures< V, E >, E extends Edge<
 
 	public void redo()
 	{
+		System.out.println( "UndoRecorder.redo()" );
 		recording = false;
 		edits.redo();
 		recording = true;
@@ -61,7 +64,7 @@ public class UndoRecorder< V extends VertexWithFeatures< V, E >, E extends Edge<
 	@Override
 	public void graphRebuilt()
 	{
-		System.out.println( "Model.UndoRecorder.graphRebuilt()" );
+		System.out.println( "UndoRecorder.graphRebuilt()" );
 	}
 
 	@Override
@@ -69,7 +72,7 @@ public class UndoRecorder< V extends VertexWithFeatures< V, E >, E extends Edge<
 	{
 		if ( recording )
 		{
-			System.out.println( "Model.UndoRecorder.vertexAdded()" );
+			System.out.println( "UndoRecorder.vertexAdded()" );
 			edits.recordAddVertex( vertex );
 		}
 	}
@@ -79,7 +82,7 @@ public class UndoRecorder< V extends VertexWithFeatures< V, E >, E extends Edge<
 	{
 		if ( recording )
 		{
-			System.out.println( "Model.UndoRecorder.vertexRemoved()" );
+			System.out.println( "UndoRecorder.vertexRemoved()" );
 			edits.recordRemoveVertex( vertex );
 		}
 	}
@@ -89,7 +92,7 @@ public class UndoRecorder< V extends VertexWithFeatures< V, E >, E extends Edge<
 	{
 		if ( recording )
 		{
-			System.out.println( "Model.UndoRecorder.edgeAdded()" );
+			System.out.println( "UndoRecorder.edgeAdded()" );
 			edits.recordAddEdge( edge );
 		}
 	}
@@ -99,7 +102,7 @@ public class UndoRecorder< V extends VertexWithFeatures< V, E >, E extends Edge<
 	{
 		if ( recording )
 		{
-			System.out.println( "Model.UndoRecorder.edgeRemoved()" );
+			System.out.println( "UndoRecorder.edgeRemoved()" );
 			edits.recordRemoveEdge( edge );
 		}
 	}
@@ -109,7 +112,7 @@ public class UndoRecorder< V extends VertexWithFeatures< V, E >, E extends Edge<
 	{
 		if ( recording )
 		{
-			System.out.println( "Model.UndoRecorder.beforeFeatureChange()" );
+			System.out.println( "UndoRecorder.beforeFeatureChange()" );
 			edits.recordSetFeature( feature, vertex );
 		}
 	}

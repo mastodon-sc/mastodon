@@ -29,6 +29,7 @@ import net.trackmate.revised.trackscheme.TrackSchemeFocus;
 import net.trackmate.revised.trackscheme.TrackSchemeGraph;
 import net.trackmate.revised.trackscheme.TrackSchemeVertex;
 import net.trackmate.revised.trackscheme.display.OffsetHeaders.OffsetHeadersListener;
+import net.trackmate.undo.UndoPointMarker;
 
 /**
  *
@@ -39,6 +40,8 @@ public class EditFocusVertexBehaviour implements Runnable, TransformListener< Sc
 	private static final Font FONT = new Font( "SansSerif", Font.BOLD, 10 );
 
 	private final TrackSchemeGraph< ?, ? > graph;
+
+	private final UndoPointMarker undoPointMarker;
 
 	private final JComponent display;
 
@@ -63,10 +66,12 @@ public class EditFocusVertexBehaviour implements Runnable, TransformListener< Sc
 	public EditFocusVertexBehaviour(
 			final TrackSchemeFocus focus,
 			final TrackSchemeGraph< ?, ? > graph,
+			final UndoPointMarker undoPointMarker,
 			final JComponent display )
 	{
 		this.focus = focus;
 		this.graph = graph;
+		this.undoPointMarker = undoPointMarker;
 		this.display = display;
 		this.screenTransform = new ScreenTransform();
 		this.fontMetrics = display.getFontMetrics( FONT );
@@ -231,6 +236,7 @@ public class EditFocusVertexBehaviour implements Runnable, TransformListener< Sc
 		private void commit()
 		{
 			vertex.setLabel( getText().trim() );
+			undoPointMarker.setUndoPoint();
 		}
 
 		private void kill()

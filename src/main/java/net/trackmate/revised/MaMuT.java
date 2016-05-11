@@ -168,6 +168,7 @@ public class MaMuT
 				trackSchemeFocus,
 				trackSchemeSelection,
 				trackSchemeNavigation,
+				model,
 				trackSchemeGroupHandle,
 				contextChooser );
 		frame.getTrackschemePanel().setTimepointRange( minTimepoint, maxTimepoint );
