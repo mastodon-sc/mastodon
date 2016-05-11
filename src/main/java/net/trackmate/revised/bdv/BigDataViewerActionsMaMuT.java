@@ -28,7 +28,7 @@
  */
 package net.trackmate.revised.bdv;
 
-import java.awt.event.ActionEvent;
+import java.awt.Dialog;
 
 import javax.swing.ActionMap;
 import javax.swing.InputMap;
@@ -36,18 +36,28 @@ import javax.swing.InputMap;
 import org.scijava.ui.behaviour.KeyStrokeAdder;
 
 import bdv.tools.ToggleDialogAction;
-import bdv.util.AbstractNamedAction;
-import bdv.util.AbstractNamedAction.NamedActionAdder;
+import bdv.tools.VisibilityAndGroupingDialog;
+import bdv.tools.bookmarks.BookmarksEditor;
+import bdv.tools.brightness.BrightnessDialog;
+import bdv.util.AbstractActions;
 import bdv.viewer.InputActionBindings;
 
-public class BigDataViewerActionsMaMuT
+public class BigDataViewerActionsMaMuT extends AbstractActions
 {
 	public static final String BRIGHTNESS_SETTINGS = "brightness settings";
 	public static final String VISIBILITY_AND_GROUPING = "visibility and grouping";
 	public static final String SET_BOOKMARK = "set bookmark";
 	public static final String GO_TO_BOOKMARK = "go to bookmark";
 	public static final String GO_TO_BOOKMARK_ROTATION = "go to bookmark rotation";
-	public static final String TOGGLE_SETTINGS_PANEL_NAME = "bdv toggle settings panel";
+	public static final String TOGGLE_SETTINGS_PANEL = "bdv toggle settings panel";
+
+	static final String[] BRIGHTNESS_SETTINGS_KEYS         = new String[] { "S" };
+	static final String[] VISIBILITY_AND_GROUPING_KEYS     = new String[] { "F6" };
+	static final String[] SET_BOOKMARK_KEYS                = new String[] { "shift B" };
+	static final String[] GO_TO_BOOKMARK_KEYS              = new String[] { "B" };
+	static final String[] GO_TO_BOOKMARK_ROTATION_KEYS     = new String[] { "O" };
+	static final String[] TOGGLE_SETTINGS_PANEL_KEYS       = new String[] { "T" };
+
 
 	/**
 	 * Create BigDataViewer actions and install them in the specified
@@ -57,126 +67,56 @@ public class BigDataViewerActionsMaMuT
 	 *            {@link InputMap} and {@link ActionMap} are installed here.
 	 * @param bdv
 	 *            Actions are targeted at this {@link BigDataViewerMaMuT}.
-	 * @param keyProperties
+	 * @param keyConfig
 	 *            user-defined key-bindings.
 	 */
 	public static void installActionBindings(
 			final InputActionBindings inputActionBindings,
 			final BigDataViewerMaMuT bdv,
-			final KeyStrokeAdder.Factory keyProperties )
+			final KeyStrokeAdder.Factory keyConfig )
 	{
-		inputActionBindings.addActionMap( "bdv", createActionMap( bdv ) );
-		inputActionBindings.addInputMap( "bdv", createInputMap( keyProperties ) );
+		final BigDataViewerActionsMaMuT actions = new BigDataViewerActionsMaMuT( inputActionBindings, keyConfig );
+		actions.dialog( bdv.getBrightnessDialog() );
+		actions.dialog( bdv.getActiveSourcesDialog() );
+		actions.bookmarks( bdv.getBookmarksEditor() );
+		actions.runnableAction( () -> bdv.setSettingsPanelVisible( !bdv.isSettingsPanelVisible() ), TOGGLE_SETTINGS_PANEL, TOGGLE_SETTINGS_PANEL_KEYS );
 	}
 
-	public static InputMap createInputMap( final KeyStrokeAdder.Factory keyProperties )
+	public BigDataViewerActionsMaMuT(
+			final InputActionBindings inputActionBindings,
+			final KeyStrokeAdder.Factory keyConfig )
 	{
-		final InputMap inputMap = new InputMap();
-		final KeyStrokeAdder map = keyProperties.keyStrokeAdder( inputMap, "bdv" );
-
-		map.put( BRIGHTNESS_SETTINGS, "S" );
-		map.put( VISIBILITY_AND_GROUPING, "F6" );
-		map.put( GO_TO_BOOKMARK, "B" );
-		map.put( GO_TO_BOOKMARK_ROTATION, "O" );
-		map.put( SET_BOOKMARK, "shift B" );
-		map.put( TOGGLE_SETTINGS_PANEL_NAME, "T" );
-
-		return inputMap;
+		this( inputActionBindings, keyConfig, "bdv" );
 	}
 
-	public static ActionMap createActionMap( final BigDataViewerMaMuT bdv )
+	public BigDataViewerActionsMaMuT(
+			final InputActionBindings inputActionBindings,
+			final KeyStrokeAdder.Factory keyConfig,
+			final String name )
 	{
-		final ActionMap actionMap = new ActionMap();
-		final NamedActionAdder map = new NamedActionAdder( actionMap );
-
-		map.put( new ToggleDialogAction( BRIGHTNESS_SETTINGS, bdv.getBrightnessDialog() ) );
-		map.put( new ToggleDialogAction( VISIBILITY_AND_GROUPING, bdv.getActiveSourcesDialog() ) );
-		map.put( new SetBookmarkAction( bdv ) );
-		map.put( new GoToBookmarkAction( bdv ) );
-		map.put( new GoToBookmarkRotationAction( bdv ) );
-		map.put( new ToggleSettingsPanelAction( bdv ) );
-
-		return actionMap;
+		super( inputActionBindings, name, keyConfig, new String[] { "bdv" } );
 	}
 
-	private static abstract class ViewerAction extends AbstractNamedAction
+	public void toggleDialogAction( final Dialog dialog, final String name, final String... defaultKeyStrokes )
 	{
-		protected final BigDataViewerMaMuT bdv;
-
-		public ViewerAction( final String name, final BigDataViewerMaMuT bdv )
-		{
-			super( name );
-			this.bdv = bdv;
-		}
-
-		private static final long serialVersionUID = 1L;
+		keyStrokeAdder.put( name, defaultKeyStrokes );
+		new ToggleDialogAction( name, dialog ).put( actionMap );
 	}
 
-	public static class SetBookmarkAction extends ViewerAction
+	public void dialog( final BrightnessDialog brightnessDialog )
 	{
-		public SetBookmarkAction( final BigDataViewerMaMuT bdv )
-		{
-			super( SET_BOOKMARK, bdv );
-		}
-
-		@Override
-		public void actionPerformed( final ActionEvent e )
-		{
-			bdv.initSetBookmark();
-		}
-
-		private static final long serialVersionUID = 1L;
+		toggleDialogAction( brightnessDialog, BRIGHTNESS_SETTINGS, BRIGHTNESS_SETTINGS_KEYS );
 	}
 
-	public static class GoToBookmarkAction extends ViewerAction
+	public void dialog( final VisibilityAndGroupingDialog visibilityAndGroupingDialog )
 	{
-		public GoToBookmarkAction( final BigDataViewerMaMuT bdv )
-		{
-			super( GO_TO_BOOKMARK, bdv );
-		}
-
-		@Override
-		public void actionPerformed( final ActionEvent e )
-		{
-			bdv.initGoToBookmark();
-		}
-
-		private static final long serialVersionUID = 1L;
+		toggleDialogAction( visibilityAndGroupingDialog, VISIBILITY_AND_GROUPING, VISIBILITY_AND_GROUPING_KEYS );
 	}
 
-	public static class GoToBookmarkRotationAction extends ViewerAction
+	public void bookmarks( final BookmarksEditor bookmarksEditor )
 	{
-		public GoToBookmarkRotationAction( final BigDataViewerMaMuT bdv )
-		{
-			super( GO_TO_BOOKMARK_ROTATION, bdv );
-		}
-
-		@Override
-		public void actionPerformed( final ActionEvent e )
-		{
-			bdv.initGoToBookmarkRotation();
-		}
-
-		private static final long serialVersionUID = 1L;
+		runnableAction( bookmarksEditor::initGoToBookmark, GO_TO_BOOKMARK, GO_TO_BOOKMARK_KEYS );
+		runnableAction( bookmarksEditor::initGoToBookmarkRotation, GO_TO_BOOKMARK_ROTATION, GO_TO_BOOKMARK_ROTATION_KEYS );
+		runnableAction( bookmarksEditor::initSetBookmark, SET_BOOKMARK, SET_BOOKMARK_KEYS );
 	}
-
-	public static class ToggleSettingsPanelAction extends ViewerAction
-	{
-		public ToggleSettingsPanelAction( final BigDataViewerMaMuT bdv )
-		{
-			super( TOGGLE_SETTINGS_PANEL_NAME, bdv );
-		}
-
-		@Override
-		public void actionPerformed( final ActionEvent e )
-		{
-			final boolean visible = !bdv.isSettingsPanelVisible();
-			bdv.setSettingsPanelVisible( visible );
-		}
-
-		private static final long serialVersionUID = 1L;
-	}
-
-	private BigDataViewerActionsMaMuT()
-	{}
 }

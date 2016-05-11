@@ -1,14 +1,8 @@
 package net.trackmate.revised.trackscheme.display;
 
-import java.awt.event.ActionEvent;
-
-import javax.swing.ActionMap;
-import javax.swing.InputMap;
-
 import org.scijava.ui.behaviour.KeyStrokeAdder;
 
-import bdv.util.AbstractNamedAction;
-import bdv.util.AbstractNamedAction.NamedActionAdder;
+import bdv.util.AbstractActions;
 import bdv.viewer.InputActionBindings;
 import net.imglib2.RealPoint;
 import net.imglib2.ui.TransformListener;
@@ -50,15 +44,25 @@ import net.trackmate.revised.trackscheme.TrackSchemeVertex;
  */
 public class TrackSchemeNavigator implements TransformListener< ScreenTransform >
 {
-	public static final String NAVIGATE_CHILD_NAME = "ts navigate to child";
-	public static final String NAVIGATE_PARENT_NAME = "ts navigate to parent";
-	public static final String NAVIGATE_LEFT_NAME = "ts navigate left";
-	public static final String NAVIGATE_RIGHT_NAME = "ts navigate right";
-	public static final String SELECT_NAVIGATE_CHILD_NAME = "ts select navigate to child";
-	public static final String SELECT_NAVIGATE_PARENT_NAME = "ts select navigate to parent";
-	public static final String SELECT_NAVIGATE_LEFT_NAME = "ts select navigate left";
-	public static final String SELECT_NAVIGATE_RIGHT_NAME = "ts select navigate right";
-	public static final String TOGGLE_FOCUS_SELECTION_NAME = "ts toggle focus selection";
+	public static final String NAVIGATE_CHILD = "ts navigate to child";
+	public static final String NAVIGATE_PARENT = "ts navigate to parent";
+	public static final String NAVIGATE_LEFT = "ts navigate left";
+	public static final String NAVIGATE_RIGHT = "ts navigate right";
+	public static final String SELECT_NAVIGATE_CHILD = "ts select navigate to child";
+	public static final String SELECT_NAVIGATE_PARENT = "ts select navigate to parent";
+	public static final String SELECT_NAVIGATE_LEFT = "ts select navigate left";
+	public static final String SELECT_NAVIGATE_RIGHT = "ts select navigate right";
+	public static final String TOGGLE_FOCUS_SELECTION = "ts toggle focus selection";
+
+	public static final String[] NAVIGATE_CHILD_KEYS = new String[] { "DOWN" };
+	public static final String[] NAVIGATE_PARENT_KEYS = new String[] { "UP" };
+	public static final String[] NAVIGATE_LEFT_KEYS = new String[] { "LEFT" };
+	public static final String[] NAVIGATE_RIGHT_KEYS = new String[] { "RIGHT" };
+	public static final String[] SELECT_NAVIGATE_CHILD_KEYS = new String[] { "shift DOWN" };
+	public static final String[] SELECT_NAVIGATE_PARENT_KEYS = new String[] { "shift UP" };
+	public static final String[] SELECT_NAVIGATE_LEFT_KEYS = new String[] { "shift LEFT" };
+	public static final String[] SELECT_NAVIGATE_RIGHT_KEYS = new String[] { "shift RIGHT" };
+	public static final String[] TOGGLE_FOCUS_SELECTION_KEYS = new String[] { "SPACE" };
 
 	public static enum Direction
 	{
@@ -78,8 +82,6 @@ public class TrackSchemeNavigator implements TransformListener< ScreenTransform 
 
 	private final TrackSchemeSelection selection;
 
-	private final ActionMap actionMap;
-
 	public TrackSchemeNavigator(
 			final TrackSchemeGraph< ?, ? > graph,
 			final LineageTreeLayout layout,
@@ -92,39 +94,33 @@ public class TrackSchemeNavigator implements TransformListener< ScreenTransform 
 		this.focus = focus;
 		this.navigation = navigation;
 		this.selection = selection;
-
-		actionMap = new ActionMap();
-		final NamedActionAdder adder = new NamedActionAdder( actionMap );
-		adder.put( new SelectAndFocusNeighborAction( NAVIGATE_CHILD_NAME, Direction.CHILD, false ) );
-		adder.put( new SelectAndFocusNeighborAction( NAVIGATE_PARENT_NAME, Direction.PARENT, false ) );
-		adder.put( new SelectAndFocusNeighborAction( NAVIGATE_LEFT_NAME, Direction.LEFT_SIBLING, false ) );
-		adder.put( new SelectAndFocusNeighborAction( NAVIGATE_RIGHT_NAME, Direction.RIGHT_SIBLING, false ) );
-		adder.put( new SelectAndFocusNeighborAction( SELECT_NAVIGATE_CHILD_NAME, Direction.CHILD, true ) );
-		adder.put( new SelectAndFocusNeighborAction( SELECT_NAVIGATE_PARENT_NAME, Direction.PARENT, true ) );
-		adder.put( new SelectAndFocusNeighborAction( SELECT_NAVIGATE_LEFT_NAME, Direction.LEFT_SIBLING, true ) );
-		adder.put( new SelectAndFocusNeighborAction( SELECT_NAVIGATE_RIGHT_NAME, Direction.RIGHT_SIBLING, true ) );
-		adder.put( new ToggleFocusSelectionAction() );
 	}
 
 	public void installActionBindings( final InputActionBindings keybindings, final KeyStrokeAdder.Factory keyConfig )
 	{
-		final InputMap inputMap = new InputMap();
-		final KeyStrokeAdder adder = keyConfig.keyStrokeAdder( inputMap, "ts" );
-
-		adder.put( NAVIGATE_CHILD_NAME, "DOWN" );
-		adder.put( NAVIGATE_PARENT_NAME, "UP" );
-		adder.put( NAVIGATE_LEFT_NAME, "LEFT" );
-		adder.put( NAVIGATE_RIGHT_NAME, "RIGHT" );
-		adder.put( SELECT_NAVIGATE_CHILD_NAME, "shift DOWN" );
-		adder.put( SELECT_NAVIGATE_PARENT_NAME, "shift UP" );
-		adder.put( SELECT_NAVIGATE_LEFT_NAME, "shift LEFT" );
-		adder.put( SELECT_NAVIGATE_RIGHT_NAME, "shift RIGHT" );
-		adder.put( TOGGLE_FOCUS_SELECTION_NAME, "SPACE" );
-
-		keybindings.addActionMap( "navigator", actionMap );
-		keybindings.addInputMap( "navigator", inputMap );
+		final AbstractActions actions = new AbstractActions( keybindings, "navigator", keyConfig, new String[] { "ts" } );
+		actions.runnableAction( () -> selectAndFocusNeighbor( Direction.CHILD, false ), NAVIGATE_CHILD, NAVIGATE_CHILD_KEYS );
+		actions.runnableAction( () -> selectAndFocusNeighbor( Direction.PARENT, false ), NAVIGATE_PARENT, NAVIGATE_PARENT_KEYS );
+		actions.runnableAction( () -> selectAndFocusNeighbor( Direction.LEFT_SIBLING, false ), NAVIGATE_LEFT, NAVIGATE_LEFT_KEYS );
+		actions.runnableAction( () -> selectAndFocusNeighbor( Direction.RIGHT_SIBLING, false ), NAVIGATE_RIGHT, NAVIGATE_RIGHT_KEYS );
+		actions.runnableAction( () -> selectAndFocusNeighbor( Direction.CHILD, true ), SELECT_NAVIGATE_CHILD, SELECT_NAVIGATE_CHILD_KEYS );
+		actions.runnableAction( () -> selectAndFocusNeighbor( Direction.PARENT, true ), SELECT_NAVIGATE_PARENT, SELECT_NAVIGATE_PARENT_KEYS );
+		actions.runnableAction( () -> selectAndFocusNeighbor( Direction.LEFT_SIBLING, true ), SELECT_NAVIGATE_LEFT, SELECT_NAVIGATE_LEFT_KEYS );
+		actions.runnableAction( () -> selectAndFocusNeighbor( Direction.RIGHT_SIBLING, true ), SELECT_NAVIGATE_RIGHT, SELECT_NAVIGATE_RIGHT_KEYS );
+		actions.runnableAction( () -> toggleSelectionOfFocusedVertex(), TOGGLE_FOCUS_SELECTION, TOGGLE_FOCUS_SELECTION_KEYS );
 	}
 
+	/**
+	 * Focus a neighbor (parent, child, left sibling, right sibling) of the
+	 * currently focused vertex. Possibly, the currently focused vertex is added
+	 * to the selection.
+	 *
+	 * @param direction
+	 *            which neighbor to focus.
+	 * @param select
+	 *            if {@code true}, the currently focussed vertex is added to the
+	 *            selection (before moving the focus).
+	 */
 	private void selectAndFocusNeighbor( final Direction direction, final boolean select )
 	{
 		final TrackSchemeVertex ref = graph.vertexRef();
@@ -166,6 +162,9 @@ public class TrackSchemeNavigator implements TransformListener< ScreenTransform 
 		return current;
 	}
 
+	/**
+	 * Toggle the selected state of the currently focused vertex.
+	 */
 	private void toggleSelectionOfFocusedVertex()
 	{
 		final TrackSchemeVertex ref = graph.vertexRef();
@@ -193,64 +192,5 @@ public class TrackSchemeNavigator implements TransformListener< ScreenTransform 
 		centerPos.setPosition( (transform.getMaxX() + transform.getMinX() ) / 2., 0 );
 		centerPos.setPosition( (transform.getMaxY() + transform.getMinY() ) / 2., 1 );
 		ratioXtoY = transform.getXtoYRatio();
-	}
-
-	/*
-	 * ACTIONS
-	 */
-
-	/**
-	 * Action to toggle the selected state of the currently focused vertex.
-	 */
-	private class ToggleFocusSelectionAction extends AbstractNamedAction
-	{
-		private static final long serialVersionUID = 1L;
-
-		public ToggleFocusSelectionAction()
-		{
-			super( TOGGLE_FOCUS_SELECTION_NAME );
-		}
-
-		@Override
-		public void actionPerformed( final ActionEvent e )
-		{
-			toggleSelectionOfFocusedVertex();
-		}
-	}
-
-	/**
-	 * Action to focus a neighbor (parent, child, left sibling, right sibling)
-	 * of the currently focused vertex. Possibly, the currently focused vertex
-	 * is added to the selection.
-	 */
-	private class SelectAndFocusNeighborAction extends AbstractNamedAction
-	{
-		private static final long serialVersionUID = 1L;
-
-		private final Direction direction;
-
-		private final boolean select;
-
-		/**
-		 * @param name
-		 *            the name of this action (used as {@link ActionMap} key).
-		 * @param direction
-		 *            which neighbor to focus.
-		 * @param select
-		 *            if {@code true}, the currently focussed vertex is added to
-		 *            the selection (before moving the focus).
-		 */
-		public SelectAndFocusNeighborAction( final String name, final Direction direction, final boolean select )
-		{
-			super( name );
-			this.direction = direction;
-			this.select = select;
-		}
-
-		@Override
-		public void actionPerformed( final ActionEvent e )
-		{
-			selectAndFocusNeighbor( direction, select );
-		}
 	}
 }

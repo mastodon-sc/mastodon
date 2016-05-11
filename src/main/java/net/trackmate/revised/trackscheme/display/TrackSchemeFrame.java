@@ -44,6 +44,8 @@ public class TrackSchemeFrame extends JFrame
 
 	private final TriggerBehaviourBindings triggerbindings;
 
+	private final EditFocusVertexBehaviour editFocusVertex;
+
 	public TrackSchemeFrame(
 			final TrackSchemeGraph< ?, ? > graph,
 			final TrackSchemeHighlight highlight,
@@ -120,14 +122,11 @@ public class TrackSchemeFrame extends JFrame
 		trackschemePanel.getNavigator().installActionBindings( keybindings, inputConf );
 		trackschemePanel.getSelectionBehaviours().installBehaviourBindings( triggerbindings, inputConf );
 
-		final EditFocusVertexBehaviour editFocus = new EditFocusVertexBehaviour( focus, graph, trackschemePanel.getDisplay() );
-		trackschemePanel.getDisplay().addTransformListener( editFocus );
-		trackschemePanel.getOffsetDecorations().addOffsetHeadersListener( editFocus );
-		editFocus.installActionBindings( keybindings, inputConf );
+		editFocusVertex = new EditFocusVertexBehaviour( focus, graph, trackschemePanel.getDisplay() );
+		trackschemePanel.getDisplay().addTransformListener( editFocusVertex );
+		trackschemePanel.getOffsetDecorations().addOffsetHeadersListener( editFocusVertex );
 
-		// TODO: This should be constructed in WindowManager as part of larger package of actions to install
-		final ToggleSettingsPanelAction toggleSettings = new ToggleSettingsPanelAction( this );
-		toggleSettings.installActionBindings( keybindings, inputConf );
+		TrackSchemeActions.installActionBindings( keybindings, this, inputConf );
 	}
 
 	protected InputTriggerConfig getKeyConfig( final TrackSchemeOptions optional )
@@ -139,6 +138,11 @@ public class TrackSchemeFrame extends JFrame
 	public TrackSchemePanel getTrackschemePanel()
 	{
 		return trackschemePanel;
+	}
+
+	public EditFocusVertexBehaviour getEditFocusVertex()
+	{
+		return editFocusVertex;
 	}
 
 	public InputActionBindings getKeybindings()

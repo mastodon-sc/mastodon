@@ -69,21 +69,6 @@ public class BigDataViewerMaMuT
 
 	private final BookmarksEditor bookmarkEditor;
 
-	public void initSetBookmark()
-	{
-		bookmarkEditor.initSetBookmark();
-	}
-
-	public void initGoToBookmark()
-	{
-		bookmarkEditor.initGoToBookmark();
-	}
-
-	public void initGoToBookmarkRotation()
-	{
-		bookmarkEditor.initGoToBookmarkRotation();
-	}
-
 	/**
 	 *
 	 * @param shared
@@ -176,6 +161,11 @@ public class BigDataViewerMaMuT
 	public VisibilityAndGroupingDialog getActiveSourcesDialog()
 	{
 		return activeSourcesDialog;
+	}
+
+	public BookmarksEditor getBookmarksEditor()
+	{
+		return bookmarkEditor;
 	}
 
 	public boolean isSettingsPanelVisible()

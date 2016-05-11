@@ -15,7 +15,6 @@ import java.util.Arrays;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
-import javax.swing.ActionMap;
 import javax.swing.BorderFactory;
 import javax.swing.InputMap;
 import javax.swing.JComponent;
@@ -24,10 +23,6 @@ import javax.swing.KeyStroke;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 
-import org.scijava.ui.behaviour.KeyStrokeAdder;
-
-import bdv.util.AbstractNamedAction;
-import bdv.viewer.InputActionBindings;
 import net.imglib2.ui.TransformListener;
 import net.trackmate.revised.trackscheme.ScreenTransform;
 import net.trackmate.revised.trackscheme.TrackSchemeFocus;
@@ -39,10 +34,8 @@ import net.trackmate.revised.trackscheme.display.OffsetHeaders.OffsetHeadersList
  *
  * @author Jean-Yves Tinevez &lt;jeanyves.tinevez@gmail.com&gt;
  */
-public class EditFocusVertexBehaviour extends AbstractNamedAction implements TransformListener< ScreenTransform >, OffsetHeadersListener
+public class EditFocusVertexBehaviour implements Runnable, TransformListener< ScreenTransform >, OffsetHeadersListener
 {
-	public static final String EDIT_FOCUS_NAME = "ts edit focused vertex label";
-
 	private static final Font FONT = new Font( "SansSerif", Font.BOLD, 10 );
 
 	private final TrackSchemeGraph< ?, ? > graph;
@@ -72,7 +65,6 @@ public class EditFocusVertexBehaviour extends AbstractNamedAction implements Tra
 			final TrackSchemeGraph< ?, ? > graph,
 			final JComponent display )
 	{
-		super( EDIT_FOCUS_NAME );
 		this.focus = focus;
 		this.graph = graph;
 		this.display = display;
@@ -80,20 +72,8 @@ public class EditFocusVertexBehaviour extends AbstractNamedAction implements Tra
 		this.fontMetrics = display.getFontMetrics( FONT );
 	}
 
-	public void installActionBindings( final InputActionBindings keybindings, final KeyStrokeAdder.Factory keyConfig )
-	{
-		final ActionMap actionMap = new ActionMap();
-		new NamedActionAdder( actionMap ).put( this );
-
-		final InputMap inputMap = new InputMap();
-		keyConfig.keyStrokeAdder( inputMap, "ts" ).put( EDIT_FOCUS_NAME, "ENTER" );
-
-		keybindings.addActionMap( "edit label", actionMap );
-		keybindings.addInputMap( "edit label", inputMap );
-	}
-
 	@Override
-	public void actionPerformed( final ActionEvent e )
+	public void run()
 	{
 		final TrackSchemeVertex ref = graph.vertexRef();
 		final TrackSchemeVertex vertex = focus.getFocusedVertex( ref );
