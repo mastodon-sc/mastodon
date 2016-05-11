@@ -11,6 +11,7 @@ import net.trackmate.graph.VertexFeature;
 import net.trackmate.revised.model.AbstractModel;
 import net.trackmate.spatial.SpatioTemporalIndex;
 import net.trackmate.spatial.SpatioTemporalIndexImp;
+import net.trackmate.undo.UndoRecorder;
 
 /**
  * A model built to manage a graph of {@link Spot}s and {@link Link}s.
@@ -39,6 +40,8 @@ public class Model extends AbstractModel< ModelGraph, Spot, Link >
 
 	private final List< VertexFeature< ?, Spot, ? > > featuresToSerialize;
 
+	private final UndoRecorder< Spot, Link > undoRecorder;
+
 	public Model()
 	{
 		super( new ModelGraph() );
@@ -46,6 +49,8 @@ public class Model extends AbstractModel< ModelGraph, Spot, Link >
 
 		featuresToSerialize = new ArrayList<>();
 		featuresToSerialize.add( Features.LABEL );
+
+		undoRecorder = new UndoRecorder<>( modelGraph, modelGraph.features(), modelGraph.idmap(), ModelSerializer.getInstance() );
 	}
 
 	/**

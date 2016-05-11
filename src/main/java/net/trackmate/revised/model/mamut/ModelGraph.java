@@ -2,6 +2,8 @@ package net.trackmate.revised.model.mamut;
 
 import net.trackmate.graph.AbstractEdgePool;
 import net.trackmate.graph.AbstractVertexWithFeaturesPool;
+import net.trackmate.graph.GraphFeatures;
+import net.trackmate.graph.GraphIdBimap;
 import net.trackmate.graph.PoolObject;
 import net.trackmate.graph.mempool.ByteMappedElement;
 import net.trackmate.graph.mempool.ByteMappedElementArray;
@@ -21,6 +23,16 @@ class ModelGraph extends AbstractModelGraph< ModelGraph.SpotPool, ModelGraph.Lin
 	public ModelGraph( final int initialCapacity )
 	{
 		super( new LinkPool( initialCapacity, new SpotPool( initialCapacity ) ) );
+	}
+
+	GraphFeatures< Spot, Link > features()
+	{
+		return features;
+	}
+
+	GraphIdBimap< Spot, Link > idmap()
+	{
+		return idmap;
 	}
 
 	static class SpotPool extends AbstractVertexWithFeaturesPool< Spot, Link, ByteMappedElement >

@@ -36,6 +36,7 @@ public class UndoRecorder< V extends VertexWithFeatures< V, E >, E extends Edge<
 		edits = new DefaultUndoableEditList<>( defaultCapacity, graph, graphFeatures, serializer, vertexUndoIdBimap, edgeUndoIdBimap );
 		recording = true;
 		graph.addGraphListener( this );
+		graphFeatures.addFeatureChangeListener( this );
 	}
 
 	public void setUndoPoint()
