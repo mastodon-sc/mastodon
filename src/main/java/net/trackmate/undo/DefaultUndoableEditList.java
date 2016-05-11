@@ -112,13 +112,17 @@ public class DefaultUndoableEditList<
 		@Override
 		public void redo()
 		{
-			addRemoveVertex.doAddVertex( ref.getDataIndex() );
+			final long d0 = ref.getDataIndex();
+			final long d1 = addRemoveVertex.doAddVertex( d0 );
+			dataStack.setWriteDataIndex( d1 );
 		}
 
 		@Override
 		public void undo()
 		{
-			addRemoveVertex.doRemoveVertex( ref.getDataIndex() );
+			final long d0 = ref.getDataIndex();
+			addRemoveVertex.doRemoveVertex( d0 );
+			dataStack.setWriteDataIndex( d0 );
 		}
 	}
 
@@ -150,13 +154,17 @@ public class DefaultUndoableEditList<
 		@Override
 		public void redo()
 		{
-			addRemoveVertex.doRemoveVertex( ref.getDataIndex() );
+			final long d0 = ref.getDataIndex();
+			final long d1 = addRemoveVertex.doRemoveVertex( d0 );
+			dataStack.setWriteDataIndex( d1 );
 		}
 
 		@Override
 		public void undo()
 		{
-			addRemoveVertex.doAddVertex( ref.getDataIndex() );
+			final long d0 = ref.getDataIndex();
+			addRemoveVertex.doAddVertex( d0 );
+			dataStack.setWriteDataIndex( d0 );
 		}
 	}
 
@@ -166,7 +174,7 @@ public class DefaultUndoableEditList<
 
 		public AddRemoveVertexRecord()
 		{
-			data = new byte[ serializer.getVertexNumBytes() ];;
+			data = new byte[ serializer.getVertexNumBytes() ];
 		}
 
 		public void initAdd( final V vertex, final UndoableEditRef< V, E > ref )
@@ -174,7 +182,7 @@ public class DefaultUndoableEditList<
 			final int vi = vertexUndoIdBimap.getId( vertex );
 			final int fi = featureStore.createFeatureUndoId();
 
-			final int dataIndex = dataStack.getNextDataIndex();
+			final long dataIndex = dataStack.getWriteDataIndex();
 			dataStack.out.writeInt( vi );
 			dataStack.out.writeInt( fi );
 			dataStack.out.skip( data.length );
@@ -189,7 +197,7 @@ public class DefaultUndoableEditList<
 			serializer.getBytes( vertex, data );
 			featureStore.storeAll( fi, vertex );
 
-			final int dataIndex = dataStack.getNextDataIndex();
+			final long dataIndex = dataStack.getWriteDataIndex();
 			dataStack.out.writeInt( vi );
 			dataStack.out.writeInt( fi );
 			dataStack.out.write( data );
@@ -197,9 +205,9 @@ public class DefaultUndoableEditList<
 			ref.setDataIndex( dataIndex );
 		}
 
-		public synchronized void doRemoveVertex( final long dataIndex )
+		public long doRemoveVertex( final long dataIndex )
 		{
-			dataStack.setDataIndex( dataIndex );
+			dataStack.setReadDataIndex( dataIndex );
 			final int vi = dataStack.in.readInt();
 			final int fi = dataStack.in.readInt();
 
@@ -208,7 +216,7 @@ public class DefaultUndoableEditList<
 			serializer.getBytes( vertex, data );
 			featureStore.storeAll( fi, vertex );
 
-			dataStack.setDataIndex( dataIndex );
+			dataStack.setWriteDataIndex( dataIndex );
 //			dataStack.out.writeInt( vi );
 //			dataStack.out.writeInt( fi );
 			dataStack.out.skip( 8 );
@@ -216,11 +224,13 @@ public class DefaultUndoableEditList<
 
 			graph.remove( vertex );
 			graph.releaseRef( vref );
+
+			return dataStack.getWriteDataIndex();
 		}
 
-		public synchronized void doAddVertex( final long dataIndex )
+		public long doAddVertex( final long dataIndex )
 		{
-			dataStack.setDataIndex( dataIndex );
+			dataStack.setReadDataIndex( dataIndex );
 			final int vi = dataStack.in.readInt();
 			final int fi = dataStack.in.readInt();
 			dataStack.in.readFully( data );
@@ -232,6 +242,8 @@ public class DefaultUndoableEditList<
 			featureStore.retrieveAll( fi, vertex );
 			graph.notifyVertexAdded( vertex );
 			graph.releaseRef( ref );
+
+			return dataStack.getReadDataIndex();
 		}
 	}
 
@@ -263,13 +275,17 @@ public class DefaultUndoableEditList<
 		@Override
 		public void redo()
 		{
-			addRemoveEdge.doAddEdge( ref.getDataIndex() );
+			final long d0 = ref.getDataIndex();
+			final long d1 = addRemoveEdge.doAddEdge( d0 );
+			dataStack.setWriteDataIndex( d1 );
 		}
 
 		@Override
 		public void undo()
 		{
-			addRemoveEdge.doRemoveEdge( ref.getDataIndex() );
+			final long d0 = ref.getDataIndex();
+			addRemoveEdge.doRemoveEdge( d0 );
+			dataStack.setWriteDataIndex( d0 );
 		}
 	}
 
@@ -301,13 +317,17 @@ public class DefaultUndoableEditList<
 		@Override
 		public void redo()
 		{
-			addRemoveEdge.doRemoveEdge( ref.getDataIndex() );
+			final long d0 = ref.getDataIndex();
+			final long d1 = addRemoveEdge.doRemoveEdge( d0 );
+			dataStack.setWriteDataIndex( d1 );
 		}
 
 		@Override
 		public void undo()
 		{
-			addRemoveEdge.doAddEdge( ref.getDataIndex() );
+			final long d0 = ref.getDataIndex();
+			addRemoveEdge.doAddEdge( d0 );
+			dataStack.setWriteDataIndex( d0 );
 		}
 	}
 
@@ -325,7 +345,7 @@ public class DefaultUndoableEditList<
 			final int ei = edgeUndoIdBimap.getId( edge );
 			final int fi = featureStore.createFeatureUndoId();
 
-			final int dataIndex = dataStack.getNextDataIndex();
+			final long dataIndex = dataStack.getWriteDataIndex();
 			dataStack.out.writeInt( ei );
 			dataStack.out.writeInt( fi );
 //			dataStack.out.writeInt( si );
@@ -350,7 +370,7 @@ public class DefaultUndoableEditList<
 			serializer.getBytes( edge, data );
 			featureStore.storeAll( fi, edge );
 
-			final int dataIndex = dataStack.getNextDataIndex();
+			final long dataIndex = dataStack.getWriteDataIndex();
 			dataStack.out.writeInt( ei );
 			dataStack.out.writeInt( fi );
 			dataStack.out.writeInt( si );
@@ -362,9 +382,9 @@ public class DefaultUndoableEditList<
 			ref.setDataIndex( dataIndex );
 		}
 
-		public void doRemoveEdge( final long dataIndex )
+		public long doRemoveEdge( final long dataIndex )
 		{
-			dataStack.setDataIndex( dataIndex );
+			dataStack.setReadDataIndex( dataIndex );
 			final int ei = dataStack.in.readInt();
 			final int fi = dataStack.in.readInt();
 
@@ -380,7 +400,7 @@ public class DefaultUndoableEditList<
 			serializer.getBytes( edge, data );
 			featureStore.storeAll( fi, edge );
 
-			dataStack.setDataIndex( dataIndex );
+			dataStack.setWriteDataIndex( dataIndex );
 //			dataStack.out.writeInt( ei );
 //			dataStack.out.writeInt( fi );
 			dataStack.out.skip( 8 );
@@ -392,11 +412,13 @@ public class DefaultUndoableEditList<
 
 			graph.remove( edge );
 			graph.releaseRef( ref );
+
+			return dataStack.getWriteDataIndex();
 		}
 
-		public void doAddEdge( final long dataIndex )
+		public long doAddEdge( final long dataIndex )
 		{
-			dataStack.setDataIndex( dataIndex );
+			dataStack.setReadDataIndex( dataIndex );
 			final int ei = dataStack.in.readInt();
 			final int fi = dataStack.in.readInt();
 			final int si = dataStack.in.readInt();
@@ -418,6 +440,8 @@ public class DefaultUndoableEditList<
 			graph.releaseRef( eref );
 			graph.releaseRef( vref2 );
 			graph.releaseRef( vref1 );
+
+			return dataStack.getReadDataIndex();
 		}
 	}
 
@@ -446,7 +470,7 @@ public class DefaultUndoableEditList<
 			final int fuid = feature.getUniqueFeatureId();
 			featureStore.store( fi, feature, vertex );
 
-			final int dataIndex = dataStack.getNextDataIndex();
+			final long dataIndex = dataStack.getWriteDataIndex();
 			dataStack.out.writeInt( vi );
 			dataStack.out.writeInt( fi );
 			dataStack.out.writeInt( fuid );
@@ -457,20 +481,22 @@ public class DefaultUndoableEditList<
 		@Override
 		public void redo()
 		{
-			/*
-			 * Redo und Undo are the same operation: When "crossing" the
-			 * SetFeature from either direction, swap the feature value and the
-			 * stored value.
-			 */
-			undo();
+			final long d0 = ref.getDataIndex();
+			final long d1 = swap( d0 );
+			dataStack.setWriteDataIndex( d1 );
 		}
 
 		@Override
 		public void undo()
 		{
-			final long dataIndex = ref.getDataIndex();
+			final long d0 = ref.getDataIndex();
+			swap( d0 );
+			dataStack.setWriteDataIndex( d0 );
+		}
 
-			dataStack.setDataIndex( dataIndex );
+		private long swap( final long dataIndex )
+		{
+			dataStack.setReadDataIndex( dataIndex );
 			final int vi = dataStack.in.readInt();
 			final int fi = dataStack.in.readInt();
 			final int fuid = dataStack.in.readInt();
@@ -481,6 +507,8 @@ public class DefaultUndoableEditList<
 			final VertexFeature< ?, V, ? > feature = ( VertexFeature< ?, V, ? > ) FeatureRegistry.getVertexFeature( fuid );
 			featureStore.swap( fi, feature, vertex );
 			graph.releaseRef( ref );
+
+			return dataStack.getReadDataIndex();
 		}
 	}
 }

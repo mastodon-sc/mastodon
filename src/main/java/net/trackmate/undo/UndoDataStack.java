@@ -33,24 +33,35 @@ class UndoDataStack
 	}
 
 	/**
-	 * Called before writing data for an {@link UndoableEdit}.
-	 *
-	 * @return
+	 * Get the byte offset at which {@link #out} will write next.
 	 */
-	public int getNextDataIndex()
+	public long getWriteDataIndex()
 	{
 		return wcount;
 	}
 
 	/**
-	 * Called before reading data for an {@link UndoableEdit}.
-	 *
-	 * @param i
+	 * Get the byte offset at which {@link #in} will read next.
 	 */
-	public void setDataIndex( final long i )
+	public long getReadDataIndex()
 	{
-		rcount = wcount;
-		wcount = pos = ( int ) i;
+		return pos;
+	}
+
+	/**
+	 * Set the byte offset at which {@link #out} will write next.
+	 */
+	public void setReadDataIndex( final long i )
+	{
+		pos = ( int ) i;
+	}
+
+	/**
+	 * Set the byte offset at which {@link #in} will read next.
+	 */
+	public void setWriteDataIndex( final long i )
+	{
+		wcount = ( int ) i;
 	}
 
 	/**
@@ -63,12 +74,6 @@ class UndoDataStack
 	 * The write pos of the {@link OutputStream}.
 	 */
 	private int wcount;
-
-	/**
-	 * The number of valid bytes in the current data portion.
-	 * The buffer end for the {@link InputStream}.
-	 */
-	private int rcount;
 
 	/**
 	 * The read pos of the {@link InputStream}.
@@ -199,7 +204,7 @@ class UndoDataStack
 		@Override
 		public int read()
 		{
-			return ( pos < rcount ) ? ( buf[ pos++ ] & 0xff ) : -1;
+			return ( pos < buf.length ) ? ( buf[ pos++ ] & 0xff ) : -1;
 		}
 
 		/**
@@ -241,9 +246,9 @@ class UndoDataStack
 			}
 			else if ( off < 0 || len < 0 || len > b.length - off ) { throw new IndexOutOfBoundsException(); }
 
-			if ( pos >= rcount ) { return -1; }
+			if ( pos >= buf.length ) { return -1; }
 
-			final int avail = rcount - pos;
+			final int avail = buf.length - pos;
 			if ( len > avail )
 			{
 				len = avail;
@@ -269,7 +274,7 @@ class UndoDataStack
 		@Override
 		public synchronized long skip( final long n )
 		{
-			long k = rcount - pos;
+			long k = buf.length - pos;
 			if ( n < k )
 			{
 				k = n < 0 ? 0 : n;
@@ -292,7 +297,7 @@ class UndoDataStack
 		@Override
 		public synchronized int available()
 		{
-			return rcount - pos;
+			return buf.length - pos;
 		}
 
 		/**
