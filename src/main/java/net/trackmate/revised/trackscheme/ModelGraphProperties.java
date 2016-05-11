@@ -3,6 +3,9 @@ package net.trackmate.revised.trackscheme;
 import net.trackmate.graph.GraphIdBimap;
 import net.trackmate.graph.Ref;
 
+/*
+ * TODO: revise javadoc. not true anymore that ModelGraphProperties are read-only.
+ */
 
 /**
  * Interface for classes that access model graph properties.
