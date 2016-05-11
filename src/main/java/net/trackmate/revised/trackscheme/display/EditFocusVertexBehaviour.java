@@ -181,11 +181,6 @@ public class EditFocusVertexBehaviour extends AbstractNamedAction implements Tra
 				public void keyTyped( final KeyEvent e )
 				{
 					reposition();
-					final InputMap im1 = getInputMap( WHEN_ANCESTOR_OF_FOCUSED_COMPONENT );
-					final InputMap im2 = getInputMap( WHEN_IN_FOCUSED_WINDOW );
-					final InputMap im3 = getInputMap( WHEN_FOCUSED );
-					final ActionMap am = getActionMap();
-					System.out.println(  );
 				}
 
 				@Override
