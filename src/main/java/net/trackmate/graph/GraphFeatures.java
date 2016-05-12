@@ -54,15 +54,6 @@ public class GraphFeatures< V extends Vertex< E >, E extends Edge< V > >
 		return fmap;
 	}
 
-	// TODO
-	// TODO
-	// TODO
-	// TODO
-	// TODO
-	// TODO
-	// TODO
-	// TODO
-	// TODO: someone needs to call this!!!
 	public void clear()
 	{
 		vertexFeatureMaps.clear();

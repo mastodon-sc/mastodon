@@ -49,6 +49,7 @@ public class AbstractModelGraph<
 	{
 		vertexPool.clear();
 		edgePool.clear();
+		features.clear();
 	}
 
 	/**
