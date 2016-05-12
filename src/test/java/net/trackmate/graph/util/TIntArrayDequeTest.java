@@ -1,10 +1,10 @@
 package net.trackmate.graph.util;
 
 import static org.junit.Assert.*;
-import net.trackmate.graph.util.TIntArrayDeque;
 
 import org.junit.Test;
 
+import gnu.trove.deque.TIntArrayDeque;
 import gnu.trove.iterator.TIntIterator;
 
 public class TIntArrayDequeTest

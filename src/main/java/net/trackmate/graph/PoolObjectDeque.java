@@ -1,12 +1,12 @@
 package net.trackmate.graph;
 
+import gnu.trove.deque.TIntArrayDeque;
 import gnu.trove.iterator.TIntIterator;
 
 import java.util.Collection;
 import java.util.Iterator;
 
 import net.trackmate.graph.collection.RefDeque;
-import net.trackmate.graph.util.TIntArrayDeque;
 
 public class PoolObjectDeque< O extends Ref< O > > implements PoolObjectCollection< O >, RefDeque< O >
 {

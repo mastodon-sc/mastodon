@@ -1,4 +1,4 @@
-package net.trackmate.graph.util;
+package gnu.trove.deque;
 
 import static gnu.trove.impl.Constants.DEFAULT_CAPACITY;
 import gnu.trove.TIntCollection;

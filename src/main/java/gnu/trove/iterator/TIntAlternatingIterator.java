@@ -1,4 +1,4 @@
-package net.trackmate.graph.util;
+package gnu.trove.iterator;
 
 import gnu.trove.iterator.TIntIterator;
 import gnu.trove.list.TIntList;

@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
+import gnu.trove.iterator.TIntAlternatingIterator;
 import gnu.trove.iterator.TIntIterator;
 import gnu.trove.list.TDoubleList;
 import gnu.trove.list.array.TDoubleArrayList;
@@ -15,7 +16,6 @@ import net.imglib2.RealLocalizable;
 import net.trackmate.graph.Edges;
 import net.trackmate.graph.collection.RefList;
 import net.trackmate.graph.collection.RefSet;
-import net.trackmate.graph.util.TIntAlternatingIterator;
 import net.trackmate.revised.trackscheme.ScreenEdge.ScreenEdgePool;
 import net.trackmate.revised.trackscheme.ScreenVertex.ScreenVertexPool;
 import net.trackmate.revised.trackscheme.ScreenVertexRange.ScreenVertexRangePool;
