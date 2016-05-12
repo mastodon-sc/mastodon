@@ -12,9 +12,6 @@ import net.trackmate.graph.PoolObject;
 import net.trackmate.graph.PoolObjectIdBimap;
 import net.trackmate.graph.mempool.ByteMappedElement;
 import net.trackmate.revised.trackscheme.ModelGraphProperties.ModelVertexProperties;
-import net.trackmate.trackscheme.ScreenEdge;
-import net.trackmate.trackscheme.ScreenVertex;
-
 
 /**
  * TODO javadoc

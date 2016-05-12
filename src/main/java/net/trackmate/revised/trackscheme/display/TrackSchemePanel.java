@@ -34,6 +34,7 @@ import net.trackmate.revised.trackscheme.TrackSchemeNavigation;
 import net.trackmate.revised.trackscheme.TrackSchemeSelection;
 import net.trackmate.revised.trackscheme.TrackSchemeVertex;
 import net.trackmate.revised.trackscheme.display.TrackSchemeOptions.Values;
+import net.trackmate.revised.trackscheme.display.animate.AbstractAnimator;
 import net.trackmate.revised.trackscheme.display.laf.DefaultTrackSchemeOverlay;
 import net.trackmate.revised.trackscheme.display.laf.TrackSchemeStyle;
 import net.trackmate.revised.ui.selection.FocusListener;
@@ -41,7 +42,6 @@ import net.trackmate.revised.ui.selection.HighlightListener;
 import net.trackmate.revised.ui.selection.NavigationEtiquette;
 import net.trackmate.revised.ui.selection.NavigationListener;
 import net.trackmate.revised.ui.selection.SelectionListener;
-import net.trackmate.trackscheme.animate.AbstractAnimator;
 
 public class TrackSchemePanel extends JPanel implements
 		TransformListener< ScreenTransform >,
