@@ -196,13 +196,13 @@ public class PoolObjectPoolObjectMap< K extends Ref< K >, L extends Ref< L > > i
 	}
 
 	@Override
-	public K createRef()
+	public K createKeyRef()
 	{
 		return keyPool.createRef();
 	}
 
 	@Override
-	public void releaseRef( final K obj )
+	public void releaseKeyRef( final K obj )
 	{
 		keyPool.releaseRef( obj );
 	}

@@ -192,7 +192,7 @@ public class PoolObjectPoolObjectMapTwoVertexPoolTest extends PoolObjectPoolObje
 	@Test
 	public void testCreateRef()
 	{
-		final TestVertex ref = map.createRef();
+		final TestVertex ref = map.createKeyRef();
 		assertNotNull( "Created reference object is null.", ref );
 	}
 

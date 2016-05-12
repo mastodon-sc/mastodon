@@ -60,7 +60,7 @@ public class PoolObjectObjectMapTest
 	{
 		assertTrue( "Map should contain the key 'A', does not.", map.containsKey( A ) );
 		assertTrue( "Map should contain the key 'B', does not.", map.containsKey( B ) );
-		TestVertex ref = map.createRef();
+		TestVertex ref = map.createKeyRef();
 		ref = pool.create( ref ).init( 10 );
 		assertFalse( "Map should not contain the key 'ref', but does.", map.containsKey( ref ) );
 	}

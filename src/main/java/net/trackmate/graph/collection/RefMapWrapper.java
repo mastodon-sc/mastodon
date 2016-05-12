@@ -83,13 +83,13 @@ public class RefMapWrapper< K, L > implements RefRefMap< K, L >
 	}
 
 	@Override
-	public K createRef()
+	public K createKeyRef()
 	{
 		return null;
 	}
 
 	@Override
-	public void releaseRef( final K obj )
+	public void releaseKeyRef( final K obj )
 	{}
 
 	@Override

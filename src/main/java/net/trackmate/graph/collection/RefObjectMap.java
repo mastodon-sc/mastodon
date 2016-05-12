@@ -15,7 +15,7 @@ import java.util.Map;
  */
 public interface RefObjectMap< O, V > extends Map< O, V >
 {
-	public O createRef();
+	public O createKeyRef();
 
-	public void releaseRef( final O obj );
+	public void releaseKeyRef( final O obj );
 }

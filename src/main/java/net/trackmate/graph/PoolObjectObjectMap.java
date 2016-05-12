@@ -114,13 +114,13 @@ public class PoolObjectObjectMap< K extends Ref< K >, O > implements Map< K, O >
 	}
 
 	@Override
-	public K createRef()
+	public K createKeyRef()
 	{
 		return pool.createRef();
 	}
 
 	@Override
-	public void releaseRef( final K obj )
+	public void releaseKeyRef( final K obj )
 	{
 		pool.releaseRef( obj );
 	}
@@ -134,7 +134,7 @@ public class PoolObjectObjectMap< K extends Ref< K >, O > implements Map< K, O >
 
 			final Entry< K, O > entry = new Entry< K, O >()
 			{
-				final K ref = createRef();
+				final K ref = createKeyRef();
 
 				@Override
 				public K getKey()
