@@ -214,7 +214,7 @@ public class UndoableEditList<
 		{}
 	}
 
-	private final int idgen = 0;
+	private int idgen = 0;
 
 	private final TIntObjectArrayMap< UndoableEditType< V, E, ? > > undoableEditTypes = new TIntObjectArrayMap<>();
 
@@ -230,7 +230,7 @@ public class UndoableEditList<
 
 		public UndoableEditTypeImp()
 		{
-			typeIndex = idgen;
+			typeIndex = idgen++;
 			undoableEditTypes.put( typeIndex, this );
 		}
 
