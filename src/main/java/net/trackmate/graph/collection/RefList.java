@@ -5,10 +5,15 @@ import java.util.List;
 import java.util.Random;
 
 /**
- * List-like interface for collections that operates on possibly reusable
- * references.
+ * A {@link List} that is a {@link RefCollection}. It provides variants of
+ * {@link List} methods that take object references that can be used for
+ * retrieval. Depending on concrete implementation, these object references can
+ * be cleared, ignored or re-used.
  *
- * TODO
+ * @param <O>
+ *            the type of elements maintained by this list.
+ *
+ * @author Tobias Pietzsch &lt;tobias.pietzsch@gmail.com&gt;
  */
 public interface RefList< O > extends RefCollection< O >, List< O >
 {

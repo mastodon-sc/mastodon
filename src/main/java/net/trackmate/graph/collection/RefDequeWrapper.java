@@ -6,7 +6,8 @@ import java.util.Iterator;
 /**
  * Wraps a {@link Deque} as a {@link RefDeque}.
  *
- * @param <O> the type of elements maintained by this deque.
+ * @param <O>
+ *            the type of elements maintained by this deque.
  *
  * @author Tobias Pietzsch &lt;tobias.pietzsch@gmail.com&gt;
  */

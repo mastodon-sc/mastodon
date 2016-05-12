@@ -7,6 +7,13 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.Random;
 
+/**
+ * Wraps a standard {@link List} in a {@link RefList}.
+ *
+ * @param <O>
+ *
+ * @author Tobias Pietzsch &lt;tobias.pietzsch@gmail.com&gt;
+ */
 public class RefListWrapper< O > extends AbstractRefCollectionWrapper< O, List< O > > implements RefList< O >
 {
 	RefListWrapper( final List< O > list )

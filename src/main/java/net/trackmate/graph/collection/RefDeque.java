@@ -3,6 +3,17 @@ package net.trackmate.graph.collection;
 import java.util.Deque;
 import java.util.NoSuchElementException;
 
+/**
+ * A {@link Deque} that is a {@link RefCollection}. It provides variants of
+ * {@link Deque} methods that take object references that can be used for
+ * retrieval. Depending on concrete implementation, these object references can
+ * be cleared, ignored or re-used.
+ *
+ * @param <O>
+ *            the type of elements maintained by this deque.
+ *
+ * @author Tobias Pietzsch &lt;tobias.pietzsch@gmail.com&gt;
+ */
 public interface RefDeque< O > extends RefCollection< O >, Deque< O >
 {
     /**

@@ -2,7 +2,21 @@ package net.trackmate.graph.collection;
 
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.List;
 
+/**
+ * Wraps a {@link Collection} as a {@link RefCollection}.
+ * <p>
+ * This is the base class for wrappers of specific {@link Collection}s, e.g.,
+ * {@link RefListWrapper} wraps a {@link List} as a {@link RefList}.
+ *
+ * @param <O>
+ *            type of objects stored in the {@link Collection}.
+ * @param <C>
+ *            type of the {@link Collection}
+ *
+ * @author Tobias Pietzsch &lt;tobias.pietzsch@gmail.com&gt;
+ */
 public abstract class AbstractRefCollectionWrapper< O, C extends Collection<  O  > > implements RefCollection< O >
 {
 	protected final C collection;

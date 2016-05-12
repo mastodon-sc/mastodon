@@ -5,7 +5,7 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * Wraps a standard {@link Map} in a {@link RefRefMap}.
+ * Wraps a standard {@link Map} as a {@link RefRefMap}.
  */
 public class RefMapWrapper< K, L > implements RefRefMap< K, L >
 {

@@ -6,7 +6,8 @@ import java.util.Iterator;
 /**
  * Wraps a {@link Deque} as a {@link RefStack}.
  *
- * @param <O> the type of elements maintained by this stack.
+ * @param <O>
+ *            the type of elements maintained by this stack.
  *
  * @author Tobias Pietzsch &lt;tobias.pietzsch@gmail.com&gt;
  */

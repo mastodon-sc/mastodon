@@ -2,6 +2,7 @@ package net.trackmate.graph.collection;
 
 import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Deque;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -15,6 +16,17 @@ import net.trackmate.graph.ReadOnlyGraph;
 import net.trackmate.graph.SafePoolObjectIteratorWrapper;
 import net.trackmate.graph.Vertex;
 
+/**
+ * Static utility methods to create {@link RefCollection}s of vertices and edges
+ * of a {@link ReadOnlyGraph}.
+ * <p>
+ * If the graph implements interfaces for providing specific
+ * {@link RefCollection} implementations (e.g., {@link ListCreator}) these
+ * specific implementations are used. Otherwise, standard {@code java.util}
+ * {@link Collections} are created and wrapped as {@link RefCollection}.
+ *
+ * @author Tobias Pietzsch &lt;tobias.pietzsch@gmail.com&gt;
+ */
 public class CollectionUtils
 {
 	public static < V extends Vertex< ? > > RefSet< V > createVertexSet( final ReadOnlyGraph< V, ? > graph )
