@@ -2,6 +2,10 @@ package net.trackmate.graph.mempool;
 
 import java.util.Iterator;
 
+/*
+ * TODO: implement MultiArrayMemPool, a MemPool that keeps data in multiple MappedElementArray (to allow for larger pools).
+ */
+
 /**
  * A pool of {@link MappedElement MappedElements}. This is realized on top of
  * one or more {@link MappedElementArray}. It has a current size() and capacity,
