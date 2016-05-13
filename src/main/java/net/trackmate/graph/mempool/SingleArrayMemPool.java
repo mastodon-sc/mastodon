@@ -16,7 +16,7 @@ public class SingleArrayMemPool< A extends MappedElementArray< A, T >, T extends
 	public SingleArrayMemPool( final MappedElementArray.Factory< A > arrayFactory, final int capacity, final int bytesPerElement )
 	{
 		super( capacity, bytesPerElement );
-		data = arrayFactory.createArray( ( int ) capacity, this.bytesPerElement );
+		data = arrayFactory.createArray( capacity, this.bytesPerElement );
 		dataAccess = data.createAccess();
 	}
 
@@ -43,8 +43,6 @@ public class SingleArrayMemPool< A extends MappedElementArray< A, T >, T extends
 	@Override
 	public void updateAccess( final T access, final int index )
 	{
-		// TODO: create data.updateAccessIndex() that does not update the dataArray of the access:
-		// This can be used in SingleArrayPool (but not in MultiArrayPool)
 		data.updateAccess( access, index );
 	}
 
