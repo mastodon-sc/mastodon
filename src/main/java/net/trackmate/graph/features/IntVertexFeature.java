@@ -68,16 +68,11 @@ public final class IntVertexFeature< V extends Vertex< ? > > extends VertexFeatu
 		@Override
 		public void set( final Integer value )
 		{
-			// TODO
-			// TODO
-			// TODO
-			// TODO
-			// TODO
-			// TODO
-			// TODO
-			// TODO
-			// TODO handle null, forward to set( int ).
-			featureMap.put( vertex, value );
+			notify.notifyBeforeFeatureChange();
+			if ( value == null )
+				featureMap.remove( vertex );
+			else
+				featureMap.put( vertex, value.intValue() );
 		}
 
 		public void set( final int value )
