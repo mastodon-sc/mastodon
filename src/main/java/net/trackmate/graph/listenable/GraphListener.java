@@ -43,24 +43,4 @@ public interface GraphListener< V extends Vertex< E >, E extends Edge< V > >
 	 *            the edge removed.
 	 */
 	public void edgeRemoved( E edge );
-
-//	/**
-//	 * Called when a {@code beginUpdate()} event is called on the graph.
-//	 */
-//	public void updateBegun();
-//
-//	/**
-//	 * Called when a {@code endUpdate()} event is called on the graph.
-//	 */
-//	public void updateEnded();
-//
-//	/**
-//	 * Called when a {@code pauseUpdate()} event is called on the graph.
-//	 */
-//	public void updatePaused();
-//
-//	/**
-//	 * Called when a {@code resumeUpdate()} event is called on the graph.
-//	 */
-//	public void updateResumed();
 }
