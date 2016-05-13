@@ -82,6 +82,13 @@ public final class IntVertexFeature< V extends Vertex< ? > > extends VertexFeatu
 		}
 
 		@Override
+		public void remove()
+		{
+			notify.notifyBeforeFeatureChange();
+			featureMap.remove( vertex );
+		}
+
+		@Override
 		public Integer get()
 		{
 			final int i = getInt();

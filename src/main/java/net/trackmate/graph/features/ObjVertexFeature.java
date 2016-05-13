@@ -70,6 +70,13 @@ public final class ObjVertexFeature< V extends Vertex< ? >, O > extends VertexFe
 		}
 
 		@Override
+		public void remove()
+		{
+			notify.notifyBeforeFeatureChange();
+			featureMap.remove( vertex );
+		}
+
+		@Override
 		public O get()
 		{
 			return featureMap.get( vertex );
