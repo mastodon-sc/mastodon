@@ -13,10 +13,48 @@ import net.trackmate.graph.VertexFeature;
 import net.trackmate.graph.collection.CollectionUtils;
 import net.trackmate.graph.features.IntVertexFeature.IntFeatureValue;
 
+/**
+ * A {@code int}-valued {@link VertexFeature}.
+ * <p>
+ * To use features, create exactly one {@link VertexFeature} object for each
+ * feature you want to use.
+ *
+ * <pre>
+ * <code>
+ *	public static final ObjVertexFeature<V,String> LABEL = new ObjVertexFeature<>("label");
+ *	public static final IntVertexFeature<V> ID = new IntVertexFeature<>("id");
+ * </code>
+ * </pre>
+ *
+ * Then use these objects as keys to access feature values.
+ *
+ * <pre>
+ * <code>
+ *	String label = vertex.feature(LABEL).get();
+ *	vertex.feature(ID).set(10);
+ * </code>
+ * </pre>
+ *
+ * @param <V>
+ *            the vertex type
+ *
+ * @author Tobias Pietzsch &lt;tobias.pietzsch@gmail.com&gt;
+ */
 public final class IntVertexFeature< V extends Vertex< ? > > extends VertexFeature< TObjectIntMap< V >, V, IntFeatureValue< V > >
 {
 	private final int noEntryValue;
 
+	/**
+	 * Create a new feature.
+	 *
+	 * @param name
+	 *            the unique name of the feature.
+	 * @param noEntryValue
+	 *            a {@code int} value that represents null for the Value set.
+	 * @throws DuplicateKeyException
+	 *             if a {@link VertexFeature} with the same {@code name} already
+	 *             exists.
+	 */
 	public IntVertexFeature( final String name, final int noEntryValue ) throws DuplicateKeyException
 	{
 		super( name );

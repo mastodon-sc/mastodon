@@ -13,8 +13,46 @@ import net.trackmate.graph.Vertex;
 import net.trackmate.graph.VertexFeature;
 import net.trackmate.graph.collection.CollectionUtils;
 
+/**
+ * A {@code Object}-valued {@link VertexFeature}.
+ * <p>
+ * To use features, create exactly one {@link VertexFeature} object for each
+ * feature you want to use.
+ *
+ * <pre>
+ * <code>
+ *	public static final ObjVertexFeature<V,String> LABEL = new ObjVertexFeature<>("label");
+ *	public static final IntVertexFeature<V> ID = new IntVertexFeature<>("id");
+ * </code>
+ * </pre>
+ *
+ * Then use these objects as keys to access feature values.
+ *
+ * <pre>
+ * <code>
+ *	String label = vertex.feature(LABEL).get();
+ *	vertex.feature(ID).set(10);
+ * </code>
+ * </pre>
+ *
+ * @param <V>
+ *            the vertex type
+ * @param <O>
+ *            the (feature) value type.
+ *
+ * @author Tobias Pietzsch &lt;tobias.pietzsch@gmail.com&gt;
+ */
 public final class ObjVertexFeature< V extends Vertex< ? >, O > extends VertexFeature< Map< V, O >, V, FeatureValue< O > >
 {
+	/**
+	 * Create a new feature.
+	 *
+	 * @param name
+	 *            the unique name of the feature.
+	 * @throws DuplicateKeyException
+	 *             if a {@link VertexFeature} with the same {@code name} already
+	 *             exists.
+	 */
 	public ObjVertexFeature( final String name ) throws DuplicateKeyException
 	{
 		super( name );
