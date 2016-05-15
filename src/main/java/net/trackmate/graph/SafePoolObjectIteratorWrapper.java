@@ -12,6 +12,7 @@ import java.util.Iterator;
  *
  * @author Tobias Pietzsch &lt;tobias.pietzsch@gmail.com&gt;
  */
+// TODO: rename SafeRefIteratorWrapper, move to collection package
 public class SafePoolObjectIteratorWrapper< O extends PoolObject< O, ? > > implements Iterator< O >
 {
 	private final Iterator< O > iterator;
