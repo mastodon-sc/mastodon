@@ -1,7 +1,6 @@
 package net.trackmate.graph.zzgraphinterfaces;
 
-import java.util.Collection;
-import java.util.Iterator;
+import net.trackmate.graph.collection.RefCollection;
 
 /**
  * A read-only graph consisting of vertices of type {@code V} and edges of type
@@ -29,42 +28,27 @@ public interface ReadOnlyGraph< V extends Vertex< E >, E extends Edge< V > >
 
 	public void releaseRef( final E ref );
 
-	public void releaseRef( final V ... refs );
-
-	public void releaseRef( final E ... refs );
+	/**
+	 * Returns the vertices of this graph as an unmodifiable collection. In the
+	 * returned {@link RefCollection}, only {@code isEmpty(),} {@code size(),}
+	 * {@code iterator(),} {@code createRef()}, and {@code releaseRef()} are
+	 * guaranteed to be implemented.
+	 *
+	 * @return unmodifiable collection of vertices. Only {@code isEmpty(),}
+	 *         {@code size(),} {@code iterator(),} {@code createRef()}, and
+	 *         {@code releaseRef()} are guaranteed to be implemented.
+	 */
+	public RefCollection< V > vertices();
 
 	/**
-	 * Returns an iterator that will iterate over all the vertices of this
-	 * graph.
+	 * Returns the edges of this graph as an unmodifiable collection. In the
+	 * returned {@link RefCollection}, only {@code isEmpty(),} {@code size(),}
+	 * {@code iterator(),} {@code createRef()}, and {@code releaseRef()} are
+	 * guaranteed to be implemented.
 	 *
-	 * @return a new {@link Iterator}.
+	 * @return unmodifiable collection of edges. Only {@code isEmpty(),}
+	 *         {@code size(),} {@code iterator(),} {@code createRef()}, and
+	 *         {@code releaseRef()} are guaranteed to be implemented.
 	 */
-	@Deprecated
-	public Iterator< V > vertexIterator();
-
-	/**
-	 * TODO
-	 *
-	 * returns unmodifiable collection. Only isEmpty(), size(), iterator() are guaranteed to be implemented.
-	 *
-	 * @return unmodifiable collection of vertices.
-	 */
-	public Collection< V > vertices();
-
-	/**
-	 * Returns an iterator that will iterate over all the edges of this graph.
-	 *
-	 * @return a new {@link Iterator}.
-	 */
-	@Deprecated
-	public Iterator< E > edgeIterator();
-
-	/**
-	 * TODO
-	 *
-	 * returns unmodifiable collection. Only isEmpty(), size(), iterator() are guaranteed to be implemented.
-	 *
-	 * @return unmodifiable collection of edges.
-	 */
-	public Collection< E > edges();
+	public RefCollection< E > edges();
 }

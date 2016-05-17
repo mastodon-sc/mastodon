@@ -1,17 +1,16 @@
 package net.trackmate.revised.bdv.overlay.wrap;
 
-import java.util.Collection;
-import java.util.Iterator;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 import net.trackmate.graph.collection.CollectionUtils.ListCreator;
+import net.trackmate.graph.collection.RefCollection;
+import net.trackmate.graph.collection.RefList;
 import net.trackmate.graph.collection.pool.PoolObjectList;
 import net.trackmate.graph.zzgraphinterfaces.Edge;
 import net.trackmate.graph.zzgraphinterfaces.GraphIdBimap;
 import net.trackmate.graph.zzgraphinterfaces.ReadOnlyGraph;
 import net.trackmate.graph.zzgraphinterfaces.Vertex;
 import net.trackmate.graph.zzrefcollections.RefPool;
-import net.trackmate.graph.collection.RefList;
 import net.trackmate.revised.bdv.overlay.OverlayGraph;
 import net.trackmate.spatial.SpatioTemporalIndex;
 
@@ -80,22 +79,6 @@ public class OverlayGraphWrapper< V extends Vertex< E >, E extends Edge< V > > i
 		tmpEdgeRefs.add( ref );
 	}
 
-	@SuppressWarnings( "unchecked" )
-	@Override
-	public void releaseRef( final OverlayVertexWrapper< V, E >... refs )
-	{
-		for ( final OverlayVertexWrapper< V, E > ref : refs )
-			tmpVertexRefs.add( ref );
-	}
-
-	@SuppressWarnings( "unchecked" )
-	@Override
-	public void releaseRef( final OverlayEdgeWrapper< V, E >... refs )
-	{
-		for ( final OverlayEdgeWrapper< V, E > ref : refs )
-			tmpEdgeRefs.add( ref );
-	}
-
 	@Override
 	public OverlayEdgeWrapper< V, E > getEdge( final OverlayVertexWrapper< V, E > source, final OverlayVertexWrapper< V, E > target )
 	{
@@ -111,26 +94,14 @@ public class OverlayGraphWrapper< V extends Vertex< E >, E extends Edge< V > > i
 	}
 
 	@Override
-	public Iterator< OverlayVertexWrapper< V, E > > vertexIterator()
-	{
-		return vertices().iterator();
-	}
-
-	@Override
-	public Iterator< OverlayEdgeWrapper< V, E > > edgeIterator()
-	{
-		return edges().iterator();
-	}
-
-	@Override
-	public Collection< OverlayVertexWrapper< V, E > > vertices()
+	public RefCollection< OverlayVertexWrapper< V, E > > vertices()
 	{
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public Collection< OverlayEdgeWrapper< V, E > > edges()
+	public RefCollection< OverlayEdgeWrapper< V, E > > edges()
 	{
 		// TODO Auto-generated method stub
 		return null;

@@ -4,6 +4,8 @@ import java.util.Collection;
 import java.util.Iterator;
 
 import net.trackmate.graph.collection.CollectionUtils.CollectionCreator;
+import net.trackmate.graph.collection.IntRefMap;
+import net.trackmate.graph.collection.RefCollection;
 import net.trackmate.graph.collection.pool.IntPoolObjectMap;
 import net.trackmate.graph.collection.pool.PoolObjectDeque;
 import net.trackmate.graph.collection.pool.PoolObjectIntMap;
@@ -12,7 +14,6 @@ import net.trackmate.graph.collection.pool.PoolObjectObjectMap;
 import net.trackmate.graph.collection.pool.PoolObjectPoolObjectMap;
 import net.trackmate.graph.collection.pool.PoolObjectSet;
 import net.trackmate.graph.collection.pool.PoolObjectStack;
-import net.trackmate.graph.collection.IntRefMap;
 import net.trackmate.graph.mempool.MappedElement;
 import net.trackmate.graph.zzgraphinterfaces.Graph;
 
@@ -50,7 +51,7 @@ public class GraphImp<
 
 	protected final EP edgePool;
 
-	private final Collection< V > vertices = new MyAbstractCollection< V >()
+	private final RefCollection< V > vertices = new MyAbstractCollection< V >()
 	{
 		@Override
 		public Iterator< V > iterator()
@@ -63,9 +64,21 @@ public class GraphImp<
 		{
 			return vertexPool.size();
 		}
+
+		@Override
+		public V createRef()
+		{
+			return vertexPool.createRef();
+		}
+
+		@Override
+		public void releaseRef( final V obj )
+		{
+			vertexPool.releaseRef( obj );
+		}
 	};
 
-	private final Collection< E > edges = new MyAbstractCollection< E >()
+	private final RefCollection< E > edges = new MyAbstractCollection< E >()
 	{
 		@Override
 		public Iterator< E > iterator()
@@ -77,6 +90,18 @@ public class GraphImp<
 		public int size()
 		{
 			return edgePool.size();
+		}
+
+		@Override
+		public E createRef()
+		{
+			return edgePool.createRef();
+		}
+
+		@Override
+		public void releaseRef( final E obj )
+		{
+			edgePool.releaseRef( obj );
 		}
 	};
 
@@ -144,25 +169,13 @@ public class GraphImp<
 	}
 
 	@Override
-	public Iterator< V > vertexIterator()
-	{
-		return vertices.iterator();
-	}
-
-	@Override
-	public Iterator< E > edgeIterator()
-	{
-		return edges.iterator();
-	}
-
-	@Override
-	public Collection< V > vertices()
+	public RefCollection< V > vertices()
 	{
 		return vertices;
 	}
 
 	@Override
-	public Collection< E > edges()
+	public RefCollection< E > edges()
 	{
 		return edges;
 	}
@@ -207,20 +220,6 @@ public class GraphImp<
 	public void releaseRef( final E ref )
 	{
 		edgePool.releaseRef( ref );
-	}
-
-	@Override
-	public void releaseRef( final V... refs )
-	{
-		for ( final V ref : refs )
-			vertexPool.releaseRef( ref );
-	}
-
-	@Override
-	public void releaseRef( final E... refs )
-	{
-		for ( final E ref : refs )
-			edgePool.releaseRef( ref );
 	}
 
 	@Override
@@ -415,7 +414,8 @@ public class GraphImp<
 		return new IntPoolObjectMap< V >( vertexPool, noEntryKey, initialCapacity );
 	}
 
-	private static abstract class MyAbstractCollection< O > implements Collection< O >
+	// TODO: move to new file? may be generally useful.
+	private static abstract class MyAbstractCollection< O > implements RefCollection< O >
 	{
 		@Override
 		public boolean isEmpty()

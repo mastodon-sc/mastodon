@@ -6,6 +6,10 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.List;
 
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+
 import net.trackmate.graph.TestEdge;
 import net.trackmate.graph.TestGraph;
 import net.trackmate.graph.TestVertex;
@@ -14,10 +18,6 @@ import net.trackmate.graph.collection.RefList;
 import net.trackmate.graph.object.ObjectEdge;
 import net.trackmate.graph.object.ObjectGraph;
 import net.trackmate.graph.object.ObjectVertex;
-
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
 
 public class TopologicalSortTest
 {
@@ -182,7 +182,7 @@ public class TopologicalSortTest
 				assertTrue( "The dependency of " + current + ", " + target + ", could not be found in the sorted list before him.", dependenceInList );
 			}
 		}
-		assertEquals( "Did not iterate through all the vertices of the graph.", graphObj.getVertices().size(), sort.get().size() );
+		assertEquals( "Did not iterate through all the vertices of the graph.", graphObj.vertices().size(), sort.get().size() );
 	}
 
 	@Test

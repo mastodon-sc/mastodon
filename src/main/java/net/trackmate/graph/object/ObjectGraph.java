@@ -1,19 +1,23 @@
 package net.trackmate.graph.object;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.Iterator;
 
+import net.trackmate.graph.collection.RefCollection;
+import net.trackmate.graph.collection.wrap.RefSetWrapper;
 import net.trackmate.graph.zzgraphinterfaces.Graph;
 
 public class ObjectGraph< K > implements Graph< ObjectVertex< K >, ObjectEdge< K > >
 {
 
-	private final Collection< ObjectVertex< K > > vertices = new HashSet< ObjectVertex< K > >();
+	private final HashSet< ObjectVertex< K > > vertices = new HashSet<>();
 
-	private final Collection< ObjectEdge< K >> edges = new HashSet< ObjectEdge< K > >();
+	private final HashSet< ObjectEdge< K > > edges = new HashSet<>();
+
+	private final RefSetWrapper< ObjectVertex< K > > unmodifiableVertices = new RefSetWrapper<>( Collections.unmodifiableSet( vertices ) );
+
+	private final RefSetWrapper< ObjectEdge< K > > unmodifiableEdges = new RefSetWrapper<>( Collections.unmodifiableSet( edges ) );
 
 	@Override
 	public ObjectVertex< K > addVertex()
@@ -126,27 +130,15 @@ public class ObjectGraph< K > implements Graph< ObjectVertex< K >, ObjectEdge< K
 	}
 
 	@Override
-	public Iterator< ObjectVertex< K > > vertexIterator()
+	public RefCollection< ObjectVertex< K > > vertices()
 	{
-		return vertices.iterator();
+		return unmodifiableVertices;
 	}
 
 	@Override
-	public Iterator< ObjectEdge< K > > edgeIterator()
+	public RefCollection< ObjectEdge< K > > edges()
 	{
-		return edges.iterator();
-	}
-
-	@Override
-	public Collection< ObjectVertex< K > > vertices()
-	{
-		return Collections.unmodifiableCollection( vertices );
-	}
-
-	@Override
-	public Collection< ObjectEdge< K > > edges()
-	{
-		return Collections.unmodifiableCollection( edges );
+		return unmodifiableEdges;
 	}
 
 	@Override
@@ -168,22 +160,4 @@ public class ObjectGraph< K > implements Graph< ObjectVertex< K >, ObjectEdge< K
 	@Override
 	public void releaseRef( final ObjectEdge< K > ref )
 	{}
-
-	@Override
-	public void releaseRef( final ObjectVertex< K >... refs )
-	{}
-
-	@Override
-	public void releaseRef( final ObjectEdge< K >... refs )
-	{}
-
-	public Collection< ObjectVertex< K >> getVertices()
-	{
-		return vertices;
-	}
-
-	public Collection< ObjectEdge< K >> getEdges()
-	{
-		return edges;
-	}
 }

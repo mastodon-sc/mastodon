@@ -75,16 +75,6 @@ public abstract class AbstractGraphAlgorithm< V extends Vertex< E >, E extends E
 		graph.releaseRef( ref );
 	}
 
-	protected void releaseRef( final V ... refs )
-	{
-		graph.releaseRef( refs );
-	}
-
-	protected void releaseRef( final E ... refs )
-	{
-		graph.releaseRef( refs );
-	}
-
 	protected RefSet< V > createVertexSet()
 	{
 		return CollectionUtils.createVertexSet( graph );
