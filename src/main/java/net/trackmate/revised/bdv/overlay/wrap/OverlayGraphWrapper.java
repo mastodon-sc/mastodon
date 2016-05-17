@@ -2,7 +2,6 @@ package net.trackmate.revised.bdv.overlay.wrap;
 
 import java.util.concurrent.ConcurrentLinkedQueue;
 
-import net.trackmate.graph.collection.CollectionUtils.ListCreator;
 import net.trackmate.graph.collection.RefCollection;
 import net.trackmate.graph.collection.RefList;
 import net.trackmate.graph.collection.pool.PoolObjectList;
@@ -10,6 +9,7 @@ import net.trackmate.graph.zzgraphinterfaces.Edge;
 import net.trackmate.graph.zzgraphinterfaces.GraphIdBimap;
 import net.trackmate.graph.zzgraphinterfaces.ReadOnlyGraph;
 import net.trackmate.graph.zzgraphinterfaces.Vertex;
+import net.trackmate.graph.zzgraphinterfaces.CollectionUtils.ListCreator;
 import net.trackmate.graph.zzrefcollections.RefPool;
 import net.trackmate.revised.bdv.overlay.OverlayGraph;
 import net.trackmate.spatial.SpatioTemporalIndex;

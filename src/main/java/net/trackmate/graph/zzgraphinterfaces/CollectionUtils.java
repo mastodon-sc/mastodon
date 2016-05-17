@@ -1,26 +1,25 @@
-package net.trackmate.graph.collection;
+package net.trackmate.graph.zzgraphinterfaces;
+
+import static net.trackmate.graph.collection.RefCollections.wrap;
+import static net.trackmate.graph.collection.RefCollections.wrapAsStack;
 
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Deque;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
+import net.trackmate.graph.collection.IntRefMap;
+import net.trackmate.graph.collection.RefCollection;
+import net.trackmate.graph.collection.RefDeque;
+import net.trackmate.graph.collection.RefIntMap;
+import net.trackmate.graph.collection.RefList;
+import net.trackmate.graph.collection.RefObjectMap;
+import net.trackmate.graph.collection.RefRefMap;
+import net.trackmate.graph.collection.RefSet;
+import net.trackmate.graph.collection.RefStack;
 import net.trackmate.graph.collection.wrap.IntRefMapWrapper;
-import net.trackmate.graph.collection.wrap.RefDequeWrapper;
 import net.trackmate.graph.collection.wrap.RefIntMapWrapper;
-import net.trackmate.graph.collection.wrap.RefListWrapper;
-import net.trackmate.graph.collection.wrap.RefMapWrapper;
-import net.trackmate.graph.collection.wrap.RefSetWrapper;
-import net.trackmate.graph.collection.wrap.RefStackWrapper;
-import net.trackmate.graph.zzgraphinterfaces.Edge;
-import net.trackmate.graph.zzgraphinterfaces.ReadOnlyGraph;
-import net.trackmate.graph.zzgraphinterfaces.Vertex;
 
 /**
  * Static utility methods to create {@link RefCollection}s of vertices and edges
@@ -291,15 +290,6 @@ public class CollectionUtils
 			return new RefIntMapWrapper< E >( noEntryValue, initialCapacity );
 	}
 
-	@SuppressWarnings( { "rawtypes", "unchecked" } )
-	public static < O > Iterator< O > safeIterator( final Iterator< O > iterator, final RefCollection< O > collection )
-	{
-		if ( iterator instanceof MaybeRefIterator )
-			if ( ( ( MaybeRefIterator ) iterator ).isRefIterator() )
-				return new SafeRefIteratorWrapper( iterator, collection );
-		return iterator;
-	}
-
 	public static interface SetCreator< V extends Vertex< E >, E extends Edge< V > > extends ReadOnlyGraph< V, E >
 	{
 		public RefSet< V > createVertexSet();
@@ -387,29 +377,4 @@ public class CollectionUtils
 			StackCreator< V, E >,
 			MapCreator< V, E >
 	{}
-
-	private static < O > RefSet< O > wrap( final Set< O > set )
-	{
-		return new RefSetWrapper< O >( set );
-	}
-
-	private static < O > RefList< O > wrap( final List< O > set )
-	{
-		return new RefListWrapper< O >( set );
-	}
-
-	private static < O > RefDeque< O > wrap( final Deque< O > set )
-	{
-		return new RefDequeWrapper< O >( set );
-	}
-
-	private static < O > RefStack< O > wrapAsStack( final Deque< O > set )
-	{
-		return new RefStackWrapper< O >( set );
-	}
-
-	private static < K, O > RefRefMap< K, O > wrap( final Map< K, O > map )
-	{
-		return new RefMapWrapper< K, O >( map );
-	}
 }

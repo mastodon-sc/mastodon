@@ -3,7 +3,6 @@ package net.trackmate.graph;
 import java.util.Collection;
 import java.util.Iterator;
 
-import net.trackmate.graph.collection.CollectionUtils.CollectionCreator;
 import net.trackmate.graph.collection.IntRefMap;
 import net.trackmate.graph.collection.RefCollection;
 import net.trackmate.graph.collection.pool.IntPoolObjectMap;
@@ -16,6 +15,7 @@ import net.trackmate.graph.collection.pool.PoolObjectSet;
 import net.trackmate.graph.collection.pool.PoolObjectStack;
 import net.trackmate.graph.mempool.MappedElement;
 import net.trackmate.graph.zzgraphinterfaces.Graph;
+import net.trackmate.graph.zzgraphinterfaces.CollectionUtils.CollectionCreator;
 
 public class GraphImp<
 		VP extends AbstractVertexPool< V, E, T >,

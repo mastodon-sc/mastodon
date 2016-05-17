@@ -2,7 +2,8 @@ package net.trackmate.graph.algorithm;
 
 import java.util.Iterator;
 
-import net.trackmate.graph.collection.CollectionUtils;
+import net.trackmate.graph.collection.RefCollections;
+import net.trackmate.graph.collection.RefCollections;
 import net.trackmate.graph.collection.RefDeque;
 import net.trackmate.graph.collection.RefIntMap;
 import net.trackmate.graph.collection.RefList;
@@ -10,6 +11,7 @@ import net.trackmate.graph.collection.RefObjectMap;
 import net.trackmate.graph.collection.RefRefMap;
 import net.trackmate.graph.collection.RefSet;
 import net.trackmate.graph.collection.RefStack;
+import net.trackmate.graph.zzgraphinterfaces.CollectionUtils;
 import net.trackmate.graph.zzgraphinterfaces.Edge;
 import net.trackmate.graph.zzgraphinterfaces.Graph;
 import net.trackmate.graph.zzgraphinterfaces.ReadOnlyGraph;
@@ -227,11 +229,11 @@ public abstract class AbstractGraphAlgorithm< V extends Vertex< E >, E extends E
 
 	protected Iterator< V > safeVertexIterator( final Iterator< V > iterator )
 	{
-		return CollectionUtils.safeIterator( iterator, graph.vertices() );
+		return RefCollections.safeIterator( iterator, graph.vertices() );
 	}
 
 	protected Iterator< E > safeEdgeIterator( final Iterator< E > iterator )
 	{
-		return CollectionUtils.safeIterator( iterator, graph.edges() );
+		return RefCollections.safeIterator( iterator, graph.edges() );
 	}
 }

@@ -4,8 +4,8 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Set;
 
-import net.trackmate.graph.collection.CollectionUtils;
 import net.trackmate.graph.collection.IntRefMap;
+import net.trackmate.graph.zzgraphinterfaces.CollectionUtils;
 import net.trackmate.revised.model.mamut.Link;
 import net.trackmate.revised.model.mamut.Model;
 import net.trackmate.revised.model.mamut.Spot;
