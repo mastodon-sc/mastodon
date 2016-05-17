@@ -1,8 +1,9 @@
 package net.trackmate.graph.collection.pool;
 
 import net.trackmate.graph.collection.IdBimap;
-import net.trackmate.graph.zzrefcollections.Pool;
 import net.trackmate.graph.zzrefcollections.PoolObject;
+import net.trackmate.graph.zzrefcollections.Ref;
+import net.trackmate.graph.zzrefcollections.RefPool;
 
 /**
  * Bidirectional mapping between {@link PoolObject}s and their internal pool
@@ -14,14 +15,14 @@ import net.trackmate.graph.zzrefcollections.PoolObject;
  * @author Tobias Pietzsch &lt;tobias.pietzsch@gmail.com&gt;
  */
 // TODO rename RefIdBimap
-// TODO use Ref instead of PoolObject
-public class PoolObjectIdBimap< O extends PoolObject< O, ? > > implements IdBimap< O >
+public class PoolObjectIdBimap< O extends Ref< O > > implements IdBimap< O >
 {
-	private final Pool< O, ? > pool;
+	private final RefPool< O > pool;
 
-	public PoolObjectIdBimap( final Pool< O, ? > pool )
+	public PoolObjectIdBimap( final RefPool< O > pool )
 	{
-		this.pool = pool;}
+		this.pool = pool;
+	}
 
 	@Override
 	public int getId( final O o )
