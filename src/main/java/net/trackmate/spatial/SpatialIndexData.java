@@ -9,19 +9,19 @@ import net.imglib2.Sampler;
 import net.imglib2.algorithm.kdtree.ConvexPolytope;
 import net.imglib2.algorithm.kdtree.HyperPlane;
 import net.imglib2.neighborsearch.NearestNeighborSearch;
-import net.trackmate.graph.collection.RefList;
-import net.trackmate.graph.collection.RefRefMap;
-import net.trackmate.graph.collection.RefSet;
-import net.trackmate.graph.collection.pool.RefArrayList;
-import net.trackmate.graph.collection.pool.RefSetImp;
-import net.trackmate.graph.mempool.DoubleMappedElement;
-import net.trackmate.graph.zzrefcollections.Ref;
-import net.trackmate.graph.zzrefcollections.RefPool;
+import net.trackmate.Ref;
+import net.trackmate.RefPool;
+import net.trackmate.collection.RefList;
+import net.trackmate.collection.RefRefMap;
+import net.trackmate.collection.RefSet;
+import net.trackmate.collection.ref.RefArrayList;
+import net.trackmate.collection.ref.RefSetImp;
 import net.trackmate.kdtree.ClipConvexPolytopeKDTree;
 import net.trackmate.kdtree.KDTree;
 import net.trackmate.kdtree.KDTreeNode;
 import net.trackmate.kdtree.KDTreeValidIterator;
 import net.trackmate.kdtree.NearestValidNeighborSearchOnKDTree;
+import net.trackmate.pool.DoubleMappedElement;
 
 /**
  * Spatial index of {@link RealLocalizable} objects.

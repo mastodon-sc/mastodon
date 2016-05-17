@@ -8,7 +8,7 @@ import java.util.Iterator;
 
 import org.junit.Test;
 
-import net.trackmate.graph.collection.pool.RefArrayDeque;
+import net.trackmate.collection.ref.RefArrayDeque;
 
 public class PoolObjectDequeTest
 {

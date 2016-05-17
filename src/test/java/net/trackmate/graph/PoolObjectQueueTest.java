@@ -10,7 +10,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import net.trackmate.graph.collection.pool.RefLinkedQueue;
+import net.trackmate.collection.ref.RefLinkedQueue;
 
 public class PoolObjectQueueTest
 {

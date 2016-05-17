@@ -6,18 +6,18 @@ import java.util.Collection;
 import net.imglib2.RealInterval;
 import net.imglib2.RealLocalizable;
 import net.imglib2.RealPositionable;
-import net.trackmate.graph.collection.RefRefMap;
-import net.trackmate.graph.collection.pool.RefRefHashMap;
-import net.trackmate.graph.mempool.DoubleMappedElement;
-import net.trackmate.graph.mempool.DoubleMappedElementArray;
-import net.trackmate.graph.mempool.MappedElement;
-import net.trackmate.graph.mempool.MemPool;
-import net.trackmate.graph.mempool.MemPool.Factory;
-import net.trackmate.graph.zzrefcollections.Pool;
-import net.trackmate.graph.zzrefcollections.PoolObject;
-import net.trackmate.graph.zzrefcollections.Ref;
-import net.trackmate.graph.zzrefcollections.RefPool;
-import net.trackmate.graph.mempool.SingleArrayMemPool;
+import net.trackmate.Ref;
+import net.trackmate.RefPool;
+import net.trackmate.collection.RefRefMap;
+import net.trackmate.collection.ref.RefRefHashMap;
+import net.trackmate.pool.DoubleMappedElement;
+import net.trackmate.pool.DoubleMappedElementArray;
+import net.trackmate.pool.MappedElement;
+import net.trackmate.pool.MemPool;
+import net.trackmate.pool.Pool;
+import net.trackmate.pool.PoolObject;
+import net.trackmate.pool.SingleArrayMemPool;
+import net.trackmate.pool.MemPool.Factory;
 
 /**
  * KDTree of {@link RealLocalizable} {@link PoolObject PoolObjects}.

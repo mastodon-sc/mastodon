@@ -1,6 +1,6 @@
 package net.trackmate.graph.algorithm;
 
-import net.trackmate.graph.zzrefcollections.PoolObject;
+import net.trackmate.pool.PoolObject;
 
 public abstract class Assigner< O >
 {

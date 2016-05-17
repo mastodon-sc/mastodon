@@ -1,16 +1,16 @@
 package net.trackmate.kdtree;
 
-import static net.trackmate.graph.mempool.ByteUtils.DOUBLE_SIZE;
-import static net.trackmate.graph.mempool.ByteUtils.INDEX_SIZE;
-import static net.trackmate.graph.mempool.ByteUtils.INT_SIZE;
+import static net.trackmate.pool.ByteUtils.DOUBLE_SIZE;
+import static net.trackmate.pool.ByteUtils.INDEX_SIZE;
+import static net.trackmate.pool.ByteUtils.INT_SIZE;
 
 import java.nio.ByteOrder;
 
 import net.imglib2.RealLocalizable;
-import net.trackmate.graph.mempool.MappedElement;
-import net.trackmate.graph.zzrefcollections.Pool;
-import net.trackmate.graph.zzrefcollections.PoolObject;
-import net.trackmate.graph.zzrefcollections.Ref;
+import net.trackmate.Ref;
+import net.trackmate.pool.MappedElement;
+import net.trackmate.pool.Pool;
+import net.trackmate.pool.PoolObject;
 
 public class KDTreeNode<
 			O extends Ref< O > & RealLocalizable,

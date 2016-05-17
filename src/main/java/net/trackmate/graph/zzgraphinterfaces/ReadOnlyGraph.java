@@ -1,6 +1,6 @@
 package net.trackmate.graph.zzgraphinterfaces;
 
-import net.trackmate.graph.collection.RefCollection;
+import net.trackmate.collection.RefCollection;
 
 /**
  * A read-only graph consisting of vertices of type {@code V} and edges of type

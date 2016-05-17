@@ -7,7 +7,7 @@ import java.awt.RenderingHints;
 import net.imglib2.RealLocalizable;
 import net.imglib2.RealPoint;
 import net.imglib2.ui.OverlayRenderer;
-import net.trackmate.graph.collection.RefList;
+import net.trackmate.collection.RefList;
 import net.trackmate.revised.trackscheme.ScreenEdge;
 import net.trackmate.revised.trackscheme.ScreenEntities;
 import net.trackmate.revised.trackscheme.ScreenVertex;

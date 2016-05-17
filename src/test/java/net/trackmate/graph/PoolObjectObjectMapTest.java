@@ -9,8 +9,8 @@ import java.util.Collection;
 import org.junit.Before;
 import org.junit.Test;
 
-import net.trackmate.graph.collection.pool.RefObjectHashMap;
-import net.trackmate.graph.collection.pool.RefSetImp;
+import net.trackmate.collection.ref.RefObjectHashMap;
+import net.trackmate.collection.ref.RefSetImp;
 
 public class PoolObjectObjectMapTest
 {

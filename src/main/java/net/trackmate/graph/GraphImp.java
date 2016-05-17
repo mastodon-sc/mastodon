@@ -3,19 +3,19 @@ package net.trackmate.graph;
 import java.util.Collection;
 import java.util.Iterator;
 
-import net.trackmate.graph.collection.IntRefMap;
-import net.trackmate.graph.collection.RefCollection;
-import net.trackmate.graph.collection.pool.IntRefHashMap;
-import net.trackmate.graph.collection.pool.RefArrayDeque;
-import net.trackmate.graph.collection.pool.RefIntHashMap;
-import net.trackmate.graph.collection.pool.RefArrayList;
-import net.trackmate.graph.collection.pool.RefObjectHashMap;
-import net.trackmate.graph.collection.pool.RefRefHashMap;
-import net.trackmate.graph.collection.pool.RefSetImp;
-import net.trackmate.graph.collection.pool.RefArrayStack;
-import net.trackmate.graph.mempool.MappedElement;
+import net.trackmate.collection.IntRefMap;
+import net.trackmate.collection.RefCollection;
+import net.trackmate.collection.ref.IntRefHashMap;
+import net.trackmate.collection.ref.RefArrayDeque;
+import net.trackmate.collection.ref.RefArrayList;
+import net.trackmate.collection.ref.RefArrayStack;
+import net.trackmate.collection.ref.RefIntHashMap;
+import net.trackmate.collection.ref.RefObjectHashMap;
+import net.trackmate.collection.ref.RefRefHashMap;
+import net.trackmate.collection.ref.RefSetImp;
 import net.trackmate.graph.zzgraphinterfaces.Graph;
 import net.trackmate.graph.zzgraphinterfaces.CollectionUtils.CollectionCreator;
+import net.trackmate.pool.MappedElement;
 
 public class GraphImp<
 		VP extends AbstractVertexPool< V, E, T >,

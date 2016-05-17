@@ -1,7 +1,7 @@
 package net.trackmate.revised.trackscheme;
 
+import net.trackmate.Ref;
 import net.trackmate.graph.zzgraphinterfaces.GraphIdBimap;
-import net.trackmate.graph.zzrefcollections.Ref;
 
 /*
  * TODO: revise javadoc. not true anymore that ModelGraphProperties are read-only.

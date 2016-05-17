@@ -1,9 +1,10 @@
 package net.trackmate.graph;
 
-import static net.trackmate.graph.mempool.ByteUtils.INDEX_SIZE;
-import net.trackmate.graph.mempool.MappedElement;
+import static net.trackmate.pool.ByteUtils.INDEX_SIZE;
+
 import net.trackmate.graph.zzgraphinterfaces.Edge;
-import net.trackmate.graph.zzrefcollections.PoolObject;
+import net.trackmate.pool.MappedElement;
+import net.trackmate.pool.PoolObject;
 
 /**
  * TODO: javadoc

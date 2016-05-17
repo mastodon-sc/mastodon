@@ -2,8 +2,8 @@ package net.trackmate.graph.algorithm;
 
 import java.util.Iterator;
 
-import net.trackmate.graph.collection.RefList;
-import net.trackmate.graph.collection.RefSet;
+import net.trackmate.collection.RefList;
+import net.trackmate.collection.RefSet;
 import net.trackmate.graph.zzgraphinterfaces.Edge;
 import net.trackmate.graph.zzgraphinterfaces.Graph;
 import net.trackmate.graph.zzgraphinterfaces.Vertex;

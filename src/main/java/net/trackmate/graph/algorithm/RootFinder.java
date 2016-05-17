@@ -1,6 +1,6 @@
 package net.trackmate.graph.algorithm;
 
-import net.trackmate.graph.collection.RefSet;
+import net.trackmate.collection.RefSet;
 import net.trackmate.graph.zzgraphinterfaces.Edge;
 import net.trackmate.graph.zzgraphinterfaces.Graph;
 import net.trackmate.graph.zzgraphinterfaces.Vertex;

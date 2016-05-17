@@ -3,7 +3,7 @@ package net.trackmate.undo;
 import gnu.trove.impl.Constants;
 import gnu.trove.map.TIntIntMap;
 import gnu.trove.map.hash.TIntIntHashMap;
-import net.trackmate.graph.collection.IdBimap;
+import net.trackmate.collection.IdBimap;
 
 /**
  * TODO

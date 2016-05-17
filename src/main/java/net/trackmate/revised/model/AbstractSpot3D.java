@@ -1,15 +1,15 @@
 package net.trackmate.revised.model;
 
-import static net.trackmate.graph.mempool.ByteUtils.DOUBLE_SIZE;
-import static net.trackmate.graph.mempool.ByteUtils.INT_SIZE;
+import static net.trackmate.pool.ByteUtils.DOUBLE_SIZE;
+import static net.trackmate.pool.ByteUtils.INT_SIZE;
 
 import net.imglib2.RealLocalizable;
 import net.trackmate.graph.AbstractEdge;
 import net.trackmate.graph.AbstractVertex;
 import net.trackmate.graph.AbstractVertexPool;
 import net.trackmate.graph.AbstractVertexWithFeatures;
-import net.trackmate.graph.mempool.ByteMappedElement;
-import net.trackmate.graph.mempool.MappedElement;
+import net.trackmate.pool.ByteMappedElement;
+import net.trackmate.pool.MappedElement;
 import net.trackmate.spatial.HasTimepoint;
 
 /**

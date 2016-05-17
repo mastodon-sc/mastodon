@@ -6,15 +6,15 @@ import static org.junit.Assert.assertNotNull;
 import java.util.Random;
 
 import net.imglib2.RealLocalizable;
-import net.trackmate.graph.collection.RefRefMap;
-import net.trackmate.graph.collection.pool.RefArrayList;
-import net.trackmate.graph.collection.pool.RefSetImp;
-import net.trackmate.graph.mempool.ByteMappedElement;
-import net.trackmate.graph.mempool.ByteMappedElementArray;
-import net.trackmate.graph.mempool.DoubleMappedElement;
-import net.trackmate.graph.mempool.SingleArrayMemPool;
+import net.trackmate.collection.RefRefMap;
+import net.trackmate.collection.ref.RefArrayList;
+import net.trackmate.collection.ref.RefSetImp;
 import net.trackmate.kdtree.RealLocalizableVertices.MyVertex;
 import net.trackmate.kdtree.RealLocalizableVertices.MyVertexPool;
+import net.trackmate.pool.ByteMappedElement;
+import net.trackmate.pool.ByteMappedElementArray;
+import net.trackmate.pool.DoubleMappedElement;
+import net.trackmate.pool.SingleArrayMemPool;
 
 import org.junit.Before;
 import org.junit.Test;

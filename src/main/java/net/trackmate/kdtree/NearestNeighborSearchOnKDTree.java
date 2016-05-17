@@ -3,8 +3,8 @@ package net.trackmate.kdtree;
 import net.imglib2.RealLocalizable;
 import net.imglib2.Sampler;
 import net.imglib2.neighborsearch.NearestNeighborSearch;
-import net.trackmate.graph.mempool.MappedElement;
-import net.trackmate.graph.zzrefcollections.Ref;
+import net.trackmate.Ref;
+import net.trackmate.pool.MappedElement;
 
 /**
  * Implementation of {@link NearestNeighborSearch} search for kd-trees.

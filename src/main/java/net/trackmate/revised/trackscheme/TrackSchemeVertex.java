@@ -1,16 +1,16 @@
 package net.trackmate.revised.trackscheme;
 
-import static net.trackmate.graph.mempool.ByteUtils.BOOLEAN_SIZE;
-import static net.trackmate.graph.mempool.ByteUtils.DOUBLE_SIZE;
-import static net.trackmate.graph.mempool.ByteUtils.INDEX_SIZE;
-import static net.trackmate.graph.mempool.ByteUtils.INT_SIZE;
+import static net.trackmate.pool.ByteUtils.BOOLEAN_SIZE;
+import static net.trackmate.pool.ByteUtils.DOUBLE_SIZE;
+import static net.trackmate.pool.ByteUtils.INDEX_SIZE;
+import static net.trackmate.pool.ByteUtils.INT_SIZE;
 
+import net.trackmate.collection.ref.RefIdBimap;
 import net.trackmate.graph.AbstractVertex;
 import net.trackmate.graph.AbstractVertexPool;
-import net.trackmate.graph.collection.pool.RefIdBimap;
-import net.trackmate.graph.mempool.ByteMappedElement;
 import net.trackmate.graph.zzgraphinterfaces.GraphIdBimap;
-import net.trackmate.graph.zzrefcollections.PoolObject;
+import net.trackmate.pool.ByteMappedElement;
+import net.trackmate.pool.PoolObject;
 import net.trackmate.revised.trackscheme.ModelGraphProperties.ModelVertexProperties;
 
 /**

@@ -6,7 +6,7 @@ import static org.junit.Assert.assertNotEquals;
 import org.junit.Before;
 import org.junit.Test;
 
-import net.trackmate.graph.collection.pool.RefRefHashMap;
+import net.trackmate.collection.ref.RefRefHashMap;
 
 /**
  * This test reproduces the tests from its parent class, but uses a map between

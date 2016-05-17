@@ -2,9 +2,9 @@ package net.trackmate.graph.traversal;
 
 import java.util.Comparator;
 
+import net.trackmate.collection.RefRefMap;
+import net.trackmate.collection.RefSet;
 import net.trackmate.graph.algorithm.AbstractGraphAlgorithm;
-import net.trackmate.graph.collection.RefRefMap;
-import net.trackmate.graph.collection.RefSet;
 import net.trackmate.graph.zzgraphinterfaces.Edge;
 import net.trackmate.graph.zzgraphinterfaces.ReadOnlyGraph;
 import net.trackmate.graph.zzgraphinterfaces.Vertex;

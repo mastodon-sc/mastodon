@@ -1,10 +1,10 @@
 package net.trackmate.revised.model.mamut;
 
-import static net.trackmate.graph.mempool.ByteUtils.DOUBLE_SIZE;
+import static net.trackmate.pool.ByteUtils.DOUBLE_SIZE;
 import static net.trackmate.revised.model.mamut.Features.LABEL;
 
 import net.trackmate.graph.AbstractVertexPool;
-import net.trackmate.graph.mempool.ByteMappedElement;
+import net.trackmate.pool.ByteMappedElement;
 import net.trackmate.revised.bdv.overlay.util.JamaEigenvalueDecomposition;
 import net.trackmate.revised.model.AbstractSpot3D;
 import net.trackmate.revised.model.HasLabel;

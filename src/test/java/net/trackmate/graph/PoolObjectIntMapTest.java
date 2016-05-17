@@ -23,7 +23,7 @@ import gnu.trove.map.hash.TObjectIntHashMap;
 import gnu.trove.procedure.TIntProcedure;
 import gnu.trove.procedure.TObjectIntProcedure;
 import gnu.trove.procedure.TObjectProcedure;
-import net.trackmate.graph.collection.pool.RefIntHashMap;
+import net.trackmate.collection.ref.RefIntHashMap;
 
 public class PoolObjectIntMapTest
 {

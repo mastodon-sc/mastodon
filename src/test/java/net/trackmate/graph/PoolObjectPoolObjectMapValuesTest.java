@@ -9,10 +9,10 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
-import net.trackmate.graph.collection.RefList;
-import net.trackmate.graph.collection.pool.RefRefHashMap;
-
 import org.junit.Test;
+
+import net.trackmate.collection.RefList;
+import net.trackmate.collection.ref.RefRefHashMap;
 
 public class PoolObjectPoolObjectMapValuesTest extends PoolObjectPoolObjectMapAbstractTest
 {

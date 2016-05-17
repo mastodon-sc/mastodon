@@ -1,6 +1,6 @@
 package net.trackmate.graph.traversal;
 
-import net.trackmate.graph.collection.RefDeque;
+import net.trackmate.collection.RefDeque;
 import net.trackmate.graph.zzgraphinterfaces.Edge;
 import net.trackmate.graph.zzgraphinterfaces.Graph;
 import net.trackmate.graph.zzgraphinterfaces.Vertex;

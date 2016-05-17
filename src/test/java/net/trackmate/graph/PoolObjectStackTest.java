@@ -9,7 +9,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import net.trackmate.graph.collection.pool.RefArrayStack;
+import net.trackmate.collection.ref.RefArrayStack;
 
 public class PoolObjectStackTest
 {

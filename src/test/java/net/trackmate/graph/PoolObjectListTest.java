@@ -9,7 +9,7 @@ import java.util.Random;
 import org.junit.Before;
 import org.junit.Test;
 
-import net.trackmate.graph.collection.pool.RefArrayList;
+import net.trackmate.collection.ref.RefArrayList;
 
 public class PoolObjectListTest
 {

@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import net.trackmate.graph.listenable.GraphChangeListener;
 import net.trackmate.graph.listenable.GraphListener;
 import net.trackmate.graph.listenable.ListenableGraph;
-import net.trackmate.graph.mempool.MappedElement;
+import net.trackmate.pool.MappedElement;
 
 public class ListenableGraphImp<
 		VP extends AbstractVertexPool< V, E, T >,

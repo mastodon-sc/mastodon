@@ -8,11 +8,11 @@ import java.util.Iterator;
 import java.util.Random;
 import java.util.Set;
 
+import net.trackmate.collection.RefList;
+import net.trackmate.collection.RefSet;
 import net.trackmate.graph.TestEdge;
 import net.trackmate.graph.TestGraph;
 import net.trackmate.graph.TestVertex;
-import net.trackmate.graph.collection.RefList;
-import net.trackmate.graph.collection.RefSet;
 
 import org.junit.Before;
 import org.junit.Test;

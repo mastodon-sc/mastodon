@@ -10,9 +10,9 @@ import java.util.Set;
 
 import org.junit.Test;
 
-import net.trackmate.graph.collection.RefSet;
-import net.trackmate.graph.collection.pool.RefRefHashMap;
-import net.trackmate.graph.collection.pool.RefSetImp;
+import net.trackmate.collection.RefSet;
+import net.trackmate.collection.ref.RefRefHashMap;
+import net.trackmate.collection.ref.RefSetImp;
 
 public class PoolObjectPoolObjectMapTwoVertexPoolTest extends PoolObjectPoolObjectMapVertexPoolAbstractTest
 {

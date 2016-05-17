@@ -1,8 +1,8 @@
 package net.trackmate.graph;
 
-import net.trackmate.graph.mempool.MappedElement;
 import net.trackmate.graph.zzgraphinterfaces.GraphFeatures;
-import net.trackmate.graph.zzrefcollections.PoolObject;
+import net.trackmate.pool.MappedElement;
+import net.trackmate.pool.PoolObject;
 
 public class AbstractVertexWithFeaturesPool<
 			V extends AbstractVertexWithFeatures< V, E, T >,

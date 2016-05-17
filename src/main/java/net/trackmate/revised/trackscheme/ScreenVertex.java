@@ -1,18 +1,18 @@
 package net.trackmate.revised.trackscheme;
 
-import static net.trackmate.graph.mempool.ByteUtils.BOOLEAN_SIZE;
-import static net.trackmate.graph.mempool.ByteUtils.BYTE_SIZE;
-import static net.trackmate.graph.mempool.ByteUtils.DOUBLE_SIZE;
-import static net.trackmate.graph.mempool.ByteUtils.INDEX_SIZE;
+import static net.trackmate.pool.ByteUtils.BOOLEAN_SIZE;
+import static net.trackmate.pool.ByteUtils.BYTE_SIZE;
+import static net.trackmate.pool.ByteUtils.DOUBLE_SIZE;
+import static net.trackmate.pool.ByteUtils.INDEX_SIZE;
 import static net.trackmate.revised.trackscheme.ScreenVertex.Transition.NONE;
 
-import net.trackmate.graph.mempool.ByteMappedElement;
-import net.trackmate.graph.mempool.ByteMappedElementArray;
-import net.trackmate.graph.mempool.MemPool;
-import net.trackmate.graph.mempool.SingleArrayMemPool;
-import net.trackmate.graph.zzrefcollections.Pool;
-import net.trackmate.graph.zzrefcollections.PoolObject;
-import net.trackmate.graph.zzrefcollections.RefPool;
+import net.trackmate.RefPool;
+import net.trackmate.pool.ByteMappedElement;
+import net.trackmate.pool.ByteMappedElementArray;
+import net.trackmate.pool.MemPool;
+import net.trackmate.pool.Pool;
+import net.trackmate.pool.PoolObject;
+import net.trackmate.pool.SingleArrayMemPool;
 
 /**
  * Layouted vertex.

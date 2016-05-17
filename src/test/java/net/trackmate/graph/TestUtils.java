@@ -1,10 +1,9 @@
 package net.trackmate.graph;
 
 import gnu.trove.map.hash.TIntObjectHashMap;
+import net.trackmate.collection.RefSet;
 
 import java.util.Comparator;
-
-import net.trackmate.graph.collection.RefSet;
 
 public class TestUtils
 {

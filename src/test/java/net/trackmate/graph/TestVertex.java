@@ -1,8 +1,8 @@
 package net.trackmate.graph;
 
-import static net.trackmate.graph.mempool.ByteUtils.INT_SIZE;
+import static net.trackmate.pool.ByteUtils.INT_SIZE;
 
-import net.trackmate.graph.mempool.ByteMappedElement;
+import net.trackmate.pool.ByteMappedElement;
 
 public class TestVertex extends AbstractVertex< TestVertex, TestEdge, ByteMappedElement >
 {

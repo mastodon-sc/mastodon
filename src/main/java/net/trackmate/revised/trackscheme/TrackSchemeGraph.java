@@ -2,25 +2,25 @@ package net.trackmate.revised.trackscheme;
 
 import java.util.ArrayList;
 
+import net.trackmate.RefPool;
+import net.trackmate.collection.IntRefMap;
+import net.trackmate.collection.RefSet;
+import net.trackmate.collection.ref.IntRefArrayMap;
+import net.trackmate.collection.ref.RefSetImp;
 import net.trackmate.graph.AbstractEdgePool;
 import net.trackmate.graph.AbstractVertexPool;
 import net.trackmate.graph.GraphImp;
-import net.trackmate.graph.collection.IntRefMap;
-import net.trackmate.graph.collection.RefSet;
-import net.trackmate.graph.collection.pool.IntRefArrayMap;
-import net.trackmate.graph.collection.pool.RefSetImp;
 import net.trackmate.graph.listenable.GraphChangeListener;
 import net.trackmate.graph.listenable.GraphListener;
 import net.trackmate.graph.listenable.ListenableGraph;
-import net.trackmate.graph.mempool.ByteMappedElement;
-import net.trackmate.graph.mempool.ByteMappedElementArray;
-import net.trackmate.graph.mempool.MemPool;
-import net.trackmate.graph.mempool.SingleArrayMemPool;
 import net.trackmate.graph.zzgraphinterfaces.Edge;
 import net.trackmate.graph.zzgraphinterfaces.GraphIdBimap;
 import net.trackmate.graph.zzgraphinterfaces.Vertex;
-import net.trackmate.graph.zzrefcollections.PoolObject;
-import net.trackmate.graph.zzrefcollections.RefPool;
+import net.trackmate.pool.ByteMappedElement;
+import net.trackmate.pool.ByteMappedElementArray;
+import net.trackmate.pool.MemPool;
+import net.trackmate.pool.PoolObject;
+import net.trackmate.pool.SingleArrayMemPool;
 import net.trackmate.spatial.HasTimepoint;
 
 /**

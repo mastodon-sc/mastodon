@@ -1,9 +1,10 @@
 package net.trackmate.revised.trackscheme;
 
-import static net.trackmate.graph.mempool.ByteUtils.INDEX_SIZE;
+import static net.trackmate.pool.ByteUtils.INDEX_SIZE;
+
 import net.trackmate.graph.AbstractEdge;
 import net.trackmate.graph.AbstractEdgePool;
-import net.trackmate.graph.mempool.ByteMappedElement;
+import net.trackmate.pool.ByteMappedElement;
 import net.trackmate.revised.trackscheme.ModelGraphProperties.ModelEdgeProperties;
 
 public class TrackSchemeEdge extends AbstractEdge< TrackSchemeEdge, TrackSchemeVertex, ByteMappedElement >

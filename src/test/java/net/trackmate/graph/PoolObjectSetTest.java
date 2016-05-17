@@ -5,7 +5,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import gnu.trove.set.TIntSet;
-import net.trackmate.graph.collection.pool.RefSetImp;
+import net.trackmate.collection.ref.RefSetImp;
 
 import java.util.ArrayList;
 import java.util.Arrays;

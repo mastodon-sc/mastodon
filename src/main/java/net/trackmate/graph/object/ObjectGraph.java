@@ -4,8 +4,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 
-import net.trackmate.graph.collection.RefCollection;
-import net.trackmate.graph.collection.wrap.RefSetWrapper;
+import net.trackmate.collection.RefCollection;
+import net.trackmate.collection.wrap.RefSetWrapper;
 import net.trackmate.graph.zzgraphinterfaces.Graph;
 
 public class ObjectGraph< K > implements Graph< ObjectVertex< K >, ObjectEdge< K > >

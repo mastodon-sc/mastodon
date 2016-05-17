@@ -8,14 +8,14 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import net.imglib2.RealLocalizable;
-import net.trackmate.graph.collection.RefList;
+import net.trackmate.Ref;
+import net.trackmate.RefPool;
+import net.trackmate.collection.RefList;
 import net.trackmate.graph.listenable.GraphListener;
 import net.trackmate.graph.listenable.ListenableGraph;
 import net.trackmate.graph.zzgraphinterfaces.CollectionUtils;
 import net.trackmate.graph.zzgraphinterfaces.Edge;
 import net.trackmate.graph.zzgraphinterfaces.Vertex;
-import net.trackmate.graph.zzrefcollections.Ref;
-import net.trackmate.graph.zzrefcollections.RefPool;
 
 /**
  * Maintain a spatio-temporal index of all the vertices of a graph.

@@ -13,9 +13,9 @@ import net.imglib2.img.display.imagej.ImageJFunctions;
 import net.imglib2.position.transform.Round;
 import net.imglib2.type.numeric.ARGBType;
 import net.imglib2.view.Views;
-import net.trackmate.graph.collection.RefList;
-import net.trackmate.graph.collection.pool.RefArrayList;
-import net.trackmate.graph.mempool.DoubleMappedElement;
+import net.trackmate.collection.RefList;
+import net.trackmate.collection.ref.RefArrayList;
+import net.trackmate.pool.DoubleMappedElement;
 
 public class SplitHyperPlaneKDTreeExample
 {

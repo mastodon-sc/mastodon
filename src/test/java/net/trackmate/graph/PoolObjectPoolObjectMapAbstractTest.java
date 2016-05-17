@@ -2,7 +2,7 @@ package net.trackmate.graph;
 
 import org.junit.Before;
 
-import net.trackmate.graph.collection.pool.RefRefHashMap;
+import net.trackmate.collection.ref.RefRefHashMap;
 
 public class PoolObjectPoolObjectMapAbstractTest
 {

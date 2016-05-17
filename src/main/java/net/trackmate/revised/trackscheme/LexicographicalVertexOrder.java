@@ -6,9 +6,9 @@ import java.util.Collections;
 import gnu.trove.iterator.TIntIterator;
 import gnu.trove.list.TIntList;
 import gnu.trove.list.array.TIntArrayList;
-import net.trackmate.graph.collection.RefCollection;
-import net.trackmate.graph.collection.RefList;
-import net.trackmate.graph.collection.pool.RefArrayList;
+import net.trackmate.collection.RefCollection;
+import net.trackmate.collection.RefList;
+import net.trackmate.collection.ref.RefArrayList;
 import net.trackmate.revised.trackscheme.util.AlphanumCompare;
 
 /**

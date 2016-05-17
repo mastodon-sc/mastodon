@@ -1,14 +1,14 @@
 package net.trackmate.undo;
 
-import static net.trackmate.graph.mempool.ByteUtils.BOOLEAN_SIZE;
-import static net.trackmate.graph.mempool.ByteUtils.BYTE_SIZE;
-import static net.trackmate.graph.mempool.ByteUtils.LONG_SIZE;
+import static net.trackmate.pool.ByteUtils.BOOLEAN_SIZE;
+import static net.trackmate.pool.ByteUtils.BYTE_SIZE;
+import static net.trackmate.pool.ByteUtils.LONG_SIZE;
 
 import gnu.trove.map.TIntObjectArrayMap;
-import net.trackmate.graph.mempool.ByteMappedElement;
 import net.trackmate.graph.zzgraphinterfaces.Edge;
 import net.trackmate.graph.zzgraphinterfaces.Vertex;
-import net.trackmate.graph.zzrefcollections.PoolObject;
+import net.trackmate.pool.ByteMappedElement;
+import net.trackmate.pool.PoolObject;
 import net.trackmate.undo.UndoableEditList.ClearableUndoableEdit;
 import net.trackmate.undo.UndoableEditList.UndoableEditType;
 

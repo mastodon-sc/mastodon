@@ -7,7 +7,7 @@ import static org.junit.Assert.assertNull;
 import org.junit.Before;
 import org.junit.Test;
 
-import net.trackmate.graph.collection.pool.RefRefHashMap;
+import net.trackmate.collection.ref.RefRefHashMap;
 
 public class PoolObjectPoolObjectMapTwoHeteroVertexPoolTest extends PoolObjectPoolObjectMapTwoVertexPoolTest
 {

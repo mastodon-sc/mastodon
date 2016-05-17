@@ -1,7 +1,7 @@
 package net.trackmate.graph.zzgraphinterfaces;
 
-import static net.trackmate.graph.collection.RefCollections.wrap;
-import static net.trackmate.graph.collection.RefCollections.wrapAsStack;
+import static net.trackmate.collection.RefCollections.wrap;
+import static net.trackmate.collection.RefCollections.wrapAsStack;
 
 import java.util.ArrayDeque;
 import java.util.ArrayList;
@@ -9,17 +9,17 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 
-import net.trackmate.graph.collection.IntRefMap;
-import net.trackmate.graph.collection.RefCollection;
-import net.trackmate.graph.collection.RefDeque;
-import net.trackmate.graph.collection.RefIntMap;
-import net.trackmate.graph.collection.RefList;
-import net.trackmate.graph.collection.RefObjectMap;
-import net.trackmate.graph.collection.RefRefMap;
-import net.trackmate.graph.collection.RefSet;
-import net.trackmate.graph.collection.RefStack;
-import net.trackmate.graph.collection.wrap.IntRefMapWrapper;
-import net.trackmate.graph.collection.wrap.RefIntMapWrapper;
+import net.trackmate.collection.IntRefMap;
+import net.trackmate.collection.RefCollection;
+import net.trackmate.collection.RefDeque;
+import net.trackmate.collection.RefIntMap;
+import net.trackmate.collection.RefList;
+import net.trackmate.collection.RefObjectMap;
+import net.trackmate.collection.RefRefMap;
+import net.trackmate.collection.RefSet;
+import net.trackmate.collection.RefStack;
+import net.trackmate.collection.wrap.IntRefMapWrapper;
+import net.trackmate.collection.wrap.RefIntMapWrapper;
 
 /**
  * Static utility methods to create {@link RefCollection}s of vertices and edges

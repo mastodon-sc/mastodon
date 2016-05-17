@@ -1,11 +1,11 @@
 package net.trackmate.graph;
 
-import net.trackmate.graph.mempool.ByteMappedElement;
-import net.trackmate.graph.mempool.ByteMappedElementArray;
-import net.trackmate.graph.mempool.MemPool;
-import net.trackmate.graph.mempool.SingleArrayMemPool;
-import net.trackmate.graph.zzrefcollections.Pool;
-import net.trackmate.graph.zzrefcollections.PoolObject;
+import net.trackmate.pool.ByteMappedElement;
+import net.trackmate.pool.ByteMappedElementArray;
+import net.trackmate.pool.MemPool;
+import net.trackmate.pool.Pool;
+import net.trackmate.pool.PoolObject;
+import net.trackmate.pool.SingleArrayMemPool;
 
 class TestObjectPool extends Pool< TestObject, ByteMappedElement >
 {

@@ -4,10 +4,10 @@ import java.util.Random;
 
 import net.imglib2.RealLocalizable;
 import net.imglib2.util.BenchmarkHelper;
-import net.trackmate.graph.collection.pool.RefArrayList;
-import net.trackmate.graph.mempool.DoubleMappedElement;
+import net.trackmate.collection.ref.RefArrayList;
 import net.trackmate.kdtree.RealLocalizableVertices.MyVertex;
 import net.trackmate.kdtree.RealLocalizableVertices.MyVertexPool;
+import net.trackmate.pool.DoubleMappedElement;
 
 public class KDTreeBenchmark
 {

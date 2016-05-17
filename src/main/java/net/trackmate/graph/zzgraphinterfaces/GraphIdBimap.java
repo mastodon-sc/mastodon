@@ -1,6 +1,6 @@
 package net.trackmate.graph.zzgraphinterfaces;
 
-import net.trackmate.graph.collection.IdBimap;
+import net.trackmate.collection.IdBimap;
 
 /**
  * Bidirectional mappings between integer IDs and vertices and integer IDs

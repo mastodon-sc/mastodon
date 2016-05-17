@@ -1,8 +1,8 @@
 package net.trackmate.graph;
 
-import net.trackmate.graph.mempool.MappedElement;
-import net.trackmate.graph.zzrefcollections.Pool;
-import net.trackmate.graph.zzrefcollections.PoolObject;
+import net.trackmate.pool.MappedElement;
+import net.trackmate.pool.Pool;
+import net.trackmate.pool.PoolObject;
 
 public class AbstractEdgePool<
 			E extends AbstractEdge< E, V, T >,

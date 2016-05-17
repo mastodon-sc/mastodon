@@ -1,6 +1,6 @@
 package net.trackmate.graph.algorithm;
 
-import net.trackmate.graph.collection.RefList;
+import net.trackmate.collection.RefList;
 import net.trackmate.graph.traversal.BreadthFirstSearch;
 import net.trackmate.graph.traversal.SearchListener;
 import net.trackmate.graph.zzgraphinterfaces.Edge;

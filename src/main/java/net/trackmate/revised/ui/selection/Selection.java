@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.Collection;
 
-import net.trackmate.graph.collection.RefSet;
+import net.trackmate.collection.RefSet;
 import net.trackmate.graph.listenable.GraphListener;
 import net.trackmate.graph.listenable.ListenableGraph;
 import net.trackmate.graph.zzgraphinterfaces.CollectionUtils;

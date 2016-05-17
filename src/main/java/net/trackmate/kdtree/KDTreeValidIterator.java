@@ -3,9 +3,9 @@ package net.trackmate.kdtree;
 import java.util.Iterator;
 
 import net.imglib2.RealLocalizable;
-import net.trackmate.graph.mempool.MappedElement;
-import net.trackmate.graph.zzrefcollections.Ref;
-import net.trackmate.graph.zzrefcollections.RefPool;
+import net.trackmate.Ref;
+import net.trackmate.RefPool;
+import net.trackmate.pool.MappedElement;
 
 public class KDTreeValidIterator<
 		O extends Ref< O > & RealLocalizable,

@@ -3,8 +3,8 @@ package net.trackmate.graph.algorithm;
 import java.util.Arrays;
 import java.util.Iterator;
 
-import net.trackmate.graph.collection.RefObjectMap;
-import net.trackmate.graph.collection.RefSet;
+import net.trackmate.collection.RefObjectMap;
+import net.trackmate.collection.RefSet;
 import net.trackmate.graph.traversal.DepthFirstIterator;
 import net.trackmate.graph.zzgraphinterfaces.Edge;
 import net.trackmate.graph.zzgraphinterfaces.Edges;

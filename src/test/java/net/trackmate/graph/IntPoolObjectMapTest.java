@@ -10,8 +10,8 @@ import gnu.trove.iterator.TIntObjectIterator;
 import gnu.trove.procedure.TIntObjectProcedure;
 import gnu.trove.procedure.TIntProcedure;
 import gnu.trove.procedure.TObjectProcedure;
-import net.trackmate.graph.collection.pool.IntRefArrayMap;
-import net.trackmate.graph.collection.pool.IntRefHashMap;
+import net.trackmate.collection.ref.IntRefArrayMap;
+import net.trackmate.collection.ref.IntRefHashMap;
 
 import java.util.Arrays;
 import java.util.HashMap;

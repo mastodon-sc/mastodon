@@ -15,7 +15,7 @@ import bdv.viewer.TriggerBehaviourBindings;
 import net.imglib2.ui.InteractiveDisplayCanvasComponent;
 import net.imglib2.ui.OverlayRenderer;
 import net.imglib2.ui.TransformListener;
-import net.trackmate.graph.collection.RefSet;
+import net.trackmate.collection.RefSet;
 import net.trackmate.revised.trackscheme.LineageTreeLayout;
 import net.trackmate.revised.trackscheme.ScreenTransform;
 import net.trackmate.revised.trackscheme.TrackSchemeEdge;

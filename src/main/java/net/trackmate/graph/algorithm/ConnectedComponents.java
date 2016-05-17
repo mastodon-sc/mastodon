@@ -3,7 +3,7 @@ package net.trackmate.graph.algorithm;
 import java.util.HashSet;
 import java.util.Set;
 
-import net.trackmate.graph.collection.RefSet;
+import net.trackmate.collection.RefSet;
 import net.trackmate.graph.util.Graphs;
 import net.trackmate.graph.zzgraphinterfaces.Edge;
 import net.trackmate.graph.zzgraphinterfaces.ReadOnlyGraph;

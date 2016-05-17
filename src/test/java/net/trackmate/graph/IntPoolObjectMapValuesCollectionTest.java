@@ -12,9 +12,9 @@ import java.util.Iterator;
 import org.junit.Before;
 import org.junit.Test;
 
-import net.trackmate.graph.collection.pool.IntRefHashMap;
-import net.trackmate.graph.collection.pool.RefArrayList;
-import net.trackmate.graph.collection.pool.RefSetImp;
+import net.trackmate.collection.ref.IntRefHashMap;
+import net.trackmate.collection.ref.RefArrayList;
+import net.trackmate.collection.ref.RefSetImp;
 
 public class IntPoolObjectMapValuesCollectionTest
 {

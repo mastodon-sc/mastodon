@@ -1,6 +1,6 @@
 package net.trackmate.graph;
 
-import net.trackmate.graph.mempool.ByteMappedElement;
+import net.trackmate.pool.ByteMappedElement;
 
 public class TestGraph extends GraphImp< TestVertexPool, TestEdgePool, TestVertex, TestEdge, ByteMappedElement >
 {
