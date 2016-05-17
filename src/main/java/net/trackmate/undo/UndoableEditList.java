@@ -23,7 +23,7 @@ public class UndoableEditList<
 	protected final ArrayList< UndoableEdit > nonRefEdits;
 
 	/**
-	 * Index in {@link #edits} where the next {@link UndoableEdit} is to be
+	 * Index in pool where the next {@link UndoableEdit} is to be
 	 * recorded. (This is not simply the end of the list because of Redo ...)
 	 */
 	protected int nextEditIndex;

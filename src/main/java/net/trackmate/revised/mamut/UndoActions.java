@@ -7,7 +7,6 @@ import org.scijava.ui.behaviour.KeyStrokeAdder;
 
 import bdv.util.AbstractActions;
 import bdv.viewer.InputActionBindings;
-import net.trackmate.revised.bdv.BigDataViewerMaMuT;
 import net.trackmate.revised.model.mamut.Model;
 
 public class UndoActions extends AbstractActions
@@ -19,13 +18,14 @@ public class UndoActions extends AbstractActions
 	static final String[] REDO_KEYS = new String[] { "meta shift Z", "ctrl shift Z" };
 
 	/**
-	 * Create BigDataViewer actions and install them in the specified
+	 * Create Undo/Redo actions and install them in the specified
 	 * {@link InputActionBindings}.
 	 *
 	 * @param inputActionBindings
 	 *            {@link InputMap} and {@link ActionMap} are installed here.
-	 * @param bdv
-	 *            Actions are targeted at this {@link BigDataViewerMaMuT}.
+	 * @param model
+	 *            Actions are targeted at this {@link Model}s {@code undo()} and
+	 *            {@code redo()} methods.
 	 * @param keyProperties
 	 *            user-defined key-bindings.
 	 */

@@ -5,8 +5,8 @@ import gnu.trove.map.TIntIntMap;
 import gnu.trove.map.TObjectIntMap;
 import gnu.trove.map.hash.TIntIntHashMap;
 import net.trackmate.graph.features.IntVertexFeature.IntFeatureValue;
-import net.trackmate.graph.zzgraphinterfaces.FeatureRegistry.DuplicateKeyException;
 import net.trackmate.graph.zzgraphinterfaces.CollectionUtils;
+import net.trackmate.graph.zzgraphinterfaces.FeatureRegistry.DuplicateKeyException;
 import net.trackmate.graph.zzgraphinterfaces.FeatureValue;
 import net.trackmate.graph.zzgraphinterfaces.GraphFeatures;
 import net.trackmate.graph.zzgraphinterfaces.ReadOnlyGraph;
@@ -21,8 +21,8 @@ import net.trackmate.graph.zzgraphinterfaces.VertexFeature;
  *
  * <pre>
  * <code>
- *	public static final ObjVertexFeature<V,String> LABEL = new ObjVertexFeature<>("label");
- *	public static final IntVertexFeature<V> ID = new IntVertexFeature<>("id");
+ *	public static final ObjVertexFeature&lt;V,String&gt; LABEL = new ObjVertexFeature&lt;&gt;("label");
+ *	public static final IntVertexFeature&lt;V&gt; ID = new IntVertexFeature&lt;&gt;("id");
  * </code>
  * </pre>
  *
