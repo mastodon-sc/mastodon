@@ -5,7 +5,7 @@ import java.util.Random;
 import net.imglib2.util.BenchmarkHelper;
 import net.imglib2.util.LinAlgHelpers;
 import net.trackmate.graph.collection.RefList;
-import net.trackmate.graph.collection.pool.PoolObjectList;
+import net.trackmate.graph.collection.pool.RefArrayList;
 import net.trackmate.graph.mempool.DoubleMappedElement;
 
 public class ClipConvexPolytopeKDTreeBenchmark
@@ -19,7 +19,7 @@ public class ClipConvexPolytopeKDTreeBenchmark
 
 		final RealPointPool pool = new RealPointPool( 2, nPoints );
 		final RealPoint pRef = pool.createRef();
-		final RefList< RealPoint > points = new PoolObjectList< RealPoint >( pool, nPoints );
+		final RefList< RealPoint > points = new RefArrayList< RealPoint >( pool, nPoints );
 		for ( int i = 0; i < nPoints; ++i )
 		{
 			final long x = rand.nextInt( w );
@@ -95,8 +95,8 @@ public class ClipConvexPolytopeKDTreeBenchmark
 	{
 		final int nPlanes = planes.length;
 		final int n = points.get( 0 ).numDimensions();
-		final RefList< RealPoint > inside = new PoolObjectList< RealPoint >( pool );
-		final RefList< RealPoint > outside = new PoolObjectList< RealPoint >( pool );
+		final RefList< RealPoint > inside = new RefArrayList< RealPoint >( pool );
+		final RefList< RealPoint > outside = new RefArrayList< RealPoint >( pool );
 		A: for ( final RealPoint p : points )
 		{
 			for ( int i = 0; i < nPlanes; ++i )

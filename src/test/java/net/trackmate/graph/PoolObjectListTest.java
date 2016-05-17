@@ -9,12 +9,12 @@ import java.util.Random;
 import org.junit.Before;
 import org.junit.Test;
 
-import net.trackmate.graph.collection.pool.PoolObjectList;
+import net.trackmate.graph.collection.pool.RefArrayList;
 
 public class PoolObjectListTest
 {
 
-	private PoolObjectList< TestObject > list;
+	private RefArrayList< TestObject > list;
 
 	private ArrayList< TestObject > objects;
 
@@ -23,7 +23,7 @@ public class PoolObjectListTest
 	{
 		final int nobj = 1000;
 		final TestObjectPool pool = new TestObjectPool( nobj );
-		list = new PoolObjectList< TestObject >( pool );
+		list = new RefArrayList< TestObject >( pool );
 
 		final Random rand = new Random();
 

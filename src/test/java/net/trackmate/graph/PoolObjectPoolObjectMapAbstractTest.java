@@ -2,7 +2,7 @@ package net.trackmate.graph;
 
 import org.junit.Before;
 
-import net.trackmate.graph.collection.pool.PoolObjectPoolObjectMap;
+import net.trackmate.graph.collection.pool.RefRefHashMap;
 
 public class PoolObjectPoolObjectMapAbstractTest
 {
@@ -10,7 +10,7 @@ public class PoolObjectPoolObjectMapAbstractTest
 
 	protected TestVertex Bk;
 
-	protected PoolObjectPoolObjectMap< TestVertex, TestEdge > map;
+	protected RefRefHashMap< TestVertex, TestEdge > map;
 
 	protected TestEdge eEA;
 
@@ -53,7 +53,7 @@ public class PoolObjectPoolObjectMapAbstractTest
 		eEA = graph.addEdge( Ek, Ak );
 
 		// Map each vertex to edge going in.
-		map = new PoolObjectPoolObjectMap< TestVertex, TestEdge >( graph.vertexPool, graph.edgePool );
+		map = new RefRefHashMap< TestVertex, TestEdge >( graph.vertexPool, graph.edgePool );
 		map.put( Bk, eAB );
 		map.put( Ck, eAC );
 		map.put( Dk, eBD );

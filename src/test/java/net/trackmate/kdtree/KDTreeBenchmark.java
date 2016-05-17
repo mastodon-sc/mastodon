@@ -4,7 +4,7 @@ import java.util.Random;
 
 import net.imglib2.RealLocalizable;
 import net.imglib2.util.BenchmarkHelper;
-import net.trackmate.graph.collection.pool.PoolObjectList;
+import net.trackmate.graph.collection.pool.RefArrayList;
 import net.trackmate.graph.mempool.DoubleMappedElement;
 import net.trackmate.kdtree.RealLocalizableVertices.MyVertex;
 import net.trackmate.kdtree.RealLocalizableVertices.MyVertexPool;
@@ -21,9 +21,9 @@ public class KDTreeBenchmark
 
 	private final MyVertexPool vertexPool;
 
-	private final PoolObjectList< MyVertex > dataVertices;
+	private final RefArrayList< MyVertex > dataVertices;
 
-	private final PoolObjectList< MyVertex > testVertices;
+	private final RefArrayList< MyVertex > testVertices;
 
 	public KDTreeBenchmark(final int numDataVertices, final int numTestVertices, final double minCoordinateValue, final double maxCoordinateValue)
 	{
@@ -32,8 +32,8 @@ public class KDTreeBenchmark
 		this.minCoordinateValue = minCoordinateValue;
 		this.maxCoordinateValue = maxCoordinateValue;
 		vertexPool = new MyVertexPool( numDataVertices + numTestVertices );
-		dataVertices = new PoolObjectList< MyVertex >( vertexPool, numDataVertices );
-		testVertices = new PoolObjectList< MyVertex >( vertexPool, numTestVertices );
+		dataVertices = new RefArrayList< MyVertex >( vertexPool, numDataVertices );
+		testVertices = new RefArrayList< MyVertex >( vertexPool, numTestVertices );
 		createDataVertices();
 	}
 

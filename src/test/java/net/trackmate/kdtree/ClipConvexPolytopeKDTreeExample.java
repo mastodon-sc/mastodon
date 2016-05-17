@@ -15,7 +15,7 @@ import net.imglib2.position.transform.Round;
 import net.imglib2.type.numeric.ARGBType;
 import net.imglib2.view.Views;
 import net.trackmate.graph.collection.RefList;
-import net.trackmate.graph.collection.pool.PoolObjectList;
+import net.trackmate.graph.collection.pool.RefArrayList;
 import net.trackmate.graph.mempool.DoubleMappedElement;
 
 public class ClipConvexPolytopeKDTreeExample
@@ -30,7 +30,7 @@ public class ClipConvexPolytopeKDTreeExample
 		final Random rand = new Random( 123124 );
 		final RealPointPool pool = new RealPointPool( 2, nPoints );
 		final RealPoint pRef = pool.createRef();
-		final RefList< RealPoint > points = new PoolObjectList< RealPoint >( pool, nPoints );
+		final RefList< RealPoint > points = new RefArrayList< RealPoint >( pool, nPoints );
 		for ( int i = 0; i < nPoints; ++i )
 		{
 			final long x = rand.nextInt( w );

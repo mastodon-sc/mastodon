@@ -10,11 +10,11 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import net.trackmate.graph.collection.pool.PoolObjectQueue;
+import net.trackmate.graph.collection.pool.RefLinkedQueue;
 
 public class PoolObjectQueueTest
 {
-	private PoolObjectQueue< TestObject > queue;
+	private RefLinkedQueue< TestObject > queue;
 
 	private ArrayList< TestObject > objects;
 
@@ -22,7 +22,7 @@ public class PoolObjectQueueTest
 	public void noSetup()
 	{
 		final TestObjectPool pool = new TestObjectPool( 10 );
-		queue = new PoolObjectQueue< TestObject >( pool );
+		queue = new RefLinkedQueue< TestObject >( pool );
 		final TestObject A = pool.create().init( 1 );
 		final TestObject B = pool.create().init( 2 );
 		final TestObject C = pool.create().init( 3 );

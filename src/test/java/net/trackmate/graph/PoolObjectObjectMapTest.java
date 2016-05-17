@@ -9,13 +9,13 @@ import java.util.Collection;
 import org.junit.Before;
 import org.junit.Test;
 
-import net.trackmate.graph.collection.pool.PoolObjectObjectMap;
-import net.trackmate.graph.collection.pool.PoolObjectSet;
+import net.trackmate.graph.collection.pool.RefObjectHashMap;
+import net.trackmate.graph.collection.pool.RefSetImp;
 
 public class PoolObjectObjectMapTest
 {
 
-	private PoolObjectObjectMap< TestVertex, String > map;
+	private RefObjectHashMap< TestVertex, String > map;
 
 	private TestVertex A;
 
@@ -43,7 +43,7 @@ public class PoolObjectObjectMapTest
 		TestVertex E = pool.createRef();
 		E = pool.create( E ).init( 0 );
 
-		map = new PoolObjectObjectMap< TestVertex, String >( pool );
+		map = new RefObjectHashMap< TestVertex, String >( pool );
 		map.put( A, "a" );
 		map.put( B, "b" );
 		map.put( C, "c" );
@@ -86,7 +86,7 @@ public class PoolObjectObjectMapTest
 	@Test
 	public void testIsEmpty()
 	{
-		assertTrue( "A new map should be empty, but is not.", new PoolObjectObjectMap< TestVertex, String >( pool ).isEmpty() );
+		assertTrue( "A new map should be empty, but is not.", new RefObjectHashMap< TestVertex, String >( pool ).isEmpty() );
 	}
 
 	@Test
@@ -129,7 +129,7 @@ public class PoolObjectObjectMapTest
 	@Test
 	public void testKeySet()
 	{
-		final PoolObjectSet< TestVertex > keySet = map.keySet();
+		final RefSetImp< TestVertex > keySet = map.keySet();
 		assertEquals( "Key set does not have the expected size.", 5, keySet.size() );
 		assertTrue( "Key set does not contain the expected key 'A'.", keySet.contains( A ) );
 		assertTrue( "Key set does not contain the expected key 'B'.", keySet.contains( B ) );
@@ -138,17 +138,5 @@ public class PoolObjectObjectMapTest
 		assertFalse( "After removal of 'A' from key set, map should not contain mapping for 'A', but does.", map.containsKey( A ) );
 		keySet.clear();
 		assertTrue( "After clearing the key set, the map should be empty, but was not.", map.isEmpty() );
-	}
-
-	@Test( expected = UnsupportedOperationException.class )
-	public void testPutAll()
-	{
-		map.putAll( map );
-	}
-
-	@Test( expected = UnsupportedOperationException.class )
-	public void testEntrySet()
-	{
-		map.entrySet();
 	}
 }

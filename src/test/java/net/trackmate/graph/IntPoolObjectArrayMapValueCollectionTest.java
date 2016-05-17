@@ -12,16 +12,16 @@ import java.util.Iterator;
 import org.junit.Before;
 import org.junit.Test;
 
-import net.trackmate.graph.collection.pool.IntPoolObjectArrayMap;
-import net.trackmate.graph.collection.pool.PoolObjectList;
-import net.trackmate.graph.collection.pool.PoolObjectSet;
+import net.trackmate.graph.collection.pool.IntRefArrayMap;
+import net.trackmate.graph.collection.pool.RefArrayList;
+import net.trackmate.graph.collection.pool.RefSetImp;
 
 public class IntPoolObjectArrayMapValueCollectionTest
 {
 
 	private TestVertexPool pool;
 
-	private IntPoolObjectArrayMap< TestVertex > map;
+	private IntRefArrayMap< TestVertex > map;
 
 	private HashMap< Integer, Integer > truthMap;
 
@@ -41,7 +41,7 @@ public class IntPoolObjectArrayMapValueCollectionTest
 			truthMap.put( Integer.valueOf( a.getId() ), Integer.valueOf( a.getInternalPoolIndex() ) );
 		}
 
-		map = new IntPoolObjectArrayMap<>( pool );
+		map = new IntRefArrayMap<>( pool );
 		storedIds = new int[] { 2, 3, 6, 8 };
 		for ( final int id : storedIds )
 		{
@@ -63,7 +63,7 @@ public class IntPoolObjectArrayMapValueCollectionTest
 	@Test( expected = UnsupportedOperationException.class )
 	public void testAddAll()
 	{
-		final PoolObjectSet< TestVertex > set = new PoolObjectSet<>( pool );
+		final RefSetImp< TestVertex > set = new RefSetImp<>( pool );
 		final TestVertex ref = pool.createRef();
 		for ( int i = 0; i < 5; i++ )
 		{
@@ -128,7 +128,7 @@ public class IntPoolObjectArrayMapValueCollectionTest
 		assertFalse( "ValueCollection should not be empty.", valueCollection.isEmpty() );
 		valueCollection.clear();
 		assertTrue( "ValueCollection should be empty after clear().", valueCollection.isEmpty() );
-		assertTrue( "ValueCollection from new map should be empty.", new IntPoolObjectArrayMap<>( pool ).valueCollection().isEmpty() );
+		assertTrue( "ValueCollection from new map should be empty.", new IntRefArrayMap<>( pool ).valueCollection().isEmpty() );
 	}
 
 	@Test
@@ -236,7 +236,7 @@ public class IntPoolObjectArrayMapValueCollectionTest
 		final Object[] array = valueCollection.toArray();
 		assertEquals( "Created array does not have the expected length.", valueCollection.size(), array.length );
 		int index = 0;
-		final PoolObjectList< TestVertex > set = createListFromKeys( storedIds );
+		final RefArrayList< TestVertex > set = createListFromKeys( storedIds );
 		for ( final TestVertex expected : set )
 		{
 			assertEquals( "Unexpected object in the array returned by toArray().", expected, array[ index++ ] );
@@ -248,7 +248,7 @@ public class IntPoolObjectArrayMapValueCollectionTest
 	{
 		final TestVertex[] array = valueCollection.toArray( new TestVertex[ 100 ] );
 		int index = 0;
-		final PoolObjectList< TestVertex > set = createListFromKeys( storedIds );
+		final RefArrayList< TestVertex > set = createListFromKeys( storedIds );
 		for ( final TestVertex expected : set )
 		{
 			assertEquals( "Unexpected object in the array returned by toArray(T[]).", expected, array[ index++ ] );
@@ -259,9 +259,9 @@ public class IntPoolObjectArrayMapValueCollectionTest
 		}
 	}
 
-	private PoolObjectList< TestVertex > createListFromKeys( final int[] keys )
+	private RefArrayList< TestVertex > createListFromKeys( final int[] keys )
 	{
-		final PoolObjectList< TestVertex > set = new PoolObjectList<>( pool );
+		final RefArrayList< TestVertex > set = new RefArrayList<>( pool );
 		final TestVertex ref = pool.createRef();
 		for ( final int key : keys )
 		{

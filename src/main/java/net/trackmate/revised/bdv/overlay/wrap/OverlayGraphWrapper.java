@@ -4,7 +4,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 
 import net.trackmate.graph.collection.RefCollection;
 import net.trackmate.graph.collection.RefList;
-import net.trackmate.graph.collection.pool.PoolObjectList;
+import net.trackmate.graph.collection.pool.RefArrayList;
 import net.trackmate.graph.zzgraphinterfaces.Edge;
 import net.trackmate.graph.zzgraphinterfaces.GraphIdBimap;
 import net.trackmate.graph.zzgraphinterfaces.ReadOnlyGraph;
@@ -164,24 +164,24 @@ public class OverlayGraphWrapper< V extends Vertex< E >, E extends Edge< V > > i
 	@Override
 	public RefList< OverlayVertexWrapper< V, E > > createVertexList()
 	{
-		return new PoolObjectList< OverlayVertexWrapper< V, E > >( vertexPool );
+		return new RefArrayList< OverlayVertexWrapper< V, E > >( vertexPool );
 	}
 
 	@Override
 	public RefList< OverlayVertexWrapper< V, E > > createVertexList( final int initialCapacity )
 	{
-		return new PoolObjectList< OverlayVertexWrapper< V, E > >( vertexPool, initialCapacity );
+		return new RefArrayList< OverlayVertexWrapper< V, E > >( vertexPool, initialCapacity );
 	}
 
 	@Override
 	public RefList< OverlayEdgeWrapper< V, E > > createEdgeList()
 	{
-		return new PoolObjectList< OverlayEdgeWrapper< V, E > >( edgePool );
+		return new RefArrayList< OverlayEdgeWrapper< V, E > >( edgePool );
 	}
 
 	@Override
 	public RefList< OverlayEdgeWrapper< V, E > > createEdgeList( final int initialCapacity )
 	{
-		return new PoolObjectList< OverlayEdgeWrapper< V, E > >( edgePool, initialCapacity );
+		return new RefArrayList< OverlayEdgeWrapper< V, E > >( edgePool, initialCapacity );
 	}
 }

@@ -29,7 +29,7 @@ import net.trackmate.graph.zzrefcollections.RefPool;
  * ordered, and can have values much greater than this map cardinality. For
  * instance to store about ~100 mappings with keys anywhere from 0 to 1e9. When
  * the <code>int</code> keys typically range from 0 to the cardinality, it is
- * best to use the {@link IntPoolObjectArrayMap} implementation.
+ * best to use the {@link IntRefArrayMap} implementation.
  *
  * @param <V>
  *            value type.
@@ -37,19 +37,18 @@ import net.trackmate.graph.zzrefcollections.RefPool;
  * @author Tobias Pietzsch &lt;tobias.pietzsch@gmail.com&gt;
  * @author Jean-Yves Tinevez &lt;jeanyves.tinevez@gmail.com&gt;
  */
-// TODO rename IntRefHashMap
-public class IntPoolObjectMap< V extends Ref< V > > implements IntRefMap< V >
+public class IntRefHashMap< V extends Ref< V > > implements IntRefMap< V >
 {
 	private final TIntIntMap keyToIndexMap;
 
 	private final RefPool< V > pool;
 
-	public IntPoolObjectMap( final RefPool< V > pool, final int noEntryKey )
+	public IntRefHashMap( final RefPool< V > pool, final int noEntryKey )
 	{
 		this( pool, noEntryKey, Constants.DEFAULT_CAPACITY );
 	}
 
-	public IntPoolObjectMap( final RefPool< V> pool, final int noEntryKey, final int initialCapacity )
+	public IntRefHashMap( final RefPool< V> pool, final int noEntryKey, final int initialCapacity )
 	{
 		this.pool = pool;
 		keyToIndexMap = new TIntIntHashMap( initialCapacity, Constants.DEFAULT_LOAD_FACTOR, noEntryKey, -1 )
@@ -383,13 +382,13 @@ public class IntPoolObjectMap< V extends Ref< V > > implements IntRefMap< V >
 		@Override
 		public int size()
 		{
-			return IntPoolObjectMap.this.size();
+			return IntRefHashMap.this.size();
 		}
 
 		@Override
 		public boolean isEmpty()
 		{
-			return IntPoolObjectMap.this.isEmpty();
+			return IntRefHashMap.this.isEmpty();
 		}
 
 		@Override
@@ -530,7 +529,7 @@ public class IntPoolObjectMap< V extends Ref< V > > implements IntRefMap< V >
 		@Override
 		public void clear()
 		{
-			IntPoolObjectMap.this.clear();
+			IntRefHashMap.this.clear();
 		}
 
 		@Override

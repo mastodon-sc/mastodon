@@ -6,7 +6,7 @@ import net.trackmate.graph.AbstractVertex;
 import net.trackmate.graph.AbstractVertexWithFeatures;
 import net.trackmate.graph.AbstractVertexWithFeaturesPool;
 import net.trackmate.graph.ListenableGraphImp;
-import net.trackmate.graph.collection.pool.PoolObjectIdBimap;
+import net.trackmate.graph.collection.pool.RefIdBimap;
 import net.trackmate.graph.listenable.GraphListener;
 import net.trackmate.graph.mempool.MappedElement;
 import net.trackmate.graph.zzgraphinterfaces.GraphFeatures;
@@ -29,8 +29,8 @@ public class AbstractModelGraph<
 	{
 		super( vertexPool, edgePool );
 		idmap = new GraphIdBimap< V, E >(
-					new PoolObjectIdBimap< V >( vertexPool ),
-					new PoolObjectIdBimap< E >( edgePool ) );
+					new RefIdBimap< V >( vertexPool ),
+					new RefIdBimap< E >( edgePool ) );
 		features = new GraphFeatures<>( this );
 		vertexPool.linkFeatures( features );
 	}
@@ -39,8 +39,8 @@ public class AbstractModelGraph<
 	{
 		super( edgePool );
 		idmap = new GraphIdBimap< V, E >(
-				new PoolObjectIdBimap< V >( vertexPool ),
-				new PoolObjectIdBimap< E >( edgePool ) );
+				new RefIdBimap< V >( vertexPool ),
+				new RefIdBimap< E >( edgePool ) );
 		features = new GraphFeatures<>( this );
 		vertexPool.linkFeatures( features );
 	}

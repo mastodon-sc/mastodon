@@ -17,26 +17,25 @@ import net.trackmate.graph.zzrefcollections.PoolObject;
 import net.trackmate.graph.zzrefcollections.Ref;
 import net.trackmate.graph.zzrefcollections.RefPool;
 
-// TODO rename RefArrayList
-public class PoolObjectList< O extends Ref< O > > implements PoolObjectCollection< O >, RefList< O >
+public class RefArrayList< O extends Ref< O > > implements IntBackedRefCollection< O >, RefList< O >
 {
 	private final TIntArrayList indices;
 
 	private final RefPool< O > pool;
 
-	public PoolObjectList( final RefPool< O > pool )
+	public RefArrayList( final RefPool< O > pool )
 	{
 		this.pool = pool;
 		indices = new TIntArrayList();
 	}
 
-	public PoolObjectList( final RefPool< O > pool, final int initialCapacity )
+	public RefArrayList( final RefPool< O > pool, final int initialCapacity )
 	{
 		this.pool = pool;
 		indices = new TIntArrayList( initialCapacity );
 	}
 
-	protected PoolObjectList( final PoolObjectList< O > list, final TIntArrayList indexSubList )
+	protected RefArrayList( final RefArrayList< O > list, final TIntArrayList indexSubList )
 	{
 		pool = list.pool;
 		indices = indexSubList;
@@ -76,8 +75,8 @@ public class PoolObjectList< O extends Ref< O > > implements PoolObjectCollectio
 	@Override
 	public boolean addAll( final Collection< ? extends O > objs )
 	{
-		if ( objs instanceof PoolObjectCollection )
-			return indices.addAll( ( ( PoolObjectCollection< ? > ) objs ).getIndexCollection() );
+		if ( objs instanceof IntBackedRefCollection )
+			return indices.addAll( ( ( IntBackedRefCollection< ? > ) objs ).getIndexCollection() );
 		else
 		{
 			for ( final O obj : objs )
@@ -89,9 +88,9 @@ public class PoolObjectList< O extends Ref< O > > implements PoolObjectCollectio
 	@Override
 	public boolean addAll( final int index, final Collection< ? extends O > objs )
 	{
-		if ( objs instanceof PoolObjectCollection )
+		if ( objs instanceof IntBackedRefCollection )
 		{
-			final TIntCollection objIndices = ( ( PoolObjectCollection< ? > ) objs ).getIndexCollection();
+			final TIntCollection objIndices = ( ( IntBackedRefCollection< ? > ) objs ).getIndexCollection();
 			indices.insert( index, objIndices.toArray() );
 		}
 		else
@@ -150,8 +149,8 @@ public class PoolObjectList< O extends Ref< O > > implements PoolObjectCollectio
 	@Override
 	public boolean containsAll( final Collection< ? > objs )
 	{
-		if ( objs instanceof PoolObjectCollection )
-			return indices.containsAll( ( ( PoolObjectCollection< ? > ) objs ).getIndexCollection() );
+		if ( objs instanceof IntBackedRefCollection )
+			return indices.containsAll( ( ( IntBackedRefCollection< ? > ) objs ).getIndexCollection() );
 		else
 		{
 			for ( final Object obj : objs )
@@ -299,7 +298,7 @@ public class PoolObjectList< O extends Ref< O > > implements PoolObjectCollectio
 
 			try
 			{
-				PoolObjectList.this.remove( lastRet );
+				RefArrayList.this.remove( lastRet );
 				if ( lastRet < cursor )
 					cursor--;
 				lastRet = -1;
@@ -356,7 +355,7 @@ public class PoolObjectList< O extends Ref< O > > implements PoolObjectCollectio
 
 			try
 			{
-				PoolObjectList.this.set( lastRet, o );
+				RefArrayList.this.set( lastRet, o );
 				expectedModCount = modCount;
 			}
 			catch ( final IndexOutOfBoundsException ex )
@@ -373,7 +372,7 @@ public class PoolObjectList< O extends Ref< O > > implements PoolObjectCollectio
 			try
 			{
 				final int i = cursor;
-				PoolObjectList.this.add( i, o );
+				RefArrayList.this.add( i, o );
 				lastRet = -1;
 				cursor = i + 1;
 				expectedModCount = modCount;
@@ -427,8 +426,8 @@ public class PoolObjectList< O extends Ref< O > > implements PoolObjectCollectio
 	@Override
 	public boolean removeAll( final Collection< ? > objs )
 	{
-		if ( objs instanceof PoolObjectCollection )
-			return indices.removeAll( ( ( PoolObjectCollection< ? > ) objs ).getIndexCollection() );
+		if ( objs instanceof IntBackedRefCollection )
+			return indices.removeAll( ( ( IntBackedRefCollection< ? > ) objs ).getIndexCollection() );
 		else
 		{
 			boolean changed = false;
@@ -442,8 +441,8 @@ public class PoolObjectList< O extends Ref< O > > implements PoolObjectCollectio
 	@Override
 	public boolean retainAll( final Collection< ? > objs )
 	{
-		if ( objs instanceof PoolObjectCollection )
-			return indices.retainAll( ( ( PoolObjectCollection< ? > ) objs ).getIndexCollection() );
+		if ( objs instanceof IntBackedRefCollection )
+			return indices.retainAll( ( ( IntBackedRefCollection< ? > ) objs ).getIndexCollection() );
 		else
 		{
 			// TODO
@@ -475,7 +474,7 @@ public class PoolObjectList< O extends Ref< O > > implements PoolObjectCollectio
 	@Override
 	public List< O > subList( final int fromIndex, final int toIndex )
 	{
-		return new PoolObjectList< O >( this, ( TIntArrayList ) indices.subList( fromIndex, toIndex ) );
+		return new RefArrayList< O >( this, ( TIntArrayList ) indices.subList( fromIndex, toIndex ) );
 	}
 
 	@Override

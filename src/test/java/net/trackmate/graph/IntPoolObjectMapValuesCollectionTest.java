@@ -12,16 +12,16 @@ import java.util.Iterator;
 import org.junit.Before;
 import org.junit.Test;
 
-import net.trackmate.graph.collection.pool.IntPoolObjectMap;
-import net.trackmate.graph.collection.pool.PoolObjectList;
-import net.trackmate.graph.collection.pool.PoolObjectSet;
+import net.trackmate.graph.collection.pool.IntRefHashMap;
+import net.trackmate.graph.collection.pool.RefArrayList;
+import net.trackmate.graph.collection.pool.RefSetImp;
 
 public class IntPoolObjectMapValuesCollectionTest
 {
 
 	private TestVertexPool pool;
 
-	private IntPoolObjectMap< TestVertex > map;
+	private IntRefHashMap< TestVertex > map;
 
 	private HashMap< Integer, Integer > truthMap;
 
@@ -41,7 +41,7 @@ public class IntPoolObjectMapValuesCollectionTest
 			truthMap.put( Integer.valueOf( a.getId() ), Integer.valueOf( a.getInternalPoolIndex() ) );
 		}
 
-		map = new IntPoolObjectMap<>( pool, -1 );
+		map = new IntRefHashMap<>( pool, -1 );
 		storedIds = new int[] { 2, 3, 6, 8 };
 		for ( final int id : storedIds )
 		{
@@ -63,7 +63,7 @@ public class IntPoolObjectMapValuesCollectionTest
 	@Test( expected = UnsupportedOperationException.class )
 	public void testAddAll()
 	{
-		final PoolObjectSet< TestVertex > set = new PoolObjectSet<>( pool );
+		final RefSetImp< TestVertex > set = new RefSetImp<>( pool );
 		final TestVertex ref = pool.createRef();
 		for ( int i = 0; i < 5; i++ )
 		{
@@ -128,7 +128,7 @@ public class IntPoolObjectMapValuesCollectionTest
 		assertFalse( "ValueCollection should not be empty.", valueCollection.isEmpty() );
 		valueCollection.clear();
 		assertTrue( "ValueCollection should be empty after clear().", valueCollection.isEmpty() );
-		assertTrue( "ValueCollection from new map should be empty.", new IntPoolObjectMap<>( pool, -1 ).valueCollection().isEmpty() );
+		assertTrue( "ValueCollection from new map should be empty.", new IntRefHashMap<>( pool, -1 ).valueCollection().isEmpty() );
 	}
 
 	@Test
@@ -259,9 +259,9 @@ public class IntPoolObjectMapValuesCollectionTest
 		}
 	}
 
-	private PoolObjectList< TestVertex > createListFromKeys( final int[] keys )
+	private RefArrayList< TestVertex > createListFromKeys( final int[] keys )
 	{
-		final PoolObjectList< TestVertex > set = new PoolObjectList<>( pool );
+		final RefArrayList< TestVertex > set = new RefArrayList<>( pool );
 		final TestVertex ref = pool.createRef();
 		for ( final int key : keys )
 		{

@@ -11,19 +11,19 @@ import net.trackmate.graph.zzrefcollections.Ref;
 import net.trackmate.graph.zzrefcollections.RefPool;
 
 // TODO rename RefArrayDeque
-public class PoolObjectDeque< O extends Ref< O > > implements PoolObjectCollection< O >, RefDeque< O >
+public class RefArrayDeque< O extends Ref< O > > implements IntBackedRefCollection< O >, RefDeque< O >
 {
 	private final RefPool< O > pool;
 
 	private final TIntArrayDeque indices;
 
-	public PoolObjectDeque( final RefPool< O > pool )
+	public RefArrayDeque( final RefPool< O > pool )
 	{
 		this.pool = pool;
 		this.indices = new TIntArrayDeque();
 	}
 
-	public PoolObjectDeque( final RefPool< O > pool, final int initialCapacity )
+	public RefArrayDeque( final RefPool< O > pool, final int initialCapacity )
 	{
 		this.pool = pool;
 		indices = new TIntArrayDeque( initialCapacity );
@@ -64,8 +64,8 @@ public class PoolObjectDeque< O extends Ref< O > > implements PoolObjectCollecti
 	@Override
 	public boolean addAll( final Collection< ? extends O > objs )
 	{
-		if ( objs instanceof PoolObjectCollection )
-			return indices.addAll( ( ( PoolObjectCollection< ? > ) objs ).getIndexCollection() );
+		if ( objs instanceof IntBackedRefCollection )
+			return indices.addAll( ( ( IntBackedRefCollection< ? > ) objs ).getIndexCollection() );
 		else
 		{
 			for ( final O obj : objs )
@@ -91,8 +91,8 @@ public class PoolObjectDeque< O extends Ref< O > > implements PoolObjectCollecti
 	@Override
 	public boolean containsAll( final Collection< ? > objs )
 	{
-		if ( objs instanceof PoolObjectCollection )
-			return indices.containsAll( ( ( PoolObjectCollection< ? > ) objs ).getIndexCollection() );
+		if ( objs instanceof IntBackedRefCollection )
+			return indices.containsAll( ( ( IntBackedRefCollection< ? > ) objs ).getIndexCollection() );
 		else
 		{
 			for ( final Object obj : objs )
@@ -179,8 +179,8 @@ public class PoolObjectDeque< O extends Ref< O > > implements PoolObjectCollecti
 	@Override
 	public boolean removeAll( final Collection< ? > objs )
 	{
-		if ( objs instanceof PoolObjectCollection )
-			return indices.removeAll( ( ( PoolObjectCollection< ? > ) objs ).getIndexCollection() );
+		if ( objs instanceof IntBackedRefCollection )
+			return indices.removeAll( ( ( IntBackedRefCollection< ? > ) objs ).getIndexCollection() );
 		else
 		{
 			boolean changed = false;
@@ -194,8 +194,8 @@ public class PoolObjectDeque< O extends Ref< O > > implements PoolObjectCollecti
 	@Override
 	public boolean retainAll( final Collection< ? > objs )
 	{
-		if ( objs instanceof PoolObjectCollection )
-			return indices.retainAll( ( ( PoolObjectCollection< ? > ) objs ).getIndexCollection() );
+		if ( objs instanceof IntBackedRefCollection )
+			return indices.retainAll( ( ( IntBackedRefCollection< ? > ) objs ).getIndexCollection() );
 		else
 		{
 			boolean changed = false;
@@ -393,7 +393,7 @@ public class PoolObjectDeque< O extends Ref< O > > implements PoolObjectCollecti
 	@Override
 	public boolean removeFirstOccurrence( final Object obj )
 	{
-		if ( !( obj instanceof PoolObjectCollection ) )
+		if ( !( obj instanceof IntBackedRefCollection ) )
 			return false;
 		@SuppressWarnings( "unchecked" )
 		final O o = ( O ) obj;
@@ -404,7 +404,7 @@ public class PoolObjectDeque< O extends Ref< O > > implements PoolObjectCollecti
 	@Override
 	public boolean removeLastOccurrence( final Object obj )
 	{
-		if ( !( obj instanceof PoolObjectCollection ) )
+		if ( !( obj instanceof IntBackedRefCollection ) )
 			return false;
 		@SuppressWarnings( "unchecked" )
 		final O o = ( O ) obj;

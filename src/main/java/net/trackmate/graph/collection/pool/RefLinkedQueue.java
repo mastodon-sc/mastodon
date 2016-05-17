@@ -10,8 +10,7 @@ import net.trackmate.graph.zzrefcollections.PoolObject;
 import net.trackmate.graph.zzrefcollections.Ref;
 import net.trackmate.graph.zzrefcollections.RefPool;
 
-//TODO rename RefLinkedQueue
-public class PoolObjectQueue< O extends Ref< O > > implements PoolObjectCollection< O >
+public class RefLinkedQueue< O extends Ref< O > > implements IntBackedRefCollection< O >
 {
 	private final RefPool< O > pool;
 
@@ -27,13 +26,13 @@ public class PoolObjectQueue< O extends Ref< O > > implements PoolObjectCollecti
 	 * @param pool
 	 *            the pool to draw objects from in order to build this queue.
 	 */
-	public PoolObjectQueue( final RefPool< O > pool )
+	public RefLinkedQueue( final RefPool< O > pool )
 	{
 		this.pool = pool;
 		this.queue = new TIntLinkedList();
 	}
 
-	protected PoolObjectQueue( final PoolObjectQueue< O > queue, final TIntLinkedList indexSubList )
+	protected RefLinkedQueue( final RefLinkedQueue< O > queue, final TIntLinkedList indexSubList )
 	{
 		this.pool = queue.pool;
 		this.queue = indexSubList;
@@ -127,8 +126,8 @@ public class PoolObjectQueue< O extends Ref< O > > implements PoolObjectCollecti
 	@Override
 	public boolean addAll( final Collection< ? extends O > objs )
 	{
-		if ( objs instanceof PoolObjectCollection )
-			return queue.addAll( ( ( PoolObjectCollection< ? > ) objs ).getIndexCollection() );
+		if ( objs instanceof IntBackedRefCollection )
+			return queue.addAll( ( ( IntBackedRefCollection< ? > ) objs ).getIndexCollection() );
 		else
 		{
 			for ( final O obj : objs )
@@ -154,8 +153,8 @@ public class PoolObjectQueue< O extends Ref< O > > implements PoolObjectCollecti
 	@Override
 	public boolean containsAll( final Collection< ? > objs )
 	{
-		if ( objs instanceof PoolObjectCollection )
-			return queue.containsAll( ( ( PoolObjectCollection< ? > ) objs ).getIndexCollection() );
+		if ( objs instanceof IntBackedRefCollection )
+			return queue.containsAll( ( ( IntBackedRefCollection< ? > ) objs ).getIndexCollection() );
 		else
 		{
 			for ( final Object obj : objs )
@@ -218,8 +217,8 @@ public class PoolObjectQueue< O extends Ref< O > > implements PoolObjectCollecti
 	@Override
 	public boolean removeAll( final Collection< ? > objs )
 	{
-		if ( objs instanceof PoolObjectCollection )
-			return queue.removeAll( ( ( PoolObjectCollection< ? > ) objs ).getIndexCollection() );
+		if ( objs instanceof IntBackedRefCollection )
+			return queue.removeAll( ( ( IntBackedRefCollection< ? > ) objs ).getIndexCollection() );
 		else
 		{
 			boolean changed = false;
@@ -233,8 +232,8 @@ public class PoolObjectQueue< O extends Ref< O > > implements PoolObjectCollecti
 	@Override
 	public boolean retainAll( final Collection< ? > objs )
 	{
-		if ( objs instanceof PoolObjectCollection )
-			return queue.retainAll( ( ( PoolObjectCollection< ? > ) objs ).getIndexCollection() );
+		if ( objs instanceof IntBackedRefCollection )
+			return queue.retainAll( ( ( IntBackedRefCollection< ? > ) objs ).getIndexCollection() );
 		else
 		{
 			boolean changed = false;

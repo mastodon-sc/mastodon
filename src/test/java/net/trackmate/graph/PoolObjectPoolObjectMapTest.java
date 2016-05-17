@@ -11,8 +11,8 @@ import java.util.Set;
 import org.junit.Test;
 
 import net.trackmate.graph.collection.RefSet;
-import net.trackmate.graph.collection.pool.PoolObjectPoolObjectMap;
-import net.trackmate.graph.collection.pool.PoolObjectSet;
+import net.trackmate.graph.collection.pool.RefRefHashMap;
+import net.trackmate.graph.collection.pool.RefSetImp;
 
 /**
  * Test map from vertices to edges, both belong to the same graph.
@@ -90,7 +90,7 @@ public class PoolObjectPoolObjectMapTest extends PoolObjectPoolObjectMapAbstract
 	public void testKeySet()
 	{
 		final Set< TestVertex > keySet = map.keySet();
-		assertTrue( "Set returned should be a PoolObjectSet.", keySet instanceof PoolObjectSet );
+		assertTrue( "Set returned should be a PoolObjectSet.", keySet instanceof RefSetImp );
 		final RefSet< TestVertex > set = graph.createVertexSet();
 		set.add( Bk );
 		set.add( Ck );
@@ -138,7 +138,7 @@ public class PoolObjectPoolObjectMapTest extends PoolObjectPoolObjectMapAbstract
 	@Test
 	public void testPutAll()
 	{
-		final PoolObjectPoolObjectMap< TestVertex, TestEdge > extraMap = new PoolObjectPoolObjectMap< TestVertex, TestEdge >( graph.vertexPool, graph.edgePool );
+		final RefRefHashMap< TestVertex, TestEdge > extraMap = new RefRefHashMap< TestVertex, TestEdge >( graph.vertexPool, graph.edgePool );
 		extraMap.put( Ak, eAB );
 		// Careful to add 1 mapping not already present in the map.
 		extraMap.put( Bk, eAC );

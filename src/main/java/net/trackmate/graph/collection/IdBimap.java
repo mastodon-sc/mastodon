@@ -1,6 +1,6 @@
 package net.trackmate.graph.collection;
 
-import net.trackmate.graph.collection.pool.PoolObjectIdBimap;
+import net.trackmate.graph.collection.pool.RefIdBimap;
 import net.trackmate.graph.zzrefcollections.PoolObject;
 
 /**
@@ -9,7 +9,7 @@ import net.trackmate.graph.zzrefcollections.PoolObject;
  * Implementations:
  * <ul>
  * <li>A mapping between {@link PoolObject}s and their internal pool
- * indices. Implemented in {@link PoolObjectIdBimap}.</li>
+ * indices. Implemented in {@link RefIdBimap}.</li>
  * <li>a mapping between Java objects and IDs that are assigned upon first
  * access. Not implemented yet.</li>
  * </ul>

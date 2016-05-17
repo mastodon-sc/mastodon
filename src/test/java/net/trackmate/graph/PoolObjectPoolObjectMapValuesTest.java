@@ -10,7 +10,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import net.trackmate.graph.collection.RefList;
-import net.trackmate.graph.collection.pool.PoolObjectPoolObjectMap;
+import net.trackmate.graph.collection.pool.RefRefHashMap;
 
 import org.junit.Test;
 
@@ -78,7 +78,7 @@ public class PoolObjectPoolObjectMapValuesTest extends PoolObjectPoolObjectMapAb
 	@Test
 	public void testIsEmpty()
 	{
-		final PoolObjectPoolObjectMap< TestVertex, TestEdge > map2 = new PoolObjectPoolObjectMap< TestVertex, TestEdge >( graph.vertexPool, graph.edgePool );
+		final RefRefHashMap< TestVertex, TestEdge > map2 = new RefRefHashMap< TestVertex, TestEdge >( graph.vertexPool, graph.edgePool );
 		assertTrue( "Value collection of newly created map should be empty.", map2.values().isEmpty() );
 
 		map2.put( Ak, eAB );

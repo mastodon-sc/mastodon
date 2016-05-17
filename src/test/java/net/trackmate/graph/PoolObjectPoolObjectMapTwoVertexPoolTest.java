@@ -11,8 +11,8 @@ import java.util.Set;
 import org.junit.Test;
 
 import net.trackmate.graph.collection.RefSet;
-import net.trackmate.graph.collection.pool.PoolObjectPoolObjectMap;
-import net.trackmate.graph.collection.pool.PoolObjectSet;
+import net.trackmate.graph.collection.pool.RefRefHashMap;
+import net.trackmate.graph.collection.pool.RefSetImp;
 
 public class PoolObjectPoolObjectMapTwoVertexPoolTest extends PoolObjectPoolObjectMapVertexPoolAbstractTest
 {
@@ -86,7 +86,7 @@ public class PoolObjectPoolObjectMapTwoVertexPoolTest extends PoolObjectPoolObje
 	public void testKeySet()
 	{
 		final Set< TestVertex > keySet = map.keySet();
-		assertTrue( "Set returned should be a PoolObjectSet.", keySet instanceof PoolObjectSet );
+		assertTrue( "Set returned should be a PoolObjectSet.", keySet instanceof RefSetImp );
 		final RefSet< TestVertex > set = graph.createVertexSet();
 		set.add( Bk );
 		set.add( Ck );
@@ -134,7 +134,7 @@ public class PoolObjectPoolObjectMapTwoVertexPoolTest extends PoolObjectPoolObje
 	@Test
 	public void testPutAll()
 	{
-		final PoolObjectPoolObjectMap< TestVertex, TestVertex > extraMap = new PoolObjectPoolObjectMap< TestVertex, TestVertex >( graph.vertexPool, graph.vertexPool );
+		final RefRefHashMap< TestVertex, TestVertex > extraMap = new RefRefHashMap< TestVertex, TestVertex >( graph.vertexPool, graph.vertexPool );
 		extraMap.put( Ak, Bk );
 		// Careful to add 1 mapping not already present in the map.
 		extraMap.put( Bk, Ak );

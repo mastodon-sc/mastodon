@@ -40,8 +40,7 @@ import net.trackmate.graph.zzrefcollections.RefPool;
  * @author Tobias Pietzsch &lt;tobias.pietzsch@gmail.com&gt;
  * @author Jean-Yves Tinevez &lt;jeanyves.tinevez@gmail.com&gt;
  */
-// TODO rename IntRefArrayMap
-public class IntPoolObjectArrayMap< V extends Ref< V > > implements IntRefMap< V >
+public class IntRefArrayMap< V extends Ref< V > > implements IntRefMap< V >
 {
 
 	/**
@@ -61,12 +60,12 @@ public class IntPoolObjectArrayMap< V extends Ref< V > > implements IntRefMap< V
 
 	private int size;
 
-	public IntPoolObjectArrayMap( final RefPool< V > pool )
+	public IntRefArrayMap( final RefPool< V > pool )
 	{
 		this( pool, Constants.DEFAULT_CAPACITY );
 	}
 
-	public IntPoolObjectArrayMap( final RefPool< V > pool, final int initialCapacity )
+	public IntRefArrayMap( final RefPool< V > pool, final int initialCapacity )
 	{
 		this.pool = pool;
 		keyToIndexMap = new TIntArrayList( initialCapacity, NO_ENTRY_VALUE );
@@ -325,7 +324,7 @@ public class IntPoolObjectArrayMap< V extends Ref< V > > implements IntRefMap< V
 			@Override
 			public void remove()
 			{
-				IntPoolObjectArrayMap.this.remove( cursor );
+				IntRefArrayMap.this.remove( cursor );
 			}
 
 			@Override
@@ -527,7 +526,7 @@ public class IntPoolObjectArrayMap< V extends Ref< V > > implements IntRefMap< V
 					try
 					{
 						final V ref = pool.createRef();
-						IntPoolObjectArrayMap.this.remove( lastRet, ref );
+						IntRefArrayMap.this.remove( lastRet, ref );
 						pool.releaseRef( ref );
 						if ( lastRet < cursor )
 							cursor--;
@@ -563,7 +562,7 @@ public class IntPoolObjectArrayMap< V extends Ref< V > > implements IntRefMap< V
 		public boolean remove( final int entry )
 		{
 			final V ref = pool.createRef();
-			final V removed = IntPoolObjectArrayMap.this.remove( entry, ref );
+			final V removed = IntRefArrayMap.this.remove( entry, ref );
 			pool.releaseRef( ref );
 			return ( removed != null );
 		}
@@ -613,7 +612,7 @@ public class IntPoolObjectArrayMap< V extends Ref< V > > implements IntRefMap< V
 			{
 				if ( !collection.contains( entry ) )
 				{
-					final V removed = IntPoolObjectArrayMap.this.remove( entry, ref );
+					final V removed = IntRefArrayMap.this.remove( entry, ref );
 					if ( removed != null )
 						changed = true;
 				}
@@ -631,7 +630,7 @@ public class IntPoolObjectArrayMap< V extends Ref< V > > implements IntRefMap< V
 			{
 				if ( !collection.contains( entry ) )
 				{
-					final V removed = IntPoolObjectArrayMap.this.remove( entry, ref );
+					final V removed = IntRefArrayMap.this.remove( entry, ref );
 					if ( removed != null )
 						changed = true;
 				}
@@ -658,7 +657,7 @@ public class IntPoolObjectArrayMap< V extends Ref< V > > implements IntRefMap< V
 				}
 				if ( !found )
 				{
-					final V removed = IntPoolObjectArrayMap.this.remove( entry, ref );
+					final V removed = IntRefArrayMap.this.remove( entry, ref );
 					if ( removed != null )
 						changed = true;
 				}
@@ -714,7 +713,7 @@ public class IntPoolObjectArrayMap< V extends Ref< V > > implements IntRefMap< V
 		@Override
 		public void clear()
 		{
-			IntPoolObjectArrayMap.this.clear();
+			IntRefArrayMap.this.clear();
 		}
 
 		@Override
@@ -751,13 +750,13 @@ public class IntPoolObjectArrayMap< V extends Ref< V > > implements IntRefMap< V
 		@Override
 		public void clear()
 		{
-			IntPoolObjectArrayMap.this.clear();
+			IntRefArrayMap.this.clear();
 		}
 
 		@Override
 		public boolean contains( final Object value )
 		{
-			return IntPoolObjectArrayMap.this.containsValue( value );
+			return IntRefArrayMap.this.containsValue( value );
 		}
 
 		@Override
@@ -774,7 +773,7 @@ public class IntPoolObjectArrayMap< V extends Ref< V > > implements IntRefMap< V
 		@Override
 		public boolean isEmpty()
 		{
-			return IntPoolObjectArrayMap.this.isEmpty();
+			return IntRefArrayMap.this.isEmpty();
 		}
 
 		@Override
@@ -841,7 +840,7 @@ public class IntPoolObjectArrayMap< V extends Ref< V > > implements IntRefMap< V
 					try
 					{
 						final V ref = pool.createRef();
-						IntPoolObjectArrayMap.this.remove( lastRet, ref );
+						IntRefArrayMap.this.remove( lastRet, ref );
 						pool.releaseRef( ref );
 						if ( lastRet < cursor )
 							cursor--;
@@ -900,7 +899,7 @@ public class IntPoolObjectArrayMap< V extends Ref< V > > implements IntRefMap< V
 		@Override
 		public int size()
 		{
-			return IntPoolObjectArrayMap.this.size();
+			return IntRefArrayMap.this.size();
 		}
 
 		@Override

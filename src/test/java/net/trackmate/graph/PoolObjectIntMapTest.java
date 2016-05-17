@@ -23,14 +23,14 @@ import gnu.trove.map.hash.TObjectIntHashMap;
 import gnu.trove.procedure.TIntProcedure;
 import gnu.trove.procedure.TObjectIntProcedure;
 import gnu.trove.procedure.TObjectProcedure;
-import net.trackmate.graph.collection.pool.PoolObjectIntMap;
+import net.trackmate.graph.collection.pool.RefIntHashMap;
 
 public class PoolObjectIntMapTest
 {
 
 	private int noEntryValue;
 
-	private PoolObjectIntMap< TestObject > map;
+	private RefIntHashMap< TestObject > map;
 
 	private ArrayList< TestObject > notIns;
 
@@ -43,7 +43,7 @@ public class PoolObjectIntMapTest
 	{
 		final TestObjectPool pool = new TestObjectPool( 10 );
 		noEntryValue = -1;
-		map = new PoolObjectIntMap< TestObject >( pool, noEntryValue );
+		map = new RefIntHashMap< TestObject >( pool, noEntryValue );
 		final TestObject A = pool.create().init( 1 );
 		final TestObject B = pool.create().init( 2 );
 		final TestObject C = pool.create().init( 3 );
@@ -123,7 +123,7 @@ public class PoolObjectIntMapTest
 	public void testIsEmpty()
 	{
 		final TestObjectPool pool = new TestObjectPool( 10 );
-		final PoolObjectIntMap< TestObject > lmap = new PoolObjectIntMap< TestObject >( pool, noEntryValue );
+		final RefIntHashMap< TestObject > lmap = new RefIntHashMap< TestObject >( pool, noEntryValue );
 		assertTrue( "Newly created map should be empty.", lmap.isEmpty() );
 	}
 
@@ -289,7 +289,7 @@ public class PoolObjectIntMapTest
 	{
 		final TestObjectPool pool = new TestObjectPool( 10 );
 		final int lNoEntryValue = 1000;
-		final PoolObjectIntMap< TestObject > lmap = new PoolObjectIntMap< TestObject >( pool, lNoEntryValue );
+		final RefIntHashMap< TestObject > lmap = new RefIntHashMap< TestObject >( pool, lNoEntryValue );
 		assertEquals( "Unexpected 'no_entry_value'.", lNoEntryValue, lmap.getNoEntryValue() );
 	}
 

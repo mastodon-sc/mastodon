@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import net.trackmate.graph.collection.RefList;
-import net.trackmate.graph.collection.pool.PoolObjectList;
+import net.trackmate.graph.collection.pool.RefArrayList;
 import net.trackmate.revised.trackscheme.ScreenEdge.ScreenEdgePool;
 import net.trackmate.revised.trackscheme.ScreenVertex.ScreenVertexPool;
 import net.trackmate.revised.trackscheme.ScreenVertexRange.ScreenVertexRangePool;
@@ -28,11 +28,11 @@ public class ScreenEntities
 
 	private final ScreenVertexRangePool rangePool;
 
-	private final PoolObjectList< ScreenVertex > vertices;
+	private final RefArrayList< ScreenVertex > vertices;
 
-	private final PoolObjectList< ScreenEdge > edges;
+	private final RefArrayList< ScreenEdge > edges;
 
-	private final PoolObjectList< ScreenVertexRange > ranges;
+	private final RefArrayList< ScreenVertexRange > ranges;
 
 	private final ArrayList< ScreenColumn > columns;
 
@@ -49,11 +49,11 @@ public class ScreenEntities
 	public ScreenEntities( final TrackSchemeGraph< ?, ? > graph, final int initialCapacity )
 	{
 		vertexPool = new ScreenVertexPool( initialCapacity, graph.getVertexPool() );
-		vertices = new PoolObjectList< ScreenVertex >( vertexPool, initialCapacity );
+		vertices = new RefArrayList< ScreenVertex >( vertexPool, initialCapacity );
 		edgePool = new ScreenEdgePool( initialCapacity );
-		edges = new PoolObjectList< ScreenEdge >( edgePool, initialCapacity );
+		edges = new RefArrayList< ScreenEdge >( edgePool, initialCapacity );
 		rangePool = new ScreenVertexRangePool( initialCapacity );
-		ranges = new PoolObjectList< ScreenVertexRange >( rangePool, initialCapacity );
+		ranges = new RefArrayList< ScreenVertexRange >( rangePool, initialCapacity );
 		columns = new ArrayList<>( initialCapacity );
 		screenTransform = new ScreenTransform();
 	}

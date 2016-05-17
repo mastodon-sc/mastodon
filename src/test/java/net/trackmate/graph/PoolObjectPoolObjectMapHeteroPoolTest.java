@@ -6,7 +6,7 @@ import static org.junit.Assert.assertNotEquals;
 import org.junit.Before;
 import org.junit.Test;
 
-import net.trackmate.graph.collection.pool.PoolObjectPoolObjectMap;
+import net.trackmate.graph.collection.pool.RefRefHashMap;
 
 /**
  * This test reproduces the tests from its parent class, but uses a map between
@@ -43,7 +43,7 @@ public class PoolObjectPoolObjectMapHeteroPoolTest extends PoolObjectPoolObjectM
 		eEA = graph2.addEdge( Ek2, Ak2 );
 
 		// Map each vertex to edge going in.
-		map = new PoolObjectPoolObjectMap< TestVertex, TestEdge >( graph.vertexPool, graph2.edgePool );
+		map = new RefRefHashMap< TestVertex, TestEdge >( graph.vertexPool, graph2.edgePool );
 		map.put( Bk, eAB );
 		map.put( Ck, eAC );
 		map.put( Dk, eBD );

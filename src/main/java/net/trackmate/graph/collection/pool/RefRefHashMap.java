@@ -12,8 +12,7 @@ import net.trackmate.graph.zzrefcollections.PoolObject;
 import net.trackmate.graph.zzrefcollections.Ref;
 import net.trackmate.graph.zzrefcollections.RefPool;
 
-//TODO rename RefRefHashMap
-public class PoolObjectPoolObjectMap< K extends Ref< K >, L extends Ref< L > > implements RefRefMap< K, L >
+public class RefRefHashMap< K extends Ref< K >, L extends Ref< L > > implements RefRefMap< K, L >
 {
 	/**
 	 * Int value used to declare that the requested key is not in the map.
@@ -37,19 +36,19 @@ public class PoolObjectPoolObjectMap< K extends Ref< K >, L extends Ref< L > > i
 	 * CONSTRUCTORS
 	 */
 
-	public PoolObjectPoolObjectMap( final RefPool< K > keyPool, final RefPool< L > valuePool, final int initialCapacity, final float loadFactor )
+	public RefRefHashMap( final RefPool< K > keyPool, final RefPool< L > valuePool, final int initialCapacity, final float loadFactor )
 	{
 		this.indexmap = new TIntIntHashMap( initialCapacity, loadFactor, NO_ENTRY_KEY, NO_ENTRY_VALUE );
 		this.keyPool = keyPool;
 		this.valuePool = valuePool;
 	}
 
-	public PoolObjectPoolObjectMap( final RefPool< K > keyPool, final RefPool< L > valuePool, final int initialCapacity )
+	public RefRefHashMap( final RefPool< K > keyPool, final RefPool< L > valuePool, final int initialCapacity )
 	{
 		this( keyPool, valuePool, initialCapacity, 0.5f );
 	}
 
-	public PoolObjectPoolObjectMap( final RefPool< K > keyPool, final RefPool< L > valuePool )
+	public RefRefHashMap( final RefPool< K > keyPool, final RefPool< L > valuePool )
 	{
 		this( keyPool, valuePool, 10 );
 	}
@@ -122,7 +121,7 @@ public class PoolObjectPoolObjectMap< K extends Ref< K >, L extends Ref< L > > i
 	@Override
 	public Set< K > keySet()
 	{
-		return new PoolObjectSet< K >( keyPool, indexmap.keySet() );
+		return new RefSetImp< K >( keyPool, indexmap.keySet() );
 	}
 
 	@Override
@@ -268,13 +267,13 @@ public class PoolObjectPoolObjectMap< K extends Ref< K >, L extends Ref< L > > i
 		@Override
 		public void clear()
 		{
-			PoolObjectPoolObjectMap.this.clear();
+			RefRefHashMap.this.clear();
 		}
 
 		@Override
 		public boolean contains( final Object o )
 		{
-			return PoolObjectPoolObjectMap.this.containsValue( o );
+			return RefRefHashMap.this.containsValue( o );
 		}
 
 		@Override
@@ -283,7 +282,7 @@ public class PoolObjectPoolObjectMap< K extends Ref< K >, L extends Ref< L > > i
 			final Iterator< ? > iter = collection.iterator();
 			while ( iter.hasNext() )
 			{
-				if ( !PoolObjectPoolObjectMap.this.containsValue( iter.next() ) ) { return false; }
+				if ( !RefRefHashMap.this.containsValue( iter.next() ) ) { return false; }
 			}
 			return true;
 		}

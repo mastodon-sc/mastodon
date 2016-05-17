@@ -8,7 +8,7 @@ import gnu.trove.iterator.TIntIterator;
 import gnu.trove.list.array.TIntArrayList;
 import gnu.trove.procedure.TIntProcedure;
 import gnu.trove.set.TIntSet;
-import net.trackmate.graph.collection.pool.IntPoolObjectMap;
+import net.trackmate.graph.collection.pool.IntRefHashMap;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -23,7 +23,7 @@ public class IntPoolObjectMapKeySetTest
 
 	private TestVertexPool pool;
 
-	private IntPoolObjectMap< TestVertex > map;
+	private IntRefHashMap< TestVertex > map;
 
 	private HashMap< Integer, Integer > truthMap;
 
@@ -44,7 +44,7 @@ public class IntPoolObjectMapKeySetTest
 			truthMap.put( Integer.valueOf( a.getId() ), Integer.valueOf( a.getInternalPoolIndex() ) );
 		}
 
-		map = new IntPoolObjectMap<>( pool, -1 );
+		map = new IntRefHashMap<>( pool, -1 );
 		storedIds = new int[] { 22, 23, 26, 28 };
 		for ( final int id : storedIds )
 		{

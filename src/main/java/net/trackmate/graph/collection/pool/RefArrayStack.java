@@ -7,7 +7,7 @@ import net.trackmate.graph.zzrefcollections.RefPool;
 
 /**
  * A stack implementation for {@link PoolObject}s entirely based on a
- * {@link PoolObjectList}.
+ * {@link RefArrayList}.
  *
  * @author Jean-Yves Tinevez
  *
@@ -15,7 +15,7 @@ import net.trackmate.graph.zzrefcollections.RefPool;
  *            recursive type of the {@link PoolObject}s stored in this stack.
  */
 // TODO rename RefArrayStack
-public class PoolObjectStack< O extends Ref< O > > extends PoolObjectList< O > implements RefStack< O >
+public class RefArrayStack< O extends Ref< O > > extends RefArrayList< O > implements RefStack< O >
 {
 
 	/*
@@ -28,7 +28,7 @@ public class PoolObjectStack< O extends Ref< O > > extends PoolObjectList< O > i
 	 * @param pool
 	 *            the pool to draw objects from in order to build this stack.
 	 */
-	public PoolObjectStack( final RefPool< O > pool )
+	public RefArrayStack( final RefPool< O > pool )
 	{
 		super( pool );
 	}
@@ -41,7 +41,7 @@ public class PoolObjectStack< O extends Ref< O > > extends PoolObjectList< O > i
 	 * @param initialCapacity
 	 *            the initial capacity.
 	 */
-	public PoolObjectStack( final RefPool< O > pool, final int initialCapacity )
+	public RefArrayStack( final RefPool< O > pool, final int initialCapacity )
 	{
 		super( pool, initialCapacity );
 	}

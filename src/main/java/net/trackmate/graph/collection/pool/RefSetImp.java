@@ -11,26 +11,25 @@ import net.trackmate.graph.zzrefcollections.PoolObject;
 import net.trackmate.graph.zzrefcollections.Ref;
 import net.trackmate.graph.zzrefcollections.RefPool;
 
-//TODO rename RefSetImpl
-public class PoolObjectSet< O extends Ref< O > > implements PoolObjectCollection< O >, RefSet< O >
+public class RefSetImp< O extends Ref< O > > implements IntBackedRefCollection< O >, RefSet< O >
 {
 	private final TIntSet indices;
 
 	private final RefPool< O > pool;
 
-	public PoolObjectSet( final RefPool< O > pool )
+	public RefSetImp( final RefPool< O > pool )
 	{
 		this.pool = pool;
 		indices = new TIntHashSet();
 	}
 
-	public PoolObjectSet( final RefPool< O > pool, final int initialCapacity )
+	public RefSetImp( final RefPool< O > pool, final int initialCapacity )
 	{
 		this.pool = pool;
 		indices = new TIntHashSet( initialCapacity );
 	}
 
-	protected PoolObjectSet( final RefPool< O > pool, final TIntSet indices )
+	protected RefSetImp( final RefPool< O > pool, final TIntSet indices )
 	{
 		this.pool = pool;
 		this.indices = indices;
@@ -63,8 +62,8 @@ public class PoolObjectSet< O extends Ref< O > > implements PoolObjectCollection
 	@Override
 	public boolean addAll( final Collection< ? extends O > objs )
 	{
-		if ( objs instanceof PoolObjectCollection )
-			return indices.addAll( ( ( PoolObjectCollection< ? > ) objs ).getIndexCollection() );
+		if ( objs instanceof IntBackedRefCollection )
+			return indices.addAll( ( ( IntBackedRefCollection< ? > ) objs ).getIndexCollection() );
 		else
 		{
 			boolean changed = false;
@@ -92,8 +91,8 @@ public class PoolObjectSet< O extends Ref< O > > implements PoolObjectCollection
 	@Override
 	public boolean containsAll( final Collection< ? > objs )
 	{
-		if ( objs instanceof PoolObjectCollection )
-			return indices.containsAll( ( ( PoolObjectCollection< ? > ) objs ).getIndexCollection() );
+		if ( objs instanceof IntBackedRefCollection )
+			return indices.containsAll( ( ( IntBackedRefCollection< ? > ) objs ).getIndexCollection() );
 		else
 		{
 			for ( final Object obj : objs )
@@ -154,8 +153,8 @@ public class PoolObjectSet< O extends Ref< O > > implements PoolObjectCollection
 	@Override
 	public boolean removeAll( final Collection< ? > objs )
 	{
-		if ( objs instanceof PoolObjectCollection )
-			return indices.removeAll( ( ( PoolObjectCollection< ? > ) objs ).getIndexCollection() );
+		if ( objs instanceof IntBackedRefCollection )
+			return indices.removeAll( ( ( IntBackedRefCollection< ? > ) objs ).getIndexCollection() );
 		else
 		{
 			boolean changed = false;
@@ -169,8 +168,8 @@ public class PoolObjectSet< O extends Ref< O > > implements PoolObjectCollection
 	@Override
 	public boolean retainAll( final Collection< ? > objs )
 	{
-		if ( objs instanceof PoolObjectCollection )
-			return indices.retainAll( ( ( PoolObjectCollection< ? > ) objs ).getIndexCollection() );
+		if ( objs instanceof IntBackedRefCollection )
+			return indices.retainAll( ( ( IntBackedRefCollection< ? > ) objs ).getIndexCollection() );
 		else
 		{
 			boolean changed = false;

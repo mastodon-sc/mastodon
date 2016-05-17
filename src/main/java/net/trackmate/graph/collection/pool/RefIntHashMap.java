@@ -18,8 +18,7 @@ import net.trackmate.graph.zzrefcollections.PoolObject;
 import net.trackmate.graph.zzrefcollections.Ref;
 import net.trackmate.graph.zzrefcollections.RefPool;
 
-// TODO rename RefIntHashMap
-public class PoolObjectIntMap< K extends Ref< K > > implements RefIntMap< K >
+public class RefIntHashMap< K extends Ref< K > > implements RefIntMap< K >
 {
 	private static final int NO_ENTRY_KEY = -1;
 
@@ -33,13 +32,13 @@ public class PoolObjectIntMap< K extends Ref< K > > implements RefIntMap< K >
 	 * CONSTRUCTORS
 	 */
 
-	public PoolObjectIntMap( final RefPool< K > pool, final int noEntryValue, final int initialCapacity )
+	public RefIntHashMap( final RefPool< K > pool, final int noEntryValue, final int initialCapacity )
 	{
 		this.pool = pool;
 		this.indexmap = new TIntIntHashMap( initialCapacity, DEFAULT_LOAD_FACTOR, NO_ENTRY_KEY, noEntryValue );
 	}
 
-	public PoolObjectIntMap( final RefPool< K > pool, final int noEntryValue )
+	public RefIntHashMap( final RefPool< K > pool, final int noEntryValue )
 	{
 		this( pool, noEntryValue, Constants.DEFAULT_CAPACITY );
 	}
@@ -89,7 +88,7 @@ public class PoolObjectIntMap< K extends Ref< K > > implements RefIntMap< K >
 	@Override
 	public Set< K > keySet()
 	{
-		return new PoolObjectSet< K >( pool, indexmap.keySet() );
+		return new RefSetImp< K >( pool, indexmap.keySet() );
 	}
 
 	@Override

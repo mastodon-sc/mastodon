@@ -5,7 +5,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import gnu.trove.set.TIntSet;
-import net.trackmate.graph.collection.pool.PoolObjectSet;
+import net.trackmate.graph.collection.pool.RefSetImp;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -19,7 +19,7 @@ public class PoolObjectSetTest
 
 	private ArrayList< TestVertex > list;
 
-	private PoolObjectSet< TestVertex > set;
+	private RefSetImp< TestVertex > set;
 
 	private TestVertexPool pool;
 
@@ -36,7 +36,7 @@ public class PoolObjectSetTest
 			list.add( pool.create( pool.createRef() ).init( i ) );
 		}
 		// Add half of it to the set.
-		set = new PoolObjectSet<>( pool );
+		set = new RefSetImp<>( pool );
 		storedIds = new int[ 5 ];
 		for ( int i = 0; i < list.size(); i = i + 2 )
 		{
@@ -146,7 +146,7 @@ public class PoolObjectSetTest
 		assertFalse( "Set should not be empty.", set.isEmpty() );
 		set.clear();
 		assertTrue( "Cleared set should be empty.", set.isEmpty() );
-		assertTrue( "New set should be empty.", new PoolObjectSet<>( pool ).isEmpty() );
+		assertTrue( "New set should be empty.", new RefSetImp<>( pool ).isEmpty() );
 	}
 
 	@Test

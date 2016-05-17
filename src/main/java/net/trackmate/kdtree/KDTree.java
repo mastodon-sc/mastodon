@@ -7,7 +7,7 @@ import net.imglib2.RealInterval;
 import net.imglib2.RealLocalizable;
 import net.imglib2.RealPositionable;
 import net.trackmate.graph.collection.RefRefMap;
-import net.trackmate.graph.collection.pool.PoolObjectPoolObjectMap;
+import net.trackmate.graph.collection.pool.RefRefHashMap;
 import net.trackmate.graph.mempool.DoubleMappedElement;
 import net.trackmate.graph.mempool.DoubleMappedElementArray;
 import net.trackmate.graph.mempool.MappedElement;
@@ -85,7 +85,7 @@ public class KDTree<
 		final RefPool< O > objPool = kdtree.getObjectPool();
 		final O o = objPool.createRef();
 		final KDTreeNode< O, T > n = kdtree.createRef();
-		final RefRefMap< O, KDTreeNode< O, T > > map = new PoolObjectPoolObjectMap< O, KDTreeNode< O, T > >( objPool, kdtree );
+		final RefRefMap< O, KDTreeNode< O, T > > map = new RefRefHashMap< O, KDTreeNode< O, T > >( objPool, kdtree );
 		for ( final KDTreeNode< O, T > node : kdtree )
 		{
 			objPool.getByInternalPoolIndex( node.getDataIndex(), o );

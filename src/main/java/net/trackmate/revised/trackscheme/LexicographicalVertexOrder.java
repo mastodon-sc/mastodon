@@ -8,7 +8,7 @@ import gnu.trove.list.TIntList;
 import gnu.trove.list.array.TIntArrayList;
 import net.trackmate.graph.collection.RefCollection;
 import net.trackmate.graph.collection.RefList;
-import net.trackmate.graph.collection.pool.PoolObjectList;
+import net.trackmate.graph.collection.pool.RefArrayList;
 import net.trackmate.revised.trackscheme.util.AlphanumCompare;
 
 /**
@@ -34,7 +34,7 @@ public class LexicographicalVertexOrder
 			keys.add( VertexKey.build( v, graph ) );
 		Collections.sort( keys );
 
-		final PoolObjectList< TrackSchemeVertex > sorted = graph.createVertexList( vertices.size() );
+		final RefArrayList< TrackSchemeVertex > sorted = graph.createVertexList( vertices.size() );
 		final TIntArrayList indices = sorted.getIndexCollection();
 		for ( final VertexKey k : keys )
 			indices.add( k.getVertexInternalPoolIndex() );

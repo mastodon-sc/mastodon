@@ -10,8 +10,8 @@ import gnu.trove.iterator.TIntObjectIterator;
 import gnu.trove.procedure.TIntObjectProcedure;
 import gnu.trove.procedure.TIntProcedure;
 import gnu.trove.procedure.TObjectProcedure;
-import net.trackmate.graph.collection.pool.IntPoolObjectArrayMap;
-import net.trackmate.graph.collection.pool.IntPoolObjectMap;
+import net.trackmate.graph.collection.pool.IntRefArrayMap;
+import net.trackmate.graph.collection.pool.IntRefHashMap;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -26,7 +26,7 @@ public class IntPoolObjectMapTest
 
 	private TestVertexPool pool;
 
-	private IntPoolObjectMap< TestVertex > map;
+	private IntRefHashMap< TestVertex > map;
 
 	private HashMap< Integer, Integer > truthMap;
 
@@ -45,7 +45,7 @@ public class IntPoolObjectMapTest
 			truthMap.put( Integer.valueOf( a.getId() ), Integer.valueOf( a.getInternalPoolIndex() ) );
 		}
 
-		map = new IntPoolObjectMap<>( pool, -1 );
+		map = new IntRefHashMap<>( pool, -1 );
 		storedIds = new int[] { 22, 23, 26, 28 };
 		for ( final int id : storedIds )
 		{
@@ -118,7 +118,7 @@ public class IntPoolObjectMapTest
 			map.remove( id );
 		}
 		assertTrue( "Emptied map should be empty.", map.isEmpty() );
-		assertTrue( "New map should be empty.", new IntPoolObjectArrayMap<>( pool ).isEmpty() );
+		assertTrue( "New map should be empty.", new IntRefArrayMap<>( pool ).isEmpty() );
 	}
 
 	@Test
@@ -203,7 +203,7 @@ public class IntPoolObjectMapTest
 		map.releaseRef( ref1 );
 		map.releaseRef( ref2 );
 		assertEquals( "Unexpected map size after addition.", storedIds.length + toAdd.length, map.size() );
-		assertEquals( "Unexpected new map size.", 0, new IntPoolObjectArrayMap<>( pool ).size() );
+		assertEquals( "Unexpected new map size.", 0, new IntRefArrayMap<>( pool ).size() );
 	}
 
 	@Test
@@ -326,7 +326,7 @@ public class IntPoolObjectMapTest
 	@Test
 	public void testPutAllTIntObjectMapOfQextendsV()
 	{
-		final IntPoolObjectMap< TestVertex > m = new IntPoolObjectMap<>( pool, -1 );
+		final IntRefHashMap< TestVertex > m = new IntRefHashMap<>( pool, -1 );
 		final int[] newIds = new int[] { 101, 102 };
 		final TestVertex ref = pool.createRef();
 		for ( final int id : newIds )

@@ -6,7 +6,7 @@ import static net.trackmate.revised.trackscheme.ScreenVertex.Transition.DISAPPEA
 import static net.trackmate.revised.trackscheme.ScreenVertex.Transition.NONE;
 import static net.trackmate.revised.trackscheme.ScreenVertex.Transition.SELECTING;
 
-import net.trackmate.graph.collection.pool.IntPoolObjectMap;
+import net.trackmate.graph.collection.pool.IntRefHashMap;
 
 public class ScreenEntitiesInterpolator
 {
@@ -14,11 +14,11 @@ public class ScreenEntitiesInterpolator
 
 	private final ScreenEntities end;
 
-	private final IntPoolObjectMap< ScreenVertex > idToStartVertex;
+	private final IntRefHashMap< ScreenVertex > idToStartVertex;
 
-	private final IntPoolObjectMap< ScreenVertex > idToEndVertex;
+	private final IntRefHashMap< ScreenVertex > idToEndVertex;
 
-	private final IntPoolObjectMap< ScreenEdge > idToStartEdge;
+	private final IntRefHashMap< ScreenEdge > idToStartEdge;
 
 	private final ScreenTransform incrementalStartTransform;
 
@@ -53,15 +53,15 @@ public class ScreenEntitiesInterpolator
 		this.start = start;
 		this.end = end;
 
-		idToStartVertex = new IntPoolObjectMap< ScreenVertex >( start.getVertexPool(), -1, start.getVertices().size() );
+		idToStartVertex = new IntRefHashMap< ScreenVertex >( start.getVertexPool(), -1, start.getVertices().size() );
 		for ( final ScreenVertex v : start.getVertices() )
 			idToStartVertex.put( v.getTrackSchemeVertexId(), v );
 
-		idToEndVertex = new IntPoolObjectMap< ScreenVertex >( end.getVertexPool(), -1, end.getVertices().size() );
+		idToEndVertex = new IntRefHashMap< ScreenVertex >( end.getVertexPool(), -1, end.getVertices().size() );
 		for ( final ScreenVertex v : end.getVertices() )
 			idToEndVertex.put( v.getTrackSchemeVertexId(), v );
 
-		idToStartEdge = new IntPoolObjectMap< ScreenEdge >( start.getEdgePool(), -1, start.getEdges().size() );
+		idToStartEdge = new IntRefHashMap< ScreenEdge >( start.getEdgePool(), -1, start.getEdges().size() );
 		for ( final ScreenEdge e : start.getEdges() )
 			idToStartEdge.put( e.getTrackSchemeEdgeId(), e );
 

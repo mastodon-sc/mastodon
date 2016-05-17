@@ -14,12 +14,11 @@ import net.trackmate.graph.zzrefcollections.RefPool;
  *
  * @author Tobias Pietzsch &lt;tobias.pietzsch@gmail.com&gt;
  */
-// TODO rename RefIdBimap
-public class PoolObjectIdBimap< O extends Ref< O > > implements IdBimap< O >
+public class RefIdBimap< O extends Ref< O > > implements IdBimap< O >
 {
 	private final RefPool< O > pool;
 
-	public PoolObjectIdBimap( final RefPool< O > pool )
+	public RefIdBimap( final RefPool< O > pool )
 	{
 		this.pool = pool;
 	}

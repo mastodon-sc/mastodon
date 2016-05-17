@@ -17,8 +17,7 @@ import net.trackmate.graph.zzrefcollections.RefPool;
  * Incomplete!
  * @author Tobias Pietzsch &lt;tobias.pietzsch@gmail.com&gt;
  */
-//TODO rename RefObjectHashMap
-public class PoolObjectObjectMap< K extends Ref< K >, O > implements Map< K, O >, RefObjectMap< K, O >
+public class RefObjectHashMap< K extends Ref< K >, O > implements Map< K, O >, RefObjectMap< K, O >
 {
 	private final TIntObjectHashMap< O > indexmap;
 
@@ -26,7 +25,7 @@ public class PoolObjectObjectMap< K extends Ref< K >, O > implements Map< K, O >
 
 	private EntrySet entrySet;
 
-	public PoolObjectObjectMap( final RefPool< K > pool )
+	public RefObjectHashMap( final RefPool< K > pool )
 	{
 		indexmap = new TIntObjectHashMap< O >();
 		this.pool = pool;
@@ -99,9 +98,9 @@ public class PoolObjectObjectMap< K extends Ref< K >, O > implements Map< K, O >
 	}
 
 	@Override
-	public PoolObjectSet< K > keySet()
+	public RefSetImp< K > keySet()
 	{
-		return new PoolObjectSet< K >( pool, indexmap.keySet() );
+		return new RefSetImp< K >( pool, indexmap.keySet() );
 	}
 
 	@Override
@@ -180,7 +179,7 @@ public class PoolObjectObjectMap< K extends Ref< K >, O > implements Map< K, O >
 		@Override
 		public int size()
 		{
-			return PoolObjectObjectMap.this.size();
+			return RefObjectHashMap.this.size();
 		}
 	}
 }

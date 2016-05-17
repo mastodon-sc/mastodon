@@ -1,7 +1,7 @@
 package net.trackmate.revised.trackscheme;
 
 import gnu.trove.list.array.TIntArrayList;
-import net.trackmate.graph.collection.pool.PoolObjectList;
+import net.trackmate.graph.collection.pool.RefArrayList;
 
 /**
  * A list of {@link TrackSchemeVertex}. The vertices are assumed to be ordered
@@ -12,7 +12,7 @@ import net.trackmate.graph.collection.pool.PoolObjectList;
  *
  * @author Tobias Pietzsch &lt;tobias.pietzsch@gmail.com&gt;
  */
-public class TrackSchemeVertexList extends PoolObjectList< TrackSchemeVertex >
+public class TrackSchemeVertexList extends RefArrayList< TrackSchemeVertex >
 {
 	private final TrackSchemeGraph< ?, ? > graph;
 

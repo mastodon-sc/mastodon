@@ -7,8 +7,8 @@ import java.util.Random;
 
 import net.imglib2.RealLocalizable;
 import net.trackmate.graph.collection.RefRefMap;
-import net.trackmate.graph.collection.pool.PoolObjectList;
-import net.trackmate.graph.collection.pool.PoolObjectSet;
+import net.trackmate.graph.collection.pool.RefArrayList;
+import net.trackmate.graph.collection.pool.RefSetImp;
 import net.trackmate.graph.mempool.ByteMappedElement;
 import net.trackmate.graph.mempool.ByteMappedElementArray;
 import net.trackmate.graph.mempool.DoubleMappedElement;
@@ -33,19 +33,19 @@ public class KDTreeTest
 
 	MyVertexPool vertexPool;
 
-	PoolObjectList< MyVertex > dataVertices;
+	RefArrayList< MyVertex > dataVertices;
 
-	PoolObjectList< MyVertex > testVertices;
+	RefArrayList< MyVertex > testVertices;
 
-	PoolObjectSet< MyVertex > invalidDataVertices;
+	RefSetImp< MyVertex > invalidDataVertices;
 
 	@Before
 	public void createDataVertices()
 	{
 		vertexPool = new MyVertexPool( numDataVertices + numTestVertices );
-		dataVertices = new PoolObjectList< MyVertex >( vertexPool, numDataVertices );
-		testVertices = new PoolObjectList< MyVertex >( vertexPool, numTestVertices );
-		invalidDataVertices = new PoolObjectSet< MyVertex >( vertexPool, numInvalidDataVertices );
+		dataVertices = new RefArrayList< MyVertex >( vertexPool, numDataVertices );
+		testVertices = new RefArrayList< MyVertex >( vertexPool, numTestVertices );
+		invalidDataVertices = new RefSetImp< MyVertex >( vertexPool, numInvalidDataVertices );
 
 		final MyVertex vertex = vertexPool.createRef();
 		final int n = vertex.numDimensions();

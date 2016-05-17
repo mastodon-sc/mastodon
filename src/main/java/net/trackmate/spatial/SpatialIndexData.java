@@ -12,8 +12,8 @@ import net.imglib2.neighborsearch.NearestNeighborSearch;
 import net.trackmate.graph.collection.RefList;
 import net.trackmate.graph.collection.RefRefMap;
 import net.trackmate.graph.collection.RefSet;
-import net.trackmate.graph.collection.pool.PoolObjectList;
-import net.trackmate.graph.collection.pool.PoolObjectSet;
+import net.trackmate.graph.collection.pool.RefArrayList;
+import net.trackmate.graph.collection.pool.RefSetImp;
 import net.trackmate.graph.mempool.DoubleMappedElement;
 import net.trackmate.graph.zzrefcollections.Ref;
 import net.trackmate.graph.zzrefcollections.RefPool;
@@ -96,7 +96,7 @@ class SpatialIndexData< O extends Ref< O > & RealLocalizable >
 		this.objPool = objPool;
 		kdtree = KDTree.kdtree( objs, objPool );
 		nodeMap = KDTree.createRefToKDTreeNodeMap( kdtree );
-		added = new PoolObjectSet< O >( objPool );
+		added = new RefSetImp< O >( objPool );
 		node = kdtree.createRef();
 	    size = kdtree.size();
 	}
@@ -124,7 +124,7 @@ class SpatialIndexData< O extends Ref< O > & RealLocalizable >
 		};
 		kdtree = KDTree.kdtree( collection, objPool );
 		nodeMap = KDTree.createRefToKDTreeNodeMap( kdtree );
-		added = new PoolObjectSet< O >( objPool );
+		added = new RefSetImp< O >( objPool );
 		node = kdtree.createRef();
 	    size = kdtree.size();
 	}
@@ -402,8 +402,8 @@ class SpatialIndexData< O extends Ref< O > & RealLocalizable >
 		public CCP()
 		{
 			clip = new ClipConvexPolytopeKDTree<>( kdtree );
-			inside = new PoolObjectList< O >( objPool );
-			outside = new PoolObjectList< O >( objPool );
+			inside = new RefArrayList< O >( objPool );
+			outside = new RefArrayList< O >( objPool );
 			n = clip.numDimensions();
 		}
 
