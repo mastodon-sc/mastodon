@@ -8,11 +8,11 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.Set;
 
+import org.junit.Test;
+
 import net.trackmate.graph.collection.RefSet;
 import net.trackmate.graph.collection.pool.PoolObjectPoolObjectMap;
 import net.trackmate.graph.collection.pool.PoolObjectSet;
-
-import org.junit.Test;
 
 /**
  * Test map from vertices to edges, both belong to the same graph.

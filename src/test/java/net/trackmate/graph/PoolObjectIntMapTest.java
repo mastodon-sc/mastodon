@@ -4,14 +4,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
-import gnu.trove.TIntCollection;
-import gnu.trove.function.TIntFunction;
-import gnu.trove.iterator.TObjectIntIterator;
-import gnu.trove.map.hash.TObjectIntHashMap;
-import gnu.trove.procedure.TIntProcedure;
-import gnu.trove.procedure.TObjectIntProcedure;
-import gnu.trove.procedure.TObjectProcedure;
-import net.trackmate.graph.collection.pool.PoolObjectIntMap;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -23,6 +15,15 @@ import java.util.Set;
 
 import org.junit.Before;
 import org.junit.Test;
+
+import gnu.trove.TIntCollection;
+import gnu.trove.function.TIntFunction;
+import gnu.trove.iterator.TObjectIntIterator;
+import gnu.trove.map.hash.TObjectIntHashMap;
+import gnu.trove.procedure.TIntProcedure;
+import gnu.trove.procedure.TObjectIntProcedure;
+import gnu.trove.procedure.TObjectProcedure;
+import net.trackmate.graph.collection.pool.PoolObjectIntMap;
 
 public class PoolObjectIntMapTest
 {
@@ -487,7 +488,7 @@ public class PoolObjectIntMapTest
 				return true;
 			}
 		};
-		final TestObject ref = ins.get( 0 ).creatingPool.createRef();
+		final TestObject ref = map.createRef();
 		final boolean ok = map.forEachEntry( procedure, ref );
 		assertTrue( "Procedure should have concluded successfully.", ok );
 
@@ -510,7 +511,7 @@ public class PoolObjectIntMapTest
 				return true;
 			}
 		};
-		final TestObject ref = ins.get( 0 ).creatingPool.createRef();
+		final TestObject ref = map.createRef();
 		final boolean ok = map.forEachKey( procedure, ref );
 		assertTrue( "Procedure should have concluded successfully.", ok );
 		assertTrue( "Procedure was not provided all the keys in the map.", ins.isEmpty() );
@@ -575,7 +576,7 @@ public class PoolObjectIntMapTest
 				return val == targetVal;
 			}
 		};
-		final TestObject ref = ins.get( 0 ).creatingPool.createRef();
+		final TestObject ref = map.createRef();
 		final boolean changed = map.retainEntries( procedure, ref );
 		assertTrue( "Procedure should have changed the map.", changed );
 		assertEquals( "After procedure filtering, the map has not the expcted size.", 1, map.size() );

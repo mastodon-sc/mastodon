@@ -6,9 +6,12 @@ public class TestEdge extends AbstractEdge< TestEdge, TestVertex, ByteMappedElem
 {
 	protected static final int SIZE_IN_BYTES = AbstractEdge.SIZE_IN_BYTES;
 
+	public final AbstractEdgePool< TestEdge, TestVertex, ByteMappedElement > creatingPool;
+
 	protected TestEdge( final AbstractEdgePool< TestEdge, TestVertex, ByteMappedElement > pool )
 	{
 		super( pool );
+		creatingPool = pool;
 	}
 
 	@Override

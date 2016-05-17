@@ -1,7 +1,8 @@
 package net.trackmate.graph;
 
-import net.trackmate.graph.mempool.ByteMappedElement;
 import static net.trackmate.graph.mempool.ByteUtils.INT_SIZE;
+
+import net.trackmate.graph.mempool.ByteMappedElement;
 
 public class TestVertex extends AbstractVertex< TestVertex, TestEdge, ByteMappedElement >
 {
@@ -9,9 +10,12 @@ public class TestVertex extends AbstractVertex< TestVertex, TestEdge, ByteMapped
 
 	protected static final int SIZE_IN_BYTES = ID_OFFSET + INT_SIZE;
 
+	public final AbstractVertexPool< TestVertex, ?, ByteMappedElement > creatingPool;
+
 	protected TestVertex( final AbstractVertexPool< TestVertex, ?, ByteMappedElement > pool )
 	{
 		super( pool );
+		creatingPool = pool;
 	}
 
 	public TestVertex init( final int id )
