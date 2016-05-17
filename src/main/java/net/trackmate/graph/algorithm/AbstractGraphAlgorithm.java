@@ -225,8 +225,13 @@ public abstract class AbstractGraphAlgorithm< V extends Vertex< E >, E extends E
 		return CollectionUtils.createEdgeIntMap( graph, noEntryValue, initialCapacity );
 	}
 
-	protected static < O > Iterator< O > safeIterator( final Iterator< O > iterator )
+	protected Iterator< V > safeVertexIterator( final Iterator< V > iterator )
 	{
-		return CollectionUtils.safeIterator( iterator );
+		return CollectionUtils.safeIterator( iterator, graph.vertices() );
+	}
+
+	protected Iterator< E > safeEdgeIterator( final Iterator< E > iterator )
+	{
+		return CollectionUtils.safeIterator( iterator, graph.edges() );
 	}
 }

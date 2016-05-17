@@ -21,7 +21,6 @@ import net.trackmate.graph.collection.wrap.RefStackWrapper;
 import net.trackmate.graph.zzgraphinterfaces.Edge;
 import net.trackmate.graph.zzgraphinterfaces.ReadOnlyGraph;
 import net.trackmate.graph.zzgraphinterfaces.Vertex;
-import net.trackmate.graph.zzrefcollections.SafePoolObjectIteratorWrapper;
 
 /**
  * Static utility methods to create {@link RefCollection}s of vertices and edges
@@ -292,12 +291,12 @@ public class CollectionUtils
 			return new RefIntMapWrapper< E >( noEntryValue, initialCapacity );
 	}
 
-	@SuppressWarnings( { "unchecked", "rawtypes" } )
-	public static < O > Iterator< O > safeIterator( final Iterator< O > iterator )
+	@SuppressWarnings( { "rawtypes", "unchecked" } )
+	public static < O > Iterator< O > safeIterator( final Iterator< O > iterator, final RefCollection< O > collection )
 	{
 		if ( iterator instanceof MaybeRefIterator )
 			if ( ( ( MaybeRefIterator ) iterator ).isRefIterator() )
-				return new SafePoolObjectIteratorWrapper( iterator );
+				return new SafeRefIteratorWrapper( iterator, collection );
 		return iterator;
 	}
 
