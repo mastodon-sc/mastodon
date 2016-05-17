@@ -2,6 +2,8 @@ package net.trackmate.graph;
 
 import static net.trackmate.graph.mempool.ByteUtils.INDEX_SIZE;
 import net.trackmate.graph.mempool.MappedElement;
+import net.trackmate.graph.zzgraphinterfaces.Edge;
+import net.trackmate.graph.zzrefcollections.PoolObject;
 
 /**
  * TODO: javadoc

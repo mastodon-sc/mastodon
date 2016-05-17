@@ -8,7 +8,7 @@ import java.util.Map;
 import java.util.Set;
 
 import gnu.trove.map.TIntObjectArrayMap;
-import net.trackmate.graph.VertexFeature;
+import net.trackmate.graph.zzgraphinterfaces.VertexFeature;
 import net.trackmate.revised.model.AbstractModel;
 
 /**
@@ -31,6 +31,7 @@ import net.trackmate.revised.model.AbstractModel;
  *
  * @author Tobias Pietzsch &lt;tobias.pietzsch@gmail.com&gt;
  */
+// TODO: move to collection package
 public final class UniqueHashcodeArrayMap< K, V > implements Map< K, V >
 {
 	private final TIntObjectArrayMap< V > map;

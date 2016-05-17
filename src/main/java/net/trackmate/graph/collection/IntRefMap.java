@@ -3,8 +3,10 @@ package net.trackmate.graph.collection;
 import gnu.trove.map.TIntObjectMap;
 
 /**
- * Interface for maps from {@code int} keys to Object values, where the Objects
- * are potentially {@link net.trackmate.graph.Ref}s.
+ * Interface for maps from {@code int} keys to Object values. It provides variants of
+ * {@link TIntObjectMap} methods that take object references that can be used for
+ * retrieval. Depending on concrete implementation, these object references can
+ * be cleared, ignored or re-used.
  *
  * @author Tobias Pietzsch &lt;tobias.pietzsch@gmail.com&gt;
  *
@@ -107,7 +109,7 @@ public interface IntRefMap< V > extends TIntObjectMap< V >
 	 *         {@code obj}, depending on concrete implementation.
 	 */
 	public V remove( final int key, final V obj );
-	
+
 	/**
 	 * Inserts a key/value pair into the map if the specified key is not already
 	 * associated with a value.

@@ -2,12 +2,12 @@ package net.trackmate.graph.traversal;
 
 import java.util.Comparator;
 
-import net.trackmate.graph.Edge;
-import net.trackmate.graph.ReadOnlyGraph;
-import net.trackmate.graph.Vertex;
 import net.trackmate.graph.algorithm.AbstractGraphAlgorithm;
 import net.trackmate.graph.collection.RefRefMap;
 import net.trackmate.graph.collection.RefSet;
+import net.trackmate.graph.zzgraphinterfaces.Edge;
+import net.trackmate.graph.zzgraphinterfaces.ReadOnlyGraph;
+import net.trackmate.graph.zzgraphinterfaces.Vertex;
 
 public abstract class GraphSearch< T extends GraphSearch< T, V, E >, V extends Vertex< E >, E extends Edge< V > > extends AbstractGraphAlgorithm< V, E >
 {

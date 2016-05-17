@@ -1,11 +1,11 @@
 package net.trackmate.graph.algorithm;
 
-import net.trackmate.graph.Edge;
-import net.trackmate.graph.Graph;
-import net.trackmate.graph.Vertex;
 import net.trackmate.graph.collection.RefList;
 import net.trackmate.graph.traversal.BreadthFirstSearch;
 import net.trackmate.graph.traversal.SearchListener;
+import net.trackmate.graph.zzgraphinterfaces.Edge;
+import net.trackmate.graph.zzgraphinterfaces.Graph;
+import net.trackmate.graph.zzgraphinterfaces.Vertex;
 
 /**
  * A plain shortest path for unweighted graphs, directed or not. Simply based on

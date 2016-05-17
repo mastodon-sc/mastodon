@@ -1,6 +1,8 @@
 package net.trackmate.graph;
 
 import net.trackmate.graph.mempool.MappedElement;
+import net.trackmate.graph.zzrefcollections.Pool;
+import net.trackmate.graph.zzrefcollections.PoolObject;
 
 public class AbstractVertexPool<
 			V extends AbstractVertex< V, E, T >,

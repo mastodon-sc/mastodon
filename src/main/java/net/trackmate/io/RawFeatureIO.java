@@ -5,10 +5,10 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.List;
 
-import net.trackmate.graph.FeatureRegistry;
-import net.trackmate.graph.GraphFeatures;
-import net.trackmate.graph.Vertex;
-import net.trackmate.graph.VertexFeature;
+import net.trackmate.graph.zzgraphinterfaces.FeatureRegistry;
+import net.trackmate.graph.zzgraphinterfaces.GraphFeatures;
+import net.trackmate.graph.zzgraphinterfaces.Vertex;
+import net.trackmate.graph.zzgraphinterfaces.VertexFeature;
 import net.trackmate.io.RawGraphIO.FileIdToGraphMap;
 import net.trackmate.io.RawGraphIO.GraphToFileIdMap;
 

@@ -6,7 +6,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
 
-import net.trackmate.graph.Graph;
+import net.trackmate.graph.zzgraphinterfaces.Graph;
 
 public class ObjectGraph< K > implements Graph< ObjectVertex< K >, ObjectEdge< K > >
 {

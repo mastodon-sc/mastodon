@@ -4,7 +4,7 @@ import java.util.Random;
 
 import net.imglib2.RealLocalizable;
 import net.imglib2.util.BenchmarkHelper;
-import net.trackmate.graph.PoolObjectList;
+import net.trackmate.graph.collection.pool.PoolObjectList;
 import net.trackmate.graph.mempool.DoubleMappedElement;
 import net.trackmate.kdtree.RealLocalizableVertices.MyVertex;
 import net.trackmate.kdtree.RealLocalizableVertices.MyVertexPool;

@@ -11,10 +11,17 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import net.trackmate.graph.Edge;
-import net.trackmate.graph.ReadOnlyGraph;
-import net.trackmate.graph.SafePoolObjectIteratorWrapper;
-import net.trackmate.graph.Vertex;
+import net.trackmate.graph.collection.wrap.IntRefMapWrapper;
+import net.trackmate.graph.collection.wrap.RefDequeWrapper;
+import net.trackmate.graph.collection.wrap.RefIntMapWrapper;
+import net.trackmate.graph.collection.wrap.RefListWrapper;
+import net.trackmate.graph.collection.wrap.RefMapWrapper;
+import net.trackmate.graph.collection.wrap.RefSetWrapper;
+import net.trackmate.graph.collection.wrap.RefStackWrapper;
+import net.trackmate.graph.zzgraphinterfaces.Edge;
+import net.trackmate.graph.zzgraphinterfaces.ReadOnlyGraph;
+import net.trackmate.graph.zzgraphinterfaces.Vertex;
+import net.trackmate.graph.zzrefcollections.SafePoolObjectIteratorWrapper;
 
 /**
  * Static utility methods to create {@link RefCollection}s of vertices and edges

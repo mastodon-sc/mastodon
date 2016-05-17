@@ -1,10 +1,10 @@
 package net.trackmate.undo;
 
-import net.trackmate.graph.Edge;
-import net.trackmate.graph.FeatureRegistry;
-import net.trackmate.graph.GraphFeatures;
-import net.trackmate.graph.VertexFeature;
-import net.trackmate.graph.VertexWithFeatures;
+import net.trackmate.graph.zzgraphinterfaces.Edge;
+import net.trackmate.graph.zzgraphinterfaces.FeatureRegistry;
+import net.trackmate.graph.zzgraphinterfaces.GraphFeatures;
+import net.trackmate.graph.zzgraphinterfaces.VertexFeature;
+import net.trackmate.graph.zzgraphinterfaces.VertexWithFeatures;
 import net.trackmate.revised.model.ModelGraph_HACK_FIX_ME;
 
 // TODO: move to model.undo ?

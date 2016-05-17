@@ -1,8 +1,8 @@
 package net.trackmate.undo;
 
-import net.trackmate.graph.Edge;
-import net.trackmate.graph.Graph;
-import net.trackmate.graph.Vertex;
+import net.trackmate.graph.zzgraphinterfaces.Edge;
+import net.trackmate.graph.zzgraphinterfaces.Graph;
+import net.trackmate.graph.zzgraphinterfaces.Vertex;
 
 /**
  * Provides serialization of vertices and edges to a byte array, for a specific {@link Graph} class.

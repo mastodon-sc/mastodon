@@ -6,11 +6,11 @@ import net.trackmate.graph.AbstractEdge;
 import net.trackmate.graph.AbstractEdgePool;
 import net.trackmate.graph.AbstractVertex;
 import net.trackmate.graph.AbstractVertexPool;
-import net.trackmate.graph.PoolObject;
 import net.trackmate.graph.mempool.ByteMappedElement;
 import net.trackmate.graph.mempool.ByteMappedElementArray;
 import net.trackmate.graph.mempool.MemPool;
 import net.trackmate.graph.mempool.SingleArrayMemPool;
+import net.trackmate.graph.zzrefcollections.PoolObject;
 
 public class RealLocalizableVertices
 {

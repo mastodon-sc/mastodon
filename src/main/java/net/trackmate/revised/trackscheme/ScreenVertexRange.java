@@ -1,12 +1,13 @@
 package net.trackmate.revised.trackscheme;
 
 import static net.trackmate.graph.mempool.ByteUtils.DOUBLE_SIZE;
-import net.trackmate.graph.Pool;
-import net.trackmate.graph.PoolObject;
+
 import net.trackmate.graph.mempool.ByteMappedElement;
 import net.trackmate.graph.mempool.ByteMappedElementArray;
 import net.trackmate.graph.mempool.MemPool;
 import net.trackmate.graph.mempool.SingleArrayMemPool;
+import net.trackmate.graph.zzrefcollections.Pool;
+import net.trackmate.graph.zzrefcollections.PoolObject;
 
 /**
  * Layouted dense vertex area.

@@ -3,11 +3,11 @@ package net.trackmate.graph.algorithm;
 import java.util.HashSet;
 import java.util.Set;
 
-import net.trackmate.graph.Edge;
-import net.trackmate.graph.ReadOnlyGraph;
-import net.trackmate.graph.Vertex;
 import net.trackmate.graph.collection.RefSet;
 import net.trackmate.graph.util.Graphs;
+import net.trackmate.graph.zzgraphinterfaces.Edge;
+import net.trackmate.graph.zzgraphinterfaces.ReadOnlyGraph;
+import net.trackmate.graph.zzgraphinterfaces.Vertex;
 
 /**
  * A class to generate the connected components of a graph, regardless of edge

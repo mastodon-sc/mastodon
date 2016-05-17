@@ -4,14 +4,14 @@ import gnu.trove.impl.Constants;
 import gnu.trove.map.TIntIntMap;
 import gnu.trove.map.TObjectIntMap;
 import gnu.trove.map.hash.TIntIntHashMap;
-import net.trackmate.graph.FeatureRegistry.DuplicateKeyException;
-import net.trackmate.graph.FeatureValue;
-import net.trackmate.graph.GraphFeatures;
-import net.trackmate.graph.ReadOnlyGraph;
-import net.trackmate.graph.Vertex;
-import net.trackmate.graph.VertexFeature;
 import net.trackmate.graph.collection.CollectionUtils;
 import net.trackmate.graph.features.IntVertexFeature.IntFeatureValue;
+import net.trackmate.graph.zzgraphinterfaces.FeatureRegistry.DuplicateKeyException;
+import net.trackmate.graph.zzgraphinterfaces.FeatureValue;
+import net.trackmate.graph.zzgraphinterfaces.GraphFeatures;
+import net.trackmate.graph.zzgraphinterfaces.ReadOnlyGraph;
+import net.trackmate.graph.zzgraphinterfaces.Vertex;
+import net.trackmate.graph.zzgraphinterfaces.VertexFeature;
 
 /**
  * A {@code int}-valued {@link VertexFeature}.
@@ -80,7 +80,7 @@ public final class IntVertexFeature< V extends Vertex< ? > > extends VertexFeatu
 	}
 
 	@Override
-	protected IntFeatureValue< V > createFeatureValue( final V vertex, final GraphFeatures< V, ? > graphFeatures )
+	public IntFeatureValue< V > createFeatureValue( final V vertex, final GraphFeatures< V, ? > graphFeatures )
 	{
 		return new IntFeatureValue<>(
 				graphFeatures.getVertexFeature( this ),

@@ -6,17 +6,17 @@ import java.util.Collection;
 import net.imglib2.RealInterval;
 import net.imglib2.RealLocalizable;
 import net.imglib2.RealPositionable;
-import net.trackmate.graph.Pool;
-import net.trackmate.graph.PoolObject;
-import net.trackmate.graph.PoolObjectPoolObjectMap;
-import net.trackmate.graph.Ref;
-import net.trackmate.graph.RefPool;
 import net.trackmate.graph.collection.RefRefMap;
+import net.trackmate.graph.collection.pool.PoolObjectPoolObjectMap;
 import net.trackmate.graph.mempool.DoubleMappedElement;
 import net.trackmate.graph.mempool.DoubleMappedElementArray;
 import net.trackmate.graph.mempool.MappedElement;
 import net.trackmate.graph.mempool.MemPool;
 import net.trackmate.graph.mempool.MemPool.Factory;
+import net.trackmate.graph.zzrefcollections.Pool;
+import net.trackmate.graph.zzrefcollections.PoolObject;
+import net.trackmate.graph.zzrefcollections.Ref;
+import net.trackmate.graph.zzrefcollections.RefPool;
 import net.trackmate.graph.mempool.SingleArrayMemPool;
 
 /**

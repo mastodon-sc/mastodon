@@ -1,12 +1,12 @@
 package net.trackmate.kdtree;
 
 import net.imglib2.EuclideanSpace;
-import net.trackmate.graph.Pool;
-import net.trackmate.graph.PoolObject;
 import net.trackmate.graph.mempool.ByteMappedElement;
 import net.trackmate.graph.mempool.ByteMappedElementArray;
 import net.trackmate.graph.mempool.MemPool;
 import net.trackmate.graph.mempool.SingleArrayMemPool;
+import net.trackmate.graph.zzrefcollections.Pool;
+import net.trackmate.graph.zzrefcollections.PoolObject;
 
 class RealPointPool extends Pool< RealPoint, ByteMappedElement > implements EuclideanSpace
 {

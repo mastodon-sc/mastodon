@@ -2,7 +2,7 @@ package net.trackmate.spatial;
 
 /**
  * Something (e.g., a spot) that has a timepoint.
- * Timepoints are alway &ge; 0.
+ * Timepoints are always &ge; 0.
  *
  * <p>
  * TODO: in which package should this be?

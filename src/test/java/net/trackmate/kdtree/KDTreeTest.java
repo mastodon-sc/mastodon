@@ -6,9 +6,9 @@ import static org.junit.Assert.assertNotNull;
 import java.util.Random;
 
 import net.imglib2.RealLocalizable;
-import net.trackmate.graph.PoolObjectList;
-import net.trackmate.graph.PoolObjectSet;
 import net.trackmate.graph.collection.RefRefMap;
+import net.trackmate.graph.collection.pool.PoolObjectList;
+import net.trackmate.graph.collection.pool.PoolObjectSet;
 import net.trackmate.graph.mempool.ByteMappedElement;
 import net.trackmate.graph.mempool.ByteMappedElementArray;
 import net.trackmate.graph.mempool.DoubleMappedElement;

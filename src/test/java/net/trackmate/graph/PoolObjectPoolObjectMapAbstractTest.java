@@ -2,6 +2,8 @@ package net.trackmate.graph;
 
 import org.junit.Before;
 
+import net.trackmate.graph.collection.pool.PoolObjectPoolObjectMap;
+
 public class PoolObjectPoolObjectMapAbstractTest
 {
 	protected TestVertex Ak;

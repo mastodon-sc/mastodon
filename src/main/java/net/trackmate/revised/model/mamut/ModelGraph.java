@@ -2,13 +2,13 @@ package net.trackmate.revised.model.mamut;
 
 import net.trackmate.graph.AbstractEdgePool;
 import net.trackmate.graph.AbstractVertexWithFeaturesPool;
-import net.trackmate.graph.GraphFeatures;
-import net.trackmate.graph.GraphIdBimap;
-import net.trackmate.graph.PoolObject;
 import net.trackmate.graph.mempool.ByteMappedElement;
 import net.trackmate.graph.mempool.ByteMappedElementArray;
 import net.trackmate.graph.mempool.MemPool;
 import net.trackmate.graph.mempool.SingleArrayMemPool;
+import net.trackmate.graph.zzgraphinterfaces.GraphFeatures;
+import net.trackmate.graph.zzgraphinterfaces.GraphIdBimap;
+import net.trackmate.graph.zzrefcollections.PoolObject;
 import net.trackmate.revised.model.AbstractModelGraph;
 
 

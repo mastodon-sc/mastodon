@@ -5,13 +5,13 @@ import java.util.Map;
 import gnu.trove.impl.Constants;
 import gnu.trove.map.TIntObjectMap;
 import gnu.trove.map.hash.TIntObjectHashMap;
-import net.trackmate.graph.FeatureRegistry.DuplicateKeyException;
-import net.trackmate.graph.FeatureValue;
-import net.trackmate.graph.GraphFeatures;
-import net.trackmate.graph.ReadOnlyGraph;
-import net.trackmate.graph.Vertex;
-import net.trackmate.graph.VertexFeature;
 import net.trackmate.graph.collection.CollectionUtils;
+import net.trackmate.graph.zzgraphinterfaces.FeatureRegistry.DuplicateKeyException;
+import net.trackmate.graph.zzgraphinterfaces.FeatureValue;
+import net.trackmate.graph.zzgraphinterfaces.GraphFeatures;
+import net.trackmate.graph.zzgraphinterfaces.ReadOnlyGraph;
+import net.trackmate.graph.zzgraphinterfaces.Vertex;
+import net.trackmate.graph.zzgraphinterfaces.VertexFeature;
 
 /**
  * A {@code Object}-valued {@link VertexFeature}.
@@ -77,7 +77,7 @@ public final class ObjVertexFeature< V extends Vertex< ? >, O > extends VertexFe
 	};
 
 	@Override
-	protected FeatureValue< O > createFeatureValue( final V vertex, final GraphFeatures< V, ? > graphFeatures )
+	public FeatureValue< O > createFeatureValue( final V vertex, final GraphFeatures< V, ? > graphFeatures )
 	{
 		return new ObjFeatureValue<>(
 				graphFeatures.getVertexFeature( this ),

@@ -3,7 +3,7 @@ package net.trackmate.graph.collection;
 import gnu.trove.map.TObjectIntMap;
 import gnu.trove.procedure.TObjectIntProcedure;
 import gnu.trove.procedure.TObjectProcedure;
-import net.trackmate.graph.PoolObject;
+import net.trackmate.graph.zzrefcollections.PoolObject;
 
 /**
  * Interface for maps that associate a key to a simple {@code int} value.

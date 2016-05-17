@@ -6,13 +6,13 @@ import static net.trackmate.graph.mempool.ByteUtils.DOUBLE_SIZE;
 import static net.trackmate.graph.mempool.ByteUtils.INDEX_SIZE;
 import static net.trackmate.revised.trackscheme.ScreenVertex.Transition.NONE;
 
-import net.trackmate.graph.Pool;
-import net.trackmate.graph.PoolObject;
-import net.trackmate.graph.RefPool;
 import net.trackmate.graph.mempool.ByteMappedElement;
 import net.trackmate.graph.mempool.ByteMappedElementArray;
 import net.trackmate.graph.mempool.MemPool;
 import net.trackmate.graph.mempool.SingleArrayMemPool;
+import net.trackmate.graph.zzrefcollections.Pool;
+import net.trackmate.graph.zzrefcollections.PoolObject;
+import net.trackmate.graph.zzrefcollections.RefPool;
 
 /**
  * Layouted vertex.

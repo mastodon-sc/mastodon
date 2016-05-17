@@ -4,6 +4,10 @@ import java.util.Map;
 
 import net.trackmate.graph.mempool.MappedElement;
 import net.trackmate.graph.util.UniqueHashcodeArrayMap;
+import net.trackmate.graph.zzgraphinterfaces.FeatureValue;
+import net.trackmate.graph.zzgraphinterfaces.GraphFeatures;
+import net.trackmate.graph.zzgraphinterfaces.VertexFeature;
+import net.trackmate.graph.zzgraphinterfaces.VertexWithFeatures;
 
 /**
  * TODO: javadoc

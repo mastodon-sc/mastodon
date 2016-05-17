@@ -7,10 +7,10 @@ import static net.trackmate.graph.mempool.ByteUtils.INT_SIZE;
 import java.nio.ByteOrder;
 
 import net.imglib2.RealLocalizable;
-import net.trackmate.graph.Pool;
-import net.trackmate.graph.PoolObject;
-import net.trackmate.graph.Ref;
 import net.trackmate.graph.mempool.MappedElement;
+import net.trackmate.graph.zzrefcollections.Pool;
+import net.trackmate.graph.zzrefcollections.PoolObject;
+import net.trackmate.graph.zzrefcollections.Ref;
 
 public class KDTreeNode<
 			O extends Ref< O > & RealLocalizable,

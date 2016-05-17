@@ -10,10 +10,10 @@ import java.util.List;
 
 import net.trackmate.graph.AbstractEdge;
 import net.trackmate.graph.AbstractVertexWithFeatures;
-import net.trackmate.graph.GraphIdBimap;
-import net.trackmate.graph.ReadOnlyGraph;
-import net.trackmate.graph.VertexFeature;
 import net.trackmate.graph.listenable.ListenableGraph;
+import net.trackmate.graph.zzgraphinterfaces.GraphIdBimap;
+import net.trackmate.graph.zzgraphinterfaces.ReadOnlyGraph;
+import net.trackmate.graph.zzgraphinterfaces.VertexFeature;
 import net.trackmate.io.RawFeatureIO;
 import net.trackmate.io.RawGraphIO;
 import net.trackmate.io.RawGraphIO.FileIdToGraphMap;

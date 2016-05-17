@@ -2,6 +2,7 @@ package net.trackmate.graph;
 
 import static net.trackmate.graph.mempool.ByteUtils.INT_SIZE;
 import net.trackmate.graph.mempool.ByteMappedElement;
+import net.trackmate.graph.zzrefcollections.PoolObject;
 
 class TestObject extends PoolObject< TestObject, ByteMappedElement >
 {

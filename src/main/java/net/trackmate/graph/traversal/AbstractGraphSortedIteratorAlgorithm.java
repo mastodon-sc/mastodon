@@ -3,10 +3,10 @@ package net.trackmate.graph.traversal;
 import java.util.Collections;
 import java.util.Comparator;
 
-import net.trackmate.graph.Edge;
-import net.trackmate.graph.Graph;
-import net.trackmate.graph.Vertex;
 import net.trackmate.graph.collection.RefList;
+import net.trackmate.graph.zzgraphinterfaces.Edge;
+import net.trackmate.graph.zzgraphinterfaces.Graph;
+import net.trackmate.graph.zzgraphinterfaces.Vertex;
 
 public abstract class AbstractGraphSortedIteratorAlgorithm< V extends Vertex< E >, E extends Edge< V > > extends AbstractGraphIteratorAlgorithm< V, E >
 {

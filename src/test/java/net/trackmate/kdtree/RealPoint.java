@@ -2,8 +2,8 @@ package net.trackmate.kdtree;
 
 import static net.trackmate.graph.mempool.ByteUtils.*;
 import net.imglib2.RealLocalizable;
-import net.trackmate.graph.PoolObject;
 import net.trackmate.graph.mempool.ByteMappedElement;
+import net.trackmate.graph.zzrefcollections.PoolObject;
 
 class RealPoint extends PoolObject< RealPoint, ByteMappedElement > implements RealLocalizable
 {

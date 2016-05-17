@@ -2,13 +2,13 @@ package net.trackmate.graph.traversal;
 
 import java.util.Iterator;
 
-import net.trackmate.graph.Edge;
-import net.trackmate.graph.PoolObject;
-import net.trackmate.graph.ReadOnlyGraph;
-import net.trackmate.graph.Vertex;
 import net.trackmate.graph.algorithm.AbstractGraphAlgorithm;
 import net.trackmate.graph.collection.MaybeRefIterator;
 import net.trackmate.graph.collection.RefSet;
+import net.trackmate.graph.zzgraphinterfaces.Edge;
+import net.trackmate.graph.zzgraphinterfaces.ReadOnlyGraph;
+import net.trackmate.graph.zzgraphinterfaces.Vertex;
+import net.trackmate.graph.zzrefcollections.PoolObject;
 
 public abstract class AbstractGraphIteratorAlgorithm< V extends Vertex< E >, E extends Edge< V > > extends AbstractGraphAlgorithm< V, E > implements MaybeRefIterator, Iterator< V >
 {

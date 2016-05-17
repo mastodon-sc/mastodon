@@ -4,13 +4,13 @@ import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.Collection;
 
-import net.trackmate.graph.Edge;
-import net.trackmate.graph.GraphIdBimap;
-import net.trackmate.graph.Vertex;
 import net.trackmate.graph.collection.CollectionUtils;
 import net.trackmate.graph.collection.RefSet;
 import net.trackmate.graph.listenable.GraphListener;
 import net.trackmate.graph.listenable.ListenableGraph;
+import net.trackmate.graph.zzgraphinterfaces.Edge;
+import net.trackmate.graph.zzgraphinterfaces.GraphIdBimap;
+import net.trackmate.graph.zzgraphinterfaces.Vertex;
 
 /**
  * A class that manages a selection of vertices and edges of a graph.

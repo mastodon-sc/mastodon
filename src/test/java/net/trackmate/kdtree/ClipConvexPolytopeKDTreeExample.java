@@ -14,8 +14,8 @@ import net.imglib2.img.display.imagej.ImageJFunctions;
 import net.imglib2.position.transform.Round;
 import net.imglib2.type.numeric.ARGBType;
 import net.imglib2.view.Views;
-import net.trackmate.graph.PoolObjectList;
 import net.trackmate.graph.collection.RefList;
+import net.trackmate.graph.collection.pool.PoolObjectList;
 import net.trackmate.graph.mempool.DoubleMappedElement;
 
 public class ClipConvexPolytopeKDTreeExample

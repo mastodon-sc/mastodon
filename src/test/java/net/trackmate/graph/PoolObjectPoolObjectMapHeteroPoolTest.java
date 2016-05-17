@@ -6,6 +6,8 @@ import static org.junit.Assert.assertNotEquals;
 import org.junit.Before;
 import org.junit.Test;
 
+import net.trackmate.graph.collection.pool.PoolObjectPoolObjectMap;
+
 /**
  * This test reproduces the tests from its parent class, but uses a map between
  * two pools that do not belong to the same graph.

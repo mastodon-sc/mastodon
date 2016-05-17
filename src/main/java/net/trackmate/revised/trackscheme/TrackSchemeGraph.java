@@ -4,16 +4,11 @@ import java.util.ArrayList;
 
 import net.trackmate.graph.AbstractEdgePool;
 import net.trackmate.graph.AbstractVertexPool;
-import net.trackmate.graph.Edge;
-import net.trackmate.graph.GraphIdBimap;
 import net.trackmate.graph.GraphImp;
-import net.trackmate.graph.IntPoolObjectArrayMap;
-import net.trackmate.graph.PoolObject;
-import net.trackmate.graph.PoolObjectSet;
-import net.trackmate.graph.RefPool;
-import net.trackmate.graph.Vertex;
 import net.trackmate.graph.collection.IntRefMap;
 import net.trackmate.graph.collection.RefSet;
+import net.trackmate.graph.collection.pool.IntPoolObjectArrayMap;
+import net.trackmate.graph.collection.pool.PoolObjectSet;
 import net.trackmate.graph.listenable.GraphChangeListener;
 import net.trackmate.graph.listenable.GraphListener;
 import net.trackmate.graph.listenable.ListenableGraph;
@@ -21,6 +16,11 @@ import net.trackmate.graph.mempool.ByteMappedElement;
 import net.trackmate.graph.mempool.ByteMappedElementArray;
 import net.trackmate.graph.mempool.MemPool;
 import net.trackmate.graph.mempool.SingleArrayMemPool;
+import net.trackmate.graph.zzgraphinterfaces.Edge;
+import net.trackmate.graph.zzgraphinterfaces.GraphIdBimap;
+import net.trackmate.graph.zzgraphinterfaces.Vertex;
+import net.trackmate.graph.zzrefcollections.PoolObject;
+import net.trackmate.graph.zzrefcollections.RefPool;
 import net.trackmate.spatial.HasTimepoint;
 
 /**

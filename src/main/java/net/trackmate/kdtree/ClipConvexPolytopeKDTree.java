@@ -9,8 +9,8 @@ import java.util.Collection;
 import net.imglib2.RealLocalizable;
 import net.imglib2.algorithm.kdtree.ConvexPolytope;
 import net.imglib2.algorithm.kdtree.HyperPlane;
-import net.trackmate.graph.Ref;
 import net.trackmate.graph.mempool.MappedElement;
+import net.trackmate.graph.zzrefcollections.Ref;
 
 /**
  * Partition nodes in a {@link KDTree} into disjoint sets of nodes that are

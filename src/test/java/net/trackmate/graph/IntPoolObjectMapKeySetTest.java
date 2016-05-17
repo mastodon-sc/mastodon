@@ -8,6 +8,7 @@ import gnu.trove.iterator.TIntIterator;
 import gnu.trove.list.array.TIntArrayList;
 import gnu.trove.procedure.TIntProcedure;
 import gnu.trove.set.TIntSet;
+import net.trackmate.graph.collection.pool.IntPoolObjectMap;
 
 import java.util.Arrays;
 import java.util.Collection;

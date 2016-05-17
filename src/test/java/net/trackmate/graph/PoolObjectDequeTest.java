@@ -8,6 +8,8 @@ import java.util.Iterator;
 
 import org.junit.Test;
 
+import net.trackmate.graph.collection.pool.PoolObjectDeque;
+
 public class PoolObjectDequeTest
 {
 	@Test

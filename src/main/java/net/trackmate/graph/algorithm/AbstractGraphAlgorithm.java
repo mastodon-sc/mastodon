@@ -2,10 +2,6 @@ package net.trackmate.graph.algorithm;
 
 import java.util.Iterator;
 
-import net.trackmate.graph.Edge;
-import net.trackmate.graph.Graph;
-import net.trackmate.graph.ReadOnlyGraph;
-import net.trackmate.graph.Vertex;
 import net.trackmate.graph.collection.CollectionUtils;
 import net.trackmate.graph.collection.RefDeque;
 import net.trackmate.graph.collection.RefIntMap;
@@ -14,6 +10,10 @@ import net.trackmate.graph.collection.RefObjectMap;
 import net.trackmate.graph.collection.RefRefMap;
 import net.trackmate.graph.collection.RefSet;
 import net.trackmate.graph.collection.RefStack;
+import net.trackmate.graph.zzgraphinterfaces.Edge;
+import net.trackmate.graph.zzgraphinterfaces.Graph;
+import net.trackmate.graph.zzgraphinterfaces.ReadOnlyGraph;
+import net.trackmate.graph.zzgraphinterfaces.Vertex;
 
 /**
  * Base class for graph algorithms. Provides helper functions aimed at

@@ -6,8 +6,8 @@ import net.imglib2.RealLocalizable;
 import net.imglib2.Sampler;
 import net.imglib2.algorithm.kdtree.ConvexPolytope;
 import net.imglib2.neighborsearch.NearestNeighborSearch;
-import net.trackmate.graph.Edge;
-import net.trackmate.graph.Vertex;
+import net.trackmate.graph.zzgraphinterfaces.Edge;
+import net.trackmate.graph.zzgraphinterfaces.Vertex;
 import net.trackmate.spatial.ClipConvexPolytope;
 import net.trackmate.spatial.SpatialIndex;
 

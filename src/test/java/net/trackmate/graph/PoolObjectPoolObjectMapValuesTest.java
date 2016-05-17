@@ -10,6 +10,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import net.trackmate.graph.collection.RefList;
+import net.trackmate.graph.collection.pool.PoolObjectPoolObjectMap;
 
 import org.junit.Test;
 

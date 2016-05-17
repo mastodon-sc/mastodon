@@ -6,9 +6,9 @@ import gnu.trove.list.array.TIntArrayList;
 import java.util.Iterator;
 
 import net.imglib2.RealLocalizable;
-import net.trackmate.graph.RefPool;
-import net.trackmate.graph.Ref;
 import net.trackmate.graph.mempool.MappedElement;
+import net.trackmate.graph.zzrefcollections.Ref;
+import net.trackmate.graph.zzrefcollections.RefPool;
 
 public class KDTreeValueIterable< O extends Ref< O > & RealLocalizable, T extends MappedElement > implements Iterable< O >
 {

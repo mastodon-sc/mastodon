@@ -7,8 +7,8 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import net.imglib2.RealLocalizable;
 import net.imglib2.neighborsearch.NearestNeighborSearch;
-import net.trackmate.graph.Ref;
-import net.trackmate.graph.RefPool;
+import net.trackmate.graph.zzrefcollections.Ref;
+import net.trackmate.graph.zzrefcollections.RefPool;
 
 /**
  * Spatial index of {@link RealLocalizable} objects.

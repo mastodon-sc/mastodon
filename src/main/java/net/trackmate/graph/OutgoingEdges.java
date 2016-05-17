@@ -2,6 +2,8 @@ package net.trackmate.graph;
 
 import java.util.Iterator;
 
+import net.trackmate.graph.zzgraphinterfaces.Edges;
+
 public class OutgoingEdges< E extends AbstractEdge< E, ?, ? > > implements Edges< E >
 {
 	private final AbstractVertex< ?, ?, ? > vertex;

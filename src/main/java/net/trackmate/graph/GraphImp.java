@@ -4,8 +4,17 @@ import java.util.Collection;
 import java.util.Iterator;
 
 import net.trackmate.graph.collection.CollectionUtils.CollectionCreator;
+import net.trackmate.graph.collection.pool.IntPoolObjectMap;
+import net.trackmate.graph.collection.pool.PoolObjectDeque;
+import net.trackmate.graph.collection.pool.PoolObjectIntMap;
+import net.trackmate.graph.collection.pool.PoolObjectList;
+import net.trackmate.graph.collection.pool.PoolObjectObjectMap;
+import net.trackmate.graph.collection.pool.PoolObjectPoolObjectMap;
+import net.trackmate.graph.collection.pool.PoolObjectSet;
+import net.trackmate.graph.collection.pool.PoolObjectStack;
 import net.trackmate.graph.collection.IntRefMap;
 import net.trackmate.graph.mempool.MappedElement;
+import net.trackmate.graph.zzgraphinterfaces.Graph;
 
 public class GraphImp<
 		VP extends AbstractVertexPool< V, E, T >,

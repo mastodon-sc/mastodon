@@ -1,10 +1,10 @@
 package net.trackmate.graph.traversal;
 
-import net.trackmate.graph.Edge;
-import net.trackmate.graph.Graph;
-import net.trackmate.graph.ReadOnlyGraph;
-import net.trackmate.graph.Vertex;
 import net.trackmate.graph.collection.RefStack;
+import net.trackmate.graph.zzgraphinterfaces.Edge;
+import net.trackmate.graph.zzgraphinterfaces.Graph;
+import net.trackmate.graph.zzgraphinterfaces.ReadOnlyGraph;
+import net.trackmate.graph.zzgraphinterfaces.Vertex;
 
 /**
  * A Depth-first iterator, that traverses edges only following their direction.

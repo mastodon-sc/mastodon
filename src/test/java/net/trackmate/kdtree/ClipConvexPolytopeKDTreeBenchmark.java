@@ -4,8 +4,8 @@ import java.util.Random;
 
 import net.imglib2.util.BenchmarkHelper;
 import net.imglib2.util.LinAlgHelpers;
-import net.trackmate.graph.PoolObjectList;
 import net.trackmate.graph.collection.RefList;
+import net.trackmate.graph.collection.pool.PoolObjectList;
 import net.trackmate.graph.mempool.DoubleMappedElement;
 
 public class ClipConvexPolytopeKDTreeBenchmark

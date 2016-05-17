@@ -9,6 +9,9 @@ import java.util.Collection;
 import org.junit.Before;
 import org.junit.Test;
 
+import net.trackmate.graph.collection.pool.PoolObjectObjectMap;
+import net.trackmate.graph.collection.pool.PoolObjectSet;
+
 public class PoolObjectObjectMapTest
 {
 

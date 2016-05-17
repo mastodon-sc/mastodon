@@ -6,7 +6,7 @@ import static net.trackmate.revised.trackscheme.ScreenVertex.Transition.DISAPPEA
 import static net.trackmate.revised.trackscheme.ScreenVertex.Transition.NONE;
 import static net.trackmate.revised.trackscheme.ScreenVertex.Transition.SELECTING;
 
-import net.trackmate.graph.IntPoolObjectMap;
+import net.trackmate.graph.collection.pool.IntPoolObjectMap;
 
 public class ScreenEntitiesInterpolator
 {

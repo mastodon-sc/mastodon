@@ -1,7 +1,7 @@
 package net.trackmate.graph.traversal;
 
-import net.trackmate.graph.Edge;
-import net.trackmate.graph.Vertex;
+import net.trackmate.graph.zzgraphinterfaces.Edge;
+import net.trackmate.graph.zzgraphinterfaces.Vertex;
 
 public interface SearchListener< V extends Vertex< E >, E extends Edge< V >, G extends GraphSearch< G, V, E > >
 {

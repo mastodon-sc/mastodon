@@ -12,6 +12,10 @@ import java.util.Iterator;
 import org.junit.Before;
 import org.junit.Test;
 
+import net.trackmate.graph.collection.pool.IntPoolObjectArrayMap;
+import net.trackmate.graph.collection.pool.PoolObjectList;
+import net.trackmate.graph.collection.pool.PoolObjectSet;
+
 public class IntPoolObjectArrayMapValueCollectionTest
 {
 

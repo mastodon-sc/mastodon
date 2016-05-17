@@ -3,8 +3,8 @@ package net.trackmate.revised.trackscheme;
 import java.util.ArrayList;
 import java.util.List;
 
-import net.trackmate.graph.PoolObjectList;
 import net.trackmate.graph.collection.RefList;
+import net.trackmate.graph.collection.pool.PoolObjectList;
 import net.trackmate.revised.trackscheme.ScreenEdge.ScreenEdgePool;
 import net.trackmate.revised.trackscheme.ScreenVertex.ScreenVertexPool;
 import net.trackmate.revised.trackscheme.ScreenVertexRange.ScreenVertexRangePool;

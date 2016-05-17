@@ -9,16 +9,16 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
-import net.trackmate.graph.Edge;
-import net.trackmate.graph.Graph;
 import net.trackmate.graph.TestEdge;
 import net.trackmate.graph.TestGraph;
 import net.trackmate.graph.TestVertex;
-import net.trackmate.graph.Vertex;
 import net.trackmate.graph.object.ObjectEdge;
 import net.trackmate.graph.object.ObjectGraph;
 import net.trackmate.graph.object.ObjectVertex;
 import net.trackmate.graph.traversal.GraphSearch.EdgeClass;
+import net.trackmate.graph.zzgraphinterfaces.Edge;
+import net.trackmate.graph.zzgraphinterfaces.Graph;
+import net.trackmate.graph.zzgraphinterfaces.Vertex;
 
 public class GraphsForTests
 {

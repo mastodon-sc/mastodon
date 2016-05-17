@@ -5,12 +5,12 @@ import net.trackmate.graph.AbstractEdgePool;
 import net.trackmate.graph.AbstractVertex;
 import net.trackmate.graph.AbstractVertexWithFeatures;
 import net.trackmate.graph.AbstractVertexWithFeaturesPool;
-import net.trackmate.graph.GraphFeatures;
-import net.trackmate.graph.GraphIdBimap;
 import net.trackmate.graph.ListenableGraphImp;
-import net.trackmate.graph.PoolObjectIdBimap;
+import net.trackmate.graph.collection.pool.PoolObjectIdBimap;
 import net.trackmate.graph.listenable.GraphListener;
 import net.trackmate.graph.mempool.MappedElement;
+import net.trackmate.graph.zzgraphinterfaces.GraphFeatures;
+import net.trackmate.graph.zzgraphinterfaces.GraphIdBimap;
 
 public class AbstractModelGraph<
 		VP extends AbstractVertexWithFeaturesPool< V, E, T >,

@@ -3,14 +3,14 @@ package net.trackmate.undo;
 import java.util.ArrayList;
 
 import gnu.trove.map.TIntObjectArrayMap;
-import net.trackmate.graph.Edge;
-import net.trackmate.graph.Pool;
-import net.trackmate.graph.PoolObject;
-import net.trackmate.graph.Vertex;
 import net.trackmate.graph.mempool.ByteMappedElement;
 import net.trackmate.graph.mempool.ByteMappedElementArray;
 import net.trackmate.graph.mempool.MemPool;
 import net.trackmate.graph.mempool.SingleArrayMemPool;
+import net.trackmate.graph.zzgraphinterfaces.Edge;
+import net.trackmate.graph.zzgraphinterfaces.Vertex;
+import net.trackmate.graph.zzrefcollections.Pool;
+import net.trackmate.graph.zzrefcollections.PoolObject;
 
 // TODO: truncating earliest UndoableEdits in the list to avoid growing without bounds
 public class UndoableEditList<
