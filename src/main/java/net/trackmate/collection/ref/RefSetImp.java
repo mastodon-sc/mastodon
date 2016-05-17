@@ -9,7 +9,6 @@ import gnu.trove.set.hash.TIntHashSet;
 import net.trackmate.Ref;
 import net.trackmate.RefPool;
 import net.trackmate.collection.RefSet;
-import net.trackmate.pool.PoolObject;
 
 public class RefSetImp< O extends Ref< O > > implements IntBackedRefCollection< O >, RefSet< O >
 {
@@ -83,8 +82,8 @@ public class RefSetImp< O extends Ref< O > > implements IntBackedRefCollection< 
 	@Override
 	public boolean contains( final Object obj )
 	{
-		return ( obj instanceof PoolObject )
-				? indices.contains( ( ( PoolObject< ?, ? > ) obj ).getInternalPoolIndex() )
+		return ( obj instanceof Ref )
+				? indices.contains( ( ( Ref< ? > ) obj ).getInternalPoolIndex() )
 				: false;
 	}
 
@@ -141,9 +140,9 @@ public class RefSetImp< O extends Ref< O > > implements IntBackedRefCollection< 
 	@Override
 	public boolean remove( final Object obj )
 	{
-		if ( obj instanceof PoolObject )
+		if ( obj instanceof Ref )
 		{
-			final PoolObject< ?, ? > o = ( PoolObject< ?, ? > ) obj;
+			final Ref< ? > o = ( Ref< ? > ) obj;
 			return indices.remove( o.getInternalPoolIndex() );
 		}
 		else

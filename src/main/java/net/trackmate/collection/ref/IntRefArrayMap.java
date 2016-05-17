@@ -20,7 +20,6 @@ import gnu.trove.set.TIntSet;
 import net.trackmate.Ref;
 import net.trackmate.RefPool;
 import net.trackmate.collection.IntRefMap;
-import net.trackmate.pool.PoolObject;
 
 /**
  * A {@link IntRefMap} implementation backed by a {@link TIntArrayList}.
@@ -857,9 +856,9 @@ public class IntRefArrayMap< V extends Ref< V > > implements IntRefMap< V >
 		@Override
 		public boolean remove( final Object obj )
 		{
-			if ( obj instanceof PoolObject )
+			if ( obj instanceof Ref )
 			{
-				final PoolObject< ?, ? > o = ( PoolObject< ?, ? > ) obj;
+				final Ref< ? > o = ( Ref< ? > ) obj;
 				final int val = o.getInternalPoolIndex();
 				final int key = keyToIndexMap.indexOf( val );
 				if (key < 0) return false;

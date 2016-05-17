@@ -8,7 +8,6 @@ import gnu.trove.iterator.TIntIterator;
 import net.trackmate.Ref;
 import net.trackmate.RefPool;
 import net.trackmate.collection.RefDeque;
-import net.trackmate.pool.PoolObject;
 
 // TODO rename RefArrayDeque
 public class RefArrayDeque< O extends Ref< O > > implements IntBackedRefCollection< O >, RefDeque< O >
@@ -83,8 +82,8 @@ public class RefArrayDeque< O extends Ref< O > > implements IntBackedRefCollecti
 	@Override
 	public boolean contains( final Object obj )
 	{
-		return ( obj instanceof PoolObject )
-				? indices.contains( ( ( PoolObject< ?, ? > ) obj ).getInternalPoolIndex() )
+		return ( obj instanceof Ref )
+				? indices.contains( ( ( Ref< ? > ) obj ).getInternalPoolIndex() )
 				: false;
 	}
 
@@ -171,8 +170,8 @@ public class RefArrayDeque< O extends Ref< O > > implements IntBackedRefCollecti
 	@Override
 	public boolean remove( final Object obj )
 	{
-		return ( obj instanceof PoolObject )
-				? indices.remove( ( ( PoolObject< ?, ? > ) obj ).getInternalPoolIndex() )
+		return ( obj instanceof Ref )
+				? indices.remove( ( ( Ref< ? > ) obj ).getInternalPoolIndex() )
 				: false;
 	}
 

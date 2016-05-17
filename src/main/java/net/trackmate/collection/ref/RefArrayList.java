@@ -15,7 +15,6 @@ import gnu.trove.list.array.TIntArrayList;
 import net.trackmate.Ref;
 import net.trackmate.RefPool;
 import net.trackmate.collection.RefList;
-import net.trackmate.pool.PoolObject;
 
 public class RefArrayList< O extends Ref< O > > implements IntBackedRefCollection< O >, RefList< O >
 {
@@ -141,8 +140,8 @@ public class RefArrayList< O extends Ref< O > > implements IntBackedRefCollectio
 	@Override
 	public boolean contains( final Object obj )
 	{
-		return ( obj instanceof PoolObject )
-				? indices.contains( ( ( PoolObject< ?, ? > ) obj ).getInternalPoolIndex() )
+		return ( obj instanceof Ref )
+				? indices.contains( ( ( Ref< ? > ) obj ).getInternalPoolIndex() )
 				: false;
 	}
 
@@ -182,8 +181,8 @@ public class RefArrayList< O extends Ref< O > > implements IntBackedRefCollectio
 	@Override
 	public int indexOf( final Object obj )
 	{
-		return ( obj instanceof PoolObject )
-				? indices.indexOf( ( ( PoolObject< ?, ? > ) obj ).getInternalPoolIndex() )
+		return ( obj instanceof Ref )
+				? indices.indexOf( ( ( Ref< ? > ) obj ).getInternalPoolIndex() )
 				: -1;
 	}
 
@@ -226,8 +225,8 @@ public class RefArrayList< O extends Ref< O > > implements IntBackedRefCollectio
 	@Override
 	public int lastIndexOf( final Object obj )
 	{
-		return ( obj instanceof PoolObject )
-				? indices.lastIndexOf( ( ( PoolObject< ?, ? > ) obj ).getInternalPoolIndex() )
+		return ( obj instanceof Ref )
+				? indices.lastIndexOf( ( ( Ref< ? > ) obj ).getInternalPoolIndex() )
 				: -1;
 	}
 
@@ -405,8 +404,8 @@ public class RefArrayList< O extends Ref< O > > implements IntBackedRefCollectio
 	@Override
 	public boolean remove( final Object obj )
 	{
-		return ( obj instanceof PoolObject )
-				? indices.remove( ( ( PoolObject< ?, ? > ) obj ).getInternalPoolIndex() )
+		return ( obj instanceof Ref )
+				? indices.remove( ( ( Ref< ? > ) obj ).getInternalPoolIndex() )
 				: false;
 	}
 

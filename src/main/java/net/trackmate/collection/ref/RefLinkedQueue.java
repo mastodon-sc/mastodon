@@ -8,7 +8,6 @@ import gnu.trove.iterator.TIntIterator;
 import gnu.trove.list.linked.TIntLinkedList;
 import net.trackmate.Ref;
 import net.trackmate.RefPool;
-import net.trackmate.pool.PoolObject;
 
 public class RefLinkedQueue< O extends Ref< O > > implements IntBackedRefCollection< O >
 {
@@ -145,8 +144,8 @@ public class RefLinkedQueue< O extends Ref< O > > implements IntBackedRefCollect
 	@Override
 	public boolean contains( final Object obj )
 	{
-		return ( obj instanceof PoolObject )
-				? queue.contains( ( ( PoolObject< ?, ? > ) obj ).getInternalPoolIndex() )
+		return ( obj instanceof Ref )
+				? queue.contains( ( ( Ref< ? > ) obj ).getInternalPoolIndex() )
 				: false;
 	}
 
@@ -203,8 +202,8 @@ public class RefLinkedQueue< O extends Ref< O > > implements IntBackedRefCollect
 	@Override
 	public boolean remove( final Object obj )
 	{
-		return ( obj instanceof PoolObject )
-				? queue.remove( ( ( PoolObject< ?, ? > ) obj ).getInternalPoolIndex() )
+		return ( obj instanceof Ref )
+				? queue.remove( ( ( Ref< ? > ) obj ).getInternalPoolIndex() )
 				: false;
 	}
 
