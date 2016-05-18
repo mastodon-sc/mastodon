@@ -13,4 +13,14 @@ public class TestGraph extends GraphImp< TestVertexPool, TestEdgePool, TestVerte
 	{
 		this( 10 );
 	}
+
+	public TestVertexPool getVertexPool()
+	{
+		return vertexPool;
+	}
+
+	public TestEdgePool getEdgePool()
+	{
+		return edgePool;
+	}
 }

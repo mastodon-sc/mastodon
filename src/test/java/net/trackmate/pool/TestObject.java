@@ -1,11 +1,11 @@
-package net.trackmate.graph;
+package net.trackmate.pool;
 
 import static net.trackmate.pool.ByteUtils.INT_SIZE;
 
 import net.trackmate.pool.ByteMappedElement;
 import net.trackmate.pool.PoolObject;
 
-class TestObject extends PoolObject< TestObject, ByteMappedElement >
+public class TestObject extends PoolObject< TestObject, ByteMappedElement >
 {
 	protected static final int ID_OFFSET = 0;
 

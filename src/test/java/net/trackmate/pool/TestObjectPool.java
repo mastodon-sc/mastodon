@@ -1,4 +1,4 @@
-package net.trackmate.graph;
+package net.trackmate.pool;
 
 import net.trackmate.pool.ByteMappedElement;
 import net.trackmate.pool.ByteMappedElementArray;
@@ -7,7 +7,7 @@ import net.trackmate.pool.Pool;
 import net.trackmate.pool.PoolObject;
 import net.trackmate.pool.SingleArrayMemPool;
 
-class TestObjectPool extends Pool< TestObject, ByteMappedElement >
+public class TestObjectPool extends Pool< TestObject, ByteMappedElement >
 {
 	public TestObjectPool( final int initialCapacity )
 	{

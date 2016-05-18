@@ -1,4 +1,4 @@
-package net.trackmate.graph;
+package net.trackmate.collection.ref;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
@@ -11,8 +11,10 @@ import org.junit.Before;
 import org.junit.Test;
 
 import net.trackmate.collection.ref.RefLinkedQueue;
+import net.trackmate.pool.TestObject;
+import net.trackmate.pool.TestObjectPool;
 
-public class PoolObjectQueueTest
+public class RefLinkedQueueTest
 {
 	private RefLinkedQueue< TestObject > queue;
 

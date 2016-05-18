@@ -1,4 +1,4 @@
-package net.trackmate.graph;
+package net.trackmate.collection.ref;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -6,6 +6,8 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import gnu.trove.set.TIntSet;
 import net.trackmate.collection.ref.RefSetImp;
+import net.trackmate.graph.TestVertex;
+import net.trackmate.graph.TestVertexPool;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -14,7 +16,7 @@ import java.util.Iterator;
 import org.junit.Before;
 import org.junit.Test;
 
-public class PoolObjectSetTest
+public class RefSetImpTest
 {
 
 	private ArrayList< TestVertex > list;

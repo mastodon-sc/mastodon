@@ -1,4 +1,4 @@
-package net.trackmate.graph;
+package net.trackmate.collection.ref;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -12,6 +12,8 @@ import gnu.trove.procedure.TIntProcedure;
 import gnu.trove.procedure.TObjectProcedure;
 import net.trackmate.collection.ref.IntRefArrayMap;
 import net.trackmate.collection.ref.IntRefHashMap;
+import net.trackmate.graph.TestVertex;
+import net.trackmate.graph.TestVertexPool;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -21,7 +23,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.junit.Before;
 import org.junit.Test;
 
-public class IntPoolObjectMapTest
+public class IntRefHashMapTest
 {
 
 	private TestVertexPool pool;

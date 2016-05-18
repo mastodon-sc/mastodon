@@ -1,4 +1,4 @@
-package net.trackmate.graph;
+package net.trackmate.collection.ref;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -9,8 +9,10 @@ import java.util.Iterator;
 import org.junit.Test;
 
 import net.trackmate.collection.ref.RefArrayDeque;
+import net.trackmate.pool.TestObject;
+import net.trackmate.pool.TestObjectPool;
 
-public class PoolObjectDequeTest
+public class RefArrayDequeTest
 {
 	@Test
 	public void addFirstTest()

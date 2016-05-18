@@ -1,4 +1,4 @@
-package net.trackmate.graph;
+package net.trackmate.collection.ref;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -10,8 +10,10 @@ import org.junit.Before;
 import org.junit.Test;
 
 import net.trackmate.collection.ref.RefArrayStack;
+import net.trackmate.pool.TestObject;
+import net.trackmate.pool.TestObjectPool;
 
-public class PoolObjectStackTest
+public class RefArrayStackTest
 {
 	private RefArrayStack< TestObject > stack;
 

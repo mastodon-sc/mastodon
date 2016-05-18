@@ -1,4 +1,4 @@
-package net.trackmate.graph;
+package net.trackmate.collection.ref;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -12,16 +12,18 @@ import java.util.Iterator;
 import org.junit.Before;
 import org.junit.Test;
 
-import net.trackmate.collection.ref.IntRefArrayMap;
+import net.trackmate.collection.ref.IntRefHashMap;
 import net.trackmate.collection.ref.RefArrayList;
 import net.trackmate.collection.ref.RefSetImp;
+import net.trackmate.graph.TestVertex;
+import net.trackmate.graph.TestVertexPool;
 
-public class IntPoolObjectArrayMapValueCollectionTest
+public class IntRefHashMapValuesCollectionTest
 {
 
 	private TestVertexPool pool;
 
-	private IntRefArrayMap< TestVertex > map;
+	private IntRefHashMap< TestVertex > map;
 
 	private HashMap< Integer, Integer > truthMap;
 
@@ -41,7 +43,7 @@ public class IntPoolObjectArrayMapValueCollectionTest
 			truthMap.put( Integer.valueOf( a.getId() ), Integer.valueOf( a.getInternalPoolIndex() ) );
 		}
 
-		map = new IntRefArrayMap<>( pool );
+		map = new IntRefHashMap<>( pool, -1 );
 		storedIds = new int[] { 2, 3, 6, 8 };
 		for ( final int id : storedIds )
 		{
@@ -128,7 +130,7 @@ public class IntPoolObjectArrayMapValueCollectionTest
 		assertFalse( "ValueCollection should not be empty.", valueCollection.isEmpty() );
 		valueCollection.clear();
 		assertTrue( "ValueCollection should be empty after clear().", valueCollection.isEmpty() );
-		assertTrue( "ValueCollection from new map should be empty.", new IntRefArrayMap<>( pool ).valueCollection().isEmpty() );
+		assertTrue( "ValueCollection from new map should be empty.", new IntRefHashMap<>( pool, -1 ).valueCollection().isEmpty() );
 	}
 
 	@Test
@@ -136,26 +138,22 @@ public class IntPoolObjectArrayMapValueCollectionTest
 	{
 		// Test iterate in the right order.
 		final Iterator< TestVertex > it = valueCollection.iterator();
-		final TestVertex ref = pool.createRef();
-		int index = 0;
+		int count = 0;
 		while ( it.hasNext() )
 		{
 			final TestVertex actual = it.next();
-
-			final int key = storedIds[ index++ ];
-			final int poolIndex = truthMap.get( key );
-			pool.getObject( poolIndex, ref );
-
-			assertEquals( "Iterator returns unexpected value.", ref, actual );
+			assertTrue( "Iterator returns unexpected value: " + actual, map.containsValue( actual ) );
+			count++;
 		}
+		assertEquals( "Iterator did not iterate through all the values.", map.size(), count );
 
 		// Test iterator removal.
-		// Remove the 6.
+		// Remove the 3rd whatsoever value.
 		final int size = map.size();
 		final Iterator< TestVertex > it2 = valueCollection.iterator();
-		it2.next(); // 2
-		it2.next(); // 3
-		final TestVertex val = it2.next(); // 6
+		it2.next();
+		it2.next();
+		final TestVertex val = it2.next();
 		it2.remove();
 		assertEquals( "Map does not have the expected size after removal by keyset iterator.", size - 1, map.size() );
 		assertFalse( "Map should not contain a mapping for key " + val + " after removal by keyset iterator.", map.containsValue( val ) );
@@ -235,25 +233,29 @@ public class IntPoolObjectArrayMapValueCollectionTest
 	{
 		final Object[] array = valueCollection.toArray();
 		assertEquals( "Created array does not have the expected length.", valueCollection.size(), array.length );
-		int index = 0;
-		final RefArrayList< TestVertex > set = createListFromKeys( storedIds );
-		for ( final TestVertex expected : set )
+		for ( final Object obj : array )
 		{
-			assertEquals( "Unexpected object in the array returned by toArray().", expected, array[ index++ ] );
+			assertTrue( "Unexpected object in the array returned by toArray(): ", map.containsValue( obj ) );
 		}
 	}
 	
 	@Test
 	public void testToArrayArray()
 	{
-		final TestVertex[] array = valueCollection.toArray( new TestVertex[ 100 ] );
-		int index = 0;
-		final RefArrayList< TestVertex > set = createListFromKeys( storedIds );
-		for ( final TestVertex expected : set )
+		final TestVertex[] arr = new TestVertex[ 100 ];
+		// Initialize it with non-null values.
+		final TestVertex v = pool.create(pool.createRef()).init( 100 );
+		for ( int i = 0; i < arr.length; i++ )
 		{
-			assertEquals( "Unexpected object in the array returned by toArray(T[]).", expected, array[ index++ ] );
+			arr[ i ] = v;
 		}
-		for ( int j = index; j < array.length; j++ )
+
+		final TestVertex[] array = valueCollection.toArray( arr );
+		for ( int i = 0; i < map.size(); i++ )
+		{
+			assertTrue( "Unexpected object in the array returned by toArray(): " + array[ i ], map.containsValue( array[ i ] ) );
+		}
+		for ( int j = map.size(); j < array.length; j++ )
 		{
 			assertNull( "Remaining array slots should be null.", array[ j ] );
 		}

@@ -1,4 +1,4 @@
-package net.trackmate.graph;
+package net.trackmate.collection.ref;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -11,8 +11,10 @@ import org.junit.Test;
 
 import net.trackmate.collection.ref.RefObjectHashMap;
 import net.trackmate.collection.ref.RefSetImp;
+import net.trackmate.graph.TestVertex;
+import net.trackmate.graph.TestVertexPool;
 
-public class PoolObjectObjectMapTest
+public class RefObjectHashMapTest
 {
 
 	private RefObjectHashMap< TestVertex, String > map;

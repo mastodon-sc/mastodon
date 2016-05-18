@@ -1,4 +1,4 @@
-package net.trackmate.graph;
+package net.trackmate.collection.ref;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -8,7 +8,9 @@ import gnu.trove.iterator.TIntIterator;
 import gnu.trove.list.array.TIntArrayList;
 import gnu.trove.procedure.TIntProcedure;
 import gnu.trove.set.TIntSet;
-import net.trackmate.collection.ref.IntRefArrayMap;
+import net.trackmate.collection.ref.IntRefHashMap;
+import net.trackmate.graph.TestVertex;
+import net.trackmate.graph.TestVertexPool;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -18,12 +20,12 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.junit.Before;
 import org.junit.Test;
 
-public class IntPoolObjectArrayMapKeySetTest
+public class IntRefHashMapKeySetTest
 {
 
 	private TestVertexPool pool;
 
-	private IntRefArrayMap< TestVertex > map;
+	private IntRefHashMap< TestVertex > map;
 
 	private HashMap< Integer, Integer > truthMap;
 
@@ -44,7 +46,7 @@ public class IntPoolObjectArrayMapKeySetTest
 			truthMap.put( Integer.valueOf( a.getId() ), Integer.valueOf( a.getInternalPoolIndex() ) );
 		}
 
-		map = new IntRefArrayMap<>( pool );
+		map = new IntRefHashMap<>( pool, -1 );
 		storedIds = new int[] { 22, 23, 26, 28 };
 		for ( final int id : storedIds )
 		{
@@ -106,20 +108,24 @@ public class IntPoolObjectArrayMapKeySetTest
 	{
 		// Test iterate in the right order.
 		final TIntIterator it = keySet.iterator();
-		int index = 0;
+		int count = 0;
+		Arrays.sort( storedIds );
 		while ( it.hasNext() )
 		{
 			final int val = it.next();
-			assertEquals( "Iterator returns unexpected value.", storedIds[ index++ ], val );
+			final int s = Arrays.binarySearch( storedIds, val );
+			assertTrue( "Iterator returns a value not in the keyset: " + val, s >= 0 );
+			count++;
 		}
+		assertEquals( "Iterator did not iterate over the whole collection.", map.size(), count );
 
 		// Test iterator removal.
-		// Remove the 6.
+		// Remove the 3rd whatsoever element.
 		final int size = map.size();
 		final TIntIterator it2 = keySet.iterator();
-		it2.next(); // 2
-		it2.next(); // 3
-		final int val = it2.next(); // 6
+		it2.next();
+		it2.next();
+		final int val = it2.next();
 		it2.remove();
 		assertEquals( "Map does not have the expected size after removal by keyset iterator.", size - 1, map.size() );
 		assertFalse( "Map should not contain a mapping for key " + val + " after removal by keyset iterator.", map.containsKey( val ) );
@@ -137,11 +143,14 @@ public class IntPoolObjectArrayMapKeySetTest
 	@Test
 	public void testToArray()
 	{
+		Arrays.sort( storedIds );
 		final int[] array = keySet.toArray();
 		for ( int i = 0; i < array.length; i++ )
 		{
-			assertEquals( "Unexpected value for array returned by keysey.toArray().", storedIds[ i ], array[ i ] );
+			final int s = Arrays.binarySearch( storedIds, array[ i ] );
+			assertTrue( "Unexpected value for array returned by keysey.toArray().", s >= 0 );
 		}
+		assertEquals( "Array does not have the expected length.", map.size(), array.length );
 	}
 
 	@Test
@@ -151,9 +160,11 @@ public class IntPoolObjectArrayMapKeySetTest
 		final int[] array = keySet.toArray( arr );
 		assertEquals( "The returned array is not the right instance.", arr, array );
 
+		Arrays.sort( storedIds );
 		for ( int i = 0; i < storedIds.length; i++ )
 		{
-			assertEquals( "Unexpected value for array returned by keysey.toArray().", storedIds[ i ], array[ i ] );
+			final int s = Arrays.binarySearch( storedIds, array[ i ] );
+			assertTrue( "Unexpected value for array returned by keysey.toArray().", s >= 0 );
 		}
 		for ( int i = storedIds.length; i < arr.length; i++ )
 		{
@@ -181,9 +192,9 @@ public class IntPoolObjectArrayMapKeySetTest
 	@Test
 	public void testContainsAllCollection()
 	{
-		final Collection< Integer > allIn = Arrays.asList( new Integer[] { 2, 3, 6, 8 } );
-		final Collection< Integer > notIn = Arrays.asList( new Integer[] { 1, 7, 9 } );
-		final Collection< Integer > partlyIn = Arrays.asList( new Integer[] { 2, 3, 9 } );
+		final Collection< Integer > allIn = Arrays.asList( new Integer[] { 22, 23, 26, 28 } );
+		final Collection< Integer > notIn = Arrays.asList( new Integer[] { 21, 27, 29 } );
+		final Collection< Integer > partlyIn = Arrays.asList( new Integer[] { 22, 23, 29 } );
 		assertTrue( "This whole collection is contained in the keyset: " + allIn, keySet.containsAll( allIn ) );
 		assertFalse( "This collection is not fully contained in the keyset: " + partlyIn, keySet.containsAll( partlyIn ) );
 		assertFalse( "This collection is not in the keyset: " + notIn, keySet.containsAll( notIn ) );
@@ -192,9 +203,9 @@ public class IntPoolObjectArrayMapKeySetTest
 	@Test
 	public void testContainsAllInt()
 	{
-		final int[] allIn = new int[] { 2, 3, 6, 8 };
-		final int[] notIn = new int[] { 1, 7, 9 };
-		final int[] partlyIn = new int[] { 2, 3, 9 };
+		final int[] allIn = new int[] { 22, 23, 26, 28 };
+		final int[] notIn = new int[] { 21, 27, 29 };
+		final int[] partlyIn = new int[] { 22, 23, 29 };
 		assertTrue( "This whole collection is contained in the keyset: " + allIn, keySet.containsAll( allIn ) );
 		assertFalse( "This collection is not fully contained in the keyset: " + partlyIn, keySet.containsAll( partlyIn ) );
 		assertFalse( "This collection is not in the keyset: " + notIn, keySet.containsAll( notIn ) );
@@ -203,9 +214,9 @@ public class IntPoolObjectArrayMapKeySetTest
 	@Test
 	public void testContainsAllTIntCollection()
 	{
-		final TIntCollection allIn = TIntArrayList.wrap( new int[] { 2, 3, 6, 8 } );
-		final TIntArrayList notIn = TIntArrayList.wrap( new int[] { 1, 7, 9 } );
-		final TIntArrayList partlyIn = TIntArrayList.wrap( new int[] { 2, 3, 9 } );
+		final TIntCollection allIn = TIntArrayList.wrap( new int[] { 22, 23, 26, 28 } );
+		final TIntArrayList notIn = TIntArrayList.wrap( new int[] { 21, 27, 29 } );
+		final TIntArrayList partlyIn = TIntArrayList.wrap( new int[] { 22, 23, 29 } );
 		assertTrue( "This whole collection is contained in the keyset: " + allIn, keySet.containsAll( allIn ) );
 		assertFalse( "This collection is not fully contained in the keyset: " + partlyIn, keySet.containsAll( partlyIn ) );
 		assertFalse( "This collection is not in the keyset: " + notIn, keySet.containsAll( notIn ) );

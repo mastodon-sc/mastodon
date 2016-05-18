@@ -1,4 +1,4 @@
-package net.trackmate.graph;
+package net.trackmate.collection.ref;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
@@ -7,9 +7,10 @@ import static org.junit.Assert.assertNull;
 import org.junit.Before;
 import org.junit.Test;
 
-import net.trackmate.collection.ref.RefRefHashMap;
+import net.trackmate.graph.TestGraph;
+import net.trackmate.graph.TestVertex;
 
-public class PoolObjectPoolObjectMapTwoHeteroVertexPoolTest extends PoolObjectPoolObjectMapTwoVertexPoolTest
+public class RefRefHashMapTwoHeteroVertexPoolTest extends RefRefHashMapTwoVertexPoolTest
 {
 
 	private TestGraph graph2;
@@ -53,7 +54,7 @@ public class PoolObjectPoolObjectMapTwoHeteroVertexPoolTest extends PoolObjectPo
 		Dk2 = graph2.addVertex().init( 3 );
 		Ek2 = graph2.addVertex().init( 4 );
 
-		map = new RefRefHashMap< TestVertex, TestVertex >( graph.vertexPool, graph2.vertexPool );
+		map = new RefRefHashMap< TestVertex, TestVertex >( graph.getVertexPool(), graph2.getVertexPool() );
 		map.put( Bk, Ck2 );
 		map.put( Ck, Dk2 );
 		map.put( Dk, Ek2 );
@@ -181,7 +182,7 @@ public class PoolObjectPoolObjectMapTwoHeteroVertexPoolTest extends PoolObjectPo
 	@Test
 	public void testPutAll()
 	{
-		final RefRefHashMap< TestVertex, TestVertex > extraMap = new RefRefHashMap< TestVertex, TestVertex >( graph.vertexPool, graph2.vertexPool );
+		final RefRefHashMap< TestVertex, TestVertex > extraMap = new RefRefHashMap< TestVertex, TestVertex >( graph.getVertexPool(), graph2.getVertexPool() );
 		extraMap.put( Ak, Bk2 );
 		// Careful to add 1 mapping not already present in the map.
 		extraMap.put( Bk, Ak2 );

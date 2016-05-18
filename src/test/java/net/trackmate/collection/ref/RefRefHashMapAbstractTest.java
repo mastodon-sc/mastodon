@@ -1,10 +1,12 @@
-package net.trackmate.graph;
+package net.trackmate.collection.ref;
 
 import org.junit.Before;
 
-import net.trackmate.collection.ref.RefRefHashMap;
+import net.trackmate.graph.TestEdge;
+import net.trackmate.graph.TestGraph;
+import net.trackmate.graph.TestVertex;
 
-public class PoolObjectPoolObjectMapAbstractTest
+public class RefRefHashMapAbstractTest
 {
 	protected TestVertex Ak;
 
@@ -53,7 +55,7 @@ public class PoolObjectPoolObjectMapAbstractTest
 		eEA = graph.addEdge( Ek, Ak );
 
 		// Map each vertex to edge going in.
-		map = new RefRefHashMap< TestVertex, TestEdge >( graph.vertexPool, graph.edgePool );
+		map = new RefRefHashMap< TestVertex, TestEdge >( graph.getVertexPool(), graph.getEdgePool() );
 		map.put( Bk, eAB );
 		map.put( Ck, eAC );
 		map.put( Dk, eBD );

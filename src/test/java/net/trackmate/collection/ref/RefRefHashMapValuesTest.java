@@ -1,4 +1,4 @@
-package net.trackmate.graph;
+package net.trackmate.collection.ref;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -12,9 +12,10 @@ import java.util.List;
 import org.junit.Test;
 
 import net.trackmate.collection.RefList;
-import net.trackmate.collection.ref.RefRefHashMap;
+import net.trackmate.graph.TestEdge;
+import net.trackmate.graph.TestVertex;
 
-public class PoolObjectPoolObjectMapValuesTest extends PoolObjectPoolObjectMapAbstractTest
+public class RefRefHashMapValuesTest extends RefRefHashMapAbstractTest
 {
 	private Collection< TestEdge > values;
 
@@ -78,7 +79,7 @@ public class PoolObjectPoolObjectMapValuesTest extends PoolObjectPoolObjectMapAb
 	@Test
 	public void testIsEmpty()
 	{
-		final RefRefHashMap< TestVertex, TestEdge > map2 = new RefRefHashMap< TestVertex, TestEdge >( graph.vertexPool, graph.edgePool );
+		final RefRefHashMap< TestVertex, TestEdge > map2 = new RefRefHashMap< TestVertex, TestEdge >( graph.getVertexPool(), graph.getEdgePool() );
 		assertTrue( "Value collection of newly created map should be empty.", map2.values().isEmpty() );
 
 		map2.put( Ak, eAB );

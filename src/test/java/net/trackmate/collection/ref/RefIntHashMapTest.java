@@ -1,4 +1,4 @@
-package net.trackmate.graph;
+package net.trackmate.collection.ref;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -24,8 +24,10 @@ import gnu.trove.procedure.TIntProcedure;
 import gnu.trove.procedure.TObjectIntProcedure;
 import gnu.trove.procedure.TObjectProcedure;
 import net.trackmate.collection.ref.RefIntHashMap;
+import net.trackmate.pool.TestObject;
+import net.trackmate.pool.TestObjectPool;
 
-public class PoolObjectIntMapTest
+public class RefIntHashMapTest
 {
 
 	private int noEntryValue;

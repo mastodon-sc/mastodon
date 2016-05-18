@@ -1,4 +1,4 @@
-package net.trackmate.graph;
+package net.trackmate.collection.ref;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
@@ -6,7 +6,9 @@ import static org.junit.Assert.assertNotEquals;
 import org.junit.Before;
 import org.junit.Test;
 
-import net.trackmate.collection.ref.RefRefHashMap;
+import net.trackmate.graph.TestEdge;
+import net.trackmate.graph.TestGraph;
+import net.trackmate.graph.TestVertex;
 
 /**
  * This test reproduces the tests from its parent class, but uses a map between
@@ -14,7 +16,7 @@ import net.trackmate.collection.ref.RefRefHashMap;
  *
  * @author Jean-Yves Tinevez - 2015
  */
-public class PoolObjectPoolObjectMapHeteroPoolTest extends PoolObjectPoolObjectMapTest
+public class RefRefHashMapHeteroPoolTest extends RefRefHashMapTest
 {
 
 	@Before
@@ -43,7 +45,7 @@ public class PoolObjectPoolObjectMapHeteroPoolTest extends PoolObjectPoolObjectM
 		eEA = graph2.addEdge( Ek2, Ak2 );
 
 		// Map each vertex to edge going in.
-		map = new RefRefHashMap< TestVertex, TestEdge >( graph.vertexPool, graph2.edgePool );
+		map = new RefRefHashMap< TestVertex, TestEdge >( graph.getVertexPool(), graph2.getEdgePool() );
 		map.put( Bk, eAB );
 		map.put( Ck, eAC );
 		map.put( Dk, eBD );
@@ -59,8 +61,8 @@ public class PoolObjectPoolObjectMapHeteroPoolTest extends PoolObjectPoolObjectM
 	@Test
 	public void testTest()
 	{
-		assertEquals( "The graph vertex pool and the map key vertex pool are different.", graph.vertexPool, Ak.creatingPool );
-		assertNotEquals( "The graph edge pool and the map value edge pool are the same.", graph.edgePool, eAB.creatingPool );
+		assertEquals( "The graph vertex pool and the map key vertex pool are different.", graph.getVertexPool(), Ak.creatingPool );
+		assertNotEquals( "The graph edge pool and the map value edge pool are the same.", graph.getEdgePool(), eAB.creatingPool );
 	}
 
 }
