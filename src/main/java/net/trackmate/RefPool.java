@@ -1,6 +1,26 @@
 package net.trackmate;
 
-//TODO: javadoc
+import net.trackmate.pool.Pool;
+import net.trackmate.pool.PoolObject;
+
+/**
+ * A pool of object (usually reusable {@link Ref} objects). It provides methods
+ * to create object references and a bidirectional mapping between integer IDs
+ * and objects.
+ * <p>
+ * Implementations:
+ * <ul>
+ * <li>A mapping between {@link PoolObject}s and their internal pool indices.
+ * Implemented in {@link Pool}.</li>
+ * <li>a mapping between Java objects and IDs that are assigned upon first
+ * access. Not implemented yet.</li>
+ * </ul>
+ *
+ * @param <O>
+ *            the object type.
+ *
+ * @author Tobias Pietzsch &lt;tobias.pietzsch@gmail.com&gt;
+ */
 public interface RefPool< O >
 {
 	/**
@@ -19,22 +39,39 @@ public interface RefPool< O >
 	public void releaseRef( final O obj );
 
 	/**
-	 * Make {@code obj} refer to the object at {@code index} in the pool.
+	 * Get the object associated with the given {@code id}.
+	 * <p>
+	 * If this pool stores {@link Ref} objects, the provided reference
+	 * {@code obj} will be used to refer to the object at {@code index} in the
+	 * pool, and returned.
 	 *
 	 * @param id
 	 *            internal pool index.
 	 * @param obj
-	 *            reference that will refer to object at {@code index} when the
-	 *            method returns.
+	 *            reusable reference that may be used to refer to object
+	 *            associated with {@code id}, and return it.
+	 * @return the object associated with the given {@code id}.
 	 */
 	public O getObject( final int id, final O obj );
 
 	/**
-	 * TODO javadoc
+	 * Get the (unique) ID associated with the given object.
+	 * <p>
+	 * If the object is a {@link Ref}, then the ID depends on the data the
+	 * {@link Ref} is currently pointing to. That is, {@link #getId(Object)}
+	 * will return different IDs for the same {@code a}, depending on which
+	 * object the {@link Ref} currently points to.
 	 *
-	 * TODO rename?
+	 * @param o
+	 *            the object (reference).
+	 * @return the ID of the (data referred to by) {@code o}.
+	 */
+	public int getId( O o );
+
+	/**
+	 * Get the type of objects stored in this pool.
 	 *
-	 * @return
+	 * @return the type of objects stored in this pool.
 	 */
 	public Class< O > getRefClass();
 }
