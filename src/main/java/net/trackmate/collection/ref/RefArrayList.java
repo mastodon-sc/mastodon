@@ -12,32 +12,36 @@ import java.util.Random;
 import gnu.trove.TIntCollection;
 import gnu.trove.iterator.TIntIterator;
 import gnu.trove.list.array.TIntArrayList;
-import net.trackmate.Ref;
-import net.trackmate.RefPool;
+import net.trackmate.collection.IdBimap;
 import net.trackmate.collection.RefList;
 
-public class RefArrayList< O extends Ref< O > > implements IntBackedRefCollection< O >, RefList< O >
+public class RefArrayList< O > implements IntBackedRefCollection< O >, RefList< O >
 {
 	private final TIntArrayList indices;
 
-	private final RefPool< O > pool;
+	final IdBimap< O > pool;
 
-	public RefArrayList( final RefPool< O > pool )
+	final Class< O > elementType;
+
+	public RefArrayList( final IdBimap< O > pool )
 	{
 		this.pool = pool;
 		indices = new TIntArrayList();
+		elementType = pool.getRefClass();
 	}
 
-	public RefArrayList( final RefPool< O > pool, final int initialCapacity )
+	public RefArrayList( final IdBimap< O > pool, final int initialCapacity )
 	{
 		this.pool = pool;
 		indices = new TIntArrayList( initialCapacity );
+		elementType = pool.getRefClass();
 	}
 
 	protected RefArrayList( final RefArrayList< O > list, final TIntArrayList indexSubList )
 	{
 		pool = list.pool;
 		indices = indexSubList;
+		elementType = pool.getRefClass();
 	}
 
 	@Override
@@ -61,13 +65,13 @@ public class RefArrayList< O extends Ref< O > > implements IntBackedRefCollectio
 	@Override
 	public boolean add( final O obj )
 	{
-		return indices.add( obj.getInternalPoolIndex() );
+		return indices.add( pool.getId( obj ) );
 	}
 
 	@Override
 	public void add( final int index, final O obj )
 	{
-		indices.insert( index, obj.getInternalPoolIndex() );
+		indices.insert( index, pool.getId( obj ) );
 	}
 
 	// TODO: consider throwing exception in addAll if objs are not from same pool
@@ -79,7 +83,7 @@ public class RefArrayList< O extends Ref< O > > implements IntBackedRefCollectio
 		else
 		{
 			for ( final O obj : objs )
-				indices.add( obj.getInternalPoolIndex() );
+				indices.add( pool.getId( obj ) );
 			return !objs.isEmpty();
 		}
 	}
@@ -97,7 +101,7 @@ public class RefArrayList< O extends Ref< O > > implements IntBackedRefCollectio
 			final int[] indicesToInsert = new int[ objs.size() ];
 			int i = 0;
 			for ( final O obj : objs )
-				indicesToInsert[ i++ ] = obj.getInternalPoolIndex();
+				indicesToInsert[ i++ ] = pool.getId( obj );
 			indices.insert( index, indicesToInsert );
 		}
 		return !objs.isEmpty();
@@ -137,11 +141,12 @@ public class RefArrayList< O extends Ref< O > > implements IntBackedRefCollectio
 		indices.resetQuick();
 	}
 
+	@SuppressWarnings( "unchecked" )
 	@Override
 	public boolean contains( final Object obj )
 	{
-		return ( obj instanceof Ref )
-				? indices.contains( ( ( Ref< ? > ) obj ).getInternalPoolIndex() )
+		return ( elementType.isInstance( obj ) )
+				? indices.contains( pool.getId( ( O ) obj ) )
 				: false;
 	}
 
@@ -161,15 +166,13 @@ public class RefArrayList< O extends Ref< O > > implements IntBackedRefCollectio
 
 	public O getQuick( final int index, final O obj )
 	{
-		pool.getByInternalPoolIndex( indices.getQuick( index ), obj );
-		return obj;
+		return pool.getObject( indices.getQuick( index ), obj );
 	}
 
 	@Override
 	public O get( final int index, final O obj )
 	{
-		pool.getByInternalPoolIndex( indices.get( index ), obj );
-		return obj;
+		return pool.getObject( indices.get( index ), obj );
 	}
 
 	@Override
@@ -178,11 +181,12 @@ public class RefArrayList< O extends Ref< O > > implements IntBackedRefCollectio
 		return get( index, pool.createRef() );
 	}
 
+	@SuppressWarnings( "unchecked" )
 	@Override
 	public int indexOf( final Object obj )
 	{
-		return ( obj instanceof Ref )
-				? indices.indexOf( ( ( Ref< ? > ) obj ).getInternalPoolIndex() )
+		return ( elementType.isInstance( obj ) )
+				? indices.indexOf( pool.getId( ( O ) obj ) )
 				: -1;
 	}
 
@@ -210,8 +214,7 @@ public class RefArrayList< O extends Ref< O > > implements IntBackedRefCollectio
 			@Override
 			public O next()
 			{
-				pool.getByInternalPoolIndex( ii.next(), obj );
-				return obj;
+				return pool.getObject( ii.next(), obj );
 			}
 
 			@Override
@@ -222,11 +225,12 @@ public class RefArrayList< O extends Ref< O > > implements IntBackedRefCollectio
 		};
 	}
 
+	@SuppressWarnings( "unchecked" )
 	@Override
 	public int lastIndexOf( final Object obj )
 	{
-		return ( obj instanceof Ref )
-				? indices.lastIndexOf( ( ( Ref< ? > ) obj ).getInternalPoolIndex() )
+		return ( elementType.isInstance( obj ) )
+				? indices.lastIndexOf( pool.getId( ( O ) obj ) )
 				: -1;
 	}
 
@@ -401,19 +405,19 @@ public class RefArrayList< O extends Ref< O > > implements IntBackedRefCollectio
 		return new ListItr( index );
 	}
 
+	@SuppressWarnings( "unchecked" )
 	@Override
 	public boolean remove( final Object obj )
 	{
-		return ( obj instanceof Ref )
-				? indices.remove( ( ( Ref< ? > ) obj ).getInternalPoolIndex() )
+		return ( elementType.isInstance( obj ) )
+				? indices.remove( pool.getId( ( O ) obj ) )
 				: false;
 	}
 
 	@Override
 	public O remove( final int index, final O obj )
 	{
-		pool.getByInternalPoolIndex( indices.removeAt( index ), obj );
-		return obj;
+		return pool.getObject( indices.removeAt( index ), obj );
 	}
 
 	@Override
@@ -452,10 +456,9 @@ public class RefArrayList< O extends Ref< O > > implements IntBackedRefCollectio
 	@Override
 	public O set( final int index, final O obj, final O replacedObj )
 	{
-		pool.getByInternalPoolIndex(
-				indices.set( index, obj.getInternalPoolIndex() ),
+		return pool.getObject(
+				indices.set( index, pool.getId( obj ) ),
 				replacedObj );
-		return replacedObj;
 	}
 
 	@Override

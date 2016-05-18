@@ -5,27 +5,30 @@ import java.util.Iterator;
 
 import gnu.trove.deque.TIntArrayDeque;
 import gnu.trove.iterator.TIntIterator;
-import net.trackmate.Ref;
-import net.trackmate.RefPool;
+import net.trackmate.collection.IdBimap;
 import net.trackmate.collection.RefDeque;
 
 // TODO rename RefArrayDeque
-public class RefArrayDeque< O extends Ref< O > > implements IntBackedRefCollection< O >, RefDeque< O >
+public class RefArrayDeque< O > implements IntBackedRefCollection< O >, RefDeque< O >
 {
-	private final RefPool< O > pool;
+	private final IdBimap< O > pool;
 
 	private final TIntArrayDeque indices;
 
-	public RefArrayDeque( final RefPool< O > pool )
+	private final Class< O > elementType;
+
+	public RefArrayDeque( final IdBimap< O > pool )
 	{
 		this.pool = pool;
 		this.indices = new TIntArrayDeque();
+		elementType = pool.getRefClass();
 	}
 
-	public RefArrayDeque( final RefPool< O > pool, final int initialCapacity )
+	public RefArrayDeque( final IdBimap< O > pool, final int initialCapacity )
 	{
 		this.pool = pool;
 		indices = new TIntArrayDeque( initialCapacity );
+		elementType = pool.getRefClass();
 	}
 
 	/*
@@ -57,7 +60,7 @@ public class RefArrayDeque< O extends Ref< O > > implements IntBackedRefCollecti
 	@Override
 	public boolean add( final O obj )
 	{
-		return indices.add( obj.getInternalPoolIndex() );
+		return indices.add( pool.getId( obj ) );
 	}
 
 	@Override
@@ -68,7 +71,7 @@ public class RefArrayDeque< O extends Ref< O > > implements IntBackedRefCollecti
 		else
 		{
 			for ( final O obj : objs )
-				indices.add( obj.getInternalPoolIndex() );
+				indices.add( pool.getId( obj ) );
 			return !objs.isEmpty();
 		}
 	}
@@ -79,11 +82,12 @@ public class RefArrayDeque< O extends Ref< O > > implements IntBackedRefCollecti
 		indices.clear();
 	}
 
+	@SuppressWarnings( "unchecked" )
 	@Override
 	public boolean contains( final Object obj )
 	{
-		return ( obj instanceof Ref )
-				? indices.contains( ( ( Ref< ? > ) obj ).getInternalPoolIndex() )
+		return ( elementType.isInstance( obj ) )
+				? indices.contains( pool.getId( ( O ) obj ) )
 				: false;
 	}
 
@@ -125,8 +129,7 @@ public class RefArrayDeque< O extends Ref< O > > implements IntBackedRefCollecti
 			@Override
 			public O next()
 			{
-				pool.getByInternalPoolIndex( ii.next(), obj );
-				return obj;
+				return pool.getObject( ii.next(), obj );
 			}
 
 			@Override
@@ -155,8 +158,7 @@ public class RefArrayDeque< O extends Ref< O > > implements IntBackedRefCollecti
 			@Override
 			public O next()
 			{
-				pool.getByInternalPoolIndex( ii.next(), obj );
-				return obj;
+				return pool.getObject( ii.next(), obj );
 			}
 
 			@Override
@@ -167,11 +169,12 @@ public class RefArrayDeque< O extends Ref< O > > implements IntBackedRefCollecti
 		};
 	}
 
+	@SuppressWarnings( "unchecked" )
 	@Override
 	public boolean remove( final Object obj )
 	{
-		return ( obj instanceof Ref )
-				? indices.remove( ( ( Ref< ? > ) obj ).getInternalPoolIndex() )
+		return ( elementType.isInstance( obj ) )
+				? indices.remove( pool.getId( ( O ) obj ) )
 				: false;
 	}
 
@@ -217,11 +220,7 @@ public class RefArrayDeque< O extends Ref< O > > implements IntBackedRefCollecti
 		final Object[] arr = new Object[ size() ];
 		int index = 0;
 		for ( final O obj : this )
-		{
-			final O ref = createRef();
-			ref.refTo( obj );
-			arr[ index++ ] = ref;
-		}
+			arr[ index++ ] = pool.getObject( pool.getId( obj ), createRef() );
 		return arr;
 	}
 
@@ -233,15 +232,9 @@ public class RefArrayDeque< O extends Ref< O > > implements IntBackedRefCollecti
 		{
 			int index = 0;
 			for ( final O obj : this )
-			{
-				final O ref = createRef();
-				ref.refTo( obj );
-				arr[ index++ ] = ( U ) ref;
-			}
+				arr[ index++ ] = ( U ) pool.getObject( pool.getId( obj ), createRef() );
 			for ( int i = index; i < arr.length; i++ )
-			{
 				arr[ i ] = null;
-			}
 			return arr;
 		}
 		return ( U[] ) toArray();
@@ -250,20 +243,19 @@ public class RefArrayDeque< O extends Ref< O > > implements IntBackedRefCollecti
 	@Override
 	public void addFirst( final O obj )
 	{
-		indices.addFirst( obj.getInternalPoolIndex() );
+		indices.addFirst( pool.getId( obj ) );
 	}
 
 	@Override
 	public void addLast( final O obj )
 	{
-		indices.addLast( obj.getInternalPoolIndex() );
+		indices.addLast( pool.getId( obj ) );
 	}
 
 	@Override
 	public O pollFirst( final O obj )
 	{
-		pool.getByInternalPoolIndex( indices.pollFirst(), obj );
-		return obj;
+		return pool.getObject( indices.pollFirst(), obj );
 	}
 
 	@Override
@@ -275,8 +267,7 @@ public class RefArrayDeque< O extends Ref< O > > implements IntBackedRefCollecti
 	@Override
 	public O pollLast( final O obj )
 	{
-		pool.getByInternalPoolIndex( indices.pollLast(), obj );
-		return obj;
+		return pool.getObject( indices.pollLast(), obj );
 	}
 
 	@Override
@@ -288,8 +279,7 @@ public class RefArrayDeque< O extends Ref< O > > implements IntBackedRefCollecti
 	@Override
 	public O peekFirst( final O obj )
 	{
-		pool.getByInternalPoolIndex( indices.peekFirst(), obj );
-		return obj;
+		return pool.getObject( indices.peekFirst(), obj );
 	}
 
 	@Override
@@ -301,8 +291,7 @@ public class RefArrayDeque< O extends Ref< O > > implements IntBackedRefCollecti
 	@Override
 	public O peekLast( final O obj )
 	{
-		pool.getByInternalPoolIndex( indices.peekLast(), obj );
-		return obj;
+		return pool.getObject( indices.peekLast(), obj );
 	}
 
 	@Override
@@ -314,8 +303,7 @@ public class RefArrayDeque< O extends Ref< O > > implements IntBackedRefCollecti
 	@Override
 	public O removeFirst( final O obj )
 	{
-		pool.getByInternalPoolIndex( indices.removeFirst(), obj );
-		return obj;
+		return pool.getObject( indices.removeFirst(), obj );
 	}
 
 	@Override
@@ -327,8 +315,7 @@ public class RefArrayDeque< O extends Ref< O > > implements IntBackedRefCollecti
 	@Override
 	public O removeLast( final O obj )
 	{
-		pool.getByInternalPoolIndex( indices.removeLast(), obj );
-		return obj;
+		return pool.getObject( indices.removeLast(), obj );
 	}
 
 	@Override
@@ -340,8 +327,7 @@ public class RefArrayDeque< O extends Ref< O > > implements IntBackedRefCollecti
 	@Override
 	public O getFirst( final O obj )
 	{
-		pool.getByInternalPoolIndex( indices.getFirst(), obj );
-		return obj;
+		return pool.getObject( indices.getFirst(), obj );
 	}
 
 	@Override
@@ -353,8 +339,7 @@ public class RefArrayDeque< O extends Ref< O > > implements IntBackedRefCollecti
 	@Override
 	public O getLast( final O obj )
 	{
-		pool.getByInternalPoolIndex( indices.getLast(), obj );
-		return obj;
+		return pool.getObject( indices.getLast(), obj );
 	}
 
 	@Override
@@ -396,7 +381,7 @@ public class RefArrayDeque< O extends Ref< O > > implements IntBackedRefCollecti
 			return false;
 		@SuppressWarnings( "unchecked" )
 		final O o = ( O ) obj;
-		final int id = o.getInternalPoolIndex();
+		final int id = pool.getId( o );
 		return indices.remove( id );
 	}
 
@@ -407,7 +392,7 @@ public class RefArrayDeque< O extends Ref< O > > implements IntBackedRefCollecti
 			return false;
 		@SuppressWarnings( "unchecked" )
 		final O o = ( O ) obj;
-		final int id = o.getInternalPoolIndex();
+		final int id = pool.getId( o );
 		return indices.removeLastOccurrence( id );
 	}
 

@@ -82,7 +82,7 @@ public class UndoableEditList<
 
 	private UndoableEditRef< V, E > get( final int index, final UndoableEditRef< V, E > ref )
 	{
-		super.getByInternalPoolIndex( index, ref );
+		super.getObject( index, ref );
 		return ref;
 	}
 
@@ -100,7 +100,7 @@ public class UndoableEditList<
 	{
 		for ( int i = super.size() - 1; i >= fromIndex; --i )
 		{
-			getByInternalPoolIndex( i, ref );
+			getObject( i, ref );
 			ref.clear();
 			deleteByInternalPoolIndex( i );
 		}
@@ -135,6 +135,13 @@ public class UndoableEditList<
 		public MemPool.Factory< ByteMappedElement > getMemPoolFactory()
 		{
 			return SingleArrayMemPool.factory( ByteMappedElementArray.factory );
+		}
+
+		@SuppressWarnings( { "unchecked", "rawtypes" } )
+		@Override
+		public Class< UndoableEditRef< V, E > > getRefClass()
+		{
+			return ( Class ) UndoableEditRef.class;
 		}
 	};
 

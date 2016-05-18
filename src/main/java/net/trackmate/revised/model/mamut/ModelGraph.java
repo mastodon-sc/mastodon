@@ -69,6 +69,12 @@ class ModelGraph extends AbstractModelGraph< ModelGraph.SpotPool, ModelGraph.Lin
 			{
 				return SingleArrayMemPool.factory( ByteMappedElementArray.factory );
 			}
+
+			@Override
+			public Class< Spot > getRefClass()
+			{
+				return Spot.class;
+			}
 		};
 	}
 
@@ -105,6 +111,12 @@ class ModelGraph extends AbstractModelGraph< ModelGraph.SpotPool, ModelGraph.Lin
 			public MemPool.Factory< ByteMappedElement > getMemPoolFactory()
 			{
 				return SingleArrayMemPool.factory( ByteMappedElementArray.factory );
+			}
+
+			@Override
+			public Class< Link > getRefClass()
+			{
+				return Link.class;
 			}
 		};
 	}

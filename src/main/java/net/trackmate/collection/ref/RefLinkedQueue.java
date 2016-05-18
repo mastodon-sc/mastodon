@@ -6,12 +6,13 @@ import java.util.Iterator;
 import gnu.trove.TIntCollection;
 import gnu.trove.iterator.TIntIterator;
 import gnu.trove.list.linked.TIntLinkedList;
-import net.trackmate.Ref;
-import net.trackmate.RefPool;
+import net.trackmate.collection.IdBimap;
 
-public class RefLinkedQueue< O extends Ref< O > > implements IntBackedRefCollection< O >
+public class RefLinkedQueue< O > implements IntBackedRefCollection< O >
 {
-	private final RefPool< O > pool;
+	private final IdBimap< O > pool;
+
+	private final Class< O > elementType;
 
 	private final TIntLinkedList queue;
 
@@ -25,15 +26,17 @@ public class RefLinkedQueue< O extends Ref< O > > implements IntBackedRefCollect
 	 * @param pool
 	 *            the pool to draw objects from in order to build this queue.
 	 */
-	public RefLinkedQueue( final RefPool< O > pool )
+	public RefLinkedQueue( final IdBimap< O > pool )
 	{
 		this.pool = pool;
+		this.elementType = pool.getRefClass();
 		this.queue = new TIntLinkedList();
 	}
 
 	protected RefLinkedQueue( final RefLinkedQueue< O > queue, final TIntLinkedList indexSubList )
 	{
 		this.pool = queue.pool;
+		this.elementType = queue.elementType;
 		this.queue = indexSubList;
 	}
 
@@ -57,7 +60,7 @@ public class RefLinkedQueue< O extends Ref< O > > implements IntBackedRefCollect
 	public O element( final O obj )
 	{
 		final int index = queue.removeAt( 0 );
-		pool.getByInternalPoolIndex( index, obj );
+		pool.getObject( index, obj );
 		return obj;
 	}
 
@@ -70,7 +73,7 @@ public class RefLinkedQueue< O extends Ref< O > > implements IntBackedRefCollect
 	 */
 	public O offer( final O obj )
 	{
-		queue.add( obj.getInternalPoolIndex() );
+		queue.add( pool.getId( obj ) );
 		return obj;
 	}
 
@@ -87,7 +90,7 @@ public class RefLinkedQueue< O extends Ref< O > > implements IntBackedRefCollect
 	{
 		if ( queue.isEmpty() ) { return null; }
 		final int index = queue.get( 0 );
-		pool.getByInternalPoolIndex( index, obj );
+		pool.getObject( index, obj );
 		return obj;
 	}
 
@@ -119,7 +122,7 @@ public class RefLinkedQueue< O extends Ref< O > > implements IntBackedRefCollect
 	@Override
 	public boolean add( final O obj )
 	{
-		return queue.add( obj.getInternalPoolIndex() );
+		return queue.add( pool.getId( obj ) );
 	}
 
 	@Override
@@ -130,7 +133,7 @@ public class RefLinkedQueue< O extends Ref< O > > implements IntBackedRefCollect
 		else
 		{
 			for ( final O obj : objs )
-				queue.add( obj.getInternalPoolIndex() );
+				queue.add( pool.getId( obj ) );
 			return !objs.isEmpty();
 		}
 	}
@@ -141,11 +144,12 @@ public class RefLinkedQueue< O extends Ref< O > > implements IntBackedRefCollect
 		queue.clear();
 	}
 
+	@SuppressWarnings( "unchecked" )
 	@Override
 	public boolean contains( final Object obj )
 	{
-		return ( obj instanceof Ref )
-				? queue.contains( ( ( Ref< ? > ) obj ).getInternalPoolIndex() )
+		return ( elementType.isInstance( obj ) )
+				? queue.contains( pool.getId( ( O ) obj ) )
 				: false;
 	}
 
@@ -187,7 +191,7 @@ public class RefLinkedQueue< O extends Ref< O > > implements IntBackedRefCollect
 			@Override
 			public O next()
 			{
-				pool.getByInternalPoolIndex( ii.next(), obj );
+				pool.getObject( ii.next(), obj );
 				return obj;
 			}
 
@@ -199,17 +203,18 @@ public class RefLinkedQueue< O extends Ref< O > > implements IntBackedRefCollect
 		};
 	}
 
+	@SuppressWarnings( "unchecked" )
 	@Override
 	public boolean remove( final Object obj )
 	{
-		return ( obj instanceof Ref )
-				? queue.remove( ( ( Ref< ? > ) obj ).getInternalPoolIndex() )
+		return ( elementType.isInstance( obj ) )
+				? queue.remove( pool.getId( ( O ) obj ) )
 				: false;
 	}
 
 	public O remove( final int index, final O obj )
 	{
-		pool.getByInternalPoolIndex(  queue.removeAt( index ), obj );
+		pool.getObject(  queue.removeAt( index ), obj );
 		return obj;
 	}
 
@@ -255,11 +260,7 @@ public class RefLinkedQueue< O extends Ref< O > > implements IntBackedRefCollect
 		final Object[] arr = new Object[ size() ];
 		int index = 0;
 		for ( final O obj : this )
-		{
-			final O ref = createRef();
-			ref.refTo( obj );
-			arr[ index++ ] = ref;
-		}
+			arr[ index++ ] = pool.getObject( pool.getId( obj ), createRef() );
 		return arr;
 	}
 
@@ -271,15 +272,9 @@ public class RefLinkedQueue< O extends Ref< O > > implements IntBackedRefCollect
 		{
 			int index = 0;
 			for ( final O obj : this )
-			{
-				final O ref = createRef();
-				ref.refTo( obj );
-				arr[ index++ ] = ( U ) ref;
-			}
+				arr[ index++ ] = ( U ) pool.getObject( pool.getId( obj ), createRef() );
 			for ( int i = index; i < arr.length; i++ )
-			{
 				arr[ i ] = null;
-			}
 			return arr;
 		}
 		return ( U[] ) toArray();
@@ -290,5 +285,4 @@ public class RefLinkedQueue< O extends Ref< O > > implements IntBackedRefCollect
 	{
 		return queue;
 	}
-
 }

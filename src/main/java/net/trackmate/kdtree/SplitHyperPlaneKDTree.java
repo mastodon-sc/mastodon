@@ -150,7 +150,7 @@ public class SplitHyperPlaneKDTree< O extends Ref< O > & RealLocalizable, T exte
 	private void split( final int currentNodeIndex, final int sd )
 	{
 		// consider the current node
-		tree.getByInternalPoolIndex( currentNodeIndex, current );
+		tree.getObject( currentNodeIndex, current );
 		final double sc = current.getDoublePosition( sd );
 		final int left = current.getLeftIndex();
 		final int right = current.getRightIndex();

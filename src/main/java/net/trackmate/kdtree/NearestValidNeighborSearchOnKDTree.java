@@ -72,7 +72,7 @@ public final class NearestValidNeighborSearchOnKDTree< O extends Ref< O > & Real
 	private final void searchNode( final int currentNodeIndex, final int d )
 	{
 		// consider the current node
-		tree.getByInternalPoolIndex( currentNodeIndex, node );
+		tree.getObject( currentNodeIndex, node );
 		final double distance = node.squDistanceTo( pos );
 		if ( distance < bestSquDistance && node.isValid() )
 		{
@@ -106,7 +106,7 @@ public final class NearestValidNeighborSearchOnKDTree< O extends Ref< O > & Real
 		if ( bestPointNodeIndex == -1 )
 			return null;
 
-		tree.getByInternalPoolIndex( bestPointNodeIndex, node );
+		tree.getObject( bestPointNodeIndex, node );
 		return node;
 	}
 
@@ -128,8 +128,8 @@ public final class NearestValidNeighborSearchOnKDTree< O extends Ref< O > & Real
 		if ( bestPointNodeIndex == -1 )
 			return null;
 
-		tree.getByInternalPoolIndex( bestPointNodeIndex, node );
-		tree.getObjectPool().getByInternalPoolIndex( node.getDataIndex(), obj );
+		tree.getObject( bestPointNodeIndex, node );
+		tree.getObjectPool().getObject( node.getDataIndex(), obj );
 		return obj;
 	}
 

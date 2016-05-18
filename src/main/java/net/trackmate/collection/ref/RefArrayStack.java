@@ -1,7 +1,6 @@
 package net.trackmate.collection.ref;
 
-import net.trackmate.Ref;
-import net.trackmate.RefPool;
+import net.trackmate.collection.IdBimap;
 import net.trackmate.collection.RefStack;
 import net.trackmate.pool.PoolObject;
 
@@ -15,7 +14,7 @@ import net.trackmate.pool.PoolObject;
  *            recursive type of the {@link PoolObject}s stored in this stack.
  */
 // TODO rename RefArrayStack
-public class RefArrayStack< O extends Ref< O > > extends RefArrayList< O > implements RefStack< O >
+public class RefArrayStack< O > extends RefArrayList< O > implements RefStack< O >
 {
 
 	/*
@@ -28,7 +27,7 @@ public class RefArrayStack< O extends Ref< O > > extends RefArrayList< O > imple
 	 * @param pool
 	 *            the pool to draw objects from in order to build this stack.
 	 */
-	public RefArrayStack( final RefPool< O > pool )
+	public RefArrayStack( final IdBimap< O > pool )
 	{
 		super( pool );
 	}
@@ -41,7 +40,7 @@ public class RefArrayStack< O extends Ref< O > > extends RefArrayList< O > imple
 	 * @param initialCapacity
 	 *            the initial capacity.
 	 */
-	public RefArrayStack( final RefPool< O > pool, final int initialCapacity )
+	public RefArrayStack( final IdBimap< O > pool, final int initialCapacity )
 	{
 		super( pool, initialCapacity );
 	}
@@ -83,9 +82,11 @@ public class RefArrayStack< O extends Ref< O > > extends RefArrayList< O > imple
 	@Override
 	public int search( final Object obj )
 	{
-		if ( !( obj instanceof PoolObject ) ) { return -1; }
-		@SuppressWarnings( "rawtypes" )
-		final int value = ( ( PoolObject ) obj ).getInternalPoolIndex();
+		if ( !( elementType.isInstance( obj ) ) )
+			return -1;
+
+		@SuppressWarnings( "unchecked" )
+		final int value = pool.getId( ( O ) obj );
 		final int index = getIndexCollection().lastIndexOf( value );
 		if ( index < 0 )
 		{

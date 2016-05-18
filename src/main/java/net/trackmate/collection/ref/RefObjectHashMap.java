@@ -8,27 +8,28 @@ import java.util.Set;
 
 import gnu.trove.iterator.TIntObjectIterator;
 import gnu.trove.map.hash.TIntObjectHashMap;
-import net.trackmate.Ref;
-import net.trackmate.RefPool;
+import net.trackmate.collection.IdBimap;
 import net.trackmate.collection.RefObjectMap;
-import net.trackmate.pool.PoolObject;
 
 /**
  * Incomplete!
  * @author Tobias Pietzsch &lt;tobias.pietzsch@gmail.com&gt;
  */
-public class RefObjectHashMap< K extends Ref< K >, O > implements Map< K, O >, RefObjectMap< K, O >
+public class RefObjectHashMap< K, O > implements Map< K, O >, RefObjectMap< K, O >
 {
 	private final TIntObjectHashMap< O > indexmap;
 
-	private final RefPool< K > pool;
+	private final IdBimap< K > pool;
+
+	private final Class< K > keyType;
 
 	private EntrySet entrySet;
 
-	public RefObjectHashMap( final RefPool< K > pool )
+	public RefObjectHashMap( final IdBimap< K > pool )
 	{
 		indexmap = new TIntObjectHashMap< O >();
 		this.pool = pool;
+		this.keyType = pool.getRefClass();
 	}
 
 	@Override
@@ -41,8 +42,8 @@ public class RefObjectHashMap< K extends Ref< K >, O > implements Map< K, O >, R
 	@Override
 	public boolean containsKey( final Object key )
 	{
-		if ( key != null && key instanceof PoolObject )
-			return indexmap.containsKey( ( ( K ) key ).getInternalPoolIndex() );
+		if ( keyType.isInstance( key ) )
+			return indexmap.containsKey( pool.getId( ( K ) key ) );
 		else
 			return false;
 	}
@@ -57,8 +58,8 @@ public class RefObjectHashMap< K extends Ref< K >, O > implements Map< K, O >, R
 	@Override
 	public O get( final Object key )
 	{
-		if ( key != null && key instanceof PoolObject )
-			return indexmap.get( ( ( K ) key ).getInternalPoolIndex() );
+		if ( keyType.isInstance( key ) )
+			return indexmap.get( pool.getId( ( K ) key ) );
 		else
 			return null;
 	}
@@ -72,15 +73,15 @@ public class RefObjectHashMap< K extends Ref< K >, O > implements Map< K, O >, R
 	@Override
 	public O put( final K key, final O value )
 	{
-		return indexmap.put( key.getInternalPoolIndex(), value );
+		return indexmap.put( pool.getId( key ), value );
 	}
 
 	@SuppressWarnings( "unchecked" )
 	@Override
 	public O remove( final Object key )
 	{
-		if ( key != null && key instanceof PoolObject )
-			return indexmap.remove( ( ( K ) key ).getInternalPoolIndex() );
+		if ( keyType.isInstance( key ) )
+			return indexmap.remove( pool.getId( ( K ) key ) );
 		else
 			return null;
 	}
@@ -142,8 +143,7 @@ public class RefObjectHashMap< K extends Ref< K >, O > implements Map< K, O >, R
 				@Override
 				public K getKey()
 				{
-					pool.getByInternalPoolIndex( iter.key(), ref );
-					return ref;
+					return pool.getObject( iter.key(), ref );
 				}
 
 				@Override

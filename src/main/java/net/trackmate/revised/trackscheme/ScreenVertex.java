@@ -155,7 +155,7 @@ public class ScreenVertex extends PoolObject< ScreenVertex, ByteMappedElement >
 		final int idx = getTrackSchemeVertexId();
 		if ( idx >= 0 )
 		{
-			trackSchemeVertexPool.getByInternalPoolIndex( idx, vref );
+			trackSchemeVertexPool.getObject( idx, vref );
 			return vref.getLabel();
 		}
 		else
@@ -329,6 +329,12 @@ public class ScreenVertex extends PoolObject< ScreenVertex, ByteMappedElement >
 			public MemPool.Factory< ByteMappedElement > getMemPoolFactory()
 			{
 				return SingleArrayMemPool.factory( ByteMappedElementArray.factory );
+			}
+
+			@Override
+			public Class< ScreenVertex > getRefClass()
+			{
+				return ScreenVertex.class;
 			}
 		};
 	}

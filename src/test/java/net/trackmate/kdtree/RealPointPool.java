@@ -74,5 +74,11 @@ class RealPointPool extends Pool< RealPoint, ByteMappedElement > implements Eucl
 		{
 			return SingleArrayMemPool.factory( ByteMappedElementArray.factory );
 		}
+
+		@Override
+		public Class< RealPoint > getRefClass()
+		{
+			return RealPoint.class;
+		}
 	}
 }

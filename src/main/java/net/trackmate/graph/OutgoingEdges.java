@@ -32,7 +32,7 @@ public class OutgoingEdges< E extends AbstractEdge< E, ?, ? > > implements Edges
 			while ( edgeIndex >= 0 )
 			{
 				++numEdges;
-				edgePool.getByInternalPoolIndex( edgeIndex, edge );
+				edgePool.getObject( edgeIndex, edge );
 				edgeIndex = edge.getNextSourceEdgeIndex();
 			}
 			edgePool.releaseRef( edge );
@@ -57,11 +57,11 @@ public class OutgoingEdges< E extends AbstractEdge< E, ?, ? > > implements Edges
 	public E get( int i, final E edge )
 	{
 		int edgeIndex = vertex.getFirstOutEdgeIndex();
-		edgePool.getByInternalPoolIndex( edgeIndex, edge );
+		edgePool.getObject( edgeIndex, edge );
 		while( i-- > 0 )
 		{
 			edgeIndex = edge.getNextSourceEdgeIndex();
-			edgePool.getByInternalPoolIndex( edgeIndex, edge );
+			edgePool.getObject( edgeIndex, edge );
 		}
 		return edge;
 
@@ -109,7 +109,7 @@ public class OutgoingEdges< E extends AbstractEdge< E, ?, ? > > implements Edges
 		@Override
 		public E next()
 		{
-			edgePool.getByInternalPoolIndex( edgeIndex, edge );
+			edgePool.getObject( edgeIndex, edge );
 			edgeIndex = edge.getNextSourceEdgeIndex();
 			return edge;
 		}

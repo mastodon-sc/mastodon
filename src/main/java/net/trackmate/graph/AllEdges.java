@@ -35,7 +35,7 @@ public class AllEdges< E extends AbstractEdge< E, ?, ? > > implements Edges< E >
 				while ( inEdgeIndex >= 0 )
 				{
 					++numEdges;
-					edgePool.getByInternalPoolIndex( inEdgeIndex, edge );
+					edgePool.getObject( inEdgeIndex, edge );
 					inEdgeIndex = edge.getNextTargetEdgeIndex();
 				}
 			}
@@ -44,7 +44,7 @@ public class AllEdges< E extends AbstractEdge< E, ?, ? > > implements Edges< E >
 				while ( outEdgeIndex >= 0 )
 				{
 					++numEdges;
-					edgePool.getByInternalPoolIndex( outEdgeIndex, edge );
+					edgePool.getObject( outEdgeIndex, edge );
 					outEdgeIndex = edge.getNextSourceEdgeIndex();
 				}
 			}
@@ -76,7 +76,7 @@ public class AllEdges< E extends AbstractEdge< E, ?, ? > > implements Edges< E >
 			in = false;
 			edgeIndex = vertex.getFirstOutEdgeIndex();
 		}
-		edgePool.getByInternalPoolIndex( edgeIndex, edge );
+		edgePool.getObject( edgeIndex, edge );
 		while( i > 0 )
 		{
 			if ( in )
@@ -90,7 +90,7 @@ public class AllEdges< E extends AbstractEdge< E, ?, ? > > implements Edges< E >
 			}
 			else
 				edgeIndex = edge.getNextSourceEdgeIndex();
-			edgePool.getByInternalPoolIndex( edgeIndex, edge );
+			edgePool.getObject( edgeIndex, edge );
 		}
 		return edge;
 	}
@@ -146,7 +146,7 @@ public class AllEdges< E extends AbstractEdge< E, ?, ? > > implements Edges< E >
 		@Override
 		public E next()
 		{
-			edgePool.getByInternalPoolIndex( edgeIndex, edge );
+			edgePool.getObject( edgeIndex, edge );
 			if ( in )
 			{
 				edgeIndex = edge.getNextTargetEdgeIndex();

@@ -1,15 +1,15 @@
 package net.trackmate.spatial;
 
-import gnu.trove.iterator.TIntObjectIterator;
-import gnu.trove.map.hash.TIntObjectHashMap;
-
 import java.util.Iterator;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
+import gnu.trove.iterator.TIntObjectIterator;
+import gnu.trove.map.hash.TIntObjectHashMap;
 import net.imglib2.RealLocalizable;
 import net.trackmate.Ref;
 import net.trackmate.RefPool;
+import net.trackmate.collection.IdBimap;
 import net.trackmate.collection.RefList;
 import net.trackmate.graph.listenable.GraphListener;
 import net.trackmate.graph.listenable.ListenableGraph;
@@ -50,7 +50,7 @@ public class SpatioTemporalIndexImp<
 
 	private final ListenableGraph< V, E > graph;
 
-	private final RefPool< V > vertexPool;
+	private final IdBimap< V > vertexPool;
 
 	private final Lock readLock;
 
@@ -70,7 +70,7 @@ public class SpatioTemporalIndexImp<
 	 * @param vertexPool
 	 *            the {@link RefPool} of the vertices of the graph.
 	 */
-	public SpatioTemporalIndexImp( final ListenableGraph< V, E > graph, final RefPool< V > vertexPool )
+	public SpatioTemporalIndexImp( final ListenableGraph< V, E > graph, final IdBimap< V > vertexPool )
 	{
 		this.graph = graph;
 		this.vertexPool = vertexPool;

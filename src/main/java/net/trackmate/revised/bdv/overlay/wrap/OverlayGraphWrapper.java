@@ -2,15 +2,15 @@ package net.trackmate.revised.bdv.overlay.wrap;
 
 import java.util.concurrent.ConcurrentLinkedQueue;
 
-import net.trackmate.RefPool;
+import net.trackmate.collection.IdBimap;
 import net.trackmate.collection.RefCollection;
 import net.trackmate.collection.RefList;
 import net.trackmate.collection.ref.RefArrayList;
+import net.trackmate.graph.zzgraphinterfaces.CollectionUtils.ListCreator;
 import net.trackmate.graph.zzgraphinterfaces.Edge;
 import net.trackmate.graph.zzgraphinterfaces.GraphIdBimap;
 import net.trackmate.graph.zzgraphinterfaces.ReadOnlyGraph;
 import net.trackmate.graph.zzgraphinterfaces.Vertex;
-import net.trackmate.graph.zzgraphinterfaces.CollectionUtils.ListCreator;
 import net.trackmate.revised.bdv.overlay.OverlayGraph;
 import net.trackmate.spatial.SpatioTemporalIndex;
 
@@ -119,7 +119,7 @@ public class OverlayGraphWrapper< V extends Vertex< E >, E extends Edge< V > > i
 		return overlayProperties.getMaxBoundingSphereRadiusSquared( timepoint );
 	}
 
-	private final RefPool< OverlayVertexWrapper< V, E > > vertexPool = new RefPool< OverlayVertexWrapper< V, E > >()
+	private final IdBimap< OverlayVertexWrapper< V, E > > vertexPool = new IdBimap< OverlayVertexWrapper< V, E > >()
 	{
 		@Override
 		public OverlayVertexWrapper< V, E > createRef()
@@ -134,13 +134,28 @@ public class OverlayGraphWrapper< V extends Vertex< E >, E extends Edge< V > > i
 		}
 
 		@Override
-		public void getByInternalPoolIndex( final int index, final OverlayVertexWrapper< V, E > v )
+		public OverlayVertexWrapper< V, E > getObject( final int index, final OverlayVertexWrapper< V, E > v )
 		{
 			v.wv = idmap.getVertex( index, v.wv );
+			return v;
+		}
+
+
+		@Override
+		public int getId( final OverlayVertexWrapper< V, E > v )
+		{
+			return idmap.getVertexId( v.wv );
+		}
+
+		@SuppressWarnings( { "unchecked", "rawtypes" } )
+		@Override
+		public Class< OverlayVertexWrapper< V, E > > getRefClass()
+		{
+			return ( Class ) OverlayVertexWrapper.class;
 		}
 	};
 
-	private final RefPool< OverlayEdgeWrapper< V, E > > edgePool = new RefPool< OverlayEdgeWrapper< V, E > >()
+	private final IdBimap< OverlayEdgeWrapper< V, E > > edgePool = new IdBimap< OverlayEdgeWrapper< V, E > >()
 	{
 		@Override
 		public OverlayEdgeWrapper< V, E > createRef()
@@ -155,9 +170,23 @@ public class OverlayGraphWrapper< V extends Vertex< E >, E extends Edge< V > > i
 		}
 
 		@Override
-		public void getByInternalPoolIndex( final int index, final OverlayEdgeWrapper< V, E > e )
+		public OverlayEdgeWrapper< V, E > getObject( final int index, final OverlayEdgeWrapper< V, E > e )
 		{
 			e.we = idmap.getEdge( index, e.we );
+			return e;
+		}
+
+		@Override
+		public int getId( final OverlayEdgeWrapper< V, E > e )
+		{
+			return idmap.getEdgeId( e.we );
+		}
+
+		@SuppressWarnings( { "unchecked", "rawtypes" } )
+		@Override
+		public Class< OverlayEdgeWrapper< V, E > > getRefClass()
+		{
+			return ( Class ) OverlayEdgeWrapper.class;
 		}
 	};
 

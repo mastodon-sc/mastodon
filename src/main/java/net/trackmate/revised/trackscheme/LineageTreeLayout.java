@@ -486,7 +486,7 @@ public class LineageTreeLayout
 		if ( closestVertexIndex < 0 )
 			return null;
 
-		graph.getVertexPool().getByInternalPoolIndex( closestVertexIndex, ref );
+		graph.getVertexPool().getObject( closestVertexIndex, ref );
 		return ref;
 	}
 

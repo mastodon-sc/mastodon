@@ -7,17 +7,17 @@ import net.imglib2.RealInterval;
 import net.imglib2.RealLocalizable;
 import net.imglib2.RealPositionable;
 import net.trackmate.Ref;
-import net.trackmate.RefPool;
+import net.trackmate.collection.IdBimap;
 import net.trackmate.collection.RefRefMap;
 import net.trackmate.collection.ref.RefRefHashMap;
 import net.trackmate.pool.DoubleMappedElement;
 import net.trackmate.pool.DoubleMappedElementArray;
 import net.trackmate.pool.MappedElement;
 import net.trackmate.pool.MemPool;
+import net.trackmate.pool.MemPool.Factory;
 import net.trackmate.pool.Pool;
 import net.trackmate.pool.PoolObject;
 import net.trackmate.pool.SingleArrayMemPool;
-import net.trackmate.pool.MemPool.Factory;
 
 /**
  * KDTree of {@link RealLocalizable} {@link PoolObject PoolObjects}.
@@ -48,7 +48,7 @@ public class KDTree<
 	 * @return the tree.
 	 */
 	public static < O extends Ref< O > & RealLocalizable >
-			KDTree< O, DoubleMappedElement > kdtree( final Collection< O > objects, final RefPool< O > objectPool )
+			KDTree< O, DoubleMappedElement > kdtree( final Collection< O > objects, final IdBimap< O > objectPool )
 	{
 		return kdtree( objects, objectPool, defaultPoolFactory );
 	}
@@ -66,7 +66,7 @@ public class KDTree<
 	 * @return the tree.
 	 */
 	public static < O extends Ref< O > & RealLocalizable, T extends MappedElement >
-			KDTree< O, T > kdtree( final Collection< O > objects, final RefPool< O > objectPool, final MemPool.Factory< T > poolFactory )
+			KDTree< O, T > kdtree( final Collection< O > objects, final IdBimap< O > objectPool, final MemPool.Factory< T > poolFactory )
 	{
 		final KDTree< O, T > kdtree = new NodeFactory< O, T >( objects, objectPool, poolFactory ).kdtree;
 		kdtree.build( objects );
@@ -82,13 +82,13 @@ public class KDTree<
 	public static < O extends Ref< O > & RealLocalizable, T extends MappedElement >
 			RefRefMap< O, KDTreeNode< O, T > > createRefToKDTreeNodeMap( final KDTree< O, T > kdtree )
 	{
-		final RefPool< O > objPool = kdtree.getObjectPool();
+		final IdBimap< O > objPool = kdtree.getObjectPool();
 		final O o = objPool.createRef();
 		final KDTreeNode< O, T > n = kdtree.createRef();
 		final RefRefMap< O, KDTreeNode< O, T > > map = new RefRefHashMap< O, KDTreeNode< O, T > >( objPool, kdtree );
 		for ( final KDTreeNode< O, T > node : kdtree )
 		{
-			objPool.getByInternalPoolIndex( node.getDataIndex(), o );
+			objPool.getObject( node.getDataIndex(), o );
 			map.put( o, node, n );
 		}
 		objPool.releaseRef( o );
@@ -109,7 +109,7 @@ public class KDTree<
 
 		private final MemPool.Factory< T > poolFactory;
 
-		public NodeFactory( final Collection< O > objects, final RefPool< O > objectPool, final MemPool.Factory< T > poolFactory )
+		public NodeFactory( final Collection< O > objects, final IdBimap< O > objectPool, final MemPool.Factory< T > poolFactory )
 		{
 			this.poolFactory = poolFactory;
 			if ( objects.isEmpty() )
@@ -142,9 +142,16 @@ public class KDTree<
 		{
 			return poolFactory;
 		}
+
+		@SuppressWarnings( { "unchecked", "rawtypes" } )
+		@Override
+		public Class< KDTreeNode< O, T > > getRefClass()
+		{
+			return ( Class ) KDTreeNode.class;
+		}
 	};
 
-	private final RefPool< O > objectPool;
+	private final IdBimap< O > objectPool;
 
 	/**
 	 * the number of dimensions.
@@ -168,7 +175,7 @@ public class KDTree<
 			final NodeFactory< O, T > nodeFactory,
 			final int numDimensions,
 			final Collection< O > objects,
-			final RefPool< O > objectPool )
+			final IdBimap< O > objectPool )
 	{
 		super( initialCapacity, nodeFactory );
 		this.n = numDimensions;
@@ -218,7 +225,7 @@ public class KDTree<
 		return null;
 	}
 
-	RefPool< O > getObjectPool()
+	IdBimap< O > getObjectPool()
 	{
 		return objectPool;
 	}
@@ -257,7 +264,7 @@ public class KDTree<
 			final int left = makeNode( i, k - 1, dChild, n1, n2, n3 );
 			final int right = makeNode( k + 1, j, dChild, n1, n2, n3 );
 
-			getByInternalPoolIndex( k, n1 );
+			getObject( k, n1 );
 			n1.setLeftIndex( left );
 			n1.setRightIndex( right );
 			return k;
@@ -265,7 +272,7 @@ public class KDTree<
 		else if ( j == i )
 		{
 			// no left/right children
-			getByInternalPoolIndex( i, n1 );
+			getObject( i, n1 );
 			n1.setLeftIndex( -1 );
 			n1.setRightIndex( -1 );
 			return i;
@@ -349,7 +356,7 @@ public class KDTree<
 	private int partitionSubList( int i, int j, final int compare_d, final KDTreeNode< O, T > pivot, final KDTreeNode< O, T > ti, final KDTreeNode< O, T > tj )
 	{
 		final int pivotIndex = j;
-		getByInternalPoolIndex( j--, pivot );
+		getObject( j--, pivot );
 		final double pivotPosition = pivot.getPosition( compare_d );
 
 		A: while ( true )
@@ -357,7 +364,7 @@ public class KDTree<
 			// move i forward while < pivot (and not at j)
 			while ( i <= j )
 			{
-				getByInternalPoolIndex( i, ti );
+				getObject( i, ti );
 				if ( ti.getPosition( compare_d ) >= pivotPosition )
 					break;
 				++i;
@@ -371,7 +378,7 @@ public class KDTree<
 			// move j backward while >= pivot (and not at i)
 			while ( true )
 			{
-				getByInternalPoolIndex( j, tj );
+				getObject( j, tj );
 				if ( tj.getPosition( compare_d ) < pivotPosition )
 				{
 					// swap [j] with [i]

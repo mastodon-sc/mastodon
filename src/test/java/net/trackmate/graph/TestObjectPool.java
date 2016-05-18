@@ -57,5 +57,11 @@ class TestObjectPool extends Pool< TestObject, ByteMappedElement >
 		{
 			return SingleArrayMemPool.factory( ByteMappedElementArray.factory );
 		}
+
+		@Override
+		public Class< TestObject > getRefClass()
+		{
+			return TestObject.class;
+		}
 	};
 }

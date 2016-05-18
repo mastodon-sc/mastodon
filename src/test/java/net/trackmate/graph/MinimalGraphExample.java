@@ -1,10 +1,5 @@
 package net.trackmate.graph;
 
-import net.trackmate.graph.AbstractEdge;
-import net.trackmate.graph.AbstractEdgePool;
-import net.trackmate.graph.AbstractVertex;
-import net.trackmate.graph.AbstractVertexPool;
-import net.trackmate.graph.GraphImp;
 import net.trackmate.graph.zzgraphinterfaces.Graph;
 import net.trackmate.pool.ByteMappedElement;
 import net.trackmate.pool.ByteMappedElementArray;
@@ -68,6 +63,12 @@ public class MinimalGraphExample
 			{
 				return SingleArrayMemPool.factory( ByteMappedElementArray.factory );
 			}
+
+			@Override
+			public Class< MyVertex > getRefClass()
+			{
+				return MyVertex.class;
+			}
 		};
 	}
 
@@ -104,6 +105,12 @@ public class MinimalGraphExample
 			public MemPool.Factory< ByteMappedElement > getMemPoolFactory()
 			{
 				return SingleArrayMemPool.factory( ByteMappedElementArray.factory );
+			}
+
+			@Override
+			public Class< MyEdge > getRefClass()
+			{
+				return MyEdge.class;
 			}
 		};
 	}

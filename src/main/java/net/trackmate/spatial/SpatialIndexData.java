@@ -11,6 +11,7 @@ import net.imglib2.algorithm.kdtree.HyperPlane;
 import net.imglib2.neighborsearch.NearestNeighborSearch;
 import net.trackmate.Ref;
 import net.trackmate.RefPool;
+import net.trackmate.collection.IdBimap;
 import net.trackmate.collection.RefList;
 import net.trackmate.collection.RefRefMap;
 import net.trackmate.collection.RefSet;
@@ -51,7 +52,7 @@ import net.trackmate.pool.DoubleMappedElement;
 class SpatialIndexData< O extends Ref< O > & RealLocalizable >
 		implements Iterable< O >
 {
-	private final RefPool< O > objPool;
+	private final IdBimap< O > objPool;
 
 	/**
 	 * KDTree of objects that were provided at construction. When changes are
@@ -91,7 +92,7 @@ class SpatialIndexData< O extends Ref< O > & RealLocalizable >
 	 * @param objPool
 	 *            pool for creating refs, collections, etc.
 	 */
-	SpatialIndexData( final Collection< O > objs, final RefPool< O > objPool )
+	SpatialIndexData( final Collection< O > objs, final IdBimap< O > objPool )
 	{
 		this.objPool = objPool;
 		kdtree = KDTree.kdtree( objs, objPool );
@@ -338,7 +339,7 @@ class SpatialIndexData< O extends Ref< O > & RealLocalizable >
 			}
 
 			if ( bestVertexIndex >= 0 )
-				objPool.getByInternalPoolIndex( bestVertexIndex, bestVertex );
+				objPool.getObject( bestVertexIndex, bestVertex );
 		}
 
 		@Override

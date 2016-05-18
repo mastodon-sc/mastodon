@@ -14,6 +14,7 @@ import net.trackmate.pool.PoolObject;
  *
  * @author Tobias Pietzsch &lt;tobias.pietzsch@gmail.com&gt;
  */
+// TODO: This is not necessary anymore, because Pool implements IdBimap directly. Don't use it. Possibly remove it.
 public class RefIdBimap< O extends Ref< O > > implements IdBimap< O >
 {
 	private final RefPool< O > pool;
@@ -32,8 +33,7 @@ public class RefIdBimap< O extends Ref< O > > implements IdBimap< O >
 	@Override
 	public O getObject( final int id, final O ref )
 	{
-		pool.getByInternalPoolIndex( id, ref );
-		return ref;
+		return pool.getObject( id, ref );
 	}
 
 	@Override
@@ -46,5 +46,11 @@ public class RefIdBimap< O extends Ref< O > > implements IdBimap< O >
 	public void releaseRef( final O ref )
 	{
 		pool.releaseRef( ref );
+	}
+
+	@Override
+	public Class< O > getRefClass()
+	{
+		return pool.getRefClass();
 	}
 }

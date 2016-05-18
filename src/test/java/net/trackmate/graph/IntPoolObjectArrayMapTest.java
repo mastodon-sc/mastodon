@@ -49,7 +49,7 @@ public class IntPoolObjectArrayMapTest
 		for ( final int id : storedIds )
 		{
 			final Integer poolIndex = truthMap.get( id );
-			pool.getByInternalPoolIndex( poolIndex, ref );
+			pool.getObject( poolIndex, ref );
 			map.put( id, ref );
 		}
 		pool.releaseRef( ref );
@@ -85,7 +85,7 @@ public class IntPoolObjectArrayMapTest
 
 			final TestVertex vactual = map.get( id );
 			final Integer poolIndex = truthMap.get( id );
-			pool.getByInternalPoolIndex( poolIndex, ref );
+			pool.getObject( poolIndex, ref );
 			assertEquals( "Unexpected mapping for key " + id, ref, vactual );
 		}
 		map.releaseRef( ref );
@@ -101,7 +101,7 @@ public class IntPoolObjectArrayMapTest
 
 			final TestVertex vactual = map.get( id, ref1 );
 			final Integer poolIndex = truthMap.get( id );
-			pool.getByInternalPoolIndex( poolIndex, ref2 );
+			pool.getObject( poolIndex, ref2 );
 			assertEquals( "Unexpected mapping for key " + id, ref2, vactual );
 		}
 		map.releaseRef( ref1 );
@@ -128,7 +128,7 @@ public class IntPoolObjectArrayMapTest
 
 		final Integer poolIndex = truthMap.get( key );
 		final TestVertex ref = map.createRef();
-		pool.getByInternalPoolIndex( poolIndex, ref );
+		pool.getObject( poolIndex, ref );
 		final TestVertex put = map.put( key, ref );
 		map.releaseRef( ref );
 		assertNull( "There should not be a previous mapping for key " + key, put );
@@ -144,7 +144,7 @@ public class IntPoolObjectArrayMapTest
 		final Integer poolIndex = truthMap.get( key );
 		final TestVertex ref1 = map.createRef();
 		final TestVertex ref2 = map.createRef();
-		pool.getByInternalPoolIndex( poolIndex, ref1 );
+		pool.getObject( poolIndex, ref1 );
 		final TestVertex put = map.put( key, ref1, ref2 );
 		map.releaseRef( ref1 );
 		map.releaseRef( ref2 );
@@ -196,7 +196,7 @@ public class IntPoolObjectArrayMapTest
 		for ( final int add : toAdd )
 		{
 			final int poolIndex = truthMap.get( add );
-			pool.getByInternalPoolIndex( poolIndex, ref1 );
+			pool.getObject( poolIndex, ref1 );
 			map.put( add, ref1, ref2 );
 		}
 		map.releaseRef( ref1 );
@@ -236,7 +236,7 @@ public class IntPoolObjectArrayMapTest
 		for ( final int id : storedIds )
 		{
 			final Integer poolIndex = truthMap.get( id );
-			pool.getByInternalPoolIndex( poolIndex, ref );
+			pool.getObject( poolIndex, ref );
 			assertTrue( "Map should contain the value " + ref, map.containsValue( ref ) );
 		}
 		Arrays.sort( storedIds );
@@ -245,7 +245,7 @@ public class IntPoolObjectArrayMapTest
 			if ( Arrays.binarySearch( storedIds, id ) < 0 )
 			{
 				final Integer poolIndex = truthMap.get( id );
-				pool.getByInternalPoolIndex( poolIndex, ref );
+				pool.getObject( poolIndex, ref );
 				assertFalse( "Map should not contain the value " + ref, map.containsValue( ref ) );
 			}
 		}
@@ -268,7 +268,7 @@ public class IntPoolObjectArrayMapTest
 		assertNotNull( "There was a mapping for index " + existingMapping + " before; returned object should not be null.", absent2 );
 
 		final Integer poolIndex = truthMap.get( existingMapping );
-		pool.getByInternalPoolIndex( poolIndex, ref1 );
+		pool.getObject( poolIndex, ref1 );
 		assertEquals( "Returned object by putIfAbsent is unexpected.", ref1, absent2 );
 
 		pool.releaseRef( ref1 );
@@ -292,7 +292,7 @@ public class IntPoolObjectArrayMapTest
 		assertNotNull( "There was a mapping for index " + existingMapping + " before; returned object should not be null.", absent2 );
 
 		final Integer poolIndex = truthMap.get( existingMapping );
-		pool.getByInternalPoolIndex( poolIndex, ref1 );
+		pool.getObject( poolIndex, ref1 );
 		assertEquals( "Returned object by putIfAbsent is unexpected.", ref1, absent2 );
 
 		pool.releaseRef( ref1 );
@@ -418,7 +418,7 @@ public class IntPoolObjectArrayMapTest
 		{
 			final int key = storedIds[ index++ ];
 			final int poolIndex = truthMap.get( key );
-			pool.getByInternalPoolIndex( poolIndex, ref );
+			pool.getObject( poolIndex, ref );
 
 			it.advance();
 			assertEquals( "Iterator returns unexpected key.", key, it.key() );

@@ -46,7 +46,7 @@ public class IntPoolObjectMapValuesCollectionTest
 		for ( final int id : storedIds )
 		{
 			final Integer poolIndex = truthMap.get( id );
-			pool.getByInternalPoolIndex( poolIndex, ref );
+			pool.getObject( poolIndex, ref );
 			map.put( id, ref );
 		}
 		pool.releaseRef( ref );
@@ -87,13 +87,13 @@ public class IntPoolObjectMapValuesCollectionTest
 		for ( final int id : storedIds )
 		{
 			final Integer poolIndex = truthMap.get( id );
-			pool.getByInternalPoolIndex( poolIndex, ref );
+			pool.getObject( poolIndex, ref );
 			assertTrue( "ValueCollection should contain the object " + ref, valueCollection.contains( ref ) );
 		}
 		for ( final int id : new int[] { 0, 1, 4, 5, 7, 9 } )
 		{
 			final Integer poolIndex = truthMap.get( id );
-			pool.getByInternalPoolIndex( poolIndex, ref );
+			pool.getObject( poolIndex, ref );
 			assertFalse( "ValueCollection should not contain the object " + ref, valueCollection.contains( ref ) );
 		}
 	}
@@ -266,7 +266,7 @@ public class IntPoolObjectMapValuesCollectionTest
 		for ( final int key : keys )
 		{
 			final int poolIndex = truthMap.get( key );
-			pool.getByInternalPoolIndex( poolIndex, ref );
+			pool.getObject( poolIndex, ref );
 			set.add( ref );
 		}
 		return set;

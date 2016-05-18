@@ -21,11 +21,20 @@ public interface RefPool< O >
 	/**
 	 * Make {@code obj} refer to the object at {@code index} in the pool.
 	 *
-	 * @param index
+	 * @param id
 	 *            internal pool index.
 	 * @param obj
 	 *            reference that will refer to object at {@code index} when the
 	 *            method returns.
 	 */
-	public void getByInternalPoolIndex( final int index, final O obj );
+	public O getObject( final int id, final O obj );
+
+	/**
+	 * TODO javadoc
+	 *
+	 * TODO rename?
+	 *
+	 * @return
+	 */
+	public Class< O > getRefClass();
 }

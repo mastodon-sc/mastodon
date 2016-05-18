@@ -89,7 +89,7 @@ public class AbstractEdge< E extends AbstractEdge< E, V, T >, V extends Abstract
 	@Override
 	public V getSource( final V vertex )
 	{
-		vertexPool.getByInternalPoolIndex( getSourceVertexInternalPoolIndex(), vertex );
+		vertexPool.getObject( getSourceVertexInternalPoolIndex(), vertex );
 		return vertex;
 	}
 
@@ -118,7 +118,7 @@ public class AbstractEdge< E extends AbstractEdge< E, V, T >, V extends Abstract
 	@Override
 	public V getTarget( final V vertex )
 	{
-		vertexPool.getByInternalPoolIndex( getTargetVertexInternalPoolIndex(), vertex );
+		vertexPool.getObject( getTargetVertexInternalPoolIndex(), vertex );
 		return vertex;
 	}
 

@@ -78,7 +78,7 @@ public class KDTreeBenchmark
 		for ( int i = 0; i < numInvalidDataVertices; ++i )
 		{
 			final int j = rnd.nextInt( kdtree.size() );
-			kdtree.getByInternalPoolIndex( j, node );
+			kdtree.getObject( j, node );
 			node.setValid( false );
 		}
 	}

@@ -17,7 +17,7 @@ import gnu.trove.procedure.TIntProcedure;
 import gnu.trove.procedure.TObjectProcedure;
 import gnu.trove.set.TIntSet;
 import net.trackmate.Ref;
-import net.trackmate.RefPool;
+import net.trackmate.collection.IdBimap;
 import net.trackmate.collection.IntRefMap;
 
 
@@ -37,20 +37,23 @@ import net.trackmate.collection.IntRefMap;
  * @author Tobias Pietzsch &lt;tobias.pietzsch@gmail.com&gt;
  * @author Jean-Yves Tinevez &lt;jeanyves.tinevez@gmail.com&gt;
  */
-public class IntRefHashMap< V extends Ref< V > > implements IntRefMap< V >
+public class IntRefHashMap< V > implements IntRefMap< V >
 {
 	private final TIntIntMap keyToIndexMap;
 
-	private final RefPool< V > pool;
+	private final IdBimap< V > pool;
 
-	public IntRefHashMap( final RefPool< V > pool, final int noEntryKey )
+	private final Class< V > valueType;
+
+	public IntRefHashMap( final IdBimap< V > pool, final int noEntryKey )
 	{
 		this( pool, noEntryKey, Constants.DEFAULT_CAPACITY );
 	}
 
-	public IntRefHashMap( final RefPool< V> pool, final int noEntryKey, final int initialCapacity )
+	public IntRefHashMap( final IdBimap< V > pool, final int noEntryKey, final int initialCapacity )
 	{
 		this.pool = pool;
+		valueType = pool.getRefClass();
 		keyToIndexMap = new TIntIntHashMap( initialCapacity, Constants.DEFAULT_LOAD_FACTOR, noEntryKey, -1 )
 		{
 			// We need to do this to honor exactly the contract on toArray(int[]).
@@ -103,10 +106,7 @@ public class IntRefHashMap< V extends Ref< V > > implements IntRefMap< V >
 	{
 		final int index = keyToIndexMap.get( key );
 		if ( index >= 0 )
-		{
-			pool.getByInternalPoolIndex( index, obj );
-			return obj;
-		}
+			return pool.getObject( index, obj );
 		else
 			return null;
 	}
@@ -126,12 +126,9 @@ public class IntRefHashMap< V extends Ref< V > > implements IntRefMap< V >
 	@Override
 	public V put( final int key, final V obj, final V replacedObj )
 	{
-		final int old = keyToIndexMap.put( key, obj.getInternalPoolIndex() );
+		final int old = keyToIndexMap.put( key, pool.getId( obj ) );
 		if ( old >= 0 )
-		{
-			pool.getByInternalPoolIndex( old, replacedObj );
-			return replacedObj;
-		}
+			return pool.getObject( old, replacedObj );
 		else
 			return null;
 	}
@@ -147,10 +144,7 @@ public class IntRefHashMap< V extends Ref< V > > implements IntRefMap< V >
 	{
 		final int old = keyToIndexMap.remove( key );
 		if ( old >= 0 )
-		{
-			pool.getByInternalPoolIndex( old, obj );
-			return obj;
-		}
+			return pool.getObject( old, obj );
 		else
 			return null;
 	}
@@ -173,11 +167,12 @@ public class IntRefHashMap< V extends Ref< V > > implements IntRefMap< V >
 		return keyToIndexMap.containsKey( key );
 	}
 
+	@SuppressWarnings( "unchecked" )
 	@Override
 	public boolean containsValue( final Object value )
 	{
-		if ( value != null && value instanceof Ref )
-			return keyToIndexMap.containsValue( ( ( Ref< ? > ) value ).getInternalPoolIndex() );
+		if ( valueType.isInstance( value ) )
+			return keyToIndexMap.containsValue( pool.getId( ( V ) value ) );
 		else
 			return false;
 	}
@@ -191,12 +186,9 @@ public class IntRefHashMap< V extends Ref< V > > implements IntRefMap< V >
 	@Override
 	public V putIfAbsent( final int key, final V value, final V obj )
 	{
-		final int replaced = keyToIndexMap.putIfAbsent( key, value.getInternalPoolIndex() );
+		final int replaced = keyToIndexMap.putIfAbsent( key, pool.getId( value ) );
 		if ( replaced >= 0 )
-		{
-			pool.getByInternalPoolIndex( replaced, obj );
-			return obj;
-		}
+			return pool.getObject( replaced, obj );
 		else
 			return null;
 	}
@@ -298,8 +290,7 @@ public class IntRefHashMap< V extends Ref< V > > implements IntRefMap< V >
 			public V value()
 			{
 				final int poolIndex = it.value();
-				pool.getByInternalPoolIndex( poolIndex, ref );
-				return ref;
+				return pool.getObject( poolIndex, ref );
 			}
 
 			@Override
@@ -391,11 +382,12 @@ public class IntRefHashMap< V extends Ref< V > > implements IntRefMap< V >
 			return IntRefHashMap.this.isEmpty();
 		}
 
+		@SuppressWarnings( "unchecked" )
 		@Override
 		public boolean contains( final Object value )
 		{
-			if ( value != null && value instanceof Ref )
-				return keyToIndexMap.containsValue( ( ( Ref< ? > ) value ).getInternalPoolIndex() );
+			if ( valueType.isInstance( value ) )
+				return keyToIndexMap.containsValue( pool.getId( ( V ) value ) );
 			else
 				return false;
 		}
@@ -419,8 +411,7 @@ public class IntRefHashMap< V extends Ref< V > > implements IntRefMap< V >
 				public V next()
 				{
 					final int poolIndex = it.next();
-					pool.getByInternalPoolIndex( poolIndex, ref );
-					return ref;
+					return pool.getObject( poolIndex, ref );
 				}
 
 				@Override

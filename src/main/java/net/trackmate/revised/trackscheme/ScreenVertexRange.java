@@ -141,6 +141,12 @@ public class ScreenVertexRange extends PoolObject< ScreenVertexRange, ByteMapped
 			{
 				return SingleArrayMemPool.factory( ByteMappedElementArray.factory );
 			}
+
+			@Override
+			public Class< ScreenVertexRange > getRefClass()
+			{
+				return ScreenVertexRange.class;
+			}
 		};
 	}
 }

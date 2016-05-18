@@ -239,7 +239,7 @@ public abstract class AbstractTrackSchemeOverlay implements OverlayRenderer, Off
 			if ( i < 0 )
 				return null;
 
-			graph.getEdgePool().getByInternalPoolIndex( i, ref );
+			graph.getEdgePool().getObject( i, ref );
 			return ref;
 		}
 	}
@@ -290,7 +290,7 @@ public abstract class AbstractTrackSchemeOverlay implements OverlayRenderer, Off
 
 			if ( iBest >= 0 )
 			{
-				graph.getVertexPool().getByInternalPoolIndex( iBest, ref );
+				graph.getVertexPool().getObject( iBest, ref );
 				return ref;
 			}
 

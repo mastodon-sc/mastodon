@@ -13,12 +13,10 @@ import gnu.trove.map.hash.TIntIntHashMap;
 import gnu.trove.procedure.TIntProcedure;
 import gnu.trove.procedure.TObjectIntProcedure;
 import gnu.trove.procedure.TObjectProcedure;
-import net.trackmate.Ref;
-import net.trackmate.RefPool;
+import net.trackmate.collection.IdBimap;
 import net.trackmate.collection.RefIntMap;
-import net.trackmate.pool.PoolObject;
 
-public class RefIntHashMap< K extends Ref< K > > implements RefIntMap< K >
+public class RefIntHashMap< K > implements RefIntMap< K >
 {
 	private static final int NO_ENTRY_KEY = -1;
 
@@ -26,19 +24,22 @@ public class RefIntHashMap< K extends Ref< K > > implements RefIntMap< K >
 
 	private final TIntIntHashMap indexmap;
 
-	private final RefPool< K > pool;
+	private final IdBimap< K > pool;
+
+	private final Class< K > keyType;
 
 	/*
 	 * CONSTRUCTORS
 	 */
 
-	public RefIntHashMap( final RefPool< K > pool, final int noEntryValue, final int initialCapacity )
+	public RefIntHashMap( final IdBimap< K > pool, final int noEntryValue, final int initialCapacity )
 	{
 		this.pool = pool;
+		this.keyType = pool.getRefClass();
 		this.indexmap = new TIntIntHashMap( initialCapacity, DEFAULT_LOAD_FACTOR, NO_ENTRY_KEY, noEntryValue );
 	}
 
-	public RefIntHashMap( final RefPool< K > pool, final int noEntryValue )
+	public RefIntHashMap( final IdBimap< K > pool, final int noEntryValue )
 	{
 		this( pool, noEntryValue, Constants.DEFAULT_CAPACITY );
 	}
@@ -57,8 +58,8 @@ public class RefIntHashMap< K extends Ref< K > > implements RefIntMap< K >
 	@Override
 	public boolean containsKey( final Object key )
 	{
-		if ( key != null && key instanceof PoolObject )
-			return indexmap.containsKey( ( ( K ) key ).getInternalPoolIndex() );
+		if ( keyType.isInstance( key ) )
+			return indexmap.containsKey( pool.getId( ( K ) key ) );
 		else
 			return false;
 	}
@@ -73,8 +74,8 @@ public class RefIntHashMap< K extends Ref< K > > implements RefIntMap< K >
 	@Override
 	public int get( final Object key )
 	{
-		if ( key != null && key instanceof PoolObject )
-			return indexmap.get( ( ( K ) key ).getInternalPoolIndex() );
+		if ( keyType.isInstance( key ) )
+			return indexmap.get( pool.getId( ( K ) key ) );
 		else
 			return indexmap.getNoEntryValue();
 	}
@@ -94,13 +95,13 @@ public class RefIntHashMap< K extends Ref< K > > implements RefIntMap< K >
 	@Override
 	public int put( final K key, final int value )
 	{
-		return indexmap.put( key.getInternalPoolIndex(), value );
+		return indexmap.put( pool.getId( key ), value );
 	}
 
 	@Override
 	public int putIfAbsent( final K key, final int value )
 	{
-		return indexmap.putIfAbsent( key.getInternalPoolIndex(), value );
+		return indexmap.putIfAbsent( pool.getId( key ), value );
 	}
 
 	@Override
@@ -108,7 +109,7 @@ public class RefIntHashMap< K extends Ref< K > > implements RefIntMap< K >
 	{
 		for ( final Map.Entry< ? extends K, ? extends Integer > entry : map.entrySet() )
 		{
-            indexmap.put( entry.getKey().getInternalPoolIndex(), entry.getValue().intValue() );
+            indexmap.put( pool.getId( entry.getKey() ), entry.getValue().intValue() );
 		}
 	}
 
@@ -116,8 +117,8 @@ public class RefIntHashMap< K extends Ref< K > > implements RefIntMap< K >
 	@Override
 	public int remove( final Object key )
 	{
-		if ( key != null && key instanceof PoolObject )
-			return indexmap.remove( ( ( K ) key ).getInternalPoolIndex() );
+		if ( keyType.isInstance( key ) )
+			return indexmap.remove( pool.getId( ( K ) key ) );
 		else
 			return indexmap.getNoEntryValue();
 	}
@@ -180,25 +181,25 @@ public class RefIntHashMap< K extends Ref< K > > implements RefIntMap< K >
 	@Override
 	public TObjectIntIterator< K > iterator()
 	{
-		return new PoolObjectIntIterator();
+		return new RefIntIterator();
 	}
 
 	@Override
 	public boolean increment( final K key )
 	{
-		return indexmap.increment( key.getInternalPoolIndex() );
+		return indexmap.increment( pool.getId( key ) );
 	}
 
 	@Override
 	public boolean adjustValue( final K key, final int amount )
 	{
-		return indexmap.adjustValue( key.getInternalPoolIndex(), amount );
+		return indexmap.adjustValue( pool.getId( key ), amount );
 	}
 
 	@Override
 	public int adjustOrPutValue( final K key, final int adjust_amount, final int put_amount )
 	{
-		return indexmap.adjustOrPutValue( key.getInternalPoolIndex(), adjust_amount, put_amount );
+		return indexmap.adjustOrPutValue( pool.getId( key ), adjust_amount, put_amount );
 	}
 
 	@Override
@@ -206,8 +207,9 @@ public class RefIntHashMap< K extends Ref< K > > implements RefIntMap< K >
 	{
 		for ( final int id : indexmap.keys() )
 		{
-			pool.getByInternalPoolIndex( id, ref );
-			if ( !procedure.execute( ref ) ) { return false; }
+			final K key = pool.getObject( id, ref );
+			if ( !procedure.execute( key ) )
+				return false;
 		}
 		return true;
 	}
@@ -230,8 +232,10 @@ public class RefIntHashMap< K extends Ref< K > > implements RefIntMap< K >
 	{
 		for ( final int id : indexmap.keys() )
 		{
-			pool.getByInternalPoolIndex( id, ref );
-			if ( !procedure.execute( ref, indexmap.get( ref.getInternalPoolIndex() ) ) ) { return false; }
+			final K key = pool.getObject( id, ref );
+			final int value = indexmap.get( id );
+			if ( !procedure.execute( key, value ) )
+				return false;
 		}
 		return true;
 	}
@@ -255,8 +259,9 @@ public class RefIntHashMap< K extends Ref< K > > implements RefIntMap< K >
 		boolean modified = false;
 		for ( final int id : indexmap.keys() )
 		{
-			pool.getByInternalPoolIndex( id, ref );
-			if ( !procedure.execute( ref, indexmap.get( ref.getInternalPoolIndex() ) ) )
+			final K key = pool.getObject( id, ref );
+			final int value = indexmap.get( id );
+			if ( !procedure.execute( key, value ) )
 			{
 				remove( ref );
 				modified = true;
@@ -288,14 +293,14 @@ public class RefIntHashMap< K extends Ref< K > > implements RefIntMap< K >
 	 * INNER CLASSES
 	 */
 
-	private class PoolObjectIntIterator implements TObjectIntIterator< K >
+	private class RefIntIterator implements TObjectIntIterator< K >
 	{
 
 		private final TIntIntIterator it;
 
 		private final K obj;
 
-		public PoolObjectIntIterator()
+		public RefIntIterator()
 		{
 			this.it = indexmap.iterator();
 			this.obj = createRef();
@@ -323,8 +328,7 @@ public class RefIntHashMap< K extends Ref< K > > implements RefIntMap< K >
 		public K key()
 		{
 			final int id = it.key();
-			pool.getByInternalPoolIndex( id, obj );
-			return obj;
+			return pool.getObject( id, obj );
 		}
 
 		@Override

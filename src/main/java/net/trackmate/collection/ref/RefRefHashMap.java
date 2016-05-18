@@ -7,12 +7,10 @@ import java.util.Set;
 
 import gnu.trove.iterator.TIntIterator;
 import gnu.trove.map.hash.TIntIntHashMap;
-import net.trackmate.Ref;
-import net.trackmate.RefPool;
+import net.trackmate.collection.IdBimap;
 import net.trackmate.collection.RefRefMap;
-import net.trackmate.pool.PoolObject;
 
-public class RefRefHashMap< K extends Ref< K >, L extends Ref< L > > implements RefRefMap< K, L >
+public class RefRefHashMap< K, L > implements RefRefMap< K, L >
 {
 	/**
 	 * Int value used to declare that the requested key is not in the map.
@@ -28,27 +26,33 @@ public class RefRefHashMap< K extends Ref< K >, L extends Ref< L > > implements 
 
 	private final TIntIntHashMap indexmap;
 
-	private final RefPool< K > keyPool;
+	private final IdBimap< K > keyPool;
 
-	private final RefPool< L > valuePool;
+	private final IdBimap< L > valuePool;
+
+	private final Class< K > keyType;
+
+	private final Class< L > valueType;
 
 	/*
 	 * CONSTRUCTORS
 	 */
 
-	public RefRefHashMap( final RefPool< K > keyPool, final RefPool< L > valuePool, final int initialCapacity, final float loadFactor )
+	public RefRefHashMap( final IdBimap< K > keyPool, final IdBimap< L > valuePool, final int initialCapacity, final float loadFactor )
 	{
 		this.indexmap = new TIntIntHashMap( initialCapacity, loadFactor, NO_ENTRY_KEY, NO_ENTRY_VALUE );
 		this.keyPool = keyPool;
 		this.valuePool = valuePool;
+		this.keyType = keyPool.getRefClass();
+		this.valueType = valuePool.getRefClass();
 	}
 
-	public RefRefHashMap( final RefPool< K > keyPool, final RefPool< L > valuePool, final int initialCapacity )
+	public RefRefHashMap( final IdBimap< K > keyPool, final IdBimap< L > valuePool, final int initialCapacity )
 	{
 		this( keyPool, valuePool, initialCapacity, 0.5f );
 	}
 
-	public RefRefHashMap( final RefPool< K > keyPool, final RefPool< L > valuePool )
+	public RefRefHashMap( final IdBimap< K > keyPool, final IdBimap< L > valuePool )
 	{
 		this( keyPool, valuePool, 10 );
 	}
@@ -67,8 +71,8 @@ public class RefRefHashMap< K extends Ref< K >, L extends Ref< L > > implements 
 	@Override
 	public boolean containsKey( final Object key )
 	{
-		if ( key != null && key instanceof PoolObject )
-			return indexmap.containsKey( ( ( K ) key ).getInternalPoolIndex() );
+		if ( keyType.isInstance( key ) )
+			return indexmap.containsKey( keyPool.getId( ( K ) key ) );
 		else
 			return false;
 	}
@@ -77,15 +81,16 @@ public class RefRefHashMap< K extends Ref< K >, L extends Ref< L > > implements 
 	@Override
 	public boolean containsValue( final Object value )
 	{
-		if ( value != null && value instanceof PoolObject )
-			return indexmap.containsValue( ( ( L ) value ).getInternalPoolIndex() );
+		if ( valueType.isInstance( value ) )
+			return indexmap.containsValue( valuePool.getId( ( L ) value ) );
 		else
 			return false;
 	}
 
 	@Override
-	public Set< java.util.Map.Entry< K, L >> entrySet()
+	public Set< Entry< K, L > > entrySet()
 	{
+		// TODO implement
 		throw new UnsupportedOperationException();
 	}
 
@@ -98,18 +103,14 @@ public class RefRefHashMap< K extends Ref< K >, L extends Ref< L > > implements 
 	@Override
 	public L get( final Object key, final L ref )
 	{
-		if ( key != null && key instanceof PoolObject )
+		if ( keyType.isInstance( key ) )
 		{
 			@SuppressWarnings( "unchecked" )
-			final int index = indexmap.get( ( ( K ) key ).getInternalPoolIndex() );
-			if ( index == NO_ENTRY_VALUE ) { return null; }
-			valuePool.getByInternalPoolIndex( index, ref );
-			return ref;
+			final int index = indexmap.get( keyPool.getId( ( K ) key ) );
+			if ( index != NO_ENTRY_VALUE )
+				return valuePool.getObject( index, ref );
 		}
-		else
-		{
-			return null;
-		}
+		return null;
 	}
 
 	@Override
@@ -127,10 +128,11 @@ public class RefRefHashMap< K extends Ref< K >, L extends Ref< L > > implements 
 	@Override
 	public L put( final K key, final L value, final L ref )
 	{
-		final int index = indexmap.put( key.getInternalPoolIndex(), value.getInternalPoolIndex() );
-		if ( index == NO_ENTRY_VALUE ) { return null; }
-		valuePool.getByInternalPoolIndex( index, ref );
-		return ref;
+		final int index = indexmap.put( keyPool.getId( key ), valuePool.getId( value ) );
+		if ( index != NO_ENTRY_VALUE )
+			return valuePool.getObject( index, ref );
+		else
+			return null;
 	}
 
 	@Override
@@ -139,6 +141,7 @@ public class RefRefHashMap< K extends Ref< K >, L extends Ref< L > > implements 
 		return put( key, value, valuePool.createRef() );
 	}
 
+	// TODO revise after implementing entrySet()
 	@Override
 	public void putAll( final Map< ? extends K, ? extends L > m )
 	{
@@ -146,10 +149,10 @@ public class RefRefHashMap< K extends Ref< K >, L extends Ref< L > > implements 
 		{
 			@SuppressWarnings( "unchecked" )
 			final RefRefMap< K, L > rm = ( RefRefMap< K, L > ) m;
-			final L ref = rm.createValueRef();
+			final L ref = createValueRef();
 			for ( final K key : rm.keySet() )
 			{
-				indexmap.put( key.getInternalPoolIndex(), rm.get( key, ref ).getInternalPoolIndex() );
+				indexmap.put( keyPool.getId( key ), valuePool.getId( rm.get( key, ref ) ) );
 			}
 			rm.releaseValueRef( ref );
 		}
@@ -157,7 +160,7 @@ public class RefRefHashMap< K extends Ref< K >, L extends Ref< L > > implements 
 		{
 			for ( final K key : m.keySet() )
 			{
-				indexmap.put( key.getInternalPoolIndex(), m.get( key ).getInternalPoolIndex() );
+				indexmap.put( keyPool.getId( key ), valuePool.getId( m.get( key ) ) );
 			}
 		}
 	}
@@ -165,18 +168,14 @@ public class RefRefHashMap< K extends Ref< K >, L extends Ref< L > > implements 
 	@Override
 	public L removeWithRef( final Object key, final L ref )
 	{
-		if ( key != null && key instanceof PoolObject )
+		if ( keyType.isInstance( key ) )
 		{
 			@SuppressWarnings( "unchecked" )
-			final int index = indexmap.remove( ( ( K ) key ).getInternalPoolIndex() );
-			if ( index == NO_ENTRY_VALUE ) { return null; }
-			valuePool.getByInternalPoolIndex( index, ref );
-			return ref;
+			final int index = indexmap.remove( keyPool.getId( ( K ) key ) );
+			if ( index != NO_ENTRY_VALUE )
+				return valuePool.getObject( index, ref );
 		}
-		else
-		{
-			return null;
-		}
+		return null;
 	}
 
 	@Override
@@ -221,6 +220,7 @@ public class RefRefHashMap< K extends Ref< K >, L extends Ref< L > > implements 
 		valuePool.releaseRef( obj );
 	}
 
+	// TODO revise after implementing entrySet()
 	@Override
 	public String toString()
 	{
@@ -313,8 +313,7 @@ public class RefRefHashMap< K extends Ref< K >, L extends Ref< L > > implements 
 				public L next()
 				{
 					final int index = it.next();
-					valuePool.getByInternalPoolIndex( index, ref );
-					return ref;
+					return valuePool.getObject( index, ref );
 				}
 
 				@Override
@@ -329,10 +328,10 @@ public class RefRefHashMap< K extends Ref< K >, L extends Ref< L > > implements 
 		@Override
 		public boolean remove( final Object value )
 		{
-			if ( value != null && value instanceof PoolObject )
+			if ( valueType.isInstance( value ) )
 			{
 				return indexmap.valueCollection().remove(
-						( ( L ) value ).getInternalPoolIndex() );
+						valuePool.getId( ( L ) value ) );
 			}
 			else
 			{
@@ -379,11 +378,7 @@ public class RefRefHashMap< K extends Ref< K >, L extends Ref< L > > implements 
 			final int[] indices = indexmap.values();
 			final Object[] obj = new Object[ indices.length ];
 			for ( int i = 0; i < obj.length; i++ )
-			{
-				final L ref = createValueRef();
-				valuePool.getByInternalPoolIndex( indices[ i ], ref );
-				obj[ i ] = ref;
-			}
+				obj[ i ] = valuePool.getObject( indices[ i ], createValueRef() );
 			return obj;
 		}
 
@@ -395,15 +390,9 @@ public class RefRefHashMap< K extends Ref< K >, L extends Ref< L > > implements 
 
 			final int[] indices = indexmap.values();
 			for ( int i = 0; i < indices.length; i++ )
-			{
-				final L ref = createValueRef();
-				valuePool.getByInternalPoolIndex( indices[ i ], ref );
-				a[ i ] = ( T ) ref;
-			}
+				a[ i ] = ( T ) valuePool.getObject( indices[ i ], createValueRef() );
 			for ( int i = indices.length; i < a.length; i++ )
-			{
 				a[ i ] = null;
-			}
 			return a;
 		}
 	}

@@ -41,11 +41,11 @@ public class AbstractEdgePool<
 		else
 		{
 			// source has outgoing edges. Append this one to the end of the linked list.
-			getByInternalPoolIndex( sourceOutIndex, tmp );
+			getObject( sourceOutIndex, tmp );
 			int nextSourceEdgeIndex = tmp.getNextSourceEdgeIndex();
 			while( nextSourceEdgeIndex >= 0 )
 			{
-				getByInternalPoolIndex( nextSourceEdgeIndex, tmp );
+				getObject( nextSourceEdgeIndex, tmp );
 				nextSourceEdgeIndex = tmp.getNextSourceEdgeIndex();
 			}
 			tmp.setNextSourceEdgeIndex( edge.getInternalPoolIndex() );
@@ -60,11 +60,11 @@ public class AbstractEdgePool<
 		else
 		{
 			// target has incoming edges. Append this one to the end of the linked list.
-			getByInternalPoolIndex( targetInIndex, tmp );
+			getObject( targetInIndex, tmp );
 			int nextTargetEdgeIndex = tmp.getNextTargetEdgeIndex();
 			while( nextTargetEdgeIndex >= 0 )
 			{
-				getByInternalPoolIndex( nextTargetEdgeIndex, tmp );
+				getObject( nextTargetEdgeIndex, tmp );
 				nextTargetEdgeIndex = tmp.getNextTargetEdgeIndex();
 			}
 			tmp.setNextTargetEdgeIndex( edge.getInternalPoolIndex() );
@@ -89,7 +89,7 @@ public class AbstractEdgePool<
 		int insertIndex = 0;
 		while( nextSourceEdgeIndex >= 0 && insertIndex < sourceOutInsertAt )
 		{
-			getByInternalPoolIndex( nextSourceEdgeIndex, tmp );
+			getObject( nextSourceEdgeIndex, tmp );
 			nextSourceEdgeIndex = tmp.getNextSourceEdgeIndex();
 			++insertIndex;
 		}
@@ -105,7 +105,7 @@ public class AbstractEdgePool<
 		insertIndex = 0;
 		while( nextTargetEdgeIndex >= 0 && insertIndex < targetInInsertAt )
 		{
-			getByInternalPoolIndex( nextTargetEdgeIndex, tmp );
+			getObject( nextTargetEdgeIndex, tmp );
 			nextTargetEdgeIndex = tmp.getNextTargetEdgeIndex();
 			++insertIndex;
 		}
@@ -125,12 +125,12 @@ public class AbstractEdgePool<
 		int nextSourceEdgeIndex = source.getFirstOutEdgeIndex();
 		if ( nextSourceEdgeIndex < 0 )
 			return null;
-		getByInternalPoolIndex( nextSourceEdgeIndex, edge );
+		getObject( nextSourceEdgeIndex, edge );
 		do
 		{
 			if ( edge.getTargetVertexInternalPoolIndex() == target.getInternalPoolIndex() )
 				return edge;
-			getByInternalPoolIndex( nextSourceEdgeIndex, edge );
+			getObject( nextSourceEdgeIndex, edge );
 			nextSourceEdgeIndex = edge.getNextSourceEdgeIndex();
 		}
 		while ( nextSourceEdgeIndex >= 0 );
@@ -148,7 +148,7 @@ public class AbstractEdgePool<
 		vertex.setFirstOutEdgeIndex( -1 );
 		while ( index >= 0 )
 		{
-			getByInternalPoolIndex( index, edge );
+			getObject( index, edge );
 			unlinkFromTarget( edge, tmpEdge, tmpVertex );
 			index = edge.getNextSourceEdgeIndex();
 			deleteByInternalPoolIndex( edge.getInternalPoolIndex() );
@@ -159,7 +159,7 @@ public class AbstractEdgePool<
 		vertex.setFirstInEdgeIndex( -1 );
 		while ( index >= 0 )
 		{
-			getByInternalPoolIndex( index, edge );
+			getObject( index, edge );
 			unlinkFromSource( edge, tmpEdge, tmpVertex );
 			index = edge.getNextTargetEdgeIndex();
 			deleteByInternalPoolIndex( edge.getInternalPoolIndex() );
@@ -192,7 +192,7 @@ public class AbstractEdgePool<
 
 	private void unlinkFromSource( final E edge, final E tmpEdge, final V tmpVertex )
 	{
-		vertexPool.getByInternalPoolIndex( edge.getSourceVertexInternalPoolIndex(), tmpVertex );
+		vertexPool.getObject( edge.getSourceVertexInternalPoolIndex(), tmpVertex );
 		final int sourceOutIndex = tmpVertex.getFirstOutEdgeIndex();
 		if ( sourceOutIndex == edge.getInternalPoolIndex() )
 		{
@@ -202,11 +202,11 @@ public class AbstractEdgePool<
 		else
 		{
 			// find this edge in the sources list of outgoing edges and remove it
-			getByInternalPoolIndex( sourceOutIndex, tmpEdge );
+			getObject( sourceOutIndex, tmpEdge );
 			int nextSourceEdgeIndex = tmpEdge.getNextSourceEdgeIndex();
 			while( nextSourceEdgeIndex != edge.getInternalPoolIndex() )
 			{
-				getByInternalPoolIndex( nextSourceEdgeIndex, tmpEdge );
+				getObject( nextSourceEdgeIndex, tmpEdge );
 				nextSourceEdgeIndex = tmpEdge.getNextSourceEdgeIndex();
 			}
 			tmpEdge.setNextSourceEdgeIndex( edge.getNextSourceEdgeIndex() );
@@ -215,7 +215,7 @@ public class AbstractEdgePool<
 
 	private void unlinkFromTarget( final E edge, final E tmpEdge, final V tmpVertex )
 	{
-		vertexPool.getByInternalPoolIndex( edge.getTargetVertexInternalPoolIndex(), tmpVertex );
+		vertexPool.getObject( edge.getTargetVertexInternalPoolIndex(), tmpVertex );
 		final int targetInIndex = tmpVertex.getFirstInEdgeIndex();
 		if ( targetInIndex == edge.getInternalPoolIndex() )
 		{
@@ -225,11 +225,11 @@ public class AbstractEdgePool<
 		else
 		{
 			// find this edge in the targets list of incoming edges and remove it
-			getByInternalPoolIndex( targetInIndex, tmpEdge );
+			getObject( targetInIndex, tmpEdge );
 			int nextTargetEdgeIndex = tmpEdge.getNextTargetEdgeIndex();
 			while( nextTargetEdgeIndex != edge.getInternalPoolIndex() )
 			{
-				getByInternalPoolIndex( nextTargetEdgeIndex, tmpEdge );
+				getObject( nextTargetEdgeIndex, tmpEdge );
 				nextTargetEdgeIndex = tmpEdge.getNextTargetEdgeIndex();
 			}
 			tmpEdge.setNextTargetEdgeIndex( edge.getNextTargetEdgeIndex() );

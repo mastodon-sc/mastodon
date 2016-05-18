@@ -1,5 +1,6 @@
 package net.trackmate.collection;
 
+import net.trackmate.RefPool;
 import net.trackmate.collection.ref.RefIdBimap;
 import net.trackmate.pool.PoolObject;
 
@@ -19,13 +20,16 @@ import net.trackmate.pool.PoolObject;
  *
  * @author Tobias Pietzsch &lt;tobias.pietzsch@gmail.com&gt;
  */
-public interface IdBimap< O >
+public interface IdBimap< O > extends RefPool< O >
 {
 	public int getId( O o );
 
-	public O getObject( int id, O ref );
-
-	public O createRef();
-
-	public void releaseRef( final O ref );
+//	@Override
+//	public O getObject( int id, O ref );
+//
+//	@Override
+//	public O createRef();
+//
+//	@Override
+//	public void releaseRef( final O ref );
 }

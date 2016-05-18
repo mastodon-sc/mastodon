@@ -215,6 +215,12 @@ public class ScreenEdge extends PoolObject< ScreenEdge, ByteMappedElement >
 			{
 				return SingleArrayMemPool.factory( ByteMappedElementArray.factory );
 			}
+
+			@Override
+			public Class< ScreenEdge > getRefClass()
+			{
+				return ScreenEdge.class;
+			}
 		};
 	}
 }

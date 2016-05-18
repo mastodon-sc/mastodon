@@ -126,6 +126,12 @@ public class RealLocalizableVertices
 			{
 				return SingleArrayMemPool.factory( ByteMappedElementArray.factory );
 			}
+
+			@Override
+			public Class< MyVertex > getRefClass()
+			{
+				return MyVertex.class;
+			}
 		};
 	}
 }

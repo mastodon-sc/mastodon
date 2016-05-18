@@ -40,5 +40,11 @@ public class TestVertexPool extends AbstractVertexPool< TestVertex, TestEdge, By
 		{
 			return SingleArrayMemPool.factory( ByteMappedElementArray.factory );
 		}
+
+		@Override
+		public Class< TestVertex > getRefClass()
+		{
+			return TestVertex.class;
+		}
 	};
 }

@@ -3,6 +3,7 @@ package net.trackmate.revised.trackscheme;
 import java.util.ArrayList;
 
 import net.trackmate.RefPool;
+import net.trackmate.collection.IdBimap;
 import net.trackmate.collection.IntRefMap;
 import net.trackmate.collection.RefSet;
 import net.trackmate.collection.ref.IntRefArrayMap;
@@ -164,7 +165,7 @@ public class TrackSchemeGraph<
 	 *
 	 * @return the vertex pool.
 	 */
-	public RefPool< TrackSchemeVertex > getVertexPool()
+	public IdBimap< TrackSchemeVertex > getVertexPool()
 	{
 		return vertexPool;
 	}
@@ -413,6 +414,12 @@ public class TrackSchemeGraph<
 			{
 				return SingleArrayMemPool.factory( ByteMappedElementArray.factory );
 			}
+
+			@Override
+			public Class< TrackSchemeVertex > getRefClass()
+			{
+				return TrackSchemeVertex.class;
+			}
 		}
 	}
 
@@ -457,6 +464,12 @@ public class TrackSchemeGraph<
 			public MemPool.Factory< ByteMappedElement > getMemPoolFactory()
 			{
 				return SingleArrayMemPool.factory( ByteMappedElementArray.factory );
+			}
+
+			@Override
+			public Class< TrackSchemeEdge > getRefClass()
+			{
+				return TrackSchemeEdge.class;
 			}
 		};
 	}

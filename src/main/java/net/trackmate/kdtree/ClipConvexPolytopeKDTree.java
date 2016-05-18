@@ -250,7 +250,7 @@ public class ClipConvexPolytopeKDTree< O extends Ref< O > & RealLocalizable, T e
 
 	private void clip( final int currentIndex, final int recursionDepth )
 	{
-		tree.getByInternalPoolIndex( currentIndex, current );
+		tree.getObject( currentIndex, current );
 		final int sd = sds[ recursionDepth ];
 		final double sc = current.getDoublePosition( sd );
 		final int left = current.getLeftIndex();

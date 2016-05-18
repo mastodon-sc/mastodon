@@ -70,7 +70,7 @@ public class KDTreeValidValueIterable< O extends Ref< O > & RealLocalizable, T e
 			{
 				if ( !stack.isEmpty() )
 				{
-					tree.getByInternalPoolIndex( stack.pop(), current );
+					tree.getObject( stack.pop(), current );
 					final int left = current.getLeftIndex();
 					final int right = current.getRightIndex();
 					if ( left >= 0 )
@@ -80,7 +80,7 @@ public class KDTreeValidValueIterable< O extends Ref< O > & RealLocalizable, T e
 				}
 				else if ( nextSubtreeIndex < subtrees.size() )
 				{
-					tree.getByInternalPoolIndex( subtrees.get( nextSubtreeIndex++ ), current );
+					tree.getObject( subtrees.get( nextSubtreeIndex++ ), current );
 					final int left = current.getLeftIndex();
 					final int right = current.getRightIndex();
 					if ( left >= 0 )
@@ -90,14 +90,14 @@ public class KDTreeValidValueIterable< O extends Ref< O > & RealLocalizable, T e
 				}
 				else if ( nextNodeIndex < nodes.size() )
 				{
-					tree.getByInternalPoolIndex( nodes.get( nextNodeIndex++ ), current );
+					tree.getObject( nodes.get( nextNodeIndex++ ), current );
 				}
 				else
 					return false;
 
 				if ( current.isValid() )
 				{
-					pool.getByInternalPoolIndex( current.getDataIndex(), nextref );
+					pool.getObject( current.getDataIndex(), nextref );
 					return true;
 				}
 			}
@@ -196,7 +196,7 @@ public class KDTreeValidValueIterable< O extends Ref< O > & RealLocalizable, T e
 				if ( flags == 0 ) // if node is valid
 				{
 					final int objIndex = ( int ) ( Double.doubleToRawLongBits( doubles[ currentIndex + n + 1 ] ) & 0xffffffff );
-					pool.getByInternalPoolIndex( objIndex, nextref );
+					pool.getObject( objIndex, nextref );
 					return true;
 				}
 			}

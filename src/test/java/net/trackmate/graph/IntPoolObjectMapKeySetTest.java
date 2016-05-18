@@ -49,7 +49,7 @@ public class IntPoolObjectMapKeySetTest
 		for ( final int id : storedIds )
 		{
 			final Integer poolIndex = truthMap.get( id );
-			pool.getByInternalPoolIndex( poolIndex, ref );
+			pool.getObject( poolIndex, ref );
 			map.put( id, ref );
 		}
 		pool.releaseRef( ref );

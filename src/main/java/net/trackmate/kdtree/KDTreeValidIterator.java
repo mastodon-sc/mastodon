@@ -46,7 +46,7 @@ public class KDTreeValidIterator<
 			final KDTreeNode< O, T > n = kdtreeIter.next();
 			if ( n.isValid() )
 			{
-				objPool.getByInternalPoolIndex( n.getDataIndex(), nextref );
+				objPool.getObject( n.getDataIndex(), nextref );
 				return true;
 			}
 		}

@@ -103,4 +103,10 @@ public class UndoIdBimap< O > implements IdBimap< O >
 	{
 		idmap.releaseRef( ref );
 	}
+
+	@Override
+	public Class< O > getRefClass()
+	{
+		return idmap.getRefClass();
+	}
 }

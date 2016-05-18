@@ -17,8 +17,8 @@ import gnu.trove.procedure.TIntObjectProcedure;
 import gnu.trove.procedure.TIntProcedure;
 import gnu.trove.procedure.TObjectProcedure;
 import gnu.trove.set.TIntSet;
-import net.trackmate.Ref;
 import net.trackmate.RefPool;
+import net.trackmate.collection.IdBimap;
 import net.trackmate.collection.IntRefMap;
 
 /**
@@ -39,7 +39,7 @@ import net.trackmate.collection.IntRefMap;
  * @author Tobias Pietzsch &lt;tobias.pietzsch@gmail.com&gt;
  * @author Jean-Yves Tinevez &lt;jeanyves.tinevez@gmail.com&gt;
  */
-public class IntRefArrayMap< V extends Ref< V > > implements IntRefMap< V >
+public class IntRefArrayMap< V > implements IntRefMap< V >
 {
 
 	/**
@@ -55,19 +55,22 @@ public class IntRefArrayMap< V extends Ref< V > > implements IntRefMap< V >
 
 	private final TIntArrayList keyToIndexMap;
 
-	private final RefPool< V > pool;
+	private final IdBimap< V > pool;
+
+	private final Class< V > valueType;
 
 	private int size;
 
-	public IntRefArrayMap( final RefPool< V > pool )
+	public IntRefArrayMap( final IdBimap< V > pool )
 	{
 		this( pool, Constants.DEFAULT_CAPACITY );
 	}
 
-	public IntRefArrayMap( final RefPool< V > pool, final int initialCapacity )
+	public IntRefArrayMap( final IdBimap< V > pool, final int initialCapacity )
 	{
 		this.pool = pool;
 		keyToIndexMap = new TIntArrayList( initialCapacity, NO_ENTRY_VALUE );
+		valueType = pool.getRefClass();
 		size = 0;
 	}
 
@@ -104,10 +107,7 @@ public class IntRefArrayMap< V extends Ref< V > > implements IntRefMap< V >
 
 		final int index = keyToIndexMap.get( key );
 		if ( index >= 0 )
-		{
-			pool.getByInternalPoolIndex( index, obj );
-			return obj;
-		}
+			return pool.getObject( index, obj );
 		else
 			return null;
 	}
@@ -135,8 +135,7 @@ public class IntRefArrayMap< V extends Ref< V > > implements IntRefMap< V >
 		final int old = keyToIndexMap.set( key, objInternalPoolIndex );
 		if ( old >= 0 )
 		{
-			pool.getByInternalPoolIndex( old, replacedObj );
-			return replacedObj;
+			return pool.getObject( old, replacedObj );
 		}
 		else
 		{
@@ -148,7 +147,7 @@ public class IntRefArrayMap< V extends Ref< V > > implements IntRefMap< V >
 	@Override
 	public V put( final int key, final V obj, final V replacedObj )
 	{
-		return putIndex( key, obj.getInternalPoolIndex(), replacedObj );
+		return putIndex( key, pool.getId( obj ), replacedObj );
 	}
 
 	@Override
@@ -184,8 +183,8 @@ public class IntRefArrayMap< V extends Ref< V > > implements IntRefMap< V >
 	@Override
 	public boolean containsValue( final Object value )
 	{
-		if ( value != null && value instanceof Ref )
-			return keyToIndexMap.contains( ( ( Ref< ? > ) value ).getInternalPoolIndex() );
+		if ( valueType.isInstance( value ) )
+			return keyToIndexMap.contains( pool.getId( ( V ) value ) );
 		else
 			return false;
 	}
@@ -336,8 +335,7 @@ public class IntRefArrayMap< V extends Ref< V > > implements IntRefMap< V >
 			public V value()
 			{
 				final int poolIndex = keyToIndexMap.get( cursor );
-				pool.getByInternalPoolIndex( poolIndex, ref );
-				return ref;
+				return pool.getObject( poolIndex, ref );
 			}
 
 			@Override
@@ -820,8 +818,7 @@ public class IntRefArrayMap< V extends Ref< V > > implements IntRefMap< V >
 						if ( cursor >= keyToIndexMap.size() )
 							cursor = Integer.MAX_VALUE;
 
-						pool.getByInternalPoolIndex( next, ref );
-						return ref;
+						return pool.getObject( next, ref );
 					}
 					catch ( final IndexOutOfBoundsException e )
 					{
@@ -856,10 +853,11 @@ public class IntRefArrayMap< V extends Ref< V > > implements IntRefMap< V >
 		@Override
 		public boolean remove( final Object obj )
 		{
-			if ( obj instanceof Ref )
+			if ( valueType.isInstance( obj ) )
 			{
-				final Ref< ? > o = ( Ref< ? > ) obj;
-				final int val = o.getInternalPoolIndex();
+				@SuppressWarnings( "unchecked" )
+				final V o = ( V ) obj;
+				final int val = pool.getId( o );
 				final int key = keyToIndexMap.indexOf( val );
 				if (key < 0) return false;
 

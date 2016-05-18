@@ -69,32 +69,32 @@ public class KDTreeValueIterable< O extends Ref< O > & RealLocalizable, T extend
 		{
 			if ( !stack.isEmpty() )
 			{
-				tree.getByInternalPoolIndex( stack.pop(), current );
+				tree.getObject( stack.pop(), current );
 				final int left = current.getLeftIndex();
 				final int right = current.getRightIndex();
 				if ( left >= 0 )
 					stack.push( left );
 				if ( right >= 0 )
 					stack.push( right );
-				pool.getByInternalPoolIndex( current.getDataIndex(), obj );
+				pool.getObject( current.getDataIndex(), obj );
 				return obj;
 			}
 			else if ( nextSubtreeIndex < subtrees.size() )
 			{
-				tree.getByInternalPoolIndex( subtrees.get( nextSubtreeIndex++ ), current );
+				tree.getObject( subtrees.get( nextSubtreeIndex++ ), current );
 				final int left = current.getLeftIndex();
 				final int right = current.getRightIndex();
 				if ( left >= 0 )
 					stack.push( left );
 				if ( right >= 0 )
 					stack.push( right );
-				pool.getByInternalPoolIndex( current.getDataIndex(), obj );
+				pool.getObject( current.getDataIndex(), obj );
 				return obj;
 			}
 			else if ( nextNodeIndex < nodes.size() )
 			{
-				tree.getByInternalPoolIndex( nodes.get( nextNodeIndex++ ), current );
-				pool.getByInternalPoolIndex( current.getDataIndex(), obj );
+				tree.getObject( nodes.get( nextNodeIndex++ ), current );
+				pool.getObject( current.getDataIndex(), obj );
 				return obj;
 			}
 			else
@@ -153,7 +153,7 @@ public class KDTreeValueIterable< O extends Ref< O > & RealLocalizable, T extend
 					stack.push( left );
 				if ( right >= 0 )
 					stack.push( right );
-				pool.getByInternalPoolIndex( objIndex, obj );
+				pool.getObject( objIndex, obj );
 				return obj;
 			}
 			else if ( nextSubtreeIndex < subtrees.size() )
@@ -167,14 +167,14 @@ public class KDTreeValueIterable< O extends Ref< O > & RealLocalizable, T extend
 					stack.push( left );
 				if ( right >= 0 )
 					stack.push( right );
-				pool.getByInternalPoolIndex( objIndex, obj );
+				pool.getObject( objIndex, obj );
 				return obj;
 			}
 			else if ( nextNodeIndex < nodes.size() )
 			{
 				final int currentIndex = nodes.get( nextNodeIndex++ );
 				final int objIndex = ( int ) ( Double.doubleToRawLongBits( doubles[ currentIndex + n + 1 ] ) & 0xffffffff );
-				pool.getByInternalPoolIndex( objIndex, obj );
+				pool.getObject( objIndex, obj );
 				return obj;
 			}
 			else

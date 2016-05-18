@@ -6,31 +6,35 @@ import java.util.Iterator;
 import gnu.trove.iterator.TIntIterator;
 import gnu.trove.set.TIntSet;
 import gnu.trove.set.hash.TIntHashSet;
-import net.trackmate.Ref;
-import net.trackmate.RefPool;
+import net.trackmate.collection.IdBimap;
 import net.trackmate.collection.RefSet;
 
-public class RefSetImp< O extends Ref< O > > implements IntBackedRefCollection< O >, RefSet< O >
+public class RefSetImp< O > implements IntBackedRefCollection< O >, RefSet< O >
 {
 	private final TIntSet indices;
 
-	private final RefPool< O > pool;
+	private final IdBimap< O > pool;
 
-	public RefSetImp( final RefPool< O > pool )
+	private final Class< O > elementType;
+
+	public RefSetImp( final IdBimap< O > pool )
 	{
 		this.pool = pool;
+		elementType = pool.getRefClass();
 		indices = new TIntHashSet();
 	}
 
-	public RefSetImp( final RefPool< O > pool, final int initialCapacity )
+	public RefSetImp( final IdBimap< O > pool, final int initialCapacity )
 	{
 		this.pool = pool;
+		elementType = pool.getRefClass();
 		indices = new TIntHashSet( initialCapacity );
 	}
 
-	protected RefSetImp( final RefPool< O > pool, final TIntSet indices )
+	protected RefSetImp( final IdBimap< O > pool, final TIntSet indices )
 	{
 		this.pool = pool;
+		elementType = pool.getRefClass();
 		this.indices = indices;
 	}
 
@@ -55,7 +59,7 @@ public class RefSetImp< O extends Ref< O > > implements IntBackedRefCollection< 
 	@Override
 	public boolean add( final O obj )
 	{
-		return indices.add( obj.getInternalPoolIndex() );
+		return indices.add( pool.getId( obj ) );
 	}
 
 	@Override
@@ -67,7 +71,7 @@ public class RefSetImp< O extends Ref< O > > implements IntBackedRefCollection< 
 		{
 			boolean changed = false;
 			for ( final O obj : objs )
-				if ( indices.add( obj.getInternalPoolIndex() ) )
+				if ( indices.add( pool.getId( obj ) ) )
 					changed = true;
 			return changed;
 		}
@@ -79,11 +83,12 @@ public class RefSetImp< O extends Ref< O > > implements IntBackedRefCollection< 
 		indices.clear();
 	}
 
+	@SuppressWarnings( "unchecked" )
 	@Override
 	public boolean contains( final Object obj )
 	{
-		return ( obj instanceof Ref )
-				? indices.contains( ( ( Ref< ? > ) obj ).getInternalPoolIndex() )
+		return ( elementType.isInstance( obj ) )
+				? indices.contains( pool.getId( ( O ) obj ) )
 				: false;
 	}
 
@@ -125,8 +130,7 @@ public class RefSetImp< O extends Ref< O > > implements IntBackedRefCollection< 
 			@Override
 			public O next()
 			{
-				pool.getByInternalPoolIndex( ii.next(), obj );
-				return obj;
+				return pool.getObject( ii.next(), obj );
 			}
 
 			@Override
@@ -137,16 +141,13 @@ public class RefSetImp< O extends Ref< O > > implements IntBackedRefCollection< 
 		};
 	}
 
+	@SuppressWarnings( "unchecked" )
 	@Override
 	public boolean remove( final Object obj )
 	{
-		if ( obj instanceof Ref )
-		{
-			final Ref< ? > o = ( Ref< ? > ) obj;
-			return indices.remove( o.getInternalPoolIndex() );
-		}
-		else
-			return false;
+		return elementType.isInstance( obj )
+			? indices.remove( pool.getId( ( O ) obj ) )
+			: false;
 	}
 
 	@Override
@@ -217,9 +218,7 @@ public class RefSetImp< O extends Ref< O > > implements IntBackedRefCollection< 
 		while ( it.hasNext() )
 		{
 			final int poolIndex = it.next();
-			final O obj = pool.createRef();
-			pool.getByInternalPoolIndex( poolIndex, obj );
-			array[ index++ ] = ( A ) obj;
+			array[ index++ ] = ( A ) pool.getObject( poolIndex, createRef() );
 		}
 
 		// nullify the rest

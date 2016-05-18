@@ -146,6 +146,8 @@ public abstract class PoolObject< O extends PoolObject< O, T >, T extends Mapped
 		public O createEmptyRef();
 
 		public MemPool.Factory< T > getMemPoolFactory();
+
+		public Class< O > getRefClass();
 	}
 
 	@Override
