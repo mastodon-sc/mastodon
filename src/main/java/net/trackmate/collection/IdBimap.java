@@ -1,7 +1,7 @@
 package net.trackmate.collection;
 
 import net.trackmate.RefPool;
-import net.trackmate.collection.ref.RefIdBimap;
+import net.trackmate.pool.Pool;
 import net.trackmate.pool.PoolObject;
 
 /**
@@ -10,7 +10,7 @@ import net.trackmate.pool.PoolObject;
  * Implementations:
  * <ul>
  * <li>A mapping between {@link PoolObject}s and their internal pool
- * indices. Implemented in {@link RefIdBimap}.</li>
+ * indices. Implemented in {@link Pool}.</li>
  * <li>a mapping between Java objects and IDs that are assigned upon first
  * access. Not implemented yet.</li>
  * </ul>

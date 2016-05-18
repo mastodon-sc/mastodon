@@ -1,6 +1,5 @@
 package net.trackmate.revised.model;
 
-import net.trackmate.collection.ref.RefIdBimap;
 import net.trackmate.graph.AbstractEdge;
 import net.trackmate.graph.AbstractEdgePool;
 import net.trackmate.graph.AbstractVertex;
@@ -28,9 +27,7 @@ public class AbstractModelGraph<
 	public AbstractModelGraph( final VP vertexPool, final EP edgePool )
 	{
 		super( vertexPool, edgePool );
-		idmap = new GraphIdBimap< V, E >(
-					new RefIdBimap< V >( vertexPool ),
-					new RefIdBimap< E >( edgePool ) );
+		idmap = new GraphIdBimap< V, E >( vertexPool, edgePool );
 		features = new GraphFeatures<>( this );
 		vertexPool.linkFeatures( features );
 	}
@@ -38,9 +35,7 @@ public class AbstractModelGraph<
 	public AbstractModelGraph( final EP edgePool )
 	{
 		super( edgePool );
-		idmap = new GraphIdBimap< V, E >(
-				new RefIdBimap< V >( vertexPool ),
-				new RefIdBimap< E >( edgePool ) );
+		idmap = new GraphIdBimap< V, E >( vertexPool, edgePool );
 		features = new GraphFeatures<>( this );
 		vertexPool.linkFeatures( features );
 	}

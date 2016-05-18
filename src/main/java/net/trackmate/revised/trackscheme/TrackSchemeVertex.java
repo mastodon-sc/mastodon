@@ -5,7 +5,6 @@ import static net.trackmate.pool.ByteUtils.DOUBLE_SIZE;
 import static net.trackmate.pool.ByteUtils.INDEX_SIZE;
 import static net.trackmate.pool.ByteUtils.INT_SIZE;
 
-import net.trackmate.collection.ref.RefIdBimap;
 import net.trackmate.graph.AbstractVertex;
 import net.trackmate.graph.AbstractVertexPool;
 import net.trackmate.graph.zzgraphinterfaces.GraphIdBimap;
@@ -52,8 +51,7 @@ public class TrackSchemeVertex extends AbstractVertex< TrackSchemeVertex, TrackS
 	/**
 	 * Get the ID of the associated model vertex, as defined by a
 	 * {@link GraphIdBimap}. For {@link PoolObject} model vertices, the ID will
-	 * be the internal pool index of the model vertex (see
-	 * {@link RefIdBimap}).
+	 * be the internal pool index of the model vertex.
 	 *
 	 * @return the ID of the associated model vertex.
 	 */
