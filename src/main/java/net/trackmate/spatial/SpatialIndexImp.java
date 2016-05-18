@@ -7,7 +7,6 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import net.imglib2.RealLocalizable;
 import net.imglib2.neighborsearch.NearestNeighborSearch;
-import net.trackmate.Ref;
 import net.trackmate.collection.IdBimap;
 
 /**
@@ -20,7 +19,7 @@ import net.trackmate.collection.IdBimap;
  *
  * @author Tobias Pietzsch &lt;tobias.pietzsch@gmail.com&gt;
  */
-public class SpatialIndexImp< O extends Ref< O > & RealLocalizable > implements SpatialIndex< O >
+public class SpatialIndexImp< O extends RealLocalizable > implements SpatialIndex< O >
 {
 	private SpatialIndexData< O > data;
 

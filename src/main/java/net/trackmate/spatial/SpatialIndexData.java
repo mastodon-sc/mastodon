@@ -9,8 +9,6 @@ import net.imglib2.Sampler;
 import net.imglib2.algorithm.kdtree.ConvexPolytope;
 import net.imglib2.algorithm.kdtree.HyperPlane;
 import net.imglib2.neighborsearch.NearestNeighborSearch;
-import net.trackmate.Ref;
-import net.trackmate.RefPool;
 import net.trackmate.collection.IdBimap;
 import net.trackmate.collection.RefList;
 import net.trackmate.collection.RefRefMap;
@@ -27,7 +25,7 @@ import net.trackmate.pool.DoubleMappedElement;
 /**
  * Spatial index of {@link RealLocalizable} objects.
  * <p>
- * When the index is {@link #SpatialIndexData(Collection, RefPool) constructed},
+ * When the index is {@link #SpatialIndexData(Collection, IdBimap) constructed},
  * a KDTree of objects is built. The index can be modified by adding, changing,
  * and removing objects. These changes do not trigger a rebuild of the KDTree.
  * Instead, affected nodes in the KDTree are marked as invalid and the modified
@@ -49,23 +47,22 @@ import net.trackmate.pool.DoubleMappedElement;
  *
  * @author Tobias Pietzsch &lt;tobias.pietzsch@gmail.com&gt;
  */
-class SpatialIndexData< O extends Ref< O > & RealLocalizable >
+class SpatialIndexData< O extends RealLocalizable >
 		implements Iterable< O >
 {
 	private final IdBimap< O > objPool;
 
 	/**
 	 * KDTree of objects that were provided at construction. When changes are
-	 * made to the set of objects (i.e. {@link #added(Ref)},
-	 * {@link #remove(Ref)}, {@link #changePosition(Ref)}), the
-	 * corresponding nodes in the KDTree are marked as invalid.
+	 * made to the set of objects (i.e. {@link #add(RealLocalizable)},
+	 * {@link #remove(RealLocalizable)}) the corresponding nodes in the KDTree
+	 * are marked as invalid.
 	 */
 	private final KDTree< O, DoubleMappedElement > kdtree;
 
 	/**
-	 * Objects that were modified ({@link #added(Ref)},
-	 * {@link #changePosition(Ref)}) since construction. These override
-	 * invalid objects in the KDTree.
+	 * Objects that were modified ({@link #add(RealLocalizable)}) since
+	 * construction. These override invalid objects in the KDTree.
 	 */
 	private final RefSet< O > added;
 
@@ -140,7 +137,7 @@ class SpatialIndexData< O extends Ref< O > & RealLocalizable >
 	@Override
 	public Iterator< O > iterator()
 	{
-		final Iterator< O > kdtreeIter = KDTreeValidIterator.create( kdtree, objPool );
+		final Iterator< O > kdtreeIter = KDTreeValidIterator.create( kdtree );
 		final Iterator< O > addedIter = added.iterator();
 		return new Iter< O >( objPool, kdtreeIter, addedIter );
 	}
@@ -225,11 +222,13 @@ class SpatialIndexData< O extends Ref< O > & RealLocalizable >
 		return size;
 	}
 
-	static class Iter< O extends Ref< O > > implements Iterator< O >
+	static class Iter< O > implements Iterator< O >
 	{
+		private final IdBimap< O > pool;
+
 		private final O ref;
 
-		private final O nextref;
+		private O next;
 
 		private final Iterator< O > kdtreeIter;
 
@@ -238,12 +237,12 @@ class SpatialIndexData< O extends Ref< O > & RealLocalizable >
 		private boolean hasNext;
 
 		public Iter(
-				final RefPool< O > objPool,
+				final IdBimap< O > objPool,
 				final Iterator< O > kdtreeIter,
 				final Iterator< O > addedIter )
 		{
+			this.pool = objPool;
 			ref = objPool.createRef();
-			nextref = objPool.createRef();
 			this.kdtreeIter = kdtreeIter;
 			this.addedIter = addedIter;
 			hasNext = prepareNext();
@@ -253,12 +252,12 @@ class SpatialIndexData< O extends Ref< O > & RealLocalizable >
 		{
 			if ( kdtreeIter.hasNext() )
 			{
-				nextref.refTo( kdtreeIter.next() );
+				next = kdtreeIter.next();
 				return true;
 			}
 			if ( addedIter.hasNext() )
 			{
-				nextref.refTo( addedIter.next() );
+				next = addedIter.next();
 				return true;
 			}
 			return false;
@@ -275,10 +274,11 @@ class SpatialIndexData< O extends Ref< O > & RealLocalizable >
 		{
 			if ( hasNext )
 			{
-				ref.refTo( nextref );
+				final O current = pool.getObject( pool.getId( next ), ref );
 				hasNext = prepareNext();
+				return current;
 			}
-			return ref;
+			return null;
 		}
 	}
 
@@ -290,7 +290,9 @@ class SpatialIndexData< O extends Ref< O > & RealLocalizable >
 
 		private int bestVertexIndex;
 
-		private final O bestVertex;
+		private final O ref;
+
+		private O bestVertex;
 
 		private final int n;
 
@@ -298,7 +300,7 @@ class SpatialIndexData< O extends Ref< O > & RealLocalizable >
 		{
 			search = new NearestValidNeighborSearchOnKDTree< O, DoubleMappedElement >( kdtree );
 			bestVertexIndex = -1;
-			bestVertex = objPool.createRef();
+			ref = objPool.createRef();
 			n = search.numDimensions();
 		}
 
@@ -318,7 +320,7 @@ class SpatialIndexData< O extends Ref< O > & RealLocalizable >
 			if ( search.get() != null )
 			{
 				bestSquDistance = search.getSquareDistance();
-				bestVertexIndex = search.get().getInternalPoolIndex();
+				bestVertexIndex = objPool.getId( search.get() );
 			}
 
 			final double[] p = new double[ n ];
@@ -334,12 +336,13 @@ class SpatialIndexData< O extends Ref< O > & RealLocalizable >
 				if ( sum < bestSquDistance )
 				{
 					bestSquDistance = sum;
-					bestVertexIndex = v.getInternalPoolIndex();
+					bestVertexIndex = objPool.getId( v );
 				}
 			}
 
-			if ( bestVertexIndex >= 0 )
-				objPool.getObject( bestVertexIndex, bestVertex );
+			bestVertex = ( bestVertexIndex >= 0 )
+					? objPool.getObject( bestVertexIndex, ref )
+					: null;
 		}
 
 		@Override
@@ -351,9 +354,6 @@ class SpatialIndexData< O extends Ref< O > & RealLocalizable >
 		@Override
 		public RealLocalizable getPosition()
 		{
-			if ( bestVertexIndex == -1 )
-				return null;
-
 			return bestVertex;
 		}
 
@@ -376,16 +376,13 @@ class SpatialIndexData< O extends Ref< O > & RealLocalizable >
 			copy.bestSquDistance = bestSquDistance;
 			copy.bestVertexIndex = bestVertexIndex;
 			if ( bestVertexIndex != -1 )
-				copy.bestVertex.refTo( bestVertex );
+				copy.bestVertex = objPool.getObject( bestVertexIndex, copy.ref );
 			return copy;
 		}
 
 		@Override
 		public O get()
 		{
-			if ( bestVertexIndex == -1 )
-				return null;
-
 			return bestVertex;
 		}
 	}

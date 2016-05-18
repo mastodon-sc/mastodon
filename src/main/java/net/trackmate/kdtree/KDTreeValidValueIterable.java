@@ -1,16 +1,17 @@
 package net.trackmate.kdtree;
 
-import gnu.trove.deque.TIntArrayDeque;
-import gnu.trove.list.array.TIntArrayList;
-
 import java.util.Iterator;
 
+import gnu.trove.deque.TIntArrayDeque;
+import gnu.trove.list.array.TIntArrayList;
 import net.imglib2.RealLocalizable;
-import net.trackmate.Ref;
-import net.trackmate.RefPool;
+import net.trackmate.collection.IdBimap;
 import net.trackmate.pool.MappedElement;
 
-public class KDTreeValidValueIterable< O extends Ref< O > & RealLocalizable, T extends MappedElement > implements Iterable< O >
+public class KDTreeValidValueIterable<
+		O extends RealLocalizable,
+		T extends MappedElement >
+	implements Iterable< O >
 {
 	private final TIntArrayList nodes;
 
@@ -44,11 +45,13 @@ public class KDTreeValidValueIterable< O extends Ref< O > & RealLocalizable, T e
 
 		private final KDTreeNode< O, T > current;
 
-		private final RefPool< O > pool;
+		private final IdBimap< O > pool;
 
 		private final O ref;
 
 		private final O nextref;
+
+		private O next;
 
 		private boolean hasNext;
 
@@ -97,7 +100,7 @@ public class KDTreeValidValueIterable< O extends Ref< O > & RealLocalizable, T e
 
 				if ( current.isValid() )
 				{
-					pool.getObject( current.getDataIndex(), nextref );
+					next = pool.getObject( current.getDataIndex(), nextref );
 					return true;
 				}
 			}
@@ -114,10 +117,11 @@ public class KDTreeValidValueIterable< O extends Ref< O > & RealLocalizable, T e
 		{
 			if ( hasNext )
 			{
-				ref.refTo( nextref );
+				final O current = pool.getObject( pool.getId( next ), ref );
 				hasNext = prepareNext();
+				return current;
 			}
-			return ref;
+			return null;
 		}
 
 		@Override
@@ -137,11 +141,13 @@ public class KDTreeValidValueIterable< O extends Ref< O > & RealLocalizable, T e
 
 		private final int n;
 
-		private final RefPool< O > pool;
+		private final IdBimap< O > pool;
 
 		private final O ref;
 
 		private final O nextref;
+
+		private O next;
 
 		private boolean hasNext;
 
@@ -196,7 +202,7 @@ public class KDTreeValidValueIterable< O extends Ref< O > & RealLocalizable, T e
 				if ( flags == 0 ) // if node is valid
 				{
 					final int objIndex = ( int ) ( Double.doubleToRawLongBits( doubles[ currentIndex + n + 1 ] ) & 0xffffffff );
-					pool.getObject( objIndex, nextref );
+					next = pool.getObject( objIndex, nextref );
 					return true;
 				}
 			}
@@ -213,10 +219,11 @@ public class KDTreeValidValueIterable< O extends Ref< O > & RealLocalizable, T e
 		{
 			if ( hasNext )
 			{
-				ref.refTo( nextref );
+				final O current = pool.getObject( pool.getId( next ), ref );
 				hasNext = prepareNext();
+				return current;
 			}
-			return ref;
+			return null;
 		}
 
 		@Override

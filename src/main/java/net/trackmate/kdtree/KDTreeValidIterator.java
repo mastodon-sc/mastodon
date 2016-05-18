@@ -3,39 +3,40 @@ package net.trackmate.kdtree;
 import java.util.Iterator;
 
 import net.imglib2.RealLocalizable;
-import net.trackmate.Ref;
-import net.trackmate.RefPool;
+import net.trackmate.collection.IdBimap;
 import net.trackmate.pool.MappedElement;
 
 public class KDTreeValidIterator<
-		O extends Ref< O > & RealLocalizable,
+		O extends RealLocalizable,
 		T extends MappedElement >
 	implements Iterator< O >
 {
 	public static <
-			O extends Ref< O > & RealLocalizable,
+			O extends RealLocalizable,
 			T extends MappedElement >
-		KDTreeValidIterator< O, T > create( final KDTree< O, T > kdtree, final RefPool< O > objPool )
+		KDTreeValidIterator< O, T > create( final KDTree< O, T > kdtree )
 	{
-		return new KDTreeValidIterator< O, T >( kdtree, objPool );
+		return new KDTreeValidIterator< O, T >( kdtree );
 	}
 
 	private final O ref;
 
 	private final O nextref;
 
+	private O next;
+
 	private final Iterator< KDTreeNode< O, T > > kdtreeIter;
 
-	private final RefPool< O > objPool;
+	private final IdBimap< O > objPool;
 
 	private boolean hasNext;
 
-	public KDTreeValidIterator( final KDTree< O, T > kdtree, final RefPool< O > objPool )
+	public KDTreeValidIterator( final KDTree< O, T > tree )
 	{
-		this.objPool = objPool;
+		this.objPool = tree.getObjectPool();
 		ref = objPool.createRef();
 		nextref = objPool.createRef();
-		kdtreeIter = kdtree.iterator();
+		kdtreeIter = tree.iterator();
 		hasNext = prepareNext();
 	}
 
@@ -46,7 +47,7 @@ public class KDTreeValidIterator<
 			final KDTreeNode< O, T > n = kdtreeIter.next();
 			if ( n.isValid() )
 			{
-				objPool.getObject( n.getDataIndex(), nextref );
+				next = objPool.getObject( n.getDataIndex(), nextref );
 				return true;
 			}
 		}
@@ -64,9 +65,10 @@ public class KDTreeValidIterator<
 	{
 		if ( hasNext )
 		{
-			ref.refTo( nextref );
+			final O current = objPool.getObject( objPool.getId( next ), ref );
 			hasNext = prepareNext();
+			return current;
 		}
-		return ref;
+		return null;
 	}
 }

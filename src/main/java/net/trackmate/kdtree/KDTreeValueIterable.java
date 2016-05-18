@@ -1,16 +1,14 @@
 package net.trackmate.kdtree;
 
-import gnu.trove.deque.TIntArrayDeque;
-import gnu.trove.list.array.TIntArrayList;
-
 import java.util.Iterator;
 
+import gnu.trove.deque.TIntArrayDeque;
+import gnu.trove.list.array.TIntArrayList;
 import net.imglib2.RealLocalizable;
-import net.trackmate.Ref;
-import net.trackmate.RefPool;
+import net.trackmate.collection.IdBimap;
 import net.trackmate.pool.MappedElement;
 
-public class KDTreeValueIterable< O extends Ref< O > & RealLocalizable, T extends MappedElement > implements Iterable< O >
+public class KDTreeValueIterable< O extends RealLocalizable, T extends MappedElement > implements Iterable< O >
 {
 	private final TIntArrayList nodes;
 
@@ -44,7 +42,7 @@ public class KDTreeValueIterable< O extends Ref< O > & RealLocalizable, T extend
 
 		private final KDTreeNode< O, T > current;
 
-		private final RefPool< O > pool;
+		private final IdBimap< O > pool;
 
 		private final O obj;
 
@@ -76,8 +74,7 @@ public class KDTreeValueIterable< O extends Ref< O > & RealLocalizable, T extend
 					stack.push( left );
 				if ( right >= 0 )
 					stack.push( right );
-				pool.getObject( current.getDataIndex(), obj );
-				return obj;
+				return pool.getObject( current.getDataIndex(), obj );
 			}
 			else if ( nextSubtreeIndex < subtrees.size() )
 			{
@@ -88,14 +85,12 @@ public class KDTreeValueIterable< O extends Ref< O > & RealLocalizable, T extend
 					stack.push( left );
 				if ( right >= 0 )
 					stack.push( right );
-				pool.getObject( current.getDataIndex(), obj );
-				return obj;
+				return pool.getObject( current.getDataIndex(), obj );
 			}
 			else if ( nextNodeIndex < nodes.size() )
 			{
 				tree.getObject( nodes.get( nextNodeIndex++ ), current );
-				pool.getObject( current.getDataIndex(), obj );
-				return obj;
+				return pool.getObject( current.getDataIndex(), obj );
 			}
 			else
 				return null;
@@ -118,7 +113,7 @@ public class KDTreeValueIterable< O extends Ref< O > & RealLocalizable, T extend
 
 		private final int n;
 
-		private final RefPool< O > pool;
+		private final IdBimap< O > pool;
 
 		private final O obj;
 
@@ -153,8 +148,7 @@ public class KDTreeValueIterable< O extends Ref< O > & RealLocalizable, T extend
 					stack.push( left );
 				if ( right >= 0 )
 					stack.push( right );
-				pool.getObject( objIndex, obj );
-				return obj;
+				return pool.getObject( objIndex, obj );
 			}
 			else if ( nextSubtreeIndex < subtrees.size() )
 			{
@@ -167,15 +161,13 @@ public class KDTreeValueIterable< O extends Ref< O > & RealLocalizable, T extend
 					stack.push( left );
 				if ( right >= 0 )
 					stack.push( right );
-				pool.getObject( objIndex, obj );
-				return obj;
+				return pool.getObject( objIndex, obj );
 			}
 			else if ( nextNodeIndex < nodes.size() )
 			{
 				final int currentIndex = nodes.get( nextNodeIndex++ );
 				final int objIndex = ( int ) ( Double.doubleToRawLongBits( doubles[ currentIndex + n + 1 ] ) & 0xffffffff );
-				pool.getObject( objIndex, obj );
-				return obj;
+				return pool.getObject( objIndex, obj );
 			}
 			else
 				return null;

@@ -7,18 +7,19 @@ import static net.trackmate.pool.ByteUtils.INT_SIZE;
 import java.nio.ByteOrder;
 
 import net.imglib2.RealLocalizable;
-import net.trackmate.Ref;
+import net.trackmate.collection.IdBimap;
 import net.trackmate.pool.MappedElement;
-import net.trackmate.pool.Pool;
 import net.trackmate.pool.PoolObject;
 
 public class KDTreeNode<
-			O extends Ref< O > & RealLocalizable,
+			O extends RealLocalizable,
 			T extends MappedElement >
 		extends PoolObject< KDTreeNode< O, T >, T >
 		implements RealLocalizable
 {
 	private final int n;
+
+	private final IdBimap< O > objPool;
 
 	private final int POS_INDEX_OFFSET;
 	private final int LEFT_INDEX_OFFSET;
@@ -28,9 +29,10 @@ public class KDTreeNode<
 
 	private final int sizeInDoubles;
 
-	public KDTreeNode( final Pool< KDTreeNode< O, T >, T > pool, final int numDimensions )
+	public KDTreeNode( final KDTree< O, T > kdtree, final int numDimensions )
 	{
-		super( pool );
+		super( kdtree );
+		this.objPool = kdtree.getObjectPool();
 		n = numDimensions;
 		POS_INDEX_OFFSET = 0;
 		if ( java.nio.ByteOrder.nativeOrder() == ByteOrder.LITTLE_ENDIAN )
@@ -107,7 +109,7 @@ public class KDTreeNode<
 
 	protected void init( final O o )
 	{
-		setDataIndex( o.getInternalPoolIndex() );
+		setDataIndex( objPool.getId( o ) );
 		setFlags( 0 );
 		for ( int d = 0; d < o.numDimensions(); ++d )
 			setPosition( o.getDoublePosition( d ), d );

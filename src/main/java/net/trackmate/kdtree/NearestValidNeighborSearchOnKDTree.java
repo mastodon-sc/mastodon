@@ -3,7 +3,6 @@ package net.trackmate.kdtree;
 import net.imglib2.RealLocalizable;
 import net.imglib2.Sampler;
 import net.imglib2.neighborsearch.NearestNeighborSearch;
-import net.trackmate.Ref;
 import net.trackmate.pool.MappedElement;
 
 /**
@@ -12,7 +11,7 @@ import net.trackmate.pool.MappedElement;
  *
  * @author Tobias Pietzsch
  */
-public final class NearestValidNeighborSearchOnKDTree< O extends Ref< O > & RealLocalizable, T extends MappedElement >
+public final class NearestValidNeighborSearchOnKDTree< O extends RealLocalizable, T extends MappedElement >
 	implements NearestNeighborSearch< O >, Sampler< O >
 {
 	private final KDTree< O, T > tree;
@@ -129,8 +128,7 @@ public final class NearestValidNeighborSearchOnKDTree< O extends Ref< O > & Real
 			return null;
 
 		tree.getObject( bestPointNodeIndex, node );
-		tree.getObjectPool().getObject( node.getDataIndex(), obj );
-		return obj;
+		return tree.getObjectPool().getObject( node.getDataIndex(), obj );
 	}
 
 	@Override

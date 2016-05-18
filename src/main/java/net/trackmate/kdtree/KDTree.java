@@ -6,7 +6,6 @@ import java.util.Collection;
 import net.imglib2.RealInterval;
 import net.imglib2.RealLocalizable;
 import net.imglib2.RealPositionable;
-import net.trackmate.Ref;
 import net.trackmate.collection.IdBimap;
 import net.trackmate.collection.RefRefMap;
 import net.trackmate.collection.ref.RefRefHashMap;
@@ -20,17 +19,17 @@ import net.trackmate.pool.PoolObject;
 import net.trackmate.pool.SingleArrayMemPool;
 
 /**
- * KDTree of {@link RealLocalizable} {@link PoolObject PoolObjects}.
+ * KDTree of {@link RealLocalizable} objects.
  *
  * @param <O>
  *            type of objects stored in the tree.
  * @param <T>
  *            the MappedElement type of the {@link KDTreeNode tree nodes}.
  *
- * @author Tobias Pietzsch
+ * @author Tobias Pietzsch &lt;tobias.pietzsch@gmail.com&gt;
  */
 public class KDTree<
-			O extends Ref< O > & RealLocalizable,
+			O extends RealLocalizable,
 			T extends MappedElement >
 		extends Pool< KDTreeNode< O, T >, T >
 		implements RealInterval
@@ -47,7 +46,7 @@ public class KDTree<
 	 *            the pool that contains the {@code objects}.
 	 * @return the tree.
 	 */
-	public static < O extends Ref< O > & RealLocalizable >
+	public static < O extends RealLocalizable >
 			KDTree< O, DoubleMappedElement > kdtree( final Collection< O > objects, final IdBimap< O > objectPool )
 	{
 		return kdtree( objects, objectPool, defaultPoolFactory );
@@ -65,7 +64,7 @@ public class KDTree<
 	 *            storage for {@link KDTreeNode nodes}
 	 * @return the tree.
 	 */
-	public static < O extends Ref< O > & RealLocalizable, T extends MappedElement >
+	public static < O extends RealLocalizable, T extends MappedElement >
 			KDTree< O, T > kdtree( final Collection< O > objects, final IdBimap< O > objectPool, final MemPool.Factory< T > poolFactory )
 	{
 		final KDTree< O, T > kdtree = new NodeFactory< O, T >( objects, objectPool, poolFactory ).kdtree;
@@ -79,25 +78,25 @@ public class KDTree<
 	 * @param kdtree
 	 * @return
 	 */
-	public static < O extends Ref< O > & RealLocalizable, T extends MappedElement >
+	public static < O extends RealLocalizable, T extends MappedElement >
 			RefRefMap< O, KDTreeNode< O, T > > createRefToKDTreeNodeMap( final KDTree< O, T > kdtree )
 	{
 		final IdBimap< O > objPool = kdtree.getObjectPool();
-		final O o = objPool.createRef();
+		final O ref = objPool.createRef();
 		final KDTreeNode< O, T > n = kdtree.createRef();
 		final RefRefMap< O, KDTreeNode< O, T > > map = new RefRefHashMap< O, KDTreeNode< O, T > >( objPool, kdtree );
 		for ( final KDTreeNode< O, T > node : kdtree )
 		{
-			objPool.getObject( node.getDataIndex(), o );
-			map.put( o, node, n );
+			final O obj = objPool.getObject( node.getDataIndex(), ref );
+			map.put( obj, node, n );
 		}
-		objPool.releaseRef( o );
+		objPool.releaseRef( ref );
 		kdtree.releaseRef( n );
 		return map;
 	}
 
 	private static final class NodeFactory<
-				O extends Ref< O > & RealLocalizable,
+				O extends RealLocalizable,
 				T extends MappedElement >
 			implements PoolObject.Factory< KDTreeNode< O, T >, T >
 	{

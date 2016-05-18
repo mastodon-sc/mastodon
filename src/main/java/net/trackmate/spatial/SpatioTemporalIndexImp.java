@@ -8,7 +8,6 @@ import gnu.trove.iterator.TIntObjectIterator;
 import gnu.trove.map.hash.TIntObjectHashMap;
 import net.imglib2.RealLocalizable;
 import net.trackmate.Ref;
-import net.trackmate.RefPool;
 import net.trackmate.collection.IdBimap;
 import net.trackmate.collection.RefList;
 import net.trackmate.graph.listenable.GraphListener;
@@ -23,7 +22,7 @@ import net.trackmate.graph.zzgraphinterfaces.Vertex;
  * This class specializes for vertices that are {@link RealLocalizable} for
  * spatial searches and partitioning. The temporal information is fetched
  * directly from the vertices themselves, which should therefore implement the
- * {@link HasTimepoint} interface. Finally, the vertices are pool objects and
+ * {@link HasTimepoint} interface. Usually, the vertices are pool objects and
  * implement the {@link Ref} interface.
  * <p>
  * TODO: figure out locking and locking API.
@@ -36,7 +35,7 @@ import net.trackmate.graph.zzgraphinterfaces.Vertex;
  * @author Tobias Pietzsch &lt;tobias.pietzsch@gmail.com&gt;
  */
 public class SpatioTemporalIndexImp<
-		V extends Vertex< E > & Ref< V > & RealLocalizable & HasTimepoint,
+		V extends Vertex< E > & RealLocalizable & HasTimepoint,
 		E extends Edge< V > >
 	implements GraphListener< V, E >, SpatioTemporalIndex< V >
 {
@@ -68,7 +67,7 @@ public class SpatioTemporalIndexImp<
 	 * @param graph
 	 *            the graph to build the spatio-temporal index for.
 	 * @param vertexPool
-	 *            the {@link RefPool} of the vertices of the graph.
+	 *            the {@link IdBimap} of the vertices of the graph.
 	 */
 	public SpatioTemporalIndexImp( final ListenableGraph< V, E > graph, final IdBimap< V > vertexPool )
 	{

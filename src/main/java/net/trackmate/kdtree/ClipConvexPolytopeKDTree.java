@@ -1,15 +1,13 @@
 package net.trackmate.kdtree;
 
-import gnu.trove.list.array.TIntArrayList;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 
+import gnu.trove.list.array.TIntArrayList;
 import net.imglib2.RealLocalizable;
 import net.imglib2.algorithm.kdtree.ConvexPolytope;
 import net.imglib2.algorithm.kdtree.HyperPlane;
-import net.trackmate.Ref;
 import net.trackmate.pool.MappedElement;
 
 /**
@@ -33,7 +31,7 @@ import net.trackmate.pool.MappedElement;
  *
  * @author Tobias Pietzsch &lt;tobias.pietzsch@gmail.com&gt;
  */
-public class ClipConvexPolytopeKDTree< O extends Ref< O > & RealLocalizable, T extends MappedElement >
+public class ClipConvexPolytopeKDTree< O extends RealLocalizable, T extends MappedElement >
 {
 	private final KDTree< O, T > tree;
 
