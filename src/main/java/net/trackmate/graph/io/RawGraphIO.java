@@ -12,8 +12,6 @@ import net.trackmate.graph.GraphIdBimap;
 import net.trackmate.graph.ReadOnlyGraph;
 import net.trackmate.graph.Vertex;
 
-// TODO: add support for featuremaps
-
 /**
  * Write/read a {@link Graph} to/from an ObjectStream. For each {@link Graph}
  * class, the {@link RawGraphIO.Serializer} interface needs to be implemented
