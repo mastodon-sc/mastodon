@@ -1,10 +1,10 @@
-package net.trackmate.io;
+package net.trackmate.graph.io;
 
 import java.util.HashMap;
 
 import net.trackmate.graph.Vertex;
 import net.trackmate.graph.VertexFeature;
-import net.trackmate.io.RawFeatureIO.Serializer;
+import net.trackmate.graph.io.RawFeatureIO.Serializer;
 
 public class FeatureSerializers
 {

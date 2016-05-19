@@ -7,7 +7,7 @@ import net.trackmate.collection.RefSet;
 import net.trackmate.graph.Edge;
 import net.trackmate.graph.ReadOnlyGraph;
 import net.trackmate.graph.Vertex;
-import net.trackmate.graph.util.Graphs;
+import net.trackmate.graph.algorithm.util.Graphs;
 
 /**
  * A class to generate the connected components of a graph, regardless of edge

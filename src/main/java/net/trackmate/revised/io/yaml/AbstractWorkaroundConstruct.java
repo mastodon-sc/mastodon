@@ -1,4 +1,4 @@
-package net.trackmate.io.yaml;
+package net.trackmate.revised.io.yaml;
 
 import java.util.List;
 import java.util.Map;

@@ -1,4 +1,4 @@
-package net.trackmate.io;
+package net.trackmate.graph.io;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -7,9 +7,9 @@ import java.io.ObjectOutputStream;
 import gnu.trove.map.TObjectIntMap;
 import gnu.trove.map.hash.TIntIntHashMap;
 import net.trackmate.graph.Vertex;
-import net.trackmate.io.RawFeatureIO.Serializer;
-import net.trackmate.io.RawGraphIO.FileIdToGraphMap;
-import net.trackmate.io.RawGraphIO.GraphToFileIdMap;
+import net.trackmate.graph.io.RawFeatureIO.Serializer;
+import net.trackmate.graph.io.RawGraphIO.FileIdToGraphMap;
+import net.trackmate.graph.io.RawGraphIO.GraphToFileIdMap;
 
 public class IntVertexFeatureSerializer< V extends Vertex< ? > > implements Serializer< TObjectIntMap< V >, V >
 {

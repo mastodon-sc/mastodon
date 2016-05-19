@@ -4,8 +4,8 @@ import net.trackmate.collection.RefList;
 import net.trackmate.graph.Edge;
 import net.trackmate.graph.Graph;
 import net.trackmate.graph.Vertex;
-import net.trackmate.graph.traversal.BreadthFirstSearch;
-import net.trackmate.graph.traversal.SearchListener;
+import net.trackmate.graph.algorithm.traversal.BreadthFirstSearch;
+import net.trackmate.graph.algorithm.traversal.SearchListener;
 
 /**
  * A plain shortest path for unweighted graphs, directed or not. Simply based on

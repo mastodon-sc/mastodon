@@ -1,8 +1,8 @@
 package net.trackmate.revised.model.mamut;
 
 import net.trackmate.graph.features.ObjVertexFeature;
-import net.trackmate.io.FeatureSerializers;
-import net.trackmate.io.StringVertexFeatureSerializer;
+import net.trackmate.graph.io.FeatureSerializers;
+import net.trackmate.graph.io.StringVertexFeatureSerializer;
 
 public class Features
 {

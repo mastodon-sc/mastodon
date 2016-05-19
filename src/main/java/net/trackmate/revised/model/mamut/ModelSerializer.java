@@ -1,6 +1,6 @@
 package net.trackmate.revised.model.mamut;
 
-import net.trackmate.io.RawGraphIO.Serializer;
+import net.trackmate.graph.io.RawGraphIO.Serializer;
 import net.trackmate.undo.UndoSerializer;
 
 class ModelSerializer implements Serializer< Spot, Link >, UndoSerializer< Spot, Link >

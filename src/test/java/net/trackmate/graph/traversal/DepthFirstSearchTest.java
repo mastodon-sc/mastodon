@@ -1,8 +1,8 @@
 package net.trackmate.graph.traversal;
 
-import static net.trackmate.graph.traversal.GraphSearch.EdgeClass.BACK;
-import static net.trackmate.graph.traversal.GraphSearch.EdgeClass.FORWARD;
-import static net.trackmate.graph.traversal.GraphSearch.EdgeClass.TREE;
+import static net.trackmate.graph.algorithm.traversal.GraphSearch.EdgeClass.BACK;
+import static net.trackmate.graph.algorithm.traversal.GraphSearch.EdgeClass.FORWARD;
+import static net.trackmate.graph.algorithm.traversal.GraphSearch.EdgeClass.TREE;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -11,9 +11,10 @@ import java.util.List;
 
 import net.trackmate.graph.TestEdge;
 import net.trackmate.graph.TestVertex;
+import net.trackmate.graph.algorithm.traversal.DepthFirstSearch;
+import net.trackmate.graph.algorithm.traversal.GraphSearch.EdgeClass;
 import net.trackmate.graph.object.ObjectEdge;
 import net.trackmate.graph.object.ObjectVertex;
-import net.trackmate.graph.traversal.GraphSearch.EdgeClass;
 import net.trackmate.graph.traversal.GraphsForTests.GraphTestBundle;
 import net.trackmate.graph.traversal.GraphsForTests.TraversalTester;
 

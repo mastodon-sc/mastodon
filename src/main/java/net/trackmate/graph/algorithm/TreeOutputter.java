@@ -10,7 +10,7 @@ import net.trackmate.graph.Edges;
 import net.trackmate.graph.Graph;
 import net.trackmate.graph.ReadOnlyGraph;
 import net.trackmate.graph.Vertex;
-import net.trackmate.graph.traversal.DepthFirstIterator;
+import net.trackmate.graph.algorithm.traversal.DepthFirstIterator;
 
 /**
  * An algorithm that can output the tree below a specified vertex.

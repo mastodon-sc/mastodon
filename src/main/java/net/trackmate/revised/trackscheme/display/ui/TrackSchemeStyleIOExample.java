@@ -5,8 +5,8 @@ import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.constructor.Constructor;
 import org.yaml.snakeyaml.representer.Representer;
 
-import net.trackmate.io.yaml.WorkaroundConstructor;
-import net.trackmate.io.yaml.WorkaroundRepresenter;
+import net.trackmate.revised.io.yaml.WorkaroundConstructor;
+import net.trackmate.revised.io.yaml.WorkaroundRepresenter;
 import net.trackmate.revised.trackscheme.display.laf.TrackSchemeStyle;
 import net.trackmate.revised.trackscheme.display.ui.TrackSchemeStyleIO.ConstructBasicStroke;
 import net.trackmate.revised.trackscheme.display.ui.TrackSchemeStyleIO.ConstructColor;

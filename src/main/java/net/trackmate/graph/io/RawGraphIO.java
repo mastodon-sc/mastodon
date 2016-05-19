@@ -1,4 +1,4 @@
-package net.trackmate.io;
+package net.trackmate.graph.io;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;

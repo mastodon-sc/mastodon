@@ -15,10 +15,12 @@ import net.trackmate.graph.TestEdge;
 import net.trackmate.graph.TestGraph;
 import net.trackmate.graph.TestVertex;
 import net.trackmate.graph.Vertex;
+import net.trackmate.graph.algorithm.traversal.GraphSearch;
+import net.trackmate.graph.algorithm.traversal.SearchListener;
+import net.trackmate.graph.algorithm.traversal.GraphSearch.EdgeClass;
 import net.trackmate.graph.object.ObjectEdge;
 import net.trackmate.graph.object.ObjectGraph;
 import net.trackmate.graph.object.ObjectVertex;
-import net.trackmate.graph.traversal.GraphSearch.EdgeClass;
 
 public class GraphsForTests
 {

@@ -1,4 +1,4 @@
-package net.trackmate.io;
+package net.trackmate.graph.io;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -9,8 +9,8 @@ import net.trackmate.graph.FeatureRegistry;
 import net.trackmate.graph.GraphFeatures;
 import net.trackmate.graph.Vertex;
 import net.trackmate.graph.VertexFeature;
-import net.trackmate.io.RawGraphIO.FileIdToGraphMap;
-import net.trackmate.io.RawGraphIO.GraphToFileIdMap;
+import net.trackmate.graph.io.RawGraphIO.FileIdToGraphMap;
+import net.trackmate.graph.io.RawGraphIO.GraphToFileIdMap;
 
 public class RawFeatureIO
 {

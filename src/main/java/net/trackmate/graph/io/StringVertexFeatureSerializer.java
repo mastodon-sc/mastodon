@@ -1,4 +1,4 @@
-package net.trackmate.io;
+package net.trackmate.graph.io;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -11,9 +11,9 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import net.trackmate.graph.Vertex;
-import net.trackmate.io.RawFeatureIO.Serializer;
-import net.trackmate.io.RawGraphIO.FileIdToGraphMap;
-import net.trackmate.io.RawGraphIO.GraphToFileIdMap;
+import net.trackmate.graph.io.RawFeatureIO.Serializer;
+import net.trackmate.graph.io.RawGraphIO.FileIdToGraphMap;
+import net.trackmate.graph.io.RawGraphIO.GraphToFileIdMap;
 
 public class StringVertexFeatureSerializer< V extends Vertex< ? > > implements Serializer< Map< V, String >, V >
 {

@@ -5,7 +5,7 @@ import java.util.Map;
 
 import net.trackmate.collection.UniqueHashcodeArrayMap;
 import net.trackmate.graph.VertexFeature.FeatureCleanup;
-import net.trackmate.io.RawFeatureIO;
+import net.trackmate.graph.io.RawFeatureIO;
 
 public class GraphFeatures< V extends Vertex< E >, E extends Edge< V > >
 {

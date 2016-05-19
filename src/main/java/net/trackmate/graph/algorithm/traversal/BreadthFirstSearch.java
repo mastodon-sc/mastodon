@@ -1,4 +1,4 @@
-package net.trackmate.graph.traversal;
+package net.trackmate.graph.algorithm.traversal;
 
 import net.trackmate.collection.RefDeque;
 import net.trackmate.collection.RefIntMap;
@@ -6,7 +6,7 @@ import net.trackmate.graph.Edge;
 import net.trackmate.graph.Edges;
 import net.trackmate.graph.ReadOnlyGraph;
 import net.trackmate.graph.Vertex;
-import net.trackmate.graph.util.Graphs;
+import net.trackmate.graph.algorithm.util.Graphs;
 
 /**
  * Breadth-first search for directed or undirected graph, following the

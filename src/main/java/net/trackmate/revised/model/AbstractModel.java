@@ -12,12 +12,12 @@ import net.trackmate.graph.GraphIdBimap;
 import net.trackmate.graph.ListenableGraph;
 import net.trackmate.graph.ReadOnlyGraph;
 import net.trackmate.graph.VertexFeature;
+import net.trackmate.graph.io.RawFeatureIO;
+import net.trackmate.graph.io.RawGraphIO;
+import net.trackmate.graph.io.RawGraphIO.FileIdToGraphMap;
+import net.trackmate.graph.io.RawGraphIO.GraphToFileIdMap;
 import net.trackmate.graph.ref.AbstractEdge;
 import net.trackmate.graph.ref.AbstractVertexWithFeatures;
-import net.trackmate.io.RawFeatureIO;
-import net.trackmate.io.RawGraphIO;
-import net.trackmate.io.RawGraphIO.FileIdToGraphMap;
-import net.trackmate.io.RawGraphIO.GraphToFileIdMap;
 
 /**
  * Manages the model graph.

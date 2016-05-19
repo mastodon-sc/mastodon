@@ -1,4 +1,4 @@
-package net.trackmate.graph.traversal;
+package net.trackmate.graph.algorithm.traversal;
 
 import net.trackmate.collection.RefStack;
 import net.trackmate.graph.Edge;

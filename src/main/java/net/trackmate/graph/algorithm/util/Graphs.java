@@ -1,4 +1,4 @@
-package net.trackmate.graph.util;
+package net.trackmate.graph.algorithm.util;
 
 import java.util.Comparator;
 

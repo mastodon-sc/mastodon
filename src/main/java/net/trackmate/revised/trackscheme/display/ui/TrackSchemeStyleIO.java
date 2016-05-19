@@ -15,10 +15,10 @@ import org.yaml.snakeyaml.nodes.Node;
 import org.yaml.snakeyaml.nodes.SequenceNode;
 import org.yaml.snakeyaml.nodes.Tag;
 
-import net.trackmate.io.yaml.AbstractWorkaroundConstruct;
-import net.trackmate.io.yaml.WorkaroundConstructor;
-import net.trackmate.io.yaml.WorkaroundRepresent;
-import net.trackmate.io.yaml.WorkaroundRepresenter;
+import net.trackmate.revised.io.yaml.AbstractWorkaroundConstruct;
+import net.trackmate.revised.io.yaml.WorkaroundConstructor;
+import net.trackmate.revised.io.yaml.WorkaroundRepresent;
+import net.trackmate.revised.io.yaml.WorkaroundRepresenter;
 import net.trackmate.revised.trackscheme.display.laf.TrackSchemeStyle;
 
 public class TrackSchemeStyleIO
