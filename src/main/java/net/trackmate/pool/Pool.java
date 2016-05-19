@@ -3,7 +3,7 @@ package net.trackmate.pool;
 import java.util.Iterator;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
-import net.trackmate.collection.IdBimap;
+import net.trackmate.RefPool;
 import net.trackmate.pool.MemPool.PoolIterator;
 
 /**
@@ -20,7 +20,7 @@ import net.trackmate.pool.MemPool.PoolIterator;
  *
  * @author Tobias Pietzsch &lt;tobias.pietzsch@gmail.com&gt;
  */
-public class Pool< O extends PoolObject< O, T >, T extends MappedElement > implements IdBimap< O >, Iterable< O >
+public class Pool< O extends PoolObject< O, T >, T extends MappedElement > implements RefPool< O >, Iterable< O >
 {
 	private final PoolObject.Factory< O, T > objFactory;
 

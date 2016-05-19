@@ -6,11 +6,11 @@ import java.util.Iterator;
 import gnu.trove.TIntCollection;
 import gnu.trove.iterator.TIntIterator;
 import gnu.trove.list.linked.TIntLinkedList;
-import net.trackmate.collection.IdBimap;
+import net.trackmate.RefPool;
 
 public class RefLinkedQueue< O > implements IntBackedRefCollection< O >
 {
-	private final IdBimap< O > pool;
+	private final RefPool< O > pool;
 
 	private final Class< O > elementType;
 
@@ -26,7 +26,7 @@ public class RefLinkedQueue< O > implements IntBackedRefCollection< O >
 	 * @param pool
 	 *            the pool to draw objects from in order to build this queue.
 	 */
-	public RefLinkedQueue( final IdBimap< O > pool )
+	public RefLinkedQueue( final RefPool< O > pool )
 	{
 		this.pool = pool;
 		this.elementType = pool.getRefClass();

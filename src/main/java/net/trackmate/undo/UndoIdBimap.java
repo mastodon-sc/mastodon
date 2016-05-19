@@ -3,7 +3,7 @@ package net.trackmate.undo;
 import gnu.trove.impl.Constants;
 import gnu.trove.map.TIntIntMap;
 import gnu.trove.map.hash.TIntIntHashMap;
-import net.trackmate.collection.IdBimap;
+import net.trackmate.RefPool;
 
 /**
  * TODO
@@ -12,7 +12,7 @@ import net.trackmate.collection.IdBimap;
  *
  * @author Tobias Pietzsch &lt;tobias.pietzsch@gmail.com&gt;
  */
-public class UndoIdBimap< O > implements IdBimap< O >
+public class UndoIdBimap< O > implements RefPool< O >
 {
 	/**
 	 * value used to declare that the requested value is not in the map.
@@ -23,7 +23,7 @@ public class UndoIdBimap< O > implements IdBimap< O >
 
 	private final TIntIntMap objectIdToUndoId;
 
-	private final IdBimap< O > idmap;
+	private final RefPool< O > idmap;
 
 	private int idgen;
 
@@ -32,7 +32,7 @@ public class UndoIdBimap< O > implements IdBimap< O >
 	 *
 	 * @param idmap
 	 */
-	public UndoIdBimap( final IdBimap< O > idmap )
+	public UndoIdBimap( final RefPool< O > idmap )
 	{
 		this.idmap = idmap;
 		undoIdToObjectId = new TIntIntHashMap( Constants.DEFAULT_CAPACITY, Constants.DEFAULT_LOAD_FACTOR, NO_ENTRY_VALUE, NO_ENTRY_VALUE );

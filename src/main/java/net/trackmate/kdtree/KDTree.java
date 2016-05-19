@@ -6,7 +6,7 @@ import java.util.Collection;
 import net.imglib2.RealInterval;
 import net.imglib2.RealLocalizable;
 import net.imglib2.RealPositionable;
-import net.trackmate.collection.IdBimap;
+import net.trackmate.RefPool;
 import net.trackmate.collection.RefRefMap;
 import net.trackmate.collection.ref.RefRefHashMap;
 import net.trackmate.pool.DoubleMappedElement;
@@ -47,7 +47,7 @@ public class KDTree<
 	 * @return the tree.
 	 */
 	public static < O extends RealLocalizable >
-			KDTree< O, DoubleMappedElement > kdtree( final Collection< O > objects, final IdBimap< O > objectPool )
+			KDTree< O, DoubleMappedElement > kdtree( final Collection< O > objects, final RefPool< O > objectPool )
 	{
 		return kdtree( objects, objectPool, defaultPoolFactory );
 	}
@@ -65,7 +65,7 @@ public class KDTree<
 	 * @return the tree.
 	 */
 	public static < O extends RealLocalizable, T extends MappedElement >
-			KDTree< O, T > kdtree( final Collection< O > objects, final IdBimap< O > objectPool, final MemPool.Factory< T > poolFactory )
+			KDTree< O, T > kdtree( final Collection< O > objects, final RefPool< O > objectPool, final MemPool.Factory< T > poolFactory )
 	{
 		final KDTree< O, T > kdtree = new NodeFactory< O, T >( objects, objectPool, poolFactory ).kdtree;
 		kdtree.build( objects );
@@ -81,7 +81,7 @@ public class KDTree<
 	public static < O extends RealLocalizable, T extends MappedElement >
 			RefRefMap< O, KDTreeNode< O, T > > createRefToKDTreeNodeMap( final KDTree< O, T > kdtree )
 	{
-		final IdBimap< O > objPool = kdtree.getObjectPool();
+		final RefPool< O > objPool = kdtree.getObjectPool();
 		final O ref = objPool.createRef();
 		final KDTreeNode< O, T > n = kdtree.createRef();
 		final RefRefMap< O, KDTreeNode< O, T > > map = new RefRefHashMap< O, KDTreeNode< O, T > >( objPool, kdtree );
@@ -108,7 +108,7 @@ public class KDTree<
 
 		private final MemPool.Factory< T > poolFactory;
 
-		public NodeFactory( final Collection< O > objects, final IdBimap< O > objectPool, final MemPool.Factory< T > poolFactory )
+		public NodeFactory( final Collection< O > objects, final RefPool< O > objectPool, final MemPool.Factory< T > poolFactory )
 		{
 			this.poolFactory = poolFactory;
 			if ( objects.isEmpty() )
@@ -150,7 +150,7 @@ public class KDTree<
 		}
 	};
 
-	private final IdBimap< O > objectPool;
+	private final RefPool< O > objectPool;
 
 	/**
 	 * the number of dimensions.
@@ -174,7 +174,7 @@ public class KDTree<
 			final NodeFactory< O, T > nodeFactory,
 			final int numDimensions,
 			final Collection< O > objects,
-			final IdBimap< O > objectPool )
+			final RefPool< O > objectPool )
 	{
 		super( initialCapacity, nodeFactory );
 		this.n = numDimensions;
@@ -224,7 +224,7 @@ public class KDTree<
 		return null;
 	}
 
-	IdBimap< O > getObjectPool()
+	RefPool< O > getObjectPool()
 	{
 		return objectPool;
 	}

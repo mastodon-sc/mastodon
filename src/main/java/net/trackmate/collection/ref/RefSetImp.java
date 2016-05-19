@@ -6,32 +6,32 @@ import java.util.Iterator;
 import gnu.trove.iterator.TIntIterator;
 import gnu.trove.set.TIntSet;
 import gnu.trove.set.hash.TIntHashSet;
-import net.trackmate.collection.IdBimap;
+import net.trackmate.RefPool;
 import net.trackmate.collection.RefSet;
 
 public class RefSetImp< O > implements IntBackedRefCollection< O >, RefSet< O >
 {
 	private final TIntSet indices;
 
-	private final IdBimap< O > pool;
+	private final RefPool< O > pool;
 
 	private final Class< O > elementType;
 
-	public RefSetImp( final IdBimap< O > pool )
+	public RefSetImp( final RefPool< O > pool )
 	{
 		this.pool = pool;
 		elementType = pool.getRefClass();
 		indices = new TIntHashSet();
 	}
 
-	public RefSetImp( final IdBimap< O > pool, final int initialCapacity )
+	public RefSetImp( final RefPool< O > pool, final int initialCapacity )
 	{
 		this.pool = pool;
 		elementType = pool.getRefClass();
 		indices = new TIntHashSet( initialCapacity );
 	}
 
-	protected RefSetImp( final IdBimap< O > pool, final TIntSet indices )
+	protected RefSetImp( final RefPool< O > pool, final TIntSet indices )
 	{
 		this.pool = pool;
 		elementType = pool.getRefClass();

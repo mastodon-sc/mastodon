@@ -1,6 +1,6 @@
 package net.trackmate.collection.ref;
 
-import net.trackmate.collection.IdBimap;
+import net.trackmate.RefPool;
 import net.trackmate.collection.RefStack;
 import net.trackmate.pool.PoolObject;
 
@@ -27,7 +27,7 @@ public class RefArrayStack< O > extends RefArrayList< O > implements RefStack< O
 	 * @param pool
 	 *            the pool to draw objects from in order to build this stack.
 	 */
-	public RefArrayStack( final IdBimap< O > pool )
+	public RefArrayStack( final RefPool< O > pool )
 	{
 		super( pool );
 	}
@@ -40,7 +40,7 @@ public class RefArrayStack< O > extends RefArrayList< O > implements RefStack< O
 	 * @param initialCapacity
 	 *            the initial capacity.
 	 */
-	public RefArrayStack( final IdBimap< O > pool, final int initialCapacity )
+	public RefArrayStack( final RefPool< O > pool, final int initialCapacity )
 	{
 		super( pool, initialCapacity );
 	}

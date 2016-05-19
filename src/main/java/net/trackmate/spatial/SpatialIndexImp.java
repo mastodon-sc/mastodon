@@ -7,7 +7,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import net.imglib2.RealLocalizable;
 import net.imglib2.neighborsearch.NearestNeighborSearch;
-import net.trackmate.collection.IdBimap;
+import net.trackmate.RefPool;
 
 /**
  * Spatial index of {@link RealLocalizable} objects.
@@ -27,7 +27,7 @@ public class SpatialIndexImp< O extends RealLocalizable > implements SpatialInde
 
     private final Lock writeLock;
 
-	public SpatialIndexImp( final Collection< O > objs, final IdBimap< O > objPool )
+	public SpatialIndexImp( final Collection< O > objs, final RefPool< O > objPool )
 	{
 		data = new SpatialIndexData< O >( objs, objPool );
 		final ReentrantReadWriteLock rwl = new ReentrantReadWriteLock();

@@ -13,7 +13,7 @@ import gnu.trove.map.hash.TIntIntHashMap;
 import gnu.trove.procedure.TIntProcedure;
 import gnu.trove.procedure.TObjectIntProcedure;
 import gnu.trove.procedure.TObjectProcedure;
-import net.trackmate.collection.IdBimap;
+import net.trackmate.RefPool;
 import net.trackmate.collection.RefIntMap;
 
 public class RefIntHashMap< K > implements RefIntMap< K >
@@ -24,7 +24,7 @@ public class RefIntHashMap< K > implements RefIntMap< K >
 
 	private final TIntIntHashMap indexmap;
 
-	private final IdBimap< K > pool;
+	private final RefPool< K > pool;
 
 	private final Class< K > keyType;
 
@@ -32,14 +32,14 @@ public class RefIntHashMap< K > implements RefIntMap< K >
 	 * CONSTRUCTORS
 	 */
 
-	public RefIntHashMap( final IdBimap< K > pool, final int noEntryValue, final int initialCapacity )
+	public RefIntHashMap( final RefPool< K > pool, final int noEntryValue, final int initialCapacity )
 	{
 		this.pool = pool;
 		this.keyType = pool.getRefClass();
 		this.indexmap = new TIntIntHashMap( initialCapacity, DEFAULT_LOAD_FACTOR, NO_ENTRY_KEY, noEntryValue );
 	}
 
-	public RefIntHashMap( final IdBimap< K > pool, final int noEntryValue )
+	public RefIntHashMap( final RefPool< K > pool, final int noEntryValue )
 	{
 		this( pool, noEntryValue, Constants.DEFAULT_CAPACITY );
 	}

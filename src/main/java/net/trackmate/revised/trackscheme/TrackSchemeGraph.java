@@ -3,7 +3,7 @@ package net.trackmate.revised.trackscheme;
 import java.util.ArrayList;
 
 import net.trackmate.RefPool;
-import net.trackmate.collection.IdBimap;
+import net.trackmate.RefPool;
 import net.trackmate.collection.IntRefMap;
 import net.trackmate.collection.RefSet;
 import net.trackmate.collection.ref.IntRefArrayMap;
@@ -165,7 +165,7 @@ public class TrackSchemeGraph<
 	 *
 	 * @return the vertex pool.
 	 */
-	public IdBimap< TrackSchemeVertex > getVertexPool()
+	public RefPool< TrackSchemeVertex > getVertexPool()
 	{
 		return vertexPool;
 	}

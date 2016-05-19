@@ -8,7 +8,7 @@ import gnu.trove.iterator.TIntObjectIterator;
 import gnu.trove.map.hash.TIntObjectHashMap;
 import net.imglib2.RealLocalizable;
 import net.trackmate.Ref;
-import net.trackmate.collection.IdBimap;
+import net.trackmate.RefPool;
 import net.trackmate.collection.RefList;
 import net.trackmate.graph.listenable.GraphListener;
 import net.trackmate.graph.listenable.ListenableGraph;
@@ -49,7 +49,7 @@ public class SpatioTemporalIndexImp<
 
 	private final ListenableGraph< V, E > graph;
 
-	private final IdBimap< V > vertexPool;
+	private final RefPool< V > vertexPool;
 
 	private final Lock readLock;
 
@@ -67,9 +67,9 @@ public class SpatioTemporalIndexImp<
 	 * @param graph
 	 *            the graph to build the spatio-temporal index for.
 	 * @param vertexPool
-	 *            the {@link IdBimap} of the vertices of the graph.
+	 *            the {@link RefPool} of the vertices of the graph.
 	 */
-	public SpatioTemporalIndexImp( final ListenableGraph< V, E > graph, final IdBimap< V > vertexPool )
+	public SpatioTemporalIndexImp( final ListenableGraph< V, E > graph, final RefPool< V > vertexPool )
 	{
 		this.graph = graph;
 		this.vertexPool = vertexPool;

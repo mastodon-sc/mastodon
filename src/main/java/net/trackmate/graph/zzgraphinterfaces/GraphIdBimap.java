@@ -1,6 +1,6 @@
 package net.trackmate.graph.zzgraphinterfaces;
 
-import net.trackmate.collection.IdBimap;
+import net.trackmate.RefPool;
 
 /**
  * Bidirectional mappings between integer IDs and vertices and integer IDs
@@ -15,10 +15,10 @@ import net.trackmate.collection.IdBimap;
  */
 public class GraphIdBimap< V, E >
 {
-	private final IdBimap< V > vertexBimap;
-	private final IdBimap< E > edgeBimap;
+	private final RefPool< V > vertexBimap;
+	private final RefPool< E > edgeBimap;
 
-	public GraphIdBimap( final IdBimap< V > vertexBimap, final IdBimap< E > edgeBimap )
+	public GraphIdBimap( final RefPool< V > vertexBimap, final RefPool< E > edgeBimap )
 	{
 		this.vertexBimap = vertexBimap;
 		this.edgeBimap = edgeBimap;
@@ -44,12 +44,12 @@ public class GraphIdBimap< V, E >
 		return edgeBimap.getObject( id, ref );
 	}
 
-	public IdBimap< V > vertexIdBimap()
+	public RefPool< V > vertexIdBimap()
 	{
 		return vertexBimap;
 	}
 
-	public IdBimap< E > edgeIdBimap()
+	public RefPool< E > edgeIdBimap()
 	{
 		return edgeBimap;
 	}

@@ -7,7 +7,7 @@ import java.util.Set;
 
 import gnu.trove.iterator.TIntIterator;
 import gnu.trove.map.hash.TIntIntHashMap;
-import net.trackmate.collection.IdBimap;
+import net.trackmate.RefPool;
 import net.trackmate.collection.RefRefMap;
 
 public class RefRefHashMap< K, L > implements RefRefMap< K, L >
@@ -26,9 +26,9 @@ public class RefRefHashMap< K, L > implements RefRefMap< K, L >
 
 	private final TIntIntHashMap indexmap;
 
-	private final IdBimap< K > keyPool;
+	private final RefPool< K > keyPool;
 
-	private final IdBimap< L > valuePool;
+	private final RefPool< L > valuePool;
 
 	private final Class< K > keyType;
 
@@ -38,7 +38,7 @@ public class RefRefHashMap< K, L > implements RefRefMap< K, L >
 	 * CONSTRUCTORS
 	 */
 
-	public RefRefHashMap( final IdBimap< K > keyPool, final IdBimap< L > valuePool, final int initialCapacity, final float loadFactor )
+	public RefRefHashMap( final RefPool< K > keyPool, final RefPool< L > valuePool, final int initialCapacity, final float loadFactor )
 	{
 		this.indexmap = new TIntIntHashMap( initialCapacity, loadFactor, NO_ENTRY_KEY, NO_ENTRY_VALUE );
 		this.keyPool = keyPool;
@@ -47,12 +47,12 @@ public class RefRefHashMap< K, L > implements RefRefMap< K, L >
 		this.valueType = valuePool.getRefClass();
 	}
 
-	public RefRefHashMap( final IdBimap< K > keyPool, final IdBimap< L > valuePool, final int initialCapacity )
+	public RefRefHashMap( final RefPool< K > keyPool, final RefPool< L > valuePool, final int initialCapacity )
 	{
 		this( keyPool, valuePool, initialCapacity, 0.5f );
 	}
 
-	public RefRefHashMap( final IdBimap< K > keyPool, final IdBimap< L > valuePool )
+	public RefRefHashMap( final RefPool< K > keyPool, final RefPool< L > valuePool )
 	{
 		this( keyPool, valuePool, 10 );
 	}

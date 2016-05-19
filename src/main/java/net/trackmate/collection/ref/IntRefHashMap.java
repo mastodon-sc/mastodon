@@ -17,7 +17,7 @@ import gnu.trove.procedure.TIntProcedure;
 import gnu.trove.procedure.TObjectProcedure;
 import gnu.trove.set.TIntSet;
 import net.trackmate.Ref;
-import net.trackmate.collection.IdBimap;
+import net.trackmate.RefPool;
 import net.trackmate.collection.IntRefMap;
 
 
@@ -41,16 +41,16 @@ public class IntRefHashMap< V > implements IntRefMap< V >
 {
 	private final TIntIntMap keyToIndexMap;
 
-	private final IdBimap< V > pool;
+	private final RefPool< V > pool;
 
 	private final Class< V > valueType;
 
-	public IntRefHashMap( final IdBimap< V > pool, final int noEntryKey )
+	public IntRefHashMap( final RefPool< V > pool, final int noEntryKey )
 	{
 		this( pool, noEntryKey, Constants.DEFAULT_CAPACITY );
 	}
 
-	public IntRefHashMap( final IdBimap< V > pool, final int noEntryKey, final int initialCapacity )
+	public IntRefHashMap( final RefPool< V > pool, final int noEntryKey, final int initialCapacity )
 	{
 		this.pool = pool;
 		valueType = pool.getRefClass();

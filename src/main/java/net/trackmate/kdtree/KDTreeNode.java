@@ -7,7 +7,7 @@ import static net.trackmate.pool.ByteUtils.INT_SIZE;
 import java.nio.ByteOrder;
 
 import net.imglib2.RealLocalizable;
-import net.trackmate.collection.IdBimap;
+import net.trackmate.RefPool;
 import net.trackmate.pool.MappedElement;
 import net.trackmate.pool.PoolObject;
 
@@ -19,7 +19,7 @@ public class KDTreeNode<
 {
 	private final int n;
 
-	private final IdBimap< O > objPool;
+	private final RefPool< O > objPool;
 
 	private final int POS_INDEX_OFFSET;
 	private final int LEFT_INDEX_OFFSET;

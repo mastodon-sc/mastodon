@@ -5,26 +5,26 @@ import java.util.Iterator;
 
 import gnu.trove.deque.TIntArrayDeque;
 import gnu.trove.iterator.TIntIterator;
-import net.trackmate.collection.IdBimap;
+import net.trackmate.RefPool;
 import net.trackmate.collection.RefDeque;
 
 // TODO rename RefArrayDeque
 public class RefArrayDeque< O > implements IntBackedRefCollection< O >, RefDeque< O >
 {
-	private final IdBimap< O > pool;
+	private final RefPool< O > pool;
 
 	private final TIntArrayDeque indices;
 
 	private final Class< O > elementType;
 
-	public RefArrayDeque( final IdBimap< O > pool )
+	public RefArrayDeque( final RefPool< O > pool )
 	{
 		this.pool = pool;
 		this.indices = new TIntArrayDeque();
 		elementType = pool.getRefClass();
 	}
 
-	public RefArrayDeque( final IdBimap< O > pool, final int initialCapacity )
+	public RefArrayDeque( final RefPool< O > pool, final int initialCapacity )
 	{
 		this.pool = pool;
 		indices = new TIntArrayDeque( initialCapacity );

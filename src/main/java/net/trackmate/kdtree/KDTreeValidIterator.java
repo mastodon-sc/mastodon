@@ -3,7 +3,7 @@ package net.trackmate.kdtree;
 import java.util.Iterator;
 
 import net.imglib2.RealLocalizable;
-import net.trackmate.collection.IdBimap;
+import net.trackmate.RefPool;
 import net.trackmate.pool.MappedElement;
 
 public class KDTreeValidIterator<
@@ -27,7 +27,7 @@ public class KDTreeValidIterator<
 
 	private final Iterator< KDTreeNode< O, T > > kdtreeIter;
 
-	private final IdBimap< O > objPool;
+	private final RefPool< O > objPool;
 
 	private boolean hasNext;
 

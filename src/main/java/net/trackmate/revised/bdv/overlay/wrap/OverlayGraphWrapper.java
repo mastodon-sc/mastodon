@@ -2,7 +2,7 @@ package net.trackmate.revised.bdv.overlay.wrap;
 
 import java.util.concurrent.ConcurrentLinkedQueue;
 
-import net.trackmate.collection.IdBimap;
+import net.trackmate.RefPool;
 import net.trackmate.collection.RefCollection;
 import net.trackmate.collection.RefList;
 import net.trackmate.collection.ref.RefArrayList;
@@ -119,7 +119,7 @@ public class OverlayGraphWrapper< V extends Vertex< E >, E extends Edge< V > > i
 		return overlayProperties.getMaxBoundingSphereRadiusSquared( timepoint );
 	}
 
-	private final IdBimap< OverlayVertexWrapper< V, E > > vertexPool = new IdBimap< OverlayVertexWrapper< V, E > >()
+	private final RefPool< OverlayVertexWrapper< V, E > > vertexPool = new RefPool< OverlayVertexWrapper< V, E > >()
 	{
 		@Override
 		public OverlayVertexWrapper< V, E > createRef()
@@ -155,7 +155,7 @@ public class OverlayGraphWrapper< V extends Vertex< E >, E extends Edge< V > > i
 		}
 	};
 
-	private final IdBimap< OverlayEdgeWrapper< V, E > > edgePool = new IdBimap< OverlayEdgeWrapper< V, E > >()
+	private final RefPool< OverlayEdgeWrapper< V, E > > edgePool = new RefPool< OverlayEdgeWrapper< V, E > >()
 	{
 		@Override
 		public OverlayEdgeWrapper< V, E > createRef()

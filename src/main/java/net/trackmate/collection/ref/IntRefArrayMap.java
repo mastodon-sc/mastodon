@@ -18,7 +18,7 @@ import gnu.trove.procedure.TIntProcedure;
 import gnu.trove.procedure.TObjectProcedure;
 import gnu.trove.set.TIntSet;
 import net.trackmate.RefPool;
-import net.trackmate.collection.IdBimap;
+import net.trackmate.RefPool;
 import net.trackmate.collection.IntRefMap;
 
 /**
@@ -55,18 +55,18 @@ public class IntRefArrayMap< V > implements IntRefMap< V >
 
 	private final TIntArrayList keyToIndexMap;
 
-	private final IdBimap< V > pool;
+	private final RefPool< V > pool;
 
 	private final Class< V > valueType;
 
 	private int size;
 
-	public IntRefArrayMap( final IdBimap< V > pool )
+	public IntRefArrayMap( final RefPool< V > pool )
 	{
 		this( pool, Constants.DEFAULT_CAPACITY );
 	}
 
-	public IntRefArrayMap( final IdBimap< V > pool, final int initialCapacity )
+	public IntRefArrayMap( final RefPool< V > pool, final int initialCapacity )
 	{
 		this.pool = pool;
 		keyToIndexMap = new TIntArrayList( initialCapacity, NO_ENTRY_VALUE );

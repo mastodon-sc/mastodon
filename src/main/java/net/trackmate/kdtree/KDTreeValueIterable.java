@@ -5,7 +5,7 @@ import java.util.Iterator;
 import gnu.trove.deque.TIntArrayDeque;
 import gnu.trove.list.array.TIntArrayList;
 import net.imglib2.RealLocalizable;
-import net.trackmate.collection.IdBimap;
+import net.trackmate.RefPool;
 import net.trackmate.pool.MappedElement;
 
 public class KDTreeValueIterable< O extends RealLocalizable, T extends MappedElement > implements Iterable< O >
@@ -42,7 +42,7 @@ public class KDTreeValueIterable< O extends RealLocalizable, T extends MappedEle
 
 		private final KDTreeNode< O, T > current;
 
-		private final IdBimap< O > pool;
+		private final RefPool< O > pool;
 
 		private final O obj;
 
@@ -113,7 +113,7 @@ public class KDTreeValueIterable< O extends RealLocalizable, T extends MappedEle
 
 		private final int n;
 
-		private final IdBimap< O > pool;
+		private final RefPool< O > pool;
 
 		private final O obj;
 

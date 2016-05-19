@@ -12,25 +12,25 @@ import java.util.Random;
 import gnu.trove.TIntCollection;
 import gnu.trove.iterator.TIntIterator;
 import gnu.trove.list.array.TIntArrayList;
-import net.trackmate.collection.IdBimap;
+import net.trackmate.RefPool;
 import net.trackmate.collection.RefList;
 
 public class RefArrayList< O > implements IntBackedRefCollection< O >, RefList< O >
 {
 	private final TIntArrayList indices;
 
-	final IdBimap< O > pool;
+	final RefPool< O > pool;
 
 	final Class< O > elementType;
 
-	public RefArrayList( final IdBimap< O > pool )
+	public RefArrayList( final RefPool< O > pool )
 	{
 		this.pool = pool;
 		indices = new TIntArrayList();
 		elementType = pool.getRefClass();
 	}
 
-	public RefArrayList( final IdBimap< O > pool, final int initialCapacity )
+	public RefArrayList( final RefPool< O > pool, final int initialCapacity )
 	{
 		this.pool = pool;
 		indices = new TIntArrayList( initialCapacity );

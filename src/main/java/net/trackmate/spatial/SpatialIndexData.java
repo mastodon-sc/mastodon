@@ -9,7 +9,7 @@ import net.imglib2.Sampler;
 import net.imglib2.algorithm.kdtree.ConvexPolytope;
 import net.imglib2.algorithm.kdtree.HyperPlane;
 import net.imglib2.neighborsearch.NearestNeighborSearch;
-import net.trackmate.collection.IdBimap;
+import net.trackmate.RefPool;
 import net.trackmate.collection.RefList;
 import net.trackmate.collection.RefRefMap;
 import net.trackmate.collection.RefSet;
@@ -25,7 +25,7 @@ import net.trackmate.pool.DoubleMappedElement;
 /**
  * Spatial index of {@link RealLocalizable} objects.
  * <p>
- * When the index is {@link #SpatialIndexData(Collection, IdBimap) constructed},
+ * When the index is {@link #SpatialIndexData(Collection, RefPool) constructed},
  * a KDTree of objects is built. The index can be modified by adding, changing,
  * and removing objects. These changes do not trigger a rebuild of the KDTree.
  * Instead, affected nodes in the KDTree are marked as invalid and the modified
@@ -50,7 +50,7 @@ import net.trackmate.pool.DoubleMappedElement;
 class SpatialIndexData< O extends RealLocalizable >
 		implements Iterable< O >
 {
-	private final IdBimap< O > objPool;
+	private final RefPool< O > objPool;
 
 	/**
 	 * KDTree of objects that were provided at construction. When changes are
@@ -89,7 +89,7 @@ class SpatialIndexData< O extends RealLocalizable >
 	 * @param objPool
 	 *            pool for creating refs, collections, etc.
 	 */
-	SpatialIndexData( final Collection< O > objs, final IdBimap< O > objPool )
+	SpatialIndexData( final Collection< O > objs, final RefPool< O > objPool )
 	{
 		this.objPool = objPool;
 		kdtree = KDTree.kdtree( objs, objPool );
@@ -224,7 +224,7 @@ class SpatialIndexData< O extends RealLocalizable >
 
 	static class Iter< O > implements Iterator< O >
 	{
-		private final IdBimap< O > pool;
+		private final RefPool< O > pool;
 
 		private final O ref;
 
@@ -237,7 +237,7 @@ class SpatialIndexData< O extends RealLocalizable >
 		private boolean hasNext;
 
 		public Iter(
-				final IdBimap< O > objPool,
+				final RefPool< O > objPool,
 				final Iterator< O > kdtreeIter,
 				final Iterator< O > addedIter )
 		{

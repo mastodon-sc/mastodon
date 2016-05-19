@@ -8,7 +8,7 @@ import java.util.Set;
 
 import gnu.trove.iterator.TIntObjectIterator;
 import gnu.trove.map.hash.TIntObjectHashMap;
-import net.trackmate.collection.IdBimap;
+import net.trackmate.RefPool;
 import net.trackmate.collection.RefObjectMap;
 
 /**
@@ -19,13 +19,13 @@ public class RefObjectHashMap< K, O > implements Map< K, O >, RefObjectMap< K, O
 {
 	private final TIntObjectHashMap< O > indexmap;
 
-	private final IdBimap< K > pool;
+	private final RefPool< K > pool;
 
 	private final Class< K > keyType;
 
 	private EntrySet entrySet;
 
-	public RefObjectHashMap( final IdBimap< K > pool )
+	public RefObjectHashMap( final RefPool< K > pool )
 	{
 		indexmap = new TIntObjectHashMap< O >();
 		this.pool = pool;
