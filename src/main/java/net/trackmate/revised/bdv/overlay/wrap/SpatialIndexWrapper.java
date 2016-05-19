@@ -8,7 +8,7 @@ import net.imglib2.algorithm.kdtree.ConvexPolytope;
 import net.imglib2.neighborsearch.NearestNeighborSearch;
 import net.trackmate.graph.Edge;
 import net.trackmate.graph.Vertex;
-import net.trackmate.spatial.ClipConvexPolytope;
+import net.trackmate.kdtree.ClipConvexPolytope;
 import net.trackmate.spatial.SpatialIndex;
 
 public class SpatialIndexWrapper< V extends Vertex< E >, E extends Edge< V > >

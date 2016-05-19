@@ -15,6 +15,7 @@ import net.trackmate.collection.RefRefMap;
 import net.trackmate.collection.RefSet;
 import net.trackmate.collection.ref.RefArrayList;
 import net.trackmate.collection.ref.RefSetImp;
+import net.trackmate.kdtree.ClipConvexPolytope;
 import net.trackmate.kdtree.ClipConvexPolytopeKDTree;
 import net.trackmate.kdtree.KDTree;
 import net.trackmate.kdtree.KDTreeNode;

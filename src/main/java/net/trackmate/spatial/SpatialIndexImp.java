@@ -8,6 +8,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 import net.imglib2.RealLocalizable;
 import net.imglib2.neighborsearch.NearestNeighborSearch;
 import net.trackmate.RefPool;
+import net.trackmate.kdtree.ClipConvexPolytope;
 
 /**
  * Spatial index of {@link RealLocalizable} objects.

@@ -1,6 +1,7 @@
 package net.trackmate.spatial;
 
 import net.imglib2.neighborsearch.NearestNeighborSearch;
+import net.trackmate.kdtree.ClipConvexPolytope;
 
 /**
  * Maintain a collection of objects which need to be searched and partitioned

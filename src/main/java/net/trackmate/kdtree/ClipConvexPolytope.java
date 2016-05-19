@@ -1,4 +1,4 @@
-package net.trackmate.spatial;
+package net.trackmate.kdtree;
 
 import net.imglib2.EuclideanSpace;
 import net.imglib2.RealLocalizable;
