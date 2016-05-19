@@ -3,12 +3,12 @@ package net.trackmate.undo;
 import java.util.ArrayList;
 import java.util.Map;
 
+import net.trackmate.collection.UniqueHashcodeArrayMap;
 import net.trackmate.graph.Edge;
 import net.trackmate.graph.GraphFeatures;
 import net.trackmate.graph.Vertex;
 import net.trackmate.graph.VertexFeature;
 import net.trackmate.graph.VertexFeature.UndoFeatureMap;
-import net.trackmate.graph.util.UniqueHashcodeArrayMap;
 
 class UndoFeatureStore< V extends Vertex< E >, E extends Edge< V > >
 {

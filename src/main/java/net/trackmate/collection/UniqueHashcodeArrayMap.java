@@ -1,4 +1,4 @@
-package net.trackmate.graph.util;
+package net.trackmate.collection;
 
 import java.util.AbstractSet;
 import java.util.Collection;
@@ -31,7 +31,6 @@ import net.trackmate.revised.model.AbstractModel;
  *
  * @author Tobias Pietzsch &lt;tobias.pietzsch@gmail.com&gt;
  */
-// TODO: move to collection package
 public final class UniqueHashcodeArrayMap< K, V > implements Map< K, V >
 {
 	private final TIntObjectArrayMap< V > map;
