@@ -1,8 +1,8 @@
 package net.trackmate.revised.model.mamut.tgmm;
 
-import static net.trackmate.io.XmlHelpers.getDoubleArrayAttribute;
-import static net.trackmate.io.XmlHelpers.getDoubleAttribute;
-import static net.trackmate.io.XmlHelpers.getIntAttribute;
+import static mpicbg.spim.data.XmlHelpers.getDoubleArrayAttribute;
+import static mpicbg.spim.data.XmlHelpers.getDoubleAttribute;
+import static mpicbg.spim.data.XmlHelpers.getIntAttribute;
 
 import java.io.File;
 import java.io.IOException;
