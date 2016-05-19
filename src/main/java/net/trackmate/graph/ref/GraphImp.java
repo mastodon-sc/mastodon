@@ -13,8 +13,8 @@ import net.trackmate.collection.ref.RefIntHashMap;
 import net.trackmate.collection.ref.RefObjectHashMap;
 import net.trackmate.collection.ref.RefRefHashMap;
 import net.trackmate.collection.ref.RefSetImp;
-import net.trackmate.graph.Graph;
 import net.trackmate.graph.CollectionUtils.CollectionCreator;
+import net.trackmate.graph.Graph;
 import net.trackmate.pool.MappedElement;
 
 public class GraphImp<
@@ -25,28 +25,6 @@ public class GraphImp<
 		T extends MappedElement >
 	implements Graph< V, E >, CollectionCreator< V, E >
 {
-	public static <
-			VP extends AbstractVertexPool< V, E, T >,
-			EP extends AbstractEdgePool< E, V, T >,
-			V extends AbstractVertex< V, E, T >,
-			E extends AbstractEdge< E, V, T >,
-			T extends MappedElement >
-	GraphImp< VP, EP, V, E, T > create( final VP vertexPool, final EP edgePool )
-	{
-		return new GraphImp< VP, EP, V, E, T >( vertexPool, edgePool );
-	}
-
-	public static <
-			VP extends AbstractVertexPool< V, E, T >,
-			EP extends AbstractEdgePool< E, V, T >,
-			V extends AbstractVertex< V, E, T >,
-			E extends AbstractEdge< E, V, T >,
-			T extends MappedElement >
-	GraphImp< VP, EP, V, E, T > create( final EP edgePool )
-	{
-		return new GraphImp< VP, EP, V, E, T >( edgePool );
-	}
-
 	protected final VP vertexPool;
 
 	protected final EP edgePool;
@@ -220,6 +198,12 @@ public class GraphImp<
 	public void releaseRef( final E ref )
 	{
 		edgePool.releaseRef( ref );
+	}
+
+	protected void clear()
+	{
+		vertexPool.clear();
+		edgePool.clear();
 	}
 
 	@Override

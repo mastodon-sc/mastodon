@@ -8,36 +8,14 @@ import net.trackmate.graph.ListenableGraph;
 import net.trackmate.pool.MappedElement;
 
 public class ListenableGraphImp<
-		VP extends AbstractVertexPool< V, E, T >,
-		EP extends AbstractEdgePool< E, V, T >,
-		V extends AbstractVertex< V, E, T >,
-		E extends AbstractEdge< E, V, T >,
+		VP extends AbstractListenableVertexPool< V, E, T >,
+		EP extends AbstractListenableEdgePool< E, V, T >,
+		V extends AbstractListenableVertex< V, E, T >,
+		E extends AbstractListenableEdge< E, V, T >,
 		T extends MappedElement >
-	extends GraphImp< VP, EP, V, E, T >
+	extends GraphWithFeaturesImp< VP, EP, V, E, T >
 	implements ListenableGraph< V, E >
 {
-	public static <
-		VP extends AbstractVertexPool< V, E, T >,
-		EP extends AbstractEdgePool< E, V, T >,
-		V extends AbstractVertex< V, E, T >,
-		E extends AbstractEdge< E, V, T >,
-		T extends MappedElement >
-	ListenableGraphImp< VP, EP, V, E, T > create( final VP vertexPool, final EP edgePool )
-	{
-		return new ListenableGraphImp< VP, EP, V, E, T >( vertexPool, edgePool );
-	}
-
-	public static <
-		VP extends AbstractVertexPool< V, E, T >,
-		EP extends AbstractEdgePool< E, V, T >,
-		V extends AbstractVertex< V, E, T >,
-		E extends AbstractEdge< E, V, T >,
-		T extends MappedElement >
-	ListenableGraphImp< VP, EP, V, E, T > create( final EP edgePool )
-	{
-		return new ListenableGraphImp< VP, EP, V, E, T >( edgePool );
-	}
-
 	protected final ArrayList< GraphListener< V, E > > listeners;
 
 	protected final ArrayList< GraphChangeListener > changeListeners;
@@ -47,6 +25,8 @@ public class ListenableGraphImp<
 	public ListenableGraphImp( final VP vertexPool, final EP edgePool )
 	{
 		super( vertexPool, edgePool );
+		vertexPool.linkNotify( notifyPostInit );
+		edgePool.linkNotify( notifyPostInit );
 		listeners = new ArrayList< GraphListener<V,E> >();
 		changeListeners = new ArrayList< GraphChangeListener >();
 		emitEvents = true;
@@ -55,60 +35,27 @@ public class ListenableGraphImp<
 	public ListenableGraphImp( final EP edgePool )
 	{
 		super( edgePool );
+		vertexPool.linkNotify( notifyPostInit );
+		edgePool.linkNotify( notifyPostInit );
 		listeners = new ArrayList< GraphListener<V,E> >();
 		changeListeners = new ArrayList< GraphChangeListener >();
 		emitEvents = true;
 	}
 
-	@Override
-	public V addVertex()
+	private final NotifyPostInit< V, E > notifyPostInit = new NotifyPostInit< V, E >()
 	{
-		final V v = vertexPool.create( vertexRef() );
-		if ( emitEvents )
-			for ( final GraphListener< V, E > listener : listeners )
-				listener.vertexAdded( v );
-		return v;
-	}
+		@Override
+		public void notifyVertexAdded( final V vertex )
+		{
+			ListenableGraphImp.this.notifyVertexAdded( vertex );
+		}
 
-	@Override
-	public V addVertex( final V vertex )
-	{
-		vertexPool.create( vertex );
-		if ( emitEvents )
-			for ( final GraphListener< V, E > listener : listeners )
-				listener.vertexAdded( vertex );
-		return vertex;
-	}
-
-	@Override
-	public E addEdge( final V source, final V target )
-	{
-		final E edge = edgePool.addEdge( source, target, edgeRef() );
-		if ( emitEvents )
-			for ( final GraphListener< V, E > listener : listeners )
-				listener.edgeAdded( edge );
-		return edge;
-	}
-
-	@Override
-	public E addEdge( final V source, final V target, final E edge )
-	{
-		edgePool.addEdge( source, target, edge );
-		if ( emitEvents )
-			for ( final GraphListener< V, E > listener : listeners )
-				listener.edgeAdded( edge );
-		return edge;
-	}
-
-	@Override
-	public E insertEdge( final V source, final int sourceOutIndex, final V target, final int targetInIndex, final E edge )
-	{
-		edgePool.insertEdge( source, sourceOutIndex, target, targetInIndex, edge );
-		if ( emitEvents )
-			for ( final GraphListener< V, E > listener : listeners )
-				listener.edgeAdded( edge );
-		return edge;
-	}
+		@Override
+		public void notifyEdgeAdded( final E edge )
+		{
+			ListenableGraphImp.this.notifyEdgeAdded( edge );
+		}
+	};
 
 	@Override
 	public void remove( final V vertex )
@@ -175,6 +122,20 @@ public class ListenableGraphImp<
 	public synchronized boolean removeGraphChangeListener( final GraphChangeListener listener )
 	{
 		return changeListeners.remove( listener );
+	}
+
+	protected void notifyVertexAdded( final V vertex )
+	{
+		if ( emitEvents )
+			for ( final GraphListener< V, E > listener : listeners )
+				listener.vertexAdded( vertex );
+	}
+
+	protected void notifyEdgeAdded( final E edge )
+	{
+		if ( emitEvents )
+			for ( final GraphListener< V, E > listener : listeners )
+				listener.edgeAdded( edge );
 	}
 
 	/**
