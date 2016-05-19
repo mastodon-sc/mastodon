@@ -12,9 +12,9 @@ import net.trackmate.RefPool;
 import net.trackmate.collection.RefList;
 import net.trackmate.graph.CollectionUtils;
 import net.trackmate.graph.Edge;
+import net.trackmate.graph.GraphListener;
+import net.trackmate.graph.ListenableGraph;
 import net.trackmate.graph.Vertex;
-import net.trackmate.graph.listenable.GraphListener;
-import net.trackmate.graph.listenable.ListenableGraph;
 
 /**
  * Maintain a spatio-temporal index of all the vertices of a graph.

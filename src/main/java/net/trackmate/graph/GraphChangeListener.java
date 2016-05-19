@@ -1,4 +1,4 @@
-package net.trackmate.graph.listenable;
+package net.trackmate.graph;
 
 /**
  * Listens to {@link #graphChanged()} event.

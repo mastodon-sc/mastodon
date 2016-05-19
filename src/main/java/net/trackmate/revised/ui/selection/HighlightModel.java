@@ -4,8 +4,8 @@ import java.util.ArrayList;
 
 import net.trackmate.graph.Edge;
 import net.trackmate.graph.GraphIdBimap;
+import net.trackmate.graph.GraphListener;
 import net.trackmate.graph.Vertex;
-import net.trackmate.graph.listenable.GraphListener;
 
 /**
  * Manages the highlighted vertex.

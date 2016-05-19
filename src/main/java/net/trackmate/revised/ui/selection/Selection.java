@@ -8,9 +8,9 @@ import net.trackmate.collection.RefSet;
 import net.trackmate.graph.CollectionUtils;
 import net.trackmate.graph.Edge;
 import net.trackmate.graph.GraphIdBimap;
+import net.trackmate.graph.GraphListener;
+import net.trackmate.graph.ListenableGraph;
 import net.trackmate.graph.Vertex;
-import net.trackmate.graph.listenable.GraphListener;
-import net.trackmate.graph.listenable.ListenableGraph;
 
 /**
  * A class that manages a selection of vertices and edges of a graph.

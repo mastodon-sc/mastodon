@@ -4,9 +4,9 @@ import net.trackmate.graph.Edge;
 import net.trackmate.graph.FeatureChangeListener;
 import net.trackmate.graph.GraphFeatures;
 import net.trackmate.graph.GraphIdBimap;
+import net.trackmate.graph.GraphListener;
 import net.trackmate.graph.VertexFeature;
 import net.trackmate.graph.VertexWithFeatures;
-import net.trackmate.graph.listenable.GraphListener;
 import net.trackmate.revised.model.ModelGraph_HACK_FIX_ME;
 
 /**

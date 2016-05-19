@@ -9,9 +9,9 @@ import java.io.ObjectOutputStream;
 import java.util.List;
 
 import net.trackmate.graph.GraphIdBimap;
+import net.trackmate.graph.ListenableGraph;
 import net.trackmate.graph.ReadOnlyGraph;
 import net.trackmate.graph.VertexFeature;
-import net.trackmate.graph.listenable.ListenableGraph;
 import net.trackmate.graph.ref.AbstractEdge;
 import net.trackmate.graph.ref.AbstractVertexWithFeatures;
 import net.trackmate.io.RawFeatureIO;

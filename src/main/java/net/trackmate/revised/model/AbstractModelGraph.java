@@ -2,7 +2,7 @@ package net.trackmate.revised.model;
 
 import net.trackmate.graph.GraphFeatures;
 import net.trackmate.graph.GraphIdBimap;
-import net.trackmate.graph.listenable.GraphListener;
+import net.trackmate.graph.GraphListener;
 import net.trackmate.graph.ref.AbstractEdge;
 import net.trackmate.graph.ref.AbstractEdgePool;
 import net.trackmate.graph.ref.AbstractVertex;

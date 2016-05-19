@@ -5,8 +5,8 @@ import gnu.trove.map.hash.TIntObjectHashMap;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
-import net.trackmate.graph.listenable.GraphListener;
-import net.trackmate.graph.listenable.ListenableGraph;
+import net.trackmate.graph.GraphListener;
+import net.trackmate.graph.ListenableGraph;
 import net.trackmate.spatial.SpatialIndex;
 
 /**

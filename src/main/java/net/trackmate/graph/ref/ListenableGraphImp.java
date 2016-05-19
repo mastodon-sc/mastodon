@@ -2,9 +2,9 @@ package net.trackmate.graph.ref;
 
 import java.util.ArrayList;
 
-import net.trackmate.graph.listenable.GraphChangeListener;
-import net.trackmate.graph.listenable.GraphListener;
-import net.trackmate.graph.listenable.ListenableGraph;
+import net.trackmate.graph.GraphChangeListener;
+import net.trackmate.graph.GraphListener;
+import net.trackmate.graph.ListenableGraph;
 import net.trackmate.pool.MappedElement;
 
 public class ListenableGraphImp<

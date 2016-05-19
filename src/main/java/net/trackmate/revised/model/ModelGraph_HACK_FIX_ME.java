@@ -2,9 +2,9 @@ package net.trackmate.revised.model;
 
 import net.trackmate.graph.Edge;
 import net.trackmate.graph.Graph;
+import net.trackmate.graph.GraphListener;
+import net.trackmate.graph.ListenableGraph;
 import net.trackmate.graph.Vertex;
-import net.trackmate.graph.listenable.GraphListener;
-import net.trackmate.graph.listenable.ListenableGraph;
 
 public interface ModelGraph_HACK_FIX_ME< V extends Vertex< E >, E extends Edge< V > > extends Graph< V, E >, ListenableGraph< V, E >
 {

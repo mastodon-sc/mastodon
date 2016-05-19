@@ -17,7 +17,7 @@ import net.imglib2.ui.OverlayRenderer;
 import net.imglib2.ui.PainterThread;
 import net.imglib2.ui.TransformEventHandler;
 import net.imglib2.ui.TransformListener;
-import net.trackmate.graph.listenable.GraphChangeListener;
+import net.trackmate.graph.GraphChangeListener;
 import net.trackmate.revised.context.Context;
 import net.trackmate.revised.context.ContextListener;
 import net.trackmate.revised.trackscheme.ContextLayout;
