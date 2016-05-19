@@ -12,8 +12,10 @@ import net.trackmate.pool.PoolObject;
  * <ul>
  * <li>A mapping between {@link PoolObject}s and their internal pool indices.
  * Implemented in {@link Pool}.</li>
- * <li>a mapping between Java objects and IDs that are assigned upon first
- * access. Not implemented yet.</li>
+ * <li>A mapping between Java objects and IDs that are assigned upon first
+ * access. In this case, {@link #createRef()} and {@link #releaseRef(Object)}
+ * simply return {@code null} and do nothing, respectively. Not implemented yet.
+ * </li>
  * </ul>
  *
  * @param <O>
