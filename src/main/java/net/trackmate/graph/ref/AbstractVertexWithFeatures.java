@@ -1,12 +1,12 @@
-package net.trackmate.graph;
+package net.trackmate.graph.ref;
 
 import java.util.Map;
 
+import net.trackmate.graph.FeatureValue;
+import net.trackmate.graph.GraphFeatures;
+import net.trackmate.graph.VertexFeature;
+import net.trackmate.graph.VertexWithFeatures;
 import net.trackmate.graph.util.UniqueHashcodeArrayMap;
-import net.trackmate.graph.zzgraphinterfaces.FeatureValue;
-import net.trackmate.graph.zzgraphinterfaces.GraphFeatures;
-import net.trackmate.graph.zzgraphinterfaces.VertexFeature;
-import net.trackmate.graph.zzgraphinterfaces.VertexWithFeatures;
 import net.trackmate.pool.MappedElement;
 
 /**

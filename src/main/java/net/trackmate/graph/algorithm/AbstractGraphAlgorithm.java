@@ -10,11 +10,11 @@ import net.trackmate.collection.RefObjectMap;
 import net.trackmate.collection.RefRefMap;
 import net.trackmate.collection.RefSet;
 import net.trackmate.collection.RefStack;
-import net.trackmate.graph.zzgraphinterfaces.CollectionUtils;
-import net.trackmate.graph.zzgraphinterfaces.Edge;
-import net.trackmate.graph.zzgraphinterfaces.Graph;
-import net.trackmate.graph.zzgraphinterfaces.ReadOnlyGraph;
-import net.trackmate.graph.zzgraphinterfaces.Vertex;
+import net.trackmate.graph.CollectionUtils;
+import net.trackmate.graph.Edge;
+import net.trackmate.graph.Graph;
+import net.trackmate.graph.ReadOnlyGraph;
+import net.trackmate.graph.Vertex;
 
 /**
  * Base class for graph algorithms. Provides helper functions aimed at

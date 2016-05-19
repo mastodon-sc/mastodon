@@ -2,8 +2,8 @@ package net.trackmate.revised.trackscheme;
 
 import static net.trackmate.pool.ByteUtils.INDEX_SIZE;
 
-import net.trackmate.graph.AbstractEdge;
-import net.trackmate.graph.AbstractEdgePool;
+import net.trackmate.graph.ref.AbstractEdge;
+import net.trackmate.graph.ref.AbstractEdgePool;
 import net.trackmate.pool.ByteMappedElement;
 import net.trackmate.revised.trackscheme.ModelGraphProperties.ModelEdgeProperties;
 

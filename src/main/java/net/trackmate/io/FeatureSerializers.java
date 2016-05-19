@@ -2,8 +2,8 @@ package net.trackmate.io;
 
 import java.util.HashMap;
 
-import net.trackmate.graph.zzgraphinterfaces.Vertex;
-import net.trackmate.graph.zzgraphinterfaces.VertexFeature;
+import net.trackmate.graph.Vertex;
+import net.trackmate.graph.VertexFeature;
 import net.trackmate.io.RawFeatureIO.Serializer;
 
 public class FeatureSerializers

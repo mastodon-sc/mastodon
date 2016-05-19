@@ -1,14 +1,14 @@
 package net.trackmate.revised.model;
 
-import net.trackmate.graph.AbstractEdge;
-import net.trackmate.graph.AbstractEdgePool;
-import net.trackmate.graph.AbstractVertex;
-import net.trackmate.graph.AbstractVertexWithFeatures;
-import net.trackmate.graph.AbstractVertexWithFeaturesPool;
-import net.trackmate.graph.ListenableGraphImp;
+import net.trackmate.graph.GraphFeatures;
+import net.trackmate.graph.GraphIdBimap;
 import net.trackmate.graph.listenable.GraphListener;
-import net.trackmate.graph.zzgraphinterfaces.GraphFeatures;
-import net.trackmate.graph.zzgraphinterfaces.GraphIdBimap;
+import net.trackmate.graph.ref.AbstractEdge;
+import net.trackmate.graph.ref.AbstractEdgePool;
+import net.trackmate.graph.ref.AbstractVertex;
+import net.trackmate.graph.ref.AbstractVertexWithFeatures;
+import net.trackmate.graph.ref.AbstractVertexWithFeaturesPool;
+import net.trackmate.graph.ref.ListenableGraphImp;
 import net.trackmate.pool.MappedElement;
 
 public class AbstractModelGraph<

@@ -1,8 +1,8 @@
 package net.trackmate.revised.bdv.overlay.wrap;
 
-import net.trackmate.graph.zzgraphinterfaces.Edge;
-import net.trackmate.graph.zzgraphinterfaces.GraphIdBimap;
-import net.trackmate.graph.zzgraphinterfaces.Vertex;
+import net.trackmate.graph.Edge;
+import net.trackmate.graph.GraphIdBimap;
+import net.trackmate.graph.Vertex;
 import net.trackmate.revised.bdv.overlay.OverlayFocus;
 import net.trackmate.revised.ui.selection.FocusListener;
 import net.trackmate.revised.ui.selection.FocusModel;

@@ -5,9 +5,9 @@ import static net.trackmate.pool.ByteUtils.DOUBLE_SIZE;
 import static net.trackmate.pool.ByteUtils.INDEX_SIZE;
 import static net.trackmate.pool.ByteUtils.INT_SIZE;
 
-import net.trackmate.graph.AbstractVertex;
-import net.trackmate.graph.AbstractVertexPool;
-import net.trackmate.graph.zzgraphinterfaces.GraphIdBimap;
+import net.trackmate.graph.GraphIdBimap;
+import net.trackmate.graph.ref.AbstractVertex;
+import net.trackmate.graph.ref.AbstractVertexPool;
 import net.trackmate.pool.ByteMappedElement;
 import net.trackmate.pool.PoolObject;
 import net.trackmate.revised.trackscheme.ModelGraphProperties.ModelVertexProperties;

@@ -4,9 +4,9 @@ import java.util.Iterator;
 
 import net.trackmate.collection.RefList;
 import net.trackmate.collection.RefSet;
-import net.trackmate.graph.zzgraphinterfaces.Edge;
-import net.trackmate.graph.zzgraphinterfaces.Graph;
-import net.trackmate.graph.zzgraphinterfaces.Vertex;
+import net.trackmate.graph.Edge;
+import net.trackmate.graph.Graph;
+import net.trackmate.graph.Vertex;
 
 /**
  * A topological order sort for a direct acyclic graph.

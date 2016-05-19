@@ -1,4 +1,4 @@
-package net.trackmate.graph;
+package net.trackmate.graph.ref;
 
 import net.trackmate.pool.MappedElement;
 import net.trackmate.pool.Pool;

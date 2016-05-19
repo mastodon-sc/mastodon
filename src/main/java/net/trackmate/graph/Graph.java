@@ -1,4 +1,4 @@
-package net.trackmate.graph.zzgraphinterfaces;
+package net.trackmate.graph;
 
 /**
  * A graph consisting of vertices of type {@code V} and edges of type {@code E}.

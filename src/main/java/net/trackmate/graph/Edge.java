@@ -1,4 +1,4 @@
-package net.trackmate.graph.zzgraphinterfaces;
+package net.trackmate.graph;
 
 /**
  * An edge between {@link Vertex vertices} of type {@code V}.

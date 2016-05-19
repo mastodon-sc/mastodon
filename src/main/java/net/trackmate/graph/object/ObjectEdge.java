@@ -1,6 +1,6 @@
 package net.trackmate.graph.object;
 
-import net.trackmate.graph.zzgraphinterfaces.Edge;
+import net.trackmate.graph.Edge;
 
 public class ObjectEdge< K > implements Edge< ObjectVertex< K > >
 {

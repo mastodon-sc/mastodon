@@ -5,12 +5,12 @@ import java.util.Iterator;
 
 import net.trackmate.collection.RefObjectMap;
 import net.trackmate.collection.RefSet;
+import net.trackmate.graph.Edge;
+import net.trackmate.graph.Edges;
+import net.trackmate.graph.Graph;
+import net.trackmate.graph.ReadOnlyGraph;
+import net.trackmate.graph.Vertex;
 import net.trackmate.graph.traversal.DepthFirstIterator;
-import net.trackmate.graph.zzgraphinterfaces.Edge;
-import net.trackmate.graph.zzgraphinterfaces.Edges;
-import net.trackmate.graph.zzgraphinterfaces.Graph;
-import net.trackmate.graph.zzgraphinterfaces.ReadOnlyGraph;
-import net.trackmate.graph.zzgraphinterfaces.Vertex;
 
 /**
  * An algorithm that can output the tree below a specified vertex.

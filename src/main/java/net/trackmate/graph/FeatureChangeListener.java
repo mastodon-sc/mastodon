@@ -1,4 +1,4 @@
-package net.trackmate.graph.zzgraphinterfaces;
+package net.trackmate.graph;
 
 /**
  * A listener that is notified when features ({@link VertexFeature}, {@code EdgeFeature}) of a graph change.

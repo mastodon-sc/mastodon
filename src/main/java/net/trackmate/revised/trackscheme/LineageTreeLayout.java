@@ -15,7 +15,7 @@ import gnu.trove.map.TIntObjectMap;
 import net.imglib2.RealLocalizable;
 import net.trackmate.collection.RefList;
 import net.trackmate.collection.RefSet;
-import net.trackmate.graph.zzgraphinterfaces.Edges;
+import net.trackmate.graph.Edges;
 import net.trackmate.revised.trackscheme.ScreenEdge.ScreenEdgePool;
 import net.trackmate.revised.trackscheme.ScreenVertex.ScreenVertexPool;
 import net.trackmate.revised.trackscheme.ScreenVertexRange.ScreenVertexRangePool;

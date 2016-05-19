@@ -1,4 +1,4 @@
-package net.trackmate.graph.zzgraphinterfaces;
+package net.trackmate.graph;
 
 import net.trackmate.RefPool;
 

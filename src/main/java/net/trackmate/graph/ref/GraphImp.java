@@ -1,4 +1,4 @@
-package net.trackmate.graph;
+package net.trackmate.graph.ref;
 
 import java.util.Collection;
 import java.util.Iterator;
@@ -13,8 +13,8 @@ import net.trackmate.collection.ref.RefIntHashMap;
 import net.trackmate.collection.ref.RefObjectHashMap;
 import net.trackmate.collection.ref.RefRefHashMap;
 import net.trackmate.collection.ref.RefSetImp;
-import net.trackmate.graph.zzgraphinterfaces.Graph;
-import net.trackmate.graph.zzgraphinterfaces.CollectionUtils.CollectionCreator;
+import net.trackmate.graph.Graph;
+import net.trackmate.graph.CollectionUtils.CollectionCreator;
 import net.trackmate.pool.MappedElement;
 
 public class GraphImp<

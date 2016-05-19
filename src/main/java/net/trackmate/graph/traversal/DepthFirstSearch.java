@@ -2,11 +2,11 @@ package net.trackmate.graph.traversal;
 
 import net.trackmate.collection.RefIntMap;
 import net.trackmate.collection.RefList;
+import net.trackmate.graph.Edge;
+import net.trackmate.graph.Edges;
+import net.trackmate.graph.Graph;
+import net.trackmate.graph.Vertex;
 import net.trackmate.graph.util.Graphs;
-import net.trackmate.graph.zzgraphinterfaces.Edge;
-import net.trackmate.graph.zzgraphinterfaces.Edges;
-import net.trackmate.graph.zzgraphinterfaces.Graph;
-import net.trackmate.graph.zzgraphinterfaces.Vertex;
 
 /**
  * Depth-first search for directed or undirected graph, following the framework

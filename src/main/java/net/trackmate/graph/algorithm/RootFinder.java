@@ -1,9 +1,9 @@
 package net.trackmate.graph.algorithm;
 
 import net.trackmate.collection.RefSet;
-import net.trackmate.graph.zzgraphinterfaces.Edge;
-import net.trackmate.graph.zzgraphinterfaces.Graph;
-import net.trackmate.graph.zzgraphinterfaces.Vertex;
+import net.trackmate.graph.Edge;
+import net.trackmate.graph.Graph;
+import net.trackmate.graph.Vertex;
 
 /**
  * Small algorithm that returns a set of vertices that have no incoming edges.

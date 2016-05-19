@@ -3,8 +3,8 @@ package net.trackmate.undo;
 import java.util.ArrayList;
 
 import gnu.trove.map.TIntObjectArrayMap;
-import net.trackmate.graph.zzgraphinterfaces.Edge;
-import net.trackmate.graph.zzgraphinterfaces.Vertex;
+import net.trackmate.graph.Edge;
+import net.trackmate.graph.Vertex;
 import net.trackmate.pool.ByteMappedElement;
 import net.trackmate.pool.ByteMappedElementArray;
 import net.trackmate.pool.MemPool;

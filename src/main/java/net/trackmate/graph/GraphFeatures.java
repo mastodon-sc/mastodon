@@ -1,10 +1,10 @@
-package net.trackmate.graph.zzgraphinterfaces;
+package net.trackmate.graph;
 
 import java.util.ArrayList;
 import java.util.Map;
 
+import net.trackmate.graph.VertexFeature.FeatureCleanup;
 import net.trackmate.graph.util.UniqueHashcodeArrayMap;
-import net.trackmate.graph.zzgraphinterfaces.VertexFeature.FeatureCleanup;
 import net.trackmate.io.RawFeatureIO;
 
 public class GraphFeatures< V extends Vertex< E >, E extends Edge< V > >

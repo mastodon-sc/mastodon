@@ -1,7 +1,7 @@
 package net.trackmate.revised.trackscheme;
 
 import net.trackmate.collection.RefList;
-import net.trackmate.graph.zzgraphinterfaces.CollectionUtils;
+import net.trackmate.graph.CollectionUtils;
 import net.trackmate.revised.context.Context;
 
 /**

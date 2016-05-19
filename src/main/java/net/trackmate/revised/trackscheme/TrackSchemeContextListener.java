@@ -3,7 +3,7 @@ package net.trackmate.revised.trackscheme;
 import java.util.Iterator;
 import java.util.concurrent.locks.Lock;
 
-import net.trackmate.graph.zzgraphinterfaces.GraphIdBimap;
+import net.trackmate.graph.GraphIdBimap;
 import net.trackmate.revised.context.Context;
 import net.trackmate.revised.context.ContextListener;
 

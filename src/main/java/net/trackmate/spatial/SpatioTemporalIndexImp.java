@@ -10,11 +10,11 @@ import net.imglib2.RealLocalizable;
 import net.trackmate.Ref;
 import net.trackmate.RefPool;
 import net.trackmate.collection.RefList;
+import net.trackmate.graph.CollectionUtils;
+import net.trackmate.graph.Edge;
+import net.trackmate.graph.Vertex;
 import net.trackmate.graph.listenable.GraphListener;
 import net.trackmate.graph.listenable.ListenableGraph;
-import net.trackmate.graph.zzgraphinterfaces.CollectionUtils;
-import net.trackmate.graph.zzgraphinterfaces.Edge;
-import net.trackmate.graph.zzgraphinterfaces.Vertex;
 
 /**
  * Maintain a spatio-temporal index of all the vertices of a graph.

@@ -8,7 +8,7 @@ import java.util.Map;
 import java.util.Set;
 
 import gnu.trove.map.TIntObjectArrayMap;
-import net.trackmate.graph.zzgraphinterfaces.VertexFeature;
+import net.trackmate.graph.VertexFeature;
 import net.trackmate.revised.model.AbstractModel;
 
 /**

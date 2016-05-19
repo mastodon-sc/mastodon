@@ -6,11 +6,11 @@ import net.trackmate.RefPool;
 import net.trackmate.collection.RefCollection;
 import net.trackmate.collection.RefList;
 import net.trackmate.collection.ref.RefArrayList;
-import net.trackmate.graph.zzgraphinterfaces.CollectionUtils.ListCreator;
-import net.trackmate.graph.zzgraphinterfaces.Edge;
-import net.trackmate.graph.zzgraphinterfaces.GraphIdBimap;
-import net.trackmate.graph.zzgraphinterfaces.ReadOnlyGraph;
-import net.trackmate.graph.zzgraphinterfaces.Vertex;
+import net.trackmate.graph.Edge;
+import net.trackmate.graph.GraphIdBimap;
+import net.trackmate.graph.ReadOnlyGraph;
+import net.trackmate.graph.Vertex;
+import net.trackmate.graph.CollectionUtils.ListCreator;
 import net.trackmate.revised.bdv.overlay.OverlayGraph;
 import net.trackmate.spatial.SpatioTemporalIndex;
 

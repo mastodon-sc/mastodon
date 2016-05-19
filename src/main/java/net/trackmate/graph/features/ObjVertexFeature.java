@@ -5,13 +5,13 @@ import java.util.Map;
 import gnu.trove.impl.Constants;
 import gnu.trove.map.TIntObjectMap;
 import gnu.trove.map.hash.TIntObjectHashMap;
-import net.trackmate.graph.zzgraphinterfaces.CollectionUtils;
-import net.trackmate.graph.zzgraphinterfaces.FeatureRegistry.DuplicateKeyException;
-import net.trackmate.graph.zzgraphinterfaces.FeatureValue;
-import net.trackmate.graph.zzgraphinterfaces.GraphFeatures;
-import net.trackmate.graph.zzgraphinterfaces.ReadOnlyGraph;
-import net.trackmate.graph.zzgraphinterfaces.Vertex;
-import net.trackmate.graph.zzgraphinterfaces.VertexFeature;
+import net.trackmate.graph.CollectionUtils;
+import net.trackmate.graph.FeatureValue;
+import net.trackmate.graph.GraphFeatures;
+import net.trackmate.graph.ReadOnlyGraph;
+import net.trackmate.graph.Vertex;
+import net.trackmate.graph.VertexFeature;
+import net.trackmate.graph.FeatureRegistry.DuplicateKeyException;
 
 /**
  * A {@code Object}-valued {@link VertexFeature}.

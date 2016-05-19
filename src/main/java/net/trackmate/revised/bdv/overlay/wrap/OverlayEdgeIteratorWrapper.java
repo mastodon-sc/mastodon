@@ -2,9 +2,9 @@ package net.trackmate.revised.bdv.overlay.wrap;
 
 import java.util.Iterator;
 
-import net.trackmate.graph.zzgraphinterfaces.Edge;
-import net.trackmate.graph.zzgraphinterfaces.GraphIdBimap;
-import net.trackmate.graph.zzgraphinterfaces.Vertex;
+import net.trackmate.graph.Edge;
+import net.trackmate.graph.GraphIdBimap;
+import net.trackmate.graph.Vertex;
 
 public class OverlayEdgeIteratorWrapper< V extends Vertex< E >, E extends Edge< V > >
 	implements Iterator< OverlayEdgeWrapper< V, E > >

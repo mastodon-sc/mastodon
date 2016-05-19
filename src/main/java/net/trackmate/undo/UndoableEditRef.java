@@ -5,8 +5,8 @@ import static net.trackmate.pool.ByteUtils.BYTE_SIZE;
 import static net.trackmate.pool.ByteUtils.LONG_SIZE;
 
 import gnu.trove.map.TIntObjectArrayMap;
-import net.trackmate.graph.zzgraphinterfaces.Edge;
-import net.trackmate.graph.zzgraphinterfaces.Vertex;
+import net.trackmate.graph.Edge;
+import net.trackmate.graph.Vertex;
 import net.trackmate.pool.ByteMappedElement;
 import net.trackmate.pool.PoolObject;
 import net.trackmate.undo.UndoableEditList.ClearableUndoableEdit;

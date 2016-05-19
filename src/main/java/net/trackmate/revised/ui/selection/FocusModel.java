@@ -2,10 +2,10 @@ package net.trackmate.revised.ui.selection;
 
 import java.util.ArrayList;
 
+import net.trackmate.graph.Edge;
+import net.trackmate.graph.GraphIdBimap;
+import net.trackmate.graph.Vertex;
 import net.trackmate.graph.listenable.GraphListener;
-import net.trackmate.graph.zzgraphinterfaces.Edge;
-import net.trackmate.graph.zzgraphinterfaces.GraphIdBimap;
-import net.trackmate.graph.zzgraphinterfaces.Vertex;
 
 /**
  * Class to manage the model vertex that has the "focus", regardless of how this

@@ -1,8 +1,8 @@
-package net.trackmate.graph;
+package net.trackmate.graph.ref;
 
 import static net.trackmate.pool.ByteUtils.INDEX_SIZE;
 
-import net.trackmate.graph.zzgraphinterfaces.Edge;
+import net.trackmate.graph.Edge;
 import net.trackmate.pool.MappedElement;
 import net.trackmate.pool.PoolObject;
 

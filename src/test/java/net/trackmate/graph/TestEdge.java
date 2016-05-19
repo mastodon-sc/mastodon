@@ -1,5 +1,7 @@
 package net.trackmate.graph;
 
+import net.trackmate.graph.ref.AbstractEdge;
+import net.trackmate.graph.ref.AbstractEdgePool;
 import net.trackmate.pool.ByteMappedElement;
 
 public class TestEdge extends AbstractEdge< TestEdge, TestVertex, ByteMappedElement >

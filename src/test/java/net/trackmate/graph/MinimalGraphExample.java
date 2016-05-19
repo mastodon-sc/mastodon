@@ -1,6 +1,10 @@
 package net.trackmate.graph;
 
-import net.trackmate.graph.zzgraphinterfaces.Graph;
+import net.trackmate.graph.ref.AbstractEdge;
+import net.trackmate.graph.ref.AbstractEdgePool;
+import net.trackmate.graph.ref.AbstractVertex;
+import net.trackmate.graph.ref.AbstractVertexPool;
+import net.trackmate.graph.ref.GraphImp;
 import net.trackmate.pool.ByteMappedElement;
 import net.trackmate.pool.ByteMappedElementArray;
 import net.trackmate.pool.MemPool;

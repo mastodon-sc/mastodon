@@ -3,8 +3,8 @@ package net.trackmate.revised.bdv.overlay.wrap;
 import java.util.Iterator;
 import java.util.concurrent.locks.Lock;
 
-import net.trackmate.graph.zzgraphinterfaces.Edge;
-import net.trackmate.graph.zzgraphinterfaces.Vertex;
+import net.trackmate.graph.Edge;
+import net.trackmate.graph.Vertex;
 import net.trackmate.revised.bdv.overlay.OverlayContext;
 import net.trackmate.revised.context.Context;
 import net.trackmate.revised.context.ContextListener;

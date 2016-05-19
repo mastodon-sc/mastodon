@@ -1,8 +1,8 @@
-package net.trackmate.graph;
+package net.trackmate.graph.ref;
 
 import java.util.Iterator;
 
-import net.trackmate.graph.zzgraphinterfaces.Edges;
+import net.trackmate.graph.Edges;
 
 public class IncomingEdges< E extends AbstractEdge< E, ?, ? > > implements Edges< E >
 {

@@ -6,11 +6,11 @@ import java.io.ObjectOutputStream;
 
 import gnu.trove.map.TIntIntMap;
 import gnu.trove.map.hash.TIntIntHashMap;
-import net.trackmate.graph.zzgraphinterfaces.Edge;
-import net.trackmate.graph.zzgraphinterfaces.Graph;
-import net.trackmate.graph.zzgraphinterfaces.GraphIdBimap;
-import net.trackmate.graph.zzgraphinterfaces.ReadOnlyGraph;
-import net.trackmate.graph.zzgraphinterfaces.Vertex;
+import net.trackmate.graph.Edge;
+import net.trackmate.graph.Graph;
+import net.trackmate.graph.GraphIdBimap;
+import net.trackmate.graph.ReadOnlyGraph;
+import net.trackmate.graph.Vertex;
 
 // TODO: add support for featuremaps
 

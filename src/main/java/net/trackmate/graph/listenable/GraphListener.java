@@ -1,7 +1,7 @@
 package net.trackmate.graph.listenable;
 
-import net.trackmate.graph.zzgraphinterfaces.Edge;
-import net.trackmate.graph.zzgraphinterfaces.Vertex;
+import net.trackmate.graph.Edge;
+import net.trackmate.graph.Vertex;
 
 public interface GraphListener< V extends Vertex< E >, E extends Edge< V > >
 {

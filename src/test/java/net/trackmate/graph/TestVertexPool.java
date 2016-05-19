@@ -1,5 +1,6 @@
 package net.trackmate.graph;
 
+import net.trackmate.graph.ref.AbstractVertexPool;
 import net.trackmate.pool.ByteMappedElement;
 import net.trackmate.pool.ByteMappedElementArray;
 import net.trackmate.pool.MemPool;

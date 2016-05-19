@@ -4,9 +4,9 @@ import java.util.Collections;
 import java.util.Comparator;
 
 import net.trackmate.collection.RefList;
-import net.trackmate.graph.zzgraphinterfaces.Edge;
-import net.trackmate.graph.zzgraphinterfaces.Graph;
-import net.trackmate.graph.zzgraphinterfaces.Vertex;
+import net.trackmate.graph.Edge;
+import net.trackmate.graph.Graph;
+import net.trackmate.graph.Vertex;
 
 public abstract class AbstractGraphSortedIteratorAlgorithm< V extends Vertex< E >, E extends Edge< V > > extends AbstractGraphIteratorAlgorithm< V, E >
 {

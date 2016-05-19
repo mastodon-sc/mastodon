@@ -3,8 +3,8 @@ package net.trackmate.graph.util;
 import java.util.Comparator;
 
 import net.trackmate.collection.RefList;
-import net.trackmate.graph.zzgraphinterfaces.Edge;
-import net.trackmate.graph.zzgraphinterfaces.Vertex;
+import net.trackmate.graph.Edge;
+import net.trackmate.graph.Vertex;
 
 /**
  * A collection of utilities to assist with graph manipulation.

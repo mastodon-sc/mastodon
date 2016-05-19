@@ -11,13 +11,13 @@ import org.junit.Before;
 import org.junit.Test;
 
 import net.trackmate.collection.RefList;
+import net.trackmate.graph.CollectionUtils;
 import net.trackmate.graph.TestEdge;
 import net.trackmate.graph.TestGraph;
 import net.trackmate.graph.TestVertex;
 import net.trackmate.graph.object.ObjectEdge;
 import net.trackmate.graph.object.ObjectGraph;
 import net.trackmate.graph.object.ObjectVertex;
-import net.trackmate.graph.zzgraphinterfaces.CollectionUtils;
 
 public class TopologicalSortTest
 {

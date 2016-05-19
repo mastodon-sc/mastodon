@@ -10,7 +10,7 @@ import java.io.ObjectOutputStream;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import net.trackmate.graph.zzgraphinterfaces.Vertex;
+import net.trackmate.graph.Vertex;
 import net.trackmate.io.RawFeatureIO.Serializer;
 import net.trackmate.io.RawGraphIO.FileIdToGraphMap;
 import net.trackmate.io.RawGraphIO.GraphToFileIdMap;

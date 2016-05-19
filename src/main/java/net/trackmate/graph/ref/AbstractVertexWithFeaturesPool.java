@@ -1,6 +1,6 @@
-package net.trackmate.graph;
+package net.trackmate.graph.ref;
 
-import net.trackmate.graph.zzgraphinterfaces.GraphFeatures;
+import net.trackmate.graph.GraphFeatures;
 import net.trackmate.pool.MappedElement;
 import net.trackmate.pool.PoolObject;
 

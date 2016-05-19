@@ -6,8 +6,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import net.imglib2.RealLocalizable;
-import net.trackmate.graph.zzgraphinterfaces.ReadOnlyGraph;
-import net.trackmate.graph.zzgraphinterfaces.VertexFeature;
+import net.trackmate.graph.ReadOnlyGraph;
+import net.trackmate.graph.VertexFeature;
 import net.trackmate.revised.model.AbstractModel;
 import net.trackmate.spatial.SpatioTemporalIndex;
 import net.trackmate.spatial.SpatioTemporalIndexImp;

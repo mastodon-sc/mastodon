@@ -4,10 +4,10 @@ import java.util.Iterator;
 
 import net.trackmate.collection.MaybeRefIterator;
 import net.trackmate.collection.RefSet;
+import net.trackmate.graph.Edge;
+import net.trackmate.graph.ReadOnlyGraph;
+import net.trackmate.graph.Vertex;
 import net.trackmate.graph.algorithm.AbstractGraphAlgorithm;
-import net.trackmate.graph.zzgraphinterfaces.Edge;
-import net.trackmate.graph.zzgraphinterfaces.ReadOnlyGraph;
-import net.trackmate.graph.zzgraphinterfaces.Vertex;
 import net.trackmate.pool.PoolObject;
 
 public abstract class AbstractGraphIteratorAlgorithm< V extends Vertex< E >, E extends Edge< V > > extends AbstractGraphAlgorithm< V, E > implements MaybeRefIterator, Iterator< V >

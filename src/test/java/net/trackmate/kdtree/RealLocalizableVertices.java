@@ -3,10 +3,10 @@ package net.trackmate.kdtree;
 import static net.trackmate.pool.ByteUtils.DOUBLE_SIZE;
 
 import net.imglib2.RealLocalizable;
-import net.trackmate.graph.AbstractEdge;
-import net.trackmate.graph.AbstractEdgePool;
-import net.trackmate.graph.AbstractVertex;
-import net.trackmate.graph.AbstractVertexPool;
+import net.trackmate.graph.ref.AbstractEdge;
+import net.trackmate.graph.ref.AbstractEdgePool;
+import net.trackmate.graph.ref.AbstractVertex;
+import net.trackmate.graph.ref.AbstractVertexPool;
 import net.trackmate.pool.ByteMappedElement;
 import net.trackmate.pool.ByteMappedElementArray;
 import net.trackmate.pool.MemPool;

@@ -1,7 +1,7 @@
 package net.trackmate.revised.model.mamut;
 
-import net.trackmate.graph.AbstractEdge;
-import net.trackmate.graph.AbstractEdgePool;
+import net.trackmate.graph.ref.AbstractEdge;
+import net.trackmate.graph.ref.AbstractEdgePool;
 import net.trackmate.pool.ByteMappedElement;
 
 public class Link extends AbstractEdge< Link, Spot, ByteMappedElement >

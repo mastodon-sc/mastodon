@@ -2,6 +2,8 @@ package net.trackmate.graph;
 
 import static net.trackmate.pool.ByteUtils.INT_SIZE;
 
+import net.trackmate.graph.ref.AbstractVertex;
+import net.trackmate.graph.ref.AbstractVertexPool;
 import net.trackmate.pool.ByteMappedElement;
 
 public class TestVertex extends AbstractVertex< TestVertex, TestEdge, ByteMappedElement >

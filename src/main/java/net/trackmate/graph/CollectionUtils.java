@@ -1,4 +1,4 @@
-package net.trackmate.graph.zzgraphinterfaces;
+package net.trackmate.graph;
 
 import static net.trackmate.collection.RefCollections.wrap;
 import static net.trackmate.collection.RefCollections.wrapAsStack;

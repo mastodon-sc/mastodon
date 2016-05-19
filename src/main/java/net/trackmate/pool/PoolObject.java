@@ -1,7 +1,7 @@
 package net.trackmate.pool;
 
 import net.trackmate.Ref;
-import net.trackmate.graph.AbstractEdge;
+import net.trackmate.graph.ref.AbstractEdge;
 
 /**
  * A proxy object that uses a {@link MappedElement} access to store its data in
