@@ -31,4 +31,16 @@ public class AbstractListenableEdgePool<
 		edge.notifyPostInit = notifyPostInit;
 		return edge;
 	}
+
+	/*
+	 * Debug helper. Uncomment to do additional verifyInitialized() whenever a
+	 * Ref is pointed to an edge.
+	 */
+//	@Override
+//	public E getObject( final int index, final E obj )
+//	{
+//		final E e = super.getObject( index, obj );
+//		e.verifyInitialized();
+//		return e;
+//	}
 }
