@@ -20,9 +20,9 @@ import net.trackmate.pool.MappedElement;
  * emitted in {@link Graph#addVertex()} but instead in {@link #initDone()}.
  * <p>
  * Idiomatically, adding a vertex to a graph should look like this:<br/>
- * {@code MyVertex v = graph.createVertex().init( ... );}<br/>
+ * {@code MyVertex v = graph.addVertex().init(...);}<br/>
  * respectively:<br/>
- * (@code MyVertex v = graph.createVertex( ref ).init( ... );}
+ * {@code MyVertex v = graph.addVertex(ref).init(...);}
  * <p>
  * Like a constructor, {@code init(...)} should be called before any other
  * method, and only once. {@link AbstractListenableVertex} tries to do some
@@ -79,7 +79,7 @@ public class AbstractListenableVertex< V extends AbstractListenableVertex< V, E,
 	 * {@link #initDone()} clears {@link #pendingInitialize}.
 	 *
 	 * @throws IllegalStateException
-	 *             if the object is already in a state between beeing created
+	 *             if the object is already in a state between being created
 	 *             ({@link #setToUninitializedState()}) and initialized
 	 *             ({@link #initDone()}) when this method is called.
 	 */
