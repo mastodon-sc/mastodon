@@ -37,11 +37,15 @@ public class RawGraphIO
 
 		public void setBytes( final V vertex, final byte[] bytes );
 
+		public void notifyVertexAdded( final V vertex );
+
 		public int getEdgeNumBytes();
 
 		public void getBytes( final E edge, final byte[] bytes );
 
 		public void setBytes( final E edge, final byte[] bytes );
+
+		public void notifyEdgeAdded( final E edge );
 	}
 
 	public static final class GraphToFileIdMap< V extends Vertex< E >, E extends Edge< V > >
@@ -208,6 +212,7 @@ public class RawGraphIO
 				ois.readFully( vbytes );
 				io.setBytes( v1, vbytes );
 			}
+			io.notifyVertexAdded( v1 );
 			fileIndexToVertexId.put( i, idmap.getVertexId( v1 ) );
 		}
 
@@ -229,6 +234,7 @@ public class RawGraphIO
 				ois.readFully( ebytes );
 				io.setBytes( e, ebytes );
 			}
+			io.notifyEdgeAdded( e );
 			fileIndexToEdgeId.put( i, idmap.getEdgeId( e ) );
 		}
 

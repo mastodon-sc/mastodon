@@ -2,8 +2,8 @@ package net.trackmate.revised.model.mamut;
 
 import net.trackmate.graph.GraphFeatures;
 import net.trackmate.graph.GraphIdBimap;
-import net.trackmate.graph.ref.AbstractEdgePool;
-import net.trackmate.graph.ref.AbstractVertexWithFeaturesPool;
+import net.trackmate.graph.ref.AbstractListenableEdgePool;
+import net.trackmate.graph.ref.AbstractListenableVertexPool;
 import net.trackmate.pool.ByteMappedElement;
 import net.trackmate.pool.ByteMappedElementArray;
 import net.trackmate.pool.MemPool;
@@ -35,7 +35,7 @@ class ModelGraph extends AbstractModelGraph< ModelGraph.SpotPool, ModelGraph.Lin
 		return idmap;
 	}
 
-	static class SpotPool extends AbstractVertexWithFeaturesPool< Spot, Link, ByteMappedElement >
+	static class SpotPool extends AbstractListenableVertexPool< Spot, Link, ByteMappedElement >
 	{
 		SpotPool( final int initialCapacity )
 		{
@@ -78,7 +78,7 @@ class ModelGraph extends AbstractModelGraph< ModelGraph.SpotPool, ModelGraph.Lin
 		};
 	}
 
-	static class LinkPool extends AbstractEdgePool< Link, Spot, ByteMappedElement >
+	static class LinkPool extends AbstractListenableEdgePool< Link, Spot, ByteMappedElement >
 	{
 		LinkPool( final int initialCapacity, final SpotPool vertexPool )
 		{

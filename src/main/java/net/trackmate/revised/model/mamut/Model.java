@@ -73,7 +73,7 @@ public class Model extends AbstractModel< ModelGraph, Spot, Link > implements Un
 	 */
 	public Spot addSpot( final int timepointId, final double[] pos, final double[][] cov, final Spot ref )
 	{
-		return modelGraph.notifyVertexAdded( modelGraph.addVertex( ref ).init( timepointId, pos, cov ) );
+		return modelGraph.addVertex( ref ).init( timepointId, pos, cov );
 	}
 
 	/**

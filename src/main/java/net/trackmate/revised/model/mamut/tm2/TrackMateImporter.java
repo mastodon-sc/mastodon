@@ -4,16 +4,15 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Set;
 
+import org.jgrapht.graph.DefaultWeightedEdge;
+
+import fiji.plugin.trackmate.TrackModel;
+import fiji.plugin.trackmate.io.TmXmlReader;
 import net.trackmate.collection.IntRefMap;
 import net.trackmate.graph.CollectionUtils;
 import net.trackmate.revised.model.mamut.Link;
 import net.trackmate.revised.model.mamut.Model;
 import net.trackmate.revised.model.mamut.Spot;
-
-import org.jgrapht.graph.DefaultWeightedEdge;
-
-import fiji.plugin.trackmate.TrackModel;
-import fiji.plugin.trackmate.io.TmXmlReader;
 
 public class TrackMateImporter
 {
@@ -53,7 +52,7 @@ public class TrackMateImporter
 				final int id = spot.ID();
 				final int frame = spot.getFeature( fiji.plugin.trackmate.Spot.FRAME ).intValue();
 
-				final net.trackmate.revised.model.mamut.Spot addSpot = model.addSpot( frame, pos, cov, ref1 );
+				final Spot addSpot = model.addSpot( frame, pos, cov, ref1 );
 				map.put( id, addSpot );
 			}
 

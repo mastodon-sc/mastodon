@@ -5,9 +5,9 @@ import static net.trackmate.pool.ByteUtils.INT_SIZE;
 
 import net.imglib2.RealLocalizable;
 import net.trackmate.graph.ref.AbstractEdge;
+import net.trackmate.graph.ref.AbstractListenableVertex;
 import net.trackmate.graph.ref.AbstractVertex;
 import net.trackmate.graph.ref.AbstractVertexPool;
-import net.trackmate.graph.ref.AbstractVertexWithFeatures;
 import net.trackmate.pool.ByteMappedElement;
 import net.trackmate.pool.MappedElement;
 import net.trackmate.spatial.HasTimepoint;
@@ -33,7 +33,7 @@ public class AbstractSpot3D<
 		V extends AbstractSpot3D< V, E, T >,
 		E extends AbstractEdge< E, ?, ? >,
 		T extends MappedElement >
-	extends AbstractVertexWithFeatures< V, E, T >
+	extends AbstractListenableVertex< V, E, T >
 	implements RealLocalizable, HasTimepoint
 {
 	protected static final int X_OFFSET = AbstractVertex.SIZE_IN_BYTES;
@@ -41,12 +41,6 @@ public class AbstractSpot3D<
 	protected static final int Z_OFFSET = Y_OFFSET + DOUBLE_SIZE;
 	protected static final int TP_OFFSET = Z_OFFSET + DOUBLE_SIZE;
 	protected static final int SIZE_IN_BYTES = TP_OFFSET + INT_SIZE;
-
-	@Override
-	protected void setToUninitializedState()
-	{
-		super.setToUninitializedState();
-	}
 
 	public double getX()
 	{

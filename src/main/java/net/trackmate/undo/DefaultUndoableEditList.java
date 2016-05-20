@@ -239,8 +239,8 @@ public class DefaultUndoableEditList<
 			final V vertex = graph.addVertex( ref );
 			vertexUndoIdBimap.put( vi, vertex );
 			serializer.setBytes( vertex, data );
+			serializer.notifyVertexAdded( vertex );
 			featureStore.retrieveAll( fi, vertex );
-			graph.notifyVertexAdded( vertex );
 			graph.releaseRef( ref );
 
 			return dataStack.getReadDataIndex();
@@ -436,7 +436,7 @@ public class DefaultUndoableEditList<
 			edgeUndoIdBimap.put( ei, edge );
 			serializer.setBytes( edge, data );
 			featureStore.retrieveAll( fi, edge );
-//			graph.notifyEdgeAdded( edge ); // TODO: this should exist obviously, analogous to notifyVertexAdded()
+			serializer.notifyEdgeAdded( edge );
 			graph.releaseRef( eref );
 			graph.releaseRef( vref2 );
 			graph.releaseRef( vref1 );

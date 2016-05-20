@@ -26,6 +26,13 @@ public interface UndoSerializer< V extends Vertex< E >, E extends Edge< V > >
 	 */
 	public void setBytes( final V vertex, final byte[] bytes );
 
+	/**
+	 * TODO javadoc
+	 *
+	 * @param vertex
+	 */
+	public void notifyVertexAdded( final V vertex );
+
 	public int getEdgeNumBytes();
 
 	/**
@@ -37,4 +44,11 @@ public interface UndoSerializer< V extends Vertex< E >, E extends Edge< V > >
 	 * Restore data from {@code bytes} into {@code edge}.
 	 */
 	public void setBytes( final E edge, final byte[] bytes );
+
+	/**
+	 * TODO javadoc
+	 *
+	 * @param edge
+	 */
+	public void notifyEdgeAdded( final E edge );
 }

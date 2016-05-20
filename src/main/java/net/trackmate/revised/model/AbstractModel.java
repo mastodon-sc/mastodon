@@ -16,8 +16,8 @@ import net.trackmate.graph.io.RawFeatureIO;
 import net.trackmate.graph.io.RawGraphIO;
 import net.trackmate.graph.io.RawGraphIO.FileIdToGraphMap;
 import net.trackmate.graph.io.RawGraphIO.GraphToFileIdMap;
-import net.trackmate.graph.ref.AbstractEdge;
-import net.trackmate.graph.ref.AbstractVertexWithFeatures;
+import net.trackmate.graph.ref.AbstractListenableEdge;
+import net.trackmate.graph.ref.AbstractListenableVertex;
 
 /**
  * Manages the model graph.
@@ -31,8 +31,8 @@ import net.trackmate.graph.ref.AbstractVertexWithFeatures;
  */
 public class AbstractModel<
 		MG extends AbstractModelGraph< ?, ?, V, E, ? >,
-		V extends AbstractVertexWithFeatures< V, E, ? >,
-		E extends AbstractEdge< E, V, ? > >
+		V extends AbstractListenableVertex< V, E, ? >,
+		E extends AbstractListenableEdge< E, V, ? > >
 {
 
 	/**

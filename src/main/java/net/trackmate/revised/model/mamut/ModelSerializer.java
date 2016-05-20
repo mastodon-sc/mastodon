@@ -29,6 +29,12 @@ class ModelSerializer implements Serializer< Spot, Link >, UndoSerializer< Spot,
 	}
 
 	@Override
+	public void notifyVertexAdded( final Spot vertex )
+	{
+		vertex.notifyVertexAdded();
+	}
+
+	@Override
 	public int getEdgeNumBytes()
 	{
 		return 0;
@@ -50,5 +56,11 @@ class ModelSerializer implements Serializer< Spot, Link >, UndoSerializer< Spot,
 	public static ModelSerializer getInstance()
 	{
 		return instance;
+	}
+
+	@Override
+	public void notifyEdgeAdded( final Link edge )
+	{
+		edge.notifyEdgeAdded();
 	}
 }

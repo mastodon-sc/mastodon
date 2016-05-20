@@ -30,4 +30,16 @@ public class AbstractListenableVertexPool<
 		vertex.notifyPostInit = notifyPostInit;
 		return vertex;
 	}
+
+	/*
+	 * Debug helper. Uncomment to do additional verifyInitialized() whenever a
+	 * Ref is pointed to a vertex.
+	 */
+//	@Override
+//	public V getObject( final int index, final V obj )
+//	{
+//		final V v = super.getObject( index, obj );
+//		v.verifyInitialized();
+//		return v;
+//	}
 }

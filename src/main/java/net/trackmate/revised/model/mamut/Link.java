@@ -2,9 +2,10 @@ package net.trackmate.revised.model.mamut;
 
 import net.trackmate.graph.ref.AbstractEdge;
 import net.trackmate.graph.ref.AbstractEdgePool;
+import net.trackmate.graph.ref.AbstractListenableEdge;
 import net.trackmate.pool.ByteMappedElement;
 
-public class Link extends AbstractEdge< Link, Spot, ByteMappedElement >
+public class Link extends AbstractListenableEdge< Link, Spot, ByteMappedElement >
 {
 	protected static final int SIZE_IN_BYTES = AbstractEdge.SIZE_IN_BYTES;
 
@@ -17,5 +18,10 @@ public class Link extends AbstractEdge< Link, Spot, ByteMappedElement >
 	Link( final AbstractEdgePool< Link, Spot, ByteMappedElement > pool )
 	{
 		super( pool );
+	}
+
+	protected void notifyEdgeAdded()
+	{
+		super.initDone();
 	}
 }

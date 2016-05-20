@@ -29,12 +29,6 @@ public class Spot extends AbstractSpot3D< Spot, Link, ByteMappedElement > implem
 	public static final double nSigmas = 2;
 	public static final double nSigmasSquared = nSigmas * nSigmas;
 
-	@Override
-	protected void setToUninitializedState()
-	{
-		super.setToUninitializedState();
-	}
-
 	Spot init( final int timepointId, final double[] pos, final double radius )
 	{
 		final double eigVal = radius * radius / nSigmasSquared;
@@ -51,6 +45,7 @@ public class Spot extends AbstractSpot3D< Spot, Link, ByteMappedElement > implem
 		setCovariance( cov );
 		setBoundingSphereRadiusSquared( boundingSphereRadiusSquared );
 		setTimepointId( timepointId );
+		super.initDone();
 		return this;
 	}
 
@@ -71,6 +66,7 @@ public class Spot extends AbstractSpot3D< Spot, Link, ByteMappedElement > implem
 		setCovariance( cov );
 		setBoundingSphereRadiusSquared( boundingSphereRadiusSquared );
 		setTimepointId( timepointId );
+		super.initDone();
 		return this;
 	}
 
@@ -157,5 +153,10 @@ public class Spot extends AbstractSpot3D< Spot, Link, ByteMappedElement > implem
 	protected void setFlattenedCovarianceEntry( final double entry, final int index )
 	{
 		access.putDouble( entry, COVARIANCE_OFFSET + index * DOUBLE_SIZE );
+	}
+
+	protected void notifyVertexAdded()
+	{
+		super.initDone();
 	}
 }
