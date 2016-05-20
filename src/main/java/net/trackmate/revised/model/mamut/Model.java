@@ -46,7 +46,7 @@ public class Model extends AbstractModel< ModelGraph, Spot, Link > implements Un
 	public Model()
 	{
 		super( new ModelGraph() );
-		index = new SpatioTemporalIndexImp<>( modelGraph, modelGraph.getVertexPool() );
+		index = new SpatioTemporalIndexImp<>( modelGraph, modelGraph.idmap().vertexIdBimap() );
 
 		featuresToSerialize = new ArrayList<>();
 		featuresToSerialize.add( Features.LABEL );

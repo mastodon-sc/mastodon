@@ -121,16 +121,6 @@ class ModelGraph extends AbstractModelGraph< ModelGraph.SpotPool, ModelGraph.Lin
 		};
 	}
 
-	/**
-	 * TODO: This should be removed! It is currently only needed to construct
-	 * SpatioTemporalIndexImp, which in turn needs it for KDTree. This should
-	 * all be rather implemented using RefCollection and IdBimap.
-	 */
-	SpotPool getVertexPool()
-	{
-		return vertexPool;
-	}
-
 	@Override
 	protected void notifyGraphChanged()
 	{
