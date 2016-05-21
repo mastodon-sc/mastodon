@@ -4,14 +4,14 @@ import net.trackmate.collection.RefIntMap;
 import net.trackmate.collection.RefList;
 import net.trackmate.graph.Edge;
 import net.trackmate.graph.Edges;
-import net.trackmate.graph.Graph;
+import net.trackmate.graph.ReadOnlyGraph;
 import net.trackmate.graph.Vertex;
 import net.trackmate.graph.algorithm.util.Graphs;
 
 /**
  * Depth-first search for directed or undirected graph, following the framework
  * of Skiena. http://www.algorist.com/
- * 
+ *
  * @author Jean-Yves Tinevez
  *
  * @param <V>
@@ -29,7 +29,7 @@ public class DepthFirstSearch< V extends Vertex< E >, E extends Edge< V > > exte
 
 	protected int time;
 
-	public DepthFirstSearch( final Graph< V, E > graph, final boolean directed )
+	public DepthFirstSearch( final ReadOnlyGraph< V, E > graph, final boolean directed )
 	{
 		super( graph );
 		this.directed = directed;
@@ -134,7 +134,7 @@ public class DepthFirstSearch< V extends Vertex< E >, E extends Edge< V > > exte
 
 	/**
 	 * Returns the time of visit for the specified vertex.
-	 * 
+	 *
 	 * @param vertex
 	 *            the vertex to time.
 	 * @return the vertex discovery time.
