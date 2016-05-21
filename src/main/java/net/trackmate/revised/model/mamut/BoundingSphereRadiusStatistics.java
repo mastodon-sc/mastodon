@@ -6,7 +6,7 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import net.trackmate.graph.GraphListener;
-import net.trackmate.graph.ListenableGraph;
+import net.trackmate.graph.ListenableReadOnlyGraph;
 import net.trackmate.spatial.SpatialIndex;
 
 /**
@@ -30,7 +30,7 @@ public class BoundingSphereRadiusStatistics implements GraphListener< Spot, Link
 
 	private final Model model;
 
-	private final ListenableGraph< Spot, Link > graph;
+	private final ListenableReadOnlyGraph< Spot, Link > graph;
 
 	private final TIntObjectHashMap< Stats > timepointToStats;
 

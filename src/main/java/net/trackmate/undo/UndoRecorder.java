@@ -5,9 +5,9 @@ import net.trackmate.graph.FeatureChangeListener;
 import net.trackmate.graph.GraphFeatures;
 import net.trackmate.graph.GraphIdBimap;
 import net.trackmate.graph.GraphListener;
+import net.trackmate.graph.ListenableGraph;
 import net.trackmate.graph.VertexFeature;
 import net.trackmate.graph.VertexWithFeatures;
-import net.trackmate.revised.model.ModelGraph_HACK_FIX_ME;
 
 /**
  * TODO: javadoc
@@ -26,7 +26,7 @@ public class UndoRecorder< V extends VertexWithFeatures< V, E >, E extends Edge<
 	private final DefaultUndoableEditList< V, E > edits;
 
 	public UndoRecorder(
-			final ModelGraph_HACK_FIX_ME< V, E > graph,
+			final ListenableGraph< V, E > graph,
 			final GraphFeatures< V, E > graphFeatures,
 			final GraphIdBimap< V, E > idmap,
 			final UndoSerializer< V, E > serializer )

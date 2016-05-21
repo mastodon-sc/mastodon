@@ -3,9 +3,9 @@ package net.trackmate.undo;
 import net.trackmate.graph.Edge;
 import net.trackmate.graph.FeatureRegistry;
 import net.trackmate.graph.GraphFeatures;
+import net.trackmate.graph.ListenableGraph;
 import net.trackmate.graph.VertexFeature;
 import net.trackmate.graph.VertexWithFeatures;
-import net.trackmate.revised.model.ModelGraph_HACK_FIX_ME;
 
 // TODO: move to model.undo ?
 public class DefaultUndoableEditList<
@@ -13,7 +13,7 @@ public class DefaultUndoableEditList<
 			E extends Edge< V > >
 		extends UndoableEditList< V, E >
 {
-	protected final ModelGraph_HACK_FIX_ME< V, E > graph;
+	protected final ListenableGraph< V, E > graph;
 
 	protected final UndoSerializer< V, E > serializer;
 
@@ -25,7 +25,7 @@ public class DefaultUndoableEditList<
 
 	public DefaultUndoableEditList(
 			final int initialCapacity,
-			final ModelGraph_HACK_FIX_ME< V, E > graph,
+			final ListenableGraph< V, E > graph,
 			final GraphFeatures< V, E > graphFeatures,
 			final UndoSerializer< V, E > serializer,
 			final UndoIdBimap< V > vertexUndoIdBimap,

@@ -10,6 +10,7 @@ import fiji.plugin.trackmate.TrackModel;
 import fiji.plugin.trackmate.io.TmXmlReader;
 import net.trackmate.collection.IntRefMap;
 import net.trackmate.graph.CollectionUtils;
+import net.trackmate.graph.Graph;
 import net.trackmate.revised.model.mamut.Link;
 import net.trackmate.revised.model.mamut.Model;
 import net.trackmate.revised.model.mamut.Spot;
@@ -30,12 +31,12 @@ public class TrackMateImporter
 		final Set< Integer > trackIDs = tm.trackIDs( true );
 
 		final double[] pos = new double[ 3 ];
-		final double[][] cov = new double[ 3 ][ 3 ];
 		final Model model = new Model();
 
-		final Spot ref1 = model.getGraph().vertexRef();
-		final Spot ref2 = model.getGraph().vertexRef();
-		final Link edgeRef = model.getGraph().edgeRef();
+		final Graph< Spot, Link > graph = model.getGraph();
+		final Spot ref1 = graph.vertexRef();
+		final Spot ref2 = graph.vertexRef();
+		final Link edgeRef = graph.edgeRef();
 
 		for ( final Integer trackID : trackIDs )
 		{
@@ -46,13 +47,10 @@ public class TrackMateImporter
 			{
 				spot.localize( pos );
 				final double radius = spot.getFeature( fiji.plugin.trackmate.Spot.RADIUS );
-				cov[0][0] = radius;
-				cov[1][1] = radius;
-				cov[2][2] = radius;
 				final int id = spot.ID();
 				final int frame = spot.getFeature( fiji.plugin.trackmate.Spot.FRAME ).intValue();
 
-				final Spot addSpot = model.addSpot( frame, pos, cov, ref1 );
+				final Spot addSpot = graph.addVertex( ref1 ).init( frame, pos, radius );
 				map.put( id, addSpot );
 			}
 
@@ -65,14 +63,14 @@ public class TrackMateImporter
 				final fiji.plugin.trackmate.Spot target = tm.getEdgeTarget( edge );
 				final int targetID = target.ID();
 
-				model.addLink( map.get( sourceID, ref1 ), map.get( targetID, ref2 ), edgeRef );
+				graph.addEdge( map.get( sourceID, ref1 ), map.get( targetID, ref2 ), edgeRef ).init();
 			}
 
 		}
 
-		model.getGraph().releaseRef( edgeRef );
-		model.getGraph().releaseRef( ref1 );
-		model.getGraph().releaseRef( ref2 );
+		graph.releaseRef( edgeRef );
+		graph.releaseRef( ref1 );
+		graph.releaseRef( ref2 );
 
 		return model;
 	}

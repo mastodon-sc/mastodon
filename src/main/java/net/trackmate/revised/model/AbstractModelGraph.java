@@ -1,7 +1,19 @@
 package net.trackmate.revised.model;
 
-import net.trackmate.graph.GraphFeatures;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.util.List;
+
 import net.trackmate.graph.GraphIdBimap;
+import net.trackmate.graph.VertexFeature;
+import net.trackmate.graph.io.RawFeatureIO;
+import net.trackmate.graph.io.RawGraphIO;
+import net.trackmate.graph.io.RawGraphIO.FileIdToGraphMap;
+import net.trackmate.graph.io.RawGraphIO.GraphToFileIdMap;
 import net.trackmate.graph.ref.AbstractListenableEdge;
 import net.trackmate.graph.ref.AbstractListenableEdgePool;
 import net.trackmate.graph.ref.AbstractListenableVertex;
@@ -16,34 +28,86 @@ public class AbstractModelGraph<
 		E extends AbstractListenableEdge< E, V, T >,
 		T extends MappedElement >
 	extends ListenableGraphImp< VP, EP, V, E, T >
-	implements ModelGraph_HACK_FIX_ME< V, E >
 {
 	protected final GraphIdBimap< V, E > idmap;
-
-	protected final GraphFeatures< V, E > features;
 
 	public AbstractModelGraph( final VP vertexPool, final EP edgePool )
 	{
 		super( vertexPool, edgePool );
 		idmap = new GraphIdBimap< V, E >( vertexPool, edgePool );
-		features = new GraphFeatures<>( this );
-		vertexPool.linkFeatures( features );
 	}
 
 	public AbstractModelGraph( final EP edgePool )
 	{
 		super( edgePool );
 		idmap = new GraphIdBimap< V, E >( vertexPool, edgePool );
-		features = new GraphFeatures<>( this );
-		vertexPool.linkFeatures( features );
+	}
+
+	/**
+	 * Exposes the bidirectional map between vertices and their id, and between
+	 * edges and their id.
+	 *
+	 * @return the bidirectional id map.
+	 */
+	public GraphIdBimap< V, E > getGraphIdBimap()
+	{
+		return idmap;
+	}
+
+	/**
+	 * Clears this model and loads the model from the specified raw file using
+	 * the specified serializer.
+	 *
+	 * @param file
+	 *            the raw file to load.
+	 * @param serializer
+	 *            the serializer used for reading individual vertices.
+	 * @throws IOException
+	 *             if an I/O error occurs while reading the file.
+	 */
+	public void loadRaw(
+			final File file,
+			final RawGraphIO.Serializer< V, E > serializer )
+					throws IOException
+	{
+		final FileInputStream fis = new FileInputStream( file );
+		final ObjectInputStream ois = new ObjectInputStream( fis );
+		pauseListeners();
+		clear();
+		final FileIdToGraphMap< V, E > fileIdMap = RawGraphIO.read( this, idmap, serializer, ois );
+		RawFeatureIO.readFeatureMaps( fileIdMap, features, ois );
+		ois.close();
+		resumeListeners();
+	}
+
+	/**
+	 * Saves this model to the specified raw file using the specified
+	 * serializer.
+	 *
+	 * @param file
+	 *            the raw file to save.
+	 * @param serializer
+	 *            the serializer used for writing individual vertices.
+	 * @throws IOException
+	 *             if an I/O error occurs while writing the file.
+	 */
+	public void saveRaw(
+			final File file,
+			final RawGraphIO.Serializer< V, E > serializer,
+			final List< VertexFeature< ?, V, ? > > featuresToSerialize )
+					throws IOException
+	{
+		final FileOutputStream fos = new FileOutputStream( file );
+		final ObjectOutputStream oos = new ObjectOutputStream( fos );
+		final GraphToFileIdMap< V, E > fileIdMap = RawGraphIO.write( this, idmap, serializer, oos );
+		RawFeatureIO.writeFeatureMaps( fileIdMap, features, featuresToSerialize, oos );
+		oos.close();
 	}
 
 	@Override
 	protected void clear()
 	{
-		vertexPool.clear();
-		edgePool.clear();
-		features.clear();
+		super.clear();
 	}
 
 	@Override

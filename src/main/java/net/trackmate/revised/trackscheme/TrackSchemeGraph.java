@@ -12,7 +12,7 @@ import net.trackmate.graph.Edge;
 import net.trackmate.graph.GraphChangeListener;
 import net.trackmate.graph.GraphIdBimap;
 import net.trackmate.graph.GraphListener;
-import net.trackmate.graph.ListenableGraph;
+import net.trackmate.graph.ListenableReadOnlyGraph;
 import net.trackmate.graph.Vertex;
 import net.trackmate.graph.ref.AbstractEdgePool;
 import net.trackmate.graph.ref.AbstractVertexPool;
@@ -84,7 +84,7 @@ public class TrackSchemeGraph<
 				TrackSchemeVertex, TrackSchemeEdge, ByteMappedElement >
 	implements GraphListener< V, E >, GraphChangeListener
 {
-	private final ListenableGraph< V, E > modelGraph;
+	private final ListenableReadOnlyGraph< V, E > modelGraph;
 
 	private final GraphIdBimap< V, E > idmap;
 
@@ -115,7 +115,7 @@ public class TrackSchemeGraph<
 	 *            the properties of the model graph.
 	 */
 	public TrackSchemeGraph(
-			final ListenableGraph< V, E > modelGraph,
+			final ListenableReadOnlyGraph< V, E > modelGraph,
 			final GraphIdBimap< V, E > idmap,
 			final ModelGraphProperties modelGraphProperties )
 	{
@@ -136,7 +136,7 @@ public class TrackSchemeGraph<
 	 *            the initial capacity for the graph storage.
 	 */
 	public TrackSchemeGraph(
-			final ListenableGraph< V, E > modelGraph,
+			final ListenableReadOnlyGraph< V, E > modelGraph,
 			final GraphIdBimap< V, E > idmap,
 			final ModelGraphProperties modelGraphProperties,
 			final int initialCapacity )

@@ -28,7 +28,7 @@ import bdv.viewer.ViewerPanel;
 import mpicbg.spim.data.generic.AbstractSpimData;
 import net.trackmate.graph.GraphChangeListener;
 import net.trackmate.graph.GraphIdBimap;
-import net.trackmate.graph.ListenableGraph;
+import net.trackmate.graph.ListenableReadOnlyGraph;
 import net.trackmate.revised.bdv.BigDataViewerMaMuT;
 import net.trackmate.revised.bdv.SharedBigDataViewerData;
 import net.trackmate.revised.bdv.overlay.MouseHighlightHandler;
@@ -279,7 +279,7 @@ public class WindowManager
 		};
 		sharedBdvData = new SharedBigDataViewerData( spimDataXmlFilename, spimData, ViewerOptions.options().inputTriggerConfig( keyconf ), requestRepaint );
 
-		final ListenableGraph< Spot, Link > graph = model.getGraph();
+		final ListenableReadOnlyGraph< Spot, Link > graph = model.getGraph();
 		final GraphIdBimap< Spot, Link > idmap = model.getGraphIdBimap();
 		selection = new Selection<>( graph, idmap );
 		highlightModel = new HighlightModel< Spot, Link  >( idmap );
@@ -494,7 +494,7 @@ public class WindowManager
 
 	public void createTrackScheme()
 	{
-		final ListenableGraph< Spot, Link > graph = model.getGraph();
+		final ListenableReadOnlyGraph< Spot, Link > graph = model.getGraph();
 		final GraphIdBimap< Spot, Link > idmap = model.getGraphIdBimap();
 
 		/*

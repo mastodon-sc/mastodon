@@ -29,7 +29,21 @@ public class Spot extends AbstractSpot3D< Spot, Link, ByteMappedElement > implem
 	public static final double nSigmas = 2;
 	public static final double nSigmasSquared = nSigmas * nSigmas;
 
-	Spot init( final int timepointId, final double[] pos, final double radius )
+	private final JamaEigenvalueDecomposition eig = new JamaEigenvalueDecomposition( 3 );
+
+	/**
+	 * Initialize a new {@link Spot} with a spherical shape.
+	 *
+	 * @param timepointId
+	 *            the time-point id to add the spot to in the spatio-temporal
+	 *            index.
+	 * @param pos
+	 *            the position of the spot.
+	 * @param radius
+	 *            the radius of the spot.
+	 * @return this {@link Spot}.
+	 */
+	public Spot init( final int timepointId, final double[] pos, final double radius )
 	{
 		final double eigVal = radius * radius / nSigmasSquared;
 		final double[][] cov = new double[][] {
@@ -49,9 +63,22 @@ public class Spot extends AbstractSpot3D< Spot, Link, ByteMappedElement > implem
 		return this;
 	}
 
-	private final JamaEigenvalueDecomposition eig = new JamaEigenvalueDecomposition( 3 );
-
-	Spot init( final int timepointId, final double[] pos, final double[][] cov )
+	/**
+	 * Initialize a new {@link Spot}.
+	 *
+	 * @param timepointId
+	 *            the time-point id to add the spot to in the spatio-temporal
+	 *            index.
+	 * @param pos
+	 *            the position of the spot.
+	 * @param cov
+	 *            the covariance matrix that determines the shape of the
+	 *            ellipsoid, as a {@code double[][]} (line, column). Since the
+	 *            covariance matrix is symmetric, only the top-left of the
+	 *            specified matrix is read.
+	 * @return this {@link Spot}.
+	 */
+	public Spot init( final int timepointId, final double[] pos, final double[][] cov )
 	{
 		eig.decomposeSymmetric( cov );
 		final double[] eigVals = eig.getRealEigenvalues();

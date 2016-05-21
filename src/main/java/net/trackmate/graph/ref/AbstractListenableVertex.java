@@ -2,7 +2,7 @@ package net.trackmate.graph.ref;
 
 import net.trackmate.graph.Graph;
 import net.trackmate.graph.GraphListener;
-import net.trackmate.graph.ListenableGraph;
+import net.trackmate.graph.ListenableReadOnlyGraph;
 import net.trackmate.pool.MappedElement;
 
 /**
@@ -14,7 +14,7 @@ import net.trackmate.pool.MappedElement;
  * these immediately after creating vertices. The {@code init(...)} methods
  * <em>must</em> call {@link #initDone()} as their last step.
  * <p>
- * The reason: {@link ListenableGraph} should emit the
+ * The reason: {@link ListenableReadOnlyGraph} should emit the
  * {@link GraphListener#vertexAdded(Vertex)} event only after some basic
  * initialization has happened on the newly created vertex. It is therefore not
  * emitted in {@link Graph#addVertex()} but instead in {@link #initDone()}.

@@ -9,7 +9,7 @@ import net.trackmate.graph.CollectionUtils;
 import net.trackmate.graph.Edge;
 import net.trackmate.graph.GraphIdBimap;
 import net.trackmate.graph.GraphListener;
-import net.trackmate.graph.ListenableGraph;
+import net.trackmate.graph.ListenableReadOnlyGraph;
 import net.trackmate.graph.Vertex;
 
 /**
@@ -33,7 +33,7 @@ import net.trackmate.graph.Vertex;
 // TODO: should Selection be an interface
 public class Selection< V extends Vertex< E >, E extends Edge< V > > implements GraphListener< V, E >
 {
-	private final ListenableGraph< V, E > graph;
+	private final ListenableReadOnlyGraph< V, E > graph;
 
 	private final GraphIdBimap< V, E > idmap;
 
@@ -71,7 +71,7 @@ public class Selection< V extends Vertex< E >, E extends Edge< V > > implements 
 	 *            the bidirectional id map, used to efficiently stores the
 	 *            selected state of edges and vertices.
 	 */
-	public Selection( final ListenableGraph< V, E > graph, final GraphIdBimap< V, E > idmap )
+	public Selection( final ListenableReadOnlyGraph< V, E > graph, final GraphIdBimap< V, E > idmap )
 	{
 		this.graph = graph;
 		this.idmap = idmap;

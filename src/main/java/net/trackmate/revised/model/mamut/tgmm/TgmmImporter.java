@@ -26,7 +26,7 @@ import net.imglib2.realtransform.AffineTransform3D;
 import net.imglib2.util.LinAlgHelpers;
 import net.trackmate.collection.IntRefMap;
 import net.trackmate.graph.CollectionUtils;
-import net.trackmate.graph.ReadOnlyGraph;
+import net.trackmate.graph.Graph;
 import net.trackmate.revised.model.AbstractModelImporter;
 import net.trackmate.revised.model.mamut.Link;
 import net.trackmate.revised.model.mamut.Model;
@@ -108,8 +108,7 @@ public class TgmmImporter extends AbstractModelImporter< Model >
 		super( model );
 		startImport();
 
-		// TODO rename graph
-		final ReadOnlyGraph< Spot, Link > graph = model.getGraph();
+		final Graph< Spot, Link > graph = model.getGraph();
 		final Spot spot = graph.vertexRef();
 		final Spot parent = graph.vertexRef();
 		final Spot tmp = graph.vertexRef();
@@ -142,15 +141,14 @@ public class TgmmImporter extends AbstractModelImporter< Model >
 					final int parentId = getIntAttribute( elem, "parent" );
 
 					final double[][] S = ( useThisCovariance != null ) ? useThisCovariance : getCovariance( transform, nu / ( nSigmas * nSigmas ), W );
-					model.addSpot(
+					graph.addVertex( spot ).init(
 							timepointId,
 							getPosition( transform, m ),
-							S,
-							spot );
+							S );
 					idToSpot.put( id, spot, tmp );
 
 					if ( ( parentId >= 0 ) && ( previousIdToSpot.get( parentId, parent ) != null ) )
-						model.addLink( parent, spot, edge );
+						graph.addEdge( parent, spot, edge ).init();
 				}
 				catch ( final NumberFormatException e )
 				{

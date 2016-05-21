@@ -13,7 +13,7 @@ import net.trackmate.collection.RefList;
 import net.trackmate.graph.CollectionUtils;
 import net.trackmate.graph.Edge;
 import net.trackmate.graph.GraphListener;
-import net.trackmate.graph.ListenableGraph;
+import net.trackmate.graph.ListenableReadOnlyGraph;
 import net.trackmate.graph.Vertex;
 
 /**
@@ -47,7 +47,7 @@ public class SpatioTemporalIndexImp<
 
 	final TIntObjectHashMap< SpatialIndexImp< V > > timepointToSpatialIndex;
 
-	private final ListenableGraph< V, E > graph;
+	private final ListenableReadOnlyGraph< V, E > graph;
 
 	private final RefPool< V > vertexPool;
 
@@ -69,7 +69,7 @@ public class SpatioTemporalIndexImp<
 	 * @param vertexPool
 	 *            the {@link RefPool} of the vertices of the graph.
 	 */
-	public SpatioTemporalIndexImp( final ListenableGraph< V, E > graph, final RefPool< V > vertexPool )
+	public SpatioTemporalIndexImp( final ListenableReadOnlyGraph< V, E > graph, final RefPool< V > vertexPool )
 	{
 		this.graph = graph;
 		this.vertexPool = vertexPool;

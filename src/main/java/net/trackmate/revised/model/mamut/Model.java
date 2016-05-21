@@ -55,48 +55,6 @@ public class Model extends AbstractModel< ModelGraph, Spot, Link > implements Un
 	}
 
 	/**
-	 * Creates and adds a new spot to this model.
-	 *
-	 * @param timepointId
-	 *            the time-point id to add the spot to in the spatio-temporal
-	 *            index.
-	 * @param pos
-	 *            the position of the spot.
-	 * @param cov
-	 *            the covariance matrix that determines the shape of the
-	 *            ellipsoid, as a {@code double[][]} (line, column). Since
-	 *            the covariance matrix is symmetric, only the top-left of the
-	 *            specified matrix is read.
-	 * @param ref
-	 *            a spot reference, used to create the spot.
-	 * @return the spot created.
-	 */
-	public Spot addSpot( final int timepointId, final double[] pos, final double[][] cov, final Spot ref )
-	{
-		return modelGraph.addVertex( ref ).init( timepointId, pos, cov );
-	}
-
-	/**
-	 * Creates and adds a new link between two spots to this model.
-	 * <p>
-	 * Links are <em>directed edges</em> in the graph, so the source spot and the
-	 * target spot matters, depending on the convention for this model
-	 * application.
-	 *
-	 * @param source
-	 *            the source spot the link.
-	 * @param target
-	 *            the target spot the link.
-	 * @param ref
-	 *            a {@link Link} reference, used to create the link.
-	 * @return the link created.
-	 */
-	public Link addLink( final Spot source, final Spot target, final Link ref )
-	{
-		return modelGraph.addEdge( source, target, ref );
-	}
-
-	/**
 	 * Clears this model and loads the model from the specified raw file.
 	 *
 	 * @param file
@@ -106,7 +64,7 @@ public class Model extends AbstractModel< ModelGraph, Spot, Link > implements Un
 	 */
 	public void loadRaw( final File file ) throws IOException
 	{
-		super.loadRaw( file, ModelSerializer.getInstance() );
+		modelGraph.loadRaw( file, ModelSerializer.getInstance() );
 	}
 
 	/**
@@ -119,7 +77,7 @@ public class Model extends AbstractModel< ModelGraph, Spot, Link > implements Un
 	 */
 	public void saveRaw( final File file ) throws IOException
 	{
-		super.saveRaw( file, ModelSerializer.getInstance(), featuresToSerialize );
+		modelGraph.saveRaw( file, ModelSerializer.getInstance(), featuresToSerialize );
 	}
 
 	/**

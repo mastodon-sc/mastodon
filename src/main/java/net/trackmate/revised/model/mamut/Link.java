@@ -9,6 +9,17 @@ public class Link extends AbstractListenableEdge< Link, Spot, ByteMappedElement 
 {
 	protected static final int SIZE_IN_BYTES = AbstractEdge.SIZE_IN_BYTES;
 
+	/**
+	 * Initialize a new {@link Link}.
+	 *
+	 * @return this {@link Link}.
+	 */
+	public Link init()
+	{
+		super.initDone();
+		return this;
+	}
+
 	@Override
 	public String toString()
 	{
