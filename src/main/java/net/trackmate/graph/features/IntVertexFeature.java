@@ -1,10 +1,8 @@
 package net.trackmate.graph.features;
 
-import gnu.trove.impl.Constants;
-import gnu.trove.map.TIntIntMap;
 import gnu.trove.map.TObjectIntMap;
-import gnu.trove.map.hash.TIntIntHashMap;
 import net.trackmate.graph.CollectionUtils;
+import net.trackmate.graph.FeatureCleanup;
 import net.trackmate.graph.FeatureValue;
 import net.trackmate.graph.GraphFeatures;
 import net.trackmate.graph.ReadOnlyGraph;
@@ -149,63 +147,5 @@ public final class IntVertexFeature< V extends Vertex< ? > > extends VertexFeatu
 	public IntUndoFeatureMap< V > createUndoFeatureMap( final TObjectIntMap< V > featureMap )
 	{
 		return new IntUndoFeatureMap<>( featureMap, noEntryValue );
-	}
-
-	public static final class IntUndoFeatureMap< V > implements UndoFeatureMap< V >
-	{
-		private static final int NO_ENTRY_KEY = -1;
-
-		private final TObjectIntMap< V > featureMap;
-
-		private final int noEntryValue;
-
-		private final TIntIntMap undoMap;
-
-		protected IntUndoFeatureMap( final TObjectIntMap< V > featureMap, final int noEntryValue )
-		{
-			this.featureMap = featureMap;
-			this.noEntryValue = noEntryValue;
-			undoMap = new TIntIntHashMap( Constants.DEFAULT_CAPACITY, Constants.DEFAULT_LOAD_FACTOR, NO_ENTRY_KEY, noEntryValue );
-		}
-
-		@Override
-		public void store( final int undoId, final V vertex )
-		{
-			final int value = featureMap.get( vertex );
-			if ( value != noEntryValue )
-				undoMap.put( undoId, value );
-		}
-
-		@Override
-		public void retrieve( final int undoId, final V vertex )
-		{
-			final int value = undoMap.get( undoId );
-			if ( value != noEntryValue )
-				featureMap.put( vertex, value );
-			else
-				featureMap.remove( vertex );
-		}
-
-		@Override
-		public void swap( final int undoId, final V vertex )
-		{
-			final int undoValue = undoMap.get( undoId );
-			final int featureValue = featureMap.get( vertex );
-			if ( featureValue != noEntryValue )
-				undoMap.put( undoId, featureValue );
-			else
-				undoMap.remove( undoId );
-			if ( undoValue != noEntryValue )
-				featureMap.put( vertex, undoValue );
-			else
-				featureMap.remove( vertex );
-
-		}
-
-		@Override
-		public void clear( final int undoId )
-		{
-			undoMap.remove( undoId );
-		}
 	}
 }

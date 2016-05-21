@@ -1,6 +1,7 @@
 package net.trackmate.undo;
 
 import net.trackmate.graph.Edge;
+import net.trackmate.graph.EdgeFeature;
 import net.trackmate.graph.FeatureChangeListener;
 import net.trackmate.graph.GraphFeatures;
 import net.trackmate.graph.GraphIdBimap;
@@ -137,6 +138,16 @@ public class UndoRecorder< V extends VertexWithFeatures< V, E >, E extends Edge<
 		{
 			System.out.println( "UndoRecorder.beforeFeatureChange()" );
 			edits.recordSetFeature( feature, vertex );
+		}
+	}
+
+	@Override
+	public void beforeFeatureChange( final EdgeFeature< ?, E, ? > feature, final E edge )
+	{
+		if ( recording )
+		{
+			System.out.println( "UndoRecorder.beforeFeatureChange()" );
+			edits.recordSetFeature( feature, edge );
 		}
 	}
 }

@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Map;
 
 import net.trackmate.collection.UniqueHashcodeArrayMap;
-import net.trackmate.graph.VertexFeature.FeatureCleanup;
 import net.trackmate.graph.io.RawFeatureIO;
 
 public class GraphFeatures< V extends Vertex< E >, E extends Edge< V > >
@@ -21,6 +20,16 @@ public class GraphFeatures< V extends Vertex< E >, E extends Edge< V > >
 
 	private final ArrayList< FeatureCleanup< V > > vertexFeatureCleanups;
 
+	/**
+	 * Maps {@link EdgeFeature} to feature-map objects, that are usually
+	 * {@code Map<E,T>} with the type {@code T} of feature values. The reason
+	 * this is not fixed to {@code Map<E,?>} is that for example primitive
+	 * features might want to use Trove maps instead.
+	 */
+	private final Map< EdgeFeature< ?, E, ? >, Object > edgeFeatureMaps;
+
+	private final ArrayList< FeatureCleanup< E > > edgeFeatureCleanups;
+
 	private final ArrayList< CreateFeatureMapListener< V, E > > createFeatureMapListeners;
 
 	private final ArrayList< FeatureChangeListener< V, E > > featureChangeListeners;
@@ -30,6 +39,8 @@ public class GraphFeatures< V extends Vertex< E >, E extends Edge< V > >
 		this.graph = graph;
 		vertexFeatureMaps = new UniqueHashcodeArrayMap<>();
 		vertexFeatureCleanups = new ArrayList<>();
+		edgeFeatureMaps = new UniqueHashcodeArrayMap< >();
+		edgeFeatureCleanups = new ArrayList< >();
 		createFeatureMapListeners = new ArrayList<>();
 		featureChangeListeners = new ArrayList<>();
 	}
@@ -57,6 +68,26 @@ public class GraphFeatures< V extends Vertex< E >, E extends Edge< V > >
 		return fmap;
 	}
 
+	/**
+	 * @see #getVertexFeature(VertexFeature)
+	 * @param feature
+	 * @return
+	 */
+	@SuppressWarnings( "unchecked" )
+	public < M > M getEdgeFeature( final EdgeFeature< M, E, ? > feature )
+	{
+		M fmap = ( M ) edgeFeatureMaps.get( feature );
+		if ( fmap == null )
+		{
+			fmap = feature.createFeatureMap( graph );
+			edgeFeatureMaps.put( feature, fmap );
+			edgeFeatureCleanups.add( feature.createFeatureCleanup( fmap ) );
+			for ( final CreateFeatureMapListener< V, E > l : createFeatureMapListeners )
+				l.createFeatureMap( feature, fmap );
+		}
+		return fmap;
+	}
+
 	public void clear()
 	{
 		vertexFeatureMaps.clear();
@@ -74,9 +105,23 @@ public class GraphFeatures< V extends Vertex< E >, E extends Edge< V > >
 			cleanup.delete( vertex );
 	}
 
+	/**
+	 * for internal use.
+	 *
+	 * @param vertex
+	 */
+	public void delete( final E edge )
+	{
+		for ( final FeatureCleanup< E > cleanup : edgeFeatureCleanups )
+			cleanup.delete( edge );
+	}
+
 	public interface CreateFeatureMapListener< V extends Vertex< E >, E extends Edge< V > >
 	{
 		public < M > void createFeatureMap( final VertexFeature< M, V, ? > feature, M featureMap );
+
+		public < M > void createFeatureMap( final EdgeFeature< M, E, ? > feature, M featureMap );
+
 	}
 
 	/**
@@ -151,4 +196,11 @@ public class GraphFeatures< V extends Vertex< E >, E extends Edge< V > >
 		for ( final FeatureChangeListener< V, E > l : featureChangeListeners )
 			l.beforeFeatureChange( feature, vertex );
 	}
+
+	void notifyBeforeFeatureChange( final EdgeFeature< ?, E, ? > feature, final E edge )
+	{
+		for ( final FeatureChangeListener< V, E > l : featureChangeListeners )
+			l.beforeFeatureChange( feature, edge );
+	}
+
 }

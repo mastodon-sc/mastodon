@@ -1,6 +1,7 @@
 package net.trackmate.undo;
 
 import net.trackmate.graph.Edge;
+import net.trackmate.graph.EdgeFeature;
 import net.trackmate.graph.FeatureRegistry;
 import net.trackmate.graph.GraphFeatures;
 import net.trackmate.graph.ListenableGraph;
@@ -71,6 +72,13 @@ public class DefaultUndoableEditList<
 	{
 		final UndoableEditRef< V, E > ref = createRef();
 		create( ref ).getEdit( setFeature ).init( feature, vertex );
+		releaseRef( ref );
+	}
+
+	public void recordSetFeature( final EdgeFeature< ?, E, ? > feature, final E edge )
+	{
+		final UndoableEditRef< V, E > ref = createRef();
+		create( ref ).getEdit( setFeature ).init( feature, edge );
 		releaseRef( ref );
 	}
 
@@ -472,6 +480,23 @@ public class DefaultUndoableEditList<
 
 			final long dataIndex = dataStack.getWriteDataIndex();
 			dataStack.out.writeInt( vi );
+			dataStack.out.writeInt( fi );
+			dataStack.out.writeInt( fuid );
+
+			ref.setDataIndex( dataIndex );
+		}
+
+		public void init( final EdgeFeature< ?, E, ? > feature, final E edge )
+		{
+			super.init();
+
+			final int ei = edgeUndoIdBimap.getId( edge );
+			final int fi = featureStore.createFeatureUndoId();
+			final int fuid = feature.getUniqueFeatureId();
+			featureStore.store( fi, feature, edge );
+
+			final long dataIndex = dataStack.getWriteDataIndex();
+			dataStack.out.writeInt( ei );
 			dataStack.out.writeInt( fi );
 			dataStack.out.writeInt( fuid );
 

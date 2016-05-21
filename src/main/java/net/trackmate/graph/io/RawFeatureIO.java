@@ -17,6 +17,8 @@ public class RawFeatureIO
 	/**
 	 * De/serialize a feature map of type {@code M}.
 	 *
+	 * TODO Create its counterpart for edge features.
+	 *
 	 * @param <M>
 	 *            the feature map type
 	 * @param <V>
@@ -39,6 +41,16 @@ public class RawFeatureIO
 						throws IOException, ClassNotFoundException;
 	}
 
+	/**
+	 * TODO How to serialize edge features, knowing that they are mapped by key
+	 * strings as well?
+	 * 
+	 * @param idmap
+	 * @param features
+	 * @param featuresToSerialize
+	 * @param oos
+	 * @throws IOException
+	 */
 	public static < V extends Vertex< ? > > void writeFeatureMaps(
 			final GraphToFileIdMap< V, ? > idmap,
 			final GraphFeatures< V, ? > features,
@@ -70,6 +82,14 @@ public class RawFeatureIO
 		serializer.writeFeatureMap( idmap, ( M ) featureMap, oos );
 	}
 
+	/**
+	 * TODO how to deserialize edge features?
+	 *
+	 * @param idmap
+	 * @param features
+	 * @param ois
+	 * @throws IOException
+	 */
 	public static < V extends Vertex< ? > > void readFeatureMaps(
 			final FileIdToGraphMap< V, ? > idmap,
 			final GraphFeatures< V, ? > features,

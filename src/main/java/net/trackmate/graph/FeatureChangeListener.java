@@ -8,4 +8,7 @@ package net.trackmate.graph;
 public interface FeatureChangeListener< V extends Vertex< E >, E extends Edge< V > >
 {
 	public void beforeFeatureChange( final VertexFeature< ?, V, ? > feature, V vertex );
+
+	public void beforeFeatureChange( final EdgeFeature< ?, E, ? > feature, E edge );
+
 }

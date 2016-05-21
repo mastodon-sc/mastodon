@@ -52,64 +52,6 @@ public abstract class VertexFeature< M, V extends Vertex< ? >, F extends Feature
 		return id;
 	}
 
-	/**
-	 * When a vertex is deleted it must be removed from all feature maps. This
-	 * can be done by {@link #delete(Object)}
-	 *
-	 * @param <V>
-	 *            vertex type
-	 */
-	public static interface FeatureCleanup< V >
-	{
-		public void delete( final V vertex );
-	}
-
-	/**
-	 * Backup and restore vertex features by storing them in a map with {@code int} keys.
-	 * This is used for implementing undo/redo (hence the name).
-	 *
-	 * @param <V>
-	 *            vertex type
-	 */
-	public static interface UndoFeatureMap< V >
-	{
-		/**
-		 * Store the feature value of {@code vertex} with the key {@code undoId}.
-		 *
-		 * @param undoId
-		 * @param vertex
-		 */
-		public void store( int undoId, V vertex );
-
-		/**
-		 * Retrieve the feature value stored with key {@code undoId} and set it
-		 * in {@code vertex}. If there is no value associated with
-		 * {@code undoId}, clear the feature in {@code vertex}.
-		 *
-		 * @param undoId
-		 * @param vertex
-		 */
-		public void retrieve( int undoId, V vertex );
-
-		/**
-		 * Store the feature value of {@code vertex} with the key {@code undoId},
-		 * and replace it with the feature value currently stored with key
-		 * {@code undoId}. If there is no value currently associated with
-		 * {@code undoId}, clear the feature in {@code vertex}.
-		 *
-		 * @param undoId
-		 * @param vertex
-		 */
-		public void swap( int undoId, V vertex );
-
-		/**
-		 * Clear the feature value associated with key {@code undoId} (if any).
-		 *
-		 * @param undoId
-		 */
-		public void clear( int undoId );
-	}
-
 	protected static class NotifyValueChange< V extends Vertex< ? > >
 	{
 		private final GraphFeatures< V, ? > graphFeatures;

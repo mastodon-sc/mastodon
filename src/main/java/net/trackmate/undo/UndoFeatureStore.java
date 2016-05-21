@@ -5,10 +5,12 @@ import java.util.Map;
 
 import net.trackmate.collection.UniqueHashcodeArrayMap;
 import net.trackmate.graph.Edge;
+import net.trackmate.graph.EdgeFeature;
 import net.trackmate.graph.GraphFeatures;
+import net.trackmate.graph.GraphFeatures.CreateFeatureMapListener;
+import net.trackmate.graph.UndoFeatureMap;
 import net.trackmate.graph.Vertex;
 import net.trackmate.graph.VertexFeature;
-import net.trackmate.graph.VertexFeature.UndoFeatureMap;
 
 class UndoFeatureStore< V extends Vertex< E >, E extends Edge< V > >
 {
@@ -16,14 +18,38 @@ class UndoFeatureStore< V extends Vertex< E >, E extends Edge< V > >
 
 	private final ArrayList< UndoFeatureMap< V > > vertexUndoMapList;
 
+	private final ArrayList< UndoFeatureMap< E > > edgeUndoMapList;
+
 	private final Map< VertexFeature< ?, V, ? >, UndoFeatureMap< V > > vertexUndoMaps;
+
+	private final Map< EdgeFeature< ?, E, ? >, UndoFeatureMap< E > > edgeUndoMaps;
+
 
 	public UndoFeatureStore( final GraphFeatures< V, E > features )
 	{
 		idgen = 0;
 		vertexUndoMapList = new ArrayList<>();
 		vertexUndoMaps = new UniqueHashcodeArrayMap<>();
-		features.addCreateFeatureMapListener( this::createFeatureMap );
+		edgeUndoMapList = new ArrayList< >();
+		edgeUndoMaps = new UniqueHashcodeArrayMap< >();
+		features.addCreateFeatureMapListener( new CreateFeatureMapListener< V, E >()
+		{
+			@Override
+			public < M > void createFeatureMap( final VertexFeature< M, V, ? > feature, final M featureMap )
+			{
+				final UndoFeatureMap< V > undoMap = feature.createUndoFeatureMap( featureMap );
+				vertexUndoMapList.add( undoMap );
+				vertexUndoMaps.put( feature, undoMap );
+			}
+
+			@Override
+			public < M > void createFeatureMap( final EdgeFeature< M, E, ? > feature, final M featureMap )
+			{
+				final UndoFeatureMap< E > undoMap = feature.createUndoFeatureMap( featureMap );
+				edgeUndoMapList.add( undoMap );
+				edgeUndoMaps.put( feature, undoMap );
+			}
+		} );
 	}
 
 	public int createFeatureUndoId()
@@ -55,6 +81,18 @@ class UndoFeatureStore< V extends Vertex< E >, E extends Edge< V > >
 	}
 
 	/**
+	 * Store the specified feature of the specified {@code edge} with key
+	 * {@code undoId}.
+	 *
+	 * @param undoId
+	 * @param edge
+	 */
+	public void store( final int undoId, final EdgeFeature< ?, E, ? > feature, final E edge )
+	{
+		edgeUndoMaps.get( feature ).store( undoId, edge );
+	}
+
+	/**
 	 * Store all features of the specified {@code edge} with key {@code undoId}.
 	 *
 	 * @param undoId
@@ -62,7 +100,7 @@ class UndoFeatureStore< V extends Vertex< E >, E extends Edge< V > >
 	 */
 	public void storeAll( final int undoId, final E edge )
 	{
-		// TODO
+		edgeUndoMapList.forEach( m -> m.store( undoId, edge ) );
 	}
 
 	/**
@@ -101,7 +139,7 @@ class UndoFeatureStore< V extends Vertex< E >, E extends Edge< V > >
 	 */
 	public void retrieveAll( final int undoId, final E edge )
 	{
-		// TODO
+		edgeUndoMapList.forEach( m -> m.retrieve( undoId, edge ) );
 	}
 
 	/**
@@ -116,12 +154,5 @@ class UndoFeatureStore< V extends Vertex< E >, E extends Edge< V > >
 	public void swap( final int undoId, final VertexFeature< ?, V, ? > feature, final V vertex )
 	{
 		vertexUndoMaps.get( feature ).swap( undoId, vertex );
-	}
-
-	private < M > void createFeatureMap( final VertexFeature< M, V, ? > feature, final M featureMap )
-	{
-		final UndoFeatureMap< V > undoMap = feature.createUndoFeatureMap( featureMap );
-		vertexUndoMapList.add( undoMap );
-		vertexUndoMaps.put( feature, undoMap );
 	}
 }
