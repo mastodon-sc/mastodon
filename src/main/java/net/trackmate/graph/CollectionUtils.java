@@ -12,6 +12,7 @@ import java.util.HashSet;
 import net.trackmate.collection.IntRefMap;
 import net.trackmate.collection.RefCollection;
 import net.trackmate.collection.RefDeque;
+import net.trackmate.collection.RefDoubleMap;
 import net.trackmate.collection.RefIntMap;
 import net.trackmate.collection.RefList;
 import net.trackmate.collection.RefObjectMap;
@@ -19,6 +20,7 @@ import net.trackmate.collection.RefRefMap;
 import net.trackmate.collection.RefSet;
 import net.trackmate.collection.RefStack;
 import net.trackmate.collection.wrap.IntRefMapWrapper;
+import net.trackmate.collection.wrap.RefDoubleMapWrapper;
 import net.trackmate.collection.wrap.RefIntMapWrapper;
 
 /**
@@ -258,6 +260,21 @@ public class CollectionUtils
 			return new RefIntMapWrapper< V >( noEntryValue, initialCapacity );
 	}
 
+	public static < V extends Vertex< ? > > RefDoubleMap< V > createVertexDoubleMap( final ReadOnlyGraph< V, ? > graph, final double noEntryValue )
+	{
+		if ( graph instanceof MapCreator )
+			return ( ( MapCreator< V, ? > ) graph ).createVertexDoubleMap( noEntryValue );
+		else
+			return new RefDoubleMapWrapper< V >( noEntryValue );
+	}
+
+	public static < V extends Vertex< ? > > RefDoubleMap< V > createVertexDoubleMap( final ReadOnlyGraph< V, ? > graph, final double noEntryValue, final int initialCapacity )
+	{
+		if ( graph instanceof MapCreator )
+			return ( ( MapCreator< V, ? > ) graph ).createVertexDoubleMap( noEntryValue, initialCapacity );
+		else
+			return new RefDoubleMapWrapper< V >( noEntryValue, initialCapacity );
+	}
 	public static < V extends Vertex< ? > > IntRefMap< V > createIntVertexMap( final ReadOnlyGraph< V, ? > graph, final int noEntryKey )
 	{
 		if ( graph instanceof MapCreator )
@@ -288,6 +305,22 @@ public class CollectionUtils
 			return ( ( MapCreator< ?, E > ) graph ).createEdgeIntMap( noEntryValue, initialCapacity );
 		else
 			return new RefIntMapWrapper< E >( noEntryValue, initialCapacity );
+	}
+
+	public static < E extends Edge< ? > > RefDoubleMap< E > createEdgeDoubleMap( final ReadOnlyGraph< ?, E > graph, final double noEntryValue )
+	{
+		if ( graph instanceof MapCreator )
+			return ( ( MapCreator< ?, E > ) graph ).createEdgeDoubleMap( noEntryValue );
+		else
+			return new RefDoubleMapWrapper< E >( noEntryValue );
+	}
+
+	public static < E extends Edge< ? > > RefDoubleMap< E > createEdgeDoubleMap( final ReadOnlyGraph< ?, E > graph, final double noEntryValue, final int initialCapacity )
+	{
+		if ( graph instanceof MapCreator )
+			return ( ( MapCreator< ?, E > ) graph ).createEdgeDoubleMap( noEntryValue, initialCapacity );
+		else
+			return new RefDoubleMapWrapper< E >( noEntryValue, initialCapacity );
 	}
 
 	public static interface SetCreator< V extends Vertex< E >, E extends Edge< V > > extends ReadOnlyGraph< V, E >
@@ -361,9 +394,17 @@ public class CollectionUtils
 
 		public RefIntMap< V > createVertexIntMap( int noEntryValue, int initialCapacity );
 
+		public RefDoubleMap< V > createVertexDoubleMap( double noEntryValue );
+
+		public RefDoubleMap< V > createVertexDoubleMap( double noEntryValue, int initialCapacity );
+
 		public RefIntMap< E > createEdgeIntMap( int noEntryValue );
 
 		public RefIntMap< E > createEdgeIntMap( int noEntryValue, int initialCapacity );
+
+		public RefDoubleMap< E > createEdgeDoubleMap( double noEntryValue );
+
+		public RefDoubleMap< E > createEdgeDoubleMap( double noEntryValue, int initialCapacity );
 
 		public IntRefMap< V > createIntVertexMap( int noEntryKey );
 

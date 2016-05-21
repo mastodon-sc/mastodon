@@ -5,10 +5,12 @@ import java.util.Iterator;
 
 import net.trackmate.collection.IntRefMap;
 import net.trackmate.collection.RefCollection;
+import net.trackmate.collection.RefDoubleMap;
 import net.trackmate.collection.ref.IntRefHashMap;
 import net.trackmate.collection.ref.RefArrayDeque;
 import net.trackmate.collection.ref.RefArrayList;
 import net.trackmate.collection.ref.RefArrayStack;
+import net.trackmate.collection.ref.RefDoubleHashMap;
 import net.trackmate.collection.ref.RefIntHashMap;
 import net.trackmate.collection.ref.RefObjectHashMap;
 import net.trackmate.collection.ref.RefRefHashMap;
@@ -396,6 +398,30 @@ public class GraphImp<
 	public IntRefMap< V > createIntVertexMap( final int noEntryKey, final int initialCapacity )
 	{
 		return new IntRefHashMap< V >( vertexPool, noEntryKey, initialCapacity );
+	}
+
+	@Override
+	public RefDoubleMap< V > createVertexDoubleMap( final double noEntryValue )
+	{
+		return new RefDoubleHashMap< >( vertexPool, noEntryValue );
+	}
+
+	@Override
+	public RefDoubleMap< V > createVertexDoubleMap( final double noEntryValue, final int initialCapacity )
+	{
+		return new RefDoubleHashMap< >( vertexPool, noEntryValue, initialCapacity );
+	}
+
+	@Override
+	public RefDoubleMap< E > createEdgeDoubleMap( final double noEntryValue )
+	{
+		return new RefDoubleHashMap< >( edgePool, noEntryValue );
+	}
+
+	@Override
+	public RefDoubleMap< E > createEdgeDoubleMap( final double noEntryValue, final int initialCapacity )
+	{
+		return new RefDoubleHashMap< >( edgePool, noEntryValue, initialCapacity );
 	}
 
 	// TODO: move to new file? may be generally useful.
