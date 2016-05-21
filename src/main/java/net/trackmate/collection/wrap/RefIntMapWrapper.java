@@ -15,14 +15,14 @@ public class RefIntMapWrapper< K > extends TObjectIntHashMap< K > implements Ref
 
 	private static final float DEFAULT_LOAD_FACTOR = Constants.DEFAULT_LOAD_FACTOR;
 
-	public RefIntMapWrapper( final int initialCapacity, final int noEntryValue )
+	public RefIntMapWrapper( final int noEntryValue, final int initialCapacity )
 	{
 		super( initialCapacity, DEFAULT_LOAD_FACTOR, noEntryValue );
 	}
 
 	public RefIntMapWrapper( final int noEntryValue )
 	{
-		this( Constants.DEFAULT_CAPACITY, noEntryValue );
+		this( noEntryValue, Constants.DEFAULT_CAPACITY );
 	}
 
 	@Override

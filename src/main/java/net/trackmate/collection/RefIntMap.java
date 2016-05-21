@@ -15,7 +15,7 @@ import net.trackmate.pool.PoolObject;
  * interface with extra methods that accept an existing Ref object to control
  * garbage collection.
  *
- * @author Jean-Yves Tinevez
+ * @author Jean-Yves Tinevez&lt;jeanyves.tinevez@gmail.com&gt;
  *
  * @param <K>
  *            the type of the keys of the map.
@@ -59,13 +59,13 @@ public interface RefIntMap< K > extends TObjectIntMap< K >
 	 * Executes <tt>procedure</tt> for each key/value entry in the map.
 	 *
 	 * @param procedure
-	 *            a {@code TOIntIntProcedure} value.
+	 *            a {@code TObjectIntProcedure} value.
 	 * @param ref
 	 *            an object reference that can be used for retrieval. Depending
 	 *            on concrete implementation, this object can be cleared,
 	 *            ignored or re-used.
-	 * @return {@code false} if the loop over the entries terminated
-	 *         because the procedure returned false for some entry.
+	 * @return {@code false} if the loop over the entries terminated because the
+	 *         procedure returned false for some entry.
 	 */
 	public boolean forEachEntry( TObjectIntProcedure< ? super K > procedure, K ref );
 
