@@ -5,9 +5,9 @@ import net.trackmate.pool.MappedElement;
 
 public class GraphWithFeaturesImp<
 		VP extends AbstractVertexWithFeaturesPool< V, E, T >,
-		EP extends AbstractEdgePool< E, V, T >,
+		EP extends AbstractEdgeWithFeaturesPool< E, V, T >,
 		V extends AbstractVertexWithFeatures< V, E, T >,
-		E extends AbstractEdge< E, V, T >,
+		E extends AbstractEdgeWithFeatures< E, V, T >,
 		T extends MappedElement >
 	extends GraphImp< VP, EP, V, E, T >
 {
@@ -18,6 +18,7 @@ public class GraphWithFeaturesImp<
 		super( vertexPool, edgePool );
 		features = new GraphFeatures<>( this );
 		vertexPool.linkFeatures( features );
+		edgePool.linkFeatures( features );
 	}
 
 	public GraphWithFeaturesImp( final EP edgePool )
@@ -25,6 +26,7 @@ public class GraphWithFeaturesImp<
 		super( edgePool );
 		features = new GraphFeatures<>( this );
 		vertexPool.linkFeatures( features );
+		edgePool.linkFeatures( features );
 	}
 
 	@Override

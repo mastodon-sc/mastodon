@@ -7,7 +7,7 @@ public class AbstractListenableEdgePool<
 			E extends AbstractListenableEdge< E, V, T >,
 			V extends AbstractVertex< V, ?, ? >,
 			T extends MappedElement >
-		extends AbstractEdgePool< E, V, T >
+		extends AbstractEdgeWithFeaturesPool< E, V, T >
 {
 	public AbstractListenableEdgePool(
 			final int initialCapacity,

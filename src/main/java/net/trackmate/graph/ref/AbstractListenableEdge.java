@@ -37,7 +37,7 @@ import net.trackmate.pool.MappedElement;
  * @author Tobias Pietzsch &lt;tobias.pietzsch@gmail.com&gt;
  */
 public class AbstractListenableEdge< E extends AbstractListenableEdge< E, V, T >, V extends AbstractVertex< V, ?, ? >, T extends MappedElement >
-		extends AbstractEdge< E, V, T >
+		extends AbstractEdgeWithFeatures< E, V, T >
 {
 	protected AbstractListenableEdge( final AbstractEdgePool< E, V, T > pool )
 	{
