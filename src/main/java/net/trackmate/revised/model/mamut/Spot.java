@@ -53,9 +53,7 @@ public class Spot extends AbstractSpot3D< Spot, Link, ByteMappedElement > implem
 		};
 		final double boundingSphereRadiusSquared = radius * radius;
 
-		setX( pos[ 0 ] );
-		setY( pos[ 1 ] );
-		setZ( pos[ 2 ] );
+		setPosition( pos );
 		setCovariance( cov );
 		setBoundingSphereRadiusSquared( boundingSphereRadiusSquared );
 		setTimepointId( timepointId );
@@ -87,9 +85,7 @@ public class Spot extends AbstractSpot3D< Spot, Link, ByteMappedElement > implem
 			max = Math.max( max, eigVals[ k ] );
 		final double boundingSphereRadiusSquared = max * nSigmasSquared;
 
-		setX( pos[ 0 ] );
-		setY( pos[ 1 ] );
-		setZ( pos[ 2 ] );
+		setPosition( pos );
 		setCovariance( cov );
 		setBoundingSphereRadiusSquared( boundingSphereRadiusSquared );
 		setTimepointId( timepointId );
@@ -148,7 +144,12 @@ public class Spot extends AbstractSpot3D< Spot, Link, ByteMappedElement > implem
 	@Override
 	public String toString()
 	{
-		return String.format( "Spot( %d, X=%.2f, Y=%.2f, Z=%.2f, tp=%d )", getInternalPoolIndex(), getX(), getY(), getZ(), getTimepoint() );
+		return String.format( "Spot( %d, X=%.2f, Y=%.2f, Z=%.2f, tp=%d )",
+				getInternalPoolIndex(),
+				getDoublePosition( 0 ),
+				getDoublePosition( 1 ),
+				getDoublePosition( 2 ),
+				getTimepoint() );
 	}
 
 	Spot( final AbstractVertexPool< Spot, Link, ByteMappedElement > pool )
