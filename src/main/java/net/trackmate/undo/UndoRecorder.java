@@ -16,25 +16,48 @@ import net.trackmate.graph.VertexWithFeatures;
  *
  * @author Tobias Pietzsch &lt;tobias.pietzsch@gmail.com&gt;
  */
-public class UndoRecorder< V extends VertexWithFeatures< V, E >, E extends Edge< V > >
+public class UndoRecorder< V extends VertexWithFeatures< V, E >, E extends Edge< V >, L extends DefaultUndoableEditList< V, E > >
 		implements GraphListener< V, E >, FeatureChangeListener< V, E >, UndoPointMarker
 {
 	private static final int defaultCapacity = 1000;
 
 	private boolean recording;
 
-	private final DefaultUndoableEditList< V, E > edits;
+	private final L edits;
+
+	public static < V extends VertexWithFeatures< V, E >, E extends Edge< V > >
+		UndoRecorder< V, E, DefaultUndoableEditList< V, E > > create(
+				final ListenableGraph< V, E > graph,
+				final GraphFeatures< V, E > graphFeatures,
+				final GraphIdBimap< V, E > idmap,
+				final UndoSerializer< V, E > serializer )
+	{
+		final UndoIdBimap< V > vertexUndoIdBimap = new UndoIdBimap< >( idmap.vertexIdBimap() );
+		final UndoIdBimap< E > edgeUndoIdBimap = new UndoIdBimap< >( idmap.edgeIdBimap() );
+		final DefaultUndoableEditList< V, E > edits = new DefaultUndoableEditList< >( defaultCapacity, graph, graphFeatures, serializer, vertexUndoIdBimap, edgeUndoIdBimap );
+		return new UndoRecorder< >( graph, graphFeatures, edits );
+	}
+
+	public UndoRecorder(
+			final L edits,
+			final ListenableGraph< V, E > graph,
+			final GraphFeatures< V, E > graphFeatures,
+			final UndoSerializer< V, E > serializer )
+	{
+		recording = true;
+		this.edits = edits;
+		graph.addGraphListener( this );
+		graphFeatures.addFeatureChangeListener( this );
+	}
+
 
 	public UndoRecorder(
 			final ListenableGraph< V, E > graph,
 			final GraphFeatures< V, E > graphFeatures,
-			final GraphIdBimap< V, E > idmap,
-			final UndoSerializer< V, E > serializer )
+			final L edits )
 	{
-		final UndoIdBimap< V > vertexUndoIdBimap = new UndoIdBimap<>( idmap.vertexIdBimap() );
-		final UndoIdBimap< E > edgeUndoIdBimap = new UndoIdBimap<>( idmap.edgeIdBimap() );
-		edits = new DefaultUndoableEditList<>( defaultCapacity, graph, graphFeatures, serializer, vertexUndoIdBimap, edgeUndoIdBimap );
 		recording = true;
+		this.edits = edits;
 		graph.addGraphListener( this );
 		graphFeatures.addFeatureChangeListener( this );
 	}

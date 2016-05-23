@@ -18,7 +18,7 @@ import java.util.Arrays;
  *
  * @author Tobias Pietzsch &lt;tobias.pietzsch@gmail.com&gt;
  */
-class UndoDataStack
+public class UndoDataStack
 {
 	public final WrappedDataOutput out;
 
