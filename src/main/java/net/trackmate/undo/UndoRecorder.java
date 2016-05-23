@@ -21,9 +21,9 @@ public class UndoRecorder< V extends VertexWithFeatures< V, E >, E extends Edge<
 {
 	private static final int defaultCapacity = 1000;
 
-	private boolean recording;
+	protected boolean recording;
 
-	private final L edits;
+	protected final L edits;
 
 	public static < V extends VertexWithFeatures< V, E >, E extends Edge< V > >
 		UndoRecorder< V, E, DefaultUndoableEditList< V, E > > create(
