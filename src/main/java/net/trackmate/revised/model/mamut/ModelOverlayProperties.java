@@ -22,21 +22,9 @@ public class ModelOverlayProperties implements OverlayProperties< Spot, Link >
 	}
 
 	@Override
-	public void localize( final Spot v, final float[] position )
-	{
-		v.localize( position );
-	}
-
-	@Override
 	public void localize( final Spot v, final double[] position )
 	{
 		v.localize( position );
-	}
-
-	@Override
-	public float getFloatPosition( final Spot v, final int d )
-	{
-		return v.getFloatPosition( d );
 	}
 
 	@Override
@@ -46,9 +34,15 @@ public class ModelOverlayProperties implements OverlayProperties< Spot, Link >
 	}
 
 	@Override
-	public int numDimensions( final Spot v )
+	public void setPosition( final Spot v, final double position, final int d )
 	{
-		return v.numDimensions();
+		v.setPosition( position, d );
+	}
+
+	@Override
+	public void setPosition( final Spot v, final double[] position )
+	{
+		v.setPosition( position );
 	}
 
 	@Override

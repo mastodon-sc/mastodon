@@ -16,7 +16,6 @@ public class SelectionBehaviours< V extends OverlayVertex< V, E >, E extends Ove
 	public static final String ADD_SELECT_NAME = "bdv click add to selection";
 
 	public static final double EDGE_SELECT_DISTANCE_TOLERANCE = 5.0;
-
 	public static final double POINT_SELECT_DISTANCE_TOLERANCE = 5.0;
 
 	private final OverlayGraph< V, E > overlayGraph;

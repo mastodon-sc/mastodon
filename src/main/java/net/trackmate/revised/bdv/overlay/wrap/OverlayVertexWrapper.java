@@ -2,6 +2,8 @@ package net.trackmate.revised.bdv.overlay.wrap;
 
 import java.util.Iterator;
 
+import net.imglib2.Localizable;
+import net.imglib2.RealLocalizable;
 import net.trackmate.graph.Edge;
 import net.trackmate.graph.Edges;
 import net.trackmate.graph.Vertex;
@@ -10,6 +12,8 @@ import net.trackmate.revised.bdv.overlay.OverlayVertex;
 public class OverlayVertexWrapper< V extends Vertex< E >, E extends Edge< V > >
 	implements OverlayVertex< OverlayVertexWrapper< V, E >, OverlayEdgeWrapper< V, E > >
 {
+	private final int n = 3;
+
 	private final OverlayGraphWrapper< V, E > wrapper;
 
 	V wv;
@@ -48,31 +52,8 @@ public class OverlayVertexWrapper< V extends Vertex< E >, E extends Edge< V > >
 	@Override
 	public void localize( final float[] position )
 	{
-		overlayProperties.localize( wv, position );
-	}
-
-	@Override
-	public void localize( final double[] position )
-	{
-		overlayProperties.localize( wv, position );
-	}
-
-	@Override
-	public float getFloatPosition( final int d )
-	{
-		return overlayProperties.getFloatPosition( wv, d );
-	}
-
-	@Override
-	public double getDoublePosition( final int d )
-	{
-		return overlayProperties.getDoublePosition( wv, d );
-	}
-
-	@Override
-	public int numDimensions()
-	{
-		return overlayProperties.numDimensions( wv );
+		for ( int d = 0; d < n; ++d )
+			position[ d ] = getFloatPosition( d );
 	}
 
 	@Override
@@ -183,5 +164,175 @@ public class OverlayVertexWrapper< V extends Vertex< E >, E extends Edge< V > >
 		{
 			return new OverlayEdgeIteratorWrapper< V, E >( wrapper, wrapper.edgeRef(), edges.iterator() );
 		}
+	}
+
+	// === RealLocalizable ===
+
+	@Override
+	public void localize( final double[] position )
+	{
+		overlayProperties.localize( wv, position );
+	}
+
+	@Override
+	public float getFloatPosition( final int d )
+	{
+		return ( float ) overlayProperties.getDoublePosition( wv, d );
+	}
+
+	@Override
+	public double getDoublePosition( final int d )
+	{
+		return overlayProperties.getDoublePosition( wv, d );
+	}
+
+	@Override
+	public int numDimensions()
+	{
+		return n;
+	}
+
+	// === RealPositionable ===
+
+	@Override
+	public void setPosition( final double[] position )
+	{
+		overlayProperties.setPosition( wv, position );
+	}
+
+	@Override
+	public void setPosition( final double position, final int d )
+	{
+		overlayProperties.setPosition( wv, position, d );
+	}
+
+	// TODO: (almost?) all of the following should have default implementations in the RealPositionable interface
+	@Override
+	public void move( final float distance, final int d )
+	{
+		setPosition( getDoublePosition( d ) + distance, d );
+	}
+
+	@Override
+	public void move( final double distance, final int d )
+	{
+		setPosition( getDoublePosition( d ) + distance, d );
+	}
+
+	@Override
+	public void move( final RealLocalizable localizable )
+	{
+		for ( int d = 0; d < n; ++d )
+			setPosition( getDoublePosition( d ) + localizable.getDoublePosition( d ), d );
+	}
+
+	@Override
+	public void move( final float[] distance )
+	{
+		for ( int d = 0; d < n; ++d )
+			setPosition( getDoublePosition( d ) + distance[ d ], d );
+	}
+
+	@Override
+	public void move( final double[] distance )
+	{
+		for ( int d = 0; d < n; ++d )
+			setPosition( getDoublePosition( d ) + distance[ d ], d );
+	}
+
+	@Override
+	public void setPosition( final RealLocalizable localizable )
+	{
+		for ( int d = 0; d < n; ++d )
+			setPosition( localizable.getDoublePosition( d ), d );
+	}
+
+	@Override
+	public void setPosition( final float[] position )
+	{
+		for ( int d = 0; d < n; ++d )
+			setPosition( position[ d ], d );
+	}
+
+	@Override
+	public void setPosition( final float position, final int d )
+	{
+		setPosition( ( double ) position, d );
+	}
+
+	@Override
+	public void setPosition( final long position, final int d )
+	{
+		setPosition( ( double ) position, d );
+	}
+
+	@Override
+	public void setPosition( final int position, final int d )
+	{
+		setPosition( ( double ) position, d );
+	}
+
+	@Override
+	public void setPosition( final Localizable localizable )
+	{
+		move( ( RealLocalizable ) localizable );
+	}
+
+	@Override
+	public void setPosition( final int[] position )
+	{
+		for ( int d = 0; d < n; ++d )
+			setPosition( ( double ) position[ d ], d );
+	}
+
+	@Override
+	public void setPosition( final long[] position )
+	{
+		for ( int d = 0; d < n; ++d )
+			setPosition( ( double ) position[ d ], d );
+	}
+
+	@Override
+	public void fwd( final int d )
+	{
+		move( 1, d );
+	}
+
+	@Override
+	public void bck( final int d )
+	{
+		move( -1, d );
+	}
+
+	@Override
+	public void move( final int distance, final int d )
+	{
+		setPosition( getDoublePosition( d ) + distance, d );
+	}
+
+	@Override
+	public void move( final long distance, final int d )
+	{
+		setPosition( getDoublePosition( d ) + distance, d );
+	}
+
+	@Override
+	public void move( final Localizable localizable )
+	{
+		move( ( RealLocalizable ) localizable );
+	}
+
+	@Override
+	public void move( final int[] distance )
+	{
+		for ( int d = 0; d < n; ++d )
+			setPosition( getDoublePosition( d ) + distance[ d ], d );
+	}
+
+	@Override
+	public void move( final long[] distance )
+	{
+		for ( int d = 0; d < n; ++d )
+			setPosition( getDoublePosition( d ) + distance[ d ], d );
 	}
 }

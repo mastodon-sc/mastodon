@@ -31,6 +31,7 @@ import net.trackmate.graph.GraphIdBimap;
 import net.trackmate.graph.ListenableReadOnlyGraph;
 import net.trackmate.revised.bdv.BigDataViewerMaMuT;
 import net.trackmate.revised.bdv.SharedBigDataViewerData;
+import net.trackmate.revised.bdv.overlay.GraphBevaviours;
 import net.trackmate.revised.bdv.overlay.MouseHighlightHandler;
 import net.trackmate.revised.bdv.overlay.OverlayContext;
 import net.trackmate.revised.bdv.overlay.OverlayGraphRenderer;
@@ -435,6 +436,8 @@ public class WindowManager
 				contextProvider );
 
 		UndoActions.installActionBindings( viewerFrame.getKeybindings(), model, keyconf );
+
+		GraphBevaviours.installActionBindings( viewerFrame.getTriggerbindings(), keyconf, overlayGraph, tracksOverlay );
 
 		/*
 		 * TODO: this is still wrong. There should be one central entity syncing

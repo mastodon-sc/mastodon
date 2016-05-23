@@ -30,7 +30,7 @@ import net.trackmate.graph.Vertex;
  *            the type of the edges.
  */
 // TODO: less severe synchronization
-// TODO: should Selection be an interface
+// TODO: should Selection be an interface?
 public class Selection< V extends Vertex< E >, E extends Edge< V > > implements GraphListener< V, E >
 {
 	private final ListenableReadOnlyGraph< V, E > graph;
@@ -328,8 +328,8 @@ public class Selection< V extends Vertex< E >, E extends Edge< V > > implements 
 	private void notifyListeners()
 	{
 		if ( emitEvents )
-		for ( final SelectionListener l : listeners )
-			l.selectionChanged();
+			for ( final SelectionListener l : listeners )
+				l.selectionChanged();
 		else
 			shouldEmitEvent = true;
 	}
@@ -350,5 +350,4 @@ public class Selection< V extends Vertex< E >, E extends Edge< V > > implements 
 	{
 		emitEvents = false;
 	}
-
 }
