@@ -8,7 +8,7 @@ import net.trackmate.undo.UndoRecorder;
 import net.trackmate.undo.UndoSerializer;
 
 public class ModelUndoRecorder<
-		V extends AbstractSpot3D< V, E, ?, ? >,
+		V extends AbstractSpot< V, E, ?, ? >,
 		E extends AbstractListenableEdge< E, V, ? > >
 	extends UndoRecorder< V, E, ModelUndoableEditList<V,E> >
 	implements AbstractSpotListener< V >

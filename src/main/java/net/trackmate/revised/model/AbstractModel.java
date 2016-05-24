@@ -18,7 +18,7 @@ import net.trackmate.graph.ref.AbstractListenableEdge;
  */
 public class AbstractModel<
 		MG extends AbstractModelGraph< MG, ?, ?, V, E, ? >,
-		V extends AbstractSpot3D< V, E, ?, MG >,
+		V extends AbstractSpot< V, E, ?, MG >,
 		E extends AbstractListenableEdge< E, V, ? > >
 {
 

@@ -6,23 +6,23 @@ import static net.trackmate.revised.model.mamut.Features.LABEL;
 import net.trackmate.graph.ref.AbstractVertexPool;
 import net.trackmate.pool.ByteMappedElement;
 import net.trackmate.revised.bdv.overlay.util.JamaEigenvalueDecomposition;
-import net.trackmate.revised.model.AbstractSpot3D;
+import net.trackmate.revised.model.AbstractSpot;
 import net.trackmate.revised.model.HasLabel;
 
 
 // TODO: replace Jama stuff by something that doesn't allocate extra memory
 
 /**
- * {@link AbstractSpot3D} implementation where the spot shape is stored in a
+ * {@link AbstractSpot} implementation where the spot shape is stored in a
  * covariance matrix.
  *
  * @author Tobias Pietzsch
  */
-public class Spot extends AbstractSpot3D< Spot, Link, ByteMappedElement, ModelGraph > implements HasLabel
+public class Spot extends AbstractSpot< Spot, Link, ByteMappedElement, ModelGraph > implements HasLabel
 {
 	// Copied to be package-visible.
-	protected static final int X_OFFSET = AbstractSpot3D.X_OFFSET;
-	protected static final int COVARIANCE_OFFSET = AbstractSpot3D.SIZE_IN_BYTES;
+	protected static final int X_OFFSET = AbstractSpot.X_OFFSET;
+	protected static final int COVARIANCE_OFFSET = AbstractSpot.sizeInBytes( 3 );
 	protected static final int BOUNDING_SPHERE_RADIUS_SQUARED_OFFSET = COVARIANCE_OFFSET + 6 * DOUBLE_SIZE;
 	protected static final int SIZE_IN_BYTES = BOUNDING_SPHERE_RADIUS_SQUARED_OFFSET + DOUBLE_SIZE;
 
@@ -154,7 +154,7 @@ public class Spot extends AbstractSpot3D< Spot, Link, ByteMappedElement, ModelGr
 
 	Spot( final AbstractVertexPool< Spot, Link, ByteMappedElement > pool )
 	{
-		super( pool );
+		super( pool, 3 );
 	}
 
 	/**

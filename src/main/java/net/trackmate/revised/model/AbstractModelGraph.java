@@ -26,7 +26,7 @@ public class AbstractModelGraph<
 		G extends AbstractModelGraph< G, VP, EP, V, E, T >,
 		VP extends AbstractSpotPool< V, E, T, G >,
 		EP extends AbstractListenableEdgePool< E, V, T >,
-		V extends AbstractSpot3D< V, E, T, G >,
+		V extends AbstractSpot< V, E, T, G >,
 		E extends AbstractListenableEdge< E, V, T >,
 		T extends MappedElement >
 	extends ListenableGraphImp< VP, EP, V, E, T >

@@ -18,7 +18,7 @@ import net.trackmate.spatial.HasTimepoint;
  * Base class for specialized vertices that are part of a graph, and are used to
  * store spatial and temporal location.
  * <p>
- * The class ships the minimal required feature, that is X, Y, Z, and
+ * The class ships the minimal required features, that is coordinates and
  * time-point.
  *
  * @author Tobias Pietzsch &lt;tobias.pietzsch@gmail.com&gt;
@@ -33,21 +33,23 @@ import net.trackmate.spatial.HasTimepoint;
  * @author Jean-Yves Tinevez
  * @author Tobias Pietzsch &lt;tobias.pietzsch@gmail.com&gt;
  */
-public class AbstractSpot3D<
-		V extends AbstractSpot3D< V, E, T, G >,
+public class AbstractSpot<
+		V extends AbstractSpot< V, E, T, G >,
 		E extends AbstractListenableEdge< E, V, T >,
 		T extends MappedElement,
 		G extends AbstractModelGraph< ?, ?, ?, V, E, T > >
 	extends AbstractListenableVertex< V, E, T >
 	implements RealLocalizable, RealPositionable, HasTimepoint
 {
-	protected static final int X_OFFSET = AbstractVertex.SIZE_IN_BYTES;
-	protected static final int Y_OFFSET = X_OFFSET + DOUBLE_SIZE;
-	protected static final int Z_OFFSET = Y_OFFSET + DOUBLE_SIZE;
-	protected static final int TP_OFFSET = Z_OFFSET + DOUBLE_SIZE;
-	protected static final int SIZE_IN_BYTES = TP_OFFSET + INT_SIZE;
+	protected static final int X_OFFSET = AbstractVertex.SIZE_IN_BYTES; // n * DOUBLE_SIZE
+	private final int TP_OFFSET; // INT_SIZE
 
-	private static final int n = 3;
+	protected static int sizeInBytes( final int numDimensions )
+	{
+		return X_OFFSET + numDimensions * DOUBLE_SIZE + INT_SIZE;
+	}
+
+	private final int n;
 
 	protected G modelGraph;
 
@@ -77,9 +79,11 @@ public class AbstractSpot3D<
 		return getTimepointId();
 	}
 
-	protected AbstractSpot3D( final AbstractVertexPool< V, E, T > pool )
+	protected AbstractSpot( final AbstractVertexPool< V, E, T > pool, final int numDimensions )
 	{
 		super( pool );
+		n = numDimensions;
+		TP_OFFSET = X_OFFSET + n * DOUBLE_SIZE;
 	}
 
 	// === RealLocalizable ===

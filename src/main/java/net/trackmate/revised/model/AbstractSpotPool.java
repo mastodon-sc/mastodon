@@ -6,7 +6,7 @@ import net.trackmate.pool.MappedElement;
 import net.trackmate.pool.PoolObject;
 
 public class AbstractSpotPool<
-			V extends AbstractSpot3D< V, E, T, G >,
+			V extends AbstractSpot< V, E, T, G >,
 			E extends AbstractListenableEdge< E, V, T >,
 			T extends MappedElement,
 			G extends AbstractModelGraph< ?, ?, ?, V, E, T > >

@@ -9,7 +9,7 @@ import net.trackmate.undo.UndoSerializer;
 import net.trackmate.undo.UndoableEditRef;
 
 public class ModelUndoableEditList<
-			V extends AbstractSpot3D< V, E, ?, ? >,
+			V extends AbstractSpot< V, E, ?, ? >,
 			E extends AbstractListenableEdge< E, V, ? > >
 		extends DefaultUndoableEditList< V, E >
 {
