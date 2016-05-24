@@ -18,7 +18,7 @@ import net.trackmate.revised.model.HasLabel;
  *
  * @author Tobias Pietzsch
  */
-public class Spot extends AbstractSpot3D< Spot, Link, ByteMappedElement > implements HasLabel
+public class Spot extends AbstractSpot3D< Spot, Link, ByteMappedElement, ModelGraph > implements HasLabel
 {
 	// Copied to be package-visible.
 	protected static final int X_OFFSET = AbstractSpot3D.X_OFFSET;

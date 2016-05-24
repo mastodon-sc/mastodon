@@ -6,7 +6,7 @@ import static net.trackmate.pool.ByteUtils.INT_SIZE;
 import net.imglib2.Localizable;
 import net.imglib2.RealLocalizable;
 import net.imglib2.RealPositionable;
-import net.trackmate.graph.ref.AbstractEdge;
+import net.trackmate.graph.ref.AbstractListenableEdge;
 import net.trackmate.graph.ref.AbstractListenableVertex;
 import net.trackmate.graph.ref.AbstractVertex;
 import net.trackmate.graph.ref.AbstractVertexPool;
@@ -34,9 +34,10 @@ import net.trackmate.spatial.HasTimepoint;
  * @author Tobias Pietzsch &lt;tobias.pietzsch@gmail.com&gt;
  */
 public class AbstractSpot3D<
-		V extends AbstractSpot3D< V, E, T >,
-		E extends AbstractEdge< E, ?, ? >,
-		T extends MappedElement >
+		V extends AbstractSpot3D< V, E, T, G >,
+		E extends AbstractListenableEdge< E, V, T >,
+		T extends MappedElement,
+		G extends AbstractModelGraph< ?, ?, ?, V, E, T > >
 	extends AbstractListenableVertex< V, E, T >
 	implements RealLocalizable, RealPositionable, HasTimepoint
 {
@@ -47,6 +48,8 @@ public class AbstractSpot3D<
 	protected static final int SIZE_IN_BYTES = TP_OFFSET + INT_SIZE;
 
 	private static final int n = 3;
+
+	protected G modelGraph;
 
 	protected void setCoord( final double value, final int d )
 	{
@@ -115,147 +118,213 @@ public class AbstractSpot3D<
 
 	// === RealPositionable ===
 
+	@SuppressWarnings( "unchecked" )
 	@Override
 	public void fwd( final int d )
 	{
+		modelGraph.notifyBeforeVertexPositionChange( ( V ) this );
 		setCoord( getCoord( d ) + 1, d );
+		modelGraph.notifyVertexPositionChanged( ( V ) this );
 	}
 
+	@SuppressWarnings( "unchecked" )
 	@Override
 	public void bck( final int d )
 	{
+		modelGraph.notifyBeforeVertexPositionChange( ( V ) this );
 		setCoord( getCoord( d ) - 1, d );
+		modelGraph.notifyVertexPositionChanged( ( V ) this );
 	}
 
+	@SuppressWarnings( "unchecked" )
 	@Override
 	public void move( final int distance, final int d )
 	{
+		modelGraph.notifyBeforeVertexPositionChange( ( V ) this );
 		setCoord( getCoord( d ) + distance, d );
+		modelGraph.notifyVertexPositionChanged( ( V ) this );
 	}
 
+	@SuppressWarnings( "unchecked" )
 	@Override
 	public void move( final long distance, final int d )
 	{
+		modelGraph.notifyBeforeVertexPositionChange( ( V ) this );
 		setCoord( getCoord( d ) + distance, d );
+		modelGraph.notifyVertexPositionChanged( ( V ) this );
 	}
 
+	@SuppressWarnings( "unchecked" )
 	@Override
 	public void move( final Localizable localizable )
 	{
+		modelGraph.notifyBeforeVertexPositionChange( ( V ) this );
 		for ( int d = 0; d < n; ++d )
 			setCoord( getCoord( d ) + localizable.getDoublePosition( d ), d );
+		modelGraph.notifyVertexPositionChanged( ( V ) this );
 	}
 
+	@SuppressWarnings( "unchecked" )
 	@Override
 	public void move( final int[] distance )
 	{
+		modelGraph.notifyBeforeVertexPositionChange( ( V ) this );
 		for ( int d = 0; d < n; ++d )
 			setCoord( getCoord( d ) + distance[ d ], d );
+		modelGraph.notifyVertexPositionChanged( ( V ) this );
 	}
 
+	@SuppressWarnings( "unchecked" )
 	@Override
 	public void move( final long[] distance )
 	{
+		modelGraph.notifyBeforeVertexPositionChange( ( V ) this );
 		for ( int d = 0; d < n; ++d )
 			setCoord( getCoord( d ) + distance[ d ], d );
+		modelGraph.notifyVertexPositionChanged( ( V ) this );
 	}
 
+	@SuppressWarnings( "unchecked" )
 	@Override
 	public void setPosition( final Localizable localizable )
 	{
+		modelGraph.notifyBeforeVertexPositionChange( ( V ) this );
 		for ( int d = 0; d < n; ++d )
 			setCoord( localizable.getDoublePosition( d ), d );
+		modelGraph.notifyVertexPositionChanged( ( V ) this );
 	}
 
+	@SuppressWarnings( "unchecked" )
 	@Override
 	public void setPosition( final int[] position )
 	{
+		modelGraph.notifyBeforeVertexPositionChange( ( V ) this );
 		for ( int d = 0; d < n; ++d )
 			setCoord( position[ d ], d );
+		modelGraph.notifyVertexPositionChanged( ( V ) this );
 	}
 
+	@SuppressWarnings( "unchecked" )
 	@Override
 	public void setPosition( final long[] position )
 	{
+		modelGraph.notifyBeforeVertexPositionChange( ( V ) this );
 		for ( int d = 0; d < n; ++d )
 			setCoord( position[ d ], d );
+		modelGraph.notifyVertexPositionChanged( ( V ) this );
 	}
 
+	@SuppressWarnings( "unchecked" )
 	@Override
 	public void setPosition( final int position, final int d )
 	{
+		modelGraph.notifyBeforeVertexPositionChange( ( V ) this );
 		setCoord( position, d );
+		modelGraph.notifyVertexPositionChanged( ( V ) this );
 	}
 
+	@SuppressWarnings( "unchecked" )
 	@Override
 	public void setPosition( final long position, final int d )
 	{
+		modelGraph.notifyBeforeVertexPositionChange( ( V ) this );
 		setCoord( position, d );
+		modelGraph.notifyVertexPositionChanged( ( V ) this );
 	}
 
+	@SuppressWarnings( "unchecked" )
 	@Override
 	public void move( final float distance, final int d )
 	{
+		modelGraph.notifyBeforeVertexPositionChange( ( V ) this );
 		setCoord( getCoord( d ) + distance, d );
+		modelGraph.notifyVertexPositionChanged( ( V ) this );
 	}
 
+	@SuppressWarnings( "unchecked" )
 	@Override
 	public void move( final double distance, final int d )
 	{
+		modelGraph.notifyBeforeVertexPositionChange( ( V ) this );
 		setCoord( getCoord( d ) + distance, d );
+		modelGraph.notifyVertexPositionChanged( ( V ) this );
 	}
 
+	@SuppressWarnings( "unchecked" )
 	@Override
 	public void move( final RealLocalizable localizable )
 	{
+		modelGraph.notifyBeforeVertexPositionChange( ( V ) this );
 		for ( int d = 0; d < n; ++d )
 			setCoord( getCoord( d ) + localizable.getDoublePosition( d ), d );
+		modelGraph.notifyVertexPositionChanged( ( V ) this );
 	}
 
+	@SuppressWarnings( "unchecked" )
 	@Override
 	public void move( final float[] distance )
 	{
+		modelGraph.notifyBeforeVertexPositionChange( ( V ) this );
 		for ( int d = 0; d < n; ++d )
 			setCoord( getCoord( d ) + distance[ d ], d );
+		modelGraph.notifyVertexPositionChanged( ( V ) this );
 	}
 
+	@SuppressWarnings( "unchecked" )
 	@Override
 	public void move( final double[] distance )
 	{
+		modelGraph.notifyBeforeVertexPositionChange( ( V ) this );
 		for ( int d = 0; d < n; ++d )
 			setCoord( getCoord( d ) + distance[ d ], d );
+		modelGraph.notifyVertexPositionChanged( ( V ) this );
 	}
 
+	@SuppressWarnings( "unchecked" )
 	@Override
 	public void setPosition( final RealLocalizable localizable )
 	{
+		modelGraph.notifyBeforeVertexPositionChange( ( V ) this );
 		for ( int d = 0; d < n; ++d )
 			setCoord( localizable.getDoublePosition( d ), d );
+		modelGraph.notifyVertexPositionChanged( ( V ) this );
 	}
 
+	@SuppressWarnings( "unchecked" )
 	@Override
 	public void setPosition( final float[] position )
 	{
+		modelGraph.notifyBeforeVertexPositionChange( ( V ) this );
 		for ( int d = 0; d < n; ++d )
 			setCoord( position[ d ], d );
+		modelGraph.notifyVertexPositionChanged( ( V ) this );
 	}
 
+	@SuppressWarnings( "unchecked" )
 	@Override
 	public void setPosition( final double[] position )
 	{
+		modelGraph.notifyBeforeVertexPositionChange( ( V ) this );
 		for ( int d = 0; d < n; ++d )
 			setCoord( position[ d ], d );
+		modelGraph.notifyVertexPositionChanged( ( V ) this );
 	}
 
+	@SuppressWarnings( "unchecked" )
 	@Override
 	public void setPosition( final float position, final int d )
 	{
+		modelGraph.notifyBeforeVertexPositionChange( ( V ) this );
 		setCoord( position, d );
+		modelGraph.notifyVertexPositionChanged( ( V ) this );
 	}
 
+	@SuppressWarnings( "unchecked" )
 	@Override
 	public void setPosition( final double position, final int d )
 	{
+		modelGraph.notifyBeforeVertexPositionChange( ( V ) this );
 		setCoord( position, d );
+		modelGraph.notifyVertexPositionChanged( ( V ) this );
 	}
 }

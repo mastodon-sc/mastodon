@@ -6,6 +6,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.util.ArrayList;
 import java.util.List;
 
 import net.trackmate.graph.GraphIdBimap;
@@ -16,31 +17,45 @@ import net.trackmate.graph.io.RawGraphIO.FileIdToGraphMap;
 import net.trackmate.graph.io.RawGraphIO.GraphToFileIdMap;
 import net.trackmate.graph.ref.AbstractListenableEdge;
 import net.trackmate.graph.ref.AbstractListenableEdgePool;
-import net.trackmate.graph.ref.AbstractListenableVertex;
-import net.trackmate.graph.ref.AbstractListenableVertexPool;
 import net.trackmate.graph.ref.ListenableGraphImp;
 import net.trackmate.pool.MappedElement;
+import net.trackmate.spatial.VertexPositionChangeProvider;
+import net.trackmate.spatial.VertexPositionListener;
 
 public class AbstractModelGraph<
-		VP extends AbstractListenableVertexPool< V, E, T >,
+		G extends AbstractModelGraph< G, VP, EP, V, E, T >,
+		VP extends AbstractSpotPool< V, E, T, G >,
 		EP extends AbstractListenableEdgePool< E, V, T >,
-		V extends AbstractListenableVertex< V, E, T >,
+		V extends AbstractSpot3D< V, E, T, G >,
 		E extends AbstractListenableEdge< E, V, T >,
 		T extends MappedElement >
 	extends ListenableGraphImp< VP, EP, V, E, T >
+	implements VertexPositionChangeProvider< V >
 {
 	protected final GraphIdBimap< V, E > idmap;
 
+	private final ArrayList< AbstractSpotListener< V > > spotListeners;
+
+	private final ArrayList< VertexPositionListener< V > > vertexPositionListeners;
+
+	@SuppressWarnings( "unchecked" )
 	public AbstractModelGraph( final VP vertexPool, final EP edgePool )
 	{
 		super( vertexPool, edgePool );
+		vertexPool.linkModelGraph( ( G ) this );
 		idmap = new GraphIdBimap< V, E >( vertexPool, edgePool );
+		spotListeners = new ArrayList<>();
+		vertexPositionListeners = new ArrayList<>();
 	}
 
+	@SuppressWarnings( "unchecked" )
 	public AbstractModelGraph( final EP edgePool )
 	{
 		super( edgePool );
+		vertexPool.linkModelGraph( ( G ) this );
 		idmap = new GraphIdBimap< V, E >( vertexPool, edgePool );
+		spotListeners = new ArrayList<>();
+		vertexPositionListeners = new ArrayList<>();
 	}
 
 	/**
@@ -102,6 +117,86 @@ public class AbstractModelGraph<
 		final GraphToFileIdMap< V, E > fileIdMap = RawGraphIO.write( this, idmap, serializer, oos );
 		RawFeatureIO.writeFeatureMaps( fileIdMap, features, featuresToSerialize, oos );
 		oos.close();
+	}
+
+	/**
+	 * Register a {@link AbstractSpotListener} that will be notified when
+	 * feature values are changed.
+	 *
+	 * @param listener
+	 *            the listener to register.
+	 * @return {@code true} if the listener was successfully registered.
+	 *         {@code false} if it was already registered.
+	 */
+	public boolean addAbstractSpotListener( final AbstractSpotListener< V > listener )
+	{
+		if ( ! spotListeners.contains( listener ) )
+		{
+			spotListeners.add( listener );
+			return true;
+		}
+		return false;
+	}
+
+	/**
+	 * Removes the specified {@link AbstractSpotListener} from the set of
+	 * listeners.
+	 *
+	 * @param listener
+	 *            the listener to remove.
+	 * @return {@code true} if the listener was present in the listeners of this
+	 *         model and was successfully removed.
+	 */
+	public boolean removeAbstractSpotListener( final AbstractSpotListener< V > listener )
+	{
+		return spotListeners.remove( listener );
+	}
+
+	/**
+	 * Register a {@link VertexPositionListener} that will be notified when
+	 * feature values are changed.
+	 *
+	 * @param listener
+	 *            the listener to register.
+	 * @return {@code true} if the listener was successfully registered.
+	 *         {@code false} if it was already registered.
+	 */
+	@Override
+	public boolean addVertexPositionListener( final VertexPositionListener< V > listener )
+	{
+		if ( ! vertexPositionListeners.contains( listener ) )
+		{
+			vertexPositionListeners.add( listener );
+			return true;
+		}
+		return false;
+	}
+
+	/**
+	 * Removes the specified {@link VertexPositionListener} from the set of
+	 * listeners.
+	 *
+	 * @param listener
+	 *            the listener to remove.
+	 * @return {@code true} if the listener was present in the listeners of this
+	 *         model and was successfully removed.
+	 */
+	@Override
+	public boolean removeVertexPositionListener( final VertexPositionListener< V > listener )
+	{
+		return vertexPositionListeners.remove( listener );
+	}
+
+	void notifyBeforeVertexPositionChange( final V vertex )
+	{
+		for ( final AbstractSpotListener< V > l : spotListeners )
+			l.beforePositionChange( vertex );
+	}
+
+	void notifyVertexPositionChanged( final V vertex )
+	{
+		for ( final VertexPositionListener< V > l : vertexPositionListeners )
+			l.vertexPositionChanged( vertex );
 	}
 
 	@Override

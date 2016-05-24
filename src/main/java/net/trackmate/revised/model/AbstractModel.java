@@ -5,7 +5,6 @@ import net.trackmate.graph.ListenableGraph;
 import net.trackmate.graph.ListenableReadOnlyGraph;
 import net.trackmate.graph.ReadOnlyGraph;
 import net.trackmate.graph.ref.AbstractListenableEdge;
-import net.trackmate.graph.ref.AbstractListenableVertex;
 
 /**
  * Manages the model graph.
@@ -18,8 +17,8 @@ import net.trackmate.graph.ref.AbstractListenableVertex;
  * @author Tobias Pietzsch &lt;tobias.pietzsch@gmail.com&gt;
  */
 public class AbstractModel<
-		MG extends AbstractModelGraph< ?, ?, V, E, ? >,
-		V extends AbstractListenableVertex< V, E, ? >,
+		MG extends AbstractModelGraph< MG, ?, ?, V, E, ? >,
+		V extends AbstractSpot3D< V, E, ?, MG >,
 		E extends AbstractListenableEdge< E, V, ? > >
 {
 

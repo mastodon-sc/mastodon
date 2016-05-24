@@ -2,15 +2,15 @@ package net.trackmate.revised.model;
 
 import net.trackmate.graph.GraphFeatures;
 import net.trackmate.graph.ListenableGraph;
-import net.trackmate.graph.ref.AbstractEdge;
+import net.trackmate.graph.ref.AbstractListenableEdge;
 import net.trackmate.undo.DefaultUndoableEditList;
 import net.trackmate.undo.UndoIdBimap;
 import net.trackmate.undo.UndoSerializer;
 import net.trackmate.undo.UndoableEditRef;
 
 public class ModelUndoableEditList<
-			V extends AbstractSpot3D< V, E, ? >,
-			E extends AbstractEdge< E, V, ? > >
+			V extends AbstractSpot3D< V, E, ?, ? >,
+			E extends AbstractListenableEdge< E, V, ? > >
 		extends DefaultUndoableEditList< V, E >
 {
 	private final int numDimensions = 3; // TODO

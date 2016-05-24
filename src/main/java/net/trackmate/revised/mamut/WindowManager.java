@@ -437,7 +437,7 @@ public class WindowManager
 
 		UndoActions.installActionBindings( viewerFrame.getKeybindings(), model, keyconf );
 
-		GraphBevaviours.installActionBindings( viewerFrame.getTriggerbindings(), keyconf, overlayGraph, tracksOverlay );
+		GraphBevaviours.installActionBindings( viewerFrame.getTriggerbindings(), keyconf, overlayGraph, tracksOverlay, model );
 
 		/*
 		 * TODO: this is still wrong. There should be one central entity syncing

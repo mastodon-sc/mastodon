@@ -14,6 +14,7 @@ import net.trackmate.graph.CollectionUtils;
 import net.trackmate.graph.Edge;
 import net.trackmate.graph.GraphListener;
 import net.trackmate.graph.ListenableReadOnlyGraph;
+import net.trackmate.graph.ReadOnlyGraph;
 import net.trackmate.graph.Vertex;
 
 /**
@@ -37,7 +38,7 @@ import net.trackmate.graph.Vertex;
 public class SpatioTemporalIndexImp<
 		V extends Vertex< E > & RealLocalizable & HasTimepoint,
 		E extends Edge< V > >
-	implements GraphListener< V, E >, SpatioTemporalIndex< V >
+	implements GraphListener< V, E >, VertexPositionListener< V >, SpatioTemporalIndex< V >
 {
 	/**
 	 * Int value used to declare that the requested timepoint is not in a map.
@@ -47,7 +48,7 @@ public class SpatioTemporalIndexImp<
 
 	final TIntObjectHashMap< SpatialIndexImp< V > > timepointToSpatialIndex;
 
-	private final ListenableReadOnlyGraph< V, E > graph;
+	private final ReadOnlyGraph< V, E > graph;
 
 	private final RefPool< V > vertexPool;
 
@@ -75,6 +76,12 @@ public class SpatioTemporalIndexImp<
 		this.vertexPool = vertexPool;
 		timepointToSpatialIndex = new TIntObjectHashMap< SpatialIndexImp< V > >( 10, 0.5f, NO_ENTRY_KEY );
 		graph.addGraphListener( this );
+		if ( graph instanceof VertexPositionChangeProvider )
+		{
+			@SuppressWarnings( "unchecked" )
+			final VertexPositionChangeProvider< V > p = ( VertexPositionChangeProvider< V > ) graph;
+			p.addVertexPositionListener( this );
+		}
 		final ReentrantReadWriteLock rwl = new ReentrantReadWriteLock();
 	    readLock = rwl.readLock();
 	    writeLock = rwl.writeLock();
@@ -212,7 +219,7 @@ public class SpatioTemporalIndexImp<
 		}
 	}
 
-//	@Override // TODO: should be implemented for some listener interface
+	@Override
 	public void vertexPositionChanged( final V vertex )
 	{
 		vertexAdded( vertex );

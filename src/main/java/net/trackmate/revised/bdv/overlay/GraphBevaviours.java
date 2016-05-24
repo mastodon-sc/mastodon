@@ -7,7 +7,9 @@ import bdv.viewer.TriggerBehaviourBindings;
 import net.imglib2.util.LinAlgHelpers;
 import net.imglib2.util.Util;
 import net.trackmate.revised.bdv.AbstractBehaviours;
+import net.trackmate.undo.UndoPointMarker;
 
+// TODO rename? EditBehaviours?
 public class GraphBevaviours< V extends OverlayVertex< V, E >, E extends OverlayEdge< E, V > >
 		extends AbstractBehaviours
 {
@@ -21,24 +23,29 @@ public class GraphBevaviours< V extends OverlayVertex< V, E >, E extends Overlay
 
 	private final OverlayGraphRenderer< V, E > renderer;
 
+	private final UndoPointMarker undo;
+
 	public static < V extends OverlayVertex< V, E >, E extends OverlayEdge< E, V > > void installActionBindings(
 			final TriggerBehaviourBindings triggerBehaviourBindings,
 			final InputTriggerConfig config,
 			final OverlayGraph< V, E > overlayGraph,
-			final OverlayGraphRenderer< V, E > renderer )
+			final OverlayGraphRenderer< V, E > renderer,
+			final UndoPointMarker undo )
 	{
-		new GraphBevaviours<>( triggerBehaviourBindings, config, overlayGraph, renderer );
+		new GraphBevaviours<>( triggerBehaviourBindings, config, overlayGraph, renderer, undo );
 	}
 
 	private GraphBevaviours(
 			final TriggerBehaviourBindings triggerBehaviourBindings,
 			final InputTriggerConfig config,
 			final OverlayGraph< V, E > overlayGraph,
-			final OverlayGraphRenderer< V, E > renderer )
+			final OverlayGraphRenderer< V, E > renderer,
+			final UndoPointMarker undo )
 	{
 		super( triggerBehaviourBindings, "graph", config, new String[] { "bdv" } );
 		this.overlayGraph = overlayGraph;
 		this.renderer = renderer;
+		this.undo = undo;
 
 		behaviour( new MoveSpot(), MOVE_SPOT, MOVE_SPOT_KEYS );
 	}
@@ -88,7 +95,7 @@ public class GraphBevaviours< V extends OverlayVertex< V, E >, E extends Overlay
 		{
 			if ( moving )
 			{
-				// TODO: setUndoPoint
+				undo.setUndoPoint();
 				moving = false;
 			}
 		}
