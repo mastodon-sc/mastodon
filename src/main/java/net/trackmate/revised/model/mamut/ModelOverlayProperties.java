@@ -11,12 +11,18 @@ import net.trackmate.revised.ui.selection.Selection;
  */
 public class ModelOverlayProperties implements OverlayProperties< Spot, Link >
 {
+	private final ModelGraph modelGraph;
+
 	private final BoundingSphereRadiusStatistics radiusStats;
 
 	private final Selection< Spot, Link > selection;
 
-	public ModelOverlayProperties( final BoundingSphereRadiusStatistics radiusStats, final Selection< Spot, Link > selection )
+	public ModelOverlayProperties(
+			final ModelGraph modelGraph,
+			final BoundingSphereRadiusStatistics radiusStats,
+			final Selection< Spot, Link > selection )
 	{
+		this.modelGraph = modelGraph;
 		this.radiusStats = radiusStats;
 		this.selection = selection;
 	}
@@ -87,5 +93,17 @@ public class ModelOverlayProperties implements OverlayProperties< Spot, Link >
 		{
 			radiusStats.readLock().unlock();
 		}
+	}
+
+	@Override
+	public Spot addVertex( final int timepoint, final double[] position, final double radius, final Spot ref )
+	{
+		return modelGraph.addVertex( ref ).init( timepoint, position, radius );
+	}
+
+	@Override
+	public void notifyGraphChanged()
+	{
+		modelGraph.notifyGraphChanged();
 	}
 }

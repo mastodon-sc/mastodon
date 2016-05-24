@@ -9,4 +9,8 @@ public interface OverlayGraph< V extends OverlayVertex< V, E >, E extends Overla
 	public SpatioTemporalIndex< V > getIndex();
 
 	public double getMaxBoundingSphereRadiusSquared( final int timepoint );
+
+	public V addVertex( final int timepoint, final double[] position, final double radius, V ref );
+
+	public void notifyGraphChanged();
 }

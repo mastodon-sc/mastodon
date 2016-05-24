@@ -711,6 +711,11 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 		}
 	}
 
+	public int getCurrentTimepoint()
+	{
+		return renderTimepoint;
+	}
+
 	public V getVertexAt( final int x, final int y, final double tolerance, final V ref )
 	{
 		final AffineTransform3D transform = getRenderTransformCopy();

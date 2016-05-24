@@ -49,7 +49,7 @@ public class AbstractSpot<
 		return X_OFFSET + numDimensions * DOUBLE_SIZE + INT_SIZE;
 	}
 
-	private final int n;
+	protected final int n;
 
 	protected G modelGraph;
 

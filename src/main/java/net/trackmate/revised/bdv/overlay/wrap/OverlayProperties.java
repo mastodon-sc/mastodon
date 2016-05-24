@@ -21,4 +21,8 @@ public interface OverlayProperties< V, E >
 	public boolean isEdgeSelected( E e );
 
 	public double getMaxBoundingSphereRadiusSquared( int timepoint );
+
+	public V addVertex( final int timepoint, final double[] position, final double radius, V ref );
+
+	public void notifyGraphChanged();
 }

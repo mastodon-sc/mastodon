@@ -33,6 +33,9 @@ public class Spot extends AbstractSpot< Spot, Link, ByteMappedElement, ModelGrap
 
 	/**
 	 * Initialize a new {@link Spot} with a spherical shape.
+	 * <p>
+	 * <em>Note that this is equivalent to a constructor. It should be only
+	 * called on newly created {@link Spot}s, and only once.</em>
 	 *
 	 * @param timepointId
 	 *            the time-point id to add the spot to in the spatio-temporal
@@ -53,7 +56,8 @@ public class Spot extends AbstractSpot< Spot, Link, ByteMappedElement, ModelGrap
 		};
 		final double boundingSphereRadiusSquared = radius * radius;
 
-		setPosition( pos );
+		for ( int d = 0; d < n; ++d )
+			setCoord( pos[ d ], d );
 		setCovariance( cov );
 		setBoundingSphereRadiusSquared( boundingSphereRadiusSquared );
 		setTimepointId( timepointId );
@@ -63,6 +67,9 @@ public class Spot extends AbstractSpot< Spot, Link, ByteMappedElement, ModelGrap
 
 	/**
 	 * Initialize a new {@link Spot}.
+	 * <p>
+	 * <em>Note that this is equivalent to a constructor. It should be only
+	 * called on newly created {@link Spot}s, and only once.</em>
 	 *
 	 * @param timepointId
 	 *            the time-point id to add the spot to in the spatio-temporal

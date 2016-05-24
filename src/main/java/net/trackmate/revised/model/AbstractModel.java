@@ -1,18 +1,10 @@
 package net.trackmate.revised.model;
 
 import net.trackmate.graph.GraphIdBimap;
-import net.trackmate.graph.ListenableGraph;
-import net.trackmate.graph.ListenableReadOnlyGraph;
-import net.trackmate.graph.ReadOnlyGraph;
 import net.trackmate.graph.ref.AbstractListenableEdge;
 
 /**
  * Manages the model graph.
- * <p>
- * The model graph is only exposed as a {@link ReadOnlyGraph}. All updates to
- * the model graph are done through {@link AbstractModel}. This includes vertex
- * and edge attribute changes (although this currently cannot be enforced
- * through {@link ReadOnlyGraph}).
  *
  * @author Tobias Pietzsch &lt;tobias.pietzsch@gmail.com&gt;
  */
@@ -21,17 +13,12 @@ public class AbstractModel<
 		V extends AbstractSpot< V, E, ?, MG >,
 		E extends AbstractListenableEdge< E, V, ? > >
 {
-
 	/**
 	 * Exposes the graph managed by this model.
-	 * <p>
-	 * The graph is only exposed as a {@link ListenableReadOnlyGraph} which is a
-	 * {@link ReadOnlyGraph}. All updates to the model graph must be done
-	 * through this model instance directly.
 	 *
 	 * @return the graph.
 	 */
-	public ListenableGraph< V, E > getGraph()
+	public MG getGraph()
 	{
 		return modelGraph;
 	}

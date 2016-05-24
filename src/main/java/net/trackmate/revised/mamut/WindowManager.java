@@ -31,7 +31,7 @@ import net.trackmate.graph.GraphIdBimap;
 import net.trackmate.graph.ListenableReadOnlyGraph;
 import net.trackmate.revised.bdv.BigDataViewerMaMuT;
 import net.trackmate.revised.bdv.SharedBigDataViewerData;
-import net.trackmate.revised.bdv.overlay.GraphBevaviours;
+import net.trackmate.revised.bdv.overlay.EditBevaviours;
 import net.trackmate.revised.bdv.overlay.MouseHighlightHandler;
 import net.trackmate.revised.bdv.overlay.OverlayContext;
 import net.trackmate.revised.bdv.overlay.OverlayGraphRenderer;
@@ -352,7 +352,7 @@ public class WindowManager
 				model.getGraph(),
 				model.getGraphIdBimap(),
 				model.getSpatioTemporalIndex(),
-				new ModelOverlayProperties( radiusStats, selection ) );
+				new ModelOverlayProperties( model.getGraph(), radiusStats, selection ) );
 
 		final OverlayHighlightWrapper< Spot, Link > overlayHighlight = new OverlayHighlightWrapper<>(
 				model.getGraphIdBimap(),
@@ -437,7 +437,7 @@ public class WindowManager
 
 		UndoActions.installActionBindings( viewerFrame.getKeybindings(), model, keyconf );
 
-		GraphBevaviours.installActionBindings( viewerFrame.getTriggerbindings(), keyconf, overlayGraph, tracksOverlay, model );
+		EditBevaviours.installActionBindings( viewerFrame.getTriggerbindings(), keyconf, overlayGraph, tracksOverlay, model );
 
 		/*
 		 * TODO: this is still wrong. There should be one central entity syncing

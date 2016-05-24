@@ -6,11 +6,11 @@ import net.trackmate.RefPool;
 import net.trackmate.collection.RefCollection;
 import net.trackmate.collection.RefList;
 import net.trackmate.collection.ref.RefArrayList;
+import net.trackmate.graph.CollectionUtils.ListCreator;
 import net.trackmate.graph.Edge;
 import net.trackmate.graph.GraphIdBimap;
 import net.trackmate.graph.ReadOnlyGraph;
 import net.trackmate.graph.Vertex;
-import net.trackmate.graph.CollectionUtils.ListCreator;
 import net.trackmate.revised.bdv.overlay.OverlayGraph;
 import net.trackmate.spatial.SpatioTemporalIndex;
 
@@ -117,6 +117,19 @@ public class OverlayGraphWrapper< V extends Vertex< E >, E extends Edge< V > > i
 	public double getMaxBoundingSphereRadiusSquared( final int timepoint )
 	{
 		return overlayProperties.getMaxBoundingSphereRadiusSquared( timepoint );
+	}
+
+	@Override
+	public OverlayVertexWrapper< V, E > addVertex( final int timepoint, final double[] position, final double radius, final OverlayVertexWrapper< V, E > ref )
+	{
+		ref.wv = overlayProperties.addVertex( timepoint, position, radius, ref.wv );
+		return ref;
+	}
+
+	@Override
+	public void notifyGraphChanged()
+	{
+		overlayProperties.notifyGraphChanged();
 	}
 
 	private final RefPool< OverlayVertexWrapper< V, E > > vertexPool = new RefPool< OverlayVertexWrapper< V, E > >()
