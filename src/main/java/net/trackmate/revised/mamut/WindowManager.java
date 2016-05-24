@@ -409,6 +409,7 @@ public class WindowManager
 				viewer.getDisplay().repaint();
 			}
 		} );
+		model.getGraph().addVertexPositionListener( ( v ) -> viewer.getDisplay().repaint() );
 		overlaySelection.addSelectionListener( new SelectionListener()
 		{
 			@Override
@@ -417,6 +418,7 @@ public class WindowManager
 				viewer.getDisplay().repaint();
 			}
 		} );
+		// TODO: remember those listeners and remove them when the BDV window is closed!!!
 
 		final MouseHighlightHandler< ?, ? > highlightHandler = new MouseHighlightHandler<>( overlayGraph, tracksOverlay, overlayHighlight );
 		viewer.getDisplay().addHandler( highlightHandler );
