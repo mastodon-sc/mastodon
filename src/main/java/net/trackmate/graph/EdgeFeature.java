@@ -1,6 +1,9 @@
 package net.trackmate.graph;
 
 import net.trackmate.graph.FeatureRegistry.DuplicateKeyException;
+import net.trackmate.graph.features.FeatureCleanup;
+import net.trackmate.graph.features.NotifyFeatureValueChange;
+import net.trackmate.graph.features.UndoFeatureMap;
 
 /**
  * Mother class for edge features. TODO
@@ -53,7 +56,7 @@ public abstract class EdgeFeature< M, E extends Edge< ? >, F extends FeatureValu
 		return id;
 	}
 
-	protected static class NotifyValueChange< E extends Edge< ? > >
+	protected static class NotifyValueChange< E extends Edge< ? > > implements NotifyFeatureValueChange
 	{
 		private final GraphFeatures< ?, E > graphFeatures;
 
@@ -68,6 +71,7 @@ public abstract class EdgeFeature< M, E extends Edge< ? >, F extends FeatureValu
 			this.edge = edge;
 		}
 
+		@Override
 		public void notifyBeforeFeatureChange()
 		{
 			graphFeatures.notifyBeforeFeatureChange( feature, edge );

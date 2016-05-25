@@ -1,15 +1,17 @@
 package net.trackmate.graph.features;
 
-import gnu.trove.map.TObjectIntMap;
+import java.util.Map;
+
 import net.trackmate.graph.CollectionUtils;
 import net.trackmate.graph.Edge;
 import net.trackmate.graph.EdgeFeature;
 import net.trackmate.graph.FeatureRegistry.DuplicateKeyException;
+import net.trackmate.graph.FeatureValue;
 import net.trackmate.graph.GraphFeatures;
 import net.trackmate.graph.ReadOnlyGraph;
 
 /**
- * A {@code int}-valued {@link EdgeFeature}.
+ * A {@code Object}-valued {@link EdgeFeature}.
  * <p>
  * To use features, create exactly one {@link EdgeFeature} object for each
  * feature you want to use.
@@ -32,62 +34,57 @@ import net.trackmate.graph.ReadOnlyGraph;
  *
  * @param <E>
  *            the edge type
+ * @param <T>
+ *            the (feature) value type.
  *
- * @author Jean-Yves Tinevez &lt;jeanyves.tinevez@gmail.com&gt;
  * @author Tobias Pietzsch &lt;tobias.pietzsch@gmail.com&gt;
  */
-public final class IntEdgeFeature< E extends Edge< ? > > extends EdgeFeature< TObjectIntMap< E >, E, IntFeatureValue< E > >
+public final class ObjEdgeFeature< E extends Edge< ? >, T > extends EdgeFeature< Map< E, T >, E, FeatureValue< T > >
 {
-	private final int noEntryValue;
-
 	/**
 	 * Create a new feature.
 	 *
 	 * @param name
 	 *            the unique name of the feature.
-	 * @param noEntryValue
-	 *            a {@code int} value that represents null for the Value set.
 	 * @throws DuplicateKeyException
 	 *             if a {@link EdgeFeature} with the same {@code name} already
 	 *             exists.
 	 */
-	public IntEdgeFeature( final String name, final int noEntryValue ) throws DuplicateKeyException
+	public ObjEdgeFeature( final String name ) throws DuplicateKeyException
 	{
 		super( name );
-		this.noEntryValue = noEntryValue;
 	}
 
 	@Override
-	protected TObjectIntMap< E > createFeatureMap( final ReadOnlyGraph< ?, E > graph )
+	protected Map< E, T > createFeatureMap( final ReadOnlyGraph< ?, E > graph )
 	{
-		return CollectionUtils.createEdgeIntMap( graph, noEntryValue, graph.edges().size() );
+		return CollectionUtils.createEdgeObjectMap( graph );
 	}
 
 	@Override
-	protected FeatureCleanup< E > createFeatureCleanup( final TObjectIntMap< E > featureMap )
+	protected FeatureCleanup< E > createFeatureCleanup( final Map< E, T > featureMap )
 	{
-		return new FeatureCleanup< E >()
-		{
+		return new FeatureCleanup< E >(){
 			@Override
-			public void delete( final E edge )
+			public void delete( final E vertex )
 			{
-				featureMap.remove( edge );
+				featureMap.remove( vertex );
 			}
 		};
-	}
-
-	@Override
-	public IntFeatureValue< E > createFeatureValue( final E edge, final GraphFeatures< ?, E > graphFeatures )
-	{
-		return new IntFeatureValue<>(
-				graphFeatures.getEdgeFeature( this ),
-				edge,
-				new NotifyValueChange<>( graphFeatures, this, edge ) );
 	};
 
 	@Override
-	public IntUndoFeatureMap< E > createUndoFeatureMap( final TObjectIntMap< E > featureMap )
+	public FeatureValue< T > createFeatureValue( final E edge, final GraphFeatures< ?, E > graphFeatures )
 	{
-		return new IntUndoFeatureMap<>( featureMap, noEntryValue );
+		return new ObjFeatureValue<>(
+				graphFeatures.getEdgeFeature( this ),
+				edge,
+				new NotifyValueChange<>( graphFeatures, this, edge ) );
+	}
+
+	@Override
+	public ObjUndoFeatureMap< E, T > createUndoFeatureMap( final Map< E, T > featureMap )
+	{
+		return new ObjUndoFeatureMap<>( featureMap );
 	}
 }

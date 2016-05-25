@@ -1,6 +1,9 @@
 package net.trackmate.graph;
 
 import net.trackmate.graph.FeatureRegistry.DuplicateKeyException;
+import net.trackmate.graph.features.FeatureCleanup;
+import net.trackmate.graph.features.NotifyFeatureValueChange;
+import net.trackmate.graph.features.UndoFeatureMap;
 
 /**
  * TODO
@@ -52,7 +55,7 @@ public abstract class VertexFeature< M, V extends Vertex< ? >, F extends Feature
 		return id;
 	}
 
-	protected static class NotifyValueChange< V extends Vertex< ? > >
+	protected static class NotifyValueChange< V extends Vertex< ? > > implements NotifyFeatureValueChange
 	{
 		private final GraphFeatures< V, ? > graphFeatures;
 
@@ -67,6 +70,7 @@ public abstract class VertexFeature< M, V extends Vertex< ? >, F extends Feature
 			this.vertex = vertex;
 		}
 
+		@Override
 		public void notifyBeforeFeatureChange()
 		{
 			graphFeatures.notifyBeforeFeatureChange( feature, vertex );

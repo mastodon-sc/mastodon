@@ -2,14 +2,11 @@ package net.trackmate.graph.features;
 
 import gnu.trove.map.TObjectIntMap;
 import net.trackmate.graph.CollectionUtils;
-import net.trackmate.graph.FeatureCleanup;
-import net.trackmate.graph.FeatureValue;
+import net.trackmate.graph.FeatureRegistry.DuplicateKeyException;
 import net.trackmate.graph.GraphFeatures;
 import net.trackmate.graph.ReadOnlyGraph;
 import net.trackmate.graph.Vertex;
 import net.trackmate.graph.VertexFeature;
-import net.trackmate.graph.FeatureRegistry.DuplicateKeyException;
-import net.trackmate.graph.features.IntVertexFeature.IntFeatureValue;
 
 /**
  * A {@code int}-valued {@link VertexFeature}.
@@ -85,63 +82,6 @@ public final class IntVertexFeature< V extends Vertex< ? > > extends VertexFeatu
 				vertex,
 				new NotifyValueChange<>( graphFeatures, this, vertex ) );
 	};
-
-	public static final class IntFeatureValue< V extends Vertex< ? > > implements FeatureValue< Integer >
-	{
-		private final TObjectIntMap< V > featureMap;
-
-		private final V vertex;
-
-		private final NotifyValueChange< ? > notify;
-
-		protected IntFeatureValue( final TObjectIntMap< V > featureMap, final V vertex, final NotifyValueChange< ? > notify )
-		{
-			this.featureMap = featureMap;
-			this.vertex = vertex;
-			this.notify = notify;
-		}
-
-		@Override
-		public void set( final Integer value )
-		{
-			notify.notifyBeforeFeatureChange();
-			if ( value == null )
-				featureMap.remove( vertex );
-			else
-				featureMap.put( vertex, value.intValue() );
-		}
-
-		public void set( final int value )
-		{
-			notify.notifyBeforeFeatureChange();
-			featureMap.put( vertex, value );
-		}
-
-		@Override
-		public void remove()
-		{
-			notify.notifyBeforeFeatureChange();
-			featureMap.remove( vertex );
-		}
-
-		@Override
-		public Integer get()
-		{
-			final int i = getInt();
-			return ( i == featureMap.getNoEntryValue() ) ? null : i;
-		}
-
-		public int getInt()
-		{
-			return featureMap.get( vertex );
-		}
-
-		@Override
-		public boolean isSet()
-		{
-			return featureMap.containsKey( vertex );
-		}
-	}
 
 	@Override
 	public IntUndoFeatureMap< V > createUndoFeatureMap( final TObjectIntMap< V > featureMap )

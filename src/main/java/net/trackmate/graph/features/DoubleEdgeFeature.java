@@ -4,12 +4,9 @@ import gnu.trove.map.TObjectDoubleMap;
 import net.trackmate.graph.CollectionUtils;
 import net.trackmate.graph.Edge;
 import net.trackmate.graph.EdgeFeature;
-import net.trackmate.graph.FeatureCleanup;
 import net.trackmate.graph.FeatureRegistry.DuplicateKeyException;
-import net.trackmate.graph.FeatureValue;
 import net.trackmate.graph.GraphFeatures;
 import net.trackmate.graph.ReadOnlyGraph;
-import net.trackmate.graph.features.DoubleEdgeFeature.DoubleFeatureValue;
 
 /**
  * A {@code double}-valued {@link EdgeFeature}.
@@ -84,69 +81,12 @@ public final class DoubleEdgeFeature< E extends Edge< ? > > extends EdgeFeature<
 		return new DoubleFeatureValue< >(
 				graphFeatures.getEdgeFeature( this ),
 				edge,
-				new NotifyValueChange< >( graphFeatures, this, edge ) );
+				new NotifyValueChange<>( graphFeatures, this, edge ) );
 	};
-
-	public static final class DoubleFeatureValue< E extends Edge< ? > > implements FeatureValue< Double >
-	{
-		private final TObjectDoubleMap< E > featureMap;
-
-		private final E edge;
-
-		private final NotifyValueChange< ? > notify;
-
-		protected DoubleFeatureValue( final TObjectDoubleMap< E > featureMap, final E edge, final NotifyValueChange< ? > notify )
-		{
-			this.featureMap = featureMap;
-			this.edge = edge;
-			this.notify = notify;
-		}
-
-		@Override
-		public void set( final Double value )
-		{
-			notify.notifyBeforeFeatureChange();
-			if ( value == null )
-				featureMap.remove( edge );
-			else
-				featureMap.put( edge, value.intValue() );
-		}
-
-		public void set( final double value )
-		{
-			notify.notifyBeforeFeatureChange();
-			featureMap.put( edge, value );
-		}
-
-		@Override
-		public void remove()
-		{
-			notify.notifyBeforeFeatureChange();
-			featureMap.remove( edge );
-		}
-
-		@Override
-		public Double get()
-		{
-			final double d = getDouble();
-			return ( d == featureMap.getNoEntryValue() ) ? null : d;
-		}
-
-		public double getDouble()
-		{
-			return featureMap.get( edge );
-		}
-
-		@Override
-		public boolean isSet()
-		{
-			return featureMap.containsKey( edge );
-		}
-	}
 
 	@Override
 	public DoubleUndoFeatureMap< E > createUndoFeatureMap( final TObjectDoubleMap< E > featureMap )
 	{
-		return new DoubleUndoFeatureMap< >( featureMap, noEntryValue );
+		return new DoubleUndoFeatureMap<>( featureMap, noEntryValue );
 	}
 }

@@ -8,7 +8,7 @@ import net.trackmate.graph.Edge;
 import net.trackmate.graph.EdgeFeature;
 import net.trackmate.graph.GraphFeatures;
 import net.trackmate.graph.GraphFeatures.CreateFeatureMapListener;
-import net.trackmate.graph.UndoFeatureMap;
+import net.trackmate.graph.features.UndoFeatureMap;
 import net.trackmate.graph.Vertex;
 import net.trackmate.graph.VertexFeature;
 

@@ -4,9 +4,15 @@ import gnu.trove.impl.Constants;
 import gnu.trove.map.TIntDoubleMap;
 import gnu.trove.map.TObjectDoubleMap;
 import gnu.trove.map.hash.TIntDoubleHashMap;
-import net.trackmate.graph.UndoFeatureMap;
 
-public final class DoubleUndoFeatureMap< O > implements UndoFeatureMap< O >
+/**
+ * TODO
+ *
+ * @param <O>
+ *
+ * @author Jean-Yves Tinevez &lt;jeanyves.tinevez@gmail.com&gt;
+ */
+final class DoubleUndoFeatureMap< O > implements UndoFeatureMap< O >
 {
 	private static final int NO_ENTRY_KEY = -1;
 

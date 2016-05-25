@@ -4,9 +4,8 @@ import gnu.trove.impl.Constants;
 import gnu.trove.map.TIntIntMap;
 import gnu.trove.map.TObjectIntMap;
 import gnu.trove.map.hash.TIntIntHashMap;
-import net.trackmate.graph.UndoFeatureMap;
 
-public final class IntUndoFeatureMap< O > implements UndoFeatureMap< O >
+final class IntUndoFeatureMap< O > implements UndoFeatureMap< O >
 {
 	private static final int NO_ENTRY_KEY = -1;
 

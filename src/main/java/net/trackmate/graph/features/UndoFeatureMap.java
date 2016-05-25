@@ -1,4 +1,4 @@
-package net.trackmate.graph;
+package net.trackmate.graph.features;
 
 /**
  * Backup and restore vertex or edge features by storing them in a map with
@@ -9,7 +9,6 @@ package net.trackmate.graph;
  *
  * @author Tobias Pietzsch &lt;tobias.pietzsch@gmail.com&gt;
  */
-// TODO: move to net.trackmate.graph.undo package?
 public interface UndoFeatureMap< O >
 {
 	/**
