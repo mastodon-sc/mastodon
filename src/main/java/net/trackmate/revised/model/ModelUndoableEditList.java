@@ -13,7 +13,7 @@ public class ModelUndoableEditList<
 			E extends AbstractListenableEdge< E, V, ? > >
 		extends DefaultUndoableEditList< V, E >
 {
-	private final int numDimensions = 3; // TODO
+	protected final int numDimensions = 3; // TODO
 
 	public ModelUndoableEditList(
 			final int initialCapacity,

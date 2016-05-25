@@ -115,6 +115,7 @@ public class Spot extends AbstractSpot< Spot, Link, ByteMappedElement, ModelGrap
 
 	protected void setCovariance( final double[][] mat )
 	{
+		modelGraph.notifyBeforeVertexCovarianceChange( this );
 		access.putDouble( mat[ 0 ][ 0 ], COVARIANCE_OFFSET );
 		access.putDouble( mat[ 0 ][ 1 ], COVARIANCE_OFFSET + 1 * DOUBLE_SIZE );
 		access.putDouble( mat[ 0 ][ 2 ], COVARIANCE_OFFSET + 2 * DOUBLE_SIZE );

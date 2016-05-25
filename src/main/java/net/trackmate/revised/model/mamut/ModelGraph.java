@@ -9,6 +9,7 @@ import net.trackmate.pool.MemPool;
 import net.trackmate.pool.PoolObject;
 import net.trackmate.pool.SingleArrayMemPool;
 import net.trackmate.revised.model.AbstractModelGraph;
+import net.trackmate.revised.model.AbstractSpotListener;
 import net.trackmate.revised.model.AbstractSpotPool;
 
 public class ModelGraph extends AbstractModelGraph< ModelGraph, SpotPool, LinkPool, Spot, Link, ByteMappedElement >
@@ -42,6 +43,13 @@ public class ModelGraph extends AbstractModelGraph< ModelGraph, SpotPool, LinkPo
 	protected void notifyGraphChanged()
 	{
 		super.notifyGraphChanged();
+	}
+
+	public void notifyBeforeVertexCovarianceChange( final Spot spot )
+	{
+		for ( final AbstractSpotListener< Spot > l : spotListeners )
+			if ( l instanceof AbstractSpotCovarianceListener )
+				( ( AbstractSpotCovarianceListener ) l ).beforeCovarianceChange( spot );
 	}
 }
 

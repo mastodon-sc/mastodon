@@ -34,7 +34,7 @@ public class AbstractModelGraph<
 {
 	protected final GraphIdBimap< V, E > idmap;
 
-	private final ArrayList< AbstractSpotListener< V > > spotListeners;
+	protected final ArrayList< AbstractSpotListener< V > > spotListeners;
 
 	private final ArrayList< VertexPositionListener< V > > vertexPositionListeners;
 
