@@ -6,17 +6,17 @@ import gnu.trove.map.TObjectIntMap;
 import gnu.trove.map.hash.TIntIntHashMap;
 import net.trackmate.graph.UndoFeatureMap;
 
-public final class IntUndoFeatureMap< K > implements UndoFeatureMap< K >
+public final class IntUndoFeatureMap< O > implements UndoFeatureMap< O >
 {
 	private static final int NO_ENTRY_KEY = -1;
 
-	private final TObjectIntMap< K > featureMap;
+	private final TObjectIntMap< O > featureMap;
 
 	private final int noEntryValue;
 
 	private final TIntIntMap undoMap;
 
-	protected IntUndoFeatureMap( final TObjectIntMap< K > featureMap, final int noEntryValue )
+	protected IntUndoFeatureMap( final TObjectIntMap< O > featureMap, final int noEntryValue )
 	{
 		this.featureMap = featureMap;
 		this.noEntryValue = noEntryValue;
@@ -24,7 +24,7 @@ public final class IntUndoFeatureMap< K > implements UndoFeatureMap< K >
 	}
 
 	@Override
-	public void store( final int undoId, final K obj )
+	public void store( final int undoId, final O obj )
 	{
 		final int value = featureMap.get( obj );
 		if ( value != noEntryValue )
@@ -32,7 +32,7 @@ public final class IntUndoFeatureMap< K > implements UndoFeatureMap< K >
 	}
 
 	@Override
-	public void retrieve( final int undoId, final K obj )
+	public void retrieve( final int undoId, final O obj )
 	{
 		final int value = undoMap.get( undoId );
 		if ( value != noEntryValue )
@@ -42,7 +42,7 @@ public final class IntUndoFeatureMap< K > implements UndoFeatureMap< K >
 	}
 
 	@Override
-	public void swap( final int undoId, final K obj )
+	public void swap( final int undoId, final O obj )
 	{
 		final int undoValue = undoMap.get( undoId );
 		final int featureValue = featureMap.get( obj );
