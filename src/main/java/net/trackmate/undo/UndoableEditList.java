@@ -80,7 +80,7 @@ public class UndoableEditList<
 		releaseRef( ref );
 	}
 
-	private UndoableEditRef< V, E > get( final int index, final UndoableEditRef< V, E > ref )
+	protected UndoableEditRef< V, E > get( final int index, final UndoableEditRef< V, E > ref )
 	{
 		super.getObject( index, ref );
 		return ref;
@@ -179,6 +179,8 @@ public class UndoableEditList<
 		 * @return a new {@code T}.
 		 */
 		public T createInstance( final UndoableEditRef< V, E > ref );
+
+		public boolean isInstance( final UndoableEditRef< V, E > ref );
 	}
 
 	/**
@@ -249,6 +251,13 @@ public class UndoableEditList<
 
 		@Override
 		public abstract T createInstance( final UndoableEditRef< V, E > ref );
+
+
+		@Override
+		public boolean isInstance( final UndoableEditRef< V, E > ref )
+		{
+			return ref != null && ref.getTypeIndex() == typeIndex;
+		}
 	}
 
 	UndoableEditType< V, E, ? > getUndoableEditType( final byte typeIndex )

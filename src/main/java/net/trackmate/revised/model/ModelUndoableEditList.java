@@ -29,7 +29,14 @@ public class ModelUndoableEditList<
 	public void recordSetPosition( final V vertex )
 	{
 		final UndoableEditRef< V, E > ref = createRef();
-		create( ref ).getEdit( setVertexPosition ).init( vertex );
+		boolean createNewEdit = true;
+		if ( nextEditIndex > 0 )
+		{
+			final UndoableEditRef< V, E > edit = get( nextEditIndex - 1, ref );
+			createNewEdit = !setVertexPosition.isInstance( edit ) || edit.isUndoPoint();
+		}
+		if ( createNewEdit )
+			create( ref ).getEdit( setVertexPosition ).init( vertex );
 		releaseRef( ref );
 	}
 
