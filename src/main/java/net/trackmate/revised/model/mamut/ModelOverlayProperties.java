@@ -58,6 +58,12 @@ public class ModelOverlayProperties implements OverlayProperties< Spot, Link >
 	}
 
 	@Override
+	public void setCovariance( final Spot v, final double[][] mat )
+	{
+		v.setCovariance( mat );
+	}
+
+	@Override
 	public double getBoundingSphereRadiusSquared( final Spot v )
 	{
 		return v.getBoundingSphereRadiusSquared();

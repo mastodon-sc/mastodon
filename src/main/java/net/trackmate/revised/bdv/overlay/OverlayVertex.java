@@ -13,5 +13,7 @@ public interface OverlayVertex< O extends OverlayVertex< O, E >, E extends Overl
 
 	public void getCovariance( final double[][] mat );
 
+	public void setCovariance( final double[][] mat );
+
 	public double getBoundingSphereRadiusSquared();
 }

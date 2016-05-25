@@ -63,6 +63,12 @@ public class OverlayVertexWrapper< V extends Vertex< E >, E extends Edge< V > >
 	}
 
 	@Override
+	public void setCovariance( final double[][] mat )
+	{
+		overlayProperties.setCovariance( wv, mat );
+	}
+
+	@Override
 	public double getBoundingSphereRadiusSquared()
 	{
 		return overlayProperties.getBoundingSphereRadiusSquared( wv );
