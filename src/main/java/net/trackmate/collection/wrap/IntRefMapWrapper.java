@@ -13,14 +13,14 @@ public class IntRefMapWrapper< K > extends TIntObjectHashMap< K > implements Int
 
 	private static final float DEFAULT_LOAD_FACTOR = Constants.DEFAULT_LOAD_FACTOR;
 
-	public IntRefMapWrapper( final int initialCapacity, final int noEntryKey )
+	public IntRefMapWrapper( final int noEntryKey, final int initialCapacity )
 	{
 		super( initialCapacity, DEFAULT_LOAD_FACTOR, noEntryKey );
 	}
 
 	public IntRefMapWrapper( final int noEntryKey )
 	{
-		this( Constants.DEFAULT_CAPACITY, noEntryKey );
+		this( noEntryKey, Constants.DEFAULT_CAPACITY );
 	}
 
 	@Override
