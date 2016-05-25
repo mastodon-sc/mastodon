@@ -1,13 +1,16 @@
 package net.trackmate.graph;
 
 /**
- * Backup and restore object or edge features by storing them in a map with
+ * Backup and restore vertex or edge features by storing them in a map with
  * {@code int} keys. This is used for implementing undo/redo (hence the name).
  *
- * @param <K>
- *            object type (edge or object).
+ * @param <O>
+ *            object type (an object that has features, i.e., edge or vertex).
+ *
+ * @author Tobias Pietzsch &lt;tobias.pietzsch@gmail.com&gt;
  */
-public interface UndoFeatureMap< K >
+// TODO: move to net.trackmate.graph.undo package?
+public interface UndoFeatureMap< O >
 {
 	/**
 	 * Store the feature value of {@code object} with the key {@code undoId}.
@@ -15,7 +18,7 @@ public interface UndoFeatureMap< K >
 	 * @param undoId
 	 * @param object
 	 */
-	public void store( int undoId, K object );
+	public void store( int undoId, O object );
 
 	/**
 	 * Retrieve the feature value stored with key {@code undoId} and set it in
@@ -25,7 +28,7 @@ public interface UndoFeatureMap< K >
 	 * @param undoId
 	 * @param object
 	 */
-	public void retrieve( int undoId, K object );
+	public void retrieve( int undoId, O object );
 
 	/**
 	 * Store the feature value of {@code object} with the key {@code undoId},
@@ -36,7 +39,7 @@ public interface UndoFeatureMap< K >
 	 * @param undoId
 	 * @param object
 	 */
-	public void swap( int undoId, K object );
+	public void swap( int undoId, O object );
 
 	/**
 	 * Clear the feature value associated with key {@code undoId} (if any).
