@@ -30,4 +30,6 @@ public interface OverlayProperties< V, E >
 
 	public void notifyGraphChanged();
 
+	public E getEdge( V source, V target, E edge );
+
 }

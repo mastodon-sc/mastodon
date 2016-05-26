@@ -80,15 +80,16 @@ public class OverlayGraphWrapper< V extends Vertex< E >, E extends Edge< V > > i
 	@Override
 	public OverlayEdgeWrapper< V, E > getEdge( final OverlayVertexWrapper< V, E > source, final OverlayVertexWrapper< V, E > target )
 	{
-		// TODO Auto-generated method stub
-		return null;
+		return getEdge( source, target, edgeRef() );
 	}
 
 	@Override
 	public OverlayEdgeWrapper< V, E > getEdge( final OverlayVertexWrapper< V, E > source, final OverlayVertexWrapper< V, E > target, final OverlayEdgeWrapper< V, E > edge )
 	{
-		// TODO Auto-generated method stub
-		return null;
+		final E e = overlayProperties.getEdge( source.wv, target.wv, edge.we );
+		if (null == e ) return null;
+		edge.we = e;
+		return edge;
 	}
 
 	@Override
