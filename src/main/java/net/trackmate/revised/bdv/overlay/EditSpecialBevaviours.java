@@ -2,14 +2,21 @@ package net.trackmate.revised.bdv.overlay;
 
 import static net.trackmate.revised.bdv.overlay.EditBevaviours.POINT_SELECT_DISTANCE_TOLERANCE;
 
+import java.awt.BasicStroke;
+import java.awt.Color;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.geom.AffineTransform;
+import java.awt.geom.Ellipse2D;
 
 import org.scijava.ui.behaviour.DragBehaviour;
 import org.scijava.ui.behaviour.io.InputTriggerConfig;
 
 import bdv.viewer.TriggerBehaviourBindings;
 import bdv.viewer.ViewerPanel;
+import net.imglib2.realtransform.AffineTransform3D;
 import net.imglib2.ui.OverlayRenderer;
+import net.imglib2.ui.TransformListener;
 import net.imglib2.util.LinAlgHelpers;
 import net.trackmate.revised.bdv.AbstractBehaviours;
 import net.trackmate.revised.bdv.overlay.util.JamaEigenvalueDecomposition;
@@ -20,9 +27,17 @@ public class EditSpecialBevaviours< V extends OverlayVertex< V, E >, E extends O
 		extends AbstractBehaviours
 {
 
-	public static final String ADD_SPOT_AND_LINK_IT = "add linked spot";
+	private static final String ADD_SPOT_AND_LINK_IT = "add linked spot";
+	private static final String TOGGLE_LINK = "toggle link";
 
-	static final String[] ADD_SPOT_AND_LINK_IT_KEYS = new String[] { "A" };
+	private static final String[] ADD_SPOT_AND_LINK_IT_KEYS = new String[] { "A" };
+	private static final String[] TOGGLE_LINK_KEYS = new String[] { "L" } ;
+
+	public static final Color EDIT_GRAPH_OVERLAY_COLOR = Color.WHITE;
+	public static final BasicStroke EDIT_GRAPH_OVERLAY_STROKE = new BasicStroke( 2f );
+	public static final BasicStroke EDIT_GRAPH_OVERLAY_GHOST_STROKE = new BasicStroke(
+			1f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL,
+			1.0f, new float[] { 4f, 10f }, 0f );
 
 	private final OverlayGraph< V, E > overlayGraph;
 
@@ -59,34 +74,40 @@ public class EditSpecialBevaviours< V extends OverlayVertex< V, E >, E extends O
 		this.undo = undo;
 
 		behaviour( new AddSpotAndLinkIt(), ADD_SPOT_AND_LINK_IT, ADD_SPOT_AND_LINK_IT_KEYS );
+
+		final ToggleLink toggleLink = new ToggleLink();
+		viewer.getDisplay().addOverlayRenderer( toggleLink.overlay );
+		toggleLink.overlay.transformChanged( viewer.getDisplay().getTransformEventHandler().getTransform() );
+		viewer.getDisplay().addTransformListener( toggleLink.overlay );
+		behaviour( toggleLink, TOGGLE_LINK, TOGGLE_LINK_KEYS );
 	}
 
-	private class LinkTwoSpots implements DragBehaviour
+	private class ToggleLink implements DragBehaviour
 	{
 
 		private final V source;
 
 		private final V target;
 
-		private final E edge;
+		private final E edgeRef;
 
-		private final double[] start;
+		private final double[] to;
 
-		private final double[] pos;
+		private final double[] from;
 
-		private boolean moving;
+		private boolean editing;
 
-		private final EditSpecialBevaviours< V, E >.LinkTwoSpots.LinkTwoSpotsOverlay overlay;
+		private final ToggleLinkOverlay overlay;
 
-		public LinkTwoSpots()
+		public ToggleLink()
 		{
 			source = overlayGraph.vertexRef();
 			target = overlayGraph.vertexRef();
-			edge = overlayGraph.edgeRef();
-			start = new double[ 3 ];
-			pos = new double[ 3 ];
-			moving = false;
-			overlay = new LinkTwoSpotsOverlay();
+			edgeRef = overlayGraph.edgeRef();
+			from = new double[ 3 ];
+			to = new double[ 3 ];
+			editing = false;
+			overlay = new ToggleLinkOverlay();
 		}
 
 		@Override
@@ -95,52 +116,124 @@ public class EditSpecialBevaviours< V extends OverlayVertex< V, E >, E extends O
 			if ( renderer.getVertexAt( x, y, POINT_SELECT_DISTANCE_TOLERANCE, source ) != null )
 			{
 				// Get vertex we clicked inside.
-				renderer.getGlobalPosition( x, y, start );
-				source.localize( pos );
-				LinAlgHelpers.subtract( pos, start, start );
+				source.localize( from );
+				source.localize( to );
 
 				// Move to next time point.
 				viewer.nextTimePoint();
 
-				moving = true;
+				editing = true;
 			}
 		}
 
 		@Override
 		public void drag( final int x, final int y )
 		{
-			if ( moving )
+			if ( editing )
 			{
-				renderer.getGlobalPosition( x, y, pos );
-				LinAlgHelpers.add( pos, start, pos );
-				target.setPosition( pos );
+				if ( renderer.getVertexAt( x, y, POINT_SELECT_DISTANCE_TOLERANCE, target ) != null )
+					target.localize( to );
+				else
+					renderer.getGlobalPosition( x, y, to );
 			}
 		}
 
 		@Override
 		public void end( final int x, final int y )
 		{
-			if ( moving )
+			if ( editing )
 			{
-				undo.setUndoPoint();
-				moving = false;
+				if ( renderer.getVertexAt( x, y, POINT_SELECT_DISTANCE_TOLERANCE, target ) != null )
+				{
+					target.localize( to );
+
+					final E edge = overlayGraph.getEdge( source, target, edgeRef );
+					if ( null == edge )
+						overlayGraph.addEdge( source, target, edgeRef );
+					else
+						System.out.println( "TODO Remove edge " + edge ); // TODO
+
+					overlayGraph.notifyGraphChanged();
+					undo.setUndoPoint();
+				}
+				editing = false;
 			}
 		}
 
-		private class LinkTwoSpotsOverlay implements OverlayRenderer
+		private class ToggleLinkOverlay implements OverlayRenderer, TransformListener< AffineTransform3D >
 		{
+			private final double[] vFrom;
+
+			private final double[] vTo;
+
+			private final AffineTransform3D renderTransform;
+
+			private final ScreenVertexMath screenVertexMath;
+
+			public ToggleLinkOverlay()
+			{
+				vFrom = new double[ 3 ];
+				vTo = new double[ 3 ];
+				renderTransform = new AffineTransform3D();
+				screenVertexMath = new ScreenVertexMath();
+			}
 
 			@Override
 			public void drawOverlays( final Graphics g )
 			{
-				// TODO Auto-generated method stub
+				if ( !editing )
+					return;
 
+				final AffineTransform3D transform = getRenderTransformCopy();
+
+				final Graphics2D graphics = ( Graphics2D ) g;
+				g.setColor( EDIT_GRAPH_OVERLAY_COLOR );
+				graphics.setStroke( EDIT_GRAPH_OVERLAY_GHOST_STROKE );
+
+				// The spot ghost, painted using ellipse projection.
+				final AffineTransform torig = graphics.getTransform();
+
+				screenVertexMath.init( source, transform );
+
+				final double[] tr = screenVertexMath.getProjectCenter();
+				final double theta = screenVertexMath.getProjectTheta();
+				final Ellipse2D ellipse = screenVertexMath.getProjectEllipse();
+
+				graphics.translate( tr[ 0 ], tr[ 1 ] );
+				graphics.rotate( theta );
+				graphics.draw( ellipse );
+				graphics.setTransform( torig );
+
+				// The link.
+				graphics.setStroke( EDIT_GRAPH_OVERLAY_STROKE );
+				renderer.getViewerPosition( from, vFrom );
+				renderer.getViewerPosition( to, vTo );
+				g.drawLine( ( int ) vFrom[ 0 ], ( int ) vFrom[ 1 ],
+						( int ) vTo[ 0 ], ( int ) vTo[ 1 ] );
 			}
 
 			@Override
 			public void setCanvasSize( final int width, final int height )
 			{}
 
+			@Override
+			public void transformChanged( final AffineTransform3D transform )
+			{
+				synchronized ( renderTransform )
+				{
+					renderTransform.set( transform );
+				}
+			}
+
+			private AffineTransform3D getRenderTransformCopy()
+			{
+				final AffineTransform3D transform = new AffineTransform3D();
+				synchronized ( renderTransform )
+				{
+					transform.set( renderTransform );
+				}
+				return transform;
+			}
 		}
 
 	}
