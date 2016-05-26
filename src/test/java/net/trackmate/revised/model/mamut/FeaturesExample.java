@@ -14,18 +14,20 @@ public class FeaturesExample
 {
 	static final int NO_ENTRY_VALUE = -1;
 
-	public static final ObjVertexFeature< Spot, String > LABEL = new ObjVertexFeature<>( "label" );
 	public static final IntVertexFeature< Spot > TRACKLENGTH = new IntVertexFeature<>( "track length", NO_ENTRY_VALUE );
+	public static final ObjVertexFeature< Spot, String > LABEL = new ObjVertexFeature<>( "label" );
 
-	static {
-		FeatureSerializers.put( LABEL, new StringVertexFeatureSerializer<>() );
+	static
+	{
 		FeatureSerializers.put( TRACKLENGTH, new IntVertexFeatureSerializer<>() );
+		FeatureSerializers.put( LABEL, new StringVertexFeatureSerializer<>() );
 	}
 
 	private FeaturesExample() {};
 
 	public static void main( final String[] args )
 	{
+
 		final Model model = new Model();
 		final Spot ref = model.getGraph().vertexRef();
 
@@ -37,7 +39,7 @@ public class FeaturesExample
 		{
 			for ( int d = 0; d < 3; ++d )
 				pos[ d ] = random.nextDouble();
-			final Spot spot = model.addSpot( 0, pos, cov, ref );
+			final Spot spot = model.getGraph().addVertex( ref ).init( 0, pos, cov );
 
 			spot.feature( LABEL ).set( "the vertex label " + i );
 			spot.feature( TRACKLENGTH ).set( 3 );
@@ -57,7 +59,8 @@ public class FeaturesExample
 				System.out.println( "saved in " + ( t1 - t0 ) + " ms" );
 
 				final Model loaded = new Model();
-				final Spot s = loaded.addSpot( 0, pos, cov, loaded.getGraph().vertexRef() );
+				final Spot tmp = loaded.getGraph().vertexRef();
+				final Spot s = loaded.getGraph().addVertex( tmp ).init( 0, pos, cov );
 				s.feature( LABEL );
 				s.feature( TRACKLENGTH );
 				t0 = System.currentTimeMillis();
@@ -68,11 +71,13 @@ public class FeaturesExample
 				final Spot next = model.getGraph().vertices().iterator().next();
 				System.out.println( next.feature( LABEL ).get() );
 				System.out.println( next.feature( TRACKLENGTH ).get() );
+				loaded.getGraph().releaseRef( ref );
 			}
 			catch ( final IOException e )
 			{
 				e.printStackTrace();
 			}
+
 		}
 	}
 

@@ -30,7 +30,7 @@ public class CreateLargeModelExample
 
 	public Model run( final int nStartingCells, final int nDivisions, final int nFramesPerDivision )
 	{
-		final Spot mother = model.getGraph().vertexRef();
+		final Spot tmp = model.getGraph().vertexRef();
 		for ( int ic = 0; ic < nStartingCells; ic++ )
 		{
 			final double angle = 2d * ic * Math.PI / N_STARTING_CELLS;
@@ -44,11 +44,11 @@ public class CreateLargeModelExample
 
 			final double[] pos = new double[] { x, y, z };
 			final double[][] cov = new double[][] { { RADIUS, 0, 0 }, { 0, RADIUS, 0 }, { 0, 0, RADIUS } };
-			model.addSpot( 0, pos, cov, mother );
 
+			final Spot mother = model.getGraph().addVertex( tmp ).init( 0, pos, cov );
 			addBranch( mother, vx, vy, 1, nDivisions, nFramesPerDivision );
 		}
-		model.getGraph().releaseRef( mother );
+		model.getGraph().releaseRef( tmp );
 		return model;
 	}
 
@@ -73,8 +73,9 @@ public class CreateLargeModelExample
 			pos[ 2 ] = previousSpot.getDoublePosition( 2 );
 			final int frame = previousSpot.getTimepoint() + 1;
 
-			model.addSpot( frame, pos, cov, spot );
-			model.addLink( previousSpot, spot, link );
+			model.getGraph().addVertex( spot ).init( frame, pos, cov );
+			model.getGraph().addEdge( previousSpot, spot, link ).init();
+
 			previousSpot.refTo( spot );
 		}
 
@@ -104,8 +105,8 @@ public class CreateLargeModelExample
 			pos[ 1 ] = y;
 			pos[ 2 ] = z;
 
-			model.addSpot( frame, pos, cov, daughter );
-			model.addLink( previousSpot, daughter, link );
+			model.getGraph().addVertex( daughter ).init( frame, pos, cov );
+			model.getGraph().addEdge( previousSpot, daughter, link ).init();
 
 			addBranch( daughter, vx, vy, iteration + 1, nDivisions, nFramesPerDivision );
 		}
