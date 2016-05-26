@@ -123,6 +123,13 @@ public class OverlayGraphWrapper< V extends Vertex< E >, E extends Edge< V > > i
 	}
 
 	@Override
+	public OverlayEdgeWrapper< V, E > addEdge( final OverlayVertexWrapper< V, E > source, final OverlayVertexWrapper< V, E > target, final OverlayEdgeWrapper< V, E > ref )
+	{
+		ref.we = overlayProperties.addEdge( source.wv, target.wv, ref.we );
+		return ref;
+	}
+
+	@Override
 	public void notifyGraphChanged()
 	{
 		overlayProperties.notifyGraphChanged();

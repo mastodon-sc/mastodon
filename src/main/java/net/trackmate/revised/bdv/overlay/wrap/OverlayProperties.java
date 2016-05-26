@@ -26,5 +26,8 @@ public interface OverlayProperties< V, E >
 
 	public V addVertex( final int timepoint, final double[] position, final double radius, V ref );
 
+	public E addEdge( V source, V target, E ref );
+
 	public void notifyGraphChanged();
+
 }

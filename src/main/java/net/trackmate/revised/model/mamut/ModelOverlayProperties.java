@@ -1,6 +1,5 @@
 package net.trackmate.revised.model.mamut;
 
-import net.trackmate.revised.bdv.overlay.OverlayGraph;
 import net.trackmate.revised.bdv.overlay.wrap.OverlayProperties;
 import net.trackmate.revised.ui.selection.Selection;
 
@@ -105,6 +104,12 @@ public class ModelOverlayProperties implements OverlayProperties< Spot, Link >
 	public Spot addVertex( final int timepoint, final double[] position, final double radius, final Spot ref )
 	{
 		return modelGraph.addVertex( ref ).init( timepoint, position, radius );
+	}
+
+	@Override
+	public Link addEdge( final Spot source, final Spot target, final Link ref )
+	{
+		return modelGraph.addEdge( source, target, ref ).init();
 	}
 
 	@Override
