@@ -693,21 +693,37 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 	}
 
 	/**
-	 * Transform viewer coordinate to global (world) coordinate
+	 * Transform viewer coordinates to global (world) coordinates.
 	 *
 	 * @param x
 	 *            viewer X coordinate
 	 * @param y
 	 *            viewer Y coordinate
 	 * @param gPos
-	 *            receives global coordinate corresponding to viewer coordinate
-	 *            <em>(x, y, 0)</em>.
+	 *            receives globals coordinate corresponding to viewer
+	 *            coordinates <em>(x, y, 0)</em>.
 	 */
 	public void getGlobalPosition( final int x, final int y, final double[] gPos )
 	{
 		synchronized ( renderTransform )
 		{
 			renderTransform.applyInverse( gPos, new double[] { x, y, 0 } );
+		}
+	}
+
+	/**
+	 * Transform global (world) coordinates to viewer coordinates.
+	 *
+	 * @param gPos
+	 *            global coordinates to transform.
+	 * @param vPos
+	 *            receives the viewer coordinates.
+	 */
+	public void getViewerPosition( final double[] gPos, final double[] vPos )
+	{
+		synchronized ( renderTransform )
+		{
+			renderTransform.apply( gPos, vPos );
 		}
 	}
 
