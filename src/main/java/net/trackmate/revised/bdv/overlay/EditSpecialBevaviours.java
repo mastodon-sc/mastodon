@@ -2,11 +2,14 @@ package net.trackmate.revised.bdv.overlay;
 
 import static net.trackmate.revised.bdv.overlay.EditBevaviours.POINT_SELECT_DISTANCE_TOLERANCE;
 
+import java.awt.Graphics;
+
 import org.scijava.ui.behaviour.DragBehaviour;
 import org.scijava.ui.behaviour.io.InputTriggerConfig;
 
 import bdv.viewer.TriggerBehaviourBindings;
 import bdv.viewer.ViewerPanel;
+import net.imglib2.ui.OverlayRenderer;
 import net.imglib2.util.LinAlgHelpers;
 import net.trackmate.revised.bdv.AbstractBehaviours;
 import net.trackmate.revised.bdv.overlay.util.JamaEigenvalueDecomposition;
@@ -16,6 +19,7 @@ import net.trackmate.undo.UndoPointMarker;
 public class EditSpecialBevaviours< V extends OverlayVertex< V, E >, E extends OverlayEdge< E, V > >
 		extends AbstractBehaviours
 {
+
 	public static final String ADD_SPOT_AND_LINK_IT = "add linked spot";
 
 	static final String[] ADD_SPOT_AND_LINK_IT_KEYS = new String[] { "A" };
@@ -57,6 +61,89 @@ public class EditSpecialBevaviours< V extends OverlayVertex< V, E >, E extends O
 		behaviour( new AddSpotAndLinkIt(), ADD_SPOT_AND_LINK_IT, ADD_SPOT_AND_LINK_IT_KEYS );
 	}
 
+	private class LinkTwoSpots implements DragBehaviour
+	{
+
+		private final V source;
+
+		private final V target;
+
+		private final E edge;
+
+		private final double[] start;
+
+		private final double[] pos;
+
+		private boolean moving;
+
+		private final EditSpecialBevaviours< V, E >.LinkTwoSpots.LinkTwoSpotsOverlay overlay;
+
+		public LinkTwoSpots()
+		{
+			source = overlayGraph.vertexRef();
+			target = overlayGraph.vertexRef();
+			edge = overlayGraph.edgeRef();
+			start = new double[ 3 ];
+			pos = new double[ 3 ];
+			moving = false;
+			overlay = new LinkTwoSpotsOverlay();
+		}
+
+		@Override
+		public void init( final int x, final int y )
+		{
+			if ( renderer.getVertexAt( x, y, POINT_SELECT_DISTANCE_TOLERANCE, source ) != null )
+			{
+				// Get vertex we clicked inside.
+				renderer.getGlobalPosition( x, y, start );
+				source.localize( pos );
+				LinAlgHelpers.subtract( pos, start, start );
+
+				// Move to next time point.
+				viewer.nextTimePoint();
+
+				moving = true;
+			}
+		}
+
+		@Override
+		public void drag( final int x, final int y )
+		{
+			if ( moving )
+			{
+				renderer.getGlobalPosition( x, y, pos );
+				LinAlgHelpers.add( pos, start, pos );
+				target.setPosition( pos );
+			}
+		}
+
+		@Override
+		public void end( final int x, final int y )
+		{
+			if ( moving )
+			{
+				undo.setUndoPoint();
+				moving = false;
+			}
+		}
+
+		private class LinkTwoSpotsOverlay implements OverlayRenderer
+		{
+
+			@Override
+			public void drawOverlays( final Graphics g )
+			{
+				// TODO Auto-generated method stub
+
+			}
+
+			@Override
+			public void setCanvasSize( final int width, final int height )
+			{}
+
+		}
+
+	}
 
 	private class AddSpotAndLinkIt implements DragBehaviour
 	{
