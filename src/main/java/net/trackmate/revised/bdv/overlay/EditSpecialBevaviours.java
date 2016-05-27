@@ -192,7 +192,7 @@ public class EditSpecialBevaviours< V extends OverlayVertex< V, E >, E extends O
 		}
 	}
 
-
+	// TODO What to do if the user changes the time-point while dragging?
 	private class ToggleLink implements DragBehaviour
 	{
 
@@ -288,6 +288,7 @@ public class EditSpecialBevaviours< V extends OverlayVertex< V, E >, E extends O
 		}
 	}
 
+	// TODO What to do if the user changes the time-point while dragging?
 	private class AddSpotAndLinkIt implements DragBehaviour
 	{
 		private final V source;
