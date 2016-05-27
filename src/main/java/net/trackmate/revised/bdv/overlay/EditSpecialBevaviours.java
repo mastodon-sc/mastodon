@@ -28,10 +28,12 @@ public class EditSpecialBevaviours< V extends OverlayVertex< V, E >, E extends O
 {
 
 	private static final String ADD_SPOT_AND_LINK_IT = "add linked spot";
-	private static final String TOGGLE_LINK = "toggle link";
+	private static final String TOGGLE_LINK_FORWARD = "toggle link";
+	private static final String TOGGLE_LINK_BACKWARD = "toggle link backward";
 
 	private static final String[] ADD_SPOT_AND_LINK_IT_KEYS = new String[] { "A" };
-	private static final String[] TOGGLE_LINK_KEYS = new String[] { "L" } ;
+	private static final String[] TOGGLE_LINK_FORWARD_KEYS = new String[] { "L" };
+	private static final String[] TOGGLE_LINK_BACKWARD_KEYS = new String[] { "shift L" };
 
 	public static final Color EDIT_GRAPH_OVERLAY_COLOR = Color.WHITE;
 	public static final BasicStroke EDIT_GRAPH_OVERLAY_STROKE = new BasicStroke( 2f );
@@ -83,7 +85,8 @@ public class EditSpecialBevaviours< V extends OverlayVertex< V, E >, E extends O
 
 		// Behaviours.
 		behaviour( new AddSpotAndLinkIt(), ADD_SPOT_AND_LINK_IT, ADD_SPOT_AND_LINK_IT_KEYS );
-		behaviour( new ToggleLink(), TOGGLE_LINK, TOGGLE_LINK_KEYS );
+		behaviour( new ToggleLink( true ), TOGGLE_LINK_FORWARD, TOGGLE_LINK_FORWARD_KEYS );
+		behaviour( new ToggleLink( false ), TOGGLE_LINK_BACKWARD, TOGGLE_LINK_BACKWARD_KEYS );
 	}
 
 	private class EditSpecialBehavioursOverlay implements OverlayRenderer, TransformListener< AffineTransform3D >
@@ -194,15 +197,20 @@ public class EditSpecialBevaviours< V extends OverlayVertex< V, E >, E extends O
 
 		private final V target;
 
+		private final V tmp;
+
 		private final E edgeRef;
 
 		private boolean editing;
 
+		private final boolean forward;
 
-		public ToggleLink()
+		public ToggleLink( final boolean forward )
 		{
+			this.forward = forward;
 			source = overlayGraph.vertexRef();
 			target = overlayGraph.vertexRef();
+			tmp = overlayGraph.vertexRef();
 			edgeRef = overlayGraph.edgeRef();
 			editing = false;
 		}
@@ -220,7 +228,10 @@ public class EditSpecialBevaviours< V extends OverlayVertex< V, E >, E extends O
 				overlay.vertex = source;
 
 				// Move to next time point.
-				viewer.nextTimePoint();
+				if ( forward )
+					viewer.nextTimePoint();
+				else
+					viewer.previousTimePoint();
 
 				editing = true;
 			}
@@ -246,6 +257,17 @@ public class EditSpecialBevaviours< V extends OverlayVertex< V, E >, E extends O
 				if ( renderer.getVertexAt( x, y, POINT_SELECT_DISTANCE_TOLERANCE, target ) != null )
 				{
 					target.localize( overlay.to );
+
+					/*
+					 * Careful with directed graphs. We always check and create
+					 * links forward in time.
+					 */
+					if ( !forward )
+					{
+						tmp.refTo( source );
+						source.refTo( target );
+						target.refTo( tmp );
+					}
 
 					final E edge = overlayGraph.getEdge( source, target, edgeRef );
 					if ( null == edge )
