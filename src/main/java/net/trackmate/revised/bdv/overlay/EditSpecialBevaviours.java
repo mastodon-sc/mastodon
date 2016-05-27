@@ -151,7 +151,7 @@ public class EditSpecialBevaviours< V extends OverlayVertex< V, E >, E extends O
 					if ( null == edge )
 						overlayGraph.addEdge( source, target, edgeRef );
 					else
-						System.out.println( "TODO Remove edge " + edge ); // TODO
+						overlayGraph.remove( edge );
 
 					overlayGraph.notifyGraphChanged();
 					undo.setUndoPoint();

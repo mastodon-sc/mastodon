@@ -28,6 +28,8 @@ public interface OverlayProperties< V, E >
 
 	public E addEdge( V source, V target, E ref );
 
+	public void remove( E we );
+
 	public void notifyGraphChanged();
 
 	public E getEdge( V source, V target, E edge );

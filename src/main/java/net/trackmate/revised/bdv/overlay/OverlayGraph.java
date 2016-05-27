@@ -14,6 +14,8 @@ public interface OverlayGraph< V extends OverlayVertex< V, E >, E extends Overla
 
 	public E addEdge( V source, V target, E ref );
 
+	public void remove( E edge );
+
 	public void notifyGraphChanged();
 
 }

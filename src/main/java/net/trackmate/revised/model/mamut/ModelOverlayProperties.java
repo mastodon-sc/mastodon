@@ -1,6 +1,5 @@
 package net.trackmate.revised.model.mamut;
 
-import net.trackmate.revised.bdv.overlay.OverlayGraph;
 import net.trackmate.revised.bdv.overlay.wrap.OverlayProperties;
 import net.trackmate.revised.ui.selection.Selection;
 
@@ -114,14 +113,21 @@ public class ModelOverlayProperties implements OverlayProperties< Spot, Link >
 	}
 
 	@Override
+	public Link getEdge( final Spot source, final Spot target, final Link edge )
+	{
+		return modelGraph.getEdge( source, target, edge );
+	}
+
+	@Override
+	public void remove( final Link edge )
+	{
+		modelGraph.remove( edge );
+	}
+
+	@Override
 	public void notifyGraphChanged()
 	{
 		modelGraph.notifyGraphChanged();
 	}
 
-	@Override
-	public Link getEdge( final Spot source, final Spot target, final Link edge )
-	{
-		return modelGraph.getEdge( source, target, edge );
-	}
 }
