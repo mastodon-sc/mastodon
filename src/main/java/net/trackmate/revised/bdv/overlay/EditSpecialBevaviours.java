@@ -47,6 +47,8 @@ public class EditSpecialBevaviours< V extends OverlayVertex< V, E >, E extends O
 
 	private final ViewerPanel viewer;
 
+	private final EditSpecialBevaviours< V, E >.EditSpecialBehavioursOverlay overlay;
+
 	public static < V extends OverlayVertex< V, E >, E extends OverlayEdge< E, V > > void installActionBindings(
 			final TriggerBehaviourBindings triggerBehaviourBindings,
 			final InputTriggerConfig config,
@@ -73,14 +75,117 @@ public class EditSpecialBevaviours< V extends OverlayVertex< V, E >, E extends O
 		this.renderer = renderer;
 		this.undo = undo;
 
-		behaviour( new AddSpotAndLinkIt(), ADD_SPOT_AND_LINK_IT, ADD_SPOT_AND_LINK_IT_KEYS );
+		// Create and register overlay.
+		overlay = new EditSpecialBehavioursOverlay();
+		overlay.transformChanged( viewer.getDisplay().getTransformEventHandler().getTransform() );
+		viewer.getDisplay().addOverlayRenderer( overlay );
+		viewer.getDisplay().addTransformListener( overlay );
 
-		final ToggleLink toggleLink = new ToggleLink();
-		viewer.getDisplay().addOverlayRenderer( toggleLink.overlay );
-		toggleLink.overlay.transformChanged( viewer.getDisplay().getTransformEventHandler().getTransform() );
-		viewer.getDisplay().addTransformListener( toggleLink.overlay );
-		behaviour( toggleLink, TOGGLE_LINK, TOGGLE_LINK_KEYS );
+		// Behaviours.
+		behaviour( new AddSpotAndLinkIt(), ADD_SPOT_AND_LINK_IT, ADD_SPOT_AND_LINK_IT_KEYS );
+		behaviour( new ToggleLink(), TOGGLE_LINK, TOGGLE_LINK_KEYS );
 	}
+
+	private class EditSpecialBehavioursOverlay implements OverlayRenderer, TransformListener< AffineTransform3D >
+	{
+
+		/** The global coordinates to paint the link from. */
+		private final double[] from;
+
+		/** The global coordinates to paint the link to. */
+		private final double[] to;
+
+		/** The viewer coordinates to paint the link from. */
+		private final double[] vFrom;
+
+		/** The viewer coordinates to paint the link to. */
+		private final double[] vTo;
+
+		/** The ghost vertex to paint. */
+		private V vertex;
+
+		private final AffineTransform3D renderTransform;
+
+		private final ScreenVertexMath screenVertexMath;
+
+		public boolean paintGhostVertex;
+
+		public boolean paintGhostLink;
+
+
+		public EditSpecialBehavioursOverlay()
+		{
+			from = new double[ 3 ];
+			vFrom = new double[ 3 ];
+			to = new double[ 3 ];
+			vTo = new double[ 3 ];
+
+			renderTransform = new AffineTransform3D();
+			screenVertexMath = new ScreenVertexMath();
+		}
+
+		@Override
+		public void drawOverlays( final Graphics g )
+		{
+			final Graphics2D graphics = ( Graphics2D ) g;
+			g.setColor( EDIT_GRAPH_OVERLAY_COLOR );
+
+			// The vertex
+			if ( paintGhostVertex )
+			{
+				final AffineTransform3D transform = getRenderTransformCopy();
+				graphics.setStroke( EDIT_GRAPH_OVERLAY_GHOST_STROKE );
+
+				// The spot ghost, painted using ellipse projection.
+				final AffineTransform torig = graphics.getTransform();
+
+				screenVertexMath.init( vertex, transform );
+
+				final double[] tr = screenVertexMath.getProjectCenter();
+				final double theta = screenVertexMath.getProjectTheta();
+				final Ellipse2D ellipse = screenVertexMath.getProjectEllipse();
+
+				graphics.translate( tr[ 0 ], tr[ 1 ] );
+				graphics.rotate( theta );
+				graphics.draw( ellipse );
+				graphics.setTransform( torig );
+			}
+
+			// The link.
+			if ( paintGhostLink )
+			{
+				graphics.setStroke( EDIT_GRAPH_OVERLAY_STROKE );
+				renderer.getViewerPosition( from, vFrom );
+				renderer.getViewerPosition( to, vTo );
+				g.drawLine( ( int ) vFrom[ 0 ], ( int ) vFrom[ 1 ],
+						( int ) vTo[ 0 ], ( int ) vTo[ 1 ] );
+			}
+		}
+
+		@Override
+		public void setCanvasSize( final int width, final int height )
+		{}
+
+		@Override
+		public void transformChanged( final AffineTransform3D transform )
+		{
+			synchronized ( renderTransform )
+			{
+				renderTransform.set( transform );
+			}
+		}
+
+		private AffineTransform3D getRenderTransformCopy()
+		{
+			final AffineTransform3D transform = new AffineTransform3D();
+			synchronized ( renderTransform )
+			{
+				transform.set( renderTransform );
+			}
+			return transform;
+		}
+	}
+
 
 	private class ToggleLink implements DragBehaviour
 	{
@@ -91,33 +196,28 @@ public class EditSpecialBevaviours< V extends OverlayVertex< V, E >, E extends O
 
 		private final E edgeRef;
 
-		private final double[] to;
-
-		private final double[] from;
-
 		private boolean editing;
 
-		private final ToggleLinkOverlay overlay;
 
 		public ToggleLink()
 		{
 			source = overlayGraph.vertexRef();
 			target = overlayGraph.vertexRef();
 			edgeRef = overlayGraph.edgeRef();
-			from = new double[ 3 ];
-			to = new double[ 3 ];
 			editing = false;
-			overlay = new ToggleLinkOverlay();
 		}
 
 		@Override
 		public void init( final int x, final int y )
 		{
+			// Get vertex we clicked inside.
 			if ( renderer.getVertexAt( x, y, POINT_SELECT_DISTANCE_TOLERANCE, source ) != null )
 			{
-				// Get vertex we clicked inside.
-				source.localize( from );
-				source.localize( to );
+				overlay.paintGhostLink = true;
+				overlay.paintGhostVertex = true;
+				source.localize( overlay.from );
+				source.localize( overlay.to );
+				overlay.vertex = source;
 
 				// Move to next time point.
 				viewer.nextTimePoint();
@@ -132,9 +232,9 @@ public class EditSpecialBevaviours< V extends OverlayVertex< V, E >, E extends O
 			if ( editing )
 			{
 				if ( renderer.getVertexAt( x, y, POINT_SELECT_DISTANCE_TOLERANCE, target ) != null )
-					target.localize( to );
+					target.localize( overlay.to );
 				else
-					renderer.getGlobalPosition( x, y, to );
+					renderer.getGlobalPosition( x, y, overlay.to );
 			}
 		}
 
@@ -145,7 +245,7 @@ public class EditSpecialBevaviours< V extends OverlayVertex< V, E >, E extends O
 			{
 				if ( renderer.getVertexAt( x, y, POINT_SELECT_DISTANCE_TOLERANCE, target ) != null )
 				{
-					target.localize( to );
+					target.localize( overlay.to );
 
 					final E edge = overlayGraph.getEdge( source, target, edgeRef );
 					if ( null == edge )
@@ -156,86 +256,11 @@ public class EditSpecialBevaviours< V extends OverlayVertex< V, E >, E extends O
 					overlayGraph.notifyGraphChanged();
 					undo.setUndoPoint();
 				}
+				overlay.paintGhostVertex = false;
+				overlay.paintGhostLink = false;
 				editing = false;
 			}
 		}
-
-		private class ToggleLinkOverlay implements OverlayRenderer, TransformListener< AffineTransform3D >
-		{
-			private final double[] vFrom;
-
-			private final double[] vTo;
-
-			private final AffineTransform3D renderTransform;
-
-			private final ScreenVertexMath screenVertexMath;
-
-			public ToggleLinkOverlay()
-			{
-				vFrom = new double[ 3 ];
-				vTo = new double[ 3 ];
-				renderTransform = new AffineTransform3D();
-				screenVertexMath = new ScreenVertexMath();
-			}
-
-			@Override
-			public void drawOverlays( final Graphics g )
-			{
-				if ( !editing )
-					return;
-
-				final AffineTransform3D transform = getRenderTransformCopy();
-
-				final Graphics2D graphics = ( Graphics2D ) g;
-				g.setColor( EDIT_GRAPH_OVERLAY_COLOR );
-				graphics.setStroke( EDIT_GRAPH_OVERLAY_GHOST_STROKE );
-
-				// The spot ghost, painted using ellipse projection.
-				final AffineTransform torig = graphics.getTransform();
-
-				screenVertexMath.init( source, transform );
-
-				final double[] tr = screenVertexMath.getProjectCenter();
-				final double theta = screenVertexMath.getProjectTheta();
-				final Ellipse2D ellipse = screenVertexMath.getProjectEllipse();
-
-				graphics.translate( tr[ 0 ], tr[ 1 ] );
-				graphics.rotate( theta );
-				graphics.draw( ellipse );
-				graphics.setTransform( torig );
-
-				// The link.
-				graphics.setStroke( EDIT_GRAPH_OVERLAY_STROKE );
-				renderer.getViewerPosition( from, vFrom );
-				renderer.getViewerPosition( to, vTo );
-				g.drawLine( ( int ) vFrom[ 0 ], ( int ) vFrom[ 1 ],
-						( int ) vTo[ 0 ], ( int ) vTo[ 1 ] );
-			}
-
-			@Override
-			public void setCanvasSize( final int width, final int height )
-			{}
-
-			@Override
-			public void transformChanged( final AffineTransform3D transform )
-			{
-				synchronized ( renderTransform )
-				{
-					renderTransform.set( transform );
-				}
-			}
-
-			private AffineTransform3D getRenderTransformCopy()
-			{
-				final AffineTransform3D transform = new AffineTransform3D();
-				synchronized ( renderTransform )
-				{
-					transform.set( renderTransform );
-				}
-				return transform;
-			}
-		}
-
 	}
 
 	private class AddSpotAndLinkIt implements DragBehaviour
