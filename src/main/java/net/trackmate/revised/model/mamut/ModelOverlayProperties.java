@@ -119,9 +119,15 @@ public class ModelOverlayProperties implements OverlayProperties< Spot, Link >
 	}
 
 	@Override
-	public void remove( final Link edge )
+	public void removeEdge( final Link edge )
 	{
 		modelGraph.remove( edge );
+	}
+
+	@Override
+	public void removeVertex( final Spot vertex )
+	{
+		modelGraph.remove( vertex );
 	}
 
 	@Override

@@ -133,7 +133,13 @@ public class OverlayGraphWrapper< V extends Vertex< E >, E extends Edge< V > > i
 	@Override
 	public void remove( final OverlayEdgeWrapper< V, E > edge )
 	{
-		overlayProperties.remove( edge.we );
+		overlayProperties.removeEdge( edge.we );
+	}
+
+	@Override
+	public void remove( final OverlayVertexWrapper< V, E > vertex )
+	{
+		overlayProperties.removeVertex( vertex.wv );
 	}
 
 	@Override
