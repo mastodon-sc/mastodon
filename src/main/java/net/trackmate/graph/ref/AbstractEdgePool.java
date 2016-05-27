@@ -125,12 +125,11 @@ public class AbstractEdgePool<
 		int nextSourceEdgeIndex = source.getFirstOutEdgeIndex();
 		if ( nextSourceEdgeIndex < 0 )
 			return null;
-		getObject( nextSourceEdgeIndex, edge );
 		do
 		{
+			getObject( nextSourceEdgeIndex, edge );
 			if ( edge.getTargetVertexInternalPoolIndex() == target.getInternalPoolIndex() )
 				return edge;
-			getObject( nextSourceEdgeIndex, edge );
 			nextSourceEdgeIndex = edge.getNextSourceEdgeIndex();
 		}
 		while ( nextSourceEdgeIndex >= 0 );
