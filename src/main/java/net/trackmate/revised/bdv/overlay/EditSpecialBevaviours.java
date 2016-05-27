@@ -303,6 +303,10 @@ public class EditSpecialBevaviours< V extends OverlayVertex< V, E >, E extends O
 				source.localize( pos );
 				LinAlgHelpers.subtract( pos, start, start );
 
+				// Set it as ghost vertex for the overlay.
+				overlay.vertex = source;
+				overlay.paintGhostVertex = true;
+
 				// Move to next time point.
 				viewer.nextTimePoint();
 
@@ -322,6 +326,11 @@ public class EditSpecialBevaviours< V extends OverlayVertex< V, E >, E extends O
 				// Link it to source vertex.
 				overlayGraph.addEdge( source, target, edge );
 
+				// Set it as ghost link for the overlay.
+				System.arraycopy( pos, 0, overlay.from, 0, pos.length );
+				System.arraycopy( pos, 0, overlay.to, 0, pos.length );
+				overlay.paintGhostLink = true;
+
 				overlayGraph.notifyGraphChanged();
 				moving = true;
 			}
@@ -335,6 +344,7 @@ public class EditSpecialBevaviours< V extends OverlayVertex< V, E >, E extends O
 				renderer.getGlobalPosition( x, y, pos );
 				LinAlgHelpers.add( pos, start, pos );
 				target.setPosition( pos );
+				System.arraycopy( pos, 0, overlay.to, 0, pos.length );
 			}
 		}
 
@@ -343,7 +353,10 @@ public class EditSpecialBevaviours< V extends OverlayVertex< V, E >, E extends O
 		{
 			if ( moving )
 			{
+				overlay.paintGhostVertex = false;
+				overlay.paintGhostLink = false;
 				undo.setUndoPoint();
+				overlayGraph.notifyGraphChanged();
 				moving = false;
 			}
 		}
