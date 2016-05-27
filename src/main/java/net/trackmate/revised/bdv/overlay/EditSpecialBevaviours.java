@@ -28,10 +28,12 @@ public class EditSpecialBevaviours< V extends OverlayVertex< V, E >, E extends O
 {
 
 	private static final String ADD_SPOT_AND_LINK_IT = "add linked spot";
+	private static final String ADD_SPOT_AND_LINK_IT_BACKWARD = "add linked spot backward";
 	private static final String TOGGLE_LINK_FORWARD = "toggle link";
 	private static final String TOGGLE_LINK_BACKWARD = "toggle link backward";
 
 	private static final String[] ADD_SPOT_AND_LINK_IT_KEYS = new String[] { "A" };
+	private static final String[] ADD_SPOT_AND_LINK_IT_BACKWARD_KEYS = new String[] { "C" };
 	private static final String[] TOGGLE_LINK_FORWARD_KEYS = new String[] { "L" };
 	private static final String[] TOGGLE_LINK_BACKWARD_KEYS = new String[] { "shift L" };
 
@@ -84,7 +86,8 @@ public class EditSpecialBevaviours< V extends OverlayVertex< V, E >, E extends O
 		viewer.getDisplay().addTransformListener( overlay );
 
 		// Behaviours.
-		behaviour( new AddSpotAndLinkIt(), ADD_SPOT_AND_LINK_IT, ADD_SPOT_AND_LINK_IT_KEYS );
+		behaviour( new AddSpotAndLinkIt( true ), ADD_SPOT_AND_LINK_IT, ADD_SPOT_AND_LINK_IT_KEYS );
+		behaviour( new AddSpotAndLinkIt( false ), ADD_SPOT_AND_LINK_IT_BACKWARD, ADD_SPOT_AND_LINK_IT_BACKWARD_KEYS );
 		behaviour( new ToggleLink( true ), TOGGLE_LINK_FORWARD, TOGGLE_LINK_FORWARD_KEYS );
 		behaviour( new ToggleLink( false ), TOGGLE_LINK_BACKWARD, TOGGLE_LINK_BACKWARD_KEYS );
 	}
@@ -303,8 +306,11 @@ public class EditSpecialBevaviours< V extends OverlayVertex< V, E >, E extends O
 
 		private final double[][] mat;
 
-		public AddSpotAndLinkIt()
+		private final boolean forward;
+
+		public AddSpotAndLinkIt( final boolean forward )
 		{
+			this.forward = forward;
 			source = overlayGraph.vertexRef();
 			target = overlayGraph.vertexRef();
 			edge = overlayGraph.edgeRef();
@@ -330,7 +336,10 @@ public class EditSpecialBevaviours< V extends OverlayVertex< V, E >, E extends O
 				overlay.paintGhostVertex = true;
 
 				// Move to next time point.
-				viewer.nextTimePoint();
+				if ( forward )
+					viewer.nextTimePoint();
+				else
+					viewer.previousTimePoint();
 
 				// Compute new radius as mean of ellipse semi-axes.
 				source.getCovariance( mat );
@@ -345,8 +354,11 @@ public class EditSpecialBevaviours< V extends OverlayVertex< V, E >, E extends O
 				final int timepoint = renderer.getCurrentTimepoint();
 				overlayGraph.addVertex( timepoint, pos, radius, target );
 
-				// Link it to source vertex.
-				overlayGraph.addEdge( source, target, edge );
+				// Link it to source vertex. Careful for oriented edge.
+				if ( forward )
+					overlayGraph.addEdge( source, target, edge );
+				else
+					overlayGraph.addEdge( target, source, edge );
 
 				// Set it as ghost link for the overlay.
 				System.arraycopy( pos, 0, overlay.from, 0, pos.length );
