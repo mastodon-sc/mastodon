@@ -124,39 +124,32 @@ public class ListenableGraphImp<
 		return changeListeners.remove( listener );
 	}
 
-	protected void notifyVertexAdded( final V vertex )
+	@Override
+	public void notifyVertexAdded( final V vertex )
 	{
 		if ( emitEvents )
 			for ( final GraphListener< V, E > listener : listeners )
 				listener.vertexAdded( vertex );
 	}
 
-	protected void notifyEdgeAdded( final E edge )
+	@Override
+	public void notifyEdgeAdded( final E edge )
 	{
 		if ( emitEvents )
 			for ( final GraphListener< V, E > listener : listeners )
 				listener.edgeAdded( edge );
 	}
 
-	/**
-	 * Pause sending events to {@link GraphListener}s. This is called before
-	 * large modifications to the graph are made, for example when the graph is
-	 * loaded from a file.
-	 */
-	protected void pauseListeners()
+	@Override
+	public void pauseListeners()
 	{
 		emitEvents = false;
 		vertexFeatures.pauseListeners();
 		edgeFeatures.pauseListeners();
 	}
 
-	/**
-	 * Resume sending events to {@link GraphListener}s, and send
-	 * {@link GraphListener#graphRebuilt()} to all registered listeners. This is
-	 * called after large modifications to the graph are made, for example when
-	 * the graph is loaded from a file.
-	 */
-	protected void resumeListeners()
+	@Override
+	public void resumeListeners()
 	{
 		emitEvents = true;
 		vertexFeatures.resumeListeners();
@@ -165,12 +158,8 @@ public class ListenableGraphImp<
 			listener.graphRebuilt();
 	}
 
-	/**
-	 * Send {@link GraphChangeListener#graphChanged() graphChanged} event to all
-	 * {@link GraphChangeListener} (if sending events is not currently
-	 * {@link #pauseListeners() paused}).
-	 */
-	protected void notifyGraphChanged()
+	@Override
+	public void notifyGraphChanged()
 	{
 		if ( emitEvents )
 			for ( final GraphChangeListener listener : changeListeners )

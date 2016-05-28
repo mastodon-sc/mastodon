@@ -203,7 +203,7 @@ public class AbstractModelGraph<
 	}
 
 	@Override
-	protected void notifyGraphChanged()
+	public void notifyGraphChanged()
 	{
 		super.notifyGraphChanged();
 	}
