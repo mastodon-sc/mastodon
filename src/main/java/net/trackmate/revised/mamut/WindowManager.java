@@ -76,6 +76,7 @@ import net.trackmate.revised.trackscheme.display.TrackSchemeFrame;
 import net.trackmate.revised.trackscheme.display.TrackSchemeOptions;
 import net.trackmate.revised.trackscheme.display.laf.TrackSchemeStyle;
 import net.trackmate.revised.trackscheme.display.ui.TrackSchemeStylePanel.TrackSchemeStyleDialog;
+import net.trackmate.revised.ui.HighlightBehaviours;
 import net.trackmate.revised.ui.grouping.GroupHandle;
 import net.trackmate.revised.ui.grouping.GroupManager;
 import net.trackmate.revised.ui.selection.FocusListener;
@@ -441,6 +442,7 @@ public class WindowManager
 		UndoActions.installActionBindings( viewerFrame.getKeybindings(), model, keyconf );
 		EditBehaviours.installActionBindings( viewerFrame.getTriggerbindings(), keyconf, overlayGraph, tracksOverlay, model );
 		EditSpecialBevaviours.installActionBindings( viewerFrame.getTriggerbindings(), keyconf, viewerFrame.getViewerPanel(), overlayGraph, tracksOverlay, model );
+		HighlightBehaviours.installActionBindings( viewerFrame.getTriggerbindings(), keyconf, model.getGraph(), highlightModel, model );
 
 		/*
 		 * TODO: this is still wrong. There should be one central entity syncing
@@ -566,6 +568,7 @@ public class WindowManager
 		frame.setVisible( true );
 
 		UndoActions.installActionBindings( frame.getKeybindings(), model, keyconf );
+		HighlightBehaviours.installActionBindings( frame.getTriggerbindings(), keyconf, model.getGraph(), highlightModel, model );
 
 		// TODO revise
 		// TrackSchemeStyleDialog triggered by "R"
