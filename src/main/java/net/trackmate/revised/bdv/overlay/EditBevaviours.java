@@ -15,7 +15,6 @@ public class EditBevaviours< V extends OverlayVertex< V, E >, E extends OverlayE
 {
 	public static final String MOVE_SPOT = "move spot";
 	public static final String ADD_SPOT = "add spot";
-	public static final String REMOVE_SPOT = "remove spot";
 	public static final String INCREASE_SPOT_RADIUS = "increase spot radius";
 	public static final String INCREASE_SPOT_RADIUS_ALOT = "increase spot radius a lot";
 	public static final String INCREASE_SPOT_RADIUS_ABIT = "increase spot radius a bit";
@@ -24,7 +23,6 @@ public class EditBevaviours< V extends OverlayVertex< V, E >, E extends OverlayE
 	public static final String DECREASE_SPOT_RADIUS_ABIT = "decrease spot radius a bit";
 
 	static final String[] ADD_SPOT_KEYS = new String[] { "A" };
-	static final String[] REMOVE_SPOT_KEYS = new String[] { "D" };
 	static final String[] MOVE_SPOT_KEYS = new String[] { "SPACE" };
 	static final String[] INCREASE_SPOT_RADIUS_KEYS = new String[] { "E" };
 	static final String[] INCREASE_SPOT_RADIUS_KEYS_ALOT = new String[] { "shift E" };
@@ -83,7 +81,6 @@ public class EditBevaviours< V extends OverlayVertex< V, E >, E extends OverlayE
 
 		behaviour( new MoveSpot(), MOVE_SPOT, MOVE_SPOT_KEYS );
 		behaviour( new AddSpot(), ADD_SPOT, ADD_SPOT_KEYS );
-		behaviour( new RemoveSpot(), REMOVE_SPOT, REMOVE_SPOT_KEYS );
 		behaviour( new ResizeSpot( NORMAL_RADIUS_CHANGE ), INCREASE_SPOT_RADIUS, INCREASE_SPOT_RADIUS_KEYS );
 		behaviour( new ResizeSpot( ALOT_RADIUS_CHANGE ), INCREASE_SPOT_RADIUS_ALOT, INCREASE_SPOT_RADIUS_KEYS_ALOT );
 		behaviour( new ResizeSpot( ABIT_RADIUS_CHANGE ), INCREASE_SPOT_RADIUS_ABIT, INCREASE_SPOT_RADIUS_KEYS_ABIT );
@@ -120,27 +117,6 @@ public class EditBevaviours< V extends OverlayVertex< V, E >, E extends OverlayE
 			overlayGraph.releaseRef( ref );
 			overlayGraph.notifyGraphChanged();
 			undo.setUndoPoint();
-		}
-	}
-
-	private class RemoveSpot implements ClickBehaviour
-	{
-		private final V vertex;
-
-		public RemoveSpot()
-		{
-			vertex = overlayGraph.vertexRef();
-		}
-
-		@Override
-		public void click( final int x, final int y )
-		{
-			if ( renderer.getVertexAt( x, y, POINT_SELECT_DISTANCE_TOLERANCE, vertex ) != null )
-			{
-				overlayGraph.remove( vertex );
-				overlayGraph.notifyGraphChanged();
-				undo.setUndoPoint();
-			}
 		}
 	}
 
