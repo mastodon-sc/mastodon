@@ -6,7 +6,7 @@ import net.trackmate.RefPool;
 import net.trackmate.collection.RefCollection;
 import net.trackmate.collection.RefList;
 import net.trackmate.collection.ref.RefArrayList;
-import net.trackmate.graph.CollectionUtils.ListCreator;
+import net.trackmate.collection.util.CollectionUtils.ListCreator;
 import net.trackmate.graph.Edge;
 import net.trackmate.graph.GraphIdBimap;
 import net.trackmate.graph.ReadOnlyGraph;

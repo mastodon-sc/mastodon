@@ -5,7 +5,7 @@ import java.util.BitSet;
 import java.util.Collection;
 
 import net.trackmate.collection.RefSet;
-import net.trackmate.graph.CollectionUtils;
+import net.trackmate.collection.util.CollectionUtils;
 import net.trackmate.graph.Edge;
 import net.trackmate.graph.GraphIdBimap;
 import net.trackmate.graph.GraphListener;
@@ -75,8 +75,8 @@ public class Selection< V extends Vertex< E >, E extends Edge< V > > implements 
 	{
 		this.graph = graph;
 		this.idmap = idmap;
-		selectedVertices = CollectionUtils.createVertexSet( graph );
-		selectedEdges = CollectionUtils.createEdgeSet( graph );
+		selectedVertices = CollectionUtils.createRefSet( graph.vertices() );
+		selectedEdges = CollectionUtils.createRefSet( graph.edges() );
 		vertexBits = new BitSet();
 		edgeBits = new BitSet();
 		this.listeners = new ArrayList< SelectionListener >();
@@ -253,7 +253,7 @@ public class Selection< V extends Vertex< E >, E extends Edge< V > > implements 
 	 */
 	public synchronized RefSet< E > getSelectedEdges()
 	{
-		final RefSet< E > set = CollectionUtils.createEdgeSet( graph );
+		final RefSet< E > set = CollectionUtils.createRefSet( graph.edges() );
 		set.addAll( selectedEdges );
 		return set;
 	}
@@ -265,7 +265,7 @@ public class Selection< V extends Vertex< E >, E extends Edge< V > > implements 
 	 */
 	public synchronized RefSet< V > getSelectedVertices()
 	{
-		final RefSet< V > set = CollectionUtils.createVertexSet( graph );
+		final RefSet< V > set = CollectionUtils.createRefSet( graph.vertices() );
 		set.addAll( selectedVertices );
 		return set;
 	}

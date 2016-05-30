@@ -12,6 +12,7 @@ import java.util.List;
 import org.junit.Test;
 
 import net.trackmate.collection.RefList;
+import net.trackmate.collection.util.CollectionUtils;
 import net.trackmate.graph.TestEdge;
 import net.trackmate.graph.TestVertex;
 
@@ -36,7 +37,7 @@ public class RefRefHashMapValuesTest extends RefRefHashMapAbstractTest
 	@Test( expected = UnsupportedOperationException.class )
 	public void testAddAll()
 	{
-		final List< TestEdge > list = graph.createEdgeList();
+		final List< TestEdge > list = CollectionUtils.createRefList( graph.edges() );
 		list.add( eAB );
 		list.add( eAC );
 		values.addAll( list );
@@ -62,7 +63,7 @@ public class RefRefHashMapValuesTest extends RefRefHashMapAbstractTest
 	@Test
 	public void testContainsAll()
 	{
-		final List< TestEdge > list = graph.createEdgeList();
+		final List< TestEdge > list = CollectionUtils.createRefList( graph.edges() );
 		list.add( eAB );
 		list.add( eAC );
 
@@ -140,7 +141,7 @@ public class RefRefHashMapValuesTest extends RefRefHashMapAbstractTest
 	public void testRemoveAll()
 	{
 		final int initSize = values.size();
-		final RefList< TestEdge > toRemove = graph.createEdgeList( 2 );
+		final RefList< TestEdge > toRemove = graph.edges().createRefList( 2 );
 
 		// Remove stuff not in the map.
 		final TestEdge edge1 = graph.addEdge( Ek, Dk );
@@ -162,7 +163,7 @@ public class RefRefHashMapValuesTest extends RefRefHashMapAbstractTest
 	@Test
 	public void testRetainAll()
 	{
-		final RefList< TestEdge > toRetain = graph.createEdgeList( 2 );
+		final RefList< TestEdge > toRetain = graph.edges().createRefList( 2 );
 		toRetain.add( eAB );
 		toRetain.add( eAC );
 

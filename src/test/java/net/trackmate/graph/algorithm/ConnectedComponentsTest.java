@@ -2,20 +2,21 @@ package net.trackmate.graph.algorithm;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-import gnu.trove.set.hash.TIntHashSet;
 
 import java.util.Iterator;
 import java.util.Random;
 import java.util.Set;
 
+import org.junit.Before;
+import org.junit.Test;
+
+import gnu.trove.set.hash.TIntHashSet;
 import net.trackmate.collection.RefList;
 import net.trackmate.collection.RefSet;
+import net.trackmate.collection.util.CollectionUtils;
 import net.trackmate.graph.TestEdge;
 import net.trackmate.graph.TestGraph;
 import net.trackmate.graph.TestVertex;
-
-import org.junit.Before;
-import org.junit.Test;
 
 public class ConnectedComponentsTest
 {
@@ -104,7 +105,7 @@ public class ConnectedComponentsTest
 		final Random ran = new Random( 1l );
 		final int nv = 50 + ran.nextInt( 100 );
 		final int nExtraEdges = 20 + ran.nextInt( 50 );
-		final RefList< TestVertex > vList = graph.createVertexList( nv );
+		final RefList< TestVertex > vList = CollectionUtils.createRefList( graph.vertices(), nv );
 		final int idRandom = 5;
 
 		final TestVertex previous = graph.addVertex().init( idRandom );

@@ -7,7 +7,7 @@ import java.util.Locale;
 import net.imglib2.type.numeric.integer.LongType;
 import net.imglib2.type.numeric.real.DoubleType;
 import net.trackmate.collection.RefSet;
-import net.trackmate.graph.CollectionUtils;
+import net.trackmate.collection.util.CollectionUtils;
 import net.trackmate.graph.ListenableGraph;
 import net.trackmate.graph.algorithm.traversal.DepthFirstSearch;
 import net.trackmate.graph.algorithm.traversal.SearchListener;
@@ -56,7 +56,7 @@ public class EdgeFeatureCalculatorExample
 
 		// Find roots.
 
-		final RefSet< Spot > roots = CollectionUtils.createVertexSet( graph );
+		final RefSet< Spot > roots = CollectionUtils.createRefSet( graph.vertices() );
 		for ( final Spot spot :graph.vertices() )
 		{
 			if (spot.incomingEdges().isEmpty())

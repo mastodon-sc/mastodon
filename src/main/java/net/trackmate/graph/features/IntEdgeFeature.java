@@ -1,7 +1,7 @@
 package net.trackmate.graph.features;
 
 import gnu.trove.map.TObjectIntMap;
-import net.trackmate.graph.CollectionUtils;
+import net.trackmate.collection.util.CollectionUtils;
 import net.trackmate.graph.Edge;
 import net.trackmate.graph.EdgeFeature;
 import net.trackmate.graph.FeatureRegistry.DuplicateKeyException;
@@ -60,7 +60,7 @@ public final class IntEdgeFeature< E extends Edge< ? > > extends EdgeFeature< TO
 	@Override
 	protected TObjectIntMap< E > createFeatureMap( final ReadOnlyGraph< ?, E > graph )
 	{
-		return CollectionUtils.createEdgeIntMap( graph, noEntryValue, graph.edges().size() );
+		return CollectionUtils.createRefIntMap( graph.edges(), noEntryValue, graph.edges().size() );
 	}
 
 	@Override

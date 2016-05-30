@@ -1,7 +1,7 @@
 package net.trackmate.graph.features;
 
 import gnu.trove.map.TObjectDoubleMap;
-import net.trackmate.graph.CollectionUtils;
+import net.trackmate.collection.util.CollectionUtils;
 import net.trackmate.graph.FeatureRegistry.DuplicateKeyException;
 import net.trackmate.graph.GraphFeatures;
 import net.trackmate.graph.ReadOnlyGraph;
@@ -59,7 +59,7 @@ public final class DoubleVertexFeature< V extends Vertex< ? > > extends VertexFe
 	@Override
 	protected TObjectDoubleMap< V > createFeatureMap( final ReadOnlyGraph< V, ? > graph )
 	{
-		return CollectionUtils.createVertexDoubleMap( graph, noEntryValue, graph.vertices().size() );
+		return CollectionUtils.createRefDoubleMap( graph.vertices(), noEntryValue, graph.vertices().size() );
 	}
 
 	@Override

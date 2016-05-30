@@ -9,7 +9,7 @@ import org.jgrapht.graph.DefaultWeightedEdge;
 import fiji.plugin.trackmate.TrackModel;
 import fiji.plugin.trackmate.io.TmXmlReader;
 import net.trackmate.collection.IntRefMap;
-import net.trackmate.graph.CollectionUtils;
+import net.trackmate.collection.util.CollectionUtils;
 import net.trackmate.graph.Graph;
 import net.trackmate.revised.model.mamut.Link;
 import net.trackmate.revised.model.mamut.Model;
@@ -40,7 +40,7 @@ public class TrackMateImporter
 
 		for ( final Integer trackID : trackIDs )
 		{
-			final IntRefMap< Spot > map = CollectionUtils.createIntVertexMap( model.getGraph(), -1 );
+			final IntRefMap< Spot > map = CollectionUtils.createIntRefMap( model.getGraph().vertices(), -1 );
 
 			final Set< fiji.plugin.trackmate.Spot > spots = tm.trackSpots( trackID );
 			for ( final fiji.plugin.trackmate.Spot spot : spots )

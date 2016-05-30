@@ -1,7 +1,7 @@
 package net.trackmate.graph.features;
 
 import gnu.trove.map.TObjectIntMap;
-import net.trackmate.graph.CollectionUtils;
+import net.trackmate.collection.util.CollectionUtils;
 import net.trackmate.graph.FeatureRegistry.DuplicateKeyException;
 import net.trackmate.graph.GraphFeatures;
 import net.trackmate.graph.ReadOnlyGraph;
@@ -59,7 +59,7 @@ public final class IntVertexFeature< V extends Vertex< ? > > extends VertexFeatu
 	@Override
 	protected TObjectIntMap< V > createFeatureMap( final ReadOnlyGraph< V, ? > graph )
 	{
-		return CollectionUtils.createVertexIntMap( graph, noEntryValue, graph.vertices().size() );
+		return CollectionUtils.createRefIntMap( graph.vertices(), noEntryValue, graph.vertices().size() );
 	}
 
 	@Override

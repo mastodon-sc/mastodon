@@ -10,7 +10,7 @@ import net.imglib2.RealLocalizable;
 import net.trackmate.Ref;
 import net.trackmate.RefPool;
 import net.trackmate.collection.RefList;
-import net.trackmate.graph.CollectionUtils;
+import net.trackmate.collection.util.CollectionUtils;
 import net.trackmate.graph.Edge;
 import net.trackmate.graph.GraphListener;
 import net.trackmate.graph.ListenableReadOnlyGraph;
@@ -96,7 +96,7 @@ public class SpatioTemporalIndexImp<
 			RefList< V > vs = timepointToVertices.get( v.getTimepoint() );
 			if ( vs == null )
 			{
-				vs = CollectionUtils.createVertexList( graph );
+				vs = CollectionUtils.createRefList( graph.vertices() );
 				timepointToVertices.put( v.getTimepoint(), vs );
 			}
 			vs.add( v );
@@ -233,7 +233,7 @@ public class SpatioTemporalIndexImp<
 		SpatialIndexImp< V > index = timepointToSpatialIndex.get( timepoint );
 		if ( index == null )
 		{
-			index = new SpatialIndexImp< V >( CollectionUtils.createVertexSet( graph ), vertexPool );
+			index = new SpatialIndexImp< V >( CollectionUtils.createRefSet( graph.vertices() ), vertexPool );
 			timepointToSpatialIndex.put( timepoint, index );
 		}
 		return index;

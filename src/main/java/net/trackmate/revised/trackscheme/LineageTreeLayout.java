@@ -124,7 +124,7 @@ public class LineageTreeLayout
 		timepoints = new TIntArrayList();
 		timepointToOrderedVertices = new TIntObjectArrayMap< >();
 		currentLayoutColumnX = new TDoubleArrayList();
-		currentLayoutColumnRoot = graph.createVertexList();
+		currentLayoutColumnRoot = graph.vertices().createRefList();
 	}
 
 	/**
@@ -513,7 +513,7 @@ public class LineageTreeLayout
 		final double x1 = Math.min( lx1, lx2 );
 		final double x2 = Math.max( lx1, lx2 );
 
-		final RefSet< TrackSchemeVertex > vertexSet = graph.createVertexSet();
+		final RefSet< TrackSchemeVertex > vertexSet = graph.vertices().createRefSet();
 		int start = timepoints.binarySearch( tStart );
 		if ( start < 0 )
 			start = -start - 1;

@@ -25,7 +25,7 @@ import mpicbg.spim.data.sequence.TimePointsPattern;
 import net.imglib2.realtransform.AffineTransform3D;
 import net.imglib2.util.LinAlgHelpers;
 import net.trackmate.collection.IntRefMap;
-import net.trackmate.graph.CollectionUtils;
+import net.trackmate.collection.util.CollectionUtils;
 import net.trackmate.graph.Graph;
 import net.trackmate.revised.model.AbstractModelImporter;
 import net.trackmate.revised.model.mamut.Link;
@@ -114,8 +114,8 @@ public class TgmmImporter extends AbstractModelImporter< Model >
 		final Spot tmp = graph.vertexRef();
 		final Link edge = graph.edgeRef();
 
-		IntRefMap< Spot > idToSpot = CollectionUtils.createIntVertexMap( graph, -1, 2000 );
-		IntRefMap< Spot > previousIdToSpot = CollectionUtils.createIntVertexMap( graph, -1, 2000 );
+		IntRefMap< Spot > idToSpot = CollectionUtils.createIntRefMap( graph.vertices(), -1, 2000 );
+		IntRefMap< Spot > previousIdToSpot = CollectionUtils.createIntRefMap( graph.vertices(), -1, 2000 );
 
 		for ( final TimePoint timepoint : timepointsToRead.getTimePointsOrdered() )
 		{

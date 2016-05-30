@@ -11,6 +11,7 @@ import java.util.Set;
 import org.junit.Test;
 
 import net.trackmate.collection.RefSet;
+import net.trackmate.collection.util.CollectionUtils;
 import net.trackmate.graph.TestVertex;
 
 public class RefRefHashMapTwoVertexPoolTest extends RefRefHashMapVertexPoolAbstractTest
@@ -86,7 +87,7 @@ public class RefRefHashMapTwoVertexPoolTest extends RefRefHashMapVertexPoolAbstr
 	{
 		final Set< TestVertex > keySet = map.keySet();
 		assertTrue( "Set returned should be a PoolObjectSet.", keySet instanceof RefSetImp );
-		final RefSet< TestVertex > set = graph.createVertexSet();
+		final RefSet< TestVertex > set = CollectionUtils.createRefSet( graph.vertices() );
 		set.add( Bk );
 		set.add( Ck );
 		set.add( Dk );

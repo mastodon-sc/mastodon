@@ -2,13 +2,13 @@ package net.trackmate.graph.features;
 
 import java.util.Map;
 
-import net.trackmate.graph.CollectionUtils;
+import net.trackmate.collection.util.CollectionUtils;
+import net.trackmate.graph.FeatureRegistry.DuplicateKeyException;
 import net.trackmate.graph.FeatureValue;
 import net.trackmate.graph.GraphFeatures;
 import net.trackmate.graph.ReadOnlyGraph;
 import net.trackmate.graph.Vertex;
 import net.trackmate.graph.VertexFeature;
-import net.trackmate.graph.FeatureRegistry.DuplicateKeyException;
 
 /**
  * A {@code Object}-valued {@link VertexFeature}.
@@ -58,7 +58,7 @@ public final class ObjVertexFeature< V extends Vertex< ? >, T > extends VertexFe
 	@Override
 	protected Map< V, T > createFeatureMap( final ReadOnlyGraph< V, ? > graph )
 	{
-		return CollectionUtils.createVertexObjectMap( graph );
+		return CollectionUtils.createRefObjectMap( graph.vertices() );
 	}
 
 	@Override

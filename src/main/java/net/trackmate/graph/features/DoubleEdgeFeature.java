@@ -1,7 +1,7 @@
 package net.trackmate.graph.features;
 
 import gnu.trove.map.TObjectDoubleMap;
-import net.trackmate.graph.CollectionUtils;
+import net.trackmate.collection.util.CollectionUtils;
 import net.trackmate.graph.Edge;
 import net.trackmate.graph.EdgeFeature;
 import net.trackmate.graph.FeatureRegistry.DuplicateKeyException;
@@ -59,7 +59,7 @@ public final class DoubleEdgeFeature< E extends Edge< ? > > extends EdgeFeature<
 	@Override
 	protected TObjectDoubleMap< E > createFeatureMap( final ReadOnlyGraph< ?, E > graph )
 	{
-		return CollectionUtils.createEdgeDoubleMap( graph, noEntryValue, graph.vertices().size() );
+		return CollectionUtils.createRefDoubleMap( graph.edges(), noEntryValue, graph.edges().size() );
 	}
 
 	@Override

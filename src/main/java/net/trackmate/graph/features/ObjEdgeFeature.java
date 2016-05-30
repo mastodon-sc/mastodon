@@ -2,7 +2,7 @@ package net.trackmate.graph.features;
 
 import java.util.Map;
 
-import net.trackmate.graph.CollectionUtils;
+import net.trackmate.collection.util.CollectionUtils;
 import net.trackmate.graph.Edge;
 import net.trackmate.graph.EdgeFeature;
 import net.trackmate.graph.FeatureRegistry.DuplicateKeyException;
@@ -58,7 +58,7 @@ public final class ObjEdgeFeature< E extends Edge< ? >, T > extends EdgeFeature<
 	@Override
 	protected Map< E, T > createFeatureMap( final ReadOnlyGraph< ?, E > graph )
 	{
-		return CollectionUtils.createEdgeObjectMap( graph );
+		return CollectionUtils.createRefObjectMap( graph.edges() );
 	}
 
 	@Override

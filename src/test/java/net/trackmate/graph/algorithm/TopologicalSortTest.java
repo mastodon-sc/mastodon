@@ -11,7 +11,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import net.trackmate.collection.RefList;
-import net.trackmate.graph.CollectionUtils;
+import net.trackmate.collection.util.CollectionUtils;
 import net.trackmate.graph.TestEdge;
 import net.trackmate.graph.TestGraph;
 import net.trackmate.graph.TestVertex;
@@ -40,7 +40,7 @@ public class TopologicalSortTest
 		// From http://en.wikipedia.org/wiki/Topological_sorting
 		// X encodes "level"
 		graphRef = new TestGraph();
-		verticesRef = CollectionUtils.createVertexList( graphRef );
+		verticesRef = CollectionUtils.createRefList( graphRef.vertices() );
 
 		v7ref = graphRef.addVertex().init( 0 );
 		final TestVertex v11 = graphRef.addVertex().init( 1 );
@@ -148,7 +148,7 @@ public class TopologicalSortTest
 		graphObj.addEdge( v3, v10Obj );
 		graphObj.addEdge( v11, v10Obj );
 
-		verticesObj = CollectionUtils.createVertexList( graphObj );
+		verticesObj = CollectionUtils.createRefList( graphObj.vertices() );
 		verticesObj.add( v9 );
 		verticesObj.add( v11 );
 		verticesObj.add( v2 );

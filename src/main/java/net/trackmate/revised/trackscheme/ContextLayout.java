@@ -1,7 +1,6 @@
 package net.trackmate.revised.trackscheme;
 
 import net.trackmate.collection.RefList;
-import net.trackmate.graph.CollectionUtils;
 import net.trackmate.revised.context.Context;
 
 /**
@@ -68,7 +67,7 @@ public class ContextLayout
 
 		final int ghostmark = layout.nextLayoutTimestamp();
 		final int mark = layout.nextLayoutTimestamp();
-		final RefList< TrackSchemeVertex > roots = CollectionUtils.createVertexList( graph );
+		final RefList< TrackSchemeVertex > roots = graph.vertices().createRefList();
 
 		context.readLock().lock();
 		try

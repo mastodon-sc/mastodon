@@ -23,7 +23,7 @@ import net.imglib2.ui.TransformListener;
 import net.imglib2.util.LinAlgHelpers;
 import net.trackmate.collection.RefCollection;
 import net.trackmate.collection.RefList;
-import net.trackmate.graph.CollectionUtils;
+import net.trackmate.collection.util.CollectionUtils;
 import net.trackmate.kdtree.ClipConvexPolytope;
 import net.trackmate.revised.Util;
 import net.trackmate.spatial.SpatialIndex;
