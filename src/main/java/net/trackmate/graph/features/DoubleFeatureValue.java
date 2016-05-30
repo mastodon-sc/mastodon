@@ -10,7 +10,7 @@ import net.trackmate.graph.FeatureValue;
  *
  * @author Tobias Pietzsch &lt;tobias.pietzsch@gmail.com&gt;
  */
-final class DoubleFeatureValue< O > implements FeatureValue< Double >
+public final class DoubleFeatureValue< O > implements FeatureValue< Double >
 {
 	private final TObjectDoubleMap< O > featureMap;
 

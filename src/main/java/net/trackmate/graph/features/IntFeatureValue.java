@@ -10,7 +10,7 @@ import net.trackmate.graph.FeatureValue;
  *
  * @author Tobias Pietzsch &lt;tobias.pietzsch@gmail.com&gt;
  */
-final class IntFeatureValue< O > implements FeatureValue< Integer >
+public final class IntFeatureValue< O > implements FeatureValue< Integer >
 {
 	private final TObjectIntMap< O > featureMap;
 

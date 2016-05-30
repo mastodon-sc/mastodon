@@ -12,7 +12,7 @@ import net.trackmate.graph.FeatureValue;
  *
  * @author Tobias Pietzsch &lt;tobias.pietzsch@gmail.com&gt;
  */
-final class ObjFeatureValue< O, T > implements FeatureValue< T >
+public final class ObjFeatureValue< O, T > implements FeatureValue< T >
 {
 	private final Map< O, T > featureMap;
 
