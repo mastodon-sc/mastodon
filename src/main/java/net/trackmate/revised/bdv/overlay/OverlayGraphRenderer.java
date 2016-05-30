@@ -226,8 +226,8 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 
 	/**
 	 * Return signed distance of timepoint t to t0, truncated at cutoff and
-	 * scaled by 1/cutoff. t=t0 has d=0. t<=t0-cutoff has d=-1. t=>t0+cutoff has
-	 * d=1.
+	 * scaled by 1/cutoff. t=t0 has d=0. t&lt;=t0-cutoff has d=-1.
+	 * t=&gt;t0+cutoff has d=1.
 	 */
 	private static double timeDistance( final double t, final double t0, final double cutoff )
 	{

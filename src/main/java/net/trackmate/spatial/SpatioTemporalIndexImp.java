@@ -42,7 +42,7 @@ public class SpatioTemporalIndexImp<
 {
 	/**
 	 * Int value used to declare that the requested timepoint is not in a map.
-	 * Timepoints are always >= 0, so -1 works...
+	 * Timepoints are always &gt;= 0, so -1 works...
 	 */
 	private final static int NO_ENTRY_KEY = -1;
 

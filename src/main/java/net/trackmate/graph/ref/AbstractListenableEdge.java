@@ -19,7 +19,7 @@ import net.trackmate.pool.MappedElement;
  * initialization has happened on the newly created edge. It is therefore not
  * emitted in {@link Graph#addEdge(Vertex, Vertex)} but instead in {@link #initDone()}.
  * <p>
- * Idiomatically, adding an edge to a graph should look like this:<br/>
+ * Idiomatically, adding an edge to a graph should look like this:<br>
  * {@code MyEdge e = graph.addEdge(...).init(...);}
  * <p>
  * Like a constructor, {@code init(...)} should be called before any other

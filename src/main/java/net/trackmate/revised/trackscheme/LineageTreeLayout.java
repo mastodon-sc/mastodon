@@ -59,8 +59,8 @@ public class LineageTreeLayout
 
 	/**
 	 * The timestamp used in the current layout. This is incremented at the
-	 * beginning of {@link #layout(List, int)}. It is also incremented when
-	 * {@link #nextLayoutTimestamp()} is called.
+	 * beginning of {@link #layout(Collection, int)}. It is also incremented
+	 * when {@link #nextLayoutTimestamp()} is called.
 	 */
 	private int timestamp;
 

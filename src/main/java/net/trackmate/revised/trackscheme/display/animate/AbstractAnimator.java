@@ -20,7 +20,10 @@ public class AbstractAnimator
 	/** Boolean flag stating whether the animation started. */
 	private boolean started;
 
-	/** Completion factor, ranging from 0 to 1. If >= 1, the animation is done. */
+	/**
+	 * Completion factor, ranging from 0 to 1. If &gt;= 1, the animation is
+	 * done.
+	 */
 	private double complete;
 
 	/**

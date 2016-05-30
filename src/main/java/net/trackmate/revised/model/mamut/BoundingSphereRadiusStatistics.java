@@ -1,10 +1,9 @@
 package net.trackmate.revised.model.mamut;
 
-import gnu.trove.map.hash.TIntObjectHashMap;
-
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
+import gnu.trove.map.hash.TIntObjectHashMap;
 import net.trackmate.graph.GraphListener;
 import net.trackmate.graph.ListenableReadOnlyGraph;
 import net.trackmate.spatial.SpatialIndex;
@@ -24,7 +23,7 @@ public class BoundingSphereRadiusStatistics implements GraphListener< Spot, Link
 {
 	/**
 	 * Int value used to declare that the requested timepoint is not in a map.
-	 * Timepoints are always >= 0, so -1 works...
+	 * Timepoints are always &gt;= 0, so -1 works...
 	 */
 	private final static int NO_ENTRY_KEY = -1;
 

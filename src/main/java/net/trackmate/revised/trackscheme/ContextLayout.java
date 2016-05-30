@@ -100,7 +100,7 @@ public class ContextLayout
 	 * <ul>
 	 * <li>(A) a vertex is reached that is already marked with ghostmark or
 	 * mark, or
-	 * <li>(B) vertex is reached that has timepoint <= minTimepoint.
+	 * <li>(B) vertex is reached that has timepoint &lt;= minTimepoint.
 	 * </ul>
 	 *
 	 * Mark all recursively visited vertices as ghosts. In case (B), add the

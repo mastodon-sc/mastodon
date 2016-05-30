@@ -296,7 +296,7 @@ public class KDTree<
 	 * @param j
 	 *            index of last element of the sublist
 	 * @param k
-	 *            index for k-th smallest value. i <= k <= j.
+	 *            index for k-th smallest value. i &lt;= k &lt;= j.
 	 * @param compare_d
 	 *            dimension by which to compare.
 	 * @param pivot

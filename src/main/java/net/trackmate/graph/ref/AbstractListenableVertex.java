@@ -19,9 +19,9 @@ import net.trackmate.pool.MappedElement;
  * initialization has happened on the newly created vertex. It is therefore not
  * emitted in {@link Graph#addVertex()} but instead in {@link #initDone()}.
  * <p>
- * Idiomatically, adding a vertex to a graph should look like this:<br/>
- * {@code MyVertex v = graph.addVertex().init(...);}<br/>
- * respectively:<br/>
+ * Idiomatically, adding a vertex to a graph should look like this:<br>
+ * {@code MyVertex v = graph.addVertex().init(...);}<br>
+ * respectively:<br>
  * {@code MyVertex v = graph.addVertex(ref).init(...);}
  * <p>
  * Like a constructor, {@code init(...)} should be called before any other
