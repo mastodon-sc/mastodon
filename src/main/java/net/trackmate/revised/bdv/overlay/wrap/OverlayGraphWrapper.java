@@ -1,12 +1,11 @@
 package net.trackmate.revised.bdv.overlay.wrap;
 
+import java.util.Iterator;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 import net.trackmate.RefPool;
 import net.trackmate.collection.RefCollection;
-import net.trackmate.collection.RefList;
-import net.trackmate.collection.ref.RefArrayList;
-import net.trackmate.collection.util.CollectionUtils.ListCreator;
+import net.trackmate.collection.util.AbstractRefPoolCollectionCreator;
 import net.trackmate.graph.Edge;
 import net.trackmate.graph.GraphIdBimap;
 import net.trackmate.graph.ReadOnlyGraph;
@@ -24,8 +23,7 @@ import net.trackmate.spatial.SpatioTemporalIndex;
  * @author Tobias Pietzsch &lt;tobias.pietzsch@gmail.com&gt;
  */
 public class OverlayGraphWrapper< V extends Vertex< E >, E extends Edge< V > > implements
-		OverlayGraph< OverlayVertexWrapper< V, E >, OverlayEdgeWrapper< V, E > >,
-		ListCreator< OverlayVertexWrapper< V, E >, OverlayEdgeWrapper< V, E > >
+		OverlayGraph< OverlayVertexWrapper< V, E >, OverlayEdgeWrapper< V, E > >
 {
 	final ReadOnlyGraph< V, E > wrappedGraph;
 
@@ -96,15 +94,13 @@ public class OverlayGraphWrapper< V extends Vertex< E >, E extends Edge< V > > i
 	@Override
 	public RefCollection< OverlayVertexWrapper< V, E > > vertices()
 	{
-		// TODO Auto-generated method stub
-		return null;
+		return vertices;
 	}
 
 	@Override
 	public RefCollection< OverlayEdgeWrapper< V, E > > edges()
 	{
-		// TODO Auto-generated method stub
-		return null;
+		return edges;
 	}
 
 	@Override
@@ -168,6 +164,21 @@ public class OverlayGraphWrapper< V extends Vertex< E >, E extends Edge< V > > i
 		}
 	};
 
+	private final AbstractRefPoolCollectionCreator< OverlayVertexWrapper< V, E >, RefPool< OverlayVertexWrapper< V, E > > > vertices = new AbstractRefPoolCollectionCreator< OverlayVertexWrapper< V, E >, RefPool< OverlayVertexWrapper< V, E > > >( vertexPool)
+	{
+		@Override
+		public int size()
+		{
+			return wrappedGraph.vertices().size();
+		}
+
+		@Override
+		public Iterator< OverlayVertexWrapper< V, E > > iterator()
+		{
+			return new OverlayVertexIteratorWrapper<>( OverlayGraphWrapper.this, OverlayGraphWrapper.this.vertexRef(), wrappedGraph.vertices().iterator() );
+		}
+	};
+
 	private final RefPool< OverlayEdgeWrapper< V, E > > edgePool = new RefPool< OverlayEdgeWrapper< V, E > >()
 	{
 		@Override
@@ -203,27 +214,19 @@ public class OverlayGraphWrapper< V extends Vertex< E >, E extends Edge< V > > i
 		}
 	};
 
-	@Override
-	public RefList< OverlayVertexWrapper< V, E > > createVertexList()
+	private final AbstractRefPoolCollectionCreator< OverlayEdgeWrapper< V, E >, RefPool< OverlayEdgeWrapper< V, E > > > edges = new AbstractRefPoolCollectionCreator< OverlayEdgeWrapper< V, E >, RefPool< OverlayEdgeWrapper< V, E > > >( edgePool)
 	{
-		return new RefArrayList< OverlayVertexWrapper< V, E > >( vertexPool );
-	}
+		@Override
+		public int size()
+		{
+			return wrappedGraph.edges().size();
+		}
 
-	@Override
-	public RefList< OverlayVertexWrapper< V, E > > createVertexList( final int initialCapacity )
-	{
-		return new RefArrayList< OverlayVertexWrapper< V, E > >( vertexPool, initialCapacity );
-	}
+		@Override
+		public Iterator< OverlayEdgeWrapper< V, E > > iterator()
+		{
+			return new OverlayEdgeIteratorWrapper<>( OverlayGraphWrapper.this, OverlayGraphWrapper.this.edgeRef(), wrappedGraph.edges().iterator() );
+		}
+	};
 
-	@Override
-	public RefList< OverlayEdgeWrapper< V, E > > createEdgeList()
-	{
-		return new RefArrayList< OverlayEdgeWrapper< V, E > >( edgePool );
-	}
-
-	@Override
-	public RefList< OverlayEdgeWrapper< V, E > > createEdgeList( final int initialCapacity )
-	{
-		return new RefArrayList< OverlayEdgeWrapper< V, E > >( edgePool, initialCapacity );
-	}
 }

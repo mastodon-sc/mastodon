@@ -811,7 +811,7 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 	 */
 	RefCollection< V > getVisibleVertices( final AffineTransform3D transform, final int timepoint )
 	{
-		final RefList< V > contextList = CollectionUtils.createVertexList( graph );
+		final RefList< V > contextList = CollectionUtils.createRefList( graph.vertices() );
 		final double maxDepth = isFocusLimitViewRelative
 				? focusLimit
 				: focusLimit * Affine3DHelpers.extractScale( transform, 0 );

@@ -1,6 +1,6 @@
 package net.trackmate.graph.ref;
 
-import net.trackmate.collection.util.AbstractRefCollection;
+import net.trackmate.collection.util.PoolObjectCollectionCreator;
 import net.trackmate.graph.Graph;
 import net.trackmate.pool.MappedElement;
 
@@ -16,17 +16,17 @@ public class GraphImp<
 
 	protected final EP edgePool;
 
-	private final AbstractRefCollection< V > vertices;
+	private final PoolObjectCollectionCreator< V > vertices;
 
-	private final AbstractRefCollection< E > edges;
+	private final PoolObjectCollectionCreator< E > edges;
 
 	public GraphImp( final VP vertexPool, final EP edgePool )
 	{
 		this.vertexPool = vertexPool;
 		this.edgePool = edgePool;
 		vertexPool.linkEdgePool( edgePool );
-		vertices = new AbstractRefCollection<>( vertexPool );
-		edges = new AbstractRefCollection<>( edgePool );
+		vertices = new PoolObjectCollectionCreator<>( vertexPool );
+		edges = new PoolObjectCollectionCreator<>( edgePool );
 	}
 
 	@SuppressWarnings( "unchecked" )
@@ -35,8 +35,8 @@ public class GraphImp<
 		this.vertexPool = ( VP ) edgePool.vertexPool;
 		this.edgePool = edgePool;
 		vertexPool.linkEdgePool( edgePool );
-		vertices = new AbstractRefCollection<>( vertexPool );
-		edges = new AbstractRefCollection<>( edgePool );
+		vertices = new PoolObjectCollectionCreator<>( vertexPool );
+		edges = new PoolObjectCollectionCreator<>( edgePool );
 	}
 
 	@Override
@@ -88,13 +88,13 @@ public class GraphImp<
 	}
 
 	@Override
-	public AbstractRefCollection< V > vertices()
+	public PoolObjectCollectionCreator< V > vertices()
 	{
 		return vertices;
 	}
 
 	@Override
-	public AbstractRefCollection< E > edges()
+	public PoolObjectCollectionCreator< E > edges()
 	{
 		return edges;
 	}

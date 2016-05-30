@@ -1,9 +1,8 @@
 package net.trackmate.collection.util;
 
 import java.util.Collection;
-import java.util.Iterator;
 
-import net.trackmate.collection.RefCollection;
+import net.trackmate.RefPool;
 import net.trackmate.collection.ref.IntRefHashMap;
 import net.trackmate.collection.ref.RefArrayDeque;
 import net.trackmate.collection.ref.RefArrayList;
@@ -14,31 +13,21 @@ import net.trackmate.collection.ref.RefObjectHashMap;
 import net.trackmate.collection.ref.RefRefHashMap;
 import net.trackmate.collection.ref.RefSetImp;
 import net.trackmate.collection.util.CollectionUtils.CollectionCreator;
-import net.trackmate.pool.Pool;
-import net.trackmate.pool.PoolObject;
 
-// TODO rename to reflect that:
-// a) it is a RefCollection wrapper around a Pool
-// b) it is a RefCollectionCreator for the Pool
-public class AbstractRefCollection< O extends PoolObject< O, ? > > implements RefCollection< O >, CollectionCreator< O >
+/**
+ * TODO
+ *
+ * @param <O>
+ *
+ * @author Tobias Pietzsch &lt;tobias.pietzsch@gmail.com&gt;
+ */
+public abstract class AbstractRefPoolCollectionCreator< O, P extends RefPool< O > > implements CollectionCreator< O >
 {
-	private final Pool< O, ? > pool;
+	protected final P pool;
 
-	public AbstractRefCollection( final Pool< O, ? > pool )
+	public AbstractRefPoolCollectionCreator( final P pool )
 	{
 		this.pool = pool;
-	}
-
-	@Override
-	public int size()
-	{
-		return pool.size();
-	}
-
-	@Override
-	public Iterator< O > iterator()
-	{
-		return pool.iterator();
 	}
 
 	@Override
@@ -56,7 +45,7 @@ public class AbstractRefCollection< O extends PoolObject< O, ? > > implements Re
 	@Override
 	public boolean isEmpty()
 	{
-		return pool.size() == 0;
+		return size() == 0;
 	}
 
 	/*
