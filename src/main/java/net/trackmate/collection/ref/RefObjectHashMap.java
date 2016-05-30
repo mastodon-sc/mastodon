@@ -32,6 +32,13 @@ public class RefObjectHashMap< K, O > implements Map< K, O >, RefObjectMap< K, O
 		this.keyType = pool.getRefClass();
 	}
 
+	public RefObjectHashMap( final RefPool< K > pool, final int initialCapacity )
+	{
+		indexmap = new TIntObjectHashMap< O >( initialCapacity );
+		this.pool = pool;
+		this.keyType = pool.getRefClass();
+	}
+
 	@Override
 	public void clear()
 	{
