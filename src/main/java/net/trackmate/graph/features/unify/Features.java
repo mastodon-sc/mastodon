@@ -1,15 +1,30 @@
 package net.trackmate.graph.features.unify;
 
+import java.sql.Ref;
 import java.util.ArrayList;
 import java.util.Map;
 
+import net.trackmate.RefPool;
 import net.trackmate.collection.RefCollection;
 import net.trackmate.collection.UniqueHashcodeArrayMap;
 import net.trackmate.graph.io.RawFeatureIO;
 
+/**
+ * Manage {@link Feature}s associated with a specific object type {@code O},
+ * (and, if {@code O} is a {@link Ref} type, associated with a specific
+ * {@link RefPool}).
+ * <p>
+ * For example, a graph would have one {@link Features} for its vertex type and
+ * one for its edge type.
+ *
+ * @param <O>
+ *            type of object to which feature should be attached.
+ *
+ * @author Tobias Pietzsch &lt;tobias.pietzsch@gmail.com&gt;
+ */
 public class Features< O >
 {
-	private final RefCollection< O > collection;
+	private final RefCollection< O > pool;
 
 	/**
 	 * Maps {@link Feature} to feature-map objects, that are usually
@@ -25,9 +40,9 @@ public class Features< O >
 
 	private final ArrayList< FeatureChangeListener< O > > featureChangeListeners;
 
-	public Features( final RefCollection< O > collection )
+	public Features( final RefCollection< O > pool )
 	{
-		this.collection = collection;
+		this.pool = pool;
 		featureMaps = new UniqueHashcodeArrayMap<>();
 		featureCleanups = new ArrayList<>();
 		createFeatureMapListeners = new ArrayList<>();
@@ -53,7 +68,7 @@ public class Features< O >
 		M fmap = ( M ) featureMaps.get( feature );
 		if ( fmap == null )
 		{
-			fmap = feature.createFeatureMap( collection );
+			fmap = feature.createFeatureMap( pool );
 			featureMaps.put( feature, fmap );
 			featureCleanups.add( feature.createFeatureCleanup( fmap ) );
 			for ( final CreateFeatureMapListener< O > l : createFeatureMapListeners )

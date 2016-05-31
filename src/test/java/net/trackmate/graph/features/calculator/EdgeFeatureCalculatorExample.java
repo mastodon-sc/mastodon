@@ -11,7 +11,7 @@ import net.trackmate.collection.util.CollectionUtils;
 import net.trackmate.graph.ListenableGraph;
 import net.trackmate.graph.algorithm.traversal.DepthFirstSearch;
 import net.trackmate.graph.algorithm.traversal.SearchListener;
-import net.trackmate.graph.features.DoubleEdgeFeature;
+import net.trackmate.graph.features.DoubleFeature;
 import net.trackmate.revised.model.mamut.Link;
 import net.trackmate.revised.model.mamut.Model;
 import net.trackmate.revised.model.mamut.Spot;
@@ -19,7 +19,7 @@ import net.trackmate.revised.model.mamut.Spot;
 public class EdgeFeatureCalculatorExample
 {
 
-	private static final DoubleEdgeFeature< Link > DISP = new DoubleEdgeFeature< >( "displacement", Double.NaN );
+	private static final DoubleFeature< Link > DISP = new DoubleFeature< >( "displacement", Double.NaN );
 
 	public static void compute( final Model model )
 	{

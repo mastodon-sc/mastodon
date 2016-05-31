@@ -7,6 +7,14 @@ import gnu.trove.map.TIntObjectMap;
 import gnu.trove.map.hash.TIntObjectHashMap;
 import net.trackmate.graph.features.unify.UndoFeatureMap;
 
+/**
+ * TODO
+ *
+ * @param <O>
+ * @param <T>
+ *
+ * @author Tobias Pietzsch &lt;tobias.pietzsch@gmail.com&gt;
+ */
 final class ObjUndoFeatureMap< O, T > implements UndoFeatureMap< O >
 {
 	private static final int NO_ENTRY_KEY = -1;

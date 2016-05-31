@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Random;
 
+import net.trackmate.graph.features.IntFeature;
 import net.trackmate.graph.features.ObjFeature;
 import net.trackmate.graph.io.FeatureSerializers;
 import net.trackmate.graph.io.IntVertexFeatureSerializer;

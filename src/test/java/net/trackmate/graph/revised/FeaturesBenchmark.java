@@ -3,7 +3,7 @@ package net.trackmate.graph.revised;
 import java.util.Random;
 
 import net.imglib2.util.BenchmarkHelper;
-import net.trackmate.graph.features.IntVertexFeature;
+import net.trackmate.graph.features.IntFeature;
 import net.trackmate.revised.model.mamut.Model;
 import net.trackmate.revised.model.mamut.Spot;
 
@@ -25,7 +25,7 @@ public class FeaturesBenchmark
 
 		final int[] storage = new int[ size ];
 
-		final IntVertexFeature< Spot > POSITIVE_NUMBER = new IntVertexFeature< >( "POS_NUMBER", -1 );
+		final IntFeature< Spot > POSITIVE_NUMBER = new IntFeature< >( "POS_NUMBER", -1 );
 
 		System.out.println();
 		final long s1 = System.currentTimeMillis();
@@ -47,7 +47,7 @@ public class FeaturesBenchmark
 
 	}
 
-	private static void readFeatureValue( final Model model, final int[] storage, final IntVertexFeature< Spot > feature )
+	private static void readFeatureValue( final Model model, final int[] storage, final IntFeature< Spot > feature )
 	{
 		int index = 0;
 		for ( final Spot spot : model.getGraph().vertices() )
@@ -56,7 +56,7 @@ public class FeaturesBenchmark
 		}
 	}
 
-	private static void putFeatureValue( final Model model, final IntVertexFeature< Spot > feature )
+	private static void putFeatureValue( final Model model, final IntFeature< Spot > feature )
 	{
 		for ( final Spot spot : model.getGraph().vertices() )
 		{
