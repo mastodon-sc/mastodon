@@ -4,9 +4,9 @@ import java.util.Map;
 
 import net.trackmate.collection.UniqueHashcodeArrayMap;
 import net.trackmate.graph.FeatureValue;
-import net.trackmate.graph.GraphFeatures;
-import net.trackmate.graph.VertexFeature;
 import net.trackmate.graph.VertexWithFeatures;
+import net.trackmate.graph.features.unify.Feature;
+import net.trackmate.graph.features.unify.Features;
 import net.trackmate.pool.MappedElement;
 
 /**
@@ -28,13 +28,13 @@ public class AbstractVertexWithFeatures< V extends AbstractVertexWithFeatures< V
 		featureValues = new UniqueHashcodeArrayMap<>();
 	}
 
-	GraphFeatures< V, ? > features;
+	Features< V > features;
 
-	private final Map< VertexFeature< ?, V, ? >, FeatureValue< ? > > featureValues;
+	private final Map< Feature< ?, V, ? >, FeatureValue< ? > > featureValues;
 
 	@SuppressWarnings( "unchecked" )
 	@Override
-	public < F extends FeatureValue< ? >, M > F feature( final VertexFeature< M, V, F > feature )
+	public < F extends FeatureValue< ? >, M > F feature( final Feature< M, V, F > feature )
 	{
 		F fv = ( F ) featureValues.get( feature );
 		if ( fv == null )

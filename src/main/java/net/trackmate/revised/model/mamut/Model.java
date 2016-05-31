@@ -7,7 +7,7 @@ import java.util.List;
 
 import net.imglib2.RealLocalizable;
 import net.trackmate.graph.ReadOnlyGraph;
-import net.trackmate.graph.VertexFeature;
+import net.trackmate.graph.features.unify.Feature;
 import net.trackmate.revised.model.AbstractModel;
 import net.trackmate.revised.model.ModelUndoRecorder;
 import net.trackmate.spatial.SpatioTemporalIndex;
@@ -39,7 +39,7 @@ public class Model extends AbstractModel< ModelGraph, Spot, Link > implements Un
 	 */
 	private final SpatioTemporalIndex< Spot > index;
 
-	private final List< VertexFeature< ?, Spot, ? > > featuresToSerialize;
+	private final List< Feature< ?, Spot, ? > > featuresToSerialize;
 
 	private final ModelUndoRecorder< Spot, Link > undoRecorder;
 
@@ -51,7 +51,7 @@ public class Model extends AbstractModel< ModelGraph, Spot, Link > implements Un
 		featuresToSerialize = new ArrayList<>();
 		featuresToSerialize.add( Features.LABEL );
 
-		undoRecorder = new ModelUndoRecorder<>( modelGraph, modelGraph.features(), modelGraph.idmap(), ModelSerializer.getInstance() );
+		undoRecorder = new ModelUndoRecorder<>( modelGraph, modelGraph.vertexFeatures(), modelGraph.edgeFeatures(), modelGraph.idmap(), ModelSerializer.getInstance() );
 	}
 
 	/**

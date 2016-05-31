@@ -4,52 +4,24 @@ import java.util.ArrayList;
 import java.util.Map;
 
 import net.trackmate.collection.UniqueHashcodeArrayMap;
-import net.trackmate.graph.Edge;
-import net.trackmate.graph.EdgeFeature;
-import net.trackmate.graph.GraphFeatures;
-import net.trackmate.graph.GraphFeatures.CreateFeatureMapListener;
+import net.trackmate.graph.features.unify.Feature;
+import net.trackmate.graph.features.unify.Features;
 import net.trackmate.graph.features.unify.UndoFeatureMap;
-import net.trackmate.graph.Vertex;
-import net.trackmate.graph.VertexFeature;
 
-class UndoFeatureStore< V extends Vertex< E >, E extends Edge< V > >
+class UndoFeatureStore< O >
 {
 	private int idgen;
 
-	private final ArrayList< UndoFeatureMap< V > > vertexUndoMapList;
+	private final ArrayList< UndoFeatureMap< O > > undoMapList;
 
-	private final ArrayList< UndoFeatureMap< E > > edgeUndoMapList;
+	private final Map< Feature< ?, O, ? >, UndoFeatureMap< O > > undoMaps;
 
-	private final Map< VertexFeature< ?, V, ? >, UndoFeatureMap< V > > vertexUndoMaps;
-
-	private final Map< EdgeFeature< ?, E, ? >, UndoFeatureMap< E > > edgeUndoMaps;
-
-
-	public UndoFeatureStore( final GraphFeatures< V, E > features )
+	public UndoFeatureStore( final Features< O > features )
 	{
 		idgen = 0;
-		vertexUndoMapList = new ArrayList<>();
-		vertexUndoMaps = new UniqueHashcodeArrayMap<>();
-		edgeUndoMapList = new ArrayList< >();
-		edgeUndoMaps = new UniqueHashcodeArrayMap< >();
-		features.addCreateFeatureMapListener( new CreateFeatureMapListener< V, E >()
-		{
-			@Override
-			public < M > void createFeatureMap( final VertexFeature< M, V, ? > feature, final M featureMap )
-			{
-				final UndoFeatureMap< V > undoMap = feature.createUndoFeatureMap( featureMap );
-				vertexUndoMapList.add( undoMap );
-				vertexUndoMaps.put( feature, undoMap );
-			}
-
-			@Override
-			public < M > void createFeatureMap( final EdgeFeature< M, E, ? > feature, final M featureMap )
-			{
-				final UndoFeatureMap< E > undoMap = feature.createUndoFeatureMap( featureMap );
-				edgeUndoMapList.add( undoMap );
-				edgeUndoMaps.put( feature, undoMap );
-			}
-		} );
+		undoMapList = new ArrayList<>();
+		undoMaps = new UniqueHashcodeArrayMap<>();
+		features.addCreateFeatureMapListener( this::createFeatureMap );
 	}
 
 	public int createFeatureUndoId()
@@ -58,101 +30,72 @@ class UndoFeatureStore< V extends Vertex< E >, E extends Edge< V > >
 	}
 
 	/**
-	 * Store all features of the specified {@code vertex} with key {@code undoId}.
+	 * Store all features of the specified {@code object} with key {@code undoId}.
 	 *
 	 * @param undoId
-	 * @param vertex
+	 * @param object
 	 */
-	public void storeAll( final int undoId, final V vertex )
+	public void storeAll( final int undoId, final O object )
 	{
-		vertexUndoMapList.forEach( m -> m.store( undoId, vertex ) );
+		undoMapList.forEach( m -> m.store( undoId, object ) );
 	}
 
 	/**
-	 * Store the specified feature of the specified {@code vertex} with key
+	 * Store the specified feature of the specified {@code object} with key
 	 * {@code undoId}.
 	 *
 	 * @param undoId
-	 * @param vertex
+	 * @param object
 	 */
-	public void store( final int undoId, final VertexFeature< ?, V, ? > feature, final V vertex )
+	public void store( final int undoId, final Feature< ?, O, ? > feature, final O object )
 	{
-		vertexUndoMaps.get( feature ).store( undoId, vertex );
-	}
-
-	/**
-	 * Store the specified feature of the specified {@code edge} with key
-	 * {@code undoId}.
-	 *
-	 * @param undoId
-	 * @param edge
-	 */
-	public void store( final int undoId, final EdgeFeature< ?, E, ? > feature, final E edge )
-	{
-		edgeUndoMaps.get( feature ).store( undoId, edge );
-	}
-
-	/**
-	 * Store all features of the specified {@code edge} with key {@code undoId}.
-	 *
-	 * @param undoId
-	 * @param edge
-	 */
-	public void storeAll( final int undoId, final E edge )
-	{
-		edgeUndoMapList.forEach( m -> m.store( undoId, edge ) );
+		undoMaps.get( feature ).store( undoId, object );
 	}
 
 	/**
 	 * Retrieve all features stored with key {@code undoId} and set them in
-	 * {@code vertex}. If there is no value for a feature associated with
-	 * {@code undoId}, clear the feature in {@code vertex}.
+	 * {@code object}. If there is no value for a feature associated with
+	 * {@code undoId}, clear the feature in {@code object}.
 	 *
 	 * @param undoId
-	 * @param vertex
+	 * @param object
 	 */
-	public void retrieveAll( final int undoId, final V vertex )
+	public void retrieveAll( final int undoId, final O object )
 	{
-		vertexUndoMapList.forEach( m -> m.retrieve( undoId, vertex ) );
+		undoMapList.forEach( m -> m.retrieve( undoId, object ) );
 	}
 
 	/**
 	 * Retrieve the specified feature stored with key {@code undoId} and set
-	 * them in {@code vertex}. If there is no value for the feature associated
-	 * with {@code undoId}, clear the feature in {@code vertex}.
+	 * them in {@code object}. If there is no value for the feature associated
+	 * with {@code undoId}, clear the feature in {@code object}.
 	 *
 	 * @param undoId
-	 * @param vertex
+	 * @param object
 	 */
-	public void retrieve( final int undoId, final VertexFeature< ?, V, ? > feature, final V vertex )
+	public void retrieve( final int undoId, final Feature< ?, O, ? > feature, final O object )
 	{
-		vertexUndoMaps.get( feature ).retrieve( undoId, vertex );
+		undoMaps.get( feature ).retrieve( undoId, object );
 	}
 
 	/**
-	 * Retrieve all features stored with key {@code undoId} and set them in
-	 * {@code edge}. If there is no value for a feature associated with
-	 * {@code undoId}, clear the feature in {@code edge}.
-	 *
-	 * @param undoId
-	 * @param edge
-	 */
-	public void retrieveAll( final int undoId, final E edge )
-	{
-		edgeUndoMapList.forEach( m -> m.retrieve( undoId, edge ) );
-	}
-
-	/**
-	 * Store the specified feature of the specified {@code vertex} with key
+	 * Store the specified feature of the specified {@code object} with key
 	 * {@code undoId} and replace it with the feature value currently stored
 	 * with key {@code undoId}. If there is no value currently associated with
-	 * {@code undoId}, clear the feature in {@code vertex}.
+	 * {@code undoId}, clear the feature in {@code object}.
 	 *
 	 * @param undoId
-	 * @param vertex
+	 * @param object
 	 */
-	public void swap( final int undoId, final VertexFeature< ?, V, ? > feature, final V vertex )
+	public void swap( final int undoId, final Feature< ?, O, ? > feature, final O object )
 	{
-		vertexUndoMaps.get( feature ).swap( undoId, vertex );
+		undoMaps.get( feature ).swap( undoId, object );
+	}
+
+	private < M > void createFeatureMap( final Feature< M, O, ? > feature, final M featureMap )
+	{
+		final UndoFeatureMap< O > undoMap = feature.createUndoFeatureMap( featureMap );
+		undoMapList.add( undoMap );
+		undoMaps.put( feature, undoMap );
 	}
 }

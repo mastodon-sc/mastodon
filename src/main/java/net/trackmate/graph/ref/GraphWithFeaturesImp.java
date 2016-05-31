@@ -1,6 +1,6 @@
 package net.trackmate.graph.ref;
 
-import net.trackmate.graph.GraphFeatures;
+import net.trackmate.graph.features.unify.Features;
 import net.trackmate.pool.MappedElement;
 
 public class GraphWithFeaturesImp<
@@ -11,28 +11,33 @@ public class GraphWithFeaturesImp<
 		T extends MappedElement >
 	extends GraphImp< VP, EP, V, E, T >
 {
-	protected final GraphFeatures< V, E > features;
+	protected final Features< V > vertexFeatures;
+
+	protected final Features< E > edgeFeatures;
 
 	public GraphWithFeaturesImp( final VP vertexPool, final EP edgePool )
 	{
 		super( vertexPool, edgePool );
-		features = new GraphFeatures<>( this );
-		vertexPool.linkFeatures( features );
-		edgePool.linkFeatures( features );
+		vertexFeatures = new Features<>( vertices() );
+		edgeFeatures = new Features<>( edges() );
+		vertexPool.linkFeatures( vertexFeatures );
+		edgePool.linkFeatures( edgeFeatures );
 	}
 
 	public GraphWithFeaturesImp( final EP edgePool )
 	{
 		super( edgePool );
-		features = new GraphFeatures<>( this );
-		vertexPool.linkFeatures( features );
-		edgePool.linkFeatures( features );
+		vertexFeatures = new Features<>( vertices() );
+		edgeFeatures = new Features<>( edges() );
+		vertexPool.linkFeatures( vertexFeatures );
+		edgePool.linkFeatures( edgeFeatures );
 	}
 
 	@Override
 	protected void clear()
 	{
 		super.clear();
-		features.clear();
+		vertexFeatures.clear();
+		edgeFeatures.clear();
 	}
 }

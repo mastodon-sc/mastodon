@@ -4,8 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Random;
 
-import net.trackmate.graph.features.IntVertexFeature;
-import net.trackmate.graph.features.ObjVertexFeature;
+import net.trackmate.graph.features.ObjFeature;
 import net.trackmate.graph.io.FeatureSerializers;
 import net.trackmate.graph.io.IntVertexFeatureSerializer;
 import net.trackmate.graph.io.StringVertexFeatureSerializer;
@@ -14,8 +13,8 @@ public class FeaturesExample
 {
 	static final int NO_ENTRY_VALUE = -1;
 
-	public static final IntVertexFeature< Spot > TRACKLENGTH = new IntVertexFeature<>( "track length", NO_ENTRY_VALUE );
-	public static final ObjVertexFeature< Spot, String > LABEL = new ObjVertexFeature<>( "label" );
+	public static final IntFeature< Spot > TRACKLENGTH = new IntFeature<>( "track length", NO_ENTRY_VALUE );
+	public static final ObjFeature< Spot, String > LABEL = new ObjFeature<>( "label" );
 
 	static
 	{

@@ -8,7 +8,7 @@ import java.util.Map;
 import java.util.Set;
 
 import gnu.trove.map.TIntObjectArrayMap;
-import net.trackmate.graph.VertexFeature;
+import net.trackmate.graph.features.unify.Feature;
 import net.trackmate.revised.model.AbstractModel;
 
 /**
@@ -23,7 +23,7 @@ import net.trackmate.revised.model.AbstractModel;
  * array does not get large).
  * </ul>
  *
- * This is used for the look up of feature-maps for {@link VertexFeature} in
+ * This is used for the look up of feature-maps for {@link Feature} in
  * {@link AbstractModel}.
  *
  * @param <K>

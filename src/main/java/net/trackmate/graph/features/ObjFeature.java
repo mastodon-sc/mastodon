@@ -4,14 +4,15 @@ import java.util.Map;
 
 import net.trackmate.collection.RefCollection;
 import net.trackmate.collection.util.CollectionUtils;
-import net.trackmate.graph.FeatureRegistry.DuplicateKeyException;
 import net.trackmate.graph.FeatureValue;
-import net.trackmate.graph.VertexFeature;
 import net.trackmate.graph.features.unify.Feature;
 import net.trackmate.graph.features.unify.FeatureCleanup;
+import net.trackmate.graph.features.unify.FeatureRegistry.DuplicateKeyException;
 import net.trackmate.graph.features.unify.Features;
 
 /**
+ * TODO revise javadoc
+ *
  * A {@code Object}-valued {@link VertexFeature}.
  * <p>
  * To use features, create exactly one {@link VertexFeature} object for each

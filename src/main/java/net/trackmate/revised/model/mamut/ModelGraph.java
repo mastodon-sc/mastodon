@@ -1,6 +1,5 @@
 package net.trackmate.revised.model.mamut;
 
-import net.trackmate.graph.GraphFeatures;
 import net.trackmate.graph.GraphIdBimap;
 import net.trackmate.graph.ref.AbstractListenableEdgePool;
 import net.trackmate.pool.ByteMappedElement;
@@ -23,9 +22,14 @@ public class ModelGraph extends AbstractModelGraph< ModelGraph, SpotPool, LinkPo
 		super( new LinkPool( initialCapacity, new SpotPool( initialCapacity ) ) );
 	}
 
-	GraphFeatures< Spot, Link > features()
+	net.trackmate.graph.features.unify.Features< Spot > vertexFeatures()
 	{
-		return features;
+		return vertexFeatures;
+	}
+
+	net.trackmate.graph.features.unify.Features< Link > edgeFeatures()
+	{
+		return edgeFeatures;
 	}
 
 	GraphIdBimap< Spot, Link > idmap()

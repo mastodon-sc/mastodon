@@ -1,12 +1,11 @@
 package net.trackmate.undo;
 
 import net.trackmate.graph.Edge;
-import net.trackmate.graph.EdgeFeature;
-import net.trackmate.graph.FeatureRegistry;
-import net.trackmate.graph.GraphFeatures;
 import net.trackmate.graph.ListenableGraph;
-import net.trackmate.graph.VertexFeature;
 import net.trackmate.graph.VertexWithFeatures;
+import net.trackmate.graph.features.unify.Feature;
+import net.trackmate.graph.features.unify.FeatureRegistry;
+import net.trackmate.graph.features.unify.Features;
 
 // TODO: move to model.undo ?
 public class DefaultUndoableEditList<
@@ -22,12 +21,15 @@ public class DefaultUndoableEditList<
 
 	protected final UndoIdBimap< E > edgeUndoIdBimap;
 
-	protected final UndoFeatureStore< V, E > featureStore;
+	protected final UndoFeatureStore< V > vertexFeatureStore;
+
+	protected final UndoFeatureStore< E > edgeFeatureStore;
 
 	public DefaultUndoableEditList(
 			final int initialCapacity,
 			final ListenableGraph< V, E > graph,
-			final GraphFeatures< V, E > graphFeatures,
+			final Features< V > vertexFeatures,
+			final Features< E > edgeFeatures,
 			final UndoSerializer< V, E > serializer,
 			final UndoIdBimap< V > vertexUndoIdBimap,
 			final UndoIdBimap< E > edgeUndoIdBimap )
@@ -37,7 +39,8 @@ public class DefaultUndoableEditList<
 		this.serializer = serializer;
 		this.vertexUndoIdBimap = vertexUndoIdBimap;
 		this.edgeUndoIdBimap = edgeUndoIdBimap;
-		featureStore = new UndoFeatureStore<>( graphFeatures );
+		vertexFeatureStore = new UndoFeatureStore<>( vertexFeatures );
+		edgeFeatureStore = new UndoFeatureStore<>( edgeFeatures );
 	}
 
 	public void recordAddVertex( final V vertex )
@@ -68,17 +71,18 @@ public class DefaultUndoableEditList<
 		releaseRef( ref );
 	}
 
-	public void recordSetFeature( final VertexFeature< ?, V, ? > feature, final V vertex )
+	public void recordSetVertexFeature( final Feature< ?, V, ? > feature, final V vertex )
 	{
 		final UndoableEditRef< V, E > ref = createRef();
 		create( ref ).getEdit( setFeature ).init( feature, vertex );
 		releaseRef( ref );
 	}
 
-	public void recordSetFeature( final EdgeFeature< ?, E, ? > feature, final E edge )
+	public void recordSetEdgeFeature( final Feature< ?, E, ? > feature, final E edge )
 	{
 		final UndoableEditRef< V, E > ref = createRef();
-		create( ref ).getEdit( setFeature ).init( feature, edge );
+//		create( ref ).getEdit( setFeature ).init( feature, edge );
+		// TODO
 		releaseRef( ref );
 	}
 
@@ -188,7 +192,7 @@ public class DefaultUndoableEditList<
 		public void initAdd( final V vertex, final UndoableEditRef< V, E > ref )
 		{
 			final int vi = vertexUndoIdBimap.getId( vertex );
-			final int fi = featureStore.createFeatureUndoId();
+			final int fi = vertexFeatureStore.createFeatureUndoId();
 
 			final long dataIndex = dataStack.getWriteDataIndex();
 			dataStack.out.writeInt( vi );
@@ -201,9 +205,9 @@ public class DefaultUndoableEditList<
 		public void initRemove( final V vertex, final UndoableEditRef< V, E > ref )
 		{
 			final int vi = vertexUndoIdBimap.getId( vertex );
-			final int fi = featureStore.createFeatureUndoId();
+			final int fi = vertexFeatureStore.createFeatureUndoId();
 			serializer.getBytes( vertex, data );
-			featureStore.storeAll( fi, vertex );
+			vertexFeatureStore.storeAll( fi, vertex );
 
 			final long dataIndex = dataStack.getWriteDataIndex();
 			dataStack.out.writeInt( vi );
@@ -222,7 +226,7 @@ public class DefaultUndoableEditList<
 			final V vref = graph.vertexRef();
 			final V vertex = vertexUndoIdBimap.getObject( vi, vref );
 			serializer.getBytes( vertex, data );
-			featureStore.storeAll( fi, vertex );
+			vertexFeatureStore.storeAll( fi, vertex );
 
 			dataStack.setWriteDataIndex( dataIndex );
 //			dataStack.out.writeInt( vi );
@@ -248,7 +252,7 @@ public class DefaultUndoableEditList<
 			vertexUndoIdBimap.put( vi, vertex );
 			serializer.setBytes( vertex, data );
 			serializer.notifyVertexAdded( vertex );
-			featureStore.retrieveAll( fi, vertex );
+			vertexFeatureStore.retrieveAll( fi, vertex );
 			graph.releaseRef( ref );
 
 			return dataStack.getReadDataIndex();
@@ -351,7 +355,7 @@ public class DefaultUndoableEditList<
 		public void initAdd( final E edge, final UndoableEditRef< V, E > ref )
 		{
 			final int ei = edgeUndoIdBimap.getId( edge );
-			final int fi = featureStore.createFeatureUndoId();
+			final int fi = edgeFeatureStore.createFeatureUndoId();
 
 			final long dataIndex = dataStack.getWriteDataIndex();
 			dataStack.out.writeInt( ei );
@@ -369,14 +373,14 @@ public class DefaultUndoableEditList<
 		{
 			final V vref = graph.vertexRef();
 			final int ei = edgeUndoIdBimap.getId( edge );
-			final int fi = featureStore.createFeatureUndoId();
+			final int fi = edgeFeatureStore.createFeatureUndoId();
 			final int si = vertexUndoIdBimap.getId( edge.getSource( vref ) );
 			final int sOutIndex = edge.getSourceOutIndex();
 			final int ti = vertexUndoIdBimap.getId( edge.getTarget( vref ) );
 			final int tInIndex = edge.getTargetInIndex();
 			graph.releaseRef( vref );
 			serializer.getBytes( edge, data );
-			featureStore.storeAll( fi, edge );
+			edgeFeatureStore.storeAll( fi, edge );
 
 			final long dataIndex = dataStack.getWriteDataIndex();
 			dataStack.out.writeInt( ei );
@@ -406,7 +410,7 @@ public class DefaultUndoableEditList<
 			final int tInIndex = edge.getTargetInIndex();
 			graph.releaseRef( vref );
 			serializer.getBytes( edge, data );
-			featureStore.storeAll( fi, edge );
+			edgeFeatureStore.storeAll( fi, edge );
 
 			dataStack.setWriteDataIndex( dataIndex );
 //			dataStack.out.writeInt( ei );
@@ -443,7 +447,7 @@ public class DefaultUndoableEditList<
 			final E edge = graph.insertEdge( source, sOutIndex, target, tInIndex, eref );
 			edgeUndoIdBimap.put( ei, edge );
 			serializer.setBytes( edge, data );
-			featureStore.retrieveAll( fi, edge );
+			edgeFeatureStore.retrieveAll( fi, edge );
 			serializer.notifyEdgeAdded( edge );
 			graph.releaseRef( eref );
 			graph.releaseRef( vref2 );
@@ -469,34 +473,17 @@ public class DefaultUndoableEditList<
 			super( ref, typeIndex );
 		}
 
-		public void init( final VertexFeature< ?, V, ? > feature, final V vertex )
+		public void init( final Feature< ?, V, ? > feature, final V vertex )
 		{
 			super.init();
 
 			final int vi = vertexUndoIdBimap.getId( vertex );
-			final int fi = featureStore.createFeatureUndoId();
+			final int fi = vertexFeatureStore.createFeatureUndoId();
 			final int fuid = feature.getUniqueFeatureId();
-			featureStore.store( fi, feature, vertex );
+			vertexFeatureStore.store( fi, feature, vertex );
 
 			final long dataIndex = dataStack.getWriteDataIndex();
 			dataStack.out.writeInt( vi );
-			dataStack.out.writeInt( fi );
-			dataStack.out.writeInt( fuid );
-
-			ref.setDataIndex( dataIndex );
-		}
-
-		public void init( final EdgeFeature< ?, E, ? > feature, final E edge )
-		{
-			super.init();
-
-			final int ei = edgeUndoIdBimap.getId( edge );
-			final int fi = featureStore.createFeatureUndoId();
-			final int fuid = feature.getUniqueFeatureId();
-			featureStore.store( fi, feature, edge );
-
-			final long dataIndex = dataStack.getWriteDataIndex();
-			dataStack.out.writeInt( ei );
 			dataStack.out.writeInt( fi );
 			dataStack.out.writeInt( fuid );
 
@@ -529,8 +516,8 @@ public class DefaultUndoableEditList<
 			final V ref = graph.vertexRef();
 			final V vertex = vertexUndoIdBimap.getObject( vi, ref );
 			@SuppressWarnings( "unchecked" )
-			final VertexFeature< ?, V, ? > feature = ( VertexFeature< ?, V, ? > ) FeatureRegistry.getVertexFeature( fuid );
-			featureStore.swap( fi, feature, vertex );
+			final Feature< ?, V, ? > feature = ( Feature< ?, V, ? > ) FeatureRegistry.getFeature( fuid );
+			vertexFeatureStore.swap( fi, feature, vertex );
 			graph.releaseRef( ref );
 
 			return dataStack.getReadDataIndex();

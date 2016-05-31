@@ -3,10 +3,10 @@ package net.trackmate.graph.ref;
 import java.util.Map;
 
 import net.trackmate.collection.UniqueHashcodeArrayMap;
-import net.trackmate.graph.EdgeFeature;
 import net.trackmate.graph.EdgeWithFeatures;
 import net.trackmate.graph.FeatureValue;
-import net.trackmate.graph.GraphFeatures;
+import net.trackmate.graph.features.unify.Feature;
+import net.trackmate.graph.features.unify.Features;
 import net.trackmate.pool.MappedElement;
 
 public class AbstractEdgeWithFeatures< E extends AbstractEdgeWithFeatures< E, V, T >, V extends AbstractVertex< V, ?, ? >, T extends MappedElement >
@@ -20,13 +20,13 @@ public class AbstractEdgeWithFeatures< E extends AbstractEdgeWithFeatures< E, V,
 		featureValues = new UniqueHashcodeArrayMap< >();
 	}
 
-	GraphFeatures< ?, E > features;
+	Features< E > features;
 
-	private final Map< EdgeFeature< ?, E, ? >, FeatureValue< ? > > featureValues;
+	private final Map< Feature< ?, E, ? >, FeatureValue< ? > > featureValues;
 
 	@SuppressWarnings( "unchecked" )
 	@Override
-	public < F extends FeatureValue< ? >, M > F feature( final EdgeFeature< M, E, F > feature )
+	public < F extends FeatureValue< ? >, M > F feature( final Feature< M, E, F > feature )
 	{
 		F fv = ( F ) featureValues.get( feature );
 		if ( fv == null )

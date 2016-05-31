@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import net.trackmate.graph.GraphIdBimap;
-import net.trackmate.graph.VertexFeature;
+import net.trackmate.graph.features.unify.Feature;
 import net.trackmate.graph.io.RawFeatureIO;
 import net.trackmate.graph.io.RawGraphIO;
 import net.trackmate.graph.io.RawGraphIO.FileIdToGraphMap;
@@ -90,7 +90,7 @@ public class AbstractModelGraph<
 		pauseListeners();
 		clear();
 		final FileIdToGraphMap< V, E > fileIdMap = RawGraphIO.read( this, idmap, serializer, ois );
-		RawFeatureIO.readFeatureMaps( fileIdMap, features, ois );
+		RawFeatureIO.readFeatureMaps( fileIdMap, vertexFeatures, ois );
 		ois.close();
 		resumeListeners();
 	}
@@ -109,13 +109,13 @@ public class AbstractModelGraph<
 	public void saveRaw(
 			final File file,
 			final RawGraphIO.Serializer< V, E > serializer,
-			final List< VertexFeature< ?, V, ? > > featuresToSerialize )
+			final List< Feature< ?, V, ? > > featuresToSerialize )
 					throws IOException
 	{
 		final FileOutputStream fos = new FileOutputStream( file );
 		final ObjectOutputStream oos = new ObjectOutputStream( fos );
 		final GraphToFileIdMap< V, E > fileIdMap = RawGraphIO.write( this, idmap, serializer, oos );
-		RawFeatureIO.writeFeatureMaps( fileIdMap, features, featuresToSerialize, oos );
+		RawFeatureIO.writeFeatureMaps( fileIdMap, vertexFeatures, featuresToSerialize, oos );
 		oos.close();
 	}
 

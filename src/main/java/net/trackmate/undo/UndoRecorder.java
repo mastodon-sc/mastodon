@@ -1,14 +1,12 @@
 package net.trackmate.undo;
 
 import net.trackmate.graph.Edge;
-import net.trackmate.graph.EdgeFeature;
-import net.trackmate.graph.FeatureChangeListener;
-import net.trackmate.graph.GraphFeatures;
 import net.trackmate.graph.GraphIdBimap;
 import net.trackmate.graph.GraphListener;
 import net.trackmate.graph.ListenableGraph;
-import net.trackmate.graph.VertexFeature;
 import net.trackmate.graph.VertexWithFeatures;
+import net.trackmate.graph.features.unify.Feature;
+import net.trackmate.graph.features.unify.Features;
 
 /**
  * TODO: javadoc
@@ -18,7 +16,7 @@ import net.trackmate.graph.VertexWithFeatures;
  * @author Tobias Pietzsch &lt;tobias.pietzsch@gmail.com&gt;
  */
 public class UndoRecorder< V extends VertexWithFeatures< V, E >, E extends Edge< V >, L extends DefaultUndoableEditList< V, E > >
-		implements GraphListener< V, E >, FeatureChangeListener< V, E >, UndoPointMarker
+		implements GraphListener< V, E >, UndoPointMarker
 {
 	private static final int defaultCapacity = 1000;
 
@@ -29,38 +27,43 @@ public class UndoRecorder< V extends VertexWithFeatures< V, E >, E extends Edge<
 	public static < V extends VertexWithFeatures< V, E >, E extends Edge< V > >
 		UndoRecorder< V, E, DefaultUndoableEditList< V, E > > create(
 				final ListenableGraph< V, E > graph,
-				final GraphFeatures< V, E > graphFeatures,
+				final Features< V > vertexFeatures,
+				final Features< E > edgeFeatures,
 				final GraphIdBimap< V, E > idmap,
 				final UndoSerializer< V, E > serializer )
 	{
-		final UndoIdBimap< V > vertexUndoIdBimap = new UndoIdBimap< >( idmap.vertexIdBimap() );
-		final UndoIdBimap< E > edgeUndoIdBimap = new UndoIdBimap< >( idmap.edgeIdBimap() );
-		final DefaultUndoableEditList< V, E > edits = new DefaultUndoableEditList< >( defaultCapacity, graph, graphFeatures, serializer, vertexUndoIdBimap, edgeUndoIdBimap );
-		return new UndoRecorder< >( graph, graphFeatures, edits );
+		final UndoIdBimap< V > vertexUndoIdBimap = new UndoIdBimap<>( idmap.vertexIdBimap() );
+		final UndoIdBimap< E > edgeUndoIdBimap = new UndoIdBimap<>( idmap.edgeIdBimap() );
+		final DefaultUndoableEditList< V, E > edits = new DefaultUndoableEditList<>( defaultCapacity, graph, vertexFeatures, edgeFeatures, serializer, vertexUndoIdBimap, edgeUndoIdBimap );
+		return new UndoRecorder<>( graph, vertexFeatures, edgeFeatures, edits );
 	}
 
 	public UndoRecorder(
 			final L edits,
 			final ListenableGraph< V, E > graph,
-			final GraphFeatures< V, E > graphFeatures,
+			final Features< V > vertexFeatures,
+			final Features< E > edgeFeatures,
 			final UndoSerializer< V, E > serializer )
 	{
 		recording = true;
 		this.edits = edits;
 		graph.addGraphListener( this );
-		graphFeatures.addFeatureChangeListener( this );
+		vertexFeatures.addFeatureChangeListener( this::beforeVertexFeatureChange );
+		edgeFeatures.addFeatureChangeListener( this::beforeEdgeFeatureChange );
 	}
 
 
 	public UndoRecorder(
 			final ListenableGraph< V, E > graph,
-			final GraphFeatures< V, E > graphFeatures,
+			final Features< V > vertexFeatures,
+			final Features< E > edgeFeatures,
 			final L edits )
 	{
 		recording = true;
 		this.edits = edits;
 		graph.addGraphListener( this );
-		graphFeatures.addFeatureChangeListener( this );
+		vertexFeatures.addFeatureChangeListener( this::beforeVertexFeatureChange );
+		edgeFeatures.addFeatureChangeListener( this::beforeEdgeFeatureChange );
 	}
 
 	@Override
@@ -131,23 +134,21 @@ public class UndoRecorder< V extends VertexWithFeatures< V, E >, E extends Edge<
 		}
 	}
 
-	@Override
-	public void beforeFeatureChange( final VertexFeature< ?, V, ? > feature, final V vertex )
+	protected void beforeVertexFeatureChange( final Feature< ?, V, ? > feature, final V vertex )
 	{
 		if ( recording )
 		{
-			System.out.println( "UndoRecorder.beforeFeatureChange()" );
-			edits.recordSetFeature( feature, vertex );
+			System.out.println( "UndoRecorder.beforeVertexFeatureChange()" );
+			edits.recordSetVertexFeature( feature, vertex );
 		}
 	}
 
-	@Override
-	public void beforeFeatureChange( final EdgeFeature< ?, E, ? > feature, final E edge )
+	protected void beforeEdgeFeatureChange( final Feature< ?, E, ? > feature, final E edge )
 	{
 		if ( recording )
 		{
-			System.out.println( "UndoRecorder.beforeFeatureChange()" );
-			edits.recordSetFeature( feature, edge );
+			System.out.println( "UndoRecorder.beforeEdgeFeatureChange()" );
+			edits.recordSetEdgeFeature( feature, edge );
 		}
 	}
 }

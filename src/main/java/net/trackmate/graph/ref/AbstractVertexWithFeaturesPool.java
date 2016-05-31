@@ -1,6 +1,6 @@
 package net.trackmate.graph.ref;
 
-import net.trackmate.graph.GraphFeatures;
+import net.trackmate.graph.features.unify.Features;
 import net.trackmate.pool.MappedElement;
 import net.trackmate.pool.PoolObject;
 
@@ -10,7 +10,7 @@ public class AbstractVertexWithFeaturesPool<
 			T extends MappedElement >
 		extends AbstractVertexPool< V, E, T >
 {
-	private GraphFeatures< V, ? > features;
+	private Features< V > features;
 
 	public AbstractVertexWithFeaturesPool(
 			final int initialCapacity,
@@ -19,7 +19,7 @@ public class AbstractVertexWithFeaturesPool<
 		super( initialCapacity, vertexFactory );
 	}
 
-	public void linkFeatures( final GraphFeatures< V, ? > features )
+	public void linkFeatures( final Features< V > features )
 	{
 		this.features = features;
 	}

@@ -1,7 +1,7 @@
 package net.trackmate.revised.model;
 
-import net.trackmate.graph.GraphFeatures;
 import net.trackmate.graph.ListenableGraph;
+import net.trackmate.graph.features.unify.Features;
 import net.trackmate.graph.ref.AbstractListenableEdge;
 import net.trackmate.undo.DefaultUndoableEditList;
 import net.trackmate.undo.UndoIdBimap;
@@ -18,12 +18,13 @@ public class ModelUndoableEditList<
 	public ModelUndoableEditList(
 			final int initialCapacity,
 			final ListenableGraph< V, E > graph,
-			final GraphFeatures< V, E > graphFeatures,
+			final Features< V > vertexFeatures,
+			final Features< E > edgeFeatures,
 			final UndoSerializer< V, E > serializer,
 			final UndoIdBimap< V > vertexUndoIdBimap,
 			final UndoIdBimap< E > edgeUndoIdBimap )
 	{
-		super( initialCapacity, graph, graphFeatures, serializer, vertexUndoIdBimap, edgeUndoIdBimap );
+		super( initialCapacity, graph, vertexFeatures, edgeFeatures, serializer, vertexUndoIdBimap, edgeUndoIdBimap );
 	}
 
 	public void recordSetPosition( final V vertex )

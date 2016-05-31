@@ -60,12 +60,12 @@ public final class FeatureRegistry
 		return newId;
 	}
 
-	public static synchronized Feature< ?, ?, ? > getVertexFeature( final String key )
+	public static synchronized Feature< ?, ?, ? > getFeature( final String key )
 	{
 		return features.get( key );
 	}
 
-	public static synchronized Feature< ?, ?, ? > getVertexFeature( final int uniqueId )
+	public static synchronized Feature< ?, ?, ? > getFeature( final int uniqueId )
 	{
 		return featuresById.get( uniqueId );
 	}

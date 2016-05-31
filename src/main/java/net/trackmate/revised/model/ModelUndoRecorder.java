@@ -1,7 +1,7 @@
 package net.trackmate.revised.model;
 
-import net.trackmate.graph.GraphFeatures;
 import net.trackmate.graph.GraphIdBimap;
+import net.trackmate.graph.features.unify.Features;
 import net.trackmate.graph.ref.AbstractListenableEdge;
 import net.trackmate.undo.UndoIdBimap;
 import net.trackmate.undo.UndoRecorder;
@@ -17,14 +17,14 @@ public class ModelUndoRecorder<
 
 	public ModelUndoRecorder(
 			final AbstractModelGraph< ?, ?, ?, V, E, ? > graph,
-			final GraphFeatures< V, E > graphFeatures,
+			final Features< V > vertexFeatures,
+			final Features< E > edgeFeatures,
 			final GraphIdBimap< V, E > idmap,
 			final UndoSerializer< V, E > serializer )
 	{
-		super( graph,
-				graphFeatures,
+		super( graph, vertexFeatures, edgeFeatures,
 				new ModelUndoableEditList< >(
-						defaultCapacity, graph, graphFeatures, serializer,
+						defaultCapacity, graph, vertexFeatures, edgeFeatures, serializer,
 						new UndoIdBimap< >( idmap.vertexIdBimap() ),
 						new UndoIdBimap< >( idmap.edgeIdBimap() ) ) );
 		graph.addAbstractSpotListener( this );
