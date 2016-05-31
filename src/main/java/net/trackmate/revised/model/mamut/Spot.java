@@ -1,7 +1,7 @@
 package net.trackmate.revised.model.mamut;
 
 import static net.trackmate.pool.ByteUtils.DOUBLE_SIZE;
-import static net.trackmate.revised.model.mamut.Features.LABEL;
+import static net.trackmate.revised.model.mamut.ModelFeatures.LABEL;
 
 import net.trackmate.graph.ref.AbstractVertexPool;
 import net.trackmate.pool.ByteMappedElement;

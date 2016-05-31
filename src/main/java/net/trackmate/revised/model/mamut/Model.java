@@ -51,7 +51,7 @@ public class Model extends AbstractModel< ModelGraph, Spot, Link > implements Un
 		index = new SpatioTemporalIndexImp<>( modelGraph, modelGraph.idmap().vertexIdBimap() );
 
 		vertexFeaturesToSerialize = new ArrayList<>();
-		vertexFeaturesToSerialize.add( Features.LABEL );
+		vertexFeaturesToSerialize.add( ModelFeatures.LABEL );
 
 		edgeFeaturesToSerialize = new ArrayList<>();
 

@@ -4,7 +4,7 @@ import net.trackmate.graph.features.ObjFeature;
 import net.trackmate.graph.io.FeatureSerializers;
 import net.trackmate.graph.io.StringFeatureSerializer;
 
-public class Features
+public class ModelFeatures
 {
 	static final int NO_ENTRY_VALUE = -1;
 
@@ -16,5 +16,5 @@ public class Features
 //		FeatureSerializers.put( TRACKLENGTH, new IntFeatureSerializer<>() );
 	}
 
-	private Features() {};
+	private ModelFeatures() {};
 }

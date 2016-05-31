@@ -1,6 +1,7 @@
 package net.trackmate.revised.model.mamut;
 
 import net.trackmate.graph.GraphIdBimap;
+import net.trackmate.graph.features.unify.Features;
 import net.trackmate.graph.ref.AbstractListenableEdgePool;
 import net.trackmate.pool.ByteMappedElement;
 import net.trackmate.pool.ByteMappedElementArray;
@@ -22,12 +23,12 @@ public class ModelGraph extends AbstractModelGraph< ModelGraph, SpotPool, LinkPo
 		super( new LinkPool( initialCapacity, new SpotPool( initialCapacity ) ) );
 	}
 
-	net.trackmate.graph.features.unify.Features< Spot > vertexFeatures()
+	Features< Spot > vertexFeatures()
 	{
 		return vertexFeatures;
 	}
 
-	net.trackmate.graph.features.unify.Features< Link > edgeFeatures()
+	Features< Link > edgeFeatures()
 	{
 		return edgeFeatures;
 	}
