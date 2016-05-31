@@ -39,7 +39,9 @@ public class Model extends AbstractModel< ModelGraph, Spot, Link > implements Un
 	 */
 	private final SpatioTemporalIndex< Spot > index;
 
-	private final List< Feature< ?, Spot, ? > > featuresToSerialize;
+	private final List< Feature< ?, Spot, ? > > vertexFeaturesToSerialize;
+
+	private final List< Feature< ?, Link, ? > > edgeFeaturesToSerialize;
 
 	private final ModelUndoRecorder< Spot, Link > undoRecorder;
 
@@ -48,8 +50,10 @@ public class Model extends AbstractModel< ModelGraph, Spot, Link > implements Un
 		super( new ModelGraph() );
 		index = new SpatioTemporalIndexImp<>( modelGraph, modelGraph.idmap().vertexIdBimap() );
 
-		featuresToSerialize = new ArrayList<>();
-		featuresToSerialize.add( Features.LABEL );
+		vertexFeaturesToSerialize = new ArrayList<>();
+		vertexFeaturesToSerialize.add( Features.LABEL );
+
+		edgeFeaturesToSerialize = new ArrayList<>();
 
 		undoRecorder = new ModelUndoRecorder<>( modelGraph, modelGraph.vertexFeatures(), modelGraph.edgeFeatures(), modelGraph.idmap(), ModelSerializer.getInstance() );
 	}
@@ -77,7 +81,7 @@ public class Model extends AbstractModel< ModelGraph, Spot, Link > implements Un
 	 */
 	public void saveRaw( final File file ) throws IOException
 	{
-		modelGraph.saveRaw( file, ModelSerializer.getInstance(), featuresToSerialize );
+		modelGraph.saveRaw( file, ModelSerializer.getInstance(), vertexFeaturesToSerialize, edgeFeaturesToSerialize );
 	}
 
 	/**

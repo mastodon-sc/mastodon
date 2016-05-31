@@ -10,17 +10,16 @@ import java.io.ObjectOutputStream;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import net.trackmate.graph.Vertex;
 import net.trackmate.graph.io.RawFeatureIO.Serializer;
-import net.trackmate.graph.io.RawGraphIO.FileIdToGraphMap;
-import net.trackmate.graph.io.RawGraphIO.GraphToFileIdMap;
+import net.trackmate.graph.io.RawGraphIO.FileIdToObjectMap;
+import net.trackmate.graph.io.RawGraphIO.ObjectToFileIdMap;
 
-public class StringVertexFeatureSerializer< V extends Vertex< ? > > implements Serializer< Map< V, String >, V >
+public class StringFeatureSerializer< O > implements Serializer< Map< O, String >, O >
 {
 	@Override
 	public void writeFeatureMap(
-			final GraphToFileIdMap< V, ? > idmap,
-			final Map< V, String > featureMap,
+			final ObjectToFileIdMap< O > idmap,
+			final Map< O, String > featureMap,
 			final ObjectOutputStream oos )
 					throws IOException
 	{
@@ -30,9 +29,9 @@ public class StringVertexFeatureSerializer< V extends Vertex< ? > > implements S
 		final DataOutputStream ds = new DataOutputStream( bs );
 
 		int i = 0;
-		for ( final Entry< V, String > e : featureMap.entrySet() )
+		for ( final Entry< O, String > e : featureMap.entrySet() )
 		{
-			ids[ i ] = idmap.getVertexId( e.getKey() );
+			ids[ i ] = idmap.getId( e.getKey() );
 			ds.writeUTF( e.getValue() );
 			++i;
 		}
@@ -43,8 +42,8 @@ public class StringVertexFeatureSerializer< V extends Vertex< ? > > implements S
 
 	@Override
 	public void readFeatureMap(
-			final FileIdToGraphMap< V, ? > idmap,
-			final Map< V, String > featureMap,
+			final FileIdToObjectMap< O > idmap,
+			final Map< O, String > featureMap,
 			final ObjectInputStream ois )
 					throws IOException, ClassNotFoundException
 	{
@@ -53,9 +52,9 @@ public class StringVertexFeatureSerializer< V extends Vertex< ? > > implements S
 		final DataInputStream ds = new DataInputStream( new ByteArrayInputStream( bsbytes ) );
 
 		featureMap.clear();
-		final V ref = idmap.vertexRef();
+		final O ref = idmap.createRef();
 		for ( final int id : ids )
-			featureMap.put( idmap.getVertex( id, ref ), ds.readUTF() );
+			featureMap.put( idmap.getObject( id, ref ), ds.readUTF() );
 		idmap.releaseRef( ref );
 	}
 }

@@ -90,7 +90,8 @@ public class AbstractModelGraph<
 		pauseListeners();
 		clear();
 		final FileIdToGraphMap< V, E > fileIdMap = RawGraphIO.read( this, idmap, serializer, ois );
-		RawFeatureIO.readFeatureMaps( fileIdMap, vertexFeatures, ois );
+		RawFeatureIO.readFeatureMaps( fileIdMap.vertices(), vertexFeatures, ois );
+		RawFeatureIO.readFeatureMaps( fileIdMap.edges(), edgeFeatures, ois );
 		ois.close();
 		resumeListeners();
 	}
@@ -109,13 +110,15 @@ public class AbstractModelGraph<
 	public void saveRaw(
 			final File file,
 			final RawGraphIO.Serializer< V, E > serializer,
-			final List< Feature< ?, V, ? > > featuresToSerialize )
+			final List< Feature< ?, V, ? > > vertexFeaturesToSerialize,
+			final List< Feature< ?, E, ? > > edgeFeaturesToSerialize )
 					throws IOException
 	{
 		final FileOutputStream fos = new FileOutputStream( file );
 		final ObjectOutputStream oos = new ObjectOutputStream( fos );
 		final GraphToFileIdMap< V, E > fileIdMap = RawGraphIO.write( this, idmap, serializer, oos );
-		RawFeatureIO.writeFeatureMaps( fileIdMap, vertexFeatures, featuresToSerialize, oos );
+		RawFeatureIO.writeFeatureMaps( fileIdMap.vertices(), vertexFeatures, vertexFeaturesToSerialize, oos );
+		RawFeatureIO.writeFeatureMaps( fileIdMap.edges(), edgeFeatures, edgeFeaturesToSerialize, oos );
 		oos.close();
 	}
 

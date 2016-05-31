@@ -6,23 +6,22 @@ import java.io.ObjectOutputStream;
 
 import gnu.trove.map.TObjectIntMap;
 import gnu.trove.map.hash.TIntIntHashMap;
-import net.trackmate.graph.Vertex;
 import net.trackmate.graph.io.RawFeatureIO.Serializer;
-import net.trackmate.graph.io.RawGraphIO.FileIdToGraphMap;
-import net.trackmate.graph.io.RawGraphIO.GraphToFileIdMap;
+import net.trackmate.graph.io.RawGraphIO.FileIdToObjectMap;
+import net.trackmate.graph.io.RawGraphIO.ObjectToFileIdMap;
 
-public class IntVertexFeatureSerializer< V extends Vertex< ? > > implements Serializer< TObjectIntMap< V >, V >
+public class IntFeatureSerializer< O > implements Serializer< TObjectIntMap< O >, O >
 {
 	@Override
 	public void writeFeatureMap(
-			final GraphToFileIdMap< V, ? > idmap,
-			final TObjectIntMap< V > featureMap,
+			final ObjectToFileIdMap< O > idmap,
+			final TObjectIntMap< O > featureMap,
 			final ObjectOutputStream oos )
 					throws IOException
 	{
 		final TIntIntHashMap fmap = new TIntIntHashMap();
-		featureMap.forEachEntry( ( final V key, final int value ) -> {
-			fmap.put( idmap.getVertexId( key ), value );
+		featureMap.forEachEntry( ( final O key, final int value ) -> {
+			fmap.put( idmap.getId( key ), value );
 			return true;
 		} );
 		oos.writeObject( fmap );
@@ -30,16 +29,16 @@ public class IntVertexFeatureSerializer< V extends Vertex< ? > > implements Seri
 
 	@Override
 	public void readFeatureMap(
-			final FileIdToGraphMap< V, ? > idmap,
-			final TObjectIntMap< V > featureMap,
+			final FileIdToObjectMap< O > idmap,
+			final TObjectIntMap< O > featureMap,
 			final ObjectInputStream ois )
 					throws IOException, ClassNotFoundException
 	{
 		final TIntIntHashMap fmap = ( TIntIntHashMap ) ois.readObject();
 		featureMap.clear();
-		final V ref = idmap.vertexRef();
+		final O ref = idmap.createRef();
 		fmap.forEachEntry( ( final int key, final int value ) -> {
-			featureMap.put( idmap.getVertex( key, ref ), value );
+			featureMap.put( idmap.getObject( key, ref ), value );
 			return true;
 		} );
 		idmap.releaseRef( ref );

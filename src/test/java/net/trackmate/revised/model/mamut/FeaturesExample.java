@@ -7,8 +7,8 @@ import java.util.Random;
 import net.trackmate.graph.features.IntFeature;
 import net.trackmate.graph.features.ObjFeature;
 import net.trackmate.graph.io.FeatureSerializers;
-import net.trackmate.graph.io.IntVertexFeatureSerializer;
-import net.trackmate.graph.io.StringVertexFeatureSerializer;
+import net.trackmate.graph.io.IntFeatureSerializer;
+import net.trackmate.graph.io.StringFeatureSerializer;
 
 public class FeaturesExample
 {
@@ -19,8 +19,8 @@ public class FeaturesExample
 
 	static
 	{
-		FeatureSerializers.put( TRACKLENGTH, new IntVertexFeatureSerializer<>() );
-		FeatureSerializers.put( LABEL, new StringVertexFeatureSerializer<>() );
+		FeatureSerializers.put( TRACKLENGTH, new IntFeatureSerializer<>() );
+		FeatureSerializers.put( LABEL, new StringFeatureSerializer<>() );
 	}
 
 	private FeaturesExample() {};

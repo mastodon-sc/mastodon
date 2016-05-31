@@ -2,23 +2,22 @@ package net.trackmate.graph.io;
 
 import java.util.HashMap;
 
-import net.trackmate.graph.Vertex;
 import net.trackmate.graph.features.unify.Feature;
 import net.trackmate.graph.io.RawFeatureIO.Serializer;
 
 public class FeatureSerializers
 {
-	private static final HashMap< Feature< ?, ?, ? >, Serializer< ?, ? > > vertexSerializers = new HashMap<>();
+	private static final HashMap< Feature< ?, ?, ? >, Serializer< ?, ? > > serializers = new HashMap<>();
 
 	@SuppressWarnings( "unchecked" )
-	public static < M, V extends Vertex< ? > > Serializer< M, V > get( final Feature< M, V, ? > feature )
+	public static < M, O > Serializer< M, O > get( final Feature< M, O, ? > feature )
 	{
-		final Serializer< M, V > serializer = ( Serializer< M, V > ) vertexSerializers.get( feature );
+		final Serializer< M, O > serializer = ( Serializer< M, O > ) serializers.get( feature );
 		return serializer;
 	}
 
-	public static < M, V extends Vertex< ? > > void put( final Feature< M, V, ? > feature, final Serializer< M, V > serializer )
+	public static < M, O > void put( final Feature< M, O, ? > feature, final Serializer< M, O > serializer )
 	{
-		vertexSerializers.put( feature, serializer );
+		serializers.put( feature, serializer );
 	}
 }
