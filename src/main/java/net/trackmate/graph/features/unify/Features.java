@@ -22,7 +22,7 @@ import net.trackmate.graph.io.RawFeatureIO;
  *
  * @author Tobias Pietzsch &lt;tobias.pietzsch@gmail.com&gt;
  */
-public class Features< O >
+public final class Features< O >
 {
 	private final RefCollection< O > pool;
 
@@ -40,6 +40,8 @@ public class Features< O >
 
 	private final ArrayList< FeatureChangeListener< O > > featureChangeListeners;
 
+	private boolean emitEvents;
+
 	public Features( final RefCollection< O > pool )
 	{
 		this.pool = pool;
@@ -47,6 +49,7 @@ public class Features< O >
 		featureCleanups = new ArrayList<>();
 		createFeatureMapListeners = new ArrayList<>();
 		featureChangeListeners = new ArrayList<>();
+		emitEvents = true;
 	}
 
 	/**
@@ -177,7 +180,28 @@ public class Features< O >
 
 	void notifyBeforeFeatureChange( final Feature< ?, O, ? > feature, final O object )
 	{
-		for ( final FeatureChangeListener< O > l : featureChangeListeners )
-			l.beforeFeatureChange( feature, object );
+		if ( emitEvents )
+			for ( final FeatureChangeListener< O > l : featureChangeListeners )
+				l.beforeFeatureChange( feature, object );
+	}
+
+	/**
+	 * For internal use only.
+	 * <p>
+	 * Resume sending events to {@link FeatureChangeListener}s.
+	 */
+	public void pauseListeners()
+	{
+		emitEvents = false;
+	}
+
+	/**
+	 * For internal use only.
+	 * <p>
+	 * Resume sending events to {@link FeatureChangeListener}s.
+	 */
+	public void resumeListeners()
+	{
+		emitEvents = true;
 	}
 }

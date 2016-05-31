@@ -171,7 +171,7 @@ public class SpatioTemporalIndexImp<
 	@Override
 	public void vertexAdded( final V vertex )
 	{
-		System.out.println( "SpatioTemporalIndexImp :: vertexAdded" );
+//		System.out.println( "SpatioTemporalIndexImp :: vertexAdded" );
 		writeLock.lock();
 		try
 		{
@@ -186,7 +186,7 @@ public class SpatioTemporalIndexImp<
 	@Override
 	public void vertexRemoved( final V vertex )
 	{
-		System.out.println( "SpatioTemporalIndexImp :: vertexRemoved" );
+//		System.out.println( "SpatioTemporalIndexImp :: vertexRemoved" );
 		writeLock.lock();
 		try
 		{
@@ -210,7 +210,7 @@ public class SpatioTemporalIndexImp<
 	@Override
 	public void graphRebuilt()
 	{
-		System.out.println( "SpatioTemporalIndexImp :: graphRebuilt" );
+//		System.out.println( "SpatioTemporalIndexImp :: graphRebuilt" );
 		writeLock.lock();
 		try
 		{

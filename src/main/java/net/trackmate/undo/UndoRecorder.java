@@ -6,6 +6,7 @@ import net.trackmate.graph.GraphListener;
 import net.trackmate.graph.ListenableGraph;
 import net.trackmate.graph.VertexWithFeatures;
 import net.trackmate.graph.features.unify.Feature;
+import net.trackmate.graph.features.unify.FeatureChangeListener;
 import net.trackmate.graph.features.unify.Features;
 
 /**
@@ -48,8 +49,8 @@ public class UndoRecorder< V extends VertexWithFeatures< V, E >, E extends Edge<
 		recording = true;
 		this.edits = edits;
 		graph.addGraphListener( this );
-		vertexFeatures.addFeatureChangeListener( this::beforeVertexFeatureChange );
-		edgeFeatures.addFeatureChangeListener( this::beforeEdgeFeatureChange );
+		vertexFeatures.addFeatureChangeListener( beforeVertexFeatureChange );
+		edgeFeatures.addFeatureChangeListener( beforeEdgeFeatureChange );
 	}
 
 
@@ -62,8 +63,8 @@ public class UndoRecorder< V extends VertexWithFeatures< V, E >, E extends Edge<
 		recording = true;
 		this.edits = edits;
 		graph.addGraphListener( this );
-		vertexFeatures.addFeatureChangeListener( this::beforeVertexFeatureChange );
-		edgeFeatures.addFeatureChangeListener( this::beforeEdgeFeatureChange );
+		vertexFeatures.addFeatureChangeListener( beforeVertexFeatureChange );
+		edgeFeatures.addFeatureChangeListener( beforeEdgeFeatureChange );
 	}
 
 	@Override
@@ -74,7 +75,7 @@ public class UndoRecorder< V extends VertexWithFeatures< V, E >, E extends Edge<
 
 	public void undo()
 	{
-		System.out.println( "UndoRecorder.undo()" );
+//		System.out.println( "UndoRecorder.undo()" );
 		recording = false;
 		edits.undo();
 		recording = true;
@@ -82,7 +83,7 @@ public class UndoRecorder< V extends VertexWithFeatures< V, E >, E extends Edge<
 
 	public void redo()
 	{
-		System.out.println( "UndoRecorder.redo()" );
+//		System.out.println( "UndoRecorder.redo()" );
 		recording = false;
 		edits.redo();
 		recording = true;
@@ -92,6 +93,7 @@ public class UndoRecorder< V extends VertexWithFeatures< V, E >, E extends Edge<
 	public void graphRebuilt()
 	{
 		System.out.println( "UndoRecorder.graphRebuilt()" );
+		System.out.println( "TODO!!!!" );
 	}
 
 	@Override
@@ -99,7 +101,7 @@ public class UndoRecorder< V extends VertexWithFeatures< V, E >, E extends Edge<
 	{
 		if ( recording )
 		{
-			System.out.println( "UndoRecorder.vertexAdded()" );
+//			System.out.println( "UndoRecorder.vertexAdded()" );
 			edits.recordAddVertex( vertex );
 		}
 	}
@@ -109,7 +111,7 @@ public class UndoRecorder< V extends VertexWithFeatures< V, E >, E extends Edge<
 	{
 		if ( recording )
 		{
-			System.out.println( "UndoRecorder.vertexRemoved()" );
+//			System.out.println( "UndoRecorder.vertexRemoved()" );
 			edits.recordRemoveVertex( vertex );
 		}
 	}
@@ -119,7 +121,7 @@ public class UndoRecorder< V extends VertexWithFeatures< V, E >, E extends Edge<
 	{
 		if ( recording )
 		{
-			System.out.println( "UndoRecorder.edgeAdded()" );
+//			System.out.println( "UndoRecorder.edgeAdded()" );
 			edits.recordAddEdge( edge );
 		}
 	}
@@ -129,26 +131,28 @@ public class UndoRecorder< V extends VertexWithFeatures< V, E >, E extends Edge<
 	{
 		if ( recording )
 		{
-			System.out.println( "UndoRecorder.edgeRemoved()" );
+//			System.out.println( "UndoRecorder.edgeRemoved()" );
 			edits.recordRemoveEdge( edge );
 		}
 	}
 
-	protected void beforeVertexFeatureChange( final Feature< ?, V, ? > feature, final V vertex )
+	private final FeatureChangeListener< V > beforeVertexFeatureChange = new FeatureChangeListener< V >()
 	{
-		if ( recording )
+		@Override
+		public void beforeFeatureChange( final Feature< ?, V, ? > feature, final V vertex )
 		{
-			System.out.println( "UndoRecorder.beforeVertexFeatureChange()" );
-			edits.recordSetVertexFeature( feature, vertex );
+			if ( recording )
+				edits.recordSetVertexFeature( feature, vertex );
 		}
-	}
+	};
 
-	protected void beforeEdgeFeatureChange( final Feature< ?, E, ? > feature, final E edge )
+	private final FeatureChangeListener< E > beforeEdgeFeatureChange = new FeatureChangeListener< E >()
 	{
-		if ( recording )
+		@Override
+		public void beforeFeatureChange( final Feature< ?, E, ? > feature, final E edge )
 		{
-			System.out.println( "UndoRecorder.beforeEdgeFeatureChange()" );
-			edits.recordSetEdgeFeature( feature, edge );
+			if ( recording )
+				edits.recordSetEdgeFeature( feature, edge );
 		}
-	}
+	};
 }

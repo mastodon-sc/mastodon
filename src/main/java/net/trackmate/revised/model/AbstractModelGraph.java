@@ -206,13 +206,13 @@ public class AbstractModelGraph<
 	}
 
 	@Override
-	protected void pauseListeners()
+	public void pauseListeners()
 	{
 		super.pauseListeners();
 	}
 
 	@Override
-	protected void resumeListeners()
+	public void resumeListeners()
 	{
 		super.resumeListeners();
 	}

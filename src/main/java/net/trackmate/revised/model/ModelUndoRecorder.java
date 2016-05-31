@@ -35,7 +35,7 @@ public class ModelUndoRecorder<
 	{
 		if ( recording )
 		{
-			System.out.println( "UndoRecorder.beforePositionChange()" );
+//			System.out.println( "UndoRecorder.beforePositionChange()" );
 			edits.recordSetPosition( vertex );
 		}
 	}

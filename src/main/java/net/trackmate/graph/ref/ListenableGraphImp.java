@@ -146,6 +146,8 @@ public class ListenableGraphImp<
 	protected void pauseListeners()
 	{
 		emitEvents = false;
+		vertexFeatures.pauseListeners();
+		edgeFeatures.pauseListeners();
 	}
 
 	/**
@@ -157,6 +159,8 @@ public class ListenableGraphImp<
 	protected void resumeListeners()
 	{
 		emitEvents = true;
+		vertexFeatures.resumeListeners();
+		edgeFeatures.resumeListeners();
 		for ( final GraphListener< V, E > listener : listeners )
 			listener.graphRebuilt();
 	}
