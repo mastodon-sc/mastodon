@@ -41,6 +41,13 @@ public class DefaultUndoableEditList<
 		this.edgeUndoIdBimap = edgeUndoIdBimap;
 		vertexFeatureStore = new UndoFeatureStore<>( vertexFeatures );
 		edgeFeatureStore = new UndoFeatureStore<>( edgeFeatures );
+
+		addVertex = new AddVertexType();
+		removeVertex = new RemoveVertexType();
+		addEdge = new AddEdgeType();
+		removeEdge = new RemoveEdgeType();
+		setVertexFeature = new SetFeatureType<>( vertexUndoIdBimap, vertexFeatureStore );
+		setEdgeFeature = new SetFeatureType<>( edgeUndoIdBimap, edgeFeatureStore );
 	}
 
 	public void recordAddVertex( final V vertex )
@@ -74,27 +81,28 @@ public class DefaultUndoableEditList<
 	public void recordSetVertexFeature( final Feature< ?, V, ? > feature, final V vertex )
 	{
 		final UndoableEditRef< V, E > ref = createRef();
-		create( ref ).getEdit( setFeature ).init( feature, vertex );
+		create( ref ).getEdit( setVertexFeature ).init( feature, vertex );
 		releaseRef( ref );
 	}
 
 	public void recordSetEdgeFeature( final Feature< ?, E, ? > feature, final E edge )
 	{
 		final UndoableEditRef< V, E > ref = createRef();
-//		create( ref ).getEdit( setFeature ).init( feature, edge );
-		// TODO
+		create( ref ).getEdit( setEdgeFeature ).init( feature, edge );
 		releaseRef( ref );
 	}
 
-	protected final AddVertexType addVertex = new AddVertexType();
+	protected final AddVertexType addVertex;
 
-	protected final RemoveVertexType removeVertex = new RemoveVertexType();
+	protected final RemoveVertexType removeVertex;
 
-	protected final AddEdgeType addEdge = new AddEdgeType();
+	protected final AddEdgeType addEdge;
 
-	protected final RemoveEdgeType removeEdge = new RemoveEdgeType();
+	protected final RemoveEdgeType removeEdge;
 
-	protected final SetFeatureType setFeature = new SetFeatureType();
+	protected final SetFeatureType< V > setVertexFeature;
+
+	protected final SetFeatureType< E > setEdgeFeature;
 
 	protected class AddVertexType extends UndoableEditTypeImp< AddVertex >
 	{
@@ -457,30 +465,53 @@ public class DefaultUndoableEditList<
 		}
 	}
 
-	protected class SetFeatureType extends UndoableEditTypeImp< SetFeature >
+	protected class SetFeatureType< O > extends UndoableEditTypeImp< SetFeature< O > >
 	{
-		@Override
-		public SetFeature createInstance( final UndoableEditRef< V, E > ref )
+		private final UndoIdBimap< O > undoIdBimap;
+
+		private final UndoFeatureStore< O > featureStore;
+
+		public SetFeatureType(
+			final UndoIdBimap< O > undoIdBimap,
+			final UndoFeatureStore< O > featureStore )
 		{
-			return new SetFeature( ref, typeIndex() );
+			super();
+			this.undoIdBimap = undoIdBimap;
+			this.featureStore = featureStore;
+		}
+
+		@Override
+		public SetFeature< O > createInstance( final UndoableEditRef< V, E > ref )
+		{
+			return new SetFeature<>( ref, typeIndex(), undoIdBimap, featureStore );
 		}
 	}
 
-	private class SetFeature extends AbstractClearableUndoableEdit
+	private class SetFeature< O > extends AbstractClearableUndoableEdit
 	{
-		SetFeature( final UndoableEditRef< V, E > ref, final int typeIndex )
+		private final UndoIdBimap< O > undoIdBimap;
+
+		private final UndoFeatureStore< O > featureStore;
+
+		SetFeature(
+				final UndoableEditRef< V, E > ref,
+				final int typeIndex,
+				final UndoIdBimap< O > undoIdBimap,
+				final UndoFeatureStore< O > featureStore )
 		{
 			super( ref, typeIndex );
+			this.undoIdBimap = undoIdBimap;
+			this.featureStore = featureStore;
 		}
 
-		public void init( final Feature< ?, V, ? > feature, final V vertex )
+		public void init( final Feature< ?, O, ? > feature, final O vertex )
 		{
 			super.init();
 
-			final int vi = vertexUndoIdBimap.getId( vertex );
-			final int fi = vertexFeatureStore.createFeatureUndoId();
+			final int vi = undoIdBimap.getId( vertex );
+			final int fi = featureStore.createFeatureUndoId();
 			final int fuid = feature.getUniqueFeatureId();
-			vertexFeatureStore.store( fi, feature, vertex );
+			featureStore.store( fi, feature, vertex );
 
 			final long dataIndex = dataStack.getWriteDataIndex();
 			dataStack.out.writeInt( vi );
@@ -513,12 +544,12 @@ public class DefaultUndoableEditList<
 			final int fi = dataStack.in.readInt();
 			final int fuid = dataStack.in.readInt();
 
-			final V ref = graph.vertexRef();
-			final V vertex = vertexUndoIdBimap.getObject( vi, ref );
+			final O ref = undoIdBimap.createRef();
+			final O vertex = undoIdBimap.getObject( vi, ref );
 			@SuppressWarnings( "unchecked" )
-			final Feature< ?, V, ? > feature = ( Feature< ?, V, ? > ) FeatureRegistry.getFeature( fuid );
-			vertexFeatureStore.swap( fi, feature, vertex );
-			graph.releaseRef( ref );
+			final Feature< ?, O, ? > feature = ( Feature< ?, O, ? > ) FeatureRegistry.getFeature( fuid );
+			featureStore.swap( fi, feature, vertex );
+			undoIdBimap.releaseRef( ref );
 
 			return dataStack.getReadDataIndex();
 		}
