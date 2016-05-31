@@ -4,9 +4,9 @@ import java.util.ArrayList;
 import java.util.Map;
 
 import net.trackmate.collection.UniqueHashcodeArrayMap;
-import net.trackmate.graph.features.unify.Feature;
-import net.trackmate.graph.features.unify.Features;
-import net.trackmate.graph.features.unify.UndoFeatureMap;
+import net.trackmate.graph.features.Feature;
+import net.trackmate.graph.features.Features;
+import net.trackmate.graph.features.UndoFeatureMap;
 
 class UndoFeatureStore< O >
 {

@@ -5,9 +5,9 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.List;
 
-import net.trackmate.graph.features.unify.Feature;
-import net.trackmate.graph.features.unify.FeatureRegistry;
-import net.trackmate.graph.features.unify.Features;
+import net.trackmate.graph.features.Feature;
+import net.trackmate.graph.features.FeatureRegistry;
+import net.trackmate.graph.features.Features;
 import net.trackmate.graph.io.RawGraphIO.FileIdToObjectMap;
 import net.trackmate.graph.io.RawGraphIO.ObjectToFileIdMap;
 

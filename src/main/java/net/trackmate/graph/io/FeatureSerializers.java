@@ -2,7 +2,7 @@ package net.trackmate.graph.io;
 
 import java.util.HashMap;
 
-import net.trackmate.graph.features.unify.Feature;
+import net.trackmate.graph.features.Feature;
 import net.trackmate.graph.io.RawFeatureIO.Serializer;
 
 public class FeatureSerializers

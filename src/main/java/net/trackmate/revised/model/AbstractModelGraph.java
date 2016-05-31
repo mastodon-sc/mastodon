@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import net.trackmate.graph.GraphIdBimap;
-import net.trackmate.graph.features.unify.Feature;
+import net.trackmate.graph.features.Feature;
 import net.trackmate.graph.io.RawFeatureIO;
 import net.trackmate.graph.io.RawGraphIO;
 import net.trackmate.graph.io.RawGraphIO.FileIdToGraphMap;

@@ -1,4 +1,4 @@
-package net.trackmate.graph.features.unify;
+package net.trackmate.graph.features;
 
 /**
  * A listener that is notified when {@link Feature}s of a graph change.

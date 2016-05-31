@@ -7,7 +7,7 @@ import java.util.List;
 
 import net.imglib2.RealLocalizable;
 import net.trackmate.graph.ReadOnlyGraph;
-import net.trackmate.graph.features.unify.Feature;
+import net.trackmate.graph.features.Feature;
 import net.trackmate.revised.model.AbstractModel;
 import net.trackmate.revised.model.ModelUndoRecorder;
 import net.trackmate.spatial.SpatioTemporalIndex;

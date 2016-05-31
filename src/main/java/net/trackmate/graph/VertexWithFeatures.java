@@ -1,6 +1,6 @@
 package net.trackmate.graph;
 
-import net.trackmate.graph.features.unify.Feature;
+import net.trackmate.graph.features.Feature;
 
 public interface VertexWithFeatures< V extends VertexWithFeatures< V, E >, E extends Edge< ? > > extends Vertex< E >
 {

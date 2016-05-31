@@ -5,8 +5,8 @@ import java.util.Map;
 import net.trackmate.collection.UniqueHashcodeArrayMap;
 import net.trackmate.graph.FeatureValue;
 import net.trackmate.graph.VertexWithFeatures;
-import net.trackmate.graph.features.unify.Feature;
-import net.trackmate.graph.features.unify.Features;
+import net.trackmate.graph.features.Feature;
+import net.trackmate.graph.features.Features;
 import net.trackmate.pool.MappedElement;
 
 /**

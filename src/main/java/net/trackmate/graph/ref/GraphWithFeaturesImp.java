@@ -1,6 +1,6 @@
 package net.trackmate.graph.ref;
 
-import net.trackmate.graph.features.unify.Features;
+import net.trackmate.graph.features.Features;
 import net.trackmate.pool.MappedElement;
 
 public class GraphWithFeaturesImp<

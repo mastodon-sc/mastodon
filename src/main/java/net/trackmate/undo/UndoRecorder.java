@@ -5,9 +5,9 @@ import net.trackmate.graph.GraphIdBimap;
 import net.trackmate.graph.GraphListener;
 import net.trackmate.graph.ListenableGraph;
 import net.trackmate.graph.VertexWithFeatures;
-import net.trackmate.graph.features.unify.Feature;
-import net.trackmate.graph.features.unify.FeatureChangeListener;
-import net.trackmate.graph.features.unify.Features;
+import net.trackmate.graph.features.Feature;
+import net.trackmate.graph.features.FeatureChangeListener;
+import net.trackmate.graph.features.Features;
 
 /**
  * TODO: javadoc

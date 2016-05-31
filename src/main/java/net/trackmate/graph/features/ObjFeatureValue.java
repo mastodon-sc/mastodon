@@ -3,7 +3,6 @@ package net.trackmate.graph.features;
 import java.util.Map;
 
 import net.trackmate.graph.FeatureValue;
-import net.trackmate.graph.features.unify.NotifyFeatureValueChange;
 
 /**
  * TODO

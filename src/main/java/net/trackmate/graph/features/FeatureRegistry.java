@@ -1,4 +1,4 @@
-package net.trackmate.graph.features.unify;
+package net.trackmate.graph.features;
 
 import java.util.HashMap;
 import java.util.Map;

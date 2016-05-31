@@ -5,7 +5,6 @@ import java.util.Map;
 import gnu.trove.impl.Constants;
 import gnu.trove.map.TIntObjectMap;
 import gnu.trove.map.hash.TIntObjectHashMap;
-import net.trackmate.graph.features.unify.UndoFeatureMap;
 
 /**
  * TODO

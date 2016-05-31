@@ -3,9 +3,9 @@ package net.trackmate.undo;
 import net.trackmate.graph.Edge;
 import net.trackmate.graph.ListenableGraph;
 import net.trackmate.graph.VertexWithFeatures;
-import net.trackmate.graph.features.unify.Feature;
-import net.trackmate.graph.features.unify.FeatureRegistry;
-import net.trackmate.graph.features.unify.Features;
+import net.trackmate.graph.features.Feature;
+import net.trackmate.graph.features.FeatureRegistry;
+import net.trackmate.graph.features.Features;
 
 // TODO: move to model.undo ?
 public class DefaultUndoableEditList<

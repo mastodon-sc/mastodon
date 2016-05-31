@@ -8,7 +8,7 @@ import java.util.Map;
 import java.util.Set;
 
 import gnu.trove.map.TIntObjectArrayMap;
-import net.trackmate.graph.features.unify.Feature;
+import net.trackmate.graph.features.Feature;
 import net.trackmate.revised.model.AbstractModel;
 
 /**

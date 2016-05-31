@@ -2,7 +2,6 @@ package net.trackmate.graph.features;
 
 import gnu.trove.map.TObjectDoubleMap;
 import net.trackmate.graph.FeatureValue;
-import net.trackmate.graph.features.unify.NotifyFeatureValueChange;
 
 /**
  * TODO

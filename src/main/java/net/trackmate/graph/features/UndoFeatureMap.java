@@ -1,4 +1,4 @@
-package net.trackmate.graph.features.unify;
+package net.trackmate.graph.features;
 
 /**
  * Backup and restore vertex or edge features by storing them in a map with

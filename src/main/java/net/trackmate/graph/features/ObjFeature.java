@@ -5,10 +5,7 @@ import java.util.Map;
 import net.trackmate.collection.RefCollection;
 import net.trackmate.collection.util.CollectionUtils;
 import net.trackmate.graph.FeatureValue;
-import net.trackmate.graph.features.unify.Feature;
-import net.trackmate.graph.features.unify.FeatureCleanup;
-import net.trackmate.graph.features.unify.FeatureRegistry.DuplicateKeyException;
-import net.trackmate.graph.features.unify.Features;
+import net.trackmate.graph.features.FeatureRegistry.DuplicateKeyException;
 
 /**
  * TODO revise javadoc

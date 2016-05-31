@@ -1,7 +1,7 @@
 package net.trackmate.revised.model.mamut;
 
 import net.trackmate.graph.GraphIdBimap;
-import net.trackmate.graph.features.unify.Features;
+import net.trackmate.graph.features.Features;
 import net.trackmate.graph.ref.AbstractListenableEdgePool;
 import net.trackmate.pool.ByteMappedElement;
 import net.trackmate.pool.ByteMappedElementArray;

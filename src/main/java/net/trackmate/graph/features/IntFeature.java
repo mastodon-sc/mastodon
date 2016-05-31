@@ -3,10 +3,7 @@ package net.trackmate.graph.features;
 import gnu.trove.map.TObjectIntMap;
 import net.trackmate.collection.RefCollection;
 import net.trackmate.collection.util.CollectionUtils;
-import net.trackmate.graph.features.unify.Feature;
-import net.trackmate.graph.features.unify.FeatureCleanup;
-import net.trackmate.graph.features.unify.FeatureRegistry.DuplicateKeyException;
-import net.trackmate.graph.features.unify.Features;
+import net.trackmate.graph.features.FeatureRegistry.DuplicateKeyException;
 
 /**
  * A {@code int}-valued {@link Feature}.

@@ -1,7 +1,7 @@
 package net.trackmate.revised.model;
 
 import net.trackmate.graph.ListenableGraph;
-import net.trackmate.graph.features.unify.Features;
+import net.trackmate.graph.features.Features;
 import net.trackmate.graph.ref.AbstractListenableEdge;
 import net.trackmate.undo.DefaultUndoableEditList;
 import net.trackmate.undo.UndoIdBimap;

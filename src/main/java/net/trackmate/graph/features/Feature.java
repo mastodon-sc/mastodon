@@ -1,8 +1,8 @@
-package net.trackmate.graph.features.unify;
+package net.trackmate.graph.features;
 
 import net.trackmate.collection.RefCollection;
 import net.trackmate.graph.FeatureValue;
-import net.trackmate.graph.features.unify.FeatureRegistry.DuplicateKeyException;
+import net.trackmate.graph.features.FeatureRegistry.DuplicateKeyException;
 
 /**
  * TODO

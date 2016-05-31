@@ -4,7 +4,6 @@ import gnu.trove.impl.Constants;
 import gnu.trove.map.TIntDoubleMap;
 import gnu.trove.map.TObjectDoubleMap;
 import gnu.trove.map.hash.TIntDoubleHashMap;
-import net.trackmate.graph.features.unify.UndoFeatureMap;
 
 /**
  * TODO
