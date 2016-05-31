@@ -2,14 +2,14 @@ package net.trackmate.graph.features;
 
 import java.util.Map;
 
+import net.trackmate.collection.RefCollection;
 import net.trackmate.collection.util.CollectionUtils;
 import net.trackmate.graph.FeatureRegistry.DuplicateKeyException;
-import net.trackmate.graph.features.unify.FeatureCleanup;
 import net.trackmate.graph.FeatureValue;
-import net.trackmate.graph.GraphFeatures;
-import net.trackmate.graph.ReadOnlyGraph;
-import net.trackmate.graph.Vertex;
 import net.trackmate.graph.VertexFeature;
+import net.trackmate.graph.features.unify.Feature;
+import net.trackmate.graph.features.unify.FeatureCleanup;
+import net.trackmate.graph.features.unify.Features;
 
 /**
  * A {@code Object}-valued {@link VertexFeature}.
@@ -40,7 +40,7 @@ import net.trackmate.graph.VertexFeature;
  *
  * @author Tobias Pietzsch &lt;tobias.pietzsch@gmail.com&gt;
  */
-public final class ObjVertexFeature< V extends Vertex< ? >, T > extends VertexFeature< Map< V, T >, V, FeatureValue< T > >
+public final class ObjFeature< V, T > extends Feature< Map< V, T >, V, FeatureValue< T > >
 {
 	/**
 	 * Create a new feature.
@@ -51,15 +51,15 @@ public final class ObjVertexFeature< V extends Vertex< ? >, T > extends VertexFe
 	 *             if a {@link VertexFeature} with the same {@code name} already
 	 *             exists.
 	 */
-	public ObjVertexFeature( final String name ) throws DuplicateKeyException
+	public ObjFeature( final String name ) throws DuplicateKeyException
 	{
 		super( name );
 	}
 
 	@Override
-	protected Map< V, T > createFeatureMap( final ReadOnlyGraph< V, ? > graph )
+	protected Map< V, T > createFeatureMap( final RefCollection< V > pool )
 	{
-		return CollectionUtils.createRefObjectMap( graph.vertices() );
+		return CollectionUtils.createRefObjectMap( pool );
 	}
 
 	@Override
@@ -75,12 +75,12 @@ public final class ObjVertexFeature< V extends Vertex< ? >, T > extends VertexFe
 	};
 
 	@Override
-	public FeatureValue< T > createFeatureValue( final V vertex, final GraphFeatures< V, ? > graphFeatures )
+	public FeatureValue< T > createFeatureValue( final V object, final Features< V > features )
 	{
 		return new ObjFeatureValue<>(
-				graphFeatures.getVertexFeature( this ),
-				vertex,
-				new NotifyValueChange<>( graphFeatures, this, vertex ) );
+				features.getFeatureMap( this ),
+				object,
+				new NotifyValueChange<>( features, this, object ) );
 	}
 
 	@Override

@@ -6,6 +6,7 @@ import net.trackmate.collection.util.CollectionUtils;
 import net.trackmate.graph.Edge;
 import net.trackmate.graph.EdgeFeature;
 import net.trackmate.graph.FeatureRegistry.DuplicateKeyException;
+import net.trackmate.graph.features.unify.FeatureCleanup;
 import net.trackmate.graph.FeatureValue;
 import net.trackmate.graph.GraphFeatures;
 import net.trackmate.graph.ReadOnlyGraph;

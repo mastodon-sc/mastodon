@@ -1,4 +1,4 @@
-package net.trackmate.graph.features;
+package net.trackmate.graph.features.unify;
 
 /**
  * TODO

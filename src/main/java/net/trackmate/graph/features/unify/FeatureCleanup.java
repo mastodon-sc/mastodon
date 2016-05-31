@@ -1,4 +1,4 @@
-package net.trackmate.graph.features;
+package net.trackmate.graph.features.unify;
 
 /**
  * When a vertex or edge is deleted it must be removed from all feature maps.

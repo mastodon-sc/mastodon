@@ -3,6 +3,7 @@ package net.trackmate.graph.features;
 import gnu.trove.map.TObjectDoubleMap;
 import net.trackmate.collection.util.CollectionUtils;
 import net.trackmate.graph.FeatureRegistry.DuplicateKeyException;
+import net.trackmate.graph.features.unify.FeatureCleanup;
 import net.trackmate.graph.GraphFeatures;
 import net.trackmate.graph.ReadOnlyGraph;
 import net.trackmate.graph.Vertex;

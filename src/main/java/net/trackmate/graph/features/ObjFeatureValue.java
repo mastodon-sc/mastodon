@@ -3,6 +3,7 @@ package net.trackmate.graph.features;
 import java.util.Map;
 
 import net.trackmate.graph.FeatureValue;
+import net.trackmate.graph.features.unify.NotifyFeatureValueChange;
 
 /**
  * TODO
@@ -20,10 +21,10 @@ public final class ObjFeatureValue< O, T > implements FeatureValue< T >
 
 	private final NotifyFeatureValueChange notify;
 
-	protected ObjFeatureValue( final Map< O, T > featureMap, final O vertex, final NotifyFeatureValueChange notify )
+	protected ObjFeatureValue( final Map< O, T > featureMap, final O object, final NotifyFeatureValueChange notify )
 	{
 		this.featureMap = featureMap;
-		this.object = vertex;
+		this.object = object;
 		this.notify = notify;
 	}
 

@@ -1,9 +1,9 @@
 package net.trackmate.graph;
 
 import net.trackmate.graph.FeatureRegistry.DuplicateKeyException;
-import net.trackmate.graph.features.FeatureCleanup;
-import net.trackmate.graph.features.NotifyFeatureValueChange;
-import net.trackmate.graph.features.UndoFeatureMap;
+import net.trackmate.graph.features.unify.FeatureCleanup;
+import net.trackmate.graph.features.unify.NotifyFeatureValueChange;
+import net.trackmate.graph.features.unify.UndoFeatureMap;
 
 /**
  * Mother class for edge features. TODO
