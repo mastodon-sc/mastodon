@@ -1,4 +1,4 @@
-package net.trackmate.graph.object.generic;
+package net.trackmate.graph.object;
 
 import net.trackmate.graph.Edge;
 import net.trackmate.graph.Vertex;

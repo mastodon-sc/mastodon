@@ -1,4 +1,4 @@
-package net.trackmate.graph.object.generic;
+package net.trackmate.graph.object;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -7,7 +7,7 @@ import net.trackmate.collection.RefCollection;
 import net.trackmate.collection.wrap.RefCollectionWrapper;
 import net.trackmate.graph.Graph;
 
-public class ObjectGraph< V extends AbstractObjectVertex< V, E >, E extends AbstractObjectEdge< E, V > > implements Graph< V, E >
+public abstract class AbstractObjectGraph< V extends AbstractObjectVertex< V, E >, E extends AbstractObjectEdge< E, V > > implements Graph< V, E >
 {
 	public interface Factory< V, E >
 	{
@@ -26,7 +26,7 @@ public class ObjectGraph< V extends AbstractObjectVertex< V, E >, E extends Abst
 
 	private final RefCollectionWrapper< E > unmodifiableEdges;
 
-	protected ObjectGraph( final Factory< V, E > factory, final Collection< V > vertices, final Collection< E > edges )
+	protected AbstractObjectGraph( final Factory< V, E > factory, final Collection< V > vertices, final Collection< E > edges )
 	{
 		this.factory = factory;
 		this.vertices = vertices;

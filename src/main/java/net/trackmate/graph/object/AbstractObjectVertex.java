@@ -1,4 +1,4 @@
-package net.trackmate.graph.object.generic;
+package net.trackmate.graph.object;
 
 import java.util.ArrayList;
 import java.util.Iterator;
