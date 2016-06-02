@@ -8,6 +8,7 @@ import org.scijava.ui.behaviour.io.InputTriggerConfig;
 
 import bdv.viewer.TriggerBehaviourBindings;
 
+// TODO: this, as well as AbstractActions, should go into ui-behaviour!
 public class AbstractBehaviours
 {
 	protected final InputTriggerMap inputTriggerMap;
