@@ -35,7 +35,7 @@ public class DefaultModelHighlightProperties<
 	{
 		final V v = graph.vertexRef();
 		final V h = highlight.getHighlightedVertex( v );
-		final int id = ( h == null ) ? -1 : idmap.getVertexId( v );
+		final int id = ( h == null ) ? -1 : idmap.getVertexId( h );
 		graph.releaseRef( v );
 		return id;
 	}
@@ -45,7 +45,7 @@ public class DefaultModelHighlightProperties<
 	{
 		final E e = graph.edgeRef();
 		final E h = highlight.getHighlightedEdge( e );
-		final int id = ( h == null ) ? -1 : idmap.getEdgeId( e );
+		final int id = ( h == null ) ? -1 : idmap.getEdgeId( h );
 		graph.releaseRef( e );
 		return id;
 	}
