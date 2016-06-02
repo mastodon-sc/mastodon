@@ -710,7 +710,7 @@ public class TrackSchemePanel extends JPanel implements
 	}
 
 	// TODO remove??? revise TrackSchemePanel / TrackSchemeFrame construction.
-	protected InteractiveDisplayCanvasComponent< ScreenTransform > getDisplay()
+	public InteractiveDisplayCanvasComponent< ScreenTransform > getDisplay()
 	{
 		return display;
 	}
