@@ -33,10 +33,10 @@ public class DefaultModelFocusProperties<
 	@Override
 	public int getFocusedVertexId()
 	{
-		final V v = graph.vertexRef();
-		final V h = focus.getFocusedVertex( v );
-		final int id = ( h == null ) ? -1 : idmap.getVertexId( v );
-		graph.releaseRef( v );
+		final V ref = graph.vertexRef();
+		final V focused = focus.getFocusedVertex( ref );
+		final int id = ( focused == null ) ? -1 : idmap.getVertexId( focused );
+		graph.releaseRef( ref );
 		return id;
 	}
 
@@ -47,9 +47,9 @@ public class DefaultModelFocusProperties<
 			focus.focusVertex( null );
 		else
 		{
-			final V v = graph.vertexRef();
-			focus.focusVertex( idmap.getVertex( id, v ) );
-			graph.releaseRef( v );
+			final V ref = graph.vertexRef();
+			focus.focusVertex( idmap.getVertex( id, ref ) );
+			graph.releaseRef( ref );
 		}
 	}
 
