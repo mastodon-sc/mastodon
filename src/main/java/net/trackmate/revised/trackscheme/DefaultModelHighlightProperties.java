@@ -33,20 +33,20 @@ public class DefaultModelHighlightProperties<
 	@Override
 	public int getHighlightedVertexId()
 	{
-		final V v = graph.vertexRef();
-		final V h = highlight.getHighlightedVertex( v );
-		final int id = ( h == null ) ? -1 : idmap.getVertexId( h );
-		graph.releaseRef( v );
+		final V ref = graph.vertexRef();
+		final V highlighted = highlight.getHighlightedVertex( ref );
+		final int id = ( highlighted == null ) ? -1 : idmap.getVertexId( highlighted );
+		graph.releaseRef( ref );
 		return id;
 	}
 
 	@Override
 	public int getHighlightedEdgeId()
 	{
-		final E e = graph.edgeRef();
-		final E h = highlight.getHighlightedEdge( e );
-		final int id = ( h == null ) ? -1 : idmap.getEdgeId( h );
-		graph.releaseRef( e );
+		final E ref = graph.edgeRef();
+		final E highlighted = highlight.getHighlightedEdge( ref );
+		final int id = ( highlighted == null ) ? -1 : idmap.getEdgeId( highlighted );
+		graph.releaseRef( ref );
 		return id;
 	}
 
@@ -57,9 +57,9 @@ public class DefaultModelHighlightProperties<
 			highlight.clearHighlight();
 		else
 		{
-			final V v = graph.vertexRef();
-			highlight.highlightVertex( idmap.getVertex( id, v ) );
-			graph.releaseRef( v );
+			final V ref = graph.vertexRef();
+			highlight.highlightVertex( idmap.getVertex( id, ref ) );
+			graph.releaseRef( ref );
 		}
 	}
 
@@ -70,9 +70,9 @@ public class DefaultModelHighlightProperties<
 			highlight.clearHighlight();
 		else
 		{
-			final E e = graph.edgeRef();
-			highlight.highlightEdge( idmap.getEdge( id, e ) );
-			graph.releaseRef( e );
+			final E ref = graph.edgeRef();
+			highlight.highlightEdge( idmap.getEdge( id, ref ) );
+			graph.releaseRef( ref );
 		}
 	}
 
