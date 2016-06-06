@@ -71,7 +71,7 @@ public abstract class AbstractGraphIteratorAlgorithm< V extends Vertex< E >, E e
 			fetched = fetch( fetched );
 			for ( final E e : neighbors( fetched ) )
 			{
-				final V target = e.getTarget( tmpRef );
+				final V target = targetOf( e, tmpRef );
 				if ( !visited.contains( target ) )
 				{
 					visited.add( target );
@@ -91,6 +91,26 @@ public abstract class AbstractGraphIteratorAlgorithm< V extends Vertex< E >, E e
 	public void remove()
 	{
 		throw new UnsupportedOperationException( "Remove is not supported for " + this.getClass() + "." );
+	}
+
+	/**
+	 * Returns the target vertex of the specified edge.
+	 * <p>
+	 * By default, this method returns the actual target of the edge, through
+	 * {@link Edge#getTarget(Vertex)}. Overriding this method allows for coding
+	 * reverse iterators.
+	 *
+	 * @param edge
+	 *            the edge to return the target of.
+	 * @param ref
+	 *            a reference object, that might be used or discarded by this
+	 *            call.
+	 * @return the target of the edge, as defined by this concrete iterator
+	 *         implementation.
+	 */
+	protected V targetOf( E edge, V ref )
+	{
+		return edge.getTarget( tmpRef );
 	}
 
 	/**
