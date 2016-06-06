@@ -121,20 +121,20 @@ public class BreadthFirstSearchUndirectedTest
 
 		final List< ObjectVertex< Integer > > expectedVertices = new ArrayList< ObjectVertex< Integer > >( 7 );
 		expectedVertices.add( bundle.vertices.get( 0 ) );
-		expectedVertices.add( bundle.vertices.get( 1 ) );
 		expectedVertices.add( bundle.vertices.get( 6 ) );
-		expectedVertices.add( bundle.vertices.get( 2 ) );
+		expectedVertices.add( bundle.vertices.get( 1 ) );
 		expectedVertices.add( bundle.vertices.get( 5 ) );
-		expectedVertices.add( bundle.vertices.get( 3 ) );
+		expectedVertices.add( bundle.vertices.get( 2 ) );
 		expectedVertices.add( bundle.vertices.get( 4 ) );
+		expectedVertices.add( bundle.vertices.get( 3 ) );
 
 		final List< ObjectEdge< Integer > > expectedEdges = new ArrayList< ObjectEdge< Integer > >( 7 );
-		expectedEdges.add( bundle.edges.get( 0 ) );
 		expectedEdges.add( bundle.edges.get( 6 ) );
-		expectedEdges.add( bundle.edges.get( 1 ) );
+		expectedEdges.add( bundle.edges.get( 0 ) );
 		expectedEdges.add( bundle.edges.get( 5 ) );
-		expectedEdges.add( bundle.edges.get( 2 ) );
+		expectedEdges.add( bundle.edges.get( 1 ) );
 		expectedEdges.add( bundle.edges.get( 4 ) );
+		expectedEdges.add( bundle.edges.get( 2 ) );
 		expectedEdges.add( bundle.edges.get( 3 ) );
 
 		final List< EdgeClass > edgeClass = Arrays.asList( new EdgeClass[] { TREE, TREE, TREE, TREE, TREE, TREE, CROSS } );
