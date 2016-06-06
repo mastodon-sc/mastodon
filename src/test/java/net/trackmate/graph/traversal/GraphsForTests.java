@@ -398,6 +398,30 @@ public class GraphsForTests
 		return bundle;
 	}
 
+	@SuppressWarnings( "unchecked" )
+	public static final GraphTestBundle< ObjectVertex< Integer >, ObjectEdge< Integer >> diamondStdObjects()
+	{
+		final GraphTestBundle< ObjectVertex< Integer >, ObjectEdge< Integer >> bundle = new GraphTestBundle< ObjectVertex< Integer >, ObjectEdge< Integer >>();
+
+		final ObjectGraph< Integer > graph = new ObjectGraph<>();
+		bundle.graph = graph;
+
+		final ObjectVertex< Integer > A = graph.addVertex().init( 1 );
+		final ObjectVertex< Integer > B = graph.addVertex().init( 2 );
+		final ObjectVertex< Integer > C = graph.addVertex().init( 3 );
+		final ObjectVertex< Integer > D = graph.addVertex().init( 4 );
+		bundle.vertices = Arrays.asList( new ObjectVertex[] { A, B, C, D } );
+
+		final ObjectEdge< Integer > eAB = graph.addEdge( A, B );
+		final ObjectEdge< Integer > eAC = graph.addEdge( A, C );
+		final ObjectEdge< Integer > eBD = graph.addEdge( B, D );
+		final ObjectEdge< Integer > eCD = graph.addEdge( C, D );
+		bundle.edges = Arrays.asList( new ObjectEdge[] { eAB, eAC, eBD, eCD } );
+
+		bundle.name = "Diamond std objects";
+		return bundle;
+	}
+
 	public static final GraphTestBundle< ObjectVertex< Integer >, ObjectEdge< Integer >> forkStdObjects()
 	{
 		final GraphTestBundle< ObjectVertex< Integer >, ObjectEdge< Integer >> bundle = new GraphTestBundle< ObjectVertex< Integer >, ObjectEdge< Integer > >();
