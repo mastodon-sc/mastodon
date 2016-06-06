@@ -102,7 +102,7 @@ public abstract class AbstractObjectVertex< V extends AbstractObjectVertex< V, E
 		public Iterator< E > iterator()
 		{
 			final Iterator< E > itin = incoming.iterator();
-			final Iterator< E > itout = incoming.iterator();
+			final Iterator< E > itout = outgoing.iterator();
 			return new Iterator< E >()
 			{
 
