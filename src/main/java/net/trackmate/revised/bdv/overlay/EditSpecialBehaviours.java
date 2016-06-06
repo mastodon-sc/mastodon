@@ -1,6 +1,6 @@
 package net.trackmate.revised.bdv.overlay;
 
-import static net.trackmate.revised.bdv.overlay.EditBevaviours.POINT_SELECT_DISTANCE_TOLERANCE;
+import static net.trackmate.revised.bdv.overlay.EditBehaviours.POINT_SELECT_DISTANCE_TOLERANCE;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
@@ -23,7 +23,7 @@ import net.trackmate.revised.bdv.overlay.util.JamaEigenvalueDecomposition;
 import net.trackmate.revised.model.mamut.Spot;
 import net.trackmate.undo.UndoPointMarker;
 
-public class EditSpecialBevaviours< V extends OverlayVertex< V, E >, E extends OverlayEdge< E, V > >
+public class EditSpecialBehaviours< V extends OverlayVertex< V, E >, E extends OverlayEdge< E, V > >
 		extends AbstractBehaviours
 {
 
@@ -51,7 +51,7 @@ public class EditSpecialBevaviours< V extends OverlayVertex< V, E >, E extends O
 
 	private final ViewerPanel viewer;
 
-	private final EditSpecialBevaviours< V, E >.EditSpecialBehavioursOverlay overlay;
+	private final EditSpecialBehaviours< V, E >.EditSpecialBehavioursOverlay overlay;
 
 	public static < V extends OverlayVertex< V, E >, E extends OverlayEdge< E, V > > void installActionBindings(
 			final TriggerBehaviourBindings triggerBehaviourBindings,
@@ -61,11 +61,11 @@ public class EditSpecialBevaviours< V extends OverlayVertex< V, E >, E extends O
 			final OverlayGraphRenderer< V, E > renderer,
 			final UndoPointMarker undo )
 	{
-		new EditSpecialBevaviours<>( triggerBehaviourBindings, config, viewer, overlayGraph, renderer, undo );
+		new EditSpecialBehaviours<>( triggerBehaviourBindings, config, viewer, overlayGraph, renderer, undo );
 	}
 
 
-	private EditSpecialBevaviours(
+	private EditSpecialBehaviours(
 			final TriggerBehaviourBindings triggerBehaviourBindings,
 			final InputTriggerConfig config,
 			final ViewerPanel viewer,

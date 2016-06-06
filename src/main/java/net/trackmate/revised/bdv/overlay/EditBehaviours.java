@@ -42,7 +42,7 @@ public class EditBehaviours< V extends OverlayVertex< V, E >, E extends OverlayE
 	private static final double NORMAL_RADIUS_CHANGE = 0.1;
 
 	/**
-	 * Ratio by which we change the radius upon change radius a bit action.
+	 * Ratio by which we change the radius upon change radius a but action.
 	 */
 	private static final double ABIT_RADIUS_CHANGE = 0.01;
 
@@ -93,14 +93,23 @@ public class EditBehaviours< V extends OverlayVertex< V, E >, E extends OverlayE
 	{
 		private final double[] pos;
 
+		private final V tmp;
+
 		public AddSpot()
 		{
 			pos = new double[ 3 ];
+			tmp = overlayGraph.vertexRef();
 		}
 
 		@Override
 		public void click( final int x, final int y )
 		{
+			if ( renderer.getVertexAt( x, y, POINT_SELECT_DISTANCE_TOLERANCE, tmp ) != null )
+			{
+				// Do not create a spot if we click inside an existing spot.
+				return;
+			}
+
 			final int timepoint = renderer.getCurrentTimepoint();
 			renderer.getGlobalPosition( x, y, pos );
 			final V ref = overlayGraph.vertexRef();
@@ -163,6 +172,7 @@ public class EditBehaviours< V extends OverlayVertex< V, E >, E extends OverlayE
 
 	private class ResizeSpot implements ClickBehaviour
 	{
+
 		private final double[][] mat;
 
 		private final double factor;

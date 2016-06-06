@@ -32,7 +32,7 @@ import net.trackmate.graph.ListenableReadOnlyGraph;
 import net.trackmate.revised.bdv.BigDataViewerMaMuT;
 import net.trackmate.revised.bdv.SharedBigDataViewerData;
 import net.trackmate.revised.bdv.overlay.EditBehaviours;
-import net.trackmate.revised.bdv.overlay.EditSpecialBevaviours;
+import net.trackmate.revised.bdv.overlay.EditSpecialBehaviours;
 import net.trackmate.revised.bdv.overlay.MouseHighlightHandler;
 import net.trackmate.revised.bdv.overlay.OverlayContext;
 import net.trackmate.revised.bdv.overlay.OverlayGraphRenderer;
@@ -441,7 +441,7 @@ public class WindowManager
 
 		UndoActions.installActionBindings( viewerFrame.getKeybindings(), model, keyconf );
 		EditBehaviours.installActionBindings( viewerFrame.getTriggerbindings(), keyconf, overlayGraph, tracksOverlay, model );
-		EditSpecialBevaviours.installActionBindings( viewerFrame.getTriggerbindings(), keyconf, viewerFrame.getViewerPanel(), overlayGraph, tracksOverlay, model );
+		EditSpecialBehaviours.installActionBindings( viewerFrame.getTriggerbindings(), keyconf, viewerFrame.getViewerPanel(), overlayGraph, tracksOverlay, model );
 		HighlightBehaviours.installActionBindings( viewerFrame.getTriggerbindings(), keyconf, model.getGraph(), highlightModel, model );
 
 		/*
