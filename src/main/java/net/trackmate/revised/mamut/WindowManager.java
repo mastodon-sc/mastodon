@@ -12,19 +12,6 @@ import javax.swing.InputMap;
 import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
 
-import org.scijava.ui.behaviour.KeyStrokeAdder;
-import org.scijava.ui.behaviour.io.InputTriggerConfig;
-import org.scijava.ui.behaviour.io.InputTriggerDescription;
-import org.scijava.ui.behaviour.io.InputTriggerDescriptionsBuilder;
-import org.scijava.ui.behaviour.io.yaml.YamlConfigIO;
-
-import bdv.spimdata.SpimDataMinimal;
-import bdv.tools.ToggleDialogAction;
-import bdv.viewer.RequestRepaint;
-import bdv.viewer.TimePointListener;
-import bdv.viewer.ViewerFrame;
-import bdv.viewer.ViewerOptions;
-import bdv.viewer.ViewerPanel;
 import mpicbg.spim.data.generic.AbstractSpimData;
 import net.trackmate.graph.GraphChangeListener;
 import net.trackmate.graph.GraphIdBimap;
@@ -72,6 +59,7 @@ import net.trackmate.revised.trackscheme.TrackSchemeGraph;
 import net.trackmate.revised.trackscheme.TrackSchemeHighlight;
 import net.trackmate.revised.trackscheme.TrackSchemeNavigation;
 import net.trackmate.revised.trackscheme.TrackSchemeSelection;
+import net.trackmate.revised.trackscheme.display.TrackSchemeEditBehaviours;
 import net.trackmate.revised.trackscheme.display.TrackSchemeFrame;
 import net.trackmate.revised.trackscheme.display.TrackSchemeOptions;
 import net.trackmate.revised.trackscheme.display.laf.TrackSchemeStyle;
@@ -86,6 +74,20 @@ import net.trackmate.revised.ui.selection.HighlightModel;
 import net.trackmate.revised.ui.selection.NavigationHandler;
 import net.trackmate.revised.ui.selection.Selection;
 import net.trackmate.revised.ui.selection.SelectionListener;
+
+import org.scijava.ui.behaviour.KeyStrokeAdder;
+import org.scijava.ui.behaviour.io.InputTriggerConfig;
+import org.scijava.ui.behaviour.io.InputTriggerDescription;
+import org.scijava.ui.behaviour.io.InputTriggerDescriptionsBuilder;
+import org.scijava.ui.behaviour.io.yaml.YamlConfigIO;
+
+import bdv.spimdata.SpimDataMinimal;
+import bdv.tools.ToggleDialogAction;
+import bdv.viewer.RequestRepaint;
+import bdv.viewer.TimePointListener;
+import bdv.viewer.ViewerFrame;
+import bdv.viewer.ViewerOptions;
+import bdv.viewer.ViewerPanel;
 
 public class WindowManager
 {
@@ -569,6 +571,15 @@ public class WindowManager
 
 		UndoActions.installActionBindings( frame.getKeybindings(), model, keyconf );
 		HighlightBehaviours.installActionBindings( frame.getTriggerbindings(), keyconf, model.getGraph(), highlightModel, model );
+		TrackSchemeEditBehaviours.installActionBindings(
+				frame.getTriggerbindings(),
+				keyconf,
+				frame.getTrackschemePanel(),
+				trackSchemeGraph,
+				frame.getTrackschemePanel().getGraphOverlay(),
+				model.getGraph(),
+				model.getGraph().getGraphIdBimap(),
+				model );
 
 		// TODO revise
 		// TrackSchemeStyleDialog triggered by "R"
