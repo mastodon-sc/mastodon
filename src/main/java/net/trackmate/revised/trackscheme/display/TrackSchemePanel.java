@@ -11,7 +11,6 @@ import javax.swing.JPanel;
 import javax.swing.JScrollBar;
 import javax.swing.UIManager;
 
-import bdv.viewer.TimePointListener;
 import net.imglib2.ui.InteractiveDisplayCanvasComponent;
 import net.imglib2.ui.OverlayRenderer;
 import net.imglib2.ui.PainterThread;
@@ -42,6 +41,7 @@ import net.trackmate.revised.ui.selection.HighlightListener;
 import net.trackmate.revised.ui.selection.NavigationEtiquette;
 import net.trackmate.revised.ui.selection.NavigationListener;
 import net.trackmate.revised.ui.selection.SelectionListener;
+import bdv.viewer.TimePointListener;
 
 public class TrackSchemePanel extends JPanel implements
 		TransformListener< ScreenTransform >,
@@ -171,7 +171,7 @@ public class TrackSchemePanel extends JPanel implements
 
 		final int w = options.getWidth();
 		final int h = options.getHeight();
-		display = new InteractiveDisplayCanvasComponent< ScreenTransform >(	w, h, options.getTransformEventHandlerFactory() );
+		display = new InteractiveDisplayCanvasComponent< ScreenTransform >( w, h, options.getTransformEventHandlerFactory() );
 		display.addTransformListener( this );
 
 		highlight.addHighlightListener( this );
@@ -752,6 +752,16 @@ public class TrackSchemePanel extends JPanel implements
 	public SelectionBehaviours getSelectionBehaviours()
 	{
 		return selectionBehaviours;
+	}
+
+	/**
+	 * Exposes the graph overlay renderer of this panel.
+	 *
+	 * @return the graph overlay renderer of this panel.
+	 */
+	public AbstractTrackSchemeOverlay getGraphOverlay()
+	{
+		return graphOverlay;
 	}
 
 	class ScreenEntityAnimator extends AbstractAnimator
