@@ -10,7 +10,7 @@ import net.trackmate.revised.bdv.AbstractBehaviours;
 import net.trackmate.revised.bdv.overlay.util.JamaEigenvalueDecomposition;
 import net.trackmate.undo.UndoPointMarker;
 
-public class EditBevaviours< V extends OverlayVertex< V, E >, E extends OverlayEdge< E, V > >
+public class EditBehaviours< V extends OverlayVertex< V, E >, E extends OverlayEdge< E, V > >
 		extends AbstractBehaviours
 {
 	public static final String MOVE_SPOT = "move spot";
@@ -64,10 +64,10 @@ public class EditBevaviours< V extends OverlayVertex< V, E >, E extends OverlayE
 			final OverlayGraphRenderer< V, E > renderer,
 			final UndoPointMarker undo )
 	{
-		new EditBevaviours<>( triggerBehaviourBindings, config, overlayGraph, renderer, undo );
+		new EditBehaviours<>( triggerBehaviourBindings, config, overlayGraph, renderer, undo );
 	}
 
-	private EditBevaviours(
+	private EditBehaviours(
 			final TriggerBehaviourBindings triggerBehaviourBindings,
 			final InputTriggerConfig config,
 			final OverlayGraph< V, E > overlayGraph,
