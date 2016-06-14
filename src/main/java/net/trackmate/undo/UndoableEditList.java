@@ -3,6 +3,7 @@ package net.trackmate.undo;
 import java.util.ArrayList;
 
 import gnu.trove.map.TIntObjectArrayMap;
+import net.trackmate.graph.Vertex;
 import net.trackmate.pool.ByteMappedElement;
 import net.trackmate.pool.ByteMappedElementArray;
 import net.trackmate.pool.MemPool;
@@ -256,6 +257,13 @@ public class UndoableEditList extends Pool< UndoableEditRef, ByteMappedElement >
 	 * =========================================================================
 	 */
 
+	/**
+	 * Record any {@link UndoableEdit}. (The method is named {@code recordOther}
+	 * because derived classes provide more specific {@code record} methods, for
+	 * example {@link GraphUndoableEditList#recordAddVertex(Vertex)}.)
+	 *
+	 * @param undoableEdit
+	 */
 	public void recordOther( final UndoableEdit undoableEdit )
 	{
 		final UndoableEditRef ref = createRef();
