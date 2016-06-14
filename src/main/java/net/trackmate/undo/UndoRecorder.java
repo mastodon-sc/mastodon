@@ -4,7 +4,7 @@ import net.trackmate.graph.Edge;
 import net.trackmate.graph.GraphIdBimap;
 import net.trackmate.graph.GraphListener;
 import net.trackmate.graph.ListenableGraph;
-import net.trackmate.graph.VertexWithFeatures;
+import net.trackmate.graph.Vertex;
 import net.trackmate.graph.features.Feature;
 import net.trackmate.graph.features.FeatureChangeListener;
 import net.trackmate.graph.features.Features;
@@ -17,7 +17,7 @@ import net.trackmate.graph.features.Features;
  * @author Tobias Pietzsch &lt;tobias.pietzsch@gmail.com&gt;
  */
 public class UndoRecorder<
-			V extends VertexWithFeatures< V, E >, // TODO: is Vertex<> sufficient?
+			V extends Vertex< E >, // TODO: is Vertex<> sufficient?
 			E extends Edge< V >,
 			L extends DefaultUndoableEditList< V, E > >
 		implements GraphListener< V, E >, UndoPointMarker
@@ -28,7 +28,7 @@ public class UndoRecorder<
 
 	protected final L edits;
 
-	public static < V extends VertexWithFeatures< V, E >, E extends Edge< V > >
+	public static < V extends Vertex< E >, E extends Edge< V > >
 		UndoRecorder< V, E, DefaultUndoableEditList< V, E > > create(
 				final ListenableGraph< V, E > graph,
 				final Features< V > vertexFeatures,

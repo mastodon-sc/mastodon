@@ -2,7 +2,7 @@ package net.trackmate.undo;
 
 import net.trackmate.graph.Edge;
 import net.trackmate.graph.ListenableGraph;
-import net.trackmate.graph.VertexWithFeatures;
+import net.trackmate.graph.Vertex;
 import net.trackmate.graph.features.Feature;
 import net.trackmate.graph.features.FeatureRegistry;
 import net.trackmate.graph.features.Features;
@@ -10,9 +10,9 @@ import net.trackmate.graph.features.Features;
 // TODO: move to model.undo ?
 // TODO: rename ?
 public class DefaultUndoableEditList<
-			V extends VertexWithFeatures< V, E >, // TODO: is Vertex<> sufficient?
+			V extends Vertex< E >, // TODO: is Vertex<> sufficient?
 			E extends Edge< V > >
-		extends UndoableEditList< V, E >
+		extends UndoableEditList
 {
 	protected final ListenableGraph< V, E > graph;
 
@@ -53,42 +53,42 @@ public class DefaultUndoableEditList<
 
 	public void recordAddVertex( final V vertex )
 	{
-		final UndoableEditRef< V, E > ref = createRef();
+		final UndoableEditRef ref = createRef();
 		create( ref ).getEdit( addVertex ).init( vertex );
 		releaseRef( ref );
 	}
 
 	public void recordRemoveVertex( final V vertex )
 	{
-		final UndoableEditRef< V, E > ref = createRef();
+		final UndoableEditRef ref = createRef();
 		create( ref ).getEdit( removeVertex ).init( vertex );
 		releaseRef( ref );
 	}
 
 	public void recordAddEdge( final E edge )
 	{
-		final UndoableEditRef< V, E > ref = createRef();
+		final UndoableEditRef ref = createRef();
 		create( ref ).getEdit( addEdge ).init( edge );
 		releaseRef( ref );
 	}
 
 	public void recordRemoveEdge( final E edge )
 	{
-		final UndoableEditRef< V, E > ref = createRef();
+		final UndoableEditRef ref = createRef();
 		create( ref ).getEdit( removeEdge ).init( edge );
 		releaseRef( ref );
 	}
 
 	public void recordSetVertexFeature( final Feature< ?, V, ? > feature, final V vertex )
 	{
-		final UndoableEditRef< V, E > ref = createRef();
+		final UndoableEditRef ref = createRef();
 		create( ref ).getEdit( setVertexFeature ).init( feature, vertex );
 		releaseRef( ref );
 	}
 
 	public void recordSetEdgeFeature( final Feature< ?, E, ? > feature, final E edge )
 	{
-		final UndoableEditRef< V, E > ref = createRef();
+		final UndoableEditRef ref = createRef();
 		create( ref ).getEdit( setEdgeFeature ).init( feature, edge );
 		releaseRef( ref );
 	}
@@ -108,7 +108,7 @@ public class DefaultUndoableEditList<
 	protected class AddVertexType extends UndoableEditTypeImp< AddVertex >
 	{
 		@Override
-		public AddVertex createInstance( final UndoableEditRef< V, E > ref )
+		public AddVertex createInstance( final UndoableEditRef ref )
 		{
 			return new AddVertex( ref, typeIndex() );
 		}
@@ -118,7 +118,7 @@ public class DefaultUndoableEditList<
 	{
 		private final AddRemoveVertexRecord addRemoveVertex;
 
-		AddVertex( final UndoableEditRef< V, E > ref, final int typeIndex )
+		AddVertex( final UndoableEditRef ref, final int typeIndex )
 		{
 			super( ref, typeIndex );
 			this.addRemoveVertex = new AddRemoveVertexRecord();
@@ -150,7 +150,7 @@ public class DefaultUndoableEditList<
 	protected class RemoveVertexType extends UndoableEditTypeImp< RemoveVertex >
 	{
 		@Override
-		public RemoveVertex createInstance( final UndoableEditRef< V, E > ref )
+		public RemoveVertex createInstance( final UndoableEditRef ref )
 		{
 			return new RemoveVertex( ref, typeIndex() );
 		}
@@ -160,7 +160,7 @@ public class DefaultUndoableEditList<
 	{
 		private final AddRemoveVertexRecord addRemoveVertex;
 
-		RemoveVertex( final UndoableEditRef< V, E > ref, final int typeIndex )
+		RemoveVertex( final UndoableEditRef ref, final int typeIndex )
 		{
 			super( ref, typeIndex );
 			this.addRemoveVertex = new AddRemoveVertexRecord();
@@ -198,7 +198,7 @@ public class DefaultUndoableEditList<
 			data = new byte[ serializer.getVertexNumBytes() ];
 		}
 
-		public void initAdd( final V vertex, final UndoableEditRef< V, E > ref )
+		public void initAdd( final V vertex, final UndoableEditRef ref )
 		{
 			final int vi = vertexUndoIdBimap.getId( vertex );
 			final int fi = vertexFeatureStore.createFeatureUndoId();
@@ -211,7 +211,7 @@ public class DefaultUndoableEditList<
 			ref.setDataIndex( dataIndex );
 		}
 
-		public void initRemove( final V vertex, final UndoableEditRef< V, E > ref )
+		public void initRemove( final V vertex, final UndoableEditRef ref )
 		{
 			final int vi = vertexUndoIdBimap.getId( vertex );
 			final int fi = vertexFeatureStore.createFeatureUndoId();
@@ -271,7 +271,7 @@ public class DefaultUndoableEditList<
 	protected class AddEdgeType extends UndoableEditTypeImp< AddEdge >
 	{
 		@Override
-		public AddEdge createInstance( final UndoableEditRef< V, E > ref )
+		public AddEdge createInstance( final UndoableEditRef ref )
 		{
 			return new AddEdge( ref, typeIndex() );
 		}
@@ -281,7 +281,7 @@ public class DefaultUndoableEditList<
 	{
 		private final AddRemoveEdgeRecord addRemoveEdge;
 
-		AddEdge( final UndoableEditRef< V, E > ref, final int typeIndex )
+		AddEdge( final UndoableEditRef ref, final int typeIndex )
 		{
 			super( ref, typeIndex );
 			this.addRemoveEdge = new AddRemoveEdgeRecord();
@@ -313,7 +313,7 @@ public class DefaultUndoableEditList<
 	protected class RemoveEdgeType extends UndoableEditTypeImp< RemoveEdge >
 	{
 		@Override
-		public RemoveEdge createInstance( final UndoableEditRef< V, E > ref )
+		public RemoveEdge createInstance( final UndoableEditRef ref )
 		{
 			return new RemoveEdge( ref, typeIndex() );
 		}
@@ -323,7 +323,7 @@ public class DefaultUndoableEditList<
 	{
 		private final AddRemoveEdgeRecord addRemoveEdge;
 
-		RemoveEdge( final UndoableEditRef< V, E > ref, final int typeIndex )
+		RemoveEdge( final UndoableEditRef ref, final int typeIndex )
 		{
 			super( ref, typeIndex );
 			this.addRemoveEdge = new AddRemoveEdgeRecord();
@@ -361,7 +361,7 @@ public class DefaultUndoableEditList<
 			data = new byte[ serializer.getEdgeNumBytes() ];;
 		}
 
-		public void initAdd( final E edge, final UndoableEditRef< V, E > ref )
+		public void initAdd( final E edge, final UndoableEditRef ref )
 		{
 			final int ei = edgeUndoIdBimap.getId( edge );
 			final int fi = edgeFeatureStore.createFeatureUndoId();
@@ -378,7 +378,7 @@ public class DefaultUndoableEditList<
 			ref.setDataIndex( dataIndex );
 		}
 
-		public void initRemove( final E edge, final UndoableEditRef< V, E > ref )
+		public void initRemove( final E edge, final UndoableEditRef ref )
 		{
 			final V vref = graph.vertexRef();
 			final int ei = edgeUndoIdBimap.getId( edge );
@@ -482,7 +482,7 @@ public class DefaultUndoableEditList<
 		}
 
 		@Override
-		public SetFeature< O > createInstance( final UndoableEditRef< V, E > ref )
+		public SetFeature< O > createInstance( final UndoableEditRef ref )
 		{
 			return new SetFeature<>( ref, typeIndex(), undoIdBimap, featureStore );
 		}
@@ -495,7 +495,7 @@ public class DefaultUndoableEditList<
 		private final UndoFeatureStore< O > featureStore;
 
 		SetFeature(
-				final UndoableEditRef< V, E > ref,
+				final UndoableEditRef ref,
 				final int typeIndex,
 				final UndoIdBimap< O > undoIdBimap,
 				final UndoFeatureStore< O > featureStore )

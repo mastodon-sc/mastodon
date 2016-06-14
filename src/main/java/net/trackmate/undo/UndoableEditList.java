@@ -3,8 +3,6 @@ package net.trackmate.undo;
 import java.util.ArrayList;
 
 import gnu.trove.map.TIntObjectArrayMap;
-import net.trackmate.graph.Edge;
-import net.trackmate.graph.Vertex;
 import net.trackmate.pool.ByteMappedElement;
 import net.trackmate.pool.ByteMappedElementArray;
 import net.trackmate.pool.MemPool;
@@ -13,10 +11,7 @@ import net.trackmate.pool.PoolObject;
 import net.trackmate.pool.SingleArrayMemPool;
 
 // TODO: truncating earliest UndoableEdits in the list to avoid growing without bounds
-public class UndoableEditList<
-			V extends Vertex< E >,
-			E extends Edge< V > >
-		extends Pool< UndoableEditRef< V, E >, ByteMappedElement >
+public class UndoableEditList extends Pool< UndoableEditRef, ByteMappedElement >
 {
 	protected final UndoDataStack dataStack;
 
@@ -30,10 +25,10 @@ public class UndoableEditList<
 
 	public UndoableEditList( final int initialCapacity )
 	{
-		this( initialCapacity, new Factory<>() );
+		this( initialCapacity, new Factory() );
 	}
 
-	private UndoableEditList( final int initialCapacity, final Factory< V, E > f )
+	private UndoableEditList( final int initialCapacity, final Factory f )
 	{
 		super( initialCapacity, f );
 		f.pool = this;
@@ -44,7 +39,7 @@ public class UndoableEditList<
 
 	public void setUndoPoint()
 	{
-		final UndoableEditRef< V, E > ref = createRef();
+		final UndoableEditRef ref = createRef();
 		if ( nextEditIndex > 0 )
 			get( nextEditIndex - 1, ref ).setUndoPoint( true );
 		releaseRef( ref );
@@ -52,7 +47,7 @@ public class UndoableEditList<
 
 	public void undo()
 	{
-		final UndoableEditRef< V, E > ref = createRef();
+		final UndoableEditRef ref = createRef();
 		boolean first = true;
 		for ( int i = nextEditIndex - 1; i >= 0; --i )
 		{
@@ -68,7 +63,7 @@ public class UndoableEditList<
 
 	public void redo()
 	{
-		final UndoableEditRef< V, E > ref = createRef();
+		final UndoableEditRef ref = createRef();
 		for ( int i = nextEditIndex; i < size(); ++i )
 		{
 			final UndoableEdit edit = get( i, ref );
@@ -80,14 +75,14 @@ public class UndoableEditList<
 		releaseRef( ref );
 	}
 
-	protected UndoableEditRef< V, E > get( final int index, final UndoableEditRef< V, E > ref )
+	protected UndoableEditRef get( final int index, final UndoableEditRef ref )
 	{
 		super.getObject( index, ref );
 		return ref;
 	}
 
 	@Override
-	public UndoableEditRef< V, E > create( final UndoableEditRef< V, E > ref )
+	public UndoableEditRef create( final UndoableEditRef ref )
 	{
 		if ( nextEditIndex < size() )
 			clearFromIndex( nextEditIndex, ref );
@@ -96,7 +91,7 @@ public class UndoableEditList<
 		return ref;
 	}
 
-	private void clearFromIndex( final int fromIndex, final UndoableEditRef< V, E > ref )
+	private void clearFromIndex( final int fromIndex, final UndoableEditRef ref )
 	{
 		for ( int i = super.size() - 1; i >= fromIndex; --i )
 		{
@@ -112,12 +107,9 @@ public class UndoableEditList<
 		super.deleteByInternalPoolIndex( index );
 	}
 
-	private static class Factory<
-				V extends Vertex< E >,
-				E extends Edge< V > >
-			implements PoolObject.Factory< UndoableEditRef< V, E >, ByteMappedElement >
+	private static class Factory implements PoolObject.Factory< UndoableEditRef, ByteMappedElement >
 	{
-		private UndoableEditList< V, E > pool;
+		private UndoableEditList pool;
 
 		@Override
 		public int getSizeInBytes()
@@ -126,9 +118,9 @@ public class UndoableEditList<
 		}
 
 		@Override
-		public UndoableEditRef< V, E > createEmptyRef()
+		public UndoableEditRef createEmptyRef()
 		{
-			return new UndoableEditRef< V, E >(	pool );
+			return new UndoableEditRef(	pool );
 		}
 
 		@Override
@@ -139,9 +131,9 @@ public class UndoableEditList<
 
 		@SuppressWarnings( { "unchecked", "rawtypes" } )
 		@Override
-		public Class< UndoableEditRef< V, E > > getRefClass()
+		public Class< UndoableEditRef > getRefClass()
 		{
-			return ( Class ) UndoableEditRef.class;
+			return UndoableEditRef.class;
 		}
 	};
 
@@ -161,7 +153,7 @@ public class UndoableEditList<
 	 * @param <T>
 	 *            the {@link ClearableUndoableEdit} type.
 	 */
-	public interface UndoableEditType< V extends Vertex< E >, E extends Edge< V >, T extends ClearableUndoableEdit >
+	public interface UndoableEditType< T extends ClearableUndoableEdit >
 	{
 		/**
 		 * Get the unique index associated to {@code T}.
@@ -178,9 +170,9 @@ public class UndoableEditList<
 		 *            {@code T}.
 		 * @return a new {@code T}.
 		 */
-		public T createInstance( final UndoableEditRef< V, E > ref );
+		public T createInstance( final UndoableEditRef ref );
 
-		public boolean isInstance( final UndoableEditRef< V, E > ref );
+		public boolean isInstance( final UndoableEditRef ref );
 	}
 
 	/**
@@ -190,11 +182,11 @@ public class UndoableEditList<
 	 */
 	protected abstract class AbstractClearableUndoableEdit implements ClearableUndoableEdit
 	{
-		protected final UndoableEditRef< V, E > ref;
+		protected final UndoableEditRef ref;
 
 		protected final byte typeIndex;
 
-		protected AbstractClearableUndoableEdit( final UndoableEditRef< V, E > ref, final int typeIndex )
+		protected AbstractClearableUndoableEdit( final UndoableEditRef ref, final int typeIndex )
 		{
 			this.ref = ref;
 			this.typeIndex = ( byte ) typeIndex;
@@ -225,7 +217,7 @@ public class UndoableEditList<
 
 	private int idgen = 0;
 
-	private final TIntObjectArrayMap< UndoableEditType< V, E, ? > > undoableEditTypes = new TIntObjectArrayMap<>();
+	private final TIntObjectArrayMap< UndoableEditType< ? > > undoableEditTypes = new TIntObjectArrayMap<>();
 
 	/**
 	 * Abstract base class for the {@link UndoableEditType}s of this {@link UndoableEditList}.
@@ -233,7 +225,7 @@ public class UndoableEditList<
 	 * @param <T>
 	 *            the {@link AbstractClearableUndoableEdit} type.
 	 */
-	protected abstract class UndoableEditTypeImp< T extends AbstractClearableUndoableEdit > implements UndoableEditType< V, E, T >
+	protected abstract class UndoableEditTypeImp< T extends AbstractClearableUndoableEdit > implements UndoableEditType< T >
 	{
 		private final int typeIndex;
 
@@ -250,17 +242,17 @@ public class UndoableEditList<
 		}
 
 		@Override
-		public abstract T createInstance( final UndoableEditRef< V, E > ref );
+		public abstract T createInstance( final UndoableEditRef ref );
 
 
 		@Override
-		public boolean isInstance( final UndoableEditRef< V, E > ref )
+		public boolean isInstance( final UndoableEditRef ref )
 		{
 			return ref != null && ref.getTypeIndex() == typeIndex;
 		}
 	}
 
-	UndoableEditType< V, E, ? > getUndoableEditType( final byte typeIndex )
+	UndoableEditType< ? > getUndoableEditType( final byte typeIndex )
 	{
 		return undoableEditTypes.get( typeIndex );
 	}
@@ -275,7 +267,7 @@ public class UndoableEditList<
 
 	public void recordOther( final UndoableEdit undoableEdit )
 	{
-		final UndoableEditRef< V, E > ref = createRef();
+		final UndoableEditRef ref = createRef();
 		create( ref ).getEdit( other ).init( undoableEdit );
 		releaseRef( ref );
 	}
@@ -285,7 +277,7 @@ public class UndoableEditList<
 	protected class OtherType extends UndoableEditTypeImp< Other >
 	{
 		@Override
-		public Other createInstance( final UndoableEditRef< V, E > ref )
+		public Other createInstance( final UndoableEditRef ref )
 		{
 			return new Other( ref, typeIndex() );
 		}
@@ -293,7 +285,7 @@ public class UndoableEditList<
 
 	private class Other extends AbstractClearableUndoableEdit
 	{
-		Other( final UndoableEditRef< V, E > ref, final int typeIndex )
+		Other( final UndoableEditRef ref, final int typeIndex )
 		{
 			super( ref, typeIndex );
 		}

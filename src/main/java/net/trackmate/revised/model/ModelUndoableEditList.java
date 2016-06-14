@@ -29,11 +29,11 @@ public class ModelUndoableEditList<
 
 	public void recordSetPosition( final V vertex )
 	{
-		final UndoableEditRef< V, E > ref = createRef();
+		final UndoableEditRef ref = createRef();
 		boolean createNewEdit = true;
 		if ( nextEditIndex > 0 )
 		{
-			final UndoableEditRef< V, E > edit = get( nextEditIndex - 1, ref );
+			final UndoableEditRef edit = get( nextEditIndex - 1, ref );
 			createNewEdit = !setVertexPosition.isInstance( edit ) || edit.isUndoPoint();
 		}
 		if ( createNewEdit )
@@ -46,7 +46,7 @@ public class ModelUndoableEditList<
 	protected class SetVertexPositionType extends UndoableEditTypeImp< SetVertexPosition >
 	{
 		@Override
-		public SetVertexPosition createInstance( final UndoableEditRef< V, E > ref )
+		public SetVertexPosition createInstance( final UndoableEditRef ref )
 		{
 			return new SetVertexPosition( ref, typeIndex() );
 		}
@@ -58,7 +58,7 @@ public class ModelUndoableEditList<
 
 		private final double[] tmp;
 
-		SetVertexPosition( final UndoableEditRef< V, E > ref, final int typeIndex )
+		SetVertexPosition( final UndoableEditRef ref, final int typeIndex )
 		{
 			super( ref, typeIndex );
 			pos = new double[ numDimensions ];
