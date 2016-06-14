@@ -138,22 +138,13 @@ public class UndoableEditList extends Pool< UndoableEditRef, ByteMappedElement >
 	};
 
 	/**
-	 * An {@link UndoableEdit} that can be cleared.
-	 * This is used to remove non-ref edits from {@link UndoableEditList#nonRefEdits}.
-	 */
-	public interface ClearableUndoableEdit extends UndoableEdit
-	{
-		public void clear();
-	}
-
-	/**
-	 * Represents a specific sub-type of {@link ClearableUndoableEdit},
+	 * Represents a specific sub-type of {@link UndoableEdit},
 	 * identified by a unique index.
 	 *
 	 * @param <T>
-	 *            the {@link ClearableUndoableEdit} type.
+	 *            the {@link UndoableEdit} type.
 	 */
-	public interface UndoableEditType< T extends ClearableUndoableEdit >
+	public interface UndoableEditType< T extends UndoableEdit >
 	{
 		/**
 		 * Get the unique index associated to {@code T}.
@@ -163,7 +154,7 @@ public class UndoableEditList extends Pool< UndoableEditRef, ByteMappedElement >
 		public int typeIndex();
 
 		/**
-		 * Create a {@link ClearableUndoableEdit} of type {@code T}.
+		 * Create a {@link UndoableEdit} of type {@code T}.
 		 *
 		 * @param ref
 		 *            the {@link UndoableEditRef} that will use the created
@@ -176,17 +167,21 @@ public class UndoableEditList extends Pool< UndoableEditRef, ByteMappedElement >
 	}
 
 	/**
-	 * Abstract base class for {@link ClearableUndoableEdit}s that has an
-	 * {@link UndoableEditRef} to which it forwards. {@link #clear()} does
-	 * nothing.
+	 * Abstract base class for {@link UndoableEdit}s that has an
+	 * {@link UndoableEditRef} to which it forwards.
+	 * <p>
+	 * This acts as a facet of a polymorphic {@link UndoableEditRef},
+	 * representing one particular derived type. Each {@link UndoableEditRef}
+	 * caches a collection of {@link AbstractUndoableEdit} for the specific
+	 * types it has represented.
 	 */
-	protected abstract class AbstractClearableUndoableEdit implements ClearableUndoableEdit
+	protected abstract class AbstractUndoableEdit implements UndoableEdit
 	{
 		protected final UndoableEditRef ref;
 
 		protected final byte typeIndex;
 
-		protected AbstractClearableUndoableEdit( final UndoableEditRef ref, final int typeIndex )
+		protected AbstractUndoableEdit( final UndoableEditRef ref, final int typeIndex )
 		{
 			this.ref = ref;
 			this.typeIndex = ( byte ) typeIndex;
@@ -209,10 +204,6 @@ public class UndoableEditList extends Pool< UndoableEditRef, ByteMappedElement >
 		{
 			ref.setIsUndoPointField( isUndoPoint );
 		}
-
-		@Override
-		public void clear()
-		{}
 	}
 
 	private int idgen = 0;
@@ -223,9 +214,9 @@ public class UndoableEditList extends Pool< UndoableEditRef, ByteMappedElement >
 	 * Abstract base class for the {@link UndoableEditType}s of this {@link UndoableEditList}.
 	 *
 	 * @param <T>
-	 *            the {@link AbstractClearableUndoableEdit} type.
+	 *            the {@link AbstractUndoableEdit} type.
 	 */
-	protected abstract class UndoableEditTypeImp< T extends AbstractClearableUndoableEdit > implements UndoableEditType< T >
+	protected abstract class UndoableEditTypeImp< T extends AbstractUndoableEdit > implements UndoableEditType< T >
 	{
 		private final int typeIndex;
 
@@ -283,7 +274,7 @@ public class UndoableEditList extends Pool< UndoableEditRef, ByteMappedElement >
 		}
 	}
 
-	private class Other extends AbstractClearableUndoableEdit
+	private class Other extends AbstractUndoableEdit
 	{
 		Other( final UndoableEditRef ref, final int typeIndex )
 		{

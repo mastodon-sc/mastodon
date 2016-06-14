@@ -121,7 +121,7 @@ public class GraphUndoableEditList<
 		}
 	}
 
-	private class AddVertex extends AbstractClearableUndoableEdit
+	private class AddVertex extends AbstractUndoableEdit
 	{
 		private final AddRemoveVertexRecord addRemoveVertex;
 
@@ -163,7 +163,7 @@ public class GraphUndoableEditList<
 		}
 	}
 
-	private class RemoveVertex extends AbstractClearableUndoableEdit
+	private class RemoveVertex extends AbstractUndoableEdit
 	{
 		private final AddRemoveVertexRecord addRemoveVertex;
 
@@ -284,7 +284,7 @@ public class GraphUndoableEditList<
 		}
 	}
 
-	private class AddEdge extends AbstractClearableUndoableEdit
+	private class AddEdge extends AbstractUndoableEdit
 	{
 		private final AddRemoveEdgeRecord addRemoveEdge;
 
@@ -326,7 +326,7 @@ public class GraphUndoableEditList<
 		}
 	}
 
-	private class RemoveEdge extends AbstractClearableUndoableEdit
+	private class RemoveEdge extends AbstractUndoableEdit
 	{
 		private final AddRemoveEdgeRecord addRemoveEdge;
 
@@ -495,7 +495,7 @@ public class GraphUndoableEditList<
 		}
 	}
 
-	private class SetFeature< O > extends AbstractClearableUndoableEdit
+	private class SetFeature< O > extends AbstractUndoableEdit
 	{
 		private final UndoIdBimap< O > undoIdBimap;
 

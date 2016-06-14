@@ -47,7 +47,7 @@ public class ModelSpotUndoableEditList extends ModelUndoableEditList< Spot, Link
 		}
 	}
 
-	private class SetVertexCovariance extends AbstractClearableUndoableEdit
+	private class SetVertexCovariance extends AbstractUndoableEdit
 	{
 		private final double[][] mat;
 

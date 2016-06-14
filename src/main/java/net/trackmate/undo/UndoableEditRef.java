@@ -7,7 +7,6 @@ import static net.trackmate.pool.ByteUtils.LONG_SIZE;
 import gnu.trove.map.TIntObjectArrayMap;
 import net.trackmate.pool.ByteMappedElement;
 import net.trackmate.pool.PoolObject;
-import net.trackmate.undo.UndoableEditList.ClearableUndoableEdit;
 import net.trackmate.undo.UndoableEditList.UndoableEditType;
 
 public final class UndoableEditRef
@@ -55,7 +54,8 @@ public final class UndoableEditRef
 	protected void setToUninitializedState()
 	{}
 
-	void clear()
+	@Override
+	public void clear()
 	{
 		getEdit().clear();
 	}
@@ -90,9 +90,9 @@ public final class UndoableEditRef
 		return access.getBoolean( IS_UNDO_POINT_OFFSET );
 	}
 
-	private final TIntObjectArrayMap< ClearableUndoableEdit > editTypes = new TIntObjectArrayMap<>();
+	private final TIntObjectArrayMap< UndoableEdit > editTypes = new TIntObjectArrayMap<>();
 
-	public < T extends ClearableUndoableEdit > T getEdit( final UndoableEditType< T > type )
+	public < T extends UndoableEdit > T getEdit( final UndoableEditType< T > type )
 	{
 		@SuppressWarnings( "unchecked" )
 		T edit = ( T ) editTypes.get( type.typeIndex() );
@@ -104,9 +104,9 @@ public final class UndoableEditRef
 		return edit;
 	}
 
-	private ClearableUndoableEdit getEdit()
+	private UndoableEdit getEdit()
 	{
-		final ClearableUndoableEdit edit = editTypes.get( getTypeIndex() );
+		final UndoableEdit edit = editTypes.get( getTypeIndex() );
 		if ( edit == null )
 			return getEdit( pool.getUndoableEditType( getTypeIndex() ) );
 		return edit;

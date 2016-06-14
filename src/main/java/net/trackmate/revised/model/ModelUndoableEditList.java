@@ -52,7 +52,7 @@ public class ModelUndoableEditList<
 		}
 	}
 
-	private class SetVertexPosition extends AbstractClearableUndoableEdit
+	private class SetVertexPosition extends AbstractUndoableEdit
 	{
 		private final double[] pos;
 
