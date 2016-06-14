@@ -1,7 +1,7 @@
 package net.trackmate.revised.model.mamut;
 
-import net.trackmate.graph.GraphFeatures;
 import net.trackmate.graph.ListenableGraph;
+import net.trackmate.graph.features.Features;
 import net.trackmate.revised.model.ModelUndoableEditList;
 import net.trackmate.undo.UndoIdBimap;
 import net.trackmate.undo.UndoSerializer;
@@ -13,21 +13,22 @@ public class ModelSpotUndoableEditList extends ModelUndoableEditList< Spot, Link
 	public ModelSpotUndoableEditList(
 			final int initialCapacity,
 			final ListenableGraph< Spot, Link > graph,
-			final GraphFeatures< Spot, Link > graphFeatures,
+			final Features< Spot > vertexFeatures,
+			final Features< Link > edgeFeatures,
 			final UndoSerializer< Spot, Link > serializer,
 			final UndoIdBimap< Spot > vertexUndoIdBimap,
 			final UndoIdBimap< Link > edgeUndoIdBimap )
 	{
-		super( initialCapacity, graph, graphFeatures, serializer, vertexUndoIdBimap, edgeUndoIdBimap );
+		super( initialCapacity, graph, vertexFeatures, edgeFeatures, serializer, vertexUndoIdBimap, edgeUndoIdBimap );
 	}
 
 	public void recordSetCovariance( final Spot vertex )
 	{
-		final UndoableEditRef< Spot, Link > ref = createRef();
+		final UndoableEditRef ref = createRef();
 		boolean createNewEdit = true;
 		if ( nextEditIndex > 0 )
 		{
-			final UndoableEditRef< Spot, Link > edit = get( nextEditIndex - 1, ref );
+			final UndoableEditRef edit = get( nextEditIndex - 1, ref );
 			createNewEdit = !setVertexPosition.isInstance( edit ) || edit.isUndoPoint();
 		}
 		if ( createNewEdit )
@@ -40,7 +41,7 @@ public class ModelSpotUndoableEditList extends ModelUndoableEditList< Spot, Link
 	protected class SetVertexCovarianceType extends UndoableEditTypeImp< SetVertexCovariance >
 	{
 		@Override
-		public SetVertexCovariance createInstance( final UndoableEditRef< Spot, Link > ref )
+		public SetVertexCovariance createInstance( final UndoableEditRef ref )
 		{
 			return new SetVertexCovariance( ref, typeIndex() );
 		}
@@ -52,7 +53,7 @@ public class ModelSpotUndoableEditList extends ModelUndoableEditList< Spot, Link
 
 		private final double[][] tmp;
 
-		SetVertexCovariance( final UndoableEditRef< Spot, Link > ref, final int typeIndex )
+		SetVertexCovariance( final UndoableEditRef ref, final int typeIndex )
 		{
 			super( ref, typeIndex );
 			mat = new double[ numDimensions ][ numDimensions ];
