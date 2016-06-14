@@ -28,6 +28,7 @@ public class UndoRecorder<
 
 	protected final L edits;
 
+	// TODO: remove?
 	public static < V extends Vertex< E >, E extends Edge< V > >
 		UndoRecorder< V, E, DefaultUndoableEditList< V, E > > create(
 				final ListenableGraph< V, E > graph,
