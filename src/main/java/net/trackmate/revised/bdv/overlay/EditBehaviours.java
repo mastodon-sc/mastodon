@@ -42,7 +42,7 @@ public class EditBehaviours< V extends OverlayVertex< V, E >, E extends OverlayE
 	private static final double NORMAL_RADIUS_CHANGE = 0.1;
 
 	/**
-	 * Ratio by which we change the radius upon change radius a but action.
+	 * Ratio by which we change the radius upon change radius a bit action.
 	 */
 	private static final double ABIT_RADIUS_CHANGE = 0.01;
 
@@ -163,7 +163,6 @@ public class EditBehaviours< V extends OverlayVertex< V, E >, E extends OverlayE
 
 	private class ResizeSpot implements ClickBehaviour
 	{
-
 		private final double[][] mat;
 
 		private final double factor;
