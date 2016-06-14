@@ -12,14 +12,17 @@ import net.trackmate.graph.features.Features;
 /**
  * TODO: javadoc
  * TODO: figure out, when mappings can be removed from UndoIdBimaps.
- * TODO: move to package model.undo
+ * TODO: move to package model.undo (?)
+ *
+ * @param <V>
+ * @param <E>
  *
  * @author Tobias Pietzsch &lt;tobias.pietzsch@gmail.com&gt;
  */
-public class UndoRecorder<
-			V extends Vertex< E >, // TODO: is Vertex<> sufficient?
+public class GraphUndoRecorder<
+			V extends Vertex< E >,
 			E extends Edge< V >,
-			L extends DefaultUndoableEditList< V, E > >
+			L extends GraphUndoableEditList< V, E > >
 		implements GraphListener< V, E >, UndoPointMarker
 {
 	private static final int defaultCapacity = 1000;
@@ -30,25 +33,25 @@ public class UndoRecorder<
 
 	// TODO: remove?
 	public static < V extends Vertex< E >, E extends Edge< V > >
-		UndoRecorder< V, E, DefaultUndoableEditList< V, E > > create(
+		GraphUndoRecorder< V, E, GraphUndoableEditList< V, E > > create(
 				final ListenableGraph< V, E > graph,
 				final Features< V > vertexFeatures,
 				final Features< E > edgeFeatures,
 				final GraphIdBimap< V, E > idmap,
-				final UndoSerializer< V, E > serializer )
+				final GraphUndoSerializer< V, E > serializer )
 	{
 		final UndoIdBimap< V > vertexUndoIdBimap = new UndoIdBimap<>( idmap.vertexIdBimap() );
 		final UndoIdBimap< E > edgeUndoIdBimap = new UndoIdBimap<>( idmap.edgeIdBimap() );
-		final DefaultUndoableEditList< V, E > edits = new DefaultUndoableEditList<>( defaultCapacity, graph, vertexFeatures, edgeFeatures, serializer, vertexUndoIdBimap, edgeUndoIdBimap );
-		return new UndoRecorder<>( graph, vertexFeatures, edgeFeatures, edits );
+		final GraphUndoableEditList< V, E > edits = new GraphUndoableEditList<>( defaultCapacity, graph, vertexFeatures, edgeFeatures, serializer, vertexUndoIdBimap, edgeUndoIdBimap );
+		return new GraphUndoRecorder<>( graph, vertexFeatures, edgeFeatures, edits );
 	}
 
-	public UndoRecorder(
+	public GraphUndoRecorder(
 			final L edits,
 			final ListenableGraph< V, E > graph,
 			final Features< V > vertexFeatures,
 			final Features< E > edgeFeatures,
-			final UndoSerializer< V, E > serializer )
+			final GraphUndoSerializer< V, E > serializer )
 	{
 		recording = true;
 		this.edits = edits;
@@ -58,7 +61,7 @@ public class UndoRecorder<
 	}
 
 
-	public UndoRecorder(
+	public GraphUndoRecorder(
 			final ListenableGraph< V, E > graph,
 			final Features< V > vertexFeatures,
 			final Features< E > edgeFeatures,

@@ -4,10 +4,10 @@ import net.trackmate.graph.GraphIdBimap;
 import net.trackmate.graph.features.Features;
 import net.trackmate.revised.model.AbstractModelGraph;
 import net.trackmate.undo.UndoIdBimap;
-import net.trackmate.undo.UndoRecorder;
-import net.trackmate.undo.UndoSerializer;
+import net.trackmate.undo.GraphUndoRecorder;
+import net.trackmate.undo.GraphUndoSerializer;
 
-public class ModelSpotUndoRecorder extends UndoRecorder< Spot, Link, ModelSpotUndoableEditList >
+public class ModelSpotUndoRecorder extends GraphUndoRecorder< Spot, Link, ModelSpotUndoableEditList >
 		implements AbstractSpotCovarianceListener
 {
 	private static final int defaultCapacity = 1000;
@@ -17,7 +17,7 @@ public class ModelSpotUndoRecorder extends UndoRecorder< Spot, Link, ModelSpotUn
 			final Features< Spot > vertexFeatures,
 			final Features< Link > edgeFeatures,
 			final GraphIdBimap< Spot, Link > idmap,
-			final UndoSerializer< Spot, Link > serializer )
+			final GraphUndoSerializer< Spot, Link > serializer )
 	{
 		super( graph,
 				vertexFeatures,

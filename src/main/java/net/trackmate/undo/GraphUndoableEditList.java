@@ -7,16 +7,23 @@ import net.trackmate.graph.features.Feature;
 import net.trackmate.graph.features.FeatureRegistry;
 import net.trackmate.graph.features.Features;
 
-// TODO: move to model.undo ?
-// TODO: rename ?
-public class DefaultUndoableEditList<
-			V extends Vertex< E >, // TODO: is Vertex<> sufficient?
+/**
+ * TODO: javadoc
+ * TODO: move to package model.undo (?)
+ *
+ * @param <V>
+ * @param <E>
+ *
+ * @author Tobias Pietzsch &lt;tobias.pietzsch@gmail.com&gt;
+ */
+public class GraphUndoableEditList<
+			V extends Vertex< E >,
 			E extends Edge< V > >
 		extends UndoableEditList
 {
 	protected final ListenableGraph< V, E > graph;
 
-	protected final UndoSerializer< V, E > serializer;
+	protected final GraphUndoSerializer< V, E > serializer;
 
 	protected final UndoIdBimap< V > vertexUndoIdBimap;
 
@@ -26,12 +33,12 @@ public class DefaultUndoableEditList<
 
 	protected final UndoFeatureStore< E > edgeFeatureStore;
 
-	public DefaultUndoableEditList(
+	public GraphUndoableEditList(
 			final int initialCapacity,
 			final ListenableGraph< V, E > graph,
 			final Features< V > vertexFeatures,
 			final Features< E > edgeFeatures,
-			final UndoSerializer< V, E > serializer,
+			final GraphUndoSerializer< V, E > serializer,
 			final UndoIdBimap< V > vertexUndoIdBimap,
 			final UndoIdBimap< E > edgeUndoIdBimap )
 	{

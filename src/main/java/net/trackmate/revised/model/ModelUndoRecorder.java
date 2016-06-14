@@ -4,13 +4,13 @@ import net.trackmate.graph.GraphIdBimap;
 import net.trackmate.graph.features.Features;
 import net.trackmate.graph.ref.AbstractListenableEdge;
 import net.trackmate.undo.UndoIdBimap;
-import net.trackmate.undo.UndoRecorder;
-import net.trackmate.undo.UndoSerializer;
+import net.trackmate.undo.GraphUndoRecorder;
+import net.trackmate.undo.GraphUndoSerializer;
 
 public class ModelUndoRecorder<
 		V extends AbstractSpot< V, E, ?, ? >,
 		E extends AbstractListenableEdge< E, V, ? > >
-	extends UndoRecorder< V, E, ModelUndoableEditList<V,E> >
+	extends GraphUndoRecorder< V, E, ModelUndoableEditList<V,E> >
 	implements AbstractSpotListener< V >
 {
 	private static final int defaultCapacity = 1000;
@@ -20,7 +20,7 @@ public class ModelUndoRecorder<
 			final Features< V > vertexFeatures,
 			final Features< E > edgeFeatures,
 			final GraphIdBimap< V, E > idmap,
-			final UndoSerializer< V, E > serializer )
+			final GraphUndoSerializer< V, E > serializer )
 	{
 		super( graph, vertexFeatures, edgeFeatures,
 				new ModelUndoableEditList< >(

@@ -4,7 +4,7 @@ import net.trackmate.graph.ListenableGraph;
 import net.trackmate.graph.features.Features;
 import net.trackmate.revised.model.ModelUndoableEditList;
 import net.trackmate.undo.UndoIdBimap;
-import net.trackmate.undo.UndoSerializer;
+import net.trackmate.undo.GraphUndoSerializer;
 import net.trackmate.undo.UndoableEditRef;
 
 public class ModelSpotUndoableEditList extends ModelUndoableEditList< Spot, Link >
@@ -15,7 +15,7 @@ public class ModelSpotUndoableEditList extends ModelUndoableEditList< Spot, Link
 			final ListenableGraph< Spot, Link > graph,
 			final Features< Spot > vertexFeatures,
 			final Features< Link > edgeFeatures,
-			final UndoSerializer< Spot, Link > serializer,
+			final GraphUndoSerializer< Spot, Link > serializer,
 			final UndoIdBimap< Spot > vertexUndoIdBimap,
 			final UndoIdBimap< Link > edgeUndoIdBimap )
 	{
