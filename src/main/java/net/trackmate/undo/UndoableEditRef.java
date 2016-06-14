@@ -12,7 +12,7 @@ import net.trackmate.pool.PoolObject;
 import net.trackmate.undo.UndoableEditList.ClearableUndoableEdit;
 import net.trackmate.undo.UndoableEditList.UndoableEditType;
 
-public class UndoableEditRef<
+public final class UndoableEditRef<
 			V extends Vertex< E >,
 			E extends Edge< V > >
 		extends PoolObject< UndoableEditRef< V, E >, ByteMappedElement >
