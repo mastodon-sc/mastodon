@@ -562,4 +562,102 @@ public class GraphUndoableEditList<
 			return dataStack.getReadDataIndex();
 		}
 	}
+
+	protected class SetAttributeType< O > extends UndoableEditTypeImp< SetAttribute< O > >
+	{
+		private final UndoIdBimap< O > undoIdBimap;
+
+		private UndoSerializer< O > attributeSerializer;
+
+		public SetAttributeType(
+				final UndoIdBimap< O > undoIdBimap,
+				final UndoSerializer< O > attributeSerializer )
+		{
+			super();
+			this.undoIdBimap = undoIdBimap;
+			this.attributeSerializer = attributeSerializer;
+		}
+
+		@Override
+		public SetAttribute< O > createInstance( final UndoableEditRef ref )
+		{
+			return new SetAttribute<>( ref, typeIndex(), undoIdBimap, attributeSerializer );
+		}
+	}
+
+	protected class SetAttribute< O > extends AbstractUndoableEdit
+	{
+		private final UndoIdBimap< O > undoIdBimap;
+
+		private UndoSerializer< O > attributeSerializer;
+
+		private final byte[] data;
+
+		private final byte[] swapdata;
+
+		SetAttribute(
+				final UndoableEditRef ref,
+				final int typeIndex,
+				final UndoIdBimap< O > undoIdBimap,
+				final UndoSerializer< O > attributeSerializer )
+		{
+			super( ref, typeIndex );
+			this.undoIdBimap = undoIdBimap;
+			this.attributeSerializer = attributeSerializer;
+			this.data = new byte[ attributeSerializer.getNumBytes() ];
+			this.swapdata = new byte[ attributeSerializer.getNumBytes() ];
+		}
+
+		public void init( final O obj )
+		{
+			super.init();
+
+			final int vi = undoIdBimap.getId( obj );
+			attributeSerializer.getBytes( obj, data );
+
+			final long dataIndex = dataStack.getWriteDataIndex();
+			dataStack.out.writeInt( vi );
+			dataStack.out.write( data );
+
+			ref.setDataIndex( dataIndex );
+		}
+
+		@Override
+		public void redo()
+		{
+			final long d0 = ref.getDataIndex();
+			final long d1 = swap( d0 );
+			dataStack.setWriteDataIndex( d1 );
+		}
+
+		@Override
+		public void undo()
+		{
+			final long d0 = ref.getDataIndex();
+			swap( d0 );
+			dataStack.setWriteDataIndex( d0 );
+		}
+
+		private long swap( final long dataIndex )
+		{
+			dataStack.setReadDataIndex( dataIndex );
+			final int vi = dataStack.in.readInt();
+			dataStack.in.readFully( swapdata );
+
+			final O ref = undoIdBimap.createRef();
+			final O obj = undoIdBimap.getObject( vi, ref );
+			attributeSerializer.getBytes( obj, data );
+
+			dataStack.setWriteDataIndex( dataIndex );
+//			dataStack.out.writeInt( vi );
+			dataStack.out.skip( 4 );
+			dataStack.out.write( data );
+
+			attributeSerializer.setBytes( obj, swapdata );
+			attributeSerializer.notifySet( obj );
+			undoIdBimap.releaseRef( ref );
+
+			return dataStack.getReadDataIndex();
+		}
+	}
 }
