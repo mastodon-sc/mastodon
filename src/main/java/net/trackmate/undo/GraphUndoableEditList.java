@@ -463,8 +463,8 @@ public class GraphUndoableEditList<
 			final E edge = graph.insertEdge( source, sOutIndex, target, tInIndex, eref );
 			edgeUndoIdBimap.put( ei, edge );
 			serializer.setBytes( edge, data );
-			edgeFeatureStore.retrieveAll( fi, edge );
 			serializer.notifyEdgeAdded( edge );
+			edgeFeatureStore.retrieveAll( fi, edge );
 			graph.releaseRef( eref );
 			graph.releaseRef( vref2 );
 			graph.releaseRef( vref1 );
