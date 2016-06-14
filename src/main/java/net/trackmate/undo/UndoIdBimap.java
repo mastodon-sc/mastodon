@@ -6,7 +6,7 @@ import gnu.trove.map.hash.TIntIntHashMap;
 import net.trackmate.RefPool;
 
 /**
- * TODO
+ * TODO javadoc
  *
  * @param <O>
  *

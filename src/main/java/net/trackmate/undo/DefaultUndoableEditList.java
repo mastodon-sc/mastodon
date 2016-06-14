@@ -8,8 +8,9 @@ import net.trackmate.graph.features.FeatureRegistry;
 import net.trackmate.graph.features.Features;
 
 // TODO: move to model.undo ?
+// TODO: rename ?
 public class DefaultUndoableEditList<
-			V extends VertexWithFeatures< V, E >,
+			V extends VertexWithFeatures< V, E >, // TODO: is Vertex<> sufficient?
 			E extends Edge< V > >
 		extends UndoableEditList< V, E >
 {

@@ -16,7 +16,10 @@ import net.trackmate.graph.features.Features;
  *
  * @author Tobias Pietzsch &lt;tobias.pietzsch@gmail.com&gt;
  */
-public class UndoRecorder< V extends VertexWithFeatures< V, E >, E extends Edge< V >, L extends DefaultUndoableEditList< V, E > >
+public class UndoRecorder<
+			V extends VertexWithFeatures< V, E >, // TODO: is Vertex<> sufficient?
+			E extends Edge< V >,
+			L extends DefaultUndoableEditList< V, E > >
 		implements GraphListener< V, E >, UndoPointMarker
 {
 	private static final int defaultCapacity = 1000;
