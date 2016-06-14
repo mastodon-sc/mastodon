@@ -29,7 +29,7 @@ public class ModelSpotUndoableEditList extends ModelUndoableEditList< Spot, Link
 		if ( nextEditIndex > 0 )
 		{
 			final UndoableEditRef edit = get( nextEditIndex - 1, ref );
-			createNewEdit = !setVertexPosition.isInstance( edit ) || edit.isUndoPoint();
+			createNewEdit = !setVertexCovariance.isInstance( edit ) || edit.isUndoPoint();
 		}
 		if ( createNewEdit )
 			create( ref ).getEdit( setVertexCovariance ).init( vertex );
