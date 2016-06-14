@@ -512,14 +512,14 @@ public class GraphUndoableEditList<
 			this.featureStore = featureStore;
 		}
 
-		public void init( final Feature< ?, O, ? > feature, final O vertex )
+		public void init( final Feature< ?, O, ? > feature, final O obj )
 		{
 			super.init();
 
-			final int vi = undoIdBimap.getId( vertex );
+			final int vi = undoIdBimap.getId( obj );
 			final int fi = featureStore.createFeatureUndoId();
 			final int fuid = feature.getUniqueFeatureId();
-			featureStore.store( fi, feature, vertex );
+			featureStore.store( fi, feature, obj );
 
 			final long dataIndex = dataStack.getWriteDataIndex();
 			dataStack.out.writeInt( vi );
@@ -553,10 +553,10 @@ public class GraphUndoableEditList<
 			final int fuid = dataStack.in.readInt();
 
 			final O ref = undoIdBimap.createRef();
-			final O vertex = undoIdBimap.getObject( vi, ref );
+			final O obj = undoIdBimap.getObject( vi, ref );
 			@SuppressWarnings( "unchecked" )
 			final Feature< ?, O, ? > feature = ( Feature< ?, O, ? > ) FeatureRegistry.getFeature( fuid );
-			featureStore.swap( fi, feature, vertex );
+			featureStore.swap( fi, feature, obj );
 			undoIdBimap.releaseRef( ref );
 
 			return dataStack.getReadDataIndex();
