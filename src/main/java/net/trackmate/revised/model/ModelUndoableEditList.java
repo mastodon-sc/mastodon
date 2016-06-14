@@ -3,9 +3,9 @@ package net.trackmate.revised.model;
 import net.trackmate.graph.ListenableGraph;
 import net.trackmate.graph.features.Features;
 import net.trackmate.graph.ref.AbstractListenableEdge;
+import net.trackmate.undo.GraphUndoSerializer;
 import net.trackmate.undo.GraphUndoableEditList;
 import net.trackmate.undo.UndoIdBimap;
-import net.trackmate.undo.GraphUndoSerializer;
 import net.trackmate.undo.UndoableEditRef;
 
 public class ModelUndoableEditList<
@@ -41,9 +41,9 @@ public class ModelUndoableEditList<
 		releaseRef( ref );
 	}
 
-	protected final SetVertexPositionType setVertexPosition = new SetVertexPositionType();
+	private final SetVertexPositionType setVertexPosition = new SetVertexPositionType();
 
-	protected class SetVertexPositionType extends UndoableEditTypeImp< SetVertexPosition >
+	private class SetVertexPositionType extends UndoableEditTypeImp< SetVertexPosition >
 	{
 		@Override
 		public SetVertexPosition createInstance( final UndoableEditRef ref )

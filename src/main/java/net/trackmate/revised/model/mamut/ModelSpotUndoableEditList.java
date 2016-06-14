@@ -3,8 +3,8 @@ package net.trackmate.revised.model.mamut;
 import net.trackmate.graph.ListenableGraph;
 import net.trackmate.graph.features.Features;
 import net.trackmate.revised.model.ModelUndoableEditList;
-import net.trackmate.undo.UndoIdBimap;
 import net.trackmate.undo.GraphUndoSerializer;
+import net.trackmate.undo.UndoIdBimap;
 import net.trackmate.undo.UndoableEditRef;
 
 public class ModelSpotUndoableEditList extends ModelUndoableEditList< Spot, Link >
@@ -36,9 +36,9 @@ public class ModelSpotUndoableEditList extends ModelUndoableEditList< Spot, Link
 		releaseRef( ref );
 	}
 
-	protected final SetVertexCovarianceType setVertexCovariance = new SetVertexCovarianceType();
+	private final SetVertexCovarianceType setVertexCovariance = new SetVertexCovarianceType();
 
-	protected class SetVertexCovarianceType extends UndoableEditTypeImp< SetVertexCovariance >
+	private class SetVertexCovarianceType extends UndoableEditTypeImp< SetVertexCovariance >
 	{
 		@Override
 		public SetVertexCovariance createInstance( final UndoableEditRef ref )

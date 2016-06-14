@@ -100,19 +100,19 @@ public class GraphUndoableEditList<
 		releaseRef( ref );
 	}
 
-	protected final AddVertexType addVertex;
+	private final AddVertexType addVertex;
 
-	protected final RemoveVertexType removeVertex;
+	private final RemoveVertexType removeVertex;
 
-	protected final AddEdgeType addEdge;
+	private final AddEdgeType addEdge;
 
-	protected final RemoveEdgeType removeEdge;
+	private final RemoveEdgeType removeEdge;
 
-	protected final SetFeatureType< V > setVertexFeature;
+	private final SetFeatureType< V > setVertexFeature;
 
-	protected final SetFeatureType< E > setEdgeFeature;
+	private final SetFeatureType< E > setEdgeFeature;
 
-	protected class AddVertexType extends UndoableEditTypeImp< AddVertex >
+	private class AddVertexType extends UndoableEditTypeImp< AddVertex >
 	{
 		@Override
 		public AddVertex createInstance( final UndoableEditRef ref )
@@ -154,7 +154,7 @@ public class GraphUndoableEditList<
 		}
 	}
 
-	protected class RemoveVertexType extends UndoableEditTypeImp< RemoveVertex >
+	private class RemoveVertexType extends UndoableEditTypeImp< RemoveVertex >
 	{
 		@Override
 		public RemoveVertex createInstance( final UndoableEditRef ref )
@@ -275,7 +275,7 @@ public class GraphUndoableEditList<
 		}
 	}
 
-	protected class AddEdgeType extends UndoableEditTypeImp< AddEdge >
+	private class AddEdgeType extends UndoableEditTypeImp< AddEdge >
 	{
 		@Override
 		public AddEdge createInstance( final UndoableEditRef ref )
@@ -317,7 +317,7 @@ public class GraphUndoableEditList<
 		}
 	}
 
-	protected class RemoveEdgeType extends UndoableEditTypeImp< RemoveEdge >
+	private class RemoveEdgeType extends UndoableEditTypeImp< RemoveEdge >
 	{
 		@Override
 		public RemoveEdge createInstance( final UndoableEditRef ref )
@@ -473,7 +473,7 @@ public class GraphUndoableEditList<
 		}
 	}
 
-	protected class SetFeatureType< O > extends UndoableEditTypeImp< SetFeature< O > >
+	private class SetFeatureType< O > extends UndoableEditTypeImp< SetFeature< O > >
 	{
 		private final UndoIdBimap< O > undoIdBimap;
 

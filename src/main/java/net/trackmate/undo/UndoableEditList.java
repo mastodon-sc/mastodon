@@ -271,9 +271,9 @@ public class UndoableEditList extends Pool< UndoableEditRef, ByteMappedElement >
 		releaseRef( ref );
 	}
 
-	protected final OtherType other = new OtherType();
+	private final OtherType other = new OtherType();
 
-	protected class OtherType extends UndoableEditTypeImp< Other >
+	private class OtherType extends UndoableEditTypeImp< Other >
 	{
 		@Override
 		public Other createInstance( final UndoableEditRef ref )
