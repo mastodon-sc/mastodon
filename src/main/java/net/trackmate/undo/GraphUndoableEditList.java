@@ -1,11 +1,15 @@
 package net.trackmate.undo;
 
+import gnu.trove.map.TIntObjectArrayMap;
+import gnu.trove.map.TIntObjectMap;
 import net.trackmate.graph.Edge;
 import net.trackmate.graph.ListenableGraph;
 import net.trackmate.graph.Vertex;
 import net.trackmate.graph.features.Feature;
 import net.trackmate.graph.features.FeatureRegistry;
 import net.trackmate.graph.features.Features;
+import net.trackmate.undo.attributes.Attribute;
+import net.trackmate.undo.attributes.Attributes;
 
 /**
  * TODO: javadoc
@@ -33,17 +37,25 @@ public class GraphUndoableEditList<
 
 	protected final UndoFeatureStore< E > edgeFeatureStore;
 
+	protected final Attributes< V > vertexAttributes;
+
+	protected final Attributes< E > edgeAttributes;
+
 	public GraphUndoableEditList(
 			final int initialCapacity,
 			final ListenableGraph< V, E > graph,
 			final Features< V > vertexFeatures,
 			final Features< E > edgeFeatures,
+			final Attributes< V > vertexAttributes,
+			final Attributes< E > edgeAttributes,
 			final GraphUndoSerializer< V, E > serializer,
 			final UndoIdBimap< V > vertexUndoIdBimap,
 			final UndoIdBimap< E > edgeUndoIdBimap )
 	{
 		super( initialCapacity );
 		this.graph = graph;
+		this.vertexAttributes = vertexAttributes;
+		this.edgeAttributes = edgeAttributes;
 		this.serializer = serializer;
 		this.vertexUndoIdBimap = vertexUndoIdBimap;
 		this.edgeUndoIdBimap = edgeUndoIdBimap;
@@ -56,6 +68,8 @@ public class GraphUndoableEditList<
 		removeEdge = new RemoveEdgeType();
 		setVertexFeature = new SetFeatureType<>( vertexUndoIdBimap, vertexFeatureStore );
 		setEdgeFeature = new SetFeatureType<>( edgeUndoIdBimap, edgeFeatureStore );
+		setVertexAttribute = new SetAttributeType<>( vertexUndoIdBimap, vertexAttributes );
+		setEdgeAttribute = new SetAttributeType<>( edgeUndoIdBimap, edgeAttributes );
 	}
 
 	public void recordAddVertex( final V vertex )
@@ -100,6 +114,34 @@ public class GraphUndoableEditList<
 		releaseRef( ref );
 	}
 
+	public void recordSetVertexAttribute( final Attribute< V > attribute, final V vertex )
+	{
+		final UndoableEditRef ref = createRef();
+		boolean createNewEdit = true;
+		if ( nextEditIndex > 0 )
+		{
+			final UndoableEditRef edit = get( nextEditIndex - 1, ref );
+			createNewEdit = edit.isUndoPoint() || !setVertexAttribute.matches( edit, attribute, vertex );
+		}
+		if ( createNewEdit )
+			create( ref ).getEdit( setVertexAttribute ).init( attribute, vertex );
+		releaseRef( ref );
+	}
+
+	public void recordSetEdgeAttribute( final Attribute< E > attribute, final E edge )
+	{
+		final UndoableEditRef ref = createRef();
+		boolean createNewEdit = true;
+		if ( nextEditIndex > 0 )
+		{
+			final UndoableEditRef edit = get( nextEditIndex - 1, ref );
+			createNewEdit = edit.isUndoPoint() || !setEdgeAttribute.matches( edit, attribute, edge );
+		}
+		if ( createNewEdit )
+			create( ref ).getEdit( setEdgeAttribute ).init( attribute, edge );
+		releaseRef( ref );
+	}
+
 	private final AddVertexType addVertex;
 
 	private final RemoveVertexType removeVertex;
@@ -111,6 +153,10 @@ public class GraphUndoableEditList<
 	private final SetFeatureType< V > setVertexFeature;
 
 	private final SetFeatureType< E > setEdgeFeature;
+
+	private final SetAttributeType< V > setVertexAttribute;
+
+	private final SetAttributeType< E > setEdgeAttribute;
 
 	private class AddVertexType extends UndoableEditTypeImp< AddVertex >
 	{
@@ -563,60 +609,80 @@ public class GraphUndoableEditList<
 		}
 	}
 
-	protected class SetAttributeType< O > extends UndoableEditTypeImp< SetAttribute< O > >
+	private class SetAttributeType< O > extends UndoableEditTypeImp< SetAttribute< O > >
 	{
 		private final UndoIdBimap< O > undoIdBimap;
 
-		private UndoSerializer< O > attributeSerializer;
+		private final Attributes< O > attributes;
 
 		public SetAttributeType(
 				final UndoIdBimap< O > undoIdBimap,
-				final UndoSerializer< O > attributeSerializer )
+				final Attributes< O > attributes )
 		{
 			super();
 			this.undoIdBimap = undoIdBimap;
-			this.attributeSerializer = attributeSerializer;
+			this.attributes = attributes;
 		}
 
 		@Override
 		public SetAttribute< O > createInstance( final UndoableEditRef ref )
 		{
-			return new SetAttribute<>( ref, typeIndex(), undoIdBimap, attributeSerializer );
+			return new SetAttribute<>( ref, typeIndex(), undoIdBimap, attributes );
+		}
+
+		public boolean matches( final UndoableEditRef ref, final Attribute< O > attribute, final O obj )
+		{
+			return isInstance( ref ) && ref.getEdit( this ).matches( attribute, obj );
 		}
 	}
 
-	protected class SetAttribute< O > extends AbstractUndoableEdit
+	private static class DataArrays
+	{
+		final byte[] data;
+
+		final byte[] swapdata;
+
+		public DataArrays( final int numBytes )
+		{
+			data = new byte[ numBytes ];
+			swapdata = new byte[ numBytes ];
+		}
+	}
+
+	private class SetAttribute< O > extends AbstractUndoableEdit
 	{
 		private final UndoIdBimap< O > undoIdBimap;
 
-		private UndoSerializer< O > attributeSerializer;
+		private final Attributes< O > attributes;
 
-		private final byte[] data;
-
-		private final byte[] swapdata;
+		private final TIntObjectMap< DataArrays > perAttributeDataArrays;
 
 		SetAttribute(
 				final UndoableEditRef ref,
 				final int typeIndex,
 				final UndoIdBimap< O > undoIdBimap,
-				final UndoSerializer< O > attributeSerializer )
+				final Attributes< O > attributes )
 		{
 			super( ref, typeIndex );
 			this.undoIdBimap = undoIdBimap;
-			this.attributeSerializer = attributeSerializer;
-			this.data = new byte[ attributeSerializer.getNumBytes() ];
-			this.swapdata = new byte[ attributeSerializer.getNumBytes() ];
+			this.attributes = attributes;
+			this.perAttributeDataArrays = new TIntObjectArrayMap<>();
+//			this.data = new byte[ attributeSerializer.getNumBytes() ];
+//			this.swapdata = new byte[ attributeSerializer.getNumBytes() ];
 		}
 
-		public void init( final O obj )
+		public void init( final Attribute< O > attribute, final O obj )
 		{
 			super.init();
 
 			final int vi = undoIdBimap.getId( obj );
-			attributeSerializer.getBytes( obj, data );
+			final int auid = attribute.getAttributeId();
+			final byte[] data = getDataArrays( attribute ).data;
+			attribute.getUndoSerializer().getBytes( obj, data );
 
 			final long dataIndex = dataStack.getWriteDataIndex();
 			dataStack.out.writeInt( vi );
+			dataStack.out.writeInt( auid );
 			dataStack.out.write( data );
 
 			ref.setDataIndex( dataIndex );
@@ -642,22 +708,54 @@ public class GraphUndoableEditList<
 		{
 			dataStack.setReadDataIndex( dataIndex );
 			final int vi = dataStack.in.readInt();
+			final int auid = dataStack.in.readInt();
+
+			final Attribute< O > attribute = attributes.getAttributeById( auid );
+			final DataArrays arrays = getDataArrays( attribute );
+			final byte[] data = arrays.data;
+			final byte[] swapdata = arrays.swapdata;
 			dataStack.in.readFully( swapdata );
 
 			final O ref = undoIdBimap.createRef();
 			final O obj = undoIdBimap.getObject( vi, ref );
-			attributeSerializer.getBytes( obj, data );
+			attribute.getUndoSerializer().getBytes( obj, data );
 
 			dataStack.setWriteDataIndex( dataIndex );
 //			dataStack.out.writeInt( vi );
-			dataStack.out.skip( 4 );
+//			dataStack.out.writeInt( auid );
+			dataStack.out.skip( 8 );
 			dataStack.out.write( data );
 
-			attributeSerializer.setBytes( obj, swapdata );
-			attributeSerializer.notifySet( obj );
+			attribute.getUndoSerializer().setBytes( obj, swapdata );
+			attribute.getUndoSerializer().notifySet( obj );
 			undoIdBimap.releaseRef( ref );
 
 			return dataStack.getReadDataIndex();
+		}
+
+		private DataArrays getDataArrays( final Attribute< O > attribute )
+		{
+			DataArrays arrays = perAttributeDataArrays.get( attribute.getAttributeId() );
+			if ( arrays == null )
+			{
+				arrays = new DataArrays( attribute.getUndoSerializer().getNumBytes() );
+				perAttributeDataArrays.put( attribute.getAttributeId(), arrays );
+			}
+			return arrays;
+		}
+
+		boolean matches( final Attribute< O > attribute, final O obj )
+		{
+			final int vi = undoIdBimap.getId( obj );
+			final int auid = attribute.getAttributeId();
+
+			final long dataIndex = ref.getDataIndex();
+			dataStack.setReadDataIndex( dataIndex );
+			final boolean matches = ( dataStack.in.readInt() == vi )
+					&& ( dataStack.in.readInt() == auid );
+			dataStack.setReadDataIndex( dataIndex );
+
+			return matches;
 		}
 	}
 }

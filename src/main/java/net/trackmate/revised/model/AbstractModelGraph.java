@@ -21,6 +21,8 @@ import net.trackmate.graph.ref.ListenableGraphImp;
 import net.trackmate.pool.MappedElement;
 import net.trackmate.spatial.VertexPositionChangeProvider;
 import net.trackmate.spatial.VertexPositionListener;
+import net.trackmate.undo.attributes.Attribute;
+import net.trackmate.undo.attributes.AttributesImp;
 
 public class AbstractModelGraph<
 		G extends AbstractModelGraph< G, VP, EP, V, E, T >,
@@ -34,9 +36,13 @@ public class AbstractModelGraph<
 {
 	protected final GraphIdBimap< V, E > idmap;
 
-	protected final ArrayList< AbstractSpotListener< V > > spotListeners;
+	protected final AttributesImp< V > vertexAttributes;
+
+	protected final AttributesImp< E > edgeAttributes;
 
 	private final ArrayList< VertexPositionListener< V > > vertexPositionListeners;
+
+	public final Attribute< V > VERTEX_POSITION;
 
 	@SuppressWarnings( "unchecked" )
 	public AbstractModelGraph( final VP vertexPool, final EP edgePool )
@@ -44,7 +50,9 @@ public class AbstractModelGraph<
 		super( vertexPool, edgePool );
 		vertexPool.linkModelGraph( ( G ) this );
 		idmap = new GraphIdBimap< V, E >( vertexPool, edgePool );
-		spotListeners = new ArrayList<>();
+		vertexAttributes = new AttributesImp<>();
+		edgeAttributes = new AttributesImp<>();
+		VERTEX_POSITION = vertexAttributes.createAttribute( AbstractSpot.createPositionAttributeSerializer( vertexPool.numDimensions() ), "vertex position" );
 		vertexPositionListeners = new ArrayList<>();
 	}
 
@@ -54,7 +62,9 @@ public class AbstractModelGraph<
 		super( edgePool );
 		vertexPool.linkModelGraph( ( G ) this );
 		idmap = new GraphIdBimap< V, E >( vertexPool, edgePool );
-		spotListeners = new ArrayList<>();
+		vertexAttributes = new AttributesImp<>();
+		edgeAttributes = new AttributesImp<>();
+		VERTEX_POSITION = vertexAttributes.createAttribute( AbstractSpot.createPositionAttributeSerializer( vertexPool.numDimensions() ), "vertex position" );
 		vertexPositionListeners = new ArrayList<>();
 	}
 
@@ -123,39 +133,6 @@ public class AbstractModelGraph<
 	}
 
 	/**
-	 * Register a {@link AbstractSpotListener} that will be notified when
-	 * feature values are changed.
-	 *
-	 * @param listener
-	 *            the listener to register.
-	 * @return {@code true} if the listener was successfully registered.
-	 *         {@code false} if it was already registered.
-	 */
-	public boolean addAbstractSpotListener( final AbstractSpotListener< V > listener )
-	{
-		if ( ! spotListeners.contains( listener ) )
-		{
-			spotListeners.add( listener );
-			return true;
-		}
-		return false;
-	}
-
-	/**
-	 * Removes the specified {@link AbstractSpotListener} from the set of
-	 * listeners.
-	 *
-	 * @param listener
-	 *            the listener to remove.
-	 * @return {@code true} if the listener was present in the listeners of this
-	 *         model and was successfully removed.
-	 */
-	public boolean removeAbstractSpotListener( final AbstractSpotListener< V > listener )
-	{
-		return spotListeners.remove( listener );
-	}
-
-	/**
 	 * Register a {@link VertexPositionListener} that will be notified when
 	 * feature values are changed.
 	 *
@@ -192,8 +169,7 @@ public class AbstractModelGraph<
 
 	void notifyBeforeVertexPositionChange( final V vertex )
 	{
-		for ( final AbstractSpotListener< V > l : spotListeners )
-			l.beforePositionChange( vertex );
+		vertexAttributes.notifyBeforeAttributeChange( VERTEX_POSITION, vertex );
 	}
 
 	void notifyVertexPositionChanged( final V vertex )

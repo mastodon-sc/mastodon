@@ -12,7 +12,9 @@ import net.trackmate.graph.ref.AbstractVertex;
 import net.trackmate.graph.ref.AbstractVertexPool;
 import net.trackmate.pool.ByteMappedElement;
 import net.trackmate.pool.MappedElement;
+import net.trackmate.pool.PoolObjectAttributeSerializer;
 import net.trackmate.spatial.HasTimepoint;
+import net.trackmate.undo.UndoSerializer;
 
 /**
  * Base class for specialized vertices that are part of a graph, and are used to
@@ -47,6 +49,18 @@ public class AbstractSpot<
 	protected static int sizeInBytes( final int numDimensions )
 	{
 		return X_OFFSET + numDimensions * DOUBLE_SIZE + INT_SIZE;
+	}
+
+	static < V extends AbstractSpot< V, ?, ?, ? > > UndoSerializer< V > createPositionAttributeSerializer( final int numDimensions )
+	{
+		return new PoolObjectAttributeSerializer< V >( X_OFFSET, numDimensions * DOUBLE_SIZE)
+		{
+			@Override
+			public void notifySet( final V obj )
+			{
+				obj.modelGraph.notifyVertexPositionChanged( obj );
+			}
+		};
 	}
 
 	protected final int n;

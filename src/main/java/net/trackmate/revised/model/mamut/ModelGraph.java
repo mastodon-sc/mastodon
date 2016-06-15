@@ -9,8 +9,8 @@ import net.trackmate.pool.MemPool;
 import net.trackmate.pool.PoolObject;
 import net.trackmate.pool.SingleArrayMemPool;
 import net.trackmate.revised.model.AbstractModelGraph;
-import net.trackmate.revised.model.AbstractSpotListener;
 import net.trackmate.revised.model.AbstractSpotPool;
+import net.trackmate.undo.attributes.Attributes;
 
 public class ModelGraph extends AbstractModelGraph< ModelGraph, SpotPool, LinkPool, Spot, Link, ByteMappedElement >
 {
@@ -34,6 +34,16 @@ public class ModelGraph extends AbstractModelGraph< ModelGraph, SpotPool, LinkPo
 		return edgeFeatures;
 	}
 
+	Attributes< Spot > vertexAttributes()
+	{
+		return vertexAttributes;
+	}
+
+	Attributes< Link > edgeAttributes()
+	{
+		return edgeAttributes;
+	}
+
 	GraphIdBimap< Spot, Link > idmap()
 	{
 		return idmap;
@@ -47,9 +57,21 @@ public class ModelGraph extends AbstractModelGraph< ModelGraph, SpotPool, LinkPo
 
 	public void notifyBeforeVertexCovarianceChange( final Spot spot )
 	{
-		for ( final AbstractSpotListener< Spot > l : spotListeners )
-			if ( l instanceof AbstractSpotCovarianceListener )
-				( ( AbstractSpotCovarianceListener ) l ).beforeCovarianceChange( spot );
+		// TODO notifyBeforeVertexCovarianceChange!
+		// TODO notifyBeforeVertexCovarianceChange!
+		// TODO notifyBeforeVertexCovarianceChange!
+		// TODO notifyBeforeVertexCovarianceChange!
+		// TODO notifyBeforeVertexCovarianceChange!
+		// TODO notifyBeforeVertexCovarianceChange!
+		// TODO notifyBeforeVertexCovarianceChange!
+		// TODO notifyBeforeVertexCovarianceChange!
+		// TODO notifyBeforeVertexCovarianceChange!
+		// TODO notifyBeforeVertexCovarianceChange!
+		// TODO notifyBeforeVertexCovarianceChange!
+		// TODO notifyBeforeVertexCovarianceChange!
+		// TODO notifyBeforeVertexCovarianceChange!
+		// TODO notifyBeforeVertexCovarianceChange!
+		// TODO notifyBeforeVertexCovarianceChange!
 	}
 }
 
@@ -62,7 +84,7 @@ class SpotPool extends AbstractSpotPool< Spot, Link, ByteMappedElement, ModelGra
 
 	private SpotPool( final int initialCapacity, final SpotFactory f )
 	{
-		super( initialCapacity, f );
+		super( 3, initialCapacity, f );
 		f.vertexPool = this;
 	}
 

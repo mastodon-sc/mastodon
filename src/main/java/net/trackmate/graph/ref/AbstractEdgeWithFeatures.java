@@ -17,7 +17,7 @@ public class AbstractEdgeWithFeatures< E extends AbstractEdgeWithFeatures< E, V,
 	protected AbstractEdgeWithFeatures( final AbstractEdgePool< E, V, T > pool )
 	{
 		super( pool );
-		featureValues = new UniqueHashcodeArrayMap< >();
+		featureValues = new UniqueHashcodeArrayMap<>();
 	}
 
 	Features< E > features;

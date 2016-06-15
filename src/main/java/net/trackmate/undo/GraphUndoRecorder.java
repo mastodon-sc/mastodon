@@ -8,6 +8,9 @@ import net.trackmate.graph.Vertex;
 import net.trackmate.graph.features.Feature;
 import net.trackmate.graph.features.FeatureChangeListener;
 import net.trackmate.graph.features.Features;
+import net.trackmate.undo.attributes.Attribute;
+import net.trackmate.undo.attributes.AttributeChangeListener;
+import net.trackmate.undo.attributes.Attributes;
 
 /**
  * TODO: javadoc
@@ -31,40 +34,43 @@ public class GraphUndoRecorder<
 
 	protected final L edits;
 
-	// TODO: remove?
 	public static < V extends Vertex< E >, E extends Edge< V > >
 		GraphUndoRecorder< V, E, GraphUndoableEditList< V, E > > create(
 				final ListenableGraph< V, E > graph,
 				final Features< V > vertexFeatures,
 				final Features< E > edgeFeatures,
+				final Attributes< V > vertexAttributes,
+				final Attributes< E > edgeAttributes,
 				final GraphIdBimap< V, E > idmap,
 				final GraphUndoSerializer< V, E > serializer )
 	{
 		final UndoIdBimap< V > vertexUndoIdBimap = new UndoIdBimap<>( idmap.vertexIdBimap() );
 		final UndoIdBimap< E > edgeUndoIdBimap = new UndoIdBimap<>( idmap.edgeIdBimap() );
-		final GraphUndoableEditList< V, E > edits = new GraphUndoableEditList<>( defaultCapacity, graph, vertexFeatures, edgeFeatures, serializer, vertexUndoIdBimap, edgeUndoIdBimap );
-		return new GraphUndoRecorder<>( graph, vertexFeatures, edgeFeatures, edits );
+		final GraphUndoableEditList< V, E > edits = new GraphUndoableEditList<>(
+				defaultCapacity,
+				graph,
+				vertexFeatures,
+				edgeFeatures,
+				vertexAttributes,
+				edgeAttributes,
+				serializer,
+				vertexUndoIdBimap,
+				edgeUndoIdBimap );
+		return new GraphUndoRecorder<>(
+				graph,
+				vertexFeatures,
+				edgeFeatures,
+				vertexAttributes,
+				edgeAttributes,
+				edits );
 	}
 
 	public GraphUndoRecorder(
-			final L edits,
 			final ListenableGraph< V, E > graph,
 			final Features< V > vertexFeatures,
 			final Features< E > edgeFeatures,
-			final GraphUndoSerializer< V, E > serializer )
-	{
-		recording = true;
-		this.edits = edits;
-		graph.addGraphListener( this );
-		vertexFeatures.addFeatureChangeListener( beforeVertexFeatureChange );
-		edgeFeatures.addFeatureChangeListener( beforeEdgeFeatureChange );
-	}
-
-
-	public GraphUndoRecorder(
-			final ListenableGraph< V, E > graph,
-			final Features< V > vertexFeatures,
-			final Features< E > edgeFeatures,
+			final Attributes< V > vertexAttributes,
+			final Attributes< E > edgeAttributes,
 			final L edits )
 	{
 		recording = true;
@@ -72,6 +78,8 @@ public class GraphUndoRecorder<
 		graph.addGraphListener( this );
 		vertexFeatures.addFeatureChangeListener( beforeVertexFeatureChange );
 		edgeFeatures.addFeatureChangeListener( beforeEdgeFeatureChange );
+		vertexAttributes.addAttributeChangeListener( beforeVertexAttributeChange );
+		edgeAttributes.addAttributeChangeListener( beforeEdgeAttributeChange );
 	}
 
 	@Override
@@ -160,6 +168,26 @@ public class GraphUndoRecorder<
 		{
 			if ( recording )
 				edits.recordSetEdgeFeature( feature, edge );
+		}
+	};
+
+	private final AttributeChangeListener< V > beforeVertexAttributeChange = new AttributeChangeListener< V >()
+	{
+		@Override
+		public void beforeAttributeChange( final Attribute< V > attribute, final V vertex )
+		{
+			if ( recording )
+				edits.recordSetVertexAttribute( attribute, vertex );
+		}
+	};
+
+	private final AttributeChangeListener< E > beforeEdgeAttributeChange = new AttributeChangeListener< E >()
+	{
+		@Override
+		public void beforeAttributeChange( final Attribute< E > attribute, final E edge )
+		{
+			if ( recording )
+				edits.recordSetEdgeAttribute( attribute, edge );
 		}
 	};
 }
