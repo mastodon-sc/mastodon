@@ -14,7 +14,7 @@ import net.trackmate.pool.ByteMappedElement;
 import net.trackmate.pool.MappedElement;
 import net.trackmate.pool.PoolObjectAttributeSerializer;
 import net.trackmate.spatial.HasTimepoint;
-import net.trackmate.undo.UndoSerializer;
+import net.trackmate.undo.attributes.AttributeUndoSerializer;
 
 /**
  * Base class for specialized vertices that are part of a graph, and are used to
@@ -51,7 +51,7 @@ public class AbstractSpot<
 		return X_OFFSET + numDimensions * DOUBLE_SIZE + INT_SIZE;
 	}
 
-	static < V extends AbstractSpot< V, ?, ?, ? > > UndoSerializer< V > createPositionAttributeSerializer( final int numDimensions )
+	static < V extends AbstractSpot< V, ?, ?, ? > > AttributeUndoSerializer< V > createPositionAttributeSerializer( final int numDimensions )
 	{
 		return new PoolObjectAttributeSerializer< V >( X_OFFSET, numDimensions * DOUBLE_SIZE)
 		{

@@ -1,4 +1,4 @@
-package net.trackmate.undo;
+package net.trackmate.undo.attributes;
 
 /**
  * Provides serialization of (parts of) an object of type {@code O} to a byte
@@ -9,7 +9,7 @@ package net.trackmate.undo;
  *
  * @author Tobias Pietzsch &lt;tobias.pietzsch@gmail.com&gt;
  */
-public interface UndoSerializer< O >
+public interface AttributeUndoSerializer< O >
 {
 	/**
 	 * How many bytes are needed for storage. (This is the expected size of the

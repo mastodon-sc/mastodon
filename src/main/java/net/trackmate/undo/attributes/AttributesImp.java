@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import gnu.trove.map.TIntObjectArrayMap;
 import gnu.trove.map.TIntObjectMap;
 import net.trackmate.graph.features.Features;
-import net.trackmate.undo.UndoSerializer;
 
 /**
  * Note: In contrast to {@link Features}, this is less automatic. A graph needs
@@ -37,7 +36,7 @@ public class AttributesImp< O > implements Attributes< O >
 		emitEvents = true;
 	}
 
-	public Attribute< O > createAttribute( final UndoSerializer< O > attributeSerializer, final String name )
+	public Attribute< O > createAttribute( final AttributeUndoSerializer< O > attributeSerializer, final String name )
 	{
 		final Attribute< O > attribute = new Attribute< O >( idgen++, attributeSerializer, name );
 		attributes.put( attribute.getAttributeId(), attribute );

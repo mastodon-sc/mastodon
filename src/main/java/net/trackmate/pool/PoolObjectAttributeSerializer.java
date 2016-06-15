@@ -1,8 +1,8 @@
 package net.trackmate.pool;
 
-import net.trackmate.undo.UndoSerializer;
+import net.trackmate.undo.attributes.AttributeUndoSerializer;
 
-public class PoolObjectAttributeSerializer< O extends PoolObject< O, ? > > implements UndoSerializer< O >
+public class PoolObjectAttributeSerializer< O extends PoolObject< O, ? > > implements AttributeUndoSerializer< O >
 {
 	private int offset;
 

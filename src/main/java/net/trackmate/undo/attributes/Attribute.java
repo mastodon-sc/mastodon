@@ -1,16 +1,14 @@
 package net.trackmate.undo.attributes;
 
-import net.trackmate.undo.UndoSerializer;
-
 public class Attribute< O >
 {
 	private final int id;
 
-	private final UndoSerializer< O > serializer;
+	private final AttributeUndoSerializer< O > serializer;
 
 	private final String name;
 
-	Attribute( final int id, final UndoSerializer< O > serializer, final String name )
+	Attribute( final int id, final AttributeUndoSerializer< O > serializer, final String name )
 	{
 		this.id = id;
 		this.serializer = serializer;
@@ -28,7 +26,7 @@ public class Attribute< O >
 		return id;
 	}
 
-	public UndoSerializer< O > getUndoSerializer()
+	public AttributeUndoSerializer< O > getUndoSerializer()
 	{
 		return serializer;
 	}
