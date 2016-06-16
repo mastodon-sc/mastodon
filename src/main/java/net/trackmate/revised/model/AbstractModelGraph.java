@@ -52,8 +52,9 @@ public class AbstractModelGraph<
 		idmap = new GraphIdBimap< V, E >( vertexPool, edgePool );
 		vertexAttributes = new AttributesImp<>();
 		edgeAttributes = new AttributesImp<>();
-		VERTEX_POSITION = vertexAttributes.createAttribute( AbstractSpot.createPositionAttributeSerializer( vertexPool.numDimensions() ), "vertex position" );
 		vertexPositionListeners = new ArrayList<>();
+
+		VERTEX_POSITION = vertexAttributes.createAttribute( AbstractSpot.createPositionAttributeSerializer( vertexPool.numDimensions() ), "vertex position" );
 	}
 
 	@SuppressWarnings( "unchecked" )
@@ -64,8 +65,9 @@ public class AbstractModelGraph<
 		idmap = new GraphIdBimap< V, E >( vertexPool, edgePool );
 		vertexAttributes = new AttributesImp<>();
 		edgeAttributes = new AttributesImp<>();
-		VERTEX_POSITION = vertexAttributes.createAttribute( AbstractSpot.createPositionAttributeSerializer( vertexPool.numDimensions() ), "vertex position" );
 		vertexPositionListeners = new ArrayList<>();
+
+		VERTEX_POSITION = vertexAttributes.createAttribute( AbstractSpot.createPositionAttributeSerializer( vertexPool.numDimensions() ), "vertex position" );
 	}
 
 	/**

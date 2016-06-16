@@ -5,12 +5,11 @@ import static net.trackmate.revised.model.mamut.ModelFeatures.LABEL;
 
 import net.trackmate.graph.ref.AbstractVertexPool;
 import net.trackmate.pool.ByteMappedElement;
+import net.trackmate.pool.PoolObjectAttributeSerializer;
 import net.trackmate.revised.bdv.overlay.util.JamaEigenvalueDecomposition;
 import net.trackmate.revised.model.AbstractSpot;
 import net.trackmate.revised.model.HasLabel;
-
-
-// TODO: replace Jama stuff by something that doesn't allocate extra memory
+import net.trackmate.undo.attributes.AttributeUndoSerializer;
 
 /**
  * {@link AbstractSpot} implementation where the spot shape is stored in a
@@ -18,7 +17,7 @@ import net.trackmate.revised.model.HasLabel;
  *
  * @author Tobias Pietzsch
  */
-public class Spot extends AbstractSpot< Spot, Link, ByteMappedElement, ModelGraph > implements HasLabel
+public final class Spot extends AbstractSpot< Spot, Link, ByteMappedElement, ModelGraph > implements HasLabel
 {
 	// Copied to be package-visible.
 	protected static final int X_OFFSET = AbstractSpot.X_OFFSET;
@@ -26,10 +25,99 @@ public class Spot extends AbstractSpot< Spot, Link, ByteMappedElement, ModelGrap
 	protected static final int BOUNDING_SPHERE_RADIUS_SQUARED_OFFSET = COVARIANCE_OFFSET + 6 * DOUBLE_SIZE;
 	protected static final int SIZE_IN_BYTES = BOUNDING_SPHERE_RADIUS_SQUARED_OFFSET + DOUBLE_SIZE;
 
-	public static final double nSigmas = 2;
-	public static final double nSigmasSquared = nSigmas * nSigmas;
-
 	private final JamaEigenvalueDecomposition eig = new JamaEigenvalueDecomposition( 3 );
+
+	static AttributeUndoSerializer< Spot > createCovarianceAttributeSerializer()
+	{
+		/*
+		 * Note: Because the {@link #getBoundingSphereRadiusSquared() radius} can
+		 * only be changed through the covariance, it is serialized as part of the
+		 * covariance attribute.
+		 */
+		return new PoolObjectAttributeSerializer< Spot >( COVARIANCE_OFFSET, 6 * DOUBLE_SIZE + DOUBLE_SIZE)
+		{
+			@Override
+			public void notifySet( final Spot spot )
+			{
+				spot.modelGraph.notifyBeforeVertexCovarianceChange( spot );
+			}
+		};
+	}
+
+	private double radiusSquaredFromCovariance( final double[][] cov )
+	{
+		eig.decomposeSymmetric( cov );
+		final double[] eigVals = eig.getRealEigenvalues();
+		double max = 0;
+		for ( int k = 0; k < eigVals.length; k++ )
+			max = Math.max( max, eigVals[ k ] );
+		return max;
+	}
+
+	private void covarianceFromRadiusSquared( final double rsqu, final double[][] cov )
+	{
+		for( int row = 0; row < 3; ++row )
+			for( int col = 0; col < 3; ++col )
+				cov[ row ][ col ] = ( row == col ) ? rsqu : 0;
+	}
+
+	private void setCovarianceEntryInternal( final double value, final int d )
+	{
+		access.putDouble( value, COVARIANCE_OFFSET + d * DOUBLE_SIZE );
+	}
+
+	private double getCovarianceEntryInternal( final int d )
+	{
+		return access.getDouble( COVARIANCE_OFFSET + d * DOUBLE_SIZE );
+	}
+
+	private void setCovarianceInternal( final double[][] cov )
+	{
+		int i = 0;
+		for( int row = 0; row < 3; ++row )
+			for ( int col = row; col < 3; ++col )
+				setCovarianceEntryInternal( cov[ row ][ col ], i++ );
+	}
+
+	private void getCovarianceInternal( final double[][] cov )
+	{
+		int i = 0;
+		for( int row = 0; row < 3; ++row )
+		{
+			cov[ row ][ row ] = getCovarianceEntryInternal( i++ );
+			for ( int col = row + 1; col < 3; ++col )
+				cov[ col ][ row ] = cov[ row ][ col ] = getCovarianceEntryInternal( i++ );
+		}
+	}
+
+	private void setBoundingSphereRadiusSquaredInternal( final double value )
+	{
+		access.putDouble( value, BOUNDING_SPHERE_RADIUS_SQUARED_OFFSET );
+	}
+
+	private double getBoundingSphereRadiusSquaredInternal()
+	{
+		return access.getDouble( BOUNDING_SPHERE_RADIUS_SQUARED_OFFSET );
+	}
+
+	/**
+	 * Exposes the underlying ByteMappedElement for efficient IO operations.
+	 *
+	 * @return the underlying spot access object.
+	 */
+	ByteMappedElement getAccess()
+	{
+		return access;
+	}
+
+	void notifyVertexAdded()
+	{
+		super.initDone();
+	}
+
+	/*
+	 * Public API
+	 */
 
 	/**
 	 * Initialize a new {@link Spot} with a spherical shape.
@@ -48,19 +136,13 @@ public class Spot extends AbstractSpot< Spot, Link, ByteMappedElement, ModelGrap
 	 */
 	public Spot init( final int timepointId, final double[] pos, final double radius )
 	{
-		final double eigVal = radius * radius / nSigmasSquared;
-		final double[][] cov = new double[][] {
-				{ eigVal, 0., 0. },
-				{ 0., eigVal, 0. },
-				{ 0., 0., eigVal }
-		};
-		final double boundingSphereRadiusSquared = radius * radius;
+		super.partialInit( timepointId, pos );
 
-		for ( int d = 0; d < n; ++d )
-			setCoord( pos[ d ], d );
-		setCovariance( cov );
-		setBoundingSphereRadiusSquared( boundingSphereRadiusSquared );
-		setTimepointId( timepointId );
+		final double[][] cov = new double[ 3 ][ 3 ];
+		covarianceFromRadiusSquared( radius * radius, cov );
+		setCovarianceInternal( cov );
+		setBoundingSphereRadiusSquaredInternal( radius * radius );
+
 		super.initDone();
 		return this;
 	}
@@ -85,53 +167,31 @@ public class Spot extends AbstractSpot< Spot, Link, ByteMappedElement, ModelGrap
 	 */
 	public Spot init( final int timepointId, final double[] pos, final double[][] cov )
 	{
-		eig.decomposeSymmetric( cov );
-		final double[] eigVals = eig.getRealEigenvalues();
-		double max = 0;
-		for ( int k = 0; k < eigVals.length; k++ )
-			max = Math.max( max, eigVals[ k ] );
-		final double boundingSphereRadiusSquared = max * nSigmasSquared;
+		super.partialInit( timepointId, pos );
 
-		setPosition( pos );
-		setCovariance( cov );
-		setBoundingSphereRadiusSquared( boundingSphereRadiusSquared );
-		setTimepointId( timepointId );
+		setCovarianceInternal( cov );
+		setBoundingSphereRadiusSquaredInternal( radiusSquaredFromCovariance( cov ) );
+
 		super.initDone();
 		return this;
 	}
 
-	public void getCovariance( final double[][] mat )
+	public void getCovariance( final double[][] cov )
 	{
-		mat[ 0 ][ 0 ] = access.getDouble( COVARIANCE_OFFSET );
-		mat[ 0 ][ 1 ] = access.getDouble( COVARIANCE_OFFSET + 1 * DOUBLE_SIZE );
-		mat[ 0 ][ 2 ] = access.getDouble( COVARIANCE_OFFSET + 2 * DOUBLE_SIZE );
-		mat[ 1 ][ 0 ] = mat[ 0 ][ 1 ];
-		mat[ 1 ][ 1 ] = access.getDouble( COVARIANCE_OFFSET + 3 * DOUBLE_SIZE );
-		mat[ 1 ][ 2 ] = access.getDouble( COVARIANCE_OFFSET + 4 * DOUBLE_SIZE );
-		mat[ 2 ][ 0 ] = mat[ 0 ][ 2 ];
-		mat[ 2 ][ 1 ] = mat[ 1 ][ 2 ];
-		mat[ 2 ][ 2 ] = access.getDouble( COVARIANCE_OFFSET + 5 * DOUBLE_SIZE );
+		getCovarianceInternal( cov );
 	}
 
-	protected void setCovariance( final double[][] mat )
+	public void setCovariance( final double[][] cov )
 	{
 		modelGraph.notifyBeforeVertexCovarianceChange( this );
-		access.putDouble( mat[ 0 ][ 0 ], COVARIANCE_OFFSET );
-		access.putDouble( mat[ 0 ][ 1 ], COVARIANCE_OFFSET + 1 * DOUBLE_SIZE );
-		access.putDouble( mat[ 0 ][ 2 ], COVARIANCE_OFFSET + 2 * DOUBLE_SIZE );
-		access.putDouble( mat[ 1 ][ 1 ], COVARIANCE_OFFSET + 3 * DOUBLE_SIZE );
-		access.putDouble( mat[ 1 ][ 2 ], COVARIANCE_OFFSET + 4 * DOUBLE_SIZE );
-		access.putDouble( mat[ 2 ][ 2 ], COVARIANCE_OFFSET + 5 * DOUBLE_SIZE );
+		setCovarianceInternal( cov );
+		setBoundingSphereRadiusSquaredInternal( radiusSquaredFromCovariance( cov ) );
+		modelGraph.notifyRadiusChanged( this );
 	}
 
 	public double getBoundingSphereRadiusSquared()
 	{
-		return access.getDouble( BOUNDING_SPHERE_RADIUS_SQUARED_OFFSET );
-	}
-
-	protected void setBoundingSphereRadiusSquared( final double r2 )
-	{
-		access.putDouble( r2, BOUNDING_SPHERE_RADIUS_SQUARED_OFFSET );
+		return getBoundingSphereRadiusSquaredInternal();
 	}
 
 	@Override
@@ -163,36 +223,5 @@ public class Spot extends AbstractSpot< Spot, Link, ByteMappedElement, ModelGrap
 	Spot( final AbstractVertexPool< Spot, Link, ByteMappedElement > pool )
 	{
 		super( pool, 3 );
-	}
-
-	/**
-	 * Exposes the underlying ByteMappedElement for efficient IO operations.
-	 *
-	 * @return the underlying spot access object.
-	 */
-	protected ByteMappedElement getAccess()
-	{
-		return access;
-	}
-
-	/**
-	 * Exposes raw covariance entries for undo.
-	 */
-	protected double getFlattenedCovarianceEntry( final int index )
-	{
-		return access.getDouble( COVARIANCE_OFFSET + index * DOUBLE_SIZE );
-	}
-
-	/**
-	 * Exposes raw covariance entries for undo.
-	 */
-	protected void setFlattenedCovarianceEntry( final double entry, final int index )
-	{
-		access.putDouble( entry, COVARIANCE_OFFSET + index * DOUBLE_SIZE );
-	}
-
-	protected void notifyVertexAdded()
-	{
-		super.initDone();
 	}
 }

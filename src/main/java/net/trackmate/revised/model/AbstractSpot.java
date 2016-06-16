@@ -46,6 +46,10 @@ public class AbstractSpot<
 	protected static final int X_OFFSET = AbstractVertex.SIZE_IN_BYTES; // n * DOUBLE_SIZE
 	private final int TP_OFFSET; // INT_SIZE
 
+	protected final int n;
+
+	protected G modelGraph;
+
 	protected static int sizeInBytes( final int numDimensions )
 	{
 		return X_OFFSET + numDimensions * DOUBLE_SIZE + INT_SIZE;
@@ -63,34 +67,24 @@ public class AbstractSpot<
 		};
 	}
 
-	protected final int n;
-
-	protected G modelGraph;
-
-	protected void setCoord( final double value, final int d )
+	private void setPosEntryInternal( final double value, final int d )
 	{
 		access.putDouble( value, X_OFFSET + d * DOUBLE_SIZE );
 	}
 
-	protected double getCoord( final int d )
+	private double getPosEntryInternal( final int d )
 	{
 		return access.getDouble( X_OFFSET + d * DOUBLE_SIZE );
 	}
 
-	protected int getTimepointId()
+	private int getTimepointInternal()
 	{
 		return access.getInt( TP_OFFSET );
 	}
 
-	protected void setTimepointId( final int tp )
+	private void setTimepointInternal( final int tp )
 	{
 		access.putInt( tp, TP_OFFSET );
-	}
-
-	@Override
-	public int getTimepoint()
-	{
-		return getTimepointId();
 	}
 
 	protected AbstractSpot( final AbstractVertexPool< V, E, T > pool, final int numDimensions )
@@ -98,6 +92,23 @@ public class AbstractSpot<
 		super( pool );
 		n = numDimensions;
 		TP_OFFSET = X_OFFSET + n * DOUBLE_SIZE;
+	}
+
+	protected void partialInit( final int timepointId, final double[] pos )
+	{
+		for ( int d = 0; d < n; ++d )
+			setPosEntryInternal( pos[ d ], d );
+		setTimepointInternal( timepointId );
+	}
+
+	/*
+	 * Public API
+	 */
+
+	@Override
+	public int getTimepoint()
+	{
+		return getTimepointInternal();
 	}
 
 	// === RealLocalizable ===
@@ -112,26 +123,26 @@ public class AbstractSpot<
 	public void localize( final float[] position )
 	{
 		for ( int d = 0; d < n; ++d )
-			position[ d ] = ( float ) getCoord( d );
+			position[ d ] = ( float ) getPosEntryInternal( d );
 	}
 
 	@Override
 	public void localize( final double[] position )
 	{
 		for ( int d = 0; d < n; ++d )
-			position[ d ] = getCoord( d );
+			position[ d ] = getPosEntryInternal( d );
 	}
 
 	@Override
 	public float getFloatPosition( final int d )
 	{
-		return ( float ) getCoord( d );
+		return ( float ) getPosEntryInternal( d );
 	}
 
 	@Override
 	public double getDoublePosition( final int d )
 	{
-		return getCoord( d );
+		return getPosEntryInternal( d );
 	}
 
 	// === RealPositionable ===
@@ -141,7 +152,7 @@ public class AbstractSpot<
 	public void fwd( final int d )
 	{
 		modelGraph.notifyBeforeVertexPositionChange( ( V ) this );
-		setCoord( getCoord( d ) + 1, d );
+		setPosEntryInternal( getPosEntryInternal( d ) + 1, d );
 		modelGraph.notifyVertexPositionChanged( ( V ) this );
 	}
 
@@ -150,7 +161,7 @@ public class AbstractSpot<
 	public void bck( final int d )
 	{
 		modelGraph.notifyBeforeVertexPositionChange( ( V ) this );
-		setCoord( getCoord( d ) - 1, d );
+		setPosEntryInternal( getPosEntryInternal( d ) - 1, d );
 		modelGraph.notifyVertexPositionChanged( ( V ) this );
 	}
 
@@ -159,7 +170,7 @@ public class AbstractSpot<
 	public void move( final int distance, final int d )
 	{
 		modelGraph.notifyBeforeVertexPositionChange( ( V ) this );
-		setCoord( getCoord( d ) + distance, d );
+		setPosEntryInternal( getPosEntryInternal( d ) + distance, d );
 		modelGraph.notifyVertexPositionChanged( ( V ) this );
 	}
 
@@ -168,7 +179,7 @@ public class AbstractSpot<
 	public void move( final long distance, final int d )
 	{
 		modelGraph.notifyBeforeVertexPositionChange( ( V ) this );
-		setCoord( getCoord( d ) + distance, d );
+		setPosEntryInternal( getPosEntryInternal( d ) + distance, d );
 		modelGraph.notifyVertexPositionChanged( ( V ) this );
 	}
 
@@ -178,7 +189,7 @@ public class AbstractSpot<
 	{
 		modelGraph.notifyBeforeVertexPositionChange( ( V ) this );
 		for ( int d = 0; d < n; ++d )
-			setCoord( getCoord( d ) + localizable.getDoublePosition( d ), d );
+			setPosEntryInternal( getPosEntryInternal( d ) + localizable.getDoublePosition( d ), d );
 		modelGraph.notifyVertexPositionChanged( ( V ) this );
 	}
 
@@ -188,7 +199,7 @@ public class AbstractSpot<
 	{
 		modelGraph.notifyBeforeVertexPositionChange( ( V ) this );
 		for ( int d = 0; d < n; ++d )
-			setCoord( getCoord( d ) + distance[ d ], d );
+			setPosEntryInternal( getPosEntryInternal( d ) + distance[ d ], d );
 		modelGraph.notifyVertexPositionChanged( ( V ) this );
 	}
 
@@ -198,7 +209,7 @@ public class AbstractSpot<
 	{
 		modelGraph.notifyBeforeVertexPositionChange( ( V ) this );
 		for ( int d = 0; d < n; ++d )
-			setCoord( getCoord( d ) + distance[ d ], d );
+			setPosEntryInternal( getPosEntryInternal( d ) + distance[ d ], d );
 		modelGraph.notifyVertexPositionChanged( ( V ) this );
 	}
 
@@ -208,7 +219,7 @@ public class AbstractSpot<
 	{
 		modelGraph.notifyBeforeVertexPositionChange( ( V ) this );
 		for ( int d = 0; d < n; ++d )
-			setCoord( localizable.getDoublePosition( d ), d );
+			setPosEntryInternal( localizable.getDoublePosition( d ), d );
 		modelGraph.notifyVertexPositionChanged( ( V ) this );
 	}
 
@@ -218,7 +229,7 @@ public class AbstractSpot<
 	{
 		modelGraph.notifyBeforeVertexPositionChange( ( V ) this );
 		for ( int d = 0; d < n; ++d )
-			setCoord( position[ d ], d );
+			setPosEntryInternal( position[ d ], d );
 		modelGraph.notifyVertexPositionChanged( ( V ) this );
 	}
 
@@ -228,7 +239,7 @@ public class AbstractSpot<
 	{
 		modelGraph.notifyBeforeVertexPositionChange( ( V ) this );
 		for ( int d = 0; d < n; ++d )
-			setCoord( position[ d ], d );
+			setPosEntryInternal( position[ d ], d );
 		modelGraph.notifyVertexPositionChanged( ( V ) this );
 	}
 
@@ -237,7 +248,7 @@ public class AbstractSpot<
 	public void setPosition( final int position, final int d )
 	{
 		modelGraph.notifyBeforeVertexPositionChange( ( V ) this );
-		setCoord( position, d );
+		setPosEntryInternal( position, d );
 		modelGraph.notifyVertexPositionChanged( ( V ) this );
 	}
 
@@ -246,7 +257,7 @@ public class AbstractSpot<
 	public void setPosition( final long position, final int d )
 	{
 		modelGraph.notifyBeforeVertexPositionChange( ( V ) this );
-		setCoord( position, d );
+		setPosEntryInternal( position, d );
 		modelGraph.notifyVertexPositionChanged( ( V ) this );
 	}
 
@@ -255,7 +266,7 @@ public class AbstractSpot<
 	public void move( final float distance, final int d )
 	{
 		modelGraph.notifyBeforeVertexPositionChange( ( V ) this );
-		setCoord( getCoord( d ) + distance, d );
+		setPosEntryInternal( getPosEntryInternal( d ) + distance, d );
 		modelGraph.notifyVertexPositionChanged( ( V ) this );
 	}
 
@@ -264,7 +275,7 @@ public class AbstractSpot<
 	public void move( final double distance, final int d )
 	{
 		modelGraph.notifyBeforeVertexPositionChange( ( V ) this );
-		setCoord( getCoord( d ) + distance, d );
+		setPosEntryInternal( getPosEntryInternal( d ) + distance, d );
 		modelGraph.notifyVertexPositionChanged( ( V ) this );
 	}
 
@@ -274,7 +285,7 @@ public class AbstractSpot<
 	{
 		modelGraph.notifyBeforeVertexPositionChange( ( V ) this );
 		for ( int d = 0; d < n; ++d )
-			setCoord( getCoord( d ) + localizable.getDoublePosition( d ), d );
+			setPosEntryInternal( getPosEntryInternal( d ) + localizable.getDoublePosition( d ), d );
 		modelGraph.notifyVertexPositionChanged( ( V ) this );
 	}
 
@@ -284,7 +295,7 @@ public class AbstractSpot<
 	{
 		modelGraph.notifyBeforeVertexPositionChange( ( V ) this );
 		for ( int d = 0; d < n; ++d )
-			setCoord( getCoord( d ) + distance[ d ], d );
+			setPosEntryInternal( getPosEntryInternal( d ) + distance[ d ], d );
 		modelGraph.notifyVertexPositionChanged( ( V ) this );
 	}
 
@@ -294,7 +305,7 @@ public class AbstractSpot<
 	{
 		modelGraph.notifyBeforeVertexPositionChange( ( V ) this );
 		for ( int d = 0; d < n; ++d )
-			setCoord( getCoord( d ) + distance[ d ], d );
+			setPosEntryInternal( getPosEntryInternal( d ) + distance[ d ], d );
 		modelGraph.notifyVertexPositionChanged( ( V ) this );
 	}
 
@@ -304,7 +315,7 @@ public class AbstractSpot<
 	{
 		modelGraph.notifyBeforeVertexPositionChange( ( V ) this );
 		for ( int d = 0; d < n; ++d )
-			setCoord( localizable.getDoublePosition( d ), d );
+			setPosEntryInternal( localizable.getDoublePosition( d ), d );
 		modelGraph.notifyVertexPositionChanged( ( V ) this );
 	}
 
@@ -314,7 +325,7 @@ public class AbstractSpot<
 	{
 		modelGraph.notifyBeforeVertexPositionChange( ( V ) this );
 		for ( int d = 0; d < n; ++d )
-			setCoord( position[ d ], d );
+			setPosEntryInternal( position[ d ], d );
 		modelGraph.notifyVertexPositionChanged( ( V ) this );
 	}
 
@@ -324,7 +335,7 @@ public class AbstractSpot<
 	{
 		modelGraph.notifyBeforeVertexPositionChange( ( V ) this );
 		for ( int d = 0; d < n; ++d )
-			setCoord( position[ d ], d );
+			setPosEntryInternal( position[ d ], d );
 		modelGraph.notifyVertexPositionChanged( ( V ) this );
 	}
 
@@ -333,7 +344,7 @@ public class AbstractSpot<
 	public void setPosition( final float position, final int d )
 	{
 		modelGraph.notifyBeforeVertexPositionChange( ( V ) this );
-		setCoord( position, d );
+		setPosEntryInternal( position, d );
 		modelGraph.notifyVertexPositionChanged( ( V ) this );
 	}
 
@@ -342,7 +353,7 @@ public class AbstractSpot<
 	public void setPosition( final double position, final int d )
 	{
 		modelGraph.notifyBeforeVertexPositionChange( ( V ) this );
-		setCoord( position, d );
+		setPosEntryInternal( position, d );
 		modelGraph.notifyVertexPositionChanged( ( V ) this );
 	}
 }
