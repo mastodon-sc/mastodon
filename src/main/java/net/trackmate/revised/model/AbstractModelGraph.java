@@ -190,12 +190,16 @@ public class AbstractModelGraph<
 	public void pauseListeners()
 	{
 		super.pauseListeners();
+		vertexAttributes.pauseListeners();
+		edgeAttributes.pauseListeners();
 	}
 
 	@Override
 	public void resumeListeners()
 	{
 		super.resumeListeners();
+		vertexAttributes.resumeListeners();
+		edgeAttributes.resumeListeners();
 	}
 
 	@Override
