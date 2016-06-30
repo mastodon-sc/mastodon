@@ -60,7 +60,7 @@ public class ModelGraph extends AbstractModelGraph< ModelGraph, SpotPool, LinkPo
 	}
 
 	@Override
-	public void notifyGraphChanged()
+	protected void notifyGraphChanged()
 	{
 		super.notifyGraphChanged();
 	}
