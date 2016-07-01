@@ -59,12 +59,6 @@ public class ModelGraph extends AbstractModelGraph< ModelGraph, SpotPool, LinkPo
 		return idmap;
 	}
 
-	@Override
-	protected void notifyGraphChanged()
-	{
-		super.notifyGraphChanged();
-	}
-
 	void notifyBeforeVertexCovarianceChange( final Spot spot )
 	{
 		vertexAttributes.notifyBeforeAttributeChange( VERTEX_COVARIANCE, spot );

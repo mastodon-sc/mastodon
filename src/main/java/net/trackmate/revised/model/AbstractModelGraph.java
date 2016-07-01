@@ -9,6 +9,7 @@ import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
+import net.trackmate.graph.GraphChangeNotifier;
 import net.trackmate.graph.GraphIdBimap;
 import net.trackmate.graph.features.Feature;
 import net.trackmate.graph.io.RawFeatureIO;
@@ -32,7 +33,7 @@ public class AbstractModelGraph<
 		E extends AbstractListenableEdge< E, V, T >,
 		T extends MappedElement >
 	extends ListenableGraphImp< VP, EP, V, E, T >
-	implements VertexPositionChangeProvider< V >
+	implements VertexPositionChangeProvider< V >, GraphChangeNotifier
 {
 	protected final GraphIdBimap< V, E > idmap;
 
@@ -203,7 +204,7 @@ public class AbstractModelGraph<
 	}
 
 	@Override
-	protected void notifyGraphChanged()
+	public void notifyGraphChanged()
 	{
 		super.notifyGraphChanged();
 	}
