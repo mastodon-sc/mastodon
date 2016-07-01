@@ -80,6 +80,8 @@ public class TrackSchemeEditBehaviours< V extends Vertex< E > & HasTimepoint, E 
 			final GraphIdBimap< V, E > idBimap,
 			final UndoPointMarker undo )
 	{
+
+		// TODO: context "mamut" is definitely wrong here. should be either "ts" for general trackscheme stuff, or this class shouldn't be here
 		super( triggerBehaviourBindings, "graph-special", config, new String[] { "mamut" } );
 		this.panel = panel;
 		this.graph = graph;

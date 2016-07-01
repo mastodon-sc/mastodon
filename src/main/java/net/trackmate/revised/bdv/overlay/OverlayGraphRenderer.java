@@ -29,6 +29,7 @@ import net.trackmate.revised.Util;
 import net.trackmate.spatial.SpatialIndex;
 import net.trackmate.spatial.SpatioTemporalIndex;
 
+// TODO: throughout this class gPos and lPos are used semantically inconsistently. Fix and document a meaning and make all uses consistent.
 
 /**
  * TODO: Review and revise.
@@ -532,6 +533,7 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 										graphics.setStroke( highlightedEdgeStroke );
 									graphics.drawLine( x0, y0, x1, y1 );
 
+									// TODO -- DEBUG Draw arrows for edge direction.
 									// DEBUG Draw arrows for edge direction.
 									final double dx = x1 - x0;
 									final double dy = y1 - y0;
@@ -658,6 +660,7 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 
 		final ConvexPolytope visiblePolytopeGlobal = getVisiblePolytopeGlobal( transform, currentTimepoint );
 
+		// TODO: unused code: remove or improve algorithm.
 		final double[] lPosClick = new double[] { x, y, 0 };
 		final double[] gPosClick = new double[ 3 ];
 		transform.applyInverse( gPosClick, lPosClick );
