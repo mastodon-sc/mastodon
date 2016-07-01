@@ -187,7 +187,7 @@ public class AbstractModelGraph<
 	}
 
 	@Override
-	public void pauseListeners()
+	protected void pauseListeners()
 	{
 		super.pauseListeners();
 		vertexAttributes.pauseListeners();
@@ -195,7 +195,7 @@ public class AbstractModelGraph<
 	}
 
 	@Override
-	public void resumeListeners()
+	protected void resumeListeners()
 	{
 		super.resumeListeners();
 		vertexAttributes.resumeListeners();
