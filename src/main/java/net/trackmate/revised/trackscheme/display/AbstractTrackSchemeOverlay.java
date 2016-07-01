@@ -444,7 +444,7 @@ public abstract class AbstractTrackSchemeOverlay implements OverlayRenderer, Off
 	 * @param overlay
 	 *            the overlay to paint.
 	 */
-	public void addOverlayRenderer( OverlayRenderer overlay )
+	public void addOverlayRenderer( final OverlayRenderer overlay )
 	{
 		overlayRenderers.add( overlay );
 		setCanvasSize( getWidth(), getHeight() );
@@ -567,5 +567,4 @@ public abstract class AbstractTrackSchemeOverlay implements OverlayRenderer, Off
 	 *            the edge target vertex.
 	 */
 	protected abstract void drawEdge( Graphics2D g2, ScreenEdge edge, ScreenVertex vs, ScreenVertex vt );
-
 }

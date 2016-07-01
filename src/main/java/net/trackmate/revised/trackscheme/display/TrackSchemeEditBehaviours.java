@@ -8,6 +8,10 @@ import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 
+import org.scijava.ui.behaviour.DragBehaviour;
+import org.scijava.ui.behaviour.io.InputTriggerConfig;
+
+import bdv.viewer.TriggerBehaviourBindings;
 import net.imglib2.ui.OverlayRenderer;
 import net.imglib2.ui.TransformListener;
 import net.trackmate.graph.Edge;
@@ -20,11 +24,6 @@ import net.trackmate.revised.trackscheme.TrackSchemeGraph;
 import net.trackmate.revised.trackscheme.TrackSchemeVertex;
 import net.trackmate.spatial.HasTimepoint;
 import net.trackmate.undo.UndoPointMarker;
-
-import org.scijava.ui.behaviour.DragBehaviour;
-import org.scijava.ui.behaviour.io.InputTriggerConfig;
-
-import bdv.viewer.TriggerBehaviourBindings;
 
 /**
  * @author Jean=Yves Tinevez &ltjeanyves.tinevez@gmail.com&gt
@@ -65,7 +64,7 @@ public class TrackSchemeEditBehaviours< V extends Vertex< E > & HasTimepoint, E 
 			final TrackSchemeGraph< V, E > graph,
 			final AbstractTrackSchemeOverlay renderer,
 			final ListenableGraph< V, E > modelGraph,
-			GraphIdBimap< V, E > idBimap,
+			final GraphIdBimap< V, E > idBimap,
 			final UndoPointMarker undo )
 	{
 		new TrackSchemeEditBehaviours<>( triggerBehaviourBindings, config, panel, graph, renderer, modelGraph, idBimap, undo );
@@ -78,7 +77,7 @@ public class TrackSchemeEditBehaviours< V extends Vertex< E > & HasTimepoint, E 
 			final TrackSchemeGraph< V, E > graph,
 			final AbstractTrackSchemeOverlay renderer,
 			final ListenableGraph< V, E > modelGraph,
-			GraphIdBimap< V, E > idBimap,
+			final GraphIdBimap< V, E > idBimap,
 			final UndoPointMarker undo )
 	{
 		super( triggerBehaviourBindings, "graph-special", config, new String[] { "mamut" } );
@@ -202,7 +201,7 @@ public class TrackSchemeEditBehaviours< V extends Vertex< E > & HasTimepoint, E 
 					 * FIXME: Does not work in practice for MaMuT, because Spots
 					 * and Links need to be init() after being added to the
 					 * model graph.
-					 * 
+					 *
 					 * Trying to add 2 links with this method will generate an
 					 * exception.
 					 */
