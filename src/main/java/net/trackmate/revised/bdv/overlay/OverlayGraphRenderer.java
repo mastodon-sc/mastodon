@@ -714,7 +714,7 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 	 * @param y
 	 *            viewer Y coordinate
 	 * @param gPos
-	 *            receives globals coordinate corresponding to viewer
+	 *            receives global coordinates corresponding to viewer
 	 *            coordinates <em>(x, y, 0)</em>.
 	 */
 	public void getGlobalPosition( final int x, final int y, final double[] gPos )
