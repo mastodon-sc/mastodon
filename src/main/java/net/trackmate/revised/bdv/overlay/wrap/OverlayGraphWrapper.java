@@ -123,6 +123,12 @@ public class OverlayGraphWrapper< V extends Vertex< E >, E extends Edge< V > > i
 		return ref;
 	}
 
+	public OverlayVertexWrapper< V, E > addVertex( final int timepoint, final double[] position, final double[][] covariance, final OverlayVertexWrapper< V, E > ref )
+	{
+		ref.wv = overlayProperties.addVertex( timepoint, position, covariance, ref.wv );
+		return ref;
+	}
+
 	@Override
 	public OverlayEdgeWrapper< V, E > addEdge( final OverlayVertexWrapper< V, E > source, final OverlayVertexWrapper< V, E > target, final OverlayEdgeWrapper< V, E > ref )
 	{

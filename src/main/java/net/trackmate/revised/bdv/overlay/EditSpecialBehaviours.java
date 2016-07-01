@@ -19,14 +19,11 @@ import net.imglib2.ui.OverlayRenderer;
 import net.imglib2.ui.TransformListener;
 import net.imglib2.util.LinAlgHelpers;
 import net.trackmate.revised.bdv.AbstractBehaviours;
-import net.trackmate.revised.bdv.overlay.util.JamaEigenvalueDecomposition;
-import net.trackmate.revised.model.mamut.Spot;
 import net.trackmate.undo.UndoPointMarker;
 
 public class EditSpecialBehaviours< V extends OverlayVertex< V, E >, E extends OverlayEdge< E, V > >
 		extends AbstractBehaviours
 {
-
 	private static final String ADD_SPOT_AND_LINK_IT = "add linked spot";
 	private static final String ADD_SPOT_AND_LINK_IT_BACKWARD = "add linked spot backward";
 	private static final String TOGGLE_LINK_FORWARD = "toggle link";
@@ -303,8 +300,6 @@ public class EditSpecialBehaviours< V extends OverlayVertex< V, E >, E extends O
 
 		private boolean moving;
 
-		private final JamaEigenvalueDecomposition eig;
-
 		private final double[][] mat;
 
 		private final boolean forward;
@@ -318,7 +313,6 @@ public class EditSpecialBehaviours< V extends OverlayVertex< V, E >, E extends O
 			start = new double[ 3 ];
 			pos = new double[ 3 ];
 			moving = false;
-			eig = new JamaEigenvalueDecomposition( 3 );
 			mat = new double[ 3 ][ 3 ];
 		}
 
@@ -342,18 +336,10 @@ public class EditSpecialBehaviours< V extends OverlayVertex< V, E >, E extends O
 				else
 					viewer.previousTimePoint();
 
-				// Compute new radius as mean of ellipse semi-axes.
-				source.getCovariance( mat );
-				eig.decompose( mat );
-				final double[] eigs = eig.getRealEigenvalues();
-				double radius = 0;
-				for ( final double e : eigs )
-					radius += Math.sqrt( e ) ;
-				radius *= Spot.nSigmas / eigs.length;
-
 				// Create new vertex under click location.
+				source.getCovariance( mat );
 				final int timepoint = renderer.getCurrentTimepoint();
-				overlayGraph.addVertex( timepoint, pos, radius, target );
+				overlayGraph.addVertex( timepoint, pos, mat, target );
 
 				// Link it to source vertex. Careful for oriented edge.
 				if ( forward )
@@ -395,7 +381,5 @@ public class EditSpecialBehaviours< V extends OverlayVertex< V, E >, E extends O
 				moving = false;
 			}
 		}
-
 	}
-
 }
