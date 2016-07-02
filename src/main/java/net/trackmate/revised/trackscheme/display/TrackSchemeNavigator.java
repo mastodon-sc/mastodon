@@ -32,29 +32,14 @@ import bdv.viewer.InputActionBindings;
 import bdv.viewer.TriggerBehaviourBindings;
 
 /**
+ * TrackSchemeNavigator that implements the 'Midnight-commander-like' behaviour.
+ * <p>
+ * Selection is independent of focus. Moving the focus with arrow keys doesn't
+ * alter selection. Space key toggles selection of focused vertex. When
+ * extending the selection with shift+arrow keys, the selection of the currently
+ * focused vertex is toggled, then the focus is moved.
+ *
  * TODO: RENAME.
- *
- * TODO: All focus/selection related stuff could be moved to this class.
- *
- * TODO: Decide on Focus/Selection behaviour. There are two options:
- *
- * 1) Finder-like: Selection is tied to the focus. When moving the focus with
- * arrow keys, the selection moves with the focus. When clicking a vertex it is
- * focused and selected, The focused vertex is always selected. Focus still
- * exists independent of selection: multiple vertices can be selected, but only
- * one of them can have the focus. When extending the selection with shift+arrow
- * keys, the vertex to which the focus moves should be selected. When box
- * selection is drawn, the selected vertex closest to the position where the
- * drag ended should receive the focus.
- *
- * 2) Norton-Commander-like: Selection is independent of focus. Moveing the
- * focus with arrow keys doesn't alter selection. Space key toggles selection of
- * focused vertex. When extending the selection with shift+arrow keys, the
- * selection of the currently focused vertex is toggled, then the focus is
- * moved.
- *
- * Both options should be implemented both options and leave it to the user to
- * enable whatever he prefers.
  *
  * @author Tobias Pietzsch &lt;tobias.pietzsch@gmail.com&gt;
  * @author Jean-Yves Tinevez &lt;jeanyves.tinevez@gmail.com&gt;
@@ -103,17 +88,18 @@ public class TrackSchemeNavigator implements TransformListener< ScreenTransform 
 		RIGHT_SIBLING
 	}
 
-	private final TrackSchemeGraph< ?, ? > graph;
+	protected final TrackSchemeGraph< ?, ? > graph;
 
-	private final LineageTreeLayout layout;
+	protected final LineageTreeLayout layout;
 
-	private final TrackSchemeNavigation navigation;
+	protected final TrackSchemeNavigation navigation;
+
+	protected final TrackSchemeSelection selection;
+
+	private final ScreenTransform screenTransform;
 
 	private final TrackSchemeFocus focus;
 
-	private final TrackSchemeSelection selection;
-
-	private final ScreenTransform screenTransform;
 
 	/**
 	 * Current width of vertical header.
@@ -203,7 +189,7 @@ public class TrackSchemeNavigator implements TransformListener< ScreenTransform 
 	 * @param direction
 	 *            which neighbor to focus.
 	 * @param select
-	 *            if {@code true}, the currently focussed vertex is added to the
+	 *            if {@code true}, the currently focused vertex is added to the
 	 *            selection (before moving the focus).
 	 */
 	private void selectAndFocusNeighbor( final Direction direction, final boolean select )
@@ -240,10 +226,8 @@ public class TrackSchemeNavigator implements TransformListener< ScreenTransform 
 		}
 
 		if ( current != null )
-		{
-//			focus.focusVertex( current ); // TODO: can this be safely removed? focus is set through navigation.notifyNavigateToVertex() --> TrackSchemePanel.navigateToVertext()
 			navigation.notifyNavigateToVertex( current );
-		}
+
 		return current;
 	}
 
@@ -263,7 +247,7 @@ public class TrackSchemeNavigator implements TransformListener< ScreenTransform 
 
 	private double ratioXtoY;
 
-	private TrackSchemeVertex getFocusedVertex( final TrackSchemeVertex ref )
+	protected TrackSchemeVertex getFocusedVertex( final TrackSchemeVertex ref )
 	{
 		final TrackSchemeVertex vertex = focus.getFocusedVertex( ref );
 		return ( vertex != null )
@@ -475,10 +459,16 @@ public class TrackSchemeNavigator implements TransformListener< ScreenTransform 
 
 		private final boolean addToSelection;
 
+		private final RealPoint lpos;
+
+		private final TrackSchemeVertex ref;
+
 		public BoxSelectionBehaviour( final String name, final boolean addToSelection )
 		{
 			super( name );
 			this.addToSelection = addToSelection;
+			lpos = new RealPoint( 2 );
+			ref = graph.vertexRef();
 		}
 
 		@Override
@@ -523,6 +513,11 @@ public class TrackSchemeNavigator implements TransformListener< ScreenTransform 
 						eX - headerWidth,
 						eY - headerHeight,
 						addToSelection );
+
+				lpos.setPosition( screenTransform.screenToLayoutX( x - headerWidth ), 0 );
+				lpos.setPosition( screenTransform.screenToLayoutY( y - headerHeight ), 1 );
+				final TrackSchemeVertex v = layout.getClosestActiveVertex( lpos, ratioXtoY, ref );
+				focus.focusVertex( v );
 			}
 		}
 

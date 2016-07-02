@@ -214,7 +214,9 @@ public class TrackSchemePanel extends JPanel implements
 		display.addMouseListener( highlightHandler );
 		display.addTransformListener( highlightHandler );
 
-		navigator = new TrackSchemeNavigator( display, graph, layout, graphOverlay, focus, navigation, selection );
+		// TODO Let the user choose between the two selection/focus modes.
+		navigator = new TrackSchemeNavigatorFinderLike( display, graph, layout, graphOverlay, focus, navigation, selection );
+//		navigator = new TrackSchemeNavigator( display, graph, layout, graphOverlay, focus, navigation, selection );
 		display.addTransformListener( navigator );
 
 		offsetHeaders = new OffsetHeaders();
