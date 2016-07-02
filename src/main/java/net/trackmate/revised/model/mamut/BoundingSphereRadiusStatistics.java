@@ -137,7 +137,7 @@ public class BoundingSphereRadiusStatistics implements GraphListener< Spot, Link
 		}
 		finally
 		{
-			writeLock.lock();
+			writeLock.unlock();
 		}
 	}
 
