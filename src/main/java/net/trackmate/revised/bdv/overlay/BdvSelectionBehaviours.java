@@ -9,7 +9,7 @@ import org.scijava.ui.behaviour.util.AbstractNamedBehaviour.NamedBehaviourAdder;
 
 import bdv.viewer.TriggerBehaviourBindings;
 
-public class SelectionBehaviours< V extends OverlayVertex< V, E >, E extends OverlayEdge< E, V > >
+public class BdvSelectionBehaviours< V extends OverlayVertex< V, E >, E extends OverlayEdge< E, V > >
 {
 	public static final String NAVIGATE_TO_VERTEX_NAME = "bdv click navigate to vertex";
 	public static final String SELECT_NAME = "bdv click select";
@@ -28,7 +28,7 @@ public class SelectionBehaviours< V extends OverlayVertex< V, E >, E extends Ove
 
 	private final BehaviourMap behaviourMap;
 
-	public SelectionBehaviours(
+	public BdvSelectionBehaviours(
 			final OverlayGraph< V, E > overlayGraph,
 			final OverlayGraphRenderer< V, E > renderer,
 			final OverlaySelection< V, E > selection,

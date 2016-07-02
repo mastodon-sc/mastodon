@@ -12,33 +12,20 @@ import javax.swing.InputMap;
 import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
 
-import org.scijava.ui.behaviour.KeyStrokeAdder;
-import org.scijava.ui.behaviour.io.InputTriggerConfig;
-import org.scijava.ui.behaviour.io.InputTriggerDescription;
-import org.scijava.ui.behaviour.io.InputTriggerDescriptionsBuilder;
-import org.scijava.ui.behaviour.io.yaml.YamlConfigIO;
-
-import bdv.spimdata.SpimDataMinimal;
-import bdv.tools.ToggleDialogAction;
-import bdv.viewer.RequestRepaint;
-import bdv.viewer.TimePointListener;
-import bdv.viewer.ViewerFrame;
-import bdv.viewer.ViewerOptions;
-import bdv.viewer.ViewerPanel;
 import mpicbg.spim.data.generic.AbstractSpimData;
 import net.trackmate.graph.GraphChangeListener;
 import net.trackmate.graph.GraphIdBimap;
 import net.trackmate.graph.ListenableReadOnlyGraph;
 import net.trackmate.revised.bdv.BigDataViewerMaMuT;
 import net.trackmate.revised.bdv.SharedBigDataViewerData;
+import net.trackmate.revised.bdv.overlay.BdvSelectionBehaviours;
 import net.trackmate.revised.bdv.overlay.EditBehaviours;
 import net.trackmate.revised.bdv.overlay.EditSpecialBehaviours;
-import net.trackmate.revised.bdv.overlay.MouseHighlightHandler;
+import net.trackmate.revised.bdv.overlay.BdvHighlightHandler;
 import net.trackmate.revised.bdv.overlay.OverlayContext;
 import net.trackmate.revised.bdv.overlay.OverlayGraphRenderer;
 import net.trackmate.revised.bdv.overlay.RenderSettings;
 import net.trackmate.revised.bdv.overlay.RenderSettings.UpdateListener;
-import net.trackmate.revised.bdv.overlay.SelectionBehaviours;
 import net.trackmate.revised.bdv.overlay.ui.RenderSettingsDialog;
 import net.trackmate.revised.bdv.overlay.wrap.OverlayContextWrapper;
 import net.trackmate.revised.bdv.overlay.wrap.OverlayEdgeWrapper;
@@ -87,6 +74,20 @@ import net.trackmate.revised.ui.selection.HighlightModel;
 import net.trackmate.revised.ui.selection.NavigationHandler;
 import net.trackmate.revised.ui.selection.Selection;
 import net.trackmate.revised.ui.selection.SelectionListener;
+
+import org.scijava.ui.behaviour.KeyStrokeAdder;
+import org.scijava.ui.behaviour.io.InputTriggerConfig;
+import org.scijava.ui.behaviour.io.InputTriggerDescription;
+import org.scijava.ui.behaviour.io.InputTriggerDescriptionsBuilder;
+import org.scijava.ui.behaviour.io.yaml.YamlConfigIO;
+
+import bdv.spimdata.SpimDataMinimal;
+import bdv.tools.ToggleDialogAction;
+import bdv.viewer.RequestRepaint;
+import bdv.viewer.TimePointListener;
+import bdv.viewer.ViewerFrame;
+import bdv.viewer.ViewerOptions;
+import bdv.viewer.ViewerPanel;
 
 public class WindowManager
 {
@@ -423,14 +424,14 @@ public class WindowManager
 		} );
 		// TODO: remember those listeners and remove them when the BDV window is closed!!!
 
-		final MouseHighlightHandler< ?, ? > highlightHandler = new MouseHighlightHandler<>( overlayGraph, tracksOverlay, overlayHighlight );
+		final BdvHighlightHandler< ?, ? > highlightHandler = new BdvHighlightHandler<>( overlayGraph, tracksOverlay, overlayHighlight );
 		viewer.getDisplay().addHandler( highlightHandler );
 		viewer.addRenderTransformListener( highlightHandler );
 
 		final NavigationHandler< Spot, Link > navigationHandler = new NavigationHandler<>( bdvGroupHandle );
 		final OverlayNavigationWrapper< Spot, Link > navigation =
 				new OverlayNavigationWrapper< Spot, Link >( viewer, overlayGraph, navigationHandler );
-		final SelectionBehaviours< ?, ? > selectionBehaviours = new SelectionBehaviours<>( overlayGraph, tracksOverlay, overlaySelection, navigation );
+		final BdvSelectionBehaviours< ?, ? > selectionBehaviours = new BdvSelectionBehaviours<>( overlayGraph, tracksOverlay, overlaySelection, navigation );
 		selectionBehaviours.installBehaviourBindings( viewerFrame.getTriggerbindings(), keyconf );
 
 		final OverlayContext< OverlayVertexWrapper< Spot, Link > > overlayContext = new OverlayContext<>( overlayGraph, tracksOverlay );
