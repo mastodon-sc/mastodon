@@ -8,14 +8,13 @@ import net.trackmate.graph.Edge;
 import net.trackmate.graph.GraphChangeNotifier;
 import net.trackmate.graph.ListenableGraph;
 import net.trackmate.graph.Vertex;
-import net.trackmate.revised.bdv.AbstractBehaviours;
 import net.trackmate.revised.ui.selection.Selection;
 import net.trackmate.undo.UndoPointMarker;
 
-import org.scijava.ui.behaviour.ClickBehaviour;
 import org.scijava.ui.behaviour.io.InputTriggerConfig;
 
-import bdv.viewer.TriggerBehaviourBindings;
+import bdv.util.AbstractActions;
+import bdv.viewer.InputActionBindings;
 
 /**
  * User-interface actions that are related to a model selection.
@@ -23,8 +22,8 @@ import bdv.viewer.TriggerBehaviourBindings;
  * @author Jean=Yves Tinevez &lt;jeanyves.tinevez@gmail.com&gt;
  *
  */
-public class SelectionBehaviours< V extends Vertex< E >, E extends Edge< V > >
-		extends AbstractBehaviours
+public class SelectionActions< V extends Vertex< E >, E extends Edge< V > >
+		extends AbstractActions
 {
 
 	private static final String DELETE_SELECTION = "delete selection";
@@ -32,7 +31,7 @@ public class SelectionBehaviours< V extends Vertex< E >, E extends Edge< V > >
 	private static final String[] DELETE_SELECTION_KEYS = new String[] { "shift DELETE" };
 
 	public static < V extends Vertex< E >, E extends Edge< V > > void installActionBindings(
-			final TriggerBehaviourBindings triggerBehaviourBindings,
+			final InputActionBindings inpputActionBindings,
 			final InputTriggerConfig config,
 			final String[] keyConfigContexts,
 			final ListenableGraph< V, E > graph,
@@ -40,7 +39,8 @@ public class SelectionBehaviours< V extends Vertex< E >, E extends Edge< V > >
 			final Selection< V, E > selection,
 			final UndoPointMarker undo )
 	{
-		new SelectionBehaviours<>( triggerBehaviourBindings, config, keyConfigContexts, graph, notify, selection, undo );
+		final SelectionActions< V, E > sa = new SelectionActions<>( inpputActionBindings, config, keyConfigContexts, graph, notify, selection, undo );
+		sa.runnableAction( sa.getDeleteSelectionAction(), DELETE_SELECTION, DELETE_SELECTION_KEYS );
 	}
 
 	private final ListenableGraph< V, E > graph;
@@ -51,8 +51,10 @@ public class SelectionBehaviours< V extends Vertex< E >, E extends Edge< V > >
 
 	private final Selection< V, E > selection;
 
-	private SelectionBehaviours(
-			final TriggerBehaviourBindings triggerBehaviourBindings,
+	private final SelectionActions< V, E >.DeleteSelectionAction deleteSelectionAction;
+
+	private SelectionActions(
+			final InputActionBindings inputActionBindings,
 			final InputTriggerConfig config,
 			final String[] keyConfigContexts,
 			final ListenableGraph< V, E > graph,
@@ -60,19 +62,24 @@ public class SelectionBehaviours< V extends Vertex< E >, E extends Edge< V > >
 			final Selection< V, E > selection,
 			final UndoPointMarker undo )
 	{
-		super( triggerBehaviourBindings, "selection", config, keyConfigContexts );
+		super( inputActionBindings, "selection", config, keyConfigContexts );
 		this.graph = graph;
 		this.notify = notify;
 		this.selection = selection;
 		this.undo = undo;
 
-		behaviour( new DeleteSelection(), DELETE_SELECTION, DELETE_SELECTION_KEYS );
+		deleteSelectionAction = new DeleteSelectionAction();
 	}
 
-	private class DeleteSelection implements ClickBehaviour
+	private DeleteSelectionAction getDeleteSelectionAction()
+	{
+		return deleteSelectionAction;
+	}
+
+	private class DeleteSelectionAction implements Runnable
 	{
 		@Override
-		public void click( final int x, final int y )
+		public void run()
 		{
 			selection.pauseListeners();
 			final RefSet< E > edges = selection.getSelectedEdges();
@@ -90,5 +97,4 @@ public class SelectionBehaviours< V extends Vertex< E >, E extends Edge< V > >
 			selection.resumeListeners();
 		}
 	}
-
 }
