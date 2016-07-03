@@ -177,8 +177,8 @@ public class TrackSchemeNavigator implements TransformListener< ScreenTransform 
 		adder.put( BOX_SELECT, "button1" );
 		adder.put( BOX_ADD_SELECT, "shift button1" );
 
-		triggerbindings.addBehaviourMap( "selection", behaviourMap );
-		triggerbindings.addInputTriggerMap( "selection", inputMap );
+		triggerbindings.addBehaviourMap( "ts navigator", behaviourMap );
+		triggerbindings.addInputTriggerMap( "ts navigator", inputMap );
 	}
 
 	/**

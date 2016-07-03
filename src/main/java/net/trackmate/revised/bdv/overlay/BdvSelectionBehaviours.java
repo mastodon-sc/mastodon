@@ -56,8 +56,8 @@ public class BdvSelectionBehaviours< V extends OverlayVertex< V, E >, E extends 
 		adder.put( SELECT_NAME, "button1" );
 		adder.put( ADD_SELECT_NAME, "shift button1" );
 
-		triggerbindings.addBehaviourMap( "selection", behaviourMap );
-		triggerbindings.addInputTriggerMap( "selection", inputMap );
+		triggerbindings.addBehaviourMap( "bdv selection", behaviourMap );
+		triggerbindings.addInputTriggerMap( "bdv selection", inputMap );
 	}
 
 	/*
