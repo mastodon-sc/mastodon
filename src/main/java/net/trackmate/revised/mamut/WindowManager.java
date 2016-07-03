@@ -18,10 +18,10 @@ import net.trackmate.graph.GraphIdBimap;
 import net.trackmate.graph.ListenableReadOnlyGraph;
 import net.trackmate.revised.bdv.BigDataViewerMaMuT;
 import net.trackmate.revised.bdv.SharedBigDataViewerData;
+import net.trackmate.revised.bdv.overlay.BdvHighlightHandler;
 import net.trackmate.revised.bdv.overlay.BdvSelectionBehaviours;
 import net.trackmate.revised.bdv.overlay.EditBehaviours;
 import net.trackmate.revised.bdv.overlay.EditSpecialBehaviours;
-import net.trackmate.revised.bdv.overlay.BdvHighlightHandler;
 import net.trackmate.revised.bdv.overlay.OverlayContext;
 import net.trackmate.revised.bdv.overlay.OverlayGraphRenderer;
 import net.trackmate.revised.bdv.overlay.RenderSettings;
@@ -65,6 +65,7 @@ import net.trackmate.revised.trackscheme.display.TrackSchemeOptions;
 import net.trackmate.revised.trackscheme.display.laf.TrackSchemeStyle;
 import net.trackmate.revised.trackscheme.display.ui.TrackSchemeStylePanel.TrackSchemeStyleDialog;
 import net.trackmate.revised.ui.HighlightBehaviours;
+import net.trackmate.revised.ui.SelectionBehaviours;
 import net.trackmate.revised.ui.grouping.GroupHandle;
 import net.trackmate.revised.ui.grouping.GroupManager;
 import net.trackmate.revised.ui.selection.FocusListener;
@@ -452,6 +453,14 @@ public class WindowManager
 				model.getGraph(),
 				highlightModel,
 				model );
+		SelectionBehaviours.installActionBindings(
+				viewerFrame.getTriggerbindings(),
+				keyconf,
+				new String[] { "bdv" },
+				model.getGraph(),
+				model.getGraph(),
+				selection,
+				model );
 
 		/*
 		 * TODO: this is still wrong. There should be one central entity syncing
@@ -584,6 +593,14 @@ public class WindowManager
 				model.getGraph(),
 				model.getGraph(),
 				highlightModel,
+				model );
+		SelectionBehaviours.installActionBindings(
+				frame.getTriggerbindings(),
+				keyconf,
+				new String[] { "ts" },
+				model.getGraph(),
+				model.getGraph(),
+				selection,
 				model );
 		TrackSchemeEditBehaviours.installActionBindings(
 				frame.getTriggerbindings(),
