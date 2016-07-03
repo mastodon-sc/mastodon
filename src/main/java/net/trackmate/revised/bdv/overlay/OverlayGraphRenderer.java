@@ -533,8 +533,8 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 										graphics.setStroke( highlightedEdgeStroke );
 									graphics.drawLine( x0, y0, x1, y1 );
 
-									// TODO -- DEBUG Draw arrows for edge direction.
-									// DEBUG Draw arrows for edge direction.
+									// Draw arrows for edge direction.
+									/*
 									final double dx = x1 - x0;
 									final double dy = y1 - y0;
 									final double alpha = Math.atan2( dy, dx );
@@ -546,6 +546,7 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 									final int y1b = ( int ) Math.round( y1 - l * Math.sin( alpha + theta ) );
 									graphics.drawLine( x1, y1, x1a, y1a );
 									graphics.drawLine( x1, y1, x1b, y1b );
+									*/
 
 									if ( isHighlighted )
 										graphics.setStroke( defaultEdgeStroke );
