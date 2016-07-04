@@ -258,7 +258,7 @@ public class RenderSettingsPanel extends JPanel implements UpdateListener
 			@Override
 			public void actionPerformed( final ActionEvent e )
 			{
-//				renderSettings.setDrawSpotLabels( drawSpotLabelsBox.isSelected() );
+				renderSettings.setDrawSpotLabels( drawSpotLabelsBox.isSelected() );
 			}
 		} );
 		c.anchor = GridBagConstraints.LINE_END;
@@ -386,6 +386,7 @@ public class RenderSettingsPanel extends JPanel implements UpdateListener
 			projectionBox.setSelected( renderSettings.getDrawEllipsoidSliceProjection() );
 			centersBox.setSelected( renderSettings.getDrawSpotCenters() );
 			centersForEllipsesBox.setSelected( renderSettings.getDrawSpotCentersForEllipses() );
+			drawSpotLabelsBox.setSelected( renderSettings.getDrawSpotLabels() );
 
 			focusLimit.setCurrentValue( renderSettings.getFocusLimit() );
 			focusLimitRelativeBox.setSelected( renderSettings.getFocusLimitViewRelative() );
