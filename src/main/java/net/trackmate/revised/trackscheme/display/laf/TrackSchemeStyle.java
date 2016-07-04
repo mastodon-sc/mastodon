@@ -46,6 +46,8 @@ public class TrackSchemeStyle
 		}
 	}
 
+	public String name;
+
 	public Color edgeColor;
 
 	public Color vertexFillColor;
@@ -346,13 +348,21 @@ public class TrackSchemeStyle
 		return this;
 	}
 
-	private TrackSchemeStyle()
+	private TrackSchemeStyle( final String name )
 	{
+		this.name = name;
 		updateListeners = new ArrayList<>();
+	}
+
+	@Override
+	public String toString()
+	{
+		return name;
 	}
 
 	public synchronized void set( final TrackSchemeStyle style )
 	{
+		this.name = style.name;
 		this.edgeColor = style.edgeColor;
 		this.vertexFillColor = style.vertexFillColor;
 		this.vertexDrawColor = style.vertexDrawColor;
@@ -423,7 +433,7 @@ public class TrackSchemeStyle
 	public static TrackSchemeStyle defaultStyle()
 	{
 		final Color fill = new Color( 128, 255, 128 );
-		return new TrackSchemeStyle().
+		return new TrackSchemeStyle( "default" ).
 				backgroundColor( Color.LIGHT_GRAY ).
 				currentTimepointColor( new Color( 217, 217, 217 ) ).
 				vertexFillColor( Color.WHITE ).
@@ -459,7 +469,7 @@ public class TrackSchemeStyle
 		final Color bg = new Color( 163, 199, 197 );
 		final Color fill = new Color( 64, 106, 102 );
 		final Color selfill = new Color( 255, 128, 128 );
-		return new TrackSchemeStyle().
+		return new TrackSchemeStyle( "modern" ).
 				backgroundColor( bg ).
 				currentTimepointColor( bg.brighter() ).
 				vertexFillColor( fill ).
@@ -495,7 +505,7 @@ public class TrackSchemeStyle
 		final Color bg = new Color( 163, 199, 197 );
 		final Color fill = new Color( 225, 216, 183 );
 		final Color selfill = new Color( 53, 107, 154 );
-		return new TrackSchemeStyle().
+		return new TrackSchemeStyle( "lorry" ).
 				backgroundColor( bg ).
 				currentTimepointColor( bg.brighter() ).
 				vertexFillColor( fill ).
