@@ -70,6 +70,18 @@ public class ModelOverlayProperties implements OverlayProperties< Spot, Link >
 	}
 
 	@Override
+	public String getLabel( final Spot v )
+	{
+		return v.getLabel();
+	}
+
+	@Override
+	public void setLabel( final Spot v, final String label )
+	{
+		v.setLabel( label );
+	}
+
+	@Override
 	public boolean isVertexSelected( final Spot v )
 	{
 		return selection.isSelected( v );

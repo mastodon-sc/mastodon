@@ -81,6 +81,18 @@ public class OverlayVertexWrapper< V extends Vertex< E >, E extends Edge< V > >
 	}
 
 	@Override
+	public String getLabel()
+	{
+		return overlayProperties.getLabel( wv );
+	}
+
+	@Override
+	public void setLabel( final String label )
+	{
+		overlayProperties.setLabel( wv, label );
+	}
+
+	@Override
 	public Edges< OverlayEdgeWrapper< V, E > > incomingEdges()
 	{
 		return incomingEdges;

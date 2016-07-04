@@ -25,4 +25,8 @@ public interface OverlayProperties< V, E >
 	public V addVertex( final int timepoint, final double[] position, final double radius, V ref );
 
 	public void notifyGraphChanged();
+
+	public String getLabel( V v );
+
+	public void setLabel( V v, String label );
 }
