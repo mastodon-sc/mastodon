@@ -430,10 +430,24 @@ public class TrackSchemeStyle
 		return updateListeners.remove( l );
 	}
 
+	public TrackSchemeStyle copy( String name )
+	{
+		final TrackSchemeStyle newStyle = new TrackSchemeStyle( "" );
+		newStyle.set( this );
+		newStyle.name = name;
+		return newStyle;
+	}
+
 	public static TrackSchemeStyle defaultStyle()
 	{
+		return df;
+	}
+
+	private static final TrackSchemeStyle df;
+	static
+	{
 		final Color fill = new Color( 128, 255, 128 );
-		return new TrackSchemeStyle( "default" ).
+		df = new TrackSchemeStyle( "default" ).
 				backgroundColor( Color.LIGHT_GRAY ).
 				currentTimepointColor( new Color( 217, 217, 217 ) ).
 				vertexFillColor( Color.WHITE ).
