@@ -1,7 +1,3 @@
-/*
- * Created by JFormDesigner on Mon Jul 04 15:49:29 EDT 2016
- */
-
 package net.trackmate.revised.trackscheme.display.ui;
 
 import java.awt.BorderLayout;
@@ -11,6 +7,8 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 import java.awt.Insets;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
@@ -38,6 +36,7 @@ import net.trackmate.revised.trackscheme.display.TrackSchemePanel;
 import net.trackmate.revised.trackscheme.display.laf.TrackSchemeStyle;
 import net.trackmate.revised.trackscheme.display.ui.dummygraph.DummyEdge;
 import net.trackmate.revised.trackscheme.display.ui.dummygraph.DummyGraph;
+import net.trackmate.revised.trackscheme.display.ui.dummygraph.DummyGraph.Examples;
 import net.trackmate.revised.trackscheme.display.ui.dummygraph.DummyVertex;
 import net.trackmate.revised.ui.grouping.GroupManager;
 import net.trackmate.revised.ui.selection.FocusModel;
@@ -46,33 +45,38 @@ import net.trackmate.revised.ui.selection.NavigationHandler;
 import net.trackmate.revised.ui.selection.Selection;
 
 /**
+ * A previewer for TrackScheme styles.
+ *
+ * @author Jean=Yves Tinevez &lt;jeanyves.tinevez@gmail.com&gt;
  */
 public class TrackSchemeStyleChooserFrame extends JFrame
 {
 
-	private TrackSchemePanel panelPreview;
+	private static final long serialVersionUID = 1L;
 
-	private final TrackSchemeStyleChooserModel model;
+	JButton buttonDeleteStyle;
+
+	JButton buttonEditStyle;
+
+	JButton buttonNewStyle;
+
+	JButton okButton;
 
 	public TrackSchemeStyleChooserFrame( final TrackSchemeStyleChooserModel model )
 	{
-		this.model = model;
-		initComponents();
-	}
-
-	private void initComponents()
-	{
-		final DummyGraph example = DummyGraph.example();
+		final Examples ex = DummyGraph.Examples.CELEGANS;
+		final DummyGraph example = ex.getGraph();
+		final Selection< DummyVertex, DummyEdge > selection = ex.getSelection();
 		final GraphIdBimap< DummyVertex, DummyEdge > idmap = example.getIdBimap();
-		final Selection< DummyVertex, DummyEdge > selection = new Selection<>( example, idmap );
 		final ModelGraphProperties dummyProps = new DefaultModelGraphProperties< DummyVertex, DummyEdge >( example, idmap, selection );
 		final TrackSchemeGraph< DummyVertex, DummyEdge > graph = new TrackSchemeGraph<>( example, idmap, dummyProps );
 		final TrackSchemeHighlight highlight = new TrackSchemeHighlight( new DefaultModelHighlightProperties<>( example, idmap, new HighlightModel<>( idmap ) ), graph );
 		final TrackSchemeFocus focus = new TrackSchemeFocus( new DefaultModelFocusProperties<>( example, idmap, new FocusModel<>( idmap ) ), graph );
 		final TrackSchemeSelection tsSelection = new TrackSchemeSelection( new DefaultModelSelectionProperties<>( example, idmap, selection ) );
 		final TrackSchemeNavigation navigation = new TrackSchemeNavigation( new DefaultModelNavigationProperties<>( example, idmap, new NavigationHandler<>( new GroupManager().createGroupHandle() ) ), graph );
-		panelPreview = new TrackSchemePanel( graph, highlight, focus, tsSelection, navigation, TrackSchemeOptions.options() );
-		panelPreview.setTimepointRange( 0, 6 );
+		final TrackSchemePanel panelPreview = new TrackSchemePanel( graph, highlight, focus, tsSelection, navigation, TrackSchemeOptions.options() );
+		panelPreview.setTimepointRange( 0, 5 );
+		panelPreview.timePointChanged( 2 );
 		panelPreview.graphChanged();
 
 		final JPanel dialogPane = new JPanel();
@@ -80,13 +84,22 @@ public class TrackSchemeStyleChooserFrame extends JFrame
 		final JPanel panelChooseStyle = new JPanel();
 		final JLabel jlabelTitle = new JLabel();
 		final JComboBox< TrackSchemeStyle > comboBoxStyles = new JComboBox<>( model );
+		comboBoxStyles.addActionListener( new ActionListener()
+		{
+			@Override
+			public void actionPerformed( ActionEvent e )
+			{
+				panelPreview.setTrackSchemeStyle( comboBoxStyles.getItemAt( comboBoxStyles.getSelectedIndex() ) );
+				panelPreview.repaint();
+			}
+		} );
 		final JPanel panelStyleButtons = new JPanel();
-		final JButton buttonDeleteStyle = new JButton();
+		buttonDeleteStyle = new JButton();
 		final JPanel hSpacer1 = new JPanel( null );
-		final JButton buttonEditStyle = new JButton();
-		final JButton buttonNewStyle = new JButton();
+		buttonEditStyle = new JButton();
+		buttonNewStyle = new JButton();
 		final JPanel buttonBar = new JPanel();
-		final JButton okButton = new JButton();
+		okButton = new JButton();
 
 		// ======== this ========
 		setTitle( "TrackScheme styles" );
@@ -156,26 +169,5 @@ public class TrackSchemeStyleChooserFrame extends JFrame
 		}
 		contentPane.add( dialogPane, BorderLayout.CENTER );
 		pack();
-		setLocationRelativeTo( getOwner() );
-	}
-
-	public static void main( final String[] args )
-	{
-		try
-		{
-			javax.swing.UIManager.setLookAndFeel(
-					javax.swing.UIManager.getSystemLookAndFeelClassName() );
-		}
-		catch ( final javax.swing.UnsupportedLookAndFeelException e )
-		{}
-		catch ( final ClassNotFoundException e )
-		{}
-		catch ( final InstantiationException e )
-		{}
-		catch ( final IllegalAccessException e )
-		{}
-		final TrackSchemeStyleChooserModel m = new TrackSchemeStyleChooserModel();
-		final TrackSchemeStyleChooserFrame frame = new TrackSchemeStyleChooserFrame( m );
-		frame.setVisible( true );
 	}
 }

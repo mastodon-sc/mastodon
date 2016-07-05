@@ -18,5 +18,4 @@ public class TrackSchemeStyleChooserModel extends DefaultComboBoxModel< TrackSch
 		addElement( TrackSchemeStyle.modernStyle() );
 		addElement( TrackSchemeStyle.howMuchDoYouKnowStyle() );
 	}
-
 }
