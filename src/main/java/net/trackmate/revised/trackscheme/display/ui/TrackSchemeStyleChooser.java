@@ -122,10 +122,9 @@ public class TrackSchemeStyleChooser
 
 	private void delete()
 	{
-		if ( model.getSelectedItem() == TrackSchemeStyle.defaultStyle() )
+		if ( TrackSchemeStyle.defaults.contains( model.getSelectedItem() ) )
 			return;
 
-		// FIXME
 		model.removeElement( model.getSelectedItem() );
 	}
 

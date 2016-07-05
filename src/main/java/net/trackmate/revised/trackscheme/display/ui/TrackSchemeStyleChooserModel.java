@@ -6,6 +6,7 @@ import net.trackmate.revised.trackscheme.display.laf.TrackSchemeStyle;
 
 public class TrackSchemeStyleChooserModel extends DefaultComboBoxModel< TrackSchemeStyle >
 {
+	private static final long serialVersionUID = 1L;
 
 	public TrackSchemeStyleChooserModel()
 	{
@@ -14,8 +15,7 @@ public class TrackSchemeStyleChooserModel extends DefaultComboBoxModel< TrackSch
 
 	private void init()
 	{
-		addElement( TrackSchemeStyle.defaultStyle() );
-		addElement( TrackSchemeStyle.modernStyle() );
-		addElement( TrackSchemeStyle.howMuchDoYouKnowStyle() );
+		for ( final TrackSchemeStyle style : TrackSchemeStyle.defaults )
+			addElement( style );
 	}
 }

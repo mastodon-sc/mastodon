@@ -5,6 +5,7 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.Stroke;
 import java.util.ArrayList;
+import java.util.Collection;
 
 public class TrackSchemeStyle
 {
@@ -38,7 +39,7 @@ public class TrackSchemeStyle
 			case "Modern":
 				return modernStyle();
 			case "Pastel":
-				return howMuchDoYouKnowStyle();
+				return lorryStyle();
 			case "Default":
 			default:
 				return defaultStyle();
@@ -480,10 +481,16 @@ public class TrackSchemeStyle
 
 	public static TrackSchemeStyle modernStyle()
 	{
+		return modern;
+	}
+
+	private static final TrackSchemeStyle modern;
+	static
+	{
 		final Color bg = new Color( 163, 199, 197 );
 		final Color fill = new Color( 64, 106, 102 );
 		final Color selfill = new Color( 255, 128, 128 );
-		return new TrackSchemeStyle( "modern" ).
+		modern = new TrackSchemeStyle( "modern" ).
 				backgroundColor( bg ).
 				currentTimepointColor( bg.brighter() ).
 				vertexFillColor( fill ).
@@ -514,12 +521,18 @@ public class TrackSchemeStyle
 				paintHeaderShadow( true );
 	}
 
-	public static TrackSchemeStyle howMuchDoYouKnowStyle()
+	public static TrackSchemeStyle lorryStyle()
+	{
+		return hmdyk;
+	}
+
+	private static final TrackSchemeStyle hmdyk;
+	static
 	{
 		final Color bg = new Color( 163, 199, 197 );
 		final Color fill = new Color( 225, 216, 183 );
 		final Color selfill = new Color( 53, 107, 154 );
-		return new TrackSchemeStyle( "lorry" ).
+		hmdyk = new TrackSchemeStyle( "lorry" ).
 				backgroundColor( bg ).
 				currentTimepointColor( bg.brighter() ).
 				vertexFillColor( fill ).
@@ -549,4 +562,14 @@ public class TrackSchemeStyle
 				paintColumns( true ).
 				paintHeaderShadow( true );
 	}
+
+	public static Collection< TrackSchemeStyle > defaults;
+	static
+	{
+		defaults = new ArrayList<>( 3 );
+		defaults.add( df );
+		defaults.add( hmdyk );
+		defaults.add( modern );
+	}
+
 }
