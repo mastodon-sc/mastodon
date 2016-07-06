@@ -60,9 +60,11 @@ public class TrackSchemeStyleChooserFrame extends JFrame
 
 	JButton buttonNewStyle;
 
+	JButton buttonSetStyleName;
+
 	JButton okButton;
 
-	JButton buttonSetStyleName;
+	JButton saveButton;
 
 	TrackSchemePanel panelPreview;
 
@@ -105,6 +107,7 @@ public class TrackSchemeStyleChooserFrame extends JFrame
 		buttonSetStyleName = new JButton();
 		final JPanel buttonBar = new JPanel();
 		okButton = new JButton();
+		saveButton = new JButton();
 
 		// ======== this ========
 		setTitle( "TrackScheme styles" );
@@ -166,12 +169,18 @@ public class TrackSchemeStyleChooserFrame extends JFrame
 			{
 				buttonBar.setBorder( new EmptyBorder( 12, 0, 0, 0 ) );
 				buttonBar.setLayout( new GridBagLayout() );
-				( ( GridBagLayout ) buttonBar.getLayout() ).columnWidths = new int[] { 244, 80 };
-				( ( GridBagLayout ) buttonBar.getLayout() ).columnWeights = new double[] { 1.0, 0.0 };
+				( ( GridBagLayout ) buttonBar.getLayout() ).columnWidths = new int[] { 80, 164, 80 };
+				( ( GridBagLayout ) buttonBar.getLayout() ).columnWeights = new double[] { 0.0, 1.0, 0.0 };
 
 				// ---- okButton ----
 				okButton.setText( "OK" );
-				buttonBar.add( okButton, new GridBagConstraints( 1, 0, 1, 1, 0.0, 0.0,
+				buttonBar.add( okButton, new GridBagConstraints( 2, 0, 1, 1, 0.0, 0.0,
+						GridBagConstraints.CENTER, GridBagConstraints.BOTH,
+						new Insets( 0, 0, 0, 0 ), 0, 0 ) );
+
+				// ---- saveButton -----
+				saveButton.setText( "Save styles" );
+				buttonBar.add( saveButton, new GridBagConstraints( 0, 0, 1, 1, 0.0, 0.0,
 						GridBagConstraints.CENTER, GridBagConstraints.BOTH,
 						new Insets( 0, 0, 0, 0 ), 0, 0 ) );
 			}

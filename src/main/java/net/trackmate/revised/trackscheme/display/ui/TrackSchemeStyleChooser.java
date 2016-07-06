@@ -6,11 +6,19 @@ package net.trackmate.revised.trackscheme.display.ui;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
+
+import org.yaml.snakeyaml.Yaml;
 
 import net.trackmate.revised.trackscheme.display.laf.TrackSchemeStyle;
 import net.trackmate.revised.trackscheme.display.ui.TrackSchemeStylePanel.TrackSchemeStyleDialog;
@@ -22,11 +30,15 @@ import net.trackmate.revised.trackscheme.display.ui.TrackSchemeStylePanel.TrackS
 public class TrackSchemeStyleChooser
 {
 
+	private static final String STYLE_FILE = "trackschemestyles.yaml";
+
 	private final TrackSchemeStyleChooserModel model;
 
 	public TrackSchemeStyleChooser()
 	{
 		model = new TrackSchemeStyleChooserModel();
+		loadStyles();
+
 		java.awt.EventQueue.invokeLater( new Runnable()
 		{
 			@Override
@@ -73,6 +85,22 @@ public class TrackSchemeStyleChooser
 						setStyleName( frame );
 					}
 				} );
+				frame.saveButton.addActionListener( new ActionListener()
+				{
+					@Override
+					public void actionPerformed( ActionEvent e )
+					{
+						frame.saveButton.setEnabled( false );
+						try
+						{
+							saveStyles();
+						}
+						finally
+						{
+							frame.saveButton.setEnabled( true );
+						}
+					}
+				} );
 
 				frame.setDefaultCloseOperation( JFrame.DISPOSE_ON_CLOSE );
 				frame.setSize( 400, 450 );
@@ -80,6 +108,46 @@ public class TrackSchemeStyleChooser
 				frame.setVisible( true );
 			}
 		} );
+	}
+
+	private void loadStyles()
+	{
+		try
+		{
+			final FileReader input = new FileReader( STYLE_FILE );
+			final Yaml yaml = TrackSchemeStyleIOExample.createYaml();
+			final Iterable< Object > objs = yaml.loadAll( input );
+			for ( final Object obj : objs )
+				model.addElement( ( TrackSchemeStyle ) obj );
+
+		}
+		catch ( final FileNotFoundException e )
+		{
+			e.printStackTrace();
+		}
+	}
+
+	private void saveStyles()
+	{
+		try
+		{
+			final List< TrackSchemeStyle > stylesToSave = new ArrayList<>();
+			for ( int i = 0; i < model.getSize(); i++ )
+			{
+				final TrackSchemeStyle style = model.getElementAt( i );
+				if ( TrackSchemeStyle.defaults.contains( style ) )
+					continue;
+				stylesToSave.add( style );
+			}
+			final FileWriter output = new FileWriter( STYLE_FILE );
+			final Yaml yaml = TrackSchemeStyleIOExample.createYaml();
+			yaml.dumpAll( stylesToSave.iterator(), output );
+			output.close();
+		}
+		catch ( final IOException e )
+		{
+			e.printStackTrace();
+		}
 	}
 
 	private void setStyleName( JFrame frame )
