@@ -36,13 +36,13 @@ import javax.swing.border.EmptyBorder;
 
 import net.trackmate.revised.trackscheme.display.laf.TrackSchemeStyle;
 
-public class TrackSchemeStylePanel extends JPanel
+public class TrackSchemeStyleEditorPanel extends JPanel
 {
 	private static final long serialVersionUID = 1L;
 
 	private final JColorChooser colorChooser;
 
-	public TrackSchemeStylePanel( final TrackSchemeStyle style )
+	public TrackSchemeStyleEditorPanel( final TrackSchemeStyle style )
 	{
 		super( new GridBagLayout() );
 
@@ -301,20 +301,20 @@ public class TrackSchemeStylePanel extends JPanel
 	public static void main( final String[] args )
 	{
 		final TrackSchemeStyle style = TrackSchemeStyle.defaultStyle();
-		new TrackSchemeStyleDialog( null, style ).setVisible( true );
+		new TrackSchemeStyleEditorDialog( null, style ).setVisible( true );
 	}
 
-	public static class TrackSchemeStyleDialog extends JDialog
+	public static class TrackSchemeStyleEditorDialog extends JDialog
 	{
 		private static final long serialVersionUID = 1L;
 
-		private final TrackSchemeStylePanel stylePanel;
+		private final TrackSchemeStyleEditorPanel stylePanel;
 
-		public TrackSchemeStyleDialog( final JDialog dialog, final TrackSchemeStyle style )
+		public TrackSchemeStyleEditorDialog( final JDialog dialog, final TrackSchemeStyle style )
 		{
 			super( dialog, "TrackScheme style editor", false );
 
-			stylePanel = new TrackSchemeStylePanel( style );
+			stylePanel = new TrackSchemeStyleEditorPanel( style );
 
 			final JPanel content = new JPanel();
 			content.setLayout( new BoxLayout( content, BoxLayout.PAGE_AXIS ) );

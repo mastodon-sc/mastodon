@@ -10,10 +10,14 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.yaml.snakeyaml.DumperOptions;
+import org.yaml.snakeyaml.Yaml;
+import org.yaml.snakeyaml.constructor.Constructor;
 import org.yaml.snakeyaml.nodes.MappingNode;
 import org.yaml.snakeyaml.nodes.Node;
 import org.yaml.snakeyaml.nodes.SequenceNode;
 import org.yaml.snakeyaml.nodes.Tag;
+import org.yaml.snakeyaml.representer.Representer;
 
 import net.trackmate.revised.io.yaml.AbstractWorkaroundConstruct;
 import net.trackmate.revised.io.yaml.WorkaroundConstructor;
@@ -24,6 +28,38 @@ import net.trackmate.revised.trackscheme.display.laf.TrackSchemeStyle;
 public class TrackSchemeStyleIO
 {
 	public static final Tag COLOR_TAG = new Tag( "!color" );
+
+	static class TrackSchemeStyleRepresenter extends WorkaroundRepresenter
+	{
+		public TrackSchemeStyleRepresenter()
+		{
+			putRepresent( new RepresentColor( this ) );
+			putRepresent( new RepresentBasicStroke( this ) );
+			putRepresent( new RepresentFont( this ) );
+			putRepresent( new RepresentStyle( this ) );
+		}
+	}
+
+	static class TrackschemeStyleConstructor extends WorkaroundConstructor
+	{
+		public TrackschemeStyleConstructor()
+		{
+			super( Object.class );
+			putConstruct( new ConstructColor( this ) );
+			putConstruct( new ConstructBasicStroke( this ) );
+			putConstruct( new ConstructFont( this ) );
+			putConstruct( new ConstructStyle( this ) );
+		}
+	}
+
+	static Yaml createYaml()
+	{
+		final DumperOptions dumperOptions = new DumperOptions();
+		final Representer representer = new TrackSchemeStyleRepresenter();
+		final Constructor constructor = new TrackschemeStyleConstructor();
+		final Yaml yaml = new Yaml( constructor, representer, dumperOptions );
+		return yaml;
+	}
 
 	public static class RepresentColor extends WorkaroundRepresent
 	{

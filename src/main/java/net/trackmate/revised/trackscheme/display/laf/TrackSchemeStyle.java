@@ -402,6 +402,13 @@ public class TrackSchemeStyle
 		return updateListeners.remove( l );
 	}
 
+	/**
+	 * Returns a new style instance, copied from this style.
+	 *
+	 * @param name
+	 *            the name for the copied style.
+	 * @return a new style instance.
+	 */
 	public TrackSchemeStyle copy( String name )
 	{
 		final TrackSchemeStyle newStyle = new TrackSchemeStyle();
@@ -410,6 +417,12 @@ public class TrackSchemeStyle
 		return newStyle;
 	}
 
+	/**
+	 * Returns the default TrackScheme style instance. Editing this instance
+	 * will affect all view using this style.
+	 *
+	 * @return the single common instance for the default style.
+	 */
 	public static TrackSchemeStyle defaultStyle()
 	{
 		return df;
@@ -450,6 +463,12 @@ public class TrackSchemeStyle
 				paintHeaderShadow( true );
 	}
 
+	/**
+	 * Returns the modern TrackScheme style instance. Editing this instance will
+	 * affect all view using this style.
+	 *
+	 * @return the single common instance for the modern style.
+	 */
 	public static TrackSchemeStyle modernStyle()
 	{
 		return modern;
@@ -493,6 +512,12 @@ public class TrackSchemeStyle
 				paintHeaderShadow( true );
 	}
 
+	/**
+	 * Returns the lorry TrackScheme style instance. Editing this instance will
+	 * affect all view using this style.
+	 *
+	 * @return the single common instance for the lorry style.
+	 */
 	public static TrackSchemeStyle lorryStyle()
 	{
 		return hmdyk;

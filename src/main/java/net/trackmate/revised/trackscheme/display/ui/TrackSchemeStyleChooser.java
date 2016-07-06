@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.swing.DefaultComboBoxModel;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
@@ -23,7 +24,7 @@ import org.yaml.snakeyaml.Yaml;
 
 import net.trackmate.revised.trackscheme.display.TrackSchemePanel;
 import net.trackmate.revised.trackscheme.display.laf.TrackSchemeStyle;
-import net.trackmate.revised.trackscheme.display.ui.TrackSchemeStylePanel.TrackSchemeStyleDialog;
+import net.trackmate.revised.trackscheme.display.ui.TrackSchemeStyleEditorPanel.TrackSchemeStyleEditorDialog;
 
 /**
  * @author Jean=Yves Tinevez &lt;jeanyves.tinevez@gmail.com&gt;
@@ -34,19 +35,22 @@ public class TrackSchemeStyleChooser
 
 	private static final String STYLE_FILE = "trackschemestyles.yaml";
 
-	private final TrackSchemeStyleChooserModel model;
+	private final DefaultComboBoxModel< TrackSchemeStyle > model;
 
-	private final TrackSchemeStyleChooserFrame dialog;
+	private final TrackSchemeStyleChooserDialog dialog;
 
 	private final TrackSchemePanel trackSchemePanel;
 
 	public TrackSchemeStyleChooser( JFrame owner, TrackSchemePanel trackSchemePanel )
 	{
 		this.trackSchemePanel = trackSchemePanel;
-		model = new TrackSchemeStyleChooserModel();
+
+		model = new DefaultComboBoxModel< >();
+		for ( final TrackSchemeStyle defaultStyle : TrackSchemeStyle.defaults )
+			model.addElement( defaultStyle );
 		loadStyles();
 
-		dialog = new TrackSchemeStyleChooserFrame( owner, model );
+		dialog = new TrackSchemeStyleChooserDialog( owner, model );
 		dialog.okButton.addActionListener( new ActionListener()
 		{
 			@Override
@@ -113,7 +117,7 @@ public class TrackSchemeStyleChooser
 		try
 		{
 			final FileReader input = new FileReader( STYLE_FILE );
-			final Yaml yaml = TrackSchemeStyleIOExample.createYaml();
+			final Yaml yaml = TrackSchemeStyleIO.createYaml();
 			final Iterable< Object > objs = yaml.loadAll( input );
 			for ( final Object obj : objs )
 				model.addElement( ( TrackSchemeStyle ) obj );
@@ -138,7 +142,7 @@ public class TrackSchemeStyleChooser
 				stylesToSave.add( style );
 			}
 			final FileWriter output = new FileWriter( STYLE_FILE );
-			final Yaml yaml = TrackSchemeStyleIOExample.createYaml();
+			final Yaml yaml = TrackSchemeStyleIO.createYaml();
 			yaml.dumpAll( stylesToSave.iterator(), output );
 			output.close();
 		}
@@ -213,7 +217,7 @@ public class TrackSchemeStyleChooser
 			}
 		};
 		current.addUpdateListener( listener );
-		final TrackSchemeStyleDialog nameDialog = new TrackSchemeStyleDialog( dialog, current );
+		final TrackSchemeStyleEditorDialog nameDialog = new TrackSchemeStyleEditorDialog( dialog, current );
 		nameDialog.addWindowListener( new WindowAdapter()
 		{
 			@Override

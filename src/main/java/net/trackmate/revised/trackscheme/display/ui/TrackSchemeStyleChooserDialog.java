@@ -12,6 +12,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import javax.swing.BoxLayout;
+import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JDialog;
@@ -50,7 +51,7 @@ import net.trackmate.revised.ui.selection.Selection;
  *
  * @author Jean=Yves Tinevez &lt;jeanyves.tinevez@gmail.com&gt;
  */
-public class TrackSchemeStyleChooserFrame extends JDialog
+class TrackSchemeStyleChooserDialog extends JDialog
 {
 
 	private static final long serialVersionUID = 1L;
@@ -69,7 +70,7 @@ public class TrackSchemeStyleChooserFrame extends JDialog
 
 	TrackSchemePanel panelPreview;
 
-	public TrackSchemeStyleChooserFrame( final Frame owner, final TrackSchemeStyleChooserModel model )
+	public TrackSchemeStyleChooserDialog( final Frame owner, final DefaultComboBoxModel< TrackSchemeStyle > model )
 	{
 		super( owner, "TrackScheme style chooser", false );
 
