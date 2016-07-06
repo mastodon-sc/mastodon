@@ -41,14 +41,11 @@ public class TrackSchemeStylePanel extends JPanel
 {
 	private static final long serialVersionUID = 1L;
 
-	private final TrackSchemeStyle style;
-
 	private final JColorChooser colorChooser;
 
 	public TrackSchemeStylePanel( final TrackSchemeStyle style )
 	{
 		super( new GridBagLayout() );
-		this.style = style;
 
 		colorChooser = new JColorChooser();
 
@@ -312,14 +309,11 @@ public class TrackSchemeStylePanel extends JPanel
 	{
 		private static final long serialVersionUID = 1L;
 
-		private final TrackSchemeStyle style;
-
 		private final TrackSchemeStylePanel stylePanel;
 
 		public TrackSchemeStyleDialog( final Frame owner, final TrackSchemeStyle style )
 		{
-			super( owner, "trackscheme style", false );
-			this.style = style;
+			super( owner, "TrackScheme style editor", false );
 
 			stylePanel = new TrackSchemeStylePanel( style );
 
