@@ -461,9 +461,10 @@ public class TrackSchemeStyle
 		final Color bg = new Color( 163, 199, 197 );
 		final Color fill = new Color( 64, 106, 102 );
 		final Color selfill = new Color( 255, 128, 128 );
+		final Color currenttp = new Color( 38, 175, 185 );
 		modern = new TrackSchemeStyle().name( "modern" ).
 				backgroundColor( bg ).
-				currentTimepointColor( bg.brighter() ).
+				currentTimepointColor( currenttp ).
 				vertexFillColor( fill ).
 				selectedVertexFillColor( selfill ).
 				simplifiedVertexFillColor( fill ).
@@ -503,6 +504,8 @@ public class TrackSchemeStyle
 		final Color bg = new Color( 163, 199, 197 );
 		final Color fill = new Color( 225, 216, 183 );
 		final Color selfill = new Color( 53, 107, 154 );
+		final Color seldraw = new Color( 230, 245, 255 );
+		final Color seledge = new Color( 91, 137, 158 );
 		hmdyk = new TrackSchemeStyle().name( "lorry" ).
 				backgroundColor( bg ).
 				currentTimepointColor( bg.brighter() ).
@@ -511,9 +514,9 @@ public class TrackSchemeStyle
 				simplifiedVertexFillColor( Color.DARK_GRAY ).
 				selectedSimplifiedVertexFillColor( selfill ).
 				vertexDrawColor( Color.DARK_GRAY ).
-				selectedVertexDrawColor( Color.WHITE ).
+				selectedVertexDrawColor( seldraw ).
 				edgeColor( Color.DARK_GRAY ).
-				selectedEdgeColor( Color.WHITE ).
+				selectedEdgeColor( seledge ).
 				decorationColor( bg.darker() ).
 				vertexRangeColor( Color.DARK_GRAY ).
 				headerBackgroundColor( bg.brighter() ).
