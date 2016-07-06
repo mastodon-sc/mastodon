@@ -15,11 +15,13 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 
 import org.yaml.snakeyaml.Yaml;
 
+import net.trackmate.revised.trackscheme.display.TrackSchemePanel;
 import net.trackmate.revised.trackscheme.display.laf.TrackSchemeStyle;
 import net.trackmate.revised.trackscheme.display.ui.TrackSchemeStylePanel.TrackSchemeStyleDialog;
 
@@ -34,80 +36,76 @@ public class TrackSchemeStyleChooser
 
 	private final TrackSchemeStyleChooserModel model;
 
-	public TrackSchemeStyleChooser()
+	private final TrackSchemeStyleChooserFrame dialog;
+
+	private final TrackSchemePanel trackSchemePanel;
+
+	public TrackSchemeStyleChooser( JFrame owner, TrackSchemePanel trackSchemePanel )
 	{
+		this.trackSchemePanel = trackSchemePanel;
 		model = new TrackSchemeStyleChooserModel();
 		loadStyles();
 
-		java.awt.EventQueue.invokeLater( new Runnable()
+		dialog = new TrackSchemeStyleChooserFrame( owner, model );
+		dialog.okButton.addActionListener( new ActionListener()
 		{
 			@Override
-			public void run()
+			public void actionPerformed( ActionEvent e )
 			{
-				final TrackSchemeStyleChooserFrame frame = new TrackSchemeStyleChooserFrame( model );
-				frame.okButton.addActionListener( new ActionListener()
-				{
-					@Override
-					public void actionPerformed( ActionEvent e )
-					{
-						okPressed();
-					}
-				} );
-				frame.buttonDeleteStyle.addActionListener( new ActionListener()
-				{
-					@Override
-					public void actionPerformed( ActionEvent e )
-					{
-						delete();
-					}
-				} );
-				frame.buttonEditStyle.addActionListener( new ActionListener()
-				{
-					@Override
-					public void actionPerformed( ActionEvent e )
-					{
-						edit( frame );
-					}
-				} );
-				frame.buttonNewStyle.addActionListener( new ActionListener()
-				{
-					@Override
-					public void actionPerformed( ActionEvent e )
-					{
-						newStyle();
-					}
-				} );
-				frame.buttonSetStyleName.addActionListener( new ActionListener()
-				{
-					@Override
-					public void actionPerformed( ActionEvent e )
-					{
-						setStyleName( frame );
-					}
-				} );
-				frame.saveButton.addActionListener( new ActionListener()
-				{
-					@Override
-					public void actionPerformed( ActionEvent e )
-					{
-						frame.saveButton.setEnabled( false );
-						try
-						{
-							saveStyles();
-						}
-						finally
-						{
-							frame.saveButton.setEnabled( true );
-						}
-					}
-				} );
-
-				frame.setDefaultCloseOperation( JFrame.DISPOSE_ON_CLOSE );
-				frame.setSize( 400, 450 );
-				frame.setLocationRelativeTo( frame.getOwner() );
-				frame.setVisible( true );
+				okPressed();
 			}
 		} );
+		dialog.buttonDeleteStyle.addActionListener( new ActionListener()
+		{
+			@Override
+			public void actionPerformed( ActionEvent e )
+			{
+				delete();
+			}
+		} );
+		dialog.buttonEditStyle.addActionListener( new ActionListener()
+		{
+			@Override
+			public void actionPerformed( ActionEvent e )
+			{
+				edit();
+			}
+		} );
+		dialog.buttonNewStyle.addActionListener( new ActionListener()
+		{
+			@Override
+			public void actionPerformed( ActionEvent e )
+			{
+				newStyle();
+			}
+		} );
+		dialog.buttonSetStyleName.addActionListener( new ActionListener()
+		{
+			@Override
+			public void actionPerformed( ActionEvent e )
+			{
+				setStyleName();
+			}
+		} );
+		dialog.saveButton.addActionListener( new ActionListener()
+		{
+			@Override
+			public void actionPerformed( ActionEvent e )
+			{
+				dialog.saveButton.setEnabled( false );
+				try
+				{
+					saveStyles();
+				}
+				finally
+				{
+					dialog.saveButton.setEnabled( true );
+				}
+			}
+		} );
+
+		dialog.setSize( 400, 450 );
+		dialog.setLocationRelativeTo( dialog.getOwner() );
 	}
 
 	private void loadStyles()
@@ -150,20 +148,13 @@ public class TrackSchemeStyleChooser
 		}
 	}
 
-	private void setStyleName( JFrame frame )
+	private void setStyleName()
 	{
 		final TrackSchemeStyle current = ( TrackSchemeStyle ) model.getSelectedItem();
 		if ( null == current || TrackSchemeStyle.defaults.contains( current ) )
 			return;
 
-		final String newName = ( String ) JOptionPane.showInputDialog(
-				frame,
-				"Enter the style name:",
-				"Style name",
-				JOptionPane.PLAIN_MESSAGE,
-				null,
-				null,
-				current.name );
+		final String newName = ( String ) JOptionPane.showInputDialog( dialog, "Enter the style name:", "Style name", JOptionPane.PLAIN_MESSAGE, null, null, current.name );
 		current.name = newName;
 	}
 
@@ -206,7 +197,7 @@ public class TrackSchemeStyleChooser
 		model.setSelectedItem( newStyle );
 	}
 
-	private void edit( TrackSchemeStyleChooserFrame frame )
+	private void edit()
 	{
 		final TrackSchemeStyle current = ( TrackSchemeStyle ) model.getSelectedItem();
 		if ( null == current || TrackSchemeStyle.defaults.contains( current ) )
@@ -217,13 +208,13 @@ public class TrackSchemeStyleChooser
 			@Override
 			public void trackSchemeStyleChanged()
 			{
-				frame.panelPreview.setTrackSchemeStyle( current );
-				frame.panelPreview.repaint();
+				dialog.panelPreview.setTrackSchemeStyle( current );
+				dialog.panelPreview.repaint();
 			}
 		};
 		current.addUpdateListener( listener );
-		final TrackSchemeStyleDialog dialog = new TrackSchemeStyleDialog( frame, current );
-		dialog.addWindowListener( new WindowAdapter()
+		final TrackSchemeStyleDialog nameDialog = new TrackSchemeStyleDialog( dialog, current );
+		nameDialog.addWindowListener( new WindowAdapter()
 		{
 			@Override
 			public void windowClosing( java.awt.event.WindowEvent e )
@@ -231,8 +222,8 @@ public class TrackSchemeStyleChooser
 				current.removeUpdateListener( listener );
 			};
 		} );
-		dialog.setModal( true );
-		dialog.setVisible( true );
+		nameDialog.setModal( true );
+		nameDialog.setVisible( true );
 	}
 
 	private void delete()
@@ -245,13 +236,13 @@ public class TrackSchemeStyleChooser
 
 	private void okPressed()
 	{
-		// TODO Auto-generated method stub
-
+		trackSchemePanel.setTrackSchemeStyle( ( TrackSchemeStyle ) model.getSelectedItem() );
+		trackSchemePanel.repaint();
+		dialog.setVisible( false );
 	}
 
-	public static void main( String[] args )
+	public JDialog getDialog()
 	{
-		new TrackSchemeStyleChooser();
+		return dialog;
 	}
-
 }

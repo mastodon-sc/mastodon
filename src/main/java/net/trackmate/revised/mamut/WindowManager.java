@@ -9,6 +9,7 @@ import java.util.List;
 
 import javax.swing.ActionMap;
 import javax.swing.InputMap;
+import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
 
@@ -73,8 +74,7 @@ import net.trackmate.revised.trackscheme.TrackSchemeNavigation;
 import net.trackmate.revised.trackscheme.TrackSchemeSelection;
 import net.trackmate.revised.trackscheme.display.TrackSchemeFrame;
 import net.trackmate.revised.trackscheme.display.TrackSchemeOptions;
-import net.trackmate.revised.trackscheme.display.laf.TrackSchemeStyle;
-import net.trackmate.revised.trackscheme.display.ui.TrackSchemeStylePanel.TrackSchemeStyleDialog;
+import net.trackmate.revised.trackscheme.display.ui.TrackSchemeStyleChooser;
 import net.trackmate.revised.ui.grouping.GroupHandle;
 import net.trackmate.revised.ui.grouping.GroupManager;
 import net.trackmate.revised.ui.selection.FocusListener;
@@ -283,7 +283,7 @@ public class WindowManager
 		final ListenableReadOnlyGraph< Spot, Link > graph = model.getGraph();
 		final GraphIdBimap< Spot, Link > idmap = model.getGraphIdBimap();
 		selection = new Selection<>( graph, idmap );
-		highlightModel = new HighlightModel< Spot, Link  >( idmap );
+		highlightModel = new HighlightModel<  >( idmap );
 		radiusStats = new BoundingSphereRadiusStatistics( model );
 		focusModel = new FocusModel<>( idmap );
 
@@ -426,7 +426,7 @@ public class WindowManager
 
 		final NavigationHandler< Spot, Link > navigationHandler = new NavigationHandler<>( bdvGroupHandle );
 		final OverlayNavigationWrapper< Spot, Link > navigation =
-				new OverlayNavigationWrapper< Spot, Link >( viewer, overlayGraph, navigationHandler );
+				new OverlayNavigationWrapper< >( viewer, overlayGraph, navigationHandler );
 		final SelectionBehaviours< ?, ? > selectionBehaviours = new SelectionBehaviours<>( overlayGraph, tracksOverlay, overlaySelection, navigation );
 		selectionBehaviours.installBehaviourBindings( viewerFrame.getTriggerbindings(), keyconf );
 
@@ -511,13 +511,13 @@ public class WindowManager
 		/*
 		 * TrackSchemeHighlight wrapping HighlightModel
 		 */
-		final ModelHighlightProperties highlightProperties = new DefaultModelHighlightProperties< Spot, Link >( graph, idmap, highlightModel );
+		final ModelHighlightProperties highlightProperties = new DefaultModelHighlightProperties< >( graph, idmap, highlightModel );
 		final TrackSchemeHighlight trackSchemeHighlight = new TrackSchemeHighlight( highlightProperties, trackSchemeGraph );
 
 		/*
 		 * TrackScheme selection
 		 */
-		final ModelSelectionProperties selectionProperties = new DefaultModelSelectionProperties< Spot, Link >( graph, idmap, selection );
+		final ModelSelectionProperties selectionProperties = new DefaultModelSelectionProperties< >( graph, idmap, selection );
 		final TrackSchemeSelection trackSchemeSelection = new TrackSchemeSelection( selectionProperties );
 
 		/*
@@ -529,7 +529,7 @@ public class WindowManager
 		 * TrackScheme navigation
 		 */
 		final NavigationHandler< Spot, Link > navigationHandler = new NavigationHandler<>( groupHandle );
-		final ModelNavigationProperties navigationProperties = new DefaultModelNavigationProperties< Spot, Link >( graph, idmap, navigationHandler );
+		final ModelNavigationProperties navigationProperties = new DefaultModelNavigationProperties< >( graph, idmap, navigationHandler );
 		final TrackSchemeNavigation trackSchemeNavigation = new TrackSchemeNavigation( navigationProperties, trackSchemeGraph );
 
 		/*
@@ -566,28 +566,17 @@ public class WindowManager
 
 		UndoActions.installActionBindings( frame.getKeybindings(), model, keyconf );
 
-		// TODO revise
 		// TrackSchemeStyleDialog triggered by "R"
-		final TrackSchemeStyle style = TrackSchemeStyle.defaultStyle();
 		final String TRACK_SCHEME_STYLE_SETTINGS = "render settings";
-		final TrackSchemeStyleDialog trackSchemeStyleDialog = new TrackSchemeStyleDialog( frame, style );
+		final TrackSchemeStyleChooser styleChooser = new TrackSchemeStyleChooser( frame, frame.getTrackschemePanel() );
+		final JDialog styleDialog = styleChooser.getDialog();
 		final ActionMap actionMap = new ActionMap();
-		new ToggleDialogAction( TRACK_SCHEME_STYLE_SETTINGS, trackSchemeStyleDialog ).put( actionMap );
+		new ToggleDialogAction( TRACK_SCHEME_STYLE_SETTINGS, styleDialog ).put( actionMap );
 		final InputMap inputMap = new InputMap();
 		final KeyStrokeAdder a = keyconf.keyStrokeAdder( inputMap, "mamut" );
 		a.put( TRACK_SCHEME_STYLE_SETTINGS, "R" );
 		frame.getKeybindings().addActionMap( "mamut", actionMap );
 		frame.getKeybindings().addInputMap( "mamut", inputMap );
-		style.addUpdateListener( new TrackSchemeStyle.UpdateListener()
-		{
-			@Override
-			public void trackSchemeStyleChanged()
-			{
-				frame.getTrackschemePanel().setTrackSchemeStyle( style );
-				// TODO: less hacky way of triggering repaint
-				frame.getTrackschemePanel().repaint();
-			}
-		} );
 
 		final TsWindow tsWindow = new TsWindow( frame, groupHandle, contextChooser );
 		addTsWindow( tsWindow );

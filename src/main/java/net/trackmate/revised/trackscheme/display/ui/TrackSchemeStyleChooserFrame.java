@@ -3,6 +3,7 @@ package net.trackmate.revised.trackscheme.display.ui;
 import java.awt.BorderLayout;
 import java.awt.Container;
 import java.awt.Font;
+import java.awt.Frame;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.GridLayout;
@@ -13,7 +14,7 @@ import java.awt.event.ActionListener;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
-import javax.swing.JFrame;
+import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
@@ -45,11 +46,11 @@ import net.trackmate.revised.ui.selection.NavigationHandler;
 import net.trackmate.revised.ui.selection.Selection;
 
 /**
- * A previewer for TrackScheme styles.
+ * A previewer, editor and managers for TrackScheme styles.
  *
  * @author Jean=Yves Tinevez &lt;jeanyves.tinevez@gmail.com&gt;
  */
-public class TrackSchemeStyleChooserFrame extends JFrame
+public class TrackSchemeStyleChooserFrame extends JDialog
 {
 
 	private static final long serialVersionUID = 1L;
@@ -68,8 +69,10 @@ public class TrackSchemeStyleChooserFrame extends JFrame
 
 	TrackSchemePanel panelPreview;
 
-	public TrackSchemeStyleChooserFrame( final TrackSchemeStyleChooserModel model )
+	public TrackSchemeStyleChooserFrame( final Frame owner, final TrackSchemeStyleChooserModel model )
 	{
+		super( owner, "TrackScheme style chooser", false );
+
 		final Examples ex = DummyGraph.Examples.CELEGANS;
 		final DummyGraph example = ex.getGraph();
 		final Selection< DummyVertex, DummyEdge > selection = ex.getSelection();

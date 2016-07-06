@@ -3,7 +3,6 @@ package net.trackmate.revised.trackscheme.display.ui;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
-import java.awt.Frame;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.GridBagConstraints;
@@ -311,9 +310,9 @@ public class TrackSchemeStylePanel extends JPanel
 
 		private final TrackSchemeStylePanel stylePanel;
 
-		public TrackSchemeStyleDialog( final Frame owner, final TrackSchemeStyle style )
+		public TrackSchemeStyleDialog( final JDialog dialog, final TrackSchemeStyle style )
 		{
-			super( owner, "TrackScheme style editor", false );
+			super( dialog, "TrackScheme style editor", false );
 
 			stylePanel = new TrackSchemeStylePanel( style );
 
