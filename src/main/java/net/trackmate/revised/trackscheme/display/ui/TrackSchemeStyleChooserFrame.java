@@ -62,13 +62,15 @@ public class TrackSchemeStyleChooserFrame extends JFrame
 
 	JButton okButton;
 
+	JButton buttonSetStyleName;
+
 	public TrackSchemeStyleChooserFrame( final TrackSchemeStyleChooserModel model )
 	{
 		final Examples ex = DummyGraph.Examples.CELEGANS;
 		final DummyGraph example = ex.getGraph();
 		final Selection< DummyVertex, DummyEdge > selection = ex.getSelection();
 		final GraphIdBimap< DummyVertex, DummyEdge > idmap = example.getIdBimap();
-		final ModelGraphProperties dummyProps = new DefaultModelGraphProperties< DummyVertex, DummyEdge >( example, idmap, selection );
+		final ModelGraphProperties dummyProps = new DefaultModelGraphProperties< >( example, idmap, selection );
 		final TrackSchemeGraph< DummyVertex, DummyEdge > graph = new TrackSchemeGraph<>( example, idmap, dummyProps );
 		final TrackSchemeHighlight highlight = new TrackSchemeHighlight( new DefaultModelHighlightProperties<>( example, idmap, new HighlightModel<>( idmap ) ), graph );
 		final TrackSchemeFocus focus = new TrackSchemeFocus( new DefaultModelFocusProperties<>( example, idmap, new FocusModel<>( idmap ) ), graph );
@@ -98,6 +100,7 @@ public class TrackSchemeStyleChooserFrame extends JFrame
 		final JPanel hSpacer1 = new JPanel( null );
 		buttonEditStyle = new JButton();
 		buttonNewStyle = new JButton();
+		buttonSetStyleName = new JButton();
 		final JPanel buttonBar = new JPanel();
 		okButton = new JButton();
 
@@ -135,13 +138,18 @@ public class TrackSchemeStyleChooserFrame extends JFrame
 						panelStyleButtons.add( buttonDeleteStyle );
 						panelStyleButtons.add( hSpacer1 );
 
+						// ---- buttonNewStyle ----
+						buttonNewStyle.setText( "New" );
+						panelStyleButtons.add( buttonNewStyle );
+
+						// ---- buttonSetStyleName ----
+						buttonSetStyleName.setText( "Set name" );
+						panelStyleButtons.add( buttonSetStyleName );
+
 						// ---- buttonEditStyle ----
 						buttonEditStyle.setText( "Edit" );
 						panelStyleButtons.add( buttonEditStyle );
 
-						// ---- buttonNewStyle ----
-						buttonNewStyle.setText( "New" );
-						panelStyleButtons.add( buttonNewStyle );
 					}
 					panelChooseStyle.add( panelStyleButtons );
 				}

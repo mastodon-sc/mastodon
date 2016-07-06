@@ -9,6 +9,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 
 import net.trackmate.revised.trackscheme.display.laf.TrackSchemeStyle;
 
@@ -54,13 +55,20 @@ public class TrackSchemeStyleChooser
 						edit();
 					}
 				} );
-				frame.setVisible( true );
 				frame.buttonNewStyle.addActionListener( new ActionListener()
 				{
 					@Override
 					public void actionPerformed( ActionEvent e )
 					{
 						newStyle();
+					}
+				} );
+				frame.buttonSetStyleName.addActionListener( new ActionListener()
+				{
+					@Override
+					public void actionPerformed( ActionEvent e )
+					{
+						setStyleName( frame );
 					}
 				} );
 
@@ -72,9 +80,23 @@ public class TrackSchemeStyleChooser
 		} );
 	}
 
-	/**
-	 *
-	 */
+	private void setStyleName( JFrame frame )
+	{
+		final TrackSchemeStyle current = ( TrackSchemeStyle ) model.getSelectedItem();
+		if ( null == current || TrackSchemeStyle.defaults.contains( current ) )
+			return;
+
+		final String newName = ( String ) JOptionPane.showInputDialog( 
+				frame, 
+				"Enter the style name:", 
+				"Style name", 
+				JOptionPane.PLAIN_MESSAGE, 
+				null, 
+				null, 
+				current.name );
+		current.name = newName;
+	}
+
 	private void newStyle()
 	{
 		TrackSchemeStyle current = ( TrackSchemeStyle ) model.getSelectedItem();
