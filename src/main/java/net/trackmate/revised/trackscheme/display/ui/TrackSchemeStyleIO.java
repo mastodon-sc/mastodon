@@ -205,6 +205,7 @@ public class TrackSchemeStyleIO
 			final TrackSchemeStyle s = ( TrackSchemeStyle ) data;
 			final Map< String, Object > mapping = new LinkedHashMap< >();
 
+			mapping.put( "name", s.name );
 			mapping.put( "edgeColor", s.edgeColor );
 			mapping.put( "vertexFillColor", s.vertexFillColor );
 			mapping.put( "vertexDrawColor", s.vertexDrawColor );
@@ -252,7 +253,8 @@ public class TrackSchemeStyleIO
 			try
 			{
 				final Map< Object, Object > mapping = constructMapping( ( MappingNode  ) node );
-				final TrackSchemeStyle s = TrackSchemeStyle.defaultStyle();
+				final String name = ( String ) mapping.get( "name" );
+				final TrackSchemeStyle s = TrackSchemeStyle.defaultStyle().copy( name );
 
 				s.edgeColor( ( Color ) mapping.get( "edgeColor" ) );
 				s.vertexFillColor( ( Color ) mapping.get( "vertexFillColor" ) );
