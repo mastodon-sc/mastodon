@@ -5,6 +5,7 @@ package net.trackmate.revised.trackscheme.display.ui;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -12,6 +13,7 @@ import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 
 import net.trackmate.revised.trackscheme.display.laf.TrackSchemeStyle;
+import net.trackmate.revised.trackscheme.display.ui.TrackSchemeStylePanel.TrackSchemeStyleDialog;
 
 /**
  * @author Jean=Yves Tinevez &lt;jeanyves.tinevez@gmail.com&gt;
@@ -52,7 +54,7 @@ public class TrackSchemeStyleChooser
 					@Override
 					public void actionPerformed( ActionEvent e )
 					{
-						edit();
+						edit( frame );
 					}
 				} );
 				frame.buttonNewStyle.addActionListener( new ActionListener()
@@ -86,13 +88,13 @@ public class TrackSchemeStyleChooser
 		if ( null == current || TrackSchemeStyle.defaults.contains( current ) )
 			return;
 
-		final String newName = ( String ) JOptionPane.showInputDialog( 
-				frame, 
-				"Enter the style name:", 
-				"Style name", 
-				JOptionPane.PLAIN_MESSAGE, 
-				null, 
-				null, 
+		final String newName = ( String ) JOptionPane.showInputDialog(
+				frame,
+				"Enter the style name:",
+				"Style name",
+				JOptionPane.PLAIN_MESSAGE,
+				null,
+				null,
 				current.name );
 		current.name = newName;
 	}
@@ -136,10 +138,33 @@ public class TrackSchemeStyleChooser
 		model.setSelectedItem( newStyle );
 	}
 
-	private void edit()
+	private void edit( TrackSchemeStyleChooserFrame frame )
 	{
-		// TODO Auto-generated method stub
+		final TrackSchemeStyle current = ( TrackSchemeStyle ) model.getSelectedItem();
+		if ( null == current || TrackSchemeStyle.defaults.contains( current ) )
+			return;
 
+		final TrackSchemeStyle.UpdateListener listener = new TrackSchemeStyle.UpdateListener()
+		{
+			@Override
+			public void trackSchemeStyleChanged()
+			{
+				frame.panelPreview.setTrackSchemeStyle( current );
+				frame.panelPreview.repaint();
+			}
+		};
+		current.addUpdateListener( listener );
+		final TrackSchemeStyleDialog dialog = new TrackSchemeStyleDialog( frame, current );
+		dialog.addWindowListener( new WindowAdapter()
+		{
+			@Override
+			public void windowClosing( java.awt.event.WindowEvent e )
+			{
+				current.removeUpdateListener( listener );
+			};
+		} );
+		dialog.setModal( true );
+		dialog.setVisible( true );
 	}
 
 	private void delete()

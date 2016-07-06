@@ -64,6 +64,8 @@ public class TrackSchemeStyleChooserFrame extends JFrame
 
 	JButton buttonSetStyleName;
 
+	TrackSchemePanel panelPreview;
+
 	public TrackSchemeStyleChooserFrame( final TrackSchemeStyleChooserModel model )
 	{
 		final Examples ex = DummyGraph.Examples.CELEGANS;
@@ -76,7 +78,7 @@ public class TrackSchemeStyleChooserFrame extends JFrame
 		final TrackSchemeFocus focus = new TrackSchemeFocus( new DefaultModelFocusProperties<>( example, idmap, new FocusModel<>( idmap ) ), graph );
 		final TrackSchemeSelection tsSelection = new TrackSchemeSelection( new DefaultModelSelectionProperties<>( example, idmap, selection ) );
 		final TrackSchemeNavigation navigation = new TrackSchemeNavigation( new DefaultModelNavigationProperties<>( example, idmap, new NavigationHandler<>( new GroupManager().createGroupHandle() ) ), graph );
-		final TrackSchemePanel panelPreview = new TrackSchemePanel( graph, highlight, focus, tsSelection, navigation, TrackSchemeOptions.options() );
+		panelPreview = new TrackSchemePanel( graph, highlight, focus, tsSelection, navigation, TrackSchemeOptions.options() );
 		panelPreview.setTimepointRange( 0, 5 );
 		panelPreview.timePointChanged( 2 );
 		panelPreview.graphChanged();
