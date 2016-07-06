@@ -13,40 +13,6 @@ public class TrackSchemeStyle
 
 	private static final Stroke DEFAULT_GHOST_STROKE = new BasicStroke( 1.0f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 10.0f, new float[] { 3.0f }, 0.0f );
 
-	// TODO: move AvailableStyles to UI or wherever it is needed
-	public static enum AvailableStyles
-	{
-		DEFAULT( "Default" ),
-		MODERN( "Modern" ),
-		HOWMUCH( "Pastel" );
-
-		private final String name;
-
-		AvailableStyles( final String name)
-		{
-			this.name = name;
-		}
-
-		@Override
-		public String toString()
-		{
-			return name;
-		}
-
-		public TrackSchemeStyle getStyle()
-		{
-			switch ( name ) {
-			case "Modern":
-				return modernStyle();
-			case "Pastel":
-				return lorryStyle();
-			case "Default":
-			default:
-				return defaultStyle();
-			}
-		}
-	}
-
 	public String name;
 
 	public Color edgeColor;
@@ -142,6 +108,12 @@ public class TrackSchemeStyle
 		ghostSelectedVertexDrawColor = mixGhostColor( selectedVertexDrawColor, backgroundColor );
 		ghostSimplifiedVertexFillColor = mixGhostColor( simplifiedVertexFillColor, backgroundColor );
 		ghostSelectedSimplifiedVertexFillColor = mixGhostColor( selectedSimplifiedVertexFillColor, backgroundColor );
+	}
+
+	public TrackSchemeStyle name( String n )
+	{
+		name = n;
+		return this;
 	}
 
 	public TrackSchemeStyle edgeColor( final Color c )
@@ -349,9 +321,8 @@ public class TrackSchemeStyle
 		return this;
 	}
 
-	private TrackSchemeStyle( final String name )
+	private TrackSchemeStyle()
 	{
-		this.name = name;
 		updateListeners = new ArrayList<>();
 	}
 
@@ -433,7 +404,7 @@ public class TrackSchemeStyle
 
 	public TrackSchemeStyle copy( String name )
 	{
-		final TrackSchemeStyle newStyle = new TrackSchemeStyle( "" );
+		final TrackSchemeStyle newStyle = new TrackSchemeStyle();
 		newStyle.set( this );
 		newStyle.name = name;
 		return newStyle;
@@ -448,7 +419,7 @@ public class TrackSchemeStyle
 	static
 	{
 		final Color fill = new Color( 128, 255, 128 );
-		df = new TrackSchemeStyle( "default" ).
+		df = new TrackSchemeStyle().name( "default" ).
 				backgroundColor( Color.LIGHT_GRAY ).
 				currentTimepointColor( new Color( 217, 217, 217 ) ).
 				vertexFillColor( Color.WHITE ).
@@ -490,7 +461,7 @@ public class TrackSchemeStyle
 		final Color bg = new Color( 163, 199, 197 );
 		final Color fill = new Color( 64, 106, 102 );
 		final Color selfill = new Color( 255, 128, 128 );
-		modern = new TrackSchemeStyle( "modern" ).
+		modern = new TrackSchemeStyle().name( "modern" ).
 				backgroundColor( bg ).
 				currentTimepointColor( bg.brighter() ).
 				vertexFillColor( fill ).
@@ -532,7 +503,7 @@ public class TrackSchemeStyle
 		final Color bg = new Color( 163, 199, 197 );
 		final Color fill = new Color( 225, 216, 183 );
 		final Color selfill = new Color( 53, 107, 154 );
-		hmdyk = new TrackSchemeStyle( "lorry" ).
+		hmdyk = new TrackSchemeStyle().name( "lorry" ).
 				backgroundColor( bg ).
 				currentTimepointColor( bg.brighter() ).
 				vertexFillColor( fill ).
