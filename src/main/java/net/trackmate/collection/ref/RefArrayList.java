@@ -550,15 +550,15 @@ public class RefArrayList< O > implements IntBackedRefCollection< O >, RefList< 
 	@Override
 	public String toString()
 	{
-		if ( isEmpty() ) { return "( )"; }
+		if ( isEmpty() ) { return "[]"; }
 		final StringBuffer sb = new StringBuffer();
 		final Iterator< ? > it = iterator();
-		sb.append( "( " + it.next().toString() );
+		sb.append( "[" + it.next().toString() );
 		while ( it.hasNext() )
 		{
-			sb.append( " , " + it.next().toString() );
+			sb.append( ", " + it.next().toString() );
 		}
-		sb.append( " )" );
+		sb.append( "]" );
 		return sb.toString();
 	}
 }
