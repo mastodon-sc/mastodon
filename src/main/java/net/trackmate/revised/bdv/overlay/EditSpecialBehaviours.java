@@ -191,6 +191,7 @@ public class EditSpecialBehaviours< V extends OverlayVertex< V, E >, E extends O
 	}
 
 	// TODO What to do if the user changes the time-point while dragging?
+	// TODO Because the user can move in time currently, always do a sanity check before inserting the link
 	private class ToggleLink implements DragBehaviour
 	{
 
