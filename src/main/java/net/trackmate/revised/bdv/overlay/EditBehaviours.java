@@ -128,6 +128,11 @@ public class EditBehaviours< V extends OverlayVertex< V, E >, E extends OverlayE
 
 		private final double[] pos;
 
+		/**
+		 * This is set to true in {@link #init(int, int)} if a vertex can be
+		 * found at the start location. If it is false, {@link #drag(int, int)}
+		 * and {@link #end(int, int)} don't do anything.
+		 */
 		private boolean moving;
 
 		public MoveSpot()
@@ -153,10 +158,12 @@ public class EditBehaviours< V extends OverlayVertex< V, E >, E extends OverlayE
 		@Override
 		public void drag( final int x, final int y )
 		{
-			renderer.getGlobalPosition( x, y, pos );
-			LinAlgHelpers.add( pos, start, pos );
-			vertex.setPosition( pos );
-
+			if ( moving )
+			{
+				renderer.getGlobalPosition( x, y, pos );
+				LinAlgHelpers.add( pos, start, pos );
+				vertex.setPosition( pos );
+			}
 		}
 
 		@Override
