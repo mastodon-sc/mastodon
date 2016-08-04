@@ -89,6 +89,7 @@ public class EditSpecialBehaviours< V extends OverlayVertex< V, E >, E extends O
 		behaviour( new ToggleLink( false ), TOGGLE_LINK_BACKWARD, TOGGLE_LINK_BACKWARD_KEYS );
 	}
 
+	// TODO: This should respect the same RenderSettings as OverlayGraphRenderer for painting the ghost vertex & edge!!!
 	private class EditSpecialBehavioursOverlay implements OverlayRenderer, TransformListener< AffineTransform3D >
 	{
 
