@@ -120,12 +120,6 @@ public class ModelOverlayProperties implements OverlayProperties< Spot, Link >
 	}
 
 	@Override
-	public Link getEdge( final Spot source, final Spot target, final Link edge )
-	{
-		return modelGraph.getEdge( source, target, edge );
-	}
-
-	@Override
 	public void removeEdge( final Link edge )
 	{
 		modelGraph.remove( edge );
