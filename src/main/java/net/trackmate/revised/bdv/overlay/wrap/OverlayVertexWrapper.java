@@ -16,6 +16,8 @@ public class OverlayVertexWrapper< V extends Vertex< E >, E extends Edge< V > >
 
 	private final OverlayGraphWrapper< V, E > wrapper;
 
+	final V ref;
+
 	V wv;
 
 	private final EdgesWrapper incomingEdges;
@@ -29,10 +31,10 @@ public class OverlayVertexWrapper< V extends Vertex< E >, E extends Edge< V > >
 	OverlayVertexWrapper( final OverlayGraphWrapper< V, E > wrapper )
 	{
 		this.wrapper = wrapper;
-		wv = wrapper.wrappedGraph.vertexRef();
-		incomingEdges = new EdgesWrapper( wv.incomingEdges() );
-		outgoingEdges = new EdgesWrapper( wv.outgoingEdges() );
-		edges = new EdgesWrapper( wv.edges() );
+		ref = wrapper.wrappedGraph.vertexRef();
+		incomingEdges = new EdgesWrapper();
+		outgoingEdges = new EdgesWrapper();
+		edges = new EdgesWrapper();
 		overlayProperties = wrapper.overlayProperties;
 	}
 
@@ -45,7 +47,7 @@ public class OverlayVertexWrapper< V extends Vertex< E >, E extends Edge< V > >
 	@Override
 	public OverlayVertexWrapper< V, E > refTo( final OverlayVertexWrapper< V, E > obj )
 	{
-		wv = wrapper.idmap.getVertex( obj.getInternalPoolIndex(), wv );
+		wv = wrapper.idmap.getVertex( obj.getInternalPoolIndex(), ref );
 		return this;
 	}
 
@@ -89,6 +91,7 @@ public class OverlayVertexWrapper< V extends Vertex< E >, E extends Edge< V > >
 	@Override
 	public Edges< OverlayEdgeWrapper< V, E > > incomingEdges()
 	{
+		incomingEdges.wrap( wv.incomingEdges() );
 		return incomingEdges;
 	}
 
@@ -96,6 +99,7 @@ public class OverlayVertexWrapper< V extends Vertex< E >, E extends Edge< V > >
 	@Override
 	public Edges< OverlayEdgeWrapper< V, E > > outgoingEdges()
 	{
+		outgoingEdges.wrap( wv.outgoingEdges() );
 		return outgoingEdges;
 	}
 
@@ -103,6 +107,7 @@ public class OverlayVertexWrapper< V extends Vertex< E >, E extends Edge< V > >
 	@Override
 	public Edges< OverlayEdgeWrapper< V, E > > edges()
 	{
+		edges.wrap( wv.edges() );
 		return edges;
 	}
 
@@ -119,37 +124,61 @@ public class OverlayVertexWrapper< V extends Vertex< E >, E extends Edge< V > >
 				wv.equals( ( ( OverlayVertexWrapper< ?, ? > ) obj ).wv );
 	}
 
+	/**
+	 * Returns {@code this} if this {@link OverlayVertexWrapper} currently wraps
+	 * a {@code V}, or null otherwise.
+	 *
+	 * @return {@code this} if this {@link OverlayVertexWrapper} currently wraps
+	 *         a {@code V}, or null otherwise.
+	 */
+	OverlayVertexWrapper< V, E > orNull()
+	{
+		return wv == null ? null : this;
+	}
+
+	/**
+	 * If called with a non-null {@link OverlayVertexWrapper} returns the
+	 * currently wrapped {@code V}, otherwise null.
+	 *
+	 * @return {@code null} if {@code wrapper == null}, otherwise the {@code V}
+	 *         wrapped by {@code wrapper}.
+	 */
+	static < V extends Vertex< ? > > V wrappedOrNull( final OverlayVertexWrapper< V, ? > wrapper )
+	{
+		return wrapper == null ? null : wrapper.wv;
+	}
+
 	private class EdgesWrapper implements Edges< OverlayEdgeWrapper< V, E > >
 	{
-		private final Edges< E > edges;
+		private Edges< E > wrappedEdges;
 
 		private OverlayEdgeIteratorWrapper< V, E > iterator = null;
 
-		public EdgesWrapper( final Edges< E > edges )
+		void wrap( final Edges< E > edges )
 		{
-			this.edges = edges;
+			wrappedEdges = edges;
 		}
 
 		@Override
 		public Iterator< OverlayEdgeWrapper< V, E > > iterator()
 		{
 			if ( iterator == null )
-				iterator = new OverlayEdgeIteratorWrapper< V, E >( wrapper, wrapper.edgeRef(), edges.iterator() );
+				iterator = new OverlayEdgeIteratorWrapper<>( wrapper, wrapper.edgeRef(), wrappedEdges.iterator() );
 			else
-				iterator.wrap( edges.iterator() );
+				iterator.wrap( wrappedEdges.iterator() );
 			return iterator;
 		}
 
 		@Override
 		public int size()
 		{
-			return edges.size();
+			return wrappedEdges.size();
 		}
 
 		@Override
 		public boolean isEmpty()
 		{
-			return edges.isEmpty();
+			return wrappedEdges.isEmpty();
 		}
 
 		@Override
@@ -161,14 +190,14 @@ public class OverlayVertexWrapper< V extends Vertex< E >, E extends Edge< V > >
 		@Override
 		public OverlayEdgeWrapper< V, E > get( final int i, final OverlayEdgeWrapper< V, E > edge )
 		{
-			edge.we = edges.get( i, edge.we );
+			edge.we = wrappedEdges.get( i, edge.ref );
 			return edge;
 		}
 
 		@Override
 		public Iterator< OverlayEdgeWrapper< V, E > > safe_iterator()
 		{
-			return new OverlayEdgeIteratorWrapper< V, E >( wrapper, wrapper.edgeRef(), edges.iterator() );
+			return new OverlayEdgeIteratorWrapper<>( wrapper, wrapper.edgeRef(), wrappedEdges.iterator() );
 		}
 	}
 

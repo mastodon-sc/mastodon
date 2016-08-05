@@ -86,8 +86,8 @@ public class OverlayGraphWrapper< V extends Vertex< E >, E extends Edge< V > > i
 	@Override
 	public OverlayEdgeWrapper< V, E > getEdge( final OverlayVertexWrapper< V, E > source, final OverlayVertexWrapper< V, E > target, final OverlayEdgeWrapper< V, E > edge )
 	{
-		final E we = wrappedGraph.getEdge( source.wv, target.wv, edge.we );
-		return we == null ? null : edge;
+		edge.we = wrappedGraph.getEdge( source.wv, target.wv, edge.ref );
+		return edge.orNull();
 	}
 
 	@Override
@@ -117,21 +117,21 @@ public class OverlayGraphWrapper< V extends Vertex< E >, E extends Edge< V > > i
 	@Override
 	public OverlayVertexWrapper< V, E > addVertex( final int timepoint, final double[] position, final double radius, final OverlayVertexWrapper< V, E > ref )
 	{
-		ref.wv = overlayProperties.addVertex( timepoint, position, radius, ref.wv );
+		ref.wv = overlayProperties.addVertex( timepoint, position, radius, ref.ref );
 		return ref;
 	}
 
 	@Override
 	public OverlayVertexWrapper< V, E > addVertex( final int timepoint, final double[] position, final double[][] covariance, final OverlayVertexWrapper< V, E > ref )
 	{
-		ref.wv = overlayProperties.addVertex( timepoint, position, covariance, ref.wv );
+		ref.wv = overlayProperties.addVertex( timepoint, position, covariance, ref.ref );
 		return ref;
 	}
 
 	@Override
 	public OverlayEdgeWrapper< V, E > addEdge( final OverlayVertexWrapper< V, E > source, final OverlayVertexWrapper< V, E > target, final OverlayEdgeWrapper< V, E > ref )
 	{
-		ref.we = overlayProperties.addEdge( source.wv, target.wv, ref.we );
+		ref.we = overlayProperties.addEdge( source.wv, target.wv, ref.ref );
 		return ref;
 	}
 
@@ -170,7 +170,7 @@ public class OverlayGraphWrapper< V extends Vertex< E >, E extends Edge< V > > i
 		@Override
 		public OverlayVertexWrapper< V, E > getObject( final int index, final OverlayVertexWrapper< V, E > v )
 		{
-			v.wv = idmap.getVertex( index, v.wv );
+			v.wv = idmap.getVertex( index, v.ref );
 			return v;
 		}
 
@@ -221,7 +221,7 @@ public class OverlayGraphWrapper< V extends Vertex< E >, E extends Edge< V > > i
 		@Override
 		public OverlayEdgeWrapper< V, E > getObject( final int index, final OverlayEdgeWrapper< V, E > e )
 		{
-			e.we = idmap.getEdge( index, e.we );
+			e.we = idmap.getEdge( index, e.ref );
 			return e;
 		}
 

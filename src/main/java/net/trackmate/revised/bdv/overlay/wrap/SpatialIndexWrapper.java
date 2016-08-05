@@ -27,7 +27,7 @@ public class SpatialIndexWrapper< V extends Vertex< E >, E extends Edge< V > >
 	@Override
 	public Iterator< OverlayVertexWrapper< V, E > > iterator()
 	{
-		return new OverlayVertexIteratorWrapper< V, E >( graphWrapper, graphWrapper.vertexRef(), wrappedIndex.iterator() );
+		return new OverlayVertexIteratorWrapper<>( graphWrapper, graphWrapper.vertexRef(), wrappedIndex.iterator() );
 	}
 
 	@Override
@@ -74,7 +74,7 @@ public class SpatialIndexWrapper< V extends Vertex< E >, E extends Edge< V > >
 				return null;
 
 			final int id = graphWrapper.idmap.getVertexId( nnv );
-			graphWrapper.idmap.getVertex( id, v.wv );
+			v.wv = graphWrapper.idmap.getVertex( id, v.ref );
 			return v;
 		}
 
@@ -131,12 +131,9 @@ public class SpatialIndexWrapper< V extends Vertex< E >, E extends Edge< V > >
 	{
 		private final ClipConvexPolytope< V > wrappedCCP;
 
-		private final OverlayVertexWrapper< V, E > v;
-
 		public CCP()
 		{
 			this.wrappedCCP = wrappedIndex.getClipConvexPolytope();
-			this.v = graphWrapper.vertexRef();
 		}
 
 		@Override
@@ -166,7 +163,7 @@ public class SpatialIndexWrapper< V extends Vertex< E >, E extends Edge< V > >
 				@Override
 				public Iterator< OverlayVertexWrapper< V, E > > iterator()
 				{
-					return new OverlayVertexIteratorWrapper< V, E >( graphWrapper, graphWrapper.vertexRef(), iterable.iterator() );
+					return new OverlayVertexIteratorWrapper<>( graphWrapper, graphWrapper.vertexRef(), iterable.iterator() );
 				}
 			};
 		}
@@ -180,7 +177,7 @@ public class SpatialIndexWrapper< V extends Vertex< E >, E extends Edge< V > >
 				@Override
 				public Iterator< OverlayVertexWrapper< V, E > > iterator()
 				{
-					return new OverlayVertexIteratorWrapper< V, E >( graphWrapper, graphWrapper.vertexRef(), iterable.iterator() );
+					return new OverlayVertexIteratorWrapper<>( graphWrapper, graphWrapper.vertexRef(), iterable.iterator() );
 				}
 			};
 		}
