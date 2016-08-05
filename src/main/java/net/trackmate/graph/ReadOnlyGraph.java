@@ -2,6 +2,7 @@ package net.trackmate.graph;
 
 import net.trackmate.collection.RefCollection;
 
+
 /**
  * A read-only graph consisting of vertices of type {@code V} and edges of type
  * {@code E}. "Read-only" means that the graph cannot be modified through this
@@ -16,16 +17,74 @@ import net.trackmate.collection.RefCollection;
  */
 public interface ReadOnlyGraph< V extends Vertex< E >, E extends Edge< V > >
 {
+	/**
+	 * Returns the directed edge from vertex {@code source} to {@code target} if
+	 * it exists, or {@code null} otherwise.
+	 *
+	 * @param source
+	 *            the source vertex of the directed edge.
+	 * @param target
+	 *            the target vertex of the directed edge.
+	 * @return the directed edge from vertex {@code source} to {@code target} if
+	 *         it exists, or {@code null} otherwise.
+	 */
 	public E getEdge( final V source, final V target );
 
-	public E getEdge( final V source, final V target, final E edge );
+	/**
+	 * Returns the directed edge from vertex {@code source} to {@code target} if
+	 * it exists, or {@code null} otherwise.
+	 *
+	 * <p>
+	 * This method is a (potentially) allocation-free version of
+	 * {@link #getEdge(Vertex, Vertex)}
+	 *
+	 * @param source
+	 *            the source vertex of the directed edge.
+	 * @param target
+	 *            the target vertex of the directed edge.
+	 * @param ref
+	 *            an edge reference that can be used for retrieval. Depending on
+	 *            concrete implementation, this object can be cleared, ignored
+	 *            or re-used.
+	 * @return the directed edge from vertex {@code source} to {@code target} if
+	 *         it exists, or {@code null} otherwise. The object actually
+	 *         returned might be the specified {@code ref}, depending on
+	 *         concrete implementation.
+	 */
+	public E getEdge( final V source, final V target, final E ref );
 
+	/**
+	 * Generates a vertex reference that can be used for retrieval. Depending on
+	 * concrete implementation this method may return {@code null.}
+	 *
+	 * @return a new, uninitialized, vertex reference.
+	 */
 	public V vertexRef();
 
+	/**
+	 * Generates an edge reference that can be used for retrieval. Depending on
+	 * concrete implementation this method may return {@code null.}
+	 *
+	 * @return a new, uninitialized, edge reference.
+	 */
 	public E edgeRef();
 
+	/**
+	 * Releases a previously created vertex reference. Depending on concrete
+	 * implementation, this method might not do anything.
+	 *
+	 * @param ref
+	 *            the vertex reference to release.
+	 */
 	public void releaseRef( final V ref );
 
+	/**
+	 * Releases a previously created edge reference. Depending on concrete
+	 * implementation, this method might not do anything.
+	 *
+	 * @param ref
+	 *            the edge reference to release.
+	 */
 	public void releaseRef( final E ref );
 
 	/**
