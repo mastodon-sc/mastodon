@@ -46,23 +46,23 @@ public class OverlayGraphWrapper< V extends Vertex< E >, E extends Edge< V > > i
 		this.wrappedGraph = graph;
 		this.idmap = idmap;
 		this.overlayProperties = overlayProperties;
-		tmpVertexRefs =	new ConcurrentLinkedQueue< OverlayVertexWrapper< V, E > >();
-		tmpEdgeRefs = new ConcurrentLinkedQueue< OverlayEdgeWrapper< V, E > >();
-		this.wrappedIndex = new SpatioTemporalIndexWrapper< V, E >( this, graphIndex );
+		tmpVertexRefs =	new ConcurrentLinkedQueue<>();
+		tmpEdgeRefs = new ConcurrentLinkedQueue<>();
+		this.wrappedIndex = new SpatioTemporalIndexWrapper<>( this, graphIndex );
 	}
 
 	@Override
 	public OverlayVertexWrapper< V, E > vertexRef()
 	{
 		final OverlayVertexWrapper< V, E > ref = tmpVertexRefs.poll();
-		return ref == null ? new OverlayVertexWrapper< V, E >( this ) : ref;
+		return ref == null ? new OverlayVertexWrapper<>( this ) : ref;
 	}
 
 	@Override
 	public OverlayEdgeWrapper< V, E > edgeRef()
 	{
 		final OverlayEdgeWrapper< V, E > ref = tmpEdgeRefs.poll();
-		return ref == null ? new OverlayEdgeWrapper< V, E >( this ) : ref;
+		return ref == null ? new OverlayEdgeWrapper<>( this ) : ref;
 	}
 
 	@Override
