@@ -15,9 +15,33 @@ import net.trackmate.collection.ref.RefSetImp;
 import net.trackmate.collection.util.CollectionUtils.CollectionCreator;
 
 /**
- * TODO
+ * Base class for wrappers of {@link RefPool} that offer access to collections.
+ * <p>
+ * This class wraps a {@link RefPool} and offers methods to generate various
+ * collections based on the wrapped pool. It offers a bridge between the
+ * {@link RefPool} framework and the Java {@link Collection} framework.
+ * <p>
+ * This class also implements the {@link Collection} interface itself, and
+ * therefore allows for questing the underlying pool using the
+ * {@link Collection} methods. However some methods that are unsuited for pools
+ * throw an {@link UnsupportedOperationException}:
+ * <ul>
+ * <li>{@link #contains(Object)}
+ * <li>{@link #containsAll(Collection)}
+ * <li>{@link #toArray()}
+ * <li>{@link #toArray(Object[])}
+ * <li>{@link #add(Object)}
+ * <li>{@link #addAll(Collection)}
+ * <li>{@link #remove(Object)}
+ * <li>{@link #removeAll(Collection)}
+ * <li>{@link #retainAll(Collection)}
+ * <li>{@link #clear()}
+ * </ul>
+ * If these methods are needed, it is probably best to create an adequate
+ * collection from the pool using the <i>create*</i> methods.
  *
  * @param <O>
+ *            the type of the pool object used in the wrapped {@link RefPool}.
  *
  * @author Tobias Pietzsch &lt;tobias.pietzsch@gmail.com&gt;
  */
@@ -52,64 +76,102 @@ public abstract class AbstractRefPoolCollectionCreator< O, P extends RefPool< O 
 	 * The remaining RefCollection methods throw UnsupportedOperationException.
 	 * Some of them could be implemented, but it is probably not a good idea to
 	 * use the Pool as a Collection in this way.
-	 *
-	 * TODO: note this in the methods and class javadoc
 	 */
 
+	/**
+	 * This method is inapplicable to {@link RefPool}s and throw an
+	 * {@link UnsupportedOperationException}.
+	 */
 	@Override
 	public boolean contains( final Object o )
 	{
 		throw new UnsupportedOperationException();
 	}
 
+	/**
+	 * This method is inapplicable to {@link RefPool}s and throw an
+	 * {@link UnsupportedOperationException}.
+	 */
 	@Override
 	public Object[] toArray()
 	{
 		throw new UnsupportedOperationException();
 	}
 
+	/**
+	 * This method is inapplicable to {@link RefPool}s and throw an
+	 * {@link UnsupportedOperationException}.
+	 */
 	@Override
 	public < T > T[] toArray( final T[] a )
 	{
 		throw new UnsupportedOperationException();
 	}
 
+	/**
+	 * This method is inapplicable to {@link RefPool}s and throw an
+	 * {@link UnsupportedOperationException}.
+	 */
 	@Override
 	public boolean add( final O e )
 	{
 		throw new UnsupportedOperationException();
 	}
 
+	/**
+	 * This method is inapplicable to {@link RefPool}s and throw an
+	 * {@link UnsupportedOperationException}.
+	 */
 	@Override
 	public boolean remove( final Object o )
 	{
 		throw new UnsupportedOperationException();
 	}
 
+	/**
+	 * This method is inapplicable to {@link RefPool}s and throw an
+	 * {@link UnsupportedOperationException}.
+	 */
 	@Override
 	public boolean containsAll( final Collection< ? > c )
 	{
 		throw new UnsupportedOperationException();
 	}
 
+	/**
+	 * This method is inapplicable to {@link RefPool}s and throw an
+	 * {@link UnsupportedOperationException}.
+	 */
 	@Override
 	public boolean addAll( final Collection< ? extends O > c )
 	{
 		throw new UnsupportedOperationException();
 	}
 
+	/**
+	 * This method is inapplicable to {@link RefPool}s and throw an
+	 * {@link UnsupportedOperationException}.
+	 */
 	@Override
 	public boolean removeAll( final Collection< ? > c )
 	{
 		throw new UnsupportedOperationException();
 	}
 
+	/**
+	 * This method is inapplicable to {@link RefPool}s and throw an
+	 * {@link UnsupportedOperationException}.
+	 */
 	@Override
 	public boolean retainAll( final Collection< ? > c )
 	{
 		throw new UnsupportedOperationException();
 	}
 
+	/**
+	 * This method is inapplicable to {@link RefPool}s and throw an
+	 * {@link UnsupportedOperationException}.
+	 */
 	@Override
 	public void clear()
 	{
