@@ -4,9 +4,10 @@ import gnu.trove.map.TObjectIntMap;
 import net.trackmate.graph.FeatureValue;
 
 /**
- * TODO
+ * Feature value for scalar, integer numbers based on <code>int</code>.
  *
  * @param <O>
+ *            type of object to which the feature should be attached.
  *
  * @author Tobias Pietzsch &lt;tobias.pietzsch@gmail.com&gt;
  */
