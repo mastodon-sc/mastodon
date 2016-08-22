@@ -238,29 +238,29 @@ public class MainWindow extends JFrame
 	/**
 	 * Try to load {@link InputTriggerConfig} from files in this order:
 	 * <ol>
-	 * <li>"mamutkeyconfig.yaml" in the current directory.
-	 * <li>".tm3/mamutkeyconfig.yaml" in the user's home directory.
+	 * <li>"keyconfig.yaml" in the current directory.
+	 * <li>".mastodon/keyconfig.yaml" in the user's home directory.
 	 * </ol>
 	 */
 	static InputTriggerConfig getInputTriggerConfig()
 	{
 		InputTriggerConfig conf = null;
 
-		// try "mamutkeyconfig.yaml" in current directory
-		if ( new File( "mamutkeyconfig.yaml" ).isFile() )
+		// try "keyconfig.yaml" in current directory
+		if ( new File( "keyconfig.yaml" ).isFile() )
 		{
 			try
 			{
-				conf = new InputTriggerConfig( YamlConfigIO.read( "mamutkeyconfig.yaml" ) );
+				conf = new InputTriggerConfig( YamlConfigIO.read( "keyconfig.yaml" ) );
 			}
 			catch ( final IOException e )
 			{}
 		}
 
-		// try "~/.tm3/mamutkeyconfig.yaml"
+		// try "~/.mastodon/keyconfig.yaml"
 		if ( conf == null )
 		{
-			final String fn = System.getProperty( "user.home" ) + "/.tm3/mamutkeyconfig.yaml";
+			final String fn = System.getProperty( "user.home" ) + "/.mastodon/keyconfig.yaml";
 			if ( new File( fn ).isFile() )
 			{
 				try
