@@ -41,4 +41,8 @@ public interface OverlayProperties< V, E >
 
 	// TODO move to separate interface? OverlayModifyProperties?
 	public void notifyGraphChanged();
+
+	public String getLabel( V v );
+
+	public void setLabel( V v, String label );
 }
