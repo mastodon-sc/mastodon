@@ -3,6 +3,7 @@ package net.trackmate.collection.util;
 import java.util.Collection;
 import java.util.Iterator;
 
+import net.trackmate.collection.RefCollection;
 import net.trackmate.pool.Pool;
 import net.trackmate.pool.PoolObject;
 
@@ -14,10 +15,14 @@ import net.trackmate.pool.PoolObject;
  * collections based on the wrapped pool. It offers a bridge between the
  * {@link Pool} framework and the Java {@link Collection} framework.
  * <p>
- * This class also implements the {@link Collection} interface itself, and
+ * This class implements the {@link RefCollection} interface itself, and
  * therefore allows for questing the underlying pool using the
- * {@link Collection} methods. However some methods that are unsuited for pools
- * throw an {@link UnsupportedOperationException}:
+ * {@link Collection} methods. Only the {@code isEmpty(),} {@code size(),}
+ * {@code iterator(),} {@code createRef()}, and {@code releaseRef()} methods are
+ * guaranteed to be implemented.
+ * <p>
+ * Other {@link Collection} methods that are unsuited for
+ * pools throw an {@link UnsupportedOperationException}:
  * <ul>
  * <li>{@link #contains(Object)}
  * <li>{@link #containsAll(Collection)}
