@@ -144,8 +144,6 @@ public class TrackSchemePanel extends JPanel implements
 
 	private final TrackSchemeNavigator navigator;
 
-	private final SelectionBehaviours selectionBehaviours;
-
 	private final OffsetHeaders offsetHeaders;
 
 	private NavigationEtiquette navigationEtiquette;
@@ -216,16 +214,15 @@ public class TrackSchemePanel extends JPanel implements
 		display.addMouseListener( highlightHandler );
 		display.addTransformListener( highlightHandler );
 
-		navigator = new TrackSchemeNavigator( graph, layout, focus, navigation, selection );
+		// TODO Let the user choose between the two selection/focus modes.
+		navigator = new TrackSchemeNavigatorFinderLike( display, graph, layout, graphOverlay, focus, navigation, selection );
+//		navigator = new TrackSchemeNavigator( display, graph, layout, graphOverlay, focus, navigation, selection );
 		display.addTransformListener( navigator );
-
-		selectionBehaviours = new SelectionBehaviours( display, graph, layout, graphOverlay, focus, navigation, selection );
-		display.addTransformListener( selectionBehaviours );
 
 		offsetHeaders = new OffsetHeaders();
 		offsetHeaders.addOffsetHeadersListener( ( InertialScreenTransformEventHandler ) display.getTransformEventHandler() );
 		offsetHeaders.addOffsetHeadersListener( graphOverlay );
-		offsetHeaders.addOffsetHeadersListener( selectionBehaviours );
+		offsetHeaders.addOffsetHeadersListener( navigator );
 		offsetHeaders.addOffsetHeadersListener( highlightHandler );
 		offsetHeaders.setHeaderVisibleX( true, 25 );
 		offsetHeaders.setHeaderVisibleY( true, 20 );
@@ -746,12 +743,6 @@ public class TrackSchemePanel extends JPanel implements
 	public TrackSchemeNavigator getNavigator()
 	{
 		return navigator;
-	}
-
-	// TODO remove. revise TrackSchemePanel / TrackSchemeFrame construction
-	public SelectionBehaviours getSelectionBehaviours()
-	{
-		return selectionBehaviours;
 	}
 
 	/**

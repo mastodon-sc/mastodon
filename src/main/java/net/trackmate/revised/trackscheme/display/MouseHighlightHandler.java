@@ -87,7 +87,7 @@ public class MouseHighlightHandler implements MouseMotionListener, MouseListener
 			if ( graphOverlay.getVertexAt( x, y, vertex ) != null )
 				highlight.highlightVertex( vertex );
 			// See if we can find an edge.
-			else if ( graphOverlay.getEdgeAt( x, y, SelectionBehaviours.EDGE_SELECT_DISTANCE_TOLERANCE, edge ) != null )
+			else if ( graphOverlay.getEdgeAt( x, y, TrackSchemeNavigator.EDGE_SELECT_DISTANCE_TOLERANCE, edge ) != null )
 				highlight.highlightEdge( edge );
 			else
 				highlight.clearHighlight();
