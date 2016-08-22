@@ -5,7 +5,6 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import gnu.trove.map.hash.TIntObjectHashMap;
 import net.trackmate.graph.GraphListener;
-import net.trackmate.graph.ListenableReadOnlyGraph;
 import net.trackmate.spatial.SpatialIndex;
 
 /**
@@ -19,7 +18,7 @@ import net.trackmate.spatial.SpatialIndex;
  *
  * @author Tobias Pietzsch
  */
-public class BoundingSphereRadiusStatistics implements GraphListener< Spot, Link >
+public class BoundingSphereRadiusStatistics implements GraphListener< Spot, Link >, SpotRadiusListener
 {
 	/**
 	 * Int value used to declare that the requested timepoint is not in a map.
@@ -29,7 +28,7 @@ public class BoundingSphereRadiusStatistics implements GraphListener< Spot, Link
 
 	private final Model model;
 
-	private final ListenableReadOnlyGraph< Spot, Link > graph;
+	private final ModelGraph graph;
 
 	private final TIntObjectHashMap< Stats > timepointToStats;
 
@@ -52,6 +51,7 @@ public class BoundingSphereRadiusStatistics implements GraphListener< Spot, Link
 		this.graph = model.getGraph();
 		timepointToStats = new TIntObjectHashMap< Stats >( 10, 0.5f, NO_ENTRY_KEY );
 		graph.addGraphListener( this );
+		graph.addSpotRadiusListener( this );
 		final ReentrantReadWriteLock rwl = new ReentrantReadWriteLock();
 	    readLock = rwl.readLock();
 	    writeLock = rwl.writeLock();
@@ -137,7 +137,7 @@ public class BoundingSphereRadiusStatistics implements GraphListener< Spot, Link
 		}
 		finally
 		{
-			writeLock.lock();
+			writeLock.unlock();
 		}
 	}
 
@@ -185,8 +185,8 @@ public class BoundingSphereRadiusStatistics implements GraphListener< Spot, Link
 		}
 	}
 
-//	@Override // TODO: should be implemented for some listener interface
-	public void vertexAttributeChanged( final Spot v )
+	@Override
+	public void radiusChanged( final Spot v )
 	{
 		writeLock.lock();
 		try

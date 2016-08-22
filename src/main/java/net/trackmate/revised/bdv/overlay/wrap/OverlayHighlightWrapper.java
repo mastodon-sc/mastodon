@@ -25,45 +25,27 @@ public class OverlayHighlightWrapper< V extends Vertex< E >, E extends Edge< V >
 	@Override
 	public OverlayVertexWrapper< V, E > getHighlightedVertex( final OverlayVertexWrapper< V, E > ref )
 	{
-		final V h = wrappedHighlightModel.getHighlightedVertex( ref.wv );
-		if ( h == null )
-			return null;
-		else
-		{
-			ref.wv = idmap.getVertex( idmap.getVertexId( h ), ref.wv );
-			return ref;
-		}
+		ref.wv = wrappedHighlightModel.getHighlightedVertex( ref.ref );
+		return ref.orNull();
 	}
 
 	@Override
 	public OverlayEdgeWrapper< V, E > getHighlightedEdge( final OverlayEdgeWrapper< V, E > ref )
 	{
-		final E h = wrappedHighlightModel.getHighlightedEdge( ref.we );
-		if ( h == null )
-			return null;
-		else
-		{
-			ref.we = idmap.getEdge( idmap.getEdgeId( h ), ref.we );
-			return ref;
-		}
+		ref.we = wrappedHighlightModel.getHighlightedEdge( ref.ref );
+		return ref.orNull();
 	}
 
 	@Override
 	public void highlightVertex( final OverlayVertexWrapper< V, E > vertex )
 	{
-		if ( vertex == null )
-			wrappedHighlightModel.highlightVertex( null );
-		else
-			wrappedHighlightModel.highlightVertex( vertex.wv );
+		wrappedHighlightModel.highlightVertex( OverlayVertexWrapper.wrappedOrNull( vertex ) );
 	}
 
 	@Override
 	public void highlightEdge( final OverlayEdgeWrapper< V, E > edge )
 	{
-		if ( edge == null )
-			wrappedHighlightModel.highlightEdge( null );
-		else
-			wrappedHighlightModel.highlightEdge( edge.we );
+		wrappedHighlightModel.highlightEdge( OverlayEdgeWrapper.wrappedOrNull( edge ) );
 	}
 
 	@Override

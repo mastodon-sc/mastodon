@@ -754,6 +754,16 @@ public class TrackSchemePanel extends JPanel implements
 		return selectionBehaviours;
 	}
 
+	/**
+	 * Exposes the graph overlay renderer of this panel.
+	 *
+	 * @return the graph overlay renderer of this panel.
+	 */
+	public AbstractTrackSchemeOverlay getGraphOverlay()
+	{
+		return graphOverlay;
+	}
+
 	class ScreenEntityAnimator extends AbstractAnimator
 	{
 		private ScreenEntities screenEntities;

@@ -8,6 +8,13 @@ import net.trackmate.graph.features.Feature;
 import net.trackmate.graph.features.Features;
 import net.trackmate.graph.features.UndoFeatureMap;
 
+/**
+ * TODO javadoc
+ *
+ * @param <O>
+ *
+ * @author Tobias Pietzsch &lt;tobias.pietzsch@gmail.com&gt;
+ */
 class UndoFeatureStore< O >
 {
 	private int idgen;

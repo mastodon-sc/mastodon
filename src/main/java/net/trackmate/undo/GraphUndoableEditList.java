@@ -1,21 +1,33 @@
 package net.trackmate.undo;
 
+import gnu.trove.map.TIntObjectArrayMap;
+import gnu.trove.map.TIntObjectMap;
 import net.trackmate.graph.Edge;
 import net.trackmate.graph.ListenableGraph;
-import net.trackmate.graph.VertexWithFeatures;
+import net.trackmate.graph.Vertex;
 import net.trackmate.graph.features.Feature;
 import net.trackmate.graph.features.FeatureRegistry;
 import net.trackmate.graph.features.Features;
+import net.trackmate.undo.attributes.Attribute;
+import net.trackmate.undo.attributes.Attributes;
 
-// TODO: move to model.undo ?
-public class DefaultUndoableEditList<
-			V extends VertexWithFeatures< V, E >,
+/**
+ * TODO: javadoc
+ * TODO: move to package model.undo (?)
+ *
+ * @param <V>
+ * @param <E>
+ *
+ * @author Tobias Pietzsch &lt;tobias.pietzsch@gmail.com&gt;
+ */
+public class GraphUndoableEditList<
+			V extends Vertex< E >,
 			E extends Edge< V > >
-		extends UndoableEditList< V, E >
+		extends UndoableEditList
 {
 	protected final ListenableGraph< V, E > graph;
 
-	protected final UndoSerializer< V, E > serializer;
+	protected final GraphUndoSerializer< V, E > serializer;
 
 	protected final UndoIdBimap< V > vertexUndoIdBimap;
 
@@ -25,17 +37,25 @@ public class DefaultUndoableEditList<
 
 	protected final UndoFeatureStore< E > edgeFeatureStore;
 
-	public DefaultUndoableEditList(
+	protected final Attributes< V > vertexAttributes;
+
+	protected final Attributes< E > edgeAttributes;
+
+	public GraphUndoableEditList(
 			final int initialCapacity,
 			final ListenableGraph< V, E > graph,
 			final Features< V > vertexFeatures,
 			final Features< E > edgeFeatures,
-			final UndoSerializer< V, E > serializer,
+			final Attributes< V > vertexAttributes,
+			final Attributes< E > edgeAttributes,
+			final GraphUndoSerializer< V, E > serializer,
 			final UndoIdBimap< V > vertexUndoIdBimap,
 			final UndoIdBimap< E > edgeUndoIdBimap )
 	{
 		super( initialCapacity );
 		this.graph = graph;
+		this.vertexAttributes = vertexAttributes;
+		this.edgeAttributes = edgeAttributes;
 		this.serializer = serializer;
 		this.vertexUndoIdBimap = vertexUndoIdBimap;
 		this.edgeUndoIdBimap = edgeUndoIdBimap;
@@ -48,76 +68,110 @@ public class DefaultUndoableEditList<
 		removeEdge = new RemoveEdgeType();
 		setVertexFeature = new SetFeatureType<>( vertexUndoIdBimap, vertexFeatureStore );
 		setEdgeFeature = new SetFeatureType<>( edgeUndoIdBimap, edgeFeatureStore );
+		setVertexAttribute = new SetAttributeType<>( vertexUndoIdBimap, vertexAttributes );
+		setEdgeAttribute = new SetAttributeType<>( edgeUndoIdBimap, edgeAttributes );
 	}
 
 	public void recordAddVertex( final V vertex )
 	{
-		final UndoableEditRef< V, E > ref = createRef();
+		final UndoableEditRef ref = createRef();
 		create( ref ).getEdit( addVertex ).init( vertex );
 		releaseRef( ref );
 	}
 
 	public void recordRemoveVertex( final V vertex )
 	{
-		final UndoableEditRef< V, E > ref = createRef();
+		final UndoableEditRef ref = createRef();
 		create( ref ).getEdit( removeVertex ).init( vertex );
 		releaseRef( ref );
 	}
 
 	public void recordAddEdge( final E edge )
 	{
-		final UndoableEditRef< V, E > ref = createRef();
+		final UndoableEditRef ref = createRef();
 		create( ref ).getEdit( addEdge ).init( edge );
 		releaseRef( ref );
 	}
 
 	public void recordRemoveEdge( final E edge )
 	{
-		final UndoableEditRef< V, E > ref = createRef();
+		final UndoableEditRef ref = createRef();
 		create( ref ).getEdit( removeEdge ).init( edge );
 		releaseRef( ref );
 	}
 
 	public void recordSetVertexFeature( final Feature< ?, V, ? > feature, final V vertex )
 	{
-		final UndoableEditRef< V, E > ref = createRef();
+		final UndoableEditRef ref = createRef();
 		create( ref ).getEdit( setVertexFeature ).init( feature, vertex );
 		releaseRef( ref );
 	}
 
 	public void recordSetEdgeFeature( final Feature< ?, E, ? > feature, final E edge )
 	{
-		final UndoableEditRef< V, E > ref = createRef();
+		final UndoableEditRef ref = createRef();
 		create( ref ).getEdit( setEdgeFeature ).init( feature, edge );
 		releaseRef( ref );
 	}
 
-	protected final AddVertexType addVertex;
+	public void recordSetVertexAttribute( final Attribute< V > attribute, final V vertex )
+	{
+		final UndoableEditRef ref = createRef();
+		boolean createNewEdit = true;
+		if ( nextEditIndex > 0 )
+		{
+			final UndoableEditRef edit = get( nextEditIndex - 1, ref );
+			createNewEdit = edit.isUndoPoint() || !setVertexAttribute.matches( edit, attribute, vertex );
+		}
+		if ( createNewEdit )
+			create( ref ).getEdit( setVertexAttribute ).init( attribute, vertex );
+		releaseRef( ref );
+	}
 
-	protected final RemoveVertexType removeVertex;
+	public void recordSetEdgeAttribute( final Attribute< E > attribute, final E edge )
+	{
+		final UndoableEditRef ref = createRef();
+		boolean createNewEdit = true;
+		if ( nextEditIndex > 0 )
+		{
+			final UndoableEditRef edit = get( nextEditIndex - 1, ref );
+			createNewEdit = edit.isUndoPoint() || !setEdgeAttribute.matches( edit, attribute, edge );
+		}
+		if ( createNewEdit )
+			create( ref ).getEdit( setEdgeAttribute ).init( attribute, edge );
+		releaseRef( ref );
+	}
 
-	protected final AddEdgeType addEdge;
+	private final AddVertexType addVertex;
 
-	protected final RemoveEdgeType removeEdge;
+	private final RemoveVertexType removeVertex;
 
-	protected final SetFeatureType< V > setVertexFeature;
+	private final AddEdgeType addEdge;
 
-	protected final SetFeatureType< E > setEdgeFeature;
+	private final RemoveEdgeType removeEdge;
 
-	protected class AddVertexType extends UndoableEditTypeImp< AddVertex >
+	private final SetFeatureType< V > setVertexFeature;
+
+	private final SetFeatureType< E > setEdgeFeature;
+
+	private final SetAttributeType< V > setVertexAttribute;
+
+	private final SetAttributeType< E > setEdgeAttribute;
+
+	private class AddVertexType extends UndoableEditTypeImp< AddVertex >
 	{
 		@Override
-		public AddVertex createInstance( final UndoableEditRef< V, E > ref )
+		public AddVertex createInstance( final UndoableEditRef ref )
 		{
 			return new AddVertex( ref, typeIndex() );
 		}
 	}
 
-	private class AddVertex extends AbstractClearableUndoableEdit
+	private class AddVertex extends AbstractUndoableEdit
 	{
 		private final AddRemoveVertexRecord addRemoveVertex;
 
-		AddVertex( final UndoableEditRef< V, E > ref, final int typeIndex )
+		AddVertex( final UndoableEditRef ref, final int typeIndex )
 		{
 			super( ref, typeIndex );
 			this.addRemoveVertex = new AddRemoveVertexRecord();
@@ -146,20 +200,20 @@ public class DefaultUndoableEditList<
 		}
 	}
 
-	protected class RemoveVertexType extends UndoableEditTypeImp< RemoveVertex >
+	private class RemoveVertexType extends UndoableEditTypeImp< RemoveVertex >
 	{
 		@Override
-		public RemoveVertex createInstance( final UndoableEditRef< V, E > ref )
+		public RemoveVertex createInstance( final UndoableEditRef ref )
 		{
 			return new RemoveVertex( ref, typeIndex() );
 		}
 	}
 
-	private class RemoveVertex extends AbstractClearableUndoableEdit
+	private class RemoveVertex extends AbstractUndoableEdit
 	{
 		private final AddRemoveVertexRecord addRemoveVertex;
 
-		RemoveVertex( final UndoableEditRef< V, E > ref, final int typeIndex )
+		RemoveVertex( final UndoableEditRef ref, final int typeIndex )
 		{
 			super( ref, typeIndex );
 			this.addRemoveVertex = new AddRemoveVertexRecord();
@@ -197,7 +251,7 @@ public class DefaultUndoableEditList<
 			data = new byte[ serializer.getVertexNumBytes() ];
 		}
 
-		public void initAdd( final V vertex, final UndoableEditRef< V, E > ref )
+		public void initAdd( final V vertex, final UndoableEditRef ref )
 		{
 			final int vi = vertexUndoIdBimap.getId( vertex );
 			final int fi = vertexFeatureStore.createFeatureUndoId();
@@ -210,7 +264,7 @@ public class DefaultUndoableEditList<
 			ref.setDataIndex( dataIndex );
 		}
 
-		public void initRemove( final V vertex, final UndoableEditRef< V, E > ref )
+		public void initRemove( final V vertex, final UndoableEditRef ref )
 		{
 			final int vi = vertexUndoIdBimap.getId( vertex );
 			final int fi = vertexFeatureStore.createFeatureUndoId();
@@ -267,20 +321,20 @@ public class DefaultUndoableEditList<
 		}
 	}
 
-	protected class AddEdgeType extends UndoableEditTypeImp< AddEdge >
+	private class AddEdgeType extends UndoableEditTypeImp< AddEdge >
 	{
 		@Override
-		public AddEdge createInstance( final UndoableEditRef< V, E > ref )
+		public AddEdge createInstance( final UndoableEditRef ref )
 		{
 			return new AddEdge( ref, typeIndex() );
 		}
 	}
 
-	private class AddEdge extends AbstractClearableUndoableEdit
+	private class AddEdge extends AbstractUndoableEdit
 	{
 		private final AddRemoveEdgeRecord addRemoveEdge;
 
-		AddEdge( final UndoableEditRef< V, E > ref, final int typeIndex )
+		AddEdge( final UndoableEditRef ref, final int typeIndex )
 		{
 			super( ref, typeIndex );
 			this.addRemoveEdge = new AddRemoveEdgeRecord();
@@ -309,20 +363,20 @@ public class DefaultUndoableEditList<
 		}
 	}
 
-	protected class RemoveEdgeType extends UndoableEditTypeImp< RemoveEdge >
+	private class RemoveEdgeType extends UndoableEditTypeImp< RemoveEdge >
 	{
 		@Override
-		public RemoveEdge createInstance( final UndoableEditRef< V, E > ref )
+		public RemoveEdge createInstance( final UndoableEditRef ref )
 		{
 			return new RemoveEdge( ref, typeIndex() );
 		}
 	}
 
-	private class RemoveEdge extends AbstractClearableUndoableEdit
+	private class RemoveEdge extends AbstractUndoableEdit
 	{
 		private final AddRemoveEdgeRecord addRemoveEdge;
 
-		RemoveEdge( final UndoableEditRef< V, E > ref, final int typeIndex )
+		RemoveEdge( final UndoableEditRef ref, final int typeIndex )
 		{
 			super( ref, typeIndex );
 			this.addRemoveEdge = new AddRemoveEdgeRecord();
@@ -360,7 +414,7 @@ public class DefaultUndoableEditList<
 			data = new byte[ serializer.getEdgeNumBytes() ];;
 		}
 
-		public void initAdd( final E edge, final UndoableEditRef< V, E > ref )
+		public void initAdd( final E edge, final UndoableEditRef ref )
 		{
 			final int ei = edgeUndoIdBimap.getId( edge );
 			final int fi = edgeFeatureStore.createFeatureUndoId();
@@ -377,7 +431,7 @@ public class DefaultUndoableEditList<
 			ref.setDataIndex( dataIndex );
 		}
 
-		public void initRemove( final E edge, final UndoableEditRef< V, E > ref )
+		public void initRemove( final E edge, final UndoableEditRef ref )
 		{
 			final V vref = graph.vertexRef();
 			final int ei = edgeUndoIdBimap.getId( edge );
@@ -455,8 +509,8 @@ public class DefaultUndoableEditList<
 			final E edge = graph.insertEdge( source, sOutIndex, target, tInIndex, eref );
 			edgeUndoIdBimap.put( ei, edge );
 			serializer.setBytes( edge, data );
-			edgeFeatureStore.retrieveAll( fi, edge );
 			serializer.notifyEdgeAdded( edge );
+			edgeFeatureStore.retrieveAll( fi, edge );
 			graph.releaseRef( eref );
 			graph.releaseRef( vref2 );
 			graph.releaseRef( vref1 );
@@ -465,7 +519,7 @@ public class DefaultUndoableEditList<
 		}
 	}
 
-	protected class SetFeatureType< O > extends UndoableEditTypeImp< SetFeature< O > >
+	private class SetFeatureType< O > extends UndoableEditTypeImp< SetFeature< O > >
 	{
 		private final UndoIdBimap< O > undoIdBimap;
 
@@ -481,20 +535,20 @@ public class DefaultUndoableEditList<
 		}
 
 		@Override
-		public SetFeature< O > createInstance( final UndoableEditRef< V, E > ref )
+		public SetFeature< O > createInstance( final UndoableEditRef ref )
 		{
 			return new SetFeature<>( ref, typeIndex(), undoIdBimap, featureStore );
 		}
 	}
 
-	private class SetFeature< O > extends AbstractClearableUndoableEdit
+	private class SetFeature< O > extends AbstractUndoableEdit
 	{
 		private final UndoIdBimap< O > undoIdBimap;
 
 		private final UndoFeatureStore< O > featureStore;
 
 		SetFeature(
-				final UndoableEditRef< V, E > ref,
+				final UndoableEditRef ref,
 				final int typeIndex,
 				final UndoIdBimap< O > undoIdBimap,
 				final UndoFeatureStore< O > featureStore )
@@ -504,14 +558,14 @@ public class DefaultUndoableEditList<
 			this.featureStore = featureStore;
 		}
 
-		public void init( final Feature< ?, O, ? > feature, final O vertex )
+		public void init( final Feature< ?, O, ? > feature, final O obj )
 		{
 			super.init();
 
-			final int vi = undoIdBimap.getId( vertex );
+			final int vi = undoIdBimap.getId( obj );
 			final int fi = featureStore.createFeatureUndoId();
 			final int fuid = feature.getUniqueFeatureId();
-			featureStore.store( fi, feature, vertex );
+			featureStore.store( fi, feature, obj );
 
 			final long dataIndex = dataStack.getWriteDataIndex();
 			dataStack.out.writeInt( vi );
@@ -545,13 +599,163 @@ public class DefaultUndoableEditList<
 			final int fuid = dataStack.in.readInt();
 
 			final O ref = undoIdBimap.createRef();
-			final O vertex = undoIdBimap.getObject( vi, ref );
+			final O obj = undoIdBimap.getObject( vi, ref );
 			@SuppressWarnings( "unchecked" )
 			final Feature< ?, O, ? > feature = ( Feature< ?, O, ? > ) FeatureRegistry.getFeature( fuid );
-			featureStore.swap( fi, feature, vertex );
+			featureStore.swap( fi, feature, obj );
 			undoIdBimap.releaseRef( ref );
 
 			return dataStack.getReadDataIndex();
+		}
+	}
+
+	private class SetAttributeType< O > extends UndoableEditTypeImp< SetAttribute< O > >
+	{
+		private final UndoIdBimap< O > undoIdBimap;
+
+		private final Attributes< O > attributes;
+
+		public SetAttributeType(
+				final UndoIdBimap< O > undoIdBimap,
+				final Attributes< O > attributes )
+		{
+			super();
+			this.undoIdBimap = undoIdBimap;
+			this.attributes = attributes;
+		}
+
+		@Override
+		public SetAttribute< O > createInstance( final UndoableEditRef ref )
+		{
+			return new SetAttribute<>( ref, typeIndex(), undoIdBimap, attributes );
+		}
+
+		public boolean matches( final UndoableEditRef ref, final Attribute< O > attribute, final O obj )
+		{
+			return isInstance( ref ) && ref.getEdit( this ).matches( attribute, obj );
+		}
+	}
+
+	private static class DataArrays
+	{
+		final byte[] data;
+
+		final byte[] swapdata;
+
+		public DataArrays( final int numBytes )
+		{
+			data = new byte[ numBytes ];
+			swapdata = new byte[ numBytes ];
+		}
+	}
+
+	private class SetAttribute< O > extends AbstractUndoableEdit
+	{
+		private final UndoIdBimap< O > undoIdBimap;
+
+		private final Attributes< O > attributes;
+
+		private final TIntObjectMap< DataArrays > perAttributeDataArrays;
+
+		SetAttribute(
+				final UndoableEditRef ref,
+				final int typeIndex,
+				final UndoIdBimap< O > undoIdBimap,
+				final Attributes< O > attributes )
+		{
+			super( ref, typeIndex );
+			this.undoIdBimap = undoIdBimap;
+			this.attributes = attributes;
+			this.perAttributeDataArrays = new TIntObjectArrayMap<>();
+//			this.data = new byte[ attributeSerializer.getNumBytes() ];
+//			this.swapdata = new byte[ attributeSerializer.getNumBytes() ];
+		}
+
+		public void init( final Attribute< O > attribute, final O obj )
+		{
+			super.init();
+
+			final int vi = undoIdBimap.getId( obj );
+			final int auid = attribute.getAttributeId();
+			final byte[] data = getDataArrays( attribute ).data;
+			attribute.getUndoSerializer().getBytes( obj, data );
+
+			final long dataIndex = dataStack.getWriteDataIndex();
+			dataStack.out.writeInt( vi );
+			dataStack.out.writeInt( auid );
+			dataStack.out.write( data );
+
+			ref.setDataIndex( dataIndex );
+		}
+
+		@Override
+		public void redo()
+		{
+			final long d0 = ref.getDataIndex();
+			final long d1 = swap( d0 );
+			dataStack.setWriteDataIndex( d1 );
+		}
+
+		@Override
+		public void undo()
+		{
+			final long d0 = ref.getDataIndex();
+			swap( d0 );
+			dataStack.setWriteDataIndex( d0 );
+		}
+
+		private long swap( final long dataIndex )
+		{
+			dataStack.setReadDataIndex( dataIndex );
+			final int vi = dataStack.in.readInt();
+			final int auid = dataStack.in.readInt();
+
+			final Attribute< O > attribute = attributes.getAttributeById( auid );
+			final DataArrays arrays = getDataArrays( attribute );
+			final byte[] data = arrays.data;
+			final byte[] swapdata = arrays.swapdata;
+			dataStack.in.readFully( swapdata );
+
+			final O ref = undoIdBimap.createRef();
+			final O obj = undoIdBimap.getObject( vi, ref );
+			attribute.getUndoSerializer().getBytes( obj, data );
+
+			dataStack.setWriteDataIndex( dataIndex );
+//			dataStack.out.writeInt( vi );
+//			dataStack.out.writeInt( auid );
+			dataStack.out.skip( 8 );
+			dataStack.out.write( data );
+
+			attribute.getUndoSerializer().setBytes( obj, swapdata );
+			attribute.getUndoSerializer().notifySet( obj );
+			undoIdBimap.releaseRef( ref );
+
+			return dataStack.getReadDataIndex();
+		}
+
+		private DataArrays getDataArrays( final Attribute< O > attribute )
+		{
+			DataArrays arrays = perAttributeDataArrays.get( attribute.getAttributeId() );
+			if ( arrays == null )
+			{
+				arrays = new DataArrays( attribute.getUndoSerializer().getNumBytes() );
+				perAttributeDataArrays.put( attribute.getAttributeId(), arrays );
+			}
+			return arrays;
+		}
+
+		boolean matches( final Attribute< O > attribute, final O obj )
+		{
+			final int vi = undoIdBimap.getId( obj );
+			final int auid = attribute.getAttributeId();
+
+			final long dataIndex = ref.getDataIndex();
+			dataStack.setReadDataIndex( dataIndex );
+			final boolean matches = ( dataStack.in.readInt() == vi )
+					&& ( dataStack.in.readInt() == auid );
+			dataStack.setReadDataIndex( dataIndex );
+
+			return matches;
 		}
 	}
 }

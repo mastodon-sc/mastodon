@@ -4,9 +4,11 @@ import gnu.trove.map.TObjectDoubleMap;
 import net.trackmate.graph.FeatureValue;
 
 /**
- * TODO
+ * Feature value for scalar, floating-point numbers based on
+ * <code>double.</code>
  *
  * @param <O>
+ *            type of object to which the feature should be attached.
  *
  * @author Tobias Pietzsch &lt;tobias.pietzsch@gmail.com&gt;
  */

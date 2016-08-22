@@ -5,6 +5,8 @@ import net.trackmate.graph.Graph;
 import net.trackmate.graph.Vertex;
 
 /**
+ * TODO: Consider splitting into two objects, generic UndoSerializer< O >
+ *
  * Provides serialization of vertices and edges to a byte array, for a specific {@link Graph} class.
  *
  * @param <V>
@@ -12,7 +14,7 @@ import net.trackmate.graph.Vertex;
  *
  * @author Tobias Pietzsch &lt;tobias.pietzsch@gmail.com&gt;
  */
-public interface UndoSerializer< V extends Vertex< E >, E extends Edge< V > >
+public interface GraphUndoSerializer< V extends Vertex< E >, E extends Edge< V > >
 {
 	public int getVertexNumBytes();
 

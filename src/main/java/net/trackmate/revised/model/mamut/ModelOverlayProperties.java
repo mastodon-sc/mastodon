@@ -58,6 +58,12 @@ public class ModelOverlayProperties implements OverlayProperties< Spot, Link >
 	}
 
 	@Override
+	public void setCovariance( final Spot v, final double[][] mat )
+	{
+		v.setCovariance( mat );
+	}
+
+	@Override
 	public double getBoundingSphereRadiusSquared( final Spot v )
 	{
 		return v.getBoundingSphereRadiusSquared();
@@ -67,6 +73,18 @@ public class ModelOverlayProperties implements OverlayProperties< Spot, Link >
 	public int getTimepoint( final Spot v )
 	{
 		return v.getTimepoint();
+	}
+
+	@Override
+	public String getLabel( final Spot v )
+	{
+		return v.getLabel();
+	}
+
+	@Override
+	public void setLabel( final Spot v, final String label )
+	{
+		v.setLabel( label );
 	}
 
 	@Override
@@ -99,6 +117,30 @@ public class ModelOverlayProperties implements OverlayProperties< Spot, Link >
 	public Spot addVertex( final int timepoint, final double[] position, final double radius, final Spot ref )
 	{
 		return modelGraph.addVertex( ref ).init( timepoint, position, radius );
+	}
+
+	@Override
+	public Spot addVertex( final int timepoint, final double[] position, final double[][] covariance, final Spot ref )
+	{
+		return modelGraph.addVertex( ref ).init( timepoint, position, covariance );
+	}
+
+	@Override
+	public Link addEdge( final Spot source, final Spot target, final Link ref )
+	{
+		return modelGraph.addEdge( source, target, ref ).init();
+	}
+
+	@Override
+	public void removeEdge( final Link edge )
+	{
+		modelGraph.remove( edge );
+	}
+
+	@Override
+	public void removeVertex( final Spot vertex )
+	{
+		modelGraph.remove( vertex );
 	}
 
 	@Override

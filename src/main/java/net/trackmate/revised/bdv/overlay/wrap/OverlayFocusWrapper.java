@@ -25,23 +25,14 @@ public class OverlayFocusWrapper< V extends Vertex< E >, E extends Edge< V > >
 	@Override
 	public OverlayVertexWrapper< V, E > getFocusedVertex( final OverlayVertexWrapper< V, E > ref )
 	{
-		final V h = wrappedFocusModel.getFocusedVertex( ref.wv );
-		if ( h == null )
-			return null;
-		else
-		{
-			ref.wv = idmap.getVertex( idmap.getVertexId( h ), ref.wv );
-			return ref;
-		}
+		ref.wv = wrappedFocusModel.getFocusedVertex( ref.ref );
+		return ref.orNull();
 	}
 
 	@Override
 	public void focusVertex( final OverlayVertexWrapper< V, E > vertex )
 	{
-		if ( vertex == null )
-			wrappedFocusModel.focusVertex( null );
-		else
-			wrappedFocusModel.focusVertex( vertex.wv );
+		wrappedFocusModel.focusVertex( OverlayVertexWrapper.wrappedOrNull( vertex ) );
 	}
 
 	@Override

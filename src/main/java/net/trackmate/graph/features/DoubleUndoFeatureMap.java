@@ -9,7 +9,7 @@ import gnu.trove.map.hash.TIntDoubleHashMap;
  * TODO
  *
  * @param <O>
- *
+ *            type of object to which the feature should be attached.
  * @author Jean-Yves Tinevez &lt;jeanyves.tinevez@gmail.com&gt;
  */
 final class DoubleUndoFeatureMap< O > implements UndoFeatureMap< O >

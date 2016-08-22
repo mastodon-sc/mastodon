@@ -9,6 +9,8 @@ public class OverlayEdgeWrapper< V extends Vertex< E >, E extends Edge< V > >
 {
 	private final OverlayGraphWrapper< V, E > wrapper;
 
+	final E ref;
+
 	E we;
 
 	private final OverlayProperties< V, E > overlayProperties;
@@ -16,7 +18,7 @@ public class OverlayEdgeWrapper< V extends Vertex< E >, E extends Edge< V > >
 	OverlayEdgeWrapper( final OverlayGraphWrapper< V, E > wrapper )
 	{
 		this.wrapper = wrapper;
-		we = wrapper.wrappedGraph.edgeRef();
+		ref = wrapper.wrappedGraph.edgeRef();
 		overlayProperties = wrapper.overlayProperties;
 	}
 
@@ -29,7 +31,7 @@ public class OverlayEdgeWrapper< V extends Vertex< E >, E extends Edge< V > >
 	@Override
 	public OverlayEdgeWrapper< V, E > refTo( final OverlayEdgeWrapper< V, E > obj )
 	{
-		we = wrapper.idmap.getEdge( obj.getInternalPoolIndex(), we );
+		we = wrapper.idmap.getEdge( obj.getInternalPoolIndex(), ref );
 		return this;
 	}
 
@@ -42,7 +44,7 @@ public class OverlayEdgeWrapper< V extends Vertex< E >, E extends Edge< V > >
 	@Override
 	public OverlayVertexWrapper< V, E > getSource( final OverlayVertexWrapper< V, E > vertex )
 	{
-		vertex.wv = we.getSource( vertex.wv );
+		vertex.wv = we.getSource( vertex.ref );
 		return vertex;
 	}
 
@@ -61,7 +63,7 @@ public class OverlayEdgeWrapper< V extends Vertex< E >, E extends Edge< V > >
 	@Override
 	public OverlayVertexWrapper< V, E > getTarget( final OverlayVertexWrapper< V, E > vertex )
 	{
-		vertex.wv = we.getTarget( vertex.wv );
+		vertex.wv = we.getTarget( vertex.ref );
 		return vertex;
 	}
 
@@ -88,5 +90,29 @@ public class OverlayEdgeWrapper< V extends Vertex< E >, E extends Edge< V > >
 	{
 		return obj instanceof OverlayEdgeWrapper< ?, ? > &&
 				we.equals( ( ( OverlayEdgeWrapper< ?, ? > ) obj ).we );
+	}
+
+	/**
+	 * Returns {@code this} if this {@link OverlayEdgeWrapper} currently wraps
+	 * an {@code E}, or null otherwise.
+	 *
+	 * @return {@code this} if this {@link OverlayEdgeWrapper} currently wraps
+	 *         an {@code E}, or null otherwise.
+	 */
+	OverlayEdgeWrapper< V, E > orNull()
+	{
+		return we == null ? null : this;
+	}
+
+	/**
+	 * If called with a non-null {@link OverlayEdgeWrapper} returns the
+	 * currently wrapped {@code E}, otherwise null.
+	 *
+	 * @return {@code null} if {@code wrapper == null}, otherwise the {@code E}
+	 *         wrapped by {@code wrapper}.
+	 */
+	static < E extends Edge< ? > > E wrappedOrNull( final OverlayEdgeWrapper< ?, E > wrapper )
+	{
+		return wrapper == null ? null : wrapper.we;
 	}
 }

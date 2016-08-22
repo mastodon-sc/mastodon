@@ -1,5 +1,6 @@
 package net.trackmate.graph.revised;
 
+import net.trackmate.revised.model.AbstractModelImporter;
 import net.trackmate.revised.model.mamut.Link;
 import net.trackmate.revised.model.mamut.Model;
 import net.trackmate.revised.model.mamut.Spot;
@@ -30,7 +31,7 @@ public class CreateLargeModelExample
 
 	public Model run( final int nStartingCells, final int nDivisions, final int nFramesPerDivision )
 	{
-		model.getGraph().pauseListeners();
+		new AbstractModelImporter< Model >( model ){{ startImport(); }};
 		final Spot tmp = model.getGraph().vertexRef();
 		for ( int ic = 0; ic < nStartingCells; ic++ )
 		{
@@ -50,7 +51,7 @@ public class CreateLargeModelExample
 			addBranch( mother, vx, vy, 1, nDivisions, nFramesPerDivision );
 		}
 		model.getGraph().releaseRef( tmp );
-		model.getGraph().resumeListeners();
+		new AbstractModelImporter< Model >( model ){{ finishImport(); }};
 		return model;
 	}
 

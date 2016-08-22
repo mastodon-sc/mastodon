@@ -3,6 +3,7 @@ package net.trackmate.revised.trackscheme.display;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import net.imglib2.RealLocalizable;
 import net.imglib2.RealPoint;
@@ -108,6 +109,11 @@ public abstract class AbstractTrackSchemeOverlay implements OverlayRenderer, Off
 	protected int headerHeight;
 
 	/**
+	 * The {@link OverlayRenderer}s that draw above the background
+	 */
+	final protected CopyOnWriteArrayList< OverlayRenderer > overlayRenderers;
+
+	/**
 	 * Creates a new overlay for the specified TrackScheme graph.
 	 *
 	 * @param graph
@@ -132,6 +138,7 @@ public abstract class AbstractTrackSchemeOverlay implements OverlayRenderer, Off
 		width = options.values.getWidth();
 		height = options.values.getHeight();
 		entities = new ScreenEntities( graph );
+		overlayRenderers = new CopyOnWriteArrayList<>();
 	}
 
 	@Override
@@ -157,6 +164,10 @@ public abstract class AbstractTrackSchemeOverlay implements OverlayRenderer, Off
 		graph.releaseRef( ref );
 
 		paintBackground( g2, entities );
+
+		// Paint extra overlay if any.
+		for ( final OverlayRenderer or : overlayRenderers )
+			or.drawOverlays( g );
 
 		final RefList< ScreenEdge > edges = entities.getEdges();
 		final RefList< ScreenVertex > vertices = entities.getVertices();
@@ -303,6 +314,8 @@ public abstract class AbstractTrackSchemeOverlay implements OverlayRenderer, Off
 	{
 		this.width = width;
 		this.height = height;
+		for ( final OverlayRenderer overlay : overlayRenderers )
+			overlay.setCanvasSize( width, height );
 	}
 
 	@Override
@@ -420,6 +433,32 @@ public abstract class AbstractTrackSchemeOverlay implements OverlayRenderer, Off
 			}
 		}
 		return entities;
+	}
+
+	/**
+	 * Adds an extra overlay that will be painted along with this one. Overlays
+	 * added by this method will be painted after background has been painted,
+	 * but before the graph and decoration are painted, so that they "lay below"
+	 * the graph and decoration renderings.
+	 *
+	 * @param overlay
+	 *            the overlay to paint.
+	 */
+	public void addOverlayRenderer( final OverlayRenderer overlay )
+	{
+		overlayRenderers.add( overlay );
+		setCanvasSize( getWidth(), getHeight() );
+	}
+
+	/**
+	 * Remove an {@link OverlayRenderer}.
+	 *
+	 * @param renderer
+	 *            overlay renderer to remove.
+	 */
+	public void removeOverlayRenderer( final OverlayRenderer renderer )
+	{
+		overlayRenderers.remove( renderer );
 	}
 
 	/**

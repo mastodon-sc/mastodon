@@ -2,6 +2,7 @@ package net.trackmate.revised.bdv.overlay;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
+import java.awt.FontMetrics;
 import java.awt.GradientPaint;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
@@ -29,6 +30,7 @@ import net.trackmate.revised.Util;
 import net.trackmate.spatial.SpatialIndex;
 import net.trackmate.spatial.SpatioTemporalIndex;
 
+// TODO: throughout this class gPos and lPos are used semantically inconsistently. Fix and document a meaning and make all uses consistent.
 
 /**
  * TODO: Review and revise.
@@ -102,6 +104,7 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 		drawEllipsoidSliceIntersection = settings.getDrawEllipsoidSliceIntersection();
 		drawPoints = settings.getDrawSpotCenters();
 		drawPointsForEllipses = settings.getDrawSpotCentersForEllipses();
+		drawSpotLabels = settings.getDrawSpotLabels();
 		focusLimit = settings.getFocusLimit();
 		isFocusLimitViewRelative = settings.getFocusLimitViewRelative();
 		ellipsoidFadeDepth = settings.getEllipsoidFadeDepth();
@@ -161,22 +164,27 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 	private boolean drawPointsForEllipses;
 
 	/**
+	 * Whether to draw spot labels next to ellipses.
+	 */
+	private boolean drawSpotLabels;
+
+	/**
 	 * Maximum distance from view plane up to which to draw spots.
 	 *
 	 * <p>
-	 * Depending on {@link #isFocusLimitViewRelative}, the distance is
-	 * either in the current view coordinate system or in the global coordinate
-	 * system. If {@code isFocusLimitViewRelative() == true} then the
-	 * distance is in current view coordinates. For example, a value of 100
-	 * means that spots will be visible up to 100 pixel widths from the view
-	 * plane. Thus, the effective focus range depends on the current zoom level.
-	 * If {@code isFocusLimitViewRelative() == false} then the distance
-	 * is in global coordinates. A value of 100 means that spots will be visible
-	 * up to 100 units (of the global coordinate system) from the view plane.
+	 * Depending on {@link #isFocusLimitViewRelative}, the distance is either in
+	 * the current view coordinate system or in the global coordinate system. If
+	 * {@code isFocusLimitViewRelative() == true} then the distance is in
+	 * current view coordinates. For example, a value of 100 means that spots
+	 * will be visible up to 100 pixel widths from the view plane. Thus, the
+	 * effective focus range depends on the current zoom level. If
+	 * {@code isFocusLimitViewRelative() == false} then the distance is in
+	 * global coordinates. A value of 100 means that spots will be visible up to
+	 * 100 units (of the global coordinate system) from the view plane.
 	 *
 	 * <p>
-	 * Ellipsoids are drawn increasingly translucent the closer they are
-	 * to {@link #focusLimit}. See {@link #ellipsoidFadeDepth}.
+	 * Ellipsoids are drawn increasingly translucent the closer they are to
+	 * {@link #focusLimit}. See {@link #ellipsoidFadeDepth}.
 	 */
 	private double focusLimit;
 
@@ -453,6 +461,9 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 		final BasicStroke focusedVertexStroke = new BasicStroke( 2f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 1f, new float[] { 8f, 3f }, 0 );
 		final BasicStroke defaultEdgeStroke = new BasicStroke();
 		final BasicStroke highlightedEdgeStroke = new BasicStroke( 3f );
+		final FontMetrics fontMetrics = graphics.getFontMetrics();
+		final int extraFontHeight = fontMetrics.getAscent() / 2;
+		final int extraFontWidth = fontMetrics.charWidth( ' ' ) / 2;
 
 		final AffineTransform3D transform = getRenderTransformCopy();
 		final int currentTimepoint = renderTimepoint;
@@ -531,6 +542,22 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 									if ( isHighlighted )
 										graphics.setStroke( highlightedEdgeStroke );
 									graphics.drawLine( x0, y0, x1, y1 );
+
+									// Draw arrows for edge direction.
+									/*
+									final double dx = x1 - x0;
+									final double dy = y1 - y0;
+									final double alpha = Math.atan2( dy, dx );
+									final double l = 5;
+									final double theta = Math.PI / 6.;
+									final int x1a = ( int ) Math.round( x1 - l * Math.cos( alpha - theta ) );
+									final int x1b = ( int ) Math.round( x1 - l * Math.cos( alpha + theta ) );
+									final int y1a = ( int ) Math.round( y1 - l * Math.sin( alpha - theta ) );
+									final int y1b = ( int ) Math.round( y1 - l * Math.sin( alpha + theta ) );
+									graphics.drawLine( x1, y1, x1a, y1a );
+									graphics.drawLine( x1, y1, x1b, y1b );
+									*/
+
 									if ( isHighlighted )
 										graphics.setStroke( defaultEdgeStroke );
 								}
@@ -581,6 +608,22 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 							graphics.draw( ellipse );
 							if ( isHighlighted || isFocused )
 								graphics.setStroke( defaultVertexStroke );
+
+							if ( !drawEllipsoidSliceProjection && drawSpotLabels )
+							{
+								// TODO Don't use ellipse, which is an AWT
+								// object, for calculation.
+								graphics.rotate( -theta );
+								final double a = ellipse.getWidth();
+								final double b = ellipse.getHeight();
+								final double cos = Math.cos( theta );
+								final double sin = Math.sin( theta );
+								final double l = Math.sqrt( a * a * cos * cos + b * b * sin * sin );
+								final float xl = ( float ) l / 2 + extraFontWidth;
+								final float yl = extraFontHeight;
+								graphics.drawString( vertex.getLabel(), xl, yl );
+							}
+
 							graphics.setTransform( torig );
 						}
 					}
@@ -603,6 +646,22 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 							graphics.draw( ellipse );
 							if ( isHighlighted || isFocused )
 								graphics.setStroke( defaultVertexStroke );
+
+							if ( drawSpotLabels )
+							{
+								// TODO Don't use ellipse, which is an AWT
+								// object, for calculation.
+								graphics.rotate( -theta );
+								final double a = ellipse.getWidth();
+								final double b = ellipse.getHeight();
+								final double cos = Math.cos( theta );
+								final double sin = Math.sin( theta );
+								final double l = Math.sqrt( a * a * cos * cos + b * b * sin * sin );
+								final float xl = ( float ) l / 2 + extraFontWidth;
+								final float yl = extraFontHeight;
+								graphics.drawString( vertex.getLabel(), xl, yl );
+							}
+
 							graphics.setTransform( torig );
 						}
 
@@ -644,6 +703,7 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 
 		final ConvexPolytope visiblePolytopeGlobal = getVisiblePolytopeGlobal( transform, currentTimepoint );
 
+		// TODO: unused code: remove or improve algorithm.
 		final double[] lPosClick = new double[] { x, y, 0 };
 		final double[] gPosClick = new double[ 3 ];
 		transform.applyInverse( gPosClick, lPosClick );
@@ -693,21 +753,37 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 	}
 
 	/**
-	 * Transform viewer coordinate to global (world) coordinate
+	 * Transform viewer coordinates to global (world) coordinates.
 	 *
 	 * @param x
 	 *            viewer X coordinate
 	 * @param y
 	 *            viewer Y coordinate
 	 * @param gPos
-	 *            receives global coordinate corresponding to viewer coordinate
-	 *            <em>(x, y, 0)</em>.
+	 *            receives global coordinates corresponding to viewer
+	 *            coordinates <em>(x, y, 0)</em>.
 	 */
 	public void getGlobalPosition( final int x, final int y, final double[] gPos )
 	{
 		synchronized ( renderTransform )
 		{
 			renderTransform.applyInverse( gPos, new double[] { x, y, 0 } );
+		}
+	}
+
+	/**
+	 * Transform global (world) coordinates to viewer coordinates.
+	 *
+	 * @param gPos
+	 *            global coordinates to transform.
+	 * @param vPos
+	 *            receives the viewer coordinates.
+	 */
+	public void getViewerPosition( final double[] gPos, final double[] vPos )
+	{
+		synchronized ( renderTransform )
+		{
+			renderTransform.apply( gPos, vPos );
 		}
 	}
 

@@ -5,17 +5,12 @@ import static net.trackmate.pool.ByteUtils.BYTE_SIZE;
 import static net.trackmate.pool.ByteUtils.LONG_SIZE;
 
 import gnu.trove.map.TIntObjectArrayMap;
-import net.trackmate.graph.Edge;
-import net.trackmate.graph.Vertex;
 import net.trackmate.pool.ByteMappedElement;
 import net.trackmate.pool.PoolObject;
-import net.trackmate.undo.UndoableEditList.ClearableUndoableEdit;
 import net.trackmate.undo.UndoableEditList.UndoableEditType;
 
-public class UndoableEditRef<
-			V extends Vertex< E >,
-			E extends Edge< V > >
-		extends PoolObject< UndoableEditRef< V, E >, ByteMappedElement >
+public final class UndoableEditRef
+		extends PoolObject< UndoableEditRef, ByteMappedElement >
 		implements UndoableEdit
 {
 	private static final int IS_UNDO_POINT_OFFSET = 0;
@@ -23,9 +18,9 @@ public class UndoableEditRef<
 	private static final int DATA_INDEX_OFFSET = TYPE_INDEX_OFFSET + BYTE_SIZE;
 	static final int SIZE_IN_BYTES = DATA_INDEX_OFFSET + LONG_SIZE;
 
-	private final UndoableEditList< V, E > pool;
+	private final UndoableEditList pool;
 
-	protected UndoableEditRef( final UndoableEditList< V, E > pool )
+	protected UndoableEditRef( final UndoableEditList pool )
 	{
 		super( pool );
 		this.pool = pool;
@@ -59,7 +54,8 @@ public class UndoableEditRef<
 	protected void setToUninitializedState()
 	{}
 
-	void clear()
+	@Override
+	public void clear()
 	{
 		getEdit().clear();
 	}
@@ -94,9 +90,9 @@ public class UndoableEditRef<
 		return access.getBoolean( IS_UNDO_POINT_OFFSET );
 	}
 
-	private final TIntObjectArrayMap< ClearableUndoableEdit > editTypes = new TIntObjectArrayMap<>();
+	private final TIntObjectArrayMap< UndoableEdit > editTypes = new TIntObjectArrayMap<>();
 
-	public < T extends ClearableUndoableEdit > T getEdit( final UndoableEditType< V, E, T > type )
+	public < T extends UndoableEdit > T getEdit( final UndoableEditType< T > type )
 	{
 		@SuppressWarnings( "unchecked" )
 		T edit = ( T ) editTypes.get( type.typeIndex() );
@@ -108,9 +104,9 @@ public class UndoableEditRef<
 		return edit;
 	}
 
-	private ClearableUndoableEdit getEdit()
+	private UndoableEdit getEdit()
 	{
-		final ClearableUndoableEdit edit = editTypes.get( getTypeIndex() );
+		final UndoableEdit edit = editTypes.get( getTypeIndex() );
 		if ( edit == null )
 			return getEdit( pool.getUndoableEditType( getTypeIndex() ) );
 		return edit;

@@ -1,5 +1,6 @@
 package net.trackmate.revised.model;
 
+import net.imglib2.EuclideanSpace;
 import net.trackmate.graph.ref.AbstractListenableEdge;
 import net.trackmate.graph.ref.AbstractListenableVertexPool;
 import net.trackmate.pool.MappedElement;
@@ -10,14 +11,18 @@ public class AbstractSpotPool<
 			E extends AbstractListenableEdge< E, V, T >,
 			T extends MappedElement,
 			G extends AbstractModelGraph< ?, ?, ?, V, E, T > >
-		extends AbstractListenableVertexPool< V, E, T >
+		extends AbstractListenableVertexPool< V, E, T > implements EuclideanSpace
 {
 	public AbstractSpotPool(
+			final int numDimensions,
 			final int initialCapacity,
 			final PoolObject.Factory< V, T > vertexFactory )
 	{
 		super( initialCapacity, vertexFactory );
+		this.numDimensions = numDimensions;
 	}
+
+	private final int numDimensions;
 
 	private G modelGraph;
 
@@ -32,6 +37,12 @@ public class AbstractSpotPool<
 		final V vertex = super.createRef();
 		vertex.modelGraph = modelGraph;
 		return vertex;
+	}
+
+	@Override
+	public int numDimensions()
+	{
+		return numDimensions;
 	}
 
 	/*

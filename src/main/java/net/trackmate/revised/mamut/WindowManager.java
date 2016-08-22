@@ -32,7 +32,8 @@ import net.trackmate.graph.GraphIdBimap;
 import net.trackmate.graph.ListenableReadOnlyGraph;
 import net.trackmate.revised.bdv.BigDataViewerMaMuT;
 import net.trackmate.revised.bdv.SharedBigDataViewerData;
-import net.trackmate.revised.bdv.overlay.EditBevaviours;
+import net.trackmate.revised.bdv.overlay.EditBehaviours;
+import net.trackmate.revised.bdv.overlay.EditSpecialBehaviours;
 import net.trackmate.revised.bdv.overlay.MouseHighlightHandler;
 import net.trackmate.revised.bdv.overlay.OverlayContext;
 import net.trackmate.revised.bdv.overlay.OverlayGraphRenderer;
@@ -72,9 +73,11 @@ import net.trackmate.revised.trackscheme.TrackSchemeGraph;
 import net.trackmate.revised.trackscheme.TrackSchemeHighlight;
 import net.trackmate.revised.trackscheme.TrackSchemeNavigation;
 import net.trackmate.revised.trackscheme.TrackSchemeSelection;
+import net.trackmate.revised.trackscheme.display.TrackSchemeEditBehaviours;
 import net.trackmate.revised.trackscheme.display.TrackSchemeFrame;
 import net.trackmate.revised.trackscheme.display.TrackSchemeOptions;
 import net.trackmate.revised.trackscheme.display.ui.TrackSchemeStyleChooser;
+import net.trackmate.revised.ui.HighlightBehaviours;
 import net.trackmate.revised.ui.grouping.GroupHandle;
 import net.trackmate.revised.ui.grouping.GroupManager;
 import net.trackmate.revised.ui.selection.FocusListener;
@@ -438,8 +441,16 @@ public class WindowManager
 				contextProvider );
 
 		UndoActions.installActionBindings( viewerFrame.getKeybindings(), model, keyconf );
-
-		EditBevaviours.installActionBindings( viewerFrame.getTriggerbindings(), keyconf, overlayGraph, tracksOverlay, model );
+		EditBehaviours.installActionBindings( viewerFrame.getTriggerbindings(), keyconf, overlayGraph, tracksOverlay, model );
+		EditSpecialBehaviours.installActionBindings( viewerFrame.getTriggerbindings(), keyconf, viewerFrame.getViewerPanel(), overlayGraph, tracksOverlay, model );
+		HighlightBehaviours.installActionBindings(
+				viewerFrame.getTriggerbindings(),
+				keyconf,
+				new String[] {"bdv"},
+				model.getGraph(),
+				model.getGraph(),
+				highlightModel,
+				model );
 
 		/*
 		 * TODO: this is still wrong. There should be one central entity syncing
@@ -565,6 +576,23 @@ public class WindowManager
 		frame.setVisible( true );
 
 		UndoActions.installActionBindings( frame.getKeybindings(), model, keyconf );
+		HighlightBehaviours.installActionBindings(
+				frame.getTriggerbindings(),
+				keyconf,
+				new String[] { "ts" },
+				model.getGraph(),
+				model.getGraph(),
+				highlightModel,
+				model );
+		TrackSchemeEditBehaviours.installActionBindings(
+				frame.getTriggerbindings(),
+				keyconf,
+				frame.getTrackschemePanel(),
+				trackSchemeGraph,
+				frame.getTrackschemePanel().getGraphOverlay(),
+				model.getGraph(),
+				model.getGraph().getGraphIdBimap(),
+				model );
 
 		// TrackSchemeStyleDialog triggered by "R"
 		final String TRACK_SCHEME_STYLE_SETTINGS = "render settings";
