@@ -1,11 +1,11 @@
 package net.trackmate.graph;
 
 /**
- * Interface for feature value or data item manipulation.
+ * The value of a feature (for one particular object).
  * <p>
- * Data items implementing this interface can be read, set and removed from the
- * collection they belong to. Additionally, a boolean flag returns whether this
- * data item has a set value or not.
+ * Using this interface, the feature value (for a particular object) can be
+ * read, set, and removed. Additionally, it can be checked whether the value is
+ * set.
  *
  * @param <T>
  *            the type of the value stored.
@@ -22,7 +22,7 @@ public interface FeatureValue< T >
 	public void set( T value );
 
 	/**
-	 * Removes this data item from the collection it belongs to.
+	 * Clear the value stored in this data item.
 	 */
 	public void remove();
 

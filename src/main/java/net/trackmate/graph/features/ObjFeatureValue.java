@@ -5,10 +5,12 @@ import java.util.Map;
 import net.trackmate.graph.FeatureValue;
 
 /**
- * TODO
+ * Feature value of type {@code T}.
  *
  * @param <O>
+ *            type of object to which the feature should be attached.
  * @param <T>
+ *            value type of the feature.
  *
  * @author Tobias Pietzsch &lt;tobias.pietzsch@gmail.com&gt;
  */
