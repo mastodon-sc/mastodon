@@ -6,6 +6,7 @@ package net.trackmate.revised.trackscheme.display.ui;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
@@ -33,7 +34,7 @@ import net.trackmate.revised.trackscheme.display.ui.TrackSchemeStyleEditorPanel.
 public class TrackSchemeStyleChooser
 {
 
-	private static final String STYLE_FILE = "trackschemestyles.yaml";
+	private static final String STYLE_FILE = System.getProperty( "user.home" ) + "/.mastodon/trackschemestyles.yaml";
 
 	private final DefaultComboBoxModel< TrackSchemeStyle > model;
 
@@ -141,6 +142,8 @@ public class TrackSchemeStyleChooser
 					continue;
 				stylesToSave.add( style );
 			}
+
+			mkdirs( STYLE_FILE );
 			final FileWriter output = new FileWriter( STYLE_FILE );
 			final Yaml yaml = TrackSchemeStyleIO.createYaml();
 			yaml.dumpAll( stylesToSave.iterator(), output );
@@ -248,5 +251,11 @@ public class TrackSchemeStyleChooser
 	public JDialog getDialog()
 	{
 		return dialog;
+	}
+
+	private static boolean mkdirs( final String fileName )
+	{
+		final File dir = new File( fileName ).getParentFile();
+		return dir == null ? false : dir.mkdirs();
 	}
 }
