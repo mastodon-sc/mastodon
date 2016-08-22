@@ -125,7 +125,7 @@ public class TrackSchemeStyleChooser
 		}
 		catch ( final FileNotFoundException e )
 		{
-			e.printStackTrace();
+			System.out.println( "TrackScheme style file " + STYLE_FILE + " not found. Using builtin styles." );
 		}
 	}
 
