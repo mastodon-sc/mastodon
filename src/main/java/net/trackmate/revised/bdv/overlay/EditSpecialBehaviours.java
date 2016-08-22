@@ -89,6 +89,7 @@ public class EditSpecialBehaviours< V extends OverlayVertex< V, E >, E extends O
 		behaviour( new ToggleLink( false ), TOGGLE_LINK_BACKWARD, TOGGLE_LINK_BACKWARD_KEYS );
 	}
 
+	// TODO: This should respect the same RenderSettings as OverlayGraphRenderer for painting the ghost vertex & edge!!!
 	private class EditSpecialBehavioursOverlay implements OverlayRenderer, TransformListener< AffineTransform3D >
 	{
 
@@ -190,6 +191,7 @@ public class EditSpecialBehaviours< V extends OverlayVertex< V, E >, E extends O
 	}
 
 	// TODO What to do if the user changes the time-point while dragging?
+	// TODO Because the user can move in time currently, always do a sanity check before inserting the link
 	private class ToggleLink implements DragBehaviour
 	{
 

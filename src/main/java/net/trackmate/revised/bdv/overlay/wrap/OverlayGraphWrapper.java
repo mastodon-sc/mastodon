@@ -46,23 +46,23 @@ public class OverlayGraphWrapper< V extends Vertex< E >, E extends Edge< V > > i
 		this.wrappedGraph = graph;
 		this.idmap = idmap;
 		this.overlayProperties = overlayProperties;
-		tmpVertexRefs =	new ConcurrentLinkedQueue< OverlayVertexWrapper< V, E > >();
-		tmpEdgeRefs = new ConcurrentLinkedQueue< OverlayEdgeWrapper< V, E > >();
-		this.wrappedIndex = new SpatioTemporalIndexWrapper< V, E >( this, graphIndex );
+		tmpVertexRefs =	new ConcurrentLinkedQueue<>();
+		tmpEdgeRefs = new ConcurrentLinkedQueue<>();
+		this.wrappedIndex = new SpatioTemporalIndexWrapper<>( this, graphIndex );
 	}
 
 	@Override
 	public OverlayVertexWrapper< V, E > vertexRef()
 	{
 		final OverlayVertexWrapper< V, E > ref = tmpVertexRefs.poll();
-		return ref == null ? new OverlayVertexWrapper< V, E >( this ) : ref;
+		return ref == null ? new OverlayVertexWrapper<>( this ) : ref;
 	}
 
 	@Override
 	public OverlayEdgeWrapper< V, E > edgeRef()
 	{
 		final OverlayEdgeWrapper< V, E > ref = tmpEdgeRefs.poll();
-		return ref == null ? new OverlayEdgeWrapper< V, E >( this ) : ref;
+		return ref == null ? new OverlayEdgeWrapper<>( this ) : ref;
 	}
 
 	@Override
@@ -86,10 +86,8 @@ public class OverlayGraphWrapper< V extends Vertex< E >, E extends Edge< V > > i
 	@Override
 	public OverlayEdgeWrapper< V, E > getEdge( final OverlayVertexWrapper< V, E > source, final OverlayVertexWrapper< V, E > target, final OverlayEdgeWrapper< V, E > edge )
 	{
-		final E e = overlayProperties.getEdge( source.wv, target.wv, edge.we );
-		if (null == e ) return null;
-		edge.we = e;
-		return edge;
+		edge.we = wrappedGraph.getEdge( source.wv, target.wv, edge.ref );
+		return edge.orNull();
 	}
 
 	@Override
@@ -119,20 +117,21 @@ public class OverlayGraphWrapper< V extends Vertex< E >, E extends Edge< V > > i
 	@Override
 	public OverlayVertexWrapper< V, E > addVertex( final int timepoint, final double[] position, final double radius, final OverlayVertexWrapper< V, E > ref )
 	{
-		ref.wv = overlayProperties.addVertex( timepoint, position, radius, ref.wv );
+		ref.wv = overlayProperties.addVertex( timepoint, position, radius, ref.ref );
 		return ref;
 	}
 
+	@Override
 	public OverlayVertexWrapper< V, E > addVertex( final int timepoint, final double[] position, final double[][] covariance, final OverlayVertexWrapper< V, E > ref )
 	{
-		ref.wv = overlayProperties.addVertex( timepoint, position, covariance, ref.wv );
+		ref.wv = overlayProperties.addVertex( timepoint, position, covariance, ref.ref );
 		return ref;
 	}
 
 	@Override
 	public OverlayEdgeWrapper< V, E > addEdge( final OverlayVertexWrapper< V, E > source, final OverlayVertexWrapper< V, E > target, final OverlayEdgeWrapper< V, E > ref )
 	{
-		ref.we = overlayProperties.addEdge( source.wv, target.wv, ref.we );
+		ref.we = overlayProperties.addEdge( source.wv, target.wv, ref.ref );
 		return ref;
 	}
 
@@ -171,7 +170,7 @@ public class OverlayGraphWrapper< V extends Vertex< E >, E extends Edge< V > > i
 		@Override
 		public OverlayVertexWrapper< V, E > getObject( final int index, final OverlayVertexWrapper< V, E > v )
 		{
-			v.wv = idmap.getVertex( index, v.wv );
+			v.wv = idmap.getVertex( index, v.ref );
 			return v;
 		}
 
@@ -222,7 +221,7 @@ public class OverlayGraphWrapper< V extends Vertex< E >, E extends Edge< V > > i
 		@Override
 		public OverlayEdgeWrapper< V, E > getObject( final int index, final OverlayEdgeWrapper< V, E > e )
 		{
-			e.we = idmap.getEdge( index, e.we );
+			e.we = idmap.getEdge( index, e.ref );
 			return e;
 		}
 

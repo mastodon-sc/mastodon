@@ -39,7 +39,7 @@ public class OverlayVertexIteratorWrapper< V extends Vertex< E >, E extends Edge
 	@Override
 	public OverlayVertexWrapper< V, E > next()
 	{
-		vertex.wv = idmap.getVertex( idmap.getVertexId( wrappedIterator.next() ), vertex.wv );
+		vertex.wv = idmap.getVertex( idmap.getVertexId( wrappedIterator.next() ), vertex.ref );
 		return vertex;
 	}
 

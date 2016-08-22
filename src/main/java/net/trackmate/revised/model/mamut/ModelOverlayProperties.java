@@ -76,6 +76,18 @@ public class ModelOverlayProperties implements OverlayProperties< Spot, Link >
 	}
 
 	@Override
+	public String getLabel( final Spot v )
+	{
+		return v.getLabel();
+	}
+
+	@Override
+	public void setLabel( final Spot v, final String label )
+	{
+		v.setLabel( label );
+	}
+
+	@Override
 	public boolean isVertexSelected( final Spot v )
 	{
 		return selection.isSelected( v );
@@ -117,12 +129,6 @@ public class ModelOverlayProperties implements OverlayProperties< Spot, Link >
 	public Link addEdge( final Spot source, final Spot target, final Link ref )
 	{
 		return modelGraph.addEdge( source, target, ref ).init();
-	}
-
-	@Override
-	public Link getEdge( final Spot source, final Spot target, final Link edge )
-	{
-		return modelGraph.getEdge( source, target, edge );
 	}
 
 	@Override

@@ -19,6 +19,7 @@ public class RenderSettings
 	public static final boolean DEFAULT_DRAW_SLICE_PROJECTION = !DEFAULT_DRAW_SLICE_INTERSECTION;
 	public static final boolean DEFAULT_DRAW_POINTS = !DEFAULT_DRAW_ELLIPSE || (DEFAULT_DRAW_ELLIPSE && DEFAULT_DRAW_SLICE_INTERSECTION);
 	public static final boolean DEFAULT_DRAW_POINTS_FOR_ELLIPSE = false;
+	public static final boolean DEFAULT_DRAW_SPOT_LABELS = false;
 	public static final boolean DEFAULT_IS_FOCUS_LIMIT_RELATIVE = true;
 	public static final double DEFAULT_ELLIPSOID_FADE_DEPTH = 0.2;
 	public static final double DEFAULT_POINT_FADE_DEPTH = 0.2;
@@ -41,6 +42,7 @@ public class RenderSettings
 		drawEllipsoidSliceIntersection = DEFAULT_DRAW_SLICE_INTERSECTION;
 		drawPoints = DEFAULT_DRAW_POINTS;
 		drawPointsForEllipses = DEFAULT_DRAW_POINTS_FOR_ELLIPSE;
+		drawSpotLabels = DEFAULT_DRAW_SPOT_LABELS;
 		focusLimit = DEFAULT_LIMIT_FOCUS_RANGE;
 		isFocusLimitViewRelative = DEFAULT_IS_FOCUS_LIMIT_RELATIVE;
 		ellipsoidFadeDepth = DEFAULT_ELLIPSOID_FADE_DEPTH;
@@ -60,6 +62,7 @@ public class RenderSettings
 		drawEllipsoidSliceIntersection = settings.drawEllipsoidSliceIntersection;
 		drawPoints = settings.drawPoints;
 		drawPointsForEllipses = settings.drawPointsForEllipses;
+		drawSpotLabels = settings.drawSpotLabels;
 		focusLimit = settings.focusLimit;
 		isFocusLimitViewRelative = settings.isFocusLimitViewRelative;
 		ellipsoidFadeDepth = settings.ellipsoidFadeDepth;
@@ -142,22 +145,27 @@ public class RenderSettings
 	private boolean drawPointsForEllipses;
 
 	/**
+	 * Whether to draw spot labels next to ellipses.
+	 */
+	private boolean drawSpotLabels;
+
+	/**
 	 * Maximum distance from view plane up to which to draw spots.
 	 *
 	 * <p>
-	 * Depending on {@link #isFocusLimitViewRelative}, the distance is
-	 * either in the current view coordinate system or in the global coordinate
-	 * system. If {@code isFocusLimitViewRelative() == true} then the
-	 * distance is in current view coordinates. For example, a value of 100
-	 * means that spots will be visible up to 100 pixel widths from the view
-	 * plane. Thus, the effective focus range depends on the current zoom level.
-	 * If {@code isFocusLimitViewRelative() == false} then the distance
-	 * is in global coordinates. A value of 100 means that spots will be visible
-	 * up to 100 units (of the global coordinate system) from the view plane.
+	 * Depending on {@link #isFocusLimitViewRelative}, the distance is either in
+	 * the current view coordinate system or in the global coordinate system. If
+	 * {@code isFocusLimitViewRelative() == true} then the distance is in
+	 * current view coordinates. For example, a value of 100 means that spots
+	 * will be visible up to 100 pixel widths from the view plane. Thus, the
+	 * effective focus range depends on the current zoom level. If
+	 * {@code isFocusLimitViewRelative() == false} then the distance is in
+	 * global coordinates. A value of 100 means that spots will be visible up to
+	 * 100 units (of the global coordinate system) from the view plane.
 	 *
 	 * <p>
-	 * Ellipsoids are drawn increasingly translucent the closer they are
-	 * to {@link #focusLimit}. See {@link #ellipsoidFadeDepth}.
+	 * Ellipsoids are drawn increasingly translucent the closer they are to
+	 * {@link #focusLimit}. See {@link #ellipsoidFadeDepth}.
 	 */
 	private double focusLimit;
 
@@ -438,6 +446,31 @@ public class RenderSettings
 		if ( this.drawPointsForEllipses != drawPointsForEllipses )
 		{
 			this.drawPointsForEllipses = drawPointsForEllipses;
+			notifyListeners();
+		}
+	}
+
+	/**
+	 * Get whether spot labels are drawn next to ellipses.
+	 *
+	 * @return whether spot labels are drawn next to ellipses.
+	 */
+	public boolean getDrawSpotLabels()
+	{
+		return drawSpotLabels;
+	}
+
+	/**
+	 * Set whether spot labels are drawn next to ellipses.
+	 *
+	 * @param drawSpotLabels
+	 *            whether spot labels are drawn next to ellipses.
+	 */
+	public void setDrawSpotLabels( final boolean drawSpotLabels )
+	{
+		if ( this.drawSpotLabels != drawSpotLabels )
+		{
+			this.drawSpotLabels = drawSpotLabels;
 			notifyListeners();
 		}
 	}

@@ -48,6 +48,8 @@ public class RenderSettingsPanel extends JPanel implements UpdateListener
 
 	private final JCheckBox centersForEllipsesBox;
 
+	private final JCheckBox drawSpotLabelsBox;
+
 	private final BoundedValueDouble focusLimit;
 
 	private final SliderPanelDouble focusLimitSlider;
@@ -245,9 +247,37 @@ public class RenderSettingsPanel extends JPanel implements UpdateListener
 		add( new JLabel("draw spot centers for ellipses"), c );
 
 
+		/*
+		 * Spot labels
+		 */
+
+		c.gridy++;
+		drawSpotLabelsBox = new JCheckBox();
+		drawSpotLabelsBox.addActionListener( new ActionListener()
+		{
+			@Override
+			public void actionPerformed( final ActionEvent e )
+			{
+				renderSettings.setDrawSpotLabels( drawSpotLabelsBox.isSelected() );
+			}
+		} );
+		c.anchor = GridBagConstraints.LINE_END;
+		c.gridx = 0;
+		add( drawSpotLabelsBox, c );
+		c.anchor = GridBagConstraints.LINE_START;
+		c.gridx = 1;
+		add( new JLabel( "draw spot labels" ), c );
+
+		/*
+		 * Vertical space.
+		 */
+
 		c.gridy++;
 		add( Box.createVerticalStrut( 15 ), c );
 
+		/*
+		 * Focus limit.
+		 */
 
 		c.gridy++;
 		focusLimit = new BoundedValueDouble( 0, 2000, 100 )
@@ -356,6 +386,7 @@ public class RenderSettingsPanel extends JPanel implements UpdateListener
 			projectionBox.setSelected( renderSettings.getDrawEllipsoidSliceProjection() );
 			centersBox.setSelected( renderSettings.getDrawSpotCenters() );
 			centersForEllipsesBox.setSelected( renderSettings.getDrawSpotCentersForEllipses() );
+			drawSpotLabelsBox.setSelected( renderSettings.getDrawSpotLabels() );
 
 			focusLimit.setCurrentValue( renderSettings.getFocusLimit() );
 			focusLimitRelativeBox.setSelected( renderSettings.getFocusLimitViewRelative() );

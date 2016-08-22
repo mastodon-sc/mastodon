@@ -42,6 +42,7 @@ public interface OverlayProperties< V, E >
 	// TODO move to separate interface? OverlayModifyProperties?
 	public void notifyGraphChanged();
 
-	// TODO investigate! Why is this needed? Everything calling this is highly suspicious.
-	public E getEdge( V source, V target, E edge );
+	public String getLabel( V v );
+
+	public void setLabel( V v, String label );
 }
