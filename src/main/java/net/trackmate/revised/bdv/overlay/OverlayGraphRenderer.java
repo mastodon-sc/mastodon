@@ -594,6 +594,8 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 
 							if ( !drawEllipsoidSliceProjection && drawSpotLabels )
 							{
+								// TODO Don't use ellipse, which is an AWT
+								// object, for calculation.
 								graphics.rotate( -theta );
 								final double a = ellipse.getWidth();
 								final double b = ellipse.getHeight();
@@ -630,6 +632,8 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 
 							if ( drawSpotLabels )
 							{
+								// TODO Don't use ellipse, which is an AWT
+								// object, for calculation.
 								graphics.rotate( -theta );
 								final double a = ellipse.getWidth();
 								final double b = ellipse.getHeight();
