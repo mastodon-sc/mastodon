@@ -88,12 +88,16 @@ public class TrackSchemeNavigator implements TransformListener< ScreenTransform 
 		RIGHT_SIBLING
 	}
 
+	// TODO: should be private (only protected because of derived TrackSchemeNavigatorFinderLike)
 	protected final TrackSchemeGraph< ?, ? > graph;
 
+	// TODO: should be private (only protected because of derived TrackSchemeNavigatorFinderLike)
 	protected final LineageTreeLayout layout;
 
+	// TODO: should be private (only protected because of derived TrackSchemeNavigatorFinderLike)
 	protected final TrackSchemeNavigation navigation;
 
+	// TODO: should be private (only protected because of derived TrackSchemeNavigatorFinderLike)
 	protected final TrackSchemeSelection selection;
 
 	private final ScreenTransform screenTransform;
@@ -247,6 +251,7 @@ public class TrackSchemeNavigator implements TransformListener< ScreenTransform 
 
 	private double ratioXtoY;
 
+	// TODO: should be private (only protected because of derived TrackSchemeNavigatorFinderLike)
 	protected TrackSchemeVertex getFocusedVertex( final TrackSchemeVertex ref )
 	{
 		final TrackSchemeVertex vertex = focus.getFocusedVertex( ref );
@@ -553,7 +558,7 @@ public class TrackSchemeNavigator implements TransformListener< ScreenTransform 
 	}
 
 	@Override
-	public void updateHeadersVisibility( boolean isVisibleX, int width, boolean isVisibleY, int height )
+	public void updateHeadersVisibility( final boolean isVisibleX, final int width, final boolean isVisibleY, final int height )
 	{
 		headerWidth = isVisibleX ? width : 0;
 		headerHeight = isVisibleY ? height : 0;
