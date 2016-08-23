@@ -8,7 +8,7 @@ import net.trackmate.collection.ref.RefArrayList;
 import net.trackmate.graph.features.DoubleFeature;
 import net.trackmate.graph.features.ObjFeature;
 
-public class Example
+public class Vector3Example
 {
 	public static void main( final String[] args )
 	{
