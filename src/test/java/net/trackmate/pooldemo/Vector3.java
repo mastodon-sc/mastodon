@@ -86,57 +86,51 @@ public class Vector3 extends PoolObject< Vector3, ByteMappedElement > implements
 	@Override
 	public void fwd( final int d )
 	{
-		// TODO Auto-generated method stub
-
+		move( 1, d );
 	}
 
 	@Override
 	public void bck( final int d )
 	{
-		// TODO Auto-generated method stub
-
+		move( -1, d );
 	}
 
 	@Override
 	public void move( final int distance, final int d )
 	{
-		// TODO Auto-generated method stub
-
+		move( ( double ) distance, d );
 	}
 
 	@Override
 	public void move( final long distance, final int d )
 	{
-		// TODO Auto-generated method stub
-
+		move( ( double ) distance, d );
 	}
 
 	@Override
 	public void move( final Localizable localizable )
 	{
-		// TODO Auto-generated method stub
-
+		move( ( RealLocalizable ) localizable );
 	}
 
 	@Override
 	public void move( final int[] distance )
 	{
-		// TODO Auto-generated method stub
-
+		for ( int d = 0; d < n; ++d )
+			move( distance[ d ], d );
 	}
 
 	@Override
 	public void move( final long[] distance )
 	{
-		// TODO Auto-generated method stub
-
+		for ( int d = 0; d < n; ++d )
+			move( distance[ d ], d );
 	}
 
 	@Override
 	public void setPosition( final Localizable localizable )
 	{
-		for ( int d = 0; d < n; ++d )
-			setPosition( localizable.getDoublePosition( d ), d );
+		setPosition( ( RealLocalizable ) localizable );
 	}
 
 	@Override
@@ -168,36 +162,34 @@ public class Vector3 extends PoolObject< Vector3, ByteMappedElement > implements
 	@Override
 	public void move( final float distance, final int d )
 	{
-		// TODO Auto-generated method stub
-
+		move( ( double ) distance, d );
 	}
 
 	@Override
 	public void move( final double distance, final int d )
 	{
-		// TODO Auto-generated method stub
-
+		setPosition( getDoublePosition( d ) + distance, d );
 	}
 
 	@Override
 	public void move( final RealLocalizable localizable )
 	{
-		// TODO Auto-generated method stub
-
+		for ( int d = 0; d < n; ++d )
+			move( localizable.getDoublePosition( d ), d );
 	}
 
 	@Override
 	public void move( final float[] distance )
 	{
-		// TODO Auto-generated method stub
-
+		for ( int d = 0; d < n; ++d )
+			move( distance[ d ], d );
 	}
 
 	@Override
 	public void move( final double[] distance )
 	{
-		// TODO Auto-generated method stub
-
+		for ( int d = 0; d < n; ++d )
+			move( distance[ d ], d );
 	}
 
 	@Override
