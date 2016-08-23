@@ -7,11 +7,13 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 
 import javax.swing.Box;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
 import javax.swing.WindowConstants;
 
 import org.scijava.ui.behaviour.io.InputTriggerConfig;
@@ -280,7 +282,7 @@ public class MainWindow extends JFrame
 		return conf;
 	}
 
-	public static void main( final String[] args ) throws IOException, SpimDataException
+	public static void main( final String[] args ) throws IOException, SpimDataException, InvocationTargetException, InterruptedException
 	{
 		final String bdvFile = "samples/datasethdf5.xml";
 		final String modelFile = "samples/model_revised.raw";
@@ -297,12 +299,14 @@ public class MainWindow extends JFrame
 		mw.setVisible( true );
 
 		mw.open( project );
-//		mw.fileChooser.setSelectedFile( new File( "/Users/pietzsch/Desktop/data/TGMM_METTE/project.xml" ) );
-//		mw.fileChooser.setSelectedFile( new File( "/Users/pietzsch/TGMM/data/tifs/datasethdf5.xml" ) );
+//		mw.proposedProjectFile = new File( "/Users/pietzsch/Desktop/data/TGMM_METTE/project2.xml" );
 //		mw.loadProject( new File( "/Users/pietzsch/Desktop/data/TGMM_METTE/project.xml" ) );
 //		mw.createProject();
-		mw.windowManager.createBigDataViewer();
-		mw.windowManager.createTrackScheme();
-//		WindowManager.DumpInputConfig.writeToYaml( System.getProperty( "user.home" ) + "/.tm3/mamutkeyconfig.yaml", mw.windowManager );
+//		mw.loadProject();
+		SwingUtilities.invokeAndWait( () -> {
+			mw.windowManager.createBigDataViewer();
+			mw.windowManager.createTrackScheme();
+		} );
+//		WindowManager.DumpInputConfig.writeToYaml( System.getProperty( "user.home" ) + "/.mastodon/keyconfig.yaml", mw.windowManager );
 	}
 }
