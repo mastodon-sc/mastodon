@@ -5,7 +5,7 @@ import net.trackmate.graph.Graph;
 import net.trackmate.graph.Vertex;
 
 /**
- * TODO: Consider splitting into two objects, generic UndoSerializer< O >
+ * TODO: Consider splitting into two objects, generic {@code UndoSerializer< O >}
  *
  * Provides serialization of vertices and edges to a byte array, for a specific {@link Graph} class.
  *

@@ -36,7 +36,7 @@ public interface AttributeUndoSerializer< O >
 	 * <p>
 	 * Note: Currently nothing is ever done in between {@code setBytes()} and
 	 * {@code notifySet()}, so maybe this will be removed later and
-	 * notifications directly linked to {@codes setBytes}. For now, we keep it
+	 * notifications directly linked to {@code setBytes()}. For now, we keep it
 	 * explicit.
 	 */
 	public void notifySet( final O obj );

@@ -11,7 +11,7 @@ import net.trackmate.graph.Vertex;
  * Same as {@link DepthFirstIterator} on a graph where all directed edges are
  * pointing in the opposite direction.
  *
- * @author Jean-Yves Tinevez &ltjeanyves.tinevez@gmail.com&gt
+ * @author Jean-Yves Tinevez &lt;jeanyves.tinevez@gmail.com&gt;
  */
 public class InverseDepthFirstIterator< V extends Vertex< E >, E extends Edge< V > > extends DepthFirstIterator< V, E >
 {
@@ -27,7 +27,7 @@ public class InverseDepthFirstIterator< V extends Vertex< E >, E extends Edge< V
 	}
 
 	@Override
-	protected V targetOf( E edge, V ref )
+	protected V targetOf( final E edge, final V ref )
 	{
 		return edge.getSource( ref );
 	}
