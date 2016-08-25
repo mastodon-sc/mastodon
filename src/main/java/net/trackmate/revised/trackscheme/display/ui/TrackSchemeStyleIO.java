@@ -163,9 +163,9 @@ public class TrackSchemeStyleIO
 				if ( list != null && !list.isEmpty() )
 				{
 					dash = new float[ list.size() ];
-					final int i = 0;
+					int i = 0;
 					for ( final double d : list )
-						dash[ i ] = ( float ) d;
+						dash[ i++ ] = ( float ) d;
 				}
 				final float dash_phase = ( ( Double ) mapping.get( "dash_phase" ) ).floatValue();
 				return new BasicStroke( width, cap, join, miterlimit, dash, dash_phase );
