@@ -27,6 +27,7 @@ import net.trackmate.revised.trackscheme.TrackSchemeGraph;
 import net.trackmate.revised.trackscheme.TrackSchemeHighlight;
 import net.trackmate.revised.trackscheme.TrackSchemeNavigation;
 import net.trackmate.revised.trackscheme.TrackSchemeSelection;
+import net.trackmate.revised.trackscheme.display.TrackSchemeNavigator.NavigatorEtiquette;
 import net.trackmate.revised.ui.context.ContextChooserPanel;
 import net.trackmate.revised.ui.grouping.GroupHandle;
 import net.trackmate.revised.ui.grouping.GroupLocksPanel;
@@ -125,8 +126,8 @@ public class TrackSchemeFrame extends JFrame
 			( ( BehaviourTransformEventHandler< ? > ) tfHandler ).install( triggerbindings );
 
 		final InputTriggerConfig inputConf = getKeyConfig( optional );
-		trackschemePanel.getNavigator().installActionBindings( keybindings, inputConf );
-		trackschemePanel.getSelectionBehaviours().installBehaviourBindings( triggerbindings, inputConf );
+		trackschemePanel.getNavigator().installBehaviourBindings( triggerbindings, inputConf );
+		trackschemePanel.getNavigator().installActionBindings( keybindings, inputConf, NavigatorEtiquette.FINDER_LIKE );
 
 		editFocusVertex = new EditFocusVertexBehaviour( focus, graph, undoPointMarker, trackschemePanel.getDisplay() );
 		trackschemePanel.getDisplay().addTransformListener( editFocusVertex );

@@ -7,7 +7,7 @@ import java.awt.event.MouseMotionListener;
 import net.imglib2.realtransform.AffineTransform3D;
 import net.imglib2.ui.TransformListener;
 
-public class MouseHighlightHandler< V extends OverlayVertex< V, E >, E extends OverlayEdge< E, V > > implements MouseMotionListener, MouseListener, TransformListener< AffineTransform3D >
+public class BdvHighlightHandler< V extends OverlayVertex< V, E >, E extends OverlayEdge< E, V > > implements MouseMotionListener, MouseListener, TransformListener< AffineTransform3D >
 {
 	private final OverlayGraph< V, E > overlayGraph;
 
@@ -19,7 +19,7 @@ public class MouseHighlightHandler< V extends OverlayVertex< V, E >, E extends O
 
 	private int x, y;
 
-	public MouseHighlightHandler(
+	public BdvHighlightHandler(
 			final OverlayGraph< V, E > overlayGraph,
 			final OverlayGraphRenderer< V, E > renderer,
 			final OverlayHighlight< V, E > highlight )
@@ -58,10 +58,10 @@ public class MouseHighlightHandler< V extends OverlayVertex< V, E >, E extends O
 		final E edge = overlayGraph.edgeRef();
 
 		// See if we can find an edge.
-		if ( renderer.getEdgeAt( x, y, SelectionBehaviours.EDGE_SELECT_DISTANCE_TOLERANCE, edge ) != null )
+		if ( renderer.getEdgeAt( x, y, BdvSelectionBehaviours.EDGE_SELECT_DISTANCE_TOLERANCE, edge ) != null )
 			highlight.highlightEdge( edge );
 		// See if we can find a vertex.
-		else if ( renderer.getVertexAt( x, y, SelectionBehaviours.POINT_SELECT_DISTANCE_TOLERANCE, vertex ) != null )
+		else if ( renderer.getVertexAt( x, y, BdvSelectionBehaviours.POINT_SELECT_DISTANCE_TOLERANCE, vertex ) != null )
 			highlight.highlightVertex( vertex );
 		else
 			highlight.clearHighlight();

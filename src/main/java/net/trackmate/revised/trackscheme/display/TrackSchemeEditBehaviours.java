@@ -26,7 +26,7 @@ import net.trackmate.spatial.HasTimepoint;
 import net.trackmate.undo.UndoPointMarker;
 
 /**
- * @author Jean=Yves Tinevez &ltjeanyves.tinevez@gmail.com&gt
+ * @author Jean-Yves Tinevez &lt;jeanyves.tinevez@gmail.com&gt;
  *
  */
 public class TrackSchemeEditBehaviours< V extends Vertex< E > & HasTimepoint, E extends Edge< V > >
