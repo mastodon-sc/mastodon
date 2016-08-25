@@ -3,7 +3,6 @@ package net.trackmate.revised.trackscheme.display.ui;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
-import java.awt.Frame;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.GridBagConstraints;
@@ -37,18 +36,15 @@ import javax.swing.border.EmptyBorder;
 
 import net.trackmate.revised.trackscheme.display.laf.TrackSchemeStyle;
 
-public class TrackSchemeStylePanel extends JPanel
+public class TrackSchemeStyleEditorPanel extends JPanel
 {
 	private static final long serialVersionUID = 1L;
 
-	private final TrackSchemeStyle style;
-
 	private final JColorChooser colorChooser;
 
-	public TrackSchemeStylePanel( final TrackSchemeStyle style )
+	public TrackSchemeStyleEditorPanel( final TrackSchemeStyle style )
 	{
 		super( new GridBagLayout() );
-		this.style = style;
 
 		colorChooser = new JColorChooser();
 
@@ -305,23 +301,20 @@ public class TrackSchemeStylePanel extends JPanel
 	public static void main( final String[] args )
 	{
 		final TrackSchemeStyle style = TrackSchemeStyle.defaultStyle();
-		new TrackSchemeStyleDialog( null, style ).setVisible( true );
+		new TrackSchemeStyleEditorDialog( null, style ).setVisible( true );
 	}
 
-	public static class TrackSchemeStyleDialog extends JDialog
+	public static class TrackSchemeStyleEditorDialog extends JDialog
 	{
 		private static final long serialVersionUID = 1L;
 
-		private final TrackSchemeStyle style;
+		private final TrackSchemeStyleEditorPanel stylePanel;
 
-		private final TrackSchemeStylePanel stylePanel;
-
-		public TrackSchemeStyleDialog( final Frame owner, final TrackSchemeStyle style )
+		public TrackSchemeStyleEditorDialog( final JDialog dialog, final TrackSchemeStyle style )
 		{
-			super( owner, "trackscheme style", false );
-			this.style = style;
+			super( dialog, "TrackScheme style editor", false );
 
-			stylePanel = new TrackSchemeStylePanel( style );
+			stylePanel = new TrackSchemeStyleEditorPanel( style );
 
 			final JPanel content = new JPanel();
 			content.setLayout( new BoxLayout( content, BoxLayout.PAGE_AXIS ) );

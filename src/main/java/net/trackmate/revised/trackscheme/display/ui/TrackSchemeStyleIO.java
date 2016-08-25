@@ -10,10 +10,14 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.yaml.snakeyaml.DumperOptions;
+import org.yaml.snakeyaml.Yaml;
+import org.yaml.snakeyaml.constructor.Constructor;
 import org.yaml.snakeyaml.nodes.MappingNode;
 import org.yaml.snakeyaml.nodes.Node;
 import org.yaml.snakeyaml.nodes.SequenceNode;
 import org.yaml.snakeyaml.nodes.Tag;
+import org.yaml.snakeyaml.representer.Representer;
 
 import net.trackmate.revised.io.yaml.AbstractWorkaroundConstruct;
 import net.trackmate.revised.io.yaml.WorkaroundConstructor;
@@ -24,6 +28,38 @@ import net.trackmate.revised.trackscheme.display.laf.TrackSchemeStyle;
 public class TrackSchemeStyleIO
 {
 	public static final Tag COLOR_TAG = new Tag( "!color" );
+
+	static class TrackSchemeStyleRepresenter extends WorkaroundRepresenter
+	{
+		public TrackSchemeStyleRepresenter()
+		{
+			putRepresent( new RepresentColor( this ) );
+			putRepresent( new RepresentBasicStroke( this ) );
+			putRepresent( new RepresentFont( this ) );
+			putRepresent( new RepresentStyle( this ) );
+		}
+	}
+
+	static class TrackschemeStyleConstructor extends WorkaroundConstructor
+	{
+		public TrackschemeStyleConstructor()
+		{
+			super( Object.class );
+			putConstruct( new ConstructColor( this ) );
+			putConstruct( new ConstructBasicStroke( this ) );
+			putConstruct( new ConstructFont( this ) );
+			putConstruct( new ConstructStyle( this ) );
+		}
+	}
+
+	static Yaml createYaml()
+	{
+		final DumperOptions dumperOptions = new DumperOptions();
+		final Representer representer = new TrackSchemeStyleRepresenter();
+		final Constructor constructor = new TrackschemeStyleConstructor();
+		final Yaml yaml = new Yaml( constructor, representer, dumperOptions );
+		return yaml;
+	}
 
 	public static class RepresentColor extends WorkaroundRepresent
 	{
@@ -127,9 +163,9 @@ public class TrackSchemeStyleIO
 				if ( list != null && !list.isEmpty() )
 				{
 					dash = new float[ list.size() ];
-					final int i = 0;
+					int i = 0;
 					for ( final double d : list )
-						dash[ i ] = ( float ) d;
+						dash[ i++ ] = ( float ) d;
 				}
 				final float dash_phase = ( ( Double ) mapping.get( "dash_phase" ) ).floatValue();
 				return new BasicStroke( width, cap, join, miterlimit, dash, dash_phase );
@@ -205,6 +241,7 @@ public class TrackSchemeStyleIO
 			final TrackSchemeStyle s = ( TrackSchemeStyle ) data;
 			final Map< String, Object > mapping = new LinkedHashMap< >();
 
+			mapping.put( "name", s.name );
 			mapping.put( "edgeColor", s.edgeColor );
 			mapping.put( "vertexFillColor", s.vertexFillColor );
 			mapping.put( "vertexDrawColor", s.vertexDrawColor );
@@ -252,7 +289,8 @@ public class TrackSchemeStyleIO
 			try
 			{
 				final Map< Object, Object > mapping = constructMapping( ( MappingNode  ) node );
-				final TrackSchemeStyle s = TrackSchemeStyle.defaultStyle();
+				final String name = ( String ) mapping.get( "name" );
+				final TrackSchemeStyle s = TrackSchemeStyle.defaultStyle().copy( name );
 
 				s.edgeColor( ( Color ) mapping.get( "edgeColor" ) );
 				s.vertexFillColor( ( Color ) mapping.get( "vertexFillColor" ) );

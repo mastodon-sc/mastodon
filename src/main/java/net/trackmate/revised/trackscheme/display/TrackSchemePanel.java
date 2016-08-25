@@ -169,14 +169,14 @@ public class TrackSchemePanel extends JPanel implements
 
 		final int w = options.getWidth();
 		final int h = options.getHeight();
-		display = new InteractiveDisplayCanvasComponent< ScreenTransform >( w, h, options.getTransformEventHandlerFactory() );
+		display = new InteractiveDisplayCanvasComponent<>( w, h, options.getTransformEventHandlerFactory() );
 		display.addTransformListener( this );
 
 		highlight.addHighlightListener( this );
 		focus.addFocusListener( this );
 		selection.addSelectionListener( this );
 
-		style = TrackSchemeStyle.defaultStyle();
+		style = TrackSchemeStyle.defaultStyle().copy( "default" );
 		graphOverlay = new DefaultTrackSchemeOverlay( graph, highlight, focus, optional, style );
 
 		display.addOverlayRenderer( graphOverlay );

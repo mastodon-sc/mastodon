@@ -5,6 +5,7 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.Stroke;
 import java.util.ArrayList;
+import java.util.Collection;
 
 public class TrackSchemeStyle
 {
@@ -12,39 +13,7 @@ public class TrackSchemeStyle
 
 	private static final Stroke DEFAULT_GHOST_STROKE = new BasicStroke( 1.0f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 10.0f, new float[] { 3.0f }, 0.0f );
 
-	// TODO: move AvailableStyles to UI or wherever it is needed
-	public static enum AvailableStyles
-	{
-		DEFAULT( "Default" ),
-		MODERN( "Modern" ),
-		HOWMUCH( "Pastel" );
-
-		private final String name;
-
-		AvailableStyles( final String name)
-		{
-			this.name = name;
-		}
-
-		@Override
-		public String toString()
-		{
-			return name;
-		}
-
-		public TrackSchemeStyle getStyle()
-		{
-			switch ( name ) {
-			case "Modern":
-				return modernStyle();
-			case "Pastel":
-				return howMuchDoYouKnowStyle();
-			case "Default":
-			default:
-				return defaultStyle();
-			}
-		}
-	}
+	public String name;
 
 	public Color edgeColor;
 
@@ -139,6 +108,12 @@ public class TrackSchemeStyle
 		ghostSelectedVertexDrawColor = mixGhostColor( selectedVertexDrawColor, backgroundColor );
 		ghostSimplifiedVertexFillColor = mixGhostColor( simplifiedVertexFillColor, backgroundColor );
 		ghostSelectedSimplifiedVertexFillColor = mixGhostColor( selectedSimplifiedVertexFillColor, backgroundColor );
+	}
+
+	public TrackSchemeStyle name( String n )
+	{
+		name = n;
+		return this;
 	}
 
 	public TrackSchemeStyle edgeColor( final Color c )
@@ -351,8 +326,15 @@ public class TrackSchemeStyle
 		updateListeners = new ArrayList<>();
 	}
 
+	@Override
+	public String toString()
+	{
+		return name;
+	}
+
 	public synchronized void set( final TrackSchemeStyle style )
 	{
+		this.name = style.name;
 		this.edgeColor = style.edgeColor;
 		this.vertexFillColor = style.vertexFillColor;
 		this.vertexDrawColor = style.vertexDrawColor;
@@ -420,10 +402,37 @@ public class TrackSchemeStyle
 		return updateListeners.remove( l );
 	}
 
+	/**
+	 * Returns a new style instance, copied from this style.
+	 *
+	 * @param name
+	 *            the name for the copied style.
+	 * @return a new style instance.
+	 */
+	public TrackSchemeStyle copy( String name )
+	{
+		final TrackSchemeStyle newStyle = new TrackSchemeStyle();
+		newStyle.set( this );
+		newStyle.name = name;
+		return newStyle;
+	}
+
+	/**
+	 * Returns the default TrackScheme style instance. Editing this instance
+	 * will affect all view using this style.
+	 *
+	 * @return the single common instance for the default style.
+	 */
 	public static TrackSchemeStyle defaultStyle()
 	{
+		return df;
+	}
+
+	private static final TrackSchemeStyle df;
+	static
+	{
 		final Color fill = new Color( 128, 255, 128 );
-		return new TrackSchemeStyle().
+		df = new TrackSchemeStyle().name( "default" ).
 				backgroundColor( Color.LIGHT_GRAY ).
 				currentTimepointColor( new Color( 217, 217, 217 ) ).
 				vertexFillColor( Color.WHITE ).
@@ -454,14 +463,27 @@ public class TrackSchemeStyle
 				paintHeaderShadow( true );
 	}
 
+	/**
+	 * Returns the modern TrackScheme style instance. Editing this instance will
+	 * affect all view using this style.
+	 *
+	 * @return the single common instance for the modern style.
+	 */
 	public static TrackSchemeStyle modernStyle()
+	{
+		return modern;
+	}
+
+	private static final TrackSchemeStyle modern;
+	static
 	{
 		final Color bg = new Color( 163, 199, 197 );
 		final Color fill = new Color( 64, 106, 102 );
 		final Color selfill = new Color( 255, 128, 128 );
-		return new TrackSchemeStyle().
+		final Color currenttp = new Color( 38, 175, 185 );
+		modern = new TrackSchemeStyle().name( "modern" ).
 				backgroundColor( bg ).
-				currentTimepointColor( bg.brighter() ).
+				currentTimepointColor( currenttp ).
 				vertexFillColor( fill ).
 				selectedVertexFillColor( selfill ).
 				simplifiedVertexFillColor( fill ).
@@ -490,12 +512,26 @@ public class TrackSchemeStyle
 				paintHeaderShadow( true );
 	}
 
-	public static TrackSchemeStyle howMuchDoYouKnowStyle()
+	/**
+	 * Returns the lorry TrackScheme style instance. Editing this instance will
+	 * affect all view using this style.
+	 *
+	 * @return the single common instance for the lorry style.
+	 */
+	public static TrackSchemeStyle lorryStyle()
+	{
+		return hmdyk;
+	}
+
+	private static final TrackSchemeStyle hmdyk;
+	static
 	{
 		final Color bg = new Color( 163, 199, 197 );
 		final Color fill = new Color( 225, 216, 183 );
 		final Color selfill = new Color( 53, 107, 154 );
-		return new TrackSchemeStyle().
+		final Color seldraw = new Color( 230, 245, 255 );
+		final Color seledge = new Color( 91, 137, 158 );
+		hmdyk = new TrackSchemeStyle().name( "lorry" ).
 				backgroundColor( bg ).
 				currentTimepointColor( bg.brighter() ).
 				vertexFillColor( fill ).
@@ -503,9 +539,9 @@ public class TrackSchemeStyle
 				simplifiedVertexFillColor( Color.DARK_GRAY ).
 				selectedSimplifiedVertexFillColor( selfill ).
 				vertexDrawColor( Color.DARK_GRAY ).
-				selectedVertexDrawColor( Color.WHITE ).
+				selectedVertexDrawColor( seldraw ).
 				edgeColor( Color.DARK_GRAY ).
-				selectedEdgeColor( Color.WHITE ).
+				selectedEdgeColor( seledge ).
 				decorationColor( bg.darker() ).
 				vertexRangeColor( Color.DARK_GRAY ).
 				headerBackgroundColor( bg.brighter() ).
@@ -525,4 +561,14 @@ public class TrackSchemeStyle
 				paintColumns( true ).
 				paintHeaderShadow( true );
 	}
+
+	public static Collection< TrackSchemeStyle > defaults;
+	static
+	{
+		defaults = new ArrayList<>( 3 );
+		defaults.add( df );
+		defaults.add( hmdyk );
+		defaults.add( modern );
+	}
+
 }
