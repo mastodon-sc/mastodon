@@ -3,18 +3,21 @@
  */
 package net.trackmate.revised.ui;
 
-import net.trackmate.collection.RefSet;
-import net.trackmate.graph.Edge;
-import net.trackmate.graph.GraphChangeNotifier;
-import net.trackmate.graph.ListenableGraph;
-import net.trackmate.graph.Vertex;
-import net.trackmate.revised.ui.selection.Selection;
-import net.trackmate.undo.UndoPointMarker;
-
 import org.scijava.ui.behaviour.io.InputTriggerConfig;
 
 import bdv.util.AbstractActions;
 import bdv.viewer.InputActionBindings;
+import net.trackmate.collection.RefList;
+import net.trackmate.collection.RefSet;
+import net.trackmate.collection.util.CollectionUtils;
+import net.trackmate.graph.Edge;
+import net.trackmate.graph.GraphChangeNotifier;
+import net.trackmate.graph.ListenableGraph;
+import net.trackmate.graph.Vertex;
+import net.trackmate.graph.algorithm.traversal.DepthFirstSearch;
+import net.trackmate.graph.algorithm.traversal.SearchListener;
+import net.trackmate.revised.ui.selection.Selection;
+import net.trackmate.undo.UndoPointMarker;
 
 /**
  * User-interface actions that are related to a model selection.
@@ -96,5 +99,119 @@ public class SelectionActions< V extends Vertex< E >, E extends Edge< V > >
 			notify.notifyGraphChanged();
 			selection.resumeListeners();
 		}
+	}
+
+	private class SelectTrackDownwardAction implements Runnable
+	{
+		private final boolean clear;
+
+		public SelectTrackDownwardAction( final boolean clear )
+		{
+			this.clear = clear;
+		}
+
+		@Override
+		public void run()
+		{
+			selection.pauseListeners();
+			final RefSet< V > vertices = selection.getSelectedVertices();
+			if ( clear )
+				selection.clearSelection();
+
+			// Prepare the iterator.
+			final RefList< V > vList = CollectionUtils.createRefList( graph.vertices() );
+			final RefList< E > eList = CollectionUtils.createRefList( graph.edges() );
+			final DepthFirstSearch< V, E > search = new DepthFirstSearch<>( graph, true );
+			search.setTraversalListener( new SearchListener< V, E, DepthFirstSearch< V, E > >()
+			{
+
+				@Override
+				public void processVertexLate( final V vertex, final DepthFirstSearch< V, E > search )
+				{}
+
+				@Override
+				public void processVertexEarly( final V vertex, final DepthFirstSearch< V, E > search )
+				{
+					vList.add( vertex );
+				}
+
+				@Override
+				public void processEdge( final E edge, final V from, final V to, final DepthFirstSearch< V, E > search )
+				{
+					eList.add( edge );
+				}
+			} );
+
+			// Iterate from all vertices that were in the selection.
+			for ( final V v : vertices )
+				search.start( v );
+
+			// Select iterated stuff.
+			selection.setVerticesSelected( vList, true );
+			selection.setEdgesSelected( eList, true );
+
+			undo.setUndoPoint();
+			notify.notifyGraphChanged();
+			selection.resumeListeners();
+
+		}
+
+	}
+
+	private class SelectWholeTrackAction implements Runnable
+	{
+
+		private final boolean clear;
+
+		public SelectWholeTrackAction( final boolean clear )
+		{
+			this.clear = clear;
+		}
+
+		@Override
+		public void run()
+		{
+			selection.pauseListeners();
+			final RefSet< V > vertices = selection.getSelectedVertices();
+			if ( clear )
+				selection.clearSelection();
+
+			// Prepare the iterator.
+			final RefList< V > vList = CollectionUtils.createRefList( graph.vertices() );
+			final RefList< E > eList = CollectionUtils.createRefList( graph.edges() );
+			final DepthFirstSearch< V, E > search = new DepthFirstSearch<>( graph, false );
+			search.setTraversalListener( new SearchListener< V, E, DepthFirstSearch< V, E > >()
+			{
+
+				@Override
+				public void processVertexLate( final V vertex, final DepthFirstSearch< V, E > search )
+				{}
+
+				@Override
+				public void processVertexEarly( final V vertex, final DepthFirstSearch< V, E > search )
+				{
+					vList.add( vertex );
+				}
+
+				@Override
+				public void processEdge( final E edge, final V from, final V to, final DepthFirstSearch< V, E > search )
+				{
+					eList.add( edge );
+				}
+			} );
+
+			// Iterate from all vertices that were in the selection.
+			for ( final V v : vertices )
+				search.start( v );
+
+			// Select iterated stuff.
+			selection.setVerticesSelected( vList, true );
+			selection.setEdgesSelected( eList, true );
+
+			undo.setUndoPoint();
+			notify.notifyGraphChanged();
+			selection.resumeListeners();
+		}
+
 	}
 }
