@@ -9,16 +9,17 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import org.junit.Test;
+
 import net.trackmate.graph.TestEdge;
 import net.trackmate.graph.TestVertex;
 import net.trackmate.graph.algorithm.traversal.BreadthFirstSearch;
 import net.trackmate.graph.algorithm.traversal.GraphSearch.EdgeClass;
+import net.trackmate.graph.algorithm.traversal.GraphSearch.SearchDirection;
 import net.trackmate.graph.object.ObjectEdge;
 import net.trackmate.graph.object.ObjectVertex;
 import net.trackmate.graph.traversal.GraphsForTests.GraphTestBundle;
 import net.trackmate.graph.traversal.GraphsForTests.TraversalTester;
-
-import org.junit.Test;
 
 /**
  * We assume that for unsorted search, child vertices are returned in the order
@@ -34,12 +35,12 @@ public class BreadthFirstSearchTest
 		final GraphTestBundle< TestVertex, TestEdge > bundle = GraphsForTests.forkPoolObjects();
 
 		final TestVertex first = bundle.vertices.get( 0 );
-		final BreadthFirstSearch< TestVertex, TestEdge > bfs = new BreadthFirstSearch< TestVertex, TestEdge >( bundle.graph, true );
+		final BreadthFirstSearch< TestVertex, TestEdge > bfs = new BreadthFirstSearch<>( bundle.graph, SearchDirection.DIRECTED );
 
 		final List< EdgeClass > edgeClass = Arrays.asList( new EdgeClass[] { TREE, TREE } );
 
 		final TraversalTester< TestVertex, TestEdge, BreadthFirstSearch< TestVertex, TestEdge > > traversalTester =
-				new TraversalTester< TestVertex, TestEdge, BreadthFirstSearch< TestVertex, TestEdge > >(
+				new TraversalTester<>(
 				bundle.vertices.iterator(),
 				bundle.vertices.iterator(),
 				bundle.edges.iterator(),
@@ -56,12 +57,12 @@ public class BreadthFirstSearchTest
 		final GraphTestBundle< ObjectVertex< Integer >, ObjectEdge< Integer >> bundle = GraphsForTests.forkStdObjects();
 
 		final ObjectVertex< Integer > first = bundle.vertices.get( 0 );
-		final BreadthFirstSearch< ObjectVertex< Integer >, ObjectEdge< Integer >> bfs = new BreadthFirstSearch< ObjectVertex< Integer >, ObjectEdge< Integer >>( bundle.graph, true );
+		final BreadthFirstSearch< ObjectVertex< Integer >, ObjectEdge< Integer > > bfs = new BreadthFirstSearch<>( bundle.graph, SearchDirection.DIRECTED );
 
 		final List< EdgeClass > edgeClass = Arrays.asList( new EdgeClass[] { TREE, TREE } );
 
 		final TraversalTester< ObjectVertex< Integer >, ObjectEdge< Integer >, BreadthFirstSearch< ObjectVertex< Integer >, ObjectEdge< Integer > >> traversalTester =
-				new TraversalTester< ObjectVertex< Integer >, ObjectEdge< Integer >, BreadthFirstSearch< ObjectVertex< Integer >, ObjectEdge< Integer > >>(
+				new TraversalTester<>(
 				bundle.vertices.iterator(),
 				bundle.vertices.iterator(),
 				bundle.edges.iterator(),
@@ -78,12 +79,12 @@ public class BreadthFirstSearchTest
 		final GraphTestBundle< TestVertex, TestEdge > bundle = GraphsForTests.loopPoolObjects();
 
 		final TestVertex first = bundle.vertices.get( 0 );
-		final BreadthFirstSearch< TestVertex, TestEdge > bfs = new BreadthFirstSearch< TestVertex, TestEdge >( bundle.graph, true );
+		final BreadthFirstSearch< TestVertex, TestEdge > bfs = new BreadthFirstSearch<>( bundle.graph, SearchDirection.DIRECTED );
 
 		final List< EdgeClass > edgeClass = Arrays.asList( new EdgeClass[] { TREE, TREE, TREE, TREE, TREE, TREE, BACK } );
 
 		final TraversalTester< TestVertex, TestEdge, BreadthFirstSearch< TestVertex, TestEdge >> traversalTester =
-				new TraversalTester< TestVertex, TestEdge, BreadthFirstSearch< TestVertex, TestEdge > >(
+				new TraversalTester<>(
 				bundle.vertices.iterator(),
 				bundle.vertices.iterator(),
 				bundle.edges.iterator(),
@@ -100,12 +101,12 @@ public class BreadthFirstSearchTest
 		final GraphTestBundle< ObjectVertex< Integer >, ObjectEdge< Integer >> bundle = GraphsForTests.loopStdObjects();
 
 		final ObjectVertex< Integer > first = bundle.vertices.get( 0 );
-		final BreadthFirstSearch< ObjectVertex< Integer >, ObjectEdge< Integer >> bfs = new BreadthFirstSearch< ObjectVertex< Integer >, ObjectEdge< Integer >>( bundle.graph, true );
+		final BreadthFirstSearch< ObjectVertex< Integer >, ObjectEdge< Integer > > bfs = new BreadthFirstSearch<>( bundle.graph, SearchDirection.DIRECTED );
 
 		final List< EdgeClass > edgeClass = Arrays.asList( new EdgeClass[] { TREE, TREE, TREE, TREE, TREE, TREE, BACK } );
 
 		final TraversalTester< ObjectVertex< Integer >, ObjectEdge< Integer >, BreadthFirstSearch< ObjectVertex< Integer >, ObjectEdge< Integer > >> traversalTester =
-				new TraversalTester< ObjectVertex< Integer >, ObjectEdge< Integer >, BreadthFirstSearch< ObjectVertex< Integer >, ObjectEdge< Integer > >>(
+				new TraversalTester<>(
 				bundle.vertices.iterator(),
 				bundle.vertices.iterator(),
 				bundle.edges.iterator(),
@@ -122,7 +123,7 @@ public class BreadthFirstSearchTest
 		final GraphTestBundle< TestVertex, TestEdge > bundle = GraphsForTests.wpExamplePoolObjects();
 
 		final TestVertex first = bundle.vertices.get( 0 );
-		final BreadthFirstSearch< TestVertex, TestEdge > bfs = new BreadthFirstSearch< TestVertex, TestEdge >( bundle.graph, true );
+		final BreadthFirstSearch< TestVertex, TestEdge > bfs = new BreadthFirstSearch<>( bundle.graph, SearchDirection.DIRECTED );
 
 		final List< TestVertex > expectedVertices = Arrays.asList( new TestVertex[] {
 				bundle.vertices.get( 0 ),
@@ -146,7 +147,7 @@ public class BreadthFirstSearchTest
 		final List< EdgeClass > edgeClass = Arrays.asList( new EdgeClass[] { TREE, TREE, TREE, TREE, TREE, TREE, CROSS } );
 
 		final TraversalTester< TestVertex, TestEdge, BreadthFirstSearch< TestVertex, TestEdge >> traversalTester =
-				new TraversalTester< TestVertex, TestEdge, BreadthFirstSearch< TestVertex, TestEdge > >(
+				new TraversalTester<>(
 				expectedVertices.iterator(),
 				processedVertices.iterator(),
 				expectedEdges.iterator(),
@@ -163,9 +164,9 @@ public class BreadthFirstSearchTest
 		final GraphTestBundle< ObjectVertex< Integer >, ObjectEdge< Integer >> bundle = GraphsForTests.wpExampleStdObjects();
 
 		final ObjectVertex< Integer > first = bundle.vertices.get( 0 );
-		final BreadthFirstSearch< ObjectVertex< Integer >, ObjectEdge< Integer >> bfs = new BreadthFirstSearch< ObjectVertex< Integer >, ObjectEdge< Integer >>( bundle.graph, true );
+		final BreadthFirstSearch< ObjectVertex< Integer >, ObjectEdge< Integer > > bfs = new BreadthFirstSearch<>( bundle.graph, SearchDirection.DIRECTED );
 
-		final List< ObjectVertex< Integer > > expectedVertices = new ArrayList< ObjectVertex< Integer > >( 7 );
+		final List< ObjectVertex< Integer > > expectedVertices = new ArrayList<>( 7 );
 		expectedVertices.add( bundle.vertices.get( 0 ) );
 		expectedVertices.add( bundle.vertices.get( 1 ) );
 		expectedVertices.add( bundle.vertices.get( 2 ) );
@@ -176,7 +177,7 @@ public class BreadthFirstSearchTest
 
 		final List< ObjectVertex< Integer > > processedVertices = expectedVertices;
 
-		final List< ObjectEdge< Integer > > expectedEdges = new ArrayList< ObjectEdge<Integer> >(7);
+		final List< ObjectEdge< Integer > > expectedEdges = new ArrayList<>( 7 );
 		expectedEdges.add( bundle.edges.get( 0 ) );
 		expectedEdges.add( bundle.edges.get( 1 ) );
 		expectedEdges.add( bundle.edges.get( 2 ) );
@@ -188,7 +189,7 @@ public class BreadthFirstSearchTest
 		final List< EdgeClass > edgeClass = Arrays.asList( new EdgeClass[] { TREE, TREE, TREE, TREE, TREE, TREE, CROSS } );
 
 		final TraversalTester< ObjectVertex< Integer >, ObjectEdge< Integer >, BreadthFirstSearch< ObjectVertex< Integer >, ObjectEdge< Integer > >> traversalTester =
-				new TraversalTester< ObjectVertex< Integer >, ObjectEdge< Integer >, BreadthFirstSearch< ObjectVertex< Integer >, ObjectEdge< Integer > >>(
+				new TraversalTester<>(
 				expectedVertices.iterator(),
 				processedVertices.iterator(),
 				expectedEdges.iterator(),
@@ -205,7 +206,7 @@ public class BreadthFirstSearchTest
 		final GraphTestBundle< TestVertex, TestEdge > bundle = GraphsForTests.singleEdgePoolObjects();
 
 		final TestVertex first = bundle.vertices.get( 0 );
-		final BreadthFirstSearch< TestVertex, TestEdge > bfs = new BreadthFirstSearch< TestVertex, TestEdge >( bundle.graph, true );
+		final BreadthFirstSearch< TestVertex, TestEdge > bfs = new BreadthFirstSearch<>( bundle.graph, SearchDirection.DIRECTED );
 
 		final List< TestVertex > expectedVertices = Arrays.asList( new TestVertex[] {
 				bundle.vertices.get( 0 ),
@@ -221,7 +222,7 @@ public class BreadthFirstSearchTest
 		final List< EdgeClass > edgeClass = Arrays.asList( new EdgeClass[] { TREE } );
 
 		final TraversalTester< TestVertex, TestEdge, BreadthFirstSearch< TestVertex, TestEdge > > traversalTester =
-				new TraversalTester< TestVertex, TestEdge, BreadthFirstSearch< TestVertex, TestEdge >>(
+				new TraversalTester<>(
 				expectedVertices.iterator(),
 				processedVertices.iterator(),
 				expectedEdges.iterator(),
@@ -238,23 +239,23 @@ public class BreadthFirstSearchTest
 		final GraphTestBundle< ObjectVertex< Integer >, ObjectEdge< Integer >> bundle = GraphsForTests.singleEdgeStdObjects();
 
 		final ObjectVertex< Integer > first = bundle.vertices.get( 0 );
-		final BreadthFirstSearch< ObjectVertex< Integer >, ObjectEdge< Integer >> bfs = new BreadthFirstSearch< ObjectVertex< Integer >, ObjectEdge< Integer >>( bundle.graph, true );
+		final BreadthFirstSearch< ObjectVertex< Integer >, ObjectEdge< Integer > > bfs = new BreadthFirstSearch<>( bundle.graph, SearchDirection.DIRECTED );
 
-		final List< ObjectVertex< Integer > > expectedVertices = new ArrayList< ObjectVertex< Integer > >( 2 );
+		final List< ObjectVertex< Integer > > expectedVertices = new ArrayList<>( 2 );
 		expectedVertices.add( bundle.vertices.get( 0 ) );
 		expectedVertices.add( bundle.vertices.get( 1 ) );
 
-		final List< ObjectVertex< Integer > > processedVertices = new ArrayList< ObjectVertex< Integer > >( 2 );
+		final List< ObjectVertex< Integer > > processedVertices = new ArrayList<>( 2 );
 		processedVertices.add( bundle.vertices.get( 0 ) );
 		processedVertices.add( bundle.vertices.get( 1 ) );
 
-		final List< ObjectEdge< Integer > > expectedEdges = new ArrayList< ObjectEdge< Integer > >( 1 );
+		final List< ObjectEdge< Integer > > expectedEdges = new ArrayList<>( 1 );
 		expectedEdges.add( bundle.edges.get( 0 ) );
 
 		final List< EdgeClass > edgeClass = Arrays.asList( new EdgeClass[] { TREE } );
 
 		final TraversalTester< ObjectVertex< Integer >, ObjectEdge< Integer >, BreadthFirstSearch< ObjectVertex< Integer >, ObjectEdge< Integer > >> traversalTester =
-				new TraversalTester< ObjectVertex< Integer >, ObjectEdge< Integer >, BreadthFirstSearch< ObjectVertex< Integer >, ObjectEdge< Integer > >>(
+				new TraversalTester<>(
 				expectedVertices.iterator(),
 				processedVertices.iterator(),
 				expectedEdges.iterator(),
@@ -271,7 +272,7 @@ public class BreadthFirstSearchTest
 		final GraphTestBundle< TestVertex, TestEdge > bundle = GraphsForTests.straightLinePoolObjects();
 
 		final TestVertex first = bundle.vertices.get( 0 );
-		final BreadthFirstSearch< TestVertex, TestEdge > bfs = new BreadthFirstSearch< TestVertex, TestEdge >( bundle.graph, true );
+		final BreadthFirstSearch< TestVertex, TestEdge > bfs = new BreadthFirstSearch<>( bundle.graph, SearchDirection.DIRECTED );
 
 		final List< TestVertex > expectedVertices = bundle.vertices;
 		final List< TestVertex > processedVertices = bundle.vertices;
@@ -280,7 +281,7 @@ public class BreadthFirstSearchTest
 		final List< EdgeClass > edgeClass = Arrays.asList( new EdgeClass[] { TREE, TREE, TREE, TREE, TREE, TREE } );
 
 		final TraversalTester< TestVertex, TestEdge, BreadthFirstSearch< TestVertex, TestEdge >> traversalTester =
-				new TraversalTester< TestVertex, TestEdge, BreadthFirstSearch< TestVertex, TestEdge > >(
+				new TraversalTester<>(
 				expectedVertices.iterator(),
 				processedVertices.iterator(),
 				expectedEdges.iterator(),
@@ -297,7 +298,7 @@ public class BreadthFirstSearchTest
 		final GraphTestBundle< ObjectVertex< Integer >, ObjectEdge< Integer >> bundle = GraphsForTests.straightLineStdObjects();
 
 		final ObjectVertex< Integer > first = bundle.vertices.get( 0 );
-		final BreadthFirstSearch< ObjectVertex< Integer >, ObjectEdge< Integer >> bfs = new BreadthFirstSearch< ObjectVertex< Integer >, ObjectEdge< Integer >>( bundle.graph, true );
+		final BreadthFirstSearch< ObjectVertex< Integer >, ObjectEdge< Integer > > bfs = new BreadthFirstSearch<>( bundle.graph, SearchDirection.DIRECTED );
 
 		final List< ObjectVertex< Integer > > expectedVertices = bundle.vertices;
 
@@ -308,7 +309,7 @@ public class BreadthFirstSearchTest
 		final List< EdgeClass > edgeClass = Arrays.asList( new EdgeClass[] { TREE, TREE, TREE, TREE, TREE, TREE } );
 
 		final TraversalTester< ObjectVertex< Integer >, ObjectEdge< Integer >, BreadthFirstSearch< ObjectVertex< Integer >, ObjectEdge< Integer > >> traversalTester =
-				new TraversalTester< ObjectVertex< Integer >, ObjectEdge< Integer >, BreadthFirstSearch< ObjectVertex< Integer >, ObjectEdge< Integer > >>(
+				new TraversalTester<>(
 				expectedVertices.iterator(),
 				processedVertices.iterator(),
 				expectedEdges.iterator(),
@@ -325,7 +326,7 @@ public class BreadthFirstSearchTest
 		final GraphTestBundle< TestVertex, TestEdge > bundle = GraphsForTests.twoComponentsPoolObjects();
 
 		final TestVertex first = bundle.vertices.get( 0 );
-		final BreadthFirstSearch< TestVertex, TestEdge > bfs = new BreadthFirstSearch< TestVertex, TestEdge >( bundle.graph, true );
+		final BreadthFirstSearch< TestVertex, TestEdge > bfs = new BreadthFirstSearch<>( bundle.graph, SearchDirection.DIRECTED );
 
 		final List< TestVertex > expectedVertices = Arrays.asList( new TestVertex[] {
 				bundle.vertices.get( 0 ),
@@ -349,7 +350,7 @@ public class BreadthFirstSearchTest
 		final List< EdgeClass > edgeClass = Arrays.asList( new EdgeClass[] { TREE, TREE, TREE, TREE, TREE, TREE, CROSS } );
 
 		final TraversalTester< TestVertex, TestEdge, BreadthFirstSearch< TestVertex, TestEdge >> traversalTester =
-				new TraversalTester< TestVertex, TestEdge, BreadthFirstSearch< TestVertex, TestEdge >>(
+				new TraversalTester<>(
 				expectedVertices.iterator(),
 				processedVertices.iterator(),
 				expectedEdges.iterator(),
@@ -366,9 +367,9 @@ public class BreadthFirstSearchTest
 		final GraphTestBundle< ObjectVertex< Integer >, ObjectEdge< Integer >> bundle = GraphsForTests.twoComponentsStdObjects();
 
 		final ObjectVertex< Integer > first = bundle.vertices.get( 0 );
-		final BreadthFirstSearch< ObjectVertex< Integer >, ObjectEdge< Integer >> bfs = new BreadthFirstSearch< ObjectVertex< Integer >, ObjectEdge< Integer >>( bundle.graph, true );
+		final BreadthFirstSearch< ObjectVertex< Integer >, ObjectEdge< Integer > > bfs = new BreadthFirstSearch<>( bundle.graph, SearchDirection.DIRECTED );
 
-		final List< ObjectVertex< Integer > > expectedVertices = new ArrayList< ObjectVertex< Integer > >( 7 );
+		final List< ObjectVertex< Integer > > expectedVertices = new ArrayList<>( 7 );
 		expectedVertices.add( bundle.vertices.get( 0 ) );
 		expectedVertices.add( bundle.vertices.get( 1 ) );
 		expectedVertices.add( bundle.vertices.get( 2 ) );
@@ -379,7 +380,7 @@ public class BreadthFirstSearchTest
 
 		final List< ObjectVertex< Integer > > processedVertices = expectedVertices;
 
-		final List< ObjectEdge< Integer > > expectedEdges = new ArrayList< ObjectEdge< Integer > >( 7 );
+		final List< ObjectEdge< Integer > > expectedEdges = new ArrayList<>( 7 );
 		expectedEdges.add( bundle.edges.get( 0 ) );
 		expectedEdges.add( bundle.edges.get( 1 ) );
 		expectedEdges.add( bundle.edges.get( 2 ) );
@@ -391,7 +392,7 @@ public class BreadthFirstSearchTest
 		final List< EdgeClass > edgeClass = Arrays.asList( new EdgeClass[] { TREE, TREE, TREE, TREE, TREE, TREE, CROSS } );
 
 		final TraversalTester< ObjectVertex< Integer >, ObjectEdge< Integer >, BreadthFirstSearch< ObjectVertex< Integer >, ObjectEdge< Integer > >> traversalTester =
-				new TraversalTester< ObjectVertex< Integer >, ObjectEdge< Integer >, BreadthFirstSearch< ObjectVertex< Integer >, ObjectEdge< Integer > >>(
+				new TraversalTester<>(
 				expectedVertices.iterator(),
 				processedVertices.iterator(),
 				expectedEdges.iterator(),
@@ -408,7 +409,7 @@ public class BreadthFirstSearchTest
 		final GraphTestBundle< TestVertex, TestEdge > bundle = GraphsForTests.singleVertexPoolObjects();
 
 		final TestVertex first = bundle.vertices.get( 0 );
-		final BreadthFirstSearch< TestVertex, TestEdge > bfs = new BreadthFirstSearch< TestVertex, TestEdge >( bundle.graph, true );
+		final BreadthFirstSearch< TestVertex, TestEdge > bfs = new BreadthFirstSearch<>( bundle.graph, SearchDirection.DIRECTED );
 
 		final List< TestVertex > expectedVertices = Arrays.asList( new TestVertex[] {
 				bundle.vertices.get( 0 )
@@ -423,7 +424,7 @@ public class BreadthFirstSearchTest
 		final List< EdgeClass > edgeClass = Collections.emptyList();
 
 		final TraversalTester< TestVertex, TestEdge, BreadthFirstSearch< TestVertex, TestEdge >> traversalTester =
-				new TraversalTester< TestVertex, TestEdge, BreadthFirstSearch< TestVertex, TestEdge > >(
+				new TraversalTester<>(
 				expectedVertices.iterator(),
 				processedVertices.iterator(),
 				expectedEdges.iterator(),
@@ -440,12 +441,12 @@ public class BreadthFirstSearchTest
 		final GraphTestBundle< ObjectVertex< Integer >, ObjectEdge< Integer >> bundle = GraphsForTests.singleVertexStdObjects();
 
 		final ObjectVertex< Integer > first = bundle.vertices.get( 0 );
-		final BreadthFirstSearch< ObjectVertex< Integer >, ObjectEdge< Integer >> bfs = new BreadthFirstSearch< ObjectVertex< Integer >, ObjectEdge< Integer >>( bundle.graph, true );
+		final BreadthFirstSearch< ObjectVertex< Integer >, ObjectEdge< Integer > > bfs = new BreadthFirstSearch<>( bundle.graph, SearchDirection.DIRECTED );
 
-		final List< ObjectVertex< Integer > > expectedVertices = new ArrayList< ObjectVertex< Integer > >( 2 );
+		final List< ObjectVertex< Integer > > expectedVertices = new ArrayList<>( 2 );
 		expectedVertices.add( bundle.vertices.get( 0 ) );
 
-		final List< ObjectVertex< Integer > > processedVertices = new ArrayList< ObjectVertex< Integer > >( 2 );
+		final List< ObjectVertex< Integer > > processedVertices = new ArrayList<>( 2 );
 		processedVertices.add( bundle.vertices.get( 0 ) );
 
 		final List< ObjectEdge< Integer > > expectedEdges = Collections.emptyList();
@@ -453,7 +454,7 @@ public class BreadthFirstSearchTest
 		final List< EdgeClass > edgeClass = Collections.emptyList();
 
 		final TraversalTester< ObjectVertex< Integer >, ObjectEdge< Integer >, BreadthFirstSearch< ObjectVertex< Integer >, ObjectEdge< Integer > >> traversalTester =
-				new TraversalTester< ObjectVertex< Integer >, ObjectEdge< Integer >, BreadthFirstSearch< ObjectVertex< Integer >, ObjectEdge< Integer > >>(
+				new TraversalTester<>(
 				expectedVertices.iterator(),
 				processedVertices.iterator(),
 				expectedEdges.iterator(),

@@ -11,6 +11,22 @@ import net.trackmate.graph.algorithm.AbstractGraphAlgorithm;
 
 public abstract class GraphSearch< T extends GraphSearch< T, V, E >, V extends Vertex< E >, E extends Edge< V > > extends AbstractGraphAlgorithm< V, E >
 {
+	public static enum SearchDirection
+	{
+		/**
+		 * The graph will be iterated regardless of the edges direction.
+		 */
+		UNDIRECTED,
+		/**
+		 * The graph will be iterated following only edges direction.
+		 */
+		DIRECTED,
+		/**
+		 * The graph will be iterated following reversed edges direction (target
+		 * to source).
+		 */
+		REVERSED;
+	}
 
 	protected final RefSet< V > discovered;
 

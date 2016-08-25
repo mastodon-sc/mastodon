@@ -13,6 +13,7 @@ import org.junit.Test;
 
 import net.trackmate.graph.TestEdge;
 import net.trackmate.graph.TestVertex;
+import net.trackmate.graph.algorithm.traversal.GraphSearch.SearchDirection;
 import net.trackmate.graph.traversal.GraphsForTests;
 import net.trackmate.graph.traversal.GraphsForTests.GraphTestBundle;
 
@@ -30,14 +31,14 @@ public class ShortestPathTest
 	@Test
 	public void testUndirected()
 	{
-		final ShortestPath< TestVertex, TestEdge > sp = new ShortestPath< TestVertex, TestEdge >( bundle.graph, false );
+		final ShortestPath< TestVertex, TestEdge > sp = new ShortestPath<>( bundle.graph, SearchDirection.UNDIRECTED );
 		final TestVertex D = bundle.vertices.get( 3 );
 		final TestVertex G = bundle.vertices.get( 6 );
 
 		final Iterator< TestVertex > path = sp.findPath( D, G ).iterator();
 		assertNotNull( "Path not found, though it exists.", path );
 
-		final List< TestVertex > expectedOrder = new ArrayList< TestVertex >( 5 );
+		final List< TestVertex > expectedOrder = new ArrayList<>( 5 );
 		// Reverse order
 		expectedOrder.add( bundle.vertices.get( 6 ) );
 		expectedOrder.add( bundle.vertices.get( 2 ) );
@@ -61,12 +62,12 @@ public class ShortestPathTest
 		bundle.graph.remove( bundle.edges.get( 2 ) );
 		bundle.graph.addEdge( E, A );
 
-		final ShortestPath< TestVertex, TestEdge > spUndirected = new ShortestPath< TestVertex, TestEdge >( bundle.graph, false );
+		final ShortestPath< TestVertex, TestEdge > spUndirected = new ShortestPath<>( bundle.graph, SearchDirection.UNDIRECTED );
 		final Iterator< TestVertex > pathUndirected = spUndirected.findPath( A, E ).iterator();
 		assertNotNull( "Path not found, though it exists.", pathUndirected );
 
 		// Reverse order
-		final List< TestVertex > expectedOrderUD = new ArrayList< TestVertex >( 2 );
+		final List< TestVertex > expectedOrderUD = new ArrayList<>( 2 );
 		expectedOrderUD.add( E );
 		expectedOrderUD.add( A );
 		final Iterator< TestVertex > eitUD = expectedOrderUD.iterator();
@@ -77,11 +78,11 @@ public class ShortestPathTest
 		assertFalse( "Path is longer than expected.", pathUndirected.hasNext() );
 
 		// Redo it, as directed search.
-		final ShortestPath< TestVertex, TestEdge > spDirected = new ShortestPath< TestVertex, TestEdge >( bundle.graph, true );
+		final ShortestPath< TestVertex, TestEdge > spDirected = new ShortestPath<>( bundle.graph, SearchDirection.DIRECTED );
 		final Iterator< TestVertex > pathDirected = spDirected.findPath( A, E ).iterator();
 		assertNotNull( "Path not found, though it exists.", pathDirected );
 
-		final List< TestVertex > expectedOrderD = new ArrayList< TestVertex >( 5 );
+		final List< TestVertex > expectedOrderD = new ArrayList<>( 5 );
 		// Reverse order
 		expectedOrderD.add( E );
 		expectedOrderD.add( bundle.vertices.get( 5 ) );
@@ -99,7 +100,7 @@ public class ShortestPathTest
 	@Test
 	public void testNonExistingPath()
 	{
-
+		// TODO
 	}
 
 }

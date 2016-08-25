@@ -10,6 +10,7 @@ import net.trackmate.collection.RefSet;
 import net.trackmate.collection.util.CollectionUtils;
 import net.trackmate.graph.ListenableGraph;
 import net.trackmate.graph.algorithm.traversal.DepthFirstSearch;
+import net.trackmate.graph.algorithm.traversal.GraphSearch.SearchDirection;
 import net.trackmate.graph.algorithm.traversal.SearchListener;
 import net.trackmate.graph.features.DoubleFeature;
 import net.trackmate.revised.model.mamut.Link;
@@ -64,7 +65,7 @@ public class EdgeFeatureCalculatorExample
 		}
 
 		// Collect links for each root.
-		final DepthFirstSearch< Spot, Link > linkCollector = new DepthFirstSearch< Spot, Link >( graph, false );
+		final DepthFirstSearch< Spot, Link > linkCollector = new DepthFirstSearch<>( graph, SearchDirection.UNDIRECTED );
 
 
 		for ( final Spot root : roots )

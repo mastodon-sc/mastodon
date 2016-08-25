@@ -99,7 +99,7 @@ public class GraphsForTests
 
 	public static final GraphTestBundle< TestVertex, TestEdge > straightLinePoolObjects()
 	{
-		final GraphTestBundle< TestVertex, TestEdge > bundle = new GraphTestBundle< TestVertex, TestEdge >();
+		final GraphTestBundle< TestVertex, TestEdge > bundle = new GraphTestBundle<>();
 
 		final TestGraph graph = new TestGraph();
 		bundle.graph = graph;
@@ -111,7 +111,7 @@ public class GraphsForTests
 		final TestVertex E = graph.addVertex().init( 5 );
 		final TestVertex F = graph.addVertex().init( 6 );
 		final TestVertex G = graph.addVertex().init( 7 );
-		bundle.vertices = new ArrayList< TestVertex >( 7 );
+		bundle.vertices = new ArrayList<>( 7 );
 		bundle.vertices.add( A );
 		bundle.vertices.add( B );
 		bundle.vertices.add( C );
@@ -126,7 +126,7 @@ public class GraphsForTests
 		final TestEdge eDE = graph.addEdge( D, E );
 		final TestEdge eEF = graph.addEdge( E, F );
 		final TestEdge eFG = graph.addEdge( F, G );
-		bundle.edges = new ArrayList< TestEdge >( 6 );
+		bundle.edges = new ArrayList<>( 6 );
 		bundle.edges.add( eAB );
 		bundle.edges.add( eBC );
 		bundle.edges.add( eCD );
@@ -140,9 +140,9 @@ public class GraphsForTests
 
 	public static final GraphTestBundle< ObjectVertex< Integer >, ObjectEdge< Integer > > straightLineStdObjects()
 	{
-		final GraphTestBundle< ObjectVertex< Integer >, ObjectEdge< Integer >> bundle = new GraphTestBundle< ObjectVertex< Integer >, ObjectEdge< Integer > >();
+		final GraphTestBundle< ObjectVertex< Integer >, ObjectEdge< Integer > > bundle = new GraphTestBundle<>();
 
-		final ObjectGraph< Integer > graph = new ObjectGraph< Integer >();
+		final ObjectGraph< Integer > graph = new ObjectGraph<>();
 		bundle.graph = graph;
 
 		final ObjectVertex< Integer > A = graph.addVertex().init( 1 );
@@ -152,7 +152,7 @@ public class GraphsForTests
 		final ObjectVertex< Integer > E = graph.addVertex().init( 5 );
 		final ObjectVertex< Integer > F = graph.addVertex().init( 6 );
 		final ObjectVertex< Integer > G = graph.addVertex().init( 7 );
-		bundle.vertices = new ArrayList< ObjectVertex< Integer > >( 7 );
+		bundle.vertices = new ArrayList<>( 7 );
 		bundle.vertices.add( A );
 		bundle.vertices.add( B );
 		bundle.vertices.add( C );
@@ -167,7 +167,7 @@ public class GraphsForTests
 		final ObjectEdge< Integer > eDE = graph.addEdge( D, E );
 		final ObjectEdge< Integer > eEF = graph.addEdge( E, F );
 		final ObjectEdge< Integer > eFG = graph.addEdge( F, G );
-		bundle.edges = new ArrayList< ObjectEdge< Integer > >( 6 );
+		bundle.edges = new ArrayList<>( 6 );
 		bundle.edges.add( eAB );
 		bundle.edges.add( eBC );
 		bundle.edges.add( eCD );
@@ -200,7 +200,7 @@ public class GraphsForTests
 
 	public static final GraphTestBundle< TestVertex, TestEdge > wpExamplePoolObjects()
 	{
-		final GraphTestBundle< TestVertex, TestEdge > bundle = new GraphTestBundle< TestVertex, TestEdge >();
+		final GraphTestBundle< TestVertex, TestEdge > bundle = new GraphTestBundle<>();
 
 		final TestGraph graph = new TestGraph();
 		bundle.graph = graph;
@@ -212,7 +212,7 @@ public class GraphsForTests
 		final TestVertex E = graph.addVertex().init( 5 );
 		final TestVertex F = graph.addVertex().init( 6 );
 		final TestVertex G = graph.addVertex().init( 7 );
-		bundle.vertices = new ArrayList< TestVertex >( 7 );
+		bundle.vertices = new ArrayList<>( 7 );
 		bundle.vertices.add( A );
 		bundle.vertices.add( B );
 		bundle.vertices.add( C );
@@ -228,7 +228,7 @@ public class GraphsForTests
 		final TestEdge eBF = graph.addEdge( B, F ); // 4
 		final TestEdge eFE = graph.addEdge( F, E ); // 5
 		final TestEdge eCG = graph.addEdge( C, G ); // 6
-		bundle.edges = new ArrayList< TestEdge >( 7 );
+		bundle.edges = new ArrayList<>( 7 );
 		bundle.edges.add( eAB ); // 0
 		bundle.edges.add( eAC ); // 1
 		bundle.edges.add( eAE ); // 2
@@ -243,9 +243,9 @@ public class GraphsForTests
 
 	public static final GraphTestBundle< ObjectVertex< Integer >, ObjectEdge< Integer > > wpExampleStdObjects()
 	{
-		final GraphTestBundle< ObjectVertex< Integer >, ObjectEdge< Integer >> bundle = new GraphTestBundle< ObjectVertex< Integer >, ObjectEdge< Integer > >();
+		final GraphTestBundle< ObjectVertex< Integer >, ObjectEdge< Integer > > bundle = new GraphTestBundle<>();
 
-		final ObjectGraph< Integer > graph = new ObjectGraph< Integer >();
+		final ObjectGraph< Integer > graph = new ObjectGraph<>();
 		bundle.graph = graph;
 
 		final ObjectVertex< Integer > A = graph.addVertex().init( 1 );
@@ -255,7 +255,7 @@ public class GraphsForTests
 		final ObjectVertex< Integer > E = graph.addVertex().init( 5 );
 		final ObjectVertex< Integer > F = graph.addVertex().init( 6 );
 		final ObjectVertex< Integer > G = graph.addVertex().init( 7 );
-		bundle.vertices = new ArrayList< ObjectVertex< Integer > >( 7 );
+		bundle.vertices = new ArrayList<>( 7 );
 		bundle.vertices.add( A );
 		bundle.vertices.add( B );
 		bundle.vertices.add( C );
@@ -271,7 +271,7 @@ public class GraphsForTests
 		final ObjectEdge< Integer > eBF = graph.addEdge( B, F );
 		final ObjectEdge< Integer > eFE = graph.addEdge( F, E );
 		final ObjectEdge< Integer > eCG = graph.addEdge( C, G );
-		bundle.edges = new ArrayList< ObjectEdge< Integer > >( 7 );
+		bundle.edges = new ArrayList<>( 7 );
 		bundle.edges.add( eAB );
 		bundle.edges.add( eAC );
 		bundle.edges.add( eAE );
@@ -286,7 +286,7 @@ public class GraphsForTests
 
 	public static final GraphTestBundle< TestVertex, TestEdge > singleVertexPoolObjects()
 	{
-		final GraphTestBundle< TestVertex, TestEdge > bundle = new GraphTestBundle< TestVertex, TestEdge >();
+		final GraphTestBundle< TestVertex, TestEdge > bundle = new GraphTestBundle<>();
 
 		final TestGraph graph = new TestGraph();
 		bundle.graph = graph;
@@ -302,13 +302,13 @@ public class GraphsForTests
 
 	public static final GraphTestBundle< ObjectVertex< Integer >, ObjectEdge< Integer >> singleVertexStdObjects()
 	{
-		final GraphTestBundle< ObjectVertex< Integer >, ObjectEdge< Integer >> bundle = new GraphTestBundle< ObjectVertex< Integer >, ObjectEdge< Integer > >();
+		final GraphTestBundle< ObjectVertex< Integer >, ObjectEdge< Integer > > bundle = new GraphTestBundle<>();
 
-		final ObjectGraph< Integer > graph = new ObjectGraph< Integer >();
+		final ObjectGraph< Integer > graph = new ObjectGraph<>();
 		bundle.graph = graph;
 
 		final ObjectVertex< Integer > A = graph.addVertex().init( 1 );
-		bundle.vertices = new ArrayList< ObjectVertex< Integer > >( 1 );
+		bundle.vertices = new ArrayList<>( 1 );
 		bundle.vertices.add( A );
 
 		bundle.edges = Collections.emptyList();
@@ -318,7 +318,7 @@ public class GraphsForTests
 
 	public static final GraphTestBundle< TestVertex, TestEdge > singleEdgePoolObjects()
 	{
-		final GraphTestBundle< TestVertex, TestEdge > bundle = new GraphTestBundle< TestVertex, TestEdge >();
+		final GraphTestBundle< TestVertex, TestEdge > bundle = new GraphTestBundle<>();
 
 		final TestGraph graph = new TestGraph();
 		bundle.graph = graph;
@@ -336,19 +336,19 @@ public class GraphsForTests
 
 	public static final GraphTestBundle< ObjectVertex< Integer >, ObjectEdge< Integer >> singleEdgeStdObjects()
 	{
-		final GraphTestBundle< ObjectVertex< Integer >, ObjectEdge< Integer >> bundle = new GraphTestBundle< ObjectVertex< Integer >, ObjectEdge< Integer > >();
+		final GraphTestBundle< ObjectVertex< Integer >, ObjectEdge< Integer > > bundle = new GraphTestBundle<>();
 
-		final ObjectGraph< Integer > graph = new ObjectGraph< Integer >();
+		final ObjectGraph< Integer > graph = new ObjectGraph<>();
 		bundle.graph = graph;
 
 		final ObjectVertex< Integer > A = graph.addVertex().init( 1 );
 		final ObjectVertex< Integer > B = graph.addVertex().init( 2 );
-		bundle.vertices = new ArrayList< ObjectVertex< Integer > >( 2 );
+		bundle.vertices = new ArrayList<>( 2 );
 		bundle.vertices.add( A );
 		bundle.vertices.add( B );
 
 		final ObjectEdge< Integer > eAB = graph.addEdge( A, B );
-		bundle.edges = new ArrayList< ObjectEdge< Integer > >( 1 );
+		bundle.edges = new ArrayList<>( 1 );
 		bundle.edges.add( eAB );
 
 		bundle.name = "Single edge standard objects";
@@ -357,7 +357,7 @@ public class GraphsForTests
 
 	public static final GraphTestBundle< TestVertex, TestEdge > forkPoolObjects()
 	{
-		final GraphTestBundle< TestVertex, TestEdge > bundle = new GraphTestBundle< TestVertex, TestEdge >();
+		final GraphTestBundle< TestVertex, TestEdge > bundle = new GraphTestBundle<>();
 
 		final TestGraph graph = new TestGraph();
 		bundle.graph = graph;
@@ -377,7 +377,7 @@ public class GraphsForTests
 
 	public static final GraphTestBundle< TestVertex, TestEdge > diamondPoolObjects()
 	{
-		final GraphTestBundle< TestVertex, TestEdge > bundle = new GraphTestBundle< TestVertex, TestEdge >();
+		final GraphTestBundle< TestVertex, TestEdge > bundle = new GraphTestBundle<>();
 
 		final TestGraph graph = new TestGraph();
 		bundle.graph = graph;
@@ -401,7 +401,7 @@ public class GraphsForTests
 	@SuppressWarnings( "unchecked" )
 	public static final GraphTestBundle< ObjectVertex< Integer >, ObjectEdge< Integer >> diamondStdObjects()
 	{
-		final GraphTestBundle< ObjectVertex< Integer >, ObjectEdge< Integer >> bundle = new GraphTestBundle< ObjectVertex< Integer >, ObjectEdge< Integer >>();
+		final GraphTestBundle< ObjectVertex< Integer >, ObjectEdge< Integer > > bundle = new GraphTestBundle<>();
 
 		final ObjectGraph< Integer > graph = new ObjectGraph<>();
 		bundle.graph = graph;
@@ -424,22 +424,22 @@ public class GraphsForTests
 
 	public static final GraphTestBundle< ObjectVertex< Integer >, ObjectEdge< Integer >> forkStdObjects()
 	{
-		final GraphTestBundle< ObjectVertex< Integer >, ObjectEdge< Integer >> bundle = new GraphTestBundle< ObjectVertex< Integer >, ObjectEdge< Integer > >();
+		final GraphTestBundle< ObjectVertex< Integer >, ObjectEdge< Integer > > bundle = new GraphTestBundle<>();
 
-		final ObjectGraph< Integer > graph = new ObjectGraph< Integer >();
+		final ObjectGraph< Integer > graph = new ObjectGraph<>();
 		bundle.graph = graph;
 
 		final ObjectVertex< Integer > A = graph.addVertex().init( 1 );
 		final ObjectVertex< Integer > B = graph.addVertex().init( 2 );
 		final ObjectVertex< Integer > C = graph.addVertex().init( 3 );
-		bundle.vertices = new ArrayList< ObjectVertex< Integer > >( 3 );
+		bundle.vertices = new ArrayList<>( 3 );
 		bundle.vertices.add( A );
 		bundle.vertices.add( B );
 		bundle.vertices.add( C );
 
 		final ObjectEdge< Integer > eAB = graph.addEdge( A, B );
 		final ObjectEdge< Integer > eAC = graph.addEdge( A, C );
-		bundle.edges = new ArrayList< ObjectEdge< Integer > >( 2 );
+		bundle.edges = new ArrayList<>( 2 );
 		bundle.edges.add( eAB );
 		bundle.edges.add( eAC );
 

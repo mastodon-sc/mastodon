@@ -5,6 +5,7 @@ import net.trackmate.graph.Edge;
 import net.trackmate.graph.Graph;
 import net.trackmate.graph.Vertex;
 import net.trackmate.graph.algorithm.traversal.BreadthFirstSearch;
+import net.trackmate.graph.algorithm.traversal.GraphSearch.SearchDirection;
 import net.trackmate.graph.algorithm.traversal.SearchListener;
 
 /**
@@ -20,20 +21,20 @@ import net.trackmate.graph.algorithm.traversal.SearchListener;
  */
 public class ShortestPath< V extends Vertex< E >, E extends Edge< V > > extends AbstractGraphAlgorithm< V, E >
 {
-	private final boolean directed;
+	private final SearchDirection directivity;
 
 	/**
 	 * Creates a new shortest path searcher.
 	 *
 	 * @param graph
 	 *            the graph to traverse.
-	 * @param directed
+	 * @param directivity
 	 *            whether the search takes into account the direction of edges.
 	 */
-	public ShortestPath( final Graph< V, E > graph, final boolean directed )
+	public ShortestPath( final Graph< V, E > graph, final SearchDirection directivity )
 	{
 		super( graph );
-		this.directed = directed;
+		this.directivity = directivity;
 	}
 
 	/**
@@ -52,7 +53,7 @@ public class ShortestPath< V extends Vertex< E >, E extends Edge< V > > extends 
 	 */
 	public RefList< V > findPath( final V from, final V to )
 	{
-		final BreadthFirstSearch< V, E > search = new BreadthFirstSearch< V, E >( graph, directed );
+		final BreadthFirstSearch< V, E > search = new BreadthFirstSearch<>( graph, directivity );
 		final VertexFinderListener vfl = new VertexFinderListener( to );
 		search.setTraversalListener( vfl );
 		search.start( from );

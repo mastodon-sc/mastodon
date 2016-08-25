@@ -23,16 +23,16 @@ public class DepthFirstSearch< V extends Vertex< E >, E extends Edge< V > > exte
 {
 	private static final int NO_ENTRY_VALUE = -1;
 
-	protected final boolean directed;
+	protected final SearchDirection directivity;
 
 	protected final RefIntMap< V > entryTime;
 
 	protected int time;
 
-	public DepthFirstSearch( final ReadOnlyGraph< V, E > graph, final boolean directed )
+	public DepthFirstSearch( final ReadOnlyGraph< V, E > graph, final SearchDirection directivity )
 	{
 		super( graph );
-		this.directed = directed;
+		this.directivity = directivity;
 		this.entryTime = createVertexIntMap( NO_ENTRY_VALUE );
 	}
 
@@ -63,7 +63,9 @@ public class DepthFirstSearch< V extends Vertex< E >, E extends Edge< V > > exte
 		final RefList< V > targets;
 		final RefList< E > targetEdges;
 		V target = vertexRef();
-		if ( directed )
+		switch ( directivity )
+		{
+		case DIRECTED:
 		{
 			final Edges< E > edges = vertex.outgoingEdges();
 			targets =  createVertexList( edges.size() );
@@ -74,8 +76,23 @@ public class DepthFirstSearch< V extends Vertex< E >, E extends Edge< V > > exte
 				targets.add( target );
 				targetEdges.add( e );
 			}
+			break;
 		}
-		else
+		case REVERSED:
+		{
+			final Edges< E > edges = vertex.incomingEdges();
+			targets = createVertexList( edges.size() );
+			targetEdges = createEdgeList( edges.size() );
+			for ( final E e : edges )
+			{
+				target = e.getSource( target );
+				targets.add( target );
+				targetEdges.add( e );
+			}
+			break;
+		}
+		case UNDIRECTED:
+		default:
 		{
 			final Edges< E > edges = vertex.edges();
 			targets =  createVertexList( edges.size() );
@@ -86,6 +103,8 @@ public class DepthFirstSearch< V extends Vertex< E >, E extends Edge< V > > exte
 				targets.add( target );
 				targetEdges.add( e );
 			}
+			break;
+		}
 		}
 
 		/*
@@ -114,7 +133,9 @@ public class DepthFirstSearch< V extends Vertex< E >, E extends Edge< V > > exte
 					searchListener.processEdge( edge, vertex, target, this );
 				visit( target );
 			}
-			else if ( null != searchListener && ( directed || ( !processed.contains( target ) && !parents.get( vertex ).equals( target ) ) ) )
+			else if ( null != searchListener &&
+					( directivity != SearchDirection.UNDIRECTED || 
+							( !processed.contains( target ) && !parents.get( vertex ).equals( target ) ) ) )
 			{
 				searchListener.processEdge( edge, vertex, target, this );
 			}

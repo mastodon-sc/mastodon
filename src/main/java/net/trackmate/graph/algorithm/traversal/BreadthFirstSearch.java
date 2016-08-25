@@ -27,9 +27,9 @@ public class BreadthFirstSearch< V extends Vertex< E >, E extends Edge< V > > ex
 
 	protected final RefIntMap< V > depths;
 
-	private final boolean directed;
+	private final SearchDirection directed;
 
-	public BreadthFirstSearch( final ReadOnlyGraph< V, E > graph, final boolean directed )
+	public BreadthFirstSearch( final ReadOnlyGraph< V, E > graph, final SearchDirection directed )
 	{
 		super( graph );
 		this.directed = directed;
@@ -71,14 +71,22 @@ public class BreadthFirstSearch< V extends Vertex< E >, E extends Edge< V > > ex
 			processed.add( vertex );
 
 			final Edges< E > edges;
-			if ( directed )
+			switch ( directed )
 			{
+			case DIRECTED:
 				edges = vertex.outgoingEdges();
-			}
-			else
-			{
+				break;
+
+			case REVERSED:
+				edges = vertex.incomingEdges();
+				break;
+
+			case UNDIRECTED:
+			default:
 				edges = vertex.edges();
+				break;
 			}
+
 			V target = vertexRef();
 			for ( final E edge : edges )
 			{
@@ -89,7 +97,9 @@ public class BreadthFirstSearch< V extends Vertex< E >, E extends Edge< V > > ex
 					parents.put( target, vertex );
 					depths.put( target, level + 1 );
 				}
-				if ( null != searchListener && ( directed || !processed.contains( target ) ) )
+				if ( null != searchListener && 
+						( directed != SearchDirection.UNDIRECTED || 
+								!processed.contains( target ) ) )
 				{
 					searchListener.processEdge( edge, vertex, target, this );
 				}

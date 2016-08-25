@@ -15,6 +15,7 @@ import net.trackmate.graph.GraphChangeNotifier;
 import net.trackmate.graph.ListenableGraph;
 import net.trackmate.graph.Vertex;
 import net.trackmate.graph.algorithm.traversal.DepthFirstSearch;
+import net.trackmate.graph.algorithm.traversal.GraphSearch.SearchDirection;
 import net.trackmate.graph.algorithm.traversal.SearchListener;
 import net.trackmate.revised.ui.selection.Selection;
 import net.trackmate.undo.UndoPointMarker;
@@ -121,7 +122,7 @@ public class SelectionActions< V extends Vertex< E >, E extends Edge< V > >
 			// Prepare the iterator.
 			final RefList< V > vList = CollectionUtils.createRefList( graph.vertices() );
 			final RefList< E > eList = CollectionUtils.createRefList( graph.edges() );
-			final DepthFirstSearch< V, E > search = new DepthFirstSearch<>( graph, true );
+			final DepthFirstSearch< V, E > search = new DepthFirstSearch<>( graph, SearchDirection.DIRECTED );
 			search.setTraversalListener( new SearchListener< V, E, DepthFirstSearch< V, E > >()
 			{
 
@@ -179,7 +180,7 @@ public class SelectionActions< V extends Vertex< E >, E extends Edge< V > >
 			// Prepare the iterator.
 			final RefList< V > vList = CollectionUtils.createRefList( graph.vertices() );
 			final RefList< E > eList = CollectionUtils.createRefList( graph.edges() );
-			final DepthFirstSearch< V, E > search = new DepthFirstSearch<>( graph, false );
+			final DepthFirstSearch< V, E > search = new DepthFirstSearch<>( graph, SearchDirection.UNDIRECTED );
 			search.setTraversalListener( new SearchListener< V, E, DepthFirstSearch< V, E > >()
 			{
 
