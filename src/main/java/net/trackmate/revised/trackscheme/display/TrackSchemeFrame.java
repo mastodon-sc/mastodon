@@ -13,6 +13,12 @@ import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 import javax.swing.WindowConstants;
 
+import org.scijava.ui.behaviour.MouseAndKeyHandler;
+import org.scijava.ui.behaviour.io.InputTriggerConfig;
+
+import bdv.BehaviourTransformEventHandler;
+import bdv.viewer.InputActionBindings;
+import bdv.viewer.TriggerBehaviourBindings;
 import net.imglib2.ui.TransformEventHandler;
 import net.imglib2.ui.util.GuiUtil;
 import net.trackmate.revised.context.ContextChooser;
@@ -21,18 +27,12 @@ import net.trackmate.revised.trackscheme.TrackSchemeGraph;
 import net.trackmate.revised.trackscheme.TrackSchemeHighlight;
 import net.trackmate.revised.trackscheme.TrackSchemeNavigation;
 import net.trackmate.revised.trackscheme.TrackSchemeSelection;
+import net.trackmate.revised.trackscheme.display.TrackSchemeNavigator.NavigatorEtiquette;
 import net.trackmate.revised.ui.context.ContextChooserPanel;
 import net.trackmate.revised.ui.grouping.GroupHandle;
 import net.trackmate.revised.ui.grouping.GroupLocksPanel;
 import net.trackmate.revised.ui.util.InvokeOnEDT;
 import net.trackmate.undo.UndoPointMarker;
-
-import org.scijava.ui.behaviour.MouseAndKeyHandler;
-import org.scijava.ui.behaviour.io.InputTriggerConfig;
-
-import bdv.BehaviourTransformEventHandler;
-import bdv.viewer.InputActionBindings;
-import bdv.viewer.TriggerBehaviourBindings;
 
 public class TrackSchemeFrame extends JFrame
 {
@@ -126,8 +126,8 @@ public class TrackSchemeFrame extends JFrame
 			( ( BehaviourTransformEventHandler< ? > ) tfHandler ).install( triggerbindings );
 
 		final InputTriggerConfig inputConf = getKeyConfig( optional );
-		trackschemePanel.getNavigator().installActionBindings( keybindings, inputConf );
 		trackschemePanel.getNavigator().installBehaviourBindings( triggerbindings, inputConf );
+		trackschemePanel.getNavigator().installActionBindings( keybindings, inputConf, NavigatorEtiquette.FINDER_LIKE );
 
 		editFocusVertex = new EditFocusVertexBehaviour( focus, graph, undoPointMarker, trackschemePanel.getDisplay() );
 		trackschemePanel.getDisplay().addTransformListener( editFocusVertex );

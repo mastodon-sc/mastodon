@@ -11,6 +11,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollBar;
 import javax.swing.UIManager;
 
+import bdv.viewer.TimePointListener;
 import net.imglib2.ui.InteractiveDisplayCanvasComponent;
 import net.imglib2.ui.OverlayRenderer;
 import net.imglib2.ui.PainterThread;
@@ -41,7 +42,6 @@ import net.trackmate.revised.ui.selection.HighlightListener;
 import net.trackmate.revised.ui.selection.NavigationEtiquette;
 import net.trackmate.revised.ui.selection.NavigationListener;
 import net.trackmate.revised.ui.selection.SelectionListener;
-import bdv.viewer.TimePointListener;
 
 public class TrackSchemePanel extends JPanel implements
 		TransformListener< ScreenTransform >,
@@ -215,8 +215,7 @@ public class TrackSchemePanel extends JPanel implements
 		display.addTransformListener( highlightHandler );
 
 		// TODO Let the user choose between the two selection/focus modes.
-		navigator = new TrackSchemeNavigatorFinderLike( display, graph, layout, graphOverlay, focus, navigation, selection );
-//		navigator = new TrackSchemeNavigator( display, graph, layout, graphOverlay, focus, navigation, selection );
+		navigator = new TrackSchemeNavigator( display, graph, layout, graphOverlay, focus, navigation, selection );
 		display.addTransformListener( navigator );
 
 		offsetHeaders = new OffsetHeaders();
