@@ -17,6 +17,15 @@ import gnu.trove.procedure.TIntProcedure;
 import gnu.trove.procedure.TObjectProcedure;
 import gnu.trove.set.TIntSet;
 
+/**
+ * A {@link TIntObjectMap} implemented as an {@link ArrayList} (where indices
+ * are keys). Assumes that keys are <em>&ge;0</em> and not arbitrarily large
+ *
+ * @param <V>
+ *            value type.
+ *
+ * @author Tobias Pietzsch &lt;tobias.pietzsch@gmail.com&gt;
+ */
 public class TIntObjectArrayMap< V > implements TIntObjectMap< V >
 {
 
@@ -47,8 +56,6 @@ public class TIntObjectArrayMap< V > implements TIntObjectMap< V >
 	/*
 	 * METHODS
 	 */
-
-
 
 	@Override
 	public int getNoEntryKey()
