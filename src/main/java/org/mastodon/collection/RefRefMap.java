@@ -7,21 +7,24 @@ package org.mastodon.collection;
  *
  * @param <K>
  *            key type.
- * @param <L>
+ * @param <V>
  *            value type.
  *
  * @author Jean-Yves Tinevez
  */
-public interface RefRefMap< K, L > extends RefObjectMap< K, L >
+public interface RefRefMap< K, V > extends RefObjectMap< K, V >
 {
-	public L createValueRef();
+	public V createValueRef();
 
-	public void releaseValueRef( final L obj );
+	public void releaseValueRef( final V obj );
 
-	public L put( K key, L value, L ref );
+	// TODO javadoc
+	public V put( K key, V value, V ref );
 
-	public L removeWithRef( Object key, L ref );
+	// TODO javadoc
+	public V removeWithRef( Object key, V ref );
 
-	public L get( Object key, L ref );
+	// TODO javadoc
+	public V get( Object key, V ref );
 
 }

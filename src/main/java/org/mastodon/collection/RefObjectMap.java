@@ -6,16 +6,16 @@ import java.util.Map;
  * Map-like interface for maps that map possibly reusable references to plain
  * objects.
  *
- * @param <O>
+ * @param <K>
  *            key type.
  * @param <V>
  *            value type.
  *
  * @author Jean-Yves Tinevez
  */
-public interface RefObjectMap< O, V > extends Map< O, V >
+public interface RefObjectMap< K, V > extends Map< K, V >
 {
-	public O createKeyRef();
+	public K createKeyRef();
 
-	public void releaseKeyRef( final O obj );
+	public void releaseKeyRef( final K obj );
 }

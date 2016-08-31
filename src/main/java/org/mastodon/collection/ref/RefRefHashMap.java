@@ -11,7 +11,7 @@ import org.mastodon.collection.RefRefMap;
 import gnu.trove.iterator.TIntIterator;
 import gnu.trove.map.hash.TIntIntHashMap;
 
-public class RefRefHashMap< K, L > implements RefRefMap< K, L >
+public class RefRefHashMap< K, V > implements RefRefMap< K, V >
 {
 	/**
 	 * Int value used to declare that the requested key is not in the map.
@@ -29,17 +29,17 @@ public class RefRefHashMap< K, L > implements RefRefMap< K, L >
 
 	private final RefPool< K > keyPool;
 
-	private final RefPool< L > valuePool;
+	private final RefPool< V > valuePool;
 
 	private final Class< K > keyType;
 
-	private final Class< L > valueType;
+	private final Class< V > valueType;
 
 	/*
 	 * CONSTRUCTORS
 	 */
 
-	public RefRefHashMap( final RefPool< K > keyPool, final RefPool< L > valuePool, final int initialCapacity, final float loadFactor )
+	public RefRefHashMap( final RefPool< K > keyPool, final RefPool< V > valuePool, final int initialCapacity, final float loadFactor )
 	{
 		this.indexmap = new TIntIntHashMap( initialCapacity, loadFactor, NO_ENTRY_KEY, NO_ENTRY_VALUE );
 		this.keyPool = keyPool;
@@ -48,12 +48,12 @@ public class RefRefHashMap< K, L > implements RefRefMap< K, L >
 		this.valueType = valuePool.getRefClass();
 	}
 
-	public RefRefHashMap( final RefPool< K > keyPool, final RefPool< L > valuePool, final int initialCapacity )
+	public RefRefHashMap( final RefPool< K > keyPool, final RefPool< V > valuePool, final int initialCapacity )
 	{
 		this( keyPool, valuePool, initialCapacity, 0.5f );
 	}
 
-	public RefRefHashMap( final RefPool< K > keyPool, final RefPool< L > valuePool )
+	public RefRefHashMap( final RefPool< K > keyPool, final RefPool< V > valuePool )
 	{
 		this( keyPool, valuePool, 10 );
 	}
@@ -83,26 +83,26 @@ public class RefRefHashMap< K, L > implements RefRefMap< K, L >
 	public boolean containsValue( final Object value )
 	{
 		if ( valueType.isInstance( value ) )
-			return indexmap.containsValue( valuePool.getId( ( L ) value ) );
+			return indexmap.containsValue( valuePool.getId( ( V ) value ) );
 		else
 			return false;
 	}
 
 	@Override
-	public Set< Entry< K, L > > entrySet()
+	public Set< Entry< K, V > > entrySet()
 	{
 		// TODO implement
 		throw new UnsupportedOperationException();
 	}
 
 	@Override
-	public L get( final Object key )
+	public V get( final Object key )
 	{
 		return get( key, valuePool.createRef() );
 	}
 
 	@Override
-	public L get( final Object key, final L ref )
+	public V get( final Object key, final V ref )
 	{
 		if ( keyType.isInstance( key ) )
 		{
@@ -123,11 +123,11 @@ public class RefRefHashMap< K, L > implements RefRefMap< K, L >
 	@Override
 	public Set< K > keySet()
 	{
-		return new RefSetImp< K >( keyPool, indexmap.keySet() );
+		return new RefSetImp<>( keyPool, indexmap.keySet() );
 	}
 
 	@Override
-	public L put( final K key, final L value, final L ref )
+	public V put( final K key, final V value, final V ref )
 	{
 		final int index = indexmap.put( keyPool.getId( key ), valuePool.getId( value ) );
 		if ( index != NO_ENTRY_VALUE )
@@ -137,20 +137,20 @@ public class RefRefHashMap< K, L > implements RefRefMap< K, L >
 	}
 
 	@Override
-	public L put( final K key, final L value )
+	public V put( final K key, final V value )
 	{
 		return put( key, value, valuePool.createRef() );
 	}
 
 	// TODO revise after implementing entrySet()
 	@Override
-	public void putAll( final Map< ? extends K, ? extends L > m )
+	public void putAll( final Map< ? extends K, ? extends V > m )
 	{
 		if ( m instanceof RefRefMap )
 		{
 			@SuppressWarnings( "unchecked" )
-			final RefRefMap< K, L > rm = ( RefRefMap< K, L > ) m;
-			final L ref = createValueRef();
+			final RefRefMap< K, V > rm = ( RefRefMap< K, V > ) m;
+			final V ref = createValueRef();
 			for ( final K key : rm.keySet() )
 			{
 				indexmap.put( keyPool.getId( key ), valuePool.getId( rm.get( key, ref ) ) );
@@ -167,7 +167,7 @@ public class RefRefHashMap< K, L > implements RefRefMap< K, L >
 	}
 
 	@Override
-	public L removeWithRef( final Object key, final L ref )
+	public V removeWithRef( final Object key, final V ref )
 	{
 		if ( keyType.isInstance( key ) )
 		{
@@ -180,7 +180,7 @@ public class RefRefHashMap< K, L > implements RefRefMap< K, L >
 	}
 
 	@Override
-	public L remove( final Object key )
+	public V remove( final Object key )
 	{
 		return removeWithRef( key, valuePool.createRef() );
 	}
@@ -192,7 +192,7 @@ public class RefRefHashMap< K, L > implements RefRefMap< K, L >
 	}
 
 	@Override
-	public Collection< L > values()
+	public Collection< V > values()
 	{
 		return new CollectionValuesView();
 	}
@@ -210,13 +210,13 @@ public class RefRefHashMap< K, L > implements RefRefMap< K, L >
 	}
 
 	@Override
-	public L createValueRef()
+	public V createValueRef()
 	{
 		return valuePool.createRef();
 	}
 
 	@Override
-	public void releaseValueRef( final L obj )
+	public void releaseValueRef( final V obj )
 	{
 		valuePool.releaseRef( obj );
 	}
@@ -226,13 +226,13 @@ public class RefRefHashMap< K, L > implements RefRefMap< K, L >
 	public String toString()
 	{
 		final StringBuilder sb = new StringBuilder();
-		final L ref = createValueRef();
+		final V ref = createValueRef();
 		final Iterator< K > it = keySet().iterator();
 		sb.append( "{ " );
 		while ( it.hasNext() )
 		{
 			final K key = it.next();
-			final L val = get( key, ref );
+			final V val = get( key, ref );
 			sb.append( key );
 			sb.append( '=' ).append( '"' );
 			sb.append( val );
@@ -250,17 +250,17 @@ public class RefRefHashMap< K, L > implements RefRefMap< K, L >
 	 * INNER CLASS
 	 */
 
-	private class CollectionValuesView implements Collection< L >
+	private class CollectionValuesView implements Collection< V >
 	{
 
 		@Override
-		public boolean add( final L e )
+		public boolean add( final V e )
 		{
 			throw new UnsupportedOperationException();
 		}
 
 		@Override
-		public boolean addAll( final Collection< ? extends L > c )
+		public boolean addAll( final Collection< ? extends V > c )
 		{
 			throw new UnsupportedOperationException();
 		}
@@ -298,11 +298,11 @@ public class RefRefHashMap< K, L > implements RefRefMap< K, L >
 		 * Unsafe iterator.
 		 */
 		@Override
-		public Iterator< L > iterator()
+		public Iterator< V > iterator()
 		{
 			final TIntIterator it = indexmap.valueCollection().iterator();
-			final L ref = createValueRef();
-			return new Iterator< L >()
+			final V ref = createValueRef();
+			return new Iterator< V >()
 			{
 				@Override
 				public boolean hasNext()
@@ -311,7 +311,7 @@ public class RefRefHashMap< K, L > implements RefRefMap< K, L >
 				}
 
 				@Override
-				public L next()
+				public V next()
 				{
 					final int index = it.next();
 					return valuePool.getObject( index, ref );
@@ -332,7 +332,7 @@ public class RefRefHashMap< K, L > implements RefRefMap< K, L >
 			if ( valueType.isInstance( value ) )
 			{
 				return indexmap.valueCollection().remove(
-						valuePool.getId( ( L ) value ) );
+						valuePool.getId( ( V ) value ) );
 			}
 			else
 			{
@@ -355,7 +355,7 @@ public class RefRefHashMap< K, L > implements RefRefMap< K, L >
 		public boolean retainAll( final Collection< ? > collection )
 		{
 			boolean changed = false;
-			final Iterator< L > it = iterator();
+			final Iterator< V > it = iterator();
 			while ( it.hasNext() )
 			{
 				if ( !collection.contains( it.next() ) )
