@@ -10,7 +10,6 @@ import org.mastodon.collection.RefDeque;
 import gnu.trove.deque.TIntArrayDeque;
 import gnu.trove.iterator.TIntIterator;
 
-// TODO rename RefArrayDeque
 /**
  * A {@link RefDeque} implementation for {@link Ref} objects, based on a Trove
  * {@link TIntArrayDeque}.

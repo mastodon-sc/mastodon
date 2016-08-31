@@ -487,7 +487,7 @@ public class RefArrayList< O > implements IntBackedRefCollection< O >, RefList< 
 	@Override
 	public List< O > subList( final int fromIndex, final int toIndex )
 	{
-		return new RefArrayList< O >( this, ( TIntArrayList ) indices.subList( fromIndex, toIndex ) );
+		return new RefArrayList<>( this, ( TIntArrayList ) indices.subList( fromIndex, toIndex ) );
 	}
 
 	@Override

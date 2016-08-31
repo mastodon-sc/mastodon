@@ -92,5 +92,4 @@ public interface RefStack< O > extends RefCollection< O >
 	 *         on the stack.
 	 */
 	public int search( final Object obj );
-
 }

@@ -90,7 +90,7 @@ public class RefDoubleHashMap< K > implements RefDoubleMap< K >
 	@Override
 	public Set< K > keySet()
 	{
-		return new RefSetImp< K >( pool, indexmap.keySet() );
+		return new RefSetImp<>( pool, indexmap.keySet() );
 	}
 
 	@Override

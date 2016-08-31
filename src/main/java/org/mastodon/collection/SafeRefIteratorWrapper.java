@@ -14,12 +14,11 @@ import org.mastodon.Ref;
  *
  * @author Tobias Pietzsch &lt;tobias.pietzsch@gmail.com&gt;
  */
-// TODO: move to collection package
 public class SafeRefIteratorWrapper< O extends Ref< O > > implements Iterator< O >
 {
 	private final Iterator< O > iterator;
 
-	private final RefCollection<O> collection;
+	private final RefCollection< O > collection;
 
 	public SafeRefIteratorWrapper( final Iterator< O > iterator, final RefCollection< O > collection )
 	{

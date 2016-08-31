@@ -13,7 +13,6 @@ import org.mastodon.pool.PoolObject;
  * @param <O>
  *            recursive type of the {@link PoolObject}s stored in this stack.
  */
-// TODO rename RefArrayStack
 public class RefArrayStack< O > extends RefArrayList< O > implements RefStack< O >
 {
 

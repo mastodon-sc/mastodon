@@ -180,6 +180,7 @@ public class IntRefArrayMap< V > implements IntRefMap< V >
 		return keyToIndexMap.size() > key && keyToIndexMap.get( key ) >= 0;
 	}
 
+	@SuppressWarnings( "unchecked" )
 	@Override
 	public boolean containsValue( final Object value )
 	{

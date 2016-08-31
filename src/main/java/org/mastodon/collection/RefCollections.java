@@ -33,26 +33,26 @@ public class RefCollections
 
 	public static < O > RefSet< O > wrap( final Set< O > set )
 	{
-		return new RefSetWrapper< O >( set );
+		return new RefSetWrapper<>( set );
 	}
 
 	public static < O > RefList< O > wrap( final List< O > set )
 	{
-		return new RefListWrapper< O >( set );
+		return new RefListWrapper<>( set );
 	}
 
 	public static < O > RefDeque< O > wrap( final Deque< O > set )
 	{
-		return new RefDequeWrapper< O >( set );
+		return new RefDequeWrapper<>( set );
 	}
 
 	public static < O > RefStack< O > wrapAsStack( final Deque< O > set )
 	{
-		return new RefStackWrapper< O >( set );
+		return new RefStackWrapper<>( set );
 	}
 
 	public static < K, O > RefRefMap< K, O > wrap( final Map< K, O > map )
 	{
-		return new RefMapWrapper< K, O >( map );
+		return new RefMapWrapper<>( map );
 	}
 }

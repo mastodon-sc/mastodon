@@ -23,7 +23,6 @@ import gnu.trove.procedure.TObjectProcedure;
  */
 public interface RefDoubleMap< K > extends TObjectDoubleMap< K >
 {
-
 	/**
 	 * Creates an object reference that can be used for processing with this
 	 * map. Depending on concrete implementation, the object return can be
@@ -83,5 +82,4 @@ public interface RefDoubleMap< K > extends TObjectDoubleMap< K >
 	 * @return {@code true} if the map was modified.
 	 */
 	public boolean retainEntries( TObjectDoubleProcedure< ? super K > procedure, K ref );
-
 }

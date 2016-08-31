@@ -23,7 +23,6 @@ import gnu.trove.procedure.TObjectProcedure;
  */
 public interface RefIntMap< K > extends TObjectIntMap< K >
 {
-
 	/**
 	 * Creates an object reference that can be used for processing with this
 	 * map. Depending on concrete implementation, the object return can be
@@ -83,5 +82,4 @@ public interface RefIntMap< K > extends TObjectIntMap< K >
 	 * @return {@code true} if the map was modified.
 	 */
 	public boolean retainEntries( TObjectIntProcedure< ? super K > procedure, K ref );
-
 }
