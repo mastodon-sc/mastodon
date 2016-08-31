@@ -20,15 +20,20 @@ import org.mastodon.collection.RefRefMap;
 import org.mastodon.collection.RefSet;
 import org.mastodon.collection.RefStack;
 import org.mastodon.collection.wrap.IntRefMapWrapper;
+import org.mastodon.collection.wrap.RefCollectionWrapper;
 import org.mastodon.collection.wrap.RefDoubleMapWrapper;
 import org.mastodon.collection.wrap.RefIntMapWrapper;
-import org.mastodon.graph.ReadOnlyGraph;
+import org.mastodon.pool.Pool;
 
 /**
- * Static utility methods to create {@link RefCollection}s of vertices and edges
- * of a {@link ReadOnlyGraph}.
+ * Static utility methods to create collections for objects of a specified
+ * {@link RefCollection}.
  * <p>
- * If the graph implements interfaces for providing specific
+ * This specified {@link RefCollection} is for example the collection of
+ * vertices of a graph. Depending on the implementation, this vertex collection
+ * could be a {@link Pool} or a wrapped standard {@link java.util.Collection} (see {@link RefCollectionWrapper} etc).
+ * <p>
+ * If specified {@link RefCollection} implements interfaces for providing specific
  * {@link RefCollection} implementations (e.g., {@link ListCreator}) these
  * specific implementations are used. Otherwise, standard {@code java.util}
  * {@link Collections} are created and wrapped as {@link RefCollection}.

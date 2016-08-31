@@ -28,22 +28,10 @@ import org.mastodon.collection.util.CollectionUtils.CollectionCreator;
  * {@code iterator(),} {@code createRef()}, and {@code releaseRef()} methods are
  * guaranteed to be implemented.
  * <p>
- * Other {@link Collection} methods that are unsuited for
- * pools throw an {@link UnsupportedOperationException}:
- * <ul>
- * <li>{@link #contains(Object)}
- * <li>{@link #containsAll(Collection)}
- * <li>{@link #toArray()}
- * <li>{@link #toArray(Object[])}
- * <li>{@link #add(Object)}
- * <li>{@link #addAll(Collection)}
- * <li>{@link #remove(Object)}
- * <li>{@link #removeAll(Collection)}
- * <li>{@link #retainAll(Collection)}
- * <li>{@link #clear()}
- * </ul>
- * If these methods are needed, it is probably best to create an adequate
- * collection from the pool using the <i>create*</i> methods.
+ * The remaining {@link Collection} methods are unsuited for pools and throw an
+ * {@link UnsupportedOperationException}. If these methods are needed, it is
+ * probably best to create an adequate collection from the pool using the
+ * <i>create*</i> methods.
  *
  * @param <O>
  *            the type of the pool object used in the wrapped {@link RefPool}.
