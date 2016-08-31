@@ -19,7 +19,7 @@ import gnu.trove.map.TIntObjectArrayMap;
  * {@code K} key is used. For this to work,
  * <ul>
  * <li>the hashcodes need to be unique (two objects have same hashcode if and
- * only if they are {@link Object#equals(Object) equal}.
+ * only if they are {@link Object#equals(Object) equal}).
  * <li>the hashcodes need to be small positive integers (such that the backing
  * array does not get large).
  * </ul>
@@ -28,7 +28,9 @@ import gnu.trove.map.TIntObjectArrayMap;
  * {@link AbstractModel}.
  *
  * @param <K>
+ *            key type.
  * @param <V>
+ *            value type.
  *
  * @author Tobias Pietzsch &lt;tobias.pietzsch@gmail.com&gt;
  */

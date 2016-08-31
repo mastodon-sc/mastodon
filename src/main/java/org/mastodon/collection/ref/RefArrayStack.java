@@ -5,7 +5,7 @@ import org.mastodon.collection.RefStack;
 import org.mastodon.pool.PoolObject;
 
 /**
- * A stack implementation for {@link PoolObject}s entirely based on a
+ * A {@link RefStack} implementation for {@link Ref}s entirely based on a
  * {@link RefArrayList}.
  *
  * @author Jean-Yves Tinevez

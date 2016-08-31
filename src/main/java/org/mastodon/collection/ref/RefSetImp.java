@@ -10,6 +10,15 @@ import gnu.trove.iterator.TIntIterator;
 import gnu.trove.set.TIntSet;
 import gnu.trove.set.hash.TIntHashSet;
 
+/**
+ * A {@link RefSet} implementation for {@link Ref} objects, based on a Trove
+ * {@link TIntSet} (a {@link TIntHashSet} if not specified otherwise).
+ *
+ * @param <O>
+ *            the type of elements maintained by this set.
+ *
+ * @author Tobias Pietzsch &lt;tobias.pietzsch@gmail.com&gt;
+ */
 public class RefSetImp< O > implements IntBackedRefCollection< O >, RefSet< O >
 {
 	private final TIntSet indices;

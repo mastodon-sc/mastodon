@@ -3,6 +3,7 @@ package org.mastodon.collection.ref;
 import java.util.Collection;
 import java.util.Iterator;
 
+import org.mastodon.Ref;
 import org.mastodon.RefPool;
 import org.mastodon.collection.RefDeque;
 
@@ -10,6 +11,15 @@ import gnu.trove.deque.TIntArrayDeque;
 import gnu.trove.iterator.TIntIterator;
 
 // TODO rename RefArrayDeque
+/**
+ * A {@link RefDeque} implementation for {@link Ref} objects, based on a Trove
+ * {@link TIntArrayDeque}.
+ *
+ * @param <O>
+ *            the type of elements maintained by this deque.
+ *
+ * @author Tobias Pietzsch &lt;tobias.pietzsch@gmail.com&gt;
+ */
 public class RefArrayDeque< O > implements IntBackedRefCollection< O >, RefDeque< O >
 {
 	private final RefPool< O > pool;

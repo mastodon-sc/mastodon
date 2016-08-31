@@ -4,7 +4,7 @@ import org.mastodon.pool.Pool;
 import org.mastodon.pool.PoolObject;
 
 /**
- * A pool of object (usually reusable {@link Ref} objects). It provides methods
+ * A pool of objects (usually reusable {@link Ref} objects). It provides methods
  * to create object references and a bidirectional mapping between integer IDs
  * and objects.
  * <p>

@@ -9,6 +9,7 @@ import java.util.ListIterator;
 import java.util.NoSuchElementException;
 import java.util.Random;
 
+import org.mastodon.Ref;
 import org.mastodon.RefPool;
 import org.mastodon.collection.RefList;
 
@@ -16,6 +17,15 @@ import gnu.trove.TIntCollection;
 import gnu.trove.iterator.TIntIterator;
 import gnu.trove.list.array.TIntArrayList;
 
+/**
+ * A {@link RefList} implementation for {@link Ref} objects, based on a Trove
+ * {@link TIntArrayList}.
+ *
+ * @param <O>
+ *            the type of elements maintained by this list.
+ *
+ * @author Tobias Pietzsch &lt;tobias.pietzsch@gmail.com&gt;
+ */
 public class RefArrayList< O > implements IntBackedRefCollection< O >, RefList< O >
 {
 	private final TIntArrayList indices;
