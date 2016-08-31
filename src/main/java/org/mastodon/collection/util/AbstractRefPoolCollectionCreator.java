@@ -178,13 +178,13 @@ public abstract class AbstractRefPoolCollectionCreator< O, P extends RefPool< O 
 	@Override
 	public RefSetImp< O > createRefSet()
 	{
-		return new RefSetImp< O >( pool );
+		return new RefSetImp<>( pool );
 	}
 
 	@Override
 	public RefSetImp< O > createRefSet( final int initialCapacity )
 	{
-		return new RefSetImp< O >( pool, initialCapacity );
+		return new RefSetImp<>( pool, initialCapacity );
 	}
 
 	/*
@@ -194,13 +194,13 @@ public abstract class AbstractRefPoolCollectionCreator< O, P extends RefPool< O 
 	@Override
 	public RefArrayList< O > createRefList()
 	{
-		return new RefArrayList< O >( pool );
+		return new RefArrayList<>( pool );
 	}
 
 	@Override
 	public RefArrayList< O > createRefList( final int initialCapacity )
 	{
-		return new RefArrayList< O >( pool, initialCapacity );
+		return new RefArrayList<>( pool, initialCapacity );
 	}
 
 	/*
@@ -210,13 +210,13 @@ public abstract class AbstractRefPoolCollectionCreator< O, P extends RefPool< O 
 	@Override
 	public RefArrayDeque< O > createRefDeque()
 	{
-		return new RefArrayDeque< O >( pool );
+		return new RefArrayDeque<>( pool );
 	}
 
 	@Override
 	public RefArrayDeque< O > createRefDeque( final int initialCapacity )
 	{
-		return new RefArrayDeque< O >( pool, initialCapacity );
+		return new RefArrayDeque<>( pool, initialCapacity );
 	}
 
 	/*
@@ -226,13 +226,13 @@ public abstract class AbstractRefPoolCollectionCreator< O, P extends RefPool< O 
 	@Override
 	public RefArrayStack< O > createRefStack()
 	{
-		return new RefArrayStack< O >( pool );
+		return new RefArrayStack<>( pool );
 	}
 
 	@Override
 	public RefArrayStack< O > createRefStack( final int initialCapacity )
 	{
-		return new RefArrayStack< O >( pool, initialCapacity );
+		return new RefArrayStack<>( pool, initialCapacity );
 	}
 
 	/*
@@ -266,36 +266,36 @@ public abstract class AbstractRefPoolCollectionCreator< O, P extends RefPool< O 
 	@Override
 	public RefIntHashMap< O > createRefIntMap(final int noEntryValue )
 	{
-		return new RefIntHashMap< O >( pool, noEntryValue );
+		return new RefIntHashMap<>( pool, noEntryValue );
 	}
 
 	@Override
 	public RefIntHashMap< O > createRefIntMap( final int noEntryValue, final int initialCapacity )
 	{
-		return new RefIntHashMap< O >( pool, noEntryValue, initialCapacity );
+		return new RefIntHashMap<>( pool, noEntryValue, initialCapacity );
 	}
 
 	@Override
 	public IntRefHashMap< O > createIntRefMap( final int noEntryKey )
 	{
-		return new IntRefHashMap< O >( pool, noEntryKey );
+		return new IntRefHashMap<>( pool, noEntryKey );
 	}
 
 	@Override
 	public IntRefHashMap< O > createIntRefMap( final int noEntryKey, final int initialCapacity )
 	{
-		return new IntRefHashMap< O >( pool, noEntryKey, initialCapacity );
+		return new IntRefHashMap<>( pool, noEntryKey, initialCapacity );
 	}
 
 	@Override
 	public RefDoubleHashMap< O > createRefDoubleMap( final double noEntryValue )
 	{
-		return new RefDoubleHashMap< >( pool, noEntryValue );
+		return new RefDoubleHashMap<>( pool, noEntryValue );
 	}
 
 	@Override
 	public RefDoubleHashMap< O > createRefDoubleMap( final double noEntryValue, final int initialCapacity )
 	{
-		return new RefDoubleHashMap< >( pool, noEntryValue, initialCapacity );
+		return new RefDoubleHashMap<>( pool, noEntryValue, initialCapacity );
 	}
 }
