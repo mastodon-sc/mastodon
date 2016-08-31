@@ -1,0 +1,8 @@
+package org.mastodon.spatial;
+
+public interface VertexPositionChangeProvider< V >
+{
+	public boolean addVertexPositionListener( final VertexPositionListener< V > listener );
+
+	public boolean removeVertexPositionListener( final VertexPositionListener< V > listener );
+}
