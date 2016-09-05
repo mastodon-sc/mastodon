@@ -12,7 +12,7 @@ import org.junit.Test;
 import org.mastodon.collection.RefSet;
 import org.mastodon.collection.ref.RefRefHashMap;
 import org.mastodon.collection.ref.RefSetImp;
-import org.mastodon.collection.util.CollectionUtils;
+import org.mastodon.collection.RefCollections;
 import org.mastodon.graph.TestEdge;
 import org.mastodon.graph.TestVertex;
 
@@ -93,7 +93,7 @@ public class RefRefHashMapTest extends RefRefHashMapAbstractTest
 	{
 		final Set< TestVertex > keySet = map.keySet();
 		assertTrue( "Set returned should be a PoolObjectSet.", keySet instanceof RefSetImp );
-		final RefSet< TestVertex > set = CollectionUtils.createRefSet( graph.vertices() );
+		final RefSet< TestVertex > set = RefCollections.createRefSet( graph.vertices() );
 		set.add( Bk );
 		set.add( Ck );
 		set.add( Dk );

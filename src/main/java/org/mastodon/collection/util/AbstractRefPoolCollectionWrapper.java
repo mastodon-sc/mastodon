@@ -1,39 +1,38 @@
 package org.mastodon.collection.util;
 
 import java.util.Collection;
+import java.util.Iterator;
 
 import org.mastodon.RefPool;
 import org.mastodon.collection.RefCollection;
+import org.mastodon.collection.RefCollections;
 import org.mastodon.collection.ref.RefPoolBackedRefCollection;
 
 /**
- * Base class for wrappers of {@link RefPool} that offer access to collections.
+ * Abstract base class for wrappers of {@link RefPool} as a
+ * {@link RefCollection}. This allows for querying the underlying pool using
+ * basic {@link Collection} methods. Only the {@code isEmpty(),} {@code size(),}
+ * {@code iterator()} methods are guaranteed to be implemented. The remaining
+ * {@link Collection} methods are unsuited for pools and throw
+ * {@link UnsupportedOperationException}.
  * <p>
- * This class wraps a {@link RefPool} and offers methods to generate various
- * collections based on the wrapped pool. It offers a bridge between the
- * {@link RefPool} framework and the Java {@link Collection} framework.
+ * Moreover, pools wrapped like this can be passed to {@link RefCollections}
+ * {@code .create...()} methods for creating specialized {@link RefCollection}s
+ * of objects in the pool.
  * <p>
- * This class implements the {@link RefCollection} interface itself, and
- * therefore allows for questing the underlying pool using the
- * {@link Collection} methods. Only the {@code isEmpty(),} {@code size(),}
- * {@code iterator(),} {@code createRef()}, and {@code releaseRef()} methods are
- * guaranteed to be implemented.
- * <p>
- * The remaining {@link Collection} methods are unsuited for pools and throw an
- * {@link UnsupportedOperationException}. If these methods are needed, it is
- * probably best to create an adequate collection from the pool using the
- * <i>create*</i> methods.
+ * Derived classes must implement the {@code size()} and {@code iterator()}
+ * methods.
  *
  * @param <O>
  *            the type of the pool object used in the wrapped {@link RefPool}.
  *
  * @author Tobias Pietzsch &lt;tobias.pietzsch@gmail.com&gt;
  */
-public abstract class AbstractRefPoolCollectionCreator< O, P extends RefPool< O > > implements RefPoolBackedRefCollection< O >
+public abstract class AbstractRefPoolCollectionWrapper< O, P extends RefPool< O > > implements RefPoolBackedRefCollection< O >
 {
 	protected final P pool;
 
-	public AbstractRefPoolCollectionCreator( final P pool )
+	public AbstractRefPoolCollectionWrapper( final P pool )
 	{
 		this.pool = pool;
 	}
@@ -60,6 +59,19 @@ public abstract class AbstractRefPoolCollectionCreator< O, P extends RefPool< O 
 	public boolean isEmpty()
 	{
 		return size() == 0;
+	}
+
+	@Override
+	public String toString()
+	{
+		if ( isEmpty() ) { return "[]"; }
+		final StringBuffer sb = new StringBuffer();
+		final Iterator< ? > it = iterator();
+		sb.append( "[" + it.next().toString() );
+		while ( it.hasNext() )
+			sb.append( ", " + it.next().toString() );
+		sb.append( "]" );
+		return sb.toString();
 	}
 
 	/*

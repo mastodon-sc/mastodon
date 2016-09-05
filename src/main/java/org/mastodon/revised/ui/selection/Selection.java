@@ -5,7 +5,7 @@ import java.util.BitSet;
 import java.util.Collection;
 
 import org.mastodon.collection.RefSet;
-import org.mastodon.collection.util.CollectionUtils;
+import org.mastodon.collection.RefCollections;
 import org.mastodon.graph.Edge;
 import org.mastodon.graph.GraphIdBimap;
 import org.mastodon.graph.GraphListener;
@@ -75,8 +75,8 @@ public class Selection< V extends Vertex< E >, E extends Edge< V > > implements 
 	{
 		this.graph = graph;
 		this.idmap = idmap;
-		selectedVertices = CollectionUtils.createRefSet( graph.vertices() );
-		selectedEdges = CollectionUtils.createRefSet( graph.edges() );
+		selectedVertices = RefCollections.createRefSet( graph.vertices() );
+		selectedEdges = RefCollections.createRefSet( graph.edges() );
 		vertexBits = new BitSet();
 		edgeBits = new BitSet();
 		this.listeners = new ArrayList< SelectionListener >();
@@ -253,7 +253,7 @@ public class Selection< V extends Vertex< E >, E extends Edge< V > > implements 
 	 */
 	public synchronized RefSet< E > getSelectedEdges()
 	{
-		final RefSet< E > set = CollectionUtils.createRefSet( graph.edges() );
+		final RefSet< E > set = RefCollections.createRefSet( graph.edges() );
 		set.addAll( selectedEdges );
 		return set;
 	}
@@ -265,7 +265,7 @@ public class Selection< V extends Vertex< E >, E extends Edge< V > > implements 
 	 */
 	public synchronized RefSet< V > getSelectedVertices()
 	{
-		final RefSet< V > set = CollectionUtils.createRefSet( graph.vertices() );
+		final RefSet< V > set = RefCollections.createRefSet( graph.vertices() );
 		set.addAll( selectedVertices );
 		return set;
 	}

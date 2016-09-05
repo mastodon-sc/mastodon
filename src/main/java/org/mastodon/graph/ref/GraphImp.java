@@ -1,8 +1,8 @@
 package org.mastodon.graph.ref;
 
-import org.mastodon.collection.util.PoolObjectCollectionCreator;
 import org.mastodon.graph.Graph;
 import org.mastodon.pool.MappedElement;
+import org.mastodon.pool.PoolCollectionWrapper;
 
 public class GraphImp<
 		VP extends AbstractVertexPool< V, E, T >,
@@ -16,17 +16,11 @@ public class GraphImp<
 
 	protected final EP edgePool;
 
-	private final PoolObjectCollectionCreator< V > vertices;
-
-	private final PoolObjectCollectionCreator< E > edges;
-
 	public GraphImp( final VP vertexPool, final EP edgePool )
 	{
 		this.vertexPool = vertexPool;
 		this.edgePool = edgePool;
 		vertexPool.linkEdgePool( edgePool );
-		vertices = new PoolObjectCollectionCreator<>( vertexPool );
-		edges = new PoolObjectCollectionCreator<>( edgePool );
 	}
 
 	@SuppressWarnings( "unchecked" )
@@ -35,8 +29,6 @@ public class GraphImp<
 		this.vertexPool = ( VP ) edgePool.vertexPool;
 		this.edgePool = edgePool;
 		vertexPool.linkEdgePool( edgePool );
-		vertices = new PoolObjectCollectionCreator<>( vertexPool );
-		edges = new PoolObjectCollectionCreator<>( edgePool );
 	}
 
 	@Override
@@ -88,15 +80,15 @@ public class GraphImp<
 	}
 
 	@Override
-	public PoolObjectCollectionCreator< V > vertices()
+	public PoolCollectionWrapper< V > vertices()
 	{
-		return vertices;
+		return vertexPool.asRefCollection();
 	}
 
 	@Override
-	public PoolObjectCollectionCreator< E > edges()
+	public PoolCollectionWrapper< E > edges()
 	{
-		return edges;
+		return edgePool.asRefCollection();
 	}
 
 	@Override

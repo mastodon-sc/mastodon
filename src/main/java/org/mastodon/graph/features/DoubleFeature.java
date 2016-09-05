@@ -1,7 +1,7 @@
 package org.mastodon.graph.features;
 
 import org.mastodon.collection.RefCollection;
-import org.mastodon.collection.util.CollectionUtils;
+import org.mastodon.collection.RefCollections;
 import org.mastodon.graph.features.FeatureRegistry.DuplicateKeyException;
 
 import gnu.trove.map.TObjectDoubleMap;
@@ -57,7 +57,7 @@ public final class DoubleFeature< O > extends Feature< TObjectDoubleMap< O >, O,
 	@Override
 	protected TObjectDoubleMap< O > createFeatureMap( final RefCollection< O > pool )
 	{
-		return CollectionUtils.createRefDoubleMap( pool, noEntryValue, pool.size() );
+		return RefCollections.createRefDoubleMap( pool, noEntryValue, pool.size() );
 	}
 
 	@Override

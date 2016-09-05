@@ -6,7 +6,7 @@ import java.util.Set;
 
 import org.jgrapht.graph.DefaultWeightedEdge;
 import org.mastodon.collection.IntRefMap;
-import org.mastodon.collection.util.CollectionUtils;
+import org.mastodon.collection.RefCollections;
 import org.mastodon.graph.Graph;
 import org.mastodon.revised.model.mamut.Link;
 import org.mastodon.revised.model.mamut.Model;
@@ -40,7 +40,7 @@ public class TrackMateImporter
 
 		for ( final Integer trackID : trackIDs )
 		{
-			final IntRefMap< Spot > map = CollectionUtils.createIntRefMap( model.getGraph().vertices(), -1 );
+			final IntRefMap< Spot > map = RefCollections.createIntRefMap( model.getGraph().vertices(), -1 );
 
 			final Set< fiji.plugin.trackmate.Spot > spots = tm.trackSpots( trackID );
 			for ( final fiji.plugin.trackmate.Spot spot : spots )

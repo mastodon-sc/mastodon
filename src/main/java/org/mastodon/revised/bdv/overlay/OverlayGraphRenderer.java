@@ -12,7 +12,7 @@ import java.awt.geom.Ellipse2D;
 
 import org.mastodon.collection.RefCollection;
 import org.mastodon.collection.RefList;
-import org.mastodon.collection.util.CollectionUtils;
+import org.mastodon.collection.RefCollections;
 import org.mastodon.kdtree.ClipConvexPolytope;
 import org.mastodon.revised.Util;
 import org.mastodon.spatial.SpatialIndex;
@@ -888,7 +888,7 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 	 */
 	RefCollection< V > getVisibleVertices( final AffineTransform3D transform, final int timepoint )
 	{
-		final RefList< V > contextList = CollectionUtils.createRefList( graph.vertices() );
+		final RefList< V > contextList = RefCollections.createRefList( graph.vertices() );
 		final double maxDepth = isFocusLimitViewRelative
 				? focusLimit
 				: focusLimit * Affine3DHelpers.extractScale( transform, 0 );

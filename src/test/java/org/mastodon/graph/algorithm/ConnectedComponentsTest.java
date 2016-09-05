@@ -11,7 +11,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mastodon.collection.RefList;
 import org.mastodon.collection.RefSet;
-import org.mastodon.collection.util.CollectionUtils;
+import org.mastodon.collection.RefCollections;
 import org.mastodon.graph.TestEdge;
 import org.mastodon.graph.TestGraph;
 import org.mastodon.graph.TestVertex;
@@ -106,7 +106,7 @@ public class ConnectedComponentsTest
 		final Random ran = new Random( 1l );
 		final int nv = 50 + ran.nextInt( 100 );
 		final int nExtraEdges = 20 + ran.nextInt( 50 );
-		final RefList< TestVertex > vList = CollectionUtils.createRefList( graph.vertices(), nv );
+		final RefList< TestVertex > vList = RefCollections.createRefList( graph.vertices(), nv );
 		final int idRandom = 5;
 
 		final TestVertex previous = graph.addVertex().init( idRandom );

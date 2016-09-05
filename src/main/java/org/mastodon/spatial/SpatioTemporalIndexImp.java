@@ -7,7 +7,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 import org.mastodon.Ref;
 import org.mastodon.RefPool;
 import org.mastodon.collection.RefList;
-import org.mastodon.collection.util.CollectionUtils;
+import org.mastodon.collection.RefCollections;
 import org.mastodon.graph.Edge;
 import org.mastodon.graph.GraphListener;
 import org.mastodon.graph.ListenableReadOnlyGraph;
@@ -97,7 +97,7 @@ public class SpatioTemporalIndexImp<
 			RefList< V > vs = timepointToVertices.get( v.getTimepoint() );
 			if ( vs == null )
 			{
-				vs = CollectionUtils.createRefList( graph.vertices() );
+				vs = RefCollections.createRefList( graph.vertices() );
 				timepointToVertices.put( v.getTimepoint(), vs );
 			}
 			vs.add( v );
@@ -234,7 +234,7 @@ public class SpatioTemporalIndexImp<
 		SpatialIndexImp< V > index = timepointToSpatialIndex.get( timepoint );
 		if ( index == null )
 		{
-			index = new SpatialIndexImp< V >( CollectionUtils.createRefSet( graph.vertices() ), vertexPool );
+			index = new SpatialIndexImp< V >( RefCollections.createRefSet( graph.vertices() ), vertexPool );
 			timepointToSpatialIndex.put( timepoint, index );
 		}
 		return index;

@@ -10,7 +10,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.mastodon.collection.RefList;
-import org.mastodon.collection.util.CollectionUtils;
+import org.mastodon.collection.RefCollections;
 import org.mastodon.graph.TestEdge;
 import org.mastodon.graph.TestGraph;
 import org.mastodon.graph.TestVertex;
@@ -40,7 +40,7 @@ public class TopologicalSortTest
 		// From http://en.wikipedia.org/wiki/Topological_sorting
 		// X encodes "level"
 		graphRef = new TestGraph();
-		verticesRef = CollectionUtils.createRefList( graphRef.vertices() );
+		verticesRef = RefCollections.createRefList( graphRef.vertices() );
 
 		v7ref = graphRef.addVertex().init( 0 );
 		final TestVertex v11 = graphRef.addVertex().init( 1 );
@@ -148,7 +148,7 @@ public class TopologicalSortTest
 		graphObj.addEdge( v3, v10Obj );
 		graphObj.addEdge( v11, v10Obj );
 
-		verticesObj = CollectionUtils.createRefList( graphObj.vertices() );
+		verticesObj = RefCollections.createRefList( graphObj.vertices() );
 		verticesObj.add( v9 );
 		verticesObj.add( v11 );
 		verticesObj.add( v2 );

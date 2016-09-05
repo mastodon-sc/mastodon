@@ -1,7 +1,7 @@
 package org.mastodon.graph.features;
 
 import org.mastodon.collection.RefCollection;
-import org.mastodon.collection.util.CollectionUtils;
+import org.mastodon.collection.RefCollections;
 import org.mastodon.graph.features.FeatureRegistry.DuplicateKeyException;
 
 import gnu.trove.map.TObjectIntMap;
@@ -57,7 +57,7 @@ public final class IntFeature< O > extends Feature< TObjectIntMap< O >, O, IntFe
 	@Override
 	protected TObjectIntMap< O > createFeatureMap( final RefCollection< O > pool )
 	{
-		return CollectionUtils.createRefIntMap( pool, noEntryValue, pool.size() );
+		return RefCollections.createRefIntMap( pool, noEntryValue, pool.size() );
 	}
 
 	@Override

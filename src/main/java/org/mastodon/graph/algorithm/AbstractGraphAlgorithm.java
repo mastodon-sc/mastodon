@@ -10,7 +10,7 @@ import org.mastodon.collection.RefObjectMap;
 import org.mastodon.collection.RefRefMap;
 import org.mastodon.collection.RefSet;
 import org.mastodon.collection.RefStack;
-import org.mastodon.collection.util.CollectionUtils;
+import org.mastodon.collection.RefCollections;
 import org.mastodon.graph.Edge;
 import org.mastodon.graph.Graph;
 import org.mastodon.graph.ReadOnlyGraph;
@@ -78,132 +78,132 @@ public abstract class AbstractGraphAlgorithm< V extends Vertex< E >, E extends E
 
 	protected RefSet< V > createVertexSet()
 	{
-		return CollectionUtils.createRefSet( graph.vertices() );
+		return RefCollections.createRefSet( graph.vertices() );
 	}
 
 	protected RefSet< V > createVertexSet( final int initialCapacity )
 	{
-		return CollectionUtils.createRefSet( graph.vertices(), initialCapacity );
+		return RefCollections.createRefSet( graph.vertices(), initialCapacity );
 	}
 
 	protected RefSet< E > createEdgeSet()
 	{
-		return CollectionUtils.createRefSet( graph.edges() );
+		return RefCollections.createRefSet( graph.edges() );
 	}
 
 	protected RefSet< E > createEdgeSet( final int initialCapacity )
 	{
-		return CollectionUtils.createRefSet( graph.edges(), initialCapacity );
+		return RefCollections.createRefSet( graph.edges(), initialCapacity );
 	}
 
 	protected RefList< V > createVertexList()
 	{
-		return CollectionUtils.createRefList( graph.vertices() );
+		return RefCollections.createRefList( graph.vertices() );
 	}
 
 	protected RefList< V > createVertexList( final int initialCapacity )
 	{
-		return CollectionUtils.createRefList( graph.vertices(), initialCapacity );
+		return RefCollections.createRefList( graph.vertices(), initialCapacity );
 	}
 
 	protected RefList< E > createEdgeList()
 	{
-		return CollectionUtils.createRefList( graph.edges() );
+		return RefCollections.createRefList( graph.edges() );
 	}
 
 	protected RefList< E > createEdgeList( final int initialCapacity )
 	{
-		return CollectionUtils.createRefList( graph.edges(), initialCapacity );
+		return RefCollections.createRefList( graph.edges(), initialCapacity );
 	}
 
 	protected RefDeque< V > createVertexDeque()
 	{
-		return CollectionUtils.createRefDeque( graph.vertices() );
+		return RefCollections.createRefDeque( graph.vertices() );
 	}
 
 	protected RefDeque< V > createVertexDeque( final int initialCapacity )
 	{
-		return CollectionUtils.createRefDeque( graph.vertices(), initialCapacity );
+		return RefCollections.createRefDeque( graph.vertices(), initialCapacity );
 	}
 
 	protected RefDeque< E > createEdgeDeque()
 	{
-		return CollectionUtils.createRefDeque( graph.edges() );
+		return RefCollections.createRefDeque( graph.edges() );
 	}
 
 	protected RefDeque< E > createEdgeDeque( final int initialCapacity )
 	{
-		return CollectionUtils.createRefDeque( graph.edges(), initialCapacity );
+		return RefCollections.createRefDeque( graph.edges(), initialCapacity );
 	}
 
 	protected RefStack< V > createVertexStack()
 	{
-		return CollectionUtils.createRefStack( graph.vertices() );
+		return RefCollections.createRefStack( graph.vertices() );
 	}
 
 	protected RefStack< V > createVertexStack( final int initialCapacity )
 	{
-		return CollectionUtils.createRefStack( graph.vertices(), initialCapacity );
+		return RefCollections.createRefStack( graph.vertices(), initialCapacity );
 	}
 
 	protected RefStack< E > createEdgeStack()
 	{
-		return CollectionUtils.createRefStack( graph.edges() );
+		return RefCollections.createRefStack( graph.edges() );
 	}
 
 	protected RefStack< E > createEdgeStack( final int initialCapacity )
 	{
-		return CollectionUtils.createRefStack( graph.edges(), initialCapacity );
+		return RefCollections.createRefStack( graph.edges(), initialCapacity );
 	}
 
 	protected < O > RefObjectMap< V, O > createVertexObjectMap()
 	{
-		return CollectionUtils.createRefObjectMap( graph.vertices() );
+		return RefCollections.createRefObjectMap( graph.vertices() );
 	}
 
 	protected < O > RefObjectMap< E, O > createEdgeObjectMap()
 	{
-		return CollectionUtils.createRefObjectMap( graph.edges() );
+		return RefCollections.createRefObjectMap( graph.edges() );
 	}
 
 	protected RefRefMap< V, V > createVertexVertexMap()
 	{
-		return CollectionUtils.createRefRefMap( graph.vertices() );
+		return RefCollections.createRefRefMap( graph.vertices() );
 	}
 
 	protected RefRefMap< V, V > createVertexVertexMap( final int initialCapacity )
 	{
-		return CollectionUtils.createRefRefMap( graph.vertices(), initialCapacity );
+		return RefCollections.createRefRefMap( graph.vertices(), initialCapacity );
 	}
 
 	protected RefRefMap< E, E > createEdgeEdgeMap()
 	{
-		return CollectionUtils.createRefRefMap( graph.edges() );
+		return RefCollections.createRefRefMap( graph.edges() );
 	}
 
 	protected RefRefMap< E, E > createEdgeEdgeMap( final int initialCapacity )
 	{
-		return CollectionUtils.createRefRefMap( graph.edges(), initialCapacity );
+		return RefCollections.createRefRefMap( graph.edges(), initialCapacity );
 	}
 
 	protected RefIntMap< V > createVertexIntMap( final int noEntryValue )
 	{
-		return CollectionUtils.createRefIntMap( graph.vertices(), noEntryValue );
+		return RefCollections.createRefIntMap( graph.vertices(), noEntryValue );
 	}
 
 	protected RefIntMap< V > createVertexIntMap( final int noEntryValue, final int initialCapacity )
 	{
-		return CollectionUtils.createRefIntMap( graph.vertices(), noEntryValue, initialCapacity );
+		return RefCollections.createRefIntMap( graph.vertices(), noEntryValue, initialCapacity );
 	}
 
 	protected RefIntMap< E > createEdgeIntMap( final int noEntryValue )
 	{
-		return CollectionUtils.createRefIntMap( graph.edges(), noEntryValue );
+		return RefCollections.createRefIntMap( graph.edges(), noEntryValue );
 	}
 
 	protected RefIntMap< E > createEdgeIntMap( final int noEntryValue, final int initialCapacity )
 	{
-		return CollectionUtils.createRefIntMap( graph.edges(), noEntryValue, initialCapacity );
+		return RefCollections.createRefIntMap( graph.edges(), noEntryValue, initialCapacity );
 	}
 
 	protected Iterator< V > safeVertexIterator( final Iterator< V > iterator )

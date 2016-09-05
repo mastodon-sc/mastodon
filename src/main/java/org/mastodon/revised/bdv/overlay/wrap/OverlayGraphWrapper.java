@@ -5,7 +5,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 
 import org.mastodon.RefPool;
 import org.mastodon.collection.RefCollection;
-import org.mastodon.collection.util.AbstractRefPoolCollectionCreator;
+import org.mastodon.collection.util.AbstractRefPoolCollectionWrapper;
 import org.mastodon.graph.Edge;
 import org.mastodon.graph.GraphIdBimap;
 import org.mastodon.graph.ReadOnlyGraph;
@@ -189,7 +189,7 @@ public class OverlayGraphWrapper< V extends Vertex< E >, E extends Edge< V > > i
 		}
 	};
 
-	private final AbstractRefPoolCollectionCreator< OverlayVertexWrapper< V, E >, RefPool< OverlayVertexWrapper< V, E > > > vertices = new AbstractRefPoolCollectionCreator< OverlayVertexWrapper< V, E >, RefPool< OverlayVertexWrapper< V, E > > >( vertexPool)
+	private final AbstractRefPoolCollectionWrapper< OverlayVertexWrapper< V, E >, RefPool< OverlayVertexWrapper< V, E > > > vertices = new AbstractRefPoolCollectionWrapper< OverlayVertexWrapper< V, E >, RefPool< OverlayVertexWrapper< V, E > > >( vertexPool )
 	{
 		@Override
 		public int size()
@@ -239,7 +239,7 @@ public class OverlayGraphWrapper< V extends Vertex< E >, E extends Edge< V > > i
 		}
 	};
 
-	private final AbstractRefPoolCollectionCreator< OverlayEdgeWrapper< V, E >, RefPool< OverlayEdgeWrapper< V, E > > > edges = new AbstractRefPoolCollectionCreator< OverlayEdgeWrapper< V, E >, RefPool< OverlayEdgeWrapper< V, E > > >( edgePool)
+	private final AbstractRefPoolCollectionWrapper< OverlayEdgeWrapper< V, E >, RefPool< OverlayEdgeWrapper< V, E > > > edges = new AbstractRefPoolCollectionWrapper< OverlayEdgeWrapper< V, E >, RefPool< OverlayEdgeWrapper< V, E > > >( edgePool )
 	{
 		@Override
 		public int size()

@@ -11,7 +11,7 @@ import java.util.List;
 
 import org.junit.Test;
 import org.mastodon.collection.RefList;
-import org.mastodon.collection.util.CollectionUtils;
+import org.mastodon.collection.RefCollections;
 import org.mastodon.graph.TestEdge;
 import org.mastodon.graph.TestVertex;
 
@@ -36,7 +36,7 @@ public class RefRefHashMapValuesTest extends RefRefHashMapAbstractTest
 	@Test( expected = UnsupportedOperationException.class )
 	public void testAddAll()
 	{
-		final List< TestEdge > list = CollectionUtils.createRefList( graph.edges() );
+		final List< TestEdge > list = RefCollections.createRefList( graph.edges() );
 		list.add( eAB );
 		list.add( eAC );
 		values.addAll( list );
@@ -62,7 +62,7 @@ public class RefRefHashMapValuesTest extends RefRefHashMapAbstractTest
 	@Test
 	public void testContainsAll()
 	{
-		final List< TestEdge > list = CollectionUtils.createRefList( graph.edges() );
+		final List< TestEdge > list = RefCollections.createRefList( graph.edges() );
 		list.add( eAB );
 		list.add( eAC );
 
@@ -140,7 +140,7 @@ public class RefRefHashMapValuesTest extends RefRefHashMapAbstractTest
 	public void testRemoveAll()
 	{
 		final int initSize = values.size();
-		final RefList< TestEdge > toRemove = CollectionUtils.createRefList( graph.edges(), 2 );
+		final RefList< TestEdge > toRemove = RefCollections.createRefList( graph.edges(), 2 );
 
 		// Remove stuff not in the map.
 		final TestEdge edge1 = graph.addEdge( Ek, Dk );
@@ -162,7 +162,7 @@ public class RefRefHashMapValuesTest extends RefRefHashMapAbstractTest
 	@Test
 	public void testRetainAll()
 	{
-		final RefList< TestEdge > toRetain = CollectionUtils.createRefList( graph.edges(), 2 );
+		final RefList< TestEdge > toRetain = RefCollections.createRefList( graph.edges(), 2 );
 		toRetain.add( eAB );
 		toRetain.add( eAC );
 

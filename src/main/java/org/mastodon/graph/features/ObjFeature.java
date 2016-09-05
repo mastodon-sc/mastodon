@@ -3,7 +3,7 @@ package org.mastodon.graph.features;
 import java.util.Map;
 
 import org.mastodon.collection.RefCollection;
-import org.mastodon.collection.util.CollectionUtils;
+import org.mastodon.collection.RefCollections;
 import org.mastodon.graph.FeatureValue;
 import org.mastodon.graph.features.FeatureRegistry.DuplicateKeyException;
 
@@ -57,7 +57,7 @@ public final class ObjFeature< O, T > extends Feature< Map< O, T >, O, FeatureVa
 	@Override
 	protected Map< O, T > createFeatureMap( final RefCollection< O > pool )
 	{
-		return CollectionUtils.createRefObjectMap( pool );
+		return RefCollections.createRefObjectMap( pool );
 	}
 
 	@Override

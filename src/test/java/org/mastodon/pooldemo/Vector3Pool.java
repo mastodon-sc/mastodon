@@ -1,6 +1,5 @@
 package org.mastodon.pooldemo;
 
-import org.mastodon.collection.util.PoolObjectCollectionCreator;
 import org.mastodon.graph.features.Features;
 import org.mastodon.pool.ByteMappedElement;
 import org.mastodon.pool.ByteMappedElementArray;
@@ -36,7 +35,7 @@ public class Vector3Pool extends Pool< Vector3, ByteMappedElement >
 	{
 		super( initialCapacity, f );
 		f.pool = this;
-		f.features = new Features<>( new PoolObjectCollectionCreator<>( this ) );
+		f.features = new Features<>( this.asRefCollection() );
 	}
 
 	private static class Vector3Factory implements PoolObject.Factory< Vector3, ByteMappedElement >

@@ -5,7 +5,7 @@ import java.io.IOException;
 import java.util.Locale;
 
 import org.mastodon.collection.RefSet;
-import org.mastodon.collection.util.CollectionUtils;
+import org.mastodon.collection.RefCollections;
 import org.mastodon.graph.ListenableGraph;
 import org.mastodon.graph.algorithm.traversal.DepthFirstSearch;
 import org.mastodon.graph.algorithm.traversal.SearchListener;
@@ -58,7 +58,7 @@ public class EdgeFeatureCalculatorExample
 
 		// Find roots.
 
-		final RefSet< Spot > roots = CollectionUtils.createRefSet( graph.vertices() );
+		final RefSet< Spot > roots = RefCollections.createRefSet( graph.vertices() );
 		for ( final Spot spot :graph.vertices() )
 		{
 			if (spot.incomingEdges().isEmpty())

@@ -10,7 +10,7 @@ import java.util.Collections;
 import java.util.List;
 
 import org.junit.Test;
-import org.mastodon.collection.util.CollectionUtils;
+import org.mastodon.collection.RefCollections;
 import org.mastodon.graph.TestEdge;
 import org.mastodon.graph.TestVertex;
 import org.mastodon.graph.algorithm.traversal.DepthFirstSearch;
@@ -39,15 +39,15 @@ public class DepthFirstSearchReversedTest
 
 		final List< EdgeClass > edgeClass = Arrays.asList( new EdgeClass[] { TREE } );
 
-		final List< TestVertex > expectedVertices = CollectionUtils.createRefList( bundle.graph.vertices() );
+		final List< TestVertex > expectedVertices = RefCollections.createRefList( bundle.graph.vertices() );
 		expectedVertices.add( bundle.vertices.get( 1 ) );
 		expectedVertices.add( bundle.vertices.get( 0 ) );
 		
-		final List< TestVertex > processedVertices = CollectionUtils.createRefList( bundle.graph.vertices() );
+		final List< TestVertex > processedVertices = RefCollections.createRefList( bundle.graph.vertices() );
 		processedVertices.add( bundle.vertices.get( 0 ) );
 		processedVertices.add( bundle.vertices.get( 1 ) );
 
-		final List< TestEdge > edges = CollectionUtils.createRefList( bundle.graph.edges() );
+		final List< TestEdge > edges = RefCollections.createRefList( bundle.graph.edges() );
 		edges.add( bundle.edges.get( 0 ) );
 
 		final TraversalTester< TestVertex, TestEdge, DepthFirstSearch< TestVertex, TestEdge > > traversalTester =
@@ -105,7 +105,7 @@ public class DepthFirstSearchReversedTest
 
 		final List< EdgeClass > edgeClass = Arrays.asList( new EdgeClass[] { TREE, TREE, TREE, TREE, TREE, TREE, BACK } );
 
-		final List< TestVertex > expectedvertices = CollectionUtils.createRefList( bundle.graph.vertices() );
+		final List< TestVertex > expectedvertices = RefCollections.createRefList( bundle.graph.vertices() );
 		expectedvertices.add( bundle.vertices.get( 0 ) );
 		expectedvertices.add( bundle.vertices.get( 6 ) );
 		expectedvertices.add( bundle.vertices.get( 5 ) );
@@ -114,7 +114,7 @@ public class DepthFirstSearchReversedTest
 		expectedvertices.add( bundle.vertices.get( 2 ) );
 		expectedvertices.add( bundle.vertices.get( 1 ) );
 
-		final List< TestVertex > processedvertices = CollectionUtils.createRefList( bundle.graph.vertices() );
+		final List< TestVertex > processedvertices = RefCollections.createRefList( bundle.graph.vertices() );
 		processedvertices.add( bundle.vertices.get( 1 ) );
 		processedvertices.add( bundle.vertices.get( 2 ) );
 		processedvertices.add( bundle.vertices.get( 3 ) );
@@ -123,7 +123,7 @@ public class DepthFirstSearchReversedTest
 		processedvertices.add( bundle.vertices.get( 6 ) );
 		processedvertices.add( bundle.vertices.get( 0 ) );
 
-		final List< TestEdge > edges = CollectionUtils.createRefList( bundle.graph.edges() );
+		final List< TestEdge > edges = RefCollections.createRefList( bundle.graph.edges() );
 		edges.add( bundle.edges.get( 6 ) );
 		edges.add( bundle.edges.get( 5 ) );
 		edges.add( bundle.edges.get( 4 ) );
@@ -172,7 +172,7 @@ public class DepthFirstSearchReversedTest
 		processedvertices.add( bundle.vertices.get( 6 ) );
 		processedvertices.add( bundle.vertices.get( 0 ) );
 
-		final List< ObjectEdge< Integer > > edges = CollectionUtils.createRefList( bundle.graph.edges() );
+		final List< ObjectEdge< Integer > > edges = RefCollections.createRefList( bundle.graph.edges() );
 		edges.add( bundle.edges.get( 6 ) );
 		edges.add( bundle.edges.get( 5 ) );
 		edges.add( bundle.edges.get( 4 ) );
@@ -201,19 +201,19 @@ public class DepthFirstSearchReversedTest
 		final TestVertex first = bundle.vertices.get( 4 ); // E
 		final DepthFirstSearch< TestVertex, TestEdge > dfs = new DepthFirstSearch<>( bundle.graph, SearchDirection.REVERSED );
 
-		final List< TestVertex > expectedVertices = CollectionUtils.createRefList( bundle.graph.vertices() );
+		final List< TestVertex > expectedVertices = RefCollections.createRefList( bundle.graph.vertices() );
 		expectedVertices.add( bundle.vertices.get( 4 ) );
 		expectedVertices.add( bundle.vertices.get( 0 ) );
 		expectedVertices.add( bundle.vertices.get( 5 ) );
 		expectedVertices.add( bundle.vertices.get( 1 ) );
 
-		final List< TestVertex > processedVertices = CollectionUtils.createRefList( bundle.graph.vertices() );
+		final List< TestVertex > processedVertices = RefCollections.createRefList( bundle.graph.vertices() );
 		processedVertices.add( bundle.vertices.get( 0 ) );
 		processedVertices.add( bundle.vertices.get( 1 ) );
 		processedVertices.add( bundle.vertices.get( 5 ) );
 		processedVertices.add( bundle.vertices.get( 4 ) );
 
-		final List< TestEdge > expectedEdges = CollectionUtils.createRefList( bundle.graph.edges() );
+		final List< TestEdge > expectedEdges = RefCollections.createRefList( bundle.graph.edges() );
 		expectedEdges.add( bundle.edges.get( 2 ) );
 		expectedEdges.add( bundle.edges.get( 5 ) );
 		expectedEdges.add( bundle.edges.get( 4 ) );
@@ -241,19 +241,19 @@ public class DepthFirstSearchReversedTest
 		final ObjectVertex< Integer > first = bundle.vertices.get( 4 ); // E
 		final DepthFirstSearch< ObjectVertex< Integer >, ObjectEdge< Integer > > dfs = new DepthFirstSearch<>( bundle.graph, SearchDirection.REVERSED );
 
-		final List< ObjectVertex< Integer > > expectedVertices = CollectionUtils.createRefList( bundle.graph.vertices() );
+		final List< ObjectVertex< Integer > > expectedVertices = RefCollections.createRefList( bundle.graph.vertices() );
 		expectedVertices.add( bundle.vertices.get( 4 ) );
 		expectedVertices.add( bundle.vertices.get( 0 ) );
 		expectedVertices.add( bundle.vertices.get( 5 ) );
 		expectedVertices.add( bundle.vertices.get( 1 ) );
 
-		final List< ObjectVertex< Integer > > processedVertices = CollectionUtils.createRefList( bundle.graph.vertices() );
+		final List< ObjectVertex< Integer > > processedVertices = RefCollections.createRefList( bundle.graph.vertices() );
 		processedVertices.add( bundle.vertices.get( 0 ) );
 		processedVertices.add( bundle.vertices.get( 1 ) );
 		processedVertices.add( bundle.vertices.get( 5 ) );
 		processedVertices.add( bundle.vertices.get( 4 ) );
 
-		final List< ObjectEdge< Integer > > expectedEdges = CollectionUtils.createRefList( bundle.graph.edges() );
+		final List< ObjectEdge< Integer > > expectedEdges = RefCollections.createRefList( bundle.graph.edges() );
 		expectedEdges.add( bundle.edges.get( 2 ) );
 		expectedEdges.add( bundle.edges.get( 5 ) );
 		expectedEdges.add( bundle.edges.get( 4 ) );
@@ -281,15 +281,15 @@ public class DepthFirstSearchReversedTest
 		final TestVertex first = bundle.vertices.get( 1 );
 		final DepthFirstSearch< TestVertex, TestEdge > dfs = new DepthFirstSearch<>( bundle.graph, SearchDirection.REVERSED );
 
-		final List< TestVertex > expectedVertices = CollectionUtils.createRefList( bundle.graph.vertices() );
+		final List< TestVertex > expectedVertices = RefCollections.createRefList( bundle.graph.vertices() );
 		expectedVertices.add( bundle.vertices.get( 1 ) );
 		expectedVertices.add( bundle.vertices.get( 0 ) );
 
-		final List< TestVertex > processedVertices = CollectionUtils.createRefList( bundle.graph.vertices() );
+		final List< TestVertex > processedVertices = RefCollections.createRefList( bundle.graph.vertices() );
 		processedVertices.add( bundle.vertices.get( 0 ) );
 		processedVertices.add( bundle.vertices.get( 1 ) );
 
-		final List< TestEdge > expectedEdges = CollectionUtils.createRefList( bundle.graph.edges() );
+		final List< TestEdge > expectedEdges = RefCollections.createRefList( bundle.graph.edges() );
 		expectedEdges.add( bundle.edges.get( 0 ) );
 
 		final List< EdgeClass > edgeClass = Arrays.asList( new EdgeClass[] { TREE } );
@@ -314,15 +314,15 @@ public class DepthFirstSearchReversedTest
 		final ObjectVertex< Integer > first = bundle.vertices.get( 1 );
 		final DepthFirstSearch< ObjectVertex< Integer >, ObjectEdge< Integer > > dfs = new DepthFirstSearch<>( bundle.graph, SearchDirection.REVERSED );
 
-		final List< ObjectVertex< Integer > > expectedVertices = CollectionUtils.createRefList( bundle.graph.vertices() );
+		final List< ObjectVertex< Integer > > expectedVertices = RefCollections.createRefList( bundle.graph.vertices() );
 		expectedVertices.add( bundle.vertices.get( 1 ) );
 		expectedVertices.add( bundle.vertices.get( 0 ) );
 
-		final List< ObjectVertex< Integer > > processedVertices = CollectionUtils.createRefList( bundle.graph.vertices() );
+		final List< ObjectVertex< Integer > > processedVertices = RefCollections.createRefList( bundle.graph.vertices() );
 		processedVertices.add( bundle.vertices.get( 0 ) );
 		processedVertices.add( bundle.vertices.get( 1 ) );
 
-		final List< ObjectEdge< Integer > > expectedEdges = CollectionUtils.createRefList( bundle.graph.edges() );
+		final List< ObjectEdge< Integer > > expectedEdges = RefCollections.createRefList( bundle.graph.edges() );
 		expectedEdges.add( bundle.edges.get( 0 ) );
 
 		final List< EdgeClass > edgeClass = Arrays.asList( new EdgeClass[] { TREE } );
@@ -349,21 +349,21 @@ public class DepthFirstSearchReversedTest
 
 		final List< EdgeClass > edgeClass = Arrays.asList( new EdgeClass[] { TREE, TREE, TREE, TREE } );
 
-		final List< TestVertex > expectedvertices = CollectionUtils.createRefList( bundle.graph.vertices() );
+		final List< TestVertex > expectedvertices = RefCollections.createRefList( bundle.graph.vertices() );
 		expectedvertices.add( bundle.vertices.get( 4 ) );
 		expectedvertices.add( bundle.vertices.get( 3 ) );
 		expectedvertices.add( bundle.vertices.get( 2 ) );
 		expectedvertices.add( bundle.vertices.get( 1 ) );
 		expectedvertices.add( bundle.vertices.get( 0 ) );
 
-		final List< TestVertex > processedvertices = CollectionUtils.createRefList( bundle.graph.vertices() );
+		final List< TestVertex > processedvertices = RefCollections.createRefList( bundle.graph.vertices() );
 		processedvertices.add( bundle.vertices.get( 0 ) );
 		processedvertices.add( bundle.vertices.get( 1 ) );
 		processedvertices.add( bundle.vertices.get( 2 ) );
 		processedvertices.add( bundle.vertices.get( 3 ) );
 		processedvertices.add( bundle.vertices.get( 4 ) );
 
-		final List< TestEdge > edges = CollectionUtils.createRefList( bundle.graph.edges() );
+		final List< TestEdge > edges = RefCollections.createRefList( bundle.graph.edges() );
 		edges.add( bundle.edges.get( 3 ) );
 		edges.add( bundle.edges.get( 2 ) );
 		edges.add( bundle.edges.get( 1 ) );
@@ -391,21 +391,21 @@ public class DepthFirstSearchReversedTest
 
 		final List< EdgeClass > edgeClass = Arrays.asList( new EdgeClass[] { TREE, TREE, TREE, TREE } );
 
-		final List< ObjectVertex< Integer > > expectedvertices = CollectionUtils.createRefList( bundle.graph.vertices() );
+		final List< ObjectVertex< Integer > > expectedvertices = RefCollections.createRefList( bundle.graph.vertices() );
 		expectedvertices.add( bundle.vertices.get( 4 ) );
 		expectedvertices.add( bundle.vertices.get( 3 ) );
 		expectedvertices.add( bundle.vertices.get( 2 ) );
 		expectedvertices.add( bundle.vertices.get( 1 ) );
 		expectedvertices.add( bundle.vertices.get( 0 ) );
 
-		final List< ObjectVertex< Integer > > processedvertices = CollectionUtils.createRefList( bundle.graph.vertices() );
+		final List< ObjectVertex< Integer > > processedvertices = RefCollections.createRefList( bundle.graph.vertices() );
 		processedvertices.add( bundle.vertices.get( 0 ) );
 		processedvertices.add( bundle.vertices.get( 1 ) );
 		processedvertices.add( bundle.vertices.get( 2 ) );
 		processedvertices.add( bundle.vertices.get( 3 ) );
 		processedvertices.add( bundle.vertices.get( 4 ) );
 
-		final List< ObjectEdge< Integer > > edges = CollectionUtils.createRefList( bundle.graph.edges() );
+		final List< ObjectEdge< Integer > > edges = RefCollections.createRefList( bundle.graph.edges() );
 		edges.add( bundle.edges.get( 3 ) );
 		edges.add( bundle.edges.get( 2 ) );
 		edges.add( bundle.edges.get( 1 ) );
@@ -431,19 +431,19 @@ public class DepthFirstSearchReversedTest
 		final TestVertex first = bundle.vertices.get( 4 ); // E
 		final DepthFirstSearch< TestVertex, TestEdge > dfs = new DepthFirstSearch<>( bundle.graph, SearchDirection.REVERSED );
 
-		final List< TestVertex > expectedVertices = CollectionUtils.createRefList( bundle.graph.vertices() );
+		final List< TestVertex > expectedVertices = RefCollections.createRefList( bundle.graph.vertices() );
 		expectedVertices.add( bundle.vertices.get( 4 ) );
 		expectedVertices.add( bundle.vertices.get( 0 ) );
 		expectedVertices.add( bundle.vertices.get( 5 ) );
 		expectedVertices.add( bundle.vertices.get( 1 ) );
 
-		final List< TestVertex > processedVertices = CollectionUtils.createRefList( bundle.graph.vertices() );
+		final List< TestVertex > processedVertices = RefCollections.createRefList( bundle.graph.vertices() );
 		processedVertices.add( bundle.vertices.get( 0 ) );
 		processedVertices.add( bundle.vertices.get( 1 ) );
 		processedVertices.add( bundle.vertices.get( 5 ) );
 		processedVertices.add( bundle.vertices.get( 4 ) );
 
-		final List< TestEdge > expectedEdges = CollectionUtils.createRefList( bundle.graph.edges() );
+		final List< TestEdge > expectedEdges = RefCollections.createRefList( bundle.graph.edges() );
 		expectedEdges.add( bundle.edges.get( 2 ) );
 		expectedEdges.add( bundle.edges.get( 5 ) );
 		expectedEdges.add( bundle.edges.get( 4 ) );
@@ -471,19 +471,19 @@ public class DepthFirstSearchReversedTest
 		final ObjectVertex< Integer > first = bundle.vertices.get( 4 ); // E
 		final DepthFirstSearch< ObjectVertex< Integer >, ObjectEdge< Integer > > dfs = new DepthFirstSearch<>( bundle.graph, SearchDirection.REVERSED );
 
-		final List< ObjectVertex< Integer > > expectedVertices = CollectionUtils.createRefList( bundle.graph.vertices() );
+		final List< ObjectVertex< Integer > > expectedVertices = RefCollections.createRefList( bundle.graph.vertices() );
 		expectedVertices.add( bundle.vertices.get( 4 ) );
 		expectedVertices.add( bundle.vertices.get( 0 ) );
 		expectedVertices.add( bundle.vertices.get( 5 ) );
 		expectedVertices.add( bundle.vertices.get( 1 ) );
 
-		final List< ObjectVertex< Integer > > processedVertices = CollectionUtils.createRefList( bundle.graph.vertices() );
+		final List< ObjectVertex< Integer > > processedVertices = RefCollections.createRefList( bundle.graph.vertices() );
 		processedVertices.add( bundle.vertices.get( 0 ) );
 		processedVertices.add( bundle.vertices.get( 1 ) );
 		processedVertices.add( bundle.vertices.get( 5 ) );
 		processedVertices.add( bundle.vertices.get( 4 ) );
 
-		final List< ObjectEdge< Integer > > expectedEdges = CollectionUtils.createRefList( bundle.graph.edges() );
+		final List< ObjectEdge< Integer > > expectedEdges = RefCollections.createRefList( bundle.graph.edges() );
 		expectedEdges.add( bundle.edges.get( 2 ) );
 		expectedEdges.add( bundle.edges.get( 5 ) );
 		expectedEdges.add( bundle.edges.get( 4 ) );

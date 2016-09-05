@@ -26,7 +26,9 @@ public class Pool< O extends PoolObject< O, T >, T extends MappedElement > imple
 
 	private final MemPool< T > memPool;
 
-	private final ConcurrentLinkedQueue< O > tmpObjRefs = new ConcurrentLinkedQueue< O >();
+	private final ConcurrentLinkedQueue< O > tmpObjRefs;
+
+	private final PoolCollectionWrapper< O > asRefCollection;
 
 	public Pool(
 			final int initialCapacity,
@@ -34,6 +36,8 @@ public class Pool< O extends PoolObject< O, T >, T extends MappedElement > imple
 	{
 		this.objFactory = objFactory;
 		this.memPool = objFactory.getMemPoolFactory().createPool( initialCapacity, objFactory.getSizeInBytes() );
+		this.tmpObjRefs = new ConcurrentLinkedQueue<>();
+		this.asRefCollection = new PoolCollectionWrapper<>( this );
 	}
 
 	/**
@@ -157,5 +161,10 @@ public class Pool< O extends PoolObject< O, T >, T extends MappedElement > imple
 	protected void deleteByInternalPoolIndex( final int index )
 	{
 		memPool.free( index );
+	}
+
+	public PoolCollectionWrapper< O > asRefCollection()
+	{
+		return asRefCollection;
 	}
 }

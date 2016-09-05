@@ -7,7 +7,7 @@ import java.util.List;
 
 import org.mastodon.collection.RefList;
 import org.mastodon.collection.RefSet;
-import org.mastodon.collection.util.CollectionUtils;
+import org.mastodon.collection.RefCollections;
 import org.mastodon.graph.Edges;
 import org.mastodon.revised.trackscheme.ScreenEdge.ScreenEdgePool;
 import org.mastodon.revised.trackscheme.ScreenVertex.ScreenVertexPool;
@@ -126,7 +126,7 @@ public class LineageTreeLayout
 		timepoints = new TIntArrayList();
 		timepointToOrderedVertices = new TIntObjectArrayMap< >();
 		currentLayoutColumnX = new TDoubleArrayList();
-		currentLayoutColumnRoot = CollectionUtils.createRefList( graph.vertices() );
+		currentLayoutColumnRoot = RefCollections.createRefList( graph.vertices() );
 	}
 
 	/**
@@ -515,7 +515,7 @@ public class LineageTreeLayout
 		final double x1 = Math.min( lx1, lx2 );
 		final double x2 = Math.max( lx1, lx2 );
 
-		final RefSet< TrackSchemeVertex > vertexSet = CollectionUtils.createRefSet( graph.vertices() );
+		final RefSet< TrackSchemeVertex > vertexSet = RefCollections.createRefSet( graph.vertices() );
 		int start = timepoints.binarySearch( tStart );
 		if ( start < 0 )
 			start = -start - 1;

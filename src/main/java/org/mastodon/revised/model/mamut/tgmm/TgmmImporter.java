@@ -14,7 +14,7 @@ import org.jdom2.Element;
 import org.jdom2.JDOMException;
 import org.jdom2.input.SAXBuilder;
 import org.mastodon.collection.IntRefMap;
-import org.mastodon.collection.util.CollectionUtils;
+import org.mastodon.collection.RefCollections;
 import org.mastodon.graph.Graph;
 import org.mastodon.revised.model.AbstractModelImporter;
 import org.mastodon.revised.model.mamut.Link;
@@ -114,8 +114,8 @@ public class TgmmImporter extends AbstractModelImporter< Model >
 		final Spot tmp = graph.vertexRef();
 		final Link edge = graph.edgeRef();
 
-		IntRefMap< Spot > idToSpot = CollectionUtils.createIntRefMap( graph.vertices(), -1, 2000 );
-		IntRefMap< Spot > previousIdToSpot = CollectionUtils.createIntRefMap( graph.vertices(), -1, 2000 );
+		IntRefMap< Spot > idToSpot = RefCollections.createIntRefMap( graph.vertices(), -1, 2000 );
+		IntRefMap< Spot > previousIdToSpot = RefCollections.createIntRefMap( graph.vertices(), -1, 2000 );
 
 		for ( final TimePoint timepoint : timepointsToRead.getTimePointsOrdered() )
 		{

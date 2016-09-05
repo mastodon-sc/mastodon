@@ -5,7 +5,7 @@ package org.mastodon.revised.ui;
 
 import org.mastodon.collection.RefList;
 import org.mastodon.collection.RefSet;
-import org.mastodon.collection.util.CollectionUtils;
+import org.mastodon.collection.RefCollections;
 import org.mastodon.graph.Edge;
 import org.mastodon.graph.GraphChangeNotifier;
 import org.mastodon.graph.ListenableGraph;
@@ -138,8 +138,8 @@ public class SelectionActions< V extends Vertex< E >, E extends Edge< V > >
 				selection.clearSelection();
 
 			// Prepare the iterator.
-			final RefList< V > vList = CollectionUtils.createRefList( graph.vertices() );
-			final RefList< E > eList = CollectionUtils.createRefList( graph.edges() );
+			final RefList< V > vList = RefCollections.createRefList( graph.vertices() );
+			final RefList< E > eList = RefCollections.createRefList( graph.edges() );
 			final DepthFirstSearch< V, E > search = new DepthFirstSearch<>( graph, directivity );
 			search.setTraversalListener( new SearchListener< V, E, DepthFirstSearch< V, E > >()
 			{

@@ -10,7 +10,7 @@ import java.util.Collections;
 import java.util.List;
 
 import org.junit.Test;
-import org.mastodon.collection.util.CollectionUtils;
+import org.mastodon.collection.RefCollections;
 import org.mastodon.graph.TestEdge;
 import org.mastodon.graph.TestVertex;
 import org.mastodon.graph.algorithm.traversal.BreadthFirstSearch;
@@ -39,11 +39,11 @@ public class BreadthFirstSearchReversedTest
 
 		final List< EdgeClass > edgeClass = Arrays.asList( new EdgeClass[] { TREE } );
 
-		final List< TestVertex > vertices = CollectionUtils.createRefList( bundle.graph.vertices() );
+		final List< TestVertex > vertices = RefCollections.createRefList( bundle.graph.vertices() );
 		vertices.add( bundle.vertices.get( 1 ) );
 		vertices.add( bundle.vertices.get( 0 ) );
 
-		final List< TestEdge> edges = CollectionUtils.createRefList( bundle.graph.edges() );
+		final List< TestEdge> edges = RefCollections.createRefList( bundle.graph.edges() );
 		edges.add( bundle.edges.get( 0 ) );
 
 		final TraversalTester< TestVertex, TestEdge, BreadthFirstSearch< TestVertex, TestEdge > > traversalTester =
@@ -97,7 +97,7 @@ public class BreadthFirstSearchReversedTest
 
 		final List< EdgeClass > edgeClass = Arrays.asList( new EdgeClass[] { TREE, TREE, TREE, TREE, TREE, TREE, BACK } );
 
-		final List< TestVertex > vertices = CollectionUtils.createRefList( bundle.graph.vertices() );
+		final List< TestVertex > vertices = RefCollections.createRefList( bundle.graph.vertices() );
 		vertices.add( bundle.vertices.get( 0 ) );
 		vertices.add( bundle.vertices.get( 6 ) );
 		vertices.add( bundle.vertices.get( 5 ) );
@@ -106,7 +106,7 @@ public class BreadthFirstSearchReversedTest
 		vertices.add( bundle.vertices.get( 2 ) );
 		vertices.add( bundle.vertices.get( 1 ) );
 
-		final List< TestEdge > edges = CollectionUtils.createRefList( bundle.graph.edges() );
+		final List< TestEdge > edges = RefCollections.createRefList( bundle.graph.edges() );
 		edges.add( bundle.edges.get( 6 ) );
 		edges.add( bundle.edges.get( 5 ) );
 		edges.add( bundle.edges.get( 4 ) );
@@ -310,13 +310,13 @@ public class BreadthFirstSearchReversedTest
 		final TestVertex first = bundle.vertices.get( 3 ); // D
 		final BreadthFirstSearch< TestVertex, TestEdge > bfs = new BreadthFirstSearch<>( bundle.graph, SearchDirection.REVERSED );
 
-		final List< TestVertex > expectedVertices = CollectionUtils.createRefList( bundle.graph.vertices() );
+		final List< TestVertex > expectedVertices = RefCollections.createRefList( bundle.graph.vertices() );
 		expectedVertices.add( bundle.vertices.get( 3 ) );
 		expectedVertices.add( bundle.vertices.get( 2 ) );
 		expectedVertices.add( bundle.vertices.get( 1 ) );
 		expectedVertices.add( bundle.vertices.get( 0 ) );
 
-		final List< TestEdge > expectedEdges = CollectionUtils.createRefList( bundle.graph.edges() );
+		final List< TestEdge > expectedEdges = RefCollections.createRefList( bundle.graph.edges() );
 		expectedEdges.add( bundle.edges.get( 2 ) );
 		expectedEdges.add( bundle.edges.get( 1 ) );
 		expectedEdges.add( bundle.edges.get( 0 ) );

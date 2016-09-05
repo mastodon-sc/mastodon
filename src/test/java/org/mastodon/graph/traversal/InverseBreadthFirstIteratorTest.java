@@ -8,7 +8,7 @@ import java.util.Iterator;
 
 import org.junit.Test;
 import org.mastodon.collection.RefList;
-import org.mastodon.collection.util.CollectionUtils;
+import org.mastodon.collection.RefCollections;
 import org.mastodon.graph.TestEdge;
 import org.mastodon.graph.TestVertex;
 import org.mastodon.graph.algorithm.traversal.InverseBreadthFirstIterator;
@@ -31,7 +31,7 @@ public class InverseBreadthFirstIteratorTest
 		final TestVertex first = bundle.vertices.get( 5 );
 		final InverseBreadthFirstIterator< TestVertex, TestEdge > it = new InverseBreadthFirstIterator<>( first, bundle.graph );
 
-		final RefList< TestVertex > expected = CollectionUtils.createRefList( bundle.graph.vertices() );
+		final RefList< TestVertex > expected = RefCollections.createRefList( bundle.graph.vertices() );
 		expected.add( bundle.vertices.get( 5 ) );
 		expected.add( bundle.vertices.get( 4 ) );
 		expected.add( bundle.vertices.get( 3 ) );
@@ -57,7 +57,7 @@ public class InverseBreadthFirstIteratorTest
 		final ObjectVertex< Integer > first = bundle.vertices.get( 5 );
 		final InverseBreadthFirstIterator< ObjectVertex< Integer >, ObjectEdge< Integer >> it = new InverseBreadthFirstIterator<>( first, bundle.graph );
 
-		final RefList< ObjectVertex< Integer >> expected = CollectionUtils.createRefList( bundle.graph.vertices() );
+		final RefList< ObjectVertex< Integer >> expected = RefCollections.createRefList( bundle.graph.vertices() );
 		expected.add( bundle.vertices.get( 5 ) );
 		expected.add( bundle.vertices.get( 4 ) );
 		expected.add( bundle.vertices.get( 3 ) );
@@ -83,7 +83,7 @@ public class InverseBreadthFirstIteratorTest
 		final ObjectVertex< Integer > first = bundle.vertices.get( 1 );
 		final InverseBreadthFirstIterator< ObjectVertex< Integer >, ObjectEdge< Integer >> it = new InverseBreadthFirstIterator<>( first, bundle.graph );
 
-		final RefList< ObjectVertex< Integer >> expected = CollectionUtils.createRefList( bundle.graph.vertices() );
+		final RefList< ObjectVertex< Integer >> expected = RefCollections.createRefList( bundle.graph.vertices() );
 		expected.add( bundle.vertices.get( 1 ) );
 		expected.add( bundle.vertices.get( 0 ) );
 		final Iterator< ObjectVertex< Integer >> eit = expected.iterator();
@@ -105,7 +105,7 @@ public class InverseBreadthFirstIteratorTest
 		final TestVertex first = bundle.vertices.get( 1 );
 		final InverseBreadthFirstIterator< TestVertex, TestEdge > it = new InverseBreadthFirstIterator<>( first, bundle.graph );
 
-		final RefList< TestVertex > expected = CollectionUtils.createRefList( bundle.graph.vertices() );
+		final RefList< TestVertex > expected = RefCollections.createRefList( bundle.graph.vertices() );
 		expected.add( bundle.vertices.get( 1 ) );
 		expected.add( bundle.vertices.get( 0 ) );
 		final Iterator< TestVertex > eit = expected.iterator();
@@ -127,7 +127,7 @@ public class InverseBreadthFirstIteratorTest
 		final TestVertex first = bundle.vertices.get( 3 );
 		final InverseBreadthFirstIterator< TestVertex, TestEdge > it = new InverseBreadthFirstIterator<>( first, bundle.graph );
 
-		final RefList< TestVertex > expected = CollectionUtils.createRefList( bundle.graph.vertices() );
+		final RefList< TestVertex > expected = RefCollections.createRefList( bundle.graph.vertices() );
 		expected.add( bundle.vertices.get( 3 ) );
 		expected.add( bundle.vertices.get( 1 ) );
 		expected.add( bundle.vertices.get( 2 ) );
@@ -151,7 +151,7 @@ public class InverseBreadthFirstIteratorTest
 		final ObjectVertex< Integer > first = bundle.vertices.get( 3 );
 		final InverseBreadthFirstIterator< ObjectVertex< Integer >, ObjectEdge< Integer >> it = new InverseBreadthFirstIterator<>( first, bundle.graph );
 
-		final RefList< ObjectVertex< Integer >> expected = CollectionUtils.createRefList( bundle.graph.vertices() );
+		final RefList< ObjectVertex< Integer >> expected = RefCollections.createRefList( bundle.graph.vertices() );
 		expected.add( bundle.vertices.get( 3 ) );
 		expected.add( bundle.vertices.get( 1 ) );
 		expected.add( bundle.vertices.get( 2 ) );
@@ -175,7 +175,7 @@ public class InverseBreadthFirstIteratorTest
 		final ObjectVertex< Integer > first = bundle.vertices.get( 0 );
 		final InverseBreadthFirstIterator< ObjectVertex< Integer >, ObjectEdge< Integer >> it = new InverseBreadthFirstIterator<>( first, bundle.graph );
 
-		final RefList< ObjectVertex< Integer >> expected = CollectionUtils.createRefList( bundle.graph.vertices() );
+		final RefList< ObjectVertex< Integer >> expected = RefCollections.createRefList( bundle.graph.vertices() );
 		expected.add( bundle.vertices.get( 0 ) );
 		expected.add( bundle.vertices.get( 6 ) );
 		expected.add( bundle.vertices.get( 5 ) );
@@ -202,7 +202,7 @@ public class InverseBreadthFirstIteratorTest
 		final TestVertex first = bundle.vertices.get( 0 );
 		final InverseBreadthFirstIterator< TestVertex, TestEdge > it = new InverseBreadthFirstIterator<>( first, bundle.graph );
 
-		final RefList< TestVertex > expected = CollectionUtils.createRefList( bundle.graph.vertices() );
+		final RefList< TestVertex > expected = RefCollections.createRefList( bundle.graph.vertices() );
 		expected.add( bundle.vertices.get( 0 ) );
 		expected.add( bundle.vertices.get( 6 ) );
 		expected.add( bundle.vertices.get( 5 ) );
@@ -229,7 +229,7 @@ public class InverseBreadthFirstIteratorTest
 		final TestVertex first = bundle.vertices.get( 1 );
 		final InverseBreadthFirstIterator< TestVertex, TestEdge > it = new InverseBreadthFirstIterator<>( first, bundle.graph );
 
-		final RefList< TestVertex > expected = CollectionUtils.createRefList( bundle.graph.vertices() );
+		final RefList< TestVertex > expected = RefCollections.createRefList( bundle.graph.vertices() );
 		expected.add( bundle.vertices.get( 1 ) );
 		expected.add( bundle.vertices.get( 0 ) );
 		final Iterator< TestVertex > eit = expected.iterator();
@@ -251,7 +251,7 @@ public class InverseBreadthFirstIteratorTest
 		final ObjectVertex< Integer > first = bundle.vertices.get( 1 );
 		final InverseBreadthFirstIterator< ObjectVertex< Integer >, ObjectEdge< Integer >> it = new InverseBreadthFirstIterator<>( first, bundle.graph );
 
-		final RefList< ObjectVertex< Integer >> expected = CollectionUtils.createRefList( bundle.graph.vertices() );
+		final RefList< ObjectVertex< Integer >> expected = RefCollections.createRefList( bundle.graph.vertices() );
 		expected.add( bundle.vertices.get( 1 ) );
 		expected.add( bundle.vertices.get( 0 ) );
 		final Iterator< ObjectVertex< Integer >> eit = expected.iterator();
@@ -273,7 +273,7 @@ public class InverseBreadthFirstIteratorTest
 		final ObjectVertex< Integer > first = bundle.vertices.get( 0 );
 		final InverseBreadthFirstIterator< ObjectVertex< Integer >, ObjectEdge< Integer >> it = new InverseBreadthFirstIterator<>( first, bundle.graph );
 
-		final RefList< ObjectVertex< Integer >> expected = CollectionUtils.createRefList( bundle.graph.vertices() );
+		final RefList< ObjectVertex< Integer >> expected = RefCollections.createRefList( bundle.graph.vertices() );
 		expected.add( bundle.vertices.get( 0 ) );
 		final Iterator< ObjectVertex< Integer >> eit = expected.iterator();
 
@@ -294,7 +294,7 @@ public class InverseBreadthFirstIteratorTest
 		final TestVertex first = bundle.vertices.get( 0 );
 		final InverseBreadthFirstIterator< TestVertex, TestEdge > it = new InverseBreadthFirstIterator<>( first, bundle.graph );
 
-		final RefList< TestVertex > expected = CollectionUtils.createRefList( bundle.graph.vertices() );
+		final RefList< TestVertex > expected = RefCollections.createRefList( bundle.graph.vertices() );
 		expected.add( bundle.vertices.get( 0 ) );
 		final Iterator< TestVertex > eit = expected.iterator();
 
@@ -315,7 +315,7 @@ public class InverseBreadthFirstIteratorTest
 		final TestVertex first = bundle.vertices.get( 4 ); // E
 		final InverseBreadthFirstIterator< TestVertex, TestEdge > it = new InverseBreadthFirstIterator<>( first, bundle.graph );
 
-		final RefList< TestVertex > expected = CollectionUtils.createRefList( bundle.graph.vertices() );
+		final RefList< TestVertex > expected = RefCollections.createRefList( bundle.graph.vertices() );
 		expected.add( bundle.vertices.get( 4 ) );
 		expected.add( bundle.vertices.get( 0 ) );
 		expected.add( bundle.vertices.get( 5 ) );
@@ -339,7 +339,7 @@ public class InverseBreadthFirstIteratorTest
 		final ObjectVertex< Integer > first = bundle.vertices.get( 4 ); // E
 		final InverseBreadthFirstIterator< ObjectVertex< Integer >, ObjectEdge< Integer >> it = new InverseBreadthFirstIterator<>( first, bundle.graph );
 
-		final RefList< ObjectVertex< Integer >> expected = CollectionUtils.createRefList( bundle.graph.vertices() );
+		final RefList< ObjectVertex< Integer >> expected = RefCollections.createRefList( bundle.graph.vertices() );
 		expected.add( bundle.vertices.get( 4 ) );
 		expected.add( bundle.vertices.get( 0 ) );
 		expected.add( bundle.vertices.get( 5 ) );
@@ -363,7 +363,7 @@ public class InverseBreadthFirstIteratorTest
 		final ObjectVertex< Integer > first = bundle.vertices.get( 4 ); // E
 		final InverseBreadthFirstIterator< ObjectVertex< Integer >, ObjectEdge< Integer >> it = new InverseBreadthFirstIterator<>( first, bundle.graph );
 
-		final RefList< ObjectVertex< Integer >> expected = CollectionUtils.createRefList( bundle.graph.vertices() );
+		final RefList< ObjectVertex< Integer >> expected = RefCollections.createRefList( bundle.graph.vertices() );
 		expected.add( bundle.vertices.get( 4 ) );
 		expected.add( bundle.vertices.get( 0 ) );
 		expected.add( bundle.vertices.get( 5 ) );
@@ -387,7 +387,7 @@ public class InverseBreadthFirstIteratorTest
 		final TestVertex first = bundle.vertices.get( 4 ); // E
 		final InverseBreadthFirstIterator< TestVertex, TestEdge > it = new InverseBreadthFirstIterator<>( first, bundle.graph );
 
-		final RefList< TestVertex > expected = CollectionUtils.createRefList( bundle.graph.vertices() );
+		final RefList< TestVertex > expected = RefCollections.createRefList( bundle.graph.vertices() );
 		expected.add( bundle.vertices.get( 4 ) );
 		expected.add( bundle.vertices.get( 0 ) );
 		expected.add( bundle.vertices.get( 5 ) );
