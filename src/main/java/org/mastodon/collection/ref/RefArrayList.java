@@ -26,7 +26,7 @@ import gnu.trove.list.array.TIntArrayList;
  *
  * @author Tobias Pietzsch &lt;tobias.pietzsch@gmail.com&gt;
  */
-public class RefArrayList< O > implements IntBackedRefCollection< O >, RefList< O >
+public class RefArrayList< O > implements IntBackedRefCollection< O >, RefPoolBackedRefCollection< O >, RefList< O >
 {
 	private final TIntArrayList indices;
 
@@ -71,6 +71,12 @@ public class RefArrayList< O > implements IntBackedRefCollection< O >, RefList< 
 	public TIntArrayList getIndexCollection()
 	{
 		return indices;
+	}
+
+	@Override
+	public RefPool< O > getRefPool()
+	{
+		return pool;
 	}
 
 	@Override

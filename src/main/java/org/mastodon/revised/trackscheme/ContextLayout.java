@@ -1,6 +1,7 @@
 package org.mastodon.revised.trackscheme;
 
 import org.mastodon.collection.RefList;
+import org.mastodon.collection.util.CollectionUtils;
 import org.mastodon.revised.context.Context;
 
 /**
@@ -67,7 +68,7 @@ public class ContextLayout
 
 		final int ghostmark = layout.nextLayoutTimestamp();
 		final int mark = layout.nextLayoutTimestamp();
-		final RefList< TrackSchemeVertex > roots = graph.vertices().createRefList();
+		final RefList< TrackSchemeVertex > roots = CollectionUtils.createRefList( graph.vertices() );
 
 		context.readLock().lock();
 		try

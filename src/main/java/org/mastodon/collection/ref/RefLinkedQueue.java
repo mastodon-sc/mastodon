@@ -9,7 +9,7 @@ import gnu.trove.TIntCollection;
 import gnu.trove.iterator.TIntIterator;
 import gnu.trove.list.linked.TIntLinkedList;
 
-public class RefLinkedQueue< O > implements IntBackedRefCollection< O >
+public class RefLinkedQueue< O > implements IntBackedRefCollection< O >, RefPoolBackedRefCollection< O >
 {
 	private final RefPool< O > pool;
 
@@ -42,9 +42,36 @@ public class RefLinkedQueue< O > implements IntBackedRefCollection< O >
 	}
 
 	/*
-	 * QUEUE METHODS
+	 * REFCOLLECTION METHODS
 	 */
 
+	@Override
+	public TIntCollection getIndexCollection()
+	{
+		return queue;
+	}
+
+	@Override
+	public RefPool< O > getRefPool()
+	{
+		return pool;
+	}
+
+	@Override
+	public O createRef()
+	{
+		return pool.createRef();
+	}
+
+	@Override
+	public void releaseRef( final O obj )
+	{
+		pool.releaseRef( obj );
+	}
+
+	/*
+	 * QUEUE METHODS
+	 */
 
 	/**
 	 * Retrieves and removes the head of this queue. This method differs from
@@ -106,18 +133,6 @@ public class RefLinkedQueue< O > implements IntBackedRefCollection< O >
 	{
 		if ( queue.isEmpty() ) { return null; }
 		return element( obj );
-	}
-
-	@Override
-	public O createRef()
-	{
-		return pool.createRef();
-	}
-
-	@Override
-	public void releaseRef( final O obj )
-	{
-		pool.releaseRef( obj );
 	}
 
 	@Override
@@ -279,11 +294,5 @@ public class RefLinkedQueue< O > implements IntBackedRefCollection< O >
 			return arr;
 		}
 		return ( U[] ) toArray();
-	}
-
-	@Override
-	public TIntCollection getIndexCollection()
-	{
-		return queue;
 	}
 }

@@ -4,7 +4,7 @@ import java.util.Collection;
 
 /**
  * Interface for collections that can manage reference objects.
- * 
+ *
  * @param <O>
  *            the type of the object to manage in this collection.
  *
@@ -14,9 +14,8 @@ public interface RefCollection< O > extends Collection< O >
 {
 	/**
 	 * Generates an object reference that can be used for retrieval. Depending
-	 * on concrete implementation, this object returned can be
-	 * {@code null.}
-	 * 
+	 * on concrete implementation, the returned object can be {@code null.}
+	 *
 	 * @return a new, uninitialized, reference object.
 	 */
 	public O createRef();
@@ -24,7 +23,7 @@ public interface RefCollection< O > extends Collection< O >
 	/**
 	 * Releases a previously created reference object. Depending on concrete
 	 * implementation, this method might not do anything.
-	 * 
+	 *
 	 * @param obj
 	 *            the reference object to release.
 	 */

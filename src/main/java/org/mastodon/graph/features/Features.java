@@ -59,7 +59,7 @@ public final class Features< O >
 	 * {@link RawFeatureIO}.
 	 * <p>
 	 * Returns the feature map for the given {@code feature}. If the feature map
-	 * doesn't exist yet, it is created (
+	 * doesn't exist yet, it is created (see
 	 * {@link Feature#createFeatureMap(RefCollection)}) and
 	 * {@link CreateFeatureMapListener}s are notified.
 	 *

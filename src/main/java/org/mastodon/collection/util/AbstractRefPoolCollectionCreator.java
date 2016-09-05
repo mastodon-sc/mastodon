@@ -4,16 +4,7 @@ import java.util.Collection;
 
 import org.mastodon.RefPool;
 import org.mastodon.collection.RefCollection;
-import org.mastodon.collection.ref.IntRefHashMap;
-import org.mastodon.collection.ref.RefArrayDeque;
-import org.mastodon.collection.ref.RefArrayList;
-import org.mastodon.collection.ref.RefArrayStack;
-import org.mastodon.collection.ref.RefDoubleHashMap;
-import org.mastodon.collection.ref.RefIntHashMap;
-import org.mastodon.collection.ref.RefObjectHashMap;
-import org.mastodon.collection.ref.RefRefHashMap;
-import org.mastodon.collection.ref.RefSetImp;
-import org.mastodon.collection.util.CollectionUtils.CollectionCreator;
+import org.mastodon.collection.ref.RefPoolBackedRefCollection;
 
 /**
  * Base class for wrappers of {@link RefPool} that offer access to collections.
@@ -38,7 +29,7 @@ import org.mastodon.collection.util.CollectionUtils.CollectionCreator;
  *
  * @author Tobias Pietzsch &lt;tobias.pietzsch@gmail.com&gt;
  */
-public abstract class AbstractRefPoolCollectionCreator< O, P extends RefPool< O > > implements CollectionCreator< O >
+public abstract class AbstractRefPoolCollectionCreator< O, P extends RefPool< O > > implements RefPoolBackedRefCollection< O >
 {
 	protected final P pool;
 
@@ -57,6 +48,12 @@ public abstract class AbstractRefPoolCollectionCreator< O, P extends RefPool< O 
 	public void releaseRef( final O obj )
 	{
 		pool.releaseRef( obj );
+	}
+
+	@Override
+	public RefPool< O > getRefPool()
+	{
+		return pool;
 	}
 
 	@Override
@@ -169,133 +166,5 @@ public abstract class AbstractRefPoolCollectionCreator< O, P extends RefPool< O 
 	public void clear()
 	{
 		throw new UnsupportedOperationException();
-	}
-
-	/*
-	 * SetCreator
-	 */
-
-	@Override
-	public RefSetImp< O > createRefSet()
-	{
-		return new RefSetImp<>( pool );
-	}
-
-	@Override
-	public RefSetImp< O > createRefSet( final int initialCapacity )
-	{
-		return new RefSetImp<>( pool, initialCapacity );
-	}
-
-	/*
-	 * ListCreator
-	 */
-
-	@Override
-	public RefArrayList< O > createRefList()
-	{
-		return new RefArrayList<>( pool );
-	}
-
-	@Override
-	public RefArrayList< O > createRefList( final int initialCapacity )
-	{
-		return new RefArrayList<>( pool, initialCapacity );
-	}
-
-	/*
-	 * DequeCreator
-	 */
-
-	@Override
-	public RefArrayDeque< O > createRefDeque()
-	{
-		return new RefArrayDeque<>( pool );
-	}
-
-	@Override
-	public RefArrayDeque< O > createRefDeque( final int initialCapacity )
-	{
-		return new RefArrayDeque<>( pool, initialCapacity );
-	}
-
-	/*
-	 * StackCreator
-	 */
-
-	@Override
-	public RefArrayStack< O > createRefStack()
-	{
-		return new RefArrayStack<>( pool );
-	}
-
-	@Override
-	public RefArrayStack< O > createRefStack( final int initialCapacity )
-	{
-		return new RefArrayStack<>( pool, initialCapacity );
-	}
-
-	/*
-	 * MapCreator
-	 */
-
-	@Override
-	public < T > RefObjectHashMap< O, T > createRefObjectMap()
-	{
-		return new RefObjectHashMap<>( pool );
-	}
-
-	@Override
-	public < T > RefObjectHashMap< O, T > createRefObjectMap( final int initialCapacity )
-	{
-		return new RefObjectHashMap<>( pool, initialCapacity );
-	}
-
-	@Override
-	public RefRefHashMap< O, O > createRefRefMap()
-	{
-		return new RefRefHashMap<>( pool, pool );
-	}
-
-	@Override
-	public RefRefHashMap< O, O > createRefRefMap( final int initialCapacity )
-	{
-		return new RefRefHashMap<>( pool, pool, initialCapacity );
-	}
-
-	@Override
-	public RefIntHashMap< O > createRefIntMap(final int noEntryValue )
-	{
-		return new RefIntHashMap<>( pool, noEntryValue );
-	}
-
-	@Override
-	public RefIntHashMap< O > createRefIntMap( final int noEntryValue, final int initialCapacity )
-	{
-		return new RefIntHashMap<>( pool, noEntryValue, initialCapacity );
-	}
-
-	@Override
-	public IntRefHashMap< O > createIntRefMap( final int noEntryKey )
-	{
-		return new IntRefHashMap<>( pool, noEntryKey );
-	}
-
-	@Override
-	public IntRefHashMap< O > createIntRefMap( final int noEntryKey, final int initialCapacity )
-	{
-		return new IntRefHashMap<>( pool, noEntryKey, initialCapacity );
-	}
-
-	@Override
-	public RefDoubleHashMap< O > createRefDoubleMap( final double noEntryValue )
-	{
-		return new RefDoubleHashMap<>( pool, noEntryValue );
-	}
-
-	@Override
-	public RefDoubleHashMap< O > createRefDoubleMap( final double noEntryValue, final int initialCapacity )
-	{
-		return new RefDoubleHashMap<>( pool, noEntryValue, initialCapacity );
 	}
 }

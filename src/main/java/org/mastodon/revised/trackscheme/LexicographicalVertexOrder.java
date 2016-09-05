@@ -35,7 +35,7 @@ public class LexicographicalVertexOrder
 			keys.add( VertexKey.build( v, graph ) );
 		Collections.sort( keys );
 
-		final RefArrayList< TrackSchemeVertex > sorted = graph.vertices().createRefList( vertices.size() );
+		final RefArrayList< TrackSchemeVertex > sorted = new RefArrayList<>( graph.vertices().getRefPool(), vertices.size() );
 		final TIntArrayList indices = sorted.getIndexCollection();
 		for ( final VertexKey k : keys )
 			indices.add( k.getVertexInternalPoolIndex() );

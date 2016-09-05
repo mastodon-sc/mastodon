@@ -19,7 +19,7 @@ import gnu.trove.iterator.TIntIterator;
  *
  * @author Tobias Pietzsch &lt;tobias.pietzsch@gmail.com&gt;
  */
-public class RefArrayDeque< O > implements IntBackedRefCollection< O >, RefDeque< O >
+public class RefArrayDeque< O > implements IntBackedRefCollection< O >, RefPoolBackedRefCollection< O >, RefDeque< O >
 {
 	private final RefPool< O > pool;
 
@@ -42,7 +42,7 @@ public class RefArrayDeque< O > implements IntBackedRefCollection< O >, RefDeque
 	}
 
 	/*
-	 * POOL COLLECTION METHODS
+	 * REFCOLLECTION METHODS
 	 */
 
 	@Override
@@ -61,6 +61,12 @@ public class RefArrayDeque< O > implements IntBackedRefCollection< O >, RefDeque
 	public TIntArrayDeque getIndexCollection()
 	{
 		return indices;
+	}
+
+	@Override
+	public RefPool< O > getRefPool()
+	{
+		return pool;
 	}
 
 	/*

@@ -19,7 +19,7 @@ import gnu.trove.set.hash.TIntHashSet;
  *
  * @author Tobias Pietzsch &lt;tobias.pietzsch@gmail.com&gt;
  */
-public class RefSetImp< O > implements IntBackedRefCollection< O >, RefSet< O >
+public class RefSetImp< O > implements IntBackedRefCollection< O >, RefPoolBackedRefCollection< O >, RefSet< O >
 {
 	private final TIntSet indices;
 
@@ -64,6 +64,12 @@ public class RefSetImp< O > implements IntBackedRefCollection< O >, RefSet< O >
 	public TIntSet getIndexCollection()
 	{
 		return indices;
+	}
+
+	@Override
+	public RefPool< O > getRefPool()
+	{
+		return pool;
 	}
 
 	@Override

@@ -9,6 +9,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 
+import org.mastodon.RefPool;
 import org.mastodon.collection.IntRefMap;
 import org.mastodon.collection.RefCollection;
 import org.mastodon.collection.RefDeque;
@@ -19,6 +20,16 @@ import org.mastodon.collection.RefObjectMap;
 import org.mastodon.collection.RefRefMap;
 import org.mastodon.collection.RefSet;
 import org.mastodon.collection.RefStack;
+import org.mastodon.collection.ref.IntRefHashMap;
+import org.mastodon.collection.ref.RefArrayDeque;
+import org.mastodon.collection.ref.RefArrayList;
+import org.mastodon.collection.ref.RefArrayStack;
+import org.mastodon.collection.ref.RefDoubleHashMap;
+import org.mastodon.collection.ref.RefIntHashMap;
+import org.mastodon.collection.ref.RefObjectHashMap;
+import org.mastodon.collection.ref.RefPoolBackedRefCollection;
+import org.mastodon.collection.ref.RefRefHashMap;
+import org.mastodon.collection.ref.RefSetImp;
 import org.mastodon.collection.wrap.IntRefMapWrapper;
 import org.mastodon.collection.wrap.RefCollectionWrapper;
 import org.mastodon.collection.wrap.RefDoubleMapWrapper;
@@ -42,205 +53,172 @@ import org.mastodon.pool.Pool;
  */
 public class CollectionUtils
 {
-	public static interface SetCreator< O > extends RefCollection< O >
-	{
-		public RefSet< O > createRefSet();
-
-		public RefSet< O > createRefSet( final int initialCapacity );
-	}
-
-	public static interface ListCreator< O > extends RefCollection< O >
-	{
-		public RefList< O > createRefList();
-
-		public RefList< O > createRefList( final int initialCapacity );
-	}
-
-	public static interface DequeCreator< O > extends RefCollection< O >
-	{
-		public RefDeque< O > createRefDeque();
-
-		public RefDeque< O > createRefDeque( final int initialCapacity );
-	}
-
-	public static interface StackCreator< O > extends RefCollection< O >
-	{
-		public RefStack< O > createRefStack();
-
-		public RefStack< O > createRefStack( final int initialCapacity );
-	}
-
-	public static interface MapCreator< O > extends RefCollection< O >
-	{
-		public < T > RefObjectMap< O, T > createRefObjectMap();
-
-		public < T > RefObjectMap< O, T > createRefObjectMap( final int initialCapacity );
-
-		public RefRefMap< O, O > createRefRefMap();
-
-		public RefRefMap< O, O > createRefRefMap( final int initialCapacity );
-
-		public RefIntMap< O > createRefIntMap( final int noEntryValue );
-
-		public RefIntMap< O > createRefIntMap( final int noEntryValue, final int initialCapacity );
-
-		public IntRefMap< O > createIntRefMap( final int noEntryKey );
-
-		public IntRefMap< O > createIntRefMap( final int noEntryKey, final int initialCapacity );
-
-		public RefDoubleMap< O > createRefDoubleMap( final double noEntryValue );
-
-		public RefDoubleMap< O > createRefDoubleMap( final double noEntryValue, final int initialCapacity );
-	}
-
-	public static interface CollectionCreator< O > extends
-			SetCreator< O >,
-			ListCreator< O >,
-			DequeCreator< O >,
-			StackCreator< O >,
-			MapCreator< O >
-	{}
-
 	public static < O > RefSet< O > createRefSet( final RefCollection< O > collection )
 	{
-		if ( collection instanceof SetCreator )
-			return ( ( SetCreator< O > ) collection ).createRefSet();
+		final RefPool< O > pool = tryGetRefPool( collection );
+		if ( pool != null )
+			return new RefSetImp<>( pool );
 		else
 			return wrap( new HashSet< O >() );
 	}
 
 	public static < O > RefSet< O > createRefSet( final RefCollection< O > collection, final int initialCapacity )
 	{
-		if ( collection instanceof SetCreator )
-			return ( ( SetCreator< O > ) collection ).createRefSet( initialCapacity );
+		final RefPool< O > pool = tryGetRefPool( collection );
+		if ( pool != null )
+			return new RefSetImp<>( pool, initialCapacity );
 		else
 			return wrap( new HashSet< O >( initialCapacity ) );
 	}
 
 	public static < O > RefList< O > createRefList( final RefCollection< O > collection )
 	{
-		if ( collection instanceof ListCreator )
-			return ( ( ListCreator< O > ) collection ).createRefList();
+		final RefPool< O > pool = tryGetRefPool( collection );
+		if ( pool != null )
+			return new RefArrayList<>( pool );
 		else
 			return wrap( new ArrayList< O >() );
 	}
 
 	public static < O > RefList< O > createRefList( final RefCollection< O > collection, final int initialCapacity )
 	{
-		if ( collection instanceof ListCreator )
-			return ( ( ListCreator< O > ) collection ).createRefList( initialCapacity );
+		final RefPool< O > pool = tryGetRefPool( collection );
+		if ( pool != null )
+			return new RefArrayList<>( pool, initialCapacity );
 		else
 			return wrap( new ArrayList< O >( initialCapacity ) );
 	}
 
 	public static < O > RefDeque< O > createRefDeque( final RefCollection< O > collection )
 	{
-		if ( collection instanceof DequeCreator )
-			return ( ( DequeCreator< O > ) collection ).createRefDeque();
+		final RefPool< O > pool = tryGetRefPool( collection );
+		if ( pool != null )
+			return new RefArrayDeque<>( pool );
 		else
 			return wrap( new ArrayDeque< O >() );
 	}
 
 	public static < O > RefDeque< O > createRefDeque( final RefCollection< O > collection, final int initialCapacity )
 	{
-		if ( collection instanceof DequeCreator )
-			return ( ( DequeCreator< O > ) collection ).createRefDeque( initialCapacity );
+		final RefPool< O > pool = tryGetRefPool( collection );
+		if ( pool != null )
+			return new RefArrayDeque<>( pool, initialCapacity );
 		else
 			return wrap( new ArrayDeque< O >( initialCapacity ) );
 	}
 
 	public static < O > RefStack< O > createRefStack( final RefCollection< O > collection )
 	{
-		if ( collection instanceof StackCreator )
-			return ( ( StackCreator< O > ) collection ).createRefStack();
+		final RefPool< O > pool = tryGetRefPool( collection );
+		if ( pool != null )
+			return new RefArrayStack<>( pool );
 		else
 			return wrapAsStack( new ArrayDeque< O >() );
 	}
 
 	public static < O > RefStack< O > createRefStack( final RefCollection< O > collection, final int initialCapacity )
 	{
-		if ( collection instanceof StackCreator )
-			return ( ( StackCreator< O > ) collection ).createRefStack( initialCapacity );
+		final RefPool< O > pool = tryGetRefPool( collection );
+		if ( pool != null )
+			return new RefArrayStack<>( pool, initialCapacity );
 		else
 			return wrapAsStack( new ArrayDeque< O >( initialCapacity ) );
 	}
 
 	public static < O, T > RefObjectMap< O, T > createRefObjectMap( final RefCollection< O > collection )
 	{
-		if ( collection instanceof MapCreator )
-			return ( ( MapCreator< O > ) collection ).createRefObjectMap();
+		final RefPool< O > pool = tryGetRefPool( collection );
+		if ( pool != null )
+			return new RefObjectHashMap<>( pool );
 		else
 			return wrap( new HashMap< O, T >() );
 	}
 
 	public static < O, T > RefObjectMap< O, T > createRefObjectMap( final RefCollection< O > collection, final int initialCapacity )
 	{
-		if ( collection instanceof MapCreator )
-			return ( ( MapCreator< O > ) collection ).createRefObjectMap( initialCapacity );
+		final RefPool< O > pool = tryGetRefPool( collection );
+		if ( pool != null )
+			return new RefObjectHashMap<>( pool, initialCapacity );
 		else
 			return wrap( new HashMap< O, T >( initialCapacity ) );
 	}
 
 	public static < O > RefRefMap< O, O > createRefRefMap( final RefCollection< O > collection )
 	{
-		if ( collection instanceof MapCreator )
-			return ( ( MapCreator< O > ) collection ).createRefRefMap();
+		final RefPool< O > pool = tryGetRefPool( collection );
+		if ( pool != null )
+			return new RefRefHashMap<>( pool, pool );
 		else
 			return wrap( new HashMap< O, O >() );
 	}
 
 	public static < O > RefRefMap< O, O > createRefRefMap( final RefCollection< O > collection, final int initialCapacity )
 	{
-		if ( collection instanceof MapCreator )
-			return ( ( MapCreator< O > ) collection ).createRefRefMap( initialCapacity );
+		final RefPool< O > pool = tryGetRefPool( collection );
+		if ( pool != null )
+			return new RefRefHashMap<>( pool, pool, initialCapacity );
 		else
 			return wrap( new HashMap< O, O >( initialCapacity ) );
 	}
 
 	public static < O > RefIntMap< O > createRefIntMap( final RefCollection< O > collection, final int noEntryValue )
 	{
-		if ( collection instanceof MapCreator )
-			return ( ( MapCreator< O > ) collection ).createRefIntMap( noEntryValue );
+		final RefPool< O > pool = tryGetRefPool( collection );
+		if ( pool != null )
+			return new RefIntHashMap<>( pool, noEntryValue );
 		else
-			return new RefIntMapWrapper< O >( noEntryValue );
+			return new RefIntMapWrapper<>( noEntryValue );
 	}
 
 	public static < O > RefIntMap< O > createRefIntMap( final RefCollection< O > collection, final int noEntryValue, final int initialCapacity )
 	{
-		if ( collection instanceof MapCreator )
-			return ( ( MapCreator< O > ) collection ).createRefIntMap( noEntryValue, initialCapacity );
+		final RefPool< O > pool = tryGetRefPool( collection );
+		if ( pool != null )
+			return new RefIntHashMap<>( pool, noEntryValue, initialCapacity );
 		else
-			return new RefIntMapWrapper< O >( noEntryValue, initialCapacity );
+			return new RefIntMapWrapper<>( noEntryValue, initialCapacity );
 	}
 
 	public static < O > RefDoubleMap< O > createRefDoubleMap( final RefCollection< O > collection, final double noEntryValue )
 	{
-		if ( collection instanceof MapCreator )
-			return ( ( MapCreator< O > ) collection ).createRefDoubleMap( noEntryValue );
+		final RefPool< O > pool = tryGetRefPool( collection );
+		if ( pool != null )
+			return new RefDoubleHashMap<>( pool, noEntryValue );
 		else
-			return new RefDoubleMapWrapper< O >( noEntryValue );
+			return new RefDoubleMapWrapper<>( noEntryValue );
 	}
 
 	public static < O > RefDoubleMap< O > createRefDoubleMap( final RefCollection< O > collection, final double noEntryValue, final int initialCapacity )
 	{
-		if ( collection instanceof MapCreator )
-			return ( ( MapCreator< O > ) collection ).createRefDoubleMap( noEntryValue, initialCapacity );
+		final RefPool< O > pool = tryGetRefPool( collection );
+		if ( pool != null )
+			return new RefDoubleHashMap<>( pool, noEntryValue, initialCapacity );
 		else
-			return new RefDoubleMapWrapper< O >( noEntryValue, initialCapacity );
+			return new RefDoubleMapWrapper<>( noEntryValue, initialCapacity );
 	}
+
 	public static < O > IntRefMap< O > createIntRefMap( final RefCollection< O > collection, final int noEntryKey )
 	{
-		if ( collection instanceof MapCreator )
-			return ( ( MapCreator< O > ) collection ).createIntRefMap( noEntryKey );
+		final RefPool< O > pool = tryGetRefPool( collection );
+		if ( pool != null )
+			return new IntRefHashMap<>( pool, noEntryKey );
 		else
-			return new IntRefMapWrapper< O >( noEntryKey );
+			return new IntRefMapWrapper<>( noEntryKey );
 	}
 
 	public static < O > IntRefMap< O > createIntRefMap( final RefCollection< O > collection, final int noEntryKey, final int initialCapacity )
 	{
-		if ( collection instanceof MapCreator )
-			return ( ( MapCreator< O > ) collection ).createIntRefMap( noEntryKey, initialCapacity );
+		final RefPool< O > pool = tryGetRefPool( collection );
+		if ( pool != null )
+			return new IntRefHashMap<>( pool, noEntryKey, initialCapacity );
 		else
-			return new IntRefMapWrapper< O >( noEntryKey, initialCapacity );
+			return new IntRefMapWrapper<>( noEntryKey, initialCapacity );
+	}
+
+	private static < O > RefPool< O > tryGetRefPool( final RefCollection< O > collection )
+	{
+		return ( collection instanceof RefPoolBackedRefCollection )
+				? ( (org.mastodon.collection.ref.RefPoolBackedRefCollection< O > ) collection ).getRefPool()
+				: null;
 	}
 }
