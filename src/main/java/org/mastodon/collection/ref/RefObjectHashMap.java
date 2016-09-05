@@ -16,9 +16,9 @@ import gnu.trove.map.hash.TIntObjectHashMap;
  * Incomplete!
  * @author Tobias Pietzsch &lt;tobias.pietzsch@gmail.com&gt;
  */
-public class RefObjectHashMap< K, O > implements Map< K, O >, RefObjectMap< K, O >
+public class RefObjectHashMap< K, V > implements Map< K, V >, RefObjectMap< K, V >
 {
-	private final TIntObjectHashMap< O > indexmap;
+	private final TIntObjectHashMap< V > indexmap;
 
 	private final RefPool< K > pool;
 
@@ -28,14 +28,14 @@ public class RefObjectHashMap< K, O > implements Map< K, O >, RefObjectMap< K, O
 
 	public RefObjectHashMap( final RefPool< K > pool )
 	{
-		indexmap = new TIntObjectHashMap< O >();
+		indexmap = new TIntObjectHashMap<>();
 		this.pool = pool;
 		this.keyType = pool.getRefClass();
 	}
 
 	public RefObjectHashMap( final RefPool< K > pool, final int initialCapacity )
 	{
-		indexmap = new TIntObjectHashMap< O >( initialCapacity );
+		indexmap = new TIntObjectHashMap<>( initialCapacity );
 		this.pool = pool;
 		this.keyType = pool.getRefClass();
 	}
@@ -64,7 +64,7 @@ public class RefObjectHashMap< K, O > implements Map< K, O >, RefObjectMap< K, O
 
 	@SuppressWarnings( "unchecked" )
 	@Override
-	public O get( final Object key )
+	public V get( final Object key )
 	{
 		if ( keyType.isInstance( key ) )
 			return indexmap.get( pool.getId( ( K ) key ) );
@@ -79,14 +79,14 @@ public class RefObjectHashMap< K, O > implements Map< K, O >, RefObjectMap< K, O
 	}
 
 	@Override
-	public O put( final K key, final O value )
+	public V put( final K key, final V value )
 	{
 		return indexmap.put( pool.getId( key ), value );
 	}
 
 	@SuppressWarnings( "unchecked" )
 	@Override
-	public O remove( final Object key )
+	public V remove( final Object key )
 	{
 		if ( keyType.isInstance( key ) )
 			return indexmap.remove( pool.getId( ( K ) key ) );
@@ -101,7 +101,7 @@ public class RefObjectHashMap< K, O > implements Map< K, O >, RefObjectMap< K, O
 	}
 
 	@Override
-	public Collection< O > values()
+	public Collection< V > values()
 	{
 		return indexmap.valueCollection();
 	}
@@ -109,18 +109,18 @@ public class RefObjectHashMap< K, O > implements Map< K, O >, RefObjectMap< K, O
 	@Override
 	public RefSetImp< K > keySet()
 	{
-		return new RefSetImp< K >( pool, indexmap.keySet() );
+		return new RefSetImp<>( pool, indexmap.keySet() );
 	}
 
 	@Override
-	public void putAll( final Map< ? extends K, ? extends O > m )
+	public void putAll( final Map< ? extends K, ? extends V > m )
 	{
 		// TODO
 		throw new UnsupportedOperationException();
 	}
 
 	@Override
-	public Set< Entry< K, O > > entrySet()
+	public Set< Entry< K, V > > entrySet()
 	{
 		return ( entrySet == null ) ? ( entrySet = new EntrySet() ) : entrySet;
 	}
@@ -137,14 +137,14 @@ public class RefObjectHashMap< K, O > implements Map< K, O >, RefObjectMap< K, O
 		pool.releaseRef( obj );
 	}
 
-	final class EntrySet extends AbstractSet< Entry< K, O > >
+	final class EntrySet extends AbstractSet< Entry< K, V > >
 	{
 		@Override
-		public Iterator< Entry< K, O > > iterator()
+		public Iterator< Entry< K, V > > iterator()
 		{
-			final TIntObjectIterator< O > iter = indexmap.iterator();
+			final TIntObjectIterator< V > iter = indexmap.iterator();
 
-			final Entry< K, O > entry = new Entry< K, O >()
+			final Entry< K, V > entry = new Entry< K, V >()
 			{
 				final K ref = createKeyRef();
 
@@ -155,19 +155,19 @@ public class RefObjectHashMap< K, O > implements Map< K, O >, RefObjectMap< K, O
 				}
 
 				@Override
-				public O getValue()
+				public V getValue()
 				{
 					return iter.value();
 				}
 
 				@Override
-				public O setValue( final O value )
+				public V setValue( final V value )
 				{
 					return iter.setValue( value );
 				}
 			};
 
-			return new Iterator< Entry< K, O > >()
+			return new Iterator< Entry< K, V > >()
 			{
 				@Override
 				public boolean hasNext()
@@ -176,7 +176,7 @@ public class RefObjectHashMap< K, O > implements Map< K, O >, RefObjectMap< K, O
 				}
 
 				@Override
-				public Entry< K, O > next()
+				public Entry< K, V > next()
 				{
 					iter.advance();
 					return entry;
