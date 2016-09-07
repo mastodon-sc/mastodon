@@ -13,6 +13,7 @@ import org.mastodon.RefPool;
  *
  * @author Tobias Pietzsch &lt;tobias.pietzsch@gmail.com&gt;
  */
+// TOOD simplify and rename? This is just a pair of RefPools. "GraphRefPools", "GraphPools"? remove completely?
 public class GraphIdBimap< V, E >
 {
 	private final RefPool< V > vertexBimap;
