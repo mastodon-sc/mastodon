@@ -84,6 +84,14 @@ public class RawGraphIO
 			edges = new ObjectToFileIdMap<>( edgeIdToFileIndex, idmap.edgeIdBimap() );
 		}
 
+		public GraphToFileIdMap(
+				final ObjectToFileIdMap< V > vertexToFileIdMap,
+				final ObjectToFileIdMap< E > edgeToFileIdMap )
+		{
+			vertices = vertexToFileIdMap;
+			edges = edgeToFileIdMap;
+		}
+
 		public ObjectToFileIdMap< V > vertices()
 		{
 			return vertices;
@@ -148,6 +156,14 @@ public class RawGraphIO
 		{
 			vertices = new FileIdToObjectMap<>( fileIndexToVertexId, idmap.vertexIdBimap() );
 			edges = new FileIdToObjectMap<>( fileIndexToEdgeId, idmap.edgeIdBimap() );
+		}
+
+		public FileIdToGraphMap(
+				final FileIdToObjectMap< V > fileIdToVertexMap,
+				final FileIdToObjectMap< E > fileIdToEdgeMap )
+		{
+			vertices = fileIdToVertexMap;
+			edges = fileIdToEdgeMap;
 		}
 
 		public FileIdToObjectMap< V > vertices()
