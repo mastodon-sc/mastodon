@@ -5,8 +5,6 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 
 import org.mastodon.graph.io.RawFeatureIO.Serializer;
-import org.mastodon.graph.io.RawGraphIO.FileIdToObjectMap;
-import org.mastodon.graph.io.RawGraphIO.ObjectToFileIdMap;
 
 import gnu.trove.map.TObjectDoubleMap;
 import gnu.trove.map.hash.TIntDoubleHashMap;

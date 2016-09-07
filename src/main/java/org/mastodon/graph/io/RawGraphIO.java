@@ -4,14 +4,12 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 
-import org.mastodon.RefPool;
 import org.mastodon.graph.Edge;
 import org.mastodon.graph.Graph;
 import org.mastodon.graph.GraphIdBimap;
 import org.mastodon.graph.ReadOnlyGraph;
 import org.mastodon.graph.Vertex;
 
-import gnu.trove.map.TIntIntMap;
 import gnu.trove.map.hash.TIntIntHashMap;
 
 /**
@@ -49,40 +47,11 @@ public class RawGraphIO
 		public void notifyAdded( final O object );
 	}
 
-	public static final class ObjectToFileIdMap< O >
-	{
-		private final TIntIntMap objectIdToFileIndex;
-
-		private final RefPool< O > idmap;
-
-		public ObjectToFileIdMap(
-				final TIntIntMap objectIdToFileIndex,
-				final RefPool< O > idmap )
-		{
-			this.objectIdToFileIndex = objectIdToFileIndex;
-			this.idmap = idmap;
-		}
-
-		public int getId( final O object )
-		{
-			return objectIdToFileIndex.get( idmap.getId( object ) );
-		}
-	}
-
 	public static final class GraphToFileIdMap< V extends Vertex< E >, E extends Edge< V > >
 	{
 		private final ObjectToFileIdMap< V > vertices;
 
 		private final ObjectToFileIdMap< E > edges;
-
-		public GraphToFileIdMap(
-				final TIntIntMap vertexIdToFileIndex,
-				final TIntIntMap edgeIdToFileIndex,
-				final GraphIdBimap< V, E > idmap )
-		{
-			vertices = new ObjectToFileIdMap<>( vertexIdToFileIndex, idmap.vertexIdBimap() );
-			edges = new ObjectToFileIdMap<>( edgeIdToFileIndex, idmap.edgeIdBimap() );
-		}
 
 		public GraphToFileIdMap(
 				final ObjectToFileIdMap< V > vertexToFileIdMap,
@@ -101,46 +70,6 @@ public class RawGraphIO
 		{
 			return edges;
 		}
-
-		public int getVertexId( final V v )
-		{
-			return vertices.getId( v );
-		}
-
-		public int getEdgeId( final E e )
-		{
-			return edges.getId( e );
-		}
-	}
-
-	public static final class FileIdToObjectMap< O >
-	{
-		private final TIntIntMap fileIndexToObjectId;
-
-		private final RefPool< O > idmap;
-
-		public FileIdToObjectMap(
-				final TIntIntMap fileIndexToObjectId,
-				final RefPool< O > idmap )
-		{
-			this.fileIndexToObjectId = fileIndexToObjectId;
-			this.idmap = idmap;
-		}
-
-		public O getObject( final int id, final O ref )
-		{
-			return idmap.getObject( fileIndexToObjectId.get( id ), ref );
-		}
-
-		public O createRef()
-		{
-			return idmap.createRef();
-		}
-
-		public void releaseRef( final O ref )
-		{
-			idmap.releaseRef( ref );
-		}
 	}
 
 	public static final class FileIdToGraphMap< V extends Vertex< E >, E extends Edge< V > >
@@ -148,15 +77,6 @@ public class RawGraphIO
 		private final FileIdToObjectMap< V > vertices;
 
 		private final FileIdToObjectMap< E > edges;
-
-		public FileIdToGraphMap(
-				final TIntIntMap fileIndexToVertexId,
-				final TIntIntMap fileIndexToEdgeId,
-				final GraphIdBimap< V, E > idmap )
-		{
-			vertices = new FileIdToObjectMap<>( fileIndexToVertexId, idmap.vertexIdBimap() );
-			edges = new FileIdToObjectMap<>( fileIndexToEdgeId, idmap.edgeIdBimap() );
-		}
 
 		public FileIdToGraphMap(
 				final FileIdToObjectMap< V > fileIdToVertexMap,
@@ -174,36 +94,6 @@ public class RawGraphIO
 		public FileIdToObjectMap< E > edges()
 		{
 			return edges;
-		}
-
-		public V getVertex( final int id, final V ref )
-		{
-			return vertices.getObject( id, ref );
-		}
-
-		public E getEdge( final int id, final E ref )
-		{
-			return edges.getObject( id, ref );
-		}
-
-		public V vertexRef()
-		{
-			return vertices.createRef();
-		}
-
-		public E edgeRef()
-		{
-			return edges.createRef();
-		}
-
-		public void releaseRef( final V ref )
-		{
-			vertices.releaseRef( ref );
-		}
-
-		public void releaseRef( final E ref )
-		{
-			edges.releaseRef( ref );
 		}
 	}
 
@@ -269,7 +159,9 @@ public class RawGraphIO
 		}
 		graph.releaseRef( v );
 
-		return new GraphToFileIdMap<>( vertexIdToFileIndex, edgeIdToFileIndex, idmap );
+		final ObjectToFileIdMap< V > vertexToFileIdMap = new ObjectToFileIdMap<>( vertexIdToFileIndex, idmap.vertexIdBimap() );
+		final ObjectToFileIdMap< E > edgeToFileIdMap = new ObjectToFileIdMap<>( edgeIdToFileIndex, idmap.edgeIdBimap() );
+		return new GraphToFileIdMap<>( vertexToFileIdMap, edgeToFileIdMap );
 	}
 
 	public static < V extends Vertex< E >, E extends Edge< V > >
@@ -329,6 +221,8 @@ public class RawGraphIO
 		graph.releaseRef( v2 );
 		graph.releaseRef( e );
 
-		return new FileIdToGraphMap<>( fileIndexToVertexId, fileIndexToEdgeId, idmap );
+		final FileIdToObjectMap< V > fileIdToVertexMap = new FileIdToObjectMap<>( fileIndexToVertexId, idmap.vertexIdBimap() );
+		final FileIdToObjectMap< E > fileIdToEdgeMap = new FileIdToObjectMap<>( fileIndexToEdgeId, idmap.edgeIdBimap() );
+		return new FileIdToGraphMap<>( fileIdToVertexMap, fileIdToEdgeMap );
 	}
 }

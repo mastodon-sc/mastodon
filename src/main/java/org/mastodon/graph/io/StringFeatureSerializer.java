@@ -11,8 +11,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import org.mastodon.graph.io.RawFeatureIO.Serializer;
-import org.mastodon.graph.io.RawGraphIO.FileIdToObjectMap;
-import org.mastodon.graph.io.RawGraphIO.ObjectToFileIdMap;
 
 public class StringFeatureSerializer< O > implements Serializer< Map< O, String >, O >
 {
