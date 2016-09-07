@@ -147,12 +147,6 @@ public class RawGraphIO
 
 	public static final class FileIdToGraphMap< V extends Vertex< E >, E extends Edge< V > >
 	{
-		private final TIntIntMap fileIndexToVertexId;
-
-		private final TIntIntMap fileIndexToEdgeId;
-
-		private final GraphIdBimap< V, E > idmap;
-
 		private final FileIdToObjectMap< V > vertices;
 
 		private final FileIdToObjectMap< E > edges;
@@ -162,9 +156,6 @@ public class RawGraphIO
 				final TIntIntMap fileIndexToEdgeId,
 				final GraphIdBimap< V, E > idmap )
 		{
-			this.fileIndexToVertexId = fileIndexToVertexId;
-			this.fileIndexToEdgeId = fileIndexToEdgeId;
-			this.idmap = idmap;
 			vertices = new FileIdToObjectMap<>( fileIndexToVertexId, idmap.vertexIdBimap() );
 			edges = new FileIdToObjectMap<>( fileIndexToEdgeId, idmap.edgeIdBimap() );
 		}
@@ -181,32 +172,32 @@ public class RawGraphIO
 
 		public V getVertex( final int id, final V ref )
 		{
-			return idmap.getVertex( fileIndexToVertexId.get( id ), ref );
+			return vertices.getObject( id, ref );
 		}
 
 		public E getEdge( final int id, final E ref )
 		{
-			return idmap.getEdge( fileIndexToEdgeId.get( id ), ref );
+			return edges.getObject( id, ref );
 		}
 
 		public V vertexRef()
 		{
-			return idmap.vertexIdBimap().createRef();
+			return vertices.createRef();
 		}
 
 		public E edgeRef()
 		{
-			return idmap.edgeIdBimap().createRef();
+			return edges.createRef();
 		}
 
 		public void releaseRef( final V ref )
 		{
-			idmap.vertexIdBimap().releaseRef( ref );
+			vertices.releaseRef( ref );
 		}
 
 		public void releaseRef( final E ref )
 		{
-			idmap.edgeIdBimap().releaseRef( ref );
+			edges.releaseRef( ref );
 		}
 	}
 
