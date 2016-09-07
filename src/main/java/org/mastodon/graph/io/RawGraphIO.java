@@ -33,21 +33,20 @@ public class RawGraphIO
 	 */
 	public static interface Serializer< V extends Vertex< E >, E extends Edge< V > >
 	{
-		public int getVertexNumBytes();
+		public ObjectSerializer< V > getVertexSerializer();
 
-		public void getBytes( final V vertex, final byte[] bytes );
+		public ObjectSerializer< E > getEdgeSerializer();
+	}
 
-		public void setBytes( final V vertex, final byte[] bytes );
+	public static interface ObjectSerializer< O >
+	{
+		public int getNumBytes();
 
-		public void notifyVertexAdded( final V vertex );
+		public void getBytes( final O object, final byte[] bytes );
 
-		public int getEdgeNumBytes();
+		public void setBytes( final O object, final byte[] bytes );
 
-		public void getBytes( final E edge, final byte[] bytes );
-
-		public void setBytes( final E edge, final byte[] bytes );
-
-		public void notifyEdgeAdded( final E edge );
+		public void notifyAdded( final O object );
 	}
 
 	public static final class ObjectToFileIdMap< O >
@@ -203,15 +202,18 @@ public class RawGraphIO
 		final int numVertices = graph.vertices().size();
 		oos.writeInt( numVertices );
 
-		final byte[] vbytes = new byte[ io.getVertexNumBytes() ];
-		final boolean writeVertexBytes = io.getVertexNumBytes() > 0;
+		final ObjectSerializer< V > vio = io.getVertexSerializer();
+		final ObjectSerializer< E > eio = io.getEdgeSerializer();
+
+		final byte[] vbytes = new byte[ vio.getNumBytes() ];
+		final boolean writeVertexBytes = vio.getNumBytes() > 0;
 		final TIntIntHashMap vertexIdToFileIndex = new TIntIntHashMap( 2 * numVertices, 0.75f, -1, -1 );
 		int i = 0;
 		for ( final V v : graph.vertices() )
 		{
 			if ( writeVertexBytes )
 			{
-				io.getBytes( v, vbytes );
+				vio.getBytes( v, vbytes );
 				oos.write( vbytes );
 			}
 
@@ -223,8 +225,8 @@ public class RawGraphIO
 		final int numEdges = graph.edges().size();
 		oos.writeInt( numEdges );
 
-		final byte[] ebytes = new byte[ io.getEdgeNumBytes() ];
-		final boolean writeEdgeBytes = io.getEdgeNumBytes() > 0;
+		final byte[] ebytes = new byte[ eio.getNumBytes() ];
+		final boolean writeEdgeBytes = eio.getNumBytes() > 0;
 		final V v = graph.vertexRef();
 		final TIntIntHashMap edgeIdToFileIndex = new TIntIntHashMap( 2 * numEdges, 0.75f, -1, -1 );
 		i = 0;
@@ -241,7 +243,7 @@ public class RawGraphIO
 
 			if ( writeEdgeBytes )
 			{
-				io.getBytes( e, ebytes );
+				eio.getBytes( e, ebytes );
 				oos.write( ebytes );
 			}
 
@@ -267,8 +269,11 @@ public class RawGraphIO
 		final V v2 = graph.vertexRef();
 		final E e = graph.edgeRef();
 
-		final byte[] vbytes = new byte[ io.getVertexNumBytes() ];
-		final boolean readVertexBytes = io.getVertexNumBytes() > 0;
+		final ObjectSerializer< V > vio = io.getVertexSerializer();
+		final ObjectSerializer< E > eio = io.getEdgeSerializer();
+
+		final byte[] vbytes = new byte[ vio.getNumBytes() ];
+		final boolean readVertexBytes = vio.getNumBytes() > 0;
 		final TIntIntHashMap fileIndexToVertexId = new TIntIntHashMap( 2 * numVertices, 0.75f, -1, -1 );
 		for ( int i = 0; i < numVertices; ++i )
 		{
@@ -276,15 +281,15 @@ public class RawGraphIO
 			if ( readVertexBytes )
 			{
 				ois.readFully( vbytes );
-				io.setBytes( v1, vbytes );
+				vio.setBytes( v1, vbytes );
 			}
-			io.notifyVertexAdded( v1 );
+			vio.notifyAdded( v1 );
 			fileIndexToVertexId.put( i, idmap.getVertexId( v1 ) );
 		}
 
 		final int numEdges = ois.readInt();
-		final byte[] ebytes = new byte[ io.getEdgeNumBytes() ];
-		final boolean readEdgeBytes = io.getEdgeNumBytes() > 0;
+		final byte[] ebytes = new byte[ eio.getNumBytes() ];
+		final boolean readEdgeBytes = eio.getNumBytes() > 0;
 		final TIntIntHashMap fileIndexToEdgeId = new TIntIntHashMap( 2 * numEdges, 0.75f, -1, -1 );
 		for ( int i = 0; i < numEdges; ++i )
 		{
@@ -298,9 +303,9 @@ public class RawGraphIO
 			if ( readEdgeBytes )
 			{
 				ois.readFully( ebytes );
-				io.setBytes( e, ebytes );
+				eio.setBytes( e, ebytes );
 			}
-			io.notifyEdgeAdded( e );
+			eio.notifyAdded( e );
 			fileIndexToEdgeId.put( i, idmap.getEdgeId( e ) );
 		}
 

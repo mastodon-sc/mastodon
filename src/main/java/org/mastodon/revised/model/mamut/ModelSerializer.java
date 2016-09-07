@@ -1,52 +1,58 @@
 package org.mastodon.revised.model.mamut;
 
+import org.mastodon.graph.io.RawGraphIO.ObjectSerializer;
 import org.mastodon.graph.io.RawGraphIO.Serializer;
 import org.mastodon.undo.GraphUndoSerializer;
 
 class ModelSerializer implements Serializer< Spot, Link >, GraphUndoSerializer< Spot, Link >
 {
-	private final int VERTEX_NUM_BYTES = Spot.SIZE_IN_BYTES - Spot.X_OFFSET;
-	private final int VERTEX_DATA_START = Spot.X_OFFSET;
-
 	@Override
 	public int getVertexNumBytes()
 	{
-		return VERTEX_NUM_BYTES;
+		return vertexSerializer.getNumBytes();
 	}
 
 	@Override
 	public void getBytes( final Spot vertex, final byte[] bytes )
 	{
-		for ( int i = 0; i < VERTEX_NUM_BYTES; ++i )
-			bytes[ i ] = vertex.getAccess().getByte( VERTEX_DATA_START + i );
+		vertexSerializer.getBytes( vertex, bytes );
 	}
 
 	@Override
 	public void setBytes( final Spot vertex, final byte[] bytes )
 	{
-		for ( int i = 0; i < VERTEX_NUM_BYTES; ++i )
-			vertex.getAccess().putByte( bytes[ i ], VERTEX_DATA_START + i );
+		vertexSerializer.setBytes( vertex, bytes );
 	}
 
 	@Override
 	public void notifyVertexAdded( final Spot vertex )
 	{
-		vertex.notifyVertexAdded();
+		vertexSerializer.notifyAdded( vertex );
 	}
 
 	@Override
 	public int getEdgeNumBytes()
 	{
-		return 0;
+		return edgeSerializer.getNumBytes();
 	}
 
 	@Override
 	public void getBytes( final Link edge, final byte[] bytes )
-	{}
+	{
+		edgeSerializer.getBytes( edge, bytes );
+	}
 
 	@Override
 	public void setBytes( final Link edge, final byte[] bytes )
-	{}
+	{
+		edgeSerializer.setBytes( edge, bytes );
+	}
+
+	@Override
+	public void notifyEdgeAdded( final Link edge )
+	{
+		edgeSerializer.notifyAdded( edge );
+	}
 
 	private ModelSerializer()
 	{}
@@ -58,9 +64,74 @@ class ModelSerializer implements Serializer< Spot, Link >, GraphUndoSerializer< 
 		return instance;
 	}
 
+	private final SpotSerializer vertexSerializer = new SpotSerializer();
+
+	private final LinkSerializer edgeSerializer = new LinkSerializer();
+
 	@Override
-	public void notifyEdgeAdded( final Link edge )
+	public ObjectSerializer< Spot > getVertexSerializer()
 	{
-		edge.notifyEdgeAdded();
+		return vertexSerializer;
+	}
+
+	@Override
+	public ObjectSerializer< Link > getEdgeSerializer()
+	{
+		return edgeSerializer;
+	}
+
+	static class SpotSerializer implements ObjectSerializer< Spot >
+	{
+		private final int VERTEX_NUM_BYTES = Spot.SIZE_IN_BYTES - Spot.X_OFFSET;
+		private final int VERTEX_DATA_START = Spot.X_OFFSET;
+
+		@Override
+		public int getNumBytes()
+		{
+			return VERTEX_NUM_BYTES;
+		}
+
+		@Override
+		public void getBytes( final Spot vertex, final byte[] bytes )
+		{
+			for ( int i = 0; i < VERTEX_NUM_BYTES; ++i )
+				bytes[ i ] = vertex.getAccess().getByte( VERTEX_DATA_START + i );
+		}
+
+		@Override
+		public void setBytes( final Spot vertex, final byte[] bytes )
+		{
+			for ( int i = 0; i < VERTEX_NUM_BYTES; ++i )
+				vertex.getAccess().putByte( bytes[ i ], VERTEX_DATA_START + i );
+		}
+
+		@Override
+		public void notifyAdded( final Spot vertex )
+		{
+			vertex.notifyVertexAdded();
+		}
+	}
+
+	static class LinkSerializer implements ObjectSerializer< Link >
+	{
+		@Override
+		public int getNumBytes()
+		{
+			return 0;
+		}
+
+		@Override
+		public void getBytes( final Link edge, final byte[] bytes )
+		{}
+
+		@Override
+		public void setBytes( final Link edge, final byte[] bytes )
+		{}
+
+		@Override
+		public void notifyAdded( final Link edge )
+		{
+			edge.notifyEdgeAdded();
+		}
 	}
 }
