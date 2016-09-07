@@ -1,8 +1,5 @@
 package org.mastodon.revised.mamut;
 
-import static mpicbg.spim.data.XmlKeys.SPIMDATA_VERSION_ATTRIBUTE_CURRENT;
-import static mpicbg.spim.data.XmlKeys.SPIMDATA_VERSION_ATTRIBUTE_NAME;
-
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -20,7 +17,7 @@ public class MamutProjectIO
 {
 	public static final String MAMUTPROJECT_TAG = "MamutProject";
 	public static final String MAMUTPROJECT_VERSION_ATTRIBUTE_NAME = "version";
-	public static final String MAMUTPROJECT_VERSION_ATTRIBUTE_CURRENT = "0.0000000001";
+	public static final String MAMUTPROJECT_VERSION_ATTRIBUTE_CURRENT = "0.1";
 	public static final String BASEPATH_TAG = "BasePath";
 	public static final String SPIMDATAFILE_TAG = "SpimDataFile";
 	public static final String RAWMODELFILE_TAG = "RawModelFile";
@@ -56,7 +53,7 @@ public class MamutProjectIO
 	public Element toXml( final MamutProject project, final File xmlFileDirectory )
 	{
 		final Element root = new Element( MAMUTPROJECT_TAG );
-		root.setAttribute( SPIMDATA_VERSION_ATTRIBUTE_NAME, SPIMDATA_VERSION_ATTRIBUTE_CURRENT );
+		root.setAttribute( MAMUTPROJECT_VERSION_ATTRIBUTE_NAME, MAMUTPROJECT_VERSION_ATTRIBUTE_CURRENT );
 		root.addContent( XmlHelpers.pathElement( BASEPATH_TAG, project.getBasePath(), xmlFileDirectory ) );
 		root.addContent( XmlHelpers.pathElement( SPIMDATAFILE_TAG, project.getDatasetXmlFile(), project.getBasePath() ) );
 		root.addContent( XmlHelpers.pathElement( RAWMODELFILE_TAG, project.getRawModelFile(), project.getBasePath() ) );
