@@ -72,12 +72,6 @@ public class RawGraphIO
 
 	public static final class GraphToFileIdMap< V extends Vertex< E >, E extends Edge< V > >
 	{
-		private final TIntIntMap vertexIdToFileIndex;
-
-		private final TIntIntMap edgeIdToFileIndex;
-
-		private final GraphIdBimap< V, E > idmap;
-
 		private final ObjectToFileIdMap< V > vertices;
 
 		private final ObjectToFileIdMap< E > edges;
@@ -87,9 +81,6 @@ public class RawGraphIO
 				final TIntIntMap edgeIdToFileIndex,
 				final GraphIdBimap< V, E > idmap )
 		{
-			this.vertexIdToFileIndex = vertexIdToFileIndex;
-			this.edgeIdToFileIndex = edgeIdToFileIndex;
-			this.idmap = idmap;
 			vertices = new ObjectToFileIdMap<>( vertexIdToFileIndex, idmap.vertexIdBimap() );
 			edges = new ObjectToFileIdMap<>( edgeIdToFileIndex, idmap.edgeIdBimap() );
 		}
@@ -106,12 +97,12 @@ public class RawGraphIO
 
 		public int getVertexId( final V v )
 		{
-			return vertexIdToFileIndex.get( idmap.getVertexId( v ) );
+			return vertices.getId( v );
 		}
 
 		public int getEdgeId( final E e )
 		{
-			return edgeIdToFileIndex.get( idmap.getEdgeId( e ) );
+			return edges.getId( e );
 		}
 	}
 
