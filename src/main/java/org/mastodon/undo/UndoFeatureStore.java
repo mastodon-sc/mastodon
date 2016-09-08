@@ -4,9 +4,9 @@ import java.util.ArrayList;
 import java.util.Map;
 
 import org.mastodon.collection.UniqueHashcodeArrayMap;
-import org.mastodon.graph.features.Feature;
-import org.mastodon.graph.features.Features;
-import org.mastodon.graph.features.UndoFeatureMap;
+import org.mastodon.features.Feature;
+import org.mastodon.features.Features;
+import org.mastodon.features.UndoFeatureMap;
 
 /**
  * TODO javadoc

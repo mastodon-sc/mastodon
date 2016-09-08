@@ -3,10 +3,10 @@ package org.mastodon.graph.ref;
 import java.util.Map;
 
 import org.mastodon.collection.UniqueHashcodeArrayMap;
+import org.mastodon.features.Feature;
+import org.mastodon.features.FeatureValue;
+import org.mastodon.features.Features;
 import org.mastodon.graph.EdgeWithFeatures;
-import org.mastodon.graph.FeatureValue;
-import org.mastodon.graph.features.Feature;
-import org.mastodon.graph.features.Features;
 import org.mastodon.pool.MappedElement;
 
 public class AbstractEdgeWithFeatures< E extends AbstractEdgeWithFeatures< E, V, T >, V extends AbstractVertex< V, ?, ? >, T extends MappedElement >

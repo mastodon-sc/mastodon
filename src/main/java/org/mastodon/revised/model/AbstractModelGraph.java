@@ -9,16 +9,16 @@ import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.mastodon.features.Feature;
 import org.mastodon.graph.GraphChangeNotifier;
 import org.mastodon.graph.GraphIdBimap;
-import org.mastodon.graph.features.Feature;
-import org.mastodon.graph.io.RawFeatureIO;
 import org.mastodon.graph.io.RawGraphIO;
 import org.mastodon.graph.io.RawGraphIO.FileIdToGraphMap;
 import org.mastodon.graph.io.RawGraphIO.GraphToFileIdMap;
 import org.mastodon.graph.ref.AbstractListenableEdge;
 import org.mastodon.graph.ref.AbstractListenableEdgePool;
 import org.mastodon.graph.ref.ListenableGraphImp;
+import org.mastodon.io.features.RawFeatureIO;
 import org.mastodon.pool.MappedElement;
 import org.mastodon.spatial.VertexPositionChangeProvider;
 import org.mastodon.spatial.VertexPositionListener;

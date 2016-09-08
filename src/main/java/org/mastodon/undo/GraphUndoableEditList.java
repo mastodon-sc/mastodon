@@ -3,9 +3,9 @@ package org.mastodon.undo;
 import org.mastodon.graph.Edge;
 import org.mastodon.graph.ListenableGraph;
 import org.mastodon.graph.Vertex;
-import org.mastodon.graph.features.Feature;
-import org.mastodon.graph.features.FeatureRegistry;
-import org.mastodon.graph.features.Features;
+import org.mastodon.features.Feature;
+import org.mastodon.features.FeatureRegistry;
+import org.mastodon.features.Features;
 import org.mastodon.undo.attributes.Attribute;
 import org.mastodon.undo.attributes.Attributes;
 

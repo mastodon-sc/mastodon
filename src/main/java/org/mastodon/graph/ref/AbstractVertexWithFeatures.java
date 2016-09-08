@@ -3,10 +3,10 @@ package org.mastodon.graph.ref;
 import java.util.Map;
 
 import org.mastodon.collection.UniqueHashcodeArrayMap;
-import org.mastodon.graph.FeatureValue;
+import org.mastodon.features.Feature;
+import org.mastodon.features.FeatureValue;
+import org.mastodon.features.Features;
 import org.mastodon.graph.VertexWithFeatures;
-import org.mastodon.graph.features.Feature;
-import org.mastodon.graph.features.Features;
 import org.mastodon.pool.MappedElement;
 
 /**

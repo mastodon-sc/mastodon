@@ -2,7 +2,7 @@ package org.mastodon.graph.revised;
 
 import java.util.Random;
 
-import org.mastodon.graph.features.IntFeature;
+import org.mastodon.features.IntFeature;
 import org.mastodon.revised.model.mamut.Model;
 import org.mastodon.revised.model.mamut.Spot;
 

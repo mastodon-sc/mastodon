@@ -1,6 +1,6 @@
 package org.mastodon.graph.ref;
 
-import org.mastodon.graph.features.Features;
+import org.mastodon.features.Features;
 import org.mastodon.pool.MappedElement;
 
 public class GraphWithFeaturesImp<

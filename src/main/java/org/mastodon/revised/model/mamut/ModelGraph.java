@@ -3,7 +3,7 @@ package org.mastodon.revised.model.mamut;
 import java.util.ArrayList;
 
 import org.mastodon.graph.GraphIdBimap;
-import org.mastodon.graph.features.Features;
+import org.mastodon.features.Features;
 import org.mastodon.graph.ref.AbstractListenableEdgePool;
 import org.mastodon.pool.ByteMappedElement;
 import org.mastodon.pool.ByteMappedElementArray;

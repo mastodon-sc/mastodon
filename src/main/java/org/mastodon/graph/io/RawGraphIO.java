@@ -9,6 +9,8 @@ import org.mastodon.graph.Graph;
 import org.mastodon.graph.GraphIdBimap;
 import org.mastodon.graph.ReadOnlyGraph;
 import org.mastodon.graph.Vertex;
+import org.mastodon.io.FileIdToObjectMap;
+import org.mastodon.io.ObjectToFileIdMap;
 
 import gnu.trove.map.hash.TIntIntHashMap;
 

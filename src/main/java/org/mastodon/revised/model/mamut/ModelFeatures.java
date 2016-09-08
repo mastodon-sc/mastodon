@@ -1,8 +1,8 @@
 package org.mastodon.revised.model.mamut;
 
-import org.mastodon.graph.features.ObjFeature;
-import org.mastodon.graph.io.FeatureSerializers;
-import org.mastodon.graph.io.StringFeatureSerializer;
+import org.mastodon.features.ObjFeature;
+import org.mastodon.io.features.FeatureSerializers;
+import org.mastodon.io.features.StringFeatureSerializer;
 
 public class ModelFeatures
 {

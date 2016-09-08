@@ -4,13 +4,11 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Random;
 
-import org.mastodon.graph.features.IntFeature;
-import org.mastodon.graph.features.ObjFeature;
-import org.mastodon.graph.io.FeatureSerializers;
-import org.mastodon.graph.io.IntFeatureSerializer;
-import org.mastodon.graph.io.StringFeatureSerializer;
-import org.mastodon.revised.model.mamut.Model;
-import org.mastodon.revised.model.mamut.Spot;
+import org.mastodon.features.IntFeature;
+import org.mastodon.features.ObjFeature;
+import org.mastodon.io.features.FeatureSerializers;
+import org.mastodon.io.features.IntFeatureSerializer;
+import org.mastodon.io.features.StringFeatureSerializer;
 
 public class FeaturesExample
 {

@@ -2,7 +2,7 @@ package org.mastodon.undo.attributes;
 
 import java.util.ArrayList;
 
-import org.mastodon.graph.features.Features;
+import org.mastodon.features.Features;
 
 import gnu.trove.map.TIntObjectArrayMap;
 import gnu.trove.map.TIntObjectMap;
