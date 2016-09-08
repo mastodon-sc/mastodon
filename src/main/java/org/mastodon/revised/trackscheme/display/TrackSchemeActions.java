@@ -13,9 +13,11 @@ public class TrackSchemeActions extends AbstractActions
 {
 	public static final String EDIT_FOCUS = "ts edit focused vertex label";
 	public static final String TOGGLE_SETTINGS_PANEL = "ts toggle settings panel";
+	public static final String SEARCH = "ts search";
 
-	public static final String[] EDIT_FOCUS_KEYS = new String[] { "ENTER" };
+	public static final String[] EDIT_FOCUS_KEYS = new String[] { "shift ENTER" };
 	public static final String[] TOGGLE_SETTINGS_PANEL_KEYS = new String[] { "T" };
+	public static final String[] SEARCH_KEYS = new String[] { "control F" };
 
 
 	/**
@@ -37,6 +39,9 @@ public class TrackSchemeActions extends AbstractActions
 		actions.runnableAction(
 				() -> frame.setSettingsPanelVisible( !frame.isSettingsPanelVisible() ),
 				TOGGLE_SETTINGS_PANEL, TOGGLE_SETTINGS_PANEL_KEYS );
+		actions.runnableAction(
+				() -> frame.searchField.requestFocusInWindow(),
+				SEARCH, SEARCH_KEYS );
 	}
 
 	public TrackSchemeActions(
