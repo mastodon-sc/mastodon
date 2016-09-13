@@ -19,6 +19,7 @@ import javax.swing.UIManager;
 
 import org.mastodon.graph.GraphChangeListener;
 import org.mastodon.graph.algorithm.traversal.BreadthFirstIterator;
+import org.mastodon.revised.trackscheme.LexicographicalVertexOrder;
 import org.mastodon.revised.trackscheme.TrackSchemeEdge;
 import org.mastodon.revised.trackscheme.TrackSchemeGraph;
 import org.mastodon.revised.trackscheme.TrackSchemeNavigation;
@@ -177,7 +178,7 @@ public class TrackSchemeSearchPanel extends JPanel
 		private synchronized void reinit()
 		{
 			if ( null == rootIterator || !rootIterator.hasNext() )
-				rootIterator = graph.getRoots().iterator();
+				rootIterator = LexicographicalVertexOrder.sort( graph, graph.getRoots() ).iterator();
 
 			final TrackSchemeVertex root = rootIterator.next();
 			iterator = new BreadthFirstIterator< TrackSchemeVertex, TrackSchemeEdge >( root, graph );
