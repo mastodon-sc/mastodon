@@ -18,6 +18,8 @@ import javax.swing.JTextField;
 import javax.swing.UIManager;
 
 import org.mastodon.graph.GraphChangeListener;
+import org.mastodon.graph.algorithm.traversal.BreadthFirstIterator;
+import org.mastodon.revised.trackscheme.TrackSchemeEdge;
 import org.mastodon.revised.trackscheme.TrackSchemeGraph;
 import org.mastodon.revised.trackscheme.TrackSchemeNavigation;
 import org.mastodon.revised.trackscheme.TrackSchemeVertex;
@@ -117,9 +119,12 @@ public class TrackSchemeSearchPanel extends JPanel
 	{
 		private Iterator< TrackSchemeVertex > iterator;
 
+		private Iterator< TrackSchemeVertex > rootIterator;
+
 		private final TrackSchemeGraph< ?, ? > graph;
 
 		private final TrackSchemeNavigation navigation;
+
 
 		public SearchAction( final TrackSchemeGraph< ?, ? > graph, final TrackSchemeNavigation navigation )
 		{
@@ -165,7 +170,11 @@ public class TrackSchemeSearchPanel extends JPanel
 
 		private synchronized void reinit()
 		{
-			iterator = graph.vertices().iterator();
+			if ( null == rootIterator || !rootIterator.hasNext() )
+				rootIterator = graph.getRoots().iterator();
+
+			final TrackSchemeVertex root = rootIterator.next();
+			iterator = new BreadthFirstIterator< TrackSchemeVertex, TrackSchemeEdge >( root, graph );
 		}
 	}
 
