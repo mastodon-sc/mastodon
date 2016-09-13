@@ -24,6 +24,7 @@ import org.mastodon.revised.bdv.overlay.EditBehaviours;
 import org.mastodon.revised.bdv.overlay.EditSpecialBehaviours;
 import org.mastodon.revised.bdv.overlay.OverlayContext;
 import org.mastodon.revised.bdv.overlay.OverlayGraphRenderer;
+import org.mastodon.revised.bdv.overlay.OverlayGraphStyle;
 import org.mastodon.revised.bdv.overlay.RenderSettings;
 import org.mastodon.revised.bdv.overlay.RenderSettings.UpdateListener;
 import org.mastodon.revised.bdv.overlay.ui.RenderSettingsDialog;
@@ -385,7 +386,8 @@ public class WindowManager
 		final OverlayGraphRenderer< OverlayVertexWrapper< Spot, Link >, OverlayEdgeWrapper< Spot, Link > > tracksOverlay = new OverlayGraphRenderer<>(
 				overlayGraph,
 				overlayHighlight,
-				overlayFocus );
+				overlayFocus,
+				OverlayGraphStyle.df );
 		viewer.getDisplay().addOverlayRenderer( tracksOverlay );
 		viewer.addRenderTransformListener( tracksOverlay );
 		viewer.addTimePointListener( tracksOverlay );

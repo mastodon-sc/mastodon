@@ -1,12 +1,12 @@
 package org.mastodon.revised.bdv.overlay;
 
-import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.FontMetrics;
 import java.awt.GradientPaint;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
+import java.awt.Stroke;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Ellipse2D;
 
@@ -73,14 +73,18 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 
 	private final OverlayFocus< V, E > focus;
 
+	private final OverlayGraphStyle style;
+
 	public OverlayGraphRenderer(
 			final OverlayGraph< V, E > graph,
 			final OverlayHighlight< V, E > highlight,
-			final OverlayFocus< V, E > focus )
+			final OverlayFocus< V, E > focus,
+			final OverlayGraphStyle style )
 	{
 		this.graph = graph;
 		this.highlight = highlight;
 		this.focus = focus;
+		this.style = style;
 		index = graph.getIndex();
 		renderTransform = new AffineTransform3D();
 		setRenderSettings( new RenderSettings() ); // default RenderSettings
@@ -296,7 +300,7 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 	 * @param isSelected whether to use selected or un-selected color scheme.
 	 * @return vertex/edge color.
 	 */
-	private static Color getColor( final double sd, final double td, final double sdFade, final double tdFade, final boolean isSelected )
+	private static Color getColor( final double sd, final double td, final double sdFade, final double tdFade, final boolean isSelected, final Color color1, final Color color2 )
 	{
 		/*
 		 * |sf| = {                  0  for  |sd| <= sdFade,
@@ -324,11 +328,19 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 			tf = -Math.max( 0, ( -td - tdFade ) / ( 1 - tdFade ) );
 		}
 
-		final double a = -2 * td;
-		final double b = 1 + 2 * td;
+		final double r1 = color1.getRed() / 255.;
+		final double r2 = color2.getRed() / 255.;
+		final double g1 = color1.getGreen() / 255.;
+		final double g2 = color2.getGreen() / 255.;
+		final double b1 = color1.getBlue() / 255.;
+		final double b2 = color2.getBlue() / 255.;
+
+		final double a = r1 + ( -2 * td ) * ( r2 - r1 );
+		final double b = g1 + ( -2 * td ) * ( g2 - g1 );
+		final double c = b1 + ( -2 * td ) * ( b2 - b1 );
 		final double r = isSelected ? b : a;
 		final double g = isSelected ? a : b;
-		return new Color( truncRGBA( r, g, 0.1, ( 1 + tf ) * ( 1 - Math.abs( sf ) ) ), true );
+		return new Color( truncRGBA( r, g, c, ( 1 + tf ) * ( 1 - Math.abs( sf ) ) ), true );
 	}
 
 	/**
@@ -473,11 +485,13 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 	public void drawOverlays( final Graphics g )
 	{
 		final Graphics2D graphics = ( Graphics2D ) g;
-		final BasicStroke defaultVertexStroke = new BasicStroke();
-		final BasicStroke highlightedVertexStroke = new BasicStroke( 4f );
-		final BasicStroke focusedVertexStroke = new BasicStroke( 2f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 1f, new float[] { 8f, 3f }, 0 );
-		final BasicStroke defaultEdgeStroke = new BasicStroke();
-		final BasicStroke highlightedEdgeStroke = new BasicStroke( 3f );
+		final Stroke defaultVertexStroke = style.vertexStroke;
+		final Stroke highlightedVertexStroke = style.vertexHighlightStroke;
+		final Stroke focusedVertexStroke = style.focusStroke;
+		final Stroke defaultEdgeStroke = style.edgeStroke;
+		final Stroke highlightedEdgeStroke = style.edgeHighlightStroke;
+		final Color color1 = style.color1;
+		final Color color2 = style.color2;
 		final FontMetrics fontMetrics = graphics.getFontMetrics();
 		final int extraFontHeight = fontMetrics.getAscent() / 2;
 		final int extraFontWidth = fontMetrics.charWidth( ' ' ) / 2;
@@ -546,10 +560,10 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 							{
 								if ( ( sd0 > -1 && sd0 < 1 ) || ( sd1 > -1 && sd1 < 1 ) )
 								{
-									final Color c1 = getColor( sd1, td1, sliceDistanceFade, timepointDistanceFade, edge.isSelected() );
+									final Color c1 = getColor( sd1, td1, sliceDistanceFade, timepointDistanceFade, edge.isSelected(), color1, color2 );
 									if ( useGradient )
 									{
-										final Color c0 = getColor( sd0, td0, sliceDistanceFade, timepointDistanceFade, edge.isSelected() );
+										final Color c0 = getColor( sd0, td0, sliceDistanceFade, timepointDistanceFade, edge.isSelected(), color1, color2 );
 										graphics.setPaint( new GradientPaint( x0, y0, c0, x1, y1, c1 ) );
 									}
 									else
@@ -617,7 +631,7 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 
 							graphics.translate( tr[ 0 ], tr[ 1 ] );
 							graphics.rotate( theta );
-							graphics.setColor( getColor( 0, 0, ellipsoidFadeDepth, timepointDistanceFade, vertex.isSelected() ) );
+							graphics.setColor( getColor( 0, 0, ellipsoidFadeDepth, timepointDistanceFade, vertex.isSelected(), color1, color2 ) );
 							if ( isHighlighted )
 								graphics.setStroke( highlightedVertexStroke );
 							else if ( isFocused )
@@ -655,7 +669,7 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 
 							graphics.translate( tr[ 0 ], tr[ 1 ] );
 							graphics.rotate( theta );
-							graphics.setColor( getColor( sd, 0, ellipsoidFadeDepth, timepointDistanceFade, vertex.isSelected() ) );
+							graphics.setColor( getColor( sd, 0, ellipsoidFadeDepth, timepointDistanceFade, vertex.isSelected(), color1, color2 ) );
 							if ( isHighlighted )
 								graphics.setStroke( highlightedVertexStroke );
 							else if ( isFocused )
@@ -688,7 +702,7 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 								|| ( drawEllipsoidSliceIntersection && !screenVertexMath.intersectsViewPlane() ) );
 						if ( drawPoint )
 						{
-							graphics.setColor( getColor( sd, 0, pointFadeDepth, timepointDistanceFade, vertex.isSelected() ) );
+							graphics.setColor( getColor( sd, 0, pointFadeDepth, timepointDistanceFade, vertex.isSelected(), color1, color2 ) );
 							double radius = pointRadius;
 							if ( isHighlighted || isFocused )
 								radius *= 2;
