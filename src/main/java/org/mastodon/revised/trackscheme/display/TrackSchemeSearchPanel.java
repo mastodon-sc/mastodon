@@ -1,5 +1,6 @@
 package org.mastodon.revised.trackscheme.display;
 
+import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -7,14 +8,21 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import javax.swing.AbstractAction;
+import javax.swing.Action;
 import javax.swing.ImageIcon;
+import javax.swing.InputMap;
 import javax.swing.JCheckBox;
+import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
+import javax.swing.KeyStroke;
 import javax.swing.UIManager;
 
 import org.mastodon.graph.GraphChangeListener;
@@ -120,6 +128,7 @@ public class TrackSchemeSearchPanel extends JPanel
 				}.start();
 			}
 		} );
+
 	}
 
 	private static class SearchAction implements GraphChangeListener
@@ -196,6 +205,8 @@ public class TrackSchemeSearchPanel extends JPanel
 
 		private final AtomicBoolean doChangeFocusIcon;
 
+		boolean keyBlocked = false;
+
 		public MyFocusListener( final JTextField searchField, final JLabel labelIcon, final AtomicBoolean doChangeFocusIcon )
 		{
 			this.labelIcon = labelIcon;
@@ -221,12 +232,71 @@ public class TrackSchemeSearchPanel extends JPanel
 		{
 			if ( doChangeFocusIcon.get() )
 			{
+				if ( !keyBlocked )
+				{
+					blockKeys( searchField );
+					keyBlocked = true;
+				}
+
 				labelIcon.setIcon( FOCUSED_ICON );
 				searchField.setText( oldText );
 				searchField.setFont( searchField.getFont().deriveFont( Font.NORMAL ) );
 				searchField.setForeground( UIManager.getColor( "Label.foreground" ) );
 			}
 		}
+	}
+
+	/**
+	 * TODO move to utility classes.
+	 * <p>
+	 * Preserves the specified component from behavior and action related key
+	 * presses. This useful <i>e.g.</i> for text fields; user input can be
+	 * confused with behaviors key shortcuts.
+	 * <p>
+	 * Adapted from Jan Funke's code in <a href=
+	 * "https://github.com/saalfeldlab/bigcat/blob/janh5/src/main/java/bdv/bigcat/ui/BigCatTable.java#L112-L143">
+	 * BigCat repo</a>
+	 * 
+	 * @param ctn
+	 *            the JComponent to preserve from key presses.
+	 * 
+	 * 
+	 */
+	private static void blockKeys( final JComponent ctn )
+	{
+		// Get all keystrokes that are mapped to actions in higher components
+		final ArrayList< KeyStroke > allTableKeys = new ArrayList< KeyStroke >();
+		for ( Container c = ctn; c != null; c = c.getParent() )
+		{
+			if ( c instanceof JComponent )
+			{
+				final InputMap inputMap = ( ( JComponent ) c ).getInputMap( JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT );
+				final KeyStroke[] tableKeys = inputMap.allKeys();
+				if ( tableKeys != null )
+					allTableKeys.addAll( Arrays.asList( tableKeys ) );
+			}
+		}
+
+		// An action that does nothing. We can not just map to "none",
+		// as this is not interrupting the action-name -> action search.
+		// We have to map to a proper action, "nothing" in this case.
+		final Action nada = new AbstractAction()
+		{
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public void actionPerformed( final ActionEvent e )
+			{}
+		};
+		ctn.getActionMap().put( "nothing", nada );
+
+		// Replace every table key binding with nothing, thus creating an
+		// event-barrier.
+		final InputMap inputMap = ctn.getInputMap( JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT );
+		for ( final KeyStroke key : allTableKeys )
+			inputMap.put( key, "nothing" );
+
+		ctn.getActionMap().put( "nothing", nada );
 	}
 
 }
