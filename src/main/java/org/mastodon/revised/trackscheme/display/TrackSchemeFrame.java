@@ -50,7 +50,7 @@ public class TrackSchemeFrame extends JFrame
 
 	private final UndoPointMarker undoPointMarker;
 
-	final TrackSchemeSearchField searchField;
+	final TrackSchemeSearchPanel searchField;
 
 	public TrackSchemeFrame(
 			final TrackSchemeGraph< ?, ? > graph,
@@ -100,7 +100,7 @@ public class TrackSchemeFrame extends JFrame
 		settingsPanel.add( contextChooserPanel );
 		settingsPanel.add( Box.createHorizontalGlue() );
 
-		searchField = new TrackSchemeSearchField( graph, navigation );
+		searchField = new TrackSchemeSearchPanel( graph, navigation );
 		settingsPanel.add( searchField );
 
 		add( settingsPanel, BorderLayout.NORTH );
