@@ -11,8 +11,8 @@ import java.awt.geom.AffineTransform;
 import java.awt.geom.Ellipse2D;
 
 import org.mastodon.collection.RefCollection;
-import org.mastodon.collection.RefList;
 import org.mastodon.collection.RefCollections;
+import org.mastodon.collection.RefList;
 import org.mastodon.kdtree.ClipConvexPolytope;
 import org.mastodon.revised.Util;
 import org.mastodon.spatial.SpatialIndex;
@@ -31,9 +31,25 @@ import net.imglib2.ui.OverlayRenderer;
 import net.imglib2.ui.TransformListener;
 import net.imglib2.util.LinAlgHelpers;
 
-// TODO: throughout this class gPos and lPos are used semantically inconsistently. Fix and document a meaning and make all uses consistent.
-
 /**
+ * Renderer for a time-resliced graph overlay on a BDV.
+ * <p>
+ * In this class, spatial coordinates are stored in local variables named
+ * <code>gPos</code> and <code>lPos</code> of type <code>double[]</code> with 3
+ * elements:
+ * <ul>
+ * <li><code>gPos</code> are world coordinates. It is used to store coordinates
+ * in the global referential, that is the one with absolute, physical
+ * coordinates. It is used <i>e.g.</i> to store vertex coordinates:
+ * <code>vertex.localize(gPos)</code>.</li>
+ * <li><code>lPos</code> are viewer coordinates. It is used to store coordinates
+ * in the local referential, currently rendered in the BDV under a certain
+ * orientation, zoom, etc. Mouse coordinates are typically stored in this
+ * variable.
+ * </ul>
+ * 
+ * <p>
+ * 
  * TODO: Review and revise.
  *
  * @author Tobias Pietzsch &lt;tobias.pietzsch@gmail.com&gt;
@@ -480,8 +496,8 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 		final V ref1 = graph.vertexRef();
 		final V ref2 = graph.vertexRef();
 		final E ref3 = graph.edgeRef();
-		final double[] lPos = new double[ 3 ];
 		final double[] gPos = new double[ 3 ];
+		final double[] lPos = new double[ 3 ];
 
 		final double sliceDistanceFade = ellipsoidFadeDepth;
 		final double timepointDistanceFade = 0.5;
@@ -504,22 +520,22 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 					ccp.clip( getVisiblePolytopeGlobal( transform, t ) );
 					for ( final V vertex : ccp.getInsideValues() )
 					{
-						vertex.localize( lPos );
-						transform.apply( lPos, gPos );
-						final int x0 = ( int ) gPos[ 0 ];
-						final int y0 = ( int ) gPos[ 1 ];
-						final double z0 = gPos[ 2 ];
+						vertex.localize( gPos );
+						transform.apply( gPos, lPos );
+						final int x0 = ( int ) lPos[ 0 ];
+						final int y0 = ( int ) lPos[ 1 ];
+						final double z0 = lPos[ 2 ];
 						for ( final E edge : vertex.outgoingEdges() )
 						{
 							final boolean isHighlighted = edge.equals( highlighted );
 
 							edge.getTarget( target );
-							target.localize( lPos );
-							transform.apply( lPos, gPos );
-							final int x1 = ( int ) gPos[ 0 ];
-							final int y1 = ( int ) gPos[ 1 ];
+							target.localize( gPos );
+							transform.apply( gPos, lPos );
+							final int x1 = ( int ) lPos[ 0 ];
+							final int y1 = ( int ) lPos[ 1 ];
 
-							final double z1 = gPos[ 2 ];
+							final double z1 = lPos[ 2 ];
 
 							final double td0 = timeDistance( t, currentTimepoint, timeLimit );
 							final double td1 = timeDistance( t + 1, currentTimepoint, timeLimit );
