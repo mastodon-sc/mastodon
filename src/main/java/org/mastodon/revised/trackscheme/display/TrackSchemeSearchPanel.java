@@ -3,7 +3,6 @@ package org.mastodon.revised.trackscheme.display;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
-import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
@@ -12,6 +11,7 @@ import java.util.Iterator;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import javax.swing.ImageIcon;
+import javax.swing.JCheckBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
@@ -52,19 +52,18 @@ public class TrackSchemeSearchPanel extends JPanel
 		 */
 
 		setMinimumSize( new Dimension( 26, 25 ) );
-		setMaximumSize( new Dimension( 260, 25 ) );
-		setPreferredSize( new Dimension( 160, 25 ) );
+		setMaximumSize( new Dimension( 310, 25 ) );
+		setPreferredSize( new Dimension( 220, 25 ) );
 		final GridBagLayout gridBagLayout = new GridBagLayout();
-		gridBagLayout.columnWidths = new int[] { 25, 122 };
-		gridBagLayout.rowHeights = new int[] { 25, 25 };
-		gridBagLayout.columnWeights = new double[] { 0.0, 1.0 };
-		gridBagLayout.rowWeights = new double[] { 0.0, Double.MIN_VALUE };
+		gridBagLayout.columnWidths = new int[] { 25, 122, 50 };
+		gridBagLayout.rowHeights = new int[] { 25 };
+		gridBagLayout.columnWeights = new double[] { 0.0, 1.0, 0.0 };
+		gridBagLayout.rowWeights = new double[] { 0.0 };
 		setLayout( gridBagLayout );
 
 		final JLabel labelIcon = new JLabel( UNFOCUSED_ICON );
 		final GridBagConstraints gbc_labelIcon = new GridBagConstraints();
 		gbc_labelIcon.anchor = GridBagConstraints.WEST;
-		gbc_labelIcon.insets = new Insets( 0, 0, 0, 5 );
 		gbc_labelIcon.gridx = 0;
 		gbc_labelIcon.gridy = 0;
 		add( labelIcon, gbc_labelIcon );
@@ -84,6 +83,13 @@ public class TrackSchemeSearchPanel extends JPanel
 		mfl.focusLost( null );
 		searchField.addFocusListener( mfl );
 
+		final JCheckBox chckbxstartswith = new JCheckBox( "<html>starts<br>with</html>" );
+		chckbxstartswith.setFont( chckbxstartswith.getFont().deriveFont( 8f ) );
+		final GridBagConstraints gbc_chckbxstartswith = new GridBagConstraints();
+		gbc_chckbxstartswith.gridx = 2;
+		gbc_chckbxstartswith.gridy = 0;
+		add( chckbxstartswith, gbc_chckbxstartswith );
+
 		final SearchAction sa = new SearchAction( graph, navigation );
 		graph.addGraphChangeListener( sa );
 		searchField.addActionListener( new ActionListener()
@@ -100,7 +106,7 @@ public class TrackSchemeSearchPanel extends JPanel
 					{
 						try
 						{
-							final boolean found = sa.search( searchField.getText() );
+							final boolean found = sa.search( searchField.getText(), chckbxstartswith.isSelected() );
 							searchField.requestFocusInWindow();
 							labelIcon.setIcon( found ? FOUND_ICON : NOT_FOUND_ICON );
 						}
@@ -133,14 +139,14 @@ public class TrackSchemeSearchPanel extends JPanel
 			reinit();
 		}
 
-		private synchronized boolean search( final String text )
+		private synchronized boolean search( final String text, final boolean startsWith )
 		{
 			final TrackSchemeVertex start = graph.vertexRef();
 			TrackSchemeVertex v = next();
 			start.refTo( v );
 			do
 			{
-				if ( v.getLabel().contains( text ) )
+				if ( startsWith ? v.getLabel().startsWith( text ) : v.getLabel().contains( text ) )
 				{
 					graph.releaseRef( start );
 					navigation.notifyNavigateToVertex( v );
