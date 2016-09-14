@@ -65,6 +65,8 @@ public class RenderSettingsPanel extends JPanel implements UpdateListener
 
 	private final SliderPanelDouble pointFadeDepthSlider;
 
+	private final AbstractButton arrowHeadBox;
+
 	public RenderSettingsPanel( final RenderSettings renderSettings )
 	{
 		super( new GridBagLayout() );
@@ -152,6 +154,23 @@ public class RenderSettingsPanel extends JPanel implements UpdateListener
 		c.anchor = GridBagConstraints.LINE_START;
 		c.gridx = 1;
 		add( new JLabel( "gradients for links" ), c );
+
+		c.gridy++;
+		arrowHeadBox = new JCheckBox();
+		arrowHeadBox.addActionListener( new ActionListener()
+		{
+			@Override
+			public void actionPerformed( final ActionEvent e )
+			{
+				renderSettings.setDrawLinkArrows( arrowHeadBox.isSelected() );
+			}
+		} );
+		c.anchor = GridBagConstraints.LINE_END;
+		c.gridx = 0;
+		add( arrowHeadBox, c );
+		c.anchor = GridBagConstraints.LINE_START;
+		c.gridx = 1;
+		add( new JLabel( "draw link arrow heads" ), c );
 
 
 		c.gridy++;
