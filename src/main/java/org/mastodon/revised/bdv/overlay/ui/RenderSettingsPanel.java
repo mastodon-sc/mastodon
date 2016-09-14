@@ -133,7 +133,7 @@ public class RenderSettingsPanel extends JPanel implements UpdateListener
 		add( timeLimitSlider, c );
 		c.anchor = GridBagConstraints.LINE_START;
 		c.gridx = 1;
-		add( new JLabel( "time range for edges" ), c );
+		add( new JLabel( "time range for links" ), c );
 
 
 		c.gridy++;
@@ -151,7 +151,7 @@ public class RenderSettingsPanel extends JPanel implements UpdateListener
 		add( gradientBox, c );
 		c.anchor = GridBagConstraints.LINE_START;
 		c.gridx = 1;
-		add( new JLabel( "gradients for edges" ), c );
+		add( new JLabel( "gradients for links" ), c );
 
 
 		c.gridy++;
