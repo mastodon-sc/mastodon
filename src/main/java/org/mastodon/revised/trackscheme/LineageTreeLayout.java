@@ -631,7 +631,7 @@ public class LineageTreeLayout
 	 * <ul>
 	 * <li>leafs are assigned layoutX = 0, 1, 2, ...
 	 * <li>non-leafs are centered between first and last child's layoutX
-	 * <li>for layout of vertices with more then one parent, only first incoming
+	 * <li>for layout of vertices with more than one parent, only first incoming
 	 * edge counts as parent edge
 	 * <li>vertices marked with a timestamp &lt; the current {@link #mark} are
 	 * marked as ghosts.
