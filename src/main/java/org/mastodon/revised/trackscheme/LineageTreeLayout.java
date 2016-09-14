@@ -657,12 +657,19 @@ public class LineageTreeLayout
 		{
 			final TrackSchemeVertex child = graph.vertexRef();
 			final Iterator< TrackSchemeEdge > iterator = v.outgoingEdges().iterator();
-			while ( layoutNextChild( iterator, child ) )
+			while ( iterator.hasNext() )
 			{
-				if ( ++numLaidOutChildren == 1 )
-					firstChildX = child.getLayoutX();
-				else
-					lastChildX = child.getLayoutX();
+				final TrackSchemeEdge edge = iterator.next();
+				edge.getTarget( child );
+				if ( child.getLayoutTimestamp() < timestamp )
+				{
+					child.setLayoutInEdgeIndex( edge.getInternalPoolIndex() );
+					layoutX( child );
+					if ( ++numLaidOutChildren == 1 )
+						firstChildX = child.getLayoutX();
+					else
+						lastChildX = child.getLayoutX();
+				}
 			}
 			graph.releaseRef( child );
 		}
@@ -681,22 +688,6 @@ public class LineageTreeLayout
 		}
 
 		appendToOrderedVertices( v );
-	}
-
-	private boolean layoutNextChild( final Iterator< TrackSchemeEdge > iterator, final TrackSchemeVertex child )
-	{
-		while ( iterator.hasNext() )
-		{
-			final TrackSchemeEdge edge = iterator.next();
-			edge.getTarget( child );
-			if ( child.getLayoutTimestamp() < timestamp )
-			{
-				child.setLayoutInEdgeIndex( edge.getInternalPoolIndex() );
-				layoutX( child );
-				return true;
-			}
-		}
-		return false;
 	}
 
 	private void appendToOrderedVertices( final TrackSchemeVertex v )
