@@ -687,11 +687,11 @@ public class LineageTreeLayout
 	{
 		while ( iterator.hasNext() )
 		{
-			final TrackSchemeEdge next = iterator.next();
-			next.getTarget( child );
+			final TrackSchemeEdge edge = iterator.next();
+			edge.getTarget( child );
 			if ( child.getLayoutTimestamp() < timestamp )
 			{
-				child.setLayoutInEdgeIndex( next.getInternalPoolIndex() );
+				child.setLayoutInEdgeIndex( edge.getInternalPoolIndex() );
 				layoutX( child );
 				return true;
 			}
