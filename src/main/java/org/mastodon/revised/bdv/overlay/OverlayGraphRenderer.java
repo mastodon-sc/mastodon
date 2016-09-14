@@ -133,6 +133,7 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 		highlightedEdgeStroke = settings.getLinkHighlightStroke();
 		color1 = settings.getLinkColor1();
 		color2 = settings.getLinkColor2();
+		drawLinkArrows = settings.getDrawLinkArrows();
 	}
 
 	public static final double pointRadius = 2.5;
@@ -278,6 +279,11 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 	 * interpolated from {@link #color1} to {@link #color2} along time.
 	 */
 	private Color color2;
+
+	/**
+	 * Whether do draw link arrow heads.
+	 */
+	private boolean drawLinkArrows;
 
 	/**
 	 * Return signed distance of p to z=0 plane, truncated at cutoff and scaled
@@ -608,19 +614,20 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 									graphics.drawLine( x0, y0, x1, y1 );
 
 									// Draw arrows for edge direction.
-									/*
-									final double dx = x1 - x0;
-									final double dy = y1 - y0;
-									final double alpha = Math.atan2( dy, dx );
-									final double l = 5;
-									final double theta = Math.PI / 6.;
-									final int x1a = ( int ) Math.round( x1 - l * Math.cos( alpha - theta ) );
-									final int x1b = ( int ) Math.round( x1 - l * Math.cos( alpha + theta ) );
-									final int y1a = ( int ) Math.round( y1 - l * Math.sin( alpha - theta ) );
-									final int y1b = ( int ) Math.round( y1 - l * Math.sin( alpha + theta ) );
-									graphics.drawLine( x1, y1, x1a, y1a );
-									graphics.drawLine( x1, y1, x1b, y1b );
-									*/
+									if ( drawLinkArrows )
+									{
+										final double dx = x1 - x0;
+										final double dy = y1 - y0;
+										final double alpha = Math.atan2( dy, dx );
+										final double l = 5;
+										final double theta = Math.PI / 6.;
+										final int x1a = ( int ) Math.round( x1 - l * Math.cos( alpha - theta ) );
+										final int x1b = ( int ) Math.round( x1 - l * Math.cos( alpha + theta ) );
+										final int y1a = ( int ) Math.round( y1 - l * Math.sin( alpha - theta ) );
+										final int y1b = ( int ) Math.round( y1 - l * Math.sin( alpha + theta ) );
+										graphics.drawLine( x1, y1, x1a, y1a );
+										graphics.drawLine( x1, y1, x1b, y1b );
+									}
 
 									if ( isHighlighted )
 										graphics.setStroke( defaultEdgeStroke );
