@@ -73,18 +73,14 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 
 	private final OverlayFocus< V, E > focus;
 
-	private final OverlayGraphStyle style;
-
 	public OverlayGraphRenderer(
 			final OverlayGraph< V, E > graph,
 			final OverlayHighlight< V, E > highlight,
-			final OverlayFocus< V, E > focus,
-			final OverlayGraphStyle style )
+			final OverlayFocus< V, E > focus )
 	{
 		this.graph = graph;
 		this.highlight = highlight;
 		this.focus = focus;
-		this.style = style;
 		index = graph.getIndex();
 		renderTransform = new AffineTransform3D();
 		setRenderSettings( new RenderSettings() ); // default RenderSettings
@@ -130,6 +126,13 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 		isFocusLimitViewRelative = settings.getFocusLimitViewRelative();
 		ellipsoidFadeDepth = settings.getEllipsoidFadeDepth();
 		pointFadeDepth = settings.getPointFadeDepth();
+		defaultVertexStroke = settings.getSpotStroke();
+		focusedVertexStroke = settings.getSpotFocusStroke();
+		highlightedVertexStroke = settings.getSpotHighlightStroke();
+		defaultEdgeStroke = settings.getLinkStroke();
+		highlightedEdgeStroke = settings.getLinkHighlightStroke();
+		color1 = settings.getLinkColor1();
+		color2 = settings.getLinkColor2();
 	}
 
 	public static final double pointRadius = 2.5;
@@ -238,6 +241,43 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 	 * they are fully opaque, then their alpha value goes to 0 linearly.
 	 */
 	private double pointFadeDepth;
+
+	/**
+	 * The stroke used to paint the spot outlines.
+	 */
+	private Stroke defaultVertexStroke;
+
+	/**
+	 * The stroke used to paint the selected spot outlines.
+	 */
+	private Stroke highlightedVertexStroke;
+
+	/**
+	 * The stroke used to paint the focused spot outlines.
+	 */
+	private Stroke focusedVertexStroke;
+
+	/**
+	 * The stroke used to paint links.
+	 */
+	private Stroke defaultEdgeStroke;
+
+	/**
+	 * The stroke used to paint highlighted links.
+	 */
+	private Stroke highlightedEdgeStroke;
+
+	/**
+	 * The first color to paint links. The actual color of edges is interpolated
+	 * from {@link #color1} to {@link #color2} along time.
+	 */
+	private Color color1;
+
+	/**
+	 * The second color to paint edges. The actual color of edges is
+	 * interpolated from {@link #color1} to {@link #color2} along time.
+	 */
+	private Color color2;
 
 	/**
 	 * Return signed distance of p to z=0 plane, truncated at cutoff and scaled
@@ -485,13 +525,6 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 	public void drawOverlays( final Graphics g )
 	{
 		final Graphics2D graphics = ( Graphics2D ) g;
-		final Stroke defaultVertexStroke = style.vertexStroke;
-		final Stroke highlightedVertexStroke = style.vertexHighlightStroke;
-		final Stroke focusedVertexStroke = style.focusStroke;
-		final Stroke defaultEdgeStroke = style.edgeStroke;
-		final Stroke highlightedEdgeStroke = style.edgeHighlightStroke;
-		final Color color1 = style.color1;
-		final Color color2 = style.color2;
 		final FontMetrics fontMetrics = graphics.getFontMetrics();
 		final int extraFontHeight = fontMetrics.getAscent() / 2;
 		final int extraFontWidth = fontMetrics.charWidth( ' ' ) / 2;

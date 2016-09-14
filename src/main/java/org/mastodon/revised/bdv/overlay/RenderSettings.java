@@ -1,5 +1,8 @@
 package org.mastodon.revised.bdv.overlay;
 
+import java.awt.BasicStroke;
+import java.awt.Color;
+import java.awt.Stroke;
 import java.util.ArrayList;
 
 public class RenderSettings
@@ -23,6 +26,14 @@ public class RenderSettings
 	public static final boolean DEFAULT_IS_FOCUS_LIMIT_RELATIVE = true;
 	public static final double DEFAULT_ELLIPSOID_FADE_DEPTH = 0.2;
 	public static final double DEFAULT_POINT_FADE_DEPTH = 0.2;
+	public static final Stroke DEFAULT_SPOT_STROKE  = new BasicStroke();
+	public static final Stroke DEFAULT_SPOT_HIGHLIGHT_STROKE  = new BasicStroke( 4f ); 
+	public static final Stroke DEFAULT_SPOT_FOCUS_STROKE  = new BasicStroke( 2f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 1f, new float[] { 8f, 3f }, 0 );
+	public static final Stroke DEFAULT_LINK_STROKE  = new BasicStroke();
+	public static final Stroke DEFAULT_LINK_HIGHLIGHT_STROKE  = new BasicStroke( 3f );
+	public static final Color DEFAULT_COLOR_1 = new Color(0f, 1f, 0.1f);
+	public static final Color DEFAULT_COLOR_2 = new Color(1f, 0f, 0.1f);
+	
 
 	public interface UpdateListener
 	{
@@ -47,7 +58,14 @@ public class RenderSettings
 		isFocusLimitViewRelative = DEFAULT_IS_FOCUS_LIMIT_RELATIVE;
 		ellipsoidFadeDepth = DEFAULT_ELLIPSOID_FADE_DEPTH;
 		pointFadeDepth = DEFAULT_POINT_FADE_DEPTH;
-
+		spotStroke = DEFAULT_SPOT_STROKE;
+		spotFocusStroke = DEFAULT_SPOT_FOCUS_STROKE;
+		spotHighlightStroke = DEFAULT_SPOT_HIGHLIGHT_STROKE;
+		linkStroke = DEFAULT_LINK_STROKE;
+		linkHighlightStroke = DEFAULT_LINK_HIGHLIGHT_STROKE;
+		color1 = DEFAULT_COLOR_1;
+		color2 = DEFAULT_COLOR_2;
+		name = "Default";
 		updateListeners = new ArrayList< UpdateListener >();
 	}
 
@@ -117,6 +135,11 @@ public class RenderSettings
 	 * For specific settings, see TODO
 	 */
 	private boolean drawLinks;
+
+	/**
+	 * Whether to draw link arrow heads.
+	 */
+	private boolean drawLinkArrows;
 
 	/**
 	 * Whether to draw spots (at all).
@@ -198,6 +221,52 @@ public class RenderSettings
 	 * they are fully opaque, then their alpha value goes to 0 linearly.
 	 */
 	private double pointFadeDepth;
+
+	/**
+	 * The name of this render settings.
+	 */
+	private String name;
+
+	/**
+	 * The stroke used to paint the spot outlines.
+	 */
+	private Stroke spotStroke;
+
+	/**
+	 * The stroke used to paint the selected spot outlines.
+	 */
+	private Stroke spotHighlightStroke;
+
+	/**
+	 * The stroke used to paint the focused spot outlines.
+	 */
+	private Stroke spotFocusStroke;
+
+	/**
+	 * The stroke used to paint links.
+	 */
+	private Stroke linkStroke;
+
+	/**
+	 * The stroke used to paint highlighted links.
+	 */
+	private Stroke linkHighlightStroke;
+
+	/**
+	 * The first color to paint links. The actual color of edges is interpolated
+	 * from {@link #color1} to {@link #color2} along time.
+	 */
+	private Color color1;
+
+	/**
+	 * The second color to paint edges. The actual color of edges is
+	 * interpolated from {@link #color1} to {@link #color2} along time.
+	 */
+	private Color color2;
+
+	/*
+	 * ACCESSOR METHODS.
+	 */
 
 	/**
 	 * Get the antialiasing setting.
@@ -303,6 +372,135 @@ public class RenderSettings
 		if ( this.drawLinks != drawLinks )
 		{
 			this.drawLinks = drawLinks;
+			notifyListeners();
+		}
+	}
+
+	/**
+	 * Gets whether to draw link arrow heads.
+	 * 
+	 * @return {@code true} if link arrow heads are drawn.
+	 */
+	public boolean getDrawLinkArrows()
+	{
+		return drawLinkArrows;
+	}
+
+	/**
+	 * Set whether to draw link arrow heads.
+	 *
+	 * @param drawLinkArrows
+	 *            whether to draw link arrow heads.
+	 */
+	public synchronized void setDrawLinkArrows( final boolean drawLinkArrows )
+	{
+		if ( this.drawLinkArrows != drawLinkArrows )
+		{
+			this.drawLinkArrows = drawLinkArrows;
+			notifyListeners();
+		}
+	}
+
+	/**
+	 * Gets the first color to paint links. The actual color of edges is
+	 * interpolated from {@code color1} to {@code color2} along time.
+	 * 
+	 * @return the first link color.
+	 */
+	public Color getLinkColor1()
+	{
+		return color1;
+	}
+
+	/**
+	 * Sets the first color to paint links. The actual color of edges is
+	 * interpolated from {@code color1} to {@code color2} along time.
+	 * 
+	 * @param color1
+	 *            the first link color.
+	 */
+	public synchronized void setLinkColor1( final Color color1 )
+	{
+		if ( this.color1 != color1 )
+		{
+			this.color1 = color1;
+			notifyListeners();
+		}
+	}
+
+	/**
+	 * Gets the second color to paint links. The actual color of edges is
+	 * interpolated from {@code color1} to {@code color2} along time.
+	 * 
+	 * @return the second link color.
+	 */
+	public Color getLinkColor2()
+	{
+		return color2;
+	}
+
+	/**
+	 * Sets the second color to paint links. The actual color of edges is
+	 * interpolated from {@code color1} to {@code color2} along time.
+	 * 
+	 * @param color2
+	 *            the first link color.
+	 */
+	public synchronized void setLinkColor2( final Color color2 )
+	{
+		if ( this.color2 != color2 )
+		{
+			this.color2 = color2;
+			notifyListeners();
+		}
+	}
+
+	/**
+	 * Gets the stroke used to paint links.
+	 * 
+	 * @return the stroke used to paint links.
+	 */
+	public Stroke getLinkStroke()
+	{
+		return linkStroke;
+	}
+
+	/**
+	 * Sets the stroke used to paint links.
+	 * 
+	 * @param linkStroke
+	 *            the stroke used to paint links.
+	 */
+	public synchronized void setLinkStroke( final Stroke linkStroke )
+	{
+		if ( this.linkStroke != linkStroke )
+		{
+			this.linkStroke = linkStroke;
+			notifyListeners();
+		}
+	}
+
+	/**
+	 * Gets the stroke used to paint highlighted links.
+	 * 
+	 * @return the stroke used to paint links.
+	 */
+	public Stroke getLinkHighlightStroke()
+	{
+		return linkHighlightStroke;
+	}
+
+	/**
+	 * Sets the stroke used to paint highlighted links.
+	 * 
+	 * @param linkHighlightStroke
+	 *            the stroke used to paint highlighted links.
+	 */
+	public synchronized void setLinkHighlightStroke( final Stroke linkHighlightStroke )
+	{
+		if ( this.linkHighlightStroke != linkHighlightStroke )
+		{
+			this.linkHighlightStroke = linkHighlightStroke;
 			notifyListeners();
 		}
 	}
@@ -476,6 +674,81 @@ public class RenderSettings
 	}
 
 	/**
+	 * Gets the stroke used to paint the spot outlines.
+	 * 
+	 * @return the stroke used to paint the spot outlines.
+	 */
+	public Stroke getSpotStroke()
+	{
+		return spotStroke;
+	}
+
+	/**
+	 * Sets the stroke used to paint the spot outlines.
+	 * 
+	 * @param spotStroke
+	 *            the stroke used to paint the spot outlines.
+	 */
+	public synchronized void setSpotStroke( final Stroke spotStroke )
+	{
+		if ( this.spotStroke != spotStroke )
+		{
+			this.spotStroke = spotStroke;
+			notifyListeners();
+		}
+	}
+
+	/**
+	 * Gets the stroke used to paint the focused spot outlines.
+	 * 
+	 * @return the stroke used to paint the focused spot outlines.
+	 */
+	public Stroke getSpotFocusStroke()
+	{
+		return spotStroke;
+	}
+
+	/**
+	 * Sets the stroke used to paint the focused spot outlines.
+	 * 
+	 * @param spotFocusStroke
+	 *            the stroke used to paint the focused spot outlines.
+	 */
+	public synchronized void setSpotFocusStroke( final Stroke spotFocusStroke )
+	{
+		if ( this.spotFocusStroke != spotFocusStroke )
+		{
+			this.spotFocusStroke = spotFocusStroke;
+			notifyListeners();
+		}
+	}
+
+	/**
+	 * Gets the stroke used to paint the highlighted spot outlines.
+	 * 
+	 * @return the stroke used to paint the highlighted spot outlines.
+	 */
+	public Stroke getSpotHighlightStroke()
+	{
+		return spotHighlightStroke;
+	}
+
+	/**
+	 * Sets the stroke used to paint the highlighted spot outlines.
+	 * 
+	 * @param spotHighlightStroke
+	 *            the stroke used to paint the highlighted spot outlines.
+	 */
+	public synchronized void setSpotHighlightStroke( final Stroke spotHighlightStroke )
+	{
+		if ( this.spotHighlightStroke != spotHighlightStroke )
+		{
+			this.spotHighlightStroke = spotHighlightStroke;
+			notifyListeners();
+		}
+	}
+
+	/**
 	 * Get the maximum distance from the view plane up to which to spots are
 	 * drawn.
 	 * <p>
@@ -613,5 +886,26 @@ public class RenderSettings
 			this.pointFadeDepth = pointFadeDepth;
 			notifyListeners();
 		}
+	}
+
+	/**
+	 * Gets the name of this render settings object.
+	 * 
+	 * @return the name of this render settings object.
+	 */
+	public String getName()
+	{
+		return name;
+	}
+
+	/**
+	 * Sets the name of this render settings object.
+	 * 
+	 * @param name
+	 *            the name of this render settings object.
+	 */
+	public void setName( final String name )
+	{
+		this.name = name;
 	}
 }
