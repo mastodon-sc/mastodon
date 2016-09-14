@@ -5,9 +5,9 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
+import org.mastodon.collection.RefCollections;
 import org.mastodon.collection.RefList;
 import org.mastodon.collection.RefSet;
-import org.mastodon.collection.RefCollections;
 import org.mastodon.graph.Edges;
 import org.mastodon.revised.trackscheme.ScreenEdge.ScreenEdgePool;
 import org.mastodon.revised.trackscheme.ScreenVertex.ScreenVertexPool;
@@ -656,16 +656,14 @@ public class LineageTreeLayout
 		if ( !v.outgoingEdges().isEmpty() && !terminate )
 		{
 			final TrackSchemeVertex child = graph.vertexRef();
-			final TrackSchemeEdge edge = graph.edgeRef();
 			final Iterator< TrackSchemeEdge > iterator = v.outgoingEdges().iterator();
-			while ( layoutNextChild( iterator, child, edge ) )
+			while ( layoutNextChild( iterator, child ) )
 			{
 				if ( ++numLaidOutChildren == 1 )
 					firstChildX = child.getLayoutX();
 				else
 					lastChildX = child.getLayoutX();
 			}
-			graph.releaseRef( edge );
 			graph.releaseRef( child );
 		}
 
@@ -685,7 +683,7 @@ public class LineageTreeLayout
 		appendToOrderedVertices( v );
 	}
 
-	private boolean layoutNextChild( final Iterator< TrackSchemeEdge > iterator, final TrackSchemeVertex child, final TrackSchemeEdge edge )
+	private boolean layoutNextChild( final Iterator< TrackSchemeEdge > iterator, final TrackSchemeVertex child )
 	{
 		while ( iterator.hasNext() )
 		{
