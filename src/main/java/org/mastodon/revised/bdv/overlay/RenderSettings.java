@@ -908,4 +908,19 @@ public class RenderSettings
 	{
 		this.name = name;
 	}
+
+	/**
+	 * Copy these render settings using the specified name.
+	 * 
+	 * @param name
+	 *            the name for the new render settings.
+	 * @return a new render settings, identical to this one, but for the name.
+	 */
+	public RenderSettings copy( final String name )
+	{
+		final RenderSettings rs = new RenderSettings();
+		rs.set( this );
+		rs.setName( name );
+		return rs;
+	}
 }
