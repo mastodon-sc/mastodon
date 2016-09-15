@@ -476,6 +476,7 @@ public class WindowManager
 		final RenderSettings renderSettings = new RenderSettings(); // TODO should be in overlay eventually
 		final String RENDER_SETTINGS = "render settings";
 		final RenderSettingsDialog renderSettingsDialog = new RenderSettingsDialog( viewerFrame, renderSettings );
+		renderSettingsDialog.setTitle( "Display settings for " + windowTitle );
 		final ActionMap actionMap = new ActionMap();
 		new ToggleDialogAction( RENDER_SETTINGS, renderSettingsDialog ).put( actionMap );
 		final InputMap inputMap = new InputMap();
