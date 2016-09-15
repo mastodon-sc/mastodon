@@ -85,6 +85,16 @@ public class RenderSettings
 		isFocusLimitViewRelative = settings.isFocusLimitViewRelative;
 		ellipsoidFadeDepth = settings.ellipsoidFadeDepth;
 		pointFadeDepth = settings.pointFadeDepth;
+		name = settings.name;
+		color1 = settings.color1;
+		color2 = settings.color2;
+		drawLinkArrows = settings.drawLinkArrows;
+		spotStroke = settings.spotStroke;
+		spotFocusStroke = settings.spotFocusStroke;
+		spotHighlightStroke = settings.spotHighlightStroke;
+		linkStroke = settings.linkStroke;
+		linkHighlightStroke = settings.linkHighlightStroke;
+
 		notifyListeners();
 	}
 
