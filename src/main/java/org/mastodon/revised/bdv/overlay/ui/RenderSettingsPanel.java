@@ -2,6 +2,7 @@ package org.mastodon.revised.bdv.overlay.ui;
 
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.GridBagConstraints;
@@ -15,6 +16,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import javax.swing.AbstractButton;
+import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.Icon;
 import javax.swing.JButton;
@@ -28,6 +30,8 @@ import javax.swing.border.EmptyBorder;
 
 import org.mastodon.revised.bdv.overlay.RenderSettings;
 import org.mastodon.revised.bdv.overlay.RenderSettings.UpdateListener;
+
+import com.itextpdf.text.Font;
 
 import bdv.tools.brightness.SliderPanel;
 import bdv.tools.brightness.SliderPanelDouble;
@@ -87,10 +91,19 @@ public class RenderSettingsPanel extends JPanel implements UpdateListener
 
 		final GridBagConstraints c = new GridBagConstraints();
 		c.insets = new Insets( 0, 5, 0, 5 );
-		c.gridwidth = 1;
 
-
+		c.gridwidth = 2;
 		c.gridy = 0;
+		final JLabel title1 = new JLabel( "Colors and look" );
+		title1.setFont( getFont().deriveFont( Font.BOLD ) );
+		title1.setHorizontalAlignment( SwingConstants.CENTER );
+		title1.setPreferredSize( new Dimension( 500, 25 ) );
+		title1.setMinimumSize( new Dimension( 500, 25 ) );
+		title1.setBorder( BorderFactory.createMatteBorder( 0, 0, 1, 0, Color.BLACK ) );
+		add( title1, c );
+
+		c.gridwidth = 1;
+		c.gridy++;
 		antialiasingBox = new JCheckBox();
 		antialiasingBox.addActionListener( new ActionListener()
 		{
@@ -172,7 +185,18 @@ public class RenderSettingsPanel extends JPanel implements UpdateListener
 		c.gridy++;
 		add( Box.createVerticalStrut( 15 ), c );
 
+		c.gridwidth = 2;
+		c.gridy++;
+		c.gridx = 0;
+		final JLabel title2 = new JLabel( "Links" );
+		title2.setFont( getFont().deriveFont( Font.BOLD ) );
+		title2.setHorizontalAlignment( SwingConstants.CENTER );
+		title2.setPreferredSize( new Dimension( 500, 25 ) );
+		title2.setMinimumSize( new Dimension( 500, 25 ) );
+		title2.setBorder( BorderFactory.createMatteBorder( 0, 0, 1, 0, Color.BLACK ) );
+		add( title2, c );
 
+		c.gridwidth = 1;
 		c.gridy++;
 		linksBox = new JCheckBox();
 		linksBox.addActionListener( new ActionListener()
@@ -253,6 +277,18 @@ public class RenderSettingsPanel extends JPanel implements UpdateListener
 		c.gridy++;
 		add( Box.createVerticalStrut( 15 ), c );
 
+		c.gridwidth = 2;
+		c.gridy++;
+		c.gridx = 0;
+		final JLabel title3 = new JLabel( "Spots" );
+		title3.setFont( getFont().deriveFont( Font.BOLD ) );
+		title3.setHorizontalAlignment( SwingConstants.CENTER );
+		title3.setPreferredSize( new Dimension( 500, 25 ) );
+		title3.setMinimumSize( new Dimension( 500, 25 ) );
+		title3.setBorder( BorderFactory.createMatteBorder( 0, 0, 1, 0, Color.BLACK ) );
+		add( title3, c );
+
+		c.gridwidth = 1;
 
 		c.gridy++;
 		spotsBox = new JCheckBox();
@@ -376,6 +412,19 @@ public class RenderSettingsPanel extends JPanel implements UpdateListener
 		 * Focus limit.
 		 */
 
+		c.gridwidth = 2;
+		c.gridy++;
+		c.gridx = 0;
+		final JLabel title4 = new JLabel( "Focus limits" );
+		title4.setFont( getFont().deriveFont( Font.BOLD ) );
+		title4.setHorizontalAlignment( SwingConstants.CENTER );
+		title4.setPreferredSize( new Dimension( 500, 25 ) );
+		title4.setMinimumSize( new Dimension( 500, 25 ) );
+		title4.setBorder( BorderFactory.createMatteBorder( 0, 0, 1, 0, Color.BLACK ) );
+		add( title4, c );
+
+		c.gridwidth = 1;
+
 		c.gridy++;
 		focusLimit = new BoundedValueDouble( 0, 2000, 100 )
 		{
@@ -416,8 +465,8 @@ public class RenderSettingsPanel extends JPanel implements UpdateListener
 		add( new JLabel("view-relative focus limit"), c );
 
 
-		c.gridy++;
-		add( Box.createVerticalStrut( 15 ), c );
+//		c.gridy++;
+//		add( Box.createVerticalStrut( 15 ), c );
 
 
 		c.gridy++;
