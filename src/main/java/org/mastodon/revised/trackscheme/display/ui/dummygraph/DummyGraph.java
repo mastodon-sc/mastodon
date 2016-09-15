@@ -1,67 +1,21 @@
 package org.mastodon.revised.trackscheme.display.ui.dummygraph;
 
-import gnu.trove.map.hash.TIntObjectHashMap;
-
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 
 import org.mastodon.graph.GraphChangeListener;
-import org.mastodon.graph.GraphIdBimap;
 import org.mastodon.graph.GraphListener;
 import org.mastodon.graph.ListenableGraph;
 import org.mastodon.graph.object.AbstractObjectGraph;
+import org.mastodon.graph.object.AbstractObjectIdGraph;
 import org.mastodon.revised.ui.selection.Selection;
 
-public class DummyGraph extends AbstractObjectGraph< DummyVertex, DummyEdge > implements ListenableGraph< DummyVertex, DummyEdge >
+public class DummyGraph extends AbstractObjectIdGraph< DummyVertex, DummyEdge > implements ListenableGraph< DummyVertex, DummyEdge >
 {
-
-	private class MyGraphIdBimap extends GraphIdBimap< DummyVertex, DummyEdge >
-	{
-
-		public MyGraphIdBimap()
-		{
-			super( null, null );
-		}
-
-		@Override
-		public DummyEdge getEdge( final int id, final DummyEdge ref )
-		{
-			return idToEdgeMap.get( id );
-		}
-
-		@Override
-		public int getEdgeId( final DummyEdge e )
-		{
-			return e.getId();
-		}
-
-		@Override
-		public DummyVertex getVertex( final int id, final DummyVertex ref )
-		{
-			return idToVertexMap.get( id );
-		}
-
-		@Override
-		public int getVertexId( final DummyVertex v )
-		{
-			return v.getId();
-		}
-
-	}
-
-	private final GraphIdBimap< DummyVertex, DummyEdge > idmap;
-
-	private final TIntObjectHashMap<DummyVertex> idToVertexMap;
-
-	private final TIntObjectHashMap<DummyEdge> idToEdgeMap;
-
 	public DummyGraph()
 	{
-		super( new Factory(), new HashSet<>(), new HashSet<>() );
-		idmap = new MyGraphIdBimap();
-		idToVertexMap = new TIntObjectHashMap<>();
-		idToEdgeMap = new TIntObjectHashMap<>();
+		super( new Factory(), DummyVertex.class, DummyEdge.class, new HashSet<>(), new HashSet<>() );
 	}
 
 	private static class Factory implements AbstractObjectGraph.Factory< DummyVertex, DummyEdge >
@@ -79,27 +33,6 @@ public class DummyGraph extends AbstractObjectGraph< DummyVertex, DummyEdge > im
 		}
 	}
 
-	public GraphIdBimap< DummyVertex, DummyEdge > getIdBimap()
-	{
-		return idmap;
-	}
-
-	@Override
-	public DummyVertex addVertex()
-	{
-		final DummyVertex v = super.addVertex();
-		idToVertexMap.put( v.getId(), v );
-		return v;
-	}
-
-	@Override
-	public DummyEdge addEdge( final DummyVertex source, final DummyVertex target )
-	{
-		final DummyEdge e = super.addEdge( source, target );
-		idToEdgeMap.put( e.getId(), e );
-		return e;
-	}
-
 	/*
 	 * STATIC EXAMPLE
 	 */
@@ -112,10 +45,10 @@ public class DummyGraph extends AbstractObjectGraph< DummyVertex, DummyEdge > im
 
 		private Selection< DummyVertex, DummyEdge > selection;
 
-		private Examples( DummyGraph graph, Collection< DummyVertex > vertices, Collection< DummyEdge > edges )
+		private Examples( final DummyGraph graph, final Collection< DummyVertex > vertices, final Collection< DummyEdge > edges )
 		{
 			this.graph = graph;
-			this.selection = new Selection<>( graph, graph.idmap );
+			this.selection = new Selection<>( graph, graph.getIdBimap() );
 			selection.setEdgesSelected( edges, true );
 			selection.setVerticesSelected( vertices, true );
 		}
