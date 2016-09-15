@@ -20,6 +20,12 @@ import org.mastodon.revised.bdv.overlay.RenderSettings;
 
 public class RenderSettingsDialog extends JDialog
 {
+
+	public static void main( final String[] args )
+	{
+		new RenderSettingsDialog( null, new RenderSettings() ).setVisible( true );
+	}
+
 	private static final long serialVersionUID = 1L;
 
 	private final RenderSettings renderSettings;

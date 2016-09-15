@@ -10,8 +10,6 @@ import java.awt.Insets;
 import java.awt.RenderingHints;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 import java.awt.geom.RoundRectangle2D;
 import java.util.Arrays;
 import java.util.List;
@@ -144,7 +142,6 @@ public class RenderSettingsPanel extends JPanel implements UpdateListener
 							{
 								final ColorIcon ci = new ColorIcon( c );
 								button.setIcon( ci );
-								button.addMouseListener( ci );
 								colorSetter.setColor( c );
 							}
 						}
@@ -529,9 +526,9 @@ public class RenderSettingsPanel extends JPanel implements UpdateListener
 	/**
 	 * Adapted from http://stackoverflow.com/a/3072979/230513
 	 */
-	private static class ColorIcon implements Icon, MouseListener
+	private static class ColorIcon implements Icon
 	{
-		private int size = 16;
+		private final int size = 16;
 
 		private final Color color;
 
@@ -562,30 +559,6 @@ public class RenderSettingsPanel extends JPanel implements UpdateListener
 		public int getIconHeight()
 		{
 			return size;
-		}
-
-		@Override
-		public void mouseClicked( final MouseEvent e )
-		{}
-
-		@Override
-		public void mousePressed( final MouseEvent e )
-		{}
-
-		@Override
-		public void mouseReleased( final MouseEvent e )
-		{}
-
-		@Override
-		public void mouseEntered( final MouseEvent e )
-		{
-			size = 24;
-		}
-
-		@Override
-		public void mouseExited( final MouseEvent e )
-		{
-			size = 16;
 		}
 	}
 
