@@ -83,7 +83,7 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 		this.focus = focus;
 		index = graph.getIndex();
 		renderTransform = new AffineTransform3D();
-		setRenderSettings( new RenderSettings() ); // default RenderSettings
+		setRenderSettings( RenderSettings.defaultStyle() );
 	}
 
 	@Override

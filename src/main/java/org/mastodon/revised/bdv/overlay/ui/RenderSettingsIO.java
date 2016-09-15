@@ -232,7 +232,7 @@ public class RenderSettingsIO
 			{
 				final Map< Object, Object > mapping = constructMapping( ( MappingNode  ) node );
 				final String name = ( String ) mapping.get( "name" );
-				final RenderSettings s = new RenderSettings().copy( name );
+				final RenderSettings s = RenderSettings.defaultStyle().copy( name );
 
 				s.setName( ( String ) mapping.get( "name") );
 				s.setUseAntialiasing( ( boolean ) mapping.get( "antialiasing" ) );

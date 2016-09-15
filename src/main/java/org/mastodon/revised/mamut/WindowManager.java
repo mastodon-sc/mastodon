@@ -26,7 +26,7 @@ import org.mastodon.revised.bdv.overlay.OverlayContext;
 import org.mastodon.revised.bdv.overlay.OverlayGraphRenderer;
 import org.mastodon.revised.bdv.overlay.RenderSettings;
 import org.mastodon.revised.bdv.overlay.RenderSettings.UpdateListener;
-import org.mastodon.revised.bdv.overlay.ui.RenderSettingsDialog;
+import org.mastodon.revised.bdv.overlay.ui.RenderSettingsChooser;
 import org.mastodon.revised.bdv.overlay.wrap.OverlayContextWrapper;
 import org.mastodon.revised.bdv.overlay.wrap.OverlayEdgeWrapper;
 import org.mastodon.revised.bdv.overlay.wrap.OverlayFocusWrapper;
@@ -473,12 +473,13 @@ public class WindowManager
 
 		// TODO revise
 		// RenderSettingsDialog triggered by "R"
-		final RenderSettings renderSettings = new RenderSettings(); // TODO should be in overlay eventually
+		final RenderSettings renderSettings = RenderSettings.defaultStyle(); // TODO should be in overlay eventually
 		final String RENDER_SETTINGS = "render settings";
-		final RenderSettingsDialog renderSettingsDialog = new RenderSettingsDialog( viewerFrame, renderSettings );
+//		final RenderSettingsEditor renderSettingsDialog = new RenderSettingsEditor( viewerFrame, renderSettings );
+		final RenderSettingsChooser renderSettingsDialog = new RenderSettingsChooser( viewerFrame );
 		renderSettingsDialog.setTitle( "Display settings for " + windowTitle );
 		final ActionMap actionMap = new ActionMap();
-		new ToggleDialogAction( RENDER_SETTINGS, renderSettingsDialog ).put( actionMap );
+		new ToggleDialogAction( RENDER_SETTINGS, renderSettingsDialog.getDialog() ).put( actionMap );
 		final InputMap inputMap = new InputMap();
 		final KeyStrokeAdder a = keyconf.keyStrokeAdder( inputMap, "mamut" );
 		a.put( RENDER_SETTINGS, "R" );

@@ -4,6 +4,7 @@ import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Stroke;
 import java.util.ArrayList;
+import java.util.Collection;
 
 public class RenderSettings
 {
@@ -34,7 +35,6 @@ public class RenderSettings
 	public static final Color DEFAULT_COLOR_1 = new Color(0f, 1f, 0.1f);
 	public static final Color DEFAULT_COLOR_2 = new Color(1f, 0f, 0.1f);
 	
-
 	public interface UpdateListener
 	{
 		public void renderSettingsChanged();
@@ -42,30 +42,8 @@ public class RenderSettings
 
 	private final ArrayList< UpdateListener > updateListeners;
 
-	public RenderSettings()
+	private RenderSettings()
 	{
-		useAntialiasing = DEFAULT_USE_ANTI_ALIASING;
-		useGradient = DEFAULT_USE_GRADIENT;
-		timeLimit = DEFAULT_LIMIT_TIME_RANGE;
-		drawLinks = DEFAULT_DRAW_LINKS;
-		drawSpots = DEFAULT_DRAW_SPOTS;
-		drawEllipsoidSliceProjection = DEFAULT_DRAW_SLICE_PROJECTION;
-		drawEllipsoidSliceIntersection = DEFAULT_DRAW_SLICE_INTERSECTION;
-		drawPoints = DEFAULT_DRAW_POINTS;
-		drawPointsForEllipses = DEFAULT_DRAW_POINTS_FOR_ELLIPSE;
-		drawSpotLabels = DEFAULT_DRAW_SPOT_LABELS;
-		focusLimit = DEFAULT_LIMIT_FOCUS_RANGE;
-		isFocusLimitViewRelative = DEFAULT_IS_FOCUS_LIMIT_RELATIVE;
-		ellipsoidFadeDepth = DEFAULT_ELLIPSOID_FADE_DEPTH;
-		pointFadeDepth = DEFAULT_POINT_FADE_DEPTH;
-		spotStroke = DEFAULT_SPOT_STROKE;
-		spotFocusStroke = DEFAULT_SPOT_FOCUS_STROKE;
-		spotHighlightStroke = DEFAULT_SPOT_HIGHLIGHT_STROKE;
-		linkStroke = DEFAULT_LINK_STROKE;
-		linkHighlightStroke = DEFAULT_LINK_HIGHLIGHT_STROKE;
-		color1 = DEFAULT_COLOR_1;
-		color2 = DEFAULT_COLOR_2;
-		name = "Default";
 		updateListeners = new ArrayList< UpdateListener >();
 	}
 
@@ -933,4 +911,45 @@ public class RenderSettings
 		rs.setName( name );
 		return rs;
 	}
+
+	private static RenderSettings df;
+	static
+	{
+		df = new RenderSettings();
+		df.useAntialiasing = DEFAULT_USE_ANTI_ALIASING;
+		df.useGradient = DEFAULT_USE_GRADIENT;
+		df.timeLimit = DEFAULT_LIMIT_TIME_RANGE;
+		df.drawLinks = DEFAULT_DRAW_LINKS;
+		df.drawSpots = DEFAULT_DRAW_SPOTS;
+		df.drawEllipsoidSliceProjection = DEFAULT_DRAW_SLICE_PROJECTION;
+		df.drawEllipsoidSliceIntersection = DEFAULT_DRAW_SLICE_INTERSECTION;
+		df.drawPoints = DEFAULT_DRAW_POINTS;
+		df.drawPointsForEllipses = DEFAULT_DRAW_POINTS_FOR_ELLIPSE;
+		df.drawSpotLabels = DEFAULT_DRAW_SPOT_LABELS;
+		df.focusLimit = DEFAULT_LIMIT_FOCUS_RANGE;
+		df.isFocusLimitViewRelative = DEFAULT_IS_FOCUS_LIMIT_RELATIVE;
+		df.ellipsoidFadeDepth = DEFAULT_ELLIPSOID_FADE_DEPTH;
+		df.pointFadeDepth = DEFAULT_POINT_FADE_DEPTH;
+		df.spotStroke = DEFAULT_SPOT_STROKE;
+		df.spotFocusStroke = DEFAULT_SPOT_FOCUS_STROKE;
+		df.spotHighlightStroke = DEFAULT_SPOT_HIGHLIGHT_STROKE;
+		df.linkStroke = DEFAULT_LINK_STROKE;
+		df.linkHighlightStroke = DEFAULT_LINK_HIGHLIGHT_STROKE;
+		df.color1 = DEFAULT_COLOR_1;
+		df.color2 = DEFAULT_COLOR_2;
+		df.name = "Default";
+	}
+
+	public static Collection< RenderSettings > defaults;
+	static
+	{
+		defaults = new ArrayList<>( 3 );
+		defaults.add( df );
+	}
+
+	public static RenderSettings defaultStyle()
+	{
+		return df;
+	}
+
 }

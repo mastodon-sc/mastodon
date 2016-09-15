@@ -1,66 +1,153 @@
 package org.mastodon.revised.bdv.overlay.ui;
 
 import java.awt.BorderLayout;
+import java.awt.Container;
+import java.awt.Font;
 import java.awt.Frame;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.GridLayout;
+import java.awt.Insets;
 import java.awt.event.ActionEvent;
-import java.awt.event.KeyEvent;
+import java.awt.event.ActionListener;
 
-import javax.swing.AbstractAction;
-import javax.swing.Action;
-import javax.swing.ActionMap;
 import javax.swing.BoxLayout;
-import javax.swing.InputMap;
-import javax.swing.JComponent;
+import javax.swing.DefaultComboBoxModel;
+import javax.swing.JButton;
+import javax.swing.JComboBox;
 import javax.swing.JDialog;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.KeyStroke;
-import javax.swing.WindowConstants;
+import javax.swing.SwingConstants;
+import javax.swing.border.EmptyBorder;
 
 import org.mastodon.revised.bdv.overlay.RenderSettings;
 
-public class RenderSettingsDialog extends JDialog
+/**
+ * An editor and manager for BDV RenderSettings.
+ *
+ * @author Jean=Yves Tinevez &lt;jeanyves.tinevez@gmail.com&gt;
+ */
+class RenderSettingsDialog extends JDialog
 {
-
-	public static void main( final String[] args )
-	{
-		new RenderSettingsDialog( null, new RenderSettings() ).setVisible( true );
-	}
 
 	private static final long serialVersionUID = 1L;
 
-	private final RenderSettings renderSettings;
+	JButton buttonDeleteStyle;
 
-	private final RenderSettingsPanel renderSettingsPanel;
+	JButton buttonEditStyle;
 
-	public RenderSettingsDialog( final Frame owner, final RenderSettings renderSettings )
+	JButton buttonNewStyle;
+
+	JButton buttonSetStyleName;
+
+	JButton okButton;
+
+	JButton saveButton;
+
+	public RenderSettingsDialog( final Frame owner, final DefaultComboBoxModel< RenderSettings > model )
 	{
-		super( owner, "render settings", false );
-		this.renderSettings = renderSettings;
+		super( owner, "BDV render settings chooser", false );
 
-		renderSettingsPanel = new RenderSettingsPanel( renderSettings );
-
-		final JPanel content = new JPanel();
-		content.setLayout( new BoxLayout( content, BoxLayout.PAGE_AXIS ) );
-		content.add( renderSettingsPanel );
-		getContentPane().add( content, BorderLayout.NORTH );
-
-		final ActionMap am = getRootPane().getActionMap();
-		final InputMap im = getRootPane().getInputMap( JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT );
-		final Object hideKey = new Object();
-		final Action hideAction = new AbstractAction()
+		final JPanel dialogPane = new JPanel();
+		final JPanel contentPanel = new JPanel();
+		final JPanel panelChooseStyle = new JPanel();
+		final JLabel jlabelTitle = new JLabel();
+		final JComboBox< RenderSettings > comboBoxStyles = new JComboBox<>( model );
+		comboBoxStyles.addActionListener( new ActionListener()
 		{
-			private static final long serialVersionUID = 1L;
-
 			@Override
 			public void actionPerformed( final ActionEvent e )
 			{
-				setVisible( false );
+				System.out.println( comboBoxStyles.getItemAt( comboBoxStyles.getSelectedIndex() ) );// DEBUG
 			}
-		};
-		im.put( KeyStroke.getKeyStroke( KeyEvent.VK_ESCAPE, 0 ), hideKey );
-		am.put( hideKey, hideAction );
+		} );
+		final JPanel panelStyleButtons = new JPanel();
+		buttonDeleteStyle = new JButton();
+		final JPanel hSpacer1 = new JPanel( null );
+		buttonEditStyle = new JButton();
+		buttonNewStyle = new JButton();
+		buttonSetStyleName = new JButton();
+		final JPanel buttonBar = new JPanel();
+		okButton = new JButton();
+		saveButton = new JButton();
 
+		// ======== this ========
+		setTitle( "BDV render settings" );
+		final Container contentPane = getContentPane();
+		contentPane.setLayout( new BorderLayout() );
+
+		// ======== dialogPane ========
+		{
+			dialogPane.setBorder( new EmptyBorder( 12, 12, 12, 12 ) );
+			dialogPane.setLayout( new BorderLayout() );
+
+			// ======== contentPanel ========
+			{
+				contentPanel.setLayout( new BorderLayout() );
+
+				// ======== panelChooseStyle ========
+				{
+					panelChooseStyle.setLayout( new GridLayout( 3, 0, 0, 10 ) );
+
+					// ---- jlabelTitle ----
+					jlabelTitle.setText( "BDV render settings." );
+					jlabelTitle.setHorizontalAlignment( SwingConstants.CENTER );
+					jlabelTitle.setFont( dialogPane.getFont().deriveFont( Font.BOLD ) );
+					panelChooseStyle.add( jlabelTitle );
+					panelChooseStyle.add( comboBoxStyles );
+
+					// ======== panelStyleButtons ========
+					{
+						panelStyleButtons.setLayout( new BoxLayout( panelStyleButtons, BoxLayout.LINE_AXIS ) );
+
+						// ---- buttonDeleteStyle ----
+						buttonDeleteStyle.setText( "Delete" );
+						panelStyleButtons.add( buttonDeleteStyle );
+						panelStyleButtons.add( hSpacer1 );
+
+						// ---- buttonNewStyle ----
+						buttonNewStyle.setText( "New" );
+						panelStyleButtons.add( buttonNewStyle );
+
+						// ---- buttonSetStyleName ----
+						buttonSetStyleName.setText( "Set name" );
+						panelStyleButtons.add( buttonSetStyleName );
+
+						// ---- buttonEditStyle ----
+						buttonEditStyle.setText( "Edit" );
+						panelStyleButtons.add( buttonEditStyle );
+
+					}
+					panelChooseStyle.add( panelStyleButtons );
+				}
+				contentPanel.add( panelChooseStyle, BorderLayout.NORTH );
+
+			}
+			dialogPane.add( contentPanel, BorderLayout.CENTER );
+
+			// ======== buttonBar ========
+			{
+				buttonBar.setBorder( new EmptyBorder( 12, 0, 0, 0 ) );
+				buttonBar.setLayout( new GridBagLayout() );
+				( ( GridBagLayout ) buttonBar.getLayout() ).columnWidths = new int[] { 80, 164, 80 };
+				( ( GridBagLayout ) buttonBar.getLayout() ).columnWeights = new double[] { 0.0, 1.0, 0.0 };
+
+				// ---- okButton ----
+				okButton.setText( "OK" );
+				buttonBar.add( okButton, new GridBagConstraints( 2, 0, 1, 1, 0.0, 0.0,
+						GridBagConstraints.CENTER, GridBagConstraints.BOTH,
+						new Insets( 0, 0, 0, 0 ), 0, 0 ) );
+
+				// ---- saveButton -----
+				saveButton.setText( "Save styles" );
+				buttonBar.add( saveButton, new GridBagConstraints( 0, 0, 1, 1, 0.0, 0.0,
+						GridBagConstraints.CENTER, GridBagConstraints.BOTH,
+						new Insets( 0, 0, 0, 0 ), 0, 0 ) );
+			}
+			dialogPane.add( buttonBar, BorderLayout.SOUTH );
+		}
+		contentPane.add( dialogPane, BorderLayout.CENTER );
 		pack();
-		setDefaultCloseOperation( WindowConstants.HIDE_ON_CLOSE );
 	}
 }
