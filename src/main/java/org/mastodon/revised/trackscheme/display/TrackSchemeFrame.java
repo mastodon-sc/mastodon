@@ -100,7 +100,7 @@ public class TrackSchemeFrame extends JFrame
 		settingsPanel.add( contextChooserPanel );
 		settingsPanel.add( Box.createHorizontalGlue() );
 
-		searchField = new TrackSchemeSearchPanel( graph, navigation );
+		searchField = new TrackSchemeSearchPanel( graph, navigation, trackschemePanel.getDisplay() );
 		settingsPanel.add( searchField );
 
 		add( settingsPanel, BorderLayout.NORTH );

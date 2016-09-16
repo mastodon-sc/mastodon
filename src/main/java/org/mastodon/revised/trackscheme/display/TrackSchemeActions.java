@@ -38,7 +38,7 @@ public class TrackSchemeActions extends AbstractActions
 				() -> frame.setSettingsPanelVisible( !frame.isSettingsPanelVisible() ),
 				TOGGLE_SETTINGS_PANEL, TOGGLE_SETTINGS_PANEL_KEYS );
 		actions.runnableAction(
-				() -> frame.searchField.requestFocusInWindow(),
+				() -> frame.searchField.focus(),
 				SEARCH, SEARCH_KEYS );
 	}
 

@@ -15,25 +15,28 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
+import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.InputMap;
+import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComponent;
-import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.KeyStroke;
 import javax.swing.UIManager;
+import javax.swing.border.EmptyBorder;
 
 import org.mastodon.graph.GraphChangeListener;
 import org.mastodon.graph.algorithm.traversal.BreadthFirstIterator;
 import org.mastodon.revised.trackscheme.LexicographicalVertexOrder;
-import org.mastodon.revised.trackscheme.TrackSchemeEdge;
 import org.mastodon.revised.trackscheme.TrackSchemeGraph;
 import org.mastodon.revised.trackscheme.TrackSchemeNavigation;
 import org.mastodon.revised.trackscheme.TrackSchemeVertex;
 
 import com.itextpdf.text.Font;
+
+import bdv.util.RunnableAction;
 
 public class TrackSchemeSearchPanel extends JPanel
 {
@@ -49,12 +52,13 @@ public class TrackSchemeSearchPanel extends JPanel
 
 	private static final ImageIcon NOT_FOUND_ICON = new ImageIcon( TrackSchemeSearchPanel.class.getResource( "find-24x24-red.png" ) );
 
-	public TrackSchemeSearchPanel()
-	{
-		this( null, null );
-	}
+	private final AtomicBoolean doChangeFocusIcon;
 
-	public TrackSchemeSearchPanel( final TrackSchemeGraph< ?, ? > graph, final TrackSchemeNavigation navigation )
+	private final JTextField searchField;
+
+	private final JButton labelIcon;
+
+	public TrackSchemeSearchPanel( final TrackSchemeGraph< ?, ? > graph, final TrackSchemeNavigation navigation, final JComponent display )
 	{
 		/*
 		 * GUI
@@ -70,15 +74,16 @@ public class TrackSchemeSearchPanel extends JPanel
 		gridBagLayout.rowWeights = new double[] { 0.0 };
 		setLayout( gridBagLayout );
 
-		final JLabel labelIcon = new JLabel( UNFOCUSED_ICON );
+		labelIcon = new JButton( UNFOCUSED_ICON );
+		labelIcon.setBorder( new EmptyBorder( 0, 0, 0, 0 ) );
 		final GridBagConstraints gbc_labelIcon = new GridBagConstraints();
 		gbc_labelIcon.anchor = GridBagConstraints.WEST;
 		gbc_labelIcon.gridx = 0;
 		gbc_labelIcon.gridy = 0;
 		add( labelIcon, gbc_labelIcon );
+		labelIcon.addActionListener( ( event ) -> focus() );
 
-		final JTextField searchField = new JTextField();
-		searchField.setBorder( null );
+		searchField = new JTextField();
 		final GridBagConstraints gbc_searchField = new GridBagConstraints();
 		gbc_searchField.fill = GridBagConstraints.HORIZONTAL;
 		gbc_searchField.anchor = GridBagConstraints.EAST;
@@ -87,10 +92,13 @@ public class TrackSchemeSearchPanel extends JPanel
 		add( searchField, gbc_searchField );
 		searchField.setColumns( 10 );
 
-		final AtomicBoolean doChangeFocusIcon = new AtomicBoolean( true );
-		final MyFocusListener mfl = new MyFocusListener( searchField, labelIcon, doChangeFocusIcon );
+		doChangeFocusIcon = new AtomicBoolean( true );
+		final MyFocusListener mfl = new MyFocusListener();
 		mfl.focusLost( null );
 		searchField.addFocusListener( mfl );
+
+		searchField.getInputMap( JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT ).put( KeyStroke.getKeyStroke( "ESCAPE" ), "abort search" );
+		new RunnableAction( "abort search", display::requestFocusInWindow ).put( searchField.getActionMap() );
 
 		final JCheckBox chckbxstartswith = new JCheckBox( "<html>starts<br>with</html>" );
 		chckbxstartswith.setFont( chckbxstartswith.getFont().deriveFont( 8f ) );
@@ -116,8 +124,8 @@ public class TrackSchemeSearchPanel extends JPanel
 						try
 						{
 							final boolean found = sa.search( searchField.getText(), chckbxstartswith.isSelected() );
-							searchField.requestFocusInWindow();
-							labelIcon.setIcon( found ? FOUND_ICON : NOT_FOUND_ICON );
+							focus();
+							setIcon( found ? FOUND_ICON : NOT_FOUND_ICON );
 						}
 						finally
 						{
@@ -128,6 +136,17 @@ public class TrackSchemeSearchPanel extends JPanel
 				}.start();
 			}
 		} );
+	}
+
+	public void focus()
+	{
+		searchField.requestFocusInWindow();
+	}
+
+	private void setIcon( final Icon icon )
+	{
+		labelIcon.setIcon( icon );
+		labelIcon.setPressedIcon( icon == UNFOCUSED_ICON ? FOCUSED_ICON : icon );
 	}
 
 	private static class SearchAction implements GraphChangeListener
@@ -188,35 +207,22 @@ public class TrackSchemeSearchPanel extends JPanel
 				rootIterator = LexicographicalVertexOrder.sort( graph, graph.getRoots() ).iterator();
 
 			final TrackSchemeVertex root = rootIterator.next();
-			iterator = new BreadthFirstIterator< TrackSchemeVertex, TrackSchemeEdge >( root, graph );
+			iterator = new BreadthFirstIterator<>( root, graph );
 		}
 	}
 
-	private static class MyFocusListener implements FocusListener
+	private class MyFocusListener implements FocusListener
 	{
 		private String oldText;
 
-		private final JTextField searchField;
-
-		private final JLabel labelIcon;
-
-		private final AtomicBoolean doChangeFocusIcon;
-
-		boolean keyBlocked = false;
-
-		public MyFocusListener( final JTextField searchField, final JLabel labelIcon, final AtomicBoolean doChangeFocusIcon )
-		{
-			this.labelIcon = labelIcon;
-			this.doChangeFocusIcon = doChangeFocusIcon;
-			this.searchField = searchField;
-		}
+		private boolean keysBlocked = false;
 
 		@Override
 		public void focusLost( final FocusEvent evt )
 		{
 			if ( doChangeFocusIcon.get() )
 			{
-				labelIcon.setIcon( UNFOCUSED_ICON );
+				setIcon( UNFOCUSED_ICON );
 				oldText = searchField.getText();
 				searchField.setText( UNFOCUSED_TEXT );
 				searchField.setFont( searchField.getFont().deriveFont( Font.ITALIC ) );
@@ -229,13 +235,13 @@ public class TrackSchemeSearchPanel extends JPanel
 		{
 			if ( doChangeFocusIcon.get() )
 			{
-				if ( !keyBlocked )
+				if ( !keysBlocked )
 				{
 					blockKeys( searchField );
-					keyBlocked = true;
+					keysBlocked = true;
 				}
 
-				labelIcon.setIcon( FOCUSED_ICON );
+				setIcon( FOCUSED_ICON );
 				searchField.setText( oldText );
 				searchField.setFont( searchField.getFont().deriveFont( Font.NORMAL ) );
 				searchField.setForeground( UIManager.getColor( "Label.foreground" ) );
@@ -260,8 +266,8 @@ public class TrackSchemeSearchPanel extends JPanel
 	private static void blockKeys( final JComponent ctn )
 	{
 		// Get all keystrokes that are mapped to actions in higher components
-		final ArrayList< KeyStroke > allTableKeys = new ArrayList< KeyStroke >();
-		for ( Container c = ctn; c != null; c = c.getParent() )
+		final ArrayList< KeyStroke > allTableKeys = new ArrayList<>();
+		for ( Container c = ctn.getParent(); c != null; c = c.getParent() )
 		{
 			if ( c instanceof JComponent )
 			{
