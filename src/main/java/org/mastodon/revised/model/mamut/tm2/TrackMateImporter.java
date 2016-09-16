@@ -1,91 +1,79 @@
 package org.mastodon.revised.model.mamut.tm2;
 
+import static org.mastodon.revised.model.mamut.tm2.TrackMateXMLKeys.FRAME_ATTRIBUTE_NAME;
+import static org.mastodon.revised.model.mamut.tm2.TrackMateXMLKeys.ID_ATTRIBUTE_NAME;
+import static org.mastodon.revised.model.mamut.tm2.TrackMateXMLKeys.LABEL_ATTRIBUTE_NAME;
+import static org.mastodon.revised.model.mamut.tm2.TrackMateXMLKeys.MODEL_TAG;
+import static org.mastodon.revised.model.mamut.tm2.TrackMateXMLKeys.RADIUS_ATTRIBUTE_NAME;
+import static org.mastodon.revised.model.mamut.tm2.TrackMateXMLKeys.SPOT_COLLECTION_TAG;
+import static org.mastodon.revised.model.mamut.tm2.TrackMateXMLKeys.SPOT_ELEMENT_TAG;
+import static org.mastodon.revised.model.mamut.tm2.TrackMateXMLKeys.SPOT_FRAME_COLLECTION_TAG;
+import static org.mastodon.revised.model.mamut.tm2.TrackMateXMLKeys.VISIBILITY_ATTRIBUTE_NAME;
+import static org.mastodon.revised.model.mamut.tm2.TrackMateXMLKeys.X_ATTRIBUTE_NAME;
+import static org.mastodon.revised.model.mamut.tm2.TrackMateXMLKeys.Y_ATTRIBUTE_NAME;
+import static org.mastodon.revised.model.mamut.tm2.TrackMateXMLKeys.Z_ATTRIBUTE_NAME;
+
 import java.io.File;
 import java.io.IOException;
-import java.util.Set;
+import java.util.List;
 
-import org.jgrapht.graph.DefaultWeightedEdge;
+import org.jdom2.Document;
+import org.jdom2.Element;
+import org.jdom2.JDOMException;
+import org.jdom2.input.SAXBuilder;
 import org.mastodon.collection.IntRefMap;
 import org.mastodon.collection.RefCollections;
-import org.mastodon.graph.Graph;
-import org.mastodon.revised.model.mamut.Link;
-import org.mastodon.revised.model.mamut.Model;
+import org.mastodon.revised.model.mamut.ModelGraph;
 import org.mastodon.revised.model.mamut.Spot;
 
-import fiji.plugin.trackmate.TrackModel;
-import fiji.plugin.trackmate.io.TmXmlReader;
+import mpicbg.spim.data.XmlHelpers;
 
 public class TrackMateImporter
 {
-	public Model importTrackMate( final File file )
+	public static void importModel( final File file ) throws JDOMException, IOException
 	{
-		final TmXmlReader reader = new TmXmlReader( file );
-		if ( !reader.isReadingOk() )
-		{
-			System.err.println( reader.getErrorMessage() );
-			return null;
-		}
+		final SAXBuilder sb = new SAXBuilder();
+		final Document document = sb.build( file );
+		final Element root = document.getRootElement();
 
-		final fiji.plugin.trackmate.Model m = reader.getModel();
-		final TrackModel tm = m.getTrackModel();
-		final Set< Integer > trackIDs = tm.trackIDs( true );
+		final Element modelEl = root.getChild( MODEL_TAG );
+		if ( null == modelEl ) { return; }
 
+		final ModelGraph model = new ModelGraph();
+
+		final Spot ref = model.vertexRef();
+		final Spot putRef = model.vertexRef();
 		final double[] pos = new double[ 3 ];
-		final Model model = new Model();
 
-		final Graph< Spot, Link > graph = model.getGraph();
-		final Spot ref1 = graph.vertexRef();
-		final Spot ref2 = graph.vertexRef();
-		final Link edgeRef = graph.edgeRef();
+		final IntRefMap< Spot > idToSpotIDmap = RefCollections.createIntRefMap( model.vertices(), -1 );
 
-		for ( final Integer trackID : trackIDs )
+		final Element allSpotsEl = modelEl.getChild( SPOT_COLLECTION_TAG );
+		final List< Element > allFramesEl = allSpotsEl.getChildren( SPOT_FRAME_COLLECTION_TAG );
+		for ( final Element frameEl : allFramesEl )
 		{
-			final IntRefMap< Spot > map = RefCollections.createIntRefMap( model.getGraph().vertices(), -1 );
-
-			final Set< fiji.plugin.trackmate.Spot > spots = tm.trackSpots( trackID );
-			for ( final fiji.plugin.trackmate.Spot spot : spots )
+			final List< Element > frameSpotsEl = frameEl.getChildren( SPOT_ELEMENT_TAG );
+			for ( final Element spotEl : frameSpotsEl )
 			{
-				spot.localize( pos );
-				final double radius = spot.getFeature( fiji.plugin.trackmate.Spot.RADIUS );
-				final int id = spot.ID();
-				final int frame = spot.getFeature( fiji.plugin.trackmate.Spot.FRAME ).intValue();
+				final boolean visible = XmlHelpers.getBoolean( spotEl, VISIBILITY_ATTRIBUTE_NAME );
+				if ( !visible )
+					continue;
 
-				final Spot addSpot = graph.addVertex( ref1 ).init( frame, pos, radius );
-				map.put( id, addSpot );
-			}
+				pos[ 0 ] = XmlHelpers.getDouble( spotEl, X_ATTRIBUTE_NAME );
+				pos[ 1 ] = XmlHelpers.getDouble( spotEl, Y_ATTRIBUTE_NAME );
+				pos[ 2 ] = XmlHelpers.getDouble( spotEl, Z_ATTRIBUTE_NAME );
+				final double radius = XmlHelpers.getDouble( spotEl, RADIUS_ATTRIBUTE_NAME );
+				final int frame = XmlHelpers.getInt( spotEl, FRAME_ATTRIBUTE_NAME );
+				final int id = XmlHelpers.getInt( spotEl, ID_ATTRIBUTE_NAME );
+				final String label = XmlHelpers.getText( spotEl, LABEL_ATTRIBUTE_NAME );
 
-			final Set< DefaultWeightedEdge > edges = tm.trackEdges( trackID );
-			for ( final DefaultWeightedEdge edge : edges )
-			{
-				final fiji.plugin.trackmate.Spot source = tm.getEdgeSource( edge );
-				final int sourceID = source.ID();
+				final Spot spot = model.addVertex( ref ).init( frame, pos, radius );
+				spot.setLabel( label );
+				idToSpotIDmap.put( id, spot, putRef );
 
-				final fiji.plugin.trackmate.Spot target = tm.getEdgeTarget( edge );
-				final int targetID = target.ID();
-
-				graph.addEdge( map.get( sourceID, ref1 ), map.get( targetID, ref2 ), edgeRef ).init();
 			}
 
 		}
 
-		graph.releaseRef( edgeRef );
-		graph.releaseRef( ref1 );
-		graph.releaseRef( ref2 );
 
-		return model;
-	}
-
-	public static void main( final String[] args ) throws IOException
-	{
-		final File file = new File( "/Users/tinevez/Projects/JYTinevez/CelegansLineage/Data/LSM700U/10-03-29-3hours.xml" );
-		final File target = new File( "/Volumes/Data/Celegans.raw" );
-
-		final long start = System.currentTimeMillis();
-		System.out.println( "Importing " + file );
-		final Model model = new TrackMateImporter().importTrackMate( file );
-		System.out.println( "Saving to " + target );
-		model.saveRaw( target );
-		final long end = System.currentTimeMillis();
-		System.out.println( "Total time: " + ( end - start ) / 1000 + " s." );
 	}
 }
