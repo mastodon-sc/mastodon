@@ -912,6 +912,12 @@ public class RenderSettings
 		return rs;
 	}
 
+	@Override
+	public String toString()
+	{
+		return name;
+	}
+
 	private static RenderSettings df;
 	static
 	{
@@ -940,11 +946,40 @@ public class RenderSettings
 		df.name = "Default";
 	}
 
+	private static RenderSettings POINT_CLOUD;
+	static
+	{
+		POINT_CLOUD = df.copy( "Point cloud" );
+		POINT_CLOUD.drawLinks = false;
+		POINT_CLOUD.drawEllipsoidSliceIntersection = false;
+		POINT_CLOUD.isFocusLimitViewRelative = false;
+	}
+
+	private static RenderSettings ARROWS;
+	static
+	{
+		ARROWS = df.copy( "Arrows" );
+		ARROWS.drawSpots = false;
+		ARROWS.drawLinkArrows = true;
+		ARROWS.color2 = new Color( 55, 150, 126, 255 );
+	}
+
+	private static RenderSettings NONE;
+	static
+	{
+		NONE = df.copy( "No overlay" );
+		NONE.drawLinks = false;
+		NONE.drawSpots = false;
+	}
+
 	public static Collection< RenderSettings > defaults;
 	static
 	{
-		defaults = new ArrayList<>( 3 );
+		defaults = new ArrayList<>( 4 );
 		defaults.add( df );
+		defaults.add( POINT_CLOUD );
+		defaults.add( ARROWS );
+		defaults.add( NONE );
 	}
 
 	public static RenderSettings defaultStyle()
