@@ -17,7 +17,7 @@ public class TrackSchemeActions extends AbstractActions
 
 	public static final String[] EDIT_FOCUS_KEYS = new String[] { "shift ENTER" };
 	public static final String[] TOGGLE_SETTINGS_PANEL_KEYS = new String[] { "T" };
-	public static final String[] SEARCH_KEYS = new String[] { "control F" };
+	public static final String[] SEARCH_KEYS = new String[] { "ctrl F", "meta F", "SLASH" };
 
 
 	/**
