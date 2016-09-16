@@ -473,10 +473,9 @@ public class WindowManager
 
 		// TODO revise
 		// RenderSettingsDialog triggered by "R"
-		final RenderSettings renderSettings = RenderSettings.defaultStyle(); // TODO should be in overlay eventually
 		final String RENDER_SETTINGS = "render settings";
-//		final RenderSettingsEditor renderSettingsDialog = new RenderSettingsEditor( viewerFrame, renderSettings );
 		final RenderSettingsChooser renderSettingsDialog = new RenderSettingsChooser( viewerFrame );
+		
 		renderSettingsDialog.setTitle( "Display settings for " + windowTitle );
 		final ActionMap actionMap = new ActionMap();
 		new ToggleDialogAction( RENDER_SETTINGS, renderSettingsDialog.getDialog() ).put( actionMap );
@@ -485,6 +484,8 @@ public class WindowManager
 		a.put( RENDER_SETTINGS, "R" );
 		viewerFrame.getKeybindings().addActionMap( "mamut", actionMap );
 		viewerFrame.getKeybindings().addInputMap( "mamut", inputMap );
+		
+		final RenderSettings renderSettings = renderSettingsDialog.getRenderSettings();
 		renderSettings.addUpdateListener( new UpdateListener()
 		{
 			@Override

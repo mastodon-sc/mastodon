@@ -12,6 +12,7 @@ import java.awt.RenderingHints;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.geom.RoundRectangle2D;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -84,6 +85,8 @@ public class RenderSettingsPanel extends JPanel implements UpdateListener
 
 	private final SliderPanelDouble pointFadeDepthSlider;
 
+	private final ArrayList< JButton > buttonList;
+
 	public RenderSettingsPanel( final RenderSettings renderSettings )
 	{
 		super( new GridBagLayout() );
@@ -92,13 +95,16 @@ public class RenderSettingsPanel extends JPanel implements UpdateListener
 		final GridBagConstraints c = new GridBagConstraints();
 		c.insets = new Insets( 0, 5, 0, 5 );
 
+		final Dimension titleDim = new Dimension( 400, 25 );
+
 		c.gridwidth = 2;
 		c.gridy = 0;
+		c.anchor = GridBagConstraints.LINE_START;
 		final JLabel title1 = new JLabel( "Colors and look" );
 		title1.setFont( getFont().deriveFont( Font.BOLD ) );
 		title1.setHorizontalAlignment( SwingConstants.CENTER );
-		title1.setPreferredSize( new Dimension( 500, 25 ) );
-		title1.setMinimumSize( new Dimension( 500, 25 ) );
+		title1.setPreferredSize( titleDim );
+		title1.setMinimumSize( titleDim );
 		title1.setBorder( BorderFactory.createMatteBorder( 0, 0, 1, 0, Color.BLACK ) );
 		add( title1, c );
 
@@ -129,6 +135,8 @@ public class RenderSettingsPanel extends JPanel implements UpdateListener
 		 */
 
 		final List< ColorSetter > styleColors = styleColors( renderSettings );
+		buttonList = new ArrayList<>( styleColors.size() );
+
 		final JColorChooser colorChooser = new JColorChooser();
 
 		c.gridy++;
@@ -136,6 +144,7 @@ public class RenderSettingsPanel extends JPanel implements UpdateListener
 		{
 			c.gridx = 0;
 			final JButton button = new JButton( new ColorIcon( colorSetter.getColor() ) );
+			buttonList.add( button );
 			button.setMargin( new Insets( 0, 0, 0, 0 ) );
 			button.setBorder( new EmptyBorder( 2, 0, 2, 6 ) );
 			button.setHorizontalAlignment( SwingConstants.LEFT );
@@ -191,8 +200,8 @@ public class RenderSettingsPanel extends JPanel implements UpdateListener
 		final JLabel title2 = new JLabel( "Links" );
 		title2.setFont( getFont().deriveFont( Font.BOLD ) );
 		title2.setHorizontalAlignment( SwingConstants.CENTER );
-		title2.setPreferredSize( new Dimension( 500, 25 ) );
-		title2.setMinimumSize( new Dimension( 500, 25 ) );
+		title2.setPreferredSize( titleDim );
+		title2.setMinimumSize( titleDim );
 		title2.setBorder( BorderFactory.createMatteBorder( 0, 0, 1, 0, Color.BLACK ) );
 		add( title2, c );
 
@@ -283,8 +292,8 @@ public class RenderSettingsPanel extends JPanel implements UpdateListener
 		final JLabel title3 = new JLabel( "Spots" );
 		title3.setFont( getFont().deriveFont( Font.BOLD ) );
 		title3.setHorizontalAlignment( SwingConstants.CENTER );
-		title3.setPreferredSize( new Dimension( 500, 25 ) );
-		title3.setMinimumSize( new Dimension( 500, 25 ) );
+		title3.setPreferredSize( titleDim );
+		title3.setMinimumSize( titleDim );
 		title3.setBorder( BorderFactory.createMatteBorder( 0, 0, 1, 0, Color.BLACK ) );
 		add( title3, c );
 
@@ -418,8 +427,8 @@ public class RenderSettingsPanel extends JPanel implements UpdateListener
 		final JLabel title4 = new JLabel( "Focus limits" );
 		title4.setFont( getFont().deriveFont( Font.BOLD ) );
 		title4.setHorizontalAlignment( SwingConstants.CENTER );
-		title4.setPreferredSize( new Dimension( 500, 25 ) );
-		title4.setMinimumSize( new Dimension( 500, 25 ) );
+		title4.setPreferredSize( titleDim );
+		title4.setMinimumSize( titleDim );
 		title4.setBorder( BorderFactory.createMatteBorder( 0, 0, 1, 0, Color.BLACK ) );
 		add( title4, c );
 
@@ -523,9 +532,13 @@ public class RenderSettingsPanel extends JPanel implements UpdateListener
 		{
 			antialiasingBox.setSelected( renderSettings.getUseAntialiasing() );
 
+			buttonList.get( 0 ).setIcon( new ColorIcon( renderSettings.getLinkColor1() ) );
+			buttonList.get( 1 ).setIcon( new ColorIcon( renderSettings.getLinkColor2() ) );
+			
 			linksBox.setSelected( renderSettings.getDrawLinks() );
 			timeLimit.setCurrentValue( renderSettings.getTimeLimit() );
 			gradientBox.setSelected( renderSettings.getUseGradient() );
+			arrowHeadBox.setSelected( renderSettings.getDrawLinkArrows() );
 
 			spotsBox.setSelected( renderSettings.getDrawSpots() );
 			intersectionBox.setSelected( renderSettings.getDrawEllipsoidSliceIntersection() );
@@ -542,6 +555,9 @@ public class RenderSettingsPanel extends JPanel implements UpdateListener
 		}
 	}
 
+	/**
+	 * Updates the UI when the settings are changed.
+	 */
 	@Override
 	public void renderSettingsChanged()
 	{

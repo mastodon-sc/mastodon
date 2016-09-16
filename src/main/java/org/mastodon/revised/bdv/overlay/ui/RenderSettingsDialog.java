@@ -1,6 +1,7 @@
 package org.mastodon.revised.bdv.overlay.ui;
 
 import java.awt.BorderLayout;
+import java.awt.Component;
 import java.awt.Container;
 import java.awt.Font;
 import java.awt.Frame;
@@ -22,6 +23,7 @@ import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
 
 import org.mastodon.revised.bdv.overlay.RenderSettings;
+import org.mastodon.revised.bdv.overlay.RenderSettings.UpdateListener;
 
 /**
  * An editor and manager for BDV RenderSettings.
@@ -35,8 +37,6 @@ class RenderSettingsDialog extends JDialog
 
 	JButton buttonDeleteStyle;
 
-	JButton buttonEditStyle;
-
 	JButton buttonNewStyle;
 
 	JButton buttonSetStyleName;
@@ -45,7 +45,7 @@ class RenderSettingsDialog extends JDialog
 
 	JButton saveButton;
 
-	public RenderSettingsDialog( final Frame owner, final DefaultComboBoxModel< RenderSettings > model )
+	public RenderSettingsDialog( final Frame owner, final DefaultComboBoxModel< RenderSettings > model, final RenderSettings targetSettings )
 	{
 		super( owner, "BDV render settings chooser", false );
 
@@ -53,19 +53,37 @@ class RenderSettingsDialog extends JDialog
 		final JPanel contentPanel = new JPanel();
 		final JPanel panelChooseStyle = new JPanel();
 		final JLabel jlabelTitle = new JLabel();
+		final RenderSettingsPanel renderSettingsPanel = new RenderSettingsPanel( targetSettings );
+
 		final JComboBox< RenderSettings > comboBoxStyles = new JComboBox<>( model );
+		// Update common render settings when a settings is chosen in the menu.
 		comboBoxStyles.addActionListener( new ActionListener()
 		{
 			@Override
 			public void actionPerformed( final ActionEvent e )
 			{
-				System.out.println( comboBoxStyles.getItemAt( comboBoxStyles.getSelectedIndex() ) );// DEBUG
+				final RenderSettings rs = comboBoxStyles.getItemAt( comboBoxStyles.getSelectedIndex() );
+				targetSettings.set( rs );
+				enableComponents( renderSettingsPanel, !RenderSettings.defaults.contains( rs ) );
 			}
 		} );
+		comboBoxStyles.setSelectedIndex( 0 );
+
+		// Update menu settings when the common render settings is changed.
+		targetSettings.addUpdateListener( new UpdateListener()
+		{
+
+			@Override
+			public void renderSettingsChanged()
+			{
+				comboBoxStyles.getItemAt( comboBoxStyles.getSelectedIndex() ).set( targetSettings );
+			}
+		} );
+
+
 		final JPanel panelStyleButtons = new JPanel();
 		buttonDeleteStyle = new JButton();
 		final JPanel hSpacer1 = new JPanel( null );
-		buttonEditStyle = new JButton();
 		buttonNewStyle = new JButton();
 		buttonSetStyleName = new JButton();
 		final JPanel buttonBar = new JPanel();
@@ -95,7 +113,17 @@ class RenderSettingsDialog extends JDialog
 					jlabelTitle.setHorizontalAlignment( SwingConstants.CENTER );
 					jlabelTitle.setFont( dialogPane.getFont().deriveFont( Font.BOLD ) );
 					panelChooseStyle.add( jlabelTitle );
-					panelChooseStyle.add( comboBoxStyles );
+
+					// Combo box panel
+					final JPanel comboBoxPanel = new JPanel();
+					{
+						final BorderLayout layout = new BorderLayout();
+						comboBoxPanel.setLayout( layout );
+						comboBoxPanel.add( new JLabel( "Render settings: " ), BorderLayout.WEST );
+						comboBoxPanel.add( comboBoxStyles, BorderLayout.CENTER );
+					}
+
+					panelChooseStyle.add( comboBoxPanel );
 
 					// ======== panelStyleButtons ========
 					{
@@ -114,14 +142,12 @@ class RenderSettingsDialog extends JDialog
 						buttonSetStyleName.setText( "Set name" );
 						panelStyleButtons.add( buttonSetStyleName );
 
-						// ---- buttonEditStyle ----
-						buttonEditStyle.setText( "Edit" );
-						panelStyleButtons.add( buttonEditStyle );
-
 					}
 					panelChooseStyle.add( panelStyleButtons );
 				}
 				contentPanel.add( panelChooseStyle, BorderLayout.NORTH );
+				contentPanel.add( renderSettingsPanel, BorderLayout.CENTER );
+
 
 			}
 			dialogPane.add( contentPanel, BorderLayout.CENTER );
@@ -150,4 +176,18 @@ class RenderSettingsDialog extends JDialog
 		contentPane.add( dialogPane, BorderLayout.CENTER );
 		pack();
 	}
+
+	private static final void enableComponents( final Container container, final boolean enable )
+	{
+		final Component[] components = container.getComponents();
+		for ( final Component component : components )
+		{
+			component.setEnabled( enable );
+			if ( component instanceof Container )
+			{
+				enableComponents( ( Container ) component, enable );
+			}
+		}
+	}
+
 }

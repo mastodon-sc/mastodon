@@ -5,7 +5,6 @@ package org.mastodon.revised.bdv.overlay.ui;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.WindowAdapter;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
@@ -22,7 +21,6 @@ import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 
 import org.mastodon.revised.bdv.overlay.RenderSettings;
-import org.mastodon.revised.trackscheme.display.laf.TrackSchemeStyle;
 import org.yaml.snakeyaml.Yaml;
 
 /**
@@ -38,14 +36,18 @@ public class RenderSettingsChooser
 
 	private final RenderSettingsDialog dialog;
 
+	private final RenderSettings targetSettings;
+
 	public RenderSettingsChooser( final JFrame owner )
 	{
-		model = new DefaultComboBoxModel< >();
+		this.model = new DefaultComboBoxModel<>();
 		for ( final RenderSettings defaultStyle : RenderSettings.defaults )
 			model.addElement( defaultStyle );
 		loadStyles();
 
-		dialog = new RenderSettingsDialog( owner, model );
+		// Give the choose its own render settings instance.
+		this.targetSettings = RenderSettings.defaultStyle().copy( RenderSettings.defaultStyle().getName() );
+		dialog = new RenderSettingsDialog( owner, model, targetSettings );
 		dialog.okButton.addActionListener( new ActionListener()
 		{
 			@Override
@@ -60,14 +62,6 @@ public class RenderSettingsChooser
 			public void actionPerformed( final ActionEvent e )
 			{
 				delete();
-			}
-		} );
-		dialog.buttonEditStyle.addActionListener( new ActionListener()
-		{
-			@Override
-			public void actionPerformed( final ActionEvent e )
-			{
-				edit();
 			}
 		} );
 		dialog.buttonNewStyle.addActionListener( new ActionListener()
@@ -103,7 +97,7 @@ public class RenderSettingsChooser
 			}
 		} );
 
-		dialog.setSize( 400, 450 );
+		dialog.setSize( 420, 750 );
 		dialog.setLocationRelativeTo( dialog.getOwner() );
 	}
 
@@ -198,37 +192,9 @@ public class RenderSettingsChooser
 		model.setSelectedItem( newStyle );
 	}
 
-	private void edit()
-	{
-		final RenderSettings current = ( RenderSettings ) model.getSelectedItem();
-		if ( null == current || RenderSettings.defaults.contains( current ) )
-			return;
-
-		final RenderSettings.UpdateListener listener = new RenderSettings.UpdateListener()
-		{
-			@Override
-			public void renderSettingsChanged()
-			{
-				System.out.println( "Render settings changed." ); // DEBUG
-			}
-		};
-		current.addUpdateListener( listener );
-		final RenderSettingsEditor nameDialog = new RenderSettingsEditor( dialog, current );
-		nameDialog.addWindowListener( new WindowAdapter()
-		{
-			@Override
-			public void windowClosing( final java.awt.event.WindowEvent e )
-			{
-				current.removeUpdateListener( listener );
-			};
-		} );
-		nameDialog.setModal( true );
-		nameDialog.setVisible( true );
-	}
-
 	private void delete()
 	{
-		if ( TrackSchemeStyle.defaults.contains( model.getSelectedItem() ) )
+		if ( RenderSettings.defaults.contains( model.getSelectedItem() ) )
 			return;
 
 		model.removeElement( model.getSelectedItem() );
@@ -236,13 +202,17 @@ public class RenderSettingsChooser
 
 	private void okPressed()
 	{
-		System.out.println( "OK pressed" ); // DEBUG
 		dialog.setVisible( false );
 	}
 
 	public JDialog getDialog()
 	{
 		return dialog;
+	}
+
+	public RenderSettings getRenderSettings()
+	{
+		return targetSettings;
 	}
 
 	private static boolean mkdirs( final String fileName )
