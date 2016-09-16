@@ -5,7 +5,6 @@ import javax.swing.InputMap;
 
 import org.scijava.ui.behaviour.KeyStrokeAdder;
 
-import bdv.BigDataViewerActions;
 import bdv.util.AbstractActions;
 import bdv.viewer.InputActionBindings;
 
@@ -18,7 +17,6 @@ public class TrackSchemeActions extends AbstractActions
 	public static final String[] EDIT_FOCUS_KEYS = new String[] { "shift ENTER" };
 	public static final String[] TOGGLE_SETTINGS_PANEL_KEYS = new String[] { "T" };
 	public static final String[] SEARCH_KEYS = new String[] { "ctrl F", "meta F", "SLASH" };
-
 
 	/**
 	 * Create TrackScheme actions and install them in the specified
@@ -34,7 +32,7 @@ public class TrackSchemeActions extends AbstractActions
 			final TrackSchemeFrame frame,
 			final KeyStrokeAdder.Factory keyProperties )
 	{
-		final BigDataViewerActions actions = new BigDataViewerActions( inputActionBindings, keyProperties );
+		final TrackSchemeActions actions = new TrackSchemeActions( inputActionBindings, keyProperties );
 		actions.runnableAction( frame.getEditFocusVertex(), EDIT_FOCUS, EDIT_FOCUS_KEYS );
 		actions.runnableAction(
 				() -> frame.setSettingsPanelVisible( !frame.isSettingsPanelVisible() ),
