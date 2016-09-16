@@ -38,10 +38,6 @@
 			<artifactId>bigdataviewer-core</artifactId>
 			<version>2.5.2-SNAPSHOT</version>
 		</dependency>
-		<dependency>
-			<groupId>sc.fiji</groupId>
-			<artifactId>TrackMate_</artifactId>
-		</dependency>
 
 		<!-- Test dependencies -->
 		<dependency>
