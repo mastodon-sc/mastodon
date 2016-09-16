@@ -128,7 +128,6 @@ public class TrackSchemeSearchPanel extends JPanel
 				}.start();
 			}
 		} );
-
 	}
 
 	private static class SearchAction implements GraphChangeListener
@@ -140,7 +139,6 @@ public class TrackSchemeSearchPanel extends JPanel
 		private final TrackSchemeGraph< ?, ? > graph;
 
 		private final TrackSchemeNavigation navigation;
-
 
 		public SearchAction( final TrackSchemeGraph< ?, ? > graph, final TrackSchemeNavigation navigation )
 		{
@@ -196,7 +194,6 @@ public class TrackSchemeSearchPanel extends JPanel
 
 	private static class MyFocusListener implements FocusListener
 	{
-
 		private String oldText;
 
 		private final JTextField searchField;
@@ -256,11 +253,9 @@ public class TrackSchemeSearchPanel extends JPanel
 	 * Adapted from Jan Funke's code in <a href=
 	 * "https://github.com/saalfeldlab/bigcat/blob/janh5/src/main/java/bdv/bigcat/ui/BigCatTable.java#L112-L143">
 	 * BigCat repo</a>
-	 * 
+	 *
 	 * @param ctn
 	 *            the JComponent to preserve from key presses.
-	 * 
-	 * 
 	 */
 	private static void blockKeys( final JComponent ctn )
 	{
@@ -298,5 +293,4 @@ public class TrackSchemeSearchPanel extends JPanel
 
 		ctn.getActionMap().put( "nothing", nada );
 	}
-
 }
