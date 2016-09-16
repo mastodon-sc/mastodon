@@ -2,6 +2,7 @@ package org.mastodon.revised.trackscheme;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 
 import org.mastodon.collection.RefCollection;
 import org.mastodon.collection.RefList;
@@ -41,6 +42,18 @@ public class LexicographicalVertexOrder
 			indices.add( k.getVertexInternalPoolIndex() );
 
 		return sorted;
+	}
+
+	public static Comparator< TrackSchemeVertex > comparator( final TrackSchemeGraph< ?, ? > graph )
+	{
+		return new Comparator< TrackSchemeVertex >()
+		{
+			@Override
+			public int compare( final TrackSchemeVertex v1, final TrackSchemeVertex v2 )
+			{
+				return VertexKey.build( v1, graph ).compareTo( VertexKey.build( v2, graph ) );
+			}
+		};
 	}
 
 	private static class VertexKey implements Comparable< VertexKey >
