@@ -29,6 +29,36 @@ public class TrackMateXMLKeys
 
 	public static final String LABEL_ATTRIBUTE_NAME = "name";
 
+	public static final String TRACK_COLLECTION_TAG = "AllTracks";
+
+	public static final String TRACK_TAG = "Track";
+
+	public static final String EDGE_TAG = "Edge";
+
+	public static final String EDGE_SOURCE_ATTRIBUTE_NAME = "SPOT_SOURCE_ID";
+
+	public static final String EDGE_TARGET_ATTRIBUTE_NAME = "SPOT_TARGET_ID";
+
+	public static final String FEATURE_DECLARATION_TAG = "FeatureDeclarations";
+
+	public static final String SPOT_FEATURE_DECLARATION_TAG = "SpotFeatures";
+
+	public static final String EDGE_FEATURE_DECLARATION_TAG = "EdgeFeatures";
+
+	public static final String TRACK_FEATURE_DECLARATION_TAG = "TrackFeatures";
+
+	public static final String FEATURE_TAG = "Feature";
+
+	public static final String FEATURE_ATTRIBUTE_NAME = "feature";
+
+	public static final String FEATURE_NAME_ATTRIBUTE_NAME = "name";
+
+	public static final String FEATURE_SHORT_NAME_ATTRIBUTE_NAME = "shortname";
+
+	public static final String FEATURE_DIMENSION_ATTRIBUTE_NAME = "dimension";
+
+	public static final String FEATURE_ISINT_ATTRIBUTE_NAME = "isint";
+
 	private TrackMateXMLKeys()
 	{}
 }
