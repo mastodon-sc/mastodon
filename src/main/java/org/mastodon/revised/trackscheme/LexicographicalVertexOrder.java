@@ -7,9 +7,9 @@ import java.util.Comparator;
 import org.mastodon.collection.RefCollection;
 import org.mastodon.collection.RefList;
 import org.mastodon.collection.ref.RefArrayList;
+import org.mastodon.graph.Edges;
 import org.mastodon.revised.trackscheme.util.AlphanumCompare;
 
-import gnu.trove.iterator.TIntIterator;
 import gnu.trove.list.TIntList;
 import gnu.trove.list.array.TIntArrayList;
 
@@ -33,7 +33,7 @@ public class LexicographicalVertexOrder
 	{
 		final ArrayList< VertexKey > keys = new ArrayList<>( vertices.size() );
 		for ( final TrackSchemeVertex v : vertices )
-			keys.add( VertexKey.build( v, graph ) );
+			keys.add( new VertexKey( v, graph ) );
 		Collections.sort( keys );
 
 		final RefArrayList< TrackSchemeVertex > sorted = new RefArrayList<>( graph.vertices().getRefPool(), vertices.size() );
@@ -51,57 +51,56 @@ public class LexicographicalVertexOrder
 			@Override
 			public int compare( final TrackSchemeVertex v1, final TrackSchemeVertex v2 )
 			{
-				return VertexKey.build( v1, graph ).compareTo( VertexKey.build( v2, graph ) );
+				return new VertexKey( v1, graph ).compareTo( new VertexKey( v2, graph ) );
+			}
+		};
+	}
+
+	public static Comparator< TrackSchemeVertex > comparator2( final TrackSchemeGraph< ?, ? > graph )
+	{
+		return new Comparator< TrackSchemeVertex >()
+		{
+			@Override
+			public int compare( final TrackSchemeVertex v1, final TrackSchemeVertex v2 )
+			{
+
+				return 0;
 			}
 		};
 	}
 
 	private static class VertexKey implements Comparable< VertexKey >
 	{
-		public static VertexKey build(
+		private final String rootName;
+
+		private final TIntList edgeSequence;
+
+		private final int vertexInternalPoolIndex;
+
+		public VertexKey(
 				final TrackSchemeVertex v,
 				final TrackSchemeGraph< ?, ? > graph )
 		{
-			final VertexKey token;
-			if ( v.incomingEdges().isEmpty() )
-				token = new VertexKey( v.getLabel() );
-			else
+			edgeSequence = new TIntArrayList();
+			vertexInternalPoolIndex = v.getInternalPoolIndex();
+			final TrackSchemeVertex ref = graph.vertexRef();
+			ref.refTo( v );
+			Edges< TrackSchemeEdge > edges = v.incomingEdges();
+			while ( !edges.isEmpty() )
 			{
-				final TrackSchemeVertex ref = graph.vertexRef();
-
-				final TrackSchemeEdge parentEdge = v.incomingEdges().iterator().next();
+				final TrackSchemeEdge parentEdge = edges.get( 0 );
 				final TrackSchemeVertex parent = parentEdge.getSource( ref );
-				token = build( parent, graph );
-
 				int i = 0;
 				for ( final TrackSchemeEdge e : parent.outgoingEdges() )
 					if ( e.equals( parentEdge ) )
 						break;
 					else
 						++i;
-				token.append( i );
-
-				graph.releaseRef( ref );
+				edgeSequence.add( i );
+				edges = parent.incomingEdges();
 			}
-			token.vertexInternalPoolIndex = v.getInternalPoolIndex();
-			return token;
-		}
-
-		private final String rootName;
-
-		private final TIntList edgeSequence;
-
-		private int vertexInternalPoolIndex;
-
-		private VertexKey( final String rootName )
-		{
-			this.rootName = rootName;
-			edgeSequence = new TIntArrayList();
-		}
-
-		private void append( final int i )
-		{
-			edgeSequence.add( i );
+			rootName = ref.getLabel();
+			graph.releaseRef( ref );
 		}
 
 		public int getVertexInternalPoolIndex()
@@ -115,17 +114,17 @@ public class LexicographicalVertexOrder
 			final int rc = AlphanumCompare.compare( rootName, o.rootName );
 			if ( rc == 0 )
 			{
-				final TIntIterator it = edgeSequence.iterator();
-				final TIntIterator oit = o.edgeSequence.iterator();
-				while ( it.hasNext() )
+				int i = edgeSequence.size() - 1;
+				int oi = o.edgeSequence.size() - 1;
+				while ( i >= 0 )
 				{
-					if ( !oit.hasNext() )
+					if ( oi < 0 )
 						return 1;
-					final int e = it.next() - oit.next();
+					final int e = edgeSequence.get( i-- ) - o.edgeSequence.get( oi-- );
 					if ( e != 0 )
 						return e;
 				}
-				return oit.hasNext() ? -1 : 0;
+				return ( oi >= 0 ) ? -1 : 0;
 			}
 			else
 				return rc;
@@ -135,11 +134,11 @@ public class LexicographicalVertexOrder
 		public String toString()
 		{
 			final StringBuilder b = new StringBuilder( "[" + rootName );
-			final TIntIterator it = edgeSequence.iterator();
-			while ( it.hasNext() )
+			int i = edgeSequence.size() - 1;
+			while ( i >= 0 )
 			{
 				b.append( "," );
-				b.append( it.next() );
+				b.append( edgeSequence.get( i-- ) );
 			}
 			b.append( "]" );
 			return b.toString();
