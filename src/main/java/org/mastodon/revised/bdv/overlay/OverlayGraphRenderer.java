@@ -34,22 +34,21 @@ import net.imglib2.util.LinAlgHelpers;
 /**
  * Renderer for a time-resliced graph overlay on a BDV.
  * <p>
- * In this class, spatial coordinates are stored in local variables named
- * <code>gPos</code> and <code>lPos</code> of type <code>double[]</code> with 3
- * elements:
+ * In this class, spatial coordinates are stored in local variables {@code gPos}
+ * and {@code lPos} of type {@code double[3]}:
  * <ul>
- * <li><code>gPos</code> are world coordinates. It is used to store coordinates
- * in the global referential, that is the one with absolute, physical
- * coordinates. It is used <i>e.g.</i> to store vertex coordinates:
- * <code>vertex.localize(gPos)</code>.</li>
- * <li><code>lPos</code> are viewer coordinates. It is used to store coordinates
- * in the local referential, currently rendered in the BDV under a certain
+ * <li>{@code gPos} are world coordinates. It is used to store coordinates in
+ * the global referential, that is the one with absolute, physical coordinates.
+ * It is used <i>e.g.</i> to store vertex coordinates:
+ * {@code vertex.localize(gPos)}.</li>
+ * <li>{@code lPos} are viewer coordinates. It is used to store coordinates in
+ * the local referential, currently rendered in the BDV under a certain
  * orientation, zoom, etc. Mouse coordinates are typically stored in this
  * variable.
  * </ul>
- * 
+ *
  * <p>
- * 
+ *
  * TODO: Review and revise.
  *
  * @author Tobias Pietzsch &lt;tobias.pietzsch@gmail.com&gt;
