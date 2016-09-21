@@ -781,10 +781,10 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 		index.readLock().lock();
 		try
 		{
-			final double[] gPosT = new double[ 3 ];
 			final double[] lPosT = new double[ 3 ];
-			final double[] gPosS = new double[ 3 ];
+			final double[] gPosT = new double[ 3 ];
 			final double[] lPosS = new double[ 3 ];
+			final double[] gPosS = new double[ 3 ];
 			final V vertexRef = graph.vertexRef();
 
 			for ( int t = Math.max( 0, currentTimepoint - timeLimit ); t < currentTimepoint; ++t )
@@ -794,17 +794,17 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 				ccp.clip( visiblePolytopeGlobal );
 				for ( final V source : ccp.getInsideValues() )
 				{
-					source.localize( lPosS );
-					transform.apply( lPosS, gPosS );
-					final double x1 = gPosS[ 0 ];
-					final double y1 = gPosS[ 1 ];
+					source.localize( gPosS );
+					transform.apply( gPosS, lPosS );
+					final double x1 = lPosS[ 0 ];
+					final double y1 = lPosS[ 1 ];
 					for ( final E edge : source.outgoingEdges() )
 					{
 						final V target = edge.getTarget( vertexRef );
-						target.localize( lPosT );
-						transform.apply( lPosT, gPosT );
-						final double x2 = gPosT[ 0 ];
-						final double y2 = gPosT[ 1 ];
+						target.localize( gPosT );
+						transform.apply( gPosT, lPosT );
+						final double x2 = lPosT[ 0 ];
+						final double y2 = lPosT[ 1 ];
 						if ( Util.segmentDist( x, y, x1, y1, x2, y2 ) <= tolerance )
 						{
 							ref.refTo( edge );
