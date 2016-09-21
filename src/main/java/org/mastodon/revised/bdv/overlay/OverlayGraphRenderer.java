@@ -773,11 +773,6 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 
 		final ConvexPolytope visiblePolytopeGlobal = getVisiblePolytopeGlobal( transform, currentTimepoint );
 
-		// TODO: unused code: remove or improve algorithm.
-		final double[] lPosClick = new double[] { x, y, 0 };
-		final double[] gPosClick = new double[ 3 ];
-		transform.applyInverse( gPosClick, lPosClick );
-
 		index.readLock().lock();
 		try
 		{
