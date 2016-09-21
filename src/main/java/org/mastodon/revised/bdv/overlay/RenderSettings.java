@@ -44,7 +44,7 @@ public class RenderSettings
 
 	private RenderSettings()
 	{
-		updateListeners = new ArrayList< UpdateListener >();
+		updateListeners = new ArrayList<>();
 	}
 
 	public synchronized void set( final RenderSettings settings )
