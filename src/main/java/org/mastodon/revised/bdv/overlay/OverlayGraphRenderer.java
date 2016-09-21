@@ -773,6 +773,7 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 
 		final ConvexPolytope visiblePolytopeGlobal = getVisiblePolytopeGlobal( transform, currentTimepoint );
 
+		boolean found = false;
 		index.readLock().lock();
 		try
 		{
@@ -781,6 +782,7 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 			final double[] lPosS = new double[ 3 ];
 			final double[] gPosS = new double[ 3 ];
 			final V vertexRef = graph.vertexRef();
+			double bestDist = tolerance;
 
 			for ( int t = Math.max( 0, currentTimepoint - timeLimit ); t < currentTimepoint; ++t )
 			{
@@ -800,21 +802,23 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 						transform.apply( gPosT, lPosT );
 						final double x2 = lPosT[ 0 ];
 						final double y2 = lPosT[ 1 ];
-						if ( Util.segmentDist( x, y, x1, y1, x2, y2 ) <= tolerance )
+						final double dist = Util.segmentDist( x, y, x1, y1, x2, y2 );
+						if ( dist <= bestDist )
 						{
+							bestDist = dist;
 							ref.refTo( edge );
-							graph.releaseRef( vertexRef );
-							return ref;
+							found = true;
 						}
 					}
 				}
 			}
+			graph.releaseRef( vertexRef );
 		}
 		finally
 		{
 			index.readLock().unlock();
 		}
-		return null;
+		return found ? ref : null;
 	}
 
 	/**
