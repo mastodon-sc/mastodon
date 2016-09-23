@@ -5,11 +5,10 @@ import javax.swing.InputMap;
 
 import org.mastodon.revised.model.mamut.Model;
 import org.scijava.ui.behaviour.KeyStrokeAdder;
+import org.scijava.ui.behaviour.util.Actions;
+import org.scijava.ui.behaviour.util.InputActionBindings;
 
-import bdv.util.AbstractActions;
-import bdv.viewer.InputActionBindings;
-
-public class UndoActions extends AbstractActions
+public class UndoActions extends Actions
 {
 	public static final String UNDO = "undo";
 	public static final String REDO = "redo";
@@ -32,17 +31,18 @@ public class UndoActions extends AbstractActions
 	public static void installActionBindings(
 			final InputActionBindings inputActionBindings,
 			final Model model,
-			final KeyStrokeAdder.Factory keyProperties )
-	{
-		final UndoActions actions = new UndoActions( inputActionBindings, keyProperties );
-		actions.runnableAction( model::undo, UNDO, UNDO_KEYS );
-		actions.runnableAction( model::redo, REDO, REDO_KEYS );
-	}
-
-	public UndoActions(
-			final InputActionBindings inputActionBindings,
 			final KeyStrokeAdder.Factory keyConfig )
 	{
-		super( inputActionBindings, "undo", keyConfig, new String[] { "ts", "bdv" } );
+		final UndoActions actions = new UndoActions( keyConfig );
+
+		actions.runnableAction( model::undo, UNDO, UNDO_KEYS );
+		actions.runnableAction( model::redo, REDO, REDO_KEYS );
+
+		actions.install( inputActionBindings, "undo" );
+	}
+
+	public UndoActions( final KeyStrokeAdder.Factory keyConfig )
+	{
+		super( keyConfig, new String[] { "ts", "bdv" } );
 	}
 }

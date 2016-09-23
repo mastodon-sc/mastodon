@@ -12,7 +12,6 @@ import org.mastodon.graph.Edge;
 import org.mastodon.graph.GraphIdBimap;
 import org.mastodon.graph.ListenableGraph;
 import org.mastodon.graph.Vertex;
-import org.mastodon.revised.bdv.AbstractBehaviours;
 import org.mastodon.revised.trackscheme.ScreenTransform;
 import org.mastodon.revised.trackscheme.TrackSchemeGraph;
 import org.mastodon.revised.trackscheme.TrackSchemeVertex;
@@ -20,8 +19,9 @@ import org.mastodon.spatial.HasTimepoint;
 import org.mastodon.undo.UndoPointMarker;
 import org.scijava.ui.behaviour.DragBehaviour;
 import org.scijava.ui.behaviour.io.InputTriggerConfig;
+import org.scijava.ui.behaviour.util.Behaviours;
+import org.scijava.ui.behaviour.util.TriggerBehaviourBindings;
 
-import bdv.viewer.TriggerBehaviourBindings;
 import net.imglib2.ui.OverlayRenderer;
 import net.imglib2.ui.TransformListener;
 
@@ -30,7 +30,7 @@ import net.imglib2.ui.TransformListener;
  *
  */
 public class TrackSchemeEditBehaviours< V extends Vertex< E > & HasTimepoint, E extends Edge< V > >
-		extends AbstractBehaviours
+		extends Behaviours
 {
 
 	private static final String TOGGLE_LINK = "toggle link";
@@ -67,11 +67,11 @@ public class TrackSchemeEditBehaviours< V extends Vertex< E > & HasTimepoint, E 
 			final GraphIdBimap< V, E > idBimap,
 			final UndoPointMarker undo )
 	{
-		new TrackSchemeEditBehaviours<>( triggerBehaviourBindings, config, panel, graph, renderer, modelGraph, idBimap, undo );
+		new TrackSchemeEditBehaviours<>( config, panel, graph, renderer, modelGraph, idBimap, undo )
+				.install( triggerBehaviourBindings, "graph-special" );
 	}
 
 	private TrackSchemeEditBehaviours(
-			final TriggerBehaviourBindings triggerBehaviourBindings,
 			final InputTriggerConfig config,
 			final TrackSchemePanel panel,
 			final TrackSchemeGraph< V, E > graph,
@@ -80,9 +80,7 @@ public class TrackSchemeEditBehaviours< V extends Vertex< E > & HasTimepoint, E 
 			final GraphIdBimap< V, E > idBimap,
 			final UndoPointMarker undo )
 	{
-
-		// TODO: context "mamut" is definitely wrong here. should be either "ts" for general trackscheme stuff, or this class shouldn't be here
-		super( triggerBehaviourBindings, "graph-special", config, new String[] { "mamut" } );
+		super( config, new String[] { "ts" } );
 		this.panel = panel;
 		this.graph = graph;
 		this.renderer = renderer;
