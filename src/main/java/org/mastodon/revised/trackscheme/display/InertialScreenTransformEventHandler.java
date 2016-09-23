@@ -10,13 +10,10 @@ import org.mastodon.revised.trackscheme.display.OffsetHeaders.OffsetHeadersListe
 import org.mastodon.revised.trackscheme.display.animate.AbstractTransformAnimator;
 import org.mastodon.revised.trackscheme.display.animate.InertialScreenTransformAnimator;
 import org.mastodon.revised.trackscheme.display.animate.InterpolateScreenTransformAnimator;
-import org.scijava.ui.behaviour.Behaviour;
-import org.scijava.ui.behaviour.BehaviourMap;
 import org.scijava.ui.behaviour.DragBehaviour;
-import org.scijava.ui.behaviour.InputTriggerAdder;
-import org.scijava.ui.behaviour.InputTriggerMap;
 import org.scijava.ui.behaviour.ScrollBehaviour;
 import org.scijava.ui.behaviour.io.InputTriggerConfig;
+import org.scijava.ui.behaviour.util.Behaviours;
 import org.scijava.ui.behaviour.util.TriggerBehaviourBindings;
 
 import bdv.BehaviourTransformEventHandler;
@@ -96,12 +93,6 @@ public class InertialScreenTransformEventHandler
 		};
 	}
 
-	private final BehaviourMap behaviourMap = new BehaviourMap();
-
-	private final InputTriggerMap inputMap = new InputTriggerMap();
-
-	private final InputTriggerAdder inputAdder;
-
 	/**
 	 * Current boundaries to enforce for the transform.
 	 *
@@ -168,6 +159,8 @@ public class InertialScreenTransformEventHandler
 
 	private AbstractTransformAnimator< ScreenTransform > animator;
 
+	private final Behaviours behaviours;
+
 	public InertialScreenTransformEventHandler( final TransformListener< ScreenTransform > listener, final InputTriggerConfig config )
 	{
 		this.listener = listener;
@@ -181,13 +174,12 @@ public class InertialScreenTransformEventHandler
 		final String ZOOM_Y = "zoom vertical";
 		final String ZOOM_XY = "zoom";
 
-		inputAdder = config.inputTriggerAdder( inputMap, "ts" );
-
-		new TranslateDragBehaviour( DRAG_TRANSLATE, "button2", "button3" ).register();
-		new TranslateScrollBehaviour( SCROLL_TRANSLATE, "scroll" ).register();
-		new ZoomScrollBehaviour( ZOOM_X, ScrollAxis.X, "shift scroll" ).register();
-		new ZoomScrollBehaviour( ZOOM_Y, ScrollAxis.Y, "ctrl scroll", "alt scroll" ).register();
-		new ZoomScrollBehaviour( ZOOM_XY, ScrollAxis.XY, "meta scroll", "ctrl shift scroll" ).register();
+		behaviours = new Behaviours( config, "bdv" );
+		behaviours.behaviour( new TranslateDragBehaviour(), DRAG_TRANSLATE, "button2", "button3" );
+		behaviours.behaviour( new TranslateScrollBehaviour(), SCROLL_TRANSLATE, "scroll" );
+		behaviours.behaviour( new ZoomScrollBehaviour( ScrollAxis.X ), ZOOM_X, "shift scroll" );
+		behaviours.behaviour( new ZoomScrollBehaviour( ScrollAxis.Y ), ZOOM_Y, "ctrl scroll", "alt scroll" );
+		behaviours.behaviour( new ZoomScrollBehaviour( ScrollAxis.XY ), ZOOM_XY, "meta scroll", "ctrl shift scroll" );
 	}
 
 	@Override
@@ -250,8 +242,7 @@ public class InertialScreenTransformEventHandler
 	@Override
 	public void install( final TriggerBehaviourBindings bindings )
 	{
-		bindings.addBehaviourMap( "transform", behaviourMap );
-		bindings.addInputTriggerMap( "transform", inputMap );
+		behaviours.install( bindings, "transform" );
 	}
 
 	@Override
@@ -341,32 +332,8 @@ public class InertialScreenTransformEventHandler
 		return ConstrainScreenTransform.hasMaxSizeY( transform, maxSizeY );
 	}
 
-	private abstract class SelfRegisteringBehaviour implements Behaviour
+	private class TranslateDragBehaviour implements DragBehaviour
 	{
-		private final String name;
-
-		private final String[] defaultTriggers;
-
-		public SelfRegisteringBehaviour( final String name, final String ... defaultTriggers )
-		{
-			this.name = name;
-			this.defaultTriggers = defaultTriggers;
-		}
-
-		public void register()
-		{
-			behaviourMap.put( name, this );
-			inputAdder.put( name, defaultTriggers );
-		}
-	}
-
-	private class TranslateDragBehaviour extends SelfRegisteringBehaviour implements DragBehaviour
-	{
-		public TranslateDragBehaviour( final String name, final String... defaultTriggers )
-		{
-			super( name, defaultTriggers );
-		}
-
 		/**
 		 * Coordinates where mouse dragging started.
 		 */
@@ -434,15 +401,14 @@ public class InertialScreenTransformEventHandler
 		X, Y, XY
 	}
 
-	private class ZoomScrollBehaviour extends SelfRegisteringBehaviour implements ScrollBehaviour
+	private class ZoomScrollBehaviour implements ScrollBehaviour
 	{
 		private final ScrollAxis axis;
 
 		private final ScreenTransform previousTransform = new ScreenTransform();
 
-		public ZoomScrollBehaviour( final String name, final ScrollAxis axis, final String... defaultTriggers )
+		public ZoomScrollBehaviour( final ScrollAxis axis )
 		{
-			super( name, defaultTriggers );
 			this.axis = axis;
 		}
 
@@ -509,14 +475,9 @@ public class InertialScreenTransformEventHandler
 		}
 	}
 
-	private class TranslateScrollBehaviour extends SelfRegisteringBehaviour implements ScrollBehaviour
+	private class TranslateScrollBehaviour implements ScrollBehaviour
 	{
 		private final ScreenTransform previousTransform = new ScreenTransform();
-
-		public TranslateScrollBehaviour( final String name, final String... defaultTriggers )
-		{
-			super( name, defaultTriggers );
-		}
 
 		@Override
 		public void scroll( final double wheelRotation, final boolean isHorizontal, final int x, final int y )
