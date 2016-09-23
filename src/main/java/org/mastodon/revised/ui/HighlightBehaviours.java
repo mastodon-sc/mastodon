@@ -4,13 +4,12 @@ import org.mastodon.graph.Edge;
 import org.mastodon.graph.GraphChangeNotifier;
 import org.mastodon.graph.ListenableGraph;
 import org.mastodon.graph.Vertex;
-import org.mastodon.revised.bdv.AbstractBehaviours;
 import org.mastodon.revised.ui.selection.HighlightModel;
 import org.mastodon.undo.UndoPointMarker;
 import org.scijava.ui.behaviour.ClickBehaviour;
 import org.scijava.ui.behaviour.io.InputTriggerConfig;
-
-import bdv.viewer.TriggerBehaviourBindings;
+import org.scijava.ui.behaviour.util.Behaviours;
+import org.scijava.ui.behaviour.util.TriggerBehaviourBindings;
 
 /**
  * User-interface actions that are related to a model highlight.
@@ -19,7 +18,7 @@ import bdv.viewer.TriggerBehaviourBindings;
  *
  */
 public class HighlightBehaviours< V extends Vertex< E >, E extends Edge< V > >
-		extends AbstractBehaviours
+		extends Behaviours
 {
 
 	private static final String REMOVE_HIGHLIGHTED_VERTEX = "remove highlighted vertex";
@@ -37,7 +36,8 @@ public class HighlightBehaviours< V extends Vertex< E >, E extends Edge< V > >
 			final HighlightModel< V, E > highlight,
 			final UndoPointMarker undo )
 	{
-		new HighlightBehaviours<>( triggerBehaviourBindings, config, keyConfigContexts, graph, notify, highlight, undo );
+		new HighlightBehaviours<>( config, keyConfigContexts, graph, notify, highlight, undo )
+				.install( triggerBehaviourBindings, "highlight" );
 	}
 
 	private final ListenableGraph< V, E > graph;
@@ -49,7 +49,6 @@ public class HighlightBehaviours< V extends Vertex< E >, E extends Edge< V > >
 	private final UndoPointMarker undo;
 
 	private HighlightBehaviours(
-			final TriggerBehaviourBindings triggerBehaviourBindings,
 			final InputTriggerConfig config,
 			final String[] keyConfigContexts,
 			final ListenableGraph< V, E > graph,
@@ -57,7 +56,7 @@ public class HighlightBehaviours< V extends Vertex< E >, E extends Edge< V > >
 			final HighlightModel< V, E > highlight,
 			final UndoPointMarker undo )
 	{
-		super( triggerBehaviourBindings, "highlight", config, keyConfigContexts );
+		super( config, keyConfigContexts );
 		this.graph = graph;
 		this.notify = notify;
 		this.highlight = highlight;

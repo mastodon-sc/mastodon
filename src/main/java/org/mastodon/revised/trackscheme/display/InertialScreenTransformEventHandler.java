@@ -4,8 +4,8 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import org.mastodon.revised.trackscheme.LineageTreeLayout;
-import org.mastodon.revised.trackscheme.ScreenTransform;
 import org.mastodon.revised.trackscheme.LineageTreeLayout.LayoutListener;
+import org.mastodon.revised.trackscheme.ScreenTransform;
 import org.mastodon.revised.trackscheme.display.OffsetHeaders.OffsetHeadersListener;
 import org.mastodon.revised.trackscheme.display.animate.AbstractTransformAnimator;
 import org.mastodon.revised.trackscheme.display.animate.InertialScreenTransformAnimator;
@@ -17,9 +17,9 @@ import org.scijava.ui.behaviour.InputTriggerAdder;
 import org.scijava.ui.behaviour.InputTriggerMap;
 import org.scijava.ui.behaviour.ScrollBehaviour;
 import org.scijava.ui.behaviour.io.InputTriggerConfig;
+import org.scijava.ui.behaviour.util.TriggerBehaviourBindings;
 
 import bdv.BehaviourTransformEventHandler;
-import bdv.viewer.TriggerBehaviourBindings;
 import net.imglib2.ui.TransformEventHandler;
 import net.imglib2.ui.TransformEventHandlerFactory;
 import net.imglib2.ui.TransformListener;

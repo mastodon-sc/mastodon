@@ -9,12 +9,12 @@ import java.awt.Graphics2D;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Ellipse2D;
 
-import org.mastodon.revised.bdv.AbstractBehaviours;
 import org.mastodon.undo.UndoPointMarker;
 import org.scijava.ui.behaviour.DragBehaviour;
 import org.scijava.ui.behaviour.io.InputTriggerConfig;
+import org.scijava.ui.behaviour.util.Behaviours;
+import org.scijava.ui.behaviour.util.TriggerBehaviourBindings;
 
-import bdv.viewer.TriggerBehaviourBindings;
 import bdv.viewer.ViewerPanel;
 import net.imglib2.realtransform.AffineTransform3D;
 import net.imglib2.ui.OverlayRenderer;
@@ -22,7 +22,7 @@ import net.imglib2.ui.TransformListener;
 import net.imglib2.util.LinAlgHelpers;
 
 public class EditSpecialBehaviours< V extends OverlayVertex< V, E >, E extends OverlayEdge< E, V > >
-		extends AbstractBehaviours
+		extends Behaviours
 {
 	private static final String ADD_SPOT_AND_LINK_IT = "add linked spot";
 	private static final String ADD_SPOT_AND_LINK_IT_BACKWARD = "add linked spot backward";
@@ -58,19 +58,18 @@ public class EditSpecialBehaviours< V extends OverlayVertex< V, E >, E extends O
 			final OverlayGraphRenderer< V, E > renderer,
 			final UndoPointMarker undo )
 	{
-		new EditSpecialBehaviours<>( triggerBehaviourBindings, config, viewer, overlayGraph, renderer, undo );
+		new EditSpecialBehaviours<>( config, viewer, overlayGraph, renderer, undo )
+				.install( triggerBehaviourBindings, "graph-special" );
 	}
 
-
 	private EditSpecialBehaviours(
-			final TriggerBehaviourBindings triggerBehaviourBindings,
 			final InputTriggerConfig config,
 			final ViewerPanel viewer,
 			final OverlayGraph< V, E > overlayGraph,
 			final OverlayGraphRenderer< V, E > renderer,
 			final UndoPointMarker undo )
 	{
-		super( triggerBehaviourBindings, "graph-special", config, new String[] { "bdv" } );
+		super( config, new String[] { "bdv" } );
 		this.viewer = viewer;
 		this.overlayGraph = overlayGraph;
 		this.renderer = renderer;

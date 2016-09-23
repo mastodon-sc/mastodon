@@ -5,9 +5,7 @@ import org.scijava.ui.behaviour.ClickBehaviour;
 import org.scijava.ui.behaviour.InputTriggerAdder;
 import org.scijava.ui.behaviour.InputTriggerMap;
 import org.scijava.ui.behaviour.util.AbstractNamedBehaviour;
-import org.scijava.ui.behaviour.util.AbstractNamedBehaviour.NamedBehaviourAdder;
-
-import bdv.viewer.TriggerBehaviourBindings;
+import org.scijava.ui.behaviour.util.TriggerBehaviourBindings;
 
 public class BdvSelectionBehaviours< V extends OverlayVertex< V, E >, E extends OverlayEdge< E, V > >
 {
@@ -40,10 +38,9 @@ public class BdvSelectionBehaviours< V extends OverlayVertex< V, E >, E extends 
 		this.navigation = navigation;
 
 		behaviourMap = new BehaviourMap();
-		final NamedBehaviourAdder adder = new NamedBehaviourAdder( behaviourMap );
-		adder.put( new ClickNavigateBehaviour() );
-		adder.put( new ClickSelectionBehaviour( SELECT_NAME, false ) );
-		adder.put( new ClickSelectionBehaviour( ADD_SELECT_NAME, true ) );
+		new ClickNavigateBehaviour().put( behaviourMap );
+		new ClickSelectionBehaviour( SELECT_NAME, false ).put( behaviourMap );
+		new ClickSelectionBehaviour( ADD_SELECT_NAME, true ).put( behaviourMap );
 
 	}
 

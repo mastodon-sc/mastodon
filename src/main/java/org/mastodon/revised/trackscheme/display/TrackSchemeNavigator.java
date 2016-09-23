@@ -20,11 +20,10 @@ import org.scijava.ui.behaviour.InputTriggerAdder;
 import org.scijava.ui.behaviour.InputTriggerMap;
 import org.scijava.ui.behaviour.KeyStrokeAdder;
 import org.scijava.ui.behaviour.util.AbstractNamedBehaviour;
-import org.scijava.ui.behaviour.util.AbstractNamedBehaviour.NamedBehaviourAdder;
+import org.scijava.ui.behaviour.util.Actions;
+import org.scijava.ui.behaviour.util.InputActionBindings;
+import org.scijava.ui.behaviour.util.TriggerBehaviourBindings;
 
-import bdv.util.AbstractActions;
-import bdv.viewer.InputActionBindings;
-import bdv.viewer.TriggerBehaviourBindings;
 import net.imglib2.RealPoint;
 import net.imglib2.ui.InteractiveDisplayCanvasComponent;
 import net.imglib2.ui.OverlayRenderer;
@@ -162,22 +161,21 @@ public class TrackSchemeNavigator implements TransformListener< ScreenTransform 
 		this.selection = selection;
 
 		behaviourMap = new BehaviourMap();
-		final NamedBehaviourAdder adder = new NamedBehaviourAdder( behaviourMap );
-		adder.put( new ClickFocusBehaviour() );
-		adder.put( new ClickNavigateBehaviour() );
-		adder.put( new ClickSelectionBehaviour( SELECT, false ) );
-		adder.put( new ClickSelectionBehaviour( ADD_SELECT, true ) );
+		new ClickFocusBehaviour().put( behaviourMap );
+		new ClickNavigateBehaviour().put( behaviourMap );
+		new ClickSelectionBehaviour( SELECT, false ).put( behaviourMap );
+		new ClickSelectionBehaviour( ADD_SELECT, true ).put( behaviourMap );
 		boxSelect = new BoxSelectionBehaviour( BOX_SELECT, false );
-		adder.put( boxSelect );
+		boxSelect.put( behaviourMap );
 		boxSelectAdd = new BoxSelectionBehaviour( BOX_ADD_SELECT, true );
-		adder.put( boxSelectAdd );
+		boxSelectAdd.put( behaviourMap );
 
 		screenTransform = new ScreenTransform();
 	}
 
-	public void installActionBindings( final InputActionBindings keybindings, final KeyStrokeAdder.Factory keyConfig, NavigatorEtiquette etiquette )
+	public void installActionBindings( final InputActionBindings keybindings, final KeyStrokeAdder.Factory keyConfig, final NavigatorEtiquette etiquette )
 	{
-		final AbstractActions actions = new AbstractActions( keybindings, "navigator", keyConfig, new String[] { "ts" } );
+		final Actions actions = new Actions( keyConfig, new String[] { "ts" } );
 		switch ( etiquette )
 		{
 		case MIDNIGHT_COMMANDER_LIKE:
@@ -207,6 +205,7 @@ public class TrackSchemeNavigator implements TransformListener< ScreenTransform 
 			break;
 		}
 		}
+		actions.install( keybindings, "navigator" );
 	}
 
 	public void installBehaviourBindings( final TriggerBehaviourBindings triggerbindings, final InputTriggerAdder.Factory keyConfig )
