@@ -41,7 +41,7 @@ public class TrackSchemeStyleChooser
 
 	private final TrackSchemePanel trackSchemePanel;
 
-	public TrackSchemeStyleChooser( JFrame owner, TrackSchemePanel trackSchemePanel )
+	public TrackSchemeStyleChooser( final JFrame owner, final TrackSchemePanel trackSchemePanel )
 	{
 		this.trackSchemePanel = trackSchemePanel;
 
@@ -54,7 +54,7 @@ public class TrackSchemeStyleChooser
 		dialog.okButton.addActionListener( new ActionListener()
 		{
 			@Override
-			public void actionPerformed( ActionEvent e )
+			public void actionPerformed( final ActionEvent e )
 			{
 				okPressed();
 			}
@@ -62,7 +62,7 @@ public class TrackSchemeStyleChooser
 		dialog.buttonDeleteStyle.addActionListener( new ActionListener()
 		{
 			@Override
-			public void actionPerformed( ActionEvent e )
+			public void actionPerformed( final ActionEvent e )
 			{
 				delete();
 			}
@@ -70,7 +70,7 @@ public class TrackSchemeStyleChooser
 		dialog.buttonEditStyle.addActionListener( new ActionListener()
 		{
 			@Override
-			public void actionPerformed( ActionEvent e )
+			public void actionPerformed( final ActionEvent e )
 			{
 				edit();
 			}
@@ -78,7 +78,7 @@ public class TrackSchemeStyleChooser
 		dialog.buttonNewStyle.addActionListener( new ActionListener()
 		{
 			@Override
-			public void actionPerformed( ActionEvent e )
+			public void actionPerformed( final ActionEvent e )
 			{
 				newStyle();
 			}
@@ -86,7 +86,7 @@ public class TrackSchemeStyleChooser
 		dialog.buttonSetStyleName.addActionListener( new ActionListener()
 		{
 			@Override
-			public void actionPerformed( ActionEvent e )
+			public void actionPerformed( final ActionEvent e )
 			{
 				setStyleName();
 			}
@@ -94,7 +94,7 @@ public class TrackSchemeStyleChooser
 		dialog.saveButton.addActionListener( new ActionListener()
 		{
 			@Override
-			public void actionPerformed( ActionEvent e )
+			public void actionPerformed( final ActionEvent e )
 			{
 				dialog.saveButton.setEnabled( false );
 				try
@@ -108,7 +108,7 @@ public class TrackSchemeStyleChooser
 			}
 		} );
 
-		dialog.setSize( 400, 450 );
+		dialog.setSize( 400, 480 );
 		dialog.setLocationRelativeTo( dialog.getOwner() );
 	}
 
@@ -223,7 +223,7 @@ public class TrackSchemeStyleChooser
 		nameDialog.addWindowListener( new WindowAdapter()
 		{
 			@Override
-			public void windowClosing( java.awt.event.WindowEvent e )
+			public void windowClosing( final java.awt.event.WindowEvent e )
 			{
 				current.removeUpdateListener( listener );
 			};
