@@ -22,8 +22,6 @@ public class TrackSchemeActions extends Actions
 	 *
 	 * @param inputActionBindings
 	 *            {@link InputMap} and {@link ActionMap} are installed here.
-	 * @param keyProperties
-	 *            user-defined key-bindings.
 	 */
 	public static void installActionBindings(
 			final InputActionBindings inputActionBindings,
