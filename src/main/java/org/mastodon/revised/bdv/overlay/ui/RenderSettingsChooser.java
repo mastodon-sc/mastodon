@@ -15,10 +15,10 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import javax.swing.DefaultComboBoxModel;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
+import javax.swing.MutableComboBoxModel;
 
 import org.mastodon.revised.bdv.overlay.RenderSettings;
 import org.yaml.snakeyaml.Yaml;
@@ -32,15 +32,15 @@ public class RenderSettingsChooser
 
 	private static final String STYLE_FILE = System.getProperty( "user.home" ) + "/.mastodon/rendersettings.yaml";
 
-	private final DefaultComboBoxModel< RenderSettings > model;
+	private final MutableComboBoxModel< RenderSettings > model;
 
 	private final RenderSettingsDialog dialog;
 
 	private final RenderSettings targetSettings;
 
-	public RenderSettingsChooser( final JFrame owner )
+	public RenderSettingsChooser( final JFrame owner, MutableComboBoxModel< RenderSettings > model )
 	{
-		this.model = new DefaultComboBoxModel<>();
+		this.model = model;
 		for ( final RenderSettings defaultStyle : RenderSettings.defaults )
 			model.addElement( defaultStyle );
 		loadStyles();

@@ -13,12 +13,12 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import javax.swing.BoxLayout;
-import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.MutableComboBoxModel;
 import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
 
@@ -45,7 +45,7 @@ class RenderSettingsDialog extends JDialog
 
 	JButton saveButton;
 
-	public RenderSettingsDialog( final Frame owner, final DefaultComboBoxModel< RenderSettings > model, final RenderSettings targetSettings )
+	public RenderSettingsDialog( final Frame owner, final MutableComboBoxModel< RenderSettings > model, final RenderSettings targetSettings )
 	{
 		super( owner, "BDV render settings chooser", false );
 
