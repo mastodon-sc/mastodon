@@ -5,13 +5,6 @@ package org.mastodon.revised.bdv.overlay.ui;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -21,7 +14,6 @@ import javax.swing.JOptionPane;
 import javax.swing.MutableComboBoxModel;
 
 import org.mastodon.revised.bdv.overlay.RenderSettings;
-import org.yaml.snakeyaml.Yaml;
 
 /**
  * @author Jean=Yves Tinevez &lt;jeanyves.tinevez@gmail.com&gt;
@@ -30,23 +22,17 @@ import org.yaml.snakeyaml.Yaml;
 public class RenderSettingsChooser
 {
 
-	private static final String STYLE_FILE = System.getProperty( "user.home" ) + "/.mastodon/rendersettings.yaml";
-
-	private final MutableComboBoxModel< RenderSettings > model;
-
 	private final RenderSettingsDialog dialog;
 
 	private final RenderSettings targetSettings;
 
-	public RenderSettingsChooser( final JFrame owner, MutableComboBoxModel< RenderSettings > model )
-	{
-		this.model = model;
-		for ( final RenderSettings defaultStyle : RenderSettings.defaults )
-			model.addElement( defaultStyle );
-		loadStyles();
+	private final MutableComboBoxModel< RenderSettings > model;
 
+	public RenderSettingsChooser( final JFrame owner, final RenderSettingsManager renderSettingsManager )
+	{
 		// Give the choose its own render settings instance.
 		this.targetSettings = RenderSettings.defaultStyle().copy( RenderSettings.defaultStyle().getName() );
+		this.model = renderSettingsManager.createComboBoxModel();
 		dialog = new RenderSettingsDialog( owner, model, targetSettings );
 		dialog.okButton.addActionListener( new ActionListener()
 		{
@@ -88,7 +74,7 @@ public class RenderSettingsChooser
 				dialog.saveButton.setEnabled( false );
 				try
 				{
-					saveStyles();
+					renderSettingsManager.saveStyles();
 				}
 				finally
 				{
@@ -99,48 +85,6 @@ public class RenderSettingsChooser
 
 		dialog.setSize( 420, 750 );
 		dialog.setLocationRelativeTo( dialog.getOwner() );
-	}
-
-	private void loadStyles()
-	{
-		try
-		{
-			final FileReader input = new FileReader( STYLE_FILE );
-			final Yaml yaml = RenderSettingsIO.createYaml();
-			final Iterable< Object > objs = yaml.loadAll( input );
-			for ( final Object obj : objs )
-				model.addElement( ( RenderSettings ) obj );
-
-		}
-		catch ( final FileNotFoundException e )
-		{
-			System.out.println( "BDV render settings file " + STYLE_FILE + " not found. Using builtin styles." );
-		}
-	}
-
-	private void saveStyles()
-	{
-		try
-		{
-			final List< RenderSettings > stylesToSave = new ArrayList<>();
-			for ( int i = 0; i < model.getSize(); i++ )
-			{
-				final RenderSettings style = model.getElementAt( i );
-				if ( RenderSettings.defaults.contains( style ) )
-					continue;
-				stylesToSave.add( style );
-			}
-
-			mkdirs( STYLE_FILE );
-			final FileWriter output = new FileWriter( STYLE_FILE );
-			final Yaml yaml = RenderSettingsIO.createYaml();
-			yaml.dumpAll( stylesToSave.iterator(), output );
-			output.close();
-		}
-		catch ( final IOException e )
-		{
-			e.printStackTrace();
-		}
 	}
 
 	private void setStyleName()
@@ -213,12 +157,6 @@ public class RenderSettingsChooser
 	public RenderSettings getRenderSettings()
 	{
 		return targetSettings;
-	}
-
-	private static boolean mkdirs( final String fileName )
-	{
-		final File dir = new File( fileName ).getParentFile();
-		return dir == null ? false : dir.mkdirs();
 	}
 
 	public void setTitle( final String title )

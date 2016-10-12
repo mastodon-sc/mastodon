@@ -27,8 +27,7 @@ import org.mastodon.revised.bdv.overlay.OverlayGraphRenderer;
 import org.mastodon.revised.bdv.overlay.RenderSettings;
 import org.mastodon.revised.bdv.overlay.RenderSettings.UpdateListener;
 import org.mastodon.revised.bdv.overlay.ui.RenderSettingsChooser;
-import org.mastodon.revised.bdv.overlay.ui.SharedListModel;
-import org.mastodon.revised.bdv.overlay.ui.SharedListModel.Factory;
+import org.mastodon.revised.bdv.overlay.ui.RenderSettingsManager;
 import org.mastodon.revised.bdv.overlay.wrap.OverlayContextWrapper;
 import org.mastodon.revised.bdv.overlay.wrap.OverlayEdgeWrapper;
 import org.mastodon.revised.bdv.overlay.wrap.OverlayFocusWrapper;
@@ -265,7 +264,7 @@ public class WindowManager
 	 */
 	private final List< TsWindow > tsWindows = new ArrayList<>();
 
-	private final Factory< RenderSettings > renderSettingsListFactory;
+	private final RenderSettingsManager renderSettingsManager;
 
 	public WindowManager(
 			final String spimDataXmlFilename,
@@ -307,7 +306,7 @@ public class WindowManager
 		/*
 		 * Deal with a common list of styles for the BDV.
 		 */
-		this.renderSettingsListFactory = new SharedListModel.Factory<>();
+		this.renderSettingsManager = new RenderSettingsManager();
 	}
 
 	private synchronized void addBdvWindow( final BdvWindow w )
@@ -483,7 +482,7 @@ public class WindowManager
 		// TODO revise
 		// RenderSettingsDialog triggered by "R"
 		final String RENDER_SETTINGS = "render settings";
-		final RenderSettingsChooser renderSettingsDialog = new RenderSettingsChooser( viewerFrame, renderSettingsListFactory.create() );
+		final RenderSettingsChooser renderSettingsDialog = new RenderSettingsChooser( viewerFrame, renderSettingsManager );
 
 		renderSettingsDialog.setTitle( "Display settings for " + windowTitle );
 		final ActionMap actionMap = new ActionMap();
