@@ -3,22 +3,21 @@
  */
 package org.mastodon.revised.ui;
 
+import org.mastodon.collection.RefCollections;
 import org.mastodon.collection.RefList;
 import org.mastodon.collection.RefSet;
-import org.mastodon.collection.RefCollections;
 import org.mastodon.graph.Edge;
 import org.mastodon.graph.GraphChangeNotifier;
 import org.mastodon.graph.ListenableGraph;
 import org.mastodon.graph.Vertex;
 import org.mastodon.graph.algorithm.traversal.DepthFirstSearch;
-import org.mastodon.graph.algorithm.traversal.SearchListener;
 import org.mastodon.graph.algorithm.traversal.GraphSearch.SearchDirection;
+import org.mastodon.graph.algorithm.traversal.SearchListener;
 import org.mastodon.revised.ui.selection.Selection;
 import org.mastodon.undo.UndoPointMarker;
 import org.scijava.ui.behaviour.io.InputTriggerConfig;
-
-import bdv.util.AbstractActions;
-import bdv.viewer.InputActionBindings;
+import org.scijava.ui.behaviour.util.Actions;
+import org.scijava.ui.behaviour.util.InputActionBindings;
 
 /**
  * User-interface actions that are related to a model selection.
@@ -27,15 +26,14 @@ import bdv.viewer.InputActionBindings;
  *
  */
 public class SelectionActions< V extends Vertex< E >, E extends Edge< V > >
-		extends AbstractActions
+		extends Actions
 {
-
 	private static final String DELETE_SELECTION = "delete selection";
 
 	private static final String[] DELETE_SELECTION_KEYS = new String[] { "shift DELETE" };
 
 	public static < V extends Vertex< E >, E extends Edge< V > > void installActionBindings(
-			final InputActionBindings inpputActionBindings,
+			final InputActionBindings inputActionBindings,
 			final InputTriggerConfig config,
 			final String[] keyConfigContexts,
 			final ListenableGraph< V, E > graph,
@@ -43,8 +41,11 @@ public class SelectionActions< V extends Vertex< E >, E extends Edge< V > >
 			final Selection< V, E > selection,
 			final UndoPointMarker undo )
 	{
-		final SelectionActions< V, E > sa = new SelectionActions<>( inpputActionBindings, config, keyConfigContexts, graph, notify, selection, undo );
+		final SelectionActions< V, E > sa = new SelectionActions<>( config, keyConfigContexts, graph, notify, selection, undo );
+
 		sa.runnableAction( sa.getDeleteSelectionAction(), DELETE_SELECTION, DELETE_SELECTION_KEYS );
+
+		sa.install( inputActionBindings, "selection" );
 	}
 
 	private final ListenableGraph< V, E > graph;
@@ -58,7 +59,6 @@ public class SelectionActions< V extends Vertex< E >, E extends Edge< V > >
 	private final SelectionActions< V, E >.DeleteSelectionAction deleteSelectionAction;
 
 	private SelectionActions(
-			final InputActionBindings inputActionBindings,
 			final InputTriggerConfig config,
 			final String[] keyConfigContexts,
 			final ListenableGraph< V, E > graph,
@@ -66,7 +66,7 @@ public class SelectionActions< V extends Vertex< E >, E extends Edge< V > >
 			final Selection< V, E > selection,
 			final UndoPointMarker undo )
 	{
-		super( inputActionBindings, "selection", config, keyConfigContexts );
+		super( config, keyConfigContexts );
 		this.graph = graph;
 		this.notify = notify;
 		this.selection = selection;
@@ -174,5 +174,4 @@ public class SelectionActions< V extends Vertex< E >, E extends Edge< V > >
 			selection.resumeListeners();
 		}
 	}
-
 }

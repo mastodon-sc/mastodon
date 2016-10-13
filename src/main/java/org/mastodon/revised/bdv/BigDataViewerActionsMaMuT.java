@@ -34,15 +34,15 @@ import javax.swing.ActionMap;
 import javax.swing.InputMap;
 
 import org.scijava.ui.behaviour.KeyStrokeAdder;
+import org.scijava.ui.behaviour.util.Actions;
+import org.scijava.ui.behaviour.util.InputActionBindings;
 
 import bdv.tools.ToggleDialogAction;
 import bdv.tools.VisibilityAndGroupingDialog;
 import bdv.tools.bookmarks.BookmarksEditor;
 import bdv.tools.brightness.BrightnessDialog;
-import bdv.util.AbstractActions;
-import bdv.viewer.InputActionBindings;
 
-public class BigDataViewerActionsMaMuT extends AbstractActions
+public class BigDataViewerActionsMaMuT extends Actions
 {
 	public static final String BRIGHTNESS_SETTINGS = "brightness settings";
 	public static final String VISIBILITY_AND_GROUPING = "visibility and grouping";
@@ -75,32 +75,25 @@ public class BigDataViewerActionsMaMuT extends AbstractActions
 			final BigDataViewerMaMuT bdv,
 			final KeyStrokeAdder.Factory keyConfig )
 	{
-		final BigDataViewerActionsMaMuT actions = new BigDataViewerActionsMaMuT( inputActionBindings, keyConfig );
+		final BigDataViewerActionsMaMuT actions = new BigDataViewerActionsMaMuT( keyConfig );
+
 		actions.dialog( bdv.getBrightnessDialog() );
 		actions.dialog( bdv.getActiveSourcesDialog() );
 		actions.bookmarks( bdv.getBookmarksEditor() );
 		actions.runnableAction( () -> bdv.setSettingsPanelVisible( !bdv.isSettingsPanelVisible() ), TOGGLE_SETTINGS_PANEL, TOGGLE_SETTINGS_PANEL_KEYS );
+
+		actions.install( inputActionBindings, "bdv" );
 	}
 
-	public BigDataViewerActionsMaMuT(
-			final InputActionBindings inputActionBindings,
-			final KeyStrokeAdder.Factory keyConfig )
+	public BigDataViewerActionsMaMuT( final KeyStrokeAdder.Factory keyConfig )
 	{
-		this( inputActionBindings, keyConfig, "bdv" );
-	}
-
-	public BigDataViewerActionsMaMuT(
-			final InputActionBindings inputActionBindings,
-			final KeyStrokeAdder.Factory keyConfig,
-			final String name )
-	{
-		super( inputActionBindings, name, keyConfig, new String[] { "bdv" } );
+		super( keyConfig, new String[] { "bdv" } );
 	}
 
 	public void toggleDialogAction( final Dialog dialog, final String name, final String... defaultKeyStrokes )
 	{
 		keyStrokeAdder.put( name, defaultKeyStrokes );
-		new ToggleDialogAction( name, dialog ).put( actionMap );
+		new ToggleDialogAction( name, dialog ).put( getActionMap() );
 	}
 
 	public void dialog( final BrightnessDialog brightnessDialog )

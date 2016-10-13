@@ -1,67 +1,24 @@
 package org.mastodon.revised.trackscheme.display.ui.dummygraph;
 
-import gnu.trove.map.hash.TIntObjectHashMap;
-
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 
 import org.mastodon.graph.GraphChangeListener;
-import org.mastodon.graph.GraphIdBimap;
 import org.mastodon.graph.GraphListener;
 import org.mastodon.graph.ListenableGraph;
+import org.mastodon.graph.algorithm.traversal.DepthFirstSearch;
+import org.mastodon.graph.algorithm.traversal.GraphSearch.SearchDirection;
+import org.mastodon.graph.algorithm.traversal.SearchListener;
 import org.mastodon.graph.object.AbstractObjectGraph;
+import org.mastodon.graph.object.AbstractObjectIdGraph;
 import org.mastodon.revised.ui.selection.Selection;
 
-public class DummyGraph extends AbstractObjectGraph< DummyVertex, DummyEdge > implements ListenableGraph< DummyVertex, DummyEdge >
+public class DummyGraph extends AbstractObjectIdGraph< DummyVertex, DummyEdge > implements ListenableGraph< DummyVertex, DummyEdge >
 {
-
-	private class MyGraphIdBimap extends GraphIdBimap< DummyVertex, DummyEdge >
-	{
-
-		public MyGraphIdBimap()
-		{
-			super( null, null );
-		}
-
-		@Override
-		public DummyEdge getEdge( final int id, final DummyEdge ref )
-		{
-			return idToEdgeMap.get( id );
-		}
-
-		@Override
-		public int getEdgeId( final DummyEdge e )
-		{
-			return e.getId();
-		}
-
-		@Override
-		public DummyVertex getVertex( final int id, final DummyVertex ref )
-		{
-			return idToVertexMap.get( id );
-		}
-
-		@Override
-		public int getVertexId( final DummyVertex v )
-		{
-			return v.getId();
-		}
-
-	}
-
-	private final GraphIdBimap< DummyVertex, DummyEdge > idmap;
-
-	private final TIntObjectHashMap<DummyVertex> idToVertexMap;
-
-	private final TIntObjectHashMap<DummyEdge> idToEdgeMap;
-
 	public DummyGraph()
 	{
-		super( new Factory(), new HashSet<>(), new HashSet<>() );
-		idmap = new MyGraphIdBimap();
-		idToVertexMap = new TIntObjectHashMap<>();
-		idToEdgeMap = new TIntObjectHashMap<>();
+		super( new Factory(), DummyVertex.class, DummyEdge.class, new HashSet<>(), new HashSet<>() );
 	}
 
 	private static class Factory implements AbstractObjectGraph.Factory< DummyVertex, DummyEdge >
@@ -79,27 +36,6 @@ public class DummyGraph extends AbstractObjectGraph< DummyVertex, DummyEdge > im
 		}
 	}
 
-	public GraphIdBimap< DummyVertex, DummyEdge > getIdBimap()
-	{
-		return idmap;
-	}
-
-	@Override
-	public DummyVertex addVertex()
-	{
-		final DummyVertex v = super.addVertex();
-		idToVertexMap.put( v.getId(), v );
-		return v;
-	}
-
-	@Override
-	public DummyEdge addEdge( final DummyVertex source, final DummyVertex target )
-	{
-		final DummyEdge e = super.addEdge( source, target );
-		idToEdgeMap.put( e.getId(), e );
-		return e;
-	}
-
 	/*
 	 * STATIC EXAMPLE
 	 */
@@ -112,10 +48,10 @@ public class DummyGraph extends AbstractObjectGraph< DummyVertex, DummyEdge > im
 
 		private Selection< DummyVertex, DummyEdge > selection;
 
-		private Examples( DummyGraph graph, Collection< DummyVertex > vertices, Collection< DummyEdge > edges )
+		private Examples( final DummyGraph graph, final Collection< DummyVertex > vertices, final Collection< DummyEdge > edges )
 		{
 			this.graph = graph;
-			this.selection = new Selection<>( graph, graph.idmap );
+			this.selection = new Selection<>( graph, graph.getIdBimap() );
 			selection.setEdgesSelected( edges, true );
 			selection.setVerticesSelected( vertices, true );
 		}
@@ -152,8 +88,8 @@ public class DummyGraph extends AbstractObjectGraph< DummyVertex, DummyEdge > im
 
 			final DummyVertex ABal = graph.addVertex().init( "AB.al", 2 );
 			final DummyVertex ABar = graph.addVertex().init( "AB.ar", 2 );
-			final DummyEdge l1 = graph.addEdge( ABa, ABal );
-			final DummyEdge l2 = graph.addEdge( ABa, ABar );
+			graph.addEdge( ABa, ABal );
+			graph.addEdge( ABa, ABar );
 
 			final DummyVertex ABpl = graph.addVertex().init( "AB.pl", 2 );
 			final DummyVertex ABpr = graph.addVertex().init( "AB.pr", 2 );
@@ -161,24 +97,35 @@ public class DummyGraph extends AbstractObjectGraph< DummyVertex, DummyEdge > im
 			graph.addEdge( ABp, ABpr );
 
 			final DummyVertex ABala = graph.addVertex().init( "AB.ala", 3 );
+			graph.addEdge( ABal, ABala );
+			addFork( graph, ABala, 4 );
+
 			final DummyVertex ABalp = graph.addVertex().init( "AB.alp", 3 );
-			final DummyEdge l3 = graph.addEdge( ABal, ABala );
-			final DummyEdge l4 = graph.addEdge( ABal, ABalp );
+			graph.addEdge( ABal, ABalp );
+			addFork( graph, ABalp, 4 );
 
 			final DummyVertex ABara = graph.addVertex().init( "AB.ara", 3 );
+			graph.addEdge( ABar, ABara );
+			addFork( graph, ABara, 4 );
 			final DummyVertex ABarp = graph.addVertex().init( "AB.arp", 3 );
-			final DummyEdge l5 = graph.addEdge( ABar, ABara );
-			final DummyEdge l6 = graph.addEdge( ABar, ABarp );
+			graph.addEdge( ABar, ABarp );
+			addFork( graph, ABarp, 4 );
 
 			final DummyVertex ABpla = graph.addVertex().init( "AB.pla", 3 );
-			final DummyVertex ABplp = graph.addVertex().init( "AB.plp", 3 );
 			graph.addEdge( ABpl, ABpla );
+			addFork( graph, ABpla, 4 );
+
+			final DummyVertex ABplp = graph.addVertex().init( "AB.plp", 3 );
 			graph.addEdge( ABpl, ABplp );
+			addFork( graph, ABplp, 4 );
 
 			final DummyVertex ABpra = graph.addVertex().init( "AB.pra", 3 );
-			final DummyVertex ABprp = graph.addVertex().init( "AB.prp", 3 );
 			graph.addEdge( ABpr, ABpra );
+			addFork( graph, ABpra, 4 );
+
+			final DummyVertex ABprp = graph.addVertex().init( "AB.prp", 3 );
 			graph.addEdge( ABpr, ABprp );
+			addFork( graph, ABprp, 4 );
 
 			final DummyVertex P1 = graph.addVertex().init( "P1", 0 );
 
@@ -193,16 +140,54 @@ public class DummyGraph extends AbstractObjectGraph< DummyVertex, DummyEdge > im
 			graph.addEdge( P3, P4 );
 			final DummyVertex Z2 = graph.addVertex().init( "Z2", 4 );
 			graph.addEdge( P4, Z2 );
-			final DummyVertex Z2a = graph.addVertex().init( "Z2.a", 5 );
-			graph.addEdge( Z2, Z2a );
+			addFork( graph, Z2, 2 );
 
 			final DummyVertex E = graph.addVertex().init( "E", 3 );
-			final DummyVertex MS = graph.addVertex().init( "MS", 3 );
 			graph.addEdge( EMS, E );
-			graph.addEdge( EMS, MS );
+			addFork( graph, E, 4 );
 
-			selectedVertices = Arrays.asList( new DummyVertex[] { ABa, ABal, ABala, ABalp, ABar, ABara, ABarp } );
-			selectedEdges = Arrays.asList( new DummyEdge[] { l1, l2, l3, l4, l5, l6 } );
+			final DummyVertex MS = graph.addVertex().init( "MS", 3 );
+			graph.addEdge( EMS, MS );
+			addFork( graph, MS, 4 );
+
+			selectedVertices = new ArrayList<>();
+			selectedEdges = new ArrayList<>();
+			final DepthFirstSearch< DummyVertex, DummyEdge > dfs = new DepthFirstSearch<>( graph, SearchDirection.DIRECTED );
+			dfs.setTraversalListener( new SearchListener< DummyVertex, DummyEdge, DepthFirstSearch< DummyVertex, DummyEdge > >()
+			{
+				@Override
+				public void processVertexLate( final DummyVertex vertex, final DepthFirstSearch< DummyVertex, DummyEdge > search )
+				{}
+
+				@Override
+				public void processVertexEarly( final DummyVertex vertex, final DepthFirstSearch< DummyVertex, DummyEdge > search )
+				{
+					selectedVertices.add( vertex );
+				}
+
+				@Override
+				public void processEdge( final DummyEdge edge, final DummyVertex from, final DummyVertex to, final DepthFirstSearch< DummyVertex, DummyEdge > search )
+				{
+					selectedEdges.add( edge );
+				}
+			} );
+			dfs.start( ABa );
+		}
+
+		private static void addFork( final DummyGraph graph, final DummyVertex mother, final int level )
+		{
+			if ( level <= 0 )
+				return;
+
+			final String label = mother.getLabel();
+			final int timepoint = mother.getTimepoint();
+			final DummyVertex daughterA = graph.addVertex().init( label + 'a', timepoint + 1 );
+			graph.addEdge( mother, daughterA );
+			addFork( graph, daughterA, level - 1 );
+
+			final DummyVertex daughterP = graph.addVertex().init( label + 'p', timepoint + 1 );
+			graph.addEdge( mother, daughterP );
+			addFork( graph, daughterP, level - 1 );
 		}
 	}
 

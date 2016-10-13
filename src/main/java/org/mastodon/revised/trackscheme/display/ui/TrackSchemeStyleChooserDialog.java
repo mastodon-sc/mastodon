@@ -38,8 +38,8 @@ import org.mastodon.revised.trackscheme.display.TrackSchemePanel;
 import org.mastodon.revised.trackscheme.display.laf.TrackSchemeStyle;
 import org.mastodon.revised.trackscheme.display.ui.dummygraph.DummyEdge;
 import org.mastodon.revised.trackscheme.display.ui.dummygraph.DummyGraph;
-import org.mastodon.revised.trackscheme.display.ui.dummygraph.DummyVertex;
 import org.mastodon.revised.trackscheme.display.ui.dummygraph.DummyGraph.Examples;
+import org.mastodon.revised.trackscheme.display.ui.dummygraph.DummyVertex;
 import org.mastodon.revised.ui.grouping.GroupManager;
 import org.mastodon.revised.ui.selection.FocusModel;
 import org.mastodon.revised.ui.selection.HighlightModel;
@@ -85,7 +85,7 @@ class TrackSchemeStyleChooserDialog extends JDialog
 		final TrackSchemeSelection tsSelection = new TrackSchemeSelection( new DefaultModelSelectionProperties<>( example, idmap, selection ) );
 		final TrackSchemeNavigation navigation = new TrackSchemeNavigation( new DefaultModelNavigationProperties<>( example, idmap, new NavigationHandler<>( new GroupManager().createGroupHandle() ) ), graph );
 		panelPreview = new TrackSchemePanel( graph, highlight, focus, tsSelection, navigation, TrackSchemeOptions.options() );
-		panelPreview.setTimepointRange( 0, 5 );
+		panelPreview.setTimepointRange( 0, 7 );
 		panelPreview.timePointChanged( 2 );
 		panelPreview.graphChanged();
 
@@ -97,7 +97,7 @@ class TrackSchemeStyleChooserDialog extends JDialog
 		comboBoxStyles.addActionListener( new ActionListener()
 		{
 			@Override
-			public void actionPerformed( ActionEvent e )
+			public void actionPerformed( final ActionEvent e )
 			{
 				panelPreview.setTrackSchemeStyle( comboBoxStyles.getItemAt( comboBoxStyles.getSelectedIndex() ) );
 				panelPreview.repaint();
