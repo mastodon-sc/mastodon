@@ -2,7 +2,6 @@ package org.mastodon.revised.bdv.overlay.ui;
 
 import java.awt.Color;
 import java.awt.Component;
-import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.GridBagConstraints;
@@ -90,24 +89,25 @@ public class RenderSettingsPanel extends JPanel implements UpdateListener
 	public RenderSettingsPanel( final RenderSettings renderSettings )
 	{
 		super( new GridBagLayout() );
+
 		this.renderSettings = renderSettings;
 
 		final GridBagConstraints c = new GridBagConstraints();
 		c.insets = new Insets( 0, 5, 0, 5 );
 
-		final Dimension titleDim = new Dimension( 400, 25 );
-
 		c.gridwidth = 2;
 		c.gridy = 0;
 		c.anchor = GridBagConstraints.LINE_START;
+
+		c.fill = GridBagConstraints.HORIZONTAL;
 		final JLabel title1 = new JLabel( "Colors and look" );
 		title1.setFont( getFont().deriveFont( Font.BOLD ) );
 		title1.setHorizontalAlignment( SwingConstants.CENTER );
-		title1.setPreferredSize( titleDim );
-		title1.setMinimumSize( titleDim );
 		title1.setBorder( BorderFactory.createMatteBorder( 0, 0, 1, 0, Color.BLACK ) );
 		add( title1, c );
 
+
+		c.fill = GridBagConstraints.NONE;
 		c.gridwidth = 1;
 		c.gridy++;
 		antialiasingBox = new JCheckBox();
@@ -197,11 +197,10 @@ public class RenderSettingsPanel extends JPanel implements UpdateListener
 		c.gridwidth = 2;
 		c.gridy++;
 		c.gridx = 0;
+		c.fill = GridBagConstraints.HORIZONTAL;
 		final JLabel title2 = new JLabel( "Links" );
 		title2.setFont( getFont().deriveFont( Font.BOLD ) );
 		title2.setHorizontalAlignment( SwingConstants.CENTER );
-		title2.setPreferredSize( titleDim );
-		title2.setMinimumSize( titleDim );
 		title2.setBorder( BorderFactory.createMatteBorder( 0, 0, 1, 0, Color.BLACK ) );
 		add( title2, c );
 
@@ -218,6 +217,7 @@ public class RenderSettingsPanel extends JPanel implements UpdateListener
 		} );
 		c.anchor = GridBagConstraints.LINE_END;
 		c.gridx = 0;
+		c.fill = GridBagConstraints.NONE;
 		add( linksBox, c );
 		c.anchor = GridBagConstraints.LINE_START;
 		c.gridx = 1;
@@ -237,11 +237,17 @@ public class RenderSettingsPanel extends JPanel implements UpdateListener
 		timeLimitSlider = new SliderPanel( null, timeLimit, 1 );
 		timeLimitSlider.setNumColummns( tfCols );
 		timeLimitSlider.setBorder( new EmptyBorder( 0, 0, 0, 6 ) );
+
 		c.anchor = GridBagConstraints.LINE_END;
 		c.gridx = 0;
+		c.weightx = 1.;
+		c.fill = GridBagConstraints.HORIZONTAL;
 		add( timeLimitSlider, c );
+
 		c.anchor = GridBagConstraints.LINE_START;
 		c.gridx = 1;
+		c.weightx = 0.;
+		c.fill = GridBagConstraints.NONE;
 		add( new JLabel( "time range for links" ), c );
 
 
@@ -289,16 +295,15 @@ public class RenderSettingsPanel extends JPanel implements UpdateListener
 		c.gridwidth = 2;
 		c.gridy++;
 		c.gridx = 0;
+		c.fill = GridBagConstraints.HORIZONTAL;
 		final JLabel title3 = new JLabel( "Spots" );
 		title3.setFont( getFont().deriveFont( Font.BOLD ) );
 		title3.setHorizontalAlignment( SwingConstants.CENTER );
-		title3.setPreferredSize( titleDim );
-		title3.setMinimumSize( titleDim );
 		title3.setBorder( BorderFactory.createMatteBorder( 0, 0, 1, 0, Color.BLACK ) );
 		add( title3, c );
 
+		c.fill = GridBagConstraints.NONE;
 		c.gridwidth = 1;
-
 		c.gridy++;
 		spotsBox = new JCheckBox();
 		spotsBox.addActionListener( new ActionListener()
@@ -424,16 +429,15 @@ public class RenderSettingsPanel extends JPanel implements UpdateListener
 		c.gridwidth = 2;
 		c.gridy++;
 		c.gridx = 0;
+		c.fill = GridBagConstraints.HORIZONTAL;
 		final JLabel title4 = new JLabel( "Focus limits" );
 		title4.setFont( getFont().deriveFont( Font.BOLD ) );
 		title4.setHorizontalAlignment( SwingConstants.CENTER );
-		title4.setPreferredSize( titleDim );
-		title4.setMinimumSize( titleDim );
 		title4.setBorder( BorderFactory.createMatteBorder( 0, 0, 1, 0, Color.BLACK ) );
 		add( title4, c );
 
 		c.gridwidth = 1;
-
+		c.fill = GridBagConstraints.NONE;
 		c.gridy++;
 		focusLimit = new BoundedValueDouble( 0, 2000, 100 )
 		{
@@ -448,11 +452,16 @@ public class RenderSettingsPanel extends JPanel implements UpdateListener
 		focusLimitSlider.setDecimalFormat( "0.####" );
 		focusLimitSlider.setNumColummns( tfCols );
 		focusLimitSlider.setBorder( new EmptyBorder( 0, 0, 0, 6 ) );
+
 		c.anchor = GridBagConstraints.LINE_END;
 		c.gridx = 0;
+
+		c.fill = GridBagConstraints.HORIZONTAL;
 		add( focusLimitSlider, c );
 		c.anchor = GridBagConstraints.LINE_START;
 		c.gridx = 1;
+
+		c.fill = GridBagConstraints.NONE;
 		add( new JLabel( "focus limit (max dist to view plane)" ), c );
 
 
@@ -473,11 +482,6 @@ public class RenderSettingsPanel extends JPanel implements UpdateListener
 		c.gridx = 1;
 		add( new JLabel("view-relative focus limit"), c );
 
-
-//		c.gridy++;
-//		add( Box.createVerticalStrut( 15 ), c );
-
-
 		c.gridy++;
 		ellipsoidFadeDepth = new BoundedValueDouble( 0, 1, 0.2 )
 		{
@@ -494,9 +498,13 @@ public class RenderSettingsPanel extends JPanel implements UpdateListener
 		ellipsoidFadeDepthSlider.setBorder( new EmptyBorder( 0, 0, 0, 6 ) );
 		c.anchor = GridBagConstraints.LINE_END;
 		c.gridx = 0;
+
+		c.fill = GridBagConstraints.HORIZONTAL;
 		add( ellipsoidFadeDepthSlider, c );
 		c.anchor = GridBagConstraints.LINE_START;
 		c.gridx = 1;
+
+		c.fill = GridBagConstraints.NONE;
 		add( new JLabel( "ellipsoid fade depth" ), c );
 
 
@@ -514,11 +522,16 @@ public class RenderSettingsPanel extends JPanel implements UpdateListener
 		pointFadeDepthSlider.setDecimalFormat( "0.####" );
 		pointFadeDepthSlider.setNumColummns( tfCols );
 		pointFadeDepthSlider.setBorder( new EmptyBorder( 0, 0, 0, 6 ) );
+
 		c.anchor = GridBagConstraints.LINE_END;
 		c.gridx = 0;
+
+		c.fill = GridBagConstraints.HORIZONTAL;
 		add( pointFadeDepthSlider, c );
 		c.anchor = GridBagConstraints.LINE_START;
 		c.gridx = 1;
+
+		c.fill = GridBagConstraints.NONE;
 		add( new JLabel( "center point fade depth" ), c );
 
 
