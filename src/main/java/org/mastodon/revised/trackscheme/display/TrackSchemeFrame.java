@@ -27,10 +27,10 @@ import org.mastodon.revised.ui.util.InvokeOnEDT;
 import org.mastodon.undo.UndoPointMarker;
 import org.scijava.ui.behaviour.MouseAndKeyHandler;
 import org.scijava.ui.behaviour.io.InputTriggerConfig;
+import org.scijava.ui.behaviour.util.InputActionBindings;
+import org.scijava.ui.behaviour.util.TriggerBehaviourBindings;
 
 import bdv.BehaviourTransformEventHandler;
-import bdv.viewer.InputActionBindings;
-import bdv.viewer.TriggerBehaviourBindings;
 import net.imglib2.ui.TransformEventHandler;
 import net.imglib2.ui.util.GuiUtil;
 

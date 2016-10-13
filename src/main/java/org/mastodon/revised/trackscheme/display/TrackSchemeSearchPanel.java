@@ -33,10 +33,9 @@ import org.mastodon.revised.trackscheme.LexicographicalVertexOrder;
 import org.mastodon.revised.trackscheme.TrackSchemeGraph;
 import org.mastodon.revised.trackscheme.TrackSchemeNavigation;
 import org.mastodon.revised.trackscheme.TrackSchemeVertex;
+import org.scijava.ui.behaviour.util.RunnableAction;
 
 import com.itextpdf.text.Font;
-
-import bdv.util.RunnableAction;
 
 public class TrackSchemeSearchPanel extends JPanel
 {
