@@ -32,6 +32,7 @@ import org.mastodon.collection.RefCollections;
 import org.mastodon.collection.RefList;
 import org.mastodon.graph.GraphChangeListener;
 import org.mastodon.graph.algorithm.traversal.BreadthFirstIterator;
+import org.mastodon.revised.trackscheme.TrackSchemeFocus;
 import org.mastodon.revised.trackscheme.TrackSchemeGraph;
 import org.mastodon.revised.trackscheme.TrackSchemeNavigation;
 import org.mastodon.revised.trackscheme.TrackSchemeVertex;
@@ -60,8 +61,13 @@ public class TrackSchemeSearchPanel extends JPanel
 
 	private final JButton labelIcon;
 
-	public TrackSchemeSearchPanel( final TrackSchemeGraph< ?, ? > graph, final TrackSchemeNavigation navigation, final JComponent display )
+	public TrackSchemeSearchPanel(
+			final TrackSchemeGraph< ?, ? > graph,
+			final TrackSchemeNavigation navigation,
+			final TrackSchemeFocus focus,
+			final JComponent display )
 	{
+
 		/*
 		 * GUI
 		 */
@@ -109,8 +115,9 @@ public class TrackSchemeSearchPanel extends JPanel
 		gbc_chckbxstartswith.gridy = 0;
 		add( chckbxstartswith, gbc_chckbxstartswith );
 
-		final SearchAction sa = new SearchAction( graph, navigation );
+		final SearchAction sa = new SearchAction( graph, navigation, focus );
 		graph.addGraphChangeListener( sa );
+		searchField.addFocusListener( sa );
 		searchField.addActionListener( new ActionListener()
 		{
 			@Override
@@ -151,7 +158,7 @@ public class TrackSchemeSearchPanel extends JPanel
 		labelIcon.setPressedIcon( icon == UNFOCUSED_ICON ? FOCUSED_ICON : icon );
 	}
 
-	private static class SearchAction implements GraphChangeListener
+	private static class SearchAction implements GraphChangeListener, FocusListener
 	{
 		private Iterator< TrackSchemeVertex > iterator;
 
@@ -161,10 +168,16 @@ public class TrackSchemeSearchPanel extends JPanel
 
 		private final TrackSchemeNavigation navigation;
 
-		public SearchAction( final TrackSchemeGraph< ?, ? > graph, final TrackSchemeNavigation navigation )
+		private final TrackSchemeFocus focus;
+
+		private final TrackSchemeVertex ref;
+
+		public SearchAction( final TrackSchemeGraph< ?, ? > graph, final TrackSchemeNavigation navigation, final TrackSchemeFocus focus )
 		{
 			this.graph = graph;
 			this.navigation = navigation;
+			this.focus = focus;
+			this.ref = graph.vertexRef();
 			reinit();
 		}
 
@@ -226,6 +239,18 @@ public class TrackSchemeSearchPanel extends JPanel
 				return strCmp.compare( v1.getLabel(), v2.getLabel() );
 			}
 		};
+
+		@Override
+		public void focusGained( final FocusEvent e )
+		{
+			final TrackSchemeVertex focusedVertex = focus.getFocusedVertex( ref );
+			if (null != focusedVertex)
+				iterator = new BreadthFirstIterator<>( focusedVertex, graph );
+		}
+
+		@Override
+		public void focusLost( final FocusEvent e )
+		{}
 	}
 
 	private class MyFocusListener implements FocusListener
