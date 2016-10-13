@@ -10,6 +10,7 @@ import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -27,12 +28,14 @@ import javax.swing.KeyStroke;
 import javax.swing.UIManager;
 import javax.swing.border.EmptyBorder;
 
+import org.mastodon.collection.RefCollections;
+import org.mastodon.collection.RefList;
 import org.mastodon.graph.GraphChangeListener;
 import org.mastodon.graph.algorithm.traversal.BreadthFirstIterator;
-import org.mastodon.revised.trackscheme.LexicographicalVertexOrder;
 import org.mastodon.revised.trackscheme.TrackSchemeGraph;
 import org.mastodon.revised.trackscheme.TrackSchemeNavigation;
 import org.mastodon.revised.trackscheme.TrackSchemeVertex;
+import org.mastodon.revised.trackscheme.util.AlphanumComparator;
 import org.scijava.ui.behaviour.util.RunnableAction;
 
 import com.itextpdf.text.Font;
@@ -203,11 +206,26 @@ public class TrackSchemeSearchPanel extends JPanel
 		private synchronized void reinit()
 		{
 			if ( null == rootIterator || !rootIterator.hasNext() )
-				rootIterator = LexicographicalVertexOrder.sort( graph, graph.getRoots() ).iterator();
-
+			{
+				final RefList< TrackSchemeVertex > list = RefCollections.createRefList( graph.getRoots() );
+				list.addAll( graph.getRoots() );
+				list.sort( labelComparator );
+				rootIterator = list.iterator();
+			}
 			final TrackSchemeVertex root = rootIterator.next();
 			iterator = new BreadthFirstIterator<>( root, graph );
 		}
+
+		private static final Comparator< TrackSchemeVertex > labelComparator = new Comparator< TrackSchemeVertex >()
+		{
+			Comparator< String > strCmp = AlphanumComparator.instance;
+
+			@Override
+			public int compare( final TrackSchemeVertex v1, final TrackSchemeVertex v2 )
+			{
+				return strCmp.compare( v1.getLabel(), v2.getLabel() );
+			}
+		};
 	}
 
 	private class MyFocusListener implements FocusListener
