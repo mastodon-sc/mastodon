@@ -19,8 +19,11 @@ public class TrackSchemeFocus
 	}
 
 	/**
-	 * Get the {@link TrackSchemeVertex} that is currently focused. Forwards to
+	 * Gets the {@link TrackSchemeVertex} that is currently focused. Forwards to
 	 * the model {@link FocusModel}.
+	 *
+	 * @param ref
+	 *            a pool reference used for retrieval.
 	 *
 	 * @return currently focused vertex.
 	 */
@@ -30,7 +33,7 @@ public class TrackSchemeFocus
 	}
 
 	/**
-	 * focus vertex.
+	 * Focus the specified vertex.
 	 *
 	 * @param v
 	 *            vertex to focus on, or {@code null} to clear focus.

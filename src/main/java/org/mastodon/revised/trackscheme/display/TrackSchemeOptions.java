@@ -53,7 +53,11 @@ public class TrackSchemeOptions
 	}
 
 	/**
-	 * Set width of {@link TrackSchemePanel} canvas.
+	 * Sets the width of {@link TrackSchemePanel} canvas.
+	 *
+	 * @param w
+	 *            the width.
+	 * @return this instance.
 	 */
 	public TrackSchemeOptions width( final int w )
 	{
@@ -62,7 +66,11 @@ public class TrackSchemeOptions
 	}
 
 	/**
-	 * Set height of {@link TrackSchemePanel} canvas.
+	 * Sets the height of {@link TrackSchemePanel} canvas.
+	 *
+	 * @param h
+	 *            the height.
+	 * @return this instance.
 	 */
 	public TrackSchemeOptions height( final int h )
 	{
@@ -71,7 +79,11 @@ public class TrackSchemeOptions
 	}
 
 	/**
-	 * TODO
+	 * Sets the factory used to create transform event handlers.
+	 *
+	 * @param f
+	 *            the factory.
+	 * @return this instance.
 	 */
 	public TrackSchemeOptions transformEventHandlerFactory( final TransformEventHandlerFactory< ScreenTransform > f )
 	{
@@ -80,7 +92,11 @@ public class TrackSchemeOptions
 	}
 
 	/**
-	 * TODO
+	 * Sets the animation time in milliseconds.
+	 *
+	 * @param ms
+	 *            the animation time in milliseconds.
+	 * @return this instance.
 	 */
 	public TrackSchemeOptions animationDurationMillis( final long ms )
 	{
@@ -89,11 +105,11 @@ public class TrackSchemeOptions
 	}
 
 	/**
-	 * TODO javadoc
-	 * TODO is this config option necessary?
+	 * Sets the input trigger config. TODO is this config option necessary?
 	 *
 	 * @param c
-	 * @return
+	 *            the input trigger config.
+	 * @return this instance.
 	 */
 	public TrackSchemeOptions inputTriggerConfig( final InputTriggerConfig c )
 	{
@@ -101,6 +117,13 @@ public class TrackSchemeOptions
 		return this;
 	}
 
+	/**
+	 * Sets the navigation etiquette.
+	 * 
+	 * @param navigationEtiquette
+	 *            the navigation etiquette.
+	 * @return this instance.
+	 */
 	public TrackSchemeOptions navigationEtiquette( final NavigationEtiquette navigationEtiquette )
 	{
 		values.navigationEtiquette = navigationEtiquette;

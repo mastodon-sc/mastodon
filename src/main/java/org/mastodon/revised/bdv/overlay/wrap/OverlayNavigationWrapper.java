@@ -14,12 +14,14 @@ import bdv.viewer.animate.TranslationAnimator;
 import net.imglib2.realtransform.AffineTransform3D;
 
 /**
- * TODO: javadoc
- * TODO: explain: how is the NavigationListener, Handler, Wrapper, etc interrelated.
- * TODO: NavigationListener to what? see Constructor: navigation.addNavigationListener( this );
+ * TODO: javadoc TODO: explain: how is the NavigationListener, Handler, Wrapper,
+ * etc interrelated. TODO: NavigationListener to what? see Constructor:
+ * navigation.addNavigationListener( this );
  *
  * @param <V>
+ *            the type of the model vertex wrapped.
  * @param <E>
+ *            the type of the model edge wrapped.
  *
  * @author Tobias Pietzsch &lt;tobias.pietzsch@gmail.com&gt;
  */

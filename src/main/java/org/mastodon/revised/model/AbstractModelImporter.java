@@ -8,6 +8,7 @@ import org.mastodon.revised.model.mamut.tgmm.TgmmImporter;
  * {@link TgmmImporter}).
  *
  * @param <M>
+ *            the type of model to import.
  *
  * @author Tobias Pietzsch &lt;tobias.pietzsch@gmail.com&gt;
  */

@@ -94,7 +94,8 @@ public class BoundingSphereRadiusStatistics implements GraphListener< Spot, Link
 	 * </pre>
 	 *
 	 * @param timepoint
-	 * @return
+	 *            the time-point to query.
+	 * @return the maximal bounding sphere radius squared.
 	 */
 	public double getMaxBoundingSphereRadiusSquared( final int timepoint )
 	{

@@ -2,9 +2,11 @@ package org.mastodon.revised.trackscheme;
 
 import static org.mastodon.pool.ByteUtils.INDEX_SIZE;
 
+import org.mastodon.graph.GraphIdBimap;
 import org.mastodon.graph.ref.AbstractEdge;
 import org.mastodon.graph.ref.AbstractEdgePool;
 import org.mastodon.pool.ByteMappedElement;
+import org.mastodon.pool.PoolObject;
 import org.mastodon.revised.trackscheme.ModelGraphProperties.ModelEdgeProperties;
 
 public class TrackSchemeEdge extends AbstractEdge< TrackSchemeEdge, TrackSchemeVertex, ByteMappedElement >
@@ -43,12 +45,11 @@ public class TrackSchemeEdge extends AbstractEdge< TrackSchemeEdge, TrackSchemeV
 	}
 
 	/**
-	 * TODO: fix javadoc, see TrackSchemeVertex.getModelVertexId()
+	 * Gets the ID of the associated model edge, as defined by a
+	 * {@link GraphIdBimap}. For {@link PoolObject} model edges, the ID will be
+	 * the internal pool index of the model edge.
 	 *
-	 * Get the internal pool index of the associated model vertex.
-	 *
-	 * @return the internal pool index of the associated
-	 *         {@link TrackSchemeVertex}.
+	 * @return the ID of the associated model edge.
 	 */
 	public int getModelEdgeId()
 	{
@@ -61,10 +62,12 @@ public class TrackSchemeEdge extends AbstractEdge< TrackSchemeEdge, TrackSchemeV
 	}
 
 	/**
-	 * TODO javadoc
+	 * Returns whether this edge is selected.
 	 *
-	 * backed by selection state of model edge
-	 * @return
+	 * Backed by the state of the SelectionModel for the associated ModelGraph
+	 * edge.
+	 *
+	 * @return {@code true} if the associated model edge is selected.
 	 */
 	public boolean isSelected()
 	{

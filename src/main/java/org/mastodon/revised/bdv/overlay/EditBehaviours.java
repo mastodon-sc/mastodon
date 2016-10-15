@@ -1,17 +1,17 @@
 package org.mastodon.revised.bdv.overlay;
 
-import org.mastodon.revised.bdv.AbstractBehaviours;
 import org.mastodon.revised.bdv.overlay.util.JamaEigenvalueDecomposition;
 import org.mastodon.undo.UndoPointMarker;
 import org.scijava.ui.behaviour.ClickBehaviour;
 import org.scijava.ui.behaviour.DragBehaviour;
 import org.scijava.ui.behaviour.io.InputTriggerConfig;
+import org.scijava.ui.behaviour.util.Behaviours;
+import org.scijava.ui.behaviour.util.TriggerBehaviourBindings;
 
-import bdv.viewer.TriggerBehaviourBindings;
 import net.imglib2.util.LinAlgHelpers;
 
 public class EditBehaviours< V extends OverlayVertex< V, E >, E extends OverlayEdge< E, V > >
-		extends AbstractBehaviours
+		extends Behaviours
 {
 	public static final String MOVE_SPOT = "move spot";
 	public static final String ADD_SPOT = "add spot";
@@ -64,17 +64,18 @@ public class EditBehaviours< V extends OverlayVertex< V, E >, E extends OverlayE
 			final OverlayGraphRenderer< V, E > renderer,
 			final UndoPointMarker undo )
 	{
-		new EditBehaviours<>( triggerBehaviourBindings, config, overlayGraph, renderer, undo );
+		new EditBehaviours<>( config, overlayGraph, renderer, undo )
+				.install( triggerBehaviourBindings, "graph" );
 	}
 
 	private EditBehaviours(
-			final TriggerBehaviourBindings triggerBehaviourBindings,
 			final InputTriggerConfig config,
 			final OverlayGraph< V, E > overlayGraph,
 			final OverlayGraphRenderer< V, E > renderer,
 			final UndoPointMarker undo )
 	{
-		super( triggerBehaviourBindings, "graph", config, new String[] { "bdv" } );
+		super( config, new String[] { "bdv" } );
+
 		this.overlayGraph = overlayGraph;
 		this.renderer = renderer;
 		this.undo = undo;

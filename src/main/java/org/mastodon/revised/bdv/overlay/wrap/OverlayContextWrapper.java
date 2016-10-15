@@ -14,7 +14,9 @@ import org.mastodon.revised.mamut.WindowManager.BdvContextAdapter;
  * TODO!!! related to {@link BdvContextAdapter}
  *
  * @param <V>
+ *            the type of model vertex wrapped.
  * @param <E>
+ *            the type of model edge wrapped.
  *
  * @author Tobias Pietzsch &lt;tobias.pietzsch@gmail.com&gt;
  */

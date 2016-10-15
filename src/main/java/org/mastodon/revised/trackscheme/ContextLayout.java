@@ -1,7 +1,7 @@
 package org.mastodon.revised.trackscheme;
 
-import org.mastodon.collection.RefList;
 import org.mastodon.collection.RefCollections;
+import org.mastodon.collection.RefList;
 import org.mastodon.revised.context.Context;
 
 /**
@@ -41,16 +41,21 @@ public class ContextLayout
 	}
 
 	/**
-	 * Layout part of the graph covered by {@code context}.
+	 * Layouts part of the graph covered by {@code context}.
 	 * <p>
 	 * The {@link ScreenTransform#getMinY()} and
 	 * {@link ScreenTransform#getMaxY()} of {@code transform} determines the
-	 * timepoint range to cover. If the timepoint range is the same as in the
+	 * time-point range to cover. If the time-point range is the same as in the
 	 * previous call nothing is updated, unless {@code forceUpdate == true}.
 	 *
 	 * @param context
+	 *            the context to layout.
 	 * @param transform
+	 *            the transform used to determine the time-point range.
 	 * @param forceUpdate
+	 *            if {@code true}, will force an update regardless of whether
+	 *            the time-point is the same as in the previous call to this
+	 *            method.
 	 * @return {@code true} if the layout was updated.
 	 */
 	public boolean buildContext(
