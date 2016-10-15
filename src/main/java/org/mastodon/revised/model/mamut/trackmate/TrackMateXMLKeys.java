@@ -1,4 +1,4 @@
-package org.mastodon.revised.model.mamut.tm2;
+package org.mastodon.revised.model.mamut.trackmate;
 
 public class TrackMateXMLKeys
 {
