@@ -43,6 +43,17 @@ import org.mastodon.revised.model.mamut.Model;
 import org.mastodon.revised.model.mamut.ModelGraph;
 import org.mastodon.revised.model.mamut.Spot;
 
+/**
+ * Importer for TrackMate (http://imagej.net/TrackMate) files.
+ * <p>
+ * The importer can read the model as a whole and also import feature values.
+ * The features keys are prepended with {@value #SPOT_FEATURE_PREFIX} and
+ * {@value #EDGE_FEATURE_PREFIX} for spot and edge feature respectively to avoid
+ * name clashes.
+ *
+ * @author Jean-Yves Tinevez
+ *
+ */
 public class TrackMateImporter
 {
 	/**
@@ -50,15 +61,26 @@ public class TrackMateImporter
 	 * import. This is to avoid conflicts with spot and edge features having the
 	 * same key.
 	 */
-	private static final String SPOT_FEATURE_PREFIX = "SPOT_";
+	public static final String SPOT_FEATURE_PREFIX = "SPOT_";
 
 	/**
 	 * All edge features will be prepended with the following prefix upon
 	 * import. This is to avoid conflicts with spot and edge features having the
 	 * same key.
 	 */
-	private static final String EDGE_FEATURE_PREFIX = "EDGE_";
+	public static final String EDGE_FEATURE_PREFIX = "EDGE_";
 
+	/**
+	 * Imports the specified TrackMate file as a MaMuT {@link Model}.
+	 *
+	 * @param file
+	 *            the path to the TrackMate file.
+	 * @return a new model.
+	 * @throws JDOMException
+	 *             if an error happens while parsing the XML file.
+	 * @throws IOException
+	 *             if an IO error prevents the XML file to be parsed.
+	 */
 	public static Model importModel( final File file ) throws JDOMException, IOException
 	{
 		final Model model = new Model();
@@ -172,15 +194,23 @@ public class TrackMateImporter
 					// Spot features.
 					for ( final String featureKey : spotDoubleFeatureMap.keySet() )
 					{
-						final double val = Double.parseDouble( spotEl.getAttributeValue( featureKey ) );
-						final DoubleFeature< Spot > feature = spotDoubleFeatureMap.get( featureKey );
-						spot.feature( feature ).set( val );
+						final String attributeValue = spotEl.getAttributeValue( featureKey );
+						if ( null != attributeValue )
+						{
+							final double val = Double.parseDouble( attributeValue );
+							final DoubleFeature< Spot > feature = spotDoubleFeatureMap.get( featureKey );
+							spot.feature( feature ).set( val );
+						}
 					}
 					for ( final String featureKey : spotIntFeatureMap.keySet() )
 					{
-						final int val = Integer.parseInt( spotEl.getAttributeValue( featureKey ) );
-						final IntFeature< Spot > feature = spotIntFeatureMap.get( featureKey );
-						spot.feature( feature ).set( val );
+						final String attributeValue = spotEl.getAttributeValue( featureKey );
+						if ( null != attributeValue )
+						{
+							final int val = Integer.parseInt( attributeValue );
+							final IntFeature< Spot > feature = spotIntFeatureMap.get( featureKey );
+							spot.feature( feature ).set( val );
+						}
 					}
 				}
 			}
@@ -205,15 +235,23 @@ public class TrackMateImporter
 					// Edge features.
 					for ( final String featureKey : edgeDoubleFeatureMap.keySet() )
 					{
-						final double val = Double.parseDouble( edgeEl.getAttributeValue( featureKey ) );
-						final DoubleFeature< Link > feature = edgeDoubleFeatureMap.get( featureKey );
-						link.feature( feature ).set( val );
+						final String attributeValue = edgeEl.getAttributeValue( featureKey );
+						if ( null != attributeValue )
+						{
+							final double val = Double.parseDouble( attributeValue );
+							final DoubleFeature< Link > feature = edgeDoubleFeatureMap.get( featureKey );
+							link.feature( feature ).set( val );
+						}
 					}
 					for ( final String featureKey : edgeIntFeatureMap.keySet() )
 					{
-						final int val = Integer.parseInt( edgeEl.getAttributeValue( featureKey ) );
-						final IntFeature< Link > feature = edgeIntFeatureMap.get( featureKey );
-						link.feature( feature ).set( val );
+						final String attributeValue = edgeEl.getAttributeValue( featureKey );
+						if (null != attributeValue)
+						{
+							final int val = Integer.parseInt( attributeValue );
+							final IntFeature< Link > feature = edgeIntFeatureMap.get( featureKey );
+							link.feature( feature ).set( val );
+						}
 					}
 				}
 			}
