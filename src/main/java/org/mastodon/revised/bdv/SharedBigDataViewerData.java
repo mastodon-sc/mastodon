@@ -14,7 +14,7 @@ import org.scijava.ui.behaviour.io.InputTriggerConfig;
 import bdv.BehaviourTransformEventHandler3D.BehaviourTransformEventHandler3DFactory;
 import bdv.BigDataViewer;
 import bdv.ViewerImgLoader;
-import bdv.img.cache.Cache;
+import bdv.cache.CacheControl;
 import bdv.spimdata.WrapBasicImgLoader;
 import bdv.tools.InitializeViewerState;
 import bdv.tools.bookmarks.Bookmarks;
@@ -53,7 +53,7 @@ public class SharedBigDataViewerData
 
 	private final int numTimepoints;
 
-	private final Cache cache;
+	private final CacheControl cache;
 
 	public SharedBigDataViewerData(
 			final String spimDataXmlFilename,
@@ -79,7 +79,7 @@ public class SharedBigDataViewerData
 
 		final AbstractSequenceDescription< ?, ?, ? > seq = spimData.getSequenceDescription();
 		numTimepoints = seq.getTimePoints().size();
-		cache = ( ( ViewerImgLoader ) seq.getImgLoader() ).getCache();
+		cache = ( ( ViewerImgLoader ) seq.getImgLoader() ).getCacheControl();
 
 		converterSetups = new ArrayList<>();
 		sources = new ArrayList<>();
@@ -198,7 +198,7 @@ public class SharedBigDataViewerData
 		return numTimepoints;
 	}
 
-	public Cache getCache()
+	public CacheControl getCache()
 	{
 		return cache;
 	}
