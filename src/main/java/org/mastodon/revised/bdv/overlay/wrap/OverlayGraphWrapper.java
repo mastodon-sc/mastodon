@@ -14,11 +14,13 @@ import org.mastodon.revised.bdv.overlay.OverlayGraph;
 import org.mastodon.spatial.SpatioTemporalIndex;
 
 /**
- * TODO: implement remaining ReadOnlyGraph methods
- * TODO: implement CollectionCreator
+ * TODO: implement remaining ReadOnlyGraph methods TODO: implement
+ * CollectionCreator
  *
  * @param <V>
+ *            the type of the model vertex wrapped.
  * @param <E>
+ *            the type of the model edge wrapped.
  *
  * @author Tobias Pietzsch &lt;tobias.pietzsch@gmail.com&gt;
  */

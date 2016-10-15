@@ -152,7 +152,9 @@ public class ScreenVertexMath
 	 * computed values.
 	 *
 	 * @param vertex
+	 *            the vertex.
 	 * @param viewerTransform
+	 *            the transform.
 	 */
 	public void init( final OverlayVertex< ?, ? > vertex, final AffineTransform3D viewerTransform )
 	{
@@ -345,10 +347,15 @@ public class ScreenVertexMath
 	 * {@code minX <= x <= maxX, minY <= y <= minX}.
 	 *
 	 * @param minX
+	 *            the x min bound of the rectangle.
 	 * @param maxX
+	 *            the x max bound of the rectangle.
 	 * @param minY
+	 *            the y min bound of the rectangle.
 	 * @param maxY
-	 * @return
+	 *            the y max bound of the rectangle.
+	 * @return {@code true} if the ellipsoid projection intersects with the
+	 *         rectangle.
 	 */
 	public boolean projectionIntersectsViewInterval( final double minX, final double maxX, final double minY, final double maxY )
 	{
@@ -389,10 +396,15 @@ public class ScreenVertexMath
 	 * {@code minX <= x <= maxX, minY <= y <= minX}.
 	 *
 	 * @param minX
+	 *            the x min bound of the rectangle.
 	 * @param maxX
+	 *            the x max bound of the rectangle.
 	 * @param minY
+	 *            the y min bound of the rectangle.
 	 * @param maxY
-	 * @return
+	 *            the y max bound of the rectangle.
+	 * @return {@code true} if the ellipsoid plane-intersection intersects with
+	 *         the rectangle.
 	 */
 	public boolean intersectionIntersectsViewInterval( final double minX, final double maxX, final double minY, final double maxY )
 	{
@@ -547,7 +559,7 @@ public class ScreenVertexMath
 
 	// TODO: move to imglib2 LinAlgHelpers
 	/**
-	 * Invert a (invertible) symmetric 3x3 matrix.
+	 * Inverts a (invertible) symmetric 3x3 matrix.
 	 *
 	 * @param m
 	 *            symmetric matrix to invert.
@@ -577,7 +589,7 @@ public class ScreenVertexMath
 
 	// TODO: move to imglib2 LinAlgHelpers
 	/**
-	 * Invert a (invertible) symmetric 2x2 matrix.
+	 * Inverts a (invertible) symmetric 2x2 matrix.
 	 *
 	 * @param m
 	 *            symmetric matrix to invert.

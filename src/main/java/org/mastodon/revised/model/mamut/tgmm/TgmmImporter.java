@@ -50,11 +50,17 @@ public class TgmmImporter extends AbstractModelImporter< Model >
 	 * @param setupID
 	 *            the setup ID of the desired transform in the
 	 *            ViewRegistrations.
+	 * @param nSigmas
+	 *            the number of sigmas to convert a TGMM probability into
+	 *            ellipsoids semi-axis lengths.
 	 * @param model
 	 *            the {@link Model} to update with the read tracks.
 	 *
 	 * @throws JDOMException
+	 *             when errors occur in parsing.
 	 * @throws IOException
+	 *             when an I/O error prevents a document from being fully
+	 *             parsed.
 	 */
 	public static void read(
 			final String tgmmFileNameFormat,

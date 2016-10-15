@@ -5,10 +5,13 @@ import java.util.ArrayList;
 import org.mastodon.revised.ui.grouping.GroupHandle;
 
 /**
- * TODO
+ * Class that centralizes receiving and sending navigation events to navigation
+ * listeners.
  *
  * @param <V>
+ *            the type of vertices.
  * @param <E>
+ *            the type of edges.
  *
  * @author Tobias Pietzsch &lt;tobias.pietzsch@gmail.com&gt;
  */

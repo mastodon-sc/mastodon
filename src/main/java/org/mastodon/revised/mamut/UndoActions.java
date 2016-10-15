@@ -25,6 +25,8 @@ public class UndoActions extends Actions
 	 * @param model
 	 *            Actions are targeted at this {@link Model}s {@code undo()} and
 	 *            {@code redo()} methods.
+	 * @param keyConfig
+	 *            the key config.
 	 */
 	public static void installActionBindings(
 			final InputActionBindings inputActionBindings,

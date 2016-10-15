@@ -16,6 +16,7 @@ import org.mastodon.revised.context.Context;
 import org.mastodon.revised.context.ContextListener;
 import org.mastodon.revised.trackscheme.ContextLayout;
 import org.mastodon.revised.trackscheme.LineageTreeLayout;
+import org.mastodon.revised.trackscheme.LineageTreeLayout.LayoutListener;
 import org.mastodon.revised.trackscheme.ScreenEntities;
 import org.mastodon.revised.trackscheme.ScreenEntitiesInterpolator;
 import org.mastodon.revised.trackscheme.ScreenTransform;
@@ -26,7 +27,6 @@ import org.mastodon.revised.trackscheme.TrackSchemeHighlight;
 import org.mastodon.revised.trackscheme.TrackSchemeNavigation;
 import org.mastodon.revised.trackscheme.TrackSchemeSelection;
 import org.mastodon.revised.trackscheme.TrackSchemeVertex;
-import org.mastodon.revised.trackscheme.LineageTreeLayout.LayoutListener;
 import org.mastodon.revised.trackscheme.display.TrackSchemeOptions.Values;
 import org.mastodon.revised.trackscheme.display.animate.AbstractAnimator;
 import org.mastodon.revised.trackscheme.display.laf.DefaultTrackSchemeOverlay;
@@ -283,7 +283,7 @@ public class TrackSchemePanel extends JPanel implements
 	}
 
 	/**
-	 * Stop the {@link #painterThread}.
+	 * Stop the painter thread.
 	 */
 	public void stop()
 	{
@@ -291,10 +291,12 @@ public class TrackSchemePanel extends JPanel implements
 	}
 
 	/**
-	 * Set the timepoint range of the dataset.
+	 * Sets the time-point range of the dataset.
 	 *
 	 * @param minTimepoint
+	 *            the min time-point.
 	 * @param maxTimepoint
+	 *            the max time-point.
 	 */
 	public void setTimepointRange( final int minTimepoint, final int maxTimepoint )
 	{
@@ -875,6 +877,9 @@ public class TrackSchemePanel extends JPanel implements
 		 * Set entities for painting into the specified double-buffered
 		 * {@link AbstractTrackSchemeOverlay}. (This swaps
 		 * {@link #screenEntities} with pending entities from the overlay.)
+		 * 
+		 * @param overlay
+		 *            the overlay to paint in.
 		 */
 		public void setPaintEntities( final AbstractTrackSchemeOverlay overlay )
 		{

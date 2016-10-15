@@ -17,11 +17,15 @@ public class TrackSchemeActions extends Actions
 
 
 	/**
-	 * Create TrackScheme actions and install them in the specified
+	 * Creates TrackScheme actions and install them in the specified
 	 * {@link InputActionBindings}.
 	 *
 	 * @param inputActionBindings
 	 *            {@link InputMap} and {@link ActionMap} are installed here.
+	 * @param frame
+	 *            the TrackScheme frame in which TrackScheme is displayed.
+	 * @param keyConfig
+	 *            the key-config.
 	 */
 	public static void installActionBindings(
 			final InputActionBindings inputActionBindings,

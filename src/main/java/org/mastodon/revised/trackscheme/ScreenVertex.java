@@ -193,9 +193,9 @@ public class ScreenVertex extends PoolObject< ScreenVertex, ByteMappedElement >
 	}
 
 	/**
-	 * TODO
+	 * Returns the current transition state for this screen vertex.
 	 *
-	 * @return
+	 * @return the transition state.
 	 */
 	public Transition getTransition()
 	{
@@ -224,15 +224,23 @@ public class ScreenVertex extends PoolObject< ScreenVertex, ByteMappedElement >
 	}
 
 	/**
-	 * TODO
+	 * Returns the interpolation completion ratio of the current transition for
+	 * this screen vertex.
 	 *
-	 * @return
+	 * @return the interpolation completion ratio.
 	 */
 	public double getInterpolationCompletionRatio()
 	{
 		return access.getDouble( IP_RATIO_OFFSET );
 	}
 
+	/**
+	 * Sets the interpolation completion ratio of the current transition for
+	 * this screen vertex.
+	 *
+	 * @param ratio
+	 *            the interpolation completion ratio.
+	 */
 	protected void setInterpolationCompletionRatio( final double ratio )
 	{
 		access.putDouble( ratio, IP_RATIO_OFFSET );
@@ -249,6 +257,7 @@ public class ScreenVertex extends PoolObject< ScreenVertex, ByteMappedElement >
 	 * ONLY USE THIS FOR {@link ScreenEntities#set(ScreenEntities)}!
 	 *
 	 * @param v
+	 *            the vertex to clone parameters from.
 	 * @return {@code this}.
 	 */
 	ScreenVertex cloneFrom( final ScreenVertex v )

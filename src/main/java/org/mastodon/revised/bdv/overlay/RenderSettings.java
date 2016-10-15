@@ -114,13 +114,11 @@ public class RenderSettings
 
 	/**
 	 * Whether to draw links (at all).
-	 * For specific settings, see TODO
 	 */
 	private boolean drawLinks;
 
 	/**
 	 * Whether to draw spots (at all).
-	 * For specific settings, see TODO
 	 */
 	private boolean drawSpots;
 
@@ -210,9 +208,10 @@ public class RenderSettings
 	}
 
 	/**
-	 * Set whether to use antialiasing for drawing.
+	 * Sets whether to use anti-aliasing for drawing.
 	 *
 	 * @param useAntialiasing
+	 *            use anti-aliasing.
 	 */
 	public synchronized void setUseAntialiasing( final boolean useAntialiasing )
 	{
@@ -224,7 +223,7 @@ public class RenderSettings
 	}
 
 	/**
-	 * Whether a gradient is used for drawing links.
+	 * Returns whether a gradient is used for drawing links.
 	 *
 	 * @return {@code true} if links are drawn using a gradient from source
 	 *         color to target color, or {@code false}, if links are drawn using
@@ -236,7 +235,7 @@ public class RenderSettings
 	}
 
 	/**
-	 * Set whether to use a gradient for drawing links. If
+	 * Sets whether to use a gradient for drawing links. If
 	 * {@code useGradient=true}, draw links using a gradient from source color
 	 * to target color. If {@code useGradient=false}, draw links using the
 	 * target color.
@@ -254,10 +253,10 @@ public class RenderSettings
 	}
 
 	/**
-	 * Get the maximum number of timepoints into the past for which outgoing
+	 * Gets the maximum number of time-points into the past for which outgoing
 	 * edges should be drawn.
 	 *
-	 * @return maximum number of timepoints into the past to draw links.
+	 * @return maximum number of time-points into the past to draw links.
 	 */
 	public int getTimeLimit()
 	{
@@ -265,11 +264,11 @@ public class RenderSettings
 	}
 
 	/**
-	 * Set the maximum number of timepoints into the past for which outgoing
+	 * Sets the maximum number of time-points into the past for which outgoing
 	 * edges should be drawn.
 	 *
 	 * @param timeLimit
-	 *            maximum number of timepoints into the past to draw links.
+	 *            maximum number of time-points into the past to draw links.
 	 */
 	public synchronized void setTimeLimit( final int timeLimit )
 	{
@@ -281,7 +280,7 @@ public class RenderSettings
 	}
 
 	/**
-	 * Get whether to draw links (at all). For specific settings, see
+	 * Gets whether to draw links (at all). For specific settings, see
 	 * {@link #getTimeLimit()}, {@link #getUseGradient()}.
 	 *
 	 * @return {@code true} if links are drawn.
@@ -292,7 +291,7 @@ public class RenderSettings
 	}
 
 	/**
-	 * Set whether to draw links (at all). For specific settings, see
+	 * Sets whether to draw links (at all). For specific settings, see
 	 * {@link #setTimeLimit(int)}, {@link #setUseGradient(boolean)}.
 	 *
 	 * @param drawLinks
@@ -308,7 +307,19 @@ public class RenderSettings
 	}
 
 	/**
-	 * Get whether to draw spots (at all). For specific settings, see TODO
+	 * Gets whether to draw spots (at all). For specific settings, see other
+	 * spot drawing settings.
+	 *
+	 * @return {@code true} if spots are to be drawn.
+	 * @see #getDrawEllipsoidSliceIntersection()
+	 * @see #getDrawEllipsoidSliceProjection()
+	 * @see #getDrawSpotCenters()
+	 * @see #getDrawSpotCentersForEllipses()
+	 * @see #getDrawSpotLabels()
+	 * @see #getEllipsoidFadeDepth()
+	 * @see #getFocusLimit()
+	 * @see #getFocusLimitViewRelative()
+	 * @see #getPointFadeDepth()
 	 */
 	public boolean getDrawSpots()
 	{
@@ -316,10 +327,20 @@ public class RenderSettings
 	}
 
 	/**
-	 * Set whether to draw spots (at all). For specific settings, see TODO
+	 * Sets whether to draw spots (at all). For specific settings, see other
+	 * spot drawing settings.
 	 *
 	 * @param drawSpots
 	 *            whether to draw spots.
+	 * @see #setDrawEllipsoidSliceIntersection(boolean)
+	 * @see #setDrawEllipsoidSliceProjection(boolean)
+	 * @see #setDrawSpotCenters(boolean)
+	 * @see #setDrawSpotCentersForEllipses(boolean)
+	 * @see #setDrawSpotLabels(boolean)
+	 * @see #setEllipsoidFadeDepth(double)
+	 * @see #setFocusLimit(double)
+	 * @see #setFocusLimitViewRelative(boolean)
+	 * @see #setPointFadeDepth(double)
 	 */
 	public synchronized void setDrawSpots( final boolean drawSpots )
 	{

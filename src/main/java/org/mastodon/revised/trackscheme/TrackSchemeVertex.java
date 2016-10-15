@@ -13,7 +13,7 @@ import org.mastodon.pool.PoolObject;
 import org.mastodon.revised.trackscheme.ModelGraphProperties.ModelVertexProperties;
 
 /**
- * TODO javadoc
+ * The vertex class for TrackScheme.
  *
  * @author Tobias Pietzsch &lt;tobias.pietzsch@gmail.com&gt;
  */
@@ -49,7 +49,7 @@ public class TrackSchemeVertex extends AbstractVertex< TrackSchemeVertex, TrackS
 	}
 
 	/**
-	 * Get the ID of the associated model vertex, as defined by a
+	 * Gets the ID of the associated model vertex, as defined by a
 	 * {@link GraphIdBimap}. For {@link PoolObject} model vertices, the ID will
 	 * be the internal pool index of the model vertex.
 	 *
@@ -84,7 +84,10 @@ public class TrackSchemeVertex extends AbstractVertex< TrackSchemeVertex, TrackS
 	}
 
 	/**
-	 * Get label of associated model vertex
+	 * Gets the label of associated model vertex.
+	 *
+	 * @return the label.
+	 *
 	 */
 	public String getLabel()
 	{
@@ -92,7 +95,10 @@ public class TrackSchemeVertex extends AbstractVertex< TrackSchemeVertex, TrackS
 	}
 
 	/**
-	 * Set label of associated model vertex
+	 * Sets the label of associated model vertex.
+	 *
+	 * @param label
+	 *            the label to set.
 	 */
 	public void setLabel( final String label )
 	{
@@ -100,10 +106,12 @@ public class TrackSchemeVertex extends AbstractVertex< TrackSchemeVertex, TrackS
 	}
 
 	/**
-	 * TODO javadoc
+	 * Returns whether this vertex is selected.
 	 *
-	 * backed by the state of the SelectionModel for the associated ModelGraph vertex.
-	 * @return
+	 * Backed by the state of the SelectionModel for the associated ModelGraph
+	 * vertex.
+	 *
+	 * @return {@code true} if the associated model vertex is selected.
 	 */
 	public boolean isSelected()
 	{
