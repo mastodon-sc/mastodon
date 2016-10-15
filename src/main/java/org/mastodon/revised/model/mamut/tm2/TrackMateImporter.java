@@ -45,6 +45,20 @@ import org.mastodon.revised.model.mamut.Spot;
 
 public class TrackMateImporter
 {
+	/**
+	 * All spot features will be prepended with the following prefix upon
+	 * import. This is to avoid conflicts with spot and edge features having the
+	 * same key.
+	 */
+	private static final String SPOT_FEATURE_PREFIX = "SPOT_";
+
+	/**
+	 * All edge features will be prepended with the following prefix upon
+	 * import. This is to avoid conflicts with spot and edge features having the
+	 * same key.
+	 */
+	private static final String EDGE_FEATURE_PREFIX = "EDGE_";
+
 	public static Model importModel( final File file ) throws JDOMException, IOException
 	{
 		final Model model = new Model();
@@ -76,12 +90,12 @@ public class TrackMateImporter
 			final boolean featureIsInt = Boolean.parseBoolean( featureEl.getAttributeValue( FEATURE_ISINT_ATTRIBUTE_NAME ) );
 			if ( featureIsInt )
 			{
-				final IntFeature< Spot > feature = new IntFeature<>( featureKey, Integer.MIN_VALUE );
+				final IntFeature< Spot > feature = new IntFeature<>( SPOT_FEATURE_PREFIX + featureKey, Integer.MIN_VALUE );
 				spotIntFeatureMap.put( featureKey, feature );
 			}
 			else
 			{
-				final DoubleFeature< Spot > feature = new DoubleFeature<>( featureKey, Double.NaN );
+				final DoubleFeature< Spot > feature = new DoubleFeature<>( SPOT_FEATURE_PREFIX + featureKey, Double.NaN );
 				spotDoubleFeatureMap.put( featureKey, feature );
 			}
 		}
@@ -99,17 +113,12 @@ public class TrackMateImporter
 			final boolean featureIsInt = Boolean.parseBoolean( featureEl.getAttributeValue( FEATURE_ISINT_ATTRIBUTE_NAME ) );
 			if ( featureIsInt )
 			{
-				/*
-				 * FIXME Fails because there are two feature with the same key:
-				 * MANUAL_COLOR, one for spot, one for links. This triggers and
-				 * DuplicateKeyException in the FeatureRegistry.
-				 */
-				final IntFeature< Link > feature = new IntFeature<>( featureKey, Integer.MIN_VALUE );
+				final IntFeature< Link > feature = new IntFeature<>( EDGE_FEATURE_PREFIX + featureKey, Integer.MIN_VALUE );
 				edgeIntFeatureMap.put( featureKey, feature );
 			}
 			else
 			{
-				final DoubleFeature< Link > feature = new DoubleFeature<>( featureKey, Double.NaN );
+				final DoubleFeature< Link > feature = new DoubleFeature<>( EDGE_FEATURE_PREFIX + featureKey, Double.NaN );
 				edgeDoubleFeatureMap.put( featureKey, feature );
 			}
 
