@@ -70,11 +70,15 @@ public class BigDataViewerMaMuT
 	private final BookmarksEditor bookmarkEditor;
 
 	/**
-	 *
+	 * Creates a new BDV window showing the image data overlaid with MaMuT
+	 * annotations.
+	 * 
 	 * @param shared
+	 *            the shared BDV data.
 	 * @param windowTitle
 	 *            title of the viewer window.
 	 * @param groupHandle
+	 *            the group handle to manage view synchronization.
 	 */
 	public BigDataViewerMaMuT(
 			final SharedBigDataViewerData shared,

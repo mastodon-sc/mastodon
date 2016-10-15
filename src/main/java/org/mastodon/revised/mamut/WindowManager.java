@@ -179,6 +179,7 @@ public class WindowManager
 	 * TODO!!! related to {@link OverlayContextWrapper}
 	 *
 	 * @param <V>
+	 *            the type of vertices in the model.
 	 *
 	 * @author Tobias Pietzsch &lt;tobias.pietzsch@gmail.com&gt;
 	 */

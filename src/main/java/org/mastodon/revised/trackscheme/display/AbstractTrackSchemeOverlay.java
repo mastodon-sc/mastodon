@@ -57,6 +57,7 @@ import net.imglib2.ui.OverlayRenderer;
  *
  * @author Tobias Pietzsch &lt;tobias.pietzsch@gmail.com&gt;
  */
+@SuppressWarnings( "javadoc" )
 public abstract class AbstractTrackSchemeOverlay implements OverlayRenderer, OffsetHeadersListener
 {
 	private int width;
@@ -408,6 +409,7 @@ public abstract class AbstractTrackSchemeOverlay implements OverlayRenderer, Off
 	 *
 	 * @param entities
 	 *            {@link ScreenEntities} to paint.
+	 * @return the previous {@link ScreenEntities}.
 	 */
 	public synchronized ScreenEntities setScreenEntities( final ScreenEntities entities )
 	{

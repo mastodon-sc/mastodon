@@ -861,10 +861,13 @@ public class JamaEigenvalueDecomposition
    Constructor
  * ------------------------ */
 
-   /** Check for symmetry, then construct the eigenvalue decomposition
-       Structure to access D and V.
-   */
-
+   	/**
+	 * Check for symmetry, then construct the eigenvalue decomposition Structure
+	 * to access D and V.
+	 *
+	 * @param numDimensions
+	 *            the dimensionality of the problem (size of the square matrix).
+	 */
    public JamaEigenvalueDecomposition( final int numDimensions ) {
       n = numDimensions;
       V = new double[ n ][ n ];
