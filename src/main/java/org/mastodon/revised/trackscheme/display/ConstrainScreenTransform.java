@@ -5,12 +5,12 @@ import org.mastodon.revised.trackscheme.ScreenTransform;
 public class ConstrainScreenTransform
 {
 	/**
-	 * Modify a {@link ScreenTransform}, such that it covers at least the
-	 * {@code minSize} and at most the {@code maxSize} (in trackscheme layout
+	 * Modifies a {@link ScreenTransform}, such that it covers at least the
+	 * {@code minSize} and at most the {@code maxSize} (in TrackScheme layout
 	 * coordinates). The {@code (minBound, maxBound)} interval specifies the
-	 * bounds of the layouted graph in trackscheme layout coordinates.
+	 * bounds of the layouted graph in TrackScheme layout coordinates.
 	 * <p>
-	 * Make sure that the {@code transform} does not move too far outside the
+	 * Makes sure that the {@code transform} does not move too far outside the
 	 * visible screen area minus {@code borderRatio}, in the following way: If
 	 * the transformed {@code (minBound, maxBound)} interval is larger than the
 	 * allowed area, the {@code minBoundX} may be transformed only such that
@@ -20,16 +20,27 @@ public class ConstrainScreenTransform
 	 * {@code x >= width * borderRatioX}, and analogously for the other bounds.
 	 *
 	 * @param transform
+	 *            the transform to modify.
 	 * @param minSizeX
+	 *            the X min size.
 	 * @param minSizeY
+	 *            the Y min size.
 	 * @param maxSizeX
+	 *            the X max size.
 	 * @param maxSizeY
+	 *            the Y max size.
 	 * @param minBoundX
+	 *            the X min bound.
 	 * @param maxBoundX
+	 *            the X max bound.
 	 * @param minBoundY
+	 *            the Y min bound.
 	 * @param maxBoundY
+	 *            the Y max bound.
 	 * @param borderRatioX
+	 *            the X border ratio to limit moving out the visible screen.
 	 * @param borderRatioY
+	 *            the Y border ratio to limit moving out the visible screen.
 	 */
 	public static void constrainTransform(
 			final ScreenTransform transform,
@@ -117,10 +128,15 @@ public class ConstrainScreenTransform
 	 * Zoom out in X to the maximally allowed width.
 	 *
 	 * @param transform
+	 *            the transform to modify.
 	 * @param maxSizeX
+	 *            the maximal allowed width.
 	 * @param minBoundX
+	 *            the X min bound.
 	 * @param maxBoundX
+	 *            the X max bound.
 	 * @param borderRatioX
+	 *            the X border ratio to limit moving out the visible screen.
 	 */
 	public static void zoomOutFullyX(
 			final ScreenTransform transform,
@@ -147,7 +163,9 @@ public class ConstrainScreenTransform
 	 * extremely small, set {@code transform = reference}.
 	 *
 	 * @param transform
+	 *            the transform to modify.
 	 * @param reference
+	 *            the reference transform to compare.
 	 */
 	public static void removeJitter( final ScreenTransform transform, final ScreenTransform reference )
 	{
@@ -162,12 +180,14 @@ public class ConstrainScreenTransform
 
 
 	/**
-	 * Check whether the given {@link ScreenTransform} covers an area having
+	 * Checks whether the given {@link ScreenTransform} covers an area having
 	 * width less or equal to the specified {@code minSizeX}.
 	 *
 	 * @param transform
+	 *            the transform to test.
 	 * @param minSizeX
-	 * @return true, iff {@code transform} covers less than or equal to
+	 *            the min width.
+	 * @return {@code true}, iff {@code transform} covers less than or equal to
 	 *         {@code minSizeX}.
 	 */
 	public static boolean hasMinSizeX(
@@ -178,12 +198,14 @@ public class ConstrainScreenTransform
 	}
 
 	/**
-	 * Check whether the given {@link ScreenTransform} covers an area having
+	 * Checks whether the given {@link ScreenTransform} covers an area having
 	 * width less or equal to the specified {@code minSizeY}.
 	 *
 	 * @param transform
+	 *            the transform to test.
 	 * @param minSizeY
-	 * @return true, iff {@code transform} covers less than or equal to
+	 *            the min height.
+	 * @return {@code true}, iff {@code transform} covers less than or equal to
 	 *         {@code minSizeY}.
 	 */
 	public static boolean hasMinSizeY(
@@ -194,11 +216,13 @@ public class ConstrainScreenTransform
 	}
 
 	/**
-	 * Check whether the given {@link ScreenTransform} covers an area having
+	 * Checks whether the given {@link ScreenTransform} covers an area having
 	 * width greater or equal to the specified {@code maxSizeX}.
 	 *
 	 * @param transform
+	 *            the transform to test.
 	 * @param maxSizeX
+	 *            the size in X to exceed to pass this test.
 	 * @return true, iff {@code transform} covers greater than or equal to
 	 *         {@code maxSizeX}.
 	 */
@@ -210,11 +234,13 @@ public class ConstrainScreenTransform
 	}
 
 	/**
-	 * Check whether the given {@link ScreenTransform} covers an area having
+	 * Checks whether the given {@link ScreenTransform} covers an area having
 	 * width greater or equal to the specified {@code maxSizeY}.
 	 *
 	 * @param transform
+	 *            the transform to test.
 	 * @param maxSizeY
+	 *            the size in Y to exceed to pass this test.
 	 * @return true, iff {@code transform} covers greater than or equal to
 	 *         {@code maxSizeY}.
 	 */

@@ -47,12 +47,16 @@ import net.imglib2.util.LinAlgHelpers;
  * orientation, zoom, etc. Mouse coordinates are typically stored in this
  * variable.
  * </ul>
- * 
+ *
  * <p>
- * 
+ *
  * TODO: Review and revise.
  *
  * @author Tobias Pietzsch &lt;tobias.pietzsch@gmail.com&gt;
+ * @param <V>
+ *            the type of model vertex.
+ * @param <E>
+ *            the type of model edge.
  */
 public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends OverlayEdge< E, V > >
 		implements OverlayRenderer, TransformListener< AffineTransform3D >, TimePointListener
@@ -332,12 +336,15 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 	}
 
 	/**
-	 * Get the {@link ConvexPolytope} described by the specified interval in
+	 * Gets the {@link ConvexPolytope} described by the specified interval in
 	 * viewer coordinates, transformed to global coordinates.
 	 *
 	 * @param transform
+	 *            the transform to transform viewer coordinates back in global
+	 *            coordinates.
 	 * @param viewerInterval
-	 * @return
+	 *            the view interval.
+	 * @return a new convex polytope.
 	 */
 	// TODO: move to Utility class
 	public static ConvexPolytope getPolytopeGlobal(
@@ -351,17 +358,25 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 	}
 
 	/**
-	 * Get the {@link ConvexPolytope} described by the specified interval in
+	 * Gets the {@link ConvexPolytope} described by the specified interval in
 	 * viewer coordinates, transformed to global coordinates.
 	 *
 	 * @param transform
+	 *            the transform to transform viewer coordinates back in global
+	 *            coordinates.
 	 * @param viewerMinX
+	 *            the x min bound of the view interval.
 	 * @param viewerMaxX
+	 *            the x max bound of the view interval.
 	 * @param viewerMinY
+	 *            the y min bound of the view interval.
 	 * @param viewerMaxY
+	 *            the y max bound of the view interval.
 	 * @param viewerMinZ
+	 *            the z min bound of the view interval.
 	 * @param viewerMaxZ
-	 * @return
+	 *            the z max bound of the view interval.
+	 * @return a new convex polytope.
 	 */
 	// TODO: move to Utility class
 	public static ConvexPolytope getPolytopeGlobal(

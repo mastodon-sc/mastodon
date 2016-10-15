@@ -4,8 +4,8 @@ import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.Collection;
 
-import org.mastodon.collection.RefSet;
 import org.mastodon.collection.RefCollections;
+import org.mastodon.collection.RefSet;
 import org.mastodon.graph.Edge;
 import org.mastodon.graph.GraphIdBimap;
 import org.mastodon.graph.GraphListener;
@@ -179,6 +179,7 @@ public class Selection< V extends Vertex< E >, E extends Edge< V > > implements 
 	 *            the edge collection.
 	 * @param selected
 	 *            selected state to set for specified edge collection.
+	 * @return {@code true} if the selection was changed by this call.
 	 */
 	public synchronized boolean setEdgesSelected( final Collection< E > edges, final boolean selected )
 	{
@@ -207,6 +208,7 @@ public class Selection< V extends Vertex< E >, E extends Edge< V > > implements 
 	 *            the vertex collection.
 	 * @param selected
 	 *            selected state to set for specified vertex collection.
+	 * @return {@code true} if the selection was changed by this call.
 	 */
 	public synchronized boolean setVerticesSelected( final Collection< V > vertices, final boolean selected )
 	{

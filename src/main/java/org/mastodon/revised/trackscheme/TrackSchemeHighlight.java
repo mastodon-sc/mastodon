@@ -19,9 +19,11 @@ public class TrackSchemeHighlight
 	}
 
 	/**
-	 * Get the {@link TrackSchemeVertex} that is currently highlighted. Forwards
-	 * to the model {@link HighlightModel}.
+	 * Gets the {@link TrackSchemeVertex} that is currently highlighted.
+	 * Forwards to the model {@link HighlightModel}.
 	 *
+	 * @param ref
+	 *            a pool reference used for retrieval.
 	 * @return currently highlighted vertex.
 	 */
 	public TrackSchemeVertex getHighlightedVertex( final TrackSchemeVertex ref )
@@ -30,9 +32,11 @@ public class TrackSchemeHighlight
 	}
 
 	/**
-	 * Get the {@link TrackSchemeVertex} that is currently highlighted. Forwards
-	 * to the model {@link HighlightModel}.
+	 * Gets the {@link TrackSchemeVertex} that is currently highlighted.
+	 * Forwards to the model {@link HighlightModel}.
 	 *
+	 * @param ref
+	 *            a pool reference used for retrieval.
 	 * @return currently highlighted vertex.
 	 */
 	public TrackSchemeEdge getHighlightedEdge( final TrackSchemeEdge ref )
@@ -41,7 +45,7 @@ public class TrackSchemeHighlight
 	}
 
 	/**
-	 * highlight vertex.
+	 * Highlights the specified vertex.
 	 *
 	 * @param v
 	 *            vertex to highlight, or {@code null} to clear highlight.
@@ -53,7 +57,7 @@ public class TrackSchemeHighlight
 	}
 
 	/**
-	 * highlight edge.
+	 * Highlights the specified edge.
 	 *
 	 * @param e
 	 *            edge to highlight, or {@code null} to clear highlight.
@@ -64,7 +68,7 @@ public class TrackSchemeHighlight
 	}
 
 	/**
-	 * clear highlight.
+	 * Clears the highlight.
 	 */
 	public void clearHighlight()
 	{

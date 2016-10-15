@@ -117,6 +117,10 @@ public class AbstractModelGraph<
 	 *            the raw file to save.
 	 * @param serializer
 	 *            the serializer used for writing individual vertices.
+	 * @param vertexFeaturesToSerialize
+	 *            the vertex features to serialize.
+	 * @param edgeFeaturesToSerialize
+	 *            the edge features to serialize.
 	 * @throws IOException
 	 *             if an I/O error occurs while writing the file.
 	 */
