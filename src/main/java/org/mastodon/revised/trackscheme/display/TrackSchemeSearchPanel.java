@@ -10,7 +10,7 @@ import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Comparator;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -30,13 +30,16 @@ import javax.swing.border.EmptyBorder;
 
 import org.mastodon.collection.RefCollections;
 import org.mastodon.collection.RefList;
+import org.mastodon.collection.RefSet;
 import org.mastodon.graph.GraphChangeListener;
-import org.mastodon.graph.algorithm.traversal.BreadthFirstIterator;
+import org.mastodon.graph.algorithm.traversal.BreadthFirstCrossComponentIterator;
+import org.mastodon.graph.algorithm.traversal.InverseDepthFirstIterator;
+import org.mastodon.revised.trackscheme.LexicographicalVertexOrder;
+import org.mastodon.revised.trackscheme.TrackSchemeEdge;
 import org.mastodon.revised.trackscheme.TrackSchemeFocus;
 import org.mastodon.revised.trackscheme.TrackSchemeGraph;
 import org.mastodon.revised.trackscheme.TrackSchemeNavigation;
 import org.mastodon.revised.trackscheme.TrackSchemeVertex;
-import org.mastodon.revised.trackscheme.util.AlphanumComparator;
 import org.scijava.ui.behaviour.util.RunnableAction;
 
 import com.itextpdf.text.Font;
@@ -162,90 +165,118 @@ public class TrackSchemeSearchPanel extends JPanel
 	{
 		private Iterator< TrackSchemeVertex > iterator;
 
-		private Iterator< TrackSchemeVertex > rootIterator;
-
 		private final TrackSchemeGraph< ?, ? > graph;
 
 		private final TrackSchemeNavigation navigation;
 
 		private final TrackSchemeFocus focus;
 
-		private final TrackSchemeVertex ref;
+		private final TrackSchemeVertex start;
 
 		public SearchAction( final TrackSchemeGraph< ?, ? > graph, final TrackSchemeNavigation navigation, final TrackSchemeFocus focus )
 		{
 			this.graph = graph;
 			this.navigation = navigation;
 			this.focus = focus;
-			this.ref = graph.vertexRef();
+			this.start = graph.vertexRef();
+			getStartFromFocus();
 			reinit();
 		}
 
 		private synchronized boolean search( final String text, final boolean startsWith )
 		{
-			final TrackSchemeVertex start = graph.vertexRef();
-			TrackSchemeVertex v = next();
-			start.refTo( v );
-			do
+			reinit();
+			while ( iterator.hasNext() )
 			{
+				final TrackSchemeVertex v = iterator.next();
 				if ( startsWith ? v.getLabel().startsWith( text ) : v.getLabel().contains( text ) )
 				{
-					graph.releaseRef( start );
 					navigation.notifyNavigateToVertex( v );
+					if ( iterator.hasNext() )
+						start.refTo( iterator.next() );
 					return true;
 				}
-
 			}
-			while ( !( v = next() ).equals( start ) );
-
-			graph.releaseRef( start );
 			return false;
 		}
 
-		private TrackSchemeVertex next()
+		private void getStartFromFocus()
 		{
-			if ( !iterator.hasNext() )
-				reinit();
+			// Start the search from the vertex with the focus.
+			final TrackSchemeVertex ref = graph.vertexRef();
+			final TrackSchemeVertex focusedVertex = focus.getFocusedVertex( ref );
+			if ( null != focusedVertex )
+				start.refTo( focusedVertex );
+			else if ( !graph.vertices().isEmpty() )
+				start.refTo( graph.vertices().iterator().next() );
+		}
 
-			return iterator.next();
+		private synchronized void reinit()
+		{
+			if ( graph.vertices().isEmpty() )
+			{
+				iterator = Collections.emptyIterator();
+				return;
+			}
+
+			// First, look for the root of the start vertex.
+			final InverseDepthFirstIterator< TrackSchemeVertex, TrackSchemeEdge > rootFinder =
+					new InverseDepthFirstIterator< TrackSchemeVertex, TrackSchemeEdge >( start, graph );
+
+			final RefSet< TrackSchemeVertex > roots = graph.getRoots();
+			final TrackSchemeVertex root = graph.vertexRef();
+			boolean rootFound = false;
+			while ( rootFinder.hasNext() )
+			{
+				final TrackSchemeVertex next = rootFinder.next();
+				if ( roots.contains( next ) )
+				{
+					root.refTo( next );
+					rootFound = true;
+					break;
+				}
+			}
+			if ( !rootFound )
+			{
+				/*
+				 * Hum we have a problem. Each vertex SHOULD have a root. If you
+				 * reach this point in code, then there is an unknown problem
+				 * probably related to changing roots while looking for the
+				 * right root.
+				 */
+				System.err.println( "[TrackSchemeSearchPanel] Could not find the root for vertex " + start );
+				iterator = new BreadthFirstCrossComponentIterator<>( start, graph, roots );
+				graph.releaseRef( root );
+				return;
+			}
+
+			/*
+			 * Now build an ordered root list that starts with the root just
+			 * next to the one we have found.
+			 */
+			final RefList< TrackSchemeVertex > sortedRoots = LexicographicalVertexOrder.sort( graph, roots );
+			final int iroot = sortedRoots.indexOf( root );
+			final RefList< TrackSchemeVertex > iteratedRoots = RefCollections.createRefList( graph.vertices(), roots.size() );
+			for ( int i = iroot + 1; i < sortedRoots.size(); i++ )
+				iteratedRoots.add( sortedRoots.get( i ) );
+			for ( int i = 0; i <= iroot; i++ )
+				iteratedRoots.add( sortedRoots.get( i ) );
+
+			iterator = new BreadthFirstCrossComponentIterator<>( start, graph, iteratedRoots );
+			graph.releaseRef( root );
+		}
+
+		@Override
+		public void focusGained( final FocusEvent e )
+		{
+			getStartFromFocus();
 		}
 
 		@Override
 		public void graphChanged()
 		{
+			getStartFromFocus();
 			reinit();
-		}
-
-		private synchronized void reinit()
-		{
-			if ( null == rootIterator || !rootIterator.hasNext() )
-			{
-				final RefList< TrackSchemeVertex > list = RefCollections.createRefList( graph.getRoots() );
-				list.addAll( graph.getRoots() );
-				list.sort( labelComparator );
-				rootIterator = list.iterator();
-			}
-			final TrackSchemeVertex root = rootIterator.next();
-			iterator = new BreadthFirstIterator<>( root, graph );
-		}
-
-		private static final Comparator< TrackSchemeVertex > labelComparator = new Comparator< TrackSchemeVertex >()
-		{
-			Comparator< String > strCmp = AlphanumComparator.instance;
-
-			@Override
-			public int compare( final TrackSchemeVertex v1, final TrackSchemeVertex v2 )
-			{
-				return strCmp.compare( v1.getLabel(), v2.getLabel() );
-			}
-		};
-
-		@Override
-		public void focusGained( final FocusEvent e )
-		{
-			final TrackSchemeVertex focusedVertex = focus.getFocusedVertex( ref );
-			if (null != focusedVertex)
-				iterator = new BreadthFirstIterator<>( focusedVertex, graph );
 		}
 
 		@Override
