@@ -1,4 +1,4 @@
-package org.mastodon.revised.trackscheme.display.ui;
+package org.mastodon.revised.trackscheme.display.style;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
@@ -14,7 +14,6 @@ import org.mastodon.revised.io.yaml.AbstractWorkaroundConstruct;
 import org.mastodon.revised.io.yaml.WorkaroundConstructor;
 import org.mastodon.revised.io.yaml.WorkaroundRepresent;
 import org.mastodon.revised.io.yaml.WorkaroundRepresenter;
-import org.mastodon.revised.trackscheme.display.laf.TrackSchemeStyle;
 import org.yaml.snakeyaml.DumperOptions;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.constructor.Constructor;

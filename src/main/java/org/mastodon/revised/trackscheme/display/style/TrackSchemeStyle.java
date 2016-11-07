@@ -1,4 +1,4 @@
-package org.mastodon.revised.trackscheme.display.laf;
+package org.mastodon.revised.trackscheme.display.style;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
@@ -87,7 +87,7 @@ public class TrackSchemeStyle
 
 	public boolean paintHeaderShadow;
 
-	static Color mixGhostColor( final Color color, final Color backgroundColor )
+	public static Color mixGhostColor( final Color color, final Color backgroundColor )
 	{
 		return ( color == null || backgroundColor == null )
 				? null
@@ -110,7 +110,7 @@ public class TrackSchemeStyle
 		ghostSelectedSimplifiedVertexFillColor = mixGhostColor( selectedSimplifiedVertexFillColor, backgroundColor );
 	}
 
-	public TrackSchemeStyle name( String n )
+	public TrackSchemeStyle name( final String n )
 	{
 		name = n;
 		return this;
@@ -409,7 +409,7 @@ public class TrackSchemeStyle
 	 *            the name for the copied style.
 	 * @return a new style instance.
 	 */
-	public TrackSchemeStyle copy( String name )
+	public TrackSchemeStyle copy( final String name )
 	{
 		final TrackSchemeStyle newStyle = new TrackSchemeStyle();
 		newStyle.set( this );

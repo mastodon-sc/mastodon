@@ -29,7 +29,7 @@ import org.mastodon.revised.trackscheme.TrackSchemeSelection;
 import org.mastodon.revised.trackscheme.display.TrackSchemeEditBehaviours;
 import org.mastodon.revised.trackscheme.display.TrackSchemeFrame;
 import org.mastodon.revised.trackscheme.display.TrackSchemeOptions;
-import org.mastodon.revised.trackscheme.display.ui.TrackSchemeStyleChooser;
+import org.mastodon.revised.trackscheme.display.style.TrackSchemeStyleChooser;
 import org.mastodon.revised.ui.HighlightBehaviours;
 import org.mastodon.revised.ui.SelectionActions;
 import org.mastodon.revised.ui.grouping.GroupHandle;

@@ -1,7 +1,7 @@
 /**
  *
  */
-package org.mastodon.revised.trackscheme.display.ui;
+package org.mastodon.revised.trackscheme.display.style;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -22,8 +22,7 @@ import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 
 import org.mastodon.revised.trackscheme.display.TrackSchemePanel;
-import org.mastodon.revised.trackscheme.display.laf.TrackSchemeStyle;
-import org.mastodon.revised.trackscheme.display.ui.TrackSchemeStyleEditorPanel.TrackSchemeStyleEditorDialog;
+import org.mastodon.revised.trackscheme.display.style.TrackSchemeStyleEditorPanel.TrackSchemeStyleEditorDialog;
 import org.yaml.snakeyaml.Yaml;
 
 /**

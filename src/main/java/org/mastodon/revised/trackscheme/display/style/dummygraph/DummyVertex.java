@@ -1,4 +1,4 @@
-package org.mastodon.revised.trackscheme.display.ui.dummygraph;
+package org.mastodon.revised.trackscheme.display.style.dummygraph;
 
 import org.mastodon.graph.object.AbstractObjectIdVertex;
 import org.mastodon.revised.model.HasLabel;

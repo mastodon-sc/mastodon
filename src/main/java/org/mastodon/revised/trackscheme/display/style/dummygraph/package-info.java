@@ -4,4 +4,4 @@
  * @author Jean-Yves Tinevez &lt;jeanyves.tinevez@gmail.com&gt;
  *
  */
-package org.mastodon.revised.trackscheme.display.ui.dummygraph;
+package org.mastodon.revised.trackscheme.display.style.dummygraph;

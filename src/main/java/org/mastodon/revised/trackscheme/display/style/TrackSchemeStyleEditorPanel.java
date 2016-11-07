@@ -1,4 +1,4 @@
-package org.mastodon.revised.trackscheme.display.ui;
+package org.mastodon.revised.trackscheme.display.style;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -33,8 +33,6 @@ import javax.swing.KeyStroke;
 import javax.swing.SwingConstants;
 import javax.swing.WindowConstants;
 import javax.swing.border.EmptyBorder;
-
-import org.mastodon.revised.trackscheme.display.laf.TrackSchemeStyle;
 
 public class TrackSchemeStyleEditorPanel extends JPanel
 {
