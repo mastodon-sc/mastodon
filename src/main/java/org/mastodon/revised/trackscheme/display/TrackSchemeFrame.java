@@ -14,6 +14,7 @@ import javax.swing.SwingUtilities;
 import javax.swing.WindowConstants;
 
 import org.mastodon.revised.context.ContextChooser;
+import org.mastodon.revised.trackscheme.TrackSchemeFeatures;
 import org.mastodon.revised.trackscheme.TrackSchemeFocus;
 import org.mastodon.revised.trackscheme.TrackSchemeGraph;
 import org.mastodon.revised.trackscheme.TrackSchemeHighlight;
@@ -56,11 +57,12 @@ public class TrackSchemeFrame extends JFrame
 			final TrackSchemeFocus focus,
 			final TrackSchemeSelection selection,
 			final TrackSchemeNavigation navigation,
+			final TrackSchemeFeatures features,
 			final UndoPointMarker undoPointMarker,
 			final GroupHandle groupHandle,
 			final ContextChooser< ? > contextChooser )
 	{
-		this( graph, highlight, focus, selection, navigation, undoPointMarker, groupHandle, contextChooser, TrackSchemeOptions.options() );
+		this( graph, highlight, focus, selection, navigation, features, undoPointMarker, groupHandle, contextChooser, TrackSchemeOptions.options() );
 	}
 
 	public TrackSchemeFrame(
@@ -69,6 +71,7 @@ public class TrackSchemeFrame extends JFrame
 			final TrackSchemeFocus focus,
 			final TrackSchemeSelection selection,
 			final TrackSchemeNavigation navigation,
+			final TrackSchemeFeatures features,
 			final UndoPointMarker undoPointMarker,
 			final GroupHandle groupHandle,
 			final ContextChooser< ? > contextChooser,
@@ -84,6 +87,7 @@ public class TrackSchemeFrame extends JFrame
 				focus,
 				selection,
 				navigation,
+				features,
 				optional );
 		add( trackschemePanel, BorderLayout.CENTER );
 

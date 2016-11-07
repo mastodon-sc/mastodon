@@ -7,6 +7,7 @@ import static org.mastodon.revised.trackscheme.ScreenVertex.Transition.SELECTING
 
 import java.awt.Color;
 import java.awt.FontMetrics;
+import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.font.FontRenderContext;
 import java.awt.font.TextLayout;
@@ -18,14 +19,17 @@ import org.mastodon.revised.trackscheme.ScreenEdge;
 import org.mastodon.revised.trackscheme.ScreenEntities;
 import org.mastodon.revised.trackscheme.ScreenTransform;
 import org.mastodon.revised.trackscheme.ScreenVertex;
+import org.mastodon.revised.trackscheme.ScreenVertex.Transition;
 import org.mastodon.revised.trackscheme.ScreenVertexRange;
+import org.mastodon.revised.trackscheme.TrackSchemeEdge;
+import org.mastodon.revised.trackscheme.TrackSchemeFeatures;
+import org.mastodon.revised.trackscheme.TrackSchemeFeatures.TrackSchemeEdgeFeature;
+import org.mastodon.revised.trackscheme.TrackSchemeFeatures.TrackSchemeVertexFeature;
 import org.mastodon.revised.trackscheme.TrackSchemeFocus;
 import org.mastodon.revised.trackscheme.TrackSchemeGraph;
 import org.mastodon.revised.trackscheme.TrackSchemeHighlight;
-import org.mastodon.revised.trackscheme.ScreenVertex.Transition;
+import org.mastodon.revised.trackscheme.TrackSchemeVertex;
 import org.mastodon.revised.trackscheme.display.style.TrackSchemeStyle;
-
-import net.imglib2.RealLocalizable;
 
 /**
  * An AbstractTrackSchemeOverlay implementation that:
@@ -33,10 +37,11 @@ import net.imglib2.RealLocalizable;
  * <li>draws vertex as circles with the label inside.
  * <li>offers two sizes of vertices (full and simplified).
  * <li>draws edges as lines.
+ * <li>shows a condensed block when vertices are very close to each other.
  * </ul>
  * <p>
- * Colors and strokes can be configured separately, using a
- * {@link TrackSchemeStyle}.
+ * Colors, fonts, strokes, decorations and coloring strategy can be configured
+ * separately, using a {@link TrackSchemeStyle}.
  */
 public class DefaultTrackSchemeOverlay extends AbstractTrackSchemeOverlay
 {
@@ -68,16 +73,28 @@ public class DefaultTrackSchemeOverlay extends AbstractTrackSchemeOverlay
 
 	private final Color[] shadowColors;
 
-	private final TrackSchemeStyle style;
+	private TrackSchemeStyle style;
+
+	private final TrackSchemeFeatures features;
+
+	private TrackSchemeEdgeFeature edgeColorEdgeFeature;
+
+	private TrackSchemeVertexFeature edgeColorVertexFeature;
+
+	private TrackSchemeEdgeFeature vertexColorEdgeFeature;
+
+	private TrackSchemeVertexFeature vertexColorVertexFeature;
 
 	public DefaultTrackSchemeOverlay(
 			final TrackSchemeGraph< ?, ? > graph,
 			final TrackSchemeHighlight highlight,
 			final TrackSchemeFocus focus,
+			final TrackSchemeFeatures features,
 			final TrackSchemeOptions options,
 			final TrackSchemeStyle style )
 	{
 		super( graph, highlight, focus, options );
+		this.features = features;
 		this.style = style;
 
 		final int[] shadowAlphas = new int[] { 28, 22, 17, 12, 8, 6, 3 };
@@ -86,6 +103,46 @@ public class DefaultTrackSchemeOverlay extends AbstractTrackSchemeOverlay
 		shadowColors = new Color[ shadowAlphas.length ];
 		for ( int i = 0; i < shadowAlphas.length; ++i )
 			shadowColors[ i ] = new Color( 0, 0, 0, shadowAlphas[ i ] );
+	}
+
+	public void setStyle( final TrackSchemeStyle style )
+	{
+		this.style = style;
+	}
+
+	public TrackSchemeStyle getStyle()
+	{
+		return style;
+	}
+
+	@Override
+	public void drawOverlays( final Graphics g )
+	{
+		switch ( style.colorEdgeBy )
+		{
+		case EDGE:
+			this.edgeColorEdgeFeature = features.getEdgeFeature( style.edgeColorFeatureKey );
+			break;
+		case SOURCE_VERTEX:
+		case TARGET_VERTEX:
+			this.edgeColorVertexFeature = features.getVertexFeature( style.edgeColorFeatureKey );
+			break;
+		default:
+		}
+
+		switch ( style.colorVertexBy )
+		{
+		case INCOMING_EDGE:
+		case OUTGOING_EDGE:
+			this.vertexColorEdgeFeature = features.getEdgeFeature( style.vertexColorFeatureKey );
+			break;
+		case VERTEX:
+			this.vertexColorVertexFeature = features.getVertexFeature( style.vertexColorFeatureKey );
+			break;
+		default:
+		}
+
+		super.drawOverlays( g );
 	}
 
 	@Override
@@ -268,23 +325,19 @@ public class DefaultTrackSchemeOverlay extends AbstractTrackSchemeOverlay
 			drawVertexSimplifiedIfHighlighted( g2, vertex );
 	}
 
-	// TODO: take double x, y instead of RealLocalizable parameter
 	@Override
-	protected double distanceToPaintedEdge( final RealLocalizable pos, final ScreenEdge edge, final ScreenVertex source, final ScreenVertex target )
+	protected double distanceToPaintedEdge( final double x, final double y, final ScreenEdge edge, final ScreenVertex source, final ScreenVertex target )
 	{
-		final double x0 = pos.getDoublePosition( 0 );
-		final double y0 = pos.getDoublePosition( 1 );
 		final double x1 = source.getX();
 		final double y1 = source.getY();
 		final double x2 = target.getX();
 		final double y2 = target.getY();
-		final double d = Util.segmentDist( x0, y0, x1, y1, x2, y2 );
+		final double d = Util.segmentDist( x, y, x1, y1, x2, y2 );
 		return d;
 	}
 
-	// TODO: take double x, y instead of RealLocalizable parameter
 	@Override
-	protected boolean isInsidePaintedVertex( final RealLocalizable pos, final ScreenVertex vertex )
+	protected boolean isInsidePaintedVertex( final double x, final double y, final ScreenVertex vertex )
 	{
 		final double d = vertex.getVertexDist();
 		double radius = 0;
@@ -297,9 +350,9 @@ public class DefaultTrackSchemeOverlay extends AbstractTrackSchemeOverlay
 		{
 			radius = simplifiedVertexRadius + simplifiedVertexSelectTolerance;
 		}
-		final double x = pos.getDoublePosition( 0 ) - vertex.getX();
-		final double y = pos.getDoublePosition( 1 ) - vertex.getY();
-		return ( x * x + y * y < radius * radius );
+		final double dx = x - vertex.getX();
+		final double dy = y - vertex.getY();
+		return ( dx * dx + dy * dy < radius * radius );
 	}
 
 	@Override
@@ -319,13 +372,13 @@ public class DefaultTrackSchemeOverlay extends AbstractTrackSchemeOverlay
 	}
 
 	@Override
-	public void beforeDrawEdge( final Graphics2D g2 )
+	protected void beforeDrawEdge( final Graphics2D g2 )
 	{
 		g2.setStroke( style.edgeStroke );
 	}
 
 	@Override
-	public void drawEdge( final Graphics2D g2, final ScreenEdge edge, final ScreenVertex vs, final ScreenVertex vt )
+	protected void drawEdge( final Graphics2D g2, final ScreenEdge edge, final ScreenVertex vs, final ScreenVertex vt )
 	{
 		Transition transition = edge.getTransition();
 		double ratio = edge.getInterpolationCompletionRatio();
@@ -342,9 +395,42 @@ public class DefaultTrackSchemeOverlay extends AbstractTrackSchemeOverlay
 		final boolean highlighted = ( highlightedEdgeId >= 0 ) && ( edge.getTrackSchemeEdgeId() == highlightedEdgeId );
 		final boolean selected = edge.isSelected();
 		final boolean ghost = vs.isGhost() && vt.isGhost();
+
+		final Color edgeColor;
+		final Color ghostEdgeColor;
+		switch ( style.colorEdgeBy )
+		{
+		case EDGE:
+		{
+			final double val = edgeColorEdgeFeature.get( edge.getTrackSchemeEdgeId() );
+			edgeColor = style.getEdgeColor( val );
+			ghostEdgeColor = TrackSchemeStyle.mixGhostColor( edgeColor, style.backgroundColor );
+			break;
+		}
+		case SOURCE_VERTEX:
+		{
+			final double val = edgeColorVertexFeature.get( vs.getTrackSchemeVertexId() );
+			edgeColor = style.getEdgeColor( val );
+			ghostEdgeColor = TrackSchemeStyle.mixGhostColor( edgeColor, style.backgroundColor );
+			break;
+		}
+		case TARGET_VERTEX:
+		{
+			final double val = edgeColorVertexFeature.get( vt.getTrackSchemeVertexId() );
+			edgeColor = style.getEdgeColor( val );
+			ghostEdgeColor = TrackSchemeStyle.mixGhostColor( edgeColor, style.backgroundColor );
+			break;
+		}
+		case FIXED:
+		default:
+			edgeColor = style.edgeColor;
+			ghostEdgeColor = style.ghostEdgeColor;
+			break;
+		}
+
 		final Color drawColor = getColor( selected, ghost, transition, ratio,
-				style.edgeColor, style.selectedEdgeColor,
-				style.ghostEdgeColor, style.ghostSelectedEdgeColor );
+				edgeColor, style.selectedEdgeColor,
+				ghostEdgeColor, style.ghostSelectedEdgeColor );
 		g2.setColor( drawColor );
 		if ( highlighted )
 			g2.setStroke( style.edgeHighlightStroke );
@@ -373,10 +459,63 @@ public class DefaultTrackSchemeOverlay extends AbstractTrackSchemeOverlay
 		if ( highlighted || focused )
 			spotradius *= 1.5;
 
+		// Unwrap to read number of incoming.outgoing edges.
+		final TrackSchemeVertex ref = graph.vertexRef();
+		final TrackSchemeVertex tsv = graph.getVertexPool().getObject( vertex.getTrackSchemeVertexId(), ref );
+		final int[] incomingIDs = new int[ tsv.incomingEdges().size() ];
+		int i1 = 0;
+		for ( final TrackSchemeEdge tse : tsv.incomingEdges() )
+			incomingIDs[ i1++ ] = tse.getModelEdgeId();
+		final int[] outgoingIDs = new int[ tsv.outgoingEdges().size() ];
+		int i2 = 0;
+		for ( final TrackSchemeEdge tse : tsv.outgoingEdges() )
+			outgoingIDs[ i2++ ] = tse.getModelEdgeId();
+		graph.releaseRef( ref );
+
+		final Color simplifiedVertexFillColor;
+		final Color ghostSimplifiedVertexFillColor;
+		switch ( style.colorVertexBy )
+		{
+		case INCOMING_EDGE:
+		{
+			final double val;
+			if ( incomingIDs.length != 1 )
+				val = Double.NaN;
+			else
+				val = vertexColorEdgeFeature.get( incomingIDs[ 0 ] );
+			simplifiedVertexFillColor = style.getVertexColor( val );
+			ghostSimplifiedVertexFillColor = TrackSchemeStyle.mixGhostColor( simplifiedVertexFillColor, style.backgroundColor );
+			break;
+		}
+		case OUTGOING_EDGE:
+		{
+			final double val;
+			if ( outgoingIDs.length != 1 )
+				val = Double.NaN;
+			else
+				val = vertexColorEdgeFeature.get( outgoingIDs[ 0 ] );
+			simplifiedVertexFillColor = style.getVertexColor( val );
+			ghostSimplifiedVertexFillColor = TrackSchemeStyle.mixGhostColor( simplifiedVertexFillColor, style.backgroundColor );
+			break;
+		}
+		case VERTEX:
+		{
+			final double val = vertexColorVertexFeature.get( vertex.getTrackSchemeVertexId() );
+			simplifiedVertexFillColor = style.getVertexColor( val );
+			ghostSimplifiedVertexFillColor = TrackSchemeStyle.mixGhostColor( simplifiedVertexFillColor, style.backgroundColor );
+			break;
+		}
+		case FIXED:
+		default:
+			simplifiedVertexFillColor = style.simplifiedVertexFillColor;
+			ghostSimplifiedVertexFillColor = style.ghostSimplifiedVertexFillColor;
+			break;
+		}
+
 		final Color fillColor = getColor( selected, ghost, transition, ratio,
-				disappear ? style.selectedSimplifiedVertexFillColor : style.simplifiedVertexFillColor,
+				disappear ? style.selectedSimplifiedVertexFillColor : simplifiedVertexFillColor,
 				style.selectedSimplifiedVertexFillColor,
-				disappear ? style.ghostSelectedSimplifiedVertexFillColor : style.ghostSimplifiedVertexFillColor,
+				disappear ? style.ghostSelectedSimplifiedVertexFillColor : ghostSimplifiedVertexFillColor,
 				style.ghostSelectedSimplifiedVertexFillColor );
 
 		final double x = vertex.getX();
@@ -409,11 +548,65 @@ public class DefaultTrackSchemeOverlay extends AbstractTrackSchemeOverlay
 			if ( disappear )
 				spotradius *= ( 1 + 3 * ratio );
 
+			// Unwrap to read number of incoming.outgoing edges.
+			final TrackSchemeVertex ref = graph.vertexRef();
+			final TrackSchemeVertex tsv = graph.getVertexPool().getObject( vertex.getTrackSchemeVertexId(), ref );
+			final int[] incomingIDs = new int[ tsv.incomingEdges().size() ];
+			int i1 = 0;
+			for ( final TrackSchemeEdge tse : tsv.incomingEdges() )
+				incomingIDs[ i1++ ] = tse.getModelEdgeId();
+			final int[] outgoingIDs = new int[ tsv.outgoingEdges().size() ];
+			int i2 = 0;
+			for ( final TrackSchemeEdge tse : tsv.outgoingEdges() )
+				outgoingIDs[ i2++ ] = tse.getModelEdgeId();
+			graph.releaseRef( ref );
+
+			final Color simplifiedVertexFillColor;
+			final Color ghostSimplifiedVertexFillColor;
+			switch ( style.colorVertexBy )
+			{
+			case INCOMING_EDGE:
+			{
+				final double val;
+				if ( incomingIDs.length != 1 )
+					val = Double.NaN;
+				else
+					val = vertexColorEdgeFeature.get( incomingIDs[ 0 ] );
+				simplifiedVertexFillColor = style.getVertexColor( val );
+				ghostSimplifiedVertexFillColor = TrackSchemeStyle.mixGhostColor( simplifiedVertexFillColor, style.backgroundColor );
+				break;
+			}
+			case OUTGOING_EDGE:
+			{
+				final double val;
+				if ( outgoingIDs.length != 1 )
+					val = Double.NaN;
+				else
+					val = vertexColorEdgeFeature.get( outgoingIDs[ 0 ] );
+				simplifiedVertexFillColor = style.getVertexColor( val );
+				ghostSimplifiedVertexFillColor = TrackSchemeStyle.mixGhostColor( simplifiedVertexFillColor, style.backgroundColor );
+				break;
+			}
+			case VERTEX:
+			{
+				final double val = vertexColorVertexFeature.get( vertex.getTrackSchemeVertexId() );
+				simplifiedVertexFillColor = style.getVertexColor( val );
+				ghostSimplifiedVertexFillColor = TrackSchemeStyle.mixGhostColor( simplifiedVertexFillColor, style.backgroundColor );
+				break;
+			}
+			case FIXED:
+			default:
+				simplifiedVertexFillColor = style.simplifiedVertexFillColor;
+				ghostSimplifiedVertexFillColor = style.ghostSimplifiedVertexFillColor;
+				break;
+			}
+
 			final Color fillColor = getColor( selected, ghost, transition, ratio,
-					disappear ? style.selectedSimplifiedVertexFillColor : style.simplifiedVertexFillColor,
+					disappear ? style.selectedSimplifiedVertexFillColor : simplifiedVertexFillColor,
 					style.selectedSimplifiedVertexFillColor,
-					disappear ? style.ghostSelectedSimplifiedVertexFillColor : style.ghostSimplifiedVertexFillColor,
+					disappear ? style.ghostSelectedSimplifiedVertexFillColor : ghostSimplifiedVertexFillColor,
 					style.ghostSelectedSimplifiedVertexFillColor );
+
 
 			final double x = vertex.getX();
 			final double y = vertex.getY();
@@ -447,9 +640,77 @@ public class DefaultTrackSchemeOverlay extends AbstractTrackSchemeOverlay
 			spotdiameter *= ( 1 + ratio );
 		final double spotradius = spotdiameter / 2;
 
+		// Unwrap to read number of incoming.outgoing edges.
+		final TrackSchemeVertex ref = graph.vertexRef();
+		final TrackSchemeVertex tsv = graph.getVertexPool().getObject( vertex.getTrackSchemeVertexId(), ref );
+		final int[] incomingIDs = new int[ tsv.incomingEdges().size() ];
+		int i1 = 0;
+		for ( final TrackSchemeEdge tse : tsv.incomingEdges() )
+			incomingIDs[ i1++ ] = tse.getModelEdgeId();
+		final int[] outgoingIDs = new int[ tsv.outgoingEdges().size() ];
+		int i2 = 0;
+		/*
+		 * FIXME: Often, the JVM crashes on this line (or equivalent in the
+		 * other vertex methods) with the following error:
+		 *
+		 * # J 4489 C2 org.mastodon.graph.ref.OutgoingEdges.size()I (60 bytes) @
+		 * 0x0000000102c41cc3 [0x0000000102c41a60+0x263]
+		 *
+		 * This happens when I try to move around the TrackScheme panel with the
+		 * keyboard. I (JY) think it is because the focus vertex can move so
+		 * fast it is sometimes OUT of the FOV of the current panel. There might
+		 * not be a ScreenVertex for this one (as it is not painted in the FOV),
+		 * or it might not properly set, which would generate the crash.
+		 *
+		 * TO CONFIRM, INVESTIGATE.
+		 */
+		for ( final TrackSchemeEdge tse : tsv.outgoingEdges() )
+			outgoingIDs[ i2++ ] = tse.getModelEdgeId();
+		graph.releaseRef( ref );
+
+		final Color vertexFillColor;
+		final Color ghostVertexFillColor;
+		switch ( style.colorVertexBy )
+		{
+		case INCOMING_EDGE:
+		{
+			final double val;
+			if ( incomingIDs.length != 1 )
+				val = Double.NaN;
+			else
+				val = vertexColorEdgeFeature.get( incomingIDs[ 0 ] );
+			vertexFillColor = style.getVertexColor( val );
+			ghostVertexFillColor = TrackSchemeStyle.mixGhostColor( vertexFillColor, style.backgroundColor );
+			break;
+		}
+		case OUTGOING_EDGE:
+		{
+			final double val;
+			if ( outgoingIDs.length != 1 )
+				val = Double.NaN;
+			else
+				val = vertexColorEdgeFeature.get( outgoingIDs[ 0 ] );
+			vertexFillColor = style.getVertexColor( val );
+			ghostVertexFillColor = TrackSchemeStyle.mixGhostColor( vertexFillColor, style.backgroundColor );
+			break;
+		}
+		case VERTEX:
+		{
+			final double val = vertexColorVertexFeature.get( vertex.getTrackSchemeVertexId() );
+			vertexFillColor = style.getVertexColor( val );
+			ghostVertexFillColor = TrackSchemeStyle.mixGhostColor( vertexFillColor, style.backgroundColor );
+			break;
+		}
+		case FIXED:
+		default:
+			vertexFillColor = style.vertexFillColor;
+			ghostVertexFillColor = style.ghostVertexFillColor;
+			break;
+		}
+
 		final Color fillColor = getColor( selected, ghost, transition, ratio,
-				style.vertexFillColor, style.selectedVertexFillColor,
-				style.ghostVertexFillColor, style.ghostSelectedVertexFillColor );
+				vertexFillColor, style.selectedVertexFillColor,
+				ghostVertexFillColor, style.ghostSelectedVertexFillColor );
 		final Color drawColor = getColor( selected, ghost, transition, ratio,
 				style.vertexDrawColor, style.selectedVertexDrawColor,
 				style.ghostVertexDrawColor, style.ghostSelectedVertexDrawColor );
