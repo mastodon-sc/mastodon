@@ -12,12 +12,12 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import javax.swing.BoxLayout;
-import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.MutableComboBoxModel;
 import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
 
@@ -28,17 +28,21 @@ import org.mastodon.revised.trackscheme.DefaultModelHighlightProperties;
 import org.mastodon.revised.trackscheme.DefaultModelNavigationProperties;
 import org.mastodon.revised.trackscheme.DefaultModelSelectionProperties;
 import org.mastodon.revised.trackscheme.ModelGraphProperties;
+import org.mastodon.revised.trackscheme.TrackSchemeFeatures;
 import org.mastodon.revised.trackscheme.TrackSchemeFocus;
 import org.mastodon.revised.trackscheme.TrackSchemeGraph;
 import org.mastodon.revised.trackscheme.TrackSchemeHighlight;
 import org.mastodon.revised.trackscheme.TrackSchemeNavigation;
 import org.mastodon.revised.trackscheme.TrackSchemeSelection;
+import org.mastodon.revised.trackscheme.display.AbstractTrackSchemeOverlay;
+import org.mastodon.revised.trackscheme.display.DefaultTrackSchemeOverlay;
 import org.mastodon.revised.trackscheme.display.TrackSchemeOptions;
 import org.mastodon.revised.trackscheme.display.TrackSchemePanel;
 import org.mastodon.revised.trackscheme.display.style.dummygraph.DummyEdge;
 import org.mastodon.revised.trackscheme.display.style.dummygraph.DummyGraph;
-import org.mastodon.revised.trackscheme.display.style.dummygraph.DummyVertex;
 import org.mastodon.revised.trackscheme.display.style.dummygraph.DummyGraph.Examples;
+import org.mastodon.revised.trackscheme.display.style.dummygraph.DummyScalarFeaturesProperties;
+import org.mastodon.revised.trackscheme.display.style.dummygraph.DummyVertex;
 import org.mastodon.revised.ui.grouping.GroupManager;
 import org.mastodon.revised.ui.selection.FocusModel;
 import org.mastodon.revised.ui.selection.HighlightModel;
@@ -69,7 +73,7 @@ class TrackSchemeStyleChooserDialog extends JDialog
 
 	TrackSchemePanel panelPreview;
 
-	public TrackSchemeStyleChooserDialog( final Frame owner, final DefaultComboBoxModel< TrackSchemeStyle > model )
+	public TrackSchemeStyleChooserDialog( final Frame owner, final MutableComboBoxModel< TrackSchemeStyle > model )
 	{
 		super( owner, "TrackScheme style chooser", false );
 
@@ -83,7 +87,9 @@ class TrackSchemeStyleChooserDialog extends JDialog
 		final TrackSchemeFocus focus = new TrackSchemeFocus( new DefaultModelFocusProperties<>( example, idmap, new FocusModel<>( idmap ) ), graph );
 		final TrackSchemeSelection tsSelection = new TrackSchemeSelection( new DefaultModelSelectionProperties<>( example, idmap, selection ) );
 		final TrackSchemeNavigation navigation = new TrackSchemeNavigation( new DefaultModelNavigationProperties<>( example, idmap, new NavigationHandler<>( new GroupManager().createGroupHandle() ) ), graph );
-		panelPreview = new TrackSchemePanel( graph, highlight, focus, tsSelection, navigation, TrackSchemeOptions.options() );
+		final DummyScalarFeaturesProperties props = new DummyScalarFeaturesProperties();
+		final TrackSchemeFeatures features = new TrackSchemeFeatures( props, graph );
+		panelPreview = new TrackSchemePanel( graph, highlight, focus, tsSelection, navigation, features, TrackSchemeOptions.options() );
 		panelPreview.setTimepointRange( 0, 7 );
 		panelPreview.timePointChanged( 2 );
 		panelPreview.graphChanged();
@@ -98,7 +104,14 @@ class TrackSchemeStyleChooserDialog extends JDialog
 			@Override
 			public void actionPerformed( final ActionEvent e )
 			{
-				panelPreview.setTrackSchemeStyle( comboBoxStyles.getItemAt( comboBoxStyles.getSelectedIndex() ) );
+				final TrackSchemeStyle style = comboBoxStyles.getItemAt( comboBoxStyles.getSelectedIndex() );
+				final AbstractTrackSchemeOverlay overlay = panelPreview.getGraphOverlay();
+				if ( overlay instanceof DefaultTrackSchemeOverlay )
+				{
+					final DefaultTrackSchemeOverlay dtso = ( DefaultTrackSchemeOverlay ) overlay;
+					dtso.setStyle( ( TrackSchemeStyle ) model.getSelectedItem() );
+				}
+				props.setStyle( style );
 				panelPreview.repaint();
 			}
 		} );

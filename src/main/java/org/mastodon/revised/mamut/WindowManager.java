@@ -635,7 +635,9 @@ public class WindowManager
 		final String TRACK_SCHEME_STYLE_SETTINGS = "render settings";
 		final TrackSchemeStyleChooser styleChooser = new TrackSchemeStyleChooser(
 				frame,
-				frame.getTrackschemePanel() );
+				frame.getTrackschemePanel(),
+				trackSchemeStyleManager,
+				trackSchemeFeatures );
 		final JDialog styleDialog = styleChooser.getDialog();
 		final ActionMap actionMap = new ActionMap();
 		new ToggleDialogAction( TRACK_SCHEME_STYLE_SETTINGS, styleDialog ).put( actionMap );

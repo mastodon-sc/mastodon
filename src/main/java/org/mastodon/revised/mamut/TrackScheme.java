@@ -33,6 +33,7 @@ import org.mastodon.revised.trackscheme.display.TrackSchemeEditBehaviours;
 import org.mastodon.revised.trackscheme.display.TrackSchemeFrame;
 import org.mastodon.revised.trackscheme.display.TrackSchemeOptions;
 import org.mastodon.revised.trackscheme.display.style.TrackSchemeStyleChooser;
+import org.mastodon.revised.trackscheme.display.style.TrackSchemeStyleManager;
 import org.mastodon.revised.ui.HighlightBehaviours;
 import org.mastodon.revised.ui.SelectionActions;
 import org.mastodon.revised.ui.grouping.GroupHandle;
@@ -189,7 +190,9 @@ public class TrackScheme
 		final String TRACK_SCHEME_STYLE_SETTINGS = "render settings";
 		final TrackSchemeStyleChooser styleChooser = new TrackSchemeStyleChooser(
 				frame,
-				frame.getTrackschemePanel() );
+				frame.getTrackschemePanel(),
+				new TrackSchemeStyleManager(),
+				trackSchemeFeatures );
 		final JDialog styleDialog = styleChooser.getDialog();
 		final ActionMap actionMap = new ActionMap();
 		new ToggleDialogAction( TRACK_SCHEME_STYLE_SETTINGS, styleDialog ).put( actionMap );
