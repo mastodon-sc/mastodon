@@ -16,7 +16,11 @@ import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 import javax.swing.WindowConstants;
 
+import org.mastodon.features.DoubleFeature;
+import org.mastodon.revised.model.mamut.Link;
 import org.mastodon.revised.model.mamut.Model;
+import org.mastodon.revised.model.mamut.ModelGraph;
+import org.mastodon.revised.model.mamut.Spot;
 import org.mastodon.revised.ui.util.FileChooser;
 import org.mastodon.revised.ui.util.XmlFileFilter;
 import org.scijava.ui.behaviour.io.InputTriggerConfig;
@@ -129,6 +133,35 @@ public class MainWindow extends JFrame
 		final Model model = new Model();
 		if ( project.getRawModelFile() != null )
 			model.loadRaw( project.getRawModelFile() );
+
+		/*
+		 * Compute some features. TODO: this is for testing only.
+		 */
+
+		System.out.print( "Computing features... " );
+		final ModelGraph graph = model.getGraph();
+		final DoubleFeature< Spot > zpos = new DoubleFeature<>( "Z_POS", Double.NaN );
+		for ( final Spot spot : graph.vertices() )
+			spot.feature( zpos ).set( spot.getDoublePosition( 2 ) );
+
+		final DoubleFeature< Link > displacement = new DoubleFeature<>( "DISPLACEMENT", Double.NaN );
+		final Spot ref1 = graph.vertexRef();
+		final Spot ref2 = graph.vertexRef();
+		for ( final Link link : graph.edges() )
+		{
+			final Spot source = link.getSource( ref1 );
+			final Spot target = link.getTarget( ref2 );
+			double d2 = 0;
+			for ( int d = 0; d < 3; d++ )
+			{
+				final double dx = source.getDoublePosition( d ) - target.getDoublePosition( d );
+				d2 += dx * dx;
+			}
+			link.feature( displacement ).set( Math.sqrt( d2 ) );
+		}
+		graph.releaseRef( ref1 );
+		graph.releaseRef( ref2 );
+		System.out.println( "Done." );
 
 		/*
 		 * Load SpimData
