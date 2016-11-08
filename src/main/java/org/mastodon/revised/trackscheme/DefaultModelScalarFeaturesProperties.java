@@ -13,6 +13,12 @@ import org.mastodon.graph.VertexWithFeatures;
  * A default implementation of {@link ModelScalarFeaturesProperties}, that
  * relies on the {@link VertexWithFeatures} and {@link EdgeWithFeatures}
  * interfaces for feature value access.
+ * <p>
+ * The actual feature values are accessed through the {@link FeatureRegistry}
+ * static methods. When an unknown feature key is queried, or when a non-scalar
+ * feature is queried, this implementation returns a mock
+ * {@link ModelScalarFeaturesProperties.FeatureProperties} for which the feature
+ * values are always not set.
  * 
  * @author Jean-Yves Tinevez
  *
@@ -47,7 +53,8 @@ public class DefaultModelScalarFeaturesProperties< V extends VertexWithFeatures<
 			return new VertexDoubleFeatureProperties( ( DoubleFeature< V > ) feature );
 		else if ( feature instanceof IntFeature )
 			return new VertexIntFeatureProperties( ( IntFeature< V > ) feature );
-		return null;
+
+		return new MissingFeatureProperties();
 	}
 
 	@SuppressWarnings( "unchecked" )
@@ -59,7 +66,8 @@ public class DefaultModelScalarFeaturesProperties< V extends VertexWithFeatures<
 			return new EdgeDoubleFeatureProperties( ( DoubleFeature< E > ) feature );
 		else if ( feature instanceof IntFeature )
 			return new EdgeIntFeatureProperties( ( IntFeature< E > ) feature );
-		return null;
+
+		return new MissingFeatureProperties();
 	}
 
 	/*
@@ -233,5 +241,28 @@ public class DefaultModelScalarFeaturesProperties< V extends VertexWithFeatures<
 			}
 			return new double[] { min, max };
 		}
+	}
+
+	private static class MissingFeatureProperties implements FeatureProperties
+	{
+
+		@Override
+		public double get( final int id )
+		{
+			return Double.NaN;
+		}
+
+		@Override
+		public boolean isSet( final int id )
+		{
+			return false;
+		}
+
+		@Override
+		public double[] getMinMax()
+		{
+			return new double[] { 0., 1. };
+		}
+
 	}
 }

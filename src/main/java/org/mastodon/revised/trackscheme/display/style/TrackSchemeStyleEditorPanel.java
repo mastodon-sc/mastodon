@@ -702,10 +702,13 @@ public class TrackSchemeStyleEditorPanel extends JPanel
 		final FeatureKeyWrapper edgeDisplacementIncomingFeature = new FeatureKeyWrapper( "DISPLACEMENT", "Displacement" );
 		final FeatureKeyWrapper edgeDisplacementOutgoingFeature = new FeatureKeyWrapper( "DISPLACEMENT", "Displacement" );
 
+		// Add a missing feature key to debug.
+		final FeatureKeyWrapper vertexMissingFeature = new FeatureKeyWrapper( "MISSING", "Missing" );
+
 		final Map< ColorVertexBy, Collection< FeatureKeyWrapper > > items = new LinkedHashMap<>();
 		items.put( ColorVertexBy.FIXED, Collections.singleton( fixedColor ) );
 		// TODO read features from registry, once it is typed.
-		items.put( ColorVertexBy.VERTEX, Collections.singleton( vertexZPosFeature ) );
+		items.put( ColorVertexBy.VERTEX, Arrays.asList( new FeatureKeyWrapper[] { vertexZPosFeature, vertexMissingFeature } ) );
 		items.put( ColorVertexBy.INCOMING_EDGE, Collections.singleton( edgeDisplacementIncomingFeature ) );
 		items.put( ColorVertexBy.OUTGOING_EDGE, Collections.singleton( edgeDisplacementOutgoingFeature ) );
 
