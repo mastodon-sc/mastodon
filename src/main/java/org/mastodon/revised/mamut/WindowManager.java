@@ -62,6 +62,7 @@ import org.mastodon.revised.trackscheme.TrackSchemeSelection;
 import org.mastodon.revised.trackscheme.display.TrackSchemeEditBehaviours;
 import org.mastodon.revised.trackscheme.display.TrackSchemeFrame;
 import org.mastodon.revised.trackscheme.display.TrackSchemeOptions;
+import org.mastodon.revised.trackscheme.display.TrackSchemeZoomBehaviours;
 import org.mastodon.revised.trackscheme.display.ui.TrackSchemeStyleChooser;
 import org.mastodon.revised.ui.HighlightBehaviours;
 import org.mastodon.revised.ui.SelectionActions;
@@ -611,6 +612,10 @@ public class WindowManager
 				model.getGraph(),
 				model.getGraph().getGraphIdBimap(),
 				model );
+		TrackSchemeZoomBehaviours.installActionBindings(
+				frame.getTriggerbindings(),
+				keyconf,
+				frame.getTrackschemePanel() );
 
 		// TrackSchemeStyleDialog triggered by "R"
 		final String TRACK_SCHEME_STYLE_SETTINGS = "render settings";
