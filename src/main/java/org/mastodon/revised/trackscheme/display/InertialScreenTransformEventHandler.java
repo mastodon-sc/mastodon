@@ -547,8 +547,9 @@ public class InertialScreenTransformEventHandler
 		}
 	}
 
-	private synchronized void runAnimation()
+	public synchronized void runAnimation()
 	{
+		stayFullyZoomedOut = false;
 		if ( currentTimerTask != null )
 			currentTimerTask.cancel();
 		timer.purge();
@@ -569,5 +570,10 @@ public class InertialScreenTransformEventHandler
 			}
 		};
 		timer.schedule( currentTimerTask, 0, INERTIAL_ANIMATION_PERIOD );
+	}
+
+	public void setAnimator( final AbstractTransformAnimator< ScreenTransform > animator )
+	{
+		this.animator = animator;
 	}
 }
