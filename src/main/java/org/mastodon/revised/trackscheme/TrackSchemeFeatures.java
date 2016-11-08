@@ -62,6 +62,16 @@ public class TrackSchemeFeatures
 			return get( graph.getVertexPool().getObject( trackSchemeVertexID, ref ) );
 		}
 
+		public boolean isSet( final TrackSchemeVertex v )
+		{
+			return feature.isSet( v.getModelVertexId() );
+		}
+
+		public boolean isSet( final int trackSchemeVertexID )
+		{
+			return isSet( graph.getVertexPool().getObject( trackSchemeVertexID, ref ) );
+		}
+
 		public double[] getMinMax()
 		{
 			return feature.getMinMax();
@@ -89,6 +99,16 @@ public class TrackSchemeFeatures
 		public double get( final int trackSchemeEdgeID )
 		{
 			return get( graph.getEdgePool().getObject( trackSchemeEdgeID, ref ) );
+		}
+
+		public boolean isSet( final TrackSchemeEdge e )
+		{
+			return feature.isSet( e.getModelEdgeId() );
+		}
+
+		public boolean isSet( final int trackSchemeEdgeID )
+		{
+			return isSet( graph.getEdgePool().getObject( trackSchemeEdgeID, ref ) );
 		}
 
 		public double[] getMinMax()

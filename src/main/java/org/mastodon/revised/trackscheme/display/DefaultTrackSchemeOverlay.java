@@ -402,22 +402,43 @@ public class DefaultTrackSchemeOverlay extends AbstractTrackSchemeOverlay
 		{
 		case EDGE:
 		{
-			final double val = edgeColorEdgeFeature.get( edge.getTrackSchemeEdgeId() );
-			edgeColor = style.getEdgeColor( val );
+			if ( edgeColorEdgeFeature.isSet( edge.getTrackSchemeEdgeId() ) )
+			{
+				final double val = edgeColorEdgeFeature.get( edge.getTrackSchemeEdgeId() );
+				edgeColor = style.getEdgeColor( val );
+			}
+			else
+			{
+				edgeColor = style.edgeColorMap.getMissingColor();
+			}
 			ghostEdgeColor = TrackSchemeStyle.mixGhostColor( edgeColor, style.backgroundColor );
 			break;
 		}
 		case SOURCE_VERTEX:
 		{
-			final double val = edgeColorVertexFeature.get( vs.getTrackSchemeVertexId() );
-			edgeColor = style.getEdgeColor( val );
+			if ( edgeColorVertexFeature.isSet( vs.getTrackSchemeVertexId() ) )
+			{
+				final double val = edgeColorVertexFeature.get( vs.getTrackSchemeVertexId() );
+				edgeColor = style.getEdgeColor( val );
+			}
+			else
+			{
+				edgeColor = style.edgeColorMap.getMissingColor();
+			}
 			ghostEdgeColor = TrackSchemeStyle.mixGhostColor( edgeColor, style.backgroundColor );
 			break;
 		}
 		case TARGET_VERTEX:
 		{
-			final double val = edgeColorVertexFeature.get( vt.getTrackSchemeVertexId() );
-			edgeColor = style.getEdgeColor( val );
+			if ( edgeColorVertexFeature.isSet( vt.getTrackSchemeVertexId() ) )
+			{
+				final double val = edgeColorVertexFeature.get( vt.getTrackSchemeVertexId() );
+				edgeColor = style.getEdgeColor( val );
+			}
+			else
+			{
+				edgeColor = style.edgeColorMap.getMissingColor();
+			}
 			ghostEdgeColor = TrackSchemeStyle.mixGhostColor( edgeColor, style.backgroundColor );
 			break;
 		}
@@ -480,10 +501,18 @@ public class DefaultTrackSchemeOverlay extends AbstractTrackSchemeOverlay
 		{
 			final double val;
 			if ( incomingIDs.length != 1 )
-				val = Double.NaN;
-			else
+			{
+				simplifiedVertexFillColor = style.getVertexColor( Double.NaN );
+			}
+			else if ( vertexColorEdgeFeature.isSet( incomingIDs[ 0 ] ) )
+			{
 				val = vertexColorEdgeFeature.get( incomingIDs[ 0 ] );
-			simplifiedVertexFillColor = style.getVertexColor( val );
+				simplifiedVertexFillColor = style.getVertexColor( val );
+			}
+			else
+			{
+				simplifiedVertexFillColor = style.vertexColorMap.getMissingColor();
+			}
 			ghostSimplifiedVertexFillColor = TrackSchemeStyle.mixGhostColor( simplifiedVertexFillColor, style.backgroundColor );
 			break;
 		}
@@ -491,17 +520,32 @@ public class DefaultTrackSchemeOverlay extends AbstractTrackSchemeOverlay
 		{
 			final double val;
 			if ( outgoingIDs.length != 1 )
-				val = Double.NaN;
-			else
+			{
+				simplifiedVertexFillColor = style.getVertexColor( Double.NaN );
+			}
+			else if ( vertexColorEdgeFeature.isSet( outgoingIDs[ 0 ] ) )
+			{
 				val = vertexColorEdgeFeature.get( outgoingIDs[ 0 ] );
-			simplifiedVertexFillColor = style.getVertexColor( val );
+				simplifiedVertexFillColor = style.getVertexColor( val );
+			}
+			else
+			{
+				simplifiedVertexFillColor = style.vertexColorMap.getMissingColor();
+			}
 			ghostSimplifiedVertexFillColor = TrackSchemeStyle.mixGhostColor( simplifiedVertexFillColor, style.backgroundColor );
 			break;
 		}
 		case VERTEX:
 		{
-			final double val = vertexColorVertexFeature.get( vertex.getTrackSchemeVertexId() );
-			simplifiedVertexFillColor = style.getVertexColor( val );
+			if ( vertexColorVertexFeature.isSet( vertex.getTrackSchemeVertexId() ) )
+			{
+				final double val = vertexColorVertexFeature.get( vertex.getTrackSchemeVertexId() );
+				simplifiedVertexFillColor = style.getVertexColor( val );
+			}
+			else
+			{
+				simplifiedVertexFillColor = style.vertexColorMap.getMissingColor();
+			}
 			ghostSimplifiedVertexFillColor = TrackSchemeStyle.mixGhostColor( simplifiedVertexFillColor, style.backgroundColor );
 			break;
 		}
@@ -567,30 +611,51 @@ public class DefaultTrackSchemeOverlay extends AbstractTrackSchemeOverlay
 			{
 			case INCOMING_EDGE:
 			{
-				final double val;
 				if ( incomingIDs.length != 1 )
-					val = Double.NaN;
+				{
+					simplifiedVertexFillColor = style.getVertexColor( Double.NaN );
+				}
+				else if ( vertexColorEdgeFeature.isSet( incomingIDs[ 0 ] ) )
+				{
+					final double val = vertexColorEdgeFeature.get( incomingIDs[ 0 ] );
+					simplifiedVertexFillColor = style.getVertexColor( val );
+				}
 				else
-					val = vertexColorEdgeFeature.get( incomingIDs[ 0 ] );
-				simplifiedVertexFillColor = style.getVertexColor( val );
+				{
+					simplifiedVertexFillColor = style.vertexColorMap.getMissingColor();
+				}
 				ghostSimplifiedVertexFillColor = TrackSchemeStyle.mixGhostColor( simplifiedVertexFillColor, style.backgroundColor );
 				break;
 			}
 			case OUTGOING_EDGE:
 			{
-				final double val;
 				if ( outgoingIDs.length != 1 )
-					val = Double.NaN;
+				{
+					simplifiedVertexFillColor = style.getVertexColor( Double.NaN );
+				}
+				else if ( vertexColorEdgeFeature.isSet( outgoingIDs[ 0 ] ) )
+				{
+					final double val = vertexColorEdgeFeature.get( outgoingIDs[ 0 ] );
+					simplifiedVertexFillColor = style.getVertexColor( val );
+				}
 				else
-					val = vertexColorEdgeFeature.get( outgoingIDs[ 0 ] );
-				simplifiedVertexFillColor = style.getVertexColor( val );
+				{
+					simplifiedVertexFillColor = style.vertexColorMap.getMissingColor();
+				}
 				ghostSimplifiedVertexFillColor = TrackSchemeStyle.mixGhostColor( simplifiedVertexFillColor, style.backgroundColor );
 				break;
 			}
 			case VERTEX:
 			{
-				final double val = vertexColorVertexFeature.get( vertex.getTrackSchemeVertexId() );
-				simplifiedVertexFillColor = style.getVertexColor( val );
+				if ( vertexColorVertexFeature.isSet( vertex.getTrackSchemeVertexId() ) )
+				{
+					final double val = vertexColorVertexFeature.get( vertex.getTrackSchemeVertexId() );
+					simplifiedVertexFillColor = style.getVertexColor( val );
+				}
+				else
+				{
+					simplifiedVertexFillColor = style.vertexColorMap.getMissingColor();
+				}
 				ghostSimplifiedVertexFillColor = TrackSchemeStyle.mixGhostColor( simplifiedVertexFillColor, style.backgroundColor );
 				break;
 			}
@@ -606,7 +671,6 @@ public class DefaultTrackSchemeOverlay extends AbstractTrackSchemeOverlay
 					style.selectedSimplifiedVertexFillColor,
 					disappear ? style.ghostSelectedSimplifiedVertexFillColor : ghostSimplifiedVertexFillColor,
 					style.ghostSelectedSimplifiedVertexFillColor );
-
 
 			final double x = vertex.getX();
 			final double y = vertex.getY();
@@ -674,30 +738,51 @@ public class DefaultTrackSchemeOverlay extends AbstractTrackSchemeOverlay
 		{
 		case INCOMING_EDGE:
 		{
-			final double val;
 			if ( incomingIDs.length != 1 )
-				val = Double.NaN;
+			{
+				vertexFillColor = style.getVertexColor( Double.NaN );
+			}
+			else if ( vertexColorEdgeFeature.isSet( incomingIDs[ 0 ] ) )
+			{
+				final double val = vertexColorEdgeFeature.get( incomingIDs[ 0 ] );
+				vertexFillColor = style.getVertexColor( val );
+			}
 			else
-				val = vertexColorEdgeFeature.get( incomingIDs[ 0 ] );
-			vertexFillColor = style.getVertexColor( val );
+			{
+				vertexFillColor = style.vertexColorMap.getMissingColor();
+			}
 			ghostVertexFillColor = TrackSchemeStyle.mixGhostColor( vertexFillColor, style.backgroundColor );
 			break;
 		}
 		case OUTGOING_EDGE:
 		{
-			final double val;
 			if ( outgoingIDs.length != 1 )
-				val = Double.NaN;
+			{
+				vertexFillColor = style.getVertexColor( Double.NaN );
+			}
+			else if ( vertexColorEdgeFeature.isSet( outgoingIDs[ 0 ] ) )
+			{
+				final double val = vertexColorEdgeFeature.get( outgoingIDs[ 0 ] );
+				vertexFillColor = style.getVertexColor( val );
+			}
 			else
-				val = vertexColorEdgeFeature.get( outgoingIDs[ 0 ] );
-			vertexFillColor = style.getVertexColor( val );
+			{
+				vertexFillColor = style.vertexColorMap.getMissingColor();
+			}
 			ghostVertexFillColor = TrackSchemeStyle.mixGhostColor( vertexFillColor, style.backgroundColor );
 			break;
 		}
 		case VERTEX:
 		{
-			final double val = vertexColorVertexFeature.get( vertex.getTrackSchemeVertexId() );
-			vertexFillColor = style.getVertexColor( val );
+			if ( vertexColorVertexFeature.isSet( vertex.getTrackSchemeVertexId() ) )
+			{
+				final double val = vertexColorVertexFeature.get( vertex.getTrackSchemeVertexId() );
+				vertexFillColor = style.getVertexColor( val );
+			}
+			else
+			{
+				vertexFillColor = style.vertexColorMap.getMissingColor();
+			}
 			ghostVertexFillColor = TrackSchemeStyle.mixGhostColor( vertexFillColor, style.backgroundColor );
 			break;
 		}
