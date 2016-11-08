@@ -936,11 +936,20 @@ public class TrackSchemeStyleEditorPanel extends JPanel
 			final ColorMap cmap = ColorMap.getColorMap( cname );
 			final int w = getWidth();
 			final int h = getHeight();
-			for ( int i = 0; i < w; i++ )
+			final int lw = ( int ) ( 0.8 * w );
+			for ( int i = 0; i < lw; i++ )
 			{
-				g.setColor( cmap.get( i, 0d, w ) );
+				g.setColor( cmap.get( i, 0d, lw ) );
 				g.drawLine( i, 0, i, h );
 			}
+			
+			// NaN.
+			g.setColor( cmap.get( Double.NaN, 0., 1. ) );
+			g.fillRect( ( int ) ( 0.83 * w ), 0, ( int ) ( 0.07 * w ), h );
+
+			// Missing color.
+			g.setColor( cmap.getMissingColor() );
+			g.fillRect( ( int ) ( 0.93 * w ), 0, ( int ) ( 0.07 * w ), h );
 		}
 
 		@Override
