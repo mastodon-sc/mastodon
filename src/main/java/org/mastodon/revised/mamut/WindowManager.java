@@ -48,12 +48,15 @@ import org.mastodon.revised.trackscheme.DefaultModelFocusProperties;
 import org.mastodon.revised.trackscheme.DefaultModelGraphProperties;
 import org.mastodon.revised.trackscheme.DefaultModelHighlightProperties;
 import org.mastodon.revised.trackscheme.DefaultModelNavigationProperties;
+import org.mastodon.revised.trackscheme.DefaultModelScalarFeaturesProperties;
 import org.mastodon.revised.trackscheme.DefaultModelSelectionProperties;
 import org.mastodon.revised.trackscheme.ModelFocusProperties;
 import org.mastodon.revised.trackscheme.ModelHighlightProperties;
 import org.mastodon.revised.trackscheme.ModelNavigationProperties;
+import org.mastodon.revised.trackscheme.ModelScalarFeaturesProperties;
 import org.mastodon.revised.trackscheme.ModelSelectionProperties;
 import org.mastodon.revised.trackscheme.TrackSchemeContextListener;
+import org.mastodon.revised.trackscheme.TrackSchemeFeatures;
 import org.mastodon.revised.trackscheme.TrackSchemeFocus;
 import org.mastodon.revised.trackscheme.TrackSchemeGraph;
 import org.mastodon.revised.trackscheme.TrackSchemeHighlight;
@@ -62,7 +65,8 @@ import org.mastodon.revised.trackscheme.TrackSchemeSelection;
 import org.mastodon.revised.trackscheme.display.TrackSchemeEditBehaviours;
 import org.mastodon.revised.trackscheme.display.TrackSchemeFrame;
 import org.mastodon.revised.trackscheme.display.TrackSchemeOptions;
-import org.mastodon.revised.trackscheme.display.ui.TrackSchemeStyleChooser;
+import org.mastodon.revised.trackscheme.display.style.TrackSchemeStyleChooser;
+import org.mastodon.revised.trackscheme.display.style.TrackSchemeStyleManager;
 import org.mastodon.revised.ui.HighlightBehaviours;
 import org.mastodon.revised.ui.SelectionActions;
 import org.mastodon.revised.ui.grouping.GroupHandle;
@@ -249,6 +253,8 @@ public class WindowManager
 
 	private final BoundingSphereRadiusStatistics radiusStats;
 
+	private final TrackSchemeStyleManager trackSchemeStyleManager;
+
 	/**
 	 * All currently open BigDataViewer windows.
 	 */
@@ -300,6 +306,12 @@ public class WindowManager
 		 * it would be confusing to have different labels in TrackScheme. If
 		 * this is changed in the future, then probably only in the model files.
 		 */
+
+		/*
+		 * Manages a common list of styles for TrackScheme.
+		 */
+
+		this.trackSchemeStyleManager = new TrackSchemeStyleManager();
 	}
 
 	private synchronized void addBdvWindow( final BdvWindow w )
@@ -431,7 +443,7 @@ public class WindowManager
 
 		final NavigationHandler< Spot, Link > navigationHandler = new NavigationHandler<>( bdvGroupHandle );
 		final OverlayNavigationWrapper< Spot, Link > navigation =
-				new OverlayNavigationWrapper< Spot, Link >( viewer, overlayGraph, navigationHandler );
+				new OverlayNavigationWrapper<>( viewer, overlayGraph, navigationHandler );
 		final BdvSelectionBehaviours< ?, ? > selectionBehaviours = new BdvSelectionBehaviours<>( overlayGraph, tracksOverlay, overlaySelection, navigation );
 		selectionBehaviours.installBehaviourBindings( viewerFrame.getTriggerbindings(), keyconf );
 
@@ -568,6 +580,12 @@ public class WindowManager
 		final ContextChooser< Spot > contextChooser = new ContextChooser<>( contextListener );
 
 		/*
+		 * TrackScheme features.
+		 */
+		final ModelScalarFeaturesProperties featureProps = new DefaultModelScalarFeaturesProperties<>( graph, idmap );
+		final TrackSchemeFeatures trackSchemeFeatures = new TrackSchemeFeatures( featureProps, trackSchemeGraph );
+
+		/*
 		 * show TrackSchemeFrame
 		 */
 		final TrackSchemeFrame frame = new TrackSchemeFrame(
@@ -576,6 +594,7 @@ public class WindowManager
 				trackSchemeFocus,
 				trackSchemeSelection,
 				trackSchemeNavigation,
+				trackSchemeFeatures,
 				model,
 				groupHandle,
 				contextChooser,
@@ -614,7 +633,11 @@ public class WindowManager
 
 		// TrackSchemeStyleDialog triggered by "R"
 		final String TRACK_SCHEME_STYLE_SETTINGS = "render settings";
-		final TrackSchemeStyleChooser styleChooser = new TrackSchemeStyleChooser( frame, frame.getTrackschemePanel() );
+		final TrackSchemeStyleChooser styleChooser = new TrackSchemeStyleChooser(
+				frame,
+				frame.getTrackschemePanel(),
+				trackSchemeStyleManager,
+				trackSchemeFeatures );
 		final JDialog styleDialog = styleChooser.getDialog();
 		final ActionMap actionMap = new ActionMap();
 		new ToggleDialogAction( TRACK_SCHEME_STYLE_SETTINGS, styleDialog ).put( actionMap );

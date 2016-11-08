@@ -21,6 +21,7 @@ import org.mastodon.revised.trackscheme.ScreenEntities;
 import org.mastodon.revised.trackscheme.ScreenEntitiesInterpolator;
 import org.mastodon.revised.trackscheme.ScreenTransform;
 import org.mastodon.revised.trackscheme.TrackSchemeEdge;
+import org.mastodon.revised.trackscheme.TrackSchemeFeatures;
 import org.mastodon.revised.trackscheme.TrackSchemeFocus;
 import org.mastodon.revised.trackscheme.TrackSchemeGraph;
 import org.mastodon.revised.trackscheme.TrackSchemeHighlight;
@@ -29,8 +30,7 @@ import org.mastodon.revised.trackscheme.TrackSchemeSelection;
 import org.mastodon.revised.trackscheme.TrackSchemeVertex;
 import org.mastodon.revised.trackscheme.display.TrackSchemeOptions.Values;
 import org.mastodon.revised.trackscheme.display.animate.AbstractAnimator;
-import org.mastodon.revised.trackscheme.display.laf.DefaultTrackSchemeOverlay;
-import org.mastodon.revised.trackscheme.display.laf.TrackSchemeStyle;
+import org.mastodon.revised.trackscheme.display.style.TrackSchemeStyle;
 import org.mastodon.revised.ui.selection.FocusListener;
 import org.mastodon.revised.ui.selection.HighlightListener;
 import org.mastodon.revised.ui.selection.NavigationEtiquette;
@@ -157,6 +157,7 @@ public class TrackSchemePanel extends JPanel implements
 			final TrackSchemeFocus focus,
 			final TrackSchemeSelection selection,
 			final TrackSchemeNavigation navigation,
+			final TrackSchemeFeatures features,
 			final TrackSchemeOptions optional )
 	{
 		super( new BorderLayout(), false );
@@ -177,8 +178,14 @@ public class TrackSchemePanel extends JPanel implements
 		focus.addFocusListener( this );
 		selection.addSelectionListener( this );
 
-		style = TrackSchemeStyle.defaultStyle().copy( "default" );
-		graphOverlay = new DefaultTrackSchemeOverlay( graph, highlight, focus, optional, style );
+		final TrackSchemeStyle style = TrackSchemeStyle.defaultStyle();
+		graphOverlay = new DefaultTrackSchemeOverlay(
+				graph,
+				highlight,
+				focus,
+				features,
+				optional,
+				style );
 
 		display.addOverlayRenderer( graphOverlay );
 
@@ -714,31 +721,10 @@ public class TrackSchemePanel extends JPanel implements
 		return display;
 	}
 
-	// TODO: THIS IS FOR TESTING ONLY
-	private TrackSchemeStyle style;
-
-	// TODO remove??? revise TrackSchemePanel / TrackSchemeFrame construction.
-	public void setTrackSchemeStyle( final TrackSchemeStyle s )
-	{
-		style.set( s );
-	}
-
 	// TODO remove??? revise TrackSchemePanel / TrackSchemeFrame construction.
 	protected OffsetHeaders getOffsetDecorations()
 	{
 		return offsetHeaders;
-	}
-
-	// TODO is this needed? does it have to be public?
-	public LineageTreeLayout getLineageTreeLayout()
-	{
-		return layout;
-	}
-
-	// TODO is this needed? does it have to be public?
-	public TrackSchemeGraph< ?, ? > getGraph()
-	{
-		return graph;
 	}
 
 	// TODO remove. revise TrackSchemePanel / TrackSchemeFrame construction
@@ -877,7 +863,7 @@ public class TrackSchemePanel extends JPanel implements
 		 * Set entities for painting into the specified double-buffered
 		 * {@link AbstractTrackSchemeOverlay}. (This swaps
 		 * {@link #screenEntities} with pending entities from the overlay.)
-		 * 
+		 *
 		 * @param overlay
 		 *            the overlay to paint in.
 		 */

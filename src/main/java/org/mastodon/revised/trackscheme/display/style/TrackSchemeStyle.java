@@ -1,4 +1,4 @@
-package org.mastodon.revised.trackscheme.display.laf;
+package org.mastodon.revised.trackscheme.display.style;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
@@ -7,11 +7,23 @@ import java.awt.Stroke;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import org.mastodon.revised.ui.util.ColorMap;
+
 public class TrackSchemeStyle
 {
 	private static final Stroke DEFAULT_FOCUS_STROKE = new BasicStroke( 2f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 1f, new float[] { 8f, 3f }, 0 );
 
 	private static final Stroke DEFAULT_GHOST_STROKE = new BasicStroke( 1.0f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 10.0f, new float[] { 3.0f }, 0.0f );
+
+	public enum ColorEdgeBy
+	{
+		FIXED, EDGE, SOURCE_VERTEX, TARGET_VERTEX;
+	}
+
+	public enum ColorVertexBy
+	{
+		FIXED, VERTEX, INCOMING_EDGE, OUTGOING_EDGE;
+	}
 
 	public String name;
 
@@ -87,7 +99,35 @@ public class TrackSchemeStyle
 
 	public boolean paintHeaderShadow;
 
-	static Color mixGhostColor( final Color color, final Color backgroundColor )
+	public ColorVertexBy colorVertexBy;
+
+	/**
+	 * Might be a key to a vertex or an edge feature, depending on
+	 * {@link #colorVertexBy}.
+	 */
+	public String vertexColorFeatureKey;
+
+	public ColorMap vertexColorMap;
+
+	public double minVertexColorRange;
+
+	public double maxVertexColorRange;
+
+	public ColorEdgeBy colorEdgeBy;
+
+	/**
+	 * Might be a key to a vertex or an edge feature, depending on
+	 * {@link #colorEdgeBy}.
+	 */
+	public String edgeColorFeatureKey;
+
+	public ColorMap edgeColorMap;
+
+	public double minEdgeColorRange;
+
+	public double maxEdgeColorRange;
+
+	public static Color mixGhostColor( final Color color, final Color backgroundColor )
 	{
 		return ( color == null || backgroundColor == null )
 				? null
@@ -110,12 +150,99 @@ public class TrackSchemeStyle
 		ghostSelectedSimplifiedVertexFillColor = mixGhostColor( selectedSimplifiedVertexFillColor, backgroundColor );
 	}
 
-	public TrackSchemeStyle name( String n )
+	/*
+	 * GETTERS
+	 */
+
+	public Color getEdgeColor( final double val )
+	{
+		return edgeColorMap.get( val, minEdgeColorRange, maxEdgeColorRange );
+	}
+
+	public Color getVertexColor( final double val )
+	{
+		return vertexColorMap.get( val, minVertexColorRange, maxVertexColorRange );
+	}
+
+	/*
+	 * SETTERS
+	 */
+
+	public TrackSchemeStyle name( final String n )
 	{
 		name = n;
 		return this;
 	}
 
+	public TrackSchemeStyle colorEdgeBy( final ColorEdgeBy ceb )
+	{
+		colorEdgeBy = ceb;
+		notifyListeners();
+		return this;
+	}
+
+	public TrackSchemeStyle colorVertexBy( final ColorVertexBy cvb )
+	{
+		colorVertexBy = cvb;
+		notifyListeners();
+		return this;
+	}
+
+	public TrackSchemeStyle edgeColorMap( final ColorMap cm )
+	{
+		edgeColorMap = cm;
+		notifyListeners();
+		return this;
+	}
+
+	public TrackSchemeStyle vertexColorMap( final ColorMap cm )
+	{
+		vertexColorMap = cm;
+		notifyListeners();
+		return this;
+	}
+
+	public TrackSchemeStyle edgeColorFeatureKey( final String key )
+	{
+		edgeColorFeatureKey = key;
+		notifyListeners();
+		return this;
+	}
+
+	public TrackSchemeStyle vertexColorFeatureKey( final String key )
+	{
+		vertexColorFeatureKey = key;
+		notifyListeners();
+		return this;
+	}
+
+	public TrackSchemeStyle minEdgeColorRange( final double val )
+	{
+		minEdgeColorRange = val;
+		notifyListeners();
+		return this;
+	}
+
+	public TrackSchemeStyle maxEdgeColorRange( final double val )
+	{
+		maxEdgeColorRange = val;
+		notifyListeners();
+		return this;
+	}
+
+	public TrackSchemeStyle minVertexColorRange( final double val )
+	{
+		minVertexColorRange = val;
+		notifyListeners();
+		return this;
+	}
+
+	public TrackSchemeStyle maxVertexColorRange( final double val )
+	{
+		maxVertexColorRange = val;
+		notifyListeners();
+		return this;
+	}
 	public TrackSchemeStyle edgeColor( final Color c )
 	{
 		edgeColor = c;
@@ -332,9 +459,19 @@ public class TrackSchemeStyle
 		return name;
 	}
 
-	public synchronized void set( final TrackSchemeStyle style )
+	synchronized void set( final TrackSchemeStyle style )
 	{
 		this.name = style.name;
+		this.colorVertexBy = style.colorVertexBy;
+		this.vertexColorFeatureKey = style.vertexColorFeatureKey;
+		this.vertexColorMap = style.vertexColorMap;
+		this.minVertexColorRange = style.minVertexColorRange;
+		this.maxVertexColorRange = style.maxVertexColorRange;
+		this.colorEdgeBy = style.colorEdgeBy;
+		this.edgeColorFeatureKey = style.edgeColorFeatureKey;
+		this.edgeColorMap = style.edgeColorMap;
+		this.minEdgeColorRange = style.minEdgeColorRange;
+		this.maxEdgeColorRange = style.maxEdgeColorRange;
 		this.edgeColor = style.edgeColor;
 		this.vertexFillColor = style.vertexFillColor;
 		this.vertexDrawColor = style.vertexDrawColor;
@@ -409,7 +546,7 @@ public class TrackSchemeStyle
 	 *            the name for the copied style.
 	 * @return a new style instance.
 	 */
-	public TrackSchemeStyle copy( String name )
+	TrackSchemeStyle copy( final String name )
 	{
 		final TrackSchemeStyle newStyle = new TrackSchemeStyle();
 		newStyle.set( this );
@@ -433,6 +570,16 @@ public class TrackSchemeStyle
 	{
 		final Color fill = new Color( 128, 255, 128 );
 		df = new TrackSchemeStyle().name( "default" ).
+				colorEdgeBy( ColorEdgeBy.FIXED ).
+				edgeColorFeatureKey( "" ).
+				vertexColorFeatureKey( "" ).
+				edgeColorMap( ColorMap.JET ).
+				vertexColorMap( ColorMap.JET ).
+				minEdgeColorRange( 0. ).
+				maxEdgeColorRange( 1. ).
+				minVertexColorRange( 0. ).
+				maxVertexColorRange( 1. ).
+				colorVertexBy( ColorVertexBy.FIXED ).
 				backgroundColor( Color.LIGHT_GRAY ).
 				currentTimepointColor( new Color( 217, 217, 217 ) ).
 				vertexFillColor( Color.WHITE ).
@@ -482,6 +629,16 @@ public class TrackSchemeStyle
 		final Color selfill = new Color( 255, 128, 128 );
 		final Color currenttp = new Color( 38, 175, 185 );
 		modern = new TrackSchemeStyle().name( "modern" ).
+				colorEdgeBy( ColorEdgeBy.FIXED ).
+				colorVertexBy( ColorVertexBy.FIXED ).
+				edgeColorFeatureKey( "" ).
+				vertexColorFeatureKey( "" ).
+				edgeColorMap( ColorMap.JET ).
+				vertexColorMap( ColorMap.JET ).
+				minEdgeColorRange( 0. ).
+				maxEdgeColorRange( 1. ).
+				minVertexColorRange( 0. ).
+				maxVertexColorRange( 1. ).
 				backgroundColor( bg ).
 				currentTimepointColor( currenttp ).
 				vertexFillColor( fill ).
@@ -532,6 +689,16 @@ public class TrackSchemeStyle
 		final Color seldraw = new Color( 230, 245, 255 );
 		final Color seledge = new Color( 91, 137, 158 );
 		hmdyk = new TrackSchemeStyle().name( "lorry" ).
+				colorEdgeBy( ColorEdgeBy.FIXED ).
+				colorVertexBy( ColorVertexBy.FIXED ).
+				edgeColorFeatureKey( "" ).
+				vertexColorFeatureKey( "" ).
+				edgeColorMap( ColorMap.JET ).
+				vertexColorMap( ColorMap.JET ).
+				minEdgeColorRange( 0. ).
+				maxEdgeColorRange( 1. ).
+				minVertexColorRange( 0. ).
+				maxVertexColorRange( 1. ).
 				backgroundColor( bg ).
 				currentTimepointColor( bg.brighter() ).
 				vertexFillColor( fill ).

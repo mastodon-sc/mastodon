@@ -17,8 +17,6 @@ import org.mastodon.revised.trackscheme.TrackSchemeHighlight;
 import org.mastodon.revised.trackscheme.TrackSchemeVertex;
 import org.mastodon.revised.trackscheme.display.OffsetHeaders.OffsetHeadersListener;
 
-import net.imglib2.RealLocalizable;
-import net.imglib2.RealPoint;
 import net.imglib2.ui.OverlayRenderer;
 
 /**
@@ -80,11 +78,11 @@ public abstract class AbstractTrackSchemeOverlay implements OverlayRenderer, Off
 	private ScreenEntities pendingEntities;
 
 	/**
-	 * Whether new entitites are pending.
+	 * Whether new entities are pending.
 	 */
 	private boolean pending;
 
-	private final TrackSchemeGraph< ?, ? > graph;
+	protected final TrackSchemeGraph< ?, ? > graph;
 
 	protected final TrackSchemeHighlight highlight;
 
@@ -229,7 +227,6 @@ public abstract class AbstractTrackSchemeOverlay implements OverlayRenderer, Off
 	{
 		synchronized ( entities )
 		{
-			final RealPoint pos = new RealPoint( x, y );
 			final RefList< ScreenVertex > vertices = entities.getVertices();
 			final ScreenVertex vt = vertices.createRef();
 			final ScreenVertex vs = vertices.createRef();
@@ -239,7 +236,7 @@ public abstract class AbstractTrackSchemeOverlay implements OverlayRenderer, Off
 			{
 				vertices.get( e.getSourceScreenVertexIndex(), vs );
 				vertices.get( e.getTargetScreenVertexIndex(), vt );
-				if ( distanceToPaintedEdge( pos, e, vs, vt ) <= tolerance )
+				if ( distanceToPaintedEdge( x, y, e, vs, vt ) <= tolerance )
 				{
 					i = e.getTrackSchemeEdgeId();
 					break;
@@ -281,10 +278,9 @@ public abstract class AbstractTrackSchemeOverlay implements OverlayRenderer, Off
 		{
 			double d2Best = Double.POSITIVE_INFINITY;
 			int iBest = -1;
-			final RealPoint pos = new RealPoint( x, y );
 			for ( final ScreenVertex v : entities.getVertices() )
 			{
-				if ( isInsidePaintedVertex( pos, v ) )
+				if ( isInsidePaintedVertex( x, y, v ) )
 				{
 					final int i = v.getTrackSchemeVertexId();
 					if ( i >= 0 )
@@ -470,19 +466,23 @@ public abstract class AbstractTrackSchemeOverlay implements OverlayRenderer, Off
 	 * possibly different concrete classes, they should return whether a point
 	 * is inside a vertex or not.
 	 *
-	 * @param pos
-	 *            the layout position.
+	 * @param x
+	 *            the x layout position.
+	 * @param y
+	 *            the y layout position.
 	 * @param vertex
 	 *            the vertex.
 	 * @return {@code true} if the position is inside the vertex painted.
 	 */
-	protected abstract boolean isInsidePaintedVertex( final RealLocalizable pos, final ScreenVertex vertex );
+	protected abstract boolean isInsidePaintedVertex( final double x, final double y, final ScreenVertex vertex );
 
 	/**
 	 * Returns the distance from a <b>layout</b> position to a specified edge.
 	 *
-	 * @param pos
-	 *            the layout position.
+	 * @param x
+	 *            the x layout position.
+	 * @param y
+	 *            the y layout position.
 	 * @param edge
 	 *            the edge.
 	 * @param source
@@ -491,7 +491,7 @@ public abstract class AbstractTrackSchemeOverlay implements OverlayRenderer, Off
 	 *            the edge target vertex.
 	 * @return the distance from the specified position to the edge.
 	 */
-	protected abstract double distanceToPaintedEdge( final RealLocalizable pos, final ScreenEdge edge, ScreenVertex source, ScreenVertex target );
+	protected abstract double distanceToPaintedEdge( final double x, final double y, final ScreenEdge edge, ScreenVertex source, ScreenVertex target );
 
 	/**
 	 * Paints background decorations.
