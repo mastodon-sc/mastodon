@@ -57,7 +57,6 @@ import net.imglib2.ui.OverlayRenderer;
  *
  * @author Tobias Pietzsch &lt;tobias.pietzsch@gmail.com&gt;
  */
-@SuppressWarnings( "javadoc" )
 public abstract class AbstractTrackSchemeOverlay implements OverlayRenderer, OffsetHeadersListener
 {
 	private int width;
