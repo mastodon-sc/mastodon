@@ -42,13 +42,13 @@ import javax.swing.JPanel;
 
 import org.mastodon.revised.ui.grouping.GroupHandle;
 import org.mastodon.revised.ui.grouping.GroupLocksPanel;
-import org.mastodon.revised.ui.util.InvokeOnEDT;
 import org.scijava.ui.behaviour.io.InputTriggerConfig;
 
 import bdv.tools.InitializeViewerState;
 import bdv.tools.VisibilityAndGroupingDialog;
 import bdv.tools.bookmarks.BookmarksEditor;
 import bdv.tools.brightness.BrightnessDialog;
+import bdv.util.InvokeOnEDT;
 import bdv.viewer.NavigationActions;
 import bdv.viewer.ViewerFrame;
 import bdv.viewer.ViewerPanel;
