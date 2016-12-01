@@ -51,10 +51,6 @@
 			<artifactId>bigdataviewer-core</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>sc.fiji</groupId>
-			<artifactId>TrackMate_</artifactId>
-		</dependency>
-		<dependency>
 			<groupId>org.scijava</groupId>
 			<artifactId>ui-behaviour</artifactId>
 		</dependency>
