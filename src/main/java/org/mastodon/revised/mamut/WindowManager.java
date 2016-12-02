@@ -359,10 +359,7 @@ public class WindowManager
 				model.getSpatioTemporalIndex(),
 				new ModelOverlayProperties( model.getGraph(), radiusStats, selection ) );
 
-		final OverlayHighlightWrapper< Spot, Link > overlayHighlight = new OverlayHighlightWrapper<>(
-				model.getGraphIdBimap(),
-				highlightModel );
-
+		final OverlayHighlightWrapper< Spot, Link > overlayHighlight = new OverlayHighlightWrapper<>( highlightModel );
 		final OverlayFocusWrapper< Spot, Link > overlayFocus = new OverlayFocusWrapper<>( focusModel );
 		final OverlaySelectionWrapper< Spot, Link > overlaySelection = new OverlaySelectionWrapper<>( selection );
 

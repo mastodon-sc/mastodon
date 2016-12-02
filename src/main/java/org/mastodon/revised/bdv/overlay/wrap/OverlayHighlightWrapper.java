@@ -1,7 +1,6 @@
 package org.mastodon.revised.bdv.overlay.wrap;
 
 import org.mastodon.graph.Edge;
-import org.mastodon.graph.GraphIdBimap;
 import org.mastodon.graph.Vertex;
 import org.mastodon.revised.bdv.overlay.OverlayHighlight;
 import org.mastodon.revised.ui.selection.HighlightListener;
@@ -10,15 +9,10 @@ import org.mastodon.revised.ui.selection.HighlightModel;
 public class OverlayHighlightWrapper< V extends Vertex< E >, E extends Edge< V > >
 	implements OverlayHighlight< OverlayVertexWrapper< V, E >, OverlayEdgeWrapper< V, E > >
 {
-	private final GraphIdBimap< V, E > idmap;
-
 	private final HighlightModel< V, E > wrappedHighlightModel;
 
-	public OverlayHighlightWrapper(
-			final GraphIdBimap< V, E > idmap,
-			final HighlightModel< V, E > highlight )
+	public OverlayHighlightWrapper( final HighlightModel< V, E > highlight )
 	{
-		this.idmap = idmap;
 		this.wrappedHighlightModel = highlight;
 	}
 
