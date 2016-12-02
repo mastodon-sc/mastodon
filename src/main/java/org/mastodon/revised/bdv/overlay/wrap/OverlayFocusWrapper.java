@@ -1,7 +1,6 @@
 package org.mastodon.revised.bdv.overlay.wrap;
 
 import org.mastodon.graph.Edge;
-import org.mastodon.graph.GraphIdBimap;
 import org.mastodon.graph.Vertex;
 import org.mastodon.revised.bdv.overlay.OverlayFocus;
 import org.mastodon.revised.ui.selection.FocusListener;
@@ -10,15 +9,10 @@ import org.mastodon.revised.ui.selection.FocusModel;
 public class OverlayFocusWrapper< V extends Vertex< E >, E extends Edge< V > >
 	implements OverlayFocus< OverlayVertexWrapper< V, E >, OverlayEdgeWrapper< V, E > >
 {
-	private final GraphIdBimap< V, E > idmap;
-
 	private final FocusModel< V, E > wrappedFocusModel;
 
-	public OverlayFocusWrapper(
-			final GraphIdBimap< V, E > idmap,
-			final FocusModel< V, E > focus )
+	public OverlayFocusWrapper(	final FocusModel< V, E > focus )
 	{
-		this.idmap = idmap;
 		this.wrappedFocusModel = focus;
 	}
 

@@ -363,12 +363,8 @@ public class WindowManager
 				model.getGraphIdBimap(),
 				highlightModel );
 
-		final OverlayFocusWrapper< Spot, Link > overlayFocus = new OverlayFocusWrapper<>(
-				model.getGraphIdBimap(),
-				focusModel );
-
-		final OverlaySelectionWrapper< Spot, Link > overlaySelection = new OverlaySelectionWrapper<>(
-				selection );
+		final OverlayFocusWrapper< Spot, Link > overlayFocus = new OverlayFocusWrapper<>( focusModel );
+		final OverlaySelectionWrapper< Spot, Link > overlaySelection = new OverlaySelectionWrapper<>( selection );
 
 		final String windowTitle = "BigDataViewer " + (bdvName++); // TODO: use JY naming scheme
 		final BigDataViewerMaMuT bdv = BigDataViewerMaMuT.open( sharedBdvData, windowTitle, bdvGroupHandle );
