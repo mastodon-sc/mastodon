@@ -79,6 +79,8 @@ public class TrackSchemeStyle
 
 	public Stroke focusStroke;
 
+	public Stroke decorationStroke;
+
 	public boolean highlightCurrentTimepoint;
 
 	public boolean paintRows;
@@ -110,7 +112,7 @@ public class TrackSchemeStyle
 		ghostSelectedSimplifiedVertexFillColor = mixGhostColor( selectedSimplifiedVertexFillColor, backgroundColor );
 	}
 
-	public TrackSchemeStyle name( String n )
+	public TrackSchemeStyle name( final String n )
 	{
 		name = n;
 		return this;
@@ -293,6 +295,13 @@ public class TrackSchemeStyle
 		return this;
 	}
 
+	public TrackSchemeStyle decorationStroke( final Stroke s )
+	{
+		decorationStroke = s;
+		notifyListeners();
+		return this;
+	}
+
 	public TrackSchemeStyle highlightCurrentTimepoint( final boolean b )
 	{
 		highlightCurrentTimepoint = b;
@@ -367,6 +376,7 @@ public class TrackSchemeStyle
 		this.vertexGhostStroke = style.vertexGhostStroke;
 		this.vertexHighlightStroke = style.vertexHighlightStroke;
 		this.focusStroke = style.focusStroke;
+		this.decorationStroke = style.decorationStroke;
 		this.highlightCurrentTimepoint = style.highlightCurrentTimepoint;
 		this.paintRows = style.paintRows;
 		this.paintColumns = style.paintColumns;
@@ -409,7 +419,7 @@ public class TrackSchemeStyle
 	 *            the name for the copied style.
 	 * @return a new style instance.
 	 */
-	public TrackSchemeStyle copy( String name )
+	public TrackSchemeStyle copy( final String name )
 	{
 		final TrackSchemeStyle newStyle = new TrackSchemeStyle();
 		newStyle.set( this );
@@ -457,6 +467,7 @@ public class TrackSchemeStyle
 				vertexGhostStroke( DEFAULT_GHOST_STROKE ).
 				vertexHighlightStroke( new BasicStroke( 3f ) ).
 				focusStroke( DEFAULT_FOCUS_STROKE ).
+				decorationStroke( new BasicStroke() ).
 				highlightCurrentTimepoint( true ).
 				paintRows( true ).
 				paintColumns( true ).
@@ -506,6 +517,7 @@ public class TrackSchemeStyle
 				vertexGhostStroke( DEFAULT_GHOST_STROKE ).
 				vertexHighlightStroke( new BasicStroke( 3f ) ).
 				focusStroke( DEFAULT_FOCUS_STROKE ).
+				decorationStroke( new BasicStroke() ).
 				highlightCurrentTimepoint( true ).
 				paintRows( true ).
 				paintColumns( true ).
@@ -556,6 +568,7 @@ public class TrackSchemeStyle
 				vertexGhostStroke( DEFAULT_GHOST_STROKE ).
 				vertexHighlightStroke( new BasicStroke( 3f ) ).
 				focusStroke( DEFAULT_FOCUS_STROKE ).
+				decorationStroke( new BasicStroke() ).
 				highlightCurrentTimepoint( true ).
 				paintRows( true ).
 				paintColumns( true ).
