@@ -23,7 +23,6 @@ import org.mastodon.revised.trackscheme.display.TrackSchemeNavigator.NavigatorEt
 import org.mastodon.revised.ui.context.ContextChooserPanel;
 import org.mastodon.revised.ui.grouping.GroupHandle;
 import org.mastodon.revised.ui.grouping.GroupLocksPanel;
-import org.mastodon.revised.ui.util.InvokeOnEDT;
 import org.mastodon.undo.UndoPointMarker;
 import org.scijava.ui.behaviour.MouseAndKeyHandler;
 import org.scijava.ui.behaviour.io.InputTriggerConfig;
@@ -31,6 +30,7 @@ import org.scijava.ui.behaviour.util.InputActionBindings;
 import org.scijava.ui.behaviour.util.TriggerBehaviourBindings;
 
 import bdv.BehaviourTransformEventHandler;
+import bdv.util.InvokeOnEDT;
 import net.imglib2.ui.TransformEventHandler;
 import net.imglib2.ui.util.GuiUtil;
 

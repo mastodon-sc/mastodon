@@ -52,11 +52,12 @@ import net.imglib2.util.LinAlgHelpers;
  *
  * TODO: Review and revise.
  *
- * @author Tobias Pietzsch &lt;tobias.pietzsch@gmail.com&gt;
  * @param <V>
  *            the type of model vertex.
  * @param <E>
  *            the type of model edge.
+ *
+ * @author Tobias Pietzsch &lt;tobias.pietzsch@gmail.com&gt;
  */
 public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends OverlayEdge< E, V > >
 		implements OverlayRenderer, TransformListener< AffineTransform3D >, TimePointListener
@@ -344,7 +345,7 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 	 *            coordinates.
 	 * @param viewerInterval
 	 *            the view interval.
-	 * @return a new convex polytope.
+	 * @return {@code viewerInterval} transformed to global coordinates.
 	 */
 	// TODO: move to Utility class
 	public static ConvexPolytope getPolytopeGlobal(
@@ -376,7 +377,7 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 	 *            the z min bound of the view interval.
 	 * @param viewerMaxZ
 	 *            the z max bound of the view interval.
-	 * @return a new convex polytope.
+	 * @return the specified viewer interval, transformed to global coordinates.
 	 */
 	// TODO: move to Utility class
 	public static ConvexPolytope getPolytopeGlobal(
