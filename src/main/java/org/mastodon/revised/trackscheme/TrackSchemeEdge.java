@@ -17,6 +17,9 @@ public class TrackSchemeEdge extends AbstractEdge< TrackSchemeEdge, TrackSchemeV
 
 	private final ModelEdgeProperties props;
 
+	// TODO: temporary hack to be able to store refs for TrackSchemeVertexBimap
+	Object reusableRefFIXME = null;
+
 	@Override
 	public String toString()
 	{

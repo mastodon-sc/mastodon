@@ -22,9 +22,9 @@ public class OverlayVertexWrapperBimap< V extends Vertex< E >, E extends Edge< V
 	}
 
 	@Override
-	public V extractLeftRef( final OverlayVertexWrapper< V, E > right )
+	public V reusableLeftRef( final OverlayVertexWrapper< V, E > right )
 	{
-		return right.wv;
+		return right.ref;
 	}
 
 //	@Override

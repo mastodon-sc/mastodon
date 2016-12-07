@@ -30,6 +30,9 @@ public class TrackSchemeVertex extends AbstractVertex< TrackSchemeVertex, TrackS
 
 	private final ModelVertexProperties props;
 
+	// TODO: temporary hack to be able to store refs for TrackSchemeVertexBimap
+	Object reusableRefFIXME = null;
+
 	@Override
 	protected void setToUninitializedState()
 	{

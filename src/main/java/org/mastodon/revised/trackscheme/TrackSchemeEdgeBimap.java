@@ -6,8 +6,8 @@ import org.mastodon.graph.GraphIdBimap;
 import org.mastodon.graph.ReadOnlyGraph;
 import org.mastodon.graph.Vertex;
 
-public class TrackSchemeVertexBimap< V extends Vertex< E >, E extends Edge< V > >
-		implements RefBimap< V, TrackSchemeVertex >
+public class TrackSchemeEdgeBimap< V extends Vertex< E >, E extends Edge< V > >
+		implements RefBimap< E, TrackSchemeEdge >
 {
 	private final ReadOnlyGraph< V, E > graph;
 
@@ -15,7 +15,7 @@ public class TrackSchemeVertexBimap< V extends Vertex< E >, E extends Edge< V > 
 
 	private final TrackSchemeGraph< ?, ? > tsgraph;
 
-	public TrackSchemeVertexBimap(
+	public TrackSchemeEdgeBimap(
 			final ReadOnlyGraph< V, E > graph,
 			final GraphIdBimap< V, E > idmap,
 			final TrackSchemeGraph< ?, ? > tsgraph )
@@ -26,28 +26,28 @@ public class TrackSchemeVertexBimap< V extends Vertex< E >, E extends Edge< V > 
 	}
 
 	@Override
-	public V getLeft( final TrackSchemeVertex right )
+	public E getLeft( final TrackSchemeEdge right )
 	{
-		return right == null ? null : idmap.getVertex( right.getModelVertexId(), reusableLeftRef( right ) );
+		return right == null ? null : idmap.getEdge( right.getModelEdgeId(), reusableLeftRef( right ) );
 	}
 
 	@Override
-	public TrackSchemeVertex getRight( final V left, final TrackSchemeVertex ref )
+	public TrackSchemeEdge getRight( final E left, final TrackSchemeEdge ref )
 	{
-		return left == null ? null : tsgraph.getTrackSchemeVertexForModelId( idmap.getVertexId( left ), ref );
+		return left == null ? null : tsgraph.getTrackSchemeEdgeForModelId( idmap.getEdgeId( left ), ref );
 	}
 
 	@SuppressWarnings( "unchecked" )
 	@Override
-	public V reusableLeftRef( final TrackSchemeVertex ref )
+	public E reusableLeftRef( final TrackSchemeEdge ref )
 	{
 		if ( ref.reusableRefFIXME != null )
-			return ( V ) ref.reusableRefFIXME;
+			return ( E ) ref.reusableRefFIXME;
 		else
 		{
-			final V v = graph.vertexRef();
-			ref.reusableRefFIXME = v;
-			return v;
+			final E e = graph.edgeRef();
+			ref.reusableRefFIXME = e;
+			return e;
 		}
 	}
 }

@@ -20,7 +20,7 @@ public class AdapterPlayground
 		@Override
 		public W getFocusedVertex( final W ref )
 		{
-			return bimap.getRight( focusState.getFocusedVertex( bimap.extractLeftRef( ref ) ), ref );
+			return bimap.getRight( focusState.getFocusedVertex( bimap.reusableLeftRef( ref ) ), ref );
 		}
 
 	}
@@ -41,7 +41,7 @@ public class AdapterPlayground
 		@Override
 		public void notifyFocusVertex( final W vertex )
 		{
-			focusReceiver.notifyFocusVertex( bimap.getLeft( vertex /*, bimap.extractLeftRef( vertex )*/ ) );
+			focusReceiver.notifyFocusVertex( bimap.getLeft( vertex /*, bimap.reusableLeftRef( vertex )*/ ) );
 		}
 	}
 
