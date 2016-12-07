@@ -268,7 +268,7 @@ public class RenderSettings
 	 * Sets whether to use anti-aliasing for drawing.
 	 *
 	 * @param useAntialiasing
-	 *            use anti-aliasing.
+	 *            whether to use use anti-aliasing.
 	 */
 	public synchronized void setUseAntialiasing( final boolean useAntialiasing )
 	{
