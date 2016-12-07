@@ -4,13 +4,13 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Locale;
 
-import org.mastodon.collection.RefSet;
 import org.mastodon.collection.RefCollections;
+import org.mastodon.collection.RefSet;
+import org.mastodon.features.DoubleFeature;
 import org.mastodon.graph.ListenableGraph;
 import org.mastodon.graph.algorithm.traversal.DepthFirstSearch;
-import org.mastodon.graph.algorithm.traversal.SearchListener;
 import org.mastodon.graph.algorithm.traversal.GraphSearch.SearchDirection;
-import org.mastodon.features.DoubleFeature;
+import org.mastodon.graph.algorithm.traversal.SearchListener;
 import org.mastodon.revised.model.mamut.Link;
 import org.mastodon.revised.model.mamut.Model;
 import org.mastodon.revised.model.mamut.Spot;
@@ -93,6 +93,10 @@ public class EdgeFeatureCalculatorExample
 					dr.add( tmp );
 					n.inc();
 				}
+
+				@Override
+				public void crossComponent( final Spot from, final Spot to, final DepthFirstSearch< Spot, Link > search )
+				{}
 			} );
 
 			linkCollector.start( root );

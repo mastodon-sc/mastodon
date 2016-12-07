@@ -170,6 +170,10 @@ public class DummyGraph extends AbstractObjectIdGraph< DummyVertex, DummyEdge > 
 				{
 					selectedEdges.add( edge );
 				}
+
+				@Override
+				public void crossComponent( final DummyVertex from, final DummyVertex to, final DepthFirstSearch< DummyVertex, DummyEdge > search )
+				{}
 			} );
 			dfs.start( ABa );
 		}

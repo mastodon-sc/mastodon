@@ -159,6 +159,10 @@ public class SelectionActions< V extends Vertex< E >, E extends Edge< V > >
 				{
 					eList.add( edge );
 				}
+
+				@Override
+				public void crossComponent( final V from, final V to, final DepthFirstSearch< V, E > search )
+				{}
 			} );
 
 			// Iterate from all vertices that were in the selection.
