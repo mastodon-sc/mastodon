@@ -1,6 +1,7 @@
 package org.mastodon.revised.trackscheme.display;
 
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
@@ -36,8 +37,6 @@ import org.mastodon.revised.trackscheme.TrackSchemeNavigation;
 import org.mastodon.revised.trackscheme.TrackSchemeVertex;
 import org.mastodon.revised.ui.util.KeyConfigUtils;
 import org.scijava.ui.behaviour.util.RunnableAction;
-
-import com.itextpdf.text.Font;
 
 public class TrackSchemeSearchPanel extends JPanel
 {
@@ -311,7 +310,7 @@ public class TrackSchemeSearchPanel extends JPanel
 
 				setIcon( FOCUSED_ICON );
 				searchField.setText( oldText );
-				searchField.setFont( searchField.getFont().deriveFont( Font.NORMAL ) );
+				searchField.setFont( searchField.getFont().deriveFont( Font.PLAIN ) );
 				searchField.setForeground( UIManager.getColor( "Label.foreground" ) );
 			}
 		}
