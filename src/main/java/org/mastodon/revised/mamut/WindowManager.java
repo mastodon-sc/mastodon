@@ -26,7 +26,8 @@ import org.mastodon.revised.bdv.overlay.OverlayContext;
 import org.mastodon.revised.bdv.overlay.OverlayGraphRenderer;
 import org.mastodon.revised.bdv.overlay.RenderSettings;
 import org.mastodon.revised.bdv.overlay.RenderSettings.UpdateListener;
-import org.mastodon.revised.bdv.overlay.ui.RenderSettingsDialog;
+import org.mastodon.revised.bdv.overlay.ui.RenderSettingsChooser;
+import org.mastodon.revised.bdv.overlay.ui.RenderSettingsManager;
 import org.mastodon.revised.bdv.overlay.wrap.OverlayContextWrapper;
 import org.mastodon.revised.bdv.overlay.wrap.OverlayEdgeWrapper;
 import org.mastodon.revised.bdv.overlay.wrap.OverlayFocusWrapper;
@@ -264,6 +265,8 @@ public class WindowManager
 	 */
 	private final List< TsWindow > tsWindows = new ArrayList<>();
 
+	private final RenderSettingsManager renderSettingsManager;
+
 	public WindowManager(
 			final String spimDataXmlFilename,
 			final SpimDataMinimal spimData,
@@ -300,6 +303,11 @@ public class WindowManager
 		 * it would be confusing to have different labels in TrackScheme. If
 		 * this is changed in the future, then probably only in the model files.
 		 */
+
+		/*
+		 * Deal with a common list of styles for the BDV.
+		 */
+		this.renderSettingsManager = new RenderSettingsManager();
 	}
 
 	private synchronized void addBdvWindow( final BdvWindow w )
@@ -431,7 +439,7 @@ public class WindowManager
 
 		final NavigationHandler< Spot, Link > navigationHandler = new NavigationHandler<>( bdvGroupHandle );
 		final OverlayNavigationWrapper< Spot, Link > navigation =
-				new OverlayNavigationWrapper< Spot, Link >( viewer, overlayGraph, navigationHandler );
+				new OverlayNavigationWrapper< >( viewer, overlayGraph, navigationHandler );
 		final BdvSelectionBehaviours< ?, ? > selectionBehaviours = new BdvSelectionBehaviours<>( overlayGraph, tracksOverlay, overlaySelection, navigation );
 		selectionBehaviours.installBehaviourBindings( viewerFrame.getTriggerbindings(), keyconf );
 
@@ -474,16 +482,19 @@ public class WindowManager
 
 		// TODO revise
 		// RenderSettingsDialog triggered by "R"
-		final RenderSettings renderSettings = new RenderSettings(); // TODO should be in overlay eventually
 		final String RENDER_SETTINGS = "render settings";
-		final RenderSettingsDialog renderSettingsDialog = new RenderSettingsDialog( viewerFrame, renderSettings );
+		final RenderSettingsChooser renderSettingsDialog = new RenderSettingsChooser( viewerFrame, renderSettingsManager );
+
+		renderSettingsDialog.setTitle( "Display settings for " + windowTitle );
 		final ActionMap actionMap = new ActionMap();
-		new ToggleDialogAction( RENDER_SETTINGS, renderSettingsDialog ).put( actionMap );
+		new ToggleDialogAction( RENDER_SETTINGS, renderSettingsDialog.getDialog() ).put( actionMap );
 		final InputMap inputMap = new InputMap();
 		final KeyStrokeAdder a = keyconf.keyStrokeAdder( inputMap, "mamut" );
 		a.put( RENDER_SETTINGS, "R" );
 		viewerFrame.getKeybindings().addActionMap( "mamut", actionMap );
 		viewerFrame.getKeybindings().addInputMap( "mamut", inputMap );
+
+		final RenderSettings renderSettings = renderSettingsDialog.getRenderSettings();
 		renderSettings.addUpdateListener( new UpdateListener()
 		{
 			@Override

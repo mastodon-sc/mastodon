@@ -1,12 +1,12 @@
 package org.mastodon.revised.bdv.overlay;
 
-import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.FontMetrics;
 import java.awt.GradientPaint;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
+import java.awt.Stroke;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Ellipse2D;
 
@@ -34,16 +34,15 @@ import net.imglib2.util.LinAlgHelpers;
 /**
  * Renderer for a time-resliced graph overlay on a BDV.
  * <p>
- * In this class, spatial coordinates are stored in local variables named
- * <code>gPos</code> and <code>lPos</code> of type <code>double[]</code> with 3
- * elements:
+ * In this class, spatial coordinates are stored in local variables {@code gPos}
+ * and {@code lPos} of type {@code double[3]}:
  * <ul>
- * <li><code>gPos</code> are world coordinates. It is used to store coordinates
- * in the global referential, that is the one with absolute, physical
- * coordinates. It is used <i>e.g.</i> to store vertex coordinates:
- * <code>vertex.localize(gPos)</code>.</li>
- * <li><code>lPos</code> are viewer coordinates. It is used to store coordinates
- * in the local referential, currently rendered in the BDV under a certain
+ * <li>{@code gPos} are world coordinates. It is used to store coordinates in
+ * the global referential, that is the one with absolute, physical coordinates.
+ * It is used <i>e.g.</i> to store vertex coordinates:
+ * {@code vertex.localize(gPos)}.</li>
+ * <li>{@code lPos} are viewer coordinates. It is used to store coordinates in
+ * the local referential, currently rendered in the BDV under a certain
  * orientation, zoom, etc. Mouse coordinates are typically stored in this
  * variable.
  * </ul>
@@ -88,7 +87,7 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 		this.focus = focus;
 		index = graph.getIndex();
 		renderTransform = new AffineTransform3D();
-		setRenderSettings( new RenderSettings() ); // default RenderSettings
+		setRenderSettings( RenderSettings.defaultStyle() );
 	}
 
 	@Override
@@ -131,6 +130,14 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 		isFocusLimitViewRelative = settings.getFocusLimitViewRelative();
 		ellipsoidFadeDepth = settings.getEllipsoidFadeDepth();
 		pointFadeDepth = settings.getPointFadeDepth();
+		defaultVertexStroke = settings.getSpotStroke();
+		focusedVertexStroke = settings.getSpotFocusStroke();
+		highlightedVertexStroke = settings.getSpotHighlightStroke();
+		defaultEdgeStroke = settings.getLinkStroke();
+		highlightedEdgeStroke = settings.getLinkHighlightStroke();
+		color1 = settings.getLinkColor1();
+		color2 = settings.getLinkColor2();
+		drawLinkArrows = settings.getDrawLinkArrows();
 	}
 
 	public static final double pointRadius = 2.5;
@@ -241,6 +248,48 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 	private double pointFadeDepth;
 
 	/**
+	 * The stroke used to paint the spot outlines.
+	 */
+	private Stroke defaultVertexStroke;
+
+	/**
+	 * The stroke used to paint the selected spot outlines.
+	 */
+	private Stroke highlightedVertexStroke;
+
+	/**
+	 * The stroke used to paint the focused spot outlines.
+	 */
+	private Stroke focusedVertexStroke;
+
+	/**
+	 * The stroke used to paint links.
+	 */
+	private Stroke defaultEdgeStroke;
+
+	/**
+	 * The stroke used to paint highlighted links.
+	 */
+	private Stroke highlightedEdgeStroke;
+
+	/**
+	 * The first color to paint links. The actual color of edges is interpolated
+	 * from {@link #color1} to {@link #color2} along time.
+	 */
+	private Color color1;
+
+	/**
+	 * The second color to paint edges. The actual color of edges is
+	 * interpolated from {@link #color1} to {@link #color2} along time.
+	 */
+	private Color color2;
+
+	/**
+	 * Whether do draw link arrow heads.
+	 */
+	private boolean drawLinkArrows;
+
+	/**
 	 * Return signed distance of p to z=0 plane, truncated at cutoff and scaled
 	 * by 1/cutoff. A point on the plane has d=0. A Point that is at cutoff or
 	 * farther behind the plane has d=1. A point that is at -cutoff or more in
@@ -301,7 +350,7 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 	 * @param isSelected whether to use selected or un-selected color scheme.
 	 * @return vertex/edge color.
 	 */
-	private static Color getColor( final double sd, final double td, final double sdFade, final double tdFade, final boolean isSelected )
+	private static Color getColor( final double sd, final double td, final double sdFade, final double tdFade, final boolean isSelected, final Color color1, final Color color2 )
 	{
 		/*
 		 * |sf| = {                  0  for  |sd| <= sdFade,
@@ -329,11 +378,19 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 			tf = -Math.max( 0, ( -td - tdFade ) / ( 1 - tdFade ) );
 		}
 
-		final double a = -2 * td;
-		final double b = 1 + 2 * td;
+		final double r1 = color1.getRed() / 255.;
+		final double r2 = color2.getRed() / 255.;
+		final double g1 = color1.getGreen() / 255.;
+		final double g2 = color2.getGreen() / 255.;
+		final double b1 = color1.getBlue() / 255.;
+		final double b2 = color2.getBlue() / 255.;
+
+		final double a = r1 + ( -2 * td ) * ( r2 - r1 );
+		final double b = g1 + ( -2 * td ) * ( g2 - g1 );
+		final double c = b1 + ( -2 * td ) * ( b2 - b1 );
 		final double r = isSelected ? b : a;
 		final double g = isSelected ? a : b;
-		return new Color( truncRGBA( r, g, 0.1, ( 1 + tf ) * ( 1 - Math.abs( sf ) ) ), true );
+		return new Color( truncRGBA( r, g, c, ( 1 + tf ) * ( 1 - Math.abs( sf ) ) ), true );
 	}
 
 	/**
@@ -489,11 +546,6 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 	public void drawOverlays( final Graphics g )
 	{
 		final Graphics2D graphics = ( Graphics2D ) g;
-		final BasicStroke defaultVertexStroke = new BasicStroke();
-		final BasicStroke highlightedVertexStroke = new BasicStroke( 4f );
-		final BasicStroke focusedVertexStroke = new BasicStroke( 2f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 1f, new float[] { 8f, 3f }, 0 );
-		final BasicStroke defaultEdgeStroke = new BasicStroke();
-		final BasicStroke highlightedEdgeStroke = new BasicStroke( 3f );
 		final FontMetrics fontMetrics = graphics.getFontMetrics();
 		final int extraFontHeight = fontMetrics.getAscent() / 2;
 		final int extraFontWidth = fontMetrics.charWidth( ' ' ) / 2;
@@ -562,10 +614,10 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 							{
 								if ( ( sd0 > -1 && sd0 < 1 ) || ( sd1 > -1 && sd1 < 1 ) )
 								{
-									final Color c1 = getColor( sd1, td1, sliceDistanceFade, timepointDistanceFade, edge.isSelected() );
+									final Color c1 = getColor( sd1, td1, sliceDistanceFade, timepointDistanceFade, edge.isSelected(), color1, color2 );
 									if ( useGradient )
 									{
-										final Color c0 = getColor( sd0, td0, sliceDistanceFade, timepointDistanceFade, edge.isSelected() );
+										final Color c0 = getColor( sd0, td0, sliceDistanceFade, timepointDistanceFade, edge.isSelected(), color1, color2 );
 										graphics.setPaint( new GradientPaint( x0, y0, c0, x1, y1, c1 ) );
 									}
 									else
@@ -577,19 +629,20 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 									graphics.drawLine( x0, y0, x1, y1 );
 
 									// Draw arrows for edge direction.
-									/*
-									final double dx = x1 - x0;
-									final double dy = y1 - y0;
-									final double alpha = Math.atan2( dy, dx );
-									final double l = 5;
-									final double theta = Math.PI / 6.;
-									final int x1a = ( int ) Math.round( x1 - l * Math.cos( alpha - theta ) );
-									final int x1b = ( int ) Math.round( x1 - l * Math.cos( alpha + theta ) );
-									final int y1a = ( int ) Math.round( y1 - l * Math.sin( alpha - theta ) );
-									final int y1b = ( int ) Math.round( y1 - l * Math.sin( alpha + theta ) );
-									graphics.drawLine( x1, y1, x1a, y1a );
-									graphics.drawLine( x1, y1, x1b, y1b );
-									*/
+									if ( drawLinkArrows )
+									{
+										final double dx = x1 - x0;
+										final double dy = y1 - y0;
+										final double alpha = Math.atan2( dy, dx );
+										final double l = 5;
+										final double theta = Math.PI / 6.;
+										final int x1a = ( int ) Math.round( x1 - l * Math.cos( alpha - theta ) );
+										final int x1b = ( int ) Math.round( x1 - l * Math.cos( alpha + theta ) );
+										final int y1a = ( int ) Math.round( y1 - l * Math.sin( alpha - theta ) );
+										final int y1b = ( int ) Math.round( y1 - l * Math.sin( alpha + theta ) );
+										graphics.drawLine( x1, y1, x1a, y1a );
+										graphics.drawLine( x1, y1, x1b, y1b );
+									}
 
 									if ( isHighlighted )
 										graphics.setStroke( defaultEdgeStroke );
@@ -633,7 +686,7 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 
 							graphics.translate( tr[ 0 ], tr[ 1 ] );
 							graphics.rotate( theta );
-							graphics.setColor( getColor( 0, 0, ellipsoidFadeDepth, timepointDistanceFade, vertex.isSelected() ) );
+							graphics.setColor( getColor( 0, 0, ellipsoidFadeDepth, timepointDistanceFade, vertex.isSelected(), color1, color2 ) );
 							if ( isHighlighted )
 								graphics.setStroke( highlightedVertexStroke );
 							else if ( isFocused )
@@ -671,7 +724,7 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 
 							graphics.translate( tr[ 0 ], tr[ 1 ] );
 							graphics.rotate( theta );
-							graphics.setColor( getColor( sd, 0, ellipsoidFadeDepth, timepointDistanceFade, vertex.isSelected() ) );
+							graphics.setColor( getColor( sd, 0, ellipsoidFadeDepth, timepointDistanceFade, vertex.isSelected(), color1, color2 ) );
 							if ( isHighlighted )
 								graphics.setStroke( highlightedVertexStroke );
 							else if ( isFocused )
@@ -704,7 +757,7 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 								|| ( drawEllipsoidSliceIntersection && !screenVertexMath.intersectsViewPlane() ) );
 						if ( drawPoint )
 						{
-							graphics.setColor( getColor( sd, 0, pointFadeDepth, timepointDistanceFade, vertex.isSelected() ) );
+							graphics.setColor( getColor( sd, 0, pointFadeDepth, timepointDistanceFade, vertex.isSelected(), color1, color2 ) );
 							double radius = pointRadius;
 							if ( isHighlighted || isFocused )
 								radius *= 2;
@@ -736,19 +789,16 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 
 		final ConvexPolytope visiblePolytopeGlobal = getVisiblePolytopeGlobal( transform, currentTimepoint );
 
-		// TODO: unused code: remove or improve algorithm.
-		final double[] lPosClick = new double[] { x, y, 0 };
-		final double[] gPosClick = new double[ 3 ];
-		transform.applyInverse( gPosClick, lPosClick );
-
+		boolean found = false;
 		index.readLock().lock();
 		try
 		{
-			final double[] gPosT = new double[ 3 ];
 			final double[] lPosT = new double[ 3 ];
-			final double[] gPosS = new double[ 3 ];
+			final double[] gPosT = new double[ 3 ];
 			final double[] lPosS = new double[ 3 ];
+			final double[] gPosS = new double[ 3 ];
 			final V vertexRef = graph.vertexRef();
+			double bestDist = tolerance;
 
 			for ( int t = Math.max( 0, currentTimepoint - timeLimit ); t < currentTimepoint; ++t )
 			{
@@ -757,32 +807,34 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 				ccp.clip( visiblePolytopeGlobal );
 				for ( final V source : ccp.getInsideValues() )
 				{
-					source.localize( lPosS );
-					transform.apply( lPosS, gPosS );
-					final double x1 = gPosS[ 0 ];
-					final double y1 = gPosS[ 1 ];
+					source.localize( gPosS );
+					transform.apply( gPosS, lPosS );
+					final double x1 = lPosS[ 0 ];
+					final double y1 = lPosS[ 1 ];
 					for ( final E edge : source.outgoingEdges() )
 					{
 						final V target = edge.getTarget( vertexRef );
-						target.localize( lPosT );
-						transform.apply( lPosT, gPosT );
-						final double x2 = gPosT[ 0 ];
-						final double y2 = gPosT[ 1 ];
-						if ( Util.segmentDist( x, y, x1, y1, x2, y2 ) <= tolerance )
+						target.localize( gPosT );
+						transform.apply( gPosT, lPosT );
+						final double x2 = lPosT[ 0 ];
+						final double y2 = lPosT[ 1 ];
+						final double dist = Util.segmentDist( x, y, x1, y1, x2, y2 );
+						if ( dist <= bestDist )
 						{
+							bestDist = dist;
 							ref.refTo( edge );
-							graph.releaseRef( vertexRef );
-							return ref;
+							found = true;
 						}
 					}
 				}
 			}
+			graph.releaseRef( vertexRef );
 		}
 		finally
 		{
 			index.readLock().unlock();
 		}
-		return null;
+		return found ? ref : null;
 	}
 
 	/**
