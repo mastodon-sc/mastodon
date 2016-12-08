@@ -22,7 +22,6 @@ import org.mastodon.revised.trackscheme.ScreenEntitiesInterpolator;
 import org.mastodon.revised.trackscheme.ScreenTransform;
 import org.mastodon.revised.trackscheme.TrackSchemeEdge;
 import org.mastodon.revised.trackscheme.TrackSchemeGraph;
-import org.mastodon.revised.trackscheme.TrackSchemeHighlight;
 import org.mastodon.revised.trackscheme.TrackSchemeNavigation;
 import org.mastodon.revised.trackscheme.TrackSchemeSelection;
 import org.mastodon.revised.trackscheme.TrackSchemeVertex;
@@ -33,6 +32,7 @@ import org.mastodon.revised.trackscheme.display.laf.TrackSchemeStyle;
 import org.mastodon.revised.ui.selection.FocusListener;
 import org.mastodon.revised.ui.selection.FocusModel;
 import org.mastodon.revised.ui.selection.HighlightListener;
+import org.mastodon.revised.ui.selection.HighlightModel;
 import org.mastodon.revised.ui.selection.NavigationEtiquette;
 import org.mastodon.revised.ui.selection.NavigationListener;
 import org.mastodon.revised.ui.selection.SelectionListener;
@@ -153,7 +153,7 @@ public class TrackSchemePanel extends JPanel implements
 
 	public TrackSchemePanel(
 			final TrackSchemeGraph< ?, ? > graph,
-			final TrackSchemeHighlight highlight,
+			final HighlightModel< TrackSchemeVertex, TrackSchemeEdge > highlight,
 			final FocusModel< TrackSchemeVertex, TrackSchemeEdge > focus,
 			final TrackSchemeSelection selection,
 			final TrackSchemeNavigation navigation,

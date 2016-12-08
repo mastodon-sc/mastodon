@@ -7,9 +7,9 @@ import java.awt.event.MouseMotionListener;
 import org.mastodon.revised.trackscheme.ScreenTransform;
 import org.mastodon.revised.trackscheme.TrackSchemeEdge;
 import org.mastodon.revised.trackscheme.TrackSchemeGraph;
-import org.mastodon.revised.trackscheme.TrackSchemeHighlight;
 import org.mastodon.revised.trackscheme.TrackSchemeVertex;
 import org.mastodon.revised.trackscheme.display.OffsetHeaders.OffsetHeadersListener;
+import org.mastodon.revised.ui.selection.HighlightModel;
 
 import net.imglib2.ui.TransformListener;
 
@@ -17,7 +17,7 @@ public class MouseHighlightHandler implements MouseMotionListener, MouseListener
 {
 	private final AbstractTrackSchemeOverlay graphOverlay;
 
-	private final TrackSchemeHighlight highlight;
+	private final HighlightModel< TrackSchemeVertex, TrackSchemeEdge > highlight;
 
 	private final TrackSchemeGraph< ?, ? > graph;
 
@@ -37,7 +37,7 @@ public class MouseHighlightHandler implements MouseMotionListener, MouseListener
 
 	public MouseHighlightHandler(
 			final AbstractTrackSchemeOverlay graphOverlay,
-			final TrackSchemeHighlight highlight,
+			final HighlightModel< TrackSchemeVertex, TrackSchemeEdge > highlight,
 			final TrackSchemeGraph< ?, ? > graph )
 	{
 		this.graphOverlay = graphOverlay;

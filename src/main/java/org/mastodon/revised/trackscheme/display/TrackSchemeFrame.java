@@ -16,7 +16,6 @@ import javax.swing.WindowConstants;
 import org.mastodon.revised.context.ContextChooser;
 import org.mastodon.revised.trackscheme.TrackSchemeEdge;
 import org.mastodon.revised.trackscheme.TrackSchemeGraph;
-import org.mastodon.revised.trackscheme.TrackSchemeHighlight;
 import org.mastodon.revised.trackscheme.TrackSchemeNavigation;
 import org.mastodon.revised.trackscheme.TrackSchemeSelection;
 import org.mastodon.revised.trackscheme.TrackSchemeVertex;
@@ -25,6 +24,7 @@ import org.mastodon.revised.ui.context.ContextChooserPanel;
 import org.mastodon.revised.ui.grouping.GroupHandle;
 import org.mastodon.revised.ui.grouping.GroupLocksPanel;
 import org.mastodon.revised.ui.selection.FocusModel;
+import org.mastodon.revised.ui.selection.HighlightModel;
 import org.mastodon.undo.UndoPointMarker;
 import org.scijava.ui.behaviour.MouseAndKeyHandler;
 import org.scijava.ui.behaviour.io.InputTriggerConfig;
@@ -54,7 +54,7 @@ public class TrackSchemeFrame extends JFrame
 
 	public TrackSchemeFrame(
 			final TrackSchemeGraph< ?, ? > graph,
-			final TrackSchemeHighlight highlight,
+			final HighlightModel< TrackSchemeVertex, TrackSchemeEdge > highlight,
 			final FocusModel< TrackSchemeVertex, TrackSchemeEdge > focus,
 			final TrackSchemeSelection selection,
 			final TrackSchemeNavigation navigation,
@@ -67,7 +67,7 @@ public class TrackSchemeFrame extends JFrame
 
 	public TrackSchemeFrame(
 			final TrackSchemeGraph< ?, ? > graph,
-			final TrackSchemeHighlight highlight,
+			final HighlightModel< TrackSchemeVertex, TrackSchemeEdge > highlight,
 			final FocusModel< TrackSchemeVertex, TrackSchemeEdge > focus,
 			final TrackSchemeSelection selection,
 			final TrackSchemeNavigation navigation,
