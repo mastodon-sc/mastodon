@@ -49,13 +49,10 @@ import org.mastodon.revised.model.mamut.Model;
 import org.mastodon.revised.model.mamut.ModelOverlayProperties;
 import org.mastodon.revised.model.mamut.Spot;
 import org.mastodon.revised.trackscheme.DefaultModelGraphProperties;
-import org.mastodon.revised.trackscheme.DefaultModelNavigationProperties;
-import org.mastodon.revised.trackscheme.ModelNavigationProperties;
 import org.mastodon.revised.trackscheme.TrackSchemeContextListener;
 import org.mastodon.revised.trackscheme.TrackSchemeEdge;
 import org.mastodon.revised.trackscheme.TrackSchemeEdgeBimap;
 import org.mastodon.revised.trackscheme.TrackSchemeGraph;
-import org.mastodon.revised.trackscheme.TrackSchemeNavigation;
 import org.mastodon.revised.trackscheme.TrackSchemeVertex;
 import org.mastodon.revised.trackscheme.TrackSchemeVertexBimap;
 import org.mastodon.revised.trackscheme.display.TrackSchemeEditBehaviours;
@@ -550,8 +547,7 @@ public class WindowManager
 		 * TrackScheme navigation
 		 */
 		final NavigationHandler< Spot, Link > navigationHandler = new NavigationHandlerImp<>( groupHandle );
-		final ModelNavigationProperties navigationProperties = new DefaultModelNavigationProperties< >( graph, idmap, navigationHandler );
-		final TrackSchemeNavigation trackSchemeNavigation = new TrackSchemeNavigation( navigationProperties, trackSchemeGraph );
+		final NavigationHandler< TrackSchemeVertex, TrackSchemeEdge > trackSchemeNavigation = new NavigationHandlerAdapter<>( navigationHandler, vertexMap, edgeMap );
 
 		/*
 		 * TrackScheme focus

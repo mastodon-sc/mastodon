@@ -23,16 +23,15 @@ import javax.swing.border.EmptyBorder;
 
 import org.mastodon.adapter.FocusAdapter;
 import org.mastodon.adapter.HighlightAdapter;
+import org.mastodon.adapter.NavigationHandlerAdapter;
 import org.mastodon.adapter.RefBimap;
 import org.mastodon.adapter.SelectionAdapter;
 import org.mastodon.graph.GraphIdBimap;
 import org.mastodon.revised.trackscheme.DefaultModelGraphProperties;
-import org.mastodon.revised.trackscheme.DefaultModelNavigationProperties;
 import org.mastodon.revised.trackscheme.ModelGraphProperties;
 import org.mastodon.revised.trackscheme.TrackSchemeEdge;
 import org.mastodon.revised.trackscheme.TrackSchemeEdgeBimap;
 import org.mastodon.revised.trackscheme.TrackSchemeGraph;
-import org.mastodon.revised.trackscheme.TrackSchemeNavigation;
 import org.mastodon.revised.trackscheme.TrackSchemeVertex;
 import org.mastodon.revised.trackscheme.TrackSchemeVertexBimap;
 import org.mastodon.revised.trackscheme.display.TrackSchemeOptions;
@@ -47,6 +46,7 @@ import org.mastodon.revised.ui.selection.FocusModel;
 import org.mastodon.revised.ui.selection.FocusModelImp;
 import org.mastodon.revised.ui.selection.HighlightModel;
 import org.mastodon.revised.ui.selection.HighlightModelImp;
+import org.mastodon.revised.ui.selection.NavigationHandler;
 import org.mastodon.revised.ui.selection.NavigationHandlerImp;
 import org.mastodon.revised.ui.selection.Selection;
 
@@ -88,7 +88,7 @@ class TrackSchemeStyleChooserDialog extends JDialog
 		final HighlightModel< TrackSchemeVertex, TrackSchemeEdge > highlight = new HighlightAdapter<>( new HighlightModelImp<>( idmap ), vertexMap, edgeMap );
 		final FocusModel< TrackSchemeVertex, TrackSchemeEdge > focus = new FocusAdapter<>( new FocusModelImp<>( idmap ), vertexMap, edgeMap );
 		final Selection< TrackSchemeVertex, TrackSchemeEdge > selection = new SelectionAdapter<>( ex.getSelection(), vertexMap, edgeMap );
-		final TrackSchemeNavigation navigation = new TrackSchemeNavigation( new DefaultModelNavigationProperties<>( example, idmap, new NavigationHandlerImp<>( new GroupManager().createGroupHandle() ) ), graph );
+		final NavigationHandler< TrackSchemeVertex, TrackSchemeEdge > navigation = new NavigationHandlerAdapter<>( new NavigationHandlerImp<>( new GroupManager().createGroupHandle() ), vertexMap, edgeMap );
 		panelPreview = new TrackSchemePanel( graph, highlight, focus, selection, navigation, TrackSchemeOptions.options() );
 		panelPreview.setTimepointRange( 0, 7 );
 		panelPreview.timePointChanged( 2 );
