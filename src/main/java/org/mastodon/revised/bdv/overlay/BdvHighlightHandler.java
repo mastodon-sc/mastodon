@@ -4,6 +4,8 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 
+import org.mastodon.revised.ui.selection.HighlightModel;
+
 import net.imglib2.realtransform.AffineTransform3D;
 import net.imglib2.ui.TransformListener;
 
@@ -13,7 +15,7 @@ public class BdvHighlightHandler< V extends OverlayVertex< V, E >, E extends Ove
 
 	private final OverlayGraphRenderer< V, E > renderer;
 
-	private final OverlayHighlight< V, E > highlight;
+	private final HighlightModel< V, E > highlight;
 
 	private boolean mouseInside;
 
@@ -22,7 +24,7 @@ public class BdvHighlightHandler< V extends OverlayVertex< V, E >, E extends Ove
 	public BdvHighlightHandler(
 			final OverlayGraph< V, E > overlayGraph,
 			final OverlayGraphRenderer< V, E > renderer,
-			final OverlayHighlight< V, E > highlight )
+			final HighlightModel< V, E > highlight )
 	{
 		this.highlight = highlight;
 		this.renderer = renderer;

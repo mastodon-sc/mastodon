@@ -14,7 +14,9 @@ import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
 
 import org.mastodon.adapter.FocusAdapter;
+import org.mastodon.adapter.HighlightAdapter;
 import org.mastodon.adapter.RefBimap;
+import org.mastodon.adapter.SelectionAdapter;
 import org.mastodon.graph.GraphChangeListener;
 import org.mastodon.graph.GraphIdBimap;
 import org.mastodon.graph.ListenableReadOnlyGraph;
@@ -33,9 +35,7 @@ import org.mastodon.revised.bdv.overlay.wrap.OverlayContextWrapper;
 import org.mastodon.revised.bdv.overlay.wrap.OverlayEdgeWrapper;
 import org.mastodon.revised.bdv.overlay.wrap.OverlayEdgeWrapperBimap;
 import org.mastodon.revised.bdv.overlay.wrap.OverlayGraphWrapper;
-import org.mastodon.revised.bdv.overlay.wrap.OverlayHighlightWrapper;
 import org.mastodon.revised.bdv.overlay.wrap.OverlayNavigationWrapper;
-import org.mastodon.revised.bdv.overlay.wrap.OverlaySelectionWrapper;
 import org.mastodon.revised.bdv.overlay.wrap.OverlayVertexWrapper;
 import org.mastodon.revised.bdv.overlay.wrap.OverlayVertexWrapperBimap;
 import org.mastodon.revised.context.Context;
@@ -368,9 +368,9 @@ public class WindowManager
 		final RefBimap< Spot, OverlayVertexWrapper< Spot, Link > > vertexMap = new OverlayVertexWrapperBimap<>( overlayGraph );
 		final RefBimap< Link, OverlayEdgeWrapper< Spot, Link > > edgeMap = new OverlayEdgeWrapperBimap<>( overlayGraph );
 
-		final OverlayHighlightWrapper< Spot, Link > overlayHighlight = new OverlayHighlightWrapper<>( highlightModel );
+		final HighlightModel< OverlayVertexWrapper< Spot, Link >, OverlayEdgeWrapper< Spot, Link > > overlayHighlight = new HighlightAdapter<>( highlightModel, vertexMap, edgeMap );
 		final FocusModel< OverlayVertexWrapper< Spot, Link >, OverlayEdgeWrapper< Spot, Link > > overlayFocus = new FocusAdapter<>( focusModel, vertexMap, edgeMap );
-		final OverlaySelectionWrapper< Spot, Link > overlaySelection = new OverlaySelectionWrapper<>( selection );
+		final Selection< OverlayVertexWrapper< Spot, Link >, OverlayEdgeWrapper< Spot, Link > > overlaySelection = new SelectionAdapter<>( selection, vertexMap, edgeMap );
 
 		final String windowTitle = "BigDataViewer " + (bdvName++); // TODO: use JY naming scheme
 		final BigDataViewerMaMuT bdv = BigDataViewerMaMuT.open( sharedBdvData, windowTitle, bdvGroupHandle );

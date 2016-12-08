@@ -16,6 +16,7 @@ import org.mastodon.collection.RefList;
 import org.mastodon.kdtree.ClipConvexPolytope;
 import org.mastodon.revised.Util;
 import org.mastodon.revised.ui.selection.FocusModel;
+import org.mastodon.revised.ui.selection.HighlightModel;
 import org.mastodon.spatial.SpatialIndex;
 import org.mastodon.spatial.SpatioTemporalIndex;
 
@@ -75,13 +76,13 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 
 	private final SpatioTemporalIndex< V > index;
 
-	private final OverlayHighlight< V, E > highlight;
+	private final HighlightModel< V, E > highlight;
 
 	private final FocusModel< V, E > focus;
 
 	public OverlayGraphRenderer(
 			final OverlayGraph< V, E > graph,
-			final OverlayHighlight< V, E > highlight,
+			final HighlightModel< V, E > highlight,
 			final FocusModel< V, E > focus )
 	{
 		this.graph = graph;
