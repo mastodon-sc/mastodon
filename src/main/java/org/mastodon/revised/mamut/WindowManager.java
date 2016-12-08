@@ -74,6 +74,7 @@ import org.mastodon.revised.ui.selection.HighlightListener;
 import org.mastodon.revised.ui.selection.HighlightModel;
 import org.mastodon.revised.ui.selection.HighlightModelImp;
 import org.mastodon.revised.ui.selection.NavigationHandler;
+import org.mastodon.revised.ui.selection.NavigationHandlerImp;
 import org.mastodon.revised.ui.selection.Selection;
 import org.mastodon.revised.ui.selection.SelectionListener;
 import org.scijava.ui.behaviour.KeyStrokeAdder;
@@ -424,7 +425,7 @@ public class WindowManager
 		viewer.getDisplay().addHandler( highlightHandler );
 		viewer.addRenderTransformListener( highlightHandler );
 
-		final NavigationHandler< Spot, Link > navigationHandler = new NavigationHandler<>( bdvGroupHandle );
+		final NavigationHandler< Spot, Link > navigationHandler = new NavigationHandlerImp<>( bdvGroupHandle );
 		final OverlayNavigationWrapper< Spot, Link > navigation =
 				new OverlayNavigationWrapper< Spot, Link >( viewer, overlayGraph, navigationHandler );
 		final BdvSelectionBehaviours< ?, ? > selectionBehaviours = new BdvSelectionBehaviours<>( overlayGraph, tracksOverlay, overlaySelection, navigation );
@@ -544,7 +545,7 @@ public class WindowManager
 		/*
 		 * TrackScheme navigation
 		 */
-		final NavigationHandler< Spot, Link > navigationHandler = new NavigationHandler<>( groupHandle );
+		final NavigationHandler< Spot, Link > navigationHandler = new NavigationHandlerImp<>( groupHandle );
 		final ModelNavigationProperties navigationProperties = new DefaultModelNavigationProperties< >( graph, idmap, navigationHandler );
 		final TrackSchemeNavigation trackSchemeNavigation = new TrackSchemeNavigation( navigationProperties, trackSchemeGraph );
 

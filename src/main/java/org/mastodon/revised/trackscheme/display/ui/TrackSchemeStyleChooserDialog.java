@@ -43,7 +43,7 @@ import org.mastodon.revised.trackscheme.display.ui.dummygraph.DummyVertex;
 import org.mastodon.revised.ui.grouping.GroupManager;
 import org.mastodon.revised.ui.selection.FocusModelImp;
 import org.mastodon.revised.ui.selection.HighlightModelImp;
-import org.mastodon.revised.ui.selection.NavigationHandler;
+import org.mastodon.revised.ui.selection.NavigationHandlerImp;
 import org.mastodon.revised.ui.selection.Selection;
 
 /**
@@ -83,7 +83,7 @@ class TrackSchemeStyleChooserDialog extends JDialog
 		final TrackSchemeHighlight highlight = new TrackSchemeHighlight( new DefaultModelHighlightProperties<>( example, idmap, new HighlightModelImp<>( idmap ) ), graph );
 		final TrackSchemeFocus focus = new TrackSchemeFocus( new DefaultModelFocusProperties<>( example, idmap, new FocusModelImp<>( idmap ) ), graph );
 		final TrackSchemeSelection tsSelection = new TrackSchemeSelection( new DefaultModelSelectionProperties<>( example, idmap, selection ) );
-		final TrackSchemeNavigation navigation = new TrackSchemeNavigation( new DefaultModelNavigationProperties<>( example, idmap, new NavigationHandler<>( new GroupManager().createGroupHandle() ) ), graph );
+		final TrackSchemeNavigation navigation = new TrackSchemeNavigation( new DefaultModelNavigationProperties<>( example, idmap, new NavigationHandlerImp<>( new GroupManager().createGroupHandle() ) ), graph );
 		panelPreview = new TrackSchemePanel( graph, highlight, focus, tsSelection, navigation, TrackSchemeOptions.options() );
 		panelPreview.setTimepointRange( 0, 7 );
 		panelPreview.timePointChanged( 2 );

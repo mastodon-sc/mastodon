@@ -50,4 +50,16 @@ public class TrackSchemeVertexBimap< V extends Vertex< E >, E extends Edge< V > 
 			return v;
 		}
 	}
+
+	@Override
+	public TrackSchemeVertex reusableRightRef()
+	{
+		return tsgraph.vertexRef();
+	}
+
+	@Override
+	public void releaseRef( final TrackSchemeVertex ref )
+	{
+		tsgraph.releaseRef( ref );
+	}
 }
