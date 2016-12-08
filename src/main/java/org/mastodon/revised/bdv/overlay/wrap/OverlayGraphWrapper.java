@@ -166,7 +166,7 @@ public class OverlayGraphWrapper< V extends Vertex< E >, E extends Edge< V > > i
 		@Override
 		public void releaseRef( final OverlayVertexWrapper< V, E > v )
 		{
-			releaseRef( v );
+			OverlayGraphWrapper.this.releaseRef( v );
 		}
 
 		@Override
@@ -217,7 +217,7 @@ public class OverlayGraphWrapper< V extends Vertex< E >, E extends Edge< V > > i
 		@Override
 		public void releaseRef( final OverlayEdgeWrapper< V, E > e )
 		{
-			releaseRef( e );
+			OverlayGraphWrapper.this.releaseRef( e );
 		}
 
 		@Override
