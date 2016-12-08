@@ -10,10 +10,9 @@ public class OverlayVertexWrapperBimap< V extends Vertex< E >, E extends Edge< V
 {
 	private final RefCollection< OverlayVertexWrapper< V, E > > vertices;
 
-	public OverlayVertexWrapperBimap(
-			final RefCollection< OverlayVertexWrapper< V, E > > vertices )
+	public OverlayVertexWrapperBimap( final OverlayGraphWrapper< V, E > graph )
 	{
-		this.vertices = vertices;
+		this.vertices = graph.vertices();
 	}
 
 	// TODO: don't need ref ???
