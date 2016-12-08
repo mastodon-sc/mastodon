@@ -76,6 +76,7 @@ import org.mastodon.revised.ui.selection.HighlightModelImp;
 import org.mastodon.revised.ui.selection.NavigationHandler;
 import org.mastodon.revised.ui.selection.NavigationHandlerImp;
 import org.mastodon.revised.ui.selection.Selection;
+import org.mastodon.revised.ui.selection.SelectionImp;
 import org.mastodon.revised.ui.selection.SelectionListener;
 import org.scijava.ui.behaviour.KeyStrokeAdder;
 import org.scijava.ui.behaviour.io.InputTriggerConfig;
@@ -290,7 +291,7 @@ public class WindowManager
 
 		final ListenableReadOnlyGraph< Spot, Link > graph = model.getGraph();
 		final GraphIdBimap< Spot, Link > idmap = model.getGraphIdBimap();
-		selection = new Selection<>( graph, idmap );
+		selection = new SelectionImp<>( graph, idmap );
 		highlightModel = new HighlightModelImp<>( idmap );
 		radiusStats = new BoundingSphereRadiusStatistics( model );
 		focusModel = new FocusModelImp<>( idmap );

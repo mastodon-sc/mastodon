@@ -13,6 +13,7 @@ import org.mastodon.graph.algorithm.traversal.SearchListener;
 import org.mastodon.graph.object.AbstractObjectGraph;
 import org.mastodon.graph.object.AbstractObjectIdGraph;
 import org.mastodon.revised.ui.selection.Selection;
+import org.mastodon.revised.ui.selection.SelectionImp;
 
 public class DummyGraph extends AbstractObjectIdGraph< DummyVertex, DummyEdge > implements ListenableGraph< DummyVertex, DummyEdge >
 {
@@ -51,7 +52,7 @@ public class DummyGraph extends AbstractObjectIdGraph< DummyVertex, DummyEdge > 
 		private Examples( final DummyGraph graph, final Collection< DummyVertex > vertices, final Collection< DummyEdge > edges )
 		{
 			this.graph = graph;
-			this.selection = new Selection<>( graph, graph.getIdBimap() );
+			this.selection = new SelectionImp<>( graph, graph.getIdBimap() );
 			selection.setEdgesSelected( edges, true );
 			selection.setVerticesSelected( vertices, true );
 		}

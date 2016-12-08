@@ -169,6 +169,8 @@ public class SelectionActions< V extends Vertex< E >, E extends Edge< V > >
 			selection.setVerticesSelected( vList, true );
 			selection.setEdgesSelected( eList, true );
 
+
+			// TODO: the following seems wrong!!! no changes to the graph are made!!!
 			undo.setUndoPoint();
 			notify.notifyGraphChanged();
 			selection.resumeListeners();
