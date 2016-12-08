@@ -21,7 +21,6 @@ import org.mastodon.revised.trackscheme.ScreenEntities;
 import org.mastodon.revised.trackscheme.ScreenEntitiesInterpolator;
 import org.mastodon.revised.trackscheme.ScreenTransform;
 import org.mastodon.revised.trackscheme.TrackSchemeEdge;
-import org.mastodon.revised.trackscheme.TrackSchemeFocus;
 import org.mastodon.revised.trackscheme.TrackSchemeGraph;
 import org.mastodon.revised.trackscheme.TrackSchemeHighlight;
 import org.mastodon.revised.trackscheme.TrackSchemeNavigation;
@@ -32,6 +31,7 @@ import org.mastodon.revised.trackscheme.display.animate.AbstractAnimator;
 import org.mastodon.revised.trackscheme.display.laf.DefaultTrackSchemeOverlay;
 import org.mastodon.revised.trackscheme.display.laf.TrackSchemeStyle;
 import org.mastodon.revised.ui.selection.FocusListener;
+import org.mastodon.revised.ui.selection.FocusModel;
 import org.mastodon.revised.ui.selection.HighlightListener;
 import org.mastodon.revised.ui.selection.NavigationEtiquette;
 import org.mastodon.revised.ui.selection.NavigationListener;
@@ -141,7 +141,7 @@ public class TrackSchemePanel extends JPanel implements
 
 //	private final TrackSchemeSelection selection;
 
-	private final TrackSchemeFocus focus;
+	private final FocusModel< TrackSchemeVertex, TrackSchemeEdge > focus;
 
 	private final TrackSchemeNavigator navigator;
 
@@ -154,7 +154,7 @@ public class TrackSchemePanel extends JPanel implements
 	public TrackSchemePanel(
 			final TrackSchemeGraph< ?, ? > graph,
 			final TrackSchemeHighlight highlight,
-			final TrackSchemeFocus focus,
+			final FocusModel< TrackSchemeVertex, TrackSchemeEdge > focus,
 			final TrackSchemeSelection selection,
 			final TrackSchemeNavigation navigation,
 			final TrackSchemeOptions optional )
@@ -877,7 +877,7 @@ public class TrackSchemePanel extends JPanel implements
 		 * Set entities for painting into the specified double-buffered
 		 * {@link AbstractTrackSchemeOverlay}. (This swaps
 		 * {@link #screenEntities} with pending entities from the overlay.)
-		 * 
+		 *
 		 * @param overlay
 		 *            the overlay to paint in.
 		 */

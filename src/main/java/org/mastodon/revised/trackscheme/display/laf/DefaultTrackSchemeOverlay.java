@@ -20,11 +20,13 @@ import org.mastodon.revised.trackscheme.ScreenTransform;
 import org.mastodon.revised.trackscheme.ScreenVertex;
 import org.mastodon.revised.trackscheme.ScreenVertex.Transition;
 import org.mastodon.revised.trackscheme.ScreenVertexRange;
-import org.mastodon.revised.trackscheme.TrackSchemeFocus;
+import org.mastodon.revised.trackscheme.TrackSchemeEdge;
 import org.mastodon.revised.trackscheme.TrackSchemeGraph;
 import org.mastodon.revised.trackscheme.TrackSchemeHighlight;
+import org.mastodon.revised.trackscheme.TrackSchemeVertex;
 import org.mastodon.revised.trackscheme.display.AbstractTrackSchemeOverlay;
 import org.mastodon.revised.trackscheme.display.TrackSchemeOptions;
+import org.mastodon.revised.ui.selection.FocusModel;
 
 import net.imglib2.RealLocalizable;
 
@@ -74,7 +76,7 @@ public class DefaultTrackSchemeOverlay extends AbstractTrackSchemeOverlay
 	public DefaultTrackSchemeOverlay(
 			final TrackSchemeGraph< ?, ? > graph,
 			final TrackSchemeHighlight highlight,
-			final TrackSchemeFocus focus,
+			final FocusModel< TrackSchemeVertex, TrackSchemeEdge > focus,
 			final TrackSchemeOptions options,
 			final TrackSchemeStyle style )
 	{

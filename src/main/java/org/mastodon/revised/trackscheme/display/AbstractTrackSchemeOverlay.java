@@ -11,11 +11,11 @@ import org.mastodon.revised.trackscheme.ScreenEntities;
 import org.mastodon.revised.trackscheme.ScreenVertex;
 import org.mastodon.revised.trackscheme.ScreenVertexRange;
 import org.mastodon.revised.trackscheme.TrackSchemeEdge;
-import org.mastodon.revised.trackscheme.TrackSchemeFocus;
 import org.mastodon.revised.trackscheme.TrackSchemeGraph;
 import org.mastodon.revised.trackscheme.TrackSchemeHighlight;
 import org.mastodon.revised.trackscheme.TrackSchemeVertex;
 import org.mastodon.revised.trackscheme.display.OffsetHeaders.OffsetHeadersListener;
+import org.mastodon.revised.ui.selection.FocusModel;
 
 import net.imglib2.RealLocalizable;
 import net.imglib2.RealPoint;
@@ -91,7 +91,7 @@ public abstract class AbstractTrackSchemeOverlay implements OverlayRenderer, Off
 
 	protected int highlightedEdgeId;
 
-	protected final TrackSchemeFocus focus;
+	protected final FocusModel< TrackSchemeVertex, TrackSchemeEdge > focus;
 
 	protected int focusedVertexId;
 
@@ -130,7 +130,7 @@ public abstract class AbstractTrackSchemeOverlay implements OverlayRenderer, Off
 	public AbstractTrackSchemeOverlay(
 			final TrackSchemeGraph< ?, ? > graph,
 			final TrackSchemeHighlight highlight,
-			final TrackSchemeFocus focus,
+			final FocusModel< TrackSchemeVertex, TrackSchemeEdge > focus,
 			final TrackSchemeOptions options )
 	{
 		this.graph = graph;

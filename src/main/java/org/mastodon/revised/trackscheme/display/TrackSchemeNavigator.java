@@ -7,12 +7,12 @@ import org.mastodon.collection.RefSet;
 import org.mastodon.revised.trackscheme.LineageTreeLayout;
 import org.mastodon.revised.trackscheme.ScreenTransform;
 import org.mastodon.revised.trackscheme.TrackSchemeEdge;
-import org.mastodon.revised.trackscheme.TrackSchemeFocus;
 import org.mastodon.revised.trackscheme.TrackSchemeGraph;
 import org.mastodon.revised.trackscheme.TrackSchemeNavigation;
 import org.mastodon.revised.trackscheme.TrackSchemeSelection;
 import org.mastodon.revised.trackscheme.TrackSchemeVertex;
 import org.mastodon.revised.trackscheme.display.OffsetHeaders.OffsetHeadersListener;
+import org.mastodon.revised.ui.selection.FocusModel;
 import org.scijava.ui.behaviour.BehaviourMap;
 import org.scijava.ui.behaviour.ClickBehaviour;
 import org.scijava.ui.behaviour.DragBehaviour;
@@ -120,7 +120,7 @@ public class TrackSchemeNavigator implements TransformListener< ScreenTransform 
 
 	private final ScreenTransform screenTransform;
 
-	private final TrackSchemeFocus focus;
+	private final FocusModel< TrackSchemeVertex, TrackSchemeEdge > focus;
 
 
 	/**
@@ -148,7 +148,7 @@ public class TrackSchemeNavigator implements TransformListener< ScreenTransform 
 			final TrackSchemeGraph< ?, ? > graph,
 			final LineageTreeLayout layout,
 			final AbstractTrackSchemeOverlay graphOverlay,
-			final TrackSchemeFocus focus,
+			final FocusModel< TrackSchemeVertex, TrackSchemeEdge > focus,
 			final TrackSchemeNavigation navigation,
 			final TrackSchemeSelection selection )
 	{

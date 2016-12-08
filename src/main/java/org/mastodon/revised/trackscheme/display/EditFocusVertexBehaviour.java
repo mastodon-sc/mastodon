@@ -24,10 +24,11 @@ import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 
 import org.mastodon.revised.trackscheme.ScreenTransform;
-import org.mastodon.revised.trackscheme.TrackSchemeFocus;
+import org.mastodon.revised.trackscheme.TrackSchemeEdge;
 import org.mastodon.revised.trackscheme.TrackSchemeGraph;
 import org.mastodon.revised.trackscheme.TrackSchemeVertex;
 import org.mastodon.revised.trackscheme.display.OffsetHeaders.OffsetHeadersListener;
+import org.mastodon.revised.ui.selection.FocusModel;
 import org.mastodon.undo.UndoPointMarker;
 
 import net.imglib2.ui.TransformListener;
@@ -52,7 +53,7 @@ public class EditFocusVertexBehaviour implements Runnable, TransformListener< Sc
 
 	private final FontMetrics fontMetrics;
 
-	private final TrackSchemeFocus focus;
+	private final FocusModel< TrackSchemeVertex, TrackSchemeEdge > focus;
 
 	/**
 	 * current width of vertical header.
@@ -65,7 +66,7 @@ public class EditFocusVertexBehaviour implements Runnable, TransformListener< Sc
 	private int headerHeight;
 
 	public EditFocusVertexBehaviour(
-			final TrackSchemeFocus focus,
+			final FocusModel< TrackSchemeVertex, TrackSchemeEdge > focus,
 			final TrackSchemeGraph< ?, ? > graph,
 			final UndoPointMarker undoPointMarker,
 			final JComponent display )
