@@ -50,15 +50,12 @@ import org.mastodon.revised.model.mamut.ModelOverlayProperties;
 import org.mastodon.revised.model.mamut.Spot;
 import org.mastodon.revised.trackscheme.DefaultModelGraphProperties;
 import org.mastodon.revised.trackscheme.DefaultModelNavigationProperties;
-import org.mastodon.revised.trackscheme.DefaultModelSelectionProperties;
 import org.mastodon.revised.trackscheme.ModelNavigationProperties;
-import org.mastodon.revised.trackscheme.ModelSelectionProperties;
 import org.mastodon.revised.trackscheme.TrackSchemeContextListener;
 import org.mastodon.revised.trackscheme.TrackSchemeEdge;
 import org.mastodon.revised.trackscheme.TrackSchemeEdgeBimap;
 import org.mastodon.revised.trackscheme.TrackSchemeGraph;
 import org.mastodon.revised.trackscheme.TrackSchemeNavigation;
-import org.mastodon.revised.trackscheme.TrackSchemeSelection;
 import org.mastodon.revised.trackscheme.TrackSchemeVertex;
 import org.mastodon.revised.trackscheme.TrackSchemeVertexBimap;
 import org.mastodon.revised.trackscheme.display.TrackSchemeEditBehaviours;
@@ -542,8 +539,7 @@ public class WindowManager
 		/*
 		 * TrackScheme selection
 		 */
-		final ModelSelectionProperties selectionProperties = new DefaultModelSelectionProperties< >( graph, idmap, selection );
-		final TrackSchemeSelection trackSchemeSelection = new TrackSchemeSelection( selectionProperties );
+		final Selection< TrackSchemeVertex, TrackSchemeEdge > trackSchemeSelection = new SelectionAdapter<>( selection, vertexMap, edgeMap );
 
 		/*
 		 * TrackScheme GroupHandle

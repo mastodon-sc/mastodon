@@ -9,10 +9,10 @@ import org.mastodon.revised.trackscheme.ScreenTransform;
 import org.mastodon.revised.trackscheme.TrackSchemeEdge;
 import org.mastodon.revised.trackscheme.TrackSchemeGraph;
 import org.mastodon.revised.trackscheme.TrackSchemeNavigation;
-import org.mastodon.revised.trackscheme.TrackSchemeSelection;
 import org.mastodon.revised.trackscheme.TrackSchemeVertex;
 import org.mastodon.revised.trackscheme.display.OffsetHeaders.OffsetHeadersListener;
 import org.mastodon.revised.ui.selection.FocusModel;
+import org.mastodon.revised.ui.selection.Selection;
 import org.scijava.ui.behaviour.BehaviourMap;
 import org.scijava.ui.behaviour.ClickBehaviour;
 import org.scijava.ui.behaviour.DragBehaviour;
@@ -116,7 +116,7 @@ public class TrackSchemeNavigator implements TransformListener< ScreenTransform 
 
 	private final TrackSchemeNavigation navigation;
 
-	private final TrackSchemeSelection selection;
+	private final Selection< TrackSchemeVertex, TrackSchemeEdge > selection;
 
 	private final ScreenTransform screenTransform;
 
@@ -150,7 +150,7 @@ public class TrackSchemeNavigator implements TransformListener< ScreenTransform 
 			final AbstractTrackSchemeOverlay graphOverlay,
 			final FocusModel< TrackSchemeVertex, TrackSchemeEdge > focus,
 			final TrackSchemeNavigation navigation,
-			final TrackSchemeSelection selection )
+			final Selection< TrackSchemeVertex, TrackSchemeEdge > selection )
 	{
 		this.display = display;
 		this.graph = graph;
@@ -285,7 +285,7 @@ public class TrackSchemeNavigator implements TransformListener< ScreenTransform 
 		final TrackSchemeVertex ref = graph.vertexRef();
 		final TrackSchemeVertex v = focus.getFocusedVertex( ref );
 		if ( v != null )
-			selection.toggleSelected( v );
+			selection.toggle( v );
 		graph.releaseRef( ref );
 	}
 

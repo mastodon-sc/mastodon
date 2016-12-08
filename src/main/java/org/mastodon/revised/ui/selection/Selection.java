@@ -24,6 +24,7 @@ import org.mastodon.graph.Vertex;
  * @param <E>
  *            the type of the edges.
  */
+// TODO: rename to SelectionModel?
 public interface Selection< V extends Vertex< E >, E extends Edge< V > >
 {
 	/**
