@@ -1,5 +1,6 @@
 package org.mastodon.revised.bdv.overlay;
 
+import org.mastodon.revised.ui.selection.NavigationHandler;
 import org.mastodon.revised.ui.selection.Selection;
 import org.scijava.ui.behaviour.BehaviourMap;
 import org.scijava.ui.behaviour.ClickBehaviour;
@@ -23,7 +24,7 @@ public class BdvSelectionBehaviours< V extends OverlayVertex< V, E >, E extends 
 
 	private final Selection< V, E > selection;
 
-	private final OverlayNavigation< V, E > navigation;
+	private final NavigationHandler< V, E > navigation;
 
 	private final BehaviourMap behaviourMap;
 
@@ -31,7 +32,7 @@ public class BdvSelectionBehaviours< V extends OverlayVertex< V, E >, E extends 
 			final OverlayGraph< V, E > overlayGraph,
 			final OverlayGraphRenderer< V, E > renderer,
 			final Selection< V, E > selection,
-			final OverlayNavigation< V, E > navigation )
+			final NavigationHandler< V, E > navigation )
 	{
 		this.overlayGraph = overlayGraph;
 		this.renderer = renderer;

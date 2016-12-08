@@ -15,6 +15,7 @@ import javax.swing.SwingUtilities;
 
 import org.mastodon.adapter.FocusAdapter;
 import org.mastodon.adapter.HighlightAdapter;
+import org.mastodon.adapter.NavigationHandlerAdapter;
 import org.mastodon.adapter.RefBimap;
 import org.mastodon.adapter.SelectionAdapter;
 import org.mastodon.graph.GraphChangeListener;
@@ -28,6 +29,7 @@ import org.mastodon.revised.bdv.overlay.EditBehaviours;
 import org.mastodon.revised.bdv.overlay.EditSpecialBehaviours;
 import org.mastodon.revised.bdv.overlay.OverlayContext;
 import org.mastodon.revised.bdv.overlay.OverlayGraphRenderer;
+import org.mastodon.revised.bdv.overlay.OverlayNavigation;
 import org.mastodon.revised.bdv.overlay.RenderSettings;
 import org.mastodon.revised.bdv.overlay.RenderSettings.UpdateListener;
 import org.mastodon.revised.bdv.overlay.ui.RenderSettingsDialog;
@@ -35,7 +37,6 @@ import org.mastodon.revised.bdv.overlay.wrap.OverlayContextWrapper;
 import org.mastodon.revised.bdv.overlay.wrap.OverlayEdgeWrapper;
 import org.mastodon.revised.bdv.overlay.wrap.OverlayEdgeWrapperBimap;
 import org.mastodon.revised.bdv.overlay.wrap.OverlayGraphWrapper;
-import org.mastodon.revised.bdv.overlay.wrap.OverlayNavigationWrapper;
 import org.mastodon.revised.bdv.overlay.wrap.OverlayVertexWrapper;
 import org.mastodon.revised.bdv.overlay.wrap.OverlayVertexWrapperBimap;
 import org.mastodon.revised.context.Context;
@@ -371,7 +372,8 @@ public class WindowManager
 		final HighlightModel< OverlayVertexWrapper< Spot, Link >, OverlayEdgeWrapper< Spot, Link > > overlayHighlight = new HighlightAdapter<>( highlightModel, vertexMap, edgeMap );
 		final FocusModel< OverlayVertexWrapper< Spot, Link >, OverlayEdgeWrapper< Spot, Link > > overlayFocus = new FocusAdapter<>( focusModel, vertexMap, edgeMap );
 		final Selection< OverlayVertexWrapper< Spot, Link >, OverlayEdgeWrapper< Spot, Link > > overlaySelection = new SelectionAdapter<>( selection, vertexMap, edgeMap );
-
+		final NavigationHandler< Spot, Link > navigationHandler = new NavigationHandlerImp<>( bdvGroupHandle );
+		final NavigationHandler< OverlayVertexWrapper< Spot, Link >, OverlayEdgeWrapper< Spot, Link > > overlayNavigationHandler = new NavigationHandlerAdapter<>( navigationHandler, vertexMap, edgeMap );
 		final String windowTitle = "BigDataViewer " + (bdvName++); // TODO: use JY naming scheme
 		final BigDataViewerMaMuT bdv = BigDataViewerMaMuT.open( sharedBdvData, windowTitle, bdvGroupHandle );
 		final ViewerFrame viewerFrame = bdv.getViewerFrame();
@@ -427,14 +429,14 @@ public class WindowManager
 		} );
 		// TODO: remember those listeners and remove them when the BDV window is closed!!!
 
+		final OverlayNavigation< OverlayVertexWrapper< Spot, Link >, OverlayEdgeWrapper< Spot, Link > > overlayNavigation = new OverlayNavigation<>( viewer, overlayGraph );
+		overlayNavigationHandler.addNavigationListener( overlayNavigation );
+
 		final BdvHighlightHandler< ?, ? > highlightHandler = new BdvHighlightHandler<>( overlayGraph, tracksOverlay, overlayHighlight );
 		viewer.getDisplay().addHandler( highlightHandler );
 		viewer.addRenderTransformListener( highlightHandler );
 
-		final NavigationHandler< Spot, Link > navigationHandler = new NavigationHandlerImp<>( bdvGroupHandle );
-		final OverlayNavigationWrapper< Spot, Link > navigation =
-				new OverlayNavigationWrapper< Spot, Link >( viewer, overlayGraph, navigationHandler );
-		final BdvSelectionBehaviours< ?, ? > selectionBehaviours = new BdvSelectionBehaviours<>( overlayGraph, tracksOverlay, overlaySelection, navigation );
+		final BdvSelectionBehaviours< ?, ? > selectionBehaviours = new BdvSelectionBehaviours<>( overlayGraph, tracksOverlay, overlaySelection, overlayNavigationHandler );
 		selectionBehaviours.installBehaviourBindings( viewerFrame.getTriggerbindings(), keyconf );
 
 		final OverlayContext< OverlayVertexWrapper< Spot, Link > > overlayContext = new OverlayContext<>( overlayGraph, tracksOverlay );
