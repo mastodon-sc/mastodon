@@ -41,8 +41,8 @@ import org.mastodon.revised.trackscheme.display.ui.dummygraph.DummyGraph;
 import org.mastodon.revised.trackscheme.display.ui.dummygraph.DummyGraph.Examples;
 import org.mastodon.revised.trackscheme.display.ui.dummygraph.DummyVertex;
 import org.mastodon.revised.ui.grouping.GroupManager;
-import org.mastodon.revised.ui.selection.FocusModel;
-import org.mastodon.revised.ui.selection.HighlightModel;
+import org.mastodon.revised.ui.selection.FocusModelImp;
+import org.mastodon.revised.ui.selection.HighlightModelImp;
 import org.mastodon.revised.ui.selection.NavigationHandler;
 import org.mastodon.revised.ui.selection.Selection;
 
@@ -80,8 +80,8 @@ class TrackSchemeStyleChooserDialog extends JDialog
 		final GraphIdBimap< DummyVertex, DummyEdge > idmap = example.getIdBimap();
 		final ModelGraphProperties dummyProps = new DefaultModelGraphProperties< >( example, idmap, selection );
 		final TrackSchemeGraph< DummyVertex, DummyEdge > graph = new TrackSchemeGraph<>( example, idmap, dummyProps );
-		final TrackSchemeHighlight highlight = new TrackSchemeHighlight( new DefaultModelHighlightProperties<>( example, idmap, new HighlightModel<>( idmap ) ), graph );
-		final TrackSchemeFocus focus = new TrackSchemeFocus( new DefaultModelFocusProperties<>( example, idmap, new FocusModel<>( idmap ) ), graph );
+		final TrackSchemeHighlight highlight = new TrackSchemeHighlight( new DefaultModelHighlightProperties<>( example, idmap, new HighlightModelImp<>( idmap ) ), graph );
+		final TrackSchemeFocus focus = new TrackSchemeFocus( new DefaultModelFocusProperties<>( example, idmap, new FocusModelImp<>( idmap ) ), graph );
 		final TrackSchemeSelection tsSelection = new TrackSchemeSelection( new DefaultModelSelectionProperties<>( example, idmap, selection ) );
 		final TrackSchemeNavigation navigation = new TrackSchemeNavigation( new DefaultModelNavigationProperties<>( example, idmap, new NavigationHandler<>( new GroupManager().createGroupHandle() ) ), graph );
 		panelPreview = new TrackSchemePanel( graph, highlight, focus, tsSelection, navigation, TrackSchemeOptions.options() );

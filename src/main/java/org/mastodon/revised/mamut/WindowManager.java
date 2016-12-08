@@ -69,8 +69,10 @@ import org.mastodon.revised.ui.grouping.GroupHandle;
 import org.mastodon.revised.ui.grouping.GroupManager;
 import org.mastodon.revised.ui.selection.FocusListener;
 import org.mastodon.revised.ui.selection.FocusModel;
+import org.mastodon.revised.ui.selection.FocusModelImp;
 import org.mastodon.revised.ui.selection.HighlightListener;
 import org.mastodon.revised.ui.selection.HighlightModel;
+import org.mastodon.revised.ui.selection.HighlightModelImp;
 import org.mastodon.revised.ui.selection.NavigationHandler;
 import org.mastodon.revised.ui.selection.Selection;
 import org.mastodon.revised.ui.selection.SelectionListener;
@@ -288,9 +290,9 @@ public class WindowManager
 		final ListenableReadOnlyGraph< Spot, Link > graph = model.getGraph();
 		final GraphIdBimap< Spot, Link > idmap = model.getGraphIdBimap();
 		selection = new Selection<>( graph, idmap );
-		highlightModel = new HighlightModel<  >( idmap );
+		highlightModel = new HighlightModelImp<>( idmap );
 		radiusStats = new BoundingSphereRadiusStatistics( model );
-		focusModel = new FocusModel<>( idmap );
+		focusModel = new FocusModelImp<>( idmap );
 
 		minTimepoint = 0;
 		maxTimepoint = sharedBdvData.getNumTimepoints() - 1;
