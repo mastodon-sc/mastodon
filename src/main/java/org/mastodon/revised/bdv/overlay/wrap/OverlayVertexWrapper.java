@@ -78,12 +78,6 @@ public class OverlayVertexWrapper< V extends Vertex< E >, E extends Edge< V > >
 	}
 
 	@Override
-	public boolean isSelected()
-	{
-		return overlayProperties.isVertexSelected( wv );
-	}
-
-	@Override
 	public int getTimepoint()
 	{
 		return overlayProperties.getTimepoint( wv );

@@ -18,10 +18,6 @@ public interface OverlayProperties< V, E >
 
 	public int getTimepoint( V v );
 
-	public boolean isVertexSelected( V v );
-
-	public boolean isEdgeSelected( E e );
-
 	public double getMaxBoundingSphereRadiusSquared( int timepoint );
 
 	// TODO move to separate interface? OverlayModifyProperties?

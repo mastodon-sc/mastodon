@@ -2,7 +2,6 @@ package org.mastodon.revised.model.mamut;
 
 import org.mastodon.revised.bdv.overlay.OverlayGraph;
 import org.mastodon.revised.bdv.overlay.wrap.OverlayProperties;
-import org.mastodon.revised.ui.selection.Selection;
 
 /**
  * Provides spot {@link OverlayProperties properties} for BDV {@link OverlayGraph}.
@@ -15,16 +14,12 @@ public class ModelOverlayProperties implements OverlayProperties< Spot, Link >
 
 	private final BoundingSphereRadiusStatistics radiusStats;
 
-	private final Selection< Spot, Link > selection;
-
 	public ModelOverlayProperties(
 			final ModelGraph modelGraph,
-			final BoundingSphereRadiusStatistics radiusStats,
-			final Selection< Spot, Link > selection )
+			final BoundingSphereRadiusStatistics radiusStats )
 	{
 		this.modelGraph = modelGraph;
 		this.radiusStats = radiusStats;
-		this.selection = selection;
 	}
 
 	@Override
@@ -85,18 +80,6 @@ public class ModelOverlayProperties implements OverlayProperties< Spot, Link >
 	public void setLabel( final Spot v, final String label )
 	{
 		v.setLabel( label );
-	}
-
-	@Override
-	public boolean isVertexSelected( final Spot v )
-	{
-		return selection.isSelected( v );
-	}
-
-	@Override
-	public boolean isEdgeSelected( final Link e )
-	{
-		return selection.isSelected( e );
 	}
 
 	@Override

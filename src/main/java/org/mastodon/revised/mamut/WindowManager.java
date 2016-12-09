@@ -357,7 +357,7 @@ public class WindowManager
 				model.getGraph(),
 				model.getGraphIdBimap(),
 				model.getSpatioTemporalIndex(),
-				new ModelOverlayProperties( model.getGraph(), radiusStats, selection ) );
+				new ModelOverlayProperties( model.getGraph(), radiusStats ) );
 		final RefBimap< Spot, OverlayVertexWrapper< Spot, Link > > vertexMap = new OverlayVertexWrapperBimap<>( overlayGraph );
 		final RefBimap< Link, OverlayEdgeWrapper< Spot, Link > > edgeMap = new OverlayEdgeWrapperBimap<>( overlayGraph );
 
@@ -382,7 +382,8 @@ public class WindowManager
 		final OverlayGraphRenderer< OverlayVertexWrapper< Spot, Link >, OverlayEdgeWrapper< Spot, Link > > tracksOverlay = new OverlayGraphRenderer<>(
 				overlayGraph,
 				overlayHighlight,
-				overlayFocus );
+				overlayFocus,
+				overlaySelection );
 		viewer.getDisplay().addOverlayRenderer( tracksOverlay );
 		viewer.addRenderTransformListener( tracksOverlay );
 		viewer.addTimePointListener( tracksOverlay );
