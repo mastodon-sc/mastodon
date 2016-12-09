@@ -64,6 +64,16 @@ public interface ModelGraphProperties
 	public static interface ModelVertexProperties
 	{
 		/**
+		 * Get the timepoint of the vertex with the specified id (see
+		 * {@link GraphIdBimap}).
+		 *
+		 * @param id
+		 *            the id of the vertex.
+		 * @return the timepoint of the vertex.
+		 */
+		public int getTimepoint( int id );
+
+		/**
 		 * Returns the label of the vertex with the specified id (see
 		 * {@link GraphIdBimap}).
 		 *

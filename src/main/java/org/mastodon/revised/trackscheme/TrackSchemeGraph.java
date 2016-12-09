@@ -75,7 +75,7 @@ import org.mastodon.spatial.HasTimepoint;
  * @author Tobias Pietzsch &lt;tobias.pietzsch@gmail.com&gt;
  */
 public class TrackSchemeGraph<
-		V extends Vertex< E > & HasTimepoint,
+		V extends Vertex< E >,
 		E extends Edge< V > >
 	extends GraphImp<
 				TrackSchemeGraph.TrackSchemeVertexPool,
@@ -145,14 +145,14 @@ public class TrackSchemeGraph<
 				new TrackSchemeVertexPool( modelGraphProperties, initialCapacity ) ) );
 		this.modelGraph = modelGraph;
 		this.idmap = idmap;
-		idToTrackSchemeVertex =	new IntRefArrayMap< TrackSchemeVertex >( vertexPool );
-		idToTrackSchemeEdge = new IntRefArrayMap< TrackSchemeEdge >( edgePool );
-		roots = new RefSetImp< TrackSchemeVertex >( vertexPool );
+		idToTrackSchemeVertex =	new IntRefArrayMap<>( vertexPool );
+		idToTrackSchemeEdge = new IntRefArrayMap<>( edgePool );
+		roots = new RefSetImp<>( vertexPool );
 		mv = modelGraph.vertexRef();
 		tsv = vertexRef();
 		tsv2 = vertexRef();
 		tse = edgeRef();
-		listeners = new ArrayList< GraphChangeListener >();
+		listeners = new ArrayList<>();
 		modelGraph.addGraphListener( this );
 		modelGraph.addGraphChangeListener( this );
 		graphRebuilt();
@@ -300,8 +300,7 @@ public class TrackSchemeGraph<
 		for ( final V v : modelGraph.vertices() )
 		{
 			final int id = idmap.getVertexId( v );
-			final int timepoint = v.getTimepoint();
-			addVertex( tsv ).init( id, timepoint );
+			addVertex( tsv ).init( id );
 			idToTrackSchemeVertex.put( id, tsv );
 			if ( v.incomingEdges().isEmpty() )
 				roots.add( tsv );
@@ -320,7 +319,7 @@ public class TrackSchemeGraph<
 	public void vertexAdded( final V vertex )
 	{
 		final int id = idmap.getVertexId( vertex );
-		addVertex( tsv ).init( id, vertex.getTimepoint() );
+		addVertex( tsv ).init( id );
 		idToTrackSchemeVertex.put( id, tsv );
 		roots.add( tsv );
 	}
@@ -364,8 +363,7 @@ public class TrackSchemeGraph<
 //	@Override // TODO: should be implemented for some listener interface, or REMOVE? (vertices never change timepoint?)
 	public void vertexTimepointChanged( final V vertex )
 	{
-		idToTrackSchemeVertex.get( idmap.getVertexId( vertex ), tsv );
-		tsv.setTimepoint( vertex.getTimepoint() );
+		idToTrackSchemeVertex.get( idmap.getVertexId( vertex ), tsv ).updateTimepointFromModel();
 	}
 
 	/*

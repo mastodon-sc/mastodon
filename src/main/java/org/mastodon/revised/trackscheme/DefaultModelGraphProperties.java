@@ -92,6 +92,12 @@ public class DefaultModelGraphProperties<
 		{
 			idmap.getVertex( id, v ).setLabel( label );
 		}
+
+		@Override
+		public int getTimepoint( final int id )
+		{
+			return idmap.getVertex( id, v ).getTimepoint();
+		}
 	}
 
 	// Does nothing currently, but maybe we'll add to it later

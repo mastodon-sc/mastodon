@@ -40,14 +40,14 @@ public class TrackSchemeVertex extends AbstractVertex< TrackSchemeVertex, TrackS
 		setScreenVertexIndex( -1 );
 	}
 
-	public TrackSchemeVertex init( final int modelVertexId, final int timepoint )
+	public TrackSchemeVertex init( final int modelVertexId )
 	{
 		setModelVertexId( modelVertexId );
 		setLayoutX( 0 );
-		setTimepoint( timepoint );
 		setLayoutTimestamp( -1 );
 		setLayoutInEdgeIndex( 0 );
 		setGhost( false );
+		updateTimepointFromModel();
 		return this;
 	}
 
@@ -116,6 +116,11 @@ public class TrackSchemeVertex extends AbstractVertex< TrackSchemeVertex, TrackS
 	protected void setTimepoint( final int timepoint )
 	{
 		access.putInt( timepoint, TIMEPOINT_OFFSET );
+	}
+
+	protected void updateTimepointFromModel()
+	{
+		setTimepoint( props.getTimepoint( getModelVertexId() ) );
 	}
 
 	/**
