@@ -412,7 +412,7 @@ public class TrackSchemeNavigator implements TransformListener< ScreenTransform 
 		// See if we can select a vertex.
 		if ( graphOverlay.getVertexAt( x, y, vertex ) != null )
 		{
-			final boolean selected = vertex.isSelected();
+			final boolean selected = selection.isSelected( vertex );
 			if ( !addToSelection )
 				selection.clearSelection();
 			selection.setSelected( vertex, !selected );
@@ -420,7 +420,7 @@ public class TrackSchemeNavigator implements TransformListener< ScreenTransform 
 		// See if we can select an edge.
 		else if ( graphOverlay.getEdgeAt( x, y, EDGE_SELECT_DISTANCE_TOLERANCE, edge ) != null )
 		{
-			final boolean selected = edge.isSelected();
+			final boolean selected = selection.isSelected( edge );
 			if ( !addToSelection )
 				selection.clearSelection();
 			selection.setSelected( edge, !selected );

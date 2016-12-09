@@ -33,8 +33,6 @@ public class DefaultModelGraphProperties<
 
 	private final GraphIdBimap< V, E > idmap;
 
-	private final Selection< V, E > selection;
-
 	/**
 	 * Creates a new graph properties object.
 	 *
@@ -49,24 +47,22 @@ public class DefaultModelGraphProperties<
 	 */
 	public DefaultModelGraphProperties(
 			final ReadOnlyGraph< V, E > graph,
-			final GraphIdBimap< V, E > idmap,
-			final Selection< V, E > selection )
+			final GraphIdBimap< V, E > idmap )
 	{
 		this.graph = graph;
 		this.idmap = idmap;
-		this.selection = selection;
 	}
 
 	@Override
 	public ModelVertexProperties createVertexProperties()
 	{
-		return new VertexProps< V >( graph, idmap, selection );
+		return new VertexProps<>( graph, idmap );
 	}
 
 	@Override
 	public ModelEdgeProperties createEdgeProperties()
 	{
-		return new EdgeProps< E >( graph, idmap, selection );
+		return new EdgeProps<>( graph, idmap );
 	}
 
 	private static class VertexProps<
@@ -75,17 +71,13 @@ public class DefaultModelGraphProperties<
 	{
 		private final GraphIdBimap< V, ? > idmap;
 
-		private final Selection< V, ? > selection;
-
 		private final V v;
 
 		private VertexProps(
 				final ReadOnlyGraph< V, ? > graph,
-				final GraphIdBimap< V, ? > idmap,
-				final Selection< V, ? > selection )
+				final GraphIdBimap< V, ? > idmap )
 		{
 			this.idmap = idmap;
-			this.selection = selection;
 			v = graph.vertexRef();
 		}
 
@@ -100,35 +92,21 @@ public class DefaultModelGraphProperties<
 		{
 			idmap.getVertex( id, v ).setLabel( label );
 		}
-
-		@Override
-		public boolean isSelected( final int id )
-		{
-			return selection.isSelected( idmap.getVertex( id, v ) );
-		}
 	}
 
+	// Does nothing currently, but maybe we'll add to it later
 	private static class EdgeProps<
 			E extends Edge< ? > >
 		implements ModelEdgeProperties
 	{
 		private final GraphIdBimap< ?, E > idmap;
 
-		private final Selection< ?, E > selection;
-
 		private final E e;
 
-		private EdgeProps( final ReadOnlyGraph< ?, E > graph, final GraphIdBimap< ?, E > idmap, final Selection< ?, E > selection )
+		private EdgeProps( final ReadOnlyGraph< ?, E > graph, final GraphIdBimap< ?, E > idmap )
 		{
 			this.idmap = idmap;
-			this.selection = selection;
 			e = graph.edgeRef();
-		}
-
-		@Override
-		public boolean isSelected( final int id )
-		{
-			return selection.isSelected( idmap.getEdge( id, e ) );
 		}
 	}
 }

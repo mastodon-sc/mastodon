@@ -64,19 +64,6 @@ public class TrackSchemeEdge extends AbstractEdge< TrackSchemeEdge, TrackSchemeV
 		access.putIndex( id, ORIG_EDGE_INDEX_OFFSET );
 	}
 
-	/**
-	 * Returns whether this edge is selected.
-	 *
-	 * Backed by the state of the SelectionModel for the associated ModelGraph
-	 * edge.
-	 *
-	 * @return {@code true} if the associated model edge is selected.
-	 */
-	public boolean isSelected()
-	{
-		return props.isSelected( getModelEdgeId() );
-	}
-
 	public int getScreenEdgeIndex()
 	{
 		return access.getIndex( SCREENEDGE_INDEX_OFFSET );

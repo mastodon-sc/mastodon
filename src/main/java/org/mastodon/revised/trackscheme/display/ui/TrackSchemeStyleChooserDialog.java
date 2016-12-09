@@ -81,7 +81,7 @@ class TrackSchemeStyleChooserDialog extends JDialog
 		final Examples ex = DummyGraph.Examples.CELEGANS;
 		final DummyGraph example = ex.getGraph();
 		final GraphIdBimap< DummyVertex, DummyEdge > idmap = example.getIdBimap();
-		final ModelGraphProperties dummyProps = new DefaultModelGraphProperties< >( example, idmap, ex.getSelection() );
+		final ModelGraphProperties dummyProps = new DefaultModelGraphProperties< >( example, idmap );
 		final TrackSchemeGraph< DummyVertex, DummyEdge > graph = new TrackSchemeGraph<>( example, idmap, dummyProps );
 		final RefBimap< DummyVertex, TrackSchemeVertex > vertexMap = new TrackSchemeVertexBimap<>( example, idmap, graph );
 		final RefBimap< DummyEdge, TrackSchemeEdge > edgeMap = new TrackSchemeEdgeBimap<>( example, idmap, graph );

@@ -198,7 +198,7 @@ public class TrackSchemePanel extends JPanel implements
 		} );
 
 		screenTransform = new ScreenTransform();
-		layout = new LineageTreeLayout( graph );
+		layout = new LineageTreeLayout( graph, selection );
 		contextLayout = new ContextLayout( graph, layout );
 		final TransformEventHandler< ScreenTransform > tevl = display.getTransformEventHandler();
 		if ( tevl instanceof LayoutListener )

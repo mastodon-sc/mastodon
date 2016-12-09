@@ -12,6 +12,7 @@ import org.mastodon.graph.Edges;
 import org.mastodon.revised.trackscheme.ScreenEdge.ScreenEdgePool;
 import org.mastodon.revised.trackscheme.ScreenVertex.ScreenVertexPool;
 import org.mastodon.revised.trackscheme.ScreenVertexRange.ScreenVertexRangePool;
+import org.mastodon.revised.ui.selection.Selection;
 
 import gnu.trove.iterator.TIntAlternatingIterator;
 import gnu.trove.iterator.TIntIterator;
@@ -53,6 +54,8 @@ import net.imglib2.RealLocalizable;
 public class LineageTreeLayout
 {
 	private final TrackSchemeGraph< ?, ? > graph;
+
+	private final Selection< TrackSchemeVertex, TrackSchemeEdge > selection;
 
 	/**
 	 * X coordinate that will be assigned to the next leaf in the current layout.
@@ -118,9 +121,12 @@ public class LineageTreeLayout
 	 */
 	private final RefList< TrackSchemeVertex > currentLayoutColumnRoot;
 
-	public LineageTreeLayout( final TrackSchemeGraph< ?, ? > graph )
+	public LineageTreeLayout(
+			final TrackSchemeGraph< ?, ? > graph,
+			final Selection< TrackSchemeVertex, TrackSchemeEdge > selection )
 	{
 		this.graph = graph;
+		this.selection = selection;
 		rightmost = 0;
 		timestamp = 0;
 		timepoints = new TIntArrayList();
@@ -351,7 +357,7 @@ public class LineageTreeLayout
 						v1.setScreenVertexIndex( v1si );
 						final int id = v1.getInternalPoolIndex();
 						final double x = ( v1.getLayoutX() - minX ) * xScale + decorationsOffsetX;
-						final boolean selected = v1.isSelected();
+						final boolean selected = selection.isSelected( v1 );
 						final boolean ghost = v1.isGhost();
 						screenVertexPool.create( sv ).init( id, x, y, selected, ghost );
 						screenVertices.add( sv );
@@ -369,7 +375,7 @@ public class LineageTreeLayout
 								final int eid = edge.getInternalPoolIndex();
 								final int sourceScreenVertexIndex = v2si;
 								final int targetScreenVertexIndex = v1si;
-								final boolean eselected = edge.isSelected();
+								final boolean eselected = selection.isSelected( edge );
 								screenEdgePool.create( se ).init( eid, sourceScreenVertexIndex, targetScreenVertexIndex, eselected );
 								screenEdges.add( se );
 								final int sei = se.getInternalPoolIndex();

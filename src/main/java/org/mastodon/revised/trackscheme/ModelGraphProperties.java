@@ -43,15 +43,6 @@ public interface ModelGraphProperties
 	 */
 	public static interface ModelEdgeProperties
 	{
-		/**
-		 * Returns the selected state of the model edge with the specified id
-		 * (see {@link GraphIdBimap}).
-		 *
-		 * @param id
-		 *            the id of the edge.
-		 * @return whether the edge is selected.
-		 */
-		boolean isSelected( int id );
 	}
 
 	/**
@@ -72,16 +63,6 @@ public interface ModelGraphProperties
 	 */
 	public static interface ModelVertexProperties
 	{
-		/**
-		 * Returns the selected state of the vertex with the specified id (see
-		 * {@link GraphIdBimap}).
-		 *
-		 * @param id
-		 *            the id of the vertex.
-		 * @return whether the vertex is selected.
-		 */
-		public boolean isSelected( int id );
-
 		/**
 		 * Returns the label of the vertex with the specified id (see
 		 * {@link GraphIdBimap}).

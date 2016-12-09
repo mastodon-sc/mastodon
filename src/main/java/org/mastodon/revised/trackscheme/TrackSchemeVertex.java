@@ -108,19 +108,6 @@ public class TrackSchemeVertex extends AbstractVertex< TrackSchemeVertex, TrackS
 		props.setLabel( getModelVertexId(), label );
 	}
 
-	/**
-	 * Returns whether this vertex is selected.
-	 *
-	 * Backed by the state of the SelectionModel for the associated ModelGraph
-	 * vertex.
-	 *
-	 * @return {@code true} if the associated model vertex is selected.
-	 */
-	public boolean isSelected()
-	{
-		return props.isSelected( getModelVertexId() );
-	}
-
 	public int getTimepoint()
 	{
 		return access.getInt( TIMEPOINT_OFFSET );
