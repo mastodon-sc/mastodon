@@ -3,21 +3,20 @@ package org.mastodon.adapter;
 /**
  * TODO DOCUMENT!!!!!!!!!!!!!!!!!!!!!!!
  *
- * @param <V>
- * @param <W>
+ * @param <L>
+ * @param <R>
  *
  * @author Tobias Pietzsch &lt;tobias.pietzsch@gmail.com&gt;
  */
-public interface RefBimap< V, W >
+public interface RefBimap< L, R >
 {
-	// TODO: don't need ref ???
-	public V getLeft( W right /*, V ref */ );
+	public L getLeft( R right );
 
-	public W getRight( V left, W ref );
+	public R getRight( L left, R ref );
 
-	public V reusableLeftRef( W ref );
+	public L reusableLeftRef( R ref );
 
-	public W reusableRightRef();
+	public R reusableRightRef();
 
-	public void releaseRef( W ref );
+	public void releaseRef( R ref );
 }
