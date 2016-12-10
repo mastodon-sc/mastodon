@@ -3,24 +3,19 @@ package org.mastodon.revised.trackscheme;
 import org.mastodon.adapter.RefBimap;
 import org.mastodon.graph.Edge;
 import org.mastodon.graph.GraphIdBimap;
-import org.mastodon.graph.ReadOnlyGraph;
 import org.mastodon.graph.Vertex;
 
 public class TrackSchemeVertexBimap< V extends Vertex< E >, E extends Edge< V > >
 		implements RefBimap< V, TrackSchemeVertex >
 {
-	private final ReadOnlyGraph< V, E > graph;
-
 	private final GraphIdBimap< V, E > idmap;
 
 	private final TrackSchemeGraph< ?, ? > tsgraph;
 
 	public TrackSchemeVertexBimap(
-			final ReadOnlyGraph< V, E > graph,
 			final GraphIdBimap< V, E > idmap,
 			final TrackSchemeGraph< ?, ? > tsgraph )
 	{
-		this.graph = graph;
 		this.idmap = idmap;
 		this.tsgraph = tsgraph;
 	}
@@ -41,14 +36,7 @@ public class TrackSchemeVertexBimap< V extends Vertex< E >, E extends Edge< V > 
 	@Override
 	public V reusableLeftRef( final TrackSchemeVertex ref )
 	{
-		if ( ref.reusableRefFIXME != null )
-			return ( V ) ref.reusableRefFIXME;
-		else
-		{
-			final V v = graph.vertexRef();
-			ref.reusableRefFIXME = v;
-			return v;
-		}
+		return ( V ) ref.modelVertex.getReusableRef();
 	}
 
 	@Override

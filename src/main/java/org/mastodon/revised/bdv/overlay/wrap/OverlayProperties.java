@@ -1,6 +1,6 @@
 package org.mastodon.revised.bdv.overlay.wrap;
 
-public interface OverlayProperties< V, E >
+public interface OverlayProperties< V, E > // TODO: rename to ModelGraphProperties ???
 {
 	public void localize( V v, final double[] position );
 
@@ -40,5 +40,6 @@ public interface OverlayProperties< V, E >
 
 	public String getLabel( V v );
 
+	// TODO move to separate interface? OverlayModifyProperties?
 	public void setLabel( V v, String label );
 }

@@ -48,7 +48,6 @@ import org.mastodon.revised.model.mamut.Link;
 import org.mastodon.revised.model.mamut.Model;
 import org.mastodon.revised.model.mamut.ModelOverlayProperties;
 import org.mastodon.revised.model.mamut.Spot;
-import org.mastodon.revised.trackscheme.DefaultModelGraphProperties;
 import org.mastodon.revised.trackscheme.TrackSchemeContextListener;
 import org.mastodon.revised.trackscheme.TrackSchemeEdge;
 import org.mastodon.revised.trackscheme.TrackSchemeEdgeBimap;
@@ -59,6 +58,8 @@ import org.mastodon.revised.trackscheme.display.TrackSchemeEditBehaviours;
 import org.mastodon.revised.trackscheme.display.TrackSchemeFrame;
 import org.mastodon.revised.trackscheme.display.TrackSchemeOptions;
 import org.mastodon.revised.trackscheme.display.ui.TrackSchemeStyleChooser;
+import org.mastodon.revised.trackscheme.wrap.DefaultModelGraphProperties;
+import org.mastodon.revised.trackscheme.wrap.ModelGraphProperties;
 import org.mastodon.revised.ui.HighlightBehaviours;
 import org.mastodon.revised.ui.SelectionActions;
 import org.mastodon.revised.ui.grouping.GroupHandle;
@@ -523,10 +524,10 @@ public class WindowManager
 		/*
 		 * TrackSchemeGraph listening to model
 		 */
-		final DefaultModelGraphProperties< Spot, Link > properties = new DefaultModelGraphProperties<>( graph, idmap );
+		final ModelGraphProperties< Spot, Link > properties = new DefaultModelGraphProperties<>();
 		final TrackSchemeGraph< Spot, Link > trackSchemeGraph = new TrackSchemeGraph<>( graph, idmap, properties );
-		final RefBimap< Spot, TrackSchemeVertex > vertexMap = new TrackSchemeVertexBimap<>( graph, idmap, trackSchemeGraph );
-		final RefBimap< Link, TrackSchemeEdge > edgeMap = new TrackSchemeEdgeBimap<>( graph, idmap, trackSchemeGraph );
+		final RefBimap< Spot, TrackSchemeVertex > vertexMap = new TrackSchemeVertexBimap<>( idmap, trackSchemeGraph );
+		final RefBimap< Link, TrackSchemeEdge > edgeMap = new TrackSchemeEdgeBimap<>( idmap, trackSchemeGraph );
 
 		/*
 		 * TrackSchemeHighlight wrapping HighlightModel

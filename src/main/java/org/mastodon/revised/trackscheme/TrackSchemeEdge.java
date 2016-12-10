@@ -7,7 +7,6 @@ import org.mastodon.graph.ref.AbstractEdge;
 import org.mastodon.graph.ref.AbstractEdgePool;
 import org.mastodon.pool.ByteMappedElement;
 import org.mastodon.pool.PoolObject;
-import org.mastodon.revised.trackscheme.ModelGraphProperties.ModelEdgeProperties;
 
 public class TrackSchemeEdge extends AbstractEdge< TrackSchemeEdge, TrackSchemeVertex, ByteMappedElement >
 {
@@ -15,10 +14,7 @@ public class TrackSchemeEdge extends AbstractEdge< TrackSchemeEdge, TrackSchemeV
 	protected static final int SCREENEDGE_INDEX_OFFSET = ORIG_EDGE_INDEX_OFFSET + INDEX_SIZE;
 	protected static final int SIZE_IN_BYTES = SCREENEDGE_INDEX_OFFSET + INDEX_SIZE;
 
-	private final ModelEdgeProperties props;
-
-	// TODO: temporary hack to be able to store refs for TrackSchemeVertexBimap
-	Object reusableRefFIXME = null;
+	ModelGraphWrapper< ?, ? >.ModelEdgeWrapper modelEdge;
 
 	@Override
 	public String toString()
@@ -26,12 +22,9 @@ public class TrackSchemeEdge extends AbstractEdge< TrackSchemeEdge, TrackSchemeV
 		return String.format( "Edge( %s -> %s )", getSource().getLabel(), getTarget().getLabel() );
 	}
 
-	TrackSchemeEdge(
-			final AbstractEdgePool< TrackSchemeEdge, TrackSchemeVertex, ByteMappedElement > pool,
-			final ModelEdgeProperties props )
+	TrackSchemeEdge( final AbstractEdgePool< TrackSchemeEdge, TrackSchemeVertex, ByteMappedElement > pool )
 	{
 		super( pool );
-		this.props = props;
 	}
 
 	@Override

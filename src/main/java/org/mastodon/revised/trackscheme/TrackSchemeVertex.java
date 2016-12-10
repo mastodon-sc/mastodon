@@ -10,7 +10,6 @@ import org.mastodon.graph.ref.AbstractVertex;
 import org.mastodon.graph.ref.AbstractVertexPool;
 import org.mastodon.pool.ByteMappedElement;
 import org.mastodon.pool.PoolObject;
-import org.mastodon.revised.trackscheme.ModelGraphProperties.ModelVertexProperties;
 
 /**
  * The vertex class for TrackScheme.
@@ -28,10 +27,7 @@ public class TrackSchemeVertex extends AbstractVertex< TrackSchemeVertex, TrackS
 	protected static final int GHOST_OFFSET = SCREENVERTEX_INDEX_OFFSET + INDEX_SIZE;
 	protected static final int SIZE_IN_BYTES = GHOST_OFFSET + BOOLEAN_SIZE;
 
-	private final ModelVertexProperties props;
-
-	// TODO: temporary hack to be able to store refs for TrackSchemeVertexBimap
-	Object reusableRefFIXME = null;
+	ModelGraphWrapper< ?, ? >.ModelVertexWrapper modelVertex;
 
 	@Override
 	protected void setToUninitializedState()
@@ -78,12 +74,9 @@ public class TrackSchemeVertex extends AbstractVertex< TrackSchemeVertex, TrackS
 				getTimepoint() );
 	}
 
-	TrackSchemeVertex(
-			final AbstractVertexPool< TrackSchemeVertex, ?, ByteMappedElement > pool,
-			final ModelVertexProperties props )
+	TrackSchemeVertex( final AbstractVertexPool< TrackSchemeVertex, ?, ByteMappedElement > pool )
 	{
 		super( pool );
-		this.props = props;
 	}
 
 	/**
@@ -94,7 +87,7 @@ public class TrackSchemeVertex extends AbstractVertex< TrackSchemeVertex, TrackS
 	 */
 	public String getLabel()
 	{
-		return props.getLabel( getModelVertexId() );
+		return modelVertex.getLabel();
 	}
 
 	/**
@@ -105,7 +98,7 @@ public class TrackSchemeVertex extends AbstractVertex< TrackSchemeVertex, TrackS
 	 */
 	public void setLabel( final String label )
 	{
-		props.setLabel( getModelVertexId(), label );
+		modelVertex.setLabel( label );
 	}
 
 	public int getTimepoint()
@@ -120,7 +113,7 @@ public class TrackSchemeVertex extends AbstractVertex< TrackSchemeVertex, TrackS
 
 	protected void updateTimepointFromModel()
 	{
-		setTimepoint( props.getTimepoint( getModelVertexId() ) );
+		setTimepoint( modelVertex.getTimepoint() );
 	}
 
 	/**
