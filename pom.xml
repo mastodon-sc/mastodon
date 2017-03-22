@@ -6,9 +6,9 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<parent>
-		<groupId>sc.fiji</groupId>
-		<artifactId>pom-fiji</artifactId>
-		<version>26.1.0</version>
+		<groupId>org.scijava</groupId>
+		<artifactId>pom-scijava</artifactId>
+		<version>14.0.0</version>
 	</parent>
 
 	<groupId>net.trackmate</groupId>
@@ -17,42 +17,39 @@
 
 	<name>TrackMate3</name>
 	<description>This is the prototype code for the 3rd version of TrackMate, planned for mid 2017.</description>
-
-	<properties>
-		<pom-bigdataviewer.version>4.0.1</pom-bigdataviewer.version>
-		<enforcer.skip>true</enforcer.skip>
-	</properties>
-
-	<dependencyManagement>
-		<dependencies>
-			<dependency>
-				<groupId>sc.fiji</groupId>
-				<artifactId>pom-bigdataviewer</artifactId>
-				<version>${pom-bigdataviewer.version}</version>
-				<type>pom</type>
-				<scope>import</scope>
-			</dependency>
-		</dependencies>
-	</dependencyManagement>
+	<url>https://github.com/fiji/TrackMate3</url>
+	<inceptionYear>2014</inceptionYear>
+	<organization>
+		<name>fiji</name>
+		<url>http://github.com/fiji</url>
+	</organization>
+	<licenses>
+		<license>
+			<name>not licensed yet</name>
+			<distribution>repo</distribution>
+		</license>
+	</licenses>
 
 	<dependencies>
 		<dependency>
 			<groupId>org.mastodon</groupId>
 			<artifactId>mastodon-collection</artifactId>
-			<version>1.0.0-beta-1</version>
+			<version>1.0.0-beta-2</version>
 		</dependency>
 		<dependency>
 			<groupId>org.mastodon</groupId>
 			<artifactId>mastodon-graph</artifactId>
-			<version>1.0.0-beta-1</version>
+			<version>1.0.0-beta-2</version>
 		</dependency>
 		<dependency>
 			<groupId>sc.fiji</groupId>
 			<artifactId>bigdataviewer-core</artifactId>
+			<version>4.0.1</version>
 		</dependency>
 		<dependency>
 			<groupId>org.scijava</groupId>
 			<artifactId>ui-behaviour</artifactId>
+			<version>1.1.0</version>
 		</dependency>
 
 		<!-- Test dependencies -->
@@ -63,6 +60,39 @@
 		</dependency>
 	</dependencies>
 
+	<mailingLists>
+		<mailingList>
+			<name>ImageJ Forum</name>
+			<archive>http://forum.imagej.net/</archive>
+		</mailingList>
+	</mailingLists>
+
+	<scm>
+		<connection>scm:git:git://github.com/fiji/TrackMate3</connection>
+		<developerConnection>scm:git:git@github.com:fiji/TrackMate3</developerConnection>
+		<tag>HEAD</tag>
+		<url>https://github.com/fiji/TrackMate3</url>
+	</scm>
+	<issueManagement>
+		<system>GitHub</system>
+		<url>https://github.com/fiji/TrackMate3/issues</url>
+	</issueManagement>
+	<ciManagement>
+		<system>Travis CI</system>
+		<url>https://travis-ci.org/fiji/TrackMate3</url>
+	</ciManagement>
+
+	<properties>
+		<package-name>net.trackmate</package-name>
+
+		<!--		<enforcer.skip>true</enforcer.skip> -->
+
+		<license.licenseName>not licensed yet</license.licenseName>
+		<license.projectName>TrackMate3</license.projectName>
+		<license.organizationName>Mastodon authors</license.organizationName>
+		<license.copyrightOwners>Tobias Pietzsch, Jean-Yves Tinevez</license.copyrightOwners>
+	</properties>
+
 	<developers>
 		<developer>
 			<id>tinevez</id>
@@ -72,25 +102,24 @@
 			<organization>Institut Pasteur</organization>
 			<organizationUrl>http://www.pasteur.fr/</organizationUrl>
 			<roles>
-				<role>architect</role>
 				<role>developer</role>
 			</roles>
-			<timezone>+1</timezone>
 		</developer>
 		<developer>
 			<id>tpietzsch</id>
 			<name>Tobias Pietzsch</name>
 			<email>pietzsch@mpi-cbg.de</email>
-			<url></url>
+			<url>http://imagej.net/User:Pietzsch</url>
 			<organization>MPI-CBG</organization>
 			<organizationUrl>http://www.mpi-cbg.de/</organizationUrl>
 			<roles>
-				<role>architect</role>
+				<role>lead</role>
 				<role>developer</role>
 			</roles>
-			<timezone>+1</timezone>
 		</developer>
 	</developers>
+
+	<contributors><contributor><name>grrrr</name></contributor></contributors>
 
 	<repositories>
 		<repository>
@@ -98,11 +127,4 @@
 			<url>http://maven.imagej.net/content/groups/public</url>
 		</repository>
 	</repositories>
-
-	<scm>
-		<connection>scm:git:git://github.com/fiji/TrackMate3</connection>
-		<developerConnection>scm:git:git@github.com:fiji/TrackMate3</developerConnection>
-		<tag>HEAD</tag>
-		<url>https://github.com/fiji/TrackMate3</url>
-	</scm>
 </project>
