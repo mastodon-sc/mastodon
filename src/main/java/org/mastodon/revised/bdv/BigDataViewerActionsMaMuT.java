@@ -46,6 +46,8 @@ public class BigDataViewerActionsMaMuT extends Actions
 {
 	public static final String BRIGHTNESS_SETTINGS = "brightness settings";
 	public static final String VISIBILITY_AND_GROUPING = "visibility and grouping";
+	public static final String SAVE_SETTINGS = "save settings";
+	public static final String LOAD_SETTINGS = "load settings";
 	public static final String SET_BOOKMARK = "set bookmark";
 	public static final String GO_TO_BOOKMARK = "go to bookmark";
 	public static final String GO_TO_BOOKMARK_ROTATION = "go to bookmark rotation";
@@ -53,6 +55,8 @@ public class BigDataViewerActionsMaMuT extends Actions
 
 	static final String[] BRIGHTNESS_SETTINGS_KEYS         = new String[] { "S" };
 	static final String[] VISIBILITY_AND_GROUPING_KEYS     = new String[] { "F6" };
+	static final String[] SAVE_SETTINGS_KEYS               = new String[] { "F11" };
+	static final String[] LOAD_SETTINGS_KEYS               = new String[] { "F12" };
 	static final String[] SET_BOOKMARK_KEYS                = new String[] { "shift B" };
 	static final String[] GO_TO_BOOKMARK_KEYS              = new String[] { "B" };
 	static final String[] GO_TO_BOOKMARK_ROTATION_KEYS     = new String[] { "O" };
@@ -81,6 +85,8 @@ public class BigDataViewerActionsMaMuT extends Actions
 		actions.dialog( bdv.getActiveSourcesDialog() );
 		actions.bookmarks( bdv.getBookmarksEditor() );
 		actions.runnableAction( () -> bdv.setSettingsPanelVisible( !bdv.isSettingsPanelVisible() ), TOGGLE_SETTINGS_PANEL, TOGGLE_SETTINGS_PANEL_KEYS );
+		actions.runnableAction( bdv::loadSettings, LOAD_SETTINGS, LOAD_SETTINGS_KEYS );
+		actions.runnableAction( bdv::saveSettings, SAVE_SETTINGS, SAVE_SETTINGS_KEYS );
 
 		actions.install( inputActionBindings, "bdv" );
 	}

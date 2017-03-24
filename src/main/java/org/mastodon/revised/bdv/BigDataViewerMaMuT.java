@@ -29,16 +29,20 @@
 package org.mastodon.revised.bdv;
 
 import java.awt.BorderLayout;
+import java.io.File;
+import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
 
 import javax.swing.ActionMap;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
+import javax.swing.JFileChooser;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
+import javax.swing.filechooser.FileFilter;
 
 import org.mastodon.revised.ui.grouping.GroupHandle;
 import org.mastodon.revised.ui.grouping.GroupLocksPanel;
@@ -69,10 +73,14 @@ public class BigDataViewerMaMuT
 
 	private final BookmarksEditor bookmarkEditor;
 
+	private final JFileChooser fileChooser;
+
+	private final SharedBigDataViewerData shared;
+
 	/**
 	 * Creates a new BDV window showing the image data overlaid with MaMuT
 	 * annotations.
-	 * 
+	 *
 	 * @param shared
 	 *            the shared BDV data.
 	 * @param windowTitle
@@ -85,6 +93,7 @@ public class BigDataViewerMaMuT
 			final String windowTitle,
 			final GroupHandle groupHandle )
 	{
+		this.shared = shared;
 		final InputTriggerConfig inputTriggerConfig = shared.getInputTriggerConfig();
 
 		viewerFrame = new ViewerFrame(
@@ -95,6 +104,34 @@ public class BigDataViewerMaMuT
 		if ( windowTitle != null )
 			viewerFrame.setTitle( windowTitle );
 		viewer = viewerFrame.getViewerPanel();
+
+		fileChooser = new JFileChooser();
+		fileChooser.setFileFilter( new FileFilter()
+		{
+			@Override
+			public String getDescription()
+			{
+				return "xml files";
+			}
+
+			@Override
+			public boolean accept( final File f )
+			{
+				if ( f.isDirectory() )
+					return true;
+				if ( f.isFile() )
+				{
+					final String s = f.getName();
+					final int i = s.lastIndexOf( '.' );
+					if ( i > 0 && i < s.length() - 1 )
+					{
+						final String ext = s.substring( i + 1 ).toLowerCase();
+						return ext.equals( "xml" );
+					}
+				}
+				return false;
+			}
+		} );
 
 		bookmarkEditor = new BookmarksEditor( viewer, viewerFrame.getKeybindings(), shared.getBookmarks() );
 		bookmarkEditor.setInputMapsToBlock( Arrays.asList( "all" ) );
@@ -110,6 +147,14 @@ public class BigDataViewerMaMuT
 
 		JMenu menu = new JMenu( "File" );
 		menubar.add( menu );
+
+		final JMenuItem miLoadSettings = new JMenuItem( actionMap.get( BigDataViewerActionsMaMuT.LOAD_SETTINGS ) );
+		miLoadSettings.setText( "Load settings" );
+		menu.add( miLoadSettings );
+
+		final JMenuItem miSaveSettings = new JMenuItem( actionMap.get( BigDataViewerActionsMaMuT.SAVE_SETTINGS ) );
+		miSaveSettings.setText( "Save settings" );
+		menu.add( miSaveSettings );
 
 		menu = new JMenu( "Settings" );
 		menubar.add( menu );
@@ -175,6 +220,46 @@ public class BigDataViewerMaMuT
 	public boolean isSettingsPanelVisible()
 	{
 		return isSettingsPanelVisible;
+	}
+
+	protected void saveSettings()
+	{
+		fileChooser.setSelectedFile( shared.getProposedSettingsFile() );
+		final int returnVal = fileChooser.showSaveDialog( null );
+		if ( returnVal == JFileChooser.APPROVE_OPTION )
+		{
+			final File file = fileChooser.getSelectedFile();
+			shared.setProposedSettingsFile( file );
+			try
+			{
+				shared.saveSettings( file.getCanonicalPath(), viewer );
+			}
+			catch ( final IOException e )
+			{
+				e.printStackTrace();
+			}
+		}
+	}
+
+	protected void loadSettings()
+	{
+		fileChooser.setSelectedFile( shared.getProposedSettingsFile()  );
+		final int returnVal = fileChooser.showOpenDialog( null );
+		if ( returnVal == JFileChooser.APPROVE_OPTION )
+		{
+			final File file = fileChooser.getSelectedFile();
+			shared.setProposedSettingsFile( file );
+			try
+			{
+				shared.loadSettings( file.getCanonicalPath(), viewer );
+				activeSourcesDialog.update();
+				viewer.repaint();
+			}
+			catch ( final Exception e )
+			{
+				e.printStackTrace();
+			}
+		}
 	}
 
 	public void setSettingsPanelVisible( final boolean visible )

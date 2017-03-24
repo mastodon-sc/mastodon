@@ -2,6 +2,7 @@ package org.mastodon.revised.bdv;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 
@@ -9,6 +10,8 @@ import org.jdom2.Document;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
 import org.jdom2.input.SAXBuilder;
+import org.jdom2.output.Format;
+import org.jdom2.output.XMLOutputter;
 import org.scijava.ui.behaviour.io.InputTriggerConfig;
 
 import bdv.BehaviourTransformEventHandler3D.BehaviourTransformEventHandler3DFactory;
@@ -27,6 +30,7 @@ import bdv.tools.transformation.ManualTransformation;
 import bdv.viewer.RequestRepaint;
 import bdv.viewer.SourceAndConverter;
 import bdv.viewer.ViewerOptions;
+import bdv.viewer.ViewerPanel;
 import bdv.viewer.state.ViewerState;
 import mpicbg.spim.data.generic.AbstractSpimData;
 import mpicbg.spim.data.generic.sequence.AbstractSequenceDescription;
@@ -54,6 +58,8 @@ public class SharedBigDataViewerData
 	private final int numTimepoints;
 
 	private final CacheControl cache;
+
+	private File proposedSettingsFile;
 
 	public SharedBigDataViewerData(
 			final String spimDataXmlFilename,
@@ -113,8 +119,9 @@ public class SharedBigDataViewerData
 		WrapBasicImgLoader.removeWrapperIfPresent( spimData );
 	}
 
-	private boolean tryLoadSettings( final String xmlFilename )
+	public boolean tryLoadSettings( final String xmlFilename )
 	{
+		proposedSettingsFile = null;
 		if( xmlFilename.startsWith( "http://" ) )
 		{
 			// load settings.xml from the BigDataServer
@@ -122,7 +129,7 @@ public class SharedBigDataViewerData
 			{
 				try
 				{
-					loadSettings( settings );
+					loadSettings( settings, null );
 					return true;
 				}
 				catch ( final FileNotFoundException e )
@@ -136,12 +143,12 @@ public class SharedBigDataViewerData
 		else if ( xmlFilename.endsWith( ".xml" ) )
 		{
 			final String settings = xmlFilename.substring( 0, xmlFilename.length() - ".xml".length() ) + ".settings" + ".xml";
-			final File proposedSettingsFile = new File( settings );
+			proposedSettingsFile = new File( settings );
 			if ( proposedSettingsFile.isFile() )
 			{
 				try
 				{
-					loadSettings( settings );
+					loadSettings( settings, null );
 					return true;
 				}
 				catch ( final Exception e )
@@ -153,14 +160,28 @@ public class SharedBigDataViewerData
 		return false;
 	}
 
-	private void loadSettings( final String xmlFilename ) throws IOException, JDOMException
+	public void loadSettings( final String xmlFilename, final ViewerPanel viewer ) throws IOException, JDOMException
 	{
 		final SAXBuilder sax = new SAXBuilder();
 		final Document doc = sax.build( xmlFilename );
 		final Element root = doc.getRootElement();
+		if ( viewer != null )
+			viewer.stateFromXml( root );
 		setupAssignments.restoreFromXml( root );
 		manualTransformation.restoreFromXml( root );
 		bookmarks.restoreFromXml( root );
+	}
+
+	public void saveSettings( final String xmlFilename, final ViewerPanel viewer ) throws IOException
+	{
+		final Element root = new Element( "Settings" );
+		root.addContent( viewer.stateToXml() );
+		root.addContent( setupAssignments.toXml() );
+		root.addContent( manualTransformation.toXml() );
+		root.addContent( bookmarks.toXml() );
+		final Document doc = new Document( root );
+		final XMLOutputter xout = new XMLOutputter( Format.getPrettyFormat() );
+		xout.output( doc, new FileWriter( xmlFilename ) );
 	}
 
 	public AbstractSpimData< ? > getSpimData()
@@ -211,5 +232,15 @@ public class SharedBigDataViewerData
 	public BrightnessDialog getBrightnessDialog()
 	{
 		return brightnessDialog;
+	}
+
+	public File getProposedSettingsFile()
+	{
+		return proposedSettingsFile;
+	}
+
+	public void setProposedSettingsFile( final File file )
+	{
+		this.proposedSettingsFile = file;
 	}
 }
