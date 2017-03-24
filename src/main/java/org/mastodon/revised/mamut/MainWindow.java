@@ -5,6 +5,8 @@ import java.awt.Container;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
@@ -119,6 +121,19 @@ public class MainWindow extends JFrame
 
 		final Container content = getContentPane();
 		content.add( buttonsPanel, BorderLayout.NORTH );
+
+		setDefaultCloseOperation( WindowConstants.DISPOSE_ON_CLOSE );
+		addWindowListener( new WindowAdapter()
+		{
+			@Override
+			public void windowClosed( final WindowEvent e )
+			{
+				project = null;
+				if ( windowManager != null )
+					windowManager.closeAllWindows();
+				windowManager = null;
+			}
+		} );
 	}
 
 	public void open( final MamutProject project ) throws IOException, SpimDataException
