@@ -164,11 +164,7 @@ public class MainWindow extends JFrame
 		File modelFile = project.getRawModelFile();
 		if ( modelFile == null )
 		{
-			final String name = projectFile.getAbsolutePath();
-			if ( name.endsWith( ".xml" ) )
-				modelFile = new File( name.substring( 0, name.length() - ".xml".length() ) + ".raw" );
-			else
-				modelFile = new File( name + ".raw" );
+			modelFile = MamutProject.deriveRawModelFile( projectFile );
 			project.setRawModelFile( modelFile );
 		}
 
@@ -187,8 +183,9 @@ public class MainWindow extends JFrame
 
 	public void saveProject()
 	{
-		final String fn = proposedProjectFile == null ? null : proposedProjectFile.getAbsolutePath();
-		final File file = FileChooser.chooseFile(
+		String fn = proposedProjectFile == null ? null : proposedProjectFile.getAbsolutePath();
+
+		File file = FileChooser.chooseFile(
 				this,
 				fn,
 				new XmlFileFilter(),
@@ -196,6 +193,13 @@ public class MainWindow extends JFrame
 				FileChooser.DialogType.SAVE );
 		if ( file == null )
 			return;
+
+		fn = file.getAbsolutePath();
+		if ( !fn.endsWith( ".xml" ) )
+			file = new File( fn + ".xml" );
+
+		if ( !file.equals( proposedProjectFile ) )
+			project.setRawModelFile( MamutProject.deriveRawModelFile( file ) );
 
 		try
 		{

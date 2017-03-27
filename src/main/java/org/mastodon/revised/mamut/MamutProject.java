@@ -53,4 +53,22 @@ public class MamutProject
 	{
 		this.rawModelFile = rawModelFile;
 	}
+
+	/**
+	 * Derive a name for the raw model file from the name of the project file:
+	 * Replace {@code .xml} extension with {@code .raw}. If the project name
+	 * does not end in {@code .xml}, simply append {@code .raw}.
+	 *
+	 * @param projectFile
+	 *            the project file.
+	 * @return the proposed raw model file
+	 */
+	public static File deriveRawModelFile( final File projectFile )
+	{
+		final String name = projectFile.getAbsolutePath();
+		if ( name.endsWith( ".xml" ) )
+			return new File( name.substring( 0, name.length() - ".xml".length() ) + ".raw" );
+		else
+			return new File( name + ".raw" );
+	}
 }
