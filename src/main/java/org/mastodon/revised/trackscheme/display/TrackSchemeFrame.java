@@ -121,6 +121,7 @@ public class TrackSchemeFrame extends JFrame
 		final MouseAndKeyHandler mouseAndKeyHandler = new MouseAndKeyHandler();
 		mouseAndKeyHandler.setInputMap( triggerbindings.getConcatenatedInputTriggerMap() );
 		mouseAndKeyHandler.setBehaviourMap( triggerbindings.getConcatenatedBehaviourMap() );
+		mouseAndKeyHandler.setKeypressManager( optional.values.getKeyPressedManager(), trackschemePanel.getDisplay() );
 		trackschemePanel.getDisplay().addHandler( mouseAndKeyHandler );
 
 		final TransformEventHandler< ? > tfHandler = trackschemePanel.getDisplay().getTransformEventHandler();

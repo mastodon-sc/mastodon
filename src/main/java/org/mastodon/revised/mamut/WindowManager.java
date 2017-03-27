@@ -75,6 +75,7 @@ import org.mastodon.revised.ui.selection.NavigationHandlerImp;
 import org.mastodon.revised.ui.selection.Selection;
 import org.mastodon.revised.ui.selection.SelectionImp;
 import org.mastodon.revised.ui.selection.SelectionListener;
+import org.scijava.ui.behaviour.KeyPressedManager;
 import org.scijava.ui.behaviour.KeyStrokeAdder;
 import org.scijava.ui.behaviour.io.InputTriggerConfig;
 import org.scijava.ui.behaviour.io.InputTriggerDescription;
@@ -236,6 +237,8 @@ public class WindowManager
 
 	private final GroupManager groupManager;
 
+	private final KeyPressedManager keyPressedManager;
+
 	private final SharedBigDataViewerData sharedBdvData;
 
 	private final int minTimepoint;
@@ -275,6 +278,7 @@ public class WindowManager
 		this.keyconf = keyconf;
 
 		groupManager = new GroupManager();
+		keyPressedManager = new KeyPressedManager();
 		final RequestRepaint requestRepaint = new RequestRepaint()
 		{
 			@Override
@@ -284,7 +288,11 @@ public class WindowManager
 					w.getViewerFrame().getViewerPanel().requestRepaint();
 			}
 		};
-		sharedBdvData = new SharedBigDataViewerData( spimDataXmlFilename, spimData, ViewerOptions.options().inputTriggerConfig( keyconf ), requestRepaint );
+
+		final ViewerOptions options = ViewerOptions.options()
+				.inputTriggerConfig( keyconf )
+				.shareKeyPressedEvents( keyPressedManager );
+		sharedBdvData = new SharedBigDataViewerData( spimDataXmlFilename, spimData, options, requestRepaint );
 
 		final ListenableReadOnlyGraph< Spot, Link > graph = model.getGraph();
 		final GraphIdBimap< Spot, Link > idmap = model.getGraphIdBimap();
@@ -567,6 +575,9 @@ public class WindowManager
 		/*
 		 * show TrackSchemeFrame
 		 */
+		final TrackSchemeOptions options = TrackSchemeOptions.options()
+				.inputTriggerConfig( keyconf )
+				.shareKeyPressedEvents( keyPressedManager );
 		final TrackSchemeFrame frame = new TrackSchemeFrame(
 				trackSchemeGraph,
 				trackSchemeHighlight,
@@ -576,7 +587,7 @@ public class WindowManager
 				model,
 				groupHandle,
 				contextChooser,
-				TrackSchemeOptions.options().inputTriggerConfig( keyconf ) );
+				options );
 		frame.getTrackschemePanel().setTimepointRange( minTimepoint, maxTimepoint );
 		frame.getTrackschemePanel().graphChanged();
 		contextListener.setContextListener( frame.getTrackschemePanel() );

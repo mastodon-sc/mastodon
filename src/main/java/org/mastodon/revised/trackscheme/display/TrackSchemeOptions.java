@@ -28,8 +28,11 @@
  */
 package org.mastodon.revised.trackscheme.display;
 
+import java.awt.event.KeyListener;
+
 import org.mastodon.revised.trackscheme.ScreenTransform;
 import org.mastodon.revised.ui.selection.NavigationEtiquette;
+import org.scijava.ui.behaviour.KeyPressedManager;
 import org.scijava.ui.behaviour.io.InputTriggerConfig;
 
 import net.imglib2.ui.TransformEventHandlerFactory;
@@ -118,8 +121,26 @@ public class TrackSchemeOptions
 	}
 
 	/**
+	 * Set the {@link KeyPressedManager} to share
+	 * {@link KeyListener#keyPressed(java.awt.event.KeyEvent)} events with other
+	 * ui-behaviour windows.
+	 * <p>
+	 * The goal is to make keyboard click/drag behaviours work like mouse
+	 * click/drag: When a behaviour is initiated with a key press, the window
+	 * under the mouse receives focus and the behaviour is handled there.
+	 * </p>
+	 *
+	 * @param manager
+	 * @return
+	 */
+	public TrackSchemeOptions shareKeyPressedEvents( final KeyPressedManager manager )
+	{
+		values.keyPressedManager = manager;
+		return this;
+	}
+	/**
 	 * Sets the navigation etiquette.
-	 * 
+	 *
 	 * @param navigationEtiquette
 	 *            the navigation etiquette.
 	 * @return this instance.
@@ -144,6 +165,8 @@ public class TrackSchemeOptions
 		private long animationDurationMillis = 250;
 
 		private InputTriggerConfig inputTriggerConfig = null;
+
+		private KeyPressedManager keyPressedManager = null;
 
 		private NavigationEtiquette navigationEtiquette = NavigationEtiquette.MINIMAL;
 
@@ -181,6 +204,11 @@ public class TrackSchemeOptions
 		public InputTriggerConfig getInputTriggerConfig()
 		{
 			return inputTriggerConfig;
+		}
+
+		public KeyPressedManager getKeyPressedManager()
+		{
+			return keyPressedManager;
 		}
 
 		public NavigationEtiquette getNavigationEtiquette()
