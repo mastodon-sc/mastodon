@@ -115,9 +115,10 @@ public class ScreenVertexRange extends PoolObject< ScreenVertexRange, ByteMapped
 			return super.create( range );
 		}
 
+		@Override
 		public void delete( final ScreenVertexRange range )
 		{
-			deleteByInternalPoolIndex( range.getInternalPoolIndex() );
+			super.delete( range );
 		}
 
 		private static class ScreenVertexRangeFactory implements PoolObject.Factory< ScreenVertexRange, ByteMappedElement >

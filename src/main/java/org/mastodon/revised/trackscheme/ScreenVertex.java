@@ -306,9 +306,10 @@ public class ScreenVertex extends PoolObject< ScreenVertex, ByteMappedElement >
 			return super.create( vertex );
 		}
 
+		@Override
 		public void delete( final ScreenVertex vertex )
 		{
-			deleteByInternalPoolIndex( vertex.getInternalPoolIndex() );
+			super.delete( vertex );
 		}
 
 		private static class VertexFactory implements PoolObject.Factory< ScreenVertex, ByteMappedElement >
