@@ -10,8 +10,8 @@ import org.mastodon.graph.ref.AbstractListenableEdge;
  */
 public class AbstractModel<
 		MG extends AbstractModelGraph< MG, ?, ?, V, E, ? >,
-		V extends AbstractSpot< V, E, ?, MG >,
-		E extends AbstractListenableEdge< E, V, ? > >
+		V extends AbstractSpot< V, E, ?, ?, MG >,
+		E extends AbstractListenableEdge< E, V, ?, ? > >
 {
 	/**
 	 * Exposes the graph managed by this model.

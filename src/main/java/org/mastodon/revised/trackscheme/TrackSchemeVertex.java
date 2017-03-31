@@ -7,16 +7,16 @@ import static org.mastodon.pool.ByteUtils.INT_SIZE;
 
 import org.mastodon.graph.GraphIdBimap;
 import org.mastodon.graph.ref.AbstractVertex;
-import org.mastodon.graph.ref.AbstractVertexPool;
 import org.mastodon.pool.ByteMappedElement;
 import org.mastodon.pool.PoolObject;
+import org.mastodon.revised.trackscheme.TrackSchemeGraph.TrackSchemeVertexPool;
 
 /**
  * The vertex class for TrackScheme.
  *
  * @author Tobias Pietzsch &lt;tobias.pietzsch@gmail.com&gt;
  */
-public class TrackSchemeVertex extends AbstractVertex< TrackSchemeVertex, TrackSchemeEdge, ByteMappedElement >
+public class TrackSchemeVertex extends AbstractVertex< TrackSchemeVertex, TrackSchemeEdge, TrackSchemeVertexPool, ByteMappedElement >
 {
 	protected static final int ORIG_VERTEX_INDEX_OFFSET = AbstractVertex.SIZE_IN_BYTES;
 	protected static final int LAYOUT_TIMESTAMP_OFFSET = ORIG_VERTEX_INDEX_OFFSET + INDEX_SIZE;
@@ -74,7 +74,7 @@ public class TrackSchemeVertex extends AbstractVertex< TrackSchemeVertex, TrackS
 				getTimepoint() );
 	}
 
-	TrackSchemeVertex( final AbstractVertexPool< TrackSchemeVertex, ?, ByteMappedElement > pool )
+	TrackSchemeVertex( final TrackSchemeVertexPool pool )
 	{
 		super( pool );
 	}

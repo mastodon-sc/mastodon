@@ -3,12 +3,12 @@ package org.mastodon.revised.model.mamut;
 import static org.mastodon.pool.ByteUtils.DOUBLE_SIZE;
 import static org.mastodon.revised.model.mamut.ModelFeatures.LABEL;
 
-import org.mastodon.graph.ref.AbstractVertexPool;
 import org.mastodon.pool.ByteMappedElement;
 import org.mastodon.pool.PoolObjectAttributeSerializer;
 import org.mastodon.revised.bdv.overlay.util.JamaEigenvalueDecomposition;
 import org.mastodon.revised.model.AbstractSpot;
 import org.mastodon.revised.model.HasLabel;
+import org.mastodon.revised.model.mamut.ModelGraph.SpotPool;
 import org.mastodon.undo.attributes.AttributeUndoSerializer;
 
 /**
@@ -17,7 +17,7 @@ import org.mastodon.undo.attributes.AttributeUndoSerializer;
  *
  * @author Tobias Pietzsch
  */
-public final class Spot extends AbstractSpot< Spot, Link, ByteMappedElement, ModelGraph > implements HasLabel
+public final class Spot extends AbstractSpot< Spot, Link, SpotPool, ByteMappedElement, ModelGraph > implements HasLabel
 {
 	// Copied to be package-visible.
 	protected static final int X_OFFSET = AbstractSpot.X_OFFSET;
@@ -220,8 +220,8 @@ public final class Spot extends AbstractSpot< Spot, Link, ByteMappedElement, Mod
 				getTimepoint() );
 	}
 
-	Spot( final AbstractVertexPool< Spot, Link, ByteMappedElement > pool )
+	Spot( final SpotPool pool )
 	{
-		super( pool, 3 );
+		super( pool );
 	}
 }

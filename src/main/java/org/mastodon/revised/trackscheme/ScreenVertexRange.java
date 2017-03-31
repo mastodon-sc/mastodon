@@ -8,13 +8,14 @@ import org.mastodon.pool.MemPool;
 import org.mastodon.pool.Pool;
 import org.mastodon.pool.PoolObject;
 import org.mastodon.pool.SingleArrayMemPool;
+import org.mastodon.revised.trackscheme.ScreenVertexRange.ScreenVertexRangePool;
 
 /**
  * Layouted dense vertex area.
  *
  * @author Tobias Pietzsch &lt;tobias.pietzsch@gmail.com&gt;
  */
-public class ScreenVertexRange extends PoolObject< ScreenVertexRange, ByteMappedElement >
+public class ScreenVertexRange extends PoolObject< ScreenVertexRange, ScreenVertexRangePool, ByteMappedElement >
 {
 	protected static final int MIN_X_OFFSET = 0;
 	protected static final int MAX_X_OFFSET = MIN_X_OFFSET + DOUBLE_SIZE;
@@ -22,7 +23,7 @@ public class ScreenVertexRange extends PoolObject< ScreenVertexRange, ByteMapped
 	protected static final int MAX_Y_OFFSET = MIN_Y_OFFSET + DOUBLE_SIZE;
 	protected static final int SIZE_IN_BYTES = MAX_Y_OFFSET + DOUBLE_SIZE;
 
-	protected ScreenVertexRange( final Pool< ScreenVertexRange, ByteMappedElement > pool )
+	protected ScreenVertexRange( final ScreenVertexRangePool pool )
 	{
 		super( pool );
 	}

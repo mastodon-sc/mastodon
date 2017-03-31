@@ -29,8 +29,8 @@ public class AbstractModelGraph<
 		G extends AbstractModelGraph< G, VP, EP, V, E, T >,
 		VP extends AbstractSpotPool< V, E, T, G >,
 		EP extends AbstractListenableEdgePool< E, V, T >,
-		V extends AbstractSpot< V, E, T, G >,
-		E extends AbstractListenableEdge< E, V, T >,
+		V extends AbstractSpot< V, E, VP, T, G >,
+		E extends AbstractListenableEdge< E, V, EP, T >,
 		T extends MappedElement >
 	extends ListenableGraphImp< VP, EP, V, E, T >
 	implements VertexPositionChangeProvider< V >, GraphChangeNotifier

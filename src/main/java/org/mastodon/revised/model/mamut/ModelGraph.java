@@ -2,8 +2,8 @@ package org.mastodon.revised.model.mamut;
 
 import java.util.ArrayList;
 
-import org.mastodon.graph.GraphIdBimap;
 import org.mastodon.features.Features;
+import org.mastodon.graph.GraphIdBimap;
 import org.mastodon.graph.ref.AbstractListenableEdgePool;
 import org.mastodon.pool.ByteMappedElement;
 import org.mastodon.pool.ByteMappedElementArray;
@@ -12,6 +12,8 @@ import org.mastodon.pool.PoolObject;
 import org.mastodon.pool.SingleArrayMemPool;
 import org.mastodon.revised.model.AbstractModelGraph;
 import org.mastodon.revised.model.AbstractSpotPool;
+import org.mastodon.revised.model.mamut.ModelGraph.LinkPool;
+import org.mastodon.revised.model.mamut.ModelGraph.SpotPool;
 import org.mastodon.undo.attributes.Attribute;
 import org.mastodon.undo.attributes.Attributes;
 
@@ -102,90 +104,90 @@ public class ModelGraph extends AbstractModelGraph< ModelGraph, SpotPool, LinkPo
 	{
 		return spotRadiusListeners.remove( listener );
 	}
-}
 
-class SpotPool extends AbstractSpotPool< Spot, Link, ByteMappedElement, ModelGraph >
-{
-	SpotPool( final int initialCapacity )
+	static class LinkPool extends AbstractListenableEdgePool< Link, Spot, ByteMappedElement >
 	{
-		this( initialCapacity, new SpotFactory() );
+		LinkPool( final int initialCapacity, final SpotPool vertexPool )
+		{
+			this( initialCapacity, new LinkFactory(), vertexPool );
+		}
+
+		private LinkPool( final int initialCapacity, final LinkPool.LinkFactory f, final SpotPool vertexPool )
+		{
+			super( initialCapacity, f, vertexPool );
+			f.edgePool = this;
+		}
+
+		private static class LinkFactory implements PoolObject.Factory< Link, ByteMappedElement >
+		{
+			private LinkPool edgePool;
+
+			@Override
+			public int getSizeInBytes()
+			{
+				return Link.SIZE_IN_BYTES;
+			}
+
+			@Override
+			public Link createEmptyRef()
+			{
+				return new Link( edgePool );
+			}
+
+			@Override
+			public MemPool.Factory< ByteMappedElement > getMemPoolFactory()
+			{
+				return SingleArrayMemPool.factory( ByteMappedElementArray.factory );
+			}
+
+			@Override
+			public Class< Link > getRefClass()
+			{
+				return Link.class;
+			}
+		};
 	}
 
-	private SpotPool( final int initialCapacity, final SpotFactory f )
+	static class SpotPool extends AbstractSpotPool< Spot, Link, ByteMappedElement, ModelGraph >
 	{
-		super( 3, initialCapacity, f );
-		f.vertexPool = this;
+		SpotPool( final int initialCapacity )
+		{
+			this( initialCapacity, new SpotFactory() );
+		}
+
+		private SpotPool( final int initialCapacity, final SpotFactory f )
+		{
+			super( 3, initialCapacity, f );
+			f.vertexPool = this;
+		}
+
+		private static class SpotFactory implements PoolObject.Factory< Spot, ByteMappedElement >
+		{
+			private SpotPool vertexPool;
+
+			@Override
+			public int getSizeInBytes()
+			{
+				return Spot.SIZE_IN_BYTES;
+			}
+
+			@Override
+			public Spot createEmptyRef()
+			{
+				return new Spot( vertexPool );
+			}
+
+			@Override
+			public MemPool.Factory< ByteMappedElement > getMemPoolFactory()
+			{
+				return SingleArrayMemPool.factory( ByteMappedElementArray.factory );
+			}
+
+			@Override
+			public Class< Spot > getRefClass()
+			{
+				return Spot.class;
+			}
+		};
 	}
-
-	private static class SpotFactory implements PoolObject.Factory< Spot, ByteMappedElement >
-	{
-		private SpotPool vertexPool;
-
-		@Override
-		public int getSizeInBytes()
-		{
-			return Spot.SIZE_IN_BYTES;
-		}
-
-		@Override
-		public Spot createEmptyRef()
-		{
-			return new Spot( vertexPool );
-		}
-
-		@Override
-		public MemPool.Factory< ByteMappedElement > getMemPoolFactory()
-		{
-			return SingleArrayMemPool.factory( ByteMappedElementArray.factory );
-		}
-
-		@Override
-		public Class< Spot > getRefClass()
-		{
-			return Spot.class;
-		}
-	};
-}
-
-class LinkPool extends AbstractListenableEdgePool< Link, Spot, ByteMappedElement >
-{
-	LinkPool( final int initialCapacity, final SpotPool vertexPool )
-	{
-		this( initialCapacity, new LinkFactory(), vertexPool );
-	}
-
-	private LinkPool( final int initialCapacity, final LinkPool.LinkFactory f, final SpotPool vertexPool )
-	{
-		super( initialCapacity, f, vertexPool );
-		f.edgePool = this;
-	}
-
-	private static class LinkFactory implements PoolObject.Factory< Link, ByteMappedElement >
-	{
-		private LinkPool edgePool;
-
-		@Override
-		public int getSizeInBytes()
-		{
-			return Link.SIZE_IN_BYTES;
-		}
-
-		@Override
-		public Link createEmptyRef()
-		{
-			return new Link( edgePool );
-		}
-
-		@Override
-		public MemPool.Factory< ByteMappedElement > getMemPoolFactory()
-		{
-			return SingleArrayMemPool.factory( ByteMappedElementArray.factory );
-		}
-
-		@Override
-		public Class< Link > getRefClass()
-		{
-			return Link.class;
-		}
-	};
 }

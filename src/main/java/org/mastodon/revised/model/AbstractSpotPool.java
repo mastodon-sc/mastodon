@@ -8,8 +8,8 @@ import org.mastodon.pool.PoolObject;
 import net.imglib2.EuclideanSpace;
 
 public class AbstractSpotPool<
-			V extends AbstractSpot< V, E, T, G >,
-			E extends AbstractListenableEdge< E, V, T >,
+			V extends AbstractSpot< V, E, ?, T, G >,
+			E extends AbstractListenableEdge< E, V, ?, T >,
 			T extends MappedElement,
 			G extends AbstractModelGraph< ?, ?, ?, V, E, T > >
 		extends AbstractListenableVertexPool< V, E, T > implements EuclideanSpace
@@ -25,19 +25,11 @@ public class AbstractSpotPool<
 
 	private final int numDimensions;
 
-	private G modelGraph;
+	G modelGraph;
 
 	public void linkModelGraph( final G modelGraph )
 	{
 		this.modelGraph = modelGraph;
-	}
-
-	@Override
-	public V createRef()
-	{
-		final V vertex = super.createRef();
-		vertex.modelGraph = modelGraph;
-		return vertex;
 	}
 
 	@Override

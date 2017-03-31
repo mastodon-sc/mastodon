@@ -1,11 +1,11 @@
 package org.mastodon.revised.model.mamut;
 
 import org.mastodon.graph.ref.AbstractEdge;
-import org.mastodon.graph.ref.AbstractEdgePool;
 import org.mastodon.graph.ref.AbstractListenableEdge;
 import org.mastodon.pool.ByteMappedElement;
+import org.mastodon.revised.model.mamut.ModelGraph.LinkPool;
 
-public class Link extends AbstractListenableEdge< Link, Spot, ByteMappedElement >
+public class Link extends AbstractListenableEdge< Link, Spot, LinkPool, ByteMappedElement >
 {
 	protected static final int SIZE_IN_BYTES = AbstractEdge.SIZE_IN_BYTES;
 
@@ -26,7 +26,7 @@ public class Link extends AbstractListenableEdge< Link, Spot, ByteMappedElement 
 		return String.format( "Link( %d -> %d )", getSource().getInternalPoolIndex(), getTarget().getInternalPoolIndex() );
 	}
 
-	Link( final AbstractEdgePool< Link, Spot, ByteMappedElement > pool )
+	Link( final LinkPool pool )
 	{
 		super( pool );
 	}

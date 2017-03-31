@@ -12,6 +12,7 @@ import org.mastodon.pool.MemPool;
 import org.mastodon.pool.Pool;
 import org.mastodon.pool.PoolObject;
 import org.mastodon.pool.SingleArrayMemPool;
+import org.mastodon.revised.trackscheme.ScreenEdge.ScreenEdgePool;
 import org.mastodon.revised.trackscheme.ScreenVertex.Transition;
 
 /**
@@ -19,7 +20,7 @@ import org.mastodon.revised.trackscheme.ScreenVertex.Transition;
  *
  * @author Tobias Pietzsch &lt;tobias.pietzsch@gmail.com&gt;
  */
-public class ScreenEdge extends PoolObject< ScreenEdge, ByteMappedElement >
+public class ScreenEdge extends PoolObject< ScreenEdge, ScreenEdgePool, ByteMappedElement >
 {
 	protected static final int ORIG_EDGE_INDEX_OFFSET = 0;
 	protected static final int SOURCE_SCREEN_VERTEX_INDEX_OFFSET = ORIG_EDGE_INDEX_OFFSET + INDEX_SIZE;
@@ -29,7 +30,7 @@ public class ScreenEdge extends PoolObject< ScreenEdge, ByteMappedElement >
 	protected static final int IP_RATIO_OFFSET = TRANSITION_OFFSET + BYTE_SIZE;
 	protected static final int SIZE_IN_BYTES = IP_RATIO_OFFSET + DOUBLE_SIZE;
 
-	protected ScreenEdge( final Pool< ScreenEdge, ByteMappedElement > pool )
+	protected ScreenEdge( final ScreenEdgePool pool )
 	{
 		super( pool );
 	}

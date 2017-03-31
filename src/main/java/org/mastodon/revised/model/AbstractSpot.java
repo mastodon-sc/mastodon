@@ -6,7 +6,6 @@ import static org.mastodon.pool.ByteUtils.INT_SIZE;
 import org.mastodon.graph.ref.AbstractListenableEdge;
 import org.mastodon.graph.ref.AbstractListenableVertex;
 import org.mastodon.graph.ref.AbstractVertex;
-import org.mastodon.graph.ref.AbstractVertexPool;
 import org.mastodon.pool.ByteMappedElement;
 import org.mastodon.pool.MappedElement;
 import org.mastodon.pool.PoolObjectAttributeSerializer;
@@ -37,11 +36,12 @@ import net.imglib2.RealPositionable;
  * @author Tobias Pietzsch &lt;tobias.pietzsch@gmail.com&gt;
  */
 public class AbstractSpot<
-		V extends AbstractSpot< V, E, T, G >,
-		E extends AbstractListenableEdge< E, V, T >,
+		V extends AbstractSpot< V, E, VP, T, G >,
+		E extends AbstractListenableEdge< E, V, ?, T >,
+		VP extends AbstractSpotPool< V, ?, T, G >,
 		T extends MappedElement,
 		G extends AbstractModelGraph< ?, ?, ?, V, E, T > >
-	extends AbstractListenableVertex< V, E, T >
+	extends AbstractListenableVertex< V, E, VP, T >
 	implements RealLocalizable, RealPositionable, HasTimepoint
 {
 	protected static final int X_OFFSET = AbstractVertex.SIZE_IN_BYTES; // n * DOUBLE_SIZE
@@ -49,14 +49,14 @@ public class AbstractSpot<
 
 	protected final int n;
 
-	protected G modelGraph;
+	protected final G modelGraph;
 
 	protected static int sizeInBytes( final int numDimensions )
 	{
 		return X_OFFSET + numDimensions * DOUBLE_SIZE + INT_SIZE;
 	}
 
-	static < V extends AbstractSpot< V, ?, ?, ? > > AttributeUndoSerializer< V > createPositionAttributeSerializer( final int numDimensions )
+	static < V extends AbstractSpot< V, ?, ?, ?, ? > > AttributeUndoSerializer< V > createPositionAttributeSerializer( final int numDimensions )
 	{
 		return new PoolObjectAttributeSerializer< V >( X_OFFSET, numDimensions * DOUBLE_SIZE)
 		{
@@ -88,10 +88,11 @@ public class AbstractSpot<
 		access.putInt( tp, TP_OFFSET );
 	}
 
-	protected AbstractSpot( final AbstractVertexPool< V, E, T > pool, final int numDimensions )
+	protected AbstractSpot( final VP pool )
 	{
 		super( pool );
-		n = numDimensions;
+		n = pool.numDimensions();
+		modelGraph = pool.modelGraph;
 		TP_OFFSET = X_OFFSET + n * DOUBLE_SIZE;
 	}
 

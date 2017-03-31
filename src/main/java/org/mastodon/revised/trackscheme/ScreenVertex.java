@@ -13,13 +13,14 @@ import org.mastodon.pool.MemPool;
 import org.mastodon.pool.Pool;
 import org.mastodon.pool.PoolObject;
 import org.mastodon.pool.SingleArrayMemPool;
+import org.mastodon.revised.trackscheme.ScreenVertex.ScreenVertexPool;
 
 /**
  * Layouted vertex.
  *
  * @author Tobias Pietzsch &lt;tobias.pietzsch@gmail.com&gt;
  */
-public class ScreenVertex extends PoolObject< ScreenVertex, ByteMappedElement >
+public class ScreenVertex extends PoolObject< ScreenVertex, ScreenVertexPool, ByteMappedElement >
 {
 	protected static final int ORIG_VERTEX_INDEX_OFFSET = 0;
 	protected static final int X_OFFSET = ORIG_VERTEX_INDEX_OFFSET + INDEX_SIZE;
@@ -57,7 +58,7 @@ public class ScreenVertex extends PoolObject< ScreenVertex, ByteMappedElement >
 		}
 	}
 
-	protected ScreenVertex( final Pool< ScreenVertex, ByteMappedElement > pool, final RefPool< TrackSchemeVertex > trackSchemeVertexPool )
+	protected ScreenVertex( final ScreenVertexPool pool, final RefPool< TrackSchemeVertex > trackSchemeVertexPool )
 	{
 		super( pool );
 		this.trackSchemeVertexPool = trackSchemeVertexPool;
