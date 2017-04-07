@@ -39,7 +39,7 @@ public final class Spot extends AbstractSpot< Spot, Link, SpotPool, ByteMappedEl
 			@Override
 			public void notifySet( final Spot spot )
 			{
-				spot.modelGraph.notifyBeforeVertexCovarianceChange( spot );
+				spot.modelGraph.notifyRadiusChanged( spot );
 			}
 		};
 	}
