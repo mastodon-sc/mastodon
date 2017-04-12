@@ -65,6 +65,7 @@ public class Model extends AbstractModel< ModelGraph, Spot, Link > implements Un
 //		final List< Attribute< Spot > > vertexAttributes = modelGraph.vertexAttributes();
 //		final List< Attribute< Link > > edgeAttributes = modelGraph.edgeAttributes();
 		final List< PropertyMap< Spot, ? > > vertexProperties = new ArrayList<>();
+		vertexProperties.add( modelGraph.VERTEX_LABEL );
 		final List< PropertyMap< Link, ? > > edgeProperties = new ArrayList<>();
 
 		undoRecorder = new GraphUndoRecorder<>(

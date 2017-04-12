@@ -19,6 +19,8 @@ import org.mastodon.graph.ref.AbstractListenableEdge;
 import org.mastodon.graph.ref.AbstractListenableEdgePool;
 import org.mastodon.graph.ref.ListenableGraphImp;
 import org.mastodon.io.features.RawFeatureIO;
+import org.mastodon.io.properties.PropertyMapSerializers;
+import org.mastodon.io.properties.RawPropertyIO;
 import org.mastodon.pool.MappedElement;
 import org.mastodon.revisedundo.attributes.Attribute;
 import org.mastodon.spatial.VertexPositionChangeProvider;
@@ -40,6 +42,8 @@ public class AbstractModelGraph<
 
 	protected final ArrayList< Attribute< E > > edgeAttributes;
 
+	protected final PropertyMapSerializers< V > vertexPropertySerializers;
+
 	private final ArrayList< VertexPositionListener< V > > vertexPositionListeners;
 
 	public final Attribute< V > VERTEX_POSITION;
@@ -52,6 +56,7 @@ public class AbstractModelGraph<
 		idmap = new GraphIdBimap<>( vertexPool, edgePool );
 		vertexAttributes = new ArrayList<>();
 		edgeAttributes = new ArrayList<>();
+		vertexPropertySerializers = new PropertyMapSerializers<>();
 		vertexPositionListeners = new ArrayList<>();
 
 		VERTEX_POSITION = new Attribute< V >( AbstractSpot.createPositionAttributeSerializer( vertexPool.numDimensions() ), "vertex position" );
@@ -66,6 +71,7 @@ public class AbstractModelGraph<
 		idmap = new GraphIdBimap< V, E >( vertexPool, edgePool );
 		vertexAttributes = new ArrayList<>();
 		edgeAttributes = new ArrayList<>();
+		vertexPropertySerializers = new PropertyMapSerializers<>();
 		vertexPositionListeners = new ArrayList<>();
 
 		VERTEX_POSITION = new Attribute< V >( AbstractSpot.createPositionAttributeSerializer( vertexPool.numDimensions() ), "vertex position" );
@@ -104,8 +110,9 @@ public class AbstractModelGraph<
 		pauseListeners();
 		clear();
 		final FileIdToGraphMap< V, E > fileIdMap = RawGraphIO.read( this, idmap, serializer, ois );
-		RawFeatureIO.readFeatureMaps( fileIdMap.vertices(), vertexFeatures, ois );
-		RawFeatureIO.readFeatureMaps( fileIdMap.edges(), edgeFeatures, ois );
+		RawPropertyIO.readPropertyMaps( fileIdMap.vertices(), vertexPropertySerializers, ois );
+//		RawFeatureIO.readFeatureMaps( fileIdMap.vertices(), vertexFeatures, ois );
+//		RawFeatureIO.readFeatureMaps( fileIdMap.edges(), edgeFeatures, ois );
 		ois.close();
 		resumeListeners();
 	}

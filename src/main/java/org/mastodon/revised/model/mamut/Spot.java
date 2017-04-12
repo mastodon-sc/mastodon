@@ -1,7 +1,6 @@
 package org.mastodon.revised.model.mamut;
 
 import static org.mastodon.pool.ByteUtils.DOUBLE_SIZE;
-import static org.mastodon.revised.model.mamut.ModelFeatures.LABEL;
 
 import org.mastodon.pool.ByteMappedElement;
 import org.mastodon.pool.PoolObjectAttributeSerializer;
@@ -197,8 +196,8 @@ public final class Spot extends AbstractSpot< Spot, Link, SpotPool, ByteMappedEl
 	@Override
 	public String getLabel()
 	{
-		if ( feature( LABEL ).isSet() )
-			return feature( LABEL ).get();
+		if ( modelGraph.VERTEX_LABEL.isSet( this ) )
+			return modelGraph.VERTEX_LABEL.get( this );
 		else
 			return Integer.toString( getInternalPoolIndex() );
 	}
@@ -206,7 +205,7 @@ public final class Spot extends AbstractSpot< Spot, Link, SpotPool, ByteMappedEl
 	@Override
 	public void setLabel( final String label )
 	{
-		feature( LABEL ).set( label );
+		modelGraph.VERTEX_LABEL.set( this, label );
 	}
 
 	@Override

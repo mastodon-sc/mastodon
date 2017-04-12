@@ -5,11 +5,13 @@ import java.util.ArrayList;
 import org.mastodon.features.Features;
 import org.mastodon.graph.GraphIdBimap;
 import org.mastodon.graph.ref.AbstractListenableEdgePool;
+import org.mastodon.io.properties.StringPropertyMapSerializer;
 import org.mastodon.pool.ByteMappedElement;
 import org.mastodon.pool.ByteMappedElementArray;
 import org.mastodon.pool.MemPool;
 import org.mastodon.pool.PoolObject;
 import org.mastodon.pool.SingleArrayMemPool;
+import org.mastodon.properties.ObjPropertyMap;
 import org.mastodon.revised.model.AbstractModelGraph;
 import org.mastodon.revised.model.AbstractSpotPool;
 import org.mastodon.revised.model.mamut.ModelGraph.LinkPool;
@@ -21,6 +23,8 @@ public class ModelGraph extends AbstractModelGraph< ModelGraph, SpotPool, LinkPo
 	private final ArrayList< SpotRadiusListener > spotRadiusListeners;
 
 	public final Attribute< Spot > VERTEX_COVARIANCE;
+
+	public final ObjPropertyMap< Spot, String > VERTEX_LABEL;
 
 	public ModelGraph()
 	{
@@ -34,6 +38,9 @@ public class ModelGraph extends AbstractModelGraph< ModelGraph, SpotPool, LinkPo
 
 		VERTEX_COVARIANCE = new Attribute< Spot >( Spot.createCovarianceAttributeSerializer(), "vertex covariance" );
 		vertexAttributes.add( VERTEX_COVARIANCE );
+
+		VERTEX_LABEL = new ObjPropertyMap<>( vertexPool );
+		vertexPropertySerializers.put( "label", new StringPropertyMapSerializer<>( VERTEX_LABEL ) );
 	}
 
 	Features< Spot > vertexFeatures()
