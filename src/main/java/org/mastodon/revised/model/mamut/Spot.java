@@ -9,7 +9,7 @@ import org.mastodon.revised.bdv.overlay.util.JamaEigenvalueDecomposition;
 import org.mastodon.revised.model.AbstractSpot;
 import org.mastodon.revised.model.HasLabel;
 import org.mastodon.revised.model.mamut.ModelGraph.SpotPool;
-import org.mastodon.undo.attributes.AttributeUndoSerializer;
+import org.mastodon.revisedundo.attributes.AttributeSerializer;
 
 /**
  * {@link AbstractSpot} implementation where the spot shape is stored in a
@@ -27,7 +27,7 @@ public final class Spot extends AbstractSpot< Spot, Link, SpotPool, ByteMappedEl
 
 	private final JamaEigenvalueDecomposition eig = new JamaEigenvalueDecomposition( 3 );
 
-	static AttributeUndoSerializer< Spot > createCovarianceAttributeSerializer()
+	static AttributeSerializer< Spot > createCovarianceAttributeSerializer()
 	{
 		/*
 		 * Note: Because the {@link #getBoundingSphereRadiusSquared() radius} can

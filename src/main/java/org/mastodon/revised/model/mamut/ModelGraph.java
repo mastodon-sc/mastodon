@@ -14,8 +14,7 @@ import org.mastodon.revised.model.AbstractModelGraph;
 import org.mastodon.revised.model.AbstractSpotPool;
 import org.mastodon.revised.model.mamut.ModelGraph.LinkPool;
 import org.mastodon.revised.model.mamut.ModelGraph.SpotPool;
-import org.mastodon.undo.attributes.Attribute;
-import org.mastodon.undo.attributes.Attributes;
+import org.mastodon.revisedundo.attributes.Attribute;
 
 public class ModelGraph extends AbstractModelGraph< ModelGraph, SpotPool, LinkPool, Spot, Link, ByteMappedElement >
 {
@@ -33,7 +32,8 @@ public class ModelGraph extends AbstractModelGraph< ModelGraph, SpotPool, LinkPo
 		super( new LinkPool( initialCapacity, new SpotPool( initialCapacity ) ) );
 		spotRadiusListeners = new ArrayList<>();
 
-		VERTEX_COVARIANCE = vertexAttributes.createAttribute( Spot.createCovarianceAttributeSerializer(), "vertex covariance" );
+		VERTEX_COVARIANCE = new Attribute< Spot >( Spot.createCovarianceAttributeSerializer(), "vertex covariance" );
+		vertexAttributes.add( VERTEX_COVARIANCE );
 	}
 
 	Features< Spot > vertexFeatures()
@@ -46,12 +46,12 @@ public class ModelGraph extends AbstractModelGraph< ModelGraph, SpotPool, LinkPo
 		return edgeFeatures;
 	}
 
-	Attributes< Spot > vertexAttributes()
+	ArrayList< Attribute< Spot > > vertexAttributes()
 	{
 		return vertexAttributes;
 	}
 
-	Attributes< Link > edgeAttributes()
+	ArrayList< Attribute< Link > > edgeAttributes()
 	{
 		return edgeAttributes;
 	}
@@ -63,7 +63,7 @@ public class ModelGraph extends AbstractModelGraph< ModelGraph, SpotPool, LinkPo
 
 	void notifyBeforeVertexCovarianceChange( final Spot spot )
 	{
-		vertexAttributes.notifyBeforeAttributeChange( VERTEX_COVARIANCE, spot );
+		VERTEX_COVARIANCE.notifyBeforeAttributeChange( spot );
 	}
 
 	void notifyRadiusChanged( final Spot spot )

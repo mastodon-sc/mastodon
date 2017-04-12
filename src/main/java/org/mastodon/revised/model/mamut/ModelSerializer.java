@@ -2,6 +2,7 @@ package org.mastodon.revised.model.mamut;
 
 import org.mastodon.graph.io.RawGraphIO.ObjectSerializer;
 import org.mastodon.graph.io.RawGraphIO.Serializer;
+import org.mastodon.revisedundo.attributes.AttributeSerializer;
 import org.mastodon.undo.GraphUndoSerializer;
 
 class ModelSerializer implements Serializer< Spot, Link >, GraphUndoSerializer< Spot, Link >
@@ -69,18 +70,18 @@ class ModelSerializer implements Serializer< Spot, Link >, GraphUndoSerializer< 
 	private final LinkSerializer edgeSerializer = new LinkSerializer();
 
 	@Override
-	public ObjectSerializer< Spot > getVertexSerializer()
+	public SpotSerializer getVertexSerializer()
 	{
 		return vertexSerializer;
 	}
 
 	@Override
-	public ObjectSerializer< Link > getEdgeSerializer()
+	public LinkSerializer getEdgeSerializer()
 	{
 		return edgeSerializer;
 	}
 
-	static class SpotSerializer implements ObjectSerializer< Spot >
+	static class SpotSerializer implements ObjectSerializer< Spot >, AttributeSerializer< Spot >
 	{
 		private final int VERTEX_NUM_BYTES = Spot.SIZE_IN_BYTES - Spot.X_OFFSET;
 		private final int VERTEX_DATA_START = Spot.X_OFFSET;
@@ -110,9 +111,15 @@ class ModelSerializer implements Serializer< Spot, Link >, GraphUndoSerializer< 
 		{
 			vertex.notifyVertexAdded();
 		}
+
+		@Override
+		public void notifySet( final Spot vertex )
+		{
+			vertex.notifyVertexAdded();
+		}
 	}
 
-	static class LinkSerializer implements ObjectSerializer< Link >
+	static class LinkSerializer implements ObjectSerializer< Link >, AttributeSerializer< Link >
 	{
 		@Override
 		public int getNumBytes()
@@ -130,6 +137,12 @@ class ModelSerializer implements Serializer< Spot, Link >, GraphUndoSerializer< 
 
 		@Override
 		public void notifyAdded( final Link edge )
+		{
+			edge.notifyEdgeAdded();
+		}
+
+		@Override
+		public void notifySet( final Link edge )
 		{
 			edge.notifyEdgeAdded();
 		}

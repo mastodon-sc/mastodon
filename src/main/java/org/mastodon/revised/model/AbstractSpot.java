@@ -9,8 +9,8 @@ import org.mastodon.graph.ref.AbstractVertex;
 import org.mastodon.pool.ByteMappedElement;
 import org.mastodon.pool.MappedElement;
 import org.mastodon.pool.PoolObjectAttributeSerializer;
+import org.mastodon.revisedundo.attributes.AttributeSerializer;
 import org.mastodon.spatial.HasTimepoint;
-import org.mastodon.undo.attributes.AttributeUndoSerializer;
 
 import net.imglib2.Localizable;
 import net.imglib2.RealLocalizable;
@@ -56,7 +56,7 @@ public class AbstractSpot<
 		return X_OFFSET + numDimensions * DOUBLE_SIZE + INT_SIZE;
 	}
 
-	static < V extends AbstractSpot< V, ?, ?, ?, ? > > AttributeUndoSerializer< V > createPositionAttributeSerializer( final int numDimensions )
+	static < V extends AbstractSpot< V, ?, ?, ?, ? > > AttributeSerializer< V > createPositionAttributeSerializer( final int numDimensions )
 	{
 		return new PoolObjectAttributeSerializer< V >( X_OFFSET, numDimensions * DOUBLE_SIZE)
 		{

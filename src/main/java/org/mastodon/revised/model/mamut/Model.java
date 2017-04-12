@@ -5,12 +5,14 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.mastodon.graph.ReadOnlyGraph;
 import org.mastodon.features.Feature;
+import org.mastodon.graph.ReadOnlyGraph;
+import org.mastodon.properties.PropertyMap;
 import org.mastodon.revised.model.AbstractModel;
+import org.mastodon.revisedundo.GraphUndoRecorder;
+import org.mastodon.revisedundo.attributes.AttributeSerializer;
 import org.mastodon.spatial.SpatioTemporalIndex;
 import org.mastodon.spatial.SpatioTemporalIndexImp;
-import org.mastodon.undo.GraphUndoRecorder;
 import org.mastodon.undo.UndoPointMarker;
 
 import net.imglib2.RealLocalizable;
@@ -44,7 +46,7 @@ public class Model extends AbstractModel< ModelGraph, Spot, Link > implements Un
 
 	private final List< Feature< ?, Link, ? > > edgeFeaturesToSerialize;
 
-	private final GraphUndoRecorder< Spot, Link, ? > undoRecorder;
+	private final GraphUndoRecorder< Spot, Link > undoRecorder;
 
 	public Model()
 	{
@@ -56,14 +58,25 @@ public class Model extends AbstractModel< ModelGraph, Spot, Link > implements Un
 
 		edgeFeaturesToSerialize = new ArrayList<>();
 
-		undoRecorder = GraphUndoRecorder.create(
+		final int initialCapacity = 1024;
+
+		final AttributeSerializer< Spot > vertexSerializer = ModelSerializer.getInstance().getVertexSerializer();
+		final AttributeSerializer< Link > edgeSerializer = ModelSerializer.getInstance().getEdgeSerializer();
+//		final List< Attribute< Spot > > vertexAttributes = modelGraph.vertexAttributes();
+//		final List< Attribute< Link > > edgeAttributes = modelGraph.edgeAttributes();
+		final List< PropertyMap< Spot, ? > > vertexProperties = new ArrayList<>();
+		final List< PropertyMap< Link, ? > > edgeProperties = new ArrayList<>();
+
+		undoRecorder = new GraphUndoRecorder<>(
+				initialCapacity,
 				modelGraph,
-				modelGraph.vertexFeatures(),
-				modelGraph.edgeFeatures(),
+				modelGraph.idmap(),
+				vertexSerializer,
+				edgeSerializer,
 				modelGraph.vertexAttributes(),
 				modelGraph.edgeAttributes(),
-				modelGraph.idmap(),
-				ModelSerializer.getInstance() );
+				vertexProperties,
+				edgeProperties );
 	}
 
 	/**

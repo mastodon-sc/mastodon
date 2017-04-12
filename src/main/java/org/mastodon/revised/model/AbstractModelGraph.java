@@ -20,10 +20,9 @@ import org.mastodon.graph.ref.AbstractListenableEdgePool;
 import org.mastodon.graph.ref.ListenableGraphImp;
 import org.mastodon.io.features.RawFeatureIO;
 import org.mastodon.pool.MappedElement;
+import org.mastodon.revisedundo.attributes.Attribute;
 import org.mastodon.spatial.VertexPositionChangeProvider;
 import org.mastodon.spatial.VertexPositionListener;
-import org.mastodon.undo.attributes.Attribute;
-import org.mastodon.undo.attributes.AttributesImp;
 
 public class AbstractModelGraph<
 		G extends AbstractModelGraph< G, VP, EP, V, E, T >,
@@ -37,9 +36,9 @@ public class AbstractModelGraph<
 {
 	protected final GraphIdBimap< V, E > idmap;
 
-	protected final AttributesImp< V > vertexAttributes;
+	protected final ArrayList< Attribute< V > > vertexAttributes;
 
-	protected final AttributesImp< E > edgeAttributes;
+	protected final ArrayList< Attribute< E > > edgeAttributes;
 
 	private final ArrayList< VertexPositionListener< V > > vertexPositionListeners;
 
@@ -50,12 +49,13 @@ public class AbstractModelGraph<
 	{
 		super( vertexPool, edgePool );
 		vertexPool.linkModelGraph( ( G ) this );
-		idmap = new GraphIdBimap< V, E >( vertexPool, edgePool );
-		vertexAttributes = new AttributesImp<>();
-		edgeAttributes = new AttributesImp<>();
+		idmap = new GraphIdBimap<>( vertexPool, edgePool );
+		vertexAttributes = new ArrayList<>();
+		edgeAttributes = new ArrayList<>();
 		vertexPositionListeners = new ArrayList<>();
 
-		VERTEX_POSITION = vertexAttributes.createAttribute( AbstractSpot.createPositionAttributeSerializer( vertexPool.numDimensions() ), "vertex position" );
+		VERTEX_POSITION = new Attribute< V >( AbstractSpot.createPositionAttributeSerializer( vertexPool.numDimensions() ), "vertex position" );
+		vertexAttributes.add( VERTEX_POSITION );
 	}
 
 	@SuppressWarnings( "unchecked" )
@@ -64,11 +64,12 @@ public class AbstractModelGraph<
 		super( edgePool );
 		vertexPool.linkModelGraph( ( G ) this );
 		idmap = new GraphIdBimap< V, E >( vertexPool, edgePool );
-		vertexAttributes = new AttributesImp<>();
-		edgeAttributes = new AttributesImp<>();
+		vertexAttributes = new ArrayList<>();
+		edgeAttributes = new ArrayList<>();
 		vertexPositionListeners = new ArrayList<>();
 
-		VERTEX_POSITION = vertexAttributes.createAttribute( AbstractSpot.createPositionAttributeSerializer( vertexPool.numDimensions() ), "vertex position" );
+		VERTEX_POSITION = new Attribute< V >( AbstractSpot.createPositionAttributeSerializer( vertexPool.numDimensions() ), "vertex position" );
+		vertexAttributes.add( VERTEX_POSITION );
 	}
 
 	/**
@@ -176,7 +177,7 @@ public class AbstractModelGraph<
 
 	void notifyBeforeVertexPositionChange( final V vertex )
 	{
-		vertexAttributes.notifyBeforeAttributeChange( VERTEX_POSITION, vertex );
+		VERTEX_POSITION.notifyBeforeAttributeChange( vertex );
 	}
 
 	void notifyVertexPositionChanged( final V vertex )
@@ -195,16 +196,20 @@ public class AbstractModelGraph<
 	protected void pauseListeners()
 	{
 		super.pauseListeners();
-		vertexAttributes.pauseListeners();
-		edgeAttributes.pauseListeners();
+		for ( final Attribute< V > attribute : vertexAttributes )
+			attribute.pauseListeners();
+		for ( final Attribute< E > attribute : edgeAttributes )
+			attribute.pauseListeners();
 	}
 
 	@Override
 	protected void resumeListeners()
 	{
 		super.resumeListeners();
-		vertexAttributes.resumeListeners();
-		edgeAttributes.resumeListeners();
+		for ( final Attribute< V > attribute : vertexAttributes )
+			attribute.resumeListeners();
+		for ( final Attribute< E > attribute : edgeAttributes )
+			attribute.resumeListeners();
 	}
 
 	@Override
