@@ -8,7 +8,7 @@ import org.mastodon.revised.bdv.overlay.util.JamaEigenvalueDecomposition;
 import org.mastodon.revised.model.AbstractSpot;
 import org.mastodon.revised.model.HasLabel;
 import org.mastodon.revised.model.mamut.ModelGraph.SpotPool;
-import org.mastodon.revisedundo.attributes.AttributeSerializer;
+import org.mastodon.undo.attributes.AttributeSerializer;
 
 /**
  * {@link AbstractSpot} implementation where the spot shape is stored in a

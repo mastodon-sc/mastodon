@@ -8,11 +8,11 @@ import java.util.List;
 import org.mastodon.graph.ReadOnlyGraph;
 import org.mastodon.properties.PropertyMap;
 import org.mastodon.revised.model.AbstractModel;
-import org.mastodon.revisedundo.GraphUndoRecorder;
-import org.mastodon.revisedundo.UndoPointMarker;
-import org.mastodon.revisedundo.attributes.AttributeSerializer;
 import org.mastodon.spatial.SpatioTemporalIndex;
 import org.mastodon.spatial.SpatioTemporalIndexImp;
+import org.mastodon.undo.GraphUndoRecorder;
+import org.mastodon.undo.UndoPointMarker;
+import org.mastodon.undo.attributes.AttributeSerializer;
 
 import net.imglib2.RealLocalizable;
 

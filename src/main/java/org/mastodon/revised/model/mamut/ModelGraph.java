@@ -15,7 +15,7 @@ import org.mastodon.revised.model.AbstractModelGraph;
 import org.mastodon.revised.model.AbstractSpotPool;
 import org.mastodon.revised.model.mamut.ModelGraph.LinkPool;
 import org.mastodon.revised.model.mamut.ModelGraph.SpotPool;
-import org.mastodon.revisedundo.attributes.Attribute;
+import org.mastodon.undo.attributes.Attribute;
 
 public class ModelGraph extends AbstractModelGraph< ModelGraph, SpotPool, LinkPool, Spot, Link, ByteMappedElement >
 {

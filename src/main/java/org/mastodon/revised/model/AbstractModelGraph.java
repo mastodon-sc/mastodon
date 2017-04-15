@@ -19,9 +19,9 @@ import org.mastodon.graph.ref.ListenableGraphImp;
 import org.mastodon.io.properties.PropertyMapSerializers;
 import org.mastodon.io.properties.RawPropertyIO;
 import org.mastodon.pool.MappedElement;
-import org.mastodon.revisedundo.attributes.Attribute;
 import org.mastodon.spatial.VertexPositionChangeProvider;
 import org.mastodon.spatial.VertexPositionListener;
+import org.mastodon.undo.attributes.Attribute;
 
 public class AbstractModelGraph<
 		G extends AbstractModelGraph< G, VP, EP, V, E, T >,

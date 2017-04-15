@@ -3,7 +3,7 @@ package org.mastodon.revised.model.mamut;
 import org.mastodon.graph.io.RawGraphIO.ObjectSerializer;
 import org.mastodon.graph.io.RawGraphIO.Serializer;
 import org.mastodon.pool.PoolObjectAttributeSerializer;
-import org.mastodon.revisedundo.attributes.AttributeSerializer;
+import org.mastodon.undo.attributes.AttributeSerializer;
 
 class ModelSerializer implements Serializer< Spot, Link >
 {

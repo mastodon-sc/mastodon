@@ -9,8 +9,8 @@ import org.mastodon.graph.ref.AbstractVertex;
 import org.mastodon.pool.ByteMappedElement;
 import org.mastodon.pool.MappedElement;
 import org.mastodon.pool.PoolObjectAttributeSerializer;
-import org.mastodon.revisedundo.attributes.AttributeSerializer;
 import org.mastodon.spatial.HasTimepoint;
+import org.mastodon.undo.attributes.AttributeSerializer;
 
 import net.imglib2.Localizable;
 import net.imglib2.RealLocalizable;
