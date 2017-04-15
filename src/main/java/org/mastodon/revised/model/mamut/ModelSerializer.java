@@ -3,58 +3,9 @@ package org.mastodon.revised.model.mamut;
 import org.mastodon.graph.io.RawGraphIO.ObjectSerializer;
 import org.mastodon.graph.io.RawGraphIO.Serializer;
 import org.mastodon.revisedundo.attributes.AttributeSerializer;
-import org.mastodon.undo.GraphUndoSerializer;
 
-class ModelSerializer implements Serializer< Spot, Link >, GraphUndoSerializer< Spot, Link >
+class ModelSerializer implements Serializer< Spot, Link >
 {
-	@Override
-	public int getVertexNumBytes()
-	{
-		return vertexSerializer.getNumBytes();
-	}
-
-	@Override
-	public void getBytes( final Spot vertex, final byte[] bytes )
-	{
-		vertexSerializer.getBytes( vertex, bytes );
-	}
-
-	@Override
-	public void setBytes( final Spot vertex, final byte[] bytes )
-	{
-		vertexSerializer.setBytes( vertex, bytes );
-	}
-
-	@Override
-	public void notifyVertexAdded( final Spot vertex )
-	{
-		vertexSerializer.notifyAdded( vertex );
-	}
-
-	@Override
-	public int getEdgeNumBytes()
-	{
-		return edgeSerializer.getNumBytes();
-	}
-
-	@Override
-	public void getBytes( final Link edge, final byte[] bytes )
-	{
-		edgeSerializer.getBytes( edge, bytes );
-	}
-
-	@Override
-	public void setBytes( final Link edge, final byte[] bytes )
-	{
-		edgeSerializer.setBytes( edge, bytes );
-	}
-
-	@Override
-	public void notifyEdgeAdded( final Link edge )
-	{
-		edgeSerializer.notifyAdded( edge );
-	}
-
 	private ModelSerializer()
 	{}
 

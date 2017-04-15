@@ -1,18 +1,13 @@
 package org.mastodon.graph.revised;
 
-import java.util.Random;
-
-import org.mastodon.features.IntFeature;
+import org.mastodon.properties.IntPropertyMap;
 import org.mastodon.revised.model.mamut.Model;
 import org.mastodon.revised.model.mamut.Spot;
 
 import net.imglib2.util.BenchmarkHelper;
 
-public class FeaturesBenchmark
+public class PropertyMapBenchmark
 {
-
-	private static final Random ran = new Random( 0l );
-
 	public static void main( final String[] args )
 	{
 		final int N_RUNS = 100;
@@ -26,13 +21,13 @@ public class FeaturesBenchmark
 
 		final int[] storage = new int[ size ];
 
-		final IntFeature< Spot > POSITIVE_NUMBER = new IntFeature< >( "POS_NUMBER", -1 );
+		final IntPropertyMap< Spot > POSITIVE_NUMBER = new IntPropertyMap<>( model.getGraph().vertices(), -1 );
 
 		System.out.println();
 		final long s1 = System.currentTimeMillis();
-		BenchmarkHelper.benchmarkAndPrint( N_RUNS, false, () -> putFeatureValue( model, POSITIVE_NUMBER ) );
+		BenchmarkHelper.benchmarkAndPrint( N_RUNS, false, () -> putPropertyValue( model, POSITIVE_NUMBER ) );
 		final long e1 = System.currentTimeMillis();
-		System.out.println( String.format( "Put a int feature value in %d spots in %.1f ms.", size, ( ( double ) e1 - s1 ) / N_RUNS ) );
+		System.out.println( String.format( "Put a int property value in %d spots in %.1f ms.", size, ( ( double ) e1 - s1 ) / N_RUNS ) );
 
 		System.out.println();
 		final long s2 = System.currentTimeMillis();
@@ -42,26 +37,26 @@ public class FeaturesBenchmark
 
 		System.out.println();
 		final long s3 = System.currentTimeMillis();
-		BenchmarkHelper.benchmarkAndPrint( N_RUNS, false, () -> readFeatureValue( model, storage, POSITIVE_NUMBER ) );
+		BenchmarkHelper.benchmarkAndPrint( N_RUNS, false, () -> readPropertyValue( model, storage, POSITIVE_NUMBER ) );
 		final long e3 = System.currentTimeMillis();
-		System.out.println( String.format( "Read a int feature value in %d spots in %.1f ms.", size, ( ( double ) e3 - s3 ) / N_RUNS ) );
+		System.out.println( String.format( "Read a int property value in %d spots in %.1f ms.", size, ( ( double ) e3 - s3 ) / N_RUNS ) );
 
 	}
 
-	private static void readFeatureValue( final Model model, final int[] storage, final IntFeature< Spot > feature )
+	private static void readPropertyValue( final Model model, final int[] storage, final IntPropertyMap< Spot > feature )
 	{
 		int index = 0;
 		for ( final Spot spot : model.getGraph().vertices() )
 		{
-			storage[ index++ ] = spot.feature( feature ).getInt();
+			storage[ index++ ] = feature.getInt( spot );
 		}
 	}
 
-	private static void putFeatureValue( final Model model, final IntFeature< Spot > feature )
+	private static void putPropertyValue( final Model model, final IntPropertyMap< Spot > feature )
 	{
 		for ( final Spot spot : model.getGraph().vertices() )
 		{
-			spot.feature( feature ).set( spot.getTimepoint() );
+			feature.set( spot, spot.getTimepoint() );
 		}
 	}
 

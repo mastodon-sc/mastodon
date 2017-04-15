@@ -7,9 +7,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
-import java.util.List;
 
-import org.mastodon.features.Feature;
 import org.mastodon.graph.GraphChangeNotifier;
 import org.mastodon.graph.GraphIdBimap;
 import org.mastodon.graph.io.RawGraphIO;
@@ -18,7 +16,6 @@ import org.mastodon.graph.io.RawGraphIO.GraphToFileIdMap;
 import org.mastodon.graph.ref.AbstractListenableEdge;
 import org.mastodon.graph.ref.AbstractListenableEdgePool;
 import org.mastodon.graph.ref.ListenableGraphImp;
-import org.mastodon.io.features.RawFeatureIO;
 import org.mastodon.io.properties.PropertyMapSerializers;
 import org.mastodon.io.properties.RawPropertyIO;
 import org.mastodon.pool.MappedElement;
@@ -49,26 +46,11 @@ public class AbstractModelGraph<
 	public final Attribute< V > VERTEX_POSITION;
 
 	@SuppressWarnings( "unchecked" )
-	public AbstractModelGraph( final VP vertexPool, final EP edgePool )
-	{
-		super( vertexPool, edgePool );
-		vertexPool.linkModelGraph( ( G ) this );
-		idmap = new GraphIdBimap<>( vertexPool, edgePool );
-		vertexAttributes = new ArrayList<>();
-		edgeAttributes = new ArrayList<>();
-		vertexPropertySerializers = new PropertyMapSerializers<>();
-		vertexPositionListeners = new ArrayList<>();
-
-		VERTEX_POSITION = new Attribute< V >( AbstractSpot.createPositionAttributeSerializer( vertexPool.numDimensions() ), "vertex position" );
-		vertexAttributes.add( VERTEX_POSITION );
-	}
-
-	@SuppressWarnings( "unchecked" )
 	public AbstractModelGraph( final EP edgePool )
 	{
 		super( edgePool );
 		vertexPool.linkModelGraph( ( G ) this );
-		idmap = new GraphIdBimap< V, E >( vertexPool, edgePool );
+		idmap = new GraphIdBimap<>( vertexPool, edgePool );
 		vertexAttributes = new ArrayList<>();
 		edgeAttributes = new ArrayList<>();
 		vertexPropertySerializers = new PropertyMapSerializers<>();
@@ -111,6 +93,7 @@ public class AbstractModelGraph<
 		clear();
 		final FileIdToGraphMap< V, E > fileIdMap = RawGraphIO.read( this, idmap, serializer, ois );
 		RawPropertyIO.readPropertyMaps( fileIdMap.vertices(), vertexPropertySerializers, ois );
+		// TODO: edge properties
 //		RawFeatureIO.readFeatureMaps( fileIdMap.vertices(), vertexFeatures, ois );
 //		RawFeatureIO.readFeatureMaps( fileIdMap.edges(), edgeFeatures, ois );
 		ois.close();
@@ -134,16 +117,16 @@ public class AbstractModelGraph<
 	 */
 	public void saveRaw(
 			final File file,
-			final RawGraphIO.Serializer< V, E > serializer,
-			final List< Feature< ?, V, ? > > vertexFeaturesToSerialize,
-			final List< Feature< ?, E, ? > > edgeFeaturesToSerialize )
+			final RawGraphIO.Serializer< V, E > serializer )
 					throws IOException
 	{
 		final FileOutputStream fos = new FileOutputStream( file );
 		final ObjectOutputStream oos = new ObjectOutputStream( fos );
 		final GraphToFileIdMap< V, E > fileIdMap = RawGraphIO.write( this, idmap, serializer, oos );
-		RawFeatureIO.writeFeatureMaps( fileIdMap.vertices(), vertexFeatures, vertexFeaturesToSerialize, oos );
-		RawFeatureIO.writeFeatureMaps( fileIdMap.edges(), edgeFeatures, edgeFeaturesToSerialize, oos );
+		RawPropertyIO.writePropertyMaps( fileIdMap.vertices(), vertexPropertySerializers, oos );
+		// TODO: edge properties
+//		RawFeatureIO.writeFeatureMaps( fileIdMap.vertices(), vertexFeatures, vertexFeaturesToSerialize, oos );
+//		RawFeatureIO.writeFeatureMaps( fileIdMap.edges(), edgeFeatures, edgeFeaturesToSerialize, oos );
 		oos.close();
 	}
 

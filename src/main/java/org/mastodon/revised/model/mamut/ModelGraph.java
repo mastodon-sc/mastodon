@@ -2,7 +2,6 @@ package org.mastodon.revised.model.mamut;
 
 import java.util.ArrayList;
 
-import org.mastodon.features.Features;
 import org.mastodon.graph.GraphIdBimap;
 import org.mastodon.graph.ref.AbstractListenableEdgePool;
 import org.mastodon.io.properties.StringPropertyMapSerializer;
@@ -41,16 +40,6 @@ public class ModelGraph extends AbstractModelGraph< ModelGraph, SpotPool, LinkPo
 
 		VERTEX_LABEL = new ObjPropertyMap<>( vertexPool );
 		vertexPropertySerializers.put( "label", new StringPropertyMapSerializer<>( VERTEX_LABEL ) );
-	}
-
-	Features< Spot > vertexFeatures()
-	{
-		return vertexFeatures;
-	}
-
-	Features< Link > edgeFeatures()
-	{
-		return edgeFeatures;
 	}
 
 	ArrayList< Attribute< Spot > > vertexAttributes()

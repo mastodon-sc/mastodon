@@ -29,7 +29,7 @@ import org.mastodon.revised.trackscheme.TrackSchemeGraph;
 import org.mastodon.revised.trackscheme.TrackSchemeVertex;
 import org.mastodon.revised.trackscheme.display.OffsetHeaders.OffsetHeadersListener;
 import org.mastodon.revised.ui.selection.FocusModel;
-import org.mastodon.undo.UndoPointMarker;
+import org.mastodon.revisedundo.UndoPointMarker;
 
 import net.imglib2.ui.TransformListener;
 

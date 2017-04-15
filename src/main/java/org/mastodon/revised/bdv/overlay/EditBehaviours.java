@@ -1,7 +1,7 @@
 package org.mastodon.revised.bdv.overlay;
 
 import org.mastodon.revised.bdv.overlay.util.JamaEigenvalueDecomposition;
-import org.mastodon.undo.UndoPointMarker;
+import org.mastodon.revisedundo.UndoPointMarker;
 import org.scijava.ui.behaviour.ClickBehaviour;
 import org.scijava.ui.behaviour.DragBehaviour;
 import org.scijava.ui.behaviour.io.InputTriggerConfig;
