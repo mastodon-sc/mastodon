@@ -35,7 +35,7 @@ public class ModelGraph extends AbstractModelGraph< ModelGraph, SpotPool, LinkPo
 		super( new LinkPool( initialCapacity, new SpotPool( initialCapacity ) ) );
 		spotRadiusListeners = new ArrayList<>();
 
-		VERTEX_COVARIANCE = new Attribute< Spot >( Spot.createCovarianceAttributeSerializer(), "vertex covariance" );
+		VERTEX_COVARIANCE = new Attribute<>( Spot.createCovarianceAttributeSerializer(), "vertex covariance" );
 		vertexAttributes.add( VERTEX_COVARIANCE );
 
 		VERTEX_LABEL = new ObjPropertyMap<>( vertexPool );
