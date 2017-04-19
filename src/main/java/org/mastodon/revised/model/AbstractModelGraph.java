@@ -58,6 +58,8 @@ public class AbstractModelGraph<
 
 		VERTEX_POSITION = new Attribute< V >( AbstractSpot.createPositionAttributeSerializer( vertexPool.numDimensions() ), "vertex position" );
 		vertexAttributes.add( VERTEX_POSITION );
+		vertexPool.position.addBeforePropertyChangeListener( v -> VERTEX_POSITION.notifyBeforeAttributeChange( v ) );
+		vertexPool.position.addPropertyChangeListener( v -> notifyVertexPositionChanged( v ) );
 	}
 
 	/**
@@ -163,11 +165,6 @@ public class AbstractModelGraph<
 	public boolean removeVertexPositionListener( final VertexPositionListener< V > listener )
 	{
 		return vertexPositionListeners.remove( listener );
-	}
-
-	void notifyBeforeVertexPositionChange( final V vertex )
-	{
-		VERTEX_POSITION.notifyBeforeAttributeChange( vertex );
 	}
 
 	void notifyVertexPositionChanged( final V vertex )
