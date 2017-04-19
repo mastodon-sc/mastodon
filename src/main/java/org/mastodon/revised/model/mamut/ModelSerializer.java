@@ -2,6 +2,7 @@ package org.mastodon.revised.model.mamut;
 
 import org.mastodon.graph.io.RawGraphIO.ObjectSerializer;
 import org.mastodon.graph.io.RawGraphIO.Serializer;
+import org.mastodon.graph.ref.AbstractVertexPool;
 import org.mastodon.pool.PoolObjectAttributeSerializer;
 import org.mastodon.undo.attributes.AttributeSerializer;
 
@@ -37,7 +38,7 @@ class ModelSerializer implements Serializer< Spot, Link >
 	{
 		public SpotSerializer( )
 		{
-			super( Spot.X_OFFSET, Spot.SIZE_IN_BYTES - Spot.X_OFFSET );
+			super( AbstractVertexPool.layout.getSizeInBytes(), Spot.layout.getSizeInBytes() - AbstractVertexPool.layout.getSizeInBytes() );
 		}
 
 //		private final int VERTEX_NUM_BYTES = Spot.SIZE_IN_BYTES - Spot.X_OFFSET;

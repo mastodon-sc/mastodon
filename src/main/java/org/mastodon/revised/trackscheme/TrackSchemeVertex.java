@@ -1,10 +1,5 @@
 package org.mastodon.revised.trackscheme;
 
-import static org.mastodon.pool.ByteUtils.BOOLEAN_SIZE;
-import static org.mastodon.pool.ByteUtils.DOUBLE_SIZE;
-import static org.mastodon.pool.ByteUtils.INDEX_SIZE;
-import static org.mastodon.pool.ByteUtils.INT_SIZE;
-
 import org.mastodon.graph.GraphIdBimap;
 import org.mastodon.graph.ref.AbstractVertex;
 import org.mastodon.pool.ByteMappedElement;
@@ -18,16 +13,7 @@ import org.mastodon.revised.trackscheme.TrackSchemeGraph.TrackSchemeVertexPool;
  */
 public class TrackSchemeVertex extends AbstractVertex< TrackSchemeVertex, TrackSchemeEdge, TrackSchemeVertexPool, ByteMappedElement >
 {
-	protected static final int ORIG_VERTEX_INDEX_OFFSET = AbstractVertex.SIZE_IN_BYTES;
-	protected static final int LAYOUT_TIMESTAMP_OFFSET = ORIG_VERTEX_INDEX_OFFSET + INDEX_SIZE;
-	protected static final int LAYOUT_IN_EDGE_INDEX_OFFSET = LAYOUT_TIMESTAMP_OFFSET + INT_SIZE;
-	protected static final int X_OFFSET = LAYOUT_IN_EDGE_INDEX_OFFSET + INDEX_SIZE;
-	protected static final int TIMEPOINT_OFFSET = X_OFFSET + DOUBLE_SIZE;
-	protected static final int SCREENVERTEX_INDEX_OFFSET = TIMEPOINT_OFFSET + INT_SIZE;
-	protected static final int GHOST_OFFSET = SCREENVERTEX_INDEX_OFFSET + INDEX_SIZE;
-	protected static final int SIZE_IN_BYTES = GHOST_OFFSET + BOOLEAN_SIZE;
-
-	ModelGraphWrapper< ?, ? >.ModelVertexWrapper modelVertex;
+	final ModelGraphWrapper< ?, ? >.ModelVertexWrapper modelVertex;
 
 	@Override
 	protected void setToUninitializedState()
@@ -56,12 +42,12 @@ public class TrackSchemeVertex extends AbstractVertex< TrackSchemeVertex, TrackS
 	 */
 	public int getModelVertexId()
 	{
-		return access.getIndex( ORIG_VERTEX_INDEX_OFFSET );
+		return pool.origVertexIndex.get( this );
 	}
 
 	protected void setModelVertexId( final int id )
 	{
-		access.putIndex( id, ORIG_VERTEX_INDEX_OFFSET );
+		pool.origVertexIndex.setQuiet( this, id );
 	}
 
 	@Override
@@ -77,6 +63,7 @@ public class TrackSchemeVertex extends AbstractVertex< TrackSchemeVertex, TrackS
 	TrackSchemeVertex( final TrackSchemeVertexPool pool )
 	{
 		super( pool );
+		modelVertex = pool.modelGraphWrapper.createVertexWrapper( this );
 	}
 
 	/**
@@ -103,12 +90,12 @@ public class TrackSchemeVertex extends AbstractVertex< TrackSchemeVertex, TrackS
 
 	public int getTimepoint()
 	{
-		return access.getInt( TIMEPOINT_OFFSET );
+		return pool.timepoint.get( this );
 	}
 
 	protected void setTimepoint( final int timepoint )
 	{
-		access.putInt( timepoint, TIMEPOINT_OFFSET );
+		pool.timepoint.setQuiet( this, timepoint );
 	}
 
 	protected void updateTimepointFromModel()
@@ -124,22 +111,22 @@ public class TrackSchemeVertex extends AbstractVertex< TrackSchemeVertex, TrackS
 	 */
 	public int getScreenVertexIndex()
 	{
-		return access.getIndex( SCREENVERTEX_INDEX_OFFSET );
+		return pool.screenVertexIndex.get( this );
 	}
 
 	protected void setScreenVertexIndex( final int screenVertexIndex )
 	{
-		access.putIndex( screenVertexIndex, SCREENVERTEX_INDEX_OFFSET );
+		pool.screenVertexIndex.setQuiet( this, screenVertexIndex );
 	}
 
 	public double getLayoutX()
 	{
-		return access.getDouble( X_OFFSET );
+		return pool.layoutX.get( this );
 	}
 
 	protected void setLayoutX( final double x )
 	{
-		access.putDouble( x, X_OFFSET );
+		pool.layoutX.setQuiet( this, x );
 	}
 
 	/**
@@ -151,12 +138,12 @@ public class TrackSchemeVertex extends AbstractVertex< TrackSchemeVertex, TrackS
 	 */
 	public int getLayoutTimestamp()
 	{
-		return access.getInt( LAYOUT_TIMESTAMP_OFFSET );
+		return pool.layoutTimeStamp.get( this );
 	}
 
 	public void setLayoutTimestamp( final int timestamp )
 	{
-		access.putInt( timestamp, LAYOUT_TIMESTAMP_OFFSET );
+		pool.layoutTimeStamp.setQuiet( this, timestamp );
 	}
 
 	/**
@@ -171,12 +158,12 @@ public class TrackSchemeVertex extends AbstractVertex< TrackSchemeVertex, TrackS
 	 */
 	protected int getLayoutInEdgeIndex()
 	{
-		return access.getIndex( LAYOUT_IN_EDGE_INDEX_OFFSET );
+		return pool.layoutInEdgeIndex.get( this );
 	}
 
 	protected void setLayoutInEdgeIndex( final int index )
 	{
-		access.putIndex( index, LAYOUT_IN_EDGE_INDEX_OFFSET );
+		pool.layoutInEdgeIndex.setQuiet( this, index );
 	}
 
 	/**
@@ -187,11 +174,11 @@ public class TrackSchemeVertex extends AbstractVertex< TrackSchemeVertex, TrackS
 	 */
 	protected boolean isGhost()
 	{
-		return access.getBoolean( GHOST_OFFSET );
+		return pool.ghost.get( this );
 	}
 
 	protected void setGhost( final boolean ghost )
 	{
-		access.putBoolean( ghost, GHOST_OFFSET );
+		pool.ghost.setQuiet( this, ghost );
 	}
 }

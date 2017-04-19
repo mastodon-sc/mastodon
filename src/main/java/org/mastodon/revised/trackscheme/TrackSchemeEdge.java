@@ -1,7 +1,5 @@
 package org.mastodon.revised.trackscheme;
 
-import static org.mastodon.pool.ByteUtils.INDEX_SIZE;
-
 import org.mastodon.graph.GraphIdBimap;
 import org.mastodon.graph.ref.AbstractEdge;
 import org.mastodon.pool.ByteMappedElement;
@@ -10,11 +8,7 @@ import org.mastodon.revised.trackscheme.TrackSchemeGraph.TrackSchemeEdgePool;
 
 public class TrackSchemeEdge extends AbstractEdge< TrackSchemeEdge, TrackSchemeVertex, TrackSchemeEdgePool, ByteMappedElement >
 {
-	protected static final int ORIG_EDGE_INDEX_OFFSET = AbstractEdge.SIZE_IN_BYTES;
-	protected static final int SCREENEDGE_INDEX_OFFSET = ORIG_EDGE_INDEX_OFFSET + INDEX_SIZE;
-	protected static final int SIZE_IN_BYTES = SCREENEDGE_INDEX_OFFSET + INDEX_SIZE;
-
-	ModelGraphWrapper< ?, ? >.ModelEdgeWrapper modelEdge;
+	final ModelGraphWrapper< ?, ? >.ModelEdgeWrapper modelEdge;
 
 	@Override
 	public String toString()
@@ -25,6 +19,7 @@ public class TrackSchemeEdge extends AbstractEdge< TrackSchemeEdge, TrackSchemeV
 	TrackSchemeEdge( final TrackSchemeEdgePool pool )
 	{
 		super( pool );
+		modelEdge = pool.modelGraphWrapper.createEdgeWrapper( this );
 	}
 
 	@Override
@@ -49,21 +44,21 @@ public class TrackSchemeEdge extends AbstractEdge< TrackSchemeEdge, TrackSchemeV
 	 */
 	public int getModelEdgeId()
 	{
-		return access.getIndex( ORIG_EDGE_INDEX_OFFSET );
+		return pool.origEdgeIndex.get( this );
 	}
 
 	protected void setModelEdgeId( final int id )
 	{
-		access.putIndex( id, ORIG_EDGE_INDEX_OFFSET );
+		pool.origEdgeIndex.setQuiet( this, id );
 	}
 
 	public int getScreenEdgeIndex()
 	{
-		return access.getIndex( SCREENEDGE_INDEX_OFFSET );
+		return pool.screenEdgeIndex.get( this );
 	}
 
-	public void setScreenEdgeIndex( final int screenVertexIndex )
+	public void setScreenEdgeIndex( final int screenEdgeIndex )
 	{
-		access.putIndex( screenVertexIndex, SCREENEDGE_INDEX_OFFSET );
+		pool.screenEdgeIndex.setQuiet( this, screenEdgeIndex );
 	}
 }

@@ -1,17 +1,17 @@
 package org.mastodon.revised.trackscheme;
 
-import static org.mastodon.pool.ByteUtils.BOOLEAN_SIZE;
-import static org.mastodon.pool.ByteUtils.BYTE_SIZE;
-import static org.mastodon.pool.ByteUtils.DOUBLE_SIZE;
-import static org.mastodon.pool.ByteUtils.INDEX_SIZE;
 import static org.mastodon.revised.trackscheme.ScreenVertex.Transition.NONE;
 
 import org.mastodon.pool.ByteMappedElement;
 import org.mastodon.pool.ByteMappedElementArray;
-import org.mastodon.pool.MemPool;
 import org.mastodon.pool.Pool;
 import org.mastodon.pool.PoolObject;
+import org.mastodon.pool.PoolObjectLayout;
 import org.mastodon.pool.SingleArrayMemPool;
+import org.mastodon.pool.attributes.BooleanAttribute;
+import org.mastodon.pool.attributes.ByteAttribute;
+import org.mastodon.pool.attributes.DoubleAttribute;
+import org.mastodon.pool.attributes.IndexAttribute;
 import org.mastodon.revised.trackscheme.ScreenEdge.ScreenEdgePool;
 import org.mastodon.revised.trackscheme.ScreenVertex.Transition;
 
@@ -22,13 +22,50 @@ import org.mastodon.revised.trackscheme.ScreenVertex.Transition;
  */
 public class ScreenEdge extends PoolObject< ScreenEdge, ScreenEdgePool, ByteMappedElement >
 {
-	protected static final int ORIG_EDGE_INDEX_OFFSET = 0;
-	protected static final int SOURCE_SCREEN_VERTEX_INDEX_OFFSET = ORIG_EDGE_INDEX_OFFSET + INDEX_SIZE;
-	protected static final int TARGET_SCREEN_VERTEX_INDEX_OFFSET = SOURCE_SCREEN_VERTEX_INDEX_OFFSET + INDEX_SIZE;
-	protected static final int SELECTED_OFFSET = TARGET_SCREEN_VERTEX_INDEX_OFFSET + INDEX_SIZE;
-	protected static final int TRANSITION_OFFSET = SELECTED_OFFSET + BOOLEAN_SIZE;
-	protected static final int IP_RATIO_OFFSET = TRANSITION_OFFSET + BYTE_SIZE;
-	protected static final int SIZE_IN_BYTES = IP_RATIO_OFFSET + DOUBLE_SIZE;
+	public static class ScreenEdgeLayout extends PoolObjectLayout
+	{
+		final IndexField origEdge = indexField();
+		final IndexField sourceScreenVertex = indexField();
+		final IndexField targetScreenVertex = indexField();
+		final BooleanField selected = booleanField();
+		final ByteField transition = byteField();
+		final DoubleField ipRatio = doubleField();
+	}
+
+	public static ScreenEdgeLayout layout = new ScreenEdgeLayout();
+
+	public static class ScreenEdgePool extends Pool< ScreenEdge, ByteMappedElement >
+	{
+		final IndexAttribute< ScreenEdge > origEdge = new IndexAttribute<>( layout.origEdge );
+		final IndexAttribute< ScreenEdge > sourceScreenVertex = new IndexAttribute<>( layout.sourceScreenVertex );
+		final IndexAttribute< ScreenEdge > targetScreenVertex = new IndexAttribute<>( layout.targetScreenVertex );
+		final BooleanAttribute< ScreenEdge > selected = new BooleanAttribute<>( layout.selected );
+		final ByteAttribute< ScreenEdge > transition = new ByteAttribute<>( layout.transition );
+		final DoubleAttribute< ScreenEdge > ipRatio = new DoubleAttribute<>( layout.ipRatio );
+
+		public ScreenEdgePool( final int initialCapacity )
+		{
+			super( initialCapacity, layout, ScreenEdge.class, SingleArrayMemPool.factory( ByteMappedElementArray.factory ) );
+		}
+
+		@Override
+		protected ScreenEdge createEmptyRef()
+		{
+			return new ScreenEdge( this );
+		}
+
+		@Override
+		public ScreenEdge create( final ScreenEdge edge )
+		{
+			return super.create( edge );
+		}
+
+		@Override
+		public void delete( final ScreenEdge edge )
+		{
+			super.delete( edge );
+		}
+	}
 
 	protected ScreenEdge( final ScreenEdgePool pool )
 	{
@@ -49,24 +86,42 @@ public class ScreenEdge extends PoolObject< ScreenEdge, ScreenEdgePool, ByteMapp
 		return this;
 	}
 
+	/**
+	 * Returns the current transition state for this screen edge.
+	 *
+	 * @return the transition state.
+	 */
 	public Transition getTransition()
 	{
-		return Transition.values()[ access.getByte( TRANSITION_OFFSET ) ];
+		return Transition.values()[ pool.transition.get( this ) ];
 	}
 
 	protected void setTransition( final Transition t )
 	{
-		access.putByte( t.toByte(), TRANSITION_OFFSET );
+		pool.transition.setQuiet( this, t.toByte() );
 	}
 
+	/**
+	 * Returns the interpolation completion ratio of the current transition for
+	 * this screen edge.
+	 *
+	 * @return the interpolation completion ratio.
+	 */
 	public double getInterpolationCompletionRatio()
 	{
-		return access.getDouble( IP_RATIO_OFFSET );
+		return pool.ipRatio.get( this );
 	}
 
+	/**
+	 * Sets the interpolation completion ratio of the current transition for
+	 * this screen edge.
+	 *
+	 * @param ratio
+	 *            the interpolation completion ratio.
+	 */
 	protected void setInterpolationCompletionRatio( final double ratio )
 	{
-		access.putDouble( ratio, IP_RATIO_OFFSET );
+		pool.ipRatio.setQuiet( this, ratio );
 	}
 
 	/**
@@ -77,12 +132,12 @@ public class ScreenEdge extends PoolObject< ScreenEdge, ScreenEdgePool, ByteMapp
 	 */
 	public int getTrackSchemeEdgeId()
 	{
-		return access.getIndex( ORIG_EDGE_INDEX_OFFSET );
+		return pool.origEdge.get( this );
 	}
 
 	protected void setTrackSchemeEdgeId( final int id )
 	{
-		access.putIndex( id, ORIG_EDGE_INDEX_OFFSET );
+		pool.origEdge.setQuiet( this, id );
 	}
 
 	/**
@@ -94,12 +149,12 @@ public class ScreenEdge extends PoolObject< ScreenEdge, ScreenEdgePool, ByteMapp
 	 */
 	public int getSourceScreenVertexIndex()
 	{
-		return access.getIndex( SOURCE_SCREEN_VERTEX_INDEX_OFFSET );
+		return pool.sourceScreenVertex.get( this );
 	}
 
 	protected void setSourceScreenVertexIndex( final int index )
 	{
-		access.putIndex( index, SOURCE_SCREEN_VERTEX_INDEX_OFFSET );
+		pool.sourceScreenVertex.setQuiet( this, index );
 	}
 
 	/**
@@ -111,12 +166,12 @@ public class ScreenEdge extends PoolObject< ScreenEdge, ScreenEdgePool, ByteMapp
 	 */
 	public int getTargetScreenVertexIndex()
 	{
-		return access.getIndex( TARGET_SCREEN_VERTEX_INDEX_OFFSET );
+		return pool.targetScreenVertex.get( this );
 	}
 
 	protected void setTargetScreenVertexIndex( final int index )
 	{
-		access.putIndex( index, TARGET_SCREEN_VERTEX_INDEX_OFFSET );
+		pool.targetScreenVertex.setQuiet( this, index );
 	}
 
 	/**
@@ -126,12 +181,12 @@ public class ScreenEdge extends PoolObject< ScreenEdge, ScreenEdgePool, ByteMapp
 	 */
 	public boolean isSelected()
 	{
-		return access.getBoolean( SELECTED_OFFSET );
+		return pool.selected.get( this );
 	}
 
 	protected void setSelected( final boolean selected )
 	{
-		access.putBoolean( selected, SELECTED_OFFSET );
+		pool.selected.setQuiet( this, selected );
 	}
 
 	@Override
@@ -158,71 +213,17 @@ public class ScreenEdge extends PoolObject< ScreenEdge, ScreenEdgePool, ByteMapp
 		return this;
 	}
 
-	@Override
-	public boolean equals( final Object obj )
-	{
-		return obj instanceof ScreenEdge &&
-				access.equals( ( ( ScreenEdge ) obj ).access );
-	}
-
-	@Override
-	public int hashCode()
-	{
-		return access.hashCode();
-	}
-
-	public static class ScreenEdgePool extends Pool< ScreenEdge, ByteMappedElement >
-	{
-		public ScreenEdgePool( final int initialCapacity )
-		{
-			this( initialCapacity, new EdgeFactory() );
-		}
-
-		private ScreenEdgePool( final int initialCapacity, final EdgeFactory f )
-		{
-			super( initialCapacity, f );
-			f.edgePool = this;
-		}
-
-		@Override
-		public ScreenEdge create( final ScreenEdge edge )
-		{
-			return super.create( edge );
-		}
-
-		@Override
-		public void delete( final ScreenEdge edge )
-		{
-			super.delete( edge );
-		}
-
-		private static class EdgeFactory implements PoolObject.Factory< ScreenEdge, ByteMappedElement >
-		{
-			private ScreenEdgePool edgePool;
-
-			@Override
-			public int getSizeInBytes()
-			{
-				return ScreenEdge.SIZE_IN_BYTES;
-			}
-
-			@Override
-			public ScreenEdge createEmptyRef()
-			{
-				return new ScreenEdge( edgePool );
-			}
-
-			@Override
-			public MemPool.Factory< ByteMappedElement > getMemPoolFactory()
-			{
-				return SingleArrayMemPool.factory( ByteMappedElementArray.factory );
-			}
-
-			@Override
-			public Class< ScreenEdge > getRefClass()
-			{
-				return ScreenEdge.class;
-			}
-		};
-	}
+// TODO REMOVE? should be covered by base class.
+//	@Override
+//	public boolean equals( final Object obj )
+//	{
+//		return obj instanceof ScreenEdge &&
+//				access.equals( ( ( ScreenEdge ) obj ).access );
+//	}
+//
+//	@Override
+//	public int hashCode()
+//	{
+//		return access.hashCode();
+//	}
 }

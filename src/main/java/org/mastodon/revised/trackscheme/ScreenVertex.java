@@ -1,18 +1,18 @@
 package org.mastodon.revised.trackscheme;
 
-import static org.mastodon.pool.ByteUtils.BOOLEAN_SIZE;
-import static org.mastodon.pool.ByteUtils.BYTE_SIZE;
-import static org.mastodon.pool.ByteUtils.DOUBLE_SIZE;
-import static org.mastodon.pool.ByteUtils.INDEX_SIZE;
 import static org.mastodon.revised.trackscheme.ScreenVertex.Transition.NONE;
 
 import org.mastodon.RefPool;
 import org.mastodon.pool.ByteMappedElement;
 import org.mastodon.pool.ByteMappedElementArray;
-import org.mastodon.pool.MemPool;
 import org.mastodon.pool.Pool;
 import org.mastodon.pool.PoolObject;
+import org.mastodon.pool.PoolObjectLayout;
 import org.mastodon.pool.SingleArrayMemPool;
+import org.mastodon.pool.attributes.BooleanAttribute;
+import org.mastodon.pool.attributes.ByteAttribute;
+import org.mastodon.pool.attributes.DoubleAttribute;
+import org.mastodon.pool.attributes.IndexAttribute;
 import org.mastodon.revised.trackscheme.ScreenVertex.ScreenVertexPool;
 
 /**
@@ -22,16 +22,59 @@ import org.mastodon.revised.trackscheme.ScreenVertex.ScreenVertexPool;
  */
 public class ScreenVertex extends PoolObject< ScreenVertex, ScreenVertexPool, ByteMappedElement >
 {
-	protected static final int ORIG_VERTEX_INDEX_OFFSET = 0;
-	protected static final int X_OFFSET = ORIG_VERTEX_INDEX_OFFSET + INDEX_SIZE;
-	protected static final int Y_OFFSET = X_OFFSET + DOUBLE_SIZE;
-	protected static final int VERTEX_DIST_OFFSET = Y_OFFSET + DOUBLE_SIZE;
-	protected static final int SELECTED_OFFSET = VERTEX_DIST_OFFSET + DOUBLE_SIZE;
-	protected static final int GHOST_OFFSET = SELECTED_OFFSET + BOOLEAN_SIZE;
-	protected static final int TRANSITION_OFFSET = GHOST_OFFSET + BOOLEAN_SIZE;
-	protected static final int IP_SCREENVERTEX_INDEX_OFFSET = TRANSITION_OFFSET + BYTE_SIZE;
-	protected static final int IP_RATIO_OFFSET = IP_SCREENVERTEX_INDEX_OFFSET + INDEX_SIZE;
-	protected static final int SIZE_IN_BYTES = IP_RATIO_OFFSET + DOUBLE_SIZE;
+	public static class ScreenVertexLayout extends PoolObjectLayout
+	{
+		final IndexField origVertex = indexField();
+		final DoubleField xOffset = doubleField();
+		final DoubleField yOffset = doubleField();
+		final DoubleField vertexDist = doubleField();
+		final BooleanField selected = booleanField();
+		final BooleanField ghost = booleanField();
+		final ByteField transition = byteField();
+		final IndexField ipScreenVertex = indexField();
+		final DoubleField ipRatio = doubleField();
+	}
+
+	public static ScreenVertexLayout layout = new ScreenVertexLayout();
+
+	public static class ScreenVertexPool extends Pool< ScreenVertex, ByteMappedElement >
+	{
+		final RefPool< TrackSchemeVertex > trackSchemeVertexPool;
+
+		final IndexAttribute< ScreenVertex > origVertex = new IndexAttribute<>( layout.origVertex );
+		final DoubleAttribute< ScreenVertex > xOffset = new DoubleAttribute<>( layout.xOffset );
+		final DoubleAttribute< ScreenVertex > yOffset = new DoubleAttribute<>( layout.yOffset );
+		final DoubleAttribute< ScreenVertex > vertexDist = new DoubleAttribute<>( layout.vertexDist );
+		final BooleanAttribute< ScreenVertex > selected = new BooleanAttribute<>( layout.selected );
+		final BooleanAttribute< ScreenVertex > ghost = new BooleanAttribute<>( layout.ghost );
+		final ByteAttribute< ScreenVertex > transition = new ByteAttribute<>( layout.transition );
+		final IndexAttribute< ScreenVertex > ipScreenVertex = new IndexAttribute<>( layout.ipScreenVertex );
+		final DoubleAttribute< ScreenVertex > ipRatio = new DoubleAttribute<>( layout.ipRatio );
+
+		public ScreenVertexPool( final int initialCapacity, final RefPool< TrackSchemeVertex > trackSchemeVertexPool )
+		{
+			super( initialCapacity, layout, ScreenVertex.class, SingleArrayMemPool.factory( ByteMappedElementArray.factory ) );
+			this.trackSchemeVertexPool = trackSchemeVertexPool;
+		}
+
+		@Override
+		protected ScreenVertex createEmptyRef()
+		{
+			return new ScreenVertex( this );
+		}
+
+		@Override
+		public ScreenVertex create( final ScreenVertex vertex )
+		{
+			return super.create( vertex );
+		}
+
+		@Override
+		public void delete( final ScreenVertex vertex )
+		{
+			super.delete( vertex );
+		}
+	}
 
 	private final TrackSchemeVertex vref;
 
@@ -58,10 +101,10 @@ public class ScreenVertex extends PoolObject< ScreenVertex, ScreenVertexPool, By
 		}
 	}
 
-	protected ScreenVertex( final ScreenVertexPool pool, final RefPool< TrackSchemeVertex > trackSchemeVertexPool )
+	protected ScreenVertex( final ScreenVertexPool pool )
 	{
 		super( pool );
-		this.trackSchemeVertexPool = trackSchemeVertexPool;
+		this.trackSchemeVertexPool = pool.trackSchemeVertexPool;
 		this.vref = trackSchemeVertexPool.createRef();
 	}
 
@@ -89,12 +132,12 @@ public class ScreenVertex extends PoolObject< ScreenVertex, ScreenVertexPool, By
 	 */
 	public int getTrackSchemeVertexId()
 	{
-		return access.getIndex( ORIG_VERTEX_INDEX_OFFSET );
+		return pool.origVertex.get( this );
 	}
 
 	protected void setTrackSchemeVertexId( final int id )
 	{
-		access.putIndex( id, ORIG_VERTEX_INDEX_OFFSET );
+		pool.origVertex.setQuiet( this, id );
 	}
 
 	/**
@@ -104,12 +147,12 @@ public class ScreenVertex extends PoolObject< ScreenVertex, ScreenVertexPool, By
 	 */
 	public double getX()
 	{
-		return access.getDouble( X_OFFSET );
+		return pool.xOffset.get( this );
 	}
 
 	protected void setX( final double x )
 	{
-		access.putDouble( x, X_OFFSET );
+		pool.xOffset.setQuiet( this, x );
 	}
 
 	/**
@@ -119,12 +162,12 @@ public class ScreenVertex extends PoolObject< ScreenVertex, ScreenVertexPool, By
 	 */
 	public double getY()
 	{
-		return access.getDouble( Y_OFFSET );
+		return pool.yOffset.get( this );
 	}
 
 	protected void setY( final double y )
 	{
-		access.putDouble( y, Y_OFFSET );
+		pool.yOffset.setQuiet( this, y );
 	}
 
 	/**
@@ -136,12 +179,12 @@ public class ScreenVertex extends PoolObject< ScreenVertex, ScreenVertexPool, By
 	 */
 	public double getVertexDist()
 	{
-		return access.getDouble( VERTEX_DIST_OFFSET );
+		return pool.vertexDist.get( this );
 	}
 
 	protected void setVertexDist( final double minVertexScreenDist )
 	{
-		access.putDouble( minVertexScreenDist, VERTEX_DIST_OFFSET );
+		pool.vertexDist.setQuiet( this, minVertexScreenDist );
 	}
 
 	/**
@@ -156,8 +199,7 @@ public class ScreenVertex extends PoolObject< ScreenVertex, ScreenVertexPool, By
 		final int idx = getTrackSchemeVertexId();
 		if ( idx >= 0 )
 		{
-			trackSchemeVertexPool.getObject( idx, vref );
-			return vref.getLabel();
+			return trackSchemeVertexPool.getObject( idx, vref ).getLabel();
 		}
 		else
 			return "XXX";
@@ -170,12 +212,12 @@ public class ScreenVertex extends PoolObject< ScreenVertex, ScreenVertexPool, By
 	 */
 	public boolean isSelected()
 	{
-		return access.getBoolean( SELECTED_OFFSET );
+		return pool.selected.get( this );
 	}
 
 	protected void setSelected( final boolean selected )
 	{
-		access.putBoolean( selected, SELECTED_OFFSET );
+		pool.selected.setQuiet( this, selected );
 	}
 
 	/**
@@ -185,12 +227,12 @@ public class ScreenVertex extends PoolObject< ScreenVertex, ScreenVertexPool, By
 	 */
 	public boolean isGhost()
 	{
-		return access.getBoolean( GHOST_OFFSET );
+		return pool.ghost.get( this );
 	}
 
 	protected void setGhost( final boolean ghost )
 	{
-		access.putBoolean( ghost, GHOST_OFFSET );
+		pool.ghost.setQuiet( this, ghost );
 	}
 
 	/**
@@ -200,12 +242,12 @@ public class ScreenVertex extends PoolObject< ScreenVertex, ScreenVertexPool, By
 	 */
 	public Transition getTransition()
 	{
-		return Transition.values()[ access.getByte( TRANSITION_OFFSET ) ];
+		return Transition.values()[ pool.transition.get( this ) ];
 	}
 
 	protected void setTransition( final Transition t )
 	{
-		access.putByte( t.toByte(), TRANSITION_OFFSET );
+		pool.transition.setQuiet( this, t.toByte() );
 	}
 
 	/**
@@ -216,12 +258,12 @@ public class ScreenVertex extends PoolObject< ScreenVertex, ScreenVertexPool, By
 	 */
 	protected int getInterpolatedScreenVertexIndex()
 	{
-		return access.getIndex( IP_SCREENVERTEX_INDEX_OFFSET );
+		return pool.ipScreenVertex.get( this );
 	}
 
 	protected void setInterpolatedScreenVertexIndex( final int screenVertexIndex )
 	{
-		access.putIndex( screenVertexIndex, IP_SCREENVERTEX_INDEX_OFFSET );
+		pool.ipScreenVertex.setQuiet( this, screenVertexIndex );
 	}
 
 	/**
@@ -232,7 +274,7 @@ public class ScreenVertex extends PoolObject< ScreenVertex, ScreenVertexPool, By
 	 */
 	public double getInterpolationCompletionRatio()
 	{
-		return access.getDouble( IP_RATIO_OFFSET );
+		return pool.ipRatio.get( this );
 	}
 
 	/**
@@ -244,7 +286,7 @@ public class ScreenVertex extends PoolObject< ScreenVertex, ScreenVertexPool, By
 	 */
 	protected void setInterpolationCompletionRatio( final double ratio )
 	{
-		access.putDouble( ratio, IP_RATIO_OFFSET );
+		pool.ipRatio.setQuiet( this, ratio );
 	}
 
 	@Override
@@ -275,80 +317,19 @@ public class ScreenVertex extends PoolObject< ScreenVertex, ScreenVertexPool, By
 		return this;
 	}
 
-	@Override
-	public boolean equals( final Object obj )
-	{
-		return obj instanceof ScreenVertex &&
-				access.equals( ( ( ScreenVertex ) obj ).access );
-	}
-
-	@Override
-	public int hashCode()
-	{
-		return access.hashCode();
-	}
-
-	public static class ScreenVertexPool extends Pool< ScreenVertex, ByteMappedElement >
-	{
-		public ScreenVertexPool( final int initialCapacity, final RefPool< TrackSchemeVertex > trackSchemeVertexPool )
-		{
-			this( initialCapacity, new VertexFactory( initialCapacity, trackSchemeVertexPool ) );
-		}
-
-		private ScreenVertexPool( final int initialCapacity, final VertexFactory f )
-		{
-			super( initialCapacity, f );
-			f.vertexPool = this;
-		}
-
-		@Override
-		public ScreenVertex create( final ScreenVertex vertex )
-		{
-			return super.create( vertex );
-		}
-
-		@Override
-		public void delete( final ScreenVertex vertex )
-		{
-			super.delete( vertex );
-		}
-
-		private static class VertexFactory implements PoolObject.Factory< ScreenVertex, ByteMappedElement >
-		{
-			private ScreenVertexPool vertexPool;
-
-			private final RefPool< TrackSchemeVertex > trackSchemeVertexPool;
-
-			public VertexFactory( final int initialCapacity, final RefPool< TrackSchemeVertex > trackSchemeVertexPool )
-			{
-				this.trackSchemeVertexPool = trackSchemeVertexPool;
-			}
-
-			@Override
-			public int getSizeInBytes()
-			{
-				return ScreenVertex.SIZE_IN_BYTES;
-			}
-
-			@Override
-			public ScreenVertex createEmptyRef()
-			{
-				return new ScreenVertex( vertexPool, trackSchemeVertexPool );
-			}
-
-			@Override
-			public MemPool.Factory< ByteMappedElement > getMemPoolFactory()
-			{
-				return SingleArrayMemPool.factory( ByteMappedElementArray.factory );
-			}
-
-			@Override
-			public Class< ScreenVertex > getRefClass()
-			{
-				return ScreenVertex.class;
-			}
-		};
-	}
+// TODO REMOVE? should be covered by base class.
+//	@Override
+//	public boolean equals( final Object obj )
+//	{
+//		return obj instanceof ScreenVertex &&
+//				access.equals( ( ( ScreenVertex ) obj ).access );
+//	}
+//
+//	@Override
+//	public int hashCode()
+//	{
+//		return access.hashCode();
+//	}
 
 	@Override
 	public String toString()

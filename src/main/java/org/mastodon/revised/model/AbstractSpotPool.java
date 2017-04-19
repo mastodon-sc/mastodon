@@ -3,29 +3,50 @@ package org.mastodon.revised.model;
 import org.mastodon.graph.ref.AbstractListenableEdge;
 import org.mastodon.graph.ref.AbstractListenableVertexPool;
 import org.mastodon.pool.MappedElement;
-import org.mastodon.pool.PoolObject;
+import org.mastodon.pool.MemPool;
+import org.mastodon.pool.attributes.IntAttribute;
+import org.mastodon.pool.attributes.RealPointAttribute;
 
 import net.imglib2.EuclideanSpace;
 
-public class AbstractSpotPool<
+public abstract class AbstractSpotPool<
 			V extends AbstractSpot< V, E, ?, T, G >,
 			E extends AbstractListenableEdge< E, V, ?, T >,
 			T extends MappedElement,
 			G extends AbstractModelGraph< ?, ?, ?, V, E, T > >
 		extends AbstractListenableVertexPool< V, E, T > implements EuclideanSpace
 {
-	public AbstractSpotPool(
-			final int numDimensions,
-			final int initialCapacity,
-			final PoolObject.Factory< V, T > vertexFactory )
+	public static class AbstractSpotLayout extends AbstractVertexLayout
 	{
-		super( initialCapacity, vertexFactory );
-		this.numDimensions = numDimensions;
+		final DoubleArrayField position;
+		final IntField timepoint;
+
+		public AbstractSpotLayout( final int numDimensions )
+		{
+			position = doubleArrayField( numDimensions );
+			timepoint = intField();
+		}
 	}
 
-	private final int numDimensions;
+	final AbstractSpotLayout layout;
 
 	G modelGraph;
+
+	protected final RealPointAttribute< V > position;
+
+	protected final IntAttribute< V > timepoint;
+
+	public AbstractSpotPool(
+			final int initialCapacity,
+			final AbstractSpotLayout layout,
+			final Class< V > vertexClass,
+			final MemPool.Factory< T > memPoolFactory )
+	{
+		super( initialCapacity, layout, vertexClass, memPoolFactory );
+		this.layout = layout;
+		position = new RealPointAttribute<>( layout.position );
+		timepoint = new IntAttribute<>( layout.timepoint );
+	}
 
 	public void linkModelGraph( final G modelGraph )
 	{
@@ -35,7 +56,7 @@ public class AbstractSpotPool<
 	@Override
 	public int numDimensions()
 	{
-		return numDimensions;
+		return layout.position.numElements();
 	}
 
 	/*

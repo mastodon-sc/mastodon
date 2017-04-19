@@ -1,13 +1,12 @@
 package org.mastodon.revised.trackscheme;
 
-import static org.mastodon.pool.ByteUtils.DOUBLE_SIZE;
-
 import org.mastodon.pool.ByteMappedElement;
 import org.mastodon.pool.ByteMappedElementArray;
-import org.mastodon.pool.MemPool;
 import org.mastodon.pool.Pool;
 import org.mastodon.pool.PoolObject;
+import org.mastodon.pool.PoolObjectLayout;
 import org.mastodon.pool.SingleArrayMemPool;
+import org.mastodon.pool.attributes.DoubleAttribute;
 import org.mastodon.revised.trackscheme.ScreenVertexRange.ScreenVertexRangePool;
 
 /**
@@ -17,11 +16,46 @@ import org.mastodon.revised.trackscheme.ScreenVertexRange.ScreenVertexRangePool;
  */
 public class ScreenVertexRange extends PoolObject< ScreenVertexRange, ScreenVertexRangePool, ByteMappedElement >
 {
-	protected static final int MIN_X_OFFSET = 0;
-	protected static final int MAX_X_OFFSET = MIN_X_OFFSET + DOUBLE_SIZE;
-	protected static final int MIN_Y_OFFSET = MAX_X_OFFSET + DOUBLE_SIZE;
-	protected static final int MAX_Y_OFFSET = MIN_Y_OFFSET + DOUBLE_SIZE;
-	protected static final int SIZE_IN_BYTES = MAX_Y_OFFSET + DOUBLE_SIZE;
+	public static class ScreenVertexRangeLayout extends PoolObjectLayout
+	{
+		final DoubleField minX = doubleField();
+		final DoubleField maxX = doubleField();
+		final DoubleField minY = doubleField();
+		final DoubleField maxY = doubleField();
+	}
+
+	public static ScreenVertexRangeLayout layout = new ScreenVertexRangeLayout();
+
+	public static class ScreenVertexRangePool extends Pool< ScreenVertexRange, ByteMappedElement >
+	{
+		final DoubleAttribute< ScreenVertexRange > minX = new DoubleAttribute<>( layout.minX );
+		final DoubleAttribute< ScreenVertexRange > maxX = new DoubleAttribute<>( layout.maxX );
+		final DoubleAttribute< ScreenVertexRange > minY = new DoubleAttribute<>( layout.minY );
+		final DoubleAttribute< ScreenVertexRange > maxY = new DoubleAttribute<>( layout.maxY );
+
+		public ScreenVertexRangePool( final int initialCapacity )
+		{
+			super( initialCapacity, layout, ScreenVertexRange.class, SingleArrayMemPool.factory( ByteMappedElementArray.factory ) );
+		}
+
+		@Override
+		protected ScreenVertexRange createEmptyRef()
+		{
+			return new ScreenVertexRange( this );
+		}
+
+		@Override
+		public ScreenVertexRange create( final ScreenVertexRange vertex )
+		{
+			return super.create( vertex );
+		}
+
+		@Override
+		public void delete( final ScreenVertexRange vertex )
+		{
+			super.delete( vertex );
+		}
+	}
 
 	protected ScreenVertexRange( final ScreenVertexRangePool pool )
 	{
@@ -39,42 +73,42 @@ public class ScreenVertexRange extends PoolObject< ScreenVertexRange, ScreenVert
 
 	public double getMinX()
 	{
-		return access.getDouble( MIN_X_OFFSET );
+		return pool.minX.get( this );
 	}
 
 	protected void setMinX( final double minX )
 	{
-		access.putDouble( minX, MIN_X_OFFSET );
+		pool.minX.setQuiet( this, minX );
 	}
 
 	public double getMaxX()
 	{
-		return access.getDouble( MAX_X_OFFSET );
+		return pool.maxX.get( this );
 	}
 
 	protected void setMaxX( final double maxX )
 	{
-		access.putDouble( maxX, MAX_X_OFFSET );
+		pool.maxX.setQuiet( this, maxX );
 	}
 
 	public double getMinY()
 	{
-		return access.getDouble( MIN_Y_OFFSET );
+		return pool.minY.get( this );
 	}
 
 	protected void setMinY( final double minY )
 	{
-		access.putDouble( minY, MIN_Y_OFFSET );
+		pool.minY.setQuiet( this, minY );
 	}
 
 	public double getMaxY()
 	{
-		return access.getDouble( MAX_Y_OFFSET );
+		return pool.maxY.get( this );
 	}
 
 	protected void setMaxY( final double maxY )
 	{
-		access.putDouble( maxY, MAX_Y_OFFSET );
+		pool.maxY.setQuiet( this, maxY );
 	}
 
 	@Override
@@ -95,60 +129,5 @@ public class ScreenVertexRange extends PoolObject< ScreenVertexRange, ScreenVert
 		setMinY( r.getMinY() );
 		setMaxY( r.getMaxY() );
 		return this;
-	}
-
-	public static class ScreenVertexRangePool extends Pool< ScreenVertexRange, ByteMappedElement >
-	{
-		public ScreenVertexRangePool( final int initialCapacity )
-		{
-			this( initialCapacity, new ScreenVertexRangeFactory() );
-		}
-
-		private ScreenVertexRangePool( final int initialCapacity, final ScreenVertexRangeFactory f )
-		{
-			super( initialCapacity, f );
-			f.pool = this;
-		}
-
-		@Override
-		public ScreenVertexRange create( final ScreenVertexRange range )
-		{
-			return super.create( range );
-		}
-
-		@Override
-		public void delete( final ScreenVertexRange range )
-		{
-			super.delete( range );
-		}
-
-		private static class ScreenVertexRangeFactory implements PoolObject.Factory< ScreenVertexRange, ByteMappedElement >
-		{
-			private ScreenVertexRangePool pool;
-
-			@Override
-			public int getSizeInBytes()
-			{
-				return ScreenVertexRange.SIZE_IN_BYTES;
-			}
-
-			@Override
-			public ScreenVertexRange createEmptyRef()
-			{
-				return new ScreenVertexRange( pool );
-			}
-
-			@Override
-			public MemPool.Factory< ByteMappedElement > getMemPoolFactory()
-			{
-				return SingleArrayMemPool.factory( ByteMappedElementArray.factory );
-			}
-
-			@Override
-			public Class< ScreenVertexRange > getRefClass()
-			{
-				return ScreenVertexRange.class;
-			}
-		};
 	}
 }

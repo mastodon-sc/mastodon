@@ -14,13 +14,17 @@ import org.mastodon.graph.GraphListener;
 import org.mastodon.graph.ListenableReadOnlyGraph;
 import org.mastodon.graph.Vertex;
 import org.mastodon.graph.ref.AbstractEdgePool;
+import org.mastodon.graph.ref.AbstractEdgePool.AbstractEdgeLayout;
 import org.mastodon.graph.ref.AbstractVertexPool;
+import org.mastodon.graph.ref.AbstractVertexPool.AbstractVertexLayout;
 import org.mastodon.graph.ref.GraphImp;
 import org.mastodon.pool.ByteMappedElement;
 import org.mastodon.pool.ByteMappedElementArray;
-import org.mastodon.pool.MemPool;
-import org.mastodon.pool.PoolObject;
 import org.mastodon.pool.SingleArrayMemPool;
+import org.mastodon.pool.attributes.BooleanAttribute;
+import org.mastodon.pool.attributes.DoubleAttribute;
+import org.mastodon.pool.attributes.IndexAttribute;
+import org.mastodon.pool.attributes.IntAttribute;
 import org.mastodon.revised.trackscheme.wrap.DefaultModelGraphProperties;
 import org.mastodon.revised.trackscheme.wrap.ModelGraphProperties;
 import org.mastodon.spatial.HasTimepoint;
@@ -145,8 +149,8 @@ public class TrackSchemeGraph<
 		super( new TrackSchemeEdgePool(
 				initialCapacity,
 				new TrackSchemeVertexPool(
-						new ModelGraphWrapper<>( idmap, modelGraphProperties ),
-						initialCapacity ) ) );
+						initialCapacity,
+						new ModelGraphWrapper<>( idmap, modelGraphProperties ) ) ) );
 		this.modelGraph = modelGraph;
 		this.idmap = idmap;
 		idToTrackSchemeVertex =	new IntRefArrayMap<>( vertexPool );
@@ -374,111 +378,70 @@ public class TrackSchemeGraph<
 	 * vertex and edge pools
 	 */
 
+	static class TrackSchemeVertexLayout extends AbstractVertexLayout
+	{
+		final IndexField origVertexIndex = indexField();
+		final IntField layoutTimeStamp = intField();
+		final IndexField layoutInEdgeIndex = indexField();
+		final DoubleField layoutX = doubleField();
+		final IntField timepoint = intField();
+		final IndexField screenVertexIndex = indexField();
+		final BooleanField ghost = booleanField();
+	}
+
+	static TrackSchemeVertexLayout vertexLayout = new TrackSchemeVertexLayout();
+
 	static class TrackSchemeVertexPool extends AbstractVertexPool< TrackSchemeVertex, TrackSchemeEdge, ByteMappedElement >
 	{
-		private final ModelGraphWrapper< ?, ? > modelGraphWrapper;
+		final ModelGraphWrapper< ?, ? > modelGraphWrapper;
 
-		private TrackSchemeVertexPool( final ModelGraphWrapper< ?, ? > modelGraphWrapper, final int initialCapacity )
+		final IndexAttribute< TrackSchemeVertex > origVertexIndex = new IndexAttribute<>( vertexLayout.origVertexIndex );
+		final IntAttribute< TrackSchemeVertex > layoutTimeStamp = new IntAttribute<>( vertexLayout.layoutTimeStamp );
+		final IndexAttribute< TrackSchemeVertex > layoutInEdgeIndex = new IndexAttribute<>( vertexLayout.layoutInEdgeIndex );
+		final DoubleAttribute< TrackSchemeVertex > layoutX = new DoubleAttribute<>( vertexLayout.layoutX );
+		final IntAttribute< TrackSchemeVertex > timepoint = new IntAttribute<>( vertexLayout.timepoint );
+		final IndexAttribute< TrackSchemeVertex > screenVertexIndex = new IndexAttribute<>( vertexLayout.screenVertexIndex );
+		final BooleanAttribute< TrackSchemeVertex > ghost = new BooleanAttribute<>( vertexLayout.ghost );
+
+		private TrackSchemeVertexPool( final int initialCapacity, final ModelGraphWrapper< ?, ? > modelGraphWrapper )
 		{
-			this( initialCapacity, new VertexFactory( modelGraphWrapper ) );
+			super( initialCapacity, vertexLayout, TrackSchemeVertex.class, SingleArrayMemPool.factory( ByteMappedElementArray.factory ) );
+			this.modelGraphWrapper = modelGraphWrapper;
 		}
 
-		private TrackSchemeVertexPool( final int initialCapacity, final VertexFactory f )
+		@Override
+		protected TrackSchemeVertex createEmptyRef()
 		{
-			super( initialCapacity, f );
-			f.vertexPool = this;
-			this.modelGraphWrapper = f.modelGraphWrapper;
-		}
-
-		private static class VertexFactory implements PoolObject.Factory< TrackSchemeVertex, ByteMappedElement >
-		{
-			private TrackSchemeVertexPool vertexPool;
-
-			private final ModelGraphWrapper< ?, ? > modelGraphWrapper;
-
-			private VertexFactory( final ModelGraphWrapper< ?, ? > modelGraphWrapper )
-			{
-				this.modelGraphWrapper = modelGraphWrapper;
-			}
-
-			@Override
-			public int getSizeInBytes()
-			{
-				return TrackSchemeVertex.SIZE_IN_BYTES;
-			}
-
-			@Override
-			public TrackSchemeVertex createEmptyRef()
-			{
-				final TrackSchemeVertex vertex = new TrackSchemeVertex( vertexPool );
-				vertex.modelVertex = modelGraphWrapper.createVertexWrapper( vertex );
-				return vertex;
-			}
-
-			@Override
-			public MemPool.Factory< ByteMappedElement > getMemPoolFactory()
-			{
-				return SingleArrayMemPool.factory( ByteMappedElementArray.factory );
-			}
-
-			@Override
-			public Class< TrackSchemeVertex > getRefClass()
-			{
-				return TrackSchemeVertex.class;
-			}
+			return new TrackSchemeVertex( this );
 		}
 	}
 
+	static class TrackSchemeEdgeLayout extends AbstractEdgeLayout
+	{
+		final IndexField origEdgeIndex = indexField();
+		final IndexField screenEdgeIndex = indexField();
+	}
+
+	static TrackSchemeEdgeLayout edgeLayout = new TrackSchemeEdgeLayout();
+
 	static class TrackSchemeEdgePool extends AbstractEdgePool< TrackSchemeEdge, TrackSchemeVertex, ByteMappedElement >
 	{
+		final ModelGraphWrapper< ?, ? > modelGraphWrapper;
+
+		final IndexAttribute< TrackSchemeEdge > origEdgeIndex = new IndexAttribute<>( edgeLayout.origEdgeIndex );
+		final IndexAttribute< TrackSchemeEdge > screenEdgeIndex = new IndexAttribute<>( edgeLayout.screenEdgeIndex );
+
 		private TrackSchemeEdgePool( final int initialCapacity, final TrackSchemeVertexPool vertexPool )
 		{
-			this( initialCapacity, new EdgeFactory( vertexPool.modelGraphWrapper ), vertexPool );
+			super( initialCapacity, edgeLayout, TrackSchemeEdge.class, SingleArrayMemPool.factory( ByteMappedElementArray.factory ), vertexPool );
+			modelGraphWrapper = vertexPool.modelGraphWrapper;
 			vertexPool.linkEdgePool( this );
 		}
 
-		private TrackSchemeEdgePool( final int initialCapacity, final EdgeFactory f, final TrackSchemeVertexPool vertexPool )
+		@Override
+		protected TrackSchemeEdge createEmptyRef()
 		{
-			super( initialCapacity, f, vertexPool );
-			f.edgePool = this;
+			return new TrackSchemeEdge( this );
 		}
-
-		private static class EdgeFactory implements PoolObject.Factory< TrackSchemeEdge, ByteMappedElement >
-		{
-			private TrackSchemeEdgePool edgePool;
-
-			private final ModelGraphWrapper< ?, ? > modelGraphWrapper;
-
-			private EdgeFactory( final ModelGraphWrapper< ?, ? > modelGraphWrapper )
-			{
-				this.modelGraphWrapper = modelGraphWrapper;
-			}
-
-			@Override
-			public int getSizeInBytes()
-			{
-				return TrackSchemeEdge.SIZE_IN_BYTES;
-			}
-
-			@Override
-			public TrackSchemeEdge createEmptyRef()
-			{
-				final TrackSchemeEdge edge = new TrackSchemeEdge( edgePool );
-				edge.modelEdge = modelGraphWrapper.createEdgeWrapper( edge );
-				return edge;
-			}
-
-			@Override
-			public MemPool.Factory< ByteMappedElement > getMemPoolFactory()
-			{
-				return SingleArrayMemPool.factory( ByteMappedElementArray.factory );
-			}
-
-			@Override
-			public Class< TrackSchemeEdge > getRefClass()
-			{
-				return TrackSchemeEdge.class;
-			}
-		};
 	}
 }

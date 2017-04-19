@@ -1,13 +1,17 @@
 package org.mastodon.revised.model.mamut;
 
-import static org.mastodon.pool.ByteUtils.DOUBLE_SIZE;
-
 import org.mastodon.pool.ByteMappedElement;
+import org.mastodon.pool.ByteMappedElementArray;
 import org.mastodon.pool.PoolObjectAttributeSerializer;
+import org.mastodon.pool.SingleArrayMemPool;
+import org.mastodon.pool.attributes.DoubleArrayAttribute;
+import org.mastodon.pool.attributes.DoubleAttribute;
 import org.mastodon.revised.bdv.overlay.util.JamaEigenvalueDecomposition;
 import org.mastodon.revised.model.AbstractSpot;
+import org.mastodon.revised.model.AbstractSpotPool;
+import org.mastodon.revised.model.AbstractSpotPool.AbstractSpotLayout;
 import org.mastodon.revised.model.HasLabel;
-import org.mastodon.revised.model.mamut.ModelGraph.SpotPool;
+import org.mastodon.revised.model.mamut.Spot.SpotPool;
 import org.mastodon.undo.attributes.AttributeSerializer;
 
 /**
@@ -18,11 +22,35 @@ import org.mastodon.undo.attributes.AttributeSerializer;
  */
 public final class Spot extends AbstractSpot< Spot, Link, SpotPool, ByteMappedElement, ModelGraph > implements HasLabel
 {
-	// Copied to be package-visible.
-	protected static final int X_OFFSET = AbstractSpot.X_OFFSET;
-	protected static final int COVARIANCE_OFFSET = AbstractSpot.sizeInBytes( 3 );
-	protected static final int BOUNDING_SPHERE_RADIUS_SQUARED_OFFSET = COVARIANCE_OFFSET + 6 * DOUBLE_SIZE;
-	protected static final int SIZE_IN_BYTES = BOUNDING_SPHERE_RADIUS_SQUARED_OFFSET + DOUBLE_SIZE;
+	public static class SpotLayout extends AbstractSpotLayout
+	{
+		public SpotLayout()
+		{
+			super( 3 );
+		}
+
+		final DoubleArrayField covariance = doubleArrayField( 6 );
+		final DoubleField boundingSphereRadiusSqu = doubleField();
+	}
+
+	public static final SpotLayout layout = new SpotLayout();
+
+	static class SpotPool extends AbstractSpotPool< Spot, Link, ByteMappedElement, ModelGraph >
+	{
+		final DoubleArrayAttribute< Spot > covariance = new DoubleArrayAttribute<>( layout.covariance );
+		final DoubleAttribute< Spot > boundingSphereRadiusSqu = new DoubleAttribute<>( layout.boundingSphereRadiusSqu );
+
+		SpotPool( final int initialCapacity )
+		{
+			super( initialCapacity, layout, Spot.class, SingleArrayMemPool.factory( ByteMappedElementArray.factory ) );
+		}
+
+		@Override
+		protected Spot createEmptyRef()
+		{
+			return new Spot( this );
+		}
+	}
 
 	private final JamaEigenvalueDecomposition eig = new JamaEigenvalueDecomposition( 3 );
 
@@ -33,7 +61,9 @@ public final class Spot extends AbstractSpot< Spot, Link, SpotPool, ByteMappedEl
 		 * only be changed through the covariance, it is serialized as part of the
 		 * covariance attribute.
 		 */
-		return new PoolObjectAttributeSerializer< Spot >( COVARIANCE_OFFSET, 6 * DOUBLE_SIZE + DOUBLE_SIZE)
+		return new PoolObjectAttributeSerializer< Spot >(
+				layout.covariance.getOffset(),
+				layout.covariance.getSizeInBytes() + layout.boundingSphereRadiusSqu.getSizeInBytes() )
 		{
 			@Override
 			public void notifySet( final Spot spot )
@@ -60,22 +90,12 @@ public final class Spot extends AbstractSpot< Spot, Link, SpotPool, ByteMappedEl
 				cov[ row ][ col ] = ( row == col ) ? rsqu : 0;
 	}
 
-	private void setCovarianceEntryInternal( final double value, final int d )
-	{
-		access.putDouble( value, COVARIANCE_OFFSET + d * DOUBLE_SIZE );
-	}
-
-	private double getCovarianceEntryInternal( final int d )
-	{
-		return access.getDouble( COVARIANCE_OFFSET + d * DOUBLE_SIZE );
-	}
-
 	private void setCovarianceInternal( final double[][] cov )
 	{
 		int i = 0;
 		for( int row = 0; row < 3; ++row )
 			for ( int col = row; col < 3; ++col )
-				setCovarianceEntryInternal( cov[ row ][ col ], i++ );
+				pool.covariance.setQuiet( this, i++, cov[ row ][ col ] );
 	}
 
 	private void getCovarianceInternal( final double[][] cov )
@@ -83,20 +103,10 @@ public final class Spot extends AbstractSpot< Spot, Link, SpotPool, ByteMappedEl
 		int i = 0;
 		for( int row = 0; row < 3; ++row )
 		{
-			cov[ row ][ row ] = getCovarianceEntryInternal( i++ );
+			cov[ row ][ row ] = pool.covariance.get( this, i++ );
 			for ( int col = row + 1; col < 3; ++col )
-				cov[ col ][ row ] = cov[ row ][ col ] = getCovarianceEntryInternal( i++ );
+				cov[ col ][ row ] = cov[ row ][ col ] = pool.covariance.get( this, i++ );
 		}
-	}
-
-	private void setBoundingSphereRadiusSquaredInternal( final double value )
-	{
-		access.putDouble( value, BOUNDING_SPHERE_RADIUS_SQUARED_OFFSET );
-	}
-
-	private double getBoundingSphereRadiusSquaredInternal()
-	{
-		return access.getDouble( BOUNDING_SPHERE_RADIUS_SQUARED_OFFSET );
 	}
 
 	/**
@@ -140,7 +150,7 @@ public final class Spot extends AbstractSpot< Spot, Link, SpotPool, ByteMappedEl
 		final double[][] cov = new double[ 3 ][ 3 ];
 		covarianceFromRadiusSquared( radius * radius, cov );
 		setCovarianceInternal( cov );
-		setBoundingSphereRadiusSquaredInternal( radius * radius );
+		pool.boundingSphereRadiusSqu.setQuiet( this, radius * radius );
 
 		super.initDone();
 		return this;
@@ -169,7 +179,7 @@ public final class Spot extends AbstractSpot< Spot, Link, SpotPool, ByteMappedEl
 		super.partialInit( timepointId, pos );
 
 		setCovarianceInternal( cov );
-		setBoundingSphereRadiusSquaredInternal( radiusSquaredFromCovariance( cov ) );
+		pool.boundingSphereRadiusSqu.setQuiet( this, radiusSquaredFromCovariance( cov ) );
 
 		super.initDone();
 		return this;
@@ -184,13 +194,13 @@ public final class Spot extends AbstractSpot< Spot, Link, SpotPool, ByteMappedEl
 	{
 		modelGraph.notifyBeforeVertexCovarianceChange( this );
 		setCovarianceInternal( cov );
-		setBoundingSphereRadiusSquaredInternal( radiusSquaredFromCovariance( cov ) );
+		pool.boundingSphereRadiusSqu.setQuiet( this, radiusSquaredFromCovariance( cov ) );
 		modelGraph.notifyRadiusChanged( this );
 	}
 
 	public double getBoundingSphereRadiusSquared()
 	{
-		return getBoundingSphereRadiusSquaredInternal();
+		return pool.boundingSphereRadiusSqu.get( this );
 	}
 
 	@Override
