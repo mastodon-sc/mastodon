@@ -1,17 +1,8 @@
 package org.mastodon.revised.model.mamut;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.Random;
-
-import org.mastodon.features.IntFeature;
-import org.mastodon.features.ObjFeature;
-import org.mastodon.io.features.FeatureSerializers;
-import org.mastodon.io.features.IntFeatureSerializer;
-import org.mastodon.io.features.StringFeatureSerializer;
-
-public class FeaturesExample
+public class FeaturesExample // TODO
 {
+	/*
 	static final int NO_ENTRY_VALUE = -1;
 
 	public static final IntFeature< Spot > TRACKLENGTH = new IntFeature<>( "track length", NO_ENTRY_VALUE );
@@ -80,5 +71,5 @@ public class FeaturesExample
 
 		}
 	}
-
+	*/
 }
