@@ -36,8 +36,8 @@ import org.jdom2.JDOMException;
 import org.jdom2.input.SAXBuilder;
 import org.mastodon.collection.IntRefMap;
 import org.mastodon.collection.RefCollections;
-import org.mastodon.features.DoubleFeature;
-import org.mastodon.features.IntFeature;
+import org.mastodon.properties.DoublePropertyMap;
+import org.mastodon.properties.IntPropertyMap;
 import org.mastodon.revised.model.mamut.Link;
 import org.mastodon.revised.model.mamut.Model;
 import org.mastodon.revised.model.mamut.ModelGraph;
@@ -47,28 +47,39 @@ import org.mastodon.revised.model.mamut.Spot;
  * Importer for TrackMate (http://imagej.net/TrackMate) files.
  * <p>
  * The importer can read the model as a whole and also import feature values.
- * The features keys are prepended with {@value #SPOT_FEATURE_PREFIX} and
- * {@value #EDGE_FEATURE_PREFIX} for spot and edge feature respectively to avoid
- * name clashes.
  *
  * @author Jean-Yves Tinevez
- *
+ * @author Tobias Pietzsch
  */
 public class TrackMateImporter
 {
-	/**
-	 * All spot features will be prepended with the following prefix upon
-	 * import. This is to avoid conflicts with spot and edge features having the
-	 * same key.
-	 */
-	public static final String SPOT_FEATURE_PREFIX = "SPOT_";
 
-	/**
-	 * All edge features will be prepended with the following prefix upon
-	 * import. This is to avoid conflicts with spot and edge features having the
-	 * same key.
-	 */
-	public static final String EDGE_FEATURE_PREFIX = "EDGE_";
+	public static class TrackMateModel
+	{
+		public final Model model;
+
+		public final Map< String, DoublePropertyMap< Spot > > spotDoubleFeatures;
+
+		public final Map< String, IntPropertyMap< Spot > > spotIntFeatures;
+
+		public final Map< String, DoublePropertyMap< Link > > linkDoubleFeatures;
+
+		public final Map< String, IntPropertyMap< Link > > linkIntFeatures;
+
+		public TrackMateModel(
+				final Model model,
+				final Map< String, DoublePropertyMap< Spot > > spotDoubleFeatures,
+				final Map< String, IntPropertyMap< Spot > > spotIntFeatures,
+				final Map< String, DoublePropertyMap< Link > > linkDoubleFeatures,
+				final Map< String, IntPropertyMap< Link > > linkIntFeatures )
+		{
+			this.model = model;
+			this.spotDoubleFeatures = spotDoubleFeatures;
+			this.spotIntFeatures = spotIntFeatures;
+			this.linkDoubleFeatures = linkDoubleFeatures;
+			this.linkIntFeatures = linkIntFeatures;
+		}
+	}
 
 	/**
 	 * Imports the specified TrackMate file as a MaMuT {@link Model}.
@@ -81,7 +92,7 @@ public class TrackMateImporter
 	 * @throws IOException
 	 *             if an IO error prevents the XML file to be parsed.
 	 */
-	public static Model importModel( final File file ) throws JDOMException, IOException
+	public static TrackMateModel importModel( final File file ) throws JDOMException, IOException
 	{
 		final Model model = new Model();
 		final ModelGraph graph = model.getGraph();
@@ -101,8 +112,8 @@ public class TrackMateImporter
 		// Spot features.
 		final Element spotFeatureDeclarationEl = featureDeclarationEl.getChild( SPOT_FEATURE_DECLARATION_TAG );
 		final List< Element > spotFeatureEls = spotFeatureDeclarationEl.getChildren( FEATURE_TAG );
-		final Map< String, DoubleFeature< Spot > > spotDoubleFeatureMap = new HashMap<>();
-		final Map< String, IntFeature< Spot > > spotIntFeatureMap = new HashMap<>();
+		final Map< String, DoublePropertyMap< Spot > > spotDoubleFeatureMap = new HashMap<>();
+		final Map< String, IntPropertyMap< Spot > > spotIntFeatureMap = new HashMap<>();
 		for ( final Element featureEl : spotFeatureEls )
 		{
 			final String featureKey = featureEl.getAttributeValue( FEATURE_ATTRIBUTE_NAME );
@@ -112,20 +123,20 @@ public class TrackMateImporter
 			final boolean featureIsInt = Boolean.parseBoolean( featureEl.getAttributeValue( FEATURE_ISINT_ATTRIBUTE_NAME ) );
 			if ( featureIsInt )
 			{
-				final IntFeature< Spot > feature = new IntFeature<>( SPOT_FEATURE_PREFIX + featureKey, Integer.MIN_VALUE );
+				final IntPropertyMap< Spot > feature = new IntPropertyMap<>( graph.vertices(), Integer.MIN_VALUE );
 				spotIntFeatureMap.put( featureKey, feature );
 			}
 			else
 			{
-				final DoubleFeature< Spot > feature = new DoubleFeature<>( SPOT_FEATURE_PREFIX + featureKey, Double.NaN );
+				final DoublePropertyMap< Spot > feature = new DoublePropertyMap<>( graph.vertices(), Double.NaN );
 				spotDoubleFeatureMap.put( featureKey, feature );
 			}
 		}
 
 		final Element edgeFeatureDeclarationEl = featureDeclarationEl.getChild( EDGE_FEATURE_DECLARATION_TAG );
 		final List< Element > edgeFeatureEls = edgeFeatureDeclarationEl.getChildren( FEATURE_TAG );
-		final Map< String, DoubleFeature< Link > > edgeDoubleFeatureMap = new HashMap<>();
-		final Map< String, IntFeature< Link > > edgeIntFeatureMap = new HashMap<>();
+		final Map< String, DoublePropertyMap< Link > > edgeDoubleFeatureMap = new HashMap<>();
+		final Map< String, IntPropertyMap< Link > > edgeIntFeatureMap = new HashMap<>();
 		for ( final Element featureEl : edgeFeatureEls )
 		{
 			final String featureKey = featureEl.getAttributeValue( FEATURE_ATTRIBUTE_NAME );
@@ -135,15 +146,14 @@ public class TrackMateImporter
 			final boolean featureIsInt = Boolean.parseBoolean( featureEl.getAttributeValue( FEATURE_ISINT_ATTRIBUTE_NAME ) );
 			if ( featureIsInt )
 			{
-				final IntFeature< Link > feature = new IntFeature<>( EDGE_FEATURE_PREFIX + featureKey, Integer.MIN_VALUE );
+				final IntPropertyMap< Link > feature = new IntPropertyMap<>( graph.edges(), Integer.MIN_VALUE );
 				edgeIntFeatureMap.put( featureKey, feature );
 			}
 			else
 			{
-				final DoubleFeature< Link > feature = new DoubleFeature<>( EDGE_FEATURE_PREFIX + featureKey, Double.NaN );
+				final DoublePropertyMap< Link > feature = new DoublePropertyMap<>( graph.edges(), Double.NaN );
 				edgeDoubleFeatureMap.put( featureKey, feature );
 			}
-
 		}
 
 		/*
@@ -198,8 +208,8 @@ public class TrackMateImporter
 						if ( null != attributeValue )
 						{
 							final double val = Double.parseDouble( attributeValue );
-							final DoubleFeature< Spot > feature = spotDoubleFeatureMap.get( featureKey );
-							spot.feature( feature ).set( val );
+							final DoublePropertyMap< Spot > feature = spotDoubleFeatureMap.get( featureKey );
+							feature.set( spot, val );
 						}
 					}
 					for ( final String featureKey : spotIntFeatureMap.keySet() )
@@ -208,8 +218,8 @@ public class TrackMateImporter
 						if ( null != attributeValue )
 						{
 							final int val = Integer.parseInt( attributeValue );
-							final IntFeature< Spot > feature = spotIntFeatureMap.get( featureKey );
-							spot.feature( feature ).set( val );
+							final IntPropertyMap< Spot > feature = spotIntFeatureMap.get( featureKey );
+							feature.set( spot, val );
 						}
 					}
 				}
@@ -239,8 +249,8 @@ public class TrackMateImporter
 						if ( null != attributeValue )
 						{
 							final double val = Double.parseDouble( attributeValue );
-							final DoubleFeature< Link > feature = edgeDoubleFeatureMap.get( featureKey );
-							link.feature( feature ).set( val );
+							final DoublePropertyMap< Link > feature = edgeDoubleFeatureMap.get( featureKey );
+							feature.set( link, val );
 						}
 					}
 					for ( final String featureKey : edgeIntFeatureMap.keySet() )
@@ -249,14 +259,14 @@ public class TrackMateImporter
 						if (null != attributeValue)
 						{
 							final int val = Integer.parseInt( attributeValue );
-							final IntFeature< Link > feature = edgeIntFeatureMap.get( featureKey );
-							link.feature( feature ).set( val );
+							final IntPropertyMap< Link > feature = edgeIntFeatureMap.get( featureKey );
+							feature.set( link, val );
 						}
 					}
 				}
 			}
 
-			return model;
+			return new TrackMateModel( model, spotDoubleFeatureMap, spotIntFeatureMap, edgeDoubleFeatureMap, edgeIntFeatureMap );
 		}
 		finally
 		{

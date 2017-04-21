@@ -4,13 +4,13 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Locale;
 
-import org.mastodon.collection.RefSet;
 import org.mastodon.collection.RefCollections;
+import org.mastodon.collection.RefSet;
 import org.mastodon.graph.ListenableGraph;
 import org.mastodon.graph.algorithm.traversal.DepthFirstSearch;
-import org.mastodon.graph.algorithm.traversal.SearchListener;
 import org.mastodon.graph.algorithm.traversal.GraphSearch.SearchDirection;
-import org.mastodon.features.DoubleFeature;
+import org.mastodon.graph.algorithm.traversal.SearchListener;
+import org.mastodon.properties.DoublePropertyMap;
 import org.mastodon.revised.model.mamut.Link;
 import org.mastodon.revised.model.mamut.Model;
 import org.mastodon.revised.model.mamut.Spot;
@@ -20,9 +20,6 @@ import net.imglib2.type.numeric.real.DoubleType;
 
 public class EdgeFeatureCalculatorExample
 {
-
-	private static final DoubleFeature< Link > DISP = new DoubleFeature< >( "displacement", Double.NaN );
-
 	public static void compute( final Model model )
 	{
 		final ListenableGraph< Spot, Link > graph = model.getGraph();
@@ -30,6 +27,8 @@ public class EdgeFeatureCalculatorExample
 		/*
 		 * 1. Compute and store displacement for all links.
 		 */
+
+		final DoublePropertyMap< Link > displacement = new DoublePropertyMap<>( graph.edges(), Double.NaN );
 
 		final Spot tmp1 = graph.vertexRef();
 		final Spot tmp2 = graph.vertexRef();
@@ -49,7 +48,7 @@ public class EdgeFeatureCalculatorExample
 				dr2 = dx * dx;
 			}
 
-			link.feature( DISP ).set( Math.sqrt( dr2 ) );
+			displacement.set( link, Math.sqrt( dr2 ) );
 		}
 
 		/*
@@ -89,7 +88,7 @@ public class EdgeFeatureCalculatorExample
 				@Override
 				public void processEdge( final Link edge, final Spot from, final Spot to, final DepthFirstSearch< Spot, Link > search )
 				{
-					tmp.set( edge.feature( DISP ).getDouble() );
+					tmp.set( displacement.getDouble( edge ) );
 					dr.add( tmp );
 					n.inc();
 				}
