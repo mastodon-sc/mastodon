@@ -1,5 +1,7 @@
 package org.mastodon.revised.model;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -9,10 +11,10 @@ import java.io.ObjectOutputStream;
 
 import org.mastodon.graph.GraphChangeNotifier;
 import org.mastodon.graph.GraphIdBimap;
+import org.mastodon.graph.io.GraphSerializer;
 import org.mastodon.graph.io.RawGraphIO;
 import org.mastodon.graph.io.RawGraphIO.FileIdToGraphMap;
 import org.mastodon.graph.io.RawGraphIO.GraphToFileIdMap;
-import org.mastodon.graph.io.GraphSerializer;
 import org.mastodon.graph.ref.AbstractListenableEdge;
 import org.mastodon.graph.ref.AbstractListenableEdgePool;
 import org.mastodon.graph.ref.ListenableGraphImp;
@@ -77,7 +79,7 @@ public class AbstractModelGraph<
 					throws IOException
 	{
 		final FileInputStream fis = new FileInputStream( file );
-		final ObjectInputStream ois = new ObjectInputStream( fis );
+		final ObjectInputStream ois = new ObjectInputStream( new BufferedInputStream( fis, 1024 * 1024 ) );
 		pauseListeners();
 		clear();
 		final FileIdToGraphMap< V, E > fileIdMap = RawGraphIO.read( this, idmap, serializer, ois );
@@ -110,7 +112,7 @@ public class AbstractModelGraph<
 					throws IOException
 	{
 		final FileOutputStream fos = new FileOutputStream( file );
-		final ObjectOutputStream oos = new ObjectOutputStream( fos );
+		final ObjectOutputStream oos = new ObjectOutputStream( new BufferedOutputStream( fos, 1024 * 1024 ) );
 		final GraphToFileIdMap< V, E > fileIdMap = RawGraphIO.write( this, idmap, serializer, oos );
 		RawPropertyIO.writePropertyMaps( fileIdMap.vertices(), vertexPropertySerializers, oos );
 		// TODO: edge properties
