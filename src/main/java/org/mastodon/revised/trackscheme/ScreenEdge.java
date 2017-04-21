@@ -36,12 +36,12 @@ public class ScreenEdge extends PoolObject< ScreenEdge, ScreenEdgePool, ByteMapp
 
 	public static class ScreenEdgePool extends Pool< ScreenEdge, ByteMappedElement >
 	{
-		final IndexAttribute< ScreenEdge > origEdge = new IndexAttribute<>( layout.origEdge );
-		final IndexAttribute< ScreenEdge > sourceScreenVertex = new IndexAttribute<>( layout.sourceScreenVertex );
-		final IndexAttribute< ScreenEdge > targetScreenVertex = new IndexAttribute<>( layout.targetScreenVertex );
-		final BooleanAttribute< ScreenEdge > selected = new BooleanAttribute<>( layout.selected );
-		final ByteAttribute< ScreenEdge > transition = new ByteAttribute<>( layout.transition );
-		final DoubleAttribute< ScreenEdge > ipRatio = new DoubleAttribute<>( layout.ipRatio );
+		final IndexAttribute< ScreenEdge > origEdge = new IndexAttribute<>( layout.origEdge, this );
+		final IndexAttribute< ScreenEdge > sourceScreenVertex = new IndexAttribute<>( layout.sourceScreenVertex, this );
+		final IndexAttribute< ScreenEdge > targetScreenVertex = new IndexAttribute<>( layout.targetScreenVertex, this );
+		final BooleanAttribute< ScreenEdge > selected = new BooleanAttribute<>( layout.selected, this );
+		final ByteAttribute< ScreenEdge > transition = new ByteAttribute<>( layout.transition, this );
+		final DoubleAttribute< ScreenEdge > ipRatio = new DoubleAttribute<>( layout.ipRatio, this );
 
 		public ScreenEdgePool( final int initialCapacity )
 		{

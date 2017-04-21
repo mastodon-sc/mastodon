@@ -6,13 +6,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.mastodon.graph.ReadOnlyGraph;
-import org.mastodon.properties.PropertyMap;
+import org.mastodon.properties.Property;
 import org.mastodon.revised.model.AbstractModel;
 import org.mastodon.spatial.SpatioTemporalIndex;
 import org.mastodon.spatial.SpatioTemporalIndexImp;
 import org.mastodon.undo.GraphUndoRecorder;
 import org.mastodon.undo.UndoPointMarker;
-import org.mastodon.undo.attributes.AttributeSerializer;
 
 import net.imglib2.RealLocalizable;
 
@@ -50,24 +49,22 @@ public class Model extends AbstractModel< ModelGraph, Spot, Link > implements Un
 
 		final int initialCapacity = 1024;
 
-		final AttributeSerializer< Spot > vertexSerializer = ModelSerializer.getInstance().getVertexSerializer();
-		final AttributeSerializer< Link > edgeSerializer = ModelSerializer.getInstance().getEdgeSerializer();
-//		final List< Attribute< Spot > > vertexAttributes = modelGraph.vertexAttributes();
-//		final List< Attribute< Link > > edgeAttributes = modelGraph.edgeAttributes();
-		final List< PropertyMap< Spot, ? > > vertexProperties = new ArrayList<>();
-		vertexProperties.add( modelGraph.VERTEX_LABEL );
-		final List< PropertyMap< Link, ? > > edgeProperties = new ArrayList<>();
+		final List< Property< Spot > > vertexUndoableProperties = new ArrayList<>();
+		vertexUndoableProperties.add( modelGraph.getVertexPool().positionProperty() );
+		vertexUndoableProperties.add( modelGraph.getVertexPool().covarianceProperty() );
+		vertexUndoableProperties.add( modelGraph.getVertexPool().boundingSphereRadiusSquProperty() );
+		vertexUndoableProperties.add( modelGraph.getVertexPool().labelProperty() );
+
+		final List< Property< Link > > edgeUndoableProperties = new ArrayList<>();
 
 		undoRecorder = new GraphUndoRecorder<>(
 				initialCapacity,
 				modelGraph,
 				modelGraph.idmap(),
-				vertexSerializer,
-				edgeSerializer,
-				modelGraph.vertexAttributes(),
-				modelGraph.edgeAttributes(),
-				vertexProperties,
-				edgeProperties );
+				ModelSerializer.getInstance().getVertexSerializer(),
+				ModelSerializer.getInstance().getEdgeSerializer(),
+				vertexUndoableProperties,
+				edgeUndoableProperties );
 	}
 
 	/**

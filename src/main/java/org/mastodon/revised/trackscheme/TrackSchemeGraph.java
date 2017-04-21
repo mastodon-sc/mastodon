@@ -395,13 +395,13 @@ public class TrackSchemeGraph<
 	{
 		final ModelGraphWrapper< ?, ? > modelGraphWrapper;
 
-		final IndexAttribute< TrackSchemeVertex > origVertexIndex = new IndexAttribute<>( vertexLayout.origVertexIndex );
-		final IntAttribute< TrackSchemeVertex > layoutTimeStamp = new IntAttribute<>( vertexLayout.layoutTimeStamp );
-		final IndexAttribute< TrackSchemeVertex > layoutInEdgeIndex = new IndexAttribute<>( vertexLayout.layoutInEdgeIndex );
-		final DoubleAttribute< TrackSchemeVertex > layoutX = new DoubleAttribute<>( vertexLayout.layoutX );
-		final IntAttribute< TrackSchemeVertex > timepoint = new IntAttribute<>( vertexLayout.timepoint );
-		final IndexAttribute< TrackSchemeVertex > screenVertexIndex = new IndexAttribute<>( vertexLayout.screenVertexIndex );
-		final BooleanAttribute< TrackSchemeVertex > ghost = new BooleanAttribute<>( vertexLayout.ghost );
+		final IndexAttribute< TrackSchemeVertex > origVertexIndex = new IndexAttribute<>( vertexLayout.origVertexIndex, this );
+		final IntAttribute< TrackSchemeVertex > layoutTimeStamp = new IntAttribute<>( vertexLayout.layoutTimeStamp, this );
+		final IndexAttribute< TrackSchemeVertex > layoutInEdgeIndex = new IndexAttribute<>( vertexLayout.layoutInEdgeIndex, this );
+		final DoubleAttribute< TrackSchemeVertex > layoutX = new DoubleAttribute<>( vertexLayout.layoutX, this );
+		final IntAttribute< TrackSchemeVertex > timepoint = new IntAttribute<>( vertexLayout.timepoint, this );
+		final IndexAttribute< TrackSchemeVertex > screenVertexIndex = new IndexAttribute<>( vertexLayout.screenVertexIndex, this );
+		final BooleanAttribute< TrackSchemeVertex > ghost = new BooleanAttribute<>( vertexLayout.ghost, this );
 
 		private TrackSchemeVertexPool( final int initialCapacity, final ModelGraphWrapper< ?, ? > modelGraphWrapper )
 		{
@@ -428,8 +428,8 @@ public class TrackSchemeGraph<
 	{
 		final ModelGraphWrapper< ?, ? > modelGraphWrapper;
 
-		final IndexAttribute< TrackSchemeEdge > origEdgeIndex = new IndexAttribute<>( edgeLayout.origEdgeIndex );
-		final IndexAttribute< TrackSchemeEdge > screenEdgeIndex = new IndexAttribute<>( edgeLayout.screenEdgeIndex );
+		final IndexAttribute< TrackSchemeEdge > origEdgeIndex = new IndexAttribute<>( edgeLayout.origEdgeIndex, this );
+		final IndexAttribute< TrackSchemeEdge > screenEdgeIndex = new IndexAttribute<>( edgeLayout.screenEdgeIndex, this );
 
 		private TrackSchemeEdgePool( final int initialCapacity, final TrackSchemeVertexPool vertexPool )
 		{

@@ -4,6 +4,7 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import org.mastodon.graph.GraphListener;
+import org.mastodon.properties.PropertyChangeListener;
 import org.mastodon.spatial.SpatialIndex;
 
 import gnu.trove.map.hash.TIntObjectHashMap;
@@ -19,7 +20,7 @@ import gnu.trove.map.hash.TIntObjectHashMap;
  *
  * @author Tobias Pietzsch
  */
-public class BoundingSphereRadiusStatistics implements GraphListener< Spot, Link >, SpotRadiusListener
+public class BoundingSphereRadiusStatistics implements GraphListener< Spot, Link >, PropertyChangeListener< Spot >
 {
 	/**
 	 * Int value used to declare that the requested timepoint is not in a map.
@@ -50,9 +51,9 @@ public class BoundingSphereRadiusStatistics implements GraphListener< Spot, Link
 	{
 		this.model = model;
 		this.graph = model.getGraph();
-		timepointToStats = new TIntObjectHashMap< Stats >( 10, 0.5f, NO_ENTRY_KEY );
+		timepointToStats = new TIntObjectHashMap<>( 10, 0.5f, NO_ENTRY_KEY );
 		graph.addGraphListener( this );
-		graph.addSpotRadiusListener( this );
+		graph.getVertexPool().boundingSphereRadiusSquProperty().addPropertyChangeListener( this );
 		final ReentrantReadWriteLock rwl = new ReentrantReadWriteLock();
 	    readLock = rwl.readLock();
 	    writeLock = rwl.writeLock();
@@ -188,7 +189,7 @@ public class BoundingSphereRadiusStatistics implements GraphListener< Spot, Link
 	}
 
 	@Override
-	public void radiusChanged( final Spot v )
+	public void propertyChanged( final Spot v )
 	{
 		writeLock.lock();
 		try

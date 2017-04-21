@@ -1,12 +1,11 @@
 package org.mastodon.revised.model.mamut;
 
-import org.mastodon.graph.io.RawGraphIO.ObjectSerializer;
-import org.mastodon.graph.io.RawGraphIO.Serializer;
+import org.mastodon.graph.io.GraphSerializer;
+import org.mastodon.graph.ref.AbstractEdgePool;
 import org.mastodon.graph.ref.AbstractVertexPool;
 import org.mastodon.pool.PoolObjectAttributeSerializer;
-import org.mastodon.undo.attributes.AttributeSerializer;
 
-class ModelSerializer implements Serializer< Spot, Link >
+class ModelSerializer implements GraphSerializer< Spot, Link >
 {
 	private ModelSerializer()
 	{}
@@ -34,38 +33,14 @@ class ModelSerializer implements Serializer< Spot, Link >
 		return edgeSerializer;
 	}
 
-	static class SpotSerializer extends PoolObjectAttributeSerializer< Spot > implements ObjectSerializer< Spot >
+
+	static class SpotSerializer extends PoolObjectAttributeSerializer< Spot >
 	{
-		public SpotSerializer( )
+		public SpotSerializer()
 		{
-			super( AbstractVertexPool.layout.getSizeInBytes(), Spot.layout.getSizeInBytes() - AbstractVertexPool.layout.getSizeInBytes() );
-		}
-
-//		private final int VERTEX_NUM_BYTES = Spot.SIZE_IN_BYTES - Spot.X_OFFSET;
-//		private final int VERTEX_DATA_START = Spot.X_OFFSET;
-//
-//		@Override
-//		public int getNumBytes()
-//		{
-//			return VERTEX_NUM_BYTES;
-//		}
-//
-//		@Override
-//		public void getBytes( final Spot vertex, final byte[] bytes )
-//		{
-//			vertex.getAccess().getBytes( bytes, 0, VERTEX_NUM_BYTES, VERTEX_DATA_START );
-//		}
-//
-//		@Override
-//		public void setBytes( final Spot vertex, final byte[] bytes )
-//		{
-//			vertex.getAccess().putBytes( bytes, 0, VERTEX_NUM_BYTES, VERTEX_DATA_START );
-//		}
-
-		@Override
-		public void notifyAdded( final Spot vertex )
-		{
-			vertex.notifyVertexAdded();
+			super(
+					AbstractVertexPool.layout.getSizeInBytes(),
+					SpotPool.layout.getSizeInBytes() - AbstractVertexPool.layout.getSizeInBytes() );
 		}
 
 		@Override
@@ -75,26 +50,13 @@ class ModelSerializer implements Serializer< Spot, Link >
 		}
 	}
 
-	static class LinkSerializer implements ObjectSerializer< Link >, AttributeSerializer< Link >
+	static class LinkSerializer extends PoolObjectAttributeSerializer< Link >
 	{
-		@Override
-		public int getNumBytes()
+		public LinkSerializer()
 		{
-			return 0;
-		}
-
-		@Override
-		public void getBytes( final Link edge, final byte[] bytes )
-		{}
-
-		@Override
-		public void setBytes( final Link edge, final byte[] bytes )
-		{}
-
-		@Override
-		public void notifyAdded( final Link edge )
-		{
-			edge.notifyEdgeAdded();
+			super(
+					AbstractEdgePool.layout.getSizeInBytes(),
+					LinkPool.layout.getSizeInBytes() - AbstractEdgePool.layout.getSizeInBytes() );
 		}
 
 		@Override

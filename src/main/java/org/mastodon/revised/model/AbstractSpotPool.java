@@ -30,8 +30,6 @@ public abstract class AbstractSpotPool<
 
 	final AbstractSpotLayout layout;
 
-	G modelGraph;
-
 	protected final RealPointAttribute< V > position;
 
 	protected final IntAttribute< V > timepoint;
@@ -44,13 +42,8 @@ public abstract class AbstractSpotPool<
 	{
 		super( initialCapacity, layout, vertexClass, memPoolFactory );
 		this.layout = layout;
-		position = new RealPointAttribute<>( layout.position );
-		timepoint = new IntAttribute<>( layout.timepoint );
-	}
-
-	public void linkModelGraph( final G modelGraph )
-	{
-		this.modelGraph = modelGraph;
+		position = new RealPointAttribute<>( layout.position, this );
+		timepoint = new IntAttribute<>( layout.timepoint, this );
 	}
 
 	@Override

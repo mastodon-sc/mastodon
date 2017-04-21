@@ -6,22 +6,23 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.util.ArrayList;
 
 import org.mastodon.graph.GraphChangeNotifier;
 import org.mastodon.graph.GraphIdBimap;
 import org.mastodon.graph.io.RawGraphIO;
 import org.mastodon.graph.io.RawGraphIO.FileIdToGraphMap;
 import org.mastodon.graph.io.RawGraphIO.GraphToFileIdMap;
+import org.mastodon.graph.io.GraphSerializer;
 import org.mastodon.graph.ref.AbstractListenableEdge;
 import org.mastodon.graph.ref.AbstractListenableEdgePool;
 import org.mastodon.graph.ref.ListenableGraphImp;
 import org.mastodon.io.properties.PropertyMapSerializers;
 import org.mastodon.io.properties.RawPropertyIO;
 import org.mastodon.pool.MappedElement;
+import org.mastodon.properties.PropertyChangeListener;
+import org.mastodon.properties.PropertyMap;
 import org.mastodon.spatial.VertexPositionChangeProvider;
 import org.mastodon.spatial.VertexPositionListener;
-import org.mastodon.undo.attributes.Attribute;
 
 public class AbstractModelGraph<
 		G extends AbstractModelGraph< G, VP, EP, V, E, T >,
@@ -35,31 +36,17 @@ public class AbstractModelGraph<
 {
 	protected final GraphIdBimap< V, E > idmap;
 
-	protected final ArrayList< Attribute< V > > vertexAttributes;
-
-	protected final ArrayList< Attribute< E > > edgeAttributes;
-
+	/**
+	 * Subclasses need to add any vertex {@link PropertyMap}s that they want to
+	 * be serialized with the graph.
+	 */
 	protected final PropertyMapSerializers< V > vertexPropertySerializers;
 
-	private final ArrayList< VertexPositionListener< V > > vertexPositionListeners;
-
-	public final Attribute< V > VERTEX_POSITION;
-
-	@SuppressWarnings( "unchecked" )
 	public AbstractModelGraph( final EP edgePool )
 	{
 		super( edgePool );
-		vertexPool.linkModelGraph( ( G ) this );
 		idmap = new GraphIdBimap<>( vertexPool, edgePool );
-		vertexAttributes = new ArrayList<>();
-		edgeAttributes = new ArrayList<>();
 		vertexPropertySerializers = new PropertyMapSerializers<>();
-		vertexPositionListeners = new ArrayList<>();
-
-		VERTEX_POSITION = new Attribute< V >( AbstractSpot.createPositionAttributeSerializer( vertexPool.numDimensions() ), "vertex position" );
-		vertexAttributes.add( VERTEX_POSITION );
-		vertexPool.position.addBeforePropertyChangeListener( v -> VERTEX_POSITION.notifyBeforeAttributeChange( v ) );
-		vertexPool.position.addPropertyChangeListener( v -> notifyVertexPositionChanged( v ) );
 	}
 
 	/**
@@ -86,7 +73,7 @@ public class AbstractModelGraph<
 	 */
 	public void loadRaw(
 			final File file,
-			final RawGraphIO.Serializer< V, E > serializer )
+			final GraphSerializer< V, E > serializer )
 					throws IOException
 	{
 		final FileInputStream fis = new FileInputStream( file );
@@ -119,7 +106,7 @@ public class AbstractModelGraph<
 	 */
 	public void saveRaw(
 			final File file,
-			final RawGraphIO.Serializer< V, E > serializer )
+			final GraphSerializer< V, E > serializer )
 					throws IOException
 	{
 		final FileOutputStream fos = new FileOutputStream( file );
@@ -130,6 +117,30 @@ public class AbstractModelGraph<
 //		RawFeatureIO.writeFeatureMaps( fileIdMap.vertices(), vertexFeatures, vertexFeaturesToSerialize, oos );
 //		RawFeatureIO.writeFeatureMaps( fileIdMap.edges(), edgeFeatures, edgeFeaturesToSerialize, oos );
 		oos.close();
+	}
+
+	@Override
+	protected void clear()
+	{
+		super.clear();
+	}
+
+	@Override
+	protected void pauseListeners()
+	{
+		super.pauseListeners();
+	}
+
+	@Override
+	protected void resumeListeners()
+	{
+		super.resumeListeners();
+	}
+
+	@Override
+	public void notifyGraphChanged()
+	{
+		super.notifyGraphChanged();
 	}
 
 	/**
@@ -144,12 +155,7 @@ public class AbstractModelGraph<
 	@Override
 	public boolean addVertexPositionListener( final VertexPositionListener< V > listener )
 	{
-		if ( ! vertexPositionListeners.contains( listener ) )
-		{
-			vertexPositionListeners.add( listener );
-			return true;
-		}
-		return false;
+		return vertexPool.position.addPropertyChangeListener( wrap( listener ) );
 	}
 
 	/**
@@ -164,44 +170,42 @@ public class AbstractModelGraph<
 	@Override
 	public boolean removeVertexPositionListener( final VertexPositionListener< V > listener )
 	{
-		return vertexPositionListeners.remove( listener );
+		return vertexPool.position.removePropertyChangeListener( wrap( listener ) );
 	}
 
-	void notifyVertexPositionChanged( final V vertex )
+	private VertexPositionListenerWrapper< V > wrap( final VertexPositionListener< V > l )
 	{
-		for ( final VertexPositionListener< V > l : vertexPositionListeners )
+		return new VertexPositionListenerWrapper<>( l );
+	}
+
+	private static class VertexPositionListenerWrapper< V > implements PropertyChangeListener< V >
+	{
+		private final VertexPositionListener< V > l;
+
+		VertexPositionListenerWrapper( final VertexPositionListener< V > l )
+		{
+			this.l = l;
+		}
+
+		@Override
+		public void propertyChanged( final V vertex )
+		{
 			l.vertexPositionChanged( vertex );
-	}
+		}
 
-	@Override
-	protected void clear()
-	{
-		super.clear();
-	}
+		@Override
+		public int hashCode()
+		{
+			return l.hashCode();
+		}
 
-	@Override
-	protected void pauseListeners()
-	{
-		super.pauseListeners();
-		for ( final Attribute< V > attribute : vertexAttributes )
-			attribute.pauseListeners();
-		for ( final Attribute< E > attribute : edgeAttributes )
-			attribute.pauseListeners();
-	}
-
-	@Override
-	protected void resumeListeners()
-	{
-		super.resumeListeners();
-		for ( final Attribute< V > attribute : vertexAttributes )
-			attribute.resumeListeners();
-		for ( final Attribute< E > attribute : edgeAttributes )
-			attribute.resumeListeners();
-	}
-
-	@Override
-	public void notifyGraphChanged()
-	{
-		super.notifyGraphChanged();
+		@SuppressWarnings( "unchecked" )
+		@Override
+		public boolean equals( final Object obj )
+		{
+			return ( obj != null )
+					&& ( obj instanceof VertexPositionListenerWrapper )
+					&& l.equals( ( ( VertexPositionListenerWrapper< V > ) obj ).l );
+		}
 	}
 }

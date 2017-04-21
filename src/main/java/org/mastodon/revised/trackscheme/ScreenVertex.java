@@ -41,15 +41,15 @@ public class ScreenVertex extends PoolObject< ScreenVertex, ScreenVertexPool, By
 	{
 		final RefPool< TrackSchemeVertex > trackSchemeVertexPool;
 
-		final IndexAttribute< ScreenVertex > origVertex = new IndexAttribute<>( layout.origVertex );
-		final DoubleAttribute< ScreenVertex > xOffset = new DoubleAttribute<>( layout.xOffset );
-		final DoubleAttribute< ScreenVertex > yOffset = new DoubleAttribute<>( layout.yOffset );
-		final DoubleAttribute< ScreenVertex > vertexDist = new DoubleAttribute<>( layout.vertexDist );
-		final BooleanAttribute< ScreenVertex > selected = new BooleanAttribute<>( layout.selected );
-		final BooleanAttribute< ScreenVertex > ghost = new BooleanAttribute<>( layout.ghost );
-		final ByteAttribute< ScreenVertex > transition = new ByteAttribute<>( layout.transition );
-		final IndexAttribute< ScreenVertex > ipScreenVertex = new IndexAttribute<>( layout.ipScreenVertex );
-		final DoubleAttribute< ScreenVertex > ipRatio = new DoubleAttribute<>( layout.ipRatio );
+		final IndexAttribute< ScreenVertex > origVertex = new IndexAttribute<>( layout.origVertex, this );
+		final DoubleAttribute< ScreenVertex > xOffset = new DoubleAttribute<>( layout.xOffset, this );
+		final DoubleAttribute< ScreenVertex > yOffset = new DoubleAttribute<>( layout.yOffset, this );
+		final DoubleAttribute< ScreenVertex > vertexDist = new DoubleAttribute<>( layout.vertexDist, this );
+		final BooleanAttribute< ScreenVertex > selected = new BooleanAttribute<>( layout.selected, this );
+		final BooleanAttribute< ScreenVertex > ghost = new BooleanAttribute<>( layout.ghost, this );
+		final ByteAttribute< ScreenVertex > transition = new ByteAttribute<>( layout.transition, this );
+		final IndexAttribute< ScreenVertex > ipScreenVertex = new IndexAttribute<>( layout.ipScreenVertex, this );
+		final DoubleAttribute< ScreenVertex > ipRatio = new DoubleAttribute<>( layout.ipRatio, this );
 
 		public ScreenVertexPool( final int initialCapacity, final RefPool< TrackSchemeVertex > trackSchemeVertexPool )
 		{

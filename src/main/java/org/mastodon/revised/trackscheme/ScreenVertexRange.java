@@ -28,10 +28,10 @@ public class ScreenVertexRange extends PoolObject< ScreenVertexRange, ScreenVert
 
 	public static class ScreenVertexRangePool extends Pool< ScreenVertexRange, ByteMappedElement >
 	{
-		final DoubleAttribute< ScreenVertexRange > minX = new DoubleAttribute<>( layout.minX );
-		final DoubleAttribute< ScreenVertexRange > maxX = new DoubleAttribute<>( layout.maxX );
-		final DoubleAttribute< ScreenVertexRange > minY = new DoubleAttribute<>( layout.minY );
-		final DoubleAttribute< ScreenVertexRange > maxY = new DoubleAttribute<>( layout.maxY );
+		final DoubleAttribute< ScreenVertexRange > minX = new DoubleAttribute<>( layout.minX, this );
+		final DoubleAttribute< ScreenVertexRange > maxX = new DoubleAttribute<>( layout.maxX, this );
+		final DoubleAttribute< ScreenVertexRange > minY = new DoubleAttribute<>( layout.minY, this );
+		final DoubleAttribute< ScreenVertexRange > maxY = new DoubleAttribute<>( layout.maxY, this );
 
 		public ScreenVertexRangePool( final int initialCapacity )
 		{
