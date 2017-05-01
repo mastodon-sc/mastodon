@@ -5,6 +5,7 @@ import java.util.Iterator;
 import org.mastodon.graph.Edge;
 import org.mastodon.graph.Vertex;
 import org.mastodon.kdtree.ClipConvexPolytope;
+import org.mastodon.kdtree.IncrementalNearestNeighborSearch;
 import org.mastodon.spatial.SpatialIndex;
 
 import net.imglib2.RealLocalizable;
@@ -35,6 +36,12 @@ public class SpatialIndexWrapper< V extends Vertex< E >, E extends Edge< V > >
 	public NearestNeighborSearch< OverlayVertexWrapper< V, E > > getNearestNeighborSearch()
 	{
 		return new NNS();
+	}
+
+	@Override
+	public IncrementalNearestNeighborSearch< OverlayVertexWrapper< V, E > > getIncrementalNearestNeighborSearch()
+	{
+		return new INNS();
 	}
 
 	@Override
@@ -125,6 +132,128 @@ public class SpatialIndexWrapper< V extends Vertex< E >, E extends Edge< V > >
 		public NNS copy()
 		{
 			return new NNS( this );
+		}
+	}
+
+	class INNS implements IncrementalNearestNeighborSearch< OverlayVertexWrapper< V, E > >
+	{
+		private final IncrementalNearestNeighborSearch< V > wrappedINNS;
+
+		private final OverlayVertexWrapper< V, E > v;
+
+		public INNS()
+		{
+			this.wrappedINNS = wrappedIndex.getIncrementalNearestNeighborSearch();
+			this.v = graphWrapper.vertexRef();
+		}
+
+		@Override
+		public void localize( final float[] position )
+		{
+			wrappedINNS.localize( position );
+		}
+
+		@Override
+		public void localize( final double[] position )
+		{
+			wrappedINNS.localize( position );
+		}
+
+		@Override
+		public float getFloatPosition( final int d )
+		{
+			return wrappedINNS.getFloatPosition( d );
+		}
+
+		@Override
+		public double getDoublePosition( final int d )
+		{
+			return wrappedINNS.getDoublePosition( d );
+		}
+
+		@Override
+		public int numDimensions()
+		{
+			return wrappedINNS.numDimensions();
+		}
+
+		@Override
+		public void jumpFwd( final long steps )
+		{
+			wrappedINNS.jumpFwd( steps );
+		}
+
+		@Override
+		public void fwd()
+		{
+			wrappedINNS.fwd();
+		}
+
+		@Override
+		public void reset()
+		{
+			wrappedINNS.reset();
+		}
+
+		@Override
+		public boolean hasNext()
+		{
+			return wrappedINNS.hasNext();
+		}
+
+		@Override
+		public OverlayVertexWrapper< V, E > get()
+		{
+			final V nnv = wrappedINNS.get();
+			if ( nnv == null )
+				return null;
+
+			final int id = graphWrapper.idmap.getVertexId( nnv );
+			v.wv = graphWrapper.idmap.getVertex( id, v.ref );
+			return v;
+		}
+
+		@Override
+		public OverlayVertexWrapper< V, E > next()
+		{
+			fwd();
+			return get();
+		}
+
+		@Override
+		public double getSquareDistance()
+		{
+			return wrappedINNS.getSquareDistance();
+		}
+
+		@Override
+		public double getDistance()
+		{
+			return wrappedINNS.getDistance();
+		}
+
+		@Override
+		public void search( final RealLocalizable reference )
+		{
+			wrappedINNS.search( reference );
+		}
+
+		private INNS( final INNS other )
+		{
+			this.wrappedINNS = other.wrappedINNS.copy();
+			this.v = graphWrapper.vertexRef();
+		}
+
+		@Override
+		public INNS copy()
+		{
+			return new INNS( this );
+		}
+
+		@Override
+		public INNS copyCursor()
+		{
+			return copy();
 		}
 	}
 

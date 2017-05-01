@@ -14,6 +14,7 @@ import org.mastodon.collection.RefCollection;
 import org.mastodon.collection.RefCollections;
 import org.mastodon.collection.RefList;
 import org.mastodon.kdtree.ClipConvexPolytope;
+import org.mastodon.kdtree.IncrementalNearestNeighborSearch;
 import org.mastodon.revised.Util;
 import org.mastodon.revised.ui.selection.FocusModel;
 import org.mastodon.revised.ui.selection.HighlightModel;
@@ -456,7 +457,7 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 
 	/**
 	 * Get the {@link ConvexPolytope} bounding the visible region of global
-	 * space, extended by a large enough border to ensure that it contains
+	 * space, extended by a large enough border to ensure that it contains the
 	 * center of every ellipsoid that intersects the visible volume.
 	 *
 	 * @param transform
@@ -472,7 +473,7 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 
 	/**
 	 * Get the {@link ConvexPolytope} around the specified viewer coordinate
-	 * that is large enough border to ensure that it contains center of every
+	 * that is large enough to ensure that it contains the center of every
 	 * ellipsoid containing the specified coordinate.
 	 *
 	 * @param x
@@ -846,6 +847,9 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 
 		index.readLock().lock();
 
+		// TODO: cache searches? --> take into account that indexdata might change
+
+		// TODO: This needs to take into account maxDepth in the same way that painting does
 		if ( drawEllipsoidSliceProjection )
 		{
 			final ConvexPolytope cropPolytopeGlobal = getSurroundingPolytopeGlobal( x, y, transform, currentTimepoint );
@@ -872,7 +876,28 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 			}
 		}
 
-		if ( !found )
+		// TODO: This needs to take into account maxDepth in the same way that painting does
+		if ( !found && drawEllipsoidSliceIntersection )
+		{
+			final IncrementalNearestNeighborSearch< V > inns = index.getSpatialIndex( currentTimepoint ).getIncrementalNearestNeighborSearch();
+			final double maxSquDist = graph.getMaxBoundingSphereRadiusSquared( currentTimepoint );
+			inns.search( RealPoint.wrap( gPos ) );
+			while ( inns.hasNext() )
+			{
+				final V v = inns.next();
+				if ( inns.getSquareDistance() > maxSquDist )
+					break;
+				svm.init( v, transform );
+				if ( svm.containsGlobal( gPos ) )
+				{
+					found = true;
+					ref.refTo( v );
+					break;
+				}
+			}
+		}
+
+		if ( !found && drawPoints )
 		{
 			final NearestNeighborSearch< V > nns = index.getSpatialIndex( currentTimepoint ).getNearestNeighborSearch();
 			nns.search( RealPoint.wrap( gPos ) );
@@ -880,25 +905,14 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 			if ( v != null )
 			{
 				svm.init( v, transform );
-				if ( drawEllipsoidSliceIntersection )
+				final double[] p = svm.getViewPos();
+				final double dx = p[ 0 ] - x;
+				final double dy = p[ 1 ] - y;
+				final double dr = pointRadius + tolerance;
+				if ( dx * dx + dy * dy <= dr * dr )
 				{
-					if ( svm.containsGlobal( gPos ) )
-					{
-						found = true;
-						ref.refTo( v );
-					}
-				}
-				if ( !found && drawPoints )
-				{
-					final double[] p = svm.getViewPos();
-					final double dx = p[ 0 ] - x;
-					final double dy = p[ 1 ] - y;
-					final double dr = pointRadius + tolerance;
-					if ( dx * dx + dy * dy <= dr * dr )
-					{
-						found = true;
-						ref.refTo( v );
-					}
+					found = true;
+					ref.refTo( v );
 				}
 			}
 		}
