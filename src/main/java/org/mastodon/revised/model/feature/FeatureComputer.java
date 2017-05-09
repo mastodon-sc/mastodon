@@ -25,7 +25,7 @@ import org.scijava.plugin.SciJavaPlugin;
  * @param <AM>
  *            the type of the model the feature is calculated on and stored in.
  */
-public interface FeatureComputer< K extends Feature< O, ? >, O, AM extends AbstractModel< ?, ?, ? > > extends SciJavaPlugin
+public interface FeatureComputer< K extends Feature< O, ?, ? >, O, AM extends AbstractModel< ?, ?, ? > > extends SciJavaPlugin
 {
 
 	/**

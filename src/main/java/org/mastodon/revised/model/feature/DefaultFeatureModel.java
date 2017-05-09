@@ -27,7 +27,7 @@ public class DefaultFeatureModel< V extends Vertex< E >, E extends Edge< V > > i
 
 	private final Map< String, FeatureTarget > projectionTargets;
 
-	private final Map< String, Feature< ?, ? > > feature;
+	private final Map< String, Feature< ?, ?, ? > > feature;
 
 	private final Map< FeatureTarget, Map< String, FeatureProjection< ? > > > projections;
 
@@ -131,7 +131,7 @@ public class DefaultFeatureModel< V extends Vertex< E >, E extends Edge< V > > i
 	}
 
 	@Override
-	public Feature< ?, ? > getFeature( final String featureKey )
+	public Feature< ?, ?, ? > getFeature( final String featureKey )
 	{
 		return feature.get( featureKey );
 	}
