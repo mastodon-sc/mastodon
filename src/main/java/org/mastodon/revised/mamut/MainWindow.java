@@ -2,6 +2,7 @@ package org.mastodon.revised.mamut;
 
 import java.awt.BorderLayout;
 import java.awt.Container;
+import java.awt.Dialog;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -10,6 +11,7 @@ import java.awt.event.WindowEvent;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
+import java.util.concurrent.ExecutionException;
 
 import javax.swing.Box;
 import javax.swing.JButton;
@@ -18,19 +20,26 @@ import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 import javax.swing.WindowConstants;
 
+import org.mastodon.revised.model.feature.FeatureComputerService;
 import org.mastodon.revised.model.mamut.Model;
 import org.mastodon.revised.ui.util.FileChooser;
 import org.mastodon.revised.ui.util.XmlFileFilter;
+import org.scijava.Context;
 import org.scijava.ui.behaviour.io.InputTriggerConfig;
 import org.scijava.ui.behaviour.io.yaml.YamlConfigIO;
 
 import bdv.spimdata.SpimDataMinimal;
 import bdv.spimdata.XmlIoSpimDataMinimal;
+import bdv.tools.ToggleDialogAction;
 import mpicbg.spim.data.SpimDataException;
 
 public class MainWindow extends JFrame
 {
 	private static final long serialVersionUID = 1L;
+
+	/*
+	 * FIELDS.
+	 */
 
 	private final InputTriggerConfig keyconf;
 
@@ -41,6 +50,9 @@ public class MainWindow extends JFrame
 	private File proposedProjectFile;
 
 	private final TgmmImportDialog tgmmImportDialog;
+
+	private final JButton featureComputationButton;
+
 
 	public MainWindow( final InputTriggerConfig keyconf )
 	{
@@ -73,6 +85,11 @@ public class MainWindow extends JFrame
 		} );
 		buttonsPanel.add( bdvButton );
 		buttonsPanel.add( trackschemeButton );
+		buttonsPanel.add( Box.createVerticalStrut( 20 ) );
+
+		this.featureComputationButton = new JButton( "features and tags" );
+		buttonsPanel.add( featureComputationButton );
+
 		buttonsPanel.add( Box.createVerticalStrut( 20 ) );
 
 		final JButton importButton = new JButton( "import tgmm" );
@@ -134,6 +151,9 @@ public class MainWindow extends JFrame
 				windowManager = null;
 			}
 		} );
+
+		setDefaultCloseOperation( WindowConstants.EXIT_ON_CLOSE );
+		pack();
 	}
 
 	public void open( final MamutProject project ) throws IOException, SpimDataException
@@ -157,6 +177,23 @@ public class MainWindow extends JFrame
 			windowManager.closeAllWindows();
 
 		windowManager = new WindowManager( spimDataXmlFilename, spimData, model, keyconf );
+
+		/*
+		 * Feature calculation.
+		 */
+
+		/*
+		 * TODO FIXE Ugly hack to get proper service instantiation. Fix it by
+		 * proposing a proper Command decoupled from the GUI.
+		 */
+		final Context context = new Context();
+		@SuppressWarnings( "unchecked" )
+		final FeatureComputerService< Model > featureComputerService = context.getService( FeatureComputerService.class );
+
+		final Dialog featureComputationDialog = new FeatureAndTagDialog( this, windowManager.getModel(), featureComputerService );
+		featureComputationDialog.setSize( 400, 400 );
+
+		featureComputationButton.addActionListener( new ToggleDialogAction( "feature computation", featureComputationDialog ) );
 	}
 
 	public void saveProject( final File projectFile ) throws IOException
@@ -263,7 +300,7 @@ public class MainWindow extends JFrame
 	 * <li>".mastodon/keyconfig.yaml" in the user's home directory.
 	 * </ol>
 	 */
-	static InputTriggerConfig getInputTriggerConfig()
+	static final InputTriggerConfig getInputTriggerConfig()
 	{
 		InputTriggerConfig conf = null;
 
@@ -301,8 +338,9 @@ public class MainWindow extends JFrame
 		return conf;
 	}
 
-	public static void main( final String[] args ) throws IOException, SpimDataException, InvocationTargetException, InterruptedException
+	public static void main( final String[] args ) throws IOException, SpimDataException, InvocationTargetException, InterruptedException, ExecutionException
 	{
+
 		final String bdvFile = "samples/datasethdf5.xml";
 		final String modelFile = "samples/model_revised.raw";
 		final MamutProject project = new MamutProject( new File( "." ), new File( bdvFile ), new File( modelFile ) );
@@ -311,21 +349,13 @@ public class MainWindow extends JFrame
 
 		System.setProperty( "apple.laf.useScreenMenuBar", "true" );
 
-		final InputTriggerConfig keyconf = getInputTriggerConfig();
-		final MainWindow mw = new MainWindow( keyconf );
-		mw.setDefaultCloseOperation( WindowConstants.EXIT_ON_CLOSE );
-		mw.pack();
+		final MainWindow mw = new MainWindow( getInputTriggerConfig() );
+		mw.open( project );
 		mw.setVisible( true );
 
-		mw.open( project );
-//		mw.proposedProjectFile = new File( "/Users/pietzsch/Desktop/data/TGMM_METTE/project2.xml" );
-//		mw.loadProject( new File( "/Users/pietzsch/Desktop/data/TGMM_METTE/project.xml" ) );
-//		mw.createProject();
-//		mw.loadProject();
 		SwingUtilities.invokeAndWait( () -> {
 			mw.windowManager.createBigDataViewer();
 			mw.windowManager.createTrackScheme();
 		} );
-//		WindowManager.DumpInputConfig.writeToYaml( System.getProperty( "user.home" ) + "/.mastodon/keyconfig.yaml", mw.windowManager );
 	}
 }
