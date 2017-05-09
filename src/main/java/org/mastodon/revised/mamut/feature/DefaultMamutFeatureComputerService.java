@@ -12,6 +12,7 @@ import org.mastodon.graph.algorithm.TopologicalSort;
 import org.mastodon.graph.object.ObjectEdge;
 import org.mastodon.graph.object.ObjectGraph;
 import org.mastodon.graph.object.ObjectVertex;
+import org.mastodon.revised.mamut.ProgressListener;
 import org.mastodon.revised.model.feature.FeatureComputer;
 import org.mastodon.revised.model.feature.FeatureComputerService;
 import org.mastodon.revised.model.mamut.Model;
@@ -19,10 +20,12 @@ import org.scijava.InstantiableException;
 import org.scijava.app.StatusService;
 import org.scijava.log.LogService;
 import org.scijava.plugin.Parameter;
+import org.scijava.plugin.Plugin;
 import org.scijava.plugin.PluginInfo;
 import org.scijava.plugin.PluginService;
 import org.scijava.service.AbstractService;
 
+@Plugin( type = FeatureComputerService.class )
 public class DefaultMamutFeatureComputerService extends AbstractService implements FeatureComputerService< Model >
 {
 
@@ -74,7 +77,7 @@ public class DefaultMamutFeatureComputerService extends AbstractService implemen
 	}
 
 	@Override
-	public boolean compute( final Model model, final Set< String > computerNames )
+	public boolean compute( final Model model, final Set< String > computerNames, final ProgressListener progressListener )
 	{
 		final ObjectGraph< FeatureComputer< ?, ?, Model > > dependencyGraph = getDependencyGraph( computerNames );
 		final TopologicalSort< ObjectVertex< FeatureComputer< ?, ?, Model > >, ObjectEdge< FeatureComputer< ?, ?, Model > > > sorter
@@ -84,7 +87,7 @@ public class DefaultMamutFeatureComputerService extends AbstractService implemen
 		{
 			logService.error( "Could not compute features using  " + computerNames +
 					" as they have a circular dependency." );
-			status.showStatus( "Circular dependency!" );
+			progressListener.showStatus( "Circular dependency!" );
 			return false;
 		}
 
@@ -94,18 +97,18 @@ public class DefaultMamutFeatureComputerService extends AbstractService implemen
 		int progress = 1;
 		for ( final ObjectVertex< FeatureComputer< ?, ?, Model > > v : sorter.get() )
 		{
-			status.showStatus( v.getContent().getFeature().getKey() );
+			progressListener.showStatus( v.getContent().getFeature().getKey() );
 			final FeatureComputer< ?, ?, Model > computer = v.getContent();
 			computer.compute( model );
 			model.getGraphFeatureModel().declareFeature( computer );
 
-			status.showProgress( progress++, computerNames.size() );
+			progressListener.showProgress( progress++, computerNames.size() );
 
 		}
 		
 		final long end = System.currentTimeMillis();
-		status.clearStatus();
-		status.showStatus( String.format( "Done in %.1f s.", ( end - start ) / 1000. ) );
+		progressListener.clearStatus();
+		progressListener.showStatus( String.format( "Done in %.1f s.", ( end - start ) / 1000. ) );
 
 		return true;
 	}
