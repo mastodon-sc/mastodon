@@ -40,7 +40,7 @@ public interface FeatureModel< V, E > extends FeatureKeys
 	 *            the feature key.
 	 * @return the feature, or <code>null</code> if the feature is unknown.
 	 */
-	public Feature< ?, ? > getFeature( final String featureKey );
+	public Feature< ?, ?, ? > getFeature( final String featureKey );
 
 	/**
 	 * Clears this feature and projection model.
