@@ -9,17 +9,16 @@ import org.mastodon.properties.IntPropertyMap;
 import org.mastodon.revised.model.feature.Feature;
 import org.mastodon.revised.model.feature.FeatureProjection;
 import org.mastodon.revised.model.feature.FeatureProjectors;
+import org.mastodon.revised.model.feature.FeatureTarget;
 import org.mastodon.revised.model.mamut.Model;
 import org.mastodon.revised.model.mamut.Spot;
 import org.scijava.plugin.Plugin;
 
 @Plugin( type = SpotFeatureComputer.class, name = "Spot N links" )
-public class SpotNLinksComputer extends SpotFeatureComputer< Feature< Spot, Integer, IntPropertyMap< Spot > >, Model >
+public class SpotNLinksComputer implements SpotFeatureComputer
 {
 
 	private static final String KEY = "Spot N links";
-
-	private Feature< Spot, Integer, IntPropertyMap< Spot > > feature;
 
 	@Override
 	public Set< String > getDependencies()
@@ -28,25 +27,22 @@ public class SpotNLinksComputer extends SpotFeatureComputer< Feature< Spot, Inte
 	}
 
 	@Override
-	public void compute( final Model model )
+	public String getKey()
+	{
+		return KEY;
+	}
+
+	@Override
+	public Feature< Spot, Integer, IntPropertyMap< Spot > > compute( final Model model )
 	{
 		final PoolCollectionWrapper< Spot > vertices = model.getGraph().vertices();
 		final IntPropertyMap< Spot > pm = new IntPropertyMap<>( vertices, -1 );
-		this.feature = new Feature<>( KEY, pm );
 
 		for ( final Spot spot : vertices )
 			pm.set( spot, spot.edges().size() );
-	}
 
-	@Override
-	public Feature< Spot, Integer, IntPropertyMap< Spot > > getFeature()
-	{
+		final Map< String, FeatureProjection< Spot > > projections = Collections.singletonMap( KEY, FeatureProjectors.project( pm ) );
+		final Feature< Spot, Integer, IntPropertyMap< Spot > > feature = new Feature<>( KEY, FeatureTarget.VERTEX, pm, projections );
 		return feature;
-	}
-
-	@Override
-	public Map< String, FeatureProjection< Spot > > getProjections()
-	{
-		return Collections.singletonMap( KEY, FeatureProjectors.project( feature.getPropertyMap() ) );
 	}
 }

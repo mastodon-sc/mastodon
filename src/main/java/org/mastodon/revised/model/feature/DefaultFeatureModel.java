@@ -27,7 +27,7 @@ public class DefaultFeatureModel< V extends Vertex< E >, E extends Edge< V > > i
 
 	private final Map< String, FeatureTarget > projectionTargets;
 
-	private final Map< String, Feature< ?, ?, ? > > feature;
+	private final Map< String, Feature< ?, ?, ? > > features;
 
 	private final Map< FeatureTarget, Map< String, FeatureProjection< ? > > > projections;
 
@@ -41,7 +41,7 @@ public class DefaultFeatureModel< V extends Vertex< E >, E extends Edge< V > > i
 	public DefaultFeatureModel()
 	{
 		featureTargets = new HashMap<>();
-		feature = new HashMap<>();
+		features = new HashMap<>();
 		projections = new EnumMap<>( FeatureTarget.class );
 		projectionTargets = new HashMap<>();
 		featureKeys = new EnumMap<>( FeatureTarget.class );
@@ -49,13 +49,13 @@ public class DefaultFeatureModel< V extends Vertex< E >, E extends Edge< V > > i
 	}
 
 	@Override
-	public void declareFeature( final FeatureComputer< ?, ?, ? > fc )
+	public void declareFeature( final Feature< ?, ?, ? > feature )
 	{
 		// Features.
-		final FeatureTarget target = fc.getTarget();
-		final String featureKey = fc.getFeature().getKey();
+		final FeatureTarget target = feature.getTarget();
+		final String featureKey = feature.getKey();
 		featureTargets.put( featureKey, target );
-		feature.put( featureKey, fc.getFeature() );
+		features.put( featureKey, feature );
 
 		// Feature keys.
 		Set< String > fkeys = featureKeys.get( target );
@@ -73,7 +73,7 @@ public class DefaultFeatureModel< V extends Vertex< E >, E extends Edge< V > > i
 			pmap = new HashMap<>();
 			projections.put( target, pmap );
 		}
-		pmap.putAll( fc.getProjections() );
+		pmap.putAll( feature.getProjections() );
 
 		// Projection keys.
 		Set< String > kset = projectionKeys.get( target );
@@ -82,10 +82,10 @@ public class DefaultFeatureModel< V extends Vertex< E >, E extends Edge< V > > i
 			kset = new HashSet<>();
 			projectionKeys.put( target, kset );
 		}
-		kset.addAll( fc.getProjections().keySet() );
+		kset.addAll( feature.getProjections().keySet() );
 
 		// Projections target.
-		for ( final String projectionKey : fc.getProjections().keySet() )
+		for ( final String projectionKey : feature.getProjections().keySet() )
 			projectionTargets.put( projectionKey, target );
 	}
 
@@ -93,7 +93,7 @@ public class DefaultFeatureModel< V extends Vertex< E >, E extends Edge< V > > i
 	public void clear()
 	{
 		featureTargets.clear();
-		feature.clear();
+		features.clear();
 		projections.clear();
 		projectionTargets.clear();
 		featureKeys.clear();
@@ -133,7 +133,7 @@ public class DefaultFeatureModel< V extends Vertex< E >, E extends Edge< V > > i
 	@Override
 	public Feature< ?, ?, ? > getFeature( final String featureKey )
 	{
-		return feature.get( featureKey );
+		return features.get( featureKey );
 	}
 
 	@SuppressWarnings( "unchecked" )

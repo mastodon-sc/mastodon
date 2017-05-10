@@ -48,11 +48,12 @@ public interface FeatureModel< V, E > extends FeatureKeys
 	public void clear();
 
 	/**
-	 * Registers the feature and the feature projections provided by the
-	 * specified feature computer.
+	 * Registers the feature key and the feature projections provided by the
+	 * specified feature.
 	 * 
-	 * @param fc
-	 *            the feature computer.
+	 * @param feature
+	 *            the feature.
 	 */
-	public void declareFeature( final FeatureComputer< ?, ?, ? > fc );
+	public void declareFeature( final Feature< ?, ?, ? > feature );
+
 }

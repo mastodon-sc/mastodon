@@ -9,6 +9,7 @@ import org.mastodon.properties.AbstractPropertyMap;
 import org.mastodon.properties.PropertyMap;
 import org.mastodon.revised.model.feature.Feature;
 import org.mastodon.revised.model.feature.FeatureProjection;
+import org.mastodon.revised.model.feature.FeatureTarget;
 import org.mastodon.revised.model.mamut.Model;
 import org.mastodon.revised.model.mamut.Spot;
 import org.scijava.plugin.Plugin;
@@ -16,26 +17,10 @@ import org.scijava.plugin.Plugin;
 import net.imglib2.RealLocalizable;
 
 @Plugin( type = SpotFeatureComputer.class, name = "Spot position" )
-public class SpotPositionFeatureComputer
-		extends SpotFeatureComputer< Feature< Spot, RealLocalizable, PropertyMap< Spot, RealLocalizable > >, Model >
+public class SpotPositionFeatureComputer implements SpotFeatureComputer
 {
 
 	private static final String KEY = "Spot position";
-
-	private static final Map< String, FeatureProjection< Spot > > PROJECTIONS;
-	static
-	{
-		final HashMap< String, FeatureProjection< Spot > > map = new HashMap<>();
-		for ( int d = 0; d < 3; d++ )
-		{
-			final String pname = "Spot " + ( char ) ( 'X' + d ) + " position";
-			final SpotPositionProjection projection = new SpotPositionProjection( d );
-			map.put( pname, projection );
-		}
-		PROJECTIONS = Collections.unmodifiableMap( map );
-	}
-
-	private Feature< Spot, RealLocalizable, PropertyMap< Spot, RealLocalizable > > feature;
 
 	@Override
 	public Set< String > getDependencies()
@@ -44,21 +29,27 @@ public class SpotPositionFeatureComputer
 	}
 
 	@Override
-	public Map< String, FeatureProjection< Spot > > getProjections()
+	public String getKey()
 	{
-		return PROJECTIONS;
-	}
-
-
-	@Override
-	public void compute( final Model model )
-	{
-		this.feature = new IdentityFeature( KEY, model.getGraph().vertices().size() );
+		return KEY;
 	}
 
 	@Override
-	public Feature< Spot, RealLocalizable, PropertyMap< Spot, RealLocalizable > > getFeature()
+	public Feature< Spot, RealLocalizable, PropertyMap< Spot, RealLocalizable > > compute( final Model model )
 	{
+		final HashMap< String, FeatureProjection< Spot > > map = new HashMap<>();
+		for ( int d = 0; d < 3; d++ )
+		{
+			final String pname = "Spot " + ( char ) ( 'X' + d ) + " position";
+			final SpotPositionProjection projection = new SpotPositionProjection( d );
+			map.put( pname, projection );
+		}
+		final Map< String, FeatureProjection< Spot > > projections = Collections.unmodifiableMap( map );
+		final Feature< Spot, RealLocalizable, PropertyMap< Spot, RealLocalizable > > feature =
+				new Feature< Spot, RealLocalizable, PropertyMap< Spot, RealLocalizable > >(
+						KEY, FeatureTarget.VERTEX,
+						new RealLocalizablePropertyMap< Spot >( model.getGraph().vertices().size() ),
+						projections );
 		return feature;
 	}
 
@@ -84,70 +75,65 @@ public class SpotPositionFeatureComputer
 			return obj.getDoublePosition( d );
 		}
 	}
-
-	private final static class IdentityFeature extends Feature< Spot, RealLocalizable, PropertyMap< Spot, RealLocalizable > >
+	
+	/**
+	 * Morphs a {@link RealLocalizable} position as a read-only PropertyMap.
+	 * 
+	 * @author Jean-Yves Tinevez
+	 *
+	 */
+	private static final class RealLocalizablePropertyMap< K extends RealLocalizable > extends AbstractPropertyMap< K, RealLocalizable >
 	{
 
 		private final int size;
 
-		public IdentityFeature( final String key, final int size )
+		public RealLocalizablePropertyMap( final int size )
 		{
-			super( key, null );
 			this.size = size;
 		}
 
 		@Override
-		public PropertyMap< Spot, RealLocalizable > getPropertyMap()
+		public RealLocalizable set( final K key, final RealLocalizable value )
 		{
-			return new AbstractPropertyMap< Spot, RealLocalizable >()
-			{
+			throw new UnsupportedOperationException( "Cannot set a read-only property map." );
+		}
 
-				@Override
-				public RealLocalizable set( final Spot key, final RealLocalizable value )
-				{
-					// Ignored
-					return null;
-				}
+		@Override
+		public RealLocalizable remove( final K key )
+		{
+			throw new UnsupportedOperationException( "Cannot remove in a read-only property map." );
+		}
 
-				@Override
-				public RealLocalizable remove( final Spot key )
-				{
-					// Ignored.
-					return null;
-				}
+		@Override
+		public void beforeDeleteObject( final K key )
+		{}
 
-				@Override
-				public void beforeDeleteObject( final Spot key )
-				{}
+		@Override
+		public void beforeClearPool()
+		{}
 
-				@Override
-				public void beforeClearPool()
-				{}
+		@Override
+		public void clear()
+		{
+			throw new UnsupportedOperationException( "Cannot clear a read-only property map." );
+		}
 
-				@Override
-				public void clear()
-				{
-					throw new UnsupportedOperationException();
-				}
+		@Override
+		public RealLocalizable get( final K key )
+		{
+			return key;
+		}
 
-				@Override
-				public RealLocalizable get( final Spot key )
-				{
-					return key;
-				}
+		@Override
+		public boolean isSet( final K key )
+		{
+			return true;
+		}
 
-				@Override
-				public boolean isSet( final Spot key )
-				{
-					return true;
-				}
-
-				@Override
-				public int size()
-				{
-					return size;
-				}
-			};
+		@Override
+		public int size()
+		{
+			return size;
 		}
 
 	}

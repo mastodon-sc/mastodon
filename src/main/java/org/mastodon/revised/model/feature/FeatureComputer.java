@@ -1,6 +1,5 @@
 package org.mastodon.revised.model.feature;
 
-import java.util.Map;
 import java.util.Set;
 
 import org.mastodon.revised.model.AbstractModel;
@@ -11,21 +10,11 @@ import org.scijava.plugin.SciJavaPlugin;
  * <p>
  * Concrete implementations must be stateless, without side effects. A computer
  * must generate a single feature, however a feature does not have to be scalar.
- * <p>
- * Since many visualization tools in Mastodon deal with scalar, real feature
- * values, the computer must also be able to return a set of feature
- * projections, that translate or project the feature on several real scalar
- * values. Since the computer defines what the feature it compute is, it also
- * must be able to define the meaningful projections for the feature.
  *
- * @param <K>
- *            the feature type.
- * @param <O>
- *            the object on which the feature is defined (vertex, edge, ...).
  * @param <AM>
  *            the type of the model the feature is calculated on and stored in.
  */
-public interface FeatureComputer< K extends Feature< O, ?, ? >, O, AM extends AbstractModel< ?, ?, ? > > extends SciJavaPlugin
+public interface FeatureComputer< AM extends AbstractModel< ?, ?, ? > > extends SciJavaPlugin
 {
 
 	/**
@@ -47,30 +36,12 @@ public interface FeatureComputer< K extends Feature< O, ?, ? >, O, AM extends Ab
 	 * @param model
 	 *            the model to retrieve objects from.
 	 */
-	public void compute( final AM model );
+	public Feature< ?, ?, ? > compute( final AM model );
 
 	/**
-	 * Returns the feature this computer calculate.
+	 * Returns the string key of the feature calculated by this computer.
 	 * 
-	 * @return the feature.
+	 * @return the feature key.
 	 */
-	public K getFeature();
-
-	/**
-	 * Returns the feature projections for the caluculated feature.
-	 * <p>
-	 * They are returned as a map from projection keys to actual projections.
-	 * 
-	 * @return the map of feature projections.
-	 */
-	public Map< String, FeatureProjection< O > > getProjections();
-
-	/**
-	 * Returns the object the calculated feature is defined on, as a
-	 * {@link FeatureTarget}.
-	 * 
-	 * @return the feature target.
-	 */
-	public FeatureTarget getTarget();
-
+	public String getKey();
 }
