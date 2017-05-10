@@ -8,6 +8,7 @@ import org.mastodon.properties.DoublePropertyMap;
 import org.mastodon.revised.model.feature.Feature;
 import org.mastodon.revised.model.feature.FeatureProjection;
 import org.mastodon.revised.model.feature.FeatureProjectors;
+import org.mastodon.revised.model.feature.FeatureTarget;
 import org.mastodon.revised.model.mamut.Link;
 import org.mastodon.revised.model.mamut.Model;
 import org.mastodon.revised.model.mamut.ModelGraph;
@@ -15,12 +16,10 @@ import org.mastodon.revised.model.mamut.Spot;
 import org.scijava.plugin.Plugin;
 
 @Plugin( type = LinkFeatureComputer.class, name = "Link velocity" )
-public class LinkVelocityFeatureComputer extends LinkFeatureComputer< Feature< Link, Double, DoublePropertyMap< Link > >, Model >
+public class LinkVelocityFeatureComputer implements LinkFeatureComputer
 {
 
 	public static final String KEY = "Link velocity";
-
-	private Feature< Link, Double, DoublePropertyMap< Link > > feature;
 
 	@Override
 	public Set< String > getDependencies()
@@ -29,11 +28,16 @@ public class LinkVelocityFeatureComputer extends LinkFeatureComputer< Feature< L
 	}
 
 	@Override
-	public void compute( final Model model )
+	public String getKey()
+	{
+		return KEY;
+	}
+
+	@Override
+	public Feature< Link, Double, DoublePropertyMap< Link > > compute( final Model model )
 	{
 		final ModelGraph graph = model.getGraph();
 		final DoublePropertyMap< Link > pm = new DoublePropertyMap<>( graph.edges(), Double.NaN );
-		this.feature = new Feature<>( KEY, pm );
 
 		final Spot ref1 = graph.vertexRef();
 		final Spot ref2 = graph.vertexRef();
@@ -57,17 +61,9 @@ public class LinkVelocityFeatureComputer extends LinkFeatureComputer< Feature< L
 
 		graph.releaseRef( ref1 );
 		graph.releaseRef( ref2 );
-	}
 
-	@Override
-	public Feature< Link, Double, DoublePropertyMap< Link > > getFeature()
-	{
+		final Map< String, FeatureProjection< Link > > projections = Collections.singletonMap( KEY, FeatureProjectors.project( pm ) );
+		final Feature< Link, Double, DoublePropertyMap< Link > > feature = new Feature<>( KEY, FeatureTarget.EDGE, pm, projections );
 		return feature;
-	}
-
-	@Override
-	public Map< String, FeatureProjection< Link > > getProjections()
-	{
-		return Collections.singletonMap( KEY, FeatureProjectors.project( feature.getPropertyMap() ) );
 	}
 }
