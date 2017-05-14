@@ -126,7 +126,8 @@ public class ScreenEntitiesInterpolator
 					e.getTrackSchemeEdgeId(),
 					sourceIndex,
 					targetIndex,
-					endSelected ) );
+					endSelected,
+					e.getColor() ) );
 			if ( idToStartEdge.get( e.getTrackSchemeEdgeId(), eStart ) != null )
 			{
 				// changing selection state?
@@ -189,6 +190,7 @@ public class ScreenEntitiesInterpolator
 						: ( endSelected
 								? SELECTING
 								: DESELECTING ) );
+		vCurrent.setColor( vEnd.getColor() );
 		vCurrent.setInterpolationCompletionRatio( ratio );
 		vEnd.setInterpolatedScreenVertexIndex( vCurrent.getInternalPoolIndex() );
 	}
@@ -211,6 +213,7 @@ public class ScreenEntitiesInterpolator
 		vCurrent.setY( startY );
 		vCurrent.setTransition( DISAPPEAR );
 		vCurrent.setInterpolationCompletionRatio( ratio );
+		vCurrent.setColor( vStart.getColor() );
 	}
 
 	private void appear( final ScreenVertex vEnd, final double ratio, final ScreenVertex vCurrent )
@@ -224,6 +227,7 @@ public class ScreenEntitiesInterpolator
 		vCurrent.setY( vEnd.getY() );
 		vCurrent.setTransition( APPEAR );
 		vCurrent.setInterpolationCompletionRatio( ratio );
+		vCurrent.setColor( vEnd.getColor() );
 		vEnd.setInterpolatedScreenVertexIndex( vCurrent.getInternalPoolIndex() );
 	}
 }

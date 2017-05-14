@@ -376,7 +376,7 @@ public class LineageTreeLayout
 						final double x = ( v1.getLayoutX() - minX ) * xScale + decorationsOffsetX;
 						final boolean selected = selection.isSelected( v1 );
 						final boolean ghost = v1.isGhost();
-						screenVertexPool.create( sv ).init( id, label, x, y, selected, ghost );
+						screenVertexPool.create( sv ).init( id, label, x, y, selected, ghost, 0 );
 						screenVertices.add( sv );
 
 						minVertexScreenDist = Math.min( minVertexScreenDist, x - prevX );
@@ -393,7 +393,7 @@ public class LineageTreeLayout
 								final int sourceScreenVertexIndex = v2si;
 								final int targetScreenVertexIndex = v1si;
 								final boolean eselected = selection.isSelected( edge );
-								screenEdgePool.create( se ).init( eid, sourceScreenVertexIndex, targetScreenVertexIndex, eselected );
+								screenEdgePool.create( se ).init( eid, sourceScreenVertexIndex, targetScreenVertexIndex, eselected, 0 );
 								screenEdges.add( se );
 								final int sei = se.getInternalPoolIndex();
 								edge.setScreenEdgeIndex( sei );

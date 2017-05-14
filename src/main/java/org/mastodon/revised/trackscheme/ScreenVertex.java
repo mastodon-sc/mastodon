@@ -13,6 +13,7 @@ import org.mastodon.pool.attributes.BooleanAttribute;
 import org.mastodon.pool.attributes.ByteAttribute;
 import org.mastodon.pool.attributes.DoubleAttribute;
 import org.mastodon.pool.attributes.IndexAttribute;
+import org.mastodon.pool.attributes.IntAttribute;
 import org.mastodon.properties.ObjPropertyMap;
 import org.mastodon.revised.trackscheme.ScreenVertex.ScreenVertexPool;
 
@@ -34,6 +35,7 @@ public class ScreenVertex extends PoolObject< ScreenVertex, ScreenVertexPool, By
 		final ByteField transition = byteField();
 		final IndexField ipScreenVertex = indexField();
 		final DoubleField ipRatio = doubleField();
+		final IntField color = intField();
 	}
 
 	public static ScreenVertexLayout layout = new ScreenVertexLayout();
@@ -52,6 +54,7 @@ public class ScreenVertex extends PoolObject< ScreenVertex, ScreenVertexPool, By
 		final IndexAttribute< ScreenVertex > ipScreenVertex = new IndexAttribute<>( layout.ipScreenVertex, this );
 		final DoubleAttribute< ScreenVertex > ipRatio = new DoubleAttribute<>( layout.ipRatio, this );
 		final ObjPropertyMap< ScreenVertex, String > label = new ObjPropertyMap<>( this );
+		final IntAttribute< ScreenVertex > color = new IntAttribute<>( layout.color, this );
 
 		public ScreenVertexPool( final int initialCapacity, final RefPool< TrackSchemeVertex > trackSchemeVertexPool )
 		{
@@ -78,10 +81,6 @@ public class ScreenVertex extends PoolObject< ScreenVertex, ScreenVertexPool, By
 		}
 	}
 
-	private final TrackSchemeVertex vref;
-
-	private final RefPool< TrackSchemeVertex > trackSchemeVertexPool;
-
 	public static enum Transition
 	{
 		NONE( 0 ),
@@ -106,8 +105,6 @@ public class ScreenVertex extends PoolObject< ScreenVertex, ScreenVertexPool, By
 	protected ScreenVertex( final ScreenVertexPool pool )
 	{
 		super( pool );
-		this.trackSchemeVertexPool = pool.trackSchemeVertexPool;
-		this.vref = trackSchemeVertexPool.createRef();
 	}
 
 	public ScreenVertex init(
@@ -116,7 +113,8 @@ public class ScreenVertex extends PoolObject< ScreenVertex, ScreenVertexPool, By
 			final double x,
 			final double y,
 			final boolean selected,
-			final boolean ghost )
+			final boolean ghost,
+			final int color )
 	{
 		setTrackSchemeVertexId( id );
 		setLabel( label );
@@ -125,6 +123,7 @@ public class ScreenVertex extends PoolObject< ScreenVertex, ScreenVertexPool, By
 		setSelected( selected );
 		setGhost( ghost );
 		setTransition( NONE );
+		setColor( color );
 		return this;
 	}
 
@@ -292,6 +291,27 @@ public class ScreenVertex extends PoolObject< ScreenVertex, ScreenVertexPool, By
 		pool.ipRatio.setQuiet( this, ratio );
 	}
 
+	/**
+	 * Returns the color of this vertex (ARGB bytes packed into {@code int}).
+	 *
+	 * @return the color.
+	 */
+	public int getColor()
+	{
+		return pool.color.get( this );
+	}
+
+	/**
+	 * Set the color of this vertex (ARGB bytes packed into {@code int}).
+	 *
+	 * @param color
+	 *            the color as ARGB bytes packed into {@code int}
+	 */
+	protected void setColor( final int color )
+	{
+		pool.color.setQuiet( this, color );
+	}
+
 	@Override
 	protected void setToUninitializedState()
 	{}
@@ -318,6 +338,7 @@ public class ScreenVertex extends PoolObject< ScreenVertex, ScreenVertexPool, By
 		setTransition( v.getTransition() );
 		setInterpolatedScreenVertexIndex( v.getInterpolatedScreenVertexIndex() );
 		setInterpolationCompletionRatio( v.getInterpolationCompletionRatio() );
+		setColor( v.getColor() );
 		return this;
 	}
 
