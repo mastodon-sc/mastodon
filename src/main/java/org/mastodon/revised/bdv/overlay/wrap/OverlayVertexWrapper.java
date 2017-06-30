@@ -1,7 +1,5 @@
 package org.mastodon.revised.bdv.overlay.wrap;
 
-import java.util.Iterator;
-
 import org.mastodon.graph.Edge;
 import org.mastodon.graph.Edges;
 import org.mastodon.graph.Vertex;
@@ -21,11 +19,11 @@ public class OverlayVertexWrapper< V extends Vertex< E >, E extends Edge< V > >
 
 	V wv;
 
-	private final EdgesWrapper incomingEdges;
+	private final OverlayGraphWrapper< V, E >.EdgesWrapper incomingEdges;
 
-	private final EdgesWrapper outgoingEdges;
+	private final OverlayGraphWrapper< V, E >.EdgesWrapper outgoingEdges;
 
-	private final EdgesWrapper edges;
+	private final OverlayGraphWrapper< V, E >.EdgesWrapper edges;
 
 	private final OverlayProperties< V, E > overlayProperties;
 
@@ -33,9 +31,9 @@ public class OverlayVertexWrapper< V extends Vertex< E >, E extends Edge< V > >
 	{
 		this.wrapper = wrapper;
 		ref = wrapper.wrappedGraph.vertexRef();
-		incomingEdges = new EdgesWrapper();
-		outgoingEdges = new EdgesWrapper();
-		edges = new EdgesWrapper();
+		incomingEdges = wrapper.new EdgesWrapper();
+		outgoingEdges = wrapper.new EdgesWrapper();
+		edges = wrapper.new EdgesWrapper();
 		overlayProperties = wrapper.overlayProperties;
 	}
 
@@ -153,59 +151,6 @@ public class OverlayVertexWrapper< V extends Vertex< E >, E extends Edge< V > >
 	static < V extends Vertex< ? > > V wrappedOrNull( final OverlayVertexWrapper< V, ? > wrapper )
 	{
 		return wrapper == null ? null : wrapper.wv;
-	}
-
-	private class EdgesWrapper implements Edges< OverlayEdgeWrapper< V, E > >
-	{
-		private Edges< E > wrappedEdges;
-
-		private OverlayEdgeIteratorWrapper< V, E > iterator = null;
-
-		void wrap( final Edges< E > edges )
-		{
-			wrappedEdges = edges;
-		}
-
-		@Override
-		public Iterator< OverlayEdgeWrapper< V, E > > iterator()
-		{
-			if ( iterator == null )
-				iterator = new OverlayEdgeIteratorWrapper<>( wrapper, wrapper.edgeRef(), wrappedEdges.iterator() );
-			else
-				iterator.wrap( wrappedEdges.iterator() );
-			return iterator;
-		}
-
-		@Override
-		public int size()
-		{
-			return wrappedEdges.size();
-		}
-
-		@Override
-		public boolean isEmpty()
-		{
-			return wrappedEdges.isEmpty();
-		}
-
-		@Override
-		public OverlayEdgeWrapper< V, E > get( final int i )
-		{
-			return get( i, wrapper.edgeRef() );
-		}
-
-		@Override
-		public OverlayEdgeWrapper< V, E > get( final int i, final OverlayEdgeWrapper< V, E > edge )
-		{
-			edge.we = wrappedEdges.get( i, edge.ref );
-			return edge;
-		}
-
-		@Override
-		public Iterator< OverlayEdgeWrapper< V, E > > safe_iterator()
-		{
-			return new OverlayEdgeIteratorWrapper<>( wrapper, wrapper.edgeRef(), wrappedEdges.iterator() );
-		}
 	}
 
 	// === RealLocalizable ===

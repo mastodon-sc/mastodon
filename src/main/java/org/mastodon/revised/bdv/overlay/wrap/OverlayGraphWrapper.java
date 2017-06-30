@@ -7,6 +7,7 @@ import org.mastodon.RefPool;
 import org.mastodon.collection.RefCollection;
 import org.mastodon.collection.util.AbstractRefPoolCollectionWrapper;
 import org.mastodon.graph.Edge;
+import org.mastodon.graph.Edges;
 import org.mastodon.graph.GraphIdBimap;
 import org.mastodon.graph.ReadOnlyGraph;
 import org.mastodon.graph.Vertex;
@@ -91,6 +92,23 @@ public class OverlayGraphWrapper< V extends Vertex< E >, E extends Edge< V > > i
 		edge.we = wrappedGraph.getEdge( source.wv, target.wv, edge.ref );
 		return edge.orNull();
 	}
+
+
+	@Override
+	public Edges< OverlayEdgeWrapper< V, E > > getEdges( final OverlayVertexWrapper< V, E > source, final OverlayVertexWrapper< V, E > target )
+	{
+		return getEdges( source, target, vertexRef() );
+	}
+
+	@Override
+	public Edges< OverlayEdgeWrapper< V, E > > getEdges( final OverlayVertexWrapper< V, E > source, final OverlayVertexWrapper< V, E > target, final OverlayVertexWrapper< V, E > ref )
+	{
+		final Edges< E > wes = wrappedGraph.getEdges( source.wv, target.wv, ref.wv );
+		final EdgesWrapper edgesWrapper = new EdgesWrapper();
+		edgesWrapper.wrap( wes );
+		return edgesWrapper;
+	}
+
 
 	@Override
 	public RefCollection< OverlayVertexWrapper< V, E > > vertices()
@@ -255,5 +273,64 @@ public class OverlayGraphWrapper< V extends Vertex< E >, E extends Edge< V > > i
 			return new OverlayEdgeIteratorWrapper<>( OverlayGraphWrapper.this, OverlayGraphWrapper.this.edgeRef(), wrappedGraph.edges().iterator() );
 		}
 	};
+
+	class EdgesWrapper implements Edges< OverlayEdgeWrapper< V, E > >
+	{
+		private Edges< E > wrappedEdges;
+
+		private OverlayEdgeIteratorWrapper< V, E > iterator = null;
+
+		void wrap( final Edges< E > edges )
+		{
+			wrappedEdges = edges;
+		}
+
+		@Override
+		public Iterator< OverlayEdgeWrapper< V, E > > iterator()
+		{
+			if ( iterator == null )
+				iterator = new OverlayEdgeIteratorWrapper<>(
+						OverlayGraphWrapper.this,
+						OverlayGraphWrapper.this.edgeRef(),
+						wrappedEdges.iterator() );
+			else
+				iterator.wrap( wrappedEdges.iterator() );
+			return iterator;
+		}
+
+		@Override
+		public int size()
+		{
+			return wrappedEdges.size();
+		}
+
+		@Override
+		public boolean isEmpty()
+		{
+			return wrappedEdges.isEmpty();
+		}
+
+		@Override
+		public OverlayEdgeWrapper< V, E > get( final int i )
+		{
+			return get( i, OverlayGraphWrapper.this.edgeRef() );
+		}
+
+		@Override
+		public OverlayEdgeWrapper< V, E > get( final int i, final OverlayEdgeWrapper< V, E > edge )
+		{
+			edge.we = wrappedEdges.get( i, edge.ref );
+			return edge;
+		}
+
+		@Override
+		public Iterator< OverlayEdgeWrapper< V, E > > safe_iterator()
+		{
+			return new OverlayEdgeIteratorWrapper<>(
+					OverlayGraphWrapper.this,
+					OverlayGraphWrapper.this.edgeRef(),
+					wrappedEdges.iterator() );
+		}
+	}
 
 }
