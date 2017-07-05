@@ -296,10 +296,20 @@ public class WindowManager
 
 		final ListenableReadOnlyGraph< Spot, Link > graph = model.getGraph();
 		final GraphIdBimap< Spot, Link > idmap = model.getGraphIdBimap();
-		selection = new SelectionImp<>( graph, idmap );
-		highlightModel = new HighlightModelImp<>( idmap );
+
+		final SelectionImp< Spot, Link > selectionImp = new SelectionImp<>( graph, idmap );
+		graph.addGraphListener( selectionImp );
+		selection = selectionImp;
+
+		final HighlightModelImp< Spot, Link > highlightModelImp = new HighlightModelImp<>( idmap );
+		graph.addGraphListener( highlightModelImp );
+		highlightModel = highlightModelImp;
+
+		final FocusModelImp< Spot, Link > focusModelImp = new FocusModelImp<>( idmap );
+		graph.addGraphListener( focusModelImp );
+		focusModel = focusModelImp;
+
 		radiusStats = new BoundingSphereRadiusStatistics( model );
-		focusModel = new FocusModelImp<>( idmap );
 
 		minTimepoint = 0;
 		maxTimepoint = sharedBdvData.getNumTimepoints() - 1;
