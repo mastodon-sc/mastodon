@@ -248,11 +248,9 @@ public abstract class AbstractTrackSchemeOverlay implements OverlayRenderer, Off
 			vertices.releaseRef( vs );
 			vertices.releaseRef( vt );
 
-			if ( i < 0 )
-				return null;
-
-			graph.getEdgePool().getObject( i, ref );
-			return ref;
+			return ( i >= 0 )
+					? graph.getEdgePool().getObjectIfExists( i, ref )
+					: null;
 		}
 	}
 
@@ -300,13 +298,9 @@ public abstract class AbstractTrackSchemeOverlay implements OverlayRenderer, Off
 				}
 			}
 
-			if ( iBest >= 0 )
-			{
-				graph.getVertexPool().getObject( iBest, ref );
-				return ref;
-			}
-
-			return null;
+			return ( iBest >= 0 )
+					? graph.getVertexPool().getObjectIfExists( iBest, ref )
+					: null;
 		}
 	}
 
