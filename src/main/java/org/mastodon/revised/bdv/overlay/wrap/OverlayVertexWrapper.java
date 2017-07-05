@@ -25,7 +25,7 @@ public class OverlayVertexWrapper< V extends Vertex< E >, E extends Edge< V > >
 
 	private final EdgesWrapper outgoingEdges;
 
-	private final EdgesWrapper edges;
+	final EdgesWrapper edges;
 
 	private final OverlayProperties< V, E > overlayProperties;
 
@@ -155,7 +155,7 @@ public class OverlayVertexWrapper< V extends Vertex< E >, E extends Edge< V > >
 		return wrapper == null ? null : wrapper.wv;
 	}
 
-	private class EdgesWrapper implements Edges< OverlayEdgeWrapper< V, E > >
+	class EdgesWrapper implements Edges< OverlayEdgeWrapper< V, E > >
 	{
 		private Edges< E > wrappedEdges;
 

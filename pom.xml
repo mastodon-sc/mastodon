@@ -34,17 +34,17 @@
 		<dependency>
 			<groupId>org.mastodon</groupId>
 			<artifactId>mastodon-collection</artifactId>
-			<version>1.0.0-beta-4-SNAPSHOT</version>
+			<version>1.0.0-beta-6</version>
 		</dependency>
 		<dependency>
 			<groupId>org.mastodon</groupId>
 			<artifactId>mastodon-graph</artifactId>
-			<version>1.0.0-beta-3-SNAPSHOT</version>
+			<version>1.0.0-beta-4</version>
 		</dependency>
 		<dependency>
 			<groupId>sc.fiji</groupId>
 			<artifactId>bigdataviewer-core</artifactId>
-			<version>4.1.1-SNAPSHOT</version>
+			<version>4.1.1</version>
 		</dependency>
 		<dependency>
 			<groupId>org.scijava</groupId>

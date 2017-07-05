@@ -36,6 +36,7 @@ import org.jdom2.JDOMException;
 import org.jdom2.input.SAXBuilder;
 import org.mastodon.collection.IntRefMap;
 import org.mastodon.collection.RefCollections;
+import org.mastodon.collection.RefMaps;
 import org.mastodon.properties.DoublePropertyMap;
 import org.mastodon.properties.IntPropertyMap;
 import org.mastodon.revised.model.mamut.Link;
@@ -172,7 +173,7 @@ public class TrackMateImporter
 			final double[] pos = new double[ 3 ];
 
 			// Map spot ID -> Vertex
-			final IntRefMap< Spot > idToSpotIDmap = RefCollections.createIntRefMap( graph.vertices(), -1 );
+			final IntRefMap< Spot > idToSpotIDmap = RefMaps.createIntRefMap( graph.vertices(), -1 );
 
 			/*
 			 * Import spots.

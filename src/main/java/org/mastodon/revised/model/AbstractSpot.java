@@ -1,7 +1,7 @@
 package org.mastodon.revised.model;
 
-import org.mastodon.collection.util.DelegateRealLocalizable;
-import org.mastodon.collection.util.DelegateRealPositionable;
+import org.mastodon.util.DelegateRealLocalizable;
+import org.mastodon.util.DelegateRealPositionable;
 import org.mastodon.graph.ref.AbstractListenableEdge;
 import org.mastodon.graph.ref.AbstractListenableVertex;
 import org.mastodon.pool.ByteMappedElement;

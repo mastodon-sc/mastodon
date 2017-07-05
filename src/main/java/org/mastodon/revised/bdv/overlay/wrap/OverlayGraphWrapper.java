@@ -7,6 +7,7 @@ import org.mastodon.RefPool;
 import org.mastodon.collection.RefCollection;
 import org.mastodon.collection.util.AbstractRefPoolCollectionWrapper;
 import org.mastodon.graph.Edge;
+import org.mastodon.graph.Edges;
 import org.mastodon.graph.GraphIdBimap;
 import org.mastodon.graph.ReadOnlyGraph;
 import org.mastodon.graph.Vertex;
@@ -90,6 +91,18 @@ public class OverlayGraphWrapper< V extends Vertex< E >, E extends Edge< V > > i
 	{
 		edge.we = wrappedGraph.getEdge( source.wv, target.wv, edge.ref );
 		return edge.orNull();
+	}
+
+	@Override public Edges< OverlayEdgeWrapper< V, E > > getEdges( final OverlayVertexWrapper< V, E > source, final OverlayVertexWrapper< V, E > target )
+	{
+		return getEdges( source, target, vertexRef() );
+	}
+
+	@Override public Edges< OverlayEdgeWrapper< V, E > > getEdges( final OverlayVertexWrapper< V, E > source, final OverlayVertexWrapper< V, E > target, final OverlayVertexWrapper< V, E > ref )
+	{
+		final Edges< E > wes = wrappedGraph.getEdges( source.wv, target.wv, ref.wv );
+		ref.edges.wrap( wes );
+		return ref.edges;
 	}
 
 	@Override
@@ -176,6 +189,12 @@ public class OverlayGraphWrapper< V extends Vertex< E >, E extends Edge< V > > i
 			return v;
 		}
 
+		@Override
+		public OverlayVertexWrapper< V, E > getObjectIfExists( final int index, final OverlayVertexWrapper< V, E > v )
+		{
+			v.wv = idmap.getVertexIfExists( index, v.ref );
+			return v.wv == null ? null : v;
+		}
 
 		@Override
 		public int getId( final OverlayVertexWrapper< V, E > v )
@@ -225,6 +244,13 @@ public class OverlayGraphWrapper< V extends Vertex< E >, E extends Edge< V > > i
 		{
 			e.we = idmap.getEdge( index, e.ref );
 			return e;
+		}
+
+		@Override
+		public OverlayEdgeWrapper< V, E > getObjectIfExists( final int index, final OverlayEdgeWrapper< V, E > e )
+		{
+			e.we = idmap.getEdgeIfExists( index, e.ref );
+			return e.we == null ? null : e;
 		}
 
 		@Override

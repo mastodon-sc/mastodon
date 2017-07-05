@@ -76,7 +76,6 @@ public class EdgeFeatureCalculatorExample
 
 			linkCollector.setTraversalListener( new SearchListener< Spot, Link, DepthFirstSearch< Spot, Link > >()
 			{
-
 				@Override
 				public void processVertexLate( final Spot vertex, final DepthFirstSearch< Spot, Link > search )
 				{}
@@ -92,6 +91,9 @@ public class EdgeFeatureCalculatorExample
 					dr.add( tmp );
 					n.inc();
 				}
+
+				@Override public void crossComponent( final Spot from, final Spot to, final DepthFirstSearch< Spot, Link > search )
+				{}
 			} );
 
 			linkCollector.start( root );
