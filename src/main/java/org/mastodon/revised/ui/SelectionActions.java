@@ -4,7 +4,6 @@
 package org.mastodon.revised.ui;
 
 import org.mastodon.collection.RefCollections;
-import org.mastodon.collection.RefList;
 import org.mastodon.collection.RefSet;
 import org.mastodon.graph.Edge;
 import org.mastodon.graph.GraphChangeNotifier;
@@ -32,6 +31,18 @@ public class SelectionActions< V extends Vertex< E >, E extends Edge< V > >
 
 	private static final String[] DELETE_SELECTION_KEYS = new String[] { "shift DELETE" };
 
+	private static final String SELECT_WHOLE_TRACK = "select whole track";
+
+	private static final String SELECT_WHOLE_TRACK_KEYS = "shift SPACE";
+
+	private static final String SELECT_TRACK_DOWNWARD = "select track downward";
+
+	private static final String SELECT_TRACK_DOWNWARD_KEYS = "shift PAGE_DOWN";
+
+	private static final String SELECT_TRACK_UPWARD = "select track upward";
+
+	private static final String SELECT_TRACK_UPWARD_KEYS = "shift PAGE_UP";
+
 	public static < V extends Vertex< E >, E extends Edge< V > > void installActionBindings(
 			final InputActionBindings inputActionBindings,
 			final InputTriggerConfig config,
@@ -44,6 +55,9 @@ public class SelectionActions< V extends Vertex< E >, E extends Edge< V > >
 		final SelectionActions< V, E > sa = new SelectionActions<>( config, keyConfigContexts, graph, notify, selection, undo );
 
 		sa.runnableAction( sa.getDeleteSelectionAction(), DELETE_SELECTION, DELETE_SELECTION_KEYS );
+		sa.runnableAction( sa.getSelectWholeTrackAction( true ), SELECT_WHOLE_TRACK, SELECT_WHOLE_TRACK_KEYS );
+		sa.runnableAction( sa.getSelectTrackDownardAction( true ), SELECT_TRACK_DOWNWARD, SELECT_TRACK_DOWNWARD_KEYS );
+		sa.runnableAction( sa.getSelectTrackUpwardAction( true ), SELECT_TRACK_UPWARD, SELECT_TRACK_UPWARD_KEYS );
 
 		sa.install( inputActionBindings, "selection" );
 	}
@@ -75,17 +89,17 @@ public class SelectionActions< V extends Vertex< E >, E extends Edge< V > >
 		deleteSelectionAction = new DeleteSelectionAction();
 	}
 
-	public Runnable getSelectWholeTrackAction(final boolean clear)
+	private Runnable getSelectWholeTrackAction( final boolean clear )
 	{
 		return new TrackSelectionAction( SearchDirection.UNDIRECTED, clear );
 	}
 
-	public Runnable getSelectTrackDownardAction( final boolean clear )
+	private Runnable getSelectTrackDownardAction( final boolean clear )
 	{
 		return new TrackSelectionAction( SearchDirection.DIRECTED, clear );
 	}
 
-	public Runnable getSelectTrackUpwardAction( final boolean clear )
+	private Runnable getSelectTrackUpwardAction( final boolean clear )
 	{
 		return new TrackSelectionAction( SearchDirection.REVERSED, clear );
 	}
@@ -133,13 +147,22 @@ public class SelectionActions< V extends Vertex< E >, E extends Edge< V > >
 		public void run()
 		{
 			selection.pauseListeners();
-			final RefSet< V > vertices = selection.getSelectedVertices();
+			final RefSet< V > vertices = RefCollections.createRefSet( graph.vertices() );
+			vertices.addAll( selection.getSelectedVertices() );
+			final V ref = graph.vertexRef();
+			for ( final E e : selection.getSelectedEdges() )
+			{
+				vertices.add( e.getSource( ref ) );
+				vertices.add( e.getTarget( ref ) );
+			}
+			graph.releaseRef( ref );
+
 			if ( clear )
 				selection.clearSelection();
 
 			// Prepare the iterator.
-			final RefList< V > vList = RefCollections.createRefList( graph.vertices() );
-			final RefList< E > eList = RefCollections.createRefList( graph.edges() );
+			final RefSet< V > vSet = RefCollections.createRefSet( graph.vertices() );
+			final RefSet< E > eSet = RefCollections.createRefSet( graph.edges() );
 			final DepthFirstSearch< V, E > search = new DepthFirstSearch<>( graph, directivity );
 			search.setTraversalListener( new SearchListener< V, E, DepthFirstSearch< V, E > >()
 			{
@@ -150,31 +173,32 @@ public class SelectionActions< V extends Vertex< E >, E extends Edge< V > >
 				@Override
 				public void processVertexEarly( final V vertex, final DepthFirstSearch< V, E > search )
 				{
-					vList.add( vertex );
+					vSet.add( vertex );
 				}
 
 				@Override
 				public void processEdge( final E edge, final V from, final V to, final DepthFirstSearch< V, E > search )
 				{
-					eList.add( edge );
+					eSet.add( edge );
 				}
 
-				@Override public void crossComponent( final V from, final V to, final DepthFirstSearch< V, E > search )
+				@Override
+				public void crossComponent( final V from, final V to, final DepthFirstSearch< V, E > search )
 				{}
 			} );
 
 			// Iterate from all vertices that were in the selection.
 			for ( final V v : vertices )
+			{
+				if ( vSet.contains( v ) )
+					continue;
+
 				search.start( v );
+			}
 
 			// Select iterated stuff.
-			selection.setVerticesSelected( vList, true );
-			selection.setEdgesSelected( eList, true );
-
-
-			// TODO: the following seems wrong!!! no changes to the graph are made!!!
-			undo.setUndoPoint();
-			notify.notifyGraphChanged();
+			selection.setVerticesSelected( vSet, true );
+			selection.setEdgesSelected( eSet, true );
 			selection.resumeListeners();
 		}
 	}
