@@ -92,6 +92,10 @@ public class EdgeFeatureCalculatorExample
 					dr.add( tmp );
 					n.inc();
 				}
+
+				@Override
+				public void crossComponent( final Spot from, final Spot to, final DepthFirstSearch< Spot, Link > search )
+				{}
 			} );
 
 			linkCollector.start( root );
