@@ -9,3 +9,5 @@ release.properties
 .settings/
 /samples/
 *.ucls
+.idea/
+*.iml
