@@ -636,11 +636,15 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 					{
 						if ( screenVertexMath.intersectsViewPlane() )
 						{
-							final double[] tr = screenVertexMath.getIntersectCenter();
-							final double theta = screenVertexMath.getIntersectTheta();
-							final Ellipse2D ellipse = screenVertexMath.getIntersectEllipse();
+							final double[] ep = screenVertexMath.getIntersectEllipse();
+							final double ex = ep[ 0 ];
+							final double ey = ep[ 1 ];
+							final double w = ep[ 2 ];
+							final double h = ep[ 3 ];
+							final double theta = ep[ 4 ];
+							final Ellipse2D ellipse = new Ellipse2D.Double( -w, -h, 2 * w, 2 * h );
 
-							graphics.translate( tr[ 0 ], tr[ 1 ] );
+							graphics.translate( ex, ey );
 							graphics.rotate( theta );
 							graphics.setColor( getColor( 0, 0, ellipsoidFadeDepth, timepointDistanceFade, selection.isSelected( vertex ) ) );
 							if ( isHighlighted )
@@ -653,11 +657,9 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 
 							if ( !drawEllipsoidSliceProjection && drawSpotLabels )
 							{
-								// TODO Don't use ellipse, which is an AWT
-								// object, for calculation.
 								graphics.rotate( -theta );
-								final double a = ellipse.getWidth();
-								final double b = ellipse.getHeight();
+								final double a = 2. * w;
+								final double b = 2. * h;
 								final double cos = Math.cos( theta );
 								final double sin = Math.sin( theta );
 								final double l = Math.sqrt( a * a * cos * cos + b * b * sin * sin );
@@ -674,11 +676,15 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 					{
 						if ( drawEllipsoidSliceProjection )
 						{
-							final double[] tr = screenVertexMath.getProjectCenter();
-							final double theta = screenVertexMath.getProjectTheta();
-							final Ellipse2D ellipse = screenVertexMath.getProjectEllipse();
+							final double[] ep = screenVertexMath.getProjectEllipse();
+							final double ex = ep[ 0 ];
+							final double ey = ep[ 1 ];
+							final double w = ep[ 2 ];
+							final double h = ep[ 3 ];
+							final double theta = ep[ 4 ];
+							final Ellipse2D ellipse = new Ellipse2D.Double( -w, -h, 2 * w, 2 * h );
 
-							graphics.translate( tr[ 0 ], tr[ 1 ] );
+							graphics.translate( ex, ey );
 							graphics.rotate( theta );
 							graphics.setColor( getColor( sd, 0, ellipsoidFadeDepth, timepointDistanceFade, selection.isSelected( vertex ) ) );
 							if ( isHighlighted )
@@ -691,11 +697,9 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 
 							if ( drawSpotLabels )
 							{
-								// TODO Don't use ellipse, which is an AWT
-								// object, for calculation.
 								graphics.rotate( -theta );
-								final double a = ellipse.getWidth();
-								final double b = ellipse.getHeight();
+								final double a = 2. * w;
+								final double b = 2. * h;
 								final double cos = Math.cos( theta );
 								final double sin = Math.sin( theta );
 								final double l = Math.sqrt( a * a * cos * cos + b * b * sin * sin );

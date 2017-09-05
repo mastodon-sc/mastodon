@@ -1,7 +1,5 @@
 package org.mastodon.revised.bdv.overlay;
 
-import java.awt.geom.Ellipse2D;
-
 import org.mastodon.revised.bdv.overlay.util.JamaEigenvalueDecomposition;
 
 import net.imglib2.RealLocalizable;
@@ -60,21 +58,23 @@ public class ScreenVertexMath
 	private final double[][] vP = new double[ 2 ][ 2 ];
 
 	/**
-	 * center of 2D ellipse obtained by projecting ellipsoid to z=0 plane.
+	 * Parameters of the 2D ellipse obtained by projecting the ellipsoid onto
+	 * the z=0 plane. Parameters are stored as follow:
+	 * <ol start="0">
+	 * <li>X center of the ellipse;</li>
+	 * <li>Y center of the ellipse;</li>
+	 * <li>half-width (along X axis) of the ellipse;</li>
+	 * <li>half-height (along Y axis) of the ellipse;</li>
+	 * <li>rotation angle (X axis) of the ellipse in radians.</li>
+	 * </ol>
+	 */
+	private final double[] projectEllipse = new double[ 5 ];
+
+	/**
+	 * Only used in
+	 * {@link #projectionIntersectsViewInterval(double, double, double, double)}.
 	 */
 	private final double[] projectCenter = new double[ 2 ];
-
-	/**
-	 * rotation angle of 2D ellipse obtained by projecting ellipsoid to z=0 plane.
-	 */
-	private double projectTheta;
-
-	/**
-	 * 2D ellipse obtained by projecting ellipsoid to z=0 plane. To draw it,
-	 * need to translate by {@link #projectCenter} and rotate by
-	 * {@link #projectTheta}.
-	 */
-	private Ellipse2D projectEllipse;
 
 	/**
 	 * whether the ellipsoid intersects the z=0 plane.
@@ -82,21 +82,23 @@ public class ScreenVertexMath
 	private boolean intersectsViewPlane;
 
 	/**
-	 * center of 2D ellipse obtained by intersecting ellipsoid with z=0 plane.
+	 * Parameters of the ellipse obtained by intersecting the ellipsoid with z=0
+	 * plane. Parameters are stored as follow:
+	 * <ol start="0">
+	 * <li>X center of the ellipse;</li>
+	 * <li>Y center of the ellipse;</li>
+	 * <li>half-width (along X axis) of the ellipse;</li>
+	 * <li>half-height (along Y axis) of the ellipse;</li>
+	 * <li>rotation angle (X axis) of the ellipse in radians.</li>
+	 * </ol>
+	 */
+	private final double[] intersectEllipse = new double[ 5 ];
+
+	/**
+	 * Only used in
+	 * {@link #intersectionIntersectsViewInterval(double, double, double, double)}.
 	 */
 	private final double[] intersectCenter = new double[ 2 ];
-
-	/**
-	 * rotation angle of 2D ellipse obtained by intersecting ellipsoid with z=0 plane.
-	 */
-	private double intersectTheta;
-
-	/**
-	 * 2D ellipse obtained by intersecting ellipsoid with z=0 plane. To draw
-	 * it, need to translate by {@link #intersectCenter} and rotate by
-	 * {@link #intersectTheta}.
-	 */
-	private Ellipse2D intersectEllipse;
 
 	private boolean projectionComputed;
 
@@ -137,12 +139,14 @@ public class ScreenVertexMath
 	private final double[] diff2 = new double[ 2 ];
 
 	/**
-	 * covariance of 2D ellipse obtained by intersecting ellipsoid with z=0 plane.
+	 * covariance of 2D ellipse obtained by intersecting ellipsoid with z=0
+	 * plane.
 	 */
 	private final double[][] iS = new double[ 2 ][ 2 ];
 
 	/**
-	 * precision of 2D ellipse obtained by intersecting ellipsoid with z=0 plane.
+	 * precision of 2D ellipse obtained by intersecting ellipsoid with z=0
+	 * plane.
 	 */
 	private final double[][] iP = new double[ 2 ][ 2 ];
 
@@ -189,38 +193,22 @@ public class ScreenVertexMath
 	}
 
 	/**
-	 * Get center of 2D ellipse obtained by projecting ellipsoid to z=0 plane.
+	 * Returns the parameters of the 2D ellipse obtained by projecting the
+	 * ellipsoid onto the z=0 plane.
+	 * <p>
+	 * Parameters are stored as follow:
+	 * <ol start="0">
+	 * <li>X center of the ellipse;</li>
+	 * <li>Y center of the ellipse;</li>
+	 * <li>half-width (along X axis) of the ellipse;</li>
+	 * <li>half-height (along Y axis) of the ellipse;</li>
+	 * <li>rotation angle (X axis) of the ellipse in radians.</li>
+	 * </ol>
 	 *
-	 * @return center of 2D ellipse obtained by projecting ellipsoid to z=0
-	 *         plane.
+	 * @return the parameters the 2D ellipse obtained by projecting the
+	 *         ellipsoid onto the z=0 plane.
 	 */
-	public double[] getProjectCenter()
-	{
-		computeProjection();
-		return projectCenter;
-	}
-
-	/**
-	 * Get the rotation angle (in radian) of 2D ellipse obtained by projecting
-	 * ellipsoid to z=0 plane.
-	 *
-	 * @return rotation angle of 2D ellipse obtained by projecting ellipsoid to
-	 *         z=0 plane.
-	 */
-	public double getProjectTheta()
-	{
-		computeProjection();
-		return projectTheta;
-	}
-
-	/**
-	 * Get the 2D ellipse obtained by projecting ellipsoid to z=0 plane. To draw
-	 * it, you need to translate by {@link #getProjectCenter()} and rotate by
-	 * {@link #getProjectTheta()}.
-	 *
-	 * @return 2D ellipse obtained by projecting ellipsoid to z=0 plane.
-	 */
-	public Ellipse2D getProjectEllipse()
+	public double[] getProjectEllipse()
 	{
 		computeProjection();
 		return projectEllipse;
@@ -238,39 +226,22 @@ public class ScreenVertexMath
 	}
 
 	/**
-	 * Get center of 2D ellipse obtained by intersecting ellipsoid with z=0
-	 * plane.
+	 * Returns the parameters of the 2D ellipse obtained by intersecting the
+	 * ellipsoid with the z=0 plane.
+	 * <p>
+	 * Parameters are stored as follow:
+	 * <ol start="0">
+	 * <li>X center of the ellipse;</li>
+	 * <li>Y center of the ellipse;</li>
+	 * <li>half-width (along X axis) of the ellipse;</li>
+	 * <li>half-height (along Y axis) of the ellipse;</li>
+	 * <li>rotation angle (X axis) of the ellipse in radians.</li>
+	 * </ol>
 	 *
-	 * @return center of 2D ellipse obtained by intersecting ellipsoid with z=0
-	 *         plane.
+	 * @return the parameters the 2D ellipse obtained by intersecting the
+	 *         ellipsoid with the z=0 plane.
 	 */
-	public double[] getIntersectCenter()
-	{
-		computeIntersection();
-		return intersectCenter;
-	}
-
-	/**
-	 * Get the rotation angle ( in radian) of 2D ellipse obtained by
-	 * intersecting ellipsoid with z=0 plane.
-	 *
-	 * @return rotation angle of 2D ellipse obtained by intersecting ellipsoid
-	 *         with z=0 plane.
-	 */
-	public double getIntersectTheta()
-	{
-		computeIntersection();
-		return intersectTheta;
-	}
-
-	/**
-	 * Get the 2D ellipse obtained by intersecting ellipsoid with z=0 plane. To
-	 * draw it, you need to translate by {@link #getIntersectCenter()} and
-	 * rotate by {@link #getIntersectTheta()}.
-	 *
-	 * @return 2D ellipse obtained by intersecting ellipsoid with z=0 plane.
-	 */
-	public Ellipse2D getIntersectEllipse()
+	public double[] getIntersectEllipse()
 	{
 		computeIntersection();
 		return intersectEllipse;
@@ -463,8 +434,8 @@ public class ScreenVertexMath
 			return;
 
 		/*
-		 * decompose the upper 2x2 sub-matrix of S, i.e., the spot
-		 * covariance in XY of the viewer coordinate system.
+		 * decompose the upper 2x2 sub-matrix of S, i.e., the spot covariance in
+		 * XY of the viewer coordinate system.
 		 */
 		eig2.decomposeSymmetric( vS );
 		final double[] eigVals2 = eig2.getRealEigenvalues();
@@ -473,10 +444,13 @@ public class ScreenVertexMath
 		final double c = eig2.getV()[ 0 ][ 0 ];
 		final double s = eig2.getV()[ 1 ][ 0 ];
 
-		projectTheta = Math.atan2( s, c );
 		projectCenter[ 0 ] = vPos[ 0 ];
 		projectCenter[ 1 ] = vPos[ 1 ];
-		projectEllipse = new Ellipse2D.Double( -w, -h, 2 * w, 2 * h );
+		projectEllipse[ 0 ] = projectCenter[ 0 ];
+		projectEllipse[ 1 ] = projectCenter[ 1 ];
+		projectEllipse[ 2 ] = w;
+		projectEllipse[ 3 ] = h;
+		projectEllipse[ 4 ] = Math.atan2( s, c );
 
 		projectionComputed = true;
 	}
@@ -538,7 +512,8 @@ public class ScreenVertexMath
 			iS[ 1 ][ 0 ] = iS[ 0 ][ 1 ];
 			iS[ 1 ][ 1 ] = radius2 / b2;
 			/*
-			 * now iS is the 2D covariance ellipsoid of transformed circle with radius
+			 * now iS is the 2D covariance ellipsoid of transformed circle with
+			 * radius
 			 */
 
 			eig2.decomposeSymmetric( iS );
@@ -548,10 +523,13 @@ public class ScreenVertexMath
 			final double ci = eig2.getV()[ 0 ][ 0 ];
 			final double si = eig2.getV()[ 1 ][ 0 ];
 
-			intersectTheta = Math.atan2( si, ci );
 			intersectCenter[ 0 ] = vPos[ 0 ] + xshift;
 			intersectCenter[ 1 ] = vPos[ 1 ] + yshift;
-			intersectEllipse = new Ellipse2D.Double( -w, -h, 2 * w, 2 * h );
+			intersectEllipse[ 0 ] = intersectCenter[ 0 ];
+			intersectEllipse[ 1 ] = intersectCenter[ 1 ];
+			intersectEllipse[ 2 ] = w;
+			intersectEllipse[ 3 ] = h;
+			intersectEllipse[ 4 ] = Math.atan2( si, ci );
 		}
 
 		intersectionComputed = true;
