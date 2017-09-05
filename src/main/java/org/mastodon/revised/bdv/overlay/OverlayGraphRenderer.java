@@ -478,6 +478,11 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 		final double timepointDistanceFade = 0.5;
 
 		final ScreenVertexMath screenVertexMath = new ScreenVertexMath();
+		final boolean drawPointAlways = drawPoints
+				&& ( ( !drawEllipsoidSliceIntersection && !drawEllipsoidSliceProjection )
+						|| drawPointsForEllipses );
+		final boolean drawPointMaybe = drawPoints
+				&& !drawEllipsoidSliceProjection && drawEllipsoidSliceIntersection;
 
 		graph.getLock().readLock().lock();
 		index.readLock().lock();
@@ -624,11 +629,7 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 							graphics.setTransform( torig );
 						}
 
-						// TODO: use simplified drawPointMaybe and drawPointAlways from getVisibleVertices()
-						final boolean drawPoint = drawPoints && ( ( !drawEllipsoidSliceIntersection && !drawEllipsoidSliceProjection )
-								|| drawPointsForEllipses
-								|| ( drawEllipsoidSliceIntersection && !screenVertexMath.intersectsViewPlane() ) );
-						if ( drawPoint )
+						if ( drawPointAlways || ( drawPointMaybe && !screenVertexMath.intersectsViewPlane() ) )
 						{
 							graphics.setColor( getColor( sd, 0, pointFadeDepth, timepointDistanceFade, selection.isSelected( vertex ) ) );
 							double radius = pointRadius;
@@ -694,12 +695,6 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 		final int currentTimepoint = renderTimepoint;
 
 		final ConvexPolytope visiblePolytopeGlobal = getVisiblePolytopeGlobal( transform, currentTimepoint );
-
-		// TODO: unused code: remove or improve algorithm.
-		final double[] lPosClick = new double[] { x, y, 0 };
-		final double[] gPosClick = new double[ 3 ];
-		transform.applyInverse( gPosClick, lPosClick );
-
 		index.readLock().lock();
 		try
 		{
@@ -787,6 +782,9 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 	public V getVertexAt( final int x, final int y, final double tolerance, final V ref )
 	{
 		final AffineTransform3D transform = getRenderTransformCopy();
+		final double maxDepth = isFocusLimitViewRelative
+				? focusLimit
+				: focusLimit * Affine3DHelpers.extractScale( transform, 0 );
 		final int currentTimepoint = renderTimepoint;
 
 		final double[] lPos = new double[] { x, y, 0 };
@@ -800,7 +798,6 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 
 		// TODO: cache searches? --> take into account that indexdata might change
 
-		// TODO: This needs to take into account maxDepth in the same way that painting does
 		if ( drawEllipsoidSliceProjection )
 		{
 			final ConvexPolytope cropPolytopeGlobal = getSurroundingPolytopeGlobal( x, y, transform, currentTimepoint );
@@ -813,7 +810,9 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 			for ( final V v : ccp.getInsideValues() )
 			{
 				svm.init( v, transform );
-				if ( svm.projectionContainsView( xy ) )
+				final double z = svm.getViewPos()[ 2 ];
+				final double sd = sliceDistance( z, maxDepth );
+				if ( sd > -1 && sd < 1 && svm.projectionContainsView( xy ) )
 				{
 					found = true;
 					v.localize( vPos );
@@ -827,7 +826,6 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 			}
 		}
 
-		// TODO: This needs to take into account maxDepth in the same way that painting does
 		if ( !found && drawEllipsoidSliceIntersection )
 		{
 			final IncrementalNearestNeighborSearch< V > inns = index.getSpatialIndex( currentTimepoint ).getIncrementalNearestNeighborSearch();
@@ -856,14 +854,19 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 			if ( v != null )
 			{
 				svm.init( v, transform );
-				final double[] p = svm.getViewPos();
-				final double dx = p[ 0 ] - x;
-				final double dy = p[ 1 ] - y;
-				final double dr = pointRadius + tolerance;
-				if ( dx * dx + dy * dy <= dr * dr )
+				final double z = svm.getViewPos()[ 2 ];
+				final double sd = sliceDistance( z, maxDepth );
+				if ( sd > -1 && sd < 1 )
 				{
-					found = true;
-					ref.refTo( v );
+					final double[] p = svm.getViewPos();
+					final double dx = p[ 0 ] - x;
+					final double dy = p[ 1 ] - y;
+					final double dr = pointRadius + tolerance;
+					if ( dx * dx + dy * dy <= dr * dr )
+					{
+						found = true;
+						ref.refTo( v );
+					}
 				}
 			}
 		}
