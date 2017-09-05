@@ -147,7 +147,8 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 	public static final double pointRadius = 2.5;
 
 	/**
-	 * Antialiasing {@link RenderingHints}.
+	 * Antialiasing settings. Must be one of {@link RenderingHints} antialias
+	 * field.
 	 */
 	private Object antialiasing;
 
@@ -164,15 +165,16 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 	private int timeLimit;
 
 	/**
-	 * Whether to draw links (at all).
-	 * For specific settings, see TODO
+	 * Whether to draw links (at all). For specific settings, see
+	 * {@link #useGradient} and {@link #timeLimit}.
 	 */
 	private boolean drawLinks;
 
-
 	/**
-	 * Whether to draw spots (at all).
-	 * For specific settings, see TODO
+	 * Whether to draw spots (at all). For specific settings, see
+	 * {@link #drawEllipsoidSliceIntersection},
+	 * {@link #drawEllipsoidSliceProjection}, {@link #drawPointsForEllipses},
+	 * {@link #drawPoints} and {@link #drawSpotLabels}.
 	 */
 	private boolean drawSpots;
 
@@ -303,13 +305,23 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 	}
 
 	/**
-	 * TODO
+	 * Generates a color suitable to paint an abject that might be away from the
+	 * focus plane, or away in time.
 	 *
-	 * @param sd sliceDistande, between -1 and 1. see {@link #sliceDistance(double, double)}.
-	 * @param td timeDistande, between -1 and 1. see {@link #timeDistance(double, double, double)}.
-	 * @param sdFade between 0 and 1, from which |sd| value color starts to fade (alpha value decreases).
-	 * @param tdFade between 0 and 1, from which |td| value color starts to fade (alpha value decreases).
-	 * @param isSelected whether to use selected or un-selected color scheme.
+	 * @param sd
+	 *            sliceDistande, between -1 and 1. see
+	 *            {@link #sliceDistance(double, double)}.
+	 * @param td
+	 *            timeDistande, between -1 and 1. see
+	 *            {@link #timeDistance(double, double, double)}.
+	 * @param sdFade
+	 *            between 0 and 1, from which |sd| value color starts to fade
+	 *            (alpha value decreases).
+	 * @param tdFade
+	 *            between 0 and 1, from which |td| value color starts to fade
+	 *            (alpha value decreases).
+	 * @param isSelected
+	 *            whether to use selected or un-selected color scheme.
 	 * @return vertex/edge color.
 	 */
 	private static Color getColor( final double sd, final double td, final double sdFade, final double tdFade, final boolean isSelected )
@@ -384,8 +396,9 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 	}
 
 	/**
-	 * TODO
-	 * @return
+	 * Returns a copy of the {@link AffineTransform3D} used in this renderer.
+	 *
+	 * @return a new {@link AffineTransform3D} object.
 	 */
 	private AffineTransform3D getRenderTransformCopy()
 	{
@@ -451,7 +464,6 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 		final double maxDepth = isFocusLimitViewRelative
 				? focusLimit
 				: focusLimit * Affine3DHelpers.extractScale( transform, 0 );
-
 
 		graphics.setRenderingHint( RenderingHints.KEY_ANTIALIASING, antialiasing );
 
