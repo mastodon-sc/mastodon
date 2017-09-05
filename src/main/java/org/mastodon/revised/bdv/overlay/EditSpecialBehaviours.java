@@ -144,11 +144,15 @@ public class EditSpecialBehaviours< V extends OverlayVertex< V, E >, E extends O
 
 				screenVertexMath.init( vertex, transform );
 
-				final double[] tr = screenVertexMath.getProjectCenter();
-				final double theta = screenVertexMath.getProjectTheta();
-				final Ellipse2D ellipse = screenVertexMath.getProjectEllipse();
+				final double[] ep = screenVertexMath.getProjectEllipse();
+				final double ex = ep[ 0 ];
+				final double ey = ep[ 1 ];
+				final double w = ep[ 2 ];
+				final double h = ep[ 3 ];
+				final double theta = ep[ 4 ];
+				final Ellipse2D ellipse = new Ellipse2D.Double( -w, -h, 2 * w, 2 * h );
 
-				graphics.translate( tr[ 0 ], tr[ 1 ] );
+				graphics.translate( ex, ey );
 				graphics.rotate( theta );
 				graphics.draw( ellipse );
 				graphics.setTransform( torig );
