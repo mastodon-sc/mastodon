@@ -16,6 +16,7 @@ import org.mastodon.collection.RefList;
 import org.mastodon.kdtree.ClipConvexPolytope;
 import org.mastodon.kdtree.IncrementalNearestNeighborSearch;
 import org.mastodon.revised.Util;
+import org.mastodon.revised.bdv.overlay.util.BdvRendererUtil;
 import org.mastodon.revised.ui.selection.FocusModel;
 import org.mastodon.revised.ui.selection.HighlightModel;
 import org.mastodon.revised.ui.selection.Selection;
@@ -24,10 +25,8 @@ import org.mastodon.spatial.SpatioTemporalIndex;
 
 import bdv.util.Affine3DHelpers;
 import bdv.viewer.TimePointListener;
-import net.imglib2.RealInterval;
 import net.imglib2.RealPoint;
 import net.imglib2.algorithm.kdtree.ConvexPolytope;
-import net.imglib2.algorithm.kdtree.HyperPlane;
 import net.imglib2.neighborsearch.NearestNeighborSearch;
 import net.imglib2.realtransform.AffineTransform3D;
 import net.imglib2.type.numeric.ARGBType;
@@ -144,7 +143,8 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 	public static final double pointRadius = 2.5;
 
 	/**
-	 * Antialiasing {@link RenderingHints}.
+	 * Antialiasing settings. Must be one of {@link RenderingHints} antialias
+	 * field.
 	 */
 	private Object antialiasing;
 
@@ -161,15 +161,16 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 	private int timeLimit;
 
 	/**
-	 * Whether to draw links (at all).
-	 * For specific settings, see TODO
+	 * Whether to draw links (at all). For specific settings, see
+	 * {@link #useGradient} and {@link #timeLimit}.
 	 */
 	private boolean drawLinks;
 
-
 	/**
-	 * Whether to draw spots (at all).
-	 * For specific settings, see TODO
+	 * Whether to draw spots (at all). For specific settings, see
+	 * {@link #drawEllipsoidSliceIntersection},
+	 * {@link #drawEllipsoidSliceProjection}, {@link #drawPointsForEllipses},
+	 * {@link #drawPoints} and {@link #drawSpotLabels}.
 	 */
 	private boolean drawSpots;
 
@@ -300,13 +301,23 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 	}
 
 	/**
-	 * TODO
+	 * Generates a color suitable to paint an abject that might be away from the
+	 * focus plane, or away in time.
 	 *
-	 * @param sd sliceDistande, between -1 and 1. see {@link #sliceDistance(double, double)}.
-	 * @param td timeDistande, between -1 and 1. see {@link #timeDistance(double, double, double)}.
-	 * @param sdFade between 0 and 1, from which |sd| value color starts to fade (alpha value decreases).
-	 * @param tdFade between 0 and 1, from which |td| value color starts to fade (alpha value decreases).
-	 * @param isSelected whether to use selected or un-selected color scheme.
+	 * @param sd
+	 *            sliceDistande, between -1 and 1. see
+	 *            {@link #sliceDistance(double, double)}.
+	 * @param td
+	 *            timeDistande, between -1 and 1. see
+	 *            {@link #timeDistance(double, double, double)}.
+	 * @param sdFade
+	 *            between 0 and 1, from which |sd| value color starts to fade
+	 *            (alpha value decreases).
+	 * @param tdFade
+	 *            between 0 and 1, from which |td| value color starts to fade
+	 *            (alpha value decreases).
+	 * @param isSelected
+	 *            whether to use selected or un-selected color scheme.
 	 * @return vertex/edge color.
 	 */
 	private static Color getColor( final double sd, final double td, final double sdFade, final double tdFade, final boolean isSelected )
@@ -345,67 +356,6 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 	}
 
 	/**
-	 * Gets the {@link ConvexPolytope} described by the specified interval in
-	 * viewer coordinates, transformed to global coordinates.
-	 *
-	 * @param transform
-	 *            the transform to transform viewer coordinates back in global
-	 *            coordinates.
-	 * @param viewerInterval
-	 *            the view interval.
-	 * @return {@code viewerInterval} transformed to global coordinates.
-	 */
-	// TODO: move to Utility class
-	public static ConvexPolytope getPolytopeGlobal(
-			final AffineTransform3D transform,
-			final RealInterval viewerInterval )
-	{
-		return getPolytopeGlobal( transform,
-				viewerInterval.realMin( 0 ), viewerInterval.realMax( 0 ),
-				viewerInterval.realMin( 1 ), viewerInterval.realMax( 1 ),
-				viewerInterval.realMin( 2 ), viewerInterval.realMax( 2 ) );
-	}
-
-	/**
-	 * Gets the {@link ConvexPolytope} described by the specified interval in
-	 * viewer coordinates, transformed to global coordinates.
-	 *
-	 * @param transform
-	 *            the transform to transform viewer coordinates back in global
-	 *            coordinates.
-	 * @param viewerMinX
-	 *            the x min bound of the view interval.
-	 * @param viewerMaxX
-	 *            the x max bound of the view interval.
-	 * @param viewerMinY
-	 *            the y min bound of the view interval.
-	 * @param viewerMaxY
-	 *            the y max bound of the view interval.
-	 * @param viewerMinZ
-	 *            the z min bound of the view interval.
-	 * @param viewerMaxZ
-	 *            the z max bound of the view interval.
-	 * @return the specified viewer interval, transformed to global coordinates.
-	 */
-	// TODO: move to Utility class
-	public static ConvexPolytope getPolytopeGlobal(
-			final AffineTransform3D transform,
-			final double viewerMinX, final double viewerMaxX,
-			final double viewerMinY, final double viewerMaxY,
-			final double viewerMinZ, final double viewerMaxZ )
-	{
-		final ConvexPolytope polytopeViewer = new ConvexPolytope(
-				new HyperPlane(  1,  0,  0, viewerMinX ),
-				new HyperPlane( -1,  0,  0, -viewerMaxX ),
-				new HyperPlane(  0,  1,  0, viewerMinY ),
-				new HyperPlane(  0, -1,  0, -viewerMaxY ),
-				new HyperPlane(  0,  0,  1, viewerMinZ),
-				new HyperPlane(  0,  0, -1, -viewerMaxZ ) );
-		final ConvexPolytope polytopeGlobal = ConvexPolytope.transform( polytopeViewer, transform.inverse() );
-		return polytopeGlobal;
-	}
-
-	/**
 	 * Get the {@link ConvexPolytope} around the specified viewer coordinate
 	 * range that is large enough border to ensure that it contains center of
 	 * every ellipsoid touching the specified coordinate range.
@@ -435,15 +385,16 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 				? focusLimit
 				: focusLimit * globalToViewerScale;
 		final double border = globalToViewerScale * Math.sqrt( graph.getMaxBoundingSphereRadiusSquared( timepoint ) );
-		return getPolytopeGlobal( transform,
+		return BdvRendererUtil.getPolytopeGlobal( transform,
 				xMin - border, xMax + border,
 				yMin - border, yMax + border,
 				-maxDepth - border, maxDepth + border );
 	}
 
 	/**
-	 * TODO
-	 * @return
+	 * Returns a copy of the {@link AffineTransform3D} used in this renderer.
+	 *
+	 * @return a new {@link AffineTransform3D} object.
 	 */
 	private AffineTransform3D getRenderTransformCopy()
 	{
@@ -513,7 +464,6 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 				? focusLimit
 				: focusLimit * Affine3DHelpers.extractScale( transform, 0 );
 
-
 		graphics.setRenderingHint( RenderingHints.KEY_ANTIALIASING, antialiasing );
 
 		final V target = graph.vertexRef();
@@ -527,6 +477,11 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 		final double timepointDistanceFade = 0.5;
 
 		final ScreenVertexMath screenVertexMath = new ScreenVertexMath();
+		final boolean drawPointAlways = drawPoints
+				&& ( ( !drawEllipsoidSliceIntersection && !drawEllipsoidSliceProjection )
+						|| drawPointsForEllipses );
+		final boolean drawPointMaybe = drawPoints
+				&& !drawEllipsoidSliceProjection && drawEllipsoidSliceIntersection;
 
 		index.readLock().lock();
 		try
@@ -635,11 +590,15 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 					{
 						if ( screenVertexMath.intersectsViewPlane() )
 						{
-							final double[] tr = screenVertexMath.getIntersectCenter();
-							final double theta = screenVertexMath.getIntersectTheta();
-							final Ellipse2D ellipse = screenVertexMath.getIntersectEllipse();
+							final double[] ep = screenVertexMath.getIntersectEllipse();
+							final double ex = ep[ 0 ];
+							final double ey = ep[ 1 ];
+							final double w = ep[ 2 ];
+							final double h = ep[ 3 ];
+							final double theta = ep[ 4 ];
+							final Ellipse2D ellipse = new Ellipse2D.Double( -w, -h, 2 * w, 2 * h );
 
-							graphics.translate( tr[ 0 ], tr[ 1 ] );
+							graphics.translate( ex, ey );
 							graphics.rotate( theta );
 							graphics.setColor( getColor( 0, 0, ellipsoidFadeDepth, timepointDistanceFade, selection.isSelected( vertex ) ) );
 							if ( isHighlighted )
@@ -652,11 +611,9 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 
 							if ( !drawEllipsoidSliceProjection && drawSpotLabels )
 							{
-								// TODO Don't use ellipse, which is an AWT
-								// object, for calculation.
 								graphics.rotate( -theta );
-								final double a = ellipse.getWidth();
-								final double b = ellipse.getHeight();
+								final double a = 2. * w;
+								final double b = 2. * h;
 								final double cos = Math.cos( theta );
 								final double sin = Math.sin( theta );
 								final double l = Math.sqrt( a * a * cos * cos + b * b * sin * sin );
@@ -673,11 +630,15 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 					{
 						if ( drawEllipsoidSliceProjection )
 						{
-							final double[] tr = screenVertexMath.getProjectCenter();
-							final double theta = screenVertexMath.getProjectTheta();
-							final Ellipse2D ellipse = screenVertexMath.getProjectEllipse();
+							final double[] ep = screenVertexMath.getProjectEllipse();
+							final double ex = ep[ 0 ];
+							final double ey = ep[ 1 ];
+							final double w = ep[ 2 ];
+							final double h = ep[ 3 ];
+							final double theta = ep[ 4 ];
+							final Ellipse2D ellipse = new Ellipse2D.Double( -w, -h, 2 * w, 2 * h );
 
-							graphics.translate( tr[ 0 ], tr[ 1 ] );
+							graphics.translate( ex, ey );
 							graphics.rotate( theta );
 							graphics.setColor( getColor( sd, 0, ellipsoidFadeDepth, timepointDistanceFade, selection.isSelected( vertex ) ) );
 							if ( isHighlighted )
@@ -690,11 +651,9 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 
 							if ( drawSpotLabels )
 							{
-								// TODO Don't use ellipse, which is an AWT
-								// object, for calculation.
 								graphics.rotate( -theta );
-								final double a = ellipse.getWidth();
-								final double b = ellipse.getHeight();
+								final double a = 2. * w;
+								final double b = 2. * h;
 								final double cos = Math.cos( theta );
 								final double sin = Math.sin( theta );
 								final double l = Math.sqrt( a * a * cos * cos + b * b * sin * sin );
@@ -706,11 +665,7 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 							graphics.setTransform( torig );
 						}
 
-						// TODO: use simplified drawPointMaybe and drawPointAlways from getVisibleVertices()
-						final boolean drawPoint = drawPoints && ( ( !drawEllipsoidSliceIntersection && !drawEllipsoidSliceProjection )
-								|| drawPointsForEllipses
-								|| ( drawEllipsoidSliceIntersection && !screenVertexMath.intersectsViewPlane() ) );
-						if ( drawPoint )
+						if ( drawPointAlways || ( drawPointMaybe && !screenVertexMath.intersectsViewPlane() ) )
 						{
 							graphics.setColor( getColor( sd, 0, pointFadeDepth, timepointDistanceFade, selection.isSelected( vertex ) ) );
 							double radius = pointRadius;
@@ -743,12 +698,6 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 		final int currentTimepoint = renderTimepoint;
 
 		final ConvexPolytope visiblePolytopeGlobal = getVisiblePolytopeGlobal( transform, currentTimepoint );
-
-		// TODO: unused code: remove or improve algorithm.
-		final double[] lPosClick = new double[] { x, y, 0 };
-		final double[] gPosClick = new double[ 3 ];
-		transform.applyInverse( gPosClick, lPosClick );
-
 		index.readLock().lock();
 		try
 		{
@@ -836,6 +785,9 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 	public V getVertexAt( final int x, final int y, final double tolerance, final V ref )
 	{
 		final AffineTransform3D transform = getRenderTransformCopy();
+		final double maxDepth = isFocusLimitViewRelative
+				? focusLimit
+				: focusLimit * Affine3DHelpers.extractScale( transform, 0 );
 		final int currentTimepoint = renderTimepoint;
 
 		final double[] lPos = new double[] { x, y, 0 };
@@ -849,7 +801,6 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 
 		// TODO: cache searches? --> take into account that indexdata might change
 
-		// TODO: This needs to take into account maxDepth in the same way that painting does
 		if ( drawEllipsoidSliceProjection )
 		{
 			final ConvexPolytope cropPolytopeGlobal = getSurroundingPolytopeGlobal( x, y, transform, currentTimepoint );
@@ -862,7 +813,9 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 			for ( final V v : ccp.getInsideValues() )
 			{
 				svm.init( v, transform );
-				if ( svm.projectionContainsView( xy ) )
+				final double z = svm.getViewPos()[ 2 ];
+				final double sd = sliceDistance( z, maxDepth );
+				if ( sd > -1 && sd < 1 && svm.projectionContainsView( xy ) )
 				{
 					found = true;
 					v.localize( vPos );
@@ -876,7 +829,6 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 			}
 		}
 
-		// TODO: This needs to take into account maxDepth in the same way that painting does
 		if ( !found && drawEllipsoidSliceIntersection )
 		{
 			final IncrementalNearestNeighborSearch< V > inns = index.getSpatialIndex( currentTimepoint ).getIncrementalNearestNeighborSearch();
@@ -905,14 +857,19 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 			if ( v != null )
 			{
 				svm.init( v, transform );
-				final double[] p = svm.getViewPos();
-				final double dx = p[ 0 ] - x;
-				final double dy = p[ 1 ] - y;
-				final double dr = pointRadius + tolerance;
-				if ( dx * dx + dy * dy <= dr * dr )
+				final double z = svm.getViewPos()[ 2 ];
+				final double sd = sliceDistance( z, maxDepth );
+				if ( sd > -1 && sd < 1 )
 				{
-					found = true;
-					ref.refTo( v );
+					final double[] p = svm.getViewPos();
+					final double dx = p[ 0 ] - x;
+					final double dy = p[ 1 ] - y;
+					final double dr = pointRadius + tolerance;
+					if ( dx * dx + dy * dy <= dr * dr )
+					{
+						found = true;
+						ref.refTo( v );
+					}
 				}
 			}
 		}
