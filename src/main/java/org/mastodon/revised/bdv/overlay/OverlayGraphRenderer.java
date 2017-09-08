@@ -143,16 +143,6 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 	public static final double pointRadius = 2.5;
 
 	/**
-	 * Color to paint vertices in, and edges when they are close in time.
-	 */
-	private static final Color FIXED_COLOR_1 = Color.GREEN;
-
-	/**
-	 * Edge color to interpolate to when painted edges are far in time.
-	 */
-	private static final Color FIXED_COLOR_2 = Color.RED;
-
-	/**
 	 * Antialiasing settings. Must be one of {@link RenderingHints} antialias
 	 * field.
 	 */
@@ -328,13 +318,9 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 	 *            (alpha value decreases).
 	 * @param isSelected
 	 *            whether to use selected or un-selected color scheme.
-	 * @param color1
-	 *            the first color to interpolate from.
-	 * @param color2
-	 *            the second color to interpolate to.
 	 * @return vertex/edge color.
 	 */
-	private static Color getColor( final double sd, final double td, final double sdFade, final double tdFade, final boolean isSelected , final Color color1, final Color color2)
+	private static Color getColor( final double sd, final double td, final double sdFade, final double tdFade, final boolean isSelected )
 	{
 		/*
 		 * |sf| = {                  0  for  |sd| <= sdFade,
@@ -362,19 +348,11 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 			tf = -Math.max( 0, ( -td - tdFade ) / ( 1 - tdFade ) );
 		}
 
-		final double r1 = color1.getRed() / 255.;
-		final double r2 = color2.getRed() / 255.;
-		final double g1 = color1.getGreen() / 255.;
-		final double g2 = color2.getGreen() / 255.;
-		final double b1 = color1.getBlue() / 255.;
-		final double b2 = color2.getBlue() / 255.;
-
-		final double a = r1 + ( -2 * td ) * ( r2 - r1 );
-		final double b = g1 + ( -2 * td ) * ( g2 - g1 );
-		final double c = b1 + ( -2 * td ) * ( b2 - b1 );
+		final double a = -2 * td;
+		final double b = 1 + 2 * td;
 		final double r = isSelected ? b : a;
 		final double g = isSelected ? a : b;
-		return new Color( truncRGBA( r, g, c, ( 1 + tf ) * ( 1 - Math.abs( sf ) ) ), true );
+		return new Color( truncRGBA( r, g, 0.1, ( 1 + tf ) * ( 1 - Math.abs( sf ) ) ), true );
 	}
 
 	/**
@@ -547,12 +525,10 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 							{
 								if ( ( sd0 > -1 && sd0 < 1 ) || ( sd1 > -1 && sd1 < 1 ) )
 								{
-									final Color color1 = edgeColor1( edge );
-									final Color color2 = edgeColor2( edge );
-									final Color c1 = getColor( sd1, td1, sliceDistanceFade, timepointDistanceFade, selection.isSelected( edge ), color1, color2 );
+									final Color c1 = getColor( sd1, td1, sliceDistanceFade, timepointDistanceFade, selection.isSelected( edge ) );
 									if ( useGradient )
 									{
-										final Color c0 = getColor( sd0, td0, sliceDistanceFade, timepointDistanceFade, selection.isSelected( edge ), color1, color2 );
+										final Color c0 = getColor( sd0, td0, sliceDistanceFade, timepointDistanceFade, selection.isSelected( edge ) );
 										graphics.setPaint( new GradientPaint( x0, y0, c0, x1, y1, c1 ) );
 									}
 									else
@@ -624,8 +600,7 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 
 							graphics.translate( ex, ey );
 							graphics.rotate( theta );
-							final Color color = vertexColor( vertex );
-							graphics.setColor( getColor( 0., 0., ellipsoidFadeDepth, timepointDistanceFade, selection.isSelected( vertex ), color, color ) );
+							graphics.setColor( getColor( 0, 0, ellipsoidFadeDepth, timepointDistanceFade, selection.isSelected( vertex ) ) );
 							if ( isHighlighted )
 								graphics.setStroke( highlightedVertexStroke );
 							else if ( isFocused )
@@ -665,8 +640,7 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 
 							graphics.translate( ex, ey );
 							graphics.rotate( theta );
-							final Color color = vertexColor( vertex );
-							graphics.setColor( getColor( sd, 0., ellipsoidFadeDepth, timepointDistanceFade, selection.isSelected( vertex ), color, color ) );
+							graphics.setColor( getColor( sd, 0, ellipsoidFadeDepth, timepointDistanceFade, selection.isSelected( vertex ) ) );
 							if ( isHighlighted )
 								graphics.setStroke( highlightedVertexStroke );
 							else if ( isFocused )
@@ -693,8 +667,7 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 
 						if ( drawPointAlways || ( drawPointMaybe && !screenVertexMath.intersectsViewPlane() ) )
 						{
-							final Color color = vertexColor( vertex );
-							graphics.setColor( getColor( sd, 0., pointFadeDepth, timepointDistanceFade, selection.isSelected( vertex ), color, color ) );
+							graphics.setColor( getColor( sd, 0, pointFadeDepth, timepointDistanceFade, selection.isSelected( vertex ) ) );
 							double radius = pointRadius;
 							if ( isHighlighted || isFocused )
 								radius *= 2;
@@ -717,52 +690,6 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 		graph.releaseRef( target );
 		graph.releaseRef( ref1 );
 		graph.releaseRef( ref2 );
-	}
-
-	/**
-	 * Returns the color suitable to paint the specified vertex in.
-	 *
-	 * @param vertex
-	 *            the vertex to paint.
-	 * @return a color.
-	 */
-	protected Color vertexColor( final V vertex )
-	{
-		return FIXED_COLOR_1;
-	}
-
-	/**
-	 * Returns the color suitable to paint the specified edge in, when the edge
-	 * is far in time.
-	 * <p>
-	 * The edge color is interpolated from the color returned by
-	 * {@link #edgeColor1(OverlayEdge)} to the color returned by this method as
-	 * it fades in time.
-	 *
-	 * @param edge
-	 *            the edge to paint.
-	 * @return a color.
-	 */
-	protected Color edgeColor2( final E edge )
-	{
-		return FIXED_COLOR_2;
-	}
-
-	/**
-	 * Returns the color suitable to paint the specified edge in, when the edge
-	 * is close in time.
-	 * <p>
-	 * The edge color is interpolated from the color returned by this method to
-	 * the color returned by {@link #edgeColor2(OverlayEdge)} as it fades in
-	 * time.
-	 *
-	 * @param edge
-	 *            the edge to paint.
-	 * @return a color.
-	 */
-	protected Color edgeColor1( final E edge )
-	{
-		return FIXED_COLOR_1;
 	}
 
 	public E getEdgeAt( final int x, final int y, final double tolerance, final E ref )
