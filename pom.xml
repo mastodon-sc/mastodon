@@ -51,6 +51,11 @@
 			<artifactId>ui-behaviour</artifactId>
 			<version>1.3.0</version>
 		</dependency>
+		<dependency>
+			<groupId>net.imglib2</groupId>
+			<artifactId>imglib2</artifactId>
+			<version>4.4.0</version>
+		</dependency>
 
 		<!-- Test dependencies -->
 		<dependency>
