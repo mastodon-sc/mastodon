@@ -56,7 +56,7 @@ public class SelectionActions< V extends Vertex< E >, E extends Edge< V > >
 
 		sa.runnableAction( sa.getDeleteSelectionAction(), DELETE_SELECTION, DELETE_SELECTION_KEYS );
 		sa.runnableAction( sa.getSelectWholeTrackAction( true ), SELECT_WHOLE_TRACK, SELECT_WHOLE_TRACK_KEYS );
-		sa.runnableAction( sa.getSelectTrackDownardAction( true ), SELECT_TRACK_DOWNWARD, SELECT_TRACK_DOWNWARD_KEYS );
+		sa.runnableAction( sa.getSelectTrackDownwardAction( true ), SELECT_TRACK_DOWNWARD, SELECT_TRACK_DOWNWARD_KEYS );
 		sa.runnableAction( sa.getSelectTrackUpwardAction( true ), SELECT_TRACK_UPWARD, SELECT_TRACK_UPWARD_KEYS );
 
 		sa.install( inputActionBindings, "selection" );
@@ -94,7 +94,7 @@ public class SelectionActions< V extends Vertex< E >, E extends Edge< V > >
 		return new TrackSelectionAction( SearchDirection.UNDIRECTED, clear );
 	}
 
-	private Runnable getSelectTrackDownardAction( final boolean clear )
+	private Runnable getSelectTrackDownwardAction( final boolean clear )
 	{
 		return new TrackSelectionAction( SearchDirection.DIRECTED, clear );
 	}
