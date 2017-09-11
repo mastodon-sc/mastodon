@@ -428,7 +428,7 @@ public class ScreenVertexMath
 			final double s1 = ( vn2[ 1 ] >= 0 ) ? 1 : -1;
 			vn2[ 0 ] -= s0 * e0;
 			vn2[ 1 ] -= s1 * e1;
-			invertSymmetric2x2( iS, iP );
+			LinAlgHelpers.invertSymmetric2x2( iS, iP );
 			vm2[ 0 ] = iP[ 0 ][ 0 ] * vn2[ 0 ] + iP[ 0 ][ 1 ] * vn2[ 1 ];
 			vm2[ 1 ] = iP[ 1 ][ 0 ] * vn2[ 0 ] + iP[ 1 ][ 1 ] * vn2[ 1 ];
 			if ( s0 * vm2[ 0 ] <= 0 || s1 * vm2[ 1 ] <= 0 )
@@ -444,7 +444,7 @@ public class ScreenVertexMath
 		if ( precisionComputed )
 			return;
 
-		invertSymmetric3x3( S, P );
+		LinAlgHelpers.invertSymmetric3x3( S, P );
 		precisionComputed = true;
 	}
 
@@ -453,7 +453,7 @@ public class ScreenVertexMath
 		if ( projectedPrecisionComputed )
 			return;
 
-		invertSymmetric2x2( vS, vP );
+		LinAlgHelpers.invertSymmetric2x2( vS, vP );
 		projectedPrecisionComputed = true;
 	}
 
@@ -555,52 +555,5 @@ public class ScreenVertexMath
 		}
 
 		intersectionComputed = true;
-	}
-
-	// TODO: move to imglib2 LinAlgHelpers
-	/**
-	 * Inverts a (invertible) symmetric 3x3 matrix.
-	 *
-	 * @param m
-	 *            symmetric matrix to invert.
-	 * @param inverse
-	 *            inverse of {@code m} is stored here.
-	 */
-	public static void invertSymmetric3x3( final double[][] m, final double[][] inverse )
-	{
-		final double a00 = m[ 2 ][ 2 ] * m[ 1 ][ 1 ] - m[ 1 ][ 2 ] * m[ 1 ][ 2 ];
-		final double a01 = m[ 0 ][ 2 ] * m[ 1 ][ 2 ] - m[ 2 ][ 2 ] * m[ 0 ][ 1 ];
-		final double a02 = m[ 0 ][ 1 ] * m[ 1 ][ 2 ] - m[ 0 ][ 2 ] * m[ 1 ][ 1 ];
-
-		final double a11 = m[ 2 ][ 2 ] * m[ 0 ][ 0 ] - m[ 0 ][ 2 ] * m[ 0 ][ 2 ];
-		final double a12 = m[ 0 ][ 1 ] * m[ 0 ][ 2 ] - m[ 0 ][ 0 ] * m[ 1 ][ 2 ];
-
-		final double a22 = m[ 0 ][ 0 ] * m[ 1 ][ 1 ] - m[ 0 ][ 1 ] * m[ 0 ][ 1 ];
-
-		final double Dinv = 1.0 / ( ( m[ 0 ][ 0 ] * a00 ) + ( m[ 1 ][ 0 ] * a01 ) + ( m[ 0 ][ 2 ] * a02 ) );
-
-		inverse[ 0 ][ 0 ] = a00 * Dinv;
-		inverse[ 1 ][ 0 ] = inverse[ 0 ][ 1 ] = a01 * Dinv;
-		inverse[ 2 ][ 0 ] = inverse[ 0 ][ 2 ] = a02 * Dinv;
-		inverse[ 1 ][ 1 ] = a11 * Dinv;
-		inverse[ 2 ][ 1 ] = inverse[ 1 ][ 2 ] = a12 * Dinv;
-		inverse[ 2 ][ 2 ] = a22 * Dinv;
-	}
-
-	// TODO: move to imglib2 LinAlgHelpers
-	/**
-	 * Inverts a (invertible) symmetric 2x2 matrix.
-	 *
-	 * @param m
-	 *            symmetric matrix to invert.
-	 * @param inverse
-	 *            inverse of {@code m} is stored here.
-	 */
-	public static void invertSymmetric2x2( final double[][] m, final double[][] inverse )
-	{
-		final double Dinv = 1.0 / ( m[ 0 ][ 0 ] * m[ 1 ][ 1 ] - m[ 1 ][ 0 ] * m[ 1 ][ 0 ] );
-		inverse[ 0 ][ 0 ] = m[ 1 ][ 1 ] * Dinv;
-		inverse[ 1 ][ 0 ] = inverse[ 0 ][ 1 ] = -m[ 1 ][ 0 ] * Dinv;
-		inverse[ 1 ][ 1 ] = m[ 0 ][ 0 ] * Dinv;
 	}
 }
