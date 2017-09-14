@@ -15,6 +15,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Locale;
 import java.util.Set;
@@ -40,6 +41,7 @@ import javax.swing.WindowConstants;
 
 import org.mastodon.graph.GraphChangeListener;
 import org.mastodon.revised.mamut.feature.DefaultMamutFeatureComputerService;
+import org.mastodon.revised.model.feature.FeatureComputer;
 import org.mastodon.revised.model.feature.FeatureComputerService;
 import org.mastodon.revised.model.mamut.Model;
 import org.scijava.Context;
@@ -64,7 +66,7 @@ public class FeatureComputersPanel extends JPanel
 
 	private final MyProgressBar progressBar;
 
-	private final Set< String > selectedFeatures;
+	private final Set< FeatureComputer< Model > > selectedComputers;
 
 	private final JButton btnCompute;
 
@@ -76,7 +78,7 @@ public class FeatureComputersPanel extends JPanel
 	{
 		this.computerService = computerService;
 		this.model = model;
-		this.selectedFeatures = new HashSet<>();
+		this.selectedComputers = new HashSet<>();
 
 		setLayout( new BorderLayout( 0, 0 ) );
 
@@ -153,10 +155,7 @@ public class FeatureComputersPanel extends JPanel
 		c.gridy = 0;
 
 		// Feed the feature panel.
-		layoutComputers( panelFeatures, c, "Vertex features:", computerService.getAvailableVertexFeatureComputers() );
-		layoutComputers( panelFeatures, c, "Edge features:", computerService.getAvailableEdgeFeatureComputers() );
-//		layoutComputers( panelFeatures, c, "Branch vertex features:", computerService.getAvailableBranchVertexFeatureComputers() );
-//		layoutComputers( panelFeatures, c, "Branch edge features:", computerService.getAvailableBranchEdgeFeatureComputers() );
+		layoutComputers( panelFeatures, c, computerService.getFeatureComputers() );
 
 		// Wire listener to compute button.
 		btnCompute.addActionListener( ( e ) -> compute() );
@@ -223,39 +222,35 @@ public class FeatureComputersPanel extends JPanel
 		return DATE_FORMAT.format( Calendar.getInstance().getTime() );
 	}
 
-	private void layoutComputers( final JPanel panel, final GridBagConstraints c, final String title, final Set< String > computers )
+	private void layoutComputers( final JPanel panel, final GridBagConstraints c, final Collection< FeatureComputer< Model > > set )
 	{
-		if ( computers.isEmpty() )
+		if ( set.isEmpty() )
 			return;
-		final JLabel lblVertexFeatures = new JLabel( title );
-		lblVertexFeatures.setFont( panel.getFont().deriveFont( Font.ITALIC ) );
-		c.gridwidth = 3;
-		c.gridx = 0;
-		panel.add( lblVertexFeatures, c );
 
-		for ( final String computer : computers )
+		c.gridx = 0;
+		for ( final FeatureComputer< Model > computer : set )
 		{
 			final boolean selected = true;
-			final JCheckBox checkBox = new JCheckBox( computer, selected );
+			final JCheckBox checkBox = new JCheckBox( computer.getKey(), selected );
 			checkBox.addActionListener( new ActionListener()
 			{
 				@Override
 				public void actionPerformed( final ActionEvent e )
 				{
 					if ( checkBox.isSelected() )
-						selectedFeatures.add( computer );
+						selectedComputers.add( computer );
 					else
-						selectedFeatures.remove( computer );
+						selectedComputers.remove( computer );
 				}
 			} );
 			if ( selected )
-				selectedFeatures.add( computer );
+				selectedComputers.add( computer );
 
-			c.gridy++;
 			c.gridx = 0;
 			c.weightx = 1.;
 			c.gridwidth = 1;
 			panel.add( checkBox, c );
+			c.gridy++;
 
 			final JButton config = new JButton( COG_ICON );
 			config.setBorder( null );
@@ -285,7 +280,7 @@ public class FeatureComputersPanel extends JPanel
 		@Override
 		protected Boolean doInBackground() throws Exception
 		{
-			final boolean ok = computerService.compute( model, selectedFeatures, progressBar );
+			final boolean ok = computerService.compute( model, selectedComputers, progressBar );
 			return Boolean.valueOf( ok );
 		}
 	}

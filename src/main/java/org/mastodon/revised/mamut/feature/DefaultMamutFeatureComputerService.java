@@ -1,6 +1,7 @@
 package org.mastodon.revised.mamut.feature;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -40,19 +41,10 @@ public class DefaultMamutFeatureComputerService extends AbstractService implemen
 	private StatusService status;
 
 	/**
-	 * Feature computers of any type.
+	 * Feature computers of any type, mapped by their key, for dependency
+	 * management.
 	 */
-	private final Map< String, FeatureComputer< Model > > availableFeatureComputers = new HashMap<>();
-
-	/**
-	 * Available spot feature computers.
-	 */
-	private Set< String > availableSpotFeatureComputers;
-
-	/**
-	 * Available link feature computers.
-	 */
-	private Set< String > availableLinkFeatureComputers;
+	private final Map< String, FeatureComputer< Model > > featureComputers = new HashMap<>();
 
 	public DefaultMamutFeatureComputerService()
 	{}
@@ -61,32 +53,19 @@ public class DefaultMamutFeatureComputerService extends AbstractService implemen
 	public void initialize()
 	{
 		super.initialize();
-		initializeAvailableSpotFeatureComputers();
-		initializeAvailableLinkFeatureComputers();
+		initializeFeatureComputers( SpotFeatureComputer.class );
+		initializeFeatureComputers( LinkFeatureComputer.class );
 	}
 
 	@Override
-	public final Set< String > getAvailableVertexFeatureComputers()
+	public boolean compute( final Model model, final Set< FeatureComputer< Model > > computers, final ProgressListener progressListener )
 	{
-		return availableSpotFeatureComputers;
-	}
+		final ObjectGraph< FeatureComputer< Model > > dependencyGraph = getDependencyGraph( computers );
+		final TopologicalSort< ObjectVertex< FeatureComputer< Model > >, ObjectEdge< FeatureComputer< Model > > > sorter = new TopologicalSort<>( dependencyGraph );
 
-	@Override
-	public Set< String > getAvailableEdgeFeatureComputers()
-	{
-		return availableLinkFeatureComputers;
-	}
-
-	@Override
-	public boolean compute( final Model model, final Set< String > computerNames, final ProgressListener progressListener )
-	{
-		final ObjectGraph< FeatureComputer< Model > > dependencyGraph = getDependencyGraph( computerNames );
-		final TopologicalSort< ObjectVertex< FeatureComputer< Model > >, ObjectEdge< FeatureComputer< Model > > > sorter
-			= new TopologicalSort<>( dependencyGraph );
-
-		if (sorter.hasFailed())
+		if ( sorter.hasFailed() )
 		{
-			logService.error( "Could not compute features using  " + computerNames +
+			logService.error( "Could not compute features using  " + computers +
 					" as they have a circular dependency." );
 			progressListener.showStatus( "Circular dependency!" );
 			return false;
@@ -103,9 +82,9 @@ public class DefaultMamutFeatureComputerService extends AbstractService implemen
 			final Feature< ?, ?, ? > feature = computer.compute( model );
 			model.getFeatureModel().declareFeature( feature );
 
-			progressListener.showProgress( progress++, computerNames.size() );
+			progressListener.showProgress( progress++, computers.size() );
 		}
-		
+
 		final long end = System.currentTimeMillis();
 		progressListener.clearStatus();
 		progressListener.showStatus( String.format( "Done in %.1f s.", ( end - start ) / 1000. ) );
@@ -117,19 +96,19 @@ public class DefaultMamutFeatureComputerService extends AbstractService implemen
 	 * DEPENDENCY GRAPH.
 	 */
 
-	private ObjectGraph< FeatureComputer< Model > > getDependencyGraph( final Set< String > computerNames )
+	private ObjectGraph< FeatureComputer< Model > > getDependencyGraph( final Set< FeatureComputer< Model > > computers )
 	{
 		final ObjectGraph< FeatureComputer< Model > > computerGraph = new ObjectGraph<>();
 		final ObjectVertex< FeatureComputer< Model > > ref = computerGraph.vertexRef();
 
 		final Set< FeatureComputer< Model > > requestedFeatureComputers = new HashSet<>();
-		for ( final String cName : computerNames )
+		for ( final FeatureComputer< Model > computer : computers )
 		{
 			// Build a list of feature computers.
-			requestedFeatureComputers.add( availableFeatureComputers.get( cName ) );
+			requestedFeatureComputers.add( computer );
 
 			// Add them in the dependency graph.
-			addDepVertex( cName, computerGraph, ref );
+			addDepVertex( computer, computerGraph, ref );
 		}
 
 		computerGraph.releaseRef( ref );
@@ -158,41 +137,41 @@ public class DefaultMamutFeatureComputerService extends AbstractService implemen
 	/**
 	 * Called recursively.
 	 *
-	 * @param depName
+	 * @param computer
 	 * @param computerGraph
 	 * @param ref
 	 * @return
 	 */
 	private final ObjectVertex< FeatureComputer< Model > > addDepVertex(
-			final String depName,
+			final FeatureComputer< Model > computer,
 			final ObjectGraph< FeatureComputer< Model > > computerGraph,
 			final ObjectVertex< FeatureComputer< Model > > ref )
 	{
-		final FeatureComputer< Model > fc = availableFeatureComputers.get( depName );
-		if ( null == fc )
-		{
-			logService.error( "Cannot add feature computer named " + depName + " as it is not registered." );
-			return null;
-		}
-
 		for ( final ObjectVertex< FeatureComputer< Model > > v : computerGraph.vertices() )
 		{
-			if ( v.getContent().equals( fc ) )
+			if ( v.getContent().equals( computer ) )
 				return v;
 		}
 
-		final ObjectVertex< FeatureComputer< Model > > source = computerGraph.addVertex( ref ).init( fc );
-		final Set< String > deps = fc.getDependencies();
+		final ObjectVertex< FeatureComputer< Model > > source = computerGraph.addVertex( ref ).init( computer );
+		final Set< String > deps = computer.getDependencies();
 
 		final ObjectVertex< FeatureComputer< Model > > vref2 = computerGraph.vertexRef();
 		final ObjectEdge< FeatureComputer< Model > > eref = computerGraph.edgeRef();
 
 		for ( final String dep : deps )
 		{
-			final ObjectVertex< FeatureComputer< Model > > target = addDepVertex( dep, computerGraph, vref2 );
+			final FeatureComputer< Model > computerDep = featureComputers.get( dep );
+			if ( null == computerDep )
+			{
+				logService.error( "Cannot add feature computer named " + dep + " as it is not registered." );
+				return null;
+			}
+
+			final ObjectVertex< FeatureComputer< Model > > target = addDepVertex( computerDep, computerGraph, vref2 );
 			if ( null == target )
 			{
-				logService.error( "Removing feature computer named " + depName + " as some of its dependencies could not be resolved." );
+				logService.error( "Removing feature computer named " + computer + " as some of its dependencies could not be resolved." );
 				computerGraph.remove( source );
 				break;
 			}
@@ -205,31 +184,17 @@ public class DefaultMamutFeatureComputerService extends AbstractService implemen
 		return source;
 	}
 
-
 	/*
 	 * PRIVATE METHODS.
 	 */
 
-	private void initializeAvailableSpotFeatureComputers()
-	{
-		this.availableSpotFeatureComputers =
-				initializeFeatureComputers( SpotFeatureComputer.class );
-	}
-
-	private void initializeAvailableLinkFeatureComputers()
-	{
-		this.availableLinkFeatureComputers =
-				initializeFeatureComputers( LinkFeatureComputer.class );
-	}
-
-	private < K extends FeatureComputer< Model > > Set< String > initializeFeatureComputers( final Class< K > cl )
+	private < K extends FeatureComputer< Model > > void initializeFeatureComputers( final Class< K > cl )
 	{
 		final List< PluginInfo< K > > infos = pluginService.getPluginsOfType( cl );
-		final Set< String > names = new HashSet<>( infos.size() );
 		for ( final PluginInfo< K > info : infos )
 		{
 			final String name = info.getName();
-			if ( availableFeatureComputers.keySet().contains( name ) )
+			if ( featureComputers.keySet().contains( name ) )
 			{
 				logService.error( "Cannot register feature computer with name " + name + " of class " + cl +
 						". There is already a feature computer registered with this name." );
@@ -239,8 +204,7 @@ public class DefaultMamutFeatureComputerService extends AbstractService implemen
 			try
 			{
 				final K computer = info.createInstance();
-				availableFeatureComputers.put( name, computer );
-				names.add( name );
+				featureComputers.put( name, computer );
 			}
 			catch ( final InstantiableException e )
 			{
@@ -249,7 +213,11 @@ public class DefaultMamutFeatureComputerService extends AbstractService implemen
 				e.printStackTrace();
 			}
 		}
-		return Collections.unmodifiableSet( names );
 	}
 
+	@Override
+	public Collection< FeatureComputer< Model > > getFeatureComputers()
+	{
+		return Collections.unmodifiableCollection( featureComputers.values() );
+	}
 }

@@ -1,14 +1,16 @@
 package org.mastodon.revised.model.feature;
 
+import java.util.Collection;
 import java.util.Set;
 
 import org.mastodon.revised.mamut.ProgressListener;
 import org.mastodon.revised.model.AbstractModel;
+import org.mastodon.revised.model.mamut.Model;
 import org.scijava.service.SciJavaService;
 
 /**
  * Service that can discover feature computers and execute computation.
- * 
+ *
  * @author Jean-Yves Tinevez
  *
  * @param <AM>
@@ -18,31 +20,27 @@ public interface FeatureComputerService< AM extends AbstractModel< ?, ?, ? > > e
 {
 
 	/**
-	 * Returns the set of available feature computers for vertex features.
-	 * 
-	 * @return the available vertex feature computers.
+	 * Returns the collection of available computers for features defined on the
+	 * objects with the specified class.
+	 *
+	 * @param target
+	 *            the class of the objects the features are defined on.
+	 * @return the available feature computers.
 	 */
-	public Set< String > getAvailableVertexFeatureComputers();
-
-	/**
-	 * Returns the set of available feature computers for edge features.
-	 * 
-	 * @return the available edge feature computers.
-	 */
-	public Set< String > getAvailableEdgeFeatureComputers();
+	public Collection< FeatureComputer< Model > > getFeatureComputers();
 
 	/**
 	 * Executes feature computation for the specified computers on the specified
 	 * model.
-	 * 
+	 *
 	 * @param model
 	 *            the model to compute features on.
-	 * @param computerNames
-	 *            what feature computers to compute.
+	 * @param selectedComputers
+	 *            what computers to run.
 	 * @param progressListener
 	 *            a progress listener, used to report calculation progress.
 	 * @return <code>true</code> if computation terminated successfully.
 	 */
-	public boolean compute( AM model, Set< String > computerNames, ProgressListener progressListener );
+	public boolean compute( AM model, Set< FeatureComputer< Model > > selectedComputers, ProgressListener progressListener );
 
 }
