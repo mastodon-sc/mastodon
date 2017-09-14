@@ -75,6 +75,9 @@ import org.mastodon.revised.ui.selection.NavigationHandlerImp;
 import org.mastodon.revised.ui.selection.Selection;
 import org.mastodon.revised.ui.selection.SelectionImp;
 import org.mastodon.revised.ui.selection.SelectionListener;
+import org.mastodon.revised.ui.selection.TimepointListener;
+import org.mastodon.revised.ui.selection.TimepointModel;
+import org.mastodon.revised.ui.selection.TimepointModelImp;
 import org.scijava.ui.behaviour.KeyPressedManager;
 import org.scijava.ui.behaviour.KeyStrokeAdder;
 import org.scijava.ui.behaviour.io.InputTriggerConfig;
@@ -251,6 +254,8 @@ public class WindowManager
 
 	private final FocusModel< Spot, Link > focusModel;
 
+	private final TimepointModel timepointModel;
+
 	private final BoundingSphereRadiusStatistics radiusStats;
 
 	/**
@@ -308,6 +313,8 @@ public class WindowManager
 		final FocusModelImp< Spot, Link > focusModelImp = new FocusModelImp<>( idmap );
 		graph.addGraphListener( focusModelImp );
 		focusModel = focusModelImp;
+
+		timepointModel = new TimepointModelImp();
 
 		radiusStats = new BoundingSphereRadiusStatistics( model );
 
@@ -397,7 +404,7 @@ public class WindowManager
 //		if ( !bdv.tryLoadSettings( bdvFile ) ) // TODO
 //			InitializeViewerState.initBrightness( 0.001, 0.999, bdv.getViewer(), bdv.getSetupAssignments() );
 
-		viewer.setTimepoint( currentTimepoint );
+		viewer.setTimepoint( timepointModel.getTimepoint() );
 		final OverlayGraphRenderer< OverlayVertexWrapper< Spot, Link >, OverlayEdgeWrapper< Spot, Link > > tracksOverlay = new OverlayGraphRenderer<>(
 				overlayGraph,
 				overlayHighlight,
@@ -478,15 +485,22 @@ public class WindowManager
 				selection,
 				model );
 
-		/*
-		 * TODO: this is still wrong. There should be one central entity syncing
-		 * time for several BDV frames and TrackSchemePanel should listen to
-		 * that. Ideally windows should be configurable to "share" timepoints or
-		 * not.
-		 */
-		viewer.addTimePointListener( tpl );
-//		viewer.repaint(); // TODO remove?
-
+		viewer.addTimePointListener( new TimePointListener()
+		{
+			@Override
+			public void timePointChanged( final int timePointIndex )
+			{
+				timepointModel.setTimepoint( timePointIndex );
+			}
+		} );
+		timepointModel.listeners().add( new TimepointListener()
+		{
+			@Override
+			public void timepointChanged()
+			{
+				viewer.setTimepoint( timepointModel.getTimepoint() );
+			}
+		} );
 
 		// TODO revise
 		// RenderSettingsDialog triggered by "R"
@@ -515,24 +529,6 @@ public class WindowManager
 		final BdvWindow bdvWindow = new BdvWindow( viewerFrame, tracksOverlay, bdvGroupHandle, contextProvider );
 		addBdvWindow( bdvWindow );
 	}
-
-	// TODO testing only
-	private int currentTimepoint = 0;
-
-	// TODO testing only
-	private final TimePointListener tpl = new TimePointListener()
-	{
-		@Override
-		public void timePointChanged( final int timePointIndex )
-		{
-			if ( currentTimepoint != timePointIndex )
-			{
-				currentTimepoint = timePointIndex;
-				for ( final TsWindow w : tsWindows )
-					w.getTrackSchemeFrame().getTrackschemePanel().timePointChanged( timePointIndex );
-			}
-		}
-	};
 
 	public void createTrackScheme()
 	{
@@ -592,6 +588,7 @@ public class WindowManager
 				trackSchemeGraph,
 				trackSchemeHighlight,
 				trackSchemeFocus,
+				timepointModel,
 				trackSchemeSelection,
 				trackSchemeNavigation,
 				model,

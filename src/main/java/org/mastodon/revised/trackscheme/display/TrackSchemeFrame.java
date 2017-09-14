@@ -25,6 +25,7 @@ import org.mastodon.revised.ui.selection.FocusModel;
 import org.mastodon.revised.ui.selection.HighlightModel;
 import org.mastodon.revised.ui.selection.NavigationHandler;
 import org.mastodon.revised.ui.selection.Selection;
+import org.mastodon.revised.ui.selection.TimepointModel;
 import org.mastodon.undo.UndoPointMarker;
 import org.scijava.ui.behaviour.MouseAndKeyHandler;
 import org.scijava.ui.behaviour.io.InputTriggerConfig;
@@ -56,19 +57,21 @@ public class TrackSchemeFrame extends JFrame
 			final TrackSchemeGraph< ?, ? > graph,
 			final HighlightModel< TrackSchemeVertex, TrackSchemeEdge > highlight,
 			final FocusModel< TrackSchemeVertex, TrackSchemeEdge > focus,
+			final TimepointModel timepoint,
 			final Selection< TrackSchemeVertex, TrackSchemeEdge > selection,
 			final NavigationHandler< TrackSchemeVertex, TrackSchemeEdge > navigation,
 			final UndoPointMarker undoPointMarker,
 			final GroupHandle groupHandle,
 			final ContextChooser< ? > contextChooser )
 	{
-		this( graph, highlight, focus, selection, navigation, undoPointMarker, groupHandle, contextChooser, TrackSchemeOptions.options() );
+		this( graph, highlight, focus, timepoint, selection, navigation, undoPointMarker, groupHandle, contextChooser, TrackSchemeOptions.options() );
 	}
 
 	public TrackSchemeFrame(
 			final TrackSchemeGraph< ?, ? > graph,
 			final HighlightModel< TrackSchemeVertex, TrackSchemeEdge > highlight,
 			final FocusModel< TrackSchemeVertex, TrackSchemeEdge > focus,
+			final TimepointModel timepoint,
 			final Selection< TrackSchemeVertex, TrackSchemeEdge > selection,
 			final NavigationHandler< TrackSchemeVertex, TrackSchemeEdge > navigation,
 			final UndoPointMarker undoPointMarker,
@@ -84,6 +87,7 @@ public class TrackSchemeFrame extends JFrame
 				graph,
 				highlight,
 				focus,
+				timepoint,
 				selection,
 				navigation,
 				optional );
