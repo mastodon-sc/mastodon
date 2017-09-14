@@ -8,7 +8,6 @@ import org.mastodon.properties.DoublePropertyMap;
 import org.mastodon.revised.model.feature.Feature;
 import org.mastodon.revised.model.feature.FeatureProjection;
 import org.mastodon.revised.model.feature.FeatureProjectors;
-import org.mastodon.revised.model.feature.FeatureTarget;
 import org.mastodon.revised.model.mamut.Link;
 import org.mastodon.revised.model.mamut.Model;
 import org.mastodon.revised.model.mamut.ModelGraph;
@@ -59,7 +58,7 @@ public class LinkDisplacementComputer implements LinkFeatureComputer
 		graph.releaseRef( ref2 );
 
 		final Map< String, FeatureProjection< Link > > projections = Collections.singletonMap( KEY, FeatureProjectors.project( pm ) );
-		final Feature< Link, Double, DoublePropertyMap< Link > > feature = new Feature<>( KEY, FeatureTarget.EDGE, pm, projections );
+		final Feature< Link, Double, DoublePropertyMap< Link > > feature = new Feature<>( KEY, Link.class, pm, projections );
 		return feature;
 	}
 }

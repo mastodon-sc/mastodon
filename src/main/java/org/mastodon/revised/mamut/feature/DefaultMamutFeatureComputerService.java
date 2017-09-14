@@ -94,14 +94,14 @@ public class DefaultMamutFeatureComputerService extends AbstractService implemen
 
 		final long start = System.currentTimeMillis();
 
-		model.getGraphFeatureModel().clear();
+		model.getFeatureModel().clear();
 		int progress = 1;
 		for ( final ObjectVertex< FeatureComputer< Model > > v : sorter.get() )
 		{
 			final FeatureComputer< Model > computer = v.getContent();
 			progressListener.showStatus( computer.getKey() );
 			final Feature< ?, ?, ? > feature = computer.compute( model );
-			model.getGraphFeatureModel().declareFeature( feature );
+			model.getFeatureModel().declareFeature( feature );
 
 			progressListener.showProgress( progress++, computerNames.size() );
 		}

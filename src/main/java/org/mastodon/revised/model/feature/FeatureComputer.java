@@ -32,7 +32,7 @@ public interface FeatureComputer< AM extends AbstractModel< ?, ?, ? > > extends 
 	 * Objects for which the feature is defined are taken from the specified
 	 * model. The model is also used to store the feature within one of its
 	 * feature model components.
-	 * 
+	 *
 	 * @param model
 	 *            the model to retrieve objects from.
 	 */
@@ -40,7 +40,7 @@ public interface FeatureComputer< AM extends AbstractModel< ?, ?, ? > > extends 
 
 	/**
 	 * Returns the string key of the feature calculated by this computer.
-	 * 
+	 *
 	 * @return the feature key.
 	 */
 	public String getKey();

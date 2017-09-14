@@ -28,7 +28,7 @@ import org.mastodon.properties.PropertyMap;
  * projections, that translate or project the feature on several real scalar
  * values. Since the computer defines what the feature it compute is, it also
  * must be able to define the meaningful projections for the feature.
- * 
+ *
  * @author Jean-Yves Tinevez
  *
  * @param <O>
@@ -58,35 +58,35 @@ public class Feature< O, T, K extends PropertyMap< O, T > >
 	private final Map< String, FeatureProjection< O > > projections;
 
 	/**
-	 * The feature target.
+	 * The class of the feature target.
 	 */
-	private final FeatureTarget target;
+	private final Class< O > targetClass;
 
 	/**
 	 * Creates a new immutable feature instance.
-	 * 
+	 *
 	 * @param key
 	 *            The feature unique key. Must be unique within the application
 	 *            scope.
 	 * @param target
-	 *            The feature target.
+	 *            The class of the feature target.
 	 * @param propertyMap
 	 *            The feature property map.
 	 * @param projections
 	 *            The feature projections, stored as a map from projection names
 	 *            to projections.
 	 */
-	public Feature( final String key, final FeatureTarget target, final K propertyMap, final Map< String, FeatureProjection< O > > projections )
+	public Feature( final String key, final Class< O > targetClass, final K propertyMap, final Map< String, FeatureProjection< O > > projections )
 	{
 		this.key = key;
-		this.target = target;
+		this.targetClass = targetClass;
 		this.propertyMap = propertyMap;
 		this.projections = projections;
 	}
 
 	/**
 	 * Returns the key of this feature.
-	 * 
+	 *
 	 * @return the feature key.
 	 */
 	public String getKey()
@@ -96,7 +96,7 @@ public class Feature< O, T, K extends PropertyMap< O, T > >
 
 	/**
 	 * Returns the property map storing the values of this feature.
-	 * 
+	 *
 	 * @return the property map.
 	 */
 	public K getPropertyMap()
@@ -108,7 +108,7 @@ public class Feature< O, T, K extends PropertyMap< O, T > >
 	 * Returns the feature projections for this feature.
 	 * <p>
 	 * They are returned as a map from projection keys to actual projections.
-	 * 
+	 *
 	 * @return the map of feature projections.
 	 */
 	public Map< String, FeatureProjection< O > > getProjections()
@@ -117,13 +117,12 @@ public class Feature< O, T, K extends PropertyMap< O, T > >
 	}
 
 	/**
-	 * Returns the object this feature is defined on, as a
-	 * {@link FeatureTarget}.
-	 * 
-	 * @return the feature target.
+	 * Returns the class of the object this feature is defined on.
+	 *
+	 * @return the feature target class.
 	 */
-	public FeatureTarget getTarget()
+	public Class< O > getTargetClass()
 	{
-		return target;
+		return targetClass;
 	}
 }

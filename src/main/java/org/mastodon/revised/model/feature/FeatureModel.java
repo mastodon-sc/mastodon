@@ -1,59 +1,40 @@
 package org.mastodon.revised.model.feature;
 
+import java.util.Set;
+
 /**
  * Interface for feature models, classes that manage a collection of features in
  * a model graph.
- * 
- * @author Jean-Yves Tinevez
  *
- * @param <V>
- *            the type of vertices in the model.
- * @param <E>
- *            the type of edges in the model.
+ * @author Jean-Yves Tinevez
  */
-public interface FeatureModel< V, E > extends FeatureKeys
+public interface FeatureModel
 {
-	/**
-	 * Returns the edge feature projection with the specified key.
-	 * 
-	 * @param projectionKey
-	 *            the projection key.
-	 * @return the feature projection of <code>null</code> if they projection
-	 *         key is unknown or defined for another target than an edge.
-	 */
-	public FeatureProjection< E > getEdgeProjection( final String projectionKey );
+
+	public Set< Feature< ?, ?, ? > > getFeatureSet( Class< ? > clazz );
 
 	/**
-	 * Returns the vertex feature projection with the specified key.
-	 * 
-	 * @param projectionKey
-	 *            the projection key.
-	 * @return the feature projection of <code>null</code> if they projection
-	 *         key is unknown or defined for another target than a vertex.
-	 */
-	public FeatureProjection< V > getVertexProjection( final String projectionKey );
-
-	/**
-	 * Returns the feature with the specified key.
-	 * 
-	 * @param featureKey
-	 *            the feature key.
-	 * @return the feature, or <code>null</code> if the feature is unknown.
-	 */
-	public Feature< ?, ?, ? > getFeature( final String featureKey );
-
-	/**
-	 * Clears this feature and projection model.
+	 * Clears this feature model.
 	 */
 	public void clear();
 
 	/**
 	 * Registers the feature key and the feature projections provided by the
 	 * specified feature.
-	 * 
+	 *
 	 * @param feature
 	 *            the feature.
 	 */
 	public void declareFeature( final Feature< ?, ?, ? > feature );
+
+	/**
+	 * Returns the feature with the specified key.
+	 *
+	 * @param key
+	 *            the key of the feature to retrieve.
+	 * @return the feature, or <code>null</code> if a feature with the specified
+	 *         key is not registered in this model.
+	 */
+	public Feature< ?, ?, ? > getFeature( String key );
 
 }

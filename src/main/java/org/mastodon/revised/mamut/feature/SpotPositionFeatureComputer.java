@@ -9,7 +9,6 @@ import org.mastodon.properties.AbstractPropertyMap;
 import org.mastodon.properties.PropertyMap;
 import org.mastodon.revised.model.feature.Feature;
 import org.mastodon.revised.model.feature.FeatureProjection;
-import org.mastodon.revised.model.feature.FeatureTarget;
 import org.mastodon.revised.model.mamut.Model;
 import org.mastodon.revised.model.mamut.Spot;
 import org.scijava.plugin.Plugin;
@@ -47,7 +46,7 @@ public class SpotPositionFeatureComputer implements SpotFeatureComputer
 		final Map< String, FeatureProjection< Spot > > projections = Collections.unmodifiableMap( map );
 		final Feature< Spot, RealLocalizable, PropertyMap< Spot, RealLocalizable > > feature =
 				new Feature< Spot, RealLocalizable, PropertyMap< Spot, RealLocalizable > >(
-						KEY, FeatureTarget.VERTEX,
+						KEY, Spot.class,
 						new RealLocalizablePropertyMap< Spot >( model.getGraph().vertices().size() ),
 						projections );
 		return feature;
@@ -75,10 +74,10 @@ public class SpotPositionFeatureComputer implements SpotFeatureComputer
 			return obj.getDoublePosition( d );
 		}
 	}
-	
+
 	/**
 	 * Morphs a {@link RealLocalizable} position as a read-only PropertyMap.
-	 * 
+	 *
 	 * @author Jean-Yves Tinevez
 	 *
 	 */

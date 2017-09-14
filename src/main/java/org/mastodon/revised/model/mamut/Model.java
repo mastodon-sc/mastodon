@@ -44,7 +44,7 @@ public class Model extends AbstractModel< ModelGraph, Spot, Link > implements Un
 
 	private final GraphUndoRecorder< Spot, Link > undoRecorder;
 
-	private final FeatureModel< Spot, Link > graphFeatureModel;
+	private final FeatureModel featureModel;
 
 	public Model()
 	{
@@ -61,7 +61,7 @@ public class Model extends AbstractModel< ModelGraph, Spot, Link > implements Un
 
 		final List< Property< Link > > edgeUndoableProperties = new ArrayList<>();
 
-		graphFeatureModel = new DefaultFeatureModel<>();
+		featureModel = new DefaultFeatureModel();
 
 		undoRecorder = new GraphUndoRecorder<>(
 				initialCapacity,
@@ -127,9 +127,9 @@ public class Model extends AbstractModel< ModelGraph, Spot, Link > implements Un
 		undoRecorder.setUndoPoint();
 	}
 
-	public FeatureModel< Spot, Link > getGraphFeatureModel()
+	public FeatureModel getFeatureModel()
 	{
-		return graphFeatureModel;
+		return featureModel;
 	}
 
 }
