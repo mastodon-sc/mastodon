@@ -2,6 +2,7 @@ package org.mastodon.revised.ui.selection;
 
 import org.mastodon.graph.Edge;
 import org.mastodon.graph.Vertex;
+import org.mastodon.util.Listeners;
 
 /**
  * Class to manage the model vertex that has the "focus", regardless of how this
@@ -19,7 +20,5 @@ public interface FocusModel< V extends Vertex< E >, E extends Edge< V > >
 
 	public V getFocusedVertex( final V ref );
 
-	public boolean addFocusListener( final FocusListener listener );
-
-	public boolean removeFocusListener( final FocusListener listener );
+	public Listeners< FocusListener > listeners();
 }

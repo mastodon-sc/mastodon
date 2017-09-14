@@ -7,6 +7,7 @@ import org.mastodon.graph.Edge;
 import org.mastodon.graph.Vertex;
 import org.mastodon.revised.ui.selection.Selection;
 import org.mastodon.revised.ui.selection.SelectionListener;
+import org.mastodon.util.Listeners;
 
 public class SelectionAdapter< V extends Vertex< E >, E extends Edge< V >, WV extends Vertex< WE >, WE extends Edge< WV > >
 		implements Selection< WV, WE >
@@ -94,15 +95,9 @@ public class SelectionAdapter< V extends Vertex< E >, E extends Edge< V >, WV ex
 	}
 
 	@Override
-	public boolean addSelectionListener( final SelectionListener listener )
+	public Listeners< SelectionListener > listeners()
 	{
-		return selection.addSelectionListener( listener );
-	}
-
-	@Override
-	public boolean removeSelectionListener( final SelectionListener listener )
-	{
-		return selection.removeSelectionListener( listener );
+		return selection.listeners();
 	}
 
 	@Override

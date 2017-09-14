@@ -406,7 +406,7 @@ public class WindowManager
 		viewer.getDisplay().addOverlayRenderer( tracksOverlay );
 		viewer.addRenderTransformListener( tracksOverlay );
 		viewer.addTimePointListener( tracksOverlay );
-		overlayHighlight.addHighlightListener( new HighlightListener()
+		overlayHighlight.listeners().add( new HighlightListener()
 		{
 			@Override
 			public void highlightChanged()
@@ -414,7 +414,7 @@ public class WindowManager
 				viewer.getDisplay().repaint();
 			}
 		} );
-		overlayFocus.addFocusListener( new FocusListener()
+		overlayFocus.listeners().add( new FocusListener()
 		{
 			@Override
 			public void focusChanged()
@@ -431,7 +431,7 @@ public class WindowManager
 			}
 		} );
 		model.getGraph().addVertexPositionListener( ( v ) -> viewer.getDisplay().repaint() );
-		overlaySelection.addSelectionListener( new SelectionListener()
+		overlaySelection.listeners().add( new SelectionListener()
 		{
 			@Override
 			public void selectionChanged()
@@ -442,7 +442,7 @@ public class WindowManager
 		// TODO: remember those listeners and remove them when the BDV window is closed!!!
 
 		final OverlayNavigation< OverlayVertexWrapper< Spot, Link >, OverlayEdgeWrapper< Spot, Link > > overlayNavigation = new OverlayNavigation<>( viewer, overlayGraph );
-		overlayNavigationHandler.addNavigationListener( overlayNavigation );
+		overlayNavigationHandler.listeners().add( overlayNavigation );
 
 		final BdvHighlightHandler< ?, ? > highlightHandler = new BdvHighlightHandler<>( overlayGraph, tracksOverlay, overlayHighlight );
 		viewer.getDisplay().addHandler( highlightHandler );

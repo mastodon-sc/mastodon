@@ -6,6 +6,7 @@ import org.mastodon.collection.RefSet;
 import org.mastodon.graph.Edge;
 import org.mastodon.graph.GraphListener;
 import org.mastodon.graph.Vertex;
+import org.mastodon.util.Listeners;
 
 /**
  * A class that manages a selection of vertices and edges of a graph.
@@ -125,9 +126,13 @@ public interface Selection< V extends Vertex< E >, E extends Edge< V > >
 	 */
 	public RefSet< V > getSelectedVertices();
 
-	public boolean addSelectionListener( final SelectionListener listener );
-
-	public boolean removeSelectionListener( final SelectionListener listener );
+	/**
+	 * Get the list of selection listeners. Add a {@link SelectionListener} to
+	 * this list, for being notified when the vertex/edge selection changes.
+	 *
+	 * @return the list of listeners
+	 */
+	public Listeners< SelectionListener > listeners();
 
 	public void resumeListeners();
 

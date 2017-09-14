@@ -4,6 +4,7 @@ import org.mastodon.graph.Edge;
 import org.mastodon.graph.Vertex;
 import org.mastodon.revised.ui.selection.HighlightListener;
 import org.mastodon.revised.ui.selection.HighlightModel;
+import org.mastodon.util.Listeners;
 
 public class HighlightAdapter< V extends Vertex< E >, E extends Edge< V >, WV extends Vertex< WE >, WE extends Edge< WV > >
 		implements HighlightModel< WV, WE >
@@ -55,14 +56,8 @@ public class HighlightAdapter< V extends Vertex< E >, E extends Edge< V >, WV ex
 	}
 
 	@Override
-	public boolean addHighlightListener( final HighlightListener listener )
+	public Listeners< HighlightListener > listeners()
 	{
-		return highlight.addHighlightListener( listener );
-	}
-
-	@Override
-	public boolean removeHighlightListener( final HighlightListener listener )
-	{
-		return highlight.removeHighlightListener( listener );
+		return highlight.listeners();
 	}
 }

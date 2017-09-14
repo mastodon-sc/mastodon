@@ -166,16 +166,16 @@ public class TrackSchemePanel extends JPanel implements
 		final Values options = optional.values;
 
 		graph.addGraphChangeListener( this );
-		navigation.addNavigationListener( this );
+		navigation.listeners().add( this );
 
 		final int w = options.getWidth();
 		final int h = options.getHeight();
 		display = new InteractiveDisplayCanvasComponent<>( w, h, options.getTransformEventHandlerFactory() );
 		display.addTransformListener( this );
 
-		highlight.addHighlightListener( this );
-		focus.addFocusListener( this );
-		selection.addSelectionListener( this );
+		highlight.listeners().add( this );
+		focus.listeners().add( this );
+		selection.listeners().add( this );
 
 		style = TrackSchemeStyle.defaultStyle().copy( "default" );
 		graphOverlay = new DefaultTrackSchemeOverlay( graph, highlight, focus, optional, style );

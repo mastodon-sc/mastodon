@@ -4,6 +4,7 @@ import org.mastodon.graph.Edge;
 import org.mastodon.graph.Vertex;
 import org.mastodon.revised.ui.selection.FocusListener;
 import org.mastodon.revised.ui.selection.FocusModel;
+import org.mastodon.util.Listeners;
 
 public class FocusAdapter< V extends Vertex< E >, E extends Edge< V >, WV extends Vertex< WE >, WE extends Edge< WV > >
 		implements FocusModel< WV, WE >
@@ -37,14 +38,8 @@ public class FocusAdapter< V extends Vertex< E >, E extends Edge< V >, WV extend
 	}
 
 	@Override
-	public boolean addFocusListener( final FocusListener listener )
+	public Listeners< FocusListener > listeners()
 	{
-		return focus.addFocusListener( listener );
-	}
-
-	@Override
-	public boolean removeFocusListener( final FocusListener listener )
-	{
-		return focus.removeFocusListener( listener );
+		return focus.listeners();
 	}
 }

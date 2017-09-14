@@ -2,6 +2,7 @@ package org.mastodon.revised.ui.selection;
 
 import org.mastodon.graph.Edge;
 import org.mastodon.graph.Vertex;
+import org.mastodon.util.Listeners;
 
 /**
  * Manages the highlighted vertex.
@@ -60,24 +61,10 @@ public interface HighlightModel< V extends Vertex< E >, E extends Edge< V > >
 	public E getHighlightedEdge( final E ref );
 
 	/**
-	 * Registers a HighlightListener to this highlight model, that will be
-	 * notified when the highlighted vertex changes.
+	 * Get the list of highlight listeners. Add a {@link HighlightListener} to
+	 * this list, for being notified when the highlighted vertex/edge changes.
 	 *
-	 * @param listener
-	 *            the listener to register.
-	 * @return {@code true} if the listener was successfully registered.
-	 *         {@code false} if it was already registered.
+	 * @return the list of listeners
 	 */
-	public boolean addHighlightListener( final HighlightListener listener );
-
-	/**
-	 * Removes the specified listener from the listeners of this highlight
-	 * model.
-	 *
-	 * @param listener
-	 *            the listener to remove.
-	 * @return {@code true} if the listener was present in the listeners of
-	 *         this model and was succesfully removed.
-	 */
-	public boolean removeHighlightListener( final HighlightListener listener );
+	public Listeners< HighlightListener > listeners();
 }
