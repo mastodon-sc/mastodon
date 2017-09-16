@@ -1,5 +1,7 @@
 package org.mastodon.revised.ui.grouping;
 
+import static org.mastodon.revised.ui.grouping.GroupHandle.NO_GROUP;
+
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
@@ -36,7 +38,7 @@ public class GroupLocksPanel extends JPanel implements GroupChangeListener
 		for ( int i = 0; i < N_LOCKS; i++ )
 		{
 			final int lockId = i;
-			final boolean isActive = groupHandle.isInGroup( lockId );
+			final boolean isActive = groupHandle.getGroupId() == lockId;
 			final JToggleButton button = new JToggleButton( "" + ( i + 1 ), isActive ? LOCK_ICON : UNLOCK_ICON, isActive );
 			button.setFont( FONT );
 			button.setPreferredSize( new Dimension( 60, 20 ) );
@@ -50,15 +52,15 @@ public class GroupLocksPanel extends JPanel implements GroupChangeListener
 				public void actionPerformed( final ActionEvent e )
 				{
 					if ( button.isSelected() )
-						groupHandle.addToGroup( lockId );
+						groupHandle.setGroupId( lockId );
 					else
-						groupHandle.removeFromGroup( lockId );
+						groupHandle.setGroupId( NO_GROUP );
 				}
 			} );
 			add( button );
 			buttons.add( button );
 		}
-		groupHandle.addGroupChangeListener( this );
+		groupHandle.groupChangeListeners().add( this );
 	}
 
 	@Override
@@ -66,7 +68,7 @@ public class GroupLocksPanel extends JPanel implements GroupChangeListener
 	{
 		for ( int i = 0; i < N_LOCKS; ++i )
 		{
-			final boolean activated = groupHandle.isInGroup( i );
+			final boolean activated = groupHandle.getGroupId() == i;
 			final JToggleButton button = buttons.get( i );
 			button.setSelected( activated );
 			button.setIcon( activated ? LOCK_ICON : UNLOCK_ICON );

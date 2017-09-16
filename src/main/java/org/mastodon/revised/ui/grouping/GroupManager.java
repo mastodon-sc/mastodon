@@ -1,14 +1,14 @@
 package org.mastodon.revised.ui.grouping;
 
-import static gnu.trove.impl.Constants.DEFAULT_CAPACITY;
-import static gnu.trove.impl.Constants.DEFAULT_LOAD_FACTOR;
-import gnu.trove.iterator.TIntIterator;
-import gnu.trove.list.array.TIntArrayList;
 import gnu.trove.map.TIntObjectMap;
 import gnu.trove.map.hash.TIntObjectHashMap;
-
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
+
+import static gnu.trove.impl.Constants.DEFAULT_CAPACITY;
+import static gnu.trove.impl.Constants.DEFAULT_LOAD_FACTOR;
+import static org.mastodon.revised.ui.grouping.GroupHandle.NO_GROUP;
 
 /**
  * TODO: javadoc
@@ -34,28 +34,21 @@ public class GroupManager
 
 	public void removeGroupHandle( final GroupHandle handle )
 	{
-		final TIntIterator ids = new TIntArrayList( handle.groupIds ).iterator();
-		while ( ids.hasNext() )
-			removeFromGroup( handle, ids.next() );
-	}
-
-	void addToGroup( final GroupHandle handle, final int groupId )
-	{
-		Set< GroupHandle > handles = groupIdToGroupHandles.get( groupId );
-		if ( handles == null )
-		{
-			handles = new HashSet<>();
-			groupIdToGroupHandles.put( groupId, handles );
-		}
-		if ( handles.add( handle ) )
+		final int id = handle.getGroupId();
+		if ( id != NO_GROUP && handles( id ).remove( handle ) )
 			++modCount;
 	}
 
-	void removeFromGroup( final GroupHandle handle, final int groupId )
+	boolean setGroupId( final GroupHandle handle, final int groupId )
 	{
-		final Set< GroupHandle > nandles = groupIdToGroupHandles.get( groupId );
-		if ( nandles != null && nandles.remove( handle ) )
-			++modCount;
+		final int oldId = handle.groupId;
+		if ( oldId == groupId )
+			return false;
+		handles( oldId ).remove( handle );
+		handles( groupId ).add( handle );
+		handle.groupId = groupId;
+		++modCount;
+		return true;
 	}
 
 	int modCount()
@@ -68,13 +61,22 @@ public class GroupManager
 		++modCount;
 	}
 
-	Set< GroupHandle > getAllGroupMembers( final GroupHandle member )
+	private Set< GroupHandle > handles( int groupId )
 	{
-		final HashSet< GroupHandle > members = new HashSet<>();
-		members.add( member );
-		final TIntIterator ids = member.groupIds.iterator();
-		while ( ids.hasNext() )
-			members.addAll( groupIdToGroupHandles.get( ids.next() ) );
-		return members;
+		Set< GroupHandle > handles = groupIdToGroupHandles.get( groupId );
+		if ( handles == null )
+		{
+			handles = new HashSet<>();
+			groupIdToGroupHandles.put( groupId, handles );
+		}
+		return handles;
+	}
+
+	Set< GroupHandle > getAllGroupMembers( final GroupHandle handle )
+	{
+		final int id = handle.getGroupId();
+		return ( id == NO_GROUP )
+				? Collections.singleton( handle )
+				: new HashSet<>( handles( id ) );
 	}
 }

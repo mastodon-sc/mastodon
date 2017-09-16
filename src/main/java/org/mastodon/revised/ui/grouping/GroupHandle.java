@@ -5,9 +5,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 
-import gnu.trove.TCollections;
-import gnu.trove.set.TIntSet;
-import gnu.trove.set.hash.TIntHashSet;
+import org.mastodon.util.Listeners;
 
 /**
  * TODO: javadoc
@@ -16,22 +14,22 @@ import gnu.trove.set.hash.TIntHashSet;
  */
 public class GroupHandle
 {
+	public static final int NO_GROUP = -1;
+
 	private final GroupManager manager;
 
 	private int expectedModCount;
 
 	/**
-	 * The IDs of the groups this {@link GroupHandle} belongs to currently.
+	 * The id of the group this {@link GroupHandle} belongs to currently.
 	 * <p>
-	 * Empty {@code groupIds} implies, that this {@link GroupHandle} currently
+	 * {@code groupId == NO_GROUP} implies, that this GroupHandle currently
 	 * belongs to no group, respectively the singleton group containing only the
-	 * {@link GroupHandle} itself.
+	 * GroupHandle itself.
 	 */
-	final TIntSet groupIds;
+	int groupId = NO_GROUP;
 
-	private final TIntSet unmodifiableGroupIds;
-
-	private final ArrayList< GroupChangeListener > listeners;
+	private final Listeners.List< GroupChangeListener > listeners = new Listeners.SynchronizedList<>();
 
 	private final HashMap< Class< ? >, Set< ? > > registered = new HashMap<>();
 
@@ -41,34 +39,23 @@ public class GroupHandle
 	{
 		this.manager = manager;
 		expectedModCount = manager.modCount() - 1;
-		groupIds = new TIntHashSet();
-		listeners = new ArrayList<>();
-		unmodifiableGroupIds = TCollections.unmodifiableSet( groupIds );
 	}
 
-	public TIntSet getGroupIds()
+	public int getGroupId()
 	{
-		return unmodifiableGroupIds;
+		return groupId;
 	}
 
-	public boolean isInGroup( final int groupId )
+	void setGroupId( final int id )
 	{
-		return groupIds.contains( groupId );
+		if ( manager.setGroupId( this, id ) )
+			for ( final GroupChangeListener l : listeners.list )
+				l.groupChanged();
 	}
 
-	public synchronized boolean addGroupChangeListener( final GroupChangeListener listener )
+	public Listeners< GroupChangeListener > groupChangeListeners()
 	{
-		if ( ! listeners.contains( listener ) )
-		{
-			listeners.add( listener );
-			return true;
-		}
-		return false;
-	}
-
-	public synchronized boolean removeGroupChangeListener( final GroupChangeListener listener )
-	{
-		return listeners.remove( listener );
+		return listeners;
 	}
 
 	public < T > void add( final T o )
@@ -101,20 +88,6 @@ public class GroupHandle
 		return ( ArrayList< T > ) cache.get( o.getClass() );
 	}
 
-	void addToGroup( final int groupId )
-	{
-		manager.addToGroup( this, groupId );
-		groupIds.add( groupId );
-		notifyListeners();
-	}
-
-	void removeFromGroup( final int groupId )
-	{
-		manager.removeFromGroup( this, groupId );
-		groupIds.remove( groupId );
-		notifyListeners();
-	}
-
 	private synchronized void validateCache()
 	{
 		final int modCount = manager.modCount();
@@ -127,6 +100,7 @@ public class GroupHandle
 		}
 	}
 
+	@SuppressWarnings( "unchecked" )
 	private < T > void rebuildCacheEntry( final Class< T > clazz )
 	{
 		final Set< GroupHandle > allMembers = manager.getAllGroupMembers( this );
@@ -134,11 +108,5 @@ public class GroupHandle
 		for ( final GroupHandle m : allMembers )
 			all.addAll( ( Set< T > ) m.registered.get( clazz ) );
 		cache.put( clazz, new ArrayList<>( all ) );
-	}
-
-	private void notifyListeners()
-	{
-		for ( final GroupChangeListener l : listeners )
-			l.groupChanged();
 	}
 }
