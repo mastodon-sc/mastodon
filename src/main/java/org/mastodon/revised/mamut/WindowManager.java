@@ -472,7 +472,7 @@ public class WindowManager
 		HighlightBehaviours.installActionBindings(
 				viewerFrame.getTriggerbindings(),
 				keyconf,
-				new String[] {"bdv"},
+				new String[] { "bdv" },
 				model.getGraph(),
 				model.getGraph(),
 				highlightModel,
@@ -549,7 +549,6 @@ public class WindowManager
 		 */
 		final HighlightModel< TrackSchemeVertex, TrackSchemeEdge > trackSchemeHighlight = new HighlightAdapter<>( highlightModel, vertexMap, edgeMap );
 
-
 		/*
 		 * TrackScheme selection
 		 */
@@ -579,7 +578,7 @@ public class WindowManager
 		/*
 		 * TrackScheme ContextChooser
 		 */
-		final TrackSchemeContextListener< Spot > contextListener = new TrackSchemeContextListener< >(
+		final TrackSchemeContextListener< Spot > contextListener = new TrackSchemeContextListener<>(
 				idmap,
 				trackSchemeGraph );
 		final ContextChooser< Spot > contextChooser = new ContextChooser<>( contextListener );
@@ -706,7 +705,7 @@ public class WindowManager
 		public static void writeToYaml( final String fileName, final WindowManager wm ) throws IOException
 		{
 			mkdirs( fileName );
-			YamlConfigIO.write(  buildDescriptions( wm ), fileName );
+			YamlConfigIO.write( buildDescriptions( wm ), fileName );
 		}
 	}
 }
