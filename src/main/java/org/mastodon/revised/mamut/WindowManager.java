@@ -62,6 +62,7 @@ import org.mastodon.revised.trackscheme.wrap.DefaultModelGraphProperties;
 import org.mastodon.revised.trackscheme.wrap.ModelGraphProperties;
 import org.mastodon.revised.ui.HighlightBehaviours;
 import org.mastodon.revised.ui.SelectionActions;
+import org.mastodon.revised.ui.grouping.ForwardingNavigationHandler;
 import org.mastodon.revised.ui.grouping.ForwardingTimepointModel;
 import org.mastodon.revised.ui.grouping.GroupHandle;
 import org.mastodon.revised.ui.grouping.GroupManager;
@@ -97,6 +98,8 @@ import mpicbg.spim.data.generic.AbstractSpimData;
 public class WindowManager
 {
 	private static final int NUM_GROUPS = 3;
+
+	public static final ForwardingNavigationHandler.Factory< Spot, Link > forwardingNavigationHandlerFactory = new ForwardingNavigationHandler.Factory<>();
 
 	/**
 	 * Information for one BigDataViewer window.
@@ -283,6 +286,9 @@ public class WindowManager
 		this.keyconf = keyconf;
 
 		groupManager = new GroupManager( NUM_GROUPS );
+		groupManager.registerModel( ForwardingTimepointModel.factory );
+		groupManager.registerModel( forwardingNavigationHandlerFactory );
+
 		keyPressedManager = new KeyPressedManager();
 		final RequestRepaint requestRepaint = new RequestRepaint()
 		{
@@ -313,8 +319,6 @@ public class WindowManager
 		final FocusModelImp< Spot, Link > focusModelImp = new FocusModelImp<>( idmap );
 		graph.addGraphListener( focusModelImp );
 		focusModel = focusModelImp;
-
-		groupManager.registerModel( ForwardingTimepointModel.factory );
 
 		radiusStats = new BoundingSphereRadiusStatistics( model );
 
@@ -379,6 +383,7 @@ public class WindowManager
 	{
 		final GroupHandle bdvGroupHandle = groupManager.createGroupHandle();
 		final TimepointModel timepointModel = bdvGroupHandle.getModel( ForwardingTimepointModel.factory );
+		final NavigationHandler< Spot, Link > navigation = bdvGroupHandle.getModel( forwardingNavigationHandlerFactory );
 
 		final OverlayGraphWrapper< Spot, Link > overlayGraph = new OverlayGraphWrapper<>(
 				model.getGraph(),
@@ -391,8 +396,7 @@ public class WindowManager
 		final HighlightModel< OverlayVertexWrapper< Spot, Link >, OverlayEdgeWrapper< Spot, Link > > overlayHighlight = new HighlightAdapter<>( highlightModel, vertexMap, edgeMap );
 		final FocusModel< OverlayVertexWrapper< Spot, Link >, OverlayEdgeWrapper< Spot, Link > > overlayFocus = new FocusAdapter<>( focusModel, vertexMap, edgeMap );
 		final Selection< OverlayVertexWrapper< Spot, Link >, OverlayEdgeWrapper< Spot, Link > > overlaySelection = new SelectionAdapter<>( selection, vertexMap, edgeMap );
-		final NavigationHandler< Spot, Link > navigationHandler = new NavigationHandlerImp<>( bdvGroupHandle );
-		final NavigationHandler< OverlayVertexWrapper< Spot, Link >, OverlayEdgeWrapper< Spot, Link > > overlayNavigationHandler = new NavigationHandlerAdapter<>( navigationHandler, vertexMap, edgeMap );
+		final NavigationHandler< OverlayVertexWrapper< Spot, Link >, OverlayEdgeWrapper< Spot, Link > > overlayNavigationHandler = new NavigationHandlerAdapter<>( navigation, vertexMap, edgeMap );
 		final String windowTitle = "BigDataViewer " + (bdvName++); // TODO: use JY naming scheme
 		final BigDataViewerMaMuT bdv = BigDataViewerMaMuT.open( sharedBdvData, windowTitle, bdvGroupHandle );
 		final ViewerFrame viewerFrame = bdv.getViewerFrame();
@@ -567,8 +571,8 @@ public class WindowManager
 		/*
 		 * TrackScheme navigation
 		 */
-		final NavigationHandler< Spot, Link > navigationHandler = new NavigationHandlerImp<>( groupHandle );
-		final NavigationHandler< TrackSchemeVertex, TrackSchemeEdge > trackSchemeNavigation = new NavigationHandlerAdapter<>( navigationHandler, vertexMap, edgeMap );
+		final NavigationHandler< Spot, Link > navigation = groupHandle.getModel( forwardingNavigationHandlerFactory );
+		final NavigationHandler< TrackSchemeVertex, TrackSchemeEdge > trackSchemeNavigation = new NavigationHandlerAdapter<>( navigation, vertexMap, edgeMap );
 
 		/*
 		 * TrackScheme focus
