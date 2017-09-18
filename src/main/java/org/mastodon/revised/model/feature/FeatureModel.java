@@ -11,7 +11,7 @@ import java.util.Set;
 public interface FeatureModel
 {
 
-	public Set< Feature< ?, ?, ? > > getFeatureSet( Class< ? > clazz );
+	public Set< Feature< ?, ?, ? > > getFeatureSet( Class< ? > targetClass );
 
 	/**
 	 * Clears this feature model.

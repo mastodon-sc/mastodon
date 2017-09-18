@@ -13,17 +13,17 @@ import java.util.Set;
 public class DefaultFeatureModel implements FeatureModel
 {
 
-	private final Map< Class< ? >, Set< Feature< ?, ?, ? > > > featureSets;
+	private final Map< Class< ? >, Set< Feature< ?, ?, ? > > > targetClassToFeatures;
 
-	private final Map<String, Feature< ?, ?, ? >> featureKeys;
+	private final Map< String, Feature< ?, ?, ? > > keyToFeature;
 
 	/**
 	 * Creates a new, empty, feature model.
 	 */
 	public DefaultFeatureModel()
 	{
-		featureSets = new HashMap<>();
-		featureKeys = new HashMap<>();
+		targetClassToFeatures = new HashMap<>();
+		keyToFeature = new HashMap<>();
 	}
 
 	@Override
@@ -31,34 +31,34 @@ public class DefaultFeatureModel implements FeatureModel
 	{
 		// Features.
 		final Class< ? > clazz = feature.getTargetClass();
-		Set< Feature< ?, ?, ? > > featureSet = featureSets.get( clazz );
+		Set< Feature< ?, ?, ? > > featureSet = targetClassToFeatures.get( clazz );
 		if (null == featureSet)
 		{
 			featureSet = new HashSet<>();
-			featureSets.put( clazz, featureSet );
+			targetClassToFeatures.put( clazz, featureSet );
 		}
 		featureSet.add( feature );
 
 		// Feature keys.
-		featureKeys.put( feature.getKey(), feature );
+		keyToFeature.put( feature.getKey(), feature );
 	}
 
 	@Override
 	public void clear()
 	{
-		featureSets.clear();
-		featureKeys.clear();
+		targetClassToFeatures.clear();
+		keyToFeature.clear();
 	}
 
 	@Override
-	public Set< Feature< ?, ?, ? > > getFeatureSet( final Class< ? > clazz )
+	public Set< Feature< ?, ?, ? > > getFeatureSet( final Class< ? > targetClass )
 	{
-		return featureSets.get( clazz );
+		return targetClassToFeatures.get( targetClass );
 	}
 
 	@Override
 	public Feature< ?, ?, ? > getFeature( final String key )
 	{
-		return featureKeys.get( key );
+		return keyToFeature.get( key );
 	}
 }
