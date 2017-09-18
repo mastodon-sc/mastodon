@@ -5,6 +5,9 @@ import org.mastodon.revised.ui.selection.TimepointModel;
 import org.mastodon.revised.ui.selection.TimepointModelImp;
 import org.mastodon.util.Listeners;
 
+/**
+ * TODO
+ */
 public class ForwardingTimepointModel implements TimepointModel, ForwardingModel< TimepointModel >
 {
 	private TimepointModel model;
