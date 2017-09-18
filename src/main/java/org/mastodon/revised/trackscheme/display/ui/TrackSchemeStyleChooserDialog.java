@@ -92,7 +92,7 @@ class TrackSchemeStyleChooserDialog extends JDialog
 		final TimepointModel timepoint = new TimepointModelImp();
 		timepoint.setTimepoint( 2 );
 		final Selection< TrackSchemeVertex, TrackSchemeEdge > selection = new SelectionAdapter<>( ex.getSelection(), vertexMap, edgeMap );
-		final NavigationHandler< TrackSchemeVertex, TrackSchemeEdge > navigation = new NavigationHandlerAdapter<>( new NavigationHandlerImp<>( new GroupManager().createGroupHandle() ), vertexMap, edgeMap );
+		final NavigationHandler< TrackSchemeVertex, TrackSchemeEdge > navigation = new NavigationHandlerAdapter<>( new NavigationHandlerImp<>( new GroupManager( 1 ).createGroupHandle() ), vertexMap, edgeMap );
 		panelPreview = new TrackSchemePanel( graph, highlight, focus, timepoint, selection, navigation, TrackSchemeOptions.options() );
 		panelPreview.setTimepointRange( 0, 7 );
 		panelPreview.graphChanged();

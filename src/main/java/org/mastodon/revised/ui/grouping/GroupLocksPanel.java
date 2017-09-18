@@ -1,6 +1,6 @@
 package org.mastodon.revised.ui.grouping;
 
-import static org.mastodon.revised.ui.grouping.GroupHandle.NO_GROUP;
+import static org.mastodon.revised.ui.grouping.GroupManager.NO_GROUP;
 
 import java.awt.Dimension;
 import java.awt.FlowLayout;
@@ -24,8 +24,6 @@ public class GroupLocksPanel extends JPanel implements GroupChangeListener
 
 	private static final Font FONT = new Font( "Arial", Font.PLAIN, 10 );
 
-	private static final int N_LOCKS = 3;
-
 	private final ArrayList< JToggleButton > buttons;
 
 	private final GroupHandle groupHandle;
@@ -35,7 +33,8 @@ public class GroupLocksPanel extends JPanel implements GroupChangeListener
 		super( new FlowLayout( FlowLayout.LEADING ) );
 		this.groupHandle = groupHandle;
 		this.buttons = new ArrayList<>();
-		for ( int i = 0; i < N_LOCKS; i++ )
+		final int numGroups = groupHandle.getNumGroups();
+		for ( int i = 0; i < numGroups; i++ )
 		{
 			final int lockId = i;
 			final boolean isActive = groupHandle.getGroupId() == lockId;
@@ -66,7 +65,8 @@ public class GroupLocksPanel extends JPanel implements GroupChangeListener
 	@Override
 	public void groupChanged()
 	{
-		for ( int i = 0; i < N_LOCKS; ++i )
+		final int numGroups = groupHandle.getNumGroups();
+		for ( int i = 0; i < numGroups; i++ )
 		{
 			final boolean activated = groupHandle.getGroupId() == i;
 			final JToggleButton button = buttons.get( i );

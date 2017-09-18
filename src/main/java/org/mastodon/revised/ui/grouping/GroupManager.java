@@ -1,14 +1,17 @@
 package org.mastodon.revised.ui.grouping;
 
-import gnu.trove.map.TIntObjectMap;
-import gnu.trove.map.hash.TIntObjectHashMap;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
-
 import static gnu.trove.impl.Constants.DEFAULT_CAPACITY;
 import static gnu.trove.impl.Constants.DEFAULT_LOAD_FACTOR;
-import static org.mastodon.revised.ui.grouping.GroupHandle.NO_GROUP;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+
+import gnu.trove.map.TIntObjectMap;
+import gnu.trove.map.hash.TIntObjectHashMap;
 
 /**
  * TODO: javadoc
@@ -17,13 +20,20 @@ import static org.mastodon.revised.ui.grouping.GroupHandle.NO_GROUP;
  */
 public class GroupManager
 {
+	public static final int NO_GROUP = -1;
+
 	private final TIntObjectMap< Set< GroupHandle > > groupIdToGroupHandles;
 
 	private int modCount;
 
-	public GroupManager()
+	private final int numGroups;
+
+	public GroupManager( final int numGroups )
 	{
+		this.numGroups = numGroups;
 		groupIdToGroupHandles = new TIntObjectHashMap<>( DEFAULT_CAPACITY, DEFAULT_LOAD_FACTOR, -1 );
+		for ( int i = 0; i < numGroups; ++i )
+			groupIdToGroupHandles.put( i, new HashSet<>() );
 		modCount = 0;
 	}
 
@@ -35,8 +45,13 @@ public class GroupManager
 	public void removeGroupHandle( final GroupHandle handle )
 	{
 		final int id = handle.getGroupId();
-		if ( id != NO_GROUP && handles( id ).remove( handle ) )
+		if ( id != NO_GROUP && groupIdToGroupHandles.get( id ).remove( handle ) )
 			++modCount;
+	}
+
+	public int getNumGroups()
+	{
+		return numGroups;
 	}
 
 	boolean setGroupId( final GroupHandle handle, final int groupId )
@@ -44,9 +59,22 @@ public class GroupManager
 		final int oldId = handle.groupId;
 		if ( oldId == groupId )
 			return false;
-		handles( oldId ).remove( handle );
-		handles( groupId ).add( handle );
+
+		if ( oldId != NO_GROUP )
+			groupIdToGroupHandles.get( oldId ).remove( handle );
+
+		final boolean copyCurrentStateToNewModel;
+		if ( groupId != NO_GROUP )
+		{
+			final Set< GroupHandle > handles = groupIdToGroupHandles.get( groupId );
+			copyCurrentStateToNewModel = handles.isEmpty();
+			handles.add( handle );
+		}
+		else
+			copyCurrentStateToNewModel = true;
+
 		handle.groupId = groupId;
+		models.values().forEach( ( m ) -> m.moveTo( handle, groupId, copyCurrentStateToNewModel ) );
 		++modCount;
 		return true;
 	}
@@ -61,22 +89,42 @@ public class GroupManager
 		++modCount;
 	}
 
-	private Set< GroupHandle > handles( int groupId )
-	{
-		Set< GroupHandle > handles = groupIdToGroupHandles.get( groupId );
-		if ( handles == null )
-		{
-			handles = new HashSet<>();
-			groupIdToGroupHandles.put( groupId, handles );
-		}
-		return handles;
-	}
-
 	Set< GroupHandle > getAllGroupMembers( final GroupHandle handle )
 	{
 		final int id = handle.getGroupId();
 		return ( id == NO_GROUP )
 				? Collections.singleton( handle )
-				: new HashSet<>( handles( id ) );
+				: new HashSet<>( groupIdToGroupHandles.get( id ) );
+	}
+
+	class ModelType< T >
+	{
+		final ArrayList< T > models;
+
+		final GroupableModelFactory< T > factory;
+
+		ModelType( final GroupableModelFactory< T > factory )
+		{
+			this.factory = factory;
+			models = new ArrayList<>();
+			for ( int i = 0; i < getNumGroups(); ++i )
+				models.add( factory.createBackingModel() );
+		}
+
+		public void moveTo( final GroupHandle handle, final int groupId, final boolean copyCurrentStateToNewModel )
+		{
+			final GroupHandle.ModelData< T > data = handle.getModelData( factory );
+			final T model = ( groupId == NO_GROUP )
+					? data.backing
+					: models.get( groupId );
+			data.forwarding.linkTo( model, copyCurrentStateToNewModel );
+		}
+	}
+
+	final Map< GroupableModelFactory< ? >, ModelType< ? > > models = new HashMap<>();
+
+	public void registerModel( final GroupableModelFactory< ? > factory )
+	{
+		models.put( factory, new ModelType<>( factory ) );
 	}
 }

@@ -62,6 +62,7 @@ import org.mastodon.revised.trackscheme.wrap.DefaultModelGraphProperties;
 import org.mastodon.revised.trackscheme.wrap.ModelGraphProperties;
 import org.mastodon.revised.ui.HighlightBehaviours;
 import org.mastodon.revised.ui.SelectionActions;
+import org.mastodon.revised.ui.grouping.ForwardingTimepointModel;
 import org.mastodon.revised.ui.grouping.GroupHandle;
 import org.mastodon.revised.ui.grouping.GroupManager;
 import org.mastodon.revised.ui.selection.FocusListener;
@@ -77,7 +78,6 @@ import org.mastodon.revised.ui.selection.SelectionImp;
 import org.mastodon.revised.ui.selection.SelectionListener;
 import org.mastodon.revised.ui.selection.TimepointListener;
 import org.mastodon.revised.ui.selection.TimepointModel;
-import org.mastodon.revised.ui.selection.TimepointModelImp;
 import org.scijava.ui.behaviour.KeyPressedManager;
 import org.scijava.ui.behaviour.KeyStrokeAdder;
 import org.scijava.ui.behaviour.io.InputTriggerConfig;
@@ -96,6 +96,8 @@ import mpicbg.spim.data.generic.AbstractSpimData;
 
 public class WindowManager
 {
+	private static final int NUM_GROUPS = 3;
+
 	/**
 	 * Information for one BigDataViewer window.
 	 */
@@ -254,8 +256,6 @@ public class WindowManager
 
 	private final FocusModel< Spot, Link > focusModel;
 
-	private final TimepointModel timepointModel;
-
 	private final BoundingSphereRadiusStatistics radiusStats;
 
 	/**
@@ -282,7 +282,7 @@ public class WindowManager
 		this.model = model;
 		this.keyconf = keyconf;
 
-		groupManager = new GroupManager();
+		groupManager = new GroupManager( NUM_GROUPS );
 		keyPressedManager = new KeyPressedManager();
 		final RequestRepaint requestRepaint = new RequestRepaint()
 		{
@@ -314,7 +314,7 @@ public class WindowManager
 		graph.addGraphListener( focusModelImp );
 		focusModel = focusModelImp;
 
-		timepointModel = new TimepointModelImp();
+		groupManager.registerModel( ForwardingTimepointModel.factory );
 
 		radiusStats = new BoundingSphereRadiusStatistics( model );
 
@@ -378,6 +378,7 @@ public class WindowManager
 	public void createBigDataViewer()
 	{
 		final GroupHandle bdvGroupHandle = groupManager.createGroupHandle();
+		final TimepointModel timepointModel = bdvGroupHandle.getModel( ForwardingTimepointModel.factory );
 
 		final OverlayGraphWrapper< Spot, Link > overlayGraph = new OverlayGraphWrapper<>(
 				model.getGraph(),
@@ -558,6 +559,11 @@ public class WindowManager
 		 * TrackScheme GroupHandle
 		 */
 		final GroupHandle groupHandle = groupManager.createGroupHandle();
+
+		/*
+		 * TimepointModel forwarding to current group
+		 */
+		final TimepointModel timepointModel = groupHandle.getModel( ForwardingTimepointModel.factory );
 
 		/*
 		 * TrackScheme navigation

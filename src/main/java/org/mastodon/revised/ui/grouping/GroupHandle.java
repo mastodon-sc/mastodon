@@ -1,5 +1,7 @@
 package org.mastodon.revised.ui.grouping;
 
+import static org.mastodon.revised.ui.grouping.GroupManager.NO_GROUP;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -14,8 +16,6 @@ import org.mastodon.util.Listeners;
  */
 public class GroupHandle
 {
-	public static final int NO_GROUP = -1;
-
 	private final GroupManager manager;
 
 	private int expectedModCount;
@@ -46,16 +46,14 @@ public class GroupHandle
 		return groupId;
 	}
 
-	void setGroupId( final int id )
-	{
-		if ( manager.setGroupId( this, id ) )
-			for ( final GroupChangeListener l : listeners.list )
-				l.groupChanged();
-	}
-
 	public Listeners< GroupChangeListener > groupChangeListeners()
 	{
 		return listeners;
+	}
+
+	public int getNumGroups()
+	{
+		return manager.getNumGroups();
 	}
 
 	public < T > void add( final T o )
@@ -88,6 +86,13 @@ public class GroupHandle
 		return ( ArrayList< T > ) cache.get( o.getClass() );
 	}
 
+	public void setGroupId( final int id )
+	{
+		if ( manager.setGroupId( this, id ) )
+			for ( final GroupChangeListener l : listeners.list )
+				l.groupChanged();
+	}
+
 	private synchronized void validateCache()
 	{
 		final int modCount = manager.modCount();
@@ -108,5 +113,40 @@ public class GroupHandle
 		for ( final GroupHandle m : allMembers )
 			all.addAll( ( Set< T > ) m.registered.get( clazz ) );
 		cache.put( clazz, new ArrayList<>( all ) );
+	}
+
+	class ModelData< T >
+	{
+		final ForwardingModel< T > forwarding;
+
+		final T backing;
+
+		ModelData( final GroupableModelFactory< T > factory )
+		{
+			forwarding = factory.createForwardingModel();
+			backing = factory.createBackingModel();
+		}
+	}
+
+	private final HashMap< GroupableModelFactory< ? >, ModelData< ? > > models = new HashMap<>();
+
+	< T > ModelData< T > getModelData( final GroupableModelFactory< T > factory )
+	{
+		@SuppressWarnings( "unchecked" )
+		ModelData< T > data = ( ModelData< T > ) models.get( factory );
+		if ( data == null )
+		{
+			data = new ModelData<>( factory );
+			models.put( factory, data );
+			@SuppressWarnings( "unchecked" )
+			final GroupManager.ModelType< T > modelType = ( GroupManager.ModelType< T > ) manager.models.get( factory );
+			modelType.moveTo( GroupHandle.this, groupId, false );
+		}
+		return data;
+	}
+
+	public < T > T getModel( final GroupableModelFactory< T > factory )
+	{
+		return getModelData( factory ).forwarding.asT();
 	}
 }
