@@ -30,7 +30,7 @@ public interface Selection< V extends Vertex< E >, E extends Edge< V > >
 	/**
 	 * Get the selected state of a vertex.
 	 *
-	 * @param v
+	 * @param vertex
 	 *            a vertex.
 	 * @return {@code true} if specified vertex is selected.
 	 */
@@ -39,7 +39,7 @@ public interface Selection< V extends Vertex< E >, E extends Edge< V > >
 	/**
 	 * Get the selected state of an edge.
 	 *
-	 * @param e
+	 * @param edge
 	 *            an edge.
 	 * @return {@code true} if specified edge is selected.
 	 */
@@ -48,7 +48,7 @@ public interface Selection< V extends Vertex< E >, E extends Edge< V > >
 	/**
 	 * Sets the selected state of a vertex.
 	 *
-	 * @param v
+	 * @param vertex
 	 *            a vertex.
 	 * @param selected
 	 *            selected state to set for specified vertex.
@@ -58,7 +58,7 @@ public interface Selection< V extends Vertex< E >, E extends Edge< V > >
 	/**
 	 * Sets the selected state of an edge.
 	 *
-	 * @param e
+	 * @param edge
 	 *            an edge.
 	 * @param selected
 	 *            selected state to set for specified edge.
@@ -68,7 +68,7 @@ public interface Selection< V extends Vertex< E >, E extends Edge< V > >
 	/**
 	 * Toggles the selected state of a vertex.
 	 *
-	 * @param v
+	 * @param vertex
 	 *            a vertex.
 	 */
 	public void toggle( final V vertex );
@@ -76,7 +76,7 @@ public interface Selection< V extends Vertex< E >, E extends Edge< V > >
 	/**
 	 * Toggles the selected state of an edge.
 	 *
-	 * @param e
+	 * @param edge
 	 *            an edge.
 	 */
 	public void toggle( final E edge );
