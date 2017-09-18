@@ -68,7 +68,7 @@ public class Feature< O, T, K extends PropertyMap< O, T > >
 	 * @param key
 	 *            The feature unique key. Must be unique within the application
 	 *            scope.
-	 * @param target
+	 * @param targetClass
 	 *            The class of the feature target.
 	 * @param propertyMap
 	 *            The feature property map.

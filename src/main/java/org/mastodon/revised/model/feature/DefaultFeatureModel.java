@@ -9,11 +9,6 @@ import java.util.Set;
  * Default feature model.
  *
  * @author Jean-Yves Tinevez
- *
- * @param <V>
- *            the type of vertices.
- * @param <E>
- *            the type of edges.
  */
 public class DefaultFeatureModel implements FeatureModel
 {
