@@ -24,8 +24,6 @@ public class GroupManager
 
 	private final TIntObjectMap< Set< GroupHandle > > groupIdToGroupHandles;
 
-	private int modCount;
-
 	private final int numGroups;
 
 	public GroupManager( final int numGroups )
@@ -34,7 +32,6 @@ public class GroupManager
 		groupIdToGroupHandles = new TIntObjectHashMap<>( DEFAULT_CAPACITY, DEFAULT_LOAD_FACTOR, -1 );
 		for ( int i = 0; i < numGroups; ++i )
 			groupIdToGroupHandles.put( i, new HashSet<>() );
-		modCount = 0;
 	}
 
 	public GroupHandle createGroupHandle()
@@ -44,9 +41,7 @@ public class GroupManager
 
 	public void removeGroupHandle( final GroupHandle handle )
 	{
-		final int id = handle.getGroupId();
-		if ( id != NO_GROUP && groupIdToGroupHandles.get( id ).remove( handle ) )
-			++modCount;
+		setGroupId( handle, NO_GROUP );
 	}
 
 	public int getNumGroups()
@@ -75,26 +70,7 @@ public class GroupManager
 
 		handle.groupId = groupId;
 		models.values().forEach( ( m ) -> m.moveTo( handle, groupId, copyCurrentStateToNewModel ) );
-		++modCount;
 		return true;
-	}
-
-	int modCount()
-	{
-		return modCount;
-	}
-
-	void incModCount()
-	{
-		++modCount;
-	}
-
-	Set< GroupHandle > getAllGroupMembers( final GroupHandle handle )
-	{
-		final int id = handle.getGroupId();
-		return ( id == NO_GROUP )
-				? Collections.singleton( handle )
-				: new HashSet<>( groupIdToGroupHandles.get( id ) );
 	}
 
 	class ModelType< T >
