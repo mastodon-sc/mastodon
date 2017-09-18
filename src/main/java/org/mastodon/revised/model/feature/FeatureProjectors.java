@@ -22,7 +22,7 @@ public class FeatureProjectors
 	 */
 	public static final < O > FeatureProjection< O > project( final DoublePropertyMap< O > feature )
 	{
-		return new DoubleFeatureProjection< O >( feature );
+		return new DoubleFeatureProjection<>( feature );
 	}
 
 	/**
@@ -35,7 +35,7 @@ public class FeatureProjectors
 	 */
 	public static final < O > FeatureProjection< O > project( final IntPropertyMap< O > feature )
 	{
-		return new IntFeatureProjection< O >( feature );
+		return new IntFeatureProjection<>( feature );
 	}
 
 	private static final class DoubleFeatureProjection< O > implements FeatureProjection< O >
