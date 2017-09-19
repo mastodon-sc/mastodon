@@ -6,7 +6,7 @@ import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JTabbedPane;
 
-import org.mastodon.revised.model.feature.FeatureComputerService;
+import org.mastodon.revised.mamut.feature.MamutFeatureComputerService;
 import org.mastodon.revised.model.mamut.Model;
 
 public class FeatureAndTagDialog extends JDialog
@@ -14,7 +14,7 @@ public class FeatureAndTagDialog extends JDialog
 
 	private static final long serialVersionUID = 1L;
 
-	public FeatureAndTagDialog( final JFrame owner, final Model model, final FeatureComputerService< Model > computerService )
+	public FeatureAndTagDialog( final JFrame owner, final Model model, final MamutFeatureComputerService computerService )
 	{
 		super( owner, "Features and tags" );
 

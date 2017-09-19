@@ -20,7 +20,7 @@ import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 import javax.swing.WindowConstants;
 
-import org.mastodon.revised.model.feature.FeatureComputerService;
+import org.mastodon.revised.mamut.feature.MamutFeatureComputerService;
 import org.mastodon.revised.model.mamut.Model;
 import org.mastodon.revised.ui.util.FileChooser;
 import org.mastodon.revised.ui.util.XmlFileFilter;
@@ -187,9 +187,7 @@ public class MainWindow extends JFrame
 		 * proposing a proper Command decoupled from the GUI.
 		 */
 		final Context context = new Context();
-		@SuppressWarnings( "unchecked" )
-		final FeatureComputerService< Model > featureComputerService = context.getService( FeatureComputerService.class );
-
+		final MamutFeatureComputerService featureComputerService = context.getService( MamutFeatureComputerService.class );
 		final Dialog featureComputationDialog = new FeatureAndTagDialog( this, windowManager.getModel(), featureComputerService );
 		featureComputationDialog.setSize( 400, 400 );
 

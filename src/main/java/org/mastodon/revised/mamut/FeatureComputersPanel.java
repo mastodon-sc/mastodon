@@ -40,9 +40,8 @@ import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.WindowConstants;
 
 import org.mastodon.graph.GraphChangeListener;
-import org.mastodon.revised.mamut.feature.DefaultMamutFeatureComputerService;
+import org.mastodon.revised.mamut.feature.MamutFeatureComputerService;
 import org.mastodon.revised.model.feature.FeatureComputer;
-import org.mastodon.revised.model.feature.FeatureComputerService;
 import org.mastodon.revised.model.mamut.Model;
 import org.mastodon.revised.ui.ProgressListener;
 import org.scijava.Context;
@@ -61,7 +60,7 @@ public class FeatureComputersPanel extends JPanel
 
 	private static final DateFormat DATE_FORMAT = new SimpleDateFormat( "yyyy-MM-dd HH:mm:ss" );
 
-	private final FeatureComputerService< Model > computerService;
+	private final MamutFeatureComputerService computerService;
 
 	private final Model model;
 
@@ -75,7 +74,7 @@ public class FeatureComputersPanel extends JPanel
 
 	private FeatureComputerWorker worker;
 
-	public FeatureComputersPanel( final FeatureComputerService< Model > computerService, final Model model )
+	public FeatureComputersPanel( final MamutFeatureComputerService computerService, final Model model )
 	{
 		this.computerService = computerService;
 		this.model = model;
@@ -281,7 +280,7 @@ public class FeatureComputersPanel extends JPanel
 		@Override
 		protected Boolean doInBackground() throws Exception
 		{
-			final boolean ok = computerService.compute( model, selectedComputers, progressBar );
+			final boolean ok = computerService.compute( model, model.getFeatureModel(), selectedComputers, progressBar );
 			return Boolean.valueOf( ok );
 		}
 	}
@@ -336,9 +335,7 @@ public class FeatureComputersPanel extends JPanel
 		Locale.setDefault( Locale.US );
 
 		final Context context = new org.scijava.Context();
-		final DefaultMamutFeatureComputerService featureComputerService = new DefaultMamutFeatureComputerService();
-		context.inject( featureComputerService );
-		featureComputerService.initialize();
+		final MamutFeatureComputerService featureComputerService = context.getService( MamutFeatureComputerService.class );
 
 		SwingUtilities.invokeLater( new Runnable()
 		{
