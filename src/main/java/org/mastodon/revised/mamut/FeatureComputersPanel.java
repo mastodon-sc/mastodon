@@ -44,6 +44,7 @@ import org.mastodon.revised.mamut.feature.DefaultMamutFeatureComputerService;
 import org.mastodon.revised.model.feature.FeatureComputer;
 import org.mastodon.revised.model.feature.FeatureComputerService;
 import org.mastodon.revised.model.mamut.Model;
+import org.mastodon.revised.ui.ProgressListener;
 import org.scijava.Context;
 
 public class FeatureComputersPanel extends JPanel

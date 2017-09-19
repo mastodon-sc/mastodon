@@ -3,8 +3,8 @@ package org.mastodon.revised.model.feature;
 import java.util.Collection;
 import java.util.Set;
 
-import org.mastodon.revised.mamut.ProgressListener;
 import org.mastodon.revised.model.AbstractModel;
+import org.mastodon.revised.ui.ProgressListener;
 import org.scijava.service.SciJavaService;
 
 /**
