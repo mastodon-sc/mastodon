@@ -1,8 +1,5 @@
 package org.mastodon.revised.ui.selection;
 
-import org.mastodon.revised.ui.grouping.ForwardingModel;
-import org.mastodon.revised.ui.grouping.GroupHandle;
-import org.mastodon.revised.ui.grouping.GroupableModelFactory;
 import org.mastodon.util.Listeners;
 
 /**
