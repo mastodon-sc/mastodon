@@ -6,6 +6,22 @@ import org.mastodon.revised.ui.selection.HighlightListener;
 import org.mastodon.revised.ui.selection.HighlightModel;
 import org.mastodon.util.Listeners;
 
+/**
+ * Adapts a {@code HighlightModel<V, E>} as a {@code HighlightModel<WV, WE>}.
+ * The mapping between source vertices/edges ({@code V, E}) and wrapped
+ * vertices/edges ({@code WV, WE}) is established by {@link RefBimap}s.
+ *
+ * @param <V>
+ *            vertex type of source graph.
+ * @param <E>
+ *            edge type of source graph.
+ * @param <WV>
+ *            vertex type this wrapped {@link HighlightModel}.
+ * @param <WE>
+ *            edge type this wrapped {@link HighlightModel}.
+ *
+ * @author Tobias Pietzsch
+ */
 public class HighlightAdapter< V extends Vertex< E >, E extends Edge< V >, WV extends Vertex< WE >, WE extends Edge< WV > >
 		implements HighlightModel< WV, WE >
 {

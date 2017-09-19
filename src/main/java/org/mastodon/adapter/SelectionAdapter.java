@@ -9,6 +9,20 @@ import org.mastodon.revised.ui.selection.Selection;
 import org.mastodon.revised.ui.selection.SelectionListener;
 import org.mastodon.util.Listeners;
 
+/**
+ * Adapts a {@code SelectionModel<V, E>} as a {@code SelectionModel<WV, WE>}.
+ * The mapping between source vertices/edges ({@code V, E}) and wrapped
+ * vertices/edges ({@code WV, WE}) is established by {@link RefBimap}s.
+ *
+ * @param <V>
+ *            vertex type of source graph.
+ * @param <E>
+ *            edge type of source graph.
+ * @param <WV>
+ *            vertex type this wrapped {@link Selection}.
+ * @param <WE>
+ *            edge type this wrapped {@link Selection}.
+ */
 public class SelectionAdapter< V extends Vertex< E >, E extends Edge< V >, WV extends Vertex< WE >, WE extends Edge< WV > >
 		implements Selection< WV, WE >
 {
