@@ -11,7 +11,7 @@ import java.util.Set;
 public interface FeatureModel
 {
 
-	public Set< Feature< ?, ?, ? > > getFeatureSet( Class< ? > targetClass );
+	public Set< Feature< ?, ? > > getFeatureSet( Class< ? > targetClass );
 
 	/**
 	 * Clears this feature model.
@@ -25,7 +25,7 @@ public interface FeatureModel
 	 * @param feature
 	 *            the feature.
 	 */
-	public void declareFeature( final Feature< ?, ?, ? > feature );
+	public void declareFeature( final Feature< ?, ? > feature );
 
 	/**
 	 * Returns the feature with the specified key.
@@ -35,6 +35,6 @@ public interface FeatureModel
 	 * @return the feature, or <code>null</code> if a feature with the specified
 	 *         key is not registered in this model.
 	 */
-	public Feature< ?, ?, ? > getFeature( String key );
+	public Feature< ?, ? > getFeature( String key );
 
 }

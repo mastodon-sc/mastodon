@@ -63,7 +63,7 @@ public abstract class AbstractFeatureComputerService< AM extends AbstractModel< 
 		{
 			final FeatureComputer< AM > computer = v.getContent();
 			progressListener.showStatus( computer.getKey() );
-			final Feature< ?, ?, ? > feature = computer.compute( model );
+			final Feature< ?, ? > feature = computer.compute( model );
 			featureModel.declareFeature( feature );
 
 			progressListener.showProgress( progress++, computers.size() );

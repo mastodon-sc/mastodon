@@ -34,7 +34,7 @@ public class SpotPositionFeatureComputer implements SpotFeatureComputer
 	}
 
 	@Override
-	public Feature< Spot, RealLocalizable, PropertyMap< Spot, RealLocalizable > > compute( final Model model )
+	public Feature< Spot, PropertyMap< Spot, RealLocalizable > > compute( final Model model )
 	{
 		final HashMap< String, FeatureProjection< Spot > > map = new HashMap<>();
 		for ( int d = 0; d < 3; d++ )
@@ -44,8 +44,8 @@ public class SpotPositionFeatureComputer implements SpotFeatureComputer
 			map.put( pname, projection );
 		}
 		final Map< String, FeatureProjection< Spot > > projections = Collections.unmodifiableMap( map );
-		final Feature< Spot, RealLocalizable, PropertyMap< Spot, RealLocalizable > > feature =
-				new Feature< Spot, RealLocalizable, PropertyMap< Spot, RealLocalizable > >(
+		final Feature< Spot, PropertyMap< Spot, RealLocalizable > > feature =
+				new Feature<>(
 						KEY, Spot.class,
 						new RealLocalizablePropertyMap< Spot >( model.getGraph().vertices().size() ),
 						projections );

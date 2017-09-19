@@ -13,9 +13,9 @@ import java.util.Set;
 public class DefaultFeatureModel implements FeatureModel
 {
 
-	private final Map< Class< ? >, Set< Feature< ?, ?, ? > > > targetClassToFeatures;
+	private final Map< Class< ? >, Set< Feature< ?, ? > > > targetClassToFeatures;
 
-	private final Map< String, Feature< ?, ?, ? > > keyToFeature;
+	private final Map< String, Feature< ?, ? > > keyToFeature;
 
 	/**
 	 * Creates a new, empty, feature model.
@@ -27,11 +27,11 @@ public class DefaultFeatureModel implements FeatureModel
 	}
 
 	@Override
-	public void declareFeature( final Feature< ?, ?, ? > feature )
+	public void declareFeature( final Feature< ?, ? > feature )
 	{
 		// Features.
 		final Class< ? > clazz = feature.getTargetClass();
-		Set< Feature< ?, ?, ? > > featureSet = targetClassToFeatures.get( clazz );
+		Set< Feature< ?, ? > > featureSet = targetClassToFeatures.get( clazz );
 		if (null == featureSet)
 		{
 			featureSet = new HashSet<>();
@@ -51,13 +51,13 @@ public class DefaultFeatureModel implements FeatureModel
 	}
 
 	@Override
-	public Set< Feature< ?, ?, ? > > getFeatureSet( final Class< ? > targetClass )
+	public Set< Feature< ?, ? > > getFeatureSet( final Class< ? > targetClass )
 	{
 		return targetClassToFeatures.get( targetClass );
 	}
 
 	@Override
-	public Feature< ?, ?, ? > getFeature( final String key )
+	public Feature< ?, ? > getFeature( final String key )
 	{
 		return keyToFeature.get( key );
 	}

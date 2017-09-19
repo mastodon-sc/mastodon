@@ -33,7 +33,7 @@ public class LinkVelocityFeatureComputer implements LinkFeatureComputer
 	}
 
 	@Override
-	public Feature< Link, Double, DoublePropertyMap< Link > > compute( final Model model )
+	public Feature< Link, DoublePropertyMap< Link > > compute( final Model model )
 	{
 		final ModelGraph graph = model.getGraph();
 		final DoublePropertyMap< Link > pm = new DoublePropertyMap<>( graph.edges(), Double.NaN );
@@ -42,8 +42,8 @@ public class LinkVelocityFeatureComputer implements LinkFeatureComputer
 		final Spot ref2 = graph.vertexRef();
 
 		@SuppressWarnings( "unchecked" )
-		final Feature< Link, Double, DoublePropertyMap< Link > > displacementFeature =
-				( Feature< Link, Double, DoublePropertyMap< Link > > ) model.getFeatureModel().getFeature( LinkDisplacementComputer.KEY );
+		final Feature< Link, DoublePropertyMap< Link > > displacementFeature =
+				( Feature< Link, DoublePropertyMap< Link > > ) model.getFeatureModel().getFeature( LinkDisplacementComputer.KEY );
 		final DoublePropertyMap< Link > displacement = displacementFeature.getPropertyMap();
 
 		for ( final Link link : graph.edges() )
@@ -62,7 +62,7 @@ public class LinkVelocityFeatureComputer implements LinkFeatureComputer
 		graph.releaseRef( ref2 );
 
 		final Map< String, FeatureProjection< Link > > projections = Collections.singletonMap( KEY, FeatureProjectors.project( pm ) );
-		final Feature< Link, Double, DoublePropertyMap< Link > > feature = new Feature<>( KEY, Link.class, pm, projections );
+		final Feature< Link, DoublePropertyMap< Link > > feature = new Feature<>( KEY, Link.class, pm, projections );
 		return feature;
 	}
 }

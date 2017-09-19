@@ -36,7 +36,7 @@ public interface FeatureComputer< AM extends AbstractModel< ?, ?, ? > > extends 
 	 * @param model
 	 *            the model to retrieve objects from.
 	 */
-	public Feature< ?, ?, ? > compute( final AM model );
+	public Feature< ?, ? > compute( final AM model );
 
 	/**
 	 * Returns the string key of the feature calculated by this computer.

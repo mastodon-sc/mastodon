@@ -33,12 +33,10 @@ import org.mastodon.properties.PropertyMap;
  *
  * @param <O>
  *            the type of the object this feature is defined for (target).
- * @param <T>
- *            the type of the values of this feature.
  * @param <K>
  *            the type of the property map used to store feature values.
  */
-public class Feature< O, T, K extends PropertyMap< O, T > >
+public class Feature< O, K extends PropertyMap< O, ? > >
 {
 
 	/**

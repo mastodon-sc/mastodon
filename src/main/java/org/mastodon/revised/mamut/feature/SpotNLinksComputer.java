@@ -32,7 +32,7 @@ public class SpotNLinksComputer implements SpotFeatureComputer
 	}
 
 	@Override
-	public Feature< Spot, Integer, IntPropertyMap< Spot > > compute( final Model model )
+	public Feature< Spot, IntPropertyMap< Spot > > compute( final Model model )
 	{
 		final PoolCollectionWrapper< Spot > vertices = model.getGraph().vertices();
 		final IntPropertyMap< Spot > pm = new IntPropertyMap<>( vertices, -1 );
@@ -41,7 +41,7 @@ public class SpotNLinksComputer implements SpotFeatureComputer
 			pm.set( spot, spot.edges().size() );
 
 		final Map< String, FeatureProjection< Spot > > projections = Collections.singletonMap( KEY, FeatureProjectors.project( pm ) );
-		final Feature< Spot, Integer, IntPropertyMap< Spot > > feature = new Feature<>( KEY, Spot.class, pm, projections );
+		final Feature< Spot, IntPropertyMap< Spot > > feature = new Feature<>( KEY, Spot.class, pm, projections );
 		return feature;
 	}
 }
