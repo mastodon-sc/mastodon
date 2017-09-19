@@ -5,7 +5,6 @@ import java.util.Set;
 
 import org.mastodon.revised.mamut.ProgressListener;
 import org.mastodon.revised.model.AbstractModel;
-import org.mastodon.revised.model.mamut.Model;
 import org.scijava.service.SciJavaService;
 
 /**
@@ -27,7 +26,7 @@ public interface FeatureComputerService< AM extends AbstractModel< ?, ?, ? > > e
 	 *            the class of the objects the features are defined on.
 	 * @return the available feature computers.
 	 */
-	public Collection< FeatureComputer< Model > > getFeatureComputers();
+	public Collection< FeatureComputer< AM > > getFeatureComputers();
 
 	/**
 	 * Executes feature computation for the specified computers on the specified
@@ -41,6 +40,6 @@ public interface FeatureComputerService< AM extends AbstractModel< ?, ?, ? > > e
 	 *            a progress listener, used to report calculation progress.
 	 * @return <code>true</code> if computation terminated successfully.
 	 */
-	public boolean compute( AM model, Set< FeatureComputer< Model > > selectedComputers, ProgressListener progressListener );
+	public boolean compute( AM model, Set< FeatureComputer< AM > > selectedComputers, ProgressListener progressListener );
 
 }
