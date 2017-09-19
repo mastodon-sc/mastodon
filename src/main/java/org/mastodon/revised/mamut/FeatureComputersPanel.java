@@ -250,7 +250,6 @@ public class FeatureComputersPanel extends JPanel
 			c.weightx = 1.;
 			c.gridwidth = 1;
 			panel.add( checkBox, c );
-			c.gridy++;
 
 			final JButton config = new JButton( COG_ICON );
 			config.setBorder( null );
@@ -268,6 +267,8 @@ public class FeatureComputersPanel extends JPanel
 			c.gridx++;
 			c.weightx = 0.;
 			panel.add( help, c );
+
+			c.gridy++;
 		}
 		c.gridy++;
 		panel.add( Box.createVerticalStrut( 15 ), c );
