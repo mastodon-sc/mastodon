@@ -2,30 +2,35 @@ package org.mastodon.revised.mamut;
 
 import java.awt.BorderLayout;
 import java.awt.Container;
-import java.awt.GridLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.awt.Dialog;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 
-import javax.swing.Box;
 import javax.swing.JButton;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JSeparator;
 import javax.swing.SwingUtilities;
 import javax.swing.WindowConstants;
 
+import org.mastodon.revised.mamut.feature.MamutFeatureComputerService;
 import org.mastodon.revised.model.mamut.Model;
 import org.mastodon.revised.ui.util.FileChooser;
 import org.mastodon.revised.ui.util.XmlFileFilter;
+import org.scijava.Context;
 import org.scijava.ui.behaviour.io.InputTriggerConfig;
 import org.scijava.ui.behaviour.io.yaml.YamlConfigIO;
 
 import bdv.spimdata.SpimDataMinimal;
 import bdv.spimdata.XmlIoSpimDataMinimal;
+import bdv.tools.ToggleDialogAction;
 import mpicbg.spim.data.SpimDataException;
 
 public class MainWindow extends JFrame
@@ -42,82 +47,118 @@ public class MainWindow extends JFrame
 
 	private final TgmmImportDialog tgmmImportDialog;
 
+	private ToggleDialogAction toggleFeatureComputationDialogAction;
+
 	public MainWindow( final InputTriggerConfig keyconf )
 	{
-		super( "test" );
+		super( "Mastodon" );
 		this.keyconf = keyconf;
 
 		tgmmImportDialog = new TgmmImportDialog( this );
 
 		final JPanel buttonsPanel = new JPanel();
-		buttonsPanel.setLayout( new GridLayout( 7, 1 ) );
-		final JButton bdvButton = new JButton( "bdv" );
-		bdvButton.addActionListener( new ActionListener()
-		{
-			@Override
-			public void actionPerformed( final ActionEvent e )
-			{
-				if ( windowManager != null )
-					windowManager.createBigDataViewer();
-			}
-		} );
-		final JButton trackschemeButton = new JButton( "trackscheme" );
-		trackschemeButton.addActionListener( new ActionListener()
-		{
-			@Override
-			public void actionPerformed( final ActionEvent e )
-			{
-				if ( windowManager != null )
-					windowManager.createTrackScheme();
-			}
-		} );
-		buttonsPanel.add( bdvButton );
-		buttonsPanel.add( trackschemeButton );
-		buttonsPanel.add( Box.createVerticalStrut( 20 ) );
+		final GridBagLayout gbl = new GridBagLayout();
+		gbl.columnWeights = new double[] { 1.0, 1.0 };
+		gbl.rowWeights = new double[] { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 };
+		buttonsPanel.setLayout(gbl);
 
-		final JButton importButton = new JButton( "import tgmm" );
-		importButton.addActionListener( new ActionListener()
-		{
-			@Override
-			public void actionPerformed( final ActionEvent e )
-			{
-				tgmmImportDialog.showImportDialog( windowManager.getSpimData(), windowManager.getModel() );
-			}
+		final GridBagConstraints separator_gbc = new GridBagConstraints();
+		separator_gbc.fill = GridBagConstraints.HORIZONTAL;
+		separator_gbc.gridwidth = 2;
+		separator_gbc.insets = new Insets(5, 5, 5, 5);
+		separator_gbc.gridx = 0;
+
+		final GridBagConstraints label_gbc = new GridBagConstraints();
+		label_gbc.fill = GridBagConstraints.HORIZONTAL;
+		label_gbc.gridwidth = 2;
+		label_gbc.insets = new Insets(5, 5, 5, 5);
+		label_gbc.gridx = 0;
+
+		final GridBagConstraints button_gbc_right = new GridBagConstraints();
+		button_gbc_right.fill = GridBagConstraints.BOTH;
+		button_gbc_right.insets = new Insets(0, 0, 5, 0);
+		button_gbc_right.gridx = 1;
+
+		final GridBagConstraints button_gbc_left = new GridBagConstraints();
+		button_gbc_left.fill = GridBagConstraints.BOTH;
+		button_gbc_left.insets = new Insets(0, 0, 5, 5);
+		button_gbc_left.gridx = 0;
+
+		int gridy = 0;
+
+		label_gbc.gridy = gridy;
+		buttonsPanel.add( new JLabel( "Views:" ), label_gbc );
+
+		++gridy;
+
+		final JButton bdvButton = new JButton( "bdv" );
+		bdvButton.addActionListener( e -> {
+			if ( windowManager != null )
+				windowManager.createBigDataViewer();
 		} );
-		buttonsPanel.add( importButton );
+		button_gbc_right.gridy = gridy;
+		buttonsPanel.add( bdvButton, button_gbc_right );
+
+		++gridy;
+
+		final JButton trackschemeButton = new JButton( "trackscheme" );
+		trackschemeButton.addActionListener( e -> {
+			if ( windowManager != null )
+				windowManager.createTrackScheme();
+		} );
+		button_gbc_right.gridy = gridy;
+		buttonsPanel.add( trackschemeButton, button_gbc_right );
+
+		++gridy;
+
+		separator_gbc.gridy = gridy;
+		buttonsPanel.add( new JSeparator(), separator_gbc );
+
+		++gridy;
+
+		label_gbc.gridy = gridy;
+		buttonsPanel.add( new JLabel( "Processing:" ), label_gbc );
+
+		++gridy;
+
+		final JButton featureComputationButton = new JButton( "features and tags" );
+		featureComputationButton.addActionListener( e -> toggleFeaturesDialog() );
+		button_gbc_right.gridy = gridy;
+		buttonsPanel.add( featureComputationButton, button_gbc_right );
+
+		++gridy;
+
+		separator_gbc.gridy = gridy;
+		buttonsPanel.add( new JSeparator(), separator_gbc );
+
+		++gridy;
+
+		label_gbc.gridy = gridy;
+		buttonsPanel.add( new JLabel( "Input / Output:" ), label_gbc );
+
+		++gridy;
 
 		final JButton createProjectButton = new JButton( "new project" );
-		createProjectButton.addActionListener( new ActionListener()
-		{
-			@Override
-			public void actionPerformed( final ActionEvent e )
-			{
-				createProject();
-			}
-		} );
-		buttonsPanel.add( createProjectButton );
+		createProjectButton.addActionListener( e -> createProject() );
+		button_gbc_left.gridy = gridy;
+		buttonsPanel.add( createProjectButton, button_gbc_left );
 
-		final JButton loadProjectButton = new JButton( "load project" );
-		loadProjectButton.addActionListener( new ActionListener()
-		{
-			@Override
-			public void actionPerformed( final ActionEvent e )
-			{
-				loadProject();
-			}
-		} );
-		buttonsPanel.add( loadProjectButton );
+		final JButton importButton = new JButton( "import tgmm" );
+		importButton.addActionListener( e -> tgmmImportDialog.showImportDialog( windowManager.getSpimData(), windowManager.getModel() ) );
+		button_gbc_right.gridy = gridy;
+		buttonsPanel.add( importButton, button_gbc_right );
+
+		++gridy;
 
 		final JButton saveProjectButton = new JButton( "save project" );
-		saveProjectButton.addActionListener( new ActionListener()
-		{
-			@Override
-			public void actionPerformed( final ActionEvent e )
-			{
-				saveProject();
-			}
-		} );
-		buttonsPanel.add( saveProjectButton );
+		saveProjectButton.addActionListener( e -> saveProject() );
+		button_gbc_left.gridy = gridy;
+		buttonsPanel.add( saveProjectButton, button_gbc_left );
+
+		final JButton loadProjectButton = new JButton( "load project" );
+		loadProjectButton.addActionListener( e -> loadProject() );
+		button_gbc_right.gridy = gridy;
+		buttonsPanel.add( loadProjectButton, button_gbc_right );
 
 		final Container content = getContentPane();
 		content.add( buttonsPanel, BorderLayout.NORTH );
@@ -134,6 +175,9 @@ public class MainWindow extends JFrame
 				windowManager = null;
 			}
 		} );
+
+		setDefaultCloseOperation( WindowConstants.EXIT_ON_CLOSE );
+		pack();
 	}
 
 	public void open( final MamutProject project ) throws IOException, SpimDataException
@@ -157,6 +201,21 @@ public class MainWindow extends JFrame
 			windowManager.closeAllWindows();
 
 		windowManager = new WindowManager( spimDataXmlFilename, spimData, model, keyconf );
+
+		/*
+		 * Feature calculation.
+		 */
+
+		/*
+		 * TODO FIXE Ugly hack to get proper service instantiation. Fix it by
+		 * proposing a proper Command decoupled from the GUI.
+		 */
+		final Context context = new Context();
+		final MamutFeatureComputerService featureComputerService = context.getService( MamutFeatureComputerService.class );
+		final Dialog featureComputationDialog = new FeatureAndTagDialog( this, windowManager.getModel(), featureComputerService );
+		featureComputationDialog.setSize( 400, 400 );
+
+		toggleFeatureComputationDialogAction = new ToggleDialogAction( "feature computation", featureComputationDialog );
 	}
 
 	public void saveProject( final File projectFile ) throws IOException
@@ -256,6 +315,12 @@ public class MainWindow extends JFrame
 		}
 	}
 
+	public void toggleFeaturesDialog()
+	{
+		if ( toggleFeatureComputationDialogAction != null )
+			toggleFeatureComputationDialogAction.actionPerformed( null );
+	}
+
 	/**
 	 * Try to load {@link InputTriggerConfig} from files in this order:
 	 * <ol>
@@ -313,8 +378,6 @@ public class MainWindow extends JFrame
 
 		final InputTriggerConfig keyconf = getInputTriggerConfig();
 		final MainWindow mw = new MainWindow( keyconf );
-		mw.setDefaultCloseOperation( WindowConstants.EXIT_ON_CLOSE );
-		mw.pack();
 		mw.setVisible( true );
 
 		mw.open( project );
