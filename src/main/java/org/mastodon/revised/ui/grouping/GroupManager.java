@@ -4,7 +4,6 @@ import static gnu.trove.impl.Constants.DEFAULT_CAPACITY;
 import static gnu.trove.impl.Constants.DEFAULT_LOAD_FACTOR;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -14,9 +13,23 @@ import gnu.trove.map.TIntObjectMap;
 import gnu.trove.map.hash.TIntObjectHashMap;
 
 /**
- * TODO: javadoc
+ * Manages a fixed number of groups. Groups are used to share state (Models)
+ * between views. Each view can belong to at most one group at any time. A view
+ * that belongs to no group is effectively in its own private group. Grouping
+ * mechanic is hidden from the views using {@link ForwardingModel}s. Each view
+ * has an associated {@link GroupHandle} from which it can obtain fixed
+ * forwarding models whose backing models are transparently switched as group
+ * membership changes.
+ * <p>
+ * Use {@link #createGroupHandle()} to make new {@link GroupHandle}s for new
+ * views.
+ * </p>
+ * <p>
+ * Use {@link #registerModel(GroupableModelFactory)} to register new model types
+ * for which forwarding and backing models should be managed.
+ * </p>
  *
- * @author Tobias Pietzsch &lt;tobias.pietzsch@gmail.com&gt;
+ * @author Tobias Pietzsch
  */
 public class GroupManager
 {
@@ -26,6 +39,11 @@ public class GroupManager
 
 	private final int numGroups;
 
+	/**
+	 *
+	 * @param numGroups
+	 *            how many groups to create
+	 */
 	public GroupManager( final int numGroups )
 	{
 		this.numGroups = numGroups;
@@ -34,6 +52,11 @@ public class GroupManager
 			groupIdToGroupHandles.put( i, new HashSet<>() );
 	}
 
+	/**
+	 * Create a {@code GroupHandle} for a new view.
+	 *
+	 * @return a new {@link GroupHandle}
+	 */
 	public GroupHandle createGroupHandle()
 	{
 		return new GroupHandle( this );

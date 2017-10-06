@@ -6,7 +6,12 @@ import org.mastodon.revised.ui.selection.TimepointModelImp;
 import org.mastodon.util.Listeners;
 
 /**
- * TODO
+ * A {@link TimepointModel} forwarding to a switchable backing
+ * {@link TimepointModel}.
+ * <p>
+ * Used for grouping views, see {@link GroupManager}.
+ *
+ * @author Tobias Pietzsch
  */
 public class ForwardingTimepointModel implements TimepointModel, ForwardingModel< TimepointModel >
 {
@@ -59,12 +64,6 @@ public class ForwardingTimepointModel implements TimepointModel, ForwardingModel
 			if ( oldModel == null || oldModel.getTimepoint() != newModel.getTimepoint() )
 				listener.timepointChanged();
 		}
-	}
-
-	@Override
-	public TimepointModel asT()
-	{
-		return this;
 	}
 
 	public static final GroupableModelFactory< TimepointModel > factory = new GroupableModelFactory< TimepointModel >()

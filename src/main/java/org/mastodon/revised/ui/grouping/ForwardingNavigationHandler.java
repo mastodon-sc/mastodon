@@ -6,14 +6,17 @@ import org.mastodon.revised.ui.selection.NavigationListener;
 import org.mastodon.util.Listeners;
 
 /**
- * TODO
+ * A {@link NavigationHandler} forwarding to another (switchable)
+ * {@link NavigationHandler}.
+ * <p>
+ * Used for grouping views, see {@link GroupManager}.
  *
  * @param <V>
  *            the type of vertices.
  * @param <E>
  *            the type of edges.
  *
- * @author Tobias Pietzsch &lt;tobias.pietzsch@gmail.com&gt;
+ * @author Tobias Pietzsch
  */
 public class ForwardingNavigationHandler< V, E > implements NavigationHandler< V, E >, NavigationListener< V, E >, ForwardingModel< NavigationHandler< V, E > >
 {
@@ -58,12 +61,6 @@ public class ForwardingNavigationHandler< V, E > implements NavigationHandler< V
 			handler.listeners().remove( this );
 		newHandler.listeners().add( this );
 		handler = newHandler;
-	}
-
-	@Override
-	public NavigationHandler< V, E > asT()
-	{
-		return this;
 	}
 
 	public static class Factory< V, E> implements GroupableModelFactory< NavigationHandler< V, E > >

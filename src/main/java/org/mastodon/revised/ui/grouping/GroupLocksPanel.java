@@ -14,6 +14,12 @@ import javax.swing.JPanel;
 import javax.swing.JToggleButton;
 import javax.swing.SwingConstants;
 
+/**
+ * TODO: javadoc
+ *
+ * @author Tobias Pietzsch
+ * @author Jean-Ives Tinevez
+ */
 public class GroupLocksPanel extends JPanel implements GroupChangeListener
 {
 	private static final long serialVersionUID = 1L;

@@ -2,17 +2,18 @@ package org.mastodon.revised.ui.grouping;
 
 import static org.mastodon.revised.ui.grouping.GroupManager.NO_GROUP;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Set;
 
 import org.mastodon.util.Listeners;
 
 /**
- * TODO: javadoc
+ * Each Mastodon view has a {@code GroupHandle}. The view can
+ * {@link #getModel(GroupableModelFactory) obtain} forwarding models that
+ * transparently switch between backing models of the current group. The
+ * {@code GroupHandle} also manages {@link #groupChangeListeners()} that are
+ * notified when the its group membership changes.
  *
- * @author Tobias Pietzsch &lt;tobias.pietzsch@gmail.com&gt;
+ * @author Tobias Pietzsch
  */
 public class GroupHandle
 {
@@ -49,6 +50,12 @@ public class GroupHandle
 		return manager.getNumGroups();
 	}
 
+	/**
+	 * Move this handle to the specified group.
+	 *
+	 * @param id
+	 *            group index or {@link GroupManager#NO_GROUP}.
+	 */
 	public void setGroupId( final int id )
 	{
 		if ( manager.setGroupId( this, id ) )
@@ -56,6 +63,10 @@ public class GroupHandle
 				l.groupChanged();
 	}
 
+	/**
+	 * Holds a forwarding model, and a backing model which will be forwarded to
+	 * if this handle belongs to NO_GROUP.
+	 */
 	class ModelData< T >
 	{
 		final ForwardingModel< T > forwarding;
@@ -86,8 +97,17 @@ public class GroupHandle
 		return data;
 	}
 
-	public < T > T getModel( final GroupableModelFactory< T > factory )
+	/**
+	 * Get the forwarding model with the specified {@code key}.
+	 *
+	 * @param key
+	 *            the factory by which this kind of model was
+	 *            {@link GroupManager#registerModel(GroupableModelFactory)
+	 *            reqistered} with the {@code GroupManager}.
+	 * @return the forwarding model with the specified {@code key}.
+	 */
+	public < T > T getModel( final GroupableModelFactory< T > key )
 	{
-		return getModelData( factory ).forwarding.asT();
+		return getModelData( key ).forwarding.asT();
 	}
 }
