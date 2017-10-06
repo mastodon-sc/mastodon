@@ -5,7 +5,7 @@ import org.mastodon.properties.IntPropertyMap;
 
 /**
  * Static utilities to build feature projections for numerical features.
- * 
+ *
  * @author Jean-Yves Tinevez
  *
  */
@@ -15,7 +15,7 @@ public class FeatureProjectors
 	/**
 	 * Returns a view of the specified scalar <code>double</code> feature as a
 	 * projection.
-	 * 
+	 *
 	 * @param feature
 	 *            the feature.
 	 * @return a feature projection for the specified feature.
@@ -28,7 +28,7 @@ public class FeatureProjectors
 	/**
 	 * Returns a view of the specified scalar <code>int</code> feature as a
 	 * projection.
-	 * 
+	 *
 	 * @param feature
 	 *            the feature.
 	 * @return a feature projection for the specified feature.

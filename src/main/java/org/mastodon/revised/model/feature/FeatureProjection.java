@@ -20,7 +20,7 @@ package org.mastodon.revised.model.feature;
  * <li><code>phi</code> the velocity vector angle measured in the OMZ plane with
  * respect to Z axis (0º to 180º).
  * </ul>
- * 
+ *
  * @param <K>
  *            the feature target (vertex, edge, ...).
  * @author Jean-Yves Tinevez
@@ -29,7 +29,7 @@ public interface FeatureProjection< K >
 {
 	/**
 	 * Returns whether the feature value is set for the specified object.
-	 * 
+	 *
 	 * @param obj
 	 *            the object.
 	 * @return <code>true</code> if a value is present for the specified object,
@@ -39,7 +39,7 @@ public interface FeatureProjection< K >
 
 	/**
 	 * Returns the value of this projection for the specified object.
-	 * 
+	 *
 	 * @param obj
 	 *            the object.
 	 * @return the feature projection value as a <code>double</code>.
