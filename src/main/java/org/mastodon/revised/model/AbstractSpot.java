@@ -17,8 +17,6 @@ import org.mastodon.spatial.HasTimepoint;
  * The class ships the minimal required features, that is coordinates and
  * time-point.
  *
- * @author Tobias Pietzsch &lt;tobias.pietzsch@gmail.com&gt;
- *
  * @param <V>
  *            the recursive type of the concrete implementation.
  * @param <E>
@@ -27,7 +25,7 @@ import org.mastodon.spatial.HasTimepoint;
  *            the MappedElement type, for example {@link ByteMappedElement}.
  *
  * @author Jean-Yves Tinevez
- * @author Tobias Pietzsch &lt;tobias.pietzsch@gmail.com&gt;
+ * @author Tobias Pietzsch
  */
 public class AbstractSpot<
 		V extends AbstractSpot< V, E, VP, T, G >,
