@@ -2,6 +2,7 @@ package org.mastodon.adapter;
 
 import org.mastodon.revised.ui.selection.NavigationHandler;
 import org.mastodon.revised.ui.selection.NavigationListener;
+import org.mastodon.util.Listeners;
 
 public class NavigationHandlerAdapter< V, E, WV, WE >
 		implements NavigationHandler< WV, WE >
@@ -34,15 +35,24 @@ public class NavigationHandlerAdapter< V, E, WV, WE >
 		navigationHandler.notifyNavigateToEdge( edgeMap.getLeft( edge ) );
 	}
 
-	@Override
-	public boolean addNavigationListener( final NavigationListener< WV, WE > listener )
+	private final Listeners< NavigationListener< WV, WE > > listeners = new Listeners< NavigationListener< WV, WE > >()
 	{
-		return navigationHandler.addNavigationListener( new NavigationListenerAdapter<>( listener, vertexMap, edgeMap ) );
-	}
+		@Override
+		public boolean add( final NavigationListener< WV, WE > listener )
+		{
+			return navigationHandler.listeners().add( new NavigationListenerAdapter<>( listener, vertexMap, edgeMap ) );
+		}
+
+		@Override
+		public boolean remove( final NavigationListener< WV, WE > listener )
+		{
+			return navigationHandler.listeners().remove( new NavigationListenerAdapter<>( listener, vertexMap, edgeMap ) );
+		}
+	};
 
 	@Override
-	public boolean removeNavigationListener( final NavigationListener< WV, WE > listener )
+	public Listeners< NavigationListener< WV, WE > > listeners()
 	{
-		return navigationHandler.removeNavigationListener( new NavigationListenerAdapter<>( listener, vertexMap, edgeMap ) );
+		return listeners;
 	}
 }

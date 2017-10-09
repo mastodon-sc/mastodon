@@ -6,6 +6,7 @@ import org.mastodon.collection.RefSet;
 import org.mastodon.graph.Edge;
 import org.mastodon.graph.GraphListener;
 import org.mastodon.graph.Vertex;
+import org.mastodon.util.Listeners;
 
 /**
  * A class that manages a selection of vertices and edges of a graph.
@@ -30,7 +31,7 @@ public interface Selection< V extends Vertex< E >, E extends Edge< V > >
 	/**
 	 * Get the selected state of a vertex.
 	 *
-	 * @param v
+	 * @param vertex
 	 *            a vertex.
 	 * @return {@code true} if specified vertex is selected.
 	 */
@@ -39,7 +40,7 @@ public interface Selection< V extends Vertex< E >, E extends Edge< V > >
 	/**
 	 * Get the selected state of an edge.
 	 *
-	 * @param e
+	 * @param edge
 	 *            an edge.
 	 * @return {@code true} if specified edge is selected.
 	 */
@@ -48,7 +49,7 @@ public interface Selection< V extends Vertex< E >, E extends Edge< V > >
 	/**
 	 * Sets the selected state of a vertex.
 	 *
-	 * @param v
+	 * @param vertex
 	 *            a vertex.
 	 * @param selected
 	 *            selected state to set for specified vertex.
@@ -58,7 +59,7 @@ public interface Selection< V extends Vertex< E >, E extends Edge< V > >
 	/**
 	 * Sets the selected state of an edge.
 	 *
-	 * @param e
+	 * @param edge
 	 *            an edge.
 	 * @param selected
 	 *            selected state to set for specified edge.
@@ -68,7 +69,7 @@ public interface Selection< V extends Vertex< E >, E extends Edge< V > >
 	/**
 	 * Toggles the selected state of a vertex.
 	 *
-	 * @param v
+	 * @param vertex
 	 *            a vertex.
 	 */
 	public void toggle( final V vertex );
@@ -76,7 +77,7 @@ public interface Selection< V extends Vertex< E >, E extends Edge< V > >
 	/**
 	 * Toggles the selected state of an edge.
 	 *
-	 * @param e
+	 * @param edge
 	 *            an edge.
 	 */
 	public void toggle( final E edge );
@@ -125,9 +126,13 @@ public interface Selection< V extends Vertex< E >, E extends Edge< V > >
 	 */
 	public RefSet< V > getSelectedVertices();
 
-	public boolean addSelectionListener( final SelectionListener listener );
-
-	public boolean removeSelectionListener( final SelectionListener listener );
+	/**
+	 * Get the list of selection listeners. Add a {@link SelectionListener} to
+	 * this list, for being notified when the vertex/edge selection changes.
+	 *
+	 * @return the list of listeners
+	 */
+	public Listeners< SelectionListener > listeners();
 
 	public void resumeListeners();
 

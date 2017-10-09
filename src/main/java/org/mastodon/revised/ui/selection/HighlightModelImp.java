@@ -1,11 +1,10 @@
 package org.mastodon.revised.ui.selection;
 
-import java.util.ArrayList;
-
 import org.mastodon.graph.Edge;
 import org.mastodon.graph.GraphIdBimap;
 import org.mastodon.graph.GraphListener;
 import org.mastodon.graph.Vertex;
+import org.mastodon.util.Listeners;
 
 /**
  * Manages the highlighted vertex.
@@ -30,7 +29,7 @@ public class HighlightModelImp< V extends Vertex< E >, E extends Edge< V > >
 
 	private int highlightedEdgeId;
 
-	private final ArrayList< HighlightListener > listeners;
+	private final Listeners.List< HighlightListener > listeners;
 
 	/**
 	 * Creates a new highlight model for the graph with the specified
@@ -45,7 +44,7 @@ public class HighlightModelImp< V extends Vertex< E >, E extends Edge< V > >
 		this.idmap = idmap;
 		highlightedVertexId = -1;
 		highlightedEdgeId = -1;
-		listeners = new ArrayList< HighlightListener >();
+		listeners = new Listeners.SynchronizedList<>();
 	}
 
 	/**
@@ -139,44 +138,15 @@ public class HighlightModelImp< V extends Vertex< E >, E extends Edge< V > >
 				null : idmap.getEdge( highlightedEdgeId, ref );
 	}
 
-	/**
-	 * Registers a HighlightListener to this highlight model, that will be
-	 * notified when the highlighted vertex changes.
-	 *
-	 * @param listener
-	 *            the listener to register.
-	 * @return {@code true} if the listener was successfully registered.
-	 *         {@code false} if it was already registered.
-	 */
 	@Override
-	public synchronized boolean addHighlightListener( final HighlightListener listener )
+	public Listeners< HighlightListener > listeners()
 	{
-		if ( ! listeners.contains( listener ) )
-		{
-			listeners.add( listener );
-			return true;
-		}
-		return false;
-	}
-
-	/**
-	 * Removes the specified listener from the listeners of this highlight
-	 * model.
-	 *
-	 * @param listener
-	 *            the listener to remove.
-	 * @return {@code true} if the listener was present in the listeners of
-	 *         this model and was succesfully removed.
-	 */
-	@Override
-	public synchronized boolean removeHighlightListener( final HighlightListener listener )
-	{
-		return listeners.remove( listener );
+		return listeners;
 	}
 
 	private void notifyListeners()
 	{
-		for ( final HighlightListener l : listeners )
+		for ( final HighlightListener l : listeners.list )
 			l.highlightChanged();
 	}
 

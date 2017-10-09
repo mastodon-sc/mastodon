@@ -2,31 +2,61 @@ package org.mastodon.revised.ui.grouping;
 
 import static gnu.trove.impl.Constants.DEFAULT_CAPACITY;
 import static gnu.trove.impl.Constants.DEFAULT_LOAD_FACTOR;
-import gnu.trove.iterator.TIntIterator;
-import gnu.trove.list.array.TIntArrayList;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+
 import gnu.trove.map.TIntObjectMap;
 import gnu.trove.map.hash.TIntObjectHashMap;
 
-import java.util.HashSet;
-import java.util.Set;
-
 /**
- * TODO: javadoc
+ * Manages a fixed number of groups. Groups are used to share state (Models)
+ * between views. Each view can belong to at most one group at any time. A view
+ * that belongs to no group is effectively in its own private group. Grouping
+ * mechanic is hidden from the views using {@link ForwardingModel}s. Each view
+ * has an associated {@link GroupHandle} from which it can obtain fixed
+ * forwarding models whose backing models are transparently switched as group
+ * membership changes.
+ * <p>
+ * Use {@link #createGroupHandle()} to make new {@link GroupHandle}s for new
+ * views.
+ * </p>
+ * <p>
+ * Use {@link #registerModel(GroupableModelFactory)} to register new model types
+ * for which forwarding and backing models should be managed.
+ * </p>
  *
- * @author Tobias Pietzsch &lt;tobias.pietzsch@gmail.com&gt;
+ * @author Tobias Pietzsch
  */
 public class GroupManager
 {
+	public static final int NO_GROUP = -1;
+
 	private final TIntObjectMap< Set< GroupHandle > > groupIdToGroupHandles;
 
-	private int modCount;
+	private final int numGroups;
 
-	public GroupManager()
+	/**
+	 *
+	 * @param numGroups
+	 *            how many groups to create
+	 */
+	public GroupManager( final int numGroups )
 	{
+		this.numGroups = numGroups;
 		groupIdToGroupHandles = new TIntObjectHashMap<>( DEFAULT_CAPACITY, DEFAULT_LOAD_FACTOR, -1 );
-		modCount = 0;
+		for ( int i = 0; i < numGroups; ++i )
+			groupIdToGroupHandles.put( i, new HashSet<>() );
 	}
 
+	/**
+	 * Create a {@code GroupHandle} for a new view.
+	 *
+	 * @return a new {@link GroupHandle}
+	 */
 	public GroupHandle createGroupHandle()
 	{
 		return new GroupHandle( this );
@@ -34,47 +64,66 @@ public class GroupManager
 
 	public void removeGroupHandle( final GroupHandle handle )
 	{
-		final TIntIterator ids = new TIntArrayList( handle.groupIds ).iterator();
-		while ( ids.hasNext() )
-			removeFromGroup( handle, ids.next() );
+		setGroupId( handle, NO_GROUP );
 	}
 
-	void addToGroup( final GroupHandle handle, final int groupId )
+	public int getNumGroups()
 	{
-		Set< GroupHandle > handles = groupIdToGroupHandles.get( groupId );
-		if ( handles == null )
+		return numGroups;
+	}
+
+	boolean setGroupId( final GroupHandle handle, final int groupId )
+	{
+		final int oldId = handle.groupId;
+		if ( oldId == groupId )
+			return false;
+
+		if ( oldId != NO_GROUP )
+			groupIdToGroupHandles.get( oldId ).remove( handle );
+
+		final boolean copyCurrentStateToNewModel;
+		if ( groupId != NO_GROUP )
 		{
-			handles = new HashSet<>();
-			groupIdToGroupHandles.put( groupId, handles );
+			final Set< GroupHandle > handles = groupIdToGroupHandles.get( groupId );
+			copyCurrentStateToNewModel = handles.isEmpty();
+			handles.add( handle );
 		}
-		if ( handles.add( handle ) )
-			++modCount;
+		else
+			copyCurrentStateToNewModel = true;
+
+		handle.groupId = groupId;
+		models.values().forEach( ( m ) -> m.moveTo( handle, groupId, copyCurrentStateToNewModel ) );
+		return true;
 	}
 
-	void removeFromGroup( final GroupHandle handle, final int groupId )
+	class ModelType< T >
 	{
-		final Set< GroupHandle > nandles = groupIdToGroupHandles.get( groupId );
-		if ( nandles != null && nandles.remove( handle ) )
-			++modCount;
+		final ArrayList< T > models;
+
+		final GroupableModelFactory< T > factory;
+
+		ModelType( final GroupableModelFactory< T > factory )
+		{
+			this.factory = factory;
+			models = new ArrayList<>();
+			for ( int i = 0; i < getNumGroups(); ++i )
+				models.add( factory.createBackingModel() );
+		}
+
+		public void moveTo( final GroupHandle handle, final int groupId, final boolean copyCurrentStateToNewModel )
+		{
+			final GroupHandle.ModelData< T > data = handle.getModelData( factory );
+			final T model = ( groupId == NO_GROUP )
+					? data.backing
+					: models.get( groupId );
+			data.forwarding.linkTo( model, copyCurrentStateToNewModel );
+		}
 	}
 
-	int modCount()
-	{
-		return modCount;
-	}
+	final Map< GroupableModelFactory< ? >, ModelType< ? > > models = new HashMap<>();
 
-	void incModCount()
+	public void registerModel( final GroupableModelFactory< ? > factory )
 	{
-		++modCount;
-	}
-
-	Set< GroupHandle > getAllGroupMembers( final GroupHandle member )
-	{
-		final HashSet< GroupHandle > members = new HashSet<>();
-		members.add( member );
-		final TIntIterator ids = member.groupIds.iterator();
-		while ( ids.hasNext() )
-			members.addAll( groupIdToGroupHandles.get( ids.next() ) );
-		return members;
+		models.put( factory, new ModelType<>( factory ) );
 	}
 }

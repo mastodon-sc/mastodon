@@ -1,5 +1,7 @@
 package org.mastodon.revised.ui.grouping;
 
+import static org.mastodon.revised.ui.grouping.GroupManager.NO_GROUP;
+
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
@@ -12,6 +14,12 @@ import javax.swing.JPanel;
 import javax.swing.JToggleButton;
 import javax.swing.SwingConstants;
 
+/**
+ * TODO: javadoc
+ *
+ * @author Tobias Pietzsch
+ * @author Jean-Ives Tinevez
+ */
 public class GroupLocksPanel extends JPanel implements GroupChangeListener
 {
 	private static final long serialVersionUID = 1L;
@@ -22,8 +30,6 @@ public class GroupLocksPanel extends JPanel implements GroupChangeListener
 
 	private static final Font FONT = new Font( "Arial", Font.PLAIN, 10 );
 
-	private static final int N_LOCKS = 3;
-
 	private final ArrayList< JToggleButton > buttons;
 
 	private final GroupHandle groupHandle;
@@ -33,10 +39,11 @@ public class GroupLocksPanel extends JPanel implements GroupChangeListener
 		super( new FlowLayout( FlowLayout.LEADING ) );
 		this.groupHandle = groupHandle;
 		this.buttons = new ArrayList<>();
-		for ( int i = 0; i < N_LOCKS; i++ )
+		final int numGroups = groupHandle.getNumGroups();
+		for ( int i = 0; i < numGroups; i++ )
 		{
 			final int lockId = i;
-			final boolean isActive = groupHandle.isInGroup( lockId );
+			final boolean isActive = groupHandle.getGroupId() == lockId;
 			final JToggleButton button = new JToggleButton( "" + ( i + 1 ), isActive ? LOCK_ICON : UNLOCK_ICON, isActive );
 			button.setFont( FONT );
 			button.setPreferredSize( new Dimension( 60, 20 ) );
@@ -50,23 +57,24 @@ public class GroupLocksPanel extends JPanel implements GroupChangeListener
 				public void actionPerformed( final ActionEvent e )
 				{
 					if ( button.isSelected() )
-						groupHandle.addToGroup( lockId );
+						groupHandle.setGroupId( lockId );
 					else
-						groupHandle.removeFromGroup( lockId );
+						groupHandle.setGroupId( NO_GROUP );
 				}
 			} );
 			add( button );
 			buttons.add( button );
 		}
-		groupHandle.addGroupChangeListener( this );
+		groupHandle.groupChangeListeners().add( this );
 	}
 
 	@Override
 	public void groupChanged()
 	{
-		for ( int i = 0; i < N_LOCKS; ++i )
+		final int numGroups = groupHandle.getNumGroups();
+		for ( int i = 0; i < numGroups; i++ )
 		{
-			final boolean activated = groupHandle.isInGroup( i );
+			final boolean activated = groupHandle.getGroupId() == i;
 			final JToggleButton button = buttons.get( i );
 			button.setSelected( activated );
 			button.setIcon( activated ? LOCK_ICON : UNLOCK_ICON );

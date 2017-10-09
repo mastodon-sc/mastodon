@@ -62,6 +62,8 @@ import org.mastodon.revised.trackscheme.wrap.DefaultModelGraphProperties;
 import org.mastodon.revised.trackscheme.wrap.ModelGraphProperties;
 import org.mastodon.revised.ui.HighlightBehaviours;
 import org.mastodon.revised.ui.SelectionActions;
+import org.mastodon.revised.ui.grouping.ForwardingNavigationHandler;
+import org.mastodon.revised.ui.grouping.ForwardingTimepointModel;
 import org.mastodon.revised.ui.grouping.GroupHandle;
 import org.mastodon.revised.ui.grouping.GroupManager;
 import org.mastodon.revised.ui.selection.FocusListener;
@@ -75,6 +77,8 @@ import org.mastodon.revised.ui.selection.NavigationHandlerImp;
 import org.mastodon.revised.ui.selection.Selection;
 import org.mastodon.revised.ui.selection.SelectionImp;
 import org.mastodon.revised.ui.selection.SelectionListener;
+import org.mastodon.revised.ui.selection.TimepointListener;
+import org.mastodon.revised.ui.selection.TimepointModel;
 import org.scijava.ui.behaviour.KeyPressedManager;
 import org.scijava.ui.behaviour.KeyStrokeAdder;
 import org.scijava.ui.behaviour.io.InputTriggerConfig;
@@ -93,6 +97,10 @@ import mpicbg.spim.data.generic.AbstractSpimData;
 
 public class WindowManager
 {
+	private static final int NUM_GROUPS = 3;
+
+	public static final ForwardingNavigationHandler.Factory< Spot, Link > forwardingNavigationHandlerFactory = new ForwardingNavigationHandler.Factory<>();
+
 	/**
 	 * Information for one BigDataViewer window.
 	 */
@@ -277,7 +285,10 @@ public class WindowManager
 		this.model = model;
 		this.keyconf = keyconf;
 
-		groupManager = new GroupManager();
+		groupManager = new GroupManager( NUM_GROUPS );
+		groupManager.registerModel( ForwardingTimepointModel.factory );
+		groupManager.registerModel( forwardingNavigationHandlerFactory );
+
 		keyPressedManager = new KeyPressedManager();
 		final RequestRepaint requestRepaint = new RequestRepaint()
 		{
@@ -371,6 +382,8 @@ public class WindowManager
 	public void createBigDataViewer()
 	{
 		final GroupHandle bdvGroupHandle = groupManager.createGroupHandle();
+		final TimepointModel timepointModel = bdvGroupHandle.getModel( ForwardingTimepointModel.factory );
+		final NavigationHandler< Spot, Link > navigation = bdvGroupHandle.getModel( forwardingNavigationHandlerFactory );
 
 		final OverlayGraphWrapper< Spot, Link > overlayGraph = new OverlayGraphWrapper<>(
 				model.getGraph(),
@@ -383,8 +396,7 @@ public class WindowManager
 		final HighlightModel< OverlayVertexWrapper< Spot, Link >, OverlayEdgeWrapper< Spot, Link > > overlayHighlight = new HighlightAdapter<>( highlightModel, vertexMap, edgeMap );
 		final FocusModel< OverlayVertexWrapper< Spot, Link >, OverlayEdgeWrapper< Spot, Link > > overlayFocus = new FocusAdapter<>( focusModel, vertexMap, edgeMap );
 		final Selection< OverlayVertexWrapper< Spot, Link >, OverlayEdgeWrapper< Spot, Link > > overlaySelection = new SelectionAdapter<>( selection, vertexMap, edgeMap );
-		final NavigationHandler< Spot, Link > navigationHandler = new NavigationHandlerImp<>( bdvGroupHandle );
-		final NavigationHandler< OverlayVertexWrapper< Spot, Link >, OverlayEdgeWrapper< Spot, Link > > overlayNavigationHandler = new NavigationHandlerAdapter<>( navigationHandler, vertexMap, edgeMap );
+		final NavigationHandler< OverlayVertexWrapper< Spot, Link >, OverlayEdgeWrapper< Spot, Link > > overlayNavigationHandler = new NavigationHandlerAdapter<>( navigation, vertexMap, edgeMap );
 		final String windowTitle = "BigDataViewer " + (bdvName++); // TODO: use JY naming scheme
 		final BigDataViewerMaMuT bdv = BigDataViewerMaMuT.open( sharedBdvData, windowTitle, bdvGroupHandle );
 		final ViewerFrame viewerFrame = bdv.getViewerFrame();
@@ -397,7 +409,7 @@ public class WindowManager
 //		if ( !bdv.tryLoadSettings( bdvFile ) ) // TODO
 //			InitializeViewerState.initBrightness( 0.001, 0.999, bdv.getViewer(), bdv.getSetupAssignments() );
 
-		viewer.setTimepoint( currentTimepoint );
+		viewer.setTimepoint( timepointModel.getTimepoint() );
 		final OverlayGraphRenderer< OverlayVertexWrapper< Spot, Link >, OverlayEdgeWrapper< Spot, Link > > tracksOverlay = new OverlayGraphRenderer<>(
 				overlayGraph,
 				overlayHighlight,
@@ -406,7 +418,7 @@ public class WindowManager
 		viewer.getDisplay().addOverlayRenderer( tracksOverlay );
 		viewer.addRenderTransformListener( tracksOverlay );
 		viewer.addTimePointListener( tracksOverlay );
-		overlayHighlight.addHighlightListener( new HighlightListener()
+		overlayHighlight.listeners().add( new HighlightListener()
 		{
 			@Override
 			public void highlightChanged()
@@ -414,7 +426,7 @@ public class WindowManager
 				viewer.getDisplay().repaint();
 			}
 		} );
-		overlayFocus.addFocusListener( new FocusListener()
+		overlayFocus.listeners().add( new FocusListener()
 		{
 			@Override
 			public void focusChanged()
@@ -431,7 +443,7 @@ public class WindowManager
 			}
 		} );
 		model.getGraph().addVertexPositionListener( ( v ) -> viewer.getDisplay().repaint() );
-		overlaySelection.addSelectionListener( new SelectionListener()
+		overlaySelection.listeners().add( new SelectionListener()
 		{
 			@Override
 			public void selectionChanged()
@@ -442,7 +454,7 @@ public class WindowManager
 		// TODO: remember those listeners and remove them when the BDV window is closed!!!
 
 		final OverlayNavigation< OverlayVertexWrapper< Spot, Link >, OverlayEdgeWrapper< Spot, Link > > overlayNavigation = new OverlayNavigation<>( viewer, overlayGraph );
-		overlayNavigationHandler.addNavigationListener( overlayNavigation );
+		overlayNavigationHandler.listeners().add( overlayNavigation );
 
 		final BdvHighlightHandler< ?, ? > highlightHandler = new BdvHighlightHandler<>( overlayGraph, tracksOverlay, overlayHighlight );
 		viewer.getDisplay().addHandler( highlightHandler );
@@ -464,7 +476,7 @@ public class WindowManager
 		HighlightBehaviours.installActionBindings(
 				viewerFrame.getTriggerbindings(),
 				keyconf,
-				new String[] {"bdv"},
+				new String[] { "bdv" },
 				model.getGraph(),
 				model.getGraph(),
 				highlightModel,
@@ -478,15 +490,22 @@ public class WindowManager
 				selection,
 				model );
 
-		/*
-		 * TODO: this is still wrong. There should be one central entity syncing
-		 * time for several BDV frames and TrackSchemePanel should listen to
-		 * that. Ideally windows should be configurable to "share" timepoints or
-		 * not.
-		 */
-		viewer.addTimePointListener( tpl );
-//		viewer.repaint(); // TODO remove?
-
+		viewer.addTimePointListener( new TimePointListener()
+		{
+			@Override
+			public void timePointChanged( final int timePointIndex )
+			{
+				timepointModel.setTimepoint( timePointIndex );
+			}
+		} );
+		timepointModel.listeners().add( new TimepointListener()
+		{
+			@Override
+			public void timepointChanged()
+			{
+				viewer.setTimepoint( timepointModel.getTimepoint() );
+			}
+		} );
 
 		// TODO revise
 		// RenderSettingsDialog triggered by "R"
@@ -516,24 +535,6 @@ public class WindowManager
 		addBdvWindow( bdvWindow );
 	}
 
-	// TODO testing only
-	private int currentTimepoint = 0;
-
-	// TODO testing only
-	private final TimePointListener tpl = new TimePointListener()
-	{
-		@Override
-		public void timePointChanged( final int timePointIndex )
-		{
-			if ( currentTimepoint != timePointIndex )
-			{
-				currentTimepoint = timePointIndex;
-				for ( final TsWindow w : tsWindows )
-					w.getTrackSchemeFrame().getTrackschemePanel().timePointChanged( timePointIndex );
-			}
-		}
-	};
-
 	public void createTrackScheme()
 	{
 		final ListenableReadOnlyGraph< Spot, Link > graph = model.getGraph();
@@ -552,7 +553,6 @@ public class WindowManager
 		 */
 		final HighlightModel< TrackSchemeVertex, TrackSchemeEdge > trackSchemeHighlight = new HighlightAdapter<>( highlightModel, vertexMap, edgeMap );
 
-
 		/*
 		 * TrackScheme selection
 		 */
@@ -564,10 +564,15 @@ public class WindowManager
 		final GroupHandle groupHandle = groupManager.createGroupHandle();
 
 		/*
+		 * TimepointModel forwarding to current group
+		 */
+		final TimepointModel timepointModel = groupHandle.getModel( ForwardingTimepointModel.factory );
+
+		/*
 		 * TrackScheme navigation
 		 */
-		final NavigationHandler< Spot, Link > navigationHandler = new NavigationHandlerImp<>( groupHandle );
-		final NavigationHandler< TrackSchemeVertex, TrackSchemeEdge > trackSchemeNavigation = new NavigationHandlerAdapter<>( navigationHandler, vertexMap, edgeMap );
+		final NavigationHandler< Spot, Link > navigation = groupHandle.getModel( forwardingNavigationHandlerFactory );
+		final NavigationHandler< TrackSchemeVertex, TrackSchemeEdge > trackSchemeNavigation = new NavigationHandlerAdapter<>( navigation, vertexMap, edgeMap );
 
 		/*
 		 * TrackScheme focus
@@ -577,7 +582,7 @@ public class WindowManager
 		/*
 		 * TrackScheme ContextChooser
 		 */
-		final TrackSchemeContextListener< Spot > contextListener = new TrackSchemeContextListener< >(
+		final TrackSchemeContextListener< Spot > contextListener = new TrackSchemeContextListener<>(
 				idmap,
 				trackSchemeGraph );
 		final ContextChooser< Spot > contextChooser = new ContextChooser<>( contextListener );
@@ -592,6 +597,7 @@ public class WindowManager
 				trackSchemeGraph,
 				trackSchemeHighlight,
 				trackSchemeFocus,
+				timepointModel,
 				trackSchemeSelection,
 				trackSchemeNavigation,
 				model,
@@ -703,7 +709,7 @@ public class WindowManager
 		public static void writeToYaml( final String fileName, final WindowManager wm ) throws IOException
 		{
 			mkdirs( fileName );
-			YamlConfigIO.write(  buildDescriptions( wm ), fileName );
+			YamlConfigIO.write( buildDescriptions( wm ), fileName );
 		}
 	}
 }

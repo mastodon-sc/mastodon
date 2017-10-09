@@ -3,6 +3,21 @@ package org.mastodon.adapter;
 import java.util.Collection;
 import java.util.Iterator;
 
+/**
+ * Adapts a {@code Collection<O>} as a {@code Collection<WO>}. The mapping
+ * between source elements {@code O} and wrapped elements {@code WO} is
+ * established by a {@code RefBimap<WO, O>}.
+ *
+ * For the reverse wrapper taking a {@code RefBimap<O, WO>}, see
+ * {@link CollectionAdapter}.
+ *
+ * @param <O>
+ *            element type of source collection being wrapped.
+ * @param <WO>
+ *            element type of this wrapper collection.
+ *
+ * @author Tobias Pietzsch
+ */
 public class CollectionAdapterReverse< O, WO >
 		implements Collection< WO >
 {

@@ -1,6 +1,5 @@
 package org.mastodon.revised.ui.selection;
 
-import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.Collection;
 
@@ -11,6 +10,7 @@ import org.mastodon.graph.GraphIdBimap;
 import org.mastodon.graph.GraphListener;
 import org.mastodon.graph.ListenableReadOnlyGraph;
 import org.mastodon.graph.Vertex;
+import org.mastodon.util.Listeners;
 
 /**
  * A class that manages a selection of vertices and edges of a graph.
@@ -46,7 +46,7 @@ public class SelectionImp< V extends Vertex< E >, E extends Edge< V > >
 
 	private final BitSet edgeBits;
 
-	private final ArrayList< SelectionListener > listeners;
+	private final Listeners.List< SelectionListener > listeners;
 
 	/**
 	 * If <code>false</code>, listeners will not be notified when a
@@ -80,7 +80,7 @@ public class SelectionImp< V extends Vertex< E >, E extends Edge< V > >
 		selectedEdges = RefCollections.createRefSet( graph.edges() );
 		vertexBits = new BitSet();
 		edgeBits = new BitSet();
-		this.listeners = new ArrayList< SelectionListener >();
+		listeners = new Listeners.SynchronizedList<>();
 		emitEvents = true;
 		shouldEmitEvent = false;
 	}
@@ -325,26 +325,15 @@ public class SelectionImp< V extends Vertex< E >, E extends Edge< V > >
 	}
 
 	@Override
-	public synchronized boolean addSelectionListener( final SelectionListener listener )
+	public Listeners< SelectionListener > listeners()
 	{
-		if ( !listeners.contains( listener ) )
-		{
-			listeners.add( listener );
-			return true;
-		}
-		return false;
-	}
-
-	@Override
-	public synchronized boolean removeSelectionListener( final SelectionListener l )
-	{
-		return listeners.remove( l );
+		return listeners;
 	}
 
 	private void notifyListeners()
 	{
 		if ( emitEvents )
-			for ( final SelectionListener l : listeners )
+			for ( final SelectionListener l : listeners.list )
 				l.selectionChanged();
 		else
 			shouldEmitEvent = true;
@@ -357,7 +346,7 @@ public class SelectionImp< V extends Vertex< E >, E extends Edge< V > >
 		if ( shouldEmitEvent )
 		{
 			// Catchup.
-			for ( final SelectionListener l : listeners )
+			for ( final SelectionListener l : listeners.list )
 				l.selectionChanged();
 			shouldEmitEvent = false;
 		}

@@ -1,5 +1,7 @@
 package org.mastodon.revised.ui.selection;
 
+import org.mastodon.util.Listeners;
+
 /**
  * Class that centralizes receiving and sending navigation events to navigation
  * listeners.
@@ -18,17 +20,12 @@ public interface NavigationHandler< V, E >
 	public void notifyNavigateToEdge( final E edge );
 
 	/**
-	 * Registers the specified listener to this handler. The listener is
+	 * Get the list of navigation listeners. Add a {@link NavigationListener} to
+	 * this list, for being notified about navigation events. Listeners are
 	 * notified of {@code navigateToVertex} events originating from any
 	 * NavigationHandler in a shared group with this {@link NavigationHandler}.
 	 *
-	 * @param listener
-	 *            the {@link NavigationListener} to register.
-	 * @return {@code true} if the specified listener was added to the
-	 *         listeners of this handler. {@code false} if the specified
-	 *         listener was already registered.
+	 * @return the list of listeners
 	 */
-	public boolean addNavigationListener( final NavigationListener< V, E > listener );
-
-	public boolean removeNavigationListener( final NavigationListener< V, E > listener );
+	public Listeners< NavigationListener< V, E > > listeners();
 }

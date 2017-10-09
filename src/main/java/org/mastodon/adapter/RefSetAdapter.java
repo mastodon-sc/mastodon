@@ -5,6 +5,18 @@ import java.util.Iterator;
 
 import org.mastodon.collection.RefSet;
 
+/**
+ * Adapts a {@code RefSet<O>} as a {@code RefSet<WO>}. The mapping between
+ * source elements {@code O} and wrapped elements {@code WO} is established by a
+ * {@code RefBimap<O, WO>}.
+ *
+ * @param <O>
+ *            element type of source collection being wrapped.
+ * @param <WO>
+ *            element type of this wrapper collection.
+ *
+ * @author Tobias Pietzsch
+ */
 public class RefSetAdapter< O, WO >
 		implements RefSet< WO >
 {
@@ -53,8 +65,7 @@ public class RefSetAdapter< O, WO >
 	@Override
 	public Iterator< WO > iterator()
 	{
-		// TODO Auto-generated method stub
-		return null;
+		throw new UnsupportedOperationException( "not implemented (yet)" );
 	}
 
 	@Override

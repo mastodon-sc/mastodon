@@ -36,8 +36,9 @@ import org.mastodon.revised.ui.selection.NavigationHandler;
 import org.mastodon.revised.ui.selection.NavigationListener;
 import org.mastodon.revised.ui.selection.Selection;
 import org.mastodon.revised.ui.selection.SelectionListener;
+import org.mastodon.revised.ui.selection.TimepointListener;
+import org.mastodon.revised.ui.selection.TimepointModel;
 
-import bdv.viewer.TimePointListener;
 import net.imglib2.ui.InteractiveDisplayCanvasComponent;
 import net.imglib2.ui.OverlayRenderer;
 import net.imglib2.ui.PainterThread;
@@ -49,7 +50,7 @@ public class TrackSchemePanel extends JPanel implements
 		PainterThread.Paintable,
 		HighlightListener,
 		FocusListener,
-		TimePointListener,
+		TimepointListener,
 		GraphChangeListener,
 		SelectionListener,
 		NavigationListener< TrackSchemeVertex, TrackSchemeEdge >,
@@ -139,9 +140,9 @@ public class TrackSchemePanel extends JPanel implements
 	 */
 	private boolean ignoreScrollBarChanges;
 
-//	private final TrackSchemeSelection selection;
-
 	private final FocusModel< TrackSchemeVertex, TrackSchemeEdge > focus;
+
+	private final TimepointModel timepoint;
 
 	private final TrackSchemeNavigator navigator;
 
@@ -155,6 +156,7 @@ public class TrackSchemePanel extends JPanel implements
 			final TrackSchemeGraph< ?, ? > graph,
 			final HighlightModel< TrackSchemeVertex, TrackSchemeEdge > highlight,
 			final FocusModel< TrackSchemeVertex, TrackSchemeEdge > focus,
+			final TimepointModel timepoint,
 			final Selection< TrackSchemeVertex, TrackSchemeEdge > selection,
 			final NavigationHandler< TrackSchemeVertex, TrackSchemeEdge > navigation,
 			final TrackSchemeOptions optional )
@@ -162,20 +164,22 @@ public class TrackSchemePanel extends JPanel implements
 		super( new BorderLayout(), false );
 		this.graph = graph;
 		this.focus = focus;
+		this.timepoint = timepoint;
 
 		final Values options = optional.values;
 
 		graph.addGraphChangeListener( this );
-		navigation.addNavigationListener( this );
+		navigation.listeners().add( this );
 
 		final int w = options.getWidth();
 		final int h = options.getHeight();
 		display = new InteractiveDisplayCanvasComponent<>( w, h, options.getTransformEventHandlerFactory() );
 		display.addTransformListener( this );
 
-		highlight.addHighlightListener( this );
-		focus.addFocusListener( this );
-		selection.addSelectionListener( this );
+		highlight.listeners().add( this );
+		focus.listeners().add( this );
+		timepoint.listeners().add( this );
+		selection.listeners().add( this );
 
 		style = TrackSchemeStyle.defaultStyle().copy( "default" );
 		graphOverlay = new DefaultTrackSchemeOverlay( graph, highlight, focus, optional, style );
@@ -397,11 +401,12 @@ public class TrackSchemePanel extends JPanel implements
 	}
 
 	@Override
-	public void timePointChanged( final int timepoint )
+	public void timepointChanged()
 	{
-		if ( graphOverlay.getCurrentTimepoint() != timepoint )
+		final int t = timepoint.getTimepoint();
+		if ( graphOverlay.getCurrentTimepoint() != t )
 		{
-			graphOverlay.setCurrentTimepoint( timepoint );
+			graphOverlay.setCurrentTimepoint( t );
 			display.repaint();
 		}
 	}
