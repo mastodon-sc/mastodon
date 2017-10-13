@@ -1,7 +1,5 @@
 package org.mastodon.graph.features.calculator;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.Locale;
 
 import org.mastodon.collection.RefCollections;
@@ -102,22 +100,5 @@ public class EdgeFeatureCalculatorExample
 			else
 				System.out.println( String.format( Locale.US, "For root %s, mean displacement = %.3f (N = %d).", root.getLabel(), ( dr.get() / n.get() ), n.get() ) );
 		}
-	}
-
-	public static void main( final String[] args ) throws IOException
-	{
-		long start = System.currentTimeMillis();
-		final String modelFile = "samples/model_revised.raw";
-		final Model model = new Model();
-		System.out.print( "Loading data: " + modelFile + "... " );
-		model.loadRaw( new File( modelFile ) );
-		long end = System.currentTimeMillis();
-		System.out.println( "Done in " + ( end - start ) + " ms." );
-
-		start = System.currentTimeMillis();
-		compute( model );
-		end = System.currentTimeMillis();
-		System.out.println( "Calculation done in " + ( end - start ) + " ms." );
-
 	}
 }

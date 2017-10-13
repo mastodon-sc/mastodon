@@ -84,6 +84,15 @@ public class AbstractModelGraph<
 	{
 		final FileInputStream fis = new FileInputStream( file );
 		final ObjectInputStream ois = new ObjectInputStream( new BufferedInputStream( fis, 1024 * 1024 ) );
+		readRaw( ois, serializer );
+		ois.close();
+	}
+
+	public FileIdToGraphMap< V, E > readRaw(
+			final ObjectInputStream ois,
+			final GraphSerializer< V, E > serializer )
+					throws IOException
+	{
 		pauseListeners();
 		clear();
 		final FileIdToGraphMap< V, E > fileIdMap = RawGraphIO.read( this, idmap, serializer, ois );
@@ -91,9 +100,10 @@ public class AbstractModelGraph<
 		// TODO: edge properties
 //		RawFeatureIO.readFeatureMaps( fileIdMap.vertices(), vertexFeatures, ois );
 //		RawFeatureIO.readFeatureMaps( fileIdMap.edges(), edgeFeatures, ois );
-		ois.close();
 		resumeListeners();
+		return fileIdMap;
 	}
+
 
 	/**
 	 * Saves this model-graph to the specified raw file using the specified

@@ -1,9 +1,12 @@
 package org.mastodon.revised.mamut.feature;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
 
+import org.mastodon.io.FileIdToObjectMap;
 import org.mastodon.io.properties.IntPropertyMapSerializer;
 import org.mastodon.pool.PoolCollectionWrapper;
 import org.mastodon.properties.IntPropertyMap;
@@ -41,13 +44,36 @@ public class SpotNLinksComputer implements SpotFeatureComputer
 		for ( final Spot spot : vertices )
 			pm.set( spot, spot.edges().size() );
 
-		final Map< String, FeatureProjection< Spot > > projections = Collections.singletonMap( KEY, FeatureProjectors.project( pm ) );
+		return bundle( pm );
+	}
+
+	@Override
+	public Feature< ?, ? > deserialize( final ObjectInputStream ois, final FileIdToObjectMap< ? > fileIdToObjectMap, final Model model )
+	{
+		final IntPropertyMap< Spot > pm = new IntPropertyMap<>( model.getGraph().vertices(), -1 );
+		final IntPropertyMapSerializer< Spot > serializer = new IntPropertyMapSerializer<>( pm );
+		@SuppressWarnings( "unchecked" )
+		final FileIdToObjectMap< Spot > idmap = ( FileIdToObjectMap< Spot > ) fileIdToObjectMap;
+		try
+		{
+			serializer.readPropertyMap( idmap, ois );
+		}
+		catch ( ClassNotFoundException | IOException e1 )
+		{
+			e1.printStackTrace();
+		}
+		return bundle( pm );
+	}
+
+	private Feature< Spot, IntPropertyMap< Spot> > bundle( final IntPropertyMap< Spot > propertyMap )
+	{
+		final Map< String, FeatureProjection< Spot > > projections = Collections.singletonMap( KEY, FeatureProjectors.project( propertyMap ) );
 		final Feature< Spot, IntPropertyMap< Spot > > feature = new Feature<>(
 				KEY,
 				Spot.class,
-				pm,
+				propertyMap,
 				projections,
-				new IntPropertyMapSerializer<>( pm ));
+				new IntPropertyMapSerializer<>( propertyMap ) );
 		return feature;
 	}
 }

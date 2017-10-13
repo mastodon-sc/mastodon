@@ -61,6 +61,13 @@ public class SpotPositionFeatureComputer implements SpotFeatureComputer
 		return feature;
 	}
 
+	@Override
+	public Feature< ?, ? > deserialize( final ObjectInputStream ois, final FileIdToObjectMap< ? > fileIdToObjectMap, final Model model )
+	{
+		// Do nothing but return the feature.
+		return compute( model );
+	}
+
 	private final static class SpotPositionProjection implements FeatureProjection< Spot >
 	{
 

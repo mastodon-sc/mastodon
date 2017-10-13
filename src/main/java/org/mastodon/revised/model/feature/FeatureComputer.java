@@ -1,7 +1,9 @@
 package org.mastodon.revised.model.feature;
 
+import java.io.ObjectInputStream;
 import java.util.Set;
 
+import org.mastodon.io.FileIdToObjectMap;
 import org.mastodon.revised.model.AbstractModel;
 import org.scijava.plugin.SciJavaPlugin;
 
@@ -44,4 +46,19 @@ public interface FeatureComputer< AM extends AbstractModel< ?, ?, ? > > extends 
 	 * @return the feature key.
 	 */
 	public String getKey();
+
+	/**
+	 * Deserializes the {@link Feature} object calculated by this class,
+	 * taking values from in input stream.
+	 *
+	 * @param ois
+	 *            The input stream. Will not be closed.
+	 * @param fileIdToObjectMap
+	 *            A mapping between file Ids to objects.
+	 * @param model
+	 *            The model the feature is defined on. This object is only used
+	 *            to instantiate property maps.
+	 * @return a new feature object.
+	 */
+	public Feature< ?, ? > deserialize( ObjectInputStream ois, FileIdToObjectMap< ? > fileIdToObjectMap, AM model );
 }
