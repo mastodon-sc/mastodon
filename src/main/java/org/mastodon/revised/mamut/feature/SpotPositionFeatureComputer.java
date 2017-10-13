@@ -1,10 +1,16 @@
 package org.mastodon.revised.mamut.feature;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
+import org.mastodon.io.FileIdToObjectMap;
+import org.mastodon.io.ObjectToFileIdMap;
+import org.mastodon.io.properties.PropertyMapSerializer;
 import org.mastodon.properties.AbstractPropertyMap;
 import org.mastodon.properties.PropertyMap;
 import org.mastodon.revised.model.feature.Feature;
@@ -44,11 +50,14 @@ public class SpotPositionFeatureComputer implements SpotFeatureComputer
 			map.put( pname, projection );
 		}
 		final Map< String, FeatureProjection< Spot > > projections = Collections.unmodifiableMap( map );
+		final RealLocalizablePropertyMap< Spot > rlpm = new RealLocalizablePropertyMap< Spot >( model.getGraph().vertices().size() );
+		final PropertyMapSerializer< Spot, PropertyMap< Spot, RealLocalizable > > pms = new DummyPropertyMapSerializer< Spot >();
 		final Feature< Spot, PropertyMap< Spot, RealLocalizable > > feature =
-				new Feature<>(
+				new Feature< Spot, PropertyMap< Spot, RealLocalizable > >(
 						KEY, Spot.class,
-						new RealLocalizablePropertyMap< Spot >( model.getGraph().vertices().size() ),
-						projections );
+						rlpm,
+						projections,
+						pms );
 		return feature;
 	}
 
@@ -135,5 +144,28 @@ public class SpotPositionFeatureComputer implements SpotFeatureComputer
 			return size;
 		}
 
+	}
+
+	private static class DummyPropertyMapSerializer< O > implements PropertyMapSerializer< O, PropertyMap< O, RealLocalizable > >
+	{
+
+		@Override
+		public void writePropertyMap( final ObjectToFileIdMap< O > idmap, final ObjectOutputStream oos ) throws IOException
+		{
+			// Do nothing.
+		}
+
+		@Override
+		public void readPropertyMap( final FileIdToObjectMap< O > idmap, final ObjectInputStream ois ) throws IOException, ClassNotFoundException
+		{
+			// Do nothing.
+		}
+
+		@Override
+		public PropertyMap< O, RealLocalizable > getPropertyMap()
+		{
+			// Return nothing.
+			return null;
+		}
 	}
 }

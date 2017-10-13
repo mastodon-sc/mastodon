@@ -1,9 +1,16 @@
 package org.mastodon.revised.model.feature;
 
+import java.io.IOException;
+import java.io.ObjectOutputStream;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+
+import org.mastodon.io.ObjectToFileIdMap;
+import org.mastodon.io.properties.PropertyMapSerializer;
+import org.mastodon.io.properties.PropertyMapSerializers;
+import org.mastodon.io.properties.RawPropertyIO;
 
 /**
  * Default feature model.
@@ -61,4 +68,35 @@ public class DefaultFeatureModel implements FeatureModel
 	{
 		return keyToFeature.get( key );
 	}
+
+	@SuppressWarnings( { "unchecked", "rawtypes" } )
+	@Override
+	public void writeRaw( final ObjectOutputStream oos, final Map< Class< ? >, ObjectToFileIdMap< ? > > fileIdMaps ) throws IOException
+	{
+		final Map<Class< ? >, PropertyMapSerializers< ? > > serializerMap = new HashMap<>();
+
+		for ( final String featureKey : keyToFeature.keySet() )
+		{
+			final Feature< ?, ? > feature = keyToFeature.get( featureKey );
+			final Class< ? > targetClass = feature.getTargetClass();
+
+			PropertyMapSerializers< ? > propertyMapSerializers = serializerMap.get( targetClass );
+			if ( null == propertyMapSerializers )
+			{
+				propertyMapSerializers = new PropertyMapSerializers<>();
+				serializerMap.put( targetClass, propertyMapSerializers );
+			}
+
+			final PropertyMapSerializer serializer = feature.getSerializer();
+			propertyMapSerializers.put( featureKey, serializer );
+		}
+
+		for ( final Class< ? > targetClass : serializerMap.keySet() )
+		{
+			final PropertyMapSerializers serializers = serializerMap.get( targetClass );
+			final ObjectToFileIdMap idmap = fileIdMaps.get(targetClass);
+			RawPropertyIO.writePropertyMaps( idmap, serializers, oos );
+		}
+	}
+
 }

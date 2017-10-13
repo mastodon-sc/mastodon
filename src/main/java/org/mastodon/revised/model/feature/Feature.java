@@ -2,6 +2,7 @@ package org.mastodon.revised.model.feature;
 
 import java.util.Map;
 
+import org.mastodon.io.properties.PropertyMapSerializer;
 import org.mastodon.properties.PropertyMap;
 
 /**
@@ -33,10 +34,10 @@ import org.mastodon.properties.PropertyMap;
  *
  * @param <O>
  *            the type of the object this feature is defined for (target).
- * @param <K>
+ * @param <M>
  *            the type of the property map used to store feature values.
  */
-public class Feature< O, K extends PropertyMap< O, ? > >
+public class Feature< O, M extends PropertyMap< O, ? > >
 {
 
 	/**
@@ -47,7 +48,7 @@ public class Feature< O, K extends PropertyMap< O, ? > >
 	/**
 	 * The feature property map.
 	 */
-	private final K propertyMap;
+	private final M propertyMap;
 
 	/**
 	 * The feature projections, stored as a map from projection names to
@@ -59,6 +60,11 @@ public class Feature< O, K extends PropertyMap< O, ? > >
 	 * The class of the feature target.
 	 */
 	private final Class< O > targetClass;
+
+	/**
+	 * The serializer that will be used to serialize this feature.
+	 */
+	private final PropertyMapSerializer< O, M > serializer;
 
 	/**
 	 * Creates a new immutable feature instance.
@@ -73,13 +79,17 @@ public class Feature< O, K extends PropertyMap< O, ? > >
 	 * @param projections
 	 *            The feature projections, stored as a map from projection names
 	 *            to projections.
+	 * @param serializer
+	 *            A serializer that can serialize the property map of this
+	 *            feature.
 	 */
-	public Feature( final String key, final Class< O > targetClass, final K propertyMap, final Map< String, FeatureProjection< O > > projections )
+	public Feature( final String key, final Class< O > targetClass, final M propertyMap, final Map< String, FeatureProjection< O > > projections, final PropertyMapSerializer< O, M > serializer )
 	{
 		this.key = key;
 		this.targetClass = targetClass;
 		this.propertyMap = propertyMap;
 		this.projections = projections;
+		this.serializer = serializer;
 	}
 
 	/**
@@ -97,7 +107,7 @@ public class Feature< O, K extends PropertyMap< O, ? > >
 	 *
 	 * @return the property map.
 	 */
-	public K getPropertyMap()
+	public M getPropertyMap()
 	{
 		return propertyMap;
 	}
@@ -122,5 +132,16 @@ public class Feature< O, K extends PropertyMap< O, ? > >
 	public Class< O > getTargetClass()
 	{
 		return targetClass;
+	}
+
+	/**
+	 * Returns a property map serializer that can serialize the property map of
+	 * this feature.
+	 *
+	 * @return a suitable serializer.
+	 */
+	public PropertyMapSerializer< ?, ? > getSerializer()
+	{
+		return serializer;
 	}
 }

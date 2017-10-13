@@ -4,6 +4,7 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
 
+import org.mastodon.io.properties.DoublePropertyMapSerializer;
 import org.mastodon.properties.DoublePropertyMap;
 import org.mastodon.revised.model.feature.Feature;
 import org.mastodon.revised.model.feature.FeatureProjection;
@@ -58,7 +59,12 @@ public class LinkDisplacementComputer implements LinkFeatureComputer
 		graph.releaseRef( ref2 );
 
 		final Map< String, FeatureProjection< Link > > projections = Collections.singletonMap( KEY, FeatureProjectors.project( pm ) );
-		final Feature< Link, DoublePropertyMap< Link > > feature = new Feature<>( KEY, Link.class, pm, projections );
+		final Feature< Link, DoublePropertyMap< Link > > feature = new Feature<>(
+				KEY,
+				Link.class,
+				pm,
+				projections,
+				new DoublePropertyMapSerializer<>( pm ) );
 		return feature;
 	}
 }

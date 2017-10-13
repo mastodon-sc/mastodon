@@ -1,11 +1,18 @@
 package org.mastodon.revised.model.mamut;
 
+import java.io.BufferedOutputStream;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.ObjectOutputStream;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.mastodon.graph.ReadOnlyGraph;
+import org.mastodon.graph.io.RawGraphIO.GraphToFileIdMap;
+import org.mastodon.io.ObjectToFileIdMap;
 import org.mastodon.properties.Property;
 import org.mastodon.revised.model.AbstractModel;
 import org.mastodon.revised.model.feature.DefaultFeatureModel;
@@ -96,7 +103,20 @@ public class Model extends AbstractModel< ModelGraph, Spot, Link > implements Un
 	 */
 	public void saveRaw( final File file ) throws IOException
 	{
-		modelGraph.saveRaw( file, ModelSerializer.getInstance() );
+		final FileOutputStream fos = new FileOutputStream( file );
+		final ObjectOutputStream oos = new ObjectOutputStream( new BufferedOutputStream( fos, 1024 * 1024 ) );
+
+		// Serialize model graph.
+		final GraphToFileIdMap< Spot, Link > fileIdMap = modelGraph.writeRaw( oos, ModelSerializer.getInstance() );
+
+		// Serialize feature model.
+		final Map< Class< ? >, ObjectToFileIdMap< ? > > fileIdMaps = new HashMap<>();
+		fileIdMaps.put( Spot.class, fileIdMap.vertices() );
+		fileIdMaps.put( Link.class, fileIdMap.edges() );
+		featureModel.writeRaw(oos, fileIdMaps);
+
+		// Close.
+		oos.close();
 	}
 
 	/**

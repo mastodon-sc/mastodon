@@ -4,6 +4,7 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
 
+import org.mastodon.io.properties.IntPropertyMapSerializer;
 import org.mastodon.pool.PoolCollectionWrapper;
 import org.mastodon.properties.IntPropertyMap;
 import org.mastodon.revised.model.feature.Feature;
@@ -41,7 +42,12 @@ public class SpotNLinksComputer implements SpotFeatureComputer
 			pm.set( spot, spot.edges().size() );
 
 		final Map< String, FeatureProjection< Spot > > projections = Collections.singletonMap( KEY, FeatureProjectors.project( pm ) );
-		final Feature< Spot, IntPropertyMap< Spot > > feature = new Feature<>( KEY, Spot.class, pm, projections );
+		final Feature< Spot, IntPropertyMap< Spot > > feature = new Feature<>(
+				KEY,
+				Spot.class,
+				pm,
+				projections,
+				new IntPropertyMapSerializer<>( pm ));
 		return feature;
 	}
 }
