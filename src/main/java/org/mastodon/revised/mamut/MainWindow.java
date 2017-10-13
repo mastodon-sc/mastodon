@@ -21,8 +21,13 @@ import javax.swing.JSeparator;
 import javax.swing.WindowConstants;
 
 import org.mastodon.app.ui.ViewMenu;
+import org.mastodon.revised.mamut.feature.MamutFeatureComputerService;
+import org.scijava.Context;
+import org.scijava.Contextual;
+import org.scijava.NullContextException;
+import org.scijava.plugin.Parameter;
 
-public class MainWindow extends JFrame
+public class MainWindow extends JFrame implements Contextual
 {
 	protected final JMenuBar menubar;
 
@@ -31,6 +36,14 @@ public class MainWindow extends JFrame
 	public MainWindow( final WindowManager windowManager )
 	{
 		super( "Mastodon" );
+		/*
+		 * Instantiate context with required services.
+		 */
+		this.context = new Context( MamutFeatureComputerService.class );
+
+		/*
+		 * GUI
+		 */
 
 		final ActionMap actionMap = windowManager.getGlobalAppActions().getActionMap();
 
@@ -156,8 +169,23 @@ public class MainWindow extends JFrame
 //			}
 //		} );
 		setDefaultCloseOperation( WindowConstants.EXIT_ON_CLOSE );
-
 		pack();
+	}
+
+	// -- Contextual methods --
+
+	@Parameter
+	private Context context;
+
+	@Override
+	public Context context() {
+		if (context == null) throw new NullContextException();
+		return context;
+	}
+
+	@Override
+	public Context getContext() {
+		return context;
 	}
 
 	public static void addMenus( final ViewMenu menu, final ActionMap actionMap )
