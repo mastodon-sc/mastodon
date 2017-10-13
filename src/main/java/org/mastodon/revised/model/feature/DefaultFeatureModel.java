@@ -73,8 +73,8 @@ public class DefaultFeatureModel implements FeatureModel
 	@Override
 	public void writeRaw( final ObjectOutputStream oos, final Map< Class< ? >, ObjectToFileIdMap< ? > > fileIdMaps ) throws IOException
 	{
+		// Collect feature to write and order them by target class.
 		final Map<Class< ? >, PropertyMapSerializers< ? > > serializerMap = new HashMap<>();
-
 		for ( final String featureKey : keyToFeature.keySet() )
 		{
 			final Feature< ?, ? > feature = keyToFeature.get( featureKey );
@@ -91,10 +91,20 @@ public class DefaultFeatureModel implements FeatureModel
 			propertyMapSerializers.put( featureKey, serializer );
 		}
 
-		for ( final Class< ? > targetClass : serializerMap.keySet() )
+		// Write several blocks of features, one by target class.
+		// Order imposed by the key of fileIdMaps.
+		for ( final Class< ? > targetClass : fileIdMaps.keySet() )
 		{
 			final PropertyMapSerializers serializers = serializerMap.get( targetClass );
-			final ObjectToFileIdMap idmap = fileIdMaps.get(targetClass);
+			if ( null == serializers )
+				continue;
+
+			final ObjectToFileIdMap idmap = fileIdMaps.get( targetClass );
+			if (null == idmap)
+			{
+				System.err.println( "Error while writing features. Do not have a file id map for target class " + targetClass );
+				continue;
+			}
 			RawPropertyIO.writePropertyMaps( idmap, serializers, oos );
 		}
 	}

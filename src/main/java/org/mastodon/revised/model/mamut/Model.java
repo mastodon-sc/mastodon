@@ -10,18 +10,17 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.mastodon.graph.ReadOnlyGraph;
 import org.mastodon.graph.io.RawGraphIO.FileIdToGraphMap;
 import org.mastodon.graph.io.RawGraphIO.GraphToFileIdMap;
+import org.mastodon.io.FileIdToObjectMap;
 import org.mastodon.io.ObjectToFileIdMap;
 import org.mastodon.properties.Property;
-import org.mastodon.revised.mamut.feature.LinkFeatureComputer;
 import org.mastodon.revised.mamut.feature.MamutFeatureComputerService;
-import org.mastodon.revised.mamut.feature.SpotFeatureComputer;
 import org.mastodon.revised.model.AbstractModel;
 import org.mastodon.revised.model.feature.DefaultFeatureModel;
 import org.mastodon.revised.model.feature.Feature;
@@ -112,56 +111,52 @@ public class Model extends AbstractModel< ModelGraph, Spot, Link > implements Un
 		final FileIdToGraphMap< Spot, Link > fileIdMap = modelGraph.readRaw( ois, ModelSerializer.getInstance() );
 
 		/*
-		 * Read the feature values.
+		 * Read the feature values. The order is important and is set by the
+		 * saveRaw() method. We suppose we wrote spot features first then link
+		 * features.
 		 */
-
 		featureModel.clear();
 		final Collection< FeatureComputer< Model > > featureComputers = featureComputerService.getFeatureComputers();
 		try
 		{
-			final String[] keys = ( String[] ) ois.readObject();
-			for ( final String key : keys )
-			{
-				FeatureComputer< Model > featureComputer = null;
-				for ( final FeatureComputer<Model> fc : featureComputers )
-				{
-					if (fc.getKey().equals( key ))
-					{
-						featureComputer = fc;
-						break;
-					}
-				}
-				if (null == featureComputer)
-				{
-					System.err.println( "Could not find a feature computer with key " + key + ". Skipping." );
-					// TODO If we skip we cannot read the next ones. What to do?
-					continue;
-				}
+			// Spot features.
+			final String[] spotKeys = ( String[] ) ois.readObject();
+			deserializeFeatures( ois, spotKeys, featureComputers, fileIdMap.vertices() );
+			// Link features.
+			final String[] linkKeys = ( String[] ) ois.readObject();
+			deserializeFeatures( ois, linkKeys, featureComputers, fileIdMap.edges() );
 
-				final Feature<?,?> feature;
-				if (featureComputer instanceof SpotFeatureComputer)
-				{
-					 feature = featureComputer.deserialize(ois, fileIdMap.vertices(), this);
-				}
-				else if (featureComputer instanceof LinkFeatureComputer)
-				{
-					 feature = featureComputer.deserialize(ois, fileIdMap.edges(), this);
-				}
-				else
-				{
-					System.err.println( "Unknown target class for feature computer " + featureComputer + ". Skipping" );
-					// TODO If we skip we cannot read the next ones. What to do?
-					continue;
-				}
-				featureModel.declareFeature( feature );
-			}
 		}
 		catch ( final ClassNotFoundException e )
 		{
 			e.printStackTrace();
 		}
-
 		ois.close();
+	}
+
+	private void deserializeFeatures( final ObjectInputStream ois, final String[] keys, final Collection< FeatureComputer< Model > > featureComputers, final FileIdToObjectMap< ? > idMap )
+	{
+		for ( final String key : keys )
+		{
+			FeatureComputer< Model > featureComputer = null;
+			for ( final FeatureComputer< Model > fc : featureComputers )
+			{
+				if ( fc.getKey().equals( key ) )
+				{
+					featureComputer = fc;
+					break;
+				}
+			}
+			if ( null == featureComputer )
+			{
+				System.err.println( "Could not find a feature computer with key " + key + ". Skipping." );
+				// TODO If we skip we cannot read the next ones. What to do?
+				continue;
+			}
+
+			final Feature< ?, ? > feature = featureComputer.deserialize( ois, idMap, this );
+			featureModel.declareFeature( feature );
+		}
 	}
 
 	/**
@@ -180,8 +175,8 @@ public class Model extends AbstractModel< ModelGraph, Spot, Link > implements Un
 		// Serialize model graph.
 		final GraphToFileIdMap< Spot, Link > fileIdMap = modelGraph.writeRaw( oos, ModelSerializer.getInstance() );
 
-		// Serialize feature model.
-		final Map< Class< ? >, ObjectToFileIdMap< ? > > fileIdMaps = new HashMap<>();
+		// Serialize feature model in order: first the spot features then the link features.
+		final Map< Class< ? >, ObjectToFileIdMap< ? > > fileIdMaps = new LinkedHashMap<>();
 		fileIdMaps.put( Spot.class, fileIdMap.vertices() );
 		fileIdMaps.put( Link.class, fileIdMap.edges() );
 		featureModel.writeRaw(oos, fileIdMaps);
