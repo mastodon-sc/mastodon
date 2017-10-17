@@ -92,8 +92,7 @@ public class SharedBigDataViewerData
 		BigDataViewer.initSetups( spimData, converterSetups, sources );
 
 		for ( final ConverterSetup cs : converterSetups )
-			if ( RealARGBColorConverterSetup.class.isInstance( cs ) )
-				( ( RealARGBColorConverterSetup ) cs ).setViewer( requestRepaint );
+			cs.setViewer( requestRepaint );
 
 		setupAssignments = new SetupAssignments( converterSetups, 0, 65535 );
 		if ( setupAssignments.getMinMaxGroups().size() > 0 )
