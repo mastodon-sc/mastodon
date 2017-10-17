@@ -9,10 +9,10 @@ import org.mastodon.collection.RefCollections;
 import org.mastodon.collection.RefList;
 import org.mastodon.collection.RefSet;
 import org.mastodon.graph.Edges;
+import org.mastodon.model.SelectionModel;
 import org.mastodon.revised.trackscheme.ScreenEdge.ScreenEdgePool;
 import org.mastodon.revised.trackscheme.ScreenVertex.ScreenVertexPool;
 import org.mastodon.revised.trackscheme.ScreenVertexRange.ScreenVertexRangePool;
-import org.mastodon.model.Selection;
 
 import gnu.trove.iterator.TIntAlternatingIterator;
 import gnu.trove.iterator.TIntIterator;
@@ -55,7 +55,7 @@ public class LineageTreeLayout
 {
 	private final TrackSchemeGraph< ?, ? > graph;
 
-	private final Selection< TrackSchemeVertex, TrackSchemeEdge > selection;
+	private final SelectionModel< TrackSchemeVertex, TrackSchemeEdge > selection;
 
 	/**
 	 * X coordinate that will be assigned to the next leaf in the current layout.
@@ -123,7 +123,7 @@ public class LineageTreeLayout
 
 	public LineageTreeLayout(
 			final TrackSchemeGraph< ?, ? > graph,
-			final Selection< TrackSchemeVertex, TrackSchemeEdge > selection )
+			final SelectionModel< TrackSchemeVertex, TrackSchemeEdge > selection )
 	{
 		this.graph = graph;
 		this.selection = selection;

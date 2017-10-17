@@ -15,10 +15,10 @@ import org.mastodon.collection.RefCollections;
 import org.mastodon.collection.RefList;
 import org.mastodon.kdtree.ClipConvexPolytope;
 import org.mastodon.kdtree.IncrementalNearestNeighborSearch;
+import org.mastodon.model.SelectionModel;
 import org.mastodon.revised.Util;
 import org.mastodon.model.FocusModel;
 import org.mastodon.model.HighlightModel;
-import org.mastodon.model.Selection;
 import org.mastodon.spatial.SpatialIndex;
 import org.mastodon.spatial.SpatioTemporalIndex;
 
@@ -82,13 +82,13 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 
 	private final FocusModel< V, E > focus;
 
-	private final Selection< V, E > selection;
+	private final SelectionModel< V, E > selection;
 
 	public OverlayGraphRenderer(
 			final OverlayGraph< V, E > graph,
 			final HighlightModel< V, E > highlight,
 			final FocusModel< V, E > focus,
-			final Selection< V, E > selection )
+			final SelectionModel< V, E > selection )
 	{
 		this.graph = graph;
 		this.highlight = highlight;

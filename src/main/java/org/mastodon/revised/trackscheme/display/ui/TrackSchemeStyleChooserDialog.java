@@ -24,7 +24,7 @@ import javax.swing.border.EmptyBorder;
 import org.mastodon.adapter.FocusAdapter;
 import org.mastodon.adapter.HighlightAdapter;
 import org.mastodon.adapter.RefBimap;
-import org.mastodon.adapter.SelectionAdapter;
+import org.mastodon.adapter.SelectionModelAdapter;
 import org.mastodon.graph.GraphIdBimap;
 import org.mastodon.revised.trackscheme.TrackSchemeEdge;
 import org.mastodon.revised.trackscheme.TrackSchemeEdgeBimap;
@@ -46,7 +46,7 @@ import org.mastodon.model.HighlightModel;
 import org.mastodon.model.HighlightModelImp;
 import org.mastodon.model.NavigationHandler;
 import org.mastodon.model.NavigationHandlerImp;
-import org.mastodon.model.Selection;
+import org.mastodon.model.SelectionModel;
 import org.mastodon.model.TimepointModel;
 import org.mastodon.model.TimepointModelImp;
 
@@ -88,7 +88,7 @@ class TrackSchemeStyleChooserDialog extends JDialog
 		final HighlightModel< TrackSchemeVertex, TrackSchemeEdge > highlight = new HighlightAdapter<>( new HighlightModelImp<>( idmap ), vertexMap, edgeMap );
 		final FocusModel< TrackSchemeVertex, TrackSchemeEdge > focus = new FocusAdapter<>( new FocusModelImp<>( idmap ), vertexMap, edgeMap );
 		final TimepointModel timepoint = new TimepointModelImp();
-		final Selection< TrackSchemeVertex, TrackSchemeEdge > selection = new SelectionAdapter<>( ex.getSelection(), vertexMap, edgeMap );
+		final SelectionModel< TrackSchemeVertex, TrackSchemeEdge > selection = new SelectionModelAdapter<>( ex.getSelectionModel(), vertexMap, edgeMap );
 		final NavigationHandler< TrackSchemeVertex, TrackSchemeEdge > navigation = new NavigationHandlerImp<>();
 		panelPreview = new TrackSchemePanel( graph, highlight, focus, timepoint, selection, navigation, TrackSchemeOptions.options() );
 		panelPreview.setTimepointRange( 0, 7 );

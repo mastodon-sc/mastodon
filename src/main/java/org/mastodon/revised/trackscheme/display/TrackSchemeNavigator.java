@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.awt.Graphics;
 
 import org.mastodon.collection.RefSet;
+import org.mastodon.model.SelectionModel;
 import org.mastodon.revised.trackscheme.LineageTreeLayout;
 import org.mastodon.revised.trackscheme.ScreenTransform;
 import org.mastodon.revised.trackscheme.TrackSchemeEdge;
@@ -12,7 +13,6 @@ import org.mastodon.revised.trackscheme.TrackSchemeVertex;
 import org.mastodon.revised.trackscheme.display.OffsetHeaders.OffsetHeadersListener;
 import org.mastodon.model.FocusModel;
 import org.mastodon.model.NavigationHandler;
-import org.mastodon.model.Selection;
 import org.scijava.ui.behaviour.BehaviourMap;
 import org.scijava.ui.behaviour.ClickBehaviour;
 import org.scijava.ui.behaviour.DragBehaviour;
@@ -32,7 +32,7 @@ import net.imglib2.ui.TransformListener;
 /**
  * TrackSchemeNavigator that implements the 'Midnight-commander-like' behaviour.
  * <p>
- * Selection is independent of focus. Moving the focus with arrow keys doesn't
+ * SelectionModel is independent of focus. Moving the focus with arrow keys doesn't
  * alter selection. Space key toggles selection of focused vertex. When
  * extending the selection with shift+arrow keys, the selection of the currently
  * focused vertex is toggled, then the focus is moved.
@@ -89,7 +89,7 @@ public class TrackSchemeNavigator implements TransformListener< ScreenTransform 
 	public static enum NavigatorEtiquette
 	{
 		/**
-		 * Selection is tied to the focus. When moving the focus with arrow
+		 * SelectionModel is tied to the focus. When moving the focus with arrow
 		 * keys, the selection moves with the focus. When clicking a vertex it
 		 * is focused and selected, The focused vertex is always selected. Focus
 		 * still exists independent of selection: multiple vertices can be
@@ -101,7 +101,7 @@ public class TrackSchemeNavigator implements TransformListener< ScreenTransform 
 		 */
 		FINDER_LIKE,
 		/**
-		 * Selection is independent of focus. Moving the focus with arrow keys
+		 * SelectionModel is independent of focus. Moving the focus with arrow keys
 		 * doesn't alter selection. Space key toggles selection of focused
 		 * vertex. When extending the selection with shift+arrow keys, the
 		 * selection of the currently focused vertex is toggled, then the focus
@@ -116,7 +116,7 @@ public class TrackSchemeNavigator implements TransformListener< ScreenTransform 
 
 	private final NavigationHandler< TrackSchemeVertex, TrackSchemeEdge > navigation;
 
-	private final Selection< TrackSchemeVertex, TrackSchemeEdge > selection;
+	private final SelectionModel< TrackSchemeVertex, TrackSchemeEdge > selection;
 
 	private final ScreenTransform screenTransform;
 
@@ -150,7 +150,7 @@ public class TrackSchemeNavigator implements TransformListener< ScreenTransform 
 			final AbstractTrackSchemeOverlay graphOverlay,
 			final FocusModel< TrackSchemeVertex, TrackSchemeEdge > focus,
 			final NavigationHandler< TrackSchemeVertex, TrackSchemeEdge > navigation,
-			final Selection< TrackSchemeVertex, TrackSchemeEdge > selection )
+			final SelectionModel< TrackSchemeVertex, TrackSchemeEdge > selection )
 	{
 		this.display = display;
 		this.graph = graph;

@@ -29,10 +29,8 @@ import org.mastodon.util.Listeners;
  * @param <E>
  *            the type of the edges.
  */
-// TODO: less severe synchronization
-// TODO: should Selection be an interface?
-public class SelectionImp< V extends Vertex< E >, E extends Edge< V > >
-		implements Selection< V, E >, GraphListener< V, E >
+public class SelectionModelImp< V extends Vertex< E >, E extends Edge< V > >
+		implements SelectionModel< V, E >, GraphListener< V, E >
 {
 	private final ListenableReadOnlyGraph< V, E > graph;
 
@@ -72,7 +70,7 @@ public class SelectionImp< V extends Vertex< E >, E extends Edge< V > >
 	 *            the bidirectional id map, used to efficiently stores the
 	 *            selected state of edges and vertices.
 	 */
-	public SelectionImp( final ListenableReadOnlyGraph< V, E > graph, final GraphIdBimap< V, E > idmap )
+	public SelectionModelImp( final ListenableReadOnlyGraph< V, E > graph, final GraphIdBimap< V, E > idmap )
 	{
 		this.graph = graph;
 		this.idmap = idmap;

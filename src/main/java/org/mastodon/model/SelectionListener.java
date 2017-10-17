@@ -1,7 +1,7 @@
 package org.mastodon.model;
 
 /**
- * Interface for listeners of a {@link Selection}.
+ * Interface for listeners of a {@link SelectionModel}.
  *
  */
 public interface SelectionListener

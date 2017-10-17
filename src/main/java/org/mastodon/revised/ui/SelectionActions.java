@@ -12,7 +12,7 @@ import org.mastodon.graph.Vertex;
 import org.mastodon.graph.algorithm.traversal.DepthFirstSearch;
 import org.mastodon.graph.algorithm.traversal.GraphSearch.SearchDirection;
 import org.mastodon.graph.algorithm.traversal.SearchListener;
-import org.mastodon.model.Selection;
+import org.mastodon.model.SelectionModel;
 import org.mastodon.undo.UndoPointMarker;
 import org.scijava.ui.behaviour.io.InputTriggerConfig;
 import org.scijava.ui.behaviour.util.Actions;
@@ -49,7 +49,7 @@ public class SelectionActions< V extends Vertex< E >, E extends Edge< V > >
 			final String[] keyConfigContexts,
 			final ListenableGraph< V, E > graph,
 			final GraphChangeNotifier notify,
-			final Selection< V, E > selection,
+			final SelectionModel< V, E > selection,
 			final UndoPointMarker undo )
 	{
 		final SelectionActions< V, E > sa = new SelectionActions<>( config, keyConfigContexts, graph, notify, selection, undo );
@@ -68,7 +68,7 @@ public class SelectionActions< V extends Vertex< E >, E extends Edge< V > >
 
 	private final UndoPointMarker undo;
 
-	private final Selection< V, E > selection;
+	private final SelectionModel< V, E > selection;
 
 	private final SelectionActions< V, E >.DeleteSelectionAction deleteSelectionAction;
 
@@ -77,7 +77,7 @@ public class SelectionActions< V extends Vertex< E >, E extends Edge< V > >
 			final String[] keyConfigContexts,
 			final ListenableGraph< V, E > graph,
 			final GraphChangeNotifier notify,
-			final Selection< V, E > selection,
+			final SelectionModel< V, E > selection,
 			final UndoPointMarker undo )
 	{
 		super( config, keyConfigContexts );

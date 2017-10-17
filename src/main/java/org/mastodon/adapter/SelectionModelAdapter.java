@@ -5,7 +5,7 @@ import java.util.Collection;
 import org.mastodon.collection.RefSet;
 import org.mastodon.graph.Edge;
 import org.mastodon.graph.Vertex;
-import org.mastodon.model.Selection;
+import org.mastodon.model.SelectionModel;
 import org.mastodon.model.SelectionListener;
 import org.mastodon.util.Listeners;
 
@@ -19,21 +19,21 @@ import org.mastodon.util.Listeners;
  * @param <E>
  *            edge type of source graph.
  * @param <WV>
- *            vertex type this wrapped {@link Selection}.
+ *            vertex type this wrapped {@link SelectionModel}.
  * @param <WE>
- *            edge type this wrapped {@link Selection}.
+ *            edge type this wrapped {@link SelectionModel}.
  */
-public class SelectionAdapter< V extends Vertex< E >, E extends Edge< V >, WV extends Vertex< WE >, WE extends Edge< WV > >
-		implements Selection< WV, WE >
+public class SelectionModelAdapter< V extends Vertex< E >, E extends Edge< V >, WV extends Vertex< WE >, WE extends Edge< WV > >
+		implements SelectionModel< WV, WE >
 {
-	private final Selection< V, E > selection;
+	private final SelectionModel< V, E > selection;
 
 	private final RefBimap< V, WV > vertexMap;
 
 	private final RefBimap< E, WE > edgeMap;
 
-	public SelectionAdapter(
-			final Selection< V, E > selection,
+	public SelectionModelAdapter(
+			final SelectionModel< V, E > selection,
 			final RefBimap< V, WV > vertexMap,
 			final RefBimap< E, WE > edgeMap )
 	{

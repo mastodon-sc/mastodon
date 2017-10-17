@@ -34,7 +34,7 @@ import org.mastodon.model.HighlightModel;
 import org.mastodon.revised.ui.selection.NavigationEtiquette;
 import org.mastodon.model.NavigationHandler;
 import org.mastodon.model.NavigationListener;
-import org.mastodon.model.Selection;
+import org.mastodon.model.SelectionModel;
 import org.mastodon.model.SelectionListener;
 import org.mastodon.model.TimepointListener;
 import org.mastodon.model.TimepointModel;
@@ -157,7 +157,7 @@ public class TrackSchemePanel extends JPanel implements
 			final HighlightModel< TrackSchemeVertex, TrackSchemeEdge > highlight,
 			final FocusModel< TrackSchemeVertex, TrackSchemeEdge > focus,
 			final TimepointModel timepoint,
-			final Selection< TrackSchemeVertex, TrackSchemeEdge > selection,
+			final SelectionModel< TrackSchemeVertex, TrackSchemeEdge > selection,
 			final NavigationHandler< TrackSchemeVertex, TrackSchemeEdge > navigation,
 			final TrackSchemeOptions optional )
 	{

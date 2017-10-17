@@ -25,8 +25,7 @@ import org.mastodon.util.Listeners;
  * @param <E>
  *            the type of the edges.
  */
-// TODO: rename to SelectionModel?
-public interface Selection< V extends Vertex< E >, E extends Edge< V > >
+public interface SelectionModel< V extends Vertex< E >, E extends Edge< V > >
 {
 	/**
 	 * Get the selected state of a vertex.

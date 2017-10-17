@@ -12,8 +12,8 @@ import org.mastodon.graph.algorithm.traversal.GraphSearch.SearchDirection;
 import org.mastodon.graph.algorithm.traversal.SearchListener;
 import org.mastodon.graph.object.AbstractObjectGraph;
 import org.mastodon.graph.object.AbstractObjectIdGraph;
-import org.mastodon.model.Selection;
-import org.mastodon.model.SelectionImp;
+import org.mastodon.model.SelectionModel;
+import org.mastodon.model.SelectionModelImp;
 
 public class DummyGraph extends AbstractObjectIdGraph< DummyVertex, DummyEdge > implements ListenableGraph< DummyVertex, DummyEdge >
 {
@@ -47,14 +47,14 @@ public class DummyGraph extends AbstractObjectIdGraph< DummyVertex, DummyEdge > 
 
 		private final DummyGraph graph;
 
-		private Selection< DummyVertex, DummyEdge > selection;
+		private SelectionModel< DummyVertex, DummyEdge > selectionModel;
 
 		private Examples( final DummyGraph graph, final Collection< DummyVertex > vertices, final Collection< DummyEdge > edges )
 		{
 			this.graph = graph;
-			this.selection = new SelectionImp<>( graph, graph.getIdBimap() );
-			selection.setEdgesSelected( edges, true );
-			selection.setVerticesSelected( vertices, true );
+			this.selectionModel = new SelectionModelImp<>( graph, graph.getIdBimap() );
+			selectionModel.setEdgesSelected( edges, true );
+			selectionModel.setVerticesSelected( vertices, true );
 		}
 
 		public DummyGraph getGraph()
@@ -62,9 +62,9 @@ public class DummyGraph extends AbstractObjectIdGraph< DummyVertex, DummyEdge > 
 			return graph;
 		}
 
-		public Selection< DummyVertex, DummyEdge > getSelection()
+		public SelectionModel< DummyVertex, DummyEdge > getSelectionModel()
 		{
-			return selection;
+			return selectionModel;
 		}
 	}
 

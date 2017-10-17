@@ -13,6 +13,7 @@ import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 import javax.swing.WindowConstants;
 
+import org.mastodon.model.SelectionModel;
 import org.mastodon.revised.context.ContextChooser;
 import org.mastodon.revised.trackscheme.TrackSchemeEdge;
 import org.mastodon.revised.trackscheme.TrackSchemeGraph;
@@ -24,7 +25,6 @@ import org.mastodon.revised.ui.grouping.GroupLocksPanel;
 import org.mastodon.model.FocusModel;
 import org.mastodon.model.HighlightModel;
 import org.mastodon.model.NavigationHandler;
-import org.mastodon.model.Selection;
 import org.mastodon.model.TimepointModel;
 import org.mastodon.undo.UndoPointMarker;
 import org.scijava.ui.behaviour.MouseAndKeyHandler;
@@ -58,7 +58,7 @@ public class TrackSchemeFrame extends JFrame
 			final HighlightModel< TrackSchemeVertex, TrackSchemeEdge > highlight,
 			final FocusModel< TrackSchemeVertex, TrackSchemeEdge > focus,
 			final TimepointModel timepoint,
-			final Selection< TrackSchemeVertex, TrackSchemeEdge > selection,
+			final SelectionModel< TrackSchemeVertex, TrackSchemeEdge > selection,
 			final NavigationHandler< TrackSchemeVertex, TrackSchemeEdge > navigation,
 			final UndoPointMarker undoPointMarker,
 			final GroupHandle groupHandle,
@@ -72,7 +72,7 @@ public class TrackSchemeFrame extends JFrame
 			final HighlightModel< TrackSchemeVertex, TrackSchemeEdge > highlight,
 			final FocusModel< TrackSchemeVertex, TrackSchemeEdge > focus,
 			final TimepointModel timepoint,
-			final Selection< TrackSchemeVertex, TrackSchemeEdge > selection,
+			final SelectionModel< TrackSchemeVertex, TrackSchemeEdge > selection,
 			final NavigationHandler< TrackSchemeVertex, TrackSchemeEdge > navigation,
 			final UndoPointMarker undoPointMarker,
 			final GroupHandle groupHandle,

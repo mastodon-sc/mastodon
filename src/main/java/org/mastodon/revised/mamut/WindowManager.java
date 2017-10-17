@@ -17,10 +17,11 @@ import org.mastodon.adapter.FocusAdapter;
 import org.mastodon.adapter.HighlightAdapter;
 import org.mastodon.adapter.NavigationHandlerAdapter;
 import org.mastodon.adapter.RefBimap;
-import org.mastodon.adapter.SelectionAdapter;
+import org.mastodon.adapter.SelectionModelAdapter;
 import org.mastodon.graph.GraphChangeListener;
 import org.mastodon.graph.GraphIdBimap;
 import org.mastodon.graph.ListenableReadOnlyGraph;
+import org.mastodon.model.SelectionModel;
 import org.mastodon.revised.bdv.BigDataViewerMaMuT;
 import org.mastodon.revised.bdv.SharedBigDataViewerData;
 import org.mastodon.revised.bdv.overlay.BdvHighlightHandler;
@@ -73,8 +74,7 @@ import org.mastodon.model.HighlightListener;
 import org.mastodon.model.HighlightModel;
 import org.mastodon.model.HighlightModelImp;
 import org.mastodon.model.NavigationHandler;
-import org.mastodon.model.Selection;
-import org.mastodon.model.SelectionImp;
+import org.mastodon.model.SelectionModelImp;
 import org.mastodon.model.SelectionListener;
 import org.mastodon.model.TimepointListener;
 import org.mastodon.model.TimepointModel;
@@ -252,7 +252,7 @@ public class WindowManager
 
 	private final int maxTimepoint;
 
-	private final Selection< Spot, Link > selection;
+	private final SelectionModel< Spot, Link > selectionModel;
 
 	private final HighlightModel< Spot, Link > highlightModel;
 
@@ -307,9 +307,9 @@ public class WindowManager
 		final ListenableReadOnlyGraph< Spot, Link > graph = model.getGraph();
 		final GraphIdBimap< Spot, Link > idmap = model.getGraphIdBimap();
 
-		final SelectionImp< Spot, Link > selectionImp = new SelectionImp<>( graph, idmap );
+		final SelectionModelImp< Spot, Link > selectionImp = new SelectionModelImp<>( graph, idmap );
 		graph.addGraphListener( selectionImp );
-		selection = selectionImp;
+		selectionModel = selectionImp;
 
 		final HighlightModelImp< Spot, Link > highlightModelImp = new HighlightModelImp<>( idmap );
 		graph.addGraphListener( highlightModelImp );
@@ -394,7 +394,7 @@ public class WindowManager
 
 		final HighlightModel< OverlayVertexWrapper< Spot, Link >, OverlayEdgeWrapper< Spot, Link > > overlayHighlight = new HighlightAdapter<>( highlightModel, vertexMap, edgeMap );
 		final FocusModel< OverlayVertexWrapper< Spot, Link >, OverlayEdgeWrapper< Spot, Link > > overlayFocus = new FocusAdapter<>( focusModel, vertexMap, edgeMap );
-		final Selection< OverlayVertexWrapper< Spot, Link >, OverlayEdgeWrapper< Spot, Link > > overlaySelection = new SelectionAdapter<>( selection, vertexMap, edgeMap );
+		final SelectionModel< OverlayVertexWrapper< Spot, Link >, OverlayEdgeWrapper< Spot, Link > > overlaySelection = new SelectionModelAdapter<>( selectionModel, vertexMap, edgeMap );
 		final NavigationHandler< OverlayVertexWrapper< Spot, Link >, OverlayEdgeWrapper< Spot, Link > > overlayNavigationHandler = new NavigationHandlerAdapter<>( navigation, vertexMap, edgeMap );
 		final String windowTitle = "BigDataViewer " + (bdvName++); // TODO: use JY naming scheme
 		final BigDataViewerMaMuT bdv = BigDataViewerMaMuT.open( sharedBdvData, windowTitle, bdvGroupHandle );
@@ -486,7 +486,7 @@ public class WindowManager
 				new String[] { "bdv" },
 				model.getGraph(),
 				model.getGraph(),
-				selection,
+				selectionModel,
 				model );
 
 		viewer.addTimePointListener( new TimePointListener()
@@ -553,9 +553,9 @@ public class WindowManager
 		final HighlightModel< TrackSchemeVertex, TrackSchemeEdge > trackSchemeHighlight = new HighlightAdapter<>( highlightModel, vertexMap, edgeMap );
 
 		/*
-		 * TrackScheme selection
+		 * TrackScheme selectionModel
 		 */
-		final Selection< TrackSchemeVertex, TrackSchemeEdge > trackSchemeSelection = new SelectionAdapter<>( selection, vertexMap, edgeMap );
+		final SelectionModel< TrackSchemeVertex, TrackSchemeEdge > trackSchemeSelection = new SelectionModelAdapter<>( selectionModel, vertexMap, edgeMap );
 
 		/*
 		 * TrackScheme GroupHandle
@@ -623,7 +623,7 @@ public class WindowManager
 				new String[] { "ts" },
 				model.getGraph(),
 				model.getGraph(),
-				selection,
+				selectionModel,
 				model );
 		TrackSchemeEditBehaviours.installActionBindings(
 				frame.getTriggerbindings(),
