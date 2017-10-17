@@ -1,4 +1,4 @@
-package org.mastodon.revised.ui.grouping;
+package org.mastodon.grouping;
 
 /**
  * Implements a model interface that forwards to a switchable

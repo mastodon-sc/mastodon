@@ -1,6 +1,6 @@
 package org.mastodon.revised.ui.grouping;
 
-import static org.mastodon.revised.ui.grouping.GroupManager.NO_GROUP;
+import static org.mastodon.grouping.GroupManager.NO_GROUP;
 
 import java.awt.Dimension;
 import java.awt.FlowLayout;
@@ -13,6 +13,8 @@ import javax.swing.ImageIcon;
 import javax.swing.JPanel;
 import javax.swing.JToggleButton;
 import javax.swing.SwingConstants;
+import org.mastodon.grouping.GroupChangeListener;
+import org.mastodon.grouping.GroupHandle;
 
 /**
  * TODO: javadoc

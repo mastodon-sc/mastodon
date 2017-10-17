@@ -1,4 +1,4 @@
-package org.mastodon.revised.ui.grouping;
+package org.mastodon.grouping;
 
 /**
  * A factory for a specific kind of {@code ForwardingModel<T>}. It can create

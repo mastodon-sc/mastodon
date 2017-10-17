@@ -1,4 +1,4 @@
-package org.mastodon.revised.ui.grouping;
+package org.mastodon.grouping;
 
 /**
  * Listens to a {@link GroupHandle} and is notified when it changes group

@@ -1,4 +1,4 @@
-package org.mastodon.revised.ui.grouping;
+package org.mastodon.grouping;
 
 import static gnu.trove.impl.Constants.DEFAULT_CAPACITY;
 import static gnu.trove.impl.Constants.DEFAULT_LOAD_FACTOR;

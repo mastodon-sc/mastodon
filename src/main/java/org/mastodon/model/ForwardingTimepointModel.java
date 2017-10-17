@@ -1,8 +1,8 @@
 package org.mastodon.model;
 
-import org.mastodon.revised.ui.grouping.ForwardingModel;
-import org.mastodon.revised.ui.grouping.GroupManager;
-import org.mastodon.revised.ui.grouping.GroupableModelFactory;
+import org.mastodon.grouping.ForwardingModel;
+import org.mastodon.grouping.GroupManager;
+import org.mastodon.grouping.GroupableModelFactory;
 import org.mastodon.util.Listeners;
 
 /**

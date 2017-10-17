@@ -20,7 +20,7 @@ import org.mastodon.revised.trackscheme.TrackSchemeGraph;
 import org.mastodon.revised.trackscheme.TrackSchemeVertex;
 import org.mastodon.revised.trackscheme.display.TrackSchemeNavigator.NavigatorEtiquette;
 import org.mastodon.revised.ui.context.ContextChooserPanel;
-import org.mastodon.revised.ui.grouping.GroupHandle;
+import org.mastodon.grouping.GroupHandle;
 import org.mastodon.revised.ui.grouping.GroupLocksPanel;
 import org.mastodon.model.FocusModel;
 import org.mastodon.model.HighlightModel;

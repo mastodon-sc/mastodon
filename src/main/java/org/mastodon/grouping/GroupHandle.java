@@ -1,6 +1,6 @@
-package org.mastodon.revised.ui.grouping;
+package org.mastodon.grouping;
 
-import static org.mastodon.revised.ui.grouping.GroupManager.NO_GROUP;
+import static org.mastodon.grouping.GroupManager.NO_GROUP;
 
 import java.util.HashMap;
 

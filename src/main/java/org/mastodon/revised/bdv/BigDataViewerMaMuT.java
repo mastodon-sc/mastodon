@@ -44,7 +44,7 @@ import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.filechooser.FileFilter;
 
-import org.mastodon.revised.ui.grouping.GroupHandle;
+import org.mastodon.grouping.GroupHandle;
 import org.mastodon.revised.ui.grouping.GroupLocksPanel;
 import org.scijava.ui.behaviour.io.InputTriggerConfig;
 
