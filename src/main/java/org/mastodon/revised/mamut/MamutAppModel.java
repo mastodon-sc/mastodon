@@ -43,12 +43,23 @@ public class MamutAppModel
 			final SharedBigDataViewerData sharedBdvData )
 	{
 		this.model = model;
+
 		final ListenableReadOnlyGraph< Spot, Link > graph = model.getGraph();
 		final GraphIdBimap< Spot, Link > idmap = model.getGraphIdBimap();
-		this.selectionModel = new DefaultSelectionModel<>( graph, idmap );
-		this.highlightModel = new DefaultHighlightModel<>( idmap );
+
+		final DefaultSelectionModel< Spot, Link > selectionModel = new DefaultSelectionModel<>( graph, idmap );
+		graph.addGraphListener( selectionModel );
+		this.selectionModel = selectionModel;
+
+		final DefaultHighlightModel< Spot, Link > highlightModel = new DefaultHighlightModel<>( idmap );
+		graph.addGraphListener( highlightModel );
+		this.highlightModel = highlightModel;
+
+		final DefaultFocusModel< Spot, Link > focusModel = new DefaultFocusModel<>( idmap );
+		graph.addGraphListener( focusModel );
+		this.focusModel = focusModel;
+
 		this.radiusStats = new BoundingSphereRadiusStatistics( model );
-		this.focusModel = new DefaultFocusModel<>( idmap );
 		this.sharedBdvData = sharedBdvData;
 		this.minTimepoint = 0;
 		this.maxTimepoint = sharedBdvData.getNumTimepoints() - 1;
