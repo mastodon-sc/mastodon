@@ -22,7 +22,7 @@ import org.mastodon.util.Listeners;
  *
  * @author Tobias Pietzsch
  */
-public class HighlightAdapter< V extends Vertex< E >, E extends Edge< V >, WV extends Vertex< WE >, WE extends Edge< WV > >
+public class HighlightModelAdapter< V extends Vertex< E >, E extends Edge< V >, WV extends Vertex< WE >, WE extends Edge< WV > >
 		implements HighlightModel< WV, WE >
 {
 	private final HighlightModel< V, E > highlight;
@@ -31,7 +31,7 @@ public class HighlightAdapter< V extends Vertex< E >, E extends Edge< V >, WV ex
 
 	private final RefBimap< E, WE > edgeMap;
 
-	public HighlightAdapter(
+	public HighlightModelAdapter(
 			final HighlightModel< V, E > highlight,
 			final RefBimap< V, WV > vertexMap,
 			final RefBimap< E, WE > edgeMap )

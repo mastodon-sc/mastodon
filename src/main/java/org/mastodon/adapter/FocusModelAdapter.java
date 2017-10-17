@@ -22,7 +22,7 @@ import org.mastodon.util.Listeners;
  *
  * @author Tobias Pietzsch
  */
-public class FocusAdapter< V extends Vertex< E >, E extends Edge< V >, WV extends Vertex< WE >, WE extends Edge< WV > >
+public class FocusModelAdapter< V extends Vertex< E >, E extends Edge< V >, WV extends Vertex< WE >, WE extends Edge< WV > >
 		implements FocusModel< WV, WE >
 {
 	private final FocusModel< V, E > focus;
@@ -31,7 +31,7 @@ public class FocusAdapter< V extends Vertex< E >, E extends Edge< V >, WV extend
 
 	private final RefBimap< E, WE > edgeMap;
 
-	public FocusAdapter(
+	public FocusModelAdapter(
 			final FocusModel< V, E > focus,
 			final RefBimap< V, WV > vertexMap,
 			final RefBimap< E, WE > edgeMap )

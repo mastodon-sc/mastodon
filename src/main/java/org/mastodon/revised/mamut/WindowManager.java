@@ -13,8 +13,8 @@ import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
 
-import org.mastodon.adapter.FocusAdapter;
-import org.mastodon.adapter.HighlightAdapter;
+import org.mastodon.adapter.FocusModelAdapter;
+import org.mastodon.adapter.HighlightModelAdapter;
 import org.mastodon.adapter.NavigationHandlerAdapter;
 import org.mastodon.adapter.RefBimap;
 import org.mastodon.adapter.SelectionModelAdapter;
@@ -392,8 +392,8 @@ public class WindowManager
 		final RefBimap< Spot, OverlayVertexWrapper< Spot, Link > > vertexMap = new OverlayVertexWrapperBimap<>( overlayGraph );
 		final RefBimap< Link, OverlayEdgeWrapper< Spot, Link > > edgeMap = new OverlayEdgeWrapperBimap<>( overlayGraph );
 
-		final HighlightModel< OverlayVertexWrapper< Spot, Link >, OverlayEdgeWrapper< Spot, Link > > overlayHighlight = new HighlightAdapter<>( highlightModel, vertexMap, edgeMap );
-		final FocusModel< OverlayVertexWrapper< Spot, Link >, OverlayEdgeWrapper< Spot, Link > > overlayFocus = new FocusAdapter<>( focusModel, vertexMap, edgeMap );
+		final HighlightModel< OverlayVertexWrapper< Spot, Link >, OverlayEdgeWrapper< Spot, Link > > overlayHighlight = new HighlightModelAdapter<>( highlightModel, vertexMap, edgeMap );
+		final FocusModel< OverlayVertexWrapper< Spot, Link >, OverlayEdgeWrapper< Spot, Link > > overlayFocus = new FocusModelAdapter<>( focusModel, vertexMap, edgeMap );
 		final SelectionModel< OverlayVertexWrapper< Spot, Link >, OverlayEdgeWrapper< Spot, Link > > overlaySelection = new SelectionModelAdapter<>( selectionModel, vertexMap, edgeMap );
 		final NavigationHandler< OverlayVertexWrapper< Spot, Link >, OverlayEdgeWrapper< Spot, Link > > overlayNavigationHandler = new NavigationHandlerAdapter<>( navigation, vertexMap, edgeMap );
 		final String windowTitle = "BigDataViewer " + (bdvName++); // TODO: use JY naming scheme
@@ -550,7 +550,7 @@ public class WindowManager
 		/*
 		 * TrackSchemeHighlight wrapping HighlightModel
 		 */
-		final HighlightModel< TrackSchemeVertex, TrackSchemeEdge > trackSchemeHighlight = new HighlightAdapter<>( highlightModel, vertexMap, edgeMap );
+		final HighlightModel< TrackSchemeVertex, TrackSchemeEdge > trackSchemeHighlight = new HighlightModelAdapter<>( highlightModel, vertexMap, edgeMap );
 
 		/*
 		 * TrackScheme selectionModel
@@ -576,7 +576,7 @@ public class WindowManager
 		/*
 		 * TrackScheme focus
 		 */
-		final FocusModel< TrackSchemeVertex, TrackSchemeEdge > trackSchemeFocus = new FocusAdapter<>( focusModel, vertexMap, edgeMap );
+		final FocusModel< TrackSchemeVertex, TrackSchemeEdge > trackSchemeFocus = new FocusModelAdapter<>( focusModel, vertexMap, edgeMap );
 
 		/*
 		 * TrackScheme ContextChooser

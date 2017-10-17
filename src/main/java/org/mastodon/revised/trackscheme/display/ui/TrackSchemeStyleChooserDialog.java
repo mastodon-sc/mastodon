@@ -21,8 +21,8 @@ import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
 
-import org.mastodon.adapter.FocusAdapter;
-import org.mastodon.adapter.HighlightAdapter;
+import org.mastodon.adapter.FocusModelAdapter;
+import org.mastodon.adapter.HighlightModelAdapter;
 import org.mastodon.adapter.RefBimap;
 import org.mastodon.adapter.SelectionModelAdapter;
 import org.mastodon.graph.GraphIdBimap;
@@ -85,8 +85,8 @@ class TrackSchemeStyleChooserDialog extends JDialog
 		final TrackSchemeGraph< DummyVertex, DummyEdge > graph = new TrackSchemeGraph<>( example, idmap, dummyProps );
 		final RefBimap< DummyVertex, TrackSchemeVertex > vertexMap = new TrackSchemeVertexBimap<>( idmap, graph );
 		final RefBimap< DummyEdge, TrackSchemeEdge > edgeMap = new TrackSchemeEdgeBimap<>( idmap, graph );
-		final HighlightModel< TrackSchemeVertex, TrackSchemeEdge > highlight = new HighlightAdapter<>( new HighlightModelImp<>( idmap ), vertexMap, edgeMap );
-		final FocusModel< TrackSchemeVertex, TrackSchemeEdge > focus = new FocusAdapter<>( new FocusModelImp<>( idmap ), vertexMap, edgeMap );
+		final HighlightModel< TrackSchemeVertex, TrackSchemeEdge > highlight = new HighlightModelAdapter<>( new HighlightModelImp<>( idmap ), vertexMap, edgeMap );
+		final FocusModel< TrackSchemeVertex, TrackSchemeEdge > focus = new FocusModelAdapter<>( new FocusModelImp<>( idmap ), vertexMap, edgeMap );
 		final TimepointModel timepoint = new TimepointModelImp();
 		final SelectionModel< TrackSchemeVertex, TrackSchemeEdge > selection = new SelectionModelAdapter<>( ex.getSelectionModel(), vertexMap, edgeMap );
 		final NavigationHandler< TrackSchemeVertex, TrackSchemeEdge > navigation = new NavigationHandlerImp<>();
