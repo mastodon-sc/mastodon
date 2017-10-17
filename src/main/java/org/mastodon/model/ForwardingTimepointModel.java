@@ -1,8 +1,8 @@
-package org.mastodon.revised.ui.grouping;
+package org.mastodon.model;
 
-import org.mastodon.model.TimepointListener;
-import org.mastodon.model.TimepointModel;
-import org.mastodon.model.TimepointModelImp;
+import org.mastodon.revised.ui.grouping.ForwardingModel;
+import org.mastodon.revised.ui.grouping.GroupManager;
+import org.mastodon.revised.ui.grouping.GroupableModelFactory;
 import org.mastodon.util.Listeners;
 
 /**
