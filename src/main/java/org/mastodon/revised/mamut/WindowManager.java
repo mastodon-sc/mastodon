@@ -238,27 +238,13 @@ public class WindowManager
 		}
 	}
 
-	private final Model model;
-
 	private final InputTriggerConfig keyconf;
 
 	private final GroupManager groupManager;
 
 	private final KeyPressedManager keyPressedManager;
 
-	private final SharedBigDataViewerData sharedBdvData;
-
-	private final int minTimepoint;
-
-	private final int maxTimepoint;
-
-	private final SelectionModel< Spot, Link > selectionModel;
-
-	private final HighlightModel< Spot, Link > highlightModel;
-
-	private final FocusModel< Spot, Link > focusModel;
-
-	private final BoundingSphereRadiusStatistics radiusStats;
+	private final MamutAppModel appModel;
 
 	/**
 	 * All currently open BigDataViewer windows.
@@ -281,7 +267,6 @@ public class WindowManager
 			final Model model,
 			final InputTriggerConfig keyconf )
 	{
-		this.model = model;
 		this.keyconf = keyconf;
 
 		groupManager = new GroupManager( NUM_GROUPS );
@@ -289,46 +274,17 @@ public class WindowManager
 		groupManager.registerModel( forwardingNavigationHandlerFactory );
 
 		keyPressedManager = new KeyPressedManager();
-		final RequestRepaint requestRepaint = new RequestRepaint()
-		{
-			@Override
-			public void requestRepaint()
-			{
-				for ( final BdvWindow w : bdvWindows )
-					w.getViewerFrame().getViewerPanel().requestRepaint();
-			}
+		final RequestRepaint requestRepaint = () -> {
+			for ( final BdvWindow w : bdvWindows )
+				w.getViewerFrame().getViewerPanel().requestRepaint();
 		};
 
 		final ViewerOptions options = ViewerOptions.options()
 				.inputTriggerConfig( keyconf )
 				.shareKeyPressedEvents( keyPressedManager );
-		sharedBdvData = new SharedBigDataViewerData( spimDataXmlFilename, spimData, options, requestRepaint );
+		final SharedBigDataViewerData sharedBdvData = new SharedBigDataViewerData( spimDataXmlFilename, spimData, options, requestRepaint );
 
-		final ListenableReadOnlyGraph< Spot, Link > graph = model.getGraph();
-		final GraphIdBimap< Spot, Link > idmap = model.getGraphIdBimap();
-
-		final DefaultSelectionModel< Spot, Link > selectionImp = new DefaultSelectionModel<>( graph, idmap );
-		graph.addGraphListener( selectionImp );
-		selectionModel = selectionImp;
-
-		final DefaultHighlightModel< Spot, Link > defaultHighlightModel = new DefaultHighlightModel<>( idmap );
-		graph.addGraphListener( defaultHighlightModel );
-		highlightModel = defaultHighlightModel;
-
-		final DefaultFocusModel< Spot, Link > defaultFocusModel = new DefaultFocusModel<>( idmap );
-		graph.addGraphListener( defaultFocusModel );
-		focusModel = defaultFocusModel;
-
-		radiusStats = new BoundingSphereRadiusStatistics( model );
-
-		minTimepoint = 0;
-		maxTimepoint = sharedBdvData.getNumTimepoints() - 1;
-		/*
-		 * TODO: (?) For now, we use timepoint indices in MaMuT model, instead
-		 * of IDs/names. This is because BDV also displays timepoint index, and
-		 * it would be confusing to have different labels in TrackScheme. If
-		 * this is changed in the future, then probably only in the model files.
-		 */
+		appModel = new MamutAppModel( model, sharedBdvData );
 	}
 
 	private synchronized void addBdvWindow( final BdvWindow w )
@@ -383,6 +339,13 @@ public class WindowManager
 		final GroupHandle bdvGroupHandle = groupManager.createGroupHandle();
 		final TimepointModel timepointModel = bdvGroupHandle.getModel( ForwardingTimepointModel.factory );
 		final NavigationHandler< Spot, Link > navigation = bdvGroupHandle.getModel( forwardingNavigationHandlerFactory );
+
+		final Model model = appModel.getModel();
+		final BoundingSphereRadiusStatistics radiusStats = appModel.getRadiusStats();
+		final HighlightModel< Spot, Link > highlightModel = appModel.getHighlightModel();
+		final FocusModel< Spot, Link > focusModel = appModel.getFocusModel();
+		final SelectionModel< Spot, Link > selectionModel = appModel.getSelectionModel();
+		final SharedBigDataViewerData sharedBdvData = appModel.getSharedBdvData();
 
 		final OverlayGraphWrapper< Spot, Link > overlayGraph = new OverlayGraphWrapper<>(
 				model.getGraph(),
@@ -536,6 +499,15 @@ public class WindowManager
 
 	public void createTrackScheme()
 	{
+		final Model model = appModel.getModel();
+		final BoundingSphereRadiusStatistics radiusStats = appModel.getRadiusStats();
+		final HighlightModel< Spot, Link > highlightModel = appModel.getHighlightModel();
+		final FocusModel< Spot, Link > focusModel = appModel.getFocusModel();
+		final SelectionModel< Spot, Link > selectionModel = appModel.getSelectionModel();
+		final SharedBigDataViewerData sharedBdvData = appModel.getSharedBdvData();
+		final int maxTimepoint = appModel.getMaxTimepoint();
+		final int minTimepoint = appModel.getMinTimepoint();
+
 		final ListenableReadOnlyGraph< Spot, Link > graph = model.getGraph();
 		final GraphIdBimap< Spot, Link > idmap = model.getGraphIdBimap();
 
@@ -672,12 +644,12 @@ public class WindowManager
 
 	public Model getModel()
 	{
-		return model;
+		return appModel.getModel();
 	}
 
 	public AbstractSpimData< ? > getSpimData()
 	{
-		return sharedBdvData.getSpimData();
+		return appModel.getSharedBdvData().getSpimData();
 	}
 
 

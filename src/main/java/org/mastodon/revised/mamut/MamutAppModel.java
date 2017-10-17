@@ -61,8 +61,15 @@ public class MamutAppModel
 
 		this.radiusStats = new BoundingSphereRadiusStatistics( model );
 		this.sharedBdvData = sharedBdvData;
+
 		this.minTimepoint = 0;
 		this.maxTimepoint = sharedBdvData.getNumTimepoints() - 1;
+		/*
+		 * TODO: (?) For now, we use timepoint indices in MaMuT model, instead
+		 * of IDs/names. This is because BDV also displays timepoint index, and
+		 * it would be confusing to have different labels in TrackScheme. If
+		 * this is changed in the future, then probably only in the model files.
+		 */
 	}
 
 	public Model getModel()
