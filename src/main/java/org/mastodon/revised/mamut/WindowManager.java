@@ -69,12 +69,12 @@ import org.mastodon.revised.ui.grouping.GroupHandle;
 import org.mastodon.revised.ui.grouping.GroupManager;
 import org.mastodon.model.FocusListener;
 import org.mastodon.model.FocusModel;
-import org.mastodon.model.FocusModelImp;
+import org.mastodon.model.DefaultFocusModel;
 import org.mastodon.model.HighlightListener;
 import org.mastodon.model.HighlightModel;
-import org.mastodon.model.HighlightModelImp;
+import org.mastodon.model.DefaultHighlightModel;
 import org.mastodon.model.NavigationHandler;
-import org.mastodon.model.SelectionModelImp;
+import org.mastodon.model.DefaultSelectionModel;
 import org.mastodon.model.SelectionListener;
 import org.mastodon.model.TimepointListener;
 import org.mastodon.model.TimepointModel;
@@ -307,17 +307,17 @@ public class WindowManager
 		final ListenableReadOnlyGraph< Spot, Link > graph = model.getGraph();
 		final GraphIdBimap< Spot, Link > idmap = model.getGraphIdBimap();
 
-		final SelectionModelImp< Spot, Link > selectionImp = new SelectionModelImp<>( graph, idmap );
+		final DefaultSelectionModel< Spot, Link > selectionImp = new DefaultSelectionModel<>( graph, idmap );
 		graph.addGraphListener( selectionImp );
 		selectionModel = selectionImp;
 
-		final HighlightModelImp< Spot, Link > highlightModelImp = new HighlightModelImp<>( idmap );
-		graph.addGraphListener( highlightModelImp );
-		highlightModel = highlightModelImp;
+		final DefaultHighlightModel< Spot, Link > defaultHighlightModel = new DefaultHighlightModel<>( idmap );
+		graph.addGraphListener( defaultHighlightModel );
+		highlightModel = defaultHighlightModel;
 
-		final FocusModelImp< Spot, Link > focusModelImp = new FocusModelImp<>( idmap );
-		graph.addGraphListener( focusModelImp );
-		focusModel = focusModelImp;
+		final DefaultFocusModel< Spot, Link > defaultFocusModel = new DefaultFocusModel<>( idmap );
+		graph.addGraphListener( defaultFocusModel );
+		focusModel = defaultFocusModel;
 
 		radiusStats = new BoundingSphereRadiusStatistics( model );
 

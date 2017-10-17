@@ -68,7 +68,7 @@ public class ForwardingNavigationHandler< V, E > implements NavigationHandler< V
 		@Override
 		public NavigationHandler< V, E > createBackingModel()
 		{
-			return new NavigationHandlerImp<>();
+			return new DefaultNavigationHandler<>();
 		}
 
 		@Override

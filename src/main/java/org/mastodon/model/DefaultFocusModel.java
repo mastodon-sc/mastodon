@@ -15,7 +15,7 @@ import org.mastodon.util.Listeners;
  * @param <E>
  *            the of model edges.
  */
-public class FocusModelImp< V extends Vertex< E >, E extends Edge< V > >
+public class DefaultFocusModel< V extends Vertex< E >, E extends Edge< V > >
 		implements FocusModel< V, E >, GraphListener< V, E >
 {
 	private final GraphIdBimap< V, E > idmap;
@@ -24,7 +24,7 @@ public class FocusModelImp< V extends Vertex< E >, E extends Edge< V > >
 
 	private final Listeners.List< FocusListener > listeners;
 
-	public FocusModelImp( final GraphIdBimap< V, E > idmap )
+	public DefaultFocusModel( final GraphIdBimap< V, E > idmap )
 	{
 		this.idmap = idmap;
 		focusVertexId = -1;

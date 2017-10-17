@@ -7,7 +7,7 @@ import org.mastodon.util.Listeners;
  *
  * @author Tobias Pietzsch
  */
-public class TimepointModelImp implements TimepointModel
+public class DefaultTimepointModel implements TimepointModel
 {
 	private final Listeners.List< TimepointListener > listeners = new Listeners.SynchronizedList<>();
 

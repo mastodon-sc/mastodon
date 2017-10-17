@@ -19,8 +19,7 @@ import org.mastodon.util.Listeners;
  * @param <E>
  *            the type of the model edges.
  */
-//TODO: should HighlightModel be an interface
-public class HighlightModelImp< V extends Vertex< E >, E extends Edge< V > >
+public class DefaultHighlightModel< V extends Vertex< E >, E extends Edge< V > >
 		implements HighlightModel< V, E >, GraphListener< V, E >
 {
 	private final GraphIdBimap< V, E > idmap;
@@ -39,7 +38,7 @@ public class HighlightModelImp< V extends Vertex< E >, E extends Edge< V > >
 	 *            the graph bidirectional map from vertices and edges to their
 	 *            id.
 	 */
-	public HighlightModelImp( final GraphIdBimap< V, E > idmap )
+	public DefaultHighlightModel( final GraphIdBimap< V, E > idmap )
 	{
 		this.idmap = idmap;
 		highlightedVertexId = -1;

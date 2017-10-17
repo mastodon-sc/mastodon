@@ -13,7 +13,7 @@ import org.mastodon.util.Listeners;
  *
  * @author Tobias Pietzsch &lt;tobias.pietzsch@gmail.com&gt;
  */
-public class NavigationHandlerImp< V, E > implements NavigationHandler< V, E >
+public class DefaultNavigationHandler< V, E > implements NavigationHandler< V, E >
 {
 	private final Listeners.List< NavigationListener< V, E > > listeners = new Listeners.SynchronizedList<>();
 

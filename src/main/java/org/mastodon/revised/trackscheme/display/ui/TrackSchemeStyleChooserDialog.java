@@ -41,14 +41,14 @@ import org.mastodon.revised.trackscheme.display.ui.dummygraph.DummyVertex;
 import org.mastodon.revised.trackscheme.wrap.DefaultModelGraphProperties;
 import org.mastodon.revised.trackscheme.wrap.ModelGraphProperties;
 import org.mastodon.model.FocusModel;
-import org.mastodon.model.FocusModelImp;
+import org.mastodon.model.DefaultFocusModel;
 import org.mastodon.model.HighlightModel;
-import org.mastodon.model.HighlightModelImp;
+import org.mastodon.model.DefaultHighlightModel;
 import org.mastodon.model.NavigationHandler;
-import org.mastodon.model.NavigationHandlerImp;
+import org.mastodon.model.DefaultNavigationHandler;
 import org.mastodon.model.SelectionModel;
 import org.mastodon.model.TimepointModel;
-import org.mastodon.model.TimepointModelImp;
+import org.mastodon.model.DefaultTimepointModel;
 
 /**
  * A previewer, editor and managers for TrackScheme styles.
@@ -85,11 +85,11 @@ class TrackSchemeStyleChooserDialog extends JDialog
 		final TrackSchemeGraph< DummyVertex, DummyEdge > graph = new TrackSchemeGraph<>( example, idmap, dummyProps );
 		final RefBimap< DummyVertex, TrackSchemeVertex > vertexMap = new TrackSchemeVertexBimap<>( idmap, graph );
 		final RefBimap< DummyEdge, TrackSchemeEdge > edgeMap = new TrackSchemeEdgeBimap<>( idmap, graph );
-		final HighlightModel< TrackSchemeVertex, TrackSchemeEdge > highlight = new HighlightModelAdapter<>( new HighlightModelImp<>( idmap ), vertexMap, edgeMap );
-		final FocusModel< TrackSchemeVertex, TrackSchemeEdge > focus = new FocusModelAdapter<>( new FocusModelImp<>( idmap ), vertexMap, edgeMap );
-		final TimepointModel timepoint = new TimepointModelImp();
+		final HighlightModel< TrackSchemeVertex, TrackSchemeEdge > highlight = new HighlightModelAdapter<>( new DefaultHighlightModel<>( idmap ), vertexMap, edgeMap );
+		final FocusModel< TrackSchemeVertex, TrackSchemeEdge > focus = new FocusModelAdapter<>( new DefaultFocusModel<>( idmap ), vertexMap, edgeMap );
+		final TimepointModel timepoint = new DefaultTimepointModel();
 		final SelectionModel< TrackSchemeVertex, TrackSchemeEdge > selection = new SelectionModelAdapter<>( ex.getSelectionModel(), vertexMap, edgeMap );
-		final NavigationHandler< TrackSchemeVertex, TrackSchemeEdge > navigation = new NavigationHandlerImp<>();
+		final NavigationHandler< TrackSchemeVertex, TrackSchemeEdge > navigation = new DefaultNavigationHandler<>();
 		panelPreview = new TrackSchemePanel( graph, highlight, focus, timepoint, selection, navigation, TrackSchemeOptions.options() );
 		panelPreview.setTimepointRange( 0, 7 );
 		timepoint.setTimepoint( 2 );

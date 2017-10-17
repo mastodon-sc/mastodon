@@ -71,7 +71,7 @@ public class ForwardingTimepointModel implements TimepointModel, ForwardingModel
 		@Override
 		public TimepointModel createBackingModel()
 		{
-			return new TimepointModelImp();
+			return new DefaultTimepointModel();
 		}
 
 		@Override

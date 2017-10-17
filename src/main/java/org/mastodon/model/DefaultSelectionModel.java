@@ -29,7 +29,7 @@ import org.mastodon.util.Listeners;
  * @param <E>
  *            the type of the edges.
  */
-public class SelectionModelImp< V extends Vertex< E >, E extends Edge< V > >
+public class DefaultSelectionModel< V extends Vertex< E >, E extends Edge< V > >
 		implements SelectionModel< V, E >, GraphListener< V, E >
 {
 	private final ListenableReadOnlyGraph< V, E > graph;
@@ -70,7 +70,7 @@ public class SelectionModelImp< V extends Vertex< E >, E extends Edge< V > >
 	 *            the bidirectional id map, used to efficiently stores the
 	 *            selected state of edges and vertices.
 	 */
-	public SelectionModelImp( final ListenableReadOnlyGraph< V, E > graph, final GraphIdBimap< V, E > idmap )
+	public DefaultSelectionModel( final ListenableReadOnlyGraph< V, E > graph, final GraphIdBimap< V, E > idmap )
 	{
 		this.graph = graph;
 		this.idmap = idmap;
