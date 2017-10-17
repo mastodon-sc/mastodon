@@ -1,4 +1,4 @@
-package org.mastodon.revised.ui.selection;
+package org.mastodon.model;
 
 /**
  * Interface for listener of the {@link HighlightModel}.

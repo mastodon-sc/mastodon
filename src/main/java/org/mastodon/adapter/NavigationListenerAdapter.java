@@ -1,6 +1,6 @@
 package org.mastodon.adapter;
 
-import org.mastodon.revised.ui.selection.NavigationListener;
+import org.mastodon.model.NavigationListener;
 
 public class NavigationListenerAdapter< V, E, WV, WE >
 		implements NavigationListener< V, E >

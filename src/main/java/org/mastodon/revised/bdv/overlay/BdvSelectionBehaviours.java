@@ -1,7 +1,7 @@
 package org.mastodon.revised.bdv.overlay;
 
-import org.mastodon.revised.ui.selection.NavigationHandler;
-import org.mastodon.revised.ui.selection.Selection;
+import org.mastodon.model.NavigationHandler;
+import org.mastodon.model.Selection;
 import org.scijava.ui.behaviour.BehaviourMap;
 import org.scijava.ui.behaviour.ClickBehaviour;
 import org.scijava.ui.behaviour.InputTriggerAdder;

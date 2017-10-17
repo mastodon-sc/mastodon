@@ -2,8 +2,8 @@ package org.mastodon.adapter;
 
 import org.mastodon.graph.Edge;
 import org.mastodon.graph.Vertex;
-import org.mastodon.revised.ui.selection.FocusListener;
-import org.mastodon.revised.ui.selection.FocusModel;
+import org.mastodon.model.FocusListener;
+import org.mastodon.model.FocusModel;
 import org.mastodon.util.Listeners;
 
 /**

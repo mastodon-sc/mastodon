@@ -21,11 +21,11 @@ import org.mastodon.revised.trackscheme.display.TrackSchemeNavigator.NavigatorEt
 import org.mastodon.revised.ui.context.ContextChooserPanel;
 import org.mastodon.revised.ui.grouping.GroupHandle;
 import org.mastodon.revised.ui.grouping.GroupLocksPanel;
-import org.mastodon.revised.ui.selection.FocusModel;
-import org.mastodon.revised.ui.selection.HighlightModel;
-import org.mastodon.revised.ui.selection.NavigationHandler;
-import org.mastodon.revised.ui.selection.Selection;
-import org.mastodon.revised.ui.selection.TimepointModel;
+import org.mastodon.model.FocusModel;
+import org.mastodon.model.HighlightModel;
+import org.mastodon.model.NavigationHandler;
+import org.mastodon.model.Selection;
+import org.mastodon.model.TimepointModel;
 import org.mastodon.undo.UndoPointMarker;
 import org.scijava.ui.behaviour.MouseAndKeyHandler;
 import org.scijava.ui.behaviour.io.InputTriggerConfig;

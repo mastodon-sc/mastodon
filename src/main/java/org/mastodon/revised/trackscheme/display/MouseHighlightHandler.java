@@ -9,7 +9,7 @@ import org.mastodon.revised.trackscheme.TrackSchemeEdge;
 import org.mastodon.revised.trackscheme.TrackSchemeGraph;
 import org.mastodon.revised.trackscheme.TrackSchemeVertex;
 import org.mastodon.revised.trackscheme.display.OffsetHeaders.OffsetHeadersListener;
-import org.mastodon.revised.ui.selection.HighlightModel;
+import org.mastodon.model.HighlightModel;
 
 import net.imglib2.ui.TransformListener;
 

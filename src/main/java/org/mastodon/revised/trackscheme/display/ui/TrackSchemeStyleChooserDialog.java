@@ -23,7 +23,6 @@ import javax.swing.border.EmptyBorder;
 
 import org.mastodon.adapter.FocusAdapter;
 import org.mastodon.adapter.HighlightAdapter;
-import org.mastodon.adapter.NavigationHandlerAdapter;
 import org.mastodon.adapter.RefBimap;
 import org.mastodon.adapter.SelectionAdapter;
 import org.mastodon.graph.GraphIdBimap;
@@ -41,16 +40,15 @@ import org.mastodon.revised.trackscheme.display.ui.dummygraph.DummyGraph.Example
 import org.mastodon.revised.trackscheme.display.ui.dummygraph.DummyVertex;
 import org.mastodon.revised.trackscheme.wrap.DefaultModelGraphProperties;
 import org.mastodon.revised.trackscheme.wrap.ModelGraphProperties;
-import org.mastodon.revised.ui.grouping.GroupManager;
-import org.mastodon.revised.ui.selection.FocusModel;
-import org.mastodon.revised.ui.selection.FocusModelImp;
-import org.mastodon.revised.ui.selection.HighlightModel;
-import org.mastodon.revised.ui.selection.HighlightModelImp;
-import org.mastodon.revised.ui.selection.NavigationHandler;
-import org.mastodon.revised.ui.selection.NavigationHandlerImp;
-import org.mastodon.revised.ui.selection.Selection;
-import org.mastodon.revised.ui.selection.TimepointModel;
-import org.mastodon.revised.ui.selection.TimepointModelImp;
+import org.mastodon.model.FocusModel;
+import org.mastodon.model.FocusModelImp;
+import org.mastodon.model.HighlightModel;
+import org.mastodon.model.HighlightModelImp;
+import org.mastodon.model.NavigationHandler;
+import org.mastodon.model.NavigationHandlerImp;
+import org.mastodon.model.Selection;
+import org.mastodon.model.TimepointModel;
+import org.mastodon.model.TimepointModelImp;
 
 /**
  * A previewer, editor and managers for TrackScheme styles.

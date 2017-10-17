@@ -1,4 +1,4 @@
-package org.mastodon.revised.ui.selection;
+package org.mastodon.model;
 
 import org.mastodon.util.Listeners;
 

@@ -12,8 +12,8 @@ import org.mastodon.graph.algorithm.traversal.GraphSearch.SearchDirection;
 import org.mastodon.graph.algorithm.traversal.SearchListener;
 import org.mastodon.graph.object.AbstractObjectGraph;
 import org.mastodon.graph.object.AbstractObjectIdGraph;
-import org.mastodon.revised.ui.selection.Selection;
-import org.mastodon.revised.ui.selection.SelectionImp;
+import org.mastodon.model.Selection;
+import org.mastodon.model.SelectionImp;
 
 public class DummyGraph extends AbstractObjectIdGraph< DummyVertex, DummyEdge > implements ListenableGraph< DummyVertex, DummyEdge >
 {

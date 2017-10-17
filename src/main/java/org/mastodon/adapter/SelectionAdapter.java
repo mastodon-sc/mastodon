@@ -5,8 +5,8 @@ import java.util.Collection;
 import org.mastodon.collection.RefSet;
 import org.mastodon.graph.Edge;
 import org.mastodon.graph.Vertex;
-import org.mastodon.revised.ui.selection.Selection;
-import org.mastodon.revised.ui.selection.SelectionListener;
+import org.mastodon.model.Selection;
+import org.mastodon.model.SelectionListener;
 import org.mastodon.util.Listeners;
 
 /**

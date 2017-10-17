@@ -1,8 +1,8 @@
 package org.mastodon.revised.ui.grouping;
 
-import org.mastodon.revised.ui.selection.NavigationHandler;
-import org.mastodon.revised.ui.selection.NavigationHandlerImp;
-import org.mastodon.revised.ui.selection.NavigationListener;
+import org.mastodon.model.NavigationHandler;
+import org.mastodon.model.NavigationHandlerImp;
+import org.mastodon.model.NavigationListener;
 import org.mastodon.util.Listeners;
 
 /**

@@ -16,9 +16,9 @@ import org.mastodon.collection.RefList;
 import org.mastodon.kdtree.ClipConvexPolytope;
 import org.mastodon.kdtree.IncrementalNearestNeighborSearch;
 import org.mastodon.revised.Util;
-import org.mastodon.revised.ui.selection.FocusModel;
-import org.mastodon.revised.ui.selection.HighlightModel;
-import org.mastodon.revised.ui.selection.Selection;
+import org.mastodon.model.FocusModel;
+import org.mastodon.model.HighlightModel;
+import org.mastodon.model.Selection;
 import org.mastodon.spatial.SpatialIndex;
 import org.mastodon.spatial.SpatioTemporalIndex;
 

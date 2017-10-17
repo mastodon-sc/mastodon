@@ -25,8 +25,8 @@ import org.mastodon.revised.trackscheme.TrackSchemeGraph;
 import org.mastodon.revised.trackscheme.TrackSchemeVertex;
 import org.mastodon.revised.trackscheme.display.AbstractTrackSchemeOverlay;
 import org.mastodon.revised.trackscheme.display.TrackSchemeOptions;
-import org.mastodon.revised.ui.selection.FocusModel;
-import org.mastodon.revised.ui.selection.HighlightModel;
+import org.mastodon.model.FocusModel;
+import org.mastodon.model.HighlightModel;
 
 import net.imglib2.RealLocalizable;
 

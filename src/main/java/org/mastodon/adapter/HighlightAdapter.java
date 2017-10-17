@@ -2,8 +2,8 @@ package org.mastodon.adapter;
 
 import org.mastodon.graph.Edge;
 import org.mastodon.graph.Vertex;
-import org.mastodon.revised.ui.selection.HighlightListener;
-import org.mastodon.revised.ui.selection.HighlightModel;
+import org.mastodon.model.HighlightListener;
+import org.mastodon.model.HighlightModel;
 import org.mastodon.util.Listeners;
 
 /**

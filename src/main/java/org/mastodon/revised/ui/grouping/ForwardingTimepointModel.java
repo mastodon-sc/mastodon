@@ -1,8 +1,8 @@
 package org.mastodon.revised.ui.grouping;
 
-import org.mastodon.revised.ui.selection.TimepointListener;
-import org.mastodon.revised.ui.selection.TimepointModel;
-import org.mastodon.revised.ui.selection.TimepointModelImp;
+import org.mastodon.model.TimepointListener;
+import org.mastodon.model.TimepointModel;
+import org.mastodon.model.TimepointModelImp;
 import org.mastodon.util.Listeners;
 
 /**

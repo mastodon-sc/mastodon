@@ -1,7 +1,7 @@
 package org.mastodon.revised.bdv.overlay;
 
 import org.mastodon.revised.ui.selection.NavigationEtiquette;
-import org.mastodon.revised.ui.selection.NavigationListener;
+import org.mastodon.model.NavigationListener;
 
 import bdv.viewer.ViewerPanel;
 import bdv.viewer.animate.TranslationAnimator;

@@ -1,7 +1,7 @@
 package org.mastodon.adapter;
 
-import org.mastodon.revised.ui.selection.NavigationHandler;
-import org.mastodon.revised.ui.selection.NavigationListener;
+import org.mastodon.model.NavigationHandler;
+import org.mastodon.model.NavigationListener;
 import org.mastodon.util.Listeners;
 
 public class NavigationHandlerAdapter< V, E, WV, WE >

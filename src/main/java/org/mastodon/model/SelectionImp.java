@@ -1,4 +1,4 @@
-package org.mastodon.revised.ui.selection;
+package org.mastodon.model;
 
 import java.util.BitSet;
 import java.util.Collection;

@@ -12,7 +12,7 @@ import org.mastodon.graph.Vertex;
 import org.mastodon.graph.algorithm.traversal.DepthFirstSearch;
 import org.mastodon.graph.algorithm.traversal.GraphSearch.SearchDirection;
 import org.mastodon.graph.algorithm.traversal.SearchListener;
-import org.mastodon.revised.ui.selection.Selection;
+import org.mastodon.model.Selection;
 import org.mastodon.undo.UndoPointMarker;
 import org.scijava.ui.behaviour.io.InputTriggerConfig;
 import org.scijava.ui.behaviour.util.Actions;

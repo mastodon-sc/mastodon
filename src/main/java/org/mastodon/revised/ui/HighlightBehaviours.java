@@ -4,7 +4,7 @@ import org.mastodon.graph.Edge;
 import org.mastodon.graph.GraphChangeNotifier;
 import org.mastodon.graph.ListenableGraph;
 import org.mastodon.graph.Vertex;
-import org.mastodon.revised.ui.selection.HighlightModel;
+import org.mastodon.model.HighlightModel;
 import org.mastodon.undo.UndoPointMarker;
 import org.scijava.ui.behaviour.ClickBehaviour;
 import org.scijava.ui.behaviour.io.InputTriggerConfig;
