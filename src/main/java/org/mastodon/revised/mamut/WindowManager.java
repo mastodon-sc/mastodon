@@ -1,18 +1,24 @@
 package org.mastodon.revised.mamut;
 
+import bdv.spimdata.SpimDataMinimal;
+import bdv.tools.ToggleDialogAction;
+import bdv.viewer.RequestRepaint;
+import bdv.viewer.TimePointListener;
+import bdv.viewer.ViewerFrame;
+import bdv.viewer.ViewerOptions;
+import bdv.viewer.ViewerPanel;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-
 import javax.swing.ActionMap;
 import javax.swing.InputMap;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
-
+import mpicbg.spim.data.generic.AbstractSpimData;
 import org.mastodon.adapter.FocusModelAdapter;
 import org.mastodon.adapter.HighlightModelAdapter;
 import org.mastodon.adapter.NavigationHandlerAdapter;
@@ -21,7 +27,17 @@ import org.mastodon.adapter.SelectionModelAdapter;
 import org.mastodon.graph.GraphChangeListener;
 import org.mastodon.graph.GraphIdBimap;
 import org.mastodon.graph.ListenableReadOnlyGraph;
+import org.mastodon.grouping.GroupHandle;
+import org.mastodon.grouping.GroupManager;
+import org.mastodon.model.FocusListener;
+import org.mastodon.model.FocusModel;
+import org.mastodon.model.HighlightListener;
+import org.mastodon.model.HighlightModel;
+import org.mastodon.model.NavigationHandler;
+import org.mastodon.model.SelectionListener;
 import org.mastodon.model.SelectionModel;
+import org.mastodon.model.TimepointListener;
+import org.mastodon.model.TimepointModel;
 import org.mastodon.revised.bdv.BigDataViewerMaMuT;
 import org.mastodon.revised.bdv.SharedBigDataViewerData;
 import org.mastodon.revised.bdv.overlay.BdvHighlightHandler;
@@ -63,21 +79,6 @@ import org.mastodon.revised.trackscheme.wrap.DefaultModelGraphProperties;
 import org.mastodon.revised.trackscheme.wrap.ModelGraphProperties;
 import org.mastodon.revised.ui.HighlightBehaviours;
 import org.mastodon.revised.ui.SelectionActions;
-import org.mastodon.model.ForwardingNavigationHandler;
-import org.mastodon.model.ForwardingTimepointModel;
-import org.mastodon.grouping.GroupHandle;
-import org.mastodon.grouping.GroupManager;
-import org.mastodon.model.FocusListener;
-import org.mastodon.model.FocusModel;
-import org.mastodon.model.DefaultFocusModel;
-import org.mastodon.model.HighlightListener;
-import org.mastodon.model.HighlightModel;
-import org.mastodon.model.DefaultHighlightModel;
-import org.mastodon.model.NavigationHandler;
-import org.mastodon.model.DefaultSelectionModel;
-import org.mastodon.model.SelectionListener;
-import org.mastodon.model.TimepointListener;
-import org.mastodon.model.TimepointModel;
 import org.scijava.ui.behaviour.KeyPressedManager;
 import org.scijava.ui.behaviour.KeyStrokeAdder;
 import org.scijava.ui.behaviour.io.InputTriggerConfig;
@@ -85,21 +86,11 @@ import org.scijava.ui.behaviour.io.InputTriggerDescription;
 import org.scijava.ui.behaviour.io.InputTriggerDescriptionsBuilder;
 import org.scijava.ui.behaviour.io.yaml.YamlConfigIO;
 
-import bdv.spimdata.SpimDataMinimal;
-import bdv.tools.ToggleDialogAction;
-import bdv.viewer.RequestRepaint;
-import bdv.viewer.TimePointListener;
-import bdv.viewer.ViewerFrame;
-import bdv.viewer.ViewerOptions;
-import bdv.viewer.ViewerPanel;
-import mpicbg.spim.data.generic.AbstractSpimData;
+import static org.mastodon.revised.mamut.MamutAppModel.NAVIGATION;
+import static org.mastodon.revised.mamut.MamutAppModel.TIMEPOINT;
 
 public class WindowManager
 {
-	private static final int NUM_GROUPS = 3;
-
-	public static final ForwardingNavigationHandler.Factory< Spot, Link > forwardingNavigationHandlerFactory = new ForwardingNavigationHandler.Factory<>();
-
 	/**
 	 * Information for one BigDataViewer window.
 	 */
@@ -240,8 +231,6 @@ public class WindowManager
 
 	private final InputTriggerConfig keyconf;
 
-	private final GroupManager groupManager;
-
 	private final KeyPressedManager keyPressedManager;
 
 	private final MamutAppModel appModel;
@@ -268,10 +257,6 @@ public class WindowManager
 			final InputTriggerConfig keyconf )
 	{
 		this.keyconf = keyconf;
-
-		groupManager = new GroupManager( NUM_GROUPS );
-		groupManager.registerModel( ForwardingTimepointModel.factory );
-		groupManager.registerModel( forwardingNavigationHandlerFactory );
 
 		keyPressedManager = new KeyPressedManager();
 		final RequestRepaint requestRepaint = () -> {
@@ -336,16 +321,17 @@ public class WindowManager
 
 	public void createBigDataViewer()
 	{
-		final GroupHandle bdvGroupHandle = groupManager.createGroupHandle();
-		final TimepointModel timepointModel = bdvGroupHandle.getModel( ForwardingTimepointModel.factory );
-		final NavigationHandler< Spot, Link > navigation = bdvGroupHandle.getModel( forwardingNavigationHandlerFactory );
-
 		final Model model = appModel.getModel();
 		final BoundingSphereRadiusStatistics radiusStats = appModel.getRadiusStats();
 		final HighlightModel< Spot, Link > highlightModel = appModel.getHighlightModel();
 		final FocusModel< Spot, Link > focusModel = appModel.getFocusModel();
 		final SelectionModel< Spot, Link > selectionModel = appModel.getSelectionModel();
 		final SharedBigDataViewerData sharedBdvData = appModel.getSharedBdvData();
+		final GroupManager groupManager = appModel.getGroupManager();
+
+		final GroupHandle bdvGroupHandle = groupManager.createGroupHandle();
+		final TimepointModel timepointModel = bdvGroupHandle.getModel( TIMEPOINT );
+		final NavigationHandler< Spot, Link > navigation = bdvGroupHandle.getModel( NAVIGATION );
 
 		final OverlayGraphWrapper< Spot, Link > overlayGraph = new OverlayGraphWrapper<>(
 				model.getGraph(),
@@ -507,6 +493,7 @@ public class WindowManager
 		final SharedBigDataViewerData sharedBdvData = appModel.getSharedBdvData();
 		final int maxTimepoint = appModel.getMaxTimepoint();
 		final int minTimepoint = appModel.getMinTimepoint();
+		final GroupManager groupManager = appModel.getGroupManager();
 
 		final ListenableReadOnlyGraph< Spot, Link > graph = model.getGraph();
 		final GraphIdBimap< Spot, Link > idmap = model.getGraphIdBimap();
@@ -537,12 +524,13 @@ public class WindowManager
 		/*
 		 * TimepointModel forwarding to current group
 		 */
-		final TimepointModel timepointModel = groupHandle.getModel( ForwardingTimepointModel.factory );
+		final TimepointModel timepointModel = groupHandle.getModel( TIMEPOINT );
+
 
 		/*
 		 * TrackScheme navigation
 		 */
-		final NavigationHandler< Spot, Link > navigation = groupHandle.getModel( forwardingNavigationHandlerFactory );
+		final NavigationHandler< Spot, Link > navigation = groupHandle.getModel( NAVIGATION );
 		final NavigationHandler< TrackSchemeVertex, TrackSchemeEdge > trackSchemeNavigation = new NavigationHandlerAdapter<>( navigation, vertexMap, edgeMap );
 
 		/*

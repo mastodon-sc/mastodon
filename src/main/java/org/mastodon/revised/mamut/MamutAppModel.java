@@ -2,12 +2,18 @@ package org.mastodon.revised.mamut;
 
 import org.mastodon.graph.GraphIdBimap;
 import org.mastodon.graph.ListenableReadOnlyGraph;
+import org.mastodon.grouping.GroupManager;
+import org.mastodon.grouping.GroupableModelFactory;
 import org.mastodon.model.DefaultFocusModel;
 import org.mastodon.model.DefaultHighlightModel;
 import org.mastodon.model.DefaultSelectionModel;
 import org.mastodon.model.FocusModel;
+import org.mastodon.model.ForwardingNavigationHandler;
+import org.mastodon.model.ForwardingTimepointModel;
 import org.mastodon.model.HighlightModel;
+import org.mastodon.model.NavigationHandler;
 import org.mastodon.model.SelectionModel;
+import org.mastodon.model.TimepointModel;
 import org.mastodon.revised.bdv.SharedBigDataViewerData;
 import org.mastodon.revised.model.mamut.BoundingSphereRadiusStatistics;
 import org.mastodon.revised.model.mamut.Link;
@@ -22,6 +28,12 @@ import org.mastodon.revised.model.mamut.Spot;
  */
 public class MamutAppModel
 {
+	private static final int NUM_GROUPS = 3;
+
+	public static final GroupableModelFactory< NavigationHandler< Spot, Link > > NAVIGATION = new ForwardingNavigationHandler.Factory<>();
+
+	public static final GroupableModelFactory< TimepointModel > TIMEPOINT = ForwardingTimepointModel.factory;
+
 	private final Model model;
 
 	private final SelectionModel< Spot, Link > selectionModel;
@@ -37,6 +49,8 @@ public class MamutAppModel
 	private final int minTimepoint;
 
 	private final int maxTimepoint;
+
+	private final GroupManager groupManager;
 
 	public MamutAppModel(
 			final Model model,
@@ -70,6 +84,10 @@ public class MamutAppModel
 		 * it would be confusing to have different labels in TrackScheme. If
 		 * this is changed in the future, then probably only in the model files.
 		 */
+
+		groupManager = new GroupManager( NUM_GROUPS );
+		groupManager.registerModel( TIMEPOINT );
+		groupManager.registerModel( NAVIGATION );
 	}
 
 	public Model getModel()
@@ -110,5 +128,10 @@ public class MamutAppModel
 	public int getMaxTimepoint()
 	{
 		return maxTimepoint;
+	}
+
+	public GroupManager getGroupManager()
+	{
+		return groupManager;
 	}
 }
