@@ -22,22 +22,21 @@ import org.mastodon.revised.model.mamut.Spot;
  */
 public class MamutAppModel
 {
-	final Model model;
+	private final Model model;
 
-	final SelectionModel< Spot, Link > selectionModel;
+	private final SelectionModel< Spot, Link > selectionModel;
 
-	final HighlightModel< Spot, Link > highlightModel;
+	private final HighlightModel< Spot, Link > highlightModel;
 
-	final BoundingSphereRadiusStatistics radiusStats;
+	private final BoundingSphereRadiusStatistics radiusStats;
 
-	final FocusModel< Spot, Link > focusModel;
+	private final FocusModel< Spot, Link > focusModel;
 
-	final SharedBigDataViewerData sharedBdvData;
+	private final SharedBigDataViewerData sharedBdvData;
 
-	final int minTimepoint;
+	private final int minTimepoint;
 
-	final int maxTimepoint;
-
+	private final int maxTimepoint;
 
 	public MamutAppModel(
 			final Model model,
@@ -53,5 +52,45 @@ public class MamutAppModel
 		this.sharedBdvData = sharedBdvData;
 		this.minTimepoint = 0;
 		this.maxTimepoint = sharedBdvData.getNumTimepoints() - 1;
+	}
+
+	public Model getModel()
+	{
+		return model;
+	}
+
+	public SelectionModel< Spot, Link > getSelectionModel()
+	{
+		return selectionModel;
+	}
+
+	public HighlightModel< Spot, Link > getHighlightModel()
+	{
+		return highlightModel;
+	}
+
+	public BoundingSphereRadiusStatistics getRadiusStats()
+	{
+		return radiusStats;
+	}
+
+	public FocusModel< Spot, Link > getFocusModel()
+	{
+		return focusModel;
+	}
+
+	public SharedBigDataViewerData getSharedBdvData()
+	{
+		return sharedBdvData;
+	}
+
+	public int getMinTimepoint()
+	{
+		return minTimepoint;
+	}
+
+	public int getMaxTimepoint()
+	{
+		return maxTimepoint;
 	}
 }
