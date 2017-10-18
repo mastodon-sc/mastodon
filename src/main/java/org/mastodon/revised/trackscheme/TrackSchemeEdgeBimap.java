@@ -10,13 +10,12 @@ public class TrackSchemeEdgeBimap< V extends Vertex< E >, E extends Edge< V > >
 {
 	private final GraphIdBimap< V, E > idmap;
 
-	private final TrackSchemeGraph< ?, ? > tsgraph;
+	private final TrackSchemeGraph< V, E > tsgraph;
 
 	public TrackSchemeEdgeBimap(
-			final GraphIdBimap< V, E > idmap,
-			final TrackSchemeGraph< ?, ? > tsgraph )
+			final TrackSchemeGraph< V, E > tsgraph )
 	{
-		this.idmap = idmap;
+		this.idmap = tsgraph.getGraphIdBimap();
 		this.tsgraph = tsgraph;
 	}
 

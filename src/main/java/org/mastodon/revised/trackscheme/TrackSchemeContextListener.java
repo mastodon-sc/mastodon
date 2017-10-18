@@ -4,6 +4,7 @@ import java.util.Iterator;
 import java.util.concurrent.locks.Lock;
 
 import org.mastodon.graph.GraphIdBimap;
+import org.mastodon.graph.Vertex;
 import org.mastodon.revised.context.Context;
 import org.mastodon.revised.context.ContextListener;
 
@@ -17,7 +18,7 @@ import org.mastodon.revised.context.ContextListener;
  *
  * @author Tobias Pietzsch &lt;tobias.pietzsch@gmail.com&gt;
  */
-public class TrackSchemeContextListener< V > implements ContextListener< V >
+public class TrackSchemeContextListener< V extends Vertex< ? > >  implements ContextListener< V >
 {
 	private final GraphIdBimap< V, ? > idmap;
 
@@ -29,11 +30,9 @@ public class TrackSchemeContextListener< V > implements ContextListener< V >
 
 	private TrackSchemeContext< V > trackSchemeContext;
 
-	public TrackSchemeContextListener(
-			final GraphIdBimap< V, ? > idmap,
-			final TrackSchemeGraph< ?, ? > graph )
+	public TrackSchemeContextListener( final TrackSchemeGraph< V, ? > graph )
 	{
-		this.idmap = idmap;
+		this.idmap = graph.getGraphIdBimap();
 		this.graph = graph;
 		listener = null;
 		previousContext = null;

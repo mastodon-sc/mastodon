@@ -345,6 +345,7 @@ public class WindowManager
 		final FocusModel< OverlayVertexWrapper< Spot, Link >, OverlayEdgeWrapper< Spot, Link > > overlayFocus = new FocusModelAdapter<>( focusModel, vertexMap, edgeMap );
 		final SelectionModel< OverlayVertexWrapper< Spot, Link >, OverlayEdgeWrapper< Spot, Link > > overlaySelection = new SelectionModelAdapter<>( selectionModel, vertexMap, edgeMap );
 		final NavigationHandler< OverlayVertexWrapper< Spot, Link >, OverlayEdgeWrapper< Spot, Link > > overlayNavigationHandler = new NavigationHandlerAdapter<>( navigation, vertexMap, edgeMap );
+
 		final String windowTitle = "BigDataViewer " + (bdvName++); // TODO: use JY naming scheme
 		final BigDataViewerMaMuT bdv = BigDataViewerMaMuT.open( sharedBdvData, windowTitle, bdvGroupHandle );
 		final ViewerFrame viewerFrame = bdv.getViewerFrame();
@@ -495,55 +496,26 @@ public class WindowManager
 		final int minTimepoint = appModel.getMinTimepoint();
 		final GroupManager groupManager = appModel.getGroupManager();
 
-		final ListenableReadOnlyGraph< Spot, Link > graph = model.getGraph();
-		final GraphIdBimap< Spot, Link > idmap = model.getGraphIdBimap();
-
-		/*
-		 * TrackSchemeGraph listening to model
-		 */
-		final ModelGraphProperties< Spot, Link > properties = new DefaultModelGraphProperties<>();
-		final TrackSchemeGraph< Spot, Link > trackSchemeGraph = new TrackSchemeGraph<>( graph, idmap, properties );
-		final RefBimap< Spot, TrackSchemeVertex > vertexMap = new TrackSchemeVertexBimap<>( idmap, trackSchemeGraph );
-		final RefBimap< Link, TrackSchemeEdge > edgeMap = new TrackSchemeEdgeBimap<>( idmap, trackSchemeGraph );
-
-		/*
-		 * TrackSchemeHighlight wrapping HighlightModel
-		 */
-		final HighlightModel< TrackSchemeVertex, TrackSchemeEdge > trackSchemeHighlight = new HighlightModelAdapter<>( highlightModel, vertexMap, edgeMap );
-
-		/*
-		 * TrackScheme selectionModel
-		 */
-		final SelectionModel< TrackSchemeVertex, TrackSchemeEdge > trackSchemeSelection = new SelectionModelAdapter<>( selectionModel, vertexMap, edgeMap );
-
-		/*
-		 * TrackScheme GroupHandle
-		 */
 		final GroupHandle groupHandle = groupManager.createGroupHandle();
-
-		/*
-		 * TimepointModel forwarding to current group
-		 */
 		final TimepointModel timepointModel = groupHandle.getModel( TIMEPOINT );
-
-
-		/*
-		 * TrackScheme navigation
-		 */
 		final NavigationHandler< Spot, Link > navigation = groupHandle.getModel( NAVIGATION );
-		final NavigationHandler< TrackSchemeVertex, TrackSchemeEdge > trackSchemeNavigation = new NavigationHandlerAdapter<>( navigation, vertexMap, edgeMap );
 
-		/*
-		 * TrackScheme focus
-		 */
+		final TrackSchemeGraph< Spot, Link > trackSchemeGraph = new TrackSchemeGraph<>(
+				model.getGraph(),
+				model.getGraphIdBimap(),
+				new DefaultModelGraphProperties<>() );
+		final RefBimap< Spot, TrackSchemeVertex > vertexMap = new TrackSchemeVertexBimap<>( trackSchemeGraph );
+		final RefBimap< Link, TrackSchemeEdge > edgeMap = new TrackSchemeEdgeBimap<>( trackSchemeGraph );
+
+		final HighlightModel< TrackSchemeVertex, TrackSchemeEdge > trackSchemeHighlight = new HighlightModelAdapter<>( highlightModel, vertexMap, edgeMap );
 		final FocusModel< TrackSchemeVertex, TrackSchemeEdge > trackSchemeFocus = new FocusModelAdapter<>( focusModel, vertexMap, edgeMap );
+		final SelectionModel< TrackSchemeVertex, TrackSchemeEdge > trackSchemeSelection = new SelectionModelAdapter<>( selectionModel, vertexMap, edgeMap );
+		final NavigationHandler< TrackSchemeVertex, TrackSchemeEdge > trackSchemeNavigation = new NavigationHandlerAdapter<>( navigation, vertexMap, edgeMap );
 
 		/*
 		 * TrackScheme ContextChooser
 		 */
-		final TrackSchemeContextListener< Spot > contextListener = new TrackSchemeContextListener<>(
-				idmap,
-				trackSchemeGraph );
+		final TrackSchemeContextListener< Spot > contextListener = new TrackSchemeContextListener<>( trackSchemeGraph );
 		final ContextChooser< Spot > contextChooser = new ContextChooser<>( contextListener );
 
 		/*

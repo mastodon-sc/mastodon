@@ -1,7 +1,6 @@
 package org.mastodon.revised.trackscheme;
 
 import java.util.ArrayList;
-
 import org.mastodon.RefPool;
 import org.mastodon.collection.IntRefMap;
 import org.mastodon.collection.RefSet;
@@ -186,6 +185,14 @@ public class TrackSchemeGraph<
 	public RefPool< TrackSchemeEdge > getEdgePool()
 	{
 		return edgePool;
+	}
+
+	/**
+	 * @return the bidirectional id map of the model graph.
+	 */
+	public GraphIdBimap< V, E > getGraphIdBimap()
+	{
+		return idmap;
 	}
 
 	/**
