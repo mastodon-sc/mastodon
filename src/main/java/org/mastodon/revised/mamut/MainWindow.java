@@ -26,7 +26,6 @@ import javax.swing.JSeparator;
 import javax.swing.WindowConstants;
 
 import org.mastodon.app.ui.ViewMenu;
-import org.mastodon.revised.mamut.feature.MamutFeatureComputerService;
 import org.mastodon.revised.model.feature.Feature;
 import org.mastodon.revised.model.feature.FeatureModel;
 import org.mastodon.revised.model.feature.FeatureProjection;
@@ -48,11 +47,6 @@ public class MainWindow extends JFrame implements Contextual
 	public MainWindow( final WindowManager windowManager )
 	{
 		super( "Mastodon" );
-		/*
-		 * Instantiate context with required services.
-		 */
-		this.context = new Context( MamutFeatureComputerService.class );
-
 		/*
 		 * GUI
 		 */
@@ -161,7 +155,7 @@ public class MainWindow extends JFrame implements Contextual
 
 		final Container content = getContentPane();
 		content.add( buttonsPanel, BorderLayout.NORTH );
-
+		
 		menubar = new JMenuBar();
 		setJMenuBar( menubar );
 
@@ -223,10 +217,10 @@ public class MainWindow extends JFrame implements Contextual
 	protected static final String dump(final Model model)
 	{
 		final ModelGraph graph = model.getGraph();
-		final FeatureModel featureModel = model.getFeatureModel();
+		final FeatureModel< Model > featureModel = model.getFeatureModel();
 
 		final StringBuilder str = new StringBuilder();
-		str.append( "Model " + model.toString()  + "\n");
+		str.append( "Model " + model.toString() + "\n" );
 
 		/*
 		 * Collect spot feature headers.
@@ -234,9 +228,8 @@ public class MainWindow extends JFrame implements Contextual
 
 		final Map< String, FeatureProjection< Spot > > sfs = new LinkedHashMap<>();
 		Set< Feature< ?, ? > > spotFeatures = featureModel.getFeatureSet( Spot.class );
-		if (null == spotFeatures)
+		if ( null == spotFeatures )
 			spotFeatures = Collections.emptySet();
-
 
 		for ( final Feature< ?, ? > feature : spotFeatures )
 		{
@@ -265,7 +258,7 @@ public class MainWindow extends JFrame implements Contextual
 		}
 
 		str.append( '\n' );
-		final char[] sline = new char[h1a.length() + Arrays.stream( spotColumnHeaderWidth ).sum() + 2 * spotColumnHeaderWidth.length];
+		final char[] sline = new char[ h1a.length() + Arrays.stream( spotColumnHeaderWidth ).sum() + 2 * spotColumnHeaderWidth.length ];
 		Arrays.fill( sline, '-' );
 		str.append( sline );
 		str.append( '\n' );
@@ -280,7 +273,7 @@ public class MainWindow extends JFrame implements Contextual
 			i = 0;
 			for ( final String pn : sfs.keySet() )
 			{
-				if (sfs.get( pn ).isSet( spot ))
+				if ( sfs.get( pn ).isSet( spot ) )
 					str.append( String.format( "  %" + spotColumnHeaderWidth[ i ] + ".1f", sfs.get( pn ).value( spot ) ) );
 				else
 					str.append( String.format( "  %" + spotColumnHeaderWidth[ i ] + "s", "unset" ) );
@@ -295,9 +288,8 @@ public class MainWindow extends JFrame implements Contextual
 
 		final Map< String, FeatureProjection< Link > > lfs = new LinkedHashMap<>();
 		Set< Feature< ?, ? > > linkFeatures = featureModel.getFeatureSet( Link.class );
-		if (null == linkFeatures)
+		if ( null == linkFeatures )
 			linkFeatures = Collections.emptySet();
-
 
 		for ( final Feature< ?, ? > feature : linkFeatures )
 		{
@@ -325,7 +317,7 @@ public class MainWindow extends JFrame implements Contextual
 		}
 
 		str.append( '\n' );
-		final char[] lline = new char[h2a.length() + Arrays.stream( linkColumnHeaderWidth ).sum() + 2 * linkColumnHeaderWidth.length];
+		final char[] lline = new char[ h2a.length() + Arrays.stream( linkColumnHeaderWidth ).sum() + 2 * linkColumnHeaderWidth.length ];
 		Arrays.fill( lline, '-' );
 		str.append( lline );
 		str.append( '\n' );
@@ -334,12 +326,12 @@ public class MainWindow extends JFrame implements Contextual
 		for ( final Link link : graph.edges() )
 		{
 			final String h1b = String.format( "%9d  %9d  %9d", link.getInternalPoolIndex(),
-					link.getSource( ref ).getInternalPoolIndex(), link.getTarget(ref).getInternalPoolIndex() );
+					link.getSource( ref ).getInternalPoolIndex(), link.getTarget( ref ).getInternalPoolIndex() );
 			str.append( h1b );
 			i = 0;
 			for ( final String pn : lfs.keySet() )
 			{
-				if (lfs.get( pn ).isSet( link ))
+				if ( lfs.get( pn ).isSet( link ) )
 					str.append( String.format( "  %" + linkColumnHeaderWidth[ i ] + ".1f", lfs.get( pn ).value( link ) ) );
 				else
 					str.append( String.format( "  %" + linkColumnHeaderWidth[ i ] + "s", "unset" ) );

@@ -1,11 +1,10 @@
 package org.mastodon.revised.model.feature;
 
-import java.io.IOException;
-import java.io.ObjectOutputStream;
+import java.io.File;
 import java.util.Map;
 import java.util.Set;
 
-import org.mastodon.io.ObjectToFileIdMap;
+import org.mastodon.revised.model.AbstractModel;
 
 /**
  * Interface for feature models, classes that manage a collection of features in
@@ -13,7 +12,7 @@ import org.mastodon.io.ObjectToFileIdMap;
  *
  * @author Jean-Yves Tinevez
  */
-public interface FeatureModel
+public interface FeatureModel< AM extends AbstractModel< ?, ?, ? > >
 {
 
 	public Set< Feature< ?, ? > > getFeatureSet( Class< ? > targetClass );
@@ -43,23 +42,35 @@ public interface FeatureModel
 	public Feature< ?, ? > getFeature( String key );
 
 	/**
-	 * Appends the features of this model to the specified stream, using the
-	 * specified mapping from object feature are defined for, to the file ids
-	 * they are saved under.
-	 * <p>
-	 * Because the feature model can deal with features defined over several
-	 * classes of objects, the mapping is specified as a map from object class
-	 * to actual mapping.
-	 * There must be a mapping for each class of target objects that has a
-	 * feature in this model, in the specified map.
+	 * Saves the {@link Feature}s managed by this feature model as individual
+	 * raw files.
 	 *
-	 *
-	 * @param oos
-	 *            The stream to appends features to. Will not be closed.
-	 * @param fileIdMaps
-	 *            the mapping from object to file ids.
-	 * @throws IOException
+	 * @param projectFolder
+	 *            the feature will be saved in a sub-folder of this project
+	 *            folder.
+	 * @param serializers
+	 *            the map of serializers to use to save features. If a
+	 *            serializer is not found in the map for a feature with a
+	 *            specific key, that feature is not saved.
+	 * @param support
+	 *            the model on which features are defined.
 	 */
-	public void writeRaw( ObjectOutputStream oos, Map< Class< ? >, ObjectToFileIdMap< ? > > fileIdMaps ) throws IOException;
+	public void saveRaw( File projectFolder, Map< String, FeatureSerializer< ?, ?, AM > > serializers, AM support );
+
+	/**
+	 * Clears this feature model and loads the {@link Feature}s from files in a
+	 * sub-folder of the specified project folder.
+	 *
+	 * @param projectFolder
+	 *            the feature will be loaded from a sub-folder of this project
+	 *            folder.
+	 * @param serializers
+	 *            the map of serializers to use to save features. If a
+	 *            serializer is not found in the map for a feature with a
+	 *            specific key, that feature is not loaded.
+	 * @param support
+	 *            the model on which features are defined.
+	 */
+	public void loadRaw( File projectFolder, Map< String, FeatureSerializer< ?, ?, AM > > serializers, AM support );
 
 }

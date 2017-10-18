@@ -1,9 +1,8 @@
 package org.mastodon.revised.model.feature;
 
-import java.io.ObjectInputStream;
 import java.util.Set;
 
-import org.mastodon.io.FileIdToObjectMap;
+import org.mastodon.properties.PropertyMap;
 import org.mastodon.revised.model.AbstractModel;
 import org.scijava.plugin.SciJavaPlugin;
 
@@ -13,10 +12,14 @@ import org.scijava.plugin.SciJavaPlugin;
  * Concrete implementations must be stateless, without side effects. A computer
  * must generate a single feature, however a feature does not have to be scalar.
  *
+ * @param <O>
+ *            the type of the objects this feature is defined for.
+ * @param <M>
+ *            the type of the property map this feature relies on.
  * @param <AM>
  *            the type of the model the feature is calculated on and stored in.
  */
-public interface FeatureComputer< AM extends AbstractModel< ?, ?, ? > > extends SciJavaPlugin
+public interface FeatureComputer< O, M extends PropertyMap< O, ? >, AM extends AbstractModel< ?, ?, ? > > extends SciJavaPlugin
 {
 
 	/**
@@ -38,7 +41,7 @@ public interface FeatureComputer< AM extends AbstractModel< ?, ?, ? > > extends 
 	 * @param model
 	 *            the model to retrieve objects from.
 	 */
-	public Feature< ?, ? > compute( final AM model );
+	public Feature< O, M > compute( final AM model );
 
 	/**
 	 * Returns the string key of the feature calculated by this computer.
@@ -48,17 +51,11 @@ public interface FeatureComputer< AM extends AbstractModel< ?, ?, ? > > extends 
 	public String getKey();
 
 	/**
-	 * Deserializes the {@link Feature} object calculated by this class,
-	 * taking values from in input stream.
+	 * Returns a feature serializer that can de/serialize <b>this specific
+	 * feature</b> from/to a raw file.
 	 *
-	 * @param ois
-	 *            The input stream. Will not be closed.
-	 * @param fileIdToObjectMap
-	 *            A mapping between file Ids to objects.
-	 * @param model
-	 *            The model the feature is defined on. This object is only used
-	 *            to instantiate property maps.
-	 * @return a new feature object.
+	 * @return a feature serializer.
 	 */
-	public Feature< ?, ? > deserialize( ObjectInputStream ois, FileIdToObjectMap< ? > fileIdToObjectMap, AM model );
+	public FeatureSerializer< O, M, AM > getSerializer();
+
 }

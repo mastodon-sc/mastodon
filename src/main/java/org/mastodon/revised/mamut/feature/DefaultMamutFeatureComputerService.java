@@ -7,6 +7,7 @@ import org.scijava.plugin.Plugin;
 @Plugin(type = MamutFeatureComputerService.class)
 public class DefaultMamutFeatureComputerService extends AbstractFeatureComputerService< Model > implements MamutFeatureComputerService
 {
+	@SuppressWarnings( "unchecked" )
 	@Override
 	public void initialize()
 	{

@@ -1,35 +1,28 @@
 package org.mastodon.revised.model.mamut;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.LinkedHashMap;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.mastodon.graph.ReadOnlyGraph;
-import org.mastodon.graph.io.RawGraphIO.FileIdToGraphMap;
-import org.mastodon.graph.io.RawGraphIO.GraphToFileIdMap;
-import org.mastodon.io.FileIdToObjectMap;
-import org.mastodon.io.ObjectToFileIdMap;
 import org.mastodon.properties.Property;
 import org.mastodon.revised.mamut.feature.MamutFeatureComputerService;
 import org.mastodon.revised.model.AbstractModel;
 import org.mastodon.revised.model.feature.DefaultFeatureModel;
-import org.mastodon.revised.model.feature.Feature;
 import org.mastodon.revised.model.feature.FeatureComputer;
 import org.mastodon.revised.model.feature.FeatureModel;
+import org.mastodon.revised.model.feature.FeatureSerializer;
 import org.mastodon.spatial.SpatioTemporalIndex;
 import org.mastodon.spatial.SpatioTemporalIndexImp;
 import org.mastodon.undo.GraphUndoRecorder;
 import org.mastodon.undo.UndoPointMarker;
+import org.scijava.Context;
+import org.scijava.Contextual;
+import org.scijava.NullContextException;
 
 import net.imglib2.RealLocalizable;
 
@@ -51,7 +44,7 @@ import net.imglib2.RealLocalizable;
  *
  * @author Tobias Pietzsch &lt;tobias.pietzsch@gmail.com&gt;
  */
-public class Model extends AbstractModel< ModelGraph, Spot, Link > implements UndoPointMarker
+public class Model extends AbstractModel< ModelGraph, Spot, Link > implements UndoPointMarker, Contextual
 {
 	/*
 	 * SpatioTemporalIndex of model spots
@@ -60,11 +53,19 @@ public class Model extends AbstractModel< ModelGraph, Spot, Link > implements Un
 
 	private final GraphUndoRecorder< Spot, Link > undoRecorder;
 
-	private final FeatureModel featureModel;
+	private final FeatureModel< Model > featureModel;
+
+	private final Context context;
 
 	public Model()
 	{
 		super( new ModelGraph() );
+
+		/*
+		 * Instantiate context with required services.
+		 */
+		this.context = new Context( MamutFeatureComputerService.class );
+
 		index = new SpatioTemporalIndexImp<>( modelGraph, modelGraph.idmap().vertexIdBimap() );
 
 		final int initialCapacity = 1024;
@@ -77,7 +78,7 @@ public class Model extends AbstractModel< ModelGraph, Spot, Link > implements Un
 
 		final List< Property< Link > > edgeUndoableProperties = new ArrayList<>();
 
-		featureModel = new DefaultFeatureModel();
+		featureModel = new DefaultFeatureModel< Model >();
 
 		undoRecorder = new GraphUndoRecorder<>(
 				initialCapacity,
@@ -91,76 +92,39 @@ public class Model extends AbstractModel< ModelGraph, Spot, Link > implements Un
 
 	/**
 	 * Clears this model and loads the model from the specified raw file.
+	 * <p>
+	 * Feature values will be loaded from the folder the specified file is in, using the
+	 * {@link FeatureComputer}s visible at runtime.
 	 *
 	 * @param file
 	 *            the raw file to load.
-	 * @param featureComputerService
-	 *            the MaMuT feature computer service, used to retrieve the
-	 *            feature computers that know how to deserialize feature values.
 	 * @throws IOException
 	 *             if an I/O error occurs while reading the file.
 	 */
-	public void loadRaw( final File file, final MamutFeatureComputerService featureComputerService ) throws IOException
+	public void loadRaw( final File file ) throws IOException
 	{
-		final FileInputStream fis = new FileInputStream( file );
-		final ObjectInputStream ois = new ObjectInputStream( new BufferedInputStream( fis, 1024 * 1024 ) );
-
 		/*
 		 * Read the model-graph.
 		 */
-		final FileIdToGraphMap< Spot, Link > fileIdMap = modelGraph.readRaw( ois, ModelSerializer.getInstance() );
+		modelGraph.loadRaw( file, ModelSerializer.getInstance() );
 
 		/*
-		 * Read the feature values. The order is important and is set by the
-		 * saveRaw() method. We suppose we wrote spot features first then link
-		 * features.
+		 * Read the feature values. We get the serializers from the MaMuT
+		 * feature computers.
 		 */
-		featureModel.clear();
-		final Collection< FeatureComputer< Model > > featureComputers = featureComputerService.getFeatureComputers();
-		try
-		{
-			// Spot features.
-			final String[] spotKeys = ( String[] ) ois.readObject();
-			deserializeFeatures( ois, spotKeys, featureComputers, fileIdMap.vertices() );
-			// Link features.
-			final String[] linkKeys = ( String[] ) ois.readObject();
-			deserializeFeatures( ois, linkKeys, featureComputers, fileIdMap.edges() );
-
-		}
-		catch ( final ClassNotFoundException e )
-		{
-			e.printStackTrace();
-		}
-		ois.close();
-	}
-
-	private void deserializeFeatures( final ObjectInputStream ois, final String[] keys, final Collection< FeatureComputer< Model > > featureComputers, final FileIdToObjectMap< ? > idMap )
-	{
-		for ( final String key : keys )
-		{
-			FeatureComputer< Model > featureComputer = null;
-			for ( final FeatureComputer< Model > fc : featureComputers )
-			{
-				if ( fc.getKey().equals( key ) )
-				{
-					featureComputer = fc;
-					break;
-				}
-			}
-			if ( null == featureComputer )
-			{
-				System.err.println( "Could not find a feature computer with key " + key + ". Skipping." );
-				// TODO If we skip we cannot read the next ones. What to do?
-				continue;
-			}
-
-			final Feature< ?, ? > feature = featureComputer.deserialize( ois, idMap, this );
-			featureModel.declareFeature( feature );
-		}
+		final MamutFeatureComputerService featureComputerService = context.getService( MamutFeatureComputerService.class );
+		final Collection< FeatureComputer< ?, ?, Model > > featureComputers = featureComputerService.getFeatureComputers();
+		final Map< String, FeatureSerializer< ?, ?, Model > > featureSerializers = new HashMap<>( featureComputers.size() );
+		for ( final FeatureComputer< ?, ?, Model > featureComputer : featureComputers )
+			featureSerializers.put( featureComputer.getKey(), featureComputer.getSerializer() );
+		featureModel.loadRaw( file.getParentFile(), featureSerializers, this );
 	}
 
 	/**
 	 * Saves this model to the specified raw file.
+	 * <p>
+	 * Feature values will be saved in individual raw files in a subfolder of
+	 * the folder the specified file is in.
 	 *
 	 * @param file
 	 *            the raw file to save.
@@ -169,20 +133,16 @@ public class Model extends AbstractModel< ModelGraph, Spot, Link > implements Un
 	 */
 	public void saveRaw( final File file ) throws IOException
 	{
-		final FileOutputStream fos = new FileOutputStream( file );
-		final ObjectOutputStream oos = new ObjectOutputStream( new BufferedOutputStream( fos, 1024 * 1024 ) );
-
 		// Serialize model graph.
-		final GraphToFileIdMap< Spot, Link > fileIdMap = modelGraph.writeRaw( oos, ModelSerializer.getInstance() );
+		modelGraph.saveRaw( file, ModelSerializer.getInstance() );
 
-		// Serialize feature model in order: first the spot features then the link features.
-		final Map< Class< ? >, ObjectToFileIdMap< ? > > fileIdMaps = new LinkedHashMap<>();
-		fileIdMaps.put( Spot.class, fileIdMap.vertices() );
-		fileIdMaps.put( Link.class, fileIdMap.edges() );
-		featureModel.writeRaw(oos, fileIdMaps);
-
-		// Close.
-		oos.close();
+		// Serialize feature model.
+		final MamutFeatureComputerService featureComputerService = context.getService( MamutFeatureComputerService.class );
+		final Collection< FeatureComputer< ?, ?, Model > > featureComputers = featureComputerService.getFeatureComputers();
+		final Map< String, FeatureSerializer< ?, ?, Model > > featureSerializers = new HashMap<>( featureComputers.size() );
+		for ( final FeatureComputer< ?, ?, Model > featureComputer : featureComputers )
+			featureSerializers.put( featureComputer.getKey(), featureComputer.getSerializer() );
+		featureModel.saveRaw( file.getParentFile(), featureSerializers, this );
 	}
 
 	/**
@@ -213,9 +173,24 @@ public class Model extends AbstractModel< ModelGraph, Spot, Link > implements Un
 		undoRecorder.setUndoPoint();
 	}
 
-	public FeatureModel getFeatureModel()
+	public FeatureModel< Model > getFeatureModel()
 	{
 		return featureModel;
 	}
 
+	// -- Contextual methods --
+
+	@Override
+	public Context context()
+	{
+		if ( context == null )
+			throw new NullContextException();
+		return context;
+	}
+
+	@Override
+	public Context getContext()
+	{
+		return context;
+	}
 }

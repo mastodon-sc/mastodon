@@ -127,31 +127,12 @@ public class AbstractModelGraph<
 	{
 		final FileOutputStream fos = new FileOutputStream( file );
 		final ObjectOutputStream oos = new ObjectOutputStream( new BufferedOutputStream( fos, 1024 * 1024 ) );
-		writeRaw( oos, serializer );
-		oos.close();
-	}
-
-	/**
-	 * Appends this model-graph to the specified stream using the specified
-	 * serializer.
-	 *
-	 * @param oos
-	 *            The stream to append the graph to. Will not be closed.
-	 * @param serializer
-	 *            The serializer to use to write the model graph.
-	 * @return A mapping from graph objects to file ids.
-	 */
-	public GraphToFileIdMap< V, E > writeRaw(
-			final ObjectOutputStream oos,
-			final GraphSerializer< V, E > serializer )
-			throws IOException
-	{
 		final GraphToFileIdMap< V, E > fileIdMap = RawGraphIO.write( this, idmap, serializer, oos );
 		RawPropertyIO.writePropertyMaps( fileIdMap.vertices(), vertexPropertySerializers, oos );
 		// TODO: edge properties
 //		RawFeatureIO.writeFeatureMaps( fileIdMap.vertices(), vertexFeatures, vertexFeaturesToSerialize, oos );
 //		RawFeatureIO.writeFeatureMaps( fileIdMap.edges(), edgeFeatures, edgeFeaturesToSerialize, oos );
-		return fileIdMap;
+		oos.close();
 	}
 
 	public ReentrantReadWriteLock getLock()

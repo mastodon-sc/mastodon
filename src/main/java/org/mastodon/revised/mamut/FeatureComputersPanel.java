@@ -66,7 +66,7 @@ public class FeatureComputersPanel extends JPanel
 
 	private final MyProgressBar progressBar;
 
-	private final Set< FeatureComputer< Model > > selectedComputers;
+	private final Set< FeatureComputer< ?, ?, Model > > selectedComputers;
 
 	private final JButton btnCompute;
 
@@ -222,13 +222,13 @@ public class FeatureComputersPanel extends JPanel
 		return DATE_FORMAT.format( Calendar.getInstance().getTime() );
 	}
 
-	private void layoutComputers( final JPanel panel, final GridBagConstraints c, final Collection< FeatureComputer< Model > > set )
+	private void layoutComputers( final JPanel panel, final GridBagConstraints c, final Collection< FeatureComputer< ?, ?, Model > > set )
 	{
 		if ( set.isEmpty() )
 			return;
 
 		c.gridx = 0;
-		for ( final FeatureComputer< Model > computer : set )
+		for ( final FeatureComputer< ?, ?, Model > computer : set )
 		{
 			final boolean selected = true;
 			final JCheckBox checkBox = new JCheckBox( computer.getKey(), selected );
