@@ -3,7 +3,6 @@ package org.mastodon.revised.mamut;
 import bdv.spimdata.SpimDataMinimal;
 import bdv.tools.ToggleDialogAction;
 import bdv.viewer.RequestRepaint;
-import bdv.viewer.TimePointListener;
 import bdv.viewer.ViewerFrame;
 import bdv.viewer.ViewerOptions;
 import bdv.viewer.ViewerPanel;
@@ -19,25 +18,8 @@ import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
 import mpicbg.spim.data.generic.AbstractSpimData;
-import org.mastodon.adapter.FocusModelAdapter;
-import org.mastodon.adapter.HighlightModelAdapter;
-import org.mastodon.adapter.NavigationHandlerAdapter;
 import org.mastodon.adapter.RefBimap;
-import org.mastodon.adapter.SelectionModelAdapter;
-import org.mastodon.graph.GraphChangeListener;
-import org.mastodon.graph.GraphIdBimap;
-import org.mastodon.graph.ListenableReadOnlyGraph;
 import org.mastodon.grouping.GroupHandle;
-import org.mastodon.grouping.GroupManager;
-import org.mastodon.model.FocusListener;
-import org.mastodon.model.FocusModel;
-import org.mastodon.model.HighlightListener;
-import org.mastodon.model.HighlightModel;
-import org.mastodon.model.NavigationHandler;
-import org.mastodon.model.SelectionListener;
-import org.mastodon.model.SelectionModel;
-import org.mastodon.model.TimepointListener;
-import org.mastodon.model.TimepointModel;
 import org.mastodon.revised.bdv.BigDataViewerMaMuT;
 import org.mastodon.revised.bdv.SharedBigDataViewerData;
 import org.mastodon.revised.bdv.overlay.BdvHighlightHandler;
@@ -76,7 +58,6 @@ import org.mastodon.revised.trackscheme.display.TrackSchemeFrame;
 import org.mastodon.revised.trackscheme.display.TrackSchemeOptions;
 import org.mastodon.revised.trackscheme.display.ui.TrackSchemeStyleChooser;
 import org.mastodon.revised.trackscheme.wrap.DefaultModelGraphProperties;
-import org.mastodon.revised.trackscheme.wrap.ModelGraphProperties;
 import org.mastodon.revised.ui.HighlightBehaviours;
 import org.mastodon.revised.ui.SelectionActions;
 import org.scijava.ui.behaviour.KeyPressedManager;
@@ -85,9 +66,6 @@ import org.scijava.ui.behaviour.io.InputTriggerConfig;
 import org.scijava.ui.behaviour.io.InputTriggerDescription;
 import org.scijava.ui.behaviour.io.InputTriggerDescriptionsBuilder;
 import org.scijava.ui.behaviour.io.yaml.YamlConfigIO;
-
-import static org.mastodon.revised.mamut.MamutAppModel.NAVIGATION;
-import static org.mastodon.revised.mamut.MamutAppModel.TIMEPOINT;
 
 public class WindowManager
 {
@@ -178,7 +156,7 @@ public class WindowManager
 	 * TODO!!! related to {@link OverlayContextWrapper}
 	 *
 	 * @param <V>
-	 *            the type of vertices in the model.
+	 * 		the type of vertices in the model.
 	 *
 	 * @author Tobias Pietzsch &lt;tobias.pietzsch@gmail.com&gt;
 	 */
@@ -323,15 +301,7 @@ public class WindowManager
 	{
 		final Model model = appModel.getModel();
 		final BoundingSphereRadiusStatistics radiusStats = appModel.getRadiusStats();
-		final HighlightModel< Spot, Link > highlightModel = appModel.getHighlightModel();
-		final FocusModel< Spot, Link > focusModel = appModel.getFocusModel();
-		final SelectionModel< Spot, Link > selectionModel = appModel.getSelectionModel();
 		final SharedBigDataViewerData sharedBdvData = appModel.getSharedBdvData();
-		final GroupManager groupManager = appModel.getGroupManager();
-
-		final GroupHandle bdvGroupHandle = groupManager.createGroupHandle();
-		final TimepointModel timepointModel = bdvGroupHandle.getModel( TIMEPOINT );
-		final NavigationHandler< Spot, Link > navigation = bdvGroupHandle.getModel( NAVIGATION );
 
 		final OverlayGraphWrapper< Spot, Link > overlayGraph = new OverlayGraphWrapper<>(
 				model.getGraph(),
@@ -341,75 +311,43 @@ public class WindowManager
 		final RefBimap< Spot, OverlayVertexWrapper< Spot, Link > > vertexMap = new OverlayVertexWrapperBimap<>( overlayGraph );
 		final RefBimap< Link, OverlayEdgeWrapper< Spot, Link > > edgeMap = new OverlayEdgeWrapperBimap<>( overlayGraph );
 
-		final HighlightModel< OverlayVertexWrapper< Spot, Link >, OverlayEdgeWrapper< Spot, Link > > overlayHighlight = new HighlightModelAdapter<>( highlightModel, vertexMap, edgeMap );
-		final FocusModel< OverlayVertexWrapper< Spot, Link >, OverlayEdgeWrapper< Spot, Link > > overlayFocus = new FocusModelAdapter<>( focusModel, vertexMap, edgeMap );
-		final SelectionModel< OverlayVertexWrapper< Spot, Link >, OverlayEdgeWrapper< Spot, Link > > overlaySelection = new SelectionModelAdapter<>( selectionModel, vertexMap, edgeMap );
-		final NavigationHandler< OverlayVertexWrapper< Spot, Link >, OverlayEdgeWrapper< Spot, Link > > overlayNavigationHandler = new NavigationHandlerAdapter<>( navigation, vertexMap, edgeMap );
+		final MamutView< OverlayVertexWrapper< Spot, Link >, OverlayEdgeWrapper< Spot, Link > > view = new MamutView<>( appModel, vertexMap, edgeMap );
 
-		final String windowTitle = "BigDataViewer " + (bdvName++); // TODO: use JY naming scheme
-		final BigDataViewerMaMuT bdv = BigDataViewerMaMuT.open( sharedBdvData, windowTitle, bdvGroupHandle );
+		final String windowTitle = "BigDataViewer " + ( bdvName++ ); // TODO: use JY naming scheme
+		final BigDataViewerMaMuT bdv = BigDataViewerMaMuT.open( sharedBdvData, windowTitle, view.groupHandle );
 		final ViewerFrame viewerFrame = bdv.getViewerFrame();
 		final ViewerPanel viewer = bdv.getViewer();
 
-
 		// TODO: It's ok to create the wrappers here, but wiring up Listeners should be done elsewhere
-
 
 //		if ( !bdv.tryLoadSettings( bdvFile ) ) // TODO
 //			InitializeViewerState.initBrightness( 0.001, 0.999, bdv.getViewer(), bdv.getSetupAssignments() );
 
-		viewer.setTimepoint( timepointModel.getTimepoint() );
+		viewer.setTimepoint( view.timepointModel.getTimepoint() );
 		final OverlayGraphRenderer< OverlayVertexWrapper< Spot, Link >, OverlayEdgeWrapper< Spot, Link > > tracksOverlay = new OverlayGraphRenderer<>(
 				overlayGraph,
-				overlayHighlight,
-				overlayFocus,
-				overlaySelection );
+				view.highlightModel,
+				view.focusModel,
+				view.selectionModel );
 		viewer.getDisplay().addOverlayRenderer( tracksOverlay );
 		viewer.addRenderTransformListener( tracksOverlay );
 		viewer.addTimePointListener( tracksOverlay );
-		overlayHighlight.listeners().add( new HighlightListener()
-		{
-			@Override
-			public void highlightChanged()
-			{
-				viewer.getDisplay().repaint();
-			}
-		} );
-		overlayFocus.listeners().add( new FocusListener()
-		{
-			@Override
-			public void focusChanged()
-			{
-				viewer.getDisplay().repaint();
-			}
-		} );
-		model.getGraph().addGraphChangeListener( new GraphChangeListener()
-		{
-			@Override
-			public void graphChanged()
-			{
-				viewer.getDisplay().repaint();
-			}
-		} );
+
+		view.highlightModel.listeners().add( () -> viewer.getDisplay().repaint() );
+		view.focusModel.listeners().add( () -> viewer.getDisplay().repaint() );
+		model.getGraph().addGraphChangeListener( () -> viewer.getDisplay().repaint() );
 		model.getGraph().addVertexPositionListener( ( v ) -> viewer.getDisplay().repaint() );
-		overlaySelection.listeners().add( new SelectionListener()
-		{
-			@Override
-			public void selectionChanged()
-			{
-				viewer.getDisplay().repaint();
-			}
-		} );
+		view.selectionModel.listeners().add( () -> viewer.getDisplay().repaint() );
 		// TODO: remember those listeners and remove them when the BDV window is closed!!!
 
 		final OverlayNavigation< OverlayVertexWrapper< Spot, Link >, OverlayEdgeWrapper< Spot, Link > > overlayNavigation = new OverlayNavigation<>( viewer, overlayGraph );
-		overlayNavigationHandler.listeners().add( overlayNavigation );
+		view.navigationHandler.listeners().add( overlayNavigation );
 
-		final BdvHighlightHandler< ?, ? > highlightHandler = new BdvHighlightHandler<>( overlayGraph, tracksOverlay, overlayHighlight );
+		final BdvHighlightHandler< ?, ? > highlightHandler = new BdvHighlightHandler<>( overlayGraph, tracksOverlay, view.highlightModel );
 		viewer.getDisplay().addHandler( highlightHandler );
 		viewer.addRenderTransformListener( highlightHandler );
 
-		final BdvSelectionBehaviours< ?, ? > selectionBehaviours = new BdvSelectionBehaviours<>( overlayGraph, tracksOverlay, overlaySelection, overlayNavigationHandler );
+		final BdvSelectionBehaviours< ?, ? > selectionBehaviours = new BdvSelectionBehaviours<>( overlayGraph, tracksOverlay, view.selectionModel, view.navigationHandler );
 		selectionBehaviours.installBehaviourBindings( viewerFrame.getTriggerbindings(), keyconf );
 
 		final OverlayContext< OverlayVertexWrapper< Spot, Link > > overlayContext = new OverlayContext<>( overlayGraph, tracksOverlay );
@@ -428,7 +366,7 @@ public class WindowManager
 				new String[] { "bdv" },
 				model.getGraph(),
 				model.getGraph(),
-				highlightModel,
+				appModel.getHighlightModel(),
 				model );
 		SelectionActions.installActionBindings(
 				viewerFrame.getKeybindings(),
@@ -436,25 +374,11 @@ public class WindowManager
 				new String[] { "bdv" },
 				model.getGraph(),
 				model.getGraph(),
-				selectionModel,
+				appModel.getSelectionModel(),
 				model );
 
-		viewer.addTimePointListener( new TimePointListener()
-		{
-			@Override
-			public void timePointChanged( final int timePointIndex )
-			{
-				timepointModel.setTimepoint( timePointIndex );
-			}
-		} );
-		timepointModel.listeners().add( new TimepointListener()
-		{
-			@Override
-			public void timepointChanged()
-			{
-				viewer.setTimepoint( timepointModel.getTimepoint() );
-			}
-		} );
+		viewer.addTimePointListener( timePointIndex -> view.timepointModel.setTimepoint( timePointIndex ) );
+		view.timepointModel.listeners().add( () -> viewer.setTimepoint( view.timepointModel.getTimepoint() ) );
 
 		// TODO revise
 		// RenderSettingsDialog triggered by "R"
@@ -480,26 +404,13 @@ public class WindowManager
 			}
 		} );
 
-		final BdvWindow bdvWindow = new BdvWindow( viewerFrame, tracksOverlay, bdvGroupHandle, contextProvider );
+		final BdvWindow bdvWindow = new BdvWindow( viewerFrame, tracksOverlay, view.groupHandle, contextProvider );
 		addBdvWindow( bdvWindow );
 	}
 
 	public void createTrackScheme()
 	{
 		final Model model = appModel.getModel();
-		final BoundingSphereRadiusStatistics radiusStats = appModel.getRadiusStats();
-		final HighlightModel< Spot, Link > highlightModel = appModel.getHighlightModel();
-		final FocusModel< Spot, Link > focusModel = appModel.getFocusModel();
-		final SelectionModel< Spot, Link > selectionModel = appModel.getSelectionModel();
-		final SharedBigDataViewerData sharedBdvData = appModel.getSharedBdvData();
-		final int maxTimepoint = appModel.getMaxTimepoint();
-		final int minTimepoint = appModel.getMinTimepoint();
-		final GroupManager groupManager = appModel.getGroupManager();
-
-		final GroupHandle groupHandle = groupManager.createGroupHandle();
-		final TimepointModel timepointModel = groupHandle.getModel( TIMEPOINT );
-		final NavigationHandler< Spot, Link > navigation = groupHandle.getModel( NAVIGATION );
-
 		final TrackSchemeGraph< Spot, Link > trackSchemeGraph = new TrackSchemeGraph<>(
 				model.getGraph(),
 				model.getGraphIdBimap(),
@@ -507,10 +418,7 @@ public class WindowManager
 		final RefBimap< Spot, TrackSchemeVertex > vertexMap = new TrackSchemeVertexBimap<>( trackSchemeGraph );
 		final RefBimap< Link, TrackSchemeEdge > edgeMap = new TrackSchemeEdgeBimap<>( trackSchemeGraph );
 
-		final HighlightModel< TrackSchemeVertex, TrackSchemeEdge > trackSchemeHighlight = new HighlightModelAdapter<>( highlightModel, vertexMap, edgeMap );
-		final FocusModel< TrackSchemeVertex, TrackSchemeEdge > trackSchemeFocus = new FocusModelAdapter<>( focusModel, vertexMap, edgeMap );
-		final SelectionModel< TrackSchemeVertex, TrackSchemeEdge > trackSchemeSelection = new SelectionModelAdapter<>( selectionModel, vertexMap, edgeMap );
-		final NavigationHandler< TrackSchemeVertex, TrackSchemeEdge > trackSchemeNavigation = new NavigationHandlerAdapter<>( navigation, vertexMap, edgeMap );
+		final MamutView< TrackSchemeVertex, TrackSchemeEdge > view = new MamutView<>( appModel, vertexMap, edgeMap );
 
 		/*
 		 * TrackScheme ContextChooser
@@ -526,16 +434,16 @@ public class WindowManager
 				.shareKeyPressedEvents( keyPressedManager );
 		final TrackSchemeFrame frame = new TrackSchemeFrame(
 				trackSchemeGraph,
-				trackSchemeHighlight,
-				trackSchemeFocus,
-				timepointModel,
-				trackSchemeSelection,
-				trackSchemeNavigation,
+				view.highlightModel,
+				view.focusModel,
+				view.timepointModel,
+				view.selectionModel,
+				view.navigationHandler,
 				model,
-				groupHandle,
+				view.groupHandle,
 				contextChooser,
 				options );
-		frame.getTrackschemePanel().setTimepointRange( minTimepoint, maxTimepoint );
+		frame.getTrackschemePanel().setTimepointRange( appModel.getMinTimepoint(), appModel.getMaxTimepoint() );
 		frame.getTrackschemePanel().graphChanged();
 		contextListener.setContextListener( frame.getTrackschemePanel() );
 		frame.setVisible( true );
@@ -547,7 +455,7 @@ public class WindowManager
 				new String[] { "ts" },
 				model.getGraph(),
 				model.getGraph(),
-				highlightModel,
+				appModel.getHighlightModel(),
 				model );
 		SelectionActions.installActionBindings(
 				frame.getKeybindings(),
@@ -555,7 +463,7 @@ public class WindowManager
 				new String[] { "ts" },
 				model.getGraph(),
 				model.getGraph(),
-				selectionModel,
+				appModel.getSelectionModel(),
 				model );
 		TrackSchemeEditBehaviours.installActionBindings(
 				frame.getTriggerbindings(),
@@ -579,7 +487,7 @@ public class WindowManager
 		frame.getKeybindings().addActionMap( "mamut", actionMap );
 		frame.getKeybindings().addInputMap( "mamut", inputMap );
 
-		final TsWindow tsWindow = new TsWindow( frame, groupHandle, contextChooser );
+		final TsWindow tsWindow = new TsWindow( frame, view.groupHandle, contextChooser );
 		addTsWindow( tsWindow );
 		frame.getTrackschemePanel().repaint();
 	}
@@ -611,7 +519,6 @@ public class WindowManager
 	{
 		return appModel.getSharedBdvData().getSpimData();
 	}
-
 
 	// TODO: move somewhere else. make bdvWindows, tsWindows accessible.
 	public static class DumpInputConfig

@@ -1,5 +1,6 @@
 package org.mastodon.revised.mamut;
 
+import org.mastodon.app.MastodonAppModel;
 import org.mastodon.graph.GraphIdBimap;
 import org.mastodon.graph.ListenableReadOnlyGraph;
 import org.mastodon.grouping.GroupManager;
@@ -26,23 +27,11 @@ import org.mastodon.revised.model.mamut.Spot;
  *
  * @author Jean-Yves Tinevez
  */
-public class MamutAppModel
+public class MamutAppModel extends MastodonAppModel< Model, Spot, Link >
 {
 	private static final int NUM_GROUPS = 3;
 
-	public static final GroupableModelFactory< NavigationHandler< Spot, Link > > NAVIGATION = new ForwardingNavigationHandler.Factory<>();
-
-	public static final GroupableModelFactory< TimepointModel > TIMEPOINT = ForwardingTimepointModel.factory;
-
-	private final Model model;
-
-	private final SelectionModel< Spot, Link > selectionModel;
-
-	private final HighlightModel< Spot, Link > highlightModel;
-
 	private final BoundingSphereRadiusStatistics radiusStats;
-
-	private final FocusModel< Spot, Link > focusModel;
 
 	private final SharedBigDataViewerData sharedBdvData;
 
@@ -50,32 +39,14 @@ public class MamutAppModel
 
 	private final int maxTimepoint;
 
-	private final GroupManager groupManager;
-
 	public MamutAppModel(
 			final Model model,
 			final SharedBigDataViewerData sharedBdvData )
 	{
-		this.model = model;
-
-		final ListenableReadOnlyGraph< Spot, Link > graph = model.getGraph();
-		final GraphIdBimap< Spot, Link > idmap = model.getGraphIdBimap();
-
-		final DefaultSelectionModel< Spot, Link > selectionModel = new DefaultSelectionModel<>( graph, idmap );
-		graph.addGraphListener( selectionModel );
-		this.selectionModel = selectionModel;
-
-		final DefaultHighlightModel< Spot, Link > highlightModel = new DefaultHighlightModel<>( idmap );
-		graph.addGraphListener( highlightModel );
-		this.highlightModel = highlightModel;
-
-		final DefaultFocusModel< Spot, Link > focusModel = new DefaultFocusModel<>( idmap );
-		graph.addGraphListener( focusModel );
-		this.focusModel = focusModel;
+		super( NUM_GROUPS, model );
 
 		this.radiusStats = new BoundingSphereRadiusStatistics( model );
 		this.sharedBdvData = sharedBdvData;
-
 		this.minTimepoint = 0;
 		this.maxTimepoint = sharedBdvData.getNumTimepoints() - 1;
 		/*
@@ -84,35 +55,11 @@ public class MamutAppModel
 		 * it would be confusing to have different labels in TrackScheme. If
 		 * this is changed in the future, then probably only in the model files.
 		 */
-
-		groupManager = new GroupManager( NUM_GROUPS );
-		groupManager.registerModel( TIMEPOINT );
-		groupManager.registerModel( NAVIGATION );
-	}
-
-	public Model getModel()
-	{
-		return model;
-	}
-
-	public SelectionModel< Spot, Link > getSelectionModel()
-	{
-		return selectionModel;
-	}
-
-	public HighlightModel< Spot, Link > getHighlightModel()
-	{
-		return highlightModel;
 	}
 
 	public BoundingSphereRadiusStatistics getRadiusStats()
 	{
 		return radiusStats;
-	}
-
-	public FocusModel< Spot, Link > getFocusModel()
-	{
-		return focusModel;
 	}
 
 	public SharedBigDataViewerData getSharedBdvData()
@@ -128,10 +75,5 @@ public class MamutAppModel
 	public int getMaxTimepoint()
 	{
 		return maxTimepoint;
-	}
-
-	public GroupManager getGroupManager()
-	{
-		return groupManager;
 	}
 }
