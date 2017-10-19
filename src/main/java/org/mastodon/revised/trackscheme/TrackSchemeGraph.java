@@ -2,6 +2,7 @@ package org.mastodon.revised.trackscheme;
 
 import java.util.ArrayList;
 import org.mastodon.RefPool;
+import org.mastodon.adapter.RefBimap;
 import org.mastodon.collection.IntRefMap;
 import org.mastodon.collection.RefSet;
 import org.mastodon.collection.ref.IntRefArrayMap;
@@ -108,6 +109,10 @@ public class TrackSchemeGraph<
 
 	private final ArrayList< GraphChangeListener > listeners;
 
+	private final RefBimap< V, TrackSchemeVertex > vertexMap;
+
+	private final RefBimap< E, TrackSchemeEdge > edgeMap;
+
 	/**
 	 * Creates a new TrackSchemeGraph with a default initial capacity.
 	 *
@@ -160,6 +165,9 @@ public class TrackSchemeGraph<
 		tsv2 = vertexRef();
 		tse = edgeRef();
 		listeners = new ArrayList<>();
+		vertexMap = new TrackSchemeVertexBimap<>( this );
+		edgeMap = new TrackSchemeEdgeBimap<>( this );
+
 		modelGraph.addGraphListener( this );
 		modelGraph.addGraphChangeListener( this );
 		graphRebuilt();
@@ -379,6 +387,26 @@ public class TrackSchemeGraph<
 	public void vertexTimepointChanged( final V vertex )
 	{
 		idToTrackSchemeVertex.get( idmap.getVertexId( vertex ), tsv ).updateTimepointFromModel();
+	}
+
+	/**
+	 * Get bidirectional mapping between model vertices and view vertices.
+	 *
+	 * @return bidirectional mapping between model vertices and view vertices.
+	 */
+	public RefBimap< V, TrackSchemeVertex > getVertexMap()
+	{
+		return vertexMap;
+	}
+
+	/**
+	 * Get bidirectional mapping between model edges and view edges.
+	 *
+	 * @return bidirectional mapping between model edges and view edges.
+	 */
+	public RefBimap< E, TrackSchemeEdge > getEdgeMap()
+	{
+		return edgeMap;
 	}
 
 	/*

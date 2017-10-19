@@ -2,8 +2,8 @@ package org.mastodon.revised.bdv.overlay.wrap;
 
 import java.util.Iterator;
 import java.util.concurrent.ConcurrentLinkedQueue;
-
 import org.mastodon.RefPool;
+import org.mastodon.adapter.RefBimap;
 import org.mastodon.collection.RefCollection;
 import org.mastodon.collection.util.AbstractRefPoolCollectionWrapper;
 import org.mastodon.graph.Edge;
@@ -40,6 +40,10 @@ public class OverlayGraphWrapper< V extends Vertex< E >, E extends Edge< V > > i
 
 	private final SpatioTemporalIndexWrapper< V, E > wrappedIndex;
 
+	private final RefBimap< V, OverlayVertexWrapper< V, E > > vertexMap;
+
+	private final RefBimap< E, OverlayEdgeWrapper< V, E > > edgeMap;
+
 	public OverlayGraphWrapper(
 			final ReadOnlyGraph< V, E > graph,
 			final GraphIdBimap< V, E > idmap,
@@ -51,7 +55,9 @@ public class OverlayGraphWrapper< V extends Vertex< E >, E extends Edge< V > > i
 		this.overlayProperties = overlayProperties;
 		tmpVertexRefs =	new ConcurrentLinkedQueue<>();
 		tmpEdgeRefs = new ConcurrentLinkedQueue<>();
-		this.wrappedIndex = new SpatioTemporalIndexWrapper<>( this, graphIndex );
+		wrappedIndex = new SpatioTemporalIndexWrapper<>( this, graphIndex );
+		vertexMap = new OverlayVertexWrapperBimap<>( this );
+		edgeMap = new OverlayEdgeWrapperBimap<>( this );
 	}
 
 	@Override
@@ -166,6 +172,26 @@ public class OverlayGraphWrapper< V extends Vertex< E >, E extends Edge< V > > i
 	public void notifyGraphChanged()
 	{
 		overlayProperties.notifyGraphChanged();
+	}
+
+	/**
+	 * Get bidirectional mapping between model vertices and view vertices.
+	 *
+	 * @return bidirectional mapping between model vertices and view vertices.
+	 */
+	public RefBimap< V, OverlayVertexWrapper< V, E > > getVertexMap()
+	{
+		return vertexMap;
+	}
+
+	/**
+	 * Get bidirectional mapping between model edges and view edges.
+	 *
+	 * @return bidirectional mapping between model edges and view edges.
+	 */
+	public RefBimap< E, OverlayEdgeWrapper< V, E > > getEdgeMap()
+	{
+		return edgeMap;
 	}
 
 	private final RefPool< OverlayVertexWrapper< V, E > > vertexPool = new RefPool< OverlayVertexWrapper< V, E > >()

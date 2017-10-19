@@ -323,19 +323,7 @@ public class WindowManager
 				final MamutAppModel appModel,
 				final OverlayGraphWrapper< Spot, Link > overlayGraph )
 		{
-			this( appModel,
-					overlayGraph,
-					new OverlayVertexWrapperBimap<>( overlayGraph ),
-					new OverlayEdgeWrapperBimap<>( overlayGraph ) );
-		}
-
-		private MamutViewBdv(
-				final MamutAppModel appModel,
-				final OverlayGraphWrapper< Spot, Link > overlayGraph,
-				final RefBimap< Spot, OverlayVertexWrapper< Spot, Link > > vertexMap,
-				final RefBimap< Link, OverlayEdgeWrapper< Spot, Link > > edgeMap )
-		{
-			super( appModel, vertexMap, edgeMap );
+			super( appModel, overlayGraph.getVertexMap(), overlayGraph.getEdgeMap() );
 			radiusStats = appModel.getRadiusStats();
 			sharedBdvData = appModel.getSharedBdvData();
 			this.overlayGraph = overlayGraph;
@@ -457,19 +445,7 @@ public class WindowManager
 				final MamutAppModel appModel,
 				final TrackSchemeGraph< Spot, Link > trackSchemeGraph )
 		{
-			this( appModel,
-					trackSchemeGraph,
-					new TrackSchemeVertexBimap<>( trackSchemeGraph ),
-					new TrackSchemeEdgeBimap<>( trackSchemeGraph ) );
-		}
-
-		private MamutViewTrackScheme(
-				final MamutAppModel appModel,
-				final TrackSchemeGraph< Spot, Link > trackSchemeGraph,
-				final RefBimap< Spot, TrackSchemeVertex > vertexMap,
-				final RefBimap< Link, TrackSchemeEdge > edgeMap )
-		{
-			super( appModel, vertexMap, edgeMap );
+			super( appModel, trackSchemeGraph.getVertexMap(), trackSchemeGraph.getEdgeMap() );
 			this.trackSchemeGraph = trackSchemeGraph;
 
 			/*
