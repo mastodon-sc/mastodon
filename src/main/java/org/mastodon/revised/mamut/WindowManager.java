@@ -6,6 +6,7 @@ import bdv.viewer.RequestRepaint;
 import bdv.viewer.ViewerFrame;
 import bdv.viewer.ViewerOptions;
 import bdv.viewer.ViewerPanel;
+import java.awt.event.KeyAdapter;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
@@ -437,6 +438,119 @@ public class WindowManager
 		}
 	}
 
+	static class MamutViewTrackScheme extends MamutView< TrackSchemeVertex, TrackSchemeEdge >
+	{
+		private final TrackSchemeGraph< Spot, Link > trackSchemeGraph;
+
+		private TsWindow tsWindow;
+
+		public MamutViewTrackScheme( final MamutAppModel appModel )
+		{
+			this( appModel,
+					new TrackSchemeGraph<>(
+							appModel.getModel().getGraph(),
+							appModel.getModel().getGraphIdBimap(),
+							new DefaultModelGraphProperties<>() ) );
+		}
+
+		private MamutViewTrackScheme(
+				final MamutAppModel appModel,
+				final TrackSchemeGraph< Spot, Link > trackSchemeGraph )
+		{
+			this( appModel,
+					trackSchemeGraph,
+					new TrackSchemeVertexBimap<>( trackSchemeGraph ),
+					new TrackSchemeEdgeBimap<>( trackSchemeGraph ) );
+		}
+
+		private MamutViewTrackScheme(
+				final MamutAppModel appModel,
+				final TrackSchemeGraph< Spot, Link > trackSchemeGraph,
+				final RefBimap< Spot, TrackSchemeVertex > vertexMap,
+				final RefBimap< Link, TrackSchemeEdge > edgeMap )
+		{
+			super( appModel, vertexMap, edgeMap );
+			this.trackSchemeGraph = trackSchemeGraph;
+
+			/*
+			 * TrackScheme ContextChooser
+			 */
+			final TrackSchemeContextListener< Spot > contextListener = new TrackSchemeContextListener<>( trackSchemeGraph );
+			final ContextChooser< Spot > contextChooser = new ContextChooser<>( contextListener );
+
+
+			final InputTriggerConfig keyconf = appModel.getKeyconf();
+			KeyPressedManager keyPressedManager = appModel.getSharedBdvData().getOptions().values.getKeyPressedManager();
+			final Model model = appModel.getModel();
+			final ModelGraph modelGraph = model.getGraph();
+
+			/*
+			 * show TrackSchemeFrame
+			 */
+			final TrackSchemeOptions options = TrackSchemeOptions.options()
+					.inputTriggerConfig( keyconf )
+					.shareKeyPressedEvents( keyPressedManager );
+			final TrackSchemeFrame frame = new TrackSchemeFrame(
+					trackSchemeGraph,
+					highlightModel,
+					focusModel,
+					timepointModel,
+					selectionModel,
+					navigationHandler,
+					model,
+					groupHandle,
+					contextChooser,
+					options );
+			frame.getTrackschemePanel().setTimepointRange( appModel.getMinTimepoint(), appModel.getMaxTimepoint() );
+			frame.getTrackschemePanel().graphChanged();
+			contextListener.setContextListener( frame.getTrackschemePanel() );
+			frame.setVisible( true );
+
+
+			UndoActions.installActionBindings( frame.getKeybindings(), model, keyconf );
+			HighlightBehaviours.installActionBindings(
+					frame.getTriggerbindings(),
+					keyconf,
+					new String[] { "ts" },
+					modelGraph,
+					modelGraph,
+					appModel.getHighlightModel(),
+					model );
+			SelectionActions.installActionBindings(
+					frame.getKeybindings(),
+					keyconf,
+					new String[] { "ts" },
+					modelGraph,
+					modelGraph,
+					appModel.getSelectionModel(),
+					model );
+			TrackSchemeEditBehaviours.installActionBindings(
+					frame.getTriggerbindings(),
+					keyconf,
+					frame.getTrackschemePanel(),
+					trackSchemeGraph,
+					frame.getTrackschemePanel().getGraphOverlay(),
+					modelGraph,
+					modelGraph.getGraphIdBimap(),
+					model );
+
+			// TrackSchemeStyleDialog triggered by "R"
+			final String TRACK_SCHEME_STYLE_SETTINGS = "render settings";
+			final TrackSchemeStyleChooser styleChooser = new TrackSchemeStyleChooser( frame, frame.getTrackschemePanel() );
+			final JDialog styleDialog = styleChooser.getDialog();
+			final ActionMap actionMap = new ActionMap();
+			new ToggleDialogAction( TRACK_SCHEME_STYLE_SETTINGS, styleDialog ).put( actionMap );
+			final InputMap inputMap = new InputMap();
+			final KeyStrokeAdder a = keyconf.keyStrokeAdder( inputMap, "mamut" );
+			a.put( TRACK_SCHEME_STYLE_SETTINGS, "R" );
+			frame.getKeybindings().addActionMap( "mamut", actionMap );
+			frame.getKeybindings().addInputMap( "mamut", inputMap );
+
+			tsWindow = new TsWindow( frame, groupHandle, contextChooser );
+			frame.getTrackschemePanel().repaint();
+		}
+	}
+
 	public void createBigDataViewer()
 	{
 		final MamutViewBdv view = new MamutViewBdv( appModel );
@@ -445,86 +559,8 @@ public class WindowManager
 
 	public void createTrackScheme()
 	{
-		final Model model = appModel.getModel();
-		final TrackSchemeGraph< Spot, Link > trackSchemeGraph = new TrackSchemeGraph<>(
-				model.getGraph(),
-				model.getGraphIdBimap(),
-				new DefaultModelGraphProperties<>() );
-		final RefBimap< Spot, TrackSchemeVertex > vertexMap = new TrackSchemeVertexBimap<>( trackSchemeGraph );
-		final RefBimap< Link, TrackSchemeEdge > edgeMap = new TrackSchemeEdgeBimap<>( trackSchemeGraph );
-
-		final MamutView< TrackSchemeVertex, TrackSchemeEdge > view = new MamutView<>( appModel, vertexMap, edgeMap );
-
-		/*
-		 * TrackScheme ContextChooser
-		 */
-		final TrackSchemeContextListener< Spot > contextListener = new TrackSchemeContextListener<>( trackSchemeGraph );
-		final ContextChooser< Spot > contextChooser = new ContextChooser<>( contextListener );
-
-		/*
-		 * show TrackSchemeFrame
-		 */
-		final TrackSchemeOptions options = TrackSchemeOptions.options()
-				.inputTriggerConfig( keyconf )
-				.shareKeyPressedEvents( keyPressedManager );
-		final TrackSchemeFrame frame = new TrackSchemeFrame(
-				trackSchemeGraph,
-				view.highlightModel,
-				view.focusModel,
-				view.timepointModel,
-				view.selectionModel,
-				view.navigationHandler,
-				model,
-				view.groupHandle,
-				contextChooser,
-				options );
-		frame.getTrackschemePanel().setTimepointRange( appModel.getMinTimepoint(), appModel.getMaxTimepoint() );
-		frame.getTrackschemePanel().graphChanged();
-		contextListener.setContextListener( frame.getTrackschemePanel() );
-		frame.setVisible( true );
-
-		UndoActions.installActionBindings( frame.getKeybindings(), model, keyconf );
-		HighlightBehaviours.installActionBindings(
-				frame.getTriggerbindings(),
-				keyconf,
-				new String[] { "ts" },
-				model.getGraph(),
-				model.getGraph(),
-				appModel.getHighlightModel(),
-				model );
-		SelectionActions.installActionBindings(
-				frame.getKeybindings(),
-				keyconf,
-				new String[] { "ts" },
-				model.getGraph(),
-				model.getGraph(),
-				appModel.getSelectionModel(),
-				model );
-		TrackSchemeEditBehaviours.installActionBindings(
-				frame.getTriggerbindings(),
-				keyconf,
-				frame.getTrackschemePanel(),
-				trackSchemeGraph,
-				frame.getTrackschemePanel().getGraphOverlay(),
-				model.getGraph(),
-				model.getGraph().getGraphIdBimap(),
-				model );
-
-		// TrackSchemeStyleDialog triggered by "R"
-		final String TRACK_SCHEME_STYLE_SETTINGS = "render settings";
-		final TrackSchemeStyleChooser styleChooser = new TrackSchemeStyleChooser( frame, frame.getTrackschemePanel() );
-		final JDialog styleDialog = styleChooser.getDialog();
-		final ActionMap actionMap = new ActionMap();
-		new ToggleDialogAction( TRACK_SCHEME_STYLE_SETTINGS, styleDialog ).put( actionMap );
-		final InputMap inputMap = new InputMap();
-		final KeyStrokeAdder a = keyconf.keyStrokeAdder( inputMap, "mamut" );
-		a.put( TRACK_SCHEME_STYLE_SETTINGS, "R" );
-		frame.getKeybindings().addActionMap( "mamut", actionMap );
-		frame.getKeybindings().addInputMap( "mamut", inputMap );
-
-		final TsWindow tsWindow = new TsWindow( frame, view.groupHandle, contextChooser );
-		addTsWindow( tsWindow );
-		frame.getTrackschemePanel().repaint();
+		final MamutViewTrackScheme view = new MamutViewTrackScheme( appModel );
+		addTsWindow( view.tsWindow );
 	}
 
 	public void closeAllWindows()
