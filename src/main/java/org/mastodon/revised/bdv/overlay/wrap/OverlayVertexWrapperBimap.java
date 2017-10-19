@@ -15,9 +15,8 @@ public class OverlayVertexWrapperBimap< V extends Vertex< E >, E extends Edge< V
 		this.vertices = graph.vertices();
 	}
 
-	// TODO: don't need ref ???
 	@Override
-	public V getLeft( final OverlayVertexWrapper< V, E > right /*, final V ref*/ )
+	public V getLeft( final OverlayVertexWrapper< V, E > right )
 	{
 		return right.wv;
 	}
