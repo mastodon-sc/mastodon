@@ -45,6 +45,7 @@ import org.mastodon.revised.context.ContextProvider;
 import org.mastodon.revised.model.mamut.BoundingSphereRadiusStatistics;
 import org.mastodon.revised.model.mamut.Link;
 import org.mastodon.revised.model.mamut.Model;
+import org.mastodon.revised.model.mamut.ModelGraph;
 import org.mastodon.revised.model.mamut.ModelOverlayProperties;
 import org.mastodon.revised.model.mamut.Spot;
 import org.mastodon.revised.trackscheme.TrackSchemeContextListener;
@@ -247,7 +248,7 @@ public class WindowManager
 				.shareKeyPressedEvents( keyPressedManager );
 		final SharedBigDataViewerData sharedBdvData = new SharedBigDataViewerData( spimDataXmlFilename, spimData, options, requestRepaint );
 
-		appModel = new MamutAppModel( model, sharedBdvData );
+		appModel = new MamutAppModel( model, sharedBdvData, keyconf );
 	}
 
 	private synchronized void addBdvWindow( final BdvWindow w )
@@ -294,118 +295,152 @@ public class WindowManager
 		w.getContextChooser().updateContextProviders( new ArrayList<>() );
 	}
 
-	// TODO
-	private int bdvName = 1;
-
-	public void createBigDataViewer()
+	static class MamutViewBdv extends MamutView< OverlayVertexWrapper< Spot, Link >, OverlayEdgeWrapper< Spot, Link > >
 	{
-		final Model model = appModel.getModel();
-		final BoundingSphereRadiusStatistics radiusStats = appModel.getRadiusStats();
-		final SharedBigDataViewerData sharedBdvData = appModel.getSharedBdvData();
+		// TODO
+		private int bdvName = 1;
 
-		final OverlayGraphWrapper< Spot, Link > overlayGraph = new OverlayGraphWrapper<>(
-				model.getGraph(),
-				model.getGraphIdBimap(),
-				model.getSpatioTemporalIndex(),
-				new ModelOverlayProperties( model.getGraph(), radiusStats ) );
-		final RefBimap< Spot, OverlayVertexWrapper< Spot, Link > > vertexMap = new OverlayVertexWrapperBimap<>( overlayGraph );
-		final RefBimap< Link, OverlayEdgeWrapper< Spot, Link > > edgeMap = new OverlayEdgeWrapperBimap<>( overlayGraph );
+		private final BoundingSphereRadiusStatistics radiusStats;
 
-		final MamutView< OverlayVertexWrapper< Spot, Link >, OverlayEdgeWrapper< Spot, Link > > view = new MamutView<>( appModel, vertexMap, edgeMap );
+		private final SharedBigDataViewerData sharedBdvData;
 
-		final String windowTitle = "BigDataViewer " + ( bdvName++ ); // TODO: use JY naming scheme
-		final BigDataViewerMaMuT bdv = BigDataViewerMaMuT.open( sharedBdvData, windowTitle, view.groupHandle );
-		final ViewerFrame viewerFrame = bdv.getViewerFrame();
-		final ViewerPanel viewer = bdv.getViewer();
+		private final OverlayGraphWrapper< Spot, Link > overlayGraph;
 
-		// TODO: It's ok to create the wrappers here, but wiring up Listeners should be done elsewhere
+		private BdvWindow bdvWindow;
+
+		public MamutViewBdv( final MamutAppModel appModel )
+		{
+			this( appModel,
+					new OverlayGraphWrapper<>(
+							appModel.getModel().getGraph(),
+							appModel.getModel().getGraphIdBimap(),
+							appModel.getModel().getSpatioTemporalIndex(),
+							new ModelOverlayProperties( appModel.getModel().getGraph(), appModel.getRadiusStats() ) ) );
+		}
+
+		private MamutViewBdv(
+				final MamutAppModel appModel,
+				final OverlayGraphWrapper< Spot, Link > overlayGraph )
+		{
+			this( appModel,
+					overlayGraph,
+					new OverlayVertexWrapperBimap<>( overlayGraph ),
+					new OverlayEdgeWrapperBimap<>( overlayGraph ) );
+		}
+
+		private MamutViewBdv(
+				final MamutAppModel appModel,
+				final OverlayGraphWrapper< Spot, Link > overlayGraph,
+				final RefBimap< Spot, OverlayVertexWrapper< Spot, Link > > vertexMap,
+				final RefBimap< Link, OverlayEdgeWrapper< Spot, Link > > edgeMap )
+		{
+			super( appModel, vertexMap, edgeMap );
+			radiusStats = appModel.getRadiusStats();
+			sharedBdvData = appModel.getSharedBdvData();
+			this.overlayGraph = overlayGraph;
+
+			final String windowTitle = "BigDataViewer " + ( bdvName++ ); // TODO: use JY naming scheme
+			final BigDataViewerMaMuT bdv = BigDataViewerMaMuT.open( sharedBdvData, windowTitle, groupHandle );
+			final ViewerFrame viewerFrame = bdv.getViewerFrame();
+			final ViewerPanel viewer = bdv.getViewer();
+
+			viewer.setTimepoint( timepointModel.getTimepoint() );
+			final OverlayGraphRenderer< OverlayVertexWrapper< Spot, Link >, OverlayEdgeWrapper< Spot, Link > > tracksOverlay = new OverlayGraphRenderer<>(
+					overlayGraph,
+					highlightModel,
+					focusModel,
+					selectionModel );
+			viewer.getDisplay().addOverlayRenderer( tracksOverlay );
+			viewer.addRenderTransformListener( tracksOverlay );
+			viewer.addTimePointListener( tracksOverlay );
+
+			final Model model = appModel.getModel();
+			final ModelGraph modelGraph = model.getGraph();
+
+			highlightModel.listeners().add( () -> viewer.getDisplay().repaint() );
+			focusModel.listeners().add( () -> viewer.getDisplay().repaint() );
+			modelGraph.addGraphChangeListener( () -> viewer.getDisplay().repaint() );
+			modelGraph.addVertexPositionListener( ( v ) -> viewer.getDisplay().repaint() );
+			selectionModel.listeners().add( () -> viewer.getDisplay().repaint() );
+			// TODO: remember those listeners and remove them when the BDV window is closed!!!
+
+			final OverlayNavigation< OverlayVertexWrapper< Spot, Link >, OverlayEdgeWrapper< Spot, Link > > overlayNavigation = new OverlayNavigation<>( viewer, overlayGraph );
+			navigationHandler.listeners().add( overlayNavigation );
+
+			final BdvHighlightHandler< ?, ? > highlightHandler = new BdvHighlightHandler<>( overlayGraph, tracksOverlay, highlightModel );
+			viewer.getDisplay().addHandler( highlightHandler );
+			viewer.addRenderTransformListener( highlightHandler );
+
+			final InputTriggerConfig keyconf = appModel.getKeyconf();
+
+			final BdvSelectionBehaviours< ?, ? > selectionBehaviours = new BdvSelectionBehaviours<>( overlayGraph, tracksOverlay, selectionModel, navigationHandler );
+			selectionBehaviours.installBehaviourBindings( viewerFrame.getTriggerbindings(), keyconf );
+
+			final OverlayContext< OverlayVertexWrapper< Spot, Link > > overlayContext = new OverlayContext<>( overlayGraph, tracksOverlay );
+			viewer.addRenderTransformListener( overlayContext );
+			final BdvContextAdapter< Spot > contextProvider = new BdvContextAdapter<>( windowTitle );
+			final OverlayContextWrapper< Spot, Link > overlayContextWrapper = new OverlayContextWrapper<>(
+					overlayContext,
+					contextProvider );
+
+			UndoActions.installActionBindings( viewerFrame.getKeybindings(), model, keyconf );
+			EditBehaviours.installActionBindings( viewerFrame.getTriggerbindings(), keyconf, overlayGraph, tracksOverlay, model );
+			EditSpecialBehaviours.installActionBindings( viewerFrame.getTriggerbindings(), keyconf, viewerFrame.getViewerPanel(), overlayGraph, tracksOverlay, model );
+			HighlightBehaviours.installActionBindings(
+					viewerFrame.getTriggerbindings(),
+					keyconf,
+					new String[] { "bdv" },
+					model.getGraph(),
+					model.getGraph(),
+					appModel.getHighlightModel(),
+					model );
+			SelectionActions.installActionBindings(
+					viewerFrame.getKeybindings(),
+					keyconf,
+					new String[] { "bdv" },
+					model.getGraph(),
+					model.getGraph(),
+					appModel.getSelectionModel(),
+					model );
+
+			viewer.addTimePointListener( timePointIndex -> timepointModel.setTimepoint( timePointIndex ) );
+			timepointModel.listeners().add( () -> viewer.setTimepoint( timepointModel.getTimepoint() ) );
+
+			// TODO revise
+			// RenderSettingsDialog triggered by "R"
+			final RenderSettings renderSettings = new RenderSettings(); // TODO should be in overlay eventually
+			final String RENDER_SETTINGS = "render settings";
+			final RenderSettingsDialog renderSettingsDialog = new RenderSettingsDialog( viewerFrame, renderSettings );
+			final ActionMap actionMap = new ActionMap();
+			new ToggleDialogAction( RENDER_SETTINGS, renderSettingsDialog ).put( actionMap );
+			final InputMap inputMap = new InputMap();
+			final KeyStrokeAdder a = keyconf.keyStrokeAdder( inputMap, "mamut" );
+			a.put( RENDER_SETTINGS, "R" );
+			viewerFrame.getKeybindings().addActionMap( "mamut", actionMap );
+			viewerFrame.getKeybindings().addInputMap( "mamut", inputMap );
+			renderSettings.addUpdateListener( new UpdateListener()
+			{
+				@Override
+				public void renderSettingsChanged()
+				{
+					tracksOverlay.setRenderSettings( renderSettings );
+					// TODO: less hacky way of triggering repaint and context update
+					viewer.repaint();
+					overlayContextWrapper.contextChanged( overlayContext );
+				}
+			} );
 
 //		if ( !bdv.tryLoadSettings( bdvFile ) ) // TODO
 //			InitializeViewerState.initBrightness( 0.001, 0.999, bdv.getViewer(), bdv.getSetupAssignments() );
 
-		viewer.setTimepoint( view.timepointModel.getTimepoint() );
-		final OverlayGraphRenderer< OverlayVertexWrapper< Spot, Link >, OverlayEdgeWrapper< Spot, Link > > tracksOverlay = new OverlayGraphRenderer<>(
-				overlayGraph,
-				view.highlightModel,
-				view.focusModel,
-				view.selectionModel );
-		viewer.getDisplay().addOverlayRenderer( tracksOverlay );
-		viewer.addRenderTransformListener( tracksOverlay );
-		viewer.addTimePointListener( tracksOverlay );
+			bdvWindow = new BdvWindow( viewerFrame, tracksOverlay, groupHandle, contextProvider );
+		}
+	}
 
-		view.highlightModel.listeners().add( () -> viewer.getDisplay().repaint() );
-		view.focusModel.listeners().add( () -> viewer.getDisplay().repaint() );
-		model.getGraph().addGraphChangeListener( () -> viewer.getDisplay().repaint() );
-		model.getGraph().addVertexPositionListener( ( v ) -> viewer.getDisplay().repaint() );
-		view.selectionModel.listeners().add( () -> viewer.getDisplay().repaint() );
-		// TODO: remember those listeners and remove them when the BDV window is closed!!!
-
-		final OverlayNavigation< OverlayVertexWrapper< Spot, Link >, OverlayEdgeWrapper< Spot, Link > > overlayNavigation = new OverlayNavigation<>( viewer, overlayGraph );
-		view.navigationHandler.listeners().add( overlayNavigation );
-
-		final BdvHighlightHandler< ?, ? > highlightHandler = new BdvHighlightHandler<>( overlayGraph, tracksOverlay, view.highlightModel );
-		viewer.getDisplay().addHandler( highlightHandler );
-		viewer.addRenderTransformListener( highlightHandler );
-
-		final BdvSelectionBehaviours< ?, ? > selectionBehaviours = new BdvSelectionBehaviours<>( overlayGraph, tracksOverlay, view.selectionModel, view.navigationHandler );
-		selectionBehaviours.installBehaviourBindings( viewerFrame.getTriggerbindings(), keyconf );
-
-		final OverlayContext< OverlayVertexWrapper< Spot, Link > > overlayContext = new OverlayContext<>( overlayGraph, tracksOverlay );
-		viewer.addRenderTransformListener( overlayContext );
-		final BdvContextAdapter< Spot > contextProvider = new BdvContextAdapter<>( windowTitle );
-		final OverlayContextWrapper< Spot, Link > overlayContextWrapper = new OverlayContextWrapper<>(
-				overlayContext,
-				contextProvider );
-
-		UndoActions.installActionBindings( viewerFrame.getKeybindings(), model, keyconf );
-		EditBehaviours.installActionBindings( viewerFrame.getTriggerbindings(), keyconf, overlayGraph, tracksOverlay, model );
-		EditSpecialBehaviours.installActionBindings( viewerFrame.getTriggerbindings(), keyconf, viewerFrame.getViewerPanel(), overlayGraph, tracksOverlay, model );
-		HighlightBehaviours.installActionBindings(
-				viewerFrame.getTriggerbindings(),
-				keyconf,
-				new String[] { "bdv" },
-				model.getGraph(),
-				model.getGraph(),
-				appModel.getHighlightModel(),
-				model );
-		SelectionActions.installActionBindings(
-				viewerFrame.getKeybindings(),
-				keyconf,
-				new String[] { "bdv" },
-				model.getGraph(),
-				model.getGraph(),
-				appModel.getSelectionModel(),
-				model );
-
-		viewer.addTimePointListener( timePointIndex -> view.timepointModel.setTimepoint( timePointIndex ) );
-		view.timepointModel.listeners().add( () -> viewer.setTimepoint( view.timepointModel.getTimepoint() ) );
-
-		// TODO revise
-		// RenderSettingsDialog triggered by "R"
-		final RenderSettings renderSettings = new RenderSettings(); // TODO should be in overlay eventually
-		final String RENDER_SETTINGS = "render settings";
-		final RenderSettingsDialog renderSettingsDialog = new RenderSettingsDialog( viewerFrame, renderSettings );
-		final ActionMap actionMap = new ActionMap();
-		new ToggleDialogAction( RENDER_SETTINGS, renderSettingsDialog ).put( actionMap );
-		final InputMap inputMap = new InputMap();
-		final KeyStrokeAdder a = keyconf.keyStrokeAdder( inputMap, "mamut" );
-		a.put( RENDER_SETTINGS, "R" );
-		viewerFrame.getKeybindings().addActionMap( "mamut", actionMap );
-		viewerFrame.getKeybindings().addInputMap( "mamut", inputMap );
-		renderSettings.addUpdateListener( new UpdateListener()
-		{
-			@Override
-			public void renderSettingsChanged()
-			{
-				tracksOverlay.setRenderSettings( renderSettings );
-				// TODO: less hacky way of triggering repaint and context update
-				viewer.repaint();
-				overlayContextWrapper.contextChanged( overlayContext );
-			}
-		} );
-
-		final BdvWindow bdvWindow = new BdvWindow( viewerFrame, tracksOverlay, view.groupHandle, contextProvider );
-		addBdvWindow( bdvWindow );
+	public void createBigDataViewer()
+	{
+		final MamutViewBdv view = new MamutViewBdv( appModel );
+		addBdvWindow( view.bdvWindow );
 	}
 
 	public void createTrackScheme()

@@ -20,6 +20,7 @@ import org.mastodon.revised.model.mamut.BoundingSphereRadiusStatistics;
 import org.mastodon.revised.model.mamut.Link;
 import org.mastodon.revised.model.mamut.Model;
 import org.mastodon.revised.model.mamut.Spot;
+import org.scijava.ui.behaviour.io.InputTriggerConfig;
 
 /**
  * Data class that stores the data model and the application model of the MaMuT
@@ -35,18 +36,22 @@ public class MamutAppModel extends MastodonAppModel< Model, Spot, Link >
 
 	private final SharedBigDataViewerData sharedBdvData;
 
+	private final InputTriggerConfig keyconf; // TODO: should this really be here???
+
 	private final int minTimepoint;
 
 	private final int maxTimepoint;
 
 	public MamutAppModel(
 			final Model model,
-			final SharedBigDataViewerData sharedBdvData )
+			final SharedBigDataViewerData sharedBdvData,
+			final InputTriggerConfig keyconf )
 	{
 		super( NUM_GROUPS, model );
 
 		this.radiusStats = new BoundingSphereRadiusStatistics( model );
 		this.sharedBdvData = sharedBdvData;
+		this.keyconf = keyconf;
 		this.minTimepoint = 0;
 		this.maxTimepoint = sharedBdvData.getNumTimepoints() - 1;
 		/*
@@ -75,5 +80,10 @@ public class MamutAppModel extends MastodonAppModel< Model, Spot, Link >
 	public int getMaxTimepoint()
 	{
 		return maxTimepoint;
+	}
+
+	public InputTriggerConfig getKeyconf()
+	{
+		return keyconf;
 	}
 }
