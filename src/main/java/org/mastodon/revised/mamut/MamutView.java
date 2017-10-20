@@ -1,6 +1,5 @@
 package org.mastodon.revised.mamut;
 
-import org.mastodon.adapter.RefBimap;
 import org.mastodon.app.MastodonView;
 import org.mastodon.app.ViewGraph;
 import org.mastodon.graph.Edge;

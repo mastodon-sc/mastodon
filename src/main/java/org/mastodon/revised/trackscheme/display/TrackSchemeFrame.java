@@ -38,8 +38,6 @@ public class TrackSchemeFrame extends MamutViewFrame
 
 	private final EditFocusVertexBehaviour editFocusVertex;
 
-	private final UndoPointMarker undoPointMarker; // TODO: unused, remove?
-
 	public TrackSchemeFrame(
 			final TrackSchemeGraph< ?, ? > graph,
 			final HighlightModel< TrackSchemeVertex, TrackSchemeEdge > highlight,
@@ -53,7 +51,6 @@ public class TrackSchemeFrame extends MamutViewFrame
 			final TrackSchemeOptions optional )
 	{
 		super( "TrackScheme" );
-		this.undoPointMarker = undoPointMarker;
 
 		trackschemePanel = new TrackSchemePanel(
 				graph,
