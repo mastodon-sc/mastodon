@@ -36,7 +36,7 @@ import bdv.viewer.ViewerPanel;
 class MamutViewBdv extends MamutView< OverlayGraphWrapper< Spot, Link >, OverlayVertexWrapper< Spot, Link >, OverlayEdgeWrapper< Spot, Link > >
 {
 	// TODO
-	private int bdvName = 1;
+	private static int bdvName = 1;
 
 	private final BoundingSphereRadiusStatistics radiusStats;
 
