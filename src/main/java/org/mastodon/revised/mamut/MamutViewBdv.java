@@ -6,6 +6,7 @@ import javax.swing.InputMap;
 import org.mastodon.revised.bdv.BdvContextProvider;
 import org.mastodon.revised.bdv.BigDataViewerMaMuT;
 import org.mastodon.revised.bdv.SharedBigDataViewerData;
+import org.mastodon.revised.bdv.ViewerFrameMamut;
 import org.mastodon.revised.bdv.overlay.BdvHighlightHandler;
 import org.mastodon.revised.bdv.overlay.BdvSelectionBehaviours;
 import org.mastodon.revised.bdv.overlay.EditBehaviours;
@@ -57,7 +58,7 @@ class MamutViewBdv extends MamutView< OverlayGraphWrapper< Spot, Link >, Overlay
 
 		final String windowTitle = "BigDataViewer " + ( bdvName++ ); // TODO: use JY naming scheme
 		final BigDataViewerMaMuT bdv = BigDataViewerMaMuT.open( sharedBdvData, windowTitle, groupHandle );
-		final ViewerFrame viewerFrame = bdv.getViewerFrame();
+		final ViewerFrameMamut viewerFrame = bdv.getViewerFrame();
 		final ViewerPanel viewer = bdv.getViewer();
 
 		viewer.setTimepoint( timepointModel.getTimepoint() );

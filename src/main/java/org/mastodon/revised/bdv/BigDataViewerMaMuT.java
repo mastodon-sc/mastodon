@@ -59,7 +59,7 @@ import bdv.viewer.ViewerPanel;
 
 public class BigDataViewerMaMuT
 {
-	private final ViewerFrame viewerFrame;
+	private final ViewerFrameMamut viewerFrame;
 
 	private final ViewerPanel viewer;
 
@@ -96,13 +96,12 @@ public class BigDataViewerMaMuT
 		this.shared = shared;
 		final InputTriggerConfig inputTriggerConfig = shared.getInputTriggerConfig();
 
-		viewerFrame = new ViewerFrame(
+		viewerFrame = new ViewerFrameMamut(
+				windowTitle,
 				shared.getSources(),
 				shared.getNumTimepoints(),
 				shared.getCache(),
 				shared.getOptions() );
-		if ( windowTitle != null )
-			viewerFrame.setTitle( windowTitle );
 		viewer = viewerFrame.getViewerPanel();
 
 		fileChooser = new JFileChooser();
@@ -197,7 +196,7 @@ public class BigDataViewerMaMuT
 		return viewer;
 	}
 
-	public ViewerFrame getViewerFrame()
+	public ViewerFrameMamut getViewerFrame()
 	{
 		return viewerFrame;
 	}

@@ -11,6 +11,7 @@ import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
 
 import org.mastodon.revised.bdv.SharedBigDataViewerData;
+import org.mastodon.revised.bdv.ViewerFrameMamut;
 import org.mastodon.views.context.ContextChooser;
 import org.mastodon.views.context.ContextProvider;
 import org.mastodon.revised.model.mamut.Model;
@@ -35,19 +36,19 @@ public class WindowManager
 	 */
 	public static class BdvWindow
 	{
-		private final ViewerFrame viewerFrame;
+		private final ViewerFrameMamut viewerFrame;
 
 		private final ContextProvider< Spot > contextProvider;
 
 		public BdvWindow(
-				final ViewerFrame viewerFrame,
+				final ViewerFrameMamut viewerFrame,
 				final ContextProvider< Spot > contextProvider )
 		{
 			this.viewerFrame = viewerFrame;
 			this.contextProvider = contextProvider;
 		}
 
-		public ViewerFrame getViewerFrame()
+		public ViewerFrameMamut getViewerFrame()
 		{
 			return viewerFrame;
 		}
@@ -216,7 +217,7 @@ public class WindowManager
 		{
 			final InputTriggerDescriptionsBuilder builder = new InputTriggerDescriptionsBuilder();
 
-			final ViewerFrame viewerFrame = wm.bdvWindows.get( 0 ).viewerFrame;
+			final ViewerFrameMamut viewerFrame = wm.bdvWindows.get( 0 ).viewerFrame;
 			builder.addMap( viewerFrame.getKeybindings().getConcatenatedInputMap(), "bdv" );
 			builder.addMap( viewerFrame.getTriggerbindings().getConcatenatedInputTriggerMap(), "bdv" );
 
