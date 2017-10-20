@@ -3,51 +3,38 @@ package org.mastodon.revised.trackscheme.display;
 import java.awt.BorderLayout;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.lang.reflect.InvocationTargetException;
 
 import javax.swing.Box;
-import javax.swing.BoxLayout;
-import javax.swing.JComponent;
-import javax.swing.JFrame;
-import javax.swing.JPanel;
-import javax.swing.SwingUtilities;
 import javax.swing.WindowConstants;
 
+import org.mastodon.grouping.GroupHandle;
+import org.mastodon.model.FocusModel;
+import org.mastodon.model.HighlightModel;
+import org.mastodon.model.NavigationHandler;
 import org.mastodon.model.SelectionModel;
-import org.mastodon.views.context.ContextChooser;
+import org.mastodon.model.TimepointModel;
+import org.mastodon.revised.mamut.MamutViewFrame;
 import org.mastodon.revised.trackscheme.TrackSchemeEdge;
 import org.mastodon.revised.trackscheme.TrackSchemeGraph;
 import org.mastodon.revised.trackscheme.TrackSchemeVertex;
 import org.mastodon.revised.trackscheme.display.TrackSchemeNavigator.NavigatorEtiquette;
 import org.mastodon.revised.ui.context.ContextChooserPanel;
-import org.mastodon.grouping.GroupHandle;
 import org.mastodon.revised.ui.grouping.GroupLocksPanel;
-import org.mastodon.model.FocusModel;
-import org.mastodon.model.HighlightModel;
-import org.mastodon.model.NavigationHandler;
-import org.mastodon.model.TimepointModel;
 import org.mastodon.undo.UndoPointMarker;
+import org.mastodon.views.context.ContextChooser;
 import org.scijava.ui.behaviour.MouseAndKeyHandler;
 import org.scijava.ui.behaviour.io.InputTriggerConfig;
 import org.scijava.ui.behaviour.util.InputActionBindings;
 import org.scijava.ui.behaviour.util.TriggerBehaviourBindings;
 
 import bdv.BehaviourTransformEventHandler;
-import bdv.util.InvokeOnEDT;
 import net.imglib2.ui.TransformEventHandler;
-import net.imglib2.ui.util.GuiUtil;
 
-public class TrackSchemeFrame extends JFrame
+public class TrackSchemeFrame extends MamutViewFrame
 {
+	private static final long serialVersionUID = 1L;
+
 	private final TrackSchemePanel trackschemePanel;
-
-	private final JPanel settingsPanel;
-
-	private boolean isSettingsPanelVisible;
-
-	private final InputActionBindings keybindings;
-
-	private final TriggerBehaviourBindings triggerbindings;
 
 	private final EditFocusVertexBehaviour editFocusVertex;
 
@@ -62,26 +49,11 @@ public class TrackSchemeFrame extends JFrame
 			final NavigationHandler< TrackSchemeVertex, TrackSchemeEdge > navigation,
 			final UndoPointMarker undoPointMarker,
 			final GroupHandle groupHandle,
-			final ContextChooser< ? > contextChooser )
-	{
-		this( graph, highlight, focus, timepoint, selection, navigation, undoPointMarker, groupHandle, contextChooser, TrackSchemeOptions.options() );
-	}
-
-	public TrackSchemeFrame(
-			final TrackSchemeGraph< ?, ? > graph,
-			final HighlightModel< TrackSchemeVertex, TrackSchemeEdge > highlight,
-			final FocusModel< TrackSchemeVertex, TrackSchemeEdge > focus,
-			final TimepointModel timepoint,
-			final SelectionModel< TrackSchemeVertex, TrackSchemeEdge > selection,
-			final NavigationHandler< TrackSchemeVertex, TrackSchemeEdge > navigation,
-			final UndoPointMarker undoPointMarker,
-			final GroupHandle groupHandle,
 			final ContextChooser< ? > contextChooser,
 			final TrackSchemeOptions optional )
 	{
-		super( "TrackScheme", GuiUtil.getSuitableGraphicsConfiguration( GuiUtil.RGB_COLOR_MODEL ) );
+		super( "TrackScheme" );
 		this.undoPointMarker = undoPointMarker;
-		getRootPane().setDoubleBuffered( true );
 
 		trackschemePanel = new TrackSchemePanel(
 				graph,
@@ -93,18 +65,12 @@ public class TrackSchemeFrame extends JFrame
 				optional );
 		add( trackschemePanel, BorderLayout.CENTER );
 
-		settingsPanel = new JPanel();
-		settingsPanel.setLayout( new BoxLayout( settingsPanel, BoxLayout.LINE_AXIS ) );
-
 		final GroupLocksPanel navigationLocksPanel = new GroupLocksPanel( groupHandle );
 		settingsPanel.add( navigationLocksPanel );
 		settingsPanel.add( Box.createHorizontalGlue() );
 
 		final ContextChooserPanel< ? > contextChooserPanel = new ContextChooserPanel<>( contextChooser );
 		settingsPanel.add( contextChooserPanel );
-
-		add( settingsPanel, BorderLayout.NORTH );
-		isSettingsPanelVisible = true;
 
 		pack();
 		setDefaultCloseOperation( WindowConstants.DISPOSE_ON_CLOSE );
@@ -117,11 +83,6 @@ public class TrackSchemeFrame extends JFrame
 			}
 		} );
 
-		keybindings = new InputActionBindings();
-		SwingUtilities.replaceUIActionMap( getRootPane(), keybindings.getConcatenatedActionMap() );
-		SwingUtilities.replaceUIInputMap( getRootPane(), JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT, keybindings.getConcatenatedInputMap() );
-
-		triggerbindings = new TriggerBehaviourBindings();
 		final MouseAndKeyHandler mouseAndKeyHandler = new MouseAndKeyHandler();
 		mouseAndKeyHandler.setInputMap( triggerbindings.getConcatenatedInputTriggerMap() );
 		mouseAndKeyHandler.setBehaviourMap( triggerbindings.getConcatenatedBehaviourMap() );
@@ -167,36 +128,5 @@ public class TrackSchemeFrame extends JFrame
 	public TriggerBehaviourBindings getTriggerbindings()
 	{
 		return triggerbindings;
-	}
-
-	public boolean isSettingsPanelVisible()
-	{
-		return isSettingsPanelVisible;
-	}
-
-	public void setSettingsPanelVisible( final boolean visible )
-	{
-		try
-		{
-			InvokeOnEDT.invokeAndWait( () -> setSettingsPanelVisibleSynchronized( visible ) );
-		}
-		catch ( InvocationTargetException | InterruptedException e )
-		{
-			e.printStackTrace();
-		}
-	}
-
-	private synchronized void setSettingsPanelVisibleSynchronized( final boolean visible )
-	{
-		if ( isSettingsPanelVisible != visible )
-		{
-			isSettingsPanelVisible = visible;
-			if ( visible )
-				add( settingsPanel, BorderLayout.NORTH );
-			else
-				remove( settingsPanel );
-			invalidate();
-			pack();
-		}
 	}
 }

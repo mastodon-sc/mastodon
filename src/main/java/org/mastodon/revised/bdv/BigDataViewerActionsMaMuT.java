@@ -84,7 +84,7 @@ public class BigDataViewerActionsMaMuT extends Actions
 		actions.dialog( bdv.getBrightnessDialog() );
 		actions.dialog( bdv.getActiveSourcesDialog() );
 		actions.bookmarks( bdv.getBookmarksEditor() );
-		actions.runnableAction( () -> bdv.setSettingsPanelVisible( !bdv.isSettingsPanelVisible() ), TOGGLE_SETTINGS_PANEL, TOGGLE_SETTINGS_PANEL_KEYS );
+		actions.runnableAction( () -> bdv.getViewerFrame().setSettingsPanelVisible( !bdv.getViewerFrame().isSettingsPanelVisible() ), TOGGLE_SETTINGS_PANEL, TOGGLE_SETTINGS_PANEL_KEYS );
 		actions.runnableAction( bdv::loadSettings, LOAD_SETTINGS, LOAD_SETTINGS_KEYS );
 		actions.runnableAction( bdv::saveSettings, SAVE_SETTINGS, SAVE_SETTINGS_KEYS );
 

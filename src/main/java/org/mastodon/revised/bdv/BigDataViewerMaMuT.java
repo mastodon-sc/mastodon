@@ -28,33 +28,25 @@
  */
 package org.mastodon.revised.bdv;
 
-import java.awt.BorderLayout;
 import java.io.File;
 import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
 
 import javax.swing.ActionMap;
-import javax.swing.Box;
-import javax.swing.BoxLayout;
 import javax.swing.JFileChooser;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
-import javax.swing.JPanel;
 import javax.swing.filechooser.FileFilter;
 
 import org.mastodon.grouping.GroupHandle;
-import org.mastodon.revised.ui.grouping.GroupLocksPanel;
 import org.scijava.ui.behaviour.io.InputTriggerConfig;
 
 import bdv.tools.InitializeViewerState;
 import bdv.tools.VisibilityAndGroupingDialog;
 import bdv.tools.bookmarks.BookmarksEditor;
 import bdv.tools.brightness.BrightnessDialog;
-import bdv.util.InvokeOnEDT;
 import bdv.viewer.NavigationActions;
-import bdv.viewer.ViewerFrame;
 import bdv.viewer.ViewerPanel;
 
 public class BigDataViewerMaMuT
@@ -62,10 +54,6 @@ public class BigDataViewerMaMuT
 	private final ViewerFrameMamut viewerFrame;
 
 	private final ViewerPanel viewer;
-
-	private final JPanel settingsPanel;
-
-	private boolean isSettingsPanelVisible;
 
 	private final BrightnessDialog brightnessDialog;
 
@@ -101,6 +89,7 @@ public class BigDataViewerMaMuT
 				shared.getSources(),
 				shared.getNumTimepoints(),
 				shared.getCache(),
+				groupHandle,
 				shared.getOptions() );
 		viewer = viewerFrame.getViewerPanel();
 
@@ -170,17 +159,6 @@ public class BigDataViewerMaMuT
 		menubar.add( menu );
 
 		viewerFrame.setJMenuBar( menubar );
-
-		settingsPanel = new JPanel();
-		settingsPanel.setLayout( new BoxLayout( settingsPanel, BoxLayout.LINE_AXIS ) );
-
-		final GroupLocksPanel navigationLocksPanel = new GroupLocksPanel( groupHandle );
-		settingsPanel.add( navigationLocksPanel );
-		settingsPanel.add( Box.createHorizontalGlue() );
-
-		viewerFrame.add( settingsPanel, BorderLayout.NORTH );
-		isSettingsPanelVisible = true;
-
 	}
 
 	public static BigDataViewerMaMuT open( final SharedBigDataViewerData shared, final String windowTitle, final GroupHandle groupHandle )
@@ -214,11 +192,6 @@ public class BigDataViewerMaMuT
 	public BookmarksEditor getBookmarksEditor()
 	{
 		return bookmarkEditor;
-	}
-
-	public boolean isSettingsPanelVisible()
-	{
-		return isSettingsPanelVisible;
 	}
 
 	protected void saveSettings()
@@ -258,32 +231,6 @@ public class BigDataViewerMaMuT
 			{
 				e.printStackTrace();
 			}
-		}
-	}
-
-	public void setSettingsPanelVisible( final boolean visible )
-	{
-		try
-		{
-			InvokeOnEDT.invokeAndWait( () -> setSettingsPanelVisibleSynchronized( visible ) );
-		}
-		catch ( InvocationTargetException | InterruptedException e )
-		{
-			e.printStackTrace();
-		}
-	}
-
-	private synchronized void setSettingsPanelVisibleSynchronized( final boolean visible )
-	{
-		if ( isSettingsPanelVisible != visible )
-		{
-			isSettingsPanelVisible = visible;
-			if ( visible )
-				viewerFrame.add( settingsPanel, BorderLayout.NORTH );
-			else
-				viewerFrame.remove( settingsPanel );
-			viewerFrame.invalidate();
-			viewerFrame.pack();
 		}
 	}
 }

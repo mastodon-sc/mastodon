@@ -29,24 +29,28 @@
  */
 package org.mastodon.revised.bdv;
 
+import java.awt.BorderLayout;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.util.List;
+
+import javax.swing.Box;
+import javax.swing.JFrame;
+import javax.swing.WindowConstants;
+
+import org.mastodon.grouping.GroupHandle;
+import org.mastodon.revised.mamut.MamutViewFrame;
+import org.mastodon.revised.ui.grouping.GroupLocksPanel;
+import org.scijava.ui.behaviour.MouseAndKeyHandler;
+import org.scijava.ui.behaviour.util.InputActionBindings;
+import org.scijava.ui.behaviour.util.TriggerBehaviourBindings;
+
 import bdv.BehaviourTransformEventHandler;
 import bdv.cache.CacheControl;
 import bdv.viewer.SourceAndConverter;
 import bdv.viewer.ViewerOptions;
 import bdv.viewer.ViewerPanel;
-import java.awt.BorderLayout;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
-import java.util.List;
-import javax.swing.JComponent;
-import javax.swing.JFrame;
-import javax.swing.SwingUtilities;
-import javax.swing.WindowConstants;
 import net.imglib2.ui.TransformEventHandler;
-import net.imglib2.ui.util.GuiUtil;
-import org.scijava.ui.behaviour.MouseAndKeyHandler;
-import org.scijava.ui.behaviour.util.InputActionBindings;
-import org.scijava.ui.behaviour.util.TriggerBehaviourBindings;
 
 /**
  * A {@link JFrame} containing a {@link ViewerPanel} and associated
@@ -54,24 +58,11 @@ import org.scijava.ui.behaviour.util.TriggerBehaviourBindings;
  *
  * @author Tobias Pietzsch &lt;tobias.pietzsch@gmail.com&gt;
  */
-public class ViewerFrameMamut extends JFrame
+public class ViewerFrameMamut extends MamutViewFrame
 {
 	private static final long serialVersionUID = 1L;
 
 	protected final ViewerPanel viewer;
-
-	private final InputActionBindings keybindings;
-
-	private final TriggerBehaviourBindings triggerbindings;
-
-	public ViewerFrameMamut(
-			final String windowTitle,
-			final List< SourceAndConverter< ? > > sources,
-			final int numTimepoints,
-			final CacheControl cache )
-	{
-		this( windowTitle, sources, numTimepoints, cache, ViewerOptions.options() );
-	}
 
 	/**
 	 *
@@ -89,15 +80,18 @@ public class ViewerFrameMamut extends JFrame
 			final List< SourceAndConverter< ? > > sources,
 			final int numTimepoints,
 			final CacheControl cacheControl,
+			final GroupHandle groupHandle,
 			final ViewerOptions optional )
 	{
-		super( windowTitle, GuiUtil.getSuitableGraphicsConfiguration( GuiUtil.RGB_COLOR_MODEL ) );
-		viewer = new ViewerPanel( sources, numTimepoints, cacheControl, optional );
-		keybindings = new InputActionBindings();
-		triggerbindings = new TriggerBehaviourBindings();
+		super( windowTitle );
 
-		getRootPane().setDoubleBuffered( true );
+		viewer = new ViewerPanel( sources, numTimepoints, cacheControl, optional );
 		add( viewer, BorderLayout.CENTER );
+
+		final GroupLocksPanel navigationLocksPanel = new GroupLocksPanel( groupHandle );
+		settingsPanel.add( navigationLocksPanel );
+		settingsPanel.add( Box.createHorizontalGlue() );
+
 		pack();
 		setDefaultCloseOperation( WindowConstants.DISPOSE_ON_CLOSE );
 		addWindowListener( new WindowAdapter()
@@ -108,9 +102,6 @@ public class ViewerFrameMamut extends JFrame
 				viewer.stop();
 			}
 		} );
-
-		SwingUtilities.replaceUIActionMap( getRootPane(), keybindings.getConcatenatedActionMap() );
-		SwingUtilities.replaceUIInputMap( getRootPane(), JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT, keybindings.getConcatenatedInputMap() );
 
 		final MouseAndKeyHandler mouseAndKeyHandler = new MouseAndKeyHandler();
 		mouseAndKeyHandler.setInputMap( triggerbindings.getConcatenatedInputTriggerMap() );
