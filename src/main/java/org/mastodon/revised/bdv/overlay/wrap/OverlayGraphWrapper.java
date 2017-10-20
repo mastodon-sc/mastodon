@@ -4,6 +4,7 @@ import java.util.Iterator;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import org.mastodon.RefPool;
 import org.mastodon.adapter.RefBimap;
+import org.mastodon.app.ViewGraph;
 import org.mastodon.collection.RefCollection;
 import org.mastodon.collection.util.AbstractRefPoolCollectionWrapper;
 import org.mastodon.graph.Edge;
@@ -26,7 +27,8 @@ import org.mastodon.spatial.SpatioTemporalIndex;
  * @author Tobias Pietzsch &lt;tobias.pietzsch@gmail.com&gt;
  */
 public class OverlayGraphWrapper< V extends Vertex< E >, E extends Edge< V > > implements
-		OverlayGraph< OverlayVertexWrapper< V, E >, OverlayEdgeWrapper< V, E > >
+		OverlayGraph< OverlayVertexWrapper< V, E >, OverlayEdgeWrapper< V, E > >,
+		ViewGraph< V, E, OverlayVertexWrapper< V, E >, OverlayEdgeWrapper< V, E > >
 {
 	final ReadOnlyGraph< V, E > wrappedGraph;
 
@@ -179,6 +181,7 @@ public class OverlayGraphWrapper< V extends Vertex< E >, E extends Edge< V > > i
 	 *
 	 * @return bidirectional mapping between model vertices and view vertices.
 	 */
+	@Override
 	public RefBimap< V, OverlayVertexWrapper< V, E > > getVertexMap()
 	{
 		return vertexMap;
@@ -189,6 +192,7 @@ public class OverlayGraphWrapper< V extends Vertex< E >, E extends Edge< V > > i
 	 *
 	 * @return bidirectional mapping between model edges and view edges.
 	 */
+	@Override
 	public RefBimap< E, OverlayEdgeWrapper< V, E > > getEdgeMap()
 	{
 		return edgeMap;

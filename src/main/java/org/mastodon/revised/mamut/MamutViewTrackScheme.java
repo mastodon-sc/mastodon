@@ -24,32 +24,22 @@ import org.scijava.ui.behaviour.KeyPressedManager;
 import org.scijava.ui.behaviour.KeyStrokeAdder;
 import org.scijava.ui.behaviour.io.InputTriggerConfig;
 
-class MamutViewTrackScheme extends MamutView< TrackSchemeVertex, TrackSchemeEdge >
+class MamutViewTrackScheme extends MamutView< TrackSchemeGraph< Spot, Link >, TrackSchemeVertex, TrackSchemeEdge >
 {
-	private final TrackSchemeGraph< Spot, Link > trackSchemeGraph;
-
 	private final WindowManager.TsWindow tsWindow;
 
 	public MamutViewTrackScheme( final MamutAppModel appModel )
 	{
-		this( appModel,
+		super( appModel,
 				new TrackSchemeGraph<>(
 						appModel.getModel().getGraph(),
 						appModel.getModel().getGraphIdBimap(),
 						new DefaultModelGraphProperties<>() ) );
-	}
-
-	private MamutViewTrackScheme(
-			final MamutAppModel appModel,
-			final TrackSchemeGraph< Spot, Link > trackSchemeGraph )
-	{
-		super( appModel, trackSchemeGraph.getVertexMap(), trackSchemeGraph.getEdgeMap() );
-		this.trackSchemeGraph = trackSchemeGraph;
 
 		/*
 		 * TrackScheme ContextChooser
 		 */
-		final TrackSchemeContextListener< Spot > contextListener = new TrackSchemeContextListener<>( trackSchemeGraph );
+		final TrackSchemeContextListener< Spot > contextListener = new TrackSchemeContextListener<>( viewGraph );
 		final ContextChooser< Spot > contextChooser = new ContextChooser<>( contextListener );
 
 
@@ -65,7 +55,7 @@ class MamutViewTrackScheme extends MamutView< TrackSchemeVertex, TrackSchemeEdge
 				.inputTriggerConfig( keyconf )
 				.shareKeyPressedEvents( keyPressedManager );
 		final TrackSchemeFrame frame = new TrackSchemeFrame(
-				trackSchemeGraph,
+				viewGraph,
 				highlightModel,
 				focusModel,
 				timepointModel,
@@ -102,7 +92,7 @@ class MamutViewTrackScheme extends MamutView< TrackSchemeVertex, TrackSchemeEdge
 				frame.getTriggerbindings(),
 				keyconf,
 				frame.getTrackschemePanel(),
-				trackSchemeGraph,
+				viewGraph,
 				frame.getTrackschemePanel().getGraphOverlay(),
 				modelGraph,
 				modelGraph.getGraphIdBimap(),

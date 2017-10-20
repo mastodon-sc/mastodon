@@ -31,7 +31,7 @@ import org.mastodon.revised.ui.SelectionActions;
 import org.scijava.ui.behaviour.KeyStrokeAdder;
 import org.scijava.ui.behaviour.io.InputTriggerConfig;
 
-class MamutViewBdv extends MamutView< OverlayVertexWrapper< Spot, Link >, OverlayEdgeWrapper< Spot, Link > >
+class MamutViewBdv extends MamutView< OverlayGraphWrapper< Spot, Link >, OverlayVertexWrapper< Spot, Link >, OverlayEdgeWrapper< Spot, Link > >
 {
 	// TODO
 	private int bdvName = 1;
@@ -40,28 +40,19 @@ class MamutViewBdv extends MamutView< OverlayVertexWrapper< Spot, Link >, Overla
 
 	private final SharedBigDataViewerData sharedBdvData;
 
-	private final OverlayGraphWrapper< Spot, Link > overlayGraph;
-
 	private final WindowManager.BdvWindow bdvWindow;
 
 	public MamutViewBdv( final MamutAppModel appModel )
 	{
-		this( appModel,
+		super( appModel,
 				new OverlayGraphWrapper<>(
 						appModel.getModel().getGraph(),
 						appModel.getModel().getGraphIdBimap(),
 						appModel.getModel().getSpatioTemporalIndex(),
 						new ModelOverlayProperties( appModel.getModel().getGraph(), appModel.getRadiusStats() ) ) );
-	}
 
-	private MamutViewBdv(
-			final MamutAppModel appModel,
-			final OverlayGraphWrapper< Spot, Link > overlayGraph )
-	{
-		super( appModel, overlayGraph.getVertexMap(), overlayGraph.getEdgeMap() );
 		radiusStats = appModel.getRadiusStats();
 		sharedBdvData = appModel.getSharedBdvData();
-		this.overlayGraph = overlayGraph;
 
 		final String windowTitle = "BigDataViewer " + ( bdvName++ ); // TODO: use JY naming scheme
 		final BigDataViewerMaMuT bdv = BigDataViewerMaMuT.open( sharedBdvData, windowTitle, groupHandle );
@@ -70,7 +61,7 @@ class MamutViewBdv extends MamutView< OverlayVertexWrapper< Spot, Link >, Overla
 
 		viewer.setTimepoint( timepointModel.getTimepoint() );
 		final OverlayGraphRenderer< OverlayVertexWrapper< Spot, Link >, OverlayEdgeWrapper< Spot, Link > > tracksOverlay = new OverlayGraphRenderer<>(
-				overlayGraph,
+				viewGraph,
 				highlightModel,
 				focusModel,
 				selectionModel );
@@ -88,19 +79,19 @@ class MamutViewBdv extends MamutView< OverlayVertexWrapper< Spot, Link >, Overla
 		selectionModel.listeners().add( () -> viewer.getDisplay().repaint() );
 		// TODO: remember those listeners and remove them when the BDV window is closed!!!
 
-		final OverlayNavigation< OverlayVertexWrapper< Spot, Link >, OverlayEdgeWrapper< Spot, Link > > overlayNavigation = new OverlayNavigation<>( viewer, overlayGraph );
+		final OverlayNavigation< OverlayVertexWrapper< Spot, Link >, OverlayEdgeWrapper< Spot, Link > > overlayNavigation = new OverlayNavigation<>( viewer, viewGraph );
 		navigationHandler.listeners().add( overlayNavigation );
 
-		final BdvHighlightHandler< ?, ? > highlightHandler = new BdvHighlightHandler<>( overlayGraph, tracksOverlay, highlightModel );
+		final BdvHighlightHandler< ?, ? > highlightHandler = new BdvHighlightHandler<>( viewGraph, tracksOverlay, highlightModel );
 		viewer.getDisplay().addHandler( highlightHandler );
 		viewer.addRenderTransformListener( highlightHandler );
 
 		final InputTriggerConfig keyconf = appModel.getKeyconf();
 
-		final BdvSelectionBehaviours< ?, ? > selectionBehaviours = new BdvSelectionBehaviours<>( overlayGraph, tracksOverlay, selectionModel, navigationHandler );
+		final BdvSelectionBehaviours< ?, ? > selectionBehaviours = new BdvSelectionBehaviours<>( viewGraph, tracksOverlay, selectionModel, navigationHandler );
 		selectionBehaviours.installBehaviourBindings( viewerFrame.getTriggerbindings(), keyconf );
 
-		final OverlayContext< OverlayVertexWrapper< Spot, Link > > overlayContext = new OverlayContext<>( overlayGraph, tracksOverlay );
+		final OverlayContext< OverlayVertexWrapper< Spot, Link > > overlayContext = new OverlayContext<>( viewGraph, tracksOverlay );
 		viewer.addRenderTransformListener( overlayContext );
 		final WindowManager.BdvContextAdapter< Spot > contextProvider = new WindowManager.BdvContextAdapter<>( windowTitle );
 		final OverlayContextWrapper< Spot, Link > overlayContextWrapper = new OverlayContextWrapper<>(
@@ -108,8 +99,8 @@ class MamutViewBdv extends MamutView< OverlayVertexWrapper< Spot, Link >, Overla
 				contextProvider );
 
 		UndoActions.installActionBindings( viewerFrame.getKeybindings(), model, keyconf );
-		EditBehaviours.installActionBindings( viewerFrame.getTriggerbindings(), keyconf, overlayGraph, tracksOverlay, model );
-		EditSpecialBehaviours.installActionBindings( viewerFrame.getTriggerbindings(), keyconf, viewerFrame.getViewerPanel(), overlayGraph, tracksOverlay, model );
+		EditBehaviours.installActionBindings( viewerFrame.getTriggerbindings(), keyconf, viewGraph, tracksOverlay, model );
+		EditSpecialBehaviours.installActionBindings( viewerFrame.getTriggerbindings(), keyconf, viewerFrame.getViewerPanel(), viewGraph, tracksOverlay, model );
 		HighlightBehaviours.installActionBindings(
 				viewerFrame.getTriggerbindings(),
 				keyconf,

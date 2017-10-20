@@ -25,39 +25,37 @@ import org.mastodon.revised.model.AbstractSpot;
  */
 public class MastodonView<
 		M extends MastodonAppModel< ?, MV, ME >,
+		VG extends ViewGraph< MV, ME, V, E >,
 		MV extends AbstractSpot< MV, ME, ?, ?, ? >,
 		ME extends AbstractListenableEdge< ME, MV, ?, ? >,
 		V extends Vertex< E >,
 		E extends Edge< V > >
 {
-	// TODO: make all public fields protected
+	protected final M appModel;
 
-	public final M appModel;
+	protected VG viewGraph;
 
-	public final RefBimap< MV, V > vertexMap;
+	protected final GroupHandle groupHandle;
 
-	public final RefBimap< ME, E > edgeMap;
+	protected final TimepointModel timepointModel;
 
-	public final GroupHandle groupHandle;
+	protected final HighlightModel< V, E > highlightModel;
 
-	public final TimepointModel timepointModel;
+	protected final FocusModel< V, E > focusModel;
 
-	public final HighlightModel< V, E > highlightModel;
+	protected final SelectionModel< V, E > selectionModel;
 
-	public final FocusModel< V, E > focusModel;
-
-	public final SelectionModel< V, E > selectionModel;
-
-	public final NavigationHandler< V, E > navigationHandler;
+	protected final NavigationHandler< V, E > navigationHandler;
 
 	public MastodonView(
 			final M appModel,
-			final RefBimap< MV, V > vertexMap,
-			final RefBimap< ME, E > edgeMap )
+			final VG viewGraph )
 	{
 		this.appModel = appModel;
-		this.vertexMap = vertexMap;
-		this.edgeMap = edgeMap;
+		this.viewGraph = viewGraph;
+
+		final RefBimap< MV, V > vertexMap = viewGraph.getVertexMap();
+		final RefBimap< ME, E > edgeMap = viewGraph.getEdgeMap();
 
 		groupHandle = appModel.getGroupManager().createGroupHandle();
 		timepointModel = groupHandle.getModel( appModel.TIMEPOINT );

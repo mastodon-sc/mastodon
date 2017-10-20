@@ -3,6 +3,7 @@ package org.mastodon.revised.trackscheme;
 import java.util.ArrayList;
 import org.mastodon.RefPool;
 import org.mastodon.adapter.RefBimap;
+import org.mastodon.app.ViewGraph;
 import org.mastodon.collection.IntRefMap;
 import org.mastodon.collection.RefSet;
 import org.mastodon.collection.ref.IntRefArrayMap;
@@ -87,7 +88,7 @@ public class TrackSchemeGraph<
 				TrackSchemeGraph.TrackSchemeVertexPool,
 				TrackSchemeGraph.TrackSchemeEdgePool,
 				TrackSchemeVertex, TrackSchemeEdge, ByteMappedElement >
-	implements GraphListener< V, E >, GraphChangeListener
+	implements GraphListener< V, E >, GraphChangeListener, ViewGraph< V, E, TrackSchemeVertex, TrackSchemeEdge >
 {
 	private final ListenableReadOnlyGraph< V, E > modelGraph;
 
@@ -394,6 +395,7 @@ public class TrackSchemeGraph<
 	 *
 	 * @return bidirectional mapping between model vertices and view vertices.
 	 */
+	@Override
 	public RefBimap< V, TrackSchemeVertex > getVertexMap()
 	{
 		return vertexMap;
@@ -404,6 +406,7 @@ public class TrackSchemeGraph<
 	 *
 	 * @return bidirectional mapping between model edges and view edges.
 	 */
+	@Override
 	public RefBimap< E, TrackSchemeEdge > getEdgeMap()
 	{
 		return edgeMap;
