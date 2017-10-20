@@ -11,8 +11,8 @@ import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
 
 import org.mastodon.revised.bdv.SharedBigDataViewerData;
-import org.mastodon.revised.context.ContextChooser;
-import org.mastodon.revised.context.ContextProvider;
+import org.mastodon.views.context.ContextChooser;
+import org.mastodon.views.context.ContextProvider;
 import org.mastodon.revised.model.mamut.Model;
 import org.mastodon.revised.model.mamut.Spot;
 import org.mastodon.revised.trackscheme.display.TrackSchemeFrame;

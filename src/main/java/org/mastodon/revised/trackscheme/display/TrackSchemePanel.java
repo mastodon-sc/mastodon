@@ -12,8 +12,8 @@ import javax.swing.JScrollBar;
 import javax.swing.UIManager;
 
 import org.mastodon.graph.GraphChangeListener;
-import org.mastodon.revised.context.Context;
-import org.mastodon.revised.context.ContextListener;
+import org.mastodon.views.context.Context;
+import org.mastodon.views.context.ContextListener;
 import org.mastodon.revised.trackscheme.ContextLayout;
 import org.mastodon.revised.trackscheme.LineageTreeLayout;
 import org.mastodon.revised.trackscheme.LineageTreeLayout.LayoutListener;

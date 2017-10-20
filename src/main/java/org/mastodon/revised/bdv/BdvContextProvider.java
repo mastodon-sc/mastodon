@@ -8,9 +8,9 @@ import org.mastodon.revised.bdv.overlay.OverlayGraphRenderer;
 import org.mastodon.revised.bdv.overlay.wrap.OverlayContextWrapper;
 import org.mastodon.revised.bdv.overlay.wrap.OverlayEdgeWrapper;
 import org.mastodon.revised.bdv.overlay.wrap.OverlayVertexWrapper;
-import org.mastodon.revised.context.Context;
-import org.mastodon.revised.context.ContextListener;
-import org.mastodon.revised.context.ContextProvider;
+import org.mastodon.views.context.Context;
+import org.mastodon.views.context.ContextListener;
+import org.mastodon.views.context.ContextProvider;
 import org.mastodon.util.Listeners;
 
 import net.imglib2.realtransform.AffineTransform3D;

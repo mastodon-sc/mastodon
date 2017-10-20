@@ -2,7 +2,7 @@ package org.mastodon.revised.trackscheme;
 
 import org.mastodon.collection.RefCollections;
 import org.mastodon.collection.RefList;
-import org.mastodon.revised.context.Context;
+import org.mastodon.views.context.Context;
 
 /**
  * Algorithm:

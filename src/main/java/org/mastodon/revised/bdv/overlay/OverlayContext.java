@@ -2,8 +2,8 @@ package org.mastodon.revised.bdv.overlay;
 
 import java.util.concurrent.locks.Lock;
 
-import org.mastodon.revised.context.Context;
-import org.mastodon.revised.context.ContextListener;
+import org.mastodon.views.context.Context;
+import org.mastodon.views.context.ContextListener;
 import org.mastodon.spatial.SpatioTemporalIndex;
 
 import net.imglib2.realtransform.AffineTransform3D;

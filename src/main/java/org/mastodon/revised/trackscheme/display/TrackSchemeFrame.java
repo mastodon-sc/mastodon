@@ -14,7 +14,7 @@ import javax.swing.SwingUtilities;
 import javax.swing.WindowConstants;
 
 import org.mastodon.model.SelectionModel;
-import org.mastodon.revised.context.ContextChooser;
+import org.mastodon.views.context.ContextChooser;
 import org.mastodon.revised.trackscheme.TrackSchemeEdge;
 import org.mastodon.revised.trackscheme.TrackSchemeGraph;
 import org.mastodon.revised.trackscheme.TrackSchemeVertex;

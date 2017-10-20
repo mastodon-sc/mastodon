@@ -6,8 +6,8 @@ import java.util.concurrent.locks.Lock;
 import org.mastodon.graph.Edge;
 import org.mastodon.graph.Vertex;
 import org.mastodon.revised.bdv.overlay.OverlayContext;
-import org.mastodon.revised.context.Context;
-import org.mastodon.revised.context.ContextListener;
+import org.mastodon.views.context.Context;
+import org.mastodon.views.context.ContextListener;
 
 /**
  * Wraps an {@link OverlayContext} (a {@code Context} on

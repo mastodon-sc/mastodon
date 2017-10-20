@@ -5,8 +5,8 @@ import java.util.concurrent.locks.Lock;
 
 import org.mastodon.graph.GraphIdBimap;
 import org.mastodon.graph.Vertex;
-import org.mastodon.revised.context.Context;
-import org.mastodon.revised.context.ContextListener;
+import org.mastodon.views.context.Context;
+import org.mastodon.views.context.ContextListener;
 
 /**
  * A {@link ContextListener} on vertice type {@code V} that wraps {@link Context

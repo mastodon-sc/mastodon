@@ -4,7 +4,7 @@ import bdv.tools.ToggleDialogAction;
 import javax.swing.ActionMap;
 import javax.swing.InputMap;
 import javax.swing.JDialog;
-import org.mastodon.revised.context.ContextChooser;
+import org.mastodon.views.context.ContextChooser;
 import org.mastodon.revised.model.mamut.Link;
 import org.mastodon.revised.model.mamut.Model;
 import org.mastodon.revised.model.mamut.ModelGraph;

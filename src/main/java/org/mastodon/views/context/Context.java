@@ -1,4 +1,4 @@
-package org.mastodon.revised.context;
+package org.mastodon.views.context;
 
 import java.util.concurrent.locks.Lock;
 

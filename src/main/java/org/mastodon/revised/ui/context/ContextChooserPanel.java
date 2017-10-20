@@ -9,8 +9,8 @@ import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
-import org.mastodon.revised.context.ContextChooser;
-import org.mastodon.revised.context.ContextProvider;
+import org.mastodon.views.context.ContextChooser;
+import org.mastodon.views.context.ContextProvider;
 
 public class ContextChooserPanel< V > extends JPanel implements ContextChooser.UpdateListener
 {
