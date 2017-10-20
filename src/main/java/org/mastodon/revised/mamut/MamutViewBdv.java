@@ -148,7 +148,7 @@ class MamutViewBdv extends MamutView< OverlayGraphWrapper< Spot, Link >, Overlay
 //		if ( !bdv.tryLoadSettings( bdvFile ) ) // TODO
 //			InitializeViewerState.initBrightness( 0.001, 0.999, bdv.getViewer(), bdv.getSetupAssignments() );
 
-		bdvWindow = new WindowManager.BdvWindow( viewerFrame, tracksOverlay, groupHandle, contextProvider );
+		bdvWindow = new WindowManager.BdvWindow( viewerFrame, contextProvider );
 	}
 
 	public WindowManager.BdvWindow getBdvWindow()

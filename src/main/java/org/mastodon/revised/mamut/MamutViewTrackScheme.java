@@ -110,7 +110,7 @@ class MamutViewTrackScheme extends MamutView< TrackSchemeGraph< Spot, Link >, Tr
 		frame.getKeybindings().addActionMap( "mamut", actionMap );
 		frame.getKeybindings().addInputMap( "mamut", inputMap );
 
-		tsWindow = new WindowManager.TsWindow( frame, groupHandle, contextChooser );
+		tsWindow = new WindowManager.TsWindow( frame, contextChooser );
 		frame.getTrackschemePanel().repaint();
 	}
 

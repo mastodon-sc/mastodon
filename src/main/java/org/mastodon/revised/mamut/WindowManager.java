@@ -39,37 +39,19 @@ public class WindowManager
 	{
 		private final ViewerFrame viewerFrame;
 
-		private final OverlayGraphRenderer< ?, ? > tracksOverlay;
-
-		private final GroupHandle groupHandle;
-
 		private final ContextProvider< Spot > contextProvider;
 
 		public BdvWindow(
 				final ViewerFrame viewerFrame,
-				final OverlayGraphRenderer< ?, ? > tracksOverlay,
-				final GroupHandle groupHandle,
 				final ContextProvider< Spot > contextProvider )
 		{
 			this.viewerFrame = viewerFrame;
-			this.tracksOverlay = tracksOverlay;
-			this.groupHandle = groupHandle;
 			this.contextProvider = contextProvider;
 		}
 
 		public ViewerFrame getViewerFrame()
 		{
 			return viewerFrame;
-		}
-
-		public OverlayGraphRenderer< ?, ? > getTracksOverlay()
-		{
-			return tracksOverlay;
-		}
-
-		public GroupHandle getGroupHandle()
-		{
-			return groupHandle;
 		}
 
 		public ContextProvider< Spot > getContextProvider()
@@ -85,28 +67,19 @@ public class WindowManager
 	{
 		private final TrackSchemeFrame trackSchemeFrame;
 
-		private final GroupHandle groupHandle;
-
 		private final ContextChooser< Spot > contextChooser;
 
 		public TsWindow(
 				final TrackSchemeFrame trackSchemeFrame,
-				final GroupHandle groupHandle,
 				final ContextChooser< Spot > contextChooser )
 		{
 			this.trackSchemeFrame = trackSchemeFrame;
-			this.groupHandle = groupHandle;
 			this.contextChooser = contextChooser;
 		}
 
 		public TrackSchemeFrame getTrackSchemeFrame()
 		{
 			return trackSchemeFrame;
-		}
-
-		public GroupHandle getGroupHandle()
-		{
-			return groupHandle;
 		}
 
 		public ContextChooser< Spot > getContextChooser()
@@ -170,8 +143,6 @@ public class WindowManager
 		}
 	}
 
-	private final InputTriggerConfig keyconf;
-
 	private final KeyPressedManager keyPressedManager;
 
 	private final MamutAppModel appModel;
@@ -197,8 +168,6 @@ public class WindowManager
 			final Model model,
 			final InputTriggerConfig keyconf )
 	{
-		this.keyconf = keyconf;
-
 		keyPressedManager = new KeyPressedManager();
 		final RequestRepaint requestRepaint = () -> {
 			for ( final BdvWindow w : bdvWindows )
