@@ -1,22 +1,19 @@
 package org.mastodon.revised.mamut;
 
-import bdv.tools.ToggleDialogAction;
-import bdv.viewer.ViewerFrame;
-import bdv.viewer.ViewerPanel;
 import javax.swing.ActionMap;
 import javax.swing.InputMap;
+
+import org.mastodon.revised.bdv.BdvContextProvider;
 import org.mastodon.revised.bdv.BigDataViewerMaMuT;
 import org.mastodon.revised.bdv.SharedBigDataViewerData;
 import org.mastodon.revised.bdv.overlay.BdvHighlightHandler;
 import org.mastodon.revised.bdv.overlay.BdvSelectionBehaviours;
 import org.mastodon.revised.bdv.overlay.EditBehaviours;
 import org.mastodon.revised.bdv.overlay.EditSpecialBehaviours;
-import org.mastodon.revised.bdv.overlay.OverlayContext;
 import org.mastodon.revised.bdv.overlay.OverlayGraphRenderer;
 import org.mastodon.revised.bdv.overlay.OverlayNavigation;
 import org.mastodon.revised.bdv.overlay.RenderSettings;
 import org.mastodon.revised.bdv.overlay.ui.RenderSettingsDialog;
-import org.mastodon.revised.bdv.overlay.wrap.OverlayContextWrapper;
 import org.mastodon.revised.bdv.overlay.wrap.OverlayEdgeWrapper;
 import org.mastodon.revised.bdv.overlay.wrap.OverlayGraphWrapper;
 import org.mastodon.revised.bdv.overlay.wrap.OverlayVertexWrapper;
@@ -30,6 +27,10 @@ import org.mastodon.revised.ui.HighlightBehaviours;
 import org.mastodon.revised.ui.SelectionActions;
 import org.scijava.ui.behaviour.KeyStrokeAdder;
 import org.scijava.ui.behaviour.io.InputTriggerConfig;
+
+import bdv.tools.ToggleDialogAction;
+import bdv.viewer.ViewerFrame;
+import bdv.viewer.ViewerPanel;
 
 class MamutViewBdv extends MamutView< OverlayGraphWrapper< Spot, Link >, OverlayVertexWrapper< Spot, Link >, OverlayEdgeWrapper< Spot, Link > >
 {
@@ -91,12 +92,8 @@ class MamutViewBdv extends MamutView< OverlayGraphWrapper< Spot, Link >, Overlay
 		final BdvSelectionBehaviours< ?, ? > selectionBehaviours = new BdvSelectionBehaviours<>( viewGraph, tracksOverlay, selectionModel, navigationHandler );
 		selectionBehaviours.installBehaviourBindings( viewerFrame.getTriggerbindings(), keyconf );
 
-		final OverlayContext< OverlayVertexWrapper< Spot, Link > > overlayContext = new OverlayContext<>( viewGraph, tracksOverlay );
-		viewer.addRenderTransformListener( overlayContext );
-		final WindowManager.BdvContextAdapter< Spot > contextProvider = new WindowManager.BdvContextAdapter<>( windowTitle );
-		final OverlayContextWrapper< Spot, Link > overlayContextWrapper = new OverlayContextWrapper<>(
-				overlayContext,
-				contextProvider );
+		final BdvContextProvider< Spot, Link > contextProvider = new BdvContextProvider<>( windowTitle, viewGraph, tracksOverlay );
+		viewer.addRenderTransformListener( contextProvider );
 
 		UndoActions.installActionBindings( viewerFrame.getKeybindings(), model, keyconf );
 		EditBehaviours.installActionBindings( viewerFrame.getTriggerbindings(), keyconf, viewGraph, tracksOverlay, model );
@@ -133,16 +130,11 @@ class MamutViewBdv extends MamutView< OverlayGraphWrapper< Spot, Link >, Overlay
 		a.put( RENDER_SETTINGS, "R" );
 		viewerFrame.getKeybindings().addActionMap( "mamut", actionMap );
 		viewerFrame.getKeybindings().addInputMap( "mamut", inputMap );
-		renderSettings.addUpdateListener( new RenderSettings.UpdateListener()
-		{
-			@Override
-			public void renderSettingsChanged()
-			{
-				tracksOverlay.setRenderSettings( renderSettings );
-				// TODO: less hacky way of triggering repaint and context update
-				viewer.repaint();
-				overlayContextWrapper.contextChanged( overlayContext );
-			}
+		renderSettings.addUpdateListener( () -> {
+			tracksOverlay.setRenderSettings( renderSettings );
+			// TODO: less hacky way of triggering repaint and context update
+			viewer.repaint();
+			contextProvider.notifyContextChanged();
 		} );
 
 //		if ( !bdv.tryLoadSettings( bdvFile ) ) // TODO

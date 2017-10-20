@@ -8,10 +8,11 @@ import org.mastodon.graph.Vertex;
 import org.mastodon.revised.bdv.overlay.OverlayContext;
 import org.mastodon.revised.context.Context;
 import org.mastodon.revised.context.ContextListener;
-import org.mastodon.revised.mamut.WindowManager.BdvContextAdapter;
 
 /**
- * TODO!!! related to {@link BdvContextAdapter}
+ * Wraps an {@link OverlayContext} (a {@code Context} on
+ * {@code OverlayVertexWrapper}) as a {@code Context} on model vertices
+ * {@code V}. Passes on {@code contextChanged} notifications to a listener.
  *
  * @param <V>
  *            the type of model vertex wrapped.
@@ -21,19 +22,23 @@ import org.mastodon.revised.mamut.WindowManager.BdvContextAdapter;
  * @author Tobias Pietzsch &lt;tobias.pietzsch@gmail.com&gt;
  */
 public class OverlayContextWrapper< V extends Vertex< E >, E extends Edge< V > >
-		implements Context< V >, ContextListener< OverlayVertexWrapper< V, E > >
+		implements Context< V >
 {
 	private final OverlayContext< OverlayVertexWrapper< V, E > > context;
 
-	private final ContextListener< V > contextListener;
-
+	/**
+	 * @param context
+	 *            {@link OverlayContext} to wrap
+	 * @param contextListener
+	 *            {@code contextChanged} of {@code context} are translated an
+	 *            send to this listeners.
+	 */
 	public OverlayContextWrapper(
 			final OverlayContext< OverlayVertexWrapper< V, E > > context,
 			final ContextListener< V > contextListener )
 	{
 		this.context = context;
-		this.contextListener = contextListener;
-		context.setContextListener( this );
+		context.setContextListener( c -> contextListener.contextChanged( this ) );
 	}
 
 	@Override
@@ -68,11 +73,5 @@ public class OverlayContextWrapper< V extends Vertex< E >, E extends Edge< V > >
 				};
 			}
 		};
-	}
-
-	@Override
-	public void contextChanged( final Context< OverlayVertexWrapper< V, E > > context )
-	{
-		contextListener.contextChanged( this );
 	}
 }

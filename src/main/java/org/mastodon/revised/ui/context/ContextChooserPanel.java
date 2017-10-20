@@ -11,7 +11,6 @@ import javax.swing.JPanel;
 
 import org.mastodon.revised.context.ContextChooser;
 import org.mastodon.revised.context.ContextProvider;
-import org.mastodon.revised.context.ContextChooser.UpdateListener;
 
 public class ContextChooserPanel< V > extends JPanel implements ContextChooser.UpdateListener
 {
@@ -31,7 +30,7 @@ public class ContextChooserPanel< V > extends JPanel implements ContextChooser.U
 		@Override
 		public String toString()
 		{
-			return provider.getContextProviderName();
+			return provider.getName();
 		}
 
 		public ContextProvider< V > getProvider()
@@ -59,7 +58,7 @@ public class ContextChooserPanel< V > extends JPanel implements ContextChooser.U
 		} );
 		add( new JLabel( "context:" ) );
 		add( comboBox );
-		contextChooser.addUpdateListener( this );
+		contextChooser.updateListeners().add( this );
 	}
 
 	@Override

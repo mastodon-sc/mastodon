@@ -1,25 +1,17 @@
 package org.mastodon.revised.mamut;
 
-import bdv.spimdata.SpimDataMinimal;
-import bdv.viewer.RequestRepaint;
-import bdv.viewer.ViewerFrame;
-import bdv.viewer.ViewerOptions;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+
 import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
-import mpicbg.spim.data.generic.AbstractSpimData;
-import org.mastodon.grouping.GroupHandle;
+
 import org.mastodon.revised.bdv.SharedBigDataViewerData;
-import org.mastodon.revised.bdv.overlay.OverlayGraphRenderer;
-import org.mastodon.revised.bdv.overlay.wrap.OverlayContextWrapper;
-import org.mastodon.revised.context.Context;
 import org.mastodon.revised.context.ContextChooser;
-import org.mastodon.revised.context.ContextListener;
 import org.mastodon.revised.context.ContextProvider;
 import org.mastodon.revised.model.mamut.Model;
 import org.mastodon.revised.model.mamut.Spot;
@@ -29,6 +21,12 @@ import org.scijava.ui.behaviour.io.InputTriggerConfig;
 import org.scijava.ui.behaviour.io.InputTriggerDescription;
 import org.scijava.ui.behaviour.io.InputTriggerDescriptionsBuilder;
 import org.scijava.ui.behaviour.io.yaml.YamlConfigIO;
+
+import bdv.spimdata.SpimDataMinimal;
+import bdv.viewer.RequestRepaint;
+import bdv.viewer.ViewerFrame;
+import bdv.viewer.ViewerOptions;
+import mpicbg.spim.data.generic.AbstractSpimData;
 
 public class WindowManager
 {
@@ -85,61 +83,6 @@ public class WindowManager
 		public ContextChooser< Spot > getContextChooser()
 		{
 			return contextChooser;
-		}
-	}
-
-	/**
-	 * TODO!!! related to {@link OverlayContextWrapper}
-	 *
-	 * @param <V>
-	 * 		the type of vertices in the model.
-	 *
-	 * @author Tobias Pietzsch &lt;tobias.pietzsch@gmail.com&gt;
-	 */
-	public static class BdvContextAdapter< V > implements ContextListener< V >, ContextProvider< V >
-	{
-		private final String contextProviderName;
-
-		private final ArrayList< ContextListener< V > > listeners;
-
-		private Context< V > context;
-
-		public BdvContextAdapter( final String contextProviderName )
-		{
-			this.contextProviderName = contextProviderName;
-			listeners = new ArrayList<>();
-		}
-
-		@Override
-		public String getContextProviderName()
-		{
-			return contextProviderName;
-		}
-
-		@Override
-		public synchronized boolean addContextListener( final ContextListener< V > l )
-		{
-			if ( !listeners.contains( l ) )
-			{
-				listeners.add( l );
-				l.contextChanged( context );
-				return true;
-			}
-			return false;
-		}
-
-		@Override
-		public synchronized boolean removeContextListener( final ContextListener< V > l )
-		{
-			return listeners.remove( l );
-		}
-
-		@Override
-		public synchronized void contextChanged( final Context< V > context )
-		{
-			this.context = context;
-			for ( final ContextListener< V > l : listeners )
-				l.contextChanged( context );
 		}
 	}
 

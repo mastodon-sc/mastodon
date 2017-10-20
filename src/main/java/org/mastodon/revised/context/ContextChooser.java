@@ -2,6 +2,7 @@ package org.mastodon.revised.context;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import org.mastodon.util.Listeners;
 
 public class ContextChooser< V >
 {
@@ -13,23 +14,32 @@ public class ContextChooser< V >
 	private final ContextProvider< V > theEmptyProvider = new ContextProvider< V >()
 	{
 		@Override
-		public String getContextProviderName()
+		public String getName()
 		{
 			return "full graph";
 		}
 
 		@Override
-		public boolean addContextListener( final ContextListener< V > listener )
+		public Listeners< ContextListener< V > > listeners()
 		{
-			listener.contextChanged( null );
-			return true;
+			return listeners;
 		}
 
-		@Override
-		public boolean removeContextListener( final ContextListener< V > listener )
+		private final Listeners< ContextListener< V > > listeners = new Listeners< ContextListener< V > >()
 		{
-			return true;
-		}
+			@Override
+			public boolean add( final ContextListener< V > listener )
+			{
+				listener.contextChanged( null );
+				return true;
+			}
+
+			@Override
+			public boolean remove( final ContextListener< V > listener )
+			{
+				return true;
+			}
+		};
 	};
 
 	private final ContextListener< V > listener;
@@ -38,7 +48,7 @@ public class ContextChooser< V >
 
 	private final ArrayList< ContextProvider< V > > providers;
 
-	private final ArrayList< ContextChooser.UpdateListener > updateListeners;
+	private final Listeners.List< UpdateListener > updateListeners;
 
 	public ContextChooser( final ContextListener< V > listener )
 	{
@@ -46,7 +56,7 @@ public class ContextChooser< V >
 		provider = theEmptyProvider;
 		providers = new ArrayList<>();
 		providers.add( theEmptyProvider );
-		updateListeners = new ArrayList<>();
+		updateListeners = new Listeners.SynchronizedList<>( l -> l.contextChooserUpdated() );
 	}
 
 	public void updateContextProviders( final Collection< ContextProvider< V > > providers )
@@ -61,9 +71,9 @@ public class ContextChooser< V >
 
 	public void choose( final ContextProvider< V > p )
 	{
-		provider.removeContextListener( listener );
+		provider.listeners().remove( listener );
 		provider = providers.contains( p ) ? p : theEmptyProvider;
-		provider.addContextListener( listener );
+		provider.listeners().add( listener );
 		notifyListeners();
 	}
 
@@ -79,23 +89,12 @@ public class ContextChooser< V >
 
 	private void notifyListeners()
 	{
-		for ( final ContextChooser.UpdateListener l : updateListeners )
+		for ( final ContextChooser.UpdateListener l : updateListeners.list )
 			l.contextChooserUpdated();
 	}
 
-	public synchronized boolean addUpdateListener( final ContextChooser.UpdateListener l )
+	public Listeners< UpdateListener > updateListeners()
 	{
-		if ( !updateListeners.contains( l ) )
-		{
-			updateListeners.add( l );
-			l.contextChooserUpdated();
-			return true;
-		}
-		return false;
-	}
-
-	public synchronized boolean removeUpdateListener( final ContextChooser.UpdateListener l )
-	{
-		return updateListeners.remove( l );
+		return updateListeners;
 	}
 }
