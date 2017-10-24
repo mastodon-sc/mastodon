@@ -10,6 +10,7 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.lang.reflect.InvocationTargetException;
 
 import javax.swing.JButton;
@@ -26,6 +27,7 @@ import org.mastodon.revised.ui.util.FileChooser;
 import org.mastodon.revised.ui.util.XmlFileFilter;
 import org.scijava.Context;
 import org.scijava.ui.behaviour.io.InputTriggerConfig;
+import org.scijava.ui.behaviour.io.InputTriggerDescriptionsBuilder;
 import org.scijava.ui.behaviour.io.yaml.YamlConfigIO;
 
 import bdv.spimdata.SpimDataMinimal;
@@ -373,7 +375,6 @@ public class MainWindow extends JFrame
 		final MamutProject project = new MamutProject( new File( "." ), new File( bdvFile ), new File( modelFile ) );
 //		final MamutProject project = new MamutProjectIO().load( "samples/mamutproject.xml" );
 
-
 		System.setProperty( "apple.laf.useScreenMenuBar", "true" );
 
 		final InputTriggerConfig keyconf = getInputTriggerConfig();
@@ -388,6 +389,7 @@ public class MainWindow extends JFrame
 		SwingUtilities.invokeAndWait( () -> {
 			mw.windowManager.createBigDataViewer();
 			mw.windowManager.createTrackScheme();
+//			YamlConfigIO.write( new InputTriggerDescriptionsBuilder( keyconf ).getDescriptions(), new PrintWriter( System.out ) );
 		} );
 //		WindowManager.DumpInputConfig.writeToYaml( System.getProperty( "user.home" ) + "/.mastodon/keyconfig.yaml", mw.windowManager );
 	}
