@@ -18,7 +18,6 @@ import org.mastodon.revised.bdv.overlay.ui.RenderSettingsDialog;
 import org.mastodon.revised.bdv.overlay.wrap.OverlayEdgeWrapper;
 import org.mastodon.revised.bdv.overlay.wrap.OverlayGraphWrapper;
 import org.mastodon.revised.bdv.overlay.wrap.OverlayVertexWrapper;
-import org.mastodon.revised.model.mamut.BoundingSphereRadiusStatistics;
 import org.mastodon.revised.model.mamut.Link;
 import org.mastodon.revised.model.mamut.Model;
 import org.mastodon.revised.model.mamut.ModelGraph;
@@ -26,11 +25,11 @@ import org.mastodon.revised.model.mamut.ModelOverlayProperties;
 import org.mastodon.revised.model.mamut.Spot;
 import org.mastodon.revised.ui.HighlightBehaviours;
 import org.mastodon.revised.ui.SelectionActions;
+import org.mastodon.views.context.ContextProvider;
 import org.scijava.ui.behaviour.KeyStrokeAdder;
 import org.scijava.ui.behaviour.io.InputTriggerConfig;
 
 import bdv.tools.ToggleDialogAction;
-import bdv.viewer.ViewerFrame;
 import bdv.viewer.ViewerPanel;
 
 class MamutViewBdv extends MamutView< OverlayGraphWrapper< Spot, Link >, OverlayVertexWrapper< Spot, Link >, OverlayEdgeWrapper< Spot, Link > >
@@ -38,11 +37,11 @@ class MamutViewBdv extends MamutView< OverlayGraphWrapper< Spot, Link >, Overlay
 	// TODO
 	private static int bdvName = 1;
 
-	private final BoundingSphereRadiusStatistics radiusStats;
-
 	private final SharedBigDataViewerData sharedBdvData;
 
-	private final WindowManager.BdvWindow bdvWindow;
+	private final BdvContextProvider< Spot, Link > contextProvider;
+
+	private final ViewerPanel viewer;
 
 	public MamutViewBdv( final MamutAppModel appModel )
 	{
@@ -53,13 +52,13 @@ class MamutViewBdv extends MamutView< OverlayGraphWrapper< Spot, Link >, Overlay
 						appModel.getModel().getSpatioTemporalIndex(),
 						new ModelOverlayProperties( appModel.getModel().getGraph(), appModel.getRadiusStats() ) ) );
 
-		radiusStats = appModel.getRadiusStats();
 		sharedBdvData = appModel.getSharedBdvData();
 
 		final String windowTitle = "BigDataViewer " + ( bdvName++ ); // TODO: use JY naming scheme
 		final BigDataViewerMaMuT bdv = BigDataViewerMaMuT.open( sharedBdvData, windowTitle, groupHandle );
 		final ViewerFrameMamut viewerFrame = bdv.getViewerFrame();
-		final ViewerPanel viewer = bdv.getViewer();
+		setFrame( viewerFrame );
+		viewer = bdv.getViewer();
 
 		viewer.setTimepoint( timepointModel.getTimepoint() );
 		final OverlayGraphRenderer< OverlayVertexWrapper< Spot, Link >, OverlayEdgeWrapper< Spot, Link > > tracksOverlay = new OverlayGraphRenderer<>(
@@ -93,7 +92,7 @@ class MamutViewBdv extends MamutView< OverlayGraphWrapper< Spot, Link >, Overlay
 		final BdvSelectionBehaviours< ?, ? > selectionBehaviours = new BdvSelectionBehaviours<>( viewGraph, tracksOverlay, selectionModel, navigationHandler );
 		selectionBehaviours.installBehaviourBindings( viewerFrame.getTriggerbindings(), keyconf );
 
-		final BdvContextProvider< Spot, Link > contextProvider = new BdvContextProvider<>( windowTitle, viewGraph, tracksOverlay );
+		contextProvider = new BdvContextProvider<>( windowTitle, viewGraph, tracksOverlay );
 		viewer.addRenderTransformListener( contextProvider );
 
 		UndoActions.installActionBindings( viewerFrame.getKeybindings(), model, keyconf );
@@ -140,12 +139,15 @@ class MamutViewBdv extends MamutView< OverlayGraphWrapper< Spot, Link >, Overlay
 
 //		if ( !bdv.tryLoadSettings( bdvFile ) ) // TODO
 //			InitializeViewerState.initBrightness( 0.001, 0.999, bdv.getViewer(), bdv.getSetupAssignments() );
-
-		bdvWindow = new WindowManager.BdvWindow( viewerFrame, contextProvider );
 	}
 
-	public WindowManager.BdvWindow getBdvWindow()
+	public ContextProvider< Spot > getContextProvider()
 	{
-		return bdvWindow;
+		return contextProvider;
+	}
+
+	public void requestRepaint()
+	{
+		viewer.requestRepaint();
 	}
 }

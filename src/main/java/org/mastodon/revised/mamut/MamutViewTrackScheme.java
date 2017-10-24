@@ -1,10 +1,9 @@
 package org.mastodon.revised.mamut;
 
-import bdv.tools.ToggleDialogAction;
 import javax.swing.ActionMap;
 import javax.swing.InputMap;
 import javax.swing.JDialog;
-import org.mastodon.views.context.ContextChooser;
+
 import org.mastodon.revised.model.mamut.Link;
 import org.mastodon.revised.model.mamut.Model;
 import org.mastodon.revised.model.mamut.ModelGraph;
@@ -20,13 +19,16 @@ import org.mastodon.revised.trackscheme.display.ui.TrackSchemeStyleChooser;
 import org.mastodon.revised.trackscheme.wrap.DefaultModelGraphProperties;
 import org.mastodon.revised.ui.HighlightBehaviours;
 import org.mastodon.revised.ui.SelectionActions;
+import org.mastodon.views.context.ContextChooser;
 import org.scijava.ui.behaviour.KeyPressedManager;
 import org.scijava.ui.behaviour.KeyStrokeAdder;
 import org.scijava.ui.behaviour.io.InputTriggerConfig;
 
+import bdv.tools.ToggleDialogAction;
+
 class MamutViewTrackScheme extends MamutView< TrackSchemeGraph< Spot, Link >, TrackSchemeVertex, TrackSchemeEdge >
 {
-	private final WindowManager.TsWindow tsWindow;
+	private final ContextChooser< Spot > contextChooser;
 
 	public MamutViewTrackScheme( final MamutAppModel appModel )
 	{
@@ -40,7 +42,7 @@ class MamutViewTrackScheme extends MamutView< TrackSchemeGraph< Spot, Link >, Tr
 		 * TrackScheme ContextChooser
 		 */
 		final TrackSchemeContextListener< Spot > contextListener = new TrackSchemeContextListener<>( viewGraph );
-		final ContextChooser< Spot > contextChooser = new ContextChooser<>( contextListener );
+		contextChooser = new ContextChooser<>( contextListener );
 
 
 		final InputTriggerConfig keyconf = appModel.getKeyconf();
@@ -68,6 +70,8 @@ class MamutViewTrackScheme extends MamutView< TrackSchemeGraph< Spot, Link >, Tr
 		frame.getTrackschemePanel().setTimepointRange( appModel.getMinTimepoint(), appModel.getMaxTimepoint() );
 		frame.getTrackschemePanel().graphChanged();
 		contextListener.setContextListener( frame.getTrackschemePanel() );
+
+		setFrame( frame );
 		frame.setVisible( true );
 
 
@@ -110,12 +114,11 @@ class MamutViewTrackScheme extends MamutView< TrackSchemeGraph< Spot, Link >, Tr
 		frame.getKeybindings().addActionMap( "mamut", actionMap );
 		frame.getKeybindings().addInputMap( "mamut", inputMap );
 
-		tsWindow = new WindowManager.TsWindow( frame, contextChooser );
 		frame.getTrackschemePanel().repaint();
 	}
 
-	public WindowManager.TsWindow getTsWindow()
+	public ContextChooser< Spot > getContextChooser()
 	{
-		return tsWindow;
+		return contextChooser;
 	}
 }
