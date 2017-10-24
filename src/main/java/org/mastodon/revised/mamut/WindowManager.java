@@ -87,8 +87,6 @@ public class WindowManager
 		}
 	}
 
-	private final KeyPressedManager keyPressedManager;
-
 	private final MamutAppModel appModel;
 
 	/**
@@ -112,7 +110,7 @@ public class WindowManager
 			final Model model,
 			final InputTriggerConfig keyconf )
 	{
-		keyPressedManager = new KeyPressedManager();
+		KeyPressedManager keyPressedManager = new KeyPressedManager();
 		final RequestRepaint requestRepaint = () -> {
 			for ( final BdvWindow w : bdvWindows )
 				w.getViewerFrame().getViewerPanel().requestRepaint();
@@ -123,7 +121,7 @@ public class WindowManager
 				.shareKeyPressedEvents( keyPressedManager );
 		final SharedBigDataViewerData sharedBdvData = new SharedBigDataViewerData( spimDataXmlFilename, spimData, options, requestRepaint );
 
-		appModel = new MamutAppModel( model, sharedBdvData, keyconf );
+		appModel = new MamutAppModel( model, sharedBdvData, keyconf, keyPressedManager );
 	}
 
 	private synchronized void addBdvWindow( final BdvWindow w )

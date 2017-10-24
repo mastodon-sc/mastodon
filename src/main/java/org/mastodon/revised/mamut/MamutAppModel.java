@@ -20,6 +20,7 @@ import org.mastodon.revised.model.mamut.BoundingSphereRadiusStatistics;
 import org.mastodon.revised.model.mamut.Link;
 import org.mastodon.revised.model.mamut.Model;
 import org.mastodon.revised.model.mamut.Spot;
+import org.scijava.ui.behaviour.KeyPressedManager;
 import org.scijava.ui.behaviour.io.InputTriggerConfig;
 
 /**
@@ -38,6 +39,8 @@ public class MamutAppModel extends MastodonAppModel< Model, Spot, Link >
 
 	private final InputTriggerConfig keyconf; // TODO: should this really be here???
 
+	private final KeyPressedManager keyPressedManager; // TODO: should this really be here???
+
 	private final int minTimepoint;
 
 	private final int maxTimepoint;
@@ -45,13 +48,15 @@ public class MamutAppModel extends MastodonAppModel< Model, Spot, Link >
 	public MamutAppModel(
 			final Model model,
 			final SharedBigDataViewerData sharedBdvData,
-			final InputTriggerConfig keyconf )
+			final InputTriggerConfig keyconf,
+			final KeyPressedManager keyPressedManager )
 	{
 		super( NUM_GROUPS, model );
 
 		this.radiusStats = new BoundingSphereRadiusStatistics( model );
 		this.sharedBdvData = sharedBdvData;
 		this.keyconf = keyconf;
+		this.keyPressedManager = keyPressedManager;
 		this.minTimepoint = 0;
 		this.maxTimepoint = sharedBdvData.getNumTimepoints() - 1;
 		/*
@@ -85,5 +90,10 @@ public class MamutAppModel extends MastodonAppModel< Model, Spot, Link >
 	public InputTriggerConfig getKeyconf()
 	{
 		return keyconf;
+	}
+
+	public KeyPressedManager getKeyPressedManager()
+	{
+		return keyPressedManager;
 	}
 }

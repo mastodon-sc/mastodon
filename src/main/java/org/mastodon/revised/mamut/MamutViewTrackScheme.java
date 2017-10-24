@@ -44,7 +44,7 @@ class MamutViewTrackScheme extends MamutView< TrackSchemeGraph< Spot, Link >, Tr
 
 
 		final InputTriggerConfig keyconf = appModel.getKeyconf();
-		KeyPressedManager keyPressedManager = appModel.getSharedBdvData().getOptions().values.getKeyPressedManager();
+		final KeyPressedManager keyPressedManager = appModel.getKeyPressedManager();
 		final Model model = appModel.getModel();
 		final ModelGraph modelGraph = model.getGraph();
 
