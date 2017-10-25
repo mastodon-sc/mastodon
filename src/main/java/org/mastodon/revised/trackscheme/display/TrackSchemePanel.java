@@ -325,79 +325,87 @@ public class TrackSchemePanel extends JPanel implements
 	@Override
 	public void paint()
 	{
-		final ScreenTransform transform = new ScreenTransform();
-		synchronized( screenTransform )
+		graph.readLock().lock();
+		try
 		{
-			transform.set( screenTransform );
-		}
-
-		final Flags flags = this.flags.clear();
-		if ( flags.graphChanged )
-		{
-//			System.out.println( "paint: graphChanged" );
-			layout.layout();
-			layoutMinX = layout.getCurrentLayoutMinX();
-			layoutMaxX = layout.getCurrentLayoutMaxX();
-			entityAnimator.startAnimation( transform, ANIMATION_MILLISECONDS );
-		}
-		else if ( flags.transformChanged )
-		{
-//			System.out.println( "paint: transformChanged" );
-//			entityAnimator.startAnimation( transform, 0 );
-			if ( context != null && contextLayout.buildContext( context, transform, false ) )
+			final ScreenTransform transform = new ScreenTransform();
+			synchronized ( screenTransform )
 			{
-				layoutMinX = layout.getCurrentLayoutMinX();
-				layoutMaxX = layout.getCurrentLayoutMaxX();
-				entityAnimator.continueAnimation( transform, ANIMATION_MILLISECONDS );
+				transform.set( screenTransform );
 			}
-			else
-				entityAnimator.continueAnimation( transform, 0 );
-//				entityAnimator.startAnimation( transform, 0 );
-//			entityAnimator.startAnimation( transform, ANIMATION_MILLISECONDS );
-		}
-		else if ( flags.selectionChanged )
-		{
-//			System.out.println( "paint: selectionChanged" );
-			entityAnimator.startAnimation( transform, ANIMATION_MILLISECONDS );
-		}
-		else if ( flags.contextChanged )
-		{
-//			System.out.println( "paint: contextChanged" );
-			if ( context == null )
+
+			final Flags flags = this.flags.clear();
+			if ( flags.graphChanged )
 			{
+//				System.out.println( "paint: graphChanged" );
 				layout.layout();
 				layoutMinX = layout.getCurrentLayoutMinX();
 				layoutMaxX = layout.getCurrentLayoutMaxX();
+				entityAnimator.startAnimation( transform, ANIMATION_MILLISECONDS );
 			}
-			else if ( contextLayout.buildContext( context, transform, true ) )
+			else if ( flags.transformChanged )
 			{
-				layoutMinX = layout.getCurrentLayoutMinX();
-				layoutMaxX = layout.getCurrentLayoutMaxX();
+//				System.out.println( "paint: transformChanged" );
+//				entityAnimator.startAnimation( transform, 0 );
+				if ( context != null && contextLayout.buildContext( context, transform, false ) )
+				{
+					layoutMinX = layout.getCurrentLayoutMinX();
+					layoutMaxX = layout.getCurrentLayoutMaxX();
+					entityAnimator.continueAnimation( transform, ANIMATION_MILLISECONDS );
+				}
+				else
+					entityAnimator.continueAnimation( transform, 0 );
+//					entityAnimator.startAnimation( transform, 0 );
+//				entityAnimator.startAnimation( transform, ANIMATION_MILLISECONDS );
 			}
-			entityAnimator.startAnimation( transform, ANIMATION_MILLISECONDS );
+			else if ( flags.selectionChanged )
+			{
+//				System.out.println( "paint: selectionChanged" );
+				entityAnimator.startAnimation( transform, ANIMATION_MILLISECONDS );
+			}
+			else if ( flags.contextChanged )
+			{
+//				System.out.println( "paint: contextChanged" );
+				if ( context == null )
+				{
+					layout.layout();
+					layoutMinX = layout.getCurrentLayoutMinX();
+					layoutMaxX = layout.getCurrentLayoutMaxX();
+				}
+				else if ( contextLayout.buildContext( context, transform, true ) )
+				{
+					layoutMinX = layout.getCurrentLayoutMinX();
+					layoutMaxX = layout.getCurrentLayoutMaxX();
+				}
+				entityAnimator.startAnimation( transform, ANIMATION_MILLISECONDS );
+			}
+
+			entityAnimator.setTime( System.currentTimeMillis() );
+			entityAnimator.setPaintEntities( graphOverlay );
+			display.repaint();
+
+			// adjust scrollbars sizes
+			final ScreenTransform t = new ScreenTransform();
+			entityAnimator.getLastComputedScreenEntities().getScreenTransform( t );
+			xScrollScale = 10000.0 / ( layoutMaxX - layoutMinX + 2 );
+			final int xval = ( int ) ( xScrollScale * t.getMinX() );
+			final int xext = ( int ) ( xScrollScale * ( t.getMaxX() - t.getMinX() ) );
+			final int xmin = ( int ) ( xScrollScale * ( layoutMinX - 1 ) );
+			final int xmax = ( int ) ( xScrollScale * ( layoutMaxX + 1 ) );
+			yScrollScale = 10000.0 / ( layoutMaxY - layoutMinY + 2 );
+			final int yval = ( int ) ( yScrollScale * t.getMinY() );
+			final int yext = ( int ) ( yScrollScale * ( t.getMaxY() - t.getMinY() ) );
+			final int ymin = ( int ) ( yScrollScale * ( layoutMinY - 1 ) );
+			final int ymax = ( int ) ( yScrollScale * ( layoutMaxY + 1 ) );
+			ignoreScrollBarChanges = true;
+			xScrollBar.setValues( xval, xext, xmin, xmax );
+			yScrollBar.setValues( yval, yext, ymin, ymax );
+			ignoreScrollBarChanges = false;
 		}
-
-		entityAnimator.setTime( System.currentTimeMillis() );
-		entityAnimator.setPaintEntities( graphOverlay );
-		display.repaint();
-
-		// adjust scrollbars sizes
-		final ScreenTransform t = new ScreenTransform();
-		entityAnimator.getLastComputedScreenEntities().getScreenTransform( t );
-		xScrollScale = 10000.0 / ( layoutMaxX - layoutMinX + 2 );
-		final int xval = ( int ) ( xScrollScale * t.getMinX() );
-		final int xext = ( int ) ( xScrollScale * ( t.getMaxX() - t.getMinX() ) );
-		final int xmin = ( int ) ( xScrollScale * ( layoutMinX - 1 ) );
-		final int xmax = ( int ) ( xScrollScale * ( layoutMaxX + 1 ) );
-		yScrollScale = 10000.0 / ( layoutMaxY - layoutMinY + 2 );
-		final int yval = ( int ) ( yScrollScale * t.getMinY() );
-		final int yext = ( int ) ( yScrollScale * ( t.getMaxY() - t.getMinY() ) );
-		final int ymin = ( int ) ( yScrollScale * ( layoutMinY - 1 ) );
-		final int ymax = ( int ) ( yScrollScale * ( layoutMaxY + 1 ) );
-		ignoreScrollBarChanges = true;
-		xScrollBar.setValues( xval, xext, xmin, xmax );
-		yScrollBar.setValues( yval, yext, ymin, ymax );
-		ignoreScrollBarChanges = false;
+		finally
+		{
+			graph.readLock().unlock();
+		}
 	}
 
 	@Override

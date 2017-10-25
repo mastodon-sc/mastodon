@@ -528,6 +528,7 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 
 		final ScreenVertexMath screenVertexMath = new ScreenVertexMath();
 
+		graph.getLock().readLock().lock();
 		index.readLock().lock();
 		try
 		{
@@ -730,6 +731,7 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 		}
 		finally
 		{
+			graph.getLock().readLock().unlock();
 			index.readLock().unlock();
 		}
 		graph.releaseRef( target );

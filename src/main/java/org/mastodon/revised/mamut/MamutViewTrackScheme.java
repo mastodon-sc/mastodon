@@ -36,7 +36,9 @@ class MamutViewTrackScheme extends MamutView< TrackSchemeGraph< Spot, Link >, Tr
 				new TrackSchemeGraph<>(
 						appModel.getModel().getGraph(),
 						appModel.getModel().getGraphIdBimap(),
-						new DefaultModelGraphProperties<>() ) );
+						new DefaultModelGraphProperties<>(),
+						appModel.getModel().getGraph().getLock()
+				) );
 
 		/*
 		 * TrackScheme ContextChooser
@@ -81,6 +83,7 @@ class MamutViewTrackScheme extends MamutView< TrackSchemeGraph< Spot, Link >, Tr
 				keyconf,
 				new String[] { "ts" },
 				modelGraph,
+				modelGraph.getLock(),
 				modelGraph,
 				appModel.getHighlightModel(),
 				model );

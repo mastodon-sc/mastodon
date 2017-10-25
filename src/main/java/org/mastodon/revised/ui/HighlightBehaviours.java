@@ -1,5 +1,7 @@
 package org.mastodon.revised.ui;
 
+import java.util.concurrent.locks.ReentrantReadWriteLock;
+
 import org.mastodon.graph.Edge;
 import org.mastodon.graph.GraphChangeNotifier;
 import org.mastodon.graph.ListenableGraph;
@@ -32,15 +34,18 @@ public class HighlightBehaviours< V extends Vertex< E >, E extends Edge< V > >
 			final InputTriggerConfig config,
 			final String[] keyConfigContexts,
 			final ListenableGraph< V, E > graph,
+			final ReentrantReadWriteLock lock,
 			final GraphChangeNotifier notify,
 			final HighlightModel< V, E > highlight,
 			final UndoPointMarker undo )
 	{
-		new HighlightBehaviours<>( config, keyConfigContexts, graph, notify, highlight, undo )
+		new HighlightBehaviours<>( config, keyConfigContexts, graph, lock, notify, highlight, undo )
 				.install( triggerBehaviourBindings, "highlight" );
 	}
 
 	private final ListenableGraph< V, E > graph;
+
+	private final ReentrantReadWriteLock lock;
 
 	private final GraphChangeNotifier notify;
 
@@ -52,12 +57,14 @@ public class HighlightBehaviours< V extends Vertex< E >, E extends Edge< V > >
 			final InputTriggerConfig config,
 			final String[] keyConfigContexts,
 			final ListenableGraph< V, E > graph,
+			final ReentrantReadWriteLock lock,
 			final GraphChangeNotifier notify,
 			final HighlightModel< V, E > highlight,
 			final UndoPointMarker undo )
 	{
 		super( config, keyConfigContexts );
 		this.graph = graph;
+		this.lock = lock;
 		this.notify = notify;
 		this.highlight = highlight;
 		this.undo = undo;
@@ -75,9 +82,17 @@ public class HighlightBehaviours< V extends Vertex< E >, E extends Edge< V > >
 			final V v = highlight.getHighlightedVertex( ref );
 			if ( v != null )
 			{
-				graph.remove( v );
-				undo.setUndoPoint();
-				notify.notifyGraphChanged();
+				lock.writeLock().lock();
+				try
+				{
+					graph.remove( v );
+					undo.setUndoPoint();
+					notify.notifyGraphChanged();
+				}
+				finally
+				{
+					lock.writeLock().unlock();
+				}
 			}
 			graph.releaseRef( ref );
 		}
@@ -92,12 +107,19 @@ public class HighlightBehaviours< V extends Vertex< E >, E extends Edge< V > >
 			final E e = highlight.getHighlightedEdge( ref );
 			if ( e != null )
 			{
-				graph.remove( e );
-				undo.setUndoPoint();
-				notify.notifyGraphChanged();
+				lock.writeLock().lock();
+				try
+				{
+					graph.remove( e );
+					undo.setUndoPoint();
+					notify.notifyGraphChanged();
+				}
+				finally
+				{
+					lock.writeLock().unlock();
+				}
 			}
 			graph.releaseRef( ref );
 		}
 	}
-
 }

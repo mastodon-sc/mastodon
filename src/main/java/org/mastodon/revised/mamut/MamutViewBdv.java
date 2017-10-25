@@ -50,6 +50,7 @@ class MamutViewBdv extends MamutView< OverlayGraphWrapper< Spot, Link >, Overlay
 						appModel.getModel().getGraph(),
 						appModel.getModel().getGraphIdBimap(),
 						appModel.getModel().getSpatioTemporalIndex(),
+						appModel.getModel().getGraph().getLock(),
 						new ModelOverlayProperties( appModel.getModel().getGraph(), appModel.getRadiusStats() ) ) );
 
 		sharedBdvData = appModel.getSharedBdvData();
@@ -103,6 +104,7 @@ class MamutViewBdv extends MamutView< OverlayGraphWrapper< Spot, Link >, Overlay
 				keyconf,
 				new String[] { "bdv" },
 				model.getGraph(),
+				model.getGraph().getLock(),
 				model.getGraph(),
 				appModel.getHighlightModel(),
 				model );

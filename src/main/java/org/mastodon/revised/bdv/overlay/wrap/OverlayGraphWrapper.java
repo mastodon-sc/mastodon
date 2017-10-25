@@ -2,6 +2,8 @@ package org.mastodon.revised.bdv.overlay.wrap;
 
 import java.util.Iterator;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
+
 import org.mastodon.RefPool;
 import org.mastodon.adapter.RefBimap;
 import org.mastodon.app.ViewGraph;
@@ -16,15 +18,15 @@ import org.mastodon.revised.bdv.overlay.OverlayGraph;
 import org.mastodon.spatial.SpatioTemporalIndex;
 
 /**
- * TODO: implement remaining ReadOnlyGraph methods TODO: implement
- * CollectionCreator
+ * TODO: implement remaining ReadOnlyGraph methods
+ * TODO: implement CollectionCreator
  *
  * @param <V>
  *            the type of the model vertex wrapped.
  * @param <E>
  *            the type of the model edge wrapped.
  *
- * @author Tobias Pietzsch &lt;tobias.pietzsch@gmail.com&gt;
+ * @author Tobias Pietzsch
  */
 public class OverlayGraphWrapper< V extends Vertex< E >, E extends Edge< V > > implements
 		OverlayGraph< OverlayVertexWrapper< V, E >, OverlayEdgeWrapper< V, E > >,
@@ -35,6 +37,8 @@ public class OverlayGraphWrapper< V extends Vertex< E >, E extends Edge< V > > i
 	final GraphIdBimap< V, E > idmap;
 
 	final OverlayProperties< V, E > overlayProperties;
+
+	private final ReentrantReadWriteLock lock;
 
 	private final ConcurrentLinkedQueue< OverlayVertexWrapper< V, E > > tmpVertexRefs;
 
@@ -50,10 +54,12 @@ public class OverlayGraphWrapper< V extends Vertex< E >, E extends Edge< V > > i
 			final ReadOnlyGraph< V, E > graph,
 			final GraphIdBimap< V, E > idmap,
 			final SpatioTemporalIndex< V > graphIndex,
+			final ReentrantReadWriteLock lock,
 			final OverlayProperties< V, E > overlayProperties )
 	{
 		this.wrappedGraph = graph;
 		this.idmap = idmap;
+		this.lock = lock;
 		this.overlayProperties = overlayProperties;
 		tmpVertexRefs =	new ConcurrentLinkedQueue<>();
 		tmpEdgeRefs = new ConcurrentLinkedQueue<>();
@@ -168,6 +174,12 @@ public class OverlayGraphWrapper< V extends Vertex< E >, E extends Edge< V > > i
 	public void remove( final OverlayVertexWrapper< V, E > vertex )
 	{
 		overlayProperties.removeVertex( vertex.wv );
+	}
+
+	@Override
+	public ReentrantReadWriteLock getLock()
+	{
+		return lock;
 	}
 
 	@Override

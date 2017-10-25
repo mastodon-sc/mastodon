@@ -8,6 +8,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import org.mastodon.graph.GraphChangeNotifier;
 import org.mastodon.graph.GraphIdBimap;
@@ -44,11 +45,14 @@ public class AbstractModelGraph<
 	 */
 	protected final PropertyMapSerializers< V > vertexPropertySerializers;
 
+	protected final ReentrantReadWriteLock lock;
+
 	public AbstractModelGraph( final EP edgePool )
 	{
 		super( edgePool );
 		idmap = new GraphIdBimap<>( vertexPool, edgePool );
 		vertexPropertySerializers = new PropertyMapSerializers<>();
+		lock = new ReentrantReadWriteLock();
 	}
 
 	/**
@@ -119,6 +123,11 @@ public class AbstractModelGraph<
 //		RawFeatureIO.writeFeatureMaps( fileIdMap.vertices(), vertexFeatures, vertexFeaturesToSerialize, oos );
 //		RawFeatureIO.writeFeatureMaps( fileIdMap.edges(), edgeFeatures, edgeFeaturesToSerialize, oos );
 		oos.close();
+	}
+
+	public ReentrantReadWriteLock getLock()
+	{
+		return lock;
 	}
 
 	@Override

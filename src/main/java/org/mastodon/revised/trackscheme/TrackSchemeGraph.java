@@ -1,6 +1,9 @@
 package org.mastodon.revised.trackscheme;
 
 import java.util.ArrayList;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
+
 import org.mastodon.RefPool;
 import org.mastodon.adapter.RefBimap;
 import org.mastodon.app.ViewGraph;
@@ -92,6 +95,8 @@ public class TrackSchemeGraph<
 {
 	private final ListenableReadOnlyGraph< V, E > modelGraph;
 
+	private final ReentrantReadWriteLock lock;
+
 	private final GraphIdBimap< V, E > idmap;
 
 	private final IntRefMap< TrackSchemeVertex > idToTrackSchemeVertex;
@@ -122,19 +127,18 @@ public class TrackSchemeGraph<
 	 * @param idmap
 	 *            the bidirectional id map of the model graph.
 	 * @param modelGraphProperties
-	 *            the properties of the model graph.
+	 *            an accessor for properties of the model graph.
 	 */
 	public TrackSchemeGraph(
 			final ListenableReadOnlyGraph< V, E > modelGraph,
 			final GraphIdBimap< V, E > idmap,
 			final ModelGraphProperties< V, E > modelGraphProperties )
 	{
-		this( modelGraph, idmap, modelGraphProperties, 10000 );
+		this( modelGraph, idmap, modelGraphProperties, new ReentrantReadWriteLock() );
 	}
 
 	/**
-	 * Creates a new {@link TrackSchemeGraph} that reproduces the current model graph structure.
-	 * It registers as a {@link GraphListener} to keep in sync with changes the model graph.
+	 * Creates a new TrackSchemeGraph with a default initial capacity.
 	 *
 	 * @param modelGraph
 	 *            the model graph to wrap.
@@ -142,6 +146,31 @@ public class TrackSchemeGraph<
 	 *            the bidirectional id map of the model graph.
 	 * @param modelGraphProperties
 	 *            an accessor for properties of the model graph.
+	 * @param lock
+	 *            read/write locks for the model graph
+	 */
+	public TrackSchemeGraph(
+			final ListenableReadOnlyGraph< V, E > modelGraph,
+			final GraphIdBimap< V, E > idmap,
+			final ModelGraphProperties< V, E > modelGraphProperties,
+			final ReentrantReadWriteLock lock )
+	{
+		this( modelGraph, idmap, modelGraphProperties, lock, 10000 );
+	}
+
+	/**
+	 * Creates a new {@link TrackSchemeGraph} that reproduces the current model
+	 * graph structure. It registers as a {@link GraphListener} to keep in sync
+	 * with changes the model graph.
+	 *
+	 * @param modelGraph
+	 *            the model graph to wrap.
+	 * @param idmap
+	 *            the bidirectional id map of the model graph.
+	 * @param modelGraphProperties
+	 *            an accessor for properties of the model graph.
+	 * @param lock
+	 *            read/write locks for the model graph
 	 * @param initialCapacity
 	 *            the initial capacity for the graph storage.
 	 */
@@ -149,6 +178,7 @@ public class TrackSchemeGraph<
 			final ListenableReadOnlyGraph< V, E > modelGraph,
 			final GraphIdBimap< V, E > idmap,
 			final ModelGraphProperties< V, E > modelGraphProperties,
+			final ReentrantReadWriteLock lock,
 			final int initialCapacity )
 	{
 		super( new TrackSchemeEdgePool(
@@ -157,6 +187,7 @@ public class TrackSchemeGraph<
 						initialCapacity,
 						new ModelGraphWrapper<>( idmap, modelGraphProperties ) ) ) );
 		this.modelGraph = modelGraph;
+		this.lock = lock;
 		this.idmap = idmap;
 		idToTrackSchemeVertex =	new IntRefArrayMap<>( vertexPool );
 		idToTrackSchemeEdge = new IntRefArrayMap<>( edgePool );
@@ -297,6 +328,11 @@ public class TrackSchemeGraph<
 	public synchronized boolean removeGraphChangeListener( final GraphChangeListener listener )
 	{
 		return listeners.remove( listener );
+	}
+
+	public Lock readLock()
+	{
+		return lock.readLock();
 	}
 
 	/*

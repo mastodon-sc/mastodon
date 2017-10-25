@@ -1,5 +1,6 @@
 package org.mastodon.revised.bdv.overlay;
 
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 import org.mastodon.graph.GraphChangeListener;
 import org.mastodon.graph.GraphChangeNotifier;
 import org.mastodon.graph.ReadOnlyGraph;
@@ -21,6 +22,8 @@ public interface OverlayGraph< V extends OverlayVertex< V, E >, E extends Overla
 	public void remove( E edge );
 
 	public void remove( V vertex );
+
+	public ReentrantReadWriteLock getLock();
 
 	/**
 	 * Triggers a {@link GraphChangeListener#graphChanged()} event.
