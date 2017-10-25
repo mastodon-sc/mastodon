@@ -76,8 +76,6 @@ class MamutViewTrackScheme extends MamutView< TrackSchemeGraph< Spot, Link >, Tr
 		setFrame( frame );
 		frame.setVisible( true );
 
-
-		UndoActions.installActionBindings( frame.getKeybindings(), model, keyconf );
 		HighlightBehaviours.installActionBindings(
 				frame.getTriggerbindings(),
 				keyconf,

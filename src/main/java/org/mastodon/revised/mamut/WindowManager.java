@@ -61,6 +61,7 @@ public class WindowManager
 		final SharedBigDataViewerData sharedBdvData = new SharedBigDataViewerData( spimDataXmlFilename, spimData, options, requestRepaint );
 
 		appModel = new MamutAppModel( model, sharedBdvData, keyconf, keyPressedManager );
+		UndoActions.install( appModel.getAppActions(), model );
 	}
 
 	private synchronized void addBdvWindow( final MamutViewBdv w )
