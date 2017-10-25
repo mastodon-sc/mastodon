@@ -168,7 +168,7 @@ public class TrackSchemePanel extends JPanel implements
 
 		final Values options = optional.values;
 
-		graph.addGraphChangeListener( this );
+		graph.graphChangeListeners().add( this );
 		navigation.listeners().add( this );
 
 		final int w = options.getWidth();

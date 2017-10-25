@@ -1,6 +1,5 @@
 package org.mastodon.revised.trackscheme;
 
-import java.util.ArrayList;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
@@ -32,6 +31,7 @@ import org.mastodon.pool.attributes.IntAttribute;
 import org.mastodon.revised.trackscheme.wrap.DefaultModelGraphProperties;
 import org.mastodon.revised.trackscheme.wrap.ModelGraphProperties;
 import org.mastodon.spatial.HasTimepoint;
+import org.mastodon.util.Listeners;
 
 /**
  * A specialized graph to be used in the TrackScheme application.
@@ -113,7 +113,7 @@ public class TrackSchemeGraph<
 
 	private final TrackSchemeEdge tse;
 
-	private final ArrayList< GraphChangeListener > listeners;
+	private final Listeners.List< GraphChangeListener > listeners;
 
 	private final RefBimap< V, TrackSchemeVertex > vertexMap;
 
@@ -196,7 +196,7 @@ public class TrackSchemeGraph<
 		tsv = vertexRef();
 		tsv2 = vertexRef();
 		tse = edgeRef();
-		listeners = new ArrayList<>();
+		listeners = new Listeners.SynchronizedList<>();
 		vertexMap = new TrackSchemeVertexBimap<>( this );
 		edgeMap = new TrackSchemeEdgeBimap<>( this );
 
@@ -297,37 +297,15 @@ public class TrackSchemeGraph<
 	}
 
 	/**
-	 * Adds a GraphChangeListener that will be notified when this
+	 * Get the list of GraphChangeListeners. This can be used to adds (or
+	 * remove) a GraphChangeListener that will be notified when this
 	 * TrackSchemeGraph changes.
 	 *
-	 * @param listener
-	 *            the {@link GraphChangeListener} to register.
-	 * @return {@code true} if the listener was added to the list of
-	 *         listeners. {@code false} if the listener was already
-	 *         registered prior to this call.
+	 * @return list of GraphChangeListeners
 	 */
-	public synchronized boolean addGraphChangeListener( final GraphChangeListener listener )
+	public Listeners< GraphChangeListener > graphChangeListeners()
 	{
-		if ( ! listeners.contains( listener ) )
-		{
-			listeners.add( listener );
-			return true;
-		}
-		return false;
-	}
-
-	/**
-	 * Removes the specified GraphChangeListener from the list of listeners to
-	 * be notified when this TrackSchemeGraph changes.
-	 *
-	 * @param listener
-	 *            the listener to remove.
-	 * @return {@code true} if the listener was present in the list of
-	 *         listeners and was successfully removed from it.
-	 */
-	public synchronized boolean removeGraphChangeListener( final GraphChangeListener listener )
-	{
-		return listeners.remove( listener );
+		return listeners;
 	}
 
 	public Lock readLock()
@@ -342,7 +320,7 @@ public class TrackSchemeGraph<
 	@Override
 	public void graphChanged()
 	{
-		for ( final GraphChangeListener l : listeners )
+		for ( final GraphChangeListener l : listeners.list )
 			l.graphChanged();
 	}
 
