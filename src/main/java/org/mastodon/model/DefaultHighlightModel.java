@@ -163,7 +163,7 @@ public class DefaultHighlightModel< V extends Vertex< E >, E extends Edge< V > >
 	public synchronized void vertexRemoved( final V vertex )
 	{
 		if ( highlightedVertexId == idmap.getVertexId( vertex ) )
-			highlightVertex( null );
+			clearHighlight();
 	}
 
 	@Override
@@ -172,5 +172,8 @@ public class DefaultHighlightModel< V extends Vertex< E >, E extends Edge< V > >
 
 	@Override
 	public synchronized void edgeRemoved( final E edge )
-	{}
+	{
+		if ( highlightedEdgeId == idmap.getEdgeId( edge ) )
+			clearHighlight();
+	}
 }
