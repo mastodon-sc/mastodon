@@ -13,6 +13,7 @@ import org.mastodon.pool.attributes.BooleanAttribute;
 import org.mastodon.pool.attributes.ByteAttribute;
 import org.mastodon.pool.attributes.DoubleAttribute;
 import org.mastodon.pool.attributes.IndexAttribute;
+import org.mastodon.properties.ObjPropertyMap;
 import org.mastodon.revised.trackscheme.ScreenVertex.ScreenVertexPool;
 
 /**
@@ -50,6 +51,7 @@ public class ScreenVertex extends PoolObject< ScreenVertex, ScreenVertexPool, By
 		final ByteAttribute< ScreenVertex > transition = new ByteAttribute<>( layout.transition, this );
 		final IndexAttribute< ScreenVertex > ipScreenVertex = new IndexAttribute<>( layout.ipScreenVertex, this );
 		final DoubleAttribute< ScreenVertex > ipRatio = new DoubleAttribute<>( layout.ipRatio, this );
+		final ObjPropertyMap< ScreenVertex, String > label = new ObjPropertyMap<>( this );
 
 		public ScreenVertexPool( final int initialCapacity, final RefPool< TrackSchemeVertex > trackSchemeVertexPool )
 		{
@@ -110,12 +112,14 @@ public class ScreenVertex extends PoolObject< ScreenVertex, ScreenVertexPool, By
 
 	public ScreenVertex init(
 			final int id,
+			final String label,
 			final double x,
 			final double y,
 			final boolean selected,
 			final boolean ghost )
 	{
 		setTrackSchemeVertexId( id );
+		setLabel( label );
 		setX( x );
 		setY( y );
 		setSelected( selected );
@@ -196,13 +200,12 @@ public class ScreenVertex extends PoolObject< ScreenVertex, ScreenVertexPool, By
 	 */
 	public String getLabel()
 	{
-		final int idx = getTrackSchemeVertexId();
-		if ( idx >= 0 )
-		{
-			return trackSchemeVertexPool.getObject( idx, vref ).getLabel();
-		}
-		else
-			return "XXX";
+		return pool.label.get( this );
+	}
+
+	protected void setLabel( final String label )
+	{
+		pool.label.set( this, label );
 	}
 
 	/**
@@ -306,6 +309,7 @@ public class ScreenVertex extends PoolObject< ScreenVertex, ScreenVertexPool, By
 	ScreenVertex cloneFrom( final ScreenVertex v )
 	{
 		setTrackSchemeVertexId( v.getTrackSchemeVertexId() );
+		setLabel( v.getLabel() );
 		setX( v.getX() );
 		setY( v.getY() );
 		setVertexDist( v.getVertexDist() );

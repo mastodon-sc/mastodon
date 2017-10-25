@@ -356,10 +356,11 @@ public class LineageTreeLayout
 						final int v1si = screenVertices.size();
 						v1.setScreenVertexIndex( v1si );
 						final int id = v1.getInternalPoolIndex();
+						final String label = v1.getLabel();
 						final double x = ( v1.getLayoutX() - minX ) * xScale + decorationsOffsetX;
 						final boolean selected = selection.isSelected( v1 );
 						final boolean ghost = v1.isGhost();
-						screenVertexPool.create( sv ).init( id, x, y, selected, ghost );
+						screenVertexPool.create( sv ).init( id, label, x, y, selected, ghost );
 						screenVertices.add( sv );
 
 						minVertexScreenDist = Math.min( minVertexScreenDist, x - prevX );

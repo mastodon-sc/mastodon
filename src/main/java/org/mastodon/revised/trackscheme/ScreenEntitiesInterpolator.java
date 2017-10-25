@@ -169,6 +169,7 @@ public class ScreenEntitiesInterpolator
 	private void interpolate( final ScreenVertex vStart, final ScreenVertex vEnd, final double ratio, final ScreenVertex vCurrent )
 	{
 		vCurrent.setTrackSchemeVertexId( vEnd.getTrackSchemeVertexId() );
+		vCurrent.setLabel( vEnd.getLabel() );
 		final boolean endSelected = vEnd.isSelected();
 		vCurrent.setSelected( endSelected );
 		vCurrent.setGhost( vEnd.isGhost() );
@@ -195,6 +196,7 @@ public class ScreenEntitiesInterpolator
 	private void disappear( final ScreenVertex vStart, final double ratio, final ScreenVertex vCurrent )
 	{
 		vCurrent.setTrackSchemeVertexId( -1 );
+		vCurrent.setLabel( vStart.getLabel() );
 		vCurrent.setSelected( vStart.isSelected() );
 		vCurrent.setGhost( vStart.isGhost() );
 		vCurrent.setVertexDist( vStart.getVertexDist() );
@@ -214,6 +216,7 @@ public class ScreenEntitiesInterpolator
 	private void appear( final ScreenVertex vEnd, final double ratio, final ScreenVertex vCurrent )
 	{
 		vCurrent.setTrackSchemeVertexId( vEnd.getTrackSchemeVertexId() );
+		vCurrent.setLabel( vEnd.getLabel() );
 		vCurrent.setSelected( vEnd.isSelected() );
 		vCurrent.setGhost( vEnd.isGhost() );
 		vCurrent.setVertexDist( vEnd.getVertexDist() );
