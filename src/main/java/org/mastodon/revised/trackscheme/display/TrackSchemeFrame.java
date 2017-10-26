@@ -19,7 +19,7 @@ import org.mastodon.revised.trackscheme.TrackSchemeGraph;
 import org.mastodon.revised.trackscheme.TrackSchemeVertex;
 import org.mastodon.revised.trackscheme.display.TrackSchemeNavigator.NavigatorEtiquette;
 import org.mastodon.revised.ui.context.ContextChooserPanel;
-import org.mastodon.revised.ui.grouping.GroupLocksPanel;
+import org.mastodon.app.ui.GroupLocksPanel;
 import org.mastodon.undo.UndoPointMarker;
 import org.mastodon.views.context.ContextChooser;
 import org.scijava.ui.behaviour.MouseAndKeyHandler;

@@ -40,7 +40,7 @@ import javax.swing.WindowConstants;
 
 import org.mastodon.grouping.GroupHandle;
 import org.mastodon.revised.mamut.MamutViewFrame;
-import org.mastodon.revised.ui.grouping.GroupLocksPanel;
+import org.mastodon.app.ui.GroupLocksPanel;
 import org.scijava.ui.behaviour.MouseAndKeyHandler;
 import org.scijava.ui.behaviour.util.InputActionBindings;
 import org.scijava.ui.behaviour.util.TriggerBehaviourBindings;

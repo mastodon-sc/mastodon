@@ -1,4 +1,4 @@
-package org.mastodon.revised.ui.grouping;
+package org.mastodon.app.ui;
 
 import static org.mastodon.grouping.GroupManager.NO_GROUP;
 
