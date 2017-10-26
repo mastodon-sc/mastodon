@@ -2,7 +2,6 @@ package org.mastodon.revised.mamut;
 
 import org.mastodon.revised.model.mamut.Model;
 import org.scijava.ui.behaviour.util.Actions;
-import org.scijava.ui.behaviour.util.InputActionBindings;
 
 public class UndoActions
 {
@@ -14,10 +13,10 @@ public class UndoActions
 
 	/**
 	 * Create Undo/Redo actions and install them in the specified
-	 * {@link InputActionBindings}.
+	 * {@link Actions}.
 	 *
 	 * @param actions
-	 *            Actions are added here
+	 *            Actions are added here.
 	 * @param model
 	 *            Actions are targeted at this {@link Model}s {@code undo()} and
 	 *            {@code redo()} methods.

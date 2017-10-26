@@ -125,6 +125,8 @@ public interface SelectionModel< V extends Vertex< E >, E extends Edge< V > >
 	 */
 	public RefSet< V > getSelectedVertices();
 
+	public boolean isEmpty();
+
 	/**
 	 * Get the list of selection listeners. Add a {@link SelectionListener} to
 	 * this list, for being notified when the vertex/edge selection changes.

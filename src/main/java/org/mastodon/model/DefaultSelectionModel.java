@@ -283,6 +283,12 @@ public class DefaultSelectionModel< V extends Vertex< E >, E extends Edge< V > >
 	}
 
 	@Override
+	public boolean isEmpty()
+	{
+		return selectedVertices.isEmpty() && selectedEdges.isEmpty();
+	}
+
+	@Override
 	public String toString()
 	{
 		final StringBuilder sb = new StringBuilder();

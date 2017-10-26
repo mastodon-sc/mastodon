@@ -67,8 +67,15 @@ class MamutViewBdv extends MamutView< OverlayGraphWrapper< Spot, Link >, Overlay
 		final ActionMap actionMap = frame.getKeybindings().getConcatenatedActionMap();
 		menu.addItem( "File", "Load settings", actionMap.get( BigDataViewerActionsMaMuT.LOAD_SETTINGS ) );
 		menu.addItem( "File", "Save settings", actionMap.get( BigDataViewerActionsMaMuT.SAVE_SETTINGS ) );
+
 		menu.addItem( "Edit", "Undo", actionMap.get( UndoActions.UNDO ) );
 		menu.addItem( "Edit", "Redo", actionMap.get( UndoActions.REDO ) );
+		menu.addSeparator( "Edit" );
+		menu.addItem( "Edit", "Delete Selection", actionMap.get( SelectionActions.DELETE_SELECTION ) );
+		menu.addItem( "Edit", "Select Whole Track", actionMap.get( SelectionActions.SELECT_WHOLE_TRACK ) );
+		menu.addItem( "Edit", "Select Track Downward", actionMap.get( SelectionActions.SELECT_TRACK_DOWNWARD ) );
+		menu.addItem( "Edit", "Select Track Upward", actionMap.get( SelectionActions.SELECT_TRACK_UPWARD ) );
+
 		menu.addItem( "Settings", "Brightness & Color", actionMap.get( BigDataViewerActionsMaMuT.BRIGHTNESS_SETTINGS ) );
 		menu.addItem( "Settings", "Visibility & Grouping", actionMap.get( BigDataViewerActionsMaMuT.VISIBILITY_AND_GROUPING ) );
 
@@ -122,14 +129,6 @@ class MamutViewBdv extends MamutView< OverlayGraphWrapper< Spot, Link >, Overlay
 				model.getGraph().getLock(),
 				model.getGraph(),
 				appModel.getHighlightModel(),
-				model );
-		SelectionActions.installActionBindings(
-				frame.getKeybindings(),
-				keyconf,
-				new String[] { "bdv" },
-				model.getGraph(),
-				model.getGraph(),
-				appModel.getSelectionModel(),
 				model );
 
 		viewer.addTimePointListener( timePointIndex -> timepointModel.setTimepoint( timePointIndex ) );

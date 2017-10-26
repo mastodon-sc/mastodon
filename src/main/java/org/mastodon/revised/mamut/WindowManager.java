@@ -13,6 +13,7 @@ import org.mastodon.app.ViewListener;
 import org.mastodon.revised.bdv.SharedBigDataViewerData;
 import org.mastodon.revised.model.mamut.Model;
 import org.mastodon.revised.model.mamut.Spot;
+import org.mastodon.revised.ui.SelectionActions;
 import org.mastodon.views.context.ContextProvider;
 import org.scijava.ui.behaviour.KeyPressedManager;
 import org.scijava.ui.behaviour.io.InputTriggerConfig;
@@ -62,7 +63,9 @@ public class WindowManager
 		final SharedBigDataViewerData sharedBdvData = new SharedBigDataViewerData( spimDataXmlFilename, spimData, options, requestRepaint );
 
 		appModel = new MamutAppModel( model, sharedBdvData, keyconf, keyPressedManager );
+
 		UndoActions.install( appModel.getAppActions(), model );
+		SelectionActions.install( appModel.getAppActions(), model.getGraph(), model.getGraph().getLock(), model.getGraph(), appModel.getSelectionModel(), model );
 	}
 
 	private synchronized void addBdvWindow( final MamutViewBdv w )

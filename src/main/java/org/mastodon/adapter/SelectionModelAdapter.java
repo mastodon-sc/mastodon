@@ -109,6 +109,12 @@ public class SelectionModelAdapter< V extends Vertex< E >, E extends Edge< V >, 
 	}
 
 	@Override
+	public boolean isEmpty()
+	{
+		return selection.isEmpty();
+	}
+
+	@Override
 	public Listeners< SelectionListener > listeners()
 	{
 		return selection.listeners();
