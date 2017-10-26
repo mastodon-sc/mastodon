@@ -33,11 +33,11 @@ import java.awt.Dialog;
 import javax.swing.ActionMap;
 import javax.swing.InputMap;
 
+import org.mastodon.revised.util.ToggleDialogAction;
 import org.scijava.ui.behaviour.KeyStrokeAdder;
 import org.scijava.ui.behaviour.util.Actions;
 import org.scijava.ui.behaviour.util.InputActionBindings;
 
-import bdv.tools.ToggleDialogAction;
 import bdv.tools.VisibilityAndGroupingDialog;
 import bdv.tools.bookmarks.BookmarksEditor;
 import bdv.tools.brightness.BrightnessDialog;

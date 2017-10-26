@@ -2,6 +2,9 @@ package org.mastodon.app.ui;
 
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.util.Arrays;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 import org.mastodon.app.MastodonAppModel;
 import org.mastodon.app.MastodonView;
@@ -12,6 +15,7 @@ import org.mastodon.graph.Vertex;
 import org.mastodon.graph.ref.AbstractListenableEdge;
 import org.mastodon.revised.model.AbstractSpot;
 import org.mastodon.util.Listeners;
+import org.scijava.ui.behaviour.io.InputTriggerConfig;
 import org.scijava.ui.behaviour.util.Actions;
 import org.scijava.ui.behaviour.util.WrappedActionMap;
 import org.scijava.ui.behaviour.util.WrappedInputMap;
@@ -44,11 +48,18 @@ public class MastodonFrameView<
 {
 	protected ViewFrame frame;
 
+	protected final String[] keyConfigContexts;
+
 	public MastodonFrameView(
 			final M appModel,
-			final VG viewGraph )
+			final VG viewGraph,
+			final String[] keyConfigContexts )
 	{
 		super( appModel, viewGraph );
+
+		final Set< String > c = new LinkedHashSet<>( Arrays.asList( appModel.getKeyConfigContexts() ) );
+		c.addAll( Arrays.asList( keyConfigContexts ) );
+		this.keyConfigContexts = c.toArray( new String[] {} );
 	}
 
 	@Override
@@ -82,5 +93,15 @@ public class MastodonFrameView<
 	M getAppModel()
 	{
 		return appModel;
+	}
+
+	InputTriggerConfig getKeyConfig()
+	{
+		return appModel.getKeyConfig();
+	}
+
+	String[] getKeyConfigContexts()
+	{
+		return keyConfigContexts;
 	}
 }

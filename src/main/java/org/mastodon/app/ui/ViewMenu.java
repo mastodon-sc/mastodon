@@ -5,11 +5,15 @@ import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 
+import javax.swing.Action;
+import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.MenuElement;
 
+import org.mastodon.revised.util.HasEnabledState;
+import org.mastodon.revised.util.HasSelectedState;
 import org.scijava.ui.behaviour.InputTrigger;
 import org.scijava.ui.behaviour.io.InputTriggerConfig;
 import org.scijava.ui.behaviour.util.AbstractNamedAction;
@@ -24,7 +28,7 @@ public class ViewMenu
 
 	public ViewMenu( final MastodonFrameView< ?, ?, ?, ?, ?, ? > view )
 	{
-		this( view.getFrame().menubar, view.getAppModel().getKeyConfig(), view.getAppModel().getKeyConfigContexts() );
+		this( view.getFrame().menubar, view.getKeyConfig(), view.getKeyConfigContexts() );
 	}
 
 	public ViewMenu( final JMenuBar menubar, final InputTriggerConfig keyconf, final String... contexts )
@@ -45,7 +49,7 @@ public class ViewMenu
 		menu.addSeparator();
 	}
 
-	public boolean addItem( final String path, final String name, final AbstractNamedAction action )
+	public boolean addItem( final String path, final String name, final Action action )
 	{
 		final JMenu menu = menu( path );
 
@@ -53,13 +57,35 @@ public class ViewMenu
 		for ( int i = 0; i < n; ++i )
 			if ( menu.getItem( i ) != null && menu.getItem( i ).getText().equals( name ) )
 				return false; // item with that name already exists
-		final JMenuItem item = new JMenuItem( action );
+		final JMenuItem item = ( action instanceof HasSelectedState )
+				? new JCheckBoxMenuItem( action )
+				: new JMenuItem( action );
 		item.setText( name );
 
-		final Set< InputTrigger > inputs = keyconf.getInputs( action.name(), contexts );
-		final Optional< InputTrigger > input = inputs.stream().filter( InputTrigger::isKeyStroke ).findFirst();
-		if ( input.isPresent() )
-			item.setAccelerator( input.get().getKeyStroke() );
+		if ( action instanceof AbstractNamedAction )
+		{
+			final AbstractNamedAction namedAction = ( AbstractNamedAction ) action;
+			final Set< InputTrigger > inputs = keyconf.getInputs( namedAction.name(), contexts );
+			final Optional< InputTrigger > input = inputs.stream().filter( InputTrigger::isKeyStroke ).findFirst();
+			if ( input.isPresent() )
+				item.setAccelerator( input.get().getKeyStroke() );
+		}
+
+		if ( action instanceof HasSelectedState )
+		{
+			final HasSelectedState s = ( HasSelectedState ) action;
+			item.setSelected( s.isSelected() );
+			s.selectListeners().add( b -> item.setSelected( b ) );
+			// TODO: cleanup listener when view window closes
+		}
+
+		if ( action instanceof HasEnabledState )
+		{
+			final HasEnabledState s = ( HasEnabledState ) action;
+			item.setEnabled( s.isEnabled() );
+			s.enableListeners().add( b -> item.setEnabled( b ) );
+			// TODO: cleanup listener when view window closes
+		}
 
 		menu.add( item );
 		return true;

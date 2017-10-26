@@ -32,17 +32,12 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
 
-import javax.swing.ActionMap;
 import javax.swing.JFileChooser;
-import javax.swing.JMenu;
-import javax.swing.JMenuBar;
-import javax.swing.JMenuItem;
 import javax.swing.filechooser.FileFilter;
 
 import org.mastodon.grouping.GroupHandle;
 import org.scijava.ui.behaviour.io.InputTriggerConfig;
 
-import bdv.tools.InitializeViewerState;
 import bdv.tools.VisibilityAndGroupingDialog;
 import bdv.tools.bookmarks.BookmarksEditor;
 import bdv.tools.brightness.BrightnessDialog;
@@ -129,43 +124,11 @@ public class BigDataViewerMaMuT
 
 		NavigationActions.installActionBindings( viewerFrame.getKeybindings(), viewer, inputTriggerConfig );
 		BigDataViewerActionsMaMuT.installActionBindings( viewerFrame.getKeybindings(), this, inputTriggerConfig );
-
-		final JMenuBar menubar = new JMenuBar();
-		final ActionMap actionMap = viewerFrame.getKeybindings().getConcatenatedActionMap();
-
-		JMenu menu = new JMenu( "File" );
-		menubar.add( menu );
-
-		final JMenuItem miLoadSettings = new JMenuItem( actionMap.get( BigDataViewerActionsMaMuT.LOAD_SETTINGS ) );
-		miLoadSettings.setText( "Load settings" );
-		menu.add( miLoadSettings );
-
-		final JMenuItem miSaveSettings = new JMenuItem( actionMap.get( BigDataViewerActionsMaMuT.SAVE_SETTINGS ) );
-		miSaveSettings.setText( "Save settings" );
-		menu.add( miSaveSettings );
-
-		menu = new JMenu( "Settings" );
-		menubar.add( menu );
-
-		final JMenuItem miBrightness = new JMenuItem( actionMap.get( BigDataViewerActionsMaMuT.BRIGHTNESS_SETTINGS ) );
-		miBrightness.setText( "Brightness & Color" );
-		menu.add( miBrightness );
-
-		final JMenuItem miVisibility = new JMenuItem( actionMap.get( BigDataViewerActionsMaMuT.VISIBILITY_AND_GROUPING ) );
-		miVisibility.setText( "Visibility & Grouping" );
-		menu.add( miVisibility );
-
-		menu = new JMenu( "Help" );
-		menubar.add( menu );
-
-		viewerFrame.setJMenuBar( menubar );
 	}
 
 	public static BigDataViewerMaMuT open( final SharedBigDataViewerData shared, final String windowTitle, final GroupHandle groupHandle )
 	{
 		final BigDataViewerMaMuT bdv = new BigDataViewerMaMuT( shared, windowTitle, groupHandle );
-		bdv.viewerFrame.setVisible( true );
-		InitializeViewerState.initTransform( bdv.viewer );
 		return bdv;
 	}
 

@@ -1,9 +1,10 @@
 package org.mastodon.revised.mamut;
 
 import javax.swing.ActionMap;
-import javax.swing.InputMap;
 
+import org.mastodon.app.ui.ViewMenu;
 import org.mastodon.revised.bdv.BdvContextProvider;
+import org.mastodon.revised.bdv.BigDataViewerActionsMaMuT;
 import org.mastodon.revised.bdv.BigDataViewerMaMuT;
 import org.mastodon.revised.bdv.SharedBigDataViewerData;
 import org.mastodon.revised.bdv.ViewerFrameMamut;
@@ -25,11 +26,12 @@ import org.mastodon.revised.model.mamut.ModelOverlayProperties;
 import org.mastodon.revised.model.mamut.Spot;
 import org.mastodon.revised.ui.HighlightBehaviours;
 import org.mastodon.revised.ui.SelectionActions;
+import org.mastodon.revised.util.ToggleDialogAction;
 import org.mastodon.views.context.ContextProvider;
-import org.scijava.ui.behaviour.KeyStrokeAdder;
 import org.scijava.ui.behaviour.io.InputTriggerConfig;
+import org.scijava.ui.behaviour.util.Actions;
 
-import bdv.tools.ToggleDialogAction;
+import bdv.tools.InitializeViewerState;
 import bdv.viewer.ViewerPanel;
 
 class MamutViewBdv extends MamutView< OverlayGraphWrapper< Spot, Link >, OverlayVertexWrapper< Spot, Link >, OverlayEdgeWrapper< Spot, Link > >
@@ -51,15 +53,29 @@ class MamutViewBdv extends MamutView< OverlayGraphWrapper< Spot, Link >, Overlay
 						appModel.getModel().getGraphIdBimap(),
 						appModel.getModel().getSpatioTemporalIndex(),
 						appModel.getModel().getGraph().getLock(),
-						new ModelOverlayProperties( appModel.getModel().getGraph(), appModel.getRadiusStats() ) ) );
+						new ModelOverlayProperties( appModel.getModel().getGraph(), appModel.getRadiusStats() ) ),
+				new String[] { "bdv" } );
 
 		sharedBdvData = appModel.getSharedBdvData();
 
 		final String windowTitle = "BigDataViewer " + ( bdvName++ ); // TODO: use JY naming scheme
 		final BigDataViewerMaMuT bdv = BigDataViewerMaMuT.open( sharedBdvData, windowTitle, groupHandle );
-		final ViewerFrameMamut viewerFrame = bdv.getViewerFrame();
-		setFrame( viewerFrame );
+		final ViewerFrameMamut frame = bdv.getViewerFrame();
+		setFrame( frame );
+
+		final ViewMenu menu = new ViewMenu( this );
+		final ActionMap actionMap = frame.getKeybindings().getConcatenatedActionMap();
+		menu.addItem( "File", "Load settings", actionMap.get( BigDataViewerActionsMaMuT.LOAD_SETTINGS ) );
+		menu.addItem( "File", "Save settings", actionMap.get( BigDataViewerActionsMaMuT.SAVE_SETTINGS ) );
+		menu.addItem( "Edit", "Undo", actionMap.get( UndoActions.UNDO ) );
+		menu.addItem( "Edit", "Redo", actionMap.get( UndoActions.REDO ) );
+		menu.addItem( "Settings", "Brightness & Color", actionMap.get( BigDataViewerActionsMaMuT.BRIGHTNESS_SETTINGS ) );
+		menu.addItem( "Settings", "Visibility & Grouping", actionMap.get( BigDataViewerActionsMaMuT.VISIBILITY_AND_GROUPING ) );
+
+		frame.setVisible( true );
+
 		viewer = bdv.getViewer();
+		InitializeViewerState.initTransform( viewer );
 
 		viewer.setTimepoint( timepointModel.getTimepoint() );
 		final OverlayGraphRenderer< OverlayVertexWrapper< Spot, Link >, OverlayEdgeWrapper< Spot, Link > > tracksOverlay = new OverlayGraphRenderer<>(
@@ -91,15 +107,15 @@ class MamutViewBdv extends MamutView< OverlayGraphWrapper< Spot, Link >, Overlay
 		final InputTriggerConfig keyconf = appModel.getKeyConfig();
 
 		final BdvSelectionBehaviours< ?, ? > selectionBehaviours = new BdvSelectionBehaviours<>( viewGraph, tracksOverlay, selectionModel, navigationHandler );
-		selectionBehaviours.installBehaviourBindings( viewerFrame.getTriggerbindings(), keyconf );
+		selectionBehaviours.installBehaviourBindings( frame.getTriggerbindings(), keyconf );
 
 		contextProvider = new BdvContextProvider<>( windowTitle, viewGraph, tracksOverlay );
 		viewer.addRenderTransformListener( contextProvider );
 
-		EditBehaviours.installActionBindings( viewerFrame.getTriggerbindings(), keyconf, viewGraph, tracksOverlay, model );
-		EditSpecialBehaviours.installActionBindings( viewerFrame.getTriggerbindings(), keyconf, viewerFrame.getViewerPanel(), viewGraph, tracksOverlay, model );
+		EditBehaviours.installActionBindings( frame.getTriggerbindings(), keyconf, viewGraph, tracksOverlay, model );
+		EditSpecialBehaviours.installActionBindings( frame.getTriggerbindings(), keyconf, frame.getViewerPanel(), viewGraph, tracksOverlay, model );
 		HighlightBehaviours.installActionBindings(
-				viewerFrame.getTriggerbindings(),
+				frame.getTriggerbindings(),
 				keyconf,
 				new String[] { "bdv" },
 				model.getGraph(),
@@ -108,7 +124,7 @@ class MamutViewBdv extends MamutView< OverlayGraphWrapper< Spot, Link >, Overlay
 				appModel.getHighlightModel(),
 				model );
 		SelectionActions.installActionBindings(
-				viewerFrame.getKeybindings(),
+				frame.getKeybindings(),
 				keyconf,
 				new String[] { "bdv" },
 				model.getGraph(),
@@ -123,14 +139,10 @@ class MamutViewBdv extends MamutView< OverlayGraphWrapper< Spot, Link >, Overlay
 		// RenderSettingsDialog triggered by "R"
 		final RenderSettings renderSettings = new RenderSettings(); // TODO should be in overlay eventually
 		final String RENDER_SETTINGS = "render settings";
-		final RenderSettingsDialog renderSettingsDialog = new RenderSettingsDialog( viewerFrame, renderSettings );
-		final ActionMap actionMap = new ActionMap();
-		new ToggleDialogAction( RENDER_SETTINGS, renderSettingsDialog ).put( actionMap );
-		final InputMap inputMap = new InputMap();
-		final KeyStrokeAdder a = keyconf.keyStrokeAdder( inputMap, "mamut" );
-		a.put( RENDER_SETTINGS, "R" );
-		viewerFrame.getKeybindings().addActionMap( "mamut", actionMap );
-		viewerFrame.getKeybindings().addInputMap( "mamut", inputMap );
+		final RenderSettingsDialog renderSettingsDialog = new RenderSettingsDialog( frame, renderSettings );
+		final Actions actions = new Actions( keyconf, "mamut" );
+		actions.install( frame.getKeybindings(), "mamut" );
+		actions.namedAction( new ToggleDialogAction( RENDER_SETTINGS, renderSettingsDialog ), "R" );
 		renderSettings.addUpdateListener( () -> {
 			tracksOverlay.setRenderSettings( renderSettings );
 			// TODO: less hacky way of triggering repaint and context update

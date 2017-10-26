@@ -1,7 +1,6 @@
 package org.mastodon.revised.mamut;
 
 import javax.swing.ActionMap;
-import javax.swing.InputMap;
 import javax.swing.JDialog;
 
 import org.mastodon.app.ui.ViewMenu;
@@ -20,13 +19,11 @@ import org.mastodon.revised.trackscheme.display.ui.TrackSchemeStyleChooser;
 import org.mastodon.revised.trackscheme.wrap.DefaultModelGraphProperties;
 import org.mastodon.revised.ui.HighlightBehaviours;
 import org.mastodon.revised.ui.SelectionActions;
+import org.mastodon.revised.util.ToggleDialogAction;
 import org.mastodon.views.context.ContextChooser;
 import org.scijava.ui.behaviour.KeyPressedManager;
-import org.scijava.ui.behaviour.KeyStrokeAdder;
 import org.scijava.ui.behaviour.io.InputTriggerConfig;
-import org.scijava.ui.behaviour.util.AbstractNamedAction;
-
-import bdv.tools.ToggleDialogAction;
+import org.scijava.ui.behaviour.util.Actions;
 
 class MamutViewTrackScheme extends MamutView< TrackSchemeGraph< Spot, Link >, TrackSchemeVertex, TrackSchemeEdge >
 {
@@ -39,15 +36,14 @@ class MamutViewTrackScheme extends MamutView< TrackSchemeGraph< Spot, Link >, Tr
 						appModel.getModel().getGraph(),
 						appModel.getModel().getGraphIdBimap(),
 						new DefaultModelGraphProperties<>(),
-						appModel.getModel().getGraph().getLock()
-				) );
+						appModel.getModel().getGraph().getLock() ),
+				new String[] { "ts" } );
 
 		/*
 		 * TrackScheme ContextChooser
 		 */
 		final TrackSchemeContextListener< Spot > contextListener = new TrackSchemeContextListener<>( viewGraph );
 		contextChooser = new ContextChooser<>( contextListener );
-
 
 		final InputTriggerConfig keyconf = appModel.getKeyConfig();
 		final KeyPressedManager keyPressedManager = appModel.getKeyPressedManager();
@@ -79,8 +75,9 @@ class MamutViewTrackScheme extends MamutView< TrackSchemeGraph< Spot, Link >, Tr
 		frame.setVisible( true );
 
 		final ViewMenu menu = new ViewMenu( this );
-		menu.addItem( "Edit", "Undo", ( AbstractNamedAction ) appModel.getAppActions().getActionMap().get( UndoActions.UNDO ) );
-		menu.addItem( "Edit", "Redo", ( AbstractNamedAction ) appModel.getAppActions().getActionMap().get( UndoActions.REDO ) );
+		final ActionMap actionMap = frame.getKeybindings().getConcatenatedActionMap();
+		menu.addItem( "Edit", "Undo", actionMap.get( UndoActions.UNDO ) );
+		menu.addItem( "Edit", "Redo", actionMap.get( UndoActions.REDO ) );
 
 		HighlightBehaviours.installActionBindings(
 				frame.getTriggerbindings(),
@@ -109,17 +106,14 @@ class MamutViewTrackScheme extends MamutView< TrackSchemeGraph< Spot, Link >, Tr
 				modelGraph.getGraphIdBimap(),
 				model );
 
+		// TODO revise
 		// TrackSchemeStyleDialog triggered by "R"
 		final String TRACK_SCHEME_STYLE_SETTINGS = "render settings";
 		final TrackSchemeStyleChooser styleChooser = new TrackSchemeStyleChooser( frame, frame.getTrackschemePanel() );
 		final JDialog styleDialog = styleChooser.getDialog();
-		final ActionMap actionMap = new ActionMap();
-		new ToggleDialogAction( TRACK_SCHEME_STYLE_SETTINGS, styleDialog ).put( actionMap );
-		final InputMap inputMap = new InputMap();
-		final KeyStrokeAdder a = keyconf.keyStrokeAdder( inputMap, "mamut" );
-		a.put( TRACK_SCHEME_STYLE_SETTINGS, "R" );
-		frame.getKeybindings().addActionMap( "mamut", actionMap );
-		frame.getKeybindings().addInputMap( "mamut", inputMap );
+		final Actions actions = new Actions( keyconf, "mamut" );
+		actions.install( frame.getKeybindings(), "mamut" );
+		actions.namedAction( new ToggleDialogAction( TRACK_SCHEME_STYLE_SETTINGS, styleDialog ), "R" );
 
 		frame.getTrackschemePanel().repaint();
 	}
