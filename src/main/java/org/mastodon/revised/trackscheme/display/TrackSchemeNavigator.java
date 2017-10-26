@@ -4,6 +4,8 @@ import java.awt.Color;
 import java.awt.Graphics;
 
 import org.mastodon.collection.RefSet;
+import org.mastodon.model.FocusModel;
+import org.mastodon.model.NavigationHandler;
 import org.mastodon.model.SelectionModel;
 import org.mastodon.revised.trackscheme.LineageTreeLayout;
 import org.mastodon.revised.trackscheme.ScreenTransform;
@@ -11,8 +13,6 @@ import org.mastodon.revised.trackscheme.TrackSchemeEdge;
 import org.mastodon.revised.trackscheme.TrackSchemeGraph;
 import org.mastodon.revised.trackscheme.TrackSchemeVertex;
 import org.mastodon.revised.trackscheme.display.OffsetHeaders.OffsetHeadersListener;
-import org.mastodon.model.FocusModel;
-import org.mastodon.model.NavigationHandler;
 import org.scijava.ui.behaviour.BehaviourMap;
 import org.scijava.ui.behaviour.ClickBehaviour;
 import org.scijava.ui.behaviour.DragBehaviour;
@@ -175,7 +175,7 @@ public class TrackSchemeNavigator implements TransformListener< ScreenTransform 
 
 	public void installActionBindings( final InputActionBindings keybindings, final KeyStrokeAdder.Factory keyConfig, final NavigatorEtiquette etiquette )
 	{
-		final Actions actions = new Actions( keyConfig, new String[] { "ts" } );
+		final Actions actions = new Actions( keyConfig, "ts" );
 		switch ( etiquette )
 		{
 		case MIDNIGHT_COMMANDER_LIKE:
@@ -212,12 +212,12 @@ public class TrackSchemeNavigator implements TransformListener< ScreenTransform 
 	{
 		final InputTriggerMap inputMap = new InputTriggerMap();
 		final InputTriggerAdder adder = keyConfig.inputTriggerAdder( inputMap, "ts" );
-		adder.put( FOCUS_VERTEX, "button1", "shift button1" );
-		adder.put( NAVIGATE_TO_VERTEX, "double-click button1", "shift double-click button1" );
-		adder.put( SELECT, "button1" );
-		adder.put( ADD_SELECT, "shift button1" );
-		adder.put( BOX_SELECT, "button1" );
-		adder.put( BOX_ADD_SELECT, "shift button1" );
+		adder.put( FOCUS_VERTEX, FOCUS_VERTEX_KEYS );
+		adder.put( NAVIGATE_TO_VERTEX, NAVIGATE_TO_VERTEX_KEYS );
+		adder.put( SELECT, SELECT_KEYS );
+		adder.put( ADD_SELECT, ADD_SELECT_KEYS );
+		adder.put( BOX_SELECT, BOX_SELECT_KEYS );
+		adder.put( BOX_ADD_SELECT, BOX_ADD_SELECT_KEYS );
 
 		triggerbindings.addBehaviourMap( "ts navigator", behaviourMap );
 		triggerbindings.addInputTriggerMap( "ts navigator", inputMap );
