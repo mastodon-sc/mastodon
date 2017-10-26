@@ -12,7 +12,6 @@ import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.MenuElement;
 
-import org.mastodon.revised.util.HasEnabledState;
 import org.mastodon.revised.util.HasSelectedState;
 import org.scijava.ui.behaviour.InputTrigger;
 import org.scijava.ui.behaviour.io.InputTriggerConfig;
@@ -76,14 +75,6 @@ public class ViewMenu
 			final HasSelectedState s = ( HasSelectedState ) action;
 			item.setSelected( s.isSelected() );
 			s.selectListeners().add( b -> item.setSelected( b ) );
-			// TODO: cleanup listener when view window closes
-		}
-
-		if ( action instanceof HasEnabledState )
-		{
-			final HasEnabledState s = ( HasEnabledState ) action;
-			item.setEnabled( s.isEnabled() );
-			s.enableListeners().add( b -> item.setEnabled( b ) );
 			// TODO: cleanup listener when view window closes
 		}
 
