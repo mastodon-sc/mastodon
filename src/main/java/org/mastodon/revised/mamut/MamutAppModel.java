@@ -8,7 +8,6 @@ import org.mastodon.revised.model.mamut.Model;
 import org.mastodon.revised.model.mamut.Spot;
 import org.scijava.ui.behaviour.KeyPressedManager;
 import org.scijava.ui.behaviour.io.InputTriggerConfig;
-import org.scijava.ui.behaviour.util.Actions;
 
 /**
  * Data class that stores the data model and the application model of the MaMuT
@@ -24,18 +23,9 @@ public class MamutAppModel extends MastodonAppModel< Model, Spot, Link >
 
 	private final SharedBigDataViewerData sharedBdvData;
 
-	private final InputTriggerConfig keyconf; // TODO: should this really be here???
-
-	private final KeyPressedManager keyPressedManager; // TODO: should this really be here???
-
 	private final int minTimepoint;
 
 	private final int maxTimepoint;
-
-	/**
-	 * Actions that should be available in all views.
-	 */
-	private final Actions appActions;
 
 	public MamutAppModel(
 			final Model model,
@@ -43,12 +33,10 @@ public class MamutAppModel extends MastodonAppModel< Model, Spot, Link >
 			final InputTriggerConfig keyconf,
 			final KeyPressedManager keyPressedManager )
 	{
-		super( NUM_GROUPS, model );
+		super( NUM_GROUPS, model, keyconf, keyPressedManager, new String[] { "mamut" } );
 
 		this.radiusStats = new BoundingSphereRadiusStatistics( model );
 		this.sharedBdvData = sharedBdvData;
-		this.keyconf = keyconf;
-		this.keyPressedManager = keyPressedManager;
 		this.minTimepoint = 0;
 		this.maxTimepoint = sharedBdvData.getNumTimepoints() - 1;
 		/*
@@ -57,8 +45,6 @@ public class MamutAppModel extends MastodonAppModel< Model, Spot, Link >
 		 * it would be confusing to have different labels in TrackScheme. If
 		 * this is changed in the future, then probably only in the model files.
 		 */
-
-		this.appActions = new Actions( keyconf, "mamut" );
 	}
 
 	public BoundingSphereRadiusStatistics getRadiusStats()
@@ -79,20 +65,5 @@ public class MamutAppModel extends MastodonAppModel< Model, Spot, Link >
 	public int getMaxTimepoint()
 	{
 		return maxTimepoint;
-	}
-
-	public InputTriggerConfig getKeyconf()
-	{
-		return keyconf;
-	}
-
-	public KeyPressedManager getKeyPressedManager()
-	{
-		return keyPressedManager;
-	}
-
-	public Actions getAppActions()
-	{
-		return appActions;
 	}
 }

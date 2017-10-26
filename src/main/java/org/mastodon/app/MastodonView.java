@@ -5,6 +5,7 @@ import org.mastodon.adapter.HighlightModelAdapter;
 import org.mastodon.adapter.NavigationHandlerAdapter;
 import org.mastodon.adapter.RefBimap;
 import org.mastodon.adapter.SelectionModelAdapter;
+import org.mastodon.app.ui.ViewFrame;
 import org.mastodon.graph.Edge;
 import org.mastodon.graph.Vertex;
 import org.mastodon.graph.ref.AbstractListenableEdge;
@@ -15,13 +16,22 @@ import org.mastodon.model.NavigationHandler;
 import org.mastodon.model.SelectionModel;
 import org.mastodon.model.TimepointModel;
 import org.mastodon.revised.model.AbstractSpot;
+import org.mastodon.util.Listeners;
 
 /**
  *
- * @param <MV> model vertex type
- * @param <ME> model edge type
- * @param <V> view vertex type
- * @param <E> view edge type
+ * @param <M>
+ * @param <VG>
+ * @param <MV>
+ *            model vertex type
+ * @param <ME>
+ *            model edge type
+ * @param <V>
+ *            view vertex type
+ * @param <E>
+ *            view edge type
+ *
+ * @author Tobias Pietzsch
  */
 public class MastodonView<
 		M extends MastodonAppModel< ?, MV, ME >,
@@ -47,6 +57,10 @@ public class MastodonView<
 
 	protected final NavigationHandler< V, E > navigationHandler;
 
+	protected final Listeners.List< ViewListener > listeners = new Listeners.SynchronizedList<>();
+
+	protected ViewFrame frame;
+
 	public MastodonView(
 			final M appModel,
 			final VG viewGraph )
@@ -64,5 +78,10 @@ public class MastodonView<
 		selectionModel = new SelectionModelAdapter<>( appModel.getSelectionModel(), vertexMap, edgeMap );
 		final NavigationHandler< MV, ME > navigation = groupHandle.getModel( appModel.NAVIGATION );
 		navigationHandler = new NavigationHandlerAdapter<>( navigation, vertexMap, edgeMap );
+	}
+
+	public Listeners< ViewListener > listeners()
+	{
+		return listeners;
 	}
 }

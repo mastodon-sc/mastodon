@@ -9,6 +9,7 @@ import java.util.List;
 import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
 
+import org.mastodon.app.ViewListener;
 import org.mastodon.revised.bdv.SharedBigDataViewerData;
 import org.mastodon.revised.model.mamut.Model;
 import org.mastodon.revised.model.mamut.Spot;
@@ -66,7 +67,7 @@ public class WindowManager
 
 	private synchronized void addBdvWindow( final MamutViewBdv w )
 	{
-		w.listeners().add( new MamutViewListener()
+		w.listeners().add( new ViewListener()
 		{
 			@Override
 			public void onClose()
@@ -90,7 +91,7 @@ public class WindowManager
 
 	private synchronized void addTsWindow( final MamutViewTrackScheme w )
 	{
-		w.listeners().add( new MamutViewListener()
+		w.listeners().add( new ViewListener()
 		{
 			@Override
 			public void onClose()
@@ -160,7 +161,7 @@ public class WindowManager
 		public static void writeToYaml( final String fileName, final WindowManager wm ) throws IOException
 		{
 			mkdirs( fileName );
-			final List< InputTriggerDescription > descriptions = new InputTriggerDescriptionsBuilder( wm.appModel.getKeyconf() ).getDescriptions();
+			final List< InputTriggerDescription > descriptions = new InputTriggerDescriptionsBuilder( wm.appModel.getKeyConfig() ).getDescriptions();
 			YamlConfigIO.write( descriptions, fileName );
 		}
 	}

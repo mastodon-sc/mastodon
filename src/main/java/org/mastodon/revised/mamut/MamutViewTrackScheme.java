@@ -4,6 +4,7 @@ import javax.swing.ActionMap;
 import javax.swing.InputMap;
 import javax.swing.JDialog;
 
+import org.mastodon.app.ui.ViewMenu;
 import org.mastodon.revised.model.mamut.Link;
 import org.mastodon.revised.model.mamut.Model;
 import org.mastodon.revised.model.mamut.ModelGraph;
@@ -23,6 +24,7 @@ import org.mastodon.views.context.ContextChooser;
 import org.scijava.ui.behaviour.KeyPressedManager;
 import org.scijava.ui.behaviour.KeyStrokeAdder;
 import org.scijava.ui.behaviour.io.InputTriggerConfig;
+import org.scijava.ui.behaviour.util.AbstractNamedAction;
 
 import bdv.tools.ToggleDialogAction;
 
@@ -47,7 +49,7 @@ class MamutViewTrackScheme extends MamutView< TrackSchemeGraph< Spot, Link >, Tr
 		contextChooser = new ContextChooser<>( contextListener );
 
 
-		final InputTriggerConfig keyconf = appModel.getKeyconf();
+		final InputTriggerConfig keyconf = appModel.getKeyConfig();
 		final KeyPressedManager keyPressedManager = appModel.getKeyPressedManager();
 		final Model model = appModel.getModel();
 		final ModelGraph modelGraph = model.getGraph();
@@ -75,6 +77,10 @@ class MamutViewTrackScheme extends MamutView< TrackSchemeGraph< Spot, Link >, Tr
 
 		setFrame( frame );
 		frame.setVisible( true );
+
+		final ViewMenu menu = new ViewMenu( this );
+		menu.addItem( "Edit", "Undo", ( AbstractNamedAction ) appModel.getAppActions().getActionMap().get( UndoActions.UNDO ) );
+		menu.addItem( "Edit", "Redo", ( AbstractNamedAction ) appModel.getAppActions().getActionMap().get( UndoActions.REDO ) );
 
 		HighlightBehaviours.installActionBindings(
 				frame.getTriggerbindings(),

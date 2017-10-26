@@ -17,6 +17,9 @@ import org.mastodon.model.SelectionModel;
 import org.mastodon.model.TimepointModel;
 import org.mastodon.revised.model.AbstractModel;
 import org.mastodon.revised.model.AbstractSpot;
+import org.scijava.ui.behaviour.KeyPressedManager;
+import org.scijava.ui.behaviour.io.InputTriggerConfig;
+import org.scijava.ui.behaviour.util.Actions;
 
 /**
  * Data class that stores the data model and the application model of the MaMuT
@@ -43,9 +46,33 @@ public class MastodonAppModel<
 
 	private final GroupManager groupManager;
 
+	private final InputTriggerConfig keyconf;
+
+	private final KeyPressedManager keyPressedManager;
+
+	private final String[] keyConfigContexts;
+
+	/**
+	 * Actions that should be available in all views.
+	 */
+	private final Actions appActions;
+
+	/**
+	 *
+	 * @param numGroups
+	 * @param model
+	 * @param keyconf
+	 * @param keyPressedManager
+	 * @param keyConfigContexts
+	 *            keyconf contexts for appActions (actions that should be
+	 *            available in all views)
+	 */
 	public MastodonAppModel(
 			final int numGroups,
-			final M model )
+			final M model,
+			final InputTriggerConfig keyconf,
+			final KeyPressedManager keyPressedManager,
+			final String[] keyConfigContexts )
 	{
 		this.model = model;
 
@@ -67,6 +94,12 @@ public class MastodonAppModel<
 		groupManager = new GroupManager( numGroups );
 		groupManager.registerModel( TIMEPOINT );
 		groupManager.registerModel( NAVIGATION );
+
+		this.keyconf = keyconf;
+		this.keyPressedManager = keyPressedManager;
+		this.keyConfigContexts = keyConfigContexts;
+
+		this.appActions = new Actions( keyconf, keyConfigContexts );
 	}
 
 	public M getModel()
@@ -92,5 +125,25 @@ public class MastodonAppModel<
 	public GroupManager getGroupManager()
 	{
 		return groupManager;
+	}
+
+	public InputTriggerConfig getKeyConfig()
+	{
+		return keyconf;
+	}
+
+	public String[] getKeyConfigContexts()
+	{
+		return keyConfigContexts;
+	}
+
+	public KeyPressedManager getKeyPressedManager()
+	{
+		return keyPressedManager;
+	}
+
+	public Actions getAppActions()
+	{
+		return appActions;
 	}
 }

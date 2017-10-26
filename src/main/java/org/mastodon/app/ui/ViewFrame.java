@@ -1,4 +1,4 @@
-package org.mastodon.revised.mamut;
+package org.mastodon.app.ui;
 
 import java.awt.BorderLayout;
 import java.lang.reflect.InvocationTargetException;
@@ -6,6 +6,7 @@ import java.lang.reflect.InvocationTargetException;
 import javax.swing.BoxLayout;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
+import javax.swing.JMenuBar;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
@@ -15,7 +16,13 @@ import org.scijava.ui.behaviour.util.TriggerBehaviourBindings;
 import bdv.util.InvokeOnEDT;
 import net.imglib2.ui.util.GuiUtil;
 
-public class MamutViewFrame extends JFrame
+/**
+ * A {@code JFrame} with some stuff added. Used to display
+ * {@link MastodonFrameView}.
+ *
+ * @author Tobias Pietzsch
+ */
+public class ViewFrame extends JFrame
 {
 	private static final long serialVersionUID = 1L;
 
@@ -27,7 +34,9 @@ public class MamutViewFrame extends JFrame
 
 	protected final TriggerBehaviourBindings triggerbindings;
 
-	public MamutViewFrame( final String windowTitle )
+	protected final JMenuBar menubar;
+
+	public ViewFrame( final String windowTitle )
 	{
 		super( windowTitle, GuiUtil.getSuitableGraphicsConfiguration( GuiUtil.RGB_COLOR_MODEL ) );
 		getRootPane().setDoubleBuffered( true );
@@ -42,6 +51,9 @@ public class MamutViewFrame extends JFrame
 		settingsPanel.setLayout( new BoxLayout( settingsPanel, BoxLayout.LINE_AXIS ) );
 		add( settingsPanel, BorderLayout.NORTH );
 		isSettingsPanelVisible = true;
+
+		menubar = new JMenuBar();
+		setJMenuBar( menubar );
 	}
 
 	public boolean isSettingsPanelVisible()
@@ -74,4 +86,5 @@ public class MamutViewFrame extends JFrame
 			pack();
 		}
 	}
+
 }

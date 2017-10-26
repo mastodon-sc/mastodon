@@ -38,9 +38,9 @@ import javax.swing.Box;
 import javax.swing.JFrame;
 import javax.swing.WindowConstants;
 
-import org.mastodon.grouping.GroupHandle;
-import org.mastodon.revised.mamut.MamutViewFrame;
 import org.mastodon.app.ui.GroupLocksPanel;
+import org.mastodon.app.ui.ViewFrame;
+import org.mastodon.grouping.GroupHandle;
 import org.scijava.ui.behaviour.MouseAndKeyHandler;
 import org.scijava.ui.behaviour.util.InputActionBindings;
 import org.scijava.ui.behaviour.util.TriggerBehaviourBindings;
@@ -58,7 +58,7 @@ import net.imglib2.ui.TransformEventHandler;
  *
  * @author Tobias Pietzsch &lt;tobias.pietzsch@gmail.com&gt;
  */
-public class ViewerFrameMamut extends MamutViewFrame
+public class ViewerFrameMamut extends ViewFrame
 {
 	private static final long serialVersionUID = 1L;
 

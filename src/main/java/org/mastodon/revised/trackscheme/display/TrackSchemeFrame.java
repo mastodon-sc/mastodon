@@ -7,19 +7,19 @@ import java.awt.event.WindowEvent;
 import javax.swing.Box;
 import javax.swing.WindowConstants;
 
+import org.mastodon.app.ui.GroupLocksPanel;
+import org.mastodon.app.ui.ViewFrame;
 import org.mastodon.grouping.GroupHandle;
 import org.mastodon.model.FocusModel;
 import org.mastodon.model.HighlightModel;
 import org.mastodon.model.NavigationHandler;
 import org.mastodon.model.SelectionModel;
 import org.mastodon.model.TimepointModel;
-import org.mastodon.revised.mamut.MamutViewFrame;
 import org.mastodon.revised.trackscheme.TrackSchemeEdge;
 import org.mastodon.revised.trackscheme.TrackSchemeGraph;
 import org.mastodon.revised.trackscheme.TrackSchemeVertex;
 import org.mastodon.revised.trackscheme.display.TrackSchemeNavigator.NavigatorEtiquette;
 import org.mastodon.revised.ui.context.ContextChooserPanel;
-import org.mastodon.app.ui.GroupLocksPanel;
 import org.mastodon.undo.UndoPointMarker;
 import org.mastodon.views.context.ContextChooser;
 import org.scijava.ui.behaviour.MouseAndKeyHandler;
@@ -30,7 +30,7 @@ import org.scijava.ui.behaviour.util.TriggerBehaviourBindings;
 import bdv.BehaviourTransformEventHandler;
 import net.imglib2.ui.TransformEventHandler;
 
-public class TrackSchemeFrame extends MamutViewFrame
+public class TrackSchemeFrame extends ViewFrame
 {
 	private static final long serialVersionUID = 1L;
 
