@@ -4,7 +4,7 @@ import javax.swing.ActionMap;
 
 import org.mastodon.app.ui.ViewMenu;
 import org.mastodon.revised.bdv.BdvContextProvider;
-import org.mastodon.revised.bdv.BigDataViewerActionsMaMuT;
+import org.mastodon.revised.bdv.BigDataViewerActionsMamut;
 import org.mastodon.revised.bdv.BigDataViewerMaMuT;
 import org.mastodon.revised.bdv.SharedBigDataViewerData;
 import org.mastodon.revised.bdv.ViewerFrameMamut;
@@ -59,14 +59,18 @@ class MamutViewBdv extends MamutView< OverlayGraphWrapper< Spot, Link >, Overlay
 		sharedBdvData = appModel.getSharedBdvData();
 
 		final String windowTitle = "BigDataViewer " + ( bdvName++ ); // TODO: use JY naming scheme
-		final BigDataViewerMaMuT bdv = BigDataViewerMaMuT.open( sharedBdvData, windowTitle, groupHandle );
+		final BigDataViewerMaMuT bdv = new BigDataViewerMaMuT( sharedBdvData, windowTitle, groupHandle );
 		final ViewerFrameMamut frame = bdv.getViewerFrame();
 		setFrame( frame );
 
+		final Actions viewActions = new Actions( appModel.getKeyConfig(), appModel.getKeyConfigContexts() );
+		viewActions.install( frame.getKeybindings(), "view" );
+		BigDataViewerActionsMamut.installActionBindings( viewActions, bdv );
+
 		final ViewMenu menu = new ViewMenu( this );
 		final ActionMap actionMap = frame.getKeybindings().getConcatenatedActionMap();
-		menu.addItem( "File", "Load settings", actionMap.get( BigDataViewerActionsMaMuT.LOAD_SETTINGS ) );
-		menu.addItem( "File", "Save settings", actionMap.get( BigDataViewerActionsMaMuT.SAVE_SETTINGS ) );
+		menu.addItem( "File", "Load settings", actionMap.get( BigDataViewerActionsMamut.LOAD_SETTINGS ) );
+		menu.addItem( "File", "Save settings", actionMap.get( BigDataViewerActionsMamut.SAVE_SETTINGS ) );
 
 		menu.addItem( "Edit", "Undo", actionMap.get( UndoActions.UNDO ) );
 		menu.addItem( "Edit", "Redo", actionMap.get( UndoActions.REDO ) );
@@ -76,8 +80,8 @@ class MamutViewBdv extends MamutView< OverlayGraphWrapper< Spot, Link >, Overlay
 		menu.addItem( "Edit", "Select Track Downward", actionMap.get( SelectionActions.SELECT_TRACK_DOWNWARD ) );
 		menu.addItem( "Edit", "Select Track Upward", actionMap.get( SelectionActions.SELECT_TRACK_UPWARD ) );
 
-		menu.addItem( "Settings", "Brightness & Color", actionMap.get( BigDataViewerActionsMaMuT.BRIGHTNESS_SETTINGS ) );
-		menu.addItem( "Settings", "Visibility & Grouping", actionMap.get( BigDataViewerActionsMaMuT.VISIBILITY_AND_GROUPING ) );
+		menu.addItem( "Settings", "Brightness & Color", actionMap.get( BigDataViewerActionsMamut.BRIGHTNESS_SETTINGS ) );
+		menu.addItem( "Settings", "Visibility & Grouping", actionMap.get( BigDataViewerActionsMamut.VISIBILITY_AND_GROUPING ) );
 
 		frame.setVisible( true );
 

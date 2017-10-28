@@ -52,7 +52,7 @@ public class BigDataViewerMaMuT
 
 	private final BrightnessDialog brightnessDialog;
 
-	private final VisibilityAndGroupingDialog activeSourcesDialog;
+	private final VisibilityAndGroupingDialog visibilityAndGroupingDialog;
 
 	private final BookmarksEditor bookmarkEditor;
 
@@ -120,16 +120,9 @@ public class BigDataViewerMaMuT
 		bookmarkEditor.setInputMapsToBlock( Arrays.asList( "all" ) );
 
 		brightnessDialog = shared.getBrightnessDialog();
-		activeSourcesDialog = new VisibilityAndGroupingDialog( viewerFrame, viewer.getVisibilityAndGrouping() );
+		visibilityAndGroupingDialog = new VisibilityAndGroupingDialog( viewerFrame, viewer.getVisibilityAndGrouping() );
 
 		NavigationActions.installActionBindings( viewerFrame.getKeybindings(), viewer, inputTriggerConfig );
-		BigDataViewerActionsMaMuT.installActionBindings( viewerFrame.getKeybindings(), this, inputTriggerConfig );
-	}
-
-	public static BigDataViewerMaMuT open( final SharedBigDataViewerData shared, final String windowTitle, final GroupHandle groupHandle )
-	{
-		final BigDataViewerMaMuT bdv = new BigDataViewerMaMuT( shared, windowTitle, groupHandle );
-		return bdv;
 	}
 
 	public ViewerPanel getViewer()
@@ -147,9 +140,9 @@ public class BigDataViewerMaMuT
 		return brightnessDialog;
 	}
 
-	public VisibilityAndGroupingDialog getActiveSourcesDialog()
+	public VisibilityAndGroupingDialog getVisibilityAndGroupingDialog()
 	{
-		return activeSourcesDialog;
+		return visibilityAndGroupingDialog;
 	}
 
 	public BookmarksEditor getBookmarksEditor()
@@ -187,7 +180,7 @@ public class BigDataViewerMaMuT
 			try
 			{
 				shared.loadSettings( file.getCanonicalPath(), viewer );
-				activeSourcesDialog.update();
+				visibilityAndGroupingDialog.update();
 				viewer.repaint();
 			}
 			catch ( final Exception e )
