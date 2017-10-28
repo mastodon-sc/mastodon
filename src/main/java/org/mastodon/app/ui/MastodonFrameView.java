@@ -50,6 +50,8 @@ public class MastodonFrameView<
 
 	protected final String[] keyConfigContexts;
 
+	protected Actions viewActions;
+
 	public MastodonFrameView(
 			final M appModel,
 			final VG viewGraph,
@@ -88,6 +90,9 @@ public class MastodonFrameView<
 		final Actions appActions = appModel.getAppActions();
 		frame.keybindings.addActionMap( "app", new WrappedActionMap( appActions.getActionMap() ) );
 		frame.keybindings.addInputMap( "app", new WrappedInputMap( appActions.getInputMap() ) );
+
+		viewActions = new Actions( getKeyConfig(), getKeyConfigContexts() );
+		viewActions.install( frame.keybindings, "view" );
 	}
 
 	M getAppModel()

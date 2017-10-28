@@ -79,9 +79,15 @@ public class ViewFrame extends JFrame
 		{
 			isSettingsPanelVisible = visible;
 			if ( visible )
+			{
+				settingsPanel.setVisible( true );
 				add( settingsPanel, BorderLayout.NORTH );
+			}
 			else
+			{
 				remove( settingsPanel );
+				settingsPanel.setVisible( false );
+			}
 			invalidate();
 			pack();
 		}

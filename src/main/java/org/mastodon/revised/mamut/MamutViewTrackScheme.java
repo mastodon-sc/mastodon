@@ -3,6 +3,7 @@ package org.mastodon.revised.mamut;
 import javax.swing.ActionMap;
 import javax.swing.JDialog;
 
+import org.mastodon.app.ui.MastodonFrameViewActions;
 import org.mastodon.app.ui.ViewMenu;
 import org.mastodon.revised.model.mamut.Link;
 import org.mastodon.revised.model.mamut.Model;
@@ -74,8 +75,13 @@ class MamutViewTrackScheme extends MamutView< TrackSchemeGraph< Spot, Link >, Tr
 		setFrame( frame );
 		frame.setVisible( true );
 
+		MastodonFrameViewActions.installActionBindings( viewActions, this );
+
 		final ViewMenu menu = new ViewMenu( this );
 		final ActionMap actionMap = frame.getKeybindings().getConcatenatedActionMap();
+
+		menu.addItem( "View", "Settings Toolbar", actionMap.get( MastodonFrameViewActions.TOGGLE_SETTINGS_PANEL ) );
+
 		menu.addItem( "Edit", "Undo", actionMap.get( UndoActions.UNDO ) );
 		menu.addItem( "Edit", "Redo", actionMap.get( UndoActions.REDO ) );
 		menu.addSeparator( "Edit" );

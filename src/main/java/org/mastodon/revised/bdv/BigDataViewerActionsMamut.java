@@ -72,13 +72,6 @@ public class BigDataViewerActionsMamut
 
 
 
-	public static final String TOGGLE_SETTINGS_PANEL = "toggle settings panel";
-
-	static final String[] TOGGLE_SETTINGS_PANEL_KEYS       = new String[] { "T" };
-
-	private final RunnableAction toggleSettingsPanelAction;
-
-
 	/**
 	 * Create BigDataViewer actions and install them in the specified
 	 * {@link Actions}.
@@ -98,13 +91,15 @@ public class BigDataViewerActionsMamut
 		actions.namedAction( ba.goToBookmarkRotationAction, GO_TO_BOOKMARK_ROTATION_KEYS );
 		actions.namedAction( ba.setBookmarkAction, SET_BOOKMARK_KEYS );
 
-		// TODO: move to app actions
+		/*
+		 * TODO: move to app actions
+		 *
+		 * This requires modifications in bigdataviewer-core: The group setup
+		 * should be shared between multiple windows.
+		 */
 		actions.namedAction( ba.toggleBrightnessDialogAction, BRIGHTNESS_SETTINGS_KEYS );
 		actions.namedAction( ba.saveBdvSettingsAction, SAVE_SETTINGS_KEYS );
 		actions.namedAction( ba.loadBdvSettingsAction, LOAD_SETTINGS_KEYS );
-
-		// TODO: move to MastodonViewAction, add group (lock...) select actions, implement HasSelectedState...
-		actions.namedAction( ba.toggleSettingsPanelAction, TOGGLE_SETTINGS_PANEL_KEYS );
 	}
 
 	private BigDataViewerActionsMamut( final BigDataViewerMaMuT bdv )
@@ -117,7 +112,5 @@ public class BigDataViewerActionsMamut
 		toggleBrightnessDialogAction = new ToggleDialogAction( BRIGHTNESS_SETTINGS, bdv.getBrightnessDialog() );
 		saveBdvSettingsAction = new RunnableAction( SAVE_SETTINGS, bdv::saveSettings );
 		loadBdvSettingsAction = new RunnableAction( LOAD_SETTINGS, bdv::loadSettings );
-
-		toggleSettingsPanelAction = new RunnableAction( TOGGLE_SETTINGS_PANEL, () -> bdv.getViewerFrame().setSettingsPanelVisible( !bdv.getViewerFrame().isSettingsPanelVisible() ) );
 	}
 }

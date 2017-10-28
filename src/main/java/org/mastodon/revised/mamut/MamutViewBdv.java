@@ -2,6 +2,7 @@ package org.mastodon.revised.mamut;
 
 import javax.swing.ActionMap;
 
+import org.mastodon.app.ui.MastodonFrameViewActions;
 import org.mastodon.app.ui.ViewMenu;
 import org.mastodon.revised.bdv.BdvContextProvider;
 import org.mastodon.revised.bdv.BigDataViewerActionsMamut;
@@ -63,14 +64,15 @@ class MamutViewBdv extends MamutView< OverlayGraphWrapper< Spot, Link >, Overlay
 		final ViewerFrameMamut frame = bdv.getViewerFrame();
 		setFrame( frame );
 
-		final Actions viewActions = new Actions( appModel.getKeyConfig(), appModel.getKeyConfigContexts() );
-		viewActions.install( frame.getKeybindings(), "view" );
+		MastodonFrameViewActions.installActionBindings( viewActions, this );
 		BigDataViewerActionsMamut.installActionBindings( viewActions, bdv );
 
 		final ViewMenu menu = new ViewMenu( this );
 		final ActionMap actionMap = frame.getKeybindings().getConcatenatedActionMap();
 		menu.addItem( "File", "Load settings", actionMap.get( BigDataViewerActionsMamut.LOAD_SETTINGS ) );
 		menu.addItem( "File", "Save settings", actionMap.get( BigDataViewerActionsMamut.SAVE_SETTINGS ) );
+
+		menu.addItem( "View", "Settings Toolbar", actionMap.get( MastodonFrameViewActions.TOGGLE_SETTINGS_PANEL ) );
 
 		menu.addItem( "Edit", "Undo", actionMap.get( UndoActions.UNDO ) );
 		menu.addItem( "Edit", "Redo", actionMap.get( UndoActions.REDO ) );
