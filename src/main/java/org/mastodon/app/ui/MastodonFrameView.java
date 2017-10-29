@@ -17,6 +17,7 @@ import org.mastodon.revised.model.AbstractSpot;
 import org.mastodon.util.Listeners;
 import org.scijava.ui.behaviour.io.InputTriggerConfig;
 import org.scijava.ui.behaviour.util.Actions;
+import org.scijava.ui.behaviour.util.Behaviours;
 import org.scijava.ui.behaviour.util.WrappedActionMap;
 import org.scijava.ui.behaviour.util.WrappedInputMap;
 
@@ -51,6 +52,8 @@ public class MastodonFrameView<
 	protected final String[] keyConfigContexts;
 
 	protected Actions viewActions;
+
+	protected Behaviours viewBehaviours;
 
 	public MastodonFrameView(
 			final M appModel,
@@ -93,6 +96,9 @@ public class MastodonFrameView<
 
 		viewActions = new Actions( getKeyConfig(), getKeyConfigContexts() );
 		viewActions.install( frame.keybindings, "view" );
+
+		viewBehaviours = new Behaviours( getKeyConfig(), getKeyConfigContexts() );
+		viewBehaviours.install( frame.triggerbindings, "view" );
 	}
 
 	M getAppModel()

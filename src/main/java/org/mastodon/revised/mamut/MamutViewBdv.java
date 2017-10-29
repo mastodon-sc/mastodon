@@ -128,9 +128,7 @@ class MamutViewBdv extends MamutView< OverlayGraphWrapper< Spot, Link >, Overlay
 		EditBehaviours.installActionBindings( frame.getTriggerbindings(), keyconf, viewGraph, tracksOverlay, model );
 		EditSpecialBehaviours.installActionBindings( frame.getTriggerbindings(), keyconf, frame.getViewerPanel(), viewGraph, tracksOverlay, model );
 		HighlightBehaviours.installActionBindings(
-				frame.getTriggerbindings(),
-				keyconf,
-				new String[] { "bdv" },
+				viewBehaviours,
 				model.getGraph(),
 				model.getGraph().getLock(),
 				model.getGraph(),

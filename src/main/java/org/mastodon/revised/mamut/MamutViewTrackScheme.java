@@ -91,9 +91,7 @@ class MamutViewTrackScheme extends MamutView< TrackSchemeGraph< Spot, Link >, Tr
 		menu.addItem( "Edit", "Select Track Upward", actionMap.get( SelectionActions.SELECT_TRACK_UPWARD ) );
 
 		HighlightBehaviours.installActionBindings(
-				frame.getTriggerbindings(),
-				keyconf,
-				new String[] { "ts" },
+				viewBehaviours,
 				modelGraph,
 				modelGraph.getLock(),
 				modelGraph,
