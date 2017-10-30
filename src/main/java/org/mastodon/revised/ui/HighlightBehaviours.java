@@ -3,8 +3,8 @@ package org.mastodon.revised.ui;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import org.mastodon.graph.Edge;
+import org.mastodon.graph.Graph;
 import org.mastodon.graph.GraphChangeNotifier;
-import org.mastodon.graph.ListenableGraph;
 import org.mastodon.graph.Vertex;
 import org.mastodon.model.HighlightModel;
 import org.mastodon.undo.UndoPointMarker;
@@ -38,7 +38,7 @@ public class HighlightBehaviours< V extends Vertex< E >, E extends Edge< V > >
 	// TODO: rename to "install" (in all similar classes)
 	public static < V extends Vertex< E >, E extends Edge< V > > void installActionBindings(
 			final Behaviours behaviours,
-			final ListenableGraph< V, E > graph,
+			final Graph< V, E > graph,
 			final ReentrantReadWriteLock lock,
 			final GraphChangeNotifier notify,
 			final HighlightModel< V, E > highlight,
@@ -50,7 +50,7 @@ public class HighlightBehaviours< V extends Vertex< E >, E extends Edge< V > >
 		behaviours.namedBehaviour( hb.removeHighlightedEdgeBehaviour, REMOVE_HIGHLIGHTED_EDGE_KEYS );
 	}
 
-	private final ListenableGraph< V, E > graph;
+	private final Graph< V, E > graph;
 
 	private final ReentrantReadWriteLock lock;
 
@@ -61,7 +61,7 @@ public class HighlightBehaviours< V extends Vertex< E >, E extends Edge< V > >
 	private final UndoPointMarker undo;
 
 	private HighlightBehaviours(
-			final ListenableGraph< V, E > graph,
+			final Graph< V, E > graph,
 			final ReentrantReadWriteLock lock,
 			final GraphChangeNotifier notify,
 			final HighlightModel< V, E > highlight,
