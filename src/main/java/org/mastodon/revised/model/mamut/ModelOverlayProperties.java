@@ -97,21 +97,39 @@ public class ModelOverlayProperties implements OverlayProperties< Spot, Link >
 	}
 
 	@Override
-	public Spot addVertex( final int timepoint, final double[] position, final double radius, final Spot ref )
+	public Spot addVertex( final Spot ref )
 	{
-		return modelGraph.addVertex( ref ).init( timepoint, position, radius );
+		return modelGraph.addVertex( ref );
 	}
 
 	@Override
-	public Spot addVertex( final int timepoint, final double[] position, final double[][] covariance, final Spot ref )
+	public Spot initVertex( final Spot spot, final int timepoint, final double[] position, final double radius )
 	{
-		return modelGraph.addVertex( ref ).init( timepoint, position, covariance );
+		return spot.init( timepoint, position, radius );
+	}
+
+	@Override
+	public Spot initVertex( final Spot spot, final int timepoint, final double[] position, final double[][] covariance )
+	{
+		return spot.init( timepoint, position, covariance );
 	}
 
 	@Override
 	public Link addEdge( final Spot source, final Spot target, final Link ref )
 	{
-		return modelGraph.addEdge( source, target, ref ).init();
+		return modelGraph.addEdge( source, target, ref );
+	}
+
+	@Override
+	public Link insertEdge( final Spot source, final int sourceOutIndex, final Spot target, final int targetInIndex, final Link ref )
+	{
+		return modelGraph.insertEdge( source, sourceOutIndex, target, targetInIndex, ref );
+	}
+
+	@Override
+	public Link initEdge( final Link link )
+	{
+		return link.init();
 	}
 
 	@Override

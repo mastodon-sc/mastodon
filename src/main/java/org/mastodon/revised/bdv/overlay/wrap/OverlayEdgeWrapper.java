@@ -36,6 +36,13 @@ public class OverlayEdgeWrapper< V extends Vertex< E >, E extends Edge< V > >
 	}
 
 	@Override
+	public OverlayEdgeWrapper< V, E > init()
+	{
+		overlayProperties.initEdge( we );
+		return this;
+	}
+
+	@Override
 	public OverlayVertexWrapper< V, E > getSource()
 	{
 		return getSource( wrapper.vertexRef() );

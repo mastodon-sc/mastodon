@@ -144,17 +144,22 @@ public class OverlayGraphWrapper< V extends Vertex< E >, E extends Edge< V > > i
 	}
 
 	@Override
-	public OverlayVertexWrapper< V, E > addVertex( final int timepoint, final double[] position, final double radius, final OverlayVertexWrapper< V, E > ref )
+	public OverlayVertexWrapper< V, E > addVertex()
 	{
-		ref.wv = overlayProperties.addVertex( timepoint, position, radius, ref.ref );
+		return addVertex( vertexRef() );
+	}
+
+	@Override
+	public OverlayVertexWrapper< V, E > addVertex( final OverlayVertexWrapper< V, E > ref )
+	{
+		ref.wv = overlayProperties.addVertex( ref.ref );
 		return ref;
 	}
 
 	@Override
-	public OverlayVertexWrapper< V, E > addVertex( final int timepoint, final double[] position, final double[][] covariance, final OverlayVertexWrapper< V, E > ref )
+	public OverlayEdgeWrapper< V, E > addEdge( final OverlayVertexWrapper< V, E > source, final OverlayVertexWrapper< V, E > target )
 	{
-		ref.wv = overlayProperties.addVertex( timepoint, position, covariance, ref.ref );
-		return ref;
+		return addEdge( source, target, edgeRef() );
 	}
 
 	@Override
@@ -165,9 +170,28 @@ public class OverlayGraphWrapper< V extends Vertex< E >, E extends Edge< V > > i
 	}
 
 	@Override
+	public OverlayEdgeWrapper< V, E > insertEdge( final OverlayVertexWrapper< V, E > source, final int sourceOutIndex, final OverlayVertexWrapper< V, E > target, final int targetInIndex )
+	{
+		return insertEdge( source, sourceOutIndex, target, targetInIndex, edgeRef() );
+	}
+
+	@Override
+	public OverlayEdgeWrapper< V, E > insertEdge( final OverlayVertexWrapper< V, E > source, final int sourceOutIndex, final OverlayVertexWrapper< V, E > target, final int targetInIndex, final OverlayEdgeWrapper< V, E > ref )
+	{
+		ref.we = overlayProperties.insertEdge( source.wv, sourceOutIndex, target.wv, targetInIndex, ref.ref );
+		return ref;
+	}
+
+	@Override
 	public void remove( final OverlayEdgeWrapper< V, E > edge )
 	{
 		overlayProperties.removeEdge( edge.we );
+	}
+
+	@Override
+	public void removeAllLinkedEdges( final OverlayVertexWrapper< V, E > vertex )
+	{
+		throw new UnsupportedOperationException();
 	}
 
 	@Override

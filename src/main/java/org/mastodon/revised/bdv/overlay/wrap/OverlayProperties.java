@@ -14,32 +14,32 @@ public interface OverlayProperties< V, E > // TODO: rename to ModelGraphProperti
 
 	public void setCovariance( V v, double[][] mat );
 
+	public String getLabel( V v );
+
+	public void setLabel( V v, String label );
+
 	public double getBoundingSphereRadiusSquared( V v );
 
 	public int getTimepoint( V v );
 
 	public double getMaxBoundingSphereRadiusSquared( int timepoint );
 
-	// TODO move to separate interface? OverlayModifyProperties?
-	public V addVertex( final int timepoint, final double[] position, final double radius, V ref );
+	public V addVertex( V ref );
 
-	// TODO move to separate interface? OverlayModifyProperties?
-	public V addVertex( final int timepoint, final double[] position, final double[][] covariance, final V ref );
+	// TODO: remove? use covariance version instead?
+	public V initVertex( V v, int timepoint, double[] position, double radius );
 
-	// TODO move to separate interface? OverlayModifyProperties?
+	public V initVertex( V v, int timepoint, double[] position, double[][] covariance );
+
 	public E addEdge( V source, V target, E ref );
 
-	// TODO move to separate interface? OverlayModifyProperties?
+	public E insertEdge( V source, final int sourceOutIndex, V target, final int targetInIndex, final E ref );
+
+	public E initEdge( E e );
+
 	public void removeEdge( E e );
 
-	// TODO move to separate interface? OverlayModifyProperties?
 	public void removeVertex( V v );
 
-	// TODO move to separate interface? OverlayModifyProperties?
 	public void notifyGraphChanged();
-
-	public String getLabel( V v );
-
-	// TODO move to separate interface? OverlayModifyProperties?
-	public void setLabel( V v, String label );
 }

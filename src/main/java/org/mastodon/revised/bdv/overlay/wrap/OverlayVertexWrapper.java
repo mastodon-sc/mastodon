@@ -96,6 +96,20 @@ public class OverlayVertexWrapper< V extends Vertex< E >, E extends Edge< V > >
 	}
 
 	@Override
+	public OverlayVertexWrapper< V, E > init( final int timepoint, final double[] position, final double radius )
+	{
+		overlayProperties.initVertex( wv, timepoint, position, radius );
+		return this;
+	}
+
+	@Override
+	public OverlayVertexWrapper< V, E > init( final int timepoint, final double[] position, final double[][] covariance )
+	{
+		overlayProperties.initVertex( wv, timepoint, position, covariance );
+		return this;
+	}
+
+	@Override
 	public Edges< OverlayEdgeWrapper< V, E > > incomingEdges()
 	{
 		incomingEdges.wrap( wv.incomingEdges() );

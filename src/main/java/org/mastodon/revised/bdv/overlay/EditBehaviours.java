@@ -126,38 +126,31 @@ public class EditBehaviours< V extends OverlayVertex< V, E >, E extends OverlayE
 	{
 		private final double[] pos;
 
-		private final V tmp;
-
 		public AddSpotBehaviour( final String name )
 		{
 			super( name );
 			pos = new double[ 3 ];
-			tmp = overlayGraph.vertexRef();
 		}
 
 		@Override
 		public void click( final int x, final int y )
 		{
-			if ( renderer.getVertexAt( x, y, POINT_SELECT_DISTANCE_TOLERANCE, tmp ) != null )
-			{
-				// Do not create a spot if we click inside an existing spot.
-				return;
-			}
-
-			final int timepoint = renderer.getCurrentTimepoint();
-			renderer.getGlobalPosition( x, y, pos );
 			final V ref = overlayGraph.vertexRef();
-			overlayGraph.addVertex( timepoint, pos, 10, ref );
+			if ( renderer.getVertexAt( x, y, POINT_SELECT_DISTANCE_TOLERANCE, ref ) == null )
+			{
+				// Only create a spot if we don't click inside an existing spot.
+				final int timepoint = renderer.getCurrentTimepoint();
+				renderer.getGlobalPosition( x, y, pos );
+				overlayGraph.addVertex( ref ).init( timepoint, pos, 10 );
+				overlayGraph.notifyGraphChanged();
+				undo.setUndoPoint();
+			}
 			overlayGraph.releaseRef( ref );
-			overlayGraph.notifyGraphChanged();
-			undo.setUndoPoint();
 		}
 	}
 
 	private class MoveSpotBehaviour extends AbstractNamedBehaviour implements DragBehaviour
 	{
-		private final V vertex;
-
 		private final double[] start;
 
 		private final double[] pos;
@@ -169,19 +162,24 @@ public class EditBehaviours< V extends OverlayVertex< V, E >, E extends OverlayE
 		 */
 		private boolean moving;
 
+		private final V ref;
+
+		private V vertex;
+
 		public MoveSpotBehaviour( final String name )
 		{
 			super( name );
-			vertex = overlayGraph.vertexRef();
 			start = new double[ 3 ];
 			pos = new double[ 3 ];
 			moving = false;
+			ref = overlayGraph.vertexRef();
 		}
 
 		@Override
 		public void init( final int x, final int y )
 		{
-			if ( renderer.getVertexAt( x, y, POINT_SELECT_DISTANCE_TOLERANCE, vertex ) != null )
+			vertex = renderer.getVertexAt( x, y, POINT_SELECT_DISTANCE_TOLERANCE, ref );
+			if ( vertex != null )
 			{
 				renderer.getGlobalPosition( x, y, start );
 				vertex.localize( pos );
@@ -231,8 +229,9 @@ public class EditBehaviours< V extends OverlayVertex< V, E >, E extends OverlayE
 		@Override
 		public void click( final int x, final int y )
 		{
-			final V vertex = overlayGraph.vertexRef();
-			if ( renderer.getVertexAt( x, y, POINT_SELECT_DISTANCE_TOLERANCE, vertex ) != null )
+			final V ref = overlayGraph.vertexRef();
+			final V vertex = renderer.getVertexAt( x, y, POINT_SELECT_DISTANCE_TOLERANCE, ref );
+			if ( vertex != null )
 			{
 				// Scale the covariance matrix.
 				vertex.getCovariance( mat );
@@ -249,7 +248,7 @@ public class EditBehaviours< V extends OverlayVertex< V, E >, E extends OverlayE
 				overlayGraph.notifyGraphChanged();
 				undo.setUndoPoint();
 			}
-			overlayGraph.releaseRef( vertex );
+			overlayGraph.releaseRef( ref );
 		}
 	}
 }

@@ -272,7 +272,7 @@ public class EditSpecialBehaviours< V extends OverlayVertex< V, E >, E extends O
 
 					final E edge = overlayGraph.getEdge( source, target, edgeRef );
 					if ( null == edge )
-						overlayGraph.addEdge( source, target, edgeRef );
+						overlayGraph.addEdge( source, target, edgeRef ).init();
 					else
 						overlayGraph.remove( edge );
 
@@ -340,13 +340,13 @@ public class EditSpecialBehaviours< V extends OverlayVertex< V, E >, E extends O
 				// Create new vertex under click location.
 				source.getCovariance( mat );
 				final int timepoint = renderer.getCurrentTimepoint();
-				overlayGraph.addVertex( timepoint, pos, mat, target );
+				overlayGraph.addVertex( target ).init( timepoint, pos, mat );
 
 				// Link it to source vertex. Careful for oriented edge.
 				if ( forward )
-					overlayGraph.addEdge( source, target, edge );
+					overlayGraph.addEdge( source, target, edge ).init();
 				else
-					overlayGraph.addEdge( target, source, edge );
+					overlayGraph.addEdge( target, source, edge ).init();
 
 				// Set it as ghost link for the overlay.
 				System.arraycopy( pos, 0, overlay.from, 0, pos.length );
