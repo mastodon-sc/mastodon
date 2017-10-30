@@ -126,7 +126,7 @@ class MamutViewBdv extends MamutView< OverlayGraphWrapper< Spot, Link >, Overlay
 		viewer.addRenderTransformListener( contextProvider );
 
 		EditBehaviours.installActionBindings( viewBehaviours, viewGraph, tracksOverlay, model );
-		EditSpecialBehaviours.installActionBindings( frame.getTriggerbindings(), keyconf, frame.getViewerPanel(), viewGraph, tracksOverlay, model );
+		EditSpecialBehaviours.installActionBindings( viewBehaviours, frame.getViewerPanel(), viewGraph, tracksOverlay, model );
 		HighlightBehaviours.installActionBindings(
 				viewBehaviours,
 				model.getGraph(),
