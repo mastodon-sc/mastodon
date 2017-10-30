@@ -127,13 +127,7 @@ class MamutViewBdv extends MamutView< OverlayGraphWrapper< Spot, Link >, Overlay
 
 		EditBehaviours.installActionBindings( viewBehaviours, viewGraph, tracksOverlay, model );
 		EditSpecialBehaviours.installActionBindings( viewBehaviours, frame.getViewerPanel(), viewGraph, tracksOverlay, model );
-		HighlightBehaviours.installActionBindings(
-				viewBehaviours,
-				model.getGraph(),
-				model.getGraph().getLock(),
-				model.getGraph(),
-				appModel.getHighlightModel(),
-				model );
+		HighlightBehaviours.installActionBindings( viewBehaviours, viewGraph, viewGraph.getLock(), viewGraph, highlightModel, model );
 
 		viewer.addTimePointListener( timePointIndex -> timepointModel.setTimepoint( timePointIndex ) );
 		timepointModel.listeners().add( () -> viewer.setTimepoint( timepointModel.getTimepoint() ) );
