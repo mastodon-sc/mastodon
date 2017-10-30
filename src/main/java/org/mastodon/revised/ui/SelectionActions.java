@@ -6,8 +6,8 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 import org.mastodon.collection.RefCollections;
 import org.mastodon.collection.RefSet;
 import org.mastodon.graph.Edge;
+import org.mastodon.graph.Graph;
 import org.mastodon.graph.GraphChangeNotifier;
-import org.mastodon.graph.ListenableGraph;
 import org.mastodon.graph.Vertex;
 import org.mastodon.graph.algorithm.traversal.DepthFirstSearch;
 import org.mastodon.graph.algorithm.traversal.GraphSearch.SearchDirection;
@@ -54,7 +54,7 @@ public class SelectionActions< V extends Vertex< E >, E extends Edge< V > >
 	 */
 	public static < V extends Vertex< E >, E extends Edge< V > > void install(
 			final Actions actions,
-			final ListenableGraph< V, E > graph,
+			final Graph< V, E > graph,
 			final ReentrantReadWriteLock lock,
 			final GraphChangeNotifier notify,
 			final SelectionModel< V, E > selection,
@@ -67,7 +67,7 @@ public class SelectionActions< V extends Vertex< E >, E extends Edge< V > >
 		actions.namedAction( sa.selectTrackUpwardAction, SELECT_TRACK_UPWARD_KEYS );
 	}
 
-	private final ListenableGraph< V, E > graph;
+	private final Graph< V, E > graph;
 
 	private final ReentrantReadWriteLock lock;
 
@@ -86,7 +86,7 @@ public class SelectionActions< V extends Vertex< E >, E extends Edge< V > >
 	private final TrackSelectionAction selectTrackUpwardAction;
 
 	private SelectionActions(
-			final ListenableGraph< V, E > graph,
+			final Graph< V, E > graph,
 			final ReentrantReadWriteLock lock,
 			final GraphChangeNotifier notify,
 			final SelectionModel< V, E > selection,
