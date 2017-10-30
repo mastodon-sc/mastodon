@@ -1,5 +1,7 @@
 package org.mastodon.revised.bdv.overlay;
 
+import java.util.concurrent.locks.ReentrantReadWriteLock;
+
 import org.mastodon.revised.bdv.overlay.util.JamaEigenvalueDecomposition;
 import org.mastodon.undo.UndoPointMarker;
 import org.scijava.ui.behaviour.ClickBehaviour;
@@ -96,6 +98,8 @@ public class EditBehaviours< V extends OverlayVertex< V, E >, E extends OverlayE
 
 	private final OverlayGraph< V, E > overlayGraph;
 
+	private final ReentrantReadWriteLock lock;
+
 	private final OverlayGraphRenderer< V, E > renderer;
 
 	private final UndoPointMarker undo;
@@ -109,6 +113,7 @@ public class EditBehaviours< V extends OverlayVertex< V, E >, E extends OverlayE
 			final double aLotRadiusChange )
 	{
 		this.overlayGraph = overlayGraph;
+		this.lock = overlayGraph.getLock();
 		this.renderer = renderer;
 		this.undo = undo;
 
@@ -141,9 +146,17 @@ public class EditBehaviours< V extends OverlayVertex< V, E >, E extends OverlayE
 				// Only create a spot if we don't click inside an existing spot.
 				final int timepoint = renderer.getCurrentTimepoint();
 				renderer.getGlobalPosition( x, y, pos );
-				overlayGraph.addVertex( ref ).init( timepoint, pos, 10 );
-				overlayGraph.notifyGraphChanged();
-				undo.setUndoPoint();
+				lock.writeLock().lock();
+				try
+				{
+					overlayGraph.addVertex( ref ).init( timepoint, pos, 10 );
+					overlayGraph.notifyGraphChanged();
+					undo.setUndoPoint();
+				}
+				finally
+				{
+					lock.writeLock().unlock();
+				}
 			}
 			overlayGraph.releaseRef( ref );
 		}
