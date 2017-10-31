@@ -21,10 +21,86 @@ import net.imglib2.util.LinAlgHelpers;
  * Intermediate results are cached.
  * </ol>
  *
- * @author Tobias Pietzsch &lt;tobias.pietzsch@gmail.com&gt;
+ * @author Tobias Pietzsch
  */
 public class ScreenVertexMath
 {
+	public static class Ellipse
+	{
+		/**
+		 * center of 2D ellipse.
+		 */
+		private final double[] center;
+
+		/**
+		 * rotation angle of 2D ellipse (in radians).
+		 */
+		private double theta;
+
+		/**
+		 * half-width and half-height of axis-aligned 2D ellipse.
+		 */
+		private final double[] axisHalfLength;
+
+		public Ellipse()
+		{
+			center = new double[ 2 ];
+			axisHalfLength = new double[ 2 ];
+		}
+
+		public double[] getCenter()
+		{
+			return center;
+		}
+
+		public void setCenter( final double[] p )
+		{
+			setCenter( p[ 0 ], p[ 1 ] );
+		}
+
+		public void setCenter( final double x, final double y )
+		{
+			center[ 0 ] = x;
+			center[ 1 ] = y;
+		}
+
+		public double getTheta()
+		{
+			return theta;
+		}
+
+		public void setTheta( final double theta )
+		{
+			this.theta = theta;
+		}
+
+		public double[] getAxisHalfLength()
+		{
+			return axisHalfLength;
+		}
+
+		public double getHalfWidth()
+		{
+			return axisHalfLength[ 0 ];
+		}
+
+		public double getHalfHeight()
+		{
+			return axisHalfLength[ 1 ];
+		}
+
+		public void setAxisHalfLength( final double[] l )
+		{
+			setAxisHalfLength( l[ 0 ], l[ 1 ] );
+		}
+
+		public void setAxisHalfLength( final double w, final double h )
+		{
+			axisHalfLength[ 0 ] = w;
+			axisHalfLength[ 1 ] = h;
+		}
+	}
+
 	private AffineTransform3D transform;
 
 	/**
@@ -58,23 +134,9 @@ public class ScreenVertexMath
 	private final double[][] vP = new double[ 2 ][ 2 ];
 
 	/**
-	 * Parameters of the 2D ellipse obtained by projecting the ellipsoid onto
-	 * the z=0 plane. Parameters are stored as follow:
-	 * <ol start="0">
-	 * <li>X center of the ellipse;</li>
-	 * <li>Y center of the ellipse;</li>
-	 * <li>half-width (along X axis) of the ellipse;</li>
-	 * <li>half-height (along Y axis) of the ellipse;</li>
-	 * <li>rotation angle (X axis) of the ellipse in radians.</li>
-	 * </ol>
+	 * 2D ellipse obtained by projecting ellipsoid to z=0 plane.
 	 */
-	private final double[] projectEllipse = new double[ 5 ];
-
-	/**
-	 * Only used in
-	 * {@link #projectionIntersectsViewInterval(double, double, double, double)}.
-	 */
-	private final double[] projectCenter = new double[ 2 ];
+	private final Ellipse projectEllipse = new Ellipse();
 
 	/**
 	 * whether the ellipsoid intersects the z=0 plane.
@@ -82,23 +144,9 @@ public class ScreenVertexMath
 	private boolean intersectsViewPlane;
 
 	/**
-	 * Parameters of the ellipse obtained by intersecting the ellipsoid with z=0
-	 * plane. Parameters are stored as follow:
-	 * <ol start="0">
-	 * <li>X center of the ellipse;</li>
-	 * <li>Y center of the ellipse;</li>
-	 * <li>half-width (along X axis) of the ellipse;</li>
-	 * <li>half-height (along Y axis) of the ellipse;</li>
-	 * <li>rotation angle (X axis) of the ellipse in radians.</li>
-	 * </ol>
+	 * 2D ellipse obtained by intersecting ellipsoid with z=0 plane.
 	 */
-	private final double[] intersectEllipse = new double[ 5 ];
-
-	/**
-	 * Only used in
-	 * {@link #intersectionIntersectsViewInterval(double, double, double, double)}.
-	 */
-	private final double[] intersectCenter = new double[ 2 ];
+	private final Ellipse intersectEllipse = new Ellipse();
 
 	private boolean projectionComputed;
 
@@ -139,14 +187,12 @@ public class ScreenVertexMath
 	private final double[] diff2 = new double[ 2 ];
 
 	/**
-	 * covariance of 2D ellipse obtained by intersecting ellipsoid with z=0
-	 * plane.
+	 * covariance of 2D ellipse obtained by intersecting ellipsoid with z=0 plane.
 	 */
 	private final double[][] iS = new double[ 2 ][ 2 ];
 
 	/**
-	 * precision of 2D ellipse obtained by intersecting ellipsoid with z=0
-	 * plane.
+	 * precision of 2D ellipse obtained by intersecting ellipsoid with z=0 plane.
 	 */
 	private final double[][] iP = new double[ 2 ][ 2 ];
 
@@ -193,22 +239,36 @@ public class ScreenVertexMath
 	}
 
 	/**
-	 * Returns the parameters of the 2D ellipse obtained by projecting the
-	 * ellipsoid onto the z=0 plane.
-	 * <p>
-	 * Parameters are stored as follow:
-	 * <ol start="0">
-	 * <li>X center of the ellipse;</li>
-	 * <li>Y center of the ellipse;</li>
-	 * <li>half-width (along X axis) of the ellipse;</li>
-	 * <li>half-height (along Y axis) of the ellipse;</li>
-	 * <li>rotation angle (X axis) of the ellipse in radians.</li>
-	 * </ol>
+	 * Get center of 2D ellipse obtained by projecting ellipsoid to z=0 plane.
 	 *
-	 * @return the parameters the 2D ellipse obtained by projecting the
-	 *         ellipsoid onto the z=0 plane.
+	 * @return center of 2D ellipse obtained by projecting ellipsoid to z=0
+	 *         plane.
 	 */
-	public double[] getProjectEllipse()
+	public double[] getProjectCenter()
+	{
+		computeProjection();
+		return projectEllipse.getCenter();
+	}
+
+	/**
+	 * Get the rotation angle (in radian) of 2D ellipse obtained by projecting
+	 * ellipsoid to z=0 plane.
+	 *
+	 * @return rotation angle of 2D ellipse obtained by projecting ellipsoid to
+	 *         z=0 plane.
+	 */
+	public double getProjectTheta()
+	{
+		computeProjection();
+		return projectEllipse.getTheta();
+	}
+
+	/**
+	 * Get the 2D ellipse obtained by projecting ellipsoid to z=0 plane.
+	 *
+	 * @return 2D ellipse obtained by projecting ellipsoid to z=0 plane.
+	 */
+	public Ellipse getProjectEllipse()
 	{
 		computeProjection();
 		return projectEllipse;
@@ -226,22 +286,37 @@ public class ScreenVertexMath
 	}
 
 	/**
-	 * Returns the parameters of the 2D ellipse obtained by intersecting the
-	 * ellipsoid with the z=0 plane.
-	 * <p>
-	 * Parameters are stored as follow:
-	 * <ol start="0">
-	 * <li>X center of the ellipse;</li>
-	 * <li>Y center of the ellipse;</li>
-	 * <li>half-width (along X axis) of the ellipse;</li>
-	 * <li>half-height (along Y axis) of the ellipse;</li>
-	 * <li>rotation angle (X axis) of the ellipse in radians.</li>
-	 * </ol>
+	 * Get center of 2D ellipse obtained by intersecting ellipsoid with z=0
+	 * plane.
 	 *
-	 * @return the parameters the 2D ellipse obtained by intersecting the
-	 *         ellipsoid with the z=0 plane.
+	 * @return center of 2D ellipse obtained by intersecting ellipsoid with z=0
+	 *         plane.
 	 */
-	public double[] getIntersectEllipse()
+	public double[] getIntersectCenter()
+	{
+		computeIntersection();
+		return intersectEllipse.getCenter();
+	}
+
+	/**
+	 * Get the rotation angle ( in radian) of 2D ellipse obtained by
+	 * intersecting ellipsoid with z=0 plane.
+	 *
+	 * @return rotation angle of 2D ellipse obtained by intersecting ellipsoid
+	 *         with z=0 plane.
+	 */
+	public double getIntersectTheta()
+	{
+		computeIntersection();
+		return intersectEllipse.getTheta();
+	}
+
+	/**
+	 * Get the 2D ellipse obtained by intersecting ellipsoid with z=0 plane.
+	 *
+	 * @return 2D ellipse obtained by intersecting ellipsoid with z=0 plane.
+	 */
+	public Ellipse getIntersectEllipse()
 	{
 		computeIntersection();
 		return intersectEllipse;
@@ -343,7 +418,7 @@ public class ScreenVertexMath
 		// Transform the ellipse center to rectangle coordinate system.
 		diff2[ 0 ] = ( minX + maxX ) / 2;
 		diff2[ 1 ] = ( minY + maxY ) / 2;
-		LinAlgHelpers.subtract( projectCenter, diff2, vn2 );
+		LinAlgHelpers.subtract( projectEllipse.getCenter(), diff2, vn2 );
 
 		if ( Math.abs( vn2[ 0 ] ) <= e0 + l0 && Math.abs( vn2[ 1 ] ) <= e1 + l1 )
 		{
@@ -391,7 +466,7 @@ public class ScreenVertexMath
 		// Transform the ellipse center to rectangle coordinate system.
 		diff2[ 0 ] = ( minX + maxX ) / 2;
 		diff2[ 1 ] = ( minY + maxY ) / 2;
-		LinAlgHelpers.subtract( intersectCenter, diff2, vn2 );
+		LinAlgHelpers.subtract( intersectEllipse.getCenter(), diff2, vn2 );
 
 		if ( Math.abs( vn2[ 0 ] ) <= e0 + l0 && Math.abs( vn2[ 1 ] ) <= e1 + l1 )
 		{
@@ -434,8 +509,8 @@ public class ScreenVertexMath
 			return;
 
 		/*
-		 * decompose the upper 2x2 sub-matrix of S, i.e., the spot covariance in
-		 * XY of the viewer coordinate system.
+		 * decompose the upper 2x2 sub-matrix of S, i.e., the spot
+		 * covariance in XY of the viewer coordinate system.
 		 */
 		eig2.decomposeSymmetric( vS );
 		final double[] eigVals2 = eig2.getRealEigenvalues();
@@ -444,13 +519,9 @@ public class ScreenVertexMath
 		final double c = eig2.getV()[ 0 ][ 0 ];
 		final double s = eig2.getV()[ 1 ][ 0 ];
 
-		projectCenter[ 0 ] = vPos[ 0 ];
-		projectCenter[ 1 ] = vPos[ 1 ];
-		projectEllipse[ 0 ] = projectCenter[ 0 ];
-		projectEllipse[ 1 ] = projectCenter[ 1 ];
-		projectEllipse[ 2 ] = w;
-		projectEllipse[ 3 ] = h;
-		projectEllipse[ 4 ] = Math.atan2( s, c );
+		projectEllipse.setTheta( Math.atan2( s, c ) );
+		projectEllipse.setCenter( vPos );
+		projectEllipse.setAxisHalfLength( w, h );
 
 		projectionComputed = true;
 	}
@@ -512,8 +583,7 @@ public class ScreenVertexMath
 			iS[ 1 ][ 0 ] = iS[ 0 ][ 1 ];
 			iS[ 1 ][ 1 ] = radius2 / b2;
 			/*
-			 * now iS is the 2D covariance ellipsoid of transformed circle with
-			 * radius
+			 * now iS is the 2D covariance ellipsoid of transformed circle with radius
 			 */
 
 			eig2.decomposeSymmetric( iS );
@@ -523,13 +593,9 @@ public class ScreenVertexMath
 			final double ci = eig2.getV()[ 0 ][ 0 ];
 			final double si = eig2.getV()[ 1 ][ 0 ];
 
-			intersectCenter[ 0 ] = vPos[ 0 ] + xshift;
-			intersectCenter[ 1 ] = vPos[ 1 ] + yshift;
-			intersectEllipse[ 0 ] = intersectCenter[ 0 ];
-			intersectEllipse[ 1 ] = intersectCenter[ 1 ];
-			intersectEllipse[ 2 ] = w;
-			intersectEllipse[ 3 ] = h;
-			intersectEllipse[ 4 ] = Math.atan2( si, ci );
+			intersectEllipse.setTheta( Math.atan2( si, ci ) );
+			intersectEllipse.setCenter( vPos[ 0 ] + xshift, vPos[ 1 ] + yshift );
+			intersectEllipse.setAxisHalfLength( w, h );
 		}
 
 		intersectionComputed = true;

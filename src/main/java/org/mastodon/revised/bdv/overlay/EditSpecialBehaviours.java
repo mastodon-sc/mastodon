@@ -7,9 +7,9 @@ import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.geom.AffineTransform;
-import java.awt.geom.Ellipse2D;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
+import org.mastodon.revised.bdv.overlay.ScreenVertexMath.Ellipse;
 import org.mastodon.undo.UndoPointMarker;
 import org.scijava.ui.behaviour.DragBehaviour;
 import org.scijava.ui.behaviour.util.AbstractNamedBehaviour;
@@ -155,18 +155,8 @@ public class EditSpecialBehaviours< V extends OverlayVertex< V, E >, E extends O
 
 				screenVertexMath.init( vertex, transform );
 
-				final double[] ep = screenVertexMath.getProjectEllipse();
-				final double ex = ep[ 0 ];
-				final double ey = ep[ 1 ];
-				final double w = ep[ 2 ];
-				final double h = ep[ 3 ];
-				final double theta = ep[ 4 ];
-				final Ellipse2D ellipse = new Ellipse2D.Double( -w, -h, 2 * w, 2 * h );
-
-				graphics.translate( ex, ey );
-				graphics.rotate( theta );
-				graphics.draw( ellipse );
-				graphics.setTransform( torig );
+				final Ellipse ellipse = screenVertexMath.getProjectEllipse();
+				OverlayGraphRenderer.drawEllipse( graphics, ellipse, torig );
 			}
 
 			// The link.

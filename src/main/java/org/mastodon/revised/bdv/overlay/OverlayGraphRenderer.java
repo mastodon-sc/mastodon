@@ -2,23 +2,27 @@ package org.mastodon.revised.bdv.overlay;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
-import java.awt.FontMetrics;
+import java.awt.Font;
 import java.awt.GradientPaint;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
+import java.awt.font.FontRenderContext;
+import java.awt.font.TextLayout;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Ellipse2D;
+import java.awt.geom.Rectangle2D;
 
 import org.mastodon.collection.RefCollection;
 import org.mastodon.collection.RefCollections;
 import org.mastodon.collection.RefList;
 import org.mastodon.kdtree.ClipConvexPolytope;
 import org.mastodon.kdtree.IncrementalNearestNeighborSearch;
-import org.mastodon.model.SelectionModel;
-import org.mastodon.revised.Util;
 import org.mastodon.model.FocusModel;
 import org.mastodon.model.HighlightModel;
+import org.mastodon.model.SelectionModel;
+import org.mastodon.revised.Util;
+import org.mastodon.revised.bdv.overlay.ScreenVertexMath.Ellipse;
 import org.mastodon.spatial.SpatialIndex;
 import org.mastodon.spatial.SpatioTemporalIndex;
 
@@ -61,7 +65,7 @@ import net.imglib2.util.LinAlgHelpers;
  * @param <E>
  *            the type of model edge.
  *
- * @author Tobias Pietzsch &lt;tobias.pietzsch@gmail.com&gt;
+ * @author Tobias Pietzsch
  */
 public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends OverlayEdge< E, V > >
 		implements OverlayRenderer, TransformListener< AffineTransform3D >, TimePointListener
@@ -502,9 +506,6 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 		final BasicStroke focusedVertexStroke = new BasicStroke( 2f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 1f, new float[] { 8f, 3f }, 0 );
 		final BasicStroke defaultEdgeStroke = new BasicStroke();
 		final BasicStroke highlightedEdgeStroke = new BasicStroke( 3f );
-		final FontMetrics fontMetrics = graphics.getFontMetrics();
-		final int extraFontHeight = fontMetrics.getAscent() / 2;
-		final int extraFontWidth = fontMetrics.charWidth( ' ' ) / 2;
 
 		final AffineTransform3D transform = getRenderTransformCopy();
 		final int currentTimepoint = renderTimepoint;
@@ -636,39 +637,19 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 					{
 						if ( screenVertexMath.intersectsViewPlane() )
 						{
-							final double[] ep = screenVertexMath.getIntersectEllipse();
-							final double ex = ep[ 0 ];
-							final double ey = ep[ 1 ];
-							final double w = ep[ 2 ];
-							final double h = ep[ 3 ];
-							final double theta = ep[ 4 ];
-							final Ellipse2D ellipse = new Ellipse2D.Double( -w, -h, 2 * w, 2 * h );
+							final Ellipse ellipse = screenVertexMath.getIntersectEllipse();
 
-							graphics.translate( ex, ey );
-							graphics.rotate( theta );
 							graphics.setColor( getColor( 0, 0, ellipsoidFadeDepth, timepointDistanceFade, selection.isSelected( vertex ) ) );
 							if ( isHighlighted )
 								graphics.setStroke( highlightedVertexStroke );
 							else if ( isFocused )
 								graphics.setStroke( focusedVertexStroke );
-							graphics.draw( ellipse );
+							drawEllipse( graphics, ellipse, torig );
 							if ( isHighlighted || isFocused )
 								graphics.setStroke( defaultVertexStroke );
 
 							if ( !drawEllipsoidSliceProjection && drawSpotLabels )
-							{
-								graphics.rotate( -theta );
-								final double a = 2. * w;
-								final double b = 2. * h;
-								final double cos = Math.cos( theta );
-								final double sin = Math.sin( theta );
-								final double l = Math.sqrt( a * a * cos * cos + b * b * sin * sin );
-								final float xl = ( float ) l / 2 + extraFontWidth;
-								final float yl = extraFontHeight;
-								graphics.drawString( vertex.getLabel(), xl, yl );
-							}
-
-							graphics.setTransform( torig );
+								drawEllipseLabel( graphics, ellipse, vertex.getLabel() );
 						}
 					}
 
@@ -676,37 +657,19 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 					{
 						if ( drawEllipsoidSliceProjection )
 						{
-							final double[] ep = screenVertexMath.getProjectEllipse();
-							final double ex = ep[ 0 ];
-							final double ey = ep[ 1 ];
-							final double w = ep[ 2 ];
-							final double h = ep[ 3 ];
-							final double theta = ep[ 4 ];
-							final Ellipse2D ellipse = new Ellipse2D.Double( -w, -h, 2 * w, 2 * h );
+							final Ellipse ellipse = screenVertexMath.getProjectEllipse();
 
-							graphics.translate( ex, ey );
-							graphics.rotate( theta );
 							graphics.setColor( getColor( sd, 0, ellipsoidFadeDepth, timepointDistanceFade, selection.isSelected( vertex ) ) );
 							if ( isHighlighted )
 								graphics.setStroke( highlightedVertexStroke );
 							else if ( isFocused )
 								graphics.setStroke( focusedVertexStroke );
-							graphics.draw( ellipse );
+							drawEllipse( graphics, ellipse, torig );
 							if ( isHighlighted || isFocused )
 								graphics.setStroke( defaultVertexStroke );
 
 							if ( drawSpotLabels )
-							{
-								graphics.rotate( -theta );
-								final double a = 2. * w;
-								final double b = 2. * h;
-								final double cos = Math.cos( theta );
-								final double sin = Math.sin( theta );
-								final double l = Math.sqrt( a * a * cos * cos + b * b * sin * sin );
-								final float xl = ( float ) l / 2 + extraFontWidth;
-								final float yl = extraFontHeight;
-								graphics.drawString( vertex.getLabel(), xl, yl );
-							}
+								drawEllipseLabel( graphics, ellipse, vertex.getLabel() );
 
 							graphics.setTransform( torig );
 						}
@@ -741,6 +704,38 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 		graph.releaseRef( target );
 		graph.releaseRef( ref1 );
 		graph.releaseRef( ref2 );
+	}
+
+	static void drawEllipse( final Graphics2D graphics, final Ellipse ellipse, AffineTransform torig )
+	{
+		if ( torig == null )
+			torig = graphics.getTransform();
+
+		final double[] tr = ellipse.getCenter();
+		final double theta = ellipse.getTheta();
+		final double w = ellipse.getHalfWidth();
+		final double h = ellipse.getHalfHeight();
+		final Ellipse2D ellipse2D = new Ellipse2D.Double( -w, -h, 2. * w, 2. * h );
+
+		graphics.translate( tr[ 0 ], tr[ 1 ] );
+		graphics.rotate( theta );
+		graphics.draw( ellipse2D );
+
+		graphics.setTransform( torig );
+	}
+
+	// TODO: move to RenderSettings
+	static final Font font = new Font( "SansSerif", Font.PLAIN, 9 );
+
+	static void drawEllipseLabel( final Graphics2D graphics, final Ellipse ellipse, final String label )
+	{
+		final double[] tr = ellipse.getCenter();
+		final FontRenderContext frc = graphics.getFontRenderContext();
+		final TextLayout layout = new TextLayout( label, font, frc );
+		final Rectangle2D bounds = layout.getBounds();
+		final float tx = ( float ) ( tr[ 0 ] - bounds.getCenterX() );
+		final float ty = ( float ) ( tr[ 1 ] - bounds.getCenterY() );
+		layout.draw( graphics, tx, ty );
 	}
 
 	public E getEdgeAt( final int x, final int y, final double tolerance, final E ref )
