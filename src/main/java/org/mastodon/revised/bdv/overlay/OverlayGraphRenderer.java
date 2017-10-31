@@ -384,10 +384,8 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 			final AffineTransform3D transform,
 			final int timepoint )
 	{
+		final double maxDepth = getMaxDepth( transform );
 		final double globalToViewerScale = Affine3DHelpers.extractScale( transform, 0 );
-		final double maxDepth = isFocusLimitViewRelative
-				? focusLimit
-				: focusLimit * globalToViewerScale;
 		final double border = globalToViewerScale * Math.sqrt( graph.getMaxBoundingSphereRadiusSquared( timepoint ) );
 		return BdvRendererUtil.getPolytopeGlobal( transform,
 				xMin - border, xMax + border,
@@ -420,7 +418,7 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 	 * @param timepoint
 	 * @return
 	 */
-	ConvexPolytope getVisiblePolytopeGlobal(
+	private ConvexPolytope getVisiblePolytopeGlobal(
 			final AffineTransform3D transform,
 			final int timepoint )
 	{
@@ -449,6 +447,42 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 		return getOverlappingPolytopeGlobal( x, x, y, y, transform, timepoint );
 	}
 
+	/**
+	 * Points (ellipsoid centers) are always drawn if
+	 * <ul>
+	 *   <li>point drawing is enabled ({@code drawPoints}), and either</li>
+	 *   <ul>
+	 *     <li>either points shall be drawn for visible ellipses too ({@code drawPointsForEllipses}),</li>
+	 *     <li>or no ellipses are visible anyways ({@code !drawEllipsoidSliceIntersection} and {@code !drawEllipsoidSliceProjection}).</li>
+	 *   </ul>
+	 * </ul>
+	 *
+	 * @return whether to draw points always
+	 */
+	private boolean drawPointsAlways()
+	{
+		return drawPoints
+				&& ( ( !drawEllipsoidSliceIntersection && !drawEllipsoidSliceProjection )
+				|| drawPointsForEllipses );
+	}
+
+	/**
+	 * Points (ellipsoid centers) are possibly drawn if
+	 * <ul>
+	 *   <li>point drawing is enabled ({@code drawPoints}), and</li>
+	 *   <li>{@code !drawEllipsoidSliceProjection} (otherwise would draw an ellipse instead), and</li>
+	 *   <li>({@code drawEllipsoidSliceIntersection} (drawing ellipses but possibly they are not intersection the view plane).</li>
+	 * </ul>
+	 * (or of course if {@code drawPointsAlways()==true}).
+	 *
+	 * @return whether to draw points depending on ellipse intersection with view plane.
+	 */
+	private boolean drawPointsMaybe()
+	{
+		return drawPoints
+				&& !drawEllipsoidSliceProjection && drawEllipsoidSliceIntersection;
+	}
+
 	@Override
 	public void drawOverlays( final Graphics g )
 	{
@@ -462,9 +496,7 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 		final AffineTransform3D transform = getRenderTransformCopy();
 		final int currentTimepoint = renderTimepoint;
 
-		final double maxDepth = isFocusLimitViewRelative
-				? focusLimit
-				: focusLimit * Affine3DHelpers.extractScale( transform, 0 );
+		final double maxDepth = getMaxDepth( transform );
 
 		graphics.setRenderingHint( RenderingHints.KEY_ANTIALIASING, antialiasing );
 
@@ -479,11 +511,8 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 		final double timepointDistanceFade = 0.5;
 
 		final ScreenVertexMath screenVertexMath = new ScreenVertexMath();
-		final boolean drawPointAlways = drawPoints
-				&& ( ( !drawEllipsoidSliceIntersection && !drawEllipsoidSliceProjection )
-						|| drawPointsForEllipses );
-		final boolean drawPointMaybe = drawPoints
-				&& !drawEllipsoidSliceProjection && drawEllipsoidSliceIntersection;
+		final boolean drawPointsAlways = drawPointsAlways();
+		final boolean drawPointsMaybe = drawPointsMaybe();
 
 		graph.getLock().readLock().lock();
 		index.readLock().lock();
@@ -574,9 +603,9 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 				graphics.setStroke( defaultVertexStroke );
 				final AffineTransform torig = graphics.getTransform();
 
-				final SpatialIndex< V > si = index.getSpatialIndex( currentTimepoint );
-				final ClipConvexPolytope< V > ccp = si.getClipConvexPolytope();
-				ccp.clip( getVisiblePolytopeGlobal( transform, currentTimepoint ) );
+				final ConvexPolytope cropPolytopeGlobal = getVisiblePolytopeGlobal( transform, currentTimepoint );
+				final ClipConvexPolytope< V > ccp = index.getSpatialIndex( currentTimepoint ).getClipConvexPolytope();
+				ccp.clip( cropPolytopeGlobal );
 				for ( final V vertex : ccp.getInsideValues() )
 				{
 					final boolean isHighlighted = vertex.equals( highlighted );
@@ -630,7 +659,7 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 							graphics.setTransform( torig );
 						}
 
-						if ( drawPointAlways || ( drawPointMaybe && !screenVertexMath.intersectsViewPlane() ) )
+						if ( drawPointsAlways || ( drawPointsMaybe && !screenVertexMath.intersectsViewPlane() ) )
 						{
 							graphics.setColor( getColor( sd, 0, pointFadeDepth, timepointDistanceFade, selection.isSelected( vertex ) ) );
 							double radius = pointRadius;
@@ -782,15 +811,16 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 
 	public V getVertexAt( final int x, final int y, final double tolerance, final V ref )
 	{
+		if ( !drawSpots )
+			return null;
+
 		final AffineTransform3D transform = getRenderTransformCopy();
-		final double maxDepth = isFocusLimitViewRelative
-				? focusLimit
-				: focusLimit * Affine3DHelpers.extractScale( transform, 0 );
+		final double maxDepth = getMaxDepth( transform );
 		final int currentTimepoint = renderTimepoint;
 
 		final double[] lPos = new double[] { x, y, 0 };
 		final double[] gPos = new double[ 3 ];
-		final ScreenVertexMath svm = new ScreenVertexMath();
+		final ScreenVertexMath screenVertexMath = new ScreenVertexMath();
 		transform.applyInverse( gPos, lPos );
 
 		boolean found = false;
@@ -801,27 +831,27 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 
 		if ( drawEllipsoidSliceProjection )
 		{
-			final ConvexPolytope cropPolytopeGlobal = getSurroundingPolytopeGlobal( x, y, transform, currentTimepoint );
-			final ClipConvexPolytope< V > ccp = index.getSpatialIndex( currentTimepoint ).getClipConvexPolytope();
-			ccp.clip( cropPolytopeGlobal );
-
 			final double[] xy = new double[] { x, y };
 			final double[] vPos = new double[ 3 ];
 			double minDist = Double.MAX_VALUE;
-			for ( final V v : ccp.getInsideValues() )
+
+			final ConvexPolytope cropPolytopeGlobal = getSurroundingPolytopeGlobal( x, y, transform, currentTimepoint );
+			final ClipConvexPolytope< V > ccp = index.getSpatialIndex( currentTimepoint ).getClipConvexPolytope();
+			ccp.clip( cropPolytopeGlobal );
+			for ( final V vertex : ccp.getInsideValues() )
 			{
-				svm.init( v, transform );
-				final double z = svm.getViewPos()[ 2 ];
+				screenVertexMath.init( vertex, transform );
+				final double z = screenVertexMath.getViewPos()[ 2 ];
 				final double sd = sliceDistance( z, maxDepth );
-				if ( sd > -1 && sd < 1 && svm.projectionContainsView( xy ) )
+				if ( sd > -1 && sd < 1 && screenVertexMath.projectionContainsView( xy ) )
 				{
 					found = true;
-					v.localize( vPos );
+					vertex.localize( vPos );
 					final double d = LinAlgHelpers.squareDistance( vPos, gPos );
 					if ( d < minDist )
 					{
 						minDist = d;
-						ref.refTo( v );
+						ref.refTo( vertex );
 					}
 				}
 			}
@@ -834,14 +864,14 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 			inns.search( RealPoint.wrap( gPos ) );
 			while ( inns.hasNext() )
 			{
-				final V v = inns.next();
+				final V vertex = inns.next();
 				if ( inns.getSquareDistance() > maxSquDist )
 					break;
-				svm.init( v, transform );
-				if ( svm.containsGlobal( gPos ) )
+				screenVertexMath.init( vertex, transform );
+				if ( screenVertexMath.containsGlobal( gPos ) )
 				{
 					found = true;
-					ref.refTo( v );
+					ref.refTo( vertex );
 					break;
 				}
 			}
@@ -851,22 +881,22 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 		{
 			final NearestNeighborSearch< V > nns = index.getSpatialIndex( currentTimepoint ).getNearestNeighborSearch();
 			nns.search( RealPoint.wrap( gPos ) );
-			final V v = nns.getSampler().get();
-			if ( v != null )
+			final V vertex = nns.getSampler().get();
+			if ( vertex != null )
 			{
-				svm.init( v, transform );
-				final double z = svm.getViewPos()[ 2 ];
+				screenVertexMath.init( vertex, transform );
+				final double z = screenVertexMath.getViewPos()[ 2 ];
 				final double sd = sliceDistance( z, maxDepth );
 				if ( sd > -1 && sd < 1 )
 				{
-					final double[] p = svm.getViewPos();
+					final double[] p = screenVertexMath.getViewPos();
 					final double dx = p[ 0 ] - x;
 					final double dy = p[ 1 ] - y;
 					final double dr = pointRadius + tolerance;
 					if ( dx * dx + dy * dy <= dr * dr )
 					{
 						found = true;
-						ref.refTo( v );
+						ref.refTo( vertex );
 					}
 				}
 			}
@@ -897,48 +927,43 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 	RefCollection< V > getVisibleVertices( final AffineTransform3D transform, final int timepoint )
 	{
 		final RefList< V > contextList = RefCollections.createRefList( graph.vertices() );
-		final double maxDepth = isFocusLimitViewRelative
-				? focusLimit
-				: focusLimit * Affine3DHelpers.extractScale( transform, 0 );
-		final boolean drawPointAlways = drawPoints
-				&& ( ( !drawEllipsoidSliceIntersection && !drawEllipsoidSliceProjection )
-						|| drawPointsForEllipses );
-		final boolean drawPointMaybe = drawPoints
-				&& !drawEllipsoidSliceProjection && drawEllipsoidSliceIntersection;
-		final ScreenVertexMath svm = new ScreenVertexMath();
+		final double maxDepth = getMaxDepth( transform );
+		final boolean drawPointsAlways = drawPointsAlways();
+		final boolean drawPointsMaybe = drawPointsMaybe();
+		final ScreenVertexMath screenVertexMath = new ScreenVertexMath();
 
+		final ConvexPolytope cropPolytopeGlobal = getVisiblePolytopeGlobal( transform, timepoint );
 		final ClipConvexPolytope< V > ccp = index.getSpatialIndex( timepoint ).getClipConvexPolytope();
-		final ConvexPolytope visiblePolytope = getVisiblePolytopeGlobal( transform, timepoint );
-		ccp.clip( visiblePolytope );
+		ccp.clip( cropPolytopeGlobal );
 		for ( final V vertex : ccp.getInsideValues() )
 		{
-			svm.init( vertex, transform );
+			screenVertexMath.init( vertex, transform );
 
 			if ( drawEllipsoidSliceIntersection )
 			{
-				if ( svm.intersectsViewPlane()
-						&& svm.intersectionIntersectsViewInterval( 0, width, 0, height ) )
+				if ( screenVertexMath.intersectsViewPlane()
+						&& screenVertexMath.intersectionIntersectsViewInterval( 0, width, 0, height ) )
 				{
 					contextList.add( vertex );
 					continue;
 				}
 			}
 
-			final double z = svm.getViewPos()[ 2 ];
+			final double z = screenVertexMath.getViewPos()[ 2 ];
 			final double sd = sliceDistance( z, maxDepth );
 			if ( -1 < sd && sd < 1 )
 			{
 				if ( drawEllipsoidSliceProjection
-						&& svm.projectionIntersectsViewInterval( 0, width, 0, height ) )
+						&& screenVertexMath.projectionIntersectsViewInterval( 0, width, 0, height ) )
 				{
 					contextList.add( vertex );
 					continue;
 				}
 
-				if ( drawPointAlways || ( drawPointMaybe && !svm.intersectsViewPlane() ) )
+				if ( drawPointsAlways || ( drawPointsMaybe && !screenVertexMath.intersectsViewPlane() ) )
 				{
-					final double x = svm.getViewPos()[ 0 ];
-					final double y = svm.getViewPos()[ 1 ];
+					final double x = screenVertexMath.getViewPos()[ 0 ];
+					final double y = screenVertexMath.getViewPos()[ 1 ];
 					if ( 0 <= x && x <= width && 0 <= y && y <= height )
 						contextList.add( vertex );
 				}
@@ -946,5 +971,22 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 		}
 
 		return contextList;
+	}
+
+	/**
+	 * Get the maximum distance from view plane up to which to draw spots,
+	 * measured in view coordinates (pixel widths).
+	 *
+	 * @param transform
+	 *            may be needed to convert global {@code focusLimit} to view
+	 *            coordinates.
+	 *
+	 * @return maximum distance from view plane up to which to draw spots.
+	 */
+	private double getMaxDepth( final AffineTransform3D transform )
+	{
+		return isFocusLimitViewRelative
+				? focusLimit
+				: focusLimit * Affine3DHelpers.extractScale( transform, 0 );
 	}
 }
