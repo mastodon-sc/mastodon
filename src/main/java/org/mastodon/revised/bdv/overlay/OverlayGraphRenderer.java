@@ -269,8 +269,8 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 
 	/**
 	 * Return signed distance of timepoint t to t0, truncated at cutoff and
-	 * scaled by 1/cutoff. t=t0 has d=0. t&lt;=t0-cutoff has d=-1.
-	 * t=&gt;t0+cutoff has d=1.
+	 * scaled by 1/cutoff. t=t0 has d=0. t&le;t0-cutoff has d=-1.
+	 * t&ge;t0+cutoff has d=1.
 	 */
 	private static double timeDistance( final double t, final double t0, final double cutoff )
 	{
@@ -396,9 +396,10 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 	}
 
 	/**
-	 * Returns a copy of the {@link AffineTransform3D} used in this renderer.
+	 * Get a copy of the {@code renderTransform} (avoids synchronizing on it for
+	 * a longer time period).
 	 *
-	 * @return a new {@link AffineTransform3D} object.
+	 * @return a copy of the {@code renderTransform}.
 	 */
 	private AffineTransform3D getRenderTransformCopy()
 	{
