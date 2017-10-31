@@ -239,31 +239,6 @@ public class ScreenVertexMath
 	}
 
 	/**
-	 * Get center of 2D ellipse obtained by projecting ellipsoid to z=0 plane.
-	 *
-	 * @return center of 2D ellipse obtained by projecting ellipsoid to z=0
-	 *         plane.
-	 */
-	public double[] getProjectCenter()
-	{
-		computeProjection();
-		return projectEllipse.getCenter();
-	}
-
-	/**
-	 * Get the rotation angle (in radian) of 2D ellipse obtained by projecting
-	 * ellipsoid to z=0 plane.
-	 *
-	 * @return rotation angle of 2D ellipse obtained by projecting ellipsoid to
-	 *         z=0 plane.
-	 */
-	public double getProjectTheta()
-	{
-		computeProjection();
-		return projectEllipse.getTheta();
-	}
-
-	/**
 	 * Get the 2D ellipse obtained by projecting ellipsoid to z=0 plane.
 	 *
 	 * @return 2D ellipse obtained by projecting ellipsoid to z=0 plane.
@@ -283,32 +258,6 @@ public class ScreenVertexMath
 	{
 		computeIntersection();
 		return intersectsViewPlane;
-	}
-
-	/**
-	 * Get center of 2D ellipse obtained by intersecting ellipsoid with z=0
-	 * plane.
-	 *
-	 * @return center of 2D ellipse obtained by intersecting ellipsoid with z=0
-	 *         plane.
-	 */
-	public double[] getIntersectCenter()
-	{
-		computeIntersection();
-		return intersectEllipse.getCenter();
-	}
-
-	/**
-	 * Get the rotation angle ( in radian) of 2D ellipse obtained by
-	 * intersecting ellipsoid with z=0 plane.
-	 *
-	 * @return rotation angle of 2D ellipse obtained by intersecting ellipsoid
-	 *         with z=0 plane.
-	 */
-	public double getIntersectTheta()
-	{
-		computeIntersection();
-		return intersectEllipse.getTheta();
 	}
 
 	/**
