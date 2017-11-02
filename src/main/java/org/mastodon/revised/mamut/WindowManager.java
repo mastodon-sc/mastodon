@@ -9,7 +9,6 @@ import java.util.List;
 import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
 
-import org.mastodon.app.ViewListener;
 import org.mastodon.revised.bdv.SharedBigDataViewerData;
 import org.mastodon.revised.model.mamut.Model;
 import org.mastodon.revised.model.mamut.Spot;
@@ -70,46 +69,26 @@ public class WindowManager
 
 	private synchronized void addBdvWindow( final MamutViewBdv w )
 	{
-		w.listeners().add( new ViewListener()
-		{
-			@Override
-			public void onClose()
-			{
-				removeBdvWindow( w );
-			}
-		} );
 		bdvWindows.add( w );
 		contextProviders.add( w.getContextProvider() );
 		for ( final MamutViewTrackScheme tsw : tsWindows )
 			tsw.getContextChooser().updateContextProviders( contextProviders );
-	}
-
-	private synchronized void removeBdvWindow( final MamutViewBdv w )
-	{
-		bdvWindows.remove( w );
-		contextProviders.remove( w.getContextProvider() );
-		for ( final MamutViewTrackScheme tsw : tsWindows )
-			tsw.getContextChooser().updateContextProviders( contextProviders );
+		w.onClose( () -> {
+			bdvWindows.remove( w );
+			contextProviders.remove( w.getContextProvider() );
+			for ( final MamutViewTrackScheme tsw : tsWindows )
+				tsw.getContextChooser().updateContextProviders( contextProviders );
+		} );
 	}
 
 	private synchronized void addTsWindow( final MamutViewTrackScheme w )
 	{
-		w.listeners().add( new ViewListener()
-		{
-			@Override
-			public void onClose()
-			{
-				removeTsWindow( w );
-			}
-		} );
 		tsWindows.add( w );
 		w.getContextChooser().updateContextProviders( contextProviders );
-	}
-
-	private synchronized void removeTsWindow( final MamutViewTrackScheme w )
-	{
-		tsWindows.remove( w );
-		w.getContextChooser().updateContextProviders( new ArrayList<>() );
+		w.onClose( () -> {
+			tsWindows.remove( w );
+			w.getContextChooser().updateContextProviders( new ArrayList<>() );
+		} );
 	}
 
 	public void createBigDataViewer()

@@ -4,7 +4,6 @@ import org.mastodon.graph.Edge;
 import org.mastodon.graph.Vertex;
 import org.mastodon.model.FocusListener;
 import org.mastodon.model.FocusModel;
-import org.mastodon.util.Listeners;
 
 /**
  * Adapts a {@code FocusModel<V, E>} as a {@code FocusModel<WV, WE>}. The
@@ -31,6 +30,8 @@ public class FocusModelAdapter< V extends Vertex< E >, E extends Edge< V >, WV e
 
 	private final RefBimap< E, WE > edgeMap;
 
+	private final ForwardedListeners< FocusListener > listeners;
+
 	public FocusModelAdapter(
 			final FocusModel< V, E > focus,
 			final RefBimap< V, WV > vertexMap,
@@ -39,6 +40,7 @@ public class FocusModelAdapter< V extends Vertex< E >, E extends Edge< V >, WV e
 		this.focus = focus;
 		this.vertexMap = vertexMap;
 		this.edgeMap = edgeMap;
+		this.listeners = new ForwardedListeners.List<>( focus.listeners() );
 	}
 
 	@Override
@@ -54,8 +56,8 @@ public class FocusModelAdapter< V extends Vertex< E >, E extends Edge< V >, WV e
 	}
 
 	@Override
-	public Listeners< FocusListener > listeners()
+	public ForwardedListeners< FocusListener > listeners()
 	{
-		return focus.listeners();
+		return listeners;
 	}
 }

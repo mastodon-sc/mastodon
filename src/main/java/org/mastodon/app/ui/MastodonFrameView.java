@@ -9,12 +9,10 @@ import java.util.Set;
 import org.mastodon.app.MastodonAppModel;
 import org.mastodon.app.MastodonView;
 import org.mastodon.app.ViewGraph;
-import org.mastodon.app.ViewListener;
 import org.mastodon.graph.Edge;
 import org.mastodon.graph.Vertex;
 import org.mastodon.graph.ref.AbstractListenableEdge;
 import org.mastodon.revised.model.AbstractSpot;
-import org.mastodon.util.Listeners;
 import org.scijava.ui.behaviour.io.InputTriggerConfig;
 import org.scijava.ui.behaviour.util.Actions;
 import org.scijava.ui.behaviour.util.Behaviours;
@@ -67,12 +65,6 @@ public class MastodonFrameView<
 		this.keyConfigContexts = c.toArray( new String[] {} );
 	}
 
-	@Override
-	public Listeners< ViewListener > listeners()
-	{
-		return listeners;
-	}
-
 	public ViewFrame getFrame()
 	{
 		return frame;
@@ -85,7 +77,7 @@ public class MastodonFrameView<
 			@Override
 			public void windowClosing( final WindowEvent e )
 			{
-				listeners.list.forEach( ViewListener::onClose );
+				close();
 			}
 		} );
 		this.frame = frame;

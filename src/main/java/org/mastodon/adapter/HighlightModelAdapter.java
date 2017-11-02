@@ -4,7 +4,6 @@ import org.mastodon.graph.Edge;
 import org.mastodon.graph.Vertex;
 import org.mastodon.model.HighlightListener;
 import org.mastodon.model.HighlightModel;
-import org.mastodon.util.Listeners;
 
 /**
  * Adapts a {@code HighlightModel<V, E>} as a {@code HighlightModel<WV, WE>}.
@@ -31,6 +30,8 @@ public class HighlightModelAdapter< V extends Vertex< E >, E extends Edge< V >, 
 
 	private final RefBimap< E, WE > edgeMap;
 
+	private final ForwardedListeners< HighlightListener > listeners;
+
 	public HighlightModelAdapter(
 			final HighlightModel< V, E > highlight,
 			final RefBimap< V, WV > vertexMap,
@@ -39,6 +40,7 @@ public class HighlightModelAdapter< V extends Vertex< E >, E extends Edge< V >, 
 		this.highlight = highlight;
 		this.vertexMap = vertexMap;
 		this.edgeMap = edgeMap;
+		this.listeners = new ForwardedListeners.SynchronizedList<>( highlight.listeners() );
 	}
 
 	@Override
@@ -72,8 +74,8 @@ public class HighlightModelAdapter< V extends Vertex< E >, E extends Edge< V >, 
 	}
 
 	@Override
-	public Listeners< HighlightListener > listeners()
+	public ForwardedListeners< HighlightListener > listeners()
 	{
-		return highlight.listeners();
+		return listeners;
 	}
 }

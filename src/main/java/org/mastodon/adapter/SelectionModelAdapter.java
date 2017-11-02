@@ -5,9 +5,8 @@ import java.util.Collection;
 import org.mastodon.collection.RefSet;
 import org.mastodon.graph.Edge;
 import org.mastodon.graph.Vertex;
-import org.mastodon.model.SelectionModel;
 import org.mastodon.model.SelectionListener;
-import org.mastodon.util.Listeners;
+import org.mastodon.model.SelectionModel;
 
 /**
  * Adapts a {@code SelectionModel<V, E>} as a {@code SelectionModel<WV, WE>}.
@@ -32,6 +31,8 @@ public class SelectionModelAdapter< V extends Vertex< E >, E extends Edge< V >, 
 
 	private final RefBimap< E, WE > edgeMap;
 
+	private final ForwardedListeners< SelectionListener > listeners;
+
 	public SelectionModelAdapter(
 			final SelectionModel< V, E > selection,
 			final RefBimap< V, WV > vertexMap,
@@ -40,6 +41,7 @@ public class SelectionModelAdapter< V extends Vertex< E >, E extends Edge< V >, 
 		this.selection = selection;
 		this.vertexMap = vertexMap;
 		this.edgeMap = edgeMap;
+		this.listeners = new ForwardedListeners.SynchronizedList<>( selection.listeners() );
 	}
 
 	@Override
@@ -115,9 +117,9 @@ public class SelectionModelAdapter< V extends Vertex< E >, E extends Edge< V >, 
 	}
 
 	@Override
-	public Listeners< SelectionListener > listeners()
+	public ForwardedListeners< SelectionListener > listeners()
 	{
-		return selection.listeners();
+		return listeners;
 	}
 
 	@Override

@@ -35,23 +35,25 @@ public class NavigationHandlerAdapter< V, E, WV, WE >
 		navigationHandler.notifyNavigateToEdge( edgeMap.getLeft( edge ) );
 	}
 
-	private final Listeners< NavigationListener< WV, WE > > listeners = new Listeners< NavigationListener< WV, WE > >()
-	{
-		@Override
-		public boolean add( final NavigationListener< WV, WE > listener )
-		{
-			return navigationHandler.listeners().add( new NavigationListenerAdapter<>( listener, vertexMap, edgeMap ) );
-		}
+	private final ForwardedListeners< NavigationListener< WV, WE > > listeners = new ForwardedListeners.SynchronizedList<>(
+			new Listeners< NavigationListener< WV, WE > >()
+			{
+				@Override
+				public boolean add( final NavigationListener< WV, WE > listener )
+				{
+					return navigationHandler.listeners().add( new NavigationListenerAdapter<>( listener, vertexMap, edgeMap ) );
+				}
 
-		@Override
-		public boolean remove( final NavigationListener< WV, WE > listener )
-		{
-			return navigationHandler.listeners().remove( new NavigationListenerAdapter<>( listener, vertexMap, edgeMap ) );
-		}
-	};
+				@Override
+				public boolean remove( final NavigationListener< WV, WE > listener )
+				{
+					return navigationHandler.listeners().remove( new NavigationListenerAdapter<>( listener, vertexMap, edgeMap ) );
+				}
+			}
+	);
 
 	@Override
-	public Listeners< NavigationListener< WV, WE > > listeners()
+	public ForwardedListeners< NavigationListener< WV, WE > > listeners()
 	{
 		return listeners;
 	}

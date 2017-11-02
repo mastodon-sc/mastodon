@@ -1,10 +1,12 @@
 package org.mastodon.app;
 
+import java.util.ArrayList;
 import org.mastodon.adapter.FocusModelAdapter;
 import org.mastodon.adapter.HighlightModelAdapter;
 import org.mastodon.adapter.NavigationHandlerAdapter;
 import org.mastodon.adapter.RefBimap;
 import org.mastodon.adapter.SelectionModelAdapter;
+import org.mastodon.adapter.TimepointModelAdapter;
 import org.mastodon.app.ui.ViewFrame;
 import org.mastodon.graph.Edge;
 import org.mastodon.graph.Vertex;
@@ -57,9 +59,7 @@ public class MastodonView<
 
 	protected final NavigationHandler< V, E > navigationHandler;
 
-	protected final Listeners.List< ViewListener > listeners = new Listeners.SynchronizedList<>();
-
-	protected ViewFrame frame;
+	protected final ArrayList< Runnable > runOnClose;
 
 	public MastodonView(
 			final M appModel,
@@ -72,16 +72,37 @@ public class MastodonView<
 		final RefBimap< ME, E > edgeMap = viewGraph.getEdgeMap();
 
 		groupHandle = appModel.getGroupManager().createGroupHandle();
-		timepointModel = groupHandle.getModel( appModel.TIMEPOINT );
-		highlightModel = new HighlightModelAdapter<>( appModel.getHighlightModel(), vertexMap, edgeMap );
-		focusModel = new FocusModelAdapter<>( appModel.getFocusModel(), vertexMap, edgeMap );
-		selectionModel = new SelectionModelAdapter<>( appModel.getSelectionModel(), vertexMap, edgeMap );
-		final NavigationHandler< MV, ME > navigation = groupHandle.getModel( appModel.NAVIGATION );
-		navigationHandler = new NavigationHandlerAdapter<>( navigation, vertexMap, edgeMap );
+
+		final TimepointModelAdapter timepointModelAdapter = new TimepointModelAdapter( groupHandle.getModel( appModel.TIMEPOINT ) );
+		final HighlightModelAdapter< MV, ME, V, E > highlightModelAdapter = new HighlightModelAdapter<>( appModel.getHighlightModel(), vertexMap, edgeMap );
+		final FocusModelAdapter< MV, ME, V, E > focusModelAdapter = new FocusModelAdapter<>( appModel.getFocusModel(), vertexMap, edgeMap );
+		final SelectionModelAdapter< MV, ME, V, E > selectionModelAdapter = new SelectionModelAdapter<>( appModel.getSelectionModel(), vertexMap, edgeMap );
+		final NavigationHandlerAdapter< MV, ME, V, E > navigationHandlerAdapter = new NavigationHandlerAdapter<>( groupHandle.getModel( appModel.NAVIGATION ), vertexMap, edgeMap );
+
+		timepointModel = timepointModelAdapter;
+		highlightModel = highlightModelAdapter;
+		focusModel = focusModelAdapter;
+		selectionModel = selectionModelAdapter;
+		navigationHandler = navigationHandlerAdapter;
+
+		runOnClose = new ArrayList<>();
+		runOnClose.add( () -> {
+			timepointModelAdapter.listeners().removeAll();
+			highlightModelAdapter.listeners().removeAll();
+			focusModelAdapter.listeners().removeAll();
+			selectionModelAdapter.listeners().removeAll();
+			navigationHandlerAdapter.listeners().removeAll();
+		});
 	}
 
-	public Listeners< ViewListener > listeners()
+	public synchronized void onClose( final Runnable runnable )
 	{
-		return listeners;
+		runOnClose.add( runnable );
+	}
+
+	protected synchronized void close()
+	{
+		runOnClose.forEach( Runnable::run );
+		runOnClose.clear();
 	}
 }
