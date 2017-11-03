@@ -4,20 +4,27 @@ import java.awt.event.WindowEvent;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import javax.swing.JFrame;
+import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
+import org.mastodon.app.ui.settings.SettingsPage;
 import org.mastodon.revised.bdv.SharedBigDataViewerData;
 import org.mastodon.revised.model.mamut.Model;
 import org.mastodon.revised.model.mamut.Spot;
 import org.mastodon.revised.ui.SelectionActions;
+import org.mastodon.revised.util.ToggleDialogAction;
 import org.mastodon.views.context.ContextProvider;
 import org.scijava.ui.behaviour.KeyPressedManager;
 import org.scijava.ui.behaviour.io.InputTriggerConfig;
 import org.scijava.ui.behaviour.io.InputTriggerDescription;
 import org.scijava.ui.behaviour.io.InputTriggerDescriptionsBuilder;
+import org.scijava.ui.behaviour.io.VisualEditorPanel;
 import org.scijava.ui.behaviour.io.yaml.YamlConfigIO;
 
 import bdv.spimdata.SpimDataMinimal;
@@ -65,6 +72,79 @@ public class WindowManager
 
 		UndoActions.install( appModel.getAppActions(), model );
 		SelectionActions.install( appModel.getAppActions(), model.getGraph(), model.getGraph().getLock(), model.getGraph(), appModel.getSelectionModel(), model );
+
+
+
+		// TODO FIX HACK
+		final PreferencesDialog settings = new PreferencesDialog( null );
+		final InputTriggerDescriptionsBuilder builder = new InputTriggerDescriptionsBuilder( keyconf );
+		final Map< String, String > commandDescriptions = new HashMap<>();
+		builder.getBehaviourNames().forEach( name -> commandDescriptions.put( name, null ) );
+		final Set< String > contexts = builder.getContexts();
+
+		final VisualEditorPanel keyconfEditor = new VisualEditorPanel( keyconf, commandDescriptions, contexts );
+		keyconfEditor.setButtonPanelVisible( false );
+		final DefaultSettingsPage page = new DefaultSettingsPage( "keymap", keyconfEditor );
+		page.onCancel( () -> keyconfEditor.configToModel() );
+		page.onApply( () -> {
+			keyconfEditor.modelToConfig();
+			appModel.getAppActions().updateKeyConfig( keyconf );
+		} );
+		settings.addPage( page );
+		final ToggleDialogAction tooglePreferencesDialogAction = new ToggleDialogAction( "Preferences", settings );
+		appModel.getAppActions().namedAction( tooglePreferencesDialogAction, "meta COMMA" );
+	}
+
+	// TODO FIX HACK
+	static class DefaultSettingsPage implements SettingsPage
+	{
+		private final String treePath;
+
+		private final JPanel panel;
+
+		public DefaultSettingsPage( final String treePath, final JPanel panel )
+		{
+			this.treePath = treePath;
+			this.panel = panel;
+		}
+
+		@Override
+		public String getTreePath()
+		{
+			return treePath;
+		}
+
+		@Override
+		public JPanel getJPanel()
+		{
+			return panel;
+		}
+
+		protected final ArrayList< Runnable > runOnApply = new ArrayList<>();
+
+		public synchronized void onApply( final Runnable runnable )
+		{
+			runOnApply.add( runnable );
+		}
+
+		protected final ArrayList< Runnable > runOnCancel = new ArrayList<>();
+
+		public synchronized void onCancel( final Runnable runnable )
+		{
+			runOnCancel.add( runnable );
+		}
+
+		@Override
+		public void cancel()
+		{
+			runOnCancel.forEach( Runnable::run );
+		}
+
+		@Override
+		public void apply()
+		{
+			runOnApply.forEach( Runnable::run );
+		}
 	}
 
 	private synchronized void addBdvWindow( final MamutViewBdv w )
