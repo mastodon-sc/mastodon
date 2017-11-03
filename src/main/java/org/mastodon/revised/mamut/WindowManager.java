@@ -1,8 +1,10 @@
 package org.mastodon.revised.mamut;
 
+import bdv.util.InvokeOnEDT;
 import java.awt.event.WindowEvent;
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -190,15 +192,27 @@ public class WindowManager
 			frames.add( w.getFrame() );
 		for ( final MamutViewTrackScheme w : tsWindows )
 			frames.add( w.getFrame() );
-		SwingUtilities.invokeLater( new Runnable()
+		try
 		{
-			@Override
-			public void run()
+			InvokeOnEDT.invokeAndWait( new Runnable()
 			{
-				for ( final JFrame f : frames )
-					f.dispatchEvent( new WindowEvent( f, WindowEvent.WINDOW_CLOSING ) );
-			}
-		} );
+				@Override
+				public void run()
+				{
+					for ( final JFrame f : frames )
+						f.dispatchEvent( new WindowEvent( f, WindowEvent.WINDOW_CLOSING ) );
+				}
+			} );
+		}
+		catch ( InvocationTargetException e )
+		{
+			e.printStackTrace();
+		}
+		catch ( InterruptedException e )
+		{
+			Thread.currentThread().interrupt();
+			e.printStackTrace();
+		}
 	}
 
 	public Model getModel()
