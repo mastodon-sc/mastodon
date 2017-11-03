@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import java.util.function.Consumer;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
@@ -36,8 +37,6 @@ import mpicbg.spim.data.generic.AbstractSpimData;
 
 public class WindowManager
 {
-	private final MamutAppModel appModel;
-
 	/**
 	 * All currently open BigDataViewer windows.
 	 */
@@ -53,31 +52,47 @@ public class WindowManager
 	 */
 	private final List< MamutViewTrackScheme > tsWindows = new ArrayList<>();
 
+	private final InputTriggerConfig keyconf;
+
+	private final KeyPressedManager keyPressedManager;
+
+	private MamutAppModel appModel;
+
+	@Deprecated
 	public WindowManager(
 			final String spimDataXmlFilename,
 			final SpimDataMinimal spimData,
 			final Model model,
 			final InputTriggerConfig keyconf )
 	{
-		final KeyPressedManager keyPressedManager = new KeyPressedManager();
-		final RequestRepaint requestRepaint = () -> {
-			for ( final MamutViewBdv bdv : bdvWindows )
-				bdv.requestRepaint();
-		};
+		this.keyconf = keyconf;
+		keyPressedManager = new KeyPressedManager();
 
 		final ViewerOptions options = ViewerOptions.options()
 				.inputTriggerConfig( keyconf )
 				.shareKeyPressedEvents( keyPressedManager );
-		final SharedBigDataViewerData sharedBdvData = new SharedBigDataViewerData( spimDataXmlFilename, spimData, options, requestRepaint );
+		final SharedBigDataViewerData sharedBdvData = new SharedBigDataViewerData( spimDataXmlFilename, spimData, options, () -> forEachBdvView( bdv -> bdv.requestRepaint() ) );
 
-		appModel = new MamutAppModel( model, sharedBdvData, keyconf, keyPressedManager );
+		setAppModel( new MamutAppModel( model, sharedBdvData, keyconf, keyPressedManager ) );
+	}
 
+	public WindowManager( final InputTriggerConfig keyconf )
+	{
+		this.keyconf = keyconf;
+		keyPressedManager = new KeyPressedManager();
+	}
+
+	void setAppModel( MamutAppModel appModel )
+	{
+		closeAllWindows();
+
+		this.appModel = appModel;
+
+		final Model model = appModel.getModel();
 		UndoActions.install( appModel.getAppActions(), model );
 		SelectionActions.install( appModel.getAppActions(), model.getGraph(), model.getGraph().getLock(), model.getGraph(), appModel.getSelectionModel(), model );
 
-
-
-		// TODO FIX HACK
+		// TODO FIX HACK: We are creating a new dialog everytime so that the keyconf (which is filled from programmatically set defaults is)
 		final PreferencesDialog settings = new PreferencesDialog( null );
 		final InputTriggerDescriptionsBuilder builder = new InputTriggerDescriptionsBuilder( keyconf );
 		final Map< String, String > commandDescriptions = new HashMap<>();
@@ -90,8 +105,11 @@ public class WindowManager
 		page.onCancel( () -> keyconfEditor.configToModel() );
 		page.onApply( () -> {
 			keyconfEditor.modelToConfig();
-			appModel.getAppActions().updateKeyConfig( keyconf );
+			if ( appModel != null )
+				appModel.getAppActions().updateKeyConfig( keyconf );
 		} );
+		settings.addPage( page );
+		settings.addPage( page );
 		settings.addPage( page );
 		final ToggleDialogAction tooglePreferencesDialogAction = new ToggleDialogAction( "Preferences", settings );
 		appModel.getAppActions().namedAction( tooglePreferencesDialogAction, "meta COMMA" );
@@ -163,6 +181,11 @@ public class WindowManager
 		} );
 	}
 
+	public void forEachBdvView( Consumer< ? super MamutViewBdv > action )
+	{
+		bdvWindows.forEach( action );
+	}
+
 	private synchronized void addTsWindow( final MamutViewTrackScheme w )
 	{
 		tsWindows.add( w );
@@ -173,16 +196,27 @@ public class WindowManager
 		} );
 	}
 
+	public void forEachTrackSchemwView( Consumer< ? super MamutViewTrackScheme > action )
+	{
+		tsWindows.forEach( action );
+	}
+
 	public void createBigDataViewer()
 	{
-		final MamutViewBdv view = new MamutViewBdv( appModel );
-		addBdvWindow( view );
+		if ( appModel != null )
+		{
+			final MamutViewBdv view = new MamutViewBdv( appModel );
+			addBdvWindow( view );
+		}
 	}
 
 	public void createTrackScheme()
 	{
-		final MamutViewTrackScheme view = new MamutViewTrackScheme( appModel );
-		addTsWindow( view );
+		if ( appModel != null )
+		{
+			final MamutViewTrackScheme view = new MamutViewTrackScheme( appModel );
+			addTsWindow( view );
+		}
 	}
 
 	public void closeAllWindows()
@@ -213,6 +247,16 @@ public class WindowManager
 			Thread.currentThread().interrupt();
 			e.printStackTrace();
 		}
+	}
+
+	InputTriggerConfig getKeyConfig()
+	{
+		return keyconf;
+	}
+
+	KeyPressedManager getKeyPressedManager()
+	{
+		return keyPressedManager;
 	}
 
 	public Model getModel()
