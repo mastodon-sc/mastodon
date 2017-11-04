@@ -1,5 +1,8 @@
 package org.mastodon.revised.mamut;
 
+import bdv.spimdata.SpimDataMinimal;
+import bdv.spimdata.XmlIoSpimDataMinimal;
+import com.sun.deploy.ref.AppModel;
 import java.awt.BorderLayout;
 import java.awt.Container;
 import java.awt.Dialog;
@@ -11,15 +14,17 @@ import java.awt.event.WindowEvent;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
-
+import javax.swing.ActionMap;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JMenuBar;
 import javax.swing.JPanel;
 import javax.swing.JSeparator;
 import javax.swing.SwingUtilities;
 import javax.swing.WindowConstants;
-
+import mpicbg.spim.data.SpimDataException;
+import org.mastodon.app.ui.ViewMenu;
 import org.mastodon.revised.mamut.feature.MamutFeatureComputerService;
 import org.mastodon.revised.model.mamut.Model;
 import org.mastodon.revised.ui.util.FileChooser;
@@ -29,32 +34,17 @@ import org.scijava.Context;
 import org.scijava.ui.behaviour.io.InputTriggerConfig;
 import org.scijava.ui.behaviour.io.yaml.YamlConfigIO;
 
-import bdv.spimdata.SpimDataMinimal;
-import bdv.spimdata.XmlIoSpimDataMinimal;
-import mpicbg.spim.data.SpimDataException;
-
 public class MainWindow extends JFrame
 {
-	private static final long serialVersionUID = 1L;
+	protected final JMenuBar menubar;
 
-	private final InputTriggerConfig keyconf;
+	private final ViewMenu menu;
 
-	private MamutProject project;
-
-	private WindowManager windowManager;
-
-	private File proposedProjectFile;
-
-	private final TgmmImportDialog tgmmImportDialog;
-
-	private ToggleDialogAction toggleFeatureComputationDialogAction;
-
-	public MainWindow( final InputTriggerConfig keyconf )
+	public MainWindow( final WindowManager windowManager )
 	{
 		super( "Mastodon" );
-		this.keyconf = keyconf;
 
-		tgmmImportDialog = new TgmmImportDialog( this );
+		final ActionMap actionMap = windowManager.getGlobalAppActions().getActionMap();
 
 		final JPanel buttonsPanel = new JPanel();
 		final GridBagLayout gbl = new GridBagLayout();
@@ -91,21 +81,15 @@ public class MainWindow extends JFrame
 
 		++gridy;
 
-		final JButton bdvButton = new JButton( "bdv" );
-		bdvButton.addActionListener( e -> {
-			if ( windowManager != null )
-				windowManager.createBigDataViewer();
-		} );
+		final JButton bdvButton = new JButton( actionMap.get( WindowManager.NEW_BDV_VIEW ) );
+		bdvButton.setText( "bdv" );
 		button_gbc_right.gridy = gridy;
 		buttonsPanel.add( bdvButton, button_gbc_right );
 
 		++gridy;
 
-		final JButton trackschemeButton = new JButton( "trackscheme" );
-		trackschemeButton.addActionListener( e -> {
-			if ( windowManager != null )
-				windowManager.createTrackScheme();
-		} );
+		final JButton trackschemeButton = new JButton( actionMap.get( WindowManager.NEW_TRACKSCHEME_VIEW ) );
+		trackschemeButton.setText( "trackscheme" );
 		button_gbc_right.gridy = gridy;
 		buttonsPanel.add( trackschemeButton, button_gbc_right );
 
@@ -121,8 +105,10 @@ public class MainWindow extends JFrame
 
 		++gridy;
 
-		final JButton featureComputationButton = new JButton( "features and tags" );
-		featureComputationButton.addActionListener( e -> toggleFeaturesDialog() );
+		final JButton featureComputationButton = new JButton();
+		featureComputationButton.setText( "features and tags" );
+		featureComputationButton.setEnabled( false ); // TODO
+//		featureComputationButton.addActionListener( e -> toggleFeaturesDialog() );
 		button_gbc_right.gridy = gridy;
 		buttonsPanel.add( featureComputationButton, button_gbc_right );
 
@@ -138,257 +124,58 @@ public class MainWindow extends JFrame
 
 		++gridy;
 
-		final JButton createProjectButton = new JButton( "new project" );
-		createProjectButton.addActionListener( e -> createProject() );
+		final JButton createProjectButton = new JButton( actionMap.get( ProjectManager.CREATE_PROJECT ) );
+		createProjectButton.setText( "new project" );
 		button_gbc_left.gridy = gridy;
 		buttonsPanel.add( createProjectButton, button_gbc_left );
 
-		final JButton importButton = new JButton( "import tgmm" );
-		importButton.addActionListener( e -> tgmmImportDialog.showImportDialog( windowManager.getSpimData(), windowManager.getModel() ) );
+		final JButton importButton = new JButton( actionMap.get( ProjectManager.IMPORT_TGMM ) );
+		importButton.setText( "import tgmm" );
 		button_gbc_right.gridy = gridy;
 		buttonsPanel.add( importButton, button_gbc_right );
 
 		++gridy;
 
-		final JButton saveProjectButton = new JButton( "save project" );
-		saveProjectButton.addActionListener( e -> saveProject() );
+		final JButton saveProjectButton = new JButton( actionMap.get( ProjectManager.SAVE_PROJECT ) );
+		saveProjectButton.setText( "save project" );
 		button_gbc_left.gridy = gridy;
 		buttonsPanel.add( saveProjectButton, button_gbc_left );
 
-		final JButton loadProjectButton = new JButton( "load project" );
-		loadProjectButton.addActionListener( e -> loadProject() );
+		final JButton loadProjectButton = new JButton( actionMap.get( ProjectManager.LOAD_PROJECT ) );
+		loadProjectButton.setText( "load project" );
 		button_gbc_right.gridy = gridy;
 		buttonsPanel.add( loadProjectButton, button_gbc_right );
 
 		final Container content = getContentPane();
 		content.add( buttonsPanel, BorderLayout.NORTH );
 
-		setDefaultCloseOperation( WindowConstants.DISPOSE_ON_CLOSE );
-		addWindowListener( new WindowAdapter()
-		{
-			@Override
-			public void windowClosed( final WindowEvent e )
-			{
-				project = null;
-				if ( windowManager != null )
-					windowManager.closeAllWindows();
-				windowManager = null;
-			}
-		} );
+		menubar = new JMenuBar();
+		setJMenuBar( menubar );
 
+		menu = new ViewMenu( menubar, windowManager.getKeyConfig(), "mastodon" );
+		menu.addItem( "File", "New Project", actionMap.get( ProjectManager.CREATE_PROJECT ) );
+		menu.addItem( "File", "Load Project", actionMap.get( ProjectManager.LOAD_PROJECT ) );
+		menu.addItem( "File", "Save Project", actionMap.get( ProjectManager.SAVE_PROJECT ) );
+		menu.addSeparator( "File" );
+		menu.addItem( "File", "Import TGMM tracks", actionMap.get( ProjectManager.IMPORT_TGMM ) );
+
+		menu.addItem( "Window", "New Bdv", actionMap.get( WindowManager.NEW_BDV_VIEW ) );
+		menu.addItem( "Window", "New Trackscheme", actionMap.get( WindowManager.NEW_TRACKSCHEME_VIEW ) );
+
+//		setDefaultCloseOperation( WindowConstants.DISPOSE_ON_CLOSE );
+//		addWindowListener( new WindowAdapter()
+//		{
+//			@Override
+//			public void windowClosed( final WindowEvent e )
+//			{
+//				project = null;
+//				if ( windowManager != null )
+//					windowManager.closeAllWindows();
+//				windowManager = null;
+//			}
+//		} );
 		setDefaultCloseOperation( WindowConstants.EXIT_ON_CLOSE );
+
 		pack();
-	}
-
-	public void open( final MamutProject project ) throws IOException, SpimDataException
-	{
-		/*
-		 * Load Model
-		 */
-		final Model model = new Model();
-		if ( project.getRawModelFile() != null )
-			model.loadRaw( project.getRawModelFile() );
-
-		/*
-		 * Load SpimData
-		 */
-		final String spimDataXmlFilename = project.getDatasetXmlFile().getAbsolutePath();
-		final SpimDataMinimal spimData = new XmlIoSpimDataMinimal().load( spimDataXmlFilename );
-
-		this.project = project;
-
-		if ( windowManager != null )
-			windowManager.closeAllWindows();
-
-		windowManager = new WindowManager( spimDataXmlFilename, spimData, model, keyconf );
-
-		/*
-		 * Feature calculation.
-		 */
-
-		/*
-		 * TODO FIXE Ugly hack to get proper service instantiation. Fix it by
-		 * proposing a proper Command decoupled from the GUI.
-		 */
-		final Context context = new Context();
-		final MamutFeatureComputerService featureComputerService = context.getService( MamutFeatureComputerService.class );
-		final Dialog featureComputationDialog = new FeatureAndTagDialog( this, windowManager.getModel(), featureComputerService );
-		featureComputationDialog.setSize( 400, 400 );
-
-		toggleFeatureComputationDialogAction = new ToggleDialogAction( "feature computation", featureComputationDialog );
-	}
-
-	public void saveProject( final File projectFile ) throws IOException
-	{
-		File modelFile = project.getRawModelFile();
-		if ( modelFile == null )
-		{
-			modelFile = MamutProject.deriveRawModelFile( projectFile );
-			project.setRawModelFile( modelFile );
-		}
-
-		project.setBasePath( projectFile.getParentFile() );
-
-		final Model model = windowManager.getModel();
-		model.saveRaw( modelFile );
-
-		new MamutProjectIO().save( project, projectFile.getAbsolutePath() );
-	}
-
-	public void loadProject( final File projectFile ) throws IOException, SpimDataException
-	{
-		open( new MamutProjectIO().load( projectFile.getAbsolutePath() ) );
-	}
-
-	public void saveProject()
-	{
-		String fn = proposedProjectFile == null ? null : proposedProjectFile.getAbsolutePath();
-
-		File file = FileChooser.chooseFile(
-				this,
-				fn,
-				new XmlFileFilter(),
-				"Save MaMuT Project File",
-				FileChooser.DialogType.SAVE );
-		if ( file == null )
-			return;
-
-		fn = file.getAbsolutePath();
-		if ( !fn.endsWith( ".xml" ) )
-			file = new File( fn + ".xml" );
-
-		if ( !file.equals( proposedProjectFile ) )
-			project.setRawModelFile( MamutProject.deriveRawModelFile( file ) );
-
-		try
-		{
-			proposedProjectFile = file;
-			saveProject( proposedProjectFile );
-		}
-		catch ( final IOException e )
-		{
-			e.printStackTrace();
-		}
-	}
-
-	public void loadProject()
-	{
-		final String fn = proposedProjectFile == null ? null : proposedProjectFile.getAbsolutePath();
-		final File file = FileChooser.chooseFile(
-				this,
-				fn,
-				new XmlFileFilter(),
-				"Open MaMuT Project File",
-				FileChooser.DialogType.LOAD );
-		if ( file == null )
-			return;
-
-		try
-		{
-			proposedProjectFile = file;
-			loadProject( proposedProjectFile );
-		}
-		catch ( final IOException | SpimDataException e )
-		{
-			e.printStackTrace();
-		}
-	}
-
-	public void createProject()
-	{
-		final File file = FileChooser.chooseFile(
-				this,
-				null,
-				new XmlFileFilter(),
-				"Open BigDataViewer File",
-				FileChooser.DialogType.LOAD );
-		if ( file == null )
-			return;
-
-		try
-		{
-			open( new MamutProject( file.getParentFile(), file, null ) );
-		}
-		catch ( final IOException | SpimDataException e )
-		{
-			e.printStackTrace();
-		}
-	}
-
-	public void toggleFeaturesDialog()
-	{
-		if ( toggleFeatureComputationDialogAction != null )
-			toggleFeatureComputationDialogAction.actionPerformed( null );
-	}
-
-	/**
-	 * Try to load {@link InputTriggerConfig} from files in this order:
-	 * <ol>
-	 * <li>"keyconfig.yaml" in the current directory.
-	 * <li>".mastodon/keyconfig.yaml" in the user's home directory.
-	 * </ol>
-	 */
-	static InputTriggerConfig getInputTriggerConfig()
-	{
-		InputTriggerConfig conf = null;
-
-		// try "keyconfig.yaml" in current directory
-		if ( new File( "keyconfig.yaml" ).isFile() )
-		{
-			try
-			{
-				conf = new InputTriggerConfig( YamlConfigIO.read( "keyconfig.yaml" ) );
-			}
-			catch ( final IOException e )
-			{}
-		}
-
-		// try "~/.mastodon/keyconfig.yaml"
-		if ( conf == null )
-		{
-			final String fn = System.getProperty( "user.home" ) + "/.mastodon/keyconfig.yaml";
-			if ( new File( fn ).isFile() )
-			{
-				try
-				{
-					conf = new InputTriggerConfig( YamlConfigIO.read( fn ) );
-				}
-				catch ( final IOException e )
-				{}
-			}
-		}
-
-		if ( conf == null )
-		{
-			conf = new InputTriggerConfig();
-		}
-
-		return conf;
-	}
-
-	public static void main( final String[] args ) throws IOException, SpimDataException, InvocationTargetException, InterruptedException
-	{
-		final String bdvFile = "samples/datasethdf5.xml";
-		final String modelFile = "samples/model_revised.raw";
-		final MamutProject project = new MamutProject( new File( "." ), new File( bdvFile ), new File( modelFile ) );
-//		final MamutProject project = new MamutProjectIO().load( "samples/mamutproject.xml" );
-
-		System.setProperty( "apple.laf.useScreenMenuBar", "true" );
-
-		final InputTriggerConfig keyconf = getInputTriggerConfig();
-		final MainWindow mw = new MainWindow( keyconf );
-		mw.setVisible( true );
-
-		mw.open( project );
-//		mw.proposedProjectFile = new File( "/Users/pietzsch/Desktop/data/TGMM_METTE/project2.xml" );
-//		mw.loadProject( new File( "/Users/pietzsch/Desktop/data/TGMM_METTE/project.xml" ) );
-//		mw.createProject();
-//		mw.loadProject();
-		SwingUtilities.invokeAndWait( () -> {
-			mw.windowManager.createBigDataViewer();
-			mw.windowManager.createTrackScheme();
-//			YamlConfigIO.write( new InputTriggerDescriptionsBuilder( keyconf ).getDescriptions(), new PrintWriter( System.out ) );
-		} );
-//		WindowManager.DumpInputConfig.writeToYaml( System.getProperty( "user.home" ) + "/.mastodon/keyconfig.yaml", mw.windowManager );
 	}
 }

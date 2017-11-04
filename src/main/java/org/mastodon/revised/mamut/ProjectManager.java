@@ -18,20 +18,157 @@ import org.mastodon.revised.util.ToggleDialogAction;
 import org.scijava.Context;
 import org.scijava.ui.behaviour.KeyPressedManager;
 import org.scijava.ui.behaviour.io.InputTriggerConfig;
+import org.scijava.ui.behaviour.util.AbstractNamedAction;
+import org.scijava.ui.behaviour.util.Actions;
+import org.scijava.ui.behaviour.util.RunnableAction;
 
 public class ProjectManager
 {
-	private WindowManager windowManager;
+	public static final String CREATE_PROJECT = "create new project";
+	public static final String LOAD_PROJECT = "load project";
+	public static final String SAVE_PROJECT = "save project";
+	public static final String IMPORT_TGMM = "import tgmm";
+
+	static final String[] CREATE_PROJECT_KEYS = new String[] { "not mapped" };
+	static final String[] LOAD_PROJECT_KEYS = new String[] { "not mapped" };
+	static final String[] SAVE_PROJECT_KEYS = new String[] { "not mapped" };
+	static final String[] IMPORT_TGMM_KEYS = new String[] { "not mapped" };
+
+	private final WindowManager windowManager;
+
+	private final TgmmImportDialog tgmmImportDialog;
+
+	private MamutProject project;
+
+	private File proposedProjectFile;
+
+	private final AbstractNamedAction createProjectAction;
+
+	private final AbstractNamedAction loadProjectAction;
+
+	private final AbstractNamedAction saveProjectAction;
+
+	private final AbstractNamedAction importTgmmAction;
 
 	public ProjectManager( WindowManager windowManager )
 	{
 		this.windowManager = windowManager;
+
+		tgmmImportDialog = new TgmmImportDialog( null );
+
+		createProjectAction = new RunnableAction( CREATE_PROJECT, this::createProject );
+		loadProjectAction = new RunnableAction( LOAD_PROJECT, this::loadProject );
+		saveProjectAction = new RunnableAction( SAVE_PROJECT, this::saveProject );
+		importTgmmAction = new RunnableAction( IMPORT_TGMM, this::importTgmm );
+
+		updateEnabledActions();
 	}
 
-	private File proposedProjectFile;
+	private void updateEnabledActions()
+	{
+		final boolean projectOpen = ( project != null );
+		saveProjectAction.setEnabled( projectOpen );
+		importTgmmAction.setEnabled( projectOpen );
+	}
 
+	/**
+	 * Add Project New/Load/Save actions and install them in the specified
+	 * {@link Actions}.
+	 *
+	 * @param actions
+	 *            Actions are added here.
+	 */
+	public void install( final Actions actions )
+	{
+		actions.namedAction( createProjectAction, CREATE_PROJECT_KEYS );
+		actions.namedAction( loadProjectAction, LOAD_PROJECT_KEYS );
+		actions.namedAction( saveProjectAction, SAVE_PROJECT_KEYS );
+		actions.namedAction( importTgmmAction, IMPORT_TGMM_KEYS );
+	}
 
-	public void open( final MamutProject project ) throws IOException, SpimDataException
+	public synchronized void createProject()
+	{
+		Component parent = null; // TODO
+		final File file = FileChooser.chooseFile(
+				parent,
+				null,
+				new XmlFileFilter(),
+				"Open BigDataViewer File",
+				FileChooser.DialogType.LOAD );
+		if ( file == null )
+			return;
+
+		try
+		{
+			open( new MamutProject( file.getParentFile(), file, null ) );
+		}
+		catch ( final IOException | SpimDataException e )
+		{
+			e.printStackTrace();
+		}
+	}
+
+	public synchronized void loadProject()
+	{
+		final String fn = proposedProjectFile == null ? null : proposedProjectFile.getAbsolutePath();
+		Component parent = null; // TODO
+		final File file = FileChooser.chooseFile(
+				parent,
+				fn,
+				new XmlFileFilter(),
+				"Open Mastodon Project",
+				FileChooser.DialogType.LOAD );
+		if ( file == null )
+			return;
+
+		try
+		{
+			proposedProjectFile = file;
+			final MamutProject project = new MamutProjectIO().load( file.getAbsolutePath() );
+			open( project );
+		}
+		catch ( final IOException | SpimDataException e )
+		{
+			e.printStackTrace();
+		}
+	}
+
+	public synchronized void saveProject()
+	{
+		if ( project == null )
+			return;
+
+		String fn = proposedProjectFile == null ? null : proposedProjectFile.getAbsolutePath();
+
+		Component parent = null; // TODO
+		File file = FileChooser.chooseFile(
+				parent,
+				fn,
+				new XmlFileFilter(),
+				"Save Mastodon Project",
+				FileChooser.DialogType.SAVE );
+		if ( file == null )
+			return;
+
+		fn = file.getAbsolutePath();
+		if ( !fn.endsWith( ".xml" ) )
+			file = new File( fn + ".xml" );
+
+		if ( !file.equals( proposedProjectFile ) )
+			project.setRawModelFile( MamutProject.deriveRawModelFile( file ) );
+
+		try
+		{
+			proposedProjectFile = file;
+			saveProject( proposedProjectFile );
+		}
+		catch ( final IOException e )
+		{
+			e.printStackTrace();
+		}
+	}
+
+	public synchronized void open( final MamutProject project ) throws IOException, SpimDataException
 	{
 		/*
 		 * Load Model
@@ -78,30 +215,41 @@ public class ProjectManager
 		featureComputationDialog.setSize( 400, 400 );
 
 		final ToggleDialogAction toggleFeatureComputationDialogAction = new ToggleDialogAction( "feature computation", featureComputationDialog );
+
+		this.project = project;
+		updateEnabledActions();
 	}
 
-	public void loadProject()
+	public synchronized void saveProject( final File projectFile ) throws IOException
 	{
-		final String fn = proposedProjectFile == null ? null : proposedProjectFile.getAbsolutePath();
-		Component parent = null; // TODO
-		final File file = FileChooser.chooseFile(
-				parent,
-				fn,
-				new XmlFileFilter(),
-				"Open MaMuT Project File",
-				FileChooser.DialogType.LOAD );
-		if ( file == null )
+		if ( project == null )
 			return;
 
-		try
+		File modelFile = project.getRawModelFile();
+		if ( modelFile == null )
 		{
-			proposedProjectFile = file;
-			final MamutProject project = new MamutProjectIO().load( file.getAbsolutePath() );
-			open( project );
+			modelFile = MamutProject.deriveRawModelFile( projectFile );
+			project.setRawModelFile( modelFile );
 		}
-		catch ( final IOException | SpimDataException e )
-		{
-			e.printStackTrace();
-		}
+
+		project.setBasePath( projectFile.getParentFile() );
+
+		final Model model = windowManager.getAppModel().getModel();
+		model.saveRaw( modelFile );
+
+		new MamutProjectIO().save( project, projectFile.getAbsolutePath() );
+
+		updateEnabledActions();
+	}
+
+	public void importTgmm()
+	{
+		if ( project == null )
+			return;
+
+		final MamutAppModel appModel = windowManager.getAppModel();
+		tgmmImportDialog.showImportDialog( appModel.getSharedBdvData().getSpimData(), appModel.getModel() );
+
+		updateEnabledActions();
 	}
 }

@@ -14,7 +14,6 @@ import java.util.Set;
 import java.util.function.Consumer;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
-import javax.swing.SwingUtilities;
 
 import org.mastodon.app.ui.settings.SettingsPage;
 import org.mastodon.revised.bdv.SharedBigDataViewerData;
@@ -31,12 +30,20 @@ import org.scijava.ui.behaviour.io.VisualEditorPanel;
 import org.scijava.ui.behaviour.io.yaml.YamlConfigIO;
 
 import bdv.spimdata.SpimDataMinimal;
-import bdv.viewer.RequestRepaint;
 import bdv.viewer.ViewerOptions;
 import mpicbg.spim.data.generic.AbstractSpimData;
+import org.scijava.ui.behaviour.util.AbstractNamedAction;
+import org.scijava.ui.behaviour.util.Actions;
+import org.scijava.ui.behaviour.util.RunnableAction;
 
 public class WindowManager
 {
+	public static final String NEW_BDV_VIEW = "new bdv view";
+	public static final String NEW_TRACKSCHEME_VIEW = "new trackscheme view";
+
+	static final String[] NEW_BDV_VIEW_KEYS = new String[] { "not mapped" };
+	static final String[] NEW_TRACKSCHEME_VIEW_KEYS = new String[] { "not mapped" };
+
 	/**
 	 * All currently open BigDataViewer windows.
 	 */
@@ -56,6 +63,12 @@ public class WindowManager
 
 	private final KeyPressedManager keyPressedManager;
 
+	private final Actions globalAppActions;
+
+	private final AbstractNamedAction newBdvViewAction;
+
+	private final AbstractNamedAction newTrackSchemeViewAction;
+
 	private MamutAppModel appModel;
 
 	@Deprecated
@@ -65,8 +78,7 @@ public class WindowManager
 			final Model model,
 			final InputTriggerConfig keyconf )
 	{
-		this.keyconf = keyconf;
-		keyPressedManager = new KeyPressedManager();
+		this ( keyconf );
 
 		final ViewerOptions options = ViewerOptions.options()
 				.inputTriggerConfig( keyconf )
@@ -80,6 +92,25 @@ public class WindowManager
 	{
 		this.keyconf = keyconf;
 		keyPressedManager = new KeyPressedManager();
+
+		// TODO: naming, this should be named appActions and the AppModel.appActions should become modelActions?
+		globalAppActions = new Actions( keyconf, "mastodon" );
+
+		new ProjectManager( this ).install( globalAppActions );
+
+		newBdvViewAction = new RunnableAction( NEW_BDV_VIEW, this::createBigDataViewer );
+		newTrackSchemeViewAction = new RunnableAction( NEW_TRACKSCHEME_VIEW, this::createTrackScheme );
+
+		globalAppActions.namedAction( newBdvViewAction, NEW_BDV_VIEW_KEYS );
+		globalAppActions.namedAction( newTrackSchemeViewAction, NEW_TRACKSCHEME_VIEW_KEYS );
+
+		updateEnabledActions();
+	}
+
+	private void updateEnabledActions()
+	{
+		newBdvViewAction.setEnabled( appModel != null );
+		newTrackSchemeViewAction.setEnabled( appModel != null );
 	}
 
 	void setAppModel( MamutAppModel appModel )
@@ -87,6 +118,11 @@ public class WindowManager
 		closeAllWindows();
 
 		this.appModel = appModel;
+		if ( appModel == null )
+		{
+			updateEnabledActions();
+			return;
+		}
 
 		final Model model = appModel.getModel();
 		UndoActions.install( appModel.getAppActions(), model );
@@ -113,6 +149,8 @@ public class WindowManager
 		settings.addPage( page );
 		final ToggleDialogAction tooglePreferencesDialogAction = new ToggleDialogAction( "Preferences", settings );
 		appModel.getAppActions().namedAction( tooglePreferencesDialogAction, "meta COMMA" );
+
+		updateEnabledActions();
 	}
 
 	// TODO FIX HACK
@@ -259,14 +297,14 @@ public class WindowManager
 		return keyPressedManager;
 	}
 
-	public Model getModel()
+	MamutAppModel getAppModel()
 	{
-		return appModel.getModel();
+		return appModel;
 	}
 
-	public AbstractSpimData< ? > getSpimData()
+	Actions getGlobalAppActions()
 	{
-		return appModel.getSharedBdvData().getSpimData();
+		return globalAppActions;
 	}
 
 	// TODO: move somewhere else. make bdvWindows, tsWindows accessible.
