@@ -10,6 +10,8 @@ import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
+import javax.swing.JPopupMenu;
+import javax.swing.JSeparator;
 import javax.swing.MenuElement;
 
 import org.mastodon.revised.util.HasSelectedState;
@@ -45,7 +47,11 @@ public class ViewMenu
 	public void addSeparator( final String path )
 	{
 		final JMenu menu = menu( path );
-		menu.addSeparator();
+		if ( menu.getItemCount() != 0 ) {
+			final JPopupMenu popup = menu.getPopupMenu();
+			if ( ! ( popup.getComponent( popup.getComponentCount() - 1 ) instanceof JSeparator ) )
+				menu.addSeparator();
+		}
 	}
 
 	public boolean addItem( final String path, final String name, final Action action )
