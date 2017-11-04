@@ -82,19 +82,6 @@ public class ViewMenu
 		return true;
 	}
 
-	public boolean addItem( final String path, final String name, final String action )
-	{
-		final JMenu menu = menu( path );
-
-		final int n = menu.getItemCount();
-		for ( int i = 0; i < n; ++i )
-			if ( menu.getItem( i ) != null && menu.getItem( i ).getText().equals( name ) )
-				return false; // item with that name already exists
-		final JMenuItem item = new JMenuItem( name );
-		menu.add( item );
-		return true;
-	}
-
 	JMenu menu( final String path )
 	{
 		final String[] parts = path.split( ">" );
