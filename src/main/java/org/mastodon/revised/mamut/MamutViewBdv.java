@@ -5,7 +5,6 @@ import static org.mastodon.app.ui.ViewMenuBuilder.separator;
 import static org.mastodon.revised.mamut.MamutMenuBuilder.editMenu;
 import static org.mastodon.revised.mamut.MamutMenuBuilder.fileMenu;
 import static org.mastodon.revised.mamut.MamutMenuBuilder.viewMenu;
-import static org.mastodon.revised.mamut.MamutMenuBuilder.windowMenu;
 
 import javax.swing.ActionMap;
 
@@ -78,19 +77,7 @@ class MamutViewBdv extends MamutView< OverlayGraphWrapper< Spot, Link >, Overlay
 		final ViewMenu menu = new ViewMenu( this );
 		final ActionMap actionMap = frame.getKeybindings().getConcatenatedActionMap();
 
-		MamutMenuBuilder.build( menu, actionMap,
-				fileMenu(
-						item( ProjectManager.CREATE_PROJECT ),
-						item( ProjectManager.LOAD_PROJECT ),
-						item( ProjectManager.SAVE_PROJECT ),
-						separator(),
-						item( ProjectManager.IMPORT_TGMM )
-				),
-				windowMenu(
-						item( WindowManager.NEW_BDV_VIEW ),
-						item( WindowManager.NEW_TRACKSCHEME_VIEW )
-				)
-		);
+		MainWindow.addMenus( menu, actionMap );
 		MamutMenuBuilder.build( menu, actionMap,
 				fileMenu(
 						separator(),

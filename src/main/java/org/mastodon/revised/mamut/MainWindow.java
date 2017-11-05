@@ -141,19 +141,7 @@ public class MainWindow extends JFrame
 		setJMenuBar( menubar );
 
 		menu = new ViewMenu( menubar, windowManager.getKeyConfig(), "mastodon" );
-		MamutMenuBuilder.build( menu, actionMap,
-				fileMenu(
-						item( ProjectManager.CREATE_PROJECT ),
-						item( ProjectManager.LOAD_PROJECT ),
-						item( ProjectManager.SAVE_PROJECT ),
-						separator(),
-						item( ProjectManager.IMPORT_TGMM )
-				),
-				windowMenu(
-						item( WindowManager.NEW_BDV_VIEW ),
-						item( WindowManager.NEW_TRACKSCHEME_VIEW )
-				)
-		);
+		addMenus( menu, actionMap );
 
 //		setDefaultCloseOperation( WindowConstants.DISPOSE_ON_CLOSE );
 //		addWindowListener( new WindowAdapter()
@@ -170,5 +158,22 @@ public class MainWindow extends JFrame
 		setDefaultCloseOperation( WindowConstants.EXIT_ON_CLOSE );
 
 		pack();
+	}
+
+	public static void addMenus( final ViewMenu menu, final ActionMap actionMap )
+	{
+		MamutMenuBuilder.build( menu, actionMap,
+				fileMenu(
+						item( ProjectManager.CREATE_PROJECT ),
+						item( ProjectManager.LOAD_PROJECT ),
+						item( ProjectManager.SAVE_PROJECT ),
+						separator(),
+						item( ProjectManager.IMPORT_TGMM )
+				),
+				windowMenu(
+						item( WindowManager.NEW_BDV_VIEW ),
+						item( WindowManager.NEW_TRACKSCHEME_VIEW )
+				)
+		);
 	}
 }
