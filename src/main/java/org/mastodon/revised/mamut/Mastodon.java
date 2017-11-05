@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 
+import javax.swing.SwingUtilities;
 import org.scijava.command.Command;
 import org.scijava.plugin.Plugin;
 import org.scijava.ui.behaviour.io.InputTriggerConfig;
@@ -33,6 +34,24 @@ public class Mastodon implements Command
 		final InputTriggerConfig keyconf = getInputTriggerConfig();
 		final WindowManager windowManager = new WindowManager( keyconf );
 		new MainWindow( windowManager ).setVisible( true );
+
+
+		final String bdvFile = "samples/datasethdf5.xml";
+		final String modelFile = "samples/model_revised.raw";
+		final MamutProject project = new MamutProject( new File( "." ), new File( bdvFile ), new File( modelFile ) );
+//		final MamutProject project = new MamutProjectIO().load( "samples/mamutproject.xml" );
+
+		windowManager.projectManager.open( project );
+//		mw.proposedProjectFile = new File( "/Users/pietzsch/Desktop/data/TGMM_METTE/project2.xml" );
+//		mw.loadProject( new File( "/Users/pietzsch/Desktop/data/TGMM_METTE/project.xml" ) );
+//		mw.createProject();
+//		mw.loadProject();
+		SwingUtilities.invokeAndWait( () -> {
+			windowManager.createBigDataViewer();
+			windowManager.createTrackScheme();
+//			YamlConfigIO.write( new InputTriggerDescriptionsBuilder( keyconf ).getDescriptions(), new PrintWriter( System.out ) );
+		} );
+//		WindowManager.DumpInputConfig.writeToYaml( System.getProperty( "user.home" ) + "/.mastodon/keyconfig.yaml", mw.windowManager );
 	}
 
 	/**

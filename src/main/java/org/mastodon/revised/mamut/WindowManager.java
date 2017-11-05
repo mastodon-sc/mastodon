@@ -67,6 +67,8 @@ public class WindowManager
 
 	private MamutAppModel appModel;
 
+	final ProjectManager projectManager;
+
 	public WindowManager( final InputTriggerConfig keyconf )
 	{
 		this.keyconf = keyconf;
@@ -75,7 +77,8 @@ public class WindowManager
 		// TODO: naming, this should be named appActions and the AppModel.appActions should become modelActions?
 		globalAppActions = new Actions( keyconf, "mastodon" );
 
-		new ProjectManager( this ).install( globalAppActions );
+		projectManager = new ProjectManager( this );
+		projectManager.install( globalAppActions );
 
 		newBdvViewAction = new RunnableAction( NEW_BDV_VIEW, this::createBigDataViewer );
 		newTrackSchemeViewAction = new RunnableAction( NEW_TRACKSCHEME_VIEW, this::createTrackScheme );
