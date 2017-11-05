@@ -1,19 +1,16 @@
 package org.mastodon.revised.mamut;
 
-import bdv.spimdata.SpimDataMinimal;
-import bdv.spimdata.XmlIoSpimDataMinimal;
-import com.sun.deploy.ref.AppModel;
+import static org.mastodon.app.ui.ViewMenuBuilder.item;
+import static org.mastodon.app.ui.ViewMenuBuilder.separator;
+import static org.mastodon.revised.mamut.MamutMenuBuilder.fileMenu;
+import static org.mastodon.revised.mamut.MamutMenuBuilder.windowMenu;
+
 import java.awt.BorderLayout;
 import java.awt.Container;
-import java.awt.Dialog;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
-import java.io.File;
-import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
+
 import javax.swing.ActionMap;
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -21,18 +18,9 @@ import javax.swing.JLabel;
 import javax.swing.JMenuBar;
 import javax.swing.JPanel;
 import javax.swing.JSeparator;
-import javax.swing.SwingUtilities;
 import javax.swing.WindowConstants;
-import mpicbg.spim.data.SpimDataException;
+
 import org.mastodon.app.ui.ViewMenu;
-import org.mastodon.revised.mamut.feature.MamutFeatureComputerService;
-import org.mastodon.revised.model.mamut.Model;
-import org.mastodon.revised.ui.util.FileChooser;
-import org.mastodon.revised.ui.util.XmlFileFilter;
-import org.mastodon.revised.util.ToggleDialogAction;
-import org.scijava.Context;
-import org.scijava.ui.behaviour.io.InputTriggerConfig;
-import org.scijava.ui.behaviour.io.yaml.YamlConfigIO;
 
 public class MainWindow extends JFrame
 {
@@ -153,14 +141,19 @@ public class MainWindow extends JFrame
 		setJMenuBar( menubar );
 
 		menu = new ViewMenu( menubar, windowManager.getKeyConfig(), "mastodon" );
-		menu.addItem( "File", "New Project", actionMap.get( ProjectManager.CREATE_PROJECT ) );
-		menu.addItem( "File", "Load Project", actionMap.get( ProjectManager.LOAD_PROJECT ) );
-		menu.addItem( "File", "Save Project", actionMap.get( ProjectManager.SAVE_PROJECT ) );
-		menu.addSeparator( "File" );
-		menu.addItem( "File", "Import TGMM tracks", actionMap.get( ProjectManager.IMPORT_TGMM ) );
-
-		menu.addItem( "Window", "New Bdv", actionMap.get( WindowManager.NEW_BDV_VIEW ) );
-		menu.addItem( "Window", "New Trackscheme", actionMap.get( WindowManager.NEW_TRACKSCHEME_VIEW ) );
+		MamutMenuBuilder.build( menu, actionMap,
+				fileMenu(
+						item( ProjectManager.CREATE_PROJECT ),
+						item( ProjectManager.LOAD_PROJECT ),
+						item( ProjectManager.SAVE_PROJECT ),
+						separator(),
+						item( ProjectManager.IMPORT_TGMM )
+				),
+				windowMenu(
+						item( WindowManager.NEW_BDV_VIEW ),
+						item( WindowManager.NEW_TRACKSCHEME_VIEW )
+				)
+		);
 
 //		setDefaultCloseOperation( WindowConstants.DISPOSE_ON_CLOSE );
 //		addWindowListener( new WindowAdapter()

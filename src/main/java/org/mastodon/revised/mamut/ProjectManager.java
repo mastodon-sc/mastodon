@@ -1,14 +1,12 @@
 package org.mastodon.revised.mamut;
 
-import bdv.spimdata.SpimDataMinimal;
-import bdv.spimdata.XmlIoSpimDataMinimal;
-import bdv.viewer.ViewerOptions;
 import java.awt.Component;
 import java.awt.Dialog;
 import java.io.File;
 import java.io.IOException;
+
 import javax.swing.JFrame;
-import mpicbg.spim.data.SpimDataException;
+
 import org.mastodon.revised.bdv.SharedBigDataViewerData;
 import org.mastodon.revised.mamut.feature.MamutFeatureComputerService;
 import org.mastodon.revised.model.mamut.Model;
@@ -21,6 +19,11 @@ import org.scijava.ui.behaviour.io.InputTriggerConfig;
 import org.scijava.ui.behaviour.util.AbstractNamedAction;
 import org.scijava.ui.behaviour.util.Actions;
 import org.scijava.ui.behaviour.util.RunnableAction;
+
+import bdv.spimdata.SpimDataMinimal;
+import bdv.spimdata.XmlIoSpimDataMinimal;
+import bdv.viewer.ViewerOptions;
+import mpicbg.spim.data.SpimDataException;
 
 public class ProjectManager
 {
@@ -50,7 +53,7 @@ public class ProjectManager
 
 	private final AbstractNamedAction importTgmmAction;
 
-	public ProjectManager( WindowManager windowManager )
+	public ProjectManager( final WindowManager windowManager )
 	{
 		this.windowManager = windowManager;
 
@@ -88,7 +91,7 @@ public class ProjectManager
 
 	public synchronized void createProject()
 	{
-		Component parent = null; // TODO
+		final Component parent = null; // TODO
 		final File file = FileChooser.chooseFile(
 				parent,
 				null,
@@ -111,7 +114,7 @@ public class ProjectManager
 	public synchronized void loadProject()
 	{
 		final String fn = proposedProjectFile == null ? null : proposedProjectFile.getAbsolutePath();
-		Component parent = null; // TODO
+		final Component parent = null; // TODO
 		final File file = FileChooser.chooseFile(
 				parent,
 				fn,
@@ -140,7 +143,7 @@ public class ProjectManager
 
 		String fn = proposedProjectFile == null ? null : proposedProjectFile.getAbsolutePath();
 
-		Component parent = null; // TODO
+		final Component parent = null; // TODO
 		File file = FileChooser.chooseFile(
 				parent,
 				fn,

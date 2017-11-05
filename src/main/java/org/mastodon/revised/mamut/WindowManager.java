@@ -1,6 +1,5 @@
 package org.mastodon.revised.mamut;
 
-import bdv.util.InvokeOnEDT;
 import java.awt.event.WindowEvent;
 import java.io.File;
 import java.io.IOException;
@@ -10,8 +9,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
 import java.util.function.Consumer;
+
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
@@ -28,13 +27,13 @@ import org.scijava.ui.behaviour.io.InputTriggerDescription;
 import org.scijava.ui.behaviour.io.InputTriggerDescriptionsBuilder;
 import org.scijava.ui.behaviour.io.VisualEditorPanel;
 import org.scijava.ui.behaviour.io.yaml.YamlConfigIO;
-
-import bdv.spimdata.SpimDataMinimal;
-import bdv.viewer.ViewerOptions;
-import mpicbg.spim.data.generic.AbstractSpimData;
 import org.scijava.ui.behaviour.util.AbstractNamedAction;
 import org.scijava.ui.behaviour.util.Actions;
 import org.scijava.ui.behaviour.util.RunnableAction;
+
+import bdv.spimdata.SpimDataMinimal;
+import bdv.util.InvokeOnEDT;
+import bdv.viewer.ViewerOptions;
 
 public class WindowManager
 {
@@ -113,7 +112,7 @@ public class WindowManager
 		newTrackSchemeViewAction.setEnabled( appModel != null );
 	}
 
-	void setAppModel( MamutAppModel appModel )
+	void setAppModel( final MamutAppModel appModel )
 	{
 		closeAllWindows();
 
@@ -219,7 +218,7 @@ public class WindowManager
 		} );
 	}
 
-	public void forEachBdvView( Consumer< ? super MamutViewBdv > action )
+	public void forEachBdvView( final Consumer< ? super MamutViewBdv > action )
 	{
 		bdvWindows.forEach( action );
 	}
@@ -234,7 +233,7 @@ public class WindowManager
 		} );
 	}
 
-	public void forEachTrackSchemwView( Consumer< ? super MamutViewTrackScheme > action )
+	public void forEachTrackSchemwView( final Consumer< ? super MamutViewTrackScheme > action )
 	{
 		tsWindows.forEach( action );
 	}
@@ -276,11 +275,11 @@ public class WindowManager
 				}
 			} );
 		}
-		catch ( InvocationTargetException e )
+		catch ( final InvocationTargetException e )
 		{
 			e.printStackTrace();
 		}
-		catch ( InterruptedException e )
+		catch ( final InterruptedException e )
 		{
 			Thread.currentThread().interrupt();
 			e.printStackTrace();

@@ -1,9 +1,17 @@
 package org.mastodon.revised.mamut;
 
+import static org.mastodon.app.ui.ViewMenuBuilder.item;
+import static org.mastodon.app.ui.ViewMenuBuilder.separator;
+import static org.mastodon.revised.mamut.MamutMenuBuilder.editMenu;
+import static org.mastodon.revised.mamut.MamutMenuBuilder.fileMenu;
+import static org.mastodon.revised.mamut.MamutMenuBuilder.viewMenu;
+import static org.mastodon.revised.mamut.MamutMenuBuilder.windowMenu;
+
 import javax.swing.ActionMap;
 
 import org.mastodon.app.ui.MastodonFrameViewActions;
 import org.mastodon.app.ui.ViewMenu;
+import org.mastodon.app.ui.ViewMenuBuilder;
 import org.mastodon.revised.bdv.BdvContextProvider;
 import org.mastodon.revised.bdv.BigDataViewerActionsMamut;
 import org.mastodon.revised.bdv.BigDataViewerMaMuT;
@@ -69,21 +77,43 @@ class MamutViewBdv extends MamutView< OverlayGraphWrapper< Spot, Link >, Overlay
 
 		final ViewMenu menu = new ViewMenu( this );
 		final ActionMap actionMap = frame.getKeybindings().getConcatenatedActionMap();
-		menu.addItem( "File", "Load settings", actionMap.get( BigDataViewerActionsMamut.LOAD_SETTINGS ) );
-		menu.addItem( "File", "Save settings", actionMap.get( BigDataViewerActionsMamut.SAVE_SETTINGS ) );
 
-		menu.addItem( "View", "Settings Toolbar", actionMap.get( MastodonFrameViewActions.TOGGLE_SETTINGS_PANEL ) );
-
-		menu.addItem( "Edit", "Undo", actionMap.get( UndoActions.UNDO ) );
-		menu.addItem( "Edit", "Redo", actionMap.get( UndoActions.REDO ) );
-		menu.addSeparator( "Edit" );
-		menu.addItem( "Edit", "Delete Selection", actionMap.get( SelectionActions.DELETE_SELECTION ) );
-		menu.addItem( "Edit", "Select Whole Track", actionMap.get( SelectionActions.SELECT_WHOLE_TRACK ) );
-		menu.addItem( "Edit", "Select Track Downward", actionMap.get( SelectionActions.SELECT_TRACK_DOWNWARD ) );
-		menu.addItem( "Edit", "Select Track Upward", actionMap.get( SelectionActions.SELECT_TRACK_UPWARD ) );
-
-		menu.addItem( "Settings", "Brightness & Color", actionMap.get( BigDataViewerActionsMamut.BRIGHTNESS_SETTINGS ) );
-		menu.addItem( "Settings", "Visibility & Grouping", actionMap.get( BigDataViewerActionsMamut.VISIBILITY_AND_GROUPING ) );
+		MamutMenuBuilder.build( menu, actionMap,
+				fileMenu(
+						item( ProjectManager.CREATE_PROJECT ),
+						item( ProjectManager.LOAD_PROJECT ),
+						item( ProjectManager.SAVE_PROJECT ),
+						separator(),
+						item( ProjectManager.IMPORT_TGMM )
+				),
+				windowMenu(
+						item( WindowManager.NEW_BDV_VIEW ),
+						item( WindowManager.NEW_TRACKSCHEME_VIEW )
+				)
+		);
+		MamutMenuBuilder.build( menu, actionMap,
+				fileMenu(
+						separator(),
+						item( BigDataViewerActionsMamut.LOAD_SETTINGS ),
+						item( BigDataViewerActionsMamut.SAVE_SETTINGS )
+				),
+				viewMenu(
+						item( MastodonFrameViewActions.TOGGLE_SETTINGS_PANEL )
+				),
+				editMenu(
+						item( UndoActions.UNDO ),
+						item( UndoActions.REDO ),
+						separator(),
+						item( SelectionActions.DELETE_SELECTION ),
+						item( SelectionActions.SELECT_WHOLE_TRACK ),
+						item( SelectionActions.SELECT_TRACK_DOWNWARD ),
+						item( SelectionActions.SELECT_TRACK_UPWARD )
+				),
+				ViewMenuBuilder.menu( "Settings",
+						item( BigDataViewerActionsMamut.BRIGHTNESS_SETTINGS ),
+						item( BigDataViewerActionsMamut.VISIBILITY_AND_GROUPING )
+				)
+		);
 
 		frame.setVisible( true );
 

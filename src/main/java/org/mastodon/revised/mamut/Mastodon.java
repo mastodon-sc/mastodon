@@ -3,11 +3,13 @@ package org.mastodon.revised.mamut;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
-import mpicbg.spim.data.SpimDataException;
+
 import org.scijava.command.Command;
 import org.scijava.plugin.Plugin;
 import org.scijava.ui.behaviour.io.InputTriggerConfig;
 import org.scijava.ui.behaviour.io.yaml.YamlConfigIO;
+
+import mpicbg.spim.data.SpimDataException;
 
 @Plugin( type = Command.class, menuPath = "Plugins>Mastodon (preview)" )
 public class Mastodon implements Command
@@ -40,7 +42,7 @@ public class Mastodon implements Command
 	 * <li>".mastodon/keyconfig.yaml" in the user's home directory.
 	 * </ol>
 	 */
-	static InputTriggerConfig getInputTriggerConfig()
+	public static InputTriggerConfig getInputTriggerConfig()
 	{
 		InputTriggerConfig conf = null;
 
