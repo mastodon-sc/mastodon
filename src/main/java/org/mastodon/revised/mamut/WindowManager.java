@@ -15,7 +15,6 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 
 import org.mastodon.app.ui.settings.SettingsPage;
-import org.mastodon.revised.bdv.SharedBigDataViewerData;
 import org.mastodon.revised.model.mamut.Model;
 import org.mastodon.revised.model.mamut.Spot;
 import org.mastodon.revised.ui.SelectionActions;
@@ -31,9 +30,7 @@ import org.scijava.ui.behaviour.util.AbstractNamedAction;
 import org.scijava.ui.behaviour.util.Actions;
 import org.scijava.ui.behaviour.util.RunnableAction;
 
-import bdv.spimdata.SpimDataMinimal;
 import bdv.util.InvokeOnEDT;
-import bdv.viewer.ViewerOptions;
 
 public class WindowManager
 {
@@ -69,23 +66,6 @@ public class WindowManager
 	private final AbstractNamedAction newTrackSchemeViewAction;
 
 	private MamutAppModel appModel;
-
-	@Deprecated
-	public WindowManager(
-			final String spimDataXmlFilename,
-			final SpimDataMinimal spimData,
-			final Model model,
-			final InputTriggerConfig keyconf )
-	{
-		this ( keyconf );
-
-		final ViewerOptions options = ViewerOptions.options()
-				.inputTriggerConfig( keyconf )
-				.shareKeyPressedEvents( keyPressedManager );
-		final SharedBigDataViewerData sharedBdvData = new SharedBigDataViewerData( spimDataXmlFilename, spimData, options, () -> forEachBdvView( bdv -> bdv.requestRepaint() ) );
-
-		setAppModel( new MamutAppModel( model, sharedBdvData, keyconf, keyPressedManager ) );
-	}
 
 	public WindowManager( final InputTriggerConfig keyconf )
 	{
