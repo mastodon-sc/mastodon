@@ -240,35 +240,42 @@ public class TrackSchemeStyleIO
 			final TrackSchemeStyle s = ( TrackSchemeStyle ) data;
 			final Map< String, Object > mapping = new LinkedHashMap< >();
 
-			mapping.put( "name", s.name );
-			mapping.put( "edgeColor", s.edgeColor );
-			mapping.put( "vertexFillColor", s.vertexFillColor );
-			mapping.put( "vertexDrawColor", s.vertexDrawColor );
-			mapping.put( "selectedVertexFillColor", s.selectedVertexFillColor );
-			mapping.put( "selectedEdgeColor", s.selectedEdgeColor );
-			mapping.put( "selectedVertexDrawColor", s.selectedVertexDrawColor );
-			mapping.put( "simplifiedVertexFillColor", s.simplifiedVertexFillColor );
-			mapping.put( "selectedSimplifiedVertexFillColor", s.selectedSimplifiedVertexFillColor );
-			mapping.put( "backgroundColor", s.backgroundColor );
-			mapping.put( "currentTimepointColor", s.currentTimepointColor );
-			mapping.put( "decorationColor", s.decorationColor );
-			mapping.put( "vertexRangeColor", s.vertexRangeColor );
-			mapping.put( "headerBackgroundColor", s.headerBackgroundColor );
-			mapping.put( "headerDecorationColor", s.headerDecorationColor );
-			mapping.put( "headerCurrentTimepointColor", s.headerCurrentTimepointColor );
-			mapping.put( "font", s.font );
-			mapping.put( "headerFont", s.headerFont );
-			mapping.put( "edgeStroke", s.edgeStroke );
-			mapping.put( "edgeGhostStroke", s.edgeGhostStroke );
-			mapping.put( "edgeHighlightStroke", s.edgeHighlightStroke );
-			mapping.put( "vertexStroke", s.vertexStroke );
-			mapping.put( "vertexGhostStroke", s.vertexGhostStroke );
-			mapping.put( "vertexHighlightStroke", s.vertexHighlightStroke );
-			mapping.put( "focusStroke", s.focusStroke );
-			mapping.put( "highlightCurrentTimepoint", s.highlightCurrentTimepoint );
-			mapping.put( "paintRows", s.paintRows );
-			mapping.put( "paintColumns", s.paintColumns );
-			mapping.put( "paintHeaderShadow", s.paintHeaderShadow );
+			// Name.
+			mapping.put( "name", s.getName() );
+			// Fixed colors.
+			mapping.put( "edgeColor", s.getEdgeColor() );
+			mapping.put( "vertexFillColor", s.getVertexFillColor() );
+			mapping.put( "vertexDrawColor", s.getVertexDrawColor() );
+			// Selection colors.
+			mapping.put( "selectedVertexFillColor", s.getSelectedVertexFillColor() );
+			mapping.put( "selectedEdgeColor", s.getSelectedEdgeColor() );
+			mapping.put( "selectedVertexDrawColor", s.getSelectedVertexDrawColor() );
+			mapping.put( "simplifiedVertexFillColor", s.getSimplifiedVertexFillColor() );
+			mapping.put( "selectedSimplifiedVertexFillColor", s.getSelectedSimplifiedVertexFillColor() );
+			// Decoration colors.
+			mapping.put( "backgroundColor", s.getBackgroundColor() );
+			mapping.put( "currentTimepointColor", s.getCurrentTimepointColor() );
+			mapping.put( "decorationColor", s.getDecorationColor() );
+			mapping.put( "vertexRangeColor", s.getVertexRangeColor() );
+			mapping.put( "headerBackgroundColor", s.getHeaderBackgroundColor() );
+			mapping.put( "headerDecorationColor", s.getHeaderDecorationColor() );
+			mapping.put( "headerCurrentTimepointColor", s.getHeaderCurrentTimepointColor() );
+			// Fonts.
+			mapping.put( "font", s.getFont() );
+			mapping.put( "headerFont", s.getHeaderFont() );
+			// Strokes.
+			mapping.put( "edgeStroke", s.getEdgeStroke() );
+			mapping.put( "edgeGhostStroke", s.getEdgeGhostStroke() );
+			mapping.put( "edgeHighlightStroke", s.getEdgeHighlightStroke() );
+			mapping.put( "vertexStroke", s.getVertexStroke() );
+			mapping.put( "vertexGhostStroke", s.getVertexGhostStroke() );
+			mapping.put( "vertexHighlightStroke", s.getVertexHighlightStroke() );
+			mapping.put( "focusStroke", s.getFocusStroke() );
+			// Paint decorations.
+			mapping.put( "highlightCurrentTimepoint", s.isHighlightCurrentTimepoint() );
+			mapping.put( "paintRows", s.isPaintRows() );
+			mapping.put( "paintColumns", s.isPaintColumns() );
+			mapping.put( "paintHeaderShadow", s.isPaintHeaderShadow() );
 
 			final Node node = representMapping( getTag(), mapping, getDefaultFlowStyle() );
 			return node;

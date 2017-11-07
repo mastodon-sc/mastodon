@@ -3,8 +3,6 @@
  */
 package org.mastodon.revised.trackscheme.display.ui;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -51,60 +49,20 @@ public class TrackSchemeStyleChooser
 		loadStyles();
 
 		dialog = new TrackSchemeStyleChooserDialog( owner, model );
-		dialog.okButton.addActionListener( new ActionListener()
-		{
-			@Override
-			public void actionPerformed( final ActionEvent e )
+		dialog.okButton.addActionListener( e -> okPressed() );
+		dialog.buttonDeleteStyle.addActionListener( e -> delete() );
+		dialog.buttonEditStyle.addActionListener( e -> edit() );
+		dialog.buttonNewStyle.addActionListener( e -> newStyle() );
+		dialog.buttonSetStyleName.addActionListener( e -> setStyleName() );
+		dialog.saveButton.addActionListener( e -> {
+			dialog.saveButton.setEnabled( false );
+			try
 			{
-				okPressed();
+				saveStyles();
 			}
-		} );
-		dialog.buttonDeleteStyle.addActionListener( new ActionListener()
-		{
-			@Override
-			public void actionPerformed( final ActionEvent e )
+			finally
 			{
-				delete();
-			}
-		} );
-		dialog.buttonEditStyle.addActionListener( new ActionListener()
-		{
-			@Override
-			public void actionPerformed( final ActionEvent e )
-			{
-				edit();
-			}
-		} );
-		dialog.buttonNewStyle.addActionListener( new ActionListener()
-		{
-			@Override
-			public void actionPerformed( final ActionEvent e )
-			{
-				newStyle();
-			}
-		} );
-		dialog.buttonSetStyleName.addActionListener( new ActionListener()
-		{
-			@Override
-			public void actionPerformed( final ActionEvent e )
-			{
-				setStyleName();
-			}
-		} );
-		dialog.saveButton.addActionListener( new ActionListener()
-		{
-			@Override
-			public void actionPerformed( final ActionEvent e )
-			{
-				dialog.saveButton.setEnabled( false );
-				try
-				{
-					saveStyles();
-				}
-				finally
-				{
-					dialog.saveButton.setEnabled( true );
-				}
+				dialog.saveButton.setEnabled( true );
 			}
 		} );
 
@@ -160,8 +118,12 @@ public class TrackSchemeStyleChooser
 		if ( null == current || TrackSchemeStyle.defaults.contains( current ) )
 			return;
 
-		final String newName = ( String ) JOptionPane.showInputDialog( dialog, "Enter the style name:", "Style name", JOptionPane.PLAIN_MESSAGE, null, null, current.name );
-		current.name = newName;
+		final String newName = ( String ) JOptionPane.showInputDialog(
+				dialog,
+				"Enter the style name:",
+				"Style name",
+				JOptionPane.PLAIN_MESSAGE, null, null, current.getName() );
+		current.name( newName );
 	}
 
 	private void newStyle()
@@ -170,7 +132,7 @@ public class TrackSchemeStyleChooser
 		if ( null == current )
 			current = TrackSchemeStyle.defaultStyle();
 
-		final String name = current.name;
+		final String name = current.getName();
 		final Pattern pattern = Pattern.compile( "(.+) \\((\\d+)\\)$" );
 		final Matcher matcher = pattern.matcher( name );
 		int n;
@@ -192,7 +154,7 @@ public class TrackSchemeStyleChooser
 			newName = prefix + " (" + ( ++n ) + ")";
 			for ( int j = 0; j < model.getSize(); j++ )
 			{
-				if ( model.getElementAt( j ).name.equals( newName ) )
+				if ( model.getElementAt( j ).getName().equals( newName ) )
 					continue INCREMENT;
 			}
 			break;
