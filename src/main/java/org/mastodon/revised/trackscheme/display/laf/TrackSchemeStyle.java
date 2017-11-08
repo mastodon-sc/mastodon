@@ -733,37 +733,36 @@ public class TrackSchemeStyle
 	static
 	{
 		final Color fill = new Color( 128, 255, 128 );
-		df = new TrackSchemeStyle();
-		df.name = "Default";
-		df.backgroundColor = Color.LIGHT_GRAY;
-		df.currentTimepointColor = new Color( 217, 217, 217 );
-		df.vertexFillColor = Color.WHITE;
-		df.selectedVertexFillColor = fill;
-		df.simplifiedVertexFillColor = Color.BLACK;
-		df.selectedSimplifiedVertexFillColor = new Color( 0, 128, 0 );
-		df.vertexDrawColor = Color.BLACK;
-		df.selectedVertexDrawColor = Color.BLACK;
-		df.edgeColor = Color.BLACK;
-		df.selectedEdgeColor = fill.darker();
-		df.decorationColor = Color.YELLOW.darker().darker();
-		df.vertexRangeColor = new Color( 128, 128, 128 );
-		df.headerBackgroundColor = new Color( 217, 217, 217 );
-		df.headerDecorationColor = Color.DARK_GRAY;
-		df.headerCurrentTimepointColor = Color.WHITE;
-		df.font = new Font( "SansSerif", Font.PLAIN, 9 );
-		df.headerFont = new Font( "SansSerif", Font.PLAIN, 9 );
-		df.edgeStroke = new BasicStroke();
-		df.edgeGhostStroke = DEFAULT_GHOST_STROKE;
-		df.edgeHighlightStroke = new BasicStroke( 2f );
-		df.vertexStroke = new BasicStroke();
-		df.vertexGhostStroke = DEFAULT_GHOST_STROKE;
-		df.vertexHighlightStroke = new BasicStroke( 3f );
-		df.focusStroke = DEFAULT_FOCUS_STROKE;
-		df.decorationStroke = new BasicStroke();
-		df.highlightCurrentTimepoint = true;
-		df.paintRows = true;
-		df.paintColumns = true;
-		df.paintHeaderShadow = true;
+		df = new TrackSchemeStyle().name( "default" ).
+				backgroundColor( Color.LIGHT_GRAY ).
+				currentTimepointColor( new Color( 217, 217, 217 ) ).
+				vertexFillColor( Color.WHITE ).
+				selectedVertexFillColor( fill ).
+				simplifiedVertexFillColor( Color.BLACK ).
+				selectedSimplifiedVertexFillColor( new Color( 0, 128, 0 ) ).
+				vertexDrawColor( Color.BLACK ).
+				selectedVertexDrawColor( Color.BLACK ).
+				edgeColor( Color.BLACK ).
+				selectedEdgeColor( fill.darker() ).
+				decorationColor( Color.YELLOW.darker().darker() ).
+				vertexRangeColor( new Color( 128, 128, 128 ) ).
+				headerBackgroundColor( new Color( 217, 217, 217 ) ). // new Color( 238, 238, 238 ) ).
+				headerDecorationColor( Color.DARK_GRAY ).
+				headerCurrentTimepointColor( Color.WHITE ).
+				font( new Font( "SansSerif", Font.PLAIN, 9 ) ).
+				headerFont( new Font( "SansSerif", Font.PLAIN, 9 ) ).
+				edgeStroke( new BasicStroke() ).
+				edgeGhostStroke( DEFAULT_GHOST_STROKE ).
+				edgeHighlightStroke( new BasicStroke( 2f ) ).
+				vertexStroke( new BasicStroke() ).
+				vertexGhostStroke( DEFAULT_GHOST_STROKE ).
+				vertexHighlightStroke( new BasicStroke( 3f ) ).
+				focusStroke( DEFAULT_FOCUS_STROKE ).
+				decorationStroke( new BasicStroke() ).
+				highlightCurrentTimepoint( true ).
+				paintRows( true ).
+				paintColumns( true ).
+				paintHeaderShadow( true );
 	}
 
 	/**
@@ -784,37 +783,36 @@ public class TrackSchemeStyle
 		final Color fill = new Color( 64, 106, 102 );
 		final Color selfill = new Color( 255, 128, 128 );
 		final Color currenttp = new Color( 38, 175, 185 );
-		modern = new TrackSchemeStyle();
-		modern.name = "Modern";
-		modern.backgroundColor = bg;
-		modern.currentTimepointColor = currenttp;
-		modern.vertexFillColor = fill;
-		modern.selectedVertexFillColor = selfill;
-		modern.simplifiedVertexFillColor = fill;
-		modern.selectedSimplifiedVertexFillColor = selfill;
-		modern.vertexDrawColor = Color.WHITE;
-		modern.selectedVertexDrawColor = Color.BLACK;
-		modern.edgeColor = Color.WHITE;
-		modern.selectedEdgeColor = selfill.darker();
-		modern.decorationColor = bg.darker();
-		modern.vertexRangeColor = Color.WHITE;
-		modern.headerBackgroundColor = bg.brighter();
-		modern.headerDecorationColor = bg;
-		modern.headerCurrentTimepointColor = bg.darker();
-		modern.font = new Font( "Calibri", Font.PLAIN, 12 );
-		modern.headerFont = new Font( "Calibri", Font.PLAIN, 12 );
-		modern.edgeStroke = new BasicStroke();
-		modern.edgeGhostStroke = DEFAULT_GHOST_STROKE;
-		modern.edgeHighlightStroke = new BasicStroke( 2f );
-		modern.vertexStroke = new BasicStroke();
-		modern.vertexGhostStroke = DEFAULT_GHOST_STROKE;
-		modern.vertexHighlightStroke = new BasicStroke( 3f );
-		modern.focusStroke = DEFAULT_FOCUS_STROKE;
-		modern.decorationStroke = new BasicStroke();
-		modern.highlightCurrentTimepoint = true;
-		modern.paintRows = true;
-		modern.paintColumns = true;
-		modern.paintHeaderShadow = true;
+		modern = new TrackSchemeStyle().name( "modern" ).
+				backgroundColor( bg ).
+				currentTimepointColor( currenttp ).
+				vertexFillColor( fill ).
+				selectedVertexFillColor( selfill ).
+				simplifiedVertexFillColor( fill ).
+				selectedSimplifiedVertexFillColor( selfill ).
+				vertexDrawColor( Color.WHITE ).
+				selectedVertexDrawColor( Color.BLACK ).
+				edgeColor( Color.WHITE ).
+				selectedEdgeColor( selfill.darker() ).
+				decorationColor( bg.darker() ).
+				vertexRangeColor( Color.WHITE ).
+				headerBackgroundColor( bg.brighter() ).
+				headerDecorationColor( bg ).
+				headerCurrentTimepointColor( bg.darker() ).
+				font( new Font( "Calibri", Font.PLAIN, 12 ) ).
+				headerFont( new Font( "Calibri", Font.PLAIN, 12 ) ).
+				edgeStroke( new BasicStroke() ).
+				edgeGhostStroke( DEFAULT_GHOST_STROKE ).
+				edgeHighlightStroke( new BasicStroke( 2f ) ).
+				vertexStroke( new BasicStroke() ).
+				vertexGhostStroke( DEFAULT_GHOST_STROKE ).
+				vertexHighlightStroke( new BasicStroke( 3f ) ).
+				focusStroke( DEFAULT_FOCUS_STROKE ).
+				decorationStroke( new BasicStroke() ).
+				highlightCurrentTimepoint( true ).
+				paintRows( true ).
+				paintColumns( true ).
+				paintHeaderShadow( true );
 	}
 
 	/**
@@ -836,37 +834,36 @@ public class TrackSchemeStyle
 		final Color selfill = new Color( 53, 107, 154 );
 		final Color seldraw = new Color( 230, 245, 255 );
 		final Color seledge = new Color( 91, 137, 158 );
-		hmdyk = new TrackSchemeStyle();
-		hmdyk.name( "Lorry" );
-		hmdyk.backgroundColor = bg;
-		hmdyk.currentTimepointColor = bg.brighter();
-		hmdyk.vertexFillColor = fill;
-		hmdyk.selectedVertexFillColor = selfill;
-		hmdyk.simplifiedVertexFillColor = Color.DARK_GRAY;
-		hmdyk.selectedSimplifiedVertexFillColor = selfill;
-		hmdyk.vertexDrawColor = Color.DARK_GRAY;
-		hmdyk.selectedVertexDrawColor = seldraw;
-		hmdyk.edgeColor = Color.DARK_GRAY;
-		hmdyk.selectedEdgeColor = seledge;
-		hmdyk.decorationColor = bg.darker();
-		hmdyk.vertexRangeColor = Color.DARK_GRAY;
-		hmdyk.headerBackgroundColor = bg.brighter();
-		hmdyk.headerDecorationColor = bg;
-		hmdyk.headerCurrentTimepointColor = bg.darker();
-		hmdyk.font = new Font( "Calibri", Font.PLAIN, 12 );
-		hmdyk.headerFont = new Font( "Calibri", Font.PLAIN, 12 );
-		hmdyk.edgeStroke = new BasicStroke();
-		hmdyk.edgeGhostStroke = DEFAULT_GHOST_STROKE;
-		hmdyk.edgeHighlightStroke = new BasicStroke( 2f );
-		hmdyk.vertexStroke = new BasicStroke();
-		hmdyk.vertexGhostStroke = DEFAULT_GHOST_STROKE;
-		hmdyk.vertexHighlightStroke = new BasicStroke( 3f );
-		hmdyk.focusStroke = DEFAULT_FOCUS_STROKE;
-		hmdyk.decorationStroke = new BasicStroke();
-		hmdyk.highlightCurrentTimepoint = true;
-		hmdyk.paintRows = true;
-		hmdyk.paintColumns = true;
-		hmdyk.paintHeaderShadow = true;
+		hmdyk = new TrackSchemeStyle().name( "lorry" ).
+				backgroundColor( bg ).
+				currentTimepointColor( bg.brighter() ).
+				vertexFillColor( fill ).
+				selectedVertexFillColor( selfill ).
+				simplifiedVertexFillColor( Color.DARK_GRAY ).
+				selectedSimplifiedVertexFillColor( selfill ).
+				vertexDrawColor( Color.DARK_GRAY ).
+				selectedVertexDrawColor( seldraw ).
+				edgeColor( Color.DARK_GRAY ).
+				selectedEdgeColor( seledge ).
+				decorationColor( bg.darker() ).
+				vertexRangeColor( Color.DARK_GRAY ).
+				headerBackgroundColor( bg.brighter() ).
+				headerDecorationColor( bg ).
+				headerCurrentTimepointColor( bg.darker() ).
+				font( new Font( "Calibri", Font.PLAIN, 12 ) ).
+				headerFont( new Font( "Calibri", Font.PLAIN, 12 ) ).
+				edgeStroke( new BasicStroke() ).
+				edgeGhostStroke( DEFAULT_GHOST_STROKE ).
+				edgeHighlightStroke( new BasicStroke( 2f ) ).
+				vertexStroke( new BasicStroke() ).
+				vertexGhostStroke( DEFAULT_GHOST_STROKE ).
+				vertexHighlightStroke( new BasicStroke( 3f ) ).
+				focusStroke( DEFAULT_FOCUS_STROKE ).
+				decorationStroke( new BasicStroke() ).
+				highlightCurrentTimepoint( true ).
+				paintRows( true ).
+				paintColumns( true ).
+				paintHeaderShadow( true );
 	}
 
 	public static Collection< TrackSchemeStyle > defaults;
