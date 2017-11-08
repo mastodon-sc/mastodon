@@ -6,6 +6,7 @@ import java.awt.Font;
 import java.awt.Stroke;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Objects;
 
 public class TrackSchemeStyle
 {
@@ -322,7 +323,7 @@ public class TrackSchemeStyle
 
 	public TrackSchemeStyle edgeColor( final Color color )
 	{
-		if ( !this.edgeColor.equals( color ) )
+		if ( !Objects.equals( this.edgeColor, color ) )
 		{
 			this.edgeColor = color;
 			updateGhostColors();
@@ -333,7 +334,7 @@ public class TrackSchemeStyle
 
 	public TrackSchemeStyle vertexFillColor( final Color color )
 	{
-		if ( !this.vertexFillColor.equals( color ) )
+		if ( !Objects.equals( this.vertexFillColor, color ) )
 		{
 			this.vertexFillColor = color;
 			updateGhostColors();
@@ -344,7 +345,7 @@ public class TrackSchemeStyle
 
 	public TrackSchemeStyle vertexDrawColor( final Color color )
 	{
-		if ( !this.vertexDrawColor.equals( color ) )
+		if ( !Objects.equals( this.vertexDrawColor, color ) )
 		{
 			this.vertexDrawColor = color;
 			updateGhostColors();
@@ -355,7 +356,7 @@ public class TrackSchemeStyle
 
 	public TrackSchemeStyle selectedVertexFillColor( final Color color )
 	{
-		if ( !this.selectedVertexFillColor.equals( color ) )
+		if ( !Objects.equals( this.selectedVertexFillColor, color ) )
 		{
 			this.selectedVertexFillColor = color;
 			updateGhostColors();
@@ -366,7 +367,7 @@ public class TrackSchemeStyle
 
 	public TrackSchemeStyle selectedEdgeColor( final Color color )
 	{
-		if ( !this.selectedEdgeColor.equals( color ) )
+		if ( !Objects.equals( this.selectedEdgeColor, color ) )
 		{
 			this.selectedEdgeColor = color;
 			updateGhostColors();
@@ -377,7 +378,7 @@ public class TrackSchemeStyle
 
 	public TrackSchemeStyle selectedVertexDrawColor( final Color color )
 	{
-		if ( !this.selectedVertexDrawColor.equals( color ) )
+		if ( !Objects.equals( this.selectedVertexDrawColor, color ) )
 		{
 			this.selectedVertexDrawColor = color;
 			updateGhostColors();
@@ -388,7 +389,7 @@ public class TrackSchemeStyle
 
 	public TrackSchemeStyle simplifiedVertexFillColor( final Color color )
 	{
-		if ( !this.simplifiedVertexFillColor.equals( color ) )
+		if ( !Objects.equals( this.simplifiedVertexFillColor, color ) )
 		{
 			this.simplifiedVertexFillColor = color;
 			updateGhostColors();
@@ -399,7 +400,7 @@ public class TrackSchemeStyle
 
 	public TrackSchemeStyle selectedSimplifiedVertexFillColor( final Color color )
 	{
-		if ( !this.selectedSimplifiedVertexFillColor.equals( color ) )
+		if ( !Objects.equals( this.selectedSimplifiedVertexFillColor, color ) )
 		{
 			this.selectedSimplifiedVertexFillColor = color;
 			updateGhostColors();
@@ -410,7 +411,7 @@ public class TrackSchemeStyle
 
 	public TrackSchemeStyle backgroundColor( final Color color )
 	{
-		if ( !this.backgroundColor.equals( color ) )
+		if ( !Objects.equals( this.backgroundColor, color ) )
 		{
 			this.backgroundColor = color;
 			updateGhostColors();
@@ -421,7 +422,7 @@ public class TrackSchemeStyle
 
 	public TrackSchemeStyle currentTimepointColor( final Color color )
 	{
-		if ( !this.currentTimepointColor.equals( color ) )
+		if ( !Objects.equals( this.currentTimepointColor, color ) )
 		{
 			this.currentTimepointColor = color;
 			notifyListeners();
@@ -431,7 +432,7 @@ public class TrackSchemeStyle
 
 	public TrackSchemeStyle decorationColor( final Color color )
 	{
-		if ( !this.decorationColor.equals( color ) )
+		if ( !Objects.equals( this.decorationColor, color ) )
 		{
 			this.decorationColor = color;
 			notifyListeners();
@@ -441,7 +442,7 @@ public class TrackSchemeStyle
 
 	public TrackSchemeStyle vertexRangeColor( final Color color )
 	{
-		if ( !this.vertexRangeColor.equals( color ) )
+		if ( !Objects.equals( this.vertexRangeColor, color ) )
 		{
 			this.vertexRangeColor = color;
 			notifyListeners();
@@ -451,7 +452,7 @@ public class TrackSchemeStyle
 
 	public TrackSchemeStyle headerBackgroundColor( final Color color )
 	{
-		if ( !this.headerBackgroundColor.equals( color ) )
+		if ( !Objects.equals( this.headerBackgroundColor, color ) )
 		{
 			this.headerBackgroundColor = color;
 			notifyListeners();
@@ -461,7 +462,7 @@ public class TrackSchemeStyle
 
 	public TrackSchemeStyle headerDecorationColor( final Color color )
 	{
-		if ( !this.headerDecorationColor.equals( color ) )
+		if ( !Objects.equals( this.headerDecorationColor, color ) )
 		{
 			this.headerDecorationColor = color;
 			notifyListeners();
@@ -471,7 +472,7 @@ public class TrackSchemeStyle
 
 	public TrackSchemeStyle headerCurrentTimepointColor( final Color color )
 	{
-		if ( !this.headerCurrentTimepointColor.equals( color ) )
+		if ( !Objects.equals( this.headerCurrentTimepointColor, color ) )
 		{
 			this.headerCurrentTimepointColor = color;
 			notifyListeners();
@@ -481,7 +482,7 @@ public class TrackSchemeStyle
 
 	public TrackSchemeStyle font( final Font font )
 	{
-		if ( !this.font.equals( font ) )
+		if ( !Objects.equals( this.font, font ) )
 		{
 			this.font = font;
 			notifyListeners();
@@ -491,7 +492,7 @@ public class TrackSchemeStyle
 
 	public TrackSchemeStyle headerFont( final Font font )
 	{
-		if ( !this.headerFont.equals( font ) )
+		if ( !Objects.equals( this.headerFont, font ) )
 		{
 			this.headerFont = font;
 			notifyListeners();
@@ -501,7 +502,7 @@ public class TrackSchemeStyle
 
 	public TrackSchemeStyle edgeStroke( final Stroke stroke )
 	{
-		if ( !this.edgeStroke.equals( stroke ) )
+		if ( !Objects.equals( this.edgeStroke, stroke ) )
 		{
 			this.edgeStroke = stroke;
 			notifyListeners();
@@ -511,7 +512,7 @@ public class TrackSchemeStyle
 
 	public TrackSchemeStyle edgeGhostStroke( final Stroke stroke )
 	{
-		if ( !this.edgeGhostStroke.equals( stroke ) )
+		if ( !Objects.equals( this.edgeGhostStroke, stroke ) )
 		{
 			this.edgeGhostStroke = stroke;
 			notifyListeners();
@@ -521,7 +522,7 @@ public class TrackSchemeStyle
 
 	public TrackSchemeStyle edgeHighlightStroke( final Stroke stroke )
 	{
-		if ( !this.edgeHighlightStroke.equals( stroke ) )
+		if ( !Objects.equals( this.edgeHighlightStroke, stroke ) )
 		{
 			this.edgeHighlightStroke = stroke;
 			notifyListeners();
@@ -531,7 +532,7 @@ public class TrackSchemeStyle
 
 	public TrackSchemeStyle vertexStroke( final Stroke stroke )
 	{
-		if ( !this.vertexStroke.equals( stroke ) )
+		if ( !Objects.equals( this.vertexStroke, stroke ) )
 		{
 			this.vertexStroke = stroke;
 			notifyListeners();
@@ -541,7 +542,7 @@ public class TrackSchemeStyle
 
 	public TrackSchemeStyle vertexGhostStroke( final Stroke stroke )
 	{
-		if ( !this.vertexGhostStroke.equals( stroke ) )
+		if ( !Objects.equals( this.vertexGhostStroke, stroke ) )
 		{
 			this.vertexGhostStroke = stroke;
 			notifyListeners();
@@ -551,7 +552,7 @@ public class TrackSchemeStyle
 
 	public TrackSchemeStyle vertexHighlightStroke( final Stroke stroke )
 	{
-		if ( !this.vertexHighlightStroke.equals( stroke ) )
+		if ( !Objects.equals( this.vertexHighlightStroke, stroke ) )
 		{
 			this.vertexHighlightStroke = stroke;
 			notifyListeners();
@@ -561,7 +562,7 @@ public class TrackSchemeStyle
 
 	public TrackSchemeStyle focusStroke( final Stroke stroke )
 	{
-		if ( !this.focusStroke.equals( stroke ) )
+		if ( !Objects.equals( this.focusStroke, stroke ) )
 		{
 			this.focusStroke = stroke;
 			notifyListeners();
@@ -571,7 +572,7 @@ public class TrackSchemeStyle
 
 	public TrackSchemeStyle decorationStroke( final Stroke stroke )
 	{
-		if ( !this.decorationStroke.equals( stroke ) )
+		if ( !Objects.equals( this.decorationStroke, stroke ) )
 		{
 			this.decorationStroke = stroke;
 			notifyListeners();
