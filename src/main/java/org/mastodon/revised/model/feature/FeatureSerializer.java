@@ -3,6 +3,7 @@ package org.mastodon.revised.model.feature;
 import java.io.File;
 import java.io.IOException;
 
+import org.mastodon.graph.io.RawGraphIO.FileIdToGraphMap;
 import org.mastodon.properties.PropertyMap;
 
 /**
@@ -46,9 +47,11 @@ public interface FeatureSerializer< O, M extends PropertyMap< O, ? >, AM >
 	 * @param support
 	 *            the model the feature to deserialized is defined on. Must
 	 *            itself be properly deserialized and unmodified since.
+	 * @param fileIdToGraphMap the map collection that links file object ids to graph object
+	 *            ids.
 	 * @return the feature.
 	 * @throws IOException
 	 *             if an IO error occurs during deserialization.
 	 */
-	public Feature< O, M > deserialize( File file, AM support ) throws IOException;
+	public Feature< O, M > deserialize( File file, AM support, FileIdToGraphMap< ?, ? > fileIdToGraphMap ) throws IOException;
 }

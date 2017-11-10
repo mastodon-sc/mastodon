@@ -9,7 +9,9 @@ import java.util.List;
 import java.util.Map;
 
 import org.mastodon.graph.ReadOnlyGraph;
+import org.mastodon.graph.io.RawGraphIO.FileIdToGraphMap;
 import org.mastodon.properties.Property;
+import org.mastodon.properties.PropertyMap;
 import org.mastodon.revised.mamut.feature.MamutFeatureComputerService;
 import org.mastodon.revised.model.AbstractModel;
 import org.mastodon.revised.model.feature.DefaultFeatureModel;
@@ -93,20 +95,21 @@ public class Model extends AbstractModel< ModelGraph, Spot, Link > implements Un
 	/**
 	 * Clears this model and loads the model from the specified raw file.
 	 * <p>
-	 * Feature values will be loaded from the folder the specified file is in, using the
-	 * {@link FeatureComputer}s visible at runtime.
+	 * Feature values will be loaded from the folder the specified file is in,
+	 * using the {@link FeatureComputer}s visible at runtime.
 	 *
 	 * @param file
 	 *            the raw file to load.
 	 * @throws IOException
 	 *             if an I/O error occurs while reading the file.
 	 */
+	@SuppressWarnings( { "unchecked", "rawtypes" } )
 	public void loadRaw( final File file ) throws IOException
 	{
 		/*
 		 * Read the model-graph.
 		 */
-		modelGraph.loadRaw( file, ModelSerializer.getInstance() );
+		final FileIdToGraphMap< Spot, Link > fileIdToGraphMap = modelGraph.loadRaw( file, ModelSerializer.getInstance() );
 
 		/*
 		 * Read the feature values. We get the serializers from the MaMuT
@@ -115,9 +118,12 @@ public class Model extends AbstractModel< ModelGraph, Spot, Link > implements Un
 		final MamutFeatureComputerService featureComputerService = context.getService( MamutFeatureComputerService.class );
 		final Collection< FeatureComputer< ?, ?, Model > > featureComputers = featureComputerService.getFeatureComputers();
 		final Map< String, FeatureSerializer< ?, ?, Model > > featureSerializers = new HashMap<>( featureComputers.size() );
-		for ( final FeatureComputer< ?, ?, Model > featureComputer : featureComputers )
-			featureSerializers.put( featureComputer.getKey(), featureComputer.getSerializer() );
-		featureModel.loadRaw( file.getParentFile(), featureSerializers, this );
+		for ( final FeatureComputer featureComputer : featureComputers )
+		{
+			final PropertyMap pm = featureComputer.createPropertyMap( this );
+			featureSerializers.put( featureComputer.getKey(), ( FeatureSerializer< ?, ?, Model > ) featureComputer.getSerializer( pm ) );
+		}
+		featureModel.loadRaw( file.getParentFile(), featureSerializers, fileIdToGraphMap );
 	}
 
 	/**

@@ -74,18 +74,21 @@ public class AbstractModelGraph<
 	 *            the raw file to load.
 	 * @param serializer
 	 *            the serializer used for reading individual vertices.
+	 * @return the map collection that links file object ids to graph object
+	 *         ids.
 	 * @throws IOException
 	 *             if an I/O error occurs while reading the file.
 	 */
-	public void loadRaw(
+	public FileIdToGraphMap< V, E > loadRaw(
 			final File file,
 			final GraphSerializer< V, E > serializer )
 					throws IOException
 	{
 		final FileInputStream fis = new FileInputStream( file );
 		final ObjectInputStream ois = new ObjectInputStream( new BufferedInputStream( fis, 1024 * 1024 ) );
-		readRaw( ois, serializer );
+		final FileIdToGraphMap< V, E > fileIdToGraphMap = readRaw( ois, serializer );
 		ois.close();
+		return fileIdToGraphMap;
 	}
 
 	public FileIdToGraphMap< V, E > readRaw(

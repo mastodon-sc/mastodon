@@ -7,6 +7,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import org.mastodon.graph.io.RawGraphIO.FileIdToGraphMap;
 import org.mastodon.revised.model.AbstractModel;
 
 /**
@@ -109,7 +110,7 @@ public class DefaultFeatureModel< AM extends AbstractModel< ?, ?, ? > > implemen
 	}
 
 	@Override
-	public void loadRaw( final File baseFolder, final Map< String, FeatureSerializer< ?, ?, AM > > serializers, final AM model )
+	public void loadRaw( final File baseFolder, final Map< String, FeatureSerializer< ?, ?, AM > > serializers, final FileIdToGraphMap< ?, ? > fileIdToGraphMap )
 	{
 		clear();
 		final File featureFolder = new File( baseFolder, FEATURE_FOLDER );
@@ -134,7 +135,7 @@ public class DefaultFeatureModel< AM extends AbstractModel< ?, ?, ? > > implemen
 			}
 			try
 			{
-				final Feature< ?, ? > feature = featureSerializer.deserialize( featureFile, model );
+				final Feature< ?, ? > feature = featureSerializer.deserialize( featureFile, fileIdToGraphMap );
 				declareFeature( feature );
 			}
 			catch ( final IOException e )

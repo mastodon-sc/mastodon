@@ -4,6 +4,7 @@ import java.io.File;
 import java.util.Map;
 import java.util.Set;
 
+import org.mastodon.graph.io.RawGraphIO.FileIdToGraphMap;
 import org.mastodon.revised.model.AbstractModel;
 
 /**
@@ -68,9 +69,10 @@ public interface FeatureModel< AM extends AbstractModel< ?, ?, ? > >
 	 *            the map of serializers to use to save features. If a
 	 *            serializer is not found in the map for a feature with a
 	 *            specific key, that feature is not loaded.
-	 * @param support
-	 *            the model on which features are defined.
+	 * @param fileIdToGraphMap
+	 *            the map collection that links file object ids to graph object
+	 *            ids.
 	 */
-	public void loadRaw( File projectFolder, Map< String, FeatureSerializer< ?, ?, AM > > serializers, AM support );
+	public void loadRaw( File projectFolder, Map< String, FeatureSerializer< ?, ?, AM > > serializers, FileIdToGraphMap< ?, ? > fileIdToGraphMap );
 
 }
