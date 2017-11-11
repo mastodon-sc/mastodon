@@ -15,7 +15,9 @@ import java.awt.event.KeyEvent;
 import java.awt.geom.RoundRectangle2D;
 import java.util.Arrays;
 import java.util.List;
-
+import java.util.function.BooleanSupplier;
+import java.util.function.Consumer;
+import java.util.function.Supplier;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.ActionMap;
@@ -33,45 +35,139 @@ import javax.swing.KeyStroke;
 import javax.swing.SwingConstants;
 import javax.swing.WindowConstants;
 import javax.swing.border.EmptyBorder;
+import org.mastodon.revised.trackscheme.display.style.TrackSchemeStyle;
+import org.mastodon.revised.trackscheme.display.style.TrackSchemeStyle.UpdateListener;
 
-import org.mastodon.revised.trackscheme.display.laf.TrackSchemeStyle;
-
-public class TrackSchemeStyleEditorPanel extends JPanel
+public class TrackSchemeStyleEditorPanel extends JPanel implements UpdateListener
 {
 	private static final long serialVersionUID = 1L;
 
 	private final JColorChooser colorChooser;
 
+	private final TrackSchemeStyle style;
+
+	private final List< StyleElement > styleElements;
+
 	public TrackSchemeStyleEditorPanel( final TrackSchemeStyle style )
 	{
 		super( new GridBagLayout() );
-
+		this.style = style;
+		style.addUpdateListener( this );
 		colorChooser = new JColorChooser();
 
 		final GridBagConstraints c = new GridBagConstraints();
 		c.insets = new Insets( 0, 5, 0, 5 );
 		c.ipadx = 0;
 		c.ipady = 0;
+		c.gridx = 0;
 		c.gridy = 0;
+		c.gridheight = 1;
+		c.anchor = GridBagConstraints.LINE_START;
+		c.fill = GridBagConstraints.HORIZONTAL;
 
-		final List< ColorSetter > styleColors = styleColors( style );
-		final List< BooleanSetter > styleBooleans = styleBooleans( style );
+		styleElements = styleElements( style );
+
+		/*
+		 * Fixed color setters.
+		 */
+
+		final int numCols = 2;
+
+		c.gridwidth = 2;
+		add( Box.createVerticalStrut( 5 ), c );
+		c.gridy++;
+		c.gridwidth = 1;
 
 		c.gridx = 0;
-		c.gridwidth = 2;
-		c.fill = GridBagConstraints.HORIZONTAL;
-		for ( final ColorSetter colorSetter : styleColors )
+		for ( final StyleElement element : styleElements )
 		{
-			final JButton button = new JButton( colorSetter.getLabel(), new ColorIcon( colorSetter.getColor() ) );
+			if ( element.fillsRow() )
+			{
+				if ( c.gridx != 0 )
+				{
+					c.gridx = 0;
+					++c.gridy;
+				}
+				c.gridwidth = 2;
+				add( element.getComponent(), c );
+				++c.gridy;
+				c.gridwidth = 1;
+			}
+			else
+			{
+				add( element.getComponent(), c );
+				if ( ++c.gridx == numCols )
+				{
+					c.gridx = 0;
+					++c.gridy;
+				}
+			}
+		}
+	}
+
+	@Override
+	public void trackSchemeStyleChanged()
+	{
+		styleElements.forEach( StyleElement::update );
+	}
+
+	private interface StyleElement
+	{
+		public Component getComponent();
+
+		public default void update()
+		{}
+
+		public default boolean fillsRow()
+		{
+			return false;
+		}
+	}
+
+	private class Separator implements StyleElement
+	{
+		@Override
+		public Component getComponent()
+		{
+			return Box.createVerticalStrut( 10 );
+		}
+
+		@Override
+		public boolean fillsRow()
+		{
+			return true;
+		}
+	}
+
+	private Separator separator()
+	{
+		return new Separator();
+	}
+
+	private abstract class ColorSetter implements StyleElement
+	{
+		private final String label;
+
+		private JButton button;
+
+		public ColorSetter( final String label )
+		{
+			this.label = label;
+
+			button = new JButton( label, new ColorIcon( getColor() ) );
+			button.setOpaque( false );
+			button.setContentAreaFilled( false );
+			button.setBorderPainted( false );
+			button.setFont( new JButton().getFont() );
 			button.setMargin( new Insets( 0, 0, 0, 0 ) );
-			button.setBorder( new EmptyBorder( 2, 2, 2, 2 ) );
+			button.setBorder( new EmptyBorder( 2, 5, 2, 2 ) );
 			button.setHorizontalAlignment( SwingConstants.LEFT );
 			button.addActionListener( new ActionListener()
 			{
 				@Override
 				public void actionPerformed( final ActionEvent e )
 				{
-					colorChooser.setColor( colorSetter.getColor() );
+					colorChooser.setColor( getColor() );
 					final JDialog d = JColorChooser.createDialog( button, "Choose a color", true, colorChooser, new ActionListener()
 					{
 						@Override
@@ -81,67 +177,13 @@ public class TrackSchemeStyleEditorPanel extends JPanel
 							if ( c != null )
 							{
 								button.setIcon( new ColorIcon( c ) );
-								colorSetter.setColor( c );
+								setColor( c );
 							}
 						}
 					}, null );
 					d.setVisible( true );
 				}
 			} );
-			c.anchor = GridBagConstraints.LINE_END;
-			add( button, c );
-			c.gridy++;
-
-			if ( colorSetter.skip > 0 )
-			{
-				add( Box.createVerticalStrut( colorSetter.skip ), c );
-				c.gridy++;
-			}
-		}
-
-		add( Box.createVerticalStrut( 15 ), c );
-		c.gridy++;
-
-		for ( final BooleanSetter booleanSetter : styleBooleans )
-		{
-			final JCheckBox checkbox = new JCheckBox( booleanSetter.getLabel(), booleanSetter.get() );
-			checkbox.addActionListener( new ActionListener()
-			{
-				@Override
-				public void actionPerformed( final ActionEvent e )
-				{
-					booleanSetter.set( checkbox.isSelected() );
-				}
-			} );
-			add( checkbox, c );
-			c.gridy++;
-		}
-//		c.anchor = GridBagConstraints.LINE_START;
-//		c.gridx = 1;
-//		add( new JLabel( colorSetter.getLabel() ), c );
-
-	}
-
-	private static abstract class ColorSetter
-	{
-		private final String label;
-
-		private final int skip;
-
-		public ColorSetter( final String label )
-		{
-			this( label, 0 );
-		}
-
-		public ColorSetter( final String label, final boolean skip )
-		{
-			this( label, skip ? 15 : 0 );
-		}
-
-		public ColorSetter( final String label, final int skip )
-		{
-			this.label = label;
-			this.skip = skip;
 		}
 
 		public String getLabel()
@@ -152,15 +194,50 @@ public class TrackSchemeStyleEditorPanel extends JPanel
 		public abstract Color getColor();
 
 		public abstract void setColor( Color c );
+
+		@Override
+		public JButton getComponent()
+		{
+			return button;
+		}
+
+		@Override
+		public void update()
+		{
+			button.setIcon( new ColorIcon( getColor() ) );
+		}
 	}
 
-	private static abstract class BooleanSetter
+	private ColorSetter colorSetter( String label, Supplier< Color > get, Consumer< Color > set )
+	{
+		return new ColorSetter( label )
+		{
+			@Override
+			public Color getColor()
+			{
+				return get.get();
+			}
+
+			@Override
+			public void setColor( final Color c )
+			{
+				set.accept( c );
+			}
+		};
+	}
+
+	private abstract class BooleanSetter implements StyleElement
 	{
 		private final String label;
+
+		private JCheckBox checkbox;
 
 		public BooleanSetter( final String label )
 		{
 			this.label = label;
+
+			checkbox = new JCheckBox( label, get() );
+			checkbox.addActionListener( ( e ) -> set( checkbox.isSelected() ) );
 		}
 
 		public String getLabel()
@@ -171,94 +248,70 @@ public class TrackSchemeStyleEditorPanel extends JPanel
 		public abstract boolean get();
 
 		public abstract void set( boolean b );
+
+		@Override
+		public JCheckBox getComponent()
+		{
+			return checkbox;
+		}
+
+		@Override
+		public void update()
+		{
+			checkbox.setSelected( get() );
+		}
 	}
 
-	private static List< ColorSetter > styleColors( final TrackSchemeStyle style )
+	private BooleanSetter booleanSetter( String label, BooleanSupplier get, Consumer< Boolean > set )
 	{
-		return Arrays.asList( new ColorSetter[] {
-				new ColorSetter( "edgeColor" ) {
-					@Override public Color getColor() { return style.getEdgeColor(); }
-					@Override public void setColor( final Color c ) { style.edgeColor( c ); }
-				},
-				new ColorSetter( "vertexFillColor" ) {
-					@Override public Color getColor() { return style.getVertexFillColor(); }
-					@Override public void setColor( final Color c ) { style.vertexFillColor( c ); }
-				},
-				new ColorSetter( "vertexDrawColor" ) {
-					@Override public Color getColor() { return style.getVertexDrawColor(); }
-					@Override public void setColor( final Color c ) { style.vertexDrawColor( c ); }
-				},
-				new ColorSetter( "simplifiedVertexFillColor", true ) {
-					@Override public Color getColor() { return style.getSimplifiedVertexFillColor(); }
-					@Override public void setColor( final Color c ) { style.simplifiedVertexFillColor( c ); }
-				},
-				new ColorSetter( "selectedEdgeColor" ) {
-					@Override public Color getColor() { return style.getSelectedEdgeColor(); }
-					@Override public void setColor( final Color c ) { style.selectedEdgeColor( c ); }
-				},
-				new ColorSetter( "selectedVertexDrawColor" ) {
-					@Override public Color getColor() { return style.getSelectedVertexDrawColor(); }
-					@Override public void setColor( final Color c ) { style.selectedVertexDrawColor( c ); }
-				},
-				new ColorSetter( "selectedVertexFillColor" ) {
-					@Override public Color getColor() { return style.getSelectedVertexFillColor(); }
-					@Override public void setColor( final Color c ) { style.selectedVertexFillColor( c ); }
-				},
-				new ColorSetter( "selectedSimplifiedVertexFillColor", true ) {
-					@Override public Color getColor() { return style.getSelectedSimplifiedVertexFillColor(); }
-					@Override public void setColor( final Color c ) { style.selectedSimplifiedVertexFillColor( c ); }
-				},
-				new ColorSetter( "backgroundColor" ) {
-					@Override public Color getColor() { return style.getBackgroundColor(); }
-					@Override public void setColor( final Color c ) { style.backgroundColor( c ); }
-				},
-				new ColorSetter( "currentTimepointColor" ) {
-					@Override public Color getColor() { return style.getCurrentTimepointColor(); }
-					@Override public void setColor( final Color c ) { style.currentTimepointColor( c ); }
-				},
-				new ColorSetter( "decorationColor" ) {
-					@Override public Color getColor() { return style.getDecorationColor(); }
-					@Override public void setColor( final Color c ) { style.decorationColor( c ); }
-				},
-				new ColorSetter( "vertexRangeColor", true ) {
-					@Override public Color getColor() { return style.getVertexRangeColor(); }
-					@Override public void setColor( final Color c ) { style.vertexRangeColor( c ); }
-				},
-				new ColorSetter( "headerBackgroundColor" ) {
-					@Override public Color getColor() { return style.getHeaderBackgroundColor(); }
-					@Override public void setColor( final Color c ) { style.headerBackgroundColor( c ); }
-				},
-				new ColorSetter( "headerDecorationColor" ) {
-					@Override public Color getColor() { return style.getHeaderDecorationColor(); }
-					@Override public void setColor( final Color c ) { style.headerDecorationColor( c ); }
-				},
-				new ColorSetter( "headerCurrentTimepointColor" ) {
-					@Override public Color getColor() { return style.getHeaderCurrentTimepointColor(); }
-					@Override public void setColor( final Color c ) { style.headerCurrentTimepointColor( c ); }
-				}
-		} );
+		return new BooleanSetter( label )
+		{
+			@Override
+			public boolean get()
+			{
+				return get.getAsBoolean();
+			}
+
+			@Override
+			public void set( final boolean b )
+			{
+				set.accept( b );
+			}
+		};
 	}
 
-	private static List< BooleanSetter > styleBooleans( final TrackSchemeStyle style )
+	private List< StyleElement > styleElements( final TrackSchemeStyle style )
 	{
-		return Arrays.asList( new BooleanSetter[] {
-				new BooleanSetter( "highlightCurrentTimepoint ") {
-					@Override public boolean get() { return style.isHighlightCurrentTimepoint(); }
-					@Override public void set( final boolean b ) { style.highlightCurrentTimepoint( b ); }
-				},
-				new BooleanSetter( "paintRows ") {
-					@Override public boolean get() { return style.isPaintRows(); }
-					@Override public void set( final boolean b ) { style.paintRows( b ); }
-				},
-				new BooleanSetter( "paintColumns ") {
-					@Override public boolean get() { return style.isPaintColumns(); }
-					@Override public void set( final boolean b ) { style.paintColumns( b ); }
-				},
-				new BooleanSetter( "paintHeaderShadow ") {
-					@Override public boolean get() { return style.isPaintHeaderShadow(); }
-					@Override public void set( final boolean b ) { style.paintHeaderShadow( b ); }
-				}
-		} );
+		return Arrays.asList(
+				colorSetter( "edge", style::getEdgeColor, style::edgeColor ),
+				colorSetter( "selected edge", style::getSelectedEdgeColor, style::selectedEdgeColor ),
+				colorSetter( "vertex fill", style::getVertexFillColor, style::vertexFillColor ),
+				colorSetter( "selected vertex fill", style::getSelectedVertexFillColor, style::selectedVertexFillColor ),
+				colorSetter( "vertex draw", style::getVertexDrawColor, style::vertexDrawColor ),
+				colorSetter( "selected vertex draw", style::getSelectedVertexDrawColor, style::selectedVertexDrawColor ),
+				colorSetter( "simplified vertex fill", style::getSimplifiedVertexFillColor, style::simplifiedVertexFillColor ),
+				colorSetter( "selected simplified vertex fill", style::getSelectedSimplifiedVertexFillColor, style::selectedSimplifiedVertexFillColor ),
+
+				separator(),
+
+				colorSetter( "vertex range", style::getVertexRangeColor, style::vertexRangeColor ),
+
+				separator(),
+
+				colorSetter( "background", style::getBackgroundColor, style::backgroundColor ),
+				colorSetter( "header background", style::getHeaderBackgroundColor, style::headerBackgroundColor ),
+				colorSetter( "decoration", style::getDecorationColor, style::decorationColor ),
+				colorSetter( "header decoration", style::getHeaderDecorationColor, style::headerDecorationColor ),
+				colorSetter( "current timepoint", style::getCurrentTimepointColor, style::currentTimepointColor ),
+				colorSetter( "header current timepoint", style::getHeaderCurrentTimepointColor, style::headerCurrentTimepointColor ),
+
+				separator(),
+
+				booleanSetter( "paint rows", style::isPaintRows, style::paintRows ),
+				booleanSetter( "highlight current timepoint", style::isHighlightCurrentTimepoint, style::highlightCurrentTimepoint ),
+				booleanSetter( "paint columns", style::isPaintColumns, style::paintColumns ),
+				booleanSetter( "paint header shadow", style::isPaintHeaderShadow, style::paintHeaderShadow )
+		);
 	}
 
 	/**
@@ -266,7 +319,9 @@ public class TrackSchemeStyleEditorPanel extends JPanel
 	 */
 	private static class ColorIcon implements Icon
 	{
-		private final int size = 32;
+		private final int size = 16;
+
+		private final int pad = 2;
 
 		private final Color color;
 
@@ -281,20 +336,20 @@ public class TrackSchemeStyleEditorPanel extends JPanel
 			final Graphics2D g2d = ( Graphics2D ) g;
 			g2d.setRenderingHint( RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON );
 			g2d.setColor( color );
-//			g2d.fillOval( x, y, size, size );
-	        g2d.fill(new RoundRectangle2D.Float(x, y, size, size, 5, 5));
+			// g2d.fillOval( x, y, size, size );
+			g2d.fill( new RoundRectangle2D.Float( x + pad, y + pad, size, size, 5, 5 ) );
 		}
 
 		@Override
 		public int getIconWidth()
 		{
-			return size;
+			return size + 2 * pad;
 		}
 
 		@Override
 		public int getIconHeight()
 		{
-			return size;
+			return size + 2 * pad;
 		}
 	}
 
