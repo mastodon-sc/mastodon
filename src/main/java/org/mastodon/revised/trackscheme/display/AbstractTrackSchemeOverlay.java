@@ -563,4 +563,13 @@ public abstract class AbstractTrackSchemeOverlay implements OverlayRenderer, Off
 	 *            the edge target vertex.
 	 */
 	protected abstract void drawEdge( Graphics2D g2, ScreenEdge edge, ScreenVertex vs, ScreenVertex vt );
+
+	public static interface TrackSchemeOverlayFactory
+	{
+		public AbstractTrackSchemeOverlay create(
+				final TrackSchemeGraph< ?, ? > graph,
+				final HighlightModel< TrackSchemeVertex, TrackSchemeEdge > highlight,
+				final FocusModel< TrackSchemeVertex, TrackSchemeEdge > focus,
+				final TrackSchemeOptions options );
+	}
 }

@@ -31,6 +31,8 @@ package org.mastodon.revised.trackscheme.display;
 import java.awt.event.KeyListener;
 
 import org.mastodon.revised.trackscheme.ScreenTransform;
+import org.mastodon.revised.trackscheme.display.AbstractTrackSchemeOverlay.TrackSchemeOverlayFactory;
+import org.mastodon.revised.trackscheme.display.laf.DefaultTrackSchemeOverlay;
 import org.mastodon.revised.ui.selection.NavigationEtiquette;
 import org.scijava.ui.behaviour.KeyPressedManager;
 import org.scijava.ui.behaviour.io.InputTriggerConfig;
@@ -152,6 +154,19 @@ public class TrackSchemeOptions
 	}
 
 	/**
+	 * Sets the factory used to create this TrackScheme's overlay.
+	 *
+	 * @param factory
+	 *            the factory.
+	 * @return this instance.
+	 */
+	public TrackSchemeOptions trackSchemeOverlayFactory( final TrackSchemeOverlayFactory factory )
+	{
+		values.trackSchemeOverlayFactory = factory;
+		return this;
+	}
+
+	/**
 	 * Read-only {@link TrackSchemeOptions} values.
 	 */
 	public static class Values
@@ -170,6 +185,8 @@ public class TrackSchemeOptions
 
 		private NavigationEtiquette navigationEtiquette = NavigationEtiquette.MINIMAL;
 
+		private TrackSchemeOverlayFactory trackSchemeOverlayFactory = new DefaultTrackSchemeOverlay.Factory();
+
 		public TrackSchemeOptions optionsFromValues()
 		{
 			return new TrackSchemeOptions().
@@ -178,7 +195,8 @@ public class TrackSchemeOptions
 				transformEventHandlerFactory( transformEventHandlerFactory ).
 				animationDurationMillis( animationDurationMillis ).
 				inputTriggerConfig( inputTriggerConfig ).
-				navigationEtiquette( navigationEtiquette );
+				navigationEtiquette( navigationEtiquette ).
+				trackSchemeOverlayFactory( trackSchemeOverlayFactory );
 		}
 
 		public int getWidth()
@@ -214,6 +232,11 @@ public class TrackSchemeOptions
 		public NavigationEtiquette getNavigationEtiquette()
 		{
 			return navigationEtiquette;
+		}
+
+		public TrackSchemeOverlayFactory getTrackSchemeOverlayFactory()
+		{
+			return trackSchemeOverlayFactory;
 		}
 	}
 }

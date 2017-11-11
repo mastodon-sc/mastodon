@@ -556,4 +556,21 @@ public class DefaultTrackSchemeOverlay extends AbstractTrackSchemeOverlay
 					: color;
 		}
 	}
+
+	/*
+	 * FACTORY.
+	 */
+
+	public static final class Factory implements TrackSchemeOverlayFactory
+	{
+		@Override
+		public DefaultTrackSchemeOverlay create(
+				final TrackSchemeGraph< ?, ? > graph,
+				final HighlightModel< TrackSchemeVertex, TrackSchemeEdge > highlight,
+				final FocusModel< TrackSchemeVertex, TrackSchemeEdge > focus,
+				final TrackSchemeOptions options )
+		{
+			return new DefaultTrackSchemeOverlay( graph, highlight, focus, options, TrackSchemeStyle.defaultStyle() );
+		}
+	}
 }
