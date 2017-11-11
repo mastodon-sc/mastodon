@@ -1,4 +1,4 @@
-package org.mastodon.revised.trackscheme.display.laf;
+package org.mastodon.revised.trackscheme.display.style;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
@@ -90,6 +90,7 @@ public class TrackSchemeStyle
 
 	private boolean paintHeaderShadow;
 
+	public // TODO?
 	static Color mixGhostColor( final Color color, final Color backgroundColor )
 	{
 		return ( color == null || backgroundColor == null )

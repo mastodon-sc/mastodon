@@ -29,6 +29,7 @@ import org.mastodon.revised.trackscheme.display.AbstractTrackSchemeOverlay;
 import org.mastodon.revised.trackscheme.display.TrackSchemeOptions;
 
 import net.imglib2.RealLocalizable;
+import org.mastodon.revised.trackscheme.display.style.TrackSchemeStyle;
 
 /**
  * An AbstractTrackSchemeOverlay implementation that:

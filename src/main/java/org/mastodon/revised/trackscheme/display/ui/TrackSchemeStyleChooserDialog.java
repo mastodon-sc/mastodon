@@ -33,7 +33,7 @@ import org.mastodon.revised.trackscheme.TrackSchemeVertex;
 import org.mastodon.revised.trackscheme.TrackSchemeVertexBimap;
 import org.mastodon.revised.trackscheme.display.TrackSchemeOptions;
 import org.mastodon.revised.trackscheme.display.TrackSchemePanel;
-import org.mastodon.revised.trackscheme.display.laf.TrackSchemeStyle;
+import org.mastodon.revised.trackscheme.display.style.TrackSchemeStyle;
 import org.mastodon.revised.trackscheme.display.ui.dummygraph.DummyEdge;
 import org.mastodon.revised.trackscheme.display.ui.dummygraph.DummyGraph;
 import org.mastodon.revised.trackscheme.display.ui.dummygraph.DummyGraph.Examples;
