@@ -2,7 +2,6 @@ package org.mastodon.revised.model.feature;
 
 import java.util.Set;
 
-import org.mastodon.io.properties.PropertyMapSerializer;
 import org.mastodon.properties.PropertyMap;
 import org.mastodon.revised.model.AbstractModel;
 import org.scijava.plugin.SciJavaPlugin;
@@ -52,25 +51,11 @@ public interface FeatureComputer< O, M extends PropertyMap< O, ? >, AM extends A
 	public String getKey();
 
 	/**
-	 * Creates a new, empty property map, that can be used to store the values
-	 * of this feature.
-	 *
-	 * @param model
-	 *            the model against which to create the property map.
-	 * @return a new, empty property map.
-	 */
-	public M createPropertyMap( AM model );
-
-	/**
 	 * Returns a feature serializer that can de/serialize <b>this specific
 	 * feature</b> from/to a raw file.
 	 *
-	 * @param pm
-	 *            the property map that will be serialized to disk when saving,
-	 *            or filled with values fetched from disk when loading.
-	 *
 	 * @return a feature serializer.
 	 */
-	public PropertyMapSerializer< O, M > getSerializer( M pm );
+	public FeatureSerializer< O, M, AM > getSerializer();
 
 }

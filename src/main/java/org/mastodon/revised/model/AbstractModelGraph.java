@@ -116,14 +116,11 @@ public class AbstractModelGraph<
 	 *            the raw file to save.
 	 * @param serializer
 	 *            the serializer used for writing individual vertices.
-//	 * @param vertexFeaturesToSerialize
-//	 *            the vertex features to serialize.
-//	 * @param edgeFeaturesToSerialize
-//	 *            the edge features to serialize.
+	 * @return the map collection that links graph object id to file object id.
 	 * @throws IOException
 	 *             if an I/O error occurs while writing the file.
 	 */
-	public void saveRaw(
+	public GraphToFileIdMap< V, E > saveRaw(
 			final File file,
 			final GraphSerializer< V, E > serializer )
 					throws IOException
@@ -136,6 +133,7 @@ public class AbstractModelGraph<
 //		RawFeatureIO.writeFeatureMaps( fileIdMap.vertices(), vertexFeatures, vertexFeaturesToSerialize, oos );
 //		RawFeatureIO.writeFeatureMaps( fileIdMap.edges(), edgeFeatures, edgeFeaturesToSerialize, oos );
 		oos.close();
+		return fileIdMap;
 	}
 
 	public ReentrantReadWriteLock getLock()

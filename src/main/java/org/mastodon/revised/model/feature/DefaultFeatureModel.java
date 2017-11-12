@@ -8,12 +8,16 @@ import java.util.Map;
 import java.util.Set;
 
 import org.mastodon.graph.io.RawGraphIO.FileIdToGraphMap;
+import org.mastodon.graph.io.RawGraphIO.GraphToFileIdMap;
 import org.mastodon.revised.model.AbstractModel;
 
 /**
  * Default feature model.
  *
  * @author Jean-Yves Tinevez
+ * @param <AM>
+ *            the type of the model over which the features stored in this
+ *            feature model are defined.
  */
 public class DefaultFeatureModel< AM extends AbstractModel< ?, ?, ? > > implements FeatureModel< AM >
 {
@@ -69,7 +73,7 @@ public class DefaultFeatureModel< AM extends AbstractModel< ?, ?, ? > > implemen
 
 	@SuppressWarnings( "unchecked" )
 	@Override
-	public void saveRaw( final File baseFolder, final Map< String, FeatureSerializer< ?, ?, AM > > serializers, final AM model )
+	public void saveRaw( final File baseFolder, final Map< String, FeatureSerializer< ?, ?, AM > > serializers, final AM model, final GraphToFileIdMap< ?, ? > graphToFileIdMap )
 	{
 		final File featureFolder = new File( baseFolder, FEATURE_FOLDER );
 		if (!featureFolder.exists())
@@ -100,7 +104,7 @@ public class DefaultFeatureModel< AM extends AbstractModel< ?, ?, ? > > implemen
 			{
 				@SuppressWarnings( "rawtypes" )
 				final Feature feature = keyToFeature.get( featureKey );
-				featureSerializer.serialize( feature, featureFilePath, model );
+				featureSerializer.serialize( feature, featureFilePath, model, graphToFileIdMap );
 			}
 			catch ( final IOException e )
 			{
@@ -110,7 +114,7 @@ public class DefaultFeatureModel< AM extends AbstractModel< ?, ?, ? > > implemen
 	}
 
 	@Override
-	public void loadRaw( final File baseFolder, final Map< String, FeatureSerializer< ?, ?, AM > > serializers, final FileIdToGraphMap< ?, ? > fileIdToGraphMap )
+	public void loadRaw( final File baseFolder, final Map< String, FeatureSerializer< ?, ?, AM > > serializers, final AM model, final FileIdToGraphMap< ?, ? > fileIdToGraphMap )
 	{
 		clear();
 		final File featureFolder = new File( baseFolder, FEATURE_FOLDER );
@@ -135,7 +139,7 @@ public class DefaultFeatureModel< AM extends AbstractModel< ?, ?, ? > > implemen
 			}
 			try
 			{
-				final Feature< ?, ? > feature = featureSerializer.deserialize( featureFile, fileIdToGraphMap );
+				final Feature< ?, ? > feature = featureSerializer.deserialize( featureFile, model, fileIdToGraphMap );
 				declareFeature( feature );
 			}
 			catch ( final IOException e )

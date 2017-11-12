@@ -7,6 +7,8 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 
+import org.mastodon.graph.io.RawGraphIO.FileIdToGraphMap;
+import org.mastodon.graph.io.RawGraphIO.GraphToFileIdMap;
 import org.mastodon.properties.AbstractPropertyMap;
 import org.mastodon.properties.PropertyMap;
 import org.mastodon.revised.model.feature.Feature;
@@ -47,9 +49,9 @@ public class SpotPositionFeatureComputer implements SpotFeatureComputer< Propert
 			map.put( pname, projection );
 		}
 		final Map< String, FeatureProjection< Spot > > projections = Collections.unmodifiableMap( map );
-		final RealLocalizablePropertyMap< Spot > rlpm = new RealLocalizablePropertyMap< Spot >( model.getGraph().vertices().size() );
+		final RealLocalizablePropertyMap< Spot > rlpm = new RealLocalizablePropertyMap< >( model.getGraph().vertices().size() );
 		final Feature< Spot, PropertyMap< Spot, RealLocalizable > > feature =
-				new Feature< Spot, PropertyMap< Spot, RealLocalizable > >(
+				new Feature< >(
 						KEY, Spot.class,
 						rlpm,
 						projections );
@@ -148,13 +150,13 @@ public class SpotPositionFeatureComputer implements SpotFeatureComputer< Propert
 		{
 
 			@Override
-			public void serialize( final Feature< Spot, PropertyMap< Spot, RealLocalizable > > feature, final File file, final Model model ) throws IOException
+			public void serialize( final Feature< Spot, PropertyMap< Spot, RealLocalizable > > feature, final File file, final Model support, final GraphToFileIdMap< ?, ? > idmap ) throws IOException
 			{
 				// Do nothing.
 			}
 
 			@Override
-			public Feature< Spot, PropertyMap< Spot, RealLocalizable > > deserialize( final File file, final Model model ) throws IOException
+			public Feature< Spot, PropertyMap< Spot, RealLocalizable > > deserialize( final File file, final Model model, final FileIdToGraphMap< ?, ? > fileIdToGraphMap ) throws IOException
 			{
 				// Do nothing and return the feature as is.
 				return compute( model );

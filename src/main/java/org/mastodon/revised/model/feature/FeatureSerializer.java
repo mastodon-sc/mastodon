@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 
 import org.mastodon.graph.io.RawGraphIO.FileIdToGraphMap;
+import org.mastodon.graph.io.RawGraphIO.GraphToFileIdMap;
 import org.mastodon.properties.PropertyMap;
 
 /**
@@ -33,7 +34,7 @@ public interface FeatureSerializer< O, M extends PropertyMap< O, ? >, AM >
 	 * @throws IOException
 	 *             if an IO error occurs during serialization.
 	 */
-	public void serialize( Feature< O, M > feature, File file, AM support ) throws IOException;
+	public void serialize( Feature< O, M > feature, File file, AM support, final GraphToFileIdMap< ?, ? > idmap ) throws IOException;
 
 	/**
 	 * Deserializes a specific feature from the specified file.

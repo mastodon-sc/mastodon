@@ -5,6 +5,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.mastodon.graph.io.RawGraphIO.FileIdToGraphMap;
+import org.mastodon.graph.io.RawGraphIO.GraphToFileIdMap;
 import org.mastodon.revised.model.AbstractModel;
 
 /**
@@ -12,6 +13,9 @@ import org.mastodon.revised.model.AbstractModel;
  * a model graph.
  *
  * @author Jean-Yves Tinevez
+ * @param <AM>
+ *            the type of the model over which the features stored in this
+ *            feature model are defined.
  */
 public interface FeatureModel< AM extends AbstractModel< ?, ?, ? > >
 {
@@ -55,8 +59,11 @@ public interface FeatureModel< AM extends AbstractModel< ?, ?, ? > >
 	 *            specific key, that feature is not saved.
 	 * @param support
 	 *            the model on which features are defined.
+	 * @param graphToFileIdMap
+	 *            the map collection that linkg graph object ids to file object
+	 *            ids.
 	 */
-	public void saveRaw( File projectFolder, Map< String, FeatureSerializer< ?, ?, AM > > serializers, AM support );
+	public void saveRaw( File projectFolder, Map< String, FeatureSerializer< ?, ?, AM > > serializers, AM support, GraphToFileIdMap< ?, ? > graphToFileIdMap );
 
 	/**
 	 * Clears this feature model and loads the {@link Feature}s from files in a
@@ -69,10 +76,13 @@ public interface FeatureModel< AM extends AbstractModel< ?, ?, ? > >
 	 *            the map of serializers to use to save features. If a
 	 *            serializer is not found in the map for a feature with a
 	 *            specific key, that feature is not loaded.
+	 * @param support
+	 *            the model on which features are defined.
 	 * @param fileIdToGraphMap
 	 *            the map collection that links file object ids to graph object
 	 *            ids.
 	 */
-	public void loadRaw( File projectFolder, Map< String, FeatureSerializer< ?, ?, AM > > serializers, FileIdToGraphMap< ?, ? > fileIdToGraphMap );
+	public void loadRaw( File projectFolder, Map< String, FeatureSerializer< ?, ?, AM > > serializers, final AM support, FileIdToGraphMap< ?, ? > fileIdToGraphMap );
+
 
 }

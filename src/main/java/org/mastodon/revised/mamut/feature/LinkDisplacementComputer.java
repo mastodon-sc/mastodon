@@ -3,10 +3,9 @@ package org.mastodon.revised.mamut.feature;
 import java.util.Collections;
 import java.util.Set;
 
-import org.mastodon.io.properties.DoublePropertyMapSerializer;
-import org.mastodon.io.properties.PropertyMapSerializer;
 import org.mastodon.properties.DoublePropertyMap;
 import org.mastodon.revised.model.feature.Feature;
+import org.mastodon.revised.model.feature.FeatureSerializer;
 import org.mastodon.revised.model.mamut.Link;
 import org.mastodon.revised.model.mamut.Model;
 import org.mastodon.revised.model.mamut.ModelGraph;
@@ -60,15 +59,9 @@ public class LinkDisplacementComputer implements LinkFeatureComputer< DoubleProp
 	}
 
 	@Override
-	public PropertyMapSerializer< Link, DoublePropertyMap< Link > > getSerializer( final DoublePropertyMap< Link > pm )
+	public FeatureSerializer< Link, DoublePropertyMap< Link >, Model > getSerializer()
 	{
-		return new DoublePropertyMapSerializer<>( pm );
-	}
-
-	@Override
-	public DoublePropertyMap< Link > createPropertyMap( final Model model )
-	{
-		return new DoublePropertyMap< Link >( model.getGraph().edges(), Double.NaN, model.getGraph().edges().size() );
+		return MamutFeatureSerializers.doubleLinkSerializer( KEY );
 	}
 
 }

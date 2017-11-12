@@ -10,8 +10,8 @@ import java.util.Map;
 
 import org.mastodon.graph.ReadOnlyGraph;
 import org.mastodon.graph.io.RawGraphIO.FileIdToGraphMap;
+import org.mastodon.graph.io.RawGraphIO.GraphToFileIdMap;
 import org.mastodon.properties.Property;
-import org.mastodon.properties.PropertyMap;
 import org.mastodon.revised.mamut.feature.MamutFeatureComputerService;
 import org.mastodon.revised.model.AbstractModel;
 import org.mastodon.revised.model.feature.DefaultFeatureModel;
@@ -80,7 +80,7 @@ public class Model extends AbstractModel< ModelGraph, Spot, Link > implements Un
 
 		final List< Property< Link > > edgeUndoableProperties = new ArrayList<>();
 
-		featureModel = new DefaultFeatureModel< Model >();
+		featureModel = new DefaultFeatureModel< >();
 
 		undoRecorder = new GraphUndoRecorder<>(
 				initialCapacity,
@@ -119,11 +119,8 @@ public class Model extends AbstractModel< ModelGraph, Spot, Link > implements Un
 		final Collection< FeatureComputer< ?, ?, Model > > featureComputers = featureComputerService.getFeatureComputers();
 		final Map< String, FeatureSerializer< ?, ?, Model > > featureSerializers = new HashMap<>( featureComputers.size() );
 		for ( final FeatureComputer featureComputer : featureComputers )
-		{
-			final PropertyMap pm = featureComputer.createPropertyMap( this );
-			featureSerializers.put( featureComputer.getKey(), ( FeatureSerializer< ?, ?, Model > ) featureComputer.getSerializer( pm ) );
-		}
-		featureModel.loadRaw( file.getParentFile(), featureSerializers, fileIdToGraphMap );
+			featureSerializers.put( featureComputer.getKey(), featureComputer.getSerializer() );
+		featureModel.loadRaw( file.getParentFile(), featureSerializers, this, fileIdToGraphMap );
 	}
 
 	/**
@@ -140,7 +137,7 @@ public class Model extends AbstractModel< ModelGraph, Spot, Link > implements Un
 	public void saveRaw( final File file ) throws IOException
 	{
 		// Serialize model graph.
-		modelGraph.saveRaw( file, ModelSerializer.getInstance() );
+		final GraphToFileIdMap< Spot, Link > graphToFileIdMap = modelGraph.saveRaw( file, ModelSerializer.getInstance() );
 
 		// Serialize feature model.
 		final MamutFeatureComputerService featureComputerService = context.getService( MamutFeatureComputerService.class );
@@ -148,7 +145,7 @@ public class Model extends AbstractModel< ModelGraph, Spot, Link > implements Un
 		final Map< String, FeatureSerializer< ?, ?, Model > > featureSerializers = new HashMap<>( featureComputers.size() );
 		for ( final FeatureComputer< ?, ?, Model > featureComputer : featureComputers )
 			featureSerializers.put( featureComputer.getKey(), featureComputer.getSerializer() );
-		featureModel.saveRaw( file.getParentFile(), featureSerializers, this );
+		featureModel.saveRaw( file.getParentFile(), featureSerializers, this, graphToFileIdMap );
 	}
 
 	/**
