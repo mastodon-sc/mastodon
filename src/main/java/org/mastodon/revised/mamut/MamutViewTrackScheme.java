@@ -6,7 +6,6 @@ import static org.mastodon.revised.mamut.MamutMenuBuilder.editMenu;
 import static org.mastodon.revised.mamut.MamutMenuBuilder.viewMenu;
 
 import javax.swing.ActionMap;
-import javax.swing.JDialog;
 
 import org.mastodon.app.ui.MastodonFrameViewActions;
 import org.mastodon.app.ui.ViewMenu;
@@ -21,15 +20,12 @@ import org.mastodon.revised.trackscheme.TrackSchemeVertex;
 import org.mastodon.revised.trackscheme.display.TrackSchemeEditBehaviours;
 import org.mastodon.revised.trackscheme.display.TrackSchemeFrame;
 import org.mastodon.revised.trackscheme.display.TrackSchemeOptions;
-import org.mastodon.revised.trackscheme.display.ui.TrackSchemeStyleChooser;
 import org.mastodon.revised.trackscheme.wrap.DefaultModelGraphProperties;
 import org.mastodon.revised.ui.HighlightBehaviours;
 import org.mastodon.revised.ui.SelectionActions;
-import org.mastodon.revised.util.ToggleDialogAction;
 import org.mastodon.views.context.ContextChooser;
 import org.scijava.ui.behaviour.KeyPressedManager;
 import org.scijava.ui.behaviour.io.InputTriggerConfig;
-import org.scijava.ui.behaviour.util.Actions;
 
 class MamutViewTrackScheme extends MamutView< TrackSchemeGraph< Spot, Link >, TrackSchemeVertex, TrackSchemeEdge >
 {
@@ -120,12 +116,18 @@ class MamutViewTrackScheme extends MamutView< TrackSchemeGraph< Spot, Link >, Tr
 
 		// TODO revise
 		// TrackSchemeStyleDialog triggered by "R"
-		final String TRACK_SCHEME_STYLE_SETTINGS = "render settings";
-		final TrackSchemeStyleChooser styleChooser = new TrackSchemeStyleChooser( frame, frame.getTrackschemePanel() );
-		final JDialog styleDialog = styleChooser.getDialog();
-		final Actions actions = new Actions( keyconf, "mamut" );
-		actions.install( frame.getKeybindings(), "mamut" );
-		actions.namedAction( new ToggleDialogAction( TRACK_SCHEME_STYLE_SETTINGS, styleDialog ), "R" );
+		// TODO
+		// TODO
+		// TODO
+		// TODO
+		// TODO
+		// TODO
+//		final String TRACK_SCHEME_STYLE_SETTINGS = "render settings";
+//		final TrackSchemeStyleChooser styleChooser = new TrackSchemeStyleChooser( frame, frame.getTrackschemePanel() );
+//		final JDialog styleDialog = styleChooser.getDialog();
+//		final Actions actions = new Actions( keyconf, "mamut" );
+//		actions.install( frame.getKeybindings(), "mamut" );
+//		actions.namedAction( new ToggleDialogAction( TRACK_SCHEME_STYLE_SETTINGS, styleDialog ), "R" );
 
 		frame.getTrackschemePanel().repaint();
 	}

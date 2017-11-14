@@ -1,4 +1,4 @@
-package org.mastodon.revised.trackscheme.display.ui;
+package org.mastodon.revised.trackscheme.display.style;
 
 import java.awt.BasicStroke;
 import java.awt.Color;

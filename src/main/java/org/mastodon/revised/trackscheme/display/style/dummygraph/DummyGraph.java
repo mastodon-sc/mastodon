@@ -1,4 +1,4 @@
-package org.mastodon.revised.trackscheme.display.ui.dummygraph;
+package org.mastodon.revised.trackscheme.display.style.dummygraph;
 
 import java.util.ArrayList;
 import java.util.Collection;

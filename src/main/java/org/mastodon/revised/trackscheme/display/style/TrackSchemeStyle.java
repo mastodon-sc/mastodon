@@ -715,8 +715,14 @@ public class TrackSchemeStyle
 	{
 		final TrackSchemeStyle newStyle = new TrackSchemeStyle();
 		newStyle.set( this );
-		newStyle.name = name;
+		if ( name != null )
+			newStyle.name( name );
 		return newStyle;
+	}
+
+	public TrackSchemeStyle copy()
+	{
+		return copy( null );
 	}
 
 	/**

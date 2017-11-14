@@ -1,4 +1,4 @@
-package org.mastodon.revised.trackscheme.display.laf;
+package org.mastodon.revised.trackscheme.display.style;
 
 import static org.mastodon.revised.trackscheme.ScreenVertex.Transition.APPEAR;
 import static org.mastodon.revised.trackscheme.ScreenVertex.Transition.DISAPPEAR;
@@ -29,7 +29,6 @@ import org.mastodon.revised.trackscheme.display.AbstractTrackSchemeOverlay;
 import org.mastodon.revised.trackscheme.display.TrackSchemeOptions;
 
 import net.imglib2.RealLocalizable;
-import org.mastodon.revised.trackscheme.display.style.TrackSchemeStyle;
 
 /**
  * An AbstractTrackSchemeOverlay implementation that:
@@ -305,6 +304,16 @@ public class DefaultTrackSchemeOverlay extends AbstractTrackSchemeOverlay
 		final double d = Util.segmentDist( x0, y0, x1, y1, x2, y2 );
 		return d;
 	}
+//	@Override
+//	protected double distanceToPaintedEdge( final double x0, final double y0, final ScreenEdge edge, final ScreenVertex source, final ScreenVertex target )
+//	{
+//		final double x1 = source.getX();
+//		final double y1 = source.getY();
+//		final double x2 = target.getX();
+//		final double y2 = target.getY();
+//		final double d = GeometryUtils.segmentDist( x0, y0, x1, y1, x2, y2 );
+//		return d;
+//	}
 
 	// TODO: take double x, y instead of RealLocalizable parameter
 	@Override

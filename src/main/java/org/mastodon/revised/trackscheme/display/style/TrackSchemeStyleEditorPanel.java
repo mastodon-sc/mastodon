@@ -1,6 +1,5 @@
-package org.mastodon.revised.trackscheme.display.ui;
+package org.mastodon.revised.trackscheme.display.style;
 
-import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Graphics;
@@ -11,31 +10,21 @@ import java.awt.Insets;
 import java.awt.RenderingHints;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.KeyEvent;
 import java.awt.geom.RoundRectangle2D;
 import java.util.Arrays;
 import java.util.List;
 import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
-import javax.swing.AbstractAction;
-import javax.swing.Action;
-import javax.swing.ActionMap;
 import javax.swing.Box;
-import javax.swing.BoxLayout;
 import javax.swing.Icon;
-import javax.swing.InputMap;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JColorChooser;
-import javax.swing.JComponent;
 import javax.swing.JDialog;
 import javax.swing.JPanel;
-import javax.swing.KeyStroke;
 import javax.swing.SwingConstants;
-import javax.swing.WindowConstants;
 import javax.swing.border.EmptyBorder;
-import org.mastodon.revised.trackscheme.display.style.TrackSchemeStyle;
 import org.mastodon.revised.trackscheme.display.style.TrackSchemeStyle.UpdateListener;
 
 public class TrackSchemeStyleEditorPanel extends JPanel implements UpdateListener
@@ -44,14 +33,11 @@ public class TrackSchemeStyleEditorPanel extends JPanel implements UpdateListene
 
 	private final JColorChooser colorChooser;
 
-	private final TrackSchemeStyle style;
-
 	private final List< StyleElement > styleElements;
 
 	public TrackSchemeStyleEditorPanel( final TrackSchemeStyle style )
 	{
 		super( new GridBagLayout() );
-		this.style = style;
 		style.addUpdateListener( this );
 		colorChooser = new JColorChooser();
 
@@ -147,16 +133,12 @@ public class TrackSchemeStyleEditorPanel extends JPanel implements UpdateListene
 
 	private abstract class ColorSetter implements StyleElement
 	{
-		private final String label;
-
 		private final ColorIcon icon;
 
-		private JButton button;
+		private final JButton button;
 
 		public ColorSetter( final String label )
 		{
-			this.label = label;
-
 			icon = new ColorIcon( getColor() );
 			button = new JButton( label, icon );
 			button.setOpaque( false );
@@ -191,11 +173,6 @@ public class TrackSchemeStyleEditorPanel extends JPanel implements UpdateListene
 			} );
 		}
 
-		public String getLabel()
-		{
-			return label;
-		}
-
 		public abstract Color getColor();
 
 		public abstract void setColor( Color c );
@@ -214,7 +191,7 @@ public class TrackSchemeStyleEditorPanel extends JPanel implements UpdateListene
 		}
 	}
 
-	private ColorSetter colorSetter( String label, Supplier< Color > get, Consumer< Color > set )
+	private ColorSetter colorSetter( final String label, final Supplier< Color > get, final Consumer< Color > set )
 	{
 		return new ColorSetter( label )
 		{
@@ -234,21 +211,12 @@ public class TrackSchemeStyleEditorPanel extends JPanel implements UpdateListene
 
 	private abstract class BooleanSetter implements StyleElement
 	{
-		private final String label;
-
-		private JCheckBox checkbox;
+		private final JCheckBox checkbox;
 
 		public BooleanSetter( final String label )
 		{
-			this.label = label;
-
 			checkbox = new JCheckBox( label, get() );
 			checkbox.addActionListener( ( e ) -> set( checkbox.isSelected() ) );
-		}
-
-		public String getLabel()
-		{
-			return label;
 		}
 
 		public abstract boolean get();
@@ -269,7 +237,7 @@ public class TrackSchemeStyleEditorPanel extends JPanel implements UpdateListene
 		}
 	}
 
-	private BooleanSetter booleanSetter( String label, BooleanSupplier get, Consumer< Boolean > set )
+	private BooleanSetter booleanSetter( final String label, final BooleanSupplier get, final Consumer< Boolean > set )
 	{
 		return new BooleanSetter( label )
 		{
@@ -362,50 +330,6 @@ public class TrackSchemeStyleEditorPanel extends JPanel implements UpdateListene
 		public int getIconHeight()
 		{
 			return size + 2 * pad;
-		}
-	}
-
-	public static void main( final String[] args )
-	{
-		final TrackSchemeStyle style = TrackSchemeStyle.defaultStyle();
-		new TrackSchemeStyleEditorDialog( null, style ).setVisible( true );
-	}
-
-	public static class TrackSchemeStyleEditorDialog extends JDialog
-	{
-		private static final long serialVersionUID = 1L;
-
-		private final TrackSchemeStyleEditorPanel stylePanel;
-
-		public TrackSchemeStyleEditorDialog( final JDialog dialog, final TrackSchemeStyle style )
-		{
-			super( dialog, "TrackScheme style editor", false );
-
-			stylePanel = new TrackSchemeStyleEditorPanel( style );
-
-			final JPanel content = new JPanel();
-			content.setLayout( new BoxLayout( content, BoxLayout.PAGE_AXIS ) );
-			content.add( stylePanel );
-			getContentPane().add( content, BorderLayout.NORTH );
-
-			final ActionMap am = getRootPane().getActionMap();
-			final InputMap im = getRootPane().getInputMap( JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT );
-			final Object hideKey = new Object();
-			final Action hideAction = new AbstractAction()
-			{
-				private static final long serialVersionUID = 1L;
-
-				@Override
-				public void actionPerformed( final ActionEvent e )
-				{
-					setVisible( false );
-				}
-			};
-			im.put( KeyStroke.getKeyStroke( KeyEvent.VK_ESCAPE, 0 ), hideKey );
-			am.put( hideKey, hideAction );
-
-			pack();
-			setDefaultCloseOperation( WindowConstants.HIDE_ON_CLOSE );
 		}
 	}
 }
