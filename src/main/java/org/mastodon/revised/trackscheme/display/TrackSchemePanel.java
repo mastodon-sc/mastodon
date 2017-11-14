@@ -181,8 +181,7 @@ public class TrackSchemePanel extends JPanel implements
 		timepoint.listeners().add( this );
 		selection.listeners().add( this );
 
-		style = TrackSchemeStyle.defaultStyle().copy( "default" );
-		graphOverlay = new DefaultTrackSchemeOverlay( graph, highlight, focus, optional, style );
+		graphOverlay = options.getTrackSchemeOverlayFactory().create( graph, highlight, focus, optional );
 
 		display.addOverlayRenderer( graphOverlay );
 
@@ -727,13 +726,10 @@ public class TrackSchemePanel extends JPanel implements
 		return display;
 	}
 
-	// TODO: THIS IS FOR TESTING ONLY
-	private TrackSchemeStyle style;
-
 	// TODO remove??? revise TrackSchemePanel / TrackSchemeFrame construction.
 	public void setTrackSchemeStyle( final TrackSchemeStyle s )
 	{
-		style.set( s );
+		throw new UnsupportedOperationException("TODO: this shouldn't be called. Should go through TrackSchemeOptions.getTrackSchemeOverlayFactory.");
 	}
 
 	// TODO remove??? revise TrackSchemePanel / TrackSchemeFrame construction.
