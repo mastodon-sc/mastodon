@@ -2,88 +2,46 @@ package org.mastodon.revised.trackscheme.display.style;
 
 import java.awt.BorderLayout;
 import java.awt.Frame;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import javax.swing.JDialog;
-
 import javax.swing.JPanel;
-import org.mastodon.adapter.FocusModelAdapter;
-import org.mastodon.adapter.HighlightModelAdapter;
-import org.mastodon.adapter.RefBimap;
-import org.mastodon.adapter.SelectionModelAdapter;
+import javax.swing.WindowConstants;
+
 import org.mastodon.app.ui.settings.ModificationListener;
 import org.mastodon.app.ui.settings.SelectAndEditProfileSettingsPage;
 import org.mastodon.app.ui.settings.SelectAndEditProfileSettingsPage.Profile;
-import org.mastodon.app.ui.settings.SelectAndEditProfileSettingsPage.ProfileManager;
 import org.mastodon.app.ui.settings.SettingsPanel;
-import org.mastodon.graph.GraphIdBimap;
-import org.mastodon.model.DefaultFocusModel;
-import org.mastodon.model.DefaultHighlightModel;
-import org.mastodon.model.DefaultNavigationHandler;
-import org.mastodon.model.DefaultTimepointModel;
-import org.mastodon.model.FocusModel;
-import org.mastodon.model.HighlightModel;
-import org.mastodon.model.NavigationHandler;
-import org.mastodon.model.SelectionModel;
-import org.mastodon.model.TimepointModel;
-import org.mastodon.revised.trackscheme.TrackSchemeEdge;
-import org.mastodon.revised.trackscheme.TrackSchemeEdgeBimap;
-import org.mastodon.revised.trackscheme.TrackSchemeGraph;
-import org.mastodon.revised.trackscheme.TrackSchemeVertex;
-import org.mastodon.revised.trackscheme.TrackSchemeVertexBimap;
-import org.mastodon.revised.trackscheme.display.TrackSchemeOptions;
-import org.mastodon.revised.trackscheme.display.TrackSchemePanel;
-import org.mastodon.revised.trackscheme.display.style.dummygraph.DummyEdge;
-import org.mastodon.revised.trackscheme.display.style.dummygraph.DummyGraph;
-import org.mastodon.revised.trackscheme.display.style.dummygraph.DummyVertex;
-import org.mastodon.revised.trackscheme.wrap.DefaultModelGraphProperties;
-import org.mastodon.revised.trackscheme.wrap.ModelGraphProperties;
-import org.mastodon.util.Listeners;
+import org.mastodon.revised.trackscheme.display.style.TrackSchemeStyleSettingsPage.TrackSchemeProfile;
+import org.mastodon.util.Listeners; 
 
-public class TrackSchemeStyleSettingsPage
+public class TrackSchemeStyleSettingsPage extends SelectAndEditProfileSettingsPage< TrackSchemeProfile >
 {
-	static class TrackSchemeProfileEditPanel extends JPanel implements TrackSchemeStyle.UpdateListener, SelectAndEditProfileSettingsPage.ProfileEditPanel< TrackSchemeProfile >
+	/**
+	 * @param treePath
+	 * 		path of this page in the settings tree.
+	 */
+	public TrackSchemeStyleSettingsPage( final String treePath, final TrackSchemeStyleManager styleManager )
 	{
-		private static final long serialVersionUID = 1L;
+		super( treePath, new TrackSchemeStyleProfileManager( styleManager ), new TrackSchemeProfileEditPanel() );
+	}
 
+	static class TrackSchemeProfileEditPanel implements TrackSchemeStyle.UpdateListener, SelectAndEditProfileSettingsPage.ProfileEditPanel< TrackSchemeProfile >
+	{
 		private final Listeners.SynchronizedList< ModificationListener > modificationListeners;
 
 		private final TrackSchemeStyle editedStyle;
 
+		private final TrackSchemeStyleEditorPanel styleEditorPanel;
+
 		public TrackSchemeProfileEditPanel()
 		{
-			final DummyGraph.Examples ex = DummyGraph.Examples.CELEGANS;
-			final DummyGraph example = ex.getGraph();
-			final GraphIdBimap< DummyVertex, DummyEdge > idmap = example.getIdBimap();
-			final ModelGraphProperties< DummyVertex, DummyEdge > dummyProps = new DefaultModelGraphProperties<>();
-			final TrackSchemeGraph< DummyVertex, DummyEdge > graph = new TrackSchemeGraph<>( example, idmap, dummyProps );
-			final RefBimap< DummyVertex, TrackSchemeVertex > vertexMap = new TrackSchemeVertexBimap<>( graph );
-			final RefBimap< DummyEdge, TrackSchemeEdge > edgeMap = new TrackSchemeEdgeBimap<>( graph );
-			final HighlightModel< TrackSchemeVertex, TrackSchemeEdge > highlight = new HighlightModelAdapter<>( new DefaultHighlightModel<>( idmap ), vertexMap, edgeMap );
-			final FocusModel< TrackSchemeVertex, TrackSchemeEdge > focus = new FocusModelAdapter<>( new DefaultFocusModel<>( idmap ), vertexMap, edgeMap );
-			final TimepointModel timepoint = new DefaultTimepointModel();
-			final SelectionModel< TrackSchemeVertex, TrackSchemeEdge > selection = new SelectionModelAdapter<>( ex.getSelectionModel(), vertexMap, edgeMap );
-			final NavigationHandler< TrackSchemeVertex, TrackSchemeEdge > navigation = new DefaultNavigationHandler<>();
-
 			editedStyle = TrackSchemeStyle.defaultStyle().copy( "Edited" );
-
-			final TrackSchemeOptions options = TrackSchemeOptions.options()
-					.trackSchemeOverlayFactory(
-							( g, h, f, o ) -> new DefaultTrackSchemeOverlay( g, h, f, o, editedStyle )
-					);
-			final TrackSchemePanel panelPreview = new TrackSchemePanel( graph, highlight, focus, timepoint, selection, navigation, options );
-			editedStyle.addUpdateListener( panelPreview::graphChanged );
-
-			panelPreview.setTimepointRange( 0, 7 );
-			timepoint.setTimepoint( 2 );
-			panelPreview.graphChanged();
-
-			setLayout( new BorderLayout() );
-			add( panelPreview, BorderLayout.CENTER );
-			add( new TrackSchemeStyleEditorPanel( editedStyle ), BorderLayout.SOUTH );
-
+			styleEditorPanel = new TrackSchemeStyleEditorPanel( editedStyle );
 			modificationListeners = new Listeners.SynchronizedList<>();
 			editedStyle.addUpdateListener( this );
 		}
@@ -123,11 +81,11 @@ public class TrackSchemeStyleSettingsPage
 		@Override
 		public JPanel getJPanel()
 		{
-			return this;
+			return styleEditorPanel;
 		}
 	}
 
-	static class TrackSchemeProfile implements Profile
+	public static class TrackSchemeProfile implements Profile
 	{
 		TrackSchemeStyle style;
 
@@ -174,49 +132,51 @@ public class TrackSchemeStyleSettingsPage
 
 	static class TrackSchemeStyleProfileManager implements ProfileManager< TrackSchemeProfile >
 	{
+		private final TrackSchemeStyleManager styles;
+
 		private final TrackSchemeStyleManager styleManager;
 
 		public TrackSchemeStyleProfileManager( final TrackSchemeStyleManager styleManager )
 		{
 			this.styleManager = styleManager;
+			styles = new TrackSchemeStyleManager( false );
+			styles.set( styleManager );
 		}
 
 		@Override
 		public List< TrackSchemeProfile > getProfiles()
 		{
 			return Stream.concat(
-					styleManager.getBuiltinStyles().stream().map( style -> new TrackSchemeProfile( style, true ) ),
-					styleManager.getUserStyles().stream().map( style -> new TrackSchemeProfile( style, false ) )
+					styles.getBuiltinStyles().stream().map( style -> new TrackSchemeProfile( style, true ) ),
+					styles.getUserStyles().stream().map( style -> new TrackSchemeProfile( style, false ) )
 			).collect( Collectors.toList() );
 		}
 
 		@Override
 		public TrackSchemeProfile getSelectedProfile()
 		{
-			final TrackSchemeStyle style = styleManager.getDefaultStyle();
-			final boolean isBuiltin = styleManager.getBuiltinStyles().stream().anyMatch( s -> s.getName().equals( style.getName() ) );
+			final TrackSchemeStyle style = styles.getDefaultStyle();
+			final boolean isBuiltin = styles.getBuiltinStyles().stream().anyMatch( s -> s.getName().equals( style.getName() ) );
 			return new TrackSchemeProfile( style, isBuiltin );
 		}
 
 		@Override
 		public void select( final TrackSchemeProfile profile )
 		{
-			styleManager.setDefaultStyle( profile.style );
-			System.out.println( "TrackSchemeStyleProfileManager.select" );
-			System.out.println( styleManager.getDefaultStyle() );
+			styles.setDefaultStyle( profile.style );
 		}
 
 		@Override
 		public TrackSchemeProfile duplicate( final TrackSchemeProfile profile )
 		{
-			final TrackSchemeStyle duplicate = styleManager.duplicate( profile.style );
+			final TrackSchemeStyle duplicate = styles.duplicate( profile.style );
 			return new TrackSchemeProfile( duplicate, false );
 		}
 
 		@Override
 		public void rename( final TrackSchemeProfile profile, final String newName )
 		{
-			styleManager.rename( profile.style, newName );
+			styles.rename( profile.style, newName );
 		}
 
 		@Override
@@ -229,7 +189,7 @@ public class TrackSchemeStyleSettingsPage
 				final List< TrackSchemeProfile > profiles = getProfiles();
 				newSelectedIndex = Math.max( 0, profiles.indexOf( profile ) - 1 );
 			}
-			styleManager.remove( profile.style );
+			styles.remove( profile.style );
 			if ( wasSelected )
 			{
 				select( getProfiles().get( newSelectedIndex ) );
@@ -239,28 +199,40 @@ public class TrackSchemeStyleSettingsPage
 		@Override
 		public void apply()
 		{
-			System.out.println( "TrackSchemeStyleProfileManager.apply" );
-			System.out.println( "APPLY TODO");
+			styleManager.set( styles );
+			styleManager.saveStyles();
 		}
 
 		@Override
 		public void cancel()
 		{
-			System.out.println( "TrackSchemeStyleProfileManager.cancel" );
-			System.out.println( "CANCEL TODO");
+			styles.set( styleManager );
 		}
 	}
 
 	public static void main( final String[] args )
 	{
-		final TrackSchemeStyleProfileManager profileManager = new TrackSchemeStyleProfileManager( new TrackSchemeStyleManager() );
-		final TrackSchemeProfileEditPanel contentPanel = new TrackSchemeProfileEditPanel();
+		final TrackSchemeStyleManager styleManager = new TrackSchemeStyleManager();
 
 		final SettingsPanel settings = new SettingsPanel();
-		settings.addPage( new SelectAndEditProfileSettingsPage<>( "Style > TrackScheme", profileManager, contentPanel ) );
+		settings.addPage( new TrackSchemeStyleSettingsPage( "Style > TrackScheme", styleManager ) );
 
 		final JDialog dialog = new JDialog( ( Frame ) null, "Settings" );
 		dialog.getContentPane().add( settings, BorderLayout.CENTER );
+
+		settings.onOk( () -> dialog.setVisible( false ) );
+		settings.onCancel( () -> dialog.setVisible( false ) );
+
+		dialog.setDefaultCloseOperation( WindowConstants.DO_NOTHING_ON_CLOSE );
+		dialog.addWindowListener( new WindowAdapter()
+		{
+			@Override
+			public void windowClosing( final WindowEvent e )
+			{
+				settings.cancel();
+			}
+		} );
+
 		dialog.pack();
 		dialog.setVisible( true );
 	}

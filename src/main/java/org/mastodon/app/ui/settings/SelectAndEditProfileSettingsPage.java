@@ -6,12 +6,14 @@ import java.awt.event.ItemEvent;
 import java.util.List;
 import java.util.Vector;
 
+import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.border.EmptyBorder;
 
 import org.mastodon.util.Listeners;
 
@@ -43,6 +45,8 @@ public class SelectAndEditProfileSettingsPage< T extends SelectAndEditProfileSet
 
 	private final ProfileManager< T > profileManager;
 
+	private final ProfileEditPanel< T > profileEditPanel;
+
 	private final Listeners.List< ModificationListener > modificationListeners;
 
 	private final JPanel contentPanel;
@@ -61,8 +65,10 @@ public class SelectAndEditProfileSettingsPage< T extends SelectAndEditProfileSet
 	{
 		this.treePath = treePath;
 		this.profileManager = profileManager;
+		this.profileEditPanel = profileEditPanel;
 
 		final ProfileSelectionPanel< T > profileSelectionPanel = new ProfileSelectionPanel<>( profileManager, profileEditPanel );
+		profileSelectionPanel.setBorder( new EmptyBorder( 0, 0, 10, 0 ) );
 
 		profileEditPanel.modificationListeners().add( profileSelectionPanel );
 
@@ -96,6 +102,7 @@ public class SelectAndEditProfileSettingsPage< T extends SelectAndEditProfileSet
 	@Override
 	public void apply()
 	{
+		profileEditPanel.storeProfile( profileManager.getSelectedProfile() );
 		profileManager.apply();
 	}
 
@@ -211,7 +218,9 @@ public class SelectAndEditProfileSettingsPage< T extends SelectAndEditProfileSet
 
 			comboBox = new JComboBox<>();
 			comboBox.setEditable( false );
-			comboBox.setPreferredSize( new Dimension( 500, 100 ) );
+			final Dimension dim = new Dimension( 300, comboBox.getPreferredSize().height );
+			comboBox.setPreferredSize( dim );
+			comboBox.setMaximumSize( dim );
 
 			buttonDuplicate = new JButton( "Duplicate" );
 			buttonRename = new JButton( "Rename" );
@@ -221,7 +230,6 @@ public class SelectAndEditProfileSettingsPage< T extends SelectAndEditProfileSet
 				final T profile = ( ( Item ) e.getItem() ).profile;
 				if ( e.getStateChange() == ItemEvent.SELECTED )
 				{
-					System.out.println( "selected " + profile.getName() );
 					manager.select( profile );
 					buttonDelete.setEnabled( !profile.isBuiltin() );
 					buttonRename.setEnabled( !profile.isBuiltin() );
@@ -230,7 +238,6 @@ public class SelectAndEditProfileSettingsPage< T extends SelectAndEditProfileSet
 				}
 				else
 				{
-					System.out.println( "deselected " + profile.getName() );
 					selectionListeners.list.forEach( l -> l.deselected( profile ) );
 					editor.storeProfile( profile );
 				}
@@ -239,14 +246,14 @@ public class SelectAndEditProfileSettingsPage< T extends SelectAndEditProfileSet
 			buttonRename.addActionListener( e -> renameSelected() );
 			buttonDelete.addActionListener( e -> deleteSelected() );
 
-			final JPanel panelStyleButtons = new JPanel();
-			panelStyleButtons.setLayout( new BoxLayout( panelStyleButtons, BoxLayout.LINE_AXIS ) );
-			panelStyleButtons.add( buttonDuplicate );
-			panelStyleButtons.add( buttonRename );
-			panelStyleButtons.add( buttonDelete );
-
+			setLayout( new BoxLayout( this, BoxLayout.LINE_AXIS ) );
+			add( Box.createHorizontalGlue() );
 			add( comboBox );
-			add( panelStyleButtons );
+			add( buttonDuplicate );
+			add( buttonRename );
+			add( buttonDelete );
+			add( Box.createHorizontalGlue() );
+
 			makeModel();
 		}
 

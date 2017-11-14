@@ -57,6 +57,10 @@ public class SettingsPanel extends JPanel
 
 	private final ModificationListener modificationListener;
 
+	private final ArrayList< Runnable > runOnOk;
+
+	private final ArrayList< Runnable > runOnCancel;
+
 	public void addPage( final SettingsPage page )
 	{
 		final String path = page.getTreePath();
@@ -158,7 +162,7 @@ public class SettingsPanel extends JPanel
 		final JPanel content = new JPanel( new BorderLayout() );
 		content.add( breadcrumbs, BorderLayout.NORTH );
 		content.add( pages, BorderLayout.CENTER );
-		content.setBorder( new EmptyBorder( 10, 0, 10, 0 ) );
+		content.setBorder( new EmptyBorder( 10, 0, 10, 10 ) );
 
 		final JScrollPane treeScrollPane = new JScrollPane( tree );
 		treeScrollPane.setPreferredSize( new Dimension( 500, 500 ) );
@@ -179,11 +183,13 @@ public class SettingsPanel extends JPanel
 		buttons.setBorder( new EmptyBorder( 10, 0, 5, 10 ) );
 		this.add( buttons, BorderLayout.SOUTH );
 
-		cancel.addActionListener( e -> {
-			getPages().forEach( SettingsPage::cancel );
-		} );
+		runOnCancel = new ArrayList<>();
+		runOnOk = new ArrayList<>();
+
+		cancel.addActionListener( e -> cancel() );
 		ok.addActionListener( e -> {
 			getPages().forEach( SettingsPage::apply );
+			runOnOk.forEach( Runnable::run );
 		} );
 
 		apply.setEnabled( false );
@@ -192,6 +198,22 @@ public class SettingsPanel extends JPanel
 			apply.setEnabled( false );
 			getPages().forEach( SettingsPage::apply );
 		} );
+	}
+
+	public void cancel()
+	{
+		getPages().forEach( SettingsPage::cancel );
+		runOnCancel.forEach( Runnable::run );
+	}
+
+	public synchronized void onOk( final Runnable runnable )
+	{
+		runOnOk.add( runnable );
+	}
+
+	public synchronized void onCancel( final Runnable runnable )
+	{
+		runOnCancel.add( runnable );
 	}
 
 	private ArrayList< SettingsPage > getPages()
