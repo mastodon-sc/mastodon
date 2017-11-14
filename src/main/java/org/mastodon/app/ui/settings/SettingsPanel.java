@@ -10,6 +10,7 @@ import java.awt.Rectangle;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
+
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
@@ -19,6 +20,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.JTree;
 import javax.swing.border.EmptyBorder;
+import javax.swing.border.MatteBorder;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.DefaultMutableTreeNode;
@@ -28,8 +30,21 @@ import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
 
+/**
+ * Main panel for preferences dialogs.
+ * <p>
+ * On the right, one of several {@link SettingsPage}s is shown. On the left, a
+ * {@code JTree} is used to select between pages. On the top, a breadcrumbs
+ * trail shows the tree path of the current {@link SettingsPage}. On the bottom,
+ * "Cancel", "Apply", and "OK" buttons are shown.
+ * </p>
+ *
+ * @author Tobias Pietzsch
+ */
 public class SettingsPanel extends JPanel
 {
+	private static final long serialVersionUID = 1L;
+
 	private final DefaultMutableTreeNode root;
 
 	private final DefaultTreeModel model;
@@ -39,6 +54,8 @@ public class SettingsPanel extends JPanel
 	private final JPanel pages;
 
 	private final JPanel breadcrumbs;
+
+	private final ModificationListener modificationListener;
 
 	public void addPage( final SettingsPage page )
 	{
@@ -51,7 +68,7 @@ public class SettingsPanel extends JPanel
 			DefaultMutableTreeNode next = null;
 			for ( int i = 0; i < current.getChildCount(); ++i )
 			{
-				DefaultMutableTreeNode child = ( DefaultMutableTreeNode ) current.getChildAt( i );
+				final DefaultMutableTreeNode child = ( DefaultMutableTreeNode ) current.getChildAt( i );
 				final SettingsNodeData data = ( SettingsNodeData ) child.getUserObject();
 				if ( text.equals( data.name ) )
 				{
@@ -62,13 +79,15 @@ public class SettingsPanel extends JPanel
 
 			if ( next == null )
 			{
-				SettingsNodeData data = new SettingsNodeData( text, null );
+				final SettingsNodeData data = new SettingsNodeData( text, null );
 				next = new DefaultMutableTreeNode( data );
 				model.insertNodeInto( next, current, current.getChildCount() );
 			}
 
 			current = next;
 		}
+
+		page.modificationListeners().add( modificationListener );
 
 		final SettingsNodeData data = ( SettingsNodeData ) current.getUserObject();
 		data.page = page;
@@ -100,12 +119,12 @@ public class SettingsPanel extends JPanel
 		tree.setExpandsSelectedPaths( true );
 		tree.getSelectionModel().setSelectionMode( TreeSelectionModel.SINGLE_TREE_SELECTION );
 
-		DefaultTreeCellRenderer renderer = new DefaultTreeCellRenderer();
+		final DefaultTreeCellRenderer renderer = new DefaultTreeCellRenderer();
 		renderer.setIcon( null );
 		renderer.setLeafIcon( null );
 		renderer.setOpenIcon( null );
 		renderer.setClosedIcon( null );
-		Color bg = renderer.getBackgroundSelectionColor();
+		final Color bg = renderer.getBackgroundSelectionColor();
 		tree.setBackgroundSelectionColor( bg );
 		tree.setCellRenderer( renderer );
 
@@ -139,33 +158,50 @@ public class SettingsPanel extends JPanel
 		final JPanel content = new JPanel( new BorderLayout() );
 		content.add( breadcrumbs, BorderLayout.NORTH );
 		content.add( pages, BorderLayout.CENTER );
-		content.add( buttons, BorderLayout.SOUTH );
+		content.setBorder( new EmptyBorder( 10, 0, 10, 0 ) );
 
 		final JScrollPane treeScrollPane = new JScrollPane( tree );
 		treeScrollPane.setPreferredSize( new Dimension( 500, 500 ) );
+		treeScrollPane.setBorder( new MatteBorder( 0, 0, 0, 1, Color.LIGHT_GRAY ) );
+//		treeScrollPane.setBorder( new EmptyBorder( 0, 0, 0, 0 ) );
 
 		final JSplitPane splitPane = new JSplitPane( JSplitPane.HORIZONTAL_SPLIT, treeScrollPane, content );
 		splitPane.setResizeWeight( 0 );
 		splitPane.setContinuousLayout( true );
-		splitPane.setDividerSize( 5 );
+		splitPane.setDividerSize( 10 );
 		splitPane.setDividerLocation( 300 );
+		splitPane.setBorder( new MatteBorder( 0, 0, 1, 0, Color.LIGHT_GRAY ) );
+//		splitPane.setBorder( new EmptyBorder( 0, 0, 0, 0 ) );
 
 		this.setLayout( new BorderLayout() );
 		this.add( splitPane, BorderLayout.CENTER );
 
-		cancel.addActionListener( e -> getPages().forEach( SettingsPage::cancel ) );
-		apply.addActionListener( e -> getPages().forEach( SettingsPage::apply ) );
-		ok.addActionListener( e -> getPages().forEach( SettingsPage::apply ) );
+		buttons.setBorder( new EmptyBorder( 10, 0, 5, 10 ) );
+		this.add( buttons, BorderLayout.SOUTH );
+
+		cancel.addActionListener( e -> {
+			getPages().forEach( SettingsPage::cancel );
+		} );
+		ok.addActionListener( e -> {
+			getPages().forEach( SettingsPage::apply );
+		} );
+
+		apply.setEnabled( false );
+		modificationListener = () -> apply.setEnabled( true );
+		apply.addActionListener( e -> {
+			apply.setEnabled( false );
+			getPages().forEach( SettingsPage::apply );
+		} );
 	}
 
 	private ArrayList< SettingsPage > getPages()
 	{
-		ArrayList< SettingsPage > list = new ArrayList<>();
+		final ArrayList< SettingsPage > list = new ArrayList<>();
 		getPages( root, list );
 		return list;
 	}
 
-	private void getPages( DefaultMutableTreeNode node, ArrayList< SettingsPage > pages )
+	private void getPages( final DefaultMutableTreeNode node, final ArrayList< SettingsPage > pages )
 	{
 		final SettingsNodeData data = ( SettingsNodeData ) node.getUserObject();
 		if ( data.page != null )
@@ -194,7 +230,7 @@ public class SettingsPanel extends JPanel
 				}
 			} );
 			breadcrumbs.add( label, 0 );
-			DefaultMutableTreeNode parent = ( DefaultMutableTreeNode ) current.getParent();
+			final DefaultMutableTreeNode parent = ( DefaultMutableTreeNode ) current.getParent();
 			if ( parent != root )
 			{
 				label = new JLabel( " \u25b8 " );
@@ -232,6 +268,8 @@ public class SettingsPanel extends JPanel
 
 	static class FullWidthSelectionJTree extends JTree
 	{
+		private static final long serialVersionUID = 1L;
+
 		private Color backgroundSelectionColor;
 
 		FullWidthSelectionJTree( final TreeModel newModel )
@@ -247,15 +285,15 @@ public class SettingsPanel extends JPanel
 		}
 
 		@Override
-		public void paintComponent( Graphics g )
+		public void paintComponent( final Graphics g )
 		{
 			final int[] rows = getSelectionRows();
 			if ( rows != null )
 			{
 				g.setColor( backgroundSelectionColor );
-				for ( int i : rows )
+				for ( final int i : rows )
 				{
-					Rectangle r = getRowBounds( i );
+					final Rectangle r = getRowBounds( i );
 					g.fillRect( 0, r.y, getWidth(), r.height );
 				}
 			}

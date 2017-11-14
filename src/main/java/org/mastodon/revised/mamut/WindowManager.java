@@ -14,11 +14,13 @@ import java.util.function.Consumer;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
+import org.mastodon.app.ui.settings.ModificationListener;
 import org.mastodon.app.ui.settings.SettingsPage;
 import org.mastodon.revised.model.mamut.Model;
 import org.mastodon.revised.model.mamut.Spot;
 import org.mastodon.revised.ui.SelectionActions;
 import org.mastodon.revised.util.ToggleDialogAction;
+import org.mastodon.util.Listeners;
 import org.mastodon.views.context.ContextProvider;
 import org.scijava.ui.behaviour.KeyPressedManager;
 import org.scijava.ui.behaviour.io.InputTriggerConfig;
@@ -127,8 +129,6 @@ public class WindowManager
 				appModel.getAppActions().updateKeyConfig( keyconf );
 		} );
 		settings.addPage( page );
-		settings.addPage( page );
-		settings.addPage( page );
 		final ToggleDialogAction tooglePreferencesDialogAction = new ToggleDialogAction( "Preferences", settings );
 		appModel.getAppActions().namedAction( tooglePreferencesDialogAction, "meta COMMA" );
 
@@ -136,16 +136,19 @@ public class WindowManager
 	}
 
 	// TODO FIX HACK
-	static class DefaultSettingsPage implements SettingsPage
+	public static class DefaultSettingsPage implements SettingsPage
 	{
 		private final String treePath;
 
 		private final JPanel panel;
 
+		private final Listeners.List< ModificationListener > modificationListeners;
+
 		public DefaultSettingsPage( final String treePath, final JPanel panel )
 		{
 			this.treePath = treePath;
 			this.panel = panel;
+			modificationListeners = new Listeners.SynchronizedList<>();
 		}
 
 		@Override
@@ -158,6 +161,17 @@ public class WindowManager
 		public JPanel getJPanel()
 		{
 			return panel;
+		}
+
+		public void notifyModified()
+		{
+			modificationListeners.list.forEach( ModificationListener::modified );
+		}
+
+		@Override
+		public Listeners< ModificationListener > modificationListeners()
+		{
+			return modificationListeners;
 		}
 
 		protected final ArrayList< Runnable > runOnApply = new ArrayList<>();

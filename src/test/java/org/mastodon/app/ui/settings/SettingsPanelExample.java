@@ -11,6 +11,7 @@ import java.util.Set;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JPanel;
+import org.mastodon.util.Listeners;
 import org.scijava.ui.behaviour.io.InputTriggerConfig;
 import org.scijava.ui.behaviour.io.InputTriggerDescription;
 import org.scijava.ui.behaviour.io.VisualEditorPanel;
@@ -24,10 +25,14 @@ public class SettingsPanelExample
 
 		private final JPanel panel;
 
+		private final Listeners.List< ModificationListener > modificationListeners;
+
 		public DummySettingsPage( String treePath )
 		{
 			this.treePath = treePath;
 			panel = new JPanel( new BorderLayout() );
+			modificationListeners = new Listeners.SynchronizedList<>();
+
 			final JButton button = new JButton( treePath );
 			button.setEnabled( false );
 			panel.add( button, BorderLayout.CENTER );
@@ -43,6 +48,12 @@ public class SettingsPanelExample
 		public JPanel getJPanel()
 		{
 			return panel;
+		}
+
+		@Override
+		public Listeners< ModificationListener > modificationListeners()
+		{
+			return modificationListeners;
 		}
 
 		@Override
@@ -62,10 +73,13 @@ public class SettingsPanelExample
 
 		private final JPanel panel;
 
+		private final Listeners.List< ModificationListener > modificationListeners;
+
 		public DefaultSettingsPage( String treePath, JPanel panel )
 		{
 			this.treePath = treePath;
 			this.panel = panel;
+			modificationListeners = new Listeners.SynchronizedList<>();
 		}
 
 		@Override
@@ -78,6 +92,12 @@ public class SettingsPanelExample
 		public JPanel getJPanel()
 		{
 			return panel;
+		}
+
+		@Override
+		public Listeners< ModificationListener > modificationListeners()
+		{
+			return modificationListeners;
 		}
 
 		@Override
