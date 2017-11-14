@@ -109,6 +109,7 @@ public class TrackSchemeStyleEditorPanel extends JPanel implements UpdateListene
 	public void trackSchemeStyleChanged()
 	{
 		styleElements.forEach( StyleElement::update );
+		repaint();
 	}
 
 	private interface StyleElement
@@ -148,13 +149,16 @@ public class TrackSchemeStyleEditorPanel extends JPanel implements UpdateListene
 	{
 		private final String label;
 
+		private final ColorIcon icon;
+
 		private JButton button;
 
 		public ColorSetter( final String label )
 		{
 			this.label = label;
 
-			button = new JButton( label, new ColorIcon( getColor() ) );
+			icon = new ColorIcon( getColor() );
+			button = new JButton( label, icon );
 			button.setOpaque( false );
 			button.setContentAreaFilled( false );
 			button.setBorderPainted( false );
@@ -176,7 +180,8 @@ public class TrackSchemeStyleEditorPanel extends JPanel implements UpdateListene
 							final Color c = colorChooser.getColor();
 							if ( c != null )
 							{
-								button.setIcon( new ColorIcon( c ) );
+								icon.setColor( c );
+								button.repaint();
 								setColor( c );
 							}
 						}
@@ -204,7 +209,8 @@ public class TrackSchemeStyleEditorPanel extends JPanel implements UpdateListene
 		@Override
 		public void update()
 		{
-			button.setIcon( new ColorIcon( getColor() ) );
+//			if ( ! icon.color.equals( getColor() ) )
+				icon.setColor( getColor() );
 		}
 	}
 
@@ -258,7 +264,8 @@ public class TrackSchemeStyleEditorPanel extends JPanel implements UpdateListene
 		@Override
 		public void update()
 		{
-			checkbox.setSelected( get() );
+			if ( get() != checkbox.isSelected() )
+				checkbox.setSelected( get() );
 		}
 	}
 
@@ -323,7 +330,7 @@ public class TrackSchemeStyleEditorPanel extends JPanel implements UpdateListene
 
 		private final int pad = 2;
 
-		private final Color color;
+		private Color color;
 
 		public ColorIcon( final Color color )
 		{
@@ -338,6 +345,11 @@ public class TrackSchemeStyleEditorPanel extends JPanel implements UpdateListene
 			g2d.setColor( color );
 			// g2d.fillOval( x, y, size, size );
 			g2d.fill( new RoundRectangle2D.Float( x + pad, y + pad, size, size, 5, 5 ) );
+		}
+
+		public void setColor( final Color color )
+		{
+			this.color = color;
 		}
 
 		@Override
