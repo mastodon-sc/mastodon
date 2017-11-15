@@ -155,6 +155,37 @@ public class ConstrainScreenTransform
 		transform.set( minX, maxX, transform.getMinY(), transform.getMaxY(), screenWidth, transform.getScreenHeight() );
 	}
 
+	/**
+	 * Zoom out in X to the maximally allowed width.
+	 *
+	 * @param transform
+	 *            the transform to modify.
+	 * @param maxSizeX
+	 *            the maximal allowed width.
+	 * @param minBoundX
+	 *            the X min bound.
+	 * @param maxBoundX
+	 *            the X max bound.
+	 * @param borderRatioX
+	 *            the X border ratio to limit moving out the visible screen.
+	 */
+	public static void zoomOutFullyY(
+			final ScreenTransform transform,
+			final double maxSizeY,
+			final double minBoundY,
+			final double maxBoundY,
+			final double borderRatioY )
+	{
+		final int screenHeight = transform.getScreenHeight();
+		final double scaleY = maxSizeY / ( screenHeight - 1 );
+		final double borderY = scaleY * screenHeight * borderRatioY;
+		final double h = maxSizeY;
+		final double addh = Math.max( borderY, h - ( maxBoundY - minBoundY ) - borderY );
+		final double minY = minBoundY - addh;
+		final double maxY = maxBoundY + addh;
+		transform.set( transform.getMinX(), transform.getMaxX(), minY, maxY, transform.getScreenWidth(), screenHeight );
+	}
+
 
 	private static final double JITTER_EPSILON = 0.0000000001;
 
