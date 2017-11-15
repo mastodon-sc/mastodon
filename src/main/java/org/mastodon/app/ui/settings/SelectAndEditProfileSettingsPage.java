@@ -263,8 +263,8 @@ public class SelectAndEditProfileSettingsPage< T extends SelectAndEditProfileSet
 			if ( selected != null )
 			{
 				final T duplicate = manager.duplicate( selected.profile );
-				manager.select( duplicate );
 				editor.storeProfile( duplicate );
+				manager.select( duplicate );
 				editor.loadProfile( selected.profile );
 				makeModel();
 			}
