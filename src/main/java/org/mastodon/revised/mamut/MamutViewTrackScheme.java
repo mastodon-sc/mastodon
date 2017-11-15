@@ -17,9 +17,13 @@ import org.mastodon.revised.trackscheme.TrackSchemeContextListener;
 import org.mastodon.revised.trackscheme.TrackSchemeEdge;
 import org.mastodon.revised.trackscheme.TrackSchemeGraph;
 import org.mastodon.revised.trackscheme.TrackSchemeVertex;
+import org.mastodon.revised.trackscheme.display.AbstractTrackSchemeOverlay.TrackSchemeOverlayFactory;
 import org.mastodon.revised.trackscheme.display.TrackSchemeEditBehaviours;
 import org.mastodon.revised.trackscheme.display.TrackSchemeFrame;
 import org.mastodon.revised.trackscheme.display.TrackSchemeOptions;
+import org.mastodon.revised.trackscheme.display.style.DefaultTrackSchemeOverlay;
+import org.mastodon.revised.trackscheme.display.style.TrackSchemeStyle;
+import org.mastodon.revised.trackscheme.display.style.TrackSchemeStyle.UpdateListener;
 import org.mastodon.revised.trackscheme.wrap.DefaultModelGraphProperties;
 import org.mastodon.revised.ui.HighlightBehaviours;
 import org.mastodon.revised.ui.SelectionActions;
@@ -55,9 +59,15 @@ class MamutViewTrackScheme extends MamutView< TrackSchemeGraph< Spot, Link >, Tr
 		/*
 		 * show TrackSchemeFrame
 		 */
+		final TrackSchemeStyle forwardDefaultStyle = appModel.getTrackSchemeStyleManager().getForwardDefaultStyle();
+		final TrackSchemeOverlayFactory overlayFactory = ( graph, highlight, focus, options ) -> new DefaultTrackSchemeOverlay(
+				graph, highlight, focus, options,
+				forwardDefaultStyle );
+
 		final TrackSchemeOptions options = TrackSchemeOptions.options()
 				.inputTriggerConfig( keyconf )
-				.shareKeyPressedEvents( keyPressedManager );
+				.shareKeyPressedEvents( keyPressedManager )
+				.trackSchemeOverlayFactory( overlayFactory );
 		final TrackSchemeFrame frame = new TrackSchemeFrame(
 				viewGraph,
 				highlightModel,
@@ -72,6 +82,10 @@ class MamutViewTrackScheme extends MamutView< TrackSchemeGraph< Spot, Link >, Tr
 		frame.getTrackschemePanel().setTimepointRange( appModel.getMinTimepoint(), appModel.getMaxTimepoint() );
 		frame.getTrackschemePanel().graphChanged();
 		contextListener.setContextListener( frame.getTrackschemePanel() );
+
+		final UpdateListener updateListener = () -> frame.getTrackschemePanel().repaint();
+		forwardDefaultStyle.addUpdateListener( updateListener );
+		onClose( () -> forwardDefaultStyle.removeUpdateListener( updateListener ) );
 
 		setFrame( frame );
 		frame.setVisible( true );
@@ -113,21 +127,6 @@ class MamutViewTrackScheme extends MamutView< TrackSchemeGraph< Spot, Link >, Tr
 				modelGraph,
 				modelGraph.getGraphIdBimap(),
 				model );
-
-		// TODO revise
-		// TrackSchemeStyleDialog triggered by "R"
-		// TODO
-		// TODO
-		// TODO
-		// TODO
-		// TODO
-		// TODO
-//		final String TRACK_SCHEME_STYLE_SETTINGS = "render settings";
-//		final TrackSchemeStyleChooser styleChooser = new TrackSchemeStyleChooser( frame, frame.getTrackschemePanel() );
-//		final JDialog styleDialog = styleChooser.getDialog();
-//		final Actions actions = new Actions( keyconf, "mamut" );
-//		actions.install( frame.getKeybindings(), "mamut" );
-//		actions.namedAction( new ToggleDialogAction( TRACK_SCHEME_STYLE_SETTINGS, styleDialog ), "R" );
 
 		frame.getTrackschemePanel().repaint();
 	}

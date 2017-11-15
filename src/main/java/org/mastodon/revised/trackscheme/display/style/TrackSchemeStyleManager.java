@@ -36,6 +36,16 @@ public class TrackSchemeStyleManager
 
 	private TrackSchemeStyle defaultStyle;
 
+	/**
+	 * A {@code TrackSchemeStyle} that has the same properties as the default
+	 * style. In contrast to defaultStyle this will always refer to the same
+	 * object, so a trackscheme can just use this one style to listen for
+	 * changes and for painting.
+	 */
+	private final TrackSchemeStyle forwardDefaultStyle;
+
+	private final TrackSchemeStyle.UpdateListener updateForwardDefaultListeners;
+
 	public TrackSchemeStyleManager()
 	{
 		this( true );
@@ -46,19 +56,25 @@ public class TrackSchemeStyleManager
 		builtinStyles = Collections.unmodifiableList( new ArrayList<>( TrackSchemeStyle.defaults ) );
 		userStyles = new ArrayList<>();
 		defaultStyle = builtinStyles.get( 0 );
+		forwardDefaultStyle = TrackSchemeStyle.defaultStyle().copy();
+		updateForwardDefaultListeners = () -> forwardDefaultStyle.set( defaultStyle );
+		defaultStyle.addUpdateListener( updateForwardDefaultListeners );
 		if ( loadStyles )
 			loadStyles();
 	}
 
 	public synchronized void setDefaultStyle( final TrackSchemeStyle style )
 	{
+		defaultStyle.removeUpdateListener( updateForwardDefaultListeners );
 		defaultStyle = style;
+		forwardDefaultStyle.set( defaultStyle );
+		defaultStyle.addUpdateListener( updateForwardDefaultListeners );
 	}
 
 	public synchronized void remove( final TrackSchemeStyle style )
 	{
 		if ( defaultStyle.equals( style ) )
-			defaultStyle = builtinStyles.get( 0 );
+			setDefaultStyle( builtinStyles.get( 0 ) );
 		userStyles.remove( style );
 	}
 
@@ -114,6 +130,15 @@ public class TrackSchemeStyleManager
 	public TrackSchemeStyle getDefaultStyle()
 	{
 		return defaultStyle;
+	}
+
+	/**
+	 * Returns a final {@link TrackSchemeStyle} instance that always has the
+	 * same properties as the default style.
+	 */
+	public TrackSchemeStyle getForwardDefaultStyle()
+	{
+		return forwardDefaultStyle;
 	}
 
 	private boolean nameExists( final String name )

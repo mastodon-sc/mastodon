@@ -10,6 +10,7 @@ import javax.swing.JFrame;
 import org.mastodon.revised.bdv.SharedBigDataViewerData;
 import org.mastodon.revised.mamut.feature.MamutFeatureComputerService;
 import org.mastodon.revised.model.mamut.Model;
+import org.mastodon.revised.trackscheme.display.style.TrackSchemeStyleManager;
 import org.mastodon.revised.ui.util.FileChooser;
 import org.mastodon.revised.ui.util.XmlFileFilter;
 import org.mastodon.revised.util.ToggleDialogAction;
@@ -190,6 +191,7 @@ public class ProjectManager
 
 		final InputTriggerConfig keyconf = windowManager.getKeyConfig();
 		final KeyPressedManager keyPressedManager = windowManager.getKeyPressedManager();
+		final TrackSchemeStyleManager trackSchemeStyleManager = windowManager.getTrackSchemeStyleManager();
 		final ViewerOptions options = ViewerOptions.options()
 				.inputTriggerConfig( keyconf )
 				.shareKeyPressedEvents( keyPressedManager );
@@ -198,7 +200,7 @@ public class ProjectManager
 				spimData,
 				options,
 				() -> windowManager.forEachBdvView( bdv -> bdv.requestRepaint() ) );
-		final MamutAppModel appModel = new MamutAppModel( model, sharedBdvData, keyconf, keyPressedManager );
+		final MamutAppModel appModel = new MamutAppModel( model, sharedBdvData, keyconf, keyPressedManager, trackSchemeStyleManager );
 
 		windowManager.setAppModel( appModel );
 
