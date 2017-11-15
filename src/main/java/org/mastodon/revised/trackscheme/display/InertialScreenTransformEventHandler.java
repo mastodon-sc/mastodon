@@ -564,6 +564,47 @@ public class InertialScreenTransformEventHandler
 		}
 	}
 
+	public void zoomTo( final double lx1, final double lx2, final double ly1, final double ly2 )
+	{
+		synchronized ( transform )
+		{
+			tstart.set( transform );
+		}
+		tend.set( tstart );
+		if ( ConstrainScreenTransform.hasMinSizeX( tstart, MIN_SIBLINGS_ON_CANVAS ) && ConstrainScreenTransform.hasMinSizeY( tstart, MIN_TIMEPOINTS_ON_CANVAS ) )
+		{
+			// Unzoom fully.
+			ConstrainScreenTransform.zoomOutFullyX(
+					tend,
+					maxSizeX,
+					boundXMin, boundXMax,
+					borderRatioX );
+			ConstrainScreenTransform.zoomOutFullyY(
+					tend,
+					maxSizeY,
+					boundYMin, boundYMax,
+					borderRatioY );
+		}
+		else
+		{
+			final double xmin = Math.min( lx1, lx2 );
+			final double xmax = Math.max( lx1, lx2 );
+			final double ymin = Math.min( ly1, ly2 );
+			final double ymax = Math.max( ly1, ly2 );
+			tend.set( xmin, xmax, ymin, ymax, tstart.getScreenWidth(), tstart.getScreenHeight() );
+		}
+
+		constrainTransform( tend );
+		ConstrainScreenTransform.removeJitter( tend, tstart );
+		if ( !tend.equals( tstart ) )
+		{
+			stayFullyZoomedOut = false;
+			animator = new InterpolateScreenTransformAnimator( tstart, tend, 200 );
+			runAnimation();
+		}
+	}
+
+
 	private void animate()
 	{
 		final long t = System.currentTimeMillis();
