@@ -97,6 +97,9 @@ public class SettingsPanel extends JPanel
 		data.page = page;
 		tree.expandPath( new TreePath( root ) );
 
+		if ( pages.getComponents().length == 0 )
+			tree.getSelectionModel().setSelectionPath( new TreePath( model.getPathToRoot( current ) ) );
+
 		pages.add( data.page.getTreePath(), data.page.getJPanel() );
 		pages.revalidate();
 		pages.repaint();
