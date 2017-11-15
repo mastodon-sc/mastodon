@@ -98,6 +98,7 @@ public class TrackSchemeStyleEditorPanel extends JPanel
 		previewPanel.setTimepointRange( 0, 7 );
 		timepoint.setTimepoint( 2 );
 		previewPanel.graphChanged();
+		previewPanel.getDisplay().setFocusable( false );
 
 		style.addUpdateListener( () -> {
 			previewPanel.graphChanged();
@@ -208,6 +209,7 @@ public class TrackSchemeStyleEditorPanel extends JPanel
 			button.setMargin( new Insets( 0, 0, 0, 0 ) );
 			button.setBorder( new EmptyBorder( 2, 5, 2, 2 ) );
 			button.setHorizontalAlignment( SwingConstants.LEFT );
+			button.setFocusable( false );
 			button.addActionListener( new ActionListener()
 			{
 				@Override
@@ -276,6 +278,7 @@ public class TrackSchemeStyleEditorPanel extends JPanel
 		public BooleanSetter( final String label )
 		{
 			checkbox = new JCheckBox( label, get() );
+			checkbox.setFocusable( false );
 			checkbox.addActionListener( ( e ) -> set( checkbox.isSelected() ) );
 		}
 
