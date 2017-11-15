@@ -165,18 +165,29 @@ public class TrackSchemeStyleManager
 			final FileReader input = new FileReader( filename );
 			final Yaml yaml = TrackSchemeStyleIO.createYaml();
 			final Iterable< Object > objs = yaml.loadAll( input );
+			String defaultStyleName = null;
 			for ( final Object obj : objs )
 			{
-				final TrackSchemeStyle ts = ( TrackSchemeStyle ) obj;
-				if ( null != ts )
+				if ( obj instanceof String )
 				{
-					// sanity check: style names must be unique
-					if ( names.add( ts.getName() ) )
-						userStyles.add( ts );
-					else
-						System.out.println( "Discarded style with duplicate name \"" +ts.getName() + "\".");
+					defaultStyleName = ( String ) obj;
+					System.out.println( "TrackSchemeStyleManager.loadStyles" );
+					System.out.println( defaultStyleName );
+				}
+				else if ( obj instanceof TrackSchemeStyle )
+				{
+					final TrackSchemeStyle ts = ( TrackSchemeStyle ) obj;
+					if ( null != ts )
+					{
+						// sanity check: style names must be unique
+						if ( names.add( ts.getName() ) )
+							userStyles.add( ts );
+						else
+							System.out.println( "Discarded style with duplicate name \"" + ts.getName() + "\"." );
+					}
 				}
 			}
+			setDefaultStyle( styleForName( defaultStyleName ).orElseGet( () -> builtinStyles.get( 0 ) ) );
 		}
 		catch ( final FileNotFoundException e )
 		{
@@ -196,7 +207,10 @@ public class TrackSchemeStyleManager
 			mkdirs( filename );
 			final FileWriter output = new FileWriter( filename );
 			final Yaml yaml = TrackSchemeStyleIO.createYaml();
-			yaml.dumpAll( userStyles.iterator(), output );
+			final ArrayList< Object > objects = new ArrayList<>();
+			objects.add( defaultStyle.getName() );
+			objects.addAll( userStyles );
+			yaml.dumpAll( objects.iterator(), output );
 			output.close();
 		}
 		catch ( final IOException e )
