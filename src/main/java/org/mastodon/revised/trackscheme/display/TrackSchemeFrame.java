@@ -36,8 +36,6 @@ public class TrackSchemeFrame extends ViewFrame
 
 	private final TrackSchemePanel trackschemePanel;
 
-	private final EditFocusVertexBehaviour editFocusVertex;
-
 	public TrackSchemeFrame(
 			final TrackSchemeGraph< ?, ? > graph,
 			final HighlightModel< TrackSchemeVertex, TrackSchemeEdge > highlight,
@@ -93,12 +91,6 @@ public class TrackSchemeFrame extends ViewFrame
 		final InputTriggerConfig inputConf = getKeyConfig( optional );
 		trackschemePanel.getNavigator().installBehaviourBindings( triggerbindings, inputConf );
 		trackschemePanel.getNavigator().installActionBindings( keybindings, inputConf, NavigatorEtiquette.FINDER_LIKE );
-
-		editFocusVertex = new EditFocusVertexBehaviour( focus, graph, undoPointMarker, trackschemePanel.getDisplay() );
-		trackschemePanel.getDisplay().addTransformListener( editFocusVertex );
-		trackschemePanel.getOffsetDecorations().addOffsetHeadersListener( editFocusVertex );
-
-		TrackSchemeActions.installActionBindings( keybindings, this, inputConf );
 	}
 
 	protected InputTriggerConfig getKeyConfig( final TrackSchemeOptions optional )
@@ -110,11 +102,6 @@ public class TrackSchemeFrame extends ViewFrame
 	public TrackSchemePanel getTrackschemePanel()
 	{
 		return trackschemePanel;
-	}
-
-	public EditFocusVertexBehaviour getEditFocusVertex()
-	{
-		return editFocusVertex;
 	}
 
 	public InputActionBindings getKeybindings()

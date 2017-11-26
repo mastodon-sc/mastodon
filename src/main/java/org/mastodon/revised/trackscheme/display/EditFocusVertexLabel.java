@@ -23,23 +23,32 @@ import javax.swing.KeyStroke;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 
+import org.mastodon.model.FocusModel;
 import org.mastodon.revised.trackscheme.ScreenTransform;
 import org.mastodon.revised.trackscheme.TrackSchemeEdge;
 import org.mastodon.revised.trackscheme.TrackSchemeGraph;
 import org.mastodon.revised.trackscheme.TrackSchemeVertex;
 import org.mastodon.revised.trackscheme.display.OffsetHeaders.OffsetHeadersListener;
-import org.mastodon.model.FocusModel;
 import org.mastodon.undo.UndoPointMarker;
+import org.scijava.ui.behaviour.util.AbstractNamedAction;
+import org.scijava.ui.behaviour.util.Actions;
 
 import net.imglib2.ui.TransformListener;
 
 /**
+ * Edit vertex label in TrackScheme.
  *
- * @author Jean-Yves Tinevez &lt;jeanyves.tinevez@gmail.com&gt;
+ * @author Jean-Yves Tinevez
  */
-public class EditFocusVertexBehaviour implements Runnable, TransformListener< ScreenTransform >, OffsetHeadersListener
+public class EditFocusVertexLabel extends AbstractNamedAction implements Runnable, TransformListener< ScreenTransform >, OffsetHeadersListener
 {
+	private static final long serialVersionUID = 1L;
+
 	private static final Font FONT = new Font( "SansSerif", Font.BOLD, 10 );
+
+	private static final String[] EDIT_FOCUS_LABEL_KEYS = new String[] { "ENTER" };
+
+	private static final String EDIT_FOCUS_LABEL = "edit vertex label";
 
 	private final TrackSchemeGraph< ?, ? > graph;
 
@@ -65,18 +74,37 @@ public class EditFocusVertexBehaviour implements Runnable, TransformListener< Sc
 	 */
 	private int headerHeight;
 
-	public EditFocusVertexBehaviour(
+	public static void installActionBindings(
+			final Actions actions,
+			final TrackSchemePanel panel,
+			final FocusModel< TrackSchemeVertex, TrackSchemeEdge > focus,
+			final UndoPointMarker undoPointMarker )
+	{
+		final EditFocusVertexLabel editFocusVertexBehaviour = new EditFocusVertexLabel( focus, panel.getGraph(), undoPointMarker, panel );
+		panel.getDisplay().addTransformListener( editFocusVertexBehaviour );
+		panel.getOffsetDecorations().addOffsetHeadersListener( editFocusVertexBehaviour );
+		actions.namedAction( editFocusVertexBehaviour, EDIT_FOCUS_LABEL_KEYS );
+	}
+
+	private EditFocusVertexLabel(
 			final FocusModel< TrackSchemeVertex, TrackSchemeEdge > focus,
 			final TrackSchemeGraph< ?, ? > graph,
 			final UndoPointMarker undoPointMarker,
 			final JComponent display )
 	{
+		super( EDIT_FOCUS_LABEL );
 		this.focus = focus;
 		this.graph = graph;
 		this.undoPointMarker = undoPointMarker;
 		this.display = display;
 		this.screenTransform = new ScreenTransform();
 		this.fontMetrics = display.getFontMetrics( FONT );
+	}
+
+	@Override
+	public void actionPerformed( final ActionEvent e )
+	{
+		run();
 	}
 
 	@Override
@@ -203,7 +231,7 @@ public class EditFocusVertexBehaviour implements Runnable, TransformListener< Sc
 		private void blockKeys()
 		{
 			// Get all keystrokes that are mapped to actions in higher components
-			final ArrayList< KeyStroke > allTableKeys = new ArrayList< KeyStroke >();
+			final ArrayList< KeyStroke > allTableKeys = new ArrayList< >();
 			for ( Container c = this; c != null; c = c.getParent() )
 			{
 				if ( c instanceof JComponent )
