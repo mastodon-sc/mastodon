@@ -26,7 +26,6 @@ import javax.swing.SwingUtilities;
 import org.mastodon.model.FocusModel;
 import org.mastodon.revised.trackscheme.ScreenTransform;
 import org.mastodon.revised.trackscheme.TrackSchemeEdge;
-import org.mastodon.revised.trackscheme.TrackSchemeGraph;
 import org.mastodon.revised.trackscheme.TrackSchemeVertex;
 import org.mastodon.revised.trackscheme.display.OffsetHeaders.OffsetHeadersListener;
 import org.mastodon.undo.UndoPointMarker;
@@ -50,11 +49,9 @@ public class EditFocusVertexLabel extends AbstractNamedAction implements Runnabl
 
 	private static final String EDIT_FOCUS_LABEL = "edit vertex label";
 
-	private final TrackSchemeGraph< ?, ? > graph;
-
 	private final UndoPointMarker undoPointMarker;
 
-	private final JComponent display;
+	private final TrackSchemePanel panel;
 
 	private final ScreenTransform screenTransform;
 
@@ -74,13 +71,14 @@ public class EditFocusVertexLabel extends AbstractNamedAction implements Runnabl
 	 */
 	private int headerHeight;
 
+
 	public static void installActionBindings(
 			final Actions actions,
 			final TrackSchemePanel panel,
 			final FocusModel< TrackSchemeVertex, TrackSchemeEdge > focus,
 			final UndoPointMarker undoPointMarker )
 	{
-		final EditFocusVertexLabel editFocusVertexBehaviour = new EditFocusVertexLabel( focus, panel.getGraph(), undoPointMarker, panel );
+		final EditFocusVertexLabel editFocusVertexBehaviour = new EditFocusVertexLabel( focus, undoPointMarker, panel );
 		panel.getDisplay().addTransformListener( editFocusVertexBehaviour );
 		panel.getOffsetDecorations().addOffsetHeadersListener( editFocusVertexBehaviour );
 		actions.namedAction( editFocusVertexBehaviour, EDIT_FOCUS_LABEL_KEYS );
@@ -88,17 +86,15 @@ public class EditFocusVertexLabel extends AbstractNamedAction implements Runnabl
 
 	private EditFocusVertexLabel(
 			final FocusModel< TrackSchemeVertex, TrackSchemeEdge > focus,
-			final TrackSchemeGraph< ?, ? > graph,
 			final UndoPointMarker undoPointMarker,
-			final JComponent display )
+			final TrackSchemePanel panel )
 	{
 		super( EDIT_FOCUS_LABEL );
 		this.focus = focus;
-		this.graph = graph;
+		this.panel = panel;
 		this.undoPointMarker = undoPointMarker;
-		this.display = display;
 		this.screenTransform = new ScreenTransform();
-		this.fontMetrics = display.getFontMetrics( FONT );
+		this.fontMetrics = panel.getDisplay().getFontMetrics( FONT );
 	}
 
 	@Override
@@ -110,11 +106,11 @@ public class EditFocusVertexLabel extends AbstractNamedAction implements Runnabl
 	@Override
 	public void run()
 	{
-		final TrackSchemeVertex ref = graph.vertexRef();
+		final TrackSchemeVertex ref = panel.getGraph().vertexRef();
 		final TrackSchemeVertex vertex = focus.getFocusedVertex( ref );
 		if ( vertex == null )
 		{
-			graph.releaseRef( ref );
+			panel.getGraph().releaseRef( ref );
 			return;
 		}
 		if ( null != editor )
@@ -124,9 +120,9 @@ public class EditFocusVertexLabel extends AbstractNamedAction implements Runnabl
 
 		editor = new Editor( vertex );
 		// vertex ref will have to be released in the editor class.
-		display.add( editor );
+		panel.getDisplay().add( editor );
 		editor.blockKeys();
-		display.repaint();
+		panel.getDisplay().repaint();
 	}
 
 	@Override
@@ -139,7 +135,7 @@ public class EditFocusVertexLabel extends AbstractNamedAction implements Runnabl
 		if ( null != editor )
 		{
 			editor.reposition();
-			display.repaint();
+			panel.getDisplay().repaint();
 		}
 	}
 
@@ -267,16 +263,17 @@ public class EditFocusVertexLabel extends AbstractNamedAction implements Runnabl
 		{
 			vertex.setLabel( getText().trim() );
 			undoPointMarker.setUndoPoint();
+			panel.graphChanged();
 		}
 
 		private void kill()
 		{
 			if ( killed )
 				return;
-			display.remove( editor );
-			display.repaint();
-			display.requestFocusInWindow();
-			graph.releaseRef( vertex );
+			panel.getDisplay().remove( editor );
+			panel.repaint();
+			panel.getDisplay().requestFocusInWindow();
+			panel.getGraph().releaseRef( vertex );
 			killed = true;
 		}
 
@@ -292,8 +289,8 @@ public class EditFocusVertexLabel extends AbstractNamedAction implements Runnabl
 
 			final int h = fontMetrics.getHeight() + 10;
 			final int w = fontMetrics.stringWidth( getText() ) + 30;
-			final int x = Math.min( display.getWidth() - w, Math.max( 0, ( int ) screenPos[ 0 ] - w / 2 ) );
-			final int y = Math.min( display.getHeight() - h, Math.max( 0, ( int ) screenPos[ 1 ] - h / 2 ) );
+			final int x = Math.min( panel.getDisplay().getWidth() - w, Math.max( 0, ( int ) screenPos[ 0 ] - w / 2 ) );
+			final int y = Math.min( panel.getDisplay().getHeight() - h, Math.max( 0, ( int ) screenPos[ 1 ] - h / 2 ) );
 			setBounds( x, y, w, h );
 		}
 	}
