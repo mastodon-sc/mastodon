@@ -18,7 +18,7 @@ import org.mastodon.revised.trackscheme.TrackSchemeEdge;
 import org.mastodon.revised.trackscheme.TrackSchemeGraph;
 import org.mastodon.revised.trackscheme.TrackSchemeVertex;
 import org.mastodon.revised.trackscheme.display.AbstractTrackSchemeOverlay.TrackSchemeOverlayFactory;
-import org.mastodon.revised.trackscheme.display.EditFocusVertexLabel;
+import org.mastodon.revised.trackscheme.display.EditFocusVertexLabelAction;
 import org.mastodon.revised.trackscheme.display.ToggleLinkBehaviour;
 import org.mastodon.revised.trackscheme.display.TrackSchemeFrame;
 import org.mastodon.revised.trackscheme.display.TrackSchemeOptions;
@@ -122,11 +122,12 @@ class MamutViewTrackScheme extends MamutView< TrackSchemeGraph< Spot, Link >, Tr
 		ToggleLinkBehaviour.installActionBindings(
 				viewBehaviours,
 				frame.getTrackschemePanel(),
+				viewGraph,
 				frame.getTrackschemePanel().getGraphOverlay(),
 				modelGraph,
 				modelGraph.getGraphIdBimap(),
 				model );
-		EditFocusVertexLabel.installActionBindings(
+		EditFocusVertexLabelAction.installActionBindings(
 				viewActions,
 				frame.getTrackschemePanel(),
 				focusModel,

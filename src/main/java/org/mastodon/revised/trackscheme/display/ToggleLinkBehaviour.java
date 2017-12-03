@@ -25,27 +25,33 @@ import net.imglib2.ui.OverlayRenderer;
 import net.imglib2.ui.TransformListener;
 
 /**
- * Bahviour that allows for creating / deleting links directly in TrackScheme.
+ * Bahviour for creating / deleting links in TrackScheme views.
+ *
+ * @param <V>
+ *            vertex type.
+ * @param <E>
+ *            edge type.
  *
  * @author Jean-Yves Tinevez
- *
+ * @author Tobias Pietzsch
  */
 public class ToggleLinkBehaviour< V extends Vertex< E > & HasTimepoint, E extends Edge< V > >
 		extends AbstractNamedBehaviour
 		implements DragBehaviour
 {
-
-	private static final String TOGGLE_LINK = "toggle link";
+	public static final String TOGGLE_LINK = "toggle link";
 
 	private static final String[] TOGGLE_LINK_KEYS = new String[] { "L" };
 
-	public static final Color EDIT_GRAPH_OVERLAY_COLOR = Color.RED.darker();
+	private static final Color EDIT_GRAPH_OVERLAY_COLOR = Color.RED.darker();
 
-	public static final BasicStroke EDIT_GRAPH_OVERLAY_STROKE = new BasicStroke( 2f );
+	private static final BasicStroke EDIT_GRAPH_OVERLAY_STROKE = new BasicStroke( 2f );
 
-	public static final BasicStroke EDIT_GRAPH_OVERLAY_GHOST_STROKE = new BasicStroke(
+	private static final BasicStroke EDIT_GRAPH_OVERLAY_GHOST_STROKE = new BasicStroke(
 			1f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL,
 			1.0f, new float[] { 4f, 10f }, 0f );
+
+	private final TrackSchemeGraph< V, E > graph;
 
 	private final AbstractTrackSchemeOverlay renderer;
 
@@ -76,13 +82,12 @@ public class ToggleLinkBehaviour< V extends Vertex< E > & HasTimepoint, E extend
 	public static < V extends Vertex< E > & HasTimepoint, E extends Edge< V > > void installActionBindings(
 			final Behaviours behaviours,
 			final TrackSchemePanel panel,
+			final TrackSchemeGraph< V, E > graph,
 			final AbstractTrackSchemeOverlay renderer,
 			final ListenableGraph< V, E > modelGraph,
 			final GraphIdBimap< V, E > idBimap,
 			final UndoPointMarker undo )
 	{
-		@SuppressWarnings( "unchecked" )
-		final TrackSchemeGraph< V, E > graph = ( TrackSchemeGraph< V, E > ) panel.getGraph();
 		final ToggleLinkBehaviour< V, E > toggleLinkBehaviour = new ToggleLinkBehaviour< V, E >( panel, graph, renderer, modelGraph, idBimap, undo );
 		behaviours.namedBehaviour( toggleLinkBehaviour, TOGGLE_LINK_KEYS );
 
@@ -98,6 +103,7 @@ public class ToggleLinkBehaviour< V extends Vertex< E > & HasTimepoint, E extend
 	{
 		super( TOGGLE_LINK );
 		this.panel = panel;
+		this.graph = graph;
 		this.renderer = renderer;
 		this.modelGraph = modelGraph;
 		this.idBimap = idBimap;
@@ -117,7 +123,6 @@ public class ToggleLinkBehaviour< V extends Vertex< E > & HasTimepoint, E extend
 		ref1 = modelGraph.vertexRef();
 		ref2 = modelGraph.vertexRef();
 		edgeRef = modelGraph.edgeRef();
-
 	}
 
 	@Override
@@ -210,7 +215,6 @@ public class ToggleLinkBehaviour< V extends Vertex< E > & HasTimepoint, E extend
 
 	private class EditOverlay implements OverlayRenderer, TransformListener< ScreenTransform >
 	{
-
 		public boolean strongEdge;
 
 		/** The global coordinates to paint the link from. */

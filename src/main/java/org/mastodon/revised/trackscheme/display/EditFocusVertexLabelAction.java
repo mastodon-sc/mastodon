@@ -22,7 +22,7 @@ import javax.swing.JTextField;
 import javax.swing.KeyStroke;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
-
+import net.imglib2.ui.TransformListener;
 import org.mastodon.model.FocusModel;
 import org.mastodon.revised.trackscheme.ScreenTransform;
 import org.mastodon.revised.trackscheme.TrackSchemeEdge;
@@ -39,7 +39,7 @@ import net.imglib2.ui.TransformListener;
  *
  * @author Jean-Yves Tinevez
  */
-public class EditFocusVertexLabel extends AbstractNamedAction implements Runnable, TransformListener< ScreenTransform >, OffsetHeadersListener
+public class EditFocusVertexLabelAction extends AbstractNamedAction implements TransformListener< ScreenTransform >, OffsetHeadersListener
 {
 	private static final long serialVersionUID = 1L;
 
@@ -71,20 +71,19 @@ public class EditFocusVertexLabel extends AbstractNamedAction implements Runnabl
 	 */
 	private int headerHeight;
 
-
 	public static void installActionBindings(
 			final Actions actions,
 			final TrackSchemePanel panel,
 			final FocusModel< TrackSchemeVertex, TrackSchemeEdge > focus,
 			final UndoPointMarker undoPointMarker )
 	{
-		final EditFocusVertexLabel editFocusVertexBehaviour = new EditFocusVertexLabel( focus, undoPointMarker, panel );
-		panel.getDisplay().addTransformListener( editFocusVertexBehaviour );
-		panel.getOffsetDecorations().addOffsetHeadersListener( editFocusVertexBehaviour );
-		actions.namedAction( editFocusVertexBehaviour, EDIT_FOCUS_LABEL_KEYS );
+		final EditFocusVertexLabelAction editFocusVertexLabelAction = new EditFocusVertexLabelAction( focus, undoPointMarker, panel );
+		panel.getDisplay().addTransformListener( editFocusVertexLabelAction );
+		panel.getOffsetDecorations().addOffsetHeadersListener( editFocusVertexLabelAction );
+		actions.namedAction( editFocusVertexLabelAction, EDIT_FOCUS_LABEL_KEYS );
 	}
 
-	private EditFocusVertexLabel(
+	private EditFocusVertexLabelAction(
 			final FocusModel< TrackSchemeVertex, TrackSchemeEdge > focus,
 			final UndoPointMarker undoPointMarker,
 			final TrackSchemePanel panel )
@@ -99,12 +98,6 @@ public class EditFocusVertexLabel extends AbstractNamedAction implements Runnabl
 
 	@Override
 	public void actionPerformed( final ActionEvent e )
-	{
-		run();
-	}
-
-	@Override
-	public void run()
 	{
 		final TrackSchemeVertex ref = panel.getGraph().vertexRef();
 		final TrackSchemeVertex vertex = focus.getFocusedVertex( ref );
@@ -168,23 +161,11 @@ public class EditFocusVertexLabel extends AbstractNamedAction implements Runnabl
 			setBorder( BorderFactory.createLineBorder( Color.ORANGE, 1 ) );
 			setFont( FONT );
 			selectAll();
-			SwingUtilities.invokeLater( new Runnable()
-			{
-				@Override
-				public void run()
-				{
-					requestFocusInWindow();
-				}
-			} );
+			SwingUtilities.invokeLater( () -> requestFocusInWindow() );
 
-			addActionListener( new ActionListener()
-			{
-				@Override
-				public void actionPerformed( final ActionEvent e )
-				{
-					commit();
-					kill();
-				}
+			addActionListener( e -> {
+				commit();
+				kill();
 			} );
 			addKeyListener( new KeyListener()
 			{
@@ -217,7 +198,6 @@ public class EditFocusVertexLabel extends AbstractNamedAction implements Runnabl
 				public void focusGained( final FocusEvent e )
 				{}
 			} );
-
 		}
 
 		/**
@@ -227,7 +207,7 @@ public class EditFocusVertexLabel extends AbstractNamedAction implements Runnabl
 		private void blockKeys()
 		{
 			// Get all keystrokes that are mapped to actions in higher components
-			final ArrayList< KeyStroke > allTableKeys = new ArrayList< >();
+			final ArrayList< KeyStroke > allTableKeys = new ArrayList<>();
 			for ( Container c = this; c != null; c = c.getParent() )
 			{
 				if ( c instanceof JComponent )
