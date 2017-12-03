@@ -83,20 +83,17 @@ public class ToggleLinkBehaviour< V extends Vertex< E > & HasTimepoint, E extend
 			final Behaviours behaviours,
 			final TrackSchemePanel panel,
 			final TrackSchemeGraph< V, E > graph,
-			final AbstractTrackSchemeOverlay renderer,
 			final ListenableGraph< V, E > modelGraph,
 			final GraphIdBimap< V, E > idBimap,
 			final UndoPointMarker undo )
 	{
-		final ToggleLinkBehaviour< V, E > toggleLinkBehaviour = new ToggleLinkBehaviour< V, E >( panel, graph, renderer, modelGraph, idBimap, undo );
+		final ToggleLinkBehaviour< V, E > toggleLinkBehaviour = new ToggleLinkBehaviour< V, E >( panel, graph, modelGraph, idBimap, undo );
 		behaviours.namedBehaviour( toggleLinkBehaviour, TOGGLE_LINK_KEYS );
-
 	}
 
 	private ToggleLinkBehaviour(
 			final TrackSchemePanel panel,
 			final TrackSchemeGraph< V, E > graph,
-			final AbstractTrackSchemeOverlay renderer,
 			final ListenableGraph< V, E > modelGraph,
 			final GraphIdBimap< V, E > idBimap,
 			final UndoPointMarker undo )
@@ -104,7 +101,7 @@ public class ToggleLinkBehaviour< V extends Vertex< E > & HasTimepoint, E extend
 		super( TOGGLE_LINK );
 		this.panel = panel;
 		this.graph = graph;
-		this.renderer = renderer;
+		this.renderer = panel.getGraphOverlay();
 		this.modelGraph = modelGraph;
 		this.idBimap = idBimap;
 		this.undo = undo;

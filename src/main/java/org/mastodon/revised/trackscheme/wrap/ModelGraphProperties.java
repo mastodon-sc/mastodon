@@ -26,4 +26,6 @@ public interface ModelGraphProperties< V, E >
 
 	// TODO move to separate interface? ModelGraphModifyProperties?
 	public void setLabel( V v, String label );
+
+	public void notifyGraphChanged();
 }

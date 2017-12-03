@@ -12,6 +12,7 @@ import org.mastodon.collection.ref.IntRefArrayMap;
 import org.mastodon.collection.ref.RefSetImp;
 import org.mastodon.graph.Edge;
 import org.mastodon.graph.GraphChangeListener;
+import org.mastodon.graph.GraphChangeNotifier;
 import org.mastodon.graph.GraphIdBimap;
 import org.mastodon.graph.GraphListener;
 import org.mastodon.graph.ListenableReadOnlyGraph;
@@ -91,9 +92,11 @@ public class TrackSchemeGraph<
 				TrackSchemeGraph.TrackSchemeVertexPool,
 				TrackSchemeGraph.TrackSchemeEdgePool,
 				TrackSchemeVertex, TrackSchemeEdge, ByteMappedElement >
-	implements GraphListener< V, E >, GraphChangeListener, ViewGraph< V, E, TrackSchemeVertex, TrackSchemeEdge >
+	implements GraphListener< V, E >, GraphChangeNotifier, GraphChangeListener, ViewGraph< V, E, TrackSchemeVertex, TrackSchemeEdge >
 {
 	private final ListenableReadOnlyGraph< V, E > modelGraph;
+
+	private final ModelGraphProperties< V, E > modelGraphProperties;
 
 	private final ReentrantReadWriteLock lock;
 
@@ -187,6 +190,7 @@ public class TrackSchemeGraph<
 						initialCapacity,
 						new ModelGraphWrapper<>( idmap, modelGraphProperties ) ) ) );
 		this.modelGraph = modelGraph;
+		this.modelGraphProperties = modelGraphProperties;
 		this.lock = lock;
 		this.idmap = idmap;
 		idToTrackSchemeVertex =	new IntRefArrayMap<>( vertexPool );
@@ -308,9 +312,33 @@ public class TrackSchemeGraph<
 		return listeners;
 	}
 
+	public ReentrantReadWriteLock getLock()
+	{
+		return lock;
+	}
+
+	// TODO: remove
+	@Deprecated
 	public Lock readLock()
 	{
-		return lock.readLock();
+		throw new UnsupportedOperationException();
+	}
+
+	/*
+	 * GraphChangeNotifier
+	 */
+
+	/**
+	 * Triggers a {@link GraphChangeListener#graphChanged()} event.
+	 *
+	 * notifyGraphChanged() is not implicitly called in addVertex() etc because
+	 * we want to support batches of add/remove with one final
+	 * notifyGraphChanged() at the end.
+	 */
+	@Override
+	public void notifyGraphChanged()
+	{
+		modelGraphProperties.notifyGraphChanged();
 	}
 
 	/*

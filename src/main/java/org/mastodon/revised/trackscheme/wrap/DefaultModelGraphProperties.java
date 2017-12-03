@@ -25,4 +25,10 @@ public class DefaultModelGraphProperties< V extends Vertex< E > & HasTimepoint &
 	{
 		v.setLabel( label );
 	}
+
+	@Override
+	public void notifyGraphChanged()
+	{
+		throw new UnsupportedOperationException( "TODO" );
+	}
 }
