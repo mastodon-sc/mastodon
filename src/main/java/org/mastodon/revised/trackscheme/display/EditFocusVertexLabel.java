@@ -263,7 +263,7 @@ public class EditFocusVertexLabel extends AbstractNamedAction implements Runnabl
 		{
 			vertex.setLabel( getText().trim() );
 			undoPointMarker.setUndoPoint();
-			panel.graphChanged();
+			panel.entitiesAttributesChanged();
 		}
 
 		private void kill()
