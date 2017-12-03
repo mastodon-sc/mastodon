@@ -18,19 +18,21 @@ import org.mastodon.revised.trackscheme.TrackSchemeVertex;
 import org.mastodon.spatial.HasTimepoint;
 import org.mastodon.undo.UndoPointMarker;
 import org.scijava.ui.behaviour.DragBehaviour;
-import org.scijava.ui.behaviour.io.InputTriggerConfig;
+import org.scijava.ui.behaviour.util.AbstractNamedBehaviour;
 import org.scijava.ui.behaviour.util.Behaviours;
-import org.scijava.ui.behaviour.util.TriggerBehaviourBindings;
 
 import net.imglib2.ui.OverlayRenderer;
 import net.imglib2.ui.TransformListener;
 
 /**
- * @author Jean-Yves Tinevez &lt;jeanyves.tinevez@gmail.com&gt;
+ * Bahviour that allows for creating / deleting links directly in TrackScheme.
+ *
+ * @author Jean-Yves Tinevez
  *
  */
-public class TrackSchemeEditBehaviours< V extends Vertex< E > & HasTimepoint, E extends Edge< V > >
-		extends Behaviours
+public class ToggleLinkBehaviour< V extends Vertex< E > & HasTimepoint, E extends Edge< V > >
+		extends AbstractNamedBehaviour
+		implements DragBehaviour
 {
 
 	private static final String TOGGLE_LINK = "toggle link";
@@ -38,12 +40,12 @@ public class TrackSchemeEditBehaviours< V extends Vertex< E > & HasTimepoint, E 
 	private static final String[] TOGGLE_LINK_KEYS = new String[] { "L" };
 
 	public static final Color EDIT_GRAPH_OVERLAY_COLOR = Color.RED.darker();
+
 	public static final BasicStroke EDIT_GRAPH_OVERLAY_STROKE = new BasicStroke( 2f );
+
 	public static final BasicStroke EDIT_GRAPH_OVERLAY_GHOST_STROKE = new BasicStroke(
 			1f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL,
 			1.0f, new float[] { 4f, 10f }, 0f );
-
-	private final TrackSchemeGraph< V, E > graph;
 
 	private final AbstractTrackSchemeOverlay renderer;
 
@@ -57,22 +59,36 @@ public class TrackSchemeEditBehaviours< V extends Vertex< E > & HasTimepoint, E 
 
 	private final GraphIdBimap< V, E > idBimap;
 
+	private final TrackSchemeVertex source;
+
+	private final TrackSchemeVertex target;
+
+	private final TrackSchemeVertex tmp;
+
+	private boolean editing;
+
+	private final V ref1;
+
+	private final V ref2;
+
+	private final E edgeRef;
+
 	public static < V extends Vertex< E > & HasTimepoint, E extends Edge< V > > void installActionBindings(
-			final TriggerBehaviourBindings triggerBehaviourBindings,
-			final InputTriggerConfig config,
+			final Behaviours behaviours,
 			final TrackSchemePanel panel,
-			final TrackSchemeGraph< V, E > graph,
 			final AbstractTrackSchemeOverlay renderer,
 			final ListenableGraph< V, E > modelGraph,
 			final GraphIdBimap< V, E > idBimap,
 			final UndoPointMarker undo )
 	{
-		new TrackSchemeEditBehaviours<>( config, panel, graph, renderer, modelGraph, idBimap, undo )
-				.install( triggerBehaviourBindings, "graph-special" );
+		@SuppressWarnings( "unchecked" )
+		final TrackSchemeGraph< V, E > graph = ( TrackSchemeGraph< V, E > ) panel.getGraph();
+		final ToggleLinkBehaviour< V, E > toggleLinkBehaviour = new ToggleLinkBehaviour< V, E >( panel, graph, renderer, modelGraph, idBimap, undo );
+		behaviours.namedBehaviour( toggleLinkBehaviour, TOGGLE_LINK_KEYS );
+
 	}
 
-	private TrackSchemeEditBehaviours(
-			final InputTriggerConfig config,
+	private ToggleLinkBehaviour(
 			final TrackSchemePanel panel,
 			final TrackSchemeGraph< V, E > graph,
 			final AbstractTrackSchemeOverlay renderer,
@@ -80,9 +96,8 @@ public class TrackSchemeEditBehaviours< V extends Vertex< E > & HasTimepoint, E 
 			final GraphIdBimap< V, E > idBimap,
 			final UndoPointMarker undo )
 	{
-		super( config, new String[] { "ts" } );
+		super( TOGGLE_LINK );
 		this.panel = panel;
-		this.graph = graph;
 		this.renderer = renderer;
 		this.modelGraph = modelGraph;
 		this.idBimap = idBimap;
@@ -95,125 +110,100 @@ public class TrackSchemeEditBehaviours< V extends Vertex< E > & HasTimepoint, E 
 		renderer.addOverlayRenderer( overlay );
 		panel.getDisplay().addTransformListener( overlay );
 
-		// Behaviours.
-		behaviour( new ToggleLink(), TOGGLE_LINK, TOGGLE_LINK_KEYS );
+		source = graph.vertexRef();
+		target = graph.vertexRef();
+		tmp = graph.vertexRef();
+		editing = false;
+		ref1 = modelGraph.vertexRef();
+		ref2 = modelGraph.vertexRef();
+		edgeRef = modelGraph.edgeRef();
+
 	}
 
-	private class ToggleLink implements DragBehaviour
+	@Override
+	public void init( final int x, final int y )
 	{
-
-		private final TrackSchemeVertex source;
-
-		private final TrackSchemeVertex target;
-
-		private final TrackSchemeVertex tmp;
-
-
-		private boolean editing;
-
-		private final V ref1;
-
-		private final V ref2;
-
-		private final E edgeRef;
-
-		public ToggleLink()
+		// Get vertex we clicked inside.
+		if ( renderer.getVertexAt( x, y, source ) != null )
 		{
-			source = graph.vertexRef();
-			target = graph.vertexRef();
-			tmp = graph.vertexRef();
+			overlay.from[ 0 ] = source.getLayoutX();
+			overlay.from[ 1 ] = source.getTimepoint();
+			overlay.to[ 0 ] = overlay.from[ 0 ];
+			overlay.to[ 1 ] = overlay.to[ 0 ];
+			editing = true;
+			overlay.paint = true;
+		}
+	}
+
+	@Override
+	public void drag( final int x, final int y )
+	{
+		if ( editing )
+		{
+			if ( renderer.getVertexAt( x, y, target ) != null )
+			{
+				overlay.to[ 0 ] = target.getLayoutX();
+				overlay.to[ 1 ] = target.getTimepoint();
+				overlay.strongEdge = true;
+			}
+			else
+			{
+				overlay.vTo[ 0 ] = x - panel.getOffsetDecorations().getWidth();
+				overlay.vTo[ 1 ] = y - panel.getOffsetDecorations().getHeight();
+				overlay.screenTransform.applyInverse( overlay.to, overlay.vTo );
+				overlay.strongEdge = false;
+				panel.repaint();
+			}
+		}
+	}
+
+	@Override
+	public void end( final int x, final int y )
+	{
+		if ( editing )
+		{
 			editing = false;
-			ref1 = modelGraph.vertexRef();
-			ref2 = modelGraph.vertexRef();
-			edgeRef = modelGraph.edgeRef();
-		}
+			overlay.paint = false;
 
-		@Override
-		public void init( final int x, final int y )
-		{
-			// Get vertex we clicked inside.
-			if ( renderer.getVertexAt( x, y, source ) != null )
+			if ( renderer.getVertexAt( x, y, target ) != null )
 			{
-				overlay.from[ 0 ] = source.getLayoutX();
-				overlay.from[ 1 ] = source.getTimepoint();
-				overlay.to[ 0 ] = overlay.from[0];
-				overlay.to[ 1 ] = overlay.to[0];
-				editing = true;
-				overlay.paint = true;
-			}
-		}
+				overlay.to[ 0 ] = target.getLayoutX();
+				overlay.to[ 1 ] = target.getTimepoint();
 
-		@Override
-		public void drag( final int x, final int y )
-		{
-			if ( editing )
-			{
-				if ( renderer.getVertexAt( x, y, target ) != null )
+				// Prevent the creation of links between vertices in the
+				// same time-point.
+				if ( source.getTimepoint() == target.getTimepoint() )
+					return;
+
+				/*
+				 * Careful with directed graphs. We always check and create
+				 * links forward in time.
+				 */
+				if ( source.getTimepoint() > target.getTimepoint() )
 				{
-					overlay.to[ 0 ] = target.getLayoutX();
-					overlay.to[ 1 ] = target.getTimepoint();
-					overlay.strongEdge = true;
+					tmp.refTo( source );
+					source.refTo( target );
+					target.refTo( tmp );
 				}
+
+				final V sv = idBimap.getVertex( source.getModelVertexId(), ref1 );
+				final V tv = idBimap.getVertex( target.getModelVertexId(), ref2 );
+
+				/*
+				 * FIXME: Does not work in practice for MaMuT, because Spots and
+				 * Links need to be init() after being added to the model graph.
+				 *
+				 * Trying to add 2 links with this method will generate an
+				 * exception.
+				 */
+
+				final E edge = modelGraph.getEdge( sv, tv, edgeRef );
+				if ( null == edge )
+					modelGraph.addEdge( sv, tv, edgeRef );
 				else
-				{
-					overlay.vTo[ 0 ] = x - panel.getOffsetDecorations().getWidth();
-					overlay.vTo[ 1 ] = y - panel.getOffsetDecorations().getHeight();
-					overlay.screenTransform.applyInverse( overlay.to, overlay.vTo );
-					overlay.strongEdge = false;
-					panel.repaint();
-				}
-			}
-		}
+					modelGraph.remove( edge );
 
-		@Override
-		public void end( final int x, final int y )
-		{
-			if ( editing )
-			{
-				editing = false;
-				overlay.paint = false;
-
-				if ( renderer.getVertexAt( x, y, target ) != null )
-				{
-					overlay.to[ 0 ] = target.getLayoutX();
-					overlay.to[ 1 ] = target.getTimepoint();
-
-					// Prevent the creation of links between vertices in the
-					// same time-point.
-					if ( source.getTimepoint() == target.getTimepoint() )
-						return;
-
-					/*
-					 * Careful with directed graphs. We always check and create
-					 * links forward in time.
-					 */
-					if ( source.getTimepoint() > target.getTimepoint() )
-					{
-						tmp.refTo( source );
-						source.refTo( target );
-						target.refTo( tmp );
-					}
-
-					final V sv = idBimap.getVertex( source.getModelVertexId(), ref1 );
-					final V tv = idBimap.getVertex( target.getModelVertexId(), ref2 );
-
-					/*
-					 * FIXME: Does not work in practice for MaMuT, because Spots
-					 * and Links need to be init() after being added to the
-					 * model graph.
-					 *
-					 * Trying to add 2 links with this method will generate an
-					 * exception.
-					 */
-
-					final E edge = modelGraph.getEdge( sv, tv, edgeRef );
-					if ( null == edge )
-						modelGraph.addEdge( sv, tv, edgeRef );
-					else
-						modelGraph.remove( edge );
-
-					undo.setUndoPoint();
-				}
+				undo.setUndoPoint();
 			}
 		}
 	}
