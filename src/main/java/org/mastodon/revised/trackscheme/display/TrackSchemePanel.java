@@ -12,8 +12,16 @@ import javax.swing.JScrollBar;
 import javax.swing.UIManager;
 
 import org.mastodon.graph.GraphChangeListener;
-import org.mastodon.views.context.Context;
-import org.mastodon.views.context.ContextListener;
+import org.mastodon.model.FocusListener;
+import org.mastodon.model.FocusModel;
+import org.mastodon.model.HighlightListener;
+import org.mastodon.model.HighlightModel;
+import org.mastodon.model.NavigationHandler;
+import org.mastodon.model.NavigationListener;
+import org.mastodon.model.SelectionListener;
+import org.mastodon.model.SelectionModel;
+import org.mastodon.model.TimepointListener;
+import org.mastodon.model.TimepointModel;
 import org.mastodon.revised.trackscheme.ContextLayout;
 import org.mastodon.revised.trackscheme.LineageTreeLayout;
 import org.mastodon.revised.trackscheme.LineageTreeLayout.LayoutListener;
@@ -26,17 +34,9 @@ import org.mastodon.revised.trackscheme.TrackSchemeVertex;
 import org.mastodon.revised.trackscheme.display.TrackSchemeOptions.Values;
 import org.mastodon.revised.trackscheme.display.animate.AbstractAnimator;
 import org.mastodon.revised.trackscheme.display.style.TrackSchemeStyle;
-import org.mastodon.model.FocusListener;
-import org.mastodon.model.FocusModel;
-import org.mastodon.model.HighlightListener;
-import org.mastodon.model.HighlightModel;
 import org.mastodon.revised.ui.selection.NavigationEtiquette;
-import org.mastodon.model.NavigationHandler;
-import org.mastodon.model.NavigationListener;
-import org.mastodon.model.SelectionModel;
-import org.mastodon.model.SelectionListener;
-import org.mastodon.model.TimepointListener;
-import org.mastodon.model.TimepointModel;
+import org.mastodon.views.context.Context;
+import org.mastodon.views.context.ContextListener;
 
 import net.imglib2.ui.InteractiveDisplayCanvasComponent;
 import net.imglib2.ui.OverlayRenderer;
@@ -377,6 +377,11 @@ public class TrackSchemePanel extends JPanel implements
 				}
 				entityAnimator.startAnimation( transform, ANIMATION_MILLISECONDS );
 			}
+			else if ( flags.entitiesAttributesChanged )
+			{
+//				System.out.println( "paint: entitiesAttributesChanged" ); // DEBUG
+				entityAnimator.continueAnimation( transform, 0 );
+			}
 
 			entityAnimator.setTime( System.currentTimeMillis() );
 			entityAnimator.setPaintEntities( graphOverlay );
@@ -457,7 +462,11 @@ public class TrackSchemePanel extends JPanel implements
 		painterThread.requestRepaint();
 	}
 
-
+	public void entitiesAttributesChanged()
+	{
+		flags.setEntitiesAttributesChanged();
+		painterThread.requestRepaint();
+	}
 
 	// TODO: THIS IS FOR TESTING ONLY
 	private Context< TrackSchemeVertex > context;
@@ -916,6 +925,7 @@ public class TrackSchemePanel extends JPanel implements
 		private boolean selectionChanged;
 		private boolean graphChanged;
 		private boolean contextChanged;
+		private boolean entitiesAttributesChanged;
 
 		public Flags()
 		{
@@ -923,6 +933,7 @@ public class TrackSchemePanel extends JPanel implements
 			selectionChanged = false;
 			graphChanged = false;
 			contextChanged = false;
+			entitiesAttributesChanged = false;
 		}
 
 		public Flags( final Flags f )
@@ -931,6 +942,7 @@ public class TrackSchemePanel extends JPanel implements
 			selectionChanged = f.selectionChanged;
 			graphChanged = f.graphChanged;
 			contextChanged = f.contextChanged;
+			entitiesAttributesChanged = f.entitiesAttributesChanged;
 		}
 
 		public synchronized void setTransformChanged()
@@ -953,6 +965,11 @@ public class TrackSchemePanel extends JPanel implements
 			contextChanged = true;
 		}
 
+		public synchronized void setEntitiesAttributesChanged()
+		{
+			entitiesAttributesChanged = true;
+		}
+
 		public synchronized Flags clear()
 		{
 			final Flags copy = new Flags( this );
@@ -960,6 +977,7 @@ public class TrackSchemePanel extends JPanel implements
 			selectionChanged = false;
 			graphChanged = false;
 			contextChanged = false;
+			entitiesAttributesChanged = false;
 			return copy;
 		}
 
@@ -972,6 +990,7 @@ public class TrackSchemePanel extends JPanel implements
 			str.append( "  - selectionChanged: " + selectionChanged + "\n" );
 			str.append( "  - graphChanged:     " + graphChanged + "\n" );
 			str.append( "  - contextChanged:   " + contextChanged + "\n" );
+			str.append( "  - entitiesAttributesChanged:   " + entitiesAttributesChanged + "\n" );
 			return str.toString();
 		}
 	}
