@@ -189,12 +189,6 @@ public class OverlayGraphWrapper< V extends Vertex< E >, E extends Edge< V > > i
 	}
 
 	@Override
-	public void removeAllLinkedEdges( final OverlayVertexWrapper< V, E > vertex )
-	{
-		throw new UnsupportedOperationException();
-	}
-
-	@Override
 	public void remove( final OverlayVertexWrapper< V, E > vertex )
 	{
 		overlayProperties.removeVertex( vertex.wv );

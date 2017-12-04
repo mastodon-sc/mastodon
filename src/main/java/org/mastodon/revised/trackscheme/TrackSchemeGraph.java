@@ -381,12 +381,6 @@ public class TrackSchemeGraph<
 		modelGraphProperties.removeEdge( edgeMap.getLeft( edge ) );
 	}
 
-	@Override
-	public void removeAllLinkedEdges( final TrackSchemeVertex vertex )
-	{
-		throw new UnsupportedOperationException( "TODO: will be removed from interface" );
-	}
-
 	/*
 	 * GraphChangeNotifier
 	 */
