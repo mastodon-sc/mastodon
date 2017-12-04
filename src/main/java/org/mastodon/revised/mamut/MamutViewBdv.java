@@ -150,7 +150,7 @@ class MamutViewBdv extends MamutView< OverlayGraphWrapper< Spot, Link >, Overlay
 
 		// TODO revise
 		// RenderSettingsDialog triggered by "R"
-		final RenderSettings renderSettings = new RenderSettings(); // TODO should be in overlay eventually
+		final RenderSettings renderSettings = RenderSettings.defaultStyle(); // TODO should be in overlay eventually
 		final String RENDER_SETTINGS = "render settings";
 		final RenderSettingsDialog renderSettingsDialog = new RenderSettingsDialog( frame, renderSettings );
 		final Actions actions = new Actions( keyconf, "mamut" );
