@@ -436,7 +436,7 @@ public class TrackSchemeGraph<
 		for ( final V v : modelGraph.vertices() )
 		{
 			final int id = idmap.getVertexId( v );
-			super.addVertex( tsv ).init( id );
+			super.addVertex( tsv ).initModelId( id );
 			idToTrackSchemeVertex.put( id, tsv );
 			if ( v.incomingEdges().isEmpty() )
 				roots.add( tsv );
@@ -446,7 +446,7 @@ public class TrackSchemeGraph<
 			final int id = idmap.getEdgeId( e );
 			idToTrackSchemeVertex.get( idmap.getVertexId( e.getSource( mv ) ), tsv );
 			idToTrackSchemeVertex.get( idmap.getVertexId( e.getTarget( mv ) ), tsv2 );
-			super.insertEdge( tsv, e.getSourceOutIndex(), tsv2, e.getTargetInIndex(), tse ).init( id );
+			super.insertEdge( tsv, e.getSourceOutIndex(), tsv2, e.getTargetInIndex(), tse ).initModelId( id );
 			idToTrackSchemeEdge.put( id, tse );
 		}
 	}
@@ -455,7 +455,7 @@ public class TrackSchemeGraph<
 	public void vertexAdded( final V vertex )
 	{
 		final int id = idmap.getVertexId( vertex );
-		super.addVertex( tsv ).init( id );
+		super.addVertex( tsv ).initModelId( id );
 		idToTrackSchemeVertex.put( id, tsv );
 		roots.add( tsv );
 	}
@@ -480,7 +480,7 @@ public class TrackSchemeGraph<
 		idToTrackSchemeVertex.get( idmap.getVertexId( edge.getTarget( mv ) ), tsv2 );
 		if ( tsv2.incomingEdges().isEmpty() )
 			roots.remove( tsv2 );
-		super.insertEdge( tsv, edge.getSourceOutIndex(), tsv2, edge.getTargetInIndex(), tse ).init( id );
+		super.insertEdge( tsv, edge.getSourceOutIndex(), tsv2, edge.getTargetInIndex(), tse ).initModelId( id );
 		idToTrackSchemeEdge.put( id, tse );
 	}
 
