@@ -1,6 +1,7 @@
 package org.mastodon.revised.bdv.overlay;
 
 import java.util.ArrayList;
+import java.util.Collection;
 
 public class RenderSettings
 {
@@ -22,7 +23,6 @@ public class RenderSettings
 	public static final boolean DEFAULT_DRAW_SPOT_LABELS = false;
 	public static final boolean DEFAULT_IS_FOCUS_LIMIT_RELATIVE = true;
 	public static final double DEFAULT_ELLIPSOID_FADE_DEPTH = 0.2;
-	public static final double DEFAULT_POINT_FADE_DEPTH = 0.2;
 
 	public interface UpdateListener
 	{
@@ -31,28 +31,35 @@ public class RenderSettings
 
 	private final ArrayList< UpdateListener > updateListeners;
 
-	public RenderSettings()
+	private RenderSettings()
 	{
-		useAntialiasing = DEFAULT_USE_ANTI_ALIASING;
-		useGradient = DEFAULT_USE_GRADIENT;
-		timeLimit = DEFAULT_LIMIT_TIME_RANGE;
-		drawLinks = DEFAULT_DRAW_LINKS;
-		drawSpots = DEFAULT_DRAW_SPOTS;
-		drawEllipsoidSliceProjection = DEFAULT_DRAW_SLICE_PROJECTION;
-		drawEllipsoidSliceIntersection = DEFAULT_DRAW_SLICE_INTERSECTION;
-		drawPoints = DEFAULT_DRAW_POINTS;
-		drawPointsForEllipses = DEFAULT_DRAW_POINTS_FOR_ELLIPSE;
-		drawSpotLabels = DEFAULT_DRAW_SPOT_LABELS;
-		focusLimit = DEFAULT_LIMIT_FOCUS_RANGE;
-		isFocusLimitViewRelative = DEFAULT_IS_FOCUS_LIMIT_RELATIVE;
-		ellipsoidFadeDepth = DEFAULT_ELLIPSOID_FADE_DEPTH;
-		pointFadeDepth = DEFAULT_POINT_FADE_DEPTH;
-
 		updateListeners = new ArrayList< UpdateListener >();
+	}
+
+	/**
+	 * Returns a new render settings, copied from this instance.
+	 *
+	 * @param name
+	 *            the name for the copied render settings.
+	 * @return a new {@link RenderSettings} instance.
+	 */
+	public RenderSettings copy( final String name )
+	{
+		final RenderSettings rs = new RenderSettings();
+		rs.set( this );
+		if ( name != null )
+			rs.setName( name );
+		return rs;
+	}
+
+	public RenderSettings copy()
+	{
+		return copy( null );
 	}
 
 	public synchronized void set( final RenderSettings settings )
 	{
+		name = settings.name;
 		useAntialiasing = settings.useAntialiasing;
 		useGradient = settings.useGradient;
 		timeLimit = settings.timeLimit;
@@ -94,6 +101,11 @@ public class RenderSettings
 	/*
 	 * DISPLAY SETTINGS FIELDS.
 	 */
+
+	/**
+	 * The name of this render settings object.
+	 */
+	private String name;
 
 	/**
 	 * Whether to use antialiasing (for drawing everything).
@@ -196,6 +208,31 @@ public class RenderSettings
 	 * they are fully opaque, then their alpha value goes to 0 linearly.
 	 */
 	private double pointFadeDepth;
+
+	/**
+	 * Returns the name of this {@link RenderSettings}.
+	 *
+	 * @return the name.
+	 */
+	public String getName()
+	{
+		return name;
+	}
+
+	/**
+	 * Sets the name of this {@link RenderSettings}.
+	 *
+	 * @param name
+	 *            the name to set.
+	 */
+	public synchronized void setName( final String name )
+	{
+		if (!this.name.equals( name ))
+		{
+			this.name = name;
+			notifyListeners();
+		}
+	}
 
 	/**
 	 * Get the antialiasing setting.
@@ -634,5 +671,60 @@ public class RenderSettings
 			this.pointFadeDepth = pointFadeDepth;
 			notifyListeners();
 		}
+	}
+
+	/*
+	 * DEFAULTS RENDER SETTINGS LIBRARY.
+	 */
+
+	private static RenderSettings df;
+	static
+	{
+		df = new RenderSettings();
+		df.useAntialiasing = DEFAULT_USE_ANTI_ALIASING;
+		df.useGradient = DEFAULT_USE_GRADIENT;
+		df.timeLimit = DEFAULT_LIMIT_TIME_RANGE;
+		df.drawLinks = DEFAULT_DRAW_LINKS;
+		df.drawSpots = DEFAULT_DRAW_SPOTS;
+		df.drawEllipsoidSliceProjection = DEFAULT_DRAW_SLICE_PROJECTION;
+		df.drawEllipsoidSliceIntersection = DEFAULT_DRAW_SLICE_INTERSECTION;
+		df.drawPoints = DEFAULT_DRAW_POINTS;
+		df.drawPointsForEllipses = DEFAULT_DRAW_POINTS_FOR_ELLIPSE;
+		df.drawSpotLabels = DEFAULT_DRAW_SPOT_LABELS;
+		df.focusLimit = DEFAULT_LIMIT_FOCUS_RANGE;
+		df.isFocusLimitViewRelative = DEFAULT_IS_FOCUS_LIMIT_RELATIVE;
+		df.ellipsoidFadeDepth = DEFAULT_ELLIPSOID_FADE_DEPTH;
+		df.name = "Default";
+	}
+
+	private static RenderSettings POINT_CLOUD;
+	static
+	{
+		POINT_CLOUD = df.copy( "Point cloud" );
+		POINT_CLOUD.drawLinks = false;
+		POINT_CLOUD.drawEllipsoidSliceIntersection = false;
+		POINT_CLOUD.isFocusLimitViewRelative = false;
+	}
+
+	private static RenderSettings NONE;
+	static
+	{
+		NONE = df.copy( "No overlay" );
+		NONE.drawLinks = false;
+		NONE.drawSpots = false;
+	}
+
+	public static Collection< RenderSettings > defaults;
+	static
+	{
+		defaults = new ArrayList<>( 4 );
+		defaults.add( df );
+		defaults.add( POINT_CLOUD );
+		defaults.add( NONE );
+	}
+
+	public static RenderSettings defaultStyle()
+	{
+		return df;
 	}
 }
