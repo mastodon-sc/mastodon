@@ -6,6 +6,7 @@ import java.awt.Graphics;
 import java.awt.event.AdjustmentEvent;
 import java.awt.event.AdjustmentListener;
 
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 import javax.swing.Box;
 import javax.swing.JPanel;
 import javax.swing.JScrollBar;
@@ -323,7 +324,8 @@ public class TrackSchemePanel extends JPanel implements
 	@Override
 	public void paint()
 	{
-		graph.readLock().lock();
+		final ReentrantReadWriteLock lock = graph.getLock();
+		lock.readLock().lock();
 		try
 		{
 			final ScreenTransform transform = new ScreenTransform();
@@ -407,7 +409,7 @@ public class TrackSchemePanel extends JPanel implements
 		}
 		finally
 		{
-			graph.readLock().unlock();
+			lock.readLock().unlock();
 		}
 	}
 

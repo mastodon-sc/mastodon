@@ -317,13 +317,6 @@ public class TrackSchemeGraph<
 		return lock;
 	}
 
-	// TODO: remove
-	@Deprecated
-	public Lock readLock()
-	{
-		throw new UnsupportedOperationException();
-	}
-
 	@Override
 	public TrackSchemeVertex addVertex()
 	{
