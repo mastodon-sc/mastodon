@@ -12,6 +12,7 @@ import org.mastodon.app.ui.ViewMenu;
 import org.mastodon.revised.model.mamut.Link;
 import org.mastodon.revised.model.mamut.Model;
 import org.mastodon.revised.model.mamut.ModelGraph;
+import org.mastodon.revised.model.mamut.ModelGraphTrackSchemeProperties;
 import org.mastodon.revised.model.mamut.Spot;
 import org.mastodon.revised.trackscheme.TrackSchemeContextListener;
 import org.mastodon.revised.trackscheme.TrackSchemeEdge;
@@ -25,7 +26,6 @@ import org.mastodon.revised.trackscheme.display.TrackSchemeOptions;
 import org.mastodon.revised.trackscheme.display.style.DefaultTrackSchemeOverlay;
 import org.mastodon.revised.trackscheme.display.style.TrackSchemeStyle;
 import org.mastodon.revised.trackscheme.display.style.TrackSchemeStyle.UpdateListener;
-import org.mastodon.revised.trackscheme.wrap.DefaultModelGraphProperties;
 import org.mastodon.revised.ui.HighlightBehaviours;
 import org.mastodon.revised.ui.SelectionActions;
 import org.mastodon.views.context.ContextChooser;
@@ -42,7 +42,7 @@ class MamutViewTrackScheme extends MamutView< TrackSchemeGraph< Spot, Link >, Tr
 				new TrackSchemeGraph<>(
 						appModel.getModel().getGraph(),
 						appModel.getModel().getGraphIdBimap(),
-						new DefaultModelGraphProperties<>(),
+						new ModelGraphTrackSchemeProperties( appModel.getModel().getGraph() ),
 						appModel.getModel().getGraph().getLock() ),
 				new String[] { "ts" } );
 

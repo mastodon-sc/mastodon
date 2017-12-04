@@ -22,6 +22,21 @@ public class TrackSchemeEdge extends AbstractEdge< TrackSchemeEdge, TrackSchemeV
 		modelEdge = pool.modelGraphWrapper.createEdgeWrapper( this );
 	}
 
+	/**
+	 * Initialize a new {@link TrackSchemeEdge}
+	 * <p>
+	 * Fake {@code init()} constructor. Although it does nothing, it is good
+	 * practice to call it when adding a new {@code TrackSchemeEdge}, because
+	 * eventually it might do something...
+	 * </p>
+	 *
+	 * @return this {@link TrackSchemeEdge}
+	 */
+	public TrackSchemeEdge init()
+	{
+		return this;
+	}
+
 	@Override
 	protected void setToUninitializedState()
 	{

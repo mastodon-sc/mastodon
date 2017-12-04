@@ -29,36 +29,36 @@ public class DefaultModelGraphProperties< V extends Vertex< E > & HasTimepoint &
 	@Override
 	public E addEdge( final V source, final V target, final E ref )
 	{
-		throw new UnsupportedOperationException( "TODO" );
+		throw new UnsupportedOperationException();
 	}
 
 	@Override
 	public E insertEdge( final V source, final int sourceOutIndex, final V target, final int targetInIndex, final E ref )
 	{
-		throw new UnsupportedOperationException( "TODO" );
+		throw new UnsupportedOperationException();
 	}
 
 	@Override
 	public E initEdge( final E e )
 	{
-		throw new UnsupportedOperationException( "TODO" );
+		throw new UnsupportedOperationException();
 	}
 
 	@Override
 	public void removeEdge( final E e )
 	{
-		throw new UnsupportedOperationException( "TODO" );
+		throw new UnsupportedOperationException();
 	}
 
 	@Override
 	public void removeVertex( final V v )
 	{
-		throw new UnsupportedOperationException( "TODO" );
+		throw new UnsupportedOperationException();
 	}
 
 	@Override
 	public void notifyGraphChanged()
 	{
-		throw new UnsupportedOperationException( "TODO" );
+		throw new UnsupportedOperationException();
 	}
 }
