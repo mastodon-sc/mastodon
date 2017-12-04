@@ -27,5 +27,15 @@ public interface ModelGraphProperties< V, E >
 	// TODO move to separate interface? ModelGraphModifyProperties?
 	public void setLabel( V v, String label );
 
+	public E addEdge( V source, V target, E ref );
+
+	public E insertEdge( V source, final int sourceOutIndex, V target, final int targetInIndex, final E ref );
+
+	public E initEdge( E e );
+
+	public void removeEdge( E e );
+
+	public void removeVertex( V v );
+
 	public void notifyGraphChanged();
 }

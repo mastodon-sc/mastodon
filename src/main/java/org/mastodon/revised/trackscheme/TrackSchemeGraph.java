@@ -324,6 +324,76 @@ public class TrackSchemeGraph<
 		throw new UnsupportedOperationException();
 	}
 
+	@Override
+	public TrackSchemeVertex addVertex()
+	{
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public TrackSchemeVertex addVertex( final TrackSchemeVertex ref )
+	{
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public TrackSchemeEdge addEdge( final TrackSchemeVertex source, final TrackSchemeVertex target )
+	{
+		return addEdge( source, target, edgeRef() );
+	}
+
+	@Override
+	public TrackSchemeEdge addEdge( final TrackSchemeVertex source, final TrackSchemeVertex target, final TrackSchemeEdge ref )
+	{
+		final E mref = modelGraph.edgeRef();
+
+		final E medge = modelGraphProperties.addEdge( vertexMap.getLeft( source ), vertexMap.getLeft( target ), mref );
+		modelGraphProperties.initEdge( medge );
+		final TrackSchemeEdge edge = edgeMap.getRight( medge, ref );
+
+		modelGraph.releaseRef( mref );
+
+		return edge;
+	}
+
+	@Override
+	public TrackSchemeEdge insertEdge( final TrackSchemeVertex source, final int sourceOutIndex, final TrackSchemeVertex target, final int targetInIndex )
+	{
+		return insertEdge( source, sourceOutIndex, target, targetInIndex, edgeRef() );
+	}
+
+	@Override
+	public TrackSchemeEdge insertEdge( final TrackSchemeVertex source, final int sourceOutIndex, final TrackSchemeVertex target, final int targetInIndex, final TrackSchemeEdge ref )
+	{
+		final E mref = modelGraph.edgeRef();
+
+		final E medge = modelGraphProperties.insertEdge( vertexMap.getLeft( source ), sourceOutIndex, vertexMap.getLeft( target ), targetInIndex, mref );
+		modelGraphProperties.initEdge( medge );
+		final TrackSchemeEdge edge = edgeMap.getRight( medge, ref );
+
+		modelGraph.releaseRef( mref );
+
+		return edge;
+	}
+
+	@Override
+	public void remove( final TrackSchemeVertex vertex )
+	{
+		modelGraphProperties.removeVertex( vertexMap.getLeft( vertex ) );
+	}
+
+	@Override
+	public void remove( final TrackSchemeEdge edge )
+	{
+		modelGraphProperties.removeEdge( edgeMap.getLeft( edge ) );
+	}
+
+	@Override
+	public void removeAllLinkedEdges( final TrackSchemeVertex vertex )
+	{
+		throw new UnsupportedOperationException( "TODO: will be removed from interface" );
+	}
+
 	/*
 	 * GraphChangeNotifier
 	 */
@@ -366,7 +436,7 @@ public class TrackSchemeGraph<
 		for ( final V v : modelGraph.vertices() )
 		{
 			final int id = idmap.getVertexId( v );
-			addVertex( tsv ).init( id );
+			super.addVertex( tsv ).init( id );
 			idToTrackSchemeVertex.put( id, tsv );
 			if ( v.incomingEdges().isEmpty() )
 				roots.add( tsv );
@@ -376,7 +446,7 @@ public class TrackSchemeGraph<
 			final int id = idmap.getEdgeId( e );
 			idToTrackSchemeVertex.get( idmap.getVertexId( e.getSource( mv ) ), tsv );
 			idToTrackSchemeVertex.get( idmap.getVertexId( e.getTarget( mv ) ), tsv2 );
-			insertEdge( tsv, e.getSourceOutIndex(), tsv2, e.getTargetInIndex(), tse ).init( id );
+			super.insertEdge( tsv, e.getSourceOutIndex(), tsv2, e.getTargetInIndex(), tse ).init( id );
 			idToTrackSchemeEdge.put( id, tse );
 		}
 	}
@@ -385,7 +455,7 @@ public class TrackSchemeGraph<
 	public void vertexAdded( final V vertex )
 	{
 		final int id = idmap.getVertexId( vertex );
-		addVertex( tsv ).init( id );
+		super.addVertex( tsv ).init( id );
 		idToTrackSchemeVertex.put( id, tsv );
 		roots.add( tsv );
 	}
@@ -398,7 +468,7 @@ public class TrackSchemeGraph<
 		{
 			if ( tsv.incomingEdges().isEmpty() )
 				roots.remove( tsv );
-			this.remove( tsv );
+			super.remove( tsv );
 		}
 	}
 
@@ -410,7 +480,7 @@ public class TrackSchemeGraph<
 		idToTrackSchemeVertex.get( idmap.getVertexId( edge.getTarget( mv ) ), tsv2 );
 		if ( tsv2.incomingEdges().isEmpty() )
 			roots.remove( tsv2 );
-		insertEdge( tsv, edge.getSourceOutIndex(), tsv2, edge.getTargetInIndex(), tse ).init( id );
+		super.insertEdge( tsv, edge.getSourceOutIndex(), tsv2, edge.getTargetInIndex(), tse ).init( id );
 		idToTrackSchemeEdge.put( id, tse );
 	}
 
@@ -422,7 +492,7 @@ public class TrackSchemeGraph<
 		{
 			if ( tse.getTarget( tsv ).incomingEdges().size() == 1 )
 				roots.add( tsv );
-			this.remove( tse );
+			super.remove( tse );
 		}
 	}
 
