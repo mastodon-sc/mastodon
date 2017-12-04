@@ -13,6 +13,8 @@ import javax.swing.JPanel;
 
 import org.mastodon.app.ui.settings.ModificationListener;
 import org.mastodon.app.ui.settings.SettingsPage;
+import org.mastodon.revised.bdv.overlay.ui.RenderSettingsConfigPage;
+import org.mastodon.revised.bdv.overlay.ui.RenderSettingsManager;
 import org.mastodon.revised.model.mamut.Model;
 import org.mastodon.revised.model.mamut.Spot;
 import org.mastodon.revised.trackscheme.display.style.TrackSchemeStyleManager;
@@ -62,6 +64,8 @@ public class WindowManager
 
 	private final TrackSchemeStyleManager trackSchemeStyleManager;
 
+	private final RenderSettingsManager renderSettingsManager;
+
 	private final Actions globalAppActions;
 
 	private final AbstractNamedAction newBdvViewAction;
@@ -77,6 +81,7 @@ public class WindowManager
 		this.keyconf = keyconf;
 		keyPressedManager = new KeyPressedManager();
 		trackSchemeStyleManager = new TrackSchemeStyleManager();
+		renderSettingsManager = new RenderSettingsManager();
 
 		// TODO: naming, this should be named appActions and the AppModel.appActions should become modelActions?
 		globalAppActions = new Actions( keyconf, "mastodon" );
@@ -128,8 +133,9 @@ public class WindowManager
 		} );
 		settings.addPage( page );
 		settings.addPage( new TrackSchemeStyleSettingsPage( "TrackScheme Styles", trackSchemeStyleManager ) );
+		settings.addPage( new RenderSettingsConfigPage( "BDV Render Settings", renderSettingsManager ) );
 		final ToggleDialogAction tooglePreferencesDialogAction = new ToggleDialogAction( "Preferences", settings );
-		appModel.getAppActions().namedAction( tooglePreferencesDialogAction, "meta COMMA" );
+		appModel.getAppActions().namedAction( tooglePreferencesDialogAction, "meta COMMA", "control COMMA" );
 
 		updateEnabledActions();
 	}
