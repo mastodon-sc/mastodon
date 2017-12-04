@@ -113,12 +113,7 @@ class MamutViewTrackScheme extends MamutView< TrackSchemeGraph< Spot, Link >, Tr
 		);
 
 		HighlightBehaviours.installActionBindings( viewBehaviours, viewGraph, viewGraph.getLock(), viewGraph, highlightModel, model );
-		ToggleLinkBehaviour.installActionBindings( viewBehaviours,
-				frame.getTrackschemePanel(),
-				viewGraph,
-				modelGraph,
-				modelGraph.getGraphIdBimap(),
-				model );
+		ToggleLinkBehaviour.installActionBindings( viewBehaviours, frame.getTrackschemePanel(),	viewGraph, viewGraph.getLock(),	viewGraph, model );
 		EditFocusVertexLabelAction.installActionBindings( viewActions, frame.getTrackschemePanel(), focusModel,	model );
 
 		frame.getTrackschemePanel().repaint();

@@ -7,12 +7,13 @@ import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import org.mastodon.graph.Edge;
-import org.mastodon.graph.GraphIdBimap;
-import org.mastodon.graph.ListenableGraph;
+import org.mastodon.graph.GraphChangeNotifier;
 import org.mastodon.graph.Vertex;
 import org.mastodon.revised.trackscheme.ScreenTransform;
+import org.mastodon.revised.trackscheme.TrackSchemeEdge;
 import org.mastodon.revised.trackscheme.TrackSchemeGraph;
 import org.mastodon.revised.trackscheme.TrackSchemeVertex;
 import org.mastodon.spatial.HasTimepoint;
@@ -47,13 +48,13 @@ public class ToggleLinkBehaviour< V extends Vertex< E > & HasTimepoint, E extend
 
 	private static final BasicStroke EDIT_GRAPH_OVERLAY_STROKE = new BasicStroke( 2f );
 
-	private static final BasicStroke EDIT_GRAPH_OVERLAY_GHOST_STROKE = new BasicStroke(
-			1f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL,
-			1.0f, new float[] { 4f, 10f }, 0f );
-
 	private final TrackSchemeGraph< V, E > graph;
 
 	private final AbstractTrackSchemeOverlay renderer;
+
+	private final ReentrantReadWriteLock lock;
+
+	private final GraphChangeNotifier notify;
 
 	private final UndoPointMarker undo;
 
@@ -61,49 +62,37 @@ public class ToggleLinkBehaviour< V extends Vertex< E > & HasTimepoint, E extend
 
 	private final EditOverlay overlay;
 
-	private final ListenableGraph< V, E > modelGraph;
+	private final TrackSchemeVertex startVertex;
 
-	private final GraphIdBimap< V, E > idBimap;
-
-	private final TrackSchemeVertex source;
-
-	private final TrackSchemeVertex target;
-
-	private final TrackSchemeVertex tmp;
+	private final TrackSchemeVertex endVertex;
 
 	private boolean editing;
-
-	private final V ref1;
-
-	private final V ref2;
-
-	private final E edgeRef;
 
 	public static < V extends Vertex< E > & HasTimepoint, E extends Edge< V > > void installActionBindings(
 			final Behaviours behaviours,
 			final TrackSchemePanel panel,
 			final TrackSchemeGraph< V, E > graph,
-			final ListenableGraph< V, E > modelGraph,
-			final GraphIdBimap< V, E > idBimap,
+			final ReentrantReadWriteLock lock,
+			final GraphChangeNotifier notify,
 			final UndoPointMarker undo )
 	{
-		final ToggleLinkBehaviour< V, E > toggleLinkBehaviour = new ToggleLinkBehaviour< V, E >( panel, graph, modelGraph, idBimap, undo );
+		final ToggleLinkBehaviour< V, E > toggleLinkBehaviour = new ToggleLinkBehaviour<>( panel, graph, lock, notify, undo );
 		behaviours.namedBehaviour( toggleLinkBehaviour, TOGGLE_LINK_KEYS );
 	}
 
 	private ToggleLinkBehaviour(
 			final TrackSchemePanel panel,
 			final TrackSchemeGraph< V, E > graph,
-			final ListenableGraph< V, E > modelGraph,
-			final GraphIdBimap< V, E > idBimap,
+			final ReentrantReadWriteLock lock,
+			final GraphChangeNotifier notify,
 			final UndoPointMarker undo )
 	{
 		super( TOGGLE_LINK );
 		this.panel = panel;
 		this.graph = graph;
 		this.renderer = panel.getGraphOverlay();
-		this.modelGraph = modelGraph;
-		this.idBimap = idBimap;
+		this.lock = lock;
+		this.notify = notify;
 		this.undo = undo;
 
 		// Create and register overlay.
@@ -113,23 +102,21 @@ public class ToggleLinkBehaviour< V extends Vertex< E > & HasTimepoint, E extend
 		renderer.addOverlayRenderer( overlay );
 		panel.getDisplay().addTransformListener( overlay );
 
-		source = graph.vertexRef();
-		target = graph.vertexRef();
-		tmp = graph.vertexRef();
+		startVertex = graph.vertexRef();
+		endVertex = graph.vertexRef();
 		editing = false;
-		ref1 = modelGraph.vertexRef();
-		ref2 = modelGraph.vertexRef();
-		edgeRef = modelGraph.edgeRef();
 	}
 
 	@Override
 	public void init( final int x, final int y )
 	{
+		// TODO: should listen to graph and abort behaviour if startVertex is removed. For this TrackSchemeGraph would need to be listenable...
+
 		// Get vertex we clicked inside.
-		if ( renderer.getVertexAt( x, y, source ) != null )
+		if ( renderer.getVertexAt( x, y, startVertex ) != null )
 		{
-			overlay.from[ 0 ] = source.getLayoutX();
-			overlay.from[ 1 ] = source.getTimepoint();
+			overlay.from[ 0 ] = startVertex.getLayoutX();
+			overlay.from[ 1 ] = startVertex.getTimepoint();
 			overlay.to[ 0 ] = overlay.from[ 0 ];
 			overlay.to[ 1 ] = overlay.to[ 0 ];
 			editing = true;
@@ -142,10 +129,10 @@ public class ToggleLinkBehaviour< V extends Vertex< E > & HasTimepoint, E extend
 	{
 		if ( editing )
 		{
-			if ( renderer.getVertexAt( x, y, target ) != null )
+			if ( renderer.getVertexAt( x, y, endVertex ) != null && startVertex.getTimepoint() != endVertex.getTimepoint() )
 			{
-				overlay.to[ 0 ] = target.getLayoutX();
-				overlay.to[ 1 ] = target.getTimepoint();
+				overlay.to[ 0 ] = endVertex.getLayoutX();
+				overlay.to[ 1 ] = endVertex.getTimepoint();
 				overlay.strongEdge = true;
 			}
 			else
@@ -154,8 +141,8 @@ public class ToggleLinkBehaviour< V extends Vertex< E > & HasTimepoint, E extend
 				overlay.vTo[ 1 ] = y - panel.getOffsetDecorations().getHeight();
 				overlay.screenTransform.applyInverse( overlay.to, overlay.vTo );
 				overlay.strongEdge = false;
-				panel.repaint();
 			}
+			panel.repaint();
 		}
 	}
 
@@ -167,45 +154,46 @@ public class ToggleLinkBehaviour< V extends Vertex< E > & HasTimepoint, E extend
 			editing = false;
 			overlay.paint = false;
 
-			if ( renderer.getVertexAt( x, y, target ) != null )
+			lock.writeLock().lock();
+			try
 			{
-				overlay.to[ 0 ] = target.getLayoutX();
-				overlay.to[ 1 ] = target.getTimepoint();
-
-				// Prevent the creation of links between vertices in the
-				// same time-point.
-				if ( source.getTimepoint() == target.getTimepoint() )
-					return;
-
-				/*
-				 * Careful with directed graphs. We always check and create
-				 * links forward in time.
-				 */
-				if ( source.getTimepoint() > target.getTimepoint() )
+				if ( renderer.getVertexAt( x, y, endVertex ) != null )
 				{
-					tmp.refTo( source );
-					source.refTo( target );
-					target.refTo( tmp );
+					overlay.to[ 0 ] = endVertex.getLayoutX();
+					overlay.to[ 1 ] = endVertex.getTimepoint();
+
+					/*
+					 * Prevent the creation of links between vertices in the
+					 * same time-point.
+					 */
+					final int tStart = startVertex.getTimepoint();
+					final int tEnd = endVertex.getTimepoint();
+					if ( tStart == tEnd )
+						return;
+
+					/*
+					 * Careful with directed graphs. We always check and create
+					 * links forward in time.
+					 */
+					final TrackSchemeVertex source = tStart > tEnd ? endVertex : startVertex;
+					final TrackSchemeVertex target = tStart > tEnd ? startVertex : endVertex;
+
+					final TrackSchemeEdge eref = graph.edgeRef();
+					final TrackSchemeEdge edge = graph.getEdge( source, target, eref );
+					if ( null == edge )
+						graph.addEdge( source, target, eref ).init();
+					else
+						graph.remove( edge );
+					graph.releaseRef( eref );
+
+					undo.setUndoPoint();
+					notify.notifyGraphChanged();
+
 				}
-
-				final V sv = idBimap.getVertex( source.getModelVertexId(), ref1 );
-				final V tv = idBimap.getVertex( target.getModelVertexId(), ref2 );
-
-				/*
-				 * FIXME: Does not work in practice for MaMuT, because Spots and
-				 * Links need to be init() after being added to the model graph.
-				 *
-				 * Trying to add 2 links with this method will generate an
-				 * exception.
-				 */
-
-				final E edge = modelGraph.getEdge( sv, tv, edgeRef );
-				if ( null == edge )
-					modelGraph.addEdge( sv, tv, edgeRef );
-				else
-					modelGraph.remove( edge );
-
-				undo.setUndoPoint();
+			}
+			finally
+			{
+				lock.writeLock().unlock();
 			}
 		}
 	}
