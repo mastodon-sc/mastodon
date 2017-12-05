@@ -81,7 +81,7 @@ public class BigDataViewerActionsMamut
 	 * @param bdv
 	 *            Actions are targeted at this BDV window.
 	 */
-	public static void installActionBindings(
+	public static void install(
 			final Actions actions,
 			final BigDataViewerMaMuT bdv )
 	{

@@ -71,7 +71,7 @@ public class EditFocusVertexLabelAction extends AbstractNamedAction implements T
 	 */
 	private int headerHeight;
 
-	public static void installActionBindings(
+	public static void install(
 			final Actions actions,
 			final TrackSchemePanel panel,
 			final FocusModel< TrackSchemeVertex, TrackSchemeEdge > focus,

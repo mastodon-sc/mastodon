@@ -28,7 +28,7 @@ public class MastodonFrameViewActions
 	 * @param view
 	 *            Actions are targeted at this view.
 	 */
-	public static void installActionBindings(
+	public static void install(
 			final Actions actions,
 			final MastodonFrameView< ?, ?, ?, ?, ?, ? > view )
 	{

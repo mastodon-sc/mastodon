@@ -38,7 +38,7 @@ public class FocusActions< V extends Vertex< E > & Ref< V >, E extends Edge< V >
 	private final RunnableAction navigateToBranchParentAction;
 
 	// TODO: rename to "install" (in all similar classes)
-	public static < V extends Vertex< E > & Ref< V >, E extends Edge< V > & Ref< E > > void installActionBindings(
+	public static < V extends Vertex< E > & Ref< V >, E extends Edge< V > & Ref< E > > void install(
 			final Actions actions,
 			final Graph< V, E > graph,
 			final ReentrantReadWriteLock lock,

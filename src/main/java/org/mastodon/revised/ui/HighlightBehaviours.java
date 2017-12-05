@@ -35,8 +35,7 @@ public class HighlightBehaviours< V extends Vertex< E >, E extends Edge< V > >
 
 	private final RemoveHighlightedEdge removeHighlightedEdgeBehaviour;
 
-	// TODO: rename to "install" (in all similar classes)
-	public static < V extends Vertex< E >, E extends Edge< V > > void installActionBindings(
+	public static < V extends Vertex< E >, E extends Edge< V > > void install(
 			final Behaviours behaviours,
 			final Graph< V, E > graph,
 			final ReentrantReadWriteLock lock,

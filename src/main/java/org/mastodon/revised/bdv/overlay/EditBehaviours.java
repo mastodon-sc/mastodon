@@ -78,7 +78,7 @@ public class EditBehaviours< V extends OverlayVertex< V, E >, E extends OverlayE
 
 	private final ResizeSpotBehaviour decreaseSpotRadiusBehaviourABit;
 
-	public static < V extends OverlayVertex< V, E >, E extends OverlayEdge< E, V > > void installActionBindings(
+	public static < V extends OverlayVertex< V, E >, E extends OverlayEdge< E, V > > void install(
 			final Behaviours behaviours,
 			final OverlayGraph< V, E > overlayGraph,
 			final OverlayGraphRenderer< V, E > renderer,
