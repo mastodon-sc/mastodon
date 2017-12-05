@@ -103,6 +103,11 @@ public class MastodonFrameView<
 		return appModel.getKeyConfig();
 	}
 
+	public void updateKeyConfig() {
+		viewBehaviours.updateKeyConfig( getKeyConfig() );
+		viewActions.updateKeyConfig( getKeyConfig() );
+	}
+
 	String[] getKeyConfigContexts()
 	{
 		return keyConfigContexts;
