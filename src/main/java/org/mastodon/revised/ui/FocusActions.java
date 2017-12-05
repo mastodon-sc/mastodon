@@ -2,6 +2,7 @@ package org.mastodon.revised.ui;
 
 import java.util.Iterator;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
+import org.mastodon.Ref;
 import org.mastodon.graph.Edge;
 import org.mastodon.graph.Edges;
 import org.mastodon.graph.Graph;
@@ -12,7 +13,7 @@ import org.mastodon.model.SelectionModel;
 import org.scijava.ui.behaviour.util.Actions;
 import org.scijava.ui.behaviour.util.RunnableAction;
 
-public class FocusActions< V extends Vertex< E >, E extends Edge< V > >
+public class FocusActions< V extends Vertex< E > & Ref< V >, E extends Edge< V > & Ref< E > >
 {
 	public static final String NAVIGATE_CHILD = "navigate to child";
 	public static final String NAVIGATE_PARENT = "navigate to parent";
@@ -37,7 +38,7 @@ public class FocusActions< V extends Vertex< E >, E extends Edge< V > >
 	private final RunnableAction navigateToBranchParentAction;
 
 	// TODO: rename to "install" (in all similar classes)
-	public static < V extends Vertex< E >, E extends Edge< V > > void installActionBindings(
+	public static < V extends Vertex< E > & Ref< V >, E extends Edge< V > & Ref< E > > void installActionBindings(
 			final Actions actions,
 			final Graph< V, E > graph,
 			final ReentrantReadWriteLock lock,
@@ -194,7 +195,7 @@ public class FocusActions< V extends Vertex< E >, E extends Edge< V > >
 		{
 			if ( v.outgoingEdges().isEmpty() )
 				break;
-			v = firstChild( v, graph.vertexRef() );
+			v = firstChild( v, ref );
 			++d;
 			if ( v.outgoingEdges().size() > 1 )
 				break;
@@ -210,7 +211,7 @@ public class FocusActions< V extends Vertex< E >, E extends Edge< V > >
 		{
 			if ( v.incomingEdges().isEmpty() )
 				break;
-			v = firstParent( v, graph.vertexRef() );
+			v = firstParent( v, ref );
 			++d;
 			if ( v.outgoingEdges().size() > 1 )
 				break;
@@ -220,39 +221,48 @@ public class FocusActions< V extends Vertex< E >, E extends Edge< V > >
 
 	private V nextSibling( V vertex, V ref )
 	{
-		V child = vertex;
-		V parent = null;
-		int d = 0;
-		while ( true )
+		V ref1 = graph.vertexRef();
+		V ref2 = graph.vertexRef();
+		try
 		{
-			if ( child.incomingEdges().isEmpty() )
-				return null;
-			parent = firstParent( child, graph.vertexRef() );
-			if ( parent.outgoingEdges().size() > 1 )
-				break;
-			child = parent;
-			++d;
-		}
-
-		final Edges< E > outgoing = parent.outgoingEdges();
-		final Iterator< E > iter = outgoing.iterator();
-		while( iter.hasNext() )
-		{
-			if ( iter.next().getTarget( ref ).equals( child ) )
+			V child = ref1;
+			V parent = ref2;
+			child.refTo( vertex );
+			int d = 0;
+			while ( true )
 			{
-				child = iter.hasNext()
-						? iter.next().getTarget( ref )
-						: outgoing.iterator().next().getTarget( ref );
-
-				for ( ; d > 0; --d )
-				{
-					child = firstChild( child, graph.vertexRef() );
-				}
-
-				return child;
+				if ( child.incomingEdges().isEmpty() )
+					return null;
+				parent.refTo( firstParent( child, ref ) );
+				if ( parent.outgoingEdges().size() > 1 )
+					break;
+				child.refTo( parent );
+				++d;
 			}
-		}
 
-		return null;
+			final Edges< E > outgoing = parent.outgoingEdges();
+			final Iterator< E > iter = outgoing.iterator();
+			while ( iter.hasNext() )
+			{
+				if ( iter.next().getTarget( ref ).equals( child ) )
+				{
+					child = iter.hasNext()
+							? iter.next().getTarget( ref )
+							: outgoing.iterator().next().getTarget( ref );
+
+					for ( ; d > 0 && child != null; --d )
+						child = firstChild( child, ref );
+
+					return child;
+				}
+			}
+
+			return null;
+		}
+		finally
+		{
+			graph.releaseRef( ref1 );
+			graph.releaseRef( ref2 );
+		}
 	}
 }
