@@ -3,8 +3,12 @@ package org.mastodon.revised.mamut;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
+import java.util.Locale;
 
 import javax.swing.SwingUtilities;
+import javax.swing.UIManager;
+import javax.swing.UnsupportedLookAndFeelException;
+
 import org.scijava.command.Command;
 import org.scijava.plugin.Plugin;
 import org.scijava.ui.behaviour.io.InputTriggerConfig;
@@ -22,14 +26,17 @@ public class Mastodon implements Command
 		{
 			main( null );
 		}
-		catch ( IOException | SpimDataException | InterruptedException | InvocationTargetException e )
+		catch ( IOException | SpimDataException | InterruptedException | InvocationTargetException | ClassNotFoundException | InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException e )
 		{
 			throw new RuntimeException( e );
 		}
 	}
 
-	public static void main( final String[] args ) throws IOException, SpimDataException, InvocationTargetException, InterruptedException
+	public static void main( final String[] args ) throws IOException, SpimDataException, InvocationTargetException, InterruptedException, ClassNotFoundException, InstantiationException, IllegalAccessException, UnsupportedLookAndFeelException
 	{
+		Locale.setDefault( Locale.US );
+		UIManager.setLookAndFeel( UIManager.getSystemLookAndFeelClassName() );
+
 		System.setProperty( "apple.laf.useScreenMenuBar", "true" );
 		final InputTriggerConfig keyconf = getInputTriggerConfig();
 		final WindowManager windowManager = new WindowManager( keyconf );
