@@ -23,7 +23,6 @@ import org.mastodon.revised.bdv.overlay.EditSpecialBehaviours;
 import org.mastodon.revised.bdv.overlay.OverlayGraphRenderer;
 import org.mastodon.revised.bdv.overlay.OverlayNavigation;
 import org.mastodon.revised.bdv.overlay.RenderSettings;
-import org.mastodon.revised.bdv.overlay.ui.RenderSettingsDialog;
 import org.mastodon.revised.bdv.overlay.wrap.OverlayEdgeWrapper;
 import org.mastodon.revised.bdv.overlay.wrap.OverlayGraphWrapper;
 import org.mastodon.revised.bdv.overlay.wrap.OverlayVertexWrapper;
@@ -35,10 +34,8 @@ import org.mastodon.revised.model.mamut.Spot;
 import org.mastodon.revised.ui.FocusActions;
 import org.mastodon.revised.ui.HighlightBehaviours;
 import org.mastodon.revised.ui.SelectionActions;
-import org.mastodon.revised.util.ToggleDialogAction;
 import org.mastodon.views.context.ContextProvider;
 import org.scijava.ui.behaviour.io.InputTriggerConfig;
-import org.scijava.ui.behaviour.util.Actions;
 
 import bdv.tools.InitializeViewerState;
 import bdv.viewer.ViewerPanel;
@@ -148,17 +145,9 @@ class MamutViewBdv extends MamutView< OverlayGraphWrapper< Spot, Link >, Overlay
 		viewer.addTimePointListener( timePointIndex -> timepointModel.setTimepoint( timePointIndex ) );
 		timepointModel.listeners().add( () -> viewer.setTimepoint( timepointModel.getTimepoint() ) );
 
-		// TODO revise
-		// RenderSettingsDialog triggered by "R"
-		final RenderSettings renderSettings = RenderSettings.defaultStyle(); // TODO should be in overlay eventually
-		final String RENDER_SETTINGS = "render settings";
-		final RenderSettingsDialog renderSettingsDialog = new RenderSettingsDialog( frame, renderSettings );
-		final Actions actions = new Actions( keyconf, "mamut" );
-		actions.install( frame.getKeybindings(), "mamut" );
-		actions.namedAction( new ToggleDialogAction( RENDER_SETTINGS, renderSettingsDialog ), "R" );
+		final RenderSettings renderSettings = appModel.getRenderSettingsManager().getForwardDefaultRenderSettings();
+		tracksOverlay.setRenderSettings( renderSettings );
 		renderSettings.addUpdateListener( () -> {
-			tracksOverlay.setRenderSettings( renderSettings );
-			// TODO: less hacky way of triggering repaint and context update
 			viewer.repaint();
 			contextProvider.notifyContextChanged();
 		} );
