@@ -309,6 +309,11 @@ public class WindowManager
 		return trackSchemeStyleManager;
 	}
 
+	RenderSettingsManager getRenderSettingsManager()
+	{
+		return renderSettingsManager;
+	}
+
 	MamutAppModel getAppModel()
 	{
 		return appModel;
