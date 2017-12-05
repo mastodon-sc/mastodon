@@ -91,7 +91,7 @@ class MamutViewTrackScheme extends MamutView< TrackSchemeGraph< Spot, Link >, Tr
 		setFrame( frame );
 		frame.setVisible( true );
 
-		MastodonFrameViewActions.installActionBindings( viewActions, this );
+		MastodonFrameViewActions.install( viewActions, this );
 
 		final ViewMenu menu = new ViewMenu( this );
 		final ActionMap actionMap = frame.getKeybindings().getConcatenatedActionMap();
@@ -112,9 +112,9 @@ class MamutViewTrackScheme extends MamutView< TrackSchemeGraph< Spot, Link >, Tr
 				)
 		);
 
-		HighlightBehaviours.installActionBindings( viewBehaviours, viewGraph, viewGraph.getLock(), viewGraph, highlightModel, model );
-		ToggleLinkBehaviour.installActionBindings( viewBehaviours, frame.getTrackschemePanel(),	viewGraph, viewGraph.getLock(),	viewGraph, model );
-		EditFocusVertexLabelAction.installActionBindings( viewActions, frame.getTrackschemePanel(), focusModel,	model );
+		HighlightBehaviours.install( viewBehaviours, viewGraph, viewGraph.getLock(), viewGraph, highlightModel, model );
+		ToggleLinkBehaviour.install( viewBehaviours, frame.getTrackschemePanel(),	viewGraph, viewGraph.getLock(),	viewGraph, model );
+		EditFocusVertexLabelAction.install( viewActions, frame.getTrackschemePanel(), focusModel,	model );
 
 		frame.getTrackschemePanel().repaint();
 	}

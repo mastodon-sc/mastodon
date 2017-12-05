@@ -72,8 +72,8 @@ class MamutViewBdv extends MamutView< OverlayGraphWrapper< Spot, Link >, Overlay
 		final ViewerFrameMamut frame = bdv.getViewerFrame();
 		setFrame( frame );
 
-		MastodonFrameViewActions.installActionBindings( viewActions, this );
-		BigDataViewerActionsMamut.installActionBindings( viewActions, bdv );
+		MastodonFrameViewActions.install( viewActions, this );
+		BigDataViewerActionsMamut.install( viewActions, bdv );
 
 		final ViewMenu menu = new ViewMenu( this );
 		final ActionMap actionMap = frame.getKeybindings().getConcatenatedActionMap();
@@ -140,10 +140,10 @@ class MamutViewBdv extends MamutView< OverlayGraphWrapper< Spot, Link >, Overlay
 		viewer.addRenderTransformListener( contextProvider );
 
 		BdvSelectionBehaviours.install( viewBehaviours, viewGraph, tracksOverlay, selectionModel, navigationHandler );
-		EditBehaviours.installActionBindings( viewBehaviours, viewGraph, tracksOverlay, model );
-		EditSpecialBehaviours.installActionBindings( viewBehaviours, frame.getViewerPanel(), viewGraph, tracksOverlay, model );
-		HighlightBehaviours.installActionBindings( viewBehaviours, viewGraph, viewGraph.getLock(), viewGraph, highlightModel, model );
-		FocusActions.installActionBindings( viewActions, viewGraph, viewGraph.getLock(), focusModel, selectionModel, navigationHandler );
+		EditBehaviours.install( viewBehaviours, viewGraph, tracksOverlay, model );
+		EditSpecialBehaviours.install( viewBehaviours, frame.getViewerPanel(), viewGraph, tracksOverlay, model );
+		HighlightBehaviours.install( viewBehaviours, viewGraph, viewGraph.getLock(), viewGraph, highlightModel, model );
+		FocusActions.install( viewActions, viewGraph, viewGraph.getLock(), focusModel, selectionModel, navigationHandler );
 
 		viewer.addTimePointListener( timePointIndex -> timepointModel.setTimepoint( timePointIndex ) );
 		timepointModel.listeners().add( () -> viewer.setTimepoint( timepointModel.getTimepoint() ) );
