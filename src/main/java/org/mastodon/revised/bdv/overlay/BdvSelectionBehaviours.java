@@ -2,21 +2,45 @@ package org.mastodon.revised.bdv.overlay;
 
 import org.mastodon.model.NavigationHandler;
 import org.mastodon.model.SelectionModel;
-import org.scijava.ui.behaviour.BehaviourMap;
 import org.scijava.ui.behaviour.ClickBehaviour;
 import org.scijava.ui.behaviour.InputTriggerAdder;
 import org.scijava.ui.behaviour.InputTriggerMap;
 import org.scijava.ui.behaviour.util.AbstractNamedBehaviour;
+import org.scijava.ui.behaviour.util.Behaviours;
 import org.scijava.ui.behaviour.util.TriggerBehaviourBindings;
 
 public class BdvSelectionBehaviours< V extends OverlayVertex< V, E >, E extends OverlayEdge< E, V > >
 {
-	public static final String NAVIGATE_TO_VERTEX_NAME = "bdv click navigate to vertex";
-	public static final String SELECT_NAME = "bdv click select";
-	public static final String ADD_SELECT_NAME = "bdv click add to selection";
+	public static final String NAVIGATE_TO_VERTEX = "bdv click navigate to vertex";
+	public static final String SELECT = "bdv click select";
+	public static final String ADD_SELECT = "bdv click add to selection";
+
+	private static final String[] NAVIGATE_TO_VERTEX_KEYS = new String[] { "double-click button1", "shift double-click button1" };
+	private static final String[] SELECT_KEYS = new String[] { "button1" };
+	private static final String[] ADD_SELECT_KEYS = new String[] { "shift button1" };
 
 	public static final double EDGE_SELECT_DISTANCE_TOLERANCE = 5.0;
 	public static final double POINT_SELECT_DISTANCE_TOLERANCE = 5.0;
+
+	private final ClickNavigateBehaviour navigateBehaviour;
+
+	private final ClickSelectionBehaviour selectBehaviour;
+
+	private final ClickSelectionBehaviour addSelectBehaviour;
+
+	public static < V extends OverlayVertex< V, E >, E extends OverlayEdge< E, V > > void install(
+			final Behaviours behaviours,
+			final OverlayGraph< V, E > overlayGraph,
+			final OverlayGraphRenderer< V, E > renderer,
+			final SelectionModel< V, E > selection,
+			final NavigationHandler< V, E > navigation )
+	{
+		final BdvSelectionBehaviours< V, E > sb = new BdvSelectionBehaviours<>( overlayGraph, renderer, selection, navigation );
+
+		behaviours.namedBehaviour( sb.navigateBehaviour, NAVIGATE_TO_VERTEX_KEYS );
+		behaviours.namedBehaviour( sb.selectBehaviour, SELECT_KEYS );
+		behaviours.namedBehaviour( sb.addSelectBehaviour, ADD_SELECT_KEYS );
+	}
 
 	private final OverlayGraph< V, E > overlayGraph;
 
@@ -26,9 +50,7 @@ public class BdvSelectionBehaviours< V extends OverlayVertex< V, E >, E extends 
 
 	private final NavigationHandler< V, E > navigation;
 
-	private final BehaviourMap behaviourMap;
-
-	public BdvSelectionBehaviours(
+	private BdvSelectionBehaviours(
 			final OverlayGraph< V, E > overlayGraph,
 			final OverlayGraphRenderer< V, E > renderer,
 			final SelectionModel< V, E > selection,
@@ -39,29 +61,10 @@ public class BdvSelectionBehaviours< V extends OverlayVertex< V, E >, E extends 
 		this.selection = selection;
 		this.navigation = navigation;
 
-		behaviourMap = new BehaviourMap();
-		new ClickNavigateBehaviour().put( behaviourMap );
-		new ClickSelectionBehaviour( SELECT_NAME, false ).put( behaviourMap );
-		new ClickSelectionBehaviour( ADD_SELECT_NAME, true ).put( behaviourMap );
-
+		navigateBehaviour = new ClickNavigateBehaviour( NAVIGATE_TO_VERTEX );
+		selectBehaviour = new ClickSelectionBehaviour( SELECT, false );
+		addSelectBehaviour = new ClickSelectionBehaviour( ADD_SELECT, true );
 	}
-
-	public void installBehaviourBindings( final TriggerBehaviourBindings triggerbindings, final InputTriggerAdder.Factory keyConfig )
-	{
-		final InputTriggerMap inputMap = new InputTriggerMap();
-		final InputTriggerAdder adder = keyConfig.inputTriggerAdder( inputMap, "bdv" );
-
-		adder.put( NAVIGATE_TO_VERTEX_NAME, "double-click button1", "shift double-click button1" );
-		adder.put( SELECT_NAME, "button1" );
-		adder.put( ADD_SELECT_NAME, "shift button1" );
-
-		triggerbindings.addBehaviourMap( "bdv selection", behaviourMap );
-		triggerbindings.addInputTriggerMap( "bdv selection", inputMap );
-	}
-
-	/*
-	 * PRIVATE METHODS
-	 */
 
 	private void select( final int x, final int y, final boolean addToSelection )
 	{
@@ -145,9 +148,9 @@ public class BdvSelectionBehaviours< V extends OverlayVertex< V, E >, E extends 
 	 */
 	private class ClickNavigateBehaviour extends AbstractNamedBehaviour implements ClickBehaviour
 	{
-		public ClickNavigateBehaviour()
+		public ClickNavigateBehaviour( final String name )
 		{
-			super( NAVIGATE_TO_VERTEX_NAME );
+			super( name );
 		}
 
 		@Override
