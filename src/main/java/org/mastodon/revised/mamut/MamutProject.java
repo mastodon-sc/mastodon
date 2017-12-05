@@ -4,39 +4,39 @@ import java.io.File;
 
 public class MamutProject
 {
+
 	/**
-	 * Relative paths in the XML should be interpreted with respect to this.
+	 * The project folder.
 	 */
-	private File basePath;
+	private File projectFolder;
 
 	private final File datasetXmlFile;
 
-	private File rawModelFile;
+	private static final String RAW_MODEL_FILE_NAME = "model.raw";
+
+	static final String PROJECT_FILE_NAME = "project.xml";
 
 	public MamutProject(
-			final File basePath,
-			final File datasetXmlFile,
-			final File rawModelFile )
+			final File projectFolder,
+			final File datasetXmlFile )
 	{
-		this.basePath = basePath;
+		this.projectFolder = projectFolder;
 		this.datasetXmlFile = datasetXmlFile;
-		this.rawModelFile = rawModelFile;
 	}
 
 	/**
-	 * Get the base path of the project. Relative paths in the XML project
-	 * description are interpreted with respect to this.
+	 * Get the project folder.
 	 *
-	 * @return the base path of the project
+	 * @return the project folder.
 	 */
-	public File getBasePath()
+	public File getProjectFolder()
 	{
-		return basePath;
+		return projectFolder;
 	}
 
-	public void setBasePath( final File basePath )
+	public void setProjectFolder( final File projectFolder )
 	{
-		this.basePath = basePath;
+		this.projectFolder = projectFolder;
 	}
 
 	public File getDatasetXmlFile()
@@ -46,29 +46,22 @@ public class MamutProject
 
 	public File getRawModelFile()
 	{
-		return rawModelFile;
+		return new File( projectFolder, RAW_MODEL_FILE_NAME );
 	}
 
-	public void setRawModelFile( final File rawModelFile )
+	public File getProjectFile()
 	{
-		this.rawModelFile = rawModelFile;
+		return new File( projectFolder, PROJECT_FILE_NAME );
 	}
 
-	/**
-	 * Derive a name for the raw model file from the name of the project file:
-	 * Replace {@code .xml} extension with {@code .raw}. If the project name
-	 * does not end in {@code .xml}, simply append {@code .raw}.
-	 *
-	 * @param projectFile
-	 *            the project file.
-	 * @return the proposed raw model file
-	 */
-	public static File deriveRawModelFile( final File projectFile )
+	@Override
+	public String toString()
 	{
-		final String name = projectFile.getAbsolutePath();
-		if ( name.endsWith( ".xml" ) )
-			return new File( name.substring( 0, name.length() - ".xml".length() ) + ".raw" );
-		else
-			return new File( name + ".raw" );
+		return super.toString() + "\n"
+				+ " - projectFolder: " + getProjectFolder() + "\n"
+				+ " - projectFile: " + getProjectFile() + "\n"
+				+ " - modelFile: " + getRawModelFile() + "\n"
+				+ " - xmlDataFile: " + getDatasetXmlFile();
+
 	}
 }

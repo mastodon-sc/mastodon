@@ -44,8 +44,7 @@ public class Mastodon implements Command
 
 
 		final String bdvFile = "samples/datasethdf5.xml";
-		final String modelFile = "samples/model_revised.raw";
-		final MamutProject project = new MamutProject( new File( "." ), new File( bdvFile ), new File( modelFile ) );
+		final MamutProject project = new MamutProject( new File( "samples" ), new File( bdvFile ) );
 //		final MamutProject project = new MamutProjectIO().load( "samples/mamutproject.xml" );
 
 		windowManager.projectManager.open( project );
