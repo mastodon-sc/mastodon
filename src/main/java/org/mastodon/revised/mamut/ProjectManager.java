@@ -8,6 +8,7 @@ import java.io.IOException;
 import javax.swing.JFrame;
 
 import org.mastodon.revised.bdv.SharedBigDataViewerData;
+import org.mastodon.revised.bdv.overlay.ui.RenderSettingsManager;
 import org.mastodon.revised.mamut.feature.MamutFeatureComputerService;
 import org.mastodon.revised.model.mamut.Model;
 import org.mastodon.revised.trackscheme.display.style.TrackSchemeStyleManager;
@@ -192,6 +193,7 @@ public class ProjectManager
 		final InputTriggerConfig keyconf = windowManager.getKeyConfig();
 		final KeyPressedManager keyPressedManager = windowManager.getKeyPressedManager();
 		final TrackSchemeStyleManager trackSchemeStyleManager = windowManager.getTrackSchemeStyleManager();
+		final RenderSettingsManager renderSettingsManager = windowManager.getRenderSettingsManager();
 		final ViewerOptions options = ViewerOptions.options()
 				.inputTriggerConfig( keyconf )
 				.shareKeyPressedEvents( keyPressedManager );
@@ -200,7 +202,7 @@ public class ProjectManager
 				spimData,
 				options,
 				() -> windowManager.forEachBdvView( bdv -> bdv.requestRepaint() ) );
-		final MamutAppModel appModel = new MamutAppModel( model, sharedBdvData, keyconf, keyPressedManager, trackSchemeStyleManager );
+		final MamutAppModel appModel = new MamutAppModel( model, sharedBdvData, keyconf, keyPressedManager, trackSchemeStyleManager, renderSettingsManager );
 
 		windowManager.setAppModel( appModel );
 

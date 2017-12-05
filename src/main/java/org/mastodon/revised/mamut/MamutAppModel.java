@@ -2,6 +2,7 @@ package org.mastodon.revised.mamut;
 
 import org.mastodon.app.MastodonAppModel;
 import org.mastodon.revised.bdv.SharedBigDataViewerData;
+import org.mastodon.revised.bdv.overlay.ui.RenderSettingsManager;
 import org.mastodon.revised.model.mamut.BoundingSphereRadiusStatistics;
 import org.mastodon.revised.model.mamut.Link;
 import org.mastodon.revised.model.mamut.Model;
@@ -26,22 +27,27 @@ public class MamutAppModel extends MastodonAppModel< Model, Spot, Link >
 
 	private final TrackSchemeStyleManager trackSchemeStyleManager;
 
+	private final RenderSettingsManager renderSettingsManager;
+
 	private final int minTimepoint;
 
 	private final int maxTimepoint;
+
 
 	public MamutAppModel(
 			final Model model,
 			final SharedBigDataViewerData sharedBdvData,
 			final InputTriggerConfig keyconf,
 			final KeyPressedManager keyPressedManager,
-			final TrackSchemeStyleManager trackSchemeStyleManager )
+			final TrackSchemeStyleManager trackSchemeStyleManager,
+			final RenderSettingsManager renderSettingsManager )
 	{
 		super( NUM_GROUPS, model, keyconf, keyPressedManager, new String[] { "mamut" } );
 
 		this.radiusStats = new BoundingSphereRadiusStatistics( model );
 		this.sharedBdvData = sharedBdvData;
 		this.trackSchemeStyleManager = trackSchemeStyleManager;
+		this.renderSettingsManager = renderSettingsManager;
 		this.minTimepoint = 0;
 		this.maxTimepoint = sharedBdvData.getNumTimepoints() - 1;
 		/*
@@ -56,6 +62,12 @@ public class MamutAppModel extends MastodonAppModel< Model, Spot, Link >
 	{
 		return trackSchemeStyleManager;
 	}
+
+	public RenderSettingsManager getRenderSettingsManager()
+	{
+		return renderSettingsManager;
+	}
+
 
 	public BoundingSphereRadiusStatistics getRadiusStats()
 	{
@@ -76,4 +88,5 @@ public class MamutAppModel extends MastodonAppModel< Model, Spot, Link >
 	{
 		return maxTimepoint;
 	}
+
 }
