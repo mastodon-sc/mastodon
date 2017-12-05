@@ -13,6 +13,7 @@ import org.mastodon.revised.mamut.feature.MamutFeatureComputerService;
 import org.mastodon.revised.model.mamut.Model;
 import org.mastodon.revised.trackscheme.display.style.TrackSchemeStyleManager;
 import org.mastodon.revised.ui.util.FileChooser;
+import org.mastodon.revised.ui.util.FileChooser.SelectionMode;
 import org.mastodon.revised.ui.util.XmlFileFilter;
 import org.mastodon.revised.util.ToggleDialogAction;
 import org.scijava.Context;
@@ -45,7 +46,7 @@ public class ProjectManager
 
 	private MamutProject project;
 
-	private File proposedProjectFile;
+	private File proposedProjectFolder;
 
 	private final AbstractNamedAction createProjectAction;
 
@@ -105,7 +106,7 @@ public class ProjectManager
 
 		try
 		{
-			open( new MamutProject( file.getParentFile(), file, null ) );
+			open( new MamutProject( file.getParentFile(), file ) );
 		}
 		catch ( final IOException | SpimDataException e )
 		{
@@ -115,20 +116,25 @@ public class ProjectManager
 
 	public synchronized void loadProject()
 	{
-		final String fn = proposedProjectFile == null ? null : proposedProjectFile.getAbsolutePath();
+		final String fn = proposedProjectFolder == null
+				? ( project == null
+						? null
+						: project.getProjectFolder().getAbsolutePath() )
+				: proposedProjectFolder.getAbsolutePath();
 		final Component parent = null; // TODO
 		final File file = FileChooser.chooseFile(
 				parent,
 				fn,
-				new XmlFileFilter(),
+				null,
 				"Open Mastodon Project",
-				FileChooser.DialogType.LOAD );
+				FileChooser.DialogType.LOAD,
+				SelectionMode.DIRECTORIES_ONLY );
 		if ( file == null )
 			return;
 
 		try
 		{
-			proposedProjectFile = file;
+			proposedProjectFolder = file;
 			final MamutProject project = new MamutProjectIO().load( file.getAbsolutePath() );
 			open( project );
 		}
@@ -143,29 +149,25 @@ public class ProjectManager
 		if ( project == null )
 			return;
 
-		String fn = proposedProjectFile == null ? null : proposedProjectFile.getAbsolutePath();
+		final String folderPath = proposedProjectFolder == null
+				? project.getProjectFolder().getAbsolutePath()
+				: proposedProjectFolder.getAbsolutePath();
 
 		final Component parent = null; // TODO
-		File file = FileChooser.chooseFile(
+		final File folder = FileChooser.chooseFile(
 				parent,
-				fn,
-				new XmlFileFilter(),
+				folderPath,
+				null,
 				"Save Mastodon Project",
-				FileChooser.DialogType.SAVE );
-		if ( file == null )
+				FileChooser.DialogType.SAVE,
+				SelectionMode.DIRECTORIES_ONLY );
+		if ( folder == null )
 			return;
-
-		fn = file.getAbsolutePath();
-		if ( !fn.endsWith( ".xml" ) )
-			file = new File( fn + ".xml" );
-
-		if ( !file.equals( proposedProjectFile ) )
-			project.setRawModelFile( MamutProject.deriveRawModelFile( file ) );
 
 		try
 		{
-			proposedProjectFile = file;
-			saveProject( proposedProjectFile );
+			proposedProjectFolder = folder;
+			saveProject( proposedProjectFolder );
 		}
 		catch ( final IOException e )
 		{
@@ -227,24 +229,20 @@ public class ProjectManager
 		updateEnabledActions();
 	}
 
-	public synchronized void saveProject( final File projectFile ) throws IOException
+	public synchronized void saveProject( File projectFolder ) throws IOException
 	{
 		if ( project == null )
 			return;
 
-		File modelFile = project.getRawModelFile();
-		if ( modelFile == null )
-		{
-			modelFile = MamutProject.deriveRawModelFile( projectFile );
-			project.setRawModelFile( modelFile );
-		}
+		if ( !projectFolder.getAbsolutePath().endsWith( ".mastodon" ) )
+			projectFolder = new File( projectFolder.getParent(), projectFolder.getName() + ".mastodon" );
 
-		project.setBasePath( projectFile.getParentFile() );
+		project.setProjectFolder( projectFolder );
+		new MamutProjectIO().save( project );
 
 		final Model model = windowManager.getAppModel().getModel();
+		final File modelFile = project.getRawModelFile();
 		model.saveRaw( modelFile );
-
-		new MamutProjectIO().save( project, projectFile.getAbsolutePath() );
 
 		updateEnabledActions();
 	}
