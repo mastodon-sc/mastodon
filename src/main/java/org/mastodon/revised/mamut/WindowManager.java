@@ -132,6 +132,7 @@ public class WindowManager
 			keyconfEditor.modelToConfig();
 			if ( appModel != null )
 				appModel.getAppActions().updateKeyConfig( keyconf );
+				forEachView( v -> v.updateKeyConfig() );
 		} );
 		settings.addPage( page );
 		settings.addPage( new TrackSchemeStyleSettingsPage( "TrackScheme Styles", trackSchemeStyleManager ) );
@@ -236,9 +237,15 @@ public class WindowManager
 		} );
 	}
 
-	public void forEachTrackSchemwView( final Consumer< ? super MamutViewTrackScheme > action )
+	public void forEachTrackSchemeView( final Consumer< ? super MamutViewTrackScheme > action )
 	{
 		tsWindows.forEach( action );
+	}
+
+	public void forEachView(  final Consumer< ? super MamutView > action  )
+	{
+		forEachBdvView( action );
+		forEachTrackSchemeView( action );
 	}
 
 	public void createBigDataViewer()

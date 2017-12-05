@@ -46,7 +46,7 @@ public class MastodonAppModel<
 
 	private final GroupManager groupManager;
 
-	private final InputTriggerConfig keyconf;
+	private InputTriggerConfig keyconf;
 
 	private final KeyPressedManager keyPressedManager;
 
@@ -130,6 +130,11 @@ public class MastodonAppModel<
 	public InputTriggerConfig getKeyConfig()
 	{
 		return keyconf;
+	}
+
+	public void setKeyConfig( final InputTriggerConfig keyconf )
+	{
+		this.keyconf = keyconf;
 	}
 
 	public String[] getKeyConfigContexts()
