@@ -136,12 +136,10 @@ class MamutViewBdv extends MamutView< OverlayGraphWrapper< Spot, Link >, Overlay
 
 		final InputTriggerConfig keyconf = appModel.getKeyConfig();
 
-		final BdvSelectionBehaviours< ?, ? > selectionBehaviours = new BdvSelectionBehaviours<>( viewGraph, tracksOverlay, selectionModel, navigationHandler );
-		selectionBehaviours.installBehaviourBindings( frame.getTriggerbindings(), keyconf );
-
 		contextProvider = new BdvContextProvider<>( windowTitle, viewGraph, tracksOverlay );
 		viewer.addRenderTransformListener( contextProvider );
 
+		BdvSelectionBehaviours.install( viewBehaviours, viewGraph, tracksOverlay, selectionModel, navigationHandler );
 		EditBehaviours.installActionBindings( viewBehaviours, viewGraph, tracksOverlay, model );
 		EditSpecialBehaviours.installActionBindings( viewBehaviours, frame.getViewerPanel(), viewGraph, tracksOverlay, model );
 		HighlightBehaviours.installActionBindings( viewBehaviours, viewGraph, viewGraph.getLock(), viewGraph, highlightModel, model );
