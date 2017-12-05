@@ -162,7 +162,7 @@ public class DefaultFeatureModel< AM extends AbstractModel< ?, ?, ? > > implemen
 	}
 
 
-	private static final String FEATURE_FOLDER = "Features";
+	private static final String FEATURE_FOLDER = "features";
 
 	private static final String RAW_EXTENSION = ".raw";
 
