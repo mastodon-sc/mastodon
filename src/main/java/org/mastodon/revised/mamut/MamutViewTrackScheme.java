@@ -26,7 +26,7 @@ import org.mastodon.revised.trackscheme.display.ToggleLinkBehaviour;
 import org.mastodon.revised.trackscheme.display.TrackSchemeFrame;
 import org.mastodon.revised.trackscheme.display.TrackSchemeNavigationActions;
 import org.mastodon.revised.trackscheme.display.TrackSchemeOptions;
-import org.mastodon.revised.trackscheme.display.TrackSchemeZoomBehaviours;
+import org.mastodon.revised.trackscheme.display.TrackSchemeZoom;
 import org.mastodon.revised.trackscheme.display.style.TrackSchemeStyle;
 import org.mastodon.revised.ui.EditTagActions;
 import org.mastodon.revised.ui.FocusActions;
@@ -99,7 +99,7 @@ public class MamutViewTrackScheme extends MamutView< TrackSchemeGraph< Spot, Lin
 		ToggleLinkBehaviour.install( viewBehaviours, frame.getTrackschemePanel(),	viewGraph, viewGraph.getLock(),	viewGraph, model );
 		EditFocusVertexLabelAction.install( viewActions, frame.getTrackschemePanel(), focusModel, model );
 		FocusActions.install( viewActions, viewGraph, viewGraph.getLock(), navigateFocusModel, selectionModel );
-		TrackSchemeZoomBehaviours.installActionBindings( frame.getTriggerbindings(), keyconf, frame.getTrackschemePanel() );
+		TrackSchemeZoom.installActionBindings( viewBehaviours, frame.getTrackschemePanel() );
 		EditTagActions.install( viewActions, frame.getKeybindings(), frame.getTriggerbindings(), model.getTagSetModel(), appModel.getSelectionModel(), frame.getTrackschemePanel(), frame.getTrackschemePanel().getDisplay(), model );
 		viewActions.runnableAction( () -> System.out.println( model.getTagSetModel() ), "output tags", "U" ); // DEBUG TODO: REMOVE
 
