@@ -11,6 +11,7 @@ import javax.swing.Box;
 import javax.swing.JCheckBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
 
 import org.mastodon.revised.bdv.overlay.RenderSettings;
@@ -72,11 +73,12 @@ public class RenderSettingsPanel extends JPanel implements UpdateListener
 
 		final GridBagConstraints c = new GridBagConstraints();
 		c.insets = new Insets( 0, 5, 0, 5 );
+		c.fill = GridBagConstraints.HORIZONTAL;
 		c.gridwidth = 1;
-
 
 		c.gridy = 0;
 		antialiasingBox = new JCheckBox();
+		antialiasingBox.setHorizontalAlignment( SwingConstants.TRAILING );
 		antialiasingBox.addActionListener( new ActionListener()
 		{
 			@Override
@@ -87,9 +89,11 @@ public class RenderSettingsPanel extends JPanel implements UpdateListener
 		} );
 		c.anchor = GridBagConstraints.LINE_END;
 		c.gridx = 0;
+		c.weightx = 1.;
 		add( antialiasingBox, c );
 		c.anchor = GridBagConstraints.LINE_START;
 		c.gridx = 1;
+		c.weightx = 0.;
 		add( new JLabel( "anti-aliasing" ), c );
 
 
@@ -99,6 +103,7 @@ public class RenderSettingsPanel extends JPanel implements UpdateListener
 
 		c.gridy++;
 		linksBox = new JCheckBox();
+		linksBox.setHorizontalAlignment( SwingConstants.TRAILING );
 		linksBox.addActionListener( new ActionListener()
 		{
 			@Override
@@ -138,6 +143,7 @@ public class RenderSettingsPanel extends JPanel implements UpdateListener
 
 		c.gridy++;
 		gradientBox = new JCheckBox();
+		gradientBox.setHorizontalAlignment( SwingConstants.TRAILING );
 		gradientBox.addActionListener( new ActionListener()
 		{
 			@Override
@@ -160,6 +166,7 @@ public class RenderSettingsPanel extends JPanel implements UpdateListener
 
 		c.gridy++;
 		spotsBox = new JCheckBox();
+		spotsBox.setHorizontalAlignment( SwingConstants.TRAILING );
 		spotsBox.addActionListener( new ActionListener()
 		{
 			@Override
@@ -178,6 +185,7 @@ public class RenderSettingsPanel extends JPanel implements UpdateListener
 
 		c.gridy++;
 		intersectionBox = new JCheckBox();
+		intersectionBox.setHorizontalAlignment( SwingConstants.TRAILING );
 		intersectionBox.addActionListener( new ActionListener()
 		{
 			@Override
@@ -196,6 +204,7 @@ public class RenderSettingsPanel extends JPanel implements UpdateListener
 
 		c.gridy++;
 		projectionBox = new JCheckBox();
+		projectionBox.setHorizontalAlignment( SwingConstants.TRAILING );
 		projectionBox.addActionListener( new ActionListener()
 		{
 			@Override
@@ -214,6 +223,7 @@ public class RenderSettingsPanel extends JPanel implements UpdateListener
 
 		c.gridy++;
 		centersBox = new JCheckBox();
+		centersBox.setHorizontalAlignment( SwingConstants.TRAILING );
 		centersBox.addActionListener( new ActionListener()
 		{
 			@Override
@@ -232,6 +242,7 @@ public class RenderSettingsPanel extends JPanel implements UpdateListener
 
 		c.gridy++;
 		centersForEllipsesBox = new JCheckBox();
+		centersForEllipsesBox.setHorizontalAlignment( SwingConstants.TRAILING );
 		centersForEllipsesBox.addActionListener( new ActionListener()
 		{
 			@Override
@@ -254,6 +265,7 @@ public class RenderSettingsPanel extends JPanel implements UpdateListener
 
 		c.gridy++;
 		drawSpotLabelsBox = new JCheckBox();
+		drawSpotLabelsBox.setHorizontalAlignment( SwingConstants.TRAILING );
 		drawSpotLabelsBox.addActionListener( new ActionListener()
 		{
 			@Override
@@ -304,6 +316,7 @@ public class RenderSettingsPanel extends JPanel implements UpdateListener
 
 		c.gridy++;
 		focusLimitRelativeBox = new JCheckBox();
+		focusLimitRelativeBox.setHorizontalAlignment( SwingConstants.TRAILING );
 		focusLimitRelativeBox.addActionListener( new ActionListener()
 		{
 			@Override
