@@ -396,6 +396,7 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 		final ScreenVertexMath screenVertexMath = new ScreenVertexMath();
 		final boolean drawPointsAlways = drawPointsAlways();
 		final boolean drawPointsMaybe = drawPointsMaybe();
+		final boolean useGradient = settings.getUseGradient();
 
 		graph.getLock().readLock().lock();
 		index.readLock().lock();
@@ -442,7 +443,7 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 								if ( ( sd0 > -1 && sd0 < 1 ) || ( sd1 > -1 && sd1 < 1 ) )
 								{
 									final Color c1 = getColor( sd1, td1, sliceDistanceFade, timepointDistanceFade, selection.isSelected( edge ) );
-									if ( settings.getUseGradient() )
+									if ( useGradient )
 									{
 										final Color c0 = getColor( sd0, td0, sliceDistanceFade, timepointDistanceFade, selection.isSelected( edge ) );
 										graphics.setPaint( new GradientPaint( x0, y0, c0, x1, y1, c1 ) );
@@ -483,6 +484,9 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 			{
 				final double ellipsoidFadeDepth = settings.getEllipsoidFadeDepth();
 				final boolean drawSpotLabels = settings.getDrawSpotLabels();
+				final boolean drawEllipsoidSliceIntersection = settings.getDrawEllipsoidSliceIntersection();
+				final boolean drawEllipsoidSliceProjection = settings.getDrawEllipsoidSliceProjection();
+				final double pointFadeDepth = settings.getPointFadeDepth();
 
 				final V highlighted = highlight.getHighlightedVertex( ref1 );
 				final V focused = focus.getFocusedVertex( ref2 );
@@ -505,7 +509,7 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 					final double z = screenVertexMath.getViewPos()[ 2 ];
 					final double sd = sliceDistance( z, maxDepth );
 
-					if ( settings.getDrawEllipsoidSliceIntersection() )
+					if ( drawEllipsoidSliceIntersection )
 					{
 						if ( screenVertexMath.intersectsViewPlane() )
 						{
@@ -520,14 +524,14 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 							if ( isHighlighted || isFocused )
 								graphics.setStroke( defaultVertexStroke );
 
-							if ( !settings.getDrawEllipsoidSliceProjection() && drawSpotLabels )
+							if ( !drawEllipsoidSliceProjection && drawSpotLabels )
 								drawEllipseLabel( graphics, ellipse, vertex.getLabel() );
 						}
 					}
 
 					if ( sd > -1 && sd < 1 )
 					{
-						if ( settings.getDrawEllipsoidSliceProjection() )
+						if ( drawEllipsoidSliceProjection )
 						{
 							final Ellipse ellipse = screenVertexMath.getProjectEllipse();
 
@@ -548,7 +552,7 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 
 						if ( drawPointsAlways || ( drawPointsMaybe && !screenVertexMath.intersectsViewPlane() ) )
 						{
-							graphics.setColor( getColor( sd, 0, settings.getPointFadeDepth(), timepointDistanceFade, selection.isSelected( vertex ) ) );
+							graphics.setColor( getColor( sd, 0, pointFadeDepth, timepointDistanceFade, selection.isSelected( vertex ) ) );
 							double radius = pointRadius;
 							if ( isHighlighted || isFocused )
 								radius *= 2;
@@ -817,6 +821,8 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 		final double maxDepth = getMaxDepth( transform );
 		final boolean drawPointsAlways = drawPointsAlways();
 		final boolean drawPointsMaybe = drawPointsMaybe();
+		final boolean drawEllipsoidSliceIntersection = settings.getDrawEllipsoidSliceIntersection();
+		final boolean drawEllipsoidSliceProjection = settings.getDrawEllipsoidSliceProjection();
 		final ScreenVertexMath screenVertexMath = new ScreenVertexMath();
 
 		final ConvexPolytope cropPolytopeGlobal = getVisiblePolytopeGlobal( transform, timepoint );
@@ -826,7 +832,7 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 		{
 			screenVertexMath.init( vertex, transform );
 
-			if ( settings.getDrawEllipsoidSliceIntersection() )
+			if ( drawEllipsoidSliceIntersection )
 			{
 				if ( screenVertexMath.intersectsViewPlane()
 						&& screenVertexMath.intersectionIntersectsViewInterval( 0, width, 0, height ) )
@@ -840,7 +846,7 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 			final double sd = sliceDistance( z, maxDepth );
 			if ( -1 < sd && sd < 1 )
 			{
-				if ( settings.getDrawEllipsoidSliceProjection()
+				if ( drawEllipsoidSliceProjection
 						&& screenVertexMath.projectionIntersectsViewInterval( 0, width, 0, height ) )
 				{
 					contextList.add( vertex );
