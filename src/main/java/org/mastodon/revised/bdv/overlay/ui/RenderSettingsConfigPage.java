@@ -85,7 +85,7 @@ public class RenderSettingsConfigPage extends SelectAndEditProfileSettingsPage< 
 		}
 	}
 
-	public static class RenderSettingsProfile implements Profile
+	public static class RenderSettingsProfile implements SelectAndEditProfileSettingsPage.Profile
 	{
 		RenderSettings style;
 
