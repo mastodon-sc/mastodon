@@ -89,6 +89,15 @@ public class TrackSchemeStyleManager
 		style.name( newName );
 	}
 
+	/**
+	 * Returns a copy of the specified {@link TrackSchemeStyle}, making sure that
+	 * the copy receives a name not already present in this manager's list of
+	 * {@link TrackSchemeStyle}.
+	 *
+	 * @param style
+	 *            the {@link TrackSchemeStyle} to copy.
+	 * @return a new {@link TrackSchemeStyle}
+	 */
 	public synchronized TrackSchemeStyle duplicate( final TrackSchemeStyle style )
 	{
 		final String name = style.getName();
@@ -107,6 +116,7 @@ public class TrackSchemeStyleManager
 			n = 1;
 			prefix = name;
 		}
+
 		String newName;
 		do
 			newName = prefix + " (" + ( ++n ) + ")";
