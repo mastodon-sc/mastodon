@@ -5,10 +5,7 @@ import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 import java.util.function.Consumer;
 
 import javax.swing.JFrame;
@@ -28,7 +25,7 @@ import org.scijava.ui.behaviour.KeyPressedManager;
 import org.scijava.ui.behaviour.io.InputTriggerConfig;
 import org.scijava.ui.behaviour.io.InputTriggerDescription;
 import org.scijava.ui.behaviour.io.InputTriggerDescriptionsBuilder;
-import org.scijava.ui.behaviour.io.VisualEditorPanel;
+import org.scijava.ui.behaviour.io.gui.VisualEditorPanel;
 import org.scijava.ui.behaviour.io.yaml.YamlConfigIO;
 import org.scijava.ui.behaviour.util.AbstractNamedAction;
 import org.scijava.ui.behaviour.util.Actions;
@@ -119,12 +116,7 @@ public class WindowManager
 
 		// TODO FIX HACK: We are creating a new dialog everytime so that the keyconf (which is filled from programmatically set defaults is)
 		final PreferencesDialog settings = new PreferencesDialog( null );
-		final InputTriggerDescriptionsBuilder builder = new InputTriggerDescriptionsBuilder( keyconf );
-		final Map< String, String > commandDescriptions = new HashMap<>();
-		builder.getBehaviourNames().forEach( name -> commandDescriptions.put( name, null ) );
-		final Set< String > contexts = builder.getContexts();
-
-		final VisualEditorPanel keyconfEditor = new VisualEditorPanel( keyconf, commandDescriptions, contexts );
+		final VisualEditorPanel keyconfEditor = new VisualEditorPanel( keyconf );
 		keyconfEditor.setButtonPanelVisible( false );
 		final DefaultSettingsPage page = new DefaultSettingsPage( "Keymap", keyconfEditor );
 		page.onCancel( () -> keyconfEditor.configToModel() );
