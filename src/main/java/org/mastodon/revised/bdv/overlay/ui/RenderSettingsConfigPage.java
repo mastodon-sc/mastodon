@@ -34,16 +34,16 @@ public class RenderSettingsConfigPage extends SelectAndEditProfileSettingsPage< 
 	{
 		private final Listeners.SynchronizedList< ModificationListener > modificationListeners;
 
-		private final RenderSettings editedRenderSettings;
+		private final RenderSettings editedStyle;
 
-		private final RenderSettingsPanel renderSettingsPanel;
+		private final RenderSettingsPanel styleEditorPanel;
 
 		public RenderSettingsProfileEditPanel()
 		{
-			editedRenderSettings = RenderSettings.defaultStyle().copy( "Edited" );
-			renderSettingsPanel = new RenderSettingsPanel( editedRenderSettings );
+			editedStyle = RenderSettings.defaultStyle().copy( "Edited" );
+			styleEditorPanel = new RenderSettingsPanel( editedStyle );
 			modificationListeners = new Listeners.SynchronizedList<>();
-			editedRenderSettings.addUpdateListener( this );
+			editedStyle.addUpdateListener( this );
 		}
 
 		private boolean trackModifications = true;
@@ -59,7 +59,7 @@ public class RenderSettingsConfigPage extends SelectAndEditProfileSettingsPage< 
 		public void loadProfile( final RenderSettingsProfile profile )
 		{
 			trackModifications = false;
-			editedRenderSettings.set( profile.rs );
+			editedStyle.set( profile.style );
 			trackModifications = true;
 		}
 
@@ -67,9 +67,9 @@ public class RenderSettingsConfigPage extends SelectAndEditProfileSettingsPage< 
 		public void storeProfile( final RenderSettingsProfile profile )
 		{
 			trackModifications = false;
-			editedRenderSettings.setName( profile.rs.getName() );
+			editedStyle.setName( profile.style.getName() );
 			trackModifications = true;
-			profile.rs.set( editedRenderSettings );
+			profile.style.set( editedStyle );
 		}
 
 		@Override
@@ -81,19 +81,19 @@ public class RenderSettingsConfigPage extends SelectAndEditProfileSettingsPage< 
 		@Override
 		public JPanel getJPanel()
 		{
-			return renderSettingsPanel;
+			return styleEditorPanel;
 		}
 	}
 
-	public static class RenderSettingsProfile implements SelectAndEditProfileSettingsPage.Profile
+	public static class RenderSettingsProfile implements Profile
 	{
-		RenderSettings rs;
+		RenderSettings style;
 
 		boolean isBuiltin;
 
-		public RenderSettingsProfile( final RenderSettings rs, final boolean isBuiltin )
+		public RenderSettingsProfile( final RenderSettings style, final boolean isBuiltin )
 		{
-			this.rs = rs;
+			this.style = style;
 			this.isBuiltin = isBuiltin;
 		}
 
@@ -106,7 +106,7 @@ public class RenderSettingsConfigPage extends SelectAndEditProfileSettingsPage< 
 		@Override
 		public String getName()
 		{
-			return rs.getName();
+			return style.getName();
 		}
 
 		@Override
@@ -118,13 +118,13 @@ public class RenderSettingsConfigPage extends SelectAndEditProfileSettingsPage< 
 				return false;
 
 			final RenderSettingsProfile that = ( RenderSettingsProfile ) o;
-			return isBuiltin == that.isBuiltin && rs.getName().equals( that.rs.getName() );
+			return isBuiltin == that.isBuiltin && style.getName().equals( that.style.getName() );
 		}
 
 		@Override
 		public int hashCode()
 		{
-			int result = rs.hashCode();
+			int result = style.hashCode();
 			result = 31 * result + ( isBuiltin ? 1 : 0 );
 			return result;
 		}
@@ -132,51 +132,51 @@ public class RenderSettingsConfigPage extends SelectAndEditProfileSettingsPage< 
 
 	static class RenderSettingsProfileManager implements ProfileManager< RenderSettingsProfile >
 	{
-		private final RenderSettingsManager rs;
+		private final RenderSettingsManager styles;
 
-		private final RenderSettingsManager rsManager;
+		private final RenderSettingsManager styleManager;
 
 		public RenderSettingsProfileManager( final RenderSettingsManager styleManager )
 		{
-			this.rsManager = styleManager;
-			rs = new RenderSettingsManager( false );
-			rs.set( styleManager );
+			this.styleManager = styleManager;
+			styles = new RenderSettingsManager( false );
+			styles.set( styleManager );
 		}
 
 		@Override
 		public List< RenderSettingsProfile > getProfiles()
 		{
 			return Stream.concat(
-					rs.getBuiltinRenderSettings().stream().map( style -> new RenderSettingsProfile( style, true ) ),
-					rs.getUserRenderSettings().stream().map( style -> new RenderSettingsProfile( style, false ) )
+					styles.getBuiltinStyles().stream().map( style -> new RenderSettingsProfile( style, true ) ),
+					styles.getUserStyles().stream().map( style -> new RenderSettingsProfile( style, false ) )
 			).collect( Collectors.toList() );
 		}
 
 		@Override
 		public RenderSettingsProfile getSelectedProfile()
 		{
-			final RenderSettings style = rs.getDefaultRenderSettings();
-			final boolean isBuiltin = rs.getBuiltinRenderSettings().stream().anyMatch( s -> s.getName().equals( style.getName() ) );
+			final RenderSettings style = styles.getDefaultStyle();
+			final boolean isBuiltin = styles.getBuiltinStyles().stream().anyMatch( s -> s.getName().equals( style.getName() ) );
 			return new RenderSettingsProfile( style, isBuiltin );
 		}
 
 		@Override
 		public void select( final RenderSettingsProfile profile )
 		{
-			rs.setDefaultStyle( profile.rs );
+			styles.setDefaultStyle( profile.style );
 		}
 
 		@Override
 		public RenderSettingsProfile duplicate( final RenderSettingsProfile profile )
 		{
-			final RenderSettings duplicate = rs.duplicate( profile.rs );
+			final RenderSettings duplicate = styles.duplicate( profile.style );
 			return new RenderSettingsProfile( duplicate, false );
 		}
 
 		@Override
 		public void rename( final RenderSettingsProfile profile, final String newName )
 		{
-			rs.rename( profile.rs, newName );
+			styles.rename( profile.style, newName );
 		}
 
 		@Override
@@ -189,7 +189,7 @@ public class RenderSettingsConfigPage extends SelectAndEditProfileSettingsPage< 
 				final List< RenderSettingsProfile > profiles = getProfiles();
 				newSelectedIndex = Math.max( 0, profiles.indexOf( profile ) - 1 );
 			}
-			rs.remove( profile.rs );
+			styles.remove( profile.style );
 			if ( wasSelected )
 			{
 				select( getProfiles().get( newSelectedIndex ) );
@@ -199,14 +199,14 @@ public class RenderSettingsConfigPage extends SelectAndEditProfileSettingsPage< 
 		@Override
 		public void apply()
 		{
-			rsManager.set( rs );
-			rsManager.saveRenderSettings();
+			styleManager.set( styles );
+			styleManager.saveStyles();
 		}
 
 		@Override
 		public void cancel()
 		{
-			rs.set( rsManager );
+			styles.set( styleManager );
 		}
 	}
 

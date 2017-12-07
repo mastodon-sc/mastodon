@@ -145,7 +145,7 @@ class MamutViewBdv extends MamutView< OverlayGraphWrapper< Spot, Link >, Overlay
 		viewer.addTimePointListener( timePointIndex -> timepointModel.setTimepoint( timePointIndex ) );
 		timepointModel.listeners().add( () -> viewer.setTimepoint( timepointModel.getTimepoint() ) );
 
-		final RenderSettings renderSettings = appModel.getRenderSettingsManager().getForwardDefaultRenderSettings();
+		final RenderSettings renderSettings = appModel.getRenderSettingsManager().getForwardDefaultStyle();
 		tracksOverlay.setRenderSettings( renderSettings );
 		renderSettings.addUpdateListener( () -> {
 			viewer.repaint();
