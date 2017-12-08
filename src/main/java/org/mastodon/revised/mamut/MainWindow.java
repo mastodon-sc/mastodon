@@ -102,6 +102,13 @@ public class MainWindow extends JFrame
 
 		++gridy;
 
+		final JButton tagSetEditorPanel = new JButton( actionMap.get( WindowManager.SHOW_TAG_PANEL ) );
+		tagSetEditorPanel.setText( "configure tags" );
+		button_gbc_right.gridy = gridy;
+		buttonsPanel.add( tagSetEditorPanel, button_gbc_right );
+
+		++gridy;
+
 		separator_gbc.gridy = gridy;
 		buttonsPanel.add( new JSeparator(), separator_gbc );
 
