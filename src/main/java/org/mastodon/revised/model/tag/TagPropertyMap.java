@@ -58,16 +58,13 @@ public class TagPropertyMap< O, K > extends ObjPropertyMap< O, K >
 		if ( null != previous )
 			removeObjectFromTagSet( o, previous );
 
-		// Store in tag set.
-		RefSet< O > coll = tags.get( tag );
-		if ( null == coll )
-		{
-			coll = RefCollections.createRefSet( pool );
-			tags.put( tag, coll );
-		}
-		coll.add( o );
-
+		store( o, tag );
 		return previous;
+	}
+
+	void store( final O o, final K tag )
+	{
+		tags.computeIfAbsent( tag, coll -> RefCollections.createRefSet( pool ) ).add( o );
 	}
 
 	/**
@@ -81,12 +78,7 @@ public class TagPropertyMap< O, K > extends ObjPropertyMap< O, K >
 	 */
 	public void set( final Iterable< O > objects, final K tag )
 	{
-		RefSet< O > set = tags.get( tag );
-		if ( null == set )
-		{
-			set = RefCollections.createRefSet( pool );
-			tags.put( tag, set );
-		}
+		final RefSet< O > set = tags.computeIfAbsent( tag, coll -> RefCollections.createRefSet( pool ) );
 
 		final Set< K > tagsToCheck = new HashSet<>();
 		for ( final O o : objects )
@@ -97,16 +89,13 @@ public class TagPropertyMap< O, K > extends ObjPropertyMap< O, K >
 				tags.get( previousTag ).remove( o );
 				tagsToCheck.add( previousTag );
 			}
-
 			set.add( o );
 		}
 
 		// Check if we emptied the tags.
-		for ( final K t : tagsToCheck )
-		{
-			if ( tags.get( t ).isEmpty() )
-				tags.remove( t );
-		}
+		tagsToCheck.stream()
+				.filter( tagToCheck -> tags.get( tagToCheck ).isEmpty() )
+				.forEach( emptyTag -> tags.remove( emptyTag ) );
 	}
 
 	/**
@@ -127,7 +116,7 @@ public class TagPropertyMap< O, K > extends ObjPropertyMap< O, K >
 	}
 
 	/**
-	 * Removes the tags for the specified {@code objects} collection, whathever
+	 * Removes the tags for the specified {@code objects} collection, whatever
 	 * they are.
 	 *
 	 * @param objects
@@ -147,11 +136,9 @@ public class TagPropertyMap< O, K > extends ObjPropertyMap< O, K >
 		}
 
 		// Check if we emptied the tags.
-		for ( final K tag : tagsToCheck )
-		{
-			if ( tags.get( tag ).isEmpty() )
-				tags.remove( tag );
-		}
+		tagsToCheck.stream()
+				.filter( tagToCheck -> tags.get( tagToCheck ).isEmpty() )
+				.forEach( emptyTag -> tags.remove( emptyTag ) );
 	}
 
 	/**

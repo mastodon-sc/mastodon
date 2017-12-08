@@ -39,12 +39,21 @@ public class GraphTagPropertyMap< V extends Vertex< E >, E extends Edge< V > >
 	 */
 	private final AtomicInteger tagID;
 
+
 	public GraphTagPropertyMap( final String name, final ReadOnlyGraph< V, E > graph )
 	{
+		this( name, graph, new ArrayList<>(), new TagPropertyMap<>( graph.vertices() ), new TagPropertyMap<>( graph.edges() ) );
+	}
+
+	/**
+	 * For deserialization only.
+	 */
+	GraphTagPropertyMap( final String name, final ReadOnlyGraph< V, E > graph, final List< Tag > tags, final TagPropertyMap< V, Tag > vPropertyMap, final TagPropertyMap< E, Tag > ePropertyMap )
+	{
 		this.name = name;
-		this.vertexTag = new TagPropertyMap<>( graph.vertices() );
-		this.edgeTag = new TagPropertyMap<>( graph.edges() );
-		this.tags = new ArrayList<>();
+		this.vertexTag = vPropertyMap;
+		this.edgeTag = ePropertyMap;
+		this.tags = tags;
 		this.tagID = new AtomicInteger( 0 );
 	}
 
@@ -142,5 +151,15 @@ public class GraphTagPropertyMap< V extends Vertex< E >, E extends Edge< V > >
 	public Collection< E > getTaggedEdges( final Tag tag )
 	{
 		return edgeTag.getTaggedWith( tag ) == null ? Collections.emptyList() : edgeTag.getTaggedWith( tag );
+	}
+
+	TagPropertyMap< V, Tag > vertexMap()
+	{
+		return vertexTag;
+	}
+
+	TagPropertyMap< E, Tag > edgeMap()
+	{
+		return edgeTag;
 	}
 }
