@@ -18,6 +18,7 @@ import org.mastodon.app.ui.settings.ModificationListener;
 import org.mastodon.app.ui.settings.SettingsPage;
 import org.mastodon.revised.model.mamut.Model;
 import org.mastodon.revised.model.mamut.Spot;
+import org.mastodon.revised.model.tag.TagSetDialog;
 import org.mastodon.revised.trackscheme.display.style.TrackSchemeStyleManager;
 import org.mastodon.revised.trackscheme.display.style.TrackSchemeStyleSettingsPage;
 import org.mastodon.revised.ui.SelectionActions;
@@ -40,9 +41,11 @@ public class WindowManager
 {
 	public static final String NEW_BDV_VIEW = "new bdv view";
 	public static final String NEW_TRACKSCHEME_VIEW = "new trackscheme view";
+	public static final String SHOW_TAG_PANEL = "show tag panel";
 
 	static final String[] NEW_BDV_VIEW_KEYS = new String[] { "not mapped" };
 	static final String[] NEW_TRACKSCHEME_VIEW_KEYS = new String[] { "not mapped" };
+	static final String[] SHOW_TAG_PANEL_KEYS = new String[] { "not mapped" };
 
 	/**
 	 * All currently open BigDataViewer windows.
@@ -71,9 +74,13 @@ public class WindowManager
 
 	private final AbstractNamedAction newTrackSchemeViewAction;
 
+	private final AbstractNamedAction showTagPanelAction;
+
 	private MamutAppModel appModel;
 
 	final ProjectManager projectManager;
+
+	private TagSetDialog tagSetDialog;
 
 	public WindowManager( final InputTriggerConfig keyconf )
 	{
@@ -89,9 +96,11 @@ public class WindowManager
 
 		newBdvViewAction = new RunnableAction( NEW_BDV_VIEW, this::createBigDataViewer );
 		newTrackSchemeViewAction = new RunnableAction( NEW_TRACKSCHEME_VIEW, this::createTrackScheme );
+		showTagPanelAction = new RunnableAction( SHOW_TAG_PANEL, this::showTagPanel );
 
 		globalAppActions.namedAction( newBdvViewAction, NEW_BDV_VIEW_KEYS );
 		globalAppActions.namedAction( newTrackSchemeViewAction, NEW_TRACKSCHEME_VIEW_KEYS );
+		globalAppActions.namedAction( showTagPanelAction, SHOW_TAG_PANEL_KEYS );
 
 		updateEnabledActions();
 	}
@@ -100,6 +109,7 @@ public class WindowManager
 	{
 		newBdvViewAction.setEnabled( appModel != null );
 		newTrackSchemeViewAction.setEnabled( appModel != null );
+		showTagPanelAction.setEnabled( appModel != null );
 	}
 
 	void setAppModel( final MamutAppModel appModel )
@@ -287,6 +297,13 @@ public class WindowManager
 			Thread.currentThread().interrupt();
 			e.printStackTrace();
 		}
+	}
+
+	public void showTagPanel()
+	{
+		if ( null == tagSetDialog )
+			tagSetDialog = new TagSetDialog( null, appModel.getModel().getTagSetModel() );
+		tagSetDialog.setVisible( true );
 	}
 
 	InputTriggerConfig getKeyConfig()
