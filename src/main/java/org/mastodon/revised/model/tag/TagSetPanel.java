@@ -17,17 +17,14 @@ import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.awt.geom.RoundRectangle2D;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Vector;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.swing.AbstractListModel;
 import javax.swing.Box;
 import javax.swing.ComboBoxEditor;
-import javax.swing.DefaultComboBoxModel;
+import javax.swing.ComboBoxModel;
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
@@ -47,7 +44,7 @@ import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 
 import org.mastodon.revised.model.mamut.Link;
-import org.mastodon.revised.model.mamut.ModelGraph;
+import org.mastodon.revised.model.mamut.Model;
 import org.mastodon.revised.model.mamut.Spot;
 
 public class TagSetPanel extends JPanel
@@ -72,21 +69,15 @@ public class TagSetPanel extends JPanel
 
 	private final JColorChooser colorChooser;
 
-	private final DefaultComboBoxModel< GraphTagPropertyMap< ?, ? > > model;
-
 	private final ArrayList< UpdateListener > listeners;
 
-	private final GraphTagPropertyMapFactory factory;
+	private final MyComboBoxModel cbm;
 
+	private final TagSetModel< ?, ? > tagSetModel;
 
-	public TagSetPanel( final GraphTagPropertyMapFactory factory )
+	public TagSetPanel( final TagSetModel< ?, ? > tagSetModel )
 	{
-		this( Collections.emptyList(), factory );
-	}
-
-	public TagSetPanel( final List< GraphTagPropertyMap< ?, ? > > tagSets, final GraphTagPropertyMapFactory factory )
-	{
-		this.factory = factory;
+		this.tagSetModel = tagSetModel;
 		this.listeners = new ArrayList<>();
 		setLayout( new BorderLayout( 0, 0 ) );
 		colorChooser = new JColorChooser();
@@ -110,8 +101,8 @@ public class TagSetPanel extends JPanel
 		hs2.setPreferredSize( new Dimension( 10, 0 ) );
 		horizontalBox.add( hs2 );
 
-		this.model = new DefaultComboBoxModel<>( new Vector<>( tagSets ) );
-		final JComboBox< GraphTagPropertyMap< ?, ? > > comboBoxTagSets = new JComboBox<>( model );
+		this.cbm = new MyComboBoxModel();
+		final JComboBox< GraphTagPropertyMap< ?, ? > > comboBoxTagSets = new JComboBox<>( cbm );
 		comboBoxTagSets.setRenderer( new MyComboBoxRenderer() );
 		comboBoxTagSets.setFont( getFont().deriveFont( Font.BOLD ) );
 		comboBoxTagSets.addActionListener( e -> update() );
@@ -149,7 +140,7 @@ public class TagSetPanel extends JPanel
 		final GridBagLayout layout = new GridBagLayout();
 		panelTags.setLayout( layout );
 
-		final GraphTagPropertyMap< ?, ? > tagset = ( GraphTagPropertyMap< ?, ? > ) model.getSelectedItem();
+		final GraphTagPropertyMap< ?, ? > tagset = ( GraphTagPropertyMap< ?, ? > ) cbm.getSelectedItem();
 		if ( null == tagset )
 			return;
 
@@ -294,21 +285,30 @@ public class TagSetPanel extends JPanel
 		panelTags.add( btnAdd, c );
 	}
 
+	@SuppressWarnings( "unchecked" )
 	private void removeTagSet()
 	{
-		final GraphTagPropertyMap< ?, ? > tagset = ( GraphTagPropertyMap< ?, ? > ) model.getSelectedItem();
-		model.removeElement( tagset );
+		@SuppressWarnings( "rawtypes" )
+		final GraphTagPropertyMap tagset = ( GraphTagPropertyMap< ?, ? > ) cbm.getSelectedItem();
+		final int index = tagSetModel.getTagSets().indexOf( tagset );
+		tagSetModel.removeTagSet( tagset );
+		if ( tagSetModel.getTagSets().isEmpty() )
+			cbm.setSelectedItem( null );
+		else
+		{
+			final int indexToSelect = Math.max( 0, Math.min( tagSetModel.getTagSets().size() - 1, index ) );
+			cbm.setSelectedItem( tagSetModel.getTagSets().get( indexToSelect ) );
+		}
 		update();
 		notifyListeners();
 	}
 
 	private void addTagSet()
 	{
-		final GraphTagPropertyMap< ?, ? > current = ( GraphTagPropertyMap< ?, ? > ) model.getSelectedItem();
+		final GraphTagPropertyMap< ?, ? > current = ( GraphTagPropertyMap< ?, ? > ) cbm.getSelectedItem();
 		final String name = ( null == current ) ? "Tag set" : makeNewName( current.getName() );
-		final GraphTagPropertyMap< ?, ? > tagset = factory.create( name );
-		model.addElement( tagset );
-		model.setSelectedItem( tagset );
+		final GraphTagPropertyMap< ?, ? > tagSet = tagSetModel.createTagSet( name );
+		cbm.setSelectedItem( tagSet );
 		update();
 		notifyListeners();
 	}
@@ -355,9 +355,9 @@ public class TagSetPanel extends JPanel
 		INCREMENT: while ( true )
 		{
 			newName = prefix + " (" + ( ++n ) + ")";
-			for ( int j = 0; j < model.getSize(); j++ )
+			for ( int j = 0; j < cbm.getSize(); j++ )
 			{
-				if ( model.getElementAt( j ).getName().equals( newName ) )
+				if ( cbm.getElementAt( j ).getName().equals( newName ) )
 					continue INCREMENT;
 			}
 			break;
@@ -479,7 +479,7 @@ public class TagSetPanel extends JPanel
 		@Override
 		public Object getItem()
 		{
-			return model.getSelectedItem();
+			return cbm.getSelectedItem();
 		}
 
 		@Override
@@ -563,29 +563,72 @@ public class TagSetPanel extends JPanel
 	public Collection< GraphTagPropertyMap< ?, ? > > getTagSets()
 	{
 		final Collection< GraphTagPropertyMap< ?, ? > > tagsets = new ArrayList<>();
-		for ( int j = 0; j < model.getSize(); j++ )
-			tagsets.add( model.getElementAt( j ) );
+		for ( int j = 0; j < cbm.getSize(); j++ )
+			tagsets.add( cbm.getElementAt( j ) );
 		return tagsets;
+	}
+
+	private class MyComboBoxModel extends AbstractListModel< GraphTagPropertyMap< ?, ? > > implements ComboBoxModel< GraphTagPropertyMap< ?, ? > >
+	{
+
+		private static final long serialVersionUID = 1L;
+
+		private GraphTagPropertyMap< ?, ? > selectedObject;
+
+		public MyComboBoxModel()
+		{
+			if (getSize() > 0)
+				selectedObject = tagSetModel.getTagSets().get( 0 );
+		}
+
+		@Override
+		public GraphTagPropertyMap< ?, ? > getElementAt( final int index )
+		{
+			return tagSetModel.getTagSets().get( index );
+		}
+
+		@Override
+		public int getSize()
+		{
+			return tagSetModel.getTagSets().size();
+		}
+
+		@Override
+		public void setSelectedItem( final Object anObject )
+		{
+			if ( ( selectedObject != null && !selectedObject.equals( anObject ) ) ||
+					selectedObject == null && anObject != null )
+			{
+				selectedObject = ( GraphTagPropertyMap< ?, ? > ) anObject;
+				fireContentsChanged( this, -1, -1 );
+			}
+		}
+
+		@Override
+		public Object getSelectedItem()
+		{
+			return selectedObject;
+		}
+
 	}
 
 	public static void main( final String[] args ) throws ClassNotFoundException, InstantiationException, IllegalAccessException, UnsupportedLookAndFeelException
 	{
 		UIManager.setLookAndFeel( UIManager.getSystemLookAndFeelClassName() );
 
-		final ModelGraph graph = new ModelGraph();
+		final Model model = new Model();
+		final TagSetModel< Spot, Link > tagSetModel = model.getTagSetModel();
 
-		final GraphTagPropertyMap< Spot, Link > reviewedByTag = new GraphTagPropertyMap<>( "Reviewed by", graph );
+		final GraphTagPropertyMap< Spot, Link > reviewedByTag = tagSetModel.createTagSet( "Reviewed by" );
 		reviewedByTag.createTag().setLabel( "Pavel" );
 		reviewedByTag.createTag().setLabel( "Mette" );
 		reviewedByTag.createTag().setLabel( "Tobias" );
 		reviewedByTag.createTag().setLabel( "JY" );
-		final GraphTagPropertyMap< Spot, Link > locationTag = new GraphTagPropertyMap<>( "Location", graph );
+		final GraphTagPropertyMap< Spot, Link > locationTag = tagSetModel.createTagSet( "Location" );
 		locationTag.createTag().setLabel( "Anterior" );
 		locationTag.createTag().setLabel( "Posterior" );
-		final List< GraphTagPropertyMap< ?, ? > > tagSets = Arrays.asList( new GraphTagPropertyMap[] { locationTag, reviewedByTag } );
 
-		final GraphTagPropertyMapFactory factory = ( name ) -> new GraphTagPropertyMap<>( name, graph );
-		final TagSetPanel panel = new TagSetPanel( tagSets, factory );
+		final TagSetPanel panel = new TagSetPanel( tagSetModel );
 		final JFrame frame = new JFrame( "Tag sets" );
 		frame.getContentPane().add( panel );
 		frame.setSize( 400, 200 );
