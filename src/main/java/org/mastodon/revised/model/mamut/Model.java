@@ -6,6 +6,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.mastodon.graph.ReadOnlyGraph;
+import org.mastodon.graph.io.RawGraphIO.FileIdToGraphMap;
+import org.mastodon.graph.io.RawGraphIO.GraphToFileIdMap;
 import org.mastodon.properties.Property;
 import org.mastodon.revised.model.AbstractModel;
 import org.mastodon.revised.model.feature.DefaultFeatureModel;
@@ -88,9 +90,8 @@ public class Model extends AbstractModel< ModelGraph, Spot, Link > implements Un
 	 */
 	public void loadRaw( final File file ) throws IOException
 	{
-		modelGraph.loadRaw( file, ModelSerializer.getInstance() );
-
-		// TODO load tag model.
+		final FileIdToGraphMap< Spot, Link > map = modelGraph.loadRaw( file, ModelSerializer.getInstance() );
+		tagSetModel.loadRaw( file.getParentFile(), map );
 	}
 
 	/**
@@ -103,9 +104,8 @@ public class Model extends AbstractModel< ModelGraph, Spot, Link > implements Un
 	 */
 	public void saveRaw( final File file ) throws IOException
 	{
-		modelGraph.saveRaw( file, ModelSerializer.getInstance() );
-
-		// TODO save tag model.
+		final GraphToFileIdMap< Spot, Link > map = modelGraph.saveRaw( file, ModelSerializer.getInstance() );
+		tagSetModel.saveRaw( file.getParentFile(), map );
 	}
 
 	/**
