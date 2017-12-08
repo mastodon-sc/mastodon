@@ -5,10 +5,7 @@ import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 import java.util.function.Consumer;
 
 import javax.swing.JFrame;
@@ -16,6 +13,8 @@ import javax.swing.JPanel;
 
 import org.mastodon.app.ui.settings.ModificationListener;
 import org.mastodon.app.ui.settings.SettingsPage;
+import org.mastodon.revised.bdv.overlay.ui.RenderSettingsConfigPage;
+import org.mastodon.revised.bdv.overlay.ui.RenderSettingsManager;
 import org.mastodon.revised.model.mamut.Model;
 import org.mastodon.revised.model.mamut.Spot;
 import org.mastodon.revised.model.tag.TagSetDialog;
@@ -29,7 +28,7 @@ import org.scijava.ui.behaviour.KeyPressedManager;
 import org.scijava.ui.behaviour.io.InputTriggerConfig;
 import org.scijava.ui.behaviour.io.InputTriggerDescription;
 import org.scijava.ui.behaviour.io.InputTriggerDescriptionsBuilder;
-import org.scijava.ui.behaviour.io.VisualEditorPanel;
+import org.scijava.ui.behaviour.io.gui.VisualEditorPanel;
 import org.scijava.ui.behaviour.io.yaml.YamlConfigIO;
 import org.scijava.ui.behaviour.util.AbstractNamedAction;
 import org.scijava.ui.behaviour.util.Actions;
@@ -68,6 +67,8 @@ public class WindowManager
 
 	private final TrackSchemeStyleManager trackSchemeStyleManager;
 
+	private final RenderSettingsManager renderSettingsManager;
+
 	private final Actions globalAppActions;
 
 	private final AbstractNamedAction newBdvViewAction;
@@ -87,6 +88,7 @@ public class WindowManager
 		this.keyconf = keyconf;
 		keyPressedManager = new KeyPressedManager();
 		trackSchemeStyleManager = new TrackSchemeStyleManager();
+		renderSettingsManager = new RenderSettingsManager();
 
 		// TODO: naming, this should be named appActions and the AppModel.appActions should become modelActions?
 		globalAppActions = new Actions( keyconf, "mastodon" );
@@ -129,12 +131,7 @@ public class WindowManager
 
 		// TODO FIX HACK: We are creating a new dialog everytime so that the keyconf (which is filled from programmatically set defaults is)
 		final PreferencesDialog settings = new PreferencesDialog( null );
-		final InputTriggerDescriptionsBuilder builder = new InputTriggerDescriptionsBuilder( keyconf );
-		final Map< String, String > commandDescriptions = new HashMap<>();
-		builder.getBehaviourNames().forEach( name -> commandDescriptions.put( name, null ) );
-		final Set< String > contexts = builder.getContexts();
-
-		final VisualEditorPanel keyconfEditor = new VisualEditorPanel( keyconf, commandDescriptions, contexts );
+		final VisualEditorPanel keyconfEditor = new VisualEditorPanel( keyconf );
 		keyconfEditor.setButtonPanelVisible( false );
 		final DefaultSettingsPage page = new DefaultSettingsPage( "Keymap", keyconfEditor );
 		page.onCancel( () -> keyconfEditor.configToModel() );
@@ -142,11 +139,13 @@ public class WindowManager
 			keyconfEditor.modelToConfig();
 			if ( appModel != null )
 				appModel.getAppActions().updateKeyConfig( keyconf );
+				forEachView( v -> v.updateKeyConfig() );
 		} );
 		settings.addPage( page );
 		settings.addPage( new TrackSchemeStyleSettingsPage( "TrackScheme Styles", trackSchemeStyleManager ) );
+		settings.addPage( new RenderSettingsConfigPage( "BDV Render Settings", renderSettingsManager ) );
 		final ToggleDialogAction tooglePreferencesDialogAction = new ToggleDialogAction( "Preferences", settings );
-		appModel.getAppActions().namedAction( tooglePreferencesDialogAction, "meta COMMA" );
+		appModel.getAppActions().namedAction( tooglePreferencesDialogAction, "meta COMMA", "control COMMA" );
 
 		updateEnabledActions();
 	}
@@ -246,9 +245,15 @@ public class WindowManager
 		} );
 	}
 
-	public void forEachTrackSchemwView( final Consumer< ? super MamutViewTrackScheme > action )
+	public void forEachTrackSchemeView( final Consumer< ? super MamutViewTrackScheme > action )
 	{
 		tsWindows.forEach( action );
+	}
+
+	public void forEachView(  final Consumer< ? super MamutView > action  )
+	{
+		forEachBdvView( action );
+		forEachTrackSchemeView( action );
 	}
 
 	public void createBigDataViewer()
@@ -319,6 +324,11 @@ public class WindowManager
 	TrackSchemeStyleManager getTrackSchemeStyleManager()
 	{
 		return trackSchemeStyleManager;
+	}
+
+	RenderSettingsManager getRenderSettingsManager()
+	{
+		return renderSettingsManager;
 	}
 
 	MamutAppModel getAppModel()

@@ -23,7 +23,6 @@ import org.mastodon.revised.bdv.overlay.EditSpecialBehaviours;
 import org.mastodon.revised.bdv.overlay.OverlayGraphRenderer;
 import org.mastodon.revised.bdv.overlay.OverlayNavigation;
 import org.mastodon.revised.bdv.overlay.RenderSettings;
-import org.mastodon.revised.bdv.overlay.ui.RenderSettingsDialog;
 import org.mastodon.revised.bdv.overlay.wrap.OverlayEdgeWrapper;
 import org.mastodon.revised.bdv.overlay.wrap.OverlayGraphWrapper;
 import org.mastodon.revised.bdv.overlay.wrap.OverlayVertexWrapper;
@@ -32,12 +31,11 @@ import org.mastodon.revised.model.mamut.Model;
 import org.mastodon.revised.model.mamut.ModelGraph;
 import org.mastodon.revised.model.mamut.ModelOverlayProperties;
 import org.mastodon.revised.model.mamut.Spot;
+import org.mastodon.revised.ui.FocusActions;
 import org.mastodon.revised.ui.HighlightBehaviours;
 import org.mastodon.revised.ui.SelectionActions;
-import org.mastodon.revised.util.ToggleDialogAction;
 import org.mastodon.views.context.ContextProvider;
 import org.scijava.ui.behaviour.io.InputTriggerConfig;
-import org.scijava.ui.behaviour.util.Actions;
 
 import bdv.tools.InitializeViewerState;
 import bdv.viewer.ViewerPanel;
@@ -71,8 +69,8 @@ class MamutViewBdv extends MamutView< OverlayGraphWrapper< Spot, Link >, Overlay
 		final ViewerFrameMamut frame = bdv.getViewerFrame();
 		setFrame( frame );
 
-		MastodonFrameViewActions.installActionBindings( viewActions, this );
-		BigDataViewerActionsMamut.installActionBindings( viewActions, bdv );
+		MastodonFrameViewActions.install( viewActions, this );
+		BigDataViewerActionsMamut.install( viewActions, bdv );
 
 		final ViewMenu menu = new ViewMenu( this );
 		final ActionMap actionMap = frame.getKeybindings().getConcatenatedActionMap();
@@ -135,30 +133,21 @@ class MamutViewBdv extends MamutView< OverlayGraphWrapper< Spot, Link >, Overlay
 
 		final InputTriggerConfig keyconf = appModel.getKeyConfig();
 
-		final BdvSelectionBehaviours< ?, ? > selectionBehaviours = new BdvSelectionBehaviours<>( viewGraph, tracksOverlay, selectionModel, navigationHandler );
-		selectionBehaviours.installBehaviourBindings( frame.getTriggerbindings(), keyconf );
-
 		contextProvider = new BdvContextProvider<>( windowTitle, viewGraph, tracksOverlay );
 		viewer.addRenderTransformListener( contextProvider );
 
-		EditBehaviours.installActionBindings( viewBehaviours, viewGraph, tracksOverlay, model );
-		EditSpecialBehaviours.installActionBindings( viewBehaviours, frame.getViewerPanel(), viewGraph, tracksOverlay, model );
-		HighlightBehaviours.installActionBindings( viewBehaviours, viewGraph, viewGraph.getLock(), viewGraph, highlightModel, model );
+		BdvSelectionBehaviours.install( viewBehaviours, viewGraph, tracksOverlay, selectionModel, navigationHandler );
+		EditBehaviours.install( viewBehaviours, viewGraph, tracksOverlay, model );
+		EditSpecialBehaviours.install( viewBehaviours, frame.getViewerPanel(), viewGraph, tracksOverlay, model );
+		HighlightBehaviours.install( viewBehaviours, viewGraph, viewGraph.getLock(), viewGraph, highlightModel, model );
+		FocusActions.install( viewActions, viewGraph, viewGraph.getLock(), focusModel, selectionModel, navigationHandler );
 
 		viewer.addTimePointListener( timePointIndex -> timepointModel.setTimepoint( timePointIndex ) );
 		timepointModel.listeners().add( () -> viewer.setTimepoint( timepointModel.getTimepoint() ) );
 
-		// TODO revise
-		// RenderSettingsDialog triggered by "R"
-		final RenderSettings renderSettings = new RenderSettings(); // TODO should be in overlay eventually
-		final String RENDER_SETTINGS = "render settings";
-		final RenderSettingsDialog renderSettingsDialog = new RenderSettingsDialog( frame, renderSettings );
-		final Actions actions = new Actions( keyconf, "mamut" );
-		actions.install( frame.getKeybindings(), "mamut" );
-		actions.namedAction( new ToggleDialogAction( RENDER_SETTINGS, renderSettingsDialog ), "R" );
+		final RenderSettings renderSettings = appModel.getRenderSettingsManager().getForwardDefaultStyle();
+		tracksOverlay.setRenderSettings( renderSettings );
 		renderSettings.addUpdateListener( () -> {
-			tracksOverlay.setRenderSettings( renderSettings );
-			// TODO: less hacky way of triggering repaint and context update
 			viewer.repaint();
 			contextProvider.notifyContextChanged();
 		} );

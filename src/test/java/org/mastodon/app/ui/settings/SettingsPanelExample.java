@@ -3,18 +3,16 @@ package org.mastodon.app.ui.settings;
 import java.awt.BorderLayout;
 import java.awt.Frame;
 import java.io.StringReader;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
+
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JPanel;
+
 import org.mastodon.util.Listeners;
 import org.scijava.ui.behaviour.io.InputTriggerConfig;
 import org.scijava.ui.behaviour.io.InputTriggerDescription;
-import org.scijava.ui.behaviour.io.VisualEditorPanel;
+import org.scijava.ui.behaviour.io.gui.VisualEditorPanel;
 import org.scijava.ui.behaviour.io.yaml.YamlConfigIO;
 
 public class SettingsPanelExample
@@ -27,7 +25,7 @@ public class SettingsPanelExample
 
 		private final Listeners.List< ModificationListener > modificationListeners;
 
-		public DummySettingsPage( String treePath )
+		public DummySettingsPage( final String treePath )
 		{
 			this.treePath = treePath;
 			panel = new JPanel( new BorderLayout() );
@@ -75,7 +73,7 @@ public class SettingsPanelExample
 
 		private final Listeners.List< ModificationListener > modificationListeners;
 
-		public DefaultSettingsPage( String treePath, JPanel panel )
+		public DefaultSettingsPage( final String treePath, final JPanel panel )
 		{
 			this.treePath = treePath;
 			this.panel = panel;
@@ -115,15 +113,15 @@ public class SettingsPanelExample
 
 	public static void main( final String[] arg )
 	{
-		SettingsPanel settings = new SettingsPanel();
-		final VisualEditorPanel keyconfEditor = new VisualEditorPanel( getDemoConfig(), getDemoActions(), getDemoContexts() );
+		final SettingsPanel settings = new SettingsPanel();
+		final VisualEditorPanel keyconfEditor = new VisualEditorPanel( getDemoConfig() );
 		keyconfEditor.setButtonPanelVisible( false );
 		settings.addPage( new DefaultSettingsPage( "keymap", keyconfEditor ) );
 		settings.addPage( new DummySettingsPage( "other" ) );
 		settings.addPage( new DummySettingsPage( "views > bdv" ) );
 		settings.addPage( new DummySettingsPage( "views > trackscheme" ) );
 
-		JDialog dialog = new JDialog( ( Frame ) null, "Settings" );
+		final JDialog dialog = new JDialog( ( Frame ) null, "Settings" );
 		dialog.getContentPane().add( settings, BorderLayout.CENTER );
 		dialog.pack();
 		dialog.setVisible( true );
@@ -156,29 +154,5 @@ public class SettingsPanelExample
 		final List< InputTriggerDescription > triggers = YamlConfigIO.read( reader );
 		final InputTriggerConfig config = new InputTriggerConfig( triggers );
 		return config;
-	}
-
-	private static Map< String, String > getDemoActions()
-	{
-		final Map< String, String > actions = new HashMap<>();
-		actions.put( "drag1", "Move an item around the editor." );
-		actions.put( "scroll1", null );
-		actions.put( "destroy the world", "Make a disgusting coffee for breakfast. \n"
-				+ "For this one, you are by yourself. Good luck and know that we are with you. This is a long line. Hopefully long engouh.\n"
-				+ "Hey, what about we add:\n"
-				+ "tabulation1\ttabulation2\n"
-				+ "lalallala\ttrollololo." );
-		actions.put( "ride the dragon", "Go to work by bike." );
-		actions.put( "make some coffee", null );
-		return actions;
-	}
-
-	private static Set< String > getDemoContexts()
-	{
-		final Set< String > contexts = new HashSet<>();
-		contexts.add( "all" );
-		contexts.add( "mamut" );
-		contexts.add( "trackscheme" );
-		return contexts;
 	}
 }

@@ -1,4 +1,4 @@
-package org.mastodon.revised.trackscheme.display.style;
+package org.mastodon.revised.bdv.overlay.ui;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -15,90 +15,88 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.mastodon.revised.bdv.overlay.RenderSettings;
 import org.yaml.snakeyaml.Yaml;
 
 /**
- * Manages a collection of {@link TrackSchemeStyle}.
- * <p>
- * Has serialization / deserialization facilities and can return models based on
- * the collection it manages.
+ * Manages a list of {@link RenderSettings} for multiple BDV windows. Provides
+ * models based on a common list of settings than can be used in swing items.
  *
  * @author Jean-Yves Tinevez
- * @author Tobias Pietzsch
  */
-public class TrackSchemeStyleManager
+public class RenderSettingsManager
 {
-	private static final String STYLE_FILE = System.getProperty( "user.home" ) + "/.mastodon/trackschemestyles.yaml";
+	private static final String STYLE_FILE = System.getProperty( "user.home" ) + "/.mastodon/rendersettings.yaml";
 
-	private final List< TrackSchemeStyle > builtinStyles;
+	private final List< RenderSettings > builtinStyles;
 
-	private final List< TrackSchemeStyle > userStyles;
+	private final List< RenderSettings > userStyles;
 
-	private TrackSchemeStyle defaultStyle;
+	private RenderSettings defaultStyle;
 
 	/**
-	 * A {@code TrackSchemeStyle} that has the same properties as the default
-	 * style. In contrast to defaultStyle this will always refer to the same
-	 * object, so a trackscheme can just use this one style to listen for
-	 * changes and for painting.
+	 * A {@code RenderSettings} that has the same properties as the default
+	 * RenderSettings. In contrast to defaultStyle this will always
+	 * refer to the same object, so a consumers can just use this one
+	 * RenderSettings to listen for changes and for painting.
 	 */
-	private final TrackSchemeStyle forwardDefaultStyle;
+	private final RenderSettings forwardDefaultStyle;
 
-	private final TrackSchemeStyle.UpdateListener updateForwardDefaultListeners;
+	private final RenderSettings.UpdateListener updateForwardDefaultListeners;
 
-	public TrackSchemeStyleManager()
+	public RenderSettingsManager()
 	{
 		this( true );
 	}
 
-	public TrackSchemeStyleManager( final boolean loadStyles )
+	public RenderSettingsManager( final boolean loadStyles )
 	{
-		builtinStyles = Collections.unmodifiableList( new ArrayList<>( TrackSchemeStyle.defaults ) );
+		builtinStyles = Collections.unmodifiableList( new ArrayList<>( RenderSettings.defaults ) );
 		userStyles = new ArrayList<>();
 		defaultStyle = builtinStyles.get( 0 );
-		forwardDefaultStyle = TrackSchemeStyle.defaultStyle().copy();
+		forwardDefaultStyle = RenderSettings.defaultStyle().copy();
 		updateForwardDefaultListeners = () -> forwardDefaultStyle.set( defaultStyle );
 		defaultStyle.addUpdateListener( updateForwardDefaultListeners );
 		if ( loadStyles )
 			loadStyles();
 	}
 
-	public synchronized void setDefaultStyle( final TrackSchemeStyle style )
+	public synchronized void setDefaultStyle( final RenderSettings renderSettings )
 	{
 		defaultStyle.removeUpdateListener( updateForwardDefaultListeners );
-		defaultStyle = style;
+		defaultStyle = renderSettings;
 		forwardDefaultStyle.set( defaultStyle );
 		defaultStyle.addUpdateListener( updateForwardDefaultListeners );
 	}
 
-	public synchronized void remove( final TrackSchemeStyle style )
+	public synchronized void remove( final RenderSettings renderSettings )
 	{
-		if ( defaultStyle.equals( style ) )
+		if ( defaultStyle.equals( renderSettings ) )
 			setDefaultStyle( builtinStyles.get( 0 ) );
-		userStyles.remove( style );
+		userStyles.remove( renderSettings );
 	}
 
-	public synchronized void rename( final TrackSchemeStyle style, final String newName )
+	public synchronized void rename( final RenderSettings renderSettings, final String newName )
 	{
-		if ( style.getName().equals( newName ) )
+		if ( renderSettings.getName().equals( newName ) )
 			return;
 
 		if ( nameExists( newName ) )
-			throw new IllegalArgumentException( "TrackSchemeStyle \"" + newName + "\" already exists.");
+			throw new IllegalArgumentException( "RenderSettings \"" + newName + "\" already exists." );
 
-		style.name( newName );
+		renderSettings.setName( newName );
 	}
 
 	/**
-	 * Returns a copy of the specified {@link TrackSchemeStyle}, making sure that
+	 * Returns a copy of the specified {@link RenderSettings}, making sure that
 	 * the copy receives a name not already present in this manager's list of
-	 * {@link TrackSchemeStyle}.
+	 * {@link RenderSettings}.
 	 *
 	 * @param style
-	 *            the {@link TrackSchemeStyle} to copy.
-	 * @return a new {@link TrackSchemeStyle}
+	 *            the {@link RenderSettings} to copy.
+	 * @return a new {@link RenderSettings}
 	 */
-	public synchronized TrackSchemeStyle duplicate( final TrackSchemeStyle style )
+	public synchronized RenderSettings duplicate( final RenderSettings style )
 	{
 		final String name = style.getName();
 		final Pattern pattern = Pattern.compile( "(.+) \\((\\d+)\\)$" );
@@ -122,31 +120,31 @@ public class TrackSchemeStyleManager
 			newName = prefix + " (" + ( ++n ) + ")";
 		while ( nameExists( newName ) );
 
-		final TrackSchemeStyle newStyle = style.copy( newName );
+		final RenderSettings newStyle = style.copy( newName );
 		userStyles.add( newStyle );
 		return newStyle;
 	}
 
-	public List< TrackSchemeStyle > getBuiltinStyles()
+	public List< RenderSettings > getBuiltinStyles()
 	{
 		return builtinStyles;
 	}
 
-	public List< TrackSchemeStyle > getUserStyles()
+	public List< RenderSettings > getUserStyles()
 	{
 		return Collections.unmodifiableList( userStyles );
 	}
 
-	public TrackSchemeStyle getDefaultStyle()
+	public RenderSettings getDefaultStyle()
 	{
 		return defaultStyle;
 	}
 
 	/**
-	 * Returns a final {@link TrackSchemeStyle} instance that always has the
-	 * same properties as the default style.
+	 * Returns a final {@link RenderSettings} instance that always has the same
+	 * properties as the default style.
 	 */
-	public TrackSchemeStyle getForwardDefaultStyle()
+	public RenderSettings getForwardDefaultStyle()
 	{
 		return forwardDefaultStyle;
 	}
@@ -156,7 +154,7 @@ public class TrackSchemeStyleManager
 		return styleForName( name ).isPresent();
 	}
 
-	private Optional< TrackSchemeStyle > styleForName( final String name )
+	private Optional< RenderSettings > styleForName( final String name )
 	{
 		return Stream.concat( builtinStyles.stream(), userStyles.stream() ).filter( style -> style.getName().equals( name ) ).findFirst();
 	}
@@ -169,11 +167,11 @@ public class TrackSchemeStyleManager
 	public void loadStyles( final String filename )
 	{
 		userStyles.clear();
-		final Set< String > names = builtinStyles.stream().map( TrackSchemeStyle::getName ).collect( Collectors.toSet() );
+		final Set< String > names = builtinStyles.stream().map( RenderSettings::getName ).collect( Collectors.toSet() );
 		try
 		{
 			final FileReader input = new FileReader( filename );
-			final Yaml yaml = TrackSchemeStyleIO.createYaml();
+			final Yaml yaml = RenderSettingsIO.createYaml();
 			final Iterable< Object > objs = yaml.loadAll( input );
 			String defaultStyleName = null;
 			for ( final Object obj : objs )
@@ -181,12 +179,12 @@ public class TrackSchemeStyleManager
 				if ( obj instanceof String )
 				{
 					defaultStyleName = ( String ) obj;
-					System.out.println( "TrackSchemeStyleManager.loadStyles" );
+					System.out.println( "RenderSettingsManager.loadStyles" );
 					System.out.println( defaultStyleName );
 				}
-				else if ( obj instanceof TrackSchemeStyle )
+				else if ( obj instanceof RenderSettings )
 				{
-					final TrackSchemeStyle ts = ( TrackSchemeStyle ) obj;
+					final RenderSettings ts = ( RenderSettings ) obj;
 					if ( null != ts )
 					{
 						// sanity check: style names must be unique
@@ -201,7 +199,7 @@ public class TrackSchemeStyleManager
 		}
 		catch ( final FileNotFoundException e )
 		{
-			System.out.println( "TrackScheme style file " + filename + " not found. Using builtin styles." );
+			System.out.println( "Bdv style file " + filename + " not found. Using builtin styles." );
 		}
 	}
 
@@ -216,7 +214,7 @@ public class TrackSchemeStyleManager
 		{
 			mkdirs( filename );
 			final FileWriter output = new FileWriter( filename );
-			final Yaml yaml = TrackSchemeStyleIO.createYaml();
+			final Yaml yaml = RenderSettingsIO.createYaml();
 			final ArrayList< Object > objects = new ArrayList<>();
 			objects.add( defaultStyle.getName() );
 			objects.addAll( userStyles );
@@ -229,18 +227,18 @@ public class TrackSchemeStyleManager
 		}
 	}
 
-	public void set( final TrackSchemeStyleManager other )
+	public void set( final RenderSettingsManager other )
 	{
 		setSnapshot( other.getSnapshot() );
 	}
 
 	static class Snapshot
 	{
-		private final List< TrackSchemeStyle > userStyles;
+		private final List< RenderSettings > userStyles;
 
 		private final String defaultStyleName;
 
-		public Snapshot( final TrackSchemeStyleManager manager )
+		public Snapshot( final RenderSettingsManager manager )
 		{
 			this.userStyles = manager.getUserStyles().stream().map( s -> s.copy() ).collect( Collectors.toList() );
 			this.defaultStyleName = manager.getDefaultStyle().getName();
@@ -268,4 +266,5 @@ public class TrackSchemeStyleManager
 		final File dir = new File( fileName ).getParentFile();
 		return dir == null ? false : dir.mkdirs();
 	}
+
 }

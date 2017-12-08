@@ -68,7 +68,7 @@ public class ToggleLinkBehaviour< V extends Vertex< E > & HasTimepoint, E extend
 
 	private boolean editing;
 
-	public static < V extends Vertex< E > & HasTimepoint, E extends Edge< V > > void installActionBindings(
+	public static < V extends Vertex< E > & HasTimepoint, E extends Edge< V > > void install(
 			final Behaviours behaviours,
 			final TrackSchemePanel panel,
 			final TrackSchemeGraph< V, E > graph,

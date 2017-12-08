@@ -4,6 +4,8 @@ import java.awt.Color;
 import java.awt.Graphics;
 
 import org.mastodon.collection.RefSet;
+import org.mastodon.graph.Edge;
+import org.mastodon.graph.Vertex;
 import org.mastodon.model.FocusModel;
 import org.mastodon.model.NavigationHandler;
 import org.mastodon.model.SelectionModel;
@@ -60,21 +62,21 @@ public class TrackSchemeNavigator implements TransformListener< ScreenTransform 
 	public static final String BOX_SELECT = "ts box selection";
 	public static final String BOX_ADD_SELECT = "ts box add to selection";
 
-	public static final String[] NAVIGATE_CHILD_KEYS = new String[] { "DOWN" };
-	public static final String[] NAVIGATE_PARENT_KEYS = new String[] { "UP" };
-	public static final String[] NAVIGATE_LEFT_KEYS = new String[] { "LEFT" };
-	public static final String[] NAVIGATE_RIGHT_KEYS = new String[] { "RIGHT" };
-	public static final String[] SELECT_NAVIGATE_CHILD_KEYS = new String[] { "shift DOWN" };
-	public static final String[] SELECT_NAVIGATE_PARENT_KEYS = new String[] { "shift UP" };
-	public static final String[] SELECT_NAVIGATE_LEFT_KEYS = new String[] { "shift LEFT" };
-	public static final String[] SELECT_NAVIGATE_RIGHT_KEYS = new String[] { "shift RIGHT" };
-	public static final String[] TOGGLE_FOCUS_SELECTION_KEYS = new String[] { "SPACE" };
-	public static final String[] FOCUS_VERTEX_KEYS = new String[] { "button1", "shift button1" };
-	public static final String[] NAVIGATE_TO_VERTEX_KEYS = new String[] { "double-click button1", "shift double-click button1" };
-	public static final String[] SELECT_KEYS = new String[] { "button1"};
-	public static final String[] ADD_SELECT_KEYS = new String[] { "shift button1"};
-	public static final String[] BOX_SELECT_KEYS = new String[] { "button1"};
-	public static final String[] BOX_ADD_SELECT_KEYS = new String[] { "shift button1"};
+	private static final String[] NAVIGATE_CHILD_KEYS = new String[] { "DOWN" };
+	private static final String[] NAVIGATE_PARENT_KEYS = new String[] { "UP" };
+	private static final String[] NAVIGATE_LEFT_KEYS = new String[] { "LEFT" };
+	private static final String[] NAVIGATE_RIGHT_KEYS = new String[] { "RIGHT" };
+	private static final String[] SELECT_NAVIGATE_CHILD_KEYS = new String[] { "shift DOWN" };
+	private static final String[] SELECT_NAVIGATE_PARENT_KEYS = new String[] { "shift UP" };
+	private static final String[] SELECT_NAVIGATE_LEFT_KEYS = new String[] { "shift LEFT" };
+	private static final String[] SELECT_NAVIGATE_RIGHT_KEYS = new String[] { "shift RIGHT" };
+	private static final String[] TOGGLE_FOCUS_SELECTION_KEYS = new String[] { "SPACE" };
+	private static final String[] FOCUS_VERTEX_KEYS = new String[] { "button1", "shift button1" };
+	private static final String[] NAVIGATE_TO_VERTEX_KEYS = new String[] { "double-click button1", "shift double-click button1" };
+	private static final String[] SELECT_KEYS = new String[] { "button1"};
+	private static final String[] ADD_SELECT_KEYS = new String[] { "shift button1"};
+	private static final String[] BOX_SELECT_KEYS = new String[] { "button1"};
+	private static final String[] BOX_ADD_SELECT_KEYS = new String[] { "shift button1"};
 
 	public static final double EDGE_SELECT_DISTANCE_TOLERANCE = 5.0;
 
@@ -171,6 +173,45 @@ public class TrackSchemeNavigator implements TransformListener< ScreenTransform 
 		boxSelectAdd.put( behaviourMap );
 
 		screenTransform = new ScreenTransform();
+	}
+
+	public static < V extends Vertex< E >, E extends Edge< V > > void install(
+			final Actions actions,
+			final InteractiveDisplayCanvasComponent< ScreenTransform > display,
+			final TrackSchemeGraph< ?, ? > graph,
+			final LineageTreeLayout layout,
+			final AbstractTrackSchemeOverlay graphOverlay,
+			final FocusModel< TrackSchemeVertex, TrackSchemeEdge > focus,
+			final NavigationHandler< TrackSchemeVertex, TrackSchemeEdge > navigation,
+			final SelectionModel< TrackSchemeVertex, TrackSchemeEdge > selection,
+			final NavigatorEtiquette etiquette )
+	{
+		final TrackSchemeNavigator tsn = new TrackSchemeNavigator( display, graph, layout, graphOverlay, focus, navigation, selection );
+		switch ( etiquette )
+		{
+		case MIDNIGHT_COMMANDER_LIKE:
+			actions.runnableAction( () -> tsn.selectAndFocusNeighbor( Direction.CHILD, false ), NAVIGATE_CHILD, NAVIGATE_CHILD_KEYS );
+			actions.runnableAction( () -> tsn.selectAndFocusNeighbor( Direction.PARENT, false ), NAVIGATE_PARENT, NAVIGATE_PARENT_KEYS );
+			actions.runnableAction( () -> tsn.selectAndFocusNeighbor( Direction.LEFT_SIBLING, false ), NAVIGATE_LEFT, NAVIGATE_LEFT_KEYS );
+			actions.runnableAction( () -> tsn.selectAndFocusNeighbor( Direction.RIGHT_SIBLING, false ), NAVIGATE_RIGHT, NAVIGATE_RIGHT_KEYS );
+			actions.runnableAction( () -> tsn.selectAndFocusNeighbor( Direction.CHILD, true ), SELECT_NAVIGATE_CHILD, SELECT_NAVIGATE_CHILD_KEYS );
+			actions.runnableAction( () -> tsn.selectAndFocusNeighbor( Direction.PARENT, true ), SELECT_NAVIGATE_PARENT, SELECT_NAVIGATE_PARENT_KEYS );
+			actions.runnableAction( () -> tsn.selectAndFocusNeighbor( Direction.LEFT_SIBLING, true ), SELECT_NAVIGATE_LEFT, SELECT_NAVIGATE_LEFT_KEYS );
+			actions.runnableAction( () -> tsn.selectAndFocusNeighbor( Direction.RIGHT_SIBLING, true ), SELECT_NAVIGATE_RIGHT, SELECT_NAVIGATE_RIGHT_KEYS );
+			actions.runnableAction( () -> tsn.toggleSelectionOfFocusedVertex(), TOGGLE_FOCUS_SELECTION, TOGGLE_FOCUS_SELECTION_KEYS );
+			break;
+		case FINDER_LIKE:
+		default:
+			actions.runnableAction( () -> tsn.selectAndFocusNeighborFL( Direction.CHILD, true ), NAVIGATE_CHILD, NAVIGATE_CHILD_KEYS );
+			actions.runnableAction( () -> tsn.selectAndFocusNeighborFL( Direction.PARENT, true ), NAVIGATE_PARENT, NAVIGATE_PARENT_KEYS );
+			actions.runnableAction( () -> tsn.selectAndFocusNeighborFL( Direction.LEFT_SIBLING, true ), NAVIGATE_LEFT, NAVIGATE_LEFT_KEYS );
+			actions.runnableAction( () -> tsn.selectAndFocusNeighborFL( Direction.RIGHT_SIBLING, true ), NAVIGATE_RIGHT, NAVIGATE_RIGHT_KEYS );
+			actions.runnableAction( () -> tsn.selectAndFocusNeighborFL( Direction.CHILD, false ), SELECT_NAVIGATE_CHILD, SELECT_NAVIGATE_CHILD_KEYS );
+			actions.runnableAction( () -> tsn.selectAndFocusNeighborFL( Direction.PARENT, false ), SELECT_NAVIGATE_PARENT, SELECT_NAVIGATE_PARENT_KEYS );
+			actions.runnableAction( () -> tsn.selectAndFocusNeighborFL( Direction.LEFT_SIBLING, false ), SELECT_NAVIGATE_LEFT, SELECT_NAVIGATE_LEFT_KEYS );
+			actions.runnableAction( () -> tsn.selectAndFocusNeighborFL( Direction.RIGHT_SIBLING, false ), SELECT_NAVIGATE_RIGHT, SELECT_NAVIGATE_RIGHT_KEYS );
+			break;
+		}
 	}
 
 	public void installActionBindings( final InputActionBindings keybindings, final KeyStrokeAdder.Factory keyConfig, final NavigatorEtiquette etiquette )

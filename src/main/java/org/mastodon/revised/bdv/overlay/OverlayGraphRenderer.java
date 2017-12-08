@@ -87,6 +87,8 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 
 	private final SelectionModel< V, E > selection;
 
+	private RenderSettings settings;
+
 	public OverlayGraphRenderer(
 			final OverlayGraph< V, E > graph,
 			final HighlightModel< V, E > highlight,
@@ -99,7 +101,7 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 		this.selection = selection;
 		index = graph.getIndex();
 		renderTransform = new AffineTransform3D();
-		setRenderSettings( new RenderSettings() ); // default RenderSettings
+		setRenderSettings( RenderSettings.defaultStyle() ); // default RenderSettings
 	}
 
 	@Override
@@ -126,132 +128,10 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 
 	public void setRenderSettings( final RenderSettings settings )
 	{
-		antialiasing = settings.getUseAntialiasing()
-				? RenderingHints.VALUE_ANTIALIAS_ON
-				: RenderingHints.VALUE_ANTIALIAS_OFF;
-		useGradient = settings.getUseGradient();
-		timeLimit = settings.getTimeLimit();
-		drawLinks = settings.getDrawLinks();
-		drawSpots = settings.getDrawSpots();
-		drawEllipsoidSliceProjection = settings.getDrawEllipsoidSliceProjection();
-		drawEllipsoidSliceIntersection = settings.getDrawEllipsoidSliceIntersection();
-		drawPoints = settings.getDrawSpotCenters();
-		drawPointsForEllipses = settings.getDrawSpotCentersForEllipses();
-		drawSpotLabels = settings.getDrawSpotLabels();
-		focusLimit = settings.getFocusLimit();
-		isFocusLimitViewRelative = settings.getFocusLimitViewRelative();
-		ellipsoidFadeDepth = settings.getEllipsoidFadeDepth();
-		pointFadeDepth = settings.getPointFadeDepth();
+		this.settings = settings;
 	}
 
 	public static final double pointRadius = 2.5;
-
-	/**
-	 * Antialiasing settings. Must be one of {@link RenderingHints} antialias
-	 * field.
-	 */
-	private Object antialiasing;
-
-	/**
-	 * If {@code true}, draw links using a gradient from source color to target
-	 * color. If {@code false}, draw links using the target color.
-	 */
-	private boolean useGradient;
-
-	/**
-	 * Maximum number of timepoints into the past for which outgoing edges
-	 * should be drawn.
-	 */
-	private int timeLimit;
-
-	/**
-	 * Whether to draw links (at all). For specific settings, see
-	 * {@link #useGradient} and {@link #timeLimit}.
-	 */
-	private boolean drawLinks;
-
-	/**
-	 * Whether to draw spots (at all). For specific settings, see
-	 * {@link #drawEllipsoidSliceIntersection},
-	 * {@link #drawEllipsoidSliceProjection}, {@link #drawPointsForEllipses},
-	 * {@link #drawPoints} and {@link #drawSpotLabels}.
-	 */
-	private boolean drawSpots;
-
-	/**
-	 * Whether to draw the intersections of spot ellipsoids with the view plane.
-	 */
-	private boolean drawEllipsoidSliceProjection;
-
-	/**
-	 * Whether to draw the projections of spot ellipsoids onto the view plane.
-	 */
-	private boolean drawEllipsoidSliceIntersection;
-
-	/**
-	 * Whether to draw spot centers.
-	 */
-	private boolean drawPoints;
-
-	/**
-	 * Whether to draw spot centers also for those points that are visible as ellipses.
-	 */
-	private boolean drawPointsForEllipses;
-
-	/**
-	 * Whether to draw spot labels next to ellipses.
-	 */
-	private boolean drawSpotLabels;
-
-	/**
-	 * Maximum distance from view plane up to which to draw spots.
-	 *
-	 * <p>
-	 * Depending on {@link #isFocusLimitViewRelative}, the distance is either in
-	 * the current view coordinate system or in the global coordinate system. If
-	 * {@code isFocusLimitViewRelative() == true} then the distance is in
-	 * current view coordinates. For example, a value of 100 means that spots
-	 * will be visible up to 100 pixel widths from the view plane. Thus, the
-	 * effective focus range depends on the current zoom level. If
-	 * {@code isFocusLimitViewRelative() == false} then the distance is in
-	 * global coordinates. A value of 100 means that spots will be visible up to
-	 * 100 units (of the global coordinate system) from the view plane.
-	 *
-	 * <p>
-	 * Ellipsoids are drawn increasingly translucent the closer they are to
-	 * {@link #focusLimit}. See {@link #ellipsoidFadeDepth}.
-	 */
-	private double focusLimit;
-
-	/**
-	 * Whether the {@link #focusLimit} is relative to the the current
-	 * view coordinate system.
-	 *
-	 * <p>
-	 * If {@code true} then the distance is in current view coordinates. For
-	 * example, a value of 100 means that spots will be visible up to 100 pixel
-	 * widths from the view plane. Thus, the effective focus range depends on
-	 * the current zoom level. If {@code false} then the distance is in global
-	 * coordinates. A value of 100 means that spots will be visible up to 100
-	 * units (of the global coordinate system) from the view plane.
-	 */
-	private boolean isFocusLimitViewRelative;
-
-	/**
-	 * The ratio of {@link #focusLimit} at which ellipsoids start to
-	 * fade. Ellipsoids are drawn increasingly translucent the closer they are
-	 * to {@link #focusLimit}. Up to ratio {@link #ellipsoidFadeDepth}
-	 * they are fully opaque, then their alpha value goes to 0 linearly.
-	 */
-	private double ellipsoidFadeDepth;
-
-	/**
-	 * The ratio of {@link #focusLimit} at which points start to
-	 * fade. Points are drawn increasingly translucent the closer they are
-	 * to {@link #focusLimit}. Up to ratio {@link #pointFadeDepth}
-	 * they are fully opaque, then their alpha value goes to 0 linearly.
-	 */
-	private double pointFadeDepth;
 
 	/**
 	 * Return signed distance of p to z=0 plane, truncated at cutoff and scaled
@@ -461,9 +341,9 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 	 */
 	private boolean drawPointsAlways()
 	{
-		return drawPoints
-				&& ( ( !drawEllipsoidSliceIntersection && !drawEllipsoidSliceProjection )
-				|| drawPointsForEllipses );
+		return settings.getDrawSpotCenters()
+				&& ( ( !settings.getDrawEllipsoidSliceIntersection() && !settings.getDrawEllipsoidSliceProjection() )
+				|| settings.getDrawSpotCentersForEllipses() );
 	}
 
 	/**
@@ -479,8 +359,8 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 	 */
 	private boolean drawPointsMaybe()
 	{
-		return drawPoints
-				&& !drawEllipsoidSliceProjection && drawEllipsoidSliceIntersection;
+		return settings.getDrawSpotCenters()
+				&& !settings.getDrawEllipsoidSliceProjection() && settings.getDrawEllipsoidSliceIntersection();
 	}
 
 	@Override
@@ -498,6 +378,9 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 
 		final double maxDepth = getMaxDepth( transform );
 
+		final Object antialiasing = settings.getUseAntialiasing()
+				? RenderingHints.VALUE_ANTIALIAS_ON
+				: RenderingHints.VALUE_ANTIALIAS_OFF;
 		graphics.setRenderingHint( RenderingHints.KEY_ANTIALIASING, antialiasing );
 
 		final V target = graph.vertexRef();
@@ -507,19 +390,21 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 		final double[] gPos = new double[ 3 ];
 		final double[] lPos = new double[ 3 ];
 
-		final double sliceDistanceFade = ellipsoidFadeDepth;
+		final double sliceDistanceFade = settings.getEllipsoidFadeDepth();
 		final double timepointDistanceFade = 0.5;
 
 		final ScreenVertexMath screenVertexMath = new ScreenVertexMath();
 		final boolean drawPointsAlways = drawPointsAlways();
 		final boolean drawPointsMaybe = drawPointsMaybe();
+		final boolean useGradient = settings.getUseGradient();
 
 		graph.getLock().readLock().lock();
 		index.readLock().lock();
 		try
 		{
-			if ( drawLinks )
+			if ( settings.getDrawLinks())
 			{
+				final int timeLimit = settings.getTimeLimit();
 				final E highlighted = highlight.getHighlightedEdge( ref3 );
 
 				graphics.setStroke( defaultEdgeStroke );
@@ -595,8 +480,14 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 				}
 			}
 
-			if ( drawSpots )
+			if ( settings.getDrawSpots() )
 			{
+				final double ellipsoidFadeDepth = settings.getEllipsoidFadeDepth();
+				final boolean drawSpotLabels = settings.getDrawSpotLabels();
+				final boolean drawEllipsoidSliceIntersection = settings.getDrawEllipsoidSliceIntersection();
+				final boolean drawEllipsoidSliceProjection = settings.getDrawEllipsoidSliceProjection();
+				final double pointFadeDepth = settings.getPointFadeDepth();
+
 				final V highlighted = highlight.getHighlightedVertex( ref1 );
 				final V focused = focus.getFocusedVertex( ref2 );
 
@@ -734,7 +625,7 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 			final double[] lPosS = new double[ 3 ];
 			final V vertexRef = graph.vertexRef();
 
-			for ( int t = Math.max( 0, currentTimepoint - timeLimit ); t < currentTimepoint; ++t )
+			for ( int t = Math.max( 0, currentTimepoint - settings.getTimeLimit() ); t < currentTimepoint; ++t )
 			{
 				final SpatialIndex< V > si = index.getSpatialIndex( t );
 				final ClipConvexPolytope< V > ccp = si.getClipConvexPolytope();
@@ -811,7 +702,7 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 
 	public V getVertexAt( final int x, final int y, final double tolerance, final V ref )
 	{
-		if ( !drawSpots )
+		if ( !settings.getDrawSpots() )
 			return null;
 
 		final AffineTransform3D transform = getRenderTransformCopy();
@@ -829,7 +720,7 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 
 		// TODO: cache searches? --> take into account that indexdata might change
 
-		if ( drawEllipsoidSliceProjection )
+		if ( settings.getDrawEllipsoidSliceProjection() )
 		{
 			final double[] xy = new double[] { x, y };
 			final double[] vPos = new double[ 3 ];
@@ -857,7 +748,7 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 			}
 		}
 
-		if ( !found && drawEllipsoidSliceIntersection )
+		if ( !found && settings.getDrawEllipsoidSliceIntersection() )
 		{
 			final IncrementalNearestNeighborSearch< V > inns = index.getSpatialIndex( currentTimepoint ).getIncrementalNearestNeighborSearch();
 			final double maxSquDist = graph.getMaxBoundingSphereRadiusSquared( currentTimepoint );
@@ -877,7 +768,7 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 			}
 		}
 
-		if ( !found && drawPoints )
+		if ( !found && settings.getDrawSpotCenters() )
 		{
 			final NearestNeighborSearch< V > nns = index.getSpatialIndex( currentTimepoint ).getNearestNeighborSearch();
 			nns.search( RealPoint.wrap( gPos ) );
@@ -930,6 +821,8 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 		final double maxDepth = getMaxDepth( transform );
 		final boolean drawPointsAlways = drawPointsAlways();
 		final boolean drawPointsMaybe = drawPointsMaybe();
+		final boolean drawEllipsoidSliceIntersection = settings.getDrawEllipsoidSliceIntersection();
+		final boolean drawEllipsoidSliceProjection = settings.getDrawEllipsoidSliceProjection();
 		final ScreenVertexMath screenVertexMath = new ScreenVertexMath();
 
 		final ConvexPolytope cropPolytopeGlobal = getVisiblePolytopeGlobal( transform, timepoint );
@@ -985,7 +878,8 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 	 */
 	private double getMaxDepth( final AffineTransform3D transform )
 	{
-		return isFocusLimitViewRelative
+		final double focusLimit = settings.getFocusLimit();
+		return settings.getFocusLimitViewRelative()
 				? focusLimit
 				: focusLimit * Affine3DHelpers.extractScale( transform, 0 );
 	}

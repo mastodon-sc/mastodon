@@ -435,7 +435,7 @@ public class TrackSchemeEditTagActions< V extends Vertex< E >, E extends Edge< V
 		PICK_TAG;
 	}
 
-	public static < V extends Vertex< E >, E extends Edge< V > > void installActionBindings(
+	public static < V extends Vertex< E >, E extends Edge< V > > void install(
 			final Actions actions,
 			final InputActionBindings inputActionBindings,
 			final TagSetModel< V, E > tagModel,

@@ -47,7 +47,7 @@ public class EditSpecialBehaviours< V extends OverlayVertex< V, E >, E extends O
 
 	private final ToggleLink toggleLinkBackwardBehaviour;
 
-	public static < V extends OverlayVertex< V, E >, E extends OverlayEdge< E, V > > void installActionBindings(
+	public static < V extends OverlayVertex< V, E >, E extends OverlayEdge< E, V > > void install(
 			final Behaviours behaviours,
 			final ViewerPanel viewer,
 			final OverlayGraph< V, E > overlayGraph,

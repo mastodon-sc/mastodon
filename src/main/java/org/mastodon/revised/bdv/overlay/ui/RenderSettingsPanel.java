@@ -1,405 +1,142 @@
 package org.mastodon.revised.bdv.overlay.ui;
 
+import static org.mastodon.app.ui.settings.StyleElements.booleanElement;
+import static org.mastodon.app.ui.settings.StyleElements.doubleElement;
+import static org.mastodon.app.ui.settings.StyleElements.intElement;
+import static org.mastodon.app.ui.settings.StyleElements.linkedCheckBox;
+import static org.mastodon.app.ui.settings.StyleElements.linkedSliderPanel;
+import static org.mastodon.app.ui.settings.StyleElements.separator;
+
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.util.Arrays;
+import java.util.List;
 
-import javax.swing.AbstractButton;
 import javax.swing.Box;
 import javax.swing.JCheckBox;
+import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.border.EmptyBorder;
+import javax.swing.SwingConstants;
 
+import org.mastodon.app.ui.settings.StyleElements.BooleanElement;
+import org.mastodon.app.ui.settings.StyleElements.DoubleElement;
+import org.mastodon.app.ui.settings.StyleElements.IntElement;
+import org.mastodon.app.ui.settings.StyleElements.Separator;
+import org.mastodon.app.ui.settings.StyleElements.StyleElement;
+import org.mastodon.app.ui.settings.StyleElements.StyleElementVisitor;
 import org.mastodon.revised.bdv.overlay.RenderSettings;
-import org.mastodon.revised.bdv.overlay.RenderSettings.UpdateListener;
 
-import bdv.tools.brightness.SliderPanel;
-import bdv.tools.brightness.SliderPanelDouble;
-import bdv.util.BoundedValue;
-import bdv.util.BoundedValueDouble;
-
-public class RenderSettingsPanel extends JPanel implements UpdateListener
+public class RenderSettingsPanel extends JPanel
 {
 	private static final long serialVersionUID = 1L;
 
 	private static final int tfCols = 4;
 
-	private final RenderSettings renderSettings;
+	private final RenderSettings style;
 
-	private final JCheckBox antialiasingBox;
+	private final List< StyleElement > styleElements;
 
-	private final JCheckBox gradientBox;
-
-	private final JCheckBox intersectionBox;
-
-	private final JCheckBox projectionBox;
-
-	private final BoundedValue timeLimit;
-
-	private final SliderPanel timeLimitSlider;
-
-	private final JCheckBox linksBox;
-
-	private final JCheckBox spotsBox;
-
-	private final AbstractButton centersBox;
-
-	private final JCheckBox centersForEllipsesBox;
-
-	private final JCheckBox drawSpotLabelsBox;
-
-	private final BoundedValueDouble focusLimit;
-
-	private final SliderPanelDouble focusLimitSlider;
-
-	private final JCheckBox focusLimitRelativeBox;
-
-	private final BoundedValueDouble ellipsoidFadeDepth;
-
-	private final SliderPanelDouble ellipsoidFadeDepthSlider;
-
-	private final BoundedValueDouble pointFadeDepth;
-
-	private final SliderPanelDouble pointFadeDepthSlider;
-
-	public RenderSettingsPanel( final RenderSettings renderSettings )
+	public RenderSettingsPanel( final RenderSettings style )
 	{
 		super( new GridBagLayout() );
-		this.renderSettings = renderSettings;
+		this.style = style;
+
+		styleElements = styleElements( style );
+
+		style.addUpdateListener( () -> {
+			styleElements.forEach( StyleElement::update );
+			repaint();
+		} );
 
 		final GridBagConstraints c = new GridBagConstraints();
 		c.insets = new Insets( 0, 5, 0, 5 );
+		c.fill = GridBagConstraints.HORIZONTAL;
+		c.weightx = 1.0;
 		c.gridwidth = 1;
-
-
+		c.gridx = 0;
 		c.gridy = 0;
-		antialiasingBox = new JCheckBox();
-		antialiasingBox.addActionListener( new ActionListener()
-		{
-			@Override
-			public void actionPerformed( final ActionEvent e )
-			{
-				renderSettings.setUseAntialiasing( antialiasingBox.isSelected() );
-			}
-		} );
-		c.anchor = GridBagConstraints.LINE_END;
-		c.gridx = 0;
-		add( antialiasingBox, c );
-		c.anchor = GridBagConstraints.LINE_START;
-		c.gridx = 1;
-		add( new JLabel( "anti-aliasing" ), c );
 
+		styleElements.forEach( element -> element.accept(
+				new StyleElementVisitor()
+				{
+					@Override
+					public void visit( final Separator element )
+					{
+						add( Box.createVerticalStrut( 10 ), c );
+						++c.gridy;
+					}
 
-		c.gridy++;
-		add( Box.createVerticalStrut( 15 ), c );
+					@Override
+					public void visit( final BooleanElement element )
+					{
+						final JCheckBox checkbox = linkedCheckBox( element, "" );
+						checkbox.setHorizontalAlignment( SwingConstants.TRAILING );
+						addToLayout(
+								checkbox,
+								new JLabel( element.getLabel() ) );
+					}
 
+					@Override
+					public void visit( final DoubleElement element )
+					{
+						addToLayout(
+								linkedSliderPanel( element, tfCols ),
+								new JLabel( element.getLabel() ) );
+					}
 
-		c.gridy++;
-		linksBox = new JCheckBox();
-		linksBox.addActionListener( new ActionListener()
-		{
-			@Override
-			public void actionPerformed( final ActionEvent e )
-			{
-				renderSettings.setDrawLinks( linksBox.isSelected() );
-			}
-		} );
-		c.anchor = GridBagConstraints.LINE_END;
-		c.gridx = 0;
-		add( linksBox, c );
-		c.anchor = GridBagConstraints.LINE_START;
-		c.gridx = 1;
-		add( new JLabel("draw links"), c );
+					@Override
+					public void visit( final IntElement element )
+					{
+						addToLayout(
+								linkedSliderPanel( element, tfCols ),
+								new JLabel( element.getLabel() ) );
+					}
 
-
-		c.gridy++;
-		timeLimit = new BoundedValue( 0, 100, 10 )
-		{
-			@Override
-			public void setCurrentValue( final int value )
-			{
-				super.setCurrentValue( value );
-				renderSettings.setTimeLimit( getCurrentValue() );
-			}
-		};
-		timeLimitSlider = new SliderPanel( null, timeLimit, 1 );
-		timeLimitSlider.setNumColummns( tfCols );
-		timeLimitSlider.setBorder( new EmptyBorder( 0, 0, 0, 6 ) );
-		c.anchor = GridBagConstraints.LINE_END;
-		c.gridx = 0;
-		add( timeLimitSlider, c );
-		c.anchor = GridBagConstraints.LINE_START;
-		c.gridx = 1;
-		add( new JLabel( "time range for edges" ), c );
-
-
-		c.gridy++;
-		gradientBox = new JCheckBox();
-		gradientBox.addActionListener( new ActionListener()
-		{
-			@Override
-			public void actionPerformed( final ActionEvent e )
-			{
-				renderSettings.setUseGradient( gradientBox.isSelected() );
-			}
-		} );
-		c.anchor = GridBagConstraints.LINE_END;
-		c.gridx = 0;
-		add( gradientBox, c );
-		c.anchor = GridBagConstraints.LINE_START;
-		c.gridx = 1;
-		add( new JLabel( "gradients for edges" ), c );
-
-
-		c.gridy++;
-		add( Box.createVerticalStrut( 15 ), c );
-
-
-		c.gridy++;
-		spotsBox = new JCheckBox();
-		spotsBox.addActionListener( new ActionListener()
-		{
-			@Override
-			public void actionPerformed( final ActionEvent e )
-			{
-				renderSettings.setDrawSpots( spotsBox.isSelected() );
-			}
-		} );
-		c.anchor = GridBagConstraints.LINE_END;
-		c.gridx = 0;
-		add( spotsBox, c );
-		c.anchor = GridBagConstraints.LINE_START;
-		c.gridx = 1;
-		add( new JLabel("draw spots"), c );
-
-
-		c.gridy++;
-		intersectionBox = new JCheckBox();
-		intersectionBox.addActionListener( new ActionListener()
-		{
-			@Override
-			public void actionPerformed( final ActionEvent e )
-			{
-				renderSettings.setDrawEllipsoidSliceIntersection( intersectionBox.isSelected() );
-			}
-		} );
-		c.anchor = GridBagConstraints.LINE_END;
-		c.gridx = 0;
-		add( intersectionBox, c );
-		c.anchor = GridBagConstraints.LINE_START;
-		c.gridx = 1;
-		add( new JLabel("ellipsoid intersection"), c );
-
-
-		c.gridy++;
-		projectionBox = new JCheckBox();
-		projectionBox.addActionListener( new ActionListener()
-		{
-			@Override
-			public void actionPerformed( final ActionEvent e )
-			{
-				renderSettings.setDrawEllipsoidSliceProjection( projectionBox.isSelected() );
-			}
-		} );
-		c.anchor = GridBagConstraints.LINE_END;
-		c.gridx = 0;
-		add( projectionBox, c );
-		c.anchor = GridBagConstraints.LINE_START;
-		c.gridx = 1;
-		add( new JLabel("ellipsoid projection"), c );
-
-
-		c.gridy++;
-		centersBox = new JCheckBox();
-		centersBox.addActionListener( new ActionListener()
-		{
-			@Override
-			public void actionPerformed( final ActionEvent e )
-			{
-				renderSettings.setDrawSpotCenters( centersBox.isSelected() );
-			}
-		} );
-		c.anchor = GridBagConstraints.LINE_END;
-		c.gridx = 0;
-		add( centersBox, c );
-		c.anchor = GridBagConstraints.LINE_START;
-		c.gridx = 1;
-		add( new JLabel("draw spot centers"), c );
-
-
-		c.gridy++;
-		centersForEllipsesBox = new JCheckBox();
-		centersForEllipsesBox.addActionListener( new ActionListener()
-		{
-			@Override
-			public void actionPerformed( final ActionEvent e )
-			{
-				renderSettings.setDrawSpotCentersForEllipses( centersForEllipsesBox.isSelected() );
-			}
-		} );
-		c.anchor = GridBagConstraints.LINE_END;
-		c.gridx = 0;
-		add( centersForEllipsesBox, c );
-		c.anchor = GridBagConstraints.LINE_START;
-		c.gridx = 1;
-		add( new JLabel("draw spot centers for ellipses"), c );
-
-
-		/*
-		 * Spot labels
-		 */
-
-		c.gridy++;
-		drawSpotLabelsBox = new JCheckBox();
-		drawSpotLabelsBox.addActionListener( new ActionListener()
-		{
-			@Override
-			public void actionPerformed( final ActionEvent e )
-			{
-				renderSettings.setDrawSpotLabels( drawSpotLabelsBox.isSelected() );
-			}
-		} );
-		c.anchor = GridBagConstraints.LINE_END;
-		c.gridx = 0;
-		add( drawSpotLabelsBox, c );
-		c.anchor = GridBagConstraints.LINE_START;
-		c.gridx = 1;
-		add( new JLabel( "draw spot labels" ), c );
-
-		/*
-		 * Vertical space.
-		 */
-
-		c.gridy++;
-		add( Box.createVerticalStrut( 15 ), c );
-
-		/*
-		 * Focus limit.
-		 */
-
-		c.gridy++;
-		focusLimit = new BoundedValueDouble( 0, 2000, 100 )
-		{
-			@Override
-			public void setCurrentValue( final double value )
-			{
-				super.setCurrentValue( value );
-				renderSettings.setFocusLimit( getCurrentValue() );
-			}
-		};
-		focusLimitSlider = new SliderPanelDouble( null, focusLimit, 1 );
-		focusLimitSlider.setDecimalFormat( "0.####" );
-		focusLimitSlider.setNumColummns( tfCols );
-		focusLimitSlider.setBorder( new EmptyBorder( 0, 0, 0, 6 ) );
-		c.anchor = GridBagConstraints.LINE_END;
-		c.gridx = 0;
-		add( focusLimitSlider, c );
-		c.anchor = GridBagConstraints.LINE_START;
-		c.gridx = 1;
-		add( new JLabel( "focus limit (max dist to view plane)" ), c );
-
-
-		c.gridy++;
-		focusLimitRelativeBox = new JCheckBox();
-		focusLimitRelativeBox.addActionListener( new ActionListener()
-		{
-			@Override
-			public void actionPerformed( final ActionEvent e )
-			{
-				renderSettings.setFocusLimitViewRelative( focusLimitRelativeBox.isSelected() );
-			}
-		} );
-		c.anchor = GridBagConstraints.LINE_END;
-		c.gridx = 0;
-		add( focusLimitRelativeBox, c );
-		c.anchor = GridBagConstraints.LINE_START;
-		c.gridx = 1;
-		add( new JLabel("view-relative focus limit"), c );
-
-
-		c.gridy++;
-		add( Box.createVerticalStrut( 15 ), c );
-
-
-		c.gridy++;
-		ellipsoidFadeDepth = new BoundedValueDouble( 0, 1, 0.2 )
-		{
-			@Override
-			public void setCurrentValue( final double value )
-			{
-				super.setCurrentValue( value );
-				renderSettings.setEllipsoidFadeDepth( getCurrentValue() );
-			}
-		};
-		ellipsoidFadeDepthSlider = new SliderPanelDouble( null, ellipsoidFadeDepth, 0.05 );
-		ellipsoidFadeDepthSlider.setDecimalFormat( "0.####" );
-		ellipsoidFadeDepthSlider.setNumColummns( tfCols );
-		ellipsoidFadeDepthSlider.setBorder( new EmptyBorder( 0, 0, 0, 6 ) );
-		c.anchor = GridBagConstraints.LINE_END;
-		c.gridx = 0;
-		add( ellipsoidFadeDepthSlider, c );
-		c.anchor = GridBagConstraints.LINE_START;
-		c.gridx = 1;
-		add( new JLabel( "ellipsoid fade depth" ), c );
-
-
-		c.gridy++;
-		pointFadeDepth = new BoundedValueDouble( 0, 1, 0.2 )
-		{
-			@Override
-			public void setCurrentValue( final double value )
-			{
-				super.setCurrentValue( value );
-				renderSettings.setPointFadeDepth( getCurrentValue() );
-			}
-		};
-		pointFadeDepthSlider = new SliderPanelDouble( null, pointFadeDepth, 0.05 );
-		pointFadeDepthSlider.setDecimalFormat( "0.####" );
-		pointFadeDepthSlider.setNumColummns( tfCols );
-		pointFadeDepthSlider.setBorder( new EmptyBorder( 0, 0, 0, 6 ) );
-		c.anchor = GridBagConstraints.LINE_END;
-		c.gridx = 0;
-		add( pointFadeDepthSlider, c );
-		c.anchor = GridBagConstraints.LINE_START;
-		c.gridx = 1;
-		add( new JLabel( "center point fade depth" ), c );
-
-
-		renderSettings.addUpdateListener( this );
-		update();
+					private void addToLayout( final JComponent comp1, final JComponent comp2 )
+					{
+						c.anchor = GridBagConstraints.LINE_END;
+						add( comp1, c );
+						c.gridx++;
+						c.weightx = 0.0;
+						c.anchor = GridBagConstraints.LINE_START;
+						add( comp2, c );
+						c.gridx = 0;
+						c.weightx = 1.0;
+						c.gridy++;
+					}
+				} ) );
 	}
 
-	protected void update()
+	private List< StyleElement > styleElements( final RenderSettings style )
 	{
-		synchronized ( renderSettings )
-		{
-			antialiasingBox.setSelected( renderSettings.getUseAntialiasing() );
+		return Arrays.asList(
+				booleanElement( "anti-aliasing", style::getUseAntialiasing, style::setUseAntialiasing ),
 
-			linksBox.setSelected( renderSettings.getDrawLinks() );
-			timeLimit.setCurrentValue( renderSettings.getTimeLimit() );
-			gradientBox.setSelected( renderSettings.getUseGradient() );
+				separator(),
 
-			spotsBox.setSelected( renderSettings.getDrawSpots() );
-			intersectionBox.setSelected( renderSettings.getDrawEllipsoidSliceIntersection() );
-			projectionBox.setSelected( renderSettings.getDrawEllipsoidSliceProjection() );
-			centersBox.setSelected( renderSettings.getDrawSpotCenters() );
-			centersForEllipsesBox.setSelected( renderSettings.getDrawSpotCentersForEllipses() );
-			drawSpotLabelsBox.setSelected( renderSettings.getDrawSpotLabels() );
+				booleanElement( "draw links", style::getDrawLinks, style::setDrawLinks ),
+				intElement( "time range for links", 0, 100, style::getTimeLimit, style::setTimeLimit ),
+				booleanElement( "gradients for links", style::getUseGradient, style::setUseGradient ),
 
-			focusLimit.setCurrentValue( renderSettings.getFocusLimit() );
-			focusLimitRelativeBox.setSelected( renderSettings.getFocusLimitViewRelative() );
+				separator(),
 
-			ellipsoidFadeDepth.setCurrentValue( renderSettings.getEllipsoidFadeDepth() );
-			pointFadeDepth.setCurrentValue( renderSettings.getPointFadeDepth() );
-		}
-	}
+				booleanElement( "draw spots", style::getDrawSpots, style::setDrawSpots ),
+				booleanElement( "ellipsoid intersection", style::getDrawEllipsoidSliceIntersection, style::setDrawEllipsoidSliceIntersection ),
+				booleanElement( "ellipsoid projection", style::getDrawEllipsoidSliceProjection, style::setDrawEllipsoidSliceProjection ),
+				booleanElement( "draw spot centers", style::getDrawSpotCenters, style::setDrawSpotCenters ),
+				booleanElement( "draw spot centers for ellipses", style::getDrawSpotCentersForEllipses, style::setDrawSpotCentersForEllipses ),
+				booleanElement( "draw spot labels", style::getDrawSpotLabels, style::setDrawSpotLabels ),
 
-	@Override
-	public void renderSettingsChanged()
-	{
-		update();
+				separator(),
+
+				doubleElement( "focus limit (max dist to view plane)", 0, 2000, style::getFocusLimit, style::setFocusLimit ),
+				booleanElement( "view relative focus limit", style::getFocusLimitViewRelative, style::setFocusLimitViewRelative ),
+
+				separator(),
+				doubleElement( "ellipsoid fade depth", 0, 1, style::getEllipsoidFadeDepth, style::setEllipsoidFadeDepth ),
+				doubleElement( "center point fade depth", 0, 1, style::getPointFadeDepth, style::setPointFadeDepth )
+		);
 	}
 }
