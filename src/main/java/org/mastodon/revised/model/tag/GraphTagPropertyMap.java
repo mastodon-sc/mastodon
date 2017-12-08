@@ -126,4 +126,21 @@ public class GraphTagPropertyMap< V extends Vertex< E >, E extends Edge< V > >
 		edgeTag.clearTag( tag );
 		tags.remove( tag );
 	}
+
+	public void clear()
+	{
+		vertexTag.clear();
+		edgeTag.clear();
+		tags.clear();
+	}
+
+	public Collection< V > getTaggedVertices( final Tag tag )
+	{
+		return vertexTag.getTaggedWith( tag ) == null ? Collections.emptyList() : vertexTag.getTaggedWith( tag );
+	}
+
+	public Collection< E > getTaggedEdges( final Tag tag )
+	{
+		return edgeTag.getTaggedWith( tag ) == null ? Collections.emptyList() : edgeTag.getTaggedWith( tag );
+	}
 }
