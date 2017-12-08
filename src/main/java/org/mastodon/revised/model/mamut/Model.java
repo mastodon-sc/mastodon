@@ -10,6 +10,8 @@ import org.mastodon.properties.Property;
 import org.mastodon.revised.model.AbstractModel;
 import org.mastodon.revised.model.feature.DefaultFeatureModel;
 import org.mastodon.revised.model.feature.FeatureModel;
+import org.mastodon.revised.model.tag.DefaultTagSetModel;
+import org.mastodon.revised.model.tag.TagSetModel;
 import org.mastodon.spatial.SpatioTemporalIndex;
 import org.mastodon.spatial.SpatioTemporalIndexImp;
 import org.mastodon.undo.GraphUndoRecorder;
@@ -46,6 +48,8 @@ public class Model extends AbstractModel< ModelGraph, Spot, Link > implements Un
 
 	private final FeatureModel featureModel;
 
+	private final TagSetModel< Spot, Link > tagSetModel;
+
 	public Model()
 	{
 		super( new ModelGraph() );
@@ -62,6 +66,7 @@ public class Model extends AbstractModel< ModelGraph, Spot, Link > implements Un
 		final List< Property< Link > > edgeUndoableProperties = new ArrayList<>();
 
 		featureModel = new DefaultFeatureModel();
+		tagSetModel = new DefaultTagSetModel<>( getGraph() );
 
 		undoRecorder = new GraphUndoRecorder<>(
 				initialCapacity,
@@ -84,6 +89,8 @@ public class Model extends AbstractModel< ModelGraph, Spot, Link > implements Un
 	public void loadRaw( final File file ) throws IOException
 	{
 		modelGraph.loadRaw( file, ModelSerializer.getInstance() );
+
+		// TODO load tag model.
 	}
 
 	/**
@@ -97,6 +104,8 @@ public class Model extends AbstractModel< ModelGraph, Spot, Link > implements Un
 	public void saveRaw( final File file ) throws IOException
 	{
 		modelGraph.saveRaw( file, ModelSerializer.getInstance() );
+
+		// TODO save tag model.
 	}
 
 	/**
@@ -130,6 +139,11 @@ public class Model extends AbstractModel< ModelGraph, Spot, Link > implements Un
 	public FeatureModel getFeatureModel()
 	{
 		return featureModel;
+	}
+
+	public TagSetModel< Spot, Link > getTagSetModel()
+	{
+		return tagSetModel;
 	}
 
 }
