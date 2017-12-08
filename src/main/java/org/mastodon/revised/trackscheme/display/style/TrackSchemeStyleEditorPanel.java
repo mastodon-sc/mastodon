@@ -1,5 +1,11 @@
 package org.mastodon.revised.trackscheme.display.style;
 
+import static org.mastodon.app.ui.settings.StyleElements.booleanElement;
+import static org.mastodon.app.ui.settings.StyleElements.colorElement;
+import static org.mastodon.app.ui.settings.StyleElements.linkedCheckBox;
+import static org.mastodon.app.ui.settings.StyleElements.linkedColorButton;
+import static org.mastodon.app.ui.settings.StyleElements.separator;
+
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.GridBagConstraints;
@@ -9,6 +15,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.util.Arrays;
 import java.util.List;
+
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.ActionMap;
@@ -23,12 +30,13 @@ import javax.swing.JPanel;
 import javax.swing.KeyStroke;
 import javax.swing.WindowConstants;
 import javax.swing.border.LineBorder;
+
 import org.mastodon.adapter.FocusModelAdapter;
 import org.mastodon.adapter.HighlightModelAdapter;
 import org.mastodon.adapter.RefBimap;
 import org.mastodon.adapter.SelectionModelAdapter;
-import org.mastodon.app.ui.settings.StyleElements.BooleanSetter;
-import org.mastodon.app.ui.settings.StyleElements.ColorSetter;
+import org.mastodon.app.ui.settings.StyleElements.BooleanElement;
+import org.mastodon.app.ui.settings.StyleElements.ColorElement;
 import org.mastodon.app.ui.settings.StyleElements.Separator;
 import org.mastodon.app.ui.settings.StyleElements.StyleElement;
 import org.mastodon.app.ui.settings.StyleElements.StyleElementVisitor;
@@ -54,12 +62,6 @@ import org.mastodon.revised.trackscheme.display.style.dummygraph.DummyGraph;
 import org.mastodon.revised.trackscheme.display.style.dummygraph.DummyVertex;
 import org.mastodon.revised.trackscheme.wrap.DefaultModelGraphProperties;
 import org.mastodon.revised.trackscheme.wrap.ModelGraphProperties;
-
-import static org.mastodon.app.ui.settings.StyleElements.booleanSetter;
-import static org.mastodon.app.ui.settings.StyleElements.colorSetter;
-import static org.mastodon.app.ui.settings.StyleElements.linkedCheckBox;
-import static org.mastodon.app.ui.settings.StyleElements.linkedColorButton;
-import static org.mastodon.app.ui.settings.StyleElements.separator;
 
 
 public class TrackSchemeStyleEditorPanel extends JPanel
@@ -146,9 +148,9 @@ public class TrackSchemeStyleEditorPanel extends JPanel
 					}
 
 					@Override
-					public void visit( final ColorSetter element )
+					public void visit( final ColorElement element )
 					{
-						JButton button = linkedColorButton( element, element.getLabel(), colorChooser );
+						final JButton button = linkedColorButton( element, element.getLabel(), colorChooser );
 						editPanel.add( button, c );
 						if ( ++c.gridx == numCols )
 						{
@@ -158,9 +160,9 @@ public class TrackSchemeStyleEditorPanel extends JPanel
 					}
 
 					@Override
-					public void visit( final BooleanSetter element )
+					public void visit( final BooleanElement element )
 					{
-						JCheckBox checkbox = linkedCheckBox( element, element.getLabel() );
+						final JCheckBox checkbox = linkedCheckBox( element, element.getLabel() );
 						editPanel.add( checkbox, c );
 						if ( ++c.gridx == numCols )
 						{
@@ -168,8 +170,7 @@ public class TrackSchemeStyleEditorPanel extends JPanel
 							++c.gridy;
 						}
 					}
-				}
-		) );
+				} ) );
 
 		previewPanel.setBorder( new LineBorder( Color.LIGHT_GRAY, 1 ) );
 		add( previewPanel, BorderLayout.CENTER );
@@ -179,34 +180,34 @@ public class TrackSchemeStyleEditorPanel extends JPanel
 	private List< StyleElement > styleElements( final TrackSchemeStyle style )
 	{
 		return Arrays.asList(
-				colorSetter( "edge", style::getEdgeColor, style::edgeColor ),
-				colorSetter( "selected edge", style::getSelectedEdgeColor, style::selectedEdgeColor ),
-				colorSetter( "vertex fill", style::getVertexFillColor, style::vertexFillColor ),
-				colorSetter( "selected vertex fill", style::getSelectedVertexFillColor, style::selectedVertexFillColor ),
-				colorSetter( "vertex draw", style::getVertexDrawColor, style::vertexDrawColor ),
-				colorSetter( "selected vertex draw", style::getSelectedVertexDrawColor, style::selectedVertexDrawColor ),
-				colorSetter( "simplified vertex fill", style::getSimplifiedVertexFillColor, style::simplifiedVertexFillColor ),
-				colorSetter( "selected simplified vertex fill", style::getSelectedSimplifiedVertexFillColor, style::selectedSimplifiedVertexFillColor ),
+				colorElement( "edge", style::getEdgeColor, style::edgeColor ),
+				colorElement( "selected edge", style::getSelectedEdgeColor, style::selectedEdgeColor ),
+				colorElement( "vertex fill", style::getVertexFillColor, style::vertexFillColor ),
+				colorElement( "selected vertex fill", style::getSelectedVertexFillColor, style::selectedVertexFillColor ),
+				colorElement( "vertex draw", style::getVertexDrawColor, style::vertexDrawColor ),
+				colorElement( "selected vertex draw", style::getSelectedVertexDrawColor, style::selectedVertexDrawColor ),
+				colorElement( "simplified vertex fill", style::getSimplifiedVertexFillColor, style::simplifiedVertexFillColor ),
+				colorElement( "selected simplified vertex fill", style::getSelectedSimplifiedVertexFillColor, style::selectedSimplifiedVertexFillColor ),
 
 				separator(),
 
-				colorSetter( "vertex range", style::getVertexRangeColor, style::vertexRangeColor ),
+				colorElement( "vertex range", style::getVertexRangeColor, style::vertexRangeColor ),
 
 				separator(),
 
-				colorSetter( "background", style::getBackgroundColor, style::backgroundColor ),
-				colorSetter( "header background", style::getHeaderBackgroundColor, style::headerBackgroundColor ),
-				colorSetter( "decoration", style::getDecorationColor, style::decorationColor ),
-				colorSetter( "header decoration", style::getHeaderDecorationColor, style::headerDecorationColor ),
-				colorSetter( "current timepoint", style::getCurrentTimepointColor, style::currentTimepointColor ),
-				colorSetter( "header current timepoint", style::getHeaderCurrentTimepointColor, style::headerCurrentTimepointColor ),
+				colorElement( "background", style::getBackgroundColor, style::backgroundColor ),
+				colorElement( "header background", style::getHeaderBackgroundColor, style::headerBackgroundColor ),
+				colorElement( "decoration", style::getDecorationColor, style::decorationColor ),
+				colorElement( "header decoration", style::getHeaderDecorationColor, style::headerDecorationColor ),
+				colorElement( "current timepoint", style::getCurrentTimepointColor, style::currentTimepointColor ),
+				colorElement( "header current timepoint", style::getHeaderCurrentTimepointColor, style::headerCurrentTimepointColor ),
 
 				separator(),
 
-				booleanSetter( "paint rows", style::isPaintRows, style::paintRows ),
-				booleanSetter( "highlight current timepoint", style::isHighlightCurrentTimepoint, style::highlightCurrentTimepoint ),
-				booleanSetter( "paint columns", style::isPaintColumns, style::paintColumns ),
-				booleanSetter( "paint header shadow", style::isPaintHeaderShadow, style::paintHeaderShadow )
+				booleanElement( "paint rows", style::isPaintRows, style::paintRows ),
+				booleanElement( "highlight current timepoint", style::isHighlightCurrentTimepoint, style::highlightCurrentTimepoint ),
+				booleanElement( "paint columns", style::isPaintColumns, style::paintColumns ),
+				booleanElement( "paint header shadow", style::isPaintHeaderShadow, style::paintHeaderShadow )
 		);
 	}
 

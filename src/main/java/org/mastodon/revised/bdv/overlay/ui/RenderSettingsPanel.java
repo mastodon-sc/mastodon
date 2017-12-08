@@ -1,26 +1,31 @@
 package org.mastodon.revised.bdv.overlay.ui;
 
-import bdv.tools.brightness.SliderPanel;
-import bdv.tools.brightness.SliderPanelDouble;
-import bdv.util.BoundedValue;
-import bdv.util.BoundedValueDouble;
-import java.awt.Component;
+import static org.mastodon.app.ui.settings.StyleElements.booleanElement;
+import static org.mastodon.app.ui.settings.StyleElements.doubleElement;
+import static org.mastodon.app.ui.settings.StyleElements.intElement;
+import static org.mastodon.app.ui.settings.StyleElements.linkedCheckBox;
+import static org.mastodon.app.ui.settings.StyleElements.linkedSliderPanel;
+import static org.mastodon.app.ui.settings.StyleElements.separator;
+
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.util.Arrays;
 import java.util.List;
-import java.util.function.BooleanSupplier;
-import java.util.function.Consumer;
-import java.util.function.DoubleSupplier;
-import java.util.function.IntSupplier;
+
 import javax.swing.Box;
 import javax.swing.JCheckBox;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
-import javax.swing.border.EmptyBorder;
+
+import org.mastodon.app.ui.settings.StyleElements.BooleanElement;
+import org.mastodon.app.ui.settings.StyleElements.DoubleElement;
+import org.mastodon.app.ui.settings.StyleElements.IntElement;
+import org.mastodon.app.ui.settings.StyleElements.Separator;
+import org.mastodon.app.ui.settings.StyleElements.StyleElement;
+import org.mastodon.app.ui.settings.StyleElements.StyleElementVisitor;
 import org.mastodon.revised.bdv.overlay.RenderSettings;
 
 public class RenderSettingsPanel extends JPanel
@@ -53,278 +58,85 @@ public class RenderSettingsPanel extends JPanel
 		c.gridx = 0;
 		c.gridy = 0;
 
-		styleElements.forEach( element -> element.addToLayout( this, c ) );
-	}
-
-	private interface StyleElement
-	{
-		public default void addToLayout( final JComponent parent, final GridBagConstraints c )
-		{
-				c.anchor = GridBagConstraints.LINE_END;
-				parent.add( comp1(), c );
-				c.gridx++;
-				c.weightx = 0.0;
-				c.anchor = GridBagConstraints.LINE_START;
-				parent.add( comp2(), c );
-				c.gridx = 0;
-				c.weightx = 1.0;
-				c.gridy++;
-		}
-
-		public default Component comp1()
-		{
-			throw new UnsupportedOperationException();
-		}
-		public default Component comp2()
-		{
-			throw new UnsupportedOperationException();
-		}
-
-		public default void update()
-		{}
-	}
-
-	private static class Separator implements StyleElement
-	{
-		@Override
-		public void addToLayout( final JComponent parent, final GridBagConstraints c )
-		{
-			parent.add( Box.createVerticalStrut( 10 ), c );
-			++c.gridy;
-		}
-	}
-
-	private static Separator separator()
-	{
-		return new Separator();
-	}
-
-	private static abstract class BooleanSetter implements StyleElement
-	{
-		private final JCheckBox checkbox;
-
-		private final JLabel label;
-
-		public BooleanSetter( final String label )
-		{
-			checkbox = new JCheckBox( "", get() );
-			checkbox.setFocusable( false );
-			checkbox.addActionListener( ( e ) -> set( checkbox.isSelected() ) );
-			checkbox.setHorizontalAlignment( SwingConstants.TRAILING );
-			this.label = new JLabel( label );
-		}
-
-		public abstract boolean get();
-
-		public abstract void set( boolean b );
-
-		@Override
-		public Component comp1()
-		{
-			return checkbox;
-		}
-
-		@Override
-		public Component comp2()
-		{
-			return label;
-		}
-
-		@Override
-		public void update()
-		{
-			if ( get() != checkbox.isSelected() )
-				checkbox.setSelected( get() );
-		}
-	}
-
-	private static BooleanSetter booleanSetter( final String label, final BooleanSupplier get, final Consumer< Boolean > set )
-	{
-		return new BooleanSetter( label )
-		{
-			@Override
-			public boolean get()
-			{
-				return get.getAsBoolean();
-			}
-
-			@Override
-			public void set( final boolean b )
-			{
-				set.accept( b );
-			}
-		};
-	}
-
-	private static abstract class SliderDoubleSetter implements StyleElement
-	{
-		private final BoundedValueDouble value;
-
-		private final SliderPanelDouble slider;
-
-		private final JLabel label;
-
-		public SliderDoubleSetter( final String label, double rangeMin, double rangeMax )
-		{
-			double currentValue = Math.max( rangeMin, Math.min( rangeMax, get() ) );
-			value = new BoundedValueDouble( rangeMin, rangeMax, currentValue )
-			{
-				@Override
-				public void setCurrentValue( final double value )
+		styleElements.forEach( element -> element.accept(
+				new StyleElementVisitor()
 				{
-					super.setCurrentValue( value );
-					if ( get() != getCurrentValue() )
-						set( getCurrentValue() );
-				}
-			};
-			slider = new SliderPanelDouble( null, value, 1 );
-			slider.setDecimalFormat( "0.####" );
-			slider.setNumColummns( tfCols );
-			slider.setBorder( new EmptyBorder( 0, 0, 0, 6 ) );
+					@Override
+					public void visit( final Separator element )
+					{
+						add( Box.createVerticalStrut( 10 ), c );
+						++c.gridy;
+					}
 
-			this.label = new JLabel( label );
-		}
+					@Override
+					public void visit( final BooleanElement element )
+					{
+						final JCheckBox checkbox = linkedCheckBox( element, "" );
+						checkbox.setHorizontalAlignment( SwingConstants.TRAILING );
+						addToLayout(
+								checkbox,
+								new JLabel( element.getLabel() ) );
+					}
 
-		public abstract double get();
+					@Override
+					public void visit( final DoubleElement element )
+					{
+						addToLayout(
+								linkedSliderPanel( element, tfCols ),
+								new JLabel( element.getLabel() ) );
+					}
 
-		public abstract void set( double v );
+					@Override
+					public void visit( final IntElement element )
+					{
+						addToLayout(
+								linkedSliderPanel( element, tfCols ),
+								new JLabel( element.getLabel() ) );
+					}
 
-		@Override
-		public Component comp1()
-		{
-			return slider;
-		}
-
-		@Override
-		public Component comp2()
-		{
-			return label;
-		}
-
-		@Override
-		public void update()
-		{
-			if ( get() != value.getCurrentValue() )
-				value.setCurrentValue( get() );
-		}
-	}
-
-	private static SliderDoubleSetter sliderSetter( final String label, double rangeMin, double rangeMax, final DoubleSupplier get, final Consumer< Double > set )
-	{
-		return new SliderDoubleSetter( label, rangeMin, rangeMax )
-		{
-			@Override
-			public double get()
-			{
-				return get.getAsDouble();
-			}
-
-			@Override
-			public void set( final double v )
-			{
-				set.accept( v );
-			}
-		};
-	}
-
-	private static abstract class SliderIntSetter implements StyleElement
-	{
-		private final BoundedValue value;
-
-		private final SliderPanel slider;
-
-		private final JLabel label;
-
-		public SliderIntSetter( final String label, int rangeMin, int rangeMax )
-		{
-			int currentValue = Math.max( rangeMin, Math.min( rangeMax, get() ) );
-			value = new BoundedValue( rangeMin, rangeMax, currentValue )
-			{
-				@Override
-				public void setCurrentValue( final int value )
-				{
-					super.setCurrentValue( value );
-					if ( get() != getCurrentValue() )
-						set( getCurrentValue() );
-				}
-			};
-			slider = new SliderPanel( null, value, 1 );
-			slider.setNumColummns( tfCols );
-			slider.setBorder( new EmptyBorder( 0, 0, 0, 6 ) );
-
-			this.label = new JLabel( label );
-		}
-
-		public abstract int get();
-
-		public abstract void set( int v );
-
-		@Override
-		public Component comp1()
-		{
-			return slider;
-		}
-
-		@Override
-		public Component comp2()
-		{
-			return label;
-		}
-
-		@Override
-		public void update()
-		{
-			if ( get() != value.getCurrentValue() )
-				value.setCurrentValue( get() );
-		}
-	}
-
-	private static SliderIntSetter sliderSetter( final String label, int rangeMin, int rangeMax, final IntSupplier get, final Consumer< Integer > set )
-	{
-		return new SliderIntSetter( label, rangeMin, rangeMax )
-		{
-			@Override
-			public int get()
-			{
-				return get.getAsInt();
-			}
-
-			@Override
-			public void set( final int v )
-			{
-				set.accept( v );
-			}
-		};
+					private void addToLayout( final JComponent comp1, final JComponent comp2 )
+					{
+						c.anchor = GridBagConstraints.LINE_END;
+						add( comp1, c );
+						c.gridx++;
+						c.weightx = 0.0;
+						c.anchor = GridBagConstraints.LINE_START;
+						add( comp2, c );
+						c.gridx = 0;
+						c.weightx = 1.0;
+						c.gridy++;
+					}
+				} ) );
 	}
 
 	private List< StyleElement > styleElements( final RenderSettings style )
 	{
 		return Arrays.asList(
-				booleanSetter( "anti-aliasing", style::getUseAntialiasing, style::setUseAntialiasing ),
+				booleanElement( "anti-aliasing", style::getUseAntialiasing, style::setUseAntialiasing ),
 
 				separator(),
 
-				booleanSetter( "draw links", style::getDrawLinks, style::setDrawLinks ),
-				sliderSetter( "time range for links", 0, 100, style::getTimeLimit, style::setTimeLimit ),
-				booleanSetter( "gradients for links", style::getUseGradient, style::setUseGradient ),
+				booleanElement( "draw links", style::getDrawLinks, style::setDrawLinks ),
+				intElement( "time range for links", 0, 100, style::getTimeLimit, style::setTimeLimit ),
+				booleanElement( "gradients for links", style::getUseGradient, style::setUseGradient ),
 
 				separator(),
 
-				booleanSetter( "draw spots", style::getDrawSpots, style::setDrawSpots ),
-				booleanSetter( "ellipsoid intersection", style::getDrawEllipsoidSliceIntersection, style::setDrawEllipsoidSliceIntersection ),
-				booleanSetter( "ellipsoid projection", style::getDrawEllipsoidSliceProjection, style::setDrawEllipsoidSliceProjection ),
-				booleanSetter( "draw spot centers", style::getDrawSpotCenters, style::setDrawSpotCenters ),
-				booleanSetter( "draw spot centers for ellipses", style::getDrawSpotCentersForEllipses, style::setDrawSpotCentersForEllipses ),
-				booleanSetter( "draw spot labels", style::getDrawSpotLabels, style::setDrawSpotLabels ),
+				booleanElement( "draw spots", style::getDrawSpots, style::setDrawSpots ),
+				booleanElement( "ellipsoid intersection", style::getDrawEllipsoidSliceIntersection, style::setDrawEllipsoidSliceIntersection ),
+				booleanElement( "ellipsoid projection", style::getDrawEllipsoidSliceProjection, style::setDrawEllipsoidSliceProjection ),
+				booleanElement( "draw spot centers", style::getDrawSpotCenters, style::setDrawSpotCenters ),
+				booleanElement( "draw spot centers for ellipses", style::getDrawSpotCentersForEllipses, style::setDrawSpotCentersForEllipses ),
+				booleanElement( "draw spot labels", style::getDrawSpotLabels, style::setDrawSpotLabels ),
 
 				separator(),
 
-				sliderSetter( "focus limit (max dist to view plane)", 0, 2000, style::getFocusLimit, style::setFocusLimit ),
-				booleanSetter( "view relative focus limit", style::getFocusLimitViewRelative, style::setFocusLimitViewRelative ),
+				doubleElement( "focus limit (max dist to view plane)", 0, 2000, style::getFocusLimit, style::setFocusLimit ),
+				booleanElement( "view relative focus limit", style::getFocusLimitViewRelative, style::setFocusLimitViewRelative ),
 
 				separator(),
-				sliderSetter( "ellipsoid fade depth", 0, 1, style::getEllipsoidFadeDepth, style::setEllipsoidFadeDepth ),
-				sliderSetter( "center point fade depth", 0, 1, style::getPointFadeDepth, style::setPointFadeDepth )
+				doubleElement( "ellipsoid fade depth", 0, 1, style::getEllipsoidFadeDepth, style::setEllipsoidFadeDepth ),
+				doubleElement( "center point fade depth", 0, 1, style::getPointFadeDepth, style::setPointFadeDepth )
 		);
 	}
 }
