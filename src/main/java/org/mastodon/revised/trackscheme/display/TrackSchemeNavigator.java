@@ -15,6 +15,7 @@ import org.mastodon.revised.trackscheme.TrackSchemeEdge;
 import org.mastodon.revised.trackscheme.TrackSchemeGraph;
 import org.mastodon.revised.trackscheme.TrackSchemeVertex;
 import org.mastodon.revised.trackscheme.display.OffsetHeaders.OffsetHeadersListener;
+import org.mastodon.revised.trackscheme.display.TrackSchemeFocusActions.NavigatorEtiquette;
 import org.scijava.ui.behaviour.BehaviourMap;
 import org.scijava.ui.behaviour.ClickBehaviour;
 import org.scijava.ui.behaviour.DragBehaviour;
@@ -46,15 +47,6 @@ import net.imglib2.ui.TransformListener;
  */
 public class TrackSchemeNavigator implements TransformListener< ScreenTransform >, OffsetHeadersListener
 {
-	public static final String NAVIGATE_CHILD = "ts navigate to child";
-	public static final String NAVIGATE_PARENT = "ts navigate to parent";
-	public static final String NAVIGATE_LEFT = "ts navigate left";
-	public static final String NAVIGATE_RIGHT = "ts navigate right";
-	public static final String SELECT_NAVIGATE_CHILD = "ts select navigate to child";
-	public static final String SELECT_NAVIGATE_PARENT = "ts select navigate to parent";
-	public static final String SELECT_NAVIGATE_LEFT = "ts select navigate left";
-	public static final String SELECT_NAVIGATE_RIGHT = "ts select navigate right";
-	public static final String TOGGLE_FOCUS_SELECTION = "ts toggle focus selection";
 	public static final String FOCUS_VERTEX = "ts click focus vertex";
 	public static final String NAVIGATE_TO_VERTEX = "ts click navigate to vertex";
 	public static final String SELECT = "ts click select";
@@ -62,15 +54,6 @@ public class TrackSchemeNavigator implements TransformListener< ScreenTransform 
 	public static final String BOX_SELECT = "ts box selection";
 	public static final String BOX_ADD_SELECT = "ts box add to selection";
 
-	private static final String[] NAVIGATE_CHILD_KEYS = new String[] { "DOWN" };
-	private static final String[] NAVIGATE_PARENT_KEYS = new String[] { "UP" };
-	private static final String[] NAVIGATE_LEFT_KEYS = new String[] { "LEFT" };
-	private static final String[] NAVIGATE_RIGHT_KEYS = new String[] { "RIGHT" };
-	private static final String[] SELECT_NAVIGATE_CHILD_KEYS = new String[] { "shift DOWN" };
-	private static final String[] SELECT_NAVIGATE_PARENT_KEYS = new String[] { "shift UP" };
-	private static final String[] SELECT_NAVIGATE_LEFT_KEYS = new String[] { "shift LEFT" };
-	private static final String[] SELECT_NAVIGATE_RIGHT_KEYS = new String[] { "shift RIGHT" };
-	private static final String[] TOGGLE_FOCUS_SELECTION_KEYS = new String[] { "SPACE" };
 	private static final String[] FOCUS_VERTEX_KEYS = new String[] { "button1", "shift button1" };
 	private static final String[] NAVIGATE_TO_VERTEX_KEYS = new String[] { "double-click button1", "shift double-click button1" };
 	private static final String[] SELECT_KEYS = new String[] { "button1"};
@@ -79,38 +62,6 @@ public class TrackSchemeNavigator implements TransformListener< ScreenTransform 
 	private static final String[] BOX_ADD_SELECT_KEYS = new String[] { "shift button1"};
 
 	public static final double EDGE_SELECT_DISTANCE_TOLERANCE = 5.0;
-
-	private static enum Direction
-	{
-		CHILD,
-		PARENT,
-		LEFT_SIBLING,
-		RIGHT_SIBLING
-	}
-
-	public static enum NavigatorEtiquette
-	{
-		/**
-		 * SelectionModel is tied to the focus. When moving the focus with arrow
-		 * keys, the selection moves with the focus. When clicking a vertex it
-		 * is focused and selected, The focused vertex is always selected. Focus
-		 * still exists independent of selection: multiple vertices can be
-		 * selected, but only one of them can have the focus. When extending the
-		 * selection with shift+arrow keys, the vertex to which the focus moves
-		 * should be selected. When box selection is drawn, the selected vertex
-		 * closest to the position where the drag ended should receive the
-		 * focus.
-		 */
-		FINDER_LIKE,
-		/**
-		 * SelectionModel is independent of focus. Moving the focus with arrow keys
-		 * doesn't alter selection. Space key toggles selection of focused
-		 * vertex. When extending the selection with shift+arrow keys, the
-		 * selection of the currently focused vertex is toggled, then the focus
-		 * is moved.
-		 */
-		MIDNIGHT_COMMANDER_LIKE;
-	}
 
 	private final TrackSchemeGraph< ?, ? > graph;
 
@@ -175,78 +126,13 @@ public class TrackSchemeNavigator implements TransformListener< ScreenTransform 
 		screenTransform = new ScreenTransform();
 	}
 
-	public static < V extends Vertex< E >, E extends Edge< V > > void install(
-			final Actions actions,
-			final InteractiveDisplayCanvasComponent< ScreenTransform > display,
-			final TrackSchemeGraph< ?, ? > graph,
-			final LineageTreeLayout layout,
-			final AbstractTrackSchemeOverlay graphOverlay,
-			final FocusModel< TrackSchemeVertex, TrackSchemeEdge > focus,
-			final NavigationHandler< TrackSchemeVertex, TrackSchemeEdge > navigation,
-			final SelectionModel< TrackSchemeVertex, TrackSchemeEdge > selection,
-			final NavigatorEtiquette etiquette )
-	{
-		final TrackSchemeNavigator tsn = new TrackSchemeNavigator( display, graph, layout, graphOverlay, focus, navigation, selection );
-		switch ( etiquette )
-		{
-		case MIDNIGHT_COMMANDER_LIKE:
-			actions.runnableAction( () -> tsn.selectAndFocusNeighbor( Direction.CHILD, false ), NAVIGATE_CHILD, NAVIGATE_CHILD_KEYS );
-			actions.runnableAction( () -> tsn.selectAndFocusNeighbor( Direction.PARENT, false ), NAVIGATE_PARENT, NAVIGATE_PARENT_KEYS );
-			actions.runnableAction( () -> tsn.selectAndFocusNeighbor( Direction.LEFT_SIBLING, false ), NAVIGATE_LEFT, NAVIGATE_LEFT_KEYS );
-			actions.runnableAction( () -> tsn.selectAndFocusNeighbor( Direction.RIGHT_SIBLING, false ), NAVIGATE_RIGHT, NAVIGATE_RIGHT_KEYS );
-			actions.runnableAction( () -> tsn.selectAndFocusNeighbor( Direction.CHILD, true ), SELECT_NAVIGATE_CHILD, SELECT_NAVIGATE_CHILD_KEYS );
-			actions.runnableAction( () -> tsn.selectAndFocusNeighbor( Direction.PARENT, true ), SELECT_NAVIGATE_PARENT, SELECT_NAVIGATE_PARENT_KEYS );
-			actions.runnableAction( () -> tsn.selectAndFocusNeighbor( Direction.LEFT_SIBLING, true ), SELECT_NAVIGATE_LEFT, SELECT_NAVIGATE_LEFT_KEYS );
-			actions.runnableAction( () -> tsn.selectAndFocusNeighbor( Direction.RIGHT_SIBLING, true ), SELECT_NAVIGATE_RIGHT, SELECT_NAVIGATE_RIGHT_KEYS );
-			actions.runnableAction( () -> tsn.toggleSelectionOfFocusedVertex(), TOGGLE_FOCUS_SELECTION, TOGGLE_FOCUS_SELECTION_KEYS );
-			break;
-		case FINDER_LIKE:
-		default:
-			actions.runnableAction( () -> tsn.selectAndFocusNeighborFL( Direction.CHILD, true ), NAVIGATE_CHILD, NAVIGATE_CHILD_KEYS );
-			actions.runnableAction( () -> tsn.selectAndFocusNeighborFL( Direction.PARENT, true ), NAVIGATE_PARENT, NAVIGATE_PARENT_KEYS );
-			actions.runnableAction( () -> tsn.selectAndFocusNeighborFL( Direction.LEFT_SIBLING, true ), NAVIGATE_LEFT, NAVIGATE_LEFT_KEYS );
-			actions.runnableAction( () -> tsn.selectAndFocusNeighborFL( Direction.RIGHT_SIBLING, true ), NAVIGATE_RIGHT, NAVIGATE_RIGHT_KEYS );
-			actions.runnableAction( () -> tsn.selectAndFocusNeighborFL( Direction.CHILD, false ), SELECT_NAVIGATE_CHILD, SELECT_NAVIGATE_CHILD_KEYS );
-			actions.runnableAction( () -> tsn.selectAndFocusNeighborFL( Direction.PARENT, false ), SELECT_NAVIGATE_PARENT, SELECT_NAVIGATE_PARENT_KEYS );
-			actions.runnableAction( () -> tsn.selectAndFocusNeighborFL( Direction.LEFT_SIBLING, false ), SELECT_NAVIGATE_LEFT, SELECT_NAVIGATE_LEFT_KEYS );
-			actions.runnableAction( () -> tsn.selectAndFocusNeighborFL( Direction.RIGHT_SIBLING, false ), SELECT_NAVIGATE_RIGHT, SELECT_NAVIGATE_RIGHT_KEYS );
-			break;
-		}
-	}
-
 	public void installActionBindings( final InputActionBindings keybindings, final KeyStrokeAdder.Factory keyConfig, final NavigatorEtiquette etiquette )
 	{
 		final Actions actions = new Actions( keyConfig, "ts" );
-		switch ( etiquette )
-		{
-		case MIDNIGHT_COMMANDER_LIKE:
-		{
-			actions.runnableAction( () -> selectAndFocusNeighbor( Direction.CHILD, false ), NAVIGATE_CHILD, NAVIGATE_CHILD_KEYS );
-			actions.runnableAction( () -> selectAndFocusNeighbor( Direction.PARENT, false ), NAVIGATE_PARENT, NAVIGATE_PARENT_KEYS );
-			actions.runnableAction( () -> selectAndFocusNeighbor( Direction.LEFT_SIBLING, false ), NAVIGATE_LEFT, NAVIGATE_LEFT_KEYS );
-			actions.runnableAction( () -> selectAndFocusNeighbor( Direction.RIGHT_SIBLING, false ), NAVIGATE_RIGHT, NAVIGATE_RIGHT_KEYS );
-			actions.runnableAction( () -> selectAndFocusNeighbor( Direction.CHILD, true ), SELECT_NAVIGATE_CHILD, SELECT_NAVIGATE_CHILD_KEYS );
-			actions.runnableAction( () -> selectAndFocusNeighbor( Direction.PARENT, true ), SELECT_NAVIGATE_PARENT, SELECT_NAVIGATE_PARENT_KEYS );
-			actions.runnableAction( () -> selectAndFocusNeighbor( Direction.LEFT_SIBLING, true ), SELECT_NAVIGATE_LEFT, SELECT_NAVIGATE_LEFT_KEYS );
-			actions.runnableAction( () -> selectAndFocusNeighbor( Direction.RIGHT_SIBLING, true ), SELECT_NAVIGATE_RIGHT, SELECT_NAVIGATE_RIGHT_KEYS );
-			actions.runnableAction( () -> toggleSelectionOfFocusedVertex(), TOGGLE_FOCUS_SELECTION, TOGGLE_FOCUS_SELECTION_KEYS );
-			break;
-		}
-		case FINDER_LIKE:
-		default:
-		{
-			actions.runnableAction( () -> selectAndFocusNeighborFL( Direction.CHILD, true ), NAVIGATE_CHILD, NAVIGATE_CHILD_KEYS );
-			actions.runnableAction( () -> selectAndFocusNeighborFL( Direction.PARENT, true ), NAVIGATE_PARENT, NAVIGATE_PARENT_KEYS );
-			actions.runnableAction( () -> selectAndFocusNeighborFL( Direction.LEFT_SIBLING, true ), NAVIGATE_LEFT, NAVIGATE_LEFT_KEYS );
-			actions.runnableAction( () -> selectAndFocusNeighborFL( Direction.RIGHT_SIBLING, true ), NAVIGATE_RIGHT, NAVIGATE_RIGHT_KEYS );
-			actions.runnableAction( () -> selectAndFocusNeighborFL( Direction.CHILD, false ), SELECT_NAVIGATE_CHILD, SELECT_NAVIGATE_CHILD_KEYS );
-			actions.runnableAction( () -> selectAndFocusNeighborFL( Direction.PARENT, false ), SELECT_NAVIGATE_PARENT, SELECT_NAVIGATE_PARENT_KEYS );
-			actions.runnableAction( () -> selectAndFocusNeighborFL( Direction.LEFT_SIBLING, false ), SELECT_NAVIGATE_LEFT, SELECT_NAVIGATE_LEFT_KEYS );
-			actions.runnableAction( () -> selectAndFocusNeighborFL( Direction.RIGHT_SIBLING, false ), SELECT_NAVIGATE_RIGHT, SELECT_NAVIGATE_RIGHT_KEYS );
-			break;
-		}
-		}
 		actions.install( keybindings, "navigator" );
+
+		final TrackSchemeFocusActions.TrackSchemeAutoFocus autoFocus = new TrackSchemeFocusActions.TrackSchemeAutoFocus( layout, focus, navigation );
+		TrackSchemeFocusActions.install( actions, graph, layout, autoFocus, selection, etiquette );
 	}
 
 	public void installBehaviourBindings( final TriggerBehaviourBindings triggerbindings, final InputTriggerAdder.Factory keyConfig )
@@ -262,132 +148,6 @@ public class TrackSchemeNavigator implements TransformListener< ScreenTransform 
 
 		triggerbindings.addBehaviourMap( "ts navigator", behaviourMap );
 		triggerbindings.addInputTriggerMap( "ts navigator", inputMap );
-	}
-
-	/*
-	 * COMMANDER-LIKE ETIQUETTE METHODS.
-	 */
-
-	/**
-	 * Focus a neighbor (parent, child, left sibling, right sibling) of the
-	 * currently focused vertex. Possibly, the currently focused vertex is added
-	 * to the selection.
-	 *
-	 * @param direction
-	 *            which neighbor to focus.
-	 * @param select
-	 *            if {@code true}, the currently focused vertex is added to the
-	 *            selection (before moving the focus).
-	 */
-	private void selectAndFocusNeighbor( final Direction direction, final boolean select )
-	{
-		final TrackSchemeVertex ref = graph.vertexRef();
-		selectAndFocusNeighbor( direction, select, ref );
-		graph.releaseRef( ref );
-	}
-
-	private TrackSchemeVertex selectAndFocusNeighbor( final Direction direction, final boolean select, final TrackSchemeVertex ref )
-	{
-		final TrackSchemeVertex vertex = getFocusedVertex( ref );
-		if ( vertex == null )
-			return null;
-
-		if ( select )
-			selection.setSelected( vertex, true );
-
-		final TrackSchemeVertex current;
-		switch ( direction )
-		{
-		case CHILD:
-			current = layout.getFirstActiveChild( vertex, ref );
-			break;
-		case PARENT:
-			current = layout.getFirstActiveParent( vertex, ref );
-			break;
-		case LEFT_SIBLING:
-			current = layout.getLeftSibling( vertex, ref );
-			break;
-		case RIGHT_SIBLING: default:
-			current = layout.getRightSibling( vertex, ref );
-			break;
-		}
-
-		if ( current != null )
-			navigation.notifyNavigateToVertex( current );
-
-		return current;
-	}
-
-	/**
-	 * Toggle the selected state of the currently focused vertex.
-	 */
-	private void toggleSelectionOfFocusedVertex()
-	{
-		final TrackSchemeVertex ref = graph.vertexRef();
-		final TrackSchemeVertex v = focus.getFocusedVertex( ref );
-		if ( v != null )
-			selection.toggle( v );
-		graph.releaseRef( ref );
-	}
-
-	/*
-	 * FINDER-LIKE ETIQUETTE METHODS.
-	 */
-
-	/**
-	 * Focus and select a neighbor (parent, child, left sibling, right sibling)
-	 * of the currently focused vertex. The selection can be cleared before
-	 * moving focus.
-	 *
-	 * @param direction
-	 *            which neighbor to focus.
-	 * @param clearSelection
-	 *            if {@code true}, the selection is cleared before moving the
-	 *            focus.
-	 */
-	private void selectAndFocusNeighborFL( final Direction direction, final boolean clearSelection )
-	{
-		final TrackSchemeVertex ref = graph.vertexRef();
-		selectAndFocusNeighborFL( direction, clearSelection, ref );
-		graph.releaseRef( ref );
-	}
-
-	private TrackSchemeVertex selectAndFocusNeighborFL( final Direction direction, final boolean clearSelection, final TrackSchemeVertex ref )
-	{
-		final TrackSchemeVertex vertex = getFocusedVertex( ref );
-		if ( vertex == null )
-			return null;
-
-		selection.pauseListeners();
-
-		final TrackSchemeVertex current;
-		switch ( direction )
-		{
-		case CHILD:
-			current = layout.getFirstActiveChild( vertex, ref );
-			break;
-		case PARENT:
-			current = layout.getFirstActiveParent( vertex, ref );
-			break;
-		case LEFT_SIBLING:
-			current = layout.getLeftSibling( vertex, ref );
-			break;
-		case RIGHT_SIBLING:
-		default:
-			current = layout.getRightSibling( vertex, ref );
-			break;
-		}
-
-		if ( current != null )
-		{
-			navigation.notifyNavigateToVertex( current );
-			if ( clearSelection )
-				selection.clearSelection();
-			selection.setSelected( current, true );
-		}
-
-		selection.resumeListeners();
-		return current;
 	}
 
 	/*

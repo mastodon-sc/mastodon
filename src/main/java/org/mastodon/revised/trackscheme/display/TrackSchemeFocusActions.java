@@ -93,8 +93,6 @@ public class TrackSchemeFocusActions
 
 	private final LineageTreeLayout layout;
 
-	private final NavigationHandler< TrackSchemeVertex, TrackSchemeEdge > navigation;
-
 	private final SelectionModel< TrackSchemeVertex, TrackSchemeEdge > selection;
 
 	private final FocusModel< TrackSchemeVertex, TrackSchemeEdge > focus;
@@ -103,13 +101,11 @@ public class TrackSchemeFocusActions
 			final TrackSchemeGraph< ?, ? > graph,
 			final LineageTreeLayout layout,
 			final FocusModel< TrackSchemeVertex, TrackSchemeEdge > focus,
-			final NavigationHandler< TrackSchemeVertex, TrackSchemeEdge > navigation,
 			final SelectionModel< TrackSchemeVertex, TrackSchemeEdge > selection )
 	{
 		this.graph = graph;
 		this.layout = layout;
 		this.focus = focus;
-		this.navigation = navigation;
 		this.selection = selection;
 	}
 
@@ -118,34 +114,33 @@ public class TrackSchemeFocusActions
 			final TrackSchemeGraph< ?, ? > graph,
 			final LineageTreeLayout layout,
 			final FocusModel< TrackSchemeVertex, TrackSchemeEdge > focus,
-			final NavigationHandler< TrackSchemeVertex, TrackSchemeEdge > navigation,
 			final SelectionModel< TrackSchemeVertex, TrackSchemeEdge > selection,
-			final NavigatorEtiquette etiquette )
+			final NavigatorEtiquette etiquette ) // TODO
 	{
-		final TrackSchemeFocusActions tsn = new TrackSchemeFocusActions( graph, layout, focus, navigation, selection );
+		final TrackSchemeFocusActions tsfa = new TrackSchemeFocusActions( graph, layout, focus, selection );
 		switch ( etiquette )
 		{
 		case MIDNIGHT_COMMANDER_LIKE:
-			actions.runnableAction( () -> tsn.selectAndFocusNeighbor( Direction.CHILD, false ), NAVIGATE_CHILD, NAVIGATE_CHILD_KEYS );
-			actions.runnableAction( () -> tsn.selectAndFocusNeighbor( Direction.PARENT, false ), NAVIGATE_PARENT, NAVIGATE_PARENT_KEYS );
-			actions.runnableAction( () -> tsn.selectAndFocusNeighbor( Direction.LEFT_SIBLING, false ), NAVIGATE_LEFT, NAVIGATE_LEFT_KEYS );
-			actions.runnableAction( () -> tsn.selectAndFocusNeighbor( Direction.RIGHT_SIBLING, false ), NAVIGATE_RIGHT, NAVIGATE_RIGHT_KEYS );
-			actions.runnableAction( () -> tsn.selectAndFocusNeighbor( Direction.CHILD, true ), SELECT_NAVIGATE_CHILD, SELECT_NAVIGATE_CHILD_KEYS );
-			actions.runnableAction( () -> tsn.selectAndFocusNeighbor( Direction.PARENT, true ), SELECT_NAVIGATE_PARENT, SELECT_NAVIGATE_PARENT_KEYS );
-			actions.runnableAction( () -> tsn.selectAndFocusNeighbor( Direction.LEFT_SIBLING, true ), SELECT_NAVIGATE_LEFT, SELECT_NAVIGATE_LEFT_KEYS );
-			actions.runnableAction( () -> tsn.selectAndFocusNeighbor( Direction.RIGHT_SIBLING, true ), SELECT_NAVIGATE_RIGHT, SELECT_NAVIGATE_RIGHT_KEYS );
-			actions.runnableAction( () -> tsn.toggleSelectionOfFocusedVertex(), TOGGLE_FOCUS_SELECTION, TOGGLE_FOCUS_SELECTION_KEYS );
+			actions.runnableAction( () -> tsfa.selectAndFocusNeighbor( Direction.CHILD, false ), NAVIGATE_CHILD, NAVIGATE_CHILD_KEYS );
+			actions.runnableAction( () -> tsfa.selectAndFocusNeighbor( Direction.PARENT, false ), NAVIGATE_PARENT, NAVIGATE_PARENT_KEYS );
+			actions.runnableAction( () -> tsfa.selectAndFocusNeighbor( Direction.LEFT_SIBLING, false ), NAVIGATE_LEFT, NAVIGATE_LEFT_KEYS );
+			actions.runnableAction( () -> tsfa.selectAndFocusNeighbor( Direction.RIGHT_SIBLING, false ), NAVIGATE_RIGHT, NAVIGATE_RIGHT_KEYS );
+			actions.runnableAction( () -> tsfa.selectAndFocusNeighbor( Direction.CHILD, true ), SELECT_NAVIGATE_CHILD, SELECT_NAVIGATE_CHILD_KEYS );
+			actions.runnableAction( () -> tsfa.selectAndFocusNeighbor( Direction.PARENT, true ), SELECT_NAVIGATE_PARENT, SELECT_NAVIGATE_PARENT_KEYS );
+			actions.runnableAction( () -> tsfa.selectAndFocusNeighbor( Direction.LEFT_SIBLING, true ), SELECT_NAVIGATE_LEFT, SELECT_NAVIGATE_LEFT_KEYS );
+			actions.runnableAction( () -> tsfa.selectAndFocusNeighbor( Direction.RIGHT_SIBLING, true ), SELECT_NAVIGATE_RIGHT, SELECT_NAVIGATE_RIGHT_KEYS );
+			actions.runnableAction( () -> tsfa.toggleSelectionOfFocusedVertex(), TOGGLE_FOCUS_SELECTION, TOGGLE_FOCUS_SELECTION_KEYS );
 			break;
 		case FINDER_LIKE:
 		default:
-			actions.runnableAction( () -> tsn.selectAndFocusNeighborFL( Direction.CHILD, true ), NAVIGATE_CHILD, NAVIGATE_CHILD_KEYS );
-			actions.runnableAction( () -> tsn.selectAndFocusNeighborFL( Direction.PARENT, true ), NAVIGATE_PARENT, NAVIGATE_PARENT_KEYS );
-			actions.runnableAction( () -> tsn.selectAndFocusNeighborFL( Direction.LEFT_SIBLING, true ), NAVIGATE_LEFT, NAVIGATE_LEFT_KEYS );
-			actions.runnableAction( () -> tsn.selectAndFocusNeighborFL( Direction.RIGHT_SIBLING, true ), NAVIGATE_RIGHT, NAVIGATE_RIGHT_KEYS );
-			actions.runnableAction( () -> tsn.selectAndFocusNeighborFL( Direction.CHILD, false ), SELECT_NAVIGATE_CHILD, SELECT_NAVIGATE_CHILD_KEYS );
-			actions.runnableAction( () -> tsn.selectAndFocusNeighborFL( Direction.PARENT, false ), SELECT_NAVIGATE_PARENT, SELECT_NAVIGATE_PARENT_KEYS );
-			actions.runnableAction( () -> tsn.selectAndFocusNeighborFL( Direction.LEFT_SIBLING, false ), SELECT_NAVIGATE_LEFT, SELECT_NAVIGATE_LEFT_KEYS );
-			actions.runnableAction( () -> tsn.selectAndFocusNeighborFL( Direction.RIGHT_SIBLING, false ), SELECT_NAVIGATE_RIGHT, SELECT_NAVIGATE_RIGHT_KEYS );
+			actions.runnableAction( () -> tsfa.selectAndFocusNeighborFL( Direction.CHILD, true ), NAVIGATE_CHILD, NAVIGATE_CHILD_KEYS );
+			actions.runnableAction( () -> tsfa.selectAndFocusNeighborFL( Direction.PARENT, true ), NAVIGATE_PARENT, NAVIGATE_PARENT_KEYS );
+			actions.runnableAction( () -> tsfa.selectAndFocusNeighborFL( Direction.LEFT_SIBLING, true ), NAVIGATE_LEFT, NAVIGATE_LEFT_KEYS );
+			actions.runnableAction( () -> tsfa.selectAndFocusNeighborFL( Direction.RIGHT_SIBLING, true ), NAVIGATE_RIGHT, NAVIGATE_RIGHT_KEYS );
+			actions.runnableAction( () -> tsfa.selectAndFocusNeighborFL( Direction.CHILD, false ), SELECT_NAVIGATE_CHILD, SELECT_NAVIGATE_CHILD_KEYS );
+			actions.runnableAction( () -> tsfa.selectAndFocusNeighborFL( Direction.PARENT, false ), SELECT_NAVIGATE_PARENT, SELECT_NAVIGATE_PARENT_KEYS );
+			actions.runnableAction( () -> tsfa.selectAndFocusNeighborFL( Direction.LEFT_SIBLING, false ), SELECT_NAVIGATE_LEFT, SELECT_NAVIGATE_LEFT_KEYS );
+			actions.runnableAction( () -> tsfa.selectAndFocusNeighborFL( Direction.RIGHT_SIBLING, false ), SELECT_NAVIGATE_RIGHT, SELECT_NAVIGATE_RIGHT_KEYS );
 			break;
 		}
 	}
@@ -199,7 +194,7 @@ public class TrackSchemeFocusActions
 		}
 
 		if ( current != null )
-			navigation.notifyNavigateToVertex( current );
+			focus.focusVertex( current );
 
 		return current;
 	}
@@ -266,7 +261,7 @@ public class TrackSchemeFocusActions
 
 		if ( current != null )
 		{
-			navigation.notifyNavigateToVertex( current );
+			focus.focusVertex( current );
 			if ( clearSelection )
 				selection.clearSelection();
 			selection.setSelected( current, true );
@@ -276,11 +271,20 @@ public class TrackSchemeFocusActions
 		return current;
 	}
 
+	/**
+	 * A {@code FocusModel} for TrackScheme that
+	 * <ul>
+	 *     <li>on {@code getFocusedVertex()} automatically focuses a vertex near the center of the window if none is focused.</li>
+	 *     <li>on {@code focusVertex()} calls {@code notifyNavigateToVertex()}.</li>
+	 * </ul>
+	 */
 	public static class TrackSchemeAutoFocus implements FocusModel< TrackSchemeVertex, TrackSchemeEdge >, TransformListener< ScreenTransform >
 	{
 		private final LineageTreeLayout layout;
 
 		private final FocusModel< TrackSchemeVertex, TrackSchemeEdge > focus;
+
+		private final NavigationHandler< TrackSchemeVertex, TrackSchemeEdge > navigation;
 
 		private final ScreenTransform screenTransform = new ScreenTransform();
 
@@ -290,16 +294,18 @@ public class TrackSchemeFocusActions
 
 		public TrackSchemeAutoFocus(
 				final LineageTreeLayout layout,
-				final FocusModel< TrackSchemeVertex, TrackSchemeEdge > focus )
+				final FocusModel< TrackSchemeVertex, TrackSchemeEdge > focus,
+				final NavigationHandler< TrackSchemeVertex, TrackSchemeEdge > navigation )
 		{
 			this.layout = layout;
 			this.focus = focus;
+			this.navigation = navigation;
 		}
 
 		@Override
 		public void focusVertex( final TrackSchemeVertex vertex )
 		{
-			focus.focusVertex( vertex );
+			navigation.notifyNavigateToVertex( vertex );
 		}
 
 		@Override

@@ -18,7 +18,7 @@ import org.mastodon.model.TimepointModel;
 import org.mastodon.revised.trackscheme.TrackSchemeEdge;
 import org.mastodon.revised.trackscheme.TrackSchemeGraph;
 import org.mastodon.revised.trackscheme.TrackSchemeVertex;
-import org.mastodon.revised.trackscheme.display.TrackSchemeNavigator.NavigatorEtiquette;
+import org.mastodon.revised.trackscheme.display.TrackSchemeFocusActions.NavigatorEtiquette;
 import org.mastodon.revised.ui.context.ContextChooserPanel;
 import org.mastodon.undo.UndoPointMarker;
 import org.mastodon.views.context.ContextChooser;
