@@ -4,8 +4,6 @@ import java.awt.Color;
 import java.awt.Graphics;
 
 import org.mastodon.collection.RefSet;
-import org.mastodon.graph.Edge;
-import org.mastodon.graph.Vertex;
 import org.mastodon.model.FocusModel;
 import org.mastodon.model.NavigationHandler;
 import org.mastodon.model.SelectionModel;
@@ -15,17 +13,10 @@ import org.mastodon.revised.trackscheme.TrackSchemeEdge;
 import org.mastodon.revised.trackscheme.TrackSchemeGraph;
 import org.mastodon.revised.trackscheme.TrackSchemeVertex;
 import org.mastodon.revised.trackscheme.display.OffsetHeaders.OffsetHeadersListener;
-import org.mastodon.revised.trackscheme.display.TrackSchemeFocusActions.NavigatorEtiquette;
-import org.scijava.ui.behaviour.BehaviourMap;
 import org.scijava.ui.behaviour.ClickBehaviour;
 import org.scijava.ui.behaviour.DragBehaviour;
-import org.scijava.ui.behaviour.InputTriggerAdder;
-import org.scijava.ui.behaviour.InputTriggerMap;
-import org.scijava.ui.behaviour.KeyStrokeAdder;
 import org.scijava.ui.behaviour.util.AbstractNamedBehaviour;
-import org.scijava.ui.behaviour.util.Actions;
-import org.scijava.ui.behaviour.util.InputActionBindings;
-import org.scijava.ui.behaviour.util.TriggerBehaviourBindings;
+import org.scijava.ui.behaviour.util.Behaviours;
 
 import net.imglib2.RealPoint;
 import net.imglib2.ui.InteractiveDisplayCanvasComponent;
@@ -63,6 +54,8 @@ public class TrackSchemeNavigator implements TransformListener< ScreenTransform 
 
 	public static final double EDGE_SELECT_DISTANCE_TOLERANCE = 5.0;
 
+	private final InteractiveDisplayCanvasComponent< ScreenTransform > display;
+
 	private final TrackSchemeGraph< ?, ? > graph;
 
 	private final LineageTreeLayout layout;
@@ -71,10 +64,11 @@ public class TrackSchemeNavigator implements TransformListener< ScreenTransform 
 
 	private final SelectionModel< TrackSchemeVertex, TrackSchemeEdge > selection;
 
-	private final ScreenTransform screenTransform;
+	private final AbstractTrackSchemeOverlay graphOverlay;
 
 	private final FocusModel< TrackSchemeVertex, TrackSchemeEdge > focus;
 
+	private final ScreenTransform screenTransform;
 
 	/**
 	 * Current width of vertical header.
@@ -86,15 +80,17 @@ public class TrackSchemeNavigator implements TransformListener< ScreenTransform 
 	 */
 	private int headerHeight;
 
-	private final AbstractTrackSchemeOverlay graphOverlay;
+	private final ClickFocusBehaviour focusVertexBehaviour;
 
-	private final InteractiveDisplayCanvasComponent< ScreenTransform > display;
+	private final ClickNavigateBehaviour navigateToVertexBehaviour;
 
-	private final BehaviourMap behaviourMap;
+	private final ClickSelectionBehaviour selectBehaviour;
 
-	private final BoxSelectionBehaviour boxSelect;
+	private final ClickSelectionBehaviour addSelectBehaviour;
 
-	private final BoxSelectionBehaviour boxSelectAdd;
+	private final BoxSelectionBehaviour boxSelectBehaviour;
+
+	private final BoxSelectionBehaviour boxAddSelectBehaviour;
 
 	public TrackSchemeNavigator(
 			final InteractiveDisplayCanvasComponent< ScreenTransform > display,
@@ -113,58 +109,31 @@ public class TrackSchemeNavigator implements TransformListener< ScreenTransform 
 		this.navigation = navigation;
 		this.selection = selection;
 
-		behaviourMap = new BehaviourMap();
-		new ClickFocusBehaviour().put( behaviourMap );
-		new ClickNavigateBehaviour().put( behaviourMap );
-		new ClickSelectionBehaviour( SELECT, false ).put( behaviourMap );
-		new ClickSelectionBehaviour( ADD_SELECT, true ).put( behaviourMap );
-		boxSelect = new BoxSelectionBehaviour( BOX_SELECT, false );
-		boxSelect.put( behaviourMap );
-		boxSelectAdd = new BoxSelectionBehaviour( BOX_ADD_SELECT, true );
-		boxSelectAdd.put( behaviourMap );
-
 		screenTransform = new ScreenTransform();
+
+		focusVertexBehaviour = new ClickFocusBehaviour();
+		navigateToVertexBehaviour = new ClickNavigateBehaviour();
+		selectBehaviour = new ClickSelectionBehaviour( SELECT, false );
+		addSelectBehaviour = new ClickSelectionBehaviour( ADD_SELECT, true );
+		boxSelectBehaviour = new BoxSelectionBehaviour( BOX_SELECT, false );
+		boxAddSelectBehaviour = new BoxSelectionBehaviour( BOX_ADD_SELECT, true );
 	}
 
-	public void installActionBindings( final InputActionBindings keybindings, final KeyStrokeAdder.Factory keyConfig, final NavigatorEtiquette etiquette )
+	public void install( final Behaviours behaviours )
 	{
-		final Actions actions = new Actions( keyConfig, "ts" );
-		actions.install( keybindings, "navigator" );
-
-		final TrackSchemeFocusActions.TrackSchemeAutoFocus autoFocus = new TrackSchemeFocusActions.TrackSchemeAutoFocus( layout, focus, navigation );
-		TrackSchemeFocusActions.install( actions, graph, layout, autoFocus, selection, etiquette );
-	}
-
-	public void installBehaviourBindings( final TriggerBehaviourBindings triggerbindings, final InputTriggerAdder.Factory keyConfig )
-	{
-		final InputTriggerMap inputMap = new InputTriggerMap();
-		final InputTriggerAdder adder = keyConfig.inputTriggerAdder( inputMap, "ts" );
-		adder.put( FOCUS_VERTEX, FOCUS_VERTEX_KEYS );
-		adder.put( NAVIGATE_TO_VERTEX, NAVIGATE_TO_VERTEX_KEYS );
-		adder.put( SELECT, SELECT_KEYS );
-		adder.put( ADD_SELECT, ADD_SELECT_KEYS );
-		adder.put( BOX_SELECT, BOX_SELECT_KEYS );
-		adder.put( BOX_ADD_SELECT, BOX_ADD_SELECT_KEYS );
-
-		triggerbindings.addBehaviourMap( "ts navigator", behaviourMap );
-		triggerbindings.addInputTriggerMap( "ts navigator", inputMap );
+		behaviours.namedBehaviour( focusVertexBehaviour, FOCUS_VERTEX_KEYS );
+		behaviours.namedBehaviour( navigateToVertexBehaviour, NAVIGATE_TO_VERTEX_KEYS );
+		behaviours.namedBehaviour( selectBehaviour, SELECT_KEYS );
+		behaviours.namedBehaviour( addSelectBehaviour, ADD_SELECT_KEYS );
+		behaviours.namedBehaviour( boxSelectBehaviour, BOX_SELECT_KEYS );
+		behaviours.namedBehaviour( boxAddSelectBehaviour, BOX_ADD_SELECT_KEYS );
 	}
 
 	/*
 	 * COMMON METHODS.
 	 */
 
-	private final RealPoint centerPos = new RealPoint( 2 );
-
 	private double ratioXtoY;
-
-	private TrackSchemeVertex getFocusedVertex( final TrackSchemeVertex ref )
-	{
-		final TrackSchemeVertex vertex = focus.getFocusedVertex( ref );
-		return ( vertex != null )
-				? vertex
-				: layout.getClosestActiveVertex( centerPos, ratioXtoY, ref );
-	}
 
 	/*
 	 * PRIVATE METHODS
@@ -457,8 +426,6 @@ public class TrackSchemeNavigator implements TransformListener< ScreenTransform 
 		synchronized ( screenTransform )
 		{
 			screenTransform.set( transform );
-			centerPos.setPosition( ( transform.getMaxX() + transform.getMinX() ) / 2., 0 );
-			centerPos.setPosition( ( transform.getMaxY() + transform.getMinY() ) / 2., 1 );
 			ratioXtoY = transform.getXtoYRatio();
 		}
 	}

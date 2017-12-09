@@ -1,35 +1,12 @@
 package org.mastodon.revised.trackscheme.display;
 
-import java.awt.Color;
-import java.awt.Graphics;
-import net.imglib2.RealPoint;
-import net.imglib2.ui.InteractiveDisplayCanvasComponent;
-import net.imglib2.ui.OverlayRenderer;
-import net.imglib2.ui.TransformListener;
-import org.mastodon.collection.RefSet;
-import org.mastodon.graph.Edge;
-import org.mastodon.graph.Vertex;
-import org.mastodon.model.FocusListener;
 import org.mastodon.model.FocusModel;
-import org.mastodon.model.NavigationHandler;
 import org.mastodon.model.SelectionModel;
 import org.mastodon.revised.trackscheme.LineageTreeLayout;
-import org.mastodon.revised.trackscheme.ScreenTransform;
 import org.mastodon.revised.trackscheme.TrackSchemeEdge;
 import org.mastodon.revised.trackscheme.TrackSchemeGraph;
 import org.mastodon.revised.trackscheme.TrackSchemeVertex;
-import org.mastodon.revised.trackscheme.display.OffsetHeaders.OffsetHeadersListener;
-import org.mastodon.util.Listeners;
-import org.scijava.ui.behaviour.BehaviourMap;
-import org.scijava.ui.behaviour.ClickBehaviour;
-import org.scijava.ui.behaviour.DragBehaviour;
-import org.scijava.ui.behaviour.InputTriggerAdder;
-import org.scijava.ui.behaviour.InputTriggerMap;
-import org.scijava.ui.behaviour.KeyStrokeAdder;
-import org.scijava.ui.behaviour.util.AbstractNamedBehaviour;
 import org.scijava.ui.behaviour.util.Actions;
-import org.scijava.ui.behaviour.util.InputActionBindings;
-import org.scijava.ui.behaviour.util.TriggerBehaviourBindings;
 
 /**
  * @author Tobias Pietzsch
@@ -57,7 +34,7 @@ public class TrackSchemeFocusActions
 	private static final String[] SELECT_NAVIGATE_RIGHT_KEYS = new String[] { "shift RIGHT" };
 	private static final String[] TOGGLE_FOCUS_SELECTION_KEYS = new String[] { "SPACE" };
 
-	private static enum Direction
+	private enum Direction
 	{
 		CHILD,
 		PARENT,
@@ -65,7 +42,7 @@ public class TrackSchemeFocusActions
 		RIGHT_SIBLING
 	}
 
-	public static enum NavigatorEtiquette
+	public enum NavigatorEtiquette
 	{
 		/**
 		 * SelectionModel is tied to the focus. When moving the focus with arrow
@@ -109,38 +86,33 @@ public class TrackSchemeFocusActions
 		this.selection = selection;
 	}
 
-	public static < V extends Vertex< E >, E extends Edge< V > > void install(
+	public void install(
 			final Actions actions,
-			final TrackSchemeGraph< ?, ? > graph,
-			final LineageTreeLayout layout,
-			final FocusModel< TrackSchemeVertex, TrackSchemeEdge > focus,
-			final SelectionModel< TrackSchemeVertex, TrackSchemeEdge > selection,
-			final NavigatorEtiquette etiquette ) // TODO
+			final NavigatorEtiquette etiquette )
 	{
-		final TrackSchemeFocusActions tsfa = new TrackSchemeFocusActions( graph, layout, focus, selection );
 		switch ( etiquette )
 		{
 		case MIDNIGHT_COMMANDER_LIKE:
-			actions.runnableAction( () -> tsfa.selectAndFocusNeighbor( Direction.CHILD, false ), NAVIGATE_CHILD, NAVIGATE_CHILD_KEYS );
-			actions.runnableAction( () -> tsfa.selectAndFocusNeighbor( Direction.PARENT, false ), NAVIGATE_PARENT, NAVIGATE_PARENT_KEYS );
-			actions.runnableAction( () -> tsfa.selectAndFocusNeighbor( Direction.LEFT_SIBLING, false ), NAVIGATE_LEFT, NAVIGATE_LEFT_KEYS );
-			actions.runnableAction( () -> tsfa.selectAndFocusNeighbor( Direction.RIGHT_SIBLING, false ), NAVIGATE_RIGHT, NAVIGATE_RIGHT_KEYS );
-			actions.runnableAction( () -> tsfa.selectAndFocusNeighbor( Direction.CHILD, true ), SELECT_NAVIGATE_CHILD, SELECT_NAVIGATE_CHILD_KEYS );
-			actions.runnableAction( () -> tsfa.selectAndFocusNeighbor( Direction.PARENT, true ), SELECT_NAVIGATE_PARENT, SELECT_NAVIGATE_PARENT_KEYS );
-			actions.runnableAction( () -> tsfa.selectAndFocusNeighbor( Direction.LEFT_SIBLING, true ), SELECT_NAVIGATE_LEFT, SELECT_NAVIGATE_LEFT_KEYS );
-			actions.runnableAction( () -> tsfa.selectAndFocusNeighbor( Direction.RIGHT_SIBLING, true ), SELECT_NAVIGATE_RIGHT, SELECT_NAVIGATE_RIGHT_KEYS );
-			actions.runnableAction( () -> tsfa.toggleSelectionOfFocusedVertex(), TOGGLE_FOCUS_SELECTION, TOGGLE_FOCUS_SELECTION_KEYS );
+			actions.runnableAction( () -> selectAndFocusNeighbor( Direction.CHILD, false ), NAVIGATE_CHILD, NAVIGATE_CHILD_KEYS );
+			actions.runnableAction( () -> selectAndFocusNeighbor( Direction.PARENT, false ), NAVIGATE_PARENT, NAVIGATE_PARENT_KEYS );
+			actions.runnableAction( () -> selectAndFocusNeighbor( Direction.LEFT_SIBLING, false ), NAVIGATE_LEFT, NAVIGATE_LEFT_KEYS );
+			actions.runnableAction( () -> selectAndFocusNeighbor( Direction.RIGHT_SIBLING, false ), NAVIGATE_RIGHT, NAVIGATE_RIGHT_KEYS );
+			actions.runnableAction( () -> selectAndFocusNeighbor( Direction.CHILD, true ), SELECT_NAVIGATE_CHILD, SELECT_NAVIGATE_CHILD_KEYS );
+			actions.runnableAction( () -> selectAndFocusNeighbor( Direction.PARENT, true ), SELECT_NAVIGATE_PARENT, SELECT_NAVIGATE_PARENT_KEYS );
+			actions.runnableAction( () -> selectAndFocusNeighbor( Direction.LEFT_SIBLING, true ), SELECT_NAVIGATE_LEFT, SELECT_NAVIGATE_LEFT_KEYS );
+			actions.runnableAction( () -> selectAndFocusNeighbor( Direction.RIGHT_SIBLING, true ), SELECT_NAVIGATE_RIGHT, SELECT_NAVIGATE_RIGHT_KEYS );
+			actions.runnableAction( () -> toggleSelectionOfFocusedVertex(), TOGGLE_FOCUS_SELECTION, TOGGLE_FOCUS_SELECTION_KEYS );
 			break;
 		case FINDER_LIKE:
 		default:
-			actions.runnableAction( () -> tsfa.selectAndFocusNeighborFL( Direction.CHILD, true ), NAVIGATE_CHILD, NAVIGATE_CHILD_KEYS );
-			actions.runnableAction( () -> tsfa.selectAndFocusNeighborFL( Direction.PARENT, true ), NAVIGATE_PARENT, NAVIGATE_PARENT_KEYS );
-			actions.runnableAction( () -> tsfa.selectAndFocusNeighborFL( Direction.LEFT_SIBLING, true ), NAVIGATE_LEFT, NAVIGATE_LEFT_KEYS );
-			actions.runnableAction( () -> tsfa.selectAndFocusNeighborFL( Direction.RIGHT_SIBLING, true ), NAVIGATE_RIGHT, NAVIGATE_RIGHT_KEYS );
-			actions.runnableAction( () -> tsfa.selectAndFocusNeighborFL( Direction.CHILD, false ), SELECT_NAVIGATE_CHILD, SELECT_NAVIGATE_CHILD_KEYS );
-			actions.runnableAction( () -> tsfa.selectAndFocusNeighborFL( Direction.PARENT, false ), SELECT_NAVIGATE_PARENT, SELECT_NAVIGATE_PARENT_KEYS );
-			actions.runnableAction( () -> tsfa.selectAndFocusNeighborFL( Direction.LEFT_SIBLING, false ), SELECT_NAVIGATE_LEFT, SELECT_NAVIGATE_LEFT_KEYS );
-			actions.runnableAction( () -> tsfa.selectAndFocusNeighborFL( Direction.RIGHT_SIBLING, false ), SELECT_NAVIGATE_RIGHT, SELECT_NAVIGATE_RIGHT_KEYS );
+			actions.runnableAction( () -> selectAndFocusNeighborFL( Direction.CHILD, true ), NAVIGATE_CHILD, NAVIGATE_CHILD_KEYS );
+			actions.runnableAction( () -> selectAndFocusNeighborFL( Direction.PARENT, true ), NAVIGATE_PARENT, NAVIGATE_PARENT_KEYS );
+			actions.runnableAction( () -> selectAndFocusNeighborFL( Direction.LEFT_SIBLING, true ), NAVIGATE_LEFT, NAVIGATE_LEFT_KEYS );
+			actions.runnableAction( () -> selectAndFocusNeighborFL( Direction.RIGHT_SIBLING, true ), NAVIGATE_RIGHT, NAVIGATE_RIGHT_KEYS );
+			actions.runnableAction( () -> selectAndFocusNeighborFL( Direction.CHILD, false ), SELECT_NAVIGATE_CHILD, SELECT_NAVIGATE_CHILD_KEYS );
+			actions.runnableAction( () -> selectAndFocusNeighborFL( Direction.PARENT, false ), SELECT_NAVIGATE_PARENT, SELECT_NAVIGATE_PARENT_KEYS );
+			actions.runnableAction( () -> selectAndFocusNeighborFL( Direction.LEFT_SIBLING, false ), SELECT_NAVIGATE_LEFT, SELECT_NAVIGATE_LEFT_KEYS );
+			actions.runnableAction( () -> selectAndFocusNeighborFL( Direction.RIGHT_SIBLING, false ), SELECT_NAVIGATE_RIGHT, SELECT_NAVIGATE_RIGHT_KEYS );
 			break;
 		}
 	}
@@ -269,75 +241,5 @@ public class TrackSchemeFocusActions
 
 		selection.resumeListeners();
 		return current;
-	}
-
-	/**
-	 * A {@code FocusModel} for TrackScheme that
-	 * <ul>
-	 *     <li>on {@code getFocusedVertex()} automatically focuses a vertex near the center of the window if none is focused.</li>
-	 *     <li>on {@code focusVertex()} calls {@code notifyNavigateToVertex()}.</li>
-	 * </ul>
-	 */
-	public static class TrackSchemeAutoFocus implements FocusModel< TrackSchemeVertex, TrackSchemeEdge >, TransformListener< ScreenTransform >
-	{
-		private final LineageTreeLayout layout;
-
-		private final FocusModel< TrackSchemeVertex, TrackSchemeEdge > focus;
-
-		private final NavigationHandler< TrackSchemeVertex, TrackSchemeEdge > navigation;
-
-		private final ScreenTransform screenTransform = new ScreenTransform();
-
-		private final RealPoint centerPos = new RealPoint( 2 );
-
-		private double ratioXtoY = 1;
-
-		public TrackSchemeAutoFocus(
-				final LineageTreeLayout layout,
-				final FocusModel< TrackSchemeVertex, TrackSchemeEdge > focus,
-				final NavigationHandler< TrackSchemeVertex, TrackSchemeEdge > navigation )
-		{
-			this.layout = layout;
-			this.focus = focus;
-			this.navigation = navigation;
-		}
-
-		@Override
-		public void focusVertex( final TrackSchemeVertex vertex )
-		{
-			navigation.notifyNavigateToVertex( vertex );
-		}
-
-		@Override
-		public TrackSchemeVertex getFocusedVertex( final TrackSchemeVertex ref )
-		{
-			TrackSchemeVertex vertex = focus.getFocusedVertex( ref );
-			if ( vertex != null )
-				return vertex;
-
-			vertex = layout.getClosestActiveVertex( centerPos, ratioXtoY, ref );
-			if ( vertex != null )
-				focus.focusVertex( vertex );
-
-			return vertex;
-		}
-
-		@Override
-		public Listeners< FocusListener > listeners()
-		{
-			return focus.listeners();
-		}
-
-		@Override
-		public void transformChanged( final ScreenTransform transform )
-		{
-			synchronized ( screenTransform )
-			{
-				screenTransform.set( transform );
-				centerPos.setPosition( ( transform.getMaxX() + transform.getMinX() ) / 2., 0 );
-				centerPos.setPosition( ( transform.getMaxY() + transform.getMinY() ) / 2., 1 );
-				ratioXtoY = transform.getXtoYRatio();
-			}
-		}
 	}
 }
