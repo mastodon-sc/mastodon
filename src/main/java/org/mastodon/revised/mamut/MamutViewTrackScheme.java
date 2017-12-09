@@ -11,7 +11,6 @@ import org.mastodon.app.ui.MastodonFrameViewActions;
 import org.mastodon.app.ui.ViewMenu;
 import org.mastodon.revised.model.mamut.Link;
 import org.mastodon.revised.model.mamut.Model;
-import org.mastodon.revised.model.mamut.ModelGraph;
 import org.mastodon.revised.model.mamut.ModelGraphTrackSchemeProperties;
 import org.mastodon.revised.model.mamut.Spot;
 import org.mastodon.revised.trackscheme.TrackSchemeContextListener;
@@ -21,6 +20,7 @@ import org.mastodon.revised.trackscheme.TrackSchemeVertex;
 import org.mastodon.revised.trackscheme.display.AbstractTrackSchemeOverlay.TrackSchemeOverlayFactory;
 import org.mastodon.revised.trackscheme.display.EditFocusVertexLabelAction;
 import org.mastodon.revised.trackscheme.display.ToggleLinkBehaviour;
+import org.mastodon.revised.trackscheme.display.TrackSchemeFocusActions;
 import org.mastodon.revised.trackscheme.display.TrackSchemeFrame;
 import org.mastodon.revised.trackscheme.display.TrackSchemeOptions;
 import org.mastodon.revised.trackscheme.display.style.DefaultTrackSchemeOverlay;
@@ -55,7 +55,6 @@ class MamutViewTrackScheme extends MamutView< TrackSchemeGraph< Spot, Link >, Tr
 		final InputTriggerConfig keyconf = appModel.getKeyConfig();
 		final KeyPressedManager keyPressedManager = appModel.getKeyPressedManager();
 		final Model model = appModel.getModel();
-		final ModelGraph modelGraph = model.getGraph();
 
 		/*
 		 * show TrackSchemeFrame
@@ -92,6 +91,13 @@ class MamutViewTrackScheme extends MamutView< TrackSchemeGraph< Spot, Link >, Tr
 		frame.setVisible( true );
 
 		MastodonFrameViewActions.install( viewActions, this );
+		HighlightBehaviours.install( viewBehaviours, viewGraph, viewGraph.getLock(), viewGraph, highlightModel, model );
+		ToggleLinkBehaviour.install( viewBehaviours, frame.getTrackschemePanel(),	viewGraph, viewGraph.getLock(),	viewGraph, model );
+		EditFocusVertexLabelAction.install( viewActions, frame.getTrackschemePanel(), focusModel,	model );
+
+		// TODO Let the user choose between the two selection/focus modes.
+		frame.getTrackschemePanel().getFocusActions().install( viewActions, TrackSchemeFocusActions.NavigatorEtiquette.FINDER_LIKE );
+		frame.getTrackschemePanel().getNavigator().install( viewBehaviours );
 
 		final ViewMenu menu = new ViewMenu( this );
 		final ActionMap actionMap = frame.getKeybindings().getConcatenatedActionMap();
@@ -108,13 +114,22 @@ class MamutViewTrackScheme extends MamutView< TrackSchemeGraph< Spot, Link >, Tr
 						item( SelectionActions.DELETE_SELECTION ),
 						item( SelectionActions.SELECT_WHOLE_TRACK ),
 						item( SelectionActions.SELECT_TRACK_DOWNWARD ),
-						item( SelectionActions.SELECT_TRACK_UPWARD )
+						item( SelectionActions.SELECT_TRACK_UPWARD ),
+						separator(),
+						item( TrackSchemeFocusActions.SELECT_NAVIGATE_CHILD ),
+						item( TrackSchemeFocusActions.SELECT_NAVIGATE_PARENT ),
+						item( TrackSchemeFocusActions.SELECT_NAVIGATE_LEFT ),
+						item( TrackSchemeFocusActions.SELECT_NAVIGATE_RIGHT ),
+//						item( TrackSchemeFocusActions.TOGGLE_FOCUS_SELECTION ),
+						separator(),
+						item( TrackSchemeFocusActions.NAVIGATE_CHILD ),
+						item( TrackSchemeFocusActions.NAVIGATE_PARENT ),
+						item( TrackSchemeFocusActions.NAVIGATE_LEFT ),
+						item( TrackSchemeFocusActions.NAVIGATE_RIGHT ),
+						separator(),
+						item( EditFocusVertexLabelAction.EDIT_FOCUS_LABEL )
 				)
 		);
-
-		HighlightBehaviours.install( viewBehaviours, viewGraph, viewGraph.getLock(), viewGraph, highlightModel, model );
-		ToggleLinkBehaviour.install( viewBehaviours, frame.getTrackschemePanel(),	viewGraph, viewGraph.getLock(),	viewGraph, model );
-		EditFocusVertexLabelAction.install( viewActions, frame.getTrackschemePanel(), focusModel,	model );
 
 		frame.getTrackschemePanel().repaint();
 	}

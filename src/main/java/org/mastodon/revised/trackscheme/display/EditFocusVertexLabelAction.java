@@ -5,7 +5,6 @@ import java.awt.Container;
 import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.awt.event.KeyEvent;
@@ -22,7 +21,7 @@ import javax.swing.JTextField;
 import javax.swing.KeyStroke;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
-import net.imglib2.ui.TransformListener;
+
 import org.mastodon.model.FocusModel;
 import org.mastodon.revised.trackscheme.ScreenTransform;
 import org.mastodon.revised.trackscheme.TrackSchemeEdge;
@@ -43,11 +42,11 @@ public class EditFocusVertexLabelAction extends AbstractNamedAction implements T
 {
 	private static final long serialVersionUID = 1L;
 
-	private static final Font FONT = new Font( "SansSerif", Font.BOLD, 10 );
+	public static final String EDIT_FOCUS_LABEL = "edit vertex label";
 
 	private static final String[] EDIT_FOCUS_LABEL_KEYS = new String[] { "ENTER" };
 
-	private static final String EDIT_FOCUS_LABEL = "edit vertex label";
+	private static final Font FONT = new Font( "SansSerif", Font.BOLD, 10 );
 
 	private final UndoPointMarker undoPointMarker;
 

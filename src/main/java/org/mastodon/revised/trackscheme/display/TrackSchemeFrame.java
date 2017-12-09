@@ -18,12 +18,10 @@ import org.mastodon.model.TimepointModel;
 import org.mastodon.revised.trackscheme.TrackSchemeEdge;
 import org.mastodon.revised.trackscheme.TrackSchemeGraph;
 import org.mastodon.revised.trackscheme.TrackSchemeVertex;
-import org.mastodon.revised.trackscheme.display.TrackSchemeFocusActions.NavigatorEtiquette;
 import org.mastodon.revised.ui.context.ContextChooserPanel;
 import org.mastodon.undo.UndoPointMarker;
 import org.mastodon.views.context.ContextChooser;
 import org.scijava.ui.behaviour.MouseAndKeyHandler;
-import org.scijava.ui.behaviour.io.InputTriggerConfig;
 import org.scijava.ui.behaviour.util.InputActionBindings;
 import org.scijava.ui.behaviour.util.TriggerBehaviourBindings;
 
@@ -84,19 +82,10 @@ public class TrackSchemeFrame extends ViewFrame
 		mouseAndKeyHandler.setKeypressManager( optional.values.getKeyPressedManager(), trackschemePanel.getDisplay() );
 		trackschemePanel.getDisplay().addHandler( mouseAndKeyHandler );
 
+		// TODO
 		final TransformEventHandler< ? > tfHandler = trackschemePanel.getDisplay().getTransformEventHandler();
 		if ( tfHandler instanceof BehaviourTransformEventHandler )
 			( ( BehaviourTransformEventHandler< ? > ) tfHandler ).install( triggerbindings );
-
-		final InputTriggerConfig inputConf = getKeyConfig( optional );
-		trackschemePanel.getNavigator().installBehaviourBindings( triggerbindings, inputConf );
-		trackschemePanel.getNavigator().installActionBindings( keybindings, inputConf, NavigatorEtiquette.FINDER_LIKE );
-	}
-
-	protected InputTriggerConfig getKeyConfig( final TrackSchemeOptions optional )
-	{
-		final InputTriggerConfig conf = optional.values.getInputTriggerConfig();
-		return conf != null ? conf : new InputTriggerConfig();
 	}
 
 	public TrackSchemePanel getTrackschemePanel()

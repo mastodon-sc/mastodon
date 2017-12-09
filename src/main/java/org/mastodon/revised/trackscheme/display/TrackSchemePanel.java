@@ -5,8 +5,8 @@ import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.event.AdjustmentEvent;
 import java.awt.event.AdjustmentListener;
-
 import java.util.concurrent.locks.ReentrantReadWriteLock;
+
 import javax.swing.Box;
 import javax.swing.JPanel;
 import javax.swing.JScrollBar;
@@ -144,6 +144,10 @@ public class TrackSchemePanel extends JPanel implements
 
 	private final TimepointModel timepoint;
 
+	private final TrackSchemeAutoFocus autoFocus;
+
+	private final TrackSchemeFocusActions focusActions;
+
 	private final TrackSchemeNavigator navigator;
 
 	private final OffsetHeaders offsetHeaders;
@@ -218,7 +222,11 @@ public class TrackSchemePanel extends JPanel implements
 		display.addMouseListener( highlightHandler );
 		display.addTransformListener( highlightHandler );
 
-		// TODO Let the user choose between the two selection/focus modes.
+		autoFocus = new TrackSchemeAutoFocus( layout, focus, navigation );
+		display.addTransformListener( autoFocus );
+
+		focusActions = new TrackSchemeFocusActions( graph, layout, autoFocus, selection );
+
 		navigator = new TrackSchemeNavigator( display, graph, layout, graphOverlay, focus, navigation, selection );
 		display.addTransformListener( navigator );
 
@@ -749,21 +757,25 @@ public class TrackSchemePanel extends JPanel implements
 	}
 
 	// TODO is this needed? does it have to be public?
-	public LineageTreeLayout getLineageTreeLayout()
+	protected LineageTreeLayout getLineageTreeLayout()
 	{
 		return layout;
 	}
 
 	// TODO is this needed? does it have to be public?
-	public TrackSchemeGraph< ?, ? > getGraph()
+	protected TrackSchemeGraph< ?, ? > getGraph()
 	{
 		return graph;
 	}
 
-	// TODO remove. revise TrackSchemePanel / TrackSchemeFrame construction
 	public TrackSchemeNavigator getNavigator()
 	{
 		return navigator;
+	}
+
+	public TrackSchemeFocusActions getFocusActions()
+	{
+		return focusActions;
 	}
 
 	/**
