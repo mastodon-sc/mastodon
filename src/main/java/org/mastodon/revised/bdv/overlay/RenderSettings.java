@@ -227,7 +227,7 @@ public class RenderSettings
 	 */
 	public synchronized void setName( final String name )
 	{
-		if (!this.name.equals( name ))
+		if ( this.name != name )
 		{
 			this.name = name;
 			notifyListeners();
@@ -677,7 +677,7 @@ public class RenderSettings
 	 * DEFAULTS RENDER SETTINGS LIBRARY.
 	 */
 
-	private static RenderSettings df;
+	private static final RenderSettings df;
 	static
 	{
 		df = new RenderSettings();
@@ -697,7 +697,7 @@ public class RenderSettings
 		df.name = "Default";
 	}
 
-	private static RenderSettings POINT_CLOUD;
+	private static final RenderSettings POINT_CLOUD;
 	static
 	{
 		POINT_CLOUD = df.copy( "Point cloud" );
@@ -706,7 +706,7 @@ public class RenderSettings
 		POINT_CLOUD.isFocusLimitViewRelative = false;
 	}
 
-	private static RenderSettings NONE;
+	private static final RenderSettings NONE;
 	static
 	{
 		NONE = df.copy( "No overlay" );
@@ -714,7 +714,7 @@ public class RenderSettings
 		NONE.drawSpots = false;
 	}
 
-	public static Collection< RenderSettings > defaults;
+	public static final Collection< RenderSettings > defaults;
 	static
 	{
 		defaults = new ArrayList<>( 4 );
