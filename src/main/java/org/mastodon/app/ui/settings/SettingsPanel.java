@@ -131,9 +131,6 @@ public class SettingsPanel extends JPanel
 		renderer.setLeafIcon( null );
 		renderer.setOpenIcon( null );
 		renderer.setClosedIcon( null );
-		renderer.setBackgroundNonSelectionColor( tree.isOpaque()
-				? tree.getBackground()
-				: this.getBackground() );
 		final Color bg = renderer.getBackgroundSelectionColor();
 		tree.setBackgroundSelectionColor( bg );
 		tree.setCellRenderer( renderer );
@@ -174,6 +171,7 @@ public class SettingsPanel extends JPanel
 		treeScrollPane.setPreferredSize( new Dimension( 500, 500 ) );
 		treeScrollPane.setBorder( new MatteBorder( 0, 0, 0, 1, Color.LIGHT_GRAY ) );
 //		treeScrollPane.setBorder( new EmptyBorder( 0, 0, 0, 0 ) );
+		renderer.setBackgroundNonSelectionColor( treeScrollPane.getBackground() );
 
 		final JSplitPane splitPane = new JSplitPane( JSplitPane.HORIZONTAL_SPLIT, treeScrollPane, content );
 		splitPane.setResizeWeight( 0 );
