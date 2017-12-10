@@ -198,6 +198,8 @@ public class SelectAndEditProfileSettingsPage< T extends SelectAndEditProfileSet
 
 		private final ProfileEditPanel< T > editor;
 
+		private boolean blockComboBoxItemListener = false;
+
 		private final JComboBox< Item > comboBox;
 
 		private final Listeners.SynchronizedList< SelectionListener< T > > selectionListeners;
@@ -227,6 +229,8 @@ public class SelectAndEditProfileSettingsPage< T extends SelectAndEditProfileSet
 			buttonDelete = new JButton( "Delete" );
 
 			comboBox.addItemListener( e -> {
+				if ( blockComboBoxItemListener )
+					return;
 				final T profile = ( ( Item ) e.getItem() ).profile;
 				if ( e.getStateChange() == ItemEvent.SELECTED )
 				{
@@ -262,10 +266,10 @@ public class SelectAndEditProfileSettingsPage< T extends SelectAndEditProfileSet
 			final Item selected = ( Item ) comboBox.getSelectedItem();
 			if ( selected != null )
 			{
+				editor.storeProfile( selected.profile );
 				final T duplicate = manager.duplicate( selected.profile );
-				editor.storeProfile( duplicate );
 				manager.select( duplicate );
-				editor.loadProfile( selected.profile );
+				editor.loadProfile( duplicate );
 				makeModel();
 			}
 		}
@@ -323,7 +327,9 @@ public class SelectAndEditProfileSettingsPage< T extends SelectAndEditProfileSet
 			final Item selectedItem = new Item( manager.getSelectedProfile() );
 			buttonDelete.setEnabled( !selectedItem.isBuiltin() );
 			buttonRename.setEnabled( !selectedItem.isBuiltin() );
+			blockComboBoxItemListener = true;
 			comboBox.setSelectedIndex( items.indexOf( selectedItem ) );
+			blockComboBoxItemListener = false;
 		}
 
 		public Listeners< SelectionListener< T > > selectionListeners()
