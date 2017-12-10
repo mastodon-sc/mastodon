@@ -220,7 +220,7 @@ public class TrackSchemeNavigationActions
 
 	private TrackSchemeVertex selectAndFocusNeighborFL( final Direction direction, final boolean clearSelection, final TrackSchemeVertex ref )
 	{
-		final TrackSchemeVertex vertex =focus.getFocusedVertex( ref );
+		final TrackSchemeVertex vertex = focus.getFocusedVertex( ref );
 		if ( vertex == null )
 			return null;
 
