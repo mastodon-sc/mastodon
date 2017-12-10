@@ -24,19 +24,12 @@ import net.imglib2.ui.OverlayRenderer;
 import net.imglib2.ui.TransformListener;
 
 /**
- * TrackSchemeNavigator that implements the 'Midnight-commander-like' behaviour.
- * <p>
- * SelectionModel is independent of focus. Moving the focus with arrow keys doesn't
- * alter selection. Space key toggles selection of focused vertex. When
- * extending the selection with shift+arrow keys, the selection of the currently
- * focused vertex is toggled, then the focus is moved.
+ * Focus and selection behaviours in TrackScheme.
  *
- * TODO: RENAME.
- *
- * @author Tobias Pietzsch &lt;tobias.pietzsch@gmail.com&gt;
- * @author Jean-Yves Tinevez &lt;jeanyves.tinevez@gmail.com&gt;
+ * @author Tobias Pietzsch
+ * @author Jean-Yves Tinevez
  */
-public class TrackSchemeNavigator implements TransformListener< ScreenTransform >, OffsetHeadersListener
+public class TrackSchemeNavigationBehaviours implements TransformListener< ScreenTransform >, OffsetHeadersListener
 {
 	public static final String FOCUS_VERTEX = "ts click focus vertex";
 	public static final String NAVIGATE_TO_VERTEX = "ts click navigate to vertex";
@@ -92,7 +85,7 @@ public class TrackSchemeNavigator implements TransformListener< ScreenTransform 
 
 	private final BoxSelectionBehaviour boxAddSelectBehaviour;
 
-	public TrackSchemeNavigator(
+	public TrackSchemeNavigationBehaviours(
 			final InteractiveDisplayCanvasComponent< ScreenTransform > display,
 			final TrackSchemeGraph< ?, ? > graph,
 			final LineageTreeLayout layout,
@@ -210,12 +203,12 @@ public class TrackSchemeNavigator implements TransformListener< ScreenTransform 
 		final TrackSchemeVertex vertex = graph.vertexRef();
 		final TrackSchemeEdge edge = graph.edgeRef();
 
-		// See if we can select a vertex.
+		// See if we can find a vertex.
 		if ( graphOverlay.getVertexAt( x, y, vertex ) != null )
 		{
 			navigation.notifyNavigateToVertex( vertex );
 		}
-		// See if we can select an edge.
+		// See if we can find an edge.
 		else if ( graphOverlay.getEdgeAt( x, y, EDGE_SELECT_DISTANCE_TOLERANCE, edge ) != null )
 		{
 			navigation.notifyNavigateToEdge( edge );

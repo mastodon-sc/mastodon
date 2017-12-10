@@ -9,10 +9,14 @@ import org.mastodon.revised.trackscheme.TrackSchemeVertex;
 import org.scijava.ui.behaviour.util.Actions;
 
 /**
+ * Keyboard navigation actions in TrackScheme. Supports two flavours:
+ * {@link NavigatorEtiquette#FINDER_LIKE} and
+ * {@link NavigatorEtiquette#MIDNIGHT_COMMANDER_LIKE}.
+ *
  * @author Tobias Pietzsch
  * @author Jean-Yves Tinevez
  */
-public class TrackSchemeFocusActions
+public class TrackSchemeNavigationActions
 {
 	public static final String NAVIGATE_CHILD = "ts navigate to child";
 	public static final String NAVIGATE_PARENT = "ts navigate to parent";
@@ -74,7 +78,16 @@ public class TrackSchemeFocusActions
 
 	private final FocusModel< TrackSchemeVertex, TrackSchemeEdge > focus;
 
-	public TrackSchemeFocusActions(
+	/**
+	 *
+	 * @param graph
+	 * @param layout
+	 * @param focus
+	 *            normally {@link TrackSchemeAutoFocus} which makes navigation
+	 *            follow the focus.
+	 * @param selection
+	 */
+	public TrackSchemeNavigationActions(
 			final TrackSchemeGraph< ?, ? > graph,
 			final LineageTreeLayout layout,
 			final FocusModel< TrackSchemeVertex, TrackSchemeEdge > focus,

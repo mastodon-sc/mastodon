@@ -20,7 +20,7 @@ import org.mastodon.revised.trackscheme.TrackSchemeVertex;
 import org.mastodon.revised.trackscheme.display.AbstractTrackSchemeOverlay.TrackSchemeOverlayFactory;
 import org.mastodon.revised.trackscheme.display.EditFocusVertexLabelAction;
 import org.mastodon.revised.trackscheme.display.ToggleLinkBehaviour;
-import org.mastodon.revised.trackscheme.display.TrackSchemeFocusActions;
+import org.mastodon.revised.trackscheme.display.TrackSchemeNavigationActions;
 import org.mastodon.revised.trackscheme.display.TrackSchemeFrame;
 import org.mastodon.revised.trackscheme.display.TrackSchemeOptions;
 import org.mastodon.revised.trackscheme.display.style.DefaultTrackSchemeOverlay;
@@ -96,8 +96,8 @@ class MamutViewTrackScheme extends MamutView< TrackSchemeGraph< Spot, Link >, Tr
 		EditFocusVertexLabelAction.install( viewActions, frame.getTrackschemePanel(), focusModel,	model );
 
 		// TODO Let the user choose between the two selection/focus modes.
-		frame.getTrackschemePanel().getFocusActions().install( viewActions, TrackSchemeFocusActions.NavigatorEtiquette.FINDER_LIKE );
-		frame.getTrackschemePanel().getNavigator().install( viewBehaviours );
+		frame.getTrackschemePanel().getNavigationActions().install( viewActions, TrackSchemeNavigationActions.NavigatorEtiquette.FINDER_LIKE );
+		frame.getTrackschemePanel().getNavigationBehaviours().install( viewBehaviours );
 
 		final ViewMenu menu = new ViewMenu( this );
 		final ActionMap actionMap = frame.getKeybindings().getConcatenatedActionMap();
@@ -116,16 +116,16 @@ class MamutViewTrackScheme extends MamutView< TrackSchemeGraph< Spot, Link >, Tr
 						item( SelectionActions.SELECT_TRACK_DOWNWARD ),
 						item( SelectionActions.SELECT_TRACK_UPWARD ),
 						separator(),
-						item( TrackSchemeFocusActions.SELECT_NAVIGATE_CHILD ),
-						item( TrackSchemeFocusActions.SELECT_NAVIGATE_PARENT ),
-						item( TrackSchemeFocusActions.SELECT_NAVIGATE_LEFT ),
-						item( TrackSchemeFocusActions.SELECT_NAVIGATE_RIGHT ),
+						item( TrackSchemeNavigationActions.SELECT_NAVIGATE_CHILD ),
+						item( TrackSchemeNavigationActions.SELECT_NAVIGATE_PARENT ),
+						item( TrackSchemeNavigationActions.SELECT_NAVIGATE_LEFT ),
+						item( TrackSchemeNavigationActions.SELECT_NAVIGATE_RIGHT ),
 //						item( TrackSchemeFocusActions.TOGGLE_FOCUS_SELECTION ),
 						separator(),
-						item( TrackSchemeFocusActions.NAVIGATE_CHILD ),
-						item( TrackSchemeFocusActions.NAVIGATE_PARENT ),
-						item( TrackSchemeFocusActions.NAVIGATE_LEFT ),
-						item( TrackSchemeFocusActions.NAVIGATE_RIGHT ),
+						item( TrackSchemeNavigationActions.NAVIGATE_CHILD ),
+						item( TrackSchemeNavigationActions.NAVIGATE_PARENT ),
+						item( TrackSchemeNavigationActions.NAVIGATE_LEFT ),
+						item( TrackSchemeNavigationActions.NAVIGATE_RIGHT ),
 						separator(),
 						item( EditFocusVertexLabelAction.EDIT_FOCUS_LABEL )
 				)

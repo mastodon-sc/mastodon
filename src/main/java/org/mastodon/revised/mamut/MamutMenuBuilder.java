@@ -11,7 +11,7 @@ import org.mastodon.app.ui.ViewMenu;
 import org.mastodon.app.ui.ViewMenuBuilder;
 import org.mastodon.revised.bdv.BigDataViewerActionsMamut;
 import org.mastodon.revised.trackscheme.display.EditFocusVertexLabelAction;
-import org.mastodon.revised.trackscheme.display.TrackSchemeFocusActions;
+import org.mastodon.revised.trackscheme.display.TrackSchemeNavigationActions;
 import org.mastodon.revised.ui.SelectionActions;
 
 public class MamutMenuBuilder extends ViewMenuBuilder
@@ -43,15 +43,15 @@ public class MamutMenuBuilder extends ViewMenuBuilder
 		menuTexts.put( BigDataViewerActionsMamut.BRIGHTNESS_SETTINGS, "Brightness & Color" );
 		menuTexts.put( BigDataViewerActionsMamut.VISIBILITY_AND_GROUPING, "Visibility & Grouping" );
 
-		menuTexts.put( TrackSchemeFocusActions.NAVIGATE_CHILD, "Navigate to Child" );
-		menuTexts.put( TrackSchemeFocusActions.NAVIGATE_PARENT, "Navigate to Parent" );
-		menuTexts.put( TrackSchemeFocusActions.NAVIGATE_LEFT, "Navigate to Left" );
-		menuTexts.put( TrackSchemeFocusActions.NAVIGATE_RIGHT, "Navigate to Right" );
-		menuTexts.put( TrackSchemeFocusActions.SELECT_NAVIGATE_CHILD, "Select to Child" );
-		menuTexts.put( TrackSchemeFocusActions.SELECT_NAVIGATE_PARENT, "Select to Parent" );
-		menuTexts.put( TrackSchemeFocusActions.SELECT_NAVIGATE_LEFT, "Select to Left" );
-		menuTexts.put( TrackSchemeFocusActions.SELECT_NAVIGATE_RIGHT, "Select to Right" );
-		menuTexts.put( TrackSchemeFocusActions.TOGGLE_FOCUS_SELECTION, "Toggle Focused Vertex Selection" );
+		menuTexts.put( TrackSchemeNavigationActions.NAVIGATE_CHILD, "Navigate to Child" );
+		menuTexts.put( TrackSchemeNavigationActions.NAVIGATE_PARENT, "Navigate to Parent" );
+		menuTexts.put( TrackSchemeNavigationActions.NAVIGATE_LEFT, "Navigate to Left" );
+		menuTexts.put( TrackSchemeNavigationActions.NAVIGATE_RIGHT, "Navigate to Right" );
+		menuTexts.put( TrackSchemeNavigationActions.SELECT_NAVIGATE_CHILD, "Select to Child" );
+		menuTexts.put( TrackSchemeNavigationActions.SELECT_NAVIGATE_PARENT, "Select to Parent" );
+		menuTexts.put( TrackSchemeNavigationActions.SELECT_NAVIGATE_LEFT, "Select to Left" );
+		menuTexts.put( TrackSchemeNavigationActions.SELECT_NAVIGATE_RIGHT, "Select to Right" );
+		menuTexts.put( TrackSchemeNavigationActions.TOGGLE_FOCUS_SELECTION, "Toggle Focused Vertex Selection" );
 
 		menuTexts.put( EditFocusVertexLabelAction.EDIT_FOCUS_LABEL, "Edit Vertex Label" );
 	}
