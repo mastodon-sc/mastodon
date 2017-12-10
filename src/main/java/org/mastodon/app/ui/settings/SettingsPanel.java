@@ -131,7 +131,7 @@ public class SettingsPanel extends JPanel
 		renderer.setLeafIcon( null );
 		renderer.setOpenIcon( null );
 		renderer.setClosedIcon( null );
-		renderer.setBackgroundNonSelectionColor( getBackground() );
+		renderer.setBackgroundNonSelectionColor( tree.getBackground() );
 		final Color bg = renderer.getBackgroundSelectionColor();
 		tree.setBackgroundSelectionColor( bg );
 		tree.setCellRenderer( renderer );
