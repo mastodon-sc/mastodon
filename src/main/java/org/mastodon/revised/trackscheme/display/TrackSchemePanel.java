@@ -146,9 +146,9 @@ public class TrackSchemePanel extends JPanel implements
 
 	private final TrackSchemeAutoFocus autoFocus;
 
-	private final TrackSchemeFocusActions focusActions;
+	private final TrackSchemeNavigationActions navigationActions;
 
-	private final TrackSchemeNavigator navigator;
+	private final TrackSchemeNavigationBehaviours navigationBehaviours;
 
 	private final OffsetHeaders offsetHeaders;
 
@@ -225,15 +225,15 @@ public class TrackSchemePanel extends JPanel implements
 		autoFocus = new TrackSchemeAutoFocus( layout, focus, navigation );
 		display.addTransformListener( autoFocus );
 
-		focusActions = new TrackSchemeFocusActions( graph, layout, autoFocus, selection );
+		navigationActions = new TrackSchemeNavigationActions( graph, layout, autoFocus, selection );
 
-		navigator = new TrackSchemeNavigator( display, graph, layout, graphOverlay, focus, navigation, selection );
-		display.addTransformListener( navigator );
+		navigationBehaviours = new TrackSchemeNavigationBehaviours( display, graph, layout, graphOverlay, focus, navigation, selection );
+		display.addTransformListener( navigationBehaviours );
 
 		offsetHeaders = new OffsetHeaders();
 		offsetHeaders.addOffsetHeadersListener( ( InertialScreenTransformEventHandler ) display.getTransformEventHandler() );
 		offsetHeaders.addOffsetHeadersListener( graphOverlay );
-		offsetHeaders.addOffsetHeadersListener( navigator );
+		offsetHeaders.addOffsetHeadersListener( navigationBehaviours );
 		offsetHeaders.addOffsetHeadersListener( highlightHandler );
 		offsetHeaders.setHeaderVisibleX( true, 25 );
 		offsetHeaders.setHeaderVisibleY( true, 20 );
@@ -768,14 +768,14 @@ public class TrackSchemePanel extends JPanel implements
 		return graph;
 	}
 
-	public TrackSchemeNavigator getNavigator()
+	public TrackSchemeNavigationBehaviours getNavigationBehaviours()
 	{
-		return navigator;
+		return navigationBehaviours;
 	}
 
-	public TrackSchemeFocusActions getFocusActions()
+	public TrackSchemeNavigationActions getNavigationActions()
 	{
-		return focusActions;
+		return navigationActions;
 	}
 
 	/**
