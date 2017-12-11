@@ -12,22 +12,39 @@ import org.mastodon.revised.trackscheme.display.animate.InertialScreenTransformA
 import org.mastodon.revised.trackscheme.display.animate.InterpolateScreenTransformAnimator;
 import org.scijava.ui.behaviour.DragBehaviour;
 import org.scijava.ui.behaviour.ScrollBehaviour;
-import org.scijava.ui.behaviour.io.InputTriggerConfig;
+import org.scijava.ui.behaviour.util.AbstractNamedBehaviour;
 import org.scijava.ui.behaviour.util.Behaviours;
-import org.scijava.ui.behaviour.util.TriggerBehaviourBindings;
 
-import bdv.BehaviourTransformEventHandler;
 import net.imglib2.ui.TransformEventHandler;
 import net.imglib2.ui.TransformEventHandlerFactory;
 import net.imglib2.ui.TransformListener;
 
 public class InertialScreenTransformEventHandler
 	implements
-		BehaviourTransformEventHandler< ScreenTransform >,
 		TransformEventHandler< ScreenTransform >,
 		LayoutListener,
 		OffsetHeadersListener
 {
+	public static TransformEventHandlerFactory< ScreenTransform > factory = transformListener -> new InertialScreenTransformEventHandler( transformListener );
+
+	public static final String DRAG_TRANSLATE = "drag translate";
+	public static final String SCROLL_TRANSLATE = "scroll translate";
+	public static final String ZOOM_X = "zoom horizontal";
+	public static final String ZOOM_Y = "zoom vertical";
+	public static final String ZOOM_XY = "zoom";
+
+	private static final String[] DRAG_TRANSLATE_KEYS = new String[] { "button2", "button3" };
+	private static final String[] SCROLL_TRANSLATE_KEYS = new String[] { "scroll" };
+	private static final String[] ZOOM_X_KEYS = new String[] { "shift scroll" };
+	private static final String[] ZOOM_Y_KEYS = new String[] { "ctrl scroll", "alt scroll" };
+	private static final String[] ZOOM_XY_KEYS = new String[] { "meta scroll", "ctrl shift scroll" };
+
+	private final TranslateDragBehaviour translateDragBehaviour;
+	private final TranslateScrollBehaviour translateScrollBehaviour;
+	private final ZoomScrollBehaviour zoomScrollBehaviourX;
+	private final ZoomScrollBehaviour zoomScrollBehaviourY;
+	private final ZoomScrollBehaviour zoomScrollBehaviourXY;
+
 	/*
 	 * Configuration options
 	 */
@@ -37,8 +54,6 @@ public class InertialScreenTransformEventHandler
 	private final boolean enableInertialZoom = false;
 
 	private final boolean enableIntertialTranslate = true;
-
-
 
 	/**
 	 * The delay in ms between inertial movements updates.
@@ -80,18 +95,6 @@ public class InertialScreenTransformEventHandler
 //	private static final double maxSizeFactorY = 1 / 0.8;
 //	private static final double boundXLayoutBorder = 0;
 //	private static final double boundYLayoutBorder = 0;
-
-	public static TransformEventHandlerFactory< ScreenTransform > factory( final InputTriggerConfig config )
-	{
-		return new TransformEventHandlerFactory< ScreenTransform >()
-		{
-			@Override
-			public TransformEventHandler< ScreenTransform > create( final TransformListener< ScreenTransform > transformListener )
-			{
-				return new InertialScreenTransformEventHandler( transformListener, config );
-			}
-		};
-	}
 
 	/**
 	 * Current boundaries to enforce for the transform.
@@ -159,27 +162,27 @@ public class InertialScreenTransformEventHandler
 
 	private AbstractTransformAnimator< ScreenTransform > animator;
 
-	private final Behaviours behaviours;
-
-	public InertialScreenTransformEventHandler( final TransformListener< ScreenTransform > listener, final InputTriggerConfig config )
+	public InertialScreenTransformEventHandler( final TransformListener< ScreenTransform > listener )
 	{
 		this.listener = listener;
 
 		timer = new Timer( "TrackScheme transform animation", true );
 		currentTimerTask = null;
 
-		final String DRAG_TRANSLATE = "drag translate";
-		final String SCROLL_TRANSLATE = "scroll translate";
-		final String ZOOM_X = "zoom horizontal";
-		final String ZOOM_Y = "zoom vertical";
-		final String ZOOM_XY = "zoom";
+		translateDragBehaviour = new TranslateDragBehaviour();
+		translateScrollBehaviour = new TranslateScrollBehaviour();
+		zoomScrollBehaviourX = new ZoomScrollBehaviour( ZOOM_X, ScrollAxis.X );
+		zoomScrollBehaviourY = new ZoomScrollBehaviour( ZOOM_Y, ScrollAxis.Y );
+		zoomScrollBehaviourXY = new ZoomScrollBehaviour( ZOOM_XY, ScrollAxis.XY );
+	}
 
-		behaviours = new Behaviours( config, "bdv" );
-		behaviours.behaviour( new TranslateDragBehaviour(), DRAG_TRANSLATE, "button2", "button3" );
-		behaviours.behaviour( new TranslateScrollBehaviour(), SCROLL_TRANSLATE, "scroll" );
-		behaviours.behaviour( new ZoomScrollBehaviour( ScrollAxis.X ), ZOOM_X, "shift scroll" );
-		behaviours.behaviour( new ZoomScrollBehaviour( ScrollAxis.Y ), ZOOM_Y, "ctrl scroll", "alt scroll" );
-		behaviours.behaviour( new ZoomScrollBehaviour( ScrollAxis.XY ), ZOOM_XY, "meta scroll", "ctrl shift scroll" );
+	public void install( final Behaviours behaviours )
+	{
+		behaviours.namedBehaviour( translateDragBehaviour, DRAG_TRANSLATE_KEYS );
+		behaviours.namedBehaviour( translateScrollBehaviour, SCROLL_TRANSLATE_KEYS );
+		behaviours.namedBehaviour( zoomScrollBehaviourX, ZOOM_X_KEYS );
+		behaviours.namedBehaviour( zoomScrollBehaviourY, ZOOM_Y_KEYS );
+		behaviours.namedBehaviour( zoomScrollBehaviourXY, ZOOM_XY_KEYS );
 	}
 
 	@Override
@@ -237,12 +240,6 @@ public class InertialScreenTransformEventHandler
 	public String getHelpString()
 	{
 		return null;
-	}
-
-	@Override
-	public void install( final TriggerBehaviourBindings bindings )
-	{
-		behaviours.install( bindings, "transform" );
 	}
 
 	@Override
@@ -332,7 +329,7 @@ public class InertialScreenTransformEventHandler
 		return ConstrainScreenTransform.hasMaxSizeY( transform, maxSizeY );
 	}
 
-	private class TranslateDragBehaviour implements DragBehaviour
+	private class TranslateDragBehaviour extends AbstractNamedBehaviour implements DragBehaviour
 	{
 		/**
 		 * Coordinates where mouse dragging started.
@@ -344,6 +341,11 @@ public class InertialScreenTransformEventHandler
 		private long previousTime = 0;
 
 		private long dt = 0;
+
+		public TranslateDragBehaviour()
+		{
+			super( DRAG_TRANSLATE );
+		}
 
 		@Override
 		public void init( final int x, final int y )
@@ -401,14 +403,15 @@ public class InertialScreenTransformEventHandler
 		X, Y, XY
 	}
 
-	private class ZoomScrollBehaviour implements ScrollBehaviour
+	private class ZoomScrollBehaviour extends AbstractNamedBehaviour implements ScrollBehaviour
 	{
 		private final ScrollAxis axis;
 
 		private final ScreenTransform previousTransform = new ScreenTransform();
 
-		public ZoomScrollBehaviour( final ScrollAxis axis )
+		public ZoomScrollBehaviour( final String name, final ScrollAxis axis )
 		{
+			super( name );
 			this.axis = axis;
 		}
 
@@ -475,9 +478,14 @@ public class InertialScreenTransformEventHandler
 		}
 	}
 
-	private class TranslateScrollBehaviour implements ScrollBehaviour
+	private class TranslateScrollBehaviour extends AbstractNamedBehaviour implements ScrollBehaviour
 	{
 		private final ScreenTransform previousTransform = new ScreenTransform();
+
+		public TranslateScrollBehaviour()
+		{
+			super( SCROLL_TRANSLATE );
+		}
 
 		@Override
 		public void scroll( final double wheelRotation, final boolean isHorizontal, final int x, final int y )

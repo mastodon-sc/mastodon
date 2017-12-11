@@ -150,6 +150,8 @@ public class TrackSchemePanel extends JPanel implements
 
 	private final TrackSchemeNavigationBehaviours navigationBehaviours;
 
+	private final InertialScreenTransformEventHandler transformEventHandler;
+
 	private final OffsetHeaders offsetHeaders;
 
 	private NavigationEtiquette navigationEtiquette;
@@ -177,7 +179,8 @@ public class TrackSchemePanel extends JPanel implements
 
 		final int w = options.getWidth();
 		final int h = options.getHeight();
-		display = new InteractiveDisplayCanvasComponent<>( w, h, options.getTransformEventHandlerFactory() );
+		display = new InteractiveDisplayCanvasComponent<>( w, h, InertialScreenTransformEventHandler.factory );
+		transformEventHandler = ( InertialScreenTransformEventHandler ) display.getTransformEventHandler();
 		display.addTransformListener( this );
 
 		highlight.listeners().add( this );
@@ -231,7 +234,7 @@ public class TrackSchemePanel extends JPanel implements
 		display.addTransformListener( navigationBehaviours );
 
 		offsetHeaders = new OffsetHeaders();
-		offsetHeaders.addOffsetHeadersListener( ( InertialScreenTransformEventHandler ) display.getTransformEventHandler() );
+		offsetHeaders.addOffsetHeadersListener( transformEventHandler );
 		offsetHeaders.addOffsetHeadersListener( graphOverlay );
 		offsetHeaders.addOffsetHeadersListener( navigationBehaviours );
 		offsetHeaders.addOffsetHeadersListener( highlightHandler );
@@ -314,10 +317,7 @@ public class TrackSchemePanel extends JPanel implements
 		layoutMinY = minTimepoint;
 		layoutMaxY = maxTimepoint;
 		graphOverlay.setTimepointRange( minTimepoint, maxTimepoint );
-
-		// TODO: THIS IS FOR TESTING ONLY
-		final InertialScreenTransformEventHandler teh = ( InertialScreenTransformEventHandler ) display.getTransformEventHandler();
-		teh.setLayoutRangeY( minTimepoint, maxTimepoint );
+		transformEventHandler.setLayoutRangeY( minTimepoint, maxTimepoint );
 	}
 
 	/**
@@ -501,12 +501,6 @@ public class TrackSchemePanel extends JPanel implements
 	public void setNavigationEtiquette( final NavigationEtiquette navigationEtiquette )
 	{
 		this.navigationEtiquette = navigationEtiquette;
-
-		/*
-		 * TODO: This will fail if there is a different transform event
-		 * handler.
-		 */
-		final InertialScreenTransformEventHandler transformEventHandler = ( InertialScreenTransformEventHandler ) display.getTransformEventHandler();
 		switch( navigationEtiquette )
 		{
 		case MINIMAL:
@@ -766,6 +760,11 @@ public class TrackSchemePanel extends JPanel implements
 	protected TrackSchemeGraph< ?, ? > getGraph()
 	{
 		return graph;
+	}
+
+	public InertialScreenTransformEventHandler getTransformEventHandler()
+	{
+		return transformEventHandler;
 	}
 
 	public TrackSchemeNavigationBehaviours getNavigationBehaviours()
