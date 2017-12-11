@@ -30,14 +30,11 @@ package org.mastodon.revised.trackscheme.display;
 
 import java.awt.event.KeyListener;
 
-import org.mastodon.revised.trackscheme.ScreenTransform;
 import org.mastodon.revised.trackscheme.display.AbstractTrackSchemeOverlay.TrackSchemeOverlayFactory;
 import org.mastodon.revised.trackscheme.display.style.DefaultTrackSchemeOverlay;
 import org.mastodon.revised.ui.selection.NavigationEtiquette;
 import org.scijava.ui.behaviour.KeyPressedManager;
 import org.scijava.ui.behaviour.io.InputTriggerConfig;
-
-import net.imglib2.ui.TransformEventHandlerFactory;
 
 /**
  * Optional parameters for {@link TrackSchemePanel}.
@@ -80,19 +77,6 @@ public class TrackSchemeOptions
 	public TrackSchemeOptions height( final int h )
 	{
 		values.height = h;
-		return this;
-	}
-
-	/**
-	 * Sets the factory used to create transform event handlers.
-	 *
-	 * @param f
-	 *            the factory.
-	 * @return this instance.
-	 */
-	public TrackSchemeOptions transformEventHandlerFactory( final TransformEventHandlerFactory< ScreenTransform > f )
-	{
-		values.transformEventHandlerFactory = f;
 		return this;
 	}
 
@@ -175,8 +159,6 @@ public class TrackSchemeOptions
 
 		private int height = 600;
 
-		private TransformEventHandlerFactory< ScreenTransform > transformEventHandlerFactory = InertialScreenTransformEventHandler.factory( new InputTriggerConfig() );
-
 		private long animationDurationMillis = 250;
 
 		private InputTriggerConfig inputTriggerConfig = null;
@@ -192,7 +174,6 @@ public class TrackSchemeOptions
 			return new TrackSchemeOptions().
 				width( width ).
 				height( height ).
-				transformEventHandlerFactory( transformEventHandlerFactory ).
 				animationDurationMillis( animationDurationMillis ).
 				inputTriggerConfig( inputTriggerConfig ).
 				navigationEtiquette( navigationEtiquette ).
@@ -207,11 +188,6 @@ public class TrackSchemeOptions
 		public int getHeight()
 		{
 			return height;
-		}
-
-		public TransformEventHandlerFactory< ScreenTransform > getTransformEventHandlerFactory()
-		{
-			return transformEventHandlerFactory;
 		}
 
 		public long getAnimationDurationMillis()
