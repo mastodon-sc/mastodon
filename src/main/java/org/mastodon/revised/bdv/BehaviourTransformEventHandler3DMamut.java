@@ -29,18 +29,15 @@
  */
 package org.mastodon.revised.bdv;
 
-import bdv.BehaviourTransformEventHandlerFactory;
 import org.scijava.ui.behaviour.Behaviour;
 import org.scijava.ui.behaviour.ClickBehaviour;
 import org.scijava.ui.behaviour.DragBehaviour;
 import org.scijava.ui.behaviour.ScrollBehaviour;
-import org.scijava.ui.behaviour.io.InputTriggerConfig;
 import org.scijava.ui.behaviour.util.AbstractNamedBehaviour;
 import org.scijava.ui.behaviour.util.Behaviours;
 
 import net.imglib2.realtransform.AffineTransform3D;
 import net.imglib2.ui.TransformEventHandler;
-import net.imglib2.ui.TransformEventHandlerFactory;
 import net.imglib2.ui.TransformListener;
 
 /**
@@ -50,7 +47,7 @@ import net.imglib2.ui.TransformListener;
  * @author Stephan Saalfeld
  * @author Tobias Pietzsch
  */
-public class BehaviourTransformEventHandler3DMaMuT implements TransformEventHandler< AffineTransform3D >
+public class BehaviourTransformEventHandler3DMamut implements TransformEventHandler< AffineTransform3D >
 {
 	public static final String DRAG_TRANSLATE = "drag translate";
 	public static final String ZOOM_NORMAL = "scroll zoom";
@@ -188,7 +185,7 @@ public class BehaviourTransformEventHandler3DMaMuT implements TransformEventHand
 	 */
 	private int centerX = 0, centerY = 0;
 
-	public BehaviourTransformEventHandler3DMaMuT( final TransformListener< AffineTransform3D > listener )
+	public BehaviourTransformEventHandler3DMamut( final TransformListener< AffineTransform3D > listener )
 	{
 		this.listener = listener;
 
@@ -517,7 +514,7 @@ public class BehaviourTransformEventHandler3DMaMuT implements TransformEventHand
 		@Override
 		public void click( final int x, final int y )
 		{
-			BehaviourTransformEventHandler3DMaMuT.this.axis = axis;
+			BehaviourTransformEventHandler3DMamut.this.axis = axis;
 		}
 	}
 

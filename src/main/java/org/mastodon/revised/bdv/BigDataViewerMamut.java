@@ -44,7 +44,7 @@ import bdv.tools.brightness.BrightnessDialog;
 import bdv.viewer.NavigationActions;
 import bdv.viewer.ViewerPanel;
 
-public class BigDataViewerMaMuT
+public class BigDataViewerMamut
 {
 	private final ViewerFrameMamut viewerFrame;
 
@@ -71,7 +71,7 @@ public class BigDataViewerMaMuT
 	 * @param groupHandle
 	 *            the group handle to manage view synchronization.
 	 */
-	public BigDataViewerMaMuT(
+	public BigDataViewerMamut(
 			final SharedBigDataViewerData shared,
 			final String windowTitle,
 			final GroupHandle groupHandle )

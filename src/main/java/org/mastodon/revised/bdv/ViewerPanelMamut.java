@@ -8,15 +8,15 @@ import java.util.List;
 
 public class ViewerPanelMamut extends ViewerPanel
 {
-	private final BehaviourTransformEventHandler3DMaMuT transformEventHandler;
+	private final BehaviourTransformEventHandler3DMamut transformEventHandler;
 
 	public ViewerPanelMamut( final List< SourceAndConverter< ? > > sources, final int numTimepoints, final CacheControl cacheControl, final ViewerOptions optional )
 	{
-		super( sources, numTimepoints, cacheControl, optional.transformEventHandlerFactory( BehaviourTransformEventHandler3DMaMuT::new ) );
-		transformEventHandler = ( BehaviourTransformEventHandler3DMaMuT ) display.getTransformEventHandler();
+		super( sources, numTimepoints, cacheControl, optional.transformEventHandlerFactory( BehaviourTransformEventHandler3DMamut::new ) );
+		transformEventHandler = ( BehaviourTransformEventHandler3DMamut ) display.getTransformEventHandler();
 	}
 
-	public BehaviourTransformEventHandler3DMaMuT getTransformEventHandler()
+	public BehaviourTransformEventHandler3DMamut getTransformEventHandler()
 	{
 		return transformEventHandler;
 	}
