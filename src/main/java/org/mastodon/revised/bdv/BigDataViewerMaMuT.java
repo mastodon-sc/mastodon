@@ -121,8 +121,6 @@ public class BigDataViewerMaMuT
 
 		brightnessDialog = shared.getBrightnessDialog();
 		visibilityAndGroupingDialog = new VisibilityAndGroupingDialog( viewerFrame, viewer.getVisibilityAndGrouping() );
-
-		NavigationActions.installActionBindings( viewerFrame.getKeybindings(), viewer, inputTriggerConfig );
 	}
 
 	public ViewerPanelMamut getViewer()

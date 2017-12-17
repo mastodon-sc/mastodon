@@ -14,6 +14,7 @@ import org.mastodon.app.ui.ViewMenuBuilder;
 import org.mastodon.revised.bdv.BdvContextProvider;
 import org.mastodon.revised.bdv.BigDataViewerActionsMamut;
 import org.mastodon.revised.bdv.BigDataViewerMaMuT;
+import org.mastodon.revised.bdv.NavigationActionsMamut;
 import org.mastodon.revised.bdv.SharedBigDataViewerData;
 import org.mastodon.revised.bdv.ViewerFrameMamut;
 import org.mastodon.revised.bdv.ViewerPanelMamut;
@@ -141,6 +142,7 @@ class MamutViewBdv extends MamutView< OverlayGraphWrapper< Spot, Link >, Overlay
 		HighlightBehaviours.install( viewBehaviours, viewGraph, viewGraph.getLock(), viewGraph, highlightModel, model );
 		FocusActions.install( viewActions, viewGraph, viewGraph.getLock(), focusModel, selectionModel, navigationHandler );
 
+		NavigationActionsMamut.install( viewActions, viewer );
 		viewer.getTransformEventHandler().install( viewBehaviours );
 
 		viewer.addTimePointListener( timePointIndex -> timepointModel.setTimepoint( timePointIndex ) );
