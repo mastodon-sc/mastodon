@@ -20,4 +20,10 @@ public class ViewerPanelMamut extends ViewerPanel
 	{
 		return transformEventHandler;
 	}
+
+	@Override
+	public synchronized void align( final AlignPlane plane )
+	{
+		super.align( plane );
+	}
 }
