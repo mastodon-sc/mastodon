@@ -210,12 +210,7 @@ public class TrackSchemePanel extends JPanel implements
 		screenTransform = new ScreenTransform();
 		layout = new LineageTreeLayout( graph, selection );
 		contextLayout = new ContextLayout( graph, layout );
-		final TransformEventHandler< ScreenTransform > tevl = display.getTransformEventHandler();
-		if ( tevl instanceof LayoutListener )
-		{
-			final LayoutListener ll = ( LayoutListener ) tevl;
-			layout.addLayoutListener( ll );
-		}
+		layout.addLayoutListener( transformEventHandler );
 		entityAnimator = new ScreenEntityAnimator();
 		painterThread = new PainterThread( this );
 		flags = new Flags();
@@ -256,7 +251,7 @@ public class TrackSchemePanel extends JPanel implements
 				synchronized ( screenTransform )
 				{
 					screenTransform.shiftLayoutX( s - screenTransform.getMinX() );
-					display.getTransformEventHandler().setTransform( screenTransform );
+					transformEventHandler.setTransform( screenTransform );
 				}
 				flags.setTransformChanged();
 				painterThread.requestRepaint();
@@ -274,7 +269,7 @@ public class TrackSchemePanel extends JPanel implements
 				synchronized ( screenTransform )
 				{
 					screenTransform.shiftLayoutY( s - screenTransform.getMinY() );
-					display.getTransformEventHandler().setTransform( screenTransform );
+					transformEventHandler.setTransform( screenTransform );
 				}
 				flags.setTransformChanged();
 				painterThread.requestRepaint();
