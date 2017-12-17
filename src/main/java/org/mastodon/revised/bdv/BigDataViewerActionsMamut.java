@@ -83,7 +83,7 @@ public class BigDataViewerActionsMamut
 	 */
 	public static void install(
 			final Actions actions,
-			final BigDataViewerMaMuT bdv )
+			final BigDataViewerMamut bdv )
 	{
 		final BigDataViewerActionsMamut ba = new BigDataViewerActionsMamut( bdv );
 		actions.namedAction( ba.toggleVisibilityAndGroupingDialogAction, VISIBILITY_AND_GROUPING_KEYS );
@@ -102,7 +102,7 @@ public class BigDataViewerActionsMamut
 		actions.namedAction( ba.loadBdvSettingsAction, LOAD_SETTINGS_KEYS );
 	}
 
-	private BigDataViewerActionsMamut( final BigDataViewerMaMuT bdv )
+	private BigDataViewerActionsMamut( final BigDataViewerMamut bdv )
 	{
 		toggleVisibilityAndGroupingDialogAction = new ToggleDialogAction( VISIBILITY_AND_GROUPING, bdv.getVisibilityAndGroupingDialog() );
 		goToBookmarkAction = new RunnableAction( GO_TO_BOOKMARK, bdv.getBookmarksEditor()::initGoToBookmark );

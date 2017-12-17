@@ -13,7 +13,7 @@ import org.mastodon.app.ui.ViewMenu;
 import org.mastodon.app.ui.ViewMenuBuilder;
 import org.mastodon.revised.bdv.BdvContextProvider;
 import org.mastodon.revised.bdv.BigDataViewerActionsMamut;
-import org.mastodon.revised.bdv.BigDataViewerMaMuT;
+import org.mastodon.revised.bdv.BigDataViewerMamut;
 import org.mastodon.revised.bdv.NavigationActionsMamut;
 import org.mastodon.revised.bdv.SharedBigDataViewerData;
 import org.mastodon.revised.bdv.ViewerFrameMamut;
@@ -37,10 +37,8 @@ import org.mastodon.revised.ui.FocusActions;
 import org.mastodon.revised.ui.HighlightBehaviours;
 import org.mastodon.revised.ui.SelectionActions;
 import org.mastodon.views.context.ContextProvider;
-import org.scijava.ui.behaviour.io.InputTriggerConfig;
 
 import bdv.tools.InitializeViewerState;
-import bdv.viewer.ViewerPanel;
 
 class MamutViewBdv extends MamutView< OverlayGraphWrapper< Spot, Link >, OverlayVertexWrapper< Spot, Link >, OverlayEdgeWrapper< Spot, Link > >
 {
@@ -67,7 +65,7 @@ class MamutViewBdv extends MamutView< OverlayGraphWrapper< Spot, Link >, Overlay
 		sharedBdvData = appModel.getSharedBdvData();
 
 		final String windowTitle = "BigDataViewer " + ( bdvName++ ); // TODO: use JY naming scheme
-		final BigDataViewerMaMuT bdv = new BigDataViewerMaMuT( sharedBdvData, windowTitle, groupHandle );
+		final BigDataViewerMamut bdv = new BigDataViewerMamut( sharedBdvData, windowTitle, groupHandle );
 		final ViewerFrameMamut frame = bdv.getViewerFrame();
 		setFrame( frame );
 
