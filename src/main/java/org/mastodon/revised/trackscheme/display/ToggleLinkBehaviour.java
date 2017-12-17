@@ -97,7 +97,7 @@ public class ToggleLinkBehaviour< V extends Vertex< E > & HasTimepoint, E extend
 
 		// Create and register overlay.
 		overlay = new EditOverlay();
-		overlay.transformChanged( panel.getDisplay().getTransformEventHandler().getTransform() );
+		overlay.transformChanged( panel.getTransformEventHandler().getTransform() );
 		// put the overlay first, so that is below the graph rendering.
 		renderer.addOverlayRenderer( overlay );
 		panel.getDisplay().addTransformListener( overlay );

@@ -81,11 +81,6 @@ public class TrackSchemeFrame extends ViewFrame
 		mouseAndKeyHandler.setBehaviourMap( triggerbindings.getConcatenatedBehaviourMap() );
 		mouseAndKeyHandler.setKeypressManager( optional.values.getKeyPressedManager(), trackschemePanel.getDisplay() );
 		trackschemePanel.getDisplay().addHandler( mouseAndKeyHandler );
-
-		// TODO
-		final TransformEventHandler< ? > tfHandler = trackschemePanel.getDisplay().getTransformEventHandler();
-		if ( tfHandler instanceof BehaviourTransformEventHandler )
-			( ( BehaviourTransformEventHandler< ? > ) tfHandler ).install( triggerbindings );
 	}
 
 	public TrackSchemePanel getTrackschemePanel()
