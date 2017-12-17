@@ -56,13 +56,13 @@ import net.imglib2.ui.TransformEventHandler;
  * A {@link JFrame} containing a {@link ViewerPanel} and associated
  * {@link InputActionBindings}.
  *
- * @author Tobias Pietzsch &lt;tobias.pietzsch@gmail.com&gt;
+ * @author Tobias Pietzsch
  */
 public class ViewerFrameMamut extends ViewFrame
 {
 	private static final long serialVersionUID = 1L;
 
-	protected final ViewerPanel viewer;
+	private final ViewerPanelMamut viewer;
 
 	/**
 	 *
@@ -85,7 +85,7 @@ public class ViewerFrameMamut extends ViewFrame
 	{
 		super( windowTitle );
 
-		viewer = new ViewerPanel( sources, numTimepoints, cacheControl, optional );
+		viewer = new ViewerPanelMamut( sources, numTimepoints, cacheControl, optional );
 		add( viewer, BorderLayout.CENTER );
 
 		final GroupLocksPanel navigationLocksPanel = new GroupLocksPanel( groupHandle );
@@ -108,13 +108,9 @@ public class ViewerFrameMamut extends ViewFrame
 		mouseAndKeyHandler.setBehaviourMap( triggerbindings.getConcatenatedBehaviourMap() );
 		mouseAndKeyHandler.setKeypressManager( optional.values.getKeyPressedManager(), viewer.getDisplay() );
 		viewer.getDisplay().addHandler( mouseAndKeyHandler );
-
-		final TransformEventHandler< ? > tfHandler = viewer.getDisplay().getTransformEventHandler();
-		if ( tfHandler instanceof BehaviourTransformEventHandler )
-			( ( BehaviourTransformEventHandler< ? > ) tfHandler ).install( triggerbindings );
 	}
 
-	public ViewerPanel getViewerPanel()
+	public ViewerPanelMamut getViewerPanel()
 	{
 		return viewer;
 	}
