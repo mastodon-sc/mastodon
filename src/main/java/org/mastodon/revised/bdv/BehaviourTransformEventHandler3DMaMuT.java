@@ -52,8 +52,6 @@ import net.imglib2.ui.TransformListener;
  */
 public class BehaviourTransformEventHandler3DMaMuT implements TransformEventHandler< AffineTransform3D >
 {
-	public static TransformEventHandlerFactory< AffineTransform3D > factory = transformListener -> new BehaviourTransformEventHandler3DMaMuT( transformListener );
-
 	public static final String DRAG_TRANSLATE = "drag translate";
 	public static final String ZOOM_NORMAL = "scroll zoom";
 	public static final String SELECT_AXIS_X = "axis x";

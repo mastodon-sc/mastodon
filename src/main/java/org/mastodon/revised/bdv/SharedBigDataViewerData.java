@@ -79,10 +79,6 @@ public class SharedBigDataViewerData
 				? options.values.getInputTriggerConfig()
 				: new InputTriggerConfig();
 
-		if ( options.values.getTransformEventHandlerFactory() instanceof BehaviourTransformEventHandler3DFactory )
-			( ( BehaviourTransformEventHandler3DFactory ) options.values.getTransformEventHandlerFactory() ).setConfig( inputTriggerConfig );
-
-
 		final AbstractSequenceDescription< ?, ?, ? > seq = spimData.getSequenceDescription();
 		numTimepoints = seq.getTimePoints().size();
 		cache = ( ( ViewerImgLoader ) seq.getImgLoader() ).getCacheControl();

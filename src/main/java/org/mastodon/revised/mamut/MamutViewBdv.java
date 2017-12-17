@@ -16,6 +16,7 @@ import org.mastodon.revised.bdv.BigDataViewerActionsMamut;
 import org.mastodon.revised.bdv.BigDataViewerMaMuT;
 import org.mastodon.revised.bdv.SharedBigDataViewerData;
 import org.mastodon.revised.bdv.ViewerFrameMamut;
+import org.mastodon.revised.bdv.ViewerPanelMamut;
 import org.mastodon.revised.bdv.overlay.BdvHighlightHandler;
 import org.mastodon.revised.bdv.overlay.BdvSelectionBehaviours;
 import org.mastodon.revised.bdv.overlay.EditBehaviours;
@@ -49,7 +50,7 @@ class MamutViewBdv extends MamutView< OverlayGraphWrapper< Spot, Link >, Overlay
 
 	private final BdvContextProvider< Spot, Link > contextProvider;
 
-	private final ViewerPanel viewer;
+	private final ViewerPanelMamut viewer;
 
 	public MamutViewBdv( final MamutAppModel appModel )
 	{
@@ -131,8 +132,6 @@ class MamutViewBdv extends MamutView< OverlayGraphWrapper< Spot, Link >, Overlay
 		viewer.getDisplay().addHandler( highlightHandler );
 		viewer.addRenderTransformListener( highlightHandler );
 
-		final InputTriggerConfig keyconf = appModel.getKeyConfig();
-
 		contextProvider = new BdvContextProvider<>( windowTitle, viewGraph, tracksOverlay );
 		viewer.addRenderTransformListener( contextProvider );
 
@@ -141,6 +140,8 @@ class MamutViewBdv extends MamutView< OverlayGraphWrapper< Spot, Link >, Overlay
 		EditSpecialBehaviours.install( viewBehaviours, frame.getViewerPanel(), viewGraph, tracksOverlay, model );
 		HighlightBehaviours.install( viewBehaviours, viewGraph, viewGraph.getLock(), viewGraph, highlightModel, model );
 		FocusActions.install( viewActions, viewGraph, viewGraph.getLock(), focusModel, selectionModel, navigationHandler );
+
+		viewer.getTransformEventHandler().install( viewBehaviours );
 
 		viewer.addTimePointListener( timePointIndex -> timepointModel.setTimepoint( timePointIndex ) );
 		timepointModel.listeners().add( () -> viewer.setTimepoint( timepointModel.getTimepoint() ) );

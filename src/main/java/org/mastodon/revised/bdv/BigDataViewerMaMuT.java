@@ -48,7 +48,7 @@ public class BigDataViewerMaMuT
 {
 	private final ViewerFrameMamut viewerFrame;
 
-	private final ViewerPanel viewer;
+	private final ViewerPanelMamut viewer;
 
 	private final BrightnessDialog brightnessDialog;
 
@@ -125,7 +125,7 @@ public class BigDataViewerMaMuT
 		NavigationActions.installActionBindings( viewerFrame.getKeybindings(), viewer, inputTriggerConfig );
 	}
 
-	public ViewerPanel getViewer()
+	public ViewerPanelMamut getViewer()
 	{
 		return viewer;
 	}
