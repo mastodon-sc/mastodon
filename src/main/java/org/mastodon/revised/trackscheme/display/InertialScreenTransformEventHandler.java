@@ -25,8 +25,6 @@ public class InertialScreenTransformEventHandler
 		LayoutListener,
 		OffsetHeadersListener
 {
-	public static TransformEventHandlerFactory< ScreenTransform > factory = transformListener -> new InertialScreenTransformEventHandler( transformListener );
-
 	public static final String DRAG_TRANSLATE = "drag translate";
 	public static final String SCROLL_TRANSLATE = "scroll translate";
 	public static final String ZOOM_X = "zoom horizontal";

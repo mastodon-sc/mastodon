@@ -179,7 +179,7 @@ public class TrackSchemePanel extends JPanel implements
 
 		final int w = options.getWidth();
 		final int h = options.getHeight();
-		display = new InteractiveDisplayCanvasComponent<>( w, h, InertialScreenTransformEventHandler.factory );
+		display = new InteractiveDisplayCanvasComponent<>( w, h, InertialScreenTransformEventHandler::new );
 		transformEventHandler = ( InertialScreenTransformEventHandler ) display.getTransformEventHandler();
 		display.addTransformListener( this );
 
