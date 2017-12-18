@@ -18,24 +18,25 @@ public class MamutProjectIO
 	public static final String MAMUTPROJECT_TAG = "MamutProject";
 	public static final String MAMUTPROJECT_VERSION_ATTRIBUTE_NAME = "version";
 	public static final String MAMUTPROJECT_VERSION_ATTRIBUTE_CURRENT = "0.2";
-	public static final String BASEPATH_TAG = "BasePath";
 	public static final String SPIMDATAFILE_TAG = "SpimDataFile";
-	public static final String RAWMODELFILE_TAG = "RawModelFile";
 
 	public void save( final MamutProject project ) throws IOException
 	{
 		final Document doc = new Document( toXml( project ) );
 		final XMLOutputter xout = new XMLOutputter( Format.getPrettyFormat() );
-		mkdirs( project.getProjectFile().getAbsolutePath() );
+		mkdirs( project.getProjectFolder().getAbsolutePath() );
 		xout.output( doc, new FileOutputStream( project.getProjectFile() ) );
 	}
 
 	public MamutProject load( final String projectPath ) throws IOException
 	{
 		final File projectFile = new File( projectPath );
-		final String projectXmlFilename = projectFile.isDirectory()
-				? new File( projectPath, MamutProject.PROJECT_FILE_NAME ).getAbsolutePath()
-				: projectPath;
+		if ( !projectFile.isDirectory() )
+			throw new IOException( "expected project folder, got \"" + projectPath + "\"" );
+
+		final String projectXmlFilename = new File( projectPath, MamutProject.PROJECT_FILE_NAME ).getAbsolutePath();
+		if ( !projectFile.isDirectory() )
+			throw new IOException( MamutProject.PROJECT_FILE_NAME + " not found" );
 
 		final SAXBuilder sax = new SAXBuilder();
 		Document doc;
@@ -50,7 +51,7 @@ public class MamutProjectIO
 		final Element root = doc.getRootElement();
 
 		if ( root.getName() != MAMUTPROJECT_TAG )
-			throw new RuntimeException( "expected <" + MAMUTPROJECT_TAG + "> root element. wrong file?" );
+			throw new IOException( "expected <" + MAMUTPROJECT_TAG + "> root element. wrong file?" );
 
 		return fromXml( root, new File( projectXmlFilename ).getParentFile() );
 	}
@@ -60,7 +61,6 @@ public class MamutProjectIO
 		final Element root = new Element( MAMUTPROJECT_TAG );
 		root.setAttribute( MAMUTPROJECT_VERSION_ATTRIBUTE_NAME, MAMUTPROJECT_VERSION_ATTRIBUTE_CURRENT );
 		root.addContent( XmlHelpers.pathElement( SPIMDATAFILE_TAG, project.getDatasetXmlFile(), project.getProjectFolder() ) );
-		root.addContent( XmlHelpers.pathElement( RAWMODELFILE_TAG, project.getRawModelFile(), project.getProjectFolder() ) );
 		return root;
 	}
 
@@ -72,25 +72,13 @@ public class MamutProjectIO
 
 	public static boolean mkdirs( final String fileName )
 	{
-		final File dir = new File( fileName ).getParentFile();
+		final File dir = new File( fileName );
 		return dir == null ? false : dir.mkdirs();
 	}
 
 	public static void main( final String[] args )
 	{
 		final String projectFolder = "samples/mamutproject";
-//		final String bdvFile = "samples/datasethdf5.xml";
-//		final MamutProject project = new MamutProject( new File( projectFolder ), new File( bdvFile ) );
-//		try
-//		{
-//			new MamutProjectIO().save( project );
-//		}
-//		catch ( final IOException e )
-//		{
-//			e.printStackTrace();
-
-//		}
-
 		try
 		{
 			final MamutProject mamutProject = new MamutProjectIO().load( projectFolder );

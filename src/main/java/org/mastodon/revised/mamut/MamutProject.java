@@ -4,7 +4,6 @@ import java.io.File;
 
 public class MamutProject
 {
-
 	/**
 	 * The project folder.
 	 */

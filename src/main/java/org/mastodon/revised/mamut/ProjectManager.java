@@ -190,15 +190,11 @@ public class ProjectManager
 		final String spimDataXmlFilename = project.getDatasetXmlFile().getAbsolutePath();
 		final SpimDataMinimal spimData = new XmlIoSpimDataMinimal().load( spimDataXmlFilename );
 
-//		this.project = project;
-
 		final InputTriggerConfig keyconf = windowManager.getKeyConfig();
 		final KeyPressedManager keyPressedManager = windowManager.getKeyPressedManager();
 		final TrackSchemeStyleManager trackSchemeStyleManager = windowManager.getTrackSchemeStyleManager();
 		final RenderSettingsManager renderSettingsManager = windowManager.getRenderSettingsManager();
-		final ViewerOptions options = ViewerOptions.options()
-				.inputTriggerConfig( keyconf )
-				.shareKeyPressedEvents( keyPressedManager );
+		final ViewerOptions options = ViewerOptions.options().shareKeyPressedEvents( keyPressedManager );
 		final SharedBigDataViewerData sharedBdvData = new SharedBigDataViewerData(
 				spimDataXmlFilename,
 				spimData,
@@ -207,7 +203,6 @@ public class ProjectManager
 		final MamutAppModel appModel = new MamutAppModel( model, sharedBdvData, keyconf, keyPressedManager, trackSchemeStyleManager, renderSettingsManager );
 
 		windowManager.setAppModel( appModel );
-
 
 		/*
 		 * Feature calculation.
@@ -233,9 +228,6 @@ public class ProjectManager
 	{
 		if ( project == null )
 			return;
-
-		if ( !projectFolder.getAbsolutePath().endsWith( ".mastodon" ) )
-			projectFolder = new File( projectFolder.getParent(), projectFolder.getName() + ".mastodon" );
 
 		project.setProjectFolder( projectFolder );
 		new MamutProjectIO().save( project );
