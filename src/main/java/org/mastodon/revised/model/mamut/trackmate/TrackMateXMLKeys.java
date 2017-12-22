@@ -9,6 +9,12 @@ public class TrackMateXMLKeys
 
 	public static final String SPOT_COLLECTION_TAG = "AllSpots";
 
+	public static final String SPOT_COLLECTION_NSPOTS_ATTRIBUTE_NAME = "nspots";
+
+	public static final String SPATIAL_UNITS_ATTRIBUTE_NAME = "spatialunits";
+
+	public static final String TIME_UNITS_ATTRIBUTE_NAME = "timeunits";
+
 	public static final String SPOT_FRAME_COLLECTION_TAG = "SpotsInFrame";
 
 	public static final String SPOT_ELEMENT_TAG = "Spot";
@@ -21,7 +27,11 @@ public class TrackMateXMLKeys
 
 	public static final String Z_ATTRIBUTE_NAME = "POSITION_Z";
 
+	public static final String T_ATTRIBUTE_NAME = "POSITION_T";
+
 	public static final String RADIUS_ATTRIBUTE_NAME = "RADIUS";
+
+	public static final String QUALITY_ATTRIBUTE_NAME = "QUALITY";
 
 	public static final String FRAME_ATTRIBUTE_NAME = "FRAME";
 
