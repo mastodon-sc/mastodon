@@ -43,11 +43,19 @@ public class TrackMateXMLKeys
 
 	public static final String TRACK_TAG = "Track";
 
+	public static final String TRACK_ID_ATTRIBUTE_NAME = "TRACK_ID";
+
+	public static final String TRACK_NAME_ATTRIBUTE_NAME = "name";
+
 	public static final String EDGE_TAG = "Edge";
 
 	public static final String EDGE_SOURCE_ATTRIBUTE_NAME = "SPOT_SOURCE_ID";
 
 	public static final String EDGE_TARGET_ATTRIBUTE_NAME = "SPOT_TARGET_ID";
+
+	public static final String FILTERED_TRACKS_TAG = "FilteredTracks";
+
+	public static final String TRACK_ID_TAG = "TrackID";
 
 	public static final String FEATURE_DECLARATION_TAG = "FeatureDeclarations";
 

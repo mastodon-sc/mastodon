@@ -1,6 +1,9 @@
 package org.mastodon.revised.io.mamut;
 
 import static org.mastodon.revised.model.mamut.trackmate.TrackMateXMLKeys.EDGE_FEATURE_DECLARATION_TAG;
+import static org.mastodon.revised.model.mamut.trackmate.TrackMateXMLKeys.EDGE_SOURCE_ATTRIBUTE_NAME;
+import static org.mastodon.revised.model.mamut.trackmate.TrackMateXMLKeys.EDGE_TAG;
+import static org.mastodon.revised.model.mamut.trackmate.TrackMateXMLKeys.EDGE_TARGET_ATTRIBUTE_NAME;
 import static org.mastodon.revised.model.mamut.trackmate.TrackMateXMLKeys.FEATURE_ATTRIBUTE_NAME;
 import static org.mastodon.revised.model.mamut.trackmate.TrackMateXMLKeys.FEATURE_DECLARATION_TAG;
 import static org.mastodon.revised.model.mamut.trackmate.TrackMateXMLKeys.FEATURE_DIMENSION_ATTRIBUTE_NAME;
@@ -8,6 +11,7 @@ import static org.mastodon.revised.model.mamut.trackmate.TrackMateXMLKeys.FEATUR
 import static org.mastodon.revised.model.mamut.trackmate.TrackMateXMLKeys.FEATURE_NAME_ATTRIBUTE_NAME;
 import static org.mastodon.revised.model.mamut.trackmate.TrackMateXMLKeys.FEATURE_SHORT_NAME_ATTRIBUTE_NAME;
 import static org.mastodon.revised.model.mamut.trackmate.TrackMateXMLKeys.FEATURE_TAG;
+import static org.mastodon.revised.model.mamut.trackmate.TrackMateXMLKeys.FILTERED_TRACKS_TAG;
 import static org.mastodon.revised.model.mamut.trackmate.TrackMateXMLKeys.FRAME_ATTRIBUTE_NAME;
 import static org.mastodon.revised.model.mamut.trackmate.TrackMateXMLKeys.ID_ATTRIBUTE_NAME;
 import static org.mastodon.revised.model.mamut.trackmate.TrackMateXMLKeys.LABEL_ATTRIBUTE_NAME;
@@ -24,6 +28,10 @@ import static org.mastodon.revised.model.mamut.trackmate.TrackMateXMLKeys.TIME_U
 import static org.mastodon.revised.model.mamut.trackmate.TrackMateXMLKeys.TRACKMATE_TAG;
 import static org.mastodon.revised.model.mamut.trackmate.TrackMateXMLKeys.TRACK_COLLECTION_TAG;
 import static org.mastodon.revised.model.mamut.trackmate.TrackMateXMLKeys.TRACK_FEATURE_DECLARATION_TAG;
+import static org.mastodon.revised.model.mamut.trackmate.TrackMateXMLKeys.TRACK_ID_ATTRIBUTE_NAME;
+import static org.mastodon.revised.model.mamut.trackmate.TrackMateXMLKeys.TRACK_ID_TAG;
+import static org.mastodon.revised.model.mamut.trackmate.TrackMateXMLKeys.TRACK_NAME_ATTRIBUTE_NAME;
+import static org.mastodon.revised.model.mamut.trackmate.TrackMateXMLKeys.TRACK_TAG;
 import static org.mastodon.revised.model.mamut.trackmate.TrackMateXMLKeys.T_ATTRIBUTE_NAME;
 import static org.mastodon.revised.model.mamut.trackmate.TrackMateXMLKeys.X_ATTRIBUTE_NAME;
 import static org.mastodon.revised.model.mamut.trackmate.TrackMateXMLKeys.Y_ATTRIBUTE_NAME;
@@ -36,6 +44,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -47,6 +56,13 @@ import org.jdom2.JDOMException;
 import org.jdom2.input.SAXBuilder;
 import org.jdom2.output.Format;
 import org.jdom2.output.XMLOutputter;
+import org.mastodon.collection.RefCollections;
+import org.mastodon.collection.RefList;
+import org.mastodon.collection.RefSet;
+import org.mastodon.graph.algorithm.RootFinder;
+import org.mastodon.graph.algorithm.traversal.DepthFirstSearch;
+import org.mastodon.graph.algorithm.traversal.GraphSearch.SearchDirection;
+import org.mastodon.graph.algorithm.traversal.SearchListener;
 import org.mastodon.properties.PropertyMap;
 import org.mastodon.revised.mamut.MamutProject;
 import org.mastodon.revised.model.feature.Feature;
@@ -130,33 +146,104 @@ public class MamutExporter
 		modelElement.setAttribute( SPATIAL_UNITS_ATTRIBUTE_NAME, spaceUnits );
 		modelElement.setAttribute( TIME_UNITS_ATTRIBUTE_NAME, timeUnits );
 
-		final Element featureDeclarationElement = echoFeaturesDeclaration();
+		final Element featureDeclarationElement = featuresDeclarationToXml();
 		modelElement.addContent( featureDeclarationElement );
 
-		final Element spotElement = echoSpots();
+		final Element spotElement = spotCollectionToXml();
 		modelElement.addContent( spotElement );
 
-		final Element trackElement = echoTracks();
-		modelElement.addContent( trackElement );
-
-//		final Element filteredTrackElement = echoFilteredTracks( model );
-//		modelElement.addContent( filteredTrackElement );
+		final Element[] tracksElements = trackCollectionToXml();
+		for ( final Element element : tracksElements )
+			modelElement.addContent( element );
 
 		root.addContent( modelElement );
 	}
 
-	private Element echoTracks()
+	private Element[] trackCollectionToXml()
 	{
+		/*
+		 * Track collection element.
+		 */
 		final Element allTracksElement = new Element( TRACK_COLLECTION_TAG );
 
-		// Collect the tracks.
+		// Collect roots, as candidates for single tracks.
+		final RefList< Spot > roots = RefCollections.createRefList( model.getGraph().vertices() );
+		roots.addAll( RootFinder.getRoots( model.getGraph() ) );
 
+		// Sort by ID (not needed but hey).
+		final Comparator< Spot > labelComparator = ( o1, o2 ) -> Integer.compare( o1.getInternalPoolIndex(), o2.getInternalPoolIndex() );
+		roots.sort( labelComparator );
 
+		/*
+		 * We will iterate the graph, cross component by cross component, to
+		 * serialize the tracks.
+		 */
+		final DepthFirstSearch< Spot, Link > search = new DepthFirstSearch<>( model.getGraph(), SearchDirection.UNDIRECTED );
+		final RefSet< Spot > toSkip = RefCollections.createRefSet( model.getGraph().vertices() );
+		final RefList< Spot > iteratedRoots = RefCollections.createRefList( model.getGraph().vertices() );
 
-		return allTracksElement;
+		for ( final Spot root : roots )
+		{
+			// Skip over the roots that were path of a track already dealt with.
+			if ( toSkip.contains( root ) )
+				continue;
+
+			// Create the track element.
+			final Element trackElement = trackToXml( root );
+			allTracksElement.addContent( trackElement );
+
+			final SearchListener< Spot, Link, DepthFirstSearch< Spot, Link > > searchListener = new SearchListener< Spot, Link, DepthFirstSearch< Spot, Link > >()
+			{
+
+				@Override
+				public void processVertexLate( final Spot vertex, final DepthFirstSearch< Spot, Link > search )
+				{
+					/*
+					 * 1 root = 1 track, unless a track has several roots. Add
+					 * the iterated vertex to the list of root to skip if
+					 * needed.
+					 */
+					if ( vertex.incomingEdges().isEmpty() )
+						toSkip.add( vertex );
+				}
+
+				@Override
+				public void processVertexEarly( final Spot vertex, final DepthFirstSearch< Spot, Link > search )
+				{}
+
+				@Override
+				public void processEdge( final Link edge, final Spot from, final Spot to, final DepthFirstSearch< Spot, Link > search )
+				{
+					// Add iterated edge to the track element.
+					final Element edgeElement = edgeToXml( edge, from.getInternalPoolIndex(), to.getInternalPoolIndex() );
+					trackElement.addContent( edgeElement );
+				}
+
+				@Override
+				public void crossComponent( final Spot from, final Spot to, final DepthFirstSearch< Spot, Link > search )
+				{}
+			};
+			search.setTraversalListener( searchListener );
+			search.start( root );
+			iteratedRoots.add( root );
+		}
+
+		/*
+		 * Filtered track collection element.
+		 */
+
+		final Element filteredTracksElement = new Element( FILTERED_TRACKS_TAG );
+		for ( final Spot spot : iteratedRoots )
+		{
+			final Element filteredTrackID = new Element( TRACK_ID_TAG );
+			filteredTrackID.setAttribute( TRACK_ID_ATTRIBUTE_NAME, Integer.toString( spot.getInternalPoolIndex() ) );
+			filteredTracksElement.addContent( filteredTrackID );
+		}
+
+		return new Element[] { allTracksElement, filteredTracksElement };
 	}
 
-	private Element echoSpots()
+	private Element spotCollectionToXml()
 	{
 		final Element spotCollectionElement = new Element( SPOT_COLLECTION_TAG );
 		spotCollectionElement.setAttribute( SPOT_COLLECTION_NSPOTS_ATTRIBUTE_NAME, "" + model.getGraph().vertices().size() );
@@ -188,7 +275,7 @@ public class MamutExporter
 
 			for ( final Spot spot : spots.getSpatialIndex( tp.getId() ) )
 			{
-				final Element spotElement = toXml( spot );
+				final Element spotElement = spotToXml( spot );
 				frameSpotsElement.addContent( spotElement );
 			}
 			spotCollectionElement.addContent( frameSpotsElement );
@@ -197,9 +284,68 @@ public class MamutExporter
 		return spotCollectionElement;
 	}
 
-	private Element toXml( final Spot spot )
+	private Element edgeToXml( final Link edge, final int sourceSpotID, final int targetSpotID )
 	{
-		final Collection< Attribute > attributes = new ArrayList< Attribute >();
+		final Collection< Attribute > attributes = new ArrayList<>();
+
+		// Source and target ID.
+		attributes.add( new Attribute( EDGE_SOURCE_ATTRIBUTE_NAME, Integer.toString( sourceSpotID ) ) );
+		attributes.add( new Attribute( EDGE_TARGET_ATTRIBUTE_NAME, Integer.toString( targetSpotID ) ) );
+
+		// Link features.
+		final FeatureModel fm = model.getFeatureModel();
+		Set< Feature< ?, ? > > features = fm.getFeatureSet( Link.class );
+		if ( null == features )
+			features = Collections.emptySet();
+
+		for ( final Feature< ?, ? > feature : features )
+		{
+			@SuppressWarnings( "unchecked" )
+			final Feature< Link, ? > f = ( Feature< Link, PropertyMap< Link, ? > > ) feature;
+			final Map< String, FeatureProjection< Link > > projections = f.getProjections();
+			for ( final String projectionKey : projections.keySet() )
+				attributes.add( new Attribute( projectionKey, "" + projections.get( projectionKey ).value( edge ) ) );
+		}
+
+		final Element edgeElement = new Element( EDGE_TAG );
+		edgeElement.setAttributes( attributes );
+		return edgeElement;
+	}
+
+	private Element trackToXml( final Spot root )
+	{
+		final Collection< Attribute > attributes = new ArrayList<>();
+
+		// Track name.
+		attributes.add( new Attribute( TRACK_NAME_ATTRIBUTE_NAME, root.getLabel() ) );
+
+		// Track ID.
+		attributes.add( new Attribute( TRACK_ID_ATTRIBUTE_NAME, Integer.toString( root.getInternalPoolIndex() ) ) );
+
+		// Other track features.
+		// TODO: when we compute and store track features, modify this.
+//		final FeatureModel fm = model.getFeatureModel();
+		Set< Feature< ?, ? > > features = null;
+		if ( null == features )
+			features = Collections.emptySet();
+
+		for ( final Feature< ?, ? > feature : features )
+		{
+			@SuppressWarnings( "unchecked" )
+			final Feature< Spot, ? > f = ( Feature< Spot, PropertyMap< Spot, ? > > ) feature;
+			final Map< String, FeatureProjection< Spot > > projections = f.getProjections();
+			for ( final String projectionKey : projections.keySet() )
+				attributes.add( new Attribute( projectionKey, "" + projections.get( projectionKey ).value( root ) ) );
+		}
+
+		final Element trackElement = new Element( TRACK_TAG );
+		trackElement.setAttributes( attributes );
+		return trackElement;
+	}
+
+	private Element spotToXml( final Spot spot )
+	{
+		final Collection< Attribute > attributes = new ArrayList<>();
 
 		// Id.
 		attributes.add( new Attribute( ID_ATTRIBUTE_NAME, "" + spot.getInternalPoolIndex() ) );
@@ -237,7 +383,7 @@ public class MamutExporter
 		return spotElement;
 	}
 
-	private Element echoFeaturesDeclaration()
+	private Element featuresDeclarationToXml()
 	{
 		final Element featuresElement = new Element( FEATURE_DECLARATION_TAG );
 		appendFeaturesDeclarationOfClass( Spot.class, featuresElement, SPOT_FEATURE_DECLARATION_TAG );
