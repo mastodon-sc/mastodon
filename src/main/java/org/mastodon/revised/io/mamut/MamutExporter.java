@@ -11,13 +11,17 @@ import static org.mastodon.revised.model.mamut.trackmate.TrackMateXMLKeys.FEATUR
 import static org.mastodon.revised.model.mamut.trackmate.TrackMateXMLKeys.FEATURE_NAME_ATTRIBUTE_NAME;
 import static org.mastodon.revised.model.mamut.trackmate.TrackMateXMLKeys.FEATURE_SHORT_NAME_ATTRIBUTE_NAME;
 import static org.mastodon.revised.model.mamut.trackmate.TrackMateXMLKeys.FEATURE_TAG;
+import static org.mastodon.revised.model.mamut.trackmate.TrackMateXMLKeys.FILENAME_ATTRIBUTE;
 import static org.mastodon.revised.model.mamut.trackmate.TrackMateXMLKeys.FILTERED_TRACKS_TAG;
+import static org.mastodon.revised.model.mamut.trackmate.TrackMateXMLKeys.FOLDER_ATTRIBUTE;
 import static org.mastodon.revised.model.mamut.trackmate.TrackMateXMLKeys.FRAME_ATTRIBUTE_NAME;
 import static org.mastodon.revised.model.mamut.trackmate.TrackMateXMLKeys.ID_ATTRIBUTE_NAME;
+import static org.mastodon.revised.model.mamut.trackmate.TrackMateXMLKeys.IMAGE_DATA_TAG;
 import static org.mastodon.revised.model.mamut.trackmate.TrackMateXMLKeys.LABEL_ATTRIBUTE_NAME;
 import static org.mastodon.revised.model.mamut.trackmate.TrackMateXMLKeys.MODEL_TAG;
 import static org.mastodon.revised.model.mamut.trackmate.TrackMateXMLKeys.QUALITY_ATTRIBUTE_NAME;
 import static org.mastodon.revised.model.mamut.trackmate.TrackMateXMLKeys.RADIUS_ATTRIBUTE_NAME;
+import static org.mastodon.revised.model.mamut.trackmate.TrackMateXMLKeys.SETTINGS_TAG;
 import static org.mastodon.revised.model.mamut.trackmate.TrackMateXMLKeys.SPATIAL_UNITS_ATTRIBUTE_NAME;
 import static org.mastodon.revised.model.mamut.trackmate.TrackMateXMLKeys.SPOT_COLLECTION_NSPOTS_ATTRIBUTE_NAME;
 import static org.mastodon.revised.model.mamut.trackmate.TrackMateXMLKeys.SPOT_COLLECTION_TAG;
@@ -42,6 +46,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
@@ -157,6 +162,71 @@ public class MamutExporter
 			modelElement.addContent( element );
 
 		root.addContent( modelElement );
+	}
+
+	private void appendSettings()
+	{
+		final Element settingsElement = new Element(SETTINGS_TAG);
+
+		final Element imageDataElement = imageDataToXml();
+		settingsElement.addContent( imageDataElement );
+
+		root.addContent( settingsElement );
+	}
+
+	private Element imageDataToXml()
+	{
+		final Collection< Attribute > attributes = new ArrayList<>();
+
+		// File path.
+		final File datasetXmlFile = project.getDatasetXmlFile();
+		attributes.add( new Attribute( FILENAME_ATTRIBUTE, datasetXmlFile.getName() ) );
+		attributes.add( new Attribute( FOLDER_ATTRIBUTE, datasetXmlFile.getParent() ) );
+
+		// Image attributes.
+		final Document document = getSAXParsedDocument( project.getDatasetXmlFile().getAbsolutePath() );
+
+		final List< Element > viewSetupsElements = document
+				.getRootElement()
+				.getChild( XmlKeys.SEQUENCEDESCRIPTION_TAG )
+				.getChild( XmlKeys.VIEWSETUPS_TAG )
+				.getChildren( XmlKeys.VIEWSETUP_TAG );
+		double pixelWidth = 1.;
+		double pixelHeight = 1.0;
+		double voxelDepth = 1.0;
+		for ( final Element vsEl : viewSetupsElements )
+		{
+			final Element vs, uel;
+			if ( null != ( vs = vsEl.getChild( XmlKeys.VIEWSETUP_VOXELSIZE_TAG ) ) && null != ( uel = vs.getChild( XmlKeys.VOXELDIMENSIONS_SIZE_TAG ) ) )
+			{
+				final String val = uel.getContent( 0 ).getValue();
+				final double[] calibration = Arrays.stream( val.split( " " ) )
+						.mapToDouble( Double::parseDouble )
+						.toArray();
+				pixelWidth = calibration[ 0 ];
+				pixelHeight = calibration[ 1 ];
+				voxelDepth = calibration[ 2 ];
+			}
+		}
+
+		final Element timePointsElement = document
+				.getRootElement()
+				.getChild( XmlKeys.SEQUENCEDESCRIPTION_TAG )
+				.getChild( XmlKeys.TIMEPOINTS_TAG );
+		int nframes = 1;
+		final XmlIoTimePoints xmlIoTimePoints = new XmlIoTimePoints();
+		try
+		{
+			final TimePoints timePoints = xmlIoTimePoints.fromXml( timePointsElement );
+			nframes = timePoints.size();
+		}
+		catch ( final SpimDataException e )
+		{
+			e.printStackTrace();
+		}
+
+		final Element imageDataElement = new Element( IMAGE_DATA_TAG );
+		return imageDataElement;
 	}
 
 	private Element[] trackCollectionToXml()
@@ -439,8 +509,9 @@ public class MamutExporter
 	{
 		final MamutExporter exporter = new MamutExporter( model, project );
 		exporter.appendModel();
+		exporter.appendSettings();
 
-		System.out.println( new XMLOutputter( Format.getPrettyFormat() ).outputString( new Document( exporter.root ) ) ); // DEBUG
+//		System.out.println( new XMLOutputter( Format.getPrettyFormat() ).outputString( new Document( exporter.root ) ) ); // DEBUG
 	}
 
 	public static void main( final String[] args ) throws IOException

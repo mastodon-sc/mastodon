@@ -77,6 +77,30 @@ public class TrackMateXMLKeys
 
 	public static final String FEATURE_ISINT_ATTRIBUTE_NAME = "isint";
 
+	public static final String SETTINGS_TAG = "Settings";
+
+	public static final String IMAGE_DATA_TAG = "ImageData";
+
+	public static final String FILENAME_ATTRIBUTE = "filename";
+
+	public static final String FOLDER_ATTRIBUTE = "folder";
+
+	public static final String WIDTH_ATTRIBUTE = "width";
+
+	public static final String HEIGHT_ATTRIBUTE = "height";
+
+	public static final String NSLICES_ATTRIBUTE = "nslices";
+
+	public static final String NFRAMES_ATTRIBUTE = "nframes";
+
+	public static final String PIXEL_WIDTH_ATTRIBUTE = "pixelwidth";
+
+	public static final String PIXEL_HEIGHT_ATTRIBUTE = "pixelheight";
+
+	public static final String VOXEL_DEPTH_ATTRIBUTE = "voxeldepth";
+
+	public static final String TIME_INTERVAL_ATTRIBUTE = "timeinterval";
+
 	private TrackMateXMLKeys()
 	{}
 }
