@@ -1,28 +1,28 @@
 package org.mastodon.revised.model.mamut.trackmate;
 
 import static org.mastodon.revised.model.mamut.trackmate.TrackMateXMLKeys.EDGE_FEATURE_DECLARATION_TAG;
-import static org.mastodon.revised.model.mamut.trackmate.TrackMateXMLKeys.EDGE_SOURCE_ATTRIBUTE_NAME;
+import static org.mastodon.revised.model.mamut.trackmate.TrackMateXMLKeys.EDGE_SOURCE_ATTRIBUTE;
 import static org.mastodon.revised.model.mamut.trackmate.TrackMateXMLKeys.EDGE_TAG;
-import static org.mastodon.revised.model.mamut.trackmate.TrackMateXMLKeys.EDGE_TARGET_ATTRIBUTE_NAME;
-import static org.mastodon.revised.model.mamut.trackmate.TrackMateXMLKeys.FEATURE_ATTRIBUTE_NAME;
+import static org.mastodon.revised.model.mamut.trackmate.TrackMateXMLKeys.EDGE_TARGET_ATTRIBUTE;
+import static org.mastodon.revised.model.mamut.trackmate.TrackMateXMLKeys.FEATURE_ATTRIBUTE;
 import static org.mastodon.revised.model.mamut.trackmate.TrackMateXMLKeys.FEATURE_DECLARATION_TAG;
-import static org.mastodon.revised.model.mamut.trackmate.TrackMateXMLKeys.FEATURE_ISINT_ATTRIBUTE_NAME;
+import static org.mastodon.revised.model.mamut.trackmate.TrackMateXMLKeys.FEATURE_ISINT_ATTRIBUTE;
 import static org.mastodon.revised.model.mamut.trackmate.TrackMateXMLKeys.FEATURE_TAG;
-import static org.mastodon.revised.model.mamut.trackmate.TrackMateXMLKeys.FRAME_ATTRIBUTE_NAME;
-import static org.mastodon.revised.model.mamut.trackmate.TrackMateXMLKeys.ID_ATTRIBUTE_NAME;
-import static org.mastodon.revised.model.mamut.trackmate.TrackMateXMLKeys.LABEL_ATTRIBUTE_NAME;
+import static org.mastodon.revised.model.mamut.trackmate.TrackMateXMLKeys.FRAME_FEATURE_NAME;
+import static org.mastodon.revised.model.mamut.trackmate.TrackMateXMLKeys.ID_FEATURE_NAME;
+import static org.mastodon.revised.model.mamut.trackmate.TrackMateXMLKeys.LABEL_FEATURE_NAME;
 import static org.mastodon.revised.model.mamut.trackmate.TrackMateXMLKeys.MODEL_TAG;
-import static org.mastodon.revised.model.mamut.trackmate.TrackMateXMLKeys.RADIUS_ATTRIBUTE_NAME;
+import static org.mastodon.revised.model.mamut.trackmate.TrackMateXMLKeys.POSITION_X_FEATURE_NAME;
+import static org.mastodon.revised.model.mamut.trackmate.TrackMateXMLKeys.POSITION_Y_FEATURE_NAME;
+import static org.mastodon.revised.model.mamut.trackmate.TrackMateXMLKeys.POSITION_Z_FEATURE_NAME;
+import static org.mastodon.revised.model.mamut.trackmate.TrackMateXMLKeys.RADIUS_FEATURE_NAME;
 import static org.mastodon.revised.model.mamut.trackmate.TrackMateXMLKeys.SPOT_COLLECTION_TAG;
 import static org.mastodon.revised.model.mamut.trackmate.TrackMateXMLKeys.SPOT_ELEMENT_TAG;
 import static org.mastodon.revised.model.mamut.trackmate.TrackMateXMLKeys.SPOT_FEATURE_DECLARATION_TAG;
 import static org.mastodon.revised.model.mamut.trackmate.TrackMateXMLKeys.SPOT_FRAME_COLLECTION_TAG;
 import static org.mastodon.revised.model.mamut.trackmate.TrackMateXMLKeys.TRACK_COLLECTION_TAG;
 import static org.mastodon.revised.model.mamut.trackmate.TrackMateXMLKeys.TRACK_TAG;
-import static org.mastodon.revised.model.mamut.trackmate.TrackMateXMLKeys.VISIBILITY_ATTRIBUTE_NAME;
-import static org.mastodon.revised.model.mamut.trackmate.TrackMateXMLKeys.X_ATTRIBUTE_NAME;
-import static org.mastodon.revised.model.mamut.trackmate.TrackMateXMLKeys.Y_ATTRIBUTE_NAME;
-import static org.mastodon.revised.model.mamut.trackmate.TrackMateXMLKeys.Z_ATTRIBUTE_NAME;
+import static org.mastodon.revised.model.mamut.trackmate.TrackMateXMLKeys.VISIBILITY_FEATURE_NAME;
 
 import java.io.File;
 import java.io.IOException;
@@ -35,7 +35,6 @@ import org.jdom2.Element;
 import org.jdom2.JDOMException;
 import org.jdom2.input.SAXBuilder;
 import org.mastodon.collection.IntRefMap;
-import org.mastodon.collection.RefCollections;
 import org.mastodon.collection.RefMaps;
 import org.mastodon.properties.DoublePropertyMap;
 import org.mastodon.properties.IntPropertyMap;
@@ -83,7 +82,7 @@ public class TrackMateImporter
 	}
 
 	/**
-	 * Imports the specified TrackMate file as a MaMuT {@link Model}.
+	 * Imports the specified TrackMate file as a Mastodon {@link Model}.
 	 *
 	 * @param file
 	 *            the path to the TrackMate file.
@@ -117,11 +116,11 @@ public class TrackMateImporter
 		final Map< String, IntPropertyMap< Spot > > spotIntFeatureMap = new HashMap<>();
 		for ( final Element featureEl : spotFeatureEls )
 		{
-			final String featureKey = featureEl.getAttributeValue( FEATURE_ATTRIBUTE_NAME );
-//			final String featureName = featureEl.getAttributeValue( FEATURE_NAME_ATTRIBUTE_NAME );
-//			final String featureShortName = featureEl.getAttributeValue( FEATURE_SHORT_NAME_ATTRIBUTE_NAME );
-//			final String featureDimension = featureEl.getAttributeValue( FEATURE_DIMENSION_ATTRIBUTE_NAME );
-			final boolean featureIsInt = Boolean.parseBoolean( featureEl.getAttributeValue( FEATURE_ISINT_ATTRIBUTE_NAME ) );
+			final String featureKey = featureEl.getAttributeValue( FEATURE_ATTRIBUTE );
+//			final String featureName = featureEl.getAttributeValue( FEATURE_NAME_ATTRIBUTE );
+//			final String featureShortName = featureEl.getAttributeValue( FEATURE_SHORT_NAME_ATTRIBUTE );
+//			final String featureDimension = featureEl.getAttributeValue( FEATURE_DIMENSION_ATTRIBUTE );
+			final boolean featureIsInt = Boolean.parseBoolean( featureEl.getAttributeValue( FEATURE_ISINT_ATTRIBUTE ) );
 			if ( featureIsInt )
 			{
 				final IntPropertyMap< Spot > feature = new IntPropertyMap<>( graph.vertices(), Integer.MIN_VALUE );
@@ -140,11 +139,11 @@ public class TrackMateImporter
 		final Map< String, IntPropertyMap< Link > > edgeIntFeatureMap = new HashMap<>();
 		for ( final Element featureEl : edgeFeatureEls )
 		{
-			final String featureKey = featureEl.getAttributeValue( FEATURE_ATTRIBUTE_NAME );
-//			final String featureName = featureEl.getAttributeValue( FEATURE_NAME_ATTRIBUTE_NAME );
-//			final String featureShortName = featureEl.getAttributeValue( FEATURE_SHORT_NAME_ATTRIBUTE_NAME );
-//			final String featureDimension = featureEl.getAttributeValue( FEATURE_DIMENSION_ATTRIBUTE_NAME );
-			final boolean featureIsInt = Boolean.parseBoolean( featureEl.getAttributeValue( FEATURE_ISINT_ATTRIBUTE_NAME ) );
+			final String featureKey = featureEl.getAttributeValue( FEATURE_ATTRIBUTE );
+//			final String featureName = featureEl.getAttributeValue( FEATURE_NAME_ATTRIBUTE );
+//			final String featureShortName = featureEl.getAttributeValue( FEATURE_SHORT_NAME_ATTRIBUTE );
+//			final String featureDimension = featureEl.getAttributeValue( FEATURE_DIMENSION_ATTRIBUTE );
+			final boolean featureIsInt = Boolean.parseBoolean( featureEl.getAttributeValue( FEATURE_ISINT_ATTRIBUTE ) );
 			if ( featureIsInt )
 			{
 				final IntPropertyMap< Link > feature = new IntPropertyMap<>( graph.edges(), Integer.MIN_VALUE );
@@ -185,18 +184,18 @@ public class TrackMateImporter
 				final List< Element > frameSpotsEl = frameEl.getChildren( SPOT_ELEMENT_TAG );
 				for ( final Element spotEl : frameSpotsEl )
 				{
-					final boolean visible = Integer.parseInt( spotEl.getAttributeValue( VISIBILITY_ATTRIBUTE_NAME ) ) != 0;
+					final boolean visible = Integer.parseInt( spotEl.getAttributeValue( VISIBILITY_FEATURE_NAME ) ) != 0;
 					if ( !visible )
 						continue;
 
 					// Create spot.
-					pos[ 0 ] = Double.parseDouble( spotEl.getAttributeValue( X_ATTRIBUTE_NAME ) );
-					pos[ 1 ] = Double.parseDouble( spotEl.getAttributeValue( Y_ATTRIBUTE_NAME ) );
-					pos[ 2 ] = Double.parseDouble( spotEl.getAttributeValue( Z_ATTRIBUTE_NAME ) );
-					final double radius = Double.parseDouble( spotEl.getAttributeValue( RADIUS_ATTRIBUTE_NAME ) );
-					final int frame = Integer.parseInt( spotEl.getAttributeValue( FRAME_ATTRIBUTE_NAME ) );
-					final int id = Integer.parseInt( spotEl.getAttributeValue( ID_ATTRIBUTE_NAME ) );
-					final String label = spotEl.getAttributeValue( LABEL_ATTRIBUTE_NAME );
+					pos[ 0 ] = Double.parseDouble( spotEl.getAttributeValue( POSITION_X_FEATURE_NAME ) );
+					pos[ 1 ] = Double.parseDouble( spotEl.getAttributeValue( POSITION_Y_FEATURE_NAME ) );
+					pos[ 2 ] = Double.parseDouble( spotEl.getAttributeValue( POSITION_Z_FEATURE_NAME ) );
+					final double radius = Double.parseDouble( spotEl.getAttributeValue( RADIUS_FEATURE_NAME ) );
+					final int frame = Integer.parseInt( spotEl.getAttributeValue( FRAME_FEATURE_NAME ) );
+					final int id = Integer.parseInt( spotEl.getAttributeValue( ID_FEATURE_NAME ) );
+					final String label = spotEl.getAttributeValue( LABEL_FEATURE_NAME );
 
 					final Spot spot = graph.addVertex( ref ).init( frame, pos, radius );
 					spot.setLabel( label );
@@ -237,9 +236,9 @@ public class TrackMateImporter
 				for ( final Element edgeEl : edgeEls )
 				{
 					// Create links.
-					final int sourceID = Integer.parseInt( edgeEl.getAttributeValue( EDGE_SOURCE_ATTRIBUTE_NAME ) );
+					final int sourceID = Integer.parseInt( edgeEl.getAttributeValue( EDGE_SOURCE_ATTRIBUTE ) );
 					final Spot source = idToSpotIDmap.get( sourceID, sourceRef );
-					final int targetID = Integer.parseInt( edgeEl.getAttributeValue( EDGE_TARGET_ATTRIBUTE_NAME ) );
+					final int targetID = Integer.parseInt( edgeEl.getAttributeValue( EDGE_TARGET_ATTRIBUTE ) );
 					final Spot target = idToSpotIDmap.get( targetID, targetRef );
 					final Link link = graph.addEdge( source, target, edgeRef ).init();
 

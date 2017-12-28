@@ -1,45 +1,70 @@
-package org.mastodon.revised.io.mamut;
+package org.mastodon.revised.model.mamut.trackmate;
 
+import static org.mastodon.revised.model.mamut.trackmate.TrackMateXMLKeys.ANALYZER_COLLECTION_TAG;
+import static org.mastodon.revised.model.mamut.trackmate.TrackMateXMLKeys.ANALYZER_KEY_ATTRIBUTE;
+import static org.mastodon.revised.model.mamut.trackmate.TrackMateXMLKeys.ANALYZER_TAG;
+import static org.mastodon.revised.model.mamut.trackmate.TrackMateXMLKeys.BOOKMARKS_TAG;
+import static org.mastodon.revised.model.mamut.trackmate.TrackMateXMLKeys.EDGE_ANALYZERS_TAG;
 import static org.mastodon.revised.model.mamut.trackmate.TrackMateXMLKeys.EDGE_FEATURE_DECLARATION_TAG;
-import static org.mastodon.revised.model.mamut.trackmate.TrackMateXMLKeys.EDGE_SOURCE_ATTRIBUTE_NAME;
+import static org.mastodon.revised.model.mamut.trackmate.TrackMateXMLKeys.EDGE_SOURCE_ATTRIBUTE;
 import static org.mastodon.revised.model.mamut.trackmate.TrackMateXMLKeys.EDGE_TAG;
-import static org.mastodon.revised.model.mamut.trackmate.TrackMateXMLKeys.EDGE_TARGET_ATTRIBUTE_NAME;
-import static org.mastodon.revised.model.mamut.trackmate.TrackMateXMLKeys.FEATURE_ATTRIBUTE_NAME;
+import static org.mastodon.revised.model.mamut.trackmate.TrackMateXMLKeys.EDGE_TARGET_ANALYZER_VALUE;
+import static org.mastodon.revised.model.mamut.trackmate.TrackMateXMLKeys.EDGE_TARGET_ATTRIBUTE;
+import static org.mastodon.revised.model.mamut.trackmate.TrackMateXMLKeys.FEATURE_ATTRIBUTE;
 import static org.mastodon.revised.model.mamut.trackmate.TrackMateXMLKeys.FEATURE_DECLARATION_TAG;
-import static org.mastodon.revised.model.mamut.trackmate.TrackMateXMLKeys.FEATURE_DIMENSION_ATTRIBUTE_NAME;
-import static org.mastodon.revised.model.mamut.trackmate.TrackMateXMLKeys.FEATURE_ISINT_ATTRIBUTE_NAME;
-import static org.mastodon.revised.model.mamut.trackmate.TrackMateXMLKeys.FEATURE_NAME_ATTRIBUTE_NAME;
-import static org.mastodon.revised.model.mamut.trackmate.TrackMateXMLKeys.FEATURE_SHORT_NAME_ATTRIBUTE_NAME;
+import static org.mastodon.revised.model.mamut.trackmate.TrackMateXMLKeys.FEATURE_DIMENSION_ATTRIBUTE;
+import static org.mastodon.revised.model.mamut.trackmate.TrackMateXMLKeys.FEATURE_ISINT_ATTRIBUTE;
+import static org.mastodon.revised.model.mamut.trackmate.TrackMateXMLKeys.FEATURE_NAME_ATTRIBUTE;
+import static org.mastodon.revised.model.mamut.trackmate.TrackMateXMLKeys.FEATURE_SHORT_NAME_ATTRIBUTE;
 import static org.mastodon.revised.model.mamut.trackmate.TrackMateXMLKeys.FEATURE_TAG;
 import static org.mastodon.revised.model.mamut.trackmate.TrackMateXMLKeys.FILENAME_ATTRIBUTE;
 import static org.mastodon.revised.model.mamut.trackmate.TrackMateXMLKeys.FILTERED_TRACKS_TAG;
+import static org.mastodon.revised.model.mamut.trackmate.TrackMateXMLKeys.FILTER_FEATURE_ATTRIBUTE;
+import static org.mastodon.revised.model.mamut.trackmate.TrackMateXMLKeys.FILTER_IS_ABOVE_ATTRIBUTE;
+import static org.mastodon.revised.model.mamut.trackmate.TrackMateXMLKeys.FILTER_VALUE_ATTRIBUTE;
 import static org.mastodon.revised.model.mamut.trackmate.TrackMateXMLKeys.FOLDER_ATTRIBUTE;
-import static org.mastodon.revised.model.mamut.trackmate.TrackMateXMLKeys.FRAME_ATTRIBUTE_NAME;
-import static org.mastodon.revised.model.mamut.trackmate.TrackMateXMLKeys.ID_ATTRIBUTE_NAME;
+import static org.mastodon.revised.model.mamut.trackmate.TrackMateXMLKeys.FRAME_ATTRIBUTE;
+import static org.mastodon.revised.model.mamut.trackmate.TrackMateXMLKeys.FRAME_FEATURE_NAME;
+import static org.mastodon.revised.model.mamut.trackmate.TrackMateXMLKeys.GUI_STATE_TAG;
+import static org.mastodon.revised.model.mamut.trackmate.TrackMateXMLKeys.HEIGHT_ATTRIBUTE;
+import static org.mastodon.revised.model.mamut.trackmate.TrackMateXMLKeys.ID_FEATURE_NAME;
 import static org.mastodon.revised.model.mamut.trackmate.TrackMateXMLKeys.IMAGE_DATA_TAG;
-import static org.mastodon.revised.model.mamut.trackmate.TrackMateXMLKeys.LABEL_ATTRIBUTE_NAME;
+import static org.mastodon.revised.model.mamut.trackmate.TrackMateXMLKeys.INITIAL_SPOT_FILTER_TAG;
+import static org.mastodon.revised.model.mamut.trackmate.TrackMateXMLKeys.LABEL_FEATURE_NAME;
 import static org.mastodon.revised.model.mamut.trackmate.TrackMateXMLKeys.MODEL_TAG;
-import static org.mastodon.revised.model.mamut.trackmate.TrackMateXMLKeys.QUALITY_ATTRIBUTE_NAME;
-import static org.mastodon.revised.model.mamut.trackmate.TrackMateXMLKeys.RADIUS_ATTRIBUTE_NAME;
+import static org.mastodon.revised.model.mamut.trackmate.TrackMateXMLKeys.NFRAMES_ATTRIBUTE;
+import static org.mastodon.revised.model.mamut.trackmate.TrackMateXMLKeys.NSLICES_ATTRIBUTE;
+import static org.mastodon.revised.model.mamut.trackmate.TrackMateXMLKeys.PIXEL_HEIGHT_ATTRIBUTE;
+import static org.mastodon.revised.model.mamut.trackmate.TrackMateXMLKeys.PIXEL_WIDTH_ATTRIBUTE;
+import static org.mastodon.revised.model.mamut.trackmate.TrackMateXMLKeys.POSITION_T_FEATURE_NAME;
+import static org.mastodon.revised.model.mamut.trackmate.TrackMateXMLKeys.POSITION_X_FEATURE_NAME;
+import static org.mastodon.revised.model.mamut.trackmate.TrackMateXMLKeys.POSITION_Y_FEATURE_NAME;
+import static org.mastodon.revised.model.mamut.trackmate.TrackMateXMLKeys.POSITION_Z_FEATURE_NAME;
+import static org.mastodon.revised.model.mamut.trackmate.TrackMateXMLKeys.QUALITY_FEATURE_NAME;
+import static org.mastodon.revised.model.mamut.trackmate.TrackMateXMLKeys.RADIUS_FEATURE_NAME;
 import static org.mastodon.revised.model.mamut.trackmate.TrackMateXMLKeys.SETTINGS_TAG;
-import static org.mastodon.revised.model.mamut.trackmate.TrackMateXMLKeys.SPATIAL_UNITS_ATTRIBUTE_NAME;
-import static org.mastodon.revised.model.mamut.trackmate.TrackMateXMLKeys.SPOT_COLLECTION_NSPOTS_ATTRIBUTE_NAME;
+import static org.mastodon.revised.model.mamut.trackmate.TrackMateXMLKeys.SETUP_ASSIGNMENTS_TAG;
+import static org.mastodon.revised.model.mamut.trackmate.TrackMateXMLKeys.SPATIAL_UNITS_ATTRIBUTE;
+import static org.mastodon.revised.model.mamut.trackmate.TrackMateXMLKeys.SPOT_ANALYZERS_TAG;
+import static org.mastodon.revised.model.mamut.trackmate.TrackMateXMLKeys.SPOT_COLLECTION_NSPOTS_ATTRIBUTE;
 import static org.mastodon.revised.model.mamut.trackmate.TrackMateXMLKeys.SPOT_COLLECTION_TAG;
 import static org.mastodon.revised.model.mamut.trackmate.TrackMateXMLKeys.SPOT_ELEMENT_TAG;
 import static org.mastodon.revised.model.mamut.trackmate.TrackMateXMLKeys.SPOT_FEATURE_DECLARATION_TAG;
+import static org.mastodon.revised.model.mamut.trackmate.TrackMateXMLKeys.SPOT_FILTER_COLLECTION_TAG;
 import static org.mastodon.revised.model.mamut.trackmate.TrackMateXMLKeys.SPOT_FRAME_COLLECTION_TAG;
-import static org.mastodon.revised.model.mamut.trackmate.TrackMateXMLKeys.TIME_UNITS_ATTRIBUTE_NAME;
+import static org.mastodon.revised.model.mamut.trackmate.TrackMateXMLKeys.TIME_UNITS_ATTRIBUTE;
 import static org.mastodon.revised.model.mamut.trackmate.TrackMateXMLKeys.TRACKMATE_TAG;
+import static org.mastodon.revised.model.mamut.trackmate.TrackMateXMLKeys.TRACK_ANALYZERS_TAG;
 import static org.mastodon.revised.model.mamut.trackmate.TrackMateXMLKeys.TRACK_COLLECTION_TAG;
 import static org.mastodon.revised.model.mamut.trackmate.TrackMateXMLKeys.TRACK_FEATURE_DECLARATION_TAG;
-import static org.mastodon.revised.model.mamut.trackmate.TrackMateXMLKeys.TRACK_ID_ATTRIBUTE_NAME;
+import static org.mastodon.revised.model.mamut.trackmate.TrackMateXMLKeys.TRACK_FILTER_COLLECTION_TAG;
+import static org.mastodon.revised.model.mamut.trackmate.TrackMateXMLKeys.TRACK_ID_ATTRIBUTE;
 import static org.mastodon.revised.model.mamut.trackmate.TrackMateXMLKeys.TRACK_ID_TAG;
-import static org.mastodon.revised.model.mamut.trackmate.TrackMateXMLKeys.TRACK_NAME_ATTRIBUTE_NAME;
+import static org.mastodon.revised.model.mamut.trackmate.TrackMateXMLKeys.TRACK_NAME_ATTRIBUTE;
 import static org.mastodon.revised.model.mamut.trackmate.TrackMateXMLKeys.TRACK_TAG;
-import static org.mastodon.revised.model.mamut.trackmate.TrackMateXMLKeys.T_ATTRIBUTE_NAME;
-import static org.mastodon.revised.model.mamut.trackmate.TrackMateXMLKeys.X_ATTRIBUTE_NAME;
-import static org.mastodon.revised.model.mamut.trackmate.TrackMateXMLKeys.Y_ATTRIBUTE_NAME;
-import static org.mastodon.revised.model.mamut.trackmate.TrackMateXMLKeys.Z_ATTRIBUTE_NAME;
+import static org.mastodon.revised.model.mamut.trackmate.TrackMateXMLKeys.VISIBILITY_FEATURE_NAME;
+import static org.mastodon.revised.model.mamut.trackmate.TrackMateXMLKeys.VOXEL_DEPTH_ATTRIBUTE;
+import static org.mastodon.revised.model.mamut.trackmate.TrackMateXMLKeys.WIDTH_ATTRIBUTE;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -69,6 +94,7 @@ import org.mastodon.graph.algorithm.traversal.DepthFirstSearch;
 import org.mastodon.graph.algorithm.traversal.GraphSearch.SearchDirection;
 import org.mastodon.graph.algorithm.traversal.SearchListener;
 import org.mastodon.properties.PropertyMap;
+import org.mastodon.revised.bdv.overlay.util.JamaEigenvalueDecomposition;
 import org.mastodon.revised.mamut.MamutProject;
 import org.mastodon.revised.model.feature.Feature;
 import org.mastodon.revised.model.feature.FeatureModel;
@@ -99,11 +125,23 @@ public class MamutExporter
 
 	private final Element root;
 
+	/**
+	 * Used to retrieve equivalent radius.
+	 */
+	private final JamaEigenvalueDecomposition eig;
+
+	/**
+	 * Used to retrieve equivalent radius.
+	 */
+	private final double[][] cov;
+
 	private MamutExporter( final Model model, final MamutProject project )
 	{
 		this.model = model;
 		this.project = project;
 		this.root = new Element( TRACKMATE_TAG );
+		this.eig = new JamaEigenvalueDecomposition( 3 );
+		this.cov = new double[ 3 ][ 3 ];
 	}
 
 	private void write( final File file )
@@ -148,8 +186,8 @@ public class MamutExporter
 		final String timeUnits = "frames";
 
 		final Element modelElement = new Element( MODEL_TAG );
-		modelElement.setAttribute( SPATIAL_UNITS_ATTRIBUTE_NAME, spaceUnits );
-		modelElement.setAttribute( TIME_UNITS_ATTRIBUTE_NAME, timeUnits );
+		modelElement.setAttribute( SPATIAL_UNITS_ATTRIBUTE, spaceUnits );
+		modelElement.setAttribute( TIME_UNITS_ATTRIBUTE, timeUnits );
 
 		final Element featureDeclarationElement = featuresDeclarationToXml();
 		modelElement.addContent( featureDeclarationElement );
@@ -166,12 +204,83 @@ public class MamutExporter
 
 	private void appendSettings()
 	{
-		final Element settingsElement = new Element(SETTINGS_TAG);
+		final Element settingsElement = new Element( SETTINGS_TAG );
 
 		final Element imageDataElement = imageDataToXml();
 		settingsElement.addContent( imageDataElement );
 
+		final Element initialSpotFilterElement = initialSpotFilterToXml();
+		settingsElement.addContent( initialSpotFilterElement );
+
+		final Element spotFilterCollectionElement = new Element( SPOT_FILTER_COLLECTION_TAG );
+		settingsElement.addContent( spotFilterCollectionElement );
+
+		final Element trackFilterCollectionElement = new Element( TRACK_FILTER_COLLECTION_TAG );
+		settingsElement.addContent( trackFilterCollectionElement );
+
+		final Element analyzerCollection = analyzerCollectionToXml();
+		settingsElement.addContent( analyzerCollection );
+
 		root.addContent( settingsElement );
+	}
+
+	/**
+	 * Try to locates a .settings file for the bdv file and import the content
+	 * that MaMuT can recognize (setup assignments and bookmarks).
+	 */
+	private void appendGuiState()
+	{
+		final String fs = project.getDatasetXmlFile().getAbsolutePath();
+		final int ixml = fs.lastIndexOf( ".xml" );
+		final String settingsFileStr = fs.substring( 0, ixml ) + ".settings" + fs.substring( ixml );
+		final File settingsFile = new File( settingsFileStr );
+		if ( settingsFile.exists() && settingsFile.isFile() && settingsFile.canRead() )
+		{
+			final SAXBuilder sax = new SAXBuilder();
+			try
+			{
+				final Element guiStateElement = new Element( GUI_STATE_TAG );
+				final Document doc = sax.build( settingsFile );
+				final Element root = doc.getRootElement();
+				final Element setupAssignmentsElement = root.getChild( SETUP_ASSIGNMENTS_TAG ).detach();
+				guiStateElement.addContent( setupAssignmentsElement );
+				final Element bookmarksElement = root.getChild( BOOKMARKS_TAG ).detach();
+				guiStateElement.addContent( bookmarksElement );
+				this.root.addContent( guiStateElement );
+			}
+			catch ( final JDOMException | IOException e )
+			{
+				e.printStackTrace();
+			}
+		}
+	}
+
+	private Element analyzerCollectionToXml()
+	{
+		final Element analyzerCollectionElement = new Element( ANALYZER_COLLECTION_TAG );
+
+		final Element spotAnalyzersElement = new Element( SPOT_ANALYZERS_TAG );
+		analyzerCollectionElement.addContent( spotAnalyzersElement );
+
+		final Element edgeAnalyzersElement = new Element( EDGE_ANALYZERS_TAG );
+		final Element edgeTargetAnalyzerElement = new Element( ANALYZER_TAG );
+		edgeTargetAnalyzerElement.setAttribute( ANALYZER_KEY_ATTRIBUTE, EDGE_TARGET_ANALYZER_VALUE );
+		edgeAnalyzersElement.addContent( edgeTargetAnalyzerElement );
+		analyzerCollectionElement.addContent( edgeAnalyzersElement );
+
+		final Element trackAnalyzersElement = new Element( TRACK_ANALYZERS_TAG );
+		analyzerCollectionElement.addContent( trackAnalyzersElement );
+
+		return analyzerCollectionElement;
+	}
+
+	private Element initialSpotFilterToXml()
+	{
+		final Element initialSpotFilterElement = new Element( INITIAL_SPOT_FILTER_TAG );
+		initialSpotFilterElement.setAttribute( FILTER_FEATURE_ATTRIBUTE, QUALITY_FEATURE_NAME );
+		initialSpotFilterElement.setAttribute( FILTER_VALUE_ATTRIBUTE, Double.toString( 0. ) );
+		initialSpotFilterElement.setAttribute( FILTER_IS_ABOVE_ATTRIBUTE, Boolean.toString( true ) );
+		return initialSpotFilterElement;
 	}
 
 	private Element imageDataToXml()
@@ -194,6 +303,9 @@ public class MamutExporter
 		double pixelWidth = 1.;
 		double pixelHeight = 1.0;
 		double voxelDepth = 1.0;
+		int width = 1;
+		int height = 1;
+		int nslices = 1;
 		for ( final Element vsEl : viewSetupsElements )
 		{
 			final Element vs, uel;
@@ -207,7 +319,25 @@ public class MamutExporter
 				pixelHeight = calibration[ 1 ];
 				voxelDepth = calibration[ 2 ];
 			}
+
+			final Element sel;
+			if ( null != ( sel = vsEl.getChild( XmlKeys.VIEWSETUP_SIZE_TAG ) ) )
+			{
+				final String val = sel.getContent( 0 ).getValue();
+				final int[] sizes = Arrays.stream( val.split( " " ) )
+						.mapToInt( Integer::parseInt )
+						.toArray();
+				width = sizes[ 0 ];
+				height = sizes[ 1 ];
+				nslices = sizes[ 2 ];
+			}
 		}
+		attributes.add( new Attribute( WIDTH_ATTRIBUTE, Integer.toString( width ) ) );
+		attributes.add( new Attribute( HEIGHT_ATTRIBUTE, Integer.toString( height ) ) );
+		attributes.add( new Attribute( NSLICES_ATTRIBUTE, Integer.toString( nslices ) ) );
+		attributes.add( new Attribute( PIXEL_WIDTH_ATTRIBUTE, Double.toString( pixelWidth ) ) );
+		attributes.add( new Attribute( PIXEL_HEIGHT_ATTRIBUTE, Double.toString( pixelHeight ) ) );
+		attributes.add( new Attribute( VOXEL_DEPTH_ATTRIBUTE, Double.toString( voxelDepth ) ) );
 
 		final Element timePointsElement = document
 				.getRootElement()
@@ -224,8 +354,10 @@ public class MamutExporter
 		{
 			e.printStackTrace();
 		}
+		attributes.add( new Attribute( NFRAMES_ATTRIBUTE, Integer.toString( nframes ) ) );
 
 		final Element imageDataElement = new Element( IMAGE_DATA_TAG );
+		imageDataElement.setAttributes( attributes );
 		return imageDataElement;
 	}
 
@@ -260,8 +392,6 @@ public class MamutExporter
 
 			// Create the track element.
 			final Element trackElement = trackToXml( root );
-			allTracksElement.addContent( trackElement );
-
 			final SearchListener< Spot, Link, DepthFirstSearch< Spot, Link > > searchListener = new SearchListener< Spot, Link, DepthFirstSearch< Spot, Link > >()
 			{
 
@@ -295,7 +425,13 @@ public class MamutExporter
 			};
 			search.setTraversalListener( searchListener );
 			search.start( root );
-			iteratedRoots.add( root );
+
+			// Don't serialize empty track (no edges).
+			if ( trackElement.getContentSize() > 0 )
+			{
+				allTracksElement.addContent( trackElement );
+				iteratedRoots.add( root );
+			}
 		}
 
 		/*
@@ -306,7 +442,7 @@ public class MamutExporter
 		for ( final Spot spot : iteratedRoots )
 		{
 			final Element filteredTrackID = new Element( TRACK_ID_TAG );
-			filteredTrackID.setAttribute( TRACK_ID_ATTRIBUTE_NAME, Integer.toString( spot.getInternalPoolIndex() ) );
+			filteredTrackID.setAttribute( TRACK_ID_ATTRIBUTE, Integer.toString( spot.getInternalPoolIndex() ) );
 			filteredTracksElement.addContent( filteredTrackID );
 		}
 
@@ -316,7 +452,7 @@ public class MamutExporter
 	private Element spotCollectionToXml()
 	{
 		final Element spotCollectionElement = new Element( SPOT_COLLECTION_TAG );
-		spotCollectionElement.setAttribute( SPOT_COLLECTION_NSPOTS_ATTRIBUTE_NAME, "" + model.getGraph().vertices().size() );
+		spotCollectionElement.setAttribute( SPOT_COLLECTION_NSPOTS_ATTRIBUTE, Integer.toString( model.getGraph().vertices().size() ) );
 
 		// Read time points from dataset xml.
 		List< TimePoint > tps = null;
@@ -341,7 +477,7 @@ public class MamutExporter
 		{
 
 			final Element frameSpotsElement = new Element( SPOT_FRAME_COLLECTION_TAG );
-			frameSpotsElement.setAttribute( FRAME_ATTRIBUTE_NAME, tp.getName() );
+			frameSpotsElement.setAttribute( FRAME_ATTRIBUTE, tp.getName() );
 
 			for ( final Spot spot : spots.getSpatialIndex( tp.getId() ) )
 			{
@@ -359,8 +495,8 @@ public class MamutExporter
 		final Collection< Attribute > attributes = new ArrayList<>();
 
 		// Source and target ID.
-		attributes.add( new Attribute( EDGE_SOURCE_ATTRIBUTE_NAME, Integer.toString( sourceSpotID ) ) );
-		attributes.add( new Attribute( EDGE_TARGET_ATTRIBUTE_NAME, Integer.toString( targetSpotID ) ) );
+		attributes.add( new Attribute( EDGE_SOURCE_ATTRIBUTE, Integer.toString( sourceSpotID ) ) );
+		attributes.add( new Attribute( EDGE_TARGET_ATTRIBUTE, Integer.toString( targetSpotID ) ) );
 
 		// Link features.
 		final FeatureModel fm = model.getFeatureModel();
@@ -374,7 +510,7 @@ public class MamutExporter
 			final Feature< Link, ? > f = ( Feature< Link, PropertyMap< Link, ? > > ) feature;
 			final Map< String, FeatureProjection< Link > > projections = f.getProjections();
 			for ( final String projectionKey : projections.keySet() )
-				attributes.add( new Attribute( projectionKey, "" + projections.get( projectionKey ).value( edge ) ) );
+				attributes.add( new Attribute( projectionKey, Double.toString( projections.get( projectionKey ).value( edge ) ) ) );
 		}
 
 		final Element edgeElement = new Element( EDGE_TAG );
@@ -387,10 +523,10 @@ public class MamutExporter
 		final Collection< Attribute > attributes = new ArrayList<>();
 
 		// Track name.
-		attributes.add( new Attribute( TRACK_NAME_ATTRIBUTE_NAME, root.getLabel() ) );
+		attributes.add( new Attribute( TRACK_NAME_ATTRIBUTE, root.getLabel() ) );
 
 		// Track ID.
-		attributes.add( new Attribute( TRACK_ID_ATTRIBUTE_NAME, Integer.toString( root.getInternalPoolIndex() ) ) );
+		attributes.add( new Attribute( TRACK_ID_ATTRIBUTE, Integer.toString( root.getInternalPoolIndex() ) ) );
 
 		// Other track features.
 		// TODO: when we compute and store track features, modify this.
@@ -405,7 +541,7 @@ public class MamutExporter
 			final Feature< Spot, ? > f = ( Feature< Spot, PropertyMap< Spot, ? > > ) feature;
 			final Map< String, FeatureProjection< Spot > > projections = f.getProjections();
 			for ( final String projectionKey : projections.keySet() )
-				attributes.add( new Attribute( projectionKey, "" + projections.get( projectionKey ).value( root ) ) );
+				attributes.add( new Attribute( projectionKey, Double.toString( projections.get( projectionKey ).value( root ) ) ) );
 		}
 
 		final Element trackElement = new Element( TRACK_TAG );
@@ -418,20 +554,27 @@ public class MamutExporter
 		final Collection< Attribute > attributes = new ArrayList<>();
 
 		// Id.
-		attributes.add( new Attribute( ID_ATTRIBUTE_NAME, "" + spot.getInternalPoolIndex() ) );
+		attributes.add( new Attribute( ID_FEATURE_NAME, Integer.toString( spot.getInternalPoolIndex() ) ) );
 		// Name.
-		attributes.add( new Attribute( LABEL_ATTRIBUTE_NAME, spot.getLabel() ) );
+		attributes.add( new Attribute( LABEL_FEATURE_NAME, spot.getLabel() ) );
 		// Position.
-		attributes.add( new Attribute( X_ATTRIBUTE_NAME, "" + spot.getDoublePosition( 0 ) ) );
-		attributes.add( new Attribute( Y_ATTRIBUTE_NAME, "" + spot.getDoublePosition( 1 ) ) );
-		attributes.add( new Attribute( Z_ATTRIBUTE_NAME, "" + spot.getDoublePosition( 2 ) ) );
-		// Radius.
-		attributes.add( new Attribute( RADIUS_ATTRIBUTE_NAME, "" + Math.sqrt( spot.getBoundingSphereRadiusSquared() ) ) );
+		attributes.add( new Attribute( POSITION_X_FEATURE_NAME, Double.toString( spot.getDoublePosition( 0 ) ) ) );
+		attributes.add( new Attribute( POSITION_Y_FEATURE_NAME, Double.toString( spot.getDoublePosition( 1 ) ) ) );
+		attributes.add( new Attribute( POSITION_Z_FEATURE_NAME, Double.toString( spot.getDoublePosition( 2 ) ) ) );
 		// Frame and time.
-		attributes.add( new Attribute( FRAME_ATTRIBUTE_NAME, "" + spot.getTimepoint() ) );
-		attributes.add( new Attribute( T_ATTRIBUTE_NAME, "" + spot.getTimepoint() ) );
+		attributes.add( new Attribute( FRAME_FEATURE_NAME, Integer.toString( spot.getTimepoint() ) ) );
+		attributes.add( new Attribute( POSITION_T_FEATURE_NAME, Double.toString( spot.getTimepoint() ) ) );
 		// Quality.
-		attributes.add( new Attribute( QUALITY_ATTRIBUTE_NAME, "-1" ) );
+		attributes.add( new Attribute( QUALITY_FEATURE_NAME, Double.toString( -1. ) ) );
+		// Visibility.
+		attributes.add( new Attribute( VISIBILITY_FEATURE_NAME, Integer.toString( 1 ) ) );
+
+		// Radius. We have to scale it by transform norm because in MaMuT they
+		// are before rendering.
+		spot.getCovariance( cov );
+		eig.decomposeSymmetric( cov );
+		final double meanRadius = Arrays.stream( eig.getRealEigenvalues() ).map( Math::sqrt ).average().getAsDouble();
+		attributes.add( new Attribute( RADIUS_FEATURE_NAME, Double.toString( meanRadius ) ) );
 
 		// Spot features.
 		final FeatureModel fm = model.getFeatureModel();
@@ -445,7 +588,7 @@ public class MamutExporter
 			final Feature< Spot, ? > f = ( Feature< Spot, PropertyMap< Spot, ? > > ) feature;
 			final Map< String, FeatureProjection< Spot > > projections = f.getProjections();
 			for ( final String projectionKey : projections.keySet() )
-				attributes.add( new Attribute( projectionKey, "" + projections.get( projectionKey ).value( spot ) ) );
+				attributes.add( new Attribute( projectionKey, Double.toString( projections.get( projectionKey ).value( spot ) ) ) );
 		}
 
 		final Element spotElement = new Element( SPOT_ELEMENT_TAG );
@@ -477,13 +620,13 @@ public class MamutExporter
 			for ( final String projectionKey : projections.keySet() )
 			{
 				final Element fel = new Element( FEATURE_TAG );
-				fel.setAttribute( FEATURE_ATTRIBUTE_NAME, projectionKey );
+				fel.setAttribute( FEATURE_ATTRIBUTE, projectionKey );
 				// Mastodon does not support feature name yet.
-				fel.setAttribute( FEATURE_NAME_ATTRIBUTE_NAME, projectionKey );
-				fel.setAttribute( FEATURE_SHORT_NAME_ATTRIBUTE_NAME, projectionKey );
+				fel.setAttribute( FEATURE_NAME_ATTRIBUTE, projectionKey );
+				fel.setAttribute( FEATURE_SHORT_NAME_ATTRIBUTE, projectionKey );
 				// Mastodon does not support feature dimension yet.
-				fel.setAttribute( FEATURE_DIMENSION_ATTRIBUTE_NAME, "NONE" );
-				fel.setAttribute( FEATURE_ISINT_ATTRIBUTE_NAME, "false" );
+				fel.setAttribute( FEATURE_DIMENSION_ATTRIBUTE, "NONE" );
+				fel.setAttribute( FEATURE_ISINT_ATTRIBUTE, "false" );
 				classFeaturesElement.addContent( fel );
 			}
 		}
@@ -510,21 +653,18 @@ public class MamutExporter
 		final MamutExporter exporter = new MamutExporter( model, project );
 		exporter.appendModel();
 		exporter.appendSettings();
-
-//		System.out.println( new XMLOutputter( Format.getPrettyFormat() ).outputString( new Document( exporter.root ) ) ); // DEBUG
+		exporter.appendGuiState();
+		exporter.write( target );
 	}
 
 	public static void main( final String[] args ) throws IOException
 	{
-//		final String bdvFile = "samples/datasethdf5.xml";
-		final String bdvFile = "/Users/tinevez/Desktop/FakeTracks.xml";
+		final String bdvFile = "samples/datasethdf5.xml";
 		final String modelFile = "samples/model_revised.raw";
 		final MamutProject project = new MamutProject( new File( "." ), new File( bdvFile ), new File( modelFile ) );
 		final Model model = new Model();
 		model.loadRaw( project.getRawModelFile() );
 		final File target = new File( "samples/mamutExport.xml" );
 		export( target, model, project );
-
 	}
-
 }
