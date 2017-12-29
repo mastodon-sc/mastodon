@@ -5,6 +5,8 @@ public class TrackMateXMLKeys
 
 	public static final String TRACKMATE_TAG = "TrackMate";
 
+	public static final String VERSION_ATTRIBUTE = "version";
+
 	public static final String MODEL_TAG = "Model";
 
 	public static final String SPOT_COLLECTION_TAG = "AllSpots";

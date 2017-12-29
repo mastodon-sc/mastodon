@@ -62,6 +62,7 @@ import static org.mastodon.revised.model.mamut.trackmate.TrackMateXMLKeys.TRACK_
 import static org.mastodon.revised.model.mamut.trackmate.TrackMateXMLKeys.TRACK_ID_TAG;
 import static org.mastodon.revised.model.mamut.trackmate.TrackMateXMLKeys.TRACK_NAME_ATTRIBUTE;
 import static org.mastodon.revised.model.mamut.trackmate.TrackMateXMLKeys.TRACK_TAG;
+import static org.mastodon.revised.model.mamut.trackmate.TrackMateXMLKeys.VERSION_ATTRIBUTE;
 import static org.mastodon.revised.model.mamut.trackmate.TrackMateXMLKeys.VISIBILITY_FEATURE_NAME;
 import static org.mastodon.revised.model.mamut.trackmate.TrackMateXMLKeys.VOXEL_DEPTH_ATTRIBUTE;
 import static org.mastodon.revised.model.mamut.trackmate.TrackMateXMLKeys.WIDTH_ATTRIBUTE;
@@ -93,6 +94,7 @@ import org.mastodon.graph.algorithm.RootFinder;
 import org.mastodon.graph.algorithm.traversal.DepthFirstSearch;
 import org.mastodon.graph.algorithm.traversal.GraphSearch.SearchDirection;
 import org.mastodon.graph.algorithm.traversal.SearchListener;
+import org.mastodon.properties.IntPropertyMap;
 import org.mastodon.properties.PropertyMap;
 import org.mastodon.revised.bdv.overlay.util.JamaEigenvalueDecomposition;
 import org.mastodon.revised.mamut.MamutProject;
@@ -140,6 +142,7 @@ public class MamutExporter
 		this.model = model;
 		this.project = project;
 		this.root = new Element( TRACKMATE_TAG );
+		root.setAttribute( VERSION_ATTRIBUTE, "3.6.0" );
 		this.eig = new JamaEigenvalueDecomposition( 3 );
 		this.cov = new double[ 3 ][ 3 ];
 	}
@@ -510,7 +513,7 @@ public class MamutExporter
 			final Feature< Link, ? > f = ( Feature< Link, PropertyMap< Link, ? > > ) feature;
 			final Map< String, FeatureProjection< Link > > projections = f.getProjections();
 			for ( final String projectionKey : projections.keySet() )
-				attributes.add( new Attribute( projectionKey, Double.toString( projections.get( projectionKey ).value( edge ) ) ) );
+				attributes.add( new Attribute( sanitize( projectionKey ), Double.toString( projections.get( projectionKey ).value( edge ) ) ) );
 		}
 
 		final Element edgeElement = new Element( EDGE_TAG );
@@ -541,7 +544,7 @@ public class MamutExporter
 			final Feature< Spot, ? > f = ( Feature< Spot, PropertyMap< Spot, ? > > ) feature;
 			final Map< String, FeatureProjection< Spot > > projections = f.getProjections();
 			for ( final String projectionKey : projections.keySet() )
-				attributes.add( new Attribute( projectionKey, Double.toString( projections.get( projectionKey ).value( root ) ) ) );
+				attributes.add( new Attribute( sanitize( projectionKey ), Double.toString( projections.get( projectionKey ).value( root ) ) ) );
 		}
 
 		final Element trackElement = new Element( TRACK_TAG );
@@ -588,7 +591,7 @@ public class MamutExporter
 			final Feature< Spot, ? > f = ( Feature< Spot, PropertyMap< Spot, ? > > ) feature;
 			final Map< String, FeatureProjection< Spot > > projections = f.getProjections();
 			for ( final String projectionKey : projections.keySet() )
-				attributes.add( new Attribute( projectionKey, Double.toString( projections.get( projectionKey ).value( spot ) ) ) );
+				attributes.add( new Attribute( sanitize( projectionKey ), Double.toString( projections.get( projectionKey ).value( spot ) ) ) );
 		}
 
 		final Element spotElement = new Element( SPOT_ELEMENT_TAG );
@@ -615,18 +618,29 @@ public class MamutExporter
 		final Element classFeaturesElement = new Element( classFeatureDeclarationTag );
 		for ( final Feature< ?, ? > feature : features )
 		{
+			/*
+			 * If we have ONE feature mapped on an int projection map, then we
+			 * can use the ISINT flag of TrackMate safely.
+			 */
+			final PropertyMap< ?, ? > pm = feature.getPropertyMap();
+			final String isint;
+			if ( pm instanceof IntPropertyMap )
+				isint = "true";
+			else
+				isint = " false";
+
 			// We actually export feature projections.
 			final Map< String, ? > projections = feature.getProjections();
 			for ( final String projectionKey : projections.keySet() )
 			{
 				final Element fel = new Element( FEATURE_TAG );
-				fel.setAttribute( FEATURE_ATTRIBUTE, projectionKey );
+				fel.setAttribute( FEATURE_ATTRIBUTE, sanitize( projectionKey ) );
 				// Mastodon does not support feature name yet.
 				fel.setAttribute( FEATURE_NAME_ATTRIBUTE, projectionKey );
 				fel.setAttribute( FEATURE_SHORT_NAME_ATTRIBUTE, projectionKey );
 				// Mastodon does not support feature dimension yet.
 				fel.setAttribute( FEATURE_DIMENSION_ATTRIBUTE, "NONE" );
-				fel.setAttribute( FEATURE_ISINT_ATTRIBUTE, "false" );
+				fel.setAttribute( FEATURE_ISINT_ATTRIBUTE, isint );
 				classFeaturesElement.addContent( fel );
 			}
 		}
@@ -646,6 +660,11 @@ public class MamutExporter
 			e.printStackTrace();
 		}
 		return document;
+	}
+
+	private static final String sanitize( final String tag )
+	{
+		return tag.replace( ' ', '_' );
 	}
 
 	public static final void export( final File target, final Model model, final MamutProject project )
