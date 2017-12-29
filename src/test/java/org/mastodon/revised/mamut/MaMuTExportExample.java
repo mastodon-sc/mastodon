@@ -2,20 +2,19 @@ package org.mastodon.revised.mamut;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.jdom2.JDOMException;
-import org.mastodon.revised.bdv.SharedBigDataViewerData;
-import org.mastodon.revised.bdv.overlay.ui.RenderSettingsManager;
+import org.mastodon.revised.mamut.feature.MamutFeatureComputerService;
+import org.mastodon.revised.model.feature.FeatureComputer;
+import org.mastodon.revised.model.mamut.MastodonUtil;
 import org.mastodon.revised.model.mamut.Model;
 import org.mastodon.revised.model.mamut.trackmate.MamutExporter;
 import org.mastodon.revised.model.mamut.trackmate.TrackMateImporter;
-import org.mastodon.revised.trackscheme.display.style.TrackSchemeStyleManager;
-import org.scijava.ui.behaviour.KeyPressedManager;
-import org.scijava.ui.behaviour.io.InputTriggerConfig;
+import org.mastodon.revised.ui.ProgressListener;
+import org.scijava.Context;
 
-import bdv.spimdata.SpimDataMinimal;
-import bdv.spimdata.XmlIoSpimDataMinimal;
-import bdv.viewer.ViewerOptions;
 import mpicbg.spim.data.SpimDataException;
 
 public class MaMuTExportExample
@@ -34,6 +33,38 @@ public class MaMuTExportExample
 		model.loadRaw( project.getRawModelFile() );
 
 		/*
+		 * 1.1. Compute features.
+		 */
+
+		final Context context = new Context( MamutFeatureComputerService.class );
+		final MamutFeatureComputerService featureComputerService = context.getService( MamutFeatureComputerService.class );
+		final Set< FeatureComputer< Model > > featureComputers = new HashSet<>( featureComputerService.getFeatureComputers() );
+		final ProgressListener pl = new ProgressListener()
+		{
+
+			@Override
+			public void showStatus( final String string )
+			{
+				System.out.println( " - " + string );
+			}
+
+			@Override
+			public void showProgress( final int current, final int total )
+			{}
+
+			@Override
+			public void clearStatus()
+			{}
+		};
+		System.out.println( "Computing all features." );
+		final boolean computed = featureComputerService.compute( model, model.getFeatureModel(), featureComputers, pl );
+		if (!computed)
+		{
+			System.err.println( "Error while calculating model features." );
+			return;
+		}
+
+		/*
 		 * 2. Export it to a MaMuT file.
 		 *
 		 * This will export also setup assignments and bookmarks, as well as
@@ -49,31 +80,9 @@ public class MaMuTExportExample
 		 * 3. Re-import it using the TrackMate importer.
 		 */
 
-		final Model trackMateModel = TrackMateImporter.importModel( target ).model;
-
-		/*
-		 * 4. Display the re-imported model.
-		 */
-
-		final InputTriggerConfig keyconf =Mastodon.getInputTriggerConfig();
-		final KeyPressedManager keyPressedManager = new KeyPressedManager();
-		final TrackSchemeStyleManager trackSchemeStyleManager = new TrackSchemeStyleManager( false );
-		final RenderSettingsManager renderSettingsManager = new RenderSettingsManager( false );
-		final ViewerOptions options = ViewerOptions.options()
-				.inputTriggerConfig( keyconf )
-				.shareKeyPressedEvents( keyPressedManager );
-		final SpimDataMinimal spimData = new XmlIoSpimDataMinimal().load( project.getDatasetXmlFile().getAbsolutePath() );
-		final SharedBigDataViewerData sharedBdvData = new SharedBigDataViewerData(
-				project.getDatasetXmlFile().getAbsolutePath(),
-				spimData,
-				options,
-				() -> System.out.println( "repaint.") );
-
-		final MamutAppModel appModel = new MamutAppModel( trackMateModel, sharedBdvData, keyconf, keyPressedManager, trackSchemeStyleManager, renderSettingsManager );
-		new MamutViewBdv( appModel );
-		new MamutViewTrackScheme( appModel );
-
-
+		final Model importedModel = new Model();
+		TrackMateImporter.importModel( target, importedModel );
+		System.out.println( MastodonUtil.dump( importedModel ) );
 	}
 
 }
