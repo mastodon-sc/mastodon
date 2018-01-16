@@ -138,13 +138,9 @@ public class TagSetPanel extends JPanel
 		btnNewTagSet.setBorderPainted( false );
 		panelTagSetButtons.add( btnNewTagSet );
 
-		final JPanel panelTagSetList = new JPanel();
-		panelTagSetEditor.add( panelTagSetList, BorderLayout.CENTER );
-		panelTagSetList.setLayout( new BorderLayout( 0, 0 ) );
-
 		final JScrollPane scrollPaneTagSet = new JScrollPane();
 		scrollPaneTagSet.setVerticalScrollBarPolicy( ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS );
-		panelTagSetList.add( scrollPaneTagSet );
+		panelTagSetEditor.add( scrollPaneTagSet, BorderLayout.CENTER );
 
 		this.tableModel = new MyTableModel();
 		this.tableTagSet = new JTable( tableModel );
