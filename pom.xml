@@ -5,7 +5,7 @@
 	<parent>
 		<groupId>org.scijava</groupId>
 		<artifactId>pom-scijava</artifactId>
-		<version>17.1.1</version>
+		<version>19.0.0</version>
 	</parent>
 
 	<groupId>net.trackmate</groupId>
@@ -41,7 +41,6 @@
 		<dependency>
 			<groupId>sc.fiji</groupId>
 			<artifactId>bigdataviewer-core</artifactId>
-			<version>4.3.1</version>
 		</dependency>
 		<dependency>
 			<groupId>org.scijava</groupId>
@@ -51,7 +50,6 @@
 		<dependency>
 			<groupId>net.imglib2</groupId>
 			<artifactId>imglib2</artifactId>
-			<version>4.4.0</version>
 		</dependency>
 
 		<!-- Test dependencies -->
