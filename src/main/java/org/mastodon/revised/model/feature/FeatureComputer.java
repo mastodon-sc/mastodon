@@ -2,6 +2,7 @@ package org.mastodon.revised.model.feature;
 
 import java.util.Set;
 
+import org.mastodon.properties.PropertyMap;
 import org.mastodon.revised.model.AbstractModel;
 import org.scijava.plugin.SciJavaPlugin;
 
@@ -11,10 +12,14 @@ import org.scijava.plugin.SciJavaPlugin;
  * Concrete implementations must be stateless, without side effects. A computer
  * must generate a single feature, however a feature does not have to be scalar.
  *
+ * @param <O>
+ *            the type of the objects this feature is defined for.
+ * @param <M>
+ *            the type of the property map this feature relies on.
  * @param <AM>
  *            the type of the model the feature is calculated on and stored in.
  */
-public interface FeatureComputer< AM extends AbstractModel< ?, ?, ? > > extends SciJavaPlugin
+public interface FeatureComputer< O, M extends PropertyMap< O, ? >, AM extends AbstractModel< ?, ?, ? > > extends SciJavaPlugin
 {
 
 	/**
@@ -36,7 +41,7 @@ public interface FeatureComputer< AM extends AbstractModel< ?, ?, ? > > extends 
 	 * @param model
 	 *            the model to retrieve objects from.
 	 */
-	public Feature< ?, ? > compute( final AM model );
+	public Feature< O, M > compute( final AM model );
 
 	/**
 	 * Returns the string key of the feature calculated by this computer.
@@ -44,4 +49,13 @@ public interface FeatureComputer< AM extends AbstractModel< ?, ?, ? > > extends 
 	 * @return the feature key.
 	 */
 	public String getKey();
+
+	/**
+	 * Returns a feature serializer that can de/serialize <b>this specific
+	 * feature</b> from/to a raw file.
+	 *
+	 * @return a feature serializer.
+	 */
+	public FeatureSerializer< O, M, AM > getSerializer();
+
 }

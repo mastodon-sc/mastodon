@@ -74,55 +74,60 @@ public class AbstractModelGraph<
 	 *            the raw file to load.
 	 * @param serializer
 	 *            the serializer used for reading individual vertices.
+	 * @return the map collection that links file object ids to graph object
+	 *         ids.
 	 * @throws IOException
 	 *             if an I/O error occurs while reading the file.
 	 */
-	public void loadRaw(
+	public FileIdToGraphMap< V, E > loadRaw(
 			final File file,
 			final GraphSerializer< V, E > serializer )
-					throws IOException
+			throws IOException
 	{
-		final FileInputStream fis = new FileInputStream( file );
-		final ObjectInputStream ois = new ObjectInputStream( new BufferedInputStream( fis, 1024 * 1024 ) );
-		pauseListeners();
-		clear();
-		final FileIdToGraphMap< V, E > fileIdMap = RawGraphIO.read( this, idmap, serializer, ois );
-		RawPropertyIO.readPropertyMaps( fileIdMap.vertices(), vertexPropertySerializers, ois );
-		// TODO: edge properties
+		try (final ObjectInputStream ois = new ObjectInputStream(
+				new BufferedInputStream(
+						new FileInputStream( file ), 1024 * 1024 ) );)
+		{
+			pauseListeners();
+			clear();
+			final FileIdToGraphMap< V, E > fileIdMap = RawGraphIO.read( this, idmap, serializer, ois );
+			RawPropertyIO.readPropertyMaps( fileIdMap.vertices(), vertexPropertySerializers, ois );
+			// TODO: edge properties
 //		RawFeatureIO.readFeatureMaps( fileIdMap.vertices(), vertexFeatures, ois );
 //		RawFeatureIO.readFeatureMaps( fileIdMap.edges(), edgeFeatures, ois );
-		ois.close();
-		resumeListeners();
+			resumeListeners();
+			return fileIdMap;
+		}
 	}
 
 	/**
-	 * Saves this model to the specified raw file using the specified
+	 * Saves this model-graph to the specified raw file using the specified
 	 * serializer.
 	 *
 	 * @param file
 	 *            the raw file to save.
 	 * @param serializer
 	 *            the serializer used for writing individual vertices.
-//	 * @param vertexFeaturesToSerialize
-//	 *            the vertex features to serialize.
-//	 * @param edgeFeaturesToSerialize
-//	 *            the edge features to serialize.
+	 * @return the map collection that links graph object id to file object id.
 	 * @throws IOException
 	 *             if an I/O error occurs while writing the file.
 	 */
-	public void saveRaw(
+	public GraphToFileIdMap< V, E > saveRaw(
 			final File file,
 			final GraphSerializer< V, E > serializer )
-					throws IOException
+			throws IOException
 	{
-		final FileOutputStream fos = new FileOutputStream( file );
-		final ObjectOutputStream oos = new ObjectOutputStream( new BufferedOutputStream( fos, 1024 * 1024 ) );
-		final GraphToFileIdMap< V, E > fileIdMap = RawGraphIO.write( this, idmap, serializer, oos );
-		RawPropertyIO.writePropertyMaps( fileIdMap.vertices(), vertexPropertySerializers, oos );
-		// TODO: edge properties
+		try (final ObjectOutputStream oos = new ObjectOutputStream(
+				new BufferedOutputStream(
+						new FileOutputStream( file ), 1024 * 1024 ) ))
+		{
+			final GraphToFileIdMap< V, E > fileIdMap = RawGraphIO.write( this, idmap, serializer, oos );
+			RawPropertyIO.writePropertyMaps( fileIdMap.vertices(), vertexPropertySerializers, oos );
+			// TODO: edge properties
 //		RawFeatureIO.writeFeatureMaps( fileIdMap.vertices(), vertexFeatures, vertexFeaturesToSerialize, oos );
 //		RawFeatureIO.writeFeatureMaps( fileIdMap.edges(), edgeFeatures, edgeFeaturesToSerialize, oos );
-		oos.close();
+			return fileIdMap;
+		}
 	}
 
 	public ReentrantReadWriteLock getLock()

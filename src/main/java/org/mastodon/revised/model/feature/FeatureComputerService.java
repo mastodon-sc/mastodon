@@ -23,7 +23,7 @@ public interface FeatureComputerService< AM extends AbstractModel< ?, ?, ? > > e
 	 *
 	 * @return the available feature computers.
 	 */
-	public Collection< FeatureComputer< AM > > getFeatureComputers();
+	public Collection< FeatureComputer< ?, ?, AM > > getFeatureComputers();
 
 	/**
 	 * Executes feature computation for the specified computers on the specified
@@ -41,6 +41,6 @@ public interface FeatureComputerService< AM extends AbstractModel< ?, ?, ? > > e
 	 *            a progress listener, used to report calculation progress.
 	 * @return <code>true</code> if computation terminated successfully.
 	 */
-	public boolean compute( AM model, FeatureModel featureModel, Set< FeatureComputer< AM > > selectedComputers, ProgressListener progressListener );
+	public boolean compute( AM model, FeatureModel< AM > featureModel, Set< FeatureComputer< ?, ?, AM > > selectedComputers, ProgressListener progressListener );
 
 }

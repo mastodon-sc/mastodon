@@ -33,10 +33,10 @@ import org.mastodon.properties.PropertyMap;
  *
  * @param <O>
  *            the type of the object this feature is defined for (target).
- * @param <K>
+ * @param <M>
  *            the type of the property map used to store feature values.
  */
-public class Feature< O, K extends PropertyMap< O, ? > >
+public class Feature< O, M extends PropertyMap< O, ? > >
 {
 
 	/**
@@ -47,7 +47,7 @@ public class Feature< O, K extends PropertyMap< O, ? > >
 	/**
 	 * The feature property map.
 	 */
-	private final K propertyMap;
+	private final M propertyMap;
 
 	/**
 	 * The feature projections, stored as a map from projection names to
@@ -74,7 +74,7 @@ public class Feature< O, K extends PropertyMap< O, ? > >
 	 *            The feature projections, stored as a map from projection names
 	 *            to projections.
 	 */
-	public Feature( final String key, final Class< O > targetClass, final K propertyMap, final Map< String, FeatureProjection< O > > projections )
+	public Feature( final String key, final Class< O > targetClass, final M propertyMap, final Map< String, FeatureProjection< O > > projections )
 	{
 		this.key = key;
 		this.targetClass = targetClass;
@@ -97,7 +97,7 @@ public class Feature< O, K extends PropertyMap< O, ? > >
 	 *
 	 * @return the property map.
 	 */
-	public K getPropertyMap()
+	public M getPropertyMap()
 	{
 		return propertyMap;
 	}

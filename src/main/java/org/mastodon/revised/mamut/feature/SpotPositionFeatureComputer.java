@@ -1,14 +1,19 @@
 package org.mastodon.revised.mamut.feature;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.Collections;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 
+import org.mastodon.graph.io.RawGraphIO.FileIdToGraphMap;
+import org.mastodon.graph.io.RawGraphIO.GraphToFileIdMap;
 import org.mastodon.properties.AbstractPropertyMap;
 import org.mastodon.properties.PropertyMap;
 import org.mastodon.revised.model.feature.Feature;
 import org.mastodon.revised.model.feature.FeatureProjection;
+import org.mastodon.revised.model.feature.FeatureSerializer;
 import org.mastodon.revised.model.mamut.Model;
 import org.mastodon.revised.model.mamut.Spot;
 import org.scijava.plugin.Plugin;
@@ -16,7 +21,7 @@ import org.scijava.plugin.Plugin;
 import net.imglib2.RealLocalizable;
 
 @Plugin( type = SpotFeatureComputer.class, name = "Spot position" )
-public class SpotPositionFeatureComputer implements SpotFeatureComputer
+public class SpotPositionFeatureComputer implements SpotFeatureComputer< PropertyMap< Spot, RealLocalizable > >
 {
 
 	private static final String KEY = "Spot position";
@@ -36,7 +41,7 @@ public class SpotPositionFeatureComputer implements SpotFeatureComputer
 	@Override
 	public Feature< Spot, PropertyMap< Spot, RealLocalizable > > compute( final Model model )
 	{
-		final HashMap< String, FeatureProjection< Spot > > map = new HashMap<>();
+		final LinkedHashMap< String, FeatureProjection< Spot > > map = new LinkedHashMap<>();
 		for ( int d = 0; d < 3; d++ )
 		{
 			final String pname = "Spot " + ( char ) ( 'X' + d ) + " position";
@@ -44,10 +49,11 @@ public class SpotPositionFeatureComputer implements SpotFeatureComputer
 			map.put( pname, projection );
 		}
 		final Map< String, FeatureProjection< Spot > > projections = Collections.unmodifiableMap( map );
+		final RealLocalizablePropertyMap< Spot > rlpm = new RealLocalizablePropertyMap< >( model.getGraph().vertices().size() );
 		final Feature< Spot, PropertyMap< Spot, RealLocalizable > > feature =
-				new Feature<>(
+				new Feature< >(
 						KEY, Spot.class,
-						new RealLocalizablePropertyMap< Spot >( model.getGraph().vertices().size() ),
+						rlpm,
 						projections );
 		return feature;
 	}
@@ -135,5 +141,26 @@ public class SpotPositionFeatureComputer implements SpotFeatureComputer
 			return size;
 		}
 
+	}
+
+	@Override
+	public FeatureSerializer< Spot, PropertyMap< Spot, RealLocalizable >, Model > getSerializer()
+	{
+		return new FeatureSerializer< Spot, PropertyMap< Spot, RealLocalizable >, Model >()
+		{
+
+			@Override
+			public void serialize( final Feature< Spot, PropertyMap< Spot, RealLocalizable > > feature, final File file, final Model support, final GraphToFileIdMap< ?, ? > idmap ) throws IOException
+			{
+				// Do nothing.
+			}
+
+			@Override
+			public Feature< Spot, PropertyMap< Spot, RealLocalizable > > deserialize( final File file, final Model model, final FileIdToGraphMap< ?, ? > fileIdToGraphMap ) throws IOException
+			{
+				// Do nothing and return the feature as is.
+				return compute( model );
+			}
+		};
 	}
 }

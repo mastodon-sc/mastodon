@@ -1,20 +1,18 @@
 package org.mastodon.revised.mamut.feature;
 
 import java.util.Collections;
-import java.util.Map;
 import java.util.Set;
 
 import org.mastodon.pool.PoolCollectionWrapper;
 import org.mastodon.properties.IntPropertyMap;
 import org.mastodon.revised.model.feature.Feature;
-import org.mastodon.revised.model.feature.FeatureProjection;
-import org.mastodon.revised.model.feature.FeatureProjectors;
+import org.mastodon.revised.model.feature.FeatureSerializer;
 import org.mastodon.revised.model.mamut.Model;
 import org.mastodon.revised.model.mamut.Spot;
 import org.scijava.plugin.Plugin;
 
 @Plugin( type = SpotFeatureComputer.class, name = "Spot N links" )
-public class SpotNLinksComputer implements SpotFeatureComputer
+public class SpotNLinksComputer implements SpotFeatureComputer< IntPropertyMap< Spot > >
 {
 
 	private static final String KEY = "Spot N links";
@@ -40,8 +38,12 @@ public class SpotNLinksComputer implements SpotFeatureComputer
 		for ( final Spot spot : vertices )
 			pm.set( spot, spot.edges().size() );
 
-		final Map< String, FeatureProjection< Spot > > projections = Collections.singletonMap( KEY, FeatureProjectors.project( pm ) );
-		final Feature< Spot, IntPropertyMap< Spot > > feature = new Feature<>( KEY, Spot.class, pm, projections );
-		return feature;
+		return MamutFeatureSerializers.bundle( KEY, pm, Spot.class );
+	}
+
+	@Override
+	public FeatureSerializer< Spot, IntPropertyMap< Spot >, Model > getSerializer()
+	{
+		return MamutFeatureSerializers.intSpotSerializer(KEY);
 	}
 }

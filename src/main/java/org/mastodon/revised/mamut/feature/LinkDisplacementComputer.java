@@ -1,13 +1,11 @@
 package org.mastodon.revised.mamut.feature;
 
 import java.util.Collections;
-import java.util.Map;
 import java.util.Set;
 
 import org.mastodon.properties.DoublePropertyMap;
 import org.mastodon.revised.model.feature.Feature;
-import org.mastodon.revised.model.feature.FeatureProjection;
-import org.mastodon.revised.model.feature.FeatureProjectors;
+import org.mastodon.revised.model.feature.FeatureSerializer;
 import org.mastodon.revised.model.mamut.Link;
 import org.mastodon.revised.model.mamut.Model;
 import org.mastodon.revised.model.mamut.ModelGraph;
@@ -15,7 +13,7 @@ import org.mastodon.revised.model.mamut.Spot;
 import org.scijava.plugin.Plugin;
 
 @Plugin( type = LinkFeatureComputer.class, name = "Link displacement" )
-public class LinkDisplacementComputer implements LinkFeatureComputer
+public class LinkDisplacementComputer implements LinkFeatureComputer< DoublePropertyMap< Link > >
 {
 
 	public static final String KEY = "Link displacement";
@@ -57,8 +55,13 @@ public class LinkDisplacementComputer implements LinkFeatureComputer
 		graph.releaseRef( ref1 );
 		graph.releaseRef( ref2 );
 
-		final Map< String, FeatureProjection< Link > > projections = Collections.singletonMap( KEY, FeatureProjectors.project( pm ) );
-		final Feature< Link, DoublePropertyMap< Link > > feature = new Feature<>( KEY, Link.class, pm, projections );
-		return feature;
+		return MamutFeatureSerializers.bundle( KEY, pm, Link.class );
 	}
+
+	@Override
+	public FeatureSerializer< Link, DoublePropertyMap< Link >, Model > getSerializer()
+	{
+		return MamutFeatureSerializers.doubleLinkSerializer( KEY );
+	}
+
 }
