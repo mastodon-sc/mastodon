@@ -4,6 +4,7 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Frame;
 import java.util.ArrayList;
+import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -77,7 +78,7 @@ public class ColorTagTableDialogExample
 	{
 		private static final long serialVersionUID = 1L;
 
-		public TagSetDialog( final Frame owner, final MyElements elements )
+		public TagSetDialog( final Frame owner, final MyElements elements1, final MyElements elements2, final MyElements elements3 )
 		{
 			super( owner, "tag sets configuration", false );
 
@@ -85,8 +86,21 @@ public class ColorTagTableDialogExample
 			final JScrollPane scrollPaneTagSet = new JScrollPane();
 			scrollPaneTagSet.setVerticalScrollBarPolicy( ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS );
 			tagSetPanel.add( scrollPaneTagSet, BorderLayout.CENTER );
-			final TagTable tagTable = new ColorTagTable<>( elements );
+			final TagTable tagTable = new ColorTagTable<>( elements1 );
 			scrollPaneTagSet.setViewportView( tagTable.getTable() );
+
+			final JPanel buttons = new JPanel();
+			tagSetPanel.add( buttons, BorderLayout.SOUTH );
+
+			final JButton b1 = new JButton( "1" );
+			final JButton b2 = new JButton( "2" );
+			final JButton b3 = new JButton( "3" );
+			b1.addActionListener( e -> tagTable.setElements( elements1 ) );
+			b2.addActionListener( e -> tagTable.setElements( elements2 ) );
+			b3.addActionListener( e -> tagTable.setElements( elements3 ) );
+			buttons.add( b1 );
+			buttons.add( b2 );
+			buttons.add( b3 );
 
 			getContentPane().add( tagSetPanel );
 			setSize( 400, 500 );
@@ -101,9 +115,15 @@ public class ColorTagTableDialogExample
 		elements.add( new MyElement( "element 2", Color.ORANGE ) );
 		elements.add( new MyElement( "element 3", Color.GREEN ) );
 
+		final MyElements elements2 = new MyElements();
+		elements2.add( new MyElement( "other 11", Color.GREEN ) );
+		elements2.add( new MyElement( "other 12", Color.YELLOW ) );
+
+		final MyElements elements3 = new MyElements();
+
 		UIManager.setLookAndFeel( UIManager.getSystemLookAndFeelClassName() );
 
-		final TagSetDialog frame = new TagSetDialog( null, elements );
+		final TagSetDialog frame = new TagSetDialog( null, elements, elements2, elements3 );
 		frame.setDefaultCloseOperation( JFrame.DISPOSE_ON_CLOSE );
 		frame.setLocationByPlatform( true );
 		frame.setVisible( true );
