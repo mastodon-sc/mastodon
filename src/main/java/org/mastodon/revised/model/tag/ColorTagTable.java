@@ -113,7 +113,6 @@ public class ColorTagTable< T extends ColorTagTable.Element > extends TagTable< 
 		}
 	}
 
-
 	/**
 	 * Adapted from http://stackoverflow.com/a/3072979/230513
 	 *

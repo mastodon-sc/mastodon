@@ -46,17 +46,23 @@ public class TagTableDialogExample
 		private final MyElement dummy = new MyElement( "" );
 
 		@Override
-		public Element getDummyElement()
+		public MyElement getDummyElement()
 		{
 			return dummy;
 		}
 
 		@Override
-		public Element addElement()
+		public MyElement addElement()
 		{
 			final MyElement element = new MyElement( "addElement" );
 			add( element );
 			return element;
+		}
+
+		@Override
+		public void remove( final MyElement element )
+		{
+			super.remove( element );
 		}
 	}
 
@@ -70,7 +76,7 @@ public class TagTableDialogExample
 
 			final JPanel tagSetPanel = new JPanel( new BorderLayout( 0, 0 ) );
 			final JScrollPane scrollPaneTagSet = new JScrollPane();
-			scrollPaneTagSet.setVerticalScrollBarPolicy( ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS );
+			scrollPaneTagSet.setVerticalScrollBarPolicy( ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED );
 			tagSetPanel.add( scrollPaneTagSet, BorderLayout.CENTER );
 			final TagTable tagTable = new TagTable<>( elements );
 			scrollPaneTagSet.setViewportView( tagTable.getTable() );

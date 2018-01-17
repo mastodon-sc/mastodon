@@ -60,17 +60,23 @@ public class ColorTagTableDialogExample
 		private final MyElement dummy = new MyElement( "", null );
 
 		@Override
-		public Element getDummyElement()
+		public MyElement getDummyElement()
 		{
 			return dummy;
 		}
 
 		@Override
-		public Element addElement()
+		public MyElement addElement()
 		{
 			final MyElement element = new MyElement( "addElement", Color.RED );
 			add( element );
 			return element;
+		}
+
+		@Override
+		public void remove( final MyElement element )
+		{
+			super.remove( element );
 		}
 	}
 

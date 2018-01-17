@@ -39,11 +39,17 @@ public class TagTable< T extends TagTable.Element >
 		void setName( String name );
 	}
 
-	public interface Elements< T extends Element > extends List< T >
+	public interface Elements< T extends Element >
 	{
-		Element getDummyElement();
+		T getDummyElement();
 
-		Element addElement();
+		T addElement();
+
+		int size();
+
+		void remove( T element );
+
+		T get( int index );
 	}
 
 	public interface UpdateListener
@@ -67,7 +73,6 @@ public class TagTable< T extends TagTable.Element >
 	{
 		this( elements, 0 );
 	}
-
 
 	protected TagTable( final Elements< T > elements, final int numAdditionalCols )
 	{
