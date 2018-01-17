@@ -51,19 +51,30 @@ public class TagTable< T extends TagTable.Element >
 		void modelUpdated();
 	}
 
-	private Elements< T > elements;
+	protected Elements< T > elements;
 
-	private final MyTableModel tableModel;
+	private final int columnCount;
 
-	private final JTable table;
+	private final int buttonColumn;
+
+	protected final MyTableModel tableModel;
+
+	protected final JTable table;
 
 	private final ArrayList< UpdateListener > listeners;
 
-	private final int buttonColumn = 1;
-
 	public TagTable( final Elements< T > elements )
 	{
+		this( elements, 0 );
+	}
+
+
+	protected TagTable( final Elements< T > elements, final int numAdditionalCols )
+	{
 		this.elements = elements;
+
+		columnCount = 2 + numAdditionalCols; // name, additional stuff ..., buttons
+		buttonColumn = columnCount - 1; // buttons in last column
 
 		tableModel = new MyTableModel();
 		table = new JTable( tableModel );
@@ -81,8 +92,8 @@ public class TagTable< T extends TagTable.Element >
 		} );
 		table.getColumnModel().getColumn( 0 ).setCellRenderer( new MyTagSetRenderer() );
 		table.getColumnModel().getColumn( 0 ).setCellEditor( new MyTagSetNameEditor() );
-		table.getColumnModel().getColumn( 1 ).setCellRenderer( new MyButtonRenderer() );
-		table.getColumnModel().getColumn( 1 ).setMaxWidth( 32 );
+		table.getColumnModel().getColumn( buttonColumn ).setCellRenderer( new MyButtonRenderer() );
+		table.getColumnModel().getColumn( buttonColumn ).setMaxWidth( 32 );
 		table.addMouseListener( new MyTableButtonMouseListener() );
 		table.setShowGrid( false );
 		table.setIntercellSpacing( new Dimension( 0,0 ) );
@@ -108,11 +119,11 @@ public class TagTable< T extends TagTable.Element >
 		return table;
 	}
 
-	private void update()
+	protected void update()
 	{
 	}
 
-	private void notifyListeners()
+	protected void notifyListeners()
 	{
 		listeners.forEach( UpdateListener::modelUpdated );
 	}
@@ -164,7 +175,7 @@ public class TagTable< T extends TagTable.Element >
 			table.editCellAt( row, 0 );
 	}
 
-	private class MyTableModel extends AbstractTableModel
+	protected class MyTableModel extends AbstractTableModel
 	{
 		private static final long serialVersionUID = 1L;
 
@@ -173,7 +184,6 @@ public class TagTable< T extends TagTable.Element >
 		{
 			// last row (with the Add button) is not editable
 			if ( rowIndex == getRowCount() - 1 )
-
 				return false;
 
 			// only the column with the element name is editable
@@ -183,7 +193,7 @@ public class TagTable< T extends TagTable.Element >
 		@Override
 		public int getColumnCount()
 		{
-			return 2;
+			return columnCount;
 		}
 
 		@Override
