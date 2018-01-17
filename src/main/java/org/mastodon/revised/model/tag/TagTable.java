@@ -144,7 +144,7 @@ public class TagTable< T extends TagTable.Element >
 	private void removeSelectedRow()
 	{
 		int row = table.getSelectedRow();
-		if ( row >= 0 || row < elements.size() )
+		if ( row >= 0 && row < elements.size() )
 		{
 			elements.remove( elements.get( row ) );
 			notifyListeners();
@@ -158,11 +158,9 @@ public class TagTable< T extends TagTable.Element >
 	private void editSelectedRow()
 	{
 		final int row = table.getSelectedRow();
-		if ( row < 0 )
-			return;
-		else if ( row == elements.size() )
+		if ( row == elements.size() )
 			addAndEditRow();
-		else
+		else if ( row >= 0 )
 			table.editCellAt( row, 0 );
 	}
 
