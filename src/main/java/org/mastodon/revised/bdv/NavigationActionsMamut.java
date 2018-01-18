@@ -29,15 +29,12 @@
  */
 package org.mastodon.revised.bdv;
 
-import bdv.viewer.ViewerPanel;
+import java.util.stream.IntStream;
+
+import org.scijava.ui.behaviour.util.Actions;
+
 import bdv.viewer.ViewerPanel.AlignPlane;
 import bdv.viewer.VisibilityAndGrouping;
-import java.util.stream.IntStream;
-import javax.swing.ActionMap;
-import javax.swing.InputMap;
-import org.scijava.ui.behaviour.KeyStrokeAdder;
-import org.scijava.ui.behaviour.util.Actions;
-import org.scijava.ui.behaviour.util.InputActionBindings;
 
 public class NavigationActionsMamut
 {
@@ -65,11 +62,12 @@ public class NavigationActionsMamut
 
 	private final ViewerPanelMamut viewer;
 
-	private VisibilityAndGrouping vg;
+	private final VisibilityAndGrouping vg;
 
 	public NavigationActionsMamut( final ViewerPanelMamut viewer )
 	{
 		this.viewer = viewer;
+		this.vg = viewer.getVisibilityAndGrouping();
 	}
 
 	public static void install( final Actions actions, final ViewerPanelMamut viewer )
