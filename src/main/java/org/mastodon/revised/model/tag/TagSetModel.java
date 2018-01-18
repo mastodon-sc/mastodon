@@ -12,6 +12,7 @@ import org.mastodon.graph.Vertex;
 import org.mastodon.labels.LabelSet;
 import org.mastodon.labels.LabelSets;
 import org.mastodon.revised.model.tag.TagSetStructure.Tag;
+import org.mastodon.revised.model.tag.TagSetStructure.TagSet;
 
 /**
  * Assigns tags to vertices and edges of a graph, according to a {@link TagSetStructure}.
@@ -103,4 +104,24 @@ public class TagSetModel< V extends Vertex< E >, E extends Edge< V > >
 		return edgeTags;
 	}
 
+	@Override
+	public String toString()
+	{
+		final StringBuilder str = new StringBuilder( super.toString() );
+		for ( final TagSet tagSet : tagSetStructure.getTagSets() )
+		{
+			str.append( "\n" + tagSet.getName() + ":" );
+			for ( final Tag tag : tagSet.getTags() )
+			{
+				str.append( "\n  - " + tag.label() + ":" );
+				str.append( "\n    V: " );
+				for ( final V v : getVertexTags().getTaggedWith( tag ) )
+					str.append( v + "," );
+				str.append( "\n    E: " );
+				for ( final E e : getEdgeTags().getTaggedWith( tag ) )
+					str.append( e + "," );
+			}
+		}
+		return str.toString();
+	}
 }
