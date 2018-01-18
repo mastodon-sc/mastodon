@@ -1,13 +1,16 @@
-package org.mastodon.revised.model.tag;
+package org.mastodon.revised.model.tag.ui;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Random;
+
 import javax.swing.JPanel;
 import javax.swing.JSplitPane;
 import javax.swing.border.MatteBorder;
+
+import org.mastodon.revised.model.tag.TagSetStructure;
 import org.mastodon.revised.model.tag.TagSetStructure.Tag;
 import org.mastodon.revised.model.tag.TagSetStructure.TagSet;
 

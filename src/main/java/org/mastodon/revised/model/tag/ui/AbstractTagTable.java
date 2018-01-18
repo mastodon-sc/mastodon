@@ -1,4 +1,4 @@
-package org.mastodon.revised.model.tag;
+package org.mastodon.revised.model.tag.ui;
 
 import static javax.swing.JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT;
 
@@ -172,7 +172,7 @@ public abstract class AbstractTagTable< C, T, E extends AbstractTagTable< ?, T, 
 			if ( e.getValueIsAdjusting() )
 				return;
 			final int row = table.getSelectedRow();
-			T selected = ( this.elements != null && row >= 0 && row < this.elements.size() )
+			final T selected = ( this.elements != null && row >= 0 && row < this.elements.size() )
 					? this.elements.get( row ).wrapped
 					: null;
 			selectionListeners.forEach( l -> l.selectionChanged( selected ) );

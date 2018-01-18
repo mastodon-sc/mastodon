@@ -1,4 +1,4 @@
-package org.mastodon.revised.model.tag;
+package org.mastodon.revised.model.tag.ui;
 
 import java.awt.BorderLayout;
 import java.awt.Color;

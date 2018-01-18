@@ -1,4 +1,4 @@
-package org.mastodon.revised.model.tag;
+package org.mastodon.revised.model.tag.ui;
 
 import java.awt.Color;
 import java.awt.Frame;
@@ -9,6 +9,7 @@ import javax.swing.JFrame;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 
+import org.mastodon.revised.model.tag.TagSetStructure;
 import org.mastodon.revised.model.tag.TagSetStructure.TagSet;
 
 public class TagSetDialog extends JDialog
