@@ -4,6 +4,7 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Frame;
 import java.util.ArrayList;
+
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
@@ -12,11 +13,10 @@ import javax.swing.JScrollPane;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
-import org.mastodon.revised.model.tag.ColorTagTable.Element;
 
 public class ColorTagTableDialogExample
 {
-	static class MyElement implements Element
+	static class MyElement
 	{
 		private String name;
 
@@ -28,55 +28,36 @@ public class ColorTagTableDialogExample
 			this.color = color;
 		}
 
-		@Override
 		public String getName()
 		{
 			return name;
 		}
 
-		@Override
 		public void setName( final String name )
 		{
 			this.name = name;
 		}
 
-		@Override
 		public Color getColor()
 		{
 			return color;
 		}
 
-		@Override
 		public void setColor( final Color color )
 		{
 			this.color = color;
 		}
 	}
 
-	static class MyElements extends ArrayList< MyElement > implements TagTable.Elements< MyElement >
+	static class MyElements extends ArrayList< MyElement >
 	{
 		private static final long serialVersionUID = 1L;
 
-		private final MyElement dummy = new MyElement( "", null );
-
-		@Override
-		public MyElement getDummyElement()
-		{
-			return dummy;
-		}
-
-		@Override
 		public MyElement addElement()
 		{
 			final MyElement element = new MyElement( "addElement", Color.RED );
 			add( element );
 			return element;
-		}
-
-		@Override
-		public void remove( final MyElement element )
-		{
-			super.remove( element );
 		}
 	}
 
@@ -92,7 +73,16 @@ public class ColorTagTableDialogExample
 			final JScrollPane scrollPaneTagSet = new JScrollPane();
 			scrollPaneTagSet.setVerticalScrollBarPolicy( ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS );
 			tagSetPanel.add( scrollPaneTagSet, BorderLayout.CENTER );
-			final TagTable tagTable = new ColorTagTable<>( elements1 );
+			final ColorTagTable< MyElements, MyElement > tagTable = new ColorTagTable<>(
+					elements1,
+					MyElements::addElement,
+					MyElements::size,
+					(c, e ) -> c.remove( e ),
+					(c, i) -> c.get( i ),
+					MyElement::setName,
+					MyElement::getName,
+					MyElement::setColor,
+					MyElement::getColor );
 			scrollPaneTagSet.setViewportView( tagTable.getTable() );
 
 			final JPanel buttons = new JPanel();

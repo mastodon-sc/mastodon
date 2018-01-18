@@ -6,18 +6,15 @@ import java.util.ArrayList;
 
 import javax.swing.JDialog;
 import javax.swing.JFrame;
-import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 
-import org.mastodon.revised.model.tag.TagTable.Element;
-
 public class TagTableDialogExample
 {
-	static class MyElement implements TagTable.Element
+	static class MyElement
 	{
 		private String name;
 
@@ -26,43 +23,26 @@ public class TagTableDialogExample
 			this.name = name;
 		}
 
-		@Override
 		public String getName()
 		{
 			return name;
 		}
 
-		@Override
 		public void setName( final String name )
 		{
 			this.name = name;
 		}
 	}
 
-	static class MyElements extends ArrayList< MyElement > implements TagTable.Elements< MyElement >
+	static class MyElements extends ArrayList< MyElement >
 	{
 		private static final long serialVersionUID = 1L;
 
-		private final MyElement dummy = new MyElement( "" );
-
-		@Override
-		public MyElement getDummyElement()
-		{
-			return dummy;
-		}
-
-		@Override
 		public MyElement addElement()
 		{
 			final MyElement element = new MyElement( "addElement" );
 			add( element );
 			return element;
-		}
-
-		@Override
-		public void remove( final MyElement element )
-		{
-			super.remove( element );
 		}
 	}
 
@@ -78,7 +58,15 @@ public class TagTableDialogExample
 			final JScrollPane scrollPaneTagSet = new JScrollPane();
 			scrollPaneTagSet.setVerticalScrollBarPolicy( ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED );
 			tagSetPanel.add( scrollPaneTagSet, BorderLayout.CENTER );
-			final TagTable tagTable = new TagTable<>( elements );
+			final TagTable< MyElements, MyElement > tagTable = new TagTable<>(
+					elements,
+					MyElements::addElement,
+					MyElements::size,
+					(c, e ) -> c.remove( e ),
+					(c, i) -> c.get( i ),
+					MyElement::setName,
+					MyElement::getName );
+
 			scrollPaneTagSet.setViewportView( tagTable.getTable() );
 
 			getContentPane().add( tagSetPanel );

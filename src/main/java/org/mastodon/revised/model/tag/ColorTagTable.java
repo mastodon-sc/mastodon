@@ -2,51 +2,67 @@ package org.mastodon.revised.model.tag;
 
 import java.awt.Color;
 import java.awt.Component;
-import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.awt.KeyboardFocusManager;
 import java.awt.RenderingHints;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.geom.RoundRectangle2D;
-import java.util.ArrayList;
-import java.util.List;
-import javax.swing.DefaultCellEditor;
+import java.util.function.BiConsumer;
+import java.util.function.BiFunction;
+import java.util.function.Function;
+import java.util.function.ToIntFunction;
+
 import javax.swing.Icon;
-import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JColorChooser;
 import javax.swing.JTable;
-import javax.swing.JTextField;
-import javax.swing.ListSelectionModel;
-import javax.swing.ToolTipManager;
-import javax.swing.event.CellEditorListener;
-import javax.swing.event.ChangeEvent;
-import javax.swing.table.AbstractTableModel;
-import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableCellRenderer;
-import org.scijava.ui.behaviour.io.InputTriggerConfig;
-import org.scijava.ui.behaviour.util.Actions;
 
-import static javax.swing.JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT;
-
-public class ColorTagTable< T extends ColorTagTable.Element > extends TagTable< T >
+public class ColorTagTable< C, T > extends AbstractTagTable< C, T, ColorTagTable< C, T >.Element >
 {
-	public interface Element extends TagTable.Element
+	public class Element extends AbstractTagTable< C, T, ColorTagTable< C, T >.Element >.Element
 	{
-		Color getColor();
+		public Element( final T wrapped )
+		{
+			super( wrapped );
+		}
 
-		void setColor( Color color );
+		Color getColor()
+		{
+			return wrapped == null ? Color.BLACK : getColor.apply( wrapped );
+		}
+
+		void setColor( final Color color )
+		{
+			if ( wrapped != null )
+				setColor.accept( wrapped, color );
+		}
 	}
 
 	private final JColorChooser colorChooser;
 
 	private final int colorColumn = 1;
 
-	public ColorTagTable( final Elements< T > elements )
+	private final BiConsumer< T, Color > setColor;
+
+	private final Function< T, Color > getColor;
+
+	public ColorTagTable(
+			final C elements,
+			final Function< C, T > addElement,
+			final ToIntFunction< C > size,
+			final BiConsumer< C, T > remove,
+			final BiFunction< C, Integer, T > get,
+			final BiConsumer< T, String > setName,
+			final Function< T, String > getName,
+			final BiConsumer< T, Color > setColor,
+			final Function< T, Color > getColor )
 	{
-		super( elements, 1 );
+		super( elements, addElement, size, remove, get, setName, getName, 1 );
+		this.setColor = setColor;
+		this.getColor = getColor;
+
 		colorChooser = new JColorChooser();
 
 		table.getColumnModel().getColumn( colorColumn ).setCellRenderer( new MyColorButtonRenderer() );
@@ -54,12 +70,24 @@ public class ColorTagTable< T extends ColorTagTable.Element > extends TagTable< 
 		table.addMouseListener( new MyTableColorButtonMouseListener() );
 	}
 
+	@Override
+	protected Elements wrap( final C wrapped )
+	{
+		return new Elements( wrapped ) {
+			@Override
+			protected Element wrap( final T wrapped )
+			{
+				return new Element( wrapped );
+			}
+		};
+	}
+
 	private void editSelectedRowColor()
 	{
 		final int row = table.getSelectedRow();
 		if ( row >= 0 )
 		{
-			final T element = elements.get( row );
+			final Element element = elements.get( row );
 			colorChooser.setColor( element.getColor() );
 			JColorChooser.createDialog( table, "Choose a color", true, colorChooser, ok -> {
 				final Color c = colorChooser.getColor();
@@ -92,7 +120,7 @@ public class ColorTagTable< T extends ColorTagTable.Element > extends TagTable< 
 				setIcon( null );
 			else
 				setIcon( new ColorIcon( elements.get( row ).getColor() ) );
-			boolean paintSelected = isSelected && !table.isEditing();
+			final boolean paintSelected = isSelected && !table.isEditing();
 			setForeground( paintSelected ? table.getSelectionForeground() : table.getForeground() );
 			setBackground( paintSelected ? table.getSelectionBackground() : table.getBackground() );
 			return this;
