@@ -1,14 +1,13 @@
 package org.mastodon.revised.model.tag;
 
 import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.awt.Frame;
 import java.util.ArrayList;
 
 import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.ScrollPaneConstants;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 
@@ -54,10 +53,6 @@ public class TagTableDialogExample
 		{
 			super( owner, "tag sets configuration", false );
 
-			final JPanel tagSetPanel = new JPanel( new BorderLayout( 0, 0 ) );
-			final JScrollPane scrollPaneTagSet = new JScrollPane();
-			scrollPaneTagSet.setVerticalScrollBarPolicy( ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED );
-			tagSetPanel.add( scrollPaneTagSet, BorderLayout.CENTER );
 			final TagTable< MyElements, MyElement > tagTable = new TagTable<>(
 					elements,
 					MyElements::addElement,
@@ -67,10 +62,11 @@ public class TagTableDialogExample
 					MyElement::setName,
 					MyElement::getName );
 
-			scrollPaneTagSet.setViewportView( tagTable.getTable() );
+			final JPanel tagSetPanel = new JPanel( new BorderLayout( 0, 0 ) );
+			tagSetPanel.add( tagTable.getTable(), BorderLayout.CENTER );
 
+			tagSetPanel.setPreferredSize( new Dimension( 400, 500 ) );
 			getContentPane().add( tagSetPanel );
-			setSize( 400, 500 );
 			pack();
 		}
 	}

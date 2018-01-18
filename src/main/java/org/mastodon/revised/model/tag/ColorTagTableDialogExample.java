@@ -2,6 +2,7 @@ package org.mastodon.revised.model.tag;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.Frame;
 import java.util.ArrayList;
 
@@ -9,8 +10,6 @@ import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.ScrollPaneConstants;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 
@@ -69,12 +68,8 @@ public class ColorTagTableDialogExample
 		{
 			super( owner, "tag sets configuration", false );
 
-			final JPanel tagSetPanel = new JPanel( new BorderLayout( 0, 0 ) );
-			final JScrollPane scrollPaneTagSet = new JScrollPane();
-			scrollPaneTagSet.setVerticalScrollBarPolicy( ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS );
-			tagSetPanel.add( scrollPaneTagSet, BorderLayout.CENTER );
 			final ColorTagTable< MyElements, MyElement > tagTable = new ColorTagTable<>(
-					elements1,
+					null,
 					MyElements::addElement,
 					MyElements::size,
 					(c, e ) -> c.remove( e ),
@@ -83,7 +78,8 @@ public class ColorTagTableDialogExample
 					MyElement::getName,
 					MyElement::setColor,
 					MyElement::getColor );
-			scrollPaneTagSet.setViewportView( tagTable.getTable() );
+			final JPanel tagSetPanel = new JPanel( new BorderLayout( 0, 0 ) );
+			tagSetPanel.add( tagTable.getTable(), BorderLayout.CENTER );
 
 			final JPanel buttons = new JPanel();
 			tagSetPanel.add( buttons, BorderLayout.SOUTH );
@@ -91,15 +87,18 @@ public class ColorTagTableDialogExample
 			final JButton b1 = new JButton( "1" );
 			final JButton b2 = new JButton( "2" );
 			final JButton b3 = new JButton( "3" );
+			final JButton b4 = new JButton( "null" );
 			b1.addActionListener( e -> tagTable.setElements( elements1 ) );
 			b2.addActionListener( e -> tagTable.setElements( elements2 ) );
 			b3.addActionListener( e -> tagTable.setElements( elements3 ) );
+			b4.addActionListener( e -> tagTable.setElements( null ) );
 			buttons.add( b1 );
 			buttons.add( b2 );
 			buttons.add( b3 );
+			buttons.add( b4 );
 
+			tagSetPanel.setPreferredSize( new Dimension( 400, 500 ) );
 			getContentPane().add( tagSetPanel );
-			setSize( 400, 500 );
 			pack();
 		}
 	}

@@ -16,9 +16,13 @@ import java.util.function.ToIntFunction;
 import javax.swing.DefaultCellEditor;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JComponent;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
+import javax.swing.ScrollPaneConstants;
 import javax.swing.ToolTipManager;
 import javax.swing.event.CellEditorListener;
 import javax.swing.event.ChangeEvent;
@@ -123,6 +127,8 @@ public abstract class AbstractTagTable< C, T, E extends AbstractTagTable< ?, T, 
 
 	protected final JTable table;
 
+	protected final JScrollPane scrollPane;
+
 	private final ArrayList< UpdateListener > listeners;
 
 	protected AbstractTagTable(
@@ -176,20 +182,34 @@ public abstract class AbstractTagTable< C, T, E extends AbstractTagTable< ?, T, 
 		actions.runnableAction( this::editSelectedRow, "edit selected row", "ENTER" );
 		actions.runnableAction( this::removeSelectedRow, "remove selected row", "DELETE", "BACK_SPACE" );
 
-		this.elements = wrap( elements );
+		scrollPane = new JScrollPane();
+		scrollPane.setVerticalScrollBarPolicy( ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED );
+
+		setElements( elements );
 	}
 
 	protected abstract Elements wrap( final C wrapped );
 
 	public void setElements( final C elements )
 	{
-		this.elements = wrap( elements );
-		tableModel.fireTableDataChanged();
+		if ( elements == null )
+		{
+			scrollPane.setViewportView( new JPanel() );
+			this.elements = null;
+		}
+		else
+		{
+			final boolean install = this.elements == null;
+			this.elements = wrap( elements );
+			if ( install )
+				scrollPane.setViewportView( table );
+			tableModel.fireTableDataChanged();
+		}
 	}
 
-	public JTable getTable()
+	public JComponent getTable()
 	{
-		return table;
+		return scrollPane;
 	}
 
 	protected void update()
