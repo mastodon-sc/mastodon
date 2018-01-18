@@ -10,6 +10,7 @@ import org.mastodon.properties.Property;
 import org.mastodon.revised.model.AbstractModel;
 import org.mastodon.revised.model.feature.DefaultFeatureModel;
 import org.mastodon.revised.model.feature.FeatureModel;
+import org.mastodon.revised.model.tag.TagSetModel;
 import org.mastodon.spatial.SpatioTemporalIndex;
 import org.mastodon.spatial.SpatioTemporalIndexImp;
 import org.mastodon.undo.GraphUndoRecorder;
@@ -46,6 +47,8 @@ public class Model extends AbstractModel< ModelGraph, Spot, Link > implements Un
 
 	private final FeatureModel featureModel;
 
+	private final TagSetModel< Spot, Link > tagSetModel;
+
 	public Model()
 	{
 		super( new ModelGraph() );
@@ -62,6 +65,7 @@ public class Model extends AbstractModel< ModelGraph, Spot, Link > implements Un
 		final List< Property< Link > > edgeUndoableProperties = new ArrayList<>();
 
 		featureModel = new DefaultFeatureModel();
+		tagSetModel = new TagSetModel<>( getGraph() );
 
 		undoRecorder = new GraphUndoRecorder<>(
 				initialCapacity,
@@ -132,4 +136,8 @@ public class Model extends AbstractModel< ModelGraph, Spot, Link > implements Un
 		return featureModel;
 	}
 
+	public TagSetModel< Spot, Link > getTagSetModel()
+	{
+		return tagSetModel;
+	}
 }

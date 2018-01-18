@@ -38,15 +38,15 @@ public class TagSetModel< V extends Vertex< E >, E extends Edge< V > >
 
 	private final ObjTags< E > edgeTags;
 
-	public TagSetModel( final ReadOnlyGraph< V, E > graph, final TagSetStructure tagSetStructure )
+	public TagSetModel( final ReadOnlyGraph< V, E > graph )
 	{
-		this( graph, RefCollections.tryGetRefPool( graph.vertices() ), RefCollections.tryGetRefPool( graph.edges() ), tagSetStructure );
+		this( graph, RefCollections.tryGetRefPool( graph.vertices() ), RefCollections.tryGetRefPool( graph.edges() ) );
 	}
 
-	public TagSetModel( final ReadOnlyGraph< V, E > graph, final RefPool< V > vertexPool, final RefPool< E > edgePool, final TagSetStructure tagSetStructure )
+	public TagSetModel( final ReadOnlyGraph< V, E > graph, final RefPool< V > vertexPool, final RefPool< E > edgePool )
 	{
 		this.graph = graph;
-		this.tagSetStructure = tagSetStructure;
+		this.tagSetStructure = new TagSetStructure();
 		vertexIdLabelSets = new LabelSets<>( vertexPool );
 		edgeIdLabelSets = new LabelSets<>( edgePool );
 		vertexTags = new ObjTags<>( vertexIdLabelSets, tagSetStructure );
