@@ -105,6 +105,11 @@ public abstract class AbstractTagTable< C, T, E extends AbstractTagTable< ?, T, 
 		void modelUpdated();
 	}
 
+	public interface SelectionListener< T >
+	{
+		void selectionChanged( T selected );
+	}
+
 	protected final Function< C, T > addElement;
 
 	protected final ToIntFunction< C > size;
@@ -129,7 +134,9 @@ public abstract class AbstractTagTable< C, T, E extends AbstractTagTable< ?, T, 
 
 	protected final JScrollPane scrollPane;
 
-	private final ArrayList< UpdateListener > listeners;
+	private final ArrayList< UpdateListener > updateListeners;
+
+	private final ArrayList< SelectionListener > selectionListeners;
 
 	protected AbstractTagTable(
 			final C elements,
@@ -153,7 +160,8 @@ public abstract class AbstractTagTable< C, T, E extends AbstractTagTable< ?, T, 
 
 		tableModel = new MyTableModel();
 		table = new JTable( tableModel );
-		listeners = new ArrayList<>();
+		updateListeners = new ArrayList<>();
+		selectionListeners = new ArrayList<>();
 
 		table.setSelectionMode( ListSelectionModel.SINGLE_SELECTION );
 		table.setTableHeader( null );
@@ -163,7 +171,11 @@ public abstract class AbstractTagTable< C, T, E extends AbstractTagTable< ?, T, 
 		table.getSelectionModel().addListSelectionListener( e -> {
 			if ( e.getValueIsAdjusting() )
 				return;
-			update();
+			final int row = table.getSelectedRow();
+			T selected = ( this.elements != null && row >= 0 && row < this.elements.size() )
+					? this.elements.get( row ).wrapped
+					: null;
+			selectionListeners.forEach( l -> l.selectionChanged( selected ) );
 		} );
 		table.getColumnModel().getColumn( 0 ).setCellRenderer( new MyTagSetRenderer() );
 		table.getColumnModel().getColumn( 0 ).setCellEditor( new MyTagSetNameEditor() );
@@ -196,6 +208,7 @@ public abstract class AbstractTagTable< C, T, E extends AbstractTagTable< ?, T, 
 		{
 			scrollPane.setViewportView( new JPanel() );
 			this.elements = null;
+			selectionListeners.forEach( l -> l.selectionChanged( null ) );
 		}
 		else
 		{
@@ -218,14 +231,14 @@ public abstract class AbstractTagTable< C, T, E extends AbstractTagTable< ?, T, 
 
 	protected void notifyListeners()
 	{
-		listeners.forEach( UpdateListener::modelUpdated );
+		updateListeners.forEach( UpdateListener::modelUpdated );
 	}
 
 	public synchronized boolean addUpdateListener( final UpdateListener l )
 	{
-		if ( !listeners.contains( l ) )
+		if ( !updateListeners.contains( l ) )
 		{
-			listeners.add( l );
+			updateListeners.add( l );
 			return true;
 		}
 		return false;
@@ -233,7 +246,22 @@ public abstract class AbstractTagTable< C, T, E extends AbstractTagTable< ?, T, 
 
 	public synchronized boolean removeUpdateListener( final UpdateListener l )
 	{
-		return listeners.remove( l );
+		return updateListeners.remove( l );
+	}
+
+	public synchronized boolean addSelectionListener( final SelectionListener< T > l )
+	{
+		if ( !selectionListeners.contains( l ) )
+		{
+			selectionListeners.add( l );
+			return true;
+		}
+		return false;
+	}
+
+	public synchronized boolean removeSelectionListener( final SelectionListener l )
+	{
+		return selectionListeners.remove( l );
 	}
 
 	private void addAndEditRow()
