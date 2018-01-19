@@ -104,6 +104,29 @@ public class TagSetModel< V extends Vertex< E >, E extends Edge< V > >
 		return edgeTags;
 	}
 
+	/**
+	 * Internals. Can be derived for implementing de/serialisation and undo/redo
+	 */
+	public static class SerialisationAccess< V extends Vertex< E >, E extends Edge< V > >
+	{
+		private final TagSetModel< V, E > tagSetModel;
+
+		protected SerialisationAccess( final TagSetModel< V, E > tagSetModel )
+		{
+			this.tagSetModel = tagSetModel;
+		}
+
+		protected LabelSets< V, Integer > getVertexIdLabelSets()
+		{
+			return tagSetModel.vertexIdLabelSets;
+		}
+
+		protected LabelSets< E, Integer > getEdgeIdLabelSets()
+		{
+			return tagSetModel.edgeIdLabelSets;
+		}
+	}
+
 	@Override
 	public String toString()
 	{

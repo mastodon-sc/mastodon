@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.mastodon.graph.ReadOnlyGraph;
+import org.mastodon.labels.LabelSets;
 import org.mastodon.properties.Property;
 import org.mastodon.revised.model.AbstractModel;
 import org.mastodon.revised.model.feature.DefaultFeatureModel;
@@ -66,6 +67,24 @@ public class Model extends AbstractModel< ModelGraph, Spot, Link > implements Un
 
 		featureModel = new DefaultFeatureModel();
 		tagSetModel = new TagSetModel<>( getGraph() );
+		vertexUndoableProperties.add(
+				new TagSetModel.SerialisationAccess< Spot, Link >( tagSetModel )
+				{
+					@Override
+					protected LabelSets< Spot, Integer > getVertexIdLabelSets()
+					{
+						return super.getVertexIdLabelSets();
+					}
+				}.getVertexIdLabelSets() );
+		edgeUndoableProperties.add(
+				new TagSetModel.SerialisationAccess< Spot, Link >( tagSetModel )
+				{
+					@Override
+					protected LabelSets< Link, Integer > getEdgeIdLabelSets()
+					{
+						return super.getEdgeIdLabelSets();
+					}
+				}.getEdgeIdLabelSets() );
 
 		undoRecorder = new GraphUndoRecorder<>(
 				initialCapacity,
