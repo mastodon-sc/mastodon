@@ -9,10 +9,8 @@ import java.util.List;
 import java.util.function.Consumer;
 
 import javax.swing.JFrame;
-import javax.swing.JPanel;
 
-import org.mastodon.app.ui.settings.ModificationListener;
-import org.mastodon.app.ui.settings.SettingsPage;
+import org.mastodon.app.ui.settings.SimpleSettingsPage;
 import org.mastodon.revised.bdv.overlay.ui.RenderSettingsConfigPage;
 import org.mastodon.revised.bdv.overlay.ui.RenderSettingsManager;
 import org.mastodon.revised.model.mamut.Model;
@@ -21,7 +19,6 @@ import org.mastodon.revised.trackscheme.display.style.TrackSchemeStyleManager;
 import org.mastodon.revised.trackscheme.display.style.TrackSchemeStyleSettingsPage;
 import org.mastodon.revised.ui.SelectionActions;
 import org.mastodon.revised.util.ToggleDialogAction;
-import org.mastodon.util.Listeners;
 import org.mastodon.views.context.ContextProvider;
 import org.scijava.ui.behaviour.KeyPressedManager;
 import org.scijava.ui.behaviour.io.InputTriggerConfig;
@@ -123,7 +120,7 @@ public class WindowManager
 		final PreferencesDialog settings = new PreferencesDialog( null );
 		final VisualEditorPanel keyconfEditor = new VisualEditorPanel( keyconf );
 		keyconfEditor.setButtonPanelVisible( false );
-		final DefaultSettingsPage page = new DefaultSettingsPage( "Keymap", keyconfEditor );
+		final SimpleSettingsPage page = new SimpleSettingsPage( "Keymap", keyconfEditor );
 		page.onCancel( () -> keyconfEditor.configToModel() );
 		page.onApply( () -> {
 			keyconfEditor.modelToConfig();
@@ -132,78 +129,14 @@ public class WindowManager
 				forEachView( v -> v.updateKeyConfig() );
 		} );
 		settings.addPage( page );
+
+
 		settings.addPage( new TrackSchemeStyleSettingsPage( "TrackScheme Styles", trackSchemeStyleManager ) );
 		settings.addPage( new RenderSettingsConfigPage( "BDV Render Settings", renderSettingsManager ) );
 		final ToggleDialogAction tooglePreferencesDialogAction = new ToggleDialogAction( "Preferences", settings );
 		appModel.getAppActions().namedAction( tooglePreferencesDialogAction, "meta COMMA", "control COMMA" );
 
 		updateEnabledActions();
-	}
-
-	// TODO FIX HACK
-	public static class DefaultSettingsPage implements SettingsPage
-	{
-		private final String treePath;
-
-		private final JPanel panel;
-
-		private final Listeners.List< ModificationListener > modificationListeners;
-
-		public DefaultSettingsPage( final String treePath, final JPanel panel )
-		{
-			this.treePath = treePath;
-			this.panel = panel;
-			modificationListeners = new Listeners.SynchronizedList<>();
-		}
-
-		@Override
-		public String getTreePath()
-		{
-			return treePath;
-		}
-
-		@Override
-		public JPanel getJPanel()
-		{
-			return panel;
-		}
-
-		public void notifyModified()
-		{
-			modificationListeners.list.forEach( ModificationListener::modified );
-		}
-
-		@Override
-		public Listeners< ModificationListener > modificationListeners()
-		{
-			return modificationListeners;
-		}
-
-		protected final ArrayList< Runnable > runOnApply = new ArrayList<>();
-
-		public synchronized void onApply( final Runnable runnable )
-		{
-			runOnApply.add( runnable );
-		}
-
-		protected final ArrayList< Runnable > runOnCancel = new ArrayList<>();
-
-		public synchronized void onCancel( final Runnable runnable )
-		{
-			runOnCancel.add( runnable );
-		}
-
-		@Override
-		public void cancel()
-		{
-			runOnCancel.forEach( Runnable::run );
-		}
-
-		@Override
-		public void apply()
-		{
-			runOnApply.forEach( Runnable::run );
-		}
 	}
 
 	private synchronized void addBdvWindow( final MamutViewBdv w )
