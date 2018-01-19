@@ -1,16 +1,19 @@
 package org.mastodon.revised.mamut;
 
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dialog;
 import java.io.File;
 import java.io.IOException;
 
+import java.util.Random;
 import javax.swing.JFrame;
 
 import org.mastodon.revised.bdv.SharedBigDataViewerData;
 import org.mastodon.revised.bdv.overlay.ui.RenderSettingsManager;
 import org.mastodon.revised.mamut.feature.MamutFeatureComputerService;
 import org.mastodon.revised.model.mamut.Model;
+import org.mastodon.revised.model.tag.TagSetStructure;
 import org.mastodon.revised.trackscheme.display.style.TrackSchemeStyleManager;
 import org.mastodon.revised.ui.util.FileChooser;
 import org.mastodon.revised.ui.util.FileChooser.SelectionMode;
@@ -207,6 +210,23 @@ public class ProjectManager
 		/*
 		 * Feature calculation.
 		 */
+
+		/*
+		 * TODO REMOVE
+		 * Set TagSetStructure for debugging.
+		 */
+		final TagSetStructure tss = new TagSetStructure();
+		final Random ran = new Random( 0l );
+		final TagSetStructure.TagSet reviewedByTag = tss.createTagSet( "Reviewed by" );
+		reviewedByTag.createTag( "Pavel", new Color( ran.nextInt() ) );
+		reviewedByTag.createTag( "Mette", new Color( ran.nextInt() ) );
+		reviewedByTag.createTag( "Tobias", new Color( ran.nextInt() ) );
+		reviewedByTag.createTag( "JY", new Color( ran.nextInt() ) );
+		final TagSetStructure.TagSet locationTag = tss.createTagSet( "Location" );
+		locationTag.createTag( "Anterior", new Color( ran.nextInt() ) );
+		locationTag.createTag( "Posterior", new Color( ran.nextInt() ) );
+		System.out.println( "Initial TagSetStructure:\n" + tss );
+		model.getTagSetModel().setTagSetStructure( tss );
 
 		/*
 		 * TODO FIXE Ugly hack to get proper service instantiation. Fix it by
