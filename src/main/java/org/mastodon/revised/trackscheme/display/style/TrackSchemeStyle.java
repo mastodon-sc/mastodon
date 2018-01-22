@@ -693,7 +693,7 @@ public class TrackSchemeStyle implements Style< TrackSchemeStyle >
 
 	private void notifyListeners()
 	{
-		final ArrayList< UpdateListener > ul = new ArrayList<>( updateListeners ); // TODO: bake into Listeners class
+		final ArrayList< UpdateListener > ul = new ArrayList<>( updateListeners ); // TODO: bake into Listeners class, see c2040afb16cb5abd090f4ef3a8adba1d52641946
 		for ( final UpdateListener l : ul )
 			l.trackSchemeStyleChanged();
 	}
