@@ -27,7 +27,7 @@ public class TrackSchemeStyleSettingsPage extends SelectAndEditProfileSettingsPa
 		super(
 				treePath,
 				new StyleProfileManager<>( styleManager, new TrackSchemeStyleManager( false ) ),
-				new TrackSchemeProfileEditPanel() );
+				new TrackSchemeProfileEditPanel( styleManager.getDefaultStyle() ) );
 	}
 
 	static class TrackSchemeProfileEditPanel implements TrackSchemeStyle.UpdateListener, SelectAndEditProfileSettingsPage.ProfileEditPanel< StyleProfile< TrackSchemeStyle > >
@@ -38,9 +38,9 @@ public class TrackSchemeStyleSettingsPage extends SelectAndEditProfileSettingsPa
 
 		private final TrackSchemeStyleEditorPanel styleEditorPanel;
 
-		public TrackSchemeProfileEditPanel()
+		public TrackSchemeProfileEditPanel( final TrackSchemeStyle initialStyle )
 		{
-			editedStyle = TrackSchemeStyle.defaultStyle().copy( "Edited" );
+			editedStyle = initialStyle.copy( "Edited" );
 			styleEditorPanel = new TrackSchemeStyleEditorPanel( editedStyle );
 			modificationListeners = new Listeners.SynchronizedList<>();
 			editedStyle.addUpdateListener( this );

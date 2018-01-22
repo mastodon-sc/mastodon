@@ -28,7 +28,7 @@ public class RenderSettingsConfigPage extends SelectAndEditProfileSettingsPage< 
 		super(
 				treePath,
 				new StyleProfileManager<>( renderSettingsManager, new RenderSettingsManager( false ) ),
-				new RenderSettingsProfileEditPanel() );
+				new RenderSettingsProfileEditPanel( renderSettingsManager.getDefaultStyle() ) );
 	}
 
 	static class RenderSettingsProfileEditPanel implements RenderSettings.UpdateListener, SelectAndEditProfileSettingsPage.ProfileEditPanel< StyleProfile< RenderSettings > >
@@ -39,9 +39,9 @@ public class RenderSettingsConfigPage extends SelectAndEditProfileSettingsPage< 
 
 		private final RenderSettingsPanel styleEditorPanel;
 
-		public RenderSettingsProfileEditPanel()
+		public RenderSettingsProfileEditPanel( final RenderSettings initialStyle )
 		{
-			editedStyle = RenderSettings.defaultStyle().copy( "Edited" );
+			editedStyle = initialStyle.copy( "Edited" );
 			styleEditorPanel = new RenderSettingsPanel( editedStyle );
 			modificationListeners = new Listeners.SynchronizedList<>();
 			editedStyle.addUpdateListener( this );

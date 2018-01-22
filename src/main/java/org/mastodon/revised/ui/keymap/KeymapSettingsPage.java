@@ -13,6 +13,7 @@ import org.mastodon.app.ui.settings.SettingsPanel;
 import org.mastodon.app.ui.settings.style.StyleProfile;
 import org.mastodon.app.ui.settings.style.StyleProfileManager;
 import org.mastodon.util.Listeners;
+import org.scijava.ui.behaviour.io.InputTriggerConfig;
 import org.scijava.ui.behaviour.io.gui.VisualEditorPanel;
 
 public class KeymapSettingsPage extends SelectAndEditProfileSettingsPage< StyleProfile< Keymap > >
@@ -26,7 +27,7 @@ public class KeymapSettingsPage extends SelectAndEditProfileSettingsPage< StyleP
 		super(
 				treePath,
 				new StyleProfileManager<>( styleManager, new KeymapManager( false ) ),
-				new KeymapProfileEditPanel() );
+				new KeymapProfileEditPanel( styleManager.getDefaultStyle() ) );
 	}
 
 	static class KeymapProfileEditPanel implements VisualEditorPanel.ConfigChangeListener, ProfileEditPanel< StyleProfile< Keymap > >
@@ -37,9 +38,9 @@ public class KeymapSettingsPage extends SelectAndEditProfileSettingsPage< StyleP
 
 		private final VisualEditorPanel styleEditorPanel;
 
-		public KeymapProfileEditPanel()
+		public KeymapProfileEditPanel( final Keymap initialStyle )
 		{
-			editedStyle = new Keymap( "Edited", new KeymapManager().getDefaultStyle().getConfig() );
+			editedStyle = initialStyle.copy( "Edited" );
 			styleEditorPanel = new VisualEditorPanel( editedStyle.getConfig() );
 			modificationListeners = new Listeners.SynchronizedList<>();
 			styleEditorPanel.addConfigChangeListener( this );
