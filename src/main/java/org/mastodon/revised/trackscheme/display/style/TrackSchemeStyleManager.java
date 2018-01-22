@@ -44,7 +44,6 @@ public class TrackSchemeStyleManager extends AbstractStyleManager< TrackSchemeSt
 
 	public TrackSchemeStyleManager( final boolean loadStyles )
 	{
-		super( loadStyles );
 		forwardDefaultStyle = TrackSchemeStyle.defaultStyle().copy();
 		updateForwardDefaultListeners = () -> forwardDefaultStyle.set( defaultStyle );
 		defaultStyle.addUpdateListener( updateForwardDefaultListeners );

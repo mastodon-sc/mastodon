@@ -17,7 +17,7 @@ public abstract class AbstractStyleManager< M extends AbstractStyleManager< M, S
 
 	protected S defaultStyle;
 
-	protected AbstractStyleManager( final boolean loadStyles )
+	protected AbstractStyleManager()
 	{
 		builtinStyles = loadBuiltinStyles();
 		userStyles = new ArrayList<>();
