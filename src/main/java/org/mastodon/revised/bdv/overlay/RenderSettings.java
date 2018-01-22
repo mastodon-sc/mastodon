@@ -3,7 +3,9 @@ package org.mastodon.revised.bdv.overlay;
 import java.util.ArrayList;
 import java.util.Collection;
 
-public class RenderSettings
+import org.mastodon.app.ui.settings.style.Style;
+
+public class RenderSettings implements Style< RenderSettings >
 {
 	/*
 	 * PUBLIC DISPLAY CONFIG DEFAULTS.
@@ -43,6 +45,7 @@ public class RenderSettings
 	 *            the name for the copied render settings.
 	 * @return a new {@link RenderSettings} instance.
 	 */
+	@Override
 	public RenderSettings copy( final String name )
 	{
 		final RenderSettings rs = new RenderSettings();
@@ -52,6 +55,7 @@ public class RenderSettings
 		return rs;
 	}
 
+	@Override
 	public RenderSettings copy()
 	{
 		return copy( null );
@@ -214,6 +218,7 @@ public class RenderSettings
 	 *
 	 * @return the name.
 	 */
+	@Override
 	public String getName()
 	{
 		return name;
@@ -225,6 +230,7 @@ public class RenderSettings
 	 * @param name
 	 *            the name to set.
 	 */
+	@Override
 	public synchronized void setName( final String name )
 	{
 		if ( this.name != name )

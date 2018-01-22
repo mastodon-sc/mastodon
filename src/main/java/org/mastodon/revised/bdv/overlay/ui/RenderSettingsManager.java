@@ -8,13 +8,10 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
+import org.mastodon.app.ui.settings.style.AbstractStyleManager;
 import org.mastodon.revised.bdv.overlay.RenderSettings;
 import org.yaml.snakeyaml.Yaml;
 
@@ -23,16 +20,11 @@ import org.yaml.snakeyaml.Yaml;
  * models based on a common list of settings than can be used in swing items.
  *
  * @author Jean-Yves Tinevez
+ * @author Tobias Pietzsch
  */
-public class RenderSettingsManager
+public class RenderSettingsManager extends AbstractStyleManager< RenderSettingsManager, RenderSettings >
 {
 	private static final String STYLE_FILE = System.getProperty( "user.home" ) + "/.mastodon/rendersettings.yaml";
-
-	private final List< RenderSettings > builtinStyles;
-
-	private final List< RenderSettings > userStyles;
-
-	private RenderSettings defaultStyle;
 
 	/**
 	 * A {@code RenderSettings} that has the same properties as the default
@@ -51,9 +43,7 @@ public class RenderSettingsManager
 
 	public RenderSettingsManager( final boolean loadStyles )
 	{
-		builtinStyles = Collections.unmodifiableList( new ArrayList<>( RenderSettings.defaults ) );
-		userStyles = new ArrayList<>();
-		defaultStyle = builtinStyles.get( 0 );
+		super( loadStyles );
 		forwardDefaultStyle = RenderSettings.defaultStyle().copy();
 		updateForwardDefaultListeners = () -> forwardDefaultStyle.set( defaultStyle );
 		defaultStyle.addUpdateListener( updateForwardDefaultListeners );
@@ -61,83 +51,19 @@ public class RenderSettingsManager
 			loadStyles();
 	}
 
+	@Override
+	protected List< RenderSettings > loadBuiltinStyles()
+	{
+		return Collections.unmodifiableList( new ArrayList<>( RenderSettings.defaults ) );
+	}
+
+	@Override
 	public synchronized void setDefaultStyle( final RenderSettings renderSettings )
 	{
 		defaultStyle.removeUpdateListener( updateForwardDefaultListeners );
 		defaultStyle = renderSettings;
 		forwardDefaultStyle.set( defaultStyle );
 		defaultStyle.addUpdateListener( updateForwardDefaultListeners );
-	}
-
-	public synchronized void remove( final RenderSettings renderSettings )
-	{
-		if ( defaultStyle.equals( renderSettings ) )
-			setDefaultStyle( builtinStyles.get( 0 ) );
-		userStyles.remove( renderSettings );
-	}
-
-	public synchronized void rename( final RenderSettings renderSettings, final String newName )
-	{
-		if ( renderSettings.getName().equals( newName ) )
-			return;
-
-		if ( nameExists( newName ) )
-			throw new IllegalArgumentException( "RenderSettings \"" + newName + "\" already exists." );
-
-		renderSettings.setName( newName );
-	}
-
-	/**
-	 * Returns a copy of the specified {@link RenderSettings}, making sure that
-	 * the copy receives a name not already present in this manager's list of
-	 * {@link RenderSettings}.
-	 *
-	 * @param style
-	 *            the {@link RenderSettings} to copy.
-	 * @return a new {@link RenderSettings}
-	 */
-	public synchronized RenderSettings duplicate( final RenderSettings style )
-	{
-		final String name = style.getName();
-		final Pattern pattern = Pattern.compile( "(.+) \\((\\d+)\\)$" );
-		final Matcher matcher = pattern.matcher( name );
-		int n;
-		String prefix;
-		if ( matcher.matches() )
-		{
-			final String nstr = matcher.group( 2 );
-			n = Integer.parseInt( nstr );
-			prefix = matcher.group( 1 );
-		}
-		else
-		{
-			n = 1;
-			prefix = name;
-		}
-
-		String newName;
-		do
-			newName = prefix + " (" + ( ++n ) + ")";
-		while ( nameExists( newName ) );
-
-		final RenderSettings newStyle = style.copy( newName );
-		userStyles.add( newStyle );
-		return newStyle;
-	}
-
-	public List< RenderSettings > getBuiltinStyles()
-	{
-		return builtinStyles;
-	}
-
-	public List< RenderSettings > getUserStyles()
-	{
-		return Collections.unmodifiableList( userStyles );
-	}
-
-	public RenderSettings getDefaultStyle()
-	{
-		return defaultStyle;
 	}
 
 	/**
@@ -147,16 +73,6 @@ public class RenderSettingsManager
 	public RenderSettings getForwardDefaultStyle()
 	{
 		return forwardDefaultStyle;
-	}
-
-	private boolean nameExists( final String name )
-	{
-		return styleForName( name ).isPresent();
-	}
-
-	private Optional< RenderSettings > styleForName( final String name )
-	{
-		return Stream.concat( builtinStyles.stream(), userStyles.stream() ).filter( style -> style.getName().equals( name ) ).findFirst();
 	}
 
 	public void loadStyles()
@@ -203,6 +119,7 @@ public class RenderSettingsManager
 		}
 	}
 
+	@Override
 	public void saveStyles()
 	{
 		saveStyles( STYLE_FILE );
@@ -227,36 +144,6 @@ public class RenderSettingsManager
 		}
 	}
 
-	public void set( final RenderSettingsManager other )
-	{
-		setSnapshot( other.getSnapshot() );
-	}
-
-	static class Snapshot
-	{
-		private final List< RenderSettings > userStyles;
-
-		private final String defaultStyleName;
-
-		public Snapshot( final RenderSettingsManager manager )
-		{
-			this.userStyles = manager.getUserStyles().stream().map( s -> s.copy() ).collect( Collectors.toList() );
-			this.defaultStyleName = manager.getDefaultStyle().getName();
-		}
-	}
-
-	Snapshot getSnapshot()
-	{
-		return new Snapshot( this );
-	}
-
-	void setSnapshot( final Snapshot snapshot )
-	{
-		userStyles.clear();
-		snapshot.userStyles.forEach( s -> userStyles.add( s.copy() ) );
-		setDefaultStyle( styleForName( snapshot.defaultStyleName ).orElseGet( () -> builtinStyles.get( 0 ) ) );
-	}
-
 	/*
 	 * STATIC UTILITIES
 	 */
@@ -266,5 +153,4 @@ public class RenderSettingsManager
 		final File dir = new File( fileName ).getParentFile();
 		return dir == null ? false : dir.mkdirs();
 	}
-
 }
