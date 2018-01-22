@@ -12,11 +12,7 @@ import org.mastodon.app.ui.settings.SelectAndEditProfileSettingsPage;
 import org.mastodon.app.ui.settings.SettingsPanel;
 import org.mastodon.app.ui.settings.style.StyleProfile;
 import org.mastodon.app.ui.settings.style.StyleProfileManager;
-import org.mastodon.revised.trackscheme.display.style.TrackSchemeStyle;
-import org.mastodon.revised.trackscheme.display.style.TrackSchemeStyleEditorPanel;
-import org.mastodon.revised.trackscheme.display.style.TrackSchemeStyleManager;
 import org.mastodon.util.Listeners;
-import org.scijava.ui.behaviour.io.InputTriggerConfig;
 import org.scijava.ui.behaviour.io.gui.VisualEditorPanel;
 
 public class KeymapSettingsPage extends SelectAndEditProfileSettingsPage< StyleProfile< Keymap > >
@@ -30,10 +26,10 @@ public class KeymapSettingsPage extends SelectAndEditProfileSettingsPage< StyleP
 		super(
 				treePath,
 				new StyleProfileManager<>( styleManager, new KeymapManager( false ) ),
-				new TrackSchemeProfileEditPanel() );
+				new KeymapProfileEditPanel() );
 	}
 
-	static class TrackSchemeProfileEditPanel implements VisualEditorPanel.ConfigChangeListener, ProfileEditPanel< StyleProfile< Keymap > >
+	static class KeymapProfileEditPanel implements VisualEditorPanel.ConfigChangeListener, ProfileEditPanel< StyleProfile< Keymap > >
 	{
 		private final Listeners.SynchronizedList< ModificationListener > modificationListeners;
 
@@ -41,7 +37,7 @@ public class KeymapSettingsPage extends SelectAndEditProfileSettingsPage< StyleP
 
 		private final VisualEditorPanel styleEditorPanel;
 
-		public TrackSchemeProfileEditPanel()
+		public KeymapProfileEditPanel()
 		{
 			editedStyle = new Keymap( "Edited", new KeymapManager().getDefaultStyle().getConfig() );
 			styleEditorPanel = new VisualEditorPanel( editedStyle.getConfig() );
