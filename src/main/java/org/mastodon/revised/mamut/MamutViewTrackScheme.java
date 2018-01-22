@@ -27,6 +27,7 @@ import org.mastodon.revised.trackscheme.display.style.DefaultTrackSchemeOverlay;
 import org.mastodon.revised.trackscheme.display.style.TrackSchemeStyle;
 import org.mastodon.revised.trackscheme.display.style.TrackSchemeStyle.UpdateListener;
 import org.mastodon.revised.ui.EditTagActions;
+import org.mastodon.revised.ui.FocusActions;
 import org.mastodon.revised.ui.HighlightBehaviours;
 import org.mastodon.revised.ui.SelectionActions;
 import org.mastodon.views.context.ContextChooser;
@@ -95,6 +96,7 @@ class MamutViewTrackScheme extends MamutView< TrackSchemeGraph< Spot, Link >, Tr
 		HighlightBehaviours.install( viewBehaviours, viewGraph, viewGraph.getLock(), viewGraph, highlightModel, model );
 		ToggleLinkBehaviour.install( viewBehaviours, frame.getTrackschemePanel(),	viewGraph, viewGraph.getLock(),	viewGraph, model );
 		EditFocusVertexLabelAction.install( viewActions, frame.getTrackschemePanel(), focusModel,	model );
+		FocusActions.install( viewActions, viewGraph, viewGraph.getLock(), focusModel, selectionModel, navigationHandler );
 		EditTagActions.install( viewActions, frame.getKeybindings(), model.getTagSetModel(), appModel.getSelectionModel(), frame.getTrackschemePanel(), frame.getTrackschemePanel().getDisplay(), model );
 		viewActions.runnableAction( () -> System.out.println( model.getTagSetModel() ), "output tags", "U" ); // DEBUG TODO: REMOVE
 
@@ -124,7 +126,6 @@ class MamutViewTrackScheme extends MamutView< TrackSchemeGraph< Spot, Link >, Tr
 						item( TrackSchemeNavigationActions.SELECT_NAVIGATE_PARENT ),
 						item( TrackSchemeNavigationActions.SELECT_NAVIGATE_LEFT ),
 						item( TrackSchemeNavigationActions.SELECT_NAVIGATE_RIGHT ),
-//						item( TrackSchemeFocusActions.TOGGLE_FOCUS_SELECTION ),
 						separator(),
 						item( TrackSchemeNavigationActions.NAVIGATE_CHILD ),
 						item( TrackSchemeNavigationActions.NAVIGATE_PARENT ),
