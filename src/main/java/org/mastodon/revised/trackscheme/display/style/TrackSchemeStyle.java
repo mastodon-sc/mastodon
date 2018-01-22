@@ -8,7 +8,9 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Objects;
 
-public class TrackSchemeStyle
+import org.mastodon.app.ui.settings.style.Style;
+
+public class TrackSchemeStyle implements Style< TrackSchemeStyle >
 {
 	private static final Stroke DEFAULT_FOCUS_STROKE = new BasicStroke( 2f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 1f, new float[] { 8f, 3f }, 0 );
 
@@ -118,6 +120,7 @@ public class TrackSchemeStyle
 	 * GETTERS for non public fields.
 	 */
 
+	@Override
 	public String getName()
 	{
 		return name;
@@ -320,6 +323,12 @@ public class TrackSchemeStyle
 			notifyListeners();
 		}
 		return this;
+	}
+
+	@Override
+	public void setName( final String name )
+	{
+		name( name );
 	}
 
 	public TrackSchemeStyle edgeColor( final Color color )
@@ -711,6 +720,7 @@ public class TrackSchemeStyle
 	 *            the name for the copied style.
 	 * @return a new style instance.
 	 */
+	@Override
 	public TrackSchemeStyle copy( final String name )
 	{
 		final TrackSchemeStyle newStyle = new TrackSchemeStyle();
@@ -720,6 +730,7 @@ public class TrackSchemeStyle
 		return newStyle;
 	}
 
+	@Override
 	public TrackSchemeStyle copy()
 	{
 		return copy( null );
