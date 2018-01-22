@@ -45,6 +45,8 @@ public class SelectAndEditProfileSettingsPage< T extends SelectAndEditProfileSet
 
 	private final ProfileManager< T > profileManager;
 
+	private final ProfileSelectionPanel< T > profileSelectionPanel;
+
 	private final ProfileEditPanel< T > profileEditPanel;
 
 	private final Listeners.List< ModificationListener > modificationListeners;
@@ -67,7 +69,7 @@ public class SelectAndEditProfileSettingsPage< T extends SelectAndEditProfileSet
 		this.profileManager = profileManager;
 		this.profileEditPanel = profileEditPanel;
 
-		final ProfileSelectionPanel< T > profileSelectionPanel = new ProfileSelectionPanel<>( profileManager, profileEditPanel );
+		profileSelectionPanel = new ProfileSelectionPanel<>( profileManager, profileEditPanel );
 		profileSelectionPanel.setBorder( new EmptyBorder( 0, 0, 10, 0 ) );
 
 		profileEditPanel.modificationListeners().add( profileSelectionPanel );
@@ -110,6 +112,7 @@ public class SelectAndEditProfileSettingsPage< T extends SelectAndEditProfileSet
 	public void cancel()
 	{
 		profileManager.cancel();
+		profileSelectionPanel.makeModel();
 	}
 
 	/**
@@ -266,10 +269,24 @@ public class SelectAndEditProfileSettingsPage< T extends SelectAndEditProfileSet
 			final Item selected = ( Item ) comboBox.getSelectedItem();
 			if ( selected != null )
 			{
-				editor.storeProfile( selected.profile );
-				final T duplicate = manager.duplicate( selected.profile );
-				manager.select( duplicate );
-				editor.loadProfile( duplicate );
+				if ( selected.profile.isBuiltin() )
+				{
+					// duplication is triggered by trying to edit a built-in style
+					final T duplicate = manager.duplicate( selected.profile );
+					editor.storeProfile( duplicate );
+					manager.select( duplicate );
+					selectionListeners.list.forEach( l -> l.deselected( selected.profile ) );
+					selectionListeners.list.forEach( l -> l.selected( duplicate ) );
+				}
+				else
+				{
+					editor.storeProfile( selected.profile );
+					final T duplicate = manager.duplicate( selected.profile );
+					manager.select( duplicate );
+					selectionListeners.list.forEach( l -> l.deselected( selected.profile ) );
+					selectionListeners.list.forEach( l -> l.selected( duplicate ) );
+					editor.loadProfile( duplicate );
+				}
 				makeModel();
 			}
 		}
@@ -280,6 +297,9 @@ public class SelectAndEditProfileSettingsPage< T extends SelectAndEditProfileSet
 			if ( selected != null )
 			{
 				manager.delete( selected.profile );
+				selectionListeners.list.forEach( l -> l.deselected( selected.profile ) );
+				selectionListeners.list.forEach( l -> l.selected( manager.getSelectedProfile() ) );
+				editor.loadProfile( manager.getSelectedProfile() );
 				makeModel();
 			}
 		}
@@ -300,6 +320,7 @@ public class SelectAndEditProfileSettingsPage< T extends SelectAndEditProfileSet
 					try
 					{
 						manager.rename( selected.profile, newName );
+						selectionListeners.list.forEach( l -> l.selected( selected.profile ) );
 						makeModel();
 					}
 					catch ( final IllegalArgumentException e )
