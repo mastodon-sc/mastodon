@@ -2,6 +2,8 @@ package org.mastodon.revised.mamut;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.Reader;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Locale;
 
@@ -70,6 +72,16 @@ public class Mastodon implements Command
 	public static InputTriggerConfig getInputTriggerConfig()
 	{
 		InputTriggerConfig conf = null;
+
+		try
+		{
+			final Reader reader = new InputStreamReader( Mastodon.class.getResourceAsStream( "keyconfig.yaml" ) );
+			conf = new InputTriggerConfig( YamlConfigIO.read( reader ) );
+			System.out.println( conf );
+			reader.close();
+		}
+		catch ( final IOException e )
+		{}
 
 		// try "keyconfig.yaml" in current directory
 		if ( new File( "keyconfig.yaml" ).isFile() )
