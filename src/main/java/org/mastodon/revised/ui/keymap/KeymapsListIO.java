@@ -1,6 +1,5 @@
 package org.mastodon.revised.ui.keymap;
 
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -15,14 +14,14 @@ class KeymapsListIO
 
 	public LinkedHashMap< String, String > keymapNameToFileName;
 
-	public KeymapsListIO( String defaultName, final List< String > keymapNames )
+	public KeymapsListIO( final String defaultName, final List< String > keymapNames )
 	{
 		defaultKeymapName = defaultName;
 		keymapNameToFileName = new LinkedHashMap<>();
 
-		Set< String > existingNames = new HashSet<>();
+		final Set< String > existingNames = new HashSet<>();
 		existingNames.add( "keymaps" );
-		for ( String keymapName : keymapNames )
+		for ( final String keymapName : keymapNames )
 		{
 			String name = keymapName.replaceAll( "\\W+", "" );
 			if ( existingNames.contains( name ) )
@@ -53,8 +52,8 @@ class KeymapsListIO
 
 	public Map< String, String > getFileNameToKeymapName()
 	{
-		Map< String, String > map = new LinkedHashMap<>();
-		for ( Map.Entry< String, String > entry : keymapNameToFileName.entrySet() )
+		final Map< String, String > map = new LinkedHashMap<>();
+		for ( final Map.Entry< String, String > entry : keymapNameToFileName.entrySet() )
 			map.put( entry.getValue(), entry.getKey() );
 		return map;
 	}
