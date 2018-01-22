@@ -45,7 +45,7 @@ public class RenderSettingsPanel extends JPanel
 
 		styleElements = styleElements( style );
 
-		style.addUpdateListener( () -> {
+		style.updateListeners().add( () -> {
 			styleElements.forEach( StyleElement::update );
 			repaint();
 		} );

@@ -148,7 +148,7 @@ class MamutViewBdv extends MamutView< OverlayGraphWrapper< Spot, Link >, Overlay
 
 		final RenderSettings renderSettings = appModel.getRenderSettingsManager().getForwardDefaultStyle();
 		tracksOverlay.setRenderSettings( renderSettings );
-		renderSettings.addUpdateListener( () -> {
+		renderSettings.updateListeners().add( () -> {
 			viewer.repaint();
 			contextProvider.notifyContextChanged();
 		} );

@@ -44,7 +44,7 @@ public class RenderSettingsConfigPage extends SelectAndEditProfileSettingsPage< 
 			editedStyle = initialStyle.copy( "Edited" );
 			styleEditorPanel = new RenderSettingsPanel( editedStyle );
 			modificationListeners = new Listeners.SynchronizedList<>();
-			editedStyle.addUpdateListener( this );
+			editedStyle.updateListeners().add( this );
 		}
 
 		private boolean trackModifications = true;

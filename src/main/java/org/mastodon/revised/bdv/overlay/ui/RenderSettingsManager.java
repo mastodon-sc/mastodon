@@ -45,7 +45,7 @@ public class RenderSettingsManager extends AbstractStyleManager< RenderSettingsM
 	{
 		forwardDefaultStyle = RenderSettings.defaultStyle().copy();
 		updateForwardDefaultListeners = () -> forwardDefaultStyle.set( defaultStyle );
-		defaultStyle.addUpdateListener( updateForwardDefaultListeners );
+		defaultStyle.updateListeners().add( updateForwardDefaultListeners );
 		if ( loadStyles )
 			loadStyles();
 	}
@@ -59,10 +59,10 @@ public class RenderSettingsManager extends AbstractStyleManager< RenderSettingsM
 	@Override
 	public synchronized void setDefaultStyle( final RenderSettings renderSettings )
 	{
-		defaultStyle.removeUpdateListener( updateForwardDefaultListeners );
+		defaultStyle.updateListeners().remove( updateForwardDefaultListeners );
 		defaultStyle = renderSettings;
 		forwardDefaultStyle.set( defaultStyle );
-		defaultStyle.addUpdateListener( updateForwardDefaultListeners );
+		defaultStyle.updateListeners().add( updateForwardDefaultListeners );
 	}
 
 	/**

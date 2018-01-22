@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 import org.mastodon.app.ui.settings.style.Style;
+import org.mastodon.util.Listeners;
 
 public class RenderSettings implements Style< RenderSettings >
 {
@@ -31,11 +32,11 @@ public class RenderSettings implements Style< RenderSettings >
 		public void renderSettingsChanged();
 	}
 
-	private final ArrayList< UpdateListener > updateListeners;
+	private final Listeners.List< UpdateListener > updateListeners;
 
 	private RenderSettings()
 	{
-		updateListeners = new ArrayList< UpdateListener >();
+		updateListeners = new Listeners.SynchronizedList<>();
 	}
 
 	/**
@@ -83,23 +84,13 @@ public class RenderSettings implements Style< RenderSettings >
 
 	private void notifyListeners()
 	{
-		for ( final UpdateListener l : updateListeners )
+		for ( final UpdateListener l : updateListeners.list )
 			l.renderSettingsChanged();
 	}
 
-	public synchronized boolean addUpdateListener( final UpdateListener l )
+	public Listeners< UpdateListener > updateListeners()
 	{
-		if ( !updateListeners.contains( l ) )
-		{
-			updateListeners.add( l );
-			return true;
-		}
-		return false;
-	}
-
-	public synchronized boolean removeUpdateListener( final UpdateListener l )
-	{
-		return updateListeners.remove( l );
+		return updateListeners;
 	}
 
 	/*
