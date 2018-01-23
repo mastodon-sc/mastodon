@@ -25,6 +25,7 @@ import org.mastodon.revised.bdv.overlay.EditSpecialBehaviours;
 import org.mastodon.revised.bdv.overlay.OverlayGraphRenderer;
 import org.mastodon.revised.bdv.overlay.OverlayNavigation;
 import org.mastodon.revised.bdv.overlay.RenderSettings;
+import org.mastodon.revised.bdv.overlay.RenderSettings.UpdateListener;
 import org.mastodon.revised.bdv.overlay.wrap.OverlayEdgeWrapper;
 import org.mastodon.revised.bdv.overlay.wrap.OverlayGraphWrapper;
 import org.mastodon.revised.bdv.overlay.wrap.OverlayVertexWrapper;
@@ -148,10 +149,12 @@ class MamutViewBdv extends MamutView< OverlayGraphWrapper< Spot, Link >, Overlay
 
 		final RenderSettings renderSettings = appModel.getRenderSettingsManager().getForwardDefaultStyle();
 		tracksOverlay.setRenderSettings( renderSettings );
-		renderSettings.updateListeners().add( () -> {
+		final UpdateListener updateListener = () -> {
 			viewer.repaint();
 			contextProvider.notifyContextChanged();
-		} );
+		};
+		renderSettings.updateListeners().add( updateListener );
+		onClose( () -> renderSettings.updateListeners().remove( updateListener ) );
 
 //		if ( !bdv.tryLoadSettings( bdvFile ) ) // TODO
 //			InitializeViewerState.initBrightness( 0.001, 0.999, bdv.getViewer(), bdv.getSetupAssignments() );
