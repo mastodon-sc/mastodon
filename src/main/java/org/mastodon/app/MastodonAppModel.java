@@ -17,6 +17,7 @@ import org.mastodon.model.SelectionModel;
 import org.mastodon.model.TimepointModel;
 import org.mastodon.revised.model.AbstractModel;
 import org.mastodon.revised.model.AbstractSpot;
+import org.mastodon.revised.ui.keymap.KeymapManager;
 import org.scijava.ui.behaviour.KeyPressedManager;
 import org.scijava.ui.behaviour.io.InputTriggerConfig;
 import org.scijava.ui.behaviour.util.Actions;
@@ -46,9 +47,9 @@ public class MastodonAppModel<
 
 	private final GroupManager groupManager;
 
-	private InputTriggerConfig keyconf;
-
 	private final KeyPressedManager keyPressedManager;
+
+	private final KeymapManager keymapManager;
 
 	private final String[] keyConfigContexts;
 
@@ -58,20 +59,18 @@ public class MastodonAppModel<
 	private final Actions appActions;
 
 	/**
-	 *
 	 * @param numGroups
 	 * @param model
-	 * @param keyconf
 	 * @param keyPressedManager
+	 * @param keymapManager
 	 * @param keyConfigContexts
-	 *            keyconf contexts for appActions (actions that should be
-	 *            available in all views)
+	 *            keyconf contexts for appActions (actions that should be available in all views)
 	 */
 	public MastodonAppModel(
 			final int numGroups,
 			final M model,
-			final InputTriggerConfig keyconf,
 			final KeyPressedManager keyPressedManager,
+			final KeymapManager keymapManager,
 			final String[] keyConfigContexts )
 	{
 		this.model = model;
@@ -95,10 +94,11 @@ public class MastodonAppModel<
 		groupManager.registerModel( TIMEPOINT );
 		groupManager.registerModel( NAVIGATION );
 
-		this.keyconf = keyconf;
 		this.keyPressedManager = keyPressedManager;
+		this.keymapManager = keymapManager;
 		this.keyConfigContexts = keyConfigContexts;
 
+		final InputTriggerConfig keyconf = keymapManager.getForwardDefaultKeymap().getConfig();
 		this.appActions = new Actions( keyconf, keyConfigContexts );
 	}
 
@@ -127,14 +127,9 @@ public class MastodonAppModel<
 		return groupManager;
 	}
 
-	public InputTriggerConfig getKeyConfig()
+	public InputTriggerConfig getKeyConfig() // TODO remove
 	{
-		return keyconf;
-	}
-
-	public void setKeyConfig( final InputTriggerConfig keyconf )
-	{
-		this.keyconf = keyconf;
+		return keymapManager.getForwardDefaultKeymap().getConfig();
 	}
 
 	public String[] getKeyConfigContexts()
@@ -145,6 +140,11 @@ public class MastodonAppModel<
 	public KeyPressedManager getKeyPressedManager()
 	{
 		return keyPressedManager;
+	}
+
+	public KeymapManager getKeymapManager()
+	{
+		return keymapManager;
 	}
 
 	public Actions getAppActions()

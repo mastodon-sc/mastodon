@@ -36,6 +36,14 @@ public class KeymapManager extends AbstractStyleManager< KeymapManager, Keymap >
 {
 	private static final String KEYMAPS_PATH = System.getProperty( "user.home" ) + "/.mastodon/keymaps/";
 
+	/**
+	 * A {@code Keymap} that has the same properties as the default
+	 * keymap. In contrast to defaultStyle this will always
+	 * refer to the same object, so a consumers can just use this one
+	 * RenderSettings to listen for changes and for painting.
+	 */
+	private final Keymap forwardDefaultKeymap;
+
 	public KeymapManager()
 	{
 		this( true );
@@ -43,6 +51,7 @@ public class KeymapManager extends AbstractStyleManager< KeymapManager, Keymap >
 
 	public KeymapManager( final boolean loadStyles )
 	{
+		forwardDefaultKeymap = new Keymap();
 		if ( loadStyles )
 			loadStyles();
 	}
@@ -66,6 +75,23 @@ public class KeymapManager extends AbstractStyleManager< KeymapManager, Keymap >
 		final InputTriggerConfig config = new InputTriggerConfig( YamlConfigIO.read( reader ) );
 		reader.close();
 		return new Keymap( name, config );
+	}
+
+	@Override
+	public synchronized void setDefaultStyle( final Keymap keymap )
+	{
+		System.out.println( "KeymapManager.setDefaultStyle" );
+		super.setDefaultStyle( keymap );
+		forwardDefaultKeymap.set( defaultStyle );
+	}
+
+	/**
+	 * Returns a final {@link Keymap} instance that always has the same
+	 * properties as the default keymap.
+	 */
+	public Keymap getForwardDefaultKeymap()
+	{
+		return forwardDefaultKeymap;
 	}
 
 	public void loadStyles()
@@ -96,7 +122,7 @@ public class KeymapManager extends AbstractStyleManager< KeymapManager, Keymap >
 
 			for ( final Map.Entry< String, String > entry : keymapsList.getFileNameToKeymapName().entrySet() )
 			{
-				filename = entry.getKey();
+				filename = KEYMAPS_PATH + "/" + entry.getKey();
 				try
 				{
 					final String name = entry.getValue();
@@ -147,7 +173,7 @@ public class KeymapManager extends AbstractStyleManager< KeymapManager, Keymap >
 
 			for ( final Keymap keymap : userStyles )
 			{
-				filename = keymapsList.keymapNameToFileName.get( keymap.getName() );
+				filename = KEYMAPS_PATH + "/" + keymapsList.keymapNameToFileName.get( keymap.getName() );
 				final List< InputTriggerDescription > descriptions = new InputTriggerDescriptionsBuilder( keymap.getConfig() ).getDescriptions();
 				YamlConfigIO.write( descriptions, filename );
 			}

@@ -23,7 +23,7 @@ public class ViewMenu
 {
 	private final JMenuBar menubar;
 
-	private final InputTriggerConfig keyconf;
+	private final InputTriggerConfig keyconf; // TODO!!!! needs to be updated when keymap is changed
 
 	private final Set< String > contexts;
 

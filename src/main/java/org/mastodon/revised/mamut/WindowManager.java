@@ -10,7 +10,6 @@ import java.util.function.Consumer;
 
 import javax.swing.JFrame;
 
-import org.mastodon.app.ui.settings.SimpleSettingsPage;
 import org.mastodon.revised.bdv.overlay.ui.RenderSettingsConfigPage;
 import org.mastodon.revised.bdv.overlay.ui.RenderSettingsManager;
 import org.mastodon.revised.model.mamut.Model;
@@ -18,13 +17,14 @@ import org.mastodon.revised.model.mamut.Spot;
 import org.mastodon.revised.trackscheme.display.style.TrackSchemeStyleManager;
 import org.mastodon.revised.trackscheme.display.style.TrackSchemeStyleSettingsPage;
 import org.mastodon.revised.ui.SelectionActions;
+import org.mastodon.revised.ui.keymap.Keymap;
+import org.mastodon.revised.ui.keymap.KeymapManager;
+import org.mastodon.revised.ui.keymap.KeymapSettingsPage;
 import org.mastodon.revised.util.ToggleDialogAction;
 import org.mastodon.views.context.ContextProvider;
 import org.scijava.ui.behaviour.KeyPressedManager;
-import org.scijava.ui.behaviour.io.InputTriggerConfig;
 import org.scijava.ui.behaviour.io.InputTriggerDescription;
 import org.scijava.ui.behaviour.io.InputTriggerDescriptionsBuilder;
-import org.scijava.ui.behaviour.io.gui.VisualEditorPanel;
 import org.scijava.ui.behaviour.io.yaml.YamlConfigIO;
 import org.scijava.ui.behaviour.util.AbstractNamedAction;
 import org.scijava.ui.behaviour.util.Actions;
@@ -55,13 +55,13 @@ public class WindowManager
 	 */
 	private final List< MamutViewTrackScheme > tsWindows = new ArrayList<>();
 
-	private final InputTriggerConfig keyconf;
-
 	private final KeyPressedManager keyPressedManager;
 
 	private final TrackSchemeStyleManager trackSchemeStyleManager;
 
 	private final RenderSettingsManager renderSettingsManager;
+
+	private final KeymapManager keymapManager;
 
 	private final Actions globalAppActions;
 
@@ -73,15 +73,22 @@ public class WindowManager
 
 	final ProjectManager projectManager;
 
-	public WindowManager( final InputTriggerConfig keyconf )
+	public WindowManager()
 	{
-		this.keyconf = keyconf;
 		keyPressedManager = new KeyPressedManager();
 		trackSchemeStyleManager = new TrackSchemeStyleManager();
 		renderSettingsManager = new RenderSettingsManager();
+		keymapManager = new KeymapManager();
+
+		final Keymap keymap = keymapManager.getForwardDefaultKeymap();
 
 		// TODO: naming, this should be named appActions and the AppModel.appActions should become modelActions?
-		globalAppActions = new Actions( keyconf, "mastodon" );
+		globalAppActions = new Actions( keymap.getConfig(), "mastodon" );
+		keymap.updateListeners().add( () -> {
+			globalAppActions.updateKeyConfig( keymap.getConfig() );
+			if ( appModel != null )
+				appModel.getAppActions().updateKeyConfig( keymap.getConfig() );
+		} );
 
 		projectManager = new ProjectManager( this );
 		projectManager.install( globalAppActions );
@@ -118,21 +125,10 @@ public class WindowManager
 
 		// TODO FIX HACK: We are creating a new dialog everytime so that the keyconf (which is filled from programmatically set defaults is)
 		final PreferencesDialog settings = new PreferencesDialog( null );
-		final VisualEditorPanel keyconfEditor = new VisualEditorPanel( keyconf );
-		keyconfEditor.setButtonPanelVisible( false );
-		final SimpleSettingsPage page = new SimpleSettingsPage( "Keymap", keyconfEditor );
-		page.onCancel( () -> keyconfEditor.configToModel() );
-		page.onApply( () -> {
-			keyconfEditor.modelToConfig();
-			if ( appModel != null )
-				appModel.getAppActions().updateKeyConfig( keyconf );
-				forEachView( v -> v.updateKeyConfig() );
-		} );
-		settings.addPage( page );
-
-
 		settings.addPage( new TrackSchemeStyleSettingsPage( "TrackScheme Styles", trackSchemeStyleManager ) );
 		settings.addPage( new RenderSettingsConfigPage( "BDV Render Settings", renderSettingsManager ) );
+		settings.addPage( new KeymapSettingsPage( "Keymap", keymapManager ) );
+
 		final ToggleDialogAction tooglePreferencesDialogAction = new ToggleDialogAction( "Preferences", settings );
 		appModel.getAppActions().namedAction( tooglePreferencesDialogAction, "meta COMMA", "control COMMA" );
 
@@ -227,11 +223,6 @@ public class WindowManager
 		}
 	}
 
-	InputTriggerConfig getKeyConfig()
-	{
-		return keyconf;
-	}
-
 	KeyPressedManager getKeyPressedManager()
 	{
 		return keyPressedManager;
@@ -245,6 +236,11 @@ public class WindowManager
 	RenderSettingsManager getRenderSettingsManager()
 	{
 		return renderSettingsManager;
+	}
+
+	public KeymapManager getKeymapManager()
+	{
+		return keymapManager;
 	}
 
 	MamutAppModel getAppModel()

@@ -40,8 +40,8 @@ public class Mastodon implements Command
 		UIManager.setLookAndFeel( UIManager.getSystemLookAndFeelClassName() );
 
 		System.setProperty( "apple.laf.useScreenMenuBar", "true" );
-		final InputTriggerConfig keyconf = getInputTriggerConfig();
-		final WindowManager windowManager = new WindowManager( keyconf );
+		final InputTriggerConfig keyconf = getInputTriggerConfig(); // TODO: remove
+		final WindowManager windowManager = new WindowManager();
 		new MainWindow( windowManager ).setVisible( true );
 
 

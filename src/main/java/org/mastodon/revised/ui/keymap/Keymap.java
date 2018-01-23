@@ -1,6 +1,7 @@
 package org.mastodon.revised.ui.keymap;
 
 import org.mastodon.app.ui.settings.style.Style;
+import org.mastodon.util.Listeners;
 import org.scijava.ui.behaviour.io.InputTriggerConfig;
 
 public class Keymap implements Style< Keymap >
@@ -12,16 +13,23 @@ public class Keymap implements Style< Keymap >
 
 	private final InputTriggerConfig config;
 
+	public interface UpdateListener
+	{
+		public void keymapChanged();
+	}
+
+	private final Listeners.List< UpdateListener > updateListeners;
+
 	public Keymap( final String name, final InputTriggerConfig config )
 	{
 		this.name = name;
 		this.config = config;
+		this.updateListeners = new Listeners.SynchronizedList<>();
 	}
 
 	public Keymap()
 	{
-		this.name = "";
-		this.config = new InputTriggerConfig();
+		this( "", new InputTriggerConfig() );
 	}
 
 	/**
@@ -51,7 +59,18 @@ public class Keymap implements Style< Keymap >
 	{
 		this.name = style.name;
 		this.config.set( style.config );
-//		notifyListeners(); // TODO?
+		notifyListeners(); // TODO?
+	}
+
+	private void notifyListeners()
+	{
+		for ( final UpdateListener l : updateListeners.list )
+			l.keymapChanged();
+	}
+
+	public Listeners< UpdateListener > updateListeners()
+	{
+		return updateListeners;
 	}
 
 	public InputTriggerConfig getConfig()

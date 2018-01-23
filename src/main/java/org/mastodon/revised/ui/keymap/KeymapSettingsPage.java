@@ -43,6 +43,7 @@ public class KeymapSettingsPage extends SelectAndEditProfileSettingsPage< StyleP
 		{
 			editedStyle = initialStyle.copy( "Edited" );
 			styleEditorPanel = new VisualEditorPanel( editedStyle.getConfig() );
+			styleEditorPanel.setButtonPanelVisible( false );
 			modificationListeners = new Listeners.SynchronizedList<>();
 			styleEditorPanel.addConfigChangeListener( this );
 		}
@@ -52,6 +53,7 @@ public class KeymapSettingsPage extends SelectAndEditProfileSettingsPage< StyleP
 		@Override
 		public void configChanged()
 		{
+			styleEditorPanel.modelToConfig();
 			if ( trackModifications )
 				modificationListeners.list.forEach( ModificationListener::modified );
 		}

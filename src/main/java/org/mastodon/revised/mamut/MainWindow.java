@@ -140,7 +140,7 @@ public class MainWindow extends JFrame
 		menubar = new JMenuBar();
 		setJMenuBar( menubar );
 
-		menu = new ViewMenu( menubar, windowManager.getKeyConfig(), "mastodon" );
+		menu = new ViewMenu( menubar, windowManager.getKeymapManager().getForwardDefaultKeymap().getConfig(), "mastodon" );
 		addMenus( menu, actionMap );
 
 //		setDefaultCloseOperation( WindowConstants.DISPOSE_ON_CLOSE );
