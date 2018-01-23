@@ -265,7 +265,7 @@ public class WindowManager
 		public static void writeToYaml( final String fileName, final WindowManager wm ) throws IOException
 		{
 			mkdirs( fileName );
-			final List< InputTriggerDescription > descriptions = new InputTriggerDescriptionsBuilder( wm.appModel.getKeyConfig() ).getDescriptions();
+			final List< InputTriggerDescription > descriptions = new InputTriggerDescriptionsBuilder( wm.appModel.getKeymap().getConfig() ).getDescriptions();
 			YamlConfigIO.write( descriptions, fileName );
 		}
 	}

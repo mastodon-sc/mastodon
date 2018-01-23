@@ -63,6 +63,7 @@ public class KeymapSettingsPage extends SelectAndEditProfileSettingsPage< StyleP
 		{
 			trackModifications = false;
 			editedStyle.set( profile.getStyle() );
+			styleEditorPanel.configToModel();
 			trackModifications = true;
 		}
 
@@ -70,6 +71,7 @@ public class KeymapSettingsPage extends SelectAndEditProfileSettingsPage< StyleP
 		public void storeProfile( final StyleProfile< Keymap > profile )
 		{
 			trackModifications = false;
+			styleEditorPanel.modelToConfig();
 			editedStyle.setName( profile.getStyle().getName() );
 			trackModifications = true;
 			profile.getStyle().set( editedStyle );

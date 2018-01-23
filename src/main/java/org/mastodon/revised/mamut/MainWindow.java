@@ -21,6 +21,7 @@ import javax.swing.JSeparator;
 import javax.swing.WindowConstants;
 
 import org.mastodon.app.ui.ViewMenu;
+import org.mastodon.revised.ui.keymap.Keymap;
 
 public class MainWindow extends JFrame
 {
@@ -140,7 +141,9 @@ public class MainWindow extends JFrame
 		menubar = new JMenuBar();
 		setJMenuBar( menubar );
 
-		menu = new ViewMenu( menubar, windowManager.getKeymapManager().getForwardDefaultKeymap().getConfig(), "mastodon" );
+		final Keymap keymap = windowManager.getKeymapManager().getForwardDefaultKeymap();
+		menu = new ViewMenu( menubar, keymap, "mastodon" );
+		keymap.updateListeners().add( menu::updateKeymap );
 		addMenus( menu, actionMap );
 
 //		setDefaultCloseOperation( WindowConstants.DISPOSE_ON_CLOSE );

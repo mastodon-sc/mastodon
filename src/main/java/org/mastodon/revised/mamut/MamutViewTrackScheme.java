@@ -25,14 +25,12 @@ import org.mastodon.revised.trackscheme.display.TrackSchemeNavigationActions;
 import org.mastodon.revised.trackscheme.display.TrackSchemeOptions;
 import org.mastodon.revised.trackscheme.display.style.DefaultTrackSchemeOverlay;
 import org.mastodon.revised.trackscheme.display.style.TrackSchemeStyle;
-import org.mastodon.revised.trackscheme.display.style.TrackSchemeStyle.UpdateListener;
 import org.mastodon.revised.ui.EditTagActions;
 import org.mastodon.revised.ui.FocusActions;
 import org.mastodon.revised.ui.HighlightBehaviours;
 import org.mastodon.revised.ui.SelectionActions;
 import org.mastodon.views.context.ContextChooser;
 import org.scijava.ui.behaviour.KeyPressedManager;
-import org.scijava.ui.behaviour.io.InputTriggerConfig;
 
 class MamutViewTrackScheme extends MamutView< TrackSchemeGraph< Spot, Link >, TrackSchemeVertex, TrackSchemeEdge >
 {
@@ -54,7 +52,6 @@ class MamutViewTrackScheme extends MamutView< TrackSchemeGraph< Spot, Link >, Tr
 		final TrackSchemeContextListener< Spot > contextListener = new TrackSchemeContextListener<>( viewGraph );
 		contextChooser = new ContextChooser<>( contextListener );
 
-		final InputTriggerConfig keyconf = appModel.getKeyConfig();
 		final KeyPressedManager keyPressedManager = appModel.getKeyPressedManager();
 		final Model model = appModel.getModel();
 
@@ -67,7 +64,6 @@ class MamutViewTrackScheme extends MamutView< TrackSchemeGraph< Spot, Link >, Tr
 				forwardDefaultStyle );
 
 		final TrackSchemeOptions options = TrackSchemeOptions.options()
-				.inputTriggerConfig( keyconf )
 				.shareKeyPressedEvents( keyPressedManager )
 				.trackSchemeOverlayFactory( overlayFactory );
 		final TrackSchemeFrame frame = new TrackSchemeFrame(
@@ -85,7 +81,7 @@ class MamutViewTrackScheme extends MamutView< TrackSchemeGraph< Spot, Link >, Tr
 		frame.getTrackschemePanel().graphChanged();
 		contextListener.setContextListener( frame.getTrackschemePanel() );
 
-		final UpdateListener updateListener = () -> frame.getTrackschemePanel().repaint();
+		final TrackSchemeStyle.UpdateListener updateListener = () -> frame.getTrackschemePanel().repaint();
 		forwardDefaultStyle.addUpdateListener( updateListener );
 		onClose( () -> forwardDefaultStyle.removeUpdateListener( updateListener ) );
 

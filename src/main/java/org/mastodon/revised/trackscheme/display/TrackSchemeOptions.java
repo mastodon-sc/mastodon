@@ -34,7 +34,6 @@ import org.mastodon.revised.trackscheme.display.AbstractTrackSchemeOverlay.Track
 import org.mastodon.revised.trackscheme.display.style.DefaultTrackSchemeOverlay;
 import org.mastodon.revised.ui.selection.NavigationEtiquette;
 import org.scijava.ui.behaviour.KeyPressedManager;
-import org.scijava.ui.behaviour.io.InputTriggerConfig;
 
 /**
  * Optional parameters for {@link TrackSchemePanel}.
@@ -94,19 +93,6 @@ public class TrackSchemeOptions
 	}
 
 	/**
-	 * Sets the input trigger config. TODO is this config option necessary?
-	 *
-	 * @param c
-	 *            the input trigger config.
-	 * @return this instance.
-	 */
-	public TrackSchemeOptions inputTriggerConfig( final InputTriggerConfig c )
-	{
-		values.inputTriggerConfig = c;
-		return this;
-	}
-
-	/**
 	 * Set the {@link KeyPressedManager} to share
 	 * {@link KeyListener#keyPressed(java.awt.event.KeyEvent)} events with other
 	 * ui-behaviour windows.
@@ -161,8 +147,6 @@ public class TrackSchemeOptions
 
 		private long animationDurationMillis = 250;
 
-		private InputTriggerConfig inputTriggerConfig = null;
-
 		private KeyPressedManager keyPressedManager = null;
 
 		private NavigationEtiquette navigationEtiquette = NavigationEtiquette.MINIMAL;
@@ -175,7 +159,6 @@ public class TrackSchemeOptions
 				width( width ).
 				height( height ).
 				animationDurationMillis( animationDurationMillis ).
-				inputTriggerConfig( inputTriggerConfig ).
 				navigationEtiquette( navigationEtiquette ).
 				trackSchemeOverlayFactory( trackSchemeOverlayFactory );
 		}
@@ -193,11 +176,6 @@ public class TrackSchemeOptions
 		public long getAnimationDurationMillis()
 		{
 			return animationDurationMillis;
-		}
-
-		public InputTriggerConfig getInputTriggerConfig()
-		{
-			return inputTriggerConfig;
 		}
 
 		public KeyPressedManager getKeyPressedManager()

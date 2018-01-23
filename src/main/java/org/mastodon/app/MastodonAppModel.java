@@ -17,6 +17,7 @@ import org.mastodon.model.SelectionModel;
 import org.mastodon.model.TimepointModel;
 import org.mastodon.revised.model.AbstractModel;
 import org.mastodon.revised.model.AbstractSpot;
+import org.mastodon.revised.ui.keymap.Keymap;
 import org.mastodon.revised.ui.keymap.KeymapManager;
 import org.scijava.ui.behaviour.KeyPressedManager;
 import org.scijava.ui.behaviour.io.InputTriggerConfig;
@@ -127,9 +128,9 @@ public class MastodonAppModel<
 		return groupManager;
 	}
 
-	public InputTriggerConfig getKeyConfig() // TODO remove
+	public Keymap getKeymap()
 	{
-		return keymapManager.getForwardDefaultKeymap().getConfig();
+		return keymapManager.getForwardDefaultKeymap();
 	}
 
 	public String[] getKeyConfigContexts()

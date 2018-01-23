@@ -1,5 +1,6 @@
 package org.mastodon.app.ui;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Optional;
@@ -14,6 +15,7 @@ import javax.swing.JPopupMenu;
 import javax.swing.JSeparator;
 import javax.swing.MenuElement;
 
+import org.mastodon.revised.ui.keymap.Keymap;
 import org.mastodon.revised.util.HasSelectedState;
 import org.scijava.ui.behaviour.InputTrigger;
 import org.scijava.ui.behaviour.io.InputTriggerConfig;
@@ -23,24 +25,28 @@ public class ViewMenu
 {
 	private final JMenuBar menubar;
 
-	private final InputTriggerConfig keyconf; // TODO!!!! needs to be updated when keymap is changed
+	private final Keymap keymap;
 
 	private final Set< String > contexts;
 
 	public ViewMenu( final MastodonFrameView< ?, ?, ?, ?, ?, ? > view )
 	{
-		this( view.getFrame().menubar, view.getKeyConfig(), view.getKeyConfigContexts() );
+		this( view.getFrame().menubar, view.getKeymap(), view.getKeyConfigContexts() );
+
+		final Keymap.UpdateListener updateListener = this::updateKeymap;
+		keymap.updateListeners().add( updateListener );
+		view.onClose( () -> keymap.updateListeners().remove( updateListener ) );
 	}
 
-	public ViewMenu( final JMenuBar menubar, final InputTriggerConfig keyconf, final String... contexts )
+	public ViewMenu( final JMenuBar menubar, final Keymap keymap, final String... contexts )
 	{
-		this( menubar, keyconf, new HashSet<>( Arrays.asList( contexts ) ) );
+		this( menubar, keymap, new HashSet<>( Arrays.asList( contexts ) ) );
 	}
 
-	public ViewMenu( final JMenuBar menubar, final InputTriggerConfig keyconf, final Set< String > contexts )
+	public ViewMenu( final JMenuBar menubar, final Keymap keymap, final Set< String > contexts )
 	{
 		this.menubar = menubar;
-		this.keyconf = keyconf;
+		this.keymap = keymap;
 		this.contexts = contexts;
 	}
 
@@ -56,6 +62,8 @@ public class ViewMenu
 
 	public boolean addItem( final String path, final String name, final Action action )
 	{
+		final InputTriggerConfig keyconf = keymap.getConfig();
+
 		final JMenu menu = menu( path );
 
 		final int n = menu.getItemCount();
@@ -86,6 +94,39 @@ public class ViewMenu
 
 		menu.add( item );
 		return true;
+	}
+
+	public void updateKeymap()
+	{
+		final InputTriggerConfig keyconf = keymap.getConfig();
+
+		final ArrayList< MenuElement > elements = new ArrayList<>();
+		elements.add( menubar );
+
+		while ( !elements.isEmpty() )
+		{
+			final MenuElement element = elements.remove( elements.size() - 1 );
+			for ( final MenuElement me : element.getSubElements() )
+			{
+				if ( me instanceof JMenu || me instanceof JPopupMenu )
+				{
+					elements.add( me );
+				}
+				else if ( me instanceof JMenuItem )
+				{
+					final JMenuItem mi = ( JMenuItem ) me;
+					final Action action = mi.getAction();
+					if ( action != null && action instanceof AbstractNamedAction )
+					{
+						final AbstractNamedAction namedAction = ( AbstractNamedAction ) action;
+						final Set< InputTrigger > inputs = keyconf.getInputs( namedAction.name(), contexts );
+						final Optional< InputTrigger > input = inputs.stream().filter( InputTrigger::isKeyStroke ).findFirst();
+						if ( input.isPresent() )
+							mi.setAccelerator( input.get().getKeyStroke() );
+					}
+				}
+			}
+		}
 	}
 
 	JMenu menu( final String path )

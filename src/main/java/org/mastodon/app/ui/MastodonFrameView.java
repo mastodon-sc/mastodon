@@ -15,7 +15,6 @@ import org.mastodon.graph.ref.AbstractListenableEdge;
 import org.mastodon.revised.model.AbstractSpot;
 import org.mastodon.revised.ui.keymap.Keymap;
 import org.mastodon.revised.ui.keymap.Keymap.UpdateListener;
-import org.scijava.ui.behaviour.io.InputTriggerConfig;
 import org.scijava.ui.behaviour.util.Actions;
 import org.scijava.ui.behaviour.util.Behaviours;
 import org.scijava.ui.behaviour.util.WrappedActionMap;
@@ -88,7 +87,7 @@ public class MastodonFrameView<
 		frame.keybindings.addActionMap( "app", new WrappedActionMap( appActions.getActionMap() ) );
 		frame.keybindings.addInputMap( "app", new WrappedInputMap( appActions.getInputMap() ) );
 
-		final Keymap keymap = appModel.getKeymapManager().getForwardDefaultKeymap();
+		final Keymap keymap = appModel.getKeymap();
 
 		viewActions = new Actions( keymap.getConfig(), getKeyConfigContexts() );
 		viewActions.install( frame.keybindings, "view" );
@@ -104,9 +103,9 @@ public class MastodonFrameView<
 		onClose( () -> keymap.updateListeners().remove( updateListener ) );
 	}
 
-	InputTriggerConfig getKeyConfig()
+	Keymap getKeymap()
 	{
-		return appModel.getKeyConfig();
+		return appModel.getKeymap();
 	}
 
 	M getAppModel()
