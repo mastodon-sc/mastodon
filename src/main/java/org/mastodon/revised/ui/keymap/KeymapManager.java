@@ -23,12 +23,9 @@ import org.yaml.snakeyaml.DumperOptions;
 import org.yaml.snakeyaml.Yaml;
 
 /**
- * TODO REVISE
- *
  * Manages a collection of {@link Keymap}.
  * <p>
- * Has serialization / deserialization facilities and can return models based on
- * the collection it manages.
+ * Provides de/serialization of user-defined keymaps.
  *
  * @author Tobias Pietzsch
  */

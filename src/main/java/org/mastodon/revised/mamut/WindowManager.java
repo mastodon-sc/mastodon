@@ -36,9 +36,11 @@ public class WindowManager
 {
 	public static final String NEW_BDV_VIEW = "new bdv view";
 	public static final String NEW_TRACKSCHEME_VIEW = "new trackscheme view";
+	public static final String PREFERENCES_DIALOG = "Preferences";
 
 	static final String[] NEW_BDV_VIEW_KEYS = new String[] { "not mapped" };
 	static final String[] NEW_TRACKSCHEME_VIEW_KEYS = new String[] { "not mapped" };
+	static final String[] PREFERENCES_DIALOG_KEYS = new String[] { "meta COMMA", "control COMMA" };
 
 	/**
 	 * All currently open BigDataViewer windows.
@@ -99,6 +101,13 @@ public class WindowManager
 		globalAppActions.namedAction( newBdvViewAction, NEW_BDV_VIEW_KEYS );
 		globalAppActions.namedAction( newTrackSchemeViewAction, NEW_TRACKSCHEME_VIEW_KEYS );
 
+		final PreferencesDialog settings = new PreferencesDialog( null );
+		settings.addPage( new TrackSchemeStyleSettingsPage( "TrackScheme Styles", trackSchemeStyleManager ) );
+		settings.addPage( new RenderSettingsConfigPage( "BDV Render Settings", renderSettingsManager ) );
+		settings.addPage( new KeymapSettingsPage( "Keymap", keymapManager ) );
+		final ToggleDialogAction tooglePreferencesDialogAction = new ToggleDialogAction( PREFERENCES_DIALOG, settings );
+		globalAppActions.namedAction( tooglePreferencesDialogAction, PREFERENCES_DIALOG_KEYS );
+
 		updateEnabledActions();
 	}
 
@@ -122,15 +131,6 @@ public class WindowManager
 		final Model model = appModel.getModel();
 		UndoActions.install( appModel.getAppActions(), model );
 		SelectionActions.install( appModel.getAppActions(), model.getGraph(), model.getGraph().getLock(), model.getGraph(), appModel.getSelectionModel(), model );
-
-		// TODO FIX HACK: We are creating a new dialog everytime so that the keyconf (which is filled from programmatically set defaults is)
-		final PreferencesDialog settings = new PreferencesDialog( null );
-		settings.addPage( new TrackSchemeStyleSettingsPage( "TrackScheme Styles", trackSchemeStyleManager ) );
-		settings.addPage( new RenderSettingsConfigPage( "BDV Render Settings", renderSettingsManager ) );
-		settings.addPage( new KeymapSettingsPage( "Keymap", keymapManager ) );
-
-		final ToggleDialogAction tooglePreferencesDialogAction = new ToggleDialogAction( "Preferences", settings );
-		appModel.getAppActions().namedAction( tooglePreferencesDialogAction, "meta COMMA", "control COMMA" );
 
 		updateEnabledActions();
 	}
@@ -256,10 +256,10 @@ public class WindowManager
 	// TODO: move somewhere else. make bdvWindows, tsWindows accessible.
 	public static class DumpInputConfig
 	{
-		public static boolean mkdirs( final String fileName )
+		static boolean mkdirs( final String fileName )
 		{
 			final File dir = new File( fileName ).getParentFile();
-			return dir == null ? false : dir.mkdirs();
+			return dir != null && dir.mkdirs();
 		}
 
 		public static void writeToYaml( final String fileName, final WindowManager wm ) throws IOException

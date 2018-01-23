@@ -59,7 +59,7 @@ public class Keymap implements Style< Keymap >
 	{
 		this.name = style.name;
 		this.config.set( style.config );
-		notifyListeners(); // TODO?
+		notifyListeners();
 	}
 
 	private void notifyListeners()
