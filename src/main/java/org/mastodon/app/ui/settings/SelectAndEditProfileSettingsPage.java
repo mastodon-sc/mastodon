@@ -113,6 +113,7 @@ public class SelectAndEditProfileSettingsPage< T extends SelectAndEditProfileSet
 	{
 		profileManager.cancel();
 		profileSelectionPanel.makeModel();
+		profileEditPanel.loadProfile( profileManager.getSelectedProfile() );
 	}
 
 	/**
