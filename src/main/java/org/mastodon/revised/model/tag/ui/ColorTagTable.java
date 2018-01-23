@@ -96,7 +96,6 @@ public class ColorTagTable< C, T > extends AbstractTagTable< C, T, ColorTagTable
 					element.setColor( c );
 					notifyListeners();
 					tableModel.fireTableRowsUpdated( row, row );
-					update();
 				}
 			}, null ).setVisible( true );
 		}

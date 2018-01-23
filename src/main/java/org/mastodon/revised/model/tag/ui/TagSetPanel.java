@@ -16,6 +16,9 @@ import org.mastodon.revised.model.tag.TagSetStructure.TagSet;
 
 public class TagSetPanel extends JPanel
 {
+
+	private final TagTable< TagSetStructure, TagSet > tagSetTable;
+
 	public interface UpdateListener
 	{
 		void modelUpdated();
@@ -25,6 +28,11 @@ public class TagSetPanel extends JPanel
 
 	private final ArrayList< UpdateListener > updateListeners;
 
+	public TagSetPanel()
+	{
+		this( new TagSetStructure() );
+	}
+
 	public TagSetPanel( final TagSetStructure tagSetStructure )
 	{
 		super( new BorderLayout( 0, 0 ) );
@@ -32,7 +40,7 @@ public class TagSetPanel extends JPanel
 		this.tagSetStructure = tagSetStructure;
 		updateListeners = new ArrayList<>();
 
-		final TagTable< TagSetStructure, TagSet > tagSetTable = new TagTable<>( tagSetStructure,
+		tagSetTable = new TagTable<>( tagSetStructure,
 				tss -> tss.createTagSet( makeNewName( "Tag set" ) ),
 				tss -> tss.getTagSets().size(),
 				TagSetStructure::remove,
@@ -63,6 +71,17 @@ public class TagSetPanel extends JPanel
 //		splitPane.setBorder( new EmptyBorder( 0, 0, 0, 0 ) );
 
 		this.add( splitPane, BorderLayout.CENTER );
+	}
+
+	public TagSetStructure getTagSetStructure()
+	{
+		return tagSetStructure;
+	}
+
+	public void setTagSetStructure( final TagSetStructure tss )
+	{
+		tagSetStructure.set( tss );
+		tagSetTable.setElements( tagSetStructure );
 	}
 
 	public synchronized boolean addUpdateListener( final UpdateListener l )

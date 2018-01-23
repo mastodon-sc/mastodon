@@ -217,16 +217,14 @@ public abstract class AbstractTagTable< C, T, E extends AbstractTagTable< ?, T, 
 			if ( install )
 				scrollPane.setViewportView( table );
 			tableModel.fireTableDataChanged();
+			if ( table.getRowCount() > 0 )
+				table.setRowSelectionInterval( 0, 0 );
 		}
 	}
 
 	public JComponent getTable()
 	{
 		return scrollPane;
-	}
-
-	protected void update()
-	{
 	}
 
 	protected void notifyListeners()
@@ -283,7 +281,6 @@ public abstract class AbstractTagTable< C, T, E extends AbstractTagTable< ?, T, 
 			tableModel.fireTableRowsDeleted( row, row );
 			final int s = Math.max( row - 1, 0 );
 			table.setRowSelectionInterval( s, s );
-			update();
 		}
 	}
 
