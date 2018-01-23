@@ -206,83 +206,83 @@
 - !mapping
   action: set current source 0
   contexts: [mastodon, bdv]
-  triggers: ['0']
+  triggers: ['1']
 - !mapping
   action: toggle source visibility 0
   contexts: [mastodon, bdv]
-  triggers: [shift 0]
+  triggers: [shift 1]
 - !mapping
   action: set current source 1
   contexts: [mastodon, bdv]
-  triggers: ['1']
+  triggers: ['2']
 - !mapping
   action: toggle source visibility 1
   contexts: [mastodon, bdv]
-  triggers: [shift 1]
+  triggers: [shift 2]
 - !mapping
   action: set current source 2
   contexts: [mastodon, bdv]
-  triggers: ['2']
+  triggers: ['3']
 - !mapping
   action: toggle source visibility 2
   contexts: [mastodon, bdv]
-  triggers: [shift 2]
+  triggers: [shift 3]
 - !mapping
   action: set current source 3
   contexts: [mastodon, bdv]
-  triggers: ['3']
+  triggers: ['4']
 - !mapping
   action: toggle source visibility 3
   contexts: [mastodon, bdv]
-  triggers: [shift 3]
+  triggers: [shift 4]
 - !mapping
   action: set current source 4
   contexts: [mastodon, bdv]
-  triggers: ['4']
+  triggers: ['5']
 - !mapping
   action: toggle source visibility 4
   contexts: [mastodon, bdv]
-  triggers: [shift 4]
+  triggers: [shift 5]
 - !mapping
   action: set current source 5
   contexts: [mastodon, bdv]
-  triggers: ['5']
+  triggers: ['6']
 - !mapping
   action: toggle source visibility 5
   contexts: [mastodon, bdv]
-  triggers: [shift 5]
+  triggers: [shift 6]
 - !mapping
   action: set current source 6
   contexts: [mastodon, bdv]
-  triggers: ['6']
+  triggers: ['7']
 - !mapping
   action: toggle source visibility 6
   contexts: [mastodon, bdv]
-  triggers: [shift 6]
+  triggers: [shift 7]
 - !mapping
   action: set current source 7
   contexts: [mastodon, bdv]
-  triggers: ['7']
+  triggers: ['8']
 - !mapping
   action: toggle source visibility 7
   contexts: [mastodon, bdv]
-  triggers: [shift 7]
+  triggers: [shift 8]
 - !mapping
   action: set current source 8
   contexts: [mastodon, bdv]
-  triggers: ['8']
+  triggers: ['9']
 - !mapping
   action: toggle source visibility 8
   contexts: [mastodon, bdv]
-  triggers: [shift 8]
+  triggers: [shift 9]
 - !mapping
   action: set current source 9
   contexts: [mastodon, bdv]
-  triggers: ['9']
+  triggers: ['0']
 - !mapping
   action: toggle source visibility 9
   contexts: [mastodon, bdv]
-  triggers: [shift 9]
+  triggers: [shift 0]
 - !mapping
   action: next timepoint
   contexts: [mastodon, bdv]

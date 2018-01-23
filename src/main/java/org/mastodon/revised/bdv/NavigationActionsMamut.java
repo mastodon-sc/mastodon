@@ -52,8 +52,8 @@ public class NavigationActionsMamut
 	public static final String[] TOGGLE_INTERPOLATION_KEYS = new String[] { "I" };
 	public static final String[] TOGGLE_FUSED_MODE_KEYS = new String[] { "F" };
 	public static final String[] TOGGLE_GROUPING_KEYS = new String[] { "G" };
-	public static final String SET_CURRENT_SOURCE_KEYS_FORMAT = "%d";
-	public static final String TOGGLE_SOURCE_VISIBILITY_KEYS_FORMAT = "shift %d";
+	public static final String SET_CURRENT_SOURCE_KEYS_FORMAT = "%s";
+	public static final String TOGGLE_SOURCE_VISIBILITY_KEYS_FORMAT = "shift %s";
 	public static final String[] ALIGN_XY_PLANE_KEYS = new String[] { "shift Z" };
 	public static final String[] ALIGN_ZY_PLANE_KEYS = new String[] { "shift X" };
 	public static final String[] ALIGN_XZ_PLANE_KEYS = new String[] { "shift Y", "shift A" };
@@ -83,8 +83,8 @@ public class NavigationActionsMamut
 
 		final String[] numkeys = new String[] { "1", "2", "3", "4", "5", "6", "7", "8", "9", "0" };
 		IntStream.range( 0, numkeys.length ).forEach( i -> {
-			actions.runnableAction( () -> vg.setCurrentGroupOrSource( i ), String.format( SET_CURRENT_SOURCE, i ), String.format( SET_CURRENT_SOURCE_KEYS_FORMAT, i ) );
-			actions.runnableAction( ()-> vg.toggleActiveGroupOrSource( i ), String.format( TOGGLE_SOURCE_VISIBILITY, i ), String.format( TOGGLE_SOURCE_VISIBILITY_KEYS_FORMAT, i ) );
+			actions.runnableAction( () -> vg.setCurrentGroupOrSource( i ), String.format( SET_CURRENT_SOURCE, i ), String.format( SET_CURRENT_SOURCE_KEYS_FORMAT, numkeys[ i ] ) );
+			actions.runnableAction( ()-> vg.toggleActiveGroupOrSource( i ), String.format( TOGGLE_SOURCE_VISIBILITY, i ), String.format( TOGGLE_SOURCE_VISIBILITY_KEYS_FORMAT, numkeys[ i ] ) );
 		} );
 
 		actions.runnableAction( viewer::nextTimePoint, NEXT_TIMEPOINT, NEXT_TIMEPOINT_KEYS );
