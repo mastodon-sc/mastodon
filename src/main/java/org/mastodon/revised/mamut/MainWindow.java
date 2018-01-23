@@ -103,6 +103,13 @@ public class MainWindow extends JFrame
 
 		++gridy;
 
+		final JButton editTagSetsButton = new JButton( actionMap.get( WindowManager.TAGSETS_DIALOG ) );
+		editTagSetsButton.setText( "configure tags" );
+		button_gbc_right.gridy = gridy;
+		buttonsPanel.add( editTagSetsButton, button_gbc_right );
+
+		++gridy;
+
 		separator_gbc.gridy = gridy;
 		buttonsPanel.add( new JSeparator(), separator_gbc );
 

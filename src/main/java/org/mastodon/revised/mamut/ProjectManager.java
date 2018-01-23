@@ -206,8 +206,6 @@ public class ProjectManager
 				() -> windowManager.forEachBdvView( bdv -> bdv.requestRepaint() ) );
 		final MamutAppModel appModel = new MamutAppModel( model, sharedBdvData, keyPressedManager, trackSchemeStyleManager, renderSettingsManager, keymapManager, globalAppActions );
 
-		windowManager.setAppModel( appModel );
-
 		/*
 		 * Feature calculation.
 		 */
@@ -228,6 +226,8 @@ public class ProjectManager
 		locationTag.createTag( "Posterior", new Color( ran.nextInt() ) );
 		System.out.println( "Initial TagSetStructure:\n" + tss );
 		model.getTagSetModel().setTagSetStructure( tss );
+
+		windowManager.setAppModel( appModel );
 
 		/*
 		 * TODO FIXE Ugly hack to get proper service instantiation. Fix it by

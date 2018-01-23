@@ -14,32 +14,37 @@ import javax.swing.WindowConstants;
 
 import org.mastodon.app.ui.settings.SimpleSettingsPage;
 import org.mastodon.app.ui.settings.SingleSettingsPanel;
+import org.mastodon.revised.model.tag.TagSetModel;
 import org.mastodon.revised.model.tag.TagSetStructure;
 import org.mastodon.revised.model.tag.TagSetStructure.TagSet;
 
 public class TagSetDialog extends JDialog
 {
-	public static class TagSetManager
+	private static final long serialVersionUID = 1L;
+
+	public interface TagSetManager
 	{
-		private final TagSetStructure tagSetStructure;
+		TagSetStructure getTagSetStructure();
 
-		public TagSetManager()
-		{
-			this.tagSetStructure = new TagSetStructure();
-		}
-
-		public TagSetStructure getTagSetStructure()
-		{
-			return tagSetStructure;
-		}
-
-		public void setTagSetStructure( final TagSetStructure tagSetStructure )
-		{
-			this.tagSetStructure.set( tagSetStructure );
-		}
+		void setTagSetStructure( final TagSetStructure tagSetStructure );
 	}
 
-	private static final long serialVersionUID = 1L;
+	public TagSetDialog( final Frame owner, final TagSetModel<?,?> model )
+	{
+		this( owner, new TagSetManager() {
+			@Override
+			public TagSetStructure getTagSetStructure()
+			{
+				return model.getTagSetStructure();
+			}
+
+			@Override
+			public void setTagSetStructure( final TagSetStructure tagSetStructure )
+			{
+				model.setTagSetStructure( tagSetStructure );
+			}
+		} );
+	}
 
 	public TagSetDialog( final Frame owner, final TagSetManager manager )
 	{
@@ -87,8 +92,20 @@ public class TagSetDialog extends JDialog
 		locationTag.createTag( "Anterior", new Color( ran.nextInt() ) );
 		locationTag.createTag( "Posterior", new Color( ran.nextInt() ) );
 
-		final TagSetManager manager = new TagSetManager();
-		manager.setTagSetStructure( tss );
+		final TagSetManager manager = new TagSetManager()
+		{
+			@Override
+			public TagSetStructure getTagSetStructure()
+			{
+				return tss;
+			}
+
+			@Override
+			public void setTagSetStructure( final TagSetStructure tagSetStructure )
+			{
+				tss.set( tagSetStructure );
+			}
+		};
 
 		final TagSetDialog frame = new TagSetDialog( null, manager );
 		frame.setVisible( true );

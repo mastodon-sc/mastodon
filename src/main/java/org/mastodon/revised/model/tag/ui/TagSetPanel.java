@@ -16,7 +16,6 @@ import org.mastodon.revised.model.tag.TagSetStructure.TagSet;
 
 public class TagSetPanel extends JPanel
 {
-
 	private final TagTable< TagSetStructure, TagSet > tagSetTable;
 
 	public interface UpdateListener

@@ -14,6 +14,7 @@ import org.mastodon.revised.bdv.overlay.ui.RenderSettingsConfigPage;
 import org.mastodon.revised.bdv.overlay.ui.RenderSettingsManager;
 import org.mastodon.revised.model.mamut.Model;
 import org.mastodon.revised.model.mamut.Spot;
+import org.mastodon.revised.model.tag.ui.TagSetDialog;
 import org.mastodon.revised.trackscheme.display.style.TrackSchemeStyleManager;
 import org.mastodon.revised.trackscheme.display.style.TrackSchemeStyleSettingsPage;
 import org.mastodon.revised.ui.SelectionActions;
@@ -37,10 +38,12 @@ public class WindowManager
 	public static final String NEW_BDV_VIEW = "new bdv view";
 	public static final String NEW_TRACKSCHEME_VIEW = "new trackscheme view";
 	public static final String PREFERENCES_DIALOG = "Preferences";
+	public static final String TAGSETS_DIALOG = "edit tag sets";
 
 	static final String[] NEW_BDV_VIEW_KEYS = new String[] { "not mapped" };
 	static final String[] NEW_TRACKSCHEME_VIEW_KEYS = new String[] { "not mapped" };
 	static final String[] PREFERENCES_DIALOG_KEYS = new String[] { "meta COMMA", "control COMMA" };
+	static final String[] TAGSETS_DIALOG_KEYS = new String[] { "not mapped" };
 
 	/**
 	 * All currently open BigDataViewer windows.
@@ -71,7 +74,11 @@ public class WindowManager
 
 	private final AbstractNamedAction newTrackSchemeViewAction;
 
+	private final AbstractNamedAction editTagSetsAction;
+
 	private MamutAppModel appModel;
+
+	private TagSetDialog tagSetDialog;
 
 	final ProjectManager projectManager;
 
@@ -97,9 +104,11 @@ public class WindowManager
 
 		newBdvViewAction = new RunnableAction( NEW_BDV_VIEW, this::createBigDataViewer );
 		newTrackSchemeViewAction = new RunnableAction( NEW_TRACKSCHEME_VIEW, this::createTrackScheme );
+		editTagSetsAction = new RunnableAction( TAGSETS_DIALOG, this::editTagSets );
 
 		globalAppActions.namedAction( newBdvViewAction, NEW_BDV_VIEW_KEYS );
 		globalAppActions.namedAction( newTrackSchemeViewAction, NEW_TRACKSCHEME_VIEW_KEYS );
+		globalAppActions.namedAction( editTagSetsAction, TAGSETS_DIALOG_KEYS );
 
 		final PreferencesDialog settings = new PreferencesDialog( null );
 		settings.addPage( new TrackSchemeStyleSettingsPage( "TrackScheme Styles", trackSchemeStyleManager ) );
@@ -115,6 +124,7 @@ public class WindowManager
 	{
 		newBdvViewAction.setEnabled( appModel != null );
 		newTrackSchemeViewAction.setEnabled( appModel != null );
+		editTagSetsAction.setEnabled( appModel != null );
 	}
 
 	void setAppModel( final MamutAppModel appModel )
@@ -124,6 +134,7 @@ public class WindowManager
 		this.appModel = appModel;
 		if ( appModel == null )
 		{
+			tagSetDialog = null;
 			updateEnabledActions();
 			return;
 		}
@@ -132,6 +143,7 @@ public class WindowManager
 		UndoActions.install( appModel.getAppActions(), model );
 		SelectionActions.install( appModel.getAppActions(), model.getGraph(), model.getGraph().getLock(), model.getGraph(), appModel.getSelectionModel(), model );
 
+		tagSetDialog = new TagSetDialog( null, model.getTagSetModel() );
 		updateEnabledActions();
 	}
 
@@ -190,6 +202,14 @@ public class WindowManager
 		{
 			final MamutViewTrackScheme view = new MamutViewTrackScheme( appModel );
 			addTsWindow( view );
+		}
+	}
+
+	public void editTagSets()
+	{
+		if ( appModel != null )
+		{
+			tagSetDialog.setVisible( true );
 		}
 	}
 
