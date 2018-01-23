@@ -60,10 +60,17 @@ public class MastodonAppModel<
 	private final Actions appActions;
 
 	/**
+	 * Actions that are always available, even if no ({@code {@link MastodonAppModel}} currently exists.
+	 */
+	private final Actions globalActions;
+
+
+	/**
 	 * @param numGroups
 	 * @param model
 	 * @param keyPressedManager
 	 * @param keymapManager
+	 * @param globalActions
 	 * @param keyConfigContexts
 	 *            keyconf contexts for appActions (actions that should be available in all views)
 	 */
@@ -72,9 +79,11 @@ public class MastodonAppModel<
 			final M model,
 			final KeyPressedManager keyPressedManager,
 			final KeymapManager keymapManager,
+			final Actions globalActions,
 			final String[] keyConfigContexts )
 	{
 		this.model = model;
+		this.globalActions = globalActions;
 
 		final ListenableReadOnlyGraph< V, E > graph = model.getGraph();
 		final GraphIdBimap< V, E > idmap = model.getGraphIdBimap();
@@ -148,8 +157,19 @@ public class MastodonAppModel<
 		return keymapManager;
 	}
 
+	/**
+	 * Actions that should be available in all views.
+	 */
 	public Actions getAppActions()
 	{
 		return appActions;
+	}
+
+	/**
+	 * Actions that are always available, even if no ({@code {@link MastodonAppModel}} currently exists.
+	 */
+	public Actions getGlobalActions()
+	{
+		return globalActions;
 	}
 }

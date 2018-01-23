@@ -171,7 +171,9 @@ public class MainWindow extends JFrame
 						item( ProjectManager.LOAD_PROJECT ),
 						item( ProjectManager.SAVE_PROJECT ),
 						separator(),
-						item( ProjectManager.IMPORT_TGMM )
+						item( ProjectManager.IMPORT_TGMM ),
+						separator(),
+						item( WindowManager.PREFERENCES_DIALOG )
 				),
 				windowMenu(
 						item( WindowManager.NEW_BDV_VIEW ),

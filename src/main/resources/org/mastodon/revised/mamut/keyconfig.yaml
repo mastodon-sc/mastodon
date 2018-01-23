@@ -25,481 +25,481 @@
   triggers: [not mapped]
 - !mapping
   action: undo
-  contexts: [mamut]
+  contexts: [mastodon]
   triggers: [ctrl Z, meta Z]
 - !mapping
   action: redo
-  contexts: [mamut]
+  contexts: [mastodon]
   triggers: [shift ctrl Z, shift meta Z]
 - !mapping
   action: delete selection
-  contexts: [mamut]
+  contexts: [mastodon]
   triggers: [shift DELETE]
 - !mapping
   action: select whole track
-  contexts: [mamut]
+  contexts: [mastodon]
   triggers: [shift SPACE]
 - !mapping
   action: select track downward
-  contexts: [mamut]
+  contexts: [mastodon]
   triggers: [shift PAGE_DOWN]
 - !mapping
   action: select track upward
-  contexts: [mamut]
+  contexts: [mastodon]
   triggers: [shift PAGE_UP]
 - !mapping
   action: Preferences
-  contexts: [mamut]
+  contexts: [mastodon]
   triggers: [meta COMMA, ctrl COMMA]
 - !mapping
   action: toggle settings panel
-  contexts: [mamut, bdv]
+  contexts: [mastodon, bdv]
   triggers: [T]
 - !mapping
   action: visibility and grouping
-  contexts: [mamut, bdv]
+  contexts: [mastodon, bdv]
   triggers: [F6]
 - !mapping
   action: go to bookmark
-  contexts: [mamut, bdv]
+  contexts: [mastodon, bdv]
   triggers: [B]
 - !mapping
   action: go to bookmark rotation
-  contexts: [mamut, bdv]
+  contexts: [mastodon, bdv]
   triggers: [O]
 - !mapping
   action: set bookmark
-  contexts: [mamut, bdv]
+  contexts: [mastodon, bdv]
   triggers: [shift B]
 - !mapping
   action: brightness settings
-  contexts: [mamut, bdv]
+  contexts: [mastodon, bdv]
   triggers: [S]
 - !mapping
   action: save settings
-  contexts: [mamut, bdv]
+  contexts: [mastodon, bdv]
   triggers: [F11]
 - !mapping
   action: load settings
-  contexts: [mamut, bdv]
+  contexts: [mastodon, bdv]
   triggers: [F12]
 - !mapping
   action: bdv click navigate to vertex
-  contexts: [mamut, bdv]
+  contexts: [mastodon, bdv]
   triggers: [button1 double-click, shift button1 double-click]
 - !mapping
   action: bdv click select
-  contexts: [mamut, bdv]
+  contexts: [mastodon, bdv]
   triggers: [button1]
 - !mapping
   action: bdv click add to selection
-  contexts: [mamut, bdv]
+  contexts: [mastodon, bdv]
   triggers: [shift button1]
 - !mapping
   action: move spot
-  contexts: [mamut, bdv]
+  contexts: [mastodon, bdv]
   triggers: [SPACE]
 - !mapping
   action: add spot
-  contexts: [mamut, bdv]
+  contexts: [mastodon, bdv]
   triggers: [A]
 - !mapping
   action: increase spot radius
-  contexts: [mamut, bdv]
+  contexts: [mastodon, bdv]
   triggers: [E]
 - !mapping
   action: increase spot radius a bit
-  contexts: [mamut, bdv]
+  contexts: [mastodon, bdv]
   triggers: [ctrl E]
 - !mapping
   action: increase spot radius a lot
-  contexts: [mamut, bdv]
+  contexts: [mastodon, bdv]
   triggers: [shift E]
 - !mapping
   action: decrease spot radius
-  contexts: [mamut, bdv]
+  contexts: [mastodon, bdv]
   triggers: [Q]
 - !mapping
   action: decrease spot radius a bit
-  contexts: [mamut, bdv]
+  contexts: [mastodon, bdv]
   triggers: [ctrl Q]
 - !mapping
   action: decrease spot radius a lot
-  contexts: [mamut, bdv]
+  contexts: [mastodon, bdv]
   triggers: [shift Q]
 - !mapping
   action: add linked spot
-  contexts: [mamut, bdv]
+  contexts: [mastodon, bdv]
   triggers: [A]
 - !mapping
   action: add linked spot backward
-  contexts: [mamut, bdv]
+  contexts: [mastodon, bdv]
   triggers: [C]
 - !mapping
   action: toggle link
-  contexts: [mamut, bdv]
+  contexts: [mastodon, bdv]
   triggers: [L]
 - !mapping
   action: toggle link backward
-  contexts: [mamut, bdv]
+  contexts: [mastodon, bdv]
   triggers: [shift L]
 - !mapping
   action: remove highlighted vertex
-  contexts: [mamut, bdv]
+  contexts: [mastodon, bdv]
   triggers: [D]
 - !mapping
   action: remove highlighted edge
-  contexts: [mamut, bdv]
+  contexts: [mastodon, bdv]
   triggers: [D]
 - !mapping
   action: navigate to child
-  contexts: [mamut, bdv]
+  contexts: [mastodon, bdv]
   triggers: [ctrl DOWN]
 - !mapping
   action: navigate to parent
-  contexts: [mamut, bdv]
+  contexts: [mastodon, bdv]
   triggers: [ctrl UP]
 - !mapping
   action: navigate to sibling
-  contexts: [mamut, bdv]
+  contexts: [mastodon, bdv]
   triggers: [ctrl RIGHT, ctrl LEFT]
 - !mapping
   action: navigate to branch child
-  contexts: [mamut, bdv]
+  contexts: [mastodon, bdv]
   triggers: [ctrl alt DOWN]
 - !mapping
   action: navigate to branch parent
-  contexts: [mamut, bdv]
+  contexts: [mastodon, bdv]
   triggers: [ctrl alt UP]
 - !mapping
   action: select navigate to child
-  contexts: [mamut, bdv]
+  contexts: [mastodon, bdv]
   triggers: [shift ctrl DOWN]
 - !mapping
   action: select navigate to parent
-  contexts: [mamut, bdv]
+  contexts: [mastodon, bdv]
   triggers: [shift ctrl UP]
 - !mapping
   action: select navigate to sibling
-  contexts: [mamut, bdv]
+  contexts: [mastodon, bdv]
   triggers: [shift ctrl LEFT, shift ctrl RIGHT]
 - !mapping
   action: select navigate to branch child
-  contexts: [mamut, bdv]
+  contexts: [mastodon, bdv]
   triggers: [shift ctrl alt DOWN]
 - !mapping
   action: select navigate to branch parent
-  contexts: [mamut, bdv]
+  contexts: [mastodon, bdv]
   triggers: [shift ctrl alt UP]
 - !mapping
   action: toggle interpolation
-  contexts: [mamut, bdv]
+  contexts: [mastodon, bdv]
   triggers: [I]
 - !mapping
   action: toggle fused mode
-  contexts: [mamut, bdv]
+  contexts: [mastodon, bdv]
   triggers: [F]
 - !mapping
   action: toggle grouping
-  contexts: [mamut, bdv]
+  contexts: [mastodon, bdv]
   triggers: [G]
 - !mapping
   action: set current source 0
-  contexts: [mamut, bdv]
+  contexts: [mastodon, bdv]
   triggers: ['0']
 - !mapping
   action: toggle source visibility 0
-  contexts: [mamut, bdv]
+  contexts: [mastodon, bdv]
   triggers: [shift 0]
 - !mapping
   action: set current source 1
-  contexts: [mamut, bdv]
+  contexts: [mastodon, bdv]
   triggers: ['1']
 - !mapping
   action: toggle source visibility 1
-  contexts: [mamut, bdv]
+  contexts: [mastodon, bdv]
   triggers: [shift 1]
 - !mapping
   action: set current source 2
-  contexts: [mamut, bdv]
+  contexts: [mastodon, bdv]
   triggers: ['2']
 - !mapping
   action: toggle source visibility 2
-  contexts: [mamut, bdv]
+  contexts: [mastodon, bdv]
   triggers: [shift 2]
 - !mapping
   action: set current source 3
-  contexts: [mamut, bdv]
+  contexts: [mastodon, bdv]
   triggers: ['3']
 - !mapping
   action: toggle source visibility 3
-  contexts: [mamut, bdv]
+  contexts: [mastodon, bdv]
   triggers: [shift 3]
 - !mapping
   action: set current source 4
-  contexts: [mamut, bdv]
+  contexts: [mastodon, bdv]
   triggers: ['4']
 - !mapping
   action: toggle source visibility 4
-  contexts: [mamut, bdv]
+  contexts: [mastodon, bdv]
   triggers: [shift 4]
 - !mapping
   action: set current source 5
-  contexts: [mamut, bdv]
+  contexts: [mastodon, bdv]
   triggers: ['5']
 - !mapping
   action: toggle source visibility 5
-  contexts: [mamut, bdv]
+  contexts: [mastodon, bdv]
   triggers: [shift 5]
 - !mapping
   action: set current source 6
-  contexts: [mamut, bdv]
+  contexts: [mastodon, bdv]
   triggers: ['6']
 - !mapping
   action: toggle source visibility 6
-  contexts: [mamut, bdv]
+  contexts: [mastodon, bdv]
   triggers: [shift 6]
 - !mapping
   action: set current source 7
-  contexts: [mamut, bdv]
+  contexts: [mastodon, bdv]
   triggers: ['7']
 - !mapping
   action: toggle source visibility 7
-  contexts: [mamut, bdv]
+  contexts: [mastodon, bdv]
   triggers: [shift 7]
 - !mapping
   action: set current source 8
-  contexts: [mamut, bdv]
+  contexts: [mastodon, bdv]
   triggers: ['8']
 - !mapping
   action: toggle source visibility 8
-  contexts: [mamut, bdv]
+  contexts: [mastodon, bdv]
   triggers: [shift 8]
 - !mapping
   action: set current source 9
-  contexts: [mamut, bdv]
+  contexts: [mastodon, bdv]
   triggers: ['9']
 - !mapping
   action: toggle source visibility 9
-  contexts: [mamut, bdv]
+  contexts: [mastodon, bdv]
   triggers: [shift 9]
 - !mapping
   action: next timepoint
-  contexts: [mamut, bdv]
+  contexts: [mastodon, bdv]
   triggers: [CLOSE_BRACKET, M]
 - !mapping
   action: previous timepoint
-  contexts: [mamut, bdv]
+  contexts: [mastodon, bdv]
   triggers: [OPEN_BRACKET, N]
 - !mapping
   action: align XY plane
-  contexts: [mamut, bdv]
+  contexts: [mastodon, bdv]
   triggers: [shift Z]
 - !mapping
   action: align ZY plane
-  contexts: [mamut, bdv]
+  contexts: [mastodon, bdv]
   triggers: [shift X]
 - !mapping
   action: align XZ plane
-  contexts: [mamut, bdv]
+  contexts: [mastodon, bdv]
   triggers: [shift Y, shift A]
 - !mapping
   action: drag translate
-  contexts: [mamut, bdv]
+  contexts: [mastodon, bdv]
   triggers: [button2, button3]
 - !mapping
   action: scroll zoom
-  contexts: [mamut, bdv]
+  contexts: [mastodon, bdv]
   triggers: [meta scroll, shift ctrl scroll]
 - !mapping
   action: axis x
-  contexts: [mamut, bdv]
+  contexts: [mastodon, bdv]
   triggers: [X]
 - !mapping
   action: axis y
-  contexts: [mamut, bdv]
+  contexts: [mastodon, bdv]
   triggers: [Y]
 - !mapping
   action: axis z
-  contexts: [mamut, bdv]
+  contexts: [mastodon, bdv]
   triggers: [Z]
 - !mapping
   action: drag rotate
-  contexts: [mamut, bdv]
+  contexts: [mastodon, bdv]
   triggers: [button1]
 - !mapping
   action: drag rotate fast
-  contexts: [mamut, bdv]
+  contexts: [mastodon, bdv]
   triggers: [shift button1]
 - !mapping
   action: drag rotate slow
-  contexts: [mamut, bdv]
+  contexts: [mastodon, bdv]
   triggers: [ctrl button1]
 - !mapping
   action: scroll browse z
-  contexts: [mamut, bdv]
+  contexts: [mastodon, bdv]
   triggers: [scroll]
 - !mapping
   action: scroll browse z fast
-  contexts: [mamut, bdv]
+  contexts: [mastodon, bdv]
   triggers: [shift scroll]
 - !mapping
   action: scroll browse z slow
-  contexts: [mamut, bdv]
+  contexts: [mastodon, bdv]
   triggers: [ctrl scroll]
 - !mapping
   action: rotate left
-  contexts: [mamut, bdv]
+  contexts: [mastodon, bdv]
   triggers: [LEFT]
 - !mapping
   action: rotate left fast
-  contexts: [mamut, bdv]
+  contexts: [mastodon, bdv]
   triggers: [shift LEFT]
 - !mapping
   action: rotate left slow
-  contexts: [mamut, bdv]
+  contexts: [mastodon, bdv]
   triggers: [ctrl LEFT]
 - !mapping
   action: rotate right
-  contexts: [mamut, bdv]
+  contexts: [mastodon, bdv]
   triggers: [RIGHT]
 - !mapping
   action: rotate right fast
-  contexts: [mamut, bdv]
+  contexts: [mastodon, bdv]
   triggers: [shift RIGHT]
 - !mapping
   action: rotate right slow
-  contexts: [mamut, bdv]
+  contexts: [mastodon, bdv]
   triggers: [ctrl RIGHT]
 - !mapping
   action: zoom in
-  contexts: [mamut, bdv]
+  contexts: [mastodon, bdv]
   triggers: [UP]
 - !mapping
   action: zoom in fast
-  contexts: [mamut, bdv]
+  contexts: [mastodon, bdv]
   triggers: [shift UP]
 - !mapping
   action: zoom in slow
-  contexts: [mamut, bdv]
+  contexts: [mastodon, bdv]
   triggers: [ctrl UP]
 - !mapping
   action: zoom out
-  contexts: [mamut, bdv]
+  contexts: [mastodon, bdv]
   triggers: [DOWN]
 - !mapping
   action: zoom out fast
-  contexts: [mamut, bdv]
+  contexts: [mastodon, bdv]
   triggers: [shift DOWN]
 - !mapping
   action: zoom out slow
-  contexts: [mamut, bdv]
+  contexts: [mastodon, bdv]
   triggers: [ctrl DOWN]
 - !mapping
   action: forward z
-  contexts: [mamut, bdv]
+  contexts: [mastodon, bdv]
   triggers: [COMMA]
 - !mapping
   action: forward z fast
-  contexts: [mamut, bdv]
+  contexts: [mastodon, bdv]
   triggers: [ctrl COMMA]
 - !mapping
   action: forward z slow
-  contexts: [mamut, bdv]
+  contexts: [mastodon, bdv]
   triggers: [shift COMMA]
 - !mapping
   action: backward z
-  contexts: [mamut, bdv]
+  contexts: [mastodon, bdv]
   triggers: [PERIOD]
 - !mapping
   action: backward z fast
-  contexts: [mamut, bdv]
+  contexts: [mastodon, bdv]
   triggers: [shift PERIOD]
 - !mapping
   action: backward z slow
-  contexts: [mamut, bdv]
+  contexts: [mastodon, bdv]
   triggers: [ctrl PERIOD]
 - !mapping
   action: edit vertex label
-  contexts: [mamut, ts]
+  contexts: [mastodon, ts]
   triggers: [ENTER]
 - !mapping
   action: pick tags
-  contexts: [mamut, ts]
+  contexts: [mastodon, ts]
   triggers: [Y]
 - !mapping
   action: output tags
-  contexts: [mamut, ts]
+  contexts: [mastodon, ts]
   triggers: [U]
 - !mapping
   action: ts navigate to child
-  contexts: [mamut, ts]
+  contexts: [mastodon, ts]
   triggers: [DOWN]
 - !mapping
   action: ts navigate to parent
-  contexts: [mamut, ts]
+  contexts: [mastodon, ts]
   triggers: [UP]
 - !mapping
   action: ts navigate left
-  contexts: [mamut, ts]
+  contexts: [mastodon, ts]
   triggers: [LEFT]
 - !mapping
   action: ts navigate right
-  contexts: [mamut, ts]
+  contexts: [mastodon, ts]
   triggers: [RIGHT]
 - !mapping
   action: ts select navigate to child
-  contexts: [mamut, ts]
+  contexts: [mastodon, ts]
   triggers: [shift DOWN]
 - !mapping
   action: ts select navigate to parent
-  contexts: [mamut, ts]
+  contexts: [mastodon, ts]
   triggers: [shift UP]
 - !mapping
   action: ts select navigate left
-  contexts: [mamut, ts]
+  contexts: [mastodon, ts]
   triggers: [shift LEFT]
 - !mapping
   action: ts select navigate right
-  contexts: [mamut, ts]
+  contexts: [mastodon, ts]
   triggers: [shift RIGHT]
 - !mapping
   action: ts click focus vertex
-  contexts: [mamut, ts]
+  contexts: [mastodon, ts]
   triggers: [shift button1, button1]
 - !mapping
   action: ts click navigate to vertex
-  contexts: [mamut, ts]
+  contexts: [mastodon, ts]
   triggers: [button1 double-click, shift button1 double-click]
 - !mapping
   action: ts click select
-  contexts: [mamut, ts]
+  contexts: [mastodon, ts]
   triggers: [button1]
 - !mapping
   action: ts click add to selection
-  contexts: [mamut, ts]
+  contexts: [mastodon, ts]
   triggers: [shift button1]
 - !mapping
   action: ts box selection
-  contexts: [mamut, ts]
+  contexts: [mastodon, ts]
   triggers: [button1]
 - !mapping
   action: ts box add to selection
-  contexts: [mamut, ts]
+  contexts: [mastodon, ts]
   triggers: [shift button1]
 - !mapping
   action: scroll translate
-  contexts: [mamut, ts]
+  contexts: [mastodon, ts]
   triggers: [scroll]
 - !mapping
   action: zoom horizontal
-  contexts: [mamut, ts]
+  contexts: [mastodon, ts]
   triggers: [shift scroll]
 - !mapping
   action: zoom vertical
-  contexts: [mamut, ts]
+  contexts: [mastodon, ts]
   triggers: [ctrl scroll, alt scroll]
 - !mapping
   action: zoom
-  contexts: [mamut, ts]
+  contexts: [mastodon, ts]
   triggers: [meta scroll, shift ctrl scroll]

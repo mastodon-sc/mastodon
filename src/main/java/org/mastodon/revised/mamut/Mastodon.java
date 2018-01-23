@@ -2,8 +2,6 @@ package org.mastodon.revised.mamut;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.Reader;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Locale;
 
@@ -13,8 +11,6 @@ import javax.swing.UnsupportedLookAndFeelException;
 
 import org.scijava.command.Command;
 import org.scijava.plugin.Plugin;
-import org.scijava.ui.behaviour.io.InputTriggerConfig;
-import org.scijava.ui.behaviour.io.yaml.YamlConfigIO;
 
 import mpicbg.spim.data.SpimDataException;
 
@@ -40,7 +36,6 @@ public class Mastodon implements Command
 		UIManager.setLookAndFeel( UIManager.getSystemLookAndFeelClassName() );
 
 		System.setProperty( "apple.laf.useScreenMenuBar", "true" );
-		final InputTriggerConfig keyconf = getInputTriggerConfig(); // TODO: remove
 		final WindowManager windowManager = new WindowManager();
 		new MainWindow( windowManager ).setVisible( true );
 
@@ -60,60 +55,5 @@ public class Mastodon implements Command
 //			YamlConfigIO.write( new InputTriggerDescriptionsBuilder( keyconf ).getDescriptions(), new PrintWriter( System.out ) );
 		} );
 //		WindowManager.DumpInputConfig.writeToYaml( System.getProperty( "user.home" ) + "/.mastodon/keyconfig.yaml", windowManager );
-	}
-
-	/**
-	 * Try to load {@link InputTriggerConfig} from files in this order:
-	 * <ol>
-	 * <li>"keyconfig.yaml" in the current directory.
-	 * <li>".mastodon/keyconfig.yaml" in the user's home directory.
-	 * </ol>
-	 */
-	public static InputTriggerConfig getInputTriggerConfig()
-	{
-		InputTriggerConfig conf = null;
-
-		try
-		{
-			final Reader reader = new InputStreamReader( Mastodon.class.getResourceAsStream( "keyconfig.yaml" ) );
-			conf = new InputTriggerConfig( YamlConfigIO.read( reader ) );
-			System.out.println( conf );
-			reader.close();
-		}
-		catch ( final IOException e )
-		{}
-
-		// try "keyconfig.yaml" in current directory
-		if ( new File( "keyconfig.yaml" ).isFile() )
-		{
-			try
-			{
-				conf = new InputTriggerConfig( YamlConfigIO.read( "keyconfig.yaml" ) );
-			}
-			catch ( final IOException e )
-			{}
-		}
-
-		// try "~/.mastodon/keyconfig.yaml"
-		if ( conf == null )
-		{
-			final String fn = System.getProperty( "user.home" ) + "/.mastodon/keyconfig.yaml";
-			if ( new File( fn ).isFile() )
-			{
-				try
-				{
-					conf = new InputTriggerConfig( YamlConfigIO.read( fn ) );
-				}
-				catch ( final IOException e )
-				{}
-			}
-		}
-
-		if ( conf == null )
-		{
-			conf = new InputTriggerConfig();
-		}
-
-		return conf;
 	}
 }

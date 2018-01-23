@@ -100,11 +100,12 @@ public class KeymapManager extends AbstractStyleManager< KeymapManager, Keymap >
 	{
 		userStyles.clear();
 		final Set< String > names = builtinStyles.stream().map( Keymap::getName ).collect( Collectors.toSet() );
+		Keymap defaultStyle = builtinStyles.get( 0 );
 		try
 		{
 			String filename = KEYMAPS_PATH + "/keymaps.yaml";
 
-			final KeymapsListIO keymapsList;
+			KeymapsListIO keymapsList = null;
 			try
 			{
 				final FileReader input = new FileReader( filename );
@@ -114,35 +115,37 @@ public class KeymapManager extends AbstractStyleManager< KeymapManager, Keymap >
 			catch ( final FileNotFoundException e )
 			{
 				System.out.println( "Keymap list file " + filename + " not found. Using builtin styles." );
-				return;
 			}
 
-			for ( final Map.Entry< String, String > entry : keymapsList.getFileNameToKeymapName().entrySet() )
+			if ( keymapsList != null )
 			{
-				filename = KEYMAPS_PATH + "/" + entry.getKey();
-				try
+				for ( final Map.Entry< String, String > entry : keymapsList.getFileNameToKeymapName().entrySet() )
 				{
-					final String name = entry.getValue();
-					final InputTriggerConfig config = new InputTriggerConfig( YamlConfigIO.read( filename ) );
-					// sanity check: style names must be unique
-					if ( names.add( name ) )
-						userStyles.add( new Keymap( name, config ) );
-					else
-						System.out.println( "Discarded style with duplicate name \"" + name + "\"." );
+					filename = KEYMAPS_PATH + "/" + entry.getKey();
+					try
+					{
+						final String name = entry.getValue();
+						final InputTriggerConfig config = new InputTriggerConfig( YamlConfigIO.read( filename ) );
+						// sanity check: style names must be unique
+						if ( names.add( name ) )
+							userStyles.add( new Keymap( name, config ) );
+						else
+							System.out.println( "Discarded style with duplicate name \"" + name + "\"." );
+					}
+					catch ( final FileNotFoundException e )
+					{
+						System.out.println( "Keymap file " + filename + " not found. Skipping." );
+					}
 				}
-				catch ( final FileNotFoundException e )
-				{
-					System.out.println( "Keymap file " + filename + " not found. Skipping." );
-				}
-			}
 
-			final String defaultStyleName = keymapsList.defaultKeymapName;
-			setDefaultStyle( styleForName( defaultStyleName ).orElseGet( () -> builtinStyles.get( 0 ) ) );
+				defaultStyle = styleForName( keymapsList.defaultKeymapName ).orElse( defaultStyle );
+			}
 		}
 		catch ( final IOException e )
 		{
 			e.printStackTrace();
 		}
+		setDefaultStyle( defaultStyle );
 	}
 
 	@Override

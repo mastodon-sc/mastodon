@@ -197,13 +197,14 @@ public class ProjectManager
 		final TrackSchemeStyleManager trackSchemeStyleManager = windowManager.getTrackSchemeStyleManager();
 		final RenderSettingsManager renderSettingsManager = windowManager.getRenderSettingsManager();
 		final KeymapManager keymapManager = windowManager.getKeymapManager();
+		final Actions globalAppActions = windowManager.getGlobalAppActions();
 		final ViewerOptions options = ViewerOptions.options().shareKeyPressedEvents( keyPressedManager );
 		final SharedBigDataViewerData sharedBdvData = new SharedBigDataViewerData(
 				spimDataXmlFilename,
 				spimData,
 				options,
 				() -> windowManager.forEachBdvView( bdv -> bdv.requestRepaint() ) );
-		final MamutAppModel appModel = new MamutAppModel( model, sharedBdvData, keyPressedManager, trackSchemeStyleManager, renderSettingsManager, keymapManager );
+		final MamutAppModel appModel = new MamutAppModel( model, sharedBdvData, keyPressedManager, trackSchemeStyleManager, renderSettingsManager, keymapManager, globalAppActions );
 
 		windowManager.setAppModel( appModel );
 

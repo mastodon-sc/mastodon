@@ -83,6 +83,13 @@ public class MastodonFrameView<
 		} );
 		this.frame = frame;
 
+		final Actions globalActions = appModel.getGlobalActions();
+		if ( globalActions != null )
+		{
+			frame.keybindings.addActionMap( "global", new WrappedActionMap( globalActions.getActionMap() ) );
+			frame.keybindings.addInputMap( "global", new WrappedInputMap( globalActions.getInputMap() ) );
+		}
+
 		final Actions appActions = appModel.getAppActions();
 		frame.keybindings.addActionMap( "app", new WrappedActionMap( appActions.getActionMap() ) );
 		frame.keybindings.addInputMap( "app", new WrappedInputMap( appActions.getInputMap() ) );
