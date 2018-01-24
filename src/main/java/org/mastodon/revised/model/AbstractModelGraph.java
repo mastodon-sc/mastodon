@@ -74,10 +74,11 @@ public class AbstractModelGraph<
 	 *            the raw file to load.
 	 * @param serializer
 	 *            the serializer used for reading individual vertices.
+	 * @return the map from  IDs used in the raw file to vertices/edges.
 	 * @throws IOException
 	 *             if an I/O error occurs while reading the file.
 	 */
-	public void loadRaw(
+	public FileIdToGraphMap< V, E > loadRaw(
 			final File file,
 			final GraphSerializer< V, E > serializer )
 					throws IOException
@@ -93,6 +94,8 @@ public class AbstractModelGraph<
 //		RawFeatureIO.readFeatureMaps( fileIdMap.edges(), edgeFeatures, ois );
 		ois.close();
 		resumeListeners();
+
+		return fileIdMap;
 	}
 
 	/**
@@ -107,10 +110,11 @@ public class AbstractModelGraph<
 //	 *            the vertex features to serialize.
 //	 * @param edgeFeaturesToSerialize
 //	 *            the edge features to serialize.
+	 * @return the map from vertices/edges to IDs used in the raw file.
 	 * @throws IOException
 	 *             if an I/O error occurs while writing the file.
 	 */
-	public void saveRaw(
+	public GraphToFileIdMap< V, E > saveRaw(
 			final File file,
 			final GraphSerializer< V, E > serializer )
 					throws IOException
@@ -123,6 +127,8 @@ public class AbstractModelGraph<
 //		RawFeatureIO.writeFeatureMaps( fileIdMap.vertices(), vertexFeatures, vertexFeaturesToSerialize, oos );
 //		RawFeatureIO.writeFeatureMaps( fileIdMap.edges(), edgeFeatures, edgeFeaturesToSerialize, oos );
 		oos.close();
+
+		return fileIdMap;
 	}
 
 	public ReentrantReadWriteLock getLock()

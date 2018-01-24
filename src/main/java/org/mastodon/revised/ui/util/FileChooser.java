@@ -125,8 +125,17 @@ public class FileChooser
 			 */
 			if ( selectedFile != null )
 			{
-				fd.setDirectory( new File( selectedFile ).getParent() );
-				fd.setFile( new File( selectedFile ).getName() );
+				System.out.println( "selectedFile = " + selectedFile );
+				if ( isDirectoriesOnly )
+				{
+					fd.setDirectory( selectedFile );
+					fd.setFile( null );
+				}
+				else
+				{
+					fd.setDirectory( new File( selectedFile ).getParent() );
+					fd.setFile( new File( selectedFile ).getName() );
+				}
 			}
 
 			/*

@@ -3,12 +3,12 @@ package org.mastodon.revised.model.tag;
 import java.awt.Color;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -43,47 +43,60 @@ public class TagSetStructure
 
 	public void saveRaw( final File file ) throws IOException
 	{
-		try (DataOutputStream dos = new DataOutputStream(
+		try (ObjectOutputStream oos = new ObjectOutputStream(
 				new BufferedOutputStream(
-						new FileOutputStream( file ) ) ))
+						new FileOutputStream( file ),
+						1024 * 1024 ) ))
 		{
-			// N tagsets.
-			dos.writeInt( tagSets.size() );
-			// Individual tagsets.
-			for ( final TagSet tagSet : tagSets )
-			{
-				// TagSet id.
-				dos.writeInt( tagSet.id );
-				// TagSet name.
-				dos.writeUTF( tagSet.name );
-				// Tags.
-				tagSet.write( dos );
-			}
+			saveRaw( oos );
+		}
+	}
+
+	public void saveRaw( final ObjectOutputStream oos ) throws IOException
+	{
+		// N tagsets.
+		oos.writeInt( tagSets.size() );
+		// Individual tagsets.
+		for ( final TagSet tagSet : tagSets )
+		{
+			// TagSet id.
+			oos.writeInt( tagSet.id );
+			// TagSet name.
+			oos.writeUTF( tagSet.name );
+			// Tags.
+			tagSet.write( oos );
 		}
 	}
 
 	public void loadRaw( final File file ) throws IOException
 	{
-		tagSets.clear();
-		try (final DataInputStream dis = new DataInputStream(
+		try (final ObjectInputStream ois = new ObjectInputStream(
 				new BufferedInputStream(
-						new FileInputStream( file ) ) ))
+						new FileInputStream( file ),
+						1024 * 1024 ) ))
 		{
-			// N tagsets.
-			final int nTagSets = dis.readInt();
-			for ( int i = 0; i < nTagSets; i++ )
-			{
-				// TagSet id.
-				final int tagSetId = dis.readInt();
-				if (tagSetId >= tagSetIDgenerator.get())
-					tagSetIDgenerator.set( tagSetId + 1 );
-				// TagSet name.
-				final String tagSetName = dis.readUTF();
-				final TagSet tagSet = new TagSet( tagSetId, tagSetName );
-				// Tags.
-				tagSet.read( dis );
-				tagSets.add( tagSet );
-			}
+			loadRaw( ois );
+		}
+	}
+
+	public void loadRaw( final ObjectInputStream ois ) throws IOException
+	{
+		tagSets.clear();
+
+		// N tagsets.
+		final int nTagSets = ois.readInt();
+		for ( int i = 0; i < nTagSets; i++ )
+		{
+			// TagSet id.
+			final int tagSetId = ois.readInt();
+			if (tagSetId >= tagSetIDgenerator.get())
+				tagSetIDgenerator.set( tagSetId + 1 );
+			// TagSet name.
+			final String tagSetName = ois.readUTF();
+			final TagSet tagSet = new TagSet( tagSetId, tagSetName );
+			// Tags.
+			tagSet.read( ois );
+			tagSets.add( tagSet );
 		}
 	}
 
@@ -120,7 +133,7 @@ public class TagSetStructure
 			this.tags = new ArrayList<>();
 		}
 
-		private void read( final DataInputStream dis ) throws IOException
+		private void read( final ObjectInputStream dis ) throws IOException
 		{
 			tags.clear();
 			// N tags.
@@ -141,7 +154,7 @@ public class TagSetStructure
 			}
 		}
 
-		private void write( final DataOutputStream dos ) throws IOException
+		private void write( final ObjectOutputStream dos ) throws IOException
 		{
 			// N tags.
 			dos.writeInt( tags.size() );

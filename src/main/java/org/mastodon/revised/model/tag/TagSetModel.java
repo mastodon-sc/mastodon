@@ -52,7 +52,6 @@ public class TagSetModel< V extends Vertex< E >, E extends Edge< V > >
 		edgeIdLabelSets = new LabelSets<>( edgePool );
 		vertexTags = new ObjTags<>( vertexIdLabelSets, tagSetStructure );
 		edgeTags = new ObjTags<>( edgeIdLabelSets, tagSetStructure );
-
 	}
 
 	public TagSetStructure getTagSetStructure()
@@ -124,6 +123,12 @@ public class TagSetModel< V extends Vertex< E >, E extends Edge< V > >
 		protected LabelSets< E, Integer > getEdgeIdLabelSets()
 		{
 			return tagSetModel.edgeIdLabelSets;
+		}
+
+		protected void updateObjTags()
+		{
+			tagSetModel.vertexTags.update( tagSetModel.tagSetStructure );
+			tagSetModel.edgeTags.update( tagSetModel.tagSetStructure );
 		}
 	}
 

@@ -1,16 +1,25 @@
 package org.mastodon.revised.model.mamut;
 
-import java.io.File;
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.mastodon.graph.ReadOnlyGraph;
+import org.mastodon.graph.io.RawGraphIO.FileIdToGraphMap;
+import org.mastodon.graph.io.RawGraphIO.GraphToFileIdMap;
 import org.mastodon.labels.LabelSets;
 import org.mastodon.properties.Property;
+import org.mastodon.revised.mamut.MamutProject;
 import org.mastodon.revised.model.AbstractModel;
 import org.mastodon.revised.model.feature.DefaultFeatureModel;
 import org.mastodon.revised.model.feature.FeatureModel;
+import org.mastodon.revised.model.tag.RawTagSetModelIO;
 import org.mastodon.revised.model.tag.TagSetModel;
 import org.mastodon.spatial.SpatioTemporalIndex;
 import org.mastodon.spatial.SpatioTemporalIndexImp;
@@ -97,29 +106,48 @@ public class Model extends AbstractModel< ModelGraph, Spot, Link > implements Un
 	}
 
 	/**
-	 * Clears this model and loads the model from the specified raw file.
+	 * Clears this model and loads the model from the specified project folder.
 	 *
-	 * @param file
-	 *            the raw file to load.
+	 * @param project
+	 *            the project from which to load the raw project files.
 	 * @throws IOException
 	 *             if an I/O error occurs while reading the file.
 	 */
-	public void loadRaw( final File file ) throws IOException
+	public void loadRaw( final MamutProject project ) throws IOException
 	{
-		modelGraph.loadRaw( file, ModelSerializer.getInstance() );
+		final FileIdToGraphMap< Spot, Link > idmap = modelGraph.loadRaw( project.getRawModelFile(), ModelSerializer.getInstance() );
+
+		if ( project.getRawTagsFile().isFile() )
+		{
+			final FileInputStream fis = new FileInputStream( project.getRawTagsFile() );
+			final ObjectInputStream ois = new ObjectInputStream( new BufferedInputStream( fis, 1024 * 1024 ) );
+//			tagSetModel.pauseListeners(); // TODO
+			RawTagSetModelIO.read( tagSetModel, idmap, ois );
+			ois.close();
+//			tagSetModel.resumeListeners(); // TODO
+		}
+//		else
+//		{
+//			tagSetModel.clear(); // TODO
+//		}
 	}
 
 	/**
-	 * Saves this model to the specified raw file.
+	 * Saves this model to the specified the specified project folder.
 	 *
-	 * @param file
-	 *            the raw file to save.
+	 * @param project
+	 *            the project from which to load the raw project files.
 	 * @throws IOException
 	 *             if an I/O error occurs while writing the file.
 	 */
-	public void saveRaw( final File file ) throws IOException
+	public void saveRaw( final MamutProject project ) throws IOException
 	{
-		modelGraph.saveRaw( file, ModelSerializer.getInstance() );
+		final GraphToFileIdMap< Spot, Link > idmap = modelGraph.saveRaw( project.getRawModelFile(), ModelSerializer.getInstance() );
+
+		final FileOutputStream fos = new FileOutputStream( project.getRawTagsFile()  );
+		final ObjectOutputStream oos = new ObjectOutputStream( new BufferedOutputStream( fos, 1024 * 1024 ) );
+		RawTagSetModelIO.write( tagSetModel, idmap, oos );
+		oos.close();
 	}
 
 	/**

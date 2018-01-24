@@ -109,7 +109,7 @@ public class ProjectManager
 
 		try
 		{
-			open( new MamutProject( file.getParentFile(), file ) );
+			open( new MamutProject( null, file ) );
 		}
 		catch ( final IOException | SpimDataException e )
 		{
@@ -152,9 +152,7 @@ public class ProjectManager
 		if ( project == null )
 			return;
 
-		final String folderPath = proposedProjectFolder == null
-				? project.getProjectFolder().getAbsolutePath()
-				: proposedProjectFolder.getAbsolutePath();
+		final String folderPath = getProposedProjectFolder( project );
 
 		final Component parent = null; // TODO
 		final File folder = FileChooser.chooseFile(
@@ -178,14 +176,24 @@ public class ProjectManager
 		}
 	}
 
+	/**
+	 * Open a project. If {@code project.getProjectFolder() == null} this is a new project and data structures are initialized as empty.
+	 * The image data {@code project.getDatasetXmlFile()} must always be set.
+	 *
+	 * @param project
+	 * @throws IOException
+	 * @throws SpimDataException
+	 */
 	public synchronized void open( final MamutProject project ) throws IOException, SpimDataException
 	{
 		/*
 		 * Load Model
 		 */
 		final Model model = new Model();
-		if ( project.getRawModelFile() != null )
-			model.loadRaw( project.getRawModelFile() );
+		final boolean isNewProject = project.getProjectFolder() == null;
+
+		if ( !isNewProject )
+			model.loadRaw( project );
 
 		/*
 		 * Load SpimData
@@ -204,6 +212,7 @@ public class ProjectManager
 				spimData,
 				options,
 				() -> windowManager.forEachBdvView( bdv -> bdv.requestRepaint() ) );
+
 		final MamutAppModel appModel = new MamutAppModel( model, sharedBdvData, keyPressedManager, trackSchemeStyleManager, renderSettingsManager, keymapManager, globalAppActions );
 
 		/*
@@ -214,18 +223,21 @@ public class ProjectManager
 		 * TODO REMOVE
 		 * Set TagSetStructure for debugging.
 		 */
-		final TagSetStructure tss = new TagSetStructure();
-		final Random ran = new Random( 0l );
-		final TagSetStructure.TagSet reviewedByTag = tss.createTagSet( "Reviewed by" );
-		reviewedByTag.createTag( "Pavel", new Color( ran.nextInt() ) );
-		reviewedByTag.createTag( "Mette", new Color( ran.nextInt() ) );
-		reviewedByTag.createTag( "Tobias", new Color( ran.nextInt() ) );
-		reviewedByTag.createTag( "JY", new Color( ran.nextInt() ) );
-		final TagSetStructure.TagSet locationTag = tss.createTagSet( "Location" );
-		locationTag.createTag( "Anterior", new Color( ran.nextInt() ) );
-		locationTag.createTag( "Posterior", new Color( ran.nextInt() ) );
-		System.out.println( "Initial TagSetStructure:\n" + tss );
-		model.getTagSetModel().setTagSetStructure( tss );
+		if ( isNewProject )
+		{
+			final TagSetStructure tss = new TagSetStructure();
+			final Random ran = new Random( 0l );
+			final TagSetStructure.TagSet reviewedByTag = tss.createTagSet( "Reviewed by" );
+			reviewedByTag.createTag( "Pavel", new Color( ran.nextInt() ) );
+			reviewedByTag.createTag( "Mette", new Color( ran.nextInt() ) );
+			reviewedByTag.createTag( "Tobias", new Color( ran.nextInt() ) );
+			reviewedByTag.createTag( "JY", new Color( ran.nextInt() ) );
+			final TagSetStructure.TagSet locationTag = tss.createTagSet( "Location" );
+			locationTag.createTag( "Anterior", new Color( ran.nextInt() ) );
+			locationTag.createTag( "Posterior", new Color( ran.nextInt() ) );
+			System.out.println( "Initial TagSetStructure:\n" + tss );
+			model.getTagSetModel().setTagSetStructure( tss );
+		}
 
 		windowManager.setAppModel( appModel );
 
@@ -254,8 +266,7 @@ public class ProjectManager
 		new MamutProjectIO().save( project );
 
 		final Model model = windowManager.getAppModel().getModel();
-		final File modelFile = project.getRawModelFile();
-		model.saveRaw( modelFile );
+		model.saveRaw( project );
 
 		updateEnabledActions();
 	}
@@ -269,5 +280,13 @@ public class ProjectManager
 		tgmmImportDialog.showImportDialog( appModel.getSharedBdvData().getSpimData(), appModel.getModel() );
 
 		updateEnabledActions();
+	}
+
+	private static String getProposedProjectFolder( final MamutProject project )
+	{
+		if ( project.getProjectFolder() != null )
+			return project.getProjectFolder().getAbsolutePath();
+		else
+			return project.getDatasetXmlFile().getParentFile().getAbsolutePath();
 	}
 }

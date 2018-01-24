@@ -14,9 +14,9 @@ import org.jdom2.Element;
 import org.jdom2.JDOMException;
 import org.jdom2.input.SAXBuilder;
 import org.mastodon.collection.IntRefMap;
-import org.mastodon.collection.RefCollections;
 import org.mastodon.collection.RefMaps;
 import org.mastodon.graph.Graph;
+import org.mastodon.revised.mamut.MamutProject;
 import org.mastodon.revised.model.AbstractModelImporter;
 import org.mastodon.revised.model.mamut.Link;
 import org.mastodon.revised.model.mamut.Model;
@@ -216,7 +216,7 @@ public class TgmmImporter extends AbstractModelImporter< Model >
 		final String tgmmFiles = "/Volumes/Data/TGMM_TL0-528_xmls_curated/GMEMfinalResult_frame%04d.xml";
 		final String bdvFile = "/Volumes/Data/BDV_MVD_5v_final.xml";
 		final int setupID = 1;
-		final String target = "/Volumes/Data/model_revised.raw";
+		final String target = "/Volumes/Data/mamutproject";
 		final TimePoints timepoints = new TimePointsPattern( "1-528" );
 
 		System.out.println( "Started reading TGMM files." );
@@ -240,7 +240,9 @@ public class TgmmImporter extends AbstractModelImporter< Model >
 		System.out.println( "Done  in " + ( end - start ) / 1000d + " s." );
 
 		System.out.println( "\nExporting to " + target );
-		model.saveRaw( new File( target ) );
+
+		final MamutProject project = new MamutProject( new File( target ), new File( bdvFile ) );
+		model.saveRaw( project );
 		final long end2 = System.currentTimeMillis();
 		System.out.println( "Exporting done in " + ( end2 - end ) / 1000d + " s." );
 	}
