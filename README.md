@@ -1,3 +1,5 @@
+[![](https://travis-ci.org/fiji/TrackMate3.svg?branch=master)](https://travis-ci.org/fiji/TrackMate3)
+
 TrackMate3
 ==========
 
