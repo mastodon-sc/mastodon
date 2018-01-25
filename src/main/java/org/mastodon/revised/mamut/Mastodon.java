@@ -17,17 +17,14 @@ import mpicbg.spim.data.SpimDataException;
 @Plugin( type = Command.class, menuPath = "Plugins>Mastodon (preview)" )
 public class Mastodon implements Command
 {
+	private WindowManager windowManager;
+
 	@Override
 	public void run()
 	{
-		try
-		{
-			main( null );
-		}
-		catch ( IOException | SpimDataException | InterruptedException | InvocationTargetException | ClassNotFoundException | InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException e )
-		{
-			throw new RuntimeException( e );
-		}
+		System.setProperty( "apple.laf.useScreenMenuBar", "true" );
+		windowManager = new WindowManager();
+		new MainWindow( windowManager ).setVisible( true );
 	}
 
 	public static void main( final String[] args ) throws IOException, SpimDataException, InvocationTargetException, InterruptedException, ClassNotFoundException, InstantiationException, IllegalAccessException, UnsupportedLookAndFeelException
@@ -35,10 +32,9 @@ public class Mastodon implements Command
 		Locale.setDefault( Locale.US );
 		UIManager.setLookAndFeel( UIManager.getSystemLookAndFeelClassName() );
 
-		System.setProperty( "apple.laf.useScreenMenuBar", "true" );
-		final WindowManager windowManager = new WindowManager();
-		new MainWindow( windowManager ).setVisible( true );
-
+		final Mastodon mastodon = new Mastodon();
+		mastodon.run();
+		final WindowManager windowManager = mastodon.windowManager;
 
 		final String bdvFile = "samples/datasethdf5.xml";
 		final MamutProject project = new MamutProject( new File( "samples/mamutproject" ), new File( bdvFile ) );
