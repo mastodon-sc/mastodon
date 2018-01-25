@@ -3,7 +3,7 @@ package org.mastodon.views.context;
 import org.mastodon.util.Listeners;
 
 /**
- * Something that provides {@link Context<V>} to {@link ContextListener}s. It
+ * Something that provides {@link Context} to {@link ContextListener}s. It
  * has an identifying {@link #getName() name} (which is not enforced to be
  * unique) to use in {@code ContextChooserPanel} UI.
  *
