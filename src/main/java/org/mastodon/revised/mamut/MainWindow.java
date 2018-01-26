@@ -10,6 +10,8 @@ import java.awt.Container;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 
 import javax.swing.ActionMap;
 import javax.swing.JButton;
@@ -153,19 +155,16 @@ public class MainWindow extends JFrame
 		keymap.updateListeners().add( menu::updateKeymap );
 		addMenus( menu, actionMap );
 
-//		setDefaultCloseOperation( WindowConstants.DISPOSE_ON_CLOSE );
-//		addWindowListener( new WindowAdapter()
-//		{
-//			@Override
-//			public void windowClosed( final WindowEvent e )
-//			{
-//				project = null;
-//				if ( windowManager != null )
-//					windowManager.closeAllWindows();
-//				windowManager = null;
-//			}
-//		} );
-		setDefaultCloseOperation( WindowConstants.EXIT_ON_CLOSE );
+		setDefaultCloseOperation( WindowConstants.DISPOSE_ON_CLOSE );
+		addWindowListener( new WindowAdapter()
+		{
+			@Override
+			public void windowClosed( final WindowEvent e )
+			{
+				if ( windowManager != null )
+					windowManager.closeAllWindows();
+			}
+		} );
 
 		pack();
 	}

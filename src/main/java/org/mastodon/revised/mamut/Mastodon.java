@@ -8,6 +8,7 @@ import java.util.Locale;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
+import javax.swing.WindowConstants;
 
 import org.scijava.command.Command;
 import org.scijava.plugin.Plugin;
@@ -19,12 +20,15 @@ public class Mastodon implements Command
 {
 	private WindowManager windowManager;
 
+	private MainWindow mainWindow;
+
 	@Override
 	public void run()
 	{
 		System.setProperty( "apple.laf.useScreenMenuBar", "true" );
 		windowManager = new WindowManager();
-		new MainWindow( windowManager ).setVisible( true );
+		mainWindow = new MainWindow( windowManager );
+		mainWindow.setVisible( true );
 	}
 
 	public static void main( final String[] args ) throws IOException, SpimDataException, InvocationTargetException, InterruptedException, ClassNotFoundException, InstantiationException, IllegalAccessException, UnsupportedLookAndFeelException
@@ -34,6 +38,8 @@ public class Mastodon implements Command
 
 		final Mastodon mastodon = new Mastodon();
 		mastodon.run();
+		mastodon.mainWindow.setDefaultCloseOperation( WindowConstants.EXIT_ON_CLOSE );
+
 		final WindowManager windowManager = mastodon.windowManager;
 
 		final String bdvFile = "samples/datasethdf5.xml";
