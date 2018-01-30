@@ -7,7 +7,9 @@ import static mpicbg.spim.data.XmlHelpers.getIntAttribute;
 import java.io.File;
 import java.io.IOException;
 import java.text.ParseException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.jdom2.Document;
 import org.jdom2.Element;
@@ -26,6 +28,7 @@ import Jama.Matrix;
 import bdv.spimdata.SpimDataMinimal;
 import bdv.spimdata.XmlIoSpimDataMinimal;
 import mpicbg.spim.data.SpimDataException;
+import mpicbg.spim.data.generic.AbstractSpimData;
 import mpicbg.spim.data.registration.ViewRegistrations;
 import mpicbg.spim.data.sequence.TimePoint;
 import mpicbg.spim.data.sequence.TimePoints;
@@ -66,6 +69,7 @@ public class TgmmImporter extends AbstractModelImporter< Model >
 	public static void read(
 			final String tgmmFileNameFormat,
 			final TimePoints timepointsToRead,
+			final Map< TimePoint, Integer > timepointToIndex,
 			final ViewRegistrations viewRegistrations,
 			final int setupID,
 			final double nSigmas,
@@ -75,6 +79,7 @@ public class TgmmImporter extends AbstractModelImporter< Model >
 		new TgmmImporter(
 				tgmmFileNameFormat,
 				timepointsToRead,
+				timepointToIndex,
 				viewRegistrations,
 				setupID,
 				nSigmas,
@@ -85,6 +90,7 @@ public class TgmmImporter extends AbstractModelImporter< Model >
 	public static void read(
 			final String tgmmFileNameFormat,
 			final TimePoints timepointsToRead,
+			final Map< TimePoint, Integer > timepointToIndex,
 			final ViewRegistrations viewRegistrations,
 			final int setupID,
 			final double nSigmas,
@@ -95,6 +101,7 @@ public class TgmmImporter extends AbstractModelImporter< Model >
 		new TgmmImporter(
 				tgmmFileNameFormat,
 				timepointsToRead,
+				timepointToIndex,
 				viewRegistrations,
 				setupID,
 				nSigmas,
@@ -105,6 +112,7 @@ public class TgmmImporter extends AbstractModelImporter< Model >
 	private TgmmImporter(
 			final String tgmmFileNameFormat,
 			final TimePoints timepointsToRead,
+			final Map< TimePoint, Integer > timepointToIndex,
 			final ViewRegistrations viewRegistrations,
 			final int setupID,
 			final double nSigmas,
@@ -127,6 +135,7 @@ public class TgmmImporter extends AbstractModelImporter< Model >
 		for ( final TimePoint timepoint : timepointsToRead.getTimePointsOrdered() )
 		{
 			final int timepointId = timepoint.getId();
+			final int timepointIndex = timepointToIndex.get( timepoint );
 			final AffineTransform3D transform = viewRegistrations.getViewRegistration( timepointId, setupID ).getModel();
 			final String tgmmFileName = String.format( tgmmFileNameFormat, timepointId );
 			System.out.println( tgmmFileName );
@@ -149,7 +158,7 @@ public class TgmmImporter extends AbstractModelImporter< Model >
 
 					final double[][] S = ( useThisCovariance != null ) ? useThisCovariance : getCovariance( transform, nu / ( nSigmas * nSigmas ), W );
 					graph.addVertex( spot ).init(
-							timepointId,
+							timepointIndex,
 							getPosition( transform, m ),
 							S );
 					idToSpot.put( id, spot, tmp );
@@ -205,6 +214,15 @@ public class TgmmImporter extends AbstractModelImporter< Model >
 		return pos;
 	}
 
+	public static Map< TimePoint, Integer > getTimepointToIndex( final AbstractSpimData< ? > spimData )
+	{
+		final Map< TimePoint, Integer > timepointToIndex = new HashMap<>();
+		int i = 0;
+		for ( final TimePoint tp : spimData.getSequenceDescription().getTimePoints().getTimePointsOrdered() )
+			timepointToIndex.put( tp, i++ );
+		return timepointToIndex;
+	}
+
 	public static void main( final String[] args ) throws ParseException, SpimDataException, JDOMException, IOException
 	{
 //		final String tgmmFiles = "/Users/pietzsch/Downloads/data/TGMMruns_testRunToCheckOutput/XML_finalResult_lht/GMEMfinalResult_frame%04d.xml";
@@ -230,12 +248,13 @@ public class TgmmImporter extends AbstractModelImporter< Model >
 
 		System.out.print( "\nReading view registrations." );
 		final SpimDataMinimal spimData = new XmlIoSpimDataMinimal().load( bdvFile );
+		final Map< TimePoint, Integer > timepointToIndex = getTimepointToIndex( spimData );
 		final ViewRegistrations viewRegistrations = spimData.getViewRegistrations();
 		System.out.println( " Done." );
 
 		System.out.println( "Reading the model." );
 		final Model model = new Model();
-		read( tgmmFiles, timepoints, viewRegistrations, setupID, 2, model );
+		read( tgmmFiles, timepoints, timepointToIndex, viewRegistrations, setupID, 2, model );
 		final long end = System.currentTimeMillis();
 		System.out.println( "Done  in " + ( end - start ) / 1000d + " s." );
 

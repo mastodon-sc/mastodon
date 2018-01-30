@@ -105,7 +105,7 @@ public class TgmmImportDialog extends JDialog
 
 		c.gridy++;
 		c.gridx = 0;
-		content.add(  Box.createVerticalStrut( 15 ), c );
+		content.add( Box.createVerticalStrut( 15 ), c );
 
 		c.gridy++;
 		c.gridx = 0;
@@ -124,7 +124,7 @@ public class TgmmImportDialog extends JDialog
 
 		c.gridy++;
 		c.gridx = 0;
-		content.add(  Box.createVerticalStrut( 15 ), c );
+		content.add( Box.createVerticalStrut( 15 ), c );
 
 		c.gridy++;
 		c.gridx = 1;
@@ -204,10 +204,10 @@ public class TgmmImportDialog extends JDialog
 			if ( covCheckBox.isSelected() )
 			{
 				final double[][] cov = parseCov( covTextField.getText() );
-				TgmmImporter.read( tgmmFiles, timepoints, viewRegistrations, setupID, nSigmas, cov, model );
+				TgmmImporter.read( tgmmFiles, timepoints, TgmmImporter.getTimepointToIndex( spimData ), viewRegistrations, setupID, nSigmas, cov, model );
 			}
 			else
-				TgmmImporter.read( tgmmFiles, timepoints, viewRegistrations, setupID, nSigmas, model );
+				TgmmImporter.read( tgmmFiles, timepoints, TgmmImporter.getTimepointToIndex( spimData ), viewRegistrations, setupID, nSigmas, model );
 		}
 		catch ( final ParseException e )
 		{
