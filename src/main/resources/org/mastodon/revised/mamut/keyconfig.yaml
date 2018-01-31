@@ -16,6 +16,10 @@
   contexts: [mastodon]
   triggers: [not mapped]
 - !mapping
+  action: edit tag sets
+  contexts: [mastodon]
+  triggers: [not mapped]
+- !mapping
   action: new bdv view
   contexts: [mastodon]
   triggers: [not mapped]
