@@ -42,9 +42,10 @@ public class Mastodon implements Command
 
 		final WindowManager windowManager = mastodon.windowManager;
 
-		final String bdvFile = "samples/datasethdf5.xml";
-		final MamutProject project = new MamutProject( new File( "samples/mamutproject" ), new File( bdvFile ) );
-//		final MamutProject project = new MamutProjectIO().load( "samples/mamutproject" );
+//		final String bdvFile = "samples/datasethdf5.xml";
+//		final MamutProject project = new MamutProject( new File( "samples/mamutproject" ), new File( bdvFile ) );
+//		final MamutProject project = new MamutProjectIO().load( "/Volumes/External/Data/Mastodon/Tassos200" );
+		final MamutProject project = new MamutProjectIO().load( "samples/mamutproject" );
 
 		windowManager.projectManager.open( project );
 //		mw.proposedProjectFile = new File( "/Users/pietzsch/Desktop/data/TGMM_METTE/project2.xml" );
