@@ -194,22 +194,26 @@ public class WindowManager
 		forEachTrackSchemeView( action );
 	}
 
-	public void createBigDataViewer()
+	public MamutViewBdv createBigDataViewer()
 	{
 		if ( appModel != null )
 		{
 			final MamutViewBdv view = new MamutViewBdv( appModel );
 			addBdvWindow( view );
+			return view;
 		}
+		return null;
 	}
 
-	public void createTrackScheme()
+	public MamutViewTrackScheme createTrackScheme()
 	{
 		if ( appModel != null )
 		{
 			final MamutViewTrackScheme view = new MamutViewTrackScheme( appModel );
 			addTsWindow( view );
+			return view;
 		}
+		return null;
 	}
 
 	public void editTagSets()
