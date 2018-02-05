@@ -41,7 +41,7 @@ import org.mastodon.views.context.ContextProvider;
 
 import bdv.tools.InitializeViewerState;
 
-class MamutViewBdv extends MamutView< OverlayGraphWrapper< Spot, Link >, OverlayVertexWrapper< Spot, Link >, OverlayEdgeWrapper< Spot, Link > >
+public class MamutViewBdv extends MamutView< OverlayGraphWrapper< Spot, Link >, OverlayVertexWrapper< Spot, Link >, OverlayEdgeWrapper< Spot, Link > >
 {
 	// TODO
 	private static int bdvName = 1;
