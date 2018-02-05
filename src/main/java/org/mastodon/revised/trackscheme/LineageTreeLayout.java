@@ -625,11 +625,13 @@ public class LineageTreeLayout
 				: null;
 	}
 
+	// TODO: REMOVE?
 	public TIntObjectMap< TrackSchemeVertexList > getTimepointToOrderedVertices()
 	{
 		return timepointToOrderedVertices;
 	}
 
+	// TODO: REMOVE?
 	public TIntArrayList getTimepoints()
 	{
 		return timepoints;
