@@ -270,7 +270,7 @@ public class WindowManager
 		return keymapManager;
 	}
 
-	MamutAppModel getAppModel()
+	public MamutAppModel getAppModel()
 	{
 		return appModel;
 	}
