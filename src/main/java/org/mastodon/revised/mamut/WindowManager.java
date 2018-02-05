@@ -285,6 +285,17 @@ public class WindowManager
 		return context;
 	}
 
+	/**
+	 * Exposes the {@link ProjectManager} of this window manager, that handles
+	 * project files.
+	 *
+	 * @return the project manager.
+	 */
+	public ProjectManager getProjectManager()
+	{
+		return projectManager;
+	}
+
 	// TODO: move somewhere else. make bdvWindows, tsWindows accessible.
 	public static class DumpInputConfig
 	{
