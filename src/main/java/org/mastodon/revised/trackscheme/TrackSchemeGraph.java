@@ -1,6 +1,5 @@
 package org.mastodon.revised.trackscheme;
 
-import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import org.mastodon.RefPool;
