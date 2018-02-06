@@ -191,6 +191,7 @@ public class EditBehaviours< V extends OverlayVertex< V, E >, E extends OverlayE
 		@Override
 		public void init( final int x, final int y )
 		{
+			lock.readLock().lock();
 			vertex = renderer.getVertexAt( x, y, POINT_SELECT_DISTANCE_TOLERANCE, ref );
 			if ( vertex != null )
 			{
@@ -199,6 +200,8 @@ public class EditBehaviours< V extends OverlayVertex< V, E >, E extends OverlayE
 				LinAlgHelpers.subtract( pos, start, start );
 				moving = true;
 			}
+			else
+				lock.readLock().unlock();
 		}
 
 		@Override
@@ -219,6 +222,7 @@ public class EditBehaviours< V extends OverlayVertex< V, E >, E extends OverlayE
 			{
 				undo.setUndoPoint();
 				moving = false;
+				lock.readLock().unlock();
 			}
 		}
 	};
@@ -243,25 +247,33 @@ public class EditBehaviours< V extends OverlayVertex< V, E >, E extends OverlayE
 		public void click( final int x, final int y )
 		{
 			final V ref = overlayGraph.vertexRef();
-			final V vertex = renderer.getVertexAt( x, y, POINT_SELECT_DISTANCE_TOLERANCE, ref );
-			if ( vertex != null )
+			lock.readLock().lock();
+			try
 			{
-				// Scale the covariance matrix.
-				vertex.getCovariance( mat );
-				LinAlgHelpers.scale( mat, 1 + factor, mat );
+				final V vertex = renderer.getVertexAt( x, y, POINT_SELECT_DISTANCE_TOLERANCE, ref );
+				if ( vertex != null )
+				{
+					// Scale the covariance matrix.
+					vertex.getCovariance( mat );
+					LinAlgHelpers.scale( mat, 1 + factor, mat );
 
-				// Check if the min radius is not too small.
-				eig.decomposeSymmetric( mat );
-				final double[] eigVals = eig.getRealEigenvalues();
-				for ( final double eigVal : eigVals )
-					if ( eigVal < MIN_RADIUS )
-						return;
+					// Check if the min radius is not too small.
+					eig.decomposeSymmetric( mat );
+					final double[] eigVals = eig.getRealEigenvalues();
+					for ( final double eigVal : eigVals )
+						if ( eigVal < MIN_RADIUS )
+							return;
 
-				vertex.setCovariance( mat );
-				overlayGraph.notifyGraphChanged();
-				undo.setUndoPoint();
+					vertex.setCovariance( mat );
+					overlayGraph.notifyGraphChanged();
+					undo.setUndoPoint();
+				}
 			}
-			overlayGraph.releaseRef( ref );
+			finally
+			{
+				lock.readLock().unlock();
+				overlayGraph.releaseRef( ref );
+			}
 		}
 	}
 }
