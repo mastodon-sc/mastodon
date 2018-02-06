@@ -140,6 +140,7 @@ public class FocusActions< V extends Vertex< E > & Ref< V >, E extends Edge< V >
 	{
 		final V ref1 = graph.vertexRef();
 		final V ref2 = graph.vertexRef();
+		lock.readLock().lock();
 		try
 		{
 			final V vertex = focus.getFocusedVertex( ref1 );
@@ -180,6 +181,7 @@ public class FocusActions< V extends Vertex< E > & Ref< V >, E extends Edge< V >
 		}
 		finally
 		{
+			lock.readLock().unlock();
 			graph.releaseRef( ref1 );
 			graph.releaseRef( ref2 );
 		}
@@ -190,6 +192,7 @@ public class FocusActions< V extends Vertex< E > & Ref< V >, E extends Edge< V >
 		final V ref1 = graph.vertexRef();
 		final V ref2 = graph.vertexRef();
 		final V ref3 = graph.vertexRef();
+		lock.readLock().lock();
 		try
 		{
 			final V vertex = focus.getFocusedVertex( ref1 );
@@ -237,6 +240,7 @@ public class FocusActions< V extends Vertex< E > & Ref< V >, E extends Edge< V >
 		}
 		finally
 		{
+			lock.readLock().unlock();
 			graph.releaseRef( ref1 );
 			graph.releaseRef( ref2 );
 			graph.releaseRef( ref3 );
