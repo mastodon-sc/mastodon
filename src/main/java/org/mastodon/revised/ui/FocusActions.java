@@ -263,13 +263,11 @@ public class FocusActions< V extends Vertex< E > & Ref< V >, E extends Edge< V >
 	private V firstBranchChild( final V vertex, final V ref )
 	{
 		V v = vertex;
-		int d = 0;
 		while ( true )
 		{
 			if ( v.outgoingEdges().isEmpty() )
 				break;
 			v = firstChild( v, ref );
-			++d;
 			if ( v.outgoingEdges().size() > 1 )
 				break;
 		}
@@ -279,13 +277,11 @@ public class FocusActions< V extends Vertex< E > & Ref< V >, E extends Edge< V >
 	private V firstBranchParent( final V vertex, final V ref )
 	{
 		V v = vertex;
-		int d = 0;
 		while ( true )
 		{
 			if ( v.incomingEdges().isEmpty() )
 				break;
 			v = firstParent( v, ref );
-			++d;
 			if ( v.outgoingEdges().size() > 1 )
 				break;
 		}
