@@ -12,6 +12,7 @@ import java.awt.font.TextLayout;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Rectangle2D;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import org.mastodon.collection.RefCollection;
 import org.mastodon.collection.RefCollections;
@@ -79,6 +80,8 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 
 	private final OverlayGraph< V, E > graph;
 
+	private final ReentrantReadWriteLock lock;
+
 	private final SpatioTemporalIndex< V > index;
 
 	private final HighlightModel< V, E > highlight;
@@ -100,6 +103,7 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 		this.focus = focus;
 		this.selection = selection;
 		index = graph.getIndex();
+		lock = graph.getLock();
 		renderTransform = new AffineTransform3D();
 		setRenderSettings( RenderSettings.defaultStyle() ); // default RenderSettings
 	}
@@ -610,12 +614,18 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 		layout.draw( graphics, tx, ty );
 	}
 
+	// TODO: This should respect render settings and only get edges that are currently visible with these settings
 	public E getEdgeAt( final int x, final int y, final double tolerance, final E ref )
 	{
+		if ( !settings.getDrawLinks() )
+			return null;
+
 		final AffineTransform3D transform = getRenderTransformCopy();
 		final int currentTimepoint = renderTimepoint;
 
 		final ConvexPolytope visiblePolytopeGlobal = getVisiblePolytopeGlobal( transform, currentTimepoint );
+
+		lock.readLock().lock();
 		index.readLock().lock();
 		try
 		{
@@ -656,6 +666,7 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 		finally
 		{
 			index.readLock().unlock();
+			lock.readLock().unlock();
 		}
 		return null;
 	}
@@ -716,6 +727,7 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 
 		boolean found = false;
 
+		lock.readLock().lock();
 		index.readLock().lock();
 
 		// TODO: cache searches? --> take into account that indexdata might change
@@ -794,6 +806,7 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 		}
 
 		index.readLock().unlock();
+		lock.readLock().unlock();
 
 		return found ? ref : null;
 	}
