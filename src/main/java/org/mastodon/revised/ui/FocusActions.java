@@ -2,6 +2,7 @@ package org.mastodon.revised.ui;
 
 import java.util.Iterator;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
+
 import org.mastodon.Ref;
 import org.mastodon.graph.Edge;
 import org.mastodon.graph.Edges;
@@ -247,19 +248,19 @@ public class FocusActions< V extends Vertex< E > & Ref< V >, E extends Edge< V >
 		}
 	}
 
-	private V firstChild( V vertex, V ref )
+	private V firstChild( final V vertex, final V ref )
 	{
 		final Edges< E > outgoing = vertex.outgoingEdges();
 		return outgoing.isEmpty() ? null : outgoing.iterator().next().getTarget( ref );
 	}
 
-	private V firstParent( V vertex, V ref )
+	private V firstParent( final V vertex, final V ref )
 	{
 		final Edges< E > incoming = vertex.incomingEdges();
 		return incoming.isEmpty() ? null : incoming.iterator().next().getSource( ref );
 	}
 
-	private V firstBranchChild( V vertex, V ref )
+	private V firstBranchChild( final V vertex, final V ref )
 	{
 		V v = vertex;
 		int d = 0;
@@ -275,7 +276,7 @@ public class FocusActions< V extends Vertex< E > & Ref< V >, E extends Edge< V >
 		return v;
 	}
 
-	private V firstBranchParent( V vertex, V ref )
+	private V firstBranchParent( final V vertex, final V ref )
 	{
 		V v = vertex;
 		int d = 0;
@@ -291,14 +292,14 @@ public class FocusActions< V extends Vertex< E > & Ref< V >, E extends Edge< V >
 		return v;
 	}
 
-	private V nextSibling( V vertex, V ref )
+	private V nextSibling( final V vertex, final V ref )
 	{
-		V ref1 = graph.vertexRef();
-		V ref2 = graph.vertexRef();
+		final V ref1 = graph.vertexRef();
+		final V ref2 = graph.vertexRef();
 		try
 		{
 			V child = ref1;
-			V parent = ref2;
+			final V parent = ref2;
 			child.refTo( vertex );
 			int d = 0;
 			while ( true )
