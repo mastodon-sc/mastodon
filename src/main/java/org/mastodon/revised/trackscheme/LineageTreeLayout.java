@@ -13,6 +13,7 @@ import org.mastodon.model.SelectionModel;
 import org.mastodon.revised.trackscheme.ScreenEdge.ScreenEdgePool;
 import org.mastodon.revised.trackscheme.ScreenVertex.ScreenVertexPool;
 import org.mastodon.revised.trackscheme.ScreenVertexRange.ScreenVertexRangePool;
+import org.mastodon.util.Listeners;
 
 import gnu.trove.iterator.TIntAlternatingIterator;
 import gnu.trove.iterator.TIntIterator;
@@ -53,9 +54,23 @@ import net.imglib2.RealLocalizable;
  */
 public class LineageTreeLayout
 {
+	public interface LayoutListener
+	{
+
+		/**
+		 * Notifies after the layout has been done.
+		 *
+		 * @param layout
+		 *            the layout.
+		 */
+		public void layoutChanged( LineageTreeLayout layout );
+	}
+
 	private final TrackSchemeGraph< ?, ? > graph;
 
 	private final SelectionModel< TrackSchemeVertex, TrackSchemeEdge > selection;
+
+	private final Listeners.List< LayoutListener > listeners;
 
 	/**
 	 * X coordinate that will be assigned to the next leaf in the current layout.
@@ -127,6 +142,7 @@ public class LineageTreeLayout
 	{
 		this.graph = graph;
 		this.selection = selection;
+		listeners = new Listeners.SynchronizedList<>();
 		rightmost = 0;
 		timestamp = 0;
 		timepoints = new TIntArrayList();
@@ -637,6 +653,11 @@ public class LineageTreeLayout
 		return timepoints;
 	}
 
+	public Listeners< LayoutListener > layoutListeners()
+	{
+		return listeners;
+	}
+
 	private class StackFrame
 	{
 		int numLaidOutChildren;
@@ -853,40 +874,9 @@ A:		while ( true )
 			graphRoot.incomingEdges().iterator().next().getSource( graphRoot );
 	}
 
-	private final ArrayList< LayoutListener > listeners = new ArrayList<>();
-
-	public synchronized boolean addLayoutListener( final LayoutListener l )
-	{
-		if ( ! listeners.contains( l ) )
-		{
-			listeners.add( l );
-			return true;
-		}
-		return false;
-	}
-
-	public synchronized boolean removeLayoutListener( final LayoutListener l )
-	{
-		return listeners.remove( l );
-	}
-
 	private void notifyListeners()
 	{
-		for ( final LayoutListener l : listeners )
-		{
+		for ( final LayoutListener l : listeners.list )
 			l.layoutChanged( this );
-		}
-	}
-
-	public interface LayoutListener
-	{
-
-		/**
-		 * Notifies after the layout has been done.
-		 *
-		 * @param layout
-		 *            the layout.
-		 */
-		public void layoutChanged( LineageTreeLayout layout );
 	}
 }

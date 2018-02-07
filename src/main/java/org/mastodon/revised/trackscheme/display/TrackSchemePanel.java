@@ -25,7 +25,6 @@ import org.mastodon.model.TimepointListener;
 import org.mastodon.model.TimepointModel;
 import org.mastodon.revised.trackscheme.ContextLayout;
 import org.mastodon.revised.trackscheme.LineageTreeLayout;
-import org.mastodon.revised.trackscheme.LineageTreeLayout.LayoutListener;
 import org.mastodon.revised.trackscheme.ScreenEntities;
 import org.mastodon.revised.trackscheme.ScreenEntitiesInterpolator;
 import org.mastodon.revised.trackscheme.ScreenTransform;
@@ -42,7 +41,6 @@ import org.mastodon.views.context.ContextListener;
 import net.imglib2.ui.InteractiveDisplayCanvasComponent;
 import net.imglib2.ui.OverlayRenderer;
 import net.imglib2.ui.PainterThread;
-import net.imglib2.ui.TransformEventHandler;
 import net.imglib2.ui.TransformListener;
 
 public class TrackSchemePanel extends JPanel implements
@@ -210,7 +208,7 @@ public class TrackSchemePanel extends JPanel implements
 		screenTransform = new ScreenTransform();
 		layout = new LineageTreeLayout( graph, selection );
 		contextLayout = new ContextLayout( graph, layout );
-		layout.addLayoutListener( transformEventHandler );
+		layout.layoutListeners().add( transformEventHandler );
 		entityAnimator = new ScreenEntityAnimator();
 		painterThread = new PainterThread( this );
 		flags = new Flags();
