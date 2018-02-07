@@ -224,6 +224,8 @@ public class EditSpecialBehaviours< V extends OverlayVertex< V, E >, E extends O
 		@Override
 		public void init( final int x, final int y )
 		{
+			lock.readLock().lock();
+
 			// Get vertex we clicked inside.
 			if ( renderer.getVertexAt( x, y, POINT_SELECT_DISTANCE_TOLERANCE, source ) != null )
 			{
@@ -241,6 +243,8 @@ public class EditSpecialBehaviours< V extends OverlayVertex< V, E >, E extends O
 
 				editing = true;
 			}
+			else
+				lock.readLock().unlock();
 		}
 
 		@Override
@@ -260,24 +264,36 @@ public class EditSpecialBehaviours< V extends OverlayVertex< V, E >, E extends O
 		{
 			if ( editing )
 			{
-				if ( renderer.getVertexAt( x, y, POINT_SELECT_DISTANCE_TOLERANCE, target ) != null )
+				/*
+				 * TODO: The following is a recipe for disaster...
+				 *
+				 * What should be really done is have a special kind of Ref that
+				 * listens for the object its pointing to getting deleted, then
+				 * becomes invalid can be interrogated in this regard.
+				 *
+				 * Then in the write-locked part, if source became invalid,
+				 * abort.
+				 */
+				lock.readLock().unlock();
+				lock.writeLock().lock();
+				try
 				{
-					target.localize( overlay.to );
-
-					/*
-					 * Careful with directed graphs. We always check and create
-					 * links forward in time.
-					 */
-					if ( !forward )
+					source.getInternalPoolIndex();
+					if ( renderer.getVertexAt( x, y, POINT_SELECT_DISTANCE_TOLERANCE, target ) != null )
 					{
-						tmp.refTo( source );
-						source.refTo( target );
-						target.refTo( tmp );
-					}
+						target.localize( overlay.to );
 
-					lock.writeLock().lock();
-					try
-					{
+						/*
+						 * Careful with directed graphs. We always check and
+						 * create links forward in time.
+						 */
+						if ( !forward )
+						{
+							tmp.refTo( source );
+							source.refTo( target );
+							target.refTo( tmp );
+						}
+
 						final E edge = overlayGraph.getEdge( source, target, edgeRef );
 						if ( null == edge )
 							overlayGraph.addEdge( source, target, edgeRef ).init();
@@ -287,14 +303,15 @@ public class EditSpecialBehaviours< V extends OverlayVertex< V, E >, E extends O
 						overlayGraph.notifyGraphChanged();
 						undo.setUndoPoint();
 					}
-					finally
-					{
-						lock.writeLock().unlock();
-					}
+
+					overlay.paintGhostVertex = false;
+					overlay.paintGhostLink = false;
+					editing = false;
 				}
-				overlay.paintGhostVertex = false;
-				overlay.paintGhostLink = false;
-				editing = false;
+				finally
+				{
+					lock.writeLock().unlock();
+				}
 			}
 		}
 	}
@@ -334,6 +351,8 @@ public class EditSpecialBehaviours< V extends OverlayVertex< V, E >, E extends O
 		@Override
 		public void init( final int x, final int y )
 		{
+			lock.writeLock().lock();
+
 			if ( renderer.getVertexAt( x, y, POINT_SELECT_DISTANCE_TOLERANCE, source ) != null )
 			{
 				// Get vertex we clicked inside.
@@ -351,33 +370,31 @@ public class EditSpecialBehaviours< V extends OverlayVertex< V, E >, E extends O
 				else
 					viewer.previousTimePoint();
 
-				lock.writeLock().lock();
-				try
-				{
-					// Create new vertex under click location.
-					source.getCovariance( mat );
-					final int timepoint = renderer.getCurrentTimepoint();
-					overlayGraph.addVertex( target ).init( timepoint, pos, mat );
+				// Create new vertex under click location.
+				source.getCovariance( mat );
+				final int timepoint = renderer.getCurrentTimepoint();
+				overlayGraph.addVertex( target ).init( timepoint, pos, mat );
 
-					// Link it to source vertex. Careful for oriented edge.
-					if ( forward )
-						overlayGraph.addEdge( source, target, edge ).init();
-					else
-						overlayGraph.addEdge( target, source, edge ).init();
+				// Link it to source vertex. Careful for oriented edge.
+				if ( forward )
+					overlayGraph.addEdge( source, target, edge ).init();
+				else
+					overlayGraph.addEdge( target, source, edge ).init();
 
-					// Set it as ghost link for the overlay.
-					System.arraycopy( pos, 0, overlay.from, 0, pos.length );
-					System.arraycopy( pos, 0, overlay.to, 0, pos.length );
-					overlay.paintGhostLink = true;
+				// Set it as ghost link for the overlay.
+				System.arraycopy( pos, 0, overlay.from, 0, pos.length );
+				System.arraycopy( pos, 0, overlay.to, 0, pos.length );
+				overlay.paintGhostLink = true;
 
-					overlayGraph.notifyGraphChanged();
-				}
-				finally
-				{
-					lock.writeLock().unlock();
-				}
+				overlayGraph.notifyGraphChanged();
+
+				lock.readLock().lock();
+				lock.writeLock().unlock();
+
 				moving = true;
 			}
+			else
+				lock.writeLock().unlock();
 		}
 
 		@Override
@@ -402,6 +419,7 @@ public class EditSpecialBehaviours< V extends OverlayVertex< V, E >, E extends O
 				undo.setUndoPoint();
 				overlayGraph.notifyGraphChanged();
 				moving = false;
+				lock.readLock().unlock();
 			}
 		}
 	}
