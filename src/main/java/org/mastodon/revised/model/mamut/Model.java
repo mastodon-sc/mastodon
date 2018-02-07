@@ -9,6 +9,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import org.mastodon.graph.ReadOnlyGraph;
 import org.mastodon.graph.io.RawGraphIO.FileIdToGraphMap;
@@ -53,6 +54,8 @@ public class Model extends AbstractModel< ModelGraph, Spot, Link > implements Un
 	 */
 	private final SpatioTemporalIndex< Spot > index;
 
+	private final ReentrantReadWriteLock lock;
+
 	private final GraphUndoRecorder< Spot, Link > undoRecorder;
 
 	private final FeatureModel featureModel;
@@ -63,6 +66,7 @@ public class Model extends AbstractModel< ModelGraph, Spot, Link > implements Un
 	{
 		super( new ModelGraph() );
 		index = new SpatioTemporalIndexImp<>( modelGraph, modelGraph.idmap().vertexIdBimap() );
+		lock = modelGraph.getLock();
 
 		final int initialCapacity = 1024;
 
@@ -162,14 +166,30 @@ public class Model extends AbstractModel< ModelGraph, Spot, Link > implements Un
 
 	public void undo()
 	{
-		undoRecorder.undo();
-		modelGraph.notifyGraphChanged();
+		lock.writeLock().lock();
+		try
+		{
+			undoRecorder.undo();
+			modelGraph.notifyGraphChanged();
+		}
+		finally
+		{
+			lock.writeLock().unlock();
+		}
 	}
 
 	public void redo()
 	{
-		undoRecorder.redo();
-		modelGraph.notifyGraphChanged();
+		lock.writeLock().lock();
+		try
+		{
+			undoRecorder.redo();
+			modelGraph.notifyGraphChanged();
+		}
+		finally
+		{
+			lock.writeLock().unlock();
+		}
 	}
 
 	@Override
