@@ -137,8 +137,8 @@ public class ToggleLinkBehaviour< V extends Vertex< E > & HasTimepoint, E extend
 			}
 			else
 			{
-				overlay.vTo[ 0 ] = x - panel.getOffsetDecorations().getWidth();
-				overlay.vTo[ 1 ] = y - panel.getOffsetDecorations().getHeight();
+				overlay.vTo[ 0 ] = x - panel.getOffsetHeaders().getWidth();
+				overlay.vTo[ 1 ] = y - panel.getOffsetHeaders().getHeight();
 				overlay.screenTransform.applyInverse( overlay.to, overlay.vTo );
 				overlay.strongEdge = false;
 			}
@@ -241,10 +241,10 @@ public class ToggleLinkBehaviour< V extends Vertex< E > & HasTimepoint, E extend
 			screenTransform.apply( from, vFrom );
 			screenTransform.apply( to, vTo );
 			g.drawLine(
-					( int ) vFrom[ 0 ] + panel.getOffsetDecorations().getWidth(),
-					( int ) vFrom[ 1 ] + panel.getOffsetDecorations().getHeight(),
-					( int ) vTo[ 0 ] + panel.getOffsetDecorations().getWidth(),
-					( int ) vTo[ 1 ] + panel.getOffsetDecorations().getHeight() );
+					( int ) vFrom[ 0 ] + panel.getOffsetHeaders().getWidth(),
+					( int ) vFrom[ 1 ] + panel.getOffsetHeaders().getHeight(),
+					( int ) vTo[ 0 ] + panel.getOffsetHeaders().getWidth(),
+					( int ) vTo[ 1 ] + panel.getOffsetHeaders().getHeight() );
 		}
 
 		@Override

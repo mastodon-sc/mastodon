@@ -738,7 +738,7 @@ public class TrackSchemePanel extends JPanel implements
 	}
 
 	// TODO remove??? revise TrackSchemePanel / TrackSchemeFrame construction.
-	protected OffsetHeaders getOffsetDecorations()
+	protected OffsetHeaders getOffsetHeaders()
 	{
 		return offsetHeaders;
 	}
