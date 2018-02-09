@@ -227,10 +227,10 @@ public class TrackSchemePanel extends JPanel implements
 		display.addTransformListener( navigationBehaviours );
 
 		offsetHeaders = new OffsetHeaders();
-		offsetHeaders.addOffsetHeadersListener( transformEventHandler );
-		offsetHeaders.addOffsetHeadersListener( graphOverlay );
-		offsetHeaders.addOffsetHeadersListener( navigationBehaviours );
-		offsetHeaders.addOffsetHeadersListener( highlightHandler );
+		offsetHeaders.listeners().add( transformEventHandler );
+		offsetHeaders.listeners().add( graphOverlay );
+		offsetHeaders.listeners().add( navigationBehaviours );
+		offsetHeaders.listeners().add( highlightHandler );
 		offsetHeaders.setHeaderVisibleX( true, 25 );
 		offsetHeaders.setHeaderVisibleY( true, 20 );
 //		offsetDecorations.setDecorationsVisibleY( false, 0 );

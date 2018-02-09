@@ -1,15 +1,15 @@
 package org.mastodon.revised.trackscheme.display;
 
-import java.util.ArrayList;
+import org.mastodon.util.Listeners;
 
 public class OffsetHeaders
 {
 	public interface OffsetHeadersListener
 	{
-		public void updateHeadersVisibility( boolean isVisibleX, int width, boolean isVisibleY, int height );
+		void updateHeadersVisibility( boolean isVisibleX, int width, boolean isVisibleY, int height );
 	}
 
-	private final ArrayList< OffsetHeadersListener > listeners = new ArrayList< OffsetHeadersListener >();
+	private final Listeners.List< OffsetHeadersListener > listeners;
 
 	private boolean isVisibleX;
 
@@ -21,6 +21,7 @@ public class OffsetHeaders
 
 	public OffsetHeaders()
 	{
+		listeners = new Listeners.SynchronizedList<>();
 		isVisibleX = false;
 		isVisibleY = false;
 		width = 50;
@@ -41,35 +42,14 @@ public class OffsetHeaders
 		notifyListeners();
 	}
 
-	/**
-	 * Registers the specified listener.
-	 *
-	 * @param l
-	 *            the {@link OffsetHeadersListener} to register.
-	 * @return {@code true} if the specified listener was added to the
-	 *         listeners of this handler. {@code false} if the specified
-	 *         listener was already registered.
-	 */
-	public synchronized boolean addOffsetHeadersListener( final OffsetHeadersListener l )
+	public Listeners< OffsetHeadersListener > listeners()
 	{
-		if ( !listeners.contains( l ) )
-		{
-			listeners.add( l );
-			l.updateHeadersVisibility( isVisibleX, width, isVisibleY, height );
-			return true;
-		}
-		return false;
-	}
-
-	public synchronized boolean removeOffsetHeadersListener( final OffsetHeadersListener l )
-	{
-		return listeners.remove( l );
+		return listeners;
 	}
 
 	private void notifyListeners()
 	{
-		for ( final OffsetHeadersListener l : listeners )
-			l.updateHeadersVisibility( isVisibleX, width, isVisibleY, height );
+		listeners.list.forEach( l -> l.updateHeadersVisibility( isVisibleX, width, isVisibleY, height ) );
 	}
 
 	public boolean isVisibleX()

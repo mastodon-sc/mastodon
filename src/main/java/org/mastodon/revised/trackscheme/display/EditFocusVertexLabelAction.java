@@ -78,7 +78,7 @@ public class EditFocusVertexLabelAction extends AbstractNamedAction implements T
 	{
 		final EditFocusVertexLabelAction editFocusVertexLabelAction = new EditFocusVertexLabelAction( focus, undoPointMarker, panel );
 		panel.getDisplay().addTransformListener( editFocusVertexLabelAction );
-		panel.getOffsetDecorations().addOffsetHeadersListener( editFocusVertexLabelAction );
+		panel.getOffsetDecorations().listeners().add( editFocusVertexLabelAction );
 		actions.namedAction( editFocusVertexLabelAction, EDIT_FOCUS_LABEL_KEYS );
 	}
 
