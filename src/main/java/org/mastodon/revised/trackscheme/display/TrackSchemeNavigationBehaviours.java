@@ -152,7 +152,7 @@ public class TrackSchemeNavigationBehaviours implements TransformListener< Scree
 			ly2 = screenTransform.screenToLayoutY( y2 );
 		}
 
-		final RefSet< TrackSchemeVertex > vs = layout.getVerticesWithin( lx1, ly1, lx2, ly2 );
+		final RefSet< TrackSchemeVertex > vs = layout.getActiveVerticesWithin( lx1, ly1, lx2, ly2 );
 		final TrackSchemeVertex vertexRef = graph.vertexRef();
 		for ( final TrackSchemeVertex v : vs )
 		{

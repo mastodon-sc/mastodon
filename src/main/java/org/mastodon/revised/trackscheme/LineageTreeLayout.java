@@ -518,7 +518,7 @@ public class LineageTreeLayout
 	}
 
 	/**
-	 * Returns the set of all the vertices in the rectangle with two corners
+	 * Returns the set of all active vertices in the rectangle with two corners
 	 * {@code (lx1, ly1)} and {@code (lx2, ly2)} in layout
 	 * coordinates.
 	 *
@@ -532,8 +532,7 @@ public class LineageTreeLayout
 	 *            the y coordinate of the second corner.
 	 * @return a new set.
 	 */
-	// TODO rename getActiveVerticesWithin
-	public RefSet< TrackSchemeVertex > getVerticesWithin( final double lx1, final double ly1, final double lx2, final double ly2 )
+	public RefSet< TrackSchemeVertex > getActiveVerticesWithin( final double lx1, final double ly1, final double lx2, final double ly2 )
 	{
 		final int tStart = ( int ) Math.ceil( Math.min( ly1, ly2 ) );
 		final int tEnd = ( int ) Math.floor( Math.max( ly1, ly2 ) ) + 1;
