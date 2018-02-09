@@ -3,6 +3,7 @@ package org.mastodon.revised.trackscheme.display;
 import java.awt.Color;
 import java.awt.Graphics;
 
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 import org.mastodon.collection.RefSet;
 import org.mastodon.model.FocusModel;
 import org.mastodon.model.NavigationHandler;
@@ -51,6 +52,8 @@ public class TrackSchemeNavigationBehaviours implements TransformListener< Scree
 
 	private final TrackSchemeGraph< ?, ? > graph;
 
+	private final ReentrantReadWriteLock lock;
+
 	private final LineageTreeLayout layout;
 
 	private final NavigationHandler< TrackSchemeVertex, TrackSchemeEdge > navigation;
@@ -96,6 +99,7 @@ public class TrackSchemeNavigationBehaviours implements TransformListener< Scree
 	{
 		this.display = display;
 		this.graph = graph;
+		this.lock = graph.getLock();
 		this.layout = layout;
 		this.graphOverlay = graphOverlay;
 		this.focus = focus;
@@ -218,6 +222,15 @@ public class TrackSchemeNavigationBehaviours implements TransformListener< Scree
 		graph.releaseRef( edge );
 	}
 
+	private void focus( final int x, final int y )
+	{
+		final TrackSchemeVertex ref = graph.vertexRef();
+
+		focus.focusVertex( graphOverlay.getVertexAt( x, y, ref ) ); // if clicked outside, getVertexAt == null, clears the focus.
+
+		graph.releaseRef( ref );
+	}
+
 	/*
 	 * BEHAVIOURS
 	 */
@@ -242,18 +255,7 @@ public class TrackSchemeNavigationBehaviours implements TransformListener< Scree
 			if ( x < headerWidth || y < headerHeight )
 				return;
 
-			final TrackSchemeVertex ref = graph.vertexRef();
-			final TrackSchemeVertex vertex = graphOverlay.getVertexAt( x, y, ref );
-			if ( vertex != null )
-			{
-				focus.focusVertex( vertex );
-			}
-			else
-			{
-				// Click outside. We clear the focus.
-				focus.focusVertex( null );
-			}
-			graph.releaseRef( ref );
+			focus( x, y );
 		}
 	}
 
