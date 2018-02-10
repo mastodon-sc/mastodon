@@ -490,22 +490,22 @@ public class LineageTreeLayout
 		{
 			final int tp = tpIter.next();
 			final double diffy = ( ly - tp ) * aspectRatioXtoY;
-			if ( diffy * diffy < closestVertexSquareDist )
+			if ( diffy * diffy >= closestVertexSquareDist )
+				break;
+
+			final TrackSchemeVertexList vertexList = timepointToOrderedVertices.get( tp );
+			final int left = vertexList.binarySearch( lx );
+			final int begin = Math.max( 0, left );
+			final int end = Math.min( begin + 2, vertexList.size() );
+			for ( int x = begin; x < end; ++x )
 			{
-				final TrackSchemeVertexList vertexList = timepointToOrderedVertices.get( tp );
-				final int left = vertexList.binarySearch( lx );
-				final int begin = Math.max( 0, left );
-				final int end = Math.min( begin + 2, vertexList.size() );
-				for ( int x = begin; x < end; ++x )
+				vertexList.get( x, ref );
+				final double diffx = ( lx - ref.getLayoutX() );
+				final double d2 = diffx * diffx + diffy * diffy;
+				if ( d2 < closestVertexSquareDist )
 				{
-					vertexList.get( x, ref );
-					final double diffx = ( lx - ref.getLayoutX() );
-					final double d2 = diffx * diffx + diffy * diffy;
-					if ( d2 < closestVertexSquareDist )
-					{
-						closestVertexSquareDist = d2;
-						closestVertexIndex = ref.getInternalPoolIndex();
-					}
+					closestVertexSquareDist = d2;
+					closestVertexIndex = ref.getInternalPoolIndex();
 				}
 			}
 		}
@@ -515,6 +515,78 @@ public class LineageTreeLayout
 
 		graph.getVertexPool().getObject( closestVertexIndex, ref );
 		return ref;
+	}
+
+	/**
+	 * Of all active vertices in the rectangle with two corners
+	 * {@code (lx1, ly1)} and {@code (lx2, ly2)} in layout
+	 * coordinates, get the one with the minimal distance to {@code (lx2, ly2)}.
+	 * The distance is computed as the Euclidean distance in layout
+	 * space distorted by the specified aspect ratio.
+	 *
+	 * @param lx1
+	 *            the x coordinate of the first corner.
+	 * @param ly1
+	 *            the y coordinate of the first corner.
+	 * @param lx2
+	 *            the x coordinate of the second corner.
+	 * @param ly2
+	 *            the y coordinate of the second corner.
+	 * @param aspectRatioXtoY
+	 *            The <em>X/Y</em> ratio of screen vector <em>(1,1)</em>
+	 *            transformed into layout coordinates <em>(X,Y)</em>.
+	 * @param ref
+	 *            ref to store the result.
+	 * @return the closest active vertex to the specified coordinates, or
+	 *         {@code null} if there are no active vertices.
+	 */
+	public TrackSchemeVertex getClosestActiveVertexWithin( final double lx1, final double ly1, final double lx2, final double ly2, final double aspectRatioXtoY, final TrackSchemeVertex ref )
+	{
+		final int tStart = ( int ) Math.ceil( Math.min( ly1, ly2 ) );
+		final int tEnd = ( int ) Math.floor( Math.max( ly1, ly2 ) ) + 1;
+		final double x1 = Math.min( lx1, lx2 );
+		final double x2 = Math.max( lx1, lx2 );
+
+		double closestVertexSquareDist = Double.POSITIVE_INFINITY;
+		int closestVertexIndex = -1;
+
+		int start = timepoints.binarySearch( tStart );
+		if ( start < 0 )
+			start = -start - 1;
+		int end = timepoints.binarySearch( tEnd );
+		if ( end < 0 )
+			end = -end - 1;
+
+		final int tpIndexFirst = ly1 < ly2 ? end - 1 : start;
+		final int tpIndexLast = ly1 < ly2 ? start - 1 : end;
+		final int tpIndexInc = ly1 < ly2 ? -1 : 1;
+		for ( int tpIndex = tpIndexFirst; tpIndex != tpIndexLast; tpIndex += tpIndexInc )
+		{
+			final double diffy = ( ly2 - tpIndex ) * aspectRatioXtoY;
+			if ( diffy * diffy >= closestVertexSquareDist )
+				break;
+
+			final TrackSchemeVertexList vertexList = timepointToOrderedVertices.get( timepoints.get( tpIndex ) );
+			final int left = vertexList.binarySearch( x1 ) + 1;
+			final int right = vertexList.binarySearch( x2, left, vertexList.size() );
+			if ( right > left )
+			{
+				final int candidate = lx1 < lx2 ? right : left;
+				final TrackSchemeVertex v = vertexList.get( candidate, ref );
+				final double diffx = ( lx2 - v.getLayoutX() );
+				final double d2 = diffx * diffx + diffy * diffy;
+				if ( d2 < closestVertexSquareDist )
+				{
+					closestVertexSquareDist = d2;
+					closestVertexIndex = v.getInternalPoolIndex();
+				}
+			}
+		}
+
+		if ( closestVertexIndex < 0 )
+			return null;
+
+		return graph.getVertexPool().getObject( closestVertexIndex, ref );
 	}
 
 	/**

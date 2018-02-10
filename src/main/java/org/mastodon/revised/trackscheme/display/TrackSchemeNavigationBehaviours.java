@@ -2,8 +2,8 @@ package org.mastodon.revised.trackscheme.display;
 
 import java.awt.Color;
 import java.awt.Graphics;
-
 import java.util.concurrent.locks.ReentrantReadWriteLock;
+
 import org.mastodon.collection.RefSet;
 import org.mastodon.model.FocusModel;
 import org.mastodon.model.NavigationHandler;
@@ -19,7 +19,6 @@ import org.scijava.ui.behaviour.DragBehaviour;
 import org.scijava.ui.behaviour.util.AbstractNamedBehaviour;
 import org.scijava.ui.behaviour.util.Behaviours;
 
-import net.imglib2.RealPoint;
 import net.imglib2.ui.InteractiveDisplayCanvasComponent;
 import net.imglib2.ui.OverlayRenderer;
 import net.imglib2.ui.TransformListener;
@@ -164,6 +163,9 @@ public class TrackSchemeNavigationBehaviours implements TransformListener< Scree
 					selection.setSelected( e, true );
 			}
 		}
+
+		focus.focusVertex( layout.getClosestActiveVertexWithin( lx1, ly1, lx2, ly2, ratioXtoY, vertexRef ) );
+
 		graph.releaseRef( vertexRef );
 
 		selection.resumeListeners();
@@ -334,16 +336,10 @@ public class TrackSchemeNavigationBehaviours implements TransformListener< Scree
 
 		private final boolean addToSelection;
 
-		private final RealPoint lpos;
-
-		private final TrackSchemeVertex ref;
-
 		public BoxSelectionBehaviour( final String name, final boolean addToSelection )
 		{
 			super( name );
 			this.addToSelection = addToSelection;
-			lpos = new RealPoint( 2 );
-			ref = graph.vertexRef();
 		}
 
 		@Override
@@ -388,11 +384,6 @@ public class TrackSchemeNavigationBehaviours implements TransformListener< Scree
 						eX - headerWidth,
 						eY - headerHeight,
 						addToSelection );
-
-				lpos.setPosition( screenTransform.screenToLayoutX( x - headerWidth ), 0 );
-				lpos.setPosition( screenTransform.screenToLayoutY( y - headerHeight ), 1 );
-				final TrackSchemeVertex v = layout.getClosestActiveVertex( lpos, ratioXtoY, ref );
-				focus.focusVertex( v );
 			}
 		}
 
