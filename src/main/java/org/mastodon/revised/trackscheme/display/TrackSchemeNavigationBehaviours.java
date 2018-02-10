@@ -257,7 +257,15 @@ public class TrackSchemeNavigationBehaviours implements TransformListener< Scree
 			if ( x < headerWidth || y < headerHeight )
 				return;
 
-			focus( x, y );
+			lock.readLock().lock();
+			try
+			{
+				focus( x, y );
+			}
+			finally
+			{
+				lock.readLock().unlock();
+			}
 		}
 	}
 
@@ -280,7 +288,15 @@ public class TrackSchemeNavigationBehaviours implements TransformListener< Scree
 			if ( x < headerWidth || y < headerHeight )
 				return;
 
-			navigate( x, y );
+			lock.readLock().lock();
+			try
+			{
+				navigate( x, y );
+			}
+			finally
+			{
+				lock.readLock().unlock();
+			}
 		}
 	}
 
@@ -306,7 +322,15 @@ public class TrackSchemeNavigationBehaviours implements TransformListener< Scree
 			if ( x < headerWidth || y < headerHeight )
 				return;
 
-			select( x, y, addToSelection );
+			lock.readLock().lock();
+			try
+			{
+				select( x, y, addToSelection );
+			}
+			finally
+			{
+				lock.readLock().unlock();
+			}
 		}
 	}
 
@@ -378,12 +402,20 @@ public class TrackSchemeNavigationBehaviours implements TransformListener< Scree
 				dragging = false;
 				display.removeOverlayRenderer( this );
 				display.repaint();
-				selectWithin(
-						oX - headerWidth,
-						oY - headerHeight,
-						eX - headerWidth,
-						eY - headerHeight,
-						addToSelection );
+				lock.readLock().lock();
+				try
+				{
+					selectWithin(
+							oX - headerWidth,
+							oY - headerHeight,
+							eX - headerWidth,
+							eY - headerHeight,
+							addToSelection );
+				}
+				finally
+				{
+					lock.readLock().unlock();
+				}
 			}
 		}
 
