@@ -1,5 +1,7 @@
 package org.mastodon.revised.trackscheme.display;
 
+import java.util.concurrent.locks.ReentrantReadWriteLock;
+
 import org.mastodon.model.FocusModel;
 import org.mastodon.model.SelectionModel;
 import org.mastodon.revised.trackscheme.LineageTreeLayout;
@@ -72,6 +74,8 @@ public class TrackSchemeNavigationActions
 
 	private final TrackSchemeGraph< ?, ? > graph;
 
+	private final ReentrantReadWriteLock lock;
+
 	private final LineageTreeLayout layout;
 
 	private final SelectionModel< TrackSchemeVertex, TrackSchemeEdge > selection;
@@ -94,6 +98,7 @@ public class TrackSchemeNavigationActions
 			final SelectionModel< TrackSchemeVertex, TrackSchemeEdge > selection )
 	{
 		this.graph = graph;
+		this.lock = graph.getLock();
 		this.layout = layout;
 		this.focus = focus;
 		this.selection = selection;
@@ -154,34 +159,42 @@ public class TrackSchemeNavigationActions
 
 	private TrackSchemeVertex selectAndFocusNeighbor( final Direction direction, final boolean select, final TrackSchemeVertex ref )
 	{
-		final TrackSchemeVertex vertex = focus.getFocusedVertex( ref );
-		if ( vertex == null )
-			return null;
-
-		if ( select )
-			selection.setSelected( vertex, true );
-
-		final TrackSchemeVertex current;
-		switch ( direction )
+		lock.readLock().lock();
+		try
 		{
-		case CHILD:
-			current = layout.getFirstActiveChild( vertex, ref );
-			break;
-		case PARENT:
-			current = layout.getFirstActiveParent( vertex, ref );
-			break;
-		case LEFT_SIBLING:
-			current = layout.getLeftSibling( vertex, ref );
-			break;
-		case RIGHT_SIBLING: default:
-			current = layout.getRightSibling( vertex, ref );
-			break;
+			final TrackSchemeVertex vertex = focus.getFocusedVertex( ref );
+			if ( vertex == null )
+				return null;
+
+			if ( select )
+				selection.setSelected( vertex, true );
+
+			final TrackSchemeVertex current;
+			switch ( direction )
+			{
+			case CHILD:
+				current = layout.getFirstActiveChild( vertex, ref );
+				break;
+			case PARENT:
+				current = layout.getFirstActiveParent( vertex, ref );
+				break;
+			case LEFT_SIBLING:
+				current = layout.getLeftSibling( vertex, ref );
+				break;
+			case RIGHT_SIBLING: default:
+				current = layout.getRightSibling( vertex, ref );
+				break;
+			}
+
+			if ( current != null )
+				focus.focusVertex( current );
+
+			return current;
 		}
-
-		if ( current != null )
-			focus.focusVertex( current );
-
-		return current;
+		finally
+		{
+			lock.readLock().unlock();
+		}
 	}
 
 	/**
@@ -190,10 +203,18 @@ public class TrackSchemeNavigationActions
 	private void toggleSelectionOfFocusedVertex()
 	{
 		final TrackSchemeVertex ref = graph.vertexRef();
-		final TrackSchemeVertex v = focus.getFocusedVertex( ref );
-		if ( v != null )
-			selection.toggle( v );
-		graph.releaseRef( ref );
+		lock.readLock().lock();
+		try
+		{
+			final TrackSchemeVertex v = focus.getFocusedVertex( ref );
+			if ( v != null )
+				selection.toggle( v );
+			}
+		finally
+		{
+			lock.readLock().unlock();
+			graph.releaseRef( ref );
+		}
 	}
 
 	/*
@@ -220,39 +241,47 @@ public class TrackSchemeNavigationActions
 
 	private TrackSchemeVertex selectAndFocusNeighborFL( final Direction direction, final boolean clearSelection, final TrackSchemeVertex ref )
 	{
-		final TrackSchemeVertex vertex = focus.getFocusedVertex( ref );
-		if ( vertex == null )
-			return null;
-
-		selection.pauseListeners();
-
-		final TrackSchemeVertex current;
-		switch ( direction )
+		lock.readLock().lock();
+		try
 		{
-		case CHILD:
-			current = layout.getFirstActiveChild( vertex, ref );
-			break;
-		case PARENT:
-			current = layout.getFirstActiveParent( vertex, ref );
-			break;
-		case LEFT_SIBLING:
-			current = layout.getLeftSibling( vertex, ref );
-			break;
-		case RIGHT_SIBLING:
-		default:
-			current = layout.getRightSibling( vertex, ref );
-			break;
-		}
+			final TrackSchemeVertex vertex = focus.getFocusedVertex( ref );
+			if ( vertex == null )
+				return null;
 
-		if ( current != null )
+			selection.pauseListeners();
+
+			final TrackSchemeVertex current;
+			switch ( direction )
+			{
+			case CHILD:
+				current = layout.getFirstActiveChild( vertex, ref );
+				break;
+			case PARENT:
+				current = layout.getFirstActiveParent( vertex, ref );
+				break;
+			case LEFT_SIBLING:
+				current = layout.getLeftSibling( vertex, ref );
+				break;
+			case RIGHT_SIBLING:
+			default:
+				current = layout.getRightSibling( vertex, ref );
+				break;
+			}
+
+			if ( current != null )
+			{
+				focus.focusVertex( current );
+				if ( clearSelection )
+					selection.clearSelection();
+				selection.setSelected( current, true );
+			}
+
+			selection.resumeListeners();
+			return current;
+		}
+		finally
 		{
-			focus.focusVertex( current );
-			if ( clearSelection )
-				selection.clearSelection();
-			selection.setSelected( current, true );
+			lock.readLock().unlock();
 		}
-
-		selection.resumeListeners();
-		return current;
 	}
 }
