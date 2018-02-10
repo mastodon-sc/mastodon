@@ -179,6 +179,9 @@ public class DefaultTrackSchemeOverlay extends AbstractTrackSchemeOverlay
 		final double minY = screenTransform.getMinY();
 		final double maxY = screenTransform.getMaxY();
 
+		final boolean isHeaderVisibleX = headerWidth > 0;
+		final boolean isHeaderVisibleY = headerHeight > 0;
+
 		if ( isHeaderVisibleX )
 		{
 			g2.setColor( style.getHeaderBackgroundColor() );

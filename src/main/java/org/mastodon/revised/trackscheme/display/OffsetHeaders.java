@@ -6,38 +6,25 @@ public class OffsetHeaders
 {
 	public interface OffsetHeadersListener
 	{
-		void updateHeadersVisibility( boolean isVisibleX, int width, boolean isVisibleY, int height );
+		void updateHeaderSize( int width, int height );
 	}
 
 	private final Listeners.List< OffsetHeadersListener > listeners;
 
-	private boolean isVisibleX;
-
 	private int width;
-
-	private boolean isVisibleY;
 
 	private int height;
 
 	public OffsetHeaders()
 	{
 		listeners = new Listeners.SynchronizedList<>();
-		isVisibleX = false;
-		isVisibleY = false;
-		width = 50;
-		height = 50;
+		width = 0;
+		height = 0;
 	}
 
-	public void setHeaderVisibleX( final boolean isVisibleX, final int width )
+	public void setHeaderSize( final int width, final int height )
 	{
-		this.isVisibleX = isVisibleX;
 		this.width = width;
-		notifyListeners();
-	}
-
-	public void setHeaderVisibleY( final boolean isVisibleY, final int height )
-	{
-		this.isVisibleY = isVisibleY;
 		this.height = height;
 		notifyListeners();
 	}
@@ -49,17 +36,7 @@ public class OffsetHeaders
 
 	private void notifyListeners()
 	{
-		listeners.list.forEach( l -> l.updateHeadersVisibility( isVisibleX, width, isVisibleY, height ) );
-	}
-
-	public boolean isVisibleX()
-	{
-		return isVisibleX;
-	}
-
-	public boolean isVisibleY()
-	{
-		return isVisibleY;
+		listeners.list.forEach( l -> l.updateHeaderSize( width, height ) );
 	}
 
 	public int getWidth()

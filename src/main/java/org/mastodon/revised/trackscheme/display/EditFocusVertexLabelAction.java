@@ -132,10 +132,10 @@ public class EditFocusVertexLabelAction extends AbstractNamedAction implements T
 	}
 
 	@Override
-	public void updateHeadersVisibility( final boolean isVisibleX, final int width, final boolean isVisibleY, final int height )
+	public void updateHeaderSize( final int width, final int height )
 	{
-		headerWidth = isVisibleX ? width : 0;
-		headerHeight = isVisibleY ? height : 0;
+		headerWidth = width;
+		headerHeight = height;
 	}
 
 	private class Editor extends JTextField

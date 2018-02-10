@@ -4,12 +4,12 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 
+import org.mastodon.model.HighlightModel;
 import org.mastodon.revised.trackscheme.ScreenTransform;
 import org.mastodon.revised.trackscheme.TrackSchemeEdge;
 import org.mastodon.revised.trackscheme.TrackSchemeGraph;
 import org.mastodon.revised.trackscheme.TrackSchemeVertex;
 import org.mastodon.revised.trackscheme.display.OffsetHeaders.OffsetHeadersListener;
-import org.mastodon.model.HighlightModel;
 
 import net.imglib2.ui.TransformListener;
 
@@ -69,10 +69,10 @@ public class MouseHighlightHandler implements MouseMotionListener, MouseListener
 	}
 
 	@Override
-	public void updateHeadersVisibility( final boolean isVisibleX, final int width, final boolean isVisibleY, final int height )
+	public void updateHeaderSize( final int width, final int height )
 	{
-		headerWidth = isVisibleX ? width : 0;
-		headerHeight = isVisibleY ? height : 0;
+		headerWidth = width;
+		headerHeight = height;
 	}
 
 	private void highlight()

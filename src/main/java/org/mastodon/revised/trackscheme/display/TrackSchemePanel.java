@@ -231,9 +231,7 @@ public class TrackSchemePanel extends JPanel implements
 		offsetHeaders.listeners().add( graphOverlay );
 		offsetHeaders.listeners().add( navigationBehaviours );
 		offsetHeaders.listeners().add( highlightHandler );
-		offsetHeaders.setHeaderVisibleX( true, 25 );
-		offsetHeaders.setHeaderVisibleY( true, 20 );
-//		offsetDecorations.setDecorationsVisibleY( false, 0 );
+		offsetHeaders.setHeaderSize( 25, 20 );
 
 		xScrollBar = new JScrollBar( JScrollBar.HORIZONTAL );
 		yScrollBar = new JScrollBar( JScrollBar.VERTICAL );

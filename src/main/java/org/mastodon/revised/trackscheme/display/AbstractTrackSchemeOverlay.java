@@ -6,6 +6,8 @@ import java.awt.RenderingHints;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.mastodon.collection.RefList;
+import org.mastodon.model.FocusModel;
+import org.mastodon.model.HighlightModel;
 import org.mastodon.revised.trackscheme.ScreenEdge;
 import org.mastodon.revised.trackscheme.ScreenEntities;
 import org.mastodon.revised.trackscheme.ScreenVertex;
@@ -14,8 +16,6 @@ import org.mastodon.revised.trackscheme.TrackSchemeEdge;
 import org.mastodon.revised.trackscheme.TrackSchemeGraph;
 import org.mastodon.revised.trackscheme.TrackSchemeVertex;
 import org.mastodon.revised.trackscheme.display.OffsetHeaders.OffsetHeadersListener;
-import org.mastodon.model.FocusModel;
-import org.mastodon.model.HighlightModel;
 
 import net.imglib2.RealLocalizable;
 import net.imglib2.RealPoint;
@@ -101,11 +101,7 @@ public abstract class AbstractTrackSchemeOverlay implements OverlayRenderer, Off
 
 	private int currentTimepoint = 0;
 
-	protected boolean isHeaderVisibleX;
-
 	protected int headerWidth;
-
-	protected boolean isHeaderVisibleY;
 
 	protected int headerHeight;
 
@@ -314,12 +310,10 @@ public abstract class AbstractTrackSchemeOverlay implements OverlayRenderer, Off
 	}
 
 	@Override
-	public void updateHeadersVisibility( final boolean isVisibleX, final int width, final boolean isVisibleY, final int height )
+	public void updateHeaderSize( final int width, final int height )
 	{
-		isHeaderVisibleX = isVisibleX;
-		headerWidth = isVisibleX ? width : 0;
-		isHeaderVisibleY = isVisibleY;
-		headerHeight = isVisibleY ? height : 0;
+		headerWidth = width;
+		headerHeight = height;
 	}
 
 	/**

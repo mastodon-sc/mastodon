@@ -16,7 +16,6 @@ import org.scijava.ui.behaviour.util.AbstractNamedBehaviour;
 import org.scijava.ui.behaviour.util.Behaviours;
 
 import net.imglib2.ui.TransformEventHandler;
-import net.imglib2.ui.TransformEventHandlerFactory;
 import net.imglib2.ui.TransformListener;
 
 public class InertialScreenTransformEventHandler
@@ -210,10 +209,10 @@ public class InertialScreenTransformEventHandler
 	}
 
 	@Override
-	public void updateHeadersVisibility( final boolean isVisibleX, final int width, final boolean isVisibleY, final int height )
+	public void updateHeaderSize( final int width, final int height )
 	{
-		headerWidth = isVisibleX ? width : 0;
-		headerHeight = isVisibleY ? height : 0;
+		headerWidth = width;
+		headerHeight = height;
 		updateTransformScreenSize();
 	}
 
