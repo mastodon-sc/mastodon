@@ -6,7 +6,6 @@ import static org.mastodon.revised.trackscheme.ScreenVertex.Transition.NONE;
 import static org.mastodon.revised.trackscheme.ScreenVertex.Transition.SELECTING;
 
 import java.awt.Color;
-import java.awt.FontMetrics;
 import java.awt.Graphics2D;
 import java.awt.font.FontRenderContext;
 import java.awt.font.TextLayout;
@@ -15,17 +14,15 @@ import java.awt.geom.Rectangle2D;
 import org.mastodon.model.FocusModel;
 import org.mastodon.model.HighlightModel;
 import org.mastodon.revised.Util;
-import org.mastodon.revised.trackscheme.ScreenColumn;
 import org.mastodon.revised.trackscheme.ScreenEdge;
 import org.mastodon.revised.trackscheme.ScreenEntities;
-import org.mastodon.revised.trackscheme.ScreenTransform;
 import org.mastodon.revised.trackscheme.ScreenVertex;
 import org.mastodon.revised.trackscheme.ScreenVertex.Transition;
-import org.mastodon.revised.trackscheme.display.style.TrackSchemeStyle;
 import org.mastodon.revised.trackscheme.ScreenVertexRange;
 import org.mastodon.revised.trackscheme.TrackSchemeEdge;
 import org.mastodon.revised.trackscheme.TrackSchemeGraph;
 import org.mastodon.revised.trackscheme.TrackSchemeVertex;
+import org.mastodon.revised.trackscheme.display.style.TrackSchemeStyle;
 
 import net.imglib2.RealLocalizable;
 
@@ -46,12 +43,6 @@ public class DefaultTrackSchemeOverlay extends AbstractTrackSchemeOverlay
 	 * CONSTANTS
 	 */
 
-	/**
-	 * If the time rows are smaller than this size in pixels, they won't be
-	 * drawn.
-	 */
-	private static final int MIN_TIMELINE_SPACING = 20;
-
 	public static final double simplifiedVertexRadius = 2.5;
 
 	public static final double simplifiedVertexSelectTolerance = 3.5;
@@ -68,8 +59,6 @@ public class DefaultTrackSchemeOverlay extends AbstractTrackSchemeOverlay
 	 * FIELDS
 	 */
 
-	private final Color[] shadowColors;
-
 	private TrackSchemeStyle style;
 
 	public DefaultTrackSchemeOverlay(
@@ -81,13 +70,6 @@ public class DefaultTrackSchemeOverlay extends AbstractTrackSchemeOverlay
 	{
 		super( graph, highlight, focus, options );
 		this.style = style;
-
-		final int[] shadowAlphas = new int[] { 28, 22, 17, 12, 8, 6, 3 };
-//		final int[] shadowAlphas = new int[] { 44, 35, 28, 22, 17, 12, 8, 6, 3 };
-//		final int[] shadowAlphas = new int[] { 78, 44, 35, 28, 22, 17, 12, 8, 6, 3, 1 };
-		shadowColors = new Color[ shadowAlphas.length ];
-		for ( int i = 0; i < shadowAlphas.length; ++i )
-			shadowColors[ i ] = new Color( 0, 0, 0, shadowAlphas[ i ] );
 	}
 
 	/**
@@ -109,170 +91,13 @@ public class DefaultTrackSchemeOverlay extends AbstractTrackSchemeOverlay
 	@Override
 	protected void paintBackground( final Graphics2D g2, final ScreenEntities screenEntities )
 	{
-		final int width = getWidth();
-		final int height = getHeight();
-
-		final ScreenTransform screenTransform = new ScreenTransform();
-		screenEntities.getScreenTransform( screenTransform );
-		final double yScale = screenTransform.getScaleY();
-		final double minY = screenTransform.getMinY();
-		final double maxY = screenTransform.getMaxY();
-
-		g2.setColor( style.getBackgroundColor() );
-		g2.fillRect( 0, 0, width, height );
-
-		if ( style.isHighlightCurrentTimepoint() )
-		{
-			final double t = getCurrentTimepoint();
-			final int y = ( int ) Math.round( yScale * ( t - minY - 0.5 ) ) + headerHeight;
-			final int h = Math.max( 1, ( int ) Math.round( yScale ) );
-			g2.setColor( style.getCurrentTimepointColor() );
-			g2.fillRect( 0, y, width, h );
-		}
-
-		if ( style.isPaintRows() )
-		{
-			g2.setColor( style.getDecorationColor() );
-			g2.setStroke( style.getDecorationStroke() );
-
-			final int stepT = 1 + MIN_TIMELINE_SPACING / ( int ) ( 1 + yScale );
-
-			int tstart = Math.max( getMinTimepoint(), ( int ) minY - 1 );
-			tstart = ( tstart / stepT ) * stepT;
-			int tend = Math.min( getMaxTimepoint(), 1 + ( int ) maxY );
-			tend = ( 1 + tend / stepT ) * stepT;
-
-			for ( int t = tstart; t < tend; t = t + stepT )
-			{
-				final int yline = ( int ) ( ( t - minY - 0.5 ) * yScale ) + headerHeight;
-				g2.drawLine( 0, yline, width, yline );
-			}
-
-			// Last line
-			final int yline = ( int ) ( ( tend - minY - 0.5 ) * yScale ) + headerHeight;
-			g2.drawLine( 0, yline, width, yline );
-		}
-
-		if ( style.isPaintColumns() )
-		{
-			g2.setColor( style.getDecorationColor() );
-			g2.setStroke( style.getDecorationStroke() );
-
-			for ( final ScreenColumn column : screenEntities.getColumns() )
-			{
-				g2.drawLine( column.xLeft, 0, column.xLeft, height );
-				g2.drawLine( column.xLeft + column.width, 0, column.xLeft + column.width, height );
-			}
-		}
+		PaintDecorations.paintBackground( g2, getWidth(), getHeight(), headerWidth, headerHeight, screenEntities, getCurrentTimepoint(), style );
 	}
 
 	@Override
 	protected void paintHeaders( final Graphics2D g2, final ScreenEntities screenEntities )
 	{
-		final int width = getWidth();
-		final int height = getHeight();
-
-		final ScreenTransform screenTransform = new ScreenTransform();
-		screenEntities.getScreenTransform( screenTransform );
-		final double yScale = screenTransform.getScaleY();
-		final double minY = screenTransform.getMinY();
-		final double maxY = screenTransform.getMaxY();
-
-		final boolean isHeaderVisibleX = headerWidth > 0;
-		final boolean isHeaderVisibleY = headerHeight > 0;
-
-		if ( isHeaderVisibleX )
-		{
-			g2.setColor( style.getHeaderBackgroundColor() );
-			g2.fillRect( 0, headerHeight, headerWidth, height - headerHeight );
-
-			if ( style.isPaintHeaderShadow() )
-			{
-				for ( int i = 0; i < shadowColors.length; ++i )
-				{
-					g2.setColor( shadowColors[ i ] );
-					g2.fillRect( headerWidth + i, headerHeight + i, 1, height - headerHeight - i );
-				}
-			}
-
-			if ( style.isHighlightCurrentTimepoint() )
-			{
-				final double t = getCurrentTimepoint();
-				final int y = ( int ) Math.round( yScale * ( t - minY - 0.5 ) ) + headerHeight;
-				final int h = Math.max( 1, ( int ) Math.round( yScale ) );
-				g2.setColor( style.getHeaderCurrentTimepointColor() );
-				g2.fillRect( 0, y, headerWidth, h );
-			}
-
-			g2.setColor( style.getHeaderDecorationColor() );
-			final FontMetrics fm = g2.getFontMetrics( style.getHeaderFont() );
-			g2.setFont( style.getHeaderFont() );
-
-			final int fontHeight = fm.getHeight();
-			final int fontInc = fontHeight / 2;
-			final int stepT = 1 + MIN_TIMELINE_SPACING / ( int ) ( 1 + yScale );
-
-			int tstart = Math.max( getMinTimepoint(), ( int ) minY - 1 );
-			tstart = ( tstart / stepT ) * stepT;
-			int tend = Math.min( getMaxTimepoint(), 1 + ( int ) maxY );
-			tend = ( 1 + tend / stepT ) * stepT;
-
-			g2.setStroke( style.getDecorationStroke() );
-			for ( int t = tstart; t <= tend; t = t + stepT )
-			{
-				final int yline = ( int ) ( ( t - minY - 0.5 ) * yScale ) + headerHeight;
-				g2.drawLine( 0, yline, headerWidth, yline );
-
-				final int ytext = Math.max(
-						( int ) ( ( t - minY ) * yScale ) + fontInc + headerHeight,
-						yline + fontHeight );
-				g2.drawString( "" + t, 5, ytext );
-			}
-		}
-
-		if ( isHeaderVisibleY )
-		{
-			g2.setColor( style.getHeaderBackgroundColor() );
-			g2.fillRect( headerWidth, 0, width - headerWidth, headerHeight );
-
-			if ( style.isPaintHeaderShadow() )
-			{
-				for ( int i = 0; i < shadowColors.length; ++i )
-				{
-					g2.setColor( shadowColors[ i ] );
-					g2.fillRect( headerWidth + i, headerHeight + i, width - headerWidth - i, 1 );
-				}
-			}
-
-			g2.setColor( style.getHeaderDecorationColor() );
-			final FontMetrics fm = g2.getFontMetrics( style.getHeaderFont() );
-			g2.setFont( style.getHeaderFont() );
-
-			g2.setStroke( style.getDecorationStroke() );
-			for ( final ScreenColumn column : screenEntities.getColumns() )
-			{
-				g2.drawLine( column.xLeft, 0, column.xLeft, headerHeight );
-				g2.drawLine( column.xLeft + column.width, 0, column.xLeft + column.width, headerHeight );
-
-				final String str = column.label;
-				final int stringWidth = fm.stringWidth( str );
-
-				final int boundedMin = Math.max( headerWidth, column.xLeft );
-				final int boundedMax = Math.min( column.xLeft + column.width, width );
-				final int boundedWidth = boundedMax - boundedMin;
-				if ( boundedWidth >= stringWidth + 5  )
-				{
-					final int xtext = ( boundedMin + boundedMax - stringWidth ) / 2;
-					g2.drawString( str, xtext, headerHeight / 2 );
-				}
-			}
-		}
-
-		if ( isHeaderVisibleX && isHeaderVisibleY )
-		{
-			g2.setColor( style.getHeaderBackgroundColor() );
-			g2.fillRect( 0, 0, headerWidth, headerHeight );
-		}
+		PaintDecorations.paintHeaders( g2, getWidth(), getHeight(), headerWidth, headerHeight, screenEntities, getCurrentTimepoint(), style );
 	}
 
 	@Override
