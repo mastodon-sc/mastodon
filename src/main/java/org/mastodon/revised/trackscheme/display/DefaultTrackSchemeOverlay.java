@@ -59,7 +59,7 @@ public class DefaultTrackSchemeOverlay extends AbstractTrackSchemeOverlay
 	 * FIELDS
 	 */
 
-	private TrackSchemeStyle style;
+	private final TrackSchemeStyle style;
 
 	public DefaultTrackSchemeOverlay(
 			final TrackSchemeGraph< ?, ? > graph,
@@ -70,22 +70,6 @@ public class DefaultTrackSchemeOverlay extends AbstractTrackSchemeOverlay
 	{
 		super( graph, highlight, focus, options );
 		this.style = style;
-	}
-
-	/**
-	 * Sets the TrackScheme style used to render this overlay.
-	 *
-	 * @param style
-	 *            the style to set.
-	 */
-	public synchronized void setStyle( final TrackSchemeStyle style )
-	{
-		this.style = style;
-	}
-
-	public TrackSchemeStyle getStyle()
-	{
-		return style;
 	}
 
 	@Override
