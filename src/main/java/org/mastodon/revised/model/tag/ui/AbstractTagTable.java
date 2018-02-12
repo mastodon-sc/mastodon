@@ -7,7 +7,6 @@ import java.awt.Dimension;
 import java.awt.KeyboardFocusManager;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.util.ArrayList;
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 import java.util.function.Function;
@@ -30,6 +29,7 @@ import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableCellRenderer;
 
+import org.mastodon.util.Listeners;
 import org.scijava.ui.behaviour.io.InputTriggerConfig;
 import org.scijava.ui.behaviour.util.Actions;
 
@@ -134,9 +134,9 @@ public abstract class AbstractTagTable< C, T, E extends AbstractTagTable< ?, T, 
 
 	protected final JScrollPane scrollPane;
 
-	private final ArrayList< UpdateListener > updateListeners;
+	private final Listeners.List< UpdateListener > updateListeners;
 
-	private final ArrayList< SelectionListener > selectionListeners;
+	private final Listeners.List< SelectionListener< T > > selectionListeners;
 
 	protected AbstractTagTable(
 			final C elements,
@@ -160,8 +160,8 @@ public abstract class AbstractTagTable< C, T, E extends AbstractTagTable< ?, T, 
 
 		tableModel = new MyTableModel();
 		table = new JTable( tableModel );
-		updateListeners = new ArrayList<>();
-		selectionListeners = new ArrayList<>();
+		updateListeners = new Listeners.SynchronizedList<>();
+		selectionListeners = new Listeners.SynchronizedList<>();
 
 		table.setSelectionMode( ListSelectionModel.SINGLE_SELECTION );
 		table.setTableHeader( null );
@@ -175,7 +175,7 @@ public abstract class AbstractTagTable< C, T, E extends AbstractTagTable< ?, T, 
 			final T selected = ( this.elements != null && row >= 0 && row < this.elements.size() )
 					? this.elements.get( row ).wrapped
 					: null;
-			selectionListeners.forEach( l -> l.selectionChanged( selected ) );
+			selectionListeners.list.forEach( l -> l.selectionChanged( selected ) );
 		} );
 		table.getColumnModel().getColumn( 0 ).setCellRenderer( new MyTagSetRenderer() );
 		table.getColumnModel().getColumn( 0 ).setCellEditor( new MyTagSetNameEditor() );
@@ -208,7 +208,7 @@ public abstract class AbstractTagTable< C, T, E extends AbstractTagTable< ?, T, 
 		{
 			scrollPane.setViewportView( new JPanel() );
 			this.elements = null;
-			selectionListeners.forEach( l -> l.selectionChanged( null ) );
+			selectionListeners.list.forEach( l -> l.selectionChanged( null ) );
 		}
 		else
 		{
@@ -229,37 +229,17 @@ public abstract class AbstractTagTable< C, T, E extends AbstractTagTable< ?, T, 
 
 	protected void notifyListeners()
 	{
-		updateListeners.forEach( UpdateListener::modelUpdated );
+		updateListeners.list.forEach( UpdateListener::modelUpdated );
 	}
 
-	public synchronized boolean addUpdateListener( final UpdateListener l )
+	public Listeners< UpdateListener > updateListeners()
 	{
-		if ( !updateListeners.contains( l ) )
-		{
-			updateListeners.add( l );
-			return true;
-		}
-		return false;
+		return updateListeners;
 	}
 
-	public synchronized boolean removeUpdateListener( final UpdateListener l )
+	public Listeners< SelectionListener< T > > selectionListeners()
 	{
-		return updateListeners.remove( l );
-	}
-
-	public synchronized boolean addSelectionListener( final SelectionListener< T > l )
-	{
-		if ( !selectionListeners.contains( l ) )
-		{
-			selectionListeners.add( l );
-			return true;
-		}
-		return false;
-	}
-
-	public synchronized boolean removeSelectionListener( final SelectionListener l )
-	{
-		return selectionListeners.remove( l );
+		return selectionListeners;
 	}
 
 	private void addAndEditRow()

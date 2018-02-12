@@ -2,7 +2,6 @@ package org.mastodon.revised.model.tag.ui;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Random;
 
@@ -13,6 +12,7 @@ import javax.swing.border.MatteBorder;
 import org.mastodon.revised.model.tag.TagSetStructure;
 import org.mastodon.revised.model.tag.TagSetStructure.Tag;
 import org.mastodon.revised.model.tag.TagSetStructure.TagSet;
+import org.mastodon.util.Listeners;
 
 public class TagSetPanel extends JPanel
 {
@@ -25,7 +25,7 @@ public class TagSetPanel extends JPanel
 
 	private final TagSetStructure tagSetStructure;
 
-	private final ArrayList< UpdateListener > updateListeners;
+	private final Listeners.List< UpdateListener > updateListeners;
 
 	public TagSetPanel()
 	{
@@ -37,7 +37,7 @@ public class TagSetPanel extends JPanel
 		super( new BorderLayout( 0, 0 ) );
 
 		this.tagSetStructure = tagSetStructure;
-		updateListeners = new ArrayList<>();
+		updateListeners = new Listeners.SynchronizedList<>();
 
 		tagSetTable = new TagTable<>( tagSetStructure,
 				tss -> tss.createTagSet( makeNewName( "Tag set" ) ),
@@ -57,9 +57,9 @@ public class TagSetPanel extends JPanel
 				Tag::setColor,
 				Tag::color );
 
-		tagSetTable.addUpdateListener( this::notifyListeners );
-		tagTable.addUpdateListener( this::notifyListeners );
-		tagSetTable.addSelectionListener( tagTable::setElements );
+		tagSetTable.updateListeners().add( this::notifyListeners );
+		tagTable.updateListeners().add( this::notifyListeners );
+		tagSetTable.selectionListeners().add( tagTable::setElements );
 
 		final JSplitPane splitPane = new JSplitPane( JSplitPane.HORIZONTAL_SPLIT, tagSetTable.getTable(), tagTable.getTable() );
 		splitPane.setResizeWeight( 0 );
@@ -83,24 +83,14 @@ public class TagSetPanel extends JPanel
 		tagSetTable.setElements( tagSetStructure );
 	}
 
-	public synchronized boolean addUpdateListener( final UpdateListener l )
+	public Listeners< UpdateListener > updateListeners()
 	{
-		if ( !updateListeners.contains( l ) )
-		{
-			updateListeners.add( l );
-			return true;
-		}
-		return false;
-	}
-
-	public synchronized boolean removeUpdateListener( final UpdateListener l )
-	{
-		return updateListeners.remove( l );
+		return updateListeners;
 	}
 
 	private void notifyListeners()
 	{
-		updateListeners.forEach( UpdateListener::modelUpdated );
+		updateListeners.list.forEach( UpdateListener::modelUpdated );
 	}
 
 	private final String makeNewName( final String prefix )
