@@ -512,7 +512,7 @@ public class TrackSchemePanel extends JPanel implements
 		if ( v.getLayoutTimestamp() == layout.getCurrentLayoutTimestamp() )
 		{
 			focus.focusVertex( v );
-			graphOverlay.setCurrentTimepoint( v.getTimepoint() );
+			timepoint.setTimepoint( v.getTimepoint() );
 
 			final ScreenTransform transform = new ScreenTransform();
 			synchronized( screenTransform )
@@ -533,7 +533,7 @@ public class TrackSchemePanel extends JPanel implements
 		final int clts = layout.getCurrentLayoutTimestamp();
 		if ( target.getLayoutTimestamp() == clts && source.getLayoutTimestamp() == clts )
 		{
-			graphOverlay.setCurrentTimepoint( target.getTimepoint() );
+			timepoint.setTimepoint( target.getTimepoint() );
 
 			final ScreenTransform transform = new ScreenTransform();
 			synchronized ( screenTransform )
