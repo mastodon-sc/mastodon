@@ -38,24 +38,26 @@ import net.imglib2.ui.OverlayRenderer;
  * <ol>
  * <li>{@link #paintBackground(Graphics2D, ScreenEntities)} to paint background
  * decorations.
- * <li> {@link #beforeDrawEdge(Graphics2D)} to configure the Graphics2D object
+ * <li>{@link #beforeDrawEdge(Graphics2D)} to configure the Graphics2D object
  * prior to painting edges.
- * <li> {@link #drawEdge(Graphics2D, ScreenEdge, ScreenVertex, ScreenVertex)} for
+ * <li>{@link #drawEdge(Graphics2D, ScreenEdge, ScreenVertex, ScreenVertex)} for
  * each edge.
  * <li>{@link #beforeDrawVertex(Graphics2D)} to configure the Graphics2D object
  * prior to painting vertices.
- * <li> {@link #drawVertex(Graphics2D, ScreenVertex)} for each vertex.
- * <li> {@link #beforeDrawVertexRange(Graphics2D)} to configure the Graphics2D
+ * <li>{@link #drawVertex(Graphics2D, ScreenVertex)} for each vertex.
+ * <li>{@link #beforeDrawVertexRange(Graphics2D)} to configure the Graphics2D
  * object prior to painting vertex ranges.
  * <li>{@link #drawVertexRange(Graphics2D, ScreenVertexRange)} for each vertex
  * range.
+ * <li>{@link #paintHeaders(Graphics2D, ScreenEntities)} to paint header
+ * decorations.</li>
  * </ol>
  * <p>
  * It also offers facilities to interrogate what has been painted where, to
  * facilitate writing user interfaces. For instance, it can return the
  * TrackScheme edge or vertex id near a screen xy coordinate.
  *
- * @author Tobias Pietzsch &lt;tobias.pietzsch@gmail.com&gt;
+ * @author Tobias Pietzsch
  */
 public abstract class AbstractTrackSchemeOverlay implements OverlayRenderer, OffsetHeadersListener
 {
