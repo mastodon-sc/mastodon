@@ -15,7 +15,7 @@ import net.imglib2.ui.TransformListener;
 
 public class MouseHighlightHandler implements MouseMotionListener, MouseListener, TransformListener< ScreenTransform >, OffsetHeadersListener
 {
-	private final AbstractTrackSchemeOverlay graphOverlay;
+	private final TrackSchemeOverlay graphOverlay;
 
 	private final HighlightModel< TrackSchemeVertex, TrackSchemeEdge > highlight;
 
@@ -36,7 +36,7 @@ public class MouseHighlightHandler implements MouseMotionListener, MouseListener
 	private int headerHeight;
 
 	public MouseHighlightHandler(
-			final AbstractTrackSchemeOverlay graphOverlay,
+			final TrackSchemeOverlay graphOverlay,
 			final HighlightModel< TrackSchemeVertex, TrackSchemeEdge > highlight,
 			final TrackSchemeGraph< ?, ? > graph )
 	{

@@ -30,40 +30,31 @@ import net.imglib2.ui.OverlayRenderer;
  * {@link #setScreenEntities(ScreenEntities)}, and can deal separately with
  * {@link ScreenVertex} and {@link ScreenVertexRange}.
  * <p>
- * This class is abstract and the details of how to paint vertices, edges and
- * background are delegated to concrete implementations. When the
- * {@link #drawOverlays(Graphics)} method is called, the following sequence of
- * abstract methods is executed:
+ * This class takes care of double-buffering of {@link ScreenEntities} and
+ * retrieving highlight, focus, etc. Details of how to paint vertices, edges and
+ * background are {@link PaintDecorations} and {@link PaintGraph}. These classes
+ * only operate on {@link ScreenEntities} and do not need to care about
+ * concurrent modifications of the graph.
+ * <p>
+ * When the {@link #drawOverlays(Graphics)} method is called, the following
+ * sequence of methods is executed:
  * <ol>
- * <li>{@link #paintBackground(Graphics2D, ScreenEntities)} to paint background
- * decorations.
- * <li>{@link #beforeDrawEdge(Graphics2D)} to configure the Graphics2D object
- * prior to painting edges.
- * <li>{@link #drawEdge(Graphics2D, ScreenEdge, ScreenVertex, ScreenVertex)} for
- * each edge.
- * <li>{@link #beforeDrawVertex(Graphics2D)} to configure the Graphics2D object
- * prior to painting vertices.
- * <li>{@link #drawVertex(Graphics2D, ScreenVertex)} for each vertex.
- * <li>{@link #beforeDrawVertexRange(Graphics2D)} to configure the Graphics2D
- * object prior to painting vertex ranges.
- * <li>{@link #drawVertexRange(Graphics2D, ScreenVertexRange)} for each vertex
- * range.
- * <li>{@link #paintHeaders(Graphics2D, ScreenEntities)} to paint header
- * decorations.</li>
+ * <li>{@link PaintDecorations#paintBackground(Graphics2D, int, int, int, int, ScreenEntities, int, TrackSchemeStyle)}
+ * to paint background decorations.
+ * <li>{@link PaintGraph#paintGraph(Graphics2D, ScreenEntities, int, int, int, TrackSchemeStyle)}
+ * to paint the graph's vertices and edges.
+ * <li>{@link PaintDecorations#paintHeaders(Graphics2D, int, int, int, int, ScreenEntities, int, TrackSchemeStyle)}
+ * to paint header decorations.</li>
  * </ol>
  * <p>
  * It also offers facilities to interrogate what has been painted where, to
  * facilitate writing user interfaces. For instance, it can return the
- * TrackScheme edge or vertex id near a screen xy coordinate.
+ * TrackScheme edge or vertex id near a screen {@code (x, y)} coordinate.
  *
  * @author Tobias Pietzsch
  */
-public abstract class AbstractTrackSchemeOverlay implements OverlayRenderer, OffsetHeadersListener
+public class TrackSchemeOverlay implements OverlayRenderer, OffsetHeadersListener
 {
-	private int width;
-
-	private int height;
-
 	/**
 	 * The {@link ScreenEntities} that are actually drawn on the canvas.
 	 */
@@ -86,32 +77,30 @@ public abstract class AbstractTrackSchemeOverlay implements OverlayRenderer, Off
 
 	private final TrackSchemeGraph< ?, ? > graph;
 
-	protected final HighlightModel< TrackSchemeVertex, TrackSchemeEdge > highlight;
+	private final HighlightModel< TrackSchemeVertex, TrackSchemeEdge > highlight;
 
-	protected int highlightedVertexId;
-
-	protected int highlightedEdgeId;
-
-	protected final FocusModel< TrackSchemeVertex, TrackSchemeEdge > focus;
-
-	protected int focusedVertexId;
-
-	private int minTimepoint = 0;
-
-	private int maxTimepoint = 100;
+	private final FocusModel< TrackSchemeVertex, TrackSchemeEdge > focus;
 
 	private int currentTimepoint = 0;
 
-	protected int headerWidth;
+	private int width;
 
-	protected int headerHeight;
+	private int height;
 
-	protected final TrackSchemeStyle style;
+	private int headerWidth;
+
+	private int headerHeight;
+
+	private final TrackSchemeStyle style;
+
+	private final PaintDecorations paintDecorations;
+
+	private final PaintGraph paintGraph;
 
 	/**
 	 * The {@link OverlayRenderer}s that draw above the background
 	 */
-	final protected CopyOnWriteArrayList< OverlayRenderer > overlayRenderers;
+	private final CopyOnWriteArrayList< OverlayRenderer > overlayRenderers;
 
 	/**
 	 * Creates a new overlay for the specified TrackScheme graph.
@@ -123,18 +112,26 @@ public abstract class AbstractTrackSchemeOverlay implements OverlayRenderer, Off
 	 *            highlighted.
 	 * @param focus
 	 *            the focus model that indicates which vertex is focused.
+	 * @param paintDecorations
+	 *            for painting background and headers
+	 * @param paintGraph
+	 *            for painting vertices and edges
 	 * @param options
 	 *            options for TrackScheme look.
 	 */
-	public AbstractTrackSchemeOverlay(
+	public TrackSchemeOverlay(
 			final TrackSchemeGraph< ?, ? > graph,
 			final HighlightModel< TrackSchemeVertex, TrackSchemeEdge > highlight,
 			final FocusModel< TrackSchemeVertex, TrackSchemeEdge > focus,
+			final PaintDecorations paintDecorations,
+			final PaintGraph paintGraph,
 			final TrackSchemeOptions options )
 	{
 		this.graph = graph;
 		this.highlight = highlight;
 		this.focus = focus;
+		this.paintDecorations = paintDecorations;
+		this.paintGraph = paintGraph;
 		style = options.values.getStyle();
 		width = options.values.getWidth();
 		height = options.values.getHeight();
@@ -154,53 +151,25 @@ public abstract class AbstractTrackSchemeOverlay implements OverlayRenderer, Off
 		final TrackSchemeEdge eref = graph.edgeRef();
 
 		final TrackSchemeVertex h = highlight.getHighlightedVertex( ref );
-		highlightedVertexId = ( h == null ) ? -1 : h.getInternalPoolIndex();
+		final int highlightedVertexId = ( h == null ) ? -1 : h.getInternalPoolIndex();
 
 		final TrackSchemeEdge he = highlight.getHighlightedEdge( eref );
-		highlightedEdgeId = ( he == null ) ? -1 : he.getInternalPoolIndex();
+		final int highlightedEdgeId = ( he == null ) ? -1 : he.getInternalPoolIndex();
 
 		final TrackSchemeVertex f = focus.getFocusedVertex( ref );
-		focusedVertexId = ( f == null ) ? -1 : f.getInternalPoolIndex();
+		final int focusedVertexId = ( f == null ) ? -1 : f.getInternalPoolIndex();
 
 		graph.releaseRef( ref );
 
-		paintBackground( g2, entities );
+		paintDecorations.paintBackground( g2, width, height, headerWidth, headerHeight, entities, currentTimepoint, style );
 
 		// Paint extra overlay if any.
 		for ( final OverlayRenderer or : overlayRenderers )
 			or.drawOverlays( g );
 
-		final RefList< ScreenEdge > edges = entities.getEdges();
-		final RefList< ScreenVertex > vertices = entities.getVertices();
-		final RefList< ScreenVertexRange > vertexRanges = entities.getRanges();
+		paintGraph.paintGraph( g2, entities, highlightedVertexId, highlightedEdgeId, focusedVertexId, style );
 
-		final ScreenVertex vt = vertices.createRef();
-		final ScreenVertex vs = vertices.createRef();
-
-		beforeDrawEdge( g2 );
-		for ( final ScreenEdge edge : edges )
-		{
-			vertices.get( edge.getSourceScreenVertexIndex(), vs );
-			vertices.get( edge.getTargetScreenVertexIndex(), vt );
-			drawEdge( g2, edge, vs, vt );
-		}
-
-		beforeDrawVertex( g2 );
-		for ( final ScreenVertex vertex : vertices )
-		{
-			drawVertex( g2, vertex );
-		}
-
-		beforeDrawVertexRange( g2 );
-		for ( final ScreenVertexRange range : vertexRanges )
-		{
-			drawVertexRange( g2, range );
-		}
-
-		paintHeaders( g2, entities );
-
-		vertices.releaseRef( vs );
-		vertices.releaseRef( vt );
+		paintDecorations.paintHeaders( g2, width, height, headerWidth, headerHeight, entities, currentTimepoint, style );
 	}
 
 	/**
@@ -237,7 +206,7 @@ public abstract class AbstractTrackSchemeOverlay implements OverlayRenderer, Off
 			{
 				vertices.get( e.getSourceScreenVertexIndex(), vs );
 				vertices.get( e.getTargetScreenVertexIndex(), vt );
-				if ( distanceToPaintedEdge( x, y, e, vs, vt ) <= tolerance )
+				if ( paintGraph.distanceToPaintedEdge( x, y, e, vs, vt ) <= tolerance )
 				{
 					i = e.getTrackSchemeEdgeId();
 					break;
@@ -279,7 +248,7 @@ public abstract class AbstractTrackSchemeOverlay implements OverlayRenderer, Off
 			int iBest = -1;
 			for ( final ScreenVertex v : entities.getVertices() )
 			{
-				if ( isInsidePaintedVertex( x, y, v ) )
+				if ( paintGraph.isInsidePaintedVertex( x, y, v ) )
 				{
 					final int i = v.getTrackSchemeVertexId();
 					if ( i >= 0 )
@@ -323,7 +292,7 @@ public abstract class AbstractTrackSchemeOverlay implements OverlayRenderer, Off
 	 *
 	 * @return the width.
 	 */
-	public int getWidth()
+	protected int getWidth()
 	{
 		return width;
 	}
@@ -333,23 +302,9 @@ public abstract class AbstractTrackSchemeOverlay implements OverlayRenderer, Off
 	 *
 	 * @return the height.
 	 */
-	public int getHeight()
+	protected int getHeight()
 	{
 		return height;
-	}
-
-	/**
-	 * Set the timepoint range of the dataset.
-	 *
-	 * @param minTimepoint
-	 *            the smallest timepoint of the dataset.
-	 * @param maxTimepoint
-	 *            the largest timepoint of the dataset.
-	 */
-	public void setTimepointRange( final int minTimepoint, final int maxTimepoint )
-	{
-		this.minTimepoint = minTimepoint;
-		this.maxTimepoint = maxTimepoint;
 	}
 
 	/**
@@ -361,26 +316,6 @@ public abstract class AbstractTrackSchemeOverlay implements OverlayRenderer, Off
 	public void setCurrentTimepoint( final int timepoint )
 	{
 		this.currentTimepoint  = timepoint;
-	}
-
-	/**
-	 * Returns the smallest timepoint of the dataset.
-	 *
-	 * @return the smallest timepoint of the dataset.
-	 */
-	protected int getMinTimepoint()
-	{
-		return minTimepoint;
-	}
-
-	/**
-	 * Returns the largest timepoint of the dataset.
-	 *
-	 * @return the largest timepoint of the dataset.
-	 */
-	protected int getMaxTimepoint()
-	{
-		return maxTimepoint;
 	}
 
 	/**
@@ -453,126 +388,15 @@ public abstract class AbstractTrackSchemeOverlay implements OverlayRenderer, Off
 		overlayRenderers.remove( renderer );
 	}
 
-	/**
-	 * Returns {@code true} if the specified <b>screen</b> coordinates are
-	 * inside a painted vertex. As the vertex painting shape is implemented by
-	 * possibly different concrete classes, they should return whether a point
-	 * is inside a vertex or not.
-	 *
-	 * @param x
-	 *            the x screen coordinate
-	 * @param y
-	 *            the y screen coordinate
-	 * @param vertex
-	 *            the vertex.
-	 * @return {@code true} if the position is inside the vertex painted.
-	 */
-	protected abstract boolean isInsidePaintedVertex( final double x, final double y, final ScreenVertex vertex );
-
-	/**
-	 * Returns the distance from a <b>screen</b> position to a specified edge.
-	 *
-	 * @param x
-	 *            the x screen coordinate
-	 * @param y
-	 *            the y screen coordinate
-	 * @param edge
-	 *            the edge.
-	 * @param source
-	 *            the edge source vertex.
-	 * @param target
-	 *            the edge target vertex.
-	 * @return the distance from the specified position to the edge.
-	 */
-	protected abstract double distanceToPaintedEdge( final double x, final double y, final ScreenEdge edge, ScreenVertex source, ScreenVertex target );
-
-	/**
-	 * Paints background decorations.
-	 *
-	 * @param g2
-	 *            the graphics object.
-	 * @param screenEntities
-	 *            the screen entities to paint.
-	 */
-	protected abstract void paintBackground( Graphics2D g2, ScreenEntities screenEntities );
-
-	/**
-	 * Paints overlay decorations.
-	 *
-	 * @param g2
-	 *            the graphics object.
-	 * @param screenEntities
-	 *            the screen entities to paint.
-	 */
-	protected abstract void paintHeaders( Graphics2D g2, ScreenEntities screenEntities );
-
-	/**
-	 * Configures the graphics object prior to drawing vertices.
-	 *
-	 * @param g2
-	 *            the graphics object.
-	 */
-	protected abstract void beforeDrawVertex( Graphics2D g2 );
-
-	/**
-	 * Paints the specified vertex.
-	 *
-	 * @param g2
-	 *            the graphics object.
-	 * @param vertex
-	 *            the vertex to paint.
-	 */
-	protected abstract void drawVertex( Graphics2D g2, ScreenVertex vertex );
-
-	/**
-	 * Configures the graphics object prior to drawing vertex ranges.
-	 *
-	 * @param g2
-	 *            the graphics object.
-	 */
-	protected abstract void beforeDrawVertexRange( Graphics2D g2 );
-
-	/**
-	 * Paints the specified vertex range.
-	 *
-	 * @param g2
-	 *            the graphics object.
-	 * @param range
-	 *            the vertex range to paint.
-	 */
-	protected abstract void drawVertexRange( Graphics2D g2, ScreenVertexRange range );
-
-	/**
-	 * Configures the graphics object prior to drawing edges.
-	 *
-	 * @param g2
-	 *            the graphics object.
-	 */
-	protected abstract void beforeDrawEdge( Graphics2D g2 );
-
-	/**
-	 * Paints the specified edge.
-	 *
-	 * @param g2
-	 *            the graphics object.
-	 * @param edge
-	 *            the edge to paint.
-	 * @param vs
-	 *            the edge source vertex.
-	 * @param vt
-	 *            the edge target vertex.
-	 */
-	protected abstract void drawEdge( Graphics2D g2, ScreenEdge edge, ScreenVertex vs, ScreenVertex vt );
-
 	public static class TrackSchemeOverlayFactory
 	{
-		public AbstractTrackSchemeOverlay create(
+		public TrackSchemeOverlay create(
 				final TrackSchemeGraph< ?, ? > graph,
 				final HighlightModel< TrackSchemeVertex, TrackSchemeEdge > highlight,
 				final FocusModel< TrackSchemeVertex, TrackSchemeEdge > focus,
 				final TrackSchemeOptions options )
 		{
-			return new DefaultTrackSchemeOverlay( graph, highlight, focus, options );
+			return new TrackSchemeOverlay( graph, highlight, focus, new PaintDecorations(), new PaintGraph(), options );
 		}
 	}
 }

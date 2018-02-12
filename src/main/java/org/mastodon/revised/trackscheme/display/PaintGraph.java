@@ -11,93 +11,139 @@ import java.awt.font.FontRenderContext;
 import java.awt.font.TextLayout;
 import java.awt.geom.Rectangle2D;
 
-import org.mastodon.model.FocusModel;
-import org.mastodon.model.HighlightModel;
+import org.mastodon.collection.RefList;
 import org.mastodon.revised.Util;
 import org.mastodon.revised.trackscheme.ScreenEdge;
 import org.mastodon.revised.trackscheme.ScreenEntities;
 import org.mastodon.revised.trackscheme.ScreenVertex;
 import org.mastodon.revised.trackscheme.ScreenVertex.Transition;
 import org.mastodon.revised.trackscheme.ScreenVertexRange;
-import org.mastodon.revised.trackscheme.TrackSchemeEdge;
-import org.mastodon.revised.trackscheme.TrackSchemeGraph;
-import org.mastodon.revised.trackscheme.TrackSchemeVertex;
 import org.mastodon.revised.trackscheme.display.style.TrackSchemeStyle;
 
 /**
- * An AbstractTrackSchemeOverlay implementation that:
- * <ul>
- * <li>draws vertex as circles with the label inside.
- * <li>offers two sizes of vertices (full and simplified).
- * <li>draws edges as lines.
- * </ul>
+ * Painting the TrackScheme graph.
  * <p>
- * Colors and strokes can be configured separately, using a
- * {@link TrackSchemeStyle}.
+ * In particular, this class
+ * <ul>
+ * <li>draws vertex as circles with the label inside,</li>
+ * <li>offers two sizes of vertices (full and simplified),</li>
+ * <li>draws edges as lines.</li>
+ * </ul>
+ * </p>
+ * <p>
+ * Colors and strokes are chosen according to a {@link TrackSchemeStyle}.
+ * </p>
+ * <p>
+ * When the
+ * {@link #paintGraph(Graphics2D, ScreenEntities, int, int, int, TrackSchemeStyle)}
+ * method is called, the following sequence of methods is executed:
+ * <ol>
+ * <li>{@link #beforeDrawEdges()} to configure the Graphics2D object prior to
+ * painting edges.
+ * <li>{@link #drawEdge(ScreenEdge, ScreenVertex, ScreenVertex)} for each edge.
+ * <li>{@link #beforeDrawVertices()} to configure the Graphics2D object prior to
+ * painting vertices.
+ * <li>{@link #drawVertex(ScreenVertex)} for each vertex.
+ * <li>{@link #beforeDrawVertexRanges()} to configure the Graphics2D object
+ * prior to painting vertex ranges.
+ * <li>{@link #drawVertexRange(ScreenVertexRange)} for each vertex range.
+ * </ol>
+ * </p>
+ * <p>
+ * Subclasses can override some or all of these methods to influcence how the
+ * graph is drawn.
+ * </p>
+ *
+ * @author Tobias Pietzsch
  */
-public class DefaultTrackSchemeOverlay extends AbstractTrackSchemeOverlay
+public class PaintGraph
 {
 	/*
 	 * CONSTANTS
 	 */
 
-	public static final double simplifiedVertexRadius = 2.5;
-
-	public static final double simplifiedVertexSelectTolerance = 3.5;
-
-	public static final double minDisplayVertexDist = 17.0;
-
-	public static final double maxDisplayVertexSize = 100.0;
-
-	public static final double minDisplaySimplifiedVertexDist = 5.0;
-
-	public static final double avgLabelLetterWidth = 5.0;
+	private static final double simplifiedVertexRadius = 2.5;
+	private static final double simplifiedVertexSelectTolerance = 3.5;
+	private static final double minDisplayVertexDist = 17.0;
+	private static final double maxDisplayVertexSize = 100.0;
+	private static final double minDisplaySimplifiedVertexDist = 5.0;
+	private static final double avgLabelLetterWidth = 5.0;
 
 	/*
 	 * FIELDS
 	 */
 
-	public DefaultTrackSchemeOverlay(
-			final TrackSchemeGraph< ?, ? > graph,
-			final HighlightModel< TrackSchemeVertex, TrackSchemeEdge > highlight,
-			final FocusModel< TrackSchemeVertex, TrackSchemeEdge > focus,
-			final TrackSchemeOptions options )
+	protected Graphics2D g2;
+
+	protected int highlightedVertexId;
+
+	protected int highlightedEdgeId;
+
+	protected int focusedVertexId;
+
+	protected TrackSchemeStyle style;
+
+	public void paintGraph(
+			final Graphics2D g2,
+			final ScreenEntities entities,
+			final int highlightedVertexId,
+			final int highlightedEdgeId,
+			final int focusedVertexId,
+			final TrackSchemeStyle style )
 	{
-		super( graph, highlight, focus, options );
+		this.g2 = g2;
+		this.highlightedVertexId = highlightedVertexId;
+		this.highlightedEdgeId = highlightedEdgeId;
+		this.focusedVertexId = focusedVertexId;
+		this.style = style;
+
+		final RefList< ScreenEdge > edges = entities.getEdges();
+		final RefList< ScreenVertex > vertices = entities.getVertices();
+		final RefList< ScreenVertexRange > vertexRanges = entities.getRanges();
+
+		final ScreenVertex vt = vertices.createRef();
+		final ScreenVertex vs = vertices.createRef();
+
+		beforeDrawEdges();
+		for ( final ScreenEdge edge : edges )
+		{
+			vertices.get( edge.getSourceScreenVertexIndex(), vs );
+			vertices.get( edge.getTargetScreenVertexIndex(), vt );
+			drawEdge( edge, vs, vt );
+		}
+
+		beforeDrawVertices();
+		for ( final ScreenVertex vertex : vertices )
+		{
+			drawVertex( vertex );
+		}
+
+		beforeDrawVertexRanges();
+		for ( final ScreenVertexRange range : vertexRanges )
+		{
+			drawVertexRange( range );
+		}
+
+		vertices.releaseRef( vs );
+		vertices.releaseRef( vt );
 	}
 
-	@Override
-	protected void paintBackground( final Graphics2D g2, final ScreenEntities screenEntities )
-	{
-		PaintDecorations.paintBackground( g2, getWidth(), getHeight(), headerWidth, headerHeight, screenEntities, getCurrentTimepoint(), style );
-	}
-
-	@Override
-	protected void paintHeaders( final Graphics2D g2, final ScreenEntities screenEntities )
-	{
-		PaintDecorations.paintHeaders( g2, getWidth(), getHeight(), headerWidth, headerHeight, screenEntities, getCurrentTimepoint(), style );
-	}
-
-	@Override
-	protected void beforeDrawVertex( final Graphics2D g2 )
-	{
-		g2.setStroke( style.getVertexStroke() );
-	}
-
-	@Override
-	protected void drawVertex( final Graphics2D g2, final ScreenVertex vertex )
-	{
-		final double d = vertex.getVertexDist();
-		if ( d >= minDisplayVertexDist )
-			drawVertexFull( g2, vertex );
-		else if ( d >= minDisplaySimplifiedVertexDist )
-			drawVertexSimplified( g2, vertex );
-		else
-			drawVertexSimplifiedIfHighlighted( g2, vertex );
-	}
-
-	@Override
-	protected double distanceToPaintedEdge( final double x, final double y, final ScreenEdge edge, final ScreenVertex source, final ScreenVertex target )
+	/**
+	 * Returns the distance from a <b>screen</b> position to a specified edge.
+	 *
+	 * @param x
+	 *            the x screen coordinate
+	 * @param y
+	 *            the y screen coordinate
+	 * @param edge
+	 *            the edge.
+	 * @param source
+	 *            the edge source vertex.
+	 * @param target
+	 *            the edge target vertex.
+	 * @return the distance from the specified position to the edge.
+	 */
+	public double distanceToPaintedEdge( final double x, final double y, final ScreenEdge edge, final ScreenVertex source, final ScreenVertex target )
 	{
 		final double x1 = source.getX();
 		final double y1 = source.getY();
@@ -107,8 +153,21 @@ public class DefaultTrackSchemeOverlay extends AbstractTrackSchemeOverlay
 		return d;
 	}
 
-	@Override
-	protected boolean isInsidePaintedVertex( final double x, final double y, final ScreenVertex vertex )
+	/**
+	 * Returns {@code true} if the specified <b>screen</b> coordinates are
+	 * inside a painted vertex. As the vertex painting shape is implemented by
+	 * possibly different concrete classes, they should return whether a point
+	 * is inside a vertex or not.
+	 *
+	 * @param x
+	 *            the x screen coordinate
+	 * @param y
+	 *            the y screen coordinate
+	 * @param vertex
+	 *            the vertex.
+	 * @return {@code true} if the position is inside the vertex painted.
+	 */
+	public boolean isInsidePaintedVertex( final double x, final double y, final ScreenVertex vertex )
 	{
 		final double d = vertex.getVertexDist();
 		double radius = 0;
@@ -126,14 +185,46 @@ public class DefaultTrackSchemeOverlay extends AbstractTrackSchemeOverlay
 		return ( dx * dx + dy * dy < radius * radius );
 	}
 
-	@Override
-	protected void beforeDrawVertexRange( final Graphics2D g2 )
+	/**
+	 * Configures the graphics object prior to drawing vertices.
+	 */
+	protected void beforeDrawVertices()
+	{
+		g2.setStroke( style.getVertexStroke() );
+	}
+
+	/**
+	 * Paints the specified vertex.
+	 *
+	 * @param vertex
+	 *            the vertex to paint.
+	 */
+	protected void drawVertex( final ScreenVertex vertex )
+	{
+		final double d = vertex.getVertexDist();
+		if ( d >= minDisplayVertexDist )
+			drawVertexFull( vertex );
+		else if ( d >= minDisplaySimplifiedVertexDist )
+			drawVertexSimplified( vertex );
+		else
+			drawVertexSimplifiedIfHighlighted( vertex );
+	}
+
+	/**
+	 * Configures the graphics object prior to drawing vertex ranges.
+	 */
+	protected void beforeDrawVertexRanges()
 	{
 		g2.setColor( style.getVertexRangeColor() );
 	}
 
-	@Override
-	protected void drawVertexRange( final Graphics2D g2, final ScreenVertexRange range )
+	/**
+	 * Paints the specified vertex range.
+	 *
+	 * @param range
+	 *            the vertex range to paint.
+	 */
+	protected void drawVertexRange( final ScreenVertexRange range )
 	{
 		final int x = ( int ) range.getMinX();
 		final int y = ( int ) range.getMinY();
@@ -142,14 +233,25 @@ public class DefaultTrackSchemeOverlay extends AbstractTrackSchemeOverlay
 		g2.fillRect( x, y, w, h );
 	}
 
-	@Override
-	public void beforeDrawEdge( final Graphics2D g2 )
+	/**
+	 * Configures the graphics object prior to drawing edges.
+	 */
+	public void beforeDrawEdges()
 	{
 		g2.setStroke( style.getEdgeStroke() );
 	}
 
-	@Override
-	public void drawEdge( final Graphics2D g2, final ScreenEdge edge, final ScreenVertex vs, final ScreenVertex vt )
+	/**
+	 * Paints the specified edge.
+	 *
+	 * @param edge
+	 *            the edge to paint.
+	 * @param vs
+	 *            the edge source vertex.
+	 * @param vt
+	 *            the edge target vertex.
+	 */
+	public void drawEdge( final ScreenEdge edge, final ScreenVertex vs, final ScreenVertex vt )
 	{
 		Transition transition = edge.getTransition();
 		double ratio = edge.getInterpolationCompletionRatio();
@@ -179,7 +281,7 @@ public class DefaultTrackSchemeOverlay extends AbstractTrackSchemeOverlay
 			g2.setStroke( style.getEdgeStroke() );
 	}
 
-	protected void drawVertexSimplified( final Graphics2D g2, final ScreenVertex vertex )
+	protected void drawVertexSimplified( final ScreenVertex vertex )
 	{
 		final Transition transition = vertex.getTransition();
 		final boolean disappear = ( transition == DISAPPEAR );
@@ -216,7 +318,7 @@ public class DefaultTrackSchemeOverlay extends AbstractTrackSchemeOverlay
 			g2.fillOval( ox, oy, ow, ow );
 	}
 
-	protected void drawVertexSimplifiedIfHighlighted( final Graphics2D g2, final ScreenVertex vertex )
+	protected void drawVertexSimplifiedIfHighlighted( final ScreenVertex vertex )
 	{
 		final boolean highlighted = ( highlightedVertexId >= 0 ) && ( vertex.getTrackSchemeVertexId() == highlightedVertexId );
 		final boolean focused = ( focusedVertexId >= 0 ) && ( vertex.getTrackSchemeVertexId() == focusedVertexId );
@@ -253,7 +355,7 @@ public class DefaultTrackSchemeOverlay extends AbstractTrackSchemeOverlay
 		}
 	}
 
-	protected void drawVertexFull( final Graphics2D g2, final ScreenVertex vertex )
+	protected void drawVertexFull( final ScreenVertex vertex )
 	{
 		final Transition transition = vertex.getTransition();
 		final boolean disappear = ( transition == DISAPPEAR );

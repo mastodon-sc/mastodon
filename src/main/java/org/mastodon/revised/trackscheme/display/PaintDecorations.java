@@ -11,6 +11,8 @@ import org.mastodon.revised.trackscheme.display.style.TrackSchemeStyle;
 
 /**
  * Painting background and headers of the TrackScheme display.
+ *
+ * @author Tobias Pietzsch
  */
 public class PaintDecorations
 {
@@ -63,7 +65,7 @@ public class PaintDecorations
 	 * @param style
 	 *            style with which to paint (background color, etc.)
 	 */
-	public static void paintBackground(
+	public void paintBackground(
 			final Graphics2D g2,
 			final int width,
 			final int height,
@@ -156,7 +158,7 @@ public class PaintDecorations
 	 * @param style
 	 *            style with which to paint (background color, etc.)
 	 */
-	public static void paintHeaders(
+	public void paintHeaders(
 			final Graphics2D g2,
 			final int width,
 			final int height,

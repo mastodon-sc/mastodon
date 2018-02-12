@@ -93,7 +93,7 @@ public class TrackSchemePanel extends JPanel implements
 
 	private final PainterThread painterThread;
 
-	private final AbstractTrackSchemeOverlay graphOverlay;
+	private final TrackSchemeOverlay graphOverlay;
 
 	/**
 	 * TODO
@@ -307,7 +307,6 @@ public class TrackSchemePanel extends JPanel implements
 	{
 		layoutMinY = minTimepoint;
 		layoutMaxY = maxTimepoint;
-		graphOverlay.setTimepointRange( minTimepoint, maxTimepoint );
 		transformEventHandler.setLayoutRangeY( minTimepoint, maxTimepoint );
 	}
 
@@ -773,7 +772,7 @@ public class TrackSchemePanel extends JPanel implements
 	 *
 	 * @return the graph overlay renderer of this panel.
 	 */
-	public AbstractTrackSchemeOverlay getGraphOverlay()
+	public TrackSchemeOverlay getGraphOverlay()
 	{
 		return graphOverlay;
 	}
@@ -896,13 +895,13 @@ public class TrackSchemePanel extends JPanel implements
 
 		/**
 		 * Set entities for painting into the specified double-buffered
-		 * {@link AbstractTrackSchemeOverlay}. (This swaps
+		 * {@link TrackSchemeOverlay}. (This swaps
 		 * {@link #screenEntities} with pending entities from the overlay.)
 		 *
 		 * @param overlay
 		 *            the overlay to paint in.
 		 */
-		public void setPaintEntities( final AbstractTrackSchemeOverlay overlay )
+		public void setPaintEntities( final TrackSchemeOverlay overlay )
 		{
 			if ( lastComputedScreenEntities == screenEntities )
 			{

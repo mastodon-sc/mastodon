@@ -50,7 +50,7 @@ public class ToggleLinkBehaviour< V extends Vertex< E > & HasTimepoint, E extend
 
 	private final TrackSchemeGraph< V, E > graph;
 
-	private final AbstractTrackSchemeOverlay renderer;
+	private final TrackSchemeOverlay renderer;
 
 	private final ReentrantReadWriteLock lock;
 
