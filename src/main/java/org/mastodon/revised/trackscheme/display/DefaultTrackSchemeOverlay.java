@@ -24,8 +24,6 @@ import org.mastodon.revised.trackscheme.TrackSchemeGraph;
 import org.mastodon.revised.trackscheme.TrackSchemeVertex;
 import org.mastodon.revised.trackscheme.display.style.TrackSchemeStyle;
 
-import net.imglib2.RealLocalizable;
-
 /**
  * An AbstractTrackSchemeOverlay implementation that:
  * <ul>
@@ -102,33 +100,19 @@ public class DefaultTrackSchemeOverlay extends AbstractTrackSchemeOverlay
 			drawVertexSimplifiedIfHighlighted( g2, vertex );
 	}
 
-	// TODO: take double x, y instead of RealLocalizable parameter
 	@Override
-	protected double distanceToPaintedEdge( final RealLocalizable pos, final ScreenEdge edge, final ScreenVertex source, final ScreenVertex target )
+	protected double distanceToPaintedEdge( final double x, final double y, final ScreenEdge edge, final ScreenVertex source, final ScreenVertex target )
 	{
-		final double x0 = pos.getDoublePosition( 0 );
-		final double y0 = pos.getDoublePosition( 1 );
 		final double x1 = source.getX();
 		final double y1 = source.getY();
 		final double x2 = target.getX();
 		final double y2 = target.getY();
-		final double d = Util.segmentDist( x0, y0, x1, y1, x2, y2 );
+		final double d = Util.segmentDist( x, y, x1, y1, x2, y2 );
 		return d;
 	}
-//	@Override
-//	protected double distanceToPaintedEdge( final double x0, final double y0, final ScreenEdge edge, final ScreenVertex source, final ScreenVertex target )
-//	{
-//		final double x1 = source.getX();
-//		final double y1 = source.getY();
-//		final double x2 = target.getX();
-//		final double y2 = target.getY();
-//		final double d = GeometryUtils.segmentDist( x0, y0, x1, y1, x2, y2 );
-//		return d;
-//	}
 
-	// TODO: take double x, y instead of RealLocalizable parameter
 	@Override
-	protected boolean isInsidePaintedVertex( final RealLocalizable pos, final ScreenVertex vertex )
+	protected boolean isInsidePaintedVertex( final double x, final double y, final ScreenVertex vertex )
 	{
 		final double d = vertex.getVertexDist();
 		double radius = 0;
@@ -141,9 +125,9 @@ public class DefaultTrackSchemeOverlay extends AbstractTrackSchemeOverlay
 		{
 			radius = simplifiedVertexRadius + simplifiedVertexSelectTolerance;
 		}
-		final double x = pos.getDoublePosition( 0 ) - vertex.getX();
-		final double y = pos.getDoublePosition( 1 ) - vertex.getY();
-		return ( x * x + y * y < radius * radius );
+		final double dx = x - vertex.getX();
+		final double dy = y - vertex.getY();
+		return ( dx * dx + dy * dy < radius * radius );
 	}
 
 	@Override
