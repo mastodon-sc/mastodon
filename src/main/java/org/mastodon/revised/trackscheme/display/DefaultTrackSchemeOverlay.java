@@ -1,4 +1,4 @@
-package org.mastodon.revised.trackscheme.display.style;
+package org.mastodon.revised.trackscheme.display;
 
 import static org.mastodon.revised.trackscheme.ScreenVertex.Transition.APPEAR;
 import static org.mastodon.revised.trackscheme.ScreenVertex.Transition.DISAPPEAR;
@@ -21,12 +21,11 @@ import org.mastodon.revised.trackscheme.ScreenEntities;
 import org.mastodon.revised.trackscheme.ScreenTransform;
 import org.mastodon.revised.trackscheme.ScreenVertex;
 import org.mastodon.revised.trackscheme.ScreenVertex.Transition;
+import org.mastodon.revised.trackscheme.display.style.TrackSchemeStyle;
 import org.mastodon.revised.trackscheme.ScreenVertexRange;
 import org.mastodon.revised.trackscheme.TrackSchemeEdge;
 import org.mastodon.revised.trackscheme.TrackSchemeGraph;
 import org.mastodon.revised.trackscheme.TrackSchemeVertex;
-import org.mastodon.revised.trackscheme.display.AbstractTrackSchemeOverlay;
-import org.mastodon.revised.trackscheme.display.TrackSchemeOptions;
 
 import net.imglib2.RealLocalizable;
 

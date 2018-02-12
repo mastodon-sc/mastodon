@@ -31,7 +31,6 @@ package org.mastodon.revised.trackscheme.display;
 import java.awt.event.KeyListener;
 
 import org.mastodon.revised.trackscheme.display.AbstractTrackSchemeOverlay.TrackSchemeOverlayFactory;
-import org.mastodon.revised.trackscheme.display.style.DefaultTrackSchemeOverlay;
 import org.mastodon.revised.ui.selection.NavigationEtiquette;
 import org.scijava.ui.behaviour.KeyPressedManager;
 
