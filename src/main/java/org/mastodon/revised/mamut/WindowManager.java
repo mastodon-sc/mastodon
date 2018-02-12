@@ -143,7 +143,7 @@ public class WindowManager
 		UndoActions.install( appModel.getAppActions(), model );
 		SelectionActions.install( appModel.getAppActions(), model.getGraph(), model.getGraph().getLock(), model.getGraph(), appModel.getSelectionModel(), model );
 
-		tagSetDialog = new TagSetDialog( null, model.getTagSetModel() );
+		tagSetDialog = new TagSetDialog( null, model.getTagSetModel(), model );
 		updateEnabledActions();
 	}
 

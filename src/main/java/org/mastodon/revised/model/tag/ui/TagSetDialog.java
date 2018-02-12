@@ -17,10 +17,15 @@ import org.mastodon.app.ui.settings.SingleSettingsPanel;
 import org.mastodon.revised.model.tag.TagSetModel;
 import org.mastodon.revised.model.tag.TagSetStructure;
 import org.mastodon.revised.model.tag.TagSetStructure.TagSet;
+import org.mastodon.undo.UndoPointMarker;
 
 public class TagSetDialog extends JDialog
 {
 	private static final long serialVersionUID = 1L;
+
+	private final TagSetDialog.TagSetManager manager;
+
+	private final TagSetPanel tagSetPanel;
 
 	public interface TagSetManager
 	{
@@ -29,7 +34,7 @@ public class TagSetDialog extends JDialog
 		void setTagSetStructure( final TagSetStructure tagSetStructure );
 	}
 
-	public TagSetDialog( final Frame owner, final TagSetModel<?,?> model )
+	public TagSetDialog( final Frame owner, final TagSetModel<?,?> model, final UndoPointMarker undoPointMarker )
 	{
 		this( owner, new TagSetManager() {
 			@Override
@@ -41,16 +46,20 @@ public class TagSetDialog extends JDialog
 			@Override
 			public void setTagSetStructure( final TagSetStructure tagSetStructure )
 			{
+				System.out.println( "TagSetDialog.setTagSetStructure" );
 				model.setTagSetStructure( tagSetStructure );
+				undoPointMarker.setUndoPoint();
 			}
 		} );
+		model.listeners().add( () -> tagSetPanel.setTagSetStructure( manager.getTagSetStructure() ) );
 	}
 
 	public TagSetDialog( final Frame owner, final TagSetManager manager )
 	{
 		super( owner, "Configure Tag Sets", false );
+		this.manager = manager;
 
-		final TagSetPanel tagSetPanel = new TagSetPanel();
+		tagSetPanel = new TagSetPanel();
 		tagSetPanel.setTagSetStructure( manager.getTagSetStructure() );
 		final SimpleSettingsPage page = new SimpleSettingsPage( "tag sets", tagSetPanel );
 

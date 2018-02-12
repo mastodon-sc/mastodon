@@ -13,6 +13,9 @@ import org.mastodon.labels.LabelSet;
 import org.mastodon.labels.LabelSets;
 import org.mastodon.revised.model.tag.TagSetStructure.Tag;
 import org.mastodon.revised.model.tag.TagSetStructure.TagSet;
+import org.mastodon.undo.Recorder;
+import org.mastodon.undo.UndoableEdit;
+import org.mastodon.util.Listeners;
 
 /**
  * Assigns tags to vertices and edges of a graph, according to a {@link TagSetStructure}.
@@ -39,6 +42,10 @@ public class TagSetModel< V extends Vertex< E >, E extends Edge< V > >
 
 	private final ObjTags< E > edgeTags;
 
+	private final Listeners.List< TagSetModelListener > listeners;
+
+	private Recorder< SetTagSetStructureUndoableEdit > editRecorder;
+
 	public TagSetModel( final ReadOnlyGraph< V, E > graph )
 	{
 		this( graph, RefCollections.tryGetRefPool( graph.vertices() ), RefCollections.tryGetRefPool( graph.edges() ) );
@@ -52,6 +59,7 @@ public class TagSetModel< V extends Vertex< E >, E extends Edge< V > >
 		edgeIdLabelSets = new LabelSets<>( edgePool );
 		vertexTags = new ObjTags<>( vertexIdLabelSets, tagSetStructure );
 		edgeTags = new ObjTags<>( edgeIdLabelSets, tagSetStructure );
+		listeners = new Listeners.SynchronizedList<>();
 	}
 
 	public TagSetStructure getTagSetStructure()
@@ -86,8 +94,14 @@ public class TagSetModel< V extends Vertex< E >, E extends Edge< V > >
 		}
 		edgeIdLabelSets.releaseRef( eref );
 
-		tagSetStructure.set( tss );
 		// TODO: undo-record TagSetStructure change
+		if ( editRecorder != null )
+		{
+			editRecorder.record( new SetTagSetStructureUndoableEdit( this, tagSetStructure, tss ) );
+		}
+
+		tagSetStructure.set( tss );
+		listeners.list.forEach( TagSetModelListener::tagSetStructureChanged );
 
 		vertexTags.update( tagSetStructure );
 		edgeTags.update( tagSetStructure );
@@ -101,6 +115,21 @@ public class TagSetModel< V extends Vertex< E >, E extends Edge< V > >
 	public ObjTags< E > getEdgeTags()
 	{
 		return edgeTags;
+	}
+
+	public void setUndoRecorder( final Recorder< SetTagSetStructureUndoableEdit > editRecorder )
+	{
+		this.editRecorder = editRecorder;
+	}
+
+	public interface TagSetModelListener
+	{
+		void tagSetStructureChanged();
+	}
+
+	public Listeners< TagSetModelListener > listeners()
+	{
+		return listeners;
 	}
 
 	/**
@@ -129,6 +158,42 @@ public class TagSetModel< V extends Vertex< E >, E extends Edge< V > >
 		{
 			tagSetModel.vertexTags.update( tagSetModel.tagSetStructure );
 			tagSetModel.edgeTags.update( tagSetModel.tagSetStructure );
+		}
+	}
+
+	public static class SetTagSetStructureUndoableEdit implements UndoableEdit
+	{
+		private final TagSetModel< ?, ? > tagSetModel;
+
+		private final TagSetStructure oldTss;
+
+		private final TagSetStructure newTss;
+
+		SetTagSetStructureUndoableEdit( final TagSetModel<?,?> tagSetModel, final TagSetStructure oldTss,  final TagSetStructure newTss )
+		{
+			this.tagSetModel = tagSetModel;
+			this.oldTss = new TagSetStructure();
+			this.oldTss.set( oldTss );
+			this.newTss = new TagSetStructure();
+			this.newTss.set( newTss );
+		}
+
+		@Override
+		public void undo()
+		{
+			tagSetModel.getTagSetStructure().set( oldTss );
+			tagSetModel.vertexTags.update( tagSetModel.tagSetStructure );
+			tagSetModel.edgeTags.update( tagSetModel.tagSetStructure );
+			tagSetModel.listeners.list.forEach( TagSetModelListener::tagSetStructureChanged );
+		}
+
+		@Override
+		public void redo()
+		{
+			tagSetModel.getTagSetStructure().set( newTss );
+			tagSetModel.vertexTags.update( tagSetModel.tagSetStructure );
+			tagSetModel.edgeTags.update( tagSetModel.tagSetStructure );
+			tagSetModel.listeners.list.forEach( TagSetModelListener::tagSetStructureChanged );
 		}
 	}
 

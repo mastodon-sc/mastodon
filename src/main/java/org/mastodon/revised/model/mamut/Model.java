@@ -25,6 +25,7 @@ import org.mastodon.revised.model.tag.TagSetModel;
 import org.mastodon.spatial.SpatioTemporalIndex;
 import org.mastodon.spatial.SpatioTemporalIndexImp;
 import org.mastodon.undo.GraphUndoRecorder;
+import org.mastodon.undo.Recorder;
 import org.mastodon.undo.UndoPointMarker;
 
 import net.imglib2.RealLocalizable;
@@ -107,6 +108,9 @@ public class Model extends AbstractModel< ModelGraph, Spot, Link > implements Un
 				ModelSerializer.getInstance().getEdgeSerializer(),
 				vertexUndoableProperties,
 				edgeUndoableProperties );
+
+		final Recorder< TagSetModel.SetTagSetStructureUndoableEdit > recorder = undoRecorder.createGenericUndoableEditRecorder();
+		tagSetModel.setUndoRecorder( recorder );
 	}
 
 	/**
