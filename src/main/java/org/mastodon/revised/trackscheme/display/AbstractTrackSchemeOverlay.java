@@ -16,9 +16,8 @@ import org.mastodon.revised.trackscheme.TrackSchemeEdge;
 import org.mastodon.revised.trackscheme.TrackSchemeGraph;
 import org.mastodon.revised.trackscheme.TrackSchemeVertex;
 import org.mastodon.revised.trackscheme.display.OffsetHeaders.OffsetHeadersListener;
+import org.mastodon.revised.trackscheme.display.style.TrackSchemeStyle;
 
-import net.imglib2.RealLocalizable;
-import net.imglib2.RealPoint;
 import net.imglib2.ui.OverlayRenderer;
 
 /**
@@ -107,6 +106,8 @@ public abstract class AbstractTrackSchemeOverlay implements OverlayRenderer, Off
 
 	protected int headerHeight;
 
+	protected final TrackSchemeStyle style;
+
 	/**
 	 * The {@link OverlayRenderer}s that draw above the background
 	 */
@@ -134,6 +135,7 @@ public abstract class AbstractTrackSchemeOverlay implements OverlayRenderer, Off
 		this.graph = graph;
 		this.highlight = highlight;
 		this.focus = focus;
+		style = options.values.getStyle();
 		width = options.values.getWidth();
 		height = options.values.getHeight();
 		entities = new ScreenEntities( graph );
@@ -562,12 +564,15 @@ public abstract class AbstractTrackSchemeOverlay implements OverlayRenderer, Off
 	 */
 	protected abstract void drawEdge( Graphics2D g2, ScreenEdge edge, ScreenVertex vs, ScreenVertex vt );
 
-	public static interface TrackSchemeOverlayFactory
+	public static class TrackSchemeOverlayFactory
 	{
 		public AbstractTrackSchemeOverlay create(
 				final TrackSchemeGraph< ?, ? > graph,
 				final HighlightModel< TrackSchemeVertex, TrackSchemeEdge > highlight,
 				final FocusModel< TrackSchemeVertex, TrackSchemeEdge > focus,
-				final TrackSchemeOptions options );
+				final TrackSchemeOptions options )
+		{
+			return new DefaultTrackSchemeOverlay( graph, highlight, focus, options );
+		}
 	}
 }

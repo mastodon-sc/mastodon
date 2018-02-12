@@ -31,6 +31,7 @@ package org.mastodon.revised.trackscheme.display;
 import java.awt.event.KeyListener;
 
 import org.mastodon.revised.trackscheme.display.AbstractTrackSchemeOverlay.TrackSchemeOverlayFactory;
+import org.mastodon.revised.trackscheme.display.style.TrackSchemeStyle;
 import org.mastodon.revised.ui.selection.NavigationEtiquette;
 import org.scijava.ui.behaviour.KeyPressedManager;
 
@@ -123,6 +124,19 @@ public class TrackSchemeOptions
 	}
 
 	/**
+	 * Sets the TrackScheme style.
+	 *
+	 * @param style
+	 *            the style.
+	 * @return this instance.
+	 */
+	public TrackSchemeOptions style( final TrackSchemeStyle style )
+	{
+		values.style = style;
+		return this;
+	}
+
+	/**
 	 * Sets the factory used to create this TrackScheme's overlay.
 	 *
 	 * @param factory
@@ -150,7 +164,9 @@ public class TrackSchemeOptions
 
 		private NavigationEtiquette navigationEtiquette = NavigationEtiquette.MINIMAL;
 
-		private TrackSchemeOverlayFactory trackSchemeOverlayFactory = new DefaultTrackSchemeOverlay.Factory();
+		private TrackSchemeStyle style = TrackSchemeStyle.defaultStyle();
+
+		private TrackSchemeOverlayFactory trackSchemeOverlayFactory = new TrackSchemeOverlayFactory();
 
 		public TrackSchemeOptions optionsFromValues()
 		{
@@ -159,6 +175,7 @@ public class TrackSchemeOptions
 				height( height ).
 				animationDurationMillis( animationDurationMillis ).
 				navigationEtiquette( navigationEtiquette ).
+				style( style ).
 				trackSchemeOverlayFactory( trackSchemeOverlayFactory );
 		}
 
@@ -185,6 +202,11 @@ public class TrackSchemeOptions
 		public NavigationEtiquette getNavigationEtiquette()
 		{
 			return navigationEtiquette;
+		}
+
+		public TrackSchemeStyle getStyle()
+		{
+			return style;
 		}
 
 		public TrackSchemeOverlayFactory getTrackSchemeOverlayFactory()

@@ -55,7 +55,6 @@ import org.mastodon.revised.trackscheme.TrackSchemeEdgeBimap;
 import org.mastodon.revised.trackscheme.TrackSchemeGraph;
 import org.mastodon.revised.trackscheme.TrackSchemeVertex;
 import org.mastodon.revised.trackscheme.TrackSchemeVertexBimap;
-import org.mastodon.revised.trackscheme.display.DefaultTrackSchemeOverlay;
 import org.mastodon.revised.trackscheme.display.TrackSchemeOptions;
 import org.mastodon.revised.trackscheme.display.TrackSchemePanel;
 import org.mastodon.revised.trackscheme.display.style.dummygraph.DummyEdge;
@@ -91,10 +90,7 @@ public class TrackSchemeStyleEditorPanel extends JPanel
 		final TimepointModel timepoint = new DefaultTimepointModel();
 		final SelectionModel< TrackSchemeVertex, TrackSchemeEdge > selection = new SelectionModelAdapter<>( ex.getSelectionModel(), vertexMap, edgeMap );
 		final NavigationHandler< TrackSchemeVertex, TrackSchemeEdge > navigation = new DefaultNavigationHandler<>();
-		final TrackSchemeOptions options = TrackSchemeOptions.options()
-				.trackSchemeOverlayFactory(
-						( g, h, f, o ) -> new DefaultTrackSchemeOverlay( g, h, f, o, style )
-				);
+		final TrackSchemeOptions options = TrackSchemeOptions.options().style( style );
 		final TrackSchemePanel previewPanel = new TrackSchemePanel( graph, highlight, focus, timepoint, selection, navigation, options );
 		previewPanel.setTimepointRange( 0, 7 );
 		timepoint.setTimepoint( 2 );

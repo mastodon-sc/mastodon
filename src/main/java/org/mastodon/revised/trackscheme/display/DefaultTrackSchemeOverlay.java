@@ -57,17 +57,13 @@ public class DefaultTrackSchemeOverlay extends AbstractTrackSchemeOverlay
 	 * FIELDS
 	 */
 
-	private final TrackSchemeStyle style;
-
 	public DefaultTrackSchemeOverlay(
 			final TrackSchemeGraph< ?, ? > graph,
 			final HighlightModel< TrackSchemeVertex, TrackSchemeEdge > highlight,
 			final FocusModel< TrackSchemeVertex, TrackSchemeEdge > focus,
-			final TrackSchemeOptions options,
-			final TrackSchemeStyle style )
+			final TrackSchemeOptions options )
 	{
 		super( graph, highlight, focus, options );
-		this.style = style;
 	}
 
 	@Override
@@ -358,23 +354,6 @@ public class DefaultTrackSchemeOverlay extends AbstractTrackSchemeOverlay
 			return isGhost
 					? TrackSchemeStyle.mixGhostColor( color, style.getBackgroundColor() )
 					: color;
-		}
-	}
-
-	/*
-	 * FACTORY.
-	 */
-
-	public static final class Factory implements TrackSchemeOverlayFactory
-	{
-		@Override
-		public DefaultTrackSchemeOverlay create(
-				final TrackSchemeGraph< ?, ? > graph,
-				final HighlightModel< TrackSchemeVertex, TrackSchemeEdge > highlight,
-				final FocusModel< TrackSchemeVertex, TrackSchemeEdge > focus,
-				final TrackSchemeOptions options )
-		{
-			return new DefaultTrackSchemeOverlay( graph, highlight, focus, options, TrackSchemeStyle.defaultStyle() );
 		}
 	}
 }

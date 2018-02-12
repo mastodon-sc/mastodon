@@ -17,8 +17,6 @@ import org.mastodon.revised.trackscheme.TrackSchemeContextListener;
 import org.mastodon.revised.trackscheme.TrackSchemeEdge;
 import org.mastodon.revised.trackscheme.TrackSchemeGraph;
 import org.mastodon.revised.trackscheme.TrackSchemeVertex;
-import org.mastodon.revised.trackscheme.display.AbstractTrackSchemeOverlay.TrackSchemeOverlayFactory;
-import org.mastodon.revised.trackscheme.display.DefaultTrackSchemeOverlay;
 import org.mastodon.revised.trackscheme.display.EditFocusVertexLabelAction;
 import org.mastodon.revised.trackscheme.display.ToggleLinkBehaviour;
 import org.mastodon.revised.trackscheme.display.TrackSchemeFrame;
@@ -59,13 +57,9 @@ class MamutViewTrackScheme extends MamutView< TrackSchemeGraph< Spot, Link >, Tr
 		 * show TrackSchemeFrame
 		 */
 		final TrackSchemeStyle forwardDefaultStyle = appModel.getTrackSchemeStyleManager().getForwardDefaultStyle();
-		final TrackSchemeOverlayFactory overlayFactory = ( graph, highlight, focus, options ) -> new DefaultTrackSchemeOverlay(
-				graph, highlight, focus, options,
-				forwardDefaultStyle );
-
 		final TrackSchemeOptions options = TrackSchemeOptions.options()
 				.shareKeyPressedEvents( keyPressedManager )
-				.trackSchemeOverlayFactory( overlayFactory );
+				.style( forwardDefaultStyle );
 		final TrackSchemeFrame frame = new TrackSchemeFrame(
 				viewGraph,
 				highlightModel,
