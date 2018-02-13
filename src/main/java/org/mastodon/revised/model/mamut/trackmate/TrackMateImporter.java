@@ -75,15 +75,20 @@ public class TrackMateImporter
 	 *
 	 * @param file
 	 * 		the path to the TrackMate file.
-	 * @throws JDOMException
-	 * 		if an error happens while parsing the XML file.
 	 * @throws IOException
-	 * 		if an IO error prevents the XML file to be parsed.
+	 * 		if an error happens while opening or parsing the XML file.
 	 */
-	public TrackMateImporter( final File file ) throws JDOMException, IOException
+	public TrackMateImporter( final File file ) throws IOException
 	{
 		this.file = file;
-		document = new SAXBuilder().build( file );
+		try
+		{
+			document = new SAXBuilder().build( file );
+		}
+		catch ( final JDOMException e )
+		{
+			throw new IOException( e );
+		}
 	}
 
 	/**

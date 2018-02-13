@@ -13,6 +13,7 @@ import org.mastodon.revised.bdv.SharedBigDataViewerData;
 import org.mastodon.revised.bdv.overlay.ui.RenderSettingsManager;
 import org.mastodon.revised.mamut.feature.MamutFeatureComputerService;
 import org.mastodon.revised.model.mamut.Model;
+import org.mastodon.revised.model.mamut.trackmate.TrackMateImporter;
 import org.mastodon.revised.model.tag.TagSetStructure;
 import org.mastodon.revised.trackscheme.display.style.TrackSchemeStyleManager;
 import org.mastodon.revised.ui.keymap.KeymapManager;
@@ -37,11 +38,15 @@ public class ProjectManager
 	public static final String LOAD_PROJECT = "load project";
 	public static final String SAVE_PROJECT = "save project";
 	public static final String IMPORT_TGMM = "import tgmm";
+	public static final String IMPORT_MAMUT = "import mamut";
+	public static final String EXPORT_MAMUT = "export mamut";
 
 	static final String[] CREATE_PROJECT_KEYS = new String[] { "not mapped" };
 	static final String[] LOAD_PROJECT_KEYS = new String[] { "not mapped" };
 	static final String[] SAVE_PROJECT_KEYS = new String[] { "not mapped" };
 	static final String[] IMPORT_TGMM_KEYS = new String[] { "not mapped" };
+	static final String[] IMPORT_MAMUT_KEYS = new String[] { "not mapped" };
+	static final String[] EXPORT_MAMUT_KEYS = new String[] { "not mapped" };
 
 	private final WindowManager windowManager;
 
@@ -59,6 +64,10 @@ public class ProjectManager
 
 	private final AbstractNamedAction importTgmmAction;
 
+	private final AbstractNamedAction importMamutAction;
+
+	private final AbstractNamedAction exportMamutAction;
+
 	public ProjectManager( final WindowManager windowManager )
 	{
 		this.windowManager = windowManager;
@@ -69,6 +78,8 @@ public class ProjectManager
 		loadProjectAction = new RunnableAction( LOAD_PROJECT, this::loadProject );
 		saveProjectAction = new RunnableAction( SAVE_PROJECT, this::saveProject );
 		importTgmmAction = new RunnableAction( IMPORT_TGMM, this::importTgmm );
+		importMamutAction = new RunnableAction( IMPORT_MAMUT, this::importMamut );
+		exportMamutAction = new RunnableAction( EXPORT_MAMUT, this::exportMamut );
 
 		updateEnabledActions();
 	}
@@ -78,6 +89,7 @@ public class ProjectManager
 		final boolean projectOpen = ( project != null );
 		saveProjectAction.setEnabled( projectOpen );
 		importTgmmAction.setEnabled( projectOpen );
+		exportMamutAction.setEnabled( projectOpen );
 	}
 
 	/**
@@ -93,6 +105,8 @@ public class ProjectManager
 		actions.namedAction( loadProjectAction, LOAD_PROJECT_KEYS );
 		actions.namedAction( saveProjectAction, SAVE_PROJECT_KEYS );
 		actions.namedAction( importTgmmAction, IMPORT_TGMM_KEYS );
+		actions.namedAction( importMamutAction, IMPORT_MAMUT_KEYS );
+		actions.namedAction( exportMamutAction, EXPORT_MAMUT_KEYS );
 	}
 
 	public synchronized void createProject()
@@ -271,7 +285,7 @@ public class ProjectManager
 		updateEnabledActions();
 	}
 
-	public void importTgmm()
+	public synchronized void importTgmm()
 	{
 		if ( project == null )
 			return;
@@ -280,6 +294,38 @@ public class ProjectManager
 		tgmmImportDialog.showImportDialog( appModel.getSharedBdvData().getSpimData(), appModel.getModel() );
 
 		updateEnabledActions();
+	}
+
+	public synchronized void importMamut()
+	{
+		final Component parent = null; // TODO
+		final File file = FileChooser.chooseFile(
+				parent,
+				null,
+				new XmlFileFilter(),
+				"Import MaMuT Project",
+				FileChooser.DialogType.LOAD );
+		if ( file == null )
+			return;
+
+		try
+		{
+			final TrackMateImporter importer = new TrackMateImporter( file );
+			open( importer.createProject() );
+			importer.readModel( windowManager.getAppModel().getModel() );
+		}
+		catch ( final IOException | SpimDataException e )
+		{
+			e.printStackTrace();
+		}
+
+		updateEnabledActions();
+	}
+
+	public synchronized void exportMamut()
+	{
+		// TODO
+		System.err.println( "NOT IMPLEMENTED YET" );
 	}
 
 	private static String getProposedProjectFolder( final MamutProject project )
