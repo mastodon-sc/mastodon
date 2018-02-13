@@ -82,7 +82,7 @@ public class MaMuTExportExample
 		 */
 
 		final Model importedModel = new Model();
-		TrackMateImporter.importModel( target, importedModel );
+		new TrackMateImporter( target ).readModel( importedModel );
 		System.out.println( MastodonUtil.dump( importedModel ) );
 	}
 
