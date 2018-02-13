@@ -9,6 +9,7 @@ import java.util.Collection;
 import java.util.Objects;
 
 import org.mastodon.app.ui.settings.style.Style;
+import org.mastodon.util.Listeners;
 
 public class TrackSchemeStyle implements Style< TrackSchemeStyle >
 {
@@ -630,9 +631,16 @@ public class TrackSchemeStyle implements Style< TrackSchemeStyle >
 		return this;
 	}
 
+	public interface UpdateListener
+	{
+		void trackSchemeStyleChanged();
+	}
+
+	private final Listeners.List< UpdateListener > updateListeners;
+
 	private TrackSchemeStyle()
 	{
-		updateListeners = new ArrayList<>();
+		updateListeners = new Listeners.SynchronizedList<>();
 	}
 
 	@Override
@@ -684,33 +692,14 @@ public class TrackSchemeStyle implements Style< TrackSchemeStyle >
 		notifyListeners();
 	}
 
-	public interface UpdateListener
-	{
-		public void trackSchemeStyleChanged();
-	}
-
-	private final ArrayList< UpdateListener > updateListeners;
-
 	private void notifyListeners()
 	{
-		final ArrayList< UpdateListener > ul = new ArrayList<>( updateListeners ); // TODO: bake into Listeners class, see c2040afb16cb5abd090f4ef3a8adba1d52641946
-		for ( final UpdateListener l : ul )
-			l.trackSchemeStyleChanged();
+		updateListeners.listCopy().forEach( UpdateListener::trackSchemeStyleChanged );
 	}
 
-	public synchronized boolean addUpdateListener( final UpdateListener l )
+	public Listeners< UpdateListener > updateListeners()
 	{
-		if ( !updateListeners.contains( l ) )
-		{
-			updateListeners.add( l );
-			return true;
-		}
-		return false;
-	}
-
-	public synchronized boolean removeUpdateListener( final UpdateListener l )
-	{
-		return updateListeners.remove( l );
+		return updateListeners;
 	}
 
 	/**

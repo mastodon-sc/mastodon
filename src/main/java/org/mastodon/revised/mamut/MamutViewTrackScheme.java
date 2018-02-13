@@ -76,8 +76,8 @@ class MamutViewTrackScheme extends MamutView< TrackSchemeGraph< Spot, Link >, Tr
 		contextListener.setContextListener( frame.getTrackschemePanel() );
 
 		final TrackSchemeStyle.UpdateListener updateListener = () -> frame.getTrackschemePanel().repaint();
-		forwardDefaultStyle.addUpdateListener( updateListener );
-		onClose( () -> forwardDefaultStyle.removeUpdateListener( updateListener ) );
+		forwardDefaultStyle.updateListeners().add( updateListener );
+		onClose( () -> forwardDefaultStyle.updateListeners().remove( updateListener ) );
 
 		setFrame( frame );
 		frame.setVisible( true );

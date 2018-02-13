@@ -97,7 +97,7 @@ public class TrackSchemeStyleEditorPanel extends JPanel
 		previewPanel.graphChanged();
 		previewPanel.getDisplay().setFocusable( false );
 
-		style.addUpdateListener( () -> {
+		style.updateListeners().add( () -> {
 			previewPanel.graphChanged();
 			styleElements.forEach( StyleElement::update );
 			repaint();

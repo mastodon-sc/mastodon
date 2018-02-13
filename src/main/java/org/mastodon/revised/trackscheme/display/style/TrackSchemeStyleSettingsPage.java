@@ -43,7 +43,7 @@ public class TrackSchemeStyleSettingsPage extends SelectAndEditProfileSettingsPa
 			editedStyle = initialStyle.copy( "Edited" );
 			styleEditorPanel = new TrackSchemeStyleEditorPanel( editedStyle );
 			modificationListeners = new Listeners.SynchronizedList<>();
-			editedStyle.addUpdateListener( this );
+			editedStyle.updateListeners().add( this );
 		}
 
 		private boolean trackModifications = true;
