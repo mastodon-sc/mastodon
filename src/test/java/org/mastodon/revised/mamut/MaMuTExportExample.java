@@ -26,11 +26,12 @@ public class MaMuTExportExample
 		 * 1. Load a regular Mastodon project.
 		 */
 
-		final String projectFolder = "samples";
+		final String projectFolder = "samples/mamutproject";
 		final String bdvFile = "samples/datasethdf5.xml";
 		final MamutProject project = new MamutProject( new File( projectFolder ), new File( bdvFile ) );
+//		final MamutProject project = new MamutProjectIO().load( "samples/mamutproject" );
 		final Model model = new Model();
-		model.loadRaw( project.getRawModelFile() );
+		model.loadRaw( project );
 
 		/*
 		 * 1.1. Compute features.

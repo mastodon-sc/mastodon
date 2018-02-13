@@ -678,11 +678,11 @@ public class MamutExporter
 
 	public static void main( final String[] args ) throws IOException
 	{
-		final String projectFolder = "samples";
+		final String projectFolder = "samples/mamutproject";
 		final String bdvFile = "samples/datasethdf5.xml";
 		final MamutProject project = new MamutProject( new File( projectFolder ), new File( bdvFile ) );
 		final Model model = new Model();
-		model.loadRaw( project.getRawModelFile() );
+		model.loadRaw( project );
 		final File target = new File( "samples/mamutExport.xml" );
 		export( target, model, project );
 	}
