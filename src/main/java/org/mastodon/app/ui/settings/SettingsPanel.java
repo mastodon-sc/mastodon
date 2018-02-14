@@ -168,7 +168,8 @@ public class SettingsPanel extends JPanel
 		content.setBorder( new EmptyBorder( 10, 0, 10, 10 ) );
 
 		final JScrollPane treeScrollPane = new JScrollPane( tree );
-		treeScrollPane.setPreferredSize( new Dimension( 500, 500 ) );
+		treeScrollPane.setPreferredSize( new Dimension( 200, 500 ) );
+		treeScrollPane.setMinimumSize( new Dimension( 150, 200 ) );
 		treeScrollPane.setBorder( new MatteBorder( 0, 0, 0, 1, Color.LIGHT_GRAY ) );
 //		treeScrollPane.setBorder( new EmptyBorder( 0, 0, 0, 0 ) );
 		renderer.setBackgroundNonSelectionColor( treeScrollPane.getBackground() );
@@ -177,7 +178,7 @@ public class SettingsPanel extends JPanel
 		splitPane.setResizeWeight( 0 );
 		splitPane.setContinuousLayout( true );
 		splitPane.setDividerSize( 10 );
-		splitPane.setDividerLocation( 300 );
+		splitPane.setDividerLocation( treeScrollPane.getPreferredSize().width );
 		splitPane.setBorder( new MatteBorder( 0, 0, 1, 0, Color.LIGHT_GRAY ) );
 //		splitPane.setBorder( new EmptyBorder( 0, 0, 0, 0 ) );
 
