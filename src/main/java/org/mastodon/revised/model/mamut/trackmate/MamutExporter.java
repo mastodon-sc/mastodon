@@ -285,7 +285,14 @@ public class MamutExporter
 		// File path.
 		final File datasetXmlFile = project.getDatasetXmlFile();
 		attributes.add( new Attribute( FILENAME_ATTRIBUTE, datasetXmlFile.getName() ) );
-		attributes.add( new Attribute( FOLDER_ATTRIBUTE, datasetXmlFile.getParentFile().getAbsolutePath() ) );
+		String folder = datasetXmlFile.getParentFile().getAbsolutePath();
+		try
+		{
+			folder = datasetXmlFile.getParentFile().getCanonicalPath();
+		}
+		catch ( IOException e )
+		{}
+		attributes.add( new Attribute( FOLDER_ATTRIBUTE, folder ) );
 
 		// Image attributes.
 		final Document document = getSAXParsedDocument( project.getDatasetXmlFile().getAbsolutePath() );
