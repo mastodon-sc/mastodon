@@ -42,12 +42,11 @@ public class TrackSchemeZoom< V extends Vertex< E > & HasTimepoint, E extends Ed
 
 		// Create and register overlay.
 		zoom.transformChanged( panel.getDisplay().getTransformEventHandler().getTransform() );
-		zoom.updateHeadersVisibility( panel.getOffsetDecorations().isVisibleX(), panel.getOffsetDecorations().getWidth(),
-				panel.getOffsetDecorations().isVisibleY(), panel.getOffsetDecorations().getHeight() );
+		zoom.updateHeaderSize( panel.getOffsetHeaders().getWidth(), panel.getOffsetHeaders().getHeight() );
 		// put the overlay first, so that is below the graph rendering.
 		panel.getDisplay().addOverlayRenderer( zoom.overlay );
 		panel.getDisplay().addTransformListener( zoom );
-		panel.getOffsetDecorations().addOffsetHeadersListener( zoom );
+		panel.getOffsetHeaders().listeners().add( zoom );
 
 		behaviours.namedBehaviour( zoom, TOGGLE_ZOOM_KEYS );
 	}
@@ -82,10 +81,10 @@ public class TrackSchemeZoom< V extends Vertex< E > & HasTimepoint, E extends Ed
 	}
 
 	@Override
-	public void updateHeadersVisibility( final boolean isVisibleX, final int width, final boolean isVisibleY, final int height )
+	public void updateHeaderSize( final int width, final int height )
 	{
-		headerWidth = isVisibleX ? width : 0;
-		headerHeight = isVisibleY ? height : 0;
+		headerWidth = width;
+		headerHeight = height;
 	}
 
 	@Override
