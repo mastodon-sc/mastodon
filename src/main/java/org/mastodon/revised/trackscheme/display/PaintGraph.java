@@ -24,12 +24,12 @@ import org.mastodon.revised.trackscheme.display.style.TrackSchemeStyle;
  * Painting the TrackScheme graph.
  * <p>
  * In particular, this class
+ * </p>
  * <ul>
  * <li>draws vertex as circles with the label inside,</li>
  * <li>offers two sizes of vertices (full and simplified),</li>
  * <li>draws edges as lines.</li>
  * </ul>
- * </p>
  * <p>
  * Colors and strokes are chosen according to a {@link TrackSchemeStyle}.
  * </p>
@@ -37,6 +37,7 @@ import org.mastodon.revised.trackscheme.display.style.TrackSchemeStyle;
  * When the
  * {@link #paintGraph(Graphics2D, ScreenEntities, int, int, int, TrackSchemeStyle)}
  * method is called, the following sequence of methods is executed:
+ * </p>
  * <ol>
  * <li>{@link #beforeDrawEdges()} to configure the Graphics2D object prior to
  * painting edges.
@@ -48,7 +49,6 @@ import org.mastodon.revised.trackscheme.display.style.TrackSchemeStyle;
  * prior to painting vertex ranges.
  * <li>{@link #drawVertexRange(ScreenVertexRange)} for each vertex range.
  * </ol>
- * </p>
  * <p>
  * Subclasses can override some or all of these methods to influcence how the
  * graph is drawn.
