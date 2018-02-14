@@ -1,6 +1,7 @@
 package org.mastodon.app.ui;
 
 import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.lang.reflect.InvocationTargetException;
 
 import javax.swing.BoxLayout;
@@ -77,6 +78,7 @@ public class ViewFrame extends JFrame
 	{
 		if ( isSettingsPanelVisible != visible )
 		{
+			final Dimension size = getSize();
 			isSettingsPanelVisible = visible;
 			if ( visible )
 			{
@@ -89,6 +91,7 @@ public class ViewFrame extends JFrame
 				settingsPanel.setVisible( false );
 			}
 			invalidate();
+			setPreferredSize( size );
 			pack();
 		}
 	}
