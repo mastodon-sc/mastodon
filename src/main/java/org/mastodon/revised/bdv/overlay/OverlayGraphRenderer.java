@@ -614,16 +614,17 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 		layout.draw( graphics, tx, ty );
 	}
 
-	// TODO: This should respect render settings and only get edges that are currently visible with these settings
 	public E getEdgeAt( final int x, final int y, final double tolerance, final E ref )
 	{
 		if ( !settings.getDrawLinks() )
 			return null;
 
 		final AffineTransform3D transform = getRenderTransformCopy();
+		final double maxDepth = getMaxDepth( transform );
 		final int currentTimepoint = renderTimepoint;
 
 		final ConvexPolytope visiblePolytopeGlobal = getVisiblePolytopeGlobal( transform, currentTimepoint );
+		final ScreenVertexMath screenVertexMath = new ScreenVertexMath();
 
 		lock.readLock().lock();
 		index.readLock().lock();
@@ -637,11 +638,25 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 
 			for ( int t = Math.max( 0, currentTimepoint - settings.getTimeLimit() ); t < currentTimepoint; ++t )
 			{
+
+
 				final SpatialIndex< V > si = index.getSpatialIndex( t );
 				final ClipConvexPolytope< V > ccp = si.getClipConvexPolytope();
 				ccp.clip( visiblePolytopeGlobal );
 				for ( final V source : ccp.getInsideValues() )
 				{
+					screenVertexMath.init( source, transform );
+					final double zs = screenVertexMath.getViewPos()[ 2 ];
+					final double sds = sliceDistance( zs, maxDepth );
+
+					/*
+					 * If true, part of the edge is not visible (its source is
+					 * not visible) so we do have to test for target visibility.
+					 * If false we do not have to check whether the target is
+					 * visible.
+					 */
+					final boolean testTargetVisibility = ( sds < -1. || sds > 1. );
+
 					source.localize( lPosS );
 					transform.apply( lPosS, gPosS );
 					final double x1 = gPosS[ 0 ];
@@ -649,6 +664,19 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 					for ( final E edge : source.outgoingEdges() )
 					{
 						final V target = edge.getTarget( vertexRef );
+						if ( testTargetVisibility )
+						{
+							screenVertexMath.init( target, transform );
+							final double zt = screenVertexMath.getViewPos()[ 2 ];
+							final double sdt = sliceDistance( zt, maxDepth );
+							/*
+							 * Now we need to test whether the edge intersect
+							 * with the plane or whether its target is visible.
+							 */
+							if ( ( sdt < -1. && sds < 0. ) || ( sdt > 1. && sds > 0. ) )
+								continue;
+						}
+
 						target.localize( lPosT );
 						transform.apply( lPosT, gPosT );
 						final double x2 = gPosT[ 0 ];
