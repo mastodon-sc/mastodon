@@ -11,7 +11,7 @@ import org.mastodon.revised.model.feature.Feature;
 import org.mastodon.revised.model.feature.FeatureModel;
 import org.mastodon.revised.model.feature.FeatureProjection;
 
-public class MastodonUtil
+public class ModelUtils
 {
 
 	public static final String dump( final Model model )

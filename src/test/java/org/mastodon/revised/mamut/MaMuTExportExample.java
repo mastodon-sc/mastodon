@@ -8,7 +8,7 @@ import java.util.Set;
 import org.jdom2.JDOMException;
 import org.mastodon.revised.mamut.feature.MamutFeatureComputerService;
 import org.mastodon.revised.model.feature.FeatureComputer;
-import org.mastodon.revised.model.mamut.MastodonUtil;
+import org.mastodon.revised.model.mamut.ModelUtils;
 import org.mastodon.revised.model.mamut.Model;
 import org.mastodon.revised.model.mamut.trackmate.MamutExporter;
 import org.mastodon.revised.model.mamut.trackmate.TrackMateImporter;
@@ -83,7 +83,7 @@ public class MaMuTExportExample
 
 		final Model importedModel = new Model();
 		new TrackMateImporter( target ).readModel( importedModel );
-		System.out.println( MastodonUtil.dump( importedModel ) );
+		System.out.println( ModelUtils.dump( importedModel ) );
 	}
 
 }
