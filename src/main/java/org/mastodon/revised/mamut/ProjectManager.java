@@ -13,6 +13,7 @@ import org.mastodon.revised.bdv.SharedBigDataViewerData;
 import org.mastodon.revised.bdv.overlay.ui.RenderSettingsManager;
 import org.mastodon.revised.mamut.feature.MamutFeatureComputerService;
 import org.mastodon.revised.model.mamut.Model;
+import org.mastodon.revised.model.mamut.trackmate.MamutExporter;
 import org.mastodon.revised.model.mamut.trackmate.TrackMateImporter;
 import org.mastodon.revised.model.tag.TagSetStructure;
 import org.mastodon.revised.trackscheme.display.style.TrackSchemeStyleManager;
@@ -190,11 +191,26 @@ public class ProjectManager
 		}
 	}
 
+	public synchronized void saveProject( final File projectFolder ) throws IOException
+	{
+		if ( project == null )
+			return;
+
+		project.setProjectFolder( projectFolder );
+		new MamutProjectIO().save( project );
+
+		final Model model = windowManager.getAppModel().getModel();
+		model.saveRaw( project );
+
+		updateEnabledActions();
+	}
+
 	/**
 	 * Open a project. If {@code project.getProjectFolder() == null} this is a new project and data structures are initialized as empty.
 	 * The image data {@code project.getDatasetXmlFile()} must always be set.
 	 *
 	 * @param project
+	 *
 	 * @throws IOException
 	 * @throws SpimDataException
 	 */
@@ -271,20 +287,6 @@ public class ProjectManager
 		updateEnabledActions();
 	}
 
-	public synchronized void saveProject( final File projectFolder ) throws IOException
-	{
-		if ( project == null )
-			return;
-
-		project.setProjectFolder( projectFolder );
-		new MamutProjectIO().save( project );
-
-		final Model model = windowManager.getAppModel().getModel();
-		model.saveRaw( project );
-
-		updateEnabledActions();
-	}
-
 	public synchronized void importTgmm()
 	{
 		if ( project == null )
@@ -324,8 +326,44 @@ public class ProjectManager
 
 	public synchronized void exportMamut()
 	{
-		// TODO
-		System.err.println( "NOT IMPLEMENTED YET" );
+		if ( project == null )
+			return;
+
+		final String filename = getProprosedMamutExportFileName( project );
+
+		final Component parent = null; // TODO
+		final File file = FileChooser.chooseFile(
+				parent,
+				filename,
+				new XmlFileFilter(),
+				"Export As MaMuT Project",
+				FileChooser.DialogType.SAVE );
+		if ( file == null )
+			return;
+
+		try
+		{
+			MamutExporter.export( file, windowManager.getAppModel().getModel(), project );
+		}
+		catch ( final IOException e )
+		{
+			e.printStackTrace();
+		}
+	}
+
+	private static String getProprosedMamutExportFileName( final MamutProject project )
+	{
+		final File pf = project.getProjectFolder();
+		if ( pf != null )
+		{
+			return new File( pf.getParentFile(), pf.getName() + "_mamut.xml" ).getAbsolutePath();
+		}
+		else
+		{
+			final File f = project.getDatasetXmlFile();
+			final String fn = f.getName();
+			return new File( f.getParentFile(), fn.substring( 0, fn.length() - ".xml".length() ) + "_mamut.xml" ).getAbsolutePath();
+		}
 	}
 
 	private static String getProposedProjectFolder( final MamutProject project )
