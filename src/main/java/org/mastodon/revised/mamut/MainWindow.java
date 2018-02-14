@@ -127,10 +127,22 @@ public class MainWindow extends JFrame
 		button_gbc_left.gridy = gridy;
 		buttonsPanel.add( createProjectButton, button_gbc_left );
 
-		final JButton importButton = new JButton( actionMap.get( ProjectManager.IMPORT_TGMM ) );
-		importButton.setText( "import tgmm" );
+		final JButton importTgmmButton = new JButton( actionMap.get( ProjectManager.IMPORT_TGMM ) );
+		importTgmmButton.setText( "import tgmm" );
 		button_gbc_right.gridy = gridy;
-		buttonsPanel.add( importButton, button_gbc_right );
+		buttonsPanel.add( importTgmmButton, button_gbc_right );
+
+		++gridy;
+
+		final JButton importMamutButton = new JButton( actionMap.get( ProjectManager.IMPORT_MAMUT ) );
+		importMamutButton.setText( "import mamut" );
+		button_gbc_left.gridy = gridy;
+		buttonsPanel.add( importMamutButton, button_gbc_left );
+
+		final JButton exportMamutButton = new JButton( actionMap.get( ProjectManager.EXPORT_MAMUT ) );
+		exportMamutButton.setText( "export mamut" );
+		button_gbc_right.gridy = gridy;
+		buttonsPanel.add( exportMamutButton, button_gbc_right );
 
 		++gridy;
 
@@ -178,6 +190,8 @@ public class MainWindow extends JFrame
 						item( ProjectManager.SAVE_PROJECT ),
 						separator(),
 						item( ProjectManager.IMPORT_TGMM ),
+						item( ProjectManager.IMPORT_MAMUT ),
+						item( ProjectManager.EXPORT_MAMUT ),
 						separator(),
 						item( WindowManager.PREFERENCES_DIALOG )
 				),
