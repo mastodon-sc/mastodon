@@ -22,9 +22,9 @@ import org.mastodon.kdtree.IncrementalNearestNeighborSearch;
 import org.mastodon.model.FocusModel;
 import org.mastodon.model.HighlightModel;
 import org.mastodon.model.SelectionModel;
-import org.mastodon.revised.Util;
 import org.mastodon.revised.bdv.overlay.ScreenVertexMath.Ellipse;
 import org.mastodon.revised.bdv.overlay.util.BdvRendererUtil;
+import org.mastodon.revised.util.GeometryUtil;
 import org.mastodon.spatial.SpatialIndex;
 import org.mastodon.spatial.SpatioTemporalIndex;
 
@@ -681,7 +681,7 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 						transform.apply( lPosT, gPosT );
 						final double x2 = gPosT[ 0 ];
 						final double y2 = gPosT[ 1 ];
-						if ( Util.segmentDist( x, y, x1, y1, x2, y2 ) <= tolerance )
+						if ( GeometryUtil.segmentDist( x, y, x1, y1, x2, y2 ) <= tolerance )
 						{
 							ref.refTo( edge );
 							graph.releaseRef( vertexRef );

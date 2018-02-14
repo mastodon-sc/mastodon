@@ -12,13 +12,13 @@ import java.awt.font.TextLayout;
 import java.awt.geom.Rectangle2D;
 
 import org.mastodon.collection.RefList;
-import org.mastodon.revised.Util;
 import org.mastodon.revised.trackscheme.ScreenEdge;
 import org.mastodon.revised.trackscheme.ScreenEntities;
 import org.mastodon.revised.trackscheme.ScreenVertex;
 import org.mastodon.revised.trackscheme.ScreenVertex.Transition;
 import org.mastodon.revised.trackscheme.ScreenVertexRange;
 import org.mastodon.revised.trackscheme.display.style.TrackSchemeStyle;
+import org.mastodon.revised.util.GeometryUtil;
 
 /**
  * Painting the TrackScheme graph.
@@ -149,7 +149,7 @@ public class PaintGraph
 		final double y1 = source.getY();
 		final double x2 = target.getX();
 		final double y2 = target.getY();
-		final double d = Util.segmentDist( x, y, x1, y1, x2, y2 );
+		final double d = GeometryUtil.segmentDist( x, y, x1, y1, x2, y2 );
 		return d;
 	}
 

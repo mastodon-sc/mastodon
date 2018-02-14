@@ -1,9 +1,6 @@
-package org.mastodon.revised;
+package org.mastodon.revised.util;
 
-
-// TODO rename to something more specifice, e.g., "GeometryUtils"
-// TODO move (to package ...trackscheme.util ?)
-public class Util
+public class GeometryUtil
 {
 	/**
 	 * Computes the distance of a point {@code A0 (x0, y0)} to a segment
@@ -40,7 +37,7 @@ public class Util
 		return d;
 	}
 
-	private Util()
+	private GeometryUtil()
 	{}
 
 }
