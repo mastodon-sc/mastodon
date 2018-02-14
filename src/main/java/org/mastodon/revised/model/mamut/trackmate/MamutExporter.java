@@ -147,21 +147,13 @@ public class MamutExporter
 		this.cov = new double[ 3 ][ 3 ];
 	}
 
-	private void write( final File file )
+	private void write( final File file ) throws IOException
 	{
 		try (FileOutputStream fos = new FileOutputStream( file ))
 		{
 			final Document document = new Document( root );
 			final XMLOutputter outputter = new XMLOutputter( Format.getPrettyFormat() );
 			outputter.output( document, fos );
-		}
-		catch ( final FileNotFoundException e )
-		{
-			e.printStackTrace();
-		}
-		catch ( final IOException e )
-		{
-			e.printStackTrace();
 		}
 	}
 
@@ -667,7 +659,7 @@ public class MamutExporter
 		return tag.replace( ' ', '_' );
 	}
 
-	public static final void export( final File target, final Model model, final MamutProject project )
+	public static final void export( final File target, final Model model, final MamutProject project ) throws IOException
 	{
 		final MamutExporter exporter = new MamutExporter( model, project );
 		exporter.appendModel();
