@@ -8,6 +8,7 @@ import static org.mastodon.app.ui.settings.StyleElements.separator;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
@@ -96,6 +97,7 @@ public class TrackSchemeStyleEditorPanel extends JPanel
 		timepoint.setTimepoint( 2 );
 		previewPanel.graphChanged();
 		previewPanel.getDisplay().setFocusable( false );
+		previewPanel.setPreferredSize( new Dimension( 200, 200 ) );
 
 		style.updateListeners().add( () -> {
 			previewPanel.graphChanged();

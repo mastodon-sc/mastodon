@@ -1,6 +1,7 @@
 package org.mastodon.revised.ui.keymap;
 
 import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.awt.Frame;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
@@ -46,6 +47,7 @@ public class KeymapSettingsPage extends SelectAndEditProfileSettingsPage< StyleP
 			styleEditorPanel.setButtonPanelVisible( false );
 			modificationListeners = new Listeners.SynchronizedList<>();
 			styleEditorPanel.addConfigChangeListener( this );
+			styleEditorPanel.setPreferredSize( new Dimension( 200, 200 ) );
 		}
 
 		private boolean trackModifications = true;
