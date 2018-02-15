@@ -620,72 +620,61 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 			return null;
 
 		final AffineTransform3D transform = getRenderTransformCopy();
-		final double maxDepth = getMaxDepth( transform );
 		final int currentTimepoint = renderTimepoint;
 
-		final ConvexPolytope visiblePolytopeGlobal = getVisiblePolytopeGlobal( transform, currentTimepoint );
-		final ScreenVertexMath screenVertexMath = new ScreenVertexMath();
+		final double maxDepth = getMaxDepth( transform );
+
+		final V target = graph.vertexRef();
+		final double[] gPos = new double[ 3 ];
+		final double[] lPos = new double[ 3 ];
+
+		double bestDist = Double.POSITIVE_INFINITY;
+		boolean found = false;
 
 		lock.readLock().lock();
 		index.readLock().lock();
 		try
 		{
-			final double[] gPosT = new double[ 3 ];
-			final double[] lPosT = new double[ 3 ];
-			final double[] gPosS = new double[ 3 ];
-			final double[] lPosS = new double[ 3 ];
-			final V vertexRef = graph.vertexRef();
-
-			for ( int t = Math.max( 0, currentTimepoint - settings.getTimeLimit() ); t < currentTimepoint; ++t )
+			final int timeLimit = settings.getTimeLimit();
+			for ( int t = Math.max( 0, currentTimepoint - timeLimit ); t < currentTimepoint; ++t )
 			{
-
-
 				final SpatialIndex< V > si = index.getSpatialIndex( t );
 				final ClipConvexPolytope< V > ccp = si.getClipConvexPolytope();
-				ccp.clip( visiblePolytopeGlobal );
-				for ( final V source : ccp.getInsideValues() )
+				ccp.clip( getVisiblePolytopeGlobal( transform, t ) );
+				for ( final V vertex : ccp.getInsideValues() )
 				{
-					screenVertexMath.init( source, transform );
-					final double zs = screenVertexMath.getViewPos()[ 2 ];
-					final double sds = sliceDistance( zs, maxDepth );
-
-					/*
-					 * If true, part of the edge is not visible (its source is
-					 * not visible) so we do have to test for target visibility.
-					 * If false we do not have to check whether the target is
-					 * visible.
-					 */
-					final boolean testTargetVisibility = ( sds < -1. || sds > 1. );
-
-					source.localize( lPosS );
-					transform.apply( lPosS, gPosS );
-					final double x1 = gPosS[ 0 ];
-					final double y1 = gPosS[ 1 ];
-					for ( final E edge : source.outgoingEdges() )
+					vertex.localize( gPos );
+					transform.apply( gPos, lPos );
+					final int x0 = ( int ) lPos[ 0 ];
+					final int y0 = ( int ) lPos[ 1 ];
+					final double z0 = lPos[ 2 ];
+					for ( final E edge : vertex.outgoingEdges() )
 					{
-						final V target = edge.getTarget( vertexRef );
-						if ( testTargetVisibility )
-						{
-							screenVertexMath.init( target, transform );
-							final double zt = screenVertexMath.getViewPos()[ 2 ];
-							final double sdt = sliceDistance( zt, maxDepth );
-							/*
-							 * Now we need to test whether the edge intersect
-							 * with the plane or whether its target is visible.
-							 */
-							if ( ( sdt < -1. && sds < 0. ) || ( sdt > 1. && sds > 0. ) )
-								continue;
-						}
+						edge.getTarget( target );
+						target.localize( gPos );
+						transform.apply( gPos, lPos );
+						final int x1 = ( int ) lPos[ 0 ];
+						final int y1 = ( int ) lPos[ 1 ];
 
-						target.localize( lPosT );
-						transform.apply( lPosT, gPosT );
-						final double x2 = gPosT[ 0 ];
-						final double y2 = gPosT[ 1 ];
-						if ( GeometryUtil.segmentDist( x, y, x1, y1, x2, y2 ) <= tolerance )
+						final double z1 = lPos[ 2 ];
+
+						final double td0 = timeDistance( t, currentTimepoint, timeLimit );
+						final double td1 = timeDistance( t + 1, currentTimepoint, timeLimit );
+						final double sd0 = sliceDistance( z0, maxDepth );
+						final double sd1 = sliceDistance( z1, maxDepth );
+
+						if ( td0 > -1 )
 						{
-							ref.refTo( edge );
-							graph.releaseRef( vertexRef );
-							return ref;
+							if ( ( sd0 > -1 && sd0 < 1 ) || ( sd1 > -1 && sd1 < 1 ) )
+							{
+								final double dist = GeometryUtil.segmentDist( x, y, x0, y0, x1, y1 );
+								if ( dist <= tolerance && dist < bestDist )
+								{
+									found = true;
+									bestDist = dist;
+									ref.refTo( edge );
+								}
+							}
 						}
 					}
 				}
@@ -696,7 +685,7 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 			index.readLock().unlock();
 			lock.readLock().unlock();
 		}
-		return null;
+		return found ? ref : null;
 	}
 
 	/**
