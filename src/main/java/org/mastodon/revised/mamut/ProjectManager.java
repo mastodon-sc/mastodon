@@ -68,9 +68,12 @@ public class ProjectManager
 
 	private final AbstractNamedAction exportMamutAction;
 
-	public ProjectManager( final WindowManager windowManager )
+	private final Context context;
+
+	public ProjectManager( final WindowManager windowManager, final Context context )
 	{
 		this.windowManager = windowManager;
+		this.context = context;
 
 		tgmmImportDialog = new TgmmImportDialog( null );
 
@@ -270,11 +273,6 @@ public class ProjectManager
 
 		windowManager.setAppModel( appModel );
 
-		/*
-		 * TODO FIXE Ugly hack to get proper service instantiation. Fix it by
-		 * proposing a proper Command decoupled from the GUI.
-		 */
-		final Context context = new Context();
 		final MamutFeatureComputerService featureComputerService = context.getService( MamutFeatureComputerService.class );
 		final JFrame owner = null; // TODO
 		final Dialog featureComputationDialog = new FeatureAndTagDialog( owner, model, featureComputerService );

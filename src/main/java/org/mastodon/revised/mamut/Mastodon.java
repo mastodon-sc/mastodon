@@ -1,6 +1,5 @@
 package org.mastodon.revised.mamut;
 
-import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Locale;
@@ -11,12 +10,13 @@ import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.WindowConstants;
 
 import org.scijava.command.Command;
+import org.scijava.command.ContextCommand;
 import org.scijava.plugin.Plugin;
 
 import mpicbg.spim.data.SpimDataException;
 
 @Plugin( type = Command.class, menuPath = "Plugins>Mastodon (preview)" )
-public class Mastodon implements Command
+public class Mastodon extends ContextCommand
 {
 	private WindowManager windowManager;
 
@@ -26,7 +26,7 @@ public class Mastodon implements Command
 	public void run()
 	{
 		System.setProperty( "apple.laf.useScreenMenuBar", "true" );
-		windowManager = new WindowManager();
+		windowManager = new WindowManager( getContext() );
 		mainWindow = new MainWindow( windowManager );
 		mainWindow.setVisible( true );
 	}

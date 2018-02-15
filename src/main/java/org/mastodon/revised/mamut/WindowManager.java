@@ -23,6 +23,7 @@ import org.mastodon.revised.ui.keymap.KeymapManager;
 import org.mastodon.revised.ui.keymap.KeymapSettingsPage;
 import org.mastodon.revised.util.ToggleDialogAction;
 import org.mastodon.views.context.ContextProvider;
+import org.scijava.Context;
 import org.scijava.ui.behaviour.KeyPressedManager;
 import org.scijava.ui.behaviour.io.InputTriggerDescription;
 import org.scijava.ui.behaviour.io.InputTriggerDescriptionsBuilder;
@@ -84,6 +85,12 @@ public class WindowManager
 
 	public WindowManager()
 	{
+		this( null );
+	}
+
+	public WindowManager(final Context ct )
+	{
+		final Context context = ct == null ? new Context() : ct;
 		keyPressedManager = new KeyPressedManager();
 		trackSchemeStyleManager = new TrackSchemeStyleManager();
 		renderSettingsManager = new RenderSettingsManager();
@@ -99,7 +106,7 @@ public class WindowManager
 				appModel.getAppActions().updateKeyConfig( keymap.getConfig() );
 		} );
 
-		projectManager = new ProjectManager( this );
+		projectManager = new ProjectManager( this, context );
 		projectManager.install( globalAppActions );
 
 		newBdvViewAction = new RunnableAction( NEW_BDV_VIEW, this::createBigDataViewer );
