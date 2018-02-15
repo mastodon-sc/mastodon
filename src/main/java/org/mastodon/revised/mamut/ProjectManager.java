@@ -134,11 +134,11 @@ public class ProjectManager
 
 	public synchronized void loadProject()
 	{
-		final String fn = proposedProjectFolder == null
-				? ( project == null
-						? null
-						: project.getProjectFolder().getAbsolutePath() )
-				: proposedProjectFolder.getAbsolutePath();
+		String fn = null;
+		if ( proposedProjectFolder != null )
+			fn = proposedProjectFolder.getAbsolutePath();
+		else if ( project != null && project.getProjectFolder() != null )
+			fn = project.getProjectFolder().getAbsolutePath();
 		final Component parent = null; // TODO
 		final File file = FileChooser.chooseFile(
 				parent,
