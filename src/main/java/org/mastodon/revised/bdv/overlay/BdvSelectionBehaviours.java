@@ -84,7 +84,7 @@ public class BdvSelectionBehaviours< V extends OverlayVertex< V, E >, E extends 
 		// See if we can select an edge.
 		else if ( renderer.getEdgeAt( x, y, EDGE_SELECT_DISTANCE_TOLERANCE, edge ) != null )
 		{
-			final boolean selected = selection.isSelected( vertex );
+			final boolean selected = selection.isSelected( edge );
 			if ( !addToSelection )
 				selection.clearSelection();
 			selection.setSelected( edge, !selected );
