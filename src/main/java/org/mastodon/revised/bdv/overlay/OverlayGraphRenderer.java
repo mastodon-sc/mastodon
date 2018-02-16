@@ -371,6 +371,66 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 				&& !settings.getDrawEllipsoidSliceProjection() && settings.getDrawEllipsoidSliceIntersection();
 	}
 
+	private interface EdgeOperation< E >
+	{
+		void apply( final E edge, final double td0, final double td1, final double sd0, final double sd1, final int x0, final int y0, final int x1, final int y1 );
+	}
+
+	private void forEachVisibleEdge(
+			final AffineTransform3D transform,
+			final int currentTimepoint,
+			final EdgeOperation< E > edgeOperation )
+	{
+		if ( !settings.getDrawLinks())
+			return;
+
+		final double maxDepth = getMaxDepth( transform );
+
+		final V ref = graph.vertexRef();
+		final double[] gPos = new double[ 3 ];
+		final double[] lPos = new double[ 3 ];
+
+		final int timeLimit = settings.getTimeLimit();
+		for ( int t = Math.max( 0, currentTimepoint - timeLimit + 1 ); t <= currentTimepoint; ++t )
+		{
+			final double td0 = timeDistance( t - 1, currentTimepoint, timeLimit );
+			final double td1 = timeDistance( t, currentTimepoint, timeLimit );
+
+			final SpatialIndex< V > si = index.getSpatialIndex( t );
+			final ClipConvexPolytope< V > ccp = si.getClipConvexPolytope();
+			ccp.clip( getVisiblePolytopeGlobal( transform, t ) );
+			for ( final V vertex : ccp.getInsideValues() )
+			{
+				vertex.localize( gPos );
+				transform.apply( gPos, lPos );
+				final int x1 = ( int ) lPos[ 0 ];
+				final int y1 = ( int ) lPos[ 1 ];
+
+				final double z1 = lPos[ 2 ];
+				final double sd1 = sliceDistance( z1, maxDepth );
+
+				for ( final E edge : vertex.incomingEdges() )
+				{
+					V source = edge.getSource( ref );
+					source.localize( gPos );
+					transform.apply( gPos, lPos );
+					final int x0 = ( int ) lPos[ 0 ];
+					final int y0 = ( int ) lPos[ 1 ];
+
+					final double z0 = lPos[ 2 ];
+					final double sd0 = sliceDistance( z0, maxDepth );
+
+					if ( ( sd0 > -1 && sd0 < 1 ) || ( sd1 > -1 && sd1 < 1 ) )
+					{
+						edgeOperation.apply( edge, td0, td1, sd0, sd1, x0, y0, x1, y1 );
+					}
+				}
+			}
+		}
+
+		graph.releaseRef( ref );
+	}
+
 	@Override
 	public void drawOverlays( final Graphics g )
 	{
@@ -391,7 +451,6 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 				: RenderingHints.VALUE_ANTIALIAS_OFF;
 		graphics.setRenderingHint( RenderingHints.KEY_ANTIALIASING, antialiasing );
 
-		final V target = graph.vertexRef();
 		final V ref1 = graph.vertexRef();
 		final V ref2 = graph.vertexRef();
 		final E ref3 = graph.edgeRef();
@@ -412,78 +471,43 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 		{
 			if ( settings.getDrawLinks())
 			{
-				final int timeLimit = settings.getTimeLimit();
 				final E highlighted = highlight.getHighlightedEdge( ref3 );
-
 				graphics.setStroke( defaultEdgeStroke );
+				forEachVisibleEdge( transform, currentTimepoint, ( edge, td0, td1, sd0, sd1, x0, y0, x1, y1 ) -> {
+					final boolean isHighlighted = edge.equals( highlighted );
 
-				for ( int t = Math.max( 0, currentTimepoint - timeLimit ); t < currentTimepoint; ++t )
-				{
-					final double td0 = timeDistance( t, currentTimepoint, timeLimit );
-					final double td1 = timeDistance( t + 1, currentTimepoint, timeLimit );
-
-					final SpatialIndex< V > si = index.getSpatialIndex( t );
-					final ClipConvexPolytope< V > ccp = si.getClipConvexPolytope();
-					ccp.clip( getVisiblePolytopeGlobal( transform, t ) );
-					for ( final V vertex : ccp.getInsideValues() )
+					final Color c1 = getColor( sd1, td1, sliceDistanceFade, timepointDistanceFade, selection.isSelected( edge ), isHighlighted );
+					if ( useGradient )
 					{
-						vertex.localize( gPos );
-						transform.apply( gPos, lPos );
-						final int x0 = ( int ) lPos[ 0 ];
-						final int y0 = ( int ) lPos[ 1 ];
-						final double z0 = lPos[ 2 ];
-						for ( final E edge : vertex.outgoingEdges() )
-						{
-							final boolean isHighlighted = edge.equals( highlighted );
-
-							edge.getTarget( target );
-							target.localize( gPos );
-							transform.apply( gPos, lPos );
-							final int x1 = ( int ) lPos[ 0 ];
-							final int y1 = ( int ) lPos[ 1 ];
-
-							final double z1 = lPos[ 2 ];
-
-							final double sd0 = sliceDistance( z0, maxDepth );
-							final double sd1 = sliceDistance( z1, maxDepth );
-
-							if ( ( sd0 > -1 && sd0 < 1 ) || ( sd1 > -1 && sd1 < 1 ) )
-							{
-								final Color c1 = getColor( sd1, td1, sliceDistanceFade, timepointDistanceFade, selection.isSelected( edge ), isHighlighted );
-								if ( useGradient )
-								{
-									final Color c0 = getColor( sd0, td0, sliceDistanceFade, timepointDistanceFade, selection.isSelected( edge ), isHighlighted );
-									graphics.setPaint( new GradientPaint( x0, y0, c0, x1, y1, c1 ) );
-								}
-								else
-								{
-									graphics.setPaint( c1 );
-								}
-								if ( isHighlighted )
-									graphics.setStroke( highlightedEdgeStroke );
-								graphics.drawLine( x0, y0, x1, y1 );
-
-								// Draw arrows for edge direction.
-								/*
-								final double dx = x1 - x0;
-								final double dy = y1 - y0;
-								final double alpha = Math.atan2( dy, dx );
-								final double l = 5;
-								final double theta = Math.PI / 6.;
-								final int x1a = ( int ) Math.round( x1 - l * Math.cos( alpha - theta ) );
-								final int x1b = ( int ) Math.round( x1 - l * Math.cos( alpha + theta ) );
-								final int y1a = ( int ) Math.round( y1 - l * Math.sin( alpha - theta ) );
-								final int y1b = ( int ) Math.round( y1 - l * Math.sin( alpha + theta ) );
-								graphics.drawLine( x1, y1, x1a, y1a );
-								graphics.drawLine( x1, y1, x1b, y1b );
-								*/
-
-								if ( isHighlighted )
-									graphics.setStroke( defaultEdgeStroke );
-							}
-						}
+						final Color c0 = getColor( sd0, td0, sliceDistanceFade, timepointDistanceFade, selection.isSelected( edge ), isHighlighted );
+						graphics.setPaint( new GradientPaint( x0, y0, c0, x1, y1, c1 ) );
 					}
-				}
+					else
+					{
+						graphics.setPaint( c1 );
+					}
+					if ( isHighlighted )
+						graphics.setStroke( highlightedEdgeStroke );
+					graphics.drawLine( x0, y0, x1, y1 );
+
+					// Draw arrows for edge direction.
+					/*
+					final double dx = x1 - x0;
+					final double dy = y1 - y0;
+					final double alpha = Math.atan2( dy, dx );
+					final double l = 5;
+					final double theta = Math.PI / 6.;
+					final int x1a = ( int ) Math.round( x1 - l * Math.cos( alpha - theta ) );
+					final int x1b = ( int ) Math.round( x1 - l * Math.cos( alpha + theta ) );
+					final int y1a = ( int ) Math.round( y1 - l * Math.sin( alpha - theta ) );
+					final int y1b = ( int ) Math.round( y1 - l * Math.sin( alpha + theta ) );
+					graphics.drawLine( x1, y1, x1a, y1a );
+					graphics.drawLine( x1, y1, x1b, y1b );
+					*/
+
+					if ( isHighlighted )
+						graphics.setStroke( defaultEdgeStroke );
+				} );
 			}
 
 			if ( settings.getDrawSpots() )
@@ -579,9 +603,9 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 			graph.getLock().readLock().unlock();
 			index.readLock().unlock();
 		}
-		graph.releaseRef( target );
 		graph.releaseRef( ref1 );
 		graph.releaseRef( ref2 );
+		graph.releaseRef( ref3 );
 	}
 
 	static void drawEllipse( final Graphics2D graphics, final Ellipse ellipse, AffineTransform torig )
@@ -624,71 +648,38 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 		final AffineTransform3D transform = getRenderTransformCopy();
 		final int currentTimepoint = renderTimepoint;
 
-		final double maxDepth = getMaxDepth( transform );
+		class Op implements EdgeOperation< E >
+		{
+			final double squTolerance = tolerance * tolerance;
+			double bestSquDist = Double.POSITIVE_INFINITY;
+			boolean found = false;
 
-		final V target = graph.vertexRef();
-		final double[] gPos = new double[ 3 ];
-		final double[] lPos = new double[ 3 ];
-
-		final double squTolerance = tolerance * tolerance;
-		double bestSquDist = Double.POSITIVE_INFINITY;
-		boolean found = false;
+			@Override
+			public void apply( final E edge, final double td0, final double td1, final double sd0, final double sd1, final int x0, final int y0, final int x1, final int y1 )
+			{
+				final double squDist = GeometryUtil.squSegmentDist( x, y, x0, y0, x1, y1 );
+				if ( squDist <= squTolerance && squDist < bestSquDist )
+				{
+					found = true;
+					bestSquDist = squDist;
+					ref.refTo( edge );
+				}
+			}
+		};
+		final Op op = new Op();
 
 		lock.readLock().lock();
 		index.readLock().lock();
 		try
 		{
-			final int timeLimit = settings.getTimeLimit();
-			for ( int t = Math.max( 0, currentTimepoint - timeLimit ); t < currentTimepoint; ++t )
-			{
-				final SpatialIndex< V > si = index.getSpatialIndex( t );
-				final ClipConvexPolytope< V > ccp = si.getClipConvexPolytope();
-				ccp.clip( getVisiblePolytopeGlobal( transform, t ) );
-				for ( final V vertex : ccp.getInsideValues() )
-				{
-					vertex.localize( gPos );
-					transform.apply( gPos, lPos );
-					final int x0 = ( int ) lPos[ 0 ];
-					final int y0 = ( int ) lPos[ 1 ];
-					final double z0 = lPos[ 2 ];
-					for ( final E edge : vertex.outgoingEdges() )
-					{
-						edge.getTarget( target );
-						target.localize( gPos );
-						transform.apply( gPos, lPos );
-						final int x1 = ( int ) lPos[ 0 ];
-						final int y1 = ( int ) lPos[ 1 ];
-
-						final double z1 = lPos[ 2 ];
-
-						final double td0 = timeDistance( t, currentTimepoint, timeLimit );
-						final double td1 = timeDistance( t + 1, currentTimepoint, timeLimit );
-						final double sd0 = sliceDistance( z0, maxDepth );
-						final double sd1 = sliceDistance( z1, maxDepth );
-
-						if ( td0 > -1 )
-						{
-							if ( ( sd0 > -1 && sd0 < 1 ) || ( sd1 > -1 && sd1 < 1 ) )
-							{
-								final double squDist = GeometryUtil.squSegmentDist( x, y, x0, y0, x1, y1 );
-								if ( squDist <= squTolerance && squDist < bestSquDist )
-								{
-									found = true;
-									bestSquDist = squDist;
-									ref.refTo( edge );
-								}
-							}
-						}
-					}
-				}
-			}
+			forEachVisibleEdge( transform, currentTimepoint, op );
 		}
 		finally
 		{
 			index.readLock().unlock();
 			lock.readLock().unlock();
 		}
-		return found ? ref : null;
+		return op.found ? ref : null;
 	}
 
 	/**
