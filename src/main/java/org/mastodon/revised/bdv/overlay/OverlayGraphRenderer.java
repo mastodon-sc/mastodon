@@ -628,7 +628,8 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 		final double[] gPos = new double[ 3 ];
 		final double[] lPos = new double[ 3 ];
 
-		double bestDist = Double.POSITIVE_INFINITY;
+		final double squTolerance = tolerance * tolerance;
+		double bestSquDist = Double.POSITIVE_INFINITY;
 		boolean found = false;
 
 		lock.readLock().lock();
@@ -667,11 +668,11 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 						{
 							if ( ( sd0 > -1 && sd0 < 1 ) || ( sd1 > -1 && sd1 < 1 ) )
 							{
-								final double dist = GeometryUtil.segmentDist( x, y, x0, y0, x1, y1 );
-								if ( dist <= tolerance && dist < bestDist )
+								final double squDist = GeometryUtil.squSegmentDist( x, y, x0, y0, x1, y1 );
+								if ( squDist <= squTolerance && squDist < bestSquDist )
 								{
 									found = true;
-									bestDist = dist;
+									bestSquDist = squDist;
 									ref.refTo( edge );
 								}
 							}
