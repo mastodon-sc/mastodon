@@ -20,7 +20,7 @@ public class BdvSelectionBehaviours< V extends OverlayVertex< V, E >, E extends 
 	private static final String[] ADD_SELECT_KEYS = new String[] { "shift button1" };
 
 	public static final double EDGE_SELECT_DISTANCE_TOLERANCE = 5.0;
-	public static final double POINT_SELECT_DISTANCE_TOLERANCE = 5.0;
+	public static final double POINT_SELECT_DISTANCE_TOLERANCE = 8.0;
 
 	private final ClickNavigateBehaviour navigateBehaviour;
 
@@ -73,21 +73,21 @@ public class BdvSelectionBehaviours< V extends OverlayVertex< V, E >, E extends 
 		final V vertex = overlayGraph.vertexRef();
 		final E edge = overlayGraph.edgeRef();
 
+		// See if we can select an edge.
+		if ( renderer.getEdgeAt( x, y, EDGE_SELECT_DISTANCE_TOLERANCE, edge ) != null )
+		{
+			final boolean selected = selection.isSelected( edge );
+			if ( !addToSelection )
+				selection.clearSelection();
+			selection.setSelected( edge, !selected );
+		}
 		// See if we can select a vertex.
-		if ( renderer.getVertexAt( x, y, POINT_SELECT_DISTANCE_TOLERANCE, vertex ) != null )
+		else if ( renderer.getVertexAt( x, y, POINT_SELECT_DISTANCE_TOLERANCE, vertex ) != null )
 		{
 			final boolean selected = selection.isSelected( vertex );
 			if ( !addToSelection )
 				selection.clearSelection();
 			selection.setSelected( vertex, !selected );
-		}
-		// See if we can select an edge.
-		else if ( renderer.getEdgeAt( x, y, EDGE_SELECT_DISTANCE_TOLERANCE, edge ) != null )
-		{
-			final boolean selected = selection.isSelected( vertex );
-			if ( !addToSelection )
-				selection.clearSelection();
-			selection.setSelected( edge, !selected );
 		}
 		// Nothing found. clear selection if addToSelection == false
 		else if ( !addToSelection )
