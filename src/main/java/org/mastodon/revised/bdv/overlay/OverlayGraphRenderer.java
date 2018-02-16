@@ -208,7 +208,7 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 	 *            whether to use selected or un-selected color scheme.
 	 * @return vertex/edge color.
 	 */
-	private static Color getColor( final double sd, final double td, final double sdFade, final double tdFade, final boolean isSelected )
+	private static Color getColor( final double sd, final double td, final double sdFade, final double tdFade, final boolean isSelected, final boolean isHighlighted )
 	{
 		/*
 		 * |sf| = {                  0  for  |sd| <= sdFade,
@@ -236,11 +236,15 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 			tf = -Math.max( 0, ( -td - tdFade ) / ( 1 - tdFade ) );
 		}
 
-		final double a = -2 * td;
-		final double b = 1 + 2 * td;
-		final double r = isSelected ? b : a;
-		final double g = isSelected ? a : b;
-		return new Color( truncRGBA( r, g, 0.1, ( 1 + tf ) * ( 1 - Math.abs( sf ) ) ), true );
+		final double i1 = -2 * td;
+		final double i2 = 1 + 2 * td;
+		final double r = isSelected ? i2 : i1;
+		final double g = isSelected ? i1 : i2;
+		final double b = 0.1;
+		final double a = Math.max(
+				isHighlighted ? 0.8 : ( isSelected ? 0.6 : 0.4 ),
+				( 1 + tf ) * ( 1 - Math.abs( sf ) ) );
+		return new Color( truncRGBA( r, g, b, a ), true );
 	}
 
 	/**
@@ -415,6 +419,9 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 
 				for ( int t = Math.max( 0, currentTimepoint - timeLimit ); t < currentTimepoint; ++t )
 				{
+					final double td0 = timeDistance( t, currentTimepoint, timeLimit );
+					final double td1 = timeDistance( t + 1, currentTimepoint, timeLimit );
+
 					final SpatialIndex< V > si = index.getSpatialIndex( t );
 					final ClipConvexPolytope< V > ccp = si.getClipConvexPolytope();
 					ccp.clip( getVisiblePolytopeGlobal( transform, t ) );
@@ -437,47 +444,42 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 
 							final double z1 = lPos[ 2 ];
 
-							final double td0 = timeDistance( t, currentTimepoint, timeLimit );
-							final double td1 = timeDistance( t + 1, currentTimepoint, timeLimit );
 							final double sd0 = sliceDistance( z0, maxDepth );
 							final double sd1 = sliceDistance( z1, maxDepth );
 
-							if ( td0 > -1 )
+							if ( ( sd0 > -1 && sd0 < 1 ) || ( sd1 > -1 && sd1 < 1 ) )
 							{
-								if ( ( sd0 > -1 && sd0 < 1 ) || ( sd1 > -1 && sd1 < 1 ) )
+								final Color c1 = getColor( sd1, td1, sliceDistanceFade, timepointDistanceFade, selection.isSelected( edge ), isHighlighted );
+								if ( useGradient )
 								{
-									final Color c1 = getColor( sd1, td1, sliceDistanceFade, timepointDistanceFade, selection.isSelected( edge ) );
-									if ( useGradient )
-									{
-										final Color c0 = getColor( sd0, td0, sliceDistanceFade, timepointDistanceFade, selection.isSelected( edge ) );
-										graphics.setPaint( new GradientPaint( x0, y0, c0, x1, y1, c1 ) );
-									}
-									else
-									{
-										graphics.setPaint( c1 );
-									}
-									if ( isHighlighted )
-										graphics.setStroke( highlightedEdgeStroke );
-									graphics.drawLine( x0, y0, x1, y1 );
-
-									// Draw arrows for edge direction.
-									/*
-									final double dx = x1 - x0;
-									final double dy = y1 - y0;
-									final double alpha = Math.atan2( dy, dx );
-									final double l = 5;
-									final double theta = Math.PI / 6.;
-									final int x1a = ( int ) Math.round( x1 - l * Math.cos( alpha - theta ) );
-									final int x1b = ( int ) Math.round( x1 - l * Math.cos( alpha + theta ) );
-									final int y1a = ( int ) Math.round( y1 - l * Math.sin( alpha - theta ) );
-									final int y1b = ( int ) Math.round( y1 - l * Math.sin( alpha + theta ) );
-									graphics.drawLine( x1, y1, x1a, y1a );
-									graphics.drawLine( x1, y1, x1b, y1b );
-									*/
-
-									if ( isHighlighted )
-										graphics.setStroke( defaultEdgeStroke );
+									final Color c0 = getColor( sd0, td0, sliceDistanceFade, timepointDistanceFade, selection.isSelected( edge ), isHighlighted );
+									graphics.setPaint( new GradientPaint( x0, y0, c0, x1, y1, c1 ) );
 								}
+								else
+								{
+									graphics.setPaint( c1 );
+								}
+								if ( isHighlighted )
+									graphics.setStroke( highlightedEdgeStroke );
+								graphics.drawLine( x0, y0, x1, y1 );
+
+								// Draw arrows for edge direction.
+								/*
+								final double dx = x1 - x0;
+								final double dy = y1 - y0;
+								final double alpha = Math.atan2( dy, dx );
+								final double l = 5;
+								final double theta = Math.PI / 6.;
+								final int x1a = ( int ) Math.round( x1 - l * Math.cos( alpha - theta ) );
+								final int x1b = ( int ) Math.round( x1 - l * Math.cos( alpha + theta ) );
+								final int y1a = ( int ) Math.round( y1 - l * Math.sin( alpha - theta ) );
+								final int y1b = ( int ) Math.round( y1 - l * Math.sin( alpha + theta ) );
+								graphics.drawLine( x1, y1, x1a, y1a );
+								graphics.drawLine( x1, y1, x1b, y1b );
+								*/
+
+								if ( isHighlighted )
+									graphics.setStroke( defaultEdgeStroke );
 							}
 						}
 					}
@@ -519,7 +521,7 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 						{
 							final Ellipse ellipse = screenVertexMath.getIntersectEllipse();
 
-							graphics.setColor( getColor( 0, 0, ellipsoidFadeDepth, timepointDistanceFade, selection.isSelected( vertex ) ) );
+							graphics.setColor( getColor( 0, 0, ellipsoidFadeDepth, timepointDistanceFade, selection.isSelected( vertex ), isHighlighted ) );
 							if ( isHighlighted )
 								graphics.setStroke( highlightedVertexStroke );
 							else if ( isFocused )
@@ -539,7 +541,7 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 						{
 							final Ellipse ellipse = screenVertexMath.getProjectEllipse();
 
-							graphics.setColor( getColor( sd, 0, ellipsoidFadeDepth, timepointDistanceFade, selection.isSelected( vertex ) ) );
+							graphics.setColor( getColor( sd, 0, ellipsoidFadeDepth, timepointDistanceFade, selection.isSelected( vertex ), isHighlighted ) );
 							if ( isHighlighted )
 								graphics.setStroke( highlightedVertexStroke );
 							else if ( isFocused )
@@ -556,7 +558,7 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 
 						if ( drawPointsAlways || ( drawPointsMaybe && !screenVertexMath.intersectsViewPlane() ) )
 						{
-							graphics.setColor( getColor( sd, 0, pointFadeDepth, timepointDistanceFade, selection.isSelected( vertex ) ) );
+							graphics.setColor( getColor( sd, 0, pointFadeDepth, timepointDistanceFade, selection.isSelected( vertex ), isHighlighted ) );
 							double radius = pointRadius;
 							if ( isHighlighted || isFocused )
 								radius *= 2;
