@@ -23,6 +23,8 @@ import org.scijava.ui.behaviour.util.AbstractNamedAction;
 
 public class ViewMenu
 {
+	private MastodonFrameView< ?, ?, ?, ?, ?, ? > view;
+
 	private final JMenuBar menubar;
 
 	private final Keymap keymap;
@@ -32,6 +34,7 @@ public class ViewMenu
 	public ViewMenu( final MastodonFrameView< ?, ?, ?, ?, ?, ? > view )
 	{
 		this( view.getFrame().menubar, view.getKeymap(), view.getKeyConfigContexts() );
+		this.view = view;
 
 		final Keymap.UpdateListener updateListener = this::updateKeymap;
 		keymap.updateListeners().add( updateListener );
@@ -88,8 +91,10 @@ public class ViewMenu
 		{
 			final HasSelectedState s = ( HasSelectedState ) action;
 			item.setSelected( s.isSelected() );
-			s.selectListeners().add( b -> item.setSelected( b ) );
-			// TODO: cleanup listener when view window closes
+			final HasSelectedState.Listener l = b -> item.setSelected( b );
+			s.selectListeners().add( l );
+			if ( view != null )
+				view.onClose( () -> s.selectListeners().remove( l ) );
 		}
 
 		menu.add( item );
