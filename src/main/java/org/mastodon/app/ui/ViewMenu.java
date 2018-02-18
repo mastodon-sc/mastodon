@@ -143,8 +143,24 @@ public class ViewMenu
 			final String text = part.trim();
 
 			JMenuItem next = null;
-			for ( final MenuElement me : root.getSubElements() )
+A:			for ( final MenuElement me : root.getSubElements() )
 			{
+				if ( me instanceof JPopupMenu )
+				{
+					final JPopupMenu pm = ( JPopupMenu ) me;
+					for ( final MenuElement pme : pm.getSubElements() )
+					{
+						if ( pme instanceof JMenu )
+						{
+							final JMenuItem mi = ( JMenuItem ) pme;
+							if ( mi.getText().equals( text ) )
+							{
+								next = mi;
+								break A;
+							}
+						}
+					}
+				}
 				if ( me instanceof JMenu )
 				{
 					final JMenuItem mi = ( JMenuItem ) me;
