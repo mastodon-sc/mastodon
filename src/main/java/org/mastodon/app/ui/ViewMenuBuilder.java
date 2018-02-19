@@ -3,12 +3,18 @@ package org.mastodon.app.ui;
 import java.util.Map;
 
 import javax.swing.ActionMap;
+import javax.swing.JMenu;
 
 public class ViewMenuBuilder
 {
 	public static Menu menu( final String name, final MenuItem... items )
 	{
 		return new Menu( name, items );
+	}
+
+	public static Menu menu( final String name, final JMenuHandle handle, final MenuItem... items )
+	{
+		return new Menu( name, handle, items );
 	}
 
 	public static Item item( final String action )
@@ -62,7 +68,9 @@ public class ViewMenuBuilder
 				nestedPath = path + ">" + menu.text;
 			else
 				nestedPath = menu.text;
-			viewMenu.menu( nestedPath );
+			final JMenu m = viewMenu.menu( nestedPath );
+			if ( menu.handle != null )
+				menu.handle.menu = m;
 			final MenuItemVisitor visitor = new MenuItemVisitor( viewMenu, actionMap, menuTexts, nestedPath );
 			for ( final MenuItem menuItem : menu.content )
 			{
@@ -96,15 +104,33 @@ public class ViewMenuBuilder
 		}
 	}
 
+	public static class JMenuHandle
+	{
+		JMenu menu;
+
+		public JMenu getMenu()
+		{
+			return menu;
+		}
+	}
+
 	static class Menu implements MenuItem
 	{
 		private final String text;
+
+		private final JMenuHandle handle;
 
 		private final MenuItem[] content;
 
 		Menu( final String text, final MenuItem... content )
 		{
+			this( text, null, content );
+		}
+
+		Menu( final String text, final JMenuHandle handle, final MenuItem... content )
+		{
 			this.text = text;
+			this.handle = handle;
 			this.content = content;
 		}
 
