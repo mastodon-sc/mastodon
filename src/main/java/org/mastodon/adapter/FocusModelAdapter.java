@@ -15,9 +15,9 @@ import org.mastodon.model.FocusModel;
  * @param <E>
  *            edge type of source graph.
  * @param <WV>
- *            vertex type this wrapped {@link FocusModel}.
+ *            vertex type of this wrapped {@link FocusModel}.
  * @param <WE>
- *            edge type this wrapped {@link FocusModel}.
+ *            edge type of this wrapped {@link FocusModel}.
  *
  * @author Tobias Pietzsch
  */
