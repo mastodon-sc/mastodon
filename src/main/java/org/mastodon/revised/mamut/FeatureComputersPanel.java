@@ -62,7 +62,7 @@ public class FeatureComputersPanel extends JPanel
 
 	private final MamutFeatureComputerService computerService;
 
-	private final Model model;
+	private Model model;
 
 	private final MyProgressBar progressBar;
 
@@ -74,10 +74,11 @@ public class FeatureComputersPanel extends JPanel
 
 	private FeatureComputerWorker worker;
 
-	public FeatureComputersPanel( final MamutFeatureComputerService computerService, final Model model )
+	private final JLabel lblModelModificationDate;
+
+	public FeatureComputersPanel( final MamutFeatureComputerService computerService )
 	{
 		this.computerService = computerService;
-		this.model = model;
 		this.selectedComputers = new HashSet<>();
 
 		setLayout( new BorderLayout( 0, 0 ) );
@@ -91,7 +92,7 @@ public class FeatureComputersPanel extends JPanel
 		progressBar.setStringPainted( true );
 
 		lblComputationDate = new JLabel( "Last feature computation: Never." );
-		final JLabel lblModelModificationDate = new JLabel( "Model last modified: Unknown." );
+		lblModelModificationDate = new JLabel( "Model last modified: Unknown." );
 		final GroupLayout gl_panelComputation = new GroupLayout( panelComputation );
 		gl_panelComputation.setHorizontalGroup(
 				gl_panelComputation.createParallelGroup( Alignment.LEADING )
@@ -160,16 +161,31 @@ public class FeatureComputersPanel extends JPanel
 		// Wire listener to compute button.
 		btnCompute.addActionListener( ( e ) -> compute() );
 
-		// Wire listener to graph.
-		model.getGraph().addGraphChangeListener( new GraphChangeListener()
-		{
+	}
 
-			@Override
-			public void graphChanged()
-			{
-				lblModelModificationDate.setText( "Model last modified: " + now() );
-			}
-		} );
+	public void setModel( final Model model )
+	{
+		// Rewire listener to graph.
+		if (this.model != null)
+			model.getGraph().removeGraphChangeListener( echoLastModified );
+
+		this.model = model;
+		if (model != null)
+			model.getGraph().addGraphChangeListener( echoLastModified );
+
+		btnCompute.setEnabled( model != null );
+	}
+
+	private final EchoLastModified echoLastModified = new EchoLastModified();
+
+	private final class EchoLastModified implements GraphChangeListener
+	{
+
+		@Override
+		public void graphChanged()
+		{
+			lblModelModificationDate.setText( "Model last modified: " + now() );
+		}
 	}
 
 	private synchronized void compute()
@@ -345,7 +361,8 @@ public class FeatureComputersPanel extends JPanel
 			{
 
 				final JFrame frame = new JFrame( "Test" );
-				final FeatureComputersPanel panel = new FeatureComputersPanel( featureComputerService, new Model() );
+				final FeatureComputersPanel panel = new FeatureComputersPanel( featureComputerService );
+				panel.setModel( new Model() );
 				frame.getContentPane().add( panel );
 				frame.setSize( 400, 400 );
 				frame.setDefaultCloseOperation( WindowConstants.EXIT_ON_CLOSE );
