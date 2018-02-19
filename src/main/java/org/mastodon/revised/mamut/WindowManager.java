@@ -85,6 +85,8 @@ public class WindowManager
 
 	final ProjectManager projectManager;
 
+	private FeatureComputersPanel featureComputersPanel;
+
 	public WindowManager( final Context context )
 	{
 		this.context = context;
@@ -115,6 +117,9 @@ public class WindowManager
 		globalAppActions.namedAction( newTrackSchemeViewAction, NEW_TRACKSCHEME_VIEW_KEYS );
 		globalAppActions.namedAction( editTagSetsAction, TAGSETS_DIALOG_KEYS );
 
+		final MamutFeatureComputerService featureComputerService = context.getService( MamutFeatureComputerService.class );
+		this.featureComputersPanel = new FeatureComputersPanel( featureComputerService );
+
 		final PreferencesDialog settings = new PreferencesDialog( null, keymap, new String[] { "mastodon" } );
 		settings.addPage( new TrackSchemeStyleSettingsPage( "TrackScheme Styles", trackSchemeStyleManager ) );
 		settings.addPage( new RenderSettingsConfigPage( "BDV Render Settings", renderSettingsManager ) );
@@ -130,6 +135,7 @@ public class WindowManager
 		newBdvViewAction.setEnabled( appModel != null );
 		newTrackSchemeViewAction.setEnabled( appModel != null );
 		editTagSetsAction.setEnabled( appModel != null );
+		featureComputersPanel.setEnabled( appModel != null );
 	}
 
 	void setAppModel( final MamutAppModel appModel )
@@ -141,6 +147,7 @@ public class WindowManager
 		{
 			tagSetDialog.dispose();
 			tagSetDialog = null;
+			featureComputersPanel.setModel( null );
 			updateEnabledActions();
 			return;
 		}
@@ -151,6 +158,7 @@ public class WindowManager
 
 		final Keymap keymap = keymapManager.getForwardDefaultKeymap();
 		tagSetDialog = new TagSetDialog( null, model.getTagSetModel(), model, keymap, new String[] { "mastodon" } );
+		featureComputersPanel.setModel( appModel.getModel() );
 		updateEnabledActions();
 	}
 
