@@ -26,9 +26,6 @@ import org.scijava.ui.behaviour.MouseAndKeyHandler;
 import org.scijava.ui.behaviour.util.InputActionBindings;
 import org.scijava.ui.behaviour.util.TriggerBehaviourBindings;
 
-import bdv.BehaviourTransformEventHandler;
-import net.imglib2.ui.TransformEventHandler;
-
 public class TrackSchemeFrame extends ViewFrame
 {
 	private static final long serialVersionUID = 1L;
