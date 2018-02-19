@@ -13,12 +13,12 @@ import org.mastodon.io.labels.LabelSetsSerializer;
 public class RawTagSetModelIO
 {
 	public static < V extends Vertex< E >, E extends Edge< V > > void read(
-			final TagSetModel< V, E > tagSetModel,
+			final DefaultTagSetModel< V, E > tagSetModel,
 			final FileIdToGraphMap< V, E > idmap,
 			final ObjectInputStream ois )
 			throws IOException
 	{
-		new TagSetModel.SerialisationAccess< V, E >( tagSetModel )
+		new DefaultTagSetModel.SerialisationAccess< V, E >( tagSetModel )
 		{
 			void read() throws IOException
 			{
@@ -31,12 +31,12 @@ public class RawTagSetModelIO
 	}
 
 	public static < V extends Vertex< E >, E extends Edge< V > > void write(
-			final TagSetModel< V, E > tagSetModel,
+			final DefaultTagSetModel< V, E > tagSetModel,
 			final GraphToFileIdMap< V, E > idmap,
 			final ObjectOutputStream oos )
 			throws IOException
 	{
-		new TagSetModel.SerialisationAccess< V, E >( tagSetModel )
+		new DefaultTagSetModel.SerialisationAccess< V, E >( tagSetModel )
 		{
 			void write() throws IOException
 			{

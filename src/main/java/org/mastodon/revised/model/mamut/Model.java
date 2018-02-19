@@ -20,6 +20,7 @@ import org.mastodon.revised.mamut.MamutProject;
 import org.mastodon.revised.model.AbstractModel;
 import org.mastodon.revised.model.feature.DefaultFeatureModel;
 import org.mastodon.revised.model.feature.FeatureModel;
+import org.mastodon.revised.model.tag.DefaultTagSetModel;
 import org.mastodon.revised.model.tag.RawTagSetModelIO;
 import org.mastodon.revised.model.tag.TagSetModel;
 import org.mastodon.spatial.SpatioTemporalIndex;
@@ -61,7 +62,7 @@ public class Model extends AbstractModel< ModelGraph, Spot, Link > implements Un
 
 	private final FeatureModel featureModel;
 
-	private final TagSetModel< Spot, Link > tagSetModel;
+	private final DefaultTagSetModel< Spot, Link > tagSetModel;
 
 	public Model()
 	{
@@ -80,9 +81,9 @@ public class Model extends AbstractModel< ModelGraph, Spot, Link > implements Un
 		final List< Property< Link > > edgeUndoableProperties = new ArrayList<>();
 
 		featureModel = new DefaultFeatureModel();
-		tagSetModel = new TagSetModel<>( getGraph() );
+		tagSetModel = new DefaultTagSetModel<>( getGraph() );
 		vertexUndoableProperties.add(
-				new TagSetModel.SerialisationAccess< Spot, Link >( tagSetModel )
+				new DefaultTagSetModel.SerialisationAccess< Spot, Link >( tagSetModel )
 				{
 					@Override
 					protected LabelSets< Spot, Integer > getVertexIdLabelSets()
@@ -91,7 +92,7 @@ public class Model extends AbstractModel< ModelGraph, Spot, Link > implements Un
 					}
 				}.getVertexIdLabelSets() );
 		edgeUndoableProperties.add(
-				new TagSetModel.SerialisationAccess< Spot, Link >( tagSetModel )
+				new DefaultTagSetModel.SerialisationAccess< Spot, Link >( tagSetModel )
 				{
 					@Override
 					protected LabelSets< Link, Integer > getEdgeIdLabelSets()
@@ -109,7 +110,7 @@ public class Model extends AbstractModel< ModelGraph, Spot, Link > implements Un
 				vertexUndoableProperties,
 				edgeUndoableProperties );
 
-		final Recorder< TagSetModel.SetTagSetStructureUndoableEdit > recorder = undoRecorder.createGenericUndoableEditRecorder();
+		final Recorder< DefaultTagSetModel.SetTagSetStructureUndoableEdit > recorder = undoRecorder.createGenericUndoableEditRecorder();
 		tagSetModel.setUndoRecorder( recorder );
 	}
 
