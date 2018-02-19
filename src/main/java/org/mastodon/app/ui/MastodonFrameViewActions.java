@@ -18,7 +18,7 @@ public class MastodonFrameViewActions
 
 	static final String[] TOGGLE_SETTINGS_PANEL_KEYS = new String[] { "T" };
 
-	static final String[] CLOSE_WINDOW_KEYS = new String[] { "ctrl W" };
+	static final String[] CLOSE_WINDOW_KEYS = new String[] { "ctrl W", "meta W" };
 
 	private final MastodonFrameView< ?, ?, ?, ?, ?, ? > view;
 
