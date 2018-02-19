@@ -18,6 +18,7 @@ import org.mastodon.model.TimepointModel;
 import org.mastodon.revised.trackscheme.TrackSchemeEdge;
 import org.mastodon.revised.trackscheme.TrackSchemeGraph;
 import org.mastodon.revised.trackscheme.TrackSchemeVertex;
+import org.mastodon.revised.ui.coloring.DefaultGraphColorGenerator;
 import org.mastodon.revised.ui.context.ContextChooserPanel;
 import org.mastodon.undo.UndoPointMarker;
 import org.mastodon.views.context.ContextChooser;
@@ -55,6 +56,7 @@ public class TrackSchemeFrame extends ViewFrame
 				timepoint,
 				selection,
 				navigation,
+				new DefaultGraphColorGenerator<>(),
 				optional );
 		add( trackschemePanel, BorderLayout.CENTER );
 

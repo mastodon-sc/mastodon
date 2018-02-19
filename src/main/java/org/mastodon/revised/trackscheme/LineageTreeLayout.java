@@ -13,6 +13,8 @@ import org.mastodon.model.SelectionModel;
 import org.mastodon.revised.trackscheme.ScreenEdge.ScreenEdgePool;
 import org.mastodon.revised.trackscheme.ScreenVertex.ScreenVertexPool;
 import org.mastodon.revised.trackscheme.ScreenVertexRange.ScreenVertexRangePool;
+import org.mastodon.revised.ui.coloring.ColorGenerator;
+import org.mastodon.revised.ui.coloring.GraphColorGenerator;
 import org.mastodon.util.Listeners;
 
 import gnu.trove.iterator.TIntAlternatingIterator;
@@ -300,7 +302,8 @@ public class LineageTreeLayout
 			final ScreenTransform transform,
 			final ScreenEntities screenEntities,
 			final int decorationsOffsetX,
-			final int decorationsOffsetY )
+			final int decorationsOffsetY,
+			final GraphColorGenerator< TrackSchemeVertex, TrackSchemeEdge > colorGenerator )
 	{
 		final double minX = transform.getMinX();
 		final double maxX = transform.getMaxX();
@@ -376,7 +379,7 @@ public class LineageTreeLayout
 						final double x = ( v1.getLayoutX() - minX ) * xScale + decorationsOffsetX;
 						final boolean selected = selection.isSelected( v1 );
 						final boolean ghost = v1.isGhost();
-						screenVertexPool.create( sv ).init( id, label, x, y, selected, ghost, 0 );
+						screenVertexPool.create( sv ).init( id, label, x, y, selected, ghost, colorGenerator.color( v1 ) );
 						screenVertices.add( sv );
 
 						minVertexScreenDist = Math.min( minVertexScreenDist, x - prevX );
@@ -393,7 +396,7 @@ public class LineageTreeLayout
 								final int sourceScreenVertexIndex = v2si;
 								final int targetScreenVertexIndex = v1si;
 								final boolean eselected = selection.isSelected( edge );
-								screenEdgePool.create( se ).init( eid, sourceScreenVertexIndex, targetScreenVertexIndex, eselected, 0 );
+								screenEdgePool.create( se ).init( eid, sourceScreenVertexIndex, targetScreenVertexIndex, eselected, colorGenerator.color( edge, v2, v1 ) );
 								screenEdges.add( se );
 								final int sei = se.getInternalPoolIndex();
 								edge.setScreenEdgeIndex( sei );
