@@ -57,7 +57,7 @@ public class TrackSchemePanel extends JPanel implements
 {
 	private static final long serialVersionUID = 1L;
 
-	private static final long ANIMATION_MILLISECONDS = 250;
+	private final long ANIMATION_MILLISECONDS;
 
 	private final TrackSchemeGraph< ?, ? > graph;
 
@@ -177,6 +177,7 @@ public class TrackSchemePanel extends JPanel implements
 		this.timepoint = timepoint;
 
 		final Values options = optional.values;
+		ANIMATION_MILLISECONDS = options.getAnimationDurationMillis();
 
 		graph.graphChangeListeners().add( this );
 		navigation.listeners().add( this );
