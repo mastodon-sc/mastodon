@@ -22,16 +22,14 @@ public class TagSetGraphColorGenerator< V extends Vertex< E >, E extends Edge< V
 	@Override
 	public int color( final V vertex )
 	{
-		// TODO: TagSet.color() should return ARBG int instead of awt.Color
 		final TagSetStructure.Tag tag = vertexTags.get( vertex );
-		return tag == null ? 0 : tag.color().getRGB();
+		return tag == null ? 0 : tag.color();
 	}
 
 	@Override
 	public int color( final E edge, final V source, final V target )
 	{
-		// TODO: TagSet.color() should return ARBG int instead of awt.Color
 		final TagSetStructure.Tag tag = edgeTags.get( edge );
-		return tag == null ? 0 : tag.color().getRGB();
+		return tag == null ? 0 : tag.color();
 	}
 }

@@ -372,7 +372,7 @@ public class EditTagActions< V extends Vertex< E >, E extends Edge< V > >
 					for ( final Tag tag : tagSet.getTags() )
 					{
 						lines[ index ] = String.format( " - %2d: %s\n", index, tag.label() );
-						colors[ index ] = tag.color();
+						colors[ index ] = new Color( tag.color(), true );
 						fonts[ index ] = FONT;
 						index++;
 					}

@@ -54,8 +54,8 @@ public class TagSetPanel extends JPanel
 				(ts, i) -> ts.getTags().get( i ),
 				Tag::setLabel,
 				Tag::label,
-				Tag::setColor,
-				Tag::color );
+				( t, color ) -> t.setColor( color.getRGB() ),
+				t -> new Color( t.color(), true ) );
 
 		tagSetTable.updateListeners().add( this::notifyListeners );
 		tagTable.updateListeners().add( this::notifyListeners );
@@ -110,7 +110,7 @@ public class TagSetPanel extends JPanel
 		return newName;
 	}
 
-	private final Iterator< Color > colorGenerator = new Iterator< Color >()
+	private final Iterator< Integer > colorGenerator = new Iterator< Integer >()
 	{
 		private final Random ran = new Random();
 
@@ -121,9 +121,9 @@ public class TagSetPanel extends JPanel
 		}
 
 		@Override
-		public Color next()
+		public Integer next()
 		{
-			return new Color( ran.nextInt() );
+			return ran.nextInt() | 0xFF000000 ;
 		}
 	};
 }

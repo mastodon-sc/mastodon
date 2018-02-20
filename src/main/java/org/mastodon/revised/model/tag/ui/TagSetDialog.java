@@ -1,7 +1,6 @@
 package org.mastodon.revised.model.tag.ui;
 
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.Frame;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
@@ -93,13 +92,13 @@ public class TagSetDialog extends JDialog
 
 		final Random ran = new Random( 0l );
 		final TagSet reviewedByTag = tss.createTagSet( "Reviewed by" );
-		reviewedByTag.createTag( "Pavel", new Color( ran.nextInt() ) );
-		reviewedByTag.createTag( "Mette", new Color( ran.nextInt() ) );
-		reviewedByTag.createTag( "Tobias", new Color( ran.nextInt() ) );
-		reviewedByTag.createTag( "JY", new Color( ran.nextInt() ) );
+		reviewedByTag.createTag( "Pavel", ran.nextInt() | 0xFF000000 );
+		reviewedByTag.createTag( "Mette", ran.nextInt() | 0xFF000000 );
+		reviewedByTag.createTag( "Tobias", ran.nextInt() | 0xFF000000 );
+		reviewedByTag.createTag( "JY", ran.nextInt() | 0xFF000000 );
 		final TagSet locationTag = tss.createTagSet( "Location" );
-		locationTag.createTag( "Anterior", new Color( ran.nextInt() ) );
-		locationTag.createTag( "Posterior", new Color( ran.nextInt() ) );
+		locationTag.createTag( "Anterior", ran.nextInt() | 0xFF000000 );
+		locationTag.createTag( "Posterior", ran.nextInt() | 0xFF000000 );
 
 		final TagSetManager manager = new TagSetManager()
 		{

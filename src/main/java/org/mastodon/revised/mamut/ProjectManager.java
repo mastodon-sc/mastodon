@@ -1,6 +1,5 @@
 package org.mastodon.revised.mamut;
 
-import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dialog;
 import java.io.File;
@@ -258,13 +257,13 @@ public class ProjectManager
 			final TagSetStructure tss = new TagSetStructure();
 			final Random ran = new Random( 0l );
 			final TagSetStructure.TagSet reviewedByTag = tss.createTagSet( "Reviewed by" );
-			reviewedByTag.createTag( "Pavel", new Color( ran.nextInt() ) );
-			reviewedByTag.createTag( "Mette", new Color( ran.nextInt() ) );
-			reviewedByTag.createTag( "Tobias", new Color( ran.nextInt() ) );
-			reviewedByTag.createTag( "JY", new Color( ran.nextInt() ) );
+			reviewedByTag.createTag( "Pavel", ran.nextInt() | 0xFF000000 );
+			reviewedByTag.createTag( "Mette", ran.nextInt() | 0xFF000000 );
+			reviewedByTag.createTag( "Tobias", ran.nextInt() | 0xFF000000 );
+			reviewedByTag.createTag( "JY", ran.nextInt() | 0xFF000000 );
 			final TagSetStructure.TagSet locationTag = tss.createTagSet( "Location" );
-			locationTag.createTag( "Anterior", new Color( ran.nextInt() ) );
-			locationTag.createTag( "Posterior", new Color( ran.nextInt() ) );
+			locationTag.createTag( "Anterior", ran.nextInt() | 0xFF000000 );
+			locationTag.createTag( "Posterior", ran.nextInt() | 0xFF000000 );
 			System.out.println( "Initial TagSetStructure:\n" + tss );
 			model.getTagSetModel().setTagSetStructure( tss );
 		}

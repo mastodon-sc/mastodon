@@ -1,6 +1,5 @@
 package org.mastodon.revised.model.tag;
 
-import java.awt.Color;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.File;
@@ -148,7 +147,7 @@ public class TagSetStructure
 				// Tag label.
 				final String tagLabel = dis.readUTF();
 				// Tag color as int.
-				final Color tagColor = new Color( dis.readInt(), true );
+				final int tagColor = dis.readInt();
 				final Tag tag = new Tag( tagId, tagLabel, tagColor );
 				tags.add( tag );
 			}
@@ -166,7 +165,7 @@ public class TagSetStructure
 				// Tag label.
 				dos.writeUTF( tag.label );
 				// Tag color as int.
-				dos.writeInt( tag.color.getRGB() );
+				dos.writeInt( tag.color );
 			}
 		}
 
@@ -209,7 +208,7 @@ public class TagSetStructure
 			return name;
 		}
 
-		public Tag createTag( final String name, final Color color )
+		public Tag createTag( final String name, final int color )
 		{
 			final int id = tagIDgenerator.getAndIncrement();
 			final Tag tag = new Tag( id, name, color );
@@ -234,9 +233,9 @@ public class TagSetStructure
 
 		private String label;
 
-		private Color color;
+		private int color;
 
-		private Tag( final int id, final String label, final Color color )
+		private Tag( final int id, final String label, final int color )
 		{
 			this.id = id;
 			this.label = label;
@@ -258,7 +257,7 @@ public class TagSetStructure
 			return id;
 		}
 
-		public void setColor( final Color color )
+		public void setColor( final int color )
 		{
 			this.color = color;
 		}
@@ -268,7 +267,7 @@ public class TagSetStructure
 			this.label = label;
 		}
 
-		public Color color()
+		public int color()
 		{
 			return color;
 		}
@@ -287,7 +286,7 @@ public class TagSetStructure
 		{
 			str.append( "\n  - " + tagSet.getName() + ", id = #" + tagSet.id + ":" );
 			for ( final Tag tag : tagSet.getTags() )
-				str.append( "\n      #" + tag.id() + ", " + tag.label() + ", color = " + tag.color() );
+				str.append( "\n      #" + tag.id() + ", " + tag.label() + ", color = " + String.format( "0x%08X", tag.color() ) );
 		}
 		return str.toString();
 	}
