@@ -1,9 +1,8 @@
-package org.mastodon.revised.mamut;
+package org.mastodon.revised.ui.coloring;
 
 import org.mastodon.adapter.RefBimap;
 import org.mastodon.graph.Edge;
 import org.mastodon.graph.Vertex;
-import org.mastodon.revised.ui.coloring.GraphColorGenerator;
 
 public class GraphColorGeneratorAdapter< V extends Vertex< E >, E extends Edge< V >, WV extends Vertex< WE >, WE extends Edge< WV > >
 		implements GraphColorGenerator< WV, WE >

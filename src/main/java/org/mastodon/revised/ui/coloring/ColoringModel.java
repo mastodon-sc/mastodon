@@ -1,4 +1,4 @@
-package org.mastodon.revised.mamut;
+package org.mastodon.revised.ui.coloring;
 
 import java.util.Optional;
 

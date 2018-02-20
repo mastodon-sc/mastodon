@@ -30,6 +30,10 @@ import org.mastodon.revised.ui.EditTagActions;
 import org.mastodon.revised.ui.FocusActions;
 import org.mastodon.revised.ui.HighlightBehaviours;
 import org.mastodon.revised.ui.SelectionActions;
+import org.mastodon.revised.ui.coloring.ColoringMenu;
+import org.mastodon.revised.ui.coloring.ColoringModel;
+import org.mastodon.revised.ui.coloring.GraphColorGeneratorAdapter;
+import org.mastodon.revised.ui.coloring.TagSetGraphColorGenerator;
 import org.mastodon.views.context.ContextChooser;
 import org.scijava.ui.behaviour.KeyPressedManager;
 
