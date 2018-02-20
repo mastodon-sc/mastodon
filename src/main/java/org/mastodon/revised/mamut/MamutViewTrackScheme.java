@@ -96,7 +96,7 @@ class MamutViewTrackScheme extends MamutView< TrackSchemeGraph< Spot, Link >, Tr
 		ToggleLinkBehaviour.install( viewBehaviours, frame.getTrackschemePanel(),	viewGraph, viewGraph.getLock(),	viewGraph, model );
 		EditFocusVertexLabelAction.install( viewActions, frame.getTrackschemePanel(), focusModel,	model );
 		FocusActions.install( viewActions, viewGraph, viewGraph.getLock(), focusModel, selectionModel, navigationHandler );
-		EditTagActions.install( viewActions, frame.getKeybindings(), model.getTagSetModel(), appModel.getSelectionModel(), frame.getTrackschemePanel(), frame.getTrackschemePanel().getDisplay(), model );
+		EditTagActions.install( viewActions, frame.getKeybindings(), frame.getTriggerbindings(), model.getTagSetModel(), appModel.getSelectionModel(), frame.getTrackschemePanel(), frame.getTrackschemePanel().getDisplay(), model );
 		viewActions.runnableAction( () -> System.out.println( model.getTagSetModel() ), "output tags", "U" ); // DEBUG TODO: REMOVE
 
 		// TODO Let the user choose between the two selection/focus modes.

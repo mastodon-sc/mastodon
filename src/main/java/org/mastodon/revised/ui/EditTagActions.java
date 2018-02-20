@@ -26,8 +26,10 @@ import org.mastodon.revised.model.tag.TagSetStructure;
 import org.mastodon.revised.model.tag.TagSetStructure.Tag;
 import org.mastodon.revised.model.tag.TagSetStructure.TagSet;
 import org.mastodon.undo.UndoPointMarker;
+import org.scijava.ui.behaviour.InputTriggerMap;
 import org.scijava.ui.behaviour.util.Actions;
 import org.scijava.ui.behaviour.util.InputActionBindings;
+import org.scijava.ui.behaviour.util.TriggerBehaviourBindings;
 
 import bdv.tools.bookmarks.BookmarksEditor;
 import net.imglib2.ui.InteractiveDisplayCanvas;
@@ -65,11 +67,15 @@ public class EditTagActions< V extends Vertex< E >, E extends Edge< V > >
 
 	private Mode mode = Mode.INACTIVE;
 
-	private final InputActionBindings bindings;
+	private final InputActionBindings actionBindings;
+
+	private final TriggerBehaviourBindings behaviourBindings;
 
 	private final ActionMap actionMap;
 
 	private final InputMap inputMap;
+
+	private final InputTriggerMap triggerMap;
 
 	private final InteractiveDisplayCanvas< ? > renderer;
 
@@ -79,13 +85,15 @@ public class EditTagActions< V extends Vertex< E >, E extends Edge< V > >
 
 	private EditTagActions(
 			final InputActionBindings inputActionBindings,
+			final TriggerBehaviourBindings triggerBehaviourBindings,
 			final TagSetModel< V, E > tagModel,
 			final SelectionModel< V, E > selectionModel,
 			final Component panel,
 			final InteractiveDisplayCanvas< ? > renderer,
 			final UndoPointMarker undoPointMarker )
 	{
-		this.bindings = inputActionBindings;
+		this.actionBindings = inputActionBindings;
+		this.behaviourBindings = triggerBehaviourBindings;
 		this.tagModel = tagModel;
 		this.selectionModel = selectionModel;
 		this.panel = panel;
@@ -96,6 +104,7 @@ public class EditTagActions< V extends Vertex< E >, E extends Edge< V > >
 
 		actionMap = new ActionMap();
 		inputMap = new InputMap();
+		triggerMap = new InputTriggerMap();
 	}
 
 	@Override
@@ -143,10 +152,9 @@ public class EditTagActions< V extends Vertex< E >, E extends Edge< V > >
 			i++;
 		}
 
-		// TODO make sure these new bindings do not conflicts with non-temporary
-		// ones. For instance source selection in the BDV.
-		bindings.addInputMap( PICK_TAGS_MAP, inputMap );
-		bindings.addActionMap( PICK_TAGS_MAP, actionMap );
+		actionBindings.addActionMap( PICK_TAGS_MAP, actionMap );
+		actionBindings.addInputMap( PICK_TAGS_MAP, inputMap, "all" );
+		behaviourBindings.addInputTriggerMap( PICK_TAGS_MAP, triggerMap, "all" );
 
 		mode = Mode.PICK_TAGSET;
 		renderer.addOverlayRenderer( overlay );
@@ -161,8 +169,9 @@ public class EditTagActions< V extends Vertex< E >, E extends Edge< V > >
 	private synchronized void done()
 	{
 		mode = Mode.INACTIVE;
-		bindings.removeActionMap( PICK_TAGS_MAP );
-		bindings.removeInputMap( PICK_TAGS_MAP );
+		actionBindings.removeActionMap( PICK_TAGS_MAP );
+		actionBindings.removeInputMap( PICK_TAGS_MAP );
+		behaviourBindings.removeInputTriggerMap( PICK_TAGS_MAP );
 		renderer.removeOverlayRenderer( overlay );
 		panel.repaint();
 	}
@@ -241,8 +250,9 @@ public class EditTagActions< V extends Vertex< E >, E extends Edge< V > >
 			i++;
 		}
 
-		bindings.addInputMap( PICK_TAGS_MAP, inputMap );
-		bindings.addActionMap( PICK_TAGS_MAP, actionMap );
+		actionBindings.addActionMap( PICK_TAGS_MAP, actionMap );
+		actionBindings.addInputMap( PICK_TAGS_MAP, inputMap, "all" );
+		behaviourBindings.addInputTriggerMap( PICK_TAGS_MAP, triggerMap, "all" );
 
 		this.tagSet = tagSet;
 		mode = Mode.PICK_TAG;
@@ -448,13 +458,14 @@ public class EditTagActions< V extends Vertex< E >, E extends Edge< V > >
 	public static < V extends Vertex< E >, E extends Edge< V > > void install(
 			final Actions actions,
 			final InputActionBindings inputActionBindings,
+			final TriggerBehaviourBindings triggerBehaviourBindings,
 			final TagSetModel< V, E > tagModel,
 			final SelectionModel< V, E > selectionModel,
 			final Component panel,
 			final InteractiveDisplayCanvas< ? > display,
 			final UndoPointMarker undo )
 	{
-		final EditTagActions< V, E > editTagActions = new EditTagActions<>( inputActionBindings, tagModel, selectionModel, panel, display, undo );
+		final EditTagActions< V, E > editTagActions = new EditTagActions<>( inputActionBindings, triggerBehaviourBindings, tagModel, selectionModel, panel, display, undo );
 		actions.runnableAction( editTagActions, PICK_TAGS, PICK_TAGS_KEYS );
 	}
 }
