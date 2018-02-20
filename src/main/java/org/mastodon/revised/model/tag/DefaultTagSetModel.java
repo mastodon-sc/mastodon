@@ -107,10 +107,10 @@ public class DefaultTagSetModel< V extends Vertex< E >, E extends Edge< V > > im
 		}
 
 		tagSetStructure.set( tss );
-		listeners.list.forEach( TagSetModelListener::tagSetStructureChanged );
-
 		vertexTags.update( tagSetStructure );
 		edgeTags.update( tagSetStructure );
+
+		listeners.list.forEach( TagSetModelListener::tagSetStructureChanged );
 	}
 
 	@Override
