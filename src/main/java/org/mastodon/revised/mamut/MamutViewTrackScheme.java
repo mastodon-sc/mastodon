@@ -60,9 +60,11 @@ class MamutViewTrackScheme extends MamutView< TrackSchemeGraph< Spot, Link >, Tr
 		 * show TrackSchemeFrame
 		 */
 		final TrackSchemeStyle forwardDefaultStyle = appModel.getTrackSchemeStyleManager().getForwardDefaultStyle();
+		final GraphColorGeneratorAdapter< Spot, Link, TrackSchemeVertex, TrackSchemeEdge > coloring = new GraphColorGeneratorAdapter<>( viewGraph.getVertexMap(), viewGraph.getEdgeMap() );
 		final TrackSchemeOptions options = TrackSchemeOptions.options()
 				.shareKeyPressedEvents( keyPressedManager )
-				.style( forwardDefaultStyle );
+				.style( forwardDefaultStyle )
+				.graphColorGenerator( coloring );
 		final TrackSchemeFrame frame = new TrackSchemeFrame(
 				viewGraph,
 				highlightModel,
@@ -141,6 +143,16 @@ class MamutViewTrackScheme extends MamutView< TrackSchemeGraph< Spot, Link >, Tr
 		final ColoringMenu coloringMenu = new ColoringMenu( tagSetColoringMenuHandle.getMenu(), coloringModel );
 		tagSetModel.listeners().add( coloringMenu );
 		onClose( () -> tagSetModel.listeners().remove( coloringMenu ) );
+
+		final ColoringModel.ColoringChangedListener coloringChangedListener = () ->
+		{
+			if ( coloringModel.noColoring() )
+				coloring.setColorGenerator( null );
+			else if ( coloringModel.getTagSet() != null)
+				coloring.setColorGenerator( new TagSetGraphColorGenerator<>( tagSetModel, coloringModel.getTagSet() ) );
+			frame.getTrackschemePanel().entitiesAttributesChanged();
+		};
+		coloringModel.listeners().add( coloringChangedListener );
 
 		frame.getTrackschemePanel().repaint();
 	}
