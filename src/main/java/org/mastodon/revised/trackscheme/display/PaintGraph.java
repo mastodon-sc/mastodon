@@ -20,6 +20,8 @@ import org.mastodon.revised.trackscheme.ScreenVertexRange;
 import org.mastodon.revised.trackscheme.display.style.TrackSchemeStyle;
 import org.mastodon.revised.util.GeometryUtil;
 
+import net.imglib2.type.numeric.ARGBType;
+
 /**
  * Painting the TrackScheme graph.
  * <p>
@@ -268,7 +270,8 @@ public class PaintGraph
 		final boolean highlighted = ( highlightedEdgeId >= 0 ) && ( edge.getTrackSchemeEdgeId() == highlightedEdgeId );
 		final boolean selected = edge.isSelected();
 		final boolean ghost = vs.isGhost() && vt.isGhost();
-		final Color drawColor = getColor( selected, ghost, transition, ratio,
+		final int specifiedColor = edge.getColor();
+		final Color drawColor = getColor( selected, ghost, transition, ratio, specifiedColor,
 				style.getEdgeColor(), style.getSelectedEdgeColor(),
 				style.getGhostEdgeColor(), style.getGhostSelectedEdgeColor() );
 		g2.setColor( drawColor );
@@ -291,6 +294,7 @@ public class PaintGraph
 		final boolean focused = ( focusedVertexId >= 0 ) && ( vertex.getTrackSchemeVertexId() == focusedVertexId );
 		final boolean selected = vertex.isSelected();
 		final boolean ghost = vertex.isGhost();
+		final int specifiedColor = vertex.getColor();
 
 		double spotradius = simplifiedVertexRadius;
 		if ( disappear )
@@ -299,7 +303,7 @@ public class PaintGraph
 		if ( highlighted || focused )
 			spotradius *= 1.5;
 
-		final Color fillColor = getColor( selected, ghost, transition, ratio,
+		final Color fillColor = getColor( selected, ghost, transition, ratio, specifiedColor,
 				disappear ? style.getSelectedSimplifiedVertexFillColor() : style.getSimplifiedVertexFillColor(),
 				style.getSelectedSimplifiedVertexFillColor(),
 				disappear ? style.getGhostSelectedSimplifiedVertexFillColor() : style.getGhostSimplifiedVertexFillColor(),
@@ -330,12 +334,13 @@ public class PaintGraph
 
 			final boolean selected = vertex.isSelected();
 			final boolean ghost = vertex.isGhost();
+			final int specifiedColor = vertex.getColor();
 
 			double spotradius = simplifiedVertexRadius;
 			if ( disappear )
 				spotradius *= ( 1 + 3 * ratio );
 
-			final Color fillColor = getColor( selected, ghost, transition, ratio,
+			final Color fillColor = getColor( selected, ghost, transition, ratio, specifiedColor,
 					disappear ? style.getSelectedSimplifiedVertexFillColor() : style.getSimplifiedVertexFillColor(),
 					style.getSelectedSimplifiedVertexFillColor(),
 					disappear ? style.getGhostSelectedSimplifiedVertexFillColor() : style.getGhostSimplifiedVertexFillColor(),
@@ -365,6 +370,7 @@ public class PaintGraph
 		final boolean focused = ( focusedVertexId >= 0 ) && ( vertex.getTrackSchemeVertexId() == focusedVertexId );
 		final boolean selected = vertex.isSelected();
 		final boolean ghost = vertex.isGhost();
+		final int specifiedColor = vertex.getColor();
 
 		double spotdiameter = Math.min( vertex.getVertexDist() - 10.0, maxDisplayVertexSize );
 		if ( highlighted )
@@ -373,10 +379,10 @@ public class PaintGraph
 			spotdiameter *= ( 1 + ratio );
 		final double spotradius = spotdiameter / 2;
 
-		final Color fillColor = getColor( selected, ghost, transition, ratio,
+		final Color fillColor = getColor( selected, ghost, transition, ratio, specifiedColor,
 				style.getVertexFillColor(), style.getSelectedVertexFillColor(),
 				style.getGhostVertexFillColor(), style.getGhostSelectedVertexFillColor() );
-		final Color drawColor = getColor( selected, ghost, transition, ratio,
+		final Color drawColor = getColor( selected, ghost, transition, ratio, 0,
 				style.getVertexDrawColor(), style.getSelectedVertexDrawColor(),
 				style.getGhostVertexDrawColor(), style.getGhostSelectedVertexDrawColor() );
 
@@ -424,25 +430,44 @@ public class PaintGraph
 			final boolean isGhost,
 			final Transition transition,
 			final double completionRatio,
+			final int specifiedColor,
 			final Color normalColor,
 			final Color selectedColor,
 			final Color ghostNormalColor,
 			final Color ghostSelectedColor )
 	{
 		if ( transition == NONE )
-			return isGhost
-					? ( isSelected ? ghostSelectedColor : ghostNormalColor )
-					: ( isSelected ? selectedColor : normalColor );
+		{
+			if ( isGhost )
+				return isSelected ? ghostSelectedColor : ghostNormalColor;
+			else if ( isSelected )
+				return selectedColor;
+			else if ( specifiedColor == 0 )
+				return normalColor;
+			else
+				return new Color( specifiedColor, true );
+		}
 		else
 		{
 			final double ratio = ( transition == APPEAR || transition == SELECTING )
 					? 1 - completionRatio
 					: completionRatio;
 			final boolean fade = ( transition == APPEAR || transition == DISAPPEAR );
-			int r = normalColor.getRed();
-			int g = normalColor.getGreen();
-			int b = normalColor.getBlue();
-			int a = normalColor.getAlpha();
+			int r, g, b, a;
+			if ( specifiedColor == 0 )
+			{
+				r = normalColor.getRed();
+				g = normalColor.getGreen();
+				b = normalColor.getBlue();
+				a = normalColor.getAlpha();
+			}
+			else
+			{
+				r = ARGBType.red( specifiedColor );
+				g = ARGBType.green( specifiedColor );
+				b = ARGBType.blue( specifiedColor );
+				a = ARGBType.alpha( specifiedColor );
+			}
 			if ( isSelected || !fade )
 			{
 				r = ( int ) ( ratio * r + ( 1 - ratio ) * selectedColor.getRed() );
