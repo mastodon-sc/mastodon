@@ -2,6 +2,7 @@ package org.mastodon.revised.mamut;
 
 import static org.mastodon.app.ui.ViewMenuBuilder.item;
 import static org.mastodon.app.ui.ViewMenuBuilder.separator;
+import static org.mastodon.revised.mamut.MamutMenuBuilder.colorMenu;
 import static org.mastodon.revised.mamut.MamutMenuBuilder.editMenu;
 import static org.mastodon.revised.mamut.MamutMenuBuilder.viewMenu;
 
@@ -9,10 +10,12 @@ import javax.swing.ActionMap;
 
 import org.mastodon.app.ui.MastodonFrameViewActions;
 import org.mastodon.app.ui.ViewMenu;
+import org.mastodon.app.ui.ViewMenuBuilder.JMenuHandle;
 import org.mastodon.revised.model.mamut.Link;
 import org.mastodon.revised.model.mamut.Model;
 import org.mastodon.revised.model.mamut.ModelGraphTrackSchemeProperties;
 import org.mastodon.revised.model.mamut.Spot;
+import org.mastodon.revised.model.tag.TagSetModel;
 import org.mastodon.revised.trackscheme.TrackSchemeContextListener;
 import org.mastodon.revised.trackscheme.TrackSchemeEdge;
 import org.mastodon.revised.trackscheme.TrackSchemeGraph;
@@ -98,9 +101,13 @@ class MamutViewTrackScheme extends MamutView< TrackSchemeGraph< Spot, Link >, Tr
 		final ViewMenu menu = new ViewMenu( this );
 		final ActionMap actionMap = frame.getKeybindings().getConcatenatedActionMap();
 
+		final JMenuHandle tagSetColoringMenuHandle = new JMenuHandle();
+
 		MainWindow.addMenus( menu, actionMap );
 		MamutMenuBuilder.build( menu, actionMap,
 				viewMenu(
+						colorMenu( tagSetColoringMenuHandle ),
+						separator(),
 						item( MastodonFrameViewActions.TOGGLE_SETTINGS_PANEL )
 				),
 				editMenu(
@@ -125,6 +132,15 @@ class MamutViewTrackScheme extends MamutView< TrackSchemeGraph< Spot, Link >, Tr
 						item( EditFocusVertexLabelAction.EDIT_FOCUS_LABEL )
 				)
 		);
+
+		final TagSetModel< Spot, Link > tagSetModel = appModel.getModel().getTagSetModel();
+		final ColoringModel coloringModel = new ColoringModel( tagSetModel );
+		tagSetModel.listeners().add( coloringModel );
+		onClose( () -> tagSetModel.listeners().remove( coloringModel ) );
+
+		final ColoringMenu coloringMenu = new ColoringMenu( tagSetColoringMenuHandle.getMenu(), coloringModel );
+		tagSetModel.listeners().add( coloringMenu );
+		onClose( () -> tagSetModel.listeners().remove( coloringMenu ) );
 
 		frame.getTrackschemePanel().repaint();
 	}

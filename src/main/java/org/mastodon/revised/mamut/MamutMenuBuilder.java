@@ -75,6 +75,11 @@ public class MamutMenuBuilder extends ViewMenuBuilder
 		return ViewMenuBuilder.menu( "View", items );
 	}
 
+	public static MenuItem colorMenu( final JMenuHandle handle )
+	{
+		return ViewMenuBuilder.menu( "Coloring", handle );
+	}
+
 	public static MenuItem editMenu( final MenuItem... items )
 	{
 		return ViewMenuBuilder.menu( "Edit", items );
