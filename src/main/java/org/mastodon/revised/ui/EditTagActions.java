@@ -45,6 +45,8 @@ import net.imglib2.ui.OverlayRenderer;
 public class EditTagActions< V extends Vertex< E >, E extends Edge< V > >
 		implements Runnable
 {
+	private static final String PICK_TAGS_MAP = "pick-tags";
+
 	private static final String PICK_TAGS = "pick tags";
 
 	private static final String[] PICK_TAGS_KEYS = new String[] { "Y" };
@@ -143,8 +145,8 @@ public class EditTagActions< V extends Vertex< E >, E extends Edge< V > >
 
 		// TODO make sure these new bindings do not conflicts with non-temporary
 		// ones. For instance source selection in the BDV.
-		bindings.addInputMap( "pick-tags", inputMap );
-		bindings.addActionMap( "pick-tags", actionMap );
+		bindings.addInputMap( PICK_TAGS_MAP, inputMap );
+		bindings.addActionMap( PICK_TAGS_MAP, actionMap );
 
 		mode = Mode.PICK_TAGSET;
 		renderer.addOverlayRenderer( overlay );
@@ -159,8 +161,8 @@ public class EditTagActions< V extends Vertex< E >, E extends Edge< V > >
 	private synchronized void done()
 	{
 		mode = Mode.INACTIVE;
-		bindings.removeActionMap( PICK_TAGS );
-		bindings.removeInputMap( PICK_TAGS );
+		bindings.removeActionMap( PICK_TAGS_MAP );
+		bindings.removeInputMap( PICK_TAGS_MAP );
 		renderer.removeOverlayRenderer( overlay );
 		panel.repaint();
 	}
@@ -239,8 +241,8 @@ public class EditTagActions< V extends Vertex< E >, E extends Edge< V > >
 			i++;
 		}
 
-		bindings.addInputMap( "pick-tags", inputMap );
-		bindings.addActionMap( "pick-tags", actionMap );
+		bindings.addInputMap( PICK_TAGS_MAP, inputMap );
+		bindings.addActionMap( PICK_TAGS_MAP, actionMap );
 
 		this.tagSet = tagSet;
 		mode = Mode.PICK_TAG;
