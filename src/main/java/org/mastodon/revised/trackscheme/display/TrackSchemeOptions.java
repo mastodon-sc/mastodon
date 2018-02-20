@@ -30,8 +30,12 @@ package org.mastodon.revised.trackscheme.display;
 
 import java.awt.event.KeyListener;
 
+import org.mastodon.revised.trackscheme.TrackSchemeEdge;
+import org.mastodon.revised.trackscheme.TrackSchemeVertex;
 import org.mastodon.revised.trackscheme.display.TrackSchemeOverlay.TrackSchemeOverlayFactory;
 import org.mastodon.revised.trackscheme.display.style.TrackSchemeStyle;
+import org.mastodon.revised.ui.coloring.DefaultGraphColorGenerator;
+import org.mastodon.revised.ui.coloring.GraphColorGenerator;
 import org.mastodon.revised.ui.selection.NavigationEtiquette;
 import org.scijava.ui.behaviour.KeyPressedManager;
 
@@ -150,6 +154,20 @@ public class TrackSchemeOptions
 	}
 
 	/**
+	 * Sets the color generator used to color vertices and edges in this
+	 * TrackScheme.
+	 *
+	 * @param generator
+	 *            the color generator.
+	 * @return this instance.
+	 */
+	public TrackSchemeOptions graphColorGenerator( final GraphColorGenerator< TrackSchemeVertex, TrackSchemeEdge > generator )
+	{
+		values.graphColorGenerator = generator;
+		return this;
+	}
+
+	/**
 	 * Read-only {@link TrackSchemeOptions} values.
 	 */
 	public static class Values
@@ -168,6 +186,8 @@ public class TrackSchemeOptions
 
 		private TrackSchemeOverlayFactory trackSchemeOverlayFactory = new TrackSchemeOverlayFactory();
 
+		private GraphColorGenerator< TrackSchemeVertex, TrackSchemeEdge > graphColorGenerator = new DefaultGraphColorGenerator<>();
+
 		public TrackSchemeOptions optionsFromValues()
 		{
 			return new TrackSchemeOptions().
@@ -176,7 +196,8 @@ public class TrackSchemeOptions
 				animationDurationMillis( animationDurationMillis ).
 				navigationEtiquette( navigationEtiquette ).
 				style( style ).
-				trackSchemeOverlayFactory( trackSchemeOverlayFactory );
+				trackSchemeOverlayFactory( trackSchemeOverlayFactory ).
+				graphColorGenerator( graphColorGenerator );
 		}
 
 		public int getWidth()
@@ -212,6 +233,11 @@ public class TrackSchemeOptions
 		public TrackSchemeOverlayFactory getTrackSchemeOverlayFactory()
 		{
 			return trackSchemeOverlayFactory;
+		}
+
+		public GraphColorGenerator< TrackSchemeVertex, TrackSchemeEdge > getGraphColorGenerator()
+		{
+			return graphColorGenerator;
 		}
 	}
 }

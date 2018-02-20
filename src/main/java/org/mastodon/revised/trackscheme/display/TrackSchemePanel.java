@@ -34,7 +34,6 @@ import org.mastodon.revised.trackscheme.TrackSchemeVertex;
 import org.mastodon.revised.trackscheme.display.TrackSchemeOptions.Values;
 import org.mastodon.revised.trackscheme.display.animate.AbstractAnimator;
 import org.mastodon.revised.trackscheme.display.style.TrackSchemeStyle;
-import org.mastodon.revised.ui.coloring.ColorGenerator;
 import org.mastodon.revised.ui.coloring.GraphColorGenerator;
 import org.mastodon.revised.ui.selection.NavigationEtiquette;
 import org.mastodon.views.context.Context;
@@ -85,6 +84,11 @@ public class TrackSchemePanel extends JPanel implements
 	 * TODO
 	 */
 	private final ContextLayout contextLayout;
+
+	/**
+	 * determine how layouted vertices and edges are colored.
+	 */
+	private final GraphColorGenerator< TrackSchemeVertex, TrackSchemeEdge > colorGenerator;
 
 	/**
 	 * compute {@link ScreenEntities} from {@link LineageTreeLayout} using the
@@ -144,8 +148,6 @@ public class TrackSchemePanel extends JPanel implements
 
 	private final TimepointModel timepoint;
 
-	private final GraphColorGenerator< TrackSchemeVertex, TrackSchemeEdge > colorGenerator;
-
 	private final TrackSchemeAutoFocus autoFocus;
 
 	private final TrackSchemeNavigationActions navigationActions;
@@ -167,14 +169,12 @@ public class TrackSchemePanel extends JPanel implements
 			final TimepointModel timepoint,
 			final SelectionModel< TrackSchemeVertex, TrackSchemeEdge > selection,
 			final NavigationHandler< TrackSchemeVertex, TrackSchemeEdge > navigation,
-			final GraphColorGenerator< TrackSchemeVertex, TrackSchemeEdge > colorGenerator,
 			final TrackSchemeOptions optional )
 	{
 		super( new BorderLayout(), false );
 		this.graph = graph;
 		this.focus = focus;
 		this.timepoint = timepoint;
-		this.colorGenerator = colorGenerator;
 
 		final Values options = optional.values;
 
@@ -214,6 +214,7 @@ public class TrackSchemePanel extends JPanel implements
 		screenTransform = new ScreenTransform();
 		layout = new LineageTreeLayout( graph, selection );
 		contextLayout = new ContextLayout( graph, layout );
+		colorGenerator = options.getGraphColorGenerator();
 		layout.layoutListeners().add( transformEventHandler );
 		entityAnimator = new ScreenEntityAnimator();
 		painterThread = new PainterThread( this );

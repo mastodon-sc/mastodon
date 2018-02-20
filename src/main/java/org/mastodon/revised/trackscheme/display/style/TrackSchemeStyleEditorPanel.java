@@ -63,7 +63,6 @@ import org.mastodon.revised.trackscheme.display.style.dummygraph.DummyGraph;
 import org.mastodon.revised.trackscheme.display.style.dummygraph.DummyVertex;
 import org.mastodon.revised.trackscheme.wrap.DefaultModelGraphProperties;
 import org.mastodon.revised.trackscheme.wrap.ModelGraphProperties;
-import org.mastodon.revised.ui.coloring.DefaultGraphColorGenerator;
 
 public class TrackSchemeStyleEditorPanel extends JPanel
 {
@@ -92,7 +91,7 @@ public class TrackSchemeStyleEditorPanel extends JPanel
 		final SelectionModel< TrackSchemeVertex, TrackSchemeEdge > selection = new SelectionModelAdapter<>( ex.getSelectionModel(), vertexMap, edgeMap );
 		final NavigationHandler< TrackSchemeVertex, TrackSchemeEdge > navigation = new DefaultNavigationHandler<>();
 		final TrackSchemeOptions options = TrackSchemeOptions.options().style( style );
-		final TrackSchemePanel previewPanel = new TrackSchemePanel( graph, highlight, focus, timepoint, selection, navigation, new DefaultGraphColorGenerator<>(), options );
+		final TrackSchemePanel previewPanel = new TrackSchemePanel( graph, highlight, focus, timepoint, selection, navigation, options );
 		previewPanel.setTimepointRange( 0, 7 );
 		timepoint.setTimepoint( 2 );
 		previewPanel.graphChanged();
