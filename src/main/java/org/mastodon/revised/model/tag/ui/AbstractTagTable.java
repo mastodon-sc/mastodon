@@ -27,6 +27,7 @@ import javax.swing.event.CellEditorListener;
 import javax.swing.event.ChangeEvent;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
 
 import org.mastodon.util.Listeners;
@@ -240,6 +241,26 @@ public abstract class AbstractTagTable< C, T, E extends AbstractTagTable< ?, T, 
 	public Listeners< SelectionListener< T > > selectionListeners()
 	{
 		return selectionListeners;
+	}
+
+	/**
+	 * If a cell is currently being edited, cancel editing.
+	 */
+	public void cancelEditing()
+	{
+		final TableCellEditor editor = table.getCellEditor();
+		if ( editor != null )
+			editor.cancelCellEditing();
+	}
+
+	/**
+	 * If a cell is currently being edited, stop editing.
+	 */
+	public void stopEditing()
+	{
+		final TableCellEditor editor = table.getCellEditor();
+		if ( editor != null )
+			editor.stopCellEditing();
 	}
 
 	private void addAndEditRow()

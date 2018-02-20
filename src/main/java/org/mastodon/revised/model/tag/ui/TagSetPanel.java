@@ -18,6 +18,8 @@ public class TagSetPanel extends JPanel
 {
 	private final TagTable< TagSetStructure, TagSet > tagSetTable;
 
+	private final ColorTagTable< TagSet, Tag > tagTable;
+
 	public interface UpdateListener
 	{
 		void modelUpdated();
@@ -47,7 +49,7 @@ public class TagSetPanel extends JPanel
 				TagSet::setName,
 				TagSet::getName );
 
-		final ColorTagTable< TagSet, Tag > tagTable = new ColorTagTable<>( null,
+		tagTable = new ColorTagTable<>( null,
 				ts -> ts.createTag( "Tag", colorGenerator.next() ),
 				ts -> ts.getTags().size(),
 				TagSet::removeTag,
@@ -81,6 +83,24 @@ public class TagSetPanel extends JPanel
 	{
 		tagSetStructure.set( tss );
 		tagSetTable.setElements( tagSetStructure );
+	}
+
+	/**
+	 * If somthing is currently being edited, cancel editing.
+	 */
+	public void cancelEditing()
+	{
+		tagSetTable.cancelEditing();
+		tagTable.cancelEditing();
+	}
+
+	/**
+	 * If somthing is currently being edited, stop editing.
+	 */
+	public void stopEditing()
+	{
+		tagSetTable.stopEditing();
+		tagTable.stopEditing();
 	}
 
 	public Listeners< UpdateListener > updateListeners()

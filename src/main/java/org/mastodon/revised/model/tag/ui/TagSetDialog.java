@@ -63,8 +63,14 @@ public class TagSetDialog extends JDialog
 		final SimpleSettingsPage page = new SimpleSettingsPage( "tag sets", tagSetPanel );
 
 		tagSetPanel.updateListeners().add( () -> page.notifyModified() );
-		page.onApply( () -> manager.setTagSetStructure( tagSetPanel.getTagSetStructure() ) );
-		page.onCancel( () -> tagSetPanel.setTagSetStructure( manager.getTagSetStructure() ) );
+		page.onApply( () -> {
+			tagSetPanel.stopEditing();
+			manager.setTagSetStructure( tagSetPanel.getTagSetStructure() );
+		} );
+		page.onCancel( () -> {
+			tagSetPanel.cancelEditing();
+			tagSetPanel.setTagSetStructure( manager.getTagSetStructure() );
+		} );
 
 		final SingleSettingsPanel settingsPanel = new SingleSettingsPanel( page );
 		settingsPanel.onOk( () -> setVisible( false ) );
