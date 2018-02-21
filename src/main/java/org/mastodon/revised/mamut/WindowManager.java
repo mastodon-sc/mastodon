@@ -110,7 +110,7 @@ public class WindowManager
 		globalAppActions.namedAction( newTrackSchemeViewAction, NEW_TRACKSCHEME_VIEW_KEYS );
 		globalAppActions.namedAction( editTagSetsAction, TAGSETS_DIALOG_KEYS );
 
-		final PreferencesDialog settings = new PreferencesDialog( null );
+		final PreferencesDialog settings = new PreferencesDialog( null, keymap, new String[] { "mastodon" } );
 		settings.addPage( new TrackSchemeStyleSettingsPage( "TrackScheme Styles", trackSchemeStyleManager ) );
 		settings.addPage( new RenderSettingsConfigPage( "BDV Render Settings", renderSettingsManager ) );
 		settings.addPage( new KeymapSettingsPage( "Keymap", keymapManager ) );
@@ -134,6 +134,7 @@ public class WindowManager
 		this.appModel = appModel;
 		if ( appModel == null )
 		{
+			tagSetDialog.dispose();
 			tagSetDialog = null;
 			updateEnabledActions();
 			return;
@@ -143,7 +144,8 @@ public class WindowManager
 		UndoActions.install( appModel.getAppActions(), model );
 		SelectionActions.install( appModel.getAppActions(), model.getGraph(), model.getGraph().getLock(), model.getGraph(), appModel.getSelectionModel(), model );
 
-		tagSetDialog = new TagSetDialog( null, model.getTagSetModel(), model );
+		final Keymap keymap = keymapManager.getForwardDefaultKeymap();
+		tagSetDialog = new TagSetDialog( null, model.getTagSetModel(), model, keymap, new String[] { "mastodon" } );
 		updateEnabledActions();
 	}
 
