@@ -5,11 +5,17 @@ import java.awt.Frame;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
+import javax.swing.ActionMap;
+import javax.swing.InputMap;
+import javax.swing.JComponent;
 import javax.swing.JDialog;
 import javax.swing.WindowConstants;
 
+import org.mastodon.app.ui.CloseWindowActions;
 import org.mastodon.app.ui.settings.SettingsPage;
 import org.mastodon.app.ui.settings.SettingsPanel;
+import org.mastodon.revised.ui.keymap.Keymap;
+import org.scijava.ui.behaviour.util.Actions;
 
 public class PreferencesDialog extends JDialog
 {
@@ -17,14 +23,17 @@ public class PreferencesDialog extends JDialog
 
 	private final SettingsPanel settingsPanel;
 
-	public PreferencesDialog( final Frame owner )
+	public PreferencesDialog(
+			final Frame owner,
+			final Keymap keymap,
+			final String[] keyConfigContexts )
 	{
 		super( owner, "Preferences", false );
 		settingsPanel = new SettingsPanel();
 		settingsPanel.onOk( () -> setVisible( false ) );
 		settingsPanel.onCancel( () -> setVisible( false ) );
 
-		setDefaultCloseOperation( WindowConstants.DO_NOTHING_ON_CLOSE );
+		setDefaultCloseOperation( WindowConstants.HIDE_ON_CLOSE );
 		addWindowListener( new WindowAdapter()
 		{
 			@Override
@@ -33,6 +42,13 @@ public class PreferencesDialog extends JDialog
 				settingsPanel.cancel();
 			}
 		} );
+
+		final ActionMap am = getRootPane().getActionMap();
+		final InputMap im = getRootPane().getInputMap( JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT );
+		final Actions actions = new Actions( im, am, keymap.getConfig(), keyConfigContexts );
+		CloseWindowActions.install( actions, this );
+
+		keymap.updateListeners().add( () -> actions.updateKeyConfig( keymap.getConfig() ) );
 
 		getContentPane().add( settingsPanel, BorderLayout.CENTER );
 		pack();

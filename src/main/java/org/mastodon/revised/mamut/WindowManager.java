@@ -110,7 +110,7 @@ public class WindowManager
 		globalAppActions.namedAction( newTrackSchemeViewAction, NEW_TRACKSCHEME_VIEW_KEYS );
 		globalAppActions.namedAction( editTagSetsAction, TAGSETS_DIALOG_KEYS );
 
-		final PreferencesDialog settings = new PreferencesDialog( null );
+		final PreferencesDialog settings = new PreferencesDialog( null, keymap, new String[] { "mastodon" } );
 		settings.addPage( new TrackSchemeStyleSettingsPage( "TrackScheme Styles", trackSchemeStyleManager ) );
 		settings.addPage( new RenderSettingsConfigPage( "BDV Render Settings", renderSettingsManager ) );
 		settings.addPage( new KeymapSettingsPage( "Keymap", keymapManager ) );
