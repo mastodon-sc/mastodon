@@ -23,6 +23,7 @@ import org.mastodon.revised.ui.keymap.KeymapManager;
 import org.mastodon.revised.ui.keymap.KeymapSettingsPage;
 import org.mastodon.revised.util.ToggleDialogAction;
 import org.mastodon.views.context.ContextProvider;
+import org.scijava.Context;
 import org.scijava.ui.behaviour.KeyPressedManager;
 import org.scijava.ui.behaviour.io.InputTriggerDescription;
 import org.scijava.ui.behaviour.io.InputTriggerDescriptionsBuilder;
@@ -44,6 +45,8 @@ public class WindowManager
 	static final String[] NEW_TRACKSCHEME_VIEW_KEYS = new String[] { "not mapped" };
 	static final String[] PREFERENCES_DIALOG_KEYS = new String[] { "meta COMMA", "control COMMA" };
 	static final String[] TAGSETS_DIALOG_KEYS = new String[] { "not mapped" };
+
+	private final Context context;
 
 	/**
 	 * All currently open BigDataViewer windows.
@@ -82,8 +85,10 @@ public class WindowManager
 
 	final ProjectManager projectManager;
 
-	public WindowManager()
+	public WindowManager( final Context context )
 	{
+		this.context = context;
+
 		keyPressedManager = new KeyPressedManager();
 		trackSchemeStyleManager = new TrackSchemeStyleManager();
 		renderSettingsManager = new RenderSettingsManager();
@@ -273,6 +278,11 @@ public class WindowManager
 	Actions getGlobalAppActions()
 	{
 		return globalAppActions;
+	}
+
+	public Context getContext()
+	{
+		return context;
 	}
 
 	// TODO: move somewhere else. make bdvWindows, tsWindows accessible.

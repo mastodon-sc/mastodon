@@ -21,7 +21,6 @@ import org.mastodon.revised.ui.util.FileChooser;
 import org.mastodon.revised.ui.util.FileChooser.SelectionMode;
 import org.mastodon.revised.ui.util.XmlFileFilter;
 import org.mastodon.revised.util.ToggleDialogAction;
-import org.scijava.Context;
 import org.scijava.ui.behaviour.KeyPressedManager;
 import org.scijava.ui.behaviour.util.AbstractNamedAction;
 import org.scijava.ui.behaviour.util.Actions;
@@ -270,12 +269,7 @@ public class ProjectManager
 
 		windowManager.setAppModel( appModel );
 
-		/*
-		 * TODO FIXE Ugly hack to get proper service instantiation. Fix it by
-		 * proposing a proper Command decoupled from the GUI.
-		 */
-		final Context context = new Context();
-		final MamutFeatureComputerService featureComputerService = context.getService( MamutFeatureComputerService.class );
+		final MamutFeatureComputerService featureComputerService = windowManager.getContext().getService( MamutFeatureComputerService.class );
 		final JFrame owner = null; // TODO
 		final Dialog featureComputationDialog = new FeatureAndTagDialog( owner, model, featureComputerService );
 		featureComputationDialog.setSize( 400, 400 );
