@@ -21,7 +21,6 @@ import org.mastodon.revised.ui.util.FileChooser;
 import org.mastodon.revised.ui.util.FileChooser.SelectionMode;
 import org.mastodon.revised.ui.util.XmlFileFilter;
 import org.mastodon.revised.util.ToggleDialogAction;
-import org.scijava.Context;
 import org.scijava.ui.behaviour.KeyPressedManager;
 import org.scijava.ui.behaviour.util.AbstractNamedAction;
 import org.scijava.ui.behaviour.util.Actions;
@@ -68,12 +67,9 @@ public class ProjectManager
 
 	private final AbstractNamedAction exportMamutAction;
 
-	private final Context context;
-
-	public ProjectManager( final WindowManager windowManager, final Context context )
+	public ProjectManager( final WindowManager windowManager )
 	{
 		this.windowManager = windowManager;
-		this.context = context;
 
 		tgmmImportDialog = new TgmmImportDialog( null );
 
@@ -273,7 +269,7 @@ public class ProjectManager
 
 		windowManager.setAppModel( appModel );
 
-		final MamutFeatureComputerService featureComputerService = context.getService( MamutFeatureComputerService.class );
+		final MamutFeatureComputerService featureComputerService = windowManager.getContext().getService( MamutFeatureComputerService.class );
 		final JFrame owner = null; // TODO
 		final Dialog featureComputationDialog = new FeatureAndTagDialog( owner, model, featureComputerService );
 		featureComputationDialog.setSize( 400, 400 );

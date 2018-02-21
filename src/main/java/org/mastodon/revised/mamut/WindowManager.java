@@ -46,6 +46,8 @@ public class WindowManager
 	static final String[] PREFERENCES_DIALOG_KEYS = new String[] { "meta COMMA", "control COMMA" };
 	static final String[] TAGSETS_DIALOG_KEYS = new String[] { "not mapped" };
 
+	private final Context context;
+
 	/**
 	 * All currently open BigDataViewer windows.
 	 */
@@ -83,14 +85,10 @@ public class WindowManager
 
 	final ProjectManager projectManager;
 
-	public WindowManager()
+	public WindowManager( final Context context )
 	{
-		this( null );
-	}
+		this.context = context;
 
-	public WindowManager(final Context ct )
-	{
-		final Context context = ct == null ? new Context() : ct;
 		keyPressedManager = new KeyPressedManager();
 		trackSchemeStyleManager = new TrackSchemeStyleManager();
 		renderSettingsManager = new RenderSettingsManager();
@@ -106,7 +104,7 @@ public class WindowManager
 				appModel.getAppActions().updateKeyConfig( keymap.getConfig() );
 		} );
 
-		projectManager = new ProjectManager( this, context );
+		projectManager = new ProjectManager( this );
 		projectManager.install( globalAppActions );
 
 		newBdvViewAction = new RunnableAction( NEW_BDV_VIEW, this::createBigDataViewer );
@@ -280,6 +278,11 @@ public class WindowManager
 	Actions getGlobalAppActions()
 	{
 		return globalAppActions;
+	}
+
+	public Context getContext()
+	{
+		return context;
 	}
 
 	// TODO: move somewhere else. make bdvWindows, tsWindows accessible.
