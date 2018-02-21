@@ -450,8 +450,6 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 		final V ref1 = graph.vertexRef();
 		final V ref2 = graph.vertexRef();
 		final E ref3 = graph.edgeRef();
-		final double[] gPos = new double[ 3 ];
-		final double[] lPos = new double[ 3 ];
 
 		final double sliceDistanceFade = settings.getEllipsoidFadeDepth();
 		final double timepointDistanceFade = 0.5;
