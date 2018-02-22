@@ -34,6 +34,7 @@ import org.mastodon.graph.algorithm.traversal.InverseDepthFirstIterator;
 import org.mastodon.model.FocusModel;
 import org.mastodon.model.HasLabel;
 import org.mastodon.model.NavigationHandler;
+import org.mastodon.model.SelectionModel;
 import org.mastodon.util.KeyConfigUtils;
 import org.mastodon.views.trackscheme.util.AlphanumCompare;
 import org.scijava.ui.behaviour.util.Actions;
@@ -67,9 +68,10 @@ public class SearchVertexLabel< V extends Vertex< E > & HasLabel, E extends Edge
 			final Actions actions,
 			final ReadOnlyGraph< V, E > graph,
 			final NavigationHandler< V, E > navigation,
+			final SelectionModel< V, E > selection,
 			final FocusModel< V, E > focus )
 	{
-		final SearchVertexLabel< V, E > search = new SearchVertexLabel<>( graph, navigation, focus );
+		final SearchVertexLabel< V, E > search = new SearchVertexLabel<>( graph, navigation, selection, focus );
 		actions.runnableAction( () -> search.searchField.requestFocusInWindow(), SEARCH, SEARCH_KEYS );
 		return search.searchPanel;
 	}
@@ -77,6 +79,7 @@ public class SearchVertexLabel< V extends Vertex< E > & HasLabel, E extends Edge
 	private SearchVertexLabel(
 			final ReadOnlyGraph< V, E > graph,
 			final NavigationHandler< V, E > navigation,
+			final SelectionModel< V, E > selection,
 			final FocusModel< V, E > focus )
 	{
 		searchPanel = new JPanel();
@@ -120,7 +123,7 @@ public class SearchVertexLabel< V extends Vertex< E > & HasLabel, E extends Edge
 		gbc_chckbxstartswith.gridy = 0;
 		searchPanel.add( chckbxstartswith, gbc_chckbxstartswith );
 
-		final SearchAction< V, E > sa = new SearchAction<>( graph, navigation, focus );
+		final SearchAction< V, E > sa = new SearchAction<>( graph, navigation, selection, focus );
 		searchField.addFocusListener( sa );
 		labelIcon.addActionListener( ( event ) -> searchField.requestFocusInWindow() );
 
@@ -167,6 +170,8 @@ public class SearchVertexLabel< V extends Vertex< E > & HasLabel, E extends Edge
 
 		private final FocusModel< V, E > focus;
 
+		private final SelectionModel< V, E > selection;
+
 		private V start;
 
 		private String previousSearchString = "";
@@ -174,13 +179,15 @@ public class SearchVertexLabel< V extends Vertex< E > & HasLabel, E extends Edge
 		public SearchAction(
 				final ReadOnlyGraph< V, E > graph,
 				final NavigationHandler< V, E > navigation,
+				final SelectionModel< V, E > selection,
 				final FocusModel< V, E > focus )
 		{
 			super( graph );
 			this.navigation = navigation;
+			this.selection = selection;
 			this.focus = focus;
 			this.start = graph.vertexRef();
-			getStartFromFocus();
+			getStartFromUI();
 			reinit();
 		}
 
@@ -199,6 +206,7 @@ public class SearchVertexLabel< V extends Vertex< E > & HasLabel, E extends Edge
 				if ( startsWith ? label.startsWith( text ) : label.contains( text ) )
 				{
 					navigation.notifyNavigateToVertex( v );
+					focus.focusVertex( v );
 					if ( iterator.hasNext() )
 						start = assign( v, start );
 					return true;
@@ -207,14 +215,28 @@ public class SearchVertexLabel< V extends Vertex< E > & HasLabel, E extends Edge
 			return false;
 		}
 
-		private void getStartFromFocus()
+		private void getStartFromUI()
 		{
-			// Start the search from the vertex with the focus.
+			// If selection == 1 vertex, then start from this one.
+			final int nSelected = selection.getSelectedVertices().size();
+			if ( nSelected == 1 )
+			{
+				final V selectedVertex = selection.getSelectedVertices().iterator().next();
+				start = assign( selectedVertex, start );
+				return;
+			}
+
+			// If not look for the focused vertex.
 			final V ref = graph.vertexRef();
 			final V focusedVertex = focus.getFocusedVertex( ref );
 			if ( null != focusedVertex )
+			{
 				start = assign( focusedVertex, start );
-			else if ( !graph.vertices().isEmpty() )
+				return;
+			}
+
+			// If not take the first one.
+			if ( !graph.vertices().isEmpty() )
 				start = assign( graph.vertices().iterator().next(), start );
 		}
 
@@ -282,7 +304,8 @@ public class SearchVertexLabel< V extends Vertex< E > & HasLabel, E extends Edge
 		@Override
 		public void focusGained( final FocusEvent e )
 		{
-			getStartFromFocus();
+			getStartFromUI();
+			reinit();
 		}
 
 		@Override

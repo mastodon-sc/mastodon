@@ -116,7 +116,7 @@ public class MamutViewTrackScheme extends MamutView< TrackSchemeGraph< Spot, Lin
 		TrackSchemeZoom.install( viewBehaviours, frame.getTrackschemePanel() );
 		EditTagActions.install( viewActions, frame.getKeybindings(), frame.getTriggerbindings(), model.getTagSetModel(), appModel.getSelectionModel(), viewGraph.getLock(), frame.getTrackschemePanel(), frame.getTrackschemePanel().getDisplay(), model );
 
-		final JPanel searchPanel = SearchVertexLabel.install( viewActions, viewGraph, navigationHandler, focusModel );
+		final JPanel searchPanel = SearchVertexLabel.install( viewActions, viewGraph, navigationHandler, selectionModel, focusModel );
 		frame.getSettingsPanel().add( searchPanel );
 
 		// TODO Let the user choose between the two selection/focus modes.
