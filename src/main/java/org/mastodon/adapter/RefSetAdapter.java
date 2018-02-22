@@ -66,7 +66,21 @@ public class RefSetAdapter< O, WO >
 	@Override
 	public Iterator< WO > iterator()
 	{
-		throw new UnsupportedOperationException( "not implemented (yet)" );
+		final Iterator< O > iter = set.iterator();
+		final WO ref = map.reusableRightRef();
+		return new Iterator< WO >() {
+			@Override
+			public boolean hasNext()
+			{
+				return iter.hasNext();
+			}
+
+			@Override
+			public WO next()
+			{
+				return map.getRight( iter.next(), ref );
+			}
+		};
 	}
 
 	@Override
