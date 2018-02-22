@@ -57,6 +57,11 @@ public class ViewFrame extends JFrame
 		setJMenuBar( menubar );
 	}
 
+	public JPanel getSettingsPanel()
+	{
+		return settingsPanel;
+	}
+
 	public boolean isSettingsPanelVisible()
 	{
 		return isSettingsPanelVisible;
