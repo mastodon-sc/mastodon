@@ -296,7 +296,14 @@ public class SearchVertexLabel< V extends Vertex< E > & HasLabel, E extends Edge
 
 			iterator = new BreadthFirstCrossComponentIterator<>( root, graph, iteratedRoots );
 			// Rewind to the starting point.
-			while ( !iterator.next().equals( start ) );
+			System.out.println( "Loooking for " + start ); // DEBUG
+			while ( iterator.hasNext() )
+			{
+				final V next = iterator.next();
+				if ( next == null || next.equals( start ) )
+					break;
+
+			}
 
 			graph.releaseRef( root );
 		}

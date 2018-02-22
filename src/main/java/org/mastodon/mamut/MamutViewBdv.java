@@ -9,8 +9,10 @@ import static org.mastodon.mamut.MamutMenuBuilder.tagSetMenu;
 import static org.mastodon.mamut.MamutMenuBuilder.viewMenu;
 
 import javax.swing.ActionMap;
+import javax.swing.JPanel;
 
 import org.mastodon.app.ui.MastodonFrameViewActions;
+import org.mastodon.app.ui.SearchVertexLabel;
 import org.mastodon.app.ui.ViewMenu;
 import org.mastodon.app.ui.ViewMenuBuilder;
 import org.mastodon.app.ui.ViewMenuBuilder.JMenuHandle;
@@ -165,6 +167,9 @@ public class MamutViewBdv extends MamutView< OverlayGraphWrapper< Spot, Link >, 
 		FocusActions.install( viewActions, viewGraph, viewGraph.getLock(), navigateFocusModel, selectionModel );
 
 		NavigationActionsMamut.install( viewActions, viewer, sharedBdvData.is2D() );
+		final JPanel searchField = SearchVertexLabel.install( viewActions, viewGraph, navigationHandler, selectionModel, focusModel );
+		frame.getSettingsPanel().add( searchField );
+
 		viewer.getTransformEventHandler().install( viewBehaviours );
 
 		viewer.addTimePointListener( timePointIndex -> timepointModel.setTimepoint( timePointIndex ) );
