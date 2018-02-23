@@ -27,6 +27,8 @@ import org.mastodon.revised.ui.keymap.Keymap;
 
 public class MainWindow extends JFrame
 {
+	private static final long serialVersionUID = 1L;
+
 	protected final JMenuBar menubar;
 
 	private final ViewMenu menu;
