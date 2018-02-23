@@ -634,6 +634,42 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 		layout.draw( graphics, tx, ty );
 	}
 
+	/**
+	 * Returns the edge currently painted close to the specified location.
+	 * <p>
+	 * It is the responsibility of the caller to lock the graph it inspects for
+	 * reading operations, prior to calling this method. A typical call from
+	 * another method would happen like this:
+	 *
+	 * <pre>
+	 * ReentrantReadWriteLock lock = graph.getLock();
+	 * lock.readLock().lock();
+	 * final E ref = graph.edgeRef();
+	 * boolean found = false;
+	 * try
+	 * {
+	 * 	found = ( renderer.getEdgeAt( x, y, EDGE_SELECT_DISTANCE_TOLERANCE, ref ) != null )
+	 * }
+	 * finally
+	 * {
+	 * 	lock.readLock().unlock();
+	 * }
+	 * </pre>
+	 *
+	 * @param x
+	 *            the x location to search, in the local coordinate system
+	 *            (screen).
+	 * @param y
+	 *            the y location to search, in the local coordinate system
+	 *            (screen).
+	 * @param tolerance
+	 *            the distance tolerance to accept close edges.
+	 * @param ref
+	 *            an edge reference, that might be used to return the vertex
+	 *            found.
+	 * @return the closest edge within tolerance, or <code>null</code> if it
+	 *         could not be found.
+	 */
 	public E getEdgeAt( final int x, final int y, final double tolerance, final E ref )
 	{
 		if ( !settings.getDrawLinks() )
@@ -714,6 +750,43 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 		return renderTimepoint;
 	}
 
+	/**
+	 * Returns the vertex currently painted close to the specified location.
+	 * <p>
+	 * It is the responsibility of the caller to lock the graph it inspects for
+	 * reading operations, prior to calling this method. A typical call from
+	 * another method would happen like this:
+	 *
+	 * <pre>
+	 * ReentrantReadWriteLock lock = graph.getLock();
+	 * boolean isOutsideExistingSpot = false;
+	 * lock.readLock().lock();
+	 * try
+	 * {
+	 * 	final V ref = graph.vertexRef();
+	 * 	isOutsideExistingSpot = renderer.getVertexAt( x, y, POINT_SELECT_DISTANCE_TOLERANCE, ref ) == null;
+	 * 	overlayGraph.releaseRef( ref );
+	 * }
+	 * finally
+	 * {
+	 * 	lock.readLock().unlock();
+	 * }
+	 * </pre>
+	 *
+	 * @param x
+	 *            the x location to search, in the local coordinate system
+	 *            (screen).
+	 * @param y
+	 *            the y location to search, in the local coordinate system
+	 *            (screen).
+	 * @param tolerance
+	 *            the distance tolerance to accept close vertices.
+	 * @param ref
+	 *            a vertex reference, that might be used to return the vertex
+	 *            found.
+	 * @return the closest vertex within tolerance, or <code>null</code> if it
+	 *         could not be found.
+	 */
 	public V getVertexAt( final int x, final int y, final double tolerance, final V ref )
 	{
 		if ( !settings.getDrawSpots() )
