@@ -10,14 +10,17 @@ import java.awt.Container;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
+import java.awt.event.ActionEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
+import javax.swing.Action;
 import javax.swing.ActionMap;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JMenuBar;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JSeparator;
 import javax.swing.WindowConstants;
@@ -169,18 +172,47 @@ public class MainWindow extends JFrame
 		keymap.updateListeners().add( menu::updateKeymap );
 		addMenus( menu, actionMap );
 
-		setDefaultCloseOperation( WindowConstants.DISPOSE_ON_CLOSE );
+		setDefaultCloseOperation( WindowConstants.DO_NOTHING_ON_CLOSE );
 		addWindowListener( new WindowAdapter()
 		{
 			@Override
-			public void windowClosed( final WindowEvent e )
+			public void windowClosing( final WindowEvent e )
 			{
-				if ( windowManager != null )
-					windowManager.closeAllWindows();
+				close( windowManager, actionMap.get( ProjectManager.SAVE_PROJECT ), e );
 			}
 		} );
-
 		pack();
+	}
+
+	private void close( final WindowManager windowManager, final Action saveAction, final WindowEvent trigger )
+	{
+		// Custom button text
+		final Object[] options = {
+				"Save project",
+				"Don't save",
+				"Cancel" };
+		final int choice = JOptionPane.showOptionDialog( this,
+				"Do you want to save the project before closing mastodon?",
+				"Save before close?",
+				JOptionPane.YES_NO_CANCEL_OPTION,
+				JOptionPane.QUESTION_MESSAGE, null, options, JOptionPane.CANCEL_OPTION );
+
+		switch ( choice )
+		{
+		case JOptionPane.CLOSED_OPTION:
+		case JOptionPane.CANCEL_OPTION:
+		default:
+			return;
+
+		case JOptionPane.YES_OPTION:
+			saveAction.actionPerformed( new ActionEvent( trigger.getSource(), trigger.getID(), trigger.paramString() ) );
+			// Fall trough to closing.
+
+		case JOptionPane.NO_OPTION:
+			if ( windowManager != null )
+				windowManager.closeAllWindows();
+			dispose();
+		}
 	}
 
 	public static void addMenus( final ViewMenu menu, final ActionMap actionMap )
