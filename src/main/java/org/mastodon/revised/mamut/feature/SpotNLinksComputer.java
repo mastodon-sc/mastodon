@@ -17,7 +17,7 @@ import org.scijava.plugin.Plugin;
 public class SpotNLinksComputer implements SpotFeatureComputer
 {
 
-	private static final String KEY = "Spot N links";
+	public static final String KEY = "Spot N links";
 
 	@Override
 	public Set< String > getDependencies()
