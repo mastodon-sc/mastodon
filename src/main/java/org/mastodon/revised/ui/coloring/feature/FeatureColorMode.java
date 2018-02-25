@@ -233,7 +233,7 @@ public class FeatureColorMode implements Style< FeatureColorMode >
 
 	public synchronized void setVertexFeatureProjection( final String vertexFeatureKey, final String vertexProjectionKey )
 	{
-		if ( this.vertexFeatureProjection[ 0 ].equals( vertexFeatureKey ) || this.vertexFeatureProjection[ 1 ].equals( vertexProjectionKey ) )
+		if ( !this.vertexFeatureProjection[ 0 ].equals( vertexFeatureKey ) || !this.vertexFeatureProjection[ 1 ].equals( vertexProjectionKey ) )
 		{
 			this.vertexFeatureProjection = new String[] { vertexFeatureKey, vertexProjectionKey };
 			notifyListeners();
@@ -270,7 +270,7 @@ public class FeatureColorMode implements Style< FeatureColorMode >
 
 	public synchronized void setEdgeFeatureProjection( final String edgeFeatureKey, final String edgeProjectionKey )
 	{
-		if ( this.edgeFeatureProjection[ 0 ].equals( edgeFeatureKey ) || this.edgeFeatureProjection[ 1 ].equals( edgeProjectionKey ) )
+		if ( !this.edgeFeatureProjection[ 0 ].equals( edgeFeatureKey ) || !this.edgeFeatureProjection[ 1 ].equals( edgeProjectionKey ) )
 		{
 			this.edgeFeatureProjection = new String[] { edgeFeatureKey, edgeProjectionKey };
 			notifyListeners();
