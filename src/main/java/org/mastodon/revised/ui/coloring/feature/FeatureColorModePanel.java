@@ -57,7 +57,7 @@ public class FeatureColorModePanel extends JPanel
 
 	private final FeatureColorMode mode;
 
-	public FeatureColorModePanel( final FeatureColorMode mode, final FeatureModel featureModel, final Class< ? extends Vertex< ? > > vertexClass, final Class< ? extends Edge< ? > > edgeClass )
+	public FeatureColorModePanel( final FeatureColorMode mode, final FeatureModel featureModel, final FeatureRangeCalculator< ? extends Vertex< ? >, ? extends Edge< ? > > rangeCalculator, final Class< ? extends Vertex< ? > > vertexClass, final Class< ? extends Edge< ? > > edgeClass )
 	{
 		this.mode = mode;
 		this.featureModel = featureModel;
@@ -106,7 +106,24 @@ public class FeatureColorModePanel extends JPanel
 		 * Vertex feature range.
 		 */
 
-		final FeatureRangeSelector vertexFeatureRangeSelector = new FeatureRangeSelector();
+		final FeatureRangeSelector vertexFeatureRangeSelector = new FeatureRangeSelector()
+		{
+
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public void autoscale()
+			{
+				final Class< ? > clazz = ( mode.getVertexColorMode().equals( VertexColorMode.VERTEX ) ) ? vertexClass : edgeClass;
+				final String featureKey = mode.getVertexFeatureProjection()[ 0 ];
+				final String projectionKey = mode.getVertexFeatureProjection()[ 1 ];
+				final double[] minMax = rangeCalculator.computeMinMax( clazz, featureKey, projectionKey );
+				if ( null == minMax )
+					return;
+				setMinMax( minMax[ 0 ], minMax[ 1 ] );
+			}
+
+		};
 		addToLayout( new JLabel( "vertex range", JLabel.TRAILING ), vertexFeatureRangeSelector, c );
 
 		vertexFeatureRangeSelector.listeners().add( mm -> mode.setVertexRange( mm[ 0 ], mm[ 1 ] ) );
@@ -168,7 +185,7 @@ public class FeatureColorModePanel extends JPanel
 		c.gridy++;
 	}
 
-	private final class FeatureRangeSelector extends JPanel
+	private abstract class FeatureRangeSelector extends JPanel
 	{
 
 		private static final long serialVersionUID = 1L;
@@ -178,6 +195,8 @@ public class FeatureColorModePanel extends JPanel
 		private final JFormattedTextField max;
 
 		private final List< Consumer< double[] > > listeners = new ArrayList<>();
+
+		private final JButton autoscale;
 
 		public FeatureRangeSelector()
 		{
@@ -196,7 +215,7 @@ public class FeatureColorModePanel extends JPanel
 			max.setHorizontalAlignment( JLabel.TRAILING );
 			max.setValue( 1. );
 			add( max );
-			final JButton autoscale = new JButton( "autoscale" );
+			autoscale = new JButton( "autoscale" );
 			add( autoscale );
 
 			final FocusListener fl = new FocusAdapter()
@@ -217,11 +236,30 @@ public class FeatureColorModePanel extends JPanel
 			min.addFocusListener( fl );
 			max.addFocusListener( fl );
 
-			autoscale.addActionListener( e -> new Thread( () -> autoscale(), "Autoscale calculation thread." ).start() );
+			autoscale.addActionListener( e -> new Thread( () -> preAutoscale(), "Autoscale calculation thread." ).start() );
 
 			final PropertyChangeListener l = ( e ) -> notifyListeners();
 			min.addPropertyChangeListener( "value", l );
 			max.addPropertyChangeListener( "value", l );
+		}
+
+		private void preAutoscale()
+		{
+			min.setEnabled( false );
+			max.setEnabled( false );
+			autoscale.setEnabled( false );
+			autoscale.setText( "calculating..." );
+			try
+			{
+				autoscale();
+			}
+			finally
+			{
+				min.setEnabled( true );
+				max.setEnabled( true );
+				autoscale.setText( "autoscale" );
+				autoscale.setEnabled( true );
+			}
 		}
 
 		private void notifyListeners()
@@ -235,10 +273,7 @@ public class FeatureColorModePanel extends JPanel
 			listeners.forEach( c -> c.accept( val ) );
 		}
 
-		private void autoscale()
-		{
-			System.out.println( "autoscale" ); // DEBUG
-		}
+		public abstract void autoscale();
 
 		public void setMinMax( final double min, final double max )
 		{
@@ -252,7 +287,6 @@ public class FeatureColorModePanel extends JPanel
 		{
 			return listeners;
 		}
-
 	}
 
 	private final class ColorMapSelector extends JPanel
@@ -392,8 +426,6 @@ public class FeatureColorModePanel extends JPanel
 
 		private final List< BiConsumer< String, String > > listeners = new ArrayList<>();
 
-		private boolean fire = true;
-
 		public KeyChainPanel()
 		{
 			super( new FlowLayout( FlowLayout.LEADING, 10, 2 ) );
@@ -430,11 +462,9 @@ public class FeatureColorModePanel extends JPanel
 
 		public void setChain( final String c1, final String c2 )
 		{
-			fire = false;
 			regenCB1();
 			cb1.setSelectedItem( c1 );
 			cb2.setSelectedItem( c2 );
-			fire = true;
 		}
 
 		public void regenCB1()
@@ -467,8 +497,7 @@ public class FeatureColorModePanel extends JPanel
 			featureKeys.sort( null );
 			cb1.setModel( new DefaultComboBoxModel<>( featureKeys.toArray( new String[] {} ) ) );
 			regenCB2();
-			if ( fire )
-				notifyListers();
+			notifyListers();
 		}
 
 		private void regenCB2()

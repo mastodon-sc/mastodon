@@ -4,6 +4,7 @@ import java.awt.BorderLayout;
 import java.awt.Frame;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.io.IOException;
 import java.util.HashSet;
 import java.util.Locale;
 
@@ -13,6 +14,8 @@ import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.WindowConstants;
 
 import org.mastodon.app.ui.settings.SettingsPanel;
+import org.mastodon.revised.mamut.MamutProject;
+import org.mastodon.revised.mamut.MamutProjectIO;
 import org.mastodon.revised.mamut.feature.MamutFeatureComputerService;
 import org.mastodon.revised.model.feature.FeatureModel;
 import org.mastodon.revised.model.mamut.Link;
@@ -21,11 +24,12 @@ import org.mastodon.revised.model.mamut.Spot;
 import org.mastodon.revised.ui.ProgressListener;
 import org.mastodon.revised.ui.coloring.feature.FeatureColorModeConfigPage;
 import org.mastodon.revised.ui.coloring.feature.FeatureColorModeManager;
+import org.mastodon.revised.ui.coloring.feature.FeatureRangeCalculator;
 import org.scijava.Context;
 
 public class FeatureColorModeConfigPageTestDrive
 {
-	public static void main( final String[] args ) throws ClassNotFoundException, InstantiationException, IllegalAccessException, UnsupportedLookAndFeelException
+	public static void main( final String[] args ) throws ClassNotFoundException, InstantiationException, IllegalAccessException, UnsupportedLookAndFeelException, IOException
 	{
 		Locale.setDefault( Locale.ROOT );
 		UIManager.setLookAndFeel( UIManager.getSystemLookAndFeelClassName() );
@@ -33,13 +37,18 @@ public class FeatureColorModeConfigPageTestDrive
 		final Context context = new Context();
 		final MamutFeatureComputerService service = context.getService( MamutFeatureComputerService.class );
 		final Model model = new Model();
+		final MamutProject project = new MamutProjectIO().load( "samples/mamutproject" );
+		model.loadRaw( project );
+
 		final FeatureModel featureModel = model.getFeatureModel();
 		service.compute( model, featureModel, new HashSet<>( service.getFeatureComputers() ), pl );
+
+		final FeatureRangeCalculator< Spot, Link > rangeCalculator = new FeatureRangeCalculator<>( model.getGraph(), model.getFeatureModel() );
 
 		final FeatureColorModeManager featureColorModeManager = new FeatureColorModeManager();
 
 		final SettingsPanel settings = new SettingsPanel();
-		settings.addPage( new FeatureColorModeConfigPage( "Feature coloring", featureColorModeManager, featureModel, Spot.class, Link.class ) );
+		settings.addPage( new FeatureColorModeConfigPage( "Feature coloring", featureColorModeManager, featureModel, rangeCalculator, Spot.class, Link.class ) );
 
 		final JDialog dialog = new JDialog( ( Frame ) null, "Settings" );
 		dialog.getContentPane().add( settings, BorderLayout.CENTER );

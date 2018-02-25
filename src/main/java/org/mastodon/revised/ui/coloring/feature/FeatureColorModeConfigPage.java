@@ -18,11 +18,11 @@ public class FeatureColorModeConfigPage extends SelectAndEditProfileSettingsPage
 
 	public FeatureColorModeConfigPage(
 			final String treePath,
-			final FeatureColorModeManager featureColorModeManager, final FeatureModel featureModel, final Class< ? extends Vertex< ? > > vertexClass, final Class< ? extends Edge< ? > > edgeClass )
+			final FeatureColorModeManager featureColorModeManager, final FeatureModel featureModel, final FeatureRangeCalculator< ? extends Vertex< ? >, ? extends Edge< ? > > rangeCalculator, final Class< ? extends Vertex< ? > > vertexClass, final Class< ? extends Edge< ? > > edgeClass )
 	{
 		super( treePath,
 				new StyleProfileManager<>( featureColorModeManager, new FeatureColorModeManager( false ) ),
-				new FeatureColorModelEditPanel( featureColorModeManager.getDefaultStyle(), featureModel, vertexClass, edgeClass ) );
+				new FeatureColorModelEditPanel( featureColorModeManager.getDefaultStyle(), featureModel, rangeCalculator, vertexClass, edgeClass ) );
 	}
 
 	static class FeatureColorModelEditPanel implements FeatureColorMode.UpdateListener, SelectAndEditProfileSettingsPage.ProfileEditPanel< StyleProfile< FeatureColorMode > >
@@ -36,10 +36,10 @@ public class FeatureColorModeConfigPage extends SelectAndEditProfileSettingsPage
 
 		private boolean trackModifications = true;
 
-		public FeatureColorModelEditPanel( final FeatureColorMode initialMode, final FeatureModel featureModel, final Class< ? extends Vertex< ? > > vertexClass, final Class< ? extends Edge< ? > > edgeClass )
+		public FeatureColorModelEditPanel( final FeatureColorMode initialMode, final FeatureModel featureModel, final FeatureRangeCalculator< ? extends Vertex< ? >, ? extends Edge< ? > > rangeCalculator, final Class< ? extends Vertex< ? > > vertexClass, final Class< ? extends Edge< ? > > edgeClass )
 		{
 			this.editedMode = initialMode.copy( "Edited" );
-			this.featureColorModeEditorPanel = new FeatureColorModePanel( editedMode, featureModel, vertexClass, edgeClass );
+			this.featureColorModeEditorPanel = new FeatureColorModePanel( editedMode, featureModel, rangeCalculator, vertexClass, edgeClass );
 			this.modificationListeners = new Listeners.SynchronizedList<>();
 			editedMode.updateListeners().add( this );
 		}
