@@ -42,6 +42,7 @@ import org.mastodon.graph.Vertex;
 import org.mastodon.revised.model.feature.Feature;
 import org.mastodon.revised.model.feature.FeatureModel;
 import org.mastodon.revised.ui.coloring.ColorMap;
+import org.mastodon.revised.ui.coloring.feature.FeatureColorMode.EdgeColorMode;
 import org.mastodon.revised.ui.coloring.feature.FeatureColorMode.VertexColorMode;
 
 public class FeatureColorModePanel extends JPanel
@@ -86,7 +87,7 @@ public class FeatureColorModePanel extends JPanel
 		 * Vertex feature.
 		 */
 
-		final KeyChainPanel vertexFeatureKeySelector = new KeyChainPanel();
+		final VertexFeatureKeySelector vertexFeatureKeySelector = new VertexFeatureKeySelector();
 		addToLayout( new JLabel( "vertex feature", JLabel.TRAILING ), vertexFeatureKeySelector, c );
 
 		vertexColorModeSelector.listeners().add( m -> mode.setVertexColorMode( m ) );
@@ -129,17 +130,6 @@ public class FeatureColorModePanel extends JPanel
 		vertexFeatureRangeSelector.listeners().add( mm -> mode.setVertexRange( mm[ 0 ], mm[ 1 ] ) );
 
 		/*
-		 * Listen to changes in vertex color mode and hide panels or not.
-		 */
-
-		vertexColorModeSelector.listeners.add( vcm -> {
-			final boolean visible = !vcm.equals( VertexColorMode.NONE );
-			vertexFeatureKeySelector.setVisible( visible );
-			vertexColorMapSelector.setVisible( visible );
-			vertexFeatureRangeSelector.setVisible( visible );
-		} );
-
-		/*
 		 * Separator.
 		 */
 
@@ -151,10 +141,84 @@ public class FeatureColorModePanel extends JPanel
 		c.gridwidth = 1;
 
 		/*
+		 * Edge color mode.
+		 */
+		final RadioButtonChoices< EdgeColorMode > edgeColorModeSelector = new RadioButtonChoices<>( EdgeColorMode.values() );
+		addToLayout( new JLabel( "edge color mode", JLabel.TRAILING ), edgeColorModeSelector, c );
+
+		/*
+		 * Edge feature.
+		 */
+
+		final EdgeFeatureKeySelector edgeFeatureKeySelector = new EdgeFeatureKeySelector();
+		addToLayout( new JLabel( "edge feature", JLabel.TRAILING ), edgeFeatureKeySelector, c );
+
+		edgeColorModeSelector.listeners().add( m -> mode.setEdgeColorMode( m ) );
+		edgeFeatureKeySelector.listeners().add( ( fk, pk ) -> mode.setEdgeFeatureProjection( fk, pk ) );
+		edgeColorModeSelector.listeners().add( m -> edgeFeatureKeySelector.regenCB1() );
+
+		/*
+		 * Edge color map.
+		 */
+
+		final ColorMapSelector edgeColorMapSelector = new ColorMapSelector( ColorMap.getColorMapNames() );
+		addToLayout( new JLabel( "edge colormap", JLabel.TRAILING ), edgeColorMapSelector, c );
+
+		edgeColorMapSelector.listeners().add( cm -> mode.setEdgeColorMap( cm ) );
+
+		/*
+		 * Edge feature range.
+		 */
+
+		final FeatureRangeSelector edgeFeatureRangeSelector = new FeatureRangeSelector()
+		{
+
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public void autoscale()
+			{
+				final Class< ? > clazz = ( mode.getEdgeColorMode().equals( EdgeColorMode.EDGE ) ) ? edgeClass : vertexClass;
+				final String featureKey = mode.getEdgeFeatureProjection()[ 0 ];
+				final String projectionKey = mode.getEdgeFeatureProjection()[ 1 ];
+				final double[] minMax = rangeCalculator.computeMinMax( clazz, featureKey, projectionKey );
+				if ( null == minMax )
+					return;
+				setMinMax( minMax[ 0 ], minMax[ 1 ] );
+			}
+		};
+		addToLayout( new JLabel( "edge range", JLabel.TRAILING ), edgeFeatureRangeSelector, c );
+
+		edgeFeatureRangeSelector.listeners().add( mm -> mode.setEdgeRange( mm[ 0 ], mm[ 1 ] ) );
+
+		/*
+		 * Listen to changes in vertex color mode and hide panels or not.
+		 */
+
+		final Consumer< VertexColorMode > vv = vcm -> {
+			final boolean visible = !vcm.equals( VertexColorMode.NONE );
+			vertexFeatureKeySelector.setVisible( visible );
+			vertexColorMapSelector.setVisible( visible );
+			vertexFeatureRangeSelector.setVisible( visible );
+		};
+		vertexColorModeSelector.listeners.add( vv );
+
+		/*
+		 * Listen to changes in edge color mode and hide panels or not.
+		 */
+
+		final Consumer< EdgeColorMode > ve = vcm -> {
+			final boolean visible = !vcm.equals( EdgeColorMode.NONE );
+			edgeFeatureKeySelector.setVisible( visible );
+			edgeColorMapSelector.setVisible( visible );
+			edgeFeatureRangeSelector.setVisible( visible );
+		};
+		edgeColorModeSelector.listeners.add( ve );
+
+		/*
 		 * Listen to changes in the mode and forward them to the view.
 		 */
 
-		mode.updateListeners().add( () -> System.out.println( "Mode updated: " + mode.toString() ) ); // DEBUG
 		final FeatureColorMode.UpdateListener l = new FeatureColorMode.UpdateListener()
 		{
 
@@ -165,6 +229,12 @@ public class FeatureColorModePanel extends JPanel
 				vertexFeatureKeySelector.setChain( mode.getVertexFeatureProjection()[ 0 ], mode.getVertexFeatureProjection()[ 1 ] );
 				vertexColorMapSelector.setColorMap( mode.getVertexColorMap() );
 				vertexFeatureRangeSelector.setMinMax( mode.getVertexRangeMin(), mode.getVertexRangeMax() );
+				edgeColorModeSelector.setSelected( mode.getEdgeColorMode() );
+				edgeFeatureKeySelector.setChain( mode.getEdgeFeatureProjection()[ 0 ], mode.getEdgeFeatureProjection()[ 1 ] );
+				edgeColorMapSelector.setColorMap( mode.getEdgeColorMap() );
+				edgeFeatureRangeSelector.setMinMax( mode.getEdgeRangeMin(), mode.getEdgeRangeMax() );
+				vv.accept( mode.getVertexColorMode() );
+				ve.accept( mode.getEdgeColorMode() );
 			}
 		};
 		l.featureColorModeChanged();
@@ -411,22 +481,100 @@ public class FeatureColorModePanel extends JPanel
 		}
 	}
 
-	private final class KeyChainPanel extends JPanel
+	private class VertexFeatureKeySelector extends FeatureKeySelector
+	{
+		private static final long serialVersionUID = 1L;
+
+		@Override
+		public void regenCB1()
+		{
+			final Class< ? > clazz;
+			switch ( mode.getVertexColorMode() )
+			{
+			case INCOMING_EDGE:
+			case OUTGOING_EDGE:
+				clazz = edgeClass;
+				setVisible( true );
+				break;
+			case NONE:
+			default:
+				clazz = null;
+				setVisible( false );
+				break;
+			case VERTEX:
+				clazz = vertexClass;
+				setVisible( true );
+				break;
+			}
+			if ( previousClass == clazz )
+				return;
+			previousClass = clazz;
+			if ( null == clazz )
+				return;
+
+			final List< String > featureKeys = featureModel.getFeatureSet( clazz ).stream().map( Feature::getKey ).collect( Collectors.toList() );
+			featureKeys.sort( null );
+			cb1.setModel( new DefaultComboBoxModel<>( featureKeys.toArray( new String[] {} ) ) );
+
+			super.regenCB1();
+		}
+	}
+
+	private class EdgeFeatureKeySelector extends FeatureKeySelector
+	{
+		private static final long serialVersionUID = 1L;
+
+		@Override
+		public void regenCB1()
+		{
+			final Class< ? > clazz;
+			switch ( mode.getEdgeColorMode() )
+			{
+			case EDGE:
+				clazz = edgeClass;
+				setVisible( true );
+				break;
+			case NONE:
+			default:
+				clazz = null;
+				setVisible( false );
+				break;
+			case SOURCE_VERTEX:
+			case TARGET_VERTEX:
+				clazz = vertexClass;
+				setVisible( true );
+				break;
+			}
+			if ( previousClass == clazz )
+				return;
+			previousClass = clazz;
+			if ( null == clazz )
+				return;
+
+			final List< String > featureKeys = featureModel.getFeatureSet( clazz ).stream().map( Feature::getKey ).collect( Collectors.toList() );
+			featureKeys.sort( null );
+			cb1.setModel( new DefaultComboBoxModel<>( featureKeys.toArray( new String[] {} ) ) );
+
+			super.regenCB1();
+		}
+	}
+
+	private abstract class FeatureKeySelector extends JPanel
 	{
 
 		private static final long serialVersionUID = 1L;
 
-		private final JComboBox< String > cb1;
+		protected final JComboBox< String > cb1;
 
 		private final JComboBox< String > cb2;
 
-		private Class< ? > previousClass;
+		protected Class< ? > previousClass;
 
 		private final JLabel arrow;
 
 		private final List< BiConsumer< String, String > > listeners = new ArrayList<>();
 
-		public KeyChainPanel()
+		public FeatureKeySelector()
 		{
 			super( new FlowLayout( FlowLayout.LEADING, 10, 2 ) );
 			cb1 = new JComboBox<>();
@@ -469,33 +617,6 @@ public class FeatureColorModePanel extends JPanel
 
 		public void regenCB1()
 		{
-			final Class< ? > clazz;
-			switch ( mode.getVertexColorMode() )
-			{
-			case INCOMING_EDGE:
-			case OUTGOING_EDGE:
-				clazz = edgeClass;
-				setVisible( true );
-				break;
-			case NONE:
-			default:
-				clazz = null;
-				setVisible( false );
-				break;
-			case VERTEX:
-				clazz = vertexClass;
-				setVisible( true );
-				break;
-			}
-			if ( previousClass == clazz )
-				return;
-			previousClass = clazz;
-			if ( null == clazz )
-				return;
-
-			final List< String > featureKeys = featureModel.getFeatureSet( clazz ).stream().map( Feature::getKey ).collect( Collectors.toList() );
-			featureKeys.sort( null );
-			cb1.setModel( new DefaultComboBoxModel<>( featureKeys.toArray( new String[] {} ) ) );
 			regenCB2();
 			notifyListers();
 		}
