@@ -80,7 +80,7 @@ public class FeatureColorModePanel extends JPanel
 		/*
 		 * Vertex color mode.
 		 */
-		final RadioButtonChoices< VertexColorMode > vertexColorModeSelector = new RadioButtonChoices<>( VertexColorMode.values() );
+		final ModeSelector< VertexColorMode > vertexColorModeSelector = new ModeSelector<>( VertexColorMode.values() );
 		addToLayout( new JLabel( "vertex color mode", JLabel.TRAILING ), vertexColorModeSelector, c );
 
 		/*
@@ -92,7 +92,7 @@ public class FeatureColorModePanel extends JPanel
 
 		vertexColorModeSelector.listeners().add( m -> mode.setVertexColorMode( m ) );
 		vertexFeatureKeySelector.listeners().add( ( fk, pk ) -> mode.setVertexFeatureProjection( fk, pk ) );
-		vertexColorModeSelector.listeners().add( m -> vertexFeatureKeySelector.regenCB1() );
+		vertexColorModeSelector.listeners().add( m -> vertexFeatureKeySelector.regen() );
 
 		/*
 		 * Vertex color map.
@@ -143,7 +143,7 @@ public class FeatureColorModePanel extends JPanel
 		/*
 		 * Edge color mode.
 		 */
-		final RadioButtonChoices< EdgeColorMode > edgeColorModeSelector = new RadioButtonChoices<>( EdgeColorMode.values() );
+		final ModeSelector< EdgeColorMode > edgeColorModeSelector = new ModeSelector<>( EdgeColorMode.values() );
 		addToLayout( new JLabel( "edge color mode", JLabel.TRAILING ), edgeColorModeSelector, c );
 
 		/*
@@ -155,7 +155,7 @@ public class FeatureColorModePanel extends JPanel
 
 		edgeColorModeSelector.listeners().add( m -> mode.setEdgeColorMode( m ) );
 		edgeFeatureKeySelector.listeners().add( ( fk, pk ) -> mode.setEdgeFeatureProjection( fk, pk ) );
-		edgeColorModeSelector.listeners().add( m -> edgeFeatureKeySelector.regenCB1() );
+		edgeColorModeSelector.listeners().add( m -> edgeFeatureKeySelector.regen() );
 
 		/*
 		 * Edge color map.
@@ -226,11 +226,11 @@ public class FeatureColorModePanel extends JPanel
 			public void featureColorModeChanged()
 			{
 				vertexColorModeSelector.setSelected( mode.getVertexColorMode() );
-				vertexFeatureKeySelector.setChain( mode.getVertexFeatureProjection()[ 0 ], mode.getVertexFeatureProjection()[ 1 ] );
+				vertexFeatureKeySelector.setFeatureKeys( mode.getVertexFeatureProjection()[ 0 ], mode.getVertexFeatureProjection()[ 1 ] );
 				vertexColorMapSelector.setColorMap( mode.getVertexColorMap() );
 				vertexFeatureRangeSelector.setMinMax( mode.getVertexRangeMin(), mode.getVertexRangeMax() );
 				edgeColorModeSelector.setSelected( mode.getEdgeColorMode() );
-				edgeFeatureKeySelector.setChain( mode.getEdgeFeatureProjection()[ 0 ], mode.getEdgeFeatureProjection()[ 1 ] );
+				edgeFeatureKeySelector.setFeatureKeys( mode.getEdgeFeatureProjection()[ 0 ], mode.getEdgeFeatureProjection()[ 1 ] );
 				edgeColorMapSelector.setColorMap( mode.getEdgeColorMap() );
 				edgeFeatureRangeSelector.setMinMax( mode.getEdgeRangeMin(), mode.getEdgeRangeMax() );
 				vv.accept( mode.getVertexColorMode() );
@@ -418,7 +418,7 @@ public class FeatureColorModePanel extends JPanel
 			final ColorMap cmap = ColorMap.getColorMap( cname );
 			final int w = getWidth();
 			final int h = getHeight();
-			final int lw = ( int ) ( 0.9 * w );
+			final int lw = ( int ) ( 0.85 * w );
 			for ( int i = 0; i < lw; i++ )
 			{
 				g.setColor( new Color( cmap.get( ( double ) i / lw ), true ) );
@@ -427,7 +427,7 @@ public class FeatureColorModePanel extends JPanel
 
 			// NaN.
 			g.setColor( new Color( cmap.get( Double.NaN ) ) );
-			g.fillRect( ( int ) ( 0.92 * w ), 0, ( int ) ( 0.08 * w ), h );
+			g.fillRect( ( int ) ( 0.9 * w ), 0, ( int ) ( 0.1 * w ), h );
 		}
 
 		@Override
@@ -435,7 +435,7 @@ public class FeatureColorModePanel extends JPanel
 		{
 			final Dimension dimension = super.getPreferredSize();
 			dimension.height = 20;
-			dimension.width = 100;
+			dimension.width = 150;
 			return dimension;
 		}
 
@@ -446,7 +446,7 @@ public class FeatureColorModePanel extends JPanel
 		}
 	}
 
-	private final class RadioButtonChoices< E > extends JPanel
+	private final class ModeSelector< E > extends JPanel
 	{
 
 		private static final long serialVersionUID = 1L;
@@ -455,7 +455,7 @@ public class FeatureColorModePanel extends JPanel
 
 		private final Map< E, JToggleButton > buttons;
 
-		public RadioButtonChoices( final E[] choices )
+		public ModeSelector( final E[] choices )
 		{
 			super( new FlowLayout( FlowLayout.LEADING, 10, 2 ) );
 			buttons = new HashMap<>();
@@ -486,7 +486,7 @@ public class FeatureColorModePanel extends JPanel
 		private static final long serialVersionUID = 1L;
 
 		@Override
-		public void regenCB1()
+		public void regen()
 		{
 			final Class< ? > clazz;
 			switch ( mode.getVertexColorMode() )
@@ -516,7 +516,7 @@ public class FeatureColorModePanel extends JPanel
 			featureKeys.sort( null );
 			cb1.setModel( new DefaultComboBoxModel<>( featureKeys.toArray( new String[] {} ) ) );
 
-			super.regenCB1();
+			super.regen();
 		}
 	}
 
@@ -525,7 +525,7 @@ public class FeatureColorModePanel extends JPanel
 		private static final long serialVersionUID = 1L;
 
 		@Override
-		public void regenCB1()
+		public void regen()
 		{
 			final Class< ? > clazz;
 			switch ( mode.getEdgeColorMode() )
@@ -555,7 +555,7 @@ public class FeatureColorModePanel extends JPanel
 			featureKeys.sort( null );
 			cb1.setModel( new DefaultComboBoxModel<>( featureKeys.toArray( new String[] {} ) ) );
 
-			super.regenCB1();
+			super.regen();
 		}
 	}
 
@@ -608,14 +608,14 @@ public class FeatureColorModePanel extends JPanel
 			return listeners;
 		}
 
-		public void setChain( final String c1, final String c2 )
+		public void setFeatureKeys( final String c1, final String c2 )
 		{
-			regenCB1();
+			regen();
 			cb1.setSelectedItem( c1 );
 			cb2.setSelectedItem( c2 );
 		}
 
-		public void regenCB1()
+		protected void regen()
 		{
 			regenCB2();
 			notifyListers();
