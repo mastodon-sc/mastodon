@@ -23,16 +23,17 @@ public class FeatureRangeCalculator< V extends Vertex< E >, E extends Edge< V > 
 	}
 
 	/**
-	 * Returns the current min & max for the specified feature.
+	 * Returns the current min and max for the specified feature.
 	 *
 	 * @param clazz
-	 *            the target class for which the feature is defined. Must be one of the graph vertex class or edge class.
+	 *            the target class for which the feature is defined. Must be one
+	 *            of the graph vertex class or edge class.
 	 * @param featureKey
 	 *            the feature key.
 	 * @param projectionKey
 	 *            the projection key.
-	 * @return the min & max as a new <code>double[]</code> 2-elements array, or
-	 *         <code>null</code> if the calculation could not proceed because
+	 * @return the min and max as a new <code>double[]</code> 2-elements array,
+	 *         or <code>null</code> if the calculation could not proceed because
 	 *         the feature was not found the specified class, the projection
 	 *         does not exist for the feature or there are no objects to compute
 	 *         feature on.
