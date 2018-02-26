@@ -25,6 +25,12 @@ public class FeatureColorModeConfigPage extends SelectAndEditProfileSettingsPage
 				new FeatureColorModelEditPanel( featureColorModeManager.getDefaultStyle(), featureModel, rangeCalculator, vertexClass, edgeClass ) );
 	}
 
+	public void refresh()
+	{
+		// HAX!
+		( ( FeatureColorModePanel ) getJPanel().getComponent( 1 ) ).refresh();
+	}
+
 	static class FeatureColorModelEditPanel implements FeatureColorMode.UpdateListener, SelectAndEditProfileSettingsPage.ProfileEditPanel< StyleProfile< FeatureColorMode > >
 	{
 

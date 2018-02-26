@@ -44,6 +44,7 @@ import org.mastodon.revised.mamut.feature.MamutFeatureComputerService;
 import org.mastodon.revised.model.feature.FeatureComputer;
 import org.mastodon.revised.model.mamut.Model;
 import org.mastodon.revised.ui.ProgressListener;
+import org.mastodon.util.Listeners;
 import org.scijava.Context;
 
 public class FeatureComputersPanel extends JPanel
@@ -178,6 +179,8 @@ public class FeatureComputersPanel extends JPanel
 
 	private final EchoLastModified echoLastModified = new EchoLastModified();
 
+	private final Listeners.List< UpdateListener > listeners = new Listeners.SynchronizedList<>();
+
 	private final class EchoLastModified implements GraphChangeListener
 	{
 
@@ -216,6 +219,7 @@ public class FeatureComputersPanel extends JPanel
 						worker = null;
 						btnCompute.setText( "Compute" );
 						btnCompute.setIcon( GO_ICON );
+						listeners.list.forEach( UpdateListener::featureValuesCalculated );
 					}
 				}
 			} );
@@ -289,6 +293,16 @@ public class FeatureComputersPanel extends JPanel
 		c.gridy++;
 		panel.add( Box.createVerticalStrut( 15 ), c );
 		c.gridy++;
+	}
+
+	public interface UpdateListener
+	{
+		public void featureValuesCalculated();
+	}
+
+	public Listeners< UpdateListener > listeners()
+	{
+		return listeners;
 	}
 
 	private class FeatureComputerWorker extends SwingWorker< Boolean, String >

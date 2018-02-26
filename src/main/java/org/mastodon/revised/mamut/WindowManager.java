@@ -85,6 +85,8 @@ public class WindowManager
 
 	final ProjectManager projectManager;
 
+	private final FeatureComputersPanel featureComputersPanel;
+
 	final PreferencesDialog settings;
 
 	public WindowManager( final Context context )
@@ -118,9 +120,12 @@ public class WindowManager
 		globalAppActions.namedAction( editTagSetsAction, TAGSETS_DIALOG_KEYS );
 
 		settings = new PreferencesDialog( null, keymap, new String[] { "mastodon" } );
+		final MamutFeatureComputerService featureComputerService = context.getService( MamutFeatureComputerService.class );
+		this.featureComputersPanel = new FeatureComputersPanel( featureComputerService );
 		settings.addPage( new TrackSchemeStyleSettingsPage( "TrackScheme Styles", trackSchemeStyleManager ) );
 		settings.addPage( new RenderSettingsConfigPage( "BDV Render Settings", renderSettingsManager ) );
 		settings.addPage( new KeymapSettingsPage( "Keymap", keymapManager ) );
+		settings.addPage( new SimpleSettingsPage( "Feature Calculation", featureComputersPanel ) );
 		final ToggleDialogAction tooglePreferencesDialogAction = new ToggleDialogAction( PREFERENCES_DIALOG, settings );
 		globalAppActions.namedAction( tooglePreferencesDialogAction, PREFERENCES_DIALOG_KEYS );
 
@@ -132,6 +137,7 @@ public class WindowManager
 		newBdvViewAction.setEnabled( appModel != null );
 		newTrackSchemeViewAction.setEnabled( appModel != null );
 		editTagSetsAction.setEnabled( appModel != null );
+		featureComputersPanel.setEnabled( appModel != null );
 	}
 
 	void setAppModel( final MamutAppModel appModel )
@@ -145,6 +151,7 @@ public class WindowManager
 		{
 			tagSetDialog.dispose();
 			tagSetDialog = null;
+			featureComputersPanel.setModel( null );
 			updateEnabledActions();
 			settings.removePage( featureColorTreePath );
 			return;
@@ -156,13 +163,15 @@ public class WindowManager
 
 		final Keymap keymap = keymapManager.getForwardDefaultKeymap();
 		tagSetDialog = new TagSetDialog( null, model.getTagSetModel(), model, keymap, new String[] { "mastodon" } );
-		settings.addPage(
-				new FeatureColorModeConfigPage(
-						featureColorTreePath,
-						new FeatureColorModeManager(),
-						appModel.getModel().getFeatureModel(),
-						new FeatureRangeCalculator<>( appModel.getModel().getGraph(), appModel.getModel().getFeatureModel() ),
-						Spot.class, Link.class ) );
+		final FeatureColorModeConfigPage featureColorModeConfigPage = new FeatureColorModeConfigPage(
+				featureColorTreePath,
+				new FeatureColorModeManager(),
+				appModel.getModel().getFeatureModel(),
+				new FeatureRangeCalculator<>( appModel.getModel().getGraph(), appModel.getModel().getFeatureModel() ),
+				Spot.class, Link.class );
+		settings.addPage( featureColorModeConfigPage );
+		featureComputersPanel.setModel( appModel.getModel() );
+		featureComputersPanel.listeners().add( () -> featureColorModeConfigPage.refresh() ); // TODO: remove listeners?
 		updateEnabledActions();
 	}
 

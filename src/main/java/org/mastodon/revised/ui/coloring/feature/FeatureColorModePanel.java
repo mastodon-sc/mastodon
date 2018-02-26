@@ -58,6 +58,10 @@ public class FeatureColorModePanel extends JPanel
 
 	private final FeatureColorMode mode;
 
+	private EdgeFeatureKeySelector edgeFeatureKeySelector;
+
+	private VertexFeatureKeySelector vertexFeatureKeySelector;
+
 	public FeatureColorModePanel( final FeatureColorMode mode, final FeatureModel featureModel, final FeatureRangeCalculator< ? extends Vertex< ? >, ? extends Edge< ? > > rangeCalculator, final Class< ? extends Vertex< ? > > vertexClass, final Class< ? extends Edge< ? > > edgeClass )
 	{
 		this.mode = mode;
@@ -87,7 +91,7 @@ public class FeatureColorModePanel extends JPanel
 		 * Vertex feature.
 		 */
 
-		final VertexFeatureKeySelector vertexFeatureKeySelector = new VertexFeatureKeySelector();
+		this.vertexFeatureKeySelector = new VertexFeatureKeySelector();
 		addToLayout( new JLabel( "vertex feature", JLabel.TRAILING ), vertexFeatureKeySelector, c );
 
 		vertexColorModeSelector.listeners().add( m -> mode.setVertexColorMode( m ) );
@@ -150,7 +154,7 @@ public class FeatureColorModePanel extends JPanel
 		 * Edge feature.
 		 */
 
-		final EdgeFeatureKeySelector edgeFeatureKeySelector = new EdgeFeatureKeySelector();
+		this.edgeFeatureKeySelector = new EdgeFeatureKeySelector();
 		addToLayout( new JLabel( "edge feature", JLabel.TRAILING ), edgeFeatureKeySelector, c );
 
 		edgeColorModeSelector.listeners().add( m -> mode.setEdgeColorMode( m ) );
@@ -253,6 +257,15 @@ public class FeatureColorModePanel extends JPanel
 		c.weightx = 1.0;
 		add( comp2, c );
 		c.gridy++;
+	}
+
+	public void refresh()
+	{
+		// Force refill of combo boxes.
+		vertexFeatureKeySelector.previousClass = null;
+		vertexFeatureKeySelector.regen();
+		edgeFeatureKeySelector.previousClass = null;
+		edgeFeatureKeySelector.regen();
 	}
 
 	private abstract class FeatureRangeSelector extends JPanel
