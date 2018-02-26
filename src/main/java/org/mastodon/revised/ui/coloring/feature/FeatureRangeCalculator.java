@@ -41,7 +41,7 @@ public class FeatureRangeCalculator< V extends Vertex< E >, E extends Edge< V > 
 	public double[] computeMinMax( final Class< ? > clazz, final String featureKey, final String projectionKey )
 	{
 		final Feature< ?, ? > feature = featureModel.getFeature( featureKey );
-		if ( feature.getTargetClass() != clazz )
+		if ( null == feature || feature.getTargetClass() != clazz )
 			return null;
 
 		final FeatureProjection< ? > projection = feature.getProjections().get( projectionKey );

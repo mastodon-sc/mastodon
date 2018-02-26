@@ -509,7 +509,7 @@ public class FeatureColorModePanel extends JPanel
 			if ( previousClass == clazz )
 				return;
 			previousClass = clazz;
-			if ( null == clazz )
+			if ( null == clazz || null == featureModel.getFeatureSet( clazz ) )
 				return;
 
 			final List< String > featureKeys = featureModel.getFeatureSet( clazz ).stream().map( Feature::getKey ).collect( Collectors.toList() );
@@ -548,7 +548,7 @@ public class FeatureColorModePanel extends JPanel
 			if ( previousClass == clazz )
 				return;
 			previousClass = clazz;
-			if ( null == clazz )
+			if ( null == clazz || null == featureModel.getFeatureSet( clazz ) )
 				return;
 
 			final List< String > featureKeys = featureModel.getFeatureSet( clazz ).stream().map( Feature::getKey ).collect( Collectors.toList() );
