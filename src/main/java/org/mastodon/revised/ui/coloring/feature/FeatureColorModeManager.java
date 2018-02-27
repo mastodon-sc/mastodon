@@ -17,7 +17,11 @@ import org.yaml.snakeyaml.Yaml;
 public class FeatureColorModeManager extends AbstractStyleManager< FeatureColorModeManager, FeatureColorMode >
 {
 
-	private static final String COLOR_MODE_FILE = System.getProperty( "user.home" ) + "/.mastodon/colormodes.yaml";;
+	private static final String COLOR_MODE_FILE = System.getProperty( "user.home" ) + "/.mastodon/colormodes.yaml";
+
+	private final FeatureColorMode forwardDefaultMode;
+
+	private final FeatureColorMode.UpdateListener updateForwardDefaultListeners;
 
 	public FeatureColorModeManager()
 	{
@@ -26,8 +30,25 @@ public class FeatureColorModeManager extends AbstractStyleManager< FeatureColorM
 
 	public FeatureColorModeManager( final boolean loadModes )
 	{
+		forwardDefaultMode = FeatureColorMode.defaultMode().copy();
+		updateForwardDefaultListeners = () -> forwardDefaultMode.set( defaultStyle );
+		defaultStyle.updateListeners().add( updateForwardDefaultListeners );
 		if ( loadModes )
 			loadModes();
+	}
+
+	public FeatureColorMode getForwardDefaultMode()
+	{
+		return forwardDefaultMode;
+	}
+
+	@Override
+	public synchronized void setDefaultStyle( final FeatureColorMode featureColorMode )
+	{
+		defaultStyle.updateListeners().remove( updateForwardDefaultListeners );
+		defaultStyle = featureColorMode;
+		forwardDefaultMode.set( defaultStyle );
+		defaultStyle.updateListeners().add( updateForwardDefaultListeners );
 	}
 
 	@Override
