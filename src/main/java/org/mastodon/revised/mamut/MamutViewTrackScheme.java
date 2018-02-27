@@ -11,6 +11,9 @@ import javax.swing.ActionMap;
 import org.mastodon.app.ui.MastodonFrameViewActions;
 import org.mastodon.app.ui.ViewMenu;
 import org.mastodon.app.ui.ViewMenuBuilder.JMenuHandle;
+import org.mastodon.revised.model.feature.Feature;
+import org.mastodon.revised.model.feature.FeatureModel;
+import org.mastodon.revised.model.feature.FeatureProjection;
 import org.mastodon.revised.model.mamut.Link;
 import org.mastodon.revised.model.mamut.Model;
 import org.mastodon.revised.model.mamut.ModelGraphTrackSchemeProperties;
@@ -30,10 +33,20 @@ import org.mastodon.revised.ui.EditTagActions;
 import org.mastodon.revised.ui.FocusActions;
 import org.mastodon.revised.ui.HighlightBehaviours;
 import org.mastodon.revised.ui.SelectionActions;
+import org.mastodon.revised.ui.coloring.ColorGenerator;
+import org.mastodon.revised.ui.coloring.ColorMap;
 import org.mastodon.revised.ui.coloring.ColoringMenu;
 import org.mastodon.revised.ui.coloring.ColoringModel;
+import org.mastodon.revised.ui.coloring.DefaultColorGenerator;
+import org.mastodon.revised.ui.coloring.FeatureColorGenerator;
+import org.mastodon.revised.ui.coloring.FeatureColorGeneratorIncomingEdge;
+import org.mastodon.revised.ui.coloring.FeatureColorGeneratorOutgoingEdge;
+import org.mastodon.revised.ui.coloring.FeatureColorGeneratorSourceVertex;
+import org.mastodon.revised.ui.coloring.FeatureColorGeneratorTargetVertex;
+import org.mastodon.revised.ui.coloring.ComposedGraphColorGenerator;
 import org.mastodon.revised.ui.coloring.GraphColorGeneratorAdapter;
 import org.mastodon.revised.ui.coloring.TagSetGraphColorGenerator;
+import org.mastodon.revised.ui.coloring.feature.FeatureColorMode;
 import org.mastodon.revised.ui.coloring.feature.FeatureColorModeManager;
 import org.mastodon.views.context.ContextChooser;
 import org.scijava.ui.behaviour.KeyPressedManager;
@@ -158,6 +171,7 @@ public class MamutViewTrackScheme extends MamutView< TrackSchemeGraph< Spot, Lin
 		featureColorModeManager.getForwardDefaultMode().updateListeners().add( coloringMenu );
 		onClose( () -> featureColorModeManager.getForwardDefaultMode().updateListeners().remove( coloringMenu ) );
 
+		@SuppressWarnings( "unchecked" )
 		final ColoringModel.ColoringChangedListener coloringChangedListener = () ->
 		{
 			if ( coloringModel.noColoring() )
@@ -165,7 +179,94 @@ public class MamutViewTrackScheme extends MamutView< TrackSchemeGraph< Spot, Lin
 			else if ( coloringModel.getTagSet() != null)
 				coloring.setColorGenerator( new TagSetGraphColorGenerator<>( tagSetModel, coloringModel.getTagSet() ) );
 			else if ( coloringModel.getFeatureColorMode() != null )
-				System.out.println( "Color by feature mode: " + coloringModel.getFeatureColorMode().getName() ); // DEBUG
+			{
+				final FeatureModel featureModel = appModel.getModel().getFeatureModel();
+				final FeatureColorMode fcm = coloringModel.getFeatureColorMode();
+
+				// Vertex.
+				final ColorGenerator< Spot > vertexColorGenerator;
+				final String[] vertexKeys = fcm.getVertexFeatureProjection();
+				final Feature< ?, ? > vertexFeature = featureModel.getFeature( vertexKeys[ 0 ] );
+				if ( null == vertexFeature || null == vertexFeature.getProjections().get( vertexKeys[ 1 ] ) )
+					vertexColorGenerator = new DefaultColorGenerator< Spot >();
+				else
+				{
+					final FeatureProjection< ? > vertexProjection = vertexFeature.getProjections().get( vertexKeys[ 1 ] );
+					final String vertexColorMap = fcm.getVertexColorMap();
+					final double vertexRangeMin = fcm.getVertexRangeMin();
+					final double vertexRangeMax = fcm.getVertexRangeMax();
+					switch ( fcm.getVertexColorMode() )
+					{
+					case INCOMING_EDGE:
+						vertexColorGenerator = new FeatureColorGeneratorIncomingEdge< Spot, Link >(
+								( FeatureProjection< Link > ) vertexProjection,
+								ColorMap.getColorMap( vertexColorMap ),
+								vertexRangeMin, vertexRangeMax,
+								appModel.getModel().getGraph().edgeRef() );
+						break;
+					case OUTGOING_EDGE:
+						vertexColorGenerator = new FeatureColorGeneratorOutgoingEdge< Spot, Link >(
+								( FeatureProjection< Link > ) vertexProjection,
+								ColorMap.getColorMap( vertexColorMap ),
+								vertexRangeMin, vertexRangeMax,
+								appModel.getModel().getGraph().edgeRef() );
+						break;
+					case VERTEX:
+						vertexColorGenerator = new FeatureColorGenerator< Spot >(
+								( FeatureProjection< Spot > ) vertexProjection,
+								ColorMap.getColorMap( vertexColorMap ),
+								vertexRangeMin, vertexRangeMax );
+						break;
+					case NONE:
+					default:
+						vertexColorGenerator = new DefaultColorGenerator<>();
+						break;
+					}
+				}
+
+				// Edge.
+				final ColorGenerator< Link > edgeColorGenerator;
+				final String[] edgeKeys = fcm.getEdgeFeatureProjection();
+				final Feature< ?, ? > edgeFeature = featureModel.getFeature( edgeKeys[ 0 ] );
+				if ( null == edgeFeature || null == edgeFeature.getProjections().get( edgeKeys[ 1 ] ) )
+					edgeColorGenerator = new DefaultColorGenerator< Link >();
+				else
+				{
+					final FeatureProjection< ? > edgeProjection = edgeFeature.getProjections().get( edgeKeys[ 1 ] );
+					final String edgeColorMap = fcm.getEdgeColorMap();
+					final double edgeRangeMin = fcm.getEdgeRangeMin();
+					final double edgeRangeMax = fcm.getEdgeRangeMax();
+					switch ( fcm.getEdgeColorMode() )
+					{
+					case SOURCE_VERTEX:
+						edgeColorGenerator = new FeatureColorGeneratorSourceVertex< Spot, Link >(
+								( FeatureProjection< Spot > ) edgeProjection,
+								ColorMap.getColorMap( edgeColorMap ),
+								edgeRangeMin, edgeRangeMax,
+								appModel.getModel().getGraph().vertexRef() );
+						break;
+					case TARGET_VERTEX:
+						edgeColorGenerator = new FeatureColorGeneratorTargetVertex< Spot, Link >(
+								( FeatureProjection< Spot > ) edgeProjection,
+								ColorMap.getColorMap( edgeColorMap ),
+								edgeRangeMin, edgeRangeMax,
+								appModel.getModel().getGraph().vertexRef() );
+						break;
+					case EDGE:
+						edgeColorGenerator = new FeatureColorGenerator< Link >(
+								( FeatureProjection< Link > ) edgeProjection,
+								ColorMap.getColorMap( edgeColorMap ),
+								edgeRangeMin, edgeRangeMax );
+						break;
+					case NONE:
+					default:
+						edgeColorGenerator = new DefaultColorGenerator<>();
+						break;
+					}
+				}
+
+				coloring.setColorGenerator( new ComposedGraphColorGenerator<>( vertexColorGenerator, edgeColorGenerator ) );
+			}
 			frame.getTrackschemePanel().entitiesAttributesChanged();
 		};
 		coloringModel.listeners().add( coloringChangedListener );
