@@ -12,11 +12,14 @@ import javax.swing.JSeparator;
 
 import org.mastodon.revised.model.tag.TagSetModel;
 import org.mastodon.revised.model.tag.TagSetStructure;
+import org.mastodon.revised.ui.coloring.feature.FeatureColorMode;
+import org.mastodon.revised.ui.coloring.feature.FeatureColorMode.UpdateListener;
+import org.mastodon.revised.ui.coloring.feature.FeatureColorModeManager;
 import org.mastodon.revised.util.HasSelectedState;
 import org.mastodon.util.Listeners;
 import org.scijava.ui.behaviour.util.AbstractNamedAction;
 
-public class ColoringMenu implements TagSetModel.TagSetModelListener
+public class ColoringMenu implements TagSetModel.TagSetModelListener, UpdateListener
 {
 	private final JMenu menu;
 
@@ -51,6 +54,21 @@ public class ColoringMenu implements TagSetModel.TagSetModelListener
 		if ( !tagSets.isEmpty() )
 			menu.add( new JSeparator() );
 
+		final FeatureColorModeManager featureColorModeManager = coloringModel.getFeatureColorModeManager();
+		final List< FeatureColorMode > l1 = featureColorModeManager.getBuiltinStyles();
+		final List< FeatureColorMode > l2 = featureColorModeManager.getUserStyles();
+		final ArrayList< FeatureColorMode > modes = new ArrayList<>( l1.size() + l2.size() );
+		modes.addAll( l1 );
+		modes.addAll( l2 );
+		for ( final FeatureColorMode mode : modes )
+			addColorAction( new ColorAction(
+					mode.getName(),
+					() -> coloringModel.getFeatureColorMode() == mode,
+					() -> coloringModel.colorByFeature( mode ) ) );
+
+		if ( !modes.isEmpty() )
+			menu.add( new JSeparator() );
+
 		addColorAction( new ColorAction(
 				"None",
 				() -> coloringModel.noColoring(),
@@ -75,8 +93,17 @@ public class ColoringMenu implements TagSetModel.TagSetModelListener
 		rebuild();
 	}
 
+	@Override
+	public void featureColorModeChanged()
+	{
+		rebuild();
+	}
+
 	public static class ColorAction extends AbstractNamedAction implements HasSelectedState, ColoringModel.ColoringChangedListener
 	{
+
+		private static final long serialVersionUID = 1L;
+
 		private final Listeners.List< Listener > selectListeners;
 
 		private final BooleanSupplier isSelected;

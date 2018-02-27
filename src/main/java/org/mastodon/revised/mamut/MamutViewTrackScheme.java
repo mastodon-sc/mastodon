@@ -34,6 +34,7 @@ import org.mastodon.revised.ui.coloring.ColoringMenu;
 import org.mastodon.revised.ui.coloring.ColoringModel;
 import org.mastodon.revised.ui.coloring.GraphColorGeneratorAdapter;
 import org.mastodon.revised.ui.coloring.TagSetGraphColorGenerator;
+import org.mastodon.revised.ui.coloring.feature.FeatureColorModeManager;
 import org.mastodon.views.context.ContextChooser;
 import org.scijava.ui.behaviour.KeyPressedManager;
 
@@ -140,13 +141,22 @@ public class MamutViewTrackScheme extends MamutView< TrackSchemeGraph< Spot, Lin
 		);
 
 		final TagSetModel< Spot, Link > tagSetModel = appModel.getModel().getTagSetModel();
-		final ColoringModel coloringModel = new ColoringModel( tagSetModel );
+		final FeatureColorModeManager featureColorModeManager = appModel.getFeatureColorModeManager();
+		final ColoringModel coloringModel = new ColoringModel( tagSetModel, featureColorModeManager );
+
 		tagSetModel.listeners().add( coloringModel );
 		onClose( () -> tagSetModel.listeners().remove( coloringModel ) );
 
+		featureColorModeManager.getForwardDefaultMode().updateListeners().add( coloringModel );
+		onClose( () -> featureColorModeManager.getForwardDefaultMode().updateListeners().remove( coloringModel ) );
+
 		final ColoringMenu coloringMenu = new ColoringMenu( tagSetColoringMenuHandle.getMenu(), coloringModel );
+
 		tagSetModel.listeners().add( coloringMenu );
 		onClose( () -> tagSetModel.listeners().remove( coloringMenu ) );
+
+		featureColorModeManager.getForwardDefaultMode().updateListeners().add( coloringMenu );
+		onClose( () -> featureColorModeManager.getForwardDefaultMode().updateListeners().remove( coloringMenu ) );
 
 		final ColoringModel.ColoringChangedListener coloringChangedListener = () ->
 		{
@@ -154,6 +164,8 @@ public class MamutViewTrackScheme extends MamutView< TrackSchemeGraph< Spot, Lin
 				coloring.setColorGenerator( null );
 			else if ( coloringModel.getTagSet() != null)
 				coloring.setColorGenerator( new TagSetGraphColorGenerator<>( tagSetModel, coloringModel.getTagSet() ) );
+			else if ( coloringModel.getFeatureColorMode() != null )
+				System.out.println( "Color by feature mode: " + coloringModel.getFeatureColorMode().getName() ); // DEBUG
 			frame.getTrackschemePanel().entitiesAttributesChanged();
 		};
 		coloringModel.listeners().add( coloringChangedListener );
