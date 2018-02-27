@@ -3,14 +3,14 @@ package org.mastodon.revised.ui.coloring;
 import org.mastodon.graph.Edge;
 import org.mastodon.graph.Vertex;
 
-public class FeatureGraphColorGenerator< V extends Vertex< E >, E extends Edge< V > > implements GraphColorGenerator< V, E >
+public class ComposedGraphColorGenerator< V extends Vertex< E >, E extends Edge< V > > implements GraphColorGenerator< V, E >
 {
 
-	private final FeatureColorGenerator< V > vertexColorGenerator;
+	private final ColorGenerator< V > vertexColorGenerator;
 
-	private final FeatureColorGenerator< E > edgeColorGenerator;
+	private final ColorGenerator< E > edgeColorGenerator;
 
-	public FeatureGraphColorGenerator( final FeatureColorGenerator< V > vertexColorGenerator, final FeatureColorGenerator< E > edgeColorGenerator )
+	public ComposedGraphColorGenerator( final ColorGenerator< V > vertexColorGenerator, final ColorGenerator< E > edgeColorGenerator )
 	{
 		this.vertexColorGenerator = vertexColorGenerator;
 		this.edgeColorGenerator = edgeColorGenerator;
