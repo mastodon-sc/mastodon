@@ -10,14 +10,20 @@ import java.util.function.Consumer;
 
 import javax.swing.JFrame;
 
+import org.mastodon.app.ui.settings.SimpleSettingsPage;
 import org.mastodon.revised.bdv.overlay.ui.RenderSettingsConfigPage;
 import org.mastodon.revised.bdv.overlay.ui.RenderSettingsManager;
+import org.mastodon.revised.mamut.feature.MamutFeatureComputerService;
+import org.mastodon.revised.model.mamut.Link;
 import org.mastodon.revised.model.mamut.Model;
 import org.mastodon.revised.model.mamut.Spot;
 import org.mastodon.revised.model.tag.ui.TagSetDialog;
 import org.mastodon.revised.trackscheme.display.style.TrackSchemeStyleManager;
 import org.mastodon.revised.trackscheme.display.style.TrackSchemeStyleSettingsPage;
 import org.mastodon.revised.ui.SelectionActions;
+import org.mastodon.revised.ui.coloring.feature.FeatureColorModeConfigPage;
+import org.mastodon.revised.ui.coloring.feature.FeatureColorModeManager;
+import org.mastodon.revised.ui.coloring.feature.FeatureRangeCalculator;
 import org.mastodon.revised.ui.keymap.Keymap;
 import org.mastodon.revised.ui.keymap.KeymapManager;
 import org.mastodon.revised.ui.keymap.KeymapSettingsPage;
@@ -89,6 +95,8 @@ public class WindowManager
 
 	final PreferencesDialog settings;
 
+	private final FeatureColorModeManager featureColorModeManager;
+
 	public WindowManager( final Context context )
 	{
 		this.context = context;
@@ -97,6 +105,7 @@ public class WindowManager
 		trackSchemeStyleManager = new TrackSchemeStyleManager();
 		renderSettingsManager = new RenderSettingsManager();
 		keymapManager = new KeymapManager();
+		featureColorModeManager = new FeatureColorModeManager();
 
 		final Keymap keymap = keymapManager.getForwardDefaultKeymap();
 
@@ -165,7 +174,7 @@ public class WindowManager
 		tagSetDialog = new TagSetDialog( null, model.getTagSetModel(), model, keymap, new String[] { "mastodon" } );
 		final FeatureColorModeConfigPage featureColorModeConfigPage = new FeatureColorModeConfigPage(
 				featureColorTreePath,
-				new FeatureColorModeManager(),
+				featureColorModeManager,
 				appModel.getModel().getFeatureModel(),
 				new FeatureRangeCalculator<>( appModel.getModel().getGraph(), appModel.getModel().getFeatureModel() ),
 				Spot.class, Link.class );
@@ -288,6 +297,11 @@ public class WindowManager
 	RenderSettingsManager getRenderSettingsManager()
 	{
 		return renderSettingsManager;
+	}
+
+	FeatureColorModeManager getFeatureColorModeManager()
+	{
+		return featureColorModeManager;
 	}
 
 	public KeymapManager getKeymapManager()

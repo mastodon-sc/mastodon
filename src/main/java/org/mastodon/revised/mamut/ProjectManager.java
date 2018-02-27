@@ -12,6 +12,7 @@ import org.mastodon.revised.model.mamut.trackmate.MamutExporter;
 import org.mastodon.revised.model.mamut.trackmate.TrackMateImporter;
 import org.mastodon.revised.model.tag.TagSetStructure;
 import org.mastodon.revised.trackscheme.display.style.TrackSchemeStyleManager;
+import org.mastodon.revised.ui.coloring.feature.FeatureColorModeManager;
 import org.mastodon.revised.ui.keymap.KeymapManager;
 import org.mastodon.revised.ui.util.FileChooser;
 import org.mastodon.revised.ui.util.FileChooser.SelectionMode;
@@ -228,6 +229,7 @@ public class ProjectManager
 		final TrackSchemeStyleManager trackSchemeStyleManager = windowManager.getTrackSchemeStyleManager();
 		final RenderSettingsManager renderSettingsManager = windowManager.getRenderSettingsManager();
 		final KeymapManager keymapManager = windowManager.getKeymapManager();
+		final FeatureColorModeManager featureColorModeManager = windowManager.getFeatureColorModeManager();
 		final Actions globalAppActions = windowManager.getGlobalAppActions();
 		final ViewerOptions options = ViewerOptions.options().shareKeyPressedEvents( keyPressedManager );
 		final SharedBigDataViewerData sharedBdvData = new SharedBigDataViewerData(
@@ -236,7 +238,15 @@ public class ProjectManager
 				options,
 				() -> windowManager.forEachBdvView( bdv -> bdv.requestRepaint() ) );
 
-		final MamutAppModel appModel = new MamutAppModel( model, sharedBdvData, keyPressedManager, trackSchemeStyleManager, renderSettingsManager, keymapManager, globalAppActions );
+		final MamutAppModel appModel = new MamutAppModel(
+				model,
+				sharedBdvData,
+				keyPressedManager,
+				trackSchemeStyleManager,
+				renderSettingsManager,
+				featureColorModeManager,
+				keymapManager,
+				globalAppActions );
 
 		/*
 		 * Feature calculation.
