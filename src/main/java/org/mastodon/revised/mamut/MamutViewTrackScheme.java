@@ -138,6 +138,7 @@ public class MamutViewTrackScheme extends MamutView< TrackSchemeGraph< Spot, Lin
 						item( EditFocusVertexLabelAction.EDIT_FOCUS_LABEL )
 				)
 		);
+		appModel.getPlugins().addMenus( menu );
 
 		final TagSetModel< Spot, Link > tagSetModel = appModel.getModel().getTagSetModel();
 		final ColoringModel coloringModel = new ColoringModel( tagSetModel );

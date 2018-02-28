@@ -8,6 +8,7 @@ import java.util.Random;
 
 import javax.swing.JFrame;
 
+import org.mastodon.plugin.MastodonPlugins;
 import org.mastodon.revised.bdv.SharedBigDataViewerData;
 import org.mastodon.revised.bdv.overlay.ui.RenderSettingsManager;
 import org.mastodon.revised.mamut.feature.MamutFeatureComputerService;
@@ -272,6 +273,7 @@ public class ProjectManager
 		final TrackSchemeStyleManager trackSchemeStyleManager = windowManager.getTrackSchemeStyleManager();
 		final RenderSettingsManager renderSettingsManager = windowManager.getRenderSettingsManager();
 		final KeymapManager keymapManager = windowManager.getKeymapManager();
+		final MastodonPlugins plugins = windowManager.getPlugins();
 		final Actions globalAppActions = windowManager.getGlobalAppActions();
 		final ViewerOptions options = ViewerOptions.options().shareKeyPressedEvents( keyPressedManager );
 		final SharedBigDataViewerData sharedBdvData = new SharedBigDataViewerData(
@@ -280,7 +282,7 @@ public class ProjectManager
 				options,
 				() -> windowManager.forEachBdvView( bdv -> bdv.requestRepaint() ) );
 
-		final MamutAppModel appModel = new MamutAppModel( model, sharedBdvData, keyPressedManager, trackSchemeStyleManager, renderSettingsManager, keymapManager, globalAppActions );
+		final MamutAppModel appModel = new MamutAppModel( model, sharedBdvData, keyPressedManager, trackSchemeStyleManager, renderSettingsManager, keymapManager, plugins, globalAppActions );
 
 		/*
 		 * Feature calculation.
