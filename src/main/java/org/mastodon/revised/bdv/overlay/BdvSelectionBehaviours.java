@@ -1,5 +1,6 @@
 package org.mastodon.revised.bdv.overlay;
 
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 import org.mastodon.model.NavigationHandler;
 import org.mastodon.model.SelectionModel;
 import org.scijava.ui.behaviour.ClickBehaviour;
@@ -41,6 +42,8 @@ public class BdvSelectionBehaviours< V extends OverlayVertex< V, E >, E extends 
 
 	private final OverlayGraph< V, E > overlayGraph;
 
+	private final ReentrantReadWriteLock lock;
+
 	private final OverlayGraphRenderer< V, E > renderer;
 
 	private final SelectionModel< V, E > selection;
@@ -54,6 +57,7 @@ public class BdvSelectionBehaviours< V extends OverlayVertex< V, E >, E extends 
 			final NavigationHandler< V, E > navigation )
 	{
 		this.overlayGraph = overlayGraph;
+		this.lock = overlayGraph.getLock();
 		this.renderer = renderer;
 		this.selection = selection;
 		this.navigation = navigation;
@@ -68,7 +72,7 @@ public class BdvSelectionBehaviours< V extends OverlayVertex< V, E >, E extends 
 		selection.pauseListeners();
 		final V vertex = overlayGraph.vertexRef();
 		final E edge = overlayGraph.edgeRef();
-		overlayGraph.getLock().readLock().lock();
+		lock.readLock().lock();
 		try
 		{
 
@@ -97,7 +101,7 @@ public class BdvSelectionBehaviours< V extends OverlayVertex< V, E >, E extends 
 		{
 			overlayGraph.releaseRef( vertex );
 			overlayGraph.releaseRef( edge );
-			overlayGraph.getLock().readLock().unlock();
+			lock.readLock().unlock();
 			selection.resumeListeners();
 		}
 	}
@@ -106,7 +110,7 @@ public class BdvSelectionBehaviours< V extends OverlayVertex< V, E >, E extends 
 	{
 		final V vertex = overlayGraph.vertexRef();
 		final E edge = overlayGraph.edgeRef();
-		overlayGraph.getLock().readLock().lock();
+		lock.readLock().lock();
 		try
 		{
 
@@ -124,7 +128,7 @@ public class BdvSelectionBehaviours< V extends OverlayVertex< V, E >, E extends 
 		}
 		finally
 		{
-			overlayGraph.getLock().readLock().unlock();
+			lock.readLock().unlock();
 			overlayGraph.releaseRef( edge );
 			overlayGraph.releaseRef( vertex );
 		}
