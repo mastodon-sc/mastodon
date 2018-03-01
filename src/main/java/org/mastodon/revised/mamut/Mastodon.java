@@ -1,12 +1,10 @@
 package org.mastodon.revised.mamut;
 
 import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
 import java.util.Locale;
 
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
-import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.WindowConstants;
 
 import org.scijava.Context;
@@ -32,7 +30,19 @@ public class Mastodon extends ContextCommand
 		mainWindow.setVisible( true );
 	}
 
-	public static void main( final String[] args ) throws IOException, SpimDataException, InvocationTargetException, InterruptedException, ClassNotFoundException, InstantiationException, IllegalAccessException, UnsupportedLookAndFeelException
+	// FOR TESTING ONLY!
+	public void openProject( final MamutProject project ) throws IOException, SpimDataException
+	{
+		windowManager.projectManager.open( project );
+	}
+
+	// FOR TESTING ONLY!
+	public void setExitOnClose()
+	{
+		mainWindow.setDefaultCloseOperation( WindowConstants.EXIT_ON_CLOSE );
+	}
+
+	public static void main( final String[] args ) throws Exception
 	{
 		Locale.setDefault( Locale.US );
 		UIManager.setLookAndFeel( UIManager.getSystemLookAndFeelClassName() );
