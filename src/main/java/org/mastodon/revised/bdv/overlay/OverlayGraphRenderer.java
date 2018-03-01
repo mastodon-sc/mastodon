@@ -644,11 +644,12 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 	 * <pre>
 	 * ReentrantReadWriteLock lock = graph.getLock();
 	 * lock.readLock().lock();
-	 * final E ref = graph.edgeRef();
 	 * boolean found = false;
 	 * try
 	 * {
-	 * 	found = ( renderer.getEdgeAt( x, y, EDGE_SELECT_DISTANCE_TOLERANCE, ref ) != null )
+	 * 	E edge = renderer.getEdgeAt( x, y, EDGE_SELECT_DISTANCE_TOLERANCE, ref )
+	 * 	... // do something with the edge
+	 * 	... // edge is guaranteed to stay valid while the lock is held
 	 * }
 	 * finally
 	 * {
@@ -657,11 +658,9 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 	 * </pre>
 	 *
 	 * @param x
-	 *            the x location to search, in the local coordinate system
-	 *            (screen).
+	 *            the x location to search, in viewer coordinates (screen).
 	 * @param y
-	 *            the y location to search, in the local coordinate system
-	 *            (screen).
+	 *            the y location to search, in viewer coordinates (screen).
 	 * @param tolerance
 	 *            the distance tolerance to accept close edges.
 	 * @param ref
@@ -759,13 +758,12 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 	 *
 	 * <pre>
 	 * ReentrantReadWriteLock lock = graph.getLock();
-	 * boolean isOutsideExistingSpot = false;
 	 * lock.readLock().lock();
 	 * try
 	 * {
-	 * 	final V ref = graph.vertexRef();
-	 * 	isOutsideExistingSpot = renderer.getVertexAt( x, y, POINT_SELECT_DISTANCE_TOLERANCE, ref ) == null;
-	 * 	overlayGraph.releaseRef( ref );
+	 * 	V vertex = renderer.getVertexAt( x, y, POINT_SELECT_DISTANCE_TOLERANCE, ref );
+	 * 	... // do something with the vertex
+	 * 	... // vertex is guaranteed to stay valid while the lock is held
 	 * }
 	 * finally
 	 * {
@@ -774,11 +772,9 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 	 * </pre>
 	 *
 	 * @param x
-	 *            the x location to search, in the local coordinate system
-	 *            (screen).
+	 *            the x location to search, in viewer coordinates (screen).
 	 * @param y
-	 *            the y location to search, in the local coordinate system
-	 *            (screen).
+	 *            the y location to search, in viewer coordinates (screen).
 	 * @param tolerance
 	 *            the distance tolerance to accept close vertices.
 	 * @param ref
