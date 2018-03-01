@@ -11,6 +11,7 @@ import java.util.function.Consumer;
 import javax.swing.JFrame;
 
 import org.mastodon.plugin.MastodonPlugin;
+import org.mastodon.plugin.MastodonPluginAppModel;
 import org.mastodon.plugin.MastodonPlugins;
 import org.mastodon.revised.bdv.overlay.ui.RenderSettingsConfigPage;
 import org.mastodon.revised.bdv.overlay.ui.RenderSettingsManager;
@@ -163,6 +164,9 @@ public class WindowManager
 
 	private void discoverPlugins()
 	{
+		if ( context == null )
+			return;
+
 		final PluginService pluginService = context.getService( PluginService.class );
 		final List< PluginInfo< MastodonPlugin > > infos = pluginService.getPluginsOfType( MastodonPlugin.class );
 		for ( final PluginInfo< MastodonPlugin > info : infos )
@@ -170,6 +174,7 @@ public class WindowManager
 			try
 			{
 				final MastodonPlugin plugin = info.createInstance();
+				context.inject( plugin );
 				plugins.register( plugin );
 			}
 			catch ( final InstantiableException e )
@@ -206,6 +211,8 @@ public class WindowManager
 		final Keymap keymap = keymapManager.getForwardDefaultKeymap();
 		tagSetDialog = new TagSetDialog( null, model.getTagSetModel(), model, keymap, new String[] { KeyConfigContexts.MASTODON } );
 		updateEnabledActions();
+
+		plugins.setAppModel( new MastodonPluginAppModel( appModel, this ) );
 	}
 
 	private synchronized void addBdvWindow( final MamutViewBdv w )
