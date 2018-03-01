@@ -188,7 +188,7 @@ public class WindowManager
 		tsWindows.forEach( action );
 	}
 
-	public void forEachView(  final Consumer< ? super MamutView > action  )
+	public void forEachView( final Consumer< ? super MamutView< ?, ?, ? > > action )
 	{
 		forEachBdvView( action );
 		forEachTrackSchemeView( action );
