@@ -12,7 +12,6 @@ import java.awt.font.TextLayout;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Rectangle2D;
-import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import org.mastodon.collection.RefCollection;
 import org.mastodon.collection.RefCollections;
@@ -80,8 +79,6 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 
 	private final OverlayGraph< V, E > graph;
 
-	private final ReentrantReadWriteLock lock;
-
 	private final SpatioTemporalIndex< V > index;
 
 	private final HighlightModel< V, E > highlight;
@@ -103,7 +100,6 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 		this.focus = focus;
 		this.selection = selection;
 		index = graph.getIndex();
-		lock = graph.getLock();
 		renderTransform = new AffineTransform3D();
 		setRenderSettings( RenderSettings.defaultStyle() ); // default RenderSettings
 	}
@@ -411,7 +407,7 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 
 				for ( final E edge : vertex.incomingEdges() )
 				{
-					V source = edge.getSource( ref );
+					final V source = edge.getSource( ref );
 					source.localize( gPos );
 					transform.apply( gPos, lPos );
 					final int x0 = ( int ) lPos[ 0 ];
@@ -454,8 +450,6 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 		final V ref1 = graph.vertexRef();
 		final V ref2 = graph.vertexRef();
 		final E ref3 = graph.edgeRef();
-		final double[] gPos = new double[ 3 ];
-		final double[] lPos = new double[ 3 ];
 
 		final double sliceDistanceFade = settings.getEllipsoidFadeDepth();
 		final double timepointDistanceFade = 0.5;
@@ -640,6 +634,42 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 		layout.draw( graphics, tx, ty );
 	}
 
+	/**
+	 * Returns the edge currently painted close to the specified location.
+	 * <p>
+	 * It is the responsibility of the caller to lock the graph it inspects for
+	 * reading operations, prior to calling this method. A typical call from
+	 * another method would happen like this:
+	 *
+	 * <pre>
+	 * ReentrantReadWriteLock lock = graph.getLock();
+	 * lock.readLock().lock();
+	 * final E ref = graph.edgeRef();
+	 * boolean found = false;
+	 * try
+	 * {
+	 * 	found = ( renderer.getEdgeAt( x, y, EDGE_SELECT_DISTANCE_TOLERANCE, ref ) != null )
+	 * }
+	 * finally
+	 * {
+	 * 	lock.readLock().unlock();
+	 * }
+	 * </pre>
+	 *
+	 * @param x
+	 *            the x location to search, in the local coordinate system
+	 *            (screen).
+	 * @param y
+	 *            the y location to search, in the local coordinate system
+	 *            (screen).
+	 * @param tolerance
+	 *            the distance tolerance to accept close edges.
+	 * @param ref
+	 *            an edge reference, that might be used to return the vertex
+	 *            found.
+	 * @return the closest edge within tolerance, or <code>null</code> if it
+	 *         could not be found.
+	 */
 	public E getEdgeAt( final int x, final int y, final double tolerance, final E ref )
 	{
 		if ( !settings.getDrawLinks() )
@@ -668,7 +698,6 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 		};
 		final Op op = new Op();
 
-		lock.readLock().lock();
 		index.readLock().lock();
 		try
 		{
@@ -677,7 +706,6 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 		finally
 		{
 			index.readLock().unlock();
-			lock.readLock().unlock();
 		}
 		return op.found ? ref : null;
 	}
@@ -722,6 +750,43 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 		return renderTimepoint;
 	}
 
+	/**
+	 * Returns the vertex currently painted close to the specified location.
+	 * <p>
+	 * It is the responsibility of the caller to lock the graph it inspects for
+	 * reading operations, prior to calling this method. A typical call from
+	 * another method would happen like this:
+	 *
+	 * <pre>
+	 * ReentrantReadWriteLock lock = graph.getLock();
+	 * boolean isOutsideExistingSpot = false;
+	 * lock.readLock().lock();
+	 * try
+	 * {
+	 * 	final V ref = graph.vertexRef();
+	 * 	isOutsideExistingSpot = renderer.getVertexAt( x, y, POINT_SELECT_DISTANCE_TOLERANCE, ref ) == null;
+	 * 	overlayGraph.releaseRef( ref );
+	 * }
+	 * finally
+	 * {
+	 * 	lock.readLock().unlock();
+	 * }
+	 * </pre>
+	 *
+	 * @param x
+	 *            the x location to search, in the local coordinate system
+	 *            (screen).
+	 * @param y
+	 *            the y location to search, in the local coordinate system
+	 *            (screen).
+	 * @param tolerance
+	 *            the distance tolerance to accept close vertices.
+	 * @param ref
+	 *            a vertex reference, that might be used to return the vertex
+	 *            found.
+	 * @return the closest vertex within tolerance, or <code>null</code> if it
+	 *         could not be found.
+	 */
 	public V getVertexAt( final int x, final int y, final double tolerance, final V ref )
 	{
 		if ( !settings.getDrawSpots() )
@@ -738,7 +803,6 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 
 		boolean found = false;
 
-		lock.readLock().lock();
 		index.readLock().lock();
 
 		// TODO: cache searches? --> take into account that indexdata might change
@@ -817,8 +881,6 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 		}
 
 		index.readLock().unlock();
-		lock.readLock().unlock();
-
 		return found ? ref : null;
 	}
 

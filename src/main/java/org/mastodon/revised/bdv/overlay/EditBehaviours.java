@@ -140,16 +140,30 @@ public class EditBehaviours< V extends OverlayVertex< V, E >, E extends OverlayE
 		@Override
 		public void click( final int x, final int y )
 		{
-			final V ref = overlayGraph.vertexRef();
-			if ( renderer.getVertexAt( x, y, POINT_SELECT_DISTANCE_TOLERANCE, ref ) == null )
+			boolean isOutsideExistingSpot = false;
+			lock.readLock().lock();
+			try
 			{
-				// Only create a spot if we don't click inside an existing spot.
+				final V ref = overlayGraph.vertexRef();
+				isOutsideExistingSpot = renderer.getVertexAt( x, y, POINT_SELECT_DISTANCE_TOLERANCE, ref ) == null;
+				overlayGraph.releaseRef( ref );
+			}
+			finally
+			{
+				lock.readLock().unlock();
+			}
+
+			// Only create a spot if we don't click inside an existing spot.
+			if ( isOutsideExistingSpot )
+			{
 				final int timepoint = renderer.getCurrentTimepoint();
 				renderer.getGlobalPosition( x, y, pos );
 				lock.writeLock().lock();
 				try
 				{
+					final V ref = overlayGraph.vertexRef();
 					overlayGraph.addVertex( ref ).init( timepoint, pos, 10 );
+					overlayGraph.releaseRef( ref );
 					overlayGraph.notifyGraphChanged();
 					undo.setUndoPoint();
 				}
@@ -158,7 +172,6 @@ public class EditBehaviours< V extends OverlayVertex< V, E >, E extends OverlayE
 					lock.writeLock().unlock();
 				}
 			}
-			overlayGraph.releaseRef( ref );
 		}
 	}
 

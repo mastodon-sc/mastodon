@@ -3,11 +3,8 @@ package org.mastodon.revised.bdv.overlay;
 import org.mastodon.model.NavigationHandler;
 import org.mastodon.model.SelectionModel;
 import org.scijava.ui.behaviour.ClickBehaviour;
-import org.scijava.ui.behaviour.InputTriggerAdder;
-import org.scijava.ui.behaviour.InputTriggerMap;
 import org.scijava.ui.behaviour.util.AbstractNamedBehaviour;
 import org.scijava.ui.behaviour.util.Behaviours;
-import org.scijava.ui.behaviour.util.TriggerBehaviourBindings;
 
 public class BdvSelectionBehaviours< V extends OverlayVertex< V, E >, E extends OverlayEdge< E, V > >
 {
@@ -69,54 +66,68 @@ public class BdvSelectionBehaviours< V extends OverlayVertex< V, E >, E extends 
 	private void select( final int x, final int y, final boolean addToSelection )
 	{
 		selection.pauseListeners();
-
 		final V vertex = overlayGraph.vertexRef();
 		final E edge = overlayGraph.edgeRef();
-
-		// See if we can select an edge.
-		if ( renderer.getEdgeAt( x, y, EDGE_SELECT_DISTANCE_TOLERANCE, edge ) != null )
+		overlayGraph.getLock().readLock().lock();
+		try
 		{
-			final boolean selected = selection.isSelected( edge );
-			if ( !addToSelection )
+
+			// See if we can select an edge.
+			if ( renderer.getEdgeAt( x, y, EDGE_SELECT_DISTANCE_TOLERANCE, edge ) != null )
+			{
+				final boolean selected = selection.isSelected( edge );
+				if ( !addToSelection )
+					selection.clearSelection();
+				selection.setSelected( edge, !selected );
+			}
+			// See if we can select a vertex.
+			else if ( renderer.getVertexAt( x, y, POINT_SELECT_DISTANCE_TOLERANCE, vertex ) != null )
+			{
+				final boolean selected = selection.isSelected( vertex );
+				if ( !addToSelection )
+					selection.clearSelection();
+				selection.setSelected( vertex, !selected );
+			}
+			// Nothing found. clear selection if addToSelection == false
+			else if ( !addToSelection )
 				selection.clearSelection();
-			selection.setSelected( edge, !selected );
+
 		}
-		// See if we can select a vertex.
-		else if ( renderer.getVertexAt( x, y, POINT_SELECT_DISTANCE_TOLERANCE, vertex ) != null )
+		finally
 		{
-			final boolean selected = selection.isSelected( vertex );
-			if ( !addToSelection )
-				selection.clearSelection();
-			selection.setSelected( vertex, !selected );
+			overlayGraph.releaseRef( vertex );
+			overlayGraph.releaseRef( edge );
+			overlayGraph.getLock().readLock().unlock();
+			selection.resumeListeners();
 		}
-		// Nothing found. clear selection if addToSelection == false
-		else if ( !addToSelection )
-			selection.clearSelection();
-
-		overlayGraph.releaseRef( vertex );
-		overlayGraph.releaseRef( edge );
-
-		selection.resumeListeners();
 	}
 
 	private void navigate( final int x, final int y )
 	{
 		final V vertex = overlayGraph.vertexRef();
 		final E edge = overlayGraph.edgeRef();
-
-		// See if we can find a vertex.
-		if ( renderer.getVertexAt( x, y, POINT_SELECT_DISTANCE_TOLERANCE, vertex ) != null )
+		overlayGraph.getLock().readLock().lock();
+		try
 		{
-			navigation.notifyNavigateToVertex( vertex );
-		}
-		// See if we can find an edge.
-		else if ( renderer.getEdgeAt( x, y, EDGE_SELECT_DISTANCE_TOLERANCE, edge ) != null )
-		{
-			navigation.notifyNavigateToEdge( edge );
-		}
 
-		overlayGraph.releaseRef( vertex );
-		overlayGraph.releaseRef( edge );
+			// See if we can find a vertex.
+			if ( renderer.getVertexAt( x, y, POINT_SELECT_DISTANCE_TOLERANCE, vertex ) != null )
+			{
+				navigation.notifyNavigateToVertex( vertex );
+			}
+			// See if we can find an edge.
+			else if ( renderer.getEdgeAt( x, y, EDGE_SELECT_DISTANCE_TOLERANCE, edge ) != null )
+			{
+				navigation.notifyNavigateToEdge( edge );
+			}
+
+		}
+		finally
+		{
+			overlayGraph.getLock().readLock().unlock();
+			overlayGraph.releaseRef( edge );
+			overlayGraph.releaseRef( vertex );
+		}
 	}
 
 	/*
