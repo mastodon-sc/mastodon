@@ -224,8 +224,8 @@ public class BehaviourTransformEventHandler3DMamut implements TransformEventHand
 		keyForwardZSlowBehaviour = new KeyTranslateZ( KEY_FORWARD_Z_SLOW, speed[ 2 ] );
 
 		keyBackwardZBehaviour = new KeyTranslateZ( KEY_BACKWARD_Z, -speed[ 0 ] );
-		keyBackwardZFastBehaviour = new KeyTranslateZ( KEY_BACKWARD_Z_FAST, -speed[ 0 ] );
-		keyBackwardZSlowBehaviour = new KeyTranslateZ( KEY_BACKWARD_Z_SLOW, -speed[ 0 ] );
+		keyBackwardZFastBehaviour = new KeyTranslateZ( KEY_BACKWARD_Z_FAST, -speed[ 1 ] );
+		keyBackwardZSlowBehaviour = new KeyTranslateZ( KEY_BACKWARD_Z_SLOW, -speed[ 2 ] );
 	}
 
 	public void install( final Behaviours behaviours )
