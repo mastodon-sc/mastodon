@@ -184,9 +184,17 @@ public class MainWindow extends JFrame
 		pack();
 	}
 
+
 	private void close( final WindowManager windowManager, final Action saveAction, final WindowEvent trigger )
 	{
-		// Custom button text
+		if ( windowManager != null && windowManager.getAppModel() == null || !windowManager.getProjectManager().projectNeedsSave() )
+		{
+			windowManager.closeAllWindows();
+			dispose();
+			return;
+		}
+
+		// Project requires save.
 		final Object[] options = {
 				"Save project",
 				"Don't save",
