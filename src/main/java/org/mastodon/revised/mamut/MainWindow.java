@@ -214,7 +214,13 @@ public class MainWindow extends JFrame
 
 		case JOptionPane.YES_OPTION:
 			saveAction.actionPerformed( new ActionEvent( trigger.getSource(), trigger.getID(), trigger.paramString() ) );
-			// Fall trough to closing.
+			/*
+			 * Do we still need to save now? I.e.: did the user canceled the
+			 * save action?
+			 */
+			if ( windowManager.getProjectManager().projectNeedsSave() )
+				return; // We don't close.
+			// Otherwise we fall trough to closing.
 
 		case JOptionPane.NO_OPTION:
 			if ( windowManager != null )
