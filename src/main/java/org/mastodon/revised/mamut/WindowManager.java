@@ -10,11 +10,10 @@ import java.util.function.Consumer;
 
 import javax.swing.JFrame;
 
-import org.mastodon.app.ui.settings.SimpleSettingsPage;
 import org.mastodon.revised.bdv.overlay.ui.RenderSettingsConfigPage;
 import org.mastodon.revised.bdv.overlay.ui.RenderSettingsManager;
 import org.mastodon.revised.mamut.feature.MamutFeatureComputerService;
-import org.mastodon.revised.model.feature.ui.FeatureComputersPanel;
+import org.mastodon.revised.model.feature.ui.FeatureCalculationDialog;
 import org.mastodon.revised.model.mamut.Link;
 import org.mastodon.revised.model.mamut.Model;
 import org.mastodon.revised.model.mamut.Spot;
@@ -47,11 +46,13 @@ public class WindowManager
 	public static final String NEW_TRACKSCHEME_VIEW = "new trackscheme view";
 	public static final String PREFERENCES_DIALOG = "Preferences";
 	public static final String TAGSETS_DIALOG = "edit tag sets";
+	public static final String COMPUTE_FEATURE_DIALOG = "compute features";
 
 	static final String[] NEW_BDV_VIEW_KEYS = new String[] { "not mapped" };
 	static final String[] NEW_TRACKSCHEME_VIEW_KEYS = new String[] { "not mapped" };
 	static final String[] PREFERENCES_DIALOG_KEYS = new String[] { "meta COMMA", "control COMMA" };
 	static final String[] TAGSETS_DIALOG_KEYS = new String[] { "not mapped" };
+	static final String[] COMPUTE_FEATURE_DIALOG_KEYS = new String[] { "not mapped" };
 
 	private final Context context;
 
@@ -86,9 +87,13 @@ public class WindowManager
 
 	private final AbstractNamedAction editTagSetsAction;
 
+	private final AbstractNamedAction featureComputationAction;
+
 	private MamutAppModel appModel;
 
 	private TagSetDialog tagSetDialog;
+
+	private FeatureCalculationDialog< Model > featureComputationDialog;
 
 	final ProjectManager projectManager;
 
@@ -122,10 +127,12 @@ public class WindowManager
 		newBdvViewAction = new RunnableAction( NEW_BDV_VIEW, this::createBigDataViewer );
 		newTrackSchemeViewAction = new RunnableAction( NEW_TRACKSCHEME_VIEW, this::createTrackScheme );
 		editTagSetsAction = new RunnableAction( TAGSETS_DIALOG, this::editTagSets );
+		featureComputationAction = new RunnableAction( COMPUTE_FEATURE_DIALOG, this::computeFeatures );
 
 		globalAppActions.namedAction( newBdvViewAction, NEW_BDV_VIEW_KEYS );
 		globalAppActions.namedAction( newTrackSchemeViewAction, NEW_TRACKSCHEME_VIEW_KEYS );
 		globalAppActions.namedAction( editTagSetsAction, TAGSETS_DIALOG_KEYS );
+		globalAppActions.namedAction( featureComputationAction, COMPUTE_FEATURE_DIALOG_KEYS );
 
 		settings = new PreferencesDialog( null, keymap, new String[] { "mastodon" } );
 		settings.addPage( new TrackSchemeStyleSettingsPage( "TrackScheme Styles", trackSchemeStyleManager ) );
@@ -142,6 +149,7 @@ public class WindowManager
 		newBdvViewAction.setEnabled( appModel != null );
 		newTrackSchemeViewAction.setEnabled( appModel != null );
 		editTagSetsAction.setEnabled( appModel != null );
+		featureComputationAction.setEnabled( appModel != null );
 	}
 
 	void setAppModel( final MamutAppModel appModel )
@@ -149,22 +157,18 @@ public class WindowManager
 		closeAllWindows();
 
 		final String featureColorTreePath = "Feature Color Modes";
-		final String featureCalculationTreePath = "Feature Calculation";
 
 		this.appModel = appModel;
 		if ( appModel == null )
 		{
 			tagSetDialog.dispose();
 			tagSetDialog = null;
+			featureComputationDialog.dispose();
+			featureComputationDialog = null;
 			updateEnabledActions();
 			settings.removePage( featureColorTreePath );
-			settings.removePage( featureCalculationTreePath );
 			return;
 		}
-
-		final MamutFeatureComputerService featureComputerService = context.getService( MamutFeatureComputerService.class );
-		final FeatureComputersPanel< Model > featureComputersPanel = new FeatureComputersPanel<>( featureComputerService, appModel.getModel(), appModel.getModel().getFeatureModel() );
-		settings.addPage( new SimpleSettingsPage( featureCalculationTreePath, featureComputersPanel ) );
 
 		final Model model = appModel.getModel();
 		UndoActions.install( appModel.getAppActions(), model );
@@ -172,6 +176,8 @@ public class WindowManager
 
 		final Keymap keymap = keymapManager.getForwardDefaultKeymap();
 		tagSetDialog = new TagSetDialog( null, model.getTagSetModel(), model, keymap, new String[] { "mastodon" } );
+		final MamutFeatureComputerService computerService = context.getService( MamutFeatureComputerService.class );
+		featureComputationDialog = new FeatureCalculationDialog< >( null, computerService, model, model.getFeatureModel() );
 		final FeatureColorModeConfigPage featureColorModeConfigPage = new FeatureColorModeConfigPage(
 				featureColorTreePath,
 				featureColorModeManager,
@@ -179,7 +185,6 @@ public class WindowManager
 				new FeatureRangeCalculator<>( appModel.getModel().getGraph(), appModel.getModel().getFeatureModel() ),
 				Spot.class, Link.class );
 		settings.addPage( featureColorModeConfigPage );
-		featureComputersPanel.listeners().add( () -> featureColorModeConfigPage.refresh() ); // TODO: remove listeners?
 		updateEnabledActions();
 	}
 
@@ -250,6 +255,14 @@ public class WindowManager
 		if ( appModel != null )
 		{
 			tagSetDialog.setVisible( true );
+		}
+	}
+
+	public void computeFeatures()
+	{
+		if ( appModel != null )
+		{
+			featureComputationDialog.setVisible( true );
 		}
 	}
 
