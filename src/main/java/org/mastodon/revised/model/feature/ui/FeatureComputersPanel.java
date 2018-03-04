@@ -3,6 +3,7 @@ package org.mastodon.revised.model.feature.ui;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Container;
+import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -11,44 +12,29 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.lang.reflect.InvocationTargetException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.Locale;
 import java.util.Set;
 
 import javax.swing.Box;
-import javax.swing.GroupLayout;
-import javax.swing.GroupLayout.Alignment;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
-import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 import javax.swing.JScrollPane;
-import javax.swing.LayoutStyle.ComponentPlacement;
 import javax.swing.ScrollPaneConstants;
-import javax.swing.SwingUtilities;
 import javax.swing.SwingWorker;
-import javax.swing.UIManager;
-import javax.swing.UnsupportedLookAndFeelException;
-import javax.swing.WindowConstants;
 
-import org.mastodon.graph.GraphChangeListener;
-import org.mastodon.revised.mamut.feature.MamutFeatureComputerService;
 import org.mastodon.revised.model.AbstractModel;
 import org.mastodon.revised.model.feature.FeatureComputer;
 import org.mastodon.revised.model.feature.FeatureComputerService;
 import org.mastodon.revised.model.feature.FeatureModel;
-import org.mastodon.revised.model.mamut.Model;
 import org.mastodon.revised.ui.ProgressListener;
-import org.mastodon.util.Listeners;
-import org.scijava.Context;
 
 public class FeatureComputersPanel< AM extends AbstractModel< ?, ?, ? > > extends JPanel
 {
@@ -62,7 +48,7 @@ public class FeatureComputersPanel< AM extends AbstractModel< ?, ?, ? > > extend
 
 	private static final ImageIcon CANCEL_ICON = new ImageIcon( FeatureComputersPanel.class.getResource( "cancel.png" ) );
 
-	private static final DateFormat DATE_FORMAT = new SimpleDateFormat( "yyyy-MM-dd HH:mm:ss" );
+	private static final DateFormat DATE_FORMAT = new SimpleDateFormat( "yyyy-MM-dd --- HH:mm:ss" );
 
 	private final FeatureComputerService< AM > computerService;
 
@@ -94,58 +80,71 @@ public class FeatureComputersPanel< AM extends AbstractModel< ?, ?, ? > > extend
 		final JPanel panelComputation = new JPanel();
 		add( panelComputation, BorderLayout.SOUTH );
 
+		final GridBagLayout gbl_panelComputation = new GridBagLayout();
+		gbl_panelComputation.columnWeights = new double[] { 0.0, 1.0 };
+		gbl_panelComputation.rowWeights = new double[] { 0.0, 0.0, 0.0 };
+		panelComputation.setLayout( gbl_panelComputation );
+
 		btnCompute = new JButton( "Compute", GO_ICON );
+		final GridBagConstraints gbc_btnCompute = new GridBagConstraints();
+		gbc_btnCompute.insets = new Insets( 5, 5, 5, 5 );
+		gbc_btnCompute.anchor = GridBagConstraints.CENTER;
+		gbc_btnCompute.gridx = 0;
+		gbc_btnCompute.gridy = 0;
+		panelComputation.add( btnCompute, gbc_btnCompute );
 
 		progressBar = new MyProgressBar();
 		progressBar.setStringPainted( true );
+		final GridBagConstraints gbc_progressBar = new GridBagConstraints();
+		gbc_progressBar.fill = GridBagConstraints.BOTH;
+		gbc_progressBar.insets = new Insets( 5, 5, 5, 5 );
+		gbc_progressBar.gridx = 1;
+		gbc_progressBar.gridy = 0;
+		panelComputation.add( progressBar, gbc_progressBar );
 
-		lblComputationDate = new JLabel( "Last feature computation: Never." );
-		lblModelModificationDate = new JLabel( "Model last modified: Unknown." );
-		final GroupLayout gl_panelComputation = new GroupLayout( panelComputation );
-		gl_panelComputation.setHorizontalGroup(
-				gl_panelComputation.createParallelGroup( Alignment.LEADING )
-						.addGroup( gl_panelComputation.createSequentialGroup()
-								.addContainerGap()
-								.addGroup( gl_panelComputation.createParallelGroup( Alignment.LEADING )
-										.addGroup( gl_panelComputation.createSequentialGroup()
-												.addComponent( btnCompute )
-												.addPreferredGap( ComponentPlacement.RELATED )
-												.addComponent( progressBar, GroupLayout.DEFAULT_SIZE, 349, Short.MAX_VALUE ) )
-										.addComponent( lblComputationDate, Alignment.TRAILING, GroupLayout.DEFAULT_SIZE, 430, Short.MAX_VALUE )
-										.addComponent( lblModelModificationDate, Alignment.TRAILING, GroupLayout.DEFAULT_SIZE, 430, Short.MAX_VALUE ) )
-								.addContainerGap() ) );
-		gl_panelComputation.setVerticalGroup(
-				gl_panelComputation.createParallelGroup( Alignment.LEADING )
-						.addGroup( gl_panelComputation.createSequentialGroup()
-								.addContainerGap()
-								.addGroup( gl_panelComputation.createParallelGroup( Alignment.TRAILING, false )
-										.addComponent( progressBar, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE )
-										.addComponent( btnCompute, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE ) )
-								.addPreferredGap( ComponentPlacement.UNRELATED )
-								.addComponent( lblComputationDate )
-								.addComponent( lblModelModificationDate )
-								.addContainerGap( GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE ) ) );
-		panelComputation.setLayout( gl_panelComputation );
+		// Wire listener to compute button.
+		btnCompute.addActionListener( ( e ) -> compute() );
 
-		final JPanel panelTitle = new JPanel();
+		final JLabel lblLastFeatureComputation = new JLabel( "Last feature computation:" );
+		final GridBagConstraints gbc_lblLastFeatureComputation = new GridBagConstraints();
+		gbc_lblLastFeatureComputation.anchor = GridBagConstraints.WEST;
+		gbc_lblLastFeatureComputation.insets = new Insets( 5, 5, 5, 5 );
+		gbc_lblLastFeatureComputation.gridx = 0;
+		gbc_lblLastFeatureComputation.gridy = 1;
+		panelComputation.add( lblLastFeatureComputation, gbc_lblLastFeatureComputation );
+
+		lblComputationDate = new JLabel( "Never." );
+		final GridBagConstraints gbc_lblComputationDate = new GridBagConstraints();
+		gbc_lblComputationDate.fill = GridBagConstraints.HORIZONTAL;
+		gbc_lblComputationDate.anchor = GridBagConstraints.WEST;
+		gbc_lblComputationDate.insets = new Insets( 5, 5, 5, 5 );
+		gbc_lblComputationDate.gridx = 1;
+		gbc_lblComputationDate.gridy = 1;
+		panelComputation.add( lblComputationDate, gbc_lblComputationDate );
+
+		final JLabel lblLastModelModification = new JLabel( "Model last modified:" );
+		final GridBagConstraints gbc_lblLastFeatureComputation_1 = new GridBagConstraints();
+		gbc_lblLastFeatureComputation_1.anchor = GridBagConstraints.WEST;
+		gbc_lblLastFeatureComputation_1.insets = new Insets( 5, 5, 5, 5 );
+		gbc_lblLastFeatureComputation_1.gridx = 0;
+		gbc_lblLastFeatureComputation_1.gridy = 2;
+		panelComputation.add( lblLastModelModification, gbc_lblLastFeatureComputation_1 );
+
+		lblModelModificationDate = new JLabel( "Unknown." );
+		final GridBagConstraints gbc_lblModelModificationDate = new GridBagConstraints();
+		gbc_lblModelModificationDate.anchor = GridBagConstraints.NORTHWEST;
+		gbc_lblModelModificationDate.insets = new Insets( 5, 5, 5, 5 );
+		gbc_lblModelModificationDate.gridx = 1;
+		gbc_lblModelModificationDate.gridy = 2;
+		panelComputation.add( lblModelModificationDate, gbc_lblModelModificationDate );
+
+
+		final JPanel panelTitle = new JPanel( new FlowLayout( FlowLayout.LEADING ) );
 		add( panelTitle, BorderLayout.NORTH );
 
 		final JLabel lblTitle = new JLabel( "Features available for computation:" );
 		lblTitle.setFont( getFont().deriveFont( Font.BOLD ) );
-		final GroupLayout gl_panelTitle = new GroupLayout( panelTitle );
-		gl_panelTitle.setHorizontalGroup(
-				gl_panelTitle.createParallelGroup( Alignment.LEADING )
-						.addGroup( gl_panelTitle.createSequentialGroup()
-								.addContainerGap()
-								.addComponent( lblTitle, GroupLayout.DEFAULT_SIZE, 430, Short.MAX_VALUE )
-								.addContainerGap() ) );
-		gl_panelTitle.setVerticalGroup(
-				gl_panelTitle.createParallelGroup( Alignment.LEADING )
-						.addGroup( gl_panelTitle.createSequentialGroup()
-								.addGap( 5 )
-								.addComponent( lblTitle, GroupLayout.PREFERRED_SIZE, 25, GroupLayout.PREFERRED_SIZE )
-								.addGap( 0, 0, Short.MAX_VALUE ) ) );
-		panelTitle.setLayout( gl_panelTitle );
+		panelTitle.add( lblTitle );
 
 		final JScrollPane scrollPane = new JScrollPane();
 		scrollPane.setViewportBorder( null );
@@ -166,23 +165,8 @@ public class FeatureComputersPanel< AM extends AbstractModel< ?, ?, ? > > extend
 		// Feed the feature panel.
 		layoutComputers( panelFeatures, c, computerService.getFeatureComputers() );
 
-		// Wire listener to compute button.
-		btnCompute.addActionListener( ( e ) -> compute() );
-
-	}
-
-	private final EchoLastModified echoLastModified = new EchoLastModified();
-
-	private final Listeners.List< UpdateListener > listeners = new Listeners.SynchronizedList<>();
-
-	private final class EchoLastModified implements GraphChangeListener
-	{
-
-		@Override
-		public void graphChanged()
-		{
-			lblModelModificationDate.setText( "Model last modified: " + now() );
-		}
+		// Listen to graph changes.
+		model.getGraph().addGraphChangeListener( () -> lblModelModificationDate.setText( now() ) );
 	}
 
 	private synchronized void compute()
@@ -209,11 +193,10 @@ public class FeatureComputersPanel< AM extends AbstractModel< ?, ?, ? > > extend
 					if ( worker.isDone() && !worker.isCancelled() )
 					{
 						enableComponents( FeatureComputersPanel.this, true );
-						lblComputationDate.setText( "Last feature computation: " + now() );
+						lblComputationDate.setText( now() );
 						worker = null;
 						btnCompute.setText( "Compute" );
 						btnCompute.setIcon( GO_ICON );
-						listeners.list.forEach( UpdateListener::featureValuesCalculated );
 					}
 				}
 			} );
@@ -294,11 +277,6 @@ public class FeatureComputersPanel< AM extends AbstractModel< ?, ?, ? > > extend
 		public void featureValuesCalculated();
 	}
 
-	public Listeners< UpdateListener > listeners()
-	{
-		return listeners;
-	}
-
 	private class FeatureComputerWorker extends SwingWorker< Boolean, String >
 	{
 
@@ -352,30 +330,5 @@ public class FeatureComputersPanel< AM extends AbstractModel< ?, ?, ? > > extend
 				enableComponents( ( Container ) component, enable );
 			}
 		}
-	}
-
-	public static void main( final String[] args ) throws ClassNotFoundException, InstantiationException, IllegalAccessException, UnsupportedLookAndFeelException, InvocationTargetException, InterruptedException
-	{
-		UIManager.setLookAndFeel( UIManager.getSystemLookAndFeelClassName() );
-		Locale.setDefault( Locale.US );
-
-		final Context context = new org.scijava.Context();
-		final MamutFeatureComputerService featureComputerService = context.getService( MamutFeatureComputerService.class );
-		final Model model = new Model();
-
-		SwingUtilities.invokeLater( new Runnable()
-		{
-			@Override
-			public void run()
-			{
-
-				final JFrame frame = new JFrame( "Test" );
-				final FeatureComputersPanel< Model > panel = new FeatureComputersPanel<>( featureComputerService, model, model.getFeatureModel() );
-				frame.getContentPane().add( panel );
-				frame.setSize( 400, 400 );
-				frame.setDefaultCloseOperation( WindowConstants.EXIT_ON_CLOSE );
-				frame.setVisible( true );
-			}
-		} );
 	}
 }
