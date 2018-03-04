@@ -1,4 +1,4 @@
-package org.mastodon.revised.mamut;
+package org.mastodon.revised.model.feature.ui;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
@@ -41,13 +41,16 @@ import javax.swing.WindowConstants;
 
 import org.mastodon.graph.GraphChangeListener;
 import org.mastodon.revised.mamut.feature.MamutFeatureComputerService;
+import org.mastodon.revised.model.AbstractModel;
 import org.mastodon.revised.model.feature.FeatureComputer;
+import org.mastodon.revised.model.feature.FeatureComputerService;
+import org.mastodon.revised.model.feature.FeatureModel;
 import org.mastodon.revised.model.mamut.Model;
 import org.mastodon.revised.ui.ProgressListener;
 import org.mastodon.util.Listeners;
 import org.scijava.Context;
 
-public class FeatureComputersPanel extends JPanel
+public class FeatureComputersPanel< AM extends AbstractModel< ?, ?, ? > > extends JPanel
 {
 	private static final long serialVersionUID = 1L;
 
@@ -61,13 +64,15 @@ public class FeatureComputersPanel extends JPanel
 
 	private static final DateFormat DATE_FORMAT = new SimpleDateFormat( "yyyy-MM-dd HH:mm:ss" );
 
-	private final MamutFeatureComputerService computerService;
+	private final FeatureComputerService< AM > computerService;
 
-	private Model model;
+	private final AM model;
+
+	private final FeatureModel featureModel;
 
 	private final MyProgressBar progressBar;
 
-	private final Set< FeatureComputer< Model > > selectedComputers;
+	private final Set< FeatureComputer< AM > > selectedComputers;
 
 	private final JButton btnCompute;
 
@@ -77,9 +82,11 @@ public class FeatureComputersPanel extends JPanel
 
 	private final JLabel lblModelModificationDate;
 
-	public FeatureComputersPanel( final MamutFeatureComputerService computerService )
+	public FeatureComputersPanel( final FeatureComputerService< AM > computerService, final AM model, final FeatureModel featureModel )
 	{
 		this.computerService = computerService;
+		this.model = model;
+		this.featureModel = featureModel;
 		this.selectedComputers = new HashSet<>();
 
 		setLayout( new BorderLayout( 0, 0 ) );
@@ -164,19 +171,6 @@ public class FeatureComputersPanel extends JPanel
 
 	}
 
-	public void setModel( final Model model )
-	{
-		// Rewire listener to graph.
-		if (this.model != null)
-			model.getGraph().removeGraphChangeListener( echoLastModified );
-
-		this.model = model;
-		if (model != null)
-			model.getGraph().addGraphChangeListener( echoLastModified );
-
-		btnCompute.setEnabled( model != null );
-	}
-
 	private final EchoLastModified echoLastModified = new EchoLastModified();
 
 	private final Listeners.List< UpdateListener > listeners = new Listeners.SynchronizedList<>();
@@ -242,13 +236,13 @@ public class FeatureComputersPanel extends JPanel
 		return DATE_FORMAT.format( Calendar.getInstance().getTime() );
 	}
 
-	private void layoutComputers( final JPanel panel, final GridBagConstraints c, final Collection< FeatureComputer< Model > > set )
+	private void layoutComputers( final JPanel panel, final GridBagConstraints c, final Collection< FeatureComputer< AM > > collection )
 	{
-		if ( set.isEmpty() )
+		if ( collection.isEmpty() )
 			return;
 
 		c.gridx = 0;
-		for ( final FeatureComputer< Model > computer : set )
+		for ( final FeatureComputer< AM > computer : collection )
 		{
 			final boolean selected = true;
 			final JCheckBox checkBox = new JCheckBox( computer.getKey(), selected );
@@ -311,7 +305,7 @@ public class FeatureComputersPanel extends JPanel
 		@Override
 		protected Boolean doInBackground() throws Exception
 		{
-			final boolean ok = computerService.compute( model, model.getFeatureModel(), selectedComputers, progressBar );
+			final boolean ok = computerService.compute( model, featureModel, selectedComputers, progressBar );
 			return Boolean.valueOf( ok );
 		}
 	}
@@ -367,6 +361,7 @@ public class FeatureComputersPanel extends JPanel
 
 		final Context context = new org.scijava.Context();
 		final MamutFeatureComputerService featureComputerService = context.getService( MamutFeatureComputerService.class );
+		final Model model = new Model();
 
 		SwingUtilities.invokeLater( new Runnable()
 		{
@@ -375,8 +370,7 @@ public class FeatureComputersPanel extends JPanel
 			{
 
 				final JFrame frame = new JFrame( "Test" );
-				final FeatureComputersPanel panel = new FeatureComputersPanel( featureComputerService );
-				panel.setModel( new Model() );
+				final FeatureComputersPanel< Model > panel = new FeatureComputersPanel<>( featureComputerService, model, model.getFeatureModel() );
 				frame.getContentPane().add( panel );
 				frame.setSize( 400, 400 );
 				frame.setDefaultCloseOperation( WindowConstants.EXIT_ON_CLOSE );

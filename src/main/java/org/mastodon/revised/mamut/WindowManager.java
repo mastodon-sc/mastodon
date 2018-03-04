@@ -14,6 +14,7 @@ import org.mastodon.app.ui.settings.SimpleSettingsPage;
 import org.mastodon.revised.bdv.overlay.ui.RenderSettingsConfigPage;
 import org.mastodon.revised.bdv.overlay.ui.RenderSettingsManager;
 import org.mastodon.revised.mamut.feature.MamutFeatureComputerService;
+import org.mastodon.revised.model.feature.ui.FeatureComputersPanel;
 import org.mastodon.revised.model.mamut.Link;
 import org.mastodon.revised.model.mamut.Model;
 import org.mastodon.revised.model.mamut.Spot;
@@ -91,8 +92,6 @@ public class WindowManager
 
 	final ProjectManager projectManager;
 
-	private final FeatureComputersPanel featureComputersPanel;
-
 	final PreferencesDialog settings;
 
 	private final FeatureColorModeManager featureColorModeManager;
@@ -129,12 +128,9 @@ public class WindowManager
 		globalAppActions.namedAction( editTagSetsAction, TAGSETS_DIALOG_KEYS );
 
 		settings = new PreferencesDialog( null, keymap, new String[] { "mastodon" } );
-		final MamutFeatureComputerService featureComputerService = context.getService( MamutFeatureComputerService.class );
-		this.featureComputersPanel = new FeatureComputersPanel( featureComputerService );
 		settings.addPage( new TrackSchemeStyleSettingsPage( "TrackScheme Styles", trackSchemeStyleManager ) );
 		settings.addPage( new RenderSettingsConfigPage( "BDV Render Settings", renderSettingsManager ) );
 		settings.addPage( new KeymapSettingsPage( "Keymap", keymapManager ) );
-		settings.addPage( new SimpleSettingsPage( "Feature Calculation", featureComputersPanel ) );
 		final ToggleDialogAction tooglePreferencesDialogAction = new ToggleDialogAction( PREFERENCES_DIALOG, settings );
 		globalAppActions.namedAction( tooglePreferencesDialogAction, PREFERENCES_DIALOG_KEYS );
 
@@ -146,7 +142,6 @@ public class WindowManager
 		newBdvViewAction.setEnabled( appModel != null );
 		newTrackSchemeViewAction.setEnabled( appModel != null );
 		editTagSetsAction.setEnabled( appModel != null );
-		featureComputersPanel.setEnabled( appModel != null );
 	}
 
 	void setAppModel( final MamutAppModel appModel )
@@ -154,17 +149,22 @@ public class WindowManager
 		closeAllWindows();
 
 		final String featureColorTreePath = "Feature Color Modes";
+		final String featureCalculationTreePath = "Feature Calculation";
 
 		this.appModel = appModel;
 		if ( appModel == null )
 		{
 			tagSetDialog.dispose();
 			tagSetDialog = null;
-			featureComputersPanel.setModel( null );
 			updateEnabledActions();
 			settings.removePage( featureColorTreePath );
+			settings.removePage( featureCalculationTreePath );
 			return;
 		}
+
+		final MamutFeatureComputerService featureComputerService = context.getService( MamutFeatureComputerService.class );
+		final FeatureComputersPanel< Model > featureComputersPanel = new FeatureComputersPanel<>( featureComputerService, appModel.getModel(), appModel.getModel().getFeatureModel() );
+		settings.addPage( new SimpleSettingsPage( featureCalculationTreePath, featureComputersPanel ) );
 
 		final Model model = appModel.getModel();
 		UndoActions.install( appModel.getAppActions(), model );
@@ -179,7 +179,6 @@ public class WindowManager
 				new FeatureRangeCalculator<>( appModel.getModel().getGraph(), appModel.getModel().getFeatureModel() ),
 				Spot.class, Link.class );
 		settings.addPage( featureColorModeConfigPage );
-		featureComputersPanel.setModel( appModel.getModel() );
 		featureComputersPanel.listeners().add( () -> featureColorModeConfigPage.refresh() ); // TODO: remove listeners?
 		updateEnabledActions();
 	}
