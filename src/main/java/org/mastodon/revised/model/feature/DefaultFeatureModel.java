@@ -5,6 +5,8 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import org.mastodon.util.Listeners;
+
 /**
  * Default feature model.
  *
@@ -12,6 +14,8 @@ import java.util.Set;
  */
 public class DefaultFeatureModel implements FeatureModel
 {
+
+	private final Listeners.List< FeatureModelListener > listeners;
 
 	private final Map< Class< ? >, Set< Feature< ?, ? > > > targetClassToFeatures;
 
@@ -24,6 +28,7 @@ public class DefaultFeatureModel implements FeatureModel
 	{
 		targetClassToFeatures = new HashMap<>();
 		keyToFeature = new HashMap<>();
+		listeners = new Listeners.SynchronizedList<>();
 	}
 
 	@Override
@@ -41,6 +46,8 @@ public class DefaultFeatureModel implements FeatureModel
 
 		// Feature keys.
 		keyToFeature.put( feature.getKey(), feature );
+
+		listeners.list.forEach( ( l ) -> l.featureModelChanged() );
 	}
 
 	@Override
@@ -48,6 +55,7 @@ public class DefaultFeatureModel implements FeatureModel
 	{
 		targetClassToFeatures.clear();
 		keyToFeature.clear();
+		listeners.list.forEach( ( l ) -> l.featureModelChanged() );
 	}
 
 	@Override
@@ -60,5 +68,11 @@ public class DefaultFeatureModel implements FeatureModel
 	public Feature< ?, ? > getFeature( final String key )
 	{
 		return keyToFeature.get( key );
+	}
+
+	@Override
+	public Listeners< FeatureModelListener > listeners()
+	{
+		return listeners;
 	}
 }
