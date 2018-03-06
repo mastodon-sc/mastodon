@@ -64,4 +64,9 @@ public class MastodonPlugins
 	{
 		ViewMenuBuilder.build( menu, actionMap, menuTexts, menuItems.toArray( new MenuItem[ 0 ] ) );
 	}
+
+	public Actions getPluginActions()
+	{
+		return pluginActions;
+	}
 }
