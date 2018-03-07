@@ -318,7 +318,7 @@ public class TrackSchemeStyle implements Style< TrackSchemeStyle >
 
 	public TrackSchemeStyle name( final String name )
 	{
-		if ( this.name != name )
+		if ( !Objects.equals( this.name, name ) )
 		{
 			this.name = name;
 			notifyListeners();

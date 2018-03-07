@@ -50,7 +50,7 @@ public class MamutProjectIO
 		}
 		final Element root = doc.getRootElement();
 
-		if ( root.getName() != MAMUTPROJECT_TAG )
+		if ( !MAMUTPROJECT_TAG.equals( root.getName() ) )
 			throw new IOException( "expected <" + MAMUTPROJECT_TAG + "> root element. wrong file?" );
 
 		return fromXml( root, new File( projectXmlFilename ).getParentFile() );
