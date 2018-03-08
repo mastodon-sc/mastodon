@@ -20,6 +20,7 @@ import org.mastodon.revised.ui.keymap.KeymapManager;
 import org.mastodon.revised.ui.util.FileChooser;
 import org.mastodon.revised.ui.util.FileChooser.SelectionMode;
 import org.mastodon.revised.ui.util.XmlFileFilter;
+import org.mastodon.revised.util.DummySpimData;
 import org.mastodon.revised.util.ToggleDialogAction;
 import org.scijava.ui.behaviour.KeyPressedManager;
 import org.scijava.ui.behaviour.util.AbstractNamedAction;
@@ -227,7 +228,9 @@ public class ProjectManager
 		 * Load SpimData
 		 */
 		final String spimDataXmlFilename = project.getDatasetXmlFile().getAbsolutePath();
-		final SpimDataMinimal spimData = new XmlIoSpimDataMinimal().load( spimDataXmlFilename );
+		SpimDataMinimal spimData = DummySpimData.tryCreate( project.getDatasetXmlFile().getName() );
+		if ( spimData == null )
+			spimData = new XmlIoSpimDataMinimal().load( spimDataXmlFilename );
 
 		final KeyPressedManager keyPressedManager = windowManager.getKeyPressedManager();
 		final TrackSchemeStyleManager trackSchemeStyleManager = windowManager.getTrackSchemeStyleManager();
