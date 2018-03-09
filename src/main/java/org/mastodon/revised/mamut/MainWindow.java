@@ -190,6 +190,7 @@ public class MainWindow extends JFrame
 						item( ProjectManager.SAVE_PROJECT ),
 						separator(),
 						item( ProjectManager.IMPORT_TGMM ),
+						item( ProjectManager.IMPORT_SIMI ),
 						item( ProjectManager.IMPORT_MAMUT ),
 						item( ProjectManager.EXPORT_MAMUT ),
 						separator(),
