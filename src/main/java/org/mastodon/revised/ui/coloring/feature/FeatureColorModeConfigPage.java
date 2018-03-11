@@ -28,7 +28,7 @@ public class FeatureColorModeConfigPage extends SelectAndEditProfileSettingsPage
 	public void refresh()
 	{
 		// HAX!
-		( ( FeatureColorModePanel ) getJPanel().getComponent( 1 ) ).refresh();
+		( ( FeatureColorModeEditorPanel ) getJPanel().getComponent( 1 ) ).refresh();
 	}
 
 	static class FeatureColorModelEditPanel implements FeatureColorMode.UpdateListener, SelectAndEditProfileSettingsPage.ProfileEditPanel< StyleProfile< FeatureColorMode > >
@@ -38,14 +38,14 @@ public class FeatureColorModeConfigPage extends SelectAndEditProfileSettingsPage
 
 		private final SynchronizedList< ModificationListener > modificationListeners;
 
-		private final FeatureColorModePanel featureColorModeEditorPanel;
+		private final FeatureColorModeEditorPanel featureColorModeEditorPanel;
 
 		private boolean trackModifications = true;
 
 		public FeatureColorModelEditPanel( final FeatureColorMode initialMode, final FeatureModel featureModel, final FeatureRangeCalculator< ? extends Vertex< ? >, ? extends Edge< ? > > rangeCalculator, final Class< ? extends Vertex< ? > > vertexClass, final Class< ? extends Edge< ? > > edgeClass )
 		{
 			this.editedMode = initialMode.copy( "Edited" );
-			this.featureColorModeEditorPanel = new FeatureColorModePanel( editedMode, featureModel, rangeCalculator, vertexClass, edgeClass );
+			this.featureColorModeEditorPanel = new FeatureColorModeEditorPanel( editedMode, featureModel, rangeCalculator, vertexClass, edgeClass );
 			this.modificationListeners = new Listeners.SynchronizedList<>();
 			editedMode.updateListeners().add( this );
 		}
