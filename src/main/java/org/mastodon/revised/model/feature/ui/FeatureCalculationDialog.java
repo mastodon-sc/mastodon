@@ -26,7 +26,7 @@ public class FeatureCalculationDialog< AM extends AbstractModel< ?, ?, ? > > ext
 	public FeatureCalculationDialog( final Frame owner, final FeatureComputerService< AM > computerService, final AM model, final FeatureModel featureModel )
 	{
 		super( owner, "Feature Calculation", false );
-		final FeatureComputersPanel< AM > panel = new FeatureComputersPanel<>( computerService, model, featureModel );
+		final FeatureCalculationPanel< AM > panel = new FeatureCalculationPanel<>( computerService, model, featureModel );
 
 		setDefaultCloseOperation( WindowConstants.HIDE_ON_CLOSE );
 		getContentPane().add( panel, BorderLayout.CENTER );

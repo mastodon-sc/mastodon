@@ -36,17 +36,17 @@ import org.mastodon.revised.model.feature.FeatureComputerService;
 import org.mastodon.revised.model.feature.FeatureModel;
 import org.mastodon.revised.ui.ProgressListener;
 
-public class FeatureComputersPanel< AM extends AbstractModel< ?, ?, ? > > extends JPanel
+public class FeatureCalculationPanel< AM extends AbstractModel< ?, ?, ? > > extends JPanel
 {
 	private static final long serialVersionUID = 1L;
 
-	private static final ImageIcon COG_ICON = new ImageIcon( FeatureComputersPanel.class.getResource( "cog.png" ) );
+	private static final ImageIcon COG_ICON = new ImageIcon( FeatureCalculationPanel.class.getResource( "cog.png" ) );
 
-	private static final ImageIcon HELP_ICON = new ImageIcon( FeatureComputersPanel.class.getResource( "help.png" ) );
+	private static final ImageIcon HELP_ICON = new ImageIcon( FeatureCalculationPanel.class.getResource( "help.png" ) );
 
-	private static final ImageIcon GO_ICON = new ImageIcon( FeatureComputersPanel.class.getResource( "bullet_green.png" ) );
+	private static final ImageIcon GO_ICON = new ImageIcon( FeatureCalculationPanel.class.getResource( "bullet_green.png" ) );
 
-	private static final ImageIcon CANCEL_ICON = new ImageIcon( FeatureComputersPanel.class.getResource( "cancel.png" ) );
+	private static final ImageIcon CANCEL_ICON = new ImageIcon( FeatureCalculationPanel.class.getResource( "cancel.png" ) );
 
 	private static final DateFormat DATE_FORMAT = new SimpleDateFormat( "yyyy-MM-dd --- HH:mm:ss" );
 
@@ -68,7 +68,7 @@ public class FeatureComputersPanel< AM extends AbstractModel< ?, ?, ? > > extend
 
 	private final JLabel lblModelModificationDate;
 
-	public FeatureComputersPanel( final FeatureComputerService< AM > computerService, final AM model, final FeatureModel featureModel )
+	public FeatureCalculationPanel( final FeatureComputerService< AM > computerService, final AM model, final FeatureModel featureModel )
 	{
 		this.computerService = computerService;
 		this.model = model;
@@ -192,7 +192,7 @@ public class FeatureComputersPanel< AM extends AbstractModel< ?, ?, ? > > extend
 
 					if ( worker.isDone() && !worker.isCancelled() )
 					{
-						enableComponents( FeatureComputersPanel.this, true );
+						enableComponents( FeatureCalculationPanel.this, true );
 						lblComputationDate.setText( now() );
 						worker = null;
 						btnCompute.setText( "Compute" );
@@ -207,7 +207,7 @@ public class FeatureComputersPanel< AM extends AbstractModel< ?, ?, ? > > extend
 			worker.cancel( true );
 			progressBar.clearStatus();
 			progressBar.setString( "Canceled." );
-			enableComponents( FeatureComputersPanel.this, true );
+			enableComponents( FeatureCalculationPanel.this, true );
 			worker = null;
 			btnCompute.setText( "Compute" );
 			btnCompute.setIcon( GO_ICON );
