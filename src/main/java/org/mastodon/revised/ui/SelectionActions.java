@@ -13,8 +13,11 @@ import org.mastodon.graph.algorithm.traversal.DepthFirstSearch;
 import org.mastodon.graph.algorithm.traversal.GraphSearch.SearchDirection;
 import org.mastodon.graph.algorithm.traversal.SearchListener;
 import org.mastodon.model.SelectionModel;
+import org.mastodon.revised.mamut.KeyConfigContexts;
+import org.mastodon.revised.ui.keymap.CommandDescriptionProvider;
 import org.mastodon.revised.ui.keymap.CommandDescriptions;
 import org.mastodon.undo.UndoPointMarker;
+import org.scijava.plugin.Plugin;
 import org.scijava.ui.behaviour.util.AbstractNamedAction;
 import org.scijava.ui.behaviour.util.Actions;
 
@@ -44,12 +47,22 @@ public class SelectionActions< V extends Vertex< E >, E extends Edge< V > >
 	/*
 	 * Command descriptions for all provided commands
 	 */
-	public static void getCommandDescriptions( final CommandDescriptions descriptions )
+	@Plugin( type = Descriptions.class )
+	public static class Descriptions extends CommandDescriptionProvider
 	{
-		descriptions.add( DELETE_SELECTION, DELETE_SELECTION_KEYS, "Delete current selection." );
-		descriptions.add( SELECT_WHOLE_TRACK, SELECT_WHOLE_TRACK_KEYS, "Select the whole track of the current spot." );
-		descriptions.add( SELECT_TRACK_DOWNWARD, SELECT_TRACK_DOWNWARD_KEYS, "Select the track downward from the current spot." );
-		descriptions.add( SELECT_TRACK_UPWARD, SELECT_TRACK_UPWARD_KEYS, "Select the track upward form the current spot." );
+		public Descriptions()
+		{
+			super( KeyConfigContexts.MASTODON );
+		}
+
+		@Override
+		public void getCommandDescriptions( final CommandDescriptions descriptions )
+		{
+			descriptions.add( DELETE_SELECTION, DELETE_SELECTION_KEYS, "Delete current selection." );
+			descriptions.add( SELECT_WHOLE_TRACK, SELECT_WHOLE_TRACK_KEYS, "Select the whole track of the current spot." );
+			descriptions.add( SELECT_TRACK_DOWNWARD, SELECT_TRACK_DOWNWARD_KEYS, "Select the track downward from the current spot." );
+			descriptions.add( SELECT_TRACK_UPWARD, SELECT_TRACK_UPWARD_KEYS, "Select the track upward form the current spot." );
+		}
 	}
 
 	/**

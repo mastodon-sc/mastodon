@@ -24,23 +24,18 @@ public final class CommandDescriptions
 
 	private final Map< Command, DescriptionAndTriggers > descriptions = new LinkedHashMap<>();
 
-	private String defaultContext;
+	private String context;
 
 	public void add( final String name, final String[] defaultTriggers, final String description )
-	{
-		add( name, defaultContext, defaultTriggers, description );
-	}
-
-	public void add( final String name, final String context, final String[] defaultTriggers, final String description )
 	{
 		final Command c = new Command( name, context );
 		final DescriptionAndTriggers cd = new DescriptionAndTriggers( description, defaultTriggers );
 		descriptions.put( c, cd );
 	}
 
-	public void setDefaultContext( final String defaultContext )
+	public void setKeyconfigContext( final String context )
 	{
-		this.defaultContext = defaultContext;
+		this.context = context;
 	}
 
 	public Map< Command, String > createCommandDescriptionsMap()

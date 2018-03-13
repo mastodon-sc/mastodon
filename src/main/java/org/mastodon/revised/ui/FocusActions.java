@@ -11,8 +11,11 @@ import org.mastodon.graph.Vertex;
 import org.mastodon.model.FocusModel;
 import org.mastodon.model.NavigationHandler;
 import org.mastodon.model.SelectionModel;
+import org.mastodon.revised.mamut.KeyConfigContexts;
 import org.mastodon.revised.trackscheme.display.TrackSchemeNavigationActions.NavigatorEtiquette;
+import org.mastodon.revised.ui.keymap.CommandDescriptionProvider;
 import org.mastodon.revised.ui.keymap.CommandDescriptions;
+import org.scijava.plugin.Plugin;
 import org.scijava.ui.behaviour.util.Actions;
 import org.scijava.ui.behaviour.util.RunnableAction;
 
@@ -54,18 +57,28 @@ public class FocusActions< V extends Vertex< E > & Ref< V >, E extends Edge< V >
 	/*
 	 * Command descriptions for all provided commands
 	 */
-	public static void getCommandDescriptions( final CommandDescriptions descriptions )
+	@Plugin( type = Descriptions.class )
+	public static class Descriptions extends CommandDescriptionProvider
 	{
-		descriptions.add( NAVIGATE_CHILD, NAVIGATE_CHILD_KEYS, "Go to the first child of the current spot." );
-		descriptions.add( NAVIGATE_PARENT, NAVIGATE_PARENT_KEYS, "Go to the parent of the current spot." );
-		descriptions.add( NAVIGATE_SIBLING, NAVIGATE_SIBLING_KEYS, "Go to the sibling of the current spot." );
-		descriptions.add( NAVIGATE_BRANCH_CHILD, NAVIGATE_BRANCH_CHILD_KEYS, "Go to the next division on the first branch of the current spot." );
-		descriptions.add( NAVIGATE_BRANCH_PARENT, NAVIGATE_BRANCH_PARENT_KEYS, "Go to the previous division on the branch of the current spot." );
-		descriptions.add( SELECT_NAVIGATE_CHILD, SELECT_NAVIGATE_CHILD_KEYS, "Go to the first child of the current spot, and select it." );
-		descriptions.add( SELECT_NAVIGATE_PARENT, SELECT_NAVIGATE_PARENT_KEYS, "Go to the parent of the current spot, and select it." );
-		descriptions.add( SELECT_NAVIGATE_SIBLING, SELECT_NAVIGATE_SIBLING_KEYS, "Go to the sibling of the current spot, and select it." );
-		descriptions.add( SELECT_NAVIGATE_BRANCH_CHILD, SELECT_NAVIGATE_BRANCH_CHILD_KEYS, "Go to the next division on the first branch of the current spot, and select all spots on the way." );
-		descriptions.add( SELECT_NAVIGATE_BRANCH_PARENT, SELECT_NAVIGATE_BRANCH_PARENT_KEYS, "Go to the previous division on the branch of the current spot, and select all spots on the way." );
+		public Descriptions()
+		{
+			super( KeyConfigContexts.BIGDATAVIEWER, KeyConfigContexts.TRACKSCHEME );
+		}
+
+		@Override
+		public void getCommandDescriptions( final CommandDescriptions descriptions )
+		{
+			descriptions.add( NAVIGATE_CHILD, NAVIGATE_CHILD_KEYS, "Go to the first child of the current spot." );
+			descriptions.add( NAVIGATE_PARENT, NAVIGATE_PARENT_KEYS, "Go to the parent of the current spot." );
+			descriptions.add( NAVIGATE_SIBLING, NAVIGATE_SIBLING_KEYS, "Go to the sibling of the current spot." );
+			descriptions.add( NAVIGATE_BRANCH_CHILD, NAVIGATE_BRANCH_CHILD_KEYS, "Go to the next division on the first branch of the current spot." );
+			descriptions.add( NAVIGATE_BRANCH_PARENT, NAVIGATE_BRANCH_PARENT_KEYS, "Go to the previous division on the branch of the current spot." );
+			descriptions.add( SELECT_NAVIGATE_CHILD, SELECT_NAVIGATE_CHILD_KEYS, "Go to the first child of the current spot, and select it." );
+			descriptions.add( SELECT_NAVIGATE_PARENT, SELECT_NAVIGATE_PARENT_KEYS, "Go to the parent of the current spot, and select it." );
+			descriptions.add( SELECT_NAVIGATE_SIBLING, SELECT_NAVIGATE_SIBLING_KEYS, "Go to the sibling of the current spot, and select it." );
+			descriptions.add( SELECT_NAVIGATE_BRANCH_CHILD, SELECT_NAVIGATE_BRANCH_CHILD_KEYS, "Go to the next division on the first branch of the current spot, and select all spots on the way." );
+			descriptions.add( SELECT_NAVIGATE_BRANCH_PARENT, SELECT_NAVIGATE_BRANCH_PARENT_KEYS, "Go to the previous division on the branch of the current spot, and select all spots on the way." );
+		}
 	}
 
 	private final RunnableAction navigateToChildAction;

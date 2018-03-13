@@ -10,8 +10,11 @@ import java.awt.geom.AffineTransform;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import org.mastodon.revised.bdv.overlay.ScreenVertexMath.Ellipse;
+import org.mastodon.revised.mamut.KeyConfigContexts;
+import org.mastodon.revised.ui.keymap.CommandDescriptionProvider;
 import org.mastodon.revised.ui.keymap.CommandDescriptions;
 import org.mastodon.undo.UndoPointMarker;
+import org.scijava.plugin.Plugin;
 import org.scijava.ui.behaviour.DragBehaviour;
 import org.scijava.ui.behaviour.util.AbstractNamedBehaviour;
 import org.scijava.ui.behaviour.util.Behaviours;
@@ -37,12 +40,22 @@ public class EditSpecialBehaviours< V extends OverlayVertex< V, E >, E extends O
 	/*
 	 * Command descriptions for all provided commands
 	 */
-	public static void getCommandDescriptions( final CommandDescriptions descriptions )
+	@Plugin( type = Descriptions.class )
+	public static class Descriptions extends CommandDescriptionProvider
 	{
-		descriptions.add( ADD_SPOT_AND_LINK_IT_FORWARD, ADD_SPOT_AND_LINK_IT_FORWARD_KEYS, "Add a spot new spot in the next timepoint, linked to the spot under the mouse." );
-		descriptions.add( ADD_SPOT_AND_LINK_IT_BACKWARD, ADD_SPOT_AND_LINK_IT_BACKWARD_KEYS, "Add a spot new spot in the previous timepoint, linked to the spot under the mouse." );
-		descriptions.add( TOGGLE_LINK_FORWARD, TOGGLE_LINK_FORWARD_KEYS, "Toggle link from the spot under the mouse, by dragging to a spot in the next timepoint." );
-		descriptions.add( TOGGLE_LINK_BACKWARD, TOGGLE_LINK_BACKWARD_KEYS, "Toggle link from the spot under the mouse, by dragging to a spot in the previous timepoint." );
+		public Descriptions()
+		{
+			super( KeyConfigContexts.BIGDATAVIEWER );
+		}
+
+		@Override
+		public void getCommandDescriptions( final CommandDescriptions descriptions )
+		{
+			descriptions.add( ADD_SPOT_AND_LINK_IT_FORWARD, ADD_SPOT_AND_LINK_IT_FORWARD_KEYS, "Add a spot new spot in the next timepoint, linked to the spot under the mouse." );
+			descriptions.add( ADD_SPOT_AND_LINK_IT_BACKWARD, ADD_SPOT_AND_LINK_IT_BACKWARD_KEYS, "Add a spot new spot in the previous timepoint, linked to the spot under the mouse." );
+			descriptions.add( TOGGLE_LINK_FORWARD, TOGGLE_LINK_FORWARD_KEYS, "Toggle link from the spot under the mouse, by dragging to a spot in the next timepoint." );
+			descriptions.add( TOGGLE_LINK_BACKWARD, TOGGLE_LINK_BACKWARD_KEYS, "Toggle link from the spot under the mouse, by dragging to a spot in the previous timepoint." );
+		}
 	}
 
 	public static final Color EDIT_GRAPH_OVERLAY_COLOR = Color.WHITE;

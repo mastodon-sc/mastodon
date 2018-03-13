@@ -4,11 +4,14 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import org.mastodon.model.FocusModel;
 import org.mastodon.model.SelectionModel;
+import org.mastodon.revised.mamut.KeyConfigContexts;
 import org.mastodon.revised.trackscheme.LineageTreeLayout;
 import org.mastodon.revised.trackscheme.TrackSchemeEdge;
 import org.mastodon.revised.trackscheme.TrackSchemeGraph;
 import org.mastodon.revised.trackscheme.TrackSchemeVertex;
+import org.mastodon.revised.ui.keymap.CommandDescriptionProvider;
 import org.mastodon.revised.ui.keymap.CommandDescriptions;
+import org.scijava.plugin.Plugin;
 import org.scijava.ui.behaviour.util.Actions;
 
 /**
@@ -44,17 +47,27 @@ public class TrackSchemeNavigationActions
 	/*
 	 * Command descriptions for all provided commands
 	 */
-	public static void getCommandDescriptions( final CommandDescriptions descriptions )
+	@Plugin( type = Descriptions.class )
+	public static class Descriptions extends CommandDescriptionProvider
 	{
-		descriptions.add( NAVIGATE_CHILD, NAVIGATE_CHILD_KEYS, "Go to the first child of the current spot." );
-		descriptions.add( NAVIGATE_PARENT, NAVIGATE_PARENT_KEYS, "Go to the parent of the current spot." );
-		descriptions.add( NAVIGATE_LEFT, NAVIGATE_LEFT_KEYS, "Go to the spot on the left." );
-		descriptions.add( NAVIGATE_RIGHT, NAVIGATE_RIGHT_KEYS, "Go to the spot on the right." );
-		descriptions.add( SELECT_NAVIGATE_CHILD, SELECT_NAVIGATE_CHILD_KEYS, "Go to the first child of the current spot, and select it." );
-		descriptions.add( SELECT_NAVIGATE_PARENT, SELECT_NAVIGATE_PARENT_KEYS, "Go to the parent of the current spot, and select it." );
-		descriptions.add( SELECT_NAVIGATE_LEFT, SELECT_NAVIGATE_LEFT_KEYS, "Go to the spot on the left, and select it." );
-		descriptions.add( SELECT_NAVIGATE_RIGHT, SELECT_NAVIGATE_RIGHT_KEYS, "Go to the spot on the right, and select it." );
-		descriptions.add( TOGGLE_FOCUS_SELECTION, TOGGLE_FOCUS_SELECTION_KEYS, "Toggle selection of the current spot." );
+		public Descriptions()
+		{
+			super( KeyConfigContexts.TRACKSCHEME );
+		}
+
+		@Override
+		public void getCommandDescriptions( final CommandDescriptions descriptions )
+		{
+			descriptions.add( NAVIGATE_CHILD, NAVIGATE_CHILD_KEYS, "Go to the first child of the current spot." );
+			descriptions.add( NAVIGATE_PARENT, NAVIGATE_PARENT_KEYS, "Go to the parent of the current spot." );
+			descriptions.add( NAVIGATE_LEFT, NAVIGATE_LEFT_KEYS, "Go to the spot on the left." );
+			descriptions.add( NAVIGATE_RIGHT, NAVIGATE_RIGHT_KEYS, "Go to the spot on the right." );
+			descriptions.add( SELECT_NAVIGATE_CHILD, SELECT_NAVIGATE_CHILD_KEYS, "Go to the first child of the current spot, and select it." );
+			descriptions.add( SELECT_NAVIGATE_PARENT, SELECT_NAVIGATE_PARENT_KEYS, "Go to the parent of the current spot, and select it." );
+			descriptions.add( SELECT_NAVIGATE_LEFT, SELECT_NAVIGATE_LEFT_KEYS, "Go to the spot on the left, and select it." );
+			descriptions.add( SELECT_NAVIGATE_RIGHT, SELECT_NAVIGATE_RIGHT_KEYS, "Go to the spot on the right, and select it." );
+			descriptions.add( TOGGLE_FOCUS_SELECTION, TOGGLE_FOCUS_SELECTION_KEYS, "Toggle selection of the current spot." );
+		}
 	}
 
 	private enum Direction

@@ -3,8 +3,11 @@ package org.mastodon.revised.bdv.overlay;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import org.mastodon.revised.bdv.overlay.util.JamaEigenvalueDecomposition;
+import org.mastodon.revised.mamut.KeyConfigContexts;
+import org.mastodon.revised.ui.keymap.CommandDescriptionProvider;
 import org.mastodon.revised.ui.keymap.CommandDescriptions;
 import org.mastodon.undo.UndoPointMarker;
+import org.scijava.plugin.Plugin;
 import org.scijava.ui.behaviour.ClickBehaviour;
 import org.scijava.ui.behaviour.DragBehaviour;
 import org.scijava.ui.behaviour.util.AbstractNamedBehaviour;
@@ -46,16 +49,26 @@ public class EditBehaviours< V extends OverlayVertex< V, E >, E extends OverlayE
 	/*
 	 * Command descriptions for all provided commands
 	 */
-	public static void getCommandDescriptions( final CommandDescriptions descriptions )
+	@Plugin( type = Descriptions.class )
+	public static class Descriptions extends CommandDescriptionProvider
 	{
-		descriptions.add( MOVE_SPOT, MOVE_SPOT_KEYS, "Move spot by mouse-dragging." );
-		descriptions.add( ADD_SPOT, ADD_SPOT_KEYS, "Add spot at mouse position." );
-		descriptions.add( INCREASE_SPOT_RADIUS, INCREASE_SPOT_RADIUS_KEYS, "Increase radius of spot at mouse position." );
-		descriptions.add( INCREASE_SPOT_RADIUS_ALOT, INCREASE_SPOT_RADIUS_ALOT_KEYS, "Increase radius of spot at mouse position (a lot)." );
-		descriptions.add( INCREASE_SPOT_RADIUS_ABIT, INCREASE_SPOT_RADIUS_ABIT_KEYS, "Increase radius of spot at mouse position (a little)." );
-		descriptions.add( DECREASE_SPOT_RADIUS, DECREASE_SPOT_RADIUS_KEYS, "Decrease radius of spot at mouse position." );
-		descriptions.add( DECREASE_SPOT_RADIUS_ALOT, DECREASE_SPOT_RADIUS_ALOT_KEYS, "Decrease radius of spot at mouse position (a lot)." );
-		descriptions.add( DECREASE_SPOT_RADIUS_ABIT, DECREASE_SPOT_RADIUS_ABIT_KEYS, "Decrease radius of spot at mouse position (a little)." );
+		public Descriptions()
+		{
+			super( KeyConfigContexts.BIGDATAVIEWER );
+		}
+
+		@Override
+		public void getCommandDescriptions( final CommandDescriptions descriptions )
+		{
+			descriptions.add( MOVE_SPOT, MOVE_SPOT_KEYS, "Move spot by mouse-dragging." );
+			descriptions.add( ADD_SPOT, ADD_SPOT_KEYS, "Add spot at mouse position." );
+			descriptions.add( INCREASE_SPOT_RADIUS, INCREASE_SPOT_RADIUS_KEYS, "Increase radius of spot at mouse position." );
+			descriptions.add( INCREASE_SPOT_RADIUS_ALOT, INCREASE_SPOT_RADIUS_ALOT_KEYS, "Increase radius of spot at mouse position (a lot)." );
+			descriptions.add( INCREASE_SPOT_RADIUS_ABIT, INCREASE_SPOT_RADIUS_ABIT_KEYS, "Increase radius of spot at mouse position (a little)." );
+			descriptions.add( DECREASE_SPOT_RADIUS, DECREASE_SPOT_RADIUS_KEYS, "Decrease radius of spot at mouse position." );
+			descriptions.add( DECREASE_SPOT_RADIUS_ALOT, DECREASE_SPOT_RADIUS_ALOT_KEYS, "Decrease radius of spot at mouse position (a lot)." );
+			descriptions.add( DECREASE_SPOT_RADIUS_ABIT, DECREASE_SPOT_RADIUS_ABIT_KEYS, "Decrease radius of spot at mouse position (a little)." );
+		}
 	}
 
 	public static final double POINT_SELECT_DISTANCE_TOLERANCE = 5.0;

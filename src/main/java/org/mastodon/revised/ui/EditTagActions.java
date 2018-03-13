@@ -20,13 +20,16 @@ import javax.swing.KeyStroke;
 import org.mastodon.graph.Edge;
 import org.mastodon.graph.Vertex;
 import org.mastodon.model.SelectionModel;
+import org.mastodon.revised.mamut.KeyConfigContexts;
 import org.mastodon.revised.model.tag.ObjTagMap;
 import org.mastodon.revised.model.tag.TagSetModel;
 import org.mastodon.revised.model.tag.TagSetStructure;
 import org.mastodon.revised.model.tag.TagSetStructure.Tag;
 import org.mastodon.revised.model.tag.TagSetStructure.TagSet;
+import org.mastodon.revised.ui.keymap.CommandDescriptionProvider;
 import org.mastodon.revised.ui.keymap.CommandDescriptions;
 import org.mastodon.undo.UndoPointMarker;
+import org.scijava.plugin.Plugin;
 import org.scijava.ui.behaviour.InputTriggerMap;
 import org.scijava.ui.behaviour.util.Actions;
 import org.scijava.ui.behaviour.util.InputActionBindings;
@@ -55,9 +58,19 @@ public class EditTagActions< V extends Vertex< E >, E extends Edge< V > >
 	/*
 	 * Command descriptions for all provided commands
 	 */
-	public static void getCommandDescriptions( final CommandDescriptions descriptions )
+	@Plugin( type = Descriptions.class )
+	public static class Descriptions extends CommandDescriptionProvider
 	{
-		descriptions.add( PICK_TAGS, PICK_TAGS_KEYS, "Assign a tag to the current selection." );
+		public Descriptions()
+		{
+			super( KeyConfigContexts.TRACKSCHEME );
+		}
+
+		@Override
+		public void getCommandDescriptions( final CommandDescriptions descriptions )
+		{
+			descriptions.add( PICK_TAGS, PICK_TAGS_KEYS, "Assign a tag to the current selection." );
+		}
 	}
 
 	private static final String PICK_TAGS_MAP = "pick-tags";

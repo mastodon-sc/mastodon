@@ -8,13 +8,16 @@ import org.mastodon.collection.RefSet;
 import org.mastodon.model.FocusModel;
 import org.mastodon.model.NavigationHandler;
 import org.mastodon.model.SelectionModel;
+import org.mastodon.revised.mamut.KeyConfigContexts;
 import org.mastodon.revised.trackscheme.LineageTreeLayout;
 import org.mastodon.revised.trackscheme.ScreenTransform;
 import org.mastodon.revised.trackscheme.TrackSchemeEdge;
 import org.mastodon.revised.trackscheme.TrackSchemeGraph;
 import org.mastodon.revised.trackscheme.TrackSchemeVertex;
 import org.mastodon.revised.trackscheme.display.OffsetHeaders.OffsetHeadersListener;
+import org.mastodon.revised.ui.keymap.CommandDescriptionProvider;
 import org.mastodon.revised.ui.keymap.CommandDescriptions;
+import org.scijava.plugin.Plugin;
 import org.scijava.ui.behaviour.ClickBehaviour;
 import org.scijava.ui.behaviour.DragBehaviour;
 import org.scijava.ui.behaviour.util.AbstractNamedBehaviour;
@@ -49,14 +52,24 @@ public class TrackSchemeNavigationBehaviours implements TransformListener< Scree
 	/*
 	 * Command descriptions for all provided commands
 	 */
-	public static void getCommandDescriptions( final CommandDescriptions descriptions )
+	@Plugin( type = Descriptions.class )
+	public static class Descriptions extends CommandDescriptionProvider
 	{
-		descriptions.add( FOCUS_VERTEX, FOCUS_VERTEX_KEYS, "Focus spot (spot gets keyboard focus)." );
-		descriptions.add( NAVIGATE_TO_VERTEX, NAVIGATE_TO_VERTEX_KEYS, "Navigate to spot (in all linked views)." );
-		descriptions.add( SELECT, SELECT_KEYS, "Select spot or link." );
-		descriptions.add( ADD_SELECT, ADD_SELECT_KEYS, "Add spot or link to selection." );
-		descriptions.add( BOX_SELECT, BOX_SELECT_KEYS, "Drag a box to select spots and links." );
-		descriptions.add( BOX_ADD_SELECT, BOX_ADD_SELECT_KEYS, "Drag a box to add spots and links to selection." );
+		public Descriptions()
+		{
+			super( KeyConfigContexts.TRACKSCHEME );
+		}
+
+		@Override
+		public void getCommandDescriptions( final CommandDescriptions descriptions )
+		{
+			descriptions.add( FOCUS_VERTEX, FOCUS_VERTEX_KEYS, "Focus spot (spot gets keyboard focus)." );
+			descriptions.add( NAVIGATE_TO_VERTEX, NAVIGATE_TO_VERTEX_KEYS, "Navigate to spot (in all linked views)." );
+			descriptions.add( SELECT, SELECT_KEYS, "Select spot or link." );
+			descriptions.add( ADD_SELECT, ADD_SELECT_KEYS, "Add spot or link to selection." );
+			descriptions.add( BOX_SELECT, BOX_SELECT_KEYS, "Drag a box to select spots and links." );
+			descriptions.add( BOX_ADD_SELECT, BOX_ADD_SELECT_KEYS, "Drag a box to add spots and links to selection." );
+		}
 	}
 
 	public static final double EDGE_SELECT_DISTANCE_TOLERANCE = 5.0;

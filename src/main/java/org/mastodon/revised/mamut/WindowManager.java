@@ -1,8 +1,6 @@
 package org.mastodon.revised.mamut;
 
 import java.awt.event.WindowEvent;
-import java.io.File;
-import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
@@ -10,41 +8,25 @@ import java.util.function.Consumer;
 
 import javax.swing.JFrame;
 
-import org.mastodon.app.ui.CloseWindowActions;
-import org.mastodon.app.ui.MastodonFrameViewActions;
-import org.mastodon.revised.bdv.BehaviourTransformEventHandler3DMamut;
-import org.mastodon.revised.bdv.BigDataViewerActionsMamut;
-import org.mastodon.revised.bdv.NavigationActionsMamut;
-import org.mastodon.revised.bdv.overlay.BdvSelectionBehaviours;
-import org.mastodon.revised.bdv.overlay.EditBehaviours;
-import org.mastodon.revised.bdv.overlay.EditSpecialBehaviours;
 import org.mastodon.revised.bdv.overlay.ui.RenderSettingsConfigPage;
 import org.mastodon.revised.bdv.overlay.ui.RenderSettingsManager;
 import org.mastodon.revised.model.mamut.Model;
 import org.mastodon.revised.model.mamut.Spot;
 import org.mastodon.revised.model.tag.ui.TagSetDialog;
-import org.mastodon.revised.trackscheme.display.EditFocusVertexLabelAction;
-import org.mastodon.revised.trackscheme.display.InertialScreenTransformEventHandler;
-import org.mastodon.revised.trackscheme.display.ToggleLinkBehaviour;
-import org.mastodon.revised.trackscheme.display.TrackSchemeNavigationActions;
-import org.mastodon.revised.trackscheme.display.TrackSchemeNavigationBehaviours;
 import org.mastodon.revised.trackscheme.display.style.TrackSchemeStyleManager;
 import org.mastodon.revised.trackscheme.display.style.TrackSchemeStyleSettingsPage;
-import org.mastodon.revised.ui.EditTagActions;
-import org.mastodon.revised.ui.FocusActions;
-import org.mastodon.revised.ui.HighlightBehaviours;
 import org.mastodon.revised.ui.SelectionActions;
+import org.mastodon.revised.ui.keymap.CommandDescriptionProvider;
 import org.mastodon.revised.ui.keymap.CommandDescriptions;
+import org.mastodon.revised.ui.keymap.CommandDescriptionsBuilder;
 import org.mastodon.revised.ui.keymap.Keymap;
 import org.mastodon.revised.ui.keymap.KeymapManager;
 import org.mastodon.revised.ui.keymap.KeymapSettingsPage;
 import org.mastodon.revised.util.ToggleDialogAction;
 import org.mastodon.views.context.ContextProvider;
 import org.scijava.Context;
+import org.scijava.plugin.Plugin;
 import org.scijava.ui.behaviour.KeyPressedManager;
-import org.scijava.ui.behaviour.io.InputTriggerDescription;
-import org.scijava.ui.behaviour.io.InputTriggerDescriptionsBuilder;
-import org.scijava.ui.behaviour.io.yaml.YamlConfigIO;
 import org.scijava.ui.behaviour.util.AbstractNamedAction;
 import org.scijava.ui.behaviour.util.Actions;
 import org.scijava.ui.behaviour.util.RunnableAction;
@@ -66,12 +48,22 @@ public class WindowManager
 	/*
 	 * Command descriptions for all provided commands
 	 */
-	public static void getCommandDescriptions( final CommandDescriptions descriptions )
+	@Plugin( type = Descriptions.class )
+	public static class Descriptions extends CommandDescriptionProvider
 	{
-		descriptions.add( NEW_BDV_VIEW, NEW_BDV_VIEW_KEYS, "Open new BigDataViewer view." );
-		descriptions.add( NEW_TRACKSCHEME_VIEW, NEW_TRACKSCHEME_VIEW_KEYS, "Open new TrackScheme view." );
-		descriptions.add( PREFERENCES_DIALOG, PREFERENCES_DIALOG_KEYS, "Edit Mastodon preferences." );
-		descriptions.add( TAGSETS_DIALOG, TAGSETS_DIALOG_KEYS, "Edit tag definitions." );
+		public Descriptions()
+		{
+			super( KeyConfigContexts.MASTODON );
+		}
+
+		@Override
+		public void getCommandDescriptions( final CommandDescriptions descriptions )
+		{
+			descriptions.add( NEW_BDV_VIEW, NEW_BDV_VIEW_KEYS, "Open new BigDataViewer view." );
+			descriptions.add( NEW_TRACKSCHEME_VIEW, NEW_TRACKSCHEME_VIEW_KEYS, "Open new TrackScheme view." );
+			descriptions.add( PREFERENCES_DIALOG, PREFERENCES_DIALOG_KEYS, "Edit Mastodon preferences." );
+			descriptions.add( TAGSETS_DIALOG, TAGSETS_DIALOG_KEYS, "Edit tag definitions." );
+		}
 	}
 
 	private final Context context;
@@ -328,66 +320,11 @@ public class WindowManager
 		return projectManager;
 	}
 
-	// TODO: move somewhere else. make bdvWindows, tsWindows accessible.
-	public static class DumpInputConfig
+	private CommandDescriptions buildCommandDescriptions()
 	{
-		static boolean mkdirs( final String fileName )
-		{
-			final File dir = new File( fileName ).getParentFile();
-			return dir != null && dir.mkdirs();
-		}
-
-		public static void writeToYaml( final String fileName, final WindowManager wm ) throws IOException
-		{
-			mkdirs( fileName );
-			final List< InputTriggerDescription > descriptions = new InputTriggerDescriptionsBuilder( wm.appModel.getKeymap().getConfig() ).getDescriptions();
-			YamlConfigIO.write( descriptions, fileName );
-		}
-
-		public static void writeDefaultConfigToYaml( final String fileName, final WindowManager wm ) throws IOException
-		{
-			mkdirs( fileName );
-			final List< InputTriggerDescription > descriptions = new InputTriggerDescriptionsBuilder( buildCommandDescriptions().createDefaultKeyconfig() ).getDescriptions();
-			YamlConfigIO.write( descriptions, fileName );
-		}
-	}
-
-	private static CommandDescriptions buildCommandDescriptions()
-	{
-		final CommandDescriptions descriptions = new CommandDescriptions();
-
-		// with context MASTODON:
-		descriptions.setDefaultContext( KeyConfigContexts.MASTODON );
-		CloseWindowActions.getCommandDescriptions( descriptions );
-		ProjectManager.getCommandDescriptions( descriptions );
-		UndoActions.getCommandDescriptions( descriptions );
-		SelectionActions.getCommandDescriptions( descriptions );
-		WindowManager.getCommandDescriptions( descriptions );
-
-		// with context BIGDATAVIEWER:
-		descriptions.setDefaultContext( KeyConfigContexts.BIGDATAVIEWER );
-		MastodonFrameViewActions.getCommandDescriptions( descriptions );
-		BehaviourTransformEventHandler3DMamut.getCommandDescriptions( descriptions );
-		BigDataViewerActionsMamut.getCommandDescriptions( descriptions );
-		NavigationActionsMamut.getCommandDescriptions( descriptions );
-		BdvSelectionBehaviours.getCommandDescriptions( descriptions );
-		EditBehaviours.getCommandDescriptions( descriptions );
-		EditSpecialBehaviours.getCommandDescriptions( descriptions );
-		FocusActions.getCommandDescriptions( descriptions );
-		HighlightBehaviours.getCommandDescriptions( descriptions );
-
-		// with context TRACKSCHEME:
-		descriptions.setDefaultContext( KeyConfigContexts.TRACKSCHEME );
-		MastodonFrameViewActions.getCommandDescriptions( descriptions );
-		InertialScreenTransformEventHandler.getCommandDescriptions( descriptions );
-		EditFocusVertexLabelAction.getCommandDescriptions( descriptions );
-		ToggleLinkBehaviour.getCommandDescriptions( descriptions );
-		TrackSchemeNavigationActions.getCommandDescriptions( descriptions );
-		TrackSchemeNavigationBehaviours.getCommandDescriptions( descriptions );
-		EditTagActions.getCommandDescriptions( descriptions );
-		FocusActions.getCommandDescriptions( descriptions );
-		HighlightBehaviours.getCommandDescriptions( descriptions );
-
-		return descriptions;
+		final CommandDescriptionsBuilder builder = new CommandDescriptionsBuilder();
+		context.inject( builder );
+		builder.discoverProviders();
+		return builder.build();
 	}
 }

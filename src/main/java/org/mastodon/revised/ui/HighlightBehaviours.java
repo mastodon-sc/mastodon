@@ -7,8 +7,11 @@ import org.mastodon.graph.Graph;
 import org.mastodon.graph.GraphChangeNotifier;
 import org.mastodon.graph.Vertex;
 import org.mastodon.model.HighlightModel;
+import org.mastodon.revised.mamut.KeyConfigContexts;
+import org.mastodon.revised.ui.keymap.CommandDescriptionProvider;
 import org.mastodon.revised.ui.keymap.CommandDescriptions;
 import org.mastodon.undo.UndoPointMarker;
+import org.scijava.plugin.Plugin;
 import org.scijava.ui.behaviour.ClickBehaviour;
 import org.scijava.ui.behaviour.util.AbstractNamedBehaviour;
 import org.scijava.ui.behaviour.util.Behaviours;
@@ -35,10 +38,20 @@ public class HighlightBehaviours< V extends Vertex< E >, E extends Edge< V > >
 	/*
 	 * Command descriptions for all provided commands
 	 */
-	public static void getCommandDescriptions( final CommandDescriptions descriptions )
+	@Plugin( type = Descriptions.class )
+	public static class Descriptions extends CommandDescriptionProvider
 	{
-		descriptions.add( REMOVE_HIGHLIGHTED_VERTEX, REMOVE_HIGHLIGHTED_VERTEX_KEYS, "Remove highlighted spot (spot under the mouse)." );
-		descriptions.add( REMOVE_HIGHLIGHTED_EDGE, REMOVE_HIGHLIGHTED_EDGE_KEYS, "Remove highlighted edge (edge under the mouse)." );
+		public Descriptions()
+		{
+			super( KeyConfigContexts.BIGDATAVIEWER, KeyConfigContexts.TRACKSCHEME );
+		}
+
+		@Override
+		public void getCommandDescriptions( final CommandDescriptions descriptions )
+		{
+			descriptions.add( REMOVE_HIGHLIGHTED_VERTEX, REMOVE_HIGHLIGHTED_VERTEX_KEYS, "Remove highlighted spot (spot under the mouse)." );
+			descriptions.add( REMOVE_HIGHLIGHTED_EDGE, REMOVE_HIGHLIGHTED_EDGE_KEYS, "Remove highlighted edge (edge under the mouse)." );
+		}
 	}
 
 	private final RemoveHighlightedVertex removeHighlightedVertexBehaviour;

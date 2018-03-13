@@ -1,7 +1,9 @@
 package org.mastodon.revised.mamut;
 
 import org.mastodon.revised.model.mamut.Model;
+import org.mastodon.revised.ui.keymap.CommandDescriptionProvider;
 import org.mastodon.revised.ui.keymap.CommandDescriptions;
+import org.scijava.plugin.Plugin;
 import org.scijava.ui.behaviour.util.Actions;
 
 public class UndoActions
@@ -15,10 +17,20 @@ public class UndoActions
 	/*
 	 * Command descriptions for all provided commands
 	 */
-	public static void getCommandDescriptions( final CommandDescriptions descriptions )
+	@Plugin( type = Descriptions.class )
+	public static class Descriptions extends CommandDescriptionProvider
 	{
-		descriptions.add( UNDO, UNDO_KEYS, "Undo last edit." );
-		descriptions.add( REDO, REDO_KEYS, "Redo last undone edit." );
+		public Descriptions()
+		{
+			super( KeyConfigContexts.MASTODON );
+		}
+
+		@Override
+		public void getCommandDescriptions( final CommandDescriptions descriptions )
+		{
+			descriptions.add( UNDO, UNDO_KEYS, "Undo last edit." );
+			descriptions.add( REDO, REDO_KEYS, "Redo last undone edit." );
+		}
 	}
 
 	/**

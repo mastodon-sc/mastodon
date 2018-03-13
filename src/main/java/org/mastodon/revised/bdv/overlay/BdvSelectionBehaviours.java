@@ -4,7 +4,10 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import org.mastodon.model.NavigationHandler;
 import org.mastodon.model.SelectionModel;
+import org.mastodon.revised.mamut.KeyConfigContexts;
+import org.mastodon.revised.ui.keymap.CommandDescriptionProvider;
 import org.mastodon.revised.ui.keymap.CommandDescriptions;
+import org.scijava.plugin.Plugin;
 import org.scijava.ui.behaviour.ClickBehaviour;
 import org.scijava.ui.behaviour.util.AbstractNamedBehaviour;
 import org.scijava.ui.behaviour.util.Behaviours;
@@ -22,11 +25,21 @@ public class BdvSelectionBehaviours< V extends OverlayVertex< V, E >, E extends 
 	/*
 	 * Command descriptions for all provided commands
 	 */
-	public static void getCommandDescriptions( final CommandDescriptions descriptions )
+	@Plugin( type = Descriptions.class )
+	public static class Descriptions extends CommandDescriptionProvider
 	{
-		descriptions.add( NAVIGATE_TO_VERTEX, NAVIGATE_TO_VERTEX_KEYS, "Navigate to spot (in all linked views)." );
-		descriptions.add( SELECT, SELECT_KEYS, "Select spot." );
-		descriptions.add( ADD_SELECT, ADD_SELECT_KEYS, "Add spot to selection." );
+		public Descriptions()
+		{
+			super( KeyConfigContexts.BIGDATAVIEWER );
+		}
+
+		@Override
+		public void getCommandDescriptions( final CommandDescriptions descriptions )
+		{
+			descriptions.add( NAVIGATE_TO_VERTEX, NAVIGATE_TO_VERTEX_KEYS, "Navigate to spot (in all linked views)." );
+			descriptions.add( SELECT, SELECT_KEYS, "Select spot." );
+			descriptions.add( ADD_SELECT, ADD_SELECT_KEYS, "Add spot to selection." );
+		}
 	}
 
 	public static final double EDGE_SELECT_DISTANCE_TOLERANCE = 5.0;

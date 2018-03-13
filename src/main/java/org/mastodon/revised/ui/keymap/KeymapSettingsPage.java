@@ -101,8 +101,8 @@ public class KeymapSettingsPage extends SelectAndEditProfileSettingsPage< StyleP
 		final SettingsPanel settings = new SettingsPanel();
 
 		final CommandDescriptions descriptions = new CommandDescriptions();
-		descriptions.setDefaultContext( KeyConfigContexts.BIGDATAVIEWER );
-		NavigationActionsMamut.getCommandDescriptions( descriptions );
+		descriptions.setKeyconfigContext( KeyConfigContexts.BIGDATAVIEWER );
+		new NavigationActionsMamut.Descriptions().getCommandDescriptions( descriptions );
 
 		settings.addPage( new KeymapSettingsPage( "Style > Keymap", styleManager, descriptions ) );
 
