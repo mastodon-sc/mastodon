@@ -343,9 +343,16 @@ public class WindowManager
 			final List< InputTriggerDescription > descriptions = new InputTriggerDescriptionsBuilder( wm.appModel.getKeymap().getConfig() ).getDescriptions();
 			YamlConfigIO.write( descriptions, fileName );
 		}
+
+		public static void writeDefaultConfigToYaml( final String fileName, final WindowManager wm ) throws IOException
+		{
+			mkdirs( fileName );
+			final List< InputTriggerDescription > descriptions = new InputTriggerDescriptionsBuilder( buildCommandDescriptions().createDefaultKeyconfig() ).getDescriptions();
+			YamlConfigIO.write( descriptions, fileName );
+		}
 	}
 
-	private CommandDescriptions buildCommandDescriptions()
+	private static CommandDescriptions buildCommandDescriptions()
 	{
 		final CommandDescriptions descriptions = new CommandDescriptions();
 
