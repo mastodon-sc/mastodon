@@ -43,7 +43,7 @@ public class MamutAppModel extends MastodonAppModel< Model, Spot, Link >
 			final KeymapManager keymapManager,
 			final Actions globalActions )
 	{
-		super( NUM_GROUPS, model, keyPressedManager, keymapManager, globalActions, new String[] { "mastodon" } );
+		super( NUM_GROUPS, model, keyPressedManager, keymapManager, globalActions, new String[] { KeyConfigContexts.MASTODON } );
 
 		this.radiusStats = new BoundingSphereRadiusStatistics( model );
 		this.sharedBdvData = sharedBdvData;

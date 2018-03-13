@@ -97,7 +97,7 @@ public class WindowManager
 		final Keymap keymap = keymapManager.getForwardDefaultKeymap();
 
 		// TODO: naming, this should be named appActions and the AppModel.appActions should become modelActions?
-		globalAppActions = new Actions( keymap.getConfig(), "mastodon" );
+		globalAppActions = new Actions( keymap.getConfig(), KeyConfigContexts.MASTODON );
 		keymap.updateListeners().add( () -> {
 			globalAppActions.updateKeyConfig( keymap.getConfig() );
 			if ( appModel != null )
@@ -115,7 +115,7 @@ public class WindowManager
 		globalAppActions.namedAction( newTrackSchemeViewAction, NEW_TRACKSCHEME_VIEW_KEYS );
 		globalAppActions.namedAction( editTagSetsAction, TAGSETS_DIALOG_KEYS );
 
-		final PreferencesDialog settings = new PreferencesDialog( null, keymap, new String[] { "mastodon" } );
+		final PreferencesDialog settings = new PreferencesDialog( null, keymap, new String[] { KeyConfigContexts.MASTODON } );
 		settings.addPage( new TrackSchemeStyleSettingsPage( "TrackScheme Styles", trackSchemeStyleManager ) );
 		settings.addPage( new RenderSettingsConfigPage( "BDV Render Settings", renderSettingsManager ) );
 		settings.addPage( new KeymapSettingsPage( "Keymap", keymapManager ) );
@@ -150,7 +150,7 @@ public class WindowManager
 		SelectionActions.install( appModel.getAppActions(), model.getGraph(), model.getGraph().getLock(), model.getGraph(), appModel.getSelectionModel(), model );
 
 		final Keymap keymap = keymapManager.getForwardDefaultKeymap();
-		tagSetDialog = new TagSetDialog( null, model.getTagSetModel(), model, keymap, new String[] { "mastodon" } );
+		tagSetDialog = new TagSetDialog( null, model.getTagSetModel(), model, keymap, new String[] { KeyConfigContexts.MASTODON } );
 		updateEnabledActions();
 	}
 
