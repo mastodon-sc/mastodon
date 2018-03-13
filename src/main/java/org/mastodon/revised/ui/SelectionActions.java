@@ -13,6 +13,7 @@ import org.mastodon.graph.algorithm.traversal.DepthFirstSearch;
 import org.mastodon.graph.algorithm.traversal.GraphSearch.SearchDirection;
 import org.mastodon.graph.algorithm.traversal.SearchListener;
 import org.mastodon.model.SelectionModel;
+import org.mastodon.revised.ui.keymap.CommandDescriptions;
 import org.mastodon.undo.UndoPointMarker;
 import org.scijava.ui.behaviour.util.AbstractNamedAction;
 import org.scijava.ui.behaviour.util.Actions;
@@ -39,6 +40,17 @@ public class SelectionActions< V extends Vertex< E >, E extends Edge< V > >
 	public static final String[] SELECT_WHOLE_TRACK_KEYS = new String[] { "shift SPACE" };
 	public static final String[] SELECT_TRACK_DOWNWARD_KEYS = new String[] { "shift PAGE_DOWN" };
 	public static final String[] SELECT_TRACK_UPWARD_KEYS = new String[] { "shift PAGE_UP" };
+
+	/*
+	 * Command descriptions for all provided commands
+	 */
+	public static void getCommandDescriptions( final CommandDescriptions descriptions )
+	{
+		descriptions.add( DELETE_SELECTION, DELETE_SELECTION_KEYS, "Delete current selection." );
+		descriptions.add( SELECT_WHOLE_TRACK, SELECT_WHOLE_TRACK_KEYS, "Select the whole track of the current spot." );
+		descriptions.add( SELECT_TRACK_DOWNWARD, SELECT_TRACK_DOWNWARD_KEYS, "Select the track downward from the current spot." );
+		descriptions.add( SELECT_TRACK_UPWARD, SELECT_TRACK_UPWARD_KEYS, "Select the track upward form the current spot." );
+	}
 
 	/**
 	 * Create selection actions and install them in the specified

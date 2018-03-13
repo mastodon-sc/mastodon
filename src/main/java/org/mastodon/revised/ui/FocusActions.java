@@ -12,6 +12,7 @@ import org.mastodon.model.FocusModel;
 import org.mastodon.model.NavigationHandler;
 import org.mastodon.model.SelectionModel;
 import org.mastodon.revised.trackscheme.display.TrackSchemeNavigationActions.NavigatorEtiquette;
+import org.mastodon.revised.ui.keymap.CommandDescriptions;
 import org.scijava.ui.behaviour.util.Actions;
 import org.scijava.ui.behaviour.util.RunnableAction;
 
@@ -50,15 +51,41 @@ public class FocusActions< V extends Vertex< E > & Ref< V >, E extends Edge< V >
 	private static final String[] SELECT_NAVIGATE_BRANCH_CHILD_KEYS = new String[] { "shift ctrl alt DOWN" };
 	private static final String[] SELECT_NAVIGATE_BRANCH_PARENT_KEYS = new String[] { "shift ctrl alt UP" };
 
+	/*
+	 * Command descriptions for all provided commands
+	 */
+	public static void getCommandDescriptions( final CommandDescriptions descriptions )
+	{
+		descriptions.add( NAVIGATE_CHILD, NAVIGATE_CHILD_KEYS, "Go to the first child of the current spot." );
+		descriptions.add( NAVIGATE_PARENT, NAVIGATE_PARENT_KEYS, "Go to the parent of the current spot." );
+		descriptions.add( NAVIGATE_SIBLING, NAVIGATE_SIBLING_KEYS, "Go to the sibling of the current spot." );
+		descriptions.add( NAVIGATE_BRANCH_CHILD, NAVIGATE_BRANCH_CHILD_KEYS, "Go to the next division on the first branch of the current spot." );
+		descriptions.add( NAVIGATE_BRANCH_PARENT, NAVIGATE_BRANCH_PARENT_KEYS, "Go to the previous division on the branch of the current spot." );
+		descriptions.add( SELECT_NAVIGATE_CHILD, SELECT_NAVIGATE_CHILD_KEYS, "Go to the first child of the current spot, and select it." );
+		descriptions.add( SELECT_NAVIGATE_PARENT, SELECT_NAVIGATE_PARENT_KEYS, "Go to the parent of the current spot, and select it." );
+		descriptions.add( SELECT_NAVIGATE_SIBLING, SELECT_NAVIGATE_SIBLING_KEYS, "Go to the sibling of the current spot, and select it." );
+		descriptions.add( SELECT_NAVIGATE_BRANCH_CHILD, SELECT_NAVIGATE_BRANCH_CHILD_KEYS, "Go to the next division on the first branch of the current spot, and select all spots on the way." );
+		descriptions.add( SELECT_NAVIGATE_BRANCH_PARENT, SELECT_NAVIGATE_BRANCH_PARENT_KEYS, "Go to the previous division on the branch of the current spot, and select all spots on the way." );
+	}
+
 	private final RunnableAction navigateToChildAction;
+
 	private final RunnableAction navigateToParentAction;
+
 	private final RunnableAction navigateToSiblingAction;
+
 	private final RunnableAction navigateToBranchChildAction;
+
 	private final RunnableAction navigateToBranchParentAction;
+
 	private final RunnableAction selectNavigateToChildAction;
+
 	private final RunnableAction selectNavigateToParentAction;
+
 	private final RunnableAction selectNavigateToSiblingAction;
+
 	private final RunnableAction selectNavigateToBranchChildAction;
+
 	private final RunnableAction selectNavigateToBranchParentAction;
 
 	public static < V extends Vertex< E > & Ref< V >, E extends Edge< V > & Ref< E > > void install(
@@ -132,10 +159,10 @@ public class FocusActions< V extends Vertex< E > & Ref< V >, E extends Edge< V >
 	 * moving focus.
 	 *
 	 * @param direction
-	 *            which neighbor to focus.
+	 * 		which neighbor to focus.
 	 * @param expandSelection
-	 *            if {@code false}, the selection is cleared before moving the
-	 *            focus (and selecting the newly focused vertex).
+	 * 		if {@code false}, the selection is cleared before moving the
+	 * 		focus (and selecting the newly focused vertex).
 	 */
 	private void selectAndFocusNeighbor( final Direction direction, final boolean expandSelection )
 	{
@@ -226,7 +253,7 @@ public class FocusActions< V extends Vertex< E > & Ref< V >, E extends Edge< V >
 				{
 					final V child = ( direction == Direction.PARENT ) ? vertex : current;
 					final V parent = ( direction == Direction.PARENT ) ? current : vertex;
-					for( V v = child; !v.equals( parent ); v = firstParent( v, ref3 ) )
+					for ( V v = child; !v.equals( parent ); v = firstParent( v, ref3 ) )
 						selection.setSelected( v, true );
 					selection.setSelected( parent, true );
 				}

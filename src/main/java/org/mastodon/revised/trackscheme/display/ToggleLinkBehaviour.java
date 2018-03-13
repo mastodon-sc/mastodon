@@ -16,6 +16,7 @@ import org.mastodon.revised.trackscheme.ScreenTransform;
 import org.mastodon.revised.trackscheme.TrackSchemeEdge;
 import org.mastodon.revised.trackscheme.TrackSchemeGraph;
 import org.mastodon.revised.trackscheme.TrackSchemeVertex;
+import org.mastodon.revised.ui.keymap.CommandDescriptions;
 import org.mastodon.spatial.HasTimepoint;
 import org.mastodon.undo.UndoPointMarker;
 import org.scijava.ui.behaviour.DragBehaviour;
@@ -43,6 +44,14 @@ public class ToggleLinkBehaviour< V extends Vertex< E > & HasTimepoint, E extend
 	public static final String TOGGLE_LINK = "toggle link";
 
 	private static final String[] TOGGLE_LINK_KEYS = new String[] { "L" };
+
+	/*
+	 * Command descriptions for all provided commands
+	 */
+	public static void getCommandDescriptions( final CommandDescriptions descriptions )
+	{
+		descriptions.add( TOGGLE_LINK, TOGGLE_LINK_KEYS, "Toggle a Link by dragging between two spots." );
+	}
 
 	private static final Color EDIT_GRAPH_OVERLAY_COLOR = Color.RED.darker();
 

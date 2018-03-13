@@ -10,6 +10,7 @@ import java.util.function.Consumer;
 
 import javax.swing.JFrame;
 
+import org.mastodon.revised.bdv.NavigationActionsMamut;
 import org.mastodon.revised.bdv.overlay.ui.RenderSettingsConfigPage;
 import org.mastodon.revised.bdv.overlay.ui.RenderSettingsManager;
 import org.mastodon.revised.model.mamut.Model;
@@ -18,6 +19,7 @@ import org.mastodon.revised.model.tag.ui.TagSetDialog;
 import org.mastodon.revised.trackscheme.display.style.TrackSchemeStyleManager;
 import org.mastodon.revised.trackscheme.display.style.TrackSchemeStyleSettingsPage;
 import org.mastodon.revised.ui.SelectionActions;
+import org.mastodon.revised.ui.keymap.CommandDescriptions;
 import org.mastodon.revised.ui.keymap.Keymap;
 import org.mastodon.revised.ui.keymap.KeymapManager;
 import org.mastodon.revised.ui.keymap.KeymapSettingsPage;
@@ -45,6 +47,17 @@ public class WindowManager
 	static final String[] NEW_TRACKSCHEME_VIEW_KEYS = new String[] { "not mapped" };
 	static final String[] PREFERENCES_DIALOG_KEYS = new String[] { "meta COMMA", "control COMMA" };
 	static final String[] TAGSETS_DIALOG_KEYS = new String[] { "not mapped" };
+
+	/*
+	 * Command descriptions for all provided commands
+	 */
+	public static void getCommandDescriptions( final CommandDescriptions descriptions )
+	{
+		descriptions.add( NEW_BDV_VIEW, NEW_BDV_VIEW_KEYS, "Open new BigDataViewer view." );
+		descriptions.add( NEW_TRACKSCHEME_VIEW, NEW_TRACKSCHEME_VIEW_KEYS, "Open new TrackScheme view." );
+		descriptions.add( PREFERENCES_DIALOG, PREFERENCES_DIALOG_KEYS, "Edit Mastodon preferences." );
+		descriptions.add( TAGSETS_DIALOG, TAGSETS_DIALOG_KEYS, "Edit tag definitions." );
+	}
 
 	private final Context context;
 
@@ -118,7 +131,7 @@ public class WindowManager
 		final PreferencesDialog settings = new PreferencesDialog( null, keymap, new String[] { KeyConfigContexts.MASTODON } );
 		settings.addPage( new TrackSchemeStyleSettingsPage( "TrackScheme Styles", trackSchemeStyleManager ) );
 		settings.addPage( new RenderSettingsConfigPage( "BDV Render Settings", renderSettingsManager ) );
-		settings.addPage( new KeymapSettingsPage( "Keymap", keymapManager ) );
+		settings.addPage( new KeymapSettingsPage( "Keymap", keymapManager, buildCommandDescriptions()  ) );
 		final ToggleDialogAction tooglePreferencesDialogAction = new ToggleDialogAction( PREFERENCES_DIALOG, settings );
 		globalAppActions.namedAction( tooglePreferencesDialogAction, PREFERENCES_DIALOG_KEYS );
 
@@ -315,5 +328,22 @@ public class WindowManager
 			final List< InputTriggerDescription > descriptions = new InputTriggerDescriptionsBuilder( wm.appModel.getKeymap().getConfig() ).getDescriptions();
 			YamlConfigIO.write( descriptions, fileName );
 		}
+	}
+
+	private CommandDescriptions buildCommandDescriptions()
+	{
+		final CommandDescriptions descriptions = new CommandDescriptions();
+
+		descriptions.setDefaultContext( KeyConfigContexts.MASTODON );
+		// ... TODO
+
+		descriptions.setDefaultContext( KeyConfigContexts.BIGDATAVIEWER );
+		NavigationActionsMamut.getCommandDescriptions( descriptions );
+		// ... TODO
+
+		descriptions.setDefaultContext( KeyConfigContexts.TRACKSCHEME );
+		// ... TODO
+
+		return descriptions;
 	}
 }

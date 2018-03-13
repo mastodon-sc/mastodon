@@ -25,6 +25,7 @@ import org.mastodon.revised.model.tag.TagSetModel;
 import org.mastodon.revised.model.tag.TagSetStructure;
 import org.mastodon.revised.model.tag.TagSetStructure.Tag;
 import org.mastodon.revised.model.tag.TagSetStructure.TagSet;
+import org.mastodon.revised.ui.keymap.CommandDescriptions;
 import org.mastodon.undo.UndoPointMarker;
 import org.scijava.ui.behaviour.InputTriggerMap;
 import org.scijava.ui.behaviour.util.Actions;
@@ -47,11 +48,19 @@ import net.imglib2.ui.OverlayRenderer;
 public class EditTagActions< V extends Vertex< E >, E extends Edge< V > >
 		implements Runnable
 {
-	private static final String PICK_TAGS_MAP = "pick-tags";
-
-	private static final String PICK_TAGS = "pick tags";
+	public static final String PICK_TAGS = "pick tags";
 
 	private static final String[] PICK_TAGS_KEYS = new String[] { "Y" };
+
+	/*
+	 * Command descriptions for all provided commands
+	 */
+	public static void getCommandDescriptions( final CommandDescriptions descriptions )
+	{
+		descriptions.add( PICK_TAGS, PICK_TAGS_KEYS, "Assign a tag to the current selection." );
+	}
+
+	private static final String PICK_TAGS_MAP = "pick-tags";
 
 	private static final Font FONT = new Font( "SansSerif", Font.PLAIN, 12 );
 

@@ -1,8 +1,10 @@
 package org.mastodon.revised.bdv.overlay;
 
 import java.util.concurrent.locks.ReentrantReadWriteLock;
+
 import org.mastodon.model.NavigationHandler;
 import org.mastodon.model.SelectionModel;
+import org.mastodon.revised.ui.keymap.CommandDescriptions;
 import org.scijava.ui.behaviour.ClickBehaviour;
 import org.scijava.ui.behaviour.util.AbstractNamedBehaviour;
 import org.scijava.ui.behaviour.util.Behaviours;
@@ -16,6 +18,16 @@ public class BdvSelectionBehaviours< V extends OverlayVertex< V, E >, E extends 
 	private static final String[] NAVIGATE_TO_VERTEX_KEYS = new String[] { "double-click button1", "shift double-click button1" };
 	private static final String[] SELECT_KEYS = new String[] { "button1" };
 	private static final String[] ADD_SELECT_KEYS = new String[] { "shift button1" };
+
+	/*
+	 * Command descriptions for all provided commands
+	 */
+	public static void getCommandDescriptions( final CommandDescriptions descriptions )
+	{
+		descriptions.add( NAVIGATE_TO_VERTEX, NAVIGATE_TO_VERTEX_KEYS, "Navigate to spot (in all linked views)." );
+		descriptions.add( SELECT, SELECT_KEYS, "Select spot." );
+		descriptions.add( ADD_SELECT, ADD_SELECT_KEYS, "Add spot to selection." );
+	}
 
 	public static final double EDGE_SELECT_DISTANCE_TOLERANCE = 5.0;
 	public static final double POINT_SELECT_DISTANCE_TOLERANCE = 8.0;

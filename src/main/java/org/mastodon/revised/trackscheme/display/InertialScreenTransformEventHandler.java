@@ -10,6 +10,7 @@ import org.mastodon.revised.trackscheme.display.OffsetHeaders.OffsetHeadersListe
 import org.mastodon.revised.trackscheme.display.animate.AbstractTransformAnimator;
 import org.mastodon.revised.trackscheme.display.animate.InertialScreenTransformAnimator;
 import org.mastodon.revised.trackscheme.display.animate.InterpolateScreenTransformAnimator;
+import org.mastodon.revised.ui.keymap.CommandDescriptions;
 import org.scijava.ui.behaviour.DragBehaviour;
 import org.scijava.ui.behaviour.ScrollBehaviour;
 import org.scijava.ui.behaviour.util.AbstractNamedBehaviour;
@@ -35,6 +36,18 @@ public class InertialScreenTransformEventHandler
 	private static final String[] ZOOM_X_KEYS = new String[] { "shift scroll" };
 	private static final String[] ZOOM_Y_KEYS = new String[] { "ctrl scroll", "alt scroll" };
 	private static final String[] ZOOM_XY_KEYS = new String[] { "meta scroll", "ctrl shift scroll" };
+
+	/*
+	 * Command descriptions for all provided commands
+	 */
+	public static void getCommandDescriptions( final CommandDescriptions descriptions )
+	{
+		descriptions.add( DRAG_TRANSLATE, DRAG_TRANSLATE_KEYS, "Pan the view by mouse-dragging." );
+		descriptions.add( SCROLL_TRANSLATE, SCROLL_TRANSLATE_KEYS, "Pan the view by scrolling." );
+		descriptions.add( ZOOM_X, ZOOM_X_KEYS, "Zoom horizontally by scrolling." );
+		descriptions.add( ZOOM_Y, ZOOM_Y_KEYS, "Zoom vertically by scrolling." );
+		descriptions.add( ZOOM_XY, ZOOM_XY_KEYS, "Zoom by scrolling." );
+	}
 
 	private final TranslateDragBehaviour translateDragBehaviour;
 	private final TranslateScrollBehaviour translateScrollBehaviour;

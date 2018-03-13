@@ -27,6 +27,7 @@ import org.mastodon.revised.trackscheme.ScreenTransform;
 import org.mastodon.revised.trackscheme.TrackSchemeEdge;
 import org.mastodon.revised.trackscheme.TrackSchemeVertex;
 import org.mastodon.revised.trackscheme.display.OffsetHeaders.OffsetHeadersListener;
+import org.mastodon.revised.ui.keymap.CommandDescriptions;
 import org.mastodon.undo.UndoPointMarker;
 import org.scijava.ui.behaviour.util.AbstractNamedAction;
 import org.scijava.ui.behaviour.util.Actions;
@@ -45,6 +46,14 @@ public class EditFocusVertexLabelAction extends AbstractNamedAction implements T
 	public static final String EDIT_FOCUS_LABEL = "edit vertex label";
 
 	private static final String[] EDIT_FOCUS_LABEL_KEYS = new String[] { "ENTER" };
+
+	/*
+	 * Command descriptions for all provided commands
+	 */
+	public static void getCommandDescriptions( final CommandDescriptions descriptions )
+	{
+		descriptions.add( EDIT_FOCUS_LABEL, EDIT_FOCUS_LABEL_KEYS, "Edit the label of the current spot." );
+	}
 
 	private static final Font FONT = new Font( "SansSerif", Font.BOLD, 10 );
 

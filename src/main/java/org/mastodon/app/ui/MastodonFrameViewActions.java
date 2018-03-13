@@ -5,6 +5,7 @@ import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.event.WindowEvent;
 
+import org.mastodon.revised.ui.keymap.CommandDescriptions;
 import org.mastodon.revised.util.HasSelectedState;
 import org.mastodon.util.Listeners;
 import org.scijava.ui.behaviour.util.AbstractNamedAction;
@@ -13,12 +14,19 @@ import org.scijava.ui.behaviour.util.Actions;
 public class MastodonFrameViewActions
 {
 	public static final String TOGGLE_SETTINGS_PANEL = "toggle settings panel";
-
 	public static final String CLOSE_WINDOW = "close window";
 
 	static final String[] TOGGLE_SETTINGS_PANEL_KEYS = new String[] { "T" };
-
 	static final String[] CLOSE_WINDOW_KEYS = new String[] { "ctrl W", "meta W" };
+
+	/*
+	 * Command descriptions for all provided commands
+	 */
+	public static void getCommandDescriptions( final CommandDescriptions descriptions )
+	{
+		descriptions.add( TOGGLE_SETTINGS_PANEL, TOGGLE_SETTINGS_PANEL_KEYS, "Toggle the view settings toolbar of the active window." );
+		descriptions.add( CLOSE_WINDOW, CLOSE_WINDOW_KEYS, "Close the active window." );
+	}
 
 	private final MastodonFrameView< ?, ?, ?, ?, ?, ? > view;
 

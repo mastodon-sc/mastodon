@@ -15,6 +15,8 @@ import org.mastodon.app.ui.settings.SelectAndEditProfileSettingsPage;
 import org.mastodon.app.ui.settings.SettingsPanel;
 import org.mastodon.app.ui.settings.style.StyleProfile;
 import org.mastodon.app.ui.settings.style.StyleProfileManager;
+import org.mastodon.revised.bdv.NavigationActionsMamut;
+import org.mastodon.revised.mamut.KeyConfigContexts;
 import org.mastodon.util.Listeners;
 import org.scijava.ui.behaviour.io.gui.VisualEditorPanel;
 
@@ -24,12 +26,12 @@ public class KeymapSettingsPage extends SelectAndEditProfileSettingsPage< StyleP
 	 * @param treePath
 	 * 		path of this page in the settings tree.
 	 */
-	public KeymapSettingsPage( final String treePath, final KeymapManager styleManager )
+	public KeymapSettingsPage( final String treePath, final KeymapManager styleManager, final CommandDescriptions commandDescriptions )
 	{
 		super(
 				treePath,
 				new StyleProfileManager<>( styleManager, new KeymapManager( false ) ),
-				new KeymapProfileEditPanel( styleManager.getDefaultStyle() ) );
+				new KeymapProfileEditPanel( styleManager.getDefaultStyle(), commandDescriptions ) );
 	}
 
 	static class KeymapProfileEditPanel implements VisualEditorPanel.ConfigChangeListener, ProfileEditPanel< StyleProfile< Keymap > >
@@ -40,10 +42,10 @@ public class KeymapSettingsPage extends SelectAndEditProfileSettingsPage< StyleP
 
 		private final VisualEditorPanel styleEditorPanel;
 
-		public KeymapProfileEditPanel( final Keymap initialStyle )
+		public KeymapProfileEditPanel( final Keymap initialStyle, final CommandDescriptions commandDescriptions )
 		{
 			editedStyle = initialStyle.copy( "Edited" );
-			styleEditorPanel = new VisualEditorPanel( editedStyle.getConfig() );
+			styleEditorPanel = new VisualEditorPanel( editedStyle.getConfig(), commandDescriptions.createCommandDescriptionsMap() );
 			styleEditorPanel.setButtonPanelVisible( false );
 			modificationListeners = new Listeners.SynchronizedList<>();
 			styleEditorPanel.addConfigChangeListener( this );
@@ -97,7 +99,12 @@ public class KeymapSettingsPage extends SelectAndEditProfileSettingsPage< StyleP
 		final KeymapManager styleManager = new KeymapManager();
 
 		final SettingsPanel settings = new SettingsPanel();
-		settings.addPage( new KeymapSettingsPage( "Style > Keymap", styleManager ) );
+
+		final CommandDescriptions descriptions = new CommandDescriptions();
+		descriptions.setDefaultContext( KeyConfigContexts.BIGDATAVIEWER );
+		NavigationActionsMamut.getCommandDescriptions( descriptions );
+
+		settings.addPage( new KeymapSettingsPage( "Style > Keymap", styleManager, descriptions ) );
 
 		final JDialog dialog = new JDialog( ( Frame ) null, "Settings" );
 		dialog.getContentPane().add( settings, BorderLayout.CENTER );
