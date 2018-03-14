@@ -5,12 +5,12 @@
 	<parent>
 		<groupId>org.scijava</groupId>
 		<artifactId>pom-scijava</artifactId>
-		<version>19.0.0</version>
+		<version>19.2.0</version>
 	</parent>
 
 	<groupId>net.trackmate</groupId>
 	<artifactId>trackmate</artifactId>
-	<version>1.0.0-beta-3-SNAPSHOT</version>
+	<version>1.0.0-beta-4-SNAPSHOT</version>
 
 	<name>TrackMate3</name>
 	<description>This is the prototype code for the 3rd version of TrackMate, planned for mid 2017.</description>
@@ -31,12 +31,12 @@
 		<dependency>
 			<groupId>org.mastodon</groupId>
 			<artifactId>mastodon-collection</artifactId>
-			<version>1.0.0-beta-12</version>
+			<version>1.0.0-beta-14</version>
 		</dependency>
 		<dependency>
 			<groupId>org.mastodon</groupId>
 			<artifactId>mastodon-graph</artifactId>
-			<version>1.0.0-beta-10</version>
+			<version>1.0.0-beta-11</version>
 		</dependency>
 		<dependency>
 			<groupId>sc.fiji</groupId>

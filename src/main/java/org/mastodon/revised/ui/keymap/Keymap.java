@@ -1,5 +1,6 @@
 package org.mastodon.revised.ui.keymap;
 
+import java.util.Objects;
 import org.mastodon.app.ui.settings.style.Style;
 import org.mastodon.util.Listeners;
 import org.scijava.ui.behaviour.io.InputTriggerConfig;
@@ -98,7 +99,7 @@ public class Keymap implements Style< Keymap >
 	@Override
 	public synchronized void setName( final String name )
 	{
-		if ( this.name != name )
+		if ( !Objects.equals( this.name, name ) )
 		{
 			this.name = name;
 //			notifyListeners(); // TODO?

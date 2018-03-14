@@ -78,6 +78,8 @@ public class EditBehaviours< V extends OverlayVertex< V, E >, E extends OverlayE
 
 	private final ResizeSpotBehaviour decreaseSpotRadiusBehaviourABit;
 
+	private double lastRadius = 10;
+
 	public static < V extends OverlayVertex< V, E >, E extends OverlayEdge< E, V > > void install(
 			final Behaviours behaviours,
 			final OverlayGraph< V, E > overlayGraph,
@@ -162,7 +164,7 @@ public class EditBehaviours< V extends OverlayVertex< V, E >, E extends OverlayE
 				try
 				{
 					final V ref = overlayGraph.vertexRef();
-					overlayGraph.addVertex( ref ).init( timepoint, pos, 10 );
+					overlayGraph.addVertex( ref ).init( timepoint, pos, lastRadius );
 					overlayGraph.releaseRef( ref );
 					overlayGraph.notifyGraphChanged();
 					undo.setUndoPoint();
@@ -278,6 +280,7 @@ public class EditBehaviours< V extends OverlayVertex< V, E >, E extends OverlayE
 							return;
 
 					vertex.setCovariance( mat );
+					lastRadius = Math.max( MIN_RADIUS, vertex.getBoundingSphereRadiusSquared() );
 					overlayGraph.notifyGraphChanged();
 					undo.setUndoPoint();
 				}
