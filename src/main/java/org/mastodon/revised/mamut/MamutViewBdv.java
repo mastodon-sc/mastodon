@@ -100,6 +100,7 @@ public class MamutViewBdv extends MamutView< OverlayGraphWrapper< Spot, Link >, 
 						item( BigDataViewerActionsMamut.VISIBILITY_AND_GROUPING )
 				)
 		);
+		appModel.getPlugins().addMenus( menu );
 
 		frame.setVisible( true );
 

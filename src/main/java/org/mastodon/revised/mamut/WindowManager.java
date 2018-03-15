@@ -1,6 +1,8 @@
 package org.mastodon.revised.mamut;
 
 import java.awt.event.WindowEvent;
+import java.io.File;
+import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
@@ -8,6 +10,9 @@ import java.util.function.Consumer;
 
 import javax.swing.JFrame;
 
+import org.mastodon.plugin.MastodonPlugin;
+import org.mastodon.plugin.MastodonPluginAppModel;
+import org.mastodon.plugin.MastodonPlugins;
 import org.mastodon.revised.bdv.overlay.ui.RenderSettingsConfigPage;
 import org.mastodon.revised.bdv.overlay.ui.RenderSettingsManager;
 import org.mastodon.revised.model.mamut.Model;
@@ -25,8 +30,14 @@ import org.mastodon.revised.ui.keymap.KeymapSettingsPage;
 import org.mastodon.revised.util.ToggleDialogAction;
 import org.mastodon.views.context.ContextProvider;
 import org.scijava.Context;
+import org.scijava.InstantiableException;
 import org.scijava.plugin.Plugin;
+import org.scijava.plugin.PluginInfo;
+import org.scijava.plugin.PluginService;
 import org.scijava.ui.behaviour.KeyPressedManager;
+import org.scijava.ui.behaviour.io.InputTriggerDescription;
+import org.scijava.ui.behaviour.io.InputTriggerDescriptionsBuilder;
+import org.scijava.ui.behaviour.io.yaml.YamlConfigIO;
 import org.scijava.ui.behaviour.util.AbstractNamedAction;
 import org.scijava.ui.behaviour.util.Actions;
 import org.scijava.ui.behaviour.util.RunnableAction;
@@ -67,6 +78,8 @@ public class WindowManager
 	}
 
 	private final Context context;
+
+	private final MastodonPlugins plugins;
 
 	/**
 	 * All currently open BigDataViewer windows.
@@ -116,7 +129,11 @@ public class WindowManager
 
 		final Keymap keymap = keymapManager.getForwardDefaultKeymap();
 
+		plugins = new MastodonPlugins( keymap );
+		discoverPlugins();
+
 		// TODO: naming, this should be named appActions and the AppModel.appActions should become modelActions?
+		// TODO: or rename AppModel --> ProjectModel, then projectActions?
 		globalAppActions = new Actions( keymap.getConfig(), KeyConfigContexts.MASTODON );
 		keymap.updateListeners().add( () -> {
 			globalAppActions.updateKeyConfig( keymap.getConfig() );
@@ -143,6 +160,28 @@ public class WindowManager
 		globalAppActions.namedAction( tooglePreferencesDialogAction, PREFERENCES_DIALOG_KEYS );
 
 		updateEnabledActions();
+	}
+
+	private void discoverPlugins()
+	{
+		if ( context == null )
+			return;
+
+		final PluginService pluginService = context.getService( PluginService.class );
+		final List< PluginInfo< MastodonPlugin > > infos = pluginService.getPluginsOfType( MastodonPlugin.class );
+		for ( final PluginInfo< MastodonPlugin > info : infos )
+		{
+			try
+			{
+				final MastodonPlugin plugin = info.createInstance();
+				context.inject( plugin );
+				plugins.register( plugin );
+			}
+			catch ( final InstantiableException e )
+			{
+				e.printStackTrace();
+			}
+		}
 	}
 
 	private void updateEnabledActions()
@@ -172,6 +211,8 @@ public class WindowManager
 		final Keymap keymap = keymapManager.getForwardDefaultKeymap();
 		tagSetDialog = new TagSetDialog( null, model.getTagSetModel(), model, keymap, new String[] { KeyConfigContexts.MASTODON } );
 		updateEnabledActions();
+
+		plugins.setAppModel( new MastodonPluginAppModel( appModel, this ) );
 	}
 
 	private synchronized void addBdvWindow( final MamutViewBdv w )
@@ -289,11 +330,12 @@ public class WindowManager
 		return renderSettingsManager;
 	}
 
-	public KeymapManager getKeymapManager()
+	KeymapManager getKeymapManager()
 	{
 		return keymapManager;
 	}
 
+	// TODO: make package private
 	public MamutAppModel getAppModel()
 	{
 		return appModel;
@@ -302,6 +344,11 @@ public class WindowManager
 	Actions getGlobalAppActions()
 	{
 		return globalAppActions;
+	}
+
+	MastodonPlugins getPlugins()
+	{
+		return plugins;
 	}
 
 	public Context getContext()

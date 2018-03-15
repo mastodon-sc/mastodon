@@ -166,6 +166,7 @@ public class MainWindow extends JFrame
 		menu = new ViewMenu( menubar, keymap, KeyConfigContexts.MASTODON );
 		keymap.updateListeners().add( menu::updateKeymap );
 		addMenus( menu, actionMap );
+		windowManager.getPlugins().addMenus( menu );
 
 		setDefaultCloseOperation( WindowConstants.DISPOSE_ON_CLOSE );
 		addWindowListener( new WindowAdapter()

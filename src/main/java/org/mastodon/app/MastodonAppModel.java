@@ -15,6 +15,7 @@ import org.mastodon.model.HighlightModel;
 import org.mastodon.model.NavigationHandler;
 import org.mastodon.model.SelectionModel;
 import org.mastodon.model.TimepointModel;
+import org.mastodon.plugin.MastodonPlugins;
 import org.mastodon.revised.model.AbstractModel;
 import org.mastodon.revised.model.AbstractSpot;
 import org.mastodon.revised.ui.keymap.Keymap;
@@ -52,6 +53,8 @@ public class MastodonAppModel<
 
 	private final KeymapManager keymapManager;
 
+	private final MastodonPlugins plugins;
+
 	private final String[] keyConfigContexts;
 
 	/**
@@ -70,6 +73,7 @@ public class MastodonAppModel<
 	 * @param model
 	 * @param keyPressedManager
 	 * @param keymapManager
+	 * @param plugins
 	 * @param globalActions
 	 * @param keyConfigContexts
 	 *            keyconf contexts for appActions (actions that should be available in all views)
@@ -79,10 +83,12 @@ public class MastodonAppModel<
 			final M model,
 			final KeyPressedManager keyPressedManager,
 			final KeymapManager keymapManager,
+			final MastodonPlugins plugins,
 			final Actions globalActions,
 			final String[] keyConfigContexts )
 	{
 		this.model = model;
+		this.plugins = plugins;
 		this.globalActions = globalActions;
 
 		final ListenableReadOnlyGraph< V, E > graph = model.getGraph();
@@ -155,6 +161,11 @@ public class MastodonAppModel<
 	public KeymapManager getKeymapManager()
 	{
 		return keymapManager;
+	}
+
+	public MastodonPlugins getPlugins()
+	{
+		return plugins;
 	}
 
 	/**
