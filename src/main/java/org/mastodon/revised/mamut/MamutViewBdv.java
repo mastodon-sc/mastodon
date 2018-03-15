@@ -136,7 +136,7 @@ public class MamutViewBdv extends MamutView< OverlayGraphWrapper< Spot, Link >, 
 		contextProvider = new BdvContextProvider<>( windowTitle, viewGraph, tracksOverlay );
 		viewer.addRenderTransformListener( contextProvider );
 
-		BdvSelectionBehaviours.install( viewBehaviours, viewGraph, tracksOverlay, selectionModel, navigationHandler );
+		BdvSelectionBehaviours.install( viewBehaviours, viewGraph, tracksOverlay, selectionModel, focusModel, navigationHandler );
 		EditBehaviours.install( viewBehaviours, viewGraph, tracksOverlay, model );
 		EditSpecialBehaviours.install( viewBehaviours, frame.getViewerPanel(), viewGraph, tracksOverlay, model );
 		HighlightBehaviours.install( viewBehaviours, viewGraph, viewGraph.getLock(), viewGraph, highlightModel, model );
