@@ -309,7 +309,7 @@ public class EditBehaviours< V extends OverlayVertex< V, E >, E extends OverlayE
 							return;
 
 					vertex.setCovariance( mat );
-					lastRadius = Math.max( MIN_RADIUS, vertex.getBoundingSphereRadiusSquared() );
+					lastRadius = Math.max( MIN_RADIUS, Math.sqrt( vertex.getBoundingSphereRadiusSquared() ) );
 					overlayGraph.notifyGraphChanged();
 					undo.setUndoPoint();
 				}
