@@ -26,12 +26,14 @@ public class DefaultNavigationHandler< V, E > implements NavigationHandler< V, E
 	@Override
 	public void notifyNavigateToVertex( final V vertex )
 	{
-		listeners.list.forEach( l -> l.navigateToVertex( vertex ) );
+		if ( vertex != null )
+			listeners.list.forEach( l -> l.navigateToVertex( vertex ) );
 	}
 
 	@Override
 	public void notifyNavigateToEdge( final E edge )
 	{
-		listeners.list.forEach( l -> l.navigateToEdge( edge ) );
+		if ( edge != null )
+			listeners.list.forEach( l -> l.navigateToEdge( edge ) );
 	}
 }
