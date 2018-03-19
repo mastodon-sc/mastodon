@@ -208,10 +208,7 @@ public class FocusActions< V extends Vertex< E > & Ref< V >, E extends Edge< V >
 			{
 				selection.pauseListeners();
 
-				// TODO!!!!!!!!!!!
-//				focus.focusVertex( current ); // TODO!!!!!!!!!!!
-				navigation.notifyNavigateToVertex( current ); // TODO!!!!!!!!!!!
-				// TODO!!!!!!!!!!!
+				focus.focusVertex( current );
 
 				if ( !expandSelection )
 					selection.clearSelection();
@@ -257,10 +254,7 @@ public class FocusActions< V extends Vertex< E > & Ref< V >, E extends Edge< V >
 			{
 				selection.pauseListeners();
 
-				// TODO!!!!!!!!!!!
-//				focus.focusVertex( current ); // TODO!!!!!!!!!!!
-				navigation.notifyNavigateToVertex( current ); // TODO!!!!!!!!!!!
-				// TODO!!!!!!!!!!!
+				focus.focusVertex( current );
 
 				if ( expandSelection )
 				{
