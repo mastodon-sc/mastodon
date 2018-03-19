@@ -6,7 +6,6 @@ import org.mastodon.model.FocusModel;
 import org.mastodon.model.NavigationHandler;
 import org.mastodon.model.SelectionModel;
 import org.mastodon.revised.mamut.KeyConfigContexts;
-import org.mastodon.revised.trackscheme.TrackSchemeVertex;
 import org.mastodon.revised.ui.keymap.CommandDescriptionProvider;
 import org.mastodon.revised.ui.keymap.CommandDescriptions;
 import org.scijava.plugin.Plugin;
