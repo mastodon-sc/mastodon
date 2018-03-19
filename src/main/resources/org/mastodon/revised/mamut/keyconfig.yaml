@@ -336,6 +336,10 @@
   contexts: [bdv]
   triggers: [shift Y, shift A]
 - !mapping
+  action: bdv click focus vertex
+  contexts: [bdv]
+  triggers: [shift button1, button1]
+- !mapping
   action: bdv click navigate to vertex
   contexts: [bdv]
   triggers: [button1 double-click, shift button1 double-click]
