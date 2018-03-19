@@ -226,12 +226,12 @@ public class TrackSchemePanel extends JPanel implements
 		display.addMouseListener( highlightHandler );
 		display.addTransformListener( highlightHandler );
 
-		autoFocus = new TrackSchemeAutoFocus( layout, focus, navigation );
+		autoFocus = new TrackSchemeAutoFocus( layout, focus );
 		display.addTransformListener( autoFocus );
 
 		navigationActions = new TrackSchemeNavigationActions( graph, layout, autoFocus, selection );
 
-		navigationBehaviours = new TrackSchemeNavigationBehaviours( display, graph, layout, graphOverlay, focus, navigation, selection );
+		navigationBehaviours = new TrackSchemeNavigationBehaviours( display, graph, layout, graphOverlay, autoFocus, navigation, selection );
 		display.addTransformListener( navigationBehaviours );
 
 		offsetHeaders = new OffsetHeaders();
@@ -519,7 +519,6 @@ public class TrackSchemePanel extends JPanel implements
 	{
 		if ( v.getLayoutTimestamp() == layout.getCurrentLayoutTimestamp() )
 		{
-			focus.focusVertex( v );
 			timepoint.setTimepoint( v.getTimepoint() );
 
 			final ScreenTransform transform = new ScreenTransform();
