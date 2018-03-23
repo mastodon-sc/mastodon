@@ -12,7 +12,7 @@ import org.scijava.plugin.Plugin;
 import org.scijava.ui.behaviour.util.AbstractNamedAction;
 import org.scijava.ui.behaviour.util.Actions;
 
-@Plugin( type = MastodonTestPlugin.class )
+//@Plugin( type = MastodonTestPlugin.class )
 public class MastodonTestPlugin implements MastodonPlugin
 {
 	private static final String ACTION_1 = "[testplugin] action1";
