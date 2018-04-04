@@ -8,6 +8,10 @@ import org.scijava.AbstractContextual;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.PluginService;
 
+/**
+ * Helper class to populate {@link CommandDescriptions} from
+ * {@link CommandDescriptionProvider}s.
+ */
 public class CommandDescriptionsBuilder extends AbstractContextual
 {
 	@Parameter
@@ -29,8 +33,9 @@ public class CommandDescriptionsBuilder extends AbstractContextual
 	private final List< ProviderAndContext > registered = new ArrayList<>();
 
 	/**
-	 * Manually add a {@code provider} in a specified {@code context}.
-	 * For example, this is useful for adding stuff in a specific order, for building nice {keyconfig.yaml} files.
+	 * Manually add a {@code provider} in a specified {@code context}. For
+	 * example, this is useful for adding stuff in a specific order, for
+	 * building nice {@code keyconfig.yaml} files.
 	 *
 	 * @param provider
 	 * @param context
@@ -46,10 +51,11 @@ public class CommandDescriptionsBuilder extends AbstractContextual
 	}
 
 	/**
-	 * Manually add a {@code provider} in the specified {@code contexts}.
-	 * For example, this is useful for adding stuff in a specific order, for building nice {keyconfig.yaml} files.
+	 * Manually add a {@code provider} in the specified {@code contexts}. For
+	 * example, this is useful for adding stuff in a specific order, for
+	 * building nice {@code keyconfig.yaml} files.
 	 *
- 	 * @param provider
+	 * @param provider
 	 * @param contexts
 	 */
 	public void addManually( final CommandDescriptionProvider provider, final String ... contexts )
@@ -58,7 +64,9 @@ public class CommandDescriptionsBuilder extends AbstractContextual
 	}
 
 	/**
-	 * Add all {@link CommandDescriptionProvider}s on the plugin index, with their respective {@link CommandDescriptionProvider#getExpectedContexts() expected contexts}.
+	 * Add all {@link CommandDescriptionProvider}s on the plugin index, with
+	 * their respective {@link CommandDescriptionProvider#getExpectedContexts()
+	 * expected contexts}.
 	 */
 	public void discoverProviders()
 	{
@@ -69,9 +77,9 @@ public class CommandDescriptionsBuilder extends AbstractContextual
 	}
 
 	/**
-	 * Debugging helper.
-	 * Checks whether all manually added providers are automatically discovered, and vice versa.
-	 * Prints warnings to stderr otherwise.
+	 * Debugging helper. Checks whether all manually added providers are
+	 * automatically discovered, and vice versa. Prints warnings to stderr
+	 * otherwise.
 	 */
 	public void verifyManuallyAdded()
 	{
