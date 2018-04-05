@@ -8,6 +8,7 @@ import javax.swing.ActionMap;
 import org.mastodon.app.ui.ViewMenu;
 import org.mastodon.app.ui.ViewMenuBuilder;
 import org.mastodon.app.ui.ViewMenuBuilder.MenuItem;
+import org.mastodon.revised.mamut.KeyConfigContexts;
 import org.mastodon.revised.ui.keymap.Keymap;
 import org.scijava.ui.behaviour.util.Actions;
 
@@ -23,7 +24,7 @@ public class MastodonPlugins
 
 	public MastodonPlugins( final Keymap keymap )
 	{
-		pluginActions = new Actions( keymap.getConfig(), "mastodon" );
+		pluginActions = new Actions( keymap.getConfig(), KeyConfigContexts.MASTODON );
 		keymap.updateListeners().add( () -> pluginActions.updateKeyConfig( keymap.getConfig() ) );
 		menuItems = new ArrayList<>();
 		menuTexts = new HashMap<>();
