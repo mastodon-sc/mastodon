@@ -7,7 +7,10 @@ import java.util.List;
 import java.util.Map;
 
 import org.mastodon.app.ui.ViewMenuBuilder;
+import org.mastodon.revised.mamut.KeyConfigContexts;
 import org.mastodon.revised.mamut.MamutMenuBuilder;
+import org.mastodon.revised.ui.keymap.CommandDescriptionProvider;
+import org.mastodon.revised.ui.keymap.CommandDescriptions;
 import org.scijava.plugin.Plugin;
 import org.scijava.ui.behaviour.util.AbstractNamedAction;
 import org.scijava.ui.behaviour.util.Actions;
@@ -18,6 +21,24 @@ public class MastodonTestPlugin implements MastodonPlugin
 	private static final String ACTION_1 = "[testplugin] action1";
 
 	private static final String[] ACTION_1_KEYS = new String[] { "meta K" };
+
+	/*
+	 * Command descriptions for all provided commands
+	 */
+//	@Plugin( type = Descriptions.class )
+	public static class Descriptions extends CommandDescriptionProvider
+	{
+		public Descriptions()
+		{
+			super( KeyConfigContexts.MASTODON );
+		}
+
+		@Override
+		public void getCommandDescriptions( final CommandDescriptions descriptions )
+		{
+			descriptions.add( ACTION_1, ACTION_1_KEYS, "Test Plugin Action" );
+		}
+	}
 
 	private MastodonPluginAppModel appModel;
 
