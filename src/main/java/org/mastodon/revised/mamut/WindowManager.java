@@ -1,8 +1,6 @@
 package org.mastodon.revised.mamut;
 
 import java.awt.event.WindowEvent;
-import java.io.File;
-import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
@@ -35,9 +33,6 @@ import org.scijava.plugin.Plugin;
 import org.scijava.plugin.PluginInfo;
 import org.scijava.plugin.PluginService;
 import org.scijava.ui.behaviour.KeyPressedManager;
-import org.scijava.ui.behaviour.io.InputTriggerDescription;
-import org.scijava.ui.behaviour.io.InputTriggerDescriptionsBuilder;
-import org.scijava.ui.behaviour.io.yaml.YamlConfigIO;
 import org.scijava.ui.behaviour.util.AbstractNamedAction;
 import org.scijava.ui.behaviour.util.Actions;
 import org.scijava.ui.behaviour.util.RunnableAction;
@@ -132,6 +127,11 @@ public class WindowManager
 		plugins = new MastodonPlugins( keymap );
 		discoverPlugins();
 
+		final CommandDescriptions descriptions = buildCommandDescriptions();
+		final Consumer< Keymap > augmentInputTriggerConfig = k -> descriptions.augmentInputTriggerConfig( k.getConfig() );
+		keymapManager.getUserStyles().forEach( augmentInputTriggerConfig );
+		keymapManager.getBuiltinStyles().forEach( augmentInputTriggerConfig );
+
 		// TODO: naming, this should be named appActions and the AppModel.appActions should become modelActions?
 		// TODO: or rename AppModel --> ProjectModel, then projectActions?
 		globalAppActions = new Actions( keymap.getConfig(), KeyConfigContexts.MASTODON );
@@ -155,7 +155,7 @@ public class WindowManager
 		final PreferencesDialog settings = new PreferencesDialog( null, keymap, new String[] { KeyConfigContexts.MASTODON } );
 		settings.addPage( new TrackSchemeStyleSettingsPage( "TrackScheme Styles", trackSchemeStyleManager ) );
 		settings.addPage( new RenderSettingsConfigPage( "BDV Render Settings", renderSettingsManager ) );
-		settings.addPage( new KeymapSettingsPage( "Keymap", keymapManager, buildCommandDescriptions()  ) );
+		settings.addPage( new KeymapSettingsPage( "Keymap", keymapManager, descriptions ) );
 		final ToggleDialogAction tooglePreferencesDialogAction = new ToggleDialogAction( PREFERENCES_DIALOG, settings );
 		globalAppActions.namedAction( tooglePreferencesDialogAction, PREFERENCES_DIALOG_KEYS );
 

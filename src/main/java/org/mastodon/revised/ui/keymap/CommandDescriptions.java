@@ -100,4 +100,25 @@ public final class CommandDescriptions
 		} );
 		return config;
 	}
+
+	/**
+	 * For commands that are not yet defined in {@code config}, add them with
+	 * their default triggers. Commands that have no specified default triggers
+	 * will have trigger {@code "not mapped"}.
+	 */
+	public void augmentInputTriggerConfig( final InputTriggerConfig config )
+	{
+		descriptions.forEach( ( c, d ) -> {
+			final String name = c.getName();
+			final String context = c.getContext();
+			if ( config.getInputs( name, context ).isEmpty() )
+			{
+				final String[] triggers = d.defaultTriggers;
+				if ( triggers == null || triggers.length == 0 )
+					config.add( "not mapped", name, context );
+				else
+					Arrays.stream( triggers ).forEachOrdered( t -> config.add( t, name, context ) );
+			}
+		} );
+	}
 }

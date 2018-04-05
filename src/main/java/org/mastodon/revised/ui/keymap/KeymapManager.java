@@ -58,13 +58,20 @@ public class KeymapManager extends AbstractStyleManager< KeymapManager, Keymap >
 	{
 		try
 		{
-			return Arrays.asList( loadBuiltinStyle( "Default", "keyconfig.yaml" ) );
+			synchronized ( KeymapManager.class )
+			{
+				if ( loadedBuiltinStyles == null )
+					loadedBuiltinStyles = Arrays.asList( loadBuiltinStyle( "Default", "keyconfig.yaml" ) );
+			}
+			return loadedBuiltinStyles;
 		}
 		catch ( final IOException e )
 		{
 			throw new RuntimeException( e );
 		}
 	}
+
+	private static List< Keymap > loadedBuiltinStyles;
 
 	private static Keymap loadBuiltinStyle( final String name, final String filename ) throws IOException
 	{
