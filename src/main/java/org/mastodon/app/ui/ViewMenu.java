@@ -128,6 +128,8 @@ public class ViewMenu
 						final Optional< InputTrigger > input = inputs.stream().filter( InputTrigger::isKeyStroke ).findFirst();
 						if ( input.isPresent() )
 							mi.setAccelerator( input.get().getKeyStroke() );
+						else
+							mi.setAccelerator( null );
 					}
 				}
 			}
