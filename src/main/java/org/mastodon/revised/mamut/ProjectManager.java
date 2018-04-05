@@ -125,6 +125,7 @@ public class ProjectManager
 		final boolean projectOpen = ( project != null );
 		saveProjectAction.setEnabled( projectOpen );
 		importTgmmAction.setEnabled( projectOpen );
+		importSimiAction.setEnabled( projectOpen );
 		exportMamutAction.setEnabled( projectOpen );
 	}
 
