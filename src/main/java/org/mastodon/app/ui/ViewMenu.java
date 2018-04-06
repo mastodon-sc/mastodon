@@ -17,12 +17,15 @@ import javax.swing.MenuElement;
 
 import org.mastodon.revised.ui.keymap.Keymap;
 import org.mastodon.revised.util.HasSelectedState;
+import org.mastodon.revised.util.MastodonDebugSettings;
 import org.scijava.ui.behaviour.InputTrigger;
 import org.scijava.ui.behaviour.io.InputTriggerConfig;
 import org.scijava.ui.behaviour.util.AbstractNamedAction;
 
 public class ViewMenu
 {
+	private static final boolean USE_ACCELERATORS = MastodonDebugSettings.getInstance().isUseMenuAccelerators(); // TODO: remove, once Fiji ships at least jdk1.8.0_162
+
 	private MastodonFrameView< ?, ?, ?, ?, ?, ? > view;
 
 	private final JMenuBar menubar;
@@ -78,13 +81,16 @@ public class ViewMenu
 				: new JMenuItem( action );
 		item.setText( name );
 
-		if ( action instanceof AbstractNamedAction )
+		if ( USE_ACCELERATORS )
 		{
-			final AbstractNamedAction namedAction = ( AbstractNamedAction ) action;
-			final Set< InputTrigger > inputs = keyconf.getInputs( namedAction.name(), contexts );
-			final Optional< InputTrigger > input = inputs.stream().filter( InputTrigger::isKeyStroke ).findFirst();
-			if ( input.isPresent() )
-				item.setAccelerator( input.get().getKeyStroke() );
+			if ( action instanceof AbstractNamedAction )
+			{
+				final AbstractNamedAction namedAction = ( AbstractNamedAction ) action;
+				final Set< InputTrigger > inputs = keyconf.getInputs( namedAction.name(), contexts );
+				final Optional< InputTrigger > input = inputs.stream().filter( InputTrigger::isKeyStroke ).findFirst();
+				if ( input.isPresent() )
+					item.setAccelerator( input.get().getKeyStroke() );
+			}
 		}
 
 		if ( action instanceof HasSelectedState )
@@ -103,33 +109,36 @@ public class ViewMenu
 
 	public void updateKeymap()
 	{
-		final InputTriggerConfig keyconf = keymap.getConfig();
-
-		final ArrayList< MenuElement > elements = new ArrayList<>();
-		elements.add( menubar );
-
-		while ( !elements.isEmpty() )
+		if ( USE_ACCELERATORS )
 		{
-			final MenuElement element = elements.remove( elements.size() - 1 );
-			for ( final MenuElement me : element.getSubElements() )
+			final InputTriggerConfig keyconf = keymap.getConfig();
+
+			final ArrayList< MenuElement > elements = new ArrayList<>();
+			elements.add( menubar );
+
+			while ( !elements.isEmpty() )
 			{
-				if ( me instanceof JMenu || me instanceof JPopupMenu )
+				final MenuElement element = elements.remove( elements.size() - 1 );
+				for ( final MenuElement me : element.getSubElements() )
 				{
-					elements.add( me );
-				}
-				else if ( me instanceof JMenuItem )
-				{
-					final JMenuItem mi = ( JMenuItem ) me;
-					final Action action = mi.getAction();
-					if ( action != null && action instanceof AbstractNamedAction )
+					if ( me instanceof JMenu || me instanceof JPopupMenu )
 					{
-						final AbstractNamedAction namedAction = ( AbstractNamedAction ) action;
-						final Set< InputTrigger > inputs = keyconf.getInputs( namedAction.name(), contexts );
-						final Optional< InputTrigger > input = inputs.stream().filter( InputTrigger::isKeyStroke ).findFirst();
-						if ( input.isPresent() )
-							mi.setAccelerator( input.get().getKeyStroke() );
-						else
-							mi.setAccelerator( null );
+						elements.add( me );
+					}
+					else if ( me instanceof JMenuItem )
+					{
+						final JMenuItem mi = ( JMenuItem ) me;
+						final Action action = mi.getAction();
+						if ( action != null && action instanceof AbstractNamedAction )
+						{
+							final AbstractNamedAction namedAction = ( AbstractNamedAction ) action;
+							final Set< InputTrigger > inputs = keyconf.getInputs( namedAction.name(), contexts );
+							final Optional< InputTrigger > input = inputs.stream().filter( InputTrigger::isKeyStroke ).findFirst();
+							if ( input.isPresent() )
+								mi.setAccelerator( input.get().getKeyStroke() );
+							else
+								mi.setAccelerator( null );
+						}
 					}
 				}
 			}
