@@ -97,7 +97,7 @@ public class ViewMenu
 		{
 			final HasSelectedState s = ( HasSelectedState ) action;
 			item.setSelected( s.isSelected() );
-			final HasSelectedState.Listener l = b -> item.setSelected( b );
+			final HasSelectedState.Listener l = item::setSelected;
 			s.selectListeners().add( l );
 			if ( view != null )
 				view.onClose( () -> s.selectListeners().remove( l ) );
@@ -129,7 +129,7 @@ public class ViewMenu
 					{
 						final JMenuItem mi = ( JMenuItem ) me;
 						final Action action = mi.getAction();
-						if ( action != null && action instanceof AbstractNamedAction )
+						if ( action instanceof AbstractNamedAction )
 						{
 							final AbstractNamedAction namedAction = ( AbstractNamedAction ) action;
 							final Set< InputTrigger > inputs = keyconf.getInputs( namedAction.name(), contexts );
@@ -188,16 +188,11 @@ A:			for ( final MenuElement me : root.getSubElements() )
 				next = new JMenu( text );
 				if ( root == menubar )
 					menubar.add( next );
-				else if ( root instanceof JMenu )
-					( ( JMenu ) root ).add( next );
 				else
-					throw new IllegalArgumentException( "menu item must be added to a submenu" );
+					( ( JMenu ) root ).add( next );
 			}
 
-			if ( next instanceof JMenu )
-				root = next;
-			else
-				throw new IllegalArgumentException( "menu item must be added to a submenu" );
+			root = next;
 		}
 
 		if ( root instanceof JMenu )
