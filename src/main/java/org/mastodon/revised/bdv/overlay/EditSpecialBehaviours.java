@@ -1,6 +1,8 @@
 package org.mastodon.revised.bdv.overlay;
 
+import static org.mastodon.revised.bdv.overlay.EditBehaviours.FOCUS_EDITED_SPOT;
 import static org.mastodon.revised.bdv.overlay.EditBehaviours.POINT_SELECT_DISTANCE_TOLERANCE;
+import static org.mastodon.revised.bdv.overlay.EditBehaviours.SELECT_ADDED_SPOT;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
@@ -9,6 +11,8 @@ import java.awt.Graphics2D;
 import java.awt.geom.AffineTransform;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
+import org.mastodon.model.FocusModel;
+import org.mastodon.model.SelectionModel;
 import org.mastodon.revised.bdv.overlay.ScreenVertexMath.Ellipse;
 import org.mastodon.revised.mamut.KeyConfigContexts;
 import org.mastodon.revised.ui.keymap.CommandDescriptionProvider;
@@ -77,9 +81,11 @@ public class EditSpecialBehaviours< V extends OverlayVertex< V, E >, E extends O
 			final ViewerPanel viewer,
 			final OverlayGraph< V, E > overlayGraph,
 			final OverlayGraphRenderer< V, E > renderer,
+			final SelectionModel< V, E > selection,
+			final FocusModel< V, E > focus,
 			final UndoPointMarker undo )
 	{
-		final EditSpecialBehaviours< V, E > eb = new EditSpecialBehaviours<>( viewer, overlayGraph, renderer, undo );
+		final EditSpecialBehaviours< V, E > eb = new EditSpecialBehaviours<>( viewer, overlayGraph, renderer, selection, focus, undo );
 
 		behaviours.namedBehaviour( eb.addSpotAndLinkItForwardBehaviour, ADD_SPOT_AND_LINK_IT_FORWARD_KEYS );
 		behaviours.namedBehaviour( eb.addSpotAndLinkItBackwardBehaviour, ADD_SPOT_AND_LINK_IT_BACKWARD_KEYS );
@@ -95,6 +101,10 @@ public class EditSpecialBehaviours< V extends OverlayVertex< V, E >, E extends O
 
 	private final OverlayGraphRenderer< V, E > renderer;
 
+	private final SelectionModel< V, E > selection;
+
+	private final FocusModel< V, E > focus;
+
 	private final UndoPointMarker undo;
 
 	private final EditSpecialBehaviours< V, E >.EditSpecialBehavioursOverlay overlay;
@@ -103,12 +113,16 @@ public class EditSpecialBehaviours< V extends OverlayVertex< V, E >, E extends O
 			final ViewerPanel viewer,
 			final OverlayGraph< V, E > overlayGraph,
 			final OverlayGraphRenderer< V, E > renderer,
+			final SelectionModel< V, E > selection,
+			final FocusModel< V, E > focus,
 			final UndoPointMarker undo )
 	{
 		this.viewer = viewer;
 		this.overlayGraph = overlayGraph;
 		this.lock = overlayGraph.getLock();
 		this.renderer = renderer;
+		this.selection = selection;
+		this.focus = focus;
 		this.undo = undo;
 
 		// Create and register overlay.
@@ -227,8 +241,6 @@ public class EditSpecialBehaviours< V extends OverlayVertex< V, E >, E extends O
 
 		private final V target;
 
-		private final V tmp;
-
 		private final E edgeRef;
 
 		private boolean editing;
@@ -241,7 +253,6 @@ public class EditSpecialBehaviours< V extends OverlayVertex< V, E >, E extends O
 			this.forward = forward;
 			source = overlayGraph.vertexRef();
 			target = overlayGraph.vertexRef();
-			tmp = overlayGraph.vertexRef();
 			edgeRef = overlayGraph.edgeRef();
 			editing = false;
 		}
@@ -312,21 +323,27 @@ public class EditSpecialBehaviours< V extends OverlayVertex< V, E >, E extends O
 						 * Careful with directed graphs. We always check and
 						 * create links forward in time.
 						 */
-						if ( !forward )
-						{
-							tmp.refTo( source );
-							source.refTo( target );
-							target.refTo( tmp );
-						}
-
-						final E edge = overlayGraph.getEdge( source, target, edgeRef );
+						final V from = forward ? source : target;
+						final V to = forward ? target : source;
+						final E edge = overlayGraph.getEdge( from, to, edgeRef );
 						if ( null == edge )
-							overlayGraph.addEdge( source, target, edgeRef ).init();
+							overlayGraph.addEdge( from, to, edgeRef ).init();
 						else
 							overlayGraph.remove( edge );
 
 						overlayGraph.notifyGraphChanged();
 						undo.setUndoPoint();
+
+						if ( FOCUS_EDITED_SPOT )
+							focus.focusVertex( target );
+
+						if ( SELECT_ADDED_SPOT )
+						{
+							selection.pauseListeners();
+							selection.clearSelection();
+							selection.setSelected( target, true );
+							selection.resumeListeners();
+						}
 					}
 
 					overlay.paintGhostVertex = false;
@@ -441,8 +458,20 @@ public class EditSpecialBehaviours< V extends OverlayVertex< V, E >, E extends O
 			{
 				overlay.paintGhostVertex = false;
 				overlay.paintGhostLink = false;
-				undo.setUndoPoint();
 				overlayGraph.notifyGraphChanged();
+				undo.setUndoPoint();
+
+				if ( FOCUS_EDITED_SPOT )
+					focus.focusVertex( target );
+
+				if ( SELECT_ADDED_SPOT )
+				{
+					selection.pauseListeners();
+					selection.clearSelection();
+					selection.setSelected( target, true );
+					selection.resumeListeners();
+				}
+
 				moving = false;
 				lock.readLock().unlock();
 			}

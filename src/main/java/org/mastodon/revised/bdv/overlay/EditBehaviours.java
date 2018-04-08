@@ -2,6 +2,8 @@ package org.mastodon.revised.bdv.overlay;
 
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
+import org.mastodon.model.FocusModel;
+import org.mastodon.model.SelectionModel;
 import org.mastodon.revised.bdv.overlay.util.JamaEigenvalueDecomposition;
 import org.mastodon.revised.mamut.KeyConfigContexts;
 import org.mastodon.revised.ui.keymap.CommandDescriptionProvider;
@@ -71,6 +73,10 @@ public class EditBehaviours< V extends OverlayVertex< V, E >, E extends OverlayE
 		}
 	}
 
+	public static final boolean FOCUS_EDITED_SPOT = true;
+
+	public static final boolean SELECT_ADDED_SPOT = true;
+
 	public static final double POINT_SELECT_DISTANCE_TOLERANCE = 5.0;
 
 	/** Minimal radius below which changes in vertex size are rejected. */
@@ -113,9 +119,11 @@ public class EditBehaviours< V extends OverlayVertex< V, E >, E extends OverlayE
 			final Behaviours behaviours,
 			final OverlayGraph< V, E > overlayGraph,
 			final OverlayGraphRenderer< V, E > renderer,
+			final SelectionModel< V, E > selection,
+			final FocusModel< V, E > focus,
 			final UndoPointMarker undo )
 	{
-		final EditBehaviours< V, E > eb = new EditBehaviours<>( overlayGraph, renderer, undo, NORMAL_RADIUS_CHANGE, ABIT_RADIUS_CHANGE, ALOT_RADIUS_CHANGE );
+		final EditBehaviours< V, E > eb = new EditBehaviours<>( overlayGraph, renderer, selection, focus, undo, NORMAL_RADIUS_CHANGE, ABIT_RADIUS_CHANGE, ALOT_RADIUS_CHANGE );
 
 		behaviours.namedBehaviour( eb.moveSpotBehaviour, MOVE_SPOT_KEYS );
 		behaviours.namedBehaviour( eb.addSpotBehaviour, ADD_SPOT_KEYS );
@@ -133,11 +141,17 @@ public class EditBehaviours< V extends OverlayVertex< V, E >, E extends OverlayE
 
 	private final OverlayGraphRenderer< V, E > renderer;
 
+	private final SelectionModel< V, E > selection;
+
+	private final FocusModel< V, E > focus;
+
 	private final UndoPointMarker undo;
 
 	private EditBehaviours(
 			final OverlayGraph< V, E > overlayGraph,
 			final OverlayGraphRenderer< V, E > renderer,
+			final SelectionModel< V, E > selection,
+			final FocusModel< V, E > focus,
 			final UndoPointMarker undo,
 			final double normalRadiusChange,
 			final double aBitRadiusChange,
@@ -146,6 +160,8 @@ public class EditBehaviours< V extends OverlayVertex< V, E >, E extends OverlayE
 		this.overlayGraph = overlayGraph;
 		this.lock = overlayGraph.getLock();
 		this.renderer = renderer;
+		this.selection = selection;
+		this.focus = focus;
 		this.undo = undo;
 
 		moveSpotBehaviour = new MoveSpotBehaviour( MOVE_SPOT );
@@ -189,17 +205,29 @@ public class EditBehaviours< V extends OverlayVertex< V, E >, E extends OverlayE
 			{
 				final int timepoint = renderer.getCurrentTimepoint();
 				renderer.getGlobalPosition( x, y, pos );
+				final V ref = overlayGraph.vertexRef();
 				lock.writeLock().lock();
 				try
 				{
-					final V ref = overlayGraph.vertexRef();
-					overlayGraph.addVertex( ref ).init( timepoint, pos, lastRadius );
-					overlayGraph.releaseRef( ref );
+					final V vertex = overlayGraph.addVertex( ref ).init( timepoint, pos, lastRadius );
 					overlayGraph.notifyGraphChanged();
+
 					undo.setUndoPoint();
+
+					if ( FOCUS_EDITED_SPOT )
+						focus.focusVertex( vertex );
+
+					if ( SELECT_ADDED_SPOT )
+					{
+						selection.pauseListeners();
+						selection.clearSelection();
+						selection.setSelected( vertex, true );
+						selection.resumeListeners();
+					}
 				}
 				finally
 				{
+					overlayGraph.releaseRef( ref );
 					lock.writeLock().unlock();
 				}
 			}
@@ -265,6 +293,10 @@ public class EditBehaviours< V extends OverlayVertex< V, E >, E extends OverlayE
 			if ( moving )
 			{
 				undo.setUndoPoint();
+
+				if ( FOCUS_EDITED_SPOT )
+					focus.focusVertex( vertex );
+
 				moving = false;
 				lock.readLock().unlock();
 			}
@@ -312,6 +344,9 @@ public class EditBehaviours< V extends OverlayVertex< V, E >, E extends OverlayE
 					lastRadius = Math.max( MIN_RADIUS, Math.sqrt( vertex.getBoundingSphereRadiusSquared() ) );
 					overlayGraph.notifyGraphChanged();
 					undo.setUndoPoint();
+
+					if ( FOCUS_EDITED_SPOT )
+						focus.focusVertex( vertex );
 				}
 			}
 			finally
