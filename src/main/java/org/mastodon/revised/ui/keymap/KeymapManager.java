@@ -65,7 +65,9 @@ public class KeymapManager extends AbstractStyleManager< KeymapManager, Keymap >
 			synchronized ( KeymapManager.class )
 			{
 				if ( loadedBuiltinStyles == null )
-					loadedBuiltinStyles = Arrays.asList( loadBuiltinStyle( "Default", "keyconfig.yaml" ) );
+					loadedBuiltinStyles = Arrays.asList(
+							loadBuiltinStyle( "Default", "keyconf_mastodon.yaml" ),
+							loadBuiltinStyle( "All BDV keys", "keyconf_fullbdv.yaml" ) );
 			}
 			return loadedBuiltinStyles;
 		}

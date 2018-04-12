@@ -89,7 +89,7 @@ public class CommandDescriptionsBuilder extends AbstractContextual
 			for ( final String context : provider.getExpectedContexts() )
 				discovered.add( new ProviderAndContext( provider, context ) );
 
-		// Can all registered providers be dicovered?
+		// Can all registered providers be discovered?
 		boolean anyFailed = false;
 		A: for ( final ProviderAndContext r : registered )
 		{
