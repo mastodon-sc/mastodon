@@ -33,25 +33,33 @@ import org.scijava.ui.behaviour.util.RunnableAction;
 public class FocusActions< V extends Vertex< E > & Ref< V >, E extends Edge< V > & Ref< E > >
 {
 	public static final String NAVIGATE_CHILD = "navigate to child";
+	public static final String NAVIGATE_LAST_CHILD = "navigate to last child";
 	public static final String NAVIGATE_PARENT = "navigate to parent";
 	public static final String NAVIGATE_SIBLING = "navigate to sibling";
 	public static final String NAVIGATE_BRANCH_CHILD = "navigate to branch child";
+	public static final String NAVIGATE_LAST_BRANCH_CHILD = "navigate to last branch child";
 	public static final String NAVIGATE_BRANCH_PARENT = "navigate to branch parent";
 	public static final String SELECT_NAVIGATE_CHILD = "select navigate to child";
+	public static final String SELECT_NAVIGATE_LAST_CHILD = "select navigate to last child";
 	public static final String SELECT_NAVIGATE_PARENT = "select navigate to parent";
 	public static final String SELECT_NAVIGATE_SIBLING = "select navigate to sibling";
 	public static final String SELECT_NAVIGATE_BRANCH_CHILD = "select navigate to branch child";
+	public static final String SELECT_NAVIGATE_LAST_BRANCH_CHILD = "select navigate to last branch child";
 	public static final String SELECT_NAVIGATE_BRANCH_PARENT = "select navigate to branch parent";
 
 	private static final String[] NAVIGATE_CHILD_KEYS = new String[] { "ctrl DOWN" };
+	private static final String[] NAVIGATE_LAST_CHILD_KEYS = new String[] { "ctrl meta DOWN" };
 	private static final String[] NAVIGATE_PARENT_KEYS = new String[] { "ctrl UP" };
 	private static final String[] NAVIGATE_SIBLING_KEYS = new String[] { "ctrl LEFT", "ctrl RIGHT" };
 	private static final String[] NAVIGATE_BRANCH_CHILD_KEYS = new String[] { "ctrl alt DOWN" };
+	private static final String[] NAVIGATE_LAST_BRANCH_CHILD_KEYS = new String[] { "ctrl alt meta DOWN" };
 	private static final String[] NAVIGATE_BRANCH_PARENT_KEYS = new String[] { "ctrl alt UP" };
 	private static final String[] SELECT_NAVIGATE_CHILD_KEYS = new String[] { "shift ctrl DOWN" };
+	private static final String[] SELECT_NAVIGATE_LAST_CHILD_KEYS = new String[] { "shift ctrl meta DOWN" };
 	private static final String[] SELECT_NAVIGATE_PARENT_KEYS = new String[] { "shift ctrl UP" };
 	private static final String[] SELECT_NAVIGATE_SIBLING_KEYS = new String[] { "shift ctrl LEFT", "shift ctrl RIGHT" };
 	private static final String[] SELECT_NAVIGATE_BRANCH_CHILD_KEYS = new String[] { "shift ctrl alt DOWN" };
+	private static final String[] SELECT_NAVIGATE_LAST_BRANCH_CHILD_KEYS = new String[] { "shift ctrl alt meta DOWN" };
 	private static final String[] SELECT_NAVIGATE_BRANCH_PARENT_KEYS = new String[] { "shift ctrl alt UP" };
 
 	/*
@@ -69,19 +77,25 @@ public class FocusActions< V extends Vertex< E > & Ref< V >, E extends Edge< V >
 		public void getCommandDescriptions( final CommandDescriptions descriptions )
 		{
 			descriptions.add( NAVIGATE_CHILD, NAVIGATE_CHILD_KEYS, "Go to the first child of the current spot." );
+			descriptions.add( NAVIGATE_LAST_CHILD, NAVIGATE_LAST_CHILD_KEYS, "Go to the last child of the current spot." );
 			descriptions.add( NAVIGATE_PARENT, NAVIGATE_PARENT_KEYS, "Go to the parent of the current spot." );
 			descriptions.add( NAVIGATE_SIBLING, NAVIGATE_SIBLING_KEYS, "Go to the sibling of the current spot." );
 			descriptions.add( NAVIGATE_BRANCH_CHILD, NAVIGATE_BRANCH_CHILD_KEYS, "Go to the next division on the first branch of the current spot." );
+			descriptions.add( NAVIGATE_LAST_BRANCH_CHILD, NAVIGATE_LAST_BRANCH_CHILD_KEYS, "Go to the next division on the last branch of the current spot." );
 			descriptions.add( NAVIGATE_BRANCH_PARENT, NAVIGATE_BRANCH_PARENT_KEYS, "Go to the previous division on the branch of the current spot." );
 			descriptions.add( SELECT_NAVIGATE_CHILD, SELECT_NAVIGATE_CHILD_KEYS, "Go to the first child of the current spot, and select it." );
+			descriptions.add( SELECT_NAVIGATE_LAST_CHILD, SELECT_NAVIGATE_LAST_CHILD_KEYS, "Go to the last child of the current spot, and select it." );
 			descriptions.add( SELECT_NAVIGATE_PARENT, SELECT_NAVIGATE_PARENT_KEYS, "Go to the parent of the current spot, and select it." );
 			descriptions.add( SELECT_NAVIGATE_SIBLING, SELECT_NAVIGATE_SIBLING_KEYS, "Go to the sibling of the current spot, and select it." );
 			descriptions.add( SELECT_NAVIGATE_BRANCH_CHILD, SELECT_NAVIGATE_BRANCH_CHILD_KEYS, "Go to the next division on the first branch of the current spot, and select all spots on the way." );
+			descriptions.add( SELECT_NAVIGATE_LAST_BRANCH_CHILD, SELECT_NAVIGATE_LAST_BRANCH_CHILD_KEYS, "Go to the next division on the last branch of the current spot, and select all spots on the way." );
 			descriptions.add( SELECT_NAVIGATE_BRANCH_PARENT, SELECT_NAVIGATE_BRANCH_PARENT_KEYS, "Go to the previous division on the branch of the current spot, and select all spots on the way." );
 		}
 	}
 
 	private final RunnableAction navigateToChildAction;
+
+	private final RunnableAction navigateToLastChildAction;
 
 	private final RunnableAction navigateToParentAction;
 
@@ -89,15 +103,21 @@ public class FocusActions< V extends Vertex< E > & Ref< V >, E extends Edge< V >
 
 	private final RunnableAction navigateToBranchChildAction;
 
+	private final RunnableAction navigateToLastBranchChildAction;
+
 	private final RunnableAction navigateToBranchParentAction;
 
 	private final RunnableAction selectNavigateToChildAction;
+
+	private final RunnableAction selectNavigateToLastChildAction;
 
 	private final RunnableAction selectNavigateToParentAction;
 
 	private final RunnableAction selectNavigateToSiblingAction;
 
 	private final RunnableAction selectNavigateToBranchChildAction;
+
+	private final RunnableAction selectNavigateToLastBranchChildAction;
 
 	private final RunnableAction selectNavigateToBranchParentAction;
 
@@ -112,20 +132,25 @@ public class FocusActions< V extends Vertex< E > & Ref< V >, E extends Edge< V >
 		final FocusActions< V, E > fa = new FocusActions<>( graph, lock, focus, selection, navigation );
 
 		actions.namedAction( fa.navigateToChildAction, NAVIGATE_CHILD_KEYS );
+		actions.namedAction( fa.navigateToLastChildAction, NAVIGATE_LAST_CHILD_KEYS );
 		actions.namedAction( fa.navigateToParentAction, NAVIGATE_PARENT_KEYS );
 		actions.namedAction( fa.navigateToSiblingAction, NAVIGATE_SIBLING_KEYS );
 		actions.namedAction( fa.navigateToBranchChildAction, NAVIGATE_BRANCH_CHILD_KEYS );
+		actions.namedAction( fa.navigateToLastBranchChildAction, NAVIGATE_LAST_BRANCH_CHILD_KEYS );
 		actions.namedAction( fa.navigateToBranchParentAction, NAVIGATE_BRANCH_PARENT_KEYS );
 		actions.namedAction( fa.selectNavigateToChildAction, SELECT_NAVIGATE_CHILD_KEYS );
+		actions.namedAction( fa.selectNavigateToLastChildAction, SELECT_NAVIGATE_LAST_CHILD_KEYS );
 		actions.namedAction( fa.selectNavigateToParentAction, SELECT_NAVIGATE_PARENT_KEYS );
 		actions.namedAction( fa.selectNavigateToSiblingAction, SELECT_NAVIGATE_SIBLING_KEYS );
 		actions.namedAction( fa.selectNavigateToBranchChildAction, SELECT_NAVIGATE_BRANCH_CHILD_KEYS );
+		actions.namedAction( fa.selectNavigateToLastBranchChildAction, SELECT_NAVIGATE_LAST_BRANCH_CHILD_KEYS );
 		actions.namedAction( fa.selectNavigateToBranchParentAction, SELECT_NAVIGATE_BRANCH_PARENT_KEYS );
 	}
 
 	private enum Direction
 	{
 		CHILD,
+		LAST_CHILD,
 		PARENT,
 		SIBLING,
 	}
@@ -139,30 +164,34 @@ public class FocusActions< V extends Vertex< E > & Ref< V >, E extends Edge< V >
 
 	private final SelectionModel< V, E > selection;
 
-	private final NavigationHandler< V, E > navigation;
+	private final NavigationHandler< V, E > navigation; // TODO: remove
 
 	public FocusActions(
 			final Graph< V, E > graph,
 			final ReentrantReadWriteLock lock,
 			final FocusModel< V, E > focus,
 			final SelectionModel< V, E > selection,
-			final NavigationHandler< V, E > navigation )
+			final NavigationHandler< V, E > navigation )  // TODO: remove
 	{
 		this.graph = graph;
 		this.lock = lock;
 		this.focus = focus;
 		this.selection = selection;
-		this.navigation = navigation;
+		this.navigation = navigation;  // TODO: remove
 
 		navigateToChildAction = new RunnableAction( NAVIGATE_CHILD, () -> selectAndFocusNeighbor( Direction.CHILD, false ) );
+		navigateToLastChildAction = new RunnableAction( NAVIGATE_LAST_CHILD, () -> selectAndFocusNeighbor( Direction.LAST_CHILD, false ) );
 		navigateToParentAction = new RunnableAction( NAVIGATE_PARENT, () -> selectAndFocusNeighbor( Direction.PARENT, false ) );
 		navigateToSiblingAction = new RunnableAction( NAVIGATE_SIBLING, () -> selectAndFocusNeighbor( Direction.SIBLING, false ) );
 		navigateToBranchChildAction = new RunnableAction( NAVIGATE_BRANCH_CHILD, () -> selectAndFocusBranchNeighbor( Direction.CHILD, false ) );
+		navigateToLastBranchChildAction = new RunnableAction( NAVIGATE_LAST_BRANCH_CHILD, () -> selectAndFocusBranchNeighbor( Direction.LAST_CHILD, false ) );
 		navigateToBranchParentAction = new RunnableAction( NAVIGATE_BRANCH_PARENT, () -> selectAndFocusBranchNeighbor( Direction.PARENT, false ) );
 		selectNavigateToChildAction = new RunnableAction( SELECT_NAVIGATE_CHILD, () -> selectAndFocusNeighbor( Direction.CHILD, true ) );
+		selectNavigateToLastChildAction = new RunnableAction( SELECT_NAVIGATE_LAST_CHILD, () -> selectAndFocusNeighbor( Direction.LAST_CHILD, true ) );
 		selectNavigateToParentAction = new RunnableAction( SELECT_NAVIGATE_PARENT, () -> selectAndFocusNeighbor( Direction.PARENT, true ) );
 		selectNavigateToSiblingAction = new RunnableAction( SELECT_NAVIGATE_SIBLING, () -> selectAndFocusNeighbor( Direction.SIBLING, true ) );
 		selectNavigateToBranchChildAction = new RunnableAction( SELECT_NAVIGATE_BRANCH_CHILD, () -> selectAndFocusBranchNeighbor( Direction.CHILD, true ) );
+		selectNavigateToLastBranchChildAction = new RunnableAction( SELECT_NAVIGATE_LAST_BRANCH_CHILD, () -> selectAndFocusBranchNeighbor( Direction.LAST_CHILD, true ) );
 		selectNavigateToBranchParentAction = new RunnableAction( SELECT_NAVIGATE_BRANCH_PARENT, () -> selectAndFocusBranchNeighbor( Direction.PARENT, true ) );
 	}
 
@@ -193,6 +222,9 @@ public class FocusActions< V extends Vertex< E > & Ref< V >, E extends Edge< V >
 			{
 			case CHILD:
 				current = firstChild( vertex, ref2 );
+				break;
+			case LAST_CHILD:
+				current = lastChild( vertex, ref2 );
 				break;
 			case PARENT:
 				current = firstParent( vertex, ref2 );
@@ -243,6 +275,9 @@ public class FocusActions< V extends Vertex< E > & Ref< V >, E extends Edge< V >
 			case CHILD:
 				current = firstBranchChild( vertex, ref2 );
 				break;
+			case LAST_CHILD:
+				current = lastBranchChild( vertex, ref2 );
+				break;
 			case PARENT:
 				current = firstBranchParent( vertex, ref2 );
 				break;
@@ -260,7 +295,7 @@ public class FocusActions< V extends Vertex< E > & Ref< V >, E extends Edge< V >
 				{
 					final V child = ( direction == Direction.PARENT ) ? vertex : current;
 					final V parent = ( direction == Direction.PARENT ) ? current : vertex;
-					for ( V v = child; !v.equals( parent ); v = firstParent( v, ref3 ) )
+					for ( V v = child; v != null && !v.equals( parent ); v = firstParent( v, ref3 ) )
 						selection.setSelected( v, true );
 					selection.setSelected( parent, true );
 				}
@@ -288,6 +323,15 @@ public class FocusActions< V extends Vertex< E > & Ref< V >, E extends Edge< V >
 		return outgoing.isEmpty() ? null : outgoing.iterator().next().getTarget( ref );
 	}
 
+	private V lastChild( final V vertex, final V ref )
+	{
+		final Iterator< E > it = vertex.outgoingEdges().iterator();
+		E edge = null;
+		while ( it.hasNext() )
+			edge = it.next();
+		return edge == null ? null : edge.getTarget( ref );
+	}
+
 	private V firstParent( final V vertex, final V ref )
 	{
 		final Edges< E > incoming = vertex.incomingEdges();
@@ -302,6 +346,20 @@ public class FocusActions< V extends Vertex< E > & Ref< V >, E extends Edge< V >
 			if ( v.outgoingEdges().isEmpty() )
 				break;
 			v = firstChild( v, ref );
+			if ( v.outgoingEdges().size() > 1 )
+				break;
+		}
+		return v;
+	}
+
+	private V lastBranchChild( final V vertex, final V ref )
+	{
+		V v = vertex;
+		while ( true )
+		{
+			if ( v.outgoingEdges().isEmpty() )
+				break;
+			v = lastChild( v, ref );
 			if ( v.outgoingEdges().size() > 1 )
 				break;
 		}
