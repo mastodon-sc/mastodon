@@ -404,6 +404,10 @@
   contexts: [bdv, ts]
   triggers: [ctrl DOWN]
 - !mapping
+  action: navigate to last child
+  contexts: [bdv, ts]
+  triggers: [ctrl meta DOWN]
+- !mapping
   action: navigate to parent
   contexts: [bdv, ts]
   triggers: [ctrl UP]
@@ -416,6 +420,10 @@
   contexts: [bdv, ts]
   triggers: [ctrl alt DOWN]
 - !mapping
+  action: navigate to last branch child
+  contexts: [bdv, ts]
+  triggers: [ctrl meta alt DOWN]
+- !mapping
   action: navigate to branch parent
   contexts: [bdv, ts]
   triggers: [ctrl alt UP]
@@ -423,6 +431,10 @@
   action: select navigate to child
   contexts: [bdv, ts]
   triggers: [shift ctrl DOWN]
+- !mapping
+  action: select navigate to last child
+  contexts: [bdv, ts]
+  triggers: [shift ctrl meta DOWN]
 - !mapping
   action: select navigate to parent
   contexts: [bdv, ts]
@@ -435,6 +447,10 @@
   action: select navigate to branch child
   contexts: [bdv, ts]
   triggers: [shift ctrl alt DOWN]
+- !mapping
+  action: select navigate to last branch child
+  contexts: [bdv, ts]
+  triggers: [shift ctrl meta alt DOWN]
 - !mapping
   action: select navigate to branch parent
   contexts: [bdv, ts]
