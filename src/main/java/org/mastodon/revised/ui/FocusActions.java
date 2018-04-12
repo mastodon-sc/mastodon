@@ -126,10 +126,9 @@ public class FocusActions< V extends Vertex< E > & Ref< V >, E extends Edge< V >
 			final Graph< V, E > graph,
 			final ReentrantReadWriteLock lock,
 			final FocusModel< V, E > focus,
-			final SelectionModel< V, E > selection,
-			final NavigationHandler< V, E > navigation )
+			final SelectionModel< V, E > selection )
 	{
-		final FocusActions< V, E > fa = new FocusActions<>( graph, lock, focus, selection, navigation );
+		final FocusActions< V, E > fa = new FocusActions<>( graph, lock, focus, selection );
 
 		actions.namedAction( fa.navigateToChildAction, NAVIGATE_CHILD_KEYS );
 		actions.namedAction( fa.navigateToLastChildAction, NAVIGATE_LAST_CHILD_KEYS );
@@ -157,27 +156,22 @@ public class FocusActions< V extends Vertex< E > & Ref< V >, E extends Edge< V >
 
 	private final Graph< V, E > graph;
 
-	// TODO: use readLock...
 	private final ReentrantReadWriteLock lock;
 
 	private final FocusModel< V, E > focus;
 
 	private final SelectionModel< V, E > selection;
 
-	private final NavigationHandler< V, E > navigation; // TODO: remove
-
 	public FocusActions(
 			final Graph< V, E > graph,
 			final ReentrantReadWriteLock lock,
 			final FocusModel< V, E > focus,
-			final SelectionModel< V, E > selection,
-			final NavigationHandler< V, E > navigation )  // TODO: remove
+			final SelectionModel< V, E > selection )
 	{
 		this.graph = graph;
 		this.lock = lock;
 		this.focus = focus;
 		this.selection = selection;
-		this.navigation = navigation;  // TODO: remove
 
 		navigateToChildAction = new RunnableAction( NAVIGATE_CHILD, () -> selectAndFocusNeighbor( Direction.CHILD, false ) );
 		navigateToLastChildAction = new RunnableAction( NAVIGATE_LAST_CHILD, () -> selectAndFocusNeighbor( Direction.LAST_CHILD, false ) );
