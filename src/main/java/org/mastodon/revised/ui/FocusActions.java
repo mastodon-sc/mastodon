@@ -263,17 +263,19 @@ public class FocusActions< V extends Vertex< E > & Ref< V >, E extends Edge< V >
 			if ( vertex == null )
 				return;
 
+			selection.pauseListeners();
+
 			final V current;
 			switch ( direction )
 			{
 			case CHILD:
-				current = firstBranchChild( vertex, ref2 );
+				current = firstBranchChild( vertex, ref2, expandSelection );
 				break;
 			case LAST_CHILD:
-				current = lastBranchChild( vertex, ref2 );
+				current = lastBranchChild( vertex, ref2, expandSelection );
 				break;
 			case PARENT:
-				current = firstBranchParent( vertex, ref2 );
+				current = firstBranchParent( vertex, ref2, expandSelection );
 				break;
 			default:
 				current = null;
@@ -281,26 +283,15 @@ public class FocusActions< V extends Vertex< E > & Ref< V >, E extends Edge< V >
 
 			if ( current != null )
 			{
-				selection.pauseListeners();
-
 				focus.focusVertex( current );
-
-				if ( expandSelection )
-				{
-					final V child = ( direction == Direction.PARENT ) ? vertex : current;
-					final V parent = ( direction == Direction.PARENT ) ? current : vertex;
-					for ( V v = child; v != null && !v.equals( parent ); v = firstParent( v, ref3 ) )
-						selection.setSelected( v, true );
-					selection.setSelected( parent, true );
-				}
-				else
+				if ( !expandSelection )
 				{
 					selection.clearSelection();
 					selection.setSelected( current, true );
 				}
-
-				selection.resumeListeners();
 			}
+
+			selection.resumeListeners();
 		}
 		finally
 		{
@@ -332,7 +323,7 @@ public class FocusActions< V extends Vertex< E > & Ref< V >, E extends Edge< V >
 		return incoming.isEmpty() ? null : incoming.iterator().next().getSource( ref );
 	}
 
-	private V firstBranchChild( final V vertex, final V ref )
+	private V firstBranchChild( final V vertex, final V ref, final boolean expandSelection )
 	{
 		V v = vertex;
 		while ( true )
@@ -340,13 +331,15 @@ public class FocusActions< V extends Vertex< E > & Ref< V >, E extends Edge< V >
 			if ( v.outgoingEdges().isEmpty() )
 				break;
 			v = firstChild( v, ref );
+			if ( expandSelection )
+				selection.setSelected( v, true );
 			if ( v.outgoingEdges().size() > 1 )
 				break;
 		}
-		return v;
+		return v == vertex ? null : v;
 	}
 
-	private V lastBranchChild( final V vertex, final V ref )
+	private V lastBranchChild( final V vertex, final V ref, final boolean expandSelection )
 	{
 		V v = vertex;
 		while ( true )
@@ -354,13 +347,15 @@ public class FocusActions< V extends Vertex< E > & Ref< V >, E extends Edge< V >
 			if ( v.outgoingEdges().isEmpty() )
 				break;
 			v = lastChild( v, ref );
+			if ( expandSelection )
+				selection.setSelected( v, true );
 			if ( v.outgoingEdges().size() > 1 )
 				break;
 		}
-		return v;
+		return v == vertex ? null : v;
 	}
 
-	private V firstBranchParent( final V vertex, final V ref )
+	private V firstBranchParent( final V vertex, final V ref, final boolean expandSelection )
 	{
 		V v = vertex;
 		while ( true )
@@ -368,10 +363,12 @@ public class FocusActions< V extends Vertex< E > & Ref< V >, E extends Edge< V >
 			if ( v.incomingEdges().isEmpty() )
 				break;
 			v = firstParent( v, ref );
+			if ( expandSelection )
+				selection.setSelected( v, true );
 			if ( v.outgoingEdges().size() > 1 )
 				break;
 		}
-		return v;
+		return v == vertex ? null : v;
 	}
 
 	private V nextSibling( final V vertex, final V ref )
