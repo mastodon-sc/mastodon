@@ -1,6 +1,9 @@
 package org.mastodon.revised.mamut;
 
 import org.mastodon.revised.model.mamut.Model;
+import org.mastodon.revised.ui.keymap.CommandDescriptionProvider;
+import org.mastodon.revised.ui.keymap.CommandDescriptions;
+import org.scijava.plugin.Plugin;
 import org.scijava.ui.behaviour.util.Actions;
 
 public class UndoActions
@@ -10,6 +13,25 @@ public class UndoActions
 
 	static final String[] UNDO_KEYS = new String[] { "meta Z", "ctrl Z" };
 	static final String[] REDO_KEYS = new String[] { "meta shift Z", "ctrl shift Z" };
+
+	/*
+	 * Command descriptions for all provided commands
+	 */
+	@Plugin( type = Descriptions.class )
+	public static class Descriptions extends CommandDescriptionProvider
+	{
+		public Descriptions()
+		{
+			super( KeyConfigContexts.MASTODON );
+		}
+
+		@Override
+		public void getCommandDescriptions( final CommandDescriptions descriptions )
+		{
+			descriptions.add( UNDO, UNDO_KEYS, "Undo last edit." );
+			descriptions.add( REDO, REDO_KEYS, "Redo last undone edit." );
+		}
+	}
 
 	/**
 	 * Create Undo/Redo actions and install them in the specified

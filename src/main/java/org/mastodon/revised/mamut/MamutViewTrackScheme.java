@@ -11,6 +11,7 @@ import javax.swing.ActionMap;
 import org.mastodon.app.ui.MastodonFrameViewActions;
 import org.mastodon.app.ui.ViewMenu;
 import org.mastodon.app.ui.ViewMenuBuilder.JMenuHandle;
+import org.mastodon.model.AutoNavigateFocusModel;
 import org.mastodon.revised.model.feature.Feature;
 import org.mastodon.revised.model.feature.FeatureModel;
 import org.mastodon.revised.model.feature.FeatureProjection;
@@ -37,13 +38,13 @@ import org.mastodon.revised.ui.coloring.ColorGenerator;
 import org.mastodon.revised.ui.coloring.ColorMap;
 import org.mastodon.revised.ui.coloring.ColoringMenu;
 import org.mastodon.revised.ui.coloring.ColoringModel;
+import org.mastodon.revised.ui.coloring.ComposedGraphColorGenerator;
 import org.mastodon.revised.ui.coloring.DefaultColorGenerator;
 import org.mastodon.revised.ui.coloring.FeatureColorGenerator;
 import org.mastodon.revised.ui.coloring.FeatureColorGeneratorIncomingEdge;
 import org.mastodon.revised.ui.coloring.FeatureColorGeneratorOutgoingEdge;
 import org.mastodon.revised.ui.coloring.FeatureColorGeneratorSourceVertex;
 import org.mastodon.revised.ui.coloring.FeatureColorGeneratorTargetVertex;
-import org.mastodon.revised.ui.coloring.ComposedGraphColorGenerator;
 import org.mastodon.revised.ui.coloring.GraphColorGeneratorAdapter;
 import org.mastodon.revised.ui.coloring.TagSetGraphColorGenerator;
 import org.mastodon.revised.ui.coloring.feature.FeatureColorMode;
@@ -63,7 +64,7 @@ public class MamutViewTrackScheme extends MamutView< TrackSchemeGraph< Spot, Lin
 						appModel.getModel().getGraphIdBimap(),
 						new ModelGraphTrackSchemeProperties( appModel.getModel().getGraph() ),
 						appModel.getModel().getGraph().getLock() ),
-				new String[] { "ts" } );
+				new String[] { KeyConfigContexts.TRACKSCHEME } );
 
 		/*
 		 * TrackScheme ContextChooser
@@ -83,10 +84,11 @@ public class MamutViewTrackScheme extends MamutView< TrackSchemeGraph< Spot, Lin
 				.shareKeyPressedEvents( keyPressedManager )
 				.style( forwardDefaultStyle )
 				.graphColorGenerator( coloring );
+		final AutoNavigateFocusModel< TrackSchemeVertex, TrackSchemeEdge > navigateFocusModel = new AutoNavigateFocusModel<>( focusModel, navigationHandler );
 		final TrackSchemeFrame frame = new TrackSchemeFrame(
 				viewGraph,
 				highlightModel,
-				focusModel,
+				navigateFocusModel,
 				timepointModel,
 				selectionModel,
 				navigationHandler,
@@ -108,8 +110,8 @@ public class MamutViewTrackScheme extends MamutView< TrackSchemeGraph< Spot, Lin
 		MastodonFrameViewActions.install( viewActions, this );
 		HighlightBehaviours.install( viewBehaviours, viewGraph, viewGraph.getLock(), viewGraph, highlightModel, model );
 		ToggleLinkBehaviour.install( viewBehaviours, frame.getTrackschemePanel(),	viewGraph, viewGraph.getLock(),	viewGraph, model );
-		EditFocusVertexLabelAction.install( viewActions, frame.getTrackschemePanel(), focusModel,	model );
-		FocusActions.install( viewActions, viewGraph, viewGraph.getLock(), focusModel, selectionModel, navigationHandler );
+		EditFocusVertexLabelAction.install( viewActions, frame.getTrackschemePanel(), focusModel, model );
+		FocusActions.install( viewActions, viewGraph, viewGraph.getLock(), navigateFocusModel, selectionModel );
 		EditTagActions.install( viewActions, frame.getKeybindings(), frame.getTriggerbindings(), model.getTagSetModel(), appModel.getSelectionModel(), frame.getTrackschemePanel(), frame.getTrackschemePanel().getDisplay(), model );
 		viewActions.runnableAction( () -> System.out.println( model.getTagSetModel() ), "output tags", "U" ); // DEBUG TODO: REMOVE
 
@@ -152,6 +154,7 @@ public class MamutViewTrackScheme extends MamutView< TrackSchemeGraph< Spot, Lin
 						item( EditFocusVertexLabelAction.EDIT_FOCUS_LABEL )
 				)
 		);
+		appModel.getPlugins().addMenus( menu );
 
 		final TagSetModel< Spot, Link > tagSetModel = appModel.getModel().getTagSetModel();
 		final FeatureColorModeManager featureColorModeManager = appModel.getFeatureColorModeManager();

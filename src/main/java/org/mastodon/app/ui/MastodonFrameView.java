@@ -90,6 +90,13 @@ public class MastodonFrameView<
 			frame.keybindings.addInputMap( "global", new WrappedInputMap( globalActions.getInputMap() ) );
 		}
 
+		final Actions pluginActions = appModel.getPlugins().getPluginActions();
+		if ( pluginActions != null )
+		{
+			frame.keybindings.addActionMap( "plugin", new WrappedActionMap( pluginActions.getActionMap() ) );
+			frame.keybindings.addInputMap( "plugin", new WrappedInputMap( pluginActions.getInputMap() ) );
+		}
+
 		final Actions appActions = appModel.getAppActions();
 		frame.keybindings.addActionMap( "app", new WrappedActionMap( appActions.getActionMap() ) );
 		frame.keybindings.addInputMap( "app", new WrappedInputMap( appActions.getInputMap() ) );

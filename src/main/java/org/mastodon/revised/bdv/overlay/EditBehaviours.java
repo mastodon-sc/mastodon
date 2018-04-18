@@ -2,8 +2,14 @@ package org.mastodon.revised.bdv.overlay;
 
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
+import org.mastodon.model.FocusModel;
+import org.mastodon.model.SelectionModel;
 import org.mastodon.revised.bdv.overlay.util.JamaEigenvalueDecomposition;
+import org.mastodon.revised.mamut.KeyConfigContexts;
+import org.mastodon.revised.ui.keymap.CommandDescriptionProvider;
+import org.mastodon.revised.ui.keymap.CommandDescriptions;
 import org.mastodon.undo.UndoPointMarker;
+import org.scijava.plugin.Plugin;
 import org.scijava.ui.behaviour.ClickBehaviour;
 import org.scijava.ui.behaviour.DragBehaviour;
 import org.scijava.ui.behaviour.util.AbstractNamedBehaviour;
@@ -33,14 +39,43 @@ public class EditBehaviours< V extends OverlayVertex< V, E >, E extends OverlayE
 	public static final String DECREASE_SPOT_RADIUS_ALOT = "decrease spot radius a lot";
 	public static final String DECREASE_SPOT_RADIUS_ABIT = "decrease spot radius a bit";
 
-	static final String[] ADD_SPOT_KEYS = new String[] { "A" };
 	static final String[] MOVE_SPOT_KEYS = new String[] { "SPACE" };
+	static final String[] ADD_SPOT_KEYS = new String[] { "A" };
 	static final String[] INCREASE_SPOT_RADIUS_KEYS = new String[] { "E" };
 	static final String[] INCREASE_SPOT_RADIUS_ALOT_KEYS = new String[] { "shift E" };
 	static final String[] INCREASE_SPOT_RADIUS_ABIT_KEYS = new String[] { "control E" };
 	static final String[] DECREASE_SPOT_RADIUS_KEYS = new String[] { "Q" };
 	static final String[] DECREASE_SPOT_RADIUS_ALOT_KEYS = new String[] { "shift Q" };
 	static final String[] DECREASE_SPOT_RADIUS_ABIT_KEYS = new String[] { "control Q" };
+
+	/*
+	 * Command descriptions for all provided commands
+	 */
+	@Plugin( type = Descriptions.class )
+	public static class Descriptions extends CommandDescriptionProvider
+	{
+		public Descriptions()
+		{
+			super( KeyConfigContexts.BIGDATAVIEWER );
+		}
+
+		@Override
+		public void getCommandDescriptions( final CommandDescriptions descriptions )
+		{
+			descriptions.add( MOVE_SPOT, MOVE_SPOT_KEYS, "Move spot by mouse-dragging." );
+			descriptions.add( ADD_SPOT, ADD_SPOT_KEYS, "Add spot at mouse position." );
+			descriptions.add( INCREASE_SPOT_RADIUS, INCREASE_SPOT_RADIUS_KEYS, "Increase radius of spot at mouse position." );
+			descriptions.add( INCREASE_SPOT_RADIUS_ALOT, INCREASE_SPOT_RADIUS_ALOT_KEYS, "Increase radius of spot at mouse position (a lot)." );
+			descriptions.add( INCREASE_SPOT_RADIUS_ABIT, INCREASE_SPOT_RADIUS_ABIT_KEYS, "Increase radius of spot at mouse position (a little)." );
+			descriptions.add( DECREASE_SPOT_RADIUS, DECREASE_SPOT_RADIUS_KEYS, "Decrease radius of spot at mouse position." );
+			descriptions.add( DECREASE_SPOT_RADIUS_ALOT, DECREASE_SPOT_RADIUS_ALOT_KEYS, "Decrease radius of spot at mouse position (a lot)." );
+			descriptions.add( DECREASE_SPOT_RADIUS_ABIT, DECREASE_SPOT_RADIUS_ABIT_KEYS, "Decrease radius of spot at mouse position (a little)." );
+		}
+	}
+
+	public static final boolean FOCUS_EDITED_SPOT = true;
+
+	public static final boolean SELECT_ADDED_SPOT = true;
 
 	public static final double POINT_SELECT_DISTANCE_TOLERANCE = 5.0;
 
@@ -84,9 +119,11 @@ public class EditBehaviours< V extends OverlayVertex< V, E >, E extends OverlayE
 			final Behaviours behaviours,
 			final OverlayGraph< V, E > overlayGraph,
 			final OverlayGraphRenderer< V, E > renderer,
+			final SelectionModel< V, E > selection,
+			final FocusModel< V, E > focus,
 			final UndoPointMarker undo )
 	{
-		final EditBehaviours< V, E > eb = new EditBehaviours<>( overlayGraph, renderer, undo, NORMAL_RADIUS_CHANGE, ABIT_RADIUS_CHANGE, ALOT_RADIUS_CHANGE );
+		final EditBehaviours< V, E > eb = new EditBehaviours<>( overlayGraph, renderer, selection, focus, undo, NORMAL_RADIUS_CHANGE, ABIT_RADIUS_CHANGE, ALOT_RADIUS_CHANGE );
 
 		behaviours.namedBehaviour( eb.moveSpotBehaviour, MOVE_SPOT_KEYS );
 		behaviours.namedBehaviour( eb.addSpotBehaviour, ADD_SPOT_KEYS );
@@ -104,11 +141,17 @@ public class EditBehaviours< V extends OverlayVertex< V, E >, E extends OverlayE
 
 	private final OverlayGraphRenderer< V, E > renderer;
 
+	private final SelectionModel< V, E > selection;
+
+	private final FocusModel< V, E > focus;
+
 	private final UndoPointMarker undo;
 
 	private EditBehaviours(
 			final OverlayGraph< V, E > overlayGraph,
 			final OverlayGraphRenderer< V, E > renderer,
+			final SelectionModel< V, E > selection,
+			final FocusModel< V, E > focus,
 			final UndoPointMarker undo,
 			final double normalRadiusChange,
 			final double aBitRadiusChange,
@@ -117,6 +160,8 @@ public class EditBehaviours< V extends OverlayVertex< V, E >, E extends OverlayE
 		this.overlayGraph = overlayGraph;
 		this.lock = overlayGraph.getLock();
 		this.renderer = renderer;
+		this.selection = selection;
+		this.focus = focus;
 		this.undo = undo;
 
 		moveSpotBehaviour = new MoveSpotBehaviour( MOVE_SPOT );
@@ -160,17 +205,29 @@ public class EditBehaviours< V extends OverlayVertex< V, E >, E extends OverlayE
 			{
 				final int timepoint = renderer.getCurrentTimepoint();
 				renderer.getGlobalPosition( x, y, pos );
+				final V ref = overlayGraph.vertexRef();
 				lock.writeLock().lock();
 				try
 				{
-					final V ref = overlayGraph.vertexRef();
-					overlayGraph.addVertex( ref ).init( timepoint, pos, lastRadius );
-					overlayGraph.releaseRef( ref );
+					final V vertex = overlayGraph.addVertex( ref ).init( timepoint, pos, lastRadius );
 					overlayGraph.notifyGraphChanged();
+
 					undo.setUndoPoint();
+
+					if ( FOCUS_EDITED_SPOT )
+						focus.focusVertex( vertex );
+
+					if ( SELECT_ADDED_SPOT )
+					{
+						selection.pauseListeners();
+						selection.clearSelection();
+						selection.setSelected( vertex, true );
+						selection.resumeListeners();
+					}
 				}
 				finally
 				{
+					overlayGraph.releaseRef( ref );
 					lock.writeLock().unlock();
 				}
 			}
@@ -236,6 +293,10 @@ public class EditBehaviours< V extends OverlayVertex< V, E >, E extends OverlayE
 			if ( moving )
 			{
 				undo.setUndoPoint();
+
+				if ( FOCUS_EDITED_SPOT )
+					focus.focusVertex( vertex );
+
 				moving = false;
 				lock.readLock().unlock();
 			}
@@ -280,9 +341,12 @@ public class EditBehaviours< V extends OverlayVertex< V, E >, E extends OverlayE
 							return;
 
 					vertex.setCovariance( mat );
-					lastRadius = Math.max( MIN_RADIUS, vertex.getBoundingSphereRadiusSquared() );
+					lastRadius = Math.max( MIN_RADIUS, Math.sqrt( vertex.getBoundingSphereRadiusSquared() ) );
 					overlayGraph.notifyGraphChanged();
 					undo.setUndoPoint();
+
+					if ( FOCUS_EDITED_SPOT )
+						focus.focusVertex( vertex );
 				}
 			}
 			finally

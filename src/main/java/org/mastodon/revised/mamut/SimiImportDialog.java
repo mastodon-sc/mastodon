@@ -10,7 +10,7 @@ import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
 import java.text.ParseException;
-import java.util.Map;
+import java.util.List;
 import java.util.function.BiFunction;
 import java.util.function.IntUnaryOperator;
 
@@ -28,12 +28,12 @@ import javax.swing.WindowConstants;
 import org.mastodon.revised.model.mamut.Model;
 import org.mastodon.revised.model.mamut.simi.SimiImporter;
 import org.mastodon.revised.model.mamut.simi.SimiImporter.LabelFunction;
-import org.mastodon.revised.model.mamut.tgmm.TgmmImporter;
 import org.mastodon.revised.ui.util.ExtensionFileFilter;
 import org.mastodon.revised.ui.util.FileChooser;
 
 import mpicbg.spim.data.generic.AbstractSpimData;
 import mpicbg.spim.data.generic.sequence.AbstractSequenceDescription;
+import mpicbg.spim.data.registration.ViewRegistrations;
 import mpicbg.spim.data.sequence.TimePoint;
 
 public class SimiImportDialog extends JDialog
@@ -41,6 +41,8 @@ public class SimiImportDialog extends JDialog
 	private final JTextField pathTextField;
 
 	private final JSpinner spinnerSetup;
+
+	private final JTextField frameOffsetTextField;
 
 	private final JCheckBox interpolateCheckbox;
 
@@ -83,6 +85,13 @@ public class SimiImportDialog extends JDialog
 		spinnerSetup.setModel( new SpinnerNumberModel( 0, 0, 0, 1 ) );
 		c.gridx = 1;
 		content.add( spinnerSetup, c );
+
+		c.gridy++;
+		c.gridx = 0;
+		content.add( new JLabel( "time offset (simi frame - bdv timepoint)" ), c );
+		frameOffsetTextField = new JTextField( "0" );
+		c.gridx = 1;
+		content.add( frameOffsetTextField, c );
 
 		c.gridy++;
 		c.gridx = 1;
@@ -162,14 +171,28 @@ public class SimiImportDialog extends JDialog
 			final String sbdFilename = pathTextField.getText();
 
 			final int setupIndex = ( Integer ) spinnerSetup.getValue();
+			final ViewRegistrations regs = spimData.getViewRegistrations();
 			final AbstractSequenceDescription< ?, ?, ? > seq = spimData.getSequenceDescription();
+			final List< TimePoint > timePointsOrdered = seq.getTimePoints().getTimePointsOrdered();
+			final int maxtp = timePointsOrdered.size() - 1;
 			final int setupID = seq.getViewSetupsOrdered().get( setupIndex ).getId();
 
-			final Map< TimePoint, Integer > timepointToIndex = TgmmImporter.getTimepointToIndex( spimData );
+			final int frameOffset = Integer.parseInt( frameOffsetTextField.getText() );
 
-			final IntUnaryOperator timepointIdFunction = frame -> {
-				final Integer t = timepointToIndex.get( new TimePoint( frame ) );
-				return t != null ? t : frame;
+			// maps frame to timepoint index
+			final IntUnaryOperator frameToTimepointFunction = frame -> {
+				int tp = frame - frameOffset;
+				if ( tp < 0 )
+				{
+					System.err.println( "WARNING: simi frame " + frame + " translates to out-of-bounds timepoint index " + tp + ". Clipping to 0." );
+					tp = 0;
+				}
+				else if ( tp > maxtp )
+				{
+					System.err.println( "WARNING: simi frame " + frame + " translates to out-of-bounds timepoint index " + tp + ". Clipping to " + maxtp + "." );
+					tp = maxtp;
+				}
+				return tp;
 			};
 			final LabelFunction labelFunction = ( generic_name, generation_name, name ) -> {
 				if ( name != null )
@@ -182,13 +205,14 @@ public class SimiImportDialog extends JDialog
 			};
 			final BiFunction< Integer, double[], double[] > positionFunction = ( frame, lPos ) -> {
 				final double[] gPos = new double[ 3 ];
-				final int timepointId = timepointIdFunction.applyAsInt( frame );
-				spimData.getViewRegistrations().getViewRegistration( timepointId, setupID ).getModel().apply( lPos, gPos );
+				final int tp = frameToTimepointFunction.applyAsInt( frame );
+				final int timepointId = timePointsOrdered.get( tp ).getId();
+				regs.getViewRegistration( timepointId, setupID ).getModel().apply( lPos, gPos );
 				return gPos;
 			};
 			final int radius = Integer.parseInt( radiusTextField.getText() );
 			final boolean interpolateMissingSpots = interpolateCheckbox.isSelected();
-			SimiImporter.read( sbdFilename, timepointIdFunction, labelFunction, positionFunction, radius, interpolateMissingSpots, model );
+			SimiImporter.read( sbdFilename, frameToTimepointFunction, labelFunction, positionFunction, radius, interpolateMissingSpots, model );
 		}
 		catch ( final ParseException e )
 		{

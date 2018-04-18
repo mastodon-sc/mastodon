@@ -1,5 +1,6 @@
 package org.mastodon.app.ui;
 
+import java.util.Arrays;
 import java.util.Map;
 
 import javax.swing.ActionMap;
@@ -30,6 +31,12 @@ public class ViewMenuBuilder
 	public interface MenuItem
 	{
 		void accept( MenuItemVisitor visitor );
+	}
+
+	public static void build( final ViewMenu viewMenu, final ActionMap actionMap, final Map< String, String > menuTexts, final MenuItem... items )
+	{
+		final MenuItemVisitor visitor = new MenuItemVisitor( viewMenu, actionMap, menuTexts, null );
+		Arrays.asList( items ).forEach( item -> item.accept( visitor ) );
 	}
 
 	protected static class MenuItemVisitor

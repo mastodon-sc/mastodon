@@ -42,11 +42,13 @@ public class SimiImporter
 	 * @param sbdFilename
 	 *            name of the {@code .sdb} file to read.
 	 * @param timepointIdFunction
-	 *            maps frames from {@code .sdb} file to timepoints in the model.
+	 *            maps frames from {@code .sdb} file to timepoints (indices) in
+	 *            the model.
 	 * @param labelFunction
 	 *            maps names from {@code .sdb} file to spot labels.
 	 * @param positionFunction
-	 *            maps frame and coordinates from {@code .sdb} file to spot coordinates.
+	 *            maps frame and coordinates from {@code .sdb} file to spot
+	 *            coordinates.
 	 * @param radius
 	 *            radius for all created spots.
 	 * @param interpolateMissingSpots

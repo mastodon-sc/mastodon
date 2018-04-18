@@ -1,6 +1,7 @@
 package org.mastodon.revised.mamut;
 
 import org.mastodon.app.MastodonAppModel;
+import org.mastodon.plugin.MastodonPlugins;
 import org.mastodon.revised.bdv.SharedBigDataViewerData;
 import org.mastodon.revised.bdv.overlay.ui.RenderSettingsManager;
 import org.mastodon.revised.model.mamut.BoundingSphereRadiusStatistics;
@@ -45,11 +46,11 @@ public class MamutAppModel extends MastodonAppModel< Model, Spot, Link >
 			final RenderSettingsManager renderSettingsManager,
 			final FeatureColorModeManager featureColorModeManager,
 			final KeymapManager keymapManager,
+			final MastodonPlugins plugins,
 			final Actions globalActions )
 	{
-		super( NUM_GROUPS, model, keyPressedManager, keymapManager, globalActions, new String[] { "mastodon" } );
+		super( NUM_GROUPS, model, keyPressedManager, keymapManager, plugins, globalActions, new String[] { KeyConfigContexts.MASTODON } );
 		this.featureColorModeManager = featureColorModeManager;
-
 		this.radiusStats = new BoundingSphereRadiusStatistics( model );
 		this.sharedBdvData = sharedBdvData;
 		this.trackSchemeStyleManager = trackSchemeStyleManager;
