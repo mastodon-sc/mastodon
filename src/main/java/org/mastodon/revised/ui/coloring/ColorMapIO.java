@@ -1,16 +1,23 @@
 package org.mastodon.revised.ui.coloring;
 
 import java.awt.Color;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Scanner;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.mastodon.revised.io.yaml.AbstractWorkaroundConstruct;
 import org.mastodon.revised.io.yaml.WorkaroundConstructor;
 import org.mastodon.revised.io.yaml.WorkaroundRepresent;
 import org.mastodon.revised.io.yaml.WorkaroundRepresenter;
+import org.scijava.util.IntArray;
 import org.yaml.snakeyaml.DumperOptions;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.constructor.Constructor;
@@ -34,9 +41,13 @@ public class ColorMapIO
 	private static final Tag COLORMAP_TAG = new Tag( "!colormap" );
 
 	private static final String X_KEY = "x";
+
 	private static final String R_KEY = "r";
+
 	private static final String G_KEY = "g";
+
 	private static final String B_KEY = "b";
+
 	private static final String A_KEY = "a";
 
 	private static class ColorMapDataConstructor extends WorkaroundConstructor
@@ -204,5 +215,50 @@ public class ColorMapIO
 		final Constructor constructor = new ColorMapDataConstructor();
 		final Yaml yaml = new Yaml( constructor, representer, dumperOptions );
 		return yaml;
+	}
+
+	static ColorMap importLUT( final String filename )
+	{
+		final Path path = Paths.get( filename );
+		try (final Scanner scanner = new Scanner( path ))
+		{
+			String name = path.getFileName().toString();
+			name = name.substring( 0, name.indexOf( '.' ) ).toLowerCase();
+
+			final IntArray colors = new IntArray();
+			final IntArray intAlphas = new IntArray();
+			final int naColor = Color.BLACK.getRGB();
+			final AtomicInteger nLines = new AtomicInteger( 0 );
+
+			while ( scanner.hasNext() )
+			{
+				if ( !scanner.hasNextInt() )
+				{
+					scanner.next();
+					continue;
+				}
+				intAlphas.addValue( scanner.nextInt() );
+				final int rgba = new Color( scanner.nextInt(), scanner.nextInt(), scanner.nextInt() ).getRGB();
+				colors.addValue( rgba );
+				nLines.incrementAndGet();
+			}
+
+			if ( nLines.get() < 2 )
+				return null;
+			final double[] alphas = new double[ intAlphas.size() ];
+			for ( int i = 0; i < alphas.length; i++ )
+				alphas[ i ] = ( double ) intAlphas.get( i ) / ( nLines.get() - 1 );
+			return new ColorMap( name, colors.getArray(), alphas, naColor );
+		}
+		catch ( final FileNotFoundException e )
+		{
+			e.printStackTrace();
+			return null;
+		}
+		catch ( final IOException e )
+		{
+			e.printStackTrace();
+			return null;
+		}
 	}
 }

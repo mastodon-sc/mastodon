@@ -6,6 +6,14 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.file.FileSystems;
+import java.nio.file.FileVisitResult;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.PathMatcher;
+import java.nio.file.Paths;
+import java.nio.file.SimpleFileVisitor;
+import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -33,6 +41,8 @@ import org.yaml.snakeyaml.Yaml;
 public class ColorMap
 {
 	private static final String COLORMAP_FILE = System.getProperty( "user.home" ) + "/.mastodon/colormaps.yaml";
+
+	private static final String LUT_FOLDER = System.getProperty( "user.home" ) + "/.mastodon/luts/";
 
 	final int[] colors;
 
@@ -73,6 +83,7 @@ public class ColorMap
 		colorMaps.put( VIRIDIS.name, VIRIDIS );
 		SEISMIC = ColorMap.seismic();
 		colorMaps.put( SEISMIC.name, SEISMIC );
+		// Load user color maps.
 		ColorMap.loadColorMaps();
 	}
 
@@ -301,6 +312,11 @@ public class ColorMap
 		{
 			e1.printStackTrace();
 		}
+
+		// Load LUTs
+		final List< ColorMap > luts = loadLUTs();
+		for ( final ColorMap lut : luts )
+			colorMaps.put( lut.name, lut );
 	}
 
 	public static void saveColorMaps()
@@ -322,8 +338,49 @@ public class ColorMap
 		}
 	}
 
-	public static void main( final String[] args )
+	private static List< ColorMap > loadLUTs()
 	{
-		ColorMap.saveColorMaps();
+		return loadLUTs( LUT_FOLDER );
+	}
+
+	private static List< ColorMap > loadLUTs( final String folder )
+	{
+		final List< ColorMap > cms = new ArrayList<>();
+
+		final String glob = "glob:**/*.lut";
+		final PathMatcher pathMatcher = FileSystems.getDefault().getPathMatcher( glob );
+
+		try
+		{
+			Files.walkFileTree( Paths.get( folder ), new SimpleFileVisitor< Path >()
+			{
+
+				@Override
+				public FileVisitResult visitFile( final Path path,
+						final BasicFileAttributes attrs ) throws IOException
+				{
+					if ( pathMatcher.matches( path ) )
+					{
+						final ColorMap cm = ColorMapIO.importLUT( path.toFile().getAbsolutePath() );
+						if ( null == cm )
+							System.err.println( "Could not read LUT file: " + path + ". Skipping." );
+						cms.add( cm );
+					}
+					return FileVisitResult.CONTINUE;
+				}
+
+				@Override
+				public FileVisitResult visitFileFailed( final Path file, final IOException exc ) throws IOException
+				{
+					return FileVisitResult.CONTINUE;
+				}
+			} );
+		}
+		catch ( final IOException e )
+		{
+			e.printStackTrace();
+		}
+
+		return cms;
 	}
 }
