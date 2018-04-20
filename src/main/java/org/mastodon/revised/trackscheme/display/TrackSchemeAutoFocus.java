@@ -2,7 +2,6 @@ package org.mastodon.revised.trackscheme.display;
 
 import org.mastodon.model.FocusListener;
 import org.mastodon.model.FocusModel;
-import org.mastodon.model.NavigationHandler;
 import org.mastodon.revised.trackscheme.LineageTreeLayout;
 import org.mastodon.revised.trackscheme.ScreenTransform;
 import org.mastodon.revised.trackscheme.TrackSchemeEdge;
@@ -13,19 +12,14 @@ import net.imglib2.RealPoint;
 import net.imglib2.ui.TransformListener;
 
 /**
- * A {@code FocusModel} for TrackScheme that
- * <ul>
- *     <li>on {@code getFocusedVertex()} automatically focuses a vertex near the center of the window if none is focused.</li>
- *     <li>on {@code focusVertex()} calls {@code notifyNavigateToVertex()}.</li>
- * </ul>
+ * A {@code FocusModel} for TrackScheme that automatically focuses a vertex near
+ * the center of the window if none is focused (on {@code getFocusedVertex()}).
  */
 public class TrackSchemeAutoFocus implements FocusModel< TrackSchemeVertex, TrackSchemeEdge >, TransformListener< ScreenTransform >
 {
 	private final LineageTreeLayout layout;
 
 	private final FocusModel< TrackSchemeVertex, TrackSchemeEdge > focus;
-
-	private final NavigationHandler< TrackSchemeVertex, TrackSchemeEdge > navigation;
 
 	private final ScreenTransform screenTransform = new ScreenTransform();
 
@@ -35,18 +29,16 @@ public class TrackSchemeAutoFocus implements FocusModel< TrackSchemeVertex, Trac
 
 	public TrackSchemeAutoFocus(
 			final LineageTreeLayout layout,
-			final FocusModel< TrackSchemeVertex, TrackSchemeEdge > focus,
-			final NavigationHandler< TrackSchemeVertex, TrackSchemeEdge > navigation )
+			final FocusModel< TrackSchemeVertex, TrackSchemeEdge > focus )
 	{
 		this.layout = layout;
 		this.focus = focus;
-		this.navigation = navigation;
 	}
 
 	@Override
 	public void focusVertex( final TrackSchemeVertex vertex )
 	{
-		navigation.notifyNavigateToVertex( vertex );
+		focus.focusVertex( vertex );
 	}
 
 	@Override

@@ -18,7 +18,7 @@ public class OverlayVertexWrapperBimap< V extends Vertex< E >, E extends Edge< V
 	@Override
 	public V getLeft( final OverlayVertexWrapper< V, E > right )
 	{
-		return right.wv;
+		return right == null ? null : right.wv;
 	}
 
 	@Override

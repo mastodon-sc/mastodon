@@ -9,6 +9,7 @@ import java.util.Random;
 import javax.swing.JFrame;
 
 import org.mastodon.graph.GraphChangeListener;
+import org.mastodon.plugin.MastodonPlugins;
 import org.mastodon.revised.bdv.SharedBigDataViewerData;
 import org.mastodon.revised.bdv.overlay.ui.RenderSettingsManager;
 import org.mastodon.revised.mamut.feature.MamutFeatureComputerService;
@@ -17,11 +18,15 @@ import org.mastodon.revised.model.mamut.trackmate.MamutExporter;
 import org.mastodon.revised.model.mamut.trackmate.TrackMateImporter;
 import org.mastodon.revised.model.tag.TagSetStructure;
 import org.mastodon.revised.trackscheme.display.style.TrackSchemeStyleManager;
+import org.mastodon.revised.ui.keymap.CommandDescriptionProvider;
+import org.mastodon.revised.ui.keymap.CommandDescriptions;
 import org.mastodon.revised.ui.keymap.KeymapManager;
 import org.mastodon.revised.ui.util.FileChooser;
 import org.mastodon.revised.ui.util.FileChooser.SelectionMode;
 import org.mastodon.revised.ui.util.XmlFileFilter;
+import org.mastodon.revised.util.DummySpimData;
 import org.mastodon.revised.util.ToggleDialogAction;
+import org.scijava.plugin.Plugin;
 import org.scijava.ui.behaviour.KeyPressedManager;
 import org.scijava.ui.behaviour.util.AbstractNamedAction;
 import org.scijava.ui.behaviour.util.Actions;
@@ -38,6 +43,7 @@ public class ProjectManager implements GraphChangeListener
 	public static final String LOAD_PROJECT = "load project";
 	public static final String SAVE_PROJECT = "save project";
 	public static final String IMPORT_TGMM = "import tgmm";
+	public static final String IMPORT_SIMI = "import simi";
 	public static final String IMPORT_MAMUT = "import mamut";
 	public static final String EXPORT_MAMUT = "export mamut";
 
@@ -45,12 +51,39 @@ public class ProjectManager implements GraphChangeListener
 	static final String[] LOAD_PROJECT_KEYS = new String[] { "not mapped" };
 	static final String[] SAVE_PROJECT_KEYS = new String[] { "not mapped" };
 	static final String[] IMPORT_TGMM_KEYS = new String[] { "not mapped" };
+	static final String[] IMPORT_SIMI_KEYS = new String[] { "not mapped" };
 	static final String[] IMPORT_MAMUT_KEYS = new String[] { "not mapped" };
 	static final String[] EXPORT_MAMUT_KEYS = new String[] { "not mapped" };
+
+	/*
+	 * Command descriptions for all provided commands
+	 */
+	@Plugin( type = Descriptions.class )
+	public static class Descriptions extends CommandDescriptionProvider
+	{
+		public Descriptions()
+		{
+			super( KeyConfigContexts.MASTODON );
+		}
+
+		@Override
+		public void getCommandDescriptions( final CommandDescriptions descriptions )
+		{
+			descriptions.add( CREATE_PROJECT, CREATE_PROJECT_KEYS, "Create a new project." );
+			descriptions.add( LOAD_PROJECT, LOAD_PROJECT_KEYS, "Load a project." );
+			descriptions.add( SAVE_PROJECT, SAVE_PROJECT_KEYS, "Save the current project." );
+			descriptions.add( IMPORT_TGMM, IMPORT_TGMM_KEYS, "Import tracks from TGMM xml files into the current project." );
+			descriptions.add( IMPORT_SIMI, IMPORT_SIMI_KEYS, "Import tracks from a Simi Biocell .sbd into the current project." );
+			descriptions.add( IMPORT_MAMUT, IMPORT_MAMUT_KEYS, "Import a MaMuT project." );
+			descriptions.add( EXPORT_MAMUT, EXPORT_MAMUT_KEYS, "Export current project as a MaMuT project." );
+		}
+	}
 
 	private final WindowManager windowManager;
 
 	private final TgmmImportDialog tgmmImportDialog;
+
+	private final SimiImportDialog simiImportDialog;
 
 	private MamutProject project;
 
@@ -63,6 +96,8 @@ public class ProjectManager implements GraphChangeListener
 	private final AbstractNamedAction saveProjectAction;
 
 	private final AbstractNamedAction importTgmmAction;
+
+	private final AbstractNamedAction importSimiAction;
 
 	private final AbstractNamedAction importMamutAction;
 
@@ -79,11 +114,13 @@ public class ProjectManager implements GraphChangeListener
 		this.windowManager = windowManager;
 
 		tgmmImportDialog = new TgmmImportDialog( null );
+		simiImportDialog = new SimiImportDialog( null );
 
 		createProjectAction = new RunnableAction( CREATE_PROJECT, this::createProject );
 		loadProjectAction = new RunnableAction( LOAD_PROJECT, this::loadProject );
 		saveProjectAction = new RunnableAction( SAVE_PROJECT, this::saveProject );
 		importTgmmAction = new RunnableAction( IMPORT_TGMM, this::importTgmm );
+		importSimiAction = new RunnableAction( IMPORT_SIMI, this::importSimi );
 		importMamutAction = new RunnableAction( IMPORT_MAMUT, this::importMamut );
 		exportMamutAction = new RunnableAction( EXPORT_MAMUT, this::exportMamut );
 
@@ -95,6 +132,7 @@ public class ProjectManager implements GraphChangeListener
 		final boolean projectOpen = ( project != null );
 		saveProjectAction.setEnabled( projectOpen );
 		importTgmmAction.setEnabled( projectOpen );
+		importSimiAction.setEnabled( projectOpen );
 		exportMamutAction.setEnabled( projectOpen );
 	}
 
@@ -111,6 +149,7 @@ public class ProjectManager implements GraphChangeListener
 		actions.namedAction( loadProjectAction, LOAD_PROJECT_KEYS );
 		actions.namedAction( saveProjectAction, SAVE_PROJECT_KEYS );
 		actions.namedAction( importTgmmAction, IMPORT_TGMM_KEYS );
+		actions.namedAction( importSimiAction, IMPORT_SIMI_KEYS );
 		actions.namedAction( importMamutAction, IMPORT_MAMUT_KEYS );
 		actions.namedAction( exportMamutAction, EXPORT_MAMUT_KEYS );
 	}
@@ -242,12 +281,15 @@ public class ProjectManager implements GraphChangeListener
 		 * Load SpimData
 		 */
 		final String spimDataXmlFilename = project.getDatasetXmlFile().getAbsolutePath();
-		final SpimDataMinimal spimData = new XmlIoSpimDataMinimal().load( spimDataXmlFilename );
+		SpimDataMinimal spimData = DummySpimData.tryCreate( project.getDatasetXmlFile().getName() );
+		if ( spimData == null )
+			spimData = new XmlIoSpimDataMinimal().load( spimDataXmlFilename );
 
 		final KeyPressedManager keyPressedManager = windowManager.getKeyPressedManager();
 		final TrackSchemeStyleManager trackSchemeStyleManager = windowManager.getTrackSchemeStyleManager();
 		final RenderSettingsManager renderSettingsManager = windowManager.getRenderSettingsManager();
 		final KeymapManager keymapManager = windowManager.getKeymapManager();
+		final MastodonPlugins plugins = windowManager.getPlugins();
 		final Actions globalAppActions = windowManager.getGlobalAppActions();
 		final ViewerOptions options = ViewerOptions.options().shareKeyPressedEvents( keyPressedManager );
 		final SharedBigDataViewerData sharedBdvData = new SharedBigDataViewerData(
@@ -256,7 +298,7 @@ public class ProjectManager implements GraphChangeListener
 				options,
 				() -> windowManager.forEachBdvView( bdv -> bdv.requestRepaint() ) );
 
-		final MamutAppModel appModel = new MamutAppModel( model, sharedBdvData, keyPressedManager, trackSchemeStyleManager, renderSettingsManager, keymapManager, globalAppActions );
+		final MamutAppModel appModel = new MamutAppModel( model, sharedBdvData, keyPressedManager, trackSchemeStyleManager, renderSettingsManager, keymapManager, plugins, globalAppActions );
 
 		/*
 		 * Feature calculation.
@@ -311,6 +353,17 @@ public class ProjectManager implements GraphChangeListener
 
 		final MamutAppModel appModel = windowManager.getAppModel();
 		tgmmImportDialog.showImportDialog( appModel.getSharedBdvData().getSpimData(), appModel.getModel() );
+
+		updateEnabledActions();
+	}
+
+	public synchronized void importSimi()
+	{
+		if ( project == null )
+			return;
+
+		final MamutAppModel appModel = windowManager.getAppModel();
+		simiImportDialog.showImportDialog( appModel.getSharedBdvData().getSpimData(), appModel.getModel() );
 
 		updateEnabledActions();
 	}

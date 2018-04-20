@@ -10,6 +10,10 @@ import java.awt.event.WindowEvent;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
 
+import org.mastodon.revised.mamut.KeyConfigContexts;
+import org.mastodon.revised.ui.keymap.CommandDescriptionProvider;
+import org.mastodon.revised.ui.keymap.CommandDescriptions;
+import org.scijava.plugin.Plugin;
 import org.scijava.ui.behaviour.util.AbstractNamedAction;
 import org.scijava.ui.behaviour.util.Actions;
 
@@ -18,6 +22,24 @@ public class CloseWindowActions
 	public static final String CLOSE_DIALOG = "close dialog window";
 
 	static final String[] CLOSE_DIALOG_KEYS = new String[] { "ctrl W", "meta W", "ESCAPE" };
+
+	/*
+	 * Command descriptions for all provided commands
+	 */
+	@Plugin( type = Descriptions.class )
+	public static class Descriptions extends CommandDescriptionProvider
+	{
+		public Descriptions()
+		{
+			super( KeyConfigContexts.MASTODON );
+		}
+
+		@Override
+		public void getCommandDescriptions( final CommandDescriptions descriptions )
+		{
+			descriptions.add( CLOSE_DIALOG, CLOSE_DIALOG_KEYS, "Close active dialog." );
+		}
+	}
 
 	/**
 	 * Create a close window action and install it in the specified

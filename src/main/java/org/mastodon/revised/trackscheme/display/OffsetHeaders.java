@@ -17,7 +17,7 @@ public class OffsetHeaders
 
 	public OffsetHeaders()
 	{
-		listeners = new Listeners.SynchronizedList<>();
+		listeners = new Listeners.SynchronizedList<>( l -> l.updateHeaderSize( width, height ) );
 		width = 0;
 		height = 0;
 	}

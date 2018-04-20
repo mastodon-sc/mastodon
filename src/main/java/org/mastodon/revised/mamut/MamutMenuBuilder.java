@@ -24,6 +24,7 @@ public class MamutMenuBuilder extends ViewMenuBuilder
 		menuTexts.put( ProjectManager.LOAD_PROJECT, "Load Project" );
 		menuTexts.put( ProjectManager.SAVE_PROJECT, "Save Project" );
 		menuTexts.put( ProjectManager.IMPORT_TGMM, "Import TGMM tracks" );
+		menuTexts.put( ProjectManager.IMPORT_SIMI, "Import Simi BioCell tracks" );
 		menuTexts.put( ProjectManager.IMPORT_MAMUT, "Import MaMuT project" );
 		menuTexts.put( ProjectManager.EXPORT_MAMUT, "Export MaMuT project" );
 

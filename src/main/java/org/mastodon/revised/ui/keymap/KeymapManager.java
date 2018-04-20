@@ -20,7 +20,11 @@ import org.scijava.ui.behaviour.io.InputTriggerDescription;
 import org.scijava.ui.behaviour.io.InputTriggerDescriptionsBuilder;
 import org.scijava.ui.behaviour.io.yaml.YamlConfigIO;
 import org.yaml.snakeyaml.DumperOptions;
+import org.yaml.snakeyaml.TypeDescription;
 import org.yaml.snakeyaml.Yaml;
+import org.yaml.snakeyaml.constructor.Constructor;
+import org.yaml.snakeyaml.nodes.Tag;
+import org.yaml.snakeyaml.representer.Representer;
 
 /**
  * Manages a collection of {@link Keymap}.
@@ -58,13 +62,22 @@ public class KeymapManager extends AbstractStyleManager< KeymapManager, Keymap >
 	{
 		try
 		{
-			return Arrays.asList( loadBuiltinStyle( "Default", "keyconfig.yaml" ) );
+			synchronized ( KeymapManager.class )
+			{
+				if ( loadedBuiltinStyles == null )
+					loadedBuiltinStyles = Arrays.asList(
+							loadBuiltinStyle( "Default", "keyconf_mastodon.yaml" ),
+							loadBuiltinStyle( "All BDV keys", "keyconf_fullbdv.yaml" ) );
+			}
+			return loadedBuiltinStyles;
 		}
 		catch ( final IOException e )
 		{
 			throw new RuntimeException( e );
 		}
 	}
+
+	private static List< Keymap > loadedBuiltinStyles;
 
 	private static Keymap loadBuiltinStyle( final String name, final String filename ) throws IOException
 	{
@@ -109,7 +122,7 @@ public class KeymapManager extends AbstractStyleManager< KeymapManager, Keymap >
 			try
 			{
 				final FileReader input = new FileReader( filename );
-				keymapsList = new Yaml().loadAs( input, KeymapsListIO.class );
+				keymapsList = createYaml().loadAs( input, KeymapsListIO.class );
 				input.close();
 			}
 			catch ( final FileNotFoundException e )
@@ -166,9 +179,7 @@ public class KeymapManager extends AbstractStyleManager< KeymapManager, Keymap >
 
 			String filename = KEYMAPS_PATH + "/keymaps.yaml";
 			final FileWriter output = new FileWriter( filename );
-			final DumperOptions options = new DumperOptions();
-			options.setPrettyFlow( true );
-			new Yaml( options ).dump( keymapsList, output );
+			createYaml().dump( keymapsList, output );
 			output.close();
 
 			for ( final Keymap keymap : userStyles )
@@ -182,5 +193,16 @@ public class KeymapManager extends AbstractStyleManager< KeymapManager, Keymap >
 		{
 			e.printStackTrace();
 		}
+	}
+
+	private static Yaml createYaml()
+	{
+		final DumperOptions dumperOptions = new DumperOptions();
+		dumperOptions.setDefaultFlowStyle( DumperOptions.FlowStyle.BLOCK );
+		final Representer representer = new Representer();
+		representer.addClassTag( KeymapsListIO.class, new Tag( "!keymapslist" ) );
+		final Constructor constructor = new Constructor();
+		constructor.addTypeDescription( new TypeDescription( KeymapsListIO.class, "!keymapslist" ) );
+		return new Yaml( constructor, representer, dumperOptions );
 	}
 }

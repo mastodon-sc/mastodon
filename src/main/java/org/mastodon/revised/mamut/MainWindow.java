@@ -168,9 +168,10 @@ public class MainWindow extends JFrame
 		setJMenuBar( menubar );
 
 		final Keymap keymap = windowManager.getKeymapManager().getForwardDefaultKeymap();
-		menu = new ViewMenu( menubar, keymap, "mastodon" );
+		menu = new ViewMenu( menubar, keymap, KeyConfigContexts.MASTODON );
 		keymap.updateListeners().add( menu::updateKeymap );
 		addMenus( menu, actionMap );
+		windowManager.getPlugins().addMenus( menu );
 
 		setDefaultCloseOperation( WindowConstants.DO_NOTHING_ON_CLOSE );
 		addWindowListener( new WindowAdapter()
@@ -238,6 +239,7 @@ public class MainWindow extends JFrame
 						item( ProjectManager.SAVE_PROJECT ),
 						separator(),
 						item( ProjectManager.IMPORT_TGMM ),
+						item( ProjectManager.IMPORT_SIMI ),
 						item( ProjectManager.IMPORT_MAMUT ),
 						item( ProjectManager.EXPORT_MAMUT ),
 						separator(),

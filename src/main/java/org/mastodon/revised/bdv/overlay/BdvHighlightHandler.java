@@ -58,18 +58,24 @@ public class BdvHighlightHandler< V extends OverlayVertex< V, E >, E extends Ove
 	{
 		final V vertex = overlayGraph.vertexRef();
 		final E edge = overlayGraph.edgeRef();
-
-		// See if we can find an edge.
-		if ( renderer.getEdgeAt( x, y, BdvSelectionBehaviours.EDGE_SELECT_DISTANCE_TOLERANCE, edge ) != null )
-			highlight.highlightEdge( edge );
-		// See if we can find a vertex.
-		else if ( renderer.getVertexAt( x, y, BdvSelectionBehaviours.POINT_SELECT_DISTANCE_TOLERANCE, vertex ) != null )
-			highlight.highlightVertex( vertex );
-		else
-			highlight.clearHighlight();
-
-		overlayGraph.releaseRef( vertex );
-		overlayGraph.releaseRef( edge );
+		overlayGraph.getLock().readLock().lock();
+		try
+		{
+			// See if we can find an edge.
+			if ( renderer.getEdgeAt( x, y, BdvSelectionBehaviours.EDGE_SELECT_DISTANCE_TOLERANCE, edge ) != null )
+				highlight.highlightEdge( edge );
+			// See if we can find a vertex.
+			else if ( renderer.getVertexAt( x, y, BdvSelectionBehaviours.POINT_SELECT_DISTANCE_TOLERANCE, vertex ) != null )
+				highlight.highlightVertex( vertex );
+			else
+				highlight.clearHighlight();
+		}
+		finally
+		{
+			overlayGraph.getLock().readLock().unlock();
+			overlayGraph.releaseRef( vertex );
+			overlayGraph.releaseRef( edge );
+		}
 	}
 
 	@Override

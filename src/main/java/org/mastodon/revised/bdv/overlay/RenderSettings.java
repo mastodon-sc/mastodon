@@ -3,6 +3,7 @@ package org.mastodon.revised.bdv.overlay;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import java.util.Objects;
 import org.mastodon.app.ui.settings.style.Style;
 import org.mastodon.util.Listeners;
 
@@ -224,7 +225,7 @@ public class RenderSettings implements Style< RenderSettings >
 	@Override
 	public synchronized void setName( final String name )
 	{
-		if ( this.name != name )
+		if ( !Objects.equals( this.name, name ) )
 		{
 			this.name = name;
 			notifyListeners();

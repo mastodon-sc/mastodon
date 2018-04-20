@@ -2,12 +2,11 @@ package org.mastodon.revised.mamut;
 
 import java.awt.event.WindowAdapter;
 import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
 import java.util.Locale;
 
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
-import javax.swing.UnsupportedLookAndFeelException;
+import javax.swing.WindowConstants;
 
 import org.scijava.Context;
 import org.scijava.command.Command;
@@ -32,7 +31,19 @@ public class Mastodon extends ContextCommand
 		mainWindow.setVisible( true );
 	}
 
-	public static void main( final String[] args ) throws IOException, SpimDataException, InvocationTargetException, InterruptedException, ClassNotFoundException, InstantiationException, IllegalAccessException, UnsupportedLookAndFeelException
+	// FOR TESTING ONLY!
+	public void openProject( final MamutProject project ) throws IOException, SpimDataException
+	{
+		windowManager.projectManager.open( project );
+	}
+
+	// FOR TESTING ONLY!
+	public void setExitOnClose()
+	{
+		mainWindow.setDefaultCloseOperation( WindowConstants.EXIT_ON_CLOSE );
+	}
+
+	public static void main( final String[] args ) throws Exception
 	{
 		Locale.setDefault( Locale.US );
 		UIManager.setLookAndFeel( UIManager.getSystemLookAndFeelClassName() );
@@ -55,6 +66,7 @@ public class Mastodon extends ContextCommand
 //		final String bdvFile = "samples/datasethdf5.xml";
 //		final MamutProject project = new MamutProject( new File( "samples/mamutproject" ), new File( bdvFile ) );
 //		final MamutProject project = new MamutProjectIO().load( "/Volumes/External/Data/Mastodon/Tassos200" );
+//		final MamutProject project = new MamutProject( null, new File( "x=1000 y=1000 z=100 sx=1 sy=1 sz=10 t=400.dummy" ) );
 		final MamutProject project = new MamutProjectIO().load( "samples/mamutproject" );
 
 		windowManager.projectManager.open( project );
@@ -67,6 +79,7 @@ public class Mastodon extends ContextCommand
 			windowManager.createTrackScheme();
 //			YamlConfigIO.write( new InputTriggerDescriptionsBuilder( keyconf ).getDescriptions(), new PrintWriter( System.out ) );
 		} );
-//		WindowManager.DumpInputConfig.writeToYaml( System.getProperty( "user.home" ) + "/.mastodon/keyconfig.yaml", windowManager );
+
+//		DumpInputConfig.writeDefaultConfigToYaml( System.getProperty( "user.home" ) + "/Desktop/DEFAULT.keyconfig.yaml", new Context() );
 	}
 }

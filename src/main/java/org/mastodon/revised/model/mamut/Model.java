@@ -25,6 +25,7 @@ import org.mastodon.revised.model.tag.RawTagSetModelIO;
 import org.mastodon.revised.model.tag.TagSetModel;
 import org.mastodon.spatial.SpatioTemporalIndex;
 import org.mastodon.spatial.SpatioTemporalIndexImp;
+import org.mastodon.spatial.SpatioTemporalIndexImpRebuilderThread;
 import org.mastodon.undo.GraphUndoRecorder;
 import org.mastodon.undo.Recorder;
 import org.mastodon.undo.UndoPointMarker;
@@ -67,8 +68,15 @@ public class Model extends AbstractModel< ModelGraph, Spot, Link > implements Un
 	public Model()
 	{
 		super( new ModelGraph() );
-		index = new SpatioTemporalIndexImp<>( modelGraph, modelGraph.idmap().vertexIdBimap() );
+		final SpatioTemporalIndexImp< Spot, Link > theIndex = new SpatioTemporalIndexImp<>( modelGraph, modelGraph.idmap().vertexIdBimap() );
+		/*
+		 * Every 1 second, rebuild spatial indices with more than 100
+		 * modifications
+		 */
+		new SpatioTemporalIndexImpRebuilderThread( "Rebuild spatial indices", theIndex, 100, 1000, true ).start();
+		index = theIndex;
 		lock = modelGraph.getLock();
+
 
 		final int initialCapacity = 1024;
 

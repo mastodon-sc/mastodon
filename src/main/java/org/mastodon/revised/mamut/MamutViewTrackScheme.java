@@ -11,6 +11,7 @@ import javax.swing.ActionMap;
 import org.mastodon.app.ui.MastodonFrameViewActions;
 import org.mastodon.app.ui.ViewMenu;
 import org.mastodon.app.ui.ViewMenuBuilder.JMenuHandle;
+import org.mastodon.model.AutoNavigateFocusModel;
 import org.mastodon.revised.model.mamut.Link;
 import org.mastodon.revised.model.mamut.Model;
 import org.mastodon.revised.model.mamut.ModelGraphTrackSchemeProperties;
@@ -49,7 +50,7 @@ public class MamutViewTrackScheme extends MamutView< TrackSchemeGraph< Spot, Lin
 						appModel.getModel().getGraphIdBimap(),
 						new ModelGraphTrackSchemeProperties( appModel.getModel().getGraph() ),
 						appModel.getModel().getGraph().getLock() ),
-				new String[] { "ts" } );
+				new String[] { KeyConfigContexts.TRACKSCHEME } );
 
 		/*
 		 * TrackScheme ContextChooser
@@ -69,10 +70,11 @@ public class MamutViewTrackScheme extends MamutView< TrackSchemeGraph< Spot, Lin
 				.shareKeyPressedEvents( keyPressedManager )
 				.style( forwardDefaultStyle )
 				.graphColorGenerator( coloring );
+		final AutoNavigateFocusModel< TrackSchemeVertex, TrackSchemeEdge > navigateFocusModel = new AutoNavigateFocusModel<>( focusModel, navigationHandler );
 		final TrackSchemeFrame frame = new TrackSchemeFrame(
 				viewGraph,
 				highlightModel,
-				focusModel,
+				navigateFocusModel,
 				timepointModel,
 				selectionModel,
 				navigationHandler,
@@ -94,8 +96,8 @@ public class MamutViewTrackScheme extends MamutView< TrackSchemeGraph< Spot, Lin
 		MastodonFrameViewActions.install( viewActions, this );
 		HighlightBehaviours.install( viewBehaviours, viewGraph, viewGraph.getLock(), viewGraph, highlightModel, model );
 		ToggleLinkBehaviour.install( viewBehaviours, frame.getTrackschemePanel(),	viewGraph, viewGraph.getLock(),	viewGraph, model );
-		EditFocusVertexLabelAction.install( viewActions, frame.getTrackschemePanel(), focusModel,	model );
-		FocusActions.install( viewActions, viewGraph, viewGraph.getLock(), focusModel, selectionModel, navigationHandler );
+		EditFocusVertexLabelAction.install( viewActions, frame.getTrackschemePanel(), focusModel, model );
+		FocusActions.install( viewActions, viewGraph, viewGraph.getLock(), navigateFocusModel, selectionModel );
 		EditTagActions.install( viewActions, frame.getKeybindings(), frame.getTriggerbindings(), model.getTagSetModel(), appModel.getSelectionModel(), frame.getTrackschemePanel(), frame.getTrackschemePanel().getDisplay(), model );
 		viewActions.runnableAction( () -> System.out.println( model.getTagSetModel() ), "output tags", "U" ); // DEBUG TODO: REMOVE
 
@@ -138,6 +140,7 @@ public class MamutViewTrackScheme extends MamutView< TrackSchemeGraph< Spot, Lin
 						item( EditFocusVertexLabelAction.EDIT_FOCUS_LABEL )
 				)
 		);
+		appModel.getPlugins().addMenus( menu );
 
 		final TagSetModel< Spot, Link > tagSetModel = appModel.getModel().getTagSetModel();
 		final ColoringModel coloringModel = new ColoringModel( tagSetModel );
