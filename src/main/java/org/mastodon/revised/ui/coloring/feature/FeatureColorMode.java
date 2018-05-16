@@ -6,6 +6,9 @@ import java.util.Collection;
 import org.mastodon.app.ui.settings.style.Style;
 import org.mastodon.revised.mamut.feature.LinkVelocityFeatureComputer;
 import org.mastodon.revised.mamut.feature.SpotNLinksComputer;
+import org.mastodon.revised.model.feature.Feature;
+import org.mastodon.revised.model.feature.FeatureModel;
+import org.mastodon.revised.model.feature.FeatureProjection;
 import org.mastodon.revised.ui.coloring.ColorMap;
 import org.mastodon.util.Listeners;
 
@@ -361,6 +364,58 @@ public class FeatureColorMode implements Style< FeatureColorMode >
 		str.append( "\n  edge color map: " + edgeColorMap );
 		str.append( String.format( "\n  edge feature range: [ %.1f - %.1f ]", edgeRangeMin, edgeRangeMax ) );
 		return str.toString();
+	}
+
+
+	/**
+	 * Returns <code>true</code> if this color mode is valid
+	 * against the specified {@link FeatureModel}. That is: the feature
+	 * projections that the color mode rely on are declared in the feature
+	 * model, and of the right class.
+	 *
+	 * @param featureModel
+	 *            the feature model.
+	 * @return <code>true</code> if the color mode is valid.
+	 */
+	public boolean isValid( final FeatureModel featureModel, final Class< ? > vertexClass, final Class< ? > edgeClass )
+	{
+		if ( vertexColorMode != VertexColorMode.NONE )
+		{
+			if ( !checkFeatureKeyPair( featureModel, vertexFeatureProjection,
+					vertexColorMode == VertexColorMode.VERTEX
+							? vertexClass
+							: edgeClass ) )
+				return false;
+		}
+
+		if ( edgeColorMode != EdgeColorMode.NONE )
+		{
+			if ( !checkFeatureKeyPair( featureModel, edgeFeatureProjection,
+					edgeColorMode == EdgeColorMode.EDGE
+							? edgeClass
+							: vertexClass ) )
+				return false;
+		}
+
+		return true;
+	}
+
+	private static final boolean checkFeatureKeyPair(final FeatureModel featureModel, final String[] featureProjection, final Class<?> clazz)
+	{
+		final String featureKey = featureProjection[ 0 ];
+		final Feature< ?, ? > feature = featureModel.getFeature( featureKey );
+		if ( null == feature )
+			return false;
+
+		final String projectionKey = featureProjection[ 1 ];
+		final FeatureProjection< ? > projection = feature.getProjections().get( projectionKey );
+		if ( null == projection )
+			return false;
+
+		if ( !featureModel.getFeatureSet( clazz ).contains( feature ) )
+			return false;
+
+		return true;
 	}
 
 	/*

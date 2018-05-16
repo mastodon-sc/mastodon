@@ -166,7 +166,8 @@ public class MamutViewTrackScheme extends MamutView< TrackSchemeGraph< Spot, Lin
 		featureColorModeManager.getForwardDefaultMode().updateListeners().add( coloringModel );
 		onClose( () -> featureColorModeManager.getForwardDefaultMode().updateListeners().remove( coloringModel ) );
 
-		final ColoringMenu coloringMenu = new ColoringMenu( tagSetColoringMenuHandle.getMenu(), coloringModel );
+		final ColoringMenu coloringMenu = new ColoringMenu( tagSetColoringMenuHandle.getMenu(), coloringModel,
+				appModel.getModel().getFeatureModel(), Spot.class, Link.class );
 
 		tagSetModel.listeners().add( coloringMenu );
 		onClose( () -> tagSetModel.listeners().remove( coloringMenu ) );

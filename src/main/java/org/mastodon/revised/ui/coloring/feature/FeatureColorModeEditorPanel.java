@@ -17,6 +17,7 @@ import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -47,7 +48,7 @@ import org.mastodon.revised.ui.coloring.feature.FeatureColorMode.VertexColorMode
 
 /**
  * JPanel to edit a single {@link FeatureColorMode}.
- * 
+ *
  * @author Jean-Yves Tinevez
  */
 public class FeatureColorModeEditorPanel extends JPanel
@@ -65,7 +66,7 @@ public class FeatureColorModeEditorPanel extends JPanel
 
 	private EdgeFeatureKeySelector edgeFeatureKeySelector;
 
-	private VertexFeatureKeySelector vertexFeatureKeySelector;
+	private final VertexFeatureKeySelector vertexFeatureKeySelector;
 
 	public FeatureColorModeEditorPanel( final FeatureColorMode mode, final FeatureModel featureModel, final FeatureRangeCalculator< ? extends Vertex< ? >, ? extends Edge< ? > > rangeCalculator, final Class< ? extends Vertex< ? > > vertexClass, final Class< ? extends Edge< ? > > edgeClass )
 	{
@@ -85,6 +86,27 @@ public class FeatureColorModeEditorPanel extends JPanel
 		c.gridwidth = 1;
 		c.gridx = 0;
 		c.gridy = 0;
+
+		/*
+		 * Message.
+		 */
+
+		c.gridwidth = 2;
+		final JLabel warningLabel = new JLabel();
+		add( warningLabel, c );
+		c.gridwidth = 1;
+		c.gridy++;
+
+		/*
+		 * Separator.
+		 */
+
+		c.gridx = 0;
+		c.weightx = 1.0;
+		c.gridwidth = 2;
+		add( new JSeparator(), c );
+		c.gridy++;
+		c.gridwidth = 1;
 
 		/*
 		 * Vertex color mode.
@@ -234,6 +256,65 @@ public class FeatureColorModeEditorPanel extends JPanel
 			@Override
 			public void featureColorModeChanged()
 			{
+				if ( !mode.isValid( featureModel, vertexClass, edgeClass ) )
+				{
+					final Set< String > requiredVertexFeatures = new HashSet<>();
+					final Set< String > requiredEdgeFeatures = new HashSet<>();
+					switch ( mode.getVertexColorMode() )
+					{
+					case INCOMING_EDGE:
+					case OUTGOING_EDGE:
+						requiredEdgeFeatures.add( mode.getVertexFeatureProjection()[ 0 ] + " \u2192 " + mode.getVertexFeatureProjection()[ 1 ] );
+						break;
+					case VERTEX:
+						requiredVertexFeatures.add( mode.getVertexFeatureProjection()[ 0 ] + " \u2192 " + mode.getVertexFeatureProjection()[ 1 ] );
+						break;
+					case NONE:
+					default:
+					}
+					switch ( mode.getEdgeColorMode() )
+					{
+					case EDGE:
+						requiredEdgeFeatures.add( mode.getEdgeFeatureProjection()[ 0 ] + " \u2192 " + mode.getEdgeFeatureProjection()[ 1 ] );
+						break;
+					case SOURCE_VERTEX:
+					case TARGET_VERTEX:
+						requiredVertexFeatures.add( mode.getEdgeFeatureProjection()[ 0 ] + " \u2192 " + mode.getEdgeFeatureProjection()[ 1 ] );
+						break;
+					case NONE:
+					default:
+						break;
+					}
+
+					final StringBuilder warning = new StringBuilder();
+					warning.append( "<html>"
+							+ "Some features are missing for this mode."
+							+ "<p>"
+							+ "Please compute features over the current model. This feature color mode "
+							+ "requires:"
+							+ "<ul>" );
+					if ( !requiredVertexFeatures.isEmpty() )
+					{
+						warning.append( "For spots: <ul>" );
+						for ( final String f : requiredVertexFeatures )
+							warning.append( "<li>" + f + "</li>" );
+						warning.append( "</ul>" );
+					}
+					if ( !requiredEdgeFeatures.isEmpty() )
+					{
+						warning.append( "For links: <ul>" );
+						for ( final String f : requiredEdgeFeatures )
+							warning.append( "<li>" + f + "</li>" );
+						warning.append( "</ul>" );
+					}
+					warning.append( "</ul></html>" );
+					warningLabel.setText( warning.toString() );
+				}
+				else
+				{
+					warningLabel.setText( "" );
+				}
+
 				vertexColorModeSelector.setSelected( mode.getVertexColorMode() );
 				vertexFeatureKeySelector.setFeatureKeys( mode.getVertexFeatureProjection()[ 0 ], mode.getVertexFeatureProjection()[ 1 ] );
 				vertexColorMapSelector.setColorMap( mode.getVertexColorMap() );
@@ -262,15 +343,6 @@ public class FeatureColorModeEditorPanel extends JPanel
 		c.weightx = 1.0;
 		add( comp2, c );
 		c.gridy++;
-	}
-
-	public void refresh()
-	{
-		// Force refill of combo boxes.
-		vertexFeatureKeySelector.previousClass = null;
-		vertexFeatureKeySelector.regen();
-		edgeFeatureKeySelector.previousClass = null;
-		edgeFeatureKeySelector.regen();
 	}
 
 	private abstract class FeatureRangeSelector extends JPanel

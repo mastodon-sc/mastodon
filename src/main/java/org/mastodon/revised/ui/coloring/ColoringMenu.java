@@ -10,6 +10,7 @@ import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JSeparator;
 
+import org.mastodon.revised.model.feature.FeatureModel;
 import org.mastodon.revised.model.tag.TagSetModel;
 import org.mastodon.revised.model.tag.TagSetStructure;
 import org.mastodon.revised.ui.coloring.feature.FeatureColorMode;
@@ -27,12 +28,24 @@ public class ColoringMenu implements TagSetModel.TagSetModelListener, UpdateList
 
 	private final ArrayList< Runnable > cleanup;
 
+	private final FeatureModel featureModel;
+
+	private final Class< ? > vertexClass;
+
+	private final Class< ? > edgeClass;
+
 	public ColoringMenu(
 			final JMenu menu,
-			final ColoringModel coloringModel )
+			final ColoringModel coloringModel,
+			final FeatureModel featureModel,
+			final Class< ? > vertexClass,
+			final Class< ? > edgeClass )
 	{
 		this.menu = menu;
 		this.coloringModel = coloringModel;
+		this.featureModel = featureModel;
+		this.vertexClass = vertexClass;
+		this.edgeClass = edgeClass;
 		cleanup = new ArrayList<>();
 		rebuild();
 	}
@@ -49,6 +62,7 @@ public class ColoringMenu implements TagSetModel.TagSetModelListener, UpdateList
 			addColorAction( new ColorAction(
 					ts.getName(),
 					() -> coloringModel.getTagSet() == ts,
+					() -> true,
 					() -> coloringModel.colorByTagSet( ts ) ) );
 
 		if ( !tagSets.isEmpty() )
@@ -64,6 +78,7 @@ public class ColoringMenu implements TagSetModel.TagSetModelListener, UpdateList
 			addColorAction( new ColorAction(
 					mode.getName(),
 					() -> coloringModel.getFeatureColorMode() == mode,
+					() -> mode.isValid( featureModel, vertexClass, edgeClass ),
 					() -> coloringModel.colorByFeature( mode ) ) );
 
 		if ( !modes.isEmpty() )
@@ -72,6 +87,7 @@ public class ColoringMenu implements TagSetModel.TagSetModelListener, UpdateList
 		addColorAction( new ColorAction(
 				"None",
 				() -> coloringModel.noColoring(),
+				() -> true,
 				() -> coloringModel.colorByNone() ) );
 
 	}
@@ -110,13 +126,17 @@ public class ColoringMenu implements TagSetModel.TagSetModelListener, UpdateList
 
 		private final Runnable onSelect;
 
+		private final BooleanSupplier isEnabled;
+
 		public ColorAction(
 				final String name,
 				final BooleanSupplier isSelected,
+				final BooleanSupplier isEnabled,
 				final Runnable onSelect )
 		{
 			super( name );
 			this.isSelected = isSelected;
+			this.isEnabled = isEnabled;
 			this.onSelect = onSelect;
 			selectListeners = new Listeners.SynchronizedList<>();
 		}
@@ -131,6 +151,12 @@ public class ColoringMenu implements TagSetModel.TagSetModelListener, UpdateList
 		public boolean isSelected()
 		{
 			return isSelected.getAsBoolean();
+		}
+
+		@Override
+		public boolean isEnabled()
+		{
+			return isEnabled.getAsBoolean();
 		}
 
 		@Override

@@ -13,7 +13,7 @@ import org.mastodon.util.Listeners;
 
 /**
  * ColoringModel knows which coloring scheme is currently active.
- * Possible options are: none, by a tag set, by a feature (not implemented yet).
+ * Possible options are: none, by a tag set, by a feature.
  * <p>
  * Notifies listeners when coloring is changed.
  * <p>
