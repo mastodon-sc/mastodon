@@ -13,6 +13,7 @@ import org.mastodon.plugin.MastodonPluginAppModel;
 import org.mastodon.plugin.MastodonPlugins;
 import org.mastodon.revised.bdv.overlay.ui.RenderSettingsConfigPage;
 import org.mastodon.revised.bdv.overlay.ui.RenderSettingsManager;
+import org.mastodon.revised.mamut.feature.MamutFeatureComputer;
 import org.mastodon.revised.mamut.feature.MamutFeatureComputerService;
 import org.mastodon.revised.model.feature.ui.FeatureCalculationDialog;
 import org.mastodon.revised.model.mamut.Link;
@@ -121,7 +122,7 @@ public class WindowManager
 
 	private TagSetDialog tagSetDialog;
 
-	private FeatureCalculationDialog< Model > featureComputationDialog;
+	private FeatureCalculationDialog< Model, MamutFeatureComputer > featureComputationDialog;
 
 	final ProjectManager projectManager;
 
@@ -236,7 +237,8 @@ public class WindowManager
 		final Keymap keymap = keymapManager.getForwardDefaultKeymap();
 		tagSetDialog = new TagSetDialog( null, model.getTagSetModel(), model, keymap, new String[] { KeyConfigContexts.MASTODON } );
 		final MamutFeatureComputerService computerService = context.getService( MamutFeatureComputerService.class );
-		featureComputationDialog = new FeatureCalculationDialog< >( null, computerService, model, model.getFeatureModel() );
+		computerService.setSharedBdvData( appModel.getSharedBdvData() );
+		featureComputationDialog = new FeatureCalculationDialog<>( null, computerService, model, model.getFeatureModel() );
 		final FeatureColorModeConfigPage featureColorModeConfigPage = new FeatureColorModeConfigPage(
 				featureColorTreePath,
 				featureColorModeManager,

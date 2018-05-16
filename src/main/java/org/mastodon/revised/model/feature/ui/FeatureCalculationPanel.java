@@ -36,7 +36,7 @@ import org.mastodon.revised.model.feature.FeatureComputerService;
 import org.mastodon.revised.model.feature.FeatureModel;
 import org.mastodon.revised.ui.ProgressListener;
 
-public class FeatureCalculationPanel< AM extends AbstractModel< ?, ?, ? > > extends JPanel
+public class FeatureCalculationPanel< AM extends AbstractModel< ?, ?, ? >, FC extends FeatureComputer< AM > > extends JPanel
 {
 	private static final long serialVersionUID = 1L;
 
@@ -50,7 +50,7 @@ public class FeatureCalculationPanel< AM extends AbstractModel< ?, ?, ? > > exte
 
 	private static final DateFormat DATE_FORMAT = new SimpleDateFormat( "yyyy-MM-dd --- HH:mm:ss" );
 
-	private final FeatureComputerService< AM > computerService;
+	private final FeatureComputerService< AM, FC > computerService;
 
 	private final AM model;
 
@@ -58,7 +58,7 @@ public class FeatureCalculationPanel< AM extends AbstractModel< ?, ?, ? > > exte
 
 	private final MyProgressBar progressBar;
 
-	private final Set< FeatureComputer< AM > > selectedComputers;
+	private final Set< FC > selectedComputers;
 
 	private final JButton btnCompute;
 
@@ -68,7 +68,7 @@ public class FeatureCalculationPanel< AM extends AbstractModel< ?, ?, ? > > exte
 
 	private final JLabel lblModelModificationDate;
 
-	public FeatureCalculationPanel( final FeatureComputerService< AM > computerService, final AM model, final FeatureModel featureModel )
+	public FeatureCalculationPanel( final FeatureComputerService< AM, FC > computerService, final AM model, final FeatureModel featureModel )
 	{
 		this.computerService = computerService;
 		this.model = model;
@@ -219,13 +219,13 @@ public class FeatureCalculationPanel< AM extends AbstractModel< ?, ?, ? > > exte
 		return DATE_FORMAT.format( Calendar.getInstance().getTime() );
 	}
 
-	private void layoutComputers( final JPanel panel, final GridBagConstraints c, final Collection< FeatureComputer< AM > > collection )
+	private void layoutComputers( final JPanel panel, final GridBagConstraints c, final Collection< FC > collection )
 	{
 		if ( collection.isEmpty() )
 			return;
 
 		c.gridx = 0;
-		for ( final FeatureComputer< AM > computer : collection )
+		for ( final FC computer : collection )
 		{
 			final boolean selected = true;
 			final JCheckBox checkBox = new JCheckBox( computer.getKey(), selected );
