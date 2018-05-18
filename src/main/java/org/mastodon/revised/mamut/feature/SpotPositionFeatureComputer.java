@@ -23,6 +23,8 @@ public class SpotPositionFeatureComputer implements SpotFeatureComputer
 
 	private static final String KEY = "Spot position";
 
+	private static final String HELP_STRING = "Exposes the spot X, Y, Z position values, in physical units.";
+
 	@Override
 	public Set< String > getDependencies()
 	{
@@ -48,6 +50,12 @@ public class SpotPositionFeatureComputer implements SpotFeatureComputer
 		final Map< String, FeatureProjection< Spot > > projections = Collections.unmodifiableMap( map );
 		final RealLocalizableFeature< Spot > feature = new RealLocalizableFeature< Spot >( KEY, Spot.class, projections );
 		return feature;
+	}
+
+	@Override
+	public String getHelpString()
+	{
+		return HELP_STRING;
 	}
 
 	private final static class RealLocalizableFeature< K extends RealLocalizable > implements Feature< K, RealLocalizable >

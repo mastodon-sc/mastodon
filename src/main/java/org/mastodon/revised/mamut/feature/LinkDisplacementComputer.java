@@ -17,6 +17,9 @@ public class LinkDisplacementComputer extends LinkDoubleScalarFeatureComputer
 
 	public static final String KEY = "Link displacement";
 
+	private static final String HELP_STRING = "Computes the link displacement in physical units "
+			+ "as the distance between the source spot and the target spot.";
+
 	public LinkDisplacementComputer()
 	{
 		super( KEY );
@@ -53,5 +56,11 @@ public class LinkDisplacementComputer extends LinkDoubleScalarFeatureComputer
 		graph.releaseRef( ref1 );
 		graph.releaseRef( ref2 );
 		return new DoubleScalarFeature<>( KEY, Link.class, pm );
+	}
+
+	@Override
+	public String getHelpString()
+	{
+		return HELP_STRING;
 	}
 }

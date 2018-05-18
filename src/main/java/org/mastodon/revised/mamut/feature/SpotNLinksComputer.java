@@ -16,6 +16,8 @@ public class SpotNLinksComputer extends SpotIntScalarFeatureComputer
 
 	public static final String KEY = "Spot N links";
 
+	private static final String HELP_STRING = "Computes the number of links that touch a spot.";
+
 	public SpotNLinksComputer()
 	{
 		super( KEY );
@@ -43,5 +45,11 @@ public class SpotNLinksComputer extends SpotIntScalarFeatureComputer
 			pm.set( spot, spot.edges().size() );
 
 		return new IntScalarFeature<>( KEY, Spot.class, pm );
+	}
+
+	@Override
+	public String getHelpString()
+	{
+		return HELP_STRING;
 	}
 }

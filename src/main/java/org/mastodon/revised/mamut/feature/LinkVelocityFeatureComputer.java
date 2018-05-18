@@ -16,6 +16,8 @@ public class LinkVelocityFeatureComputer extends LinkDoubleScalarFeatureComputer
 {
 
 	public static final String KEY = "Link velocity";
+	private static final String HELP_STRING = "Computes the link velocity as the distance between "
+			+ "the source and target spots divided by their frame difference. Units are in physical distance per frame.";
 
 	public LinkVelocityFeatureComputer()
 	{
@@ -56,5 +58,11 @@ public class LinkVelocityFeatureComputer extends LinkDoubleScalarFeatureComputer
 		graph.releaseRef( ref1 );
 		graph.releaseRef( ref2 );
 		return new DoubleScalarFeature<>( KEY, Link.class, pm );
+	}
+
+	@Override
+	public String getHelpString()
+	{
+		return HELP_STRING;
 	}
 }

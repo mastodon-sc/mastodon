@@ -1,14 +1,24 @@
 package org.mastodon.revised.mamut.feature;
 
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
+
+import javax.swing.JCheckBox;
+import javax.swing.JComponent;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JSeparator;
 
 import org.mastodon.graph.io.RawGraphIO.FileIdToGraphMap;
 import org.mastodon.io.FileIdToObjectMap;
@@ -42,7 +52,18 @@ public class SpotGaussFilteredIntensityComputer implements SpotFeatureComputer
 	/** Convert from min radius to sigma by dividing radius by: */
 	private static final double SIGMA_FACTOR = 2.;
 
+	private static final String HELP_STRING = "<html>"
+			+ "Computes the average intensity and its standard deviation inside spots "
+			+ "over all sources of the dataset. "
+			+ "<p>"
+			+ "The average is calculated by a weighted mean over the pixels of the spot, "
+			+ "weighted by a gaussian centered in the spot and with a sigma value equal "
+			+ "to the minimal radius of the ellipsoid divided by " + SIGMA_FACTOR + "."
+			+ "</html>";
+
 	private SharedBigDataViewerData bdvData;
+
+	private boolean[] processSource;
 
 	@Override
 	public Set< String > getDependencies()
@@ -60,6 +81,8 @@ public class SpotGaussFilteredIntensityComputer implements SpotFeatureComputer
 	public void setSharedBigDataViewerData( final SharedBigDataViewerData bdvData )
 	{
 		this.bdvData = bdvData;
+		this.processSource = new boolean[ bdvData.getSources().size() ];
+		Arrays.fill( processSource, true );
 	}
 
 	@Override
@@ -89,14 +112,21 @@ public class SpotGaussFilteredIntensityComputer implements SpotFeatureComputer
 
 		// Holder for property map.
 		final ArrayList< SourceAndConverter< ? > > sources = bdvData.getSources();
-		final int nSources = sources.size();
-		final List< DoublePropertyMap< Spot > > pms = new ArrayList<>( nSources * 2 );
-		final List< String > names = new ArrayList<>( nSources * 2 );
+		int nSourcesToProcess = 0;
+		for ( final boolean pSource : processSource )
+			if ( pSource )
+				nSourcesToProcess++;
+		final List< DoublePropertyMap< Spot > > pms = new ArrayList<>( nSourcesToProcess * 2 );
+		final List< String > names = new ArrayList<>( nSourcesToProcess * 2 );
 
 		final SpatioTemporalIndex< Spot > index = model.getSpatioTemporalIndex();
 		final int numTimepoints = bdvData.getNumTimepoints();
+		final int nSources = sources.size();
 		for ( int iSource = 0; iSource < nSources; iSource++ )
 		{
+			if ( !processSource[ iSource ] )
+				continue;
+
 			final PoolCollectionWrapper< Spot > vertices = model.getGraph().vertices();
 			final DoublePropertyMap< Spot > pmMean = new DoublePropertyMap<>( vertices, Double.NaN );
 			pms.add( pmMean );
@@ -255,5 +285,48 @@ public class SpotGaussFilteredIntensityComputer implements SpotFeatureComputer
 			e.printStackTrace();
 		}
 		return null;
+	}
+
+	@Override
+	public String getHelpString()
+	{
+		return HELP_STRING;
+	}
+
+	@Override
+	public JComponent getConfigPanel()
+	{
+		if ( null == bdvData )
+			return null;
+
+		final int nSources = bdvData.getSources().size();
+		final JPanel configPanel = new JPanel();
+		configPanel.setLayout( new GridBagLayout() );
+		final GridBagConstraints c = new GridBagConstraints();
+		c.insets = new Insets( 0, 5, 0, 5 );
+		c.anchor = GridBagConstraints.LINE_START;
+		c.gridy = 0;
+		c.weightx = 1.;
+		c.fill = GridBagConstraints.BOTH;
+
+		final JLabel lbl = new JLabel( "Data to analyze:" );
+		configPanel.add( lbl, c );
+		c.gridy++;
+
+		configPanel.add( new JSeparator(), c);
+		c.gridy++;
+
+		for ( int i = 0; i < nSources; i++ )
+		{
+			final int currentSource = i;
+			final String str = "ch " + currentSource + ": " + bdvData.getSources().get( currentSource ).getSpimSource().getName();
+			final JCheckBox processBox = new JCheckBox( str, processSource[ currentSource ] );
+			processBox.addItemListener( ( e ) -> processSource[ currentSource ] = processBox.isSelected() );
+			configPanel.add( processBox, c );
+			c.gridy++;
+		}
+
+		return configPanel;
+
 	}
 }
