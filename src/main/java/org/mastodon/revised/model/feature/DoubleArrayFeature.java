@@ -126,6 +126,8 @@ public class DoubleArrayFeature< O > implements Feature< O, double[] >
 	@Override
 	public boolean isSet( final O o )
 	{
+		if ( propertyMaps.isEmpty() )
+			return false;
 		return propertyMaps.get( 0 ).isSet( o );
 	}
 
