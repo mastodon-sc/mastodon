@@ -3,13 +3,17 @@ package org.mastodon.revised.model.feature.ui;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Container;
+import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
+import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.text.DateFormat;
@@ -23,10 +27,15 @@ import javax.swing.Box;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
+import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 import javax.swing.JScrollPane;
+import javax.swing.JSplitPane;
+import javax.swing.JToolTip;
+import javax.swing.Popup;
+import javax.swing.PopupFactory;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingWorker;
 
@@ -67,6 +76,8 @@ public class FeatureCalculationPanel< AM extends AbstractModel< ?, ?, ? >, FC ex
 	private FeatureComputerWorker worker;
 
 	private final JLabel lblModelModificationDate;
+
+	private final JPanel panelConfig;
 
 	public FeatureCalculationPanel( final FeatureComputerService< AM, FC > computerService, final AM model, final FeatureModel featureModel )
 	{
@@ -138,7 +149,6 @@ public class FeatureCalculationPanel< AM extends AbstractModel< ?, ?, ? >, FC ex
 		gbc_lblModelModificationDate.gridy = 2;
 		panelComputation.add( lblModelModificationDate, gbc_lblModelModificationDate );
 
-
 		final JPanel panelTitle = new JPanel( new FlowLayout( FlowLayout.LEADING ) );
 		add( panelTitle, BorderLayout.NORTH );
 
@@ -146,23 +156,45 @@ public class FeatureCalculationPanel< AM extends AbstractModel< ?, ?, ? >, FC ex
 		lblTitle.setFont( getFont().deriveFont( Font.BOLD ) );
 		panelTitle.add( lblTitle );
 
-		final JScrollPane scrollPane = new JScrollPane();
-		scrollPane.setViewportBorder( null );
-		scrollPane.setVerticalScrollBarPolicy( ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS );
-		add( scrollPane, BorderLayout.CENTER );
+		final JSplitPane splitPane = new JSplitPane();
+		splitPane.setBorder( null );
+		splitPane.setResizeWeight( 0.5 );
+		add( splitPane, BorderLayout.CENTER );
+
+		final JPanel panelLeft = new JPanel();
+		splitPane.setLeftComponent( panelLeft );
+		panelLeft.setLayout( new BorderLayout( 0, 0 ) );
+
+		final JScrollPane scrollPaneFeatures = new JScrollPane();
+		panelLeft.add( scrollPaneFeatures );
+		scrollPaneFeatures.setViewportBorder( null );
+		scrollPaneFeatures.setVerticalScrollBarPolicy( ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS );
 
 		final JPanel panelFeatures = new JPanel();
 		panelFeatures.setBorder( null );
-		scrollPane.setViewportView( panelFeatures );
+		scrollPaneFeatures.setViewportView( panelFeatures );
 		final GridBagLayout gbl = new GridBagLayout();
 		panelFeatures.setLayout( gbl );
+
+		final JPanel panelRight = new JPanel();
+		panelRight.setPreferredSize( new Dimension( 300, 300 ) );
+		splitPane.setRightComponent( panelRight );
+		panelRight.setLayout( new BorderLayout( 0, 0 ) );
+
+		final JScrollPane scrollPaneConfig = new JScrollPane();
+		panelRight.add( scrollPaneConfig );
+
+		this.panelConfig = new JPanel();
+		panelConfig.setLayout( new BorderLayout() );
+		scrollPaneConfig.setViewportView( panelConfig );
+		panelConfig.setLayout( new BorderLayout( 0, 0 ) );
+
+		// Feed the feature panel.
 		final GridBagConstraints c = new GridBagConstraints();
 		c.insets = new Insets( 0, 5, 0, 5 );
 		c.anchor = GridBagConstraints.LINE_START;
 		c.fill = GridBagConstraints.HORIZONTAL;
 		c.gridy = 0;
-
-		// Feed the feature panel.
 		layoutComputers( panelFeatures, c, computerService.getFeatureComputers() );
 
 		// Listen to graph changes.
@@ -253,6 +285,7 @@ public class FeatureCalculationPanel< AM extends AbstractModel< ?, ?, ? >, FC ex
 			config.setBorderPainted( false );
 			config.setContentAreaFilled( false );
 			config.setMargin( new Insets( 0, 0, 0, 0 ) );
+			config.addActionListener( ( e ) -> displayConfigPanel( computer ) );
 			c.gridx++;
 			c.weightx = 0.;
 			panel.add( config, c );
@@ -261,6 +294,7 @@ public class FeatureCalculationPanel< AM extends AbstractModel< ?, ?, ? >, FC ex
 			help.setBorder( null );
 			help.setBorderPainted( false );
 			help.setContentAreaFilled( false );
+			help.addActionListener( ( e ) -> displayInfoString( computer, help ) );
 			c.gridx++;
 			c.weightx = 0.;
 			panel.add( help, c );
@@ -270,6 +304,46 @@ public class FeatureCalculationPanel< AM extends AbstractModel< ?, ?, ? >, FC ex
 		c.gridy++;
 		panel.add( Box.createVerticalStrut( 15 ), c );
 		c.gridy++;
+	}
+
+	private void displayConfigPanel( final FeatureComputer< ? > computer )
+	{
+		panelConfig.removeAll();
+		panelConfig.add( new JLabel( "Configure " + computer.getKey() ), BorderLayout.NORTH );
+
+		final JComponent configPanel = computer.getConfigPanel();
+		if ( null != configPanel )
+			panelConfig.add( configPanel, BorderLayout.CENTER );
+
+		panelConfig.revalidate();
+		panelConfig.repaint();
+	}
+
+	private void displayInfoString( final FeatureComputer< ? > computer, final JButton component )
+	{
+		final String helpStr = computer.getHelpString();
+		new PopUpToolTip( component, helpStr );
+	}
+
+	private static class PopUpToolTip
+	{
+
+		private PopUpToolTip( final JComponent comp, final String text )
+		{
+			final JToolTip toolTip = comp.createToolTip();
+			toolTip.setTipText( "<html><div width=\"300\">" + text + "</div></html>" );
+			final Point point = comp.getLocationOnScreen();
+			final Popup popup = PopupFactory.getSharedInstance().getPopup( comp, toolTip, point.x + 2, point.y + 2 );
+			popup.show();
+			toolTip.addMouseListener( new MouseAdapter()
+			{
+				@Override
+				public void mouseClicked( final MouseEvent e )
+				{
+					popup.hide();
+				}
+			} );
+		}
 	}
 
 	public interface UpdateListener
@@ -283,8 +357,16 @@ public class FeatureCalculationPanel< AM extends AbstractModel< ?, ?, ? >, FC ex
 		@Override
 		protected Boolean doInBackground() throws Exception
 		{
-			final boolean ok = computerService.compute( model, featureModel, selectedComputers, progressBar );
-			return Boolean.valueOf( ok );
+			try
+			{
+				final boolean ok = computerService.compute( model, featureModel, selectedComputers, progressBar );
+				return Boolean.valueOf( ok );
+			}
+			catch ( final Exception e )
+			{
+				e.printStackTrace();
+			}
+			return Boolean.valueOf( false );
 		}
 	}
 
