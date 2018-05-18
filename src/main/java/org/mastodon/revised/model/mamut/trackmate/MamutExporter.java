@@ -68,7 +68,6 @@ import static org.mastodon.revised.model.mamut.trackmate.TrackMateXMLKeys.VOXEL_
 import static org.mastodon.revised.model.mamut.trackmate.TrackMateXMLKeys.WIDTH_ATTRIBUTE;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -94,13 +93,13 @@ import org.mastodon.graph.algorithm.RootFinder;
 import org.mastodon.graph.algorithm.traversal.DepthFirstSearch;
 import org.mastodon.graph.algorithm.traversal.GraphSearch.SearchDirection;
 import org.mastodon.graph.algorithm.traversal.SearchListener;
-import org.mastodon.properties.IntPropertyMap;
 import org.mastodon.properties.PropertyMap;
 import org.mastodon.revised.bdv.overlay.util.JamaEigenvalueDecomposition;
 import org.mastodon.revised.mamut.MamutProject;
 import org.mastodon.revised.model.feature.Feature;
 import org.mastodon.revised.model.feature.FeatureModel;
 import org.mastodon.revised.model.feature.FeatureProjection;
+import org.mastodon.revised.model.feature.IntScalarFeature;
 import org.mastodon.revised.model.mamut.Link;
 import org.mastodon.revised.model.mamut.Model;
 import org.mastodon.revised.model.mamut.Spot;
@@ -290,7 +289,7 @@ public class MamutExporter
 		{
 			folder = datasetXmlFile.getParentFile().getCanonicalPath();
 		}
-		catch ( IOException e )
+		catch ( final IOException e )
 		{}
 		attributes.add( new Attribute( FOLDER_ATTRIBUTE, folder ) );
 
@@ -621,9 +620,8 @@ public class MamutExporter
 			 * If we have ONE feature mapped on an int projection map, then we
 			 * can use the ISINT flag of TrackMate safely.
 			 */
-			final PropertyMap< ?, ? > pm = feature.getPropertyMap();
 			final String isint;
-			if ( pm instanceof IntPropertyMap )
+			if ( feature instanceof IntScalarFeature )
 				isint = "true";
 			else
 				isint = " false";

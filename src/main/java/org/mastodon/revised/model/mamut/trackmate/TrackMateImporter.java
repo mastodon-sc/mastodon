@@ -32,7 +32,6 @@ import java.io.File;
 import java.io.IOException;
 import java.text.NumberFormat;
 import java.text.ParseException;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -47,10 +46,9 @@ import org.mastodon.properties.DoublePropertyMap;
 import org.mastodon.properties.IntPropertyMap;
 import org.mastodon.revised.mamut.MamutProject;
 import org.mastodon.revised.model.AbstractModelImporter;
-import org.mastodon.revised.model.feature.Feature;
+import org.mastodon.revised.model.feature.DoubleScalarFeature;
 import org.mastodon.revised.model.feature.FeatureModel;
-import org.mastodon.revised.model.feature.FeatureProjection;
-import org.mastodon.revised.model.feature.FeatureProjectors;
+import org.mastodon.revised.model.feature.IntScalarFeature;
 import org.mastodon.revised.model.mamut.Link;
 import org.mastodon.revised.model.mamut.Model;
 import org.mastodon.revised.model.mamut.ModelGraph;
@@ -331,29 +329,25 @@ public class TrackMateImporter
 			for ( final String featureKey : spotDoubleFeatureMap.keySet() )
 			{
 				final DoublePropertyMap< Spot > pm = spotDoubleFeatureMap.get( featureKey );
-				final Map< String, FeatureProjection< Spot > > projections = Collections.singletonMap( featureKey, FeatureProjectors.project( pm ) );
-				final Feature< Spot, DoublePropertyMap< Spot > > feature = new Feature<>( featureKey, Spot.class, pm, projections );
+				final DoubleScalarFeature< Spot > feature = new DoubleScalarFeature<>( featureKey, Spot.class, pm );
 				featureModel.declareFeature( feature );
 			}
 			for ( final String featureKey : spotIntFeatureMap.keySet() )
 			{
 				final IntPropertyMap< Spot > pm = spotIntFeatureMap.get( featureKey );
-				final Map< String, FeatureProjection< Spot > > projections = Collections.singletonMap( featureKey, FeatureProjectors.project( pm ) );
-				final Feature< Spot, IntPropertyMap< Spot > > feature = new Feature<>( featureKey, Spot.class, pm, projections );
+				final IntScalarFeature< Spot > feature = new IntScalarFeature<>( featureKey, Spot.class, pm );
 				featureModel.declareFeature( feature );
 			}
 			for ( final String featureKey : linkDoubleFeatureMap.keySet() )
 			{
 				final DoublePropertyMap< Link > pm = linkDoubleFeatureMap.get( featureKey );
-				final Map< String, FeatureProjection< Link > > projections = Collections.singletonMap( featureKey, FeatureProjectors.project( pm ) );
-				final Feature< Link, DoublePropertyMap< Link > > feature = new Feature<>( featureKey, Link.class, pm, projections );
+				final DoubleScalarFeature< Link > feature = new DoubleScalarFeature<>( featureKey, Link.class, pm );
 				featureModel.declareFeature( feature );
 			}
 			for ( final String featureKey : linkIntFeatureMap.keySet() )
 			{
 				final IntPropertyMap< Link > pm = linkIntFeatureMap.get( featureKey );
-				final Map< String, FeatureProjection< Link > > projections = Collections.singletonMap( featureKey, FeatureProjectors.project( pm ) );
-				final Feature< Link, IntPropertyMap< Link > > feature = new Feature<>( featureKey, Link.class, pm, projections );
+				final IntScalarFeature< Link > feature = new IntScalarFeature<>( featureKey, Link.class, pm );
 				featureModel.declareFeature( feature );
 			}
 

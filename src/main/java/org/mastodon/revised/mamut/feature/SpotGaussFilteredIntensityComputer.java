@@ -1,17 +1,19 @@
 package org.mastodon.revised.mamut.feature;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Map;
+import java.util.List;
 import java.util.Set;
 
+import org.mastodon.graph.io.RawGraphIO.FileIdToGraphMap;
 import org.mastodon.pool.PoolCollectionWrapper;
 import org.mastodon.properties.DoublePropertyMap;
 import org.mastodon.revised.bdv.SharedBigDataViewerData;
 import org.mastodon.revised.bdv.overlay.util.JamaEigenvalueDecomposition;
+import org.mastodon.revised.model.feature.DoubleArrayFeature;
 import org.mastodon.revised.model.feature.Feature;
-import org.mastodon.revised.model.feature.FeatureProjection;
-import org.mastodon.revised.model.feature.FeatureProjectors;
 import org.mastodon.revised.model.mamut.Model;
 import org.mastodon.revised.model.mamut.Spot;
 import org.mastodon.spatial.SpatialIndex;
@@ -57,16 +59,10 @@ public class SpotGaussFilteredIntensityComputer implements SpotFeatureComputer
 	}
 
 	@Override
-	public Feature< Spot, DoublePropertyMap< Spot > > compute( final Model model )
+	public DoubleArrayFeature< Spot > compute( final Model model )
 	{
-		final PoolCollectionWrapper< Spot > vertices = model.getGraph().vertices();
-		final DoublePropertyMap< Spot > pm = new DoublePropertyMap<>( vertices, Double.NaN );
 		if ( null == bdvData )
-		{
-			final Map< String, FeatureProjection< Spot > > projections = Collections.singletonMap( KEY, FeatureProjectors.project( pm ) );
-			final Feature< Spot, DoublePropertyMap< Spot > > feature = new Feature<>( KEY, Spot.class, pm, projections );
-			return feature;
-		}
+			return null;
 
 		// Calculation are made on resolution level 0.
 		final int level = 0;
@@ -87,15 +83,26 @@ public class SpotGaussFilteredIntensityComputer implements SpotFeatureComputer
 		// Spot center position holder in integer image coords.
 		final long[] p = new long[ 3 ];
 
+		// Holder for property map.
+		final ArrayList< SourceAndConverter< ? > > sources = bdvData.getSources();
+		final int nSources = sources.size();
+		final List< DoublePropertyMap< Spot > > pms = new ArrayList<>( nSources * 2 );
+		final List< String > names = new ArrayList<>( nSources * 2 );
+
 		final SpatioTemporalIndex< Spot > index = model.getSpatioTemporalIndex();
 		final int numTimepoints = bdvData.getNumTimepoints();
-		final ArrayList< SourceAndConverter< ? > > sources = bdvData.getSources();
-//		final int nSources = sources.size();
-//		for ( int iSource = 0; iSource < nSources; iSource++ )
+		for ( int iSource = 0; iSource < nSources; iSource++ )
 		{
-			// TODO: Compute over all sources and store in a double array
-			// property map.
-			final int iSource = 0;
+			final PoolCollectionWrapper< Spot > vertices = model.getGraph().vertices();
+			final DoublePropertyMap< Spot > pmMean = new DoublePropertyMap<>( vertices, Double.NaN );
+			pms.add( pmMean );
+			final String nameMean = "Average ch " + iSource;
+			names.add( nameMean );
+			final DoublePropertyMap< Spot > pmStd = new DoublePropertyMap<>( vertices, Double.NaN );
+			pms.add( pmStd );
+			final String nameStd = "Std ch " + iSource;
+			names.add( nameStd );
+
 			final Source< ? > source = sources.get( iSource ).getSpimSource();
 			for ( int timepoint = 0; timepoint < numTimepoints; timepoint++ )
 			{
@@ -107,6 +114,7 @@ public class SpotGaussFilteredIntensityComputer implements SpotFeatureComputer
 				@SuppressWarnings( "unchecked" )
 				final RandomAccessibleInterval< RealType< ? > > rai = ( RandomAccessibleInterval< RealType< ? > > ) source.getSource( timepoint, level );
 				final RandomAccess< RealType< ? > > ra = rai.randomAccess( rai );
+
 				for ( final Spot spot : spatialIndex )
 				{
 					// Spot location in pixel units.
@@ -134,9 +142,7 @@ public class SpotGaussFilteredIntensityComputer implements SpotFeatureComputer
 
 					/*
 					 * Compute running mean & std.
-					 * https://en.wikipedia.org/wiki/
-					 * Algorithms_for_calculating_variance#
-					 * Weighted_incremental_algorithm
+					 * https://en.wikipedia.org/wiki/Algorithms_for_calculating_variance#Weighted_incremental_algorithm
 					 */
 					double weightedMean = 0.;
 					double weightedSum = 0.;
@@ -168,16 +174,13 @@ public class SpotGaussFilteredIntensityComputer implements SpotFeatureComputer
 						}
 					}
 
-					// TODO Store them in a double array property map.
-					@SuppressWarnings( "unused" )
-					final double variance = S / ( weightedSum - 1. );
-					pm.set( spot, weightedMean );
+					final double variance = S / weightedSum;
+					pmMean.set( spot, weightedMean );
+					pmStd.set( spot, Math.sqrt( variance ) );
 				}
 			}
 		}
-		final Map< String, FeatureProjection< Spot > > projections = Collections.singletonMap( KEY, FeatureProjectors.project( pm ) );
-		final Feature< Spot, DoublePropertyMap< Spot > > feature = new Feature<>( KEY, Spot.class, pm, projections );
-		return feature;
+		return new DoubleArrayFeature<>( KEY, Spot.class, pms, names );
 	}
 
 	private static final double[] halfkernel( final double sigma, final double offset, final int size )
@@ -214,5 +217,12 @@ public class SpotGaussFilteredIntensityComputer implements SpotFeatureComputer
 			minEig = Math.min( minEig, eigVals[ k ] );
 		final double radius = Math.sqrt( minEig );
 		return radius;
+	}
+
+	@Override
+	public Feature< ?, ? > deserialize( final File file, final Model support, final FileIdToGraphMap< ?, ? > fileIdToGraphMap ) throws IOException
+	{
+		// TODO Auto-generated method stub
+		return null;
 	}
 }
