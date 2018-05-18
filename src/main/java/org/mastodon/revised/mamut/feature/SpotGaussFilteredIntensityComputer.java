@@ -1,19 +1,23 @@
 package org.mastodon.revised.mamut.feature;
 
+import java.io.BufferedInputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
 import org.mastodon.graph.io.RawGraphIO.FileIdToGraphMap;
+import org.mastodon.io.FileIdToObjectMap;
+import org.mastodon.io.properties.DoublePropertyMapSerializer;
 import org.mastodon.pool.PoolCollectionWrapper;
 import org.mastodon.properties.DoublePropertyMap;
 import org.mastodon.revised.bdv.SharedBigDataViewerData;
 import org.mastodon.revised.bdv.overlay.util.JamaEigenvalueDecomposition;
 import org.mastodon.revised.model.feature.DoubleArrayFeature;
-import org.mastodon.revised.model.feature.Feature;
 import org.mastodon.revised.model.mamut.Model;
 import org.mastodon.revised.model.mamut.Spot;
 import org.mastodon.spatial.SpatialIndex;
@@ -220,9 +224,36 @@ public class SpotGaussFilteredIntensityComputer implements SpotFeatureComputer
 	}
 
 	@Override
-	public Feature< ?, ? > deserialize( final File file, final Model support, final FileIdToGraphMap< ?, ? > fileIdToGraphMap ) throws IOException
+	public DoubleArrayFeature< Spot > deserialize( final File file, final Model support, final FileIdToGraphMap< ?, ? > fileIdToGraphMap ) throws IOException
 	{
-		// TODO Auto-generated method stub
+		try (final ObjectInputStream ois = new ObjectInputStream(
+				new BufferedInputStream(
+						new FileInputStream( file ), 1024 * 1024 ) ))
+		{
+			// NUMBER OF ELEMENTS
+			final int nSources = ois.readInt();
+			final List< DoublePropertyMap< Spot > > propertyMaps = new ArrayList<>();
+			final List< String > names = new ArrayList<>();
+			for ( int i = 0; i < nSources; i++ )
+			{
+				// NAME OF ENTRIES
+				final String name = ois.readUTF();
+				names.add( name );
+				// NUMBER OF ENTRIES and ENTRIES
+				final PoolCollectionWrapper< Spot > vertices = support.getGraph().vertices();
+				final DoublePropertyMap< Spot > pm = new DoublePropertyMap<>( vertices, Double.NaN, vertices.size() );
+				@SuppressWarnings( "unchecked" )
+				final FileIdToObjectMap< Spot > idToSpotMap = ( FileIdToObjectMap< Spot > ) fileIdToGraphMap.vertices();
+				final DoublePropertyMapSerializer< Spot > serializer = new DoublePropertyMapSerializer<>( pm );
+				serializer.readPropertyMap( idToSpotMap, ois );
+				propertyMaps.add( pm );
+			}
+			return new DoubleArrayFeature<>( KEY, Spot.class, propertyMaps, names );
+		}
+		catch ( final ClassNotFoundException e )
+		{
+			e.printStackTrace();
+		}
 		return null;
 	}
 }
