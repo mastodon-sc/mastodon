@@ -1,13 +1,10 @@
 package org.mastodon.revised.mamut.feature;
 
 import java.util.Collection;
-import java.util.Set;
 
 import org.mastodon.revised.bdv.SharedBigDataViewerData;
 import org.mastodon.revised.model.feature.AbstractFeatureComputerService;
-import org.mastodon.revised.model.feature.FeatureModel;
 import org.mastodon.revised.model.mamut.Model;
-import org.mastodon.revised.ui.ProgressListener;
 import org.scijava.plugin.Plugin;
 
 @Plugin(type = MamutFeatureComputerService.class)
@@ -29,13 +26,12 @@ public class DefaultMamutFeatureComputerService extends AbstractFeatureComputerS
 	}
 
 	@Override
-	public boolean compute( final Model model, final FeatureModel featureModel, final Set< MamutFeatureComputer > computers, final ProgressListener progressListener )
+	public Collection< MamutFeatureComputer > getFeatureComputers()
 	{
-		// Pass image data before calling compute.
-		final Collection< MamutFeatureComputer > fcs = getFeatureComputers();
-		for ( final MamutFeatureComputer computer : fcs )
-			computer.setSharedBigDataViewerData( sharedBdvData );
-		// Compute.
-		return super.compute( model, featureModel, computers, progressListener );
+		final Collection< MamutFeatureComputer > fcs = super.getFeatureComputers();
+		// Pass image data before exposing them.
+		for ( final MamutFeatureComputer fc : fcs )
+			fc.setSharedBigDataViewerData( sharedBdvData );
+		return fcs;
 	}
 }
