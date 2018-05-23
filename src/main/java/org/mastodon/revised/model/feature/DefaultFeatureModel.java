@@ -17,6 +17,10 @@ public class DefaultFeatureModel implements FeatureModel
 
 	private final Listeners.List< FeatureModelListener > listeners;
 
+	private boolean emitEvents = true;
+
+	private boolean fireAtResume = false;
+
 	private final Map< Class< ? >, Set< Feature< ?, ? > > > targetClassToFeatures;
 
 	private final Map< String, Feature< ?, ? > > keyToFeature;
@@ -37,7 +41,7 @@ public class DefaultFeatureModel implements FeatureModel
 		// Features.
 		final Class< ? > clazz = feature.getTargetClass();
 		Set< Feature< ?, ? > > featureSet = targetClassToFeatures.get( clazz );
-		if (null == featureSet)
+		if ( null == featureSet )
 		{
 			featureSet = new HashSet<>();
 			targetClassToFeatures.put( clazz, featureSet );
@@ -47,7 +51,7 @@ public class DefaultFeatureModel implements FeatureModel
 		// Feature keys.
 		keyToFeature.put( feature.getKey(), feature );
 
-		listeners.list.forEach( ( l ) -> l.featureModelChanged() );
+		fireFeatureModelChangedEvent();
 	}
 
 	@Override
@@ -55,7 +59,7 @@ public class DefaultFeatureModel implements FeatureModel
 	{
 		targetClassToFeatures.clear();
 		keyToFeature.clear();
-		listeners.list.forEach( ( l ) -> l.featureModelChanged() );
+		fireFeatureModelChangedEvent();
 	}
 
 	@Override
@@ -74,5 +78,28 @@ public class DefaultFeatureModel implements FeatureModel
 	public Listeners< FeatureModelListener > listeners()
 	{
 		return listeners;
+	}
+
+	@Override
+	public void pauseListeners()
+	{
+		emitEvents = false;
+	}
+
+	@Override
+	public void resumeListeners()
+	{
+		emitEvents = true;
+		if ( fireAtResume )
+			listeners.list.forEach( ( l ) -> l.featureModelChanged() );
+		fireAtResume = false;
+	}
+
+	private void fireFeatureModelChangedEvent()
+	{
+		if ( emitEvents )
+			listeners.list.forEach( ( l ) -> l.featureModelChanged() );
+		else if ( !fireAtResume )
+			fireAtResume = true;
 	}
 }

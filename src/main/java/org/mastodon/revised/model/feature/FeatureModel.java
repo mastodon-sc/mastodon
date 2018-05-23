@@ -56,4 +56,16 @@ public interface FeatureModel
 	 */
 	public Listeners< FeatureModelListener > listeners();
 
+	/**
+	 * Pause sending events to the feature model.
+	 */
+	public void pauseListeners();
+
+	/**
+	 * Resume sending events to the feature model. If events were generated
+	 * while the listeners were paused, an event is fired by calling this
+	 * method.
+	 */
+	public void resumeListeners();
+
 }
