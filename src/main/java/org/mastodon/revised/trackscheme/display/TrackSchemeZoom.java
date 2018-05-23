@@ -36,7 +36,7 @@ public class TrackSchemeZoom< V extends Vertex< E > & HasTimepoint, E extends Ed
 
 	private static final String[] TOGGLE_ZOOM_KEYS = new String[] { "Z" };
 
-	public static < V extends Vertex< E > & HasTimepoint, E extends Edge< V > > void installActionBindings( final Behaviours behaviours, final TrackSchemePanel panel )
+	public static < V extends Vertex< E > & HasTimepoint, E extends Edge< V > > void install( final Behaviours behaviours, final TrackSchemePanel panel )
 	{
 		final TrackSchemeZoom< V, E > zoom = new TrackSchemeZoom<>( panel );
 
