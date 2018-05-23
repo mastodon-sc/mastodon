@@ -52,14 +52,12 @@ public class SpotGaussFilteredIntensityComputer implements SpotFeatureComputer
 	/** Convert from min radius to sigma by dividing radius by: */
 	private static final double SIGMA_FACTOR = 2.;
 
-	private static final String HELP_STRING = "<html>"
-			+ "Computes the average intensity and its standard deviation inside spots "
-			+ "over all sources of the dataset. "
-			+ "<p>"
-			+ "The average is calculated by a weighted mean over the pixels of the spot, "
-			+ "weighted by a gaussian centered in the spot and with a sigma value equal "
-			+ "to the minimal radius of the ellipsoid divided by " + SIGMA_FACTOR + "."
-			+ "</html>";
+	private static final String HELP_STRING =
+			"Computes the average intensity and its standard deviation inside spots "
+					+ "over all sources of the dataset. "
+					+ "The average is calculated by a weighted mean over the pixels of the spot, "
+					+ "weighted by a gaussian centered in the spot and with a sigma value equal "
+					+ "to the minimal radius of the ellipsoid divided by " + SIGMA_FACTOR + ".";
 
 	private SharedBigDataViewerData bdvData;
 

@@ -9,11 +9,8 @@ import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
-import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.text.DateFormat;
@@ -33,9 +30,6 @@ import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
-import javax.swing.JToolTip;
-import javax.swing.Popup;
-import javax.swing.PopupFactory;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingWorker;
 
@@ -50,8 +44,6 @@ public class FeatureCalculationPanel< AM extends AbstractModel< ?, ?, ? >, FC ex
 	private static final long serialVersionUID = 1L;
 
 	private static final ImageIcon COG_ICON = new ImageIcon( FeatureCalculationPanel.class.getResource( "cog.png" ) );
-
-	private static final ImageIcon HELP_ICON = new ImageIcon( FeatureCalculationPanel.class.getResource( "help.png" ) );
 
 	private static final ImageIcon GO_ICON = new ImageIcon( FeatureCalculationPanel.class.getResource( "bullet_green.png" ) );
 
@@ -181,13 +173,9 @@ public class FeatureCalculationPanel< AM extends AbstractModel< ?, ?, ? >, FC ex
 		splitPane.setRightComponent( panelRight );
 		panelRight.setLayout( new BorderLayout( 0, 0 ) );
 
-		final JScrollPane scrollPaneConfig = new JScrollPane();
-		panelRight.add( scrollPaneConfig );
-
 		this.panelConfig = new JPanel();
 		panelConfig.setLayout( new BorderLayout() );
-		scrollPaneConfig.setViewportView( panelConfig );
-		panelConfig.setLayout( new BorderLayout( 0, 0 ) );
+		panelRight.add( panelConfig, BorderLayout.CENTER );
 
 		// Feed the feature panel.
 		final GridBagConstraints c = new GridBagConstraints();
@@ -290,15 +278,6 @@ public class FeatureCalculationPanel< AM extends AbstractModel< ?, ?, ? >, FC ex
 			c.weightx = 0.;
 			panel.add( config, c );
 
-			final JButton help = new JButton( HELP_ICON );
-			help.setBorder( null );
-			help.setBorderPainted( false );
-			help.setContentAreaFilled( false );
-			help.addActionListener( ( e ) -> displayInfoString( computer, help ) );
-			c.gridx++;
-			c.weightx = 0.;
-			panel.add( help, c );
-
 			c.gridy++;
 		}
 		c.gridy++;
@@ -309,7 +288,42 @@ public class FeatureCalculationPanel< AM extends AbstractModel< ?, ?, ? >, FC ex
 	private void displayConfigPanel( final FeatureComputer< ? > computer )
 	{
 		panelConfig.removeAll();
-		panelConfig.add( new JLabel( "Configure " + computer.getKey() ), BorderLayout.NORTH );
+
+		final JPanel infoPanel = new JPanel();
+		infoPanel.setLayout( new GridBagLayout() );
+		final GridBagConstraints c = new GridBagConstraints();
+		c.insets = new Insets( 5, 5, 5, 5 );
+		c.anchor = GridBagConstraints.LINE_START;
+		c.fill = GridBagConstraints.BOTH;
+		c.weightx = 1.;
+		c.weighty = 1.;
+
+		final JLabel title = new JLabel( computer.getKey() );
+		title.setFont( getFont().deriveFont( Font.BOLD ) );
+		c.gridy = 0;
+		infoPanel.add( title, c );
+
+		final JLabel infoLbl = new JLabel( "<html>" + computer.getHelpString() + "</html>" );
+		infoLbl.setFont( getFont().deriveFont( Font.ITALIC ) );
+		c.gridy++;
+		infoPanel.add( infoLbl, c );
+
+		final Set< String > dependencies = computer.getDependencies();
+		if ( !dependencies.isEmpty() )
+		{
+			final StringBuilder depStr = new StringBuilder();
+			if ( dependencies.size() == 1 )
+				depStr.append( "<html>Dependency: <ul>" );
+			else
+				depStr.append( "<html>Dependencies: <ul>" );
+			for ( final String dep : dependencies )
+				depStr.append( "<li>" + dep + "</li>" );
+			depStr.append( "</ul></html>" );
+			c.gridy++;
+			final JLabel depsLabel = new JLabel( depStr.toString() );
+			infoPanel.add( depsLabel, c );
+		}
+		panelConfig.add( infoPanel, BorderLayout.NORTH );
 
 		final JComponent configPanel = computer.getConfigPanel();
 		if ( null != configPanel )
@@ -317,33 +331,6 @@ public class FeatureCalculationPanel< AM extends AbstractModel< ?, ?, ? >, FC ex
 
 		panelConfig.revalidate();
 		panelConfig.repaint();
-	}
-
-	private void displayInfoString( final FeatureComputer< ? > computer, final JButton component )
-	{
-		final String helpStr = computer.getHelpString();
-		new PopUpToolTip( component, helpStr );
-	}
-
-	private static class PopUpToolTip
-	{
-
-		private PopUpToolTip( final JComponent comp, final String text )
-		{
-			final JToolTip toolTip = comp.createToolTip();
-			toolTip.setTipText( "<html><div width=\"300\">" + text + "</div></html>" );
-			final Point point = comp.getLocationOnScreen();
-			final Popup popup = PopupFactory.getSharedInstance().getPopup( comp, toolTip, point.x + 2, point.y + 2 );
-			popup.show();
-			toolTip.addMouseListener( new MouseAdapter()
-			{
-				@Override
-				public void mouseClicked( final MouseEvent e )
-				{
-					popup.hide();
-				}
-			} );
-		}
 	}
 
 	public interface UpdateListener
