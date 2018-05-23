@@ -59,7 +59,7 @@ public class TrackSchemeZoom< V extends Vertex< E > & HasTimepoint, E extends Ed
 
 	private final InertialScreenTransformEventHandler transformEventHandler;
 
-	private boolean editing;
+	private boolean dragging;
 
 	private int headerWidth;
 
@@ -75,7 +75,7 @@ public class TrackSchemeZoom< V extends Vertex< E > & HasTimepoint, E extends Ed
 		this.panel = panel;
 		this.transformEventHandler = ( InertialScreenTransformEventHandler ) panel.getDisplay().getTransformEventHandler();
 
-		editing = false;
+		dragging = false;
 		screenTransform = new ScreenTransform();
 		overlay = new ZoomOverlay();
 	}
@@ -103,14 +103,14 @@ public class TrackSchemeZoom< V extends Vertex< E > & HasTimepoint, E extends Ed
 		overlay.oy = y;
 		overlay.ex = x;
 		overlay.ey = y;
-		editing = true;
+		dragging = true;
 		overlay.paint = true;
 	}
 
 	@Override
 	public void drag( final int x, final int y )
 	{
-		if ( editing )
+		if ( dragging )
 		{
 			overlay.ex = x;
 			overlay.ey = y;
@@ -121,9 +121,9 @@ public class TrackSchemeZoom< V extends Vertex< E > & HasTimepoint, E extends Ed
 	@Override
 	public void end( final int x, final int y )
 	{
-		if ( editing )
+		if ( dragging )
 		{
-			editing = false;
+			dragging = false;
 			overlay.paint = false;
 
 			final int x1 = Math.min( overlay.ox, overlay.ex ) - headerWidth;
