@@ -16,6 +16,7 @@ import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -123,7 +124,7 @@ public class FeatureColorModeEditorPanel extends JPanel
 
 		vertexColorModeSelector.listeners().add( m -> mode.setVertexColorMode( m ) );
 		vertexFeatureKeySelector.listeners().add( ( fk, pk ) -> mode.setVertexFeatureProjection( fk, pk ) );
-		vertexColorModeSelector.listeners().add( m -> vertexFeatureKeySelector.regen() );
+		vertexColorModeSelector.listeners().add( m -> vertexFeatureKeySelector.regen( false ) );
 
 		/*
 		 * Vertex color map.
@@ -186,7 +187,7 @@ public class FeatureColorModeEditorPanel extends JPanel
 
 		edgeColorModeSelector.listeners().add( m -> mode.setEdgeColorMode( m ) );
 		edgeFeatureKeySelector.listeners().add( ( fk, pk ) -> mode.setEdgeFeatureProjection( fk, pk ) );
-		edgeColorModeSelector.listeners().add( m -> edgeFeatureKeySelector.regen() );
+		edgeColorModeSelector.listeners().add( m -> edgeFeatureKeySelector.regen( false ) );
 
 		/*
 		 * Edge color map.
@@ -256,79 +257,111 @@ public class FeatureColorModeEditorPanel extends JPanel
 			@Override
 			public void featureColorModeChanged()
 			{
-				if ( !mode.isValid( featureModel, vertexClass, edgeClass ) )
-				{
-					final Set< String > requiredVertexFeatures = new HashSet<>();
-					final Set< String > requiredEdgeFeatures = new HashSet<>();
-					switch ( mode.getVertexColorMode() )
-					{
-					case INCOMING_EDGE:
-					case OUTGOING_EDGE:
-						requiredEdgeFeatures.add( mode.getVertexFeatureProjection()[ 0 ] + " \u2192 " + mode.getVertexFeatureProjection()[ 1 ] );
-						break;
-					case VERTEX:
-						requiredVertexFeatures.add( mode.getVertexFeatureProjection()[ 0 ] + " \u2192 " + mode.getVertexFeatureProjection()[ 1 ] );
-						break;
-					case NONE:
-					default:
-					}
-					switch ( mode.getEdgeColorMode() )
-					{
-					case EDGE:
-						requiredEdgeFeatures.add( mode.getEdgeFeatureProjection()[ 0 ] + " \u2192 " + mode.getEdgeFeatureProjection()[ 1 ] );
-						break;
-					case SOURCE_VERTEX:
-					case TARGET_VERTEX:
-						requiredVertexFeatures.add( mode.getEdgeFeatureProjection()[ 0 ] + " \u2192 " + mode.getEdgeFeatureProjection()[ 1 ] );
-						break;
-					case NONE:
-					default:
-						break;
-					}
-
-					final StringBuilder warning = new StringBuilder();
-					warning.append( "<html>"
-							+ "Some features are missing for this mode."
-							+ "<p>"
-							+ "Please compute features over the current model. This feature color mode "
-							+ "requires:"
-							+ "<ul>" );
-					if ( !requiredVertexFeatures.isEmpty() )
-					{
-						warning.append( "For spots: <ul>" );
-						for ( final String f : requiredVertexFeatures )
-							warning.append( "<li>" + f + "</li>" );
-						warning.append( "</ul>" );
-					}
-					if ( !requiredEdgeFeatures.isEmpty() )
-					{
-						warning.append( "For links: <ul>" );
-						for ( final String f : requiredEdgeFeatures )
-							warning.append( "<li>" + f + "</li>" );
-						warning.append( "</ul>" );
-					}
-					warning.append( "</ul></html>" );
-					warningLabel.setText( warning.toString() );
-				}
-				else
-				{
-					warningLabel.setText( "" );
-				}
 
 				vertexColorModeSelector.setSelected( mode.getVertexColorMode() );
-				vertexFeatureKeySelector.setFeatureKeys( mode.getVertexFeatureProjection()[ 0 ], mode.getVertexFeatureProjection()[ 1 ] );
 				vertexColorMapSelector.setColorMap( mode.getVertexColorMap() );
 				vertexFeatureRangeSelector.setMinMax( mode.getVertexRangeMin(), mode.getVertexRangeMax() );
 				edgeColorModeSelector.setSelected( mode.getEdgeColorMode() );
-				edgeFeatureKeySelector.setFeatureKeys( mode.getEdgeFeatureProjection()[ 0 ], mode.getEdgeFeatureProjection()[ 1 ] );
 				edgeColorMapSelector.setColorMap( mode.getEdgeColorMap() );
 				edgeFeatureRangeSelector.setMinMax( mode.getEdgeRangeMin(), mode.getEdgeRangeMax() );
 				vv.accept( mode.getVertexColorMode() );
 				ve.accept( mode.getEdgeColorMode() );
+				if ( checkModeValidity( warningLabel ) )
+				{
+					edgeFeatureKeySelector.setFeatureKeys( mode.getEdgeFeatureProjection()[ 0 ], mode.getEdgeFeatureProjection()[ 1 ] );
+					vertexFeatureKeySelector.setFeatureKeys( mode.getVertexFeatureProjection()[ 0 ], mode.getVertexFeatureProjection()[ 1 ] );
+				}
+				else
+				{
+					vertexFeatureKeySelector.setFeatureKeys( FeatureKeySelector.MISSING_KEY, FeatureKeySelector.MISSING_KEY );
+					edgeFeatureKeySelector.setFeatureKeys( FeatureKeySelector.MISSING_KEY, FeatureKeySelector.MISSING_KEY );
+				}
 			}
 		};
 		l.featureColorModeChanged();
 		mode.updateListeners().add( l );
+
+		// Listen to changes in the feature model.
+		featureModel.listeners().add( () -> {
+			final String[] vertexFeatureProjection = mode.getVertexFeatureProjection();
+			final String[] edgeFeatureProjection = mode.getEdgeFeatureProjection();
+			vertexFeatureKeySelector.regen( true );
+			edgeFeatureKeySelector.regen( true );
+			if ( checkModeValidity( warningLabel ) )
+			{
+				vertexFeatureKeySelector.setFeatureKeys( vertexFeatureProjection[ 0 ], vertexFeatureProjection[ 1 ] );
+				edgeFeatureKeySelector.setFeatureKeys( edgeFeatureProjection[ 0 ], edgeFeatureProjection[ 1 ] );
+			}
+			else
+			{
+				vertexFeatureKeySelector.setFeatureKeys( FeatureKeySelector.MISSING_KEY, FeatureKeySelector.MISSING_KEY );
+				edgeFeatureKeySelector.setFeatureKeys( FeatureKeySelector.MISSING_KEY, FeatureKeySelector.MISSING_KEY );
+			}
+		} );
+	}
+
+	private boolean checkModeValidity( final JLabel lbl )
+	{
+		if ( !mode.isValid( featureModel, vertexClass, edgeClass ) )
+		{
+			final Set< String > requiredVertexFeatures = new HashSet<>();
+			final Set< String > requiredEdgeFeatures = new HashSet<>();
+			switch ( mode.getVertexColorMode() )
+			{
+			case INCOMING_EDGE:
+			case OUTGOING_EDGE:
+				requiredEdgeFeatures.add( mode.getVertexFeatureProjection()[ 0 ] + " \u2192 " + mode.getVertexFeatureProjection()[ 1 ] );
+				break;
+			case VERTEX:
+				requiredVertexFeatures.add( mode.getVertexFeatureProjection()[ 0 ] + " \u2192 " + mode.getVertexFeatureProjection()[ 1 ] );
+				break;
+			case NONE:
+			default:
+			}
+			switch ( mode.getEdgeColorMode() )
+			{
+			case EDGE:
+				requiredEdgeFeatures.add( mode.getEdgeFeatureProjection()[ 0 ] + " \u2192 " + mode.getEdgeFeatureProjection()[ 1 ] );
+				break;
+			case SOURCE_VERTEX:
+			case TARGET_VERTEX:
+				requiredVertexFeatures.add( mode.getEdgeFeatureProjection()[ 0 ] + " \u2192 " + mode.getEdgeFeatureProjection()[ 1 ] );
+				break;
+			case NONE:
+			default:
+				break;
+			}
+
+			final StringBuilder warning = new StringBuilder();
+			warning.append( "<html>"
+					+ "Some features are missing for this mode."
+					+ "<p>"
+					+ "Please compute features over the current model. This feature color mode "
+					+ "requires:"
+					+ "<ul>" );
+			if ( !requiredVertexFeatures.isEmpty() )
+			{
+				warning.append( "For spots: <ul>" );
+				for ( final String f : requiredVertexFeatures )
+					warning.append( "<li>" + f + "</li>" );
+				warning.append( "</ul>" );
+			}
+			if ( !requiredEdgeFeatures.isEmpty() )
+			{
+				warning.append( "For links: <ul>" );
+				for ( final String f : requiredEdgeFeatures )
+					warning.append( "<li>" + f + "</li>" );
+				warning.append( "</ul>" );
+			}
+			warning.append( "</ul></html>" );
+			lbl.setText( warning.toString() );
+			return false;
+		}
+		else
+		{
+			lbl.setText( "" );
+			return true;
+		}
 	}
 
 	private void addToLayout( final JComponent comp1, final JComponent comp2, final GridBagConstraints c )
@@ -576,7 +609,7 @@ public class FeatureColorModeEditorPanel extends JPanel
 		private static final long serialVersionUID = 1L;
 
 		@Override
-		public void regen()
+		public void regen( final boolean force )
 		{
 			final Class< ? > clazz;
 			switch ( mode.getVertexColorMode() )
@@ -596,17 +629,23 @@ public class FeatureColorModeEditorPanel extends JPanel
 				setVisible( true );
 				break;
 			}
-			if ( previousClass == clazz )
+			if ( !force && previousClass == clazz )
 				return;
 			previousClass = clazz;
-			if ( null == clazz || null == featureModel.getFeatureSet( clazz ) )
+			if ( null == clazz && null == featureModel.getFeatureSet( clazz ) )
 				return;
 
-			final List< String > featureKeys = featureModel.getFeatureSet( clazz ).stream().map( Feature::getKey ).collect( Collectors.toList() );
-			featureKeys.sort( null );
-			cb1.setModel( new DefaultComboBoxModel<>( featureKeys.toArray( new String[] {} ) ) );
+			this.keysCB1 = new ArrayList<>();
+			final Set< Feature< ?, ? > > featureSet = featureModel.getFeatureSet( clazz );
+			if ( null != featureSet )
+			{
+				keysCB1.addAll( featureSet.stream().map( Feature::getKey ).collect( Collectors.toList() ) );
+				keysCB1.sort( null );
+			}
+			keysCB1.add( MISSING_KEY );
+			cb1.setModel( new DefaultComboBoxModel<>( keysCB1.toArray( new String[] {} ) ) );
 
-			super.regen();
+			super.regen( false );
 		}
 	}
 
@@ -615,7 +654,7 @@ public class FeatureColorModeEditorPanel extends JPanel
 		private static final long serialVersionUID = 1L;
 
 		@Override
-		public void regen()
+		public void regen( final boolean force )
 		{
 			final Class< ? > clazz;
 			switch ( mode.getEdgeColorMode() )
@@ -635,17 +674,23 @@ public class FeatureColorModeEditorPanel extends JPanel
 				setVisible( true );
 				break;
 			}
-			if ( previousClass == clazz )
+			if ( !force && previousClass == clazz )
 				return;
 			previousClass = clazz;
 			if ( null == clazz || null == featureModel.getFeatureSet( clazz ) )
 				return;
 
-			final List< String > featureKeys = featureModel.getFeatureSet( clazz ).stream().map( Feature::getKey ).collect( Collectors.toList() );
-			featureKeys.sort( null );
-			cb1.setModel( new DefaultComboBoxModel<>( featureKeys.toArray( new String[] {} ) ) );
+			this.keysCB1 = new ArrayList<>();
+			final Set< Feature< ?, ? > > featureSet = featureModel.getFeatureSet( clazz );
+			if ( null != featureSet )
+			{
+				keysCB1.addAll( featureSet.stream().map( Feature::getKey ).collect( Collectors.toList() ) );
+				keysCB1.sort( null );
+			}
+			keysCB1.add( MISSING_KEY );
+			cb1.setModel( new DefaultComboBoxModel<>( keysCB1.toArray( new String[] {} ) ) );
 
-			super.regen();
+			super.regen( false );
 		}
 	}
 
@@ -653,6 +698,8 @@ public class FeatureColorModeEditorPanel extends JPanel
 	{
 
 		private static final long serialVersionUID = 1L;
+
+		protected static final String MISSING_KEY = "..";
 
 		protected final JComboBox< String > cb1;
 
@@ -663,6 +710,10 @@ public class FeatureColorModeEditorPanel extends JPanel
 		private final JLabel arrow;
 
 		private final List< BiConsumer< String, String > > listeners = new ArrayList<>();
+
+		private List< String > keysCB2 = Collections.emptyList();
+
+		protected List< String > keysCB1 = Collections.emptyList();
 
 		public FeatureKeySelector()
 		{
@@ -688,6 +739,8 @@ public class FeatureColorModeEditorPanel extends JPanel
 
 		private void notifyListers()
 		{
+			if ( !mode.isValid( featureModel, vertexClass, edgeClass ) )
+				return;
 			final String fk = ( String ) cb1.getSelectedItem();
 			final String pk = ( String ) cb2.getSelectedItem();
 			listeners.forEach( ( bc ) -> bc.accept( fk, pk ) );
@@ -700,12 +753,12 @@ public class FeatureColorModeEditorPanel extends JPanel
 
 		public void setFeatureKeys( final String c1, final String c2 )
 		{
-			regen();
-			cb1.setSelectedItem( c1 );
-			cb2.setSelectedItem( c2 );
+			regen( false );
+			cb1.setSelectedItem( keysCB1.contains( c1 ) ? c1 : MISSING_KEY );
+			cb2.setSelectedItem( keysCB2.contains( c2 ) ? c2 : MISSING_KEY );
 		}
 
-		protected void regen()
+		protected void regen( final boolean force )
 		{
 			regenCB2();
 			notifyListers();
@@ -713,10 +766,16 @@ public class FeatureColorModeEditorPanel extends JPanel
 
 		private void regenCB2()
 		{
-			final Set< String > keySet = featureModel.getFeature( ( String ) cb1.getSelectedItem() ).getProjections().keySet();
-			final List< String > list = new ArrayList<>( keySet );
-			list.sort( null );
-			cb2.setModel( new DefaultComboBoxModel<>( list.toArray( new String[] {} ) ) );
+			this.keysCB2 = new ArrayList<>();
+			final Feature< ?, ? > feature = featureModel.getFeature( ( String ) cb1.getSelectedItem() );
+			if ( null != feature )
+			{
+				final Set< String > keySet = feature.getProjections().keySet();
+				keysCB2.addAll( keySet );
+				keysCB2.sort( null );
+			}
+			keysCB2.add( MISSING_KEY );
+			cb2.setModel( new DefaultComboBoxModel<>( keysCB2.toArray( new String[] {} ) ) );
 		}
 	}
 }
