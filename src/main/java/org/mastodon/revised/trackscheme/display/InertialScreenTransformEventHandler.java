@@ -111,6 +111,12 @@ public class InertialScreenTransformEventHandler
 	private static final double boundXLayoutBorder = 1;
 	private static final double boundYLayoutBorder = 1;
 
+	/**
+	 * A zoom command to a window smaller than this value (in layout
+	 * coordinates) when fully zoomed in, will trigger a full zoom out.
+	 */
+	private static final double ZOOM_LIMIT = 0.1;
+
 	// ...still something else...
 //	private static final double borderRatioX = 0.1;
 //	private static final double borderRatioY = 0.1;
@@ -564,6 +570,18 @@ public class InertialScreenTransformEventHandler
 		}
 	}
 
+	/**
+	 * Zooms the current view to the specified layout coordinates.
+	 *
+	 * @param lx1
+	 *            left coordinate of the coordinates to zoom to.
+	 * @param lx2
+	 *            right coordinate of the coordinates to zoom to.
+	 * @param ly1
+	 *            top coordinate of the coordinates to zoom to.
+	 * @param ly2
+	 *            bottom coordinate of the coordinates to zoom to.
+	 */
 	public void zoomTo( final double lx1, final double lx2, final double ly1, final double ly2 )
 	{
 		synchronized ( transform )
@@ -571,7 +589,10 @@ public class InertialScreenTransformEventHandler
 			tstart.set( transform );
 		}
 		tend.set( tstart );
-		if ( ConstrainScreenTransform.hasMinSizeX( tstart, MIN_SIBLINGS_ON_CANVAS ) && ConstrainScreenTransform.hasMinSizeY( tstart, MIN_TIMEPOINTS_ON_CANVAS ) )
+		if ( ConstrainScreenTransform.hasMinSizeX( tstart, MIN_SIBLINGS_ON_CANVAS )
+				&& ConstrainScreenTransform.hasMinSizeY( tstart, MIN_TIMEPOINTS_ON_CANVAS )
+				&& Math.abs( lx2 - lx1 ) < ZOOM_LIMIT
+				&& Math.abs( ly2 - ly1 ) < ZOOM_LIMIT )
 		{
 			// Unzoom fully.
 			ConstrainScreenTransform.zoomOutFullyX(
@@ -603,7 +624,6 @@ public class InertialScreenTransformEventHandler
 			runAnimation();
 		}
 	}
-
 
 	private void animate()
 	{
