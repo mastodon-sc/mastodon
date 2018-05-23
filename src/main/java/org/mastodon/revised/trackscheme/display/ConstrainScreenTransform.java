@@ -156,18 +156,18 @@ public class ConstrainScreenTransform
 	}
 
 	/**
-	 * Zoom out in X to the maximally allowed width.
+	 * Zoom out in Y to the maximally allowed height.
 	 *
 	 * @param transform
 	 *            the transform to modify.
-	 * @param maxSizeX
-	 *            the maximal allowed width.
-	 * @param minBoundX
-	 *            the X min bound.
-	 * @param maxBoundX
-	 *            the X max bound.
-	 * @param borderRatioX
-	 *            the X border ratio to limit moving out the visible screen.
+	 * @param maxSizeY
+	 *            the maximal allowed height.
+	 * @param minBoundY
+	 *            the Y min bound.
+	 * @param maxBoundY
+	 *            the Y max bound.
+	 * @param borderRatioY
+	 *            the Y border ratio to limit moving out the visible screen.
 	 */
 	public static void zoomOutFullyY(
 			final ScreenTransform transform,
