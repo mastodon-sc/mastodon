@@ -326,6 +326,7 @@ public class TrackMateImporter
 			 */
 
 			final FeatureModel featureModel = model.getFeatureModel();
+			featureModel.pauseListeners();
 			for ( final String featureKey : spotDoubleFeatureMap.keySet() )
 			{
 				final DoublePropertyMap< Spot > pm = spotDoubleFeatureMap.get( featureKey );
@@ -350,6 +351,7 @@ public class TrackMateImporter
 				final IntScalarFeature< Link > feature = new IntScalarFeature<>( featureKey, Link.class, pm );
 				featureModel.declareFeature( feature );
 			}
+			featureModel.resumeListeners();
 
 			finishImport();
 		}

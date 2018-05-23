@@ -57,6 +57,7 @@ public abstract class AbstractFeatureComputerService< AM extends AbstractModel< 
 
 		final long start = System.currentTimeMillis();
 
+		featureModel.pauseListeners();
 		featureModel.clear();
 		int progress = 1;
 		for ( final ObjectVertex< FC > v : sorter.get() )
@@ -68,6 +69,7 @@ public abstract class AbstractFeatureComputerService< AM extends AbstractModel< 
 
 			progressListener.showProgress( progress++, computers.size() );
 		}
+		featureModel.resumeListeners();
 
 		final long end = System.currentTimeMillis();
 		progressListener.clearStatus();
