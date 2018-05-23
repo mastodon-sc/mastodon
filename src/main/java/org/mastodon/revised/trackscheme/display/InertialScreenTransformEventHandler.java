@@ -619,7 +619,7 @@ public class InertialScreenTransformEventHandler
 		ConstrainScreenTransform.removeJitter( tend, tstart );
 		if ( !tend.equals( tstart ) )
 		{
-			stayFullyZoomedOut = false;
+			stayFullyZoomedOut = false; // TODO: why is this here?
 			animator = new InterpolateScreenTransformAnimator( tstart, tend, 200 );
 			runAnimation();
 		}
