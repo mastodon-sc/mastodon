@@ -5,18 +5,22 @@ import java.awt.Graphics;
 
 import javax.swing.ImageIcon;
 
-import org.mastodon.graph.Edge;
-import org.mastodon.graph.Vertex;
-import org.mastodon.revised.trackscheme.ScreenTransform;
-import org.mastodon.revised.trackscheme.display.OffsetHeaders.OffsetHeadersListener;
-import org.mastodon.spatial.HasTimepoint;
-import org.scijava.ui.behaviour.DragBehaviour;
-import org.scijava.ui.behaviour.util.AbstractNamedBehaviour;
-import org.scijava.ui.behaviour.util.Behaviours;
-
 import net.imglib2.ui.OverlayRenderer;
 import net.imglib2.ui.TransformEventHandler;
 import net.imglib2.ui.TransformListener;
+
+import org.mastodon.graph.Edge;
+import org.mastodon.graph.Vertex;
+import org.mastodon.revised.mamut.KeyConfigContexts;
+import org.mastodon.revised.trackscheme.ScreenTransform;
+import org.mastodon.revised.trackscheme.display.OffsetHeaders.OffsetHeadersListener;
+import org.mastodon.revised.ui.keymap.CommandDescriptionProvider;
+import org.mastodon.revised.ui.keymap.CommandDescriptions;
+import org.mastodon.spatial.HasTimepoint;
+import org.scijava.plugin.Plugin;
+import org.scijava.ui.behaviour.DragBehaviour;
+import org.scijava.ui.behaviour.util.AbstractNamedBehaviour;
+import org.scijava.ui.behaviour.util.Behaviours;
 
 /**
  * Drag behaviour that implements a zoom rectangle in TrackScheme.
@@ -26,15 +30,32 @@ import net.imglib2.ui.TransformListener;
  * pass it a transform animator that will execute the zoom.
  *
  * @author Jean-Yves Tinevez
- *
  */
 public class TrackSchemeZoom< V extends Vertex< E > & HasTimepoint, E extends Edge< V > >
 		extends AbstractNamedBehaviour
 		implements DragBehaviour, OffsetHeadersListener, TransformListener< ScreenTransform >
 {
-	private static final String TOGGLE_ZOOM = "trackscheme zoom";
+	private static final String TOGGLE_ZOOM = "box zoom";
 
 	private static final String[] TOGGLE_ZOOM_KEYS = new String[] { "Z" };
+
+	/*
+	 * Command descriptions for all provided commands
+	 */
+	@Plugin( type = Descriptions.class )
+	public static class Descriptions extends CommandDescriptionProvider
+	{
+		public Descriptions()
+		{
+			super( KeyConfigContexts.TRACKSCHEME );
+		}
+
+		@Override
+		public void getCommandDescriptions( final CommandDescriptions descriptions )
+		{
+			descriptions.add( TOGGLE_ZOOM, TOGGLE_ZOOM_KEYS, "Zoom to area specified by dragging a box." );
+		}
+	}
 
 	public static < V extends Vertex< E > & HasTimepoint, E extends Edge< V > > void install( final Behaviours behaviours, final TrackSchemePanel panel )
 	{
