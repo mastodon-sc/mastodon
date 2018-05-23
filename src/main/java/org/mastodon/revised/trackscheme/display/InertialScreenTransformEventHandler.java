@@ -3,6 +3,9 @@ package org.mastodon.revised.trackscheme.display;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import net.imglib2.ui.TransformEventHandler;
+import net.imglib2.ui.TransformListener;
+
 import org.mastodon.revised.mamut.KeyConfigContexts;
 import org.mastodon.revised.trackscheme.LineageTreeLayout;
 import org.mastodon.revised.trackscheme.LineageTreeLayout.LayoutListener;
@@ -18,9 +21,6 @@ import org.scijava.ui.behaviour.DragBehaviour;
 import org.scijava.ui.behaviour.ScrollBehaviour;
 import org.scijava.ui.behaviour.util.AbstractNamedBehaviour;
 import org.scijava.ui.behaviour.util.Behaviours;
-
-import net.imglib2.ui.TransformEventHandler;
-import net.imglib2.ui.TransformListener;
 
 public class InertialScreenTransformEventHandler
 	implements
@@ -111,12 +111,6 @@ public class InertialScreenTransformEventHandler
 	private static final double boundXLayoutBorder = 1;
 	private static final double boundYLayoutBorder = 1;
 
-	/**
-	 * A zoom command to a window smaller than this value (in layout
-	 * coordinates) when fully zoomed in, will trigger a full zoom out.
-	 */
-	private static final double ZOOM_LIMIT = 0.1;
-
 	// ...still something else...
 //	private static final double borderRatioX = 0.1;
 //	private static final double borderRatioY = 0.1;
@@ -124,6 +118,12 @@ public class InertialScreenTransformEventHandler
 //	private static final double maxSizeFactorY = 1 / 0.8;
 //	private static final double boundXLayoutBorder = 0;
 //	private static final double boundYLayoutBorder = 0;
+
+	/**
+	 * A zoom command to a window smaller than this value (in layout
+	 * coordinates) when fully zoomed in, will trigger a full zoom out.
+	 */
+	private static final double ZOOM_LIMIT = 0.1;
 
 	/**
 	 * Current boundaries to enforce for the transform.
@@ -336,6 +336,15 @@ public class InertialScreenTransformEventHandler
 				maxSizeX,
 				boundXMin, boundXMax,
 				borderRatioX );
+	}
+
+	private void zoomOutFullyY( final ScreenTransform transform )
+	{
+		ConstrainScreenTransform.zoomOutFullyY(
+				transform,
+				maxSizeY,
+				boundYMin, boundYMax,
+				borderRatioY );
 	}
 
 	private boolean hasMinSizeX( final ScreenTransform transform )
@@ -588,30 +597,20 @@ public class InertialScreenTransformEventHandler
 		{
 			tstart.set( transform );
 		}
-		tend.set( tstart );
-		if ( ConstrainScreenTransform.hasMinSizeX( tstart, MIN_SIBLINGS_ON_CANVAS )
-				&& ConstrainScreenTransform.hasMinSizeY( tstart, MIN_TIMEPOINTS_ON_CANVAS )
-				&& Math.abs( lx2 - lx1 ) < ZOOM_LIMIT
-				&& Math.abs( ly2 - ly1 ) < ZOOM_LIMIT )
+		final double xmin = Math.min( lx1, lx2 );
+		final double xmax = Math.max( lx1, lx2 );
+		final double ymin = Math.min( ly1, ly2 );
+		final double ymax = Math.max( ly1, ly2 );
+		if ( hasMinSizeX( tstart ) && hasMinSizeY( tstart )
+				&& Math.max( xmax - xmin, ymax - ymin ) < ZOOM_LIMIT )
 		{
 			// Unzoom fully.
-			ConstrainScreenTransform.zoomOutFullyX(
-					tend,
-					maxSizeX,
-					boundXMin, boundXMax,
-					borderRatioX );
-			ConstrainScreenTransform.zoomOutFullyY(
-					tend,
-					maxSizeY,
-					boundYMin, boundYMax,
-					borderRatioY );
+			tend.set( tstart );
+			zoomOutFullyX( tend );
+			zoomOutFullyY( tend );
 		}
 		else
 		{
-			final double xmin = Math.min( lx1, lx2 );
-			final double xmax = Math.max( lx1, lx2 );
-			final double ymin = Math.min( ly1, ly2 );
-			final double ymax = Math.max( ly1, ly2 );
 			tend.set( xmin, xmax, ymin, ymax, tstart.getScreenWidth(), tstart.getScreenHeight() );
 		}
 
@@ -619,7 +618,7 @@ public class InertialScreenTransformEventHandler
 		ConstrainScreenTransform.removeJitter( tend, tstart );
 		if ( !tend.equals( tstart ) )
 		{
-			stayFullyZoomedOut = false; // TODO: why is this here?
+			stayFullyZoomedOut = false;
 			animator = new InterpolateScreenTransformAnimator( tstart, tend, 200 );
 			runAnimation();
 		}
@@ -652,6 +651,10 @@ public class InertialScreenTransformEventHandler
 				if ( null == animator || animator.isComplete() )
 				{
 					cancel();
+					synchronized ( transform )
+					{
+						stayFullyZoomedOut = hasMaxSizeX( transform );
+					}
 					currentTimerTask = null;
 				}
 				else

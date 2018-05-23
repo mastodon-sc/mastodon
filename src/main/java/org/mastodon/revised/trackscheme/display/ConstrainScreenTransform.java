@@ -186,7 +186,6 @@ public class ConstrainScreenTransform
 		transform.set( transform.getMinX(), transform.getMaxX(), minY, maxY, transform.getScreenWidth(), screenHeight );
 	}
 
-
 	private static final double JITTER_EPSILON = 0.0000000001;
 
 	/**
