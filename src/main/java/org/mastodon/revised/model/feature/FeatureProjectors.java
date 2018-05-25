@@ -20,7 +20,7 @@ public class FeatureProjectors
 	 *            the feature.
 	 * @return a feature projection for the specified feature.
 	 */
-	public static final < O > FeatureProjection< O > project( final DoublePropertyMap< O > feature )
+	public static final < O > DoubleFeatureProjection< O > project( final DoublePropertyMap< O > feature )
 	{
 		return new DoubleFeatureProjection<>( feature );
 	}
@@ -33,12 +33,12 @@ public class FeatureProjectors
 	 *            the feature.
 	 * @return a feature projection for the specified feature.
 	 */
-	public static final < O > FeatureProjection< O > project( final IntPropertyMap< O > feature )
+	public static final < O > IntFeatureProjection< O > project( final IntPropertyMap< O > feature )
 	{
-		return new IntFeatureProjection<>( feature );
+		return new IntFeatureProjectionImp<>( feature );
 	}
 
-	private static final class DoubleFeatureProjection< O > implements FeatureProjection< O >
+	public static final class DoubleFeatureProjection< O > implements FeatureProjection< O >
 	{
 
 		private final DoublePropertyMap< O > pm;
@@ -61,12 +61,23 @@ public class FeatureProjectors
 		}
 	}
 
-	private static final class IntFeatureProjection< O > implements FeatureProjection< O >
+	/**
+	 * Marker interface for projections that actually only have <code>int</code>
+	 * values exposed as <code>double</code>s.
+	 * 
+	 * @author Jean-Yves Tinevez
+	 *
+	 * @param <O>
+	 */
+	public static interface IntFeatureProjection< O > extends FeatureProjection< O >
+	{}
+
+	public static final class IntFeatureProjectionImp< O > implements IntFeatureProjection< O >
 	{
 
 		private final IntPropertyMap< O > pm;
 
-		public IntFeatureProjection( final IntPropertyMap< O > pm )
+		public IntFeatureProjectionImp( final IntPropertyMap< O > pm )
 		{
 			this.pm = pm;
 		}
