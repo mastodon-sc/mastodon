@@ -6,6 +6,7 @@ import static org.mastodon.revised.model.mamut.trackmate.TrackMateXMLKeys.EDGE_T
 import static org.mastodon.revised.model.mamut.trackmate.TrackMateXMLKeys.EDGE_TARGET_ATTRIBUTE;
 import static org.mastodon.revised.model.mamut.trackmate.TrackMateXMLKeys.FEATURE_ATTRIBUTE;
 import static org.mastodon.revised.model.mamut.trackmate.TrackMateXMLKeys.FEATURE_DECLARATION_TAG;
+import static org.mastodon.revised.model.mamut.trackmate.TrackMateXMLKeys.FEATURE_DIMENSION_ATTRIBUTE;
 import static org.mastodon.revised.model.mamut.trackmate.TrackMateXMLKeys.FEATURE_ISINT_ATTRIBUTE;
 import static org.mastodon.revised.model.mamut.trackmate.TrackMateXMLKeys.FEATURE_TAG;
 import static org.mastodon.revised.model.mamut.trackmate.TrackMateXMLKeys.FILENAME_ATTRIBUTE;
@@ -20,10 +21,12 @@ import static org.mastodon.revised.model.mamut.trackmate.TrackMateXMLKeys.POSITI
 import static org.mastodon.revised.model.mamut.trackmate.TrackMateXMLKeys.POSITION_Z_FEATURE_NAME;
 import static org.mastodon.revised.model.mamut.trackmate.TrackMateXMLKeys.RADIUS_FEATURE_NAME;
 import static org.mastodon.revised.model.mamut.trackmate.TrackMateXMLKeys.SETTINGS_TAG;
+import static org.mastodon.revised.model.mamut.trackmate.TrackMateXMLKeys.SPATIAL_UNITS_ATTRIBUTE;
 import static org.mastodon.revised.model.mamut.trackmate.TrackMateXMLKeys.SPOT_COLLECTION_TAG;
 import static org.mastodon.revised.model.mamut.trackmate.TrackMateXMLKeys.SPOT_ELEMENT_TAG;
 import static org.mastodon.revised.model.mamut.trackmate.TrackMateXMLKeys.SPOT_FEATURE_DECLARATION_TAG;
 import static org.mastodon.revised.model.mamut.trackmate.TrackMateXMLKeys.SPOT_FRAME_COLLECTION_TAG;
+import static org.mastodon.revised.model.mamut.trackmate.TrackMateXMLKeys.TIME_UNITS_ATTRIBUTE;
 import static org.mastodon.revised.model.mamut.trackmate.TrackMateXMLKeys.TRACK_COLLECTION_TAG;
 import static org.mastodon.revised.model.mamut.trackmate.TrackMateXMLKeys.TRACK_TAG;
 import static org.mastodon.revised.model.mamut.trackmate.TrackMateXMLKeys.VISIBILITY_FEATURE_NAME;
@@ -32,7 +35,6 @@ import java.io.File;
 import java.io.IOException;
 import java.text.NumberFormat;
 import java.text.ParseException;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -47,10 +49,9 @@ import org.mastodon.properties.DoublePropertyMap;
 import org.mastodon.properties.IntPropertyMap;
 import org.mastodon.revised.mamut.MamutProject;
 import org.mastodon.revised.model.AbstractModelImporter;
-import org.mastodon.revised.model.feature.Feature;
+import org.mastodon.revised.model.feature.DoubleScalarFeature;
 import org.mastodon.revised.model.feature.FeatureModel;
-import org.mastodon.revised.model.feature.FeatureProjection;
-import org.mastodon.revised.model.feature.FeatureProjectors;
+import org.mastodon.revised.model.feature.IntScalarFeature;
 import org.mastodon.revised.model.mamut.Link;
 import org.mastodon.revised.model.mamut.Model;
 import org.mastodon.revised.model.mamut.ModelGraph;
@@ -149,6 +150,13 @@ public class TrackMateImporter
 				throw new IOException( "Could not import TrackMate project. No <" + MODEL_TAG + "> element found." );
 
 			/*
+			 * Units.
+			 */
+
+			final String spaceUnits = modelEl.getAttributeValue( SPATIAL_UNITS_ATTRIBUTE );
+			final String timeUnits = modelEl.getAttributeValue( TIME_UNITS_ATTRIBUTE );
+
+			/*
 			 * Read feature declaration and instantiate mastodon features.
 			 */
 
@@ -159,12 +167,14 @@ public class TrackMateImporter
 			final List< Element > spotFeatureEls = spotFeatureDeclarationEl.getChildren( FEATURE_TAG );
 			final Map< String, DoublePropertyMap< Spot > > spotDoubleFeatureMap = new HashMap<>();
 			final Map< String, IntPropertyMap< Spot > > spotIntFeatureMap = new HashMap<>();
+			final Map< String, String > spotFeatureUnits = new HashMap<>();
 			for ( final Element featureEl : spotFeatureEls )
 			{
 				final String featureKey = featureEl.getAttributeValue( FEATURE_ATTRIBUTE );
 //			final String featureName = featureEl.getAttributeValue( FEATURE_NAME_ATTRIBUTE );
 //			final String featureShortName = featureEl.getAttributeValue( FEATURE_SHORT_NAME_ATTRIBUTE );
-//			final String featureDimension = featureEl.getAttributeValue( FEATURE_DIMENSION_ATTRIBUTE );
+				final String featureDimension = featureEl.getAttributeValue( FEATURE_DIMENSION_ATTRIBUTE );
+				spotFeatureUnits.put( featureKey, dimensionToUnits( featureDimension, spaceUnits, timeUnits ) );
 				final boolean featureIsInt = Boolean.parseBoolean( featureEl.getAttributeValue( FEATURE_ISINT_ATTRIBUTE ) );
 				if ( featureIsInt )
 				{
@@ -182,12 +192,14 @@ public class TrackMateImporter
 			final List< Element > edgeFeatureEls = edgeFeatureDeclarationEl.getChildren( FEATURE_TAG );
 			final Map< String, DoublePropertyMap< Link > > linkDoubleFeatureMap = new HashMap<>();
 			final Map< String, IntPropertyMap< Link > > linkIntFeatureMap = new HashMap<>();
+			final Map< String, String > edgeFeatureUnits = new HashMap<>();
 			for ( final Element featureEl : edgeFeatureEls )
 			{
 				final String featureKey = featureEl.getAttributeValue( FEATURE_ATTRIBUTE );
 //			final String featureName = featureEl.getAttributeValue( FEATURE_NAME_ATTRIBUTE );
 //			final String featureShortName = featureEl.getAttributeValue( FEATURE_SHORT_NAME_ATTRIBUTE );
-//			final String featureDimension = featureEl.getAttributeValue( FEATURE_DIMENSION_ATTRIBUTE );
+				final String featureDimension = featureEl.getAttributeValue( FEATURE_DIMENSION_ATTRIBUTE );
+				edgeFeatureUnits.put( featureKey, dimensionToUnits( featureDimension, spaceUnits, timeUnits ) );
 				final boolean featureIsInt = Boolean.parseBoolean( featureEl.getAttributeValue( FEATURE_ISINT_ATTRIBUTE ) );
 				if ( featureIsInt )
 				{
@@ -334,36 +346,66 @@ public class TrackMateImporter
 			 */
 
 			final FeatureModel featureModel = model.getFeatureModel();
+			featureModel.pauseListeners();
 			for ( final String featureKey : spotDoubleFeatureMap.keySet() )
 			{
 				final DoublePropertyMap< Spot > pm = spotDoubleFeatureMap.get( featureKey );
-				final Map< String, FeatureProjection< Spot > > projections = Collections.singletonMap( featureKey, FeatureProjectors.project( pm ) );
-				final Feature< Spot, DoublePropertyMap< Spot > > feature = new Feature<>( featureKey, Spot.class, pm, projections );
+				final String units = spotFeatureUnits.get( featureKey );
+				final DoubleScalarFeature< Spot > feature = new DoubleScalarFeature<>( featureKey, Spot.class, pm, units );
 				featureModel.declareFeature( feature );
 			}
 			for ( final String featureKey : spotIntFeatureMap.keySet() )
 			{
 				final IntPropertyMap< Spot > pm = spotIntFeatureMap.get( featureKey );
-				final Map< String, FeatureProjection< Spot > > projections = Collections.singletonMap( featureKey, FeatureProjectors.project( pm ) );
-				final Feature< Spot, IntPropertyMap< Spot > > feature = new Feature<>( featureKey, Spot.class, pm, projections );
+				final String units = spotFeatureUnits.get( featureKey );
+				final IntScalarFeature< Spot > feature = new IntScalarFeature<>( featureKey, Spot.class, pm, units );
 				featureModel.declareFeature( feature );
 			}
 			for ( final String featureKey : linkDoubleFeatureMap.keySet() )
 			{
 				final DoublePropertyMap< Link > pm = linkDoubleFeatureMap.get( featureKey );
-				final Map< String, FeatureProjection< Link > > projections = Collections.singletonMap( featureKey, FeatureProjectors.project( pm ) );
-				final Feature< Link, DoublePropertyMap< Link > > feature = new Feature<>( featureKey, Link.class, pm, projections );
+				final String units = edgeFeatureUnits.get( featureKey );
+				final DoubleScalarFeature< Link > feature = new DoubleScalarFeature<>( featureKey, Link.class, pm, units );
 				featureModel.declareFeature( feature );
 			}
 			for ( final String featureKey : linkIntFeatureMap.keySet() )
 			{
 				final IntPropertyMap< Link > pm = linkIntFeatureMap.get( featureKey );
-				final Map< String, FeatureProjection< Link > > projections = Collections.singletonMap( featureKey, FeatureProjectors.project( pm ) );
-				final Feature< Link, IntPropertyMap< Link > > feature = new Feature<>( featureKey, Link.class, pm, projections );
+				final String units = edgeFeatureUnits.get( featureKey );
+				final IntScalarFeature< Link > feature = new IntScalarFeature<>( featureKey, Link.class, pm, units );
 				featureModel.declareFeature( feature );
 			}
+			featureModel.resumeListeners();
 
 			finishImport();
+		}
+	}
+
+	private static final String dimensionToUnits( final String dimension, final String spaceUnits, final String timeUnits )
+	{
+		switch ( dimension )
+		{
+		case "QUALITY":
+			return "Quality";
+		case "INTENSITY":
+			return "Counts";
+		case "INTENSITY_SQUARED":
+			return "Counts²";
+		case "POSITION":
+		case "LENGTH":
+			return spaceUnits;
+		case "VELOCITY":
+			return spaceUnits + "/" + timeUnits;
+		case "TIME":
+			return timeUnits;
+		case "ANGLE":
+			return "Radians";
+		case "RATE":
+			return  "/" + timeUnits;
+		case "STRING":
+		case "NONE":
+		default:
+			return "";
 		}
 	}
 }

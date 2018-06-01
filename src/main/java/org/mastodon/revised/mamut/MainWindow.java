@@ -96,10 +96,8 @@ public class MainWindow extends JFrame
 
 		++gridy;
 
-		final JButton featureComputationButton = new JButton();
-		featureComputationButton.setText( "features and tags" );
-		featureComputationButton.setEnabled( false ); // TODO
-//		featureComputationButton.addActionListener( e -> toggleFeaturesDialog() );
+		final JButton featureComputationButton = new JButton( actionMap.get( WindowManager.COMPUTE_FEATURE_DIALOG ) );
+		featureComputationButton.setText( "compute features" );
 		button_gbc_right.gridy = gridy;
 		buttonsPanel.add( featureComputationButton, button_gbc_right );
 

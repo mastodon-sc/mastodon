@@ -1,13 +1,12 @@
 package org.mastodon.revised.mamut.feature;
 
 import java.util.Collections;
-import java.util.Map;
 import java.util.Set;
 
 import org.mastodon.properties.DoublePropertyMap;
-import org.mastodon.revised.model.feature.Feature;
-import org.mastodon.revised.model.feature.FeatureProjection;
-import org.mastodon.revised.model.feature.FeatureProjectors;
+import org.mastodon.revised.model.feature.DoubleScalarFeature;
+import org.mastodon.revised.model.feature.FeatureUtil;
+import org.mastodon.revised.model.feature.FeatureUtil.Dimension;
 import org.mastodon.revised.model.mamut.Link;
 import org.mastodon.revised.model.mamut.Model;
 import org.mastodon.revised.model.mamut.ModelGraph;
@@ -15,10 +14,18 @@ import org.mastodon.revised.model.mamut.Spot;
 import org.scijava.plugin.Plugin;
 
 @Plugin( type = LinkFeatureComputer.class, name = "Link displacement" )
-public class LinkDisplacementComputer implements LinkFeatureComputer
+public class LinkDisplacementComputer extends LinkDoubleScalarFeatureComputer
 {
 
 	public static final String KEY = "Link displacement";
+
+	private static final String HELP_STRING = "Computes the link displacement in physical units "
+			+ "as the distance between the source spot and the target spot.";
+
+	public LinkDisplacementComputer()
+	{
+		super( KEY );
+	}
 
 	@Override
 	public Set< String > getDependencies()
@@ -27,13 +34,7 @@ public class LinkDisplacementComputer implements LinkFeatureComputer
 	}
 
 	@Override
-	public String getKey()
-	{
-		return KEY;
-	}
-
-	@Override
-	public Feature< Link, DoublePropertyMap< Link > > compute( final Model model )
+	public DoubleScalarFeature< Link > compute( final Model model )
 	{
 		final ModelGraph graph = model.getGraph();
 		final DoublePropertyMap< Link > pm = new DoublePropertyMap<>( graph.edges(), Double.NaN );
@@ -56,9 +57,13 @@ public class LinkDisplacementComputer implements LinkFeatureComputer
 
 		graph.releaseRef( ref1 );
 		graph.releaseRef( ref2 );
+		final String units = FeatureUtil.dimensionToUnits( Dimension.LENGTH, spaceUnits, timeUnits );
+		return new DoubleScalarFeature<>( KEY, Link.class, pm, units );
+	}
 
-		final Map< String, FeatureProjection< Link > > projections = Collections.singletonMap( KEY, FeatureProjectors.project( pm ) );
-		final Feature< Link, DoublePropertyMap< Link > > feature = new Feature<>( KEY, Link.class, pm, projections );
-		return feature;
+	@Override
+	public String getHelpString()
+	{
+		return HELP_STRING;
 	}
 }

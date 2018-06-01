@@ -5,6 +5,8 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import org.mastodon.util.Listeners;
+
 /**
  * Default feature model.
  *
@@ -12,6 +14,12 @@ import java.util.Set;
  */
 public class DefaultFeatureModel implements FeatureModel
 {
+
+	private final Listeners.List< FeatureModelListener > listeners;
+
+	private boolean emitEvents = true;
+
+	private boolean fireAtResume = false;
 
 	private final Map< Class< ? >, Set< Feature< ?, ? > > > targetClassToFeatures;
 
@@ -24,6 +32,7 @@ public class DefaultFeatureModel implements FeatureModel
 	{
 		targetClassToFeatures = new HashMap<>();
 		keyToFeature = new HashMap<>();
+		listeners = new Listeners.SynchronizedList<>();
 	}
 
 	@Override
@@ -32,7 +41,7 @@ public class DefaultFeatureModel implements FeatureModel
 		// Features.
 		final Class< ? > clazz = feature.getTargetClass();
 		Set< Feature< ?, ? > > featureSet = targetClassToFeatures.get( clazz );
-		if (null == featureSet)
+		if ( null == featureSet )
 		{
 			featureSet = new HashSet<>();
 			targetClassToFeatures.put( clazz, featureSet );
@@ -41,6 +50,8 @@ public class DefaultFeatureModel implements FeatureModel
 
 		// Feature keys.
 		keyToFeature.put( feature.getKey(), feature );
+
+		fireFeatureModelChangedEvent();
 	}
 
 	@Override
@@ -48,6 +59,7 @@ public class DefaultFeatureModel implements FeatureModel
 	{
 		targetClassToFeatures.clear();
 		keyToFeature.clear();
+		fireFeatureModelChangedEvent();
 	}
 
 	@Override
@@ -60,5 +72,34 @@ public class DefaultFeatureModel implements FeatureModel
 	public Feature< ?, ? > getFeature( final String key )
 	{
 		return keyToFeature.get( key );
+	}
+
+	@Override
+	public Listeners< FeatureModelListener > listeners()
+	{
+		return listeners;
+	}
+
+	@Override
+	public void pauseListeners()
+	{
+		emitEvents = false;
+	}
+
+	@Override
+	public void resumeListeners()
+	{
+		emitEvents = true;
+		if ( fireAtResume )
+			listeners.list.forEach( ( l ) -> l.featureModelChanged() );
+		fireAtResume = false;
+	}
+
+	private void fireFeatureModelChangedEvent()
+	{
+		if ( emitEvents )
+			listeners.list.forEach( ( l ) -> l.featureModelChanged() );
+		else if ( !fireAtResume )
+			fireAtResume = true;
 	}
 }

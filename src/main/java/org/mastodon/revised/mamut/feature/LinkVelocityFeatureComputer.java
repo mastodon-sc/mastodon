@@ -1,13 +1,12 @@
 package org.mastodon.revised.mamut.feature;
 
 import java.util.Collections;
-import java.util.Map;
 import java.util.Set;
 
 import org.mastodon.properties.DoublePropertyMap;
-import org.mastodon.revised.model.feature.Feature;
-import org.mastodon.revised.model.feature.FeatureProjection;
-import org.mastodon.revised.model.feature.FeatureProjectors;
+import org.mastodon.revised.model.feature.DoubleScalarFeature;
+import org.mastodon.revised.model.feature.FeatureUtil;
+import org.mastodon.revised.model.feature.FeatureUtil.Dimension;
 import org.mastodon.revised.model.mamut.Link;
 import org.mastodon.revised.model.mamut.Model;
 import org.mastodon.revised.model.mamut.ModelGraph;
@@ -15,10 +14,17 @@ import org.mastodon.revised.model.mamut.Spot;
 import org.scijava.plugin.Plugin;
 
 @Plugin( type = LinkFeatureComputer.class, name = "Link velocity" )
-public class LinkVelocityFeatureComputer implements LinkFeatureComputer
+public class LinkVelocityFeatureComputer extends LinkDoubleScalarFeatureComputer
 {
 
 	public static final String KEY = "Link velocity";
+	private static final String HELP_STRING = "Computes the link velocity as the distance between "
+			+ "the source and target spots divided by their frame difference. Units are in physical distance per frame.";
+
+	public LinkVelocityFeatureComputer()
+	{
+		super( KEY );
+	}
 
 	@Override
 	public Set< String > getDependencies()
@@ -27,13 +33,7 @@ public class LinkVelocityFeatureComputer implements LinkFeatureComputer
 	}
 
 	@Override
-	public String getKey()
-	{
-		return KEY;
-	}
-
-	@Override
-	public Feature< Link, DoublePropertyMap< Link > > compute( final Model model )
+	public DoubleScalarFeature< Link > compute( final Model model )
 	{
 		final ModelGraph graph = model.getGraph();
 		final DoublePropertyMap< Link > pm = new DoublePropertyMap<>( graph.edges(), Double.NaN );
@@ -42,15 +42,14 @@ public class LinkVelocityFeatureComputer implements LinkFeatureComputer
 		final Spot ref2 = graph.vertexRef();
 
 		@SuppressWarnings( "unchecked" )
-		final Feature< Link, DoublePropertyMap< Link > > displacementFeature =
-				( Feature< Link, DoublePropertyMap< Link > > ) model.getFeatureModel().getFeature( LinkDisplacementComputer.KEY );
-		final DoublePropertyMap< Link > displacement = displacementFeature.getPropertyMap();
+		final DoubleScalarFeature< Link > displacement =
+				( DoubleScalarFeature< Link > ) model.getFeatureModel().getFeature( LinkDisplacementComputer.KEY );
 
 		for ( final Link link : graph.edges() )
 		{
 			if ( displacement.isSet( link ) )
 			{
-				final double disp = displacement.getDouble( link );
+				final double disp = displacement.getValue( link );
 				final Spot source = link.getSource( ref1 );
 				final Spot target = link.getTarget( ref2 );
 				final double dt = Math.abs( source.getTimepoint() - target.getTimepoint() );
@@ -60,9 +59,12 @@ public class LinkVelocityFeatureComputer implements LinkFeatureComputer
 
 		graph.releaseRef( ref1 );
 		graph.releaseRef( ref2 );
+		return new DoubleScalarFeature<>( KEY, Link.class, pm, FeatureUtil.dimensionToUnits( Dimension.VELOCITY, spaceUnits, timeUnits ) );
+	}
 
-		final Map< String, FeatureProjection< Link > > projections = Collections.singletonMap( KEY, FeatureProjectors.project( pm ) );
-		final Feature< Link, DoublePropertyMap< Link > > feature = new Feature<>( KEY, Link.class, pm, projections );
-		return feature;
+	@Override
+	public String getHelpString()
+	{
+		return HELP_STRING;
 	}
 }

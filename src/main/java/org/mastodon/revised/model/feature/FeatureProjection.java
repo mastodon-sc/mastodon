@@ -46,4 +46,11 @@ public interface FeatureProjection< K >
 	 */
 	public double value( K obj );
 
+	/**
+	 * Returns the physical units of this projection.
+	 *
+	 * @return the units.
+	 */
+	public String units();
+
 }

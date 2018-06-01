@@ -1,22 +1,19 @@
 package org.mastodon.revised.mamut;
 
 import java.awt.Component;
-import java.awt.Dialog;
 import java.io.File;
 import java.io.IOException;
 import java.util.Random;
 
-import javax.swing.JFrame;
-
 import org.mastodon.plugin.MastodonPlugins;
 import org.mastodon.revised.bdv.SharedBigDataViewerData;
 import org.mastodon.revised.bdv.overlay.ui.RenderSettingsManager;
-import org.mastodon.revised.mamut.feature.MamutFeatureComputerService;
 import org.mastodon.revised.model.mamut.Model;
 import org.mastodon.revised.model.mamut.trackmate.MamutExporter;
 import org.mastodon.revised.model.mamut.trackmate.TrackMateImporter;
 import org.mastodon.revised.model.tag.TagSetStructure;
 import org.mastodon.revised.trackscheme.display.style.TrackSchemeStyleManager;
+import org.mastodon.revised.ui.coloring.feature.FeatureColorModeManager;
 import org.mastodon.revised.ui.keymap.CommandDescriptionProvider;
 import org.mastodon.revised.ui.keymap.CommandDescriptions;
 import org.mastodon.revised.ui.keymap.KeymapManager;
@@ -24,7 +21,6 @@ import org.mastodon.revised.ui.util.FileChooser;
 import org.mastodon.revised.ui.util.FileChooser.SelectionMode;
 import org.mastodon.revised.ui.util.XmlFileFilter;
 import org.mastodon.revised.util.DummySpimData;
-import org.mastodon.revised.util.ToggleDialogAction;
 import org.scijava.plugin.Plugin;
 import org.scijava.ui.behaviour.KeyPressedManager;
 import org.scijava.ui.behaviour.util.AbstractNamedAction;
@@ -274,6 +270,7 @@ public class ProjectManager
 		final TrackSchemeStyleManager trackSchemeStyleManager = windowManager.getTrackSchemeStyleManager();
 		final RenderSettingsManager renderSettingsManager = windowManager.getRenderSettingsManager();
 		final KeymapManager keymapManager = windowManager.getKeymapManager();
+		final FeatureColorModeManager featureColorModeManager = windowManager.getFeatureColorModeManager();
 		final MastodonPlugins plugins = windowManager.getPlugins();
 		final Actions globalAppActions = windowManager.getGlobalAppActions();
 		final ViewerOptions options = ViewerOptions.options().shareKeyPressedEvents( keyPressedManager );
@@ -283,7 +280,16 @@ public class ProjectManager
 				options,
 				() -> windowManager.forEachBdvView( bdv -> bdv.requestRepaint() ) );
 
-		final MamutAppModel appModel = new MamutAppModel( model, sharedBdvData, keyPressedManager, trackSchemeStyleManager, renderSettingsManager, keymapManager, plugins, globalAppActions );
+		final MamutAppModel appModel = new MamutAppModel(
+				model,
+				sharedBdvData,
+				keyPressedManager,
+				trackSchemeStyleManager,
+				renderSettingsManager,
+				featureColorModeManager,
+				keymapManager,
+				plugins,
+				globalAppActions );
 
 		/*
 		 * Feature calculation.
@@ -310,14 +316,6 @@ public class ProjectManager
 		}
 
 		windowManager.setAppModel( appModel );
-
-		final MamutFeatureComputerService featureComputerService = windowManager.getContext().getService( MamutFeatureComputerService.class );
-		final JFrame owner = null; // TODO
-		final Dialog featureComputationDialog = new FeatureAndTagDialog( owner, model, featureComputerService );
-		featureComputationDialog.setSize( 400, 400 );
-
-		final ToggleDialogAction toggleFeatureComputationDialogAction = new ToggleDialogAction( "feature computation", featureComputationDialog );
-
 		this.project = project;
 		updateEnabledActions();
 	}

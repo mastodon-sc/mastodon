@@ -15,7 +15,7 @@ import org.scijava.service.SciJavaService;
  * @param <AM>
  *            the type of the model on which features are computed.
  */
-public interface FeatureComputerService< AM extends AbstractModel< ?, ?, ? > > extends SciJavaService
+public interface FeatureComputerService< AM extends AbstractModel< ?, ?, ? >, FC extends FeatureComputer< AM > > extends SciJavaService
 {
 
 	/**
@@ -23,7 +23,7 @@ public interface FeatureComputerService< AM extends AbstractModel< ?, ?, ? > > e
 	 *
 	 * @return the available feature computers.
 	 */
-	public Collection< FeatureComputer< AM > > getFeatureComputers();
+	public Collection< FC > getFeatureComputers();
 
 	/**
 	 * Executes feature computation for the specified computers on the specified
@@ -41,6 +41,6 @@ public interface FeatureComputerService< AM extends AbstractModel< ?, ?, ? > > e
 	 *            a progress listener, used to report calculation progress.
 	 * @return <code>true</code> if computation terminated successfully.
 	 */
-	public boolean compute( AM model, FeatureModel featureModel, Set< FeatureComputer< AM > > selectedComputers, ProgressListener progressListener );
+	public boolean compute( AM model, FeatureModel featureModel, Set< FC > selectedComputers, ProgressListener progressListener );
 
 }

@@ -105,6 +105,39 @@ public class SettingsPanel extends JPanel
 		pages.repaint();
 	}
 
+	public void removePage( final String path )
+	{
+		final String[] parts = path.split( ">" );
+		DefaultMutableTreeNode current = root;
+		for ( final String part : parts )
+		{
+			final String text = part.trim();
+			DefaultMutableTreeNode next = null;
+			for ( int i = 0; i < current.getChildCount(); ++i )
+			{
+				final DefaultMutableTreeNode child = ( DefaultMutableTreeNode ) current.getChildAt( i );
+				final SettingsNodeData data = ( SettingsNodeData ) child.getUserObject();
+				if ( text.equals( data.name ) )
+				{
+					next = child;
+					break;
+				}
+			}
+			current = next;
+		}
+		if ( null == current )
+			return; // Path not found in the tree.
+
+		model.removeNodeFromParent( current );
+		for ( final SettingsPage page : getPages() )
+		{
+			if ( page.getTreePath().equals( path ) )
+				pages.remove( page.getJPanel() );
+		}
+		pages.revalidate();
+		pages.repaint();
+	}
+
 	public SettingsPanel()
 	{
 		root = new DefaultMutableTreeNode( new SettingsNodeData( "root", null ) );

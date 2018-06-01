@@ -2,6 +2,8 @@ package org.mastodon.revised.model.feature;
 
 import java.util.Set;
 
+import org.mastodon.util.Listeners;
+
 /**
  * Interface for feature models, classes that manage a collection of features in
  * a model graph.
@@ -10,6 +12,14 @@ import java.util.Set;
  */
 public interface FeatureModel
 {
+
+	public interface FeatureModelListener
+	{
+		/**
+		 * Notifies a listener that the feature model it listens has changed.
+		 */
+		public void featureModelChanged();
+	}
 
 	public Set< Feature< ?, ? > > getFeatureSet( Class< ? > targetClass );
 
@@ -36,5 +46,26 @@ public interface FeatureModel
 	 *         key is not registered in this model.
 	 */
 	public Feature< ?, ? > getFeature( String key );
+
+	/**
+	 * Exposes the list of listeners that are notified when a change happens to
+	 * this feature model. Events are fired for every call to {@link #clear()}
+	 * or {@link #declareFeature(Feature)} methods.
+	 * 
+	 * @return the list of the listeners.
+	 */
+	public Listeners< FeatureModelListener > listeners();
+
+	/**
+	 * Pause sending events to the feature model.
+	 */
+	public void pauseListeners();
+
+	/**
+	 * Resume sending events to the feature model. If events were generated
+	 * while the listeners were paused, an event is fired by calling this
+	 * method.
+	 */
+	public void resumeListeners();
 
 }

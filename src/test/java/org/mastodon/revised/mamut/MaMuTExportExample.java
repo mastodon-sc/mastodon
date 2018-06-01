@@ -6,10 +6,10 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.jdom2.JDOMException;
+import org.mastodon.revised.mamut.feature.MamutFeatureComputer;
 import org.mastodon.revised.mamut.feature.MamutFeatureComputerService;
-import org.mastodon.revised.model.feature.FeatureComputer;
-import org.mastodon.revised.model.mamut.ModelUtils;
 import org.mastodon.revised.model.mamut.Model;
+import org.mastodon.revised.model.mamut.ModelUtils;
 import org.mastodon.revised.model.mamut.trackmate.MamutExporter;
 import org.mastodon.revised.model.mamut.trackmate.TrackMateImporter;
 import org.mastodon.revised.ui.ProgressListener;
@@ -39,7 +39,7 @@ public class MaMuTExportExample
 
 		final Context context = new Context( MamutFeatureComputerService.class );
 		final MamutFeatureComputerService featureComputerService = context.getService( MamutFeatureComputerService.class );
-		final Set< FeatureComputer< Model > > featureComputers = new HashSet<>( featureComputerService.getFeatureComputers() );
+		final Set< MamutFeatureComputer > featureComputers = new HashSet<>( featureComputerService.getFeatureComputers() );
 		final ProgressListener pl = new ProgressListener()
 		{
 

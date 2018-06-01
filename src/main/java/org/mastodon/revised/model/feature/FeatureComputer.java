@@ -1,15 +1,20 @@
 package org.mastodon.revised.model.feature;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.Set;
 
+import javax.swing.JComponent;
+
+import org.mastodon.graph.io.RawGraphIO.FileIdToGraphMap;
 import org.mastodon.revised.model.AbstractModel;
 import org.scijava.plugin.SciJavaPlugin;
 
 /**
  * Interface for classes that can compute a feature on a model.
  * <p>
- * Concrete implementations must be stateless, without side effects. A computer
- * must generate a single feature, however a feature does not have to be scalar.
+ * A computer must generate a single feature, however a feature does not have to
+ * be scalar.
  *
  * @param <AM>
  *            the type of the model the feature is calculated on and stored in.
@@ -44,4 +49,34 @@ public interface FeatureComputer< AM extends AbstractModel< ?, ?, ? > > extends 
 	 * @return the feature key.
 	 */
 	public String getKey();
+
+	/**
+	 * Deserializes a feature from the specified file.
+	 *
+	 * @param file
+	 *            the raw file to deserialize.
+	 * @param support
+	 *            the model the feature to deserialized is defined on. Must
+	 *            itself be properly deserialized and unmodified since.
+	 * @param fileIdToGraphMap
+	 *            the map collection that links file object ids to graph object
+	 *            ids.
+	 * @return the deserialized feature.
+	 * @throws IOException
+	 *             if an IO error occurs during deserialization.
+	 */
+	public Feature< ?, ? > deserialize( File file, AM support, FileIdToGraphMap< ?, ? > fileIdToGraphMap ) throws IOException;
+
+	/**
+	 * Returns a help string that defines the feature and explains how the it is
+	 * calculated.
+	 *
+	 * @return a help string.
+	 */
+	public String getHelpString();
+
+	public default JComponent getConfigPanel()
+	{
+		return null;
+	}
 }

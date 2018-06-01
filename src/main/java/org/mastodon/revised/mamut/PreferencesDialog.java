@@ -59,4 +59,10 @@ public class PreferencesDialog extends JDialog
 		settingsPanel.addPage( page );
 		pack();
 	}
+
+	public void removePage( final String treePath )
+	{
+		settingsPanel.removePage( treePath );
+		pack();
+	}
 }

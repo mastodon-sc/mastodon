@@ -13,12 +13,20 @@ import org.mastodon.plugin.MastodonPluginAppModel;
 import org.mastodon.plugin.MastodonPlugins;
 import org.mastodon.revised.bdv.overlay.ui.RenderSettingsConfigPage;
 import org.mastodon.revised.bdv.overlay.ui.RenderSettingsManager;
+import org.mastodon.revised.mamut.feature.MamutFeatureComputer;
+import org.mastodon.revised.mamut.feature.MamutFeatureComputerService;
+import org.mastodon.revised.model.feature.FeatureModel;
+import org.mastodon.revised.model.feature.ui.FeatureCalculationDialog;
+import org.mastodon.revised.model.mamut.Link;
 import org.mastodon.revised.model.mamut.Model;
 import org.mastodon.revised.model.mamut.Spot;
 import org.mastodon.revised.model.tag.ui.TagSetDialog;
 import org.mastodon.revised.trackscheme.display.style.TrackSchemeStyleManager;
 import org.mastodon.revised.trackscheme.display.style.TrackSchemeStyleSettingsPage;
 import org.mastodon.revised.ui.SelectionActions;
+import org.mastodon.revised.ui.coloring.feature.FeatureColorModeConfigPage;
+import org.mastodon.revised.ui.coloring.feature.FeatureColorModeManager;
+import org.mastodon.revised.ui.coloring.feature.FeatureRangeCalculator;
 import org.mastodon.revised.ui.keymap.CommandDescriptionProvider;
 import org.mastodon.revised.ui.keymap.CommandDescriptions;
 import org.mastodon.revised.ui.keymap.CommandDescriptionsBuilder;
@@ -45,11 +53,13 @@ public class WindowManager
 	public static final String NEW_TRACKSCHEME_VIEW = "new trackscheme view";
 	public static final String PREFERENCES_DIALOG = "Preferences";
 	public static final String TAGSETS_DIALOG = "edit tag sets";
+	public static final String COMPUTE_FEATURE_DIALOG = "compute features";
 
 	static final String[] NEW_BDV_VIEW_KEYS = new String[] { "not mapped" };
 	static final String[] NEW_TRACKSCHEME_VIEW_KEYS = new String[] { "not mapped" };
 	static final String[] PREFERENCES_DIALOG_KEYS = new String[] { "meta COMMA", "ctrl COMMA" };
 	static final String[] TAGSETS_DIALOG_KEYS = new String[] { "not mapped" };
+	static final String[] COMPUTE_FEATURE_DIALOG_KEYS = new String[] { "not mapped" };
 
 	/*
 	 * Command descriptions for all provided commands
@@ -107,11 +117,19 @@ public class WindowManager
 
 	private final AbstractNamedAction editTagSetsAction;
 
+	private final AbstractNamedAction featureComputationAction;
+
 	private MamutAppModel appModel;
 
 	private TagSetDialog tagSetDialog;
 
+	private FeatureCalculationDialog< Model, MamutFeatureComputer > featureComputationDialog;
+
 	final ProjectManager projectManager;
+
+	final PreferencesDialog settings;
+
+	private final FeatureColorModeManager featureColorModeManager;
 
 	public WindowManager( final Context context )
 	{
@@ -121,6 +139,7 @@ public class WindowManager
 		trackSchemeStyleManager = new TrackSchemeStyleManager();
 		renderSettingsManager = new RenderSettingsManager();
 		keymapManager = new KeymapManager();
+		featureColorModeManager = new FeatureColorModeManager();
 
 		final Keymap keymap = keymapManager.getForwardDefaultKeymap();
 
@@ -147,12 +166,14 @@ public class WindowManager
 		newBdvViewAction = new RunnableAction( NEW_BDV_VIEW, this::createBigDataViewer );
 		newTrackSchemeViewAction = new RunnableAction( NEW_TRACKSCHEME_VIEW, this::createTrackScheme );
 		editTagSetsAction = new RunnableAction( TAGSETS_DIALOG, this::editTagSets );
+		featureComputationAction = new RunnableAction( COMPUTE_FEATURE_DIALOG, this::computeFeatures );
 
 		globalAppActions.namedAction( newBdvViewAction, NEW_BDV_VIEW_KEYS );
 		globalAppActions.namedAction( newTrackSchemeViewAction, NEW_TRACKSCHEME_VIEW_KEYS );
 		globalAppActions.namedAction( editTagSetsAction, TAGSETS_DIALOG_KEYS );
+		globalAppActions.namedAction( featureComputationAction, COMPUTE_FEATURE_DIALOG_KEYS );
 
-		final PreferencesDialog settings = new PreferencesDialog( null, keymap, new String[] { KeyConfigContexts.MASTODON } );
+		settings = new PreferencesDialog( null, keymap, new String[] { KeyConfigContexts.MASTODON } );
 		settings.addPage( new TrackSchemeStyleSettingsPage( "TrackScheme Styles", trackSchemeStyleManager ) );
 		settings.addPage( new RenderSettingsConfigPage( "BDV Render Settings", renderSettingsManager ) );
 		settings.addPage( new KeymapSettingsPage( "Keymap", keymapManager, descriptions ) );
@@ -189,18 +210,24 @@ public class WindowManager
 		newBdvViewAction.setEnabled( appModel != null );
 		newTrackSchemeViewAction.setEnabled( appModel != null );
 		editTagSetsAction.setEnabled( appModel != null );
+		featureComputationAction.setEnabled( appModel != null );
 	}
 
 	void setAppModel( final MamutAppModel appModel )
 	{
 		closeAllWindows();
 
+		final String featureColorTreePath = "Feature Color Modes";
+
 		this.appModel = appModel;
 		if ( appModel == null )
 		{
 			tagSetDialog.dispose();
 			tagSetDialog = null;
+			featureComputationDialog.dispose();
+			featureComputationDialog = null;
 			updateEnabledActions();
+			settings.removePage( featureColorTreePath );
 			return;
 		}
 
@@ -210,6 +237,17 @@ public class WindowManager
 
 		final Keymap keymap = keymapManager.getForwardDefaultKeymap();
 		tagSetDialog = new TagSetDialog( null, model.getTagSetModel(), model, keymap, new String[] { KeyConfigContexts.MASTODON } );
+		final MamutFeatureComputerService computerService = context.getService( MamutFeatureComputerService.class );
+		computerService.setSharedBdvData( appModel.getSharedBdvData() );
+		final FeatureModel featureModel = model.getFeatureModel();
+		featureComputationDialog = new FeatureCalculationDialog<>( null, computerService, model, featureModel );
+		final FeatureColorModeConfigPage featureColorModeConfigPage = new FeatureColorModeConfigPage(
+				featureColorTreePath,
+				featureColorModeManager,
+				appModel.getModel().getFeatureModel(),
+				new FeatureRangeCalculator<>( appModel.getModel().getGraph(), appModel.getModel().getFeatureModel() ),
+				Spot.class, Link.class );
+		settings.addPage( featureColorModeConfigPage );
 		updateEnabledActions();
 
 		plugins.setAppModel( new MastodonPluginAppModel( appModel, this ) );
@@ -285,6 +323,14 @@ public class WindowManager
 		}
 	}
 
+	public void computeFeatures()
+	{
+		if ( appModel != null )
+		{
+			featureComputationDialog.setVisible( true );
+		}
+	}
+
 	public void closeAllWindows()
 	{
 		final ArrayList< JFrame > frames = new ArrayList<>();
@@ -328,6 +374,11 @@ public class WindowManager
 	RenderSettingsManager getRenderSettingsManager()
 	{
 		return renderSettingsManager;
+	}
+
+	FeatureColorModeManager getFeatureColorModeManager()
+	{
+		return featureColorModeManager;
 	}
 
 	KeymapManager getKeymapManager()
