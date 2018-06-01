@@ -15,22 +15,11 @@ import org.mastodon.revised.model.feature.IntScalarFeature;
 import org.mastodon.revised.model.mamut.Model;
 import org.mastodon.revised.model.mamut.Spot;
 
-public abstract class SpotIntScalarFeatureComputer implements SpotFeatureComputer
+public abstract class SpotIntScalarFeatureComputer extends SpotFeatureComputer
 {
-	/**
-	 * The key of the feature this computer generates.
-	 */
-	protected final String key;
-
 	public SpotIntScalarFeatureComputer( final String key )
 	{
-		this.key = key;
-	}
-
-	@Override
-	public String getKey()
-	{
-		return key;
+		super( key );
 	}
 
 	@Override
@@ -40,13 +29,16 @@ public abstract class SpotIntScalarFeatureComputer implements SpotFeatureCompute
 				new BufferedInputStream(
 						new FileInputStream( file ), 1024 * 1024 ) ))
 		{
+			// UNITS.
+			final String units = ois.readUTF();
+			// CONTENT.
 			final PoolCollectionWrapper< Spot > vertices = model.getGraph().vertices();
 			final IntPropertyMap< Spot > pm = new IntPropertyMap<>( vertices, Integer.MIN_VALUE, vertices.size() );
 			final IntPropertyMapSerializer< Spot > serializer = new IntPropertyMapSerializer<>( pm );
 			@SuppressWarnings( "unchecked" )
 			final FileIdToObjectMap< Spot > idToLinkMap = ( FileIdToObjectMap< Spot > ) fileIdToGraphMap.edges();
 			serializer.readPropertyMap( idToLinkMap, ois );
-			return new IntScalarFeature<>( key, Spot.class, pm );
+			return new IntScalarFeature<>( getKey(), Spot.class, pm, units );
 		}
 		catch ( final ClassNotFoundException e )
 		{

@@ -54,7 +54,26 @@ public class DoubleArrayFeature< O > implements Feature< O, double[] >
 
 	private final int length;
 
-	public DoubleArrayFeature( final String key, final Class< O > targetClass, final List< DoublePropertyMap< O > > propertyMaps, final List< String > projectionKeys )
+	/**
+	 * Creates an {@link DoubleArrayFeature}.
+	 *
+	 * @param key
+	 *            the key of the feature.
+	 * @param targetClass
+	 *            the target class of the feature.
+	 * @param propertyMaps
+	 *            the list of property maps that makes this feature.
+	 * @param projectionKeys
+	 *            the list of projection keys.
+	 * @param projectionUnits
+	 *            the list of projection units.
+	 */
+	public DoubleArrayFeature(
+			final String key,
+			final Class< O > targetClass,
+			final List< DoublePropertyMap< O > > propertyMaps,
+			final List< String > projectionKeys,
+			final List< String > projectionUnits )
 	{
 		this.length = propertyMaps.size();
 		this.key = key;
@@ -63,7 +82,7 @@ public class DoubleArrayFeature< O > implements Feature< O, double[] >
 		this.projectionKeys = projectionKeys;
 		final HashMap< String, FeatureProjection< O > > pm = new HashMap<>( length );
 		for ( int i = 0; i < length; i++ )
-			pm.put( projectionKeys.get( i ), FeatureProjectors.project( propertyMaps.get( i ) ) );
+			pm.put( projectionKeys.get( i ), FeatureUtil.project( propertyMaps.get( i ), projectionUnits.get( i ) ) );
 		this.projections = Collections.unmodifiableMap( pm );
 	}
 
@@ -156,7 +175,10 @@ public class DoubleArrayFeature< O > implements Feature< O, double[] >
 			for ( int i = 0; i < length; i++ )
 			{
 				// NAME OF ENTRIES
-				oos.writeUTF( projectionKeys.get( i ) );
+				final String pKey = projectionKeys.get( i );
+				oos.writeUTF( pKey  );
+				// UNITS.
+				oos.writeUTF( projections.get( pKey ).units() );
 				// NUMBER OF ENTRIES and ENTRIES
 				final DoublePropertyMapSerializer< O > serializer = new DoublePropertyMapSerializer<>( propertyMaps.get( i ) );
 				serializer.writePropertyMap( idmap, oos );

@@ -28,6 +28,8 @@ import org.mastodon.properties.DoublePropertyMap;
 import org.mastodon.revised.bdv.SharedBigDataViewerData;
 import org.mastodon.revised.bdv.overlay.util.JamaEigenvalueDecomposition;
 import org.mastodon.revised.model.feature.DoubleArrayFeature;
+import org.mastodon.revised.model.feature.FeatureUtil;
+import org.mastodon.revised.model.feature.FeatureUtil.Dimension;
 import org.mastodon.revised.model.mamut.Model;
 import org.mastodon.revised.model.mamut.Spot;
 import org.mastodon.spatial.SpatialIndex;
@@ -44,7 +46,7 @@ import net.imglib2.realtransform.AffineTransform3D;
 import net.imglib2.type.numeric.RealType;
 
 @Plugin( type = SpotFeatureComputer.class, name = "Spot gaussian-filtered intensity" )
-public class SpotGaussFilteredIntensityComputer implements SpotFeatureComputer
+public class SpotGaussFilteredIntensityComputer extends SpotFeatureComputer
 {
 
 	public static final String KEY = "Spot gaussian-filtered intensity";
@@ -58,6 +60,11 @@ public class SpotGaussFilteredIntensityComputer implements SpotFeatureComputer
 					+ "The average is calculated by a weighted mean over the pixels of the spot, "
 					+ "weighted by a gaussian centered in the spot and with a sigma value equal "
 					+ "to the minimal radius of the ellipsoid divided by " + SIGMA_FACTOR + ".";
+
+	public SpotGaussFilteredIntensityComputer()
+	{
+		super( KEY );
+	}
 
 	private SharedBigDataViewerData bdvData;
 
@@ -116,6 +123,7 @@ public class SpotGaussFilteredIntensityComputer implements SpotFeatureComputer
 				nSourcesToProcess++;
 		final List< DoublePropertyMap< Spot > > pms = new ArrayList<>( nSourcesToProcess * 2 );
 		final List< String > names = new ArrayList<>( nSourcesToProcess * 2 );
+		final List< String > units = new ArrayList<>( nSourcesToProcess * 2 );
 
 		final SpatioTemporalIndex< Spot > index = model.getSpatioTemporalIndex();
 		final int numTimepoints = bdvData.getNumTimepoints();
@@ -130,10 +138,12 @@ public class SpotGaussFilteredIntensityComputer implements SpotFeatureComputer
 			pms.add( pmMean );
 			final String nameMean = "Average ch " + iSource;
 			names.add( nameMean );
+			units.add( FeatureUtil.dimensionToUnits( Dimension.INTENSITY, spaceUnits, timeUnits ) );
 			final DoublePropertyMap< Spot > pmStd = new DoublePropertyMap<>( vertices, Double.NaN );
 			pms.add( pmStd );
 			final String nameStd = "Std ch " + iSource;
 			names.add( nameStd );
+			units.add( FeatureUtil.dimensionToUnits( Dimension.INTENSITY, spaceUnits, timeUnits ) );
 
 			final Source< ? > source = sources.get( iSource ).getSpimSource();
 			for ( int timepoint = 0; timepoint < numTimepoints; timepoint++ )
@@ -212,7 +222,7 @@ public class SpotGaussFilteredIntensityComputer implements SpotFeatureComputer
 				}
 			}
 		}
-		return new DoubleArrayFeature<>( KEY, Spot.class, pms, names );
+		return new DoubleArrayFeature<>( KEY, Spot.class, pms, names, units );
 	}
 
 	private static final double[] halfkernel( final double sigma, final double offset, final int size )
@@ -262,11 +272,15 @@ public class SpotGaussFilteredIntensityComputer implements SpotFeatureComputer
 			final int nSources = ois.readInt();
 			final List< DoublePropertyMap< Spot > > propertyMaps = new ArrayList<>();
 			final List< String > names = new ArrayList<>();
+			final List< String > units = new ArrayList<>();
 			for ( int i = 0; i < nSources; i++ )
 			{
 				// NAME OF ENTRIES
 				final String name = ois.readUTF();
 				names.add( name );
+				// UNITS.
+				final String unit = ois.readUTF();
+				units.add( unit );
 				// NUMBER OF ENTRIES and ENTRIES
 				final PoolCollectionWrapper< Spot > vertices = support.getGraph().vertices();
 				final DoublePropertyMap< Spot > pm = new DoublePropertyMap<>( vertices, Double.NaN, vertices.size() );
@@ -276,7 +290,7 @@ public class SpotGaussFilteredIntensityComputer implements SpotFeatureComputer
 				serializer.readPropertyMap( idToSpotMap, ois );
 				propertyMaps.add( pm );
 			}
-			return new DoubleArrayFeature<>( KEY, Spot.class, propertyMaps, names );
+			return new DoubleArrayFeature<>( KEY, Spot.class, propertyMaps, names, units );
 		}
 		catch ( final ClassNotFoundException e )
 		{

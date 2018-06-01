@@ -5,6 +5,8 @@ import java.util.Set;
 
 import org.mastodon.pool.PoolCollectionWrapper;
 import org.mastodon.properties.IntPropertyMap;
+import org.mastodon.revised.model.feature.FeatureUtil;
+import org.mastodon.revised.model.feature.FeatureUtil.Dimension;
 import org.mastodon.revised.model.feature.IntScalarFeature;
 import org.mastodon.revised.model.mamut.Model;
 import org.mastodon.revised.model.mamut.Spot;
@@ -14,7 +16,7 @@ import gnu.trove.map.TIntIntMap;
 import gnu.trove.map.hash.TIntIntHashMap;
 
 @Plugin( type = SpotFeatureComputer.class, name = "Track N spots" )
-public class TrackSizeFeatureComputer extends SpotIntScalarFeatureComputer implements SpotFeatureComputer
+public class TrackSizeFeatureComputer extends SpotIntScalarFeatureComputer
 {
 
 	public static final String KEY = "Track N spots";
@@ -50,7 +52,7 @@ public class TrackSizeFeatureComputer extends SpotIntScalarFeatureComputer imple
 		for ( final Spot spot : vertices )
 			trackNSpots.set( spot, nSpots.get( trackID.getValue( spot ) ) );
 
-		return new IntScalarFeature<>( KEY, Spot.class, trackNSpots );
+		return new IntScalarFeature<>( KEY, Spot.class, trackNSpots, FeatureUtil.dimensionToUnits( Dimension.NONE, spaceUnits, timeUnits ) );
 	}
 
 	@Override

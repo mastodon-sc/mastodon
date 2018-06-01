@@ -37,6 +37,10 @@ public class DoubleScalarFeature< O > implements Feature< O, Double >
 	 */
 	private final DoublePropertyMap< O > propertyMap;
 
+	private final Map< String, FeatureProjection< O > > proj;
+
+	private final String units;
+
 	/**
 	 * Creates a new immutable feature instance.
 	 *
@@ -47,12 +51,16 @@ public class DoubleScalarFeature< O > implements Feature< O, Double >
 	 *            The class of the feature target.
 	 * @param propertyMap
 	 *            The feature property map.
+	 * @param units
+	 *            the projection units.
 	 */
-	public DoubleScalarFeature( final String key, final Class< O > targetClass, final DoublePropertyMap< O > propertyMap )
+	public DoubleScalarFeature( final String key, final Class< O > targetClass, final DoublePropertyMap< O > propertyMap, final String units )
 	{
 		this.key = key;
 		this.targetClass = targetClass;
 		this.propertyMap = propertyMap;
+		this.units = units;
+		this.proj = Collections.singletonMap( key, FeatureUtil.project( propertyMap, units ) );
 	}
 
 	@Override
@@ -64,7 +72,7 @@ public class DoubleScalarFeature< O > implements Feature< O, Double >
 	@Override
 	public Map< String, FeatureProjection< O > > getProjections()
 	{
-		return Collections.singletonMap( key, FeatureProjectors.project( propertyMap ) );
+		return proj;
 	}
 
 	@Override
@@ -103,6 +111,9 @@ public class DoubleScalarFeature< O > implements Feature< O, Double >
 				new BufferedOutputStream(
 						new FileOutputStream( file ), 1024 * 1024 ) ))
 		{
+			// UNITS.
+			oos.writeUTF( units );
+			// CONTENT.
 			final DoublePropertyMapSerializer< O > serializer = new DoublePropertyMapSerializer<>( propertyMap );
 			serializer.writePropertyMap( idmap, oos );
 		}

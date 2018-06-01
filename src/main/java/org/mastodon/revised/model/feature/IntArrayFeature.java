@@ -18,10 +18,10 @@ import org.mastodon.properties.IntPropertyMap;
  * A feature implementation for array where elements are <code>int</code>s.
  * <p>
  * Concretely, the arrays elements are stored in <code>length</code>-number of
- * {@link IntPropertyMap}. This favors situation where consumers want to
- * access the same element in the array for many objects, <i>e.g.</i> to iterate
- * over all the values of a single projection.
-
+ * {@link IntPropertyMap}. This favors situation where consumers want to access
+ * the same element in the array for many objects, <i>e.g.</i> to iterate over
+ * all the values of a single projection.
+ *
  * @author Jean-Yves Tinevez
  *
  * @param <O>
@@ -54,7 +54,26 @@ public class IntArrayFeature< O > implements Feature< O, int[] >
 
 	private final int length;
 
-	public IntArrayFeature( final String key, final Class< O > targetClass, final List< IntPropertyMap< O > > propertyMaps, final List< String > projectionKeys )
+	/**
+	 * Creates an {@link IntArrayFeature}.
+	 *
+	 * @param key
+	 *            the key of the feature.
+	 * @param targetClass
+	 *            the target class of the feature.
+	 * @param propertyMaps
+	 *            the list of property maps that makes this feature.
+	 * @param projectionKeys
+	 *            the list of projection keys.
+	 * @param projectionUnits
+	 *            the list of projection units.
+	 */
+	public IntArrayFeature(
+			final String key,
+			final Class< O > targetClass,
+			final List< IntPropertyMap< O > > propertyMaps,
+			final List< String > projectionKeys,
+			final List< String > projectionUnits )
 	{
 		this.length = propertyMaps.size();
 		this.key = key;
@@ -63,7 +82,7 @@ public class IntArrayFeature< O > implements Feature< O, int[] >
 		this.projectionKeys = projectionKeys;
 		final HashMap< String, IntFeatureProjection< O > > pm = new HashMap<>( length );
 		for ( int i = 0; i < length; i++ )
-			pm.put( projectionKeys.get( i ), FeatureProjectors.project( propertyMaps.get( i ) ) );
+			pm.put( projectionKeys.get( i ), FeatureUtil.project( propertyMaps.get( i ), projectionUnits.get( i ) ) );
 		this.projections = Collections.unmodifiableMap( pm );
 	}
 
@@ -156,7 +175,10 @@ public class IntArrayFeature< O > implements Feature< O, int[] >
 			for ( int i = 0; i < length; i++ )
 			{
 				// NAME OF ENTRIES
-				oos.writeUTF( projectionKeys.get( i ) );
+				final String pKey = projectionKeys.get( i );
+				oos.writeUTF( pKey );
+				// UNITS
+				oos.writeUTF( projections.get( pKey ).units() );
 				// NUMBER OF ENTRIES and ENTRIES
 				final IntPropertyMapSerializer< O > serializer = new IntPropertyMapSerializer<>( propertyMaps.get( i ) );
 				serializer.writePropertyMap( idmap, oos );

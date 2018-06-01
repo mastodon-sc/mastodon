@@ -11,6 +11,8 @@ import org.mastodon.graph.io.RawGraphIO.FileIdToGraphMap;
 import org.mastodon.io.ObjectToFileIdMap;
 import org.mastodon.revised.model.feature.Feature;
 import org.mastodon.revised.model.feature.FeatureProjection;
+import org.mastodon.revised.model.feature.FeatureUtil;
+import org.mastodon.revised.model.feature.FeatureUtil.Dimension;
 import org.mastodon.revised.model.mamut.Model;
 import org.mastodon.revised.model.mamut.Spot;
 import org.scijava.plugin.Plugin;
@@ -18,23 +20,22 @@ import org.scijava.plugin.Plugin;
 import net.imglib2.RealLocalizable;
 
 @Plugin( type = SpotFeatureComputer.class, name = "Spot position" )
-public class SpotPositionFeatureComputer implements SpotFeatureComputer
+public class SpotPositionFeatureComputer extends SpotFeatureComputer
 {
 
 	private static final String KEY = "Spot position";
 
 	private static final String HELP_STRING = "Exposes the spot X, Y, Z position values, in physical units.";
 
+	public SpotPositionFeatureComputer()
+	{
+		super( KEY );
+	}
+
 	@Override
 	public Set< String > getDependencies()
 	{
 		return Collections.emptySet();
-	}
-
-	@Override
-	public String getKey()
-	{
-		return KEY;
 	}
 
 	@Override
@@ -44,7 +45,7 @@ public class SpotPositionFeatureComputer implements SpotFeatureComputer
 		for ( int d = 0; d < 3; d++ )
 		{
 			final String pname = "Spot " + ( char ) ( 'X' + d ) + " position";
-			final SpotPositionProjection projection = new SpotPositionProjection( d );
+			final SpotPositionProjection projection = new SpotPositionProjection( d, spaceUnits, timeUnits );
 			map.put( pname, projection );
 		}
 		final Map< String, FeatureProjection< Spot > > projections = Collections.unmodifiableMap( map );
@@ -122,9 +123,15 @@ public class SpotPositionFeatureComputer implements SpotFeatureComputer
 
 		private final int d;
 
-		public SpotPositionProjection( final int d )
+		private final String lSpaceUnits;
+
+		private final String lTimeUnits;
+
+		public SpotPositionProjection( final int d, final String spaceUnits, final String timeUnits )
 		{
 			this.d = d;
+			lSpaceUnits = spaceUnits;
+			lTimeUnits = timeUnits;
 		}
 
 		@Override
@@ -137,6 +144,12 @@ public class SpotPositionFeatureComputer implements SpotFeatureComputer
 		public double value( final Spot obj )
 		{
 			return obj.getDoublePosition( d );
+		}
+
+		@Override
+		public String units()
+		{
+			return FeatureUtil.dimensionToUnits( Dimension.POSITION, lSpaceUnits, lTimeUnits );
 		}
 	}
 

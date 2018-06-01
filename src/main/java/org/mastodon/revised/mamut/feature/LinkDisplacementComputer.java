@@ -5,6 +5,8 @@ import java.util.Set;
 
 import org.mastodon.properties.DoublePropertyMap;
 import org.mastodon.revised.model.feature.DoubleScalarFeature;
+import org.mastodon.revised.model.feature.FeatureUtil;
+import org.mastodon.revised.model.feature.FeatureUtil.Dimension;
 import org.mastodon.revised.model.mamut.Link;
 import org.mastodon.revised.model.mamut.Model;
 import org.mastodon.revised.model.mamut.ModelGraph;
@@ -55,7 +57,8 @@ public class LinkDisplacementComputer extends LinkDoubleScalarFeatureComputer
 
 		graph.releaseRef( ref1 );
 		graph.releaseRef( ref2 );
-		return new DoubleScalarFeature<>( KEY, Link.class, pm );
+		final String units = FeatureUtil.dimensionToUnits( Dimension.LENGTH, spaceUnits, timeUnits );
+		return new DoubleScalarFeature<>( KEY, Link.class, pm, units );
 	}
 
 	@Override

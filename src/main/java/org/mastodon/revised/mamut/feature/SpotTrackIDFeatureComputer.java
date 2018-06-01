@@ -7,6 +7,8 @@ import org.mastodon.graph.algorithm.traversal.BreadthFirstCrossComponentSearch;
 import org.mastodon.graph.algorithm.traversal.GraphSearch.SearchDirection;
 import org.mastodon.graph.algorithm.traversal.SearchListener;
 import org.mastodon.properties.IntPropertyMap;
+import org.mastodon.revised.model.feature.FeatureUtil;
+import org.mastodon.revised.model.feature.FeatureUtil.Dimension;
 import org.mastodon.revised.model.feature.IntScalarFeature;
 import org.mastodon.revised.model.mamut.Link;
 import org.mastodon.revised.model.mamut.Model;
@@ -66,7 +68,7 @@ public class SpotTrackIDFeatureComputer extends SpotIntScalarFeatureComputer
 		};
 		search.setTraversalListener( l );
 		search.start( graph.vertices().iterator().next() );
-		return new IntScalarFeature<>( KEY, Spot.class, trackID );
+		return new IntScalarFeature<>( KEY, Spot.class, trackID, FeatureUtil.dimensionToUnits( Dimension.NONE, spaceUnits, timeUnits ) );
 	}
 
 	@Override

@@ -15,23 +15,12 @@ import org.mastodon.revised.model.feature.DoubleScalarFeature;
 import org.mastodon.revised.model.mamut.Link;
 import org.mastodon.revised.model.mamut.Model;
 
-public abstract class LinkDoubleScalarFeatureComputer implements LinkFeatureComputer
+public abstract class LinkDoubleScalarFeatureComputer extends  LinkFeatureComputer
 {
-
-	/**
-	 * The key of the feature this computer generates.
-	 */
-	protected final String key;
 
 	public LinkDoubleScalarFeatureComputer( final String key )
 	{
-		this.key = key;
-	}
-
-	@Override
-	public String getKey()
-	{
-		return key;
+		super( key );
 	}
 
 	@Override
@@ -41,13 +30,16 @@ public abstract class LinkDoubleScalarFeatureComputer implements LinkFeatureComp
 				new BufferedInputStream(
 						new FileInputStream( file ), 1024 * 1024 ) ))
 		{
+			// UNITS.
+			final String units = ois.readUTF();
+			// CONTENT.
 			final PoolCollectionWrapper< Link > edges = model.getGraph().edges();
 			final DoublePropertyMap< Link > pm = new DoublePropertyMap<>( edges, Double.NaN, edges.size() );
 			final DoublePropertyMapSerializer< Link > serializer = new DoublePropertyMapSerializer<>( pm );
 			@SuppressWarnings( "unchecked" )
 			final FileIdToObjectMap< Link > idToLinkMap = ( FileIdToObjectMap< Link > ) fileIdToGraphMap.edges();
 			serializer.readPropertyMap( idToLinkMap, ois );
-			return new DoubleScalarFeature<>( key, Link.class, pm );
+			return new DoubleScalarFeature<>( getKey(), Link.class, pm, units );
 		}
 		catch ( final ClassNotFoundException e )
 		{

@@ -5,14 +5,33 @@ import org.mastodon.revised.model.feature.FeatureComputer;
 import org.mastodon.revised.model.mamut.Model;
 
 /**
- * A specific interface for Mastodon feature computers. They receive the image
+ * A specific abstract class for Mastodon feature computers. They receive the image
  * data, on which they can base their feature values (<i>e.g.</i> spot mean
  * intensity).
  *
  * @author Jean-Yves Tinevez
  */
-public interface MamutFeatureComputer extends FeatureComputer< Model >
+public abstract class MamutFeatureComputer implements FeatureComputer< Model >
 {
+
+	protected String spaceUnits = "";
+
+	protected String timeUnits = "frame";
+
+	protected SharedBigDataViewerData bdvData;
+
+	private final String key;
+
+	protected MamutFeatureComputer(final String key)
+	{
+		this.key = key;
+	}
+
+	@Override
+	public String getKey()
+	{
+		return key;
+	}
 
 	/**
 	 * Sets the image data to be used by this computer.
@@ -20,8 +39,9 @@ public interface MamutFeatureComputer extends FeatureComputer< Model >
 	 * @param bdvData
 	 *            the image data.
 	 */
-	public default void setSharedBigDataViewerData( final SharedBigDataViewerData bdvData )
+	public void setSharedBigDataViewerData( final SharedBigDataViewerData bdvData )
 	{
-		// Ignored by default.
+		this.bdvData = bdvData;
+		this.spaceUnits = bdvData.getSources().get( 0 ).getSpimSource().getVoxelDimensions().unit();
 	}
 }

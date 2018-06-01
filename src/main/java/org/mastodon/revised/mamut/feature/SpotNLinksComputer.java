@@ -5,6 +5,8 @@ import java.util.Set;
 
 import org.mastodon.pool.PoolCollectionWrapper;
 import org.mastodon.properties.IntPropertyMap;
+import org.mastodon.revised.model.feature.FeatureUtil;
+import org.mastodon.revised.model.feature.FeatureUtil.Dimension;
 import org.mastodon.revised.model.feature.IntScalarFeature;
 import org.mastodon.revised.model.mamut.Model;
 import org.mastodon.revised.model.mamut.Spot;
@@ -44,7 +46,7 @@ public class SpotNLinksComputer extends SpotIntScalarFeatureComputer
 		for ( final Spot spot : vertices )
 			pm.set( spot, spot.edges().size() );
 
-		return new IntScalarFeature<>( KEY, Spot.class, pm );
+		return new IntScalarFeature<>( KEY, Spot.class, pm, FeatureUtil.dimensionToUnits( Dimension.NONE, spaceUnits, timeUnits ) );
 	}
 
 	@Override

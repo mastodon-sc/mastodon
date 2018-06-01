@@ -15,22 +15,11 @@ import org.mastodon.revised.model.feature.DoubleScalarFeature;
 import org.mastodon.revised.model.mamut.Model;
 import org.mastodon.revised.model.mamut.Spot;
 
-public abstract class SpotDoubleScalarFeatureComputer implements SpotFeatureComputer
+public abstract class SpotDoubleScalarFeatureComputer extends SpotFeatureComputer
 {
-	/**
-	 * The key of the feature this computer generates.
-	 */
-	protected final String key;
-
 	public SpotDoubleScalarFeatureComputer( final String key )
 	{
-		this.key = key;
-	}
-
-	@Override
-	public String getKey()
-	{
-		return key;
+		super( key );
 	}
 
 	@Override
@@ -40,13 +29,16 @@ public abstract class SpotDoubleScalarFeatureComputer implements SpotFeatureComp
 				new BufferedInputStream(
 						new FileInputStream( file ), 1024 * 1024 ) ))
 		{
+			// UNITS.
+			final String units = ois.readUTF();
+			// CONTENT.
 			final PoolCollectionWrapper< Spot > vertices = model.getGraph().vertices();
 			final DoublePropertyMap< Spot > pm = new DoublePropertyMap<>( vertices, Double.NaN, vertices.size() );
 			final DoublePropertyMapSerializer< Spot > serializer = new DoublePropertyMapSerializer<>( pm );
 			@SuppressWarnings( "unchecked" )
 			final FileIdToObjectMap< Spot > idToLinkMap = ( FileIdToObjectMap< Spot > ) fileIdToGraphMap.edges();
 			serializer.readPropertyMap( idToLinkMap, ois );
-			return new DoubleScalarFeature<>( key, Spot.class, pm );
+			return new DoubleScalarFeature<>( getKey(), Spot.class, pm, units );
 		}
 		catch ( final ClassNotFoundException e )
 		{

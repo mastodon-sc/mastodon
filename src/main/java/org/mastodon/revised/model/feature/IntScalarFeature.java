@@ -37,6 +37,10 @@ public class IntScalarFeature< O > implements Feature< O, Integer >
 	 */
 	private final IntPropertyMap< O > propertyMap;
 
+	private final Map< String, FeatureProjection< O > > proj;
+
+	private final String units;
+
 	/**
 	 * Creates a new immutable feature instance.
 	 *
@@ -48,11 +52,13 @@ public class IntScalarFeature< O > implements Feature< O, Integer >
 	 * @param propertyMap
 	 *            The feature property map.
 	 */
-	public IntScalarFeature( final String key, final Class< O > targetClass, final IntPropertyMap< O > propertyMap )
+	public IntScalarFeature( final String key, final Class< O > targetClass, final IntPropertyMap< O > propertyMap, final String units )
 	{
 		this.key = key;
 		this.targetClass = targetClass;
 		this.propertyMap = propertyMap;
+		this.units = units;
+		this.proj = Collections.singletonMap( key, FeatureUtil.project( propertyMap, units ) );
 	}
 
 	@Override
@@ -64,7 +70,7 @@ public class IntScalarFeature< O > implements Feature< O, Integer >
 	@Override
 	public Map< String, FeatureProjection< O > > getProjections()
 	{
-		return Collections.singletonMap( key, FeatureProjectors.project( propertyMap ) );
+		return proj;
 	}
 
 	@Override
@@ -103,6 +109,9 @@ public class IntScalarFeature< O > implements Feature< O, Integer >
 				new BufferedOutputStream(
 						new FileOutputStream( file ), 1024 * 1024 ) ))
 		{
+			// UNITS.
+			oos.writeUTF( units );
+			// CONTENT.
 			final IntPropertyMapSerializer< O > serializer = new IntPropertyMapSerializer<>( propertyMap );
 			serializer.writePropertyMap( idmap, oos );
 		}

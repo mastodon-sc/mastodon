@@ -64,6 +64,7 @@ public abstract class AbstractFeatureComputerService< AM extends AbstractModel< 
 		{
 			final FC computer = v.getContent();
 			progressListener.showStatus( computer.getKey() );
+			prepareComputer( computer );
 			final Feature< ?, ? > feature = computer.compute( model );
 			featureModel.declareFeature( feature );
 
@@ -77,6 +78,17 @@ public abstract class AbstractFeatureComputerService< AM extends AbstractModel< 
 
 		return true;
 	}
+
+	/**
+	 * Hook for subclassers. This method is called just before the
+	 * {@link FeatureComputer#compute(AbstractModel)} is called on the specified
+	 * computer and let concrete implementations pass supplemental information
+	 * to the computers.
+	 *
+	 * @param computer
+	 *            the feature computer to prepare.
+	 */
+	protected abstract void prepareComputer( FC computer );
 
 	/*
 	 * DEPENDENCY GRAPH.
