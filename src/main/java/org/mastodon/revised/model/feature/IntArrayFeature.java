@@ -13,8 +13,20 @@ import java.util.Map;
 import org.mastodon.io.ObjectToFileIdMap;
 import org.mastodon.io.properties.IntPropertyMapSerializer;
 import org.mastodon.properties.IntPropertyMap;
-import org.mastodon.revised.model.feature.FeatureProjectors.IntFeatureProjection;
 
+/**
+ * A feature implementation for array where elements are <code>int</code>s.
+ * <p>
+ * Concretely, the arrays elements are stored in <code>length</code>-number of
+ * {@link IntPropertyMap}. This favors situation where consumers want to
+ * access the same element in the array for many objects, <i>e.g.</i> to iterate
+ * over all the values of a single projection.
+
+ * @author Jean-Yves Tinevez
+ *
+ * @param <O>
+ *            the type of objects for which the feature is defined.
+ */
 public class IntArrayFeature< O > implements Feature< O, int[] >
 {
 

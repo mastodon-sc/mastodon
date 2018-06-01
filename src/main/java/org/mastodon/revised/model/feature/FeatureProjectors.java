@@ -61,17 +61,6 @@ public class FeatureProjectors
 		}
 	}
 
-	/**
-	 * Marker interface for projections that actually only have <code>int</code>
-	 * values exposed as <code>double</code>s.
-	 * 
-	 * @author Jean-Yves Tinevez
-	 *
-	 * @param <O>
-	 */
-	public static interface IntFeatureProjection< O > extends FeatureProjection< O >
-	{}
-
 	public static final class IntFeatureProjectionImp< O > implements IntFeatureProjection< O >
 	{
 
