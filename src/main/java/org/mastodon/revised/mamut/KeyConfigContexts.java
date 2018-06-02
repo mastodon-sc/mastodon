@@ -8,6 +8,8 @@ public final class KeyConfigContexts
 
 	public static final String BIGDATAVIEWER = "bdv";
 
+	public static final String TABLE = "table";
+
 	private KeyConfigContexts()
 	{}
 }
