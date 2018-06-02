@@ -13,6 +13,7 @@ import org.mastodon.revised.model.mamut.trackmate.MamutExporter;
 import org.mastodon.revised.model.mamut.trackmate.TrackMateImporter;
 import org.mastodon.revised.model.tag.TagSetStructure;
 import org.mastodon.revised.trackscheme.display.style.TrackSchemeStyleManager;
+import org.mastodon.revised.ui.coloring.feature.FeatureColorModeManager;
 import org.mastodon.revised.ui.keymap.CommandDescriptionProvider;
 import org.mastodon.revised.ui.keymap.CommandDescriptions;
 import org.mastodon.revised.ui.keymap.KeymapManager;
@@ -238,8 +239,9 @@ public class ProjectManager
 	}
 
 	/**
-	 * Open a project. If {@code project.getProjectFolder() == null} this is a new project and data structures are initialized as empty.
-	 * The image data {@code project.getDatasetXmlFile()} must always be set.
+	 * Open a project. If {@code project.getProjectFolder() == null} this is a
+	 * new project and data structures are initialized as empty. The image data
+	 * {@code project.getDatasetXmlFile()} must always be set.
 	 *
 	 * @param project
 	 *
@@ -269,6 +271,7 @@ public class ProjectManager
 		final TrackSchemeStyleManager trackSchemeStyleManager = windowManager.getTrackSchemeStyleManager();
 		final RenderSettingsManager renderSettingsManager = windowManager.getRenderSettingsManager();
 		final KeymapManager keymapManager = windowManager.getKeymapManager();
+		final FeatureColorModeManager featureColorModeManager = windowManager.getFeatureColorModeManager();
 		final MastodonPlugins plugins = windowManager.getPlugins();
 		final Actions globalAppActions = windowManager.getGlobalAppActions();
 		final ViewerOptions options = ViewerOptions.options().shareKeyPressedEvents( keyPressedManager );
@@ -278,7 +281,16 @@ public class ProjectManager
 				options,
 				() -> windowManager.forEachBdvView( bdv -> bdv.requestRepaint() ) );
 
-		final MamutAppModel appModel = new MamutAppModel( model, sharedBdvData, keyPressedManager, trackSchemeStyleManager, renderSettingsManager, keymapManager, plugins, globalAppActions );
+		final MamutAppModel appModel = new MamutAppModel(
+				model,
+				sharedBdvData,
+				keyPressedManager,
+				trackSchemeStyleManager,
+				renderSettingsManager,
+				featureColorModeManager,
+				keymapManager,
+				plugins,
+				globalAppActions );
 
 		/*
 		 * TODO REMOVE

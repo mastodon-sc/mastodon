@@ -3,6 +3,8 @@ package org.mastodon.revised.mamut;
 import java.awt.event.WindowEvent;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.function.Consumer;
 
@@ -17,12 +19,16 @@ import org.mastodon.revised.mamut.feature.MamutFeatureComputer;
 import org.mastodon.revised.mamut.feature.MamutFeatureComputerService;
 import org.mastodon.revised.model.feature.FeatureModel;
 import org.mastodon.revised.model.feature.ui.FeatureCalculationDialog;
+import org.mastodon.revised.model.mamut.Link;
 import org.mastodon.revised.model.mamut.Model;
 import org.mastodon.revised.model.mamut.Spot;
 import org.mastodon.revised.model.tag.ui.TagSetDialog;
 import org.mastodon.revised.trackscheme.display.style.TrackSchemeStyleManager;
 import org.mastodon.revised.trackscheme.display.style.TrackSchemeStyleSettingsPage;
 import org.mastodon.revised.ui.SelectionActions;
+import org.mastodon.revised.ui.coloring.feature.FeatureColorModeConfigPage;
+import org.mastodon.revised.ui.coloring.feature.FeatureColorModeManager;
+import org.mastodon.revised.ui.coloring.feature.FeatureRangeCalculator;
 import org.mastodon.revised.ui.keymap.CommandDescriptionProvider;
 import org.mastodon.revised.ui.keymap.CommandDescriptions;
 import org.mastodon.revised.ui.keymap.CommandDescriptionsBuilder;
@@ -123,6 +129,10 @@ public class WindowManager
 
 	final ProjectManager projectManager;
 
+	final PreferencesDialog settings;
+
+	private final FeatureColorModeManager featureColorModeManager;
+
 	public WindowManager( final Context context )
 	{
 		this.context = context;
@@ -131,6 +141,7 @@ public class WindowManager
 		trackSchemeStyleManager = new TrackSchemeStyleManager();
 		renderSettingsManager = new RenderSettingsManager();
 		keymapManager = new KeymapManager();
+		featureColorModeManager = new FeatureColorModeManager();
 
 		final Keymap keymap = keymapManager.getForwardDefaultKeymap();
 
@@ -164,7 +175,7 @@ public class WindowManager
 		globalAppActions.namedAction( editTagSetsAction, TAGSETS_DIALOG_KEYS );
 		globalAppActions.namedAction( featureComputationAction, COMPUTE_FEATURE_DIALOG_KEYS );
 
-		final PreferencesDialog settings = new PreferencesDialog( null, keymap, new String[] { KeyConfigContexts.MASTODON } );
+		settings = new PreferencesDialog( null, keymap, new String[] { KeyConfigContexts.MASTODON } );
 		settings.addPage( new TrackSchemeStyleSettingsPage( "TrackScheme Styles", trackSchemeStyleManager ) );
 		settings.addPage( new RenderSettingsConfigPage( "BDV Render Settings", renderSettingsManager ) );
 		settings.addPage( new KeymapSettingsPage( "Keymap", keymapManager, descriptions ) );
@@ -208,6 +219,8 @@ public class WindowManager
 	{
 		closeAllWindows();
 
+		final String featureColorTreePath = "Feature Color Modes";
+
 		this.appModel = appModel;
 		if ( appModel == null )
 		{
@@ -216,6 +229,7 @@ public class WindowManager
 			featureComputationDialog.dispose();
 			featureComputationDialog = null;
 			updateEnabledActions();
+			settings.removePage( featureColorTreePath );
 			return;
 		}
 
@@ -229,6 +243,28 @@ public class WindowManager
 		computerService.setSharedBdvData( appModel.getSharedBdvData() );
 		final FeatureModel featureModel = model.getFeatureModel();
 		featureComputationDialog = new FeatureCalculationDialog<>( null, computerService, model, featureModel );
+
+		// Get feature keys.
+		final LinkedHashMap< String, Collection< String > > vertexFeatureKeys = new LinkedHashMap<>();
+		final LinkedHashMap< String, Collection< String > > edgeFeatureKeys = new LinkedHashMap<>();
+		final Collection< MamutFeatureComputer > featureComputers = computerService.getFeatureComputers();
+		for ( final MamutFeatureComputer computer : featureComputers )
+		{
+			if ( Spot.class.equals( computer.getTargetClass() ) )
+				vertexFeatureKeys.put( computer.getKey(), computer.getProjectionKeys() );
+			if ( Link.class.equals( computer.getTargetClass() ) )
+				edgeFeatureKeys.put( computer.getKey(), computer.getProjectionKeys() );
+		}
+		final FeatureColorModeConfigPage featureColorModeConfigPage = new FeatureColorModeConfigPage(
+				featureColorTreePath,
+				featureColorModeManager,
+				appModel.getModel().getFeatureModel(),
+				new FeatureRangeCalculator<>( appModel.getModel().getGraph(), appModel.getModel().getFeatureModel() ),
+				Spot.class,
+				vertexFeatureKeys,
+				Link.class,
+				edgeFeatureKeys );
+		settings.addPage( featureColorModeConfigPage );
 		updateEnabledActions();
 
 		plugins.setAppModel( new MastodonPluginAppModel( appModel, this ) );
@@ -355,6 +391,11 @@ public class WindowManager
 	RenderSettingsManager getRenderSettingsManager()
 	{
 		return renderSettingsManager;
+	}
+
+	FeatureColorModeManager getFeatureColorModeManager()
+	{
+		return featureColorModeManager;
 	}
 
 	KeymapManager getKeymapManager()
