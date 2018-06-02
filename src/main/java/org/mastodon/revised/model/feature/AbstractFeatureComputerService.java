@@ -23,7 +23,7 @@ import org.scijava.plugin.PluginInfo;
 import org.scijava.plugin.PluginService;
 import org.scijava.service.AbstractService;
 
-public abstract class AbstractFeatureComputerService< AM extends AbstractModel< ?, ?, ? > > extends AbstractService implements FeatureComputerService< AM >
+public abstract class AbstractFeatureComputerService< AM extends AbstractModel< ?, ?, ? >, FC extends FeatureComputer< AM > > extends AbstractService implements FeatureComputerService< AM, FC >
 {
 
 	@Parameter
@@ -39,13 +39,13 @@ public abstract class AbstractFeatureComputerService< AM extends AbstractModel< 
 	 * Feature computers of any type, mapped by their key, for dependency
 	 * management.
 	 */
-	private final Map< String, FeatureComputer< AM > > featureComputers = new HashMap<>();
+	private final Map< String, FC > featureComputers = new HashMap<>();
 
 	@Override
-	public boolean compute( final AM model, final FeatureModel featureModel, final Set< FeatureComputer< AM > > computers, final ProgressListener progressListener )
+	public boolean compute( final AM model, final FeatureModel featureModel, final Set< FC > computers, final ProgressListener progressListener )
 	{
-		final ObjectGraph< FeatureComputer< AM > > dependencyGraph = getDependencyGraph( computers );
-		final TopologicalSort< ObjectVertex< FeatureComputer< AM > >, ObjectEdge< FeatureComputer< AM > > > sorter = new TopologicalSort<>( dependencyGraph );
+		final ObjectGraph< FC > dependencyGraph = getDependencyGraph( computers );
+		final TopologicalSort< ObjectVertex< FC >, ObjectEdge< FC > > sorter = new TopologicalSort<>( dependencyGraph );
 
 		if ( sorter.hasFailed() )
 		{
@@ -57,17 +57,20 @@ public abstract class AbstractFeatureComputerService< AM extends AbstractModel< 
 
 		final long start = System.currentTimeMillis();
 
+		featureModel.pauseListeners();
 		featureModel.clear();
 		int progress = 1;
-		for ( final ObjectVertex< FeatureComputer< AM > > v : sorter.get() )
+		for ( final ObjectVertex< FC > v : sorter.get() )
 		{
-			final FeatureComputer< AM > computer = v.getContent();
+			final FC computer = v.getContent();
 			progressListener.showStatus( computer.getKey() );
+			prepareComputer( computer );
 			final Feature< ?, ? > feature = computer.compute( model );
 			featureModel.declareFeature( feature );
 
 			progressListener.showProgress( progress++, computers.size() );
 		}
+		featureModel.resumeListeners();
 
 		final long end = System.currentTimeMillis();
 		progressListener.clearStatus();
@@ -76,17 +79,28 @@ public abstract class AbstractFeatureComputerService< AM extends AbstractModel< 
 		return true;
 	}
 
+	/**
+	 * Hook for subclassers. This method is called just before the
+	 * {@link FeatureComputer#compute(AbstractModel)} is called on the specified
+	 * computer and let concrete implementations pass supplemental information
+	 * to the computers.
+	 *
+	 * @param computer
+	 *            the feature computer to prepare.
+	 */
+	protected abstract void prepareComputer( FC computer );
+
 	/*
 	 * DEPENDENCY GRAPH.
 	 */
 
-	private ObjectGraph< FeatureComputer< AM > > getDependencyGraph( final Set< FeatureComputer< AM > > computers )
+	private ObjectGraph< FC > getDependencyGraph( final Set< FC > computers )
 	{
-		final ObjectGraph< FeatureComputer< AM > > computerGraph = new ObjectGraph<>();
-		final ObjectVertex< FeatureComputer< AM > > ref = computerGraph.vertexRef();
+		final ObjectGraph< FC > computerGraph = new ObjectGraph<>();
+		final ObjectVertex< FC > ref = computerGraph.vertexRef();
 
-		final Set< FeatureComputer< AM > > requestedFeatureComputers = new HashSet<>();
-		for ( final FeatureComputer< AM > computer : computers )
+		final Set< FC > requestedFeatureComputers = new HashSet<>();
+		for ( final FC computer : computers )
 		{
 			// Build a list of feature computers.
 			requestedFeatureComputers.add( computer );
@@ -111,9 +125,9 @@ public abstract class AbstractFeatureComputerService< AM extends AbstractModel< 
 	 * @param computerGraph
 	 * @param requestedFeatureComputers
 	 */
-	private void prune( final ObjectGraph< FeatureComputer< AM > > computerGraph, final Set< FeatureComputer< AM > > requestedFeatureComputers )
+	private void prune( final ObjectGraph< FC > computerGraph, final Set< FC > requestedFeatureComputers )
 	{
-		for ( final ObjectVertex< FeatureComputer< AM > > v : new ArrayList<>( computerGraph.vertices() ) )
+		for ( final ObjectVertex< FC > v : new ArrayList<>( computerGraph.vertices() ) )
 			if ( v.incomingEdges().isEmpty() && !requestedFeatureComputers.contains( v.getContent() ) )
 				computerGraph.remove( v );
 	}
@@ -126,33 +140,33 @@ public abstract class AbstractFeatureComputerService< AM extends AbstractModel< 
 	 * @param ref
 	 * @return
 	 */
-	private final ObjectVertex< FeatureComputer< AM > > addDepVertex(
-			final FeatureComputer< AM > computer,
-			final ObjectGraph< FeatureComputer< AM > > computerGraph,
-			final ObjectVertex< FeatureComputer< AM > > ref )
+	private final ObjectVertex< FC > addDepVertex(
+			final FC computer,
+			final ObjectGraph< FC > computerGraph,
+			final ObjectVertex< FC > ref )
 	{
-		for ( final ObjectVertex< FeatureComputer< AM > > v : computerGraph.vertices() )
+		for ( final ObjectVertex< FC > v : computerGraph.vertices() )
 		{
 			if ( v.getContent().equals( computer ) )
 				return v;
 		}
 
-		final ObjectVertex< FeatureComputer< AM > > source = computerGraph.addVertex( ref ).init( computer );
+		final ObjectVertex< FC > source = computerGraph.addVertex( ref ).init( computer );
 		final Set< String > deps = computer.getDependencies();
 
-		final ObjectVertex< FeatureComputer< AM > > vref2 = computerGraph.vertexRef();
-		final ObjectEdge< FeatureComputer< AM > > eref = computerGraph.edgeRef();
+		final ObjectVertex< FC > vref2 = computerGraph.vertexRef();
+		final ObjectEdge< FC > eref = computerGraph.edgeRef();
 
 		for ( final String dep : deps )
 		{
-			final FeatureComputer< AM > computerDep = featureComputers.get( dep );
+			final FC computerDep = featureComputers.get( dep );
 			if ( null == computerDep )
 			{
 				logService.error( "Cannot add feature computer named " + dep + " as it is not registered." );
 				return null;
 			}
 
-			final ObjectVertex< FeatureComputer< AM > > target = addDepVertex( computerDep, computerGraph, vref2 );
+			final ObjectVertex< FC > target = addDepVertex( computerDep, computerGraph, vref2 );
 			if ( null == target )
 			{
 				logService.error( "Removing feature computer named " + computer + " as some of its dependencies could not be resolved." );
@@ -172,7 +186,7 @@ public abstract class AbstractFeatureComputerService< AM extends AbstractModel< 
 	 * PRIVATE METHODS.
 	 */
 
-	protected < K extends FeatureComputer< AM > > void initializeFeatureComputers( final Class< K > cl )
+	protected < K extends FC > void initializeFeatureComputers( final Class< K > cl )
 	{
 		final List< PluginInfo< K > > infos = pluginService.getPluginsOfType( cl );
 		for ( final PluginInfo< K > info : infos )
@@ -200,7 +214,7 @@ public abstract class AbstractFeatureComputerService< AM extends AbstractModel< 
 	}
 
 	@Override
-	public Collection< FeatureComputer< AM > > getFeatureComputers()
+	public Collection< FC > getFeatureComputers()
 	{
 		return Collections.unmodifiableCollection( featureComputers.values() );
 	}
