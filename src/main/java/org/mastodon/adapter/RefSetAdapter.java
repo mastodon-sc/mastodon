@@ -56,6 +56,7 @@ public class RefSetAdapter< O, WO >
 		return set.isEmpty();
 	}
 
+	@SuppressWarnings( "unchecked" )
 	@Override
 	public boolean contains( final Object o )
 	{
@@ -65,7 +66,24 @@ public class RefSetAdapter< O, WO >
 	@Override
 	public Iterator< WO > iterator()
 	{
-		throw new UnsupportedOperationException( "not implemented (yet)" );
+		return new Iterator< WO >()
+		{
+			private final Iterator< O > iterator = set.iterator();
+
+			private final WO ref = createRef();
+
+			@Override
+			public boolean hasNext()
+			{
+				return iterator.hasNext();
+			}
+
+			@Override
+			public WO next()
+			{
+				return map.getRight( iterator.next(), ref );
+			}
+		};
 	}
 
 	@Override
@@ -86,6 +104,7 @@ public class RefSetAdapter< O, WO >
 		return set.add( map.getLeft( e ) );
 	}
 
+	@SuppressWarnings( "unchecked" )
 	@Override
 	public boolean remove( final Object o )
 	{
