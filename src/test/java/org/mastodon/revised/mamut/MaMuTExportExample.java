@@ -6,10 +6,10 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.jdom2.JDOMException;
+import org.mastodon.revised.mamut.feature.MamutFeatureComputer;
 import org.mastodon.revised.mamut.feature.MamutFeatureComputerService;
-import org.mastodon.revised.model.feature.FeatureComputer;
-import org.mastodon.revised.model.mamut.ModelUtils;
 import org.mastodon.revised.model.mamut.Model;
+import org.mastodon.revised.model.mamut.ModelUtils;
 import org.mastodon.revised.model.mamut.trackmate.MamutExporter;
 import org.mastodon.revised.model.mamut.trackmate.TrackMateImporter;
 import org.mastodon.revised.ui.ProgressListener;
@@ -26,20 +26,18 @@ public class MaMuTExportExample
 		 * 1. Load a regular Mastodon project.
 		 */
 
-		final String projectFolder = "samples/mamutproject";
-		final String bdvFile = "samples/datasethdf5.xml";
-		final MamutProject project = new MamutProject( new File( projectFolder ), new File( bdvFile ) );
-//		final MamutProject project = new MamutProjectIO().load( "samples/mamutproject" );
-		final Model model = new Model();
-		model.loadRaw( project );
+		final MamutProject project = new MamutProjectIO().load( "samples/mamutproject" );
+		final WindowManager windowManager = new WindowManager( new Context() );
+		windowManager.projectManager.open( project );
+		final Model model = windowManager.getAppModel().getModel();
 
 		/*
 		 * 1.1. Compute features.
 		 */
 
-		final Context context = new Context( MamutFeatureComputerService.class );
+		final Context context = windowManager.getContext();
 		final MamutFeatureComputerService featureComputerService = context.getService( MamutFeatureComputerService.class );
-		final Set< FeatureComputer< Model > > featureComputers = new HashSet<>( featureComputerService.getFeatureComputers() );
+		final Set< MamutFeatureComputer > featureComputers = new HashSet<>( featureComputerService.getFeatureComputers() );
 		final ProgressListener pl = new ProgressListener()
 		{
 
