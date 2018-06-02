@@ -10,6 +10,7 @@ import java.util.Set;
 import org.mastodon.revised.model.feature.Feature;
 import org.mastodon.revised.model.feature.FeatureModel;
 import org.mastodon.revised.model.feature.FeatureProjection;
+import org.mastodon.revised.model.feature.IntFeatureProjection;
 
 public class ModelUtils
 {
@@ -73,7 +74,10 @@ public class ModelUtils
 			for ( final String pn : sfs.keySet() )
 			{
 				if ( sfs.get( pn ).isSet( spot ) )
-					str.append( String.format( "  %" + spotColumnHeaderWidth[ i ] + ".1f", sfs.get( pn ).value( spot ) ) );
+					if ( sfs.get( pn ) instanceof IntFeatureProjection )
+						str.append( String.format( "  %" + spotColumnHeaderWidth[ i ] + "d", ( int ) sfs.get( pn ).value( spot ) ) );
+					else
+						str.append( String.format( "  %" + spotColumnHeaderWidth[ i ] + ".1f", sfs.get( pn ).value( spot ) ) );
 				else
 					str.append( String.format( "  %" + spotColumnHeaderWidth[ i ] + "s", "unset" ) );
 				i++;
@@ -130,7 +134,10 @@ public class ModelUtils
 			for ( final String pn : lfs.keySet() )
 			{
 				if ( lfs.get( pn ).isSet( link ) )
-					str.append( String.format( "  %" + linkColumnHeaderWidth[ i ] + ".1f", lfs.get( pn ).value( link ) ) );
+					if ( sfs.get( pn ) instanceof IntFeatureProjection )
+						str.append( String.format( "  %" + linkColumnHeaderWidth[ i ] + "d", ( int ) lfs.get( pn ).value( link ) ) );
+					else
+						str.append( String.format( "  %" + linkColumnHeaderWidth[ i ] + ".1f", lfs.get( pn ).value( link ) ) );
 				else
 					str.append( String.format( "  %" + linkColumnHeaderWidth[ i ] + "s", "unset" ) );
 				i++;
