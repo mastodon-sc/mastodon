@@ -1,17 +1,13 @@
 package org.mastodon.revised.mamut;
 
 import java.awt.Component;
-import java.awt.Dialog;
 import java.io.File;
 import java.io.IOException;
 import java.util.Random;
 
-import javax.swing.JFrame;
-
 import org.mastodon.plugin.MastodonPlugins;
 import org.mastodon.revised.bdv.SharedBigDataViewerData;
 import org.mastodon.revised.bdv.overlay.ui.RenderSettingsManager;
-import org.mastodon.revised.mamut.feature.MamutFeatureComputerService;
 import org.mastodon.revised.model.mamut.Model;
 import org.mastodon.revised.model.mamut.trackmate.MamutExporter;
 import org.mastodon.revised.model.mamut.trackmate.TrackMateImporter;
@@ -24,7 +20,6 @@ import org.mastodon.revised.ui.util.FileChooser;
 import org.mastodon.revised.ui.util.FileChooser.SelectionMode;
 import org.mastodon.revised.ui.util.XmlFileFilter;
 import org.mastodon.revised.util.DummySpimData;
-import org.mastodon.revised.util.ToggleDialogAction;
 import org.scijava.plugin.Plugin;
 import org.scijava.ui.behaviour.KeyPressedManager;
 import org.scijava.ui.behaviour.util.AbstractNamedAction;
@@ -286,10 +281,6 @@ public class ProjectManager
 		final MamutAppModel appModel = new MamutAppModel( model, sharedBdvData, keyPressedManager, trackSchemeStyleManager, renderSettingsManager, keymapManager, plugins, globalAppActions );
 
 		/*
-		 * Feature calculation.
-		 */
-
-		/*
 		 * TODO REMOVE
 		 * Set TagSetStructure for debugging.
 		 */
@@ -310,14 +301,6 @@ public class ProjectManager
 		}
 
 		windowManager.setAppModel( appModel );
-
-		final MamutFeatureComputerService featureComputerService = windowManager.getContext().getService( MamutFeatureComputerService.class );
-		final JFrame owner = null; // TODO
-		final Dialog featureComputationDialog = new FeatureAndTagDialog( owner, model, featureComputerService );
-		featureComputationDialog.setSize( 400, 400 );
-
-		final ToggleDialogAction toggleFeatureComputationDialogAction = new ToggleDialogAction( "feature computation", featureComputationDialog );
-
 		this.project = project;
 		updateEnabledActions();
 	}
