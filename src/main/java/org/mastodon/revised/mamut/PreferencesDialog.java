@@ -54,9 +54,28 @@ public class PreferencesDialog extends JDialog
 		pack();
 	}
 
+	/**
+	 * Adds the specified settings page to the settings panel of this dialog.
+	 * 
+	 * @param page
+	 *            the settings page to add.
+	 */
 	public void addPage( final SettingsPage page )
 	{
 		settingsPanel.addPage( page );
+		pack();
+	}
+
+	/**
+	 * Removes the settings page with the specified path. Does nothing if there
+	 * is not settings page for the path.
+	 * 
+	 * @param path
+	 *            the path of the settings page to remove.
+	 */
+	public void removePage( final String treePath )
+	{
+		settingsPanel.removePage( treePath );
 		pack();
 	}
 }
