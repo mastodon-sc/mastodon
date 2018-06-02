@@ -68,7 +68,6 @@ import static org.mastodon.revised.model.mamut.trackmate.TrackMateXMLKeys.VOXEL_
 import static org.mastodon.revised.model.mamut.trackmate.TrackMateXMLKeys.WIDTH_ATTRIBUTE;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -94,13 +93,13 @@ import org.mastodon.graph.algorithm.RootFinder;
 import org.mastodon.graph.algorithm.traversal.DepthFirstSearch;
 import org.mastodon.graph.algorithm.traversal.GraphSearch.SearchDirection;
 import org.mastodon.graph.algorithm.traversal.SearchListener;
-import org.mastodon.properties.IntPropertyMap;
 import org.mastodon.properties.PropertyMap;
 import org.mastodon.revised.bdv.overlay.util.JamaEigenvalueDecomposition;
 import org.mastodon.revised.mamut.MamutProject;
 import org.mastodon.revised.model.feature.Feature;
 import org.mastodon.revised.model.feature.FeatureModel;
 import org.mastodon.revised.model.feature.FeatureProjection;
+import org.mastodon.revised.model.feature.IntScalarFeature;
 import org.mastodon.revised.model.mamut.Link;
 import org.mastodon.revised.model.mamut.Model;
 import org.mastodon.revised.model.mamut.Spot;
@@ -159,26 +158,8 @@ public class MamutExporter
 
 	private void appendModel()
 	{
-		// Read space units from dataset xml if we can.
-		String spaceUnits = "pixel";
-		final Document document = getSAXParsedDocument( project.getDatasetXmlFile().getAbsolutePath() );
-		final List< Element > viewSetupsElements = document
-				.getRootElement()
-				.getChild( XmlKeys.SEQUENCEDESCRIPTION_TAG )
-				.getChild( XmlKeys.VIEWSETUPS_TAG )
-				.getChildren( XmlKeys.VIEWSETUP_TAG );
-		for ( final Element vsEl : viewSetupsElements )
-		{
-			final Element vs, uel;
-			if ( null != ( vs = vsEl.getChild( XmlKeys.VIEWSETUP_VOXELSIZE_TAG ) ) && null != ( uel = vs.getChild( XmlKeys.VOXELDIMENSIONS_UNIT_TAG ) ) )
-			{
-				spaceUnits = uel.getValue();
-				break;
-			}
-		}
-
-		// BDV does not let you save frame interval in physical units.
-		final String timeUnits = "frames";
+		final String spaceUnits = getSpatialUnits();
+		final String timeUnits = getTimeUnits();
 
 		final Element modelElement = new Element( MODEL_TAG );
 		modelElement.setAttribute( SPATIAL_UNITS_ATTRIBUTE, spaceUnits );
@@ -290,7 +271,7 @@ public class MamutExporter
 		{
 			folder = datasetXmlFile.getParentFile().getCanonicalPath();
 		}
-		catch ( IOException e )
+		catch ( final IOException e )
 		{}
 		attributes.add( new Attribute( FOLDER_ATTRIBUTE, folder ) );
 
@@ -603,12 +584,15 @@ public class MamutExporter
 		final Element featuresElement = new Element( FEATURE_DECLARATION_TAG );
 		appendFeaturesDeclarationOfClass( Spot.class, featuresElement, SPOT_FEATURE_DECLARATION_TAG );
 		appendFeaturesDeclarationOfClass( Link.class, featuresElement, EDGE_FEATURE_DECLARATION_TAG );
-		appendFeaturesDeclarationOfClass( Link.class, featuresElement, TRACK_FEATURE_DECLARATION_TAG );
+		// Create an empty declaration for track features, for now.
+		appendFeaturesDeclarationOfClass( Boolean.class, featuresElement, TRACK_FEATURE_DECLARATION_TAG );
 		return featuresElement;
 	}
 
 	private void appendFeaturesDeclarationOfClass( final Class< ? > clazz, final Element featuresElement, final String classFeatureDeclarationTag )
 	{
+		final String spaceUnits = getSpatialUnits();
+		final String timeUnits = getTimeUnits();
 		final FeatureModel fm = model.getFeatureModel();
 		Set< Feature< ?, ? > > features = fm.getFeatureSet( clazz );
 		if ( null == features )
@@ -621,15 +605,16 @@ public class MamutExporter
 			 * If we have ONE feature mapped on an int projection map, then we
 			 * can use the ISINT flag of TrackMate safely.
 			 */
-			final PropertyMap< ?, ? > pm = feature.getPropertyMap();
 			final String isint;
-			if ( pm instanceof IntPropertyMap )
+			if ( feature instanceof IntScalarFeature )
 				isint = "true";
 			else
 				isint = " false";
 
 			// We actually export feature projections.
-			final Map< String, ? > projections = feature.getProjections();
+			final Map< String, ? > p = feature.getProjections();
+			@SuppressWarnings( "unchecked" )
+			final Map< String, FeatureProjection< ? > > projections = ( Map< String, FeatureProjection< ? > > ) p;
 			for ( final String projectionKey : projections.keySet() )
 			{
 				final Element fel = new Element( FEATURE_TAG );
@@ -637,13 +622,42 @@ public class MamutExporter
 				// Mastodon does not support feature name yet.
 				fel.setAttribute( FEATURE_NAME_ATTRIBUTE, projectionKey );
 				fel.setAttribute( FEATURE_SHORT_NAME_ATTRIBUTE, projectionKey );
-				// Mastodon does not support feature dimension yet.
-				fel.setAttribute( FEATURE_DIMENSION_ATTRIBUTE, "NONE" );
+				final String units = projections.get( projectionKey ).units();
+				fel.setAttribute( FEATURE_DIMENSION_ATTRIBUTE, unitsToDimension( units, spaceUnits, timeUnits ) );
 				fel.setAttribute( FEATURE_ISINT_ATTRIBUTE, isint );
 				classFeaturesElement.addContent( fel );
 			}
 		}
 		featuresElement.addContent( classFeaturesElement );
+	}
+
+	private String getSpatialUnits()
+	{
+		// Read space units from dataset xml if we can.
+		String spaceUnits = "pixel";
+		final Document document = getSAXParsedDocument( project.getDatasetXmlFile().getAbsolutePath() );
+		final List< Element > viewSetupsElements = document
+				.getRootElement()
+				.getChild( XmlKeys.SEQUENCEDESCRIPTION_TAG )
+				.getChild( XmlKeys.VIEWSETUPS_TAG )
+				.getChildren( XmlKeys.VIEWSETUP_TAG );
+		for ( final Element vsEl : viewSetupsElements )
+		{
+			final Element vs, uel;
+			if ( null != ( vs = vsEl.getChild( XmlKeys.VIEWSETUP_VOXELSIZE_TAG ) ) && null != ( uel = vs.getChild( XmlKeys.VOXELDIMENSIONS_UNIT_TAG ) ) )
+			{
+				spaceUnits = uel.getValue();
+				break;
+			}
+		}
+		return spaceUnits;
+	}
+
+	private String getTimeUnits()
+	{
+		// BDV does not let you save frame interval in physical units.
+		final String timeUnits = "frame";
+		return timeUnits;
 	}
 
 	private static Document getSAXParsedDocument( final String fileName )
@@ -664,6 +678,40 @@ public class MamutExporter
 	private static final String sanitize( final String tag )
 	{
 		return tag.replace( ' ', '_' );
+	}
+
+	/**
+	 * Tries to recover the dimension from the unit string and the spatial and
+	 * time units.
+	 * 
+	 * @param units
+	 *            the unit string.
+	 * @param spaceUnits
+	 *            the spatial units.
+	 * @param timeUnits
+	 *            the time units.
+	 * @return a dimension string that can be parsed by MaMuT.
+	 */
+	private static final String unitsToDimension( final String units, final String spaceUnits, final String timeUnits )
+	{
+		if ( units.equals( "Quality" ) )
+			return "QUALITY";
+		else if ( units.equals( "Counts" ) )
+			return "INTENSITY";
+		else if ( units.equals( "Counts^2" ) )
+			return "INTENSITY_SQUARED";
+		else if ( units.equals( spaceUnits ) )
+			return "LENGTH";
+		else if ( units.equals( spaceUnits + "/" + timeUnits ) )
+			return "VELOCITY";
+		else if ( units.equals( timeUnits ) )
+			return "TIME";
+		else if ( units.equals( "Radians" ) )
+			return "ANGLE";
+		else if ( units.equals( "/" + timeUnits ) )
+			return "RATE";
+		else
+			return "NONE";
 	}
 
 	public static final void export( final File target, final Model model, final MamutProject project ) throws IOException
