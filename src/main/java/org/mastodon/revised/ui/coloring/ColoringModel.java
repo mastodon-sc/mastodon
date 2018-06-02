@@ -1,14 +1,19 @@
 package org.mastodon.revised.ui.coloring;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import org.mastodon.revised.model.tag.TagSetModel;
 import org.mastodon.revised.model.tag.TagSetStructure;
+import org.mastodon.revised.ui.coloring.feature.FeatureColorMode;
+import org.mastodon.revised.ui.coloring.feature.FeatureColorMode.UpdateListener;
+import org.mastodon.revised.ui.coloring.feature.FeatureColorModeManager;
 import org.mastodon.util.Listeners;
 
 /**
  * ColoringModel knows which coloring scheme is currently active.
- * Possible options are: none, by a tag set, by a feature (not implemented yet).
+ * Possible options are: none, by a tag set, by a feature.
  * <p>
  * Notifies listeners when coloring is changed.
  * <p>
@@ -16,7 +21,7 @@ import org.mastodon.util.Listeners;
  *
  * @author Tobias Pietzsch
  */
-public class ColoringModel implements TagSetModel.TagSetModelListener
+public class ColoringModel implements TagSetModel.TagSetModelListener, UpdateListener
 {
 	public interface ColoringChangedListener
 	{
@@ -29,9 +34,14 @@ public class ColoringModel implements TagSetModel.TagSetModelListener
 
 	private TagSetStructure.TagSet tagSet;
 
-	public ColoringModel( final TagSetModel< ?, ? > tagSetModel )
+	private FeatureColorMode featureColorMode;
+
+	private final FeatureColorModeManager featureColorModeManager;
+
+	public ColoringModel( final TagSetModel< ?, ? > tagSetModel, final FeatureColorModeManager featureColorModeManager )
 	{
 		this.tagSetModel = tagSetModel;
+		this.featureColorModeManager = featureColorModeManager;
 		this.listeners = new Listeners.SynchronizedList<>();
 	}
 
@@ -43,12 +53,14 @@ public class ColoringModel implements TagSetModel.TagSetModelListener
 	public void colorByNone()
 	{
 		tagSet = null;
+		featureColorMode = null;
 		listeners.list.forEach( ColoringChangedListener::coloringChanged );
 	}
 
 	public void colorByTagSet( final TagSetStructure.TagSet tagSet )
 	{
 		this.tagSet = tagSet;
+		this.featureColorMode = null;
 		listeners.list.forEach( ColoringChangedListener::coloringChanged );
 	}
 
@@ -57,9 +69,21 @@ public class ColoringModel implements TagSetModel.TagSetModelListener
 		return tagSet;
 	}
 
+	public void colorByFeature( final FeatureColorMode featureColorMode )
+	{
+		this.featureColorMode = featureColorMode;
+		this.tagSet = null;
+		listeners.list.forEach( ColoringChangedListener::coloringChanged );
+	}
+
+	public FeatureColorMode getFeatureColorMode()
+	{
+		return featureColorMode;
+	}
+
 	public boolean noColoring()
 	{
-		return tagSet == null;
+		return tagSet == null && featureColorMode == null;
 	}
 
 	@Override
@@ -77,8 +101,33 @@ public class ColoringModel implements TagSetModel.TagSetModelListener
 		}
 	}
 
+	@Override
+	public void featureColorModeChanged()
+	{
+		if ( featureColorMode != null )
+		{
+			final List< FeatureColorMode > l1 = featureColorModeManager.getBuiltinStyles();
+			final List< FeatureColorMode > l2 = featureColorModeManager.getUserStyles();
+			final ArrayList< FeatureColorMode > modes = new ArrayList<>( l1.size() + l2.size() );
+			modes.addAll( l1 );
+			modes.addAll( l2 );
+			final String name = featureColorMode.getName();
+			final Optional< FeatureColorMode > f = modes.stream().filter( fcm -> fcm.getName().equals( name ) ).findFirst();
+			if ( f.isPresent() )
+				colorByFeature( f.get() );
+			else
+				colorByNone();
+
+		}
+	}
+
 	public TagSetStructure getTagSetStructure()
 	{
 		return tagSetModel.getTagSetStructure();
+	}
+
+	public FeatureColorModeManager getFeatureColorModeManager()
+	{
+		return featureColorModeManager;
 	}
 }
