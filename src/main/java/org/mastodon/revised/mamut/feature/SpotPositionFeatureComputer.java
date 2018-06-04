@@ -2,6 +2,8 @@ package org.mastodon.revised.mamut.feature;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -33,6 +35,12 @@ public class SpotPositionFeatureComputer extends SpotFeatureComputer
 	}
 
 	@Override
+	public Collection< String > getProjectionKeys()
+	{
+		return Arrays.asList( new String[] { "X", "Y", "Z" } );
+	}
+
+	@Override
 	public Set< String > getDependencies()
 	{
 		return Collections.emptySet();
@@ -44,7 +52,7 @@ public class SpotPositionFeatureComputer extends SpotFeatureComputer
 		final HashMap< String, FeatureProjection< Spot > > map = new HashMap<>();
 		for ( int d = 0; d < 3; d++ )
 		{
-			final String pname = "Spot " + ( char ) ( 'X' + d ) + " position";
+			final String pname = "" + ( char ) ( 'X' + d );
 			final SpotPositionProjection projection = new SpotPositionProjection( d, spaceUnits, timeUnits );
 			map.put( pname, projection );
 		}

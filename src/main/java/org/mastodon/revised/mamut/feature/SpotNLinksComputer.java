@@ -1,5 +1,6 @@
 package org.mastodon.revised.mamut.feature;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Set;
 
@@ -26,15 +27,15 @@ public class SpotNLinksComputer extends SpotIntScalarFeatureComputer
 	}
 
 	@Override
-	public Set< String > getDependencies()
+	public Collection< String > getProjectionKeys()
 	{
-		return Collections.emptySet();
+		return Collections.singleton( KEY );
 	}
 
 	@Override
-	public String getKey()
+	public Set< String > getDependencies()
 	{
-		return KEY;
+		return Collections.emptySet();
 	}
 
 	@Override

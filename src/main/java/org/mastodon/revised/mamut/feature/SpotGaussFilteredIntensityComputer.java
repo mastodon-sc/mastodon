@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
@@ -77,17 +78,28 @@ public class SpotGaussFilteredIntensityComputer extends SpotFeatureComputer
 	}
 
 	@Override
-	public String getKey()
-	{
-		return KEY;
-	}
-
-	@Override
 	public void setSharedBigDataViewerData( final SharedBigDataViewerData bdvData )
 	{
 		this.bdvData = bdvData;
 		this.processSource = new boolean[ bdvData.getSources().size() ];
 		Arrays.fill( processSource, true );
+	}
+
+	@Override
+	public Collection< String > getProjectionKeys()
+	{
+		if ( null == bdvData )
+			return Collections.emptyList();
+
+		final List< String > projectionKeys = new ArrayList<>( processSource.length * 2 );
+		for ( int iSource = 0; iSource < processSource.length; iSource++ )
+		{
+			final String nameMean = "Average ch " + iSource;
+			projectionKeys.add( nameMean );
+			final String nameStd = "Std ch " + iSource;
+			projectionKeys.add( nameStd );
+		}
+		return projectionKeys;
 	}
 
 	@Override

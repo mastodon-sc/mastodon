@@ -1,5 +1,6 @@
 package org.mastodon.revised.mamut.feature;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Set;
 
@@ -25,6 +26,12 @@ public class LinkDisplacementComputer extends LinkDoubleScalarFeatureComputer
 	public LinkDisplacementComputer()
 	{
 		super( KEY );
+	}
+
+	@Override
+	public Collection< String > getProjectionKeys()
+	{
+		return Collections.singleton( KEY );
 	}
 
 	@Override

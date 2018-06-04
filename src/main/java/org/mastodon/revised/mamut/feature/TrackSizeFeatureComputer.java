@@ -1,5 +1,6 @@
 package org.mastodon.revised.mamut.feature;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Set;
 
@@ -26,6 +27,12 @@ public class TrackSizeFeatureComputer extends SpotIntScalarFeatureComputer
 	public TrackSizeFeatureComputer()
 	{
 		super( KEY );
+	}
+
+	@Override
+	public Collection< String > getProjectionKeys()
+	{
+		return Collections.singleton( KEY );
 	}
 
 	@Override

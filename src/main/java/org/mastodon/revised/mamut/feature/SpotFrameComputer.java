@@ -2,6 +2,7 @@ package org.mastodon.revised.mamut.feature;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
@@ -25,6 +26,12 @@ public class SpotFrameComputer extends SpotIntScalarFeatureComputer
 	public SpotFrameComputer()
 	{
 		super( KEY );
+	}
+
+	@Override
+	public Collection< String > getProjectionKeys()
+	{
+		return Collections.singleton( KEY );
 	}
 
 	@Override

@@ -2,6 +2,7 @@ package org.mastodon.revised.model.feature;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Collection;
 import java.util.Set;
 
 import javax.swing.JComponent;
@@ -49,6 +50,21 @@ public interface FeatureComputer< AM extends AbstractModel< ?, ?, ? > > extends 
 	 * @return the feature key.
 	 */
 	public String getKey();
+
+	/**
+	 * Returns the keys of the projection the computed feature will have.
+	 *
+	 * @return the projection keys.
+	 */
+	public Collection< String > getProjectionKeys();
+
+	/**
+	 * Returns the class of the objects for which the computed feature is
+	 * defined on.
+	 *
+	 * @return the target class.
+	 */
+	public Class< ? > getTargetClass();
 
 	/**
 	 * Deserializes a feature from the specified file.
