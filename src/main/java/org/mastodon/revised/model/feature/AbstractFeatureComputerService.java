@@ -64,10 +64,8 @@ public abstract class AbstractFeatureComputerService< AM extends AbstractModel< 
 		{
 			final FC computer = v.getContent();
 			progressListener.showStatus( computer.getKey() );
-			prepareComputer( computer );
 			final Feature< ?, ? > feature = computer.compute( model );
 			featureModel.declareFeature( feature );
-
 			progressListener.showProgress( progress++, computers.size() );
 		}
 		featureModel.resumeListeners();
@@ -79,16 +77,38 @@ public abstract class AbstractFeatureComputerService< AM extends AbstractModel< 
 		return true;
 	}
 
-	/**
-	 * Hook for subclassers. This method is called just before the
-	 * {@link FeatureComputer#compute(AbstractModel)} is called on the specified
-	 * computer and let concrete implementations pass supplemental information
-	 * to the computers.
-	 *
-	 * @param computer
-	 *            the feature computer to prepare.
-	 */
-	protected abstract void prepareComputer( FC computer );
+	protected < K extends FC > void initializeFeatureComputers( final Class< K > cl )
+	{
+		final List< PluginInfo< K > > infos = pluginService.getPluginsOfType( cl );
+		for ( final PluginInfo< K > info : infos )
+		{
+			final String name = info.getName();
+			if ( featureComputers.keySet().contains( name ) )
+			{
+				logService.error( "Cannot register feature computer with name " + name + " of class " + cl +
+						". There is already a feature computer registered with this name." );
+				continue;
+			}
+
+			try
+			{
+				final K computer = info.createInstance();
+				featureComputers.put( name, computer );
+			}
+			catch ( final InstantiableException e )
+			{
+				logService.error( "Could not instantiate computer  with name " + name + " of class " + cl +
+						":\n" + e.getMessage() );
+				e.printStackTrace();
+			}
+		}
+	}
+
+	@Override
+	public Collection< FC > getFeatureComputers()
+	{
+		return Collections.unmodifiableCollection( featureComputers.values() );
+	}
 
 	/*
 	 * DEPENDENCY GRAPH.
@@ -180,42 +200,5 @@ public abstract class AbstractFeatureComputerService< AM extends AbstractModel< 
 		computerGraph.releaseRef( eref );
 
 		return source;
-	}
-
-	/*
-	 * PRIVATE METHODS.
-	 */
-
-	protected < K extends FC > void initializeFeatureComputers( final Class< K > cl )
-	{
-		final List< PluginInfo< K > > infos = pluginService.getPluginsOfType( cl );
-		for ( final PluginInfo< K > info : infos )
-		{
-			final String name = info.getName();
-			if ( featureComputers.keySet().contains( name ) )
-			{
-				logService.error( "Cannot register feature computer with name " + name + " of class " + cl +
-						". There is already a feature computer registered with this name." );
-				continue;
-			}
-
-			try
-			{
-				final K computer = info.createInstance();
-				featureComputers.put( name, computer );
-			}
-			catch ( final InstantiableException e )
-			{
-				logService.error( "Could not instantiate computer  with name " + name + " of class " + cl +
-						":\n" + e.getMessage() );
-				e.printStackTrace();
-			}
-		}
-	}
-
-	@Override
-	public Collection< FC > getFeatureComputers()
-	{
-		return Collections.unmodifiableCollection( featureComputers.values() );
 	}
 }

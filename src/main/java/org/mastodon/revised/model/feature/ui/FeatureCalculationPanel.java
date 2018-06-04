@@ -285,7 +285,7 @@ public class FeatureCalculationPanel< AM extends AbstractModel< ?, ?, ? >, FC ex
 		c.gridy++;
 	}
 
-	private void displayConfigPanel( final FeatureComputer< ? > computer )
+	private void displayConfigPanel( final FC computer )
 	{
 		panelConfig.removeAll();
 

@@ -8,7 +8,6 @@ import org.scijava.plugin.Plugin;
 @Plugin( type = MamutFeatureComputerService.class )
 public class DefaultMamutFeatureComputerService extends AbstractFeatureComputerService< Model, MamutFeatureComputer > implements MamutFeatureComputerService
 {
-	private SharedBigDataViewerData sharedBdvData;
 
 	@Override
 	public void initialize()
@@ -20,12 +19,7 @@ public class DefaultMamutFeatureComputerService extends AbstractFeatureComputerS
 	@Override
 	public void setSharedBdvData( final SharedBigDataViewerData sharedBdvData )
 	{
-		this.sharedBdvData = sharedBdvData;
-	}
-
-	@Override
-	protected void prepareComputer( final MamutFeatureComputer computer )
-	{
-		computer.setSharedBigDataViewerData( sharedBdvData );
+		for ( final MamutFeatureComputer computer : getFeatureComputers() )
+			computer.setSharedBigDataViewerData( sharedBdvData );
 	}
 }

@@ -14,6 +14,8 @@ import org.scijava.service.SciJavaService;
  *
  * @param <AM>
  *            the type of the model on which features are computed.
+ * @param <FC>
+ *            the type of feature computers used in this service.
  */
 public interface FeatureComputerService< AM extends AbstractModel< ?, ?, ? >, FC extends FeatureComputer< AM > > extends SciJavaService
 {
