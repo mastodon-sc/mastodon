@@ -35,7 +35,7 @@ public class IntScalarFeature< O > implements Feature< O, Integer >
 	/**
 	 * The property map that stores feature values.
 	 */
-	private final IntPropertyMap< O > propertyMap;
+	protected final IntPropertyMap< O > propertyMap;
 
 	private final Map< String, FeatureProjection< O > > proj;
 

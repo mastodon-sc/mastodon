@@ -35,7 +35,7 @@ public class DoubleScalarFeature< O > implements Feature< O, Double >
 	/**
 	 * The property map that stores feature values.
 	 */
-	private final DoublePropertyMap< O > propertyMap;
+	protected final DoublePropertyMap< O > propertyMap;
 
 	private final Map< String, FeatureProjection< O > > proj;
 
