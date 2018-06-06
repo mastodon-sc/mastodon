@@ -63,6 +63,19 @@ public class DefaultFeatureModel implements FeatureModel
 	}
 
 	@Override
+	public void removeFeature( final String key )
+	{
+		final Feature< ?, ? > feature = keyToFeature.get( key );
+		if ( null == feature )
+			return;
+
+		final Class< ? > targetClass = feature.getTargetClass();
+		targetClassToFeatures.get( targetClass ).remove( feature );
+		keyToFeature.remove( key );
+		fireFeatureModelChangedEvent();
+	}
+
+	@Override
 	public Set< Feature< ?, ? > > getFeatureSet( final Class< ? > targetClass )
 	{
 		return targetClassToFeatures.get( targetClass );

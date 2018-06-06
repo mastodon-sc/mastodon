@@ -29,6 +29,14 @@ public interface FeatureModel
 	public void clear();
 
 	/**
+	 * Removes the feature with the specified key from this model.
+	 *
+	 * @param key the key of the feature to remove.
+	 */
+	public void removeFeature( String key );
+
+
+	/**
 	 * Registers the feature key and the feature projections provided by the
 	 * specified feature.
 	 *
@@ -51,7 +59,7 @@ public interface FeatureModel
 	 * Exposes the list of listeners that are notified when a change happens to
 	 * this feature model. Events are fired for every call to {@link #clear()}
 	 * or {@link #declareFeature(Feature)} methods.
-	 * 
+	 *
 	 * @return the list of the listeners.
 	 */
 	public Listeners< FeatureModelListener > listeners();
