@@ -44,6 +44,9 @@ public abstract class AbstractFeatureComputerService< AM extends AbstractModel< 
 	@Override
 	public boolean compute( final AM model, final FeatureModel featureModel, final Set< FC > computers, final ProgressListener progressListener )
 	{
+		/*
+		 * Determine features to compute according to dependencies.
+		 */
 		final ObjectGraph< FC > dependencyGraph = getDependencyGraph( computers );
 		final TopologicalSort< ObjectVertex< FC >, ObjectEdge< FC > > sorter = new TopologicalSort<>( dependencyGraph );
 
@@ -56,9 +59,18 @@ public abstract class AbstractFeatureComputerService< AM extends AbstractModel< 
 		}
 
 		final long start = System.currentTimeMillis();
-
 		featureModel.pauseListeners();
-		featureModel.clear();
+
+		/*
+		 * Remove only the features for which we have a computer registered.
+		 */
+
+		for ( final String featureKey : featureComputers.keySet() )
+			featureModel.removeFeature( featureKey );
+
+		/*
+		 * Compute features.
+		 */
 		int progress = 1;
 		for ( final ObjectVertex< FC > v : sorter.get() )
 		{
