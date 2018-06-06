@@ -645,14 +645,6 @@ public class FeatureColorModeEditorPanel extends JPanel
 			if ( null == clazz )
 				return;
 
-			final ArrayList< String > keysCB1 = new ArrayList<>();
-			if ( currentClass.equals( vertexClass ) )
-				keysCB1.addAll( vertexFeatureKeys.keySet() );
-			else if ( currentClass.equals( edgeClass ) )
-				keysCB1.addAll( edgeFeatureKeys.keySet() );
-			keysCB1.sort( null );
-			cb1.setModel( new DefaultComboBoxModel<>( keysCB1.toArray( new String[] {} ) ) );
-
 			super.regen( false );
 		}
 	}
@@ -687,14 +679,6 @@ public class FeatureColorModeEditorPanel extends JPanel
 			currentClass = clazz;
 			if ( null == clazz )
 				return;
-
-			final ArrayList< String > keysCB1 = new ArrayList<>();
-			if ( currentClass.equals( vertexClass ) )
-				keysCB1.addAll( vertexFeatureKeys.keySet() );
-			else if ( currentClass.equals( edgeClass ) )
-				keysCB1.addAll( edgeFeatureKeys.keySet() );
-			keysCB1.sort( null );
-			cb1.setModel( new DefaultComboBoxModel<>( keysCB1.toArray( new String[] {} ) ) );
 
 			super.regen( false );
 		}
@@ -760,6 +744,22 @@ public class FeatureColorModeEditorPanel extends JPanel
 
 		protected void regen( final boolean force )
 		{
+			final HashSet< String > keysCB1 = new HashSet<>();
+			if ( currentClass.equals( vertexClass ) )
+			{
+				keysCB1.addAll( vertexFeatureKeys.keySet() );
+				keysCB1.addAll( collectKeys( featureModel.getFeatureSet( vertexClass )  ) );
+			}
+			else if ( currentClass.equals( edgeClass ) )
+			{
+				keysCB1.addAll( edgeFeatureKeys.keySet() );
+				keysCB1.addAll( collectKeys( featureModel.getFeatureSet( edgeClass )  ) );
+			}
+
+			final List<String> lKeysCB1 = new ArrayList<>(keysCB1);
+			lKeysCB1.sort( null );
+			cb1.setModel( new DefaultComboBoxModel<>( lKeysCB1.toArray( new String[] {} ) ) );
+
 			regenCB2();
 			notifyListers();
 		}
@@ -768,10 +768,18 @@ public class FeatureColorModeEditorPanel extends JPanel
 		{
 			final String featureKey = ( String ) cb1.getSelectedItem();
 			final ArrayList< String > keysCB2 = new ArrayList<>();
-			if ( vertexClass.equals( currentClass ) )
+
+			// Feature is vertex, computer generated.
+			if ( vertexClass.equals( currentClass ) && null != vertexFeatureKeys.get( featureKey ) )
 				keysCB2.addAll( vertexFeatureKeys.get( featureKey ) );
-			else if ( edgeClass.equals( currentClass ) )
+			// Feature is edge, computer generated.
+			else if ( edgeClass.equals( currentClass ) && null != edgeFeatureKeys.get( featureKey ) )
 				keysCB2.addAll( edgeFeatureKeys.get( featureKey ) );
+			// Feature is stored in the feature model, not computer generated.
+			else
+				keysCB2.addAll( featureModel.getFeature( featureKey ).getProjections().keySet() );
+			// Else feature is invalid!
+
 			keysCB2.sort( null );
 			cb2.setModel( new DefaultComboBoxModel<>( keysCB2.toArray( new String[] {} ) ) );
 

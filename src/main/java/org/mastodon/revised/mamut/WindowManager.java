@@ -4,6 +4,7 @@ import java.awt.event.WindowEvent;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.function.Consumer;
@@ -21,11 +22,13 @@ import org.mastodon.revised.model.feature.FeatureModel;
 import org.mastodon.revised.model.feature.ui.FeatureCalculationDialog;
 import org.mastodon.revised.model.mamut.Link;
 import org.mastodon.revised.model.mamut.Model;
+import org.mastodon.revised.model.mamut.ModelGraph;
 import org.mastodon.revised.model.mamut.Spot;
 import org.mastodon.revised.model.tag.ui.TagSetDialog;
 import org.mastodon.revised.trackscheme.display.style.TrackSchemeStyleManager;
 import org.mastodon.revised.trackscheme.display.style.TrackSchemeStyleSettingsPage;
 import org.mastodon.revised.ui.SelectionActions;
+import org.mastodon.revised.ui.coloring.feature.FeatureColorMode;
 import org.mastodon.revised.ui.coloring.feature.FeatureColorModeConfigPage;
 import org.mastodon.revised.ui.coloring.feature.FeatureColorModeManager;
 import org.mastodon.revised.ui.coloring.feature.FeatureRangeCalculator;
@@ -244,27 +247,7 @@ public class WindowManager
 		final FeatureModel featureModel = model.getFeatureModel();
 		featureComputationDialog = new FeatureCalculationDialog<>( null, computerService, model, featureModel );
 
-		// Get feature keys.
-		final LinkedHashMap< String, Collection< String > > vertexFeatureKeys = new LinkedHashMap<>();
-		final LinkedHashMap< String, Collection< String > > edgeFeatureKeys = new LinkedHashMap<>();
-		final Collection< MamutFeatureComputer > featureComputers = computerService.getFeatureComputers();
-		for ( final MamutFeatureComputer computer : featureComputers )
-		{
-			if ( Spot.class.equals( computer.getTargetClass() ) )
-				vertexFeatureKeys.put( computer.getKey(), computer.getProjectionKeys() );
-			if ( Link.class.equals( computer.getTargetClass() ) )
-				edgeFeatureKeys.put( computer.getKey(), computer.getProjectionKeys() );
-		}
-		final FeatureColorModeConfigPage featureColorModeConfigPage = new FeatureColorModeConfigPage(
-				featureColorTreePath,
-				featureColorModeManager,
-				appModel.getModel().getFeatureModel(),
-				new FeatureRangeCalculator<>( appModel.getModel().getGraph(), appModel.getModel().getFeatureModel() ),
-				Spot.class,
-				vertexFeatureKeys,
-				Link.class,
-				edgeFeatureKeys );
-		settings.addPage( featureColorModeConfigPage );
+		settings.addPage( createFeatureColorModeConfigPage( computerService, featureColorModeManager, model, featureColorTreePath ) );
 		updateEnabledActions();
 
 		plugins.setAppModel( new MastodonPluginAppModel( appModel, this ) );
@@ -441,5 +424,61 @@ public class WindowManager
 		context.inject( builder );
 		builder.discoverProviders();
 		return builder.build();
+	}
+
+	/**
+	 * Returns a new config page for feature color modes, prepared with all feature
+	 * keys from known feature computers and color modes.
+	 * 
+	 * @param computerService
+	 *            the feature computer service.
+	 * @param featureColorModeManager
+	 *            the feature color mode manager.
+	 * @param model
+	 *            the model.
+	 * @param featureColorTreePath
+	 *            the path under which to install the config page in the settings
+	 *            panel.
+	 * @return a new {@link FeatureColorModeConfigPage}.
+	 */
+	private static final FeatureColorModeConfigPage createFeatureColorModeConfigPage(
+			final MamutFeatureComputerService computerService,
+			final FeatureColorModeManager featureColorModeManager,
+			final Model model,
+			final String featureColorTreePath )
+	{
+		// Get feature keys.
+		final LinkedHashMap< String, Collection< String > > vertexFeatureKeys = new LinkedHashMap<>();
+		final LinkedHashMap< String, Collection< String > > edgeFeatureKeys = new LinkedHashMap<>();
+		final Collection< MamutFeatureComputer > featureComputers = computerService.getFeatureComputers();
+		for ( final MamutFeatureComputer computer : featureComputers )
+		{
+			if ( Spot.class.equals( computer.getTargetClass() ) )
+				vertexFeatureKeys.put( computer.getKey(), computer.getProjectionKeys() );
+			if ( Link.class.equals( computer.getTargetClass() ) )
+				edgeFeatureKeys.put( computer.getKey(), computer.getProjectionKeys() );
+		}
+		// Add all mode keys, in case of invalid yet editable ones.
+		final Collection< FeatureColorMode > modes = new ArrayList<>();
+		modes.addAll( featureColorModeManager.getBuiltinStyles() );
+		modes.addAll( featureColorModeManager.getUserStyles() );
+		for ( final FeatureColorMode mode : modes )
+		{
+			vertexFeatureKeys.putIfAbsent( mode.getVertexFeatureProjection()[ 0 ], Collections.singleton( mode.getVertexFeatureProjection()[ 1 ] ) );
+			edgeFeatureKeys.putIfAbsent( mode.getEdgeFeatureProjection()[ 0 ], Collections.singleton( mode.getEdgeFeatureProjection()[ 1 ] ) );
+		}
+
+		final FeatureModel featureModel = model.getFeatureModel();
+		final ModelGraph graph = model.getGraph();
+		final FeatureColorModeConfigPage featureColorModeConfigPage = new FeatureColorModeConfigPage(
+				featureColorTreePath,
+				featureColorModeManager,
+				featureModel,
+				new FeatureRangeCalculator<>( graph, featureModel ),
+				Spot.class,
+				vertexFeatureKeys,
+				Link.class,
+				edgeFeatureKeys );
+		return featureColorModeConfigPage;
 	}
 }
