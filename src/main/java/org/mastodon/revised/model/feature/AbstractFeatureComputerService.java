@@ -13,11 +13,10 @@ import org.mastodon.graph.algorithm.TopologicalSort;
 import org.mastodon.graph.object.ObjectEdge;
 import org.mastodon.graph.object.ObjectGraph;
 import org.mastodon.graph.object.ObjectVertex;
+import org.mastodon.revised.mamut.MastodonLogger;
 import org.mastodon.revised.model.AbstractModel;
-import org.mastodon.revised.ui.ProgressListener;
 import org.scijava.InstantiableException;
-import org.scijava.app.StatusService;
-import org.scijava.log.LogService;
+import org.scijava.log.LogSource;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.PluginInfo;
 import org.scijava.plugin.PluginService;
@@ -30,10 +29,7 @@ public abstract class AbstractFeatureComputerService< AM extends AbstractModel< 
 	private PluginService pluginService;
 
 	@Parameter
-	private LogService logService;
-
-	@Parameter
-	private StatusService status;
+	private MastodonLogger logger;
 
 	/**
 	 * Feature computers of any type, mapped by their key, for dependency
@@ -41,17 +37,26 @@ public abstract class AbstractFeatureComputerService< AM extends AbstractModel< 
 	 */
 	private final Map< String, FeatureComputer< AM > > featureComputers = new HashMap<>();
 
+	private LogSource logSource;
+
 	@Override
-	public boolean compute( final AM model, final FeatureModel featureModel, final Set< FeatureComputer< AM > > computers, final ProgressListener progressListener )
+	public void initialize()
+	{
+		super.initialize();
+		logSource = logger.getLogSourceRoot().subSource( "Feature computer" );
+	}
+
+	@Override
+	public boolean compute( final AM model, final FeatureModel featureModel, final Set< FeatureComputer< AM > > computers )
 	{
 		final ObjectGraph< FeatureComputer< AM > > dependencyGraph = getDependencyGraph( computers );
 		final TopologicalSort< ObjectVertex< FeatureComputer< AM > >, ObjectEdge< FeatureComputer< AM > > > sorter = new TopologicalSort<>( dependencyGraph );
 
 		if ( sorter.hasFailed() )
 		{
-			logService.error( "Could not compute features using  " + computers +
-					" as they have a circular dependency." );
-			progressListener.showStatus( "Circular dependency!" );
+			logger.error( "Could not compute features using  " + computers +
+					" as they have a circular dependency.", logSource );
+			logger.setStatus( "Circular dependency!", logSource );
 			return false;
 		}
 
@@ -62,16 +67,16 @@ public abstract class AbstractFeatureComputerService< AM extends AbstractModel< 
 		for ( final ObjectVertex< FeatureComputer< AM > > v : sorter.get() )
 		{
 			final FeatureComputer< AM > computer = v.getContent();
-			progressListener.showStatus( computer.getKey() );
+			logger.setStatus( computer.getKey(), logSource );
 			final Feature< ?, ? > feature = computer.compute( model );
 			featureModel.declareFeature( feature );
 
-			progressListener.showProgress( progress++, computers.size() );
+			logger.setProgress( progress++ / ( double ) computers.size(), logSource );
 		}
 
 		final long end = System.currentTimeMillis();
-		progressListener.clearStatus();
-		progressListener.showStatus( String.format( "Done in %.1f s.", ( end - start ) / 1000. ) );
+		logger.setProgress( 1., logSource );
+		logger.info( String.format( "Done in %.1f s.", ( end - start ) / 1000. ), logSource );
 
 		return true;
 	}
@@ -148,14 +153,14 @@ public abstract class AbstractFeatureComputerService< AM extends AbstractModel< 
 			final FeatureComputer< AM > computerDep = featureComputers.get( dep );
 			if ( null == computerDep )
 			{
-				logService.error( "Cannot add feature computer named " + dep + " as it is not registered." );
+				logger.error( "Cannot add feature computer named " + dep + " as it is not registered.", logSource );
 				return null;
 			}
 
 			final ObjectVertex< FeatureComputer< AM > > target = addDepVertex( computerDep, computerGraph, vref2 );
 			if ( null == target )
 			{
-				logService.error( "Removing feature computer named " + computer + " as some of its dependencies could not be resolved." );
+				logger.error( "Removing feature computer named " + computer + " as some of its dependencies could not be resolved.", logSource );
 				computerGraph.remove( source );
 				break;
 			}
@@ -180,8 +185,8 @@ public abstract class AbstractFeatureComputerService< AM extends AbstractModel< 
 			final String name = info.getName();
 			if ( featureComputers.keySet().contains( name ) )
 			{
-				logService.error( "Cannot register feature computer with name " + name + " of class " + cl +
-						". There is already a feature computer registered with this name." );
+				logger.error( "Cannot register feature computer with name " + name + " of class " + cl +
+						". There is already a feature computer registered with this name.", logSource );
 				continue;
 			}
 
@@ -192,8 +197,8 @@ public abstract class AbstractFeatureComputerService< AM extends AbstractModel< 
 			}
 			catch ( final InstantiableException e )
 			{
-				logService.error( "Could not instantiate computer  with name " + name + " of class " + cl +
-						":\n" + e.getMessage() );
+				logger.error( "Could not instantiate computer  with name " + name + " of class " + cl +
+						":\n" + e.getMessage(), logSource );
 				e.printStackTrace();
 			}
 		}

@@ -8,12 +8,12 @@ import java.util.Set;
 import org.jdom2.JDOMException;
 import org.mastodon.revised.mamut.feature.MamutFeatureComputerService;
 import org.mastodon.revised.model.feature.FeatureComputer;
-import org.mastodon.revised.model.mamut.ModelUtils;
 import org.mastodon.revised.model.mamut.Model;
+import org.mastodon.revised.model.mamut.ModelUtils;
 import org.mastodon.revised.model.mamut.trackmate.MamutExporter;
 import org.mastodon.revised.model.mamut.trackmate.TrackMateImporter;
-import org.mastodon.revised.ui.ProgressListener;
 import org.scijava.Context;
+import org.scijava.prefs.PrefService;
 
 import mpicbg.spim.data.SpimDataException;
 
@@ -27,7 +27,7 @@ public class MaMuTExportExample
 		 */
 
 		final String projectFolder = "samples/mamutproject";
-		final String bdvFile = "samples/datasethdf5.xml";
+		final String bdvFile = "samples/mamutproject/datasethdf5.xml";
 		final MamutProject project = new MamutProject( new File( projectFolder ), new File( bdvFile ) );
 //		final MamutProject project = new MamutProjectIO().load( "samples/mamutproject" );
 		final Model model = new Model();
@@ -37,28 +37,15 @@ public class MaMuTExportExample
 		 * 1.1. Compute features.
 		 */
 
-		final Context context = new Context( MamutFeatureComputerService.class );
+		// Tune context to use command-liner logger.
+		final Context context = new Context(
+				SysOutMastodonLogger.class,
+				MamutFeatureComputerService.class,
+				PrefService.class );
 		final MamutFeatureComputerService featureComputerService = context.getService( MamutFeatureComputerService.class );
 		final Set< FeatureComputer< Model > > featureComputers = new HashSet<>( featureComputerService.getFeatureComputers() );
-		final ProgressListener pl = new ProgressListener()
-		{
-
-			@Override
-			public void showStatus( final String string )
-			{
-				System.out.println( " - " + string );
-			}
-
-			@Override
-			public void showProgress( final int current, final int total )
-			{}
-
-			@Override
-			public void clearStatus()
-			{}
-		};
 		System.out.println( "Computing all features." );
-		final boolean computed = featureComputerService.compute( model, model.getFeatureModel(), featureComputers, pl );
+		final boolean computed = featureComputerService.compute( model, model.getFeatureModel(), featureComputers );
 		if (!computed)
 		{
 			System.err.println( "Error while calculating model features." );

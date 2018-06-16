@@ -10,6 +10,7 @@ public class DefaultMamutFeatureComputerService extends AbstractFeatureComputerS
 	@Override
 	public void initialize()
 	{
+		super.initialize();
 		initializeFeatureComputers( SpotFeatureComputer.class );
 		initializeFeatureComputers( LinkFeatureComputer.class );
 	}
