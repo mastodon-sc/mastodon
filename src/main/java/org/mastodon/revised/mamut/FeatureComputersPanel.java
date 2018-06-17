@@ -29,7 +29,6 @@ import javax.swing.JCheckBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JProgressBar;
 import javax.swing.JScrollPane;
 import javax.swing.LayoutStyle.ComponentPlacement;
 import javax.swing.ScrollPaneConstants;
@@ -43,7 +42,6 @@ import org.mastodon.graph.GraphChangeListener;
 import org.mastodon.revised.mamut.feature.MamutFeatureComputerService;
 import org.mastodon.revised.model.feature.FeatureComputer;
 import org.mastodon.revised.model.mamut.Model;
-import org.mastodon.revised.ui.ProgressListener;
 import org.scijava.Context;
 
 public class FeatureComputersPanel extends JPanel
@@ -63,8 +61,6 @@ public class FeatureComputersPanel extends JPanel
 	private final MamutFeatureComputerService computerService;
 
 	private final Model model;
-
-	private final MyProgressBar progressBar;
 
 	private final Set< FeatureComputer< Model > > selectedComputers;
 
@@ -87,9 +83,6 @@ public class FeatureComputersPanel extends JPanel
 
 		btnCompute = new JButton( "Compute", GO_ICON );
 
-		progressBar = new MyProgressBar();
-		progressBar.setStringPainted( true );
-
 		lblComputationDate = new JLabel( "Last feature computation: Never." );
 		final JLabel lblModelModificationDate = new JLabel( "Model last modified: Unknown." );
 		final GroupLayout gl_panelComputation = new GroupLayout( panelComputation );
@@ -98,10 +91,7 @@ public class FeatureComputersPanel extends JPanel
 						.addGroup( gl_panelComputation.createSequentialGroup()
 								.addContainerGap()
 								.addGroup( gl_panelComputation.createParallelGroup( Alignment.LEADING )
-										.addGroup( gl_panelComputation.createSequentialGroup()
-												.addComponent( btnCompute )
-												.addPreferredGap( ComponentPlacement.RELATED )
-												.addComponent( progressBar, GroupLayout.DEFAULT_SIZE, 349, Short.MAX_VALUE ) )
+										.addComponent( btnCompute )
 										.addComponent( lblComputationDate, Alignment.TRAILING, GroupLayout.DEFAULT_SIZE, 430, Short.MAX_VALUE )
 										.addComponent( lblModelModificationDate, Alignment.TRAILING, GroupLayout.DEFAULT_SIZE, 430, Short.MAX_VALUE ) )
 								.addContainerGap() ) );
@@ -109,9 +99,7 @@ public class FeatureComputersPanel extends JPanel
 				gl_panelComputation.createParallelGroup( Alignment.LEADING )
 						.addGroup( gl_panelComputation.createSequentialGroup()
 								.addContainerGap()
-								.addGroup( gl_panelComputation.createParallelGroup( Alignment.TRAILING, false )
-										.addComponent( progressBar, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE )
-										.addComponent( btnCompute, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE ) )
+								.addComponent( btnCompute )
 								.addPreferredGap( ComponentPlacement.UNRELATED )
 								.addComponent( lblComputationDate )
 								.addComponent( lblModelModificationDate )
@@ -178,7 +166,6 @@ public class FeatureComputersPanel extends JPanel
 
 		if ( worker == null )
 		{
-			progressBar.setEnabled( true );
 			btnCompute.setText( "Cancel" );
 			btnCompute.setIcon( CANCEL_ICON );
 			btnCompute.setEnabled( true );
@@ -208,8 +195,6 @@ public class FeatureComputersPanel extends JPanel
 		else
 		{
 			worker.cancel( true );
-			progressBar.clearStatus();
-			progressBar.setString( "Canceled." );
 			enableComponents( FeatureComputersPanel.this, true );
 			worker = null;
 			btnCompute.setText( "Compute" );
@@ -281,39 +266,8 @@ public class FeatureComputersPanel extends JPanel
 		@Override
 		protected Boolean doInBackground() throws Exception
 		{
-			final boolean ok = computerService.compute( model, model.getFeatureModel(), selectedComputers, progressBar );
+			final boolean ok = computerService.compute( model, model.getFeatureModel(), selectedComputers );
 			return Boolean.valueOf( ok );
-		}
-	}
-
-	private class MyProgressBar extends JProgressBar implements ProgressListener
-	{
-
-		private static final long serialVersionUID = 1L;
-
-		public MyProgressBar()
-		{
-			super();
-			setStringPainted( true );
-		}
-
-		@Override
-		public void showStatus( final String string )
-		{
-			setString( string );
-		}
-
-		@Override
-		public void showProgress( final int current, final int total )
-		{
-			setValue( ( int ) ( 100. * current / total ) );
-		}
-
-		@Override
-		public void clearStatus()
-		{
-			setString( "" );
-			setValue( 0 );
 		}
 	}
 

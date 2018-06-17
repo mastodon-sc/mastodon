@@ -4,7 +4,6 @@ import java.util.Collection;
 import java.util.Set;
 
 import org.mastodon.revised.model.AbstractModel;
-import org.mastodon.revised.ui.ProgressListener;
 import org.scijava.service.SciJavaService;
 
 /**
@@ -37,10 +36,8 @@ public interface FeatureComputerService< AM extends AbstractModel< ?, ?, ? > > e
 	 * @param selectedComputers
 	 *            what computers to run. The computers in the specified set must
 	 *            have been discovered by this instance.
-	 * @param progressListener
-	 *            a progress listener, used to report calculation progress.
 	 * @return <code>true</code> if computation terminated successfully.
 	 */
-	public boolean compute( AM model, FeatureModel featureModel, Set< FeatureComputer< AM > > selectedComputers, ProgressListener progressListener );
+	public boolean compute( AM model, FeatureModel featureModel, Set< FeatureComputer< AM > > selectedComputers );
 
 }
