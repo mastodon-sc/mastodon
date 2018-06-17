@@ -1,9 +1,18 @@
 package org.mastodon.revised.mamut;
 
+import javax.swing.JPanel;
+
 import org.scijava.log.LogSource;
 import org.scijava.plugin.Plugin;
 import org.scijava.service.AbstractService;
 
+/**
+ * A default {@link MastodonLogger} that echoes messages and progress to a
+ * {@link JPanel}. Suitable to be used in a GUI.
+ * 
+ * @author Jean-Yves Tinevez
+ *
+ */
 @Plugin( type = DefaultMastodonLogger.class )
 public class DefaultMastodonLogger extends AbstractService implements MastodonLogger
 {
