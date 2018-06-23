@@ -287,35 +287,36 @@ public class SearchVertexLabel< V extends Vertex< E > & HasLabel, E extends Edge
 			return SearchResult.NOT_FOUND;
 		}
 
-		private V getStartFromUI()
+		private void getStartFromUI()
 		{
-			// If selection == 1 vertex, then start from this one.
-			final int nSelected = selection.getSelectedVertices().size();
-			if ( nSelected == 1 )
-			{
-				final V selectedVertex = selection.getSelectedVertices().iterator().next();
-				start = assign( selectedVertex, start );
-				return start;
-			}
-
-			// If not look for the focused vertex.
+			// Look for the focused vertex.
 			final V ref = graph.vertexRef();
 			final V focusedVertex = focus.getFocusedVertex( ref );
 			if ( null != focusedVertex )
 			{
 				start = assign( focusedVertex, start );
-				return start;
+				return;
 			}
 
-			// If not take the first one.
-			if ( !graph.vertices().isEmpty() )
+			// If not focused, take a vertex from the selection.
+			if ( !selection.getSelectedVertices().isEmpty() )
 			{
-				start = assign( graph.vertices().iterator().next(), start );
-				return start;
+				final V selectedVertex = selection.getSelectedVertices().iterator().next();
+				start = assign( selectedVertex, start );
+				return;
 			}
 
-			// Null for empty graph.
-			return null;
+			// If there is no vertices in the selection, take the source of an edge.
+			if ( !selection.getSelectedEdges().isEmpty() )
+			{
+				final E selectedEdge = selection.getSelectedEdges().iterator().next();
+				start = assign( selectedEdge.getSource(), start );
+				return;
+			}
+
+			// If not take the first one in the model.
+			if ( !graph.vertices().isEmpty() )
+				start = assign( graph.vertices().iterator().next(), start );
 		}
 
 		private synchronized void reinit( final V from )
