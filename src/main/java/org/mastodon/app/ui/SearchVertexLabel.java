@@ -23,7 +23,6 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.KeyStroke;
 import javax.swing.UIManager;
-import javax.swing.border.EmptyBorder;
 
 import org.mastodon.collection.RefCollections;
 import org.mastodon.collection.RefList;
@@ -118,7 +117,10 @@ public class SearchVertexLabel< V extends Vertex< E > & HasLabel, E extends Edge
 		searchPanel.setLayout( gridBagLayout );
 
 		labelIcon = new JButton( UNFOCUSED_ICON );
-		labelIcon.setBorder( new EmptyBorder( 0, 0, 0, 0 ) );
+		labelIcon.setBorderPainted( false );
+		labelIcon.setContentAreaFilled( false );
+		labelIcon.setFocusPainted( false );
+		labelIcon.setOpaque( false );
 		final GridBagConstraints gbc_labelIcon = new GridBagConstraints();
 		gbc_labelIcon.anchor = GridBagConstraints.WEST;
 		gbc_labelIcon.gridx = 0;
