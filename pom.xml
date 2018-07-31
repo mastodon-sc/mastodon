@@ -86,7 +86,7 @@
 	<properties>
 		<package-name>net.trackmate</package-name>
 
-		<!--		<enforcer.skip>true</enforcer.skip> -->
+		<enforcer.skip>true</enforcer.skip>
 
 		<license.licenseName>not licensed yet</license.licenseName>
 		<license.projectName>TrackMate3</license.projectName>
