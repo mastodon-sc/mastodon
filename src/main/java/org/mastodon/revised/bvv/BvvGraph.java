@@ -9,11 +9,11 @@ import org.mastodon.spatial.SpatioTemporalIndex;
 public interface BvvGraph< V extends BvvVertex< V, E >, E extends BvvEdge< E, V > >
 		extends Graph< V, E >, GraphChangeNotifier
 {
-	public SpatioTemporalIndex< V > getIndex();
+	SpatioTemporalIndex< V > getIndex();
 
-	public double getMaxBoundingSphereRadiusSquared( final int timepoint );
+	double getMaxBoundingSphereRadiusSquared( final int timepoint );
 
-	public ReentrantReadWriteLock getLock();
+	ReentrantReadWriteLock getLock();
 
 	/**
 	 * Triggers a {@link GraphChangeListener#graphChanged()} event.
@@ -23,5 +23,5 @@ public interface BvvGraph< V extends BvvVertex< V, E >, E extends BvvEdge< E, V 
 	 * notifyGraphChanged() at the end.
 	 */
 	@Override
-	public void notifyGraphChanged();
+	void notifyGraphChanged();
 }

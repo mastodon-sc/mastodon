@@ -4,7 +4,6 @@ import java.util.Iterator;
 import org.mastodon.graph.Edge;
 import org.mastodon.graph.Edges;
 import org.mastodon.graph.Vertex;
-import org.mastodon.revised.bdv.overlay.wrap.OverlayProperties;
 import org.mastodon.revised.bvv.BvvVertex;
 
 public class BvvVertexWrapper< V extends Vertex< E >, E extends Edge< V > >
@@ -22,22 +21,46 @@ public class BvvVertexWrapper< V extends Vertex< E >, E extends Edge< V > >
 
 	final EdgesWrapper edges;
 
-	private final OverlayProperties< V, E > overlayProperties;
+	private final BvvModelGraphProperties< V, E > modelGraphProperties;
 
 	BvvVertexWrapper( final BvvGraphWrapper< V, E > wrapper )
 	{
 		this.wrapper = wrapper;
-		ref = wrapper.wrappedGraph.vertexRef();
+		ref = wrapper.modelGraph.vertexRef();
 		incomingEdges = new EdgesWrapper();
 		outgoingEdges = new EdgesWrapper();
 		edges = new EdgesWrapper();
-		overlayProperties = wrapper.overlayProperties;
+		modelGraphProperties = wrapper.modelGraphProperties;
 	}
 
 	@Override
 	public int getInternalPoolIndex()
 	{
 		return wrapper.idmap.getVertexId( wv );
+	}
+
+	@Override
+	public void getCovariance( final double[][] mat )
+	{
+		modelGraphProperties.getCovariance( wv, mat );
+	}
+
+	@Override
+	public float x()
+	{
+		return ( float ) modelGraphProperties.getDoublePosition( wv, 0 );
+	}
+
+	@Override
+	public float y()
+	{
+		return ( float ) modelGraphProperties.getDoublePosition( wv, 0 );
+	}
+
+	@Override
+	public float z()
+	{
+		return ( float ) modelGraphProperties.getDoublePosition( wv, 0 );
 	}
 
 	@Override
@@ -50,7 +73,7 @@ public class BvvVertexWrapper< V extends Vertex< E >, E extends Edge< V > >
 	@Override
 	public int getTimepoint()
 	{
-		return overlayProperties.getTimepoint( wv );
+		return modelGraphProperties.getTimepoint( wv );
 	}
 
 	@Override
@@ -60,14 +83,12 @@ public class BvvVertexWrapper< V extends Vertex< E >, E extends Edge< V > >
 		return incomingEdges;
 	}
 
-
 	@Override
 	public Edges< BvvEdgeWrapper< V, E > > outgoingEdges()
 	{
 		outgoingEdges.wrap( wv.outgoingEdges() );
 		return outgoingEdges;
 	}
-
 
 	@Override
 	public Edges< BvvEdgeWrapper< V, E > > edges()

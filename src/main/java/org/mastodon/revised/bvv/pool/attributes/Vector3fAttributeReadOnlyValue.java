@@ -10,4 +10,8 @@ public interface Vector3fAttributeReadOnlyValue
 	{
 		return get( new Vector3f() );
 	}
+
+	float x();
+	float y();
+	float z();
 }

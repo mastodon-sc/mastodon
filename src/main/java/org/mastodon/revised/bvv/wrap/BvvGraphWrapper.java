@@ -1,5 +1,6 @@
 package org.mastodon.revised.bvv.wrap;
 
+import gnu.trove.map.TIntObjectArrayMap;
 import java.util.Iterator;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
@@ -10,12 +11,17 @@ import org.mastodon.collection.RefCollection;
 import org.mastodon.collection.util.AbstractRefPoolCollectionWrapper;
 import org.mastodon.graph.Edge;
 import org.mastodon.graph.Edges;
+import org.mastodon.graph.GraphChangeListener;
 import org.mastodon.graph.GraphIdBimap;
-import org.mastodon.graph.ReadOnlyGraph;
+import org.mastodon.graph.GraphListener;
+import org.mastodon.graph.ListenableReadOnlyGraph;
 import org.mastodon.graph.Vertex;
-import org.mastodon.revised.bdv.overlay.wrap.OverlayProperties;
+import org.mastodon.revised.bvv.BvvEdge;
 import org.mastodon.revised.bvv.BvvGraph;
+import org.mastodon.revised.bvv.BvvVertex;
+import org.mastodon.revised.bvv.EllipsoidInstances;
 import org.mastodon.spatial.SpatioTemporalIndex;
+import org.mastodon.util.Listeners;
 
 /**
  * TODO: implement remaining ReadOnlyGraph methods
@@ -30,13 +36,15 @@ import org.mastodon.spatial.SpatioTemporalIndex;
  */
 public class BvvGraphWrapper< V extends Vertex< E >, E extends Edge< V > > implements
 		BvvGraph< BvvVertexWrapper< V, E >, BvvEdgeWrapper< V, E > >,
-		ViewGraph< V, E, BvvVertexWrapper< V, E >, BvvEdgeWrapper< V, E > >
+		ViewGraph< V, E, BvvVertexWrapper< V, E >, BvvEdgeWrapper< V, E > >,
+		GraphChangeListener,
+		GraphListener< V, E >
 {
-	final ReadOnlyGraph< V, E > wrappedGraph;
+	final ListenableReadOnlyGraph< V, E > modelGraph;
 
 	final GraphIdBimap< V, E > idmap;
 
-	final OverlayProperties< V, E > overlayProperties;
+	final BvvModelGraphProperties< V, E > modelGraphProperties;
 
 	private final ReentrantReadWriteLock lock;
 
@@ -46,26 +54,33 @@ public class BvvGraphWrapper< V extends Vertex< E >, E extends Edge< V > > imple
 
 	private final BvvSpatioTemporalIndexWrapper< V, E > wrappedIndex;
 
+	private final Listeners.List< GraphChangeListener > listeners;
+
 	private final RefBimap< V, BvvVertexWrapper< V, E > > vertexMap;
 
 	private final RefBimap< E, BvvEdgeWrapper< V, E > > edgeMap;
 
 	public BvvGraphWrapper(
-			final ReadOnlyGraph< V, E > graph,
+			final ListenableReadOnlyGraph< V, E > modelGraph,
 			final GraphIdBimap< V, E > idmap,
-			final SpatioTemporalIndex< V > graphIndex,
+			final SpatioTemporalIndex< V > modelGraphIndex,
 			final ReentrantReadWriteLock lock,
-			final OverlayProperties< V, E > overlayProperties )
+			final BvvModelGraphProperties< V, E > modelGraphProperties )
 	{
-		this.wrappedGraph = graph;
+		this.modelGraph = modelGraph;
 		this.idmap = idmap;
 		this.lock = lock;
-		this.overlayProperties = overlayProperties;
+		this.modelGraphProperties = modelGraphProperties;
 		tmpVertexRefs =	new ConcurrentLinkedQueue<>();
 		tmpEdgeRefs = new ConcurrentLinkedQueue<>();
-		wrappedIndex = new BvvSpatioTemporalIndexWrapper<>( this, graphIndex );
+		wrappedIndex = new BvvSpatioTemporalIndexWrapper<>( this, modelGraphIndex );
+		listeners = new Listeners.SynchronizedList<>();
 		vertexMap = new BvvVertexWrapperBimap<>( this );
 		edgeMap = new BvvEdgeWrapperBimap<>( this );
+
+		modelGraph.addGraphListener( this );
+		modelGraph.addGraphChangeListener( this );
+		graphRebuilt();
 	}
 
 	@Override
@@ -103,7 +118,7 @@ public class BvvGraphWrapper< V extends Vertex< E >, E extends Edge< V > > imple
 	@Override
 	public BvvEdgeWrapper< V, E > getEdge( final BvvVertexWrapper< V, E > source, final BvvVertexWrapper< V, E > target, final BvvEdgeWrapper< V, E > edge )
 	{
-		edge.we = wrappedGraph.getEdge( source.wv, target.wv, edge.ref );
+		edge.we = modelGraph.getEdge( source.wv, target.wv, edge.ref );
 		return edge.orNull();
 	}
 
@@ -116,7 +131,7 @@ public class BvvGraphWrapper< V extends Vertex< E >, E extends Edge< V > > imple
 	@Override
 	public Edges< BvvEdgeWrapper< V, E > > getEdges( final BvvVertexWrapper< V, E > source, final BvvVertexWrapper< V, E > target, final BvvVertexWrapper< V, E > ref )
 	{
-		final Edges< E > wes = wrappedGraph.getEdges( source.wv, target.wv, ref.wv );
+		final Edges< E > wes = modelGraph.getEdges( source.wv, target.wv, ref.wv );
 		ref.edges.wrap( wes );
 		return ref.edges;
 	}
@@ -142,7 +157,7 @@ public class BvvGraphWrapper< V extends Vertex< E >, E extends Edge< V > > imple
 	@Override
 	public double getMaxBoundingSphereRadiusSquared( final int timepoint )
 	{
-		return overlayProperties.getMaxBoundingSphereRadiusSquared( timepoint );
+		return modelGraphProperties.getMaxBoundingSphereRadiusSquared( timepoint );
 	}
 
 	@Override
@@ -155,7 +170,7 @@ public class BvvGraphWrapper< V extends Vertex< E >, E extends Edge< V > > imple
 	public BvvVertexWrapper< V, E > addVertex( final BvvVertexWrapper< V, E > ref )
 	{
 		throw new UnsupportedOperationException( "NOT IMPLEMENTED" );
-//		ref.wv = overlayProperties.addVertex( ref.ref );
+//		ref.wv = modelGraphProperties.addVertex( ref.ref );
 //		return ref;
 	}
 
@@ -169,7 +184,7 @@ public class BvvGraphWrapper< V extends Vertex< E >, E extends Edge< V > > imple
 	public BvvEdgeWrapper< V, E > addEdge( final BvvVertexWrapper< V, E > source, final BvvVertexWrapper< V, E > target, final BvvEdgeWrapper< V, E > ref )
 	{
 		throw new UnsupportedOperationException( "NOT IMPLEMENTED" );
-//		ref.we = overlayProperties.addEdge( source.wv, target.wv, ref.ref );
+//		ref.we = modelGraphProperties.addEdge( source.wv, target.wv, ref.ref );
 //		return ref;
 	}
 
@@ -183,20 +198,32 @@ public class BvvGraphWrapper< V extends Vertex< E >, E extends Edge< V > > imple
 	public BvvEdgeWrapper< V, E > insertEdge( final BvvVertexWrapper< V, E > source, final int sourceOutIndex, final BvvVertexWrapper< V, E > target, final int targetInIndex, final BvvEdgeWrapper< V, E > ref )
 	{
 		throw new UnsupportedOperationException( "NOT IMPLEMENTED" );
-//		ref.we = overlayProperties.insertEdge( source.wv, sourceOutIndex, target.wv, targetInIndex, ref.ref );
+//		ref.we = modelGraphProperties.insertEdge( source.wv, sourceOutIndex, target.wv, targetInIndex, ref.ref );
 //		return ref;
 	}
 
 	@Override
 	public void remove( final BvvEdgeWrapper< V, E > edge )
 	{
-		overlayProperties.removeEdge( edge.we );
+		modelGraphProperties.removeEdge( edge.we );
 	}
 
 	@Override
 	public void remove( final BvvVertexWrapper< V, E > vertex )
 	{
-		overlayProperties.removeVertex( vertex.wv );
+		modelGraphProperties.removeVertex( vertex.wv );
+	}
+
+	/**
+	 * Get the list of GraphChangeListeners. This can be used to adds (or
+	 * remove) a GraphChangeListener that will be notified when this
+	 * TrackSchemeGraph changes.
+	 *
+	 * @return list of GraphChangeListeners
+	 */
+	public Listeners< GraphChangeListener > graphChangeListeners()
+	{
+		return listeners;
 	}
 
 	@Override
@@ -205,11 +232,139 @@ public class BvvGraphWrapper< V extends Vertex< E >, E extends Edge< V > > imple
 		return lock;
 	}
 
+	/*
+	 * GraphChangeNotifier
+	 */
+
+	/**
+	 * Triggers a {@link GraphChangeListener#graphChanged()} event.
+	 *
+	 * notifyGraphChanged() is not implicitly called in addVertex() etc because
+	 * we want to support batches of add/remove with one final
+	 * notifyGraphChanged() at the end.
+	 */
 	@Override
 	public void notifyGraphChanged()
 	{
-		overlayProperties.notifyGraphChanged();
+		modelGraphProperties.notifyGraphChanged();
 	}
+
+	/*
+	 * GraphChangeListener
+	 */
+
+	@Override
+	public void graphChanged()
+	{
+		for ( final GraphChangeListener l : listeners.list )
+			l.graphChanged();
+	}
+
+
+
+
+
+
+
+
+
+
+
+
+	/*
+	 * GraphListener
+	 */
+
+	static class EllipsoidsPerTimepoint< V extends BvvVertex< V, E >, E extends BvvEdge< E, V > >
+	{
+		private final TIntObjectArrayMap< EllipsoidInstances< V, E > > map = new TIntObjectArrayMap<>();
+
+		private final BvvGraph< V, E > graph;
+
+		EllipsoidsPerTimepoint( BvvGraph< V, E > graph )
+		{
+			this.graph = graph;
+		}
+
+		EllipsoidInstances< V, E > get( final int timepoint )
+		{
+			EllipsoidInstances< V, E > ellipsoids = map.get( timepoint );
+			if ( ellipsoids == null )
+			{
+				ellipsoids = new EllipsoidInstances<>( graph );
+				map.put( timepoint, ellipsoids );
+			}
+			return ellipsoids;
+		}
+
+		void addInstanceFor( final V vertex )
+		{
+			get( vertex.getTimepoint() ).addInstanceFor( vertex );
+		}
+
+		void removeInstanceFor( final V vertex )
+		{
+			get( vertex.getTimepoint() ).removeInstanceFor( vertex );
+		}
+
+		void clear()
+		{
+			map.clear();
+		}
+	}
+
+	private final EllipsoidsPerTimepoint< BvvVertexWrapper< V, E >, BvvEdgeWrapper< V, E > > ellipsoidsPerTimepoint = new EllipsoidsPerTimepoint<>( this );
+
+	@Override
+	public void graphRebuilt()
+	{
+		ellipsoidsPerTimepoint.clear();
+
+		final BvvVertexWrapper< V, E > ref = vertexRef();
+		for ( final V v : modelGraph.vertices() )
+			ellipsoidsPerTimepoint.addInstanceFor( vertexMap.getRight( v, ref ) );
+		releaseRef( ref );
+
+		// TODO: edges
+	}
+
+	@Override
+	public void vertexAdded( final V vertex )
+	{
+		final BvvVertexWrapper< V, E > ref = vertexRef();
+		ellipsoidsPerTimepoint.addInstanceFor( vertexMap.getRight( vertex, ref ) );
+		releaseRef( ref );
+	}
+
+	@Override
+	public void vertexRemoved( final V vertex )
+	{
+		final BvvVertexWrapper< V, E > ref = vertexRef();
+		ellipsoidsPerTimepoint.removeInstanceFor( vertexMap.getRight( vertex, ref ) );
+		releaseRef( ref );
+	}
+
+	@Override
+	public void edgeAdded( final E edge )
+	{
+		// TODO: edges
+	}
+
+	@Override
+	public void edgeRemoved( final E edge )
+	{
+		// TODO: edges
+	}
+
+
+
+
+
+
+
+
+
+
 
 	/**
 	 * Get bidirectional mapping between model vertices and view vertices.
@@ -280,13 +435,13 @@ public class BvvGraphWrapper< V extends Vertex< E >, E extends Edge< V > > imple
 		@Override
 		public int size()
 		{
-			return wrappedGraph.vertices().size();
+			return modelGraph.vertices().size();
 		}
 
 		@Override
 		public Iterator< BvvVertexWrapper< V, E > > iterator()
 		{
-			return new BvvVertexIteratorWrapper<>( BvvGraphWrapper.this, BvvGraphWrapper.this.vertexRef(), wrappedGraph.vertices().iterator() );
+			return new BvvVertexIteratorWrapper<>( BvvGraphWrapper.this, BvvGraphWrapper.this.vertexRef(), modelGraph.vertices().iterator() );
 		}
 	};
 
@@ -337,14 +492,13 @@ public class BvvGraphWrapper< V extends Vertex< E >, E extends Edge< V > > imple
 		@Override
 		public int size()
 		{
-			return wrappedGraph.edges().size();
+			return modelGraph.edges().size();
 		}
 
 		@Override
 		public Iterator< BvvEdgeWrapper< V, E > > iterator()
 		{
-			return new BvvEdgeIteratorWrapper<>( BvvGraphWrapper.this, BvvGraphWrapper.this.edgeRef(), wrappedGraph.edges().iterator() );
+			return new BvvEdgeIteratorWrapper<>( BvvGraphWrapper.this, BvvGraphWrapper.this.edgeRef(), modelGraph.edges().iterator() );
 		}
 	};
-
 }

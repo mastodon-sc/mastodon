@@ -2,7 +2,6 @@ package org.mastodon.revised.bvv.wrap;
 
 import org.mastodon.graph.Edge;
 import org.mastodon.graph.Vertex;
-import org.mastodon.revised.bdv.overlay.wrap.OverlayProperties;
 import org.mastodon.revised.bvv.BvvEdge;
 
 public class BvvEdgeWrapper< V extends Vertex< E >, E extends Edge< V > >
@@ -14,13 +13,13 @@ public class BvvEdgeWrapper< V extends Vertex< E >, E extends Edge< V > >
 
 	E we;
 
-	private final OverlayProperties< V, E > overlayProperties;
+	private final BvvModelGraphProperties< V, E > modelGraphProperties;
 
 	BvvEdgeWrapper( final BvvGraphWrapper< V, E > wrapper )
 	{
 		this.wrapper = wrapper;
-		ref = wrapper.wrappedGraph.edgeRef();
-		overlayProperties = wrapper.overlayProperties;
+		ref = wrapper.modelGraph.edgeRef();
+		modelGraphProperties = wrapper.modelGraphProperties;
 	}
 
 	@Override
@@ -39,7 +38,7 @@ public class BvvEdgeWrapper< V extends Vertex< E >, E extends Edge< V > >
 	@Override
 	public BvvEdgeWrapper< V, E > init()
 	{
-		overlayProperties.initEdge( we );
+		modelGraphProperties.initEdge( we );
 		return this;
 	}
 

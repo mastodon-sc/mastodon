@@ -8,5 +8,7 @@ public interface Matrix3fAttributeValue extends Matrix3fAttributeReadOnlyValue
 
 	void set( final float[] value );
 
+	void set( final Matrix3fAttributeReadOnlyValue value );
+
 	void identity();
 }

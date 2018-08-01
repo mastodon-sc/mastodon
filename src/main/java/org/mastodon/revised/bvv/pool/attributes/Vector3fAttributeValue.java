@@ -8,5 +8,7 @@ public interface Vector3fAttributeValue extends Vector3fAttributeReadOnlyValue
 
 	void set( final float x, final float y, final float z );
 
+	void set( final Vector3fAttributeReadOnlyValue value );
+
 	void zero();
 }
