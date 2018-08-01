@@ -193,6 +193,7 @@ public class TrackSchemeOptions
 			return new TrackSchemeOptions().
 				width( width ).
 				height( height ).
+				shareKeyPressedEvents( keyPressedManager ).
 				animationDurationMillis( animationDurationMillis ).
 				navigationEtiquette( navigationEtiquette ).
 				style( style ).
