@@ -65,6 +65,9 @@ public class BvvRenderer
 			final int timepoint )
 	{
 		final Matrix4f view = MatrixMath.affine( worldToScreen, new Matrix4f() );
+		final Matrix4f camview = new Matrix4f()
+			.translation( ( float ) ( -( screenWidth - 1 ) / 2 ), ( float ) ( -( screenHeight - 1 ) / 2 ), ( float ) dCam )
+			.mul( view );
 		final Matrix4f projection = MatrixMath.screenPerspective( dCam, dClip, screenWidth, screenHeight, 0, new Matrix4f() );
 		final Matrix4f pv = new Matrix4f( projection ).mul( view );
 
@@ -83,7 +86,7 @@ public class BvvRenderer
 			instanceArray.setModCount( modCount );
 			instanceArray.update( gl, instances.buffer().asFloatBuffer() );
 		}
-		instancedEllipsoid.draw( gl, new Matrix4f( projection ).mul( view ), view, instanceArray );
+		instancedEllipsoid.draw( gl, pv, camview, instanceArray );
 
 		sceneBuf.unbind( gl, false );
 		gl.glDisable( GL_DEPTH_TEST );

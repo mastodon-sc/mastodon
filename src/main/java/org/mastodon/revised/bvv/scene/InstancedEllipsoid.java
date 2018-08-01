@@ -152,7 +152,9 @@ public class InstancedEllipsoid
 
 		final Matrix4f itvm = vm.invert( new Matrix4f() ).transpose();
 		prog.getUniformMatrix4f( "pvm" ).set( pvm );
+		prog.getUniformMatrix4f( "vm" ).set( vm );
 		prog.getUniformMatrix3f( "itvm" ).set( itvm.get3x3( new Matrix3f() ) );
+		prog.getUniform3f( "color" ).set( 0.5f, 1.0f, 0.5f );
 		prog.setUniforms( context );
 		prog.use( context );
 
