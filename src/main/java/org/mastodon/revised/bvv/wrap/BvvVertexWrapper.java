@@ -54,13 +54,13 @@ public class BvvVertexWrapper< V extends Vertex< E >, E extends Edge< V > >
 	@Override
 	public float y()
 	{
-		return ( float ) modelGraphProperties.getDoublePosition( wv, 0 );
+		return ( float ) modelGraphProperties.getDoublePosition( wv, 1 );
 	}
 
 	@Override
 	public float z()
 	{
-		return ( float ) modelGraphProperties.getDoublePosition( wv, 0 );
+		return ( float ) modelGraphProperties.getDoublePosition( wv, 2 );
 	}
 
 	@Override
