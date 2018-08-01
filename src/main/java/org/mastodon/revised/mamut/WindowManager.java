@@ -42,11 +42,13 @@ import bdv.util.InvokeOnEDT;
 public class WindowManager
 {
 	public static final String NEW_BDV_VIEW = "new bdv view";
+	public static final String NEW_BVV_VIEW = "new bvv view";
 	public static final String NEW_TRACKSCHEME_VIEW = "new trackscheme view";
 	public static final String PREFERENCES_DIALOG = "Preferences";
 	public static final String TAGSETS_DIALOG = "edit tag sets";
 
 	static final String[] NEW_BDV_VIEW_KEYS = new String[] { "not mapped" };
+	static final String[] NEW_BVV_VIEW_KEYS = new String[] { "not mapped" };
 	static final String[] NEW_TRACKSCHEME_VIEW_KEYS = new String[] { "not mapped" };
 	static final String[] PREFERENCES_DIALOG_KEYS = new String[] { "meta COMMA", "ctrl COMMA" };
 	static final String[] TAGSETS_DIALOG_KEYS = new String[] { "not mapped" };
@@ -87,6 +89,11 @@ public class WindowManager
 	private final List< ContextProvider< Spot > > contextProviders = new ArrayList<>();
 
 	/**
+	 * All currently open BigVolumeViewer windows.
+	 */
+	private final List< MamutViewBvv > bvvWindows = new ArrayList<>();
+
+	/**
 	 * All currently open TrackScheme windows.
 	 */
 	private final List< MamutViewTrackScheme > tsWindows = new ArrayList<>();
@@ -102,6 +109,8 @@ public class WindowManager
 	private final Actions globalAppActions;
 
 	private final AbstractNamedAction newBdvViewAction;
+
+	private final AbstractNamedAction newBvvViewAction;
 
 	private final AbstractNamedAction newTrackSchemeViewAction;
 
@@ -145,10 +154,12 @@ public class WindowManager
 		projectManager.install( globalAppActions );
 
 		newBdvViewAction = new RunnableAction( NEW_BDV_VIEW, this::createBigDataViewer );
+		newBvvViewAction = new RunnableAction( NEW_BVV_VIEW, this::createBigVolumeViewer );
 		newTrackSchemeViewAction = new RunnableAction( NEW_TRACKSCHEME_VIEW, this::createTrackScheme );
 		editTagSetsAction = new RunnableAction( TAGSETS_DIALOG, this::editTagSets );
 
 		globalAppActions.namedAction( newBdvViewAction, NEW_BDV_VIEW_KEYS );
+		globalAppActions.namedAction( newBvvViewAction, NEW_BVV_VIEW_KEYS );
 		globalAppActions.namedAction( newTrackSchemeViewAction, NEW_TRACKSCHEME_VIEW_KEYS );
 		globalAppActions.namedAction( editTagSetsAction, TAGSETS_DIALOG_KEYS );
 
@@ -187,6 +198,7 @@ public class WindowManager
 	private void updateEnabledActions()
 	{
 		newBdvViewAction.setEnabled( appModel != null );
+		newBvvViewAction.setEnabled( appModel != null );
 		newTrackSchemeViewAction.setEnabled( appModel != null );
 		editTagSetsAction.setEnabled( appModel != null );
 	}
@@ -234,6 +246,19 @@ public class WindowManager
 		bdvWindows.forEach( action );
 	}
 
+	private synchronized void addBvvWindow( final MamutViewBvv w )
+	{
+		bvvWindows.add( w );
+		w.onClose( () -> {
+			bdvWindows.remove( w );
+		} );
+	}
+
+	public void forEachBvvView( final Consumer< ? super MamutViewBvv > action )
+	{
+		bvvWindows.forEach( action );
+	}
+
 	private synchronized void addTsWindow( final MamutViewTrackScheme w )
 	{
 		tsWindows.add( w );
@@ -252,6 +277,7 @@ public class WindowManager
 	public void forEachView( final Consumer< ? super MamutView< ?, ?, ? > > action )
 	{
 		forEachBdvView( action );
+		forEachBvvView( action );
 		forEachTrackSchemeView( action );
 	}
 
@@ -261,6 +287,17 @@ public class WindowManager
 		{
 			final MamutViewBdv view = new MamutViewBdv( appModel );
 			addBdvWindow( view );
+			return view;
+		}
+		return null;
+	}
+
+	public MamutViewBvv createBigVolumeViewer()
+	{
+		if ( appModel != null )
+		{
+			final MamutViewBvv view = new MamutViewBvv( appModel );
+			addBvvWindow( view );
 			return view;
 		}
 		return null;

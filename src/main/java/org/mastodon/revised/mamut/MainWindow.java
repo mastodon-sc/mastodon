@@ -86,6 +86,13 @@ public class MainWindow extends JFrame
 
 		++gridy;
 
+		final JButton bvvButton = new JButton( actionMap.get( WindowManager.NEW_BVV_VIEW ) );
+		bvvButton.setText( "bvv" );
+		button_gbc_right.gridy = gridy;
+		buttonsPanel.add( bvvButton, button_gbc_right );
+
+		++gridy;
+
 		separator_gbc.gridy = gridy;
 		buttonsPanel.add( new JSeparator(), separator_gbc );
 
@@ -199,7 +206,8 @@ public class MainWindow extends JFrame
 				),
 				windowMenu(
 						item( WindowManager.NEW_BDV_VIEW ),
-						item( WindowManager.NEW_TRACKSCHEME_VIEW )
+						item( WindowManager.NEW_TRACKSCHEME_VIEW ),
+						item( WindowManager.NEW_BVV_VIEW )
 				)
 		);
 	}
