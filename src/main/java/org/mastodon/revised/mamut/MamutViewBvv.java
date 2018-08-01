@@ -14,7 +14,6 @@ import org.mastodon.revised.bvv.wrap.BvvVertexWrapper;
 import org.mastodon.revised.model.mamut.Link;
 import org.mastodon.revised.model.mamut.Spot;
 import org.mastodon.revised.ui.SelectionActions;
-import org.scijava.ui.behaviour.KeyPressedManager;
 
 import static org.mastodon.app.ui.ViewMenuBuilder.item;
 import static org.mastodon.app.ui.ViewMenuBuilder.separator;
@@ -38,13 +37,18 @@ public class MamutViewBvv extends MamutView< BvvGraphWrapper< Spot, Link >, BvvV
 						new MamutModelGraphPropertiesBvv( appModel.getModel().getGraph(), appModel.getRadiusStats() ) ),
 				new String[] { KeyConfigContexts.BIGDATAVIEWER } );
 
-		final KeyPressedManager keyPressedManager = appModel.getKeyPressedManager();
 		final SharedBigDataViewerData shared = appModel.getSharedBdvData();
 
 		final String windowTitle = "BigVolumeViewer " + ( bvvName++ ); // TODO: use JY naming scheme
-		final BvvOptions options = BvvOptions.options()
-				.shareKeyPressedEvents( keyPressedManager );
-		BvvViewFrame frame = new BvvViewFrame( windowTitle, shared.getNumTimepoints(), groupHandle, options );
+		BvvViewFrame frame = new BvvViewFrame(
+				windowTitle,
+				viewGraph,
+				shared.getSources(),
+				shared.getNumTimepoints(),
+				shared.getCache(),
+				groupHandle,
+				shared.getOptions(),
+				BvvOptions.options() );
 		setFrame( frame );
 
 		frame.getBvvPanel().getTransformEventHandler().install( viewBehaviours );

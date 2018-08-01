@@ -28,7 +28,6 @@
  */
 package org.mastodon.revised.bvv;
 
-import java.awt.event.KeyListener;
 import org.scijava.ui.behaviour.KeyPressedManager;
 
 /**
@@ -49,50 +48,18 @@ public class BvvOptions
 		return new BvvOptions();
 	}
 
-	/**
-	 * Sets the width of {@link BvvPanel} canvas.
-	 *
-	 * @param w
-	 *            the width.
-	 * @return this instance.
-	 */
-	public BvvOptions width( final int w )
-	{
-		values.width = w;
-		return this;
-	}
-
-	/**
-	 * Sets the height of {@link BvvPanel} canvas.
-	 *
-	 * @param h
-	 *            the height.
-	 * @return this instance.
-	 */
-	public BvvOptions height( final int h )
-	{
-		values.height = h;
-		return this;
-	}
-
-	/**
-	 * Set the {@link KeyPressedManager} to share
-	 * {@link KeyListener#keyPressed(java.awt.event.KeyEvent)} events with other
-	 * ui-behaviour windows.
-	 * <p>
-	 * The goal is to make keyboard click/drag behaviours work like mouse
-	 * click/drag: When a behaviour is initiated with a key press, the window
-	 * under the mouse receives focus and the behaviour is handled there.
-	 * </p>
-	 *
-	 * @param manager
-	 * @return
-	 */
-	public BvvOptions shareKeyPressedEvents( final KeyPressedManager manager )
-	{
-		values.keyPressedManager = manager;
-		return this;
-	}
+//	/**
+//	 * Sets the width of {@link BvvPanel} canvas.
+//	 *
+//	 * @param w
+//	 *            the width.
+//	 * @return this instance.
+//	 */
+//	public BvvOptions width( final int w )
+//	{
+//		values.width = w;
+//		return this;
+//	}
 
 	/**
 	 * Read-only {@link BvvOptions} values.
@@ -101,31 +68,18 @@ public class BvvOptions
 	{
 		private int width = 800;
 
-		private int height = 600;
-
 		private KeyPressedManager keyPressedManager = null;
 
 		public BvvOptions optionsFromValues()
 		{
-			return new BvvOptions().
-					width( width ).
-					height( height ).
-					shareKeyPressedEvents( keyPressedManager );
+			return new BvvOptions();
+//			return new BvvOptions().
+//					width( width );
 		}
 
-		public int getWidth()
-		{
-			return width;
-		}
-
-		public int getHeight()
-		{
-			return height;
-		}
-
-		public KeyPressedManager getKeyPressedManager()
-		{
-			return keyPressedManager;
-		}
+//		public int getWidth()
+//		{
+//			return width;
+//		}
 	}
 }

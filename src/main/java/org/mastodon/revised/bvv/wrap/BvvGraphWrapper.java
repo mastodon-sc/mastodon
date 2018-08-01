@@ -313,7 +313,8 @@ public class BvvGraphWrapper< V extends Vertex< E >, E extends Edge< V > > imple
 		}
 	}
 
-	private final EllipsoidsPerTimepoint< BvvVertexWrapper< V, E >, BvvEdgeWrapper< V, E > > ellipsoidsPerTimepoint = new EllipsoidsPerTimepoint<>( this );
+	// TODO HACK shouldn't be public
+	public final EllipsoidsPerTimepoint< BvvVertexWrapper< V, E >, BvvEdgeWrapper< V, E > > ellipsoidsPerTimepoint = new EllipsoidsPerTimepoint<>( this );
 
 	@Override
 	public void graphRebuilt()

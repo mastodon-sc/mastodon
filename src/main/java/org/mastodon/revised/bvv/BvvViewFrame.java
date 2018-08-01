@@ -1,32 +1,54 @@
 package org.mastodon.revised.bvv;
 
+import bdv.cache.CacheControl;
+import bdv.viewer.SourceAndConverter;
+import bdv.viewer.ViewerOptions;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.util.List;
 import javax.swing.Box;
 import javax.swing.WindowConstants;
 import org.mastodon.app.ui.GroupLocksPanel;
 import org.mastodon.app.ui.ViewFrame;
 import org.mastodon.grouping.GroupHandle;
+import org.mastodon.revised.bvv.wrap.BvvGraphWrapper;
+import org.mastodon.revised.model.mamut.Link;
+import org.mastodon.revised.model.mamut.Spot;
 import org.scijava.ui.behaviour.MouseAndKeyHandler;
 import org.scijava.ui.behaviour.util.InputActionBindings;
-
-import static com.sun.xml.internal.ws.api.model.wsdl.WSDLBoundOperation.ANONYMOUS.optional;
 
 public class BvvViewFrame extends ViewFrame
 {
 	private final BvvPanel bvvPanel;
 
+	/**
+	 *
+	 * @param sources
+	 *            the {@link SourceAndConverter sources} to display.
+	 * @param numTimepoints
+	 *            number of available timepoints.
+	 * @param cacheControl
+	 *            handle to cache. This is used to control io timing.
+	 * @param optional
+	 *            optional parameters. See {@link ViewerOptions}.
+	 * @param bvvOptional
+	 *            optional parameters. See {@link BvvOptions}.
+	 */
 	public BvvViewFrame(
 			final String windowTitle,
+			final BvvGraphWrapper< Spot, Link > viewGraph,	// TODO HACK should be BvvGraph<?,?>
+			final List< SourceAndConverter< ? > > sources,
 			final int numTimepoints,
+			final CacheControl cacheControl,
 			final GroupHandle groupHandle,
-			final BvvOptions optional )
+			final ViewerOptions optional,
+			final BvvOptions bvvOptional )
 	{
 		super( windowTitle );
 
-		bvvPanel = new BvvPanel( numTimepoints, optional );
+		bvvPanel = new BvvPanel( viewGraph, sources, numTimepoints, cacheControl, optional, bvvOptional );
 		add( bvvPanel, BorderLayout.CENTER );
 
 		final GroupLocksPanel navigationLocksPanel = new GroupLocksPanel( groupHandle );
