@@ -20,6 +20,7 @@ public class EllipsoidInstances< V extends BvvVertex< V, E >, E extends BvvEdge<
 
 	private final RefRefMap< V, EllipsoidInstance > vertexToInstance;
 	private final RefRefMap< EllipsoidInstance, V > instanceToVertex;
+
 	private int modCount = 0;
 
 	public EllipsoidInstances( BvvGraph< V, E > graph )
@@ -40,21 +41,9 @@ public class EllipsoidInstances< V extends BvvVertex< V, E >, E extends BvvEdge<
 		return new EllipsoidInstance( this );
 	}
 
-	public EllipsoidInstance create()
+	public int getModCount()
 	{
-		return create( createRef() );
-	}
-
-	@Override
-	public EllipsoidInstance create( final EllipsoidInstance ref )
-	{
-		return super.create( ref );
-	}
-
-	@Override
-	public void delete( final EllipsoidInstance ellipsoid )
-	{
-		super.delete( ellipsoid );
+		return modCount;
 	}
 
 	public ByteBuffer buffer()

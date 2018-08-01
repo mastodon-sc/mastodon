@@ -26,11 +26,9 @@ public class InstancedEllipsoid
 
 	private final Shader prog;
 
-	private int ivbo;
-
-	private int vao;
-
-	private int numElements;
+	private int sphereVbo;
+	private int sphereEbo;
+	private int sphereNumElements;
 
 	public InstancedEllipsoid( final int subdivisions )
 	{
@@ -49,42 +47,103 @@ public class InstancedEllipsoid
 		final UnitSphere sphere = new UnitSphere( subdivisions );
 		final float[] vertices = sphere.getVertices();
 		final int[] indices = sphere.getIndices();
-		numElements = sphere.getNumElements();
+		sphereNumElements = sphere.getNumElements();
 
-		final int[] tmp = new int[ 3 ];
-		gl.glGenBuffers( 3, tmp, 0 );
-		final int vbo = tmp[ 0 ];
-		final int ebo = tmp[ 1 ];
-		ivbo = tmp[ 2 ];
+		final int[] tmp = new int[ 2 ];
+		gl.glGenBuffers( 2, tmp, 0 );
+		sphereVbo = tmp[ 0 ];
+		sphereEbo = tmp[ 1 ];
 
-		gl.glBindBuffer( GL_ARRAY_BUFFER, vbo );
+		gl.glBindBuffer( GL_ARRAY_BUFFER, sphereVbo );
 		gl.glBufferData( GL_ARRAY_BUFFER, vertices.length * Float.BYTES, FloatBuffer.wrap( vertices ), GL_STATIC_DRAW );
 		gl.glBindBuffer( GL_ARRAY_BUFFER, 0 );
 
-		gl.glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, ebo );
+		gl.glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, sphereEbo );
 		gl.glBufferData( GL_ELEMENT_ARRAY_BUFFER, indices.length * Integer.BYTES, IntBuffer.wrap( indices ), GL_STATIC_DRAW );
 		gl.glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, 0 );
-
-		// ..:: VERTEX ARRAY OBJECT ::..
-
-		gl.glGenVertexArrays( 1, tmp, 0 );
-		vao = tmp[ 0 ];
-		gl.glBindVertexArray( vao );
-		gl.glBindBuffer( GL_ARRAY_BUFFER, vbo );
-		gl.glVertexAttribPointer( 0, 3, GL_FLOAT, false, 3 * Float.BYTES, 0 );
-		gl.glEnableVertexAttribArray( 0 );
-		gl.glBindBuffer( GL_ARRAY_BUFFER, ivbo );
-		for ( int i = 0; i < 7; ++i )
-		{
-			gl.glVertexAttribPointer( 1 + i, 3, GL_FLOAT, false, 21 * Float.BYTES, i * 3 * Float.BYTES );
-			gl.glEnableVertexAttribArray( 1 + i );
-			gl.glVertexAttribDivisor( 1 + i, 1 );
-		}
-		gl.glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, ebo );
-		gl.glBindVertexArray( 0 );
 	}
 
-	public void draw( GL3 gl, Matrix4fc pvm, Matrix4f vm, FloatBuffer data )
+	public InstanceArray createInstanceArray()
+	{
+		return new InstanceArray();
+	}
+
+	public class InstanceArray implements HasModCount
+	{
+		public void update( GL3 gl, FloatBuffer data )
+		{
+			if ( !initialized )
+				init( gl );
+
+			gl.glBindBuffer( GL_ARRAY_BUFFER, vbo );
+			final int size = data.capacity();
+			gl.glBufferData( GL_ARRAY_BUFFER, size * Float.BYTES, data, GL_DYNAMIC_DRAW );
+			instanceCount = size / 21;
+			gl.glBindBuffer( GL_ARRAY_BUFFER, 0 );
+		}
+
+		@Override
+		public int getModCount()
+		{
+			return modCount;
+		}
+
+		@Override
+		public void setModCount( final int modCount )
+		{
+			this.modCount = modCount;
+		}
+
+		private int modCount = 0;
+
+		private int instanceCount;
+
+		private int vbo;
+
+		private int vao;
+
+		private boolean initialized;
+
+		private void init( GL3 gl )
+		{
+			initialized = true;
+
+			if ( !InstancedEllipsoid.this.initialized )
+				InstancedEllipsoid.this.init( gl );
+
+			final int[] tmp = new int[ 1 ];
+			gl.glGenBuffers( 1, tmp, 0 );
+			vbo = tmp[ 0 ];
+			gl.glGenVertexArrays( 1, tmp, 0 );
+			vao = tmp[ 0 ];
+
+			gl.glBindVertexArray( vao );
+			gl.glBindBuffer( GL_ARRAY_BUFFER, sphereVbo );
+			gl.glVertexAttribPointer( 0, 3, GL_FLOAT, false, 3 * Float.BYTES, 0 );
+			gl.glEnableVertexAttribArray( 0 );
+			gl.glBindBuffer( GL_ARRAY_BUFFER, vbo );
+			for ( int i = 0; i < 7; ++i )
+			{
+				gl.glVertexAttribPointer( 1 + i, 3, GL_FLOAT, false, 21 * Float.BYTES, i * 3 * Float.BYTES );
+				gl.glEnableVertexAttribArray( 1 + i );
+				gl.glVertexAttribDivisor( 1 + i, 1 );
+			}
+			gl.glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, sphereEbo );
+			gl.glBindVertexArray( 0 );
+		}
+
+		private void draw( GL3 gl )
+		{
+			if ( !initialized )
+				init( gl );
+
+			gl.glBindVertexArray( vao );
+			gl.glDrawElementsInstanced( GL_TRIANGLES, sphereNumElements, GL_UNSIGNED_INT, 0, instanceCount );
+			gl.glBindVertexArray( 0 );
+		}
+	}
+
+	public void draw( GL3 gl, Matrix4fc pvm, Matrix4f vm, InstanceArray instanceArray )
 	{
 		if ( !initialized )
 			init( gl );
@@ -97,11 +156,6 @@ public class InstancedEllipsoid
 		prog.setUniforms( context );
 		prog.use( context );
 
-		gl.glBindVertexArray( vao );
-		gl.glBindBuffer(GL_ARRAY_BUFFER, ivbo );
-		final int size = data.capacity();
-		gl.glBufferData( GL_ARRAY_BUFFER, size * Float.BYTES, data, GL_DYNAMIC_DRAW );
-		gl.glDrawElementsInstanced( GL_TRIANGLES, numElements, GL_UNSIGNED_INT, 0, size / 21 );
-		gl.glBindVertexArray( 0 );
+		instanceArray.draw( gl );
 	}
 }

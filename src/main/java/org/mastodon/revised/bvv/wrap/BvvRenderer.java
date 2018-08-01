@@ -4,6 +4,7 @@ import com.jogamp.opengl.GL3;
 import java.nio.FloatBuffer;
 import net.imglib2.realtransform.AffineTransform3D;
 import org.joml.Matrix4f;
+import org.mastodon.revised.bvv.EllipsoidInstances;
 import org.mastodon.revised.bvv.scene.InstancedEllipsoid;
 import org.mastodon.revised.model.mamut.Link;
 import org.mastodon.revised.model.mamut.Spot;
@@ -31,7 +32,9 @@ public class BvvRenderer
 
 	private final TexturedUnitCube cube = new TexturedUnitCube( "imglib2.png" );
 
-	private final InstancedEllipsoid instancedEllipsoid = new InstancedEllipsoid( 3 );
+	private final InstancedEllipsoid instancedEllipsoid;
+
+	private final ReusableInstanceArrays< InstancedEllipsoid.InstanceArray > reusableInstanceArrays;
 
 	public BvvRenderer(
 			final int renderWidth,
@@ -41,6 +44,14 @@ public class BvvRenderer
 	{
 		this.viewGraph = viewGraph;
 		sceneBuf = new OffScreenFrameBufferWithDepth( renderWidth, renderHeight, GL_RGB8 );
+		instancedEllipsoid = new InstancedEllipsoid( 3 );
+
+		final int numInstanceArrays = 10;
+		reusableInstanceArrays = new ReusableInstanceArrays<>(
+				t -> viewGraph.ellipsoidsPerTimepoint.get( t ).getModCount(),
+				numInstanceArrays,
+				instancedEllipsoid::createInstanceArray
+		);
 	}
 
 	public void init( final GL3 gl )
@@ -64,8 +75,15 @@ public class BvvRenderer
 		gl.glEnable( GL_DEPTH_TEST );
 		cube.draw( gl, new Matrix4f( pv ).translate( 200, 200, 50 ).scale( 100 ) );
 
-		FloatBuffer buf = viewGraph.ellipsoidsPerTimepoint.get( timepoint ).buffer().asFloatBuffer();
-		instancedEllipsoid.draw( gl, new Matrix4f( projection ).mul( view ), view, buf );
+		final InstancedEllipsoid.InstanceArray instanceArray = reusableInstanceArrays.getForTimepoint( timepoint );
+		final EllipsoidInstances< BvvVertexWrapper< Spot, Link >, BvvEdgeWrapper< Spot, Link > > instances = viewGraph.ellipsoidsPerTimepoint.get( timepoint );
+		final int modCount = instances.getModCount();
+		if ( instanceArray.getModCount() != modCount )
+		{
+			instanceArray.setModCount( modCount );
+			instanceArray.update( gl, instances.buffer().asFloatBuffer() );
+		}
+		instancedEllipsoid.draw( gl, new Matrix4f( projection ).mul( view ), view, instanceArray );
 
 		sceneBuf.unbind( gl, false );
 		gl.glDisable( GL_DEPTH_TEST );

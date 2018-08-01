@@ -39,7 +39,7 @@ public class MamutViewBvv extends MamutView< BvvGraphWrapper< Spot, Link >, BvvV
 
 		final SharedBigDataViewerData shared = appModel.getSharedBdvData();
 
-		final String windowTitle = "BigVolumeViewer " + ( bvvName++ ); // TODO: use JY naming scheme
+		final String windowTitle = "BigVolumeViewer " + ( bvvName++ );
 		BvvViewFrame frame = new BvvViewFrame(
 				windowTitle,
 				viewGraph,
