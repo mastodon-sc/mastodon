@@ -5,6 +5,7 @@ import org.mastodon.app.ui.MastodonFrameViewActions;
 import org.mastodon.app.ui.ViewMenu;
 import org.mastodon.app.ui.ViewMenuBuilder;
 import org.mastodon.revised.bdv.BigDataViewerActionsMamut;
+import org.mastodon.revised.bdv.SharedBigDataViewerData;
 import org.mastodon.revised.bvv.BvvOptions;
 import org.mastodon.revised.bvv.BvvViewFrame;
 import org.mastodon.revised.bvv.wrap.BvvEdgeWrapper;
@@ -38,11 +39,12 @@ public class MamutViewBvv extends MamutView< BvvGraphWrapper< Spot, Link >, BvvV
 				new String[] { KeyConfigContexts.BIGDATAVIEWER } );
 
 		final KeyPressedManager keyPressedManager = appModel.getKeyPressedManager();
+		final SharedBigDataViewerData shared = appModel.getSharedBdvData();
 
 		final String windowTitle = "BigVolumeViewer " + ( bvvName++ ); // TODO: use JY naming scheme
 		final BvvOptions options = BvvOptions.options()
 				.shareKeyPressedEvents( keyPressedManager );
-		BvvViewFrame frame = new BvvViewFrame( windowTitle, groupHandle, options );
+		BvvViewFrame frame = new BvvViewFrame( windowTitle, shared.getNumTimepoints(), groupHandle, options );
 		setFrame( frame );
 
 		frame.getBvvPanel().getTransformEventHandler().install( viewBehaviours );

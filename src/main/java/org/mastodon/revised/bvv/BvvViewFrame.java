@@ -20,12 +20,13 @@ public class BvvViewFrame extends ViewFrame
 
 	public BvvViewFrame(
 			final String windowTitle,
+			final int numTimepoints,
 			final GroupHandle groupHandle,
 			final BvvOptions optional )
 	{
 		super( windowTitle );
 
-		bvvPanel = new BvvPanel( optional );
+		bvvPanel = new BvvPanel( numTimepoints, optional );
 		add( bvvPanel, BorderLayout.CENTER );
 
 		final GroupLocksPanel navigationLocksPanel = new GroupLocksPanel( groupHandle );
