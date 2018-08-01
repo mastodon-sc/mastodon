@@ -1,0 +1,16 @@
+layout (location = 0) in vec3 aPos;
+
+layout (location = 1) in mat3 e;
+layout (location = 4) in mat3 ite;
+layout (location = 7) in vec3 t;
+
+out vec3 normal;
+
+uniform mat4 pvm;
+uniform mat3 itvm;
+
+void main()
+{
+	gl_Position = pvm * vec4( e * aPos + t, 1.0 );
+	normal = normalize( itvm * ite * aPos );
+}
