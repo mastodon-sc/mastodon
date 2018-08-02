@@ -7,6 +7,7 @@ import org.mastodon.app.ui.ViewMenuBuilder;
 import org.mastodon.revised.bdv.BigDataViewerActionsMamut;
 import org.mastodon.revised.bdv.SharedBigDataViewerData;
 import org.mastodon.revised.bvv.BvvOptions;
+import org.mastodon.revised.bvv.BvvPanel;
 import org.mastodon.revised.bvv.BvvViewFrame;
 import org.mastodon.revised.bvv.wrap.BvvEdgeWrapper;
 import org.mastodon.revised.bvv.wrap.BvvGraphWrapper;
@@ -28,6 +29,8 @@ public class MamutViewBvv extends MamutView< BvvGraphWrapper< Spot, Link >, BvvV
 	// TODO
 	private static int bvvName = 1;
 
+	private final BvvPanel bvvPanel;
+
 	public MamutViewBvv( final MamutAppModel appModel )
 	{
 		super( appModel,
@@ -46,6 +49,7 @@ public class MamutViewBvv extends MamutView< BvvGraphWrapper< Spot, Link >, BvvV
 				windowTitle,
 				viewGraph,
 				selectionModel,
+				highlightModel,
 				shared.getSources(),
 				shared.getNumTimepoints(),
 				shared.getCache(),
@@ -53,6 +57,7 @@ public class MamutViewBvv extends MamutView< BvvGraphWrapper< Spot, Link >, BvvV
 				shared.getOptions(),
 				BvvOptions.options() );
 		setFrame( frame );
+		bvvPanel = frame.getBvvPanel();
 
 		frame.getBvvPanel().getTransformEventHandler().install( viewBehaviours );
 
@@ -90,8 +95,9 @@ public class MamutViewBvv extends MamutView< BvvGraphWrapper< Spot, Link >, BvvV
 		final Model model = appModel.getModel();
 		final ModelGraph modelGraph = model.getGraph();
 
-		modelGraph.addGraphChangeListener( () -> frame.getBvvPanel().requestRepaint() );
-		selectionModel.listeners().add( () -> frame.getBvvPanel().requestRepaint() );
+		modelGraph.addGraphChangeListener( bvvPanel::requestRepaint );
+		selectionModel.listeners().add( bvvPanel::requestRepaint );
+		highlightModel.listeners().add( bvvPanel::requestRepaint );
 
 		frame.setVisible( true );
 	}

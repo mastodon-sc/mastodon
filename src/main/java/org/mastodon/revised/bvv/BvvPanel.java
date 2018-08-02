@@ -26,6 +26,7 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import net.imglib2.realtransform.AffineTransform3D;
 import net.imglib2.ui.PainterThread;
+import org.mastodon.model.HighlightModel;
 import org.mastodon.model.SelectionModel;
 import tpietzsch.util.TransformHandler;
 
@@ -60,6 +61,7 @@ public class BvvPanel
 	public < V extends BvvVertex< V, E >, E extends BvvEdge< E, V > > BvvPanel(
 			final BvvGraph< V, E > viewGraph,
 			final SelectionModel< V, E > selection,
+			final HighlightModel< V, E > highlight,
 			final List< SourceAndConverter< ? > > sources,
 			final int numTimepoints,
 			final CacheControl cacheControl,
@@ -83,7 +85,7 @@ public class BvvPanel
 			state.setCurrentSource( 0 );
 
 		painterThread = new PainterThread( this::paint );
-		renderer = new BvvRenderer<>( 640, 480, viewGraph, selection );
+		renderer = new BvvRenderer<>( 640, 480, viewGraph, selection, highlight );
 
 		final GLCapabilities capsReqUser = new GLCapabilities( GLProfile.getMaxProgrammableCore( true ) );
 		canvas = new GLCanvas( capsReqUser );

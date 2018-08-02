@@ -4,6 +4,7 @@ import com.jogamp.opengl.GL3;
 import net.imglib2.realtransform.AffineTransform3D;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
+import org.mastodon.model.HighlightModel;
 import org.mastodon.model.SelectionModel;
 import org.mastodon.revised.bvv.scene.InstancedEllipsoid;
 import tpietzsch.offscreen.OffScreenFrameBufferWithDepth;
@@ -21,6 +22,8 @@ public class BvvRenderer< V extends BvvVertex< V, E >, E extends BvvEdge< E, V >
 	private final BvvGraph< V, E > graph;
 
 	private final SelectionModel< V, E > selection;
+
+	private final HighlightModel< V, E > highlight;
 
 	private final OffScreenFrameBufferWithDepth sceneBuf;
 
@@ -40,10 +43,12 @@ public class BvvRenderer< V extends BvvVertex< V, E >, E extends BvvEdge< E, V >
 			final int renderWidth,
 			final int renderHeight,
 			final BvvGraph< V, E > graph,
-			final SelectionModel< V, E > selection )
+			final SelectionModel< V, E > selection,
+			final HighlightModel< V, E > highlight )
 	{
 		this.graph = graph;
 		this.selection = selection;
+		this.highlight = highlight;
 		sceneBuf = new OffScreenFrameBufferWithDepth( renderWidth, renderHeight, GL_RGB8 );
 		instancedEllipsoid = new InstancedEllipsoid( 3 );
 
@@ -105,7 +110,11 @@ public class BvvRenderer< V extends BvvVertex< V, E >, E extends BvvEdge< E, V >
 			instanceArray.updateColors( gl, instances.colorBuffer().asFloatBuffer() );
 		}
 
-		instancedEllipsoid.draw( gl, pv, camview, instanceArray );
+		final V vref = graph.vertexRef();
+		final V vertex = highlight.getHighlightedVertex( vref );
+		final int highlightId = instances.indexOf( vertex );
+		graph.releaseRef( vref );
+		instancedEllipsoid.draw( gl, pv, camview, instanceArray, highlightId );
 
 		sceneBuf.unbind( gl, false );
 		gl.glDisable( GL_DEPTH_TEST );

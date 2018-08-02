@@ -159,7 +159,7 @@ public class InstancedEllipsoid
 		}
 	}
 
-	public void draw( GL3 gl, Matrix4fc pvm, Matrix4f vm, InstanceArray instanceArray )
+	public void draw( GL3 gl, Matrix4fc pvm, Matrix4f vm, InstanceArray instanceArray, final int highlightIndex )
 	{
 		if ( !initialized )
 			init( gl );
@@ -170,6 +170,7 @@ public class InstancedEllipsoid
 		prog.getUniformMatrix4f( "pvm" ).set( pvm );
 		prog.getUniformMatrix4f( "vm" ).set( vm );
 		prog.getUniformMatrix3f( "itvm" ).set( itvm.get3x3( new Matrix3f() ) );
+		prog.getUniform1i( "highlight" ).set( highlightIndex );
 		prog.getUniform3f( "color" ).set( 0.5f, 1.0f, 0.5f );
 		prog.setUniforms( context );
 		prog.use( context );

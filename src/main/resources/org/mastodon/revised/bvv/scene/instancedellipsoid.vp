@@ -13,6 +13,9 @@ out vec3 ObjectColor;
 uniform mat4 pvm;
 uniform mat4 vm;
 uniform mat3 itvm;
+uniform int highlight;
+
+const vec3 highlightColor = vec3( 1, 0, 0 );
 
 void main()
 {
@@ -20,5 +23,9 @@ void main()
 	gl_Position = pvm * pos;
 	Normal = normalize( itvm * ite * aPos );
 	FragPos = vec3( vm * pos );
-	ObjectColor = color;
+
+	if ( gl_InstanceID == highlight)
+		ObjectColor = highlightColor;
+	else
+		ObjectColor = color;
 }

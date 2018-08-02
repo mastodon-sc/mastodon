@@ -13,6 +13,7 @@ import javax.swing.WindowConstants;
 import org.mastodon.app.ui.GroupLocksPanel;
 import org.mastodon.app.ui.ViewFrame;
 import org.mastodon.grouping.GroupHandle;
+import org.mastodon.model.HighlightModel;
 import org.mastodon.model.SelectionModel;
 import org.scijava.ui.behaviour.MouseAndKeyHandler;
 import org.scijava.ui.behaviour.util.InputActionBindings;
@@ -37,6 +38,7 @@ public class BvvViewFrame extends ViewFrame
 			final String windowTitle,
 			final BvvGraph< V, E > viewGraph,
 			final SelectionModel< V, E > selection,
+			final HighlightModel< V, E > highlight,
 			final List< SourceAndConverter< ? > > sources,
 			final int numTimepoints,
 			final CacheControl cacheControl,
@@ -46,7 +48,7 @@ public class BvvViewFrame extends ViewFrame
 	{
 		super( windowTitle );
 
-		bvvPanel = new BvvPanel( viewGraph, selection, sources, numTimepoints, cacheControl, optional, bvvOptional );
+		bvvPanel = new BvvPanel( viewGraph, selection, highlight, sources, numTimepoints, cacheControl, optional, bvvOptional );
 		add( bvvPanel, BorderLayout.CENTER );
 
 		final GroupLocksPanel navigationLocksPanel = new GroupLocksPanel( groupHandle );

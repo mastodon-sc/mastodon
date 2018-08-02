@@ -147,8 +147,8 @@ public class EllipsoidInstances< V extends BvvVertex< V, E >, E extends BvvEdge<
 		final EllipsoidInstance ref = createRef();
 		final ColorInstance cref = colors.createRef();
 		final V vref = instanceToVertex.createValueRef();
-		EllipsoidInstance instance = vertexToInstance.removeWithRef( vertex, ref );
-		ColorInstance colorInstance = colors.getObject( instance.getInternalPoolIndex(), cref );
+		final EllipsoidInstance instance = vertexToInstance.removeWithRef( vertex, ref );
+		final ColorInstance colorInstance = colors.getObject( instance.getInternalPoolIndex(), cref );
 		if ( instance == null )
 			throw new NoSuchElementException();
 		if ( instance.getInternalPoolIndex() == size() - 1 )
@@ -176,6 +176,23 @@ public class EllipsoidInstances< V extends BvvVertex< V, E >, E extends BvvEdge<
 		instanceToVertex.releaseValueRef( vref );
 		colors.releaseRef( cref );
 		releaseRef( ref );
+	}
+
+	public int indexOf( final V vertex )
+	{
+		if ( vertex == null )
+			return -1;
+
+		final EllipsoidInstance ref = createRef();
+		try
+		{
+			final EllipsoidInstance instance = vertexToInstance.get( vertex, ref );
+			return ( instance == null ) ? -1 : instance.getInternalPoolIndex();
+		}
+		finally
+		{
+			releaseRef( ref );
+		}
 	}
 
 	/*
