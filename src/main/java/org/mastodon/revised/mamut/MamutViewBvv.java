@@ -91,6 +91,7 @@ public class MamutViewBvv extends MamutView< BvvGraphWrapper< Spot, Link >, BvvV
 		final ModelGraph modelGraph = model.getGraph();
 
 		modelGraph.addGraphChangeListener( () -> frame.getBvvPanel().requestRepaint() );
+		selectionModel.listeners().add( () -> frame.getBvvPanel().requestRepaint() );
 
 		frame.setVisible( true );
 	}

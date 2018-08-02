@@ -1,9 +1,9 @@
 package org.mastodon.revised.bvv;
 
 import com.jogamp.opengl.GL3;
-import java.nio.FloatBuffer;
 import net.imglib2.realtransform.AffineTransform3D;
 import org.joml.Matrix4f;
+import org.joml.Vector3f;
 import org.mastodon.model.SelectionModel;
 import org.mastodon.revised.bvv.scene.InstancedEllipsoid;
 import tpietzsch.offscreen.OffScreenFrameBufferWithDepth;
@@ -53,6 +53,8 @@ public class BvvRenderer< V extends BvvVertex< V, E >, E extends BvvEdge< E, V >
 				numInstanceArrays,
 				instancedEllipsoid::createInstanceArray
 		);
+
+		selection.listeners().add( this::selectionChanged );
 	}
 
 	public void init( final GL3 gl )
@@ -82,27 +84,38 @@ public class BvvRenderer< V extends BvvVertex< V, E >, E extends BvvEdge< E, V >
 		final InstancedEllipsoid.InstanceArray instanceArray = reusableInstanceArrays.getForTimepoint( timepoint );
 		final EllipsoidInstances< V, E > instances = graph.getEllipsoids().forTimepoint( timepoint );
 		final int modCount = instances.getModCount();
-		if ( instanceArray.getModCount() != modCount )
+		final boolean needShapeUpdate = instanceArray.getModCount() != modCount;
+		if ( needShapeUpdate )
 		{
 			instanceArray.setModCount( modCount );
 			instanceArray.updateShapes( gl, instances.buffer().asFloatBuffer() );
-
-			float[] colors = new float[ 3 * instances.size() ];
-
-//			selection.isSelected(  )
-
-			for ( int i = 0; i < instances.size(); ++i )
-			{
-				colors[ 3 * i ] = 1f;
-				colors[ 3 * i + 1 ] = ( float ) Math.random();
-				colors[ 3 * i + 2 ] = ( float ) Math.random();
-			}
-			instanceArray.updateColors( gl, FloatBuffer.wrap( colors ) );
 		}
+
+		final boolean needColorUpdate = instances.getColorModCount() != colorModCount;
+		if ( needColorUpdate )
+		{
+			instances.setColorModCount( colorModCount );
+			final Vector3f defaultColor = new Vector3f( 0.5f, 1.0f, 0.5f );
+			final Vector3f selectedColor = new Vector3f( 1.0f, 0.7f, 0.7f );
+			instances.updateColors( v -> selection.isSelected( v ) ? selectedColor : defaultColor );
+		}
+
+		if ( needShapeUpdate || needColorUpdate )
+		{
+			instanceArray.updateColors( gl, instances.colorBuffer().asFloatBuffer() );
+		}
+
 		instancedEllipsoid.draw( gl, pv, camview, instanceArray );
 
 		sceneBuf.unbind( gl, false );
 		gl.glDisable( GL_DEPTH_TEST );
 		sceneBuf.drawQuad( gl );
+	}
+
+	private int colorModCount = 1;
+
+	private void selectionChanged()
+	{
+		++colorModCount;
 	}
 }
