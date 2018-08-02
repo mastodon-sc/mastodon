@@ -52,8 +52,9 @@ public class EllipsoidInstances< V extends BvvVertex< V, E >, E extends BvvEdge<
 		final BufferMappedElementArray dataArray = memPool.getDataArray();
 		final ByteBuffer buffer = dataArray.getBuffer();
 		buffer.rewind();
-		buffer.limit( this.size() * EllipsoidInstance.layout.getSizeInBytes() );
-		return buffer.slice().order( ByteOrder.nativeOrder() );
+		final ByteBuffer slice = buffer.slice().order( ByteOrder.nativeOrder() );
+		slice.limit( this.size() * EllipsoidInstance.layout.getSizeInBytes() );
+		return slice;
 	}
 
 	/**
@@ -102,7 +103,9 @@ public class EllipsoidInstances< V extends BvvVertex< V, E >, E extends BvvEdge<
 			final EllipsoidInstance ref2 = createRef();
 			final EllipsoidInstance last = getObject( size() - 1, ref2 );
 			instance.set( last );
-			instanceToVertex.put( instance, instanceToVertex.removeWithRef( last, vref ) );
+			final V lastVertex = instanceToVertex.removeWithRef( last, vref );
+			instanceToVertex.put( instance, lastVertex );
+			vertexToInstance.put( lastVertex, instance );
 			delete( last );
 			releaseRef( ref2 );
 		}

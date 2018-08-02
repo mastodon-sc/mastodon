@@ -70,15 +70,27 @@ public class InstancedEllipsoid
 
 	public class InstanceArray implements HasModCount
 	{
-		public void update( GL3 gl, FloatBuffer data )
+		public void updateShapes( GL3 gl, FloatBuffer data )
 		{
 			if ( !initialized )
 				init( gl );
 
-			gl.glBindBuffer( GL_ARRAY_BUFFER, vbo );
-			final int size = data.capacity();
+			gl.glBindBuffer( GL_ARRAY_BUFFER, vboShape );
+			final int size = data.limit();
 			gl.glBufferData( GL_ARRAY_BUFFER, size * Float.BYTES, data, GL_DYNAMIC_DRAW );
 			instanceCount = size / 21;
+			gl.glBindBuffer( GL_ARRAY_BUFFER, 0 );
+		}
+
+		public void updateColors( GL3 gl, FloatBuffer data )
+		{
+			if ( !initialized )
+				init( gl );
+
+			gl.glBindBuffer( GL_ARRAY_BUFFER, vboColor );
+			final int size = data.limit();
+			gl.glBufferData( GL_ARRAY_BUFFER, size * Float.BYTES, data, GL_DYNAMIC_DRAW );
+			instanceCount = size / 3;
 			gl.glBindBuffer( GL_ARRAY_BUFFER, 0 );
 		}
 
@@ -97,9 +109,8 @@ public class InstancedEllipsoid
 		private int modCount = 0;
 
 		private int instanceCount;
-
-		private int vbo;
-
+		private int vboShape;
+		private int vboColor;
 		private int vao;
 
 		private boolean initialized;
@@ -111,9 +122,10 @@ public class InstancedEllipsoid
 			if ( !InstancedEllipsoid.this.initialized )
 				InstancedEllipsoid.this.init( gl );
 
-			final int[] tmp = new int[ 1 ];
-			gl.glGenBuffers( 1, tmp, 0 );
-			vbo = tmp[ 0 ];
+			final int[] tmp = new int[ 2 ];
+			gl.glGenBuffers( 2, tmp, 0 );
+			vboShape = tmp[ 0 ];
+			vboColor = tmp[ 1 ];
 			gl.glGenVertexArrays( 1, tmp, 0 );
 			vao = tmp[ 0 ];
 
@@ -121,13 +133,17 @@ public class InstancedEllipsoid
 			gl.glBindBuffer( GL_ARRAY_BUFFER, sphereVbo );
 			gl.glVertexAttribPointer( 0, 3, GL_FLOAT, false, 3 * Float.BYTES, 0 );
 			gl.glEnableVertexAttribArray( 0 );
-			gl.glBindBuffer( GL_ARRAY_BUFFER, vbo );
+			gl.glBindBuffer( GL_ARRAY_BUFFER, vboShape );
 			for ( int i = 0; i < 7; ++i )
 			{
 				gl.glVertexAttribPointer( 1 + i, 3, GL_FLOAT, false, 21 * Float.BYTES, i * 3 * Float.BYTES );
 				gl.glEnableVertexAttribArray( 1 + i );
 				gl.glVertexAttribDivisor( 1 + i, 1 );
 			}
+			gl.glBindBuffer( GL_ARRAY_BUFFER, vboColor );
+			gl.glVertexAttribPointer( 8, 3, GL_FLOAT, false, 3 * Float.BYTES, 0 );
+			gl.glEnableVertexAttribArray( 8 );
+			gl.glVertexAttribDivisor( 8, 1 );
 			gl.glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, sphereEbo );
 			gl.glBindVertexArray( 0 );
 		}

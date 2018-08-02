@@ -1,4 +1,4 @@
-package org.mastodon.revised.bvv.wrap;
+package org.mastodon.revised.bvv;
 
 import gnu.trove.impl.Constants;
 import gnu.trove.map.hash.TIntObjectHashMap;

@@ -20,6 +20,7 @@ import org.mastodon.revised.bvv.BvvEdge;
 import org.mastodon.revised.bvv.BvvGraph;
 import org.mastodon.revised.bvv.BvvVertex;
 import org.mastodon.revised.bvv.EllipsoidInstances;
+import org.mastodon.revised.bvv.EllipsoidsPerTimepoint;
 import org.mastodon.spatial.SpatioTemporalIndex;
 import org.mastodon.util.Listeners;
 
@@ -275,18 +276,19 @@ public class BvvGraphWrapper< V extends Vertex< E >, E extends Edge< V > > imple
 	 * GraphListener
 	 */
 
-	static class EllipsoidsPerTimepoint< V extends BvvVertex< V, E >, E extends BvvEdge< E, V > >
+	private static class EllipsoidsPerTimepointImp< V extends BvvVertex< V, E >, E extends BvvEdge< E, V > > implements EllipsoidsPerTimepoint< V, E >
 	{
 		private final TIntObjectArrayMap< EllipsoidInstances< V, E > > map = new TIntObjectArrayMap<>();
 
 		private final BvvGraph< V, E > graph;
 
-		EllipsoidsPerTimepoint( BvvGraph< V, E > graph )
+		EllipsoidsPerTimepointImp( BvvGraph< V, E > graph )
 		{
 			this.graph = graph;
 		}
 
-		EllipsoidInstances< V, E > get( final int timepoint )
+		@Override
+		public EllipsoidInstances< V, E > forTimepoint( final int timepoint )
 		{
 			EllipsoidInstances< V, E > ellipsoids = map.get( timepoint );
 			if ( ellipsoids == null )
@@ -299,12 +301,12 @@ public class BvvGraphWrapper< V extends Vertex< E >, E extends Edge< V > > imple
 
 		void addInstanceFor( final V vertex )
 		{
-			get( vertex.getTimepoint() ).addInstanceFor( vertex );
+			forTimepoint( vertex.getTimepoint() ).addInstanceFor( vertex );
 		}
 
 		void removeInstanceFor( final V vertex )
 		{
-			get( vertex.getTimepoint() ).removeInstanceFor( vertex );
+			forTimepoint( vertex.getTimepoint() ).removeInstanceFor( vertex );
 		}
 
 		void clear()
@@ -313,8 +315,13 @@ public class BvvGraphWrapper< V extends Vertex< E >, E extends Edge< V > > imple
 		}
 	}
 
-	// TODO HACK shouldn't be public
-	public final EllipsoidsPerTimepoint< BvvVertexWrapper< V, E >, BvvEdgeWrapper< V, E > > ellipsoidsPerTimepoint = new EllipsoidsPerTimepoint<>( this );
+	private final EllipsoidsPerTimepointImp< BvvVertexWrapper< V, E >, BvvEdgeWrapper< V, E > > ellipsoidsPerTimepoint = new EllipsoidsPerTimepointImp<>( this );
+
+	@Override
+	public EllipsoidsPerTimepoint< BvvVertexWrapper< V, E >, BvvEdgeWrapper< V, E > > getEllipsoids()
+	{
+		return ellipsoidsPerTimepoint;
+	}
 
 	@Override
 	public void graphRebuilt()

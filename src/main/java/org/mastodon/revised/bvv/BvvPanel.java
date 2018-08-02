@@ -26,13 +26,12 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import net.imglib2.realtransform.AffineTransform3D;
 import net.imglib2.ui.PainterThread;
-import org.mastodon.revised.bvv.wrap.BvvGraphWrapper;
-import org.mastodon.revised.bvv.wrap.BvvRenderer;
-import org.mastodon.revised.model.mamut.Link;
-import org.mastodon.revised.model.mamut.Spot;
+import org.mastodon.model.SelectionModel;
 import tpietzsch.util.TransformHandler;
 
-public class BvvPanel extends JPanel implements RequestRepaint
+public class BvvPanel
+		extends JPanel
+		implements RequestRepaint
 {
 	/**
 	 * Currently rendered state (visible sources, transformation, timepoint,
@@ -44,7 +43,7 @@ public class BvvPanel extends JPanel implements RequestRepaint
 
 	private final TransformHandler transformHandler;
 
-	private final BvvRenderer renderer;
+	private final BvvRenderer< ?, ? > renderer;
 
 	private final GLCanvas canvas;
 
@@ -58,8 +57,9 @@ public class BvvPanel extends JPanel implements RequestRepaint
 	 */
 	private final CopyOnWriteArrayList< TimePointListener > timePointListeners;
 
-	public BvvPanel(
-			final BvvGraphWrapper< Spot, Link > viewGraph,    // TODO HACK should be BvvGraph<?,?>
+	public < V extends BvvVertex< V, E >, E extends BvvEdge< E, V > > BvvPanel(
+			final BvvGraph< V, E > viewGraph,
+			final SelectionModel< V, E > selection,
 			final List< SourceAndConverter< ? > > sources,
 			final int numTimepoints,
 			final CacheControl cacheControl,
@@ -83,7 +83,7 @@ public class BvvPanel extends JPanel implements RequestRepaint
 			state.setCurrentSource( 0 );
 
 		painterThread = new PainterThread( this::paint );
-		renderer = new BvvRenderer( 640, 480, viewGraph );
+		renderer = new BvvRenderer<>( 640, 480, viewGraph, selection );
 
 		final GLCapabilities capsReqUser = new GLCapabilities( GLProfile.getMaxProgrammableCore( true ) );
 		canvas = new GLCanvas( capsReqUser );

@@ -1,13 +1,11 @@
-package org.mastodon.revised.bvv.wrap;
+package org.mastodon.revised.bvv;
 
 import com.jogamp.opengl.GL3;
 import java.nio.FloatBuffer;
 import net.imglib2.realtransform.AffineTransform3D;
 import org.joml.Matrix4f;
-import org.mastodon.revised.bvv.EllipsoidInstances;
+import org.mastodon.model.SelectionModel;
 import org.mastodon.revised.bvv.scene.InstancedEllipsoid;
-import org.mastodon.revised.model.mamut.Link;
-import org.mastodon.revised.model.mamut.Spot;
 import tpietzsch.offscreen.OffScreenFrameBufferWithDepth;
 import tpietzsch.scene.TexturedUnitCube;
 import tpietzsch.util.MatrixMath;
@@ -18,9 +16,11 @@ import static com.jogamp.opengl.GL.GL_DEPTH_TEST;
 import static com.jogamp.opengl.GL.GL_RGB8;
 import static com.jogamp.opengl.GL.GL_UNPACK_ALIGNMENT;
 
-public class BvvRenderer
+public class BvvRenderer< V extends BvvVertex< V, E >, E extends BvvEdge< E, V > >
 {
-	private final BvvGraphWrapper< Spot, Link > viewGraph; // TODO HACK should be BvvGraph<?,?>
+	private final BvvGraph< V, E > graph;
+
+	private final SelectionModel< V, E > selection;
 
 	private final OffScreenFrameBufferWithDepth sceneBuf;
 
@@ -39,16 +39,17 @@ public class BvvRenderer
 	public BvvRenderer(
 			final int renderWidth,
 			final int renderHeight,
-			final BvvGraphWrapper< Spot, Link > viewGraph // TODO HACK should be BvvGraph<?,?>
-	)
+			final BvvGraph< V, E > graph,
+			final SelectionModel< V, E > selection )
 	{
-		this.viewGraph = viewGraph;
+		this.graph = graph;
+		this.selection = selection;
 		sceneBuf = new OffScreenFrameBufferWithDepth( renderWidth, renderHeight, GL_RGB8 );
 		instancedEllipsoid = new InstancedEllipsoid( 3 );
 
 		final int numInstanceArrays = 10;
 		reusableInstanceArrays = new ReusableInstanceArrays<>(
-				t -> viewGraph.ellipsoidsPerTimepoint.get( t ).getModCount(),
+				t -> graph.getEllipsoids().forTimepoint( t ).getModCount(),
 				numInstanceArrays,
 				instancedEllipsoid::createInstanceArray
 		);
@@ -79,12 +80,24 @@ public class BvvRenderer
 		cube.draw( gl, new Matrix4f( pv ).translate( 200, 200, 50 ).scale( 100 ) );
 
 		final InstancedEllipsoid.InstanceArray instanceArray = reusableInstanceArrays.getForTimepoint( timepoint );
-		final EllipsoidInstances< BvvVertexWrapper< Spot, Link >, BvvEdgeWrapper< Spot, Link > > instances = viewGraph.ellipsoidsPerTimepoint.get( timepoint );
+		final EllipsoidInstances< V, E > instances = graph.getEllipsoids().forTimepoint( timepoint );
 		final int modCount = instances.getModCount();
 		if ( instanceArray.getModCount() != modCount )
 		{
 			instanceArray.setModCount( modCount );
-			instanceArray.update( gl, instances.buffer().asFloatBuffer() );
+			instanceArray.updateShapes( gl, instances.buffer().asFloatBuffer() );
+
+			float[] colors = new float[ 3 * instances.size() ];
+
+//			selection.isSelected(  )
+
+			for ( int i = 0; i < instances.size(); ++i )
+			{
+				colors[ 3 * i ] = 1f;
+				colors[ 3 * i + 1 ] = ( float ) Math.random();
+				colors[ 3 * i + 2 ] = ( float ) Math.random();
+			}
+			instanceArray.updateColors( gl, FloatBuffer.wrap( colors ) );
 		}
 		instancedEllipsoid.draw( gl, pv, camview, instanceArray );
 

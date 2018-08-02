@@ -15,6 +15,8 @@ public interface BvvGraph< V extends BvvVertex< V, E >, E extends BvvEdge< E, V 
 
 	ReentrantReadWriteLock getLock();
 
+	EllipsoidsPerTimepoint< V, E > getEllipsoids();
+
 	/**
 	 * Triggers a {@link GraphChangeListener#graphChanged()} event.
 	 *

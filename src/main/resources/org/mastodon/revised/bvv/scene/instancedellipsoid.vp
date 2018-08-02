@@ -4,6 +4,8 @@ layout (location = 1) in mat3 e;
 layout (location = 4) in mat3 ite;
 layout (location = 7) in vec3 t;
 
+layout (location = 8) in vec3 color;
+
 out vec3 Normal;
 out vec3 FragPos;
 out vec3 ObjectColor;
@@ -11,7 +13,6 @@ out vec3 ObjectColor;
 uniform mat4 pvm;
 uniform mat4 vm;
 uniform mat3 itvm;
-uniform vec3 color;
 
 void main()
 {

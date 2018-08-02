@@ -6,10 +6,6 @@ import static org.mastodon.pool.ByteUtils.*;
 
 public abstract class PoolObjectLayoutJoml extends PoolObjectLayout
 {
-
-	// TODO extend PoolPbjectLayout as JomlPoolPbjectLayout and add vector3fField etc.
-//	final FloatArrayField mat3fE = floatArrayField( 9 );
-
 	public static class Matrix3fField extends PrimitiveField
 	{
 		Matrix3fField( final CurrentSizeInBytes sib )

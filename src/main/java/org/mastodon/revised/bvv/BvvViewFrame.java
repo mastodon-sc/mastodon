@@ -13,9 +13,7 @@ import javax.swing.WindowConstants;
 import org.mastodon.app.ui.GroupLocksPanel;
 import org.mastodon.app.ui.ViewFrame;
 import org.mastodon.grouping.GroupHandle;
-import org.mastodon.revised.bvv.wrap.BvvGraphWrapper;
-import org.mastodon.revised.model.mamut.Link;
-import org.mastodon.revised.model.mamut.Spot;
+import org.mastodon.model.SelectionModel;
 import org.scijava.ui.behaviour.MouseAndKeyHandler;
 import org.scijava.ui.behaviour.util.InputActionBindings;
 
@@ -24,21 +22,21 @@ public class BvvViewFrame extends ViewFrame
 	private final BvvPanel bvvPanel;
 
 	/**
-	 *
 	 * @param sources
-	 *            the {@link SourceAndConverter sources} to display.
+	 * 		the {@link SourceAndConverter sources} to display.
 	 * @param numTimepoints
-	 *            number of available timepoints.
+	 * 		number of available timepoints.
 	 * @param cacheControl
-	 *            handle to cache. This is used to control io timing.
+	 * 		handle to cache. This is used to control io timing.
 	 * @param optional
-	 *            optional parameters. See {@link ViewerOptions}.
+	 * 		optional parameters. See {@link ViewerOptions}.
 	 * @param bvvOptional
-	 *            optional parameters. See {@link BvvOptions}.
+	 * 		optional parameters. See {@link BvvOptions}.
 	 */
-	public BvvViewFrame(
+	public < V extends BvvVertex< V, E >, E extends BvvEdge< E, V > > BvvViewFrame(
 			final String windowTitle,
-			final BvvGraphWrapper< Spot, Link > viewGraph,	// TODO HACK should be BvvGraph<?,?>
+			final BvvGraph< V, E > viewGraph,
+			final SelectionModel< V, E > selection,
 			final List< SourceAndConverter< ? > > sources,
 			final int numTimepoints,
 			final CacheControl cacheControl,
@@ -48,7 +46,7 @@ public class BvvViewFrame extends ViewFrame
 	{
 		super( windowTitle );
 
-		bvvPanel = new BvvPanel( viewGraph, sources, numTimepoints, cacheControl, optional, bvvOptional );
+		bvvPanel = new BvvPanel( viewGraph, selection, sources, numTimepoints, cacheControl, optional, bvvOptional );
 		add( bvvPanel, BorderLayout.CENTER );
 
 		final GroupLocksPanel navigationLocksPanel = new GroupLocksPanel( groupHandle );

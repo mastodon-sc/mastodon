@@ -12,6 +12,8 @@ import org.mastodon.revised.bvv.wrap.BvvEdgeWrapper;
 import org.mastodon.revised.bvv.wrap.BvvGraphWrapper;
 import org.mastodon.revised.bvv.wrap.BvvVertexWrapper;
 import org.mastodon.revised.model.mamut.Link;
+import org.mastodon.revised.model.mamut.Model;
+import org.mastodon.revised.model.mamut.ModelGraph;
 import org.mastodon.revised.model.mamut.Spot;
 import org.mastodon.revised.ui.SelectionActions;
 
@@ -43,6 +45,7 @@ public class MamutViewBvv extends MamutView< BvvGraphWrapper< Spot, Link >, BvvV
 		BvvViewFrame frame = new BvvViewFrame(
 				windowTitle,
 				viewGraph,
+				selectionModel,
 				shared.getSources(),
 				shared.getNumTimepoints(),
 				shared.getCache(),
@@ -83,6 +86,12 @@ public class MamutViewBvv extends MamutView< BvvGraphWrapper< Spot, Link >, BvvV
 				)
 		);
 		appModel.getPlugins().addMenus( menu );
+
+		final Model model = appModel.getModel();
+		final ModelGraph modelGraph = model.getGraph();
+
+		modelGraph.addGraphChangeListener( () -> frame.getBvvPanel().requestRepaint() );
+
 		frame.setVisible( true );
 	}
 }
