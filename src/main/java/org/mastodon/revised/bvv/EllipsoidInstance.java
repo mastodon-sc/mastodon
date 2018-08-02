@@ -68,15 +68,7 @@ public class EllipsoidInstance extends PoolObject< EllipsoidInstance, EllipsoidI
 				V[ 1 ][ 0 ], V[ 1 ][ 1 ], V[ 1 ][ 2 ],
 				V[ 2 ][ 0 ], V[ 2 ][ 1 ], V[ 2 ][ 2 ] );
 		if ( det < 0 )
-		{
-			final double[] tmp = V[ 0 ];
-			V[ 0 ] = V[ 1 ];
-			V[ 1 ] = tmp;
-
-			final double tmp2 = eigVals[ 0 ];
-			eigVals[ 0 ] = eigVals[ 1 ];
-			eigVals[ 1 ] = tmp2;
-		}
+			LinAlgHelpers.scale( V, -1, V );
 		for ( int i = 0; i < 3; ++i )
 		{
 			final double e = Math.sqrt( eigVals[ i ] );
