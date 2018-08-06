@@ -60,8 +60,7 @@ public class FeatureTagTableExample
 		locationTag.createTag( "Posterior", ran.nextInt() | 0xFF000000 );
 		model.getTagSetModel().setTagSetStructure( tss );
 
-		final MamutViewTable view = new MamutViewTable( appModel );
-		view.getFrame().setMirrorSelection( true );
+		final MamutViewTable view = new MamutViewTable( appModel, false );
 		final ModelGraph graph = appModel.getModel().getGraph();
 		view.getFrame().getVertexTable().setRows( graph.vertices() );
 		view.getFrame().getEdgeTable().setRows( graph.edges() );

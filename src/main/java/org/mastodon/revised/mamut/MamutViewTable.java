@@ -15,11 +15,16 @@ import org.mastodon.app.ViewGraph;
 import org.mastodon.app.ui.MastodonFrameViewActions;
 import org.mastodon.app.ui.ViewFrame;
 import org.mastodon.app.ui.ViewMenu;
+import org.mastodon.graph.GraphChangeListener;
+import org.mastodon.model.SelectionListener;
+import org.mastodon.model.SelectionModel;
 import org.mastodon.revised.model.feature.FeatureModel;
 import org.mastodon.revised.model.mamut.Link;
 import org.mastodon.revised.model.mamut.Model;
+import org.mastodon.revised.model.mamut.ModelGraph;
 import org.mastodon.revised.model.mamut.Spot;
 import org.mastodon.revised.model.tag.TagSetModel;
+import org.mastodon.revised.table.FeatureTagTablePanel;
 import org.mastodon.revised.table.TableViewActions;
 import org.mastodon.revised.table.TableViewFrame;
 import org.mastodon.revised.ui.SelectionActions;
@@ -30,7 +35,7 @@ public class MamutViewTable extends MamutView< ViewGraph< Spot, Link, Spot, Link
 
 	private static final String[] CONTEXTS = new String[] { KeyConfigContexts.TABLE };
 
-	public MamutViewTable( final MamutAppModel appModel )
+	public MamutViewTable( final MamutAppModel appModel, final boolean selectionOnly )
 
 	{
 		super( appModel, IdentityViewGraph.wrap( appModel.getModel().getGraph(), appModel.getModel().getGraphIdBimap() ), CONTEXTS );
@@ -100,6 +105,42 @@ public class MamutViewTable extends MamutView< ViewGraph< Spot, Link, Spot, Link
 				)
 		);
 		appModel.getPlugins().addMenus( menu );
+
+		final FeatureTagTablePanel< Spot > vertexTable = frame.getVertexTable();
+		final FeatureTagTablePanel< Link > edgeTable = frame.getEdgeTable();
+		final SelectionModel< Spot, Link > selectionModel = appModel.getSelectionModel();
+
+		if ( selectionOnly )
+		{
+			// Pass only the selection.
+			frame.setTitle( "Selection table" );
+			frame.setMirrorSelection( false );
+			final SelectionListener selectionListener = () -> {
+				vertexTable.setRows( selectionModel.getSelectedVertices() );
+				edgeTable.setRows( selectionModel.getSelectedEdges() );
+			};
+			selectionModel.listeners().add( selectionListener );
+			selectionListener.selectionChanged();
+			onClose( () -> selectionModel.listeners().remove( selectionListener ) );
+		}
+		else
+		{
+			// Pass and listen to the full graph.
+			final ModelGraph graph = appModel.getModel().getGraph();
+			final GraphChangeListener graphChangeListener = () -> {
+				vertexTable.setRows( graph.vertices() );
+				edgeTable.setRows( graph.edges() );
+			};
+			graph.addGraphChangeListener( graphChangeListener );
+			graphChangeListener.graphChanged();
+			onClose( () -> graph.removeGraphChangeListener( graphChangeListener ) );
+
+			// Listen to selection changes.
+			frame.setMirrorSelection( true );
+			selectionModel.listeners().add( frame );
+			frame.selectionChanged();
+			onClose( () -> selectionModel.listeners().remove( frame ) );
+		}
 
 		frame.setSize( 400, 400 );
 		frame.setVisible( true );
