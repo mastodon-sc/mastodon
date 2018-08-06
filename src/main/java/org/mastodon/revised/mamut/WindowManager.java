@@ -187,8 +187,8 @@ public class WindowManager
 
 		newBdvViewAction = new RunnableAction( NEW_BDV_VIEW, this::createBigDataViewer );
 		newTrackSchemeViewAction = new RunnableAction( NEW_TRACKSCHEME_VIEW, this::createTrackScheme );
-		newTableViewAction = new RunnableAction( NEW_TABLE_VIEW, () -> createTable( false ) );
-		newSelectionTableViewAction = new RunnableAction( NEW_SELECTION_TABLE_VIEW, () -> createTable( true ) );
+		newTableViewAction = new RunnableAction( NEW_TABLE_VIEW, () -> createTable() );
+		newSelectionTableViewAction = new RunnableAction( NEW_SELECTION_TABLE_VIEW, () -> createSelectionTable() );
 		editTagSetsAction = new RunnableAction( TAGSETS_DIALOG, this::editTagSets );
 		featureComputationAction = new RunnableAction( COMPUTE_FEATURE_DIALOG, this::computeFeatures );
 
@@ -355,16 +355,41 @@ public class WindowManager
 	}
 
 	/**
+	 * Creates, shows and registers a new table view. The table will display the
+	 * full graph content, listen to its changes, and will be able to edit the
+	 * selection.
+	 * 
+	 * @return a new table view.
+	 */
+	public MamutViewTable createTable()
+	{
+		return createTableImpl( false );
+	}
+
+	/**
+	 * Creates, shows and registers a new selection table view. The table will
+	 * only display the current content of the selection, and will listen to its
+	 * changes.
+	 * 
+	 * @return a new table view.
+	 */
+	public MamutViewTable createSelectionTable()
+	{
+		return createTableImpl( true );
+	}
+
+	/**
 	 * Creates, shows and registers a new table view.
 	 *
 	 * @param selectionOnly
 	 *            if <code>true</code>, the table will only display the current
 	 *            content of the selection, and will listen to its changes. If
-	 *            <code>false</code>, the table will display the full graph content,
-	 *            listen to its changes, and will be able to edit the selection.
+	 *            <code>false</code>, the table will display the full graph
+	 *            content, listen to its changes, and will be able to edit the
+	 *            selection.
 	 * @return a new table view.
 	 */
-	public MamutViewTable createTable( final boolean selectionOnly )
+	private MamutViewTable createTableImpl( final boolean selectionOnly )
 	{
 		if ( appModel != null )
 		{
