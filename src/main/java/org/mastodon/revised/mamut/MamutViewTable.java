@@ -1,11 +1,13 @@
 package org.mastodon.revised.mamut;
 
+import static org.mastodon.app.ui.MastodonViewStateSerialization.VIEW_TYPE_KEY;
 import static org.mastodon.app.ui.ViewMenuBuilder.item;
 import static org.mastodon.app.ui.ViewMenuBuilder.separator;
 import static org.mastodon.revised.mamut.MamutMenuBuilder.editMenu;
 import static org.mastodon.revised.mamut.MamutMenuBuilder.fileMenu;
 import static org.mastodon.revised.mamut.MamutMenuBuilder.viewMenu;
 
+import java.util.Map;
 import java.util.function.Function;
 
 import javax.swing.ActionMap;
@@ -35,10 +37,13 @@ public class MamutViewTable extends MamutView< ViewGraph< Spot, Link, Spot, Link
 
 	private static final String[] CONTEXTS = new String[] { KeyConfigContexts.TABLE };
 
+	private final boolean selectionOnly;
+
 	public MamutViewTable( final MamutAppModel appModel, final boolean selectionOnly )
 
 	{
 		super( appModel, IdentityViewGraph.wrap( appModel.getModel().getGraph(), appModel.getModel().getGraphIdBimap() ), CONTEXTS );
+		this.selectionOnly = selectionOnly;
 
 		final TableViewFrame< MamutAppModel, ViewGraph< Spot, Link, Spot, Link >, Spot, Link > frame = new TableViewFrame<>(
 				appModel,
@@ -158,5 +163,14 @@ public class MamutViewTable extends MamutView< ViewGraph< Spot, Link, Spot, Link
 	public ContextChooser< Spot > getContextChooser()
 	{
 		return getFrame().getContextChooser();
+	}
+
+	@Override
+	public Map< String, Object > getGUIState()
+	{
+		final Map< String, Object > guiState = super.getGUIState();
+		guiState.put( VIEW_TYPE_KEY, selectionOnly ? "MamutViewSelectionTable" : "MamutViewTable" );
+
+		return guiState;
 	}
 }

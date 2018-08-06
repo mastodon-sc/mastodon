@@ -1,9 +1,14 @@
 package org.mastodon.app.ui;
 
+import static org.mastodon.app.ui.MastodonViewStateSerialization.FRAME_POSITION_KEY;
+import static org.mastodon.app.ui.MastodonViewStateSerialization.VIEW_TYPE_KEY;
+
+import java.awt.Rectangle;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.Arrays;
 import java.util.LinkedHashSet;
+import java.util.Map;
 import java.util.Set;
 
 import org.mastodon.app.MastodonAppModel;
@@ -130,5 +135,27 @@ public class MastodonFrameView<
 	String[] getKeyConfigContexts()
 	{
 		return keyConfigContexts;
+	}
+
+	@Override
+	public Map< String, Object > getGUIState()
+	{
+		final Map< String, Object > guiState = super.getGUIState();
+		guiState.put( VIEW_TYPE_KEY, getClass().getSimpleName() );
+		final Rectangle bounds = getFrame().getBounds();
+		guiState.put( FRAME_POSITION_KEY, new int[] {
+				( int ) bounds.getMinX(),
+				( int ) bounds.getMinY(),
+				( int ) bounds.getWidth(),
+				( int ) bounds.getHeight() } );
+		return guiState;
+	}
+
+	@Override
+	public void setGUIState( final Map< String, Object > guiState )
+	{
+		final int[] pos = ( int[] ) guiState.get( FRAME_POSITION_KEY );
+		if ( null != pos )
+			getFrame().setBounds( pos[ 0 ], pos[ 1 ], pos[ 2 ], pos[ 3 ] );
 	}
 }

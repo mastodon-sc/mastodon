@@ -1,10 +1,19 @@
 package org.mastodon.revised.mamut;
 
+import static org.mastodon.app.ui.MastodonViewStateSerialization.BDV_TRANSFORM_KEY;
+import static org.mastodon.app.ui.MastodonViewStateSerialization.DISPLAY_MODE_KEY;
+import static org.mastodon.app.ui.MastodonViewStateSerialization.GROUP_KEY;
+import static org.mastodon.app.ui.MastodonViewStateSerialization.INTERPOLATION_KEY;
+import static org.mastodon.app.ui.MastodonViewStateSerialization.SOURCE_KEY;
+import static org.mastodon.app.ui.MastodonViewStateSerialization.TIMEPOINT_KEY;
+import static org.mastodon.app.ui.MastodonViewStateSerialization.VIEW_TYPE_KEY;
 import static org.mastodon.app.ui.ViewMenuBuilder.item;
 import static org.mastodon.app.ui.ViewMenuBuilder.separator;
 import static org.mastodon.revised.mamut.MamutMenuBuilder.editMenu;
 import static org.mastodon.revised.mamut.MamutMenuBuilder.fileMenu;
 import static org.mastodon.revised.mamut.MamutMenuBuilder.viewMenu;
+
+import java.util.Map;
 
 import javax.swing.ActionMap;
 
@@ -41,6 +50,11 @@ import org.mastodon.revised.ui.SelectionActions;
 import org.mastodon.views.context.ContextProvider;
 
 import bdv.tools.InitializeViewerState;
+import bdv.viewer.DisplayMode;
+import bdv.viewer.Interpolation;
+import bdv.viewer.VisibilityAndGrouping;
+import bdv.viewer.state.ViewerState;
+import net.imglib2.realtransform.AffineTransform3D;
 
 public class MamutViewBdv extends MamutView< OverlayGraphWrapper< Spot, Link >, OverlayVertexWrapper< Spot, Link >, OverlayEdgeWrapper< Spot, Link > >
 {
@@ -172,5 +186,77 @@ public class MamutViewBdv extends MamutView< OverlayGraphWrapper< Spot, Link >, 
 	public void requestRepaint()
 	{
 		viewer.requestRepaint();
+	}
+
+	@Override
+	public Map< String, Object > getGUIState()
+	{
+		final ViewerState state = viewer.getState();
+		final Map< String, Object > guiState = super.getGUIState();
+		guiState.put( VIEW_TYPE_KEY, getClass().getSimpleName() );
+		guiState.put( TIMEPOINT_KEY, state.getCurrentTimepoint() );
+		guiState.put( GROUP_KEY, state.getCurrentGroup() );
+		guiState.put( SOURCE_KEY, state.getCurrentSource() );
+		guiState.put( INTERPOLATION_KEY, state.getInterpolation().name() );
+		guiState.put( DISPLAY_MODE_KEY, state.getDisplayMode().name() );
+		final AffineTransform3D t = new AffineTransform3D();
+		state.getViewerTransform( t );
+		guiState.put( BDV_TRANSFORM_KEY, t );
+		return guiState;
+	}
+
+	@Override
+	public void setGUIState( final Map< String, Object > guiState )
+	{
+		super.setGUIState( guiState );
+
+		final int numTimepoints = sharedBdvData.getNumTimepoints();
+		Integer timepoint = ( Integer ) guiState.get( TIMEPOINT_KEY );
+		if ( null != timepoint )
+		{
+			timepoint = Math.max( timepoint, 0 );
+			timepoint = Math.min( timepoint, numTimepoints - 1 );
+			viewer.setTimepoint( timepoint );
+		}
+		final VisibilityAndGrouping visibilityAndGrouping = viewer.getVisibilityAndGrouping();
+
+		final Integer group = ( Integer ) guiState.get( GROUP_KEY );
+		if ( null != group )
+			visibilityAndGrouping.setCurrentGroup( group );
+
+		final Integer source = ( Integer ) guiState.get( SOURCE_KEY );
+		if ( null != source )
+			visibilityAndGrouping.setCurrentSource( source );
+
+		final String interpolationName = ( String ) guiState.get( INTERPOLATION_KEY );
+		if ( null != interpolationName )
+		{
+			final Interpolation interpolation = Interpolation.valueOf( interpolationName );
+			viewer.setInterpolation( interpolation );
+		}
+
+		final String displayModeName = ( String ) guiState.get( DISPLAY_MODE_KEY );
+		if (null != displayModeName)
+		{
+			final DisplayMode displayMode = DisplayMode.valueOf( displayModeName );
+			viewer.setDisplayMode( displayMode );
+		}
+
+		final AffineTransform3D t = ( AffineTransform3D ) guiState.get( BDV_TRANSFORM_KEY );
+		if ( null != t )
+		{
+			new Thread( () -> {
+				try
+				{
+					Thread.sleep( 100 );
+					// We have to wait to avoid weirdo transforms.
+					viewer.setCurrentViewerTransform( t );
+				}
+				catch ( final InterruptedException e )
+				{
+					e.printStackTrace();
+				}
+			} ).start();
+		}
 	}
 }

@@ -1,13 +1,18 @@
 package org.mastodon.app;
 
+import static org.mastodon.app.ui.MastodonViewStateSerialization.VIEW_TYPE_KEY;
+
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.Map;
+
 import org.mastodon.adapter.FocusModelAdapter;
 import org.mastodon.adapter.HighlightModelAdapter;
 import org.mastodon.adapter.NavigationHandlerAdapter;
 import org.mastodon.adapter.RefBimap;
 import org.mastodon.adapter.SelectionModelAdapter;
 import org.mastodon.adapter.TimepointModelAdapter;
-import org.mastodon.app.ui.ViewFrame;
+import org.mastodon.app.ui.MastodonViewStateSerialization;
 import org.mastodon.graph.Edge;
 import org.mastodon.graph.Vertex;
 import org.mastodon.graph.ref.AbstractListenableEdge;
@@ -18,7 +23,6 @@ import org.mastodon.model.NavigationHandler;
 import org.mastodon.model.SelectionModel;
 import org.mastodon.model.TimepointModel;
 import org.mastodon.revised.model.AbstractSpot;
-import org.mastodon.util.Listeners;
 
 /**
  *
@@ -104,5 +108,22 @@ public class MastodonView<
 	{
 		runOnClose.forEach( Runnable::run );
 		runOnClose.clear();
+	}
+
+	/**
+	 * Returns the state of this view (position, size, etc.).
+	 * 
+	 * @return a new {@link MastodonViewStateSerialization} instance.
+	 */
+	public Map< String, Object > getGUIState()
+	{
+		final Map< String, Object > state = new LinkedHashMap<>();
+		state.put( VIEW_TYPE_KEY, getClass().getSimpleName() );
+		return state;
+	}
+
+	public void setGUIState( final Map< String, Object > guiState )
+	{
+		// Nothing to do, we have no state.
 	}
 }
