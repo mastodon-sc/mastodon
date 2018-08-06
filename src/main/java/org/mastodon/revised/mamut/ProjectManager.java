@@ -1,10 +1,22 @@
 package org.mastodon.revised.mamut;
 
+import static org.mastodon.revised.mamut.MamutProjectIO.MAMUTPROJECT_VERSION_ATTRIBUTE_CURRENT;
+import static org.mastodon.revised.mamut.MamutProjectIO.MAMUTPROJECT_VERSION_ATTRIBUTE_NAME;
+
 import java.awt.Component;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Random;
 
+import org.jdom2.Document;
+import org.jdom2.Element;
+import org.jdom2.JDOMException;
+import org.jdom2.input.SAXBuilder;
+import org.jdom2.output.Format;
+import org.jdom2.output.XMLOutputter;
+import org.mastodon.app.ui.MastodonViewStateSerialization;
 import org.mastodon.plugin.MastodonPlugins;
 import org.mastodon.revised.bdv.SharedBigDataViewerData;
 import org.mastodon.revised.bdv.overlay.ui.RenderSettingsManager;
@@ -49,6 +61,9 @@ public class ProjectManager
 	static final String[] IMPORT_SIMI_KEYS = new String[] { "not mapped" };
 	static final String[] IMPORT_MAMUT_KEYS = new String[] { "not mapped" };
 	static final String[] EXPORT_MAMUT_KEYS = new String[] { "not mapped" };
+
+	private static final String GUI_TAG = "MamutGui";
+	private static final String WINDOWS_TAG = "Windows";
 
 	/*
 	 * Command descriptions for all provided commands
@@ -234,6 +249,7 @@ public class ProjectManager
 
 		final Model model = windowManager.getAppModel().getModel();
 		model.saveRaw( project );
+		saveGUI( project.getGuiFile() );
 
 		updateEnabledActions();
 	}
@@ -313,6 +329,7 @@ public class ProjectManager
 		}
 
 		windowManager.setAppModel( appModel );
+		loadGUI( project.getGuiFile() );
 		this.project = project;
 		updateEnabledActions();
 	}
@@ -413,5 +430,51 @@ public class ProjectManager
 			return project.getProjectFolder().getAbsolutePath();
 		else
 			return project.getDatasetXmlFile().getParentFile().getAbsolutePath();
+	}
+
+	/**
+	 * Serialize window positions and states.
+	 * 
+	 * @throws IOException
+	 * @throws FileNotFoundException
+	 */
+	private void saveGUI( final File guiFile ) throws FileNotFoundException, IOException
+	{
+		final Element guiRoot = new Element( GUI_TAG );
+		guiRoot.setAttribute( MAMUTPROJECT_VERSION_ATTRIBUTE_NAME, MAMUTPROJECT_VERSION_ATTRIBUTE_CURRENT );
+		final Element windows = new Element( WINDOWS_TAG );
+		windowManager.forEachView( ( view ) -> windows.addContent(
+				MastodonViewStateSerialization.toXml( view.getGUIState() ) ) );
+		guiRoot.addContent( windows );
+		final Document doc = new Document( guiRoot );
+		final XMLOutputter xout = new XMLOutputter( Format.getPrettyFormat() );
+		xout.output( doc, new FileOutputStream( guiFile ) );
+	}
+
+	private void loadGUI( final File guiFile ) throws IOException
+	{
+		if ( !guiFile.exists() || !guiFile.canRead() )
+			return;
+
+		final String guiXmlFilename = guiFile.getAbsolutePath();
+		final SAXBuilder sax = new SAXBuilder();
+		Document guiDoc;
+		try
+		{
+			guiDoc = sax.build( guiXmlFilename );
+		}
+		catch ( final JDOMException e )
+		{
+			throw new IOException( e );
+		}
+		final Element root = guiDoc.getRootElement();
+		if ( !GUI_TAG.equals( root.getName() ) )
+			throw new IOException( "expected <" + GUI_TAG + "> root element. wrong file?" );
+
+		final Element windowsEl = root.getChild( WINDOWS_TAG );
+		if ( null == windowsEl )
+			return;
+
+		MastodonViewStateSerialization.fromXml( windowsEl, windowManager );
 	}
 }

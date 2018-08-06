@@ -14,6 +14,7 @@ public class MamutProject
 	static final String PROJECT_FILE_NAME = "project.xml";
 	static final String RAW_MODEL_FILE_NAME = "model.raw";
 	static final String RAW_TAGS_FILE_NAME = "tags.raw";
+	static final String GUI_FILE_NAME = "gui.xml";
 
 	public MamutProject(
 			final File projectFolder,
@@ -57,6 +58,11 @@ public class MamutProject
 	{
 		return new File( projectFolder, PROJECT_FILE_NAME );
 	}
+	
+	public File getGuiFile()
+	{
+		return new File( projectFolder, GUI_FILE_NAME );
+	}
 
 	@Override
 	public String toString()
@@ -65,6 +71,7 @@ public class MamutProject
 				+ " - projectFolder: " + getProjectFolder() + "\n"
 				+ " - projectFile: " + getProjectFile() + "\n"
 				+ " - modelFile: " + getRawModelFile() + "\n"
-				+ " - tagsFile: " + getRawTagsFile();
+				+ " - tagsFile: " + getRawTagsFile() + "\n"
+				+ " - guiGile: " + getGuiFile();
 	}
 }
