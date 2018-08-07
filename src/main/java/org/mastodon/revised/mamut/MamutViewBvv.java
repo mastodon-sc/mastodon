@@ -1,14 +1,20 @@
 package org.mastodon.revised.mamut;
 
+import bdv.tools.InitializeViewerState;
+import bdv.tools.VisibilityAndGroupingDialog;
+import bdv.tools.brightness.BrightnessDialog;
+import bdv.viewer.ViewerOptions;
 import javax.swing.ActionMap;
+import net.imglib2.realtransform.AffineTransform3D;
 import org.mastodon.app.ui.MastodonFrameViewActions;
 import org.mastodon.app.ui.ViewMenu;
 import org.mastodon.app.ui.ViewMenuBuilder;
 import org.mastodon.revised.bdv.BigDataViewerActionsMamut;
 import org.mastodon.revised.bdv.SharedBigDataViewerData;
-import org.mastodon.revised.bvv.BvvOptions;
-import org.mastodon.revised.bvv.BvvPanel;
-import org.mastodon.revised.bvv.BvvViewFrame;
+import org.mastodon.revised.bvv.BvvScene;
+import org.mastodon.revised.bvv.NavigationActionsMamut;
+import org.mastodon.revised.bvv.VolumeViewerActionsMamut;
+import org.mastodon.revised.bvv.VolumeViewerFrameMamut;
 import org.mastodon.revised.bvv.wrap.BvvEdgeWrapper;
 import org.mastodon.revised.bvv.wrap.BvvGraphWrapper;
 import org.mastodon.revised.bvv.wrap.BvvVertexWrapper;
@@ -17,6 +23,9 @@ import org.mastodon.revised.model.mamut.Model;
 import org.mastodon.revised.model.mamut.ModelGraph;
 import org.mastodon.revised.model.mamut.Spot;
 import org.mastodon.revised.ui.SelectionActions;
+import tpietzsch.example2.VolumeViewerOptions;
+import tpietzsch.example2.VolumeViewerPanel;
+import tpietzsch.multires.SpimDataStacks;
 
 import static org.mastodon.app.ui.ViewMenuBuilder.item;
 import static org.mastodon.app.ui.ViewMenuBuilder.separator;
@@ -29,7 +38,11 @@ public class MamutViewBvv extends MamutView< BvvGraphWrapper< Spot, Link >, BvvV
 	// TODO
 	private static int bvvName = 1;
 
-	private final BvvPanel bvvPanel;
+	private final BrightnessDialog brightnessDialog;
+
+	private final VisibilityAndGroupingDialog visibilityAndGroupingDialog;
+
+	private final VolumeViewerPanel viewer;
 
 	public MamutViewBvv( final MamutAppModel appModel )
 	{
@@ -45,23 +58,39 @@ public class MamutViewBvv extends MamutView< BvvGraphWrapper< Spot, Link >, BvvV
 		final SharedBigDataViewerData shared = appModel.getSharedBdvData();
 
 		final String windowTitle = "BigVolumeViewer " + ( bvvName++ );
-		BvvViewFrame frame = new BvvViewFrame(
-				windowTitle,
+
+		final ViewerOptions.Values ov = shared.getOptions().values;
+		final VolumeViewerOptions options = VolumeViewerOptions.options().
+				width( ov.getWidth() ).
+				height( ov.getHeight() ).
+				shareKeyPressedEvents( ov.getKeyPressedManager() ).
+				inputTriggerConfig( ov.getInputTriggerConfig() ).
+				numSourceGroups( ov.getNumSourceGroups() );
+
+		final BvvScene< ?, ? > scene = new BvvScene<>(
 				viewGraph,
 				selectionModel,
-				highlightModel,
-				shared.getSources(),
-				shared.getNumTimepoints(),
-				shared.getCache(),
-				groupHandle,
-				shared.getOptions(),
-				BvvOptions.options() );
-		setFrame( frame );
-		bvvPanel = frame.getBvvPanel();
+				highlightModel );
 
-		frame.getBvvPanel().getTransformEventHandler().install( viewBehaviours );
+		// TODO: should be shared
+		final SpimDataStacks stacks = new SpimDataStacks( shared.getSpimData() );
+
+		final VolumeViewerFrameMamut frame = new VolumeViewerFrameMamut(
+				windowTitle,
+				shared.getSources(),
+				shared.getConverterSetups(),
+				stacks,
+				groupHandle,
+				scene,
+				options );
+		setFrame( frame );
+		viewer = frame.getViewerPanel();
+		brightnessDialog = shared.getBrightnessDialog();
+		visibilityAndGroupingDialog = new VisibilityAndGroupingDialog( frame, viewer.getVisibilityAndGrouping() );
 
 		MastodonFrameViewActions.install( viewActions, this );
+		NavigationActionsMamut.install( viewActions, viewer );
+		VolumeViewerActionsMamut.install( viewActions, this );
 
 		final ViewMenu menu = new ViewMenu( this );
 		final ActionMap actionMap = frame.getKeybindings().getConcatenatedActionMap();
@@ -92,13 +121,41 @@ public class MamutViewBvv extends MamutView< BvvGraphWrapper< Spot, Link >, BvvV
 		);
 		appModel.getPlugins().addMenus( menu );
 
+		frame.setVisible( true );
+
+		final AffineTransform3D resetTransform = InitializeViewerState.initTransform( ov.getWidth(), ov.getHeight(), false, viewer.getState() );
+		viewer.getTransformEventHandler().setTransform( resetTransform );
+		viewActions.runnableAction( () -> {
+			viewer.getTransformEventHandler().setTransform( resetTransform );
+		}, "reset transform", "R" );
+
+		viewer.setTimepoint( timepointModel.getTimepoint() );
+
+		viewer.getTransformEventHandler().install( viewBehaviours );
+
+		viewer.addTimePointListener( timePointIndex -> timepointModel.setTimepoint( timePointIndex ) );
+		timepointModel.listeners().add( () -> viewer.setTimepoint( timepointModel.getTimepoint() ) );
+
 		final Model model = appModel.getModel();
 		final ModelGraph modelGraph = model.getGraph();
 
-		modelGraph.addGraphChangeListener( bvvPanel::requestRepaint );
-		selectionModel.listeners().add( bvvPanel::requestRepaint );
-		highlightModel.listeners().add( bvvPanel::requestRepaint );
+		modelGraph.addGraphChangeListener( viewer::requestRepaint );
+		selectionModel.listeners().add( viewer::requestRepaint );
+		highlightModel.listeners().add( viewer::requestRepaint );
+	}
 
-		frame.setVisible( true );
+	public BrightnessDialog getBrightnessDialog()
+	{
+		return brightnessDialog;
+	}
+
+	public VisibilityAndGroupingDialog getVisibilityAndGroupingDialog()
+	{
+		return visibilityAndGroupingDialog;
+	}
+
+	public void requestRepaint()
+	{
+		viewer.requestRepaint();
 	}
 }

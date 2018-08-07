@@ -281,7 +281,10 @@ public class ProjectManager
 				spimDataXmlFilename,
 				spimData,
 				options,
-				() -> windowManager.forEachBdvView( bdv -> bdv.requestRepaint() ) );
+				() -> {
+					windowManager.forEachBdvView( bdv -> bdv.requestRepaint() );
+					windowManager.forEachBvvView( bvv -> bvv.requestRepaint() );
+				} );
 
 		final MamutAppModel appModel = new MamutAppModel( model, sharedBdvData, keyPressedManager, trackSchemeStyleManager, renderSettingsManager, keymapManager, plugins, globalAppActions );
 

@@ -30,15 +30,15 @@ public class EllipsoidInstances< V extends BvvVertex< V, E >, E extends BvvEdge<
 
 	/**
 	 * Tracks modifications to ellipsoid number and shape (for one timepoint).
-	 * The {@link BvvRenderer} uses this to decide when to update the vertex array.
+	 * The {@link BvvScene} uses this to decide when to update the vertex array.
 	 */
 	private int modCount = 0;
 
 	/**
 	 * Tracks potential modifications to ellipsoid colors because of {@code selectionChanged()} events, etc.
 	 * These events do not immediately trigger a color update, because it would need to go through all timepoints whether or not they are currently painted.
-	 * Rather, the {@link BvvRenderer} actively does the update when required.
-	 * {@code colorModCount} is only read and written by {@link BvvRenderer}.
+	 * Rather, the {@link BvvScene} actively does the update when required.
+	 * {@code colorModCount} is only read and written by {@link BvvScene}.
 	 */
 	private int colorModCount = 0;
 
@@ -233,7 +233,9 @@ public class EllipsoidInstances< V extends BvvVertex< V, E >, E extends BvvEdge<
 
 		@Override
 		protected void setToUninitializedState()
-		{}
+		{
+			access.putIndex( -1, 0 );
+		}
 	}
 
 	static class ColorInstances extends Pool< ColorInstance, BufferMappedElement >
