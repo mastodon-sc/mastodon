@@ -31,17 +31,21 @@ package org.mastodon.revised.bvv;
 import org.mastodon.revised.mamut.MamutViewBvv;
 import org.mastodon.revised.util.ToggleDialogAction;
 import org.scijava.ui.behaviour.util.Actions;
+import org.scijava.ui.behaviour.util.RunnableAction;
 
 public class VolumeViewerActionsMamut
 {
 	public static final String VISIBILITY_AND_GROUPING = "visibility and grouping";
 	public static final String BRIGHTNESS_SETTINGS = "brightness settings";
+	public static final String TOGGLE_SCENE_VISIBILITY = "toggle scene visibility";
 
 	static final String[] VISIBILITY_AND_GROUPING_KEYS     = new String[] { "F6" };
 	static final String[] BRIGHTNESS_SETTINGS_KEYS         = new String[] { "S" };
+	static final String[] TOGGLE_SCENE_VISIBILITY_KEYS = new String[] { "H" };
 
 	private final ToggleDialogAction toggleVisibilityAndGroupingDialogAction;
 	private final ToggleDialogAction toggleBrightnessDialogAction;
+	private final RunnableAction toggleSceneVisibilityAction;
 
 //	/*
 //	 * Command descriptions for all provided commands
@@ -78,11 +82,16 @@ public class VolumeViewerActionsMamut
 		final VolumeViewerActionsMamut ba = new VolumeViewerActionsMamut( bdv );
 		actions.namedAction( ba.toggleVisibilityAndGroupingDialogAction, VISIBILITY_AND_GROUPING_KEYS );
 		actions.namedAction( ba.toggleBrightnessDialogAction, BRIGHTNESS_SETTINGS_KEYS );
+		actions.namedAction( ba.toggleSceneVisibilityAction, TOGGLE_SCENE_VISIBILITY_KEYS );
 	}
 
-	private VolumeViewerActionsMamut( final MamutViewBvv bdv )
+	private VolumeViewerActionsMamut( final MamutViewBvv bvv )
 	{
-		toggleVisibilityAndGroupingDialogAction = new ToggleDialogAction( VISIBILITY_AND_GROUPING, bdv.getVisibilityAndGroupingDialog() );
-		toggleBrightnessDialogAction = new ToggleDialogAction( BRIGHTNESS_SETTINGS, bdv.getBrightnessDialog() );
+		toggleVisibilityAndGroupingDialogAction = new ToggleDialogAction( VISIBILITY_AND_GROUPING, bvv.getVisibilityAndGroupingDialog() );
+		toggleBrightnessDialogAction = new ToggleDialogAction( BRIGHTNESS_SETTINGS, bvv.getBrightnessDialog() );
+		toggleSceneVisibilityAction = new RunnableAction( TOGGLE_SCENE_VISIBILITY, () -> {
+			bvv.getScene().setVisible( !bvv.getScene().isVisible() );
+			bvv.requestRepaint();
+		} );
 	}
 }

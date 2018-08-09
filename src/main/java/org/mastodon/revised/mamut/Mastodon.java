@@ -58,7 +58,8 @@ public class Mastodon extends ContextCommand
 //		final MamutProject project = new MamutProject( new File( "samples/mamutproject" ), new File( bdvFile ) );
 //		final MamutProject project = new MamutProjectIO().load( "/Volumes/External/Data/Mastodon/Tassos200" );
 //		final MamutProject project = new MamutProject( null, new File( "x=1000 y=1000 z=100 sx=1 sy=1 sz=10 t=400.dummy" ) );
-		final MamutProject project = new MamutProjectIO().load( "samples/mamutproject" );
+//		final MamutProject project = new MamutProjectIO().load( "samples/mamutproject" );
+		final MamutProject project = new MamutProjectIO().load( "/Users/pietzsch/Desktop/LSFM2018-Mastodon" );
 
 		windowManager.projectManager.open( project );
 //		mw.proposedProjectFile = new File( "/Users/pietzsch/Desktop/data/TGMM_METTE/project2.xml" );
@@ -66,8 +67,9 @@ public class Mastodon extends ContextCommand
 //		mw.createProject();
 //		mw.loadProject();
 		SwingUtilities.invokeAndWait( () -> {
-			windowManager.createBigDataViewer();
-			windowManager.createTrackScheme();
+//			windowManager.createBigDataViewer();
+//			windowManager.createTrackScheme();
+			windowManager.createBigVolumeViewer();
 //			YamlConfigIO.write( new InputTriggerDescriptionsBuilder( keyconf ).getDescriptions(), new PrintWriter( System.out ) );
 		} );
 

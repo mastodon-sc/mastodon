@@ -1,17 +1,28 @@
 package org.mastodon.revised.mamut;
 
-import bdv.tools.InitializeViewerState;
-import bdv.tools.VisibilityAndGroupingDialog;
-import bdv.tools.brightness.BrightnessDialog;
-import bdv.viewer.ViewerOptions;
+import static org.mastodon.app.ui.ViewMenuBuilder.item;
+import static org.mastodon.app.ui.ViewMenuBuilder.separator;
+import static org.mastodon.revised.mamut.MamutMenuBuilder.editMenu;
+import static org.mastodon.revised.mamut.MamutMenuBuilder.fileMenu;
+import static org.mastodon.revised.mamut.MamutMenuBuilder.viewMenu;
+import static tpietzsch.example2.VolumeRenderer.RepaintType.SCENE;
+
+import java.awt.Component;
+
 import javax.swing.ActionMap;
+
 import net.imglib2.realtransform.AffineTransform3D;
+
 import org.mastodon.app.ui.MastodonFrameViewActions;
 import org.mastodon.app.ui.ViewMenu;
 import org.mastodon.app.ui.ViewMenuBuilder;
+import org.mastodon.model.AutoNavigateFocusModel;
 import org.mastodon.revised.bdv.BigDataViewerActionsMamut;
 import org.mastodon.revised.bdv.SharedBigDataViewerData;
+import org.mastodon.revised.bvv.BvvHighlightHandler;
+import org.mastodon.revised.bvv.BvvNavigation;
 import org.mastodon.revised.bvv.BvvScene;
+import org.mastodon.revised.bvv.BvvSelectionBehaviours;
 import org.mastodon.revised.bvv.NavigationActionsMamut;
 import org.mastodon.revised.bvv.VolumeViewerActionsMamut;
 import org.mastodon.revised.bvv.VolumeViewerFrameMamut;
@@ -22,16 +33,17 @@ import org.mastodon.revised.model.mamut.Link;
 import org.mastodon.revised.model.mamut.Model;
 import org.mastodon.revised.model.mamut.ModelGraph;
 import org.mastodon.revised.model.mamut.Spot;
+import org.mastodon.revised.ui.FocusActions;
+import org.mastodon.revised.ui.HighlightBehaviours;
 import org.mastodon.revised.ui.SelectionActions;
+
+import bdv.tools.InitializeViewerState;
+import bdv.tools.VisibilityAndGroupingDialog;
+import bdv.tools.brightness.BrightnessDialog;
+import bdv.viewer.ViewerOptions;
 import tpietzsch.example2.VolumeViewerOptions;
 import tpietzsch.example2.VolumeViewerPanel;
 import tpietzsch.multires.SpimDataStacks;
-
-import static org.mastodon.app.ui.ViewMenuBuilder.item;
-import static org.mastodon.app.ui.ViewMenuBuilder.separator;
-import static org.mastodon.revised.mamut.MamutMenuBuilder.editMenu;
-import static org.mastodon.revised.mamut.MamutMenuBuilder.fileMenu;
-import static org.mastodon.revised.mamut.MamutMenuBuilder.viewMenu;
 
 public class MamutViewBvv extends MamutView< BvvGraphWrapper< Spot, Link >, BvvVertexWrapper< Spot, Link >, BvvEdgeWrapper< Spot, Link > >
 {
@@ -43,6 +55,8 @@ public class MamutViewBvv extends MamutView< BvvGraphWrapper< Spot, Link >, BvvV
 	private final VisibilityAndGroupingDialog visibilityAndGroupingDialog;
 
 	private final VolumeViewerPanel viewer;
+
+	private final BvvScene< BvvVertexWrapper< Spot, Link >, BvvEdgeWrapper< Spot, Link > > scene;
 
 	public MamutViewBvv( final MamutAppModel appModel )
 	{
@@ -61,13 +75,16 @@ public class MamutViewBvv extends MamutView< BvvGraphWrapper< Spot, Link >, BvvV
 
 		final ViewerOptions.Values ov = shared.getOptions().values;
 		final VolumeViewerOptions options = VolumeViewerOptions.options().
+
+				ditherWidth( 8 ).
+
 				width( ov.getWidth() ).
 				height( ov.getHeight() ).
 				shareKeyPressedEvents( ov.getKeyPressedManager() ).
 				inputTriggerConfig( ov.getInputTriggerConfig() ).
 				numSourceGroups( ov.getNumSourceGroups() );
 
-		final BvvScene< ?, ? > scene = new BvvScene<>(
+		scene = new BvvScene<>(
 				viewGraph,
 				selectionModel,
 				highlightModel );
@@ -139,9 +156,24 @@ public class MamutViewBvv extends MamutView< BvvGraphWrapper< Spot, Link >, BvvV
 		final Model model = appModel.getModel();
 		final ModelGraph modelGraph = model.getGraph();
 
+		final AutoNavigateFocusModel< BvvVertexWrapper< Spot, Link >, BvvEdgeWrapper< Spot, Link > > navigateFocusModel = new AutoNavigateFocusModel<>( focusModel, navigationHandler );
+
+		BvvSelectionBehaviours.install( viewBehaviours, viewGraph, scene, selectionModel, focusModel, navigationHandler );
+		HighlightBehaviours.install( viewBehaviours, viewGraph, viewGraph.getLock(), viewGraph, highlightModel, model );
+		FocusActions.install( viewActions, viewGraph, viewGraph.getLock(), navigateFocusModel, selectionModel );
+
 		modelGraph.addGraphChangeListener( viewer::requestRepaint );
-		selectionModel.listeners().add( viewer::requestRepaint );
-		highlightModel.listeners().add( viewer::requestRepaint );
+		selectionModel.listeners().add( () -> viewer.requestRepaint( SCENE ) );
+		highlightModel.listeners().add( () -> viewer.requestRepaint( SCENE ) );
+
+		final BvvNavigation< BvvVertexWrapper< Spot, Link >, BvvEdgeWrapper< Spot, Link > > bvvNavigation = new BvvNavigation<>( viewer, viewGraph );
+		navigationHandler.listeners().add( bvvNavigation );
+
+		final BvvHighlightHandler< ?, ? > highlightHandler = new BvvHighlightHandler<>( viewGraph, scene, highlightModel );
+		final Component display = viewer.getDisplay();
+		display.addMouseListener( highlightHandler );
+		display.addMouseMotionListener( highlightHandler );
+		viewer.addTransformListener( highlightHandler );
 	}
 
 	public BrightnessDialog getBrightnessDialog()
@@ -152,6 +184,11 @@ public class MamutViewBvv extends MamutView< BvvGraphWrapper< Spot, Link >, BvvV
 	public VisibilityAndGroupingDialog getVisibilityAndGroupingDialog()
 	{
 		return visibilityAndGroupingDialog;
+	}
+
+	public BvvScene< BvvVertexWrapper< Spot, Link >, BvvEdgeWrapper< Spot, Link > > getScene()
+	{
+		return scene;
 	}
 
 	public void requestRepaint()

@@ -56,6 +56,11 @@ public class EllipsoidInstances< V extends BvvVertex< V, E >, E extends BvvEdge<
 		colors = new ColorInstances( initialCapacity );
 	}
 
+	public V getVertex( EllipsoidInstance instance, V ref )
+	{
+		return instanceToVertex.get( instance, ref );
+	}
+
 	@Override
 	protected EllipsoidInstance createEmptyRef()
 	{
