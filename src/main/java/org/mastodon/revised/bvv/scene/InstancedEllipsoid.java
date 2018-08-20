@@ -105,7 +105,7 @@ public class InstancedEllipsoid
 			this.modCount = modCount;
 		}
 
-		private int modCount = 0;
+		private int modCount = -1;
 
 		private int instanceCount;
 		private int vboShape;
