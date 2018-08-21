@@ -9,6 +9,8 @@ import java.util.Random;
 import javax.swing.JFrame;
 
 import org.mastodon.plugin.MastodonPlugins;
+import org.mastodon.project.MamutProject;
+import org.mastodon.project.MamutProjectIO;
 import org.mastodon.revised.bdv.SharedBigDataViewerData;
 import org.mastodon.revised.bdv.overlay.ui.RenderSettingsManager;
 import org.mastodon.revised.mamut.feature.MamutFeatureComputerService;
@@ -174,8 +176,8 @@ public class ProjectManager
 		String fn = null;
 		if ( proposedProjectFolder != null )
 			fn = proposedProjectFolder.getAbsolutePath();
-		else if ( project != null && project.getProjectFolder() != null )
-			fn = project.getProjectFolder().getAbsolutePath();
+		else if ( project != null && project.getProjectRoot() != null )
+			fn = project.getProjectRoot().getAbsolutePath();
 		final Component parent = null; // TODO
 		final File file = FileChooser.chooseFile(
 				parent,
@@ -233,7 +235,7 @@ public class ProjectManager
 		if ( project == null )
 			return;
 
-		project.setProjectFolder( projectFolder );
+		project.setProjectRoot( projectFolder );
 		new MamutProjectIO().save( project );
 
 		final Model model = windowManager.getAppModel().getModel();
@@ -243,7 +245,7 @@ public class ProjectManager
 	}
 
 	/**
-	 * Open a project. If {@code project.getProjectFolder() == null} this is a new project and data structures are initialized as empty.
+	 * Open a project. If {@code project.getProjectRoot() == null} this is a new project and data structures are initialized as empty.
 	 * The image data {@code project.getDatasetXmlFile()} must always be set.
 	 *
 	 * @param project
@@ -257,7 +259,7 @@ public class ProjectManager
 		 * Load Model
 		 */
 		final Model model = new Model();
-		final boolean isNewProject = project.getProjectFolder() == null;
+		final boolean isNewProject = project.getProjectRoot() == null;
 
 		if ( !isNewProject )
 			model.loadRaw( project );
@@ -399,7 +401,7 @@ public class ProjectManager
 
 	private static String getProprosedMamutExportFileName( final MamutProject project )
 	{
-		final File pf = project.getProjectFolder();
+		final File pf = project.getProjectRoot();
 		if ( pf != null )
 		{
 			return new File( pf.getParentFile(), pf.getName() + "_mamut.xml" ).getAbsolutePath();
@@ -414,8 +416,8 @@ public class ProjectManager
 
 	private static String getProposedProjectFolder( final MamutProject project )
 	{
-		if ( project.getProjectFolder() != null )
-			return project.getProjectFolder().getAbsolutePath();
+		if ( project.getProjectRoot() != null )
+			return project.getProjectRoot().getAbsolutePath();
 		else
 			return project.getDatasetXmlFile().getParentFile().getAbsolutePath();
 	}

@@ -7,6 +7,8 @@ import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.WindowConstants;
 
+import org.mastodon.project.MamutProject;
+import org.mastodon.project.MamutProjectIO;
 import org.scijava.Context;
 import org.scijava.command.Command;
 import org.scijava.command.ContextCommand;

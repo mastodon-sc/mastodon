@@ -2,14 +2,12 @@ package org.mastodon.revised.model;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.OutputStream;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
-
 import org.mastodon.graph.GraphChangeNotifier;
 import org.mastodon.graph.GraphIdBimap;
 import org.mastodon.graph.io.GraphSerializer;
@@ -70,8 +68,9 @@ public class AbstractModelGraph<
 	 * Clears this model and loads the model from the specified raw file using
 	 * the specified serializer.
 	 *
-	 * @param file
-	 *            the raw file to load.
+	 * @param is
+	 *            the raw data to load.
+	 *            The stream will be closed when done!
 	 * @param serializer
 	 *            the serializer used for reading individual vertices.
 	 * @return the map from  IDs used in the raw file to vertices/edges.
@@ -79,12 +78,11 @@ public class AbstractModelGraph<
 	 *             if an I/O error occurs while reading the file.
 	 */
 	public FileIdToGraphMap< V, E > loadRaw(
-			final File file,
+			final InputStream is,
 			final GraphSerializer< V, E > serializer )
 					throws IOException
 	{
-		final FileInputStream fis = new FileInputStream( file );
-		final ObjectInputStream ois = new ObjectInputStream( new BufferedInputStream( fis, 1024 * 1024 ) );
+		final ObjectInputStream ois = new ObjectInputStream( new BufferedInputStream( is, 1024 * 1024 ) );
 		pauseListeners();
 		clear();
 		final FileIdToGraphMap< V, E > fileIdMap = RawGraphIO.read( this, idmap, serializer, ois );
@@ -102,8 +100,9 @@ public class AbstractModelGraph<
 	 * Saves this model to the specified raw file using the specified
 	 * serializer.
 	 *
-	 * @param file
-	 *            the raw file to save.
+	 * @param os
+	 *            the stream to which raw data will be written.
+	 *            The stream will be closed when done!
 	 * @param serializer
 	 *            the serializer used for writing individual vertices.
 //	 * @param vertexFeaturesToSerialize
@@ -115,12 +114,11 @@ public class AbstractModelGraph<
 	 *             if an I/O error occurs while writing the file.
 	 */
 	public GraphToFileIdMap< V, E > saveRaw(
-			final File file,
+			final OutputStream os,
 			final GraphSerializer< V, E > serializer )
 					throws IOException
 	{
-		final FileOutputStream fos = new FileOutputStream( file );
-		final ObjectOutputStream oos = new ObjectOutputStream( new BufferedOutputStream( fos, 1024 * 1024 ) );
+		final ObjectOutputStream oos = new ObjectOutputStream( new BufferedOutputStream( os, 1024 * 1024 ) );
 		final GraphToFileIdMap< V, E > fileIdMap = RawGraphIO.write( this, idmap, serializer, oos );
 		RawPropertyIO.writePropertyMaps( fileIdMap.vertices(), vertexPropertySerializers, oos );
 		// TODO: edge properties
@@ -220,8 +218,7 @@ public class AbstractModelGraph<
 		@Override
 		public boolean equals( final Object obj )
 		{
-			return ( obj != null )
-					&& ( obj instanceof VertexPositionListenerWrapper )
+			return ( obj instanceof VertexPositionListenerWrapper )
 					&& l.equals( ( ( VertexPositionListenerWrapper< V > ) obj ).l );
 		}
 	}

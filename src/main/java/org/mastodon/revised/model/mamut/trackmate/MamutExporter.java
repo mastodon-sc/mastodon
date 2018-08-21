@@ -97,7 +97,7 @@ import org.mastodon.graph.algorithm.traversal.SearchListener;
 import org.mastodon.properties.IntPropertyMap;
 import org.mastodon.properties.PropertyMap;
 import org.mastodon.revised.bdv.overlay.util.JamaEigenvalueDecomposition;
-import org.mastodon.revised.mamut.MamutProject;
+import org.mastodon.project.MamutProject;
 import org.mastodon.revised.model.feature.Feature;
 import org.mastodon.revised.model.feature.FeatureModel;
 import org.mastodon.revised.model.feature.FeatureProjection;

@@ -1,4 +1,4 @@
-package org.mastodon.revised.mamut;
+package org.mastodon.project;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -24,7 +24,7 @@ public class MamutProjectIO
 	{
 		final Document doc = new Document( toXml( project ) );
 		final XMLOutputter xout = new XMLOutputter( Format.getPrettyFormat() );
-		mkdirs( project.getProjectFolder().getAbsolutePath() );
+		mkdirs( project.getProjectRoot().getAbsolutePath() );
 		xout.output( doc, new FileOutputStream( project.getProjectFile() ) );
 	}
 
@@ -60,7 +60,7 @@ public class MamutProjectIO
 	{
 		final Element root = new Element( MAMUTPROJECT_TAG );
 		root.setAttribute( MAMUTPROJECT_VERSION_ATTRIBUTE_NAME, MAMUTPROJECT_VERSION_ATTRIBUTE_CURRENT );
-		root.addContent( XmlHelpers.pathElement( SPIMDATAFILE_TAG, project.getDatasetXmlFile(), project.getProjectFolder() ) );
+		root.addContent( XmlHelpers.pathElement( SPIMDATAFILE_TAG, project.getDatasetXmlFile(), project.getProjectRoot() ) );
 		return root;
 	}
 
