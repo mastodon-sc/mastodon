@@ -681,7 +681,9 @@ public class MamutExporter
 		final String bdvFile = "samples/datasethdf5.xml";
 		final MamutProject project = new MamutProject( new File( projectFolder ), new File( bdvFile ) );
 		final Model model = new Model();
-		model.loadRaw( project );
+		final MamutProject.ProjectReader reader = project.openForReading();
+		model.loadRaw( reader );
+		reader.close();
 		final File target = new File( "samples/mamutExport.xml" );
 		export( target, model, project );
 	}

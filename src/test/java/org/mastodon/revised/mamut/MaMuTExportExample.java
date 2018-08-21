@@ -7,6 +7,7 @@ import java.util.Set;
 
 import org.jdom2.JDOMException;
 import org.mastodon.project.MamutProject;
+import org.mastodon.project.MamutProjectIO;
 import org.mastodon.revised.mamut.feature.MamutFeatureComputerService;
 import org.mastodon.revised.model.feature.FeatureComputer;
 import org.mastodon.revised.model.mamut.ModelUtils;
@@ -27,12 +28,9 @@ public class MaMuTExportExample
 		 * 1. Load a regular Mastodon project.
 		 */
 
-		final String projectFolder = "samples/mamutproject";
-		final String bdvFile = "samples/datasethdf5.xml";
-		final MamutProject project = new MamutProject( new File( projectFolder ), new File( bdvFile ) );
-//		final MamutProject project = new MamutProjectIO().load( "samples/mamutproject" );
+		final MamutProject project = new MamutProjectIO().load( "samples/mamutproject.mastodon" );
 		final Model model = new Model();
-		model.loadRaw( project );
+		model.loadRaw( project.openForReading() );
 
 		/*
 		 * 1.1. Compute features.

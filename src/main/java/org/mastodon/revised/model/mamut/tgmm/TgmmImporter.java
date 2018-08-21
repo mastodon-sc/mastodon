@@ -261,7 +261,9 @@ public class TgmmImporter extends AbstractModelImporter< Model >
 		System.out.println( "\nExporting to " + target );
 
 		final MamutProject project = new MamutProject( new File( target ), new File( bdvFile ) );
-		model.saveRaw( project );
+		final MamutProject.ProjectWriter writer = project.openForWriting();
+		model.saveRaw( writer );
+		writer.close();
 		final long end2 = System.currentTimeMillis();
 		System.out.println( "Exporting done in " + ( end2 - end ) / 1000d + " s." );
 	}

@@ -22,6 +22,7 @@ import org.mastodon.revised.trackscheme.display.style.TrackSchemeStyleManager;
 import org.mastodon.revised.ui.keymap.CommandDescriptionProvider;
 import org.mastodon.revised.ui.keymap.CommandDescriptions;
 import org.mastodon.revised.ui.keymap.KeymapManager;
+import org.mastodon.revised.ui.util.ExtensionFileFilter;
 import org.mastodon.revised.ui.util.FileChooser;
 import org.mastodon.revised.ui.util.FileChooser.SelectionMode;
 import org.mastodon.revised.ui.util.XmlFileFilter;
@@ -88,7 +89,7 @@ public class ProjectManager
 
 	private MamutProject project;
 
-	private File proposedProjectFolder;
+	private File proposedProjectRoot;
 
 	private final AbstractNamedAction createProjectAction;
 
@@ -174,24 +175,24 @@ public class ProjectManager
 	public synchronized void loadProject()
 	{
 		String fn = null;
-		if ( proposedProjectFolder != null )
-			fn = proposedProjectFolder.getAbsolutePath();
+		if ( proposedProjectRoot != null )
+			fn = proposedProjectRoot.getAbsolutePath();
 		else if ( project != null && project.getProjectRoot() != null )
 			fn = project.getProjectRoot().getAbsolutePath();
 		final Component parent = null; // TODO
 		final File file = FileChooser.chooseFile(
 				parent,
 				fn,
-				null,
+				new ExtensionFileFilter( "mastodon" ),
 				"Open Mastodon Project",
 				FileChooser.DialogType.LOAD,
-				SelectionMode.DIRECTORIES_ONLY );
+				SelectionMode.FILES_AND_DIRECTORIES );
 		if ( file == null )
 			return;
 
 		try
 		{
-			proposedProjectFolder = file;
+			proposedProjectRoot = file;
 			final MamutProject project = new MamutProjectIO().load( file.getAbsolutePath() );
 			open( project );
 		}
@@ -209,20 +210,20 @@ public class ProjectManager
 		final String folderPath = getProposedProjectFolder( project );
 
 		final Component parent = null; // TODO
-		final File folder = FileChooser.chooseFile(
+		final File file = FileChooser.chooseFile( true,
 				parent,
 				folderPath,
-				null,
+				new ExtensionFileFilter( "mastodon" ),
 				"Save Mastodon Project",
 				FileChooser.DialogType.SAVE,
-				SelectionMode.DIRECTORIES_ONLY );
-		if ( folder == null )
+				SelectionMode.FILES_ONLY );
+		if ( file == null )
 			return;
 
 		try
 		{
-			proposedProjectFolder = folder;
-			saveProject( proposedProjectFolder );
+			proposedProjectRoot = file;
+			saveProject( proposedProjectRoot );
 		}
 		catch ( final IOException e )
 		{
@@ -230,16 +231,19 @@ public class ProjectManager
 		}
 	}
 
-	public synchronized void saveProject( final File projectFolder ) throws IOException
+	public synchronized void saveProject( final File projectRoot ) throws IOException
 	{
 		if ( project == null )
 			return;
 
-		project.setProjectRoot( projectFolder );
-		new MamutProjectIO().save( project );
+		project.setProjectRoot( projectRoot );
+		final MamutProject.ProjectWriter writer = project.openForWriting();
+		new MamutProjectIO().save( project, writer );
 
 		final Model model = windowManager.getAppModel().getModel();
-		model.saveRaw( project );
+		model.saveRaw( writer );
+
+		writer.close();
 
 		updateEnabledActions();
 	}
@@ -262,7 +266,11 @@ public class ProjectManager
 		final boolean isNewProject = project.getProjectRoot() == null;
 
 		if ( !isNewProject )
-			model.loadRaw( project );
+		{
+			final MamutProject.ProjectReader reader = project.openForReading();
+			model.loadRaw( reader );
+			reader.close();
+		}
 
 		/*
 		 * Load SpimData

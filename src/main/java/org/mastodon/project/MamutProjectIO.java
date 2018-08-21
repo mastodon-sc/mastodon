@@ -1,17 +1,15 @@
 package org.mastodon.project;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
-
+import java.io.OutputStream;
+import mpicbg.spim.data.XmlHelpers;
 import org.jdom2.Document;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
 import org.jdom2.input.SAXBuilder;
 import org.jdom2.output.Format;
 import org.jdom2.output.XMLOutputter;
-
-import mpicbg.spim.data.XmlHelpers;
 
 public class MamutProjectIO
 {
@@ -20,29 +18,25 @@ public class MamutProjectIO
 	public static final String MAMUTPROJECT_VERSION_ATTRIBUTE_CURRENT = "0.2";
 	public static final String SPIMDATAFILE_TAG = "SpimDataFile";
 
-	public void save( final MamutProject project ) throws IOException
+	public void save( final MamutProject project, MamutProject.ProjectWriter writer ) throws IOException
 	{
 		final Document doc = new Document( toXml( project ) );
 		final XMLOutputter xout = new XMLOutputter( Format.getPrettyFormat() );
-		mkdirs( project.getProjectRoot().getAbsolutePath() );
-		xout.output( doc, new FileOutputStream( project.getProjectFile() ) );
+		mkdirs( project.getProjectRoot().getParentFile().getAbsolutePath() );
+		final OutputStream os = writer.getProjectXmlOutputStream();
+		xout.output( doc, os );
+		os.close();
 	}
 
 	public MamutProject load( final String projectPath ) throws IOException
 	{
-		final File projectFile = new File( projectPath );
-		if ( !projectFile.isDirectory() )
-			throw new IOException( "expected project folder, got \"" + projectPath + "\"" );
-
-		final String projectXmlFilename = new File( projectPath, MamutProject.PROJECT_FILE_NAME ).getAbsolutePath();
-		if ( !projectFile.isDirectory() )
-			throw new IOException( MamutProject.PROJECT_FILE_NAME + " not found" );
+		final MamutProject project = new MamutProject( projectPath );
 
 		final SAXBuilder sax = new SAXBuilder();
 		Document doc;
-		try
+		try ( final MamutProject.ProjectReader reader = project.openForReading() )
 		{
-			doc = sax.build( projectXmlFilename );
+			doc = sax.build( reader.getProjectXmlInputStream() );
 		}
 		catch ( final JDOMException e )
 		{
@@ -53,7 +47,9 @@ public class MamutProjectIO
 		if ( !MAMUTPROJECT_TAG.equals( root.getName() ) )
 			throw new IOException( "expected <" + MAMUTPROJECT_TAG + "> root element. wrong file?" );
 
-		return fromXml( root, new File( projectXmlFilename ).getParentFile() );
+		fromXml( project, root );
+
+		return project;
 	}
 
 	public Element toXml( final MamutProject project )
@@ -64,10 +60,10 @@ public class MamutProjectIO
 		return root;
 	}
 
-	public MamutProject fromXml( final Element root, final File projectFolder )
+	public void fromXml( final MamutProject project, final Element root )
 	{
-		final File datasetXmlFile = XmlHelpers.loadPath( root, SPIMDATAFILE_TAG, projectFolder );
-		return new MamutProject( projectFolder, datasetXmlFile );
+		final File datasetXmlFile = XmlHelpers.loadPath( root, SPIMDATAFILE_TAG, project.getProjectRoot() ).toPath().normalize().toFile();
+		project.setDatasetXmlFile( datasetXmlFile );
 	}
 
 	public static boolean mkdirs( final String fileName )

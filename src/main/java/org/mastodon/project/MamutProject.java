@@ -12,15 +12,28 @@ import java.io.OutputStream;
 public class MamutProject
 {
 	/**
-	 * The project folder.
+	 * The project folder or {@code .mastodon} file.
 	 */
 	private File projectRoot;
 
-	private final File datasetXmlFile;
+	/**
+	 * The BDV xml file.
+	 */
+	private File datasetXmlFile;
 
 	static final String PROJECT_FILE_NAME = "project.xml";
 	static final String RAW_MODEL_FILE_NAME = "model.raw";
 	static final String RAW_TAGS_FILE_NAME = "tags.raw";
+
+	public MamutProject( final String projectRoot )
+	{
+		this( new File( projectRoot ), null );
+	}
+
+	public MamutProject( final File projectRoot )
+	{
+		this( projectRoot, null );
+	}
 
 	public MamutProject(
 			final File projectRoot,
@@ -50,9 +63,9 @@ public class MamutProject
 		return datasetXmlFile;
 	}
 
-	public File getProjectFile()
+	public void setDatasetXmlFile( final File datasetXmlFile )
 	{
-		return new File( projectRoot, PROJECT_FILE_NAME );
+		this.datasetXmlFile = datasetXmlFile;
 	}
 
 	@Override
@@ -63,32 +76,46 @@ public class MamutProject
 				+ " - dataset: " + getDatasetXmlFile();
 	}
 
-	public ProjectReader openForReading()
+	public ProjectReader openForReading() throws IOException
 	{
-		return new ReadFromDirectory();
+		return projectRoot.isDirectory()
+				? new ReadFromDirectory()
+				: new ReadFromZip();
 	}
 
-	public ProjectWriter openForWriting()
+	public ProjectWriter openForWriting() throws IOException
 	{
-		return new WriteToDirectory();
+		return projectRoot.isDirectory()
+				? new WriteToDirectory()
+				: new WriteToZip();
 	}
 
 	public interface ProjectReader extends Closeable
 	{
-		InputStream getRawModelInputStream() throws FileNotFoundException;
+		InputStream getProjectXmlInputStream() throws IOException;
 
-		InputStream getRawTagsInputStream() throws FileNotFoundException;
+		InputStream getRawModelInputStream() throws IOException;
+
+		InputStream getRawTagsInputStream() throws IOException;
 	}
 
 	public interface ProjectWriter extends Closeable
 	{
-		OutputStream getRawModelOutputStream() throws FileNotFoundException;
+		OutputStream getProjectXmlOutputStream() throws IOException;
 
-		OutputStream getRawTagsOutputStream() throws FileNotFoundException;
+		OutputStream getRawModelOutputStream() throws IOException;
+
+		OutputStream getRawTagsOutputStream() throws IOException;
 	}
 
 	private class ReadFromDirectory implements ProjectReader
 	{
+		@Override
+		public InputStream getProjectXmlInputStream() throws FileNotFoundException
+		{
+			return new FileInputStream( new File( projectRoot, PROJECT_FILE_NAME ) );
+		}
+
 		@Override
 		public InputStream getRawModelInputStream() throws FileNotFoundException
 		{
@@ -107,8 +134,48 @@ public class MamutProject
 		}
 	}
 
+	private class ReadFromZip implements ProjectReader
+	{
+		private final ReadZip zip;
+
+		ReadFromZip() throws IOException
+		{
+			zip = new ReadZip( projectRoot );
+		}
+
+		@Override
+		public InputStream getProjectXmlInputStream() throws IOException
+		{
+			return zip.getInputStream( PROJECT_FILE_NAME );
+		}
+
+		@Override
+		public InputStream getRawModelInputStream() throws IOException
+		{
+			return zip.getInputStream( RAW_MODEL_FILE_NAME );
+		}
+
+		@Override
+		public InputStream getRawTagsInputStream() throws IOException
+		{
+			return zip.getInputStream( RAW_TAGS_FILE_NAME );
+		}
+
+		@Override
+		public void close() throws IOException
+		{
+			zip.close();
+		}
+	}
+
 	private class WriteToDirectory implements ProjectWriter
 	{
+		@Override
+		public OutputStream getProjectXmlOutputStream() throws FileNotFoundException
+		{
+			return new FileOutputStream( new File( projectRoot, PROJECT_FILE_NAME ) );
+		}
+
 		@Override
 		public OutputStream getRawModelOutputStream() throws FileNotFoundException
 		{
@@ -124,6 +191,40 @@ public class MamutProject
 		@Override
 		public void close() throws IOException
 		{
+		}
+	}
+
+	private class WriteToZip implements ProjectWriter
+	{
+		private final WriteZip zip;
+
+		WriteToZip() throws IOException
+		{
+			zip = new WriteZip( projectRoot );
+		}
+
+		@Override
+		public OutputStream getProjectXmlOutputStream() throws IOException
+		{
+			return zip.getOutputStream( PROJECT_FILE_NAME );
+		}
+
+		@Override
+		public OutputStream getRawModelOutputStream() throws IOException
+		{
+			return zip.getOutputStream( RAW_MODEL_FILE_NAME );
+		}
+
+		@Override
+		public OutputStream getRawTagsOutputStream() throws IOException
+		{
+			return zip.getOutputStream( RAW_TAGS_FILE_NAME );
+		}
+
+		@Override
+		public void close() throws IOException
+		{
+			zip.close();
 		}
 	}
 }

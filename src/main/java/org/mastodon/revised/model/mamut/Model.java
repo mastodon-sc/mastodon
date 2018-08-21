@@ -17,7 +17,6 @@ import org.mastodon.graph.io.RawGraphIO.FileIdToGraphMap;
 import org.mastodon.graph.io.RawGraphIO.GraphToFileIdMap;
 import org.mastodon.labels.LabelSets;
 import org.mastodon.project.MamutProject;
-import org.mastodon.project.MamutProject.ProjectReader;
 import org.mastodon.properties.Property;
 import org.mastodon.revised.model.AbstractModel;
 import org.mastodon.revised.model.feature.DefaultFeatureModel;
@@ -125,15 +124,13 @@ public class Model extends AbstractModel< ModelGraph, Spot, Link > implements Un
 	/**
 	 * Clears this model and loads the model from the specified project folder.
 	 *
-	 * @param project
-	 *            the project from which to load the raw project files.
+	 * @param reader
+	 *            reader from which to load the raw project files.
 	 * @throws IOException
 	 *             if an I/O error occurs while reading the file.
 	 */
-	public void loadRaw( final MamutProject project ) throws IOException
+	public void loadRaw( final MamutProject.ProjectReader reader ) throws IOException
 	{
-		final ProjectReader reader = project.openForReading();
-
 		final FileIdToGraphMap< Spot, Link > idmap = modelGraph.loadRaw( reader.getRawModelInputStream(), ModelSerializer.getInstance() );
 
 		try
@@ -149,30 +146,24 @@ public class Model extends AbstractModel< ModelGraph, Spot, Link > implements Un
 		{
 //			tagSetModel.clear(); // TODO
 		}
-
-		reader.close();
 	}
 
 	/**
 	 * Saves this model to the specified the specified project folder.
 	 *
-	 * @param project
-	 *            the project from which to load the raw project files.
+	 * @param writer
+	 *            	writer to save the raw project files.
 	 * @throws IOException
 	 *             if an I/O error occurs while writing the file.
 	 */
-	public void saveRaw( final MamutProject project ) throws IOException
+	public void saveRaw( final MamutProject.ProjectWriter writer ) throws IOException
 	{
-		final MamutProject.ProjectWriter writer = project.openForWriting();
-
 		final GraphToFileIdMap< Spot, Link > idmap = modelGraph.saveRaw( writer.getRawModelOutputStream(), ModelSerializer.getInstance() );
 
 		final OutputStream fos = writer.getRawTagsOutputStream();
 		final ObjectOutputStream oos = new ObjectOutputStream( new BufferedOutputStream( fos, 1024 * 1024 ) );
 		RawTagSetModelIO.write( tagSetModel, idmap, oos );
 		oos.close();
-
-		writer.close();
 	}
 
 	/**

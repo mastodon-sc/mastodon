@@ -60,7 +60,7 @@ public class Mastodon extends ContextCommand
 //		final MamutProject project = new MamutProject( new File( "samples/mamutproject" ), new File( bdvFile ) );
 //		final MamutProject project = new MamutProjectIO().load( "/Volumes/External/Data/Mastodon/Tassos200" );
 //		final MamutProject project = new MamutProject( null, new File( "x=1000 y=1000 z=100 sx=1 sy=1 sz=10 t=400.dummy" ) );
-		final MamutProject project = new MamutProjectIO().load( "samples/mamutproject" );
+		final MamutProject project = new MamutProjectIO().load( "samples/mamutproject.mastodon" );
 
 		windowManager.projectManager.open( project );
 //		mw.proposedProjectFile = new File( "/Users/pietzsch/Desktop/data/TGMM_METTE/project2.xml" );
