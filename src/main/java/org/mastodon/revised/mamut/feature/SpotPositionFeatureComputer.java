@@ -9,8 +9,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-import org.mastodon.graph.io.RawGraphIO.FileIdToGraphMap;
-import org.mastodon.io.ObjectToFileIdMap;
 import org.mastodon.revised.model.feature.Feature;
 import org.mastodon.revised.model.feature.FeatureProjection;
 import org.mastodon.revised.model.feature.FeatureUtil;
@@ -118,12 +116,6 @@ public class SpotPositionFeatureComputer extends SpotFeatureComputer
 		{
 			return true;
 		}
-
-		@Override
-		public void serialize( final File file, final ObjectToFileIdMap< K > idmap ) throws IOException
-		{
-			// Do nothing.
-		}
 	}
 
 	private final static class SpotPositionProjection implements FeatureProjection< Spot >
@@ -159,11 +151,5 @@ public class SpotPositionFeatureComputer extends SpotFeatureComputer
 		{
 			return FeatureUtil.dimensionToUnits( Dimension.POSITION, lSpaceUnits, lTimeUnits );
 		}
-	}
-
-	@Override
-	public Feature< Spot, RealLocalizable > deserialize( final File file, final Model support, final FileIdToGraphMap< ?, ? > fileIdToGraphMap ) throws IOException
-	{
-		return compute( support );
 	}
 }
