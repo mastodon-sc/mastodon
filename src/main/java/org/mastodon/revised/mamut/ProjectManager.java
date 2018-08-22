@@ -207,12 +207,12 @@ public class ProjectManager
 		if ( project == null )
 			return;
 
-		final String folderPath = getProposedProjectFolder( project );
+		final String projectRoot = getProposedProjectRoot( project );
 
 		final Component parent = null; // TODO
 		final File file = FileChooser.chooseFile( true,
 				parent,
-				folderPath,
+				projectRoot,
 				new ExtensionFileFilter( "mastodon" ),
 				"Save Mastodon Project",
 				FileChooser.DialogType.SAVE,
@@ -407,26 +407,40 @@ public class ProjectManager
 		}
 	}
 
+	private static final String EXT_DOT_MASTODON = ".mastodon";
+
+	private static String stripExtensionIfPresent( final String fn, final String ext )
+	{
+		return fn.endsWith( ext )
+				? fn.substring( 0, fn.length() - ext.length() )
+				: fn;
+	}
+
 	private static String getProprosedMamutExportFileName( final MamutProject project )
 	{
 		final File pf = project.getProjectRoot();
 		if ( pf != null )
 		{
-			return new File( pf.getParentFile(), pf.getName() + "_mamut.xml" ).getAbsolutePath();
+			final String fn = stripExtensionIfPresent( pf.getName(), EXT_DOT_MASTODON );
+			return new File( pf.getParentFile(), fn + "_mamut.xml" ).getAbsolutePath();
 		}
 		else
 		{
 			final File f = project.getDatasetXmlFile();
-			final String fn = f.getName();
-			return new File( f.getParentFile(), fn.substring( 0, fn.length() - ".xml".length() ) + "_mamut.xml" ).getAbsolutePath();
+			final String fn = stripExtensionIfPresent( f.getName(), ".xml" );
+			return new File( f.getParentFile(), fn + "_mamut.xml" ).getAbsolutePath();
 		}
 	}
 
-	private static String getProposedProjectFolder( final MamutProject project )
+	private static String getProposedProjectRoot( final MamutProject project )
 	{
 		if ( project.getProjectRoot() != null )
 			return project.getProjectRoot().getAbsolutePath();
 		else
-			return project.getDatasetXmlFile().getParentFile().getAbsolutePath();
+		{
+			final File f = project.getDatasetXmlFile();
+			final String fn = stripExtensionIfPresent( f.getName(), ".xml" );
+			return new File( f.getParentFile(), fn + EXT_DOT_MASTODON ).getAbsolutePath();
+		}
 	}
 }
