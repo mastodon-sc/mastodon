@@ -103,14 +103,4 @@ public interface Feature< O, V >
 	 * @return {@code true} if a value exits for this object.
 	 */
 	public boolean isSet( O o );
-
-	/**
-	 * Serializes this feature to a raw file.
-	 *
-	 * @param file
-	 *            the file to write.
-	 * @throws IOException
-	 *             if an IO error occurs during serialization.
-	 */
-	public void serialize( File file, final ObjectToFileIdMap< O > idmap ) throws IOException;
 }

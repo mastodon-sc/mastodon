@@ -13,7 +13,6 @@ import org.mastodon.graph.algorithm.TopologicalSort;
 import org.mastodon.graph.object.ObjectEdge;
 import org.mastodon.graph.object.ObjectGraph;
 import org.mastodon.graph.object.ObjectVertex;
-import org.mastodon.revised.model.AbstractModel;
 import org.mastodon.revised.ui.ProgressListener;
 import org.scijava.InstantiableException;
 import org.scijava.app.StatusService;
@@ -23,7 +22,9 @@ import org.scijava.plugin.PluginInfo;
 import org.scijava.plugin.PluginService;
 import org.scijava.service.AbstractService;
 
-public abstract class AbstractFeatureComputerService< AM extends AbstractModel< ?, ?, ? >, FC extends FeatureComputer< AM > > extends AbstractService implements FeatureComputerService< AM, FC >
+public abstract class AbstractFeatureComputerService< M, FC extends FeatureComputer< M > >
+		extends AbstractService
+		implements FeatureComputerService< M, FC >
 {
 
 	@Parameter
@@ -42,7 +43,7 @@ public abstract class AbstractFeatureComputerService< AM extends AbstractModel< 
 	private final Map< String, FC > featureComputers = new HashMap<>();
 
 	@Override
-	public boolean compute( final AM model, final FeatureModel featureModel, final Set< FC > computers, final ProgressListener progressListener )
+	public boolean compute( final M model, final FeatureModel featureModel, final Set< FC > computers, final ProgressListener progressListener )
 	{
 		/*
 		 * Determine features to compute according to dependencies.
@@ -64,7 +65,6 @@ public abstract class AbstractFeatureComputerService< AM extends AbstractModel< 
 		/*
 		 * Remove only the features for which we have a computer registered.
 		 */
-
 		for ( final String featureKey : featureComputers.keySet() )
 			featureModel.removeFeature( featureKey );
 
@@ -129,7 +129,6 @@ public abstract class AbstractFeatureComputerService< AM extends AbstractModel< 
 	private ObjectGraph< FC > getDependencyGraph( final Set< FC > computers )
 	{
 		final ObjectGraph< FC > computerGraph = new ObjectGraph<>();
-		final ObjectVertex< FC > ref = computerGraph.vertexRef();
 
 		final Set< FC > requestedFeatureComputers = new HashSet<>();
 		for ( final FC computer : computers )
@@ -138,10 +137,9 @@ public abstract class AbstractFeatureComputerService< AM extends AbstractModel< 
 			requestedFeatureComputers.add( computer );
 
 			// Add them in the dependency graph.
-			addDepVertex( computer, computerGraph, ref );
+			addDepVertex( computer, computerGraph );
 		}
 
-		computerGraph.releaseRef( ref );
 		prune( computerGraph, requestedFeatureComputers );
 		return computerGraph;
 	}
@@ -169,13 +167,11 @@ public abstract class AbstractFeatureComputerService< AM extends AbstractModel< 
 	 *
 	 * @param computer
 	 * @param computerGraph
-	 * @param ref
 	 * @return
 	 */
 	private final ObjectVertex< FC > addDepVertex(
 			final FC computer,
-			final ObjectGraph< FC > computerGraph,
-			final ObjectVertex< FC > ref )
+			final ObjectGraph< FC > computerGraph )
 	{
 		for ( final ObjectVertex< FC > v : computerGraph.vertices() )
 		{
@@ -183,11 +179,8 @@ public abstract class AbstractFeatureComputerService< AM extends AbstractModel< 
 				return v;
 		}
 
-		final ObjectVertex< FC > source = computerGraph.addVertex( ref ).init( computer );
+		final ObjectVertex< FC > source = computerGraph.addVertex().init( computer );
 		final Set< String > deps = computer.getDependencies();
-
-		final ObjectVertex< FC > vref2 = computerGraph.vertexRef();
-		final ObjectEdge< FC > eref = computerGraph.edgeRef();
 
 		for ( final String dep : deps )
 		{
@@ -198,18 +191,15 @@ public abstract class AbstractFeatureComputerService< AM extends AbstractModel< 
 				return null;
 			}
 
-			final ObjectVertex< FC > target = addDepVertex( computerDep, computerGraph, vref2 );
+			final ObjectVertex< FC > target = addDepVertex( computerDep, computerGraph );
 			if ( null == target )
 			{
 				logService.error( "Removing feature computer named " + computer + " as some of its dependencies could not be resolved." );
 				computerGraph.remove( source );
 				break;
 			}
-			computerGraph.addEdge( source, target, eref );
+			computerGraph.addEdge( source, target );
 		}
-
-		computerGraph.releaseRef( vref2 );
-		computerGraph.releaseRef( eref );
 
 		return source;
 	}

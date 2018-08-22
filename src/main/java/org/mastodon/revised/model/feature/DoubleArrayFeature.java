@@ -1,17 +1,9 @@
 package org.mastodon.revised.model.feature;
 
-import java.io.BufferedOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.ObjectOutputStream;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import org.mastodon.io.ObjectToFileIdMap;
-import org.mastodon.io.properties.DoublePropertyMapSerializer;
 import org.mastodon.properties.DoublePropertyMap;
 
 /**
@@ -161,28 +153,5 @@ public class DoubleArrayFeature< O > implements Feature< O, double[] >
 		if ( propertyMaps.isEmpty() )
 			return false;
 		return propertyMaps.get( 0 ).isSet( o );
-	}
-
-	@Override
-	public void serialize( final File file, final ObjectToFileIdMap< O > idmap ) throws IOException
-	{
-		try (final ObjectOutputStream oos = new ObjectOutputStream(
-				new BufferedOutputStream(
-						new FileOutputStream( file ), 1024 * 1024 ) ))
-		{
-			// NUMBER OF ELEMENTS
-			oos.writeInt( length );
-			for ( int i = 0; i < length; i++ )
-			{
-				// NAME OF ENTRIES
-				final String pKey = projectionKeys.get( i );
-				oos.writeUTF( pKey  );
-				// UNITS.
-				oos.writeUTF( projections.get( pKey ).units() );
-				// NUMBER OF ENTRIES and ENTRIES
-				final DoublePropertyMapSerializer< O > serializer = new DoublePropertyMapSerializer<>( propertyMaps.get( i ) );
-				serializer.writePropertyMap( idmap, oos );
-			}
-		}
 	}
 }
