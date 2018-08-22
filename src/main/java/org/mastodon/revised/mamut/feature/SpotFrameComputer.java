@@ -1,13 +1,9 @@
 package org.mastodon.revised.mamut.feature;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
-
-import org.mastodon.io.ObjectToFileIdMap;
 import org.mastodon.revised.model.feature.Feature;
 import org.mastodon.revised.model.feature.FeatureProjection;
 import org.mastodon.revised.model.feature.IntFeatureProjection;
@@ -97,12 +93,6 @@ public class SpotFrameComputer extends SpotIntScalarFeatureComputer
 		public boolean isSet( final Spot o )
 		{
 			return true;
-		}
-
-		@Override
-		public void serialize( final File file, final ObjectToFileIdMap< Spot > idmap ) throws IOException
-		{
-			// Do nothing.
 		}
 	}
 
