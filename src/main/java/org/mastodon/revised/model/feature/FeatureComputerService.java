@@ -3,7 +3,6 @@ package org.mastodon.revised.model.feature;
 import java.util.Collection;
 import java.util.Set;
 
-import org.mastodon.revised.model.AbstractModel;
 import org.mastodon.revised.ui.ProgressListener;
 import org.scijava.service.SciJavaService;
 
@@ -12,12 +11,12 @@ import org.scijava.service.SciJavaService;
  *
  * @author Jean-Yves Tinevez
  *
- * @param <AM>
+ * @param <M>
  *            the type of the model on which features are computed.
  * @param <FC>
  *            the type of feature computers used in this service.
  */
-public interface FeatureComputerService< AM extends AbstractModel< ?, ?, ? >, FC extends FeatureComputer< AM > > extends SciJavaService
+public interface FeatureComputerService< M, FC extends FeatureComputer< M > > extends SciJavaService
 {
 
 	/**
@@ -43,6 +42,6 @@ public interface FeatureComputerService< AM extends AbstractModel< ?, ?, ? >, FC
 	 *            a progress listener, used to report calculation progress.
 	 * @return <code>true</code> if computation terminated successfully.
 	 */
-	public boolean compute( AM model, FeatureModel featureModel, Set< FC > selectedComputers, ProgressListener progressListener );
+	public boolean compute( M model, FeatureModel featureModel, Set< FC > selectedComputers, ProgressListener progressListener );
 
 }

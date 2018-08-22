@@ -13,7 +13,6 @@ import org.mastodon.graph.algorithm.TopologicalSort;
 import org.mastodon.graph.object.ObjectEdge;
 import org.mastodon.graph.object.ObjectGraph;
 import org.mastodon.graph.object.ObjectVertex;
-import org.mastodon.revised.model.AbstractModel;
 import org.mastodon.revised.ui.ProgressListener;
 import org.scijava.InstantiableException;
 import org.scijava.app.StatusService;
@@ -23,7 +22,9 @@ import org.scijava.plugin.PluginInfo;
 import org.scijava.plugin.PluginService;
 import org.scijava.service.AbstractService;
 
-public abstract class AbstractFeatureComputerService< AM extends AbstractModel< ?, ?, ? >, FC extends FeatureComputer< AM > > extends AbstractService implements FeatureComputerService< AM, FC >
+public abstract class AbstractFeatureComputerService< M, FC extends FeatureComputer< M > >
+		extends AbstractService
+		implements FeatureComputerService< M, FC >
 {
 
 	@Parameter
@@ -42,7 +43,7 @@ public abstract class AbstractFeatureComputerService< AM extends AbstractModel< 
 	private final Map< String, FC > featureComputers = new HashMap<>();
 
 	@Override
-	public boolean compute( final AM model, final FeatureModel featureModel, final Set< FC > computers, final ProgressListener progressListener )
+	public boolean compute( final M model, final FeatureModel featureModel, final Set< FC > computers, final ProgressListener progressListener )
 	{
 		/*
 		 * Determine features to compute according to dependencies.

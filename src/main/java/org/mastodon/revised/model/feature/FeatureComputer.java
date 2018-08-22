@@ -5,7 +5,6 @@ import java.util.Set;
 
 import javax.swing.JComponent;
 
-import org.mastodon.revised.model.AbstractModel;
 import org.scijava.plugin.SciJavaPlugin;
 
 /**
@@ -14,10 +13,10 @@ import org.scijava.plugin.SciJavaPlugin;
  * A computer must generate a single feature, however a feature does not have to
  * be scalar.
  *
- * @param <AM>
- *            the type of the model the feature is calculated on and stored in.
+ * @param <M>
+ *            the type of the model the feature is calculated on.
  */
-public interface FeatureComputer< AM extends AbstractModel< ?, ?, ? > > extends SciJavaPlugin
+public interface FeatureComputer< M > extends SciJavaPlugin
 {
 
 	/**
@@ -39,7 +38,7 @@ public interface FeatureComputer< AM extends AbstractModel< ?, ?, ? > > extends 
 	 * @param model
 	 *            the model to retrieve objects from.
 	 */
-	public Feature< ?, ? > compute( final AM model );
+	public Feature< ?, ? > compute( final M model );
 
 	/**
 	 * Returns the string key of the feature calculated by this computer.
