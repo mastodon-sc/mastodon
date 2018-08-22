@@ -14,7 +14,6 @@ import org.mastodon.util.Listeners;
  */
 public class DefaultFeatureModel implements FeatureModel
 {
-
 	private final Listeners.List< FeatureModelListener > listeners;
 
 	private boolean emitEvents = true;
@@ -40,12 +39,7 @@ public class DefaultFeatureModel implements FeatureModel
 	{
 		// Features.
 		final Class< ? > clazz = feature.getTargetClass();
-		Set< Feature< ?, ? > > featureSet = targetClassToFeatures.get( clazz );
-		if ( null == featureSet )
-		{
-			featureSet = new HashSet<>();
-			targetClassToFeatures.put( clazz, featureSet );
-		}
+		final Set< Feature< ?, ? > > featureSet = targetClassToFeatures.computeIfAbsent( clazz, k -> new HashSet<>() );
 		featureSet.add( feature );
 
 		// Feature keys.
@@ -65,13 +59,12 @@ public class DefaultFeatureModel implements FeatureModel
 	@Override
 	public void removeFeature( final String key )
 	{
-		final Feature< ?, ? > feature = keyToFeature.get( key );
+		final Feature< ?, ? > feature = keyToFeature.remove( key );
 		if ( null == feature )
 			return;
 
-		final Class< ? > targetClass = feature.getTargetClass();
-		targetClassToFeatures.get( targetClass ).remove( feature );
-		keyToFeature.remove( key );
+		final Class< ? > clazz = feature.getTargetClass();
+		targetClassToFeatures.get( clazz ).remove( feature );
 		fireFeatureModelChangedEvent();
 	}
 
@@ -104,15 +97,15 @@ public class DefaultFeatureModel implements FeatureModel
 	{
 		emitEvents = true;
 		if ( fireAtResume )
-			listeners.list.forEach( ( l ) -> l.featureModelChanged() );
+			listeners.list.forEach( FeatureModelListener::featureModelChanged );
 		fireAtResume = false;
 	}
 
 	private void fireFeatureModelChangedEvent()
 	{
 		if ( emitEvents )
-			listeners.list.forEach( ( l ) -> l.featureModelChanged() );
-		else if ( !fireAtResume )
+			listeners.list.forEach( FeatureModelListener::featureModelChanged );
+		else
 			fireAtResume = true;
 	}
 }
