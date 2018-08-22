@@ -12,11 +12,10 @@ import org.mastodon.util.Listeners;
  */
 public interface FeatureModel
 {
-
 	public interface FeatureModelListener
 	{
 		/**
-		 * Notifies a listener that the feature model it listens has changed.
+		 * Notifies a listener that the feature model it listens to has changed.
 		 */
 		public void featureModelChanged();
 	}
@@ -75,5 +74,4 @@ public interface FeatureModel
 	 * method.
 	 */
 	public void resumeListeners();
-
 }

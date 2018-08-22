@@ -10,7 +10,7 @@ public interface MamutFeatureComputerService extends FeatureComputerService< Mod
 	/**
 	 * Sets the image data to be used by the feature computers.
 	 *
-	 * @param bdvData
+	 * @param sharedBdvData
 	 *            the image data.
 	 */
 	public void setSharedBdvData( SharedBigDataViewerData sharedBdvData );

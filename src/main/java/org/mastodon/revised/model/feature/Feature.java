@@ -36,7 +36,7 @@ import org.mastodon.io.ObjectToFileIdMap;
  *
  * @param <O>
  *            the type of the object this feature is defined for (target).
- * @param the
+ * @param <V>
  *            type of value stored in this feature.
  */
 public interface Feature< O, V >

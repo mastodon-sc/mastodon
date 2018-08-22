@@ -7,7 +7,7 @@ package org.mastodon.revised.model.feature;
  *
  * @param <O>
  *            the type of the object this feature is defined for (target).
- * @param the
+ * @param <V>
  *            type of value stored in this feature.
  */
 public interface WritableFeature< O, V > extends Feature< O, V >
