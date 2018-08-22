@@ -28,7 +28,7 @@ public class ModelUtils
 		 */
 
 		final Map< String, FeatureProjection< Spot > > sfs = new LinkedHashMap<>();
-		final Set< Feature< ?, ? > > set1 = featureModel.getFeatureSet( Spot.class );
+		final Set< Feature< Spot, ? > > set1 = featureModel.getFeatureSet( Spot.class );
 		final List< Feature< ?, ? > > spotFeatures = set1 == null ? new ArrayList<>() : new ArrayList<>( set1 );
 		spotFeatures.sort( ( f1, f2 ) -> f1.getKey().compareTo( f2.getKey() ) );
 		for ( final Feature< ?, ? > feature : spotFeatures )
@@ -90,7 +90,7 @@ public class ModelUtils
 		 */
 
 		final Map< String, FeatureProjection< Link > > lfs = new LinkedHashMap<>();
-		final Set< Feature< ?, ? > > set2 = featureModel.getFeatureSet( Link.class );
+		final Set< Feature< Link, ? > > set2 = featureModel.getFeatureSet( Link.class );
 		final List< Feature< ?, ? > > linkFeatures = set2 == null ? new ArrayList<>() : new ArrayList<>( set2 );
 		linkFeatures.sort( ( f1, f2 ) -> f1.getKey().compareTo( f2.getKey() ) );
 		for ( final Feature< ?, ? > feature : linkFeatures )

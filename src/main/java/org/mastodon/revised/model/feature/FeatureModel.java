@@ -20,7 +20,7 @@ public interface FeatureModel
 		public void featureModelChanged();
 	}
 
-	public Set< Feature< ?, ? > > getFeatureSet( Class< ? > targetClass );
+	public < T > Set< Feature< T, ? > > getFeatureSet( Class< T > targetClass );
 
 	/**
 	 * Clears this feature model.

@@ -483,14 +483,12 @@ public class MamutExporter
 
 		// Link features.
 		final FeatureModel fm = model.getFeatureModel();
-		Set< Feature< ?, ? > > features = fm.getFeatureSet( Link.class );
+		Set< Feature< Link, ? > > features = fm.getFeatureSet( Link.class );
 		if ( null == features )
 			features = Collections.emptySet();
 
-		for ( final Feature< ?, ? > feature : features )
+		for ( final Feature< Link, ? > f : features )
 		{
-			@SuppressWarnings( "unchecked" )
-			final Feature< Link, ? > f = ( Feature< Link, PropertyMap< Link, ? > > ) feature;
 			final Map< String, FeatureProjection< Link > > projections = f.getProjections();
 			for ( final String projectionKey : projections.keySet() )
 				attributes.add( new Attribute( sanitize( projectionKey ), Double.toString( projections.get( projectionKey ).value( edge ) ) ) );
@@ -513,19 +511,6 @@ public class MamutExporter
 
 		// Other track features.
 		// TODO: when we compute and store track features, modify this.
-//		final FeatureModel fm = model.getFeatureModel();
-		Set< Feature< ?, ? > > features = null;
-		if ( null == features )
-			features = Collections.emptySet();
-
-		for ( final Feature< ?, ? > feature : features )
-		{
-			@SuppressWarnings( "unchecked" )
-			final Feature< Spot, ? > f = ( Feature< Spot, PropertyMap< Spot, ? > > ) feature;
-			final Map< String, FeatureProjection< Spot > > projections = f.getProjections();
-			for ( final String projectionKey : projections.keySet() )
-				attributes.add( new Attribute( sanitize( projectionKey ), Double.toString( projections.get( projectionKey ).value( root ) ) ) );
-		}
 
 		final Element trackElement = new Element( TRACK_TAG );
 		trackElement.setAttributes( attributes );
@@ -561,14 +546,12 @@ public class MamutExporter
 
 		// Spot features.
 		final FeatureModel fm = model.getFeatureModel();
-		Set< Feature< ?, ? > > features = fm.getFeatureSet( Spot.class );
+		Set< Feature< Spot, ? > > features = fm.getFeatureSet( Spot.class );
 		if ( null == features )
 			features = Collections.emptySet();
 
-		for ( final Feature< ?, ? > feature : features )
+		for ( final Feature< Spot, ? > f : features )
 		{
-			@SuppressWarnings( "unchecked" )
-			final Feature< Spot, ? > f = ( Feature< Spot, PropertyMap< Spot, ? > > ) feature;
 			final Map< String, FeatureProjection< Spot > > projections = f.getProjections();
 			for ( final String projectionKey : projections.keySet() )
 				attributes.add( new Attribute( sanitize( projectionKey ), Double.toString( projections.get( projectionKey ).value( spot ) ) ) );
@@ -589,17 +572,17 @@ public class MamutExporter
 		return featuresElement;
 	}
 
-	private void appendFeaturesDeclarationOfClass( final Class< ? > clazz, final Element featuresElement, final String classFeatureDeclarationTag )
+	private < T > void appendFeaturesDeclarationOfClass( final Class< T > clazz, final Element featuresElement, final String classFeatureDeclarationTag )
 	{
 		final String spaceUnits = getSpatialUnits();
 		final String timeUnits = getTimeUnits();
 		final FeatureModel fm = model.getFeatureModel();
-		Set< Feature< ?, ? > > features = fm.getFeatureSet( clazz );
+		Set< Feature< T, ? > > features = fm.getFeatureSet( clazz );
 		if ( null == features )
 			features = Collections.emptySet();
 
 		final Element classFeaturesElement = new Element( classFeatureDeclarationTag );
-		for ( final Feature< ?, ? > feature : features )
+		for ( final Feature< T, ? > feature : features )
 		{
 			/*
 			 * If we have ONE feature mapped on an int projection map, then we
@@ -612,9 +595,7 @@ public class MamutExporter
 				isint = " false";
 
 			// We actually export feature projections.
-			final Map< String, ? > p = feature.getProjections();
-			@SuppressWarnings( "unchecked" )
-			final Map< String, FeatureProjection< ? > > projections = ( Map< String, FeatureProjection< ? > > ) p;
+			final Map< String, FeatureProjection< T > > projections = feature.getProjections();
 			for ( final String projectionKey : projections.keySet() )
 			{
 				final Element fel = new Element( FEATURE_TAG );
@@ -683,7 +664,7 @@ public class MamutExporter
 	/**
 	 * Tries to recover the dimension from the unit string and the spatial and
 	 * time units.
-	 * 
+	 *
 	 * @param units
 	 *            the unit string.
 	 * @param spaceUnits

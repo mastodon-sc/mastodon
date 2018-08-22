@@ -68,10 +68,11 @@ public class DefaultFeatureModel implements FeatureModel
 		fireFeatureModelChangedEvent();
 	}
 
+	@SuppressWarnings( { "unchecked", "rawtypes" } )
 	@Override
-	public Set< Feature< ?, ? > > getFeatureSet( final Class< ? > targetClass )
+	public < T > Set< Feature< T, ? > > getFeatureSet( final Class< T > targetClass )
 	{
-		return targetClassToFeatures.get( targetClass );
+		return ( Set ) targetClassToFeatures.get( targetClass );
 	}
 
 	@Override
