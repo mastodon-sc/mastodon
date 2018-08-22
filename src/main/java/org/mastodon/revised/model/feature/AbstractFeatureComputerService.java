@@ -65,7 +65,6 @@ public abstract class AbstractFeatureComputerService< M, FC extends FeatureCompu
 		/*
 		 * Remove only the features for which we have a computer registered.
 		 */
-
 		for ( final String featureKey : featureComputers.keySet() )
 			featureModel.removeFeature( featureKey );
 
@@ -130,7 +129,6 @@ public abstract class AbstractFeatureComputerService< M, FC extends FeatureCompu
 	private ObjectGraph< FC > getDependencyGraph( final Set< FC > computers )
 	{
 		final ObjectGraph< FC > computerGraph = new ObjectGraph<>();
-		final ObjectVertex< FC > ref = computerGraph.vertexRef();
 
 		final Set< FC > requestedFeatureComputers = new HashSet<>();
 		for ( final FC computer : computers )
@@ -139,10 +137,9 @@ public abstract class AbstractFeatureComputerService< M, FC extends FeatureCompu
 			requestedFeatureComputers.add( computer );
 
 			// Add them in the dependency graph.
-			addDepVertex( computer, computerGraph, ref );
+			addDepVertex( computer, computerGraph );
 		}
 
-		computerGraph.releaseRef( ref );
 		prune( computerGraph, requestedFeatureComputers );
 		return computerGraph;
 	}
@@ -170,13 +167,11 @@ public abstract class AbstractFeatureComputerService< M, FC extends FeatureCompu
 	 *
 	 * @param computer
 	 * @param computerGraph
-	 * @param ref
 	 * @return
 	 */
 	private final ObjectVertex< FC > addDepVertex(
 			final FC computer,
-			final ObjectGraph< FC > computerGraph,
-			final ObjectVertex< FC > ref )
+			final ObjectGraph< FC > computerGraph )
 	{
 		for ( final ObjectVertex< FC > v : computerGraph.vertices() )
 		{
@@ -184,11 +179,8 @@ public abstract class AbstractFeatureComputerService< M, FC extends FeatureCompu
 				return v;
 		}
 
-		final ObjectVertex< FC > source = computerGraph.addVertex( ref ).init( computer );
+		final ObjectVertex< FC > source = computerGraph.addVertex().init( computer );
 		final Set< String > deps = computer.getDependencies();
-
-		final ObjectVertex< FC > vref2 = computerGraph.vertexRef();
-		final ObjectEdge< FC > eref = computerGraph.edgeRef();
 
 		for ( final String dep : deps )
 		{
@@ -199,18 +191,15 @@ public abstract class AbstractFeatureComputerService< M, FC extends FeatureCompu
 				return null;
 			}
 
-			final ObjectVertex< FC > target = addDepVertex( computerDep, computerGraph, vref2 );
+			final ObjectVertex< FC > target = addDepVertex( computerDep, computerGraph );
 			if ( null == target )
 			{
 				logService.error( "Removing feature computer named " + computer + " as some of its dependencies could not be resolved." );
 				computerGraph.remove( source );
 				break;
 			}
-			computerGraph.addEdge( source, target, eref );
+			computerGraph.addEdge( source, target );
 		}
-
-		computerGraph.releaseRef( vref2 );
-		computerGraph.releaseRef( eref );
 
 		return source;
 	}
