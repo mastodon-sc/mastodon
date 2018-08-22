@@ -29,8 +29,8 @@ import org.mastodon.io.ObjectToFileIdMap;
  * Since many visualization tools in Mastodon deal with scalar, real feature
  * values, the computer must also be able to return a set of feature
  * projections, that translate or project the feature on several real scalar
- * values. Since the computer defines what the feature it compute is, it also
- * must be able to define the meaningful projections for the feature.
+ * values. Since the computer defines what the feature is, it also must be able
+ * to define the meaningful projections for the feature.
  *
  * @author Jean-Yves Tinevez
  *
@@ -69,6 +69,8 @@ public interface Feature< O, V >
 	 * Returns the value stored in this feature associated with the specified
 	 * target object. Potentially allocation-free version of
 	 * {@link #get(Object)}.
+	 * <p>
+	 * If {@code isSet(o) == false} then {@code get(o) == null}.
 	 *
 	 * @param o
 	 *            the target object.
@@ -76,27 +78,29 @@ public interface Feature< O, V >
 	 *            a value reference object, that might be reused to avoid
 	 *            instantiating a new one. It might be cleared, filled or
 	 *            ignored depending on concrete implementation.
-	 * @return the value.
+	 * @return the value, may be {@code null}.
 	 */
 	public V get( O o, V ref );
 
 	/**
 	 * Returns the value stored in this feature associated with the specified
 	 * target object.
+	 * <p>
+	 * If {@code isSet(o) == false} then {@code get(o) == null}.
 	 *
 	 * @param o
 	 *            the target object.
-	 * @return the value.
+	 * @return the value, may be {@code null}.
 	 */
 	public V get( O o );
 
 	/**
-	 * Returns <code>true</code> if this feature contains a value associated
+	 * Returns {@code true} if this feature contains a value associated
 	 * with the specified target object.
 	 *
 	 * @param o
 	 *            the target object.
-	 * @return <code>true</code> if a value exits for this object.
+	 * @return {@code true} if a value exits for this object.
 	 */
 	public boolean isSet( O o );
 

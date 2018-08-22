@@ -15,9 +15,9 @@ import org.mastodon.io.properties.DoublePropertyMapSerializer;
 import org.mastodon.properties.DoublePropertyMap;
 
 /**
- * A feature implementation for array where elements are <code>double</code>s.
+ * A feature implementation for array where elements are {@code double}s.
  * <p>
- * Concretely, the arrays elements are stored in <code>length</code>-number of
+ * Concretely, the arrays elements are stored in {@code length}-number of
  * {@link DoublePropertyMap}. This favors situation where consumers want to
  * access the same element in the array for many objects, <i>e.g.</i> to iterate
  * over all the values of a single projection.
@@ -129,7 +129,7 @@ public class DoubleArrayFeature< O > implements Feature< O, double[] >
 	}
 
 	/**
-	 * Returns the value of element <code>index</code> for the specified target
+	 * Returns the value of element {@code index} for the specified target
 	 * object.
 	 *
 	 * @param o
