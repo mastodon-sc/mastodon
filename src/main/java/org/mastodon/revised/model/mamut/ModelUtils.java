@@ -19,9 +19,18 @@ public class ModelUtils
 	{
 		final ModelGraph graph = model.getGraph();
 		final FeatureModel featureModel = model.getFeatureModel();
-
+		final Spot ref = graph.vertexRef();
+		final String dump = dump( graph.vertices(), graph.edges(), featureModel, ref );
+		graph.releaseRef( ref );
 		final StringBuilder str = new StringBuilder();
 		str.append( "Model " + model.toString() + "\n" );
+		str.append( dump );
+		return str.toString();
+	}
+
+	public static final String dump( final Iterable< Spot > vertices, final Iterable< Link > edges, final FeatureModel featureModel, final Spot ref )
+	{
+		final StringBuilder str = new StringBuilder();
 
 		/*
 		 * Collect spot feature headers.
@@ -52,7 +61,7 @@ public class ModelUtils
 		int i = 0;
 		for ( final String pn : sfs.keySet() )
 		{
-			spotColumnHeaderWidth[ i ] = pn.length() + 2;
+			spotColumnHeaderWidth[ i ] =  Math.max( 9,pn.length() + 2 );
 			str.append( String.format( "  %" + spotColumnHeaderWidth[ i ] + "s", pn ) );
 			i++;
 		}
@@ -63,7 +72,7 @@ public class ModelUtils
 		str.append( sline );
 		str.append( '\n' );
 
-		for ( final Spot spot : graph.vertices() )
+		for ( final Spot spot : vertices )
 		{
 			final String h1b = String.format( "%9d  %9s  %6d  %9.1f  %9.1f  %9.1f",
 					spot.getInternalPoolIndex(), spot.getLabel(), spot.getTimepoint(),
@@ -73,13 +82,14 @@ public class ModelUtils
 			i = 0;
 			for ( final String pn : sfs.keySet() )
 			{
+				final int width = spotColumnHeaderWidth[ i ];
 				if ( sfs.get( pn ).isSet( spot ) )
 					if ( sfs.get( pn ) instanceof IntFeatureProjection )
-						str.append( String.format( "  %" + spotColumnHeaderWidth[ i ] + "d", ( int ) sfs.get( pn ).value( spot ) ) );
+						str.append( String.format( "  %" + width + "d", ( int ) sfs.get( pn ).value( spot ) ) );
 					else
-						str.append( String.format( "  %" + spotColumnHeaderWidth[ i ] + ".1f", sfs.get( pn ).value( spot ) ) );
+						str.append( String.format( "  %" + width + ".1f", sfs.get( pn ).value( spot ) ) );
 				else
-					str.append( String.format( "  %" + spotColumnHeaderWidth[ i ] + "s", "unset" ) );
+					str.append( String.format( "  %" + width + "s", "unset" ) );
 				i++;
 			}
 			str.append( '\n' );
@@ -124,8 +134,7 @@ public class ModelUtils
 		str.append( lline );
 		str.append( '\n' );
 
-		final Spot ref = graph.vertexRef();
-		for ( final Link link : graph.edges() )
+		for ( final Link link : edges )
 		{
 			final String h1b = String.format( "%9d  %9d  %9d", link.getInternalPoolIndex(),
 					link.getSource( ref ).getInternalPoolIndex(), link.getTarget( ref ).getInternalPoolIndex() );
