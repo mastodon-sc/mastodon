@@ -255,6 +255,7 @@ public class FeatureComputerService extends AbstractService
 			}
 
 			featureComputer.createOutput();
+			featureComputer.run();
 
 			final Feature< ? > output = ( Feature< ? > ) info.outputs().iterator().next().getValue( module );
 			featureModel.put( vertex.getFeatureSpec(), output );
