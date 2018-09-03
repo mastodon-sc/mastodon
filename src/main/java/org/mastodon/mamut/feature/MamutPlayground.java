@@ -1,6 +1,7 @@
 package org.mastodon.mamut.feature;
 
 import java.io.IOException;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -11,6 +12,7 @@ import org.mastodon.feature.FeatureSpecsService;
 import org.mastodon.revised.mamut.MamutProject;
 import org.mastodon.revised.mamut.MamutProjectIO;
 import org.mastodon.revised.mamut.WindowManager;
+import org.mastodon.revised.model.mamut.Link;
 import org.mastodon.revised.model.mamut.Model;
 import org.mastodon.revised.model.mamut.Spot;
 import org.scijava.Context;
@@ -33,13 +35,18 @@ public class MamutPlayground
 		featureComputerService.setModel( model );
 		featureComputerService.setSharedBdvData( windowManager.getAppModel().getSharedBdvData() );
 		final Map< FeatureSpec< ?, ? >, Feature< ? > > featureModel =
-				featureComputerService.compute( "Spot N links", "Tralalala", "F2" );
+				featureComputerService.compute( "Link velocity" );
 
 		final FeatureSpecsService specsService = context.getService( FeatureSpecsService.class );
-		final Class<Spot> target = Spot.class;
+		printForTarget( Spot.class, model.getGraph().vertices(), specsService, featureModel );
+		printForTarget( Link.class, model.getGraph().edges(), specsService, featureModel );
+	}
+
+	private static < T > void printForTarget( final Class< T > target, final Collection< T > collection, final FeatureSpecsService specsService, final Map< FeatureSpec< ?, ? >, Feature< ? > > featureModel )
+	{
 		System.out.println( "\n\nFeatures that have " + target.getSimpleName() + " as target:" );
-		final List< FeatureSpec< ?, Spot > > specs = specsService.getSpecs( target );
-		for ( final FeatureSpec< ?, Spot > spec : specs )
+		final List< FeatureSpec< ?, T > > specs = specsService.getSpecs( target );
+		for ( final FeatureSpec< ?, ? > spec : specs )
 		{
 			@SuppressWarnings( "unchecked" )
 			final Feature< Spot > feature = ( Feature< Spot > ) featureModel.get( spec );
@@ -52,15 +59,16 @@ public class MamutPlayground
 			System.out.println( "\n - Feature " + spec.getKey() +". Has " + projections.length + " projections:" );
 			for ( final String projectionKey : projections )
 			{
-				final FeatureProjection< Spot > projection = feature.project( projectionKey );
+				@SuppressWarnings( "unchecked" )
+				final FeatureProjection< T > projection = ( FeatureProjection< T > ) feature.project( projectionKey );
 				if (null == projection)
 				{
 					System.out.println( "   - Projection " + projectionKey  + " is not set, skipping." );
 					continue;
 				}
 				System.out.println( "   - Projection " + projectionKey );
-				for ( final Spot spot : model.getGraph().vertices() )
-					System.out.println( "       - " + spot.getLabel() + ": " + projection.value( spot ) );
+				for ( final T obj : collection )
+					System.out.println( "       - " + obj + ": " + projection.value( obj ) );
 			}
 		}
 	}
