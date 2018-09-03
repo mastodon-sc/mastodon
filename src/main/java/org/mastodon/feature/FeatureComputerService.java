@@ -98,6 +98,9 @@ public class FeatureComputerService extends AbstractService
 					final Class< ? extends Feature< ? > > type = ( Class< ? extends Feature< ? > > ) item.getType();
 					featureSpec = featureSpecs.getSpec( type );
 				}
+				if (featureSpec == null)
+					throw new IllegalArgumentException( "Ignoring FeatureComputer " + info.getClassName()
+					+ " because it does not define an output." );
 
 				FeatureDependencyGraph.Vertex v = dependencies.get( featureSpec );
 				if ( v == null )
