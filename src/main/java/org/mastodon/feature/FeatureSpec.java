@@ -1,8 +1,17 @@
 package org.mastodon.feature;
 
 import java.util.Arrays;
+
 import org.scijava.plugin.SciJavaPlugin;
 
+/**
+ * Specification for a feature F.
+ *
+ * @param <F>
+ *            the concrete feature type.
+ * @param <T>
+ *            the target type (<i>e.g.</i> Spot).
+ */
 public abstract class FeatureSpec< F extends Feature< T >, T > implements SciJavaPlugin
 {
 	private final String key;
@@ -54,7 +63,7 @@ public abstract class FeatureSpec< F extends Feature< T >, T > implements SciJav
 	@Override
 	public boolean equals( final Object o )
 	{
-		if ( ! ( o instanceof FeatureSpec ) )
+		if ( !( o instanceof FeatureSpec ) )
 			return false;
 		final FeatureSpec< ?, ? > that = ( FeatureSpec< ?, ? > ) o;
 		return key.equals( that.key )

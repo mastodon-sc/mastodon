@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.PluginService;
 import org.scijava.service.AbstractService;
@@ -18,9 +19,12 @@ public class FeatureSpecsService extends AbstractService
 	private PluginService pluginService;
 
 	private final List< FeatureSpec< ?, ? > > specs = new ArrayList<>();
+
 	private final Map< Class< ? >, List< FeatureSpec< ?, ? > > > targetToSpecs = new HashMap<>();
+
 	private final Map< String, FeatureSpec< ?, ? > > keyToSpec = new HashMap<>();
-	private final Map< Class< ? extends Feature< ? > > , FeatureSpec< ?, ? > > featureClassToSpec = new HashMap<>();
+
+	private final Map< Class< ? extends Feature< ? > >, FeatureSpec< ?, ? > > featureClassToSpec = new HashMap<>();
 
 	@Override
 	public void initialize()
@@ -38,7 +42,8 @@ public class FeatureSpecsService extends AbstractService
 	}
 
 	/**
-	 * Add all {@link FeatureSpec}s that are found by the {@code PluginService} to the index.
+	 * Add all {@link FeatureSpec}s that are found by the {@code PluginService}
+	 * to the index.
 	 */
 	private void discover()
 	{
@@ -49,7 +54,9 @@ public class FeatureSpecsService extends AbstractService
 	/**
 	 * Add a {@link FeatureSpec} to the index.
 	 *
-	 * @throws IllegalArgumentException if a {@link FeatureSpec} with the same name as {@code spec} is already present
+	 * @throws IllegalArgumentException
+	 *             if a {@link FeatureSpec} with the same name as {@code spec}
+	 *             is already present
 	 */
 	private void add( final FeatureSpec< ?, ? > spec ) throws IllegalArgumentException
 	{
@@ -61,16 +68,42 @@ public class FeatureSpecsService extends AbstractService
 		featureClassToSpec.put( spec.getFeatureClass(), spec );
 	}
 
+	/**
+	 * Returns the specification of the feature with the specified key. Returns
+	 * <code>null</code> if a feature with the specified key is not known to
+	 * this service.
+	 *
+	 * @param key
+	 *            the feature key.
+	 * @return the feature specification.
+	 */
 	public FeatureSpec< ?, ? > getSpec( final String key )
 	{
 		return keyToSpec.get( key );
 	}
 
+	/**
+	 * Returns the specification of the feature with the specified class.
+	 * Returns <code>null</code> if a feature with the specified class is not
+	 * known to this service.
+	 *
+	 * @param featureClass
+	 *            the feature class.
+	 * @return the feature specification.
+	 */
 	public FeatureSpec< ?, ? > getSpec( final Class< ? extends Feature< ? > > featureClass )
 	{
 		return featureClassToSpec.get( featureClass );
 	}
 
+	/**
+	 * Returns a list of feature specifications for features that operates on
+	 * the specified target.
+	 *
+	 * @param target
+	 *            the target features returned operate on.
+	 * @return a new unmodifiable list, never <code>null</code>.
+	 */
 	@SuppressWarnings( "unchecked" )
 	public < T > List< FeatureSpec< ?, T > > getSpecs( final Class< T > target )
 	{

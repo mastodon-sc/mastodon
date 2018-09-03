@@ -10,7 +10,7 @@ import org.mastodon.graph.object.AbstractObjectVertex;
 import org.scijava.command.CommandInfo;
 
 /**
- * Each vertex represents a Feature and tha FeatureComputer that computes it.
+ * Each vertex represents a Feature and that FeatureComputer that computes it.
  * Each edge represents a dependency, {@code A --> B} means "feature A depends on feature B".
  */
 public class FeatureDependencyGraph extends AbstractObjectGraph< FeatureDependencyGraph.Vertex, FeatureDependencyGraph.Edge >
@@ -128,14 +128,14 @@ public class FeatureDependencyGraph extends AbstractObjectGraph< FeatureDependen
 	@Override
 	public String toString()
 	{
-		StringBuilder sb = new StringBuilder();
+		final StringBuilder sb = new StringBuilder();
 
 		sb.append( "FeatureDependencyGraph{\n" );
 		sb.append( "  {\n" );
-		for ( Vertex vertex : vertices() )
+		for ( final Vertex vertex : vertices() )
 			sb.append( "    " + vertex + "\n" );
 		sb.append( "  }, {\n" );
-		for ( Edge edge : edges() )
+		for ( final Edge edge : edges() )
 			sb.append( "    " + edge + "\n" );
 		sb.append( "  }\n" );
 		sb.append( "}" );
