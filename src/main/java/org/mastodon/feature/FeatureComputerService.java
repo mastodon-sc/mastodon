@@ -144,6 +144,9 @@ public class FeatureComputerService extends AbstractService
 
 	/**
 	 * Removes vertices on cycles.
+	 * 
+	 * @param dependencies
+	 *                         the dependency graph.
 	 */
 	public static void removeCycles( final FeatureDependencyGraph dependencies )
 	{
@@ -174,12 +177,15 @@ public class FeatureComputerService extends AbstractService
 	}
 
 	/**
-	 * Removes vertices whose feature cannot be computed. A Feature is
-	 * incomputable if
+	 * Removes vertices whose feature cannot be computed. A Feature is incomputable
+	 * if
 	 * <ul>
 	 * <li>no {@link FeatureComputer} was found to compute it, or</li>
 	 * <li>it depends on an incomputable feature.</li>
 	 * </ul>
+	 * 
+	 * @param dependencies
+	 *                         the dependency graph.
 	 */
 	public static void removeMissing( final FeatureDependencyGraph dependencies )
 	{
