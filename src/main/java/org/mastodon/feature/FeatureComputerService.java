@@ -68,14 +68,14 @@ public class FeatureComputerService extends AbstractService
 	}
 
 	/**
-	 * Adds the inputs and outputs of all {@link FeatureComputer}s that are
-	 * found by the {@code {@link CommandService} to the dependency graph.
+	 * Adds the inputs and outputs of all {@link FeatureComputer}s that are found by
+	 * the {@code {@link CommandService}} to the dependency graph.
 	 * <p>
 	 * Each vertex that is created has a {@link FeatureSpec}, and hopefully a
 	 * {@link FeatureComputer} that computes the corresponding {@link Feature}.
 	 * <p>
-	 * Each edge that is created means a feature dependency ({@code A --> B}
-	 * means A requires B, so B must be computed before A).
+	 * Each edge that is created means a feature dependency ({@code A --> B} means A
+	 * requires B, so B must be computed before A).
 	 */
 	private void discover()
 	{
@@ -248,32 +248,54 @@ public class FeatureComputerService extends AbstractService
 			final FeatureComputer featureComputer = vertex.getFeatureComputer();
 			final CommandInfo info = vertex.getFeatureComputerInfo();
 			final CommandModule module = new CommandModule( info, featureComputer );
-			for ( final ModuleItem item : info.inputs() )
+			for ( final ModuleItem< ? > item : info.inputs() )
 			{
-				final Class klass = item.getType();
-				if ( Feature.class.isAssignableFrom( klass ) )
-				{
-					item.setValue( module, featureModel.get( featureSpecs.getSpec( klass ) ) );
-				}
-//				else if ( Model.class.isAssignableFrom( klass ) )
-//				{
-//					...
-//				}
-//				else if ( SharedBigDataViewerData.class.isAssignableFrom( klass ) )
-//				{
-//					...
-//				}
-				else
-					System.err.println( "Unknown FeatureComputer input @Parameter " + item );
+				final Class< ? > klass = item.getType();
+				provideParameters( item, module, klass, featureModel );
 			}
 
 			featureComputer.createOutput();
 
-			final Feature output = ( Feature ) info.outputs().iterator().next().getValue( module );
+			final Feature< ? > output = ( Feature< ? > ) info.outputs().iterator().next().getValue( module );
 			featureModel.put( vertex.getFeatureSpec(), output );
 		}
 
 		return ( featureModel );
+	}
+
+	/**
+	 * Try to set a value for the specified {@link ModuleItem} that is a parameter
+	 * of the {@link FeatureComputer} described by the specified
+	 * {@link CommandModule}.
+	 * <p>
+	 * An error is printed if this {@link FeatureComputerService} cannot assign a
+	 * value for the specified class of input.
+	 * 
+	 * @param item
+	 *                           the parameter in the feature computer to set value
+	 *                           of.
+	 * @param module
+	 *                           the command module representing the feature
+	 *                           computer.
+	 * @param parameterClass
+	 *                           the class of the parameter to set.
+	 * @param featureModel
+	 *                           the map of already computed features to potentially
+	 *                           serve as parameter.
+	 */
+	protected void provideParameters( final ModuleItem< ? > item, final CommandModule module, final Class< ? > parameterClass, final Map< FeatureSpec< ?, ? >, Feature< ? > > featureModel )
+	{
+		if ( Feature.class.isAssignableFrom( parameterClass ) )
+		{
+			@SuppressWarnings( "unchecked" )
+			final Class< ? extends Feature< ? > > featureClass = ( Class< ? extends Feature< ? > > ) parameterClass;
+			@SuppressWarnings( "unchecked" )
+			final ModuleItem< Feature< ? > > featureItem = ( ModuleItem< Feature< ? > > ) item;
+			featureItem.setValue( module, featureModel.get( featureSpecs.getSpec( featureClass ) ) );
+			return;
+		}
+
+		System.err.println( "Unknown FeatureComputer input @Parameter " + item + " in " + module.getCommand() );
 	}
 
 	public Map< FeatureSpec< ?, ? >, Feature< ? > > compute( final String... keys )
