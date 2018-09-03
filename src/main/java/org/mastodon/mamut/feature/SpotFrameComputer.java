@@ -15,7 +15,8 @@ public class SpotFrameComputer implements MamutFeatureComputer
 	@Override
 	public void createOutput()
 	{
-		output = new SpotFrameFeature();
+		if ( null == output )
+			output = new SpotFrameFeature();
 	}
 
 	@Override
