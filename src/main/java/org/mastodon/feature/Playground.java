@@ -180,7 +180,7 @@ public class Playground
 		final FeatureComputerService featureComputerService = new FeatureComputerService();
 		context.inject( featureComputerService );
 		featureComputerService.initialize();
-		featureComputerService.doStuff();
+		featureComputerService.compute( "F1", "F3" );
 
 //		testSpecs( context );
 	}

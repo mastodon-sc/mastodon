@@ -3,13 +3,13 @@ package org.mastodon.feature;
 import static org.mastodon.graph.algorithm.AncestorFinder.ancestors;
 import static org.mastodon.graph.algorithm.StronglyConnectedComponents.stronglyConnectedComponents;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import org.mastodon.collection.RefCollections;
 import org.mastodon.collection.RefList;
@@ -197,14 +197,6 @@ public class FeatureComputerService extends AbstractService
 	 *
 	 */
 
-	private FeatureDependencyGraph dependencyGraphFor( final String... keys )
-	{
-		return dependencyGraphFor(
-				Arrays.stream( keys )
-						.map( featureSpecs::getSpec )
-						.collect( Collectors.toList() ) );
-	}
-
 	private FeatureDependencyGraph dependencyGraphFor( final Collection< FeatureSpec< ?, ? > > specs )
 	{
 		final FeatureDependencyGraph graph = new FeatureDependencyGraph();
@@ -233,9 +225,20 @@ public class FeatureComputerService extends AbstractService
 		return graph;
 	}
 
-	public Map< FeatureSpec< ?, ? >, Feature< ? > > doStuff()
+	public Map< FeatureSpec< ?, ? >, Feature< ? > > compute( final Collection< String > featureKeys )
 	{
-		final FeatureDependencyGraph dependencyGraph = dependencyGraphFor( "F3", "F1" );
+		final List< FeatureSpec< ?, ? > > specs = new ArrayList<>();
+		for ( final String key : featureKeys )
+		{
+			final FeatureSpec< ?, ? > spec = featureSpecs.getSpec( key );
+			if ( null == spec )
+			{
+				System.err.println( "Unknown feature key: " + key + ". Skipping." );
+				continue;
+			}
+			specs.add( spec );
+		}
+		final FeatureDependencyGraph dependencyGraph = dependencyGraphFor( specs );
 		final RefList< FeatureDependencyGraph.Vertex > sequence = new TopologicalSort<>( dependencyGraph ).get();
 		sequence.forEach( System.out::println );
 
@@ -272,4 +275,10 @@ public class FeatureComputerService extends AbstractService
 
 		return ( featureModel );
 	}
+
+	public Map< FeatureSpec< ?, ? >, Feature< ? > > compute( final String... keys )
+	{
+		return compute( Arrays.asList( keys ) );
+	}
+
 }
