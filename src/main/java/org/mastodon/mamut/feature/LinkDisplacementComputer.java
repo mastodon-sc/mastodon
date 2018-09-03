@@ -1,6 +1,7 @@
 package org.mastodon.mamut.feature;
 
 import org.mastodon.collection.ref.RefDoubleHashMap;
+import org.mastodon.feature.FeatureComputer;
 import org.mastodon.revised.model.mamut.Link;
 import org.mastodon.revised.model.mamut.ModelGraph;
 import org.mastodon.revised.model.mamut.Spot;
@@ -9,7 +10,7 @@ import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 
 @Plugin( type = LinkDisplacementComputer.class )
-public class LinkDisplacementComputer implements MamutFeatureComputer
+public class LinkDisplacementComputer implements FeatureComputer
 {
 
 	public static final String KEY = "Link displacement";
