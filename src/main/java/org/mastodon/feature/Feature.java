@@ -17,4 +17,7 @@ package org.mastodon.feature;
  *            target the type of the object this feature is defined for.
  */
 public interface Feature< T >
-{}
+{
+
+	public FeatureProjection< T > project( String projectionKey );
+}

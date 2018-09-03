@@ -22,6 +22,12 @@ public class Playground
 				super( "F1", F1.class, Spot.class, "p1", "p2" );
 			}
 		}
+
+		@Override
+		public FeatureProjection<Spot> project( final String projectionKey )
+		{
+			return null;
+		}
 	}
 
 	public static class F2 implements Feature< Spot >
@@ -33,6 +39,12 @@ public class Playground
 			{
 				super( "F2", F2.class, Spot.class, "q1", "q2" );
 			}
+		}
+
+		@Override
+		public FeatureProjection<Spot> project( final String projectionKey )
+		{
+			return null;
 		}
 	}
 
@@ -46,6 +58,12 @@ public class Playground
 				super( "F3", F3.class, Spot.class, "p" );
 			}
 		}
+
+		@Override
+		public FeatureProjection<Spot> project( final String projectionKey )
+		{
+			return null;
+		}
 	}
 
 	public static class F4 implements Feature< Spot >
@@ -57,6 +75,12 @@ public class Playground
 			{
 				super( "F4", F4.class, Spot.class, "p" );
 			}
+		}
+
+		@Override
+		public FeatureProjection<Spot> project( final String projectionKey )
+		{
+			return null;
 		}
 	}
 
