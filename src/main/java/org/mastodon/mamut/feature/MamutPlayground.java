@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.mastodon.feature.Feature;
-import org.mastodon.feature.FeatureComputerService;
 import org.mastodon.feature.FeatureProjection;
 import org.mastodon.feature.FeatureSpec;
 import org.mastodon.feature.FeatureSpecsService;
@@ -30,8 +29,11 @@ public class MamutPlayground
 		final Model model = windowManager.getAppModel().getModel();
 		System.out.println( "\n\n\n___________________________________\nData loaded. " );
 
-		final FeatureComputerService featureComputerService = context.getService( FeatureComputerService.class );
-		final Map< FeatureSpec< ?, ? >, Feature< ? > > featureModel = featureComputerService.compute( "Spot frame", "Tralalala", "F2" );
+		final MamutFeatureComputerService featureComputerService = context.getService( MamutFeatureComputerService.class );
+		featureComputerService.setModel( model );
+		featureComputerService.setSharedBdvData( windowManager.getAppModel().getSharedBdvData() );
+		final Map< FeatureSpec< ?, ? >, Feature< ? > > featureModel =
+				featureComputerService.compute( "Spot N links", "Tralalala", "F2" );
 
 		final FeatureSpecsService specsService = context.getService( FeatureSpecsService.class );
 		final Class<Spot> target = Spot.class;
