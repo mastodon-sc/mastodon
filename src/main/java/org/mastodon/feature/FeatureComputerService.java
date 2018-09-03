@@ -60,7 +60,8 @@ public class FeatureComputerService extends AbstractService
 	private void clear()
 	{
 		// TODO: IMPLEMENT protected void AbstractObjectGraph.clear()
-		// TODO: and public void FeatureDependencyGraph.clear() { super.clear(); }
+		// TODO: and public void FeatureDependencyGraph.clear() { super.clear();
+		// }
 //		dependencies.clear();
 	}
 
@@ -98,9 +99,9 @@ public class FeatureComputerService extends AbstractService
 					final Class< ? extends Feature< ? > > type = ( Class< ? extends Feature< ? > > ) item.getType();
 					featureSpec = featureSpecs.getSpec( type );
 				}
-				if (featureSpec == null)
+				if ( featureSpec == null )
 					throw new IllegalArgumentException( "Ignoring FeatureComputer " + info.getClassName()
-					+ " because it does not define an output." );
+							+ " because it does not define an output." );
 
 				FeatureDependencyGraph.Vertex v = dependencies.get( featureSpec );
 				if ( v == null )
@@ -156,7 +157,8 @@ public class FeatureComputerService extends AbstractService
 			else if ( scc.size() == 1 )
 			{
 				// Component contains exactly one vertex.
-				// Still needs to be pruned, if the one vertex has an edge to itself.
+				// Still needs to be pruned, if the one vertex has an edge to
+				// itself.
 				final FeatureDependencyGraph.Vertex vertex = scc.iterator().next();
 				for ( final FeatureDependencyGraph.Edge edge : vertex.outgoingEdges() )
 					if ( edge.getTarget().equals( vertex ) )
@@ -170,11 +172,11 @@ public class FeatureComputerService extends AbstractService
 	}
 
 	/**
-	 * Removes vertices whose feature cannot be computed.
-	 * A Feature is incomputable if
+	 * Removes vertices whose feature cannot be computed. A Feature is
+	 * incomputable if
 	 * <ul>
-	 *     <li>no {@link FeatureComputer} was found to compute it, or</li>
-	 *     <li>it depends on an incomputable feature.</li>
+	 * <li>no {@link FeatureComputer} was found to compute it, or</li>
+	 * <li>it depends on an incomputable feature.</li>
 	 * </ul>
 	 */
 	public static void removeMissing( final FeatureDependencyGraph dependencies )
@@ -183,7 +185,7 @@ public class FeatureComputerService extends AbstractService
 		for ( final FeatureDependencyGraph.Vertex vertex : dependencies.vertices() )
 			if ( vertex.getFeatureComputer() == null )
 				missing.add( vertex );
-		for ( final FeatureDependencyGraph.Vertex vertex : ancestors( dependencies, missing) )
+		for ( final FeatureDependencyGraph.Vertex vertex : ancestors( dependencies, missing ) )
 			dependencies.remove( vertex );
 	}
 
@@ -198,8 +200,7 @@ public class FeatureComputerService extends AbstractService
 		return dependencyGraphFor(
 				Arrays.stream( keys )
 						.map( featureSpecs::getSpec )
-						.collect( Collectors.toList() )
-		);
+						.collect( Collectors.toList() ) );
 	}
 
 	private FeatureDependencyGraph dependencyGraphFor( final Collection< FeatureSpec< ?, ? > > specs )
@@ -230,12 +231,11 @@ public class FeatureComputerService extends AbstractService
 		return graph;
 	}
 
-	public void doStuff()
+	public Map< FeatureSpec< ?, ? >, Feature< ? > > doStuff()
 	{
 		final FeatureDependencyGraph dependencyGraph = dependencyGraphFor( "F3", "F1" );
 		final RefList< FeatureDependencyGraph.Vertex > sequence = new TopologicalSort<>( dependencyGraph ).get();
 		sequence.forEach( System.out::println );
-
 
 		final Map< FeatureSpec< ?, ? >, Feature< ? > > featureModel = new HashMap<>();
 		for ( final FeatureDependencyGraph.Vertex vertex : sequence )
@@ -268,6 +268,6 @@ public class FeatureComputerService extends AbstractService
 			featureModel.put( vertex.getFeatureSpec(), output );
 		}
 
-		System.out.println( featureModel );
+		return ( featureModel );
 	}
 }
