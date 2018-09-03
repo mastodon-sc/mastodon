@@ -21,9 +21,11 @@ import org.scijava.command.CommandModule;
 import org.scijava.command.CommandService;
 import org.scijava.module.ModuleItem;
 import org.scijava.plugin.Parameter;
+import org.scijava.plugin.Plugin;
 import org.scijava.plugin.PluginService;
 import org.scijava.service.AbstractService;
 
+@Plugin( type = FeatureComputerService.class )
 public class FeatureComputerService extends AbstractService
 {
 	@Parameter

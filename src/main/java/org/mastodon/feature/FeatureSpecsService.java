@@ -7,12 +7,14 @@ import java.util.List;
 import java.util.Map;
 
 import org.scijava.plugin.Parameter;
+import org.scijava.plugin.Plugin;
 import org.scijava.plugin.PluginService;
 import org.scijava.service.AbstractService;
 
 /**
  * Helper class to discover and hold {@link FeatureSpec}s.
  */
+@Plugin( type = FeatureSpecsService.class )
 public class FeatureSpecsService extends AbstractService
 {
 	@Parameter
