@@ -13,8 +13,6 @@ import org.scijava.plugin.Plugin;
 public class LinkDisplacementComputer implements FeatureComputer
 {
 
-	public static final String KEY = "Link displacement";
-
 	@Parameter
 	private ModelGraph graph;
 
