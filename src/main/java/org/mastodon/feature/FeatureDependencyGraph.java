@@ -10,7 +10,7 @@ import org.mastodon.graph.object.AbstractObjectVertex;
 import org.scijava.command.CommandInfo;
 
 /**
- * Each vertex represents a Feature and that FeatureComputer that computes it.
+ * Each vertex represents a Feature and the FeatureComputer that computes it.
  * Each edge represents a dependency, {@code A --> B} means "feature A depends on feature B".
  */
 public class FeatureDependencyGraph extends AbstractObjectGraph< FeatureDependencyGraph.Vertex, FeatureDependencyGraph.Edge >

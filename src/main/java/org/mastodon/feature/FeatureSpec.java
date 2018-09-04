@@ -5,7 +5,7 @@ import java.util.Arrays;
 import org.scijava.plugin.SciJavaPlugin;
 
 /**
- * Specification for a feature F.
+ * Specification for a feature {@code F}.
  *
  * @param <F>
  *            the concrete feature type.

@@ -3,8 +3,8 @@ package org.mastodon.feature;
 /**
  *
  * @param <T>
- *            target the type of the object this feature-projection is defined
- *            for.
+ *            target the type of the {@link Feature} this feature-projection is
+ *            defined for.
  */
 public interface FeatureProjection< T >
 {
