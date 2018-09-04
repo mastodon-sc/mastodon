@@ -2,8 +2,6 @@ package org.mastodon.mamut.feature;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 
 import org.mastodon.collection.RefDoubleMap;
@@ -55,23 +53,9 @@ public class SpotGaussFilteredIntensityComputer implements FeatureComputer
 	public void createOutput()
 	{
 		if ( null == output )
-			output = new SpotGaussFilteredIntensityFeature( bdvData.getSources().size(), model.getGraph().vertices().getRefPool() );
-	}
-
-	public Collection< String > getProjectionKeys()
-	{
-		if ( null == bdvData )
-			return Collections.emptyList();
-
-		final List< String > projectionKeys = new ArrayList<>( processSource.length * 2 );
-		for ( int iSource = 0; iSource < processSource.length; iSource++ )
-		{
-			final String nameMean = "Average ch " + iSource;
-			projectionKeys.add( nameMean );
-			final String nameStd = "Std ch " + iSource;
-			projectionKeys.add( nameStd );
-		}
-		return projectionKeys;
+			output = new SpotGaussFilteredIntensityFeature(
+					bdvData.getSources().size(),
+					model.getGraph().vertices().getRefPool() );
 	}
 
 	@Override
