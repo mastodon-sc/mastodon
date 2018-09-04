@@ -10,8 +10,8 @@ import org.mastodon.collection.RefDoubleMap;
 import org.mastodon.collection.ref.RefDoubleHashMap;
 import org.mastodon.feature.Feature;
 import org.mastodon.feature.FeatureProjection;
+import org.mastodon.feature.FeatureProjections;
 import org.mastodon.feature.FeatureSpec;
-import org.mastodon.feature.util.FeatureProjections;
 import org.mastodon.revised.model.mamut.Spot;
 import org.scijava.plugin.Plugin;
 

@@ -3,8 +3,8 @@ package org.mastodon.mamut.feature;
 import org.mastodon.collection.RefDoubleMap;
 import org.mastodon.feature.Feature;
 import org.mastodon.feature.FeatureProjection;
+import org.mastodon.feature.FeatureProjections;
 import org.mastodon.feature.FeatureSpec;
-import org.mastodon.feature.util.FeatureProjections;
 import org.mastodon.revised.model.mamut.Link;
 import org.scijava.plugin.Plugin;
 

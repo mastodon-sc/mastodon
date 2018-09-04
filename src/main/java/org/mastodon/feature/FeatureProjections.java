@@ -1,9 +1,7 @@
-package org.mastodon.feature.util;
+package org.mastodon.feature;
 
 import org.mastodon.collection.RefDoubleMap;
 import org.mastodon.collection.RefIntMap;
-import org.mastodon.feature.FeatureProjection;
-import org.mastodon.feature.IntFeatureProjection;
 
 /**
  * Static utilities related to common {@link FeatureProjection}s.
