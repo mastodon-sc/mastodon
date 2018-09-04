@@ -9,7 +9,7 @@ package org.mastodon.revised.model.feature;
  *
  * @author Jean-Yves Tinevez
  *
- * @param <O> the type of objects for which the feature is defined.
+ * @param <T> the type of objects for which the feature is defined.
  */
-public interface IntFeatureProjection< O > extends FeatureProjection< O >
+public interface IntFeatureProjection< T > extends FeatureProjection< T >
 {}
