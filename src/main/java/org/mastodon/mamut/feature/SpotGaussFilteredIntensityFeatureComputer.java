@@ -5,7 +5,6 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.mastodon.collection.RefDoubleMap;
-import org.mastodon.feature.FeatureComputer;
 import org.mastodon.feature.FeatureSpec;
 import org.mastodon.feature.FeatureSpecsService;
 import org.mastodon.mamut.feature.SpotGaussFilteredIntensityFeature.SpotGaussFilteredIntensityFeatureSpec;
@@ -29,7 +28,7 @@ import net.imglib2.realtransform.AffineTransform3D;
 import net.imglib2.type.numeric.RealType;
 
 @Plugin( type = SpotGaussFilteredIntensityFeatureComputer.class )
-public class SpotGaussFilteredIntensityFeatureComputer implements FeatureComputer
+public class SpotGaussFilteredIntensityFeatureComputer implements MamutFeatureComputer
 {
 
 	/** Convert from min radius to sigma by dividing radius by: */
