@@ -2,12 +2,8 @@ package org.mastodon.mamut.feature;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 
 import org.mastodon.collection.RefDoubleMap;
-import org.mastodon.feature.FeatureSpec;
-import org.mastodon.feature.FeatureSpecsService;
-import org.mastodon.mamut.feature.SpotGaussFilteredIntensityFeature.SpotGaussFilteredIntensityFeatureSpec;
 import org.mastodon.revised.bdv.SharedBigDataViewerData;
 import org.mastodon.revised.bdv.overlay.util.JamaEigenvalueDecomposition;
 import org.mastodon.revised.model.mamut.Model;
@@ -43,9 +39,6 @@ public class SpotGaussFilteredIntensityFeatureComputer implements MamutFeatureCo
 	@Parameter( type = ItemIO.OUTPUT )
 	private SpotGaussFilteredIntensityFeature output;
 
-	@Parameter
-	private FeatureSpecsService specsService;
-
 	private boolean[] processSource;
 
 	@Override
@@ -61,7 +54,7 @@ public class SpotGaussFilteredIntensityFeatureComputer implements MamutFeatureCo
 	public void run()
 	{
 		// TODO Take into account that some sources might not be computed.
-		this.processSource = new boolean[bdvData.getSources().size()];
+		this.processSource = new boolean[ bdvData.getSources().size() ];
 		Arrays.fill( processSource, true );
 
 		// TODO Update instead of clearing.
@@ -91,9 +84,6 @@ public class SpotGaussFilteredIntensityFeatureComputer implements MamutFeatureCo
 		// Spatio-temporal index.
 		final SpatioTemporalIndex< Spot > index = model.getSpatioTemporalIndex();
 
-		// Projection names.
-		final List<String> projections = new ArrayList<>();
-
 		final int numTimepoints = bdvData.getNumTimepoints();
 		final ArrayList< SourceAndConverter< ? > > sources = bdvData.getSources();
 		final int nSources = sources.size();
@@ -101,11 +91,6 @@ public class SpotGaussFilteredIntensityFeatureComputer implements MamutFeatureCo
 		{
 			if ( !processSource[ iSource ] )
 				continue;
-
-			final String nameMean = SpotGaussFilteredIntensityFeature.meanProjectionName( iSource );
-			final String nameStd = SpotGaussFilteredIntensityFeature.stdProjectionName( iSource );
-			projections.add( nameMean );
-			projections.add( nameStd );
 
 			final Source< ? > source = sources.get( iSource ).getSpimSource();
 			for ( int timepoint = 0; timepoint < numTimepoints; timepoint++ )
@@ -186,11 +171,6 @@ public class SpotGaussFilteredIntensityFeatureComputer implements MamutFeatureCo
 				}
 			}
 		}
-
-		// Update specs.
-		final FeatureSpec< ?, ? > fs = specsService.getSpec( SpotGaussFilteredIntensityFeature.class );
-		final SpotGaussFilteredIntensityFeatureSpec spec = ( SpotGaussFilteredIntensityFeatureSpec ) fs;
-		spec.setProjections( projections.toArray( new String[] {}  ) );
 	}
 
 	private static final double[] halfkernel( final double sigma, final double offset, final int size )
