@@ -2,12 +2,11 @@ package org.mastodon.mamut.feature;
 
 import static org.scijava.ItemIO.OUTPUT;
 
-import org.mastodon.feature.FeatureComputer;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 
 @Plugin( type = SpotFrameComputer.class )
-public class SpotFrameComputer implements FeatureComputer
+public class SpotFrameComputer implements MamutFeatureComputer
 {
 
 	@Parameter( type = OUTPUT )
