@@ -27,7 +27,7 @@ public class SpotNLinksFeature implements Feature< Spot >
 		}
 	}
 
-	SpotNLinksFeature(final RefIntHashMap<Spot> map)
+	SpotNLinksFeature( final RefIntHashMap< Spot > map )
 	{
 		this.map = map;
 		this.projection = FeatureProjections.project( map );
@@ -37,5 +37,11 @@ public class SpotNLinksFeature implements Feature< Spot >
 	public FeatureProjection< Spot > project( final String projectionKey )
 	{
 		return projectionKey.equals( KEY ) ? projection : null;
+	}
+
+	@Override
+	public String[] projectionKeys()
+	{
+		return new String[] { KEY };
 	}
 }

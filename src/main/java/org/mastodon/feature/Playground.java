@@ -24,9 +24,15 @@ public class Playground
 		}
 
 		@Override
-		public FeatureProjection<Spot> project( final String projectionKey )
+		public FeatureProjection< Spot > project( final String projectionKey )
 		{
 			return null;
+		}
+
+		@Override
+		public String[] projectionKeys()
+		{
+			return new String[] { "p1", "p2" };
 		}
 	}
 
@@ -42,9 +48,15 @@ public class Playground
 		}
 
 		@Override
-		public FeatureProjection<Spot> project( final String projectionKey )
+		public FeatureProjection< Spot > project( final String projectionKey )
 		{
 			return null;
+		}
+
+		@Override
+		public String[] projectionKeys()
+		{
+			return new String[] { "q1", "q2" };
 		}
 	}
 
@@ -60,9 +72,15 @@ public class Playground
 		}
 
 		@Override
-		public FeatureProjection<Spot> project( final String projectionKey )
+		public FeatureProjection< Spot > project( final String projectionKey )
 		{
 			return null;
+		}
+
+		@Override
+		public String[] projectionKeys()
+		{
+			return new String[] { "p" };
 		}
 	}
 
@@ -78,9 +96,15 @@ public class Playground
 		}
 
 		@Override
-		public FeatureProjection<Spot> project( final String projectionKey )
+		public FeatureProjection< Spot > project( final String projectionKey )
 		{
 			return null;
+		}
+
+		@Override
+		public String[] projectionKeys()
+		{
+			return new String[] { "p" };
 		}
 	}
 
@@ -92,8 +116,7 @@ public class Playground
 
 		@Override
 		public void run()
-		{
-		}
+		{}
 
 		@Override
 		public void createOutput()
@@ -113,8 +136,7 @@ public class Playground
 
 		@Override
 		public void run()
-		{
-		}
+		{}
 
 		@Override
 		public void createOutput()
@@ -139,8 +161,7 @@ public class Playground
 
 		@Override
 		public void run()
-		{
-		}
+		{}
 
 		@Override
 		public void createOutput()
@@ -162,8 +183,7 @@ public class Playground
 
 		@Override
 		public void run()
-		{
-		}
+		{}
 
 		@Override
 		public void createOutput()
@@ -182,7 +202,7 @@ public class Playground
 		featureComputerService.initialize();
 		featureComputerService.compute( "F1", "F3" );
 
-//		testSpecs( context );
+		testSpecs( context );
 	}
 
 	private static void testSpecs( final Context context )

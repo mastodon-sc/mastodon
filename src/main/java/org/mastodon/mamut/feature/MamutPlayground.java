@@ -55,7 +55,7 @@ public class MamutPlayground
 				System.out.println( "\n - Feature " + spec.getKey() + " is not computed." );
 				continue;
 			}
-			final String[] projections = spec.getProjections();
+			final String[] projections = feature.projectionKeys();
 			System.out.println( "\n - Feature " + spec.getKey() +". Has " + projections.length + " projections:" );
 			for ( final String projectionKey : projections )
 			{

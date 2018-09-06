@@ -30,6 +30,12 @@ public class SpotFrameFeature implements Feature< Spot >
 		return new MyProjection();
 	}
 
+	@Override
+	public String[] projectionKeys()
+	{
+		return new String[] { KEY };
+	}
+
 	private static final class MyProjection implements IntFeatureProjection< Spot >
 	{
 

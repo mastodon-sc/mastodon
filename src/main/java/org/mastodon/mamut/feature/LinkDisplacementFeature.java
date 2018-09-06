@@ -15,7 +15,7 @@ public class LinkDisplacementFeature implements Feature< Link >
 
 	final RefDoubleMap< Link > map;
 
-	private FeatureProjection< Link > projection;
+	private final FeatureProjection< Link > projection;
 
 	@Plugin( type = FeatureSpec.class )
 	public static class Spec extends FeatureSpec< LinkDisplacementFeature, Link >
@@ -36,5 +36,11 @@ public class LinkDisplacementFeature implements Feature< Link >
 	public FeatureProjection< Link > project( final String projectionKey )
 	{
 		return projection;
+	}
+
+	@Override
+	public String[] projectionKeys()
+	{
+		return new String[] { KEY };
 	}
 }

@@ -20,4 +20,7 @@ public interface Feature< T >
 {
 
 	public FeatureProjection< T > project( String projectionKey );
+
+	public String[] projectionKeys();
+
 }
