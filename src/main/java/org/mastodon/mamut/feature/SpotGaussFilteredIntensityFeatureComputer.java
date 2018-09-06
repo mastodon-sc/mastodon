@@ -28,8 +28,8 @@ import net.imglib2.RealPoint;
 import net.imglib2.realtransform.AffineTransform3D;
 import net.imglib2.type.numeric.RealType;
 
-@Plugin( type = SpotGaussFilteredIntensityComputer.class )
-public class SpotGaussFilteredIntensityComputer implements FeatureComputer
+@Plugin( type = SpotGaussFilteredIntensityFeatureComputer.class )
+public class SpotGaussFilteredIntensityFeatureComputer implements FeatureComputer
 {
 
 	/** Convert from min radius to sigma by dividing radius by: */

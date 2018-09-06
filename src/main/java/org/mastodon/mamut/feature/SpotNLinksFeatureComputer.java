@@ -8,8 +8,8 @@ import org.scijava.ItemIO;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 
-@Plugin( type = SpotNLinksComputer.class, name = "Spot N links" )
-public class SpotNLinksComputer implements FeatureComputer
+@Plugin( type = SpotNLinksFeatureComputer.class, name = "Spot N links" )
+public class SpotNLinksFeatureComputer implements FeatureComputer
 {
 
 	@Parameter

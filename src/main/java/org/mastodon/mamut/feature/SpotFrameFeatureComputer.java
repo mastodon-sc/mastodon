@@ -5,8 +5,8 @@ import static org.scijava.ItemIO.OUTPUT;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 
-@Plugin( type = SpotFrameComputer.class )
-public class SpotFrameComputer implements MamutFeatureComputer
+@Plugin( type = SpotFrameFeatureComputer.class )
+public class SpotFrameFeatureComputer implements MamutFeatureComputer
 {
 
 	@Parameter( type = OUTPUT )

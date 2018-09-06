@@ -8,8 +8,8 @@ import org.scijava.ItemIO;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 
-@Plugin( type = LinkDisplacementComputer.class )
-public class LinkDisplacementComputer implements MamutFeatureComputer
+@Plugin( type = LinkDisplacementFeatureComputer.class )
+public class LinkDisplacementFeatureComputer implements MamutFeatureComputer
 {
 
 	@Parameter
