@@ -1,6 +1,7 @@
 package org.mastodon.feature;
 
 import java.util.Arrays;
+import java.util.stream.Collectors;
 
 import org.scijava.plugin.SciJavaPlugin;
 
@@ -16,7 +17,7 @@ public abstract class FeatureSpec< F extends Feature< T >, T > implements SciJav
 {
 	private final String key;
 
-	private final String[] projections;
+	private final FeatureProjectionSpec[] projectionSpecs;
 
 	private final Class< F > featureClass;
 
@@ -26,12 +27,28 @@ public abstract class FeatureSpec< F extends Feature< T >, T > implements SciJav
 			final String key,
 			final Class< F > featureClass,
 			final Class< T > targetClass,
-			final String... projections )
+			final FeatureProjectionSpec... projectionSpecs )
 	{
 		this.key = key;
 		this.featureClass = featureClass;
 		this.targetClass = targetClass;
-		this.projections = projections;
+		this.projectionSpecs = projectionSpecs;
+	}
+
+	protected FeatureSpec(
+			final String key,
+			final Class< F > featureClass,
+			final Class< T> targetClass,
+			final String... projectionNames )
+	{
+		this(
+				key,
+				featureClass,
+				targetClass,
+				Arrays.stream( projectionNames )
+					.map( FeatureProjectionSpec::standard )
+					.collect( Collectors.toList() )
+					.toArray( new FeatureProjectionSpec[] {} ));
 	}
 
 	public String getKey()
@@ -39,9 +56,9 @@ public abstract class FeatureSpec< F extends Feature< T >, T > implements SciJav
 		return key;
 	}
 
-	public String[] getProjections()
+	public FeatureProjectionSpec[] getProjectionSpecs()
 	{
-		return projections;
+		return projectionSpecs;
 	}
 
 	public Class< F > getFeatureClass()
@@ -67,7 +84,7 @@ public abstract class FeatureSpec< F extends Feature< T >, T > implements SciJav
 			return false;
 		final FeatureSpec< ?, ? > that = ( FeatureSpec< ?, ? > ) o;
 		return key.equals( that.key )
-				&& Arrays.equals( projections, that.projections )
+				&& Arrays.equals( projectionSpecs, that.projectionSpecs )
 				&& featureClass.equals( that.featureClass )
 				&& targetClass.equals( that.targetClass );
 	}
