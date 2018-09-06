@@ -52,14 +52,6 @@ public class MamutFeatureComputerService extends FeatureComputerService
 			return;
 		}
 
-		if ( FeatureSpecsService.class.isAssignableFrom( parameterClass ) )
-		{
-			@SuppressWarnings( "unchecked" )
-			final ModuleItem< FeatureSpecsService > specServiceItem = ( ModuleItem< FeatureSpecsService > ) item;
-			specServiceItem.setValue( module, featureSpecsService );
-			return;
-		}
-
 		super.provideParameters( item, module, parameterClass, featureModel );
 	}
 
