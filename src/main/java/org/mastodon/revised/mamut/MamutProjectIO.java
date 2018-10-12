@@ -2,6 +2,7 @@ package org.mastodon.revised.mamut;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 
 import org.jdom2.Document;
@@ -17,8 +18,10 @@ public class MamutProjectIO
 {
 	public static final String MAMUTPROJECT_TAG = "MamutProject";
 	public static final String MAMUTPROJECT_VERSION_ATTRIBUTE_NAME = "version";
-	public static final String MAMUTPROJECT_VERSION_ATTRIBUTE_CURRENT = "0.2";
+	public static final String MAMUTPROJECT_VERSION_ATTRIBUTE_CURRENT = "0.3";
 	public static final String SPIMDATAFILE_TAG = "SpimDataFile";
+	private static final String SPACE_UNITS_TAG = "SpaceUnits";
+	private static final String TIME_UNITS_TAG = "TimeUnits";
 
 	public void save( final MamutProject project ) throws IOException
 	{
@@ -68,6 +71,59 @@ public class MamutProjectIO
 	{
 		final File datasetXmlFile = XmlHelpers.loadPath( root, SPIMDATAFILE_TAG, projectFolder );
 		return new MamutProject( projectFolder, datasetXmlFile );
+	}
+
+	public static final String readSpaceUnits( final MamutProject project )
+	{
+		final String projectXmlFilename = project.getProjectFile().getAbsolutePath();
+		final SAXBuilder sax = new SAXBuilder();
+		try
+		{
+			final Document doc = sax.build( projectXmlFilename );
+			final Element root = doc.getRootElement();
+			return XmlHelpers.getText( root, SPACE_UNITS_TAG );
+		}
+		catch ( final JDOMException | IOException e )
+		{
+			return "pixel";
+		}
+	}
+
+	public static final String readTimeUnits( final MamutProject project )
+	{
+		final String projectXmlFilename = project.getProjectFile().getAbsolutePath();
+		final SAXBuilder sax = new SAXBuilder();
+		try
+		{
+			final Document doc = sax.build( projectXmlFilename );
+			final Element root = doc.getRootElement();
+			return XmlHelpers.getText( root, TIME_UNITS_TAG );
+		}
+		catch ( final JDOMException | IOException e )
+		{
+			return "frame";
+		}
+	}
+
+	public static final void writeUnits( final MamutProject project, final String spaceUnits, final String timeUnits )
+	{
+		final String projectXmlFilename = project.getProjectFile().getAbsolutePath();
+		final SAXBuilder sax = new SAXBuilder();
+		try
+		{
+			// Load and edit the project file.
+			final Document doc = sax.build( projectXmlFilename );
+			final Element root = doc.getRootElement();
+			root.addContent( XmlHelpers.textElement( SPACE_UNITS_TAG, spaceUnits ) );
+			root.addContent( XmlHelpers.textElement( TIME_UNITS_TAG, timeUnits ) );
+
+			// Resave it.
+			final XMLOutputter xmlOutput = new XMLOutputter();
+			xmlOutput.setFormat( Format.getPrettyFormat() );
+			xmlOutput.output( doc, new FileWriter( project.getProjectFile() ) );
+		}
+		catch ( final JDOMException | IOException e )
+		{}
 	}
 
 	public static boolean mkdirs( final String fileName )

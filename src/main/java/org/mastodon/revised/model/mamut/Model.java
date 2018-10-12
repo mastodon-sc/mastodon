@@ -11,15 +11,15 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
+import org.mastodon.feature.FeatureModel;
 import org.mastodon.graph.ReadOnlyGraph;
 import org.mastodon.graph.io.RawGraphIO.FileIdToGraphMap;
 import org.mastodon.graph.io.RawGraphIO.GraphToFileIdMap;
 import org.mastodon.labels.LabelSets;
 import org.mastodon.properties.Property;
 import org.mastodon.revised.mamut.MamutProject;
+import org.mastodon.revised.mamut.MamutProjectIO;
 import org.mastodon.revised.model.AbstractModel;
-import org.mastodon.revised.model.feature.DefaultFeatureModel;
-import org.mastodon.revised.model.feature.FeatureModel;
 import org.mastodon.revised.model.tag.DefaultTagSetModel;
 import org.mastodon.revised.model.tag.RawTagSetModelIO;
 import org.mastodon.revised.model.tag.TagSetModel;
@@ -65,9 +65,20 @@ public class Model extends AbstractModel< ModelGraph, Spot, Link > implements Un
 
 	private final DefaultTagSetModel< Spot, Link > tagSetModel;
 
+	private String spaceUnits;
+
+	private String timeUnits;
+
 	public Model()
 	{
+		this("pixel", "frame");
+	}
+
+	public Model(final String spaceUnits, final String timeUnits)
+	{
 		super( new ModelGraph() );
+		this.spaceUnits = spaceUnits;
+		this.timeUnits = timeUnits;
 		final SpatioTemporalIndexImp< Spot, Link > theIndex = new SpatioTemporalIndexImp<>( modelGraph, modelGraph.idmap().vertexIdBimap() );
 		/*
 		 * Every 1 second, rebuild spatial indices with more than 100
@@ -88,7 +99,7 @@ public class Model extends AbstractModel< ModelGraph, Spot, Link > implements Un
 
 		final List< Property< Link > > edgeUndoableProperties = new ArrayList<>();
 
-		featureModel = new DefaultFeatureModel();
+		featureModel = new FeatureModel();
 		tagSetModel = new DefaultTagSetModel<>( getGraph() );
 		vertexUndoableProperties.add(
 				new DefaultTagSetModel.SerialisationAccess< Spot, Link >( tagSetModel )
@@ -132,8 +143,9 @@ public class Model extends AbstractModel< ModelGraph, Spot, Link > implements Un
 	 */
 	public void loadRaw( final MamutProject project ) throws IOException
 	{
+		// Graph.
 		final FileIdToGraphMap< Spot, Link > idmap = modelGraph.loadRaw( project.getRawModelFile(), ModelSerializer.getInstance() );
-
+		// Tags.
 		if ( project.getRawTagsFile().isFile() )
 		{
 			final FileInputStream fis = new FileInputStream( project.getRawTagsFile() );
@@ -159,8 +171,11 @@ public class Model extends AbstractModel< ModelGraph, Spot, Link > implements Un
 	 */
 	public void saveRaw( final MamutProject project ) throws IOException
 	{
+		// Units.
+		MamutProjectIO.writeUnits( project, spaceUnits, timeUnits );
+		// Graph.
 		final GraphToFileIdMap< Spot, Link > idmap = modelGraph.saveRaw( project.getRawModelFile(), ModelSerializer.getInstance() );
-
+		// Tags.
 		final FileOutputStream fos = new FileOutputStream( project.getRawTagsFile()  );
 		final ObjectOutputStream oos = new ObjectOutputStream( new BufferedOutputStream( fos, 1024 * 1024 ) );
 		RawTagSetModelIO.write( tagSetModel, idmap, oos );
@@ -219,5 +234,15 @@ public class Model extends AbstractModel< ModelGraph, Spot, Link > implements Un
 	public TagSetModel< Spot, Link > getTagSetModel()
 	{
 		return tagSetModel;
+	}
+
+	public String getSpaceUnits()
+	{
+		return spaceUnits;
+	}
+
+	public String getTimeUnits()
+	{
+		return timeUnits;
 	}
 }

@@ -248,14 +248,6 @@ public class ProjectManager
 	 */
 	public synchronized void open( final MamutProject project ) throws IOException, SpimDataException
 	{
-		/*
-		 * Load Model
-		 */
-		final Model model = new Model();
-		final boolean isNewProject = project.getProjectFolder() == null;
-
-		if ( !isNewProject )
-			model.loadRaw( project );
 
 		/*
 		 * Load SpimData
@@ -277,6 +269,45 @@ public class ProjectManager
 				spimData,
 				options,
 				() -> windowManager.forEachBdvView( bdv -> bdv.requestRepaint() ) );
+
+		/*
+		 * Load Model
+		 */
+
+		// Units
+
+		final Model model;
+		final boolean isNewProject = project.getProjectFolder() == null;
+
+		if ( !isNewProject )
+		{
+			// Try to read units from the project file.
+			String spaceUnits = MamutProjectIO.readSpaceUnits( project );
+			String timeUnits = MamutProjectIO.readTimeUnits( project );
+			if (null == spaceUnits)
+			{
+				// We could not. Read if from the BDV file.
+				if (sharedBdvData.getSources().isEmpty())
+					spaceUnits = "pixel";
+				else
+					spaceUnits = sharedBdvData.getSources().get( 0 ).getSpimSource().getVoxelDimensions().unit();
+			}
+			if (null == timeUnits)
+				timeUnits = "frame";
+			model = new Model(spaceUnits, timeUnits);
+			model.loadRaw( project );
+		}
+		else
+		{
+			// Read units from the BDV file.
+			final String timeUnits = "frame";
+			final String spaceUnits;
+			if (sharedBdvData.getSources().isEmpty())
+				spaceUnits = "pixel";
+			else
+				spaceUnits = sharedBdvData.getSources().get( 0 ).getSpimSource().getVoxelDimensions().unit();
+			model = new Model( spaceUnits, timeUnits );
+		}
 
 		final MamutAppModel appModel = new MamutAppModel( model, sharedBdvData, keyPressedManager, trackSchemeStyleManager, renderSettingsManager, keymapManager, plugins, globalAppActions );
 
