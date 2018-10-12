@@ -1,7 +1,6 @@
 package org.mastodon.feature;
 
 import java.util.Arrays;
-import java.util.stream.Collectors;
 
 import org.scijava.plugin.SciJavaPlugin;
 
@@ -23,32 +22,29 @@ public abstract class FeatureSpec< F extends Feature< T >, T > implements SciJav
 
 	private final Class< T > targetClass;
 
+	private final String info;
+
 	protected FeatureSpec(
 			final String key,
+			final String info,
 			final Class< F > featureClass,
 			final Class< T > targetClass,
 			final FeatureProjectionSpec... projectionSpecs )
 	{
 		this.key = key;
+		this.info = info;
 		this.featureClass = featureClass;
 		this.targetClass = targetClass;
 		this.projectionSpecs = projectionSpecs;
 	}
 
-	protected FeatureSpec(
-			final String key,
-			final Class< F > featureClass,
-			final Class< T> targetClass,
-			final String... projectionNames )
+	/**
+	 * Returns an info string about the feature.
+	 * @return an info string.
+	 */
+	public String getInfo()
 	{
-		this(
-				key,
-				featureClass,
-				targetClass,
-				Arrays.stream( projectionNames )
-					.map( FeatureProjectionSpec::standard )
-					.collect( Collectors.toList() )
-					.toArray( new FeatureProjectionSpec[] {} ));
+		return info;
 	}
 
 	public String getKey()
