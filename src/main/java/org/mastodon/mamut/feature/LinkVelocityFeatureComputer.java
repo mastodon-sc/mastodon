@@ -1,7 +1,9 @@
 package org.mastodon.mamut.feature;
 
 import org.mastodon.collection.ref.RefDoubleHashMap;
+import org.mastodon.feature.Dimension;
 import org.mastodon.revised.model.mamut.Link;
+import org.mastodon.revised.model.mamut.Model;
 import org.mastodon.revised.model.mamut.ModelGraph;
 import org.mastodon.revised.model.mamut.Spot;
 import org.scijava.ItemIO;
@@ -16,7 +18,7 @@ public class LinkVelocityFeatureComputer implements MamutFeatureComputer
 	private LinkDisplacementFeature displacement;
 
 	@Parameter
-	private ModelGraph graph;
+	private Model model;
 
 	@Parameter( type = ItemIO.OUTPUT )
 	private LinkVelocityFeature output;
@@ -25,14 +27,16 @@ public class LinkVelocityFeatureComputer implements MamutFeatureComputer
 	public void createOutput()
 	{
 		if ( null == output )
-			output = new LinkVelocityFeature( new RefDoubleHashMap<>( graph.edges().getRefPool(), Double.NaN ) );
+		{
+			final String units = Dimension.VELOCITY.getUnits( model.getSpaceUnits(), model.getTimeUnits() );
+			output = new LinkVelocityFeature( new RefDoubleHashMap<>( model.getGraph().edges().getRefPool(), Double.NaN ), units );
+		}
 	}
 
 	@Override
 	public void run()
 	{
-		output.map.clear(); // TODO Update map instead.
-
+		final ModelGraph graph = model.getGraph();
 		final Spot ref1 = graph.vertexRef();
 		final Spot ref2 = graph.vertexRef();
 

@@ -1,7 +1,9 @@
 package org.mastodon.mamut.feature;
 
+import org.mastodon.feature.Dimension;
 import org.mastodon.feature.Feature;
 import org.mastodon.feature.FeatureProjection;
+import org.mastodon.feature.FeatureProjectionSpec;
 import org.mastodon.feature.FeatureSpec;
 import org.mastodon.feature.IntFeatureProjection;
 import org.mastodon.revised.model.mamut.Spot;
@@ -12,6 +14,8 @@ public class SpotFrameFeature implements Feature< Spot >
 
 	private static final String KEY = "Spot frame";
 
+	private static final String HELP_STRING = "Exposes the spot frame.";
+
 	SpotFrameFeature()
 	{}
 
@@ -20,7 +24,12 @@ public class SpotFrameFeature implements Feature< Spot >
 	{
 		public Spec()
 		{
-			super( KEY, SpotFrameFeature.class, Spot.class, KEY );
+			super(
+					KEY,
+					HELP_STRING,
+					SpotFrameFeature.class,
+					Spot.class,
+					FeatureProjectionSpec.standard( KEY, Dimension.NONE ) );
 		}
 	}
 
@@ -49,6 +58,12 @@ public class SpotFrameFeature implements Feature< Spot >
 		public double value( final Spot o )
 		{
 			return o.getTimepoint();
+		}
+
+		@Override
+		public String units()
+		{
+			return "";
 		}
 	}
 }
