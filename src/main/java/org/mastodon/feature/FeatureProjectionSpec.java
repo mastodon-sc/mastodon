@@ -13,6 +13,8 @@ public class FeatureProjectionSpec
 	 */
 	public final String projectionName;
 
+	public final Dimension projectionDimension;
+
 	/**
 	 * The projection multiplicity.
 	 */
@@ -55,9 +57,10 @@ public class FeatureProjectionSpec
 		}
 	}
 
-	private FeatureProjectionSpec( final String projectionName, final Multiplicity multiplicity )
+	private FeatureProjectionSpec( final String projectionName, final Dimension dimension, final Multiplicity multiplicity )
 	{
 		this.projectionName = projectionName;
+		this.projectionDimension = dimension;
 		this.multiplicity = multiplicity;
 	}
 
@@ -86,11 +89,13 @@ public class FeatureProjectionSpec
 	 *
 	 * @param projectionName
 	 *            the projection name.
+	 * @param dimension
+	 *            the feature projection dimension.
 	 * @return a new feature projection specification.
 	 */
-	public static FeatureProjectionSpec standard( final String projectionName )
+	public static FeatureProjectionSpec standard( final String projectionName, final Dimension dimension )
 	{
-		return new FeatureProjectionSpec( projectionName, Multiplicity.SINGLE );
+		return new FeatureProjectionSpec( projectionName, dimension, Multiplicity.SINGLE );
 	}
 
 	/**
@@ -100,11 +105,13 @@ public class FeatureProjectionSpec
 	 *
 	 * @param projectionName
 	 *            the projection name.
+	 * @param dimension
+	 *            the feature projection dimension.
 	 * @return a new feature projection specification.
 	 */
-	public static FeatureProjectionSpec onSources( final String projectionName )
+	public static FeatureProjectionSpec onSources( final String projectionName, final Dimension dimension )
 	{
-		return new FeatureProjectionSpec( projectionName, Multiplicity.ON_SOURCES );
+		return new FeatureProjectionSpec( projectionName, dimension, Multiplicity.ON_SOURCES );
 	}
 
 	/**
@@ -114,10 +121,12 @@ public class FeatureProjectionSpec
 	 *
 	 * @param projectionName
 	 *            the projection name.
+	 * @param dimension
+	 *            the feature projection dimension.
 	 * @return a new feature projection specification.
 	 */
-	public static FeatureProjectionSpec onSourcePairs( final String projectionName )
+	public static FeatureProjectionSpec onSourcePairs( final String projectionName, final Dimension dimension )
 	{
-		return new FeatureProjectionSpec( projectionName, Multiplicity.ON_SOURCE_PAIRS );
+		return new FeatureProjectionSpec( projectionName, dimension, Multiplicity.ON_SOURCE_PAIRS );
 	}
 }
