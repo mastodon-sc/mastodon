@@ -19,7 +19,13 @@ public class Playground
 		{
 			public Spec()
 			{
-				super( "F1", F1.class, Spot.class, "p1", "p2" );
+				super(
+						"F1",
+						"Dummy feature F1",
+						F1.class,
+						Spot.class,
+						FeatureProjectionSpec.standard( "p1", Dimension.NONE ),
+						FeatureProjectionSpec.standard( "p2", Dimension.NONE ) );
 			}
 		}
 
@@ -43,7 +49,13 @@ public class Playground
 		{
 			public Spec()
 			{
-				super( "F2", F2.class, Spot.class, "q1", "q2" );
+				super(
+						"F2",
+						"Dummy feature F2",
+						F2.class,
+						Spot.class,
+						FeatureProjectionSpec.standard( "p1", Dimension.NONE ),
+						FeatureProjectionSpec.standard( "p2", Dimension.NONE ) );
 			}
 		}
 
@@ -67,7 +79,12 @@ public class Playground
 		{
 			public Spec()
 			{
-				super( "F3", F3.class, Spot.class, "p" );
+				super(
+						"F3",
+						"Dummy feature F3",
+						F3.class,
+						Spot.class,
+						FeatureProjectionSpec.standard( "p", Dimension.NONE ) );
 			}
 		}
 
@@ -91,7 +108,12 @@ public class Playground
 		{
 			public Spec()
 			{
-				super( "F4", F4.class, Spot.class, "p" );
+				super(
+						"F4",
+						"Dummy feature F4",
+						F4.class,
+						Spot.class,
+						FeatureProjectionSpec.standard( "p", Dimension.NONE ) );
 			}
 		}
 
@@ -197,7 +219,7 @@ public class Playground
 	public static void main( final String[] args )
 	{
 		final Context context = new Context( PluginService.class, CommandService.class, FeatureSpecsService.class );
-		final FeatureComputerService featureComputerService = new FeatureComputerService();
+		final DefaultFeatureComputerService featureComputerService = new DefaultFeatureComputerService();
 		context.inject( featureComputerService );
 		featureComputerService.initialize();
 		featureComputerService.compute( "F1", "F3" );

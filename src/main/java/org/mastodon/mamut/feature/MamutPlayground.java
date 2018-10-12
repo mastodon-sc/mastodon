@@ -29,17 +29,18 @@ public class MamutPlayground
 		final WindowManager windowManager = new WindowManager( context );
 		windowManager.getProjectManager().open( project );
 		final Model model = windowManager.getAppModel().getModel();
-		System.out.println( "\n\n\n___________________________________\nData loaded. " );
+
+		System.out.println( "\n\n\n___________________________________\nData loaded.\n" );
 
 		final MamutFeatureComputerService featureComputerService = context.getService( MamutFeatureComputerService.class );
 		featureComputerService.setModel( model );
 		featureComputerService.setSharedBdvData( windowManager.getAppModel().getSharedBdvData() );
-		final Map< FeatureSpec< ?, ? >, Feature< ? > > featureModel =
+		final Map< FeatureSpec< ?, ? >, Feature< ? > > features =
 				featureComputerService.compute( "Spot gaussian-filtered intensity" );
 
 		final FeatureSpecsService specsService = context.getService( FeatureSpecsService.class );
-		printForTarget( Spot.class, model.getGraph().vertices(), specsService, featureModel );
-		printForTarget( Link.class, model.getGraph().edges(), specsService, featureModel );
+		printForTarget( Spot.class, model.getGraph().vertices(), specsService, features );
+		printForTarget( Link.class, model.getGraph().edges(), specsService, features );
 	}
 
 	private static < T > void printForTarget( final Class< T > target, final Collection< T > collection, final FeatureSpecsService specsService, final Map< FeatureSpec< ?, ? >, Feature< ? > > featureModel )
