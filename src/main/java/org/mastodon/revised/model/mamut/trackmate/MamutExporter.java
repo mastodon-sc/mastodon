@@ -76,8 +76,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.jdom2.Attribute;
 import org.jdom2.Document;
@@ -89,17 +88,16 @@ import org.jdom2.output.XMLOutputter;
 import org.mastodon.collection.RefCollections;
 import org.mastodon.collection.RefList;
 import org.mastodon.collection.RefSet;
+import org.mastodon.feature.Dimension;
+import org.mastodon.feature.Feature;
+import org.mastodon.feature.FeatureModel;
+import org.mastodon.feature.IntFeatureProjection;
 import org.mastodon.graph.algorithm.RootFinder;
 import org.mastodon.graph.algorithm.traversal.DepthFirstSearch;
 import org.mastodon.graph.algorithm.traversal.GraphSearch.SearchDirection;
 import org.mastodon.graph.algorithm.traversal.SearchListener;
-import org.mastodon.properties.PropertyMap;
 import org.mastodon.revised.bdv.overlay.util.JamaEigenvalueDecomposition;
 import org.mastodon.revised.mamut.MamutProject;
-import org.mastodon.revised.model.feature.Feature;
-import org.mastodon.revised.model.feature.FeatureModel;
-import org.mastodon.revised.model.feature.FeatureProjection;
-import org.mastodon.revised.model.feature.IntScalarFeature;
 import org.mastodon.revised.model.mamut.Link;
 import org.mastodon.revised.model.mamut.Model;
 import org.mastodon.revised.model.mamut.Spot;
@@ -158,12 +156,9 @@ public class MamutExporter
 
 	private void appendModel()
 	{
-		final String spaceUnits = getSpatialUnits();
-		final String timeUnits = getTimeUnits();
-
 		final Element modelElement = new Element( MODEL_TAG );
-		modelElement.setAttribute( SPATIAL_UNITS_ATTRIBUTE, spaceUnits );
-		modelElement.setAttribute( TIME_UNITS_ATTRIBUTE, timeUnits );
+		modelElement.setAttribute( SPATIAL_UNITS_ATTRIBUTE, model.getSpaceUnits() );
+		modelElement.setAttribute( TIME_UNITS_ATTRIBUTE, model.getTimeUnits() );
 
 		final Element featureDeclarationElement = featuresDeclarationToXml();
 		modelElement.addContent( featureDeclarationElement );
@@ -482,16 +477,13 @@ public class MamutExporter
 		attributes.add( new Attribute( EDGE_TARGET_ATTRIBUTE, Integer.toString( targetSpotID ) ) );
 
 		// Link features.
-		final FeatureModel fm = model.getFeatureModel();
-		Set< Feature< Link, ? > > features = fm.getFeatureSet( Link.class );
-		if ( null == features )
-			features = Collections.emptySet();
-
-		for ( final Feature< Link, ? > f : features )
+		final List< Feature< Link > > features = getFeaturesForTarget( model.getFeatureModel(), Link.class );
+		for ( final Feature< Link > f : features )
 		{
-			final Map< String, FeatureProjection< Link > > projections = f.getProjections();
-			for ( final String projectionKey : projections.keySet() )
-				attributes.add( new Attribute( sanitize( projectionKey ), Double.toString( projections.get( projectionKey ).value( edge ) ) ) );
+			for ( final String projectionKey : f.projectionKeys() )
+				attributes.add( new Attribute(
+						sanitize( projectionKey ),
+						Double.toString( f.project( projectionKey ).value( edge ) ) ) );
 		}
 
 		final Element edgeElement = new Element( EDGE_TAG );
@@ -545,18 +537,15 @@ public class MamutExporter
 		attributes.add( new Attribute( RADIUS_FEATURE_NAME, Double.toString( meanRadius ) ) );
 
 		// Spot features.
-		final FeatureModel fm = model.getFeatureModel();
-		Set< Feature< Spot, ? > > features = fm.getFeatureSet( Spot.class );
-		if ( null == features )
-			features = Collections.emptySet();
 
-		for ( final Feature< Spot, ? > f : features )
+		final List< Feature< Spot > > features = getFeaturesForTarget( model.getFeatureModel(), Spot.class );
+		for ( final Feature< Spot > f : features )
 		{
-			final Map< String, FeatureProjection< Spot > > projections = f.getProjections();
-			for ( final String projectionKey : projections.keySet() )
-				attributes.add( new Attribute( sanitize( projectionKey ), Double.toString( projections.get( projectionKey ).value( spot ) ) ) );
+			for ( final String projectionKey : f.projectionKeys() )
+				attributes.add( new Attribute(
+						sanitize( projectionKey ),
+						Double.toString( f.project( projectionKey ).value( spot ) ) ) );
 		}
-
 		final Element spotElement = new Element( SPOT_ELEMENT_TAG );
 		spotElement.setAttributes( attributes );
 		return spotElement;
@@ -574,71 +563,35 @@ public class MamutExporter
 
 	private < T > void appendFeaturesDeclarationOfClass( final Class< T > clazz, final Element featuresElement, final String classFeatureDeclarationTag )
 	{
-		final String spaceUnits = getSpatialUnits();
-		final String timeUnits = getTimeUnits();
 		final FeatureModel fm = model.getFeatureModel();
-		Set< Feature< T, ? > > features = fm.getFeatureSet( clazz );
+		List< Feature< T > > features = getFeaturesForTarget( fm, clazz );
 		if ( null == features )
-			features = Collections.emptySet();
+			features = Collections.emptyList();
 
 		final Element classFeaturesElement = new Element( classFeatureDeclarationTag );
-		for ( final Feature< T, ? > feature : features )
+		for ( final Feature< T > feature : features )
 		{
-			/*
-			 * If we have ONE feature mapped on an int projection map, then we
-			 * can use the ISINT flag of TrackMate safely.
-			 */
-			final String isint;
-			if ( feature instanceof IntScalarFeature )
-				isint = "true";
-			else
-				isint = " false";
 
 			// We actually export feature projections.
-			final Map< String, FeatureProjection< T > > projections = feature.getProjections();
-			for ( final String projectionKey : projections.keySet() )
+			for ( final String projectionKey : feature.projectionKeys() )
 			{
+				final String isint = ( feature.project( projectionKey ) instanceof IntFeatureProjection )
+						? "true"
+						: "false";
+
 				final Element fel = new Element( FEATURE_TAG );
 				fel.setAttribute( FEATURE_ATTRIBUTE, sanitize( projectionKey ) );
 				// Mastodon does not support feature name yet.
 				fel.setAttribute( FEATURE_NAME_ATTRIBUTE, projectionKey );
 				fel.setAttribute( FEATURE_SHORT_NAME_ATTRIBUTE, projectionKey );
-				final String units = projections.get( projectionKey ).units();
-				fel.setAttribute( FEATURE_DIMENSION_ATTRIBUTE, unitsToDimension( units, spaceUnits, timeUnits ) );
+				// TODO Add projection units to export.
+				final String units = feature.project( projectionKey ).units();
+				fel.setAttribute( FEATURE_DIMENSION_ATTRIBUTE, unitsToDimension( units, model.getSpaceUnits(), model.getTimeUnits() ) );
 				fel.setAttribute( FEATURE_ISINT_ATTRIBUTE, isint );
 				classFeaturesElement.addContent( fel );
 			}
 		}
 		featuresElement.addContent( classFeaturesElement );
-	}
-
-	private String getSpatialUnits()
-	{
-		// Read space units from dataset xml if we can.
-		String spaceUnits = "pixel";
-		final Document document = getSAXParsedDocument( project.getDatasetXmlFile().getAbsolutePath() );
-		final List< Element > viewSetupsElements = document
-				.getRootElement()
-				.getChild( XmlKeys.SEQUENCEDESCRIPTION_TAG )
-				.getChild( XmlKeys.VIEWSETUPS_TAG )
-				.getChildren( XmlKeys.VIEWSETUP_TAG );
-		for ( final Element vsEl : viewSetupsElements )
-		{
-			final Element vs, uel;
-			if ( null != ( vs = vsEl.getChild( XmlKeys.VIEWSETUP_VOXELSIZE_TAG ) ) && null != ( uel = vs.getChild( XmlKeys.VOXELDIMENSIONS_UNIT_TAG ) ) )
-			{
-				spaceUnits = uel.getValue();
-				break;
-			}
-		}
-		return spaceUnits;
-	}
-
-	private String getTimeUnits()
-	{
-		// BDV does not let you save frame interval in physical units.
-		final String timeUnits = "frame";
-		return timeUnits;
 	}
 
 	private static Document getSAXParsedDocument( final String fileName )
@@ -662,7 +615,7 @@ public class MamutExporter
 	}
 
 	/**
-	 * Tries to recover the dimension from the unit string and the spatial and
+	 * Tries to recover the TrackMate dimension from the unit string and the spatial and
 	 * time units.
 	 *
 	 * @param units
@@ -675,24 +628,47 @@ public class MamutExporter
 	 */
 	private static final String unitsToDimension( final String units, final String spaceUnits, final String timeUnits )
 	{
-		if ( units.equals( "Quality" ) )
+		if ( units.equals( Dimension.QUALITY.getUnits( spaceUnits, timeUnits ) ) )
 			return "QUALITY";
-		else if ( units.equals( "Counts" ) )
+		else if ( units.equals( Dimension.INTENSITY.getUnits( spaceUnits, timeUnits ) ) )
 			return "INTENSITY";
-		else if ( units.equals( "Counts^2" ) )
+		else if ( units.equals( Dimension.INTENSITY_SQUARED.getUnits( spaceUnits, timeUnits ) ) )
 			return "INTENSITY_SQUARED";
-		else if ( units.equals( spaceUnits ) )
+		else if ( units.equals( Dimension.LENGTH.getUnits( spaceUnits, timeUnits ) ) )
 			return "LENGTH";
-		else if ( units.equals( spaceUnits + "/" + timeUnits ) )
+		else if ( units.equals( Dimension.VELOCITY.getUnits( spaceUnits, timeUnits ) ) )
 			return "VELOCITY";
-		else if ( units.equals( timeUnits ) )
+		else if ( units.equals( Dimension.ANGLE.getUnits( spaceUnits, timeUnits ) ) )
 			return "TIME";
-		else if ( units.equals( "Radians" ) )
+		else if ( units.equals( Dimension.TIME.getUnits( spaceUnits, timeUnits ) ) )
 			return "ANGLE";
-		else if ( units.equals( "/" + timeUnits ) )
+		else if ( units.equals( Dimension.RATE.getUnits( spaceUnits, timeUnits ) ) )
 			return "RATE";
 		else
 			return "NONE";
+	}
+
+	/**
+	 * Returns the list of features stored in the specified feature model that
+	 * have the specified class as target.
+	 *
+	 * @param featureModel
+	 *            the feature model.
+	 * @param target
+	 *            the target class.
+	 * @return a new list.
+	 */
+	private static final < T > List< Feature< T > > getFeaturesForTarget( final FeatureModel featureModel, final Class< T > target )
+	{
+		@SuppressWarnings( "rawtypes" )
+		final List list = featureModel.getFeatureSpecs()
+				.stream()
+				.filter( ( fs ) -> fs.getTargetClass().equals( target ) )
+				.map( ( fs ) -> featureModel.getFeature( fs.getKey() ) )
+				.collect( Collectors.toList() );
+		@SuppressWarnings( "unchecked" )
+		final List< Feature< T > > features = list;
+		return features;
 	}
 
 	public static final void export( final File target, final Model model, final MamutProject project ) throws IOException
@@ -702,16 +678,5 @@ public class MamutExporter
 		exporter.appendSettings();
 		exporter.appendGuiState();
 		exporter.write( target );
-	}
-
-	public static void main( final String[] args ) throws IOException
-	{
-		final String projectFolder = "samples/mamutproject";
-		final String bdvFile = "samples/datasethdf5.xml";
-		final MamutProject project = new MamutProject( new File( projectFolder ), new File( bdvFile ) );
-		final Model model = new Model();
-		model.loadRaw( project );
-		final File target = new File( "samples/mamutExport.xml" );
-		export( target, model, project );
 	}
 }
