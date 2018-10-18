@@ -1,4 +1,4 @@
-package org.mastodon.revised.model.feature.ui;
+package org.mastodon.feature.ui;
 
 import static org.mastodon.app.ui.settings.StyleElements.booleanElement;
 import static org.mastodon.app.ui.settings.StyleElements.label;

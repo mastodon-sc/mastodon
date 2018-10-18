@@ -1,4 +1,4 @@
-package org.mastodon.revised.model.feature.ui;
+package org.mastodon.feature.ui;
 
 import java.util.ArrayList;
 import java.util.Collection;
