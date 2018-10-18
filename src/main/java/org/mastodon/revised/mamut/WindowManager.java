@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 
+import javax.swing.JDialog;
 import javax.swing.JFrame;
 
 import org.mastodon.plugin.MastodonPlugin;
@@ -13,10 +14,6 @@ import org.mastodon.plugin.MastodonPluginAppModel;
 import org.mastodon.plugin.MastodonPlugins;
 import org.mastodon.revised.bdv.overlay.ui.RenderSettingsConfigPage;
 import org.mastodon.revised.bdv.overlay.ui.RenderSettingsManager;
-import org.mastodon.revised.mamut.feature.MamutFeatureComputer;
-import org.mastodon.revised.mamut.feature.MamutFeatureComputerService;
-import org.mastodon.revised.model.feature.FeatureModel;
-import org.mastodon.revised.model.feature.ui.FeatureCalculationDialog;
 import org.mastodon.revised.model.mamut.Model;
 import org.mastodon.revised.model.mamut.Spot;
 import org.mastodon.revised.model.tag.ui.TagSetDialog;
@@ -119,7 +116,7 @@ public class WindowManager
 
 	private TagSetDialog tagSetDialog;
 
-	private FeatureCalculationDialog< Model, MamutFeatureComputer > featureComputationDialog;
+	private JDialog featureComputationDialog;
 
 	final ProjectManager projectManager;
 
@@ -225,10 +222,7 @@ public class WindowManager
 
 		final Keymap keymap = keymapManager.getForwardDefaultKeymap();
 		tagSetDialog = new TagSetDialog( null, model.getTagSetModel(), model, keymap, new String[] { KeyConfigContexts.MASTODON } );
-		final MamutFeatureComputerService computerService = context.getService( MamutFeatureComputerService.class );
-		computerService.setSharedBdvData( appModel.getSharedBdvData() );
-		final FeatureModel featureModel = model.getFeatureModel();
-		featureComputationDialog = new FeatureCalculationDialog<>( null, computerService, model, featureModel );
+		featureComputationDialog = MamutFeatureComputation.getDialog( appModel, context );
 		updateEnabledActions();
 
 		plugins.setAppModel( new MastodonPluginAppModel( appModel, this ) );
