@@ -88,6 +88,7 @@ public class MamutFeatureComputation
 			if ( wrapped.isCanceled() )
 				return null;
 
+			featureModel.pauseListeners();
 			// Clear feature we can compute
 			final Collection< FeatureSpec< ?, ? > > featureSpecs = featureModel.getFeatureSpecs();
 			final Collection< FeatureSpec< ?, ? > > toClear = new ArrayList<>();
@@ -102,6 +103,7 @@ public class MamutFeatureComputation
 			for ( final FeatureSpec< ?, ? > featureSpec : map.keySet() )
 				featureModel.declareFeature( featureSpec, map.get( featureSpec ) );
 
+			featureModel.resumeListeners();
 			return map;
 		}
 
