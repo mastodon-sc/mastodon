@@ -1,9 +1,9 @@
 package org.mastodon.mamut.feature;
 
-import org.mastodon.collection.ref.RefIntHashMap;
 import org.mastodon.graph.algorithm.traversal.BreadthFirstCrossComponentSearch;
 import org.mastodon.graph.algorithm.traversal.GraphSearch.SearchDirection;
 import org.mastodon.graph.algorithm.traversal.SearchListener;
+import org.mastodon.properties.IntPropertyMap;
 import org.mastodon.revised.model.mamut.Link;
 import org.mastodon.revised.model.mamut.ModelGraph;
 import org.mastodon.revised.model.mamut.Spot;
@@ -25,7 +25,7 @@ public class SpotTrackIDFeatureComputer implements MamutFeatureComputer
 	public void createOutput()
 	{
 		if ( null == output )
-			output = new SpotTrackIDFeature( new RefIntHashMap<>( graph.vertices().getRefPool(), -1 ) );
+			output = new SpotTrackIDFeature( new IntPropertyMap<>( graph.vertices().getRefPool(), -1 ) );
 	}
 
 	@Override
@@ -46,7 +46,7 @@ public class SpotTrackIDFeatureComputer implements MamutFeatureComputer
 			@Override
 			public void processVertexEarly( final Spot spot, final BreadthFirstCrossComponentSearch< Spot, Link > search )
 			{
-				output.map.put( spot, id );
+				output.map.set( spot, id );
 			}
 
 			@Override

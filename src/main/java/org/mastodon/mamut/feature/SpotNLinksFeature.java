@@ -1,6 +1,5 @@
 package org.mastodon.mamut.feature;
 
-import org.mastodon.collection.ref.RefIntHashMap;
 import org.mastodon.feature.Dimension;
 import org.mastodon.feature.Feature;
 import org.mastodon.feature.FeatureProjection;
@@ -8,6 +7,7 @@ import org.mastodon.feature.FeatureProjectionSpec;
 import org.mastodon.feature.FeatureProjections;
 import org.mastodon.feature.FeatureSpec;
 import org.mastodon.feature.IntFeatureProjection;
+import org.mastodon.properties.IntPropertyMap;
 import org.mastodon.revised.model.mamut.Spot;
 import org.scijava.plugin.Plugin;
 
@@ -18,7 +18,7 @@ public class SpotNLinksFeature implements Feature< Spot >
 
 	private static final String HELP_STRING = "Computes the number of links that touch a spot.";
 
-	final RefIntHashMap< Spot > map;
+	final IntPropertyMap< Spot > map;
 
 	private final IntFeatureProjection< Spot > projection;
 
@@ -36,7 +36,7 @@ public class SpotNLinksFeature implements Feature< Spot >
 		}
 	}
 
-	SpotNLinksFeature( final RefIntHashMap< Spot > map )
+	SpotNLinksFeature( final IntPropertyMap< Spot > map )
 	{
 		this.map = map;
 		this.projection = FeatureProjections.project( map, Dimension.NONE_UNITS );

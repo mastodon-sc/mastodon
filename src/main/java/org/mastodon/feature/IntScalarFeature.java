@@ -1,6 +1,7 @@
 package org.mastodon.feature;
 
-import org.mastodon.collection.RefIntMap;
+import org.mastodon.RefPool;
+import org.mastodon.properties.IntPropertyMap;
 
 /**
  * Feature made of a int scalar value.
@@ -21,23 +22,24 @@ public class IntScalarFeature< O > implements Feature< O >
 
 	private final Class< O > targetClass;
 
+	private final IntPropertyMap< O > values;
+
 	/**
-	 * Creates a new immutable feature instance.
+	 * Creates a new scalar integer feature instance.
 	 *
 	 * @param key
-	 *            The feature unique key. Must be unique within the application
+	 *            the feature unique key. Must be unique within the application
 	 *            scope.
-	 * @param targetClass
-	 *            The class of the feature target.
-	 * @param values
-	 *            The feature property map.
 	 * @param units
 	 *            the projection units.
+	 * @param pool
+	 *            the pool of objects on which to define the feature.
 	 */
-	public IntScalarFeature( final String key, final RefIntMap< O > values, final Class< O > targetClass, final String units )
+	public IntScalarFeature( final String key, final String units, final RefPool< O > pool )
 	{
 		this.key = key;
-		this.targetClass = targetClass;
+		this.values = new IntPropertyMap<>( pool, Integer.MIN_VALUE );
+		this.targetClass = pool.getRefClass();
 		this.projection = FeatureProjections.project( values, units );
 	}
 
@@ -53,6 +55,26 @@ public class IntScalarFeature< O > implements Feature< O >
 	public String[] projectionKeys()
 	{
 		return new String[] { key };
+	}
+
+	public boolean isSet( final O o )
+	{
+		return values.isSet( o );
+	}
+
+	public double value( final O o )
+	{
+		return values.getInt( o );
+	}
+
+	public void set( final O o, final int value )
+	{
+		values.set( o, value );
+	}
+
+	public void clear( final O o )
+	{
+		values.remove( o );
 	}
 
 	/**

@@ -1,6 +1,5 @@
 package org.mastodon.mamut.feature;
 
-import org.mastodon.collection.RefIntMap;
 import org.mastodon.feature.Dimension;
 import org.mastodon.feature.Feature;
 import org.mastodon.feature.FeatureProjection;
@@ -8,6 +7,7 @@ import org.mastodon.feature.FeatureProjectionSpec;
 import org.mastodon.feature.FeatureProjections;
 import org.mastodon.feature.FeatureSpec;
 import org.mastodon.feature.IntFeatureProjection;
+import org.mastodon.properties.IntPropertyMap;
 import org.mastodon.revised.model.mamut.Spot;
 import org.scijava.plugin.Plugin;
 
@@ -18,7 +18,7 @@ public class TrackSizeFeature implements Feature< Spot >
 
 	private static final String INFO_STRING = "Returns the number of spots in a track.";
 
-	RefIntMap< Spot > map;
+	final IntPropertyMap< Spot > map;
 
 	private final IntFeatureProjection< Spot > projection;
 
@@ -36,7 +36,7 @@ public class TrackSizeFeature implements Feature< Spot >
 		}
 	}
 
-	TrackSizeFeature( final RefIntMap< Spot > map )
+	TrackSizeFeature( final IntPropertyMap< Spot > map )
 	{
 		this.map = map;
 		this.projection = FeatureProjections.project( map, Dimension.NONE_UNITS );

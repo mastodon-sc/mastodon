@@ -11,7 +11,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mastodon.collection.RefSet;
 import org.mastodon.collection.ref.RefSetImp;
-import org.mastodon.collection.wrap.RefDoubleMapWrapper;
 import org.mastodon.feature.Dimension;
 import org.mastodon.feature.Feature;
 import org.mastodon.feature.FeatureProjection;
@@ -266,7 +265,7 @@ public class GraphUpdateStackTest
 		@Override
 		public FeatureProjection< Spot > project( final String projectionKey )
 		{
-			return FeatureProjections.project( new RefDoubleMapWrapper<>( Double.NaN ), "Nope" );
+			return FeatureProjections.project( map, "Nope" );
 		}
 
 		@Override
@@ -338,10 +337,12 @@ public class GraphUpdateStackTest
 			}
 		}
 
+		public DoublePropertyMap< Spot > map;
+
 		@Override
 		public FeatureProjection< Spot > project( final String projectionKey )
 		{
-			return FeatureProjections.project( new RefDoubleMapWrapper<>( Double.NaN ), "Nope" );
+			return FeatureProjections.project( map, "Nope" );
 		}
 
 		@Override
@@ -355,6 +356,9 @@ public class GraphUpdateStackTest
 	public static class FT2computer extends TestFeatureComputer
 	{
 
+		@Parameter
+		private ModelGraph graph;
+
 		@Parameter( type = ItemIO.OUTPUT )
 		private FT2 output;
 
@@ -362,7 +366,10 @@ public class GraphUpdateStackTest
 		public void createOutput()
 		{
 			if ( null == output )
+			{
 				output = new FT2();
+				output.map = new DoublePropertyMap<>( graph.vertices().getRefPool(), Double.NaN );
+			}
 		}
 
 		@Override
@@ -398,10 +405,12 @@ public class GraphUpdateStackTest
 			}
 		}
 
+		public DoublePropertyMap< Spot > map;
+
 		@Override
 		public FeatureProjection< Spot > project( final String projectionKey )
 		{
-			return FeatureProjections.project( new RefDoubleMapWrapper<>( Double.NaN ), "Nope" );
+			return FeatureProjections.project( map, "Nope" );
 		}
 
 		@Override
@@ -414,6 +423,10 @@ public class GraphUpdateStackTest
 	@Plugin( type = FT3computer.class )
 	public static class FT3computer extends TestFeatureComputer
 	{
+
+		@Parameter
+		private ModelGraph graph;
+
 		@Parameter( type = ItemIO.OUTPUT )
 		private FT3 output;
 
@@ -421,7 +434,10 @@ public class GraphUpdateStackTest
 		public void createOutput()
 		{
 			if ( null == output )
+			{
 				output = new FT3();
+				output.map = new DoublePropertyMap<>( graph.vertices().getRefPool(), Double.NaN );
+			}
 		}
 
 		@Override

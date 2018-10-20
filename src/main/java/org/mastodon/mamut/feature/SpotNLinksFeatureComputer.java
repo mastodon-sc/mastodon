@@ -1,6 +1,6 @@
 package org.mastodon.mamut.feature;
 
-import org.mastodon.collection.ref.RefIntHashMap;
+import org.mastodon.properties.IntPropertyMap;
 import org.mastodon.revised.model.mamut.ModelGraph;
 import org.mastodon.revised.model.mamut.Spot;
 import org.scijava.ItemIO;
@@ -20,15 +20,15 @@ public class SpotNLinksFeatureComputer implements MamutFeatureComputer
 	@Override
 	public void run()
 	{
-		output.map.clear(); // TODO Update map instead.
+		output.map.clear();
 		for ( final Spot spot : graph.vertices() )
-			output.map.put( spot, spot.edges().size() );
+			output.map.set( spot, spot.edges().size() );
 	}
 
 	@Override
 	public void createOutput()
 	{
 		if ( null == output )
-			output = new SpotNLinksFeature( new RefIntHashMap<>( graph.vertices().getRefPool(), -1 ) );
+			output = new SpotNLinksFeature( new IntPropertyMap<>( graph.vertices().getRefPool(), -1 ) );
 	}
 }

@@ -44,11 +44,7 @@ import org.jdom2.Element;
 import org.jdom2.JDOMException;
 import org.jdom2.input.SAXBuilder;
 import org.mastodon.collection.IntRefMap;
-import org.mastodon.collection.RefDoubleMap;
-import org.mastodon.collection.RefIntMap;
 import org.mastodon.collection.RefMaps;
-import org.mastodon.collection.ref.RefDoubleHashMap;
-import org.mastodon.collection.ref.RefIntHashMap;
 import org.mastodon.feature.Dimension;
 import org.mastodon.feature.DoubleScalarFeature;
 import org.mastodon.feature.FeatureModel;
@@ -170,8 +166,8 @@ public class TrackMateImporter
 			// Spot features.
 			final Element spotFeatureDeclarationEl = featureDeclarationEl.getChild( SPOT_FEATURE_DECLARATION_TAG );
 			final List< Element > spotFeatureEls = spotFeatureDeclarationEl.getChildren( FEATURE_TAG );
-			final Map< String, RefDoubleMap< Spot > > spotDoubleFeatureMap = new HashMap<>();
-			final Map< String, RefIntMap< Spot > > spotIntFeatureMap = new HashMap<>();
+			final Map< String, DoubleScalarFeature< Spot > > spotDoubleFeatureMap = new HashMap<>();
+			final Map< String, IntScalarFeature< Spot > > spotIntFeatureMap = new HashMap<>();
 			final Map< String, String > spotFeatureDimensions = new HashMap<>();
 			for ( final Element featureEl : spotFeatureEls )
 			{
@@ -180,43 +176,32 @@ public class TrackMateImporter
 //			final String featureShortName = featureEl.getAttributeValue( FEATURE_SHORT_NAME_ATTRIBUTE );
 				final String featureDimension = featureEl.getAttributeValue( FEATURE_DIMENSION_ATTRIBUTE );
 				spotFeatureDimensions.put( featureKey, featureDimension );
+				final String units = dimensionToUnits( featureDimension, spaceUnits, timeUnits );
 				final boolean featureIsInt = Boolean.parseBoolean( featureEl.getAttributeValue( FEATURE_ISINT_ATTRIBUTE ) );
 				if ( featureIsInt )
-				{
-
-					final RefIntHashMap< Spot > feature = new RefIntHashMap<>( graph.vertices().getRefPool(), Integer.MIN_VALUE );
-					spotIntFeatureMap.put( featureKey, feature );
-				}
+					spotIntFeatureMap.put( featureKey, new IntScalarFeature<>( featureKey, units, graph.vertices().getRefPool() ) );
 				else
-				{
-					final RefDoubleHashMap< Spot > feature = new RefDoubleHashMap<>( graph.vertices().getRefPool(), Double.NaN );
-					spotDoubleFeatureMap.put( featureKey, feature );
-				}
+					spotDoubleFeatureMap.put( featureKey, new DoubleScalarFeature<>( featureKey, units, graph.vertices().getRefPool() ) );
 			}
 
 			final Element edgeFeatureDeclarationEl = featureDeclarationEl.getChild( EDGE_FEATURE_DECLARATION_TAG );
 			final List< Element > edgeFeatureEls = edgeFeatureDeclarationEl.getChildren( FEATURE_TAG );
-			final Map< String, RefDoubleMap< Link > > linkDoubleFeatureMap = new HashMap<>();
-			final Map< String, RefIntMap< Link > > linkIntFeatureMap = new HashMap<>();
-			final Map< String, String > edgeFeatureDimensions = new HashMap<>();
+			final Map< String, DoubleScalarFeature< Link > > linkDoubleFeatureMap = new HashMap<>();
+			final Map< String, IntScalarFeature< Link > > linkIntFeatureMap = new HashMap<>();
+			final Map< String, String > linkFeatureDimensions = new HashMap<>();
 			for ( final Element featureEl : edgeFeatureEls )
 			{
 				final String featureKey = featureEl.getAttributeValue( FEATURE_ATTRIBUTE );
 //			final String featureName = featureEl.getAttributeValue( FEATURE_NAME_ATTRIBUTE );
 //			final String featureShortName = featureEl.getAttributeValue( FEATURE_SHORT_NAME_ATTRIBUTE );
 				final String featureDimension = featureEl.getAttributeValue( FEATURE_DIMENSION_ATTRIBUTE );
-				edgeFeatureDimensions.put( featureKey, featureDimension );
+				linkFeatureDimensions.put( featureKey, featureDimension );
+				final String units = dimensionToUnits( featureDimension, spaceUnits, timeUnits );
 				final boolean featureIsInt = Boolean.parseBoolean( featureEl.getAttributeValue( FEATURE_ISINT_ATTRIBUTE ) );
 				if ( featureIsInt )
-				{
-					final RefIntMap< Link > feature = new RefIntHashMap<>( graph.edges().getRefPool(), Integer.MIN_VALUE );
-					linkIntFeatureMap.put( featureKey, feature );
-				}
+					linkIntFeatureMap.put( featureKey, new IntScalarFeature<>( featureKey, units, graph.edges().getRefPool() ) );
 				else
-				{
-					final RefDoubleMap< Link > feature = new RefDoubleHashMap<>( graph.edges().getRefPool(), Double.NaN );
-					linkDoubleFeatureMap.put( featureKey, feature );
-				}
+					linkDoubleFeatureMap.put( featureKey, new DoubleScalarFeature<>( featureKey, units, graph.edges().getRefPool() ) );
 			}
 
 			/*
@@ -270,8 +255,8 @@ public class TrackMateImporter
 							if ( null != attributeValue )
 							{
 								final double val = Double.parseDouble( attributeValue );
-								final RefDoubleMap< Spot > pm = spotDoubleFeatureMap.get( featureKey );
-								pm.put( spot, val );
+								final DoubleScalarFeature< Spot > feature = spotDoubleFeatureMap.get( featureKey );
+								feature.set( spot, val );
 							}
 						}
 						for ( final String featureKey : spotIntFeatureMap.keySet() )
@@ -280,8 +265,8 @@ public class TrackMateImporter
 							if ( null != attributeValue )
 							{
 								final int val = NumberFormat.getInstance().parse( attributeValue ).intValue();
-								final RefIntMap< Spot > pm = spotIntFeatureMap.get( featureKey );
-								pm.put( spot, val );
+								final IntScalarFeature< Spot > feature = spotIntFeatureMap.get( featureKey );
+								feature.set( spot, val );
 							}
 						}
 					}
@@ -311,8 +296,8 @@ public class TrackMateImporter
 							if ( null != attributeValue )
 							{
 								final double val = Double.parseDouble( attributeValue );
-								final RefDoubleMap< Link > pm = linkDoubleFeatureMap.get( featureKey );
-								pm.put( link, val );
+								final DoubleScalarFeature< Link > pm = linkDoubleFeatureMap.get( featureKey );
+								pm.set( link, val );
 							}
 						}
 						for ( final String featureKey : linkIntFeatureMap.keySet() )
@@ -321,8 +306,8 @@ public class TrackMateImporter
 							if ( null != attributeValue )
 							{
 								final int val = NumberFormat.getInstance().parse( attributeValue ).intValue();
-								final RefIntMap< Link > pm = linkIntFeatureMap.get( featureKey );
-								pm.put( link, val );
+								final IntScalarFeature< Link > pm = linkIntFeatureMap.get( featureKey );
+								pm.set( link, val );
 							}
 						}
 					}
@@ -349,30 +334,26 @@ public class TrackMateImporter
 			featureModel.pauseListeners();
 			for ( final String featureKey : spotDoubleFeatureMap.keySet() )
 			{
-				final RefDoubleMap< Spot > pm = spotDoubleFeatureMap.get( featureKey );
 				final String dimension = spotFeatureDimensions.get( featureKey );
-				final DoubleScalarFeature< Spot > feature = new DoubleScalarFeature<>( featureKey, pm, Spot.class, dimensionToUnits( dimension, spaceUnits, timeUnits ) );
+				final DoubleScalarFeature< Spot > feature = spotDoubleFeatureMap.get( featureKey );
 				featureModel.declareFeature( feature.createFeatureSpec( featureKey, dimensionToDimension( dimension ) ), feature );
 			}
 			for ( final String featureKey : spotIntFeatureMap.keySet() )
 			{
-				final RefIntMap< Spot > pm = spotIntFeatureMap.get( featureKey );
 				final String dimension = spotFeatureDimensions.get( featureKey );
-				final IntScalarFeature< Spot > feature = new IntScalarFeature<>( featureKey, pm, Spot.class, dimensionToUnits( dimension, spaceUnits, timeUnits ) );
+				final IntScalarFeature< Spot > feature = spotIntFeatureMap.get( featureKey );
 				featureModel.declareFeature( feature.createFeatureSpec( featureKey, dimensionToDimension( dimension ) ), feature );
 			}
 			for ( final String featureKey : linkDoubleFeatureMap.keySet() )
 			{
-				final RefDoubleMap< Link > pm = linkDoubleFeatureMap.get( featureKey );
-				final String dimension = edgeFeatureDimensions.get( featureKey );
-				final DoubleScalarFeature< Link > feature = new DoubleScalarFeature<>( featureKey, pm, Link.class, dimensionToUnits( dimension, spaceUnits, timeUnits ) );
+				final String dimension = linkFeatureDimensions.get( featureKey );
+				final DoubleScalarFeature< Link > feature = linkDoubleFeatureMap.get( featureKey );
 				featureModel.declareFeature( feature.createFeatureSpec( featureKey, dimensionToDimension( dimension ) ), feature );
 			}
 			for ( final String featureKey : linkIntFeatureMap.keySet() )
 			{
-				final RefIntMap< Link > pm = linkIntFeatureMap.get( featureKey );
-				final String dimension = edgeFeatureDimensions.get( featureKey );
-				final IntScalarFeature< Link > feature = new IntScalarFeature<>( featureKey, pm, Link.class, dimensionToUnits( dimension, spaceUnits, timeUnits ) );
+				final String dimension = linkFeatureDimensions.get( featureKey );
+				final IntScalarFeature< Link > feature = linkIntFeatureMap.get( featureKey );
 				featureModel.declareFeature( feature.createFeatureSpec( featureKey, dimensionToDimension( dimension ) ), feature );
 			}
 			featureModel.resumeListeners();

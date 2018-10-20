@@ -1,7 +1,7 @@
 package org.mastodon.mamut.feature;
 
-import org.mastodon.collection.ref.RefDoubleHashMap;
 import org.mastodon.feature.Dimension;
+import org.mastodon.properties.DoublePropertyMap;
 import org.mastodon.revised.model.mamut.Link;
 import org.mastodon.revised.model.mamut.Model;
 import org.mastodon.revised.model.mamut.ModelGraph;
@@ -29,7 +29,7 @@ public class LinkVelocityFeatureComputer implements MamutFeatureComputer
 		if ( null == output )
 		{
 			final String units = Dimension.VELOCITY.getUnits( model.getSpaceUnits(), model.getTimeUnits() );
-			output = new LinkVelocityFeature( new RefDoubleHashMap<>( model.getGraph().edges().getRefPool(), Double.NaN ), units );
+			output = new LinkVelocityFeature( new DoublePropertyMap<>( model.getGraph().edges().getRefPool(), Double.NaN ), units );
 		}
 	}
 
@@ -42,13 +42,13 @@ public class LinkVelocityFeatureComputer implements MamutFeatureComputer
 
 		for ( final Link link : graph.edges() )
 		{
-			if ( displacement.map.containsKey( link ) )
+			if ( displacement.map.isSet( link ) )
 			{
 				final double disp = displacement.map.get( link );
 				final Spot source = link.getSource( ref1 );
 				final Spot target = link.getTarget( ref2 );
 				final double dt = Math.abs( source.getTimepoint() - target.getTimepoint() );
-				output.map.put( link, disp / dt );
+				output.map.set( link, disp / dt );
 			}
 		}
 

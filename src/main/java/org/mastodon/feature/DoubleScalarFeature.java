@@ -1,6 +1,7 @@
 package org.mastodon.feature;
 
-import org.mastodon.collection.RefDoubleMap;
+import org.mastodon.RefPool;
+import org.mastodon.properties.DoublePropertyMap;
 
 /**
  * Feature made of a double scalar value.
@@ -25,24 +26,25 @@ public class DoubleScalarFeature< O > implements Feature< O >
 
 	private final Class< O > targetClass;
 
+	private final DoublePropertyMap< O > values;
+
 	/**
-	 * Creates a new immutable feature instance.
+	 * Creates a new scalar double feature instance.
 	 *
 	 * @param key
-	 *            The feature unique key. Must be unique within the application
+	 *            the feature unique key. Must be unique within the application
 	 *            scope.
-	 * @param targetClass
-	 *            The class of the feature target.
-	 * @param values
-	 *            The feature property map.
+	 * @param pool
+	 *            the pool of objects on which to define the feature.
 	 * @param units
 	 *            the projection units.
 	 */
-	public DoubleScalarFeature( final String key, final RefDoubleMap< O > values, final Class< O > targetClass, final String units )
+	public DoubleScalarFeature( final String key, final String units, final RefPool< O > pool )
 	{
 		this.key = key;
-		this.targetClass = targetClass;
+		this.values = new DoublePropertyMap<>( pool, Double.NaN );
 		this.projection = FeatureProjections.project( values, units );
+		this.targetClass = pool.getRefClass();
 	}
 
 	@Override
@@ -57,6 +59,38 @@ public class DoubleScalarFeature< O > implements Feature< O >
 	public String[] projectionKeys()
 	{
 		return new String[] { key };
+	}
+
+	public boolean isSet( final O o )
+	{
+		return values.isSet( o );
+	}
+
+	public double value( final O o )
+	{
+		return values.getDouble( o );
+	}
+
+	public void set( final O o, final double value )
+	{
+		values.set( o, value );
+	}
+
+	public void clear( final O o )
+	{
+		values.remove( o );
+	}
+
+	/**
+	 * Returns the values of the feature as an array of double values. Changes
+	 * to the array of values will not be reflected in the feature nor
+	 * vice-versa.
+	 * 
+	 * @return the values of the map as an array of double values.
+	 */
+	public double[] values()
+	{
+		return values.getMap().values();
 	}
 
 	/**

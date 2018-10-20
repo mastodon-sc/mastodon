@@ -1,7 +1,7 @@
 package org.mastodon.mamut.feature;
 
-import org.mastodon.collection.ref.RefDoubleHashMap;
 import org.mastodon.feature.Dimension;
+import org.mastodon.properties.DoublePropertyMap;
 import org.mastodon.revised.model.mamut.Link;
 import org.mastodon.revised.model.mamut.Model;
 import org.mastodon.revised.model.mamut.ModelGraph;
@@ -26,7 +26,7 @@ public class LinkDisplacementFeatureComputer implements MamutFeatureComputer
 		if ( null == output )
 		{
 			final String units = Dimension.LENGTH.getUnits( model.getSpaceUnits(), model.getTimeUnits() );
-			output = new LinkDisplacementFeature( new RefDoubleHashMap<>( model.getGraph().edges().getRefPool(), Double.NaN ), units );
+			output = new LinkDisplacementFeature( new DoublePropertyMap<>( model.getGraph().edges().getRefPool(), Double.NaN ), units );
 		}
 	}
 
@@ -49,7 +49,7 @@ public class LinkDisplacementFeatureComputer implements MamutFeatureComputer
 				final double dx = source.getDoublePosition( d ) - target.getDoublePosition( d );
 				d2 += dx * dx;
 			}
-			output.map.put( link, Math.sqrt( d2 ) );
+			output.map.set( link, Math.sqrt( d2 ) );
 		}
 
 		graph.releaseRef( ref1 );
