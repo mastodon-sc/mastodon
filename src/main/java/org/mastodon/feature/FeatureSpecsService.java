@@ -99,8 +99,8 @@ public class FeatureSpecsService extends AbstractService
 	}
 
 	/**
-	 * Returns a list of feature specifications for features that operates on
-	 * the specified target.
+	 * Returns a list of feature specifications for features that operate on the
+	 * specified target.
 	 *
 	 * @param target
 	 *            the target features returned operate on.
