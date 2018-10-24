@@ -340,7 +340,8 @@ public abstract class AbstractTagTable< C, T, E extends AbstractTagTable< ?, T, 
 		public Component getTableCellRendererComponent( final JTable table, final Object value, final boolean isSelected, final boolean hasFocus, final int row, final int column )
 		{
 			super.getTableCellRendererComponent( table, value, isSelected, hasFocus, row, column );
-			setText( ( ( Element ) value ).getName() );
+			final String text = ( value == null ) ? null : ( ( Element ) value ).getName();
+			setText( text );
 			return this;
 		}
 	}
