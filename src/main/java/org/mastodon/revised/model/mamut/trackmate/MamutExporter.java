@@ -664,7 +664,7 @@ public class MamutExporter
 		final List list = featureModel.getFeatureSpecs()
 				.stream()
 				.filter( ( fs ) -> fs.getTargetClass().equals( target ) )
-				.map( ( fs ) -> featureModel.getFeature( fs.getKey() ) )
+				.map( ( fs ) -> featureModel.getFeature( fs ) )
 				.collect( Collectors.toList() );
 		@SuppressWarnings( "unchecked" )
 		final List< Feature< T > > features = list;
