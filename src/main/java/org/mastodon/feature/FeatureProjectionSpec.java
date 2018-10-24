@@ -129,4 +129,33 @@ public class FeatureProjectionSpec
 	{
 		return new FeatureProjectionSpec( projectionName, dimension, Multiplicity.ON_SOURCE_PAIRS );
 	}
+
+	@Override
+	public String toString()
+	{
+		return "\"" + projectionName + "\" (dimension = " + projectionDimension + ", multiplicity = " + multiplicity + ")";
+	}
+
+	@Override
+	public boolean equals( final Object o )
+	{
+		if ( this == o )
+			return true;
+		if ( !( o instanceof FeatureProjectionSpec ) )
+			return false;
+
+		final FeatureProjectionSpec that = ( FeatureProjectionSpec ) o;
+
+		if ( !projectionName.equals( that.projectionName ) )
+			return false;
+		if ( projectionDimension != that.projectionDimension )
+			return false;
+		return multiplicity == that.multiplicity;
+	}
+
+	@Override
+	public int hashCode()
+	{
+		return projectionName.hashCode();
+	}
 }
