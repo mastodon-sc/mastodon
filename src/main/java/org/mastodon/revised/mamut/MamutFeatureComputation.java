@@ -96,7 +96,7 @@ public class MamutFeatureComputation
 					toClear.add( featureSpec );
 
 			for ( final FeatureSpec< ?, ? > featureSpec : toClear )
-					featureModel.clear( featureSpec );
+				featureModel.clear( featureSpec );
 
 			// Pass the feature map to the feature model.
 			for ( final FeatureSpec< ?, ? > featureSpec : map.keySet() )
