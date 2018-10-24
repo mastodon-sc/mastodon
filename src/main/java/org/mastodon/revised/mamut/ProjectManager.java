@@ -237,14 +237,12 @@ public class ProjectManager
 			return;
 
 		project.setProjectRoot( projectRoot );
-		final MamutProject.ProjectWriter writer = project.openForWriting();
-		new MamutProjectIO().save( project, writer );
-
-		final Model model = windowManager.getAppModel().getModel();
-		model.saveRaw( writer );
-
-		writer.close();
-
+		try (final MamutProject.ProjectWriter writer = project.openForWriting())
+		{
+			new MamutProjectIO().save( project, writer );
+			final Model model = windowManager.getAppModel().getModel();
+			model.saveRaw( writer );
+		}
 		updateEnabledActions();
 	}
 
@@ -267,9 +265,10 @@ public class ProjectManager
 
 		if ( !isNewProject )
 		{
-			final MamutProject.ProjectReader reader = project.openForReading();
-			model.loadRaw( reader );
-			reader.close();
+			try (final MamutProject.ProjectReader reader = project.openForReading())
+			{
+				model.loadRaw( reader );
+			}
 		}
 
 		/*
