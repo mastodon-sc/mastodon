@@ -3,8 +3,6 @@ package org.mastodon.feature;
 import static org.mastodon.graph.algorithm.AncestorFinder.ancestors;
 import static org.mastodon.graph.algorithm.StronglyConnectedComponents.stronglyConnectedComponents;
 
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -16,6 +14,7 @@ import org.mastodon.collection.RefCollections;
 import org.mastodon.collection.RefList;
 import org.mastodon.collection.RefSet;
 import org.mastodon.graph.algorithm.TopologicalSort;
+import org.mastodon.util.Listeners;
 import org.scijava.Cancelable;
 import org.scijava.InstantiableException;
 import org.scijava.command.CommandInfo;
@@ -43,13 +42,44 @@ public class DefaultFeatureComputerService extends AbstractService implements Fe
 
 	private final Class< ? extends FeatureComputer > klass;
 
-	private PropertyChangeListener propertyChangeListener = new PropertyChangeListener()
+	public interface FeatureComputationStatusListener
 	{
-		// Does nothing.
-		@Override
-		public void propertyChange( final PropertyChangeEvent evt )
-		{}
-	};
+		void status( final String status );
+
+		void progress( final double progress );
+
+		void clear();
+	}
+
+	public static class FeatureComputationStatus
+	{
+		private final Listeners.List< FeatureComputationStatusListener > listeners;
+
+		FeatureComputationStatus()
+		{
+			listeners = new Listeners.SynchronizedList<>();
+		}
+
+		public void notifyStatus( final String status )
+		{
+			listeners.list.forEach( l -> l.status( status ) );
+		}
+
+		/**
+		 * @param progress computation progress as a number between 0 and 1
+		 */
+		public void notifyProgress( final double progress )
+		{
+			listeners.list.forEach( l -> l.progress( progress ) );
+		}
+
+		public void notifyClear()
+		{
+			listeners.list.forEach( l -> l.clear() );
+		}
+	}
+
+	private final FeatureComputationStatus status = new FeatureComputationStatus();
 
 	private String cancelReason;
 
@@ -86,8 +116,7 @@ public class DefaultFeatureComputerService extends AbstractService implements Fe
 	private void clear()
 	{
 		// TODO: IMPLEMENT protected void AbstractObjectGraph.clear()
-		// TODO: and public void FeatureDependencyGraph.clear() { super.clear();
-		// }
+		// TODO: and public void FeatureDependencyGraph.clear() { super.clear(); }
 //		dependencies.clear();
 	}
 
@@ -305,11 +334,7 @@ public class DefaultFeatureComputerService extends AbstractService implements Fe
 				provideParameters( item, module, klass, featureModel );
 			}
 
-			propertyChangeListener.propertyChange(  new PropertyChangeEvent(
-					this,
-					"status",
-					"",
-					vertex.getFeatureSpec().getKey() ) );
+			status.notifyStatus( vertex.getFeatureSpec().getKey() );
 			currentFeatureComputer.createOutput();
 			currentFeatureComputer.run();
 
@@ -318,11 +343,7 @@ public class DefaultFeatureComputerService extends AbstractService implements Fe
 		}
 
 		currentFeatureComputer = null;
-		propertyChangeListener.propertyChange(  new PropertyChangeEvent(
-				this,
-				"clear",
-				"",
-				"" ) );
+		status.notifyClear();
 		return ( featureModel );
 	}
 
@@ -359,12 +380,12 @@ public class DefaultFeatureComputerService extends AbstractService implements Fe
 			return;
 		}
 
-		// PropertyChangeListener.
-		if (PropertyChangeListener.class.isAssignableFrom( parameterClass ))
+		// FeatureComputationStatus.
+		if (FeatureComputationStatus.class.isAssignableFrom( parameterClass ))
 		{
 			@SuppressWarnings( "unchecked" )
-			final ModuleItem< PropertyChangeListener > propModule = ( ModuleItem< PropertyChangeListener > ) item;
-			propModule.setValue( module, propertyChangeListener );
+			final ModuleItem< FeatureComputationStatus > statusModule = ( ModuleItem< FeatureComputationStatus > ) item;
+			statusModule.setValue( module, status );
 			return;
 		}
 
@@ -372,15 +393,11 @@ public class DefaultFeatureComputerService extends AbstractService implements Fe
 	}
 
 	/**
-	 * Sets the {@link PropertyChangeListener} that will be notified of feature
-	 * computation progress by feature computer that depend on it.
-	 *
-	 * @param propertyChangeListener
-	 *            the {@link PropertyChangeListener}.
+	 * {@code FeatureComputationStatusListener}s added here will be notified about progress of computation.
 	 */
-	public void setPropertyChangeListener( final PropertyChangeListener propertyChangeListener )
+	public Listeners< FeatureComputationStatusListener > computationStatusListeners()
 	{
-		this.propertyChangeListener = propertyChangeListener;
+		return status.listeners;
 	}
 
 	@Override

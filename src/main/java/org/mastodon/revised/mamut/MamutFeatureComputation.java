@@ -37,7 +37,7 @@ public class MamutFeatureComputation
 		// Controller.
 		final Collection< Class< ? > > targets = Arrays.asList( new Class[] { Spot.class, Link.class } );
 		final FeatureComputationController controller = new FeatureComputationController( specsService, myComputerService, targets );
-		computerService.setPropertyChangeListener( controller.getPropertyChangeListener() );
+		computerService.computationStatusListeners().add( controller.getComputationStatusListener() );
 
 		// Listen to model changes and echo in the GUI
 		final ModelGraph graph = appModel.getModel().getGraph();

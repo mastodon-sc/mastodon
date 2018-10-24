@@ -1,7 +1,5 @@
 package org.mastodon.feature.ui;
 
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -15,6 +13,7 @@ import javax.swing.JLabel;
 import javax.swing.JProgressBar;
 import javax.swing.SwingUtilities;
 
+import org.mastodon.feature.DefaultFeatureComputerService.FeatureComputationStatusListener;
 import org.mastodon.feature.FeatureComputerService;
 import org.mastodon.feature.FeatureSpec;
 import org.mastodon.feature.FeatureSpecsService;
@@ -34,7 +33,7 @@ public class FeatureComputationController implements GraphChangeListener
 
 	private final FeatureComputationModel model;
 
-	private final PropertyChangeListener propertyChangeListener;
+	private final FeatureComputationStatusListener computationStatusListener;
 
 	public FeatureComputationController( final FeatureSpecsService specsService, final FeatureComputerService computerService, final Collection< Class< ? > > targets )
 	{
@@ -49,28 +48,35 @@ public class FeatureComputationController implements GraphChangeListener
 		gui.btnCancel.addActionListener( ( e ) -> cancel() );
 
 		gui.progressBar.setString( "" );
-		propertyChangeListener = new PropertyChangeListener()
+		computationStatusListener = new FeatureComputationStatusListener()
 		{
 			@Override
-			public void propertyChange( final PropertyChangeEvent evt )
+			public void status( final String status )
 			{
-				if ( "progress".equals( evt.getPropertyName() ) )
-					SwingUtilities.invokeLater( () -> gui.progressBar.setValue( ( Integer ) evt.getNewValue() ) );
-				else if ( "status".equals( evt.getPropertyName() ) )
-					SwingUtilities.invokeLater( () -> gui.progressBar.setString( ( String ) evt.getNewValue() ) );
-				else if ( "clear".equals( evt.getPropertyName() ) )
-					SwingUtilities.invokeLater( () -> {
-						gui.progressBar.setValue( 0 );
-						gui.progressBar.setString( "" );
-					} );
+				SwingUtilities.invokeLater( () -> gui.progressBar.setString( status ) );
+			}
+
+			@Override
+			public void progress( final double progress )
+			{
+				SwingUtilities.invokeLater( () -> gui.progressBar.setValue( ( int ) ( 100 * progress ) ) );
+			}
+
+			@Override
+			public void clear()
+			{
+				SwingUtilities.invokeLater( () -> {
+					gui.progressBar.setValue( 0 );
+					gui.progressBar.setString( "" );
+				} );
 			}
 		};
 
 	}
 
-	public PropertyChangeListener getPropertyChangeListener()
+	public FeatureComputationStatusListener getComputationStatusListener()
 	{
-		return propertyChangeListener;
+		return computationStatusListener;
 	}
 
 	private void cancel()

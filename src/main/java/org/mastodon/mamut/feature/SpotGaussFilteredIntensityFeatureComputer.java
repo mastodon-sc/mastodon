@@ -1,7 +1,5 @@
 package org.mastodon.mamut.feature;
 
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -10,6 +8,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.IntFunction;
 
+import org.mastodon.feature.DefaultFeatureComputerService.FeatureComputationStatus;
 import org.mastodon.feature.update.GraphUpdate;
 import org.mastodon.feature.update.GraphUpdate.UpdateLocality;
 import org.mastodon.feature.update.GraphUpdateStack;
@@ -50,7 +49,7 @@ public class SpotGaussFilteredIntensityFeatureComputer implements MamutFeatureCo
 	private GraphUpdateStack< Spot, Link > update;
 
 	@Parameter
-	private PropertyChangeListener listener;
+	private FeatureComputationStatus status;
 
 	@Parameter( type = ItemIO.OUTPUT )
 	private SpotGaussFilteredIntensityFeature output;
@@ -135,11 +134,7 @@ public class SpotGaussFilteredIntensityFeatureComputer implements MamutFeatureCo
 			for ( int timepoint = 0; timepoint < numTimepoints; timepoint++ )
 			{
 
-				listener.propertyChange(  new PropertyChangeEvent(
-						this,
-						"progress",
-						0,
-						(int) ( 100. * done++ / todo ) ) );
+				status.notifyProgress( ( double ) done++ / todo );
 
 				source.getSourceTransform( timepoint, level, transform );
 				for ( int d = 0; d < calibration.length; d++ )
