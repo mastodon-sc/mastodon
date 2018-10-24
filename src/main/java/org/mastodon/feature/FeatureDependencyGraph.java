@@ -4,6 +4,7 @@ import static org.mastodon.graph.algorithm.AncestorFinder.ancestors;
 import static org.mastodon.graph.algorithm.StronglyConnectedComponents.stronglyConnectedComponents;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -31,11 +32,6 @@ public class FeatureDependencyGraph extends AbstractObjectGraph< FeatureDependen
 		features = new HashMap<>();
 	}
 
-	public boolean contains( final FeatureSpec< ?, ? > featureSpec )
-	{
-		return features.containsKey( featureSpec );
-	}
-
 	public Vertex get( final FeatureSpec< ?, ? > featureSpec )
 	{
 		return features.get( featureSpec );
@@ -55,10 +51,27 @@ public class FeatureDependencyGraph extends AbstractObjectGraph< FeatureDependen
 	}
 
 	@Override
+	public void remove( final Vertex vertex )
+	{
+		super.remove( vertex );
+		features.remove( vertex.getFeatureSpec() );
+	}
+
+	@Override
 	public void clear()
 	{
 		super.clear();
 		features.clear();
+	}
+
+	/**
+	 * Get {@code FeatureSpec}s for all vertices in this graph.
+	 *
+	 * @return set of {@code FeatureSpec}s of all vertices in this graph.
+	 */
+	public Set< FeatureSpec< ?, ? > > getFeatureSpecs()
+	{
+		return Collections.unmodifiableSet( features.keySet() );
 	}
 
 	/**

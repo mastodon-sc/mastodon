@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.mastodon.collection.RefList;
 import org.mastodon.graph.algorithm.TopologicalSort;
@@ -157,6 +158,12 @@ public class DefaultFeatureComputerService extends AbstractService implements Fe
 		return null == dependencies.get( spec )
 				? null
 				: dependencies.get( spec ).getFeatureComputer();
+	}
+
+	@Override
+	public Set< FeatureSpec< ?, ? > > getFeatureSpecs()
+	{
+		return dependencies.getFeatureSpecs();
 	}
 
 	@Override

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Map;
+import java.util.Set;
 
 import javax.swing.JDialog;
 
@@ -12,7 +13,6 @@ import org.mastodon.feature.FeatureComputer;
 import org.mastodon.feature.FeatureComputerService;
 import org.mastodon.feature.FeatureModel;
 import org.mastodon.feature.FeatureSpec;
-import org.mastodon.feature.FeatureSpecsService;
 import org.mastodon.feature.ui.FeatureComputationController;
 import org.mastodon.mamut.feature.MamutFeatureComputerService;
 import org.mastodon.revised.model.mamut.Link;
@@ -28,15 +28,14 @@ public class MamutFeatureComputation
 	public static final JDialog getDialog( final MamutAppModel appModel, final Context context )
 	{
 		// Prepare services.
-		final FeatureSpecsService specsService = context.getService( FeatureSpecsService.class );
 		final MamutFeatureComputerService computerService = context.getService( MamutFeatureComputerService.class );
 		computerService.setModel( appModel.getModel() );
 		computerService.setSharedBdvData( appModel.getSharedBdvData() );
 		final MyFeatureComputerService myComputerService = new MyFeatureComputerService( computerService, appModel.getModel().getFeatureModel() );
 
 		// Controller.
-		final Collection< Class< ? > > targets = Arrays.asList( new Class[] { Spot.class, Link.class } );
-		final FeatureComputationController controller = new FeatureComputationController( specsService, myComputerService, targets );
+		final Collection< Class< ? > > targets = Arrays.asList( Spot.class, Link.class );
+		final FeatureComputationController controller = new FeatureComputationController( myComputerService, targets );
 		computerService.computationStatusListeners().add( controller.getComputationStatusListener() );
 
 		// Listen to model changes and echo in the GUI
@@ -79,6 +78,12 @@ public class MamutFeatureComputation
 		public String getCancelReason()
 		{
 			return wrapped.getCancelReason();
+		}
+
+		@Override
+		public Set< FeatureSpec< ?, ? > > getFeatureSpecs()
+		{
+			return wrapped.getFeatureSpecs();
 		}
 
 		@Override

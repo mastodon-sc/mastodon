@@ -2,10 +2,8 @@ package org.mastodon.feature.ui;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
-import java.util.List;
 
 import javax.swing.JDialog;
 import javax.swing.JFrame;
@@ -16,7 +14,6 @@ import javax.swing.SwingUtilities;
 import org.mastodon.feature.DefaultFeatureComputerService.FeatureComputationStatusListener;
 import org.mastodon.feature.FeatureComputerService;
 import org.mastodon.feature.FeatureSpec;
-import org.mastodon.feature.FeatureSpecsService;
 import org.mastodon.graph.GraphChangeListener;
 import org.mastodon.revised.ui.util.EverythingDisablerAndReenabler;
 
@@ -35,10 +32,10 @@ public class FeatureComputationController implements GraphChangeListener
 
 	private final FeatureComputationStatusListener computationStatusListener;
 
-	public FeatureComputationController( final FeatureSpecsService specsService, final FeatureComputerService computerService, final Collection< Class< ? > > targets )
+	public FeatureComputationController( final FeatureComputerService computerService, final Collection< Class< ? > > targets )
 	{
 		this.computerService = computerService;
-		model = createModel( specsService, targets );
+		model = createModel( targets );
 		dialog = new JDialog( ( JFrame ) null, "Feature calculation" );
 		gui = new FeatureComputationPanel( model, targets );
 		dialog.getContentPane().add( gui );
@@ -110,20 +107,16 @@ public class FeatureComputationController implements GraphChangeListener
 		}.start();
 	}
 
-	private FeatureComputationModel createModel( final FeatureSpecsService featureSpecsService, final Collection< Class< ? > > targets )
+	private FeatureComputationModel createModel( final Collection< Class< ? > > targets )
 	{
 		final FeatureComputationModel model = new FeatureComputationModel();
-		for ( final Class< ? > target : targets )
+		for ( final FeatureSpec< ?, ? > spec : computerService.getFeatureSpecs() )
 		{
-			final List< FeatureSpec< ?, ? > > fs = new ArrayList<>( featureSpecsService.getSpecs( target ) );
-			// Only add the feature that can be computed.
-			for ( final FeatureSpec< ?, ? > f : fs )
+			// Only add the features with specified targets.
+			if ( targets.contains( spec.getTargetClass() ) )
 			{
-				if ( null != computerService.getFeatureComputerFor( f ) )
-				{
-					model.put( target, f );
-					model.setSelected( f.getKey(), true );
-				}
+				model.put( spec.getTargetClass(), spec );
+				model.setSelected( spec.getKey(), true );
 			}
 		}
 		return model;
