@@ -10,7 +10,6 @@ import java.util.function.ToIntFunction;
 import javax.swing.ImageIcon;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
-import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
 import javax.swing.SwingConstants;
@@ -43,8 +42,6 @@ public class FeatureTable< C, T >
 
 	private final JTable table;
 
-	private final JScrollPane scrollPane;
-
 	public FeatureTable(
 			final C elements,                           // collection of elements
 			final ToIntFunction< C > size,              // given collection returns number of elements
@@ -71,8 +68,6 @@ public class FeatureTable< C, T >
 		table.setAutoResizeMode( JTable.AUTO_RESIZE_SUBSEQUENT_COLUMNS );
 		table.setRowHeight( 30 );
 		table.setShowGrid( false );
-		this.scrollPane = new JScrollPane( table );
-		table.setBackground( scrollPane.getBackground() );
 		setElements( elements );
 	}
 
@@ -83,7 +78,12 @@ public class FeatureTable< C, T >
 	 */
 	public JComponent getComponent()
 	{
-		return scrollPane;
+		return table;
+	}
+
+	public ListSelectionModel getListSelectionModel()
+	{
+		return table.getSelectionModel();
 	}
 
 	/**
