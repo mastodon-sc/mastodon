@@ -36,7 +36,7 @@ public class MamutPlayground
 		featureComputerService.setModel( model );
 		featureComputerService.setSharedBdvData( windowManager.getAppModel().getSharedBdvData() );
 		final Map< FeatureSpec< ?, ? >, Feature< ? > > features =
-				featureComputerService.compute( "Spot gaussian-filtered intensity" );
+				featureComputerService.compute( SpotGaussFilteredIntensityFeature.SPEC );
 
 		final FeatureSpecsService specsService = context.getService( FeatureSpecsService.class );
 		printForTarget( Spot.class, model.getGraph().vertices(), specsService, features );

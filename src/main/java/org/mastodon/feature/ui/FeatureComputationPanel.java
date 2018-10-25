@@ -211,7 +211,7 @@ public class FeatureComputationPanel extends JPanel
 						final JCheckBox checkbox = linkedCheckBox( element, element.getLabel() );
 						checkbox.setFocusable( true );
 						final JButton button = new JButton( COG_ICON );
-						button.addActionListener( ( e ) -> displayConfigPanel( element.getLabel() ) );
+						button.addActionListener( ( e ) -> displayConfigPanel( model.getFeatureSpec( element.getLabel() ) ) );
 						addToLayout( checkbox, button );
 					}
 
@@ -251,7 +251,7 @@ public class FeatureComputationPanel extends JPanel
 				} ) );
 	}
 
-	private void displayConfigPanel( final String featureKey )
+	private void displayConfigPanel( final FeatureSpec< ?, ? > spec )
 	{
 		panelConfig.removeAll();
 
@@ -264,7 +264,7 @@ public class FeatureComputationPanel extends JPanel
 		c.weightx = 1.;
 		c.weighty = 1.;
 
-		final JLabel title = new JLabel( featureKey );
+		final JLabel title = new JLabel( spec.getKey() );
 		title.setFont( getFont().deriveFont( Font.BOLD ) );
 		c.gridy = 0;
 		infoPanel.add( title, c );
@@ -274,7 +274,6 @@ public class FeatureComputationPanel extends JPanel
 		c.gridy++;
 		infoPanel.add( infoLbl, c );
 
-		final FeatureSpec< ?, ? > spec = model.getFeatureSpec( featureKey );
 		infoLbl.setText(  "<html>" + spec.getInfo() +  "</html>"  );
 		final FeatureProjectionSpec[] projections = spec.getProjectionSpecs();
 		final StringBuilder projStr = new StringBuilder( ( projections.length == 1 )
@@ -339,10 +338,9 @@ public class FeatureComputationPanel extends JPanel
 			final List< FeatureSpec< ?, ? > > featureSpecs =
 					new ArrayList<>( model.getFeatureSpecs( target ) );
 			featureSpecs.sort( ( fs1, fs2 ) -> fs1.getKey().compareTo( fs2.getKey() ) );
-			for ( final FeatureSpec< ?, ? > featureSpec : featureSpecs )
+			for ( final FeatureSpec< ?, ? > spec : featureSpecs )
 			{
-				final String key = featureSpec.getKey();
-				elements.add( booleanElement( key, () -> model.isSelected( key ), ( s ) -> model.setSelected( key, s ) ) );
+				elements.add( booleanElement( spec.getKey(), () -> model.isSelected( spec ), ( s ) -> model.setSelected( spec, s ) ) );
 			}
 			elements.add( separator() );
 		}

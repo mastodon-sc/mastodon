@@ -2,22 +2,16 @@ package org.mastodon.revised.mamut;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import org.jdom2.JDOMException;
 import org.mastodon.feature.Feature;
 import org.mastodon.feature.FeatureModel;
 import org.mastodon.feature.FeatureSpec;
-import org.mastodon.feature.FeatureSpecsService;
 import org.mastodon.mamut.feature.MamutFeatureComputerService;
-import org.mastodon.revised.model.mamut.Link;
 import org.mastodon.revised.model.mamut.Model;
 import org.mastodon.revised.model.mamut.ModelUtils;
-import org.mastodon.revised.model.mamut.Spot;
 import org.mastodon.revised.model.mamut.trackmate.MamutExporter;
 import org.mastodon.revised.model.mamut.trackmate.TrackMateImporter;
 import org.scijava.Context;
@@ -44,16 +38,8 @@ public class MaMuTExportExample
 		 */
 
 		final Context context = windowManager.getContext();
-		final FeatureSpecsService specsService = context.getService( FeatureSpecsService.class );
-		final Collection< String > featureKeys = new ArrayList<>();
-		featureKeys.addAll(
-				Stream.concat(
-						specsService.getSpecs( Spot.class ).stream(),
-						specsService.getSpecs( Link.class ).stream() )
-						.map( FeatureSpec::getKey )
-						.collect( Collectors.toList() ) );
-
 		final MamutFeatureComputerService featureComputerService = context.getService( MamutFeatureComputerService.class );
+		final Collection< FeatureSpec< ?, ? > > featureKeys = featureComputerService.getFeatureSpecs();
 		featureComputerService.setModel( model );
 		featureComputerService.setSharedBdvData( windowManager.getAppModel().getSharedBdvData() );
 		System.out.println( "Computing all discovered features: " + featureKeys );

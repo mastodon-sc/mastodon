@@ -13,7 +13,6 @@ import org.mastodon.util.Listeners;
 
 public class FeatureComputationModel
 {
-
 	public interface UpdateListener
 	{
 		public void settingsChanged();
@@ -21,7 +20,7 @@ public class FeatureComputationModel
 
 	private final Listeners.List< UpdateListener > updateListeners;
 
-	private final Set< String > selectedFeatureKeys;
+	private final Set< FeatureSpec< ?, ? > > selectedFeatures;
 
 	private final Map< Class< ? >, Collection< FeatureSpec< ?, ? > > > featureSpecsTargetMap;
 
@@ -30,7 +29,7 @@ public class FeatureComputationModel
 	public FeatureComputationModel()
 	{
 		this.updateListeners = new Listeners.SynchronizedList<>();
-		this.selectedFeatureKeys = new HashSet<>();
+		this.selectedFeatures = new HashSet<>();
 		this.featureSpecsTargetMap = new HashMap<>();
 		this.featureSpecsKeys = new HashMap<>();
 	}
@@ -46,26 +45,23 @@ public class FeatureComputationModel
 		return updateListeners;
 	}
 
-	public boolean isSelected( final String featureKey )
+	public boolean isSelected( final FeatureSpec< ?, ? > spec )
 	{
-		return selectedFeatureKeys.contains( featureKey );
+		return selectedFeatures.contains( spec );
 	}
 
-	public void setSelected( final String featureKey, final boolean selected )
+	public void setSelected( final FeatureSpec< ?, ? > spec, final boolean selected )
 	{
-		if ( isSelected( featureKey ) != selected )
-		{
-			if ( selected )
-				selectedFeatureKeys.add( featureKey );
-			else
-				selectedFeatureKeys.remove( featureKey );
+		final boolean changed = selected
+				? selectedFeatures.add( spec )
+				: selectedFeatures.remove( spec );
+		if ( changed )
 			notifyListeners();
-		}
 	}
 
-	public Set< String > getSelectedFeatureKeys()
+	public Set< FeatureSpec< ?, ? > > getSelectedFeatureKeys()
 	{
-		return Collections.unmodifiableSet( selectedFeatureKeys );
+		return Collections.unmodifiableSet( selectedFeatures );
 	}
 
 	public Collection< FeatureSpec< ?, ? > > getFeatureSpecs( final Class< ? > target )
@@ -88,8 +84,6 @@ public class FeatureComputationModel
 	@Override
 	public String toString()
 	{
-		return ( super.toString() + " " + selectedFeatureKeys.toString() );
+		return getClass().getSimpleName() + " " + selectedFeatures.toString();
 	}
-
-
 }

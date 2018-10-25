@@ -38,7 +38,7 @@ public class MamutFeatureComputerService extends DefaultFeatureComputerService
 	}
 
 	@Override
-	public Map< FeatureSpec< ?, ? >, Feature< ? > > compute( final Collection< String > featureKeys )
+	public Map< FeatureSpec< ?, ? >, Feature< ? > > compute( final Collection< FeatureSpec< ?, ? > > featureKeys )
 	{
 		final Map< FeatureSpec< ?, ? >, Feature< ? > > results = super.compute( featureKeys );
 		if ( isCanceled() )

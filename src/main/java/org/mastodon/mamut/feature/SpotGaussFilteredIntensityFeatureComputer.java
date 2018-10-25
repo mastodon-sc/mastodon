@@ -78,7 +78,7 @@ public class SpotGaussFilteredIntensityFeatureComputer implements MamutFeatureCo
 
 		// Spots to process, per time-point.
 		final IntFunction< Iterable< Spot > > index;
-		final GraphUpdate< Spot, Link > changes = update.changesFor( SpotGaussFilteredIntensityFeature.KEY );
+		final GraphUpdate< Spot, Link > changes = update.changesFor( SpotGaussFilteredIntensityFeature.SPEC );
 
 		if (null == changes)
 		{

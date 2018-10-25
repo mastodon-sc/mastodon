@@ -90,11 +90,10 @@ public class GraphUpdateStackTest
 		 */
 
 		// Compute all for FT1.
-		final Map< FeatureSpec< ?, ? >, Feature< ? > > features = computerService.compute( FT1.KEY );
+		final Map< FeatureSpec< ?, ? >, Feature< ? > > features = computerService.compute( FT1.SPEC );
 
 		// Grab FT1.
-		final FeatureSpec< ?, ? > FT1specs = specsService.getSpec( FT1.KEY );
-		final FT1 ft1 = ( FT1 ) features.get( FT1specs );
+		final FT1 ft1 = ( FT1 ) features.get( FT1.SPEC );
 
 		// Make one change.
 		s0.move( 10., 0 );
@@ -112,7 +111,7 @@ public class GraphUpdateStackTest
 		ft1.expectedEdgesSelf = new RefSetImp<>( graph.edges().getRefPool() );
 		ft1.expectedEdgesNeighbor = new RefSetImp<>( graph.edges().getRefPool() );
 		ft1.expectedEdgesNeighbor.add( e01 );
-		computerService.compute( FT1.KEY );
+		computerService.compute( FT1.SPEC );
 
 		// Redo one change.
 		s1.move( 10., 0 );
@@ -128,23 +127,20 @@ public class GraphUpdateStackTest
 		ft1.expectedVerticesNeighbor = null;
 		ft1.expectedEdgesSelf = null;
 		ft1.expectedEdgesNeighbor = null;
-		computerService.compute( FT1.KEY );
+		computerService.compute( FT1.SPEC );
 	}
 
 	@Test
 	public void testUpdates()
 	{
-		final FeatureSpec< ?, ? > FT1specs = specsService.getSpec( FT1.KEY );
-		final FeatureSpec< ?, ? > FT2specs = specsService.getSpec( FT2.KEY );
-
 		/*
 		 * First calculation for FT1 and FT2. They should receive the null flag
 		 * stating that all values are to be recomputed.
 		 */
 
-		final Map< FeatureSpec< ?, ? >, Feature< ? > > features = computerService.compute( FT1.KEY, FT2.KEY );
-		final FT1 ft1 = ( FT1 ) features.get( FT1specs );
-		final FT2 ft2 = ( FT2 ) features.get( FT2specs );
+		final Map< FeatureSpec< ?, ? >, Feature< ? > > features = computerService.compute( FT1.SPEC, FT2.SPEC );
+		final FT1 ft1 = ( FT1 ) features.get( FT1.SPEC );
+		final FT2 ft2 = ( FT2 ) features.get( FT2.SPEC );
 
 		/*
 		 * Second calculation for FT1 and FT2. They should receive empty changes
@@ -158,7 +154,7 @@ public class GraphUpdateStackTest
 		ft2.expectedVerticesNeighbor = new RefSetImp<>( graph.vertices().getRefPool() );
 		ft2.expectedEdgesSelf = new RefSetImp<>( graph.edges().getRefPool() );
 		ft2.expectedEdgesNeighbor = new RefSetImp<>( graph.edges().getRefPool() );
-		computerService.compute( FT1.KEY, FT2.KEY );
+		computerService.compute( FT1.SPEC, FT2.SPEC );
 
 		/*
 		 * Third calculation. We move one spot. We only recompute FT1.
@@ -167,7 +163,7 @@ public class GraphUpdateStackTest
 		s0.move( 10., 0 );
 		ft1.expectedVerticesSelf.add( s0 );
 		ft1.expectedEdgesNeighbor.add( e01 );
-		computerService.compute( FT1.KEY );
+		computerService.compute( FT1.SPEC );
 
 		/*
 		 * Fourth calculation. We move another spot. We compute FT1 and FT2. FT2
@@ -182,16 +178,15 @@ public class GraphUpdateStackTest
 		ft2.expectedVerticesSelf.add( s1 );
 		ft2.expectedEdgesNeighbor.add( e01 );
 		ft2.expectedEdgesNeighbor.add( e12 );
-		computerService.compute( FT1.KEY, FT2.KEY );
+		computerService.compute( FT1.SPEC, FT2.SPEC );
 
 		/*
 		 * Fifth calculation. We now compute FT3. It should receive null
 		 * changes, triggering full re-computation.
 		 */
 
-		final Map< FeatureSpec< ?, ? >, Feature< ? > > features2 = computerService.compute( FT3.KEY );
-		final FeatureSpec< ?, ? > specFT3 = specsService.getSpec( FT3.KEY );
-		final FT3 ft3 = ( FT3 ) features2.get( specFT3 );
+		final Map< FeatureSpec< ?, ? >, Feature< ? > > features2 = computerService.compute( FT3.SPEC );
+		final FT3 ft3 = ( FT3 ) features2.get( FT3.SPEC );
 
 		/*
 		 * Sixth & seventh calculations. We make two changes but only catch up
@@ -213,7 +208,7 @@ public class GraphUpdateStackTest
 		ft3.expectedVerticesNeighbor.add( s2 );
 		ft3.expectedEdgesSelf = new RefSetImp<>( graph.edges().getRefPool() );
 		ft3.expectedEdgesNeighbor = new RefSetImp<>( graph.edges().getRefPool() );
-		computerService.compute( FT3.KEY );
+		computerService.compute( FT3.SPEC );
 
 		// Test that FT1 does not have a value for s1.
 		assertFalse( "FT1 should not have a value for s1 anymore.", ft1.map.isSet( s1 ) );
@@ -237,13 +232,15 @@ public class GraphUpdateStackTest
 		ft3.expectedVerticesNeighbor.add( s4 );
 		// Since we moved s3, e23 should be in NEIGHBOR.
 		ft3.expectedEdgesNeighbor.add( e23 );
-		computerService.compute( FT3.KEY );
+		computerService.compute( FT3.SPEC );
 	}
 
 	public static class FT1 extends TestFeature< Spot >
 	{
 
 		public final static String KEY = "FT1";
+
+		public final static Spec SPEC = new Spec();
 
 		private DoublePropertyMap< Spot > map;
 
@@ -296,9 +293,9 @@ public class GraphUpdateStackTest
 		}
 
 		@Override
-		protected String getKey()
+		protected FeatureSpec< ?, ? > getKey()
 		{
-			return FT1.KEY;
+			return FT1.SPEC;
 		}
 
 		@Override
@@ -321,6 +318,8 @@ public class GraphUpdateStackTest
 	{
 
 		public final static String KEY = "FT2";
+
+		public final static Spec SPEC = new Spec();
 
 		@Plugin( type = FeatureSpec.class )
 		public static class Spec extends FeatureSpec< FT2, Spot >
@@ -373,9 +372,9 @@ public class GraphUpdateStackTest
 		}
 
 		@Override
-		protected String getKey()
+		protected FeatureSpec< ?, ? > getKey()
 		{
-			return FT2.KEY;
+			return FT2.SPEC;
 		}
 
 		@Override
@@ -389,6 +388,8 @@ public class GraphUpdateStackTest
 	{
 
 		public final static String KEY = "FT3";
+
+		public final static Spec SPEC = new Spec();
 
 		@Plugin( type = FeatureSpec.class )
 		public static class Spec extends FeatureSpec< FT3, Spot >
@@ -441,9 +442,9 @@ public class GraphUpdateStackTest
 		}
 
 		@Override
-		protected String getKey()
+		protected FeatureSpec< ?, ? > getKey()
 		{
-			return FT3.KEY;
+			return FT3.SPEC;
 		}
 
 		@Override
@@ -490,7 +491,7 @@ public class GraphUpdateStackTest
 
 		}
 
-		protected abstract String getKey();
+		protected abstract FeatureSpec< ?, ? > getKey();
 
 		protected abstract TestFeature< Spot > getOutput();
 	}

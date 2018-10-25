@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.Collections;
 
 import org.mastodon.feature.DefaultFeatureComputerService;
+import org.mastodon.feature.FeatureSpec;
 import org.mastodon.feature.update.GraphUpdate.UpdateLocality;
 import org.mastodon.graph.Edge;
 import org.mastodon.graph.GraphListener;
@@ -71,7 +72,7 @@ public class GraphUpdateStack< V extends Vertex< E >, E extends Edge< V > >
 	 *            the keys of the features that were computed before this
 	 *            commit.
 	 */
-	public void commit( final Collection< String > featureKeys )
+	public void commit( final Collection< FeatureSpec< ?, ? > > featureKeys )
 	{
 		currentUpdate = new GraphUpdate<>( graph );
 		stateStack.push( new UpdateState<>( featureKeys, currentUpdate ) );
@@ -90,7 +91,7 @@ public class GraphUpdateStack< V extends Vertex< E >, E extends Edge< V > >
 	 * @return a graph update object, or <code>null</code> if the full graph
 	 *         needs to re-computed for this feature.
 	 */
-	public GraphUpdate< V, E > changesFor( final String featureKey )
+	public GraphUpdate< V, E > changesFor( final FeatureSpec< ?, ? > featureKey )
 	{
 		final GraphUpdate< V, E > changes = new GraphUpdate<>( graph );
 		for ( final UpdateState< V, E > updateState : stateStack )

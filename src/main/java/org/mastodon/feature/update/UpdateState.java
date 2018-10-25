@@ -2,6 +2,7 @@ package org.mastodon.feature.update;
 
 import java.util.Collection;
 
+import org.mastodon.feature.FeatureSpec;
 import org.mastodon.graph.Edge;
 import org.mastodon.graph.Vertex;
 
@@ -19,17 +20,17 @@ import org.mastodon.graph.Vertex;
 class UpdateState< V extends Vertex< E >, E extends Edge< V > >
 {
 
-	private final Collection< String > featureKeys;
+	private final Collection< FeatureSpec< ?, ? > > featureKeys;
 
 	private final GraphUpdate< V, E > changes;
 
-	public UpdateState( final Collection< String > featureKeys, final GraphUpdate< V, E > changes )
+	public UpdateState( final Collection< FeatureSpec< ?, ? > > featureKeys, final GraphUpdate< V, E > changes )
 	{
 		this.featureKeys = featureKeys;
 		this.changes = changes;
 	}
 
-	public boolean contains( final String featureKey )
+	public boolean contains( final FeatureSpec< ?, ? > featureKey )
 	{
 		return featureKeys.contains( featureKey );
 	}

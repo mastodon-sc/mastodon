@@ -14,6 +14,8 @@ public class Playground
 {
 	public static class F1 implements Feature< Spot >
 	{
+		public static final Spec SPEC = new Spec();
+
 		@Plugin( type = FeatureSpec.class )
 		public static class Spec extends FeatureSpec< F1, Spot >
 		{
@@ -44,6 +46,8 @@ public class Playground
 
 	public static class F2 implements Feature< Spot >
 	{
+		public static final Spec SPEC = new Spec();
+
 		@Plugin( type = FeatureSpec.class )
 		public static class Spec extends FeatureSpec< F2, Spot >
 		{
@@ -74,6 +78,8 @@ public class Playground
 
 	public static class F3 implements Feature< Spot >
 	{
+		public static final Spec SPEC = new Spec();
+
 		@Plugin( type = FeatureSpec.class )
 		public static class Spec extends FeatureSpec< F3, Spot >
 		{
@@ -103,6 +109,8 @@ public class Playground
 
 	public static class F4 implements Feature< Spot >
 	{
+		public static final Spec SPEC = new Spec();
+
 		@Plugin( type = FeatureSpec.class )
 		public static class Spec extends FeatureSpec< F4, Spot >
 		{
@@ -222,7 +230,7 @@ public class Playground
 		final DefaultFeatureComputerService featureComputerService = new DefaultFeatureComputerService();
 		context.inject( featureComputerService );
 		featureComputerService.initialize();
-		featureComputerService.compute( "F1", "F3" );
+		featureComputerService.compute( F1.SPEC, F3.SPEC );
 
 		testSpecs( context );
 	}

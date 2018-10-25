@@ -18,8 +18,9 @@ import org.scijava.plugin.Plugin;
 
 public class SpotGaussFilteredIntensityFeature implements Feature< Spot >
 {
-
 	public static final String KEY = "Spot gaussian-filtered intensity";
+
+	public static final Spec SPEC = new Spec();
 
 	private static final String HELP_STRING =
 			"Computes the average intensity and its standard deviation inside spots "
@@ -34,9 +35,9 @@ public class SpotGaussFilteredIntensityFeature implements Feature< Spot >
 	private static final String STD_PROJECTIONS_KEY = "Std";
 
 	@Plugin( type = FeatureSpec.class )
-	public static class SpotGaussFilteredIntensityFeatureSpec extends FeatureSpec< SpotGaussFilteredIntensityFeature, Spot >
+	public static class Spec extends FeatureSpec< SpotGaussFilteredIntensityFeature, Spot >
 	{
-		public SpotGaussFilteredIntensityFeatureSpec()
+		public Spec()
 		{
 			super(
 					KEY,
