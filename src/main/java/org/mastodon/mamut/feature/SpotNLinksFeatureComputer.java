@@ -20,7 +20,7 @@ public class SpotNLinksFeatureComputer implements MamutFeatureComputer
 	@Override
 	public void run()
 	{
-		output.map.clear();
+		output.map.beforeClearPool();
 		for ( final Spot spot : graph.vertices() )
 			output.map.set( spot, spot.edges().size() );
 	}

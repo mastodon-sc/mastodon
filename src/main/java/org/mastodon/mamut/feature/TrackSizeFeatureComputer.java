@@ -34,7 +34,7 @@ public class TrackSizeFeatureComputer implements MamutFeatureComputer
 	@Override
 	public void run()
 	{
-		output.map.clear();
+		output.map.beforeClearPool();
 
 		final TIntIntMap nSpots = new TIntIntHashMap();
 		final PoolCollectionWrapper< Spot > vertices = graph.vertices();

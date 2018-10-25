@@ -33,7 +33,7 @@ public class LinkDisplacementFeatureComputer implements MamutFeatureComputer
 	@Override
 	public void run()
 	{
-		output.map.clear();
+		output.map.beforeClearPool();
 
 		final ModelGraph graph = model.getGraph();
 		final Spot ref1 = graph.vertexRef();

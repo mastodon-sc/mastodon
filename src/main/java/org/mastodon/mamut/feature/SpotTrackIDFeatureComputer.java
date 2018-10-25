@@ -31,7 +31,7 @@ public class SpotTrackIDFeatureComputer implements MamutFeatureComputer
 	@Override
 	public void run()
 	{
-		output.map.clear();
+		output.map.beforeClearPool();
 		final BreadthFirstCrossComponentSearch< Spot, Link > search = new BreadthFirstCrossComponentSearch<>( graph, SearchDirection.UNDIRECTED );
 		final SearchListener< Spot, Link, BreadthFirstCrossComponentSearch< Spot, Link > > l =
 				new SearchListener< Spot, Link, BreadthFirstCrossComponentSearch< Spot, Link > >()
