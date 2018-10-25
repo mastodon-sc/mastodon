@@ -127,7 +127,7 @@ public class FeatureTableDialogExample
 		{
 			super( owner, "Feature computation", false );
 
-			final List< Class< ? > > targets = Arrays.asList( new Class[] { Spot.class, Link.class } );
+			final List< Class< ? > > targets = Arrays.asList( Spot.class, Link.class );
 
 			final FeatureTable< List< MyElement >, MyElement > ft1 = createFeatureTable();
 			ft1.setElements( elements1 );
@@ -144,7 +144,7 @@ public class FeatureTableDialogExample
 			tablePanel.setBorder( BorderFactory.createEmptyBorder( 10, 10, 10, 10 ) );
 
 			final FeatureTable.SelectionListener< MyElement > sl = ( t ) -> System.out.println( "Element " + t + " changed." );
-			
+
 			final MyListSelectionAggregator aggregator = new MyListSelectionAggregator();
 
 			for ( int i = 0; i < targets.size(); i++ )

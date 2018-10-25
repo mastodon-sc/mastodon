@@ -1,6 +1,7 @@
 package org.mastodon.feature.ui;
 
 import java.awt.Component;
+import java.awt.Dimension;
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 import java.util.function.Function;
@@ -17,7 +18,12 @@ import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellRenderer;
 
+import org.mastodon.revised.model.tag.ui.AbstractTagTable;
 import org.mastodon.util.Listeners;
+import org.scijava.ui.behaviour.io.InputTriggerConfig;
+import org.scijava.ui.behaviour.util.Actions;
+
+import static javax.swing.JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT;
 
 /**
  *
@@ -27,7 +33,6 @@ import org.mastodon.util.Listeners;
 public class FeatureTable< C, T >
 {
 	private static final ImageIcon UP_TO_DATE_ICON = new ImageIcon( FeatureTable.class.getResource( "bullet_green.png" ) );
-
 	private static final ImageIcon NOT_UP_TO_DATE_ICON = new ImageIcon( FeatureTable.class.getResource( "time.png" ) );
 
 	private C elements;
@@ -39,6 +44,8 @@ public class FeatureTable< C, T >
 	private final Predicate< T > isUptodate;
 
 	private final Listeners.List< SelectionListener< T > > selectionListeners;
+
+	private final MyTableModel tableModel;
 
 	private final JTable table;
 
@@ -61,19 +68,39 @@ public class FeatureTable< C, T >
 
 		selectionListeners = new Listeners.SynchronizedList<>();
 
-		this.table = new JTable();
+		tableModel = new MyTableModel();
+		table = new JTable( tableModel );
 		table.setSelectionMode( ListSelectionModel.SINGLE_SELECTION );
 		table.setTableHeader( null );
 		table.setFillsViewportHeight( true );
 		table.setAutoResizeMode( JTable.AUTO_RESIZE_SUBSEQUENT_COLUMNS );
 		table.setRowHeight( 30 );
+		table.setIntercellSpacing( new Dimension( 0, 0 ) );
+		table.getColumnModel().getColumn( 0 ).setMaxWidth( 30 );
+		table.getColumnModel().getColumn( 2 ).setMaxWidth( 64 );
+		table.getColumnModel().getColumn( 2 ).setCellRenderer( new UpdatedCellRenderer() );
 		table.setShowGrid( false );
+
+		final Actions actions = new Actions( table.getInputMap( WHEN_ANCESTOR_OF_FOCUSED_COMPONENT ), table.getActionMap(), new InputTriggerConfig() );
+		actions.runnableAction( this::toggleSelectedRow, "toggle selected row", "SPACE", "ENTER" );
+
 		setElements( elements );
+	}
+
+	private void toggleSelectedRow()
+	{
+		final int row = table.getSelectedRow();
+		if ( row >= 0 )
+		{
+			final T feature = get.apply( elements, row );
+			setSelected.accept( feature, !isSelected.test( feature ) );
+			tableModel.fireTableCellUpdated( row, 0 );
+		}
 	}
 
 	/**
 	 * Exposes the component in which the elements are displayed.
-	 * 
+	 *
 	 * @return the component.
 	 */
 	public JComponent getComponent()
@@ -88,18 +115,25 @@ public class FeatureTable< C, T >
 
 	/**
 	 * Sets the collection of elements to show.
-	 * 
+	 *
 	 * @param elements
 	 *            the collection of elements to show.
 	 */
 	public void setElements( final C elements )
 	{
 		this.elements = elements;
-		table.setModel( new MyTableModel() );
-		table.getColumnModel().getColumn( 0 ).setMaxWidth( 30 );
-		table.getColumnModel().getColumn( 2 ).setMaxWidth( 64 );
-		table.getColumnModel().getColumn( 2 ).setCellRenderer( new UpdatedCellRenderer() );
+		if ( elements == null )
+		{
+			selectionListeners.list.forEach( l -> l.selectionChanged( null ) );
+		}
+		else
+		{
+			tableModel.fireTableDataChanged();
+			if ( table.getRowCount() > 0 )
+				table.setRowSelectionInterval( 0, 0 );
+		}
 	}
+
 
 	public interface SelectionListener< T >
 	{
