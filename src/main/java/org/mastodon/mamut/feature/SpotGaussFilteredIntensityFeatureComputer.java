@@ -8,6 +8,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.IntFunction;
 
+import org.mastodon.RefPool;
+import org.mastodon.collection.ref.RefArrayList;
 import org.mastodon.feature.DefaultFeatureComputerService.FeatureComputationStatus;
 import org.mastodon.feature.update.GraphUpdate;
 import org.mastodon.feature.update.GraphUpdate.UpdateLocality;
@@ -93,7 +95,7 @@ public class SpotGaussFilteredIntensityFeatureComputer implements MamutFeatureCo
 		else
 		{
 			// Only process modified spots.
-			index = new MyIndex( changes );
+			index = new MyIndex( changes, model.getGraph().vertices().getRefPool() );
 		}
 
 		// Calculation are made on resolution level 0.
@@ -233,19 +235,15 @@ public class SpotGaussFilteredIntensityFeatureComputer implements MamutFeatureCo
 
 		private final Map< Integer, Collection< Spot > > index;
 
-		public MyIndex( final GraphUpdate< Spot, Link > update )
+		public MyIndex( final GraphUpdate< Spot, Link > update, final RefPool< Spot > pool )
 		{
 			this.index = new HashMap<>();
 			for ( final Spot spot : update.vertices( UpdateLocality.SELF ) )
 			{
 				final int timepoint = spot.getTimepoint();
-				Collection< Spot > iterable = index.get( Integer.valueOf( timepoint ) );
-				if ( null == iterable )
-				{
-					iterable = new ArrayList<>();
-					index.put( Integer.valueOf( timepoint ), iterable );
-				}
-				iterable.add( spot );
+				index
+						.computeIfAbsent( Integer.valueOf( timepoint ), t -> new RefArrayList<>( pool ) )
+						.add( spot );
 			}
 		}
 
