@@ -4,6 +4,7 @@ import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.Frame;
 import java.util.ArrayList;
+
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
@@ -15,11 +16,11 @@ public class FeatureTableDialogExample
 {
 	static class MyElement
 	{
-		private String name;
+		private final String name;
 
 		private boolean selected;
 
-		private boolean uptodate;
+		private final boolean uptodate;
 
 		public MyElement( final String name, final boolean selected, final boolean uptodate )
 		{
@@ -71,7 +72,8 @@ public class FeatureTableDialogExample
 					MyElement::setSelected,
 					MyElement::isUptodate );
 			final JPanel featureTablePanel = new JPanel( new BorderLayout( 0, 0 ) );
-			featureTablePanel.add( featureTable.getTable(), BorderLayout.CENTER );
+			featureTablePanel.add( featureTable.getComponent(), BorderLayout.CENTER );
+			featureTable.selectionListeners().add( ( t ) -> System.out.println( "Element " + t + " changed." ) );
 
 			final JPanel buttons = new JPanel();
 			featureTablePanel.add( buttons, BorderLayout.SOUTH );
