@@ -10,7 +10,6 @@ import org.mastodon.feature.Feature;
 import org.mastodon.feature.FeatureModel;
 import org.mastodon.feature.FeatureProjection;
 import org.mastodon.feature.FeatureSpec;
-import org.mastodon.mamut.feature.SpotGaussFilteredIntensityFeature.SpotGaussFilteredIntensityFeatureSpec;
 import org.mastodon.revised.mamut.MamutProject;
 import org.mastodon.revised.mamut.MamutProjectIO;
 import org.mastodon.revised.mamut.WindowManager;
@@ -46,12 +45,11 @@ public class SpotIntensityUpdateExample
 		final MamutFeatureComputerService featureComputerService = context.getService( MamutFeatureComputerService.class );
 		featureComputerService.setModel( model );
 		featureComputerService.setSharedBdvData( windowManager.getAppModel().getSharedBdvData() );
-		final FeatureSpec< ?, ? > SPOT_GAUSS_FILTERED_INTENSITY = new SpotGaussFilteredIntensityFeatureSpec();
 		System.out.println( "Computing spot intensity..." );
 		final StopWatch stopWatch = new StopWatch();
 		stopWatch.start();
 		final Map< FeatureSpec< ?, ? >, Feature< ? > > features = featureComputerService.compute(
-				SpotGaussFilteredIntensityFeature.KEY );
+				SpotGaussFilteredIntensityFeature.SPEC );
 		stopWatch.stop();
 		System.out.println( String.format( "Done in %.1s.", stopWatch.nanoTime() / 1e9 ) );
 
@@ -65,10 +63,10 @@ public class SpotIntensityUpdateExample
 
 		@SuppressWarnings( "unchecked" )
 		final FeatureProjection< Spot > proj1 = ( FeatureProjection< Spot > ) model.getFeatureModel()
-				.getFeature( SPOT_GAUSS_FILTERED_INTENSITY ).project( "Mean ch1" );
+				.getFeature( SpotGaussFilteredIntensityFeature.SPEC ).project( "Mean ch1" );
 		@SuppressWarnings( "unchecked" )
 		final FeatureProjection< Spot > proj2 = ( FeatureProjection< Spot > ) model.getFeatureModel()
-				.getFeature( SPOT_GAUSS_FILTERED_INTENSITY ).project( "Std ch1" );
+				.getFeature( SpotGaussFilteredIntensityFeature.SPEC ).project( "Std ch1" );
 
 		System.out.println();
 		System.out.println( "Spot " + spot.getLabel() + " intensity was " + proj1.value( spot ) + " ± " + proj2.value( spot ) );
@@ -87,7 +85,7 @@ public class SpotIntensityUpdateExample
 
 		System.out.println( "Re-computing spot intensity..." );
 		final Map< FeatureSpec< ?, ? >, Feature< ? > > features2 = featureComputerService.compute(
-				SpotGaussFilteredIntensityFeature.KEY );
+				SpotGaussFilteredIntensityFeature.SPEC );
 
 		featureModel.clear();
 		for ( final FeatureSpec< ?, ? > spec: features2.keySet() )
@@ -103,7 +101,7 @@ public class SpotIntensityUpdateExample
 		System.out.println( "Full recalculation..." );
 		featureComputerService.setModel( model );
 		final Map< FeatureSpec< ?, ? >, Feature< ? > > features3 = featureComputerService.compute(
-				SpotGaussFilteredIntensityFeature.KEY );
+				SpotGaussFilteredIntensityFeature.SPEC );
 
 		featureModel.clear();
 		for ( final FeatureSpec< ?, ? > spec: features3.keySet() )
@@ -118,7 +116,7 @@ public class SpotIntensityUpdateExample
 
 		System.out.println( "Update without changes..." );
 		final Map< FeatureSpec< ?, ? >, Feature< ? > > features4 = featureComputerService.compute(
-				SpotGaussFilteredIntensityFeature.KEY );
+				SpotGaussFilteredIntensityFeature.SPEC );
 
 		featureModel.clear();
 		for ( final FeatureSpec< ?, ? > spec: features4.keySet() )

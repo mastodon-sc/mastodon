@@ -18,9 +18,9 @@ public interface FeatureComputerService extends Cancelable, Service
 	 */
 	public Set< FeatureSpec< ?, ? > > getFeatureSpecs();
 
-	public Map< FeatureSpec< ?, ? >, Feature< ? > > compute( Collection< String > featureKeys );
+	public Map< FeatureSpec< ?, ? >, Feature< ? > > compute( Collection< FeatureSpec< ?, ? > > featureKeys );
 
-	public default Map< FeatureSpec< ?, ? >, Feature< ? > > compute( final String... keys )
+	public default Map< FeatureSpec< ?, ? >, Feature< ? > > compute( final FeatureSpec< ?, ? >... keys )
 	{
 		return compute( Arrays.asList( keys ) );
 	}

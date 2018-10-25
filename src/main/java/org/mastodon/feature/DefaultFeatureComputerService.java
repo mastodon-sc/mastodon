@@ -167,24 +167,16 @@ public class DefaultFeatureComputerService extends AbstractService implements Fe
 	}
 
 	@Override
-	public Map< FeatureSpec< ?, ? >, Feature< ? > > compute( final Collection< String > featureKeys )
+	public Map< FeatureSpec< ?, ? >, Feature< ? > > compute( final Collection< FeatureSpec< ?, ? > > featureKeys )
 	{
 		cancelReason = null;
 		final List< FeatureSpec< ?, ? > > specs = new ArrayList<>();
-		for ( final String key : featureKeys )
+		for ( final FeatureSpec< ?, ? > spec : featureKeys )
 		{
-			// Do we have specs for this feature key?
-			final FeatureSpec< ?, ? > spec = featureSpecs.getSpec( key );
-			if ( null == spec )
-			{
-				System.err.println( "Unknown feature key: " + key + ". Skipping." );
-				continue;
-			}
-
 			// Did we discover a feature computer for this feature spec?
-			if ( null == dependencies.get( spec ) )
+			if ( !dependencies.contains( spec ) )
 			{
-				System.err.println( "No feature computer for feature key: " + key + ". Skipping." );
+				System.err.println( "No feature computer for feature: " + spec + ". Skipping." );
 				continue;
 			}
 

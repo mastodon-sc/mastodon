@@ -68,7 +68,6 @@ public class FeatureComputationController implements GraphChangeListener
 				} );
 			}
 		};
-
 	}
 
 	public FeatureComputationStatusListener getComputationStatusListener()
@@ -116,7 +115,7 @@ public class FeatureComputationController implements GraphChangeListener
 			if ( targets.contains( spec.getTargetClass() ) )
 			{
 				model.put( spec.getTargetClass(), spec );
-				model.setSelected( spec.getKey(), true );
+				model.setSelected( spec, true );
 			}
 		}
 		return model;
@@ -128,7 +127,7 @@ public class FeatureComputationController implements GraphChangeListener
 		gui.lblModelModificationDate.setText( now() );
 	}
 
-	private static final String now()
+	private static String now()
 	{
 		return DATE_FORMAT.format( Calendar.getInstance().getTime() );
 	}

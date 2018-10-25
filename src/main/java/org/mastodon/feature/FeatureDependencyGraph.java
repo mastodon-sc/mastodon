@@ -32,6 +32,11 @@ public class FeatureDependencyGraph extends AbstractObjectGraph< FeatureDependen
 		features = new HashMap<>();
 	}
 
+	public boolean contains( final FeatureSpec< ?, ? > featureSpec )
+	{
+		return features.containsKey( featureSpec );
+	}
+
 	public Vertex get( final FeatureSpec< ?, ? > featureSpec )
 	{
 		return features.get( featureSpec );
