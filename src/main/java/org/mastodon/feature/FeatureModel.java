@@ -3,12 +3,10 @@ package org.mastodon.feature;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
 import org.mastodon.util.Listeners;
-import org.mastodon.util.Listeners.SynchronizedList;
 
 /**
  * Class that manage a collection of features in a model graph.
@@ -29,11 +27,9 @@ public class FeatureModel
 		public void featureModelChanged();
 	}
 
-	private final Map< String, Feature< ? > > featureMap;
+	private final Map< FeatureSpec< ?, ? >, Feature< ? > > features;
 
-	private final Set< FeatureSpec< ?, ? > > featureSpecs;
-
-	private final SynchronizedList< FeatureModelListener > listeners;
+	private final Listeners.List< FeatureModelListener > listeners;
 
 	private boolean emitEvents = true;
 
@@ -41,8 +37,7 @@ public class FeatureModel
 
 	public FeatureModel()
 	{
-		this.featureMap = new HashMap<>();
-		this.featureSpecs = new HashSet<>();
+		this.features = new HashMap<>();
 		this.listeners = new Listeners.SynchronizedList<>();
 	}
 
@@ -51,22 +46,20 @@ public class FeatureModel
 	 */
 	public void clear()
 	{
-		featureMap.clear();
-		featureSpecs.clear();
+		features.clear();
 		fireFeatureModelChangedEvent();
 	}
 
 	/**
 	 * Removes the feature with the specified specification from this model.
 	 *
-	 * @param spec
+	 * @param key
 	 *            the {@link FeatureSpec} of the feature to remove.
 	 */
-	public void clear( final FeatureSpec< ?, ? > spec )
+	public void clear( final FeatureSpec< ?, ? > key )
 	{
-		featureMap.remove( spec.getKey() );
-		final boolean removed = featureSpecs.remove( spec );
-		if (removed)
+		final boolean removed = features.remove( key ) != null;
+		if ( removed )
 			fireFeatureModelChangedEvent();
 	}
 
@@ -75,14 +68,13 @@ public class FeatureModel
 	 * specified feature.
 	 *
 	 * @param key
-	 *            the feature key.
+	 *            the {@link FeatureSpec} of the feature to add.
 	 * @param feature
 	 *            the feature.
 	 */
-	public void declareFeature( final FeatureSpec< ?, ? > spec, final Feature< ? > feature )
+	public void declareFeature( final FeatureSpec< ?, ? > key, final Feature< ? > feature )
 	{
-		featureMap.put( spec.getKey(), feature );
-		featureSpecs.add( spec );
+		features.put( key, feature );
 		fireFeatureModelChangedEvent();
 	}
 
@@ -90,13 +82,13 @@ public class FeatureModel
 	 * Returns the feature with the specified key.
 	 *
 	 * @param key
-	 *            the key of the feature to retrieve.
-	 * @return the feature, or <code>null</code> if a feature with the specified
+	 *            the {@link FeatureSpec} of the feature to retrieve.
+	 * @return the feature, or {@code null} if a feature with the specified
 	 *         key is not registered in this model.
 	 */
-	public Feature< ? > getFeature( final String key )
+	public Feature< ? > getFeature( final FeatureSpec< ?, ? > key )
 	{
-		return featureMap.get( key );
+		return features.get( key );
 	}
 
 	/**
@@ -108,13 +100,18 @@ public class FeatureModel
 	 */
 	public Collection< FeatureSpec< ?, ? > > getFeatureSpecs()
 	{
-		return Collections.unmodifiableSet( featureSpecs );
+		return Collections.unmodifiableSet( features.keySet() );
+	}
+
+	public Set< Map.Entry< FeatureSpec< ?, ? >, Feature< ? > > > entrySet()
+	{
+		return Collections.unmodifiableSet( features.entrySet() );
 	}
 
 	/**
 	 * Exposes the list of listeners that are notified when a change happens to
 	 * this feature model. Events are fired for every call to {@link #clear()}
-	 * or {@link #declareFeature(Feature)} methods.
+	 * or {@link #declareFeature(FeatureSpec, Feature)} methods.
 	 *
 	 * @return the list of the listeners.
 	 */

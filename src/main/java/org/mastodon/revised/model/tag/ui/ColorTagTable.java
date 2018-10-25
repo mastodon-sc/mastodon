@@ -134,7 +134,7 @@ public class ColorTagTable< C, T > extends AbstractTagTable< C, T, ColorTagTable
 			final int column = table.getColumnModel().getColumnIndexAtX( e.getX() );
 			if ( column == colorColumn )
 			{
-				if ( table.getSelectedRow() <= elements.size() )
+				if ( table.getSelectedRow() < elements.size() )
 					editSelectedRowColor();
 			}
 		}

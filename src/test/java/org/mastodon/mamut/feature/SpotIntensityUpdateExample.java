@@ -3,11 +3,14 @@ package org.mastodon.mamut.feature;
 import java.io.IOException;
 import java.util.Map;
 
+import net.imglib2.util.StopWatch;
+
 import org.jdom2.JDOMException;
 import org.mastodon.feature.Feature;
 import org.mastodon.feature.FeatureModel;
 import org.mastodon.feature.FeatureProjection;
 import org.mastodon.feature.FeatureSpec;
+import org.mastodon.mamut.feature.SpotGaussFilteredIntensityFeature.SpotGaussFilteredIntensityFeatureSpec;
 import org.mastodon.revised.mamut.MamutProject;
 import org.mastodon.revised.mamut.MamutProjectIO;
 import org.mastodon.revised.mamut.WindowManager;
@@ -16,7 +19,6 @@ import org.mastodon.revised.model.mamut.Spot;
 import org.scijava.Context;
 
 import mpicbg.spim.data.SpimDataException;
-import net.imglib2.ui.util.StopWatch;
 
 public class SpotIntensityUpdateExample
 {
@@ -44,6 +46,7 @@ public class SpotIntensityUpdateExample
 		final MamutFeatureComputerService featureComputerService = context.getService( MamutFeatureComputerService.class );
 		featureComputerService.setModel( model );
 		featureComputerService.setSharedBdvData( windowManager.getAppModel().getSharedBdvData() );
+		final FeatureSpec< ?, ? > SPOT_GAUSS_FILTERED_INTENSITY = new SpotGaussFilteredIntensityFeatureSpec();
 		System.out.println( "Computing spot intensity..." );
 		final StopWatch stopWatch = new StopWatch();
 		stopWatch.start();
@@ -62,10 +65,10 @@ public class SpotIntensityUpdateExample
 
 		@SuppressWarnings( "unchecked" )
 		final FeatureProjection< Spot > proj1 = ( FeatureProjection< Spot > ) model.getFeatureModel()
-				.getFeature( SpotGaussFilteredIntensityFeature.KEY ).project( "Mean ch1" );
+				.getFeature( SPOT_GAUSS_FILTERED_INTENSITY ).project( "Mean ch1" );
 		@SuppressWarnings( "unchecked" )
 		final FeatureProjection< Spot > proj2 = ( FeatureProjection< Spot > ) model.getFeatureModel()
-				.getFeature( SpotGaussFilteredIntensityFeature.KEY ).project( "Std ch1" );
+				.getFeature( SPOT_GAUSS_FILTERED_INTENSITY ).project( "Std ch1" );
 
 		System.out.println();
 		System.out.println( "Spot " + spot.getLabel() + " intensity was " + proj1.value( spot ) + " ± " + proj2.value( spot ) );

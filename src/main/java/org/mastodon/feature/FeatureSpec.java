@@ -39,8 +39,10 @@ public abstract class FeatureSpec< F extends Feature< T >, T > implements SciJav
 	}
 
 	/**
-	 * Returns an info string about the feature.
-	 * @return an info string.
+	 * Get an info string describing the feature (to be displayed in UI, for
+	 * example).
+	 *
+	 * @return info string.
 	 */
 	public String getInfo()
 	{

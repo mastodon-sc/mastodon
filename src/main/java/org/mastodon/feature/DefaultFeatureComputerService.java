@@ -1,10 +1,5 @@
 package org.mastodon.feature;
 
-import static org.mastodon.graph.algorithm.AncestorFinder.ancestors;
-import static org.mastodon.graph.algorithm.StronglyConnectedComponents.stronglyConnectedComponents;
-
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -12,10 +7,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.mastodon.collection.RefCollections;
 import org.mastodon.collection.RefList;
-import org.mastodon.collection.RefSet;
 import org.mastodon.graph.algorithm.TopologicalSort;
+import org.mastodon.util.Listeners;
 import org.scijava.Cancelable;
 import org.scijava.InstantiableException;
 import org.scijava.command.CommandInfo;
@@ -39,17 +33,12 @@ public class DefaultFeatureComputerService extends AbstractService implements Fe
 	@Parameter
 	private FeatureSpecsService featureSpecs;
 
-	private final FeatureDependencyGraph dependencies = new FeatureDependencyGraph();
-
+	// FeatureComputer type discovered and managed by this service
 	private final Class< ? extends FeatureComputer > klass;
 
-	private PropertyChangeListener propertyChangeListener = new PropertyChangeListener()
-	{
-		// Does nothing.
-		@Override
-		public void propertyChange( final PropertyChangeEvent evt )
-		{}
-	};
+	private final FeatureDependencyGraph dependencies = new FeatureDependencyGraph();
+
+	private final FeatureComputationStatus status = new FeatureComputationStatus();
 
 	private String cancelReason;
 
@@ -60,6 +49,11 @@ public class DefaultFeatureComputerService extends AbstractService implements Fe
 		this( FeatureComputer.class );
 	}
 
+	/**
+	 * @param klass
+	 *            the type of {}@code FeatureComputer}s that should be
+	 *            discovered and managed by this {@code FeatureComputerService}.
+	 */
 	protected DefaultFeatureComputerService( final Class< ? extends FeatureComputer > klass )
 	{
 		this.klass = klass;
@@ -68,7 +62,7 @@ public class DefaultFeatureComputerService extends AbstractService implements Fe
 	@Override
 	public void initialize()
 	{
-		clear();
+		dependencies.clear();
 
 		/*
 		 * Build the dependency graph. Potentially with cycles and potentially
@@ -78,17 +72,9 @@ public class DefaultFeatureComputerService extends AbstractService implements Fe
 
 		// Post-process dependency graph.
 		// 1.) remove cycles
-		removeCycles( dependencies );
-		// 2.) recursively remove vertices with missing inputs
-		removeMissing( dependencies );
-	}
-
-	private void clear()
-	{
-		// TODO: IMPLEMENT protected void AbstractObjectGraph.clear()
-		// TODO: and public void FeatureDependencyGraph.clear() { super.clear();
-		// }
-//		dependencies.clear();
+		dependencies.removeCycles();
+		// 2.) recursively remove vertices with missing inputs or featurecomputers
+		dependencies.removeIncomputable();
 	}
 
 	/**
@@ -174,93 +160,10 @@ public class DefaultFeatureComputerService extends AbstractService implements Fe
 				: dependencies.get( spec ).getFeatureComputer();
 	}
 
-	/**
-	 * Removes vertices on cycles.
-	 *
-	 * @param dependencies
-	 *                         the dependency graph.
-	 */
-	public static void removeCycles( final FeatureDependencyGraph dependencies )
+	@Override
+	public Set< FeatureSpec< ?, ? > > getFeatureSpecs()
 	{
-		final Set< RefSet< FeatureDependencyGraph.Vertex > > sccs = stronglyConnectedComponents( dependencies );
-		for ( final RefSet< FeatureDependencyGraph.Vertex > scc : sccs )
-		{
-			boolean prune = false;
-			if ( scc.size() > 1 )
-			{
-				// Component contains vertices that are on a cycle.
-				prune = true;
-			}
-			else if ( scc.size() == 1 )
-			{
-				// Component contains exactly one vertex.
-				// Still needs to be pruned, if the one vertex has an edge to
-				// itself.
-				final FeatureDependencyGraph.Vertex vertex = scc.iterator().next();
-				for ( final FeatureDependencyGraph.Edge edge : vertex.outgoingEdges() )
-					if ( edge.getTarget().equals( vertex ) )
-						prune = true;
-			}
-
-			if ( prune )
-				for ( final FeatureDependencyGraph.Vertex vertex : scc )
-					dependencies.remove( vertex );
-		}
-	}
-
-	/**
-	 * Removes vertices whose feature cannot be computed. A Feature is incomputable
-	 * if
-	 * <ul>
-	 * <li>no {@link FeatureComputer} was found to compute it, or</li>
-	 * <li>it depends on an incomputable feature.</li>
-	 * </ul>
-	 *
-	 * @param dependencies
-	 *                         the dependency graph.
-	 */
-	public static void removeMissing( final FeatureDependencyGraph dependencies )
-	{
-		final RefSet< FeatureDependencyGraph.Vertex > missing = RefCollections.createRefSet( dependencies.vertices() );
-		for ( final FeatureDependencyGraph.Vertex vertex : dependencies.vertices() )
-			if ( vertex.getFeatureComputer() == null )
-				missing.add( vertex );
-		for ( final FeatureDependencyGraph.Vertex vertex : ancestors( dependencies, missing ) )
-			dependencies.remove( vertex );
-	}
-
-	/*
-	 *
-	 * Partial dependency graphs for given feature keys or FeatureSpecs
-	 *
-	 */
-
-	private FeatureDependencyGraph dependencyGraphFor( final Collection< FeatureSpec< ?, ? > > specs )
-	{
-		final FeatureDependencyGraph graph = new FeatureDependencyGraph();
-		new Runnable()
-		{
-			@Override
-			public void run()
-			{
-				specs.forEach( this::vertex );
-			}
-
-			private FeatureDependencyGraph.Vertex vertex( final FeatureSpec< ?, ? > spec )
-			{
-				FeatureDependencyGraph.Vertex vertex = graph.get( spec );
-				if ( vertex == null )
-				{
-					final FeatureDependencyGraph.Vertex dep = dependencies.get( spec );
-					vertex = graph.addVertex( dep.getFeatureSpec() );
-					vertex.setFeatureComputer( dep.getFeatureComputer(), dep.getFeatureComputerInfo() );
-					for ( final FeatureDependencyGraph.Edge edge : dep.outgoingEdges() )
-						graph.addEdge( vertex, vertex( edge.getTarget().getFeatureSpec() ) );
-				}
-				return vertex;
-			}
-		}.run();
-		return graph;
+		return dependencies.getFeatureSpecs();
 	}
 
 	@Override
@@ -287,7 +190,7 @@ public class DefaultFeatureComputerService extends AbstractService implements Fe
 
 			specs.add( spec );
 		}
-		final FeatureDependencyGraph dependencyGraph = dependencyGraphFor( specs );
+		final FeatureDependencyGraph dependencyGraph = dependencies.subGraphFor( specs );
 		final RefList< FeatureDependencyGraph.Vertex > sequence = new TopologicalSort<>( dependencyGraph ).get();
 
 		final Map< FeatureSpec< ?, ? >, Feature< ? > > featureModel = new HashMap<>();
@@ -305,11 +208,7 @@ public class DefaultFeatureComputerService extends AbstractService implements Fe
 				provideParameters( item, module, klass, featureModel );
 			}
 
-			propertyChangeListener.propertyChange(  new PropertyChangeEvent(
-					this,
-					"status",
-					"",
-					vertex.getFeatureSpec().getKey() ) );
+			status.notifyStatus( vertex.getFeatureSpec().getKey() );
 			currentFeatureComputer.createOutput();
 			currentFeatureComputer.run();
 
@@ -318,11 +217,7 @@ public class DefaultFeatureComputerService extends AbstractService implements Fe
 		}
 
 		currentFeatureComputer = null;
-		propertyChangeListener.propertyChange(  new PropertyChangeEvent(
-				this,
-				"clear",
-				"",
-				"" ) );
+		status.notifyClear();
 		return ( featureModel );
 	}
 
@@ -359,28 +254,16 @@ public class DefaultFeatureComputerService extends AbstractService implements Fe
 			return;
 		}
 
-		// PropertyChangeListener.
-		if (PropertyChangeListener.class.isAssignableFrom( parameterClass ))
+		// FeatureComputationStatus.
+		if (FeatureComputationStatus.class.isAssignableFrom( parameterClass ))
 		{
 			@SuppressWarnings( "unchecked" )
-			final ModuleItem< PropertyChangeListener > propModule = ( ModuleItem< PropertyChangeListener > ) item;
-			propModule.setValue( module, propertyChangeListener );
+			final ModuleItem< FeatureComputationStatus > statusModule = ( ModuleItem< FeatureComputationStatus > ) item;
+			statusModule.setValue( module, status );
 			return;
 		}
 
 		System.err.println( "Unknown FeatureComputer input @Parameter " + item + " in " + module.getCommand() );
-	}
-
-	/**
-	 * Sets the {@link PropertyChangeListener} that will be notified of feature
-	 * computation progress by feature computer that depend on it.
-	 *
-	 * @param propertyChangeListener
-	 *            the {@link PropertyChangeListener}.
-	 */
-	public void setPropertyChangeListener( final PropertyChangeListener propertyChangeListener )
-	{
-		this.propertyChangeListener = propertyChangeListener;
 	}
 
 	@Override
@@ -403,4 +286,54 @@ public class DefaultFeatureComputerService extends AbstractService implements Fe
 		return cancelReason;
 	}
 
+	/**
+	 * {@code FeatureComputationStatusListener}s added here will be notified about progress of computation.
+	 */
+	public Listeners< FeatureComputationStatusListener > computationStatusListeners()
+	{
+		return status.listeners;
+	}
+
+	/*
+	 *
+	 * Reporting computation status
+	 *
+	 */
+
+	public interface FeatureComputationStatusListener
+	{
+		void status( final String status );
+
+		void progress( final double progress );
+
+		void clear();
+	}
+
+	public static class FeatureComputationStatus
+	{
+		private final Listeners.List< FeatureComputationStatusListener > listeners;
+
+		FeatureComputationStatus()
+		{
+			listeners = new Listeners.SynchronizedList<>();
+		}
+
+		public void notifyStatus( final String status )
+		{
+			listeners.list.forEach( l -> l.status( status ) );
+		}
+
+		/**
+		 * @param progress computation progress as a number between 0 and 1
+		 */
+		public void notifyProgress( final double progress )
+		{
+			listeners.list.forEach( l -> l.progress( progress ) );
+		}
+
+		public void notifyClear()
+		{
+			listeners.list.forEach( l -> l.clear() );
+		}
+	}
 }

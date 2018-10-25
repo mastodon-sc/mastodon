@@ -47,7 +47,7 @@ public class ModelUtils
 			if ( featureSpec.getTargetClass().equals( Spot.class ) )
 			{
 				@SuppressWarnings( "unchecked" )
-				final Feature< Spot > spotFeature = ( Feature< Spot > ) featureModel.getFeature( featureSpec.getKey() );
+				final Feature< Spot > spotFeature = ( Feature< Spot > ) featureModel.getFeature( featureSpec );
 				spotFeatures.add( spotFeature );
 			}
 
@@ -125,7 +125,7 @@ public class ModelUtils
 			if ( featureSpec.getTargetClass().equals( Link.class ) )
 			{
 				@SuppressWarnings( "unchecked" )
-				final Feature< Link > linkFeature = ( Feature< Link > ) featureModel.getFeature( featureSpec.getKey() );
+				final Feature< Link > linkFeature = ( Feature< Link > ) featureModel.getFeature( featureSpec );
 				linkFeatures.add( linkFeature );
 			}
 
