@@ -2,23 +2,29 @@ package org.mastodon.feature.ui;
 
 import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.KeyboardFocusManager;
+import java.awt.event.ActionEvent;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.ToIntFunction;
 
+import javax.swing.Action;
 import javax.swing.ImageIcon;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
 import javax.swing.SwingConstants;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellRenderer;
 
-import org.mastodon.revised.model.tag.ui.AbstractTagTable;
 import org.mastodon.util.Listeners;
 import org.scijava.ui.behaviour.io.InputTriggerConfig;
 import org.scijava.ui.behaviour.util.Actions;
@@ -32,6 +38,67 @@ import static javax.swing.JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT;
  */
 public class FeatureTable< C, T >
 {
+	public static class Tables implements ListSelectionListener
+	{
+		private final List< FeatureTable< ?, ? > > tables = new ArrayList<>();
+
+		public void add( final FeatureTable< ?, ? > table )
+		{
+			tables.add( table );
+			table.tables = this;
+			table.table.getSelectionModel().addListSelectionListener( this );
+		}
+
+		@Override
+		public void valueChanged( final ListSelectionEvent event )
+		{
+			final ListSelectionModel source = ( ListSelectionModel ) event.getSource();
+			for ( FeatureTable< ?, ? > table : tables )
+			{
+				final ListSelectionModel lsm = table.table.getSelectionModel();
+				if ( lsm.equals( source ) )
+					continue;
+
+				lsm.removeListSelectionListener( this );
+				lsm.clearSelection();
+				lsm.addListSelectionListener( this );
+			}
+		}
+
+		boolean selectNextTable( final FeatureTable< ?, ? > table )
+		{
+			final int i = tables.indexOf( table );
+			if ( i < 0 || i >= tables.size() - 1 )
+				return false;
+
+			final JTable next = tables.get( i + 1 ).table;
+			if ( next.getRowCount() > 0 )
+			{
+				table.clearSelectionQuiet();
+				next.setRowSelectionInterval( 0, 0 );
+				next.requestFocusInWindow();
+			}
+			return true;
+		}
+
+		boolean selectPreviousTable( final FeatureTable< ?, ? > table )
+		{
+			final int i = tables.indexOf( table );
+			if ( i <= 0 )
+				return false;
+
+			final JTable previous = tables.get( i - 1 ).table;
+			final int rows = previous.getRowCount();
+			if ( rows > 0 )
+			{
+				table.clearSelectionQuiet();
+				previous.setRowSelectionInterval( rows - 1, rows - 1 );
+				previous.requestFocusInWindow();
+			}
+			return true;
+		}
+	}
+
 	private static final ImageIcon UP_TO_DATE_ICON = new ImageIcon( FeatureTable.class.getResource( "bullet_green.png" ) );
 	private static final ImageIcon NOT_UP_TO_DATE_ICON = new ImageIcon( FeatureTable.class.getResource( "time.png" ) );
 
@@ -45,9 +112,13 @@ public class FeatureTable< C, T >
 
 	private final Listeners.List< SelectionListener< T > > selectionListeners;
 
+	private final ListSelectionListener listSelectionListener;
+
 	private final MyTableModel tableModel;
 
 	private final JTable table;
+
+	private Tables tables;
 
 	public FeatureTable(
 			final C elements,                           // collection of elements
@@ -75,7 +146,20 @@ public class FeatureTable< C, T >
 		table.setFillsViewportHeight( true );
 		table.setAutoResizeMode( JTable.AUTO_RESIZE_SUBSEQUENT_COLUMNS );
 		table.setRowHeight( 30 );
+		listSelectionListener = e -> {
+			if ( e.getValueIsAdjusting() )
+				return;
+			final int row = table.getSelectedRow();
+			final T selected = ( this.elements != null && row >= 0 && row < this.size.applyAsInt( this.elements ) )
+					? this.get.apply( this.elements, row )
+					: null;
+			selectionListeners.list.forEach( l -> l.selectionChanged( selected ) );
+		};
+		table.getSelectionModel().addListSelectionListener( listSelectionListener );
 		table.setIntercellSpacing( new Dimension( 0, 0 ) );
+		table.setSurrendersFocusOnKeystroke( true );
+		table.setFocusTraversalKeys( KeyboardFocusManager.FORWARD_TRAVERSAL_KEYS, null );
+		table.setFocusTraversalKeys( KeyboardFocusManager.BACKWARD_TRAVERSAL_KEYS, null );
 		table.getColumnModel().getColumn( 0 ).setMaxWidth( 30 );
 		table.getColumnModel().getColumn( 2 ).setMaxWidth( 64 );
 		table.getColumnModel().getColumn( 2 ).setCellRenderer( new UpdatedCellRenderer() );
@@ -83,6 +167,8 @@ public class FeatureTable< C, T >
 
 		final Actions actions = new Actions( table.getInputMap( WHEN_ANCESTOR_OF_FOCUSED_COMPONENT ), table.getActionMap(), new InputTriggerConfig() );
 		actions.runnableAction( this::toggleSelectedRow, "toggle selected row", "SPACE", "ENTER" );
+		actions.runnableAction( this::nextRowOrTable, "select next row or table", "DOWN" );
+		actions.runnableAction( this::previousRowOrTable, "select previous row or table", "UP" );
 
 		setElements( elements );
 	}
@@ -98,6 +184,36 @@ public class FeatureTable< C, T >
 		}
 	}
 
+	private void nextRowOrTable()
+	{
+		final int row = table.getSelectedRow();
+		if ( elements == null || tables == null || row != table.getRowCount() - 1 || !tables.selectNextTable( this ) )
+		{
+			final Action action = table.getActionMap().get( "selectNextRow" );
+			if ( action != null )
+				action.actionPerformed( new ActionEvent( table, 0, null ) );
+		}
+	}
+
+	private void previousRowOrTable()
+	{
+		final int row = table.getSelectedRow();
+		if ( elements == null || tables == null || row != 0 || !tables.selectPreviousTable( this ) )
+		{
+			final Action action = table.getActionMap().get( "selectPreviousRow" );
+			if ( action != null )
+				action.actionPerformed( new ActionEvent( table, 0, null ) );
+		}
+	}
+
+	private void clearSelectionQuiet()
+	{
+		table.getSelectionModel().removeListSelectionListener( listSelectionListener );
+		table.clearSelection();
+		table.getSelectionModel().addListSelectionListener( listSelectionListener );
+
+	}
+
 	/**
 	 * Exposes the component in which the elements are displayed.
 	 *
@@ -106,11 +222,6 @@ public class FeatureTable< C, T >
 	public JComponent getComponent()
 	{
 		return table;
-	}
-
-	public ListSelectionModel getListSelectionModel()
-	{
-		return table.getSelectionModel();
 	}
 
 	/**
@@ -123,17 +234,16 @@ public class FeatureTable< C, T >
 	{
 		this.elements = elements;
 		if ( elements == null )
-		{
 			selectionListeners.list.forEach( l -> l.selectionChanged( null ) );
-		}
 		else
-		{
 			tableModel.fireTableDataChanged();
-			if ( table.getRowCount() > 0 )
-				table.setRowSelectionInterval( 0, 0 );
-		}
 	}
 
+	public void selectFirstRow()
+	{
+		if ( table.getRowCount() > 0 )
+			table.setRowSelectionInterval( 0, 0 );
+	}
 
 	public interface SelectionListener< T >
 	{

@@ -7,9 +7,7 @@ import java.awt.Font;
 import java.awt.Frame;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import javax.swing.BorderFactory;
 import javax.swing.Box;
@@ -19,46 +17,15 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.ListSelectionModel;
 import javax.swing.SwingConstants;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
 
 import org.mastodon.revised.model.mamut.Link;
 import org.mastodon.revised.model.mamut.Spot;
 
 public class FeatureTableDialogExample
 {
-	private static class MyListSelectionAggregator implements ListSelectionListener
-	{
-
-		private final Set< ListSelectionModel > selectionModels = new HashSet<>();
-
-		public void add( final ListSelectionModel listSelectionModel )
-		{
-			selectionModels.add( listSelectionModel );
-			listSelectionModel.addListSelectionListener( this );
-		}
-
-		@Override
-		public void valueChanged( final ListSelectionEvent event )
-		{
-			System.out.println( event ); // DEBUG
-			final ListSelectionModel source = ( ListSelectionModel ) event.getSource();
-			for ( final ListSelectionModel lsm : selectionModels )
-			{
-				if ( lsm.equals( source ) )
-					continue;
-
-				lsm.removeListSelectionListener( this );
-				lsm.clearSelection();
-				lsm.addListSelectionListener( this );
-			}
-		}
-	}
-
 	static class MyElement
 	{
 		private final String name;
@@ -130,10 +97,7 @@ public class FeatureTableDialogExample
 			final List< Class< ? > > targets = Arrays.asList( Spot.class, Link.class );
 
 			final FeatureTable< List< MyElement >, MyElement > ft1 = createFeatureTable();
-			ft1.setElements( elements1 );
-
 			final FeatureTable< List< MyElement >, MyElement > ft2 = createFeatureTable();
-			ft2.setElements( elements2 );
 
 			final List< FeatureTable< List< MyElement >, MyElement > > featureTables = new ArrayList<>();
 			featureTables.add( ft1 );
@@ -143,16 +107,21 @@ public class FeatureTableDialogExample
 			tablePanel.setLayout( new BoxLayout( tablePanel, BoxLayout.PAGE_AXIS ) );
 			tablePanel.setBorder( BorderFactory.createEmptyBorder( 10, 10, 10, 10 ) );
 
-			final FeatureTable.SelectionListener< MyElement > sl = ( t ) -> System.out.println( "Element " + t + " changed." );
+			final FeatureTable.SelectionListener< MyElement > sl = t ->
+			{
+				if ( t == null )
+					System.out.println();
+				System.out.println( "Element " + t + " changed." );
+			};
 
-			final MyListSelectionAggregator aggregator = new MyListSelectionAggregator();
+			final FeatureTable.Tables aggregator = new FeatureTable.Tables();
 
 			for ( int i = 0; i < targets.size(); i++ )
 			{
 				final FeatureTable< List< MyElement >, MyElement > featureTable = featureTables.get( i );
 				featureTable.getComponent().setAlignmentX( Component.LEFT_ALIGNMENT );
 				featureTable.getComponent().setBackground( tablePanel.getBackground() );
-				aggregator.add( featureTable.getListSelectionModel() );
+				aggregator.add( featureTable );
 
 				final JLabel lbl = new JLabel( targets.get( i ).getSimpleName() );
 				lbl.setFont( tablePanel.getFont().deriveFont( Font.BOLD ).deriveFont( tablePanel.getFont().getSize2D() + 2f ) );
@@ -167,6 +136,8 @@ public class FeatureTableDialogExample
 				featureTable.selectionListeners().add( sl );
 			}
 
+			ft1.setElements( elements1 );
+			ft2.setElements( elements2 );
 
 			final JPanel featureTablePanel = new JPanel( new BorderLayout( 0, 0 ) );
 			featureTablePanel.add( new JScrollPane( tablePanel ), BorderLayout.CENTER );
@@ -174,6 +145,8 @@ public class FeatureTableDialogExample
 			featureTablePanel.setPreferredSize( new Dimension( 400, 500 ) );
 			getContentPane().add( featureTablePanel );
 			pack();
+
+			ft1.selectFirstRow();
 		}
 	}
 
