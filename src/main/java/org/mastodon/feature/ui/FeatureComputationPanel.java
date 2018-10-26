@@ -2,8 +2,6 @@ package org.mastodon.feature.ui;
 
 import static org.mastodon.app.ui.settings.StyleElements.booleanElement;
 import static org.mastodon.app.ui.settings.StyleElements.label;
-import static org.mastodon.app.ui.settings.StyleElements.linkedCheckBox;
-import static org.mastodon.app.ui.settings.StyleElements.linkedLabel;
 import static org.mastodon.app.ui.settings.StyleElements.separator;
 
 import java.awt.BorderLayout;
@@ -19,26 +17,22 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
+import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
-import javax.swing.JCheckBox;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 import javax.swing.JScrollPane;
-import javax.swing.JSeparator;
 import javax.swing.JSplitPane;
 import javax.swing.ScrollPaneConstants;
 
-import org.mastodon.app.ui.settings.StyleElements.BooleanElement;
-import org.mastodon.app.ui.settings.StyleElements.LabelElement;
-import org.mastodon.app.ui.settings.StyleElements.Separator;
 import org.mastodon.app.ui.settings.StyleElements.StyleElement;
-import org.mastodon.app.ui.settings.StyleElements.StyleElementVisitor;
 import org.mastodon.feature.FeatureProjectionSpec;
 import org.mastodon.feature.FeatureSpec;
 
@@ -167,10 +161,11 @@ public class FeatureComputationPanel extends JPanel
 		scrollPaneFeatures.setVerticalScrollBarPolicy( ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS );
 
 		final JPanel panelFeatures = new JPanel();
-		panelFeatures.setBorder( null );
+		panelFeatures.setBorder( BorderFactory.createEmptyBorder( 10, 10, 10, 10 ) );
+		panelFeatures.setPreferredSize( new Dimension( 300, 300 ) );
 		scrollPaneFeatures.setViewportView( panelFeatures );
-		final GridBagLayout gbl = new GridBagLayout();
-		panelFeatures.setLayout( gbl );
+		final BoxLayout boxLayout = new BoxLayout( panelFeatures, BoxLayout.PAGE_AXIS );
+		panelFeatures.setLayout( boxLayout );
 
 		final JPanel panelRight = new JPanel();
 		panelRight.setPreferredSize( new Dimension( 300, 300 ) );
@@ -182,73 +177,39 @@ public class FeatureComputationPanel extends JPanel
 		panelRight.add( panelConfig, BorderLayout.CENTER );
 
 		// Feed the feature panel.
-		final GridBagConstraints c = new GridBagConstraints();
-		c.insets = new Insets( 0, 5, 0, 5 );
-		c.anchor = GridBagConstraints.LINE_START;
-		c.fill = GridBagConstraints.HORIZONTAL;
-		c.gridy = 0;
-		c.gridx = 0;
 
-		// Massage target and feature spec order in this model.
-		final List< StyleElement > styleElements = styleElements( targets );
-		model.updateListeners().add( () -> {
-			styleElements.forEach( StyleElement::update );
-			repaint();
-		} );
-		styleElements.forEach( element -> element.accept(
-				new StyleElementVisitor()
-				{
-					@Override
-					public void visit( final Separator element )
-					{
-						addToLayout( new JSeparator() );
-						++c.gridy;
-					}
+		final FeatureTable.SelectionListener< ElementWrapper > sl = t -> displayConfigPanel( t.fs );
+		final FeatureTable.Tables aggregator = new FeatureTable.Tables();
 
-					@Override
-					public void visit( final BooleanElement element )
-					{
-						final JCheckBox checkbox = linkedCheckBox( element, element.getLabel() );
-						checkbox.setFocusable( true );
-						final JButton button = new JButton( COG_ICON );
-						button.addActionListener( ( e ) -> displayConfigPanel( model.getFeatureSpec( element.getLabel() ) ) );
-						addToLayout( checkbox, button );
-					}
+		for ( final Class< ? > target : targets )
+		{
+			final JLabel lbl = new JLabel( target.getSimpleName() );
+			lbl.setFont( panelFeatures.getFont().deriveFont( Font.BOLD ).deriveFont( panelFeatures.getFont().getSize2D() + 2f ) );
+			lbl.setAlignmentX( Component.LEFT_ALIGNMENT );
+			panelFeatures.add( lbl );
+			panelFeatures.add( Box.createVerticalStrut( 5 ) );
 
-					@Override
-					public void visit( final LabelElement label )
-					{
+			final Collection< FeatureSpec< ?, ? > > featureSpecs = model.getFeatureSpecs( target );
+			final List< ElementWrapper > elements = featureSpecs.stream()
+					.map( ElementWrapper::new )
+					.collect( Collectors.toList() );
+			final FeatureTable< List< ElementWrapper >, ElementWrapper > featureTable =
+					new FeatureTable<>(
+							elements,
+							List::size,
+							List::get,
+							ElementWrapper::getName,
+							ElementWrapper::isFocused,
+							ElementWrapper::setFocused,
+							ElementWrapper::isUptodate );
+			featureTable.getComponent().setAlignmentX( Component.LEFT_ALIGNMENT );
+			featureTable.getComponent().setBackground( panelFeatures.getBackground() );
+			panelFeatures.add( featureTable.getComponent() );
+			panelFeatures.add( Box.createVerticalStrut( 10 ) );
 
-						final JLabel targetLabel = linkedLabel( label );
-						targetLabel.setFont( getFont().deriveFont( Font.BOLD ) );
-						addToLayout( targetLabel );
-					}
-
-					private void addToLayout( final JComponent comp )
-					{
-						c.anchor = GridBagConstraints.LINE_START;
-						c.gridx = 0;
-						c.weightx = 1.0;
-						c.gridwidth = 2;
-						panelFeatures.add( comp, c );
-						c.gridy++;
-					}
-
-					private void addToLayout( final JComponent comp1, final JComponent comp2 )
-					{
-						c.gridwidth = 1;
-						c.anchor = GridBagConstraints.LINE_START;
-						c.gridx = 0;
-						c.weightx = 1.0;
-						panelFeatures.add( comp1, c );
-
-						c.anchor = GridBagConstraints.LINE_END;
-						c.gridx++;
-						c.weightx = 0.0;
-						panelFeatures.add( comp2, c );
-						c.gridy++;
-					}
-				} ) );
+			aggregator.add( featureTable );
+			featureTable.selectionListeners().add( sl );
+		}
 	}
 
 	private void displayConfigPanel( final FeatureSpec< ?, ? > spec )
@@ -345,5 +306,39 @@ public class FeatureComputationPanel extends JPanel
 			elements.add( separator() );
 		}
 		return elements;
+	}
+	
+	private static class ElementWrapper
+	{
+		private final FeatureSpec< ?, ? > fs;
+
+		private boolean focused;
+
+		private boolean uptodate;
+
+		public ElementWrapper( final FeatureSpec< ?, ? > fs )
+		{
+			this.fs = fs;
+		}
+
+		public String getName()
+		{
+			return fs.getKey();
+		}
+
+		public boolean isFocused()
+		{
+			return focused;
+		}
+
+		public void setFocused( final boolean focused )
+		{
+			this.focused = focused;
+		}
+
+		public boolean isUptodate()
+		{
+			return uptodate;
+		}
 	}
 }
