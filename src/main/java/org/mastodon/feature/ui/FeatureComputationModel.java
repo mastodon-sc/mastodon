@@ -26,12 +26,15 @@ public class FeatureComputationModel
 
 	private final Map< String, FeatureSpec< ?, ? > > featureSpecsKeys;
 
+	private final Map< FeatureSpec< ?, ? >, Boolean > uptodateMap;
+
 	public FeatureComputationModel()
 	{
 		this.updateListeners = new Listeners.SynchronizedList<>();
 		this.selectedFeatures = new HashSet<>();
 		this.featureSpecsTargetMap = new HashMap<>();
 		this.featureSpecsKeys = new HashMap<>();
+		this.uptodateMap = new HashMap<>();
 	}
 
 	private void notifyListeners()
@@ -81,9 +84,34 @@ public class FeatureComputationModel
 		featureSpecsTargetMap.computeIfAbsent( target, ( k ) -> new ArrayList<>() ).add( spec );
 	}
 
+	public boolean isUptodate( final FeatureSpec< ?, ? > featureSpec )
+	{
+		return uptodateMap.computeIfAbsent( featureSpec, fs -> Boolean.valueOf( false ) );
+	}
+
 	@Override
 	public String toString()
 	{
 		return getClass().getSimpleName() + " " + selectedFeatures.toString();
 	}
+
+	/**
+	 * Marks all the {@link FeatureSpec}s of this model as out of date.
+	 */
+	public void setOutofdate()
+	{
+		for ( final FeatureSpec< ?, ? > featureSpec : featureSpecsKeys.values() )
+			uptodateMap.put( featureSpec, Boolean.valueOf( false ) );
+	}
+
+	/**
+	 * Marks all the {@link FeatureSpec}s <b>currently selected</b> in this
+	 * model as up to date.
+	 */
+	public void setUptodate()
+	{
+		for ( final FeatureSpec< ?, ? > featureSpec : selectedFeatures )
+			uptodateMap.put( featureSpec, Boolean.valueOf( true ) );
+	}
+
 }
