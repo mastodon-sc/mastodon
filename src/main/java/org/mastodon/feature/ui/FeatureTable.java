@@ -1,5 +1,7 @@
 package org.mastodon.feature.ui;
 
+import static javax.swing.JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT;
+
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.KeyboardFocusManager;
@@ -29,8 +31,6 @@ import org.mastodon.util.Listeners;
 import org.scijava.ui.behaviour.io.InputTriggerConfig;
 import org.scijava.ui.behaviour.util.Actions;
 
-import static javax.swing.JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT;
-
 /**
  *
  * @param <C> collection-of-elements type
@@ -53,7 +53,7 @@ public class FeatureTable< C, T >
 		public void valueChanged( final ListSelectionEvent event )
 		{
 			final ListSelectionModel source = ( ListSelectionModel ) event.getSource();
-			for ( FeatureTable< ?, ? > table : tables )
+			for ( final FeatureTable< ?, ? > table : tables )
 			{
 				final ListSelectionModel lsm = table.table.getSelectionModel();
 				if ( lsm.equals( source ) )
@@ -120,14 +120,32 @@ public class FeatureTable< C, T >
 
 	private Tables tables;
 
+	/**
+	 * Creates a new feature table.
+	 * 
+	 * @param elements
+	 *            collection of elements.
+	 * @param size
+	 *            given collection returns number of elements.
+	 * @param get
+	 *            given collection and index returns element at index.
+	 * @param getName
+	 *            given element returns name.
+	 * @param isSelected
+	 *            given element returns whether it is selected.
+	 * @param setSelected
+	 *            given element and boolean sets selected state of element.
+	 * @param isUptodate
+	 *            given element returns whether it is up-to-date.
+	 */
 	public FeatureTable(
-			final C elements,                           // collection of elements
-			final ToIntFunction< C > size,              // given collection returns number of elements
-			final BiFunction< C, Integer, T > get,      // given collection and index returns element at index
-			final Function< T, String > getName,        // given element returns name
-			final Predicate< T > isSelected,            // given element returns whether it is selected
-			final BiConsumer< T, Boolean > setSelected, // given element and boolean sets selection of element
-			final Predicate< T > isUptodate )           // given element returns whether it is up-to-date
+			final C elements,
+			final ToIntFunction< C > size,
+			final BiFunction< C, Integer, T > get,
+			final Function< T, String > getName,
+			final Predicate< T > isSelected,
+			final BiConsumer< T, Boolean > setSelected,
+			final Predicate< T > isUptodate )
 	{
 		this.elements = elements;
 		this.size = size;
