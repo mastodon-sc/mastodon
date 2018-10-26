@@ -1,8 +1,5 @@
 package org.mastodon.feature.ui;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.Collection;
 
 import javax.swing.JDialog;
@@ -19,8 +16,6 @@ import org.mastodon.revised.ui.util.EverythingDisablerAndReenabler;
 
 public class FeatureComputationController implements GraphChangeListener
 {
-
-	private static final DateFormat DATE_FORMAT = new SimpleDateFormat( "yyyy-MM-dd --- HH:mm:ss" );
 
 	private final JDialog dialog;
 
@@ -100,7 +95,7 @@ public class FeatureComputationController implements GraphChangeListener
 					gui.btnCompute.setVisible( true );
 					reenabler.reenable();
 					if ( !computerService.isCanceled() )
-						gui.lblComputationDate.setText( now() );
+						model.setUptodate();
 				} );
 			};
 		}.start();
@@ -124,12 +119,8 @@ public class FeatureComputationController implements GraphChangeListener
 	@Override
 	public void graphChanged()
 	{
-		gui.lblModelModificationDate.setText( now() );
-	}
-
-	private static String now()
-	{
-		return DATE_FORMAT.format( Calendar.getInstance().getTime() );
+		model.setOutofdate();
+		gui.repaint();
 	}
 
 	public JDialog getDialog()
