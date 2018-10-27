@@ -113,7 +113,7 @@ public class DoubleScalarFeature< O > implements Feature< O >
 
 		public MyFeatureSpec( final String key, final String info, final Dimension dimension, final Class< F > featureClass, final Class< T > targetClass )
 		{
-			super( key, info, featureClass, targetClass, FeatureProjectionSpec.standard( key, dimension ) );
+			super( key, info, featureClass, targetClass, Multiplicity.SINGLE, new FeatureProjectionSpec( key, dimension ) );
 		}
 
 	}

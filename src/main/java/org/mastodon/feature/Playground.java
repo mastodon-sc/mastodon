@@ -26,8 +26,9 @@ public class Playground
 						"Dummy feature F1",
 						F1.class,
 						Spot.class,
-						FeatureProjectionSpec.standard( "p1", Dimension.NONE ),
-						FeatureProjectionSpec.standard( "p2", Dimension.NONE ) );
+						Multiplicity.SINGLE,
+						new FeatureProjectionSpec( "p1", Dimension.NONE ),
+						new FeatureProjectionSpec( "p2", Dimension.NONE ) );
 			}
 		}
 
@@ -58,8 +59,9 @@ public class Playground
 						"Dummy feature F2",
 						F2.class,
 						Spot.class,
-						FeatureProjectionSpec.standard( "p1", Dimension.NONE ),
-						FeatureProjectionSpec.standard( "p2", Dimension.NONE ) );
+						Multiplicity.SINGLE,
+						new FeatureProjectionSpec( "p1", Dimension.NONE ),
+						new FeatureProjectionSpec( "p2", Dimension.NONE ) );
 			}
 		}
 
@@ -90,7 +92,8 @@ public class Playground
 						"Dummy feature F3",
 						F3.class,
 						Spot.class,
-						FeatureProjectionSpec.standard( "p", Dimension.NONE ) );
+						Multiplicity.SINGLE,
+						new FeatureProjectionSpec( "p", Dimension.NONE ) );
 			}
 		}
 
@@ -121,7 +124,8 @@ public class Playground
 						"Dummy feature F4",
 						F4.class,
 						Spot.class,
-						FeatureProjectionSpec.standard( "p", Dimension.NONE ) );
+						Multiplicity.SINGLE,
+						new FeatureProjectionSpec( "p", Dimension.NONE ) );
 			}
 		}
 

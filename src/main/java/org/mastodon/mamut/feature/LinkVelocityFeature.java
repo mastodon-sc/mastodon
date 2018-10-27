@@ -6,6 +6,7 @@ import org.mastodon.feature.FeatureProjection;
 import org.mastodon.feature.FeatureProjectionSpec;
 import org.mastodon.feature.FeatureProjections;
 import org.mastodon.feature.FeatureSpec;
+import org.mastodon.feature.Multiplicity;
 import org.mastodon.properties.DoublePropertyMap;
 import org.mastodon.revised.model.mamut.Link;
 import org.scijava.plugin.Plugin;
@@ -32,7 +33,8 @@ public class LinkVelocityFeature implements Feature< Link >
 					HELP_STRING,
 					LinkVelocityFeature.class,
 					Link.class,
-					FeatureProjectionSpec.standard( KEY, Dimension.VELOCITY ) );
+					Multiplicity.SINGLE,
+					new FeatureProjectionSpec( KEY, Dimension.VELOCITY ) );
 		}
 	}
 

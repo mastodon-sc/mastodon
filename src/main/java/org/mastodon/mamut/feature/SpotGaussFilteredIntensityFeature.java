@@ -12,6 +12,7 @@ import org.mastodon.feature.FeatureProjection;
 import org.mastodon.feature.FeatureProjectionSpec;
 import org.mastodon.feature.FeatureProjections;
 import org.mastodon.feature.FeatureSpec;
+import org.mastodon.feature.Multiplicity;
 import org.mastodon.properties.DoublePropertyMap;
 import org.mastodon.revised.model.mamut.Spot;
 import org.scijava.plugin.Plugin;
@@ -44,8 +45,9 @@ public class SpotGaussFilteredIntensityFeature implements Feature< Spot >
 					HELP_STRING,
 					SpotGaussFilteredIntensityFeature.class,
 					Spot.class,
-					FeatureProjectionSpec.onSources( MEAN_PROJECTIONS_KEY, Dimension.INTENSITY ),
-					FeatureProjectionSpec.onSources( STD_PROJECTIONS_KEY, Dimension.INTENSITY ) );
+					Multiplicity.ON_SOURCES,
+					new FeatureProjectionSpec( MEAN_PROJECTIONS_KEY, Dimension.INTENSITY ),
+					new FeatureProjectionSpec( STD_PROJECTIONS_KEY, Dimension.INTENSITY ) );
 		}
 	}
 
@@ -57,9 +59,9 @@ public class SpotGaussFilteredIntensityFeature implements Feature< Spot >
 
 	SpotGaussFilteredIntensityFeature( final int nSources, final RefPool< Spot > pool )
 	{
-		// Just used to generate projection names.
-		final FeatureProjectionSpec meanProjections = FeatureProjectionSpec.onSources( MEAN_PROJECTIONS_KEY, Dimension.INTENSITY );
-		final FeatureProjectionSpec stdProjections = FeatureProjectionSpec.onSources( STD_PROJECTIONS_KEY, Dimension.INTENSITY );
+		// Just used to generate projection keys.
+		final FeatureProjectionSpec meanProjections = new FeatureProjectionSpec( MEAN_PROJECTIONS_KEY, Dimension.INTENSITY );
+		final FeatureProjectionSpec stdProjections = new FeatureProjectionSpec( STD_PROJECTIONS_KEY, Dimension.INTENSITY );
 
 		this.means = new ArrayList<>( nSources );
 		this.stds = new ArrayList<>( nSources );
@@ -72,11 +74,15 @@ public class SpotGaussFilteredIntensityFeature implements Feature< Spot >
 			 */
 			final DoublePropertyMap< Spot > m = new DoublePropertyMap<>( pool, Double.NaN );
 			means.add( m );
-			projectionMap.put( meanProjections.projectionKey( iSource ), FeatureProjections.project( m, Dimension.COUNTS_UNITS ) );
+			projectionMap.put(
+					meanProjections.projectionKey( Multiplicity.ON_SOURCES, iSource ),
+					FeatureProjections.project( m, Dimension.COUNTS_UNITS ) );
 
 			final DoublePropertyMap< Spot > s = new DoublePropertyMap<>( pool, Double.NaN );
 			stds.add( s );
-			projectionMap.put( stdProjections.projectionKey( iSource ), FeatureProjections.project( s, Dimension.COUNTS_UNITS ) );
+			projectionMap.put(
+					stdProjections.projectionKey( Multiplicity.ON_SOURCES, iSource ),
+					FeatureProjections.project( s, Dimension.COUNTS_UNITS ) );
 		}
 	}
 

@@ -7,6 +7,7 @@ import org.mastodon.feature.FeatureProjectionSpec;
 import org.mastodon.feature.FeatureProjections;
 import org.mastodon.feature.FeatureSpec;
 import org.mastodon.feature.IntFeatureProjection;
+import org.mastodon.feature.Multiplicity;
 import org.mastodon.properties.IntPropertyMap;
 import org.mastodon.revised.model.mamut.Spot;
 import org.scijava.plugin.Plugin;
@@ -32,7 +33,8 @@ public class SpotNLinksFeature implements Feature< Spot >
 					HELP_STRING,
 					SpotNLinksFeature.class,
 					Spot.class,
-					FeatureProjectionSpec.standard( KEY, Dimension.NONE ) );
+					Multiplicity.SINGLE,
+					new FeatureProjectionSpec( KEY, Dimension.NONE ) );
 		}
 	}
 

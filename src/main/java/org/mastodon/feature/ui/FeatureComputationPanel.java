@@ -183,10 +183,26 @@ public class FeatureComputationPanel extends JPanel
 
 		final JLabel infoLbl = new JLabel();
 		infoLbl.setFont( getFont().deriveFont( Font.ITALIC ) );
+		infoLbl.setText( "<html>" + spec.getInfo() + "</html>" );
 		c.gridy++;
 		infoPanel.add( infoLbl, c );
 
-		infoLbl.setText(  "<html>" + spec.getInfo() +  "</html>"  );
+		final JLabel multiplicityLbl = new JLabel();
+		switch ( spec.multiplicity )
+		{
+		case ON_SOURCES:
+			multiplicityLbl.setText( "One value per source." );
+			break;
+		case ON_SOURCE_PAIRS:
+			multiplicityLbl.setText( "One value per source pair." );
+			break;
+		case SINGLE:
+		default:
+			break;
+		}
+		c.gridy++;
+		infoPanel.add( multiplicityLbl, c );
+
 		final FeatureProjectionSpec[] projections = spec.getProjectionSpecs();
 		final StringBuilder projStr = new StringBuilder( ( projections.length == 1 )
 				? "<html>Projection: <ul>"
@@ -195,20 +211,7 @@ public class FeatureComputationPanel extends JPanel
 		{
 			projStr.append( "<li>" + projSpec.projectionName );
 			projStr.append( "<br>- Dimension: " + projSpec.projectionDimension.toString() );
-			switch(projSpec.multiplicity)
-			{
-			case ON_SOURCES:
-				projStr.append( "<br>- <i>One value per source.</i>" );
-				break;
-			case ON_SOURCE_PAIRS:
-				projStr.append( "<br>- <i>One value per source pair.</i>" );
-				break;
-			case SINGLE:
-			default:
-				break;
-			}
 			projStr.append( "</li>" );
-
 		}
 		projStr.append( "</ul></html>" );
 		c.gridy++;

@@ -24,17 +24,24 @@ public abstract class FeatureSpec< F extends Feature< T >, T > implements SciJav
 
 	private final String info;
 
+	/**
+	 * The feature multiplicity.
+	 */
+	public final Multiplicity multiplicity;
+
 	protected FeatureSpec(
 			final String key,
 			final String info,
 			final Class< F > featureClass,
 			final Class< T > targetClass,
+			final Multiplicity multiplicity,
 			final FeatureProjectionSpec... projectionSpecs )
 	{
 		this.key = key;
 		this.info = info;
 		this.featureClass = featureClass;
 		this.targetClass = targetClass;
+		this.multiplicity = multiplicity;
 		this.projectionSpecs = projectionSpecs;
 	}
 
@@ -67,6 +74,11 @@ public abstract class FeatureSpec< F extends Feature< T >, T > implements SciJav
 	public Class< T > getTargetClass()
 	{
 		return targetClass;
+	}
+
+	public Multiplicity getMultiplicity()
+	{
+		return multiplicity;
 	}
 
 	@Override

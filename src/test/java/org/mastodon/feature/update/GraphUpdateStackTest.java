@@ -18,6 +18,7 @@ import org.mastodon.feature.FeatureProjectionSpec;
 import org.mastodon.feature.FeatureProjections;
 import org.mastodon.feature.FeatureSpec;
 import org.mastodon.feature.FeatureSpecsService;
+import org.mastodon.feature.Multiplicity;
 import org.mastodon.feature.update.GraphUpdate.UpdateLocality;
 import org.mastodon.mamut.feature.MamutFeatureComputer;
 import org.mastodon.mamut.feature.MamutFeatureComputerService;
@@ -56,8 +57,6 @@ public class GraphUpdateStackTest
 
 	private MamutFeatureComputerService computerService;
 
-	private FeatureSpecsService specsService;
-
 	@Before
 	public void setUp()
 	{
@@ -77,8 +76,6 @@ public class GraphUpdateStackTest
 
 		computerService = context.getService( MamutFeatureComputerService.class );
 		computerService.setModel( model );
-
-		specsService = context.getService( FeatureSpecsService.class );
 	}
 
 	@Test
@@ -254,8 +251,9 @@ public class GraphUpdateStackTest
 						"Dummy feature FT1",
 						FT1.class,
 						Spot.class,
-						FeatureProjectionSpec.standard( "p1", Dimension.NONE ),
-						FeatureProjectionSpec.standard( "p2", Dimension.NONE ) );
+						Multiplicity.SINGLE,
+						new FeatureProjectionSpec( "p1", Dimension.NONE ),
+						new FeatureProjectionSpec( "p2", Dimension.NONE ) );
 			}
 		}
 
@@ -331,8 +329,9 @@ public class GraphUpdateStackTest
 						"Dummy feature FT2",
 						FT2.class,
 						Spot.class,
-						FeatureProjectionSpec.standard( "q1", Dimension.NONE ),
-						FeatureProjectionSpec.standard( "q2", Dimension.NONE ) );
+						Multiplicity.SINGLE,
+						new FeatureProjectionSpec( "q1", Dimension.NONE ),
+						new FeatureProjectionSpec( "q2", Dimension.NONE ) );
 			}
 		}
 
@@ -401,8 +400,9 @@ public class GraphUpdateStackTest
 						"Dummy feature FT3",
 						FT3.class,
 						Spot.class,
-						FeatureProjectionSpec.standard( "q1", Dimension.NONE ),
-						FeatureProjectionSpec.standard( "q2", Dimension.NONE ) );
+						Multiplicity.SINGLE,
+						new FeatureProjectionSpec( "q1", Dimension.NONE ),
+						new FeatureProjectionSpec( "q2", Dimension.NONE ) );
 			}
 		}
 
