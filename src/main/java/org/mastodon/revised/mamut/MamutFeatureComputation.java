@@ -117,5 +117,11 @@ public class MamutFeatureComputation
 		{
 			return wrapped.getFeatureComputerFor( spec );
 		}
+
+		@Override
+		public Collection< FeatureSpec< ?, ? > > getDependencies( final FeatureSpec< ?, ? > spec )
+		{
+			return wrapped.getDependencies( spec );
+		}
 	}
 }

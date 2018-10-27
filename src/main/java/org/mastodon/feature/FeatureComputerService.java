@@ -36,4 +36,14 @@ public interface FeatureComputerService extends Cancelable, Service
 	 * @return a feature computer.
 	 */
 	public FeatureComputer getFeatureComputerFor( FeatureSpec< ?, ? > spec );
+
+	/**
+	 * Returns the list of dependencies identified for the feature with the
+	 * given specification.
+	 * 
+	 * @param spec
+	 *            the specification of the feature to query.
+	 * @return the dependencies.
+	 */
+	public Collection< FeatureSpec< ?, ? > > getDependencies( FeatureSpec< ?, ? > spec );
 }

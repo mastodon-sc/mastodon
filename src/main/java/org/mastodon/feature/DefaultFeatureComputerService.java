@@ -2,12 +2,15 @@ package org.mastodon.feature;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import org.mastodon.collection.RefList;
+import org.mastodon.feature.FeatureDependencyGraph.Edge;
+import org.mastodon.feature.FeatureDependencyGraph.Vertex;
 import org.mastodon.graph.algorithm.TopologicalSort;
 import org.mastodon.util.Listeners;
 import org.scijava.Cancelable;
@@ -167,6 +170,23 @@ public class DefaultFeatureComputerService extends AbstractService implements Fe
 	}
 
 	@Override
+	public Collection< FeatureSpec< ?, ? > > getDependencies( final FeatureSpec< ?, ? > spec )
+	{
+		final Vertex vertex = dependencies.get( spec );
+		if (null == vertex)
+			return Collections.emptyList();
+		
+		final List<FeatureSpec< ?, ? >> deps = new ArrayList<>();
+		for ( final Edge edge : vertex.outgoingEdges() )
+		{
+			final Vertex target = edge.getTarget();
+			deps.add( target.getFeatureSpec() );
+			deps.addAll( getDependencies( target.getFeatureSpec() ) );
+		}
+		return deps;
+	}
+
+	@Override
 	public Map< FeatureSpec< ?, ? >, Feature< ? > > compute( final Collection< FeatureSpec< ?, ? > > featureKeys )
 	{
 		cancelReason = null;
@@ -279,7 +299,10 @@ public class DefaultFeatureComputerService extends AbstractService implements Fe
 	}
 
 	/**
-	 * {@code FeatureComputationStatusListener}s added here will be notified about progress of computation.
+	 * {@code FeatureComputationStatusListener}s added here will be notified
+	 * about progress of computation.
+	 * 
+	 * @return the listeners.
 	 */
 	public Listeners< FeatureComputationStatusListener > computationStatusListeners()
 	{
