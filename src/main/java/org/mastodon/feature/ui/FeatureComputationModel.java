@@ -28,6 +28,8 @@ public class FeatureComputationModel
 
 	private final Map< FeatureSpec< ?, ? >, Boolean > uptodateMap;
 
+	private final Map< FeatureSpec< ?, ? >, Collection< FeatureSpec< ?, ? > > > deps;
+
 	public FeatureComputationModel()
 	{
 		this.updateListeners = new Listeners.SynchronizedList<>();
@@ -35,6 +37,7 @@ public class FeatureComputationModel
 		this.featureSpecsTargetMap = new HashMap<>();
 		this.featureSpecsKeys = new HashMap<>();
 		this.uptodateMap = new HashMap<>();
+		this.deps = new HashMap<>();
 	}
 
 	private void notifyListeners()
@@ -78,10 +81,22 @@ public class FeatureComputationModel
 		return featureSpecsKeys.get( featureKey );
 	}
 
-	public void put( final Class< ? > target, final FeatureSpec< ?, ? > spec )
+	/**
+	 * Stores the give specification, with the given target class and
+	 * dependencies.
+	 * 
+	 * @param target
+	 *            the target class of the the feature .
+	 * @param spec
+	 *            the specification of the feature.
+	 * @param dependencies
+	 *            its dependencies.
+	 */
+	public void put( final Class< ? > target, final FeatureSpec< ?, ? > spec, final Collection< FeatureSpec< ?, ? > > dependencies )
 	{
 		featureSpecsKeys.put( spec.getKey(), spec );
 		featureSpecsTargetMap.computeIfAbsent( target, ( k ) -> new ArrayList<>() ).add( spec );
+		deps.put( spec, dependencies );
 	}
 
 	public boolean isUptodate( final FeatureSpec< ?, ? > featureSpec )
@@ -112,6 +127,11 @@ public class FeatureComputationModel
 	{
 		for ( final FeatureSpec< ?, ? > featureSpec : selectedFeatures )
 			uptodateMap.put( featureSpec, Boolean.valueOf( true ) );
+	}
+
+	public Collection< FeatureSpec< ?, ? > > getDependencies( final FeatureSpec< ?, ? > spec )
+	{
+		return Collections.unmodifiableCollection( deps.computeIfAbsent( spec, s -> Collections.emptyList() ) );
 	}
 
 }

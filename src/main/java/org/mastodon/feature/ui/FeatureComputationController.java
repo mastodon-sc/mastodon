@@ -109,7 +109,7 @@ public class FeatureComputationController implements GraphChangeListener
 			// Only add the features with specified targets.
 			if ( targets.contains( spec.getTargetClass() ) )
 			{
-				model.put( spec.getTargetClass(), spec );
+				model.put( spec.getTargetClass(), spec, computerService.getDependencies( spec ) );
 				model.setSelected( spec, true );
 			}
 		}

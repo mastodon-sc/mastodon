@@ -10,9 +10,7 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import javax.swing.BorderFactory;
 import javax.swing.Box;
@@ -130,7 +128,7 @@ public class FeatureComputationPanel extends JPanel
 
 		// Feed the feature panel.
 
-		final FeatureTable.SelectionListener< FeatureSpec< ?, ? > > sl = fs -> displayConfigPanel( fs );
+		final FeatureTable.SelectionListener< FeatureSpec< ?, ? > > sl = fs -> displayConfigPanel( fs, model.getDependencies( fs ) );
 		final FeatureTable.Tables aggregator = new FeatureTable.Tables();
 
 		for ( final Class< ? > target : targets )
@@ -163,7 +161,7 @@ public class FeatureComputationPanel extends JPanel
 		}
 	}
 
-	private void displayConfigPanel( final FeatureSpec< ?, ? > spec )
+	private void displayConfigPanel( final FeatureSpec< ?, ? > spec, final Collection< FeatureSpec< ?, ? > > dependencies )
 	{
 		panelConfig.removeAll();
 		if ( null == spec )
@@ -217,7 +215,6 @@ public class FeatureComputationPanel extends JPanel
 		final JLabel projLabel = new JLabel( projStr.toString() );
 		infoPanel.add( projLabel, c );
 
-		final Set< String > dependencies = new HashSet<>(); // TODO
 		if ( !dependencies.isEmpty() )
 		{
 			final StringBuilder depStr = new StringBuilder();
@@ -225,8 +222,8 @@ public class FeatureComputationPanel extends JPanel
 				depStr.append( "<html>Dependency: <ul>" );
 			else
 				depStr.append( "<html>Dependencies: <ul>" );
-			for ( final String dep : dependencies )
-				depStr.append( "<li>" + dep + "</li>" );
+			for ( final FeatureSpec< ?, ? > dep : dependencies )
+				depStr.append( "<li>" + dep.getKey() + "</li>" );
 			depStr.append( "</ul></html>" );
 			c.gridy++;
 			final JLabel depsLabel = new JLabel( depStr.toString() );
