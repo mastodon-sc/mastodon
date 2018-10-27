@@ -1,6 +1,7 @@
 package org.mastodon.feature.ui;
 
 import java.util.Collection;
+import java.util.Map;
 
 import javax.swing.JDialog;
 import javax.swing.JFrame;
@@ -9,6 +10,7 @@ import javax.swing.JProgressBar;
 import javax.swing.SwingUtilities;
 
 import org.mastodon.feature.DefaultFeatureComputerService.FeatureComputationStatusListener;
+import org.mastodon.feature.Feature;
 import org.mastodon.feature.FeatureComputerService;
 import org.mastodon.feature.FeatureSpec;
 import org.mastodon.graph.GraphChangeListener;
@@ -89,13 +91,14 @@ public class FeatureComputationController implements GraphChangeListener
 			@Override
 			public void run()
 			{
-				computerService.compute( model.getSelectedFeatureKeys() );
+				final Map< FeatureSpec< ?, ? >, Feature< ? > > computed =
+						computerService.compute( model.getSelectedFeatureKeys() );
 				SwingUtilities.invokeLater( () -> {
 					gui.btnCancel.setVisible( false );
 					gui.btnCompute.setVisible( true );
 					reenabler.reenable();
 					if ( !computerService.isCanceled() )
-						model.setUptodate();
+						model.setUptodate( computed.keySet() );
 				} );
 			};
 		}.start();

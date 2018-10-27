@@ -120,12 +120,14 @@ public class FeatureComputationModel
 	}
 
 	/**
-	 * Marks all the {@link FeatureSpec}s <b>currently selected</b> in this
-	 * model as up to date.
+	 * Marks all the specified {@link FeatureSpec}s in this model as up to date.
+	 * 
+	 * @param featureSpecs
+	 *            the feature specs to mark as up to date.
 	 */
-	public void setUptodate()
+	public void setUptodate( final Set< FeatureSpec< ?, ? > > featureSpecs )
 	{
-		for ( final FeatureSpec< ?, ? > featureSpec : selectedFeatures )
+		for ( final FeatureSpec< ?, ? > featureSpec : featureSpecs )
 			uptodateMap.put( featureSpec, Boolean.valueOf( true ) );
 	}
 
