@@ -15,7 +15,7 @@ import org.scijava.plugin.Plugin;
 public class SpotNLinksFeature implements Feature< Spot >
 {
 
-	private static final String KEY = "Spot N links";
+	public static final String KEY = "Spot N links";
 
 	private static final String HELP_STRING = "Computes the number of links that touch a spot.";
 
