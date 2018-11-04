@@ -206,6 +206,47 @@ public class FeatureSelectionPanel extends JPanel
 						cbSource2.getSelectedIndex() ) };
 	}
 
+	public void setSelection( final String[] selection )
+	{
+		final String featureKey = selection[ 0 ];
+		final FeatureSpec< ?, ? > featureSpec = getFeatureSpecFromKey( featureKey );
+		cbFeatures.setSelectedItem( featureSpec );
+
+		final String projectionKey = selection[ 1 ];
+		final String projectionName = featureSpec.multiplicity.nameFromKey( projectionKey );
+		final FeatureProjectionSpec featureProjectionSpec = getFeatureProjectionSpecFromName( featureSpec, projectionName );
+		cbProjections.setSelectedItem( featureProjectionSpec );
+
+		final int[] indices = featureSpec.multiplicity.indicesFromKey( projectionKey );
+		if ( indices.length > 0 )
+		{
+			cbSource1.setSelectedIndex( indices[ 0 ] );
+			if ( indices.length > 1 )
+				cbSource2.setSelectedIndex( indices[ 1 ] );
+		}
+	}
+
+	private FeatureProjectionSpec getFeatureProjectionSpecFromName( final FeatureSpec< ?, ? > featureSpec, final String projectionName )
+	{
+		final FeatureProjectionSpec[] projectionSpecs = featureSpec.getProjectionSpecs();
+		for ( final FeatureProjectionSpec featureProjectionSpec : projectionSpecs )
+		{
+			if ( featureProjectionSpec.projectionName.equals( projectionName ) )
+				return featureProjectionSpec;
+		}
+		throw new IllegalArgumentException( "Unknown name for feature projection specification: " + projectionName );
+	}
+
+	private FeatureSpec< ?, ? > getFeatureSpecFromKey( final String key )
+	{
+		for ( final FeatureSpec< ?, ? > featureSpec : featureSpecs )
+		{
+			if ( featureSpec.getKey().equals( key ) )
+				return featureSpec;
+		}
+		throw new IllegalArgumentException( "Unknown key for feature specification: " + key );
+	}
+
 	private void refreshProjections()
 	{
 		final FeatureSpec< ?, ? > currentSelection = ( FeatureSpec< ?, ? > ) cbFeatures.getSelectedItem();
