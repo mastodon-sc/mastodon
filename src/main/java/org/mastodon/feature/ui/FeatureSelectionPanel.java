@@ -37,7 +37,7 @@ import org.scijava.Context;
 /**
  * A JPanel, one line, in which the user can select a pair of feature /
  * projection keys.
- * 
+ *
  * @author Jean-Yves Tinevez
  */
 public class FeatureSelectionPanel extends JPanel
@@ -67,15 +67,15 @@ public class FeatureSelectionPanel extends JPanel
 
 	private final Listeners.List< UpdateListener > updateListeners;
 
-	private Component projectionStrut;
+	private final Component projectionStrut;
 
-	private Component featureStrut;
+	private final Component featureStrut;
 
-	private Component arrowStrut;
+	private final Component arrowStrut;
 
-	private Component source1Strut;
+	private final Component source1Strut;
 
-	private Component andStrut;
+	private final Component andStrut;
 
 	public FeatureSelectionPanel()
 	{
@@ -165,7 +165,7 @@ public class FeatureSelectionPanel extends JPanel
 	/**
 	 * Exposes the listeners that will be notified when a change is made in this
 	 * panel.
-	 * 
+	 *
 	 * @return the listeners.
 	 */
 	public Listeners< UpdateListener > updateListeners()
@@ -184,7 +184,7 @@ public class FeatureSelectionPanel extends JPanel
 	 * feature projection name ({@link FeatureProjectionSpec#projectionName}), the
 	 * feature multiplicity and the source indices selected in this panel. Or the
 	 * empty string if there is no selection.
-	 * 
+	 *
 	 * @return a 2-element string array.
 	 */
 	public String[] getSelection()
@@ -197,10 +197,10 @@ public class FeatureSelectionPanel extends JPanel
 		if (null == projectionSpec)
 			return new String[] { featureSpec.getKey(), "" };
 
-		return new String[] { 
-				featureSpec.getKey(), 
-				projectionSpec.projectionKey( 
-						featureSpec.multiplicity, 
+		return new String[] {
+				featureSpec.getKey(),
+				projectionSpec.projectionKey(
+						featureSpec.multiplicity,
 						// We use the index, since the display is 1-based.
 						cbSource1.getSelectedIndex(),
 						cbSource2.getSelectedIndex() ) };
@@ -282,7 +282,7 @@ public class FeatureSelectionPanel extends JPanel
 
 	/**
 	 * Sets the feature specifications to display in this panel.
-	 * 
+	 *
 	 * @param featureSpecs
 	 *                         the feature specifications.
 	 */
@@ -293,10 +293,15 @@ public class FeatureSelectionPanel extends JPanel
 			this.featureSpecs = featureSpecs;
 			final FeatureSpec< ?, ? > previousSelection = ( FeatureSpec< ?, ? > ) cbFeatures.getSelectedItem();
 			cbFeatures.setModel( new FeatureSpectComboBoxModel( featureSpecs ) );
-			if ( null == previousSelection && !featureSpecs.isEmpty() )
+			if ( null == previousSelection && cbFeatures.getModel().getSize() > 0  )
 				cbFeatures.setSelectedIndex( 0 );
-			else 
+			else
+			{
 				cbFeatures.setSelectedItem( previousSelection );
+				final Object selectedItem = cbFeatures.getSelectedItem();
+				if (null == selectedItem && cbFeatures.getModel().getSize() > 0)
+					cbFeatures.setSelectedIndex( 0 );
+			}
 		}
 	}
 
@@ -424,7 +429,7 @@ public class FeatureSelectionPanel extends JPanel
 
 		final FeatureSelectionPanel selectionPanel = new FeatureSelectionPanel();
 		selectionPanel.updateListeners().add( () -> System.out.println( Arrays.toString( selectionPanel.getSelection() ) ) );
-		
+
 		final JFrame frame = new JFrame( "Feature selection panel" );
 		frame.getContentPane().add( selectionPanel );
 		frame.setVisible( true );
