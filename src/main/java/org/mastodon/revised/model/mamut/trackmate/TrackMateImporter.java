@@ -45,7 +45,7 @@ import org.mastodon.collection.IntRefMap;
 import org.mastodon.collection.RefMaps;
 import org.mastodon.properties.DoublePropertyMap;
 import org.mastodon.properties.IntPropertyMap;
-import org.mastodon.revised.mamut.MamutProject;
+import org.mastodon.project.MamutProject;
 import org.mastodon.revised.model.AbstractModelImporter;
 import org.mastodon.revised.model.feature.Feature;
 import org.mastodon.revised.model.feature.FeatureModel;

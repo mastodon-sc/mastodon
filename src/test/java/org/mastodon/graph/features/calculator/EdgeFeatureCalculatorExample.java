@@ -1,6 +1,7 @@
 package org.mastodon.graph.features.calculator;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Locale;
 
@@ -11,7 +12,7 @@ import org.mastodon.graph.algorithm.traversal.DepthFirstSearch;
 import org.mastodon.graph.algorithm.traversal.GraphSearch.SearchDirection;
 import org.mastodon.graph.algorithm.traversal.SearchListener;
 import org.mastodon.properties.DoublePropertyMap;
-import org.mastodon.revised.mamut.MamutProject;
+import org.mastodon.project.MamutProject;
 import org.mastodon.revised.model.mamut.Link;
 import org.mastodon.revised.model.mamut.Model;
 import org.mastodon.revised.model.mamut.Spot;
@@ -108,10 +109,9 @@ public class EdgeFeatureCalculatorExample
 	public static void main( final String[] args ) throws IOException
 	{
 		long start = System.currentTimeMillis();
-		final String modelFile = "samples/model_revised.raw";
+		final String projectFile = "samples/mamutproject.mastodon";
 		final Model model = new Model();
-		System.out.print( "Loading data: " + modelFile + "... " );
-		model.loadRaw( new MamutProject( new File( modelFile ), null ) );
+		model.loadRaw( new MamutProject( projectFile ).openForReading() );
 		long end = System.currentTimeMillis();
 		System.out.println( "Done in " + ( end - start ) + " ms." );
 

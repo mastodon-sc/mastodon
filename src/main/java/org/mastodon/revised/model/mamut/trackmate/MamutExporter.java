@@ -68,7 +68,6 @@ import static org.mastodon.revised.model.mamut.trackmate.TrackMateXMLKeys.VOXEL_
 import static org.mastodon.revised.model.mamut.trackmate.TrackMateXMLKeys.WIDTH_ATTRIBUTE;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -94,10 +93,11 @@ import org.mastodon.graph.algorithm.RootFinder;
 import org.mastodon.graph.algorithm.traversal.DepthFirstSearch;
 import org.mastodon.graph.algorithm.traversal.GraphSearch.SearchDirection;
 import org.mastodon.graph.algorithm.traversal.SearchListener;
+import org.mastodon.pool.PoolObject;
 import org.mastodon.properties.IntPropertyMap;
 import org.mastodon.properties.PropertyMap;
 import org.mastodon.revised.bdv.overlay.util.JamaEigenvalueDecomposition;
-import org.mastodon.revised.mamut.MamutProject;
+import org.mastodon.project.MamutProject;
 import org.mastodon.revised.model.feature.Feature;
 import org.mastodon.revised.model.feature.FeatureModel;
 import org.mastodon.revised.model.feature.FeatureProjection;
@@ -375,7 +375,7 @@ public class MamutExporter
 		roots.addAll( RootFinder.getRoots( model.getGraph() ) );
 
 		// Sort by ID (not needed but hey).
-		final Comparator< Spot > labelComparator = ( o1, o2 ) -> Integer.compare( o1.getInternalPoolIndex(), o2.getInternalPoolIndex() );
+		final Comparator< Spot > labelComparator = Comparator.comparingInt( PoolObject::getInternalPoolIndex );
 		roots.sort( labelComparator );
 
 		/*
@@ -661,12 +661,12 @@ public class MamutExporter
 		return document;
 	}
 
-	private static final String sanitize( final String tag )
+	private static String sanitize( final String tag )
 	{
 		return tag.replace( ' ', '_' );
 	}
 
-	public static final void export( final File target, final Model model, final MamutProject project ) throws IOException
+	public static void export( final File target, final Model model, final MamutProject project ) throws IOException
 	{
 		final MamutExporter exporter = new MamutExporter( model, project );
 		exporter.appendModel();
@@ -681,7 +681,9 @@ public class MamutExporter
 		final String bdvFile = "samples/datasethdf5.xml";
 		final MamutProject project = new MamutProject( new File( projectFolder ), new File( bdvFile ) );
 		final Model model = new Model();
-		model.loadRaw( project );
+		final MamutProject.ProjectReader reader = project.openForReading();
+		model.loadRaw( reader );
+		reader.close();
 		final File target = new File( "samples/mamutExport.xml" );
 		export( target, model, project );
 	}
