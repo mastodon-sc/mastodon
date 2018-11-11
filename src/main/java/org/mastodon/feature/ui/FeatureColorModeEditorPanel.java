@@ -8,31 +8,20 @@ import java.util.Comparator;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Locale;
 import java.util.Set;
 import java.util.function.Consumer;
-import java.util.stream.Collectors;
 
 import javax.swing.JComponent;
-import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JSeparator;
-import javax.swing.UIManager;
-import javax.swing.UnsupportedLookAndFeelException;
 
 import org.mastodon.feature.FeatureSpec;
-import org.mastodon.feature.FeatureSpecsService;
-import org.mastodon.revised.model.mamut.Link;
-import org.mastodon.revised.model.mamut.Model;
-import org.mastodon.revised.model.mamut.Spot;
 import org.mastodon.revised.ui.coloring.ColorMap;
-import org.mastodon.revised.ui.coloring.feature.DefaultFeatureRangeCalculator;
 import org.mastodon.revised.ui.coloring.feature.FeatureColorMode;
 import org.mastodon.revised.ui.coloring.feature.FeatureColorMode.EdgeColorMode;
 import org.mastodon.revised.ui.coloring.feature.FeatureColorMode.VertexColorMode;
 import org.mastodon.revised.ui.coloring.feature.FeatureRangeCalculator;
-import org.scijava.Context;
 
 /**
  * JPanel to edit a single {@link FeatureColorMode}.
@@ -101,8 +90,6 @@ public class FeatureColorModeEditorPanel extends JPanel
 		final ColorMapSelector vertexColorMapSelector = new ColorMapSelector( ColorMap.getColorMapNames() );
 		addToLayout( new JLabel( "vertex colormap", JLabel.TRAILING ), vertexColorMapSelector, c );
 
-		vertexColorMapSelector.listeners().add( cm -> mode.setVertexColorMap( cm ) );
-
 		/*
 		 * Vertex feature range.
 		 */
@@ -131,7 +118,6 @@ public class FeatureColorModeEditorPanel extends JPanel
 
 		};
 		addToLayout( new JLabel( "vertex range", JLabel.TRAILING ), vertexFeatureRangeSelector, c );
-		vertexFeatureRangeSelector.listeners().add( mm -> mode.setVertexRange( mm[ 0 ], mm[ 1 ] ) );
 
 		/*
 		 * Separator.
@@ -164,8 +150,6 @@ public class FeatureColorModeEditorPanel extends JPanel
 		final ColorMapSelector edgeColorMapSelector = new ColorMapSelector( ColorMap.getColorMapNames() );
 		addToLayout( new JLabel( "edge colormap", JLabel.TRAILING ), edgeColorMapSelector, c );
 
-		edgeColorMapSelector.listeners().add( cm -> mode.setEdgeColorMap( cm ) );
-
 		/*
 		 * Edge feature range.
 		 */
@@ -193,58 +177,103 @@ public class FeatureColorModeEditorPanel extends JPanel
 			}
 		};
 		addToLayout( new JLabel( "edge range", JLabel.TRAILING ), edgeFeatureRangeSelector, c );
-		edgeFeatureRangeSelector.listeners().add( mm -> mode.setEdgeRange( mm[ 0 ], mm[ 1 ] ) );
+
+		/*
+		 * Here comes the great dance of listeners.
+		 * 
+		 * First the listener that listens to changes in the GUI and forward them to the
+		 * model.
+		 */
 
 		/*
 		 * Listen to changes in vertex color mode and hide panels or not.
 		 */
 
-		final Consumer< VertexColorMode > vv = vcm -> {
+		final Consumer< VertexColorMode > vertexColorModeListener = vcm -> {
 			final boolean visible = !vcm.equals( VertexColorMode.NONE );
 			vertexColorMapSelector.setVisible( visible );
 			vertexFeatureRangeSelector.setVisible( visible );
 			vertexFeatureSelectionPanel.setVisible( visible );
+
+			switch ( vcm )
+			{
+			case VERTEX:
+				vertexFeatureSelectionPanel.setFeatureSpecs( vertexFeatureSpecs );
+				break;
+			case INCOMING_EDGE:
+			case OUTGOING_EDGE:
+				vertexFeatureSelectionPanel.setFeatureSpecs( edgeFeatureSpecs );
+				break;
+			case NONE:
+			default:
+				break;
+			}
+
+			if ( doForwardToMode )
+				mode.setVertexColorMode( vcm );
 		};
-		vertexColorModeSelector.listeners().add( vv );
+		vertexColorModeSelector.listeners().add( vertexColorModeListener );
 
 		/*
-		 * Listen to changes in edge color mode and hide panels or not.
+		 * Listen to changes in edge color mode and hide panels or not. Then forward
+		 * possible new feature specs to feature selection panel.
 		 */
 
-		final Consumer< EdgeColorMode > ve = vcm -> {
-			final boolean visible = !vcm.equals( EdgeColorMode.NONE );
+		final Consumer< EdgeColorMode > edgeColorModeListener = ecm -> {
+			final boolean visible = !ecm.equals( EdgeColorMode.NONE );
 			edgeColorMapSelector.setVisible( visible );
 			edgeFeatureRangeSelector.setVisible( visible );
 			edgeFeatureSelectionPanel.setVisible( visible );
+
+			switch ( ecm )
+			{
+			case NONE:
+			case EDGE:
+				edgeFeatureSelectionPanel.setFeatureSpecs( edgeFeatureSpecs );
+				break;
+			case SOURCE_VERTEX:
+			case TARGET_VERTEX:
+				edgeFeatureSelectionPanel.setFeatureSpecs( vertexFeatureSpecs );
+				break;
+			default:
+				break;
+			}
+
+			if ( doForwardToMode )
+				mode.setEdgeColorMode( ecm );
 		};
-		edgeColorModeSelector.listeners().add( ve );
+		edgeColorModeSelector.listeners().add( edgeColorModeListener );
 
 		/*
-		 * Listen to changes in the mode and forward them to the view.
+		 * Listen to changes in the color map selection and forward it to mode.
 		 */
 
-		final FeatureColorMode.UpdateListener l = new FeatureColorMode.UpdateListener()
-		{
+		edgeColorMapSelector.listeners().add( cm -> {
+			if ( doForwardToMode )
+				mode.setEdgeColorMap( cm );
+		} );
 
-			@Override
-			public void featureColorModeChanged()
-			{
-
-				vertexColorModeSelector.setSelected( mode.getVertexColorMode() );
-				vertexColorMapSelector.setColorMap( mode.getVertexColorMap() );
-				vertexFeatureRangeSelector.setMinMax( mode.getVertexRangeMin(), mode.getVertexRangeMax() );
-				edgeColorModeSelector.setSelected( mode.getEdgeColorMode() );
-				edgeColorMapSelector.setColorMap( mode.getEdgeColorMap() );
-				edgeFeatureRangeSelector.setMinMax( mode.getEdgeRangeMin(), mode.getEdgeRangeMax() );
-				vv.accept( mode.getVertexColorMode() );
-				ve.accept( mode.getEdgeColorMode() );
-			}
-		};
-		l.featureColorModeChanged();
-		mode.updateListeners().add( l );
+		vertexColorMapSelector.listeners().add( cm -> {
+			if ( doForwardToMode )
+				mode.setVertexColorMap( cm );
+		} );
 
 		/*
-		 * Listeners.
+		 * Listen to changes in the feature value ranges and forward it to mode.
+		 */
+
+		vertexFeatureRangeSelector.listeners().add( mm -> {
+			if ( doForwardToMode )
+				mode.setVertexRange( mm[ 0 ], mm[ 1 ] );
+		} );
+
+		edgeFeatureRangeSelector.listeners().add( mm -> {
+			if ( doForwardToMode )
+				mode.setEdgeRange( mm[ 0 ], mm[ 1 ] );
+		} );
+
+		/*
+		 * Listen to changes in the feature selection panels and forward it to the mode.
 		 */
 
 		// Listen to changes in the vertex feature panel and forward it to the mode.
@@ -256,62 +285,6 @@ public class FeatureColorModeEditorPanel extends JPanel
 			}
 		} );
 
-		// Listen to changes in the vertex color mode and update feature panel.
-		final Consumer< VertexColorMode > vertexColorModeListener = new Consumer< VertexColorMode >()
-		{
-			@Override
-			public void accept( final VertexColorMode m )
-			{
-				if ( m == mode.getVertexColorMode() )
-					return;
-
-				mode.setVertexColorMode( m );
-				switch ( m )
-				{
-				case VERTEX:
-					vertexFeatureSelectionPanel.setFeatureSpecs( vertexFeatureSpecs );
-					break;
-				case INCOMING_EDGE:
-				case OUTGOING_EDGE:
-					vertexFeatureSelectionPanel.setFeatureSpecs( edgeFeatureSpecs );
-					break;
-				case NONE:
-				default:
-					break;
-				}
-			}
-		};
-		vertexColorModeSelector.listeners().add( vertexColorModeListener );
-
-		// Listen to changes in the vertex feature panel and forward it to the mode.
-
-		// Listen to changes in the edge color mode and update feature panel.
-		final Consumer< EdgeColorMode > edgeColorModeListener = new Consumer< EdgeColorMode >()
-		{
-			@Override
-			public void accept( final EdgeColorMode m )
-			{
-				if ( m == mode.getEdgeColorMode() )
-					return;
-
-				mode.setEdgeColorMode( m );
-				switch ( m )
-				{
-				case NONE:
-				case EDGE:
-					edgeFeatureSelectionPanel.setFeatureSpecs( edgeFeatureSpecs );
-					break;
-				case SOURCE_VERTEX:
-				case TARGET_VERTEX:
-					edgeFeatureSelectionPanel.setFeatureSpecs( vertexFeatureSpecs );
-					break;
-				default:
-					break;
-				}
-			}
-		};
-		edgeColorModeSelector.listeners().add( edgeColorModeListener );
-		
 		// Listen to changes in the vertex feature panel and forward it to the mode.
 		edgeFeatureSelectionPanel.updateListeners().add( () -> {
 			if ( doForwardToMode )
@@ -320,6 +293,33 @@ public class FeatureColorModeEditorPanel extends JPanel
 				mode.setEdgeFeatureProjection( keys[ 0 ], keys[ 1 ] );
 			}
 		} );
+
+		/*
+		 * Listen to changes in the mode and forward them to the view.
+		 */
+
+		final FeatureColorMode.UpdateListener l = new FeatureColorMode.UpdateListener()
+		{
+
+			@Override
+			public void featureColorModeChanged()
+			{
+				doForwardToMode = false;
+				vertexColorModeSelector.setSelected( mode.getVertexColorMode() );
+				vertexColorMapSelector.setColorMap( mode.getVertexColorMap() );
+				vertexFeatureRangeSelector.setMinMax( mode.getVertexRangeMin(), mode.getVertexRangeMax() );
+				edgeColorModeSelector.setSelected( mode.getEdgeColorMode() );
+				edgeColorMapSelector.setColorMap( mode.getEdgeColorMap() );
+				edgeFeatureRangeSelector.setMinMax( mode.getEdgeRangeMin(), mode.getEdgeRangeMax() );
+				vertexColorModeListener.accept( mode.getVertexColorMode() );
+				edgeColorModeListener.accept( mode.getEdgeColorMode() );
+				vertexFeatureSelectionPanel.setSelection( mode.getVertexFeatureProjection() );
+				edgeFeatureSelectionPanel.setSelection( mode.getEdgeFeatureProjection() );
+				doForwardToMode = true;
+			}
+		};
+		l.featureColorModeChanged();
+		mode.updateListeners().add( l );
 	}
 
 	private void addToLayout( final JComponent comp1, final JComponent comp2, final GridBagConstraints c )
@@ -379,51 +379,5 @@ public class FeatureColorModeEditorPanel extends JPanel
 		edgeFeatureSelectionPanel.setFeatureSpecs( mode.getEdgeColorMode() == EdgeColorMode.EDGE ? edgeFeatureSpecs : vertexFeatureSpecs );
 		edgeFeatureSelectionPanel.setSelection( mode.getEdgeFeatureProjection() );
 		doForwardToMode = true;
-	}
-
-	public static void main( final String[] args ) throws ClassNotFoundException, InstantiationException, IllegalAccessException, UnsupportedLookAndFeelException
-	{
-		UIManager.setLookAndFeel( UIManager.getSystemLookAndFeelClassName() );
-		Locale.setDefault( Locale.ROOT );
-
-		final FeatureColorMode mode = FeatureColorMode.defaultMode();
-		mode.updateListeners().add( () -> System.out.println( "Mode is now: " + mode ) );
-		
-		final Model model = new Model();
-
-		final DefaultFeatureRangeCalculator< Spot > vertexFeatureRangeCalculator =
-				new DefaultFeatureRangeCalculator<>( model.getGraph().vertices(), model.getFeatureModel() );
-		final DefaultFeatureRangeCalculator< Link > edgeFeatureRangeCalculator =
-				new DefaultFeatureRangeCalculator<>( model.getGraph().edges(), model.getFeatureModel() );
-
-		final FeatureColorModeEditorPanel editorPanel = new FeatureColorModeEditorPanel(
-				mode,
-				vertexFeatureRangeCalculator,
-				edgeFeatureRangeCalculator );
-
-		// Collect feature specs.
-		final Context context = new Context( FeatureSpecsService.class );
-		final FeatureSpecsService featureSpecsService = context.getService( FeatureSpecsService.class );
-
-		// Vertex feature specs.
-		final Set<FeatureSpec< ?, ? >> vfs = new HashSet<>(featureSpecsService.getSpecs( Spot.class ));
-		final Set< FeatureSpec< ?, ? > > fmVfs = model.getFeatureModel().getFeatureSpecs().stream()
-			.filter( (fs) -> fs.getTargetClass().isAssignableFrom(Spot.class) )
-			.collect( Collectors.toSet() );
-		vfs.addAll( fmVfs );
-
-		// Edge feature specs.
-		final Set<FeatureSpec< ?, ? >> efs = new HashSet<>(featureSpecsService.getSpecs( Link.class ));
-		final Set< FeatureSpec< ?, ? > > fmEfs = model.getFeatureModel().getFeatureSpecs().stream()
-			.filter( (fs) -> fs.getTargetClass().isAssignableFrom(Link.class) )
-			.collect( Collectors.toSet() );
-		efs.addAll( fmEfs );
-
-		editorPanel.setFeatureSpecs( vfs, efs );
-
-		final JFrame frame = new JFrame( "Feature color mode editor" );
-		frame.getContentPane().add( editorPanel );
-		frame.pack();
-		frame.setVisible( true );
 	}
 }
