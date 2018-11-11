@@ -211,7 +211,7 @@ public class FeatureSelectionPanel extends JPanel
 		final String featureKey = selection[ 0 ];
 		final FeatureSpec< ?, ? > featureSpec = getFeatureSpecFromKey( featureKey );
 		cbFeatures.setSelectedItem( featureSpec );
-		if ( null == featureKey )
+		if ( null == featureSpec )
 			return;
 
 		final String projectionKey = selection[ 1 ];
@@ -236,7 +236,7 @@ public class FeatureSelectionPanel extends JPanel
 			if ( featureProjectionSpec.projectionName.equals( projectionName ) )
 				return featureProjectionSpec;
 		}
-		throw new IllegalArgumentException( "Unknown name for feature projection specification: " + projectionName );
+		return null;
 	}
 
 	private FeatureSpec< ?, ? > getFeatureSpecFromKey( final String key )
