@@ -9,17 +9,23 @@ import java.util.function.Consumer;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
 
+import org.mastodon.feature.FeatureSpecsService;
+import org.mastodon.feature.ui.FeatureColorModeConfigPage;
 import org.mastodon.plugin.MastodonPlugin;
 import org.mastodon.plugin.MastodonPluginAppModel;
 import org.mastodon.plugin.MastodonPlugins;
 import org.mastodon.revised.bdv.overlay.ui.RenderSettingsConfigPage;
 import org.mastodon.revised.bdv.overlay.ui.RenderSettingsManager;
+import org.mastodon.revised.model.mamut.Link;
 import org.mastodon.revised.model.mamut.Model;
 import org.mastodon.revised.model.mamut.Spot;
 import org.mastodon.revised.model.tag.ui.TagSetDialog;
 import org.mastodon.revised.trackscheme.display.style.TrackSchemeStyleManager;
 import org.mastodon.revised.trackscheme.display.style.TrackSchemeStyleSettingsPage;
 import org.mastodon.revised.ui.SelectionActions;
+import org.mastodon.revised.ui.coloring.feature.DefaultFeatureRangeCalculator;
+import org.mastodon.revised.ui.coloring.feature.FeatureColorModeManager;
+import org.mastodon.revised.ui.coloring.feature.FeatureRangeCalculator;
 import org.mastodon.revised.ui.keymap.CommandDescriptionProvider;
 import org.mastodon.revised.ui.keymap.CommandDescriptions;
 import org.mastodon.revised.ui.keymap.CommandDescriptionsBuilder;
@@ -53,6 +59,8 @@ public class WindowManager
 	static final String[] PREFERENCES_DIALOG_KEYS = new String[] { "meta COMMA", "ctrl COMMA" };
 	static final String[] TAGSETS_DIALOG_KEYS = new String[] { "not mapped" };
 	static final String[] COMPUTE_FEATURE_DIALOG_KEYS = new String[] { "not mapped" };
+
+	private static final String FEATURECOLORMODE_SETTINGSPAGE_TREEPATH = "Feature Color Modes";
 
 	/*
 	 * Command descriptions for all provided commands
@@ -100,6 +108,8 @@ public class WindowManager
 
 	private final RenderSettingsManager renderSettingsManager;
 
+	private FeatureColorModeManager featureColorModeManager;
+
 	private final KeymapManager keymapManager;
 
 	private final Actions globalAppActions;
@@ -118,7 +128,11 @@ public class WindowManager
 
 	private JDialog featureComputationDialog;
 
+	private final PreferencesDialog settings;
+
 	final ProjectManager projectManager;
+
+
 
 	public WindowManager( final Context context )
 	{
@@ -127,6 +141,7 @@ public class WindowManager
 		keyPressedManager = new KeyPressedManager();
 		trackSchemeStyleManager = new TrackSchemeStyleManager();
 		renderSettingsManager = new RenderSettingsManager();
+		featureColorModeManager = new FeatureColorModeManager();
 		keymapManager = new KeymapManager();
 
 		final Keymap keymap = keymapManager.getForwardDefaultKeymap();
@@ -161,7 +176,7 @@ public class WindowManager
 		globalAppActions.namedAction( editTagSetsAction, TAGSETS_DIALOG_KEYS );
 		globalAppActions.namedAction( featureComputationAction, COMPUTE_FEATURE_DIALOG_KEYS );
 
-		final PreferencesDialog settings = new PreferencesDialog( null, keymap, new String[] { KeyConfigContexts.MASTODON } );
+		this.settings = new PreferencesDialog( null, keymap, new String[] { KeyConfigContexts.MASTODON } );
 		settings.addPage( new TrackSchemeStyleSettingsPage( "TrackScheme Styles", trackSchemeStyleManager ) );
 		settings.addPage( new RenderSettingsConfigPage( "BDV Render Settings", renderSettingsManager ) );
 		settings.addPage( new KeymapSettingsPage( "Keymap", keymapManager, descriptions ) );
@@ -213,6 +228,7 @@ public class WindowManager
 			featureComputationDialog.dispose();
 			featureComputationDialog = null;
 			updateEnabledActions();
+			settings.removePage( FEATURECOLORMODE_SETTINGSPAGE_TREEPATH );
 			return;
 		}
 
@@ -223,6 +239,21 @@ public class WindowManager
 		final Keymap keymap = keymapManager.getForwardDefaultKeymap();
 		tagSetDialog = new TagSetDialog( null, model.getTagSetModel(), model, keymap, new String[] { KeyConfigContexts.MASTODON } );
 		featureComputationDialog = MamutFeatureComputation.getDialog( appModel, context );
+
+		// Feature color modes.
+		final FeatureRangeCalculator vertexFeatureRangeCalculator =
+				new DefaultFeatureRangeCalculator<>( model.getGraph().vertices(), model.getFeatureModel() );
+		final FeatureRangeCalculator edgeFeatureRangeCalculator =
+				new DefaultFeatureRangeCalculator<>( model.getGraph().edges(), model.getFeatureModel() );
+		settings.addPage( new FeatureColorModeConfigPage( FEATURECOLORMODE_SETTINGSPAGE_TREEPATH,
+				featureColorModeManager,
+				context.getService( FeatureSpecsService.class ),
+				model.getFeatureModel(),
+				vertexFeatureRangeCalculator,
+				edgeFeatureRangeCalculator,
+				Spot.class,
+				Link.class ) );
+
 		updateEnabledActions();
 
 		plugins.setAppModel( new MastodonPluginAppModel( appModel, this ) );
