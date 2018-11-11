@@ -203,6 +203,7 @@ public class FeatureColorModeEditorPanel extends JPanel
 			final boolean visible = !vcm.equals( VertexColorMode.NONE );
 			vertexColorMapSelector.setVisible( visible );
 			vertexFeatureRangeSelector.setVisible( visible );
+			vertexFeatureSelectionPanel.setVisible( visible );
 		};
 		vertexColorModeSelector.listeners().add( vv );
 
@@ -214,6 +215,7 @@ public class FeatureColorModeEditorPanel extends JPanel
 			final boolean visible = !vcm.equals( EdgeColorMode.NONE );
 			edgeColorMapSelector.setVisible( visible );
 			edgeFeatureRangeSelector.setVisible( visible );
+			edgeFeatureSelectionPanel.setVisible( visible );
 		};
 		edgeColorModeSelector.listeners().add( ve );
 
