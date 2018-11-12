@@ -108,7 +108,7 @@ public class WindowManager
 
 	private final RenderSettingsManager renderSettingsManager;
 
-	private FeatureColorModeManager featureColorModeManager;
+	private final FeatureColorModeManager featureColorModeManager;
 
 	private final KeymapManager keymapManager;
 
@@ -380,6 +380,11 @@ public class WindowManager
 	RenderSettingsManager getRenderSettingsManager()
 	{
 		return renderSettingsManager;
+	}
+
+	FeatureColorModeManager getFeatureColorModeManager()
+	{
+		return featureColorModeManager;
 	}
 
 	KeymapManager getKeymapManager()

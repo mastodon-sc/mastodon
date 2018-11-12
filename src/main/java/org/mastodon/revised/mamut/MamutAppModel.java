@@ -9,6 +9,7 @@ import org.mastodon.revised.model.mamut.Link;
 import org.mastodon.revised.model.mamut.Model;
 import org.mastodon.revised.model.mamut.Spot;
 import org.mastodon.revised.trackscheme.display.style.TrackSchemeStyleManager;
+import org.mastodon.revised.ui.coloring.feature.FeatureColorModeManager;
 import org.mastodon.revised.ui.keymap.KeymapManager;
 import org.scijava.ui.behaviour.KeyPressedManager;
 import org.scijava.ui.behaviour.util.Actions;
@@ -31,9 +32,12 @@ public class MamutAppModel extends MastodonAppModel< Model, Spot, Link >
 
 	private final RenderSettingsManager renderSettingsManager;
 
+	private final FeatureColorModeManager featureColorModeManager;
+
 	private final int minTimepoint;
 
 	private final int maxTimepoint;
+
 
 	public MamutAppModel(
 			final Model model,
@@ -41,6 +45,7 @@ public class MamutAppModel extends MastodonAppModel< Model, Spot, Link >
 			final KeyPressedManager keyPressedManager,
 			final TrackSchemeStyleManager trackSchemeStyleManager,
 			final RenderSettingsManager renderSettingsManager,
+			final FeatureColorModeManager featureColorModeManager,
 			final KeymapManager keymapManager,
 			final MastodonPlugins plugins,
 			final Actions globalActions )
@@ -51,6 +56,7 @@ public class MamutAppModel extends MastodonAppModel< Model, Spot, Link >
 		this.sharedBdvData = sharedBdvData;
 		this.trackSchemeStyleManager = trackSchemeStyleManager;
 		this.renderSettingsManager = renderSettingsManager;
+		this.featureColorModeManager = featureColorModeManager;
 		this.minTimepoint = 0;
 		this.maxTimepoint = sharedBdvData.getNumTimepoints() - 1;
 		/*
@@ -89,5 +95,10 @@ public class MamutAppModel extends MastodonAppModel< Model, Spot, Link >
 	public int getMaxTimepoint()
 	{
 		return maxTimepoint;
+	}
+
+	public FeatureColorModeManager getFeatureColorModeManager()
+	{
+		return featureColorModeManager;
 	}
 }

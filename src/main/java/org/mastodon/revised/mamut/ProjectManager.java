@@ -13,6 +13,7 @@ import org.mastodon.revised.model.mamut.trackmate.MamutExporter;
 import org.mastodon.revised.model.mamut.trackmate.TrackMateImporter;
 import org.mastodon.revised.model.tag.TagSetStructure;
 import org.mastodon.revised.trackscheme.display.style.TrackSchemeStyleManager;
+import org.mastodon.revised.ui.coloring.feature.FeatureColorModeManager;
 import org.mastodon.revised.ui.keymap.CommandDescriptionProvider;
 import org.mastodon.revised.ui.keymap.CommandDescriptions;
 import org.mastodon.revised.ui.keymap.KeymapManager;
@@ -259,6 +260,7 @@ public class ProjectManager
 
 		final KeyPressedManager keyPressedManager = windowManager.getKeyPressedManager();
 		final TrackSchemeStyleManager trackSchemeStyleManager = windowManager.getTrackSchemeStyleManager();
+		final FeatureColorModeManager featureColorModeManager = windowManager.getFeatureColorModeManager();
 		final RenderSettingsManager renderSettingsManager = windowManager.getRenderSettingsManager();
 		final KeymapManager keymapManager = windowManager.getKeymapManager();
 		final MastodonPlugins plugins = windowManager.getPlugins();
@@ -309,7 +311,16 @@ public class ProjectManager
 			model = new Model( spaceUnits, timeUnits );
 		}
 
-		final MamutAppModel appModel = new MamutAppModel( model, sharedBdvData, keyPressedManager, trackSchemeStyleManager, renderSettingsManager, keymapManager, plugins, globalAppActions );
+		final MamutAppModel appModel = new MamutAppModel(
+				model,
+				sharedBdvData,
+				keyPressedManager,
+				trackSchemeStyleManager,
+				renderSettingsManager,
+				featureColorModeManager,
+				keymapManager,
+				plugins,
+				globalAppActions );
 
 		/*
 		 * TODO REMOVE
