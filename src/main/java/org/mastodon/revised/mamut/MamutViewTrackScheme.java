@@ -11,6 +11,7 @@ import javax.swing.ActionMap;
 import org.mastodon.app.ui.MastodonFrameViewActions;
 import org.mastodon.app.ui.ViewMenu;
 import org.mastodon.app.ui.ViewMenuBuilder.JMenuHandle;
+import org.mastodon.feature.FeatureModel;
 import org.mastodon.model.AutoNavigateFocusModel;
 import org.mastodon.revised.model.mamut.Link;
 import org.mastodon.revised.model.mamut.Model;
@@ -36,6 +37,7 @@ import org.mastodon.revised.ui.coloring.ColoringMenu;
 import org.mastodon.revised.ui.coloring.ColoringModel;
 import org.mastodon.revised.ui.coloring.GraphColorGeneratorAdapter;
 import org.mastodon.revised.ui.coloring.TagSetGraphColorGenerator;
+import org.mastodon.revised.ui.coloring.feature.FeatureColorModeManager;
 import org.mastodon.views.context.ContextChooser;
 import org.scijava.ui.behaviour.KeyPressedManager;
 
@@ -145,11 +147,18 @@ public class MamutViewTrackScheme extends MamutView< TrackSchemeGraph< Spot, Lin
 		appModel.getPlugins().addMenus( menu );
 
 		final TagSetModel< Spot, Link > tagSetModel = appModel.getModel().getTagSetModel();
-		final ColoringModel coloringModel = new ColoringModel( tagSetModel );
+		final FeatureModel featureModel = appModel.getModel().getFeatureModel();
+		final FeatureColorModeManager featureColorModeManager = appModel.getFeatureColorModeManager();
+		final ColoringModel coloringModel = new ColoringModel( tagSetModel, featureColorModeManager );
 		tagSetModel.listeners().add( coloringModel );
 		onClose( () -> tagSetModel.listeners().remove( coloringModel ) );
 
-		final ColoringMenu coloringMenu = new ColoringMenu( tagSetColoringMenuHandle.getMenu(), coloringModel );
+		final ColoringMenu coloringMenu = new ColoringMenu(
+				tagSetColoringMenuHandle.getMenu(),
+				coloringModel,
+				featureModel,
+				Spot.class,
+				Link.class );
 		tagSetModel.listeners().add( coloringMenu );
 		onClose( () -> tagSetModel.listeners().remove( coloringMenu ) );
 
@@ -162,6 +171,8 @@ public class MamutViewTrackScheme extends MamutView< TrackSchemeGraph< Spot, Lin
 			frame.getTrackschemePanel().entitiesAttributesChanged();
 		};
 		coloringModel.listeners().add( coloringChangedListener );
+
+		registerColoring( coloring, tagSetColoringMenuHandle, () -> frame.getTrackschemePanel().entitiesAttributesChanged() );
 
 		frame.getTrackschemePanel().repaint();
 	}
