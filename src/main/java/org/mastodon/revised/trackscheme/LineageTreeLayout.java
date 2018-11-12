@@ -388,19 +388,32 @@ public class LineageTreeLayout
 						for ( final TrackSchemeEdge edge : v1.incomingEdges() )
 						{
 							edge.getSource( v2 );
-							final int v2si = v2.getScreenVertexIndex();
+							int v2si = v2.getScreenVertexIndex();
+
 							// TODO: additionally to checking for id ref consistency, the following should be decided by layout timestamp
-							if ( v2si >= 0 && v2si < screenVertices.size() && screenVertices.get( v2si, sv ).getTrackSchemeVertexId() == v2.getInternalPoolIndex() )
+							if ( v2si < 0 || v2si >= screenVertices.size() || screenVertices.get( v2si, sv ).getTrackSchemeVertexId() != v2.getInternalPoolIndex() )
 							{
-								final int eid = edge.getInternalPoolIndex();
-								final int sourceScreenVertexIndex = v2si;
-								final int targetScreenVertexIndex = v1si;
-								final boolean eselected = selection.isSelected( edge );
-								screenEdgePool.create( se ).init( eid, sourceScreenVertexIndex, targetScreenVertexIndex, eselected, colorGenerator.color( edge, v2, v1 ) );
-								screenEdges.add( se );
-								final int sei = se.getInternalPoolIndex();
-								edge.setScreenEdgeIndex( sei );
+								// ScreenVertex for v2 not found. Adding one...
+								v2si = screenVertices.size();
+								v2.setScreenVertexIndex( v2si );
+								final int nid = v2.getInternalPoolIndex();
+								final String nlabel = v2.getLabel();
+								final double nx = ( v2.getLayoutX() - minX ) * xScale + decorationsOffsetX;
+								final double ny = ( v2.getTimepoint() - minY ) * yScale + decorationsOffsetY;
+								final boolean nselected = selection.isSelected( v2 );
+								final boolean nghost = v2.isGhost();
+								screenVertexPool.create( sv ).init( nid, nlabel, nx, ny, nselected, nghost, colorGenerator.color( v2 ) );
+								screenVertices.add( sv );
 							}
+
+							final int eid = edge.getInternalPoolIndex();
+							final int sourceScreenVertexIndex = v2si;
+							final int targetScreenVertexIndex = v1si;
+							final boolean eselected = selection.isSelected( edge );
+							screenEdgePool.create( se ).init( eid, sourceScreenVertexIndex, targetScreenVertexIndex, eselected, colorGenerator.color( edge, v2, v1 ) );
+							screenEdges.add( se );
+							final int sei = se.getInternalPoolIndex();
+							edge.setScreenEdgeIndex( sei );
 						}
 					}
 					else
@@ -412,7 +425,7 @@ public class LineageTreeLayout
 						final double svMinX = ( vertexList.get( rangeMinIndex, v1 ).getLayoutX() - minX ) * xScale + decorationsOffsetX;
 						final double svMaxX = ( vertexList.get( rangeMaxIndex, v1 ).getLayoutX() - minX ) * xScale + decorationsOffsetX; // TODO: make minimum width (maybe only when painting...)
 						vertexRanges.add( screenRangePool.create( sr ).init( svMinX, svMaxX, prevY, y ) );
-						minVertexScreenDist = 0;
+						minVertexScreenDist = 0; // TODO: WHY = 0?
 					}
 				}
 				for ( int i = timepointStartScreenVertexIndex; i < screenVertices.size(); ++i )
