@@ -181,6 +181,7 @@ public class ProjectManager
 			fn = project.getProjectRoot().getAbsolutePath();
 		final Component parent = null; // TODO
 		final File file = FileChooser.chooseFile(
+				true,
 				parent,
 				fn,
 				new ExtensionFileFilter( "mastodon" ),
