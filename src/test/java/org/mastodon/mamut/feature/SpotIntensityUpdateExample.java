@@ -3,21 +3,20 @@ package org.mastodon.mamut.feature;
 import java.io.IOException;
 import java.util.Map;
 
-import net.imglib2.util.StopWatch;
-
 import org.jdom2.JDOMException;
 import org.mastodon.feature.Feature;
 import org.mastodon.feature.FeatureModel;
 import org.mastodon.feature.FeatureProjection;
 import org.mastodon.feature.FeatureSpec;
-import org.mastodon.revised.mamut.MamutProject;
-import org.mastodon.revised.mamut.MamutProjectIO;
+import org.mastodon.project.MamutProject;
+import org.mastodon.project.MamutProjectIO;
 import org.mastodon.revised.mamut.WindowManager;
 import org.mastodon.revised.model.mamut.Model;
 import org.mastodon.revised.model.mamut.Spot;
 import org.scijava.Context;
 
 import mpicbg.spim.data.SpimDataException;
+import net.imglib2.util.StopWatch;
 
 public class SpotIntensityUpdateExample
 {
@@ -28,7 +27,7 @@ public class SpotIntensityUpdateExample
 		 * 1. Load a regular Mastodon project.
 		 */
 
-		final MamutProject project = new MamutProjectIO().load( "samples/mamutproject" );
+		final MamutProject project = new MamutProjectIO().load( "samples/mamutproject.mastodon" );
 		final WindowManager windowManager = new WindowManager( new Context() );
 		windowManager.getProjectManager().open( project );
 		final Model model = windowManager.getAppModel().getModel();

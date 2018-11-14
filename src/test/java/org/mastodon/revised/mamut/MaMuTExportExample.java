@@ -10,6 +10,8 @@ import org.mastodon.feature.Feature;
 import org.mastodon.feature.FeatureModel;
 import org.mastodon.feature.FeatureSpec;
 import org.mastodon.mamut.feature.MamutFeatureComputerService;
+import org.mastodon.project.MamutProject;
+import org.mastodon.project.MamutProjectIO;
 import org.mastodon.revised.model.mamut.Model;
 import org.mastodon.revised.model.mamut.ModelUtils;
 import org.mastodon.revised.model.mamut.trackmate.MamutExporter;
@@ -27,7 +29,7 @@ public class MaMuTExportExample
 		 * 1. Load a regular Mastodon project.
 		 */
 
-		final MamutProject project = new MamutProjectIO().load( "samples/mamutproject" );
+		final MamutProject project = new MamutProjectIO().load( "samples/mamutproject.mastodon" );
 		final WindowManager windowManager = new WindowManager( new Context() );
 		windowManager.projectManager.open( project );
 		final Model model = windowManager.getAppModel().getModel();

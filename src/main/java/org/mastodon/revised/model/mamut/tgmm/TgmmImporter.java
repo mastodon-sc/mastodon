@@ -18,7 +18,7 @@ import org.jdom2.input.SAXBuilder;
 import org.mastodon.collection.IntRefMap;
 import org.mastodon.collection.RefMaps;
 import org.mastodon.graph.Graph;
-import org.mastodon.revised.mamut.MamutProject;
+import org.mastodon.project.MamutProject;
 import org.mastodon.revised.model.AbstractModelImporter;
 import org.mastodon.revised.model.mamut.Link;
 import org.mastodon.revised.model.mamut.Model;
@@ -267,7 +267,9 @@ public class TgmmImporter extends AbstractModelImporter< Model >
 		System.out.println( "\nExporting to " + target );
 
 		final MamutProject project = new MamutProject( new File( target ), new File( bdvFile ) );
-		model.saveRaw( project );
+		final MamutProject.ProjectWriter writer = project.openForWriting();
+		model.saveRaw( writer );
+		writer.close();
 		final long end2 = System.currentTimeMillis();
 		System.out.println( "Exporting done in " + ( end2 - end ) / 1000d + " s." );
 	}

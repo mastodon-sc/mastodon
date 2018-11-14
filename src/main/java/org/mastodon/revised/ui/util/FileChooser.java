@@ -23,7 +23,7 @@ public class FileChooser
 
 	public static enum SelectionMode
 	{
-		FILES_ONLY, DIRECTORIES_ONLY
+		FILES_ONLY, DIRECTORIES_ONLY, FILES_AND_DIRECTORIES
 	}
 
 	public static File chooseFile(
@@ -94,7 +94,18 @@ public class FileChooser
 			if ( selectedFile != null )
 				fileChooser.setSelectedFile( new File( selectedFile ) );
 
-			fileChooser.setFileSelectionMode( isDirectoriesOnly ? JFileChooser.DIRECTORIES_ONLY : JFileChooser.FILES_ONLY );
+			switch ( selectionMode )
+			{
+			case FILES_ONLY:
+				fileChooser.setFileSelectionMode( JFileChooser.FILES_ONLY );
+				break;
+			case DIRECTORIES_ONLY:
+				fileChooser.setFileSelectionMode( JFileChooser.DIRECTORIES_ONLY );
+				break;
+			case FILES_AND_DIRECTORIES:
+				fileChooser.setFileSelectionMode( JFileChooser.FILES_AND_DIRECTORIES );
+				break;
+			}
 
 			fileChooser.setFileFilter( fileFilter );
 

@@ -96,8 +96,9 @@ import org.mastodon.graph.algorithm.RootFinder;
 import org.mastodon.graph.algorithm.traversal.DepthFirstSearch;
 import org.mastodon.graph.algorithm.traversal.GraphSearch.SearchDirection;
 import org.mastodon.graph.algorithm.traversal.SearchListener;
+import org.mastodon.pool.PoolObject;
+import org.mastodon.project.MamutProject;
 import org.mastodon.revised.bdv.overlay.util.JamaEigenvalueDecomposition;
-import org.mastodon.revised.mamut.MamutProject;
 import org.mastodon.revised.model.mamut.Link;
 import org.mastodon.revised.model.mamut.Model;
 import org.mastodon.revised.model.mamut.Spot;
@@ -351,7 +352,7 @@ public class MamutExporter
 		roots.addAll( RootFinder.getRoots( model.getGraph() ) );
 
 		// Sort by ID (not needed but hey).
-		final Comparator< Spot > labelComparator = ( o1, o2 ) -> Integer.compare( o1.getInternalPoolIndex(), o2.getInternalPoolIndex() );
+		final Comparator< Spot > labelComparator = Comparator.comparingInt( PoolObject::getInternalPoolIndex );
 		roots.sort( labelComparator );
 
 		/*
@@ -584,7 +585,6 @@ public class MamutExporter
 				// Mastodon does not support feature name yet.
 				fel.setAttribute( FEATURE_NAME_ATTRIBUTE, projectionKey );
 				fel.setAttribute( FEATURE_SHORT_NAME_ATTRIBUTE, projectionKey );
-				// TODO Add projection units to export.
 				final String units = feature.project( projectionKey ).units();
 				fel.setAttribute( FEATURE_DIMENSION_ATTRIBUTE, unitsToDimension( units, model.getSpaceUnits(), model.getTimeUnits() ) );
 				fel.setAttribute( FEATURE_ISINT_ATTRIBUTE, isint );

@@ -49,7 +49,7 @@ import org.mastodon.feature.Dimension;
 import org.mastodon.feature.DoubleScalarFeature;
 import org.mastodon.feature.FeatureModel;
 import org.mastodon.feature.IntScalarFeature;
-import org.mastodon.revised.mamut.MamutProject;
+import org.mastodon.project.MamutProject;
 import org.mastodon.revised.model.AbstractModelImporter;
 import org.mastodon.revised.model.mamut.Link;
 import org.mastodon.revised.model.mamut.Model;

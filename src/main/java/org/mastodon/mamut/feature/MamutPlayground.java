@@ -9,8 +9,8 @@ import org.mastodon.feature.Feature;
 import org.mastodon.feature.FeatureProjection;
 import org.mastodon.feature.FeatureSpec;
 import org.mastodon.feature.FeatureSpecsService;
-import org.mastodon.revised.mamut.MamutProject;
-import org.mastodon.revised.mamut.MamutProjectIO;
+import org.mastodon.project.MamutProject;
+import org.mastodon.project.MamutProjectIO;
 import org.mastodon.revised.mamut.WindowManager;
 import org.mastodon.revised.model.mamut.Link;
 import org.mastodon.revised.model.mamut.Model;
@@ -25,7 +25,7 @@ public class MamutPlayground
 	public static void main( final String[] args ) throws IOException, SpimDataException
 	{
 		final Context context = new Context();
-		final MamutProject project = new MamutProjectIO().load( "../TrackMate3/samples/mamutproject" );
+		final MamutProject project = new MamutProjectIO().load( "../TrackMate3/samples/mamutproject.mastodon" );
 		final WindowManager windowManager = new WindowManager( context );
 		windowManager.getProjectManager().open( project );
 		final Model model = windowManager.getAppModel().getModel();
