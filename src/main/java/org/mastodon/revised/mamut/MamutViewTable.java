@@ -2,6 +2,7 @@ package org.mastodon.revised.mamut;
 
 import static org.mastodon.app.ui.ViewMenuBuilder.item;
 import static org.mastodon.app.ui.ViewMenuBuilder.separator;
+import static org.mastodon.revised.mamut.MamutMenuBuilder.colorMenu;
 import static org.mastodon.revised.mamut.MamutMenuBuilder.editMenu;
 import static org.mastodon.revised.mamut.MamutMenuBuilder.fileMenu;
 import static org.mastodon.revised.mamut.MamutMenuBuilder.viewMenu;
@@ -15,6 +16,7 @@ import org.mastodon.app.ViewGraph;
 import org.mastodon.app.ui.MastodonFrameViewActions;
 import org.mastodon.app.ui.ViewFrame;
 import org.mastodon.app.ui.ViewMenu;
+import org.mastodon.app.ui.ViewMenuBuilder.JMenuHandle;
 import org.mastodon.feature.FeatureModel;
 import org.mastodon.revised.model.mamut.Link;
 import org.mastodon.revised.model.mamut.Model;
@@ -23,6 +25,7 @@ import org.mastodon.revised.model.tag.TagSetModel;
 import org.mastodon.revised.table.TableViewActions;
 import org.mastodon.revised.table.TableViewFrame;
 import org.mastodon.revised.ui.SelectionActions;
+import org.mastodon.revised.ui.coloring.GraphColorGeneratorAdapter;
 import org.mastodon.views.context.ContextChooser;
 
 public class MamutViewTable extends MamutView< ViewGraph< Spot, Link, Spot, Link >, Spot, Link >
@@ -34,6 +37,8 @@ public class MamutViewTable extends MamutView< ViewGraph< Spot, Link, Spot, Link
 
 	{
 		super( appModel, IdentityViewGraph.wrap( appModel.getModel().getGraph(), appModel.getModel().getGraphIdBimap() ), CONTEXTS );
+
+		final GraphColorGeneratorAdapter< Spot, Link, Spot, Link > coloring = new GraphColorGeneratorAdapter<>( viewGraph.getVertexMap(), viewGraph.getEdgeMap() );
 
 		final TableViewFrame< MamutAppModel, ViewGraph< Spot, Link, Spot, Link >, Spot, Link > frame = new TableViewFrame<>(
 				appModel,
@@ -56,7 +61,8 @@ public class MamutViewTable extends MamutView< ViewGraph< Spot, Link, Spot, Link
 				null,
 				groupHandle,
 				navigationHandler,
-				appModel.getModel() );
+				appModel.getModel(),
+				coloring );
 		setFrame( frame );
 
 		final Model model = appModel.getModel();
@@ -81,6 +87,8 @@ public class MamutViewTable extends MamutView< ViewGraph< Spot, Link, Spot, Link
 		final ViewMenu menu = new ViewMenu( this );
 		final ActionMap actionMap = frame.getKeybindings().getConcatenatedActionMap();
 
+		final JMenuHandle menuHandle = new JMenuHandle();
+
 		MamutMenuBuilder.build( menu, actionMap,
 				fileMenu(
 						item( TableViewActions.EXPORT_TO_CSV ),
@@ -90,6 +98,8 @@ public class MamutViewTable extends MamutView< ViewGraph< Spot, Link, Spot, Link
 		MainWindow.addMenus( menu, actionMap );
 		MamutMenuBuilder.build( menu, actionMap,
 				viewMenu(
+						colorMenu( menuHandle ),
+						separator(),
 						item( MastodonFrameViewActions.TOGGLE_SETTINGS_PANEL )
 				),
 				editMenu(
@@ -100,6 +110,11 @@ public class MamutViewTable extends MamutView< ViewGraph< Spot, Link, Spot, Link
 				)
 		);
 		appModel.getPlugins().addMenus( menu );
+
+		registerColoring( coloring, menuHandle, () -> {
+			frame.getEdgeTable().repaint();
+			frame.getVertexTable().repaint();
+		} );
 
 		frame.setSize( 400, 400 );
 		frame.setVisible( true );
