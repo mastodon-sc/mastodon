@@ -4,19 +4,22 @@ import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+/**
+ * The Multiplicity of a feature indicates whether it is dependent of the number
+ * of sources (e.g., channels, etc) present in the model.
+ */
 public enum Multiplicity
 {
-
 	/**
-	 * For projections that do not have multiplicity.
+	 * For features that do not have multiplicity.
 	 */
 	SINGLE( 0, ( indices ) -> "" ),
 	/**
-	 * Indicate projections that have one value per source present in the model.
+	 * For features that have one value per source present in the model.
 	 */
 	ON_SOURCES( 1, ( indices ) -> " ch" + ( indices[ 0 ] + 1 ) ),
 	/**
-	 * Indicate projections that have one value per source pair.
+	 * For features that have one value per source pair.
 	 */
 	ON_SOURCE_PAIRS( 2, ( indices ) -> " ch" + ( indices[ 0 ] + 1 ) + " ch" + ( indices[ 1 ] + 1 ) );
 
@@ -39,19 +42,19 @@ public enum Multiplicity
 	{
 		if ( sourceIndices.length < requiredNArgs )
 			throw new IllegalArgumentException( "At least " + requiredNArgs
-					+ " are required to build a name with feature projection multiplicity "
+					+ " are required to build a name with feature multiplicity "
 					+ this + ". Got " + sourceIndices.length + "." );
 
 		return suffixGenerator.apply( sourceIndices );
 	}
 
 	/**
-	 * Returns the name of a projection with this multiplicity from the specified
-	 * key. For instance: "Mean ch1" with a multiplicity of {@link #ON_SOURCES}
-	 * would return "Mean".
-	 * 
+	 * Returns the name of a projection with this multiplicity from the
+	 * specified key. For instance: "Mean ch1" with a multiplicity of
+	 * {@link #ON_SOURCES} would return "Mean".
+	 *
 	 * @param key
-	 *                the projection key.
+	 *            the projection key.
 	 * @return the projection name.
 	 */
 	public String nameFromKey( final String key )
@@ -80,14 +83,14 @@ public enum Multiplicity
 	}
 
 	/**
-	 * Returns the indices stored in the specified projection key, according to this
-	 * multiplicity. Warning, we assume that the key indices are 1-based, but the
-	 * indices themselves are 0-based. For instance "Ratio ch3 ch9" will return
-	 * <code>[2, 8]</code>. An empty array is returned if a match could not be
-	 * found.
-	 * 
+	 * Returns the indices stored in the specified projection key, according to
+	 * this multiplicity. Warning, we assume that the key indices are 1-based,
+	 * but the indices themselves are 0-based. For instance "Ratio ch3 ch9" will
+	 * return <code>[2, 8]</code>. An empty array is returned if a match could
+	 * not be found.
+	 *
 	 * @param key
-	 *                the projection key.
+	 *            the projection key.
 	 * @return the indices array.
 	 */
 	public int[] indicesFromKey( final String key )
