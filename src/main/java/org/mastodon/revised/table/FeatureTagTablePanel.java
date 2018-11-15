@@ -10,7 +10,8 @@ import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
-import java.text.NumberFormat;
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -351,7 +352,7 @@ public class FeatureTagTablePanel< O > extends JPanel
 				@SuppressWarnings( "unchecked" )
 				final FeatureProjection< O > fp = ( FeatureProjection< O > ) projection;
 				mapToProjections.add( fp );
-				mapToTooltip.add(  "<html>" + fs.getInfo() + "</html>" );
+				mapToTooltip.add(  "<html><p width=\"300\">" + fs.getInfo() + "</p></html>" );
 				final String units = fp.units();
 				lastHeaderLine.add( ( units == null || units.isEmpty() ) ? "" : "(" + units + ")" );
 				tableColumnModel.addColumn( new TableColumn( colIndex++ ) );
@@ -503,15 +504,18 @@ public class FeatureTagTablePanel< O > extends JPanel
 		public void mouseMoved( final MouseEvent evt )
 		{
 			final TableColumnModel tableColumnModel = table.getColumnModel();
-			final int vColIndex =  tableColumnModel.getColumnIndexAtX( evt.getX() ) - 2;
-			if ( vColIndex != previousCol && vColIndex >= 0 && vColIndex < mapToTooltip.size() )
+			final int vColIndex = tableColumnModel.getColumnIndexAtX( evt.getX() ) - 2;
+			if ( vColIndex != previousCol )
 			{
-				table.getTableHeader().setToolTipText( "<html>" + mapToTooltip.get( vColIndex ) + "</html>" );
-				previousCol = vColIndex;
-			}
-			else
-			{
-				table.getTableHeader().setToolTipText( "" );
+				if ( vColIndex >= 0 && vColIndex < mapToTooltip.size() )
+				{
+					table.getTableHeader().setToolTipText( mapToTooltip.get( vColIndex ) );
+					previousCol = vColIndex;
+				}
+				else
+				{
+					table.getTableHeader().setToolTipText( "" );
+				}
 			}
 		}
 	}
@@ -665,7 +669,7 @@ public class FeatureTagTablePanel< O > extends JPanel
 
 		private final Font normalFont;
 
-		private final NumberFormat nf;
+		private final DecimalFormat nf;
 
 		private final JCheckBox checkBox;
 
@@ -680,7 +684,10 @@ public class FeatureTagTablePanel< O > extends JPanel
 			this.highlightBorderLeft = BorderFactory.createMatteBorder( 2, 2, 2, 0, HIGHLIGHT_BORDER_COLOR );
 			this.highlightBorderRight = BorderFactory.createMatteBorder( 2, 0, 2, 2, HIGHLIGHT_BORDER_COLOR );
 			this.normalFont = table.getFont();
-			this.nf = NumberFormat.getInstance();
+			this.nf = new DecimalFormat();
+			final DecimalFormatSymbols formatSymbols = new DecimalFormatSymbols();
+			formatSymbols.setNaN( "NaN" );
+			nf.setDecimalFormatSymbols( formatSymbols );
 			this.checkBox = new JCheckBox();
 			checkBox.setHorizontalAlignment( SwingConstants.CENTER );
 			checkBox.setBorderPainted( true );
