@@ -58,6 +58,7 @@ import org.mastodon.feature.IntFeatureProjection;
 import org.mastodon.revised.model.tag.ObjTags;
 import org.mastodon.revised.model.tag.TagSetStructure.Tag;
 import org.mastodon.revised.model.tag.TagSetStructure.TagSet;
+import org.mastodon.revised.ui.coloring.ColorGenerator;
 import org.mastodon.undo.UndoPointMarker;
 
 import gnu.trove.map.hash.TIntIntHashMap;
@@ -129,18 +130,22 @@ public class FeatureTagTablePanel< O > extends JPanel
 
 	private boolean doFilter = false;
 
+	private final ColorGenerator< O > coloring;
+
 	public FeatureTagTablePanel(
 			final ObjTags< O > tags,
 			final RefPool< O > idBimap,
 			final Function< O, String > labelGenerator,
 			final BiConsumer< O, String > labelSetter,
-			final UndoPointMarker undoPointMarker )
+			final UndoPointMarker undoPointMarker,
+			final ColorGenerator< O > coloring )
 	{
 		this.tags = tags;
 		this.idBimap = idBimap;
 		this.labelGenerator = labelGenerator;
 		this.labelSetter = labelSetter;
 		this.undoPointMarker = undoPointMarker;
+		this.coloring = coloring;
 		this.columnClasses = new ArrayList<>();
 		this.mapToProjections = new ArrayList<>();
 		this.mapToTooltip = new ArrayList<>();
@@ -698,6 +703,8 @@ public class FeatureTagTablePanel< O > extends JPanel
 
 		private final JCheckBox checkBox;
 
+		private final O ref = idBimap.createRef();
+
 		private static final long serialVersionUID = 1L;
 
 		public MyTableCellRenderer()
@@ -741,7 +748,9 @@ public class FeatureTagTablePanel< O > extends JPanel
 			}
 			else
 			{
-				c.setBackground( table.getBackground() );
+				final O o = getObjectForViewRow( row, ref );
+				final int color = coloring.color( o );
+				c.setBackground( color == 0 ? table.getBackground() : new Color( color, true ) );
 				c.setForeground( table.getForeground() );
 			}
 
