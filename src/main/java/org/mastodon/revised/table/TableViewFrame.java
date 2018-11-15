@@ -42,6 +42,7 @@ import org.mastodon.revised.model.AbstractSpot;
 import org.mastodon.revised.model.tag.ObjTags;
 import org.mastodon.revised.model.tag.TagSetModel;
 import org.mastodon.revised.model.tag.TagSetStructure.TagSet;
+import org.mastodon.revised.ui.coloring.GraphColorGenerator;
 import org.mastodon.revised.ui.context.ContextChooserPanel;
 import org.mastodon.undo.UndoPointMarker;
 import org.mastodon.views.context.Context;
@@ -88,6 +89,12 @@ public class TableViewFrame<
 
 	private final E eref;
 
+	/** Used in coloring edges. */
+	private final V source;
+
+	/** Used in coloring edges. */
+	private final V target;
+
 	/**
 	 * If <code>true</code>, the selection in the {@link JTable}s will be used
 	 * to update the {@link SelectionModel} of this view.
@@ -113,7 +120,8 @@ public class TableViewFrame<
 			final BiConsumer< E, String > edgeLabelSetter,
 			final GroupHandle groupHandle,
 			final NavigationHandler< V, E > navigationHandler,
-			final UndoPointMarker undoPointMarker )
+			final UndoPointMarker undoPointMarker,
+			final GraphColorGenerator< V, E > coloring )
 	{
 		super( "Feature and tag table" );
 		this.featureModel = featureModel;
@@ -124,6 +132,8 @@ public class TableViewFrame<
 		final GraphIdBimap< V, E > graphIdBimap = appModel.getModel().getGraphIdBimap();
 		this.vref = graphIdBimap.vertexIdBimap().createRef();
 		this.eref = graphIdBimap.edgeIdBimap().createRef();
+		this.source = graphIdBimap.vertexIdBimap().createRef();
+		this.target = graphIdBimap.vertexIdBimap().createRef();
 		final List< TagSet > tagSets = tagSetModel.getTagSetStructure().getTagSets();
 		this.filterByVertices = new RefArrayList<>( graphIdBimap.vertexIdBimap() );
 		this.filterByEdges = new RefSetImp<>( graphIdBimap.edgeIdBimap() );
@@ -152,7 +162,8 @@ public class TableViewFrame<
 				vertexIdBimap,
 				vertexLabelGenerator,
 				vertexLabelSetter,
-				undoPointMarker );
+				undoPointMarker,
+				( v ) -> coloring.color( v ) );
 		final JTable vt = vertexTable.getTable();
 
 		vt.getSelectionModel().addListSelectionListener( new ListSelectionListener()
@@ -211,7 +222,8 @@ public class TableViewFrame<
 				edgeIdBimap,
 				edgeLabelGenerator,
 				edgeLabelSetter,
-				undoPointMarker );
+				undoPointMarker,
+				( e ) -> coloring.color( e, source, target ) );
 		final JTable et = edgeTable.getTable();
 		et.getSelectionModel().addListSelectionListener( new ListSelectionListener()
 		{
