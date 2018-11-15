@@ -294,7 +294,7 @@ public class FeatureSelectionPanel extends JPanel
 		{
 			this.featureSpecs = featureSpecs;
 			final FeatureSpec< ?, ? > previousSelection = ( FeatureSpec< ?, ? > ) cbFeatures.getSelectedItem();
-			cbFeatures.setModel( new FeatureSpectComboBoxModel( featureSpecs ) );
+			cbFeatures.setModel( new FeatureSpecComboBoxModel( featureSpecs ) );
 			if ( null == previousSelection && cbFeatures.getModel().getSize() > 0  )
 				cbFeatures.setSelectedIndex( 0 );
 			else
@@ -307,7 +307,7 @@ public class FeatureSelectionPanel extends JPanel
 		}
 	}
 
-	private class FeatureSpectComboBoxModel extends AbstractListModel< FeatureSpec< ?, ? > > implements ComboBoxModel< FeatureSpec< ?, ? > >
+	private class FeatureSpecComboBoxModel extends AbstractListModel< FeatureSpec< ?, ? > > implements ComboBoxModel< FeatureSpec< ?, ? > >
 	{
 
 		private static final long serialVersionUID = 1L;
@@ -316,7 +316,7 @@ public class FeatureSelectionPanel extends JPanel
 
 		private FeatureSpec< ?, ? > selectedItem;
 
-		public FeatureSpectComboBoxModel( final Collection< FeatureSpec< ?, ? > > featureSpecs )
+		public FeatureSpecComboBoxModel( final Collection< FeatureSpec< ?, ? > > featureSpecs )
 		{
 			this.featureSpecs = new ArrayList<>( featureSpecs );
 			this.featureSpecs.sort( Comparator.comparing( FeatureSpec::getKey ) );
