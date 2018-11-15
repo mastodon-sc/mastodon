@@ -131,7 +131,7 @@ public class FeatureSelectionPanel extends JPanel
 		// N-sources. Careful! Their display is 1-based!
 		final Integer[] sources = new Integer[ MAX_N_SOURCES ];
 		for ( int i = 0; i < sources.length; i++ )
-			sources[ i ] = Integer.valueOf( i + 1 );
+			sources[ i ] = i + 1;
 
 		// Source index 1.
 		this.lblSource1 = new JLabel( "ch" );
