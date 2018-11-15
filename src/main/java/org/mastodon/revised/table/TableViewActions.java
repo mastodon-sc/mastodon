@@ -71,7 +71,15 @@ public class TableViewActions<
 	/**
 	 * Create table-view actions and install them in the specified
 	 * {@link Actions}.
-	 *
+	 * 
+	 * @param <M>
+	 *            the type of the {@link MastodonAppModel}.
+	 * @param <VG>
+	 *            the type of the view graph used.
+	 * @param <V>
+	 *            the type of vertices in the graph.
+	 * @param <E>
+	 *            the type of edges in the graph.
 	 * @param actions
 	 *            Actions are added here.
 	 * @param frame
@@ -191,7 +199,9 @@ public class TableViewActions<
 				for ( int col = 0; col < nCols; col++ )
 				{
 					final Object obj = model.getValueAt( row, col );
-					if ( obj instanceof Integer )
+					if ( null == obj )
+						content[ col ] = "";
+					else if ( obj instanceof Integer )
 						content[ col ] = Integer.toString( ( Integer ) obj );
 					else if ( obj instanceof Double )
 						content[ col ] = Double.toString( ( Double ) obj );
