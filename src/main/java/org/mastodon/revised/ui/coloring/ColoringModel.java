@@ -7,7 +7,6 @@ import java.util.Optional;
 import org.mastodon.revised.model.tag.TagSetModel;
 import org.mastodon.revised.model.tag.TagSetStructure;
 import org.mastodon.revised.ui.coloring.feature.FeatureColorMode;
-import org.mastodon.revised.ui.coloring.feature.FeatureColorMode.UpdateListener;
 import org.mastodon.revised.ui.coloring.feature.FeatureColorModeManager;
 import org.mastodon.util.Listeners;
 
@@ -21,7 +20,7 @@ import org.mastodon.util.Listeners;
  *
  * @author Tobias Pietzsch
  */
-public class ColoringModel implements TagSetModel.TagSetModelListener, UpdateListener
+public class ColoringModel implements TagSetModel.TagSetModelListener, FeatureColorMode.UpdateListener
 {
 	public interface ColoringChangedListener
 	{
