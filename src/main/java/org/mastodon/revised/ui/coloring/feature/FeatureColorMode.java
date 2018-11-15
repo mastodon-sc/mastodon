@@ -369,7 +369,7 @@ public class FeatureColorMode implements Style< FeatureColorMode >
 	}
 
 	/*
-	 * DEFAULT FEATURE COLOR MODE LIBARY.
+	 * DEFAULT FEATURE COLOR MODE LIBRARY.
 	 */
 
 	private static final FeatureColorMode N_LINKS;
