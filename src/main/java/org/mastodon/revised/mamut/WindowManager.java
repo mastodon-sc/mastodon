@@ -12,14 +12,20 @@ import javax.swing.JFrame;
 import org.mastodon.feature.FeatureSpecsService;
 import org.mastodon.feature.ui.FeatureColorModeConfigPage;
 import org.mastodon.feature.ui.mamut.MamutFeatureProjectionsManager;
+import org.mastodon.graph.GraphChangeListener;
+import org.mastodon.model.SelectionListener;
+import org.mastodon.model.SelectionModel;
 import org.mastodon.plugin.MastodonPlugin;
 import org.mastodon.plugin.MastodonPluginAppModel;
 import org.mastodon.plugin.MastodonPlugins;
 import org.mastodon.revised.bdv.overlay.ui.RenderSettingsConfigPage;
 import org.mastodon.revised.bdv.overlay.ui.RenderSettingsManager;
+import org.mastodon.revised.model.mamut.Link;
 import org.mastodon.revised.model.mamut.Model;
+import org.mastodon.revised.model.mamut.ModelGraph;
 import org.mastodon.revised.model.mamut.Spot;
 import org.mastodon.revised.model.tag.ui.TagSetDialog;
+import org.mastodon.revised.table.FeatureTagTablePanel;
 import org.mastodon.revised.trackscheme.display.style.TrackSchemeStyleManager;
 import org.mastodon.revised.trackscheme.display.style.TrackSchemeStyleSettingsPage;
 import org.mastodon.revised.ui.SelectionActions;
@@ -48,12 +54,16 @@ public class WindowManager
 {
 	public static final String NEW_BDV_VIEW = "new bdv view";
 	public static final String NEW_TRACKSCHEME_VIEW = "new trackscheme view";
+	public static final String NEW_TABLE_VIEW = "new full table view";
+	public static final String NEW_SELECTION_TABLE_VIEW = "new selection table view";
 	public static final String PREFERENCES_DIALOG = "Preferences";
 	public static final String TAGSETS_DIALOG = "edit tag sets";
 	public static final String COMPUTE_FEATURE_DIALOG = "compute features";
 
 	static final String[] NEW_BDV_VIEW_KEYS = new String[] { "not mapped" };
 	static final String[] NEW_TRACKSCHEME_VIEW_KEYS = new String[] { "not mapped" };
+	static final String[] NEW_TABLE_VIEW_KEYS = new String[] { "not mapped" };
+	static final String[] NEW_SELECTION_TABLE_VIEW_KEYS = new String[] { "not mapped" };
 	static final String[] PREFERENCES_DIALOG_KEYS = new String[] { "meta COMMA", "ctrl COMMA" };
 	static final String[] TAGSETS_DIALOG_KEYS = new String[] { "not mapped" };
 	static final String[] COMPUTE_FEATURE_DIALOG_KEYS = new String[] { "not mapped" };
@@ -72,8 +82,14 @@ public class WindowManager
 		@Override
 		public void getCommandDescriptions( final CommandDescriptions descriptions )
 		{
-			descriptions.add( NEW_BDV_VIEW, NEW_BDV_VIEW_KEYS, "Open new BigDataViewer view." );
-			descriptions.add( NEW_TRACKSCHEME_VIEW, NEW_TRACKSCHEME_VIEW_KEYS, "Open new TrackScheme view." );
+			descriptions.add( NEW_BDV_VIEW, NEW_BDV_VIEW_KEYS, "Open a new BigDataViewer view." );
+			descriptions.add( NEW_TRACKSCHEME_VIEW, NEW_TRACKSCHEME_VIEW_KEYS, "Open a new TrackScheme view." );
+			descriptions.add( NEW_TABLE_VIEW, NEW_TABLE_VIEW_KEYS, "Open a new table view. "
+					+ "The table displays the full data." );
+			descriptions.add( NEW_SELECTION_TABLE_VIEW, NEW_SELECTION_TABLE_VIEW_KEYS,
+					"Open a new selection table view. "
+							+ "The table only displays the current selection and "
+							+ "is updated as the selection changes." );
 			descriptions.add( PREFERENCES_DIALOG, PREFERENCES_DIALOG_KEYS, "Edit Mastodon preferences." );
 			descriptions.add( TAGSETS_DIALOG, TAGSETS_DIALOG_KEYS, "Edit tag definitions." );
 		}
@@ -98,6 +114,11 @@ public class WindowManager
 	 */
 	private final List< MamutViewTrackScheme > tsWindows = new ArrayList<>();
 
+	/**
+	 * All currently open Table windows.
+	 */
+	private final List< MamutViewTable > tableWindows = new ArrayList<>();
+
 	private final KeyPressedManager keyPressedManager;
 
 	private final TrackSchemeStyleManager trackSchemeStyleManager;
@@ -115,6 +136,10 @@ public class WindowManager
 	private final AbstractNamedAction newBdvViewAction;
 
 	private final AbstractNamedAction newTrackSchemeViewAction;
+
+	private final AbstractNamedAction newTableViewAction;
+
+	private final AbstractNamedAction newSelectionTableViewAction;
 
 	private final AbstractNamedAction editTagSetsAction;
 
@@ -165,11 +190,15 @@ public class WindowManager
 
 		newBdvViewAction = new RunnableAction( NEW_BDV_VIEW, this::createBigDataViewer );
 		newTrackSchemeViewAction = new RunnableAction( NEW_TRACKSCHEME_VIEW, this::createTrackScheme );
+		newTableViewAction = new RunnableAction( NEW_TABLE_VIEW, () -> createTable( false ) );
+		newSelectionTableViewAction = new RunnableAction( NEW_SELECTION_TABLE_VIEW, () -> createTable( true ) );
 		editTagSetsAction = new RunnableAction( TAGSETS_DIALOG, this::editTagSets );
 		featureComputationAction = new RunnableAction( COMPUTE_FEATURE_DIALOG, this::computeFeatures );
 
 		globalAppActions.namedAction( newBdvViewAction, NEW_BDV_VIEW_KEYS );
 		globalAppActions.namedAction( newTrackSchemeViewAction, NEW_TRACKSCHEME_VIEW_KEYS );
+		globalAppActions.namedAction( newTableViewAction, NEW_SELECTION_TABLE_VIEW_KEYS );
+		globalAppActions.namedAction( newSelectionTableViewAction, NEW_SELECTION_TABLE_VIEW_KEYS );
 		globalAppActions.namedAction( editTagSetsAction, TAGSETS_DIALOG_KEYS );
 		globalAppActions.namedAction( featureComputationAction, COMPUTE_FEATURE_DIALOG_KEYS );
 
@@ -211,6 +240,8 @@ public class WindowManager
 	{
 		newBdvViewAction.setEnabled( appModel != null );
 		newTrackSchemeViewAction.setEnabled( appModel != null );
+		newTableViewAction.setEnabled( appModel != null );
+		newSelectionTableViewAction.setEnabled( appModel != null );
 		editTagSetsAction.setEnabled( appModel != null );
 		featureComputationAction.setEnabled( appModel != null );
 	}
@@ -251,11 +282,15 @@ public class WindowManager
 		contextProviders.add( w.getContextProvider() );
 		for ( final MamutViewTrackScheme tsw : tsWindows )
 			tsw.getContextChooser().updateContextProviders( contextProviders );
+		for ( final MamutViewTable tw : tableWindows )
+			tw.getContextChooser().updateContextProviders( contextProviders );
 		w.onClose( () -> {
 			bdvWindows.remove( w );
 			contextProviders.remove( w.getContextProvider() );
 			for ( final MamutViewTrackScheme tsw : tsWindows )
 				tsw.getContextChooser().updateContextProviders( contextProviders );
+			for ( final MamutViewTable tw : tableWindows )
+				tw.getContextChooser().updateContextProviders( contextProviders );
 		} );
 	}
 
@@ -274,6 +309,21 @@ public class WindowManager
 		} );
 	}
 
+	private synchronized void addTableWindow( final MamutViewTable table )
+	{
+		tableWindows.add( table );
+		table.getContextChooser().updateContextProviders( contextProviders );
+		table.onClose( () -> {
+			tableWindows.remove( table );
+			table.getContextChooser().updateContextProviders( new ArrayList<>() );
+		} );
+	}
+
+	public void forEachTableView( final Consumer< ? super MamutViewTable > action )
+	{
+		tableWindows.forEach( action );
+	}
+
 	public void forEachTrackSchemeView( final Consumer< ? super MamutViewTrackScheme > action )
 	{
 		tsWindows.forEach( action );
@@ -283,6 +333,7 @@ public class WindowManager
 	{
 		forEachBdvView( action );
 		forEachTrackSchemeView( action );
+		forEachTableView( action );
 	}
 
 	public MamutViewBdv createBigDataViewer()
@@ -305,6 +356,66 @@ public class WindowManager
 			return view;
 		}
 		return null;
+	}
+
+	/**
+	 * Creates, shows and registers a new table view.
+	 *
+	 * @param selectionOnly
+	 *            if <code>true</code>, the table will only display the current
+	 *            content of the selection, and will listen to its changes. If
+	 *            <code>false</code>, the table will display the full graph content,
+	 *            listen to its changes, and will be able to edit the selection.
+	 * @return a new table view.
+	 */
+	public MamutViewTable createTable( final boolean selectionOnly )
+	{
+		if ( appModel == null )
+			return null;
+
+		final MamutViewTable view = new MamutViewTable( appModel );
+		final FeatureTagTablePanel< Spot > vertexTable = view.getFrame().getVertexTable();
+		final FeatureTagTablePanel< Link > edgeTable = view.getFrame().getEdgeTable();
+		final SelectionModel< Spot, Link > selectionModel = appModel.getSelectionModel();
+
+		if ( selectionOnly )
+		{
+			// Pass only the selection.
+			view.getFrame().setTitle( "Selection table" );
+			view.getFrame().setMirrorSelection( false );
+			final SelectionListener selectionListener = () -> {
+				vertexTable.setRows( selectionModel.getSelectedVertices() );
+				edgeTable.setRows( selectionModel.getSelectedEdges() );
+			};
+			selectionModel.listeners().add( selectionListener );
+			selectionListener.selectionChanged();
+			view.onClose( () -> selectionModel.listeners().remove( selectionListener ) );
+		}
+		else
+		{
+			// Pass and listen to the full graph.
+			final ModelGraph graph = appModel.getModel().getGraph();
+			final GraphChangeListener graphChangeListener = () -> {
+				vertexTable.setRows( graph.vertices() );
+				edgeTable.setRows( graph.edges() );
+			};
+			graph.addGraphChangeListener( graphChangeListener );
+			graphChangeListener.graphChanged();
+			view.onClose( () -> graph.removeGraphChangeListener( graphChangeListener ) );
+
+			// Listen to selection changes.
+			view.getFrame().setMirrorSelection( true );
+			selectionModel.listeners().add( view.getFrame() );
+			view.getFrame().selectionChanged();
+			view.onClose( () -> selectionModel.listeners().remove( view.getFrame() ) );
+		}
+		/*
+		 * TODO Have the model expose the label property so that we can register a
+		 * listener to it, that will update the table-view when the label change.
+		 */
+
+		addTableWindow( view );
+		return view;
 	}
 
 	public void editTagSets()
