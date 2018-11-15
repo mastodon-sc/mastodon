@@ -200,7 +200,7 @@ public class FeatureSelectionPanel extends JPanel
 		return new String[] {
 				featureSpec.getKey(),
 				projectionSpec.projectionKey(
-						featureSpec.multiplicity,
+						featureSpec.getMultiplicity(),
 						// We use the index, since the display is 1-based.
 						cbSource1.getSelectedIndex(),
 						cbSource2.getSelectedIndex() ) };
@@ -215,11 +215,11 @@ public class FeatureSelectionPanel extends JPanel
 			return;
 
 		final String projectionKey = selection[ 1 ];
-		final String projectionName = featureSpec.multiplicity.nameFromKey( projectionKey );
+		final String projectionName = featureSpec.getMultiplicity().nameFromKey( projectionKey );
 		final FeatureProjectionSpec featureProjectionSpec = getFeatureProjectionSpecFromName( featureSpec, projectionName );
 		cbProjections.setSelectedItem( featureProjectionSpec );
 
-		final int[] indices = featureSpec.multiplicity.indicesFromKey( projectionKey );
+		final int[] indices = featureSpec.getMultiplicity().indicesFromKey( projectionKey );
 		if ( indices.length > 0 )
 		{
 			cbSource1.setSelectedIndex( indices[ 0 ] );
@@ -262,22 +262,22 @@ public class FeatureSelectionPanel extends JPanel
 		// Visibility.
 		final boolean projectionCBVisible = ( null != currentSelection ) &&
 				( ( projectionSpecs.length > 1 )
-						|| currentSelection.multiplicity != Multiplicity.SINGLE );
+						|| currentSelection.getMultiplicity() != Multiplicity.SINGLE );
 		arrowStrut.setVisible( projectionCBVisible );
 		cbProjections.setVisible( projectionCBVisible );
 		lblArrow.setVisible( projectionCBVisible );
 		featureStrut.setVisible( projectionCBVisible );
 
-		projectionStrut.setVisible( projectionCBVisible && ( currentSelection.multiplicity != Multiplicity.SINGLE ) );
-		lblSource1.setVisible( projectionCBVisible && ( currentSelection.multiplicity != Multiplicity.SINGLE ) );
-		cbSource1.setVisible( projectionCBVisible && ( currentSelection.multiplicity != Multiplicity.SINGLE ) );
+		projectionStrut.setVisible( projectionCBVisible && ( currentSelection.getMultiplicity() != Multiplicity.SINGLE ) );
+		lblSource1.setVisible( projectionCBVisible && ( currentSelection.getMultiplicity() != Multiplicity.SINGLE ) );
+		cbSource1.setVisible( projectionCBVisible && ( currentSelection.getMultiplicity() != Multiplicity.SINGLE ) );
 
-		source1Strut.setVisible( projectionCBVisible && ( currentSelection.multiplicity == Multiplicity.ON_SOURCE_PAIRS ) );
-		lblAnd.setVisible( projectionCBVisible && ( currentSelection.multiplicity == Multiplicity.ON_SOURCE_PAIRS ) );
-		andStrut.setVisible( projectionCBVisible && ( currentSelection.multiplicity == Multiplicity.ON_SOURCE_PAIRS ) );
+		source1Strut.setVisible( projectionCBVisible && ( currentSelection.getMultiplicity() == Multiplicity.ON_SOURCE_PAIRS ) );
+		lblAnd.setVisible( projectionCBVisible && ( currentSelection.getMultiplicity() == Multiplicity.ON_SOURCE_PAIRS ) );
+		andStrut.setVisible( projectionCBVisible && ( currentSelection.getMultiplicity() == Multiplicity.ON_SOURCE_PAIRS ) );
 
-		lblSource2.setVisible( projectionCBVisible && ( currentSelection.multiplicity == Multiplicity.ON_SOURCE_PAIRS ) );
-		cbSource2.setVisible( projectionCBVisible && ( currentSelection.multiplicity == Multiplicity.ON_SOURCE_PAIRS ) );
+		lblSource2.setVisible( projectionCBVisible && ( currentSelection.getMultiplicity() == Multiplicity.ON_SOURCE_PAIRS ) );
+		cbSource2.setVisible( projectionCBVisible && ( currentSelection.getMultiplicity() == Multiplicity.ON_SOURCE_PAIRS ) );
 
 		notifyListeners();
 	}

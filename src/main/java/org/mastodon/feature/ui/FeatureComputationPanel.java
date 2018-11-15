@@ -188,7 +188,7 @@ public class FeatureComputationPanel extends JPanel
 		infoPanel.add( infoLbl, c );
 
 		final JLabel multiplicityLbl = new JLabel();
-		switch ( spec.multiplicity )
+		switch ( spec.getMultiplicity() )
 		{
 		case ON_SOURCES:
 			multiplicityLbl.setText( "One value per source." );

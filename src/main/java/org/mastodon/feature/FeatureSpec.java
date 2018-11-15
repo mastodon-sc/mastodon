@@ -27,7 +27,7 @@ public abstract class FeatureSpec< F extends Feature< T >, T > implements SciJav
 	/**
 	 * The feature multiplicity.
 	 */
-	public final Multiplicity multiplicity;
+	private final Multiplicity multiplicity;
 
 	protected FeatureSpec(
 			final String key,
