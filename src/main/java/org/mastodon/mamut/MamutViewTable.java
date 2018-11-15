@@ -12,12 +12,14 @@ import org.mastodon.app.ViewGraph;
 import org.mastodon.app.ui.MastodonFrameViewActions;
 import org.mastodon.app.ui.ViewFrame;
 import org.mastodon.app.ui.ViewMenu;
+import org.mastodon.app.ui.ViewMenuBuilder.JMenuHandle;
 import org.mastodon.feature.FeatureModel;
 import org.mastodon.mamut.model.Link;
 import org.mastodon.mamut.model.Model;
 import org.mastodon.mamut.model.Spot;
 import org.mastodon.model.tag.TagSetModel;
 import org.mastodon.ui.SelectionActions;
+import org.mastodon.ui.coloring.GraphColorGeneratorAdapter;
 import org.mastodon.ui.keymap.KeyConfigContexts;
 import org.mastodon.views.context.ContextChooser;
 import org.mastodon.views.table.TableViewActions;
@@ -32,6 +34,8 @@ public class MamutViewTable extends MamutView< ViewGraph< Spot, Link, Spot, Link
 
 	{
 		super( appModel, IdentityViewGraph.wrap( appModel.getModel().getGraph(), appModel.getModel().getGraphIdBimap() ), CONTEXTS );
+
+		final GraphColorGeneratorAdapter< Spot, Link, Spot, Link > coloring = new GraphColorGeneratorAdapter<>( viewGraph.getVertexMap(), viewGraph.getEdgeMap() );
 
 		final TableViewFrame< MamutAppModel, ViewGraph< Spot, Link, Spot, Link >, Spot, Link > frame = new TableViewFrame<>(
 				appModel,
@@ -54,7 +58,8 @@ public class MamutViewTable extends MamutView< ViewGraph< Spot, Link, Spot, Link
 				null,
 				groupHandle,
 				navigationHandler,
-				appModel.getModel() );
+				appModel.getModel(),
+				coloring );
 		setFrame( frame );
 
 		final Model model = appModel.getModel();
@@ -79,6 +84,8 @@ public class MamutViewTable extends MamutView< ViewGraph< Spot, Link, Spot, Link
 		final ViewMenu menu = new ViewMenu( this );
 		final ActionMap actionMap = frame.getKeybindings().getConcatenatedActionMap();
 
+		final JMenuHandle menuHandle = new JMenuHandle();
+
 		MamutMenuBuilder.build( menu, actionMap,
 				MamutMenuBuilder.fileMenu(
 						item( TableViewActions.EXPORT_TO_CSV ),
@@ -86,13 +93,21 @@ public class MamutViewTable extends MamutView< ViewGraph< Spot, Link, Spot, Link
 		MainWindow.addMenus( menu, actionMap );
 		MamutMenuBuilder.build( menu, actionMap,
 				MamutMenuBuilder.viewMenu(
-						item( MastodonFrameViewActions.TOGGLE_SETTINGS_PANEL ) ),
+						MamutMenuBuilder.colorMenu( menuHandle ),
+						separator(),
+						item( MastodonFrameViewActions.TOGGLE_SETTINGS_PANEL )
+						),
 				MamutMenuBuilder.editMenu(
 						item( TableViewActions.EDIT_LABEL ),
 						item( TableViewActions.TOGGLE_TAG ),
 						separator(),
 						item( SelectionActions.DELETE_SELECTION ) ) );
 		appModel.getPlugins().addMenus( menu );
+
+		registerColoring( coloring, menuHandle, () -> {
+			frame.getEdgeTable().repaint();
+			frame.getVertexTable().repaint();
+		} );
 
 		frame.setSize( 400, 400 );
 		frame.setVisible( true );
