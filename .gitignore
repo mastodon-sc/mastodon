@@ -10,3 +10,6 @@ pom.xml.next
 *.ucls
 .idea/
 *.iml
+doc/
+*.bak
+debug.yaml
