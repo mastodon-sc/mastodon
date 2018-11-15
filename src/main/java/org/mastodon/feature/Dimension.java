@@ -65,7 +65,7 @@ public enum Dimension
 
 	public static final String COST_UNITS = "";
 
-	public static final String COUNTS_SQUARED_UNITS = "Counts^2";
+	public static final String COUNTS_SQUARED_UNITS = "Counts²";
 
 	public static final String RADIANS_UNITS = "Radians";
 
