@@ -140,7 +140,7 @@ public class FeatureColorModeConfigPage extends SelectAndEditProfileSettingsPage
 				modificationListeners.list.forEach( ModificationListener::modified );
 		}
 	}
-	
+
 	/*
 	 * Below this: Everything required to generate a comprehensive set of feature specs, from 3 sources:
 	 * - discoverable feature specs;
@@ -282,12 +282,5 @@ public class FeatureColorModeConfigPage extends SelectAndEditProfileSettingsPage
 		{
 			return null;
 		}
-	}
-
-	public static void main( final String[] args ) throws ClassNotFoundException, InstantiationException, IllegalAccessException, UnsupportedLookAndFeelException
-	{
-		Locale.setDefault( Locale.US );
-		UIManager.setLookAndFeel( UIManager.getSystemLookAndFeelClassName() );
-
 	}
 }
