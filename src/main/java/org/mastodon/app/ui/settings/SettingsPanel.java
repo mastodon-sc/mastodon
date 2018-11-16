@@ -106,12 +106,12 @@ public class SettingsPanel extends JPanel
 	}
 
 	/**
-	 * Removes the settings page with the specified path. Does nothing if there is
-	 * not settings page for the path.
-	 * 
+	 * Removes the settings page with the specified path. Does nothing if there
+	 * is no settings page for the path.
+	 *
 	 * @param path
-	 *                 the path of the settings page to remove. Example: "Analyze >
-	 *                 Tables"
+	 *            the path of the settings page to remove. Example:
+	 *            {@code "Analyze > Tables"}
 	 */
 	public void removePage( final String path )
 	{
