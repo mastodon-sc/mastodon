@@ -5,13 +5,17 @@ package org.mastodon.feature;
  */
 public class FeatureProjectionSpec
 {
-
 	/**
 	 * The projection specification name.
 	 */
 	public final String projectionName;
 
 	public final Dimension projectionDimension;
+
+	public FeatureProjectionSpec( final String projectionName )
+	{
+		this( projectionName, Dimension.NONE );
+	}
 
 	public FeatureProjectionSpec( final String projectionName, final Dimension dimension )
 	{
