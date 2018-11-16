@@ -4,7 +4,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
 
 import org.mastodon.util.Listeners;
 
@@ -31,9 +30,17 @@ public class FeatureModel
 
 	private final Listeners.List< FeatureModelListener > listeners;
 
+	/**
+	 * If <code>false</code>, listeners will not be notified when a
+	 * featureModelChanged event happens.
+	 */
 	private boolean emitEvents = true;
 
-	private boolean fireAtResume = false;
+	/**
+	 * Is <code>true</code> if a featureModelChanged happened while the
+	 * listeners were paused.
+	 */
+	private boolean shouldEmitEvent;
 
 	public FeatureModel()
 	{
@@ -47,7 +54,7 @@ public class FeatureModel
 	public void clear()
 	{
 		features.clear();
-		fireFeatureModelChangedEvent();
+		notifyFeatureModelChanged();
 	}
 
 	/**
@@ -60,7 +67,7 @@ public class FeatureModel
 	{
 		final boolean removed = features.remove( key ) != null;
 		if ( removed )
-			fireFeatureModelChangedEvent();
+			notifyFeatureModelChanged();
 	}
 
 	/**
@@ -73,7 +80,7 @@ public class FeatureModel
 	public void declareFeature( final Feature< ? > feature )
 	{
 		features.put( feature.getSpec(), feature );
-		fireFeatureModelChangedEvent();
+		notifyFeatureModelChanged();
 	}
 
 	/**
@@ -129,16 +136,18 @@ public class FeatureModel
 	public void resumeListeners()
 	{
 		emitEvents = true;
-		if ( fireAtResume )
+		if ( shouldEmitEvent )
+		{
 			listeners.list.forEach( FeatureModelListener::featureModelChanged );
-		fireAtResume = false;
+			shouldEmitEvent = false;
+		}
 	}
 
-	private void fireFeatureModelChangedEvent()
+	private void notifyFeatureModelChanged()
 	{
 		if ( emitEvents )
 			listeners.list.forEach( FeatureModelListener::featureModelChanged );
 		else
-			fireAtResume = true;
+			shouldEmitEvent = true;
 	}
 }
