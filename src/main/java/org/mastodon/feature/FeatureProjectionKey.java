@@ -36,9 +36,11 @@ public final class FeatureProjectionKey
 		if ( this == o )
 			return true;
 		if ( o instanceof FeatureProjectionKey )
-			return false;
-		final FeatureProjectionKey key = ( FeatureProjectionKey ) o;
-		return spec.equals( key.spec ) && Arrays.equals( sourceIndices, key.sourceIndices );
+		{
+			final FeatureProjectionKey key = ( FeatureProjectionKey ) o;
+			return spec.equals( key.spec ) && Arrays.equals( sourceIndices, key.sourceIndices );
+		}
+		return false;
 	}
 
 	@Override
