@@ -15,7 +15,11 @@ import org.scijava.plugin.PluginService;
 
 public class Playground
 {
-	public static class F1 implements Feature< Spot >
+	public static class PlaygroundSpot {};
+
+	public static class PlaygroundLink {};
+
+	public static class F1 implements Feature< PlaygroundSpot >
 	{
 		public static final FeatureProjectionSpec p1 = new FeatureProjectionSpec( "p1" );
 
@@ -24,7 +28,7 @@ public class Playground
 		public static final Spec SPEC = new Spec();
 
 		@Plugin( type = FeatureSpec.class )
-		public static class Spec extends FeatureSpec< F1, Spot >
+		public static class Spec extends FeatureSpec< F1, PlaygroundSpot >
 		{
 			public Spec()
 			{
@@ -32,14 +36,14 @@ public class Playground
 						"F1",
 						"Dummy feature F1",
 						F1.class,
-						Spot.class,
+						PlaygroundSpot.class,
 						Multiplicity.SINGLE,
 						p1, p2 );
 			}
 		}
 
 		@Override
-		public FeatureProjection< Spot > project( final FeatureProjectionKey key )
+		public FeatureProjection< PlaygroundSpot > project( final FeatureProjectionKey key )
 		{
 			return null;
 		}
@@ -57,7 +61,7 @@ public class Playground
 		}
 	}
 
-	public static class F2 implements Feature< Spot >
+	public static class F2 implements Feature< PlaygroundSpot >
 	{
 		public static final FeatureProjectionSpec q1 = new FeatureProjectionSpec( "q1" );
 
@@ -66,7 +70,7 @@ public class Playground
 		public static final Spec SPEC = new Spec();
 
 		@Plugin( type = FeatureSpec.class )
-		public static class Spec extends FeatureSpec< F2, Spot >
+		public static class Spec extends FeatureSpec< F2, PlaygroundSpot >
 		{
 			public Spec()
 			{
@@ -74,14 +78,14 @@ public class Playground
 						"F2",
 						"Dummy feature F2",
 						F2.class,
-						Spot.class,
+						PlaygroundSpot.class,
 						Multiplicity.SINGLE,
 						q1, q2 );
 			}
 		}
 
 		@Override
-		public FeatureProjection< Spot > project( final FeatureProjectionKey key )
+		public FeatureProjection< PlaygroundSpot > project( final FeatureProjectionKey key )
 		{
 			return null;
 		}
@@ -99,14 +103,14 @@ public class Playground
 		}
 	}
 
-	public static class F3 implements Feature< Spot >
+	public static class F3 implements Feature< PlaygroundSpot >
 	{
 		public static final FeatureProjectionSpec p = new FeatureProjectionSpec( "p" );
 
 		public static final Spec SPEC = new Spec();
 
 		@Plugin( type = FeatureSpec.class )
-		public static class Spec extends FeatureSpec< F3, Spot >
+		public static class Spec extends FeatureSpec< F3, PlaygroundSpot >
 		{
 			public Spec()
 			{
@@ -114,14 +118,14 @@ public class Playground
 						"F3",
 						"Dummy feature F3",
 						F3.class,
-						Spot.class,
+						PlaygroundSpot.class,
 						Multiplicity.SINGLE,
 						p );
 			}
 		}
 
 		@Override
-		public FeatureProjection< Spot > project( final FeatureProjectionKey key )
+		public FeatureProjection< PlaygroundSpot > project( final FeatureProjectionKey key )
 		{
 			return null;
 		}
@@ -139,14 +143,14 @@ public class Playground
 		}
 	}
 
-	public static class F4 implements Feature< Spot >
+	public static class F4 implements Feature< PlaygroundSpot >
 	{
 		public static final FeatureProjectionSpec p = new FeatureProjectionSpec( "p" );
 
 		public static final Spec SPEC = new Spec();
 
 		@Plugin( type = FeatureSpec.class )
-		public static class Spec extends FeatureSpec< F4, Spot >
+		public static class Spec extends FeatureSpec< F4, PlaygroundSpot >
 		{
 			public Spec()
 			{
@@ -154,14 +158,14 @@ public class Playground
 						"F4",
 						"Dummy feature F4",
 						F4.class,
-						Spot.class,
+						PlaygroundSpot.class,
 						Multiplicity.SINGLE,
 						p );
 			}
 		}
 
 		@Override
-		public FeatureProjection< Spot > project( final FeatureProjectionKey key )
+		public FeatureProjection< PlaygroundSpot > project( final FeatureProjectionKey key )
 		{
 			return null;
 		}
@@ -281,8 +285,8 @@ public class Playground
 		final FeatureSpecsService specs = new FeatureSpecsService();
 		context.inject( specs );
 		specs.initialize();
-		System.out.println( "specs.getSpecs( Spot.class ) = " + specs.getSpecs( Spot.class ) );
-		System.out.println( "specs.getSpecs( Link.class ) = " + specs.getSpecs( Link.class ) );
+		System.out.println( "specs.getSpecs( PlaygroundSpot.class ) = " + specs.getSpecs( PlaygroundSpot.class ) );
+		System.out.println( "specs.getSpecs( PlaygroundLink.class ) = " + specs.getSpecs( PlaygroundLink.class ) );
 		System.out.println( "specs.getSpec( \"F1\" ) = " + specs.getSpec( "F1" ) );
 		System.out.println( "specs.getSpec( \"F2\" ) = " + specs.getSpec( "F2" ) );
 		System.out.println( "specs.getSpec( \"F3\" ) = " + specs.getSpec( "F3" ) );
