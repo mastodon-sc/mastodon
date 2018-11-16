@@ -52,7 +52,7 @@ public class ModelUtils
 				spotFeatures.add( spotFeature );
 			}
 
-		// TODO if different features have same PeatureProjectionKey, map entries will be overridden!
+		// TODO if different features have same FeatureProjectionKey, map entries will be overridden!
 		for ( final Feature< Spot > feature : spotFeatures )
 			for ( final FeatureProjectionKey projectionKey : feature.projectionKeys() )
 				sfs.put( projectionKey, feature.project( projectionKey ) );

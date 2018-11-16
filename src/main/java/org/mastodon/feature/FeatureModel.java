@@ -26,8 +26,6 @@ public class FeatureModel
 		public void featureModelChanged();
 	}
 
-	private final Map< FeatureSpec< ?, ? >, Feature< ? > > features;
-
 	private final Listeners.List< FeatureModelListener > listeners;
 
 	/**
@@ -41,6 +39,8 @@ public class FeatureModel
 	 * listeners were paused.
 	 */
 	private boolean shouldEmitEvent;
+
+	private final Map< FeatureSpec< ?, ? >, Feature< ? > > features;
 
 	public FeatureModel()
 	{
@@ -71,11 +71,7 @@ public class FeatureModel
 	}
 
 	/**
-	 * Registers the feature key and the feature projections provided by the
-	 * specified feature.
-	 *
-	 * @param feature
-	 *            the feature.
+	 * Registers the specified feature.
 	 */
 	public void declareFeature( final Feature< ? > feature )
 	{
@@ -107,6 +103,13 @@ public class FeatureModel
 	{
 		return Collections.unmodifiableSet( features.keySet() );
 	}
+
+	/*
+	 *
+	 * Listener handling
+	 * =======================================================================
+	 *
+	 */
 
 	/**
 	 * Exposes the list of listeners that are notified when a change happens to

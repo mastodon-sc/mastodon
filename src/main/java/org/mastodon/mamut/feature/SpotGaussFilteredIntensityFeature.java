@@ -73,13 +73,13 @@ public class SpotGaussFilteredIntensityFeature implements Feature< Spot >
 			 */
 			final DoublePropertyMap< Spot > m = new DoublePropertyMap<>( pool, Double.NaN );
 			means.add( m );
-			projectionMap.put( key( MEAN_PROJECTION_SPEC, iSource ),
-					FeatureProjections.project( m, Dimension.COUNTS_UNITS ) );
+			final FeatureProjectionKey mkey = key( MEAN_PROJECTION_SPEC, iSource );
+			projectionMap.put( mkey, FeatureProjections.project( mkey, m, Dimension.COUNTS_UNITS ) );
 
 			final DoublePropertyMap< Spot > s = new DoublePropertyMap<>( pool, Double.NaN );
 			stds.add( s );
-			projectionMap.put( key( STD_PROJECTION_SPEC, iSource ),
-					FeatureProjections.project( s, Dimension.COUNTS_UNITS ) );
+			final FeatureProjectionKey skey = key( STD_PROJECTION_SPEC, iSource );
+			projectionMap.put( skey, FeatureProjections.project( skey, s, Dimension.COUNTS_UNITS ) );
 		}
 	}
 

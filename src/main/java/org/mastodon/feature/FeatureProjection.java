@@ -9,6 +9,8 @@ package org.mastodon.feature;
 public interface FeatureProjection< T >
 {
 
+	public FeatureProjectionKey getKey();
+
 	/**
 	 * Returns whether the feature value is set for the specified object.
 	 *

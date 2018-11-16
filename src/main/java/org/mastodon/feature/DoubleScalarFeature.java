@@ -23,8 +23,6 @@ public class DoubleScalarFeature< O > implements Feature< O >
 {
 	private final FeatureSpec< DoubleScalarFeature< O >, O > spec;
 
-	private final FeatureProjectionSpec projectionSpec;
-
 	private final FeatureProjection< O > projection;
 
 	private final DoublePropertyMap< O > values;
@@ -46,22 +44,22 @@ public class DoubleScalarFeature< O > implements Feature< O >
 	 */
 	public DoubleScalarFeature( final String key, final String info, final Dimension dimension, final String units, final RefPool< O > pool )
 	{
-		this.projectionSpec = new FeatureProjectionSpec( key, dimension );
+		FeatureProjectionSpec projectionSpec = new FeatureProjectionSpec( key, dimension );
 		this.spec = new MyFeatureSpec<>( key, info, pool.getRefClass(), projectionSpec );
 		this.values = new DoublePropertyMap<>( pool, Double.NaN );
-		this.projection = FeatureProjections.project( values, units );
+		this.projection = FeatureProjections.project( key( projectionSpec ), values, units );
 	}
 
 	@Override
 	public FeatureProjection< O > project( final FeatureProjectionKey key )
 	{
-		return key( projectionSpec ).equals( key ) ? projection : null;
+		return projection.getKey().equals( key ) ? projection : null;
 	}
 
 	@Override
 	public Set< FeatureProjectionKey > projectionKeys()
 	{
-		return Collections.singleton( key( projectionSpec ) );
+		return Collections.singleton( projection.getKey() );
 	}
 
 	@Override

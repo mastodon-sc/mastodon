@@ -51,19 +51,19 @@ public class LinkVelocityFeature implements Feature< Link >
 	LinkVelocityFeature( final DoublePropertyMap< Link > map, final String units )
 	{
 		this.map = map;
-		this.projection = FeatureProjections.project( map, units );
+		this.projection = FeatureProjections.project( key( PROJECTION_SPEC ), map, units );
 	}
 
 	@Override
 	public FeatureProjection< Link > project( final FeatureProjectionKey key )
 	{
-		return key( PROJECTION_SPEC ).equals( key ) ? projection : null;
+		return projection.getKey().equals( key ) ? projection : null;
 	}
 
 	@Override
 	public Set< FeatureProjectionKey > projectionKeys()
 	{
-		return Collections.singleton( key( PROJECTION_SPEC ) );
+		return Collections.singleton( projection.getKey() );
 	}
 
 	@Override

@@ -13,7 +13,7 @@ public final class FeatureProjectionKey
 
 	private final int[] sourceIndices;
 
-	public FeatureProjectionKey( final FeatureProjectionSpec spec, final int... sourceIndices )
+	private FeatureProjectionKey( final FeatureProjectionSpec spec, final int... sourceIndices )
 	{
 		this.spec = spec;
 		this.sourceIndices = ( sourceIndices == null ) ? new int[ 0 ] : sourceIndices;

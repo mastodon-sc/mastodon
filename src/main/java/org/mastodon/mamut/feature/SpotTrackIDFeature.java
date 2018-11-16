@@ -51,13 +51,13 @@ public class SpotTrackIDFeature implements Feature< Spot >
 	SpotTrackIDFeature( final IntPropertyMap< Spot > map )
 	{
 		this.map = map;
-		this.projection = FeatureProjections.project( map, Dimension.NONE_UNITS );
+		this.projection = FeatureProjections.project( key( PROJECTION_SPEC ), map, Dimension.NONE_UNITS );
 	}
 
 	@Override
 	public FeatureProjection< Spot > project( final FeatureProjectionKey key )
 	{
-		return key( PROJECTION_SPEC ).equals( key ) ? projection : null;
+		return projection.getKey().equals( key ) ? projection : null;
 	}
 
 	@Override

@@ -51,13 +51,13 @@ public class SpotFrameFeature implements Feature< Spot >
 	@Override
 	public FeatureProjection< Spot > project( final FeatureProjectionKey key )
 	{
-		return key( PROJECTION_SPEC ).equals( key ) ? projection : null;
+		return projection.getKey().equals( key ) ? projection : null;
 	}
 
 	@Override
 	public Set< FeatureProjectionKey > projectionKeys()
 	{
-		return Collections.singleton( key( PROJECTION_SPEC ) );
+		return Collections.singleton( projection.getKey() );
 	}
 
 	@Override
@@ -68,6 +68,12 @@ public class SpotFrameFeature implements Feature< Spot >
 
 	private static final class MyProjection implements IntFeatureProjection< Spot >
 	{
+
+		@Override
+		public FeatureProjectionKey getKey()
+		{
+			return key( PROJECTION_SPEC );
+		}
 
 		@Override
 		public boolean isSet( final Spot obj )
