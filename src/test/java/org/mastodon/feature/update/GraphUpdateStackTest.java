@@ -243,10 +243,6 @@ public class GraphUpdateStackTest
 
 		public final static String KEY = "FT1";
 
-		public static final FeatureProjectionSpec p1 = new FeatureProjectionSpec( "p1" );
-
-		public static final FeatureProjectionSpec p2 = new FeatureProjectionSpec( "p2" );
-
 		public final static Spec SPEC = new Spec();
 
 		private DoublePropertyMap< Spot > map;
@@ -261,21 +257,20 @@ public class GraphUpdateStackTest
 						"Dummy feature FT1",
 						FT1.class,
 						Spot.class,
-						Multiplicity.SINGLE,
-						p1, p2 );
+						Multiplicity.SINGLE );
 			}
 		}
 
 		@Override
 		public FeatureProjection< Spot > project( final FeatureProjectionKey key )
 		{
-			return FeatureProjections.project( map, "Nope" );
+			return null;
 		}
 
 		@Override
 		public Set< FeatureProjectionKey > projectionKeys()
 		{
-			return new HashSet<>( Arrays.asList( key( p1 ), key( p2 ) ) );
+			return null;
 		}
 
 		@Override
@@ -331,10 +326,6 @@ public class GraphUpdateStackTest
 	{
 		public final static String KEY = "FT2";
 
-		public static final FeatureProjectionSpec q1 = new FeatureProjectionSpec( "q1", Dimension.NONE );
-
-		public static final FeatureProjectionSpec q2 = new FeatureProjectionSpec( "q2", Dimension.NONE );
-
 		public final static Spec SPEC = new Spec();
 
 		@Plugin( type = FeatureSpec.class )
@@ -347,8 +338,7 @@ public class GraphUpdateStackTest
 						"Dummy feature FT2",
 						FT2.class,
 						Spot.class,
-						Multiplicity.SINGLE,
-						q1, q2 );
+						Multiplicity.SINGLE );
 			}
 		}
 
@@ -357,13 +347,13 @@ public class GraphUpdateStackTest
 		@Override
 		public FeatureProjection< Spot > project( final FeatureProjectionKey key )
 		{
-			return FeatureProjections.project( map, "Nope" );
+			return null;
 		}
 
 		@Override
 		public Set< FeatureProjectionKey > projectionKeys()
 		{
-			return new HashSet<>( Arrays.asList( key( q1 ), key( q2 ) ) );
+			return null;
 		}
 
 		@Override
@@ -411,10 +401,6 @@ public class GraphUpdateStackTest
 
 		public final static String KEY = "FT3";
 
-		public static final FeatureProjectionSpec q1 = new FeatureProjectionSpec( "q1", Dimension.NONE );
-
-		public static final FeatureProjectionSpec q2 = new FeatureProjectionSpec( "q2", Dimension.NONE );
-
 		public final static Spec SPEC = new Spec();
 
 		@Plugin( type = FeatureSpec.class )
@@ -427,8 +413,7 @@ public class GraphUpdateStackTest
 						"Dummy feature FT3",
 						FT3.class,
 						Spot.class,
-						Multiplicity.SINGLE,
-						q1, q2 );
+						Multiplicity.SINGLE );
 			}
 		}
 
@@ -437,13 +422,13 @@ public class GraphUpdateStackTest
 		@Override
 		public FeatureProjection< Spot > project( final FeatureProjectionKey key )
 		{
-			return FeatureProjections.project( map, "Nope" );
+			return null;
 		}
 
 		@Override
 		public Set< FeatureProjectionKey > projectionKeys()
 		{
-			return new HashSet<>( Arrays.asList( key( q1 ), key( q2 ) ) );
+			return null;
 		}
 
 		@Override
