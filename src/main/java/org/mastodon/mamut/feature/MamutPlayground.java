@@ -4,9 +4,11 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.mastodon.feature.Feature;
 import org.mastodon.feature.FeatureProjection;
+import org.mastodon.feature.FeatureProjectionKey;
 import org.mastodon.feature.FeatureSpec;
 import org.mastodon.feature.FeatureSpecsService;
 import org.mastodon.project.MamutProject;
@@ -56,9 +58,9 @@ public class MamutPlayground
 				System.out.println( "\n - Feature " + spec.getKey() + " is not computed." );
 				continue;
 			}
-			final String[] projections = feature.projectionKeys();
-			System.out.println( "\n - Feature " + spec.getKey() +". Has " + projections.length + " projections:" );
-			for ( final String projectionKey : projections )
+			final Set< FeatureProjectionKey > projections = feature.projectionKeys();
+			System.out.println( "\n - Feature " + spec.getKey() +". Has " + projections.size() + " projections:" );
+			for ( final FeatureProjectionKey projectionKey : projections )
 			{
 				@SuppressWarnings( "unchecked" )
 				final FeatureProjection< T > projection = ( FeatureProjection< T > ) feature.project( projectionKey );

@@ -1,5 +1,7 @@
 package org.mastodon.feature;
 
+import java.util.Set;
+
 /**
  * Interface for Mastodon features.
  * <p>
@@ -18,9 +20,32 @@ package org.mastodon.feature;
  */
 public interface Feature< T >
 {
+	/**
+	 * Get the projection with the specified {@code key}. Depending of this
+	 * features {@link Multiplicity}, source indices need to be specified
+	 * additionally.
+	 *
+	 * @param spec
+	 *            spec of the requested projection
+	 * @param sources
+	 *            indices of 0, 1, or 2 sources (depending on this features
+	 *            {@code Multiplicity}) for which to obtain the projection
+	 * @return the specified projection, or {@code null} if the projection is
+	 *         not available.
+	 */
+	default public FeatureProjection< T > project( final FeatureProjectionSpec spec, final int... sources )
+	{
+		return project( FeatureProjectionKey.key( spec, sources ) );
+	}
 
-	public FeatureProjection< T > project( String projectionKey );
+	public FeatureProjection< T > project( final FeatureProjectionKey key );
 
-	public String[] projectionKeys();
+	/**
+	 * Get keys for all {@link FeatureProjection}s that this feature currently provides.
+	 *
+	 * @return keys for all projections.
+	 */
+	public Set< FeatureProjectionKey > projectionKeys();
 
+	public FeatureSpec< ? extends Feature<T>, T > getSpec();
 }

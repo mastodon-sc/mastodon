@@ -11,7 +11,7 @@ import org.mastodon.util.Listeners;
 /**
  * Data class that stores a configuration for coloring graph objects based on
  * feature values.
- * 
+ *
  * @author Jean-Yves Tinevez
  */
 public class FeatureColorMode implements Style< FeatureColorMode >

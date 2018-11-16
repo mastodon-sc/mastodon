@@ -91,6 +91,7 @@ import org.mastodon.collection.RefSet;
 import org.mastodon.feature.Dimension;
 import org.mastodon.feature.Feature;
 import org.mastodon.feature.FeatureModel;
+import org.mastodon.feature.FeatureProjectionKey;
 import org.mastodon.feature.IntFeatureProjection;
 import org.mastodon.graph.algorithm.RootFinder;
 import org.mastodon.graph.algorithm.traversal.DepthFirstSearch;
@@ -481,9 +482,9 @@ public class MamutExporter
 		final List< Feature< Link > > features = getFeaturesForTarget( model.getFeatureModel(), Link.class );
 		for ( final Feature< Link > f : features )
 		{
-			for ( final String projectionKey : f.projectionKeys() )
+			for ( final FeatureProjectionKey projectionKey : f.projectionKeys() )
 				attributes.add( new Attribute(
-						sanitize( projectionKey ),
+						sanitize( projectionKey.toString() ),
 						Double.toString( f.project( projectionKey ).value( edge ) ) ) );
 		}
 
@@ -542,9 +543,9 @@ public class MamutExporter
 		final List< Feature< Spot > > features = getFeaturesForTarget( model.getFeatureModel(), Spot.class );
 		for ( final Feature< Spot > f : features )
 		{
-			for ( final String projectionKey : f.projectionKeys() )
+			for ( final FeatureProjectionKey projectionKey : f.projectionKeys() )
 				attributes.add( new Attribute(
-						sanitize( projectionKey ),
+						sanitize( projectionKey.toString() ),
 						Double.toString( f.project( projectionKey ).value( spot ) ) ) );
 		}
 		final Element spotElement = new Element( SPOT_ELEMENT_TAG );
@@ -574,17 +575,17 @@ public class MamutExporter
 		{
 
 			// We actually export feature projections.
-			for ( final String projectionKey : feature.projectionKeys() )
+			for ( final FeatureProjectionKey projectionKey : feature.projectionKeys() )
 			{
 				final String isint = ( feature.project( projectionKey ) instanceof IntFeatureProjection )
 						? "true"
 						: "false";
 
 				final Element fel = new Element( FEATURE_TAG );
-				fel.setAttribute( FEATURE_ATTRIBUTE, sanitize( projectionKey ) );
+				fel.setAttribute( FEATURE_ATTRIBUTE, sanitize( projectionKey.toString() ) );
 				// Mastodon does not support feature name yet.
-				fel.setAttribute( FEATURE_NAME_ATTRIBUTE, projectionKey );
-				fel.setAttribute( FEATURE_SHORT_NAME_ATTRIBUTE, projectionKey );
+				fel.setAttribute( FEATURE_NAME_ATTRIBUTE, projectionKey.toString() );
+				fel.setAttribute( FEATURE_SHORT_NAME_ATTRIBUTE, projectionKey.toString() );
 				final String units = feature.project( projectionKey ).units();
 				fel.setAttribute( FEATURE_DIMENSION_ATTRIBUTE, unitsToDimension( units, model.getSpaceUnits(), model.getTimeUnits() ) );
 				fel.setAttribute( FEATURE_ISINT_ATTRIBUTE, isint );

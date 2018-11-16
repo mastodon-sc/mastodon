@@ -4,8 +4,13 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
+import static org.mastodon.feature.FeatureProjectionKey.key;
 
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -14,6 +19,7 @@ import org.mastodon.collection.ref.RefSetImp;
 import org.mastodon.feature.Dimension;
 import org.mastodon.feature.Feature;
 import org.mastodon.feature.FeatureProjection;
+import org.mastodon.feature.FeatureProjectionKey;
 import org.mastodon.feature.FeatureProjectionSpec;
 import org.mastodon.feature.FeatureProjections;
 import org.mastodon.feature.FeatureSpec;
@@ -237,6 +243,10 @@ public class GraphUpdateStackTest
 
 		public final static String KEY = "FT1";
 
+		public static final FeatureProjectionSpec p1 = new FeatureProjectionSpec( "p1" );
+
+		public static final FeatureProjectionSpec p2 = new FeatureProjectionSpec( "p2" );
+
 		public final static Spec SPEC = new Spec();
 
 		private DoublePropertyMap< Spot > map;
@@ -252,21 +262,26 @@ public class GraphUpdateStackTest
 						FT1.class,
 						Spot.class,
 						Multiplicity.SINGLE,
-						new FeatureProjectionSpec( "p1", Dimension.NONE ),
-						new FeatureProjectionSpec( "p2", Dimension.NONE ) );
+						p1, p2 );
 			}
 		}
 
 		@Override
-		public FeatureProjection< Spot > project( final String projectionKey )
+		public FeatureProjection< Spot > project( final FeatureProjectionKey key )
 		{
 			return FeatureProjections.project( map, "Nope" );
 		}
 
 		@Override
-		public String[] projectionKeys()
+		public Set< FeatureProjectionKey > projectionKeys()
 		{
-			return new String[] { "p1", "p2" };
+			return new HashSet<>( Arrays.asList( key( p1 ), key( p2 ) ) );
+		}
+
+		@Override
+		public Spec getSpec()
+		{
+			return SPEC;
 		}
 	}
 
@@ -314,8 +329,11 @@ public class GraphUpdateStackTest
 
 	public static class FT2 extends TestFeature< Spot >
 	{
-
 		public final static String KEY = "FT2";
+
+		public static final FeatureProjectionSpec q1 = new FeatureProjectionSpec( "q1", Dimension.NONE );
+
+		public static final FeatureProjectionSpec q2 = new FeatureProjectionSpec( "q2", Dimension.NONE );
 
 		public final static Spec SPEC = new Spec();
 
@@ -330,23 +348,28 @@ public class GraphUpdateStackTest
 						FT2.class,
 						Spot.class,
 						Multiplicity.SINGLE,
-						new FeatureProjectionSpec( "q1", Dimension.NONE ),
-						new FeatureProjectionSpec( "q2", Dimension.NONE ) );
+						q1, q2 );
 			}
 		}
 
 		public DoublePropertyMap< Spot > map;
 
 		@Override
-		public FeatureProjection< Spot > project( final String projectionKey )
+		public FeatureProjection< Spot > project( final FeatureProjectionKey key )
 		{
 			return FeatureProjections.project( map, "Nope" );
 		}
 
 		@Override
-		public String[] projectionKeys()
+		public Set< FeatureProjectionKey > projectionKeys()
 		{
-			return new String[] { "q1", "q2" };
+			return new HashSet<>( Arrays.asList( key( q1 ), key( q2 ) ) );
+		}
+
+		@Override
+		public Spec getSpec()
+		{
+			return SPEC;
 		}
 	}
 
@@ -388,6 +411,10 @@ public class GraphUpdateStackTest
 
 		public final static String KEY = "FT3";
 
+		public static final FeatureProjectionSpec q1 = new FeatureProjectionSpec( "q1", Dimension.NONE );
+
+		public static final FeatureProjectionSpec q2 = new FeatureProjectionSpec( "q2", Dimension.NONE );
+
 		public final static Spec SPEC = new Spec();
 
 		@Plugin( type = FeatureSpec.class )
@@ -401,23 +428,28 @@ public class GraphUpdateStackTest
 						FT3.class,
 						Spot.class,
 						Multiplicity.SINGLE,
-						new FeatureProjectionSpec( "q1", Dimension.NONE ),
-						new FeatureProjectionSpec( "q2", Dimension.NONE ) );
+						q1, q2 );
 			}
 		}
 
 		public DoublePropertyMap< Spot > map;
 
 		@Override
-		public FeatureProjection< Spot > project( final String projectionKey )
+		public FeatureProjection< Spot > project( final FeatureProjectionKey key )
 		{
 			return FeatureProjections.project( map, "Nope" );
 		}
 
 		@Override
-		public String[] projectionKeys()
+		public Set< FeatureProjectionKey > projectionKeys()
 		{
-			return new String[] { "q1", "q2" };
+			return new HashSet<>( Arrays.asList( key( q1 ), key( q2 ) ) );
+		}
+
+		@Override
+		public Spec getSpec()
+		{
+			return SPEC;
 		}
 	}
 

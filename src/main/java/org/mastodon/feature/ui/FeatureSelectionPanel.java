@@ -6,6 +6,7 @@ import java.awt.event.ItemListener;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
@@ -230,7 +231,7 @@ public class FeatureSelectionPanel extends JPanel
 
 	private FeatureProjectionSpec getFeatureProjectionSpecFromName( final FeatureSpec< ?, ? > featureSpec, final String projectionName )
 	{
-		final FeatureProjectionSpec[] projectionSpecs = featureSpec.getProjectionSpecs();
+		final Set<FeatureProjectionSpec> projectionSpecs = featureSpec.getProjectionSpecs();
 		for ( final FeatureProjectionSpec featureProjectionSpec : projectionSpecs )
 		{
 			if ( featureProjectionSpec.projectionName.equals( projectionName ) )
@@ -254,14 +255,14 @@ public class FeatureSelectionPanel extends JPanel
 		final FeatureSpec< ?, ? > currentSelection = ( FeatureSpec< ?, ? > ) cbFeatures.getSelectedItem();
 
 		// Projections.
-		final FeatureProjectionSpec[] projectionSpecs = ( currentSelection == null )
-				? new FeatureProjectionSpec[] {}
+		final Set< FeatureProjectionSpec > projectionSpecs = ( currentSelection == null )
+				? Collections.emptySet()
 				: currentSelection.getProjectionSpecs();
-		cbProjections.setModel( new DefaultComboBoxModel<>( projectionSpecs ) );
+		cbProjections.setModel( new DefaultComboBoxModel<>( projectionSpecs.toArray( new FeatureProjectionSpec[ 0 ] ) ) );
 
 		// Visibility.
 		final boolean projectionCBVisible = ( null != currentSelection ) &&
-				( ( projectionSpecs.length > 1 )
+				( ( projectionSpecs.size() > 1 )
 						|| currentSelection.getMultiplicity() != Multiplicity.SINGLE );
 		arrowStrut.setVisible( projectionCBVisible );
 		cbProjections.setVisible( projectionCBVisible );

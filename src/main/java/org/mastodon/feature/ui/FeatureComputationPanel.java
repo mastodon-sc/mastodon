@@ -11,6 +11,7 @@ import java.awt.Insets;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 
 import javax.swing.BorderFactory;
 import javax.swing.Box;
@@ -203,8 +204,8 @@ public class FeatureComputationPanel extends JPanel
 		c.gridy++;
 		infoPanel.add( multiplicityLbl, c );
 
-		final FeatureProjectionSpec[] projections = spec.getProjectionSpecs();
-		final StringBuilder projStr = new StringBuilder( ( projections.length == 1 )
+		final Set< FeatureProjectionSpec > projections = spec.getProjectionSpecs();
+		final StringBuilder projStr = new StringBuilder( ( projections.size() == 1 )
 				? "<html>Projection: <ul>"
 				: "<html>Projections: <ul>" );
 		for ( final FeatureProjectionSpec projSpec : projections )

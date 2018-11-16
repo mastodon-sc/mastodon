@@ -1,6 +1,8 @@
 package org.mastodon.feature;
 
 import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.scijava.plugin.SciJavaPlugin;
 
@@ -16,7 +18,7 @@ public abstract class FeatureSpec< F extends Feature< T >, T > implements SciJav
 {
 	private final String key;
 
-	private final FeatureProjectionSpec[] projectionSpecs;
+	private final HashSet< FeatureProjectionSpec > projectionSpecs;
 
 	private final Class< F > featureClass;
 
@@ -42,7 +44,7 @@ public abstract class FeatureSpec< F extends Feature< T >, T > implements SciJav
 		this.featureClass = featureClass;
 		this.targetClass = targetClass;
 		this.multiplicity = multiplicity;
-		this.projectionSpecs = projectionSpecs;
+		this.projectionSpecs = new HashSet<>( Arrays.asList( projectionSpecs ) );
 	}
 
 	/**
@@ -61,7 +63,7 @@ public abstract class FeatureSpec< F extends Feature< T >, T > implements SciJav
 		return key;
 	}
 
-	public FeatureProjectionSpec[] getProjectionSpecs()
+	public Set< FeatureProjectionSpec > getProjectionSpecs()
 	{
 		return projectionSpecs;
 	}
@@ -94,7 +96,7 @@ public abstract class FeatureSpec< F extends Feature< T >, T > implements SciJav
 			return false;
 		final FeatureSpec< ?, ? > that = ( FeatureSpec< ?, ? > ) o;
 		return key.equals( that.key )
-				&& Arrays.equals( projectionSpecs, that.projectionSpecs )
+				&& projectionSpecs.equals( that.projectionSpecs )
 				&& featureClass.equals( that.featureClass )
 				&& targetClass.equals( that.targetClass );
 	}

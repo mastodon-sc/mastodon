@@ -1,8 +1,14 @@
 package org.mastodon.mamut.feature;
 
+import static org.mastodon.feature.FeatureProjectionKey.key;
+
+import java.util.Collections;
+import java.util.Set;
+
 import org.mastodon.feature.Dimension;
 import org.mastodon.feature.Feature;
 import org.mastodon.feature.FeatureProjection;
+import org.mastodon.feature.FeatureProjectionKey;
 import org.mastodon.feature.FeatureProjectionSpec;
 import org.mastodon.feature.FeatureProjections;
 import org.mastodon.feature.FeatureSpec;
@@ -19,6 +25,10 @@ public class LinkVelocityFeature implements Feature< Link >
 	private static final String HELP_STRING = "Computes the link velocity as the distance between "
 			+ "the source and target spots divided by their frame difference. Units are in physical distance per frame.";
 
+	private static final FeatureProjectionSpec PROJECTION_SPEC = new FeatureProjectionSpec( KEY, Dimension.VELOCITY );
+
+	public static final Spec SPEC = new Spec();
+
 	final DoublePropertyMap< Link > map;
 
 	private final FeatureProjection< Link > projection;
@@ -34,7 +44,7 @@ public class LinkVelocityFeature implements Feature< Link >
 					LinkVelocityFeature.class,
 					Link.class,
 					Multiplicity.SINGLE,
-					new FeatureProjectionSpec( KEY, Dimension.VELOCITY ) );
+					PROJECTION_SPEC );
 		}
 	}
 
@@ -45,14 +55,20 @@ public class LinkVelocityFeature implements Feature< Link >
 	}
 
 	@Override
-	public FeatureProjection< Link > project( final String projectionKey )
+	public FeatureProjection< Link > project( final FeatureProjectionKey key )
 	{
-		return projection;
+		return key( PROJECTION_SPEC ).equals( key ) ? projection : null;
 	}
 
 	@Override
-	public String[] projectionKeys()
+	public Set< FeatureProjectionKey > projectionKeys()
 	{
-		return new String[] { KEY };
+		return Collections.singleton( key( PROJECTION_SPEC ) );
+	}
+
+	@Override
+	public Spec getSpec()
+	{
+		return SPEC;
 	}
 }

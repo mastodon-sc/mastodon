@@ -21,6 +21,7 @@ import org.mastodon.feature.Dimension;
 import org.mastodon.feature.Feature;
 import org.mastodon.feature.FeatureModel;
 import org.mastodon.feature.FeatureProjection;
+import org.mastodon.feature.FeatureProjectionKey;
 import org.mastodon.feature.FeatureProjectionSpec;
 import org.mastodon.feature.FeatureSpec;
 import org.mastodon.feature.FeatureSpecsService;
@@ -272,13 +273,19 @@ public class FeatureColorModeConfigPage extends SelectAndEditProfileSettingsPage
 	{
 
 		@Override
-		public FeatureProjection< T > project( final String projectionKey )
+		public FeatureProjection< T > project( final FeatureProjectionKey key )
 		{
 			return null;
 		}
 
 		@Override
-		public String[] projectionKeys()
+		public Set< FeatureProjectionKey > projectionKeys()
+		{
+			return null;
+		}
+
+		@Override
+		public FeatureSpec< ? extends Feature< T >, T > getSpec()
 		{
 			return null;
 		}

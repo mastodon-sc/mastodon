@@ -3,8 +3,8 @@ package org.mastodon.revised.ui.coloring.feature;
 import java.util.Collection;
 import java.util.DoubleSummaryStatistics;
 
-import org.mastodon.feature.Feature;
 import org.mastodon.feature.FeatureModel;
+import org.mastodon.feature.FeatureModelUtil;
 import org.mastodon.feature.FeatureProjection;
 import org.mastodon.feature.FeatureSpec;
 
@@ -24,11 +24,7 @@ public class DefaultFeatureRangeCalculator< O > implements FeatureRangeCalculato
 	@Override
 	public double[] computeMinMax( final FeatureSpec< ?, ? > featureSpec, final String projectionKey )
 	{
-		final Feature< ? > feature = featureModel.getFeature( featureSpec );
-		if ( null == feature )
-			return null;
-
-		final FeatureProjection< ? > projection = feature.project( projectionKey );
+		final FeatureProjection< ? > projection = FeatureModelUtil.getFeatureProjection( featureModel, featureSpec, FeatureModelUtil.parseProjectionName( projectionKey ) );
 		if ( null == projection )
 			return null;
 

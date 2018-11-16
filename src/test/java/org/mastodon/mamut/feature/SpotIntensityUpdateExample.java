@@ -3,6 +3,8 @@ package org.mastodon.mamut.feature;
 import java.io.IOException;
 import java.util.Map;
 
+import net.imglib2.util.StopWatch;
+
 import org.jdom2.JDOMException;
 import org.mastodon.feature.Feature;
 import org.mastodon.feature.FeatureModel;
@@ -16,7 +18,6 @@ import org.mastodon.revised.model.mamut.Spot;
 import org.scijava.Context;
 
 import mpicbg.spim.data.SpimDataException;
-import net.imglib2.util.StopWatch;
 
 public class SpotIntensityUpdateExample
 {
@@ -62,10 +63,10 @@ public class SpotIntensityUpdateExample
 
 		@SuppressWarnings( "unchecked" )
 		final FeatureProjection< Spot > proj1 = ( FeatureProjection< Spot > ) model.getFeatureModel()
-				.getFeature( SpotGaussFilteredIntensityFeature.SPEC ).project( "Mean ch1" );
+				.getFeature( SpotGaussFilteredIntensityFeature.SPEC ).project( SpotGaussFilteredIntensityFeature.MEAN_PROJECTION_SPEC, 0 );
 		@SuppressWarnings( "unchecked" )
 		final FeatureProjection< Spot > proj2 = ( FeatureProjection< Spot > ) model.getFeatureModel()
-				.getFeature( SpotGaussFilteredIntensityFeature.SPEC ).project( "Std ch1" );
+				.getFeature( SpotGaussFilteredIntensityFeature.SPEC ).project( SpotGaussFilteredIntensityFeature.STD_PROJECTION_SPEC, 0 );
 
 		System.out.println();
 		System.out.println( "Spot " + spot.getLabel() + " intensity was " + proj1.value( spot ) + " ± " + proj2.value( spot ) );

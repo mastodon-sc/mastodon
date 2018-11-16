@@ -3,7 +3,6 @@ package org.mastodon.revised.ui.coloring;
 import java.awt.event.ActionEvent;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.function.BooleanSupplier;
 
 import javax.swing.JCheckBoxMenuItem;
@@ -11,17 +10,13 @@ import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JSeparator;
 
-import org.mastodon.feature.Feature;
 import org.mastodon.feature.FeatureModel;
 import org.mastodon.feature.FeatureModel.FeatureModelListener;
-import org.mastodon.feature.FeatureProjection;
-import org.mastodon.feature.FeatureSpec;
+import org.mastodon.feature.FeatureModelUtil;
 import org.mastodon.revised.model.tag.TagSetModel;
 import org.mastodon.revised.model.tag.TagSetStructure;
 import org.mastodon.revised.ui.coloring.feature.FeatureColorMode;
-import org.mastodon.revised.ui.coloring.feature.FeatureColorMode.EdgeColorMode;
 import org.mastodon.revised.ui.coloring.feature.FeatureColorMode.UpdateListener;
-import org.mastodon.revised.ui.coloring.feature.FeatureColorMode.VertexColorMode;
 import org.mastodon.revised.ui.coloring.feature.FeatureColorModeManager;
 import org.mastodon.revised.util.HasSelectedState;
 import org.mastodon.util.Listeners;
@@ -100,58 +95,17 @@ public class ColoringMenu implements TagSetModel.TagSetModelListener, UpdateList
 	}
 
 	/**
-	 * Returns <code>true</code> if this color mode is valid against the
-	 * specified {@link FeatureModel}. That is: the feature projections that the
-	 * color mode rely on are declared in the feature model, and of the right
-	 * class.
+	 * Returns {@code true} if the specified color mode is valid against the
+	 * {@link FeatureModel}. That is: the feature projections that the color
+	 * mode rely on are declared in the feature model, and of the right class.
 	 *
-	 * @param featureModel
-	 *            the feature model.
-	 * @return <code>true</code> if the color mode is valid.
+	 * @param mode
+	 *            the color mode
+	 * @return {@code true} if the color mode is valid.
 	 */
 	private boolean isValid( final FeatureColorMode mode )
 	{
-		if ( mode.getVertexColorMode() != VertexColorMode.NONE )
-		{
-			if ( !checkFeatureKeyPair( featureModel, mode.getVertexFeatureProjection(),
-					mode.getVertexColorMode() == VertexColorMode.VERTEX
-							? vertexClass
-							: edgeClass ) )
-				return false;
-		}
-
-		if ( mode.getEdgeColorMode() != EdgeColorMode.NONE )
-		{
-			if ( !checkFeatureKeyPair( featureModel, mode.getEdgeFeatureProjection(),
-					mode.getEdgeColorMode() == EdgeColorMode.EDGE
-							? edgeClass
-							: vertexClass ) )
-				return false;
-		}
-
-		return true;
-	}
-
-	private static final boolean checkFeatureKeyPair( final FeatureModel featureModel, final String[] featureProjection, final Class< ? > clazz )
-	{
-		final String featureKey = featureProjection[ 0 ];
-		final Optional< FeatureSpec< ?, ? > > findFirst = featureModel.getFeatureSpecs().stream()
-			.filter( (fs) -> fs.getTargetClass().isAssignableFrom( clazz ) )
-			.filter( (fs) -> featureKey.equals( fs.getKey() ) )
-			.findFirst();
-
-		if (!findFirst.isPresent())
-			return false;
-
-		final FeatureSpec< ?, ? > featureSpec = findFirst.get();
-		final Feature< ? > feature = featureModel.getFeature( featureSpec );
-
-		final String projectionKey = featureProjection[ 1 ];
-		final FeatureProjection< ? > projection = feature.project( projectionKey );
-		if ( null == projection )
-			return false;
-
-		return true;
+		return FeatureModelUtil.isValid( featureModel, mode, vertexClass, edgeClass );
 	}
 
 	private void addColorAction( final ColorAction action )

@@ -10,6 +10,7 @@ import java.util.Optional;
 import org.mastodon.feature.Feature;
 import org.mastodon.feature.FeatureModel;
 import org.mastodon.feature.FeatureProjection;
+import org.mastodon.feature.FeatureProjectionKey;
 import org.mastodon.feature.FeatureSpec;
 import org.mastodon.feature.IntFeatureProjection;
 
@@ -41,7 +42,7 @@ public class ModelUtils
 		 * Collect spot feature headers.
 		 */
 
-		final Map< String, FeatureProjection< Spot > > sfs = new LinkedHashMap<>();
+		final Map< FeatureProjectionKey, FeatureProjection< Spot > > sfs = new LinkedHashMap<>();
 		final List< Feature< Spot > > spotFeatures = new ArrayList<>();
 		for ( final FeatureSpec< ?, ? > featureSpec : featureSpecs )
 			if ( featureSpec.getTargetClass().equals( Spot.class ) )
@@ -51,8 +52,9 @@ public class ModelUtils
 				spotFeatures.add( spotFeature );
 			}
 
+		// TODO if different features have same PeatureProjectionKey, map entries will be overridden!
 		for ( final Feature< Spot > feature : spotFeatures )
-			for ( final String projectionKey : feature.projectionKeys() )
+			for ( final FeatureProjectionKey projectionKey : feature.projectionKeys() )
 				sfs.put( projectionKey, feature.project( projectionKey ) );
 
 		/*
@@ -71,11 +73,11 @@ public class ModelUtils
 
 		final int[] spotColumnHeaderWidth = new int[ sfs.size() ];
 		int i = 0;
-		for ( final String pn : sfs.keySet() )
+		for ( final FeatureProjectionKey pk : sfs.keySet() )
 		{
-			final String units = Optional.ofNullable( sfs.get( pn ).units() ).orElse( "" );
-			spotColumnHeaderWidth[ i ] = Math.max( pn.length(), units.length() + 2 ) + 2;
-			str.append( String.format( "  %" + spotColumnHeaderWidth[ i ] + "s", pn ) );
+			final String units = Optional.ofNullable( sfs.get( pk ).units() ).orElse( "" );
+			spotColumnHeaderWidth[ i ] = Math.max( pk.toString().length(), units.length() + 2 ) + 2;
+			str.append( String.format( "  %" + spotColumnHeaderWidth[ i ] + "s", pk ) );
 			unitLineSpots.append( String.format( "  %" + spotColumnHeaderWidth[ i ] + "s", bracket( units ) ) );
 			i++;
 		}
@@ -101,13 +103,13 @@ public class ModelUtils
 
 			str.append( h1b );
 			i = 0;
-			for ( final String pn : sfs.keySet() )
+			for ( final FeatureProjectionKey pk : sfs.keySet() )
 			{
-				if ( sfs.get( pn ).isSet( spot ) )
-					if ( sfs.get( pn ) instanceof IntFeatureProjection )
-						str.append( String.format( "  %" + spotColumnHeaderWidth[ i ] + "d", ( int ) sfs.get( pn ).value( spot ) ) );
+				if ( sfs.get( pk ).isSet( spot ) )
+					if ( sfs.get( pk ) instanceof IntFeatureProjection )
+						str.append( String.format( "  %" + spotColumnHeaderWidth[ i ] + "d", ( int ) sfs.get( pk ).value( spot ) ) );
 					else
-						str.append( String.format( "  %" + spotColumnHeaderWidth[ i ] + ".1f", sfs.get( pn ).value( spot ) ) );
+						str.append( String.format( "  %" + spotColumnHeaderWidth[ i ] + ".1f", sfs.get( pk ).value( spot ) ) );
 				else
 					str.append( String.format( "  %" + spotColumnHeaderWidth[ i ] + "s", "unset" ) );
 				i++;
@@ -119,7 +121,7 @@ public class ModelUtils
 		 * Collect link feature headers.
 		 */
 
-		final Map< String, FeatureProjection< Link > > lfs = new LinkedHashMap<>();
+		final Map< FeatureProjectionKey, FeatureProjection< Link > > lfs = new LinkedHashMap<>();
 		final List< Feature< Link > > linkFeatures = new ArrayList<>();
 		for ( final FeatureSpec< ?, ? > featureSpec : featureSpecs )
 			if ( featureSpec.getTargetClass().equals( Link.class ) )
@@ -130,7 +132,7 @@ public class ModelUtils
 			}
 
 		for ( final Feature< Link > feature : linkFeatures )
-			for ( final String projectionKey : feature.projectionKeys() )
+			for ( final FeatureProjectionKey projectionKey : feature.projectionKeys() )
 				lfs.put( projectionKey, feature.project( projectionKey ) );
 
 		/*
@@ -147,11 +149,11 @@ public class ModelUtils
 
 		final int[] linkColumnHeaderWidth = new int[ lfs.size() ];
 		i = 0;
-		for ( final String pn : lfs.keySet() )
+		for ( final FeatureProjectionKey pk : lfs.keySet() )
 		{
-			final String units = Optional.ofNullable( lfs.get( pn ).units() ).orElse( "" );
-			linkColumnHeaderWidth[ i ] = Math.max( pn.length(), units.length() + 2 ) + 2;
-			str.append( String.format( "  %" + linkColumnHeaderWidth[ i ] + "s", pn ) );
+			final String units = Optional.ofNullable( lfs.get( pk ).units() ).orElse( "" );
+			linkColumnHeaderWidth[ i ] = Math.max( pk.toString().length(), units.length() + 2 ) + 2;
+			str.append( String.format( "  %" + linkColumnHeaderWidth[ i ] + "s", pk ) );
 			unitLineLinks.append( String.format( "  %" + linkColumnHeaderWidth[ i ] + "s", bracket( units ) ) );
 			i++;
 		}
@@ -176,13 +178,13 @@ public class ModelUtils
 					link.getSource( ref ).getInternalPoolIndex(), link.getTarget( ref ).getInternalPoolIndex() );
 			str.append( h1b );
 			i = 0;
-			for ( final String pn : lfs.keySet() )
+			for ( final FeatureProjectionKey pk : lfs.keySet() )
 			{
-				if ( lfs.get( pn ).isSet( link ) )
-					if ( sfs.get( pn ) instanceof IntFeatureProjection )
-						str.append( String.format( "  %" + linkColumnHeaderWidth[ i ] + "d", ( int ) lfs.get( pn ).value( link ) ) );
+				if ( lfs.get( pk ).isSet( link ) )
+					if ( sfs.get( pk ) instanceof IntFeatureProjection )
+						str.append( String.format( "  %" + linkColumnHeaderWidth[ i ] + "d", ( int ) lfs.get( pk ).value( link ) ) );
 					else
-						str.append( String.format( "  %" + linkColumnHeaderWidth[ i ] + ".1f", lfs.get( pn ).value( link ) ) );
+						str.append( String.format( "  %" + linkColumnHeaderWidth[ i ] + ".1f", lfs.get( pk ).value( link ) ) );
 				else
 					str.append( String.format( "  %" + linkColumnHeaderWidth[ i ] + "s", "unset" ) );
 				i++;

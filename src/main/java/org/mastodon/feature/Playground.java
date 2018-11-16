@@ -2,6 +2,9 @@ package org.mastodon.feature;
 
 import static org.scijava.ItemIO.OUTPUT;
 
+import java.util.Collections;
+import java.util.Set;
+
 import org.mastodon.revised.model.mamut.Link;
 import org.mastodon.revised.model.mamut.Spot;
 import org.scijava.Context;
@@ -14,6 +17,10 @@ public class Playground
 {
 	public static class F1 implements Feature< Spot >
 	{
+		public static final FeatureProjectionSpec p1 = new FeatureProjectionSpec( "p1" );
+
+		public static final FeatureProjectionSpec p2 = new FeatureProjectionSpec( "p2" );
+
 		public static final Spec SPEC = new Spec();
 
 		@Plugin( type = FeatureSpec.class )
@@ -27,26 +34,35 @@ public class Playground
 						F1.class,
 						Spot.class,
 						Multiplicity.SINGLE,
-						new FeatureProjectionSpec( "p1", Dimension.NONE ),
-						new FeatureProjectionSpec( "p2", Dimension.NONE ) );
+						p1, p2 );
 			}
 		}
 
 		@Override
-		public FeatureProjection< Spot > project( final String projectionKey )
+		public FeatureProjection< Spot > project( final FeatureProjectionKey key )
 		{
 			return null;
 		}
 
 		@Override
-		public String[] projectionKeys()
+		public Set< FeatureProjectionKey > projectionKeys()
 		{
-			return new String[] { "p1", "p2" };
+			return Collections.emptySet();
+		}
+
+		@Override
+		public Spec getSpec()
+		{
+			return SPEC;
 		}
 	}
 
 	public static class F2 implements Feature< Spot >
 	{
+		public static final FeatureProjectionSpec q1 = new FeatureProjectionSpec( "q1" );
+
+		public static final FeatureProjectionSpec q2 = new FeatureProjectionSpec( "q2" );
+
 		public static final Spec SPEC = new Spec();
 
 		@Plugin( type = FeatureSpec.class )
@@ -60,26 +76,33 @@ public class Playground
 						F2.class,
 						Spot.class,
 						Multiplicity.SINGLE,
-						new FeatureProjectionSpec( "p1", Dimension.NONE ),
-						new FeatureProjectionSpec( "p2", Dimension.NONE ) );
+						q1, q2 );
 			}
 		}
 
 		@Override
-		public FeatureProjection< Spot > project( final String projectionKey )
+		public FeatureProjection< Spot > project( final FeatureProjectionKey key )
 		{
 			return null;
 		}
 
 		@Override
-		public String[] projectionKeys()
+		public Set< FeatureProjectionKey > projectionKeys()
 		{
-			return new String[] { "q1", "q2" };
+			return Collections.emptySet();
+		}
+
+		@Override
+		public Spec getSpec()
+		{
+			return SPEC;
 		}
 	}
 
 	public static class F3 implements Feature< Spot >
 	{
+		public static final FeatureProjectionSpec p = new FeatureProjectionSpec( "p" );
+
 		public static final Spec SPEC = new Spec();
 
 		@Plugin( type = FeatureSpec.class )
@@ -93,25 +116,33 @@ public class Playground
 						F3.class,
 						Spot.class,
 						Multiplicity.SINGLE,
-						new FeatureProjectionSpec( "p", Dimension.NONE ) );
+						p );
 			}
 		}
 
 		@Override
-		public FeatureProjection< Spot > project( final String projectionKey )
+		public FeatureProjection< Spot > project( final FeatureProjectionKey key )
 		{
 			return null;
 		}
 
 		@Override
-		public String[] projectionKeys()
+		public Set< FeatureProjectionKey > projectionKeys()
 		{
-			return new String[] { "p" };
+			return Collections.emptySet();
+		}
+
+		@Override
+		public Spec getSpec()
+		{
+			return SPEC;
 		}
 	}
 
 	public static class F4 implements Feature< Spot >
 	{
+		public static final FeatureProjectionSpec p = new FeatureProjectionSpec( "p" );
+
 		public static final Spec SPEC = new Spec();
 
 		@Plugin( type = FeatureSpec.class )
@@ -125,20 +156,26 @@ public class Playground
 						F4.class,
 						Spot.class,
 						Multiplicity.SINGLE,
-						new FeatureProjectionSpec( "p", Dimension.NONE ) );
+						p );
 			}
 		}
 
 		@Override
-		public FeatureProjection< Spot > project( final String projectionKey )
+		public FeatureProjection< Spot > project( final FeatureProjectionKey key )
 		{
 			return null;
 		}
 
 		@Override
-		public String[] projectionKeys()
+		public Set< FeatureProjectionKey > projectionKeys()
 		{
-			return new String[] { "p" };
+			return Collections.emptySet();
+		}
+
+		@Override
+		public Spec getSpec()
+		{
+			return SPEC;
 		}
 	}
 

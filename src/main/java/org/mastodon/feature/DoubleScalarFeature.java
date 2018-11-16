@@ -1,5 +1,10 @@
 package org.mastodon.feature;
 
+import static org.mastodon.feature.FeatureProjectionKey.key;
+
+import java.util.Collections;
+import java.util.Set;
+
 import org.mastodon.RefPool;
 import org.mastodon.properties.DoublePropertyMap;
 
@@ -16,15 +21,11 @@ import org.mastodon.properties.DoublePropertyMap;
  */
 public class DoubleScalarFeature< O > implements Feature< O >
 {
+	private final FeatureSpec< DoubleScalarFeature< O >, O > spec;
 
-	/**
-	 * The feature unique key.
-	 */
-	private final String key;
+	private final FeatureProjectionSpec projectionSpec;
 
 	private final FeatureProjection< O > projection;
-
-	private final Class< O > targetClass;
 
 	private final DoublePropertyMap< O > values;
 
@@ -34,31 +35,39 @@ public class DoubleScalarFeature< O > implements Feature< O >
 	 * @param key
 	 *            the feature unique key. Must be unique within the application
 	 *            scope.
-	 * @param pool
-	 *            the pool of objects on which to define the feature.
+	 * @param info
+	 *            the feature info text.
+	 * @param dimension
+	 *            the dimension of the quantity of this scalar feature.
 	 * @param units
 	 *            the projection units.
+	 * @param pool
+	 *            the pool of objects on which to define the feature.
 	 */
-	public DoubleScalarFeature( final String key, final String units, final RefPool< O > pool )
+	public DoubleScalarFeature( final String key, final String info, final Dimension dimension, final String units, final RefPool< O > pool )
 	{
-		this.key = key;
+		this.projectionSpec = new FeatureProjectionSpec( key, dimension );
+		this.spec = new MyFeatureSpec<>( key, info, pool.getRefClass(), projectionSpec );
 		this.values = new DoublePropertyMap<>( pool, Double.NaN );
 		this.projection = FeatureProjections.project( values, units );
-		this.targetClass = pool.getRefClass();
 	}
 
 	@Override
-	public FeatureProjection< O > project( final String projectionKey )
+	public FeatureProjection< O > project( final FeatureProjectionKey key )
 	{
-		return ( key.equals( projectionKey ) )
-				? projection
-				: null;
+		return key( projectionSpec ).equals( key ) ? projection : null;
 	}
 
 	@Override
-	public String[] projectionKeys()
+	public Set< FeatureProjectionKey > projectionKeys()
 	{
-		return new String[] { key };
+		return Collections.singleton( key( projectionSpec ) );
+	}
+
+	@Override
+	public FeatureSpec< ? extends Feature< O >, O > getSpec()
+	{
+		return spec;
 	}
 
 	public boolean isSet( final O o )
@@ -85,37 +94,21 @@ public class DoubleScalarFeature< O > implements Feature< O >
 	 * Returns the values of the feature as an array of double values. Changes
 	 * to the array of values will not be reflected in the feature nor
 	 * vice-versa.
-	 * 
+	 *
 	 * @return the values of the map as an array of double values.
 	 */
+	// TODO: REMOVE?
 	public double[] values()
 	{
 		return values.getMap().values();
 	}
 
-	/**
-	 * Returns an undiscoverable {@link FeatureSpec} for this feature.
-	 *
-	 * @param info
-	 *            the feature info text.
-	 * @param dimension
-	 *            the dimension of the quantity of this scalar feature.
-	 * @return a {@link FeatureSpec}.
-	 */
-	@SuppressWarnings( { "rawtypes", "unchecked" } )
-	public FeatureSpec< DoubleScalarFeature< O >, O > createFeatureSpec( final String info, final Dimension dimension )
+	private static final class MyFeatureSpec< T > extends FeatureSpec< DoubleScalarFeature< T >, T >
 	{
-		return new MyFeatureSpec( key, info, dimension, DoubleScalarFeature.class, targetClass );
-	}
-
-	private static final class MyFeatureSpec< F extends DoubleScalarFeature< T >, T > extends FeatureSpec< F, T >
-	{
-
-		public MyFeatureSpec( final String key, final String info, final Dimension dimension, final Class< F > featureClass, final Class< T > targetClass )
+		@SuppressWarnings( "unchecked" )
+		public MyFeatureSpec( final String key, final String info, final Class< T > targetClass, final FeatureProjectionSpec projectionSpec )
 		{
-			super( key, info, featureClass, targetClass, Multiplicity.SINGLE, new FeatureProjectionSpec( key, dimension ) );
+			super( key, info, ( Class< DoubleScalarFeature< T > > ) ( Class< ? > ) DoubleScalarFeature.class, targetClass, Multiplicity.SINGLE, projectionSpec );
 		}
-
 	}
-
 }

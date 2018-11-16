@@ -1,8 +1,13 @@
 package org.mastodon.mamut.feature;
 
-import org.mastodon.feature.Dimension;
+import static org.mastodon.feature.FeatureProjectionKey.key;
+
+import java.util.Collections;
+import java.util.Set;
+
 import org.mastodon.feature.Feature;
 import org.mastodon.feature.FeatureProjection;
+import org.mastodon.feature.FeatureProjectionKey;
 import org.mastodon.feature.FeatureProjectionSpec;
 import org.mastodon.feature.FeatureSpec;
 import org.mastodon.feature.IntFeatureProjection;
@@ -17,8 +22,16 @@ public class SpotFrameFeature implements Feature< Spot >
 
 	private static final String HELP_STRING = "Exposes the spot frame.";
 
+	private static final FeatureProjectionSpec PROJECTION_SPEC = new FeatureProjectionSpec( KEY );
+
+	public static final Spec SPEC = new Spec();
+
+	private final IntFeatureProjection< Spot > projection;
+
 	SpotFrameFeature()
-	{}
+	{
+		this.projection = new MyProjection();
+	}
 
 	@Plugin( type = FeatureSpec.class )
 	public static class Spec extends FeatureSpec< SpotFrameFeature, Spot >
@@ -31,20 +44,26 @@ public class SpotFrameFeature implements Feature< Spot >
 					SpotFrameFeature.class,
 					Spot.class,
 					Multiplicity.SINGLE,
-					new FeatureProjectionSpec( KEY, Dimension.NONE ) );
+					PROJECTION_SPEC );
 		}
 	}
 
 	@Override
-	public FeatureProjection< Spot > project( final String projectionKey )
+	public FeatureProjection< Spot > project( final FeatureProjectionKey key )
 	{
-		return new MyProjection();
+		return key( PROJECTION_SPEC ).equals( key ) ? projection : null;
 	}
 
 	@Override
-	public String[] projectionKeys()
+	public Set< FeatureProjectionKey > projectionKeys()
 	{
-		return new String[] { KEY };
+		return Collections.singleton( key( PROJECTION_SPEC ) );
+	}
+
+	@Override
+	public Spec getSpec()
+	{
+		return SPEC;
 	}
 
 	private static final class MyProjection implements IntFeatureProjection< Spot >

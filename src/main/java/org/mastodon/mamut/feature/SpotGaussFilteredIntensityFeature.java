@@ -1,14 +1,18 @@
 package org.mastodon.mamut.feature;
 
+import static org.mastodon.feature.FeatureProjectionKey.key;
+
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.mastodon.RefPool;
 import org.mastodon.feature.Dimension;
 import org.mastodon.feature.Feature;
 import org.mastodon.feature.FeatureProjection;
+import org.mastodon.feature.FeatureProjectionKey;
 import org.mastodon.feature.FeatureProjectionSpec;
 import org.mastodon.feature.FeatureProjections;
 import org.mastodon.feature.FeatureSpec;
@@ -21,8 +25,6 @@ public class SpotGaussFilteredIntensityFeature implements Feature< Spot >
 {
 	public static final String KEY = "Spot gaussian-filtered intensity";
 
-	public static final Spec SPEC = new Spec();
-
 	private static final String HELP_STRING =
 			"Computes the average intensity and its standard deviation inside spots "
 					+ "over all sources of the dataset. "
@@ -31,9 +33,11 @@ public class SpotGaussFilteredIntensityFeature implements Feature< Spot >
 					+ "to the minimal radius of the ellipsoid divided by "
 					+ SpotGaussFilteredIntensityFeatureComputer.SIGMA_FACTOR + ".";
 
-	private static final String MEAN_PROJECTIONS_KEY = "Mean";
+	public static final FeatureProjectionSpec MEAN_PROJECTION_SPEC = new FeatureProjectionSpec( "Mean", Dimension.INTENSITY );
 
-	private static final String STD_PROJECTIONS_KEY = "Std";
+	public static final FeatureProjectionSpec STD_PROJECTION_SPEC = new FeatureProjectionSpec( "Std", Dimension.INTENSITY );
+
+	public static final Spec SPEC = new Spec();
 
 	@Plugin( type = FeatureSpec.class )
 	public static class Spec extends FeatureSpec< SpotGaussFilteredIntensityFeature, Spot >
@@ -46,8 +50,7 @@ public class SpotGaussFilteredIntensityFeature implements Feature< Spot >
 					SpotGaussFilteredIntensityFeature.class,
 					Spot.class,
 					Multiplicity.ON_SOURCES,
-					new FeatureProjectionSpec( MEAN_PROJECTIONS_KEY, Dimension.INTENSITY ),
-					new FeatureProjectionSpec( STD_PROJECTIONS_KEY, Dimension.INTENSITY ) );
+					MEAN_PROJECTION_SPEC, STD_PROJECTION_SPEC );
 		}
 	}
 
@@ -55,17 +58,13 @@ public class SpotGaussFilteredIntensityFeature implements Feature< Spot >
 
 	final List< DoublePropertyMap< Spot > > stds;
 
-	private final Map< String, FeatureProjection< Spot > > projectionMap;
+	private final Map< FeatureProjectionKey, FeatureProjection< Spot > > projectionMap;
 
 	SpotGaussFilteredIntensityFeature( final int nSources, final RefPool< Spot > pool )
 	{
-		// Just used to generate projection keys.
-		final FeatureProjectionSpec meanProjections = new FeatureProjectionSpec( MEAN_PROJECTIONS_KEY, Dimension.INTENSITY );
-		final FeatureProjectionSpec stdProjections = new FeatureProjectionSpec( STD_PROJECTIONS_KEY, Dimension.INTENSITY );
-
 		this.means = new ArrayList<>( nSources );
 		this.stds = new ArrayList<>( nSources );
-		this.projectionMap = new HashMap<>( 2 * nSources );
+		this.projectionMap = new LinkedHashMap<>( 2 * nSources );
 		for ( int iSource = 0; iSource < nSources; iSource++ )
 		{
 			/*
@@ -74,27 +73,31 @@ public class SpotGaussFilteredIntensityFeature implements Feature< Spot >
 			 */
 			final DoublePropertyMap< Spot > m = new DoublePropertyMap<>( pool, Double.NaN );
 			means.add( m );
-			projectionMap.put(
-					meanProjections.projectionKey( Multiplicity.ON_SOURCES, iSource ),
+			projectionMap.put( key( MEAN_PROJECTION_SPEC, iSource ),
 					FeatureProjections.project( m, Dimension.COUNTS_UNITS ) );
 
 			final DoublePropertyMap< Spot > s = new DoublePropertyMap<>( pool, Double.NaN );
 			stds.add( s );
-			projectionMap.put(
-					stdProjections.projectionKey( Multiplicity.ON_SOURCES, iSource ),
+			projectionMap.put( key( STD_PROJECTION_SPEC, iSource ),
 					FeatureProjections.project( s, Dimension.COUNTS_UNITS ) );
 		}
 	}
 
 	@Override
-	public FeatureProjection< Spot > project( final String projectionKey )
+	public FeatureProjection< Spot > project( final FeatureProjectionKey key )
 	{
-		return projectionMap.get( projectionKey );
+		return projectionMap.get( key );
 	}
 
 	@Override
-	public String[] projectionKeys()
+	public Set< FeatureProjectionKey > projectionKeys()
 	{
-		return projectionMap.keySet().toArray( new String[] {} );
+		return projectionMap.keySet();
+	}
+
+	@Override
+	public Spec getSpec()
+	{
+		return SPEC;
 	}
 }

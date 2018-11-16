@@ -1,26 +1,31 @@
 package org.mastodon.feature;
 
+import static org.mastodon.feature.FeatureProjectionKey.key;
+
+import java.util.Collections;
+import java.util.Set;
+
 import org.mastodon.RefPool;
 import org.mastodon.properties.IntPropertyMap;
 
 /**
- * Feature made of a int scalar value.
+ * Feature made of an int scalar value.
+ * <p>
+ * They are not connected to a feature computer and are used to wrap a map that
+ * stores static values.
  *
  * @author Jean-Yves Tinevez
  *
  * @param <O>
+ *            the feature target.
  */
 public class IntScalarFeature< O > implements Feature< O >
 {
+	private final FeatureSpec< IntScalarFeature< O >, O > spec;
 
-	/**
-	 * The feature unique key.
-	 */
-	private final String key;
+	private final FeatureProjectionSpec projectionSpec;
 
-	private final IntFeatureProjection< O > projection;
-
-	private final Class< O > targetClass;
+	private final FeatureProjection< O > projection;
 
 	private final IntPropertyMap< O > values;
 
@@ -30,31 +35,39 @@ public class IntScalarFeature< O > implements Feature< O >
 	 * @param key
 	 *            the feature unique key. Must be unique within the application
 	 *            scope.
+	 * @param info
+	 *            the feature info text.
+	 * @param dimension
+	 *            the dimension of the quantity of this scalar feature.
 	 * @param units
 	 *            the projection units.
 	 * @param pool
 	 *            the pool of objects on which to define the feature.
 	 */
-	public IntScalarFeature( final String key, final String units, final RefPool< O > pool )
+	public IntScalarFeature( final String key, final String info, final Dimension dimension, final String units, final RefPool< O > pool )
 	{
-		this.key = key;
+		this.projectionSpec = new FeatureProjectionSpec( key, dimension );
+		this.spec = new MyFeatureSpec<>( key, info, pool.getRefClass(), projectionSpec );
 		this.values = new IntPropertyMap<>( pool, Integer.MIN_VALUE );
-		this.targetClass = pool.getRefClass();
 		this.projection = FeatureProjections.project( values, units );
 	}
 
 	@Override
-	public FeatureProjection< O > project( final String projectionKey )
+	public FeatureProjection< O > project( final FeatureProjectionKey key )
 	{
-		return ( key.equals( projectionKey ) )
-				? projection
-				: null;
+		return key( projectionSpec ).equals( key ) ? projection : null;
 	}
 
 	@Override
-	public String[] projectionKeys()
+	public Set< FeatureProjectionKey > projectionKeys()
 	{
-		return new String[] { key };
+		return Collections.singleton( key( projectionSpec ) );
+	}
+
+	@Override
+	public FeatureSpec< ? extends Feature< O >, O > getSpec()
+	{
+		return spec;
 	}
 
 	public boolean isSet( final O o )
@@ -77,27 +90,12 @@ public class IntScalarFeature< O > implements Feature< O >
 		values.remove( o );
 	}
 
-	/**
-	 * Returns an undiscoverable {@link FeatureSpec} for this feature.
-	 *
-	 * @param info
-	 *            the feature info text.
-	 * @param dimension
-	 *            the dimension of the quantity of this scalar feature.
-	 * @return a {@link FeatureSpec}.
-	 */
-	@SuppressWarnings( { "rawtypes", "unchecked" } )
-	public FeatureSpec< DoubleScalarFeature< O >, O > createFeatureSpec( final String info, final Dimension dimension )
+	private static final class MyFeatureSpec< T > extends FeatureSpec< IntScalarFeature< T >, T >
 	{
-		return new MyFeatureSpec( key, info, dimension, IntScalarFeature.class, targetClass );
-	}
-
-	private static final class MyFeatureSpec< F extends DoubleScalarFeature< T >, T > extends FeatureSpec< F, T >
-	{
-
-		public MyFeatureSpec( final String key, final String info, final Dimension dimension, final Class< F > featureClass, final Class< T > targetClass )
+		@SuppressWarnings( "unchecked" )
+		public MyFeatureSpec( final String key, final String info, final Class< T > targetClass, final FeatureProjectionSpec projectionSpec )
 		{
-			super( key, info, featureClass, targetClass, Multiplicity.SINGLE, new FeatureProjectionSpec( key, dimension ) );
+			super( key, info, ( Class< IntScalarFeature< T > > ) ( Class< ? > ) IntScalarFeature.class, targetClass, Multiplicity.SINGLE, projectionSpec );
 		}
 	}
 }

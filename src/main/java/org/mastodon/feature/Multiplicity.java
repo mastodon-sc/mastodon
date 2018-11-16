@@ -31,7 +31,6 @@ public enum Multiplicity
 
 	private final Function< int[], String > suffixGenerator;
 
-
 	private Multiplicity( final int requiredNArgs, final Function< int[], String > suffixGenerator )
 	{
 		this.requiredNArgs = requiredNArgs;
@@ -46,6 +45,11 @@ public enum Multiplicity
 					+ this + ". Got " + sourceIndices.length + "." );
 
 		return suffixGenerator.apply( sourceIndices );
+	}
+
+	public int getRequiredNArgs()
+	{
+		return requiredNArgs;
 	}
 
 	/**

@@ -3,10 +3,9 @@ package org.mastodon.revised.mamut;
 import org.mastodon.app.ViewGraph;
 import org.mastodon.app.ui.MastodonFrameView;
 import org.mastodon.app.ui.ViewMenuBuilder.JMenuHandle;
-import org.mastodon.feature.Feature;
 import org.mastodon.feature.FeatureModel;
+import org.mastodon.feature.FeatureModelUtil;
 import org.mastodon.feature.FeatureProjection;
-import org.mastodon.feature.FeatureSpec;
 import org.mastodon.graph.Edge;
 import org.mastodon.graph.Vertex;
 import org.mastodon.revised.model.mamut.Link;
@@ -82,13 +81,11 @@ public class MamutView< VG extends ViewGraph< Spot, Link, V, E >, V extends Vert
 				// Vertex.
 				final ColorGenerator< Spot > vertexColorGenerator;
 				final String[] vertexKeys = fcm.getVertexFeatureProjection();
-				final FeatureSpec< ?, ? > vertexFeatureSpec = getFeatureSpec( featureModel, vertexKeys[0] );
-				final Feature< ? > vertexFeature = featureModel.getFeature( vertexFeatureSpec );
-				if ( null == vertexFeature || null == vertexFeature.project( vertexKeys[ 1 ] ) )
+				final FeatureProjection< ? > vertexProjection = FeatureModelUtil.getFeatureProjection( featureModel, vertexKeys );
+				if ( null == vertexProjection )
 					vertexColorGenerator = new DefaultColorGenerator< Spot >();
 				else
 				{
-					final FeatureProjection< ? > vertexProjection = vertexFeature.project( vertexKeys[ 1 ] );
 					final String vertexColorMap = fcm.getVertexColorMap();
 					final double vertexRangeMin = fcm.getVertexRangeMin();
 					final double vertexRangeMax = fcm.getVertexRangeMax();
@@ -124,13 +121,11 @@ public class MamutView< VG extends ViewGraph< Spot, Link, V, E >, V extends Vert
 				// Edge.
 				final ColorGenerator< Link > edgeColorGenerator;
 				final String[] edgeKeys = fcm.getEdgeFeatureProjection();
-				final FeatureSpec< ?, ? > edgeFeatureSpec = getFeatureSpec( featureModel, edgeKeys[0] );
-				final Feature< ? > edgeFeature = featureModel.getFeature( edgeFeatureSpec );
-				if ( null == edgeFeature || null == edgeFeature.project( edgeKeys[ 1 ] ) )
+				final FeatureProjection< ? > edgeProjection = FeatureModelUtil.getFeatureProjection( featureModel, edgeKeys );;
+				if ( null == edgeProjection )
 					edgeColorGenerator = new DefaultColorGenerator< Link >();
 				else
 				{
-					final FeatureProjection< ? > edgeProjection = edgeFeature.project( edgeKeys[ 1 ] );
 					final String edgeColorMap = fcm.getEdgeColorMap();
 					final double edgeRangeMin = fcm.getEdgeRangeMin();
 					final double edgeRangeMax = fcm.getEdgeRangeMax();
@@ -168,13 +163,5 @@ public class MamutView< VG extends ViewGraph< Spot, Link, V, E >, V extends Vert
 			refresh.run();
 		};
 		coloringModel.listeners().add( coloringChangedListener );
-	}
-
-	private static final FeatureSpec< ?, ? > getFeatureSpec( final FeatureModel featureModel, final String featureKey )
-	{
-		return featureModel.getFeatureSpecs().stream()
-				.filter( ( fs ) -> featureKey.equals( fs.getKey() ) )
-				.findFirst()
-				.get();
 	}
 }

@@ -8,6 +8,7 @@ public class FeatureProjectionSpec
 	/**
 	 * The projection specification name.
 	 */
+	// TODO: rename to key
 	public final String projectionName;
 
 	public final Dimension projectionDimension;
@@ -23,10 +24,15 @@ public class FeatureProjectionSpec
 		this.projectionDimension = dimension;
 	}
 
+	public String getKey()
+	{
+		return projectionName;
+	}
+
 	/**
 	 * Generates a feature projection key based on this specification name and
 	 * on the specified source indices.
-	 * 
+	 *
 	 * @param multiplicity
 	 *            the multiplicity of the feature.
 	 * @param sourceIndices
@@ -38,10 +44,24 @@ public class FeatureProjectionSpec
 	 *             the {@link Multiplicity#ON_SOURCES} requires the
 	 *             specification of at least one source index.
 	 */
+	// TODO
 	public String projectionKey( final Multiplicity multiplicity, final int... sourceIndices )
 	{
 		return projectionName + multiplicity.makeSuffix( sourceIndices );
 	}
+
+	// TODO
+	public String projectionKey( final int... sourceIndices )
+	{
+		StringBuilder sb = new StringBuilder( projectionName );
+		for ( int sourceIndex : sourceIndices )
+		{
+			sb.append( " ch" );
+			sb.append( sourceIndex );
+		}
+		return sb.toString();
+	}
+
 
 	@Override
 	public String toString()

@@ -72,9 +72,15 @@ public class FeatureModel
 	 * @param feature
 	 *            the feature.
 	 */
+	// TODO: remove?
 	public void declareFeature( final FeatureSpec< ?, ? > key, final Feature< ? > feature )
 	{
 		features.put( key, feature );
+		fireFeatureModelChangedEvent();
+	}
+	public void declareFeature( final Feature< ? > feature )
+	{
+		features.put( feature.getSpec(), feature );
 		fireFeatureModelChangedEvent();
 	}
 
