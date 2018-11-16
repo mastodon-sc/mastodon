@@ -105,8 +105,7 @@ public class MamutFeatureComputation
 				featureModel.clear( featureSpec );
 
 			// Pass the feature map to the feature model.
-			for ( final FeatureSpec< ?, ? > featureSpec : map.keySet() )
-				featureModel.declareFeature( featureSpec, map.get( featureSpec ) );
+			map.values().forEach( featureModel::declareFeature );
 
 			featureModel.resumeListeners();
 			return map;

@@ -65,7 +65,7 @@ public class MaMuTExportExample
 
 		featureModel.clear();
 		for ( final FeatureSpec< ?, ? > spec: features.keySet() )
-			featureModel.declareFeature( spec, features.get( spec ) );
+			featureModel.declareFeature( features.get( spec ) );
 
 		System.out.println();
 		System.out.println( "Model BEFORE serialization:" );

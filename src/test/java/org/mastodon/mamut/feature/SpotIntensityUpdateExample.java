@@ -58,8 +58,7 @@ public class SpotIntensityUpdateExample
 		 */
 
 		featureModel.clear();
-		for ( final FeatureSpec< ?, ? > spec: features.keySet() )
-			featureModel.declareFeature( spec, features.get( spec ) );
+		features.values().forEach( featureModel::declareFeature );
 
 		@SuppressWarnings( "unchecked" )
 		final FeatureProjection< Spot > proj1 = ( FeatureProjection< Spot > ) model.getFeatureModel()
@@ -88,8 +87,7 @@ public class SpotIntensityUpdateExample
 				SpotGaussFilteredIntensityFeature.SPEC );
 
 		featureModel.clear();
-		for ( final FeatureSpec< ?, ? > spec: features2.keySet() )
-			featureModel.declareFeature( spec, features2.get( spec ) );
+		features2.values().forEach( featureModel::declareFeature );
 
 		System.out.println( "Spot " + spot.getLabel() + " intensity is now " + proj1.value( spot ) + " ± " + proj2.value( spot ) );
 		System.out.println();
@@ -104,8 +102,7 @@ public class SpotIntensityUpdateExample
 				SpotGaussFilteredIntensityFeature.SPEC );
 
 		featureModel.clear();
-		for ( final FeatureSpec< ?, ? > spec: features3.keySet() )
-			featureModel.declareFeature( spec, features3.get( spec ) );
+		features3.values().forEach( featureModel::declareFeature );
 
 		System.out.println( "Spot " + spot.getLabel() + " intensity is to be compared with " + proj1.value( spot ) + " ± " + proj2.value( spot ) );
 		System.out.println();
@@ -119,8 +116,6 @@ public class SpotIntensityUpdateExample
 				SpotGaussFilteredIntensityFeature.SPEC );
 
 		featureModel.clear();
-		for ( final FeatureSpec< ?, ? > spec: features4.keySet() )
-			featureModel.declareFeature( spec, features4.get( spec ) );
-
+		features4.values().forEach( featureModel::declareFeature );
 	}
 }

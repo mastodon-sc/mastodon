@@ -33,24 +33,10 @@ public class FeatureProjectionSpec
 	 * Generates a feature projection key based on this specification name and
 	 * on the specified source indices.
 	 *
-	 * @param multiplicity
-	 *            the multiplicity of the feature.
 	 * @param sourceIndices
 	 *            the source indices.
 	 * @return they feature projection key.
-	 * @throws IllegalArgumentException
-	 *             if there is not enough source indices specified for the
-	 *             multiplicity of this projection specification. For instance
-	 *             the {@link Multiplicity#ON_SOURCES} requires the
-	 *             specification of at least one source index.
 	 */
-	// TODO
-	public String projectionKey( final Multiplicity multiplicity, final int... sourceIndices )
-	{
-		return projectionName + multiplicity.makeSuffix( sourceIndices );
-	}
-
-	// TODO
 	public String projectionKey( final int... sourceIndices )
 	{
 		StringBuilder sb = new StringBuilder( projectionName );
@@ -61,7 +47,6 @@ public class FeatureProjectionSpec
 		}
 		return sb.toString();
 	}
-
 
 	@Override
 	public String toString()

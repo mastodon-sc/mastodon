@@ -22,7 +22,7 @@ public class FeatureModel
 	public interface FeatureModelListener
 	{
 		/**
-		 * Notifies a listener that the feature model it listens to has changed.
+		 * Notifies a listener that the feature model has changed.
 		 */
 		public void featureModelChanged();
 	}
@@ -67,17 +67,9 @@ public class FeatureModel
 	 * Registers the feature key and the feature projections provided by the
 	 * specified feature.
 	 *
-	 * @param key
-	 *            the {@link FeatureSpec} of the feature to add.
 	 * @param feature
 	 *            the feature.
 	 */
-	// TODO: remove?
-	public void declareFeature( final FeatureSpec< ?, ? > key, final Feature< ? > feature )
-	{
-		features.put( key, feature );
-		fireFeatureModelChangedEvent();
-	}
 	public void declareFeature( final Feature< ? > feature )
 	{
 		features.put( feature.getSpec(), feature );
@@ -109,15 +101,10 @@ public class FeatureModel
 		return Collections.unmodifiableSet( features.keySet() );
 	}
 
-	public Set< Map.Entry< FeatureSpec< ?, ? >, Feature< ? > > > entrySet()
-	{
-		return Collections.unmodifiableSet( features.entrySet() );
-	}
-
 	/**
 	 * Exposes the list of listeners that are notified when a change happens to
 	 * this feature model. Events are fired for every call to {@link #clear()}
-	 * or {@link #declareFeature(FeatureSpec, Feature)} methods.
+	 * or {@link #declareFeature(Feature)} methods.
 	 *
 	 * @return the list of the listeners.
 	 */

@@ -201,7 +201,6 @@ public class FeatureSelectionPanel extends JPanel
 		return new String[] {
 				featureSpec.getKey(),
 				projectionSpec.projectionKey(
-						featureSpec.getMultiplicity(),
 						// We use the index, since the display is 1-based.
 						cbSource1.getSelectedIndex(),
 						cbSource2.getSelectedIndex() ) };
