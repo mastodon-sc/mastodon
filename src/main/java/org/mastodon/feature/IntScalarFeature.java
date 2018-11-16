@@ -63,6 +63,12 @@ public class IntScalarFeature< O > implements Feature< O >
 	}
 
 	@Override
+	public Set< FeatureProjection< O > > projections()
+	{
+		return Collections.singleton( projection );
+	}
+
+	@Override
 	public FeatureSpec< ? extends Feature< O >, O > getSpec()
 	{
 		return spec;

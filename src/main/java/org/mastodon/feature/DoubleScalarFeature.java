@@ -7,6 +7,7 @@ import java.util.Set;
 
 import org.mastodon.RefPool;
 import org.mastodon.properties.DoublePropertyMap;
+import org.mastodon.revised.model.mamut.Spot;
 
 /**
  * Feature made of a double scalar value.
@@ -60,6 +61,12 @@ public class DoubleScalarFeature< O > implements Feature< O >
 	public Set< FeatureProjectionKey > projectionKeys()
 	{
 		return Collections.singleton( projection.getKey() );
+	}
+
+	@Override
+	public Set< FeatureProjection< O > > projections()
+	{
+		return Collections.singleton( projection );
 	}
 
 	@Override

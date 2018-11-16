@@ -67,6 +67,12 @@ public class LinkVelocityFeature implements Feature< Link >
 	}
 
 	@Override
+	public Set< FeatureProjection< Link > > projections()
+	{
+		return Collections.singleton( projection );
+	}
+
+	@Override
 	public Spec getSpec()
 	{
 		return SPEC;

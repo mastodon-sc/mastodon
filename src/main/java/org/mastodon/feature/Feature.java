@@ -45,7 +45,12 @@ public interface Feature< T >
 	 *
 	 * @return keys for all projections.
 	 */
+	@Deprecated
 	public Set< FeatureProjectionKey > projectionKeys();
+
+	// TODO: should replace projectionKeys()
+	// TODO: After that, FeatureProjectionKey can be made to include also FeatureSpec, to provide a unique key for each projection (mastodon-wide)
+	public Set< FeatureProjection< T > > projections();
 
 	public FeatureSpec< ? extends Feature<T>, T > getSpec();
 }

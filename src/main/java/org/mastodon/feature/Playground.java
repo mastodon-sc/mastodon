@@ -21,10 +21,6 @@ public class Playground
 
 	public static class F1 implements Feature< PlaygroundSpot >
 	{
-		public static final FeatureProjectionSpec p1 = new FeatureProjectionSpec( "p1" );
-
-		public static final FeatureProjectionSpec p2 = new FeatureProjectionSpec( "p2" );
-
 		public static final Spec SPEC = new Spec();
 
 		@Plugin( type = FeatureSpec.class )
@@ -37,8 +33,7 @@ public class Playground
 						"Dummy feature F1",
 						F1.class,
 						PlaygroundSpot.class,
-						Multiplicity.SINGLE,
-						p1, p2 );
+						Multiplicity.SINGLE );
 			}
 		}
 
@@ -51,7 +46,13 @@ public class Playground
 		@Override
 		public Set< FeatureProjectionKey > projectionKeys()
 		{
-			return Collections.emptySet();
+			return null;
+		}
+
+		@Override
+		public Set< FeatureProjection< PlaygroundSpot > > projections()
+		{
+			return null;
 		}
 
 		@Override
@@ -63,10 +64,6 @@ public class Playground
 
 	public static class F2 implements Feature< PlaygroundSpot >
 	{
-		public static final FeatureProjectionSpec q1 = new FeatureProjectionSpec( "q1" );
-
-		public static final FeatureProjectionSpec q2 = new FeatureProjectionSpec( "q2" );
-
 		public static final Spec SPEC = new Spec();
 
 		@Plugin( type = FeatureSpec.class )
@@ -79,8 +76,7 @@ public class Playground
 						"Dummy feature F2",
 						F2.class,
 						PlaygroundSpot.class,
-						Multiplicity.SINGLE,
-						q1, q2 );
+						Multiplicity.SINGLE );
 			}
 		}
 
@@ -93,7 +89,13 @@ public class Playground
 		@Override
 		public Set< FeatureProjectionKey > projectionKeys()
 		{
-			return Collections.emptySet();
+			return null;
+		}
+
+		@Override
+		public Set< FeatureProjection< PlaygroundSpot > > projections()
+		{
+			return null;
 		}
 
 		@Override
@@ -105,8 +107,6 @@ public class Playground
 
 	public static class F3 implements Feature< PlaygroundSpot >
 	{
-		public static final FeatureProjectionSpec p = new FeatureProjectionSpec( "p" );
-
 		public static final Spec SPEC = new Spec();
 
 		@Plugin( type = FeatureSpec.class )
@@ -119,8 +119,7 @@ public class Playground
 						"Dummy feature F3",
 						F3.class,
 						PlaygroundSpot.class,
-						Multiplicity.SINGLE,
-						p );
+						Multiplicity.SINGLE );
 			}
 		}
 
@@ -133,7 +132,13 @@ public class Playground
 		@Override
 		public Set< FeatureProjectionKey > projectionKeys()
 		{
-			return Collections.emptySet();
+			return null;
+		}
+
+		@Override
+		public Set< FeatureProjection< PlaygroundSpot > > projections()
+		{
+			return null;
 		}
 
 		@Override
@@ -145,8 +150,6 @@ public class Playground
 
 	public static class F4 implements Feature< PlaygroundSpot >
 	{
-		public static final FeatureProjectionSpec p = new FeatureProjectionSpec( "p" );
-
 		public static final Spec SPEC = new Spec();
 
 		@Plugin( type = FeatureSpec.class )
@@ -159,8 +162,7 @@ public class Playground
 						"Dummy feature F4",
 						F4.class,
 						PlaygroundSpot.class,
-						Multiplicity.SINGLE,
-						p );
+						Multiplicity.SINGLE );
 			}
 		}
 
@@ -173,7 +175,13 @@ public class Playground
 		@Override
 		public Set< FeatureProjectionKey > projectionKeys()
 		{
-			return Collections.emptySet();
+			return null;
+		}
+
+		@Override
+		public Set< FeatureProjection< PlaygroundSpot > > projections()
+		{
+			return null;
 		}
 
 		@Override

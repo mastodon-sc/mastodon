@@ -285,6 +285,12 @@ public class FeatureColorModeConfigPage extends SelectAndEditProfileSettingsPage
 		}
 
 		@Override
+		public Set< FeatureProjection< T > > projections()
+		{
+			return null;
+		}
+
+		@Override
 		public FeatureSpec< ? extends Feature< T >, T > getSpec()
 		{
 			return null;
