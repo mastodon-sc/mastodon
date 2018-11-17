@@ -55,12 +55,6 @@ public class SpotFrameFeature implements Feature< Spot >
 	}
 
 	@Override
-	public Set< FeatureProjectionKey > projectionKeys()
-	{
-		return Collections.singleton( projection.getKey() );
-	}
-
-	@Override
 	public Set< FeatureProjection< Spot > > projections()
 	{
 		return Collections.singleton( projection );

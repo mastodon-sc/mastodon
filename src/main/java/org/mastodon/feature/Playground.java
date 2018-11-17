@@ -44,12 +44,6 @@ public class Playground
 		}
 
 		@Override
-		public Set< FeatureProjectionKey > projectionKeys()
-		{
-			return null;
-		}
-
-		@Override
 		public Set< FeatureProjection< PlaygroundSpot > > projections()
 		{
 			return null;
@@ -82,12 +76,6 @@ public class Playground
 
 		@Override
 		public FeatureProjection< PlaygroundSpot > project( final FeatureProjectionKey key )
-		{
-			return null;
-		}
-
-		@Override
-		public Set< FeatureProjectionKey > projectionKeys()
 		{
 			return null;
 		}
@@ -130,12 +118,6 @@ public class Playground
 		}
 
 		@Override
-		public Set< FeatureProjectionKey > projectionKeys()
-		{
-			return null;
-		}
-
-		@Override
 		public Set< FeatureProjection< PlaygroundSpot > > projections()
 		{
 			return null;
@@ -168,12 +150,6 @@ public class Playground
 
 		@Override
 		public FeatureProjection< PlaygroundSpot > project( final FeatureProjectionKey key )
-		{
-			return null;
-		}
-
-		@Override
-		public Set< FeatureProjectionKey > projectionKeys()
 		{
 			return null;
 		}

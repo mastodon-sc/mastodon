@@ -49,27 +49,20 @@ public class MamutPlayground
 	{
 		System.out.println( "\n\nFeatures that have " + target.getSimpleName() + " as target:" );
 		final List< FeatureSpec< ?, T > > specs = specsService.getSpecs( target );
-		for ( final FeatureSpec< ?, ? > spec : specs )
+		for ( final FeatureSpec< ?, T > spec : specs )
 		{
 			@SuppressWarnings( "unchecked" )
-			final Feature< Spot > feature = ( Feature< Spot > ) featureModel.get( spec );
+			final Feature< T > feature = ( Feature< T > ) featureModel.get( spec );
 			if (null == feature)
 			{
 				System.out.println( "\n - Feature " + spec.getKey() + " is not computed." );
 				continue;
 			}
-			final Set< FeatureProjectionKey > projections = feature.projectionKeys();
+			final Set< FeatureProjection< T > > projections = feature.projections();
 			System.out.println( "\n - Feature " + spec.getKey() +". Has " + projections.size() + " projections:" );
-			for ( final FeatureProjectionKey projectionKey : projections )
+			for ( final FeatureProjection< T > projection : projections )
 			{
-				@SuppressWarnings( "unchecked" )
-				final FeatureProjection< T > projection = ( FeatureProjection< T > ) feature.project( projectionKey );
-				if (null == projection)
-				{
-					System.out.println( "   - Projection " + projectionKey  + " is not set, skipping." );
-					continue;
-				}
-				System.out.println( "   - Projection " + projectionKey );
+				System.out.println( "   - Projection " + projection.getKey() );
 				for ( final T obj : collection )
 					System.out.println( "       - " + obj + ": " + projection.value( obj ) );
 			}

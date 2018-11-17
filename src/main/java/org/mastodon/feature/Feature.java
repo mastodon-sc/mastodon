@@ -41,15 +41,11 @@ public interface Feature< T >
 	public FeatureProjection< T > project( final FeatureProjectionKey key );
 
 	/**
-	 * Get keys for all {@link FeatureProjection}s that this feature currently provides.
+	 * Get all {@link FeatureProjection}s that this feature currently provides.
 	 *
-	 * @return keys for all projections.
+	 * @return set of all projections.
 	 */
-	@Deprecated
-	public Set< FeatureProjectionKey > projectionKeys();
-
-	// TODO: should replace projectionKeys()
-	// TODO: After that, FeatureProjectionKey can be made to include also FeatureSpec, to provide a unique key for each projection (mastodon-wide)
+	// TODO: Now FeatureProjectionKey can be made to include also FeatureSpec, to provide a unique key for each projection (mastodon-wide)
 	public Set< FeatureProjection< T > > projections();
 
 	public FeatureSpec< ? extends Feature<T>, T > getSpec();

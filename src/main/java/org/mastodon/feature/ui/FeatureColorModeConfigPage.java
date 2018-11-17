@@ -279,12 +279,6 @@ public class FeatureColorModeConfigPage extends SelectAndEditProfileSettingsPage
 		}
 
 		@Override
-		public Set< FeatureProjectionKey > projectionKeys()
-		{
-			return null;
-		}
-
-		@Override
 		public Set< FeatureProjection< T > > projections()
 		{
 			return null;

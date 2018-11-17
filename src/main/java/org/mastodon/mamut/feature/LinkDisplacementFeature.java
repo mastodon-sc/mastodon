@@ -61,12 +61,6 @@ public class LinkDisplacementFeature implements Feature< Link >
 	}
 
 	@Override
-	public Set< FeatureProjectionKey > projectionKeys()
-	{
-		return Collections.singleton( projection.getKey() );
-	}
-
-	@Override
 	public Set< FeatureProjection< Link > > projections()
 	{
 		return Collections.singleton( projection );

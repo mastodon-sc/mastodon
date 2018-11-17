@@ -92,12 +92,6 @@ public class SpotGaussFilteredIntensityFeature implements Feature< Spot >
 	}
 
 	@Override
-	public Set< FeatureProjectionKey > projectionKeys()
-	{
-		return projectionMap.keySet();
-	}
-
-	@Override
 	public Set< FeatureProjection< Spot > > projections()
 	{
 		return new LinkedHashSet<>( projectionMap.values() );

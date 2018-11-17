@@ -57,12 +57,6 @@ public class IntScalarFeature< O > implements Feature< O >
 	}
 
 	@Override
-	public Set< FeatureProjectionKey > projectionKeys()
-	{
-		return Collections.singleton( projection.getKey() );
-	}
-
-	@Override
 	public Set< FeatureProjection< O > > projections()
 	{
 		return Collections.singleton( projection );

@@ -54,8 +54,8 @@ public class ModelUtils
 
 		// TODO if different features have same FeatureProjectionKey, map entries will be overridden!
 		for ( final Feature< Spot > feature : spotFeatures )
-			for ( final FeatureProjectionKey projectionKey : feature.projectionKeys() )
-				sfs.put( projectionKey, feature.project( projectionKey ) );
+			for ( FeatureProjection< Spot > projection : feature.projections() )
+				sfs.put( projection.getKey(), projection );
 
 		/*
 		 * Loop over all spots.
@@ -132,8 +132,8 @@ public class ModelUtils
 			}
 
 		for ( final Feature< Link > feature : linkFeatures )
-			for ( final FeatureProjectionKey projectionKey : feature.projectionKeys() )
-				lfs.put( projectionKey, feature.project( projectionKey ) );
+			for ( FeatureProjection< Link > projection : feature.projections() )
+				lfs.put( projection.getKey(), projection );
 
 		/*
 		 * Loop over all links.

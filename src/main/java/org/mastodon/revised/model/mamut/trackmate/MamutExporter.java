@@ -91,6 +91,7 @@ import org.mastodon.collection.RefSet;
 import org.mastodon.feature.Dimension;
 import org.mastodon.feature.Feature;
 import org.mastodon.feature.FeatureModel;
+import org.mastodon.feature.FeatureProjection;
 import org.mastodon.feature.FeatureProjectionKey;
 import org.mastodon.feature.IntFeatureProjection;
 import org.mastodon.graph.algorithm.RootFinder;
@@ -482,10 +483,10 @@ public class MamutExporter
 		final List< Feature< Link > > features = getFeaturesForTarget( model.getFeatureModel(), Link.class );
 		for ( final Feature< Link > f : features )
 		{
-			for ( final FeatureProjectionKey projectionKey : f.projectionKeys() )
+			for ( FeatureProjection< Link > projection : f.projections() )
 				attributes.add( new Attribute(
-						sanitize( projectionKey.toString() ),
-						Double.toString( f.project( projectionKey ).value( edge ) ) ) );
+						sanitize( projection.getKey().toString() ),
+						Double.toString( projection.value( edge ) ) ) );
 		}
 
 		final Element edgeElement = new Element( EDGE_TAG );
@@ -543,10 +544,10 @@ public class MamutExporter
 		final List< Feature< Spot > > features = getFeaturesForTarget( model.getFeatureModel(), Spot.class );
 		for ( final Feature< Spot > f : features )
 		{
-			for ( final FeatureProjectionKey projectionKey : f.projectionKeys() )
+			for ( FeatureProjection< Spot > projection : f.projections() )
 				attributes.add( new Attribute(
-						sanitize( projectionKey.toString() ),
-						Double.toString( f.project( projectionKey ).value( spot ) ) ) );
+						sanitize( projection.getKey().toString() ),
+						Double.toString( projection.value( spot ) ) ) );
 		}
 		final Element spotElement = new Element( SPOT_ELEMENT_TAG );
 		spotElement.setAttributes( attributes );
@@ -575,18 +576,19 @@ public class MamutExporter
 		{
 
 			// We actually export feature projections.
-			for ( final FeatureProjectionKey projectionKey : feature.projectionKeys() )
+			for ( FeatureProjection< T > projection : feature.projections() )
 			{
-				final String isint = ( feature.project( projectionKey ) instanceof IntFeatureProjection )
+				final String isint = ( projection instanceof IntFeatureProjection )
 						? "true"
 						: "false";
 
 				final Element fel = new Element( FEATURE_TAG );
-				fel.setAttribute( FEATURE_ATTRIBUTE, sanitize( projectionKey.toString() ) );
+				final String projectionName = projection.getKey().toString();
+				fel.setAttribute( FEATURE_ATTRIBUTE, sanitize( projectionName ) );
 				// Mastodon does not support feature name yet.
-				fel.setAttribute( FEATURE_NAME_ATTRIBUTE, projectionKey.toString() );
-				fel.setAttribute( FEATURE_SHORT_NAME_ATTRIBUTE, projectionKey.toString() );
-				final String units = feature.project( projectionKey ).units();
+				fel.setAttribute( FEATURE_NAME_ATTRIBUTE, projectionName );
+				fel.setAttribute( FEATURE_SHORT_NAME_ATTRIBUTE, projectionName );
+				final String units = projection.units();
 				fel.setAttribute( FEATURE_DIMENSION_ATTRIBUTE, unitsToDimension( units, model.getSpaceUnits(), model.getTimeUnits() ) );
 				fel.setAttribute( FEATURE_ISINT_ATTRIBUTE, isint );
 				classFeaturesElement.addContent( fel );

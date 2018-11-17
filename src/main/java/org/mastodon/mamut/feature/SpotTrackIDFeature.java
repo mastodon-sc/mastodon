@@ -61,12 +61,6 @@ public class SpotTrackIDFeature implements Feature< Spot >
 	}
 
 	@Override
-	public Set< FeatureProjectionKey > projectionKeys()
-	{
-		return Collections.singleton( key( PROJECTION_SPEC ) );
-	}
-
-	@Override
 	public Set< FeatureProjection< Spot > > projections()
 	{
 		return Collections.singleton( projection );
