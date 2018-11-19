@@ -18,10 +18,13 @@ import javax.swing.JSeparator;
 
 import org.mastodon.feature.FeatureSpec;
 import org.mastodon.revised.ui.coloring.ColorMap;
+import org.mastodon.revised.ui.coloring.feature.AvailableFeatureProjections;
 import org.mastodon.revised.ui.coloring.feature.FeatureColorMode;
 import org.mastodon.revised.ui.coloring.feature.FeatureColorMode.EdgeColorMode;
 import org.mastodon.revised.ui.coloring.feature.FeatureColorMode.VertexColorMode;
+import org.mastodon.revised.ui.coloring.feature.FeatureProjectionId;
 import org.mastodon.revised.ui.coloring.feature.FeatureRangeCalculator;
+import org.mastodon.revised.ui.coloring.feature.TargetType;
 
 /**
  * JPanel to edit a single {@link FeatureColorMode}.
@@ -35,10 +38,6 @@ public class FeatureColorModeEditorPanel extends JPanel
 
 	private final FeatureColorMode mode;
 
-	private Set< FeatureSpec< ?, ? > > vertexFeatureSpecs = new HashSet<>();
-
-	private Set< FeatureSpec< ?, ? > > edgeFeatureSpecs = new HashSet<>();
-
 	private final FeatureSelectionPanel edgeFeatureSelectionPanel;
 
 	private final FeatureSelectionPanel vertexFeatureSelectionPanel;
@@ -48,6 +47,10 @@ public class FeatureColorModeEditorPanel extends JPanel
 	 * in the JComboBoxes.
 	 */
 	private boolean doForwardToMode = true;
+
+	private AvailableFeatureProjections availableFeatureProjections;
+
+	private final Runnable update;
 
 	public FeatureColorModeEditorPanel(
 			final FeatureColorMode mode,
@@ -80,7 +83,7 @@ public class FeatureColorModeEditorPanel extends JPanel
 		 */
 
 		this.vertexFeatureSelectionPanel = new FeatureSelectionPanel();
-		addToLayout( new JLabel( "vertex feature", JLabel.TRAILING ), vertexFeatureSelectionPanel, c );
+		addToLayout( new JLabel( "vertex feature", JLabel.TRAILING ), vertexFeatureSelectionPanel.getPanel(), c );
 
 
 		/*
@@ -105,12 +108,10 @@ public class FeatureColorModeEditorPanel extends JPanel
 				final FeatureRangeCalculator rangeCalculator = ( mode.getVertexColorMode().equals( VertexColorMode.VERTEX ) )
 						? vertexFeatureRangeCalculator
 						: edgeFeatureRangeCalculator;
-				final String featureKey = mode.getVertexFeatureProjection()[ 0 ];
-				final String projectionKey = mode.getVertexFeatureProjection()[ 1 ];
-				final FeatureSpec< ?, ? > featureSpec = getFeatureSpecFromKey( featureKey );
-				if ( null == featureSpec )
+				final FeatureProjectionId projection = mode.getVertexFeatureProjection();
+				if ( null == projection )
 					return;
-				final double[] minMax = rangeCalculator.computeMinMax( featureSpec, projectionKey );
+				final double[] minMax = rangeCalculator.computeMinMax( projection );
 				if ( null == minMax )
 					return;
 				setMinMax( minMax[ 0 ], minMax[ 1 ] );
@@ -141,7 +142,7 @@ public class FeatureColorModeEditorPanel extends JPanel
 		 */
 
 		this.edgeFeatureSelectionPanel = new FeatureSelectionPanel();
-		addToLayout( new JLabel( "edge feature", JLabel.TRAILING ), edgeFeatureSelectionPanel, c );
+		addToLayout( new JLabel( "edge feature", JLabel.TRAILING ), edgeFeatureSelectionPanel.getPanel(), c );
 
 		/*
 		 * Edge color map.
@@ -165,12 +166,10 @@ public class FeatureColorModeEditorPanel extends JPanel
 				final FeatureRangeCalculator rangeCalculator = ( mode.getEdgeColorMode().equals( EdgeColorMode.EDGE ) )
 						? edgeFeatureRangeCalculator
 						: vertexFeatureRangeCalculator;
-				final String featureKey = mode.getEdgeFeatureProjection()[ 0 ];
-				final String projectionKey = mode.getEdgeFeatureProjection()[ 1 ];
-				final FeatureSpec< ?, ? > featureSpec = getFeatureSpecFromKey( featureKey );
-				if ( null == featureSpec )
+				final FeatureProjectionId projection = mode.getVertexFeatureProjection();
+				if ( null == projection )
 					return;
-				final double[] minMax = rangeCalculator.computeMinMax( featureSpec, projectionKey );
+				final double[] minMax = rangeCalculator.computeMinMax( projection );
 				if ( null == minMax )
 					return;
 				setMinMax( minMax[ 0 ], minMax[ 1 ] );
@@ -180,7 +179,7 @@ public class FeatureColorModeEditorPanel extends JPanel
 
 		/*
 		 * Here comes the great dance of listeners.
-		 * 
+		 *
 		 * First the listener that listens to changes in the GUI and forward them to the
 		 * model.
 		 */
@@ -193,21 +192,8 @@ public class FeatureColorModeEditorPanel extends JPanel
 			final boolean visible = !vcm.equals( VertexColorMode.NONE );
 			vertexColorMapSelector.setVisible( visible );
 			vertexFeatureRangeSelector.setVisible( visible );
-			vertexFeatureSelectionPanel.setVisible( visible );
-
-			switch ( vcm )
-			{
-			case VERTEX:
-				vertexFeatureSelectionPanel.setFeatureSpecs( vertexFeatureSpecs );
-				break;
-			case INCOMING_EDGE:
-			case OUTGOING_EDGE:
-				vertexFeatureSelectionPanel.setFeatureSpecs( edgeFeatureSpecs );
-				break;
-			case NONE:
-			default:
-				break;
-			}
+			vertexFeatureSelectionPanel.getPanel().setVisible( visible );
+			vertexFeatureSelectionPanel.setAvailableFeatureProjections( availableFeatureProjections, vcm.targetType() );
 
 			if ( doForwardToMode )
 				mode.setVertexColorMode( vcm );
@@ -223,21 +209,8 @@ public class FeatureColorModeEditorPanel extends JPanel
 			final boolean visible = !ecm.equals( EdgeColorMode.NONE );
 			edgeColorMapSelector.setVisible( visible );
 			edgeFeatureRangeSelector.setVisible( visible );
-			edgeFeatureSelectionPanel.setVisible( visible );
-
-			switch ( ecm )
-			{
-			case NONE:
-			case EDGE:
-				edgeFeatureSelectionPanel.setFeatureSpecs( edgeFeatureSpecs );
-				break;
-			case SOURCE_VERTEX:
-			case TARGET_VERTEX:
-				edgeFeatureSelectionPanel.setFeatureSpecs( vertexFeatureSpecs );
-				break;
-			default:
-				break;
-			}
+			edgeFeatureSelectionPanel.getPanel().setVisible( visible );
+			edgeFeatureSelectionPanel.setAvailableFeatureProjections( availableFeatureProjections, ecm.targetType() );
 
 			if ( doForwardToMode )
 				mode.setEdgeColorMode( ecm );
@@ -280,8 +253,8 @@ public class FeatureColorModeEditorPanel extends JPanel
 		vertexFeatureSelectionPanel.updateListeners().add( () -> {
 			if ( doForwardToMode )
 			{
-				final String[] keys = vertexFeatureSelectionPanel.getSelection();
-				mode.setVertexFeatureProjection( keys[ 0 ], keys[ 1 ] );
+				final FeatureProjectionId p = vertexFeatureSelectionPanel.getSelection();
+				mode.setVertexFeatureProjection( p );
 			}
 		} );
 
@@ -289,8 +262,8 @@ public class FeatureColorModeEditorPanel extends JPanel
 		edgeFeatureSelectionPanel.updateListeners().add( () -> {
 			if ( doForwardToMode )
 			{
-				final String[] keys = edgeFeatureSelectionPanel.getSelection();
-				mode.setEdgeFeatureProjection( keys[ 0 ], keys[ 1 ] );
+				final FeatureProjectionId p = edgeFeatureSelectionPanel.getSelection();
+				mode.setEdgeFeatureProjection( p );
 			}
 		} );
 
@@ -300,7 +273,6 @@ public class FeatureColorModeEditorPanel extends JPanel
 
 		final FeatureColorMode.UpdateListener l = new FeatureColorMode.UpdateListener()
 		{
-
 			@Override
 			public void featureColorModeChanged()
 			{
@@ -318,7 +290,7 @@ public class FeatureColorModeEditorPanel extends JPanel
 				doForwardToMode = true;
 			}
 		};
-		l.featureColorModeChanged();
+		update = l::featureColorModeChanged;
 		mode.updateListeners().add( l );
 	}
 
@@ -336,48 +308,18 @@ public class FeatureColorModeEditorPanel extends JPanel
 		c.gridy++;
 	}
 
-	/**
-	 * Tries to retrieve the {@link FeatureSpec} corresponding to the specified
-	 * key, by searching the {@link #vertexFeatureSpecs} and
-	 * {@link #edgeFeatureSpecs} fields. If not found, return <code>null</code>.
-	 * 
-	 * @param key
-	 *            the feature key.
-	 * @return the corresponding feature spec, or <code>null</code> if it cannot
-	 *         be found.
-	 */
-	private FeatureSpec< ?, ? > getFeatureSpecFromKey( final String key )
+	public void setAvailableFeatureProjections( final AvailableFeatureProjections featureSpecs )
 	{
-		for ( final FeatureSpec< ?, ? > featureSpec : vertexFeatureSpecs )
-		{
-			if ( featureSpec.getKey().equals( key ) )
-				return featureSpec;
-		}
-		for ( final FeatureSpec< ?, ? > featureSpec : edgeFeatureSpecs )
-		{
-			if ( featureSpec.getKey().equals( key ) )
-				return featureSpec;
-		}
-		return null;
-	}
-
-	public void setFeatureSpecs( final Set< FeatureSpec< ?, ? > > vertexFeatureSpecs, final Set< FeatureSpec< ?, ? > > edgeFeatureSpecs )
-	{
-		// Sort.
-		final List< FeatureSpec< ?, ? > > vfs = new ArrayList<>( vertexFeatureSpecs );
-		vfs.sort( Comparator.comparing( FeatureSpec::getKey ) );
-		this.vertexFeatureSpecs  = new LinkedHashSet<>( vfs );
-
-		final List< FeatureSpec< ?, ? > > efs = new ArrayList<>( edgeFeatureSpecs );
-		efs.sort( Comparator.comparing( FeatureSpec::getKey ) );
-		this.edgeFeatureSpecs = new LinkedHashSet<>( efs );
+		this.availableFeatureProjections = featureSpecs;
 
 		// Pass to lists.
 		doForwardToMode = false;
-		vertexFeatureSelectionPanel.setFeatureSpecs( mode.getVertexColorMode() == VertexColorMode.VERTEX ? vertexFeatureSpecs : edgeFeatureSpecs );
+		vertexFeatureSelectionPanel.setAvailableFeatureProjections( featureSpecs, mode.getVertexColorMode().targetType() );
 		vertexFeatureSelectionPanel.setSelection( mode.getVertexFeatureProjection() );
-		edgeFeatureSelectionPanel.setFeatureSpecs( mode.getEdgeColorMode() == EdgeColorMode.EDGE ? edgeFeatureSpecs : vertexFeatureSpecs );
+		edgeFeatureSelectionPanel.setAvailableFeatureProjections( featureSpecs, mode.getEdgeColorMode().targetType() );
 		edgeFeatureSelectionPanel.setSelection( mode.getEdgeFeatureProjection() );
 		doForwardToMode = true;
+
+		update.run();
 	}
 }

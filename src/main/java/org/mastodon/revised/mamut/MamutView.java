@@ -4,7 +4,6 @@ import org.mastodon.app.ViewGraph;
 import org.mastodon.app.ui.MastodonFrameView;
 import org.mastodon.app.ui.ViewMenuBuilder.JMenuHandle;
 import org.mastodon.feature.FeatureModel;
-import org.mastodon.feature.FeatureModelUtil;
 import org.mastodon.feature.FeatureProjection;
 import org.mastodon.graph.Edge;
 import org.mastodon.graph.Vertex;
@@ -26,6 +25,7 @@ import org.mastodon.revised.ui.coloring.GraphColorGeneratorAdapter;
 import org.mastodon.revised.ui.coloring.TagSetGraphColorGenerator;
 import org.mastodon.revised.ui.coloring.feature.FeatureColorMode;
 import org.mastodon.revised.ui.coloring.feature.FeatureColorModeManager;
+import org.mastodon.revised.ui.coloring.feature.revised.Playground.ProjectionsFromFeatureModel;
 
 public class MamutView< VG extends ViewGraph< Spot, Link, V, E >, V extends Vertex< E >, E extends Edge< V > >
 		extends MastodonFrameView< MamutAppModel, VG, Spot, Link, V, E >
@@ -57,7 +57,7 @@ public class MamutView< VG extends ViewGraph< Spot, Link, V, E >, V extends Vert
 		onClose( () -> featureColorModeManager.getForwardDefaultMode().updateListeners().remove( coloringModel ) );
 
 		final ColoringMenu coloringMenu = new ColoringMenu( menuHandle.getMenu(), coloringModel,
-				appModel.getModel().getFeatureModel(), Spot.class, Link.class );
+				appModel.getModel().getFeatureModel() );
 
 		tagSetModel.listeners().add( coloringMenu );
 		onClose( () -> tagSetModel.listeners().remove( coloringMenu ) );
@@ -67,6 +67,8 @@ public class MamutView< VG extends ViewGraph< Spot, Link, V, E >, V extends Vert
 
 		featureColorModeManager.getForwardDefaultMode().updateListeners().add( coloringMenu );
 		onClose( () -> featureColorModeManager.getForwardDefaultMode().updateListeners().remove( coloringMenu ) );
+
+		final ProjectionsFromFeatureModel projections = new ProjectionsFromFeatureModel( featureModel );
 
 		@SuppressWarnings( "unchecked" )
 		final ColoringModel.ColoringChangedListener coloringChangedListener = () -> {
@@ -80,8 +82,7 @@ public class MamutView< VG extends ViewGraph< Spot, Link, V, E >, V extends Vert
 
 				// Vertex.
 				final ColorGenerator< Spot > vertexColorGenerator;
-				final String[] vertexKeys = fcm.getVertexFeatureProjection();
-				final FeatureProjection< ? > vertexProjection = FeatureModelUtil.getFeatureProjection( featureModel, vertexKeys );
+				final FeatureProjection< ? > vertexProjection = projections.getFeatureProjection( fcm.getVertexFeatureProjection() );
 				if ( null == vertexProjection )
 					vertexColorGenerator = new DefaultColorGenerator< Spot >();
 				else
@@ -120,8 +121,7 @@ public class MamutView< VG extends ViewGraph< Spot, Link, V, E >, V extends Vert
 
 				// Edge.
 				final ColorGenerator< Link > edgeColorGenerator;
-				final String[] edgeKeys = fcm.getEdgeFeatureProjection();
-				final FeatureProjection< ? > edgeProjection = FeatureModelUtil.getFeatureProjection( featureModel, edgeKeys );;
+				final FeatureProjection< ? > edgeProjection = projections.getFeatureProjection( fcm.getEdgeFeatureProjection() );
 				if ( null == edgeProjection )
 					edgeColorGenerator = new DefaultColorGenerator< Link >();
 				else

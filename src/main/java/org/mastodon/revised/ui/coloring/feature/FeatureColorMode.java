@@ -1,5 +1,7 @@
 package org.mastodon.revised.ui.coloring.feature;
 
+import java.io.StringReader;
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Collection;
 
@@ -7,6 +9,7 @@ import org.mastodon.app.ui.settings.style.Style;
 import org.mastodon.mamut.feature.SpotNLinksFeature;
 import org.mastodon.revised.ui.coloring.ColorMap;
 import org.mastodon.util.Listeners;
+import org.yaml.snakeyaml.Yaml;
 
 /**
  * Data class that stores a configuration for coloring graph objects based on
@@ -16,7 +19,6 @@ import org.mastodon.util.Listeners;
  */
 public class FeatureColorMode implements Style< FeatureColorMode >
 {
-
 	/**
 	 * Supported modes for edge coloring.
 	 */
@@ -26,33 +28,41 @@ public class FeatureColorMode implements Style< FeatureColorMode >
 		 * Each edge has a color that depends on a numerical feature defined for
 		 * this edge.
 		 */
-		EDGE( "Edge" ),
+		EDGE( "Edge", TargetType.EDGE ),
 		/**
 		 * Edges have a color determined by a numerical feature of their source
 		 * vertex.
 		 */
-		SOURCE_VERTEX( "Source vertex" ),
+		SOURCE_VERTEX( "Source vertex", TargetType.VERTEX ),
 		/**
 		 * Edges have a color determined by a numerical feature of their target
 		 * vertex.
 		 */
-		TARGET_VERTEX( "Target vertex" ),
+		TARGET_VERTEX( "Target vertex", TargetType.VERTEX ),
 		/**
 		 * Edges are painted with a default color.
 		 */
-		NONE( "Default" );
+		NONE( "Default", null );
 
 		private final String label;
 
-		private EdgeColorMode( final String label )
+		private final TargetType targetType;
+
+		private EdgeColorMode( final String label, final TargetType targetType )
 		{
 			this.label = label;
+			this.targetType = targetType;
 		}
 
 		@Override
 		public String toString()
 		{
 			return label;
+		}
+
+		public TargetType targetType()
+		{
+			return targetType;
 		}
 	}
 
@@ -65,33 +75,41 @@ public class FeatureColorMode implements Style< FeatureColorMode >
 		 * Each vertex has a color determined by a numerical feature defined for
 		 * this vertex.
 		 */
-		VERTEX( "Vertex" ),
+		VERTEX( "Vertex", TargetType.VERTEX ),
 		/**
 		 * Vertices have a color determined by a numerical feature of their
 		 * incoming edge, iff they have exactly one incoming edge.
 		 */
-		INCOMING_EDGE( "Incoming edge" ),
+		INCOMING_EDGE( "Incoming edge", TargetType.EDGE ),
 		/**
 		 * Vertices have a color determined by a numerical feature of their
 		 * outgoing edge, iff they have exactly one outgoing edge.
 		 */
-		OUTGOING_EDGE( "Outgoing edge" ),
+		OUTGOING_EDGE( "Outgoing edge", TargetType.EDGE ),
 		/**
 		 * Vertices are painted with a default color.
 		 */
-		NONE( "Default" );
+		NONE( "Default", null );
 
 		private final String label;
 
-		private VertexColorMode( final String label )
+		private final TargetType targetType;
+
+		private VertexColorMode( final String label, final TargetType targetType )
 		{
 			this.label = label;
+			this.targetType = targetType;
 		}
 
 		@Override
 		public String toString()
 		{
 			return label;
+		}
+
+		public TargetType targetType()
+		{
+			return targetType;
 		}
 	}
 
@@ -184,7 +202,7 @@ public class FeatureColorMode implements Style< FeatureColorMode >
 	 * The key pair for vertex feature projection (feature key, projection of
 	 * feature key).
 	 */
-	private String[] vertexFeatureProjection;
+	private FeatureProjectionId vertexFeatureProjection;
 
 	/**
 	 * The key of the color map for vertex feature coloring.
@@ -210,7 +228,7 @@ public class FeatureColorMode implements Style< FeatureColorMode >
 	 * The key pair for edge feature projection (feature key, projection of
 	 * feature key).
 	 */
-	private String[] edgeFeatureProjection;
+	private FeatureProjectionId edgeFeatureProjection;
 
 	/**
 	 * The key of the color map for edge feature coloring.
@@ -236,11 +254,11 @@ public class FeatureColorMode implements Style< FeatureColorMode >
 		}
 	}
 
-	public synchronized void setVertexFeatureProjection( final String vertexFeatureKey, final String vertexProjectionKey )
+	public synchronized void setVertexFeatureProjection( final FeatureProjectionId vertexFeatureProjection )
 	{
-		if ( !this.vertexFeatureProjection[ 0 ].equals( vertexFeatureKey ) || !this.vertexFeatureProjection[ 1 ].equals( vertexProjectionKey ) )
+		if ( !this.vertexFeatureProjection.equals( vertexFeatureProjection ) )
 		{
-			this.vertexFeatureProjection = new String[] { vertexFeatureKey, vertexProjectionKey };
+			this.vertexFeatureProjection = vertexFeatureProjection;
 			notifyListeners();
 		}
 	}
@@ -273,11 +291,11 @@ public class FeatureColorMode implements Style< FeatureColorMode >
 		}
 	}
 
-	public synchronized void setEdgeFeatureProjection( final String edgeFeatureKey, final String edgeProjectionKey )
+	public synchronized void setEdgeFeatureProjection( final FeatureProjectionId edgeFeatureProjection )
 	{
-		if ( !this.edgeFeatureProjection[ 0 ].equals( edgeFeatureKey ) || !this.edgeFeatureProjection[ 1 ].equals( edgeProjectionKey ) )
+		if ( !this.edgeFeatureProjection.equals( edgeFeatureProjection ) )
 		{
-			this.edgeFeatureProjection = new String[] { edgeFeatureKey, edgeProjectionKey };
+			this.edgeFeatureProjection = edgeFeatureProjection;
 			notifyListeners();
 		}
 	}
@@ -307,7 +325,7 @@ public class FeatureColorMode implements Style< FeatureColorMode >
 		return vertexColorMode;
 	}
 
-	public String[] getVertexFeatureProjection()
+	public FeatureProjectionId getVertexFeatureProjection()
 	{
 		return vertexFeatureProjection;
 	}
@@ -332,7 +350,7 @@ public class FeatureColorMode implements Style< FeatureColorMode >
 		return edgeColorMode;
 	}
 
-	public String[] getEdgeFeatureProjection()
+	public FeatureProjectionId getEdgeFeatureProjection()
 	{
 		return edgeFeatureProjection;
 	}
@@ -355,15 +373,15 @@ public class FeatureColorMode implements Style< FeatureColorMode >
 	@Override
 	public String toString()
 	{
-		final StringBuilder str = new StringBuilder( super.toString() );
-		str.append( "\n  name: " + name );
-		str.append( "\n  vertex color mode: " + vertexColorMode );
-		str.append( "\n  vertex feature projection: " + vertexFeatureProjection[ 0 ] + " -> " + vertexFeatureProjection[ 1 ] );
-		str.append( "\n  vertex color map: " + vertexColorMap );
+		final StringBuilder str = new StringBuilder();
+		str.append( "\n  name: " ).append( name );
+		str.append( "\n  vertex color mode: " ).append( vertexColorMode );
+		str.append( "\n  vertex feature projection: " ).append( vertexFeatureProjection );
+		str.append( "\n  vertex color map: " ).append( vertexColorMap );
 		str.append( String.format( "\n  vertex feature range: [ %.1f - %.1f ]", vertexRangeMin, vertexRangeMax ) );
-		str.append( "\n  edge color mode: " + edgeColorMode );
-		str.append( "\n  edge feature projection: " + edgeFeatureProjection[ 0 ] + " -> " + edgeFeatureProjection[ 1 ] );
-		str.append( "\n  edge color map: " + edgeColorMap );
+		str.append( "\n  edge color mode: " ).append( edgeColorMode );
+		str.append( "\n  edge feature projection: " ).append( edgeFeatureProjection );
+		str.append( "\n  edge color map: " ).append( edgeColorMap );
 		str.append( String.format( "\n  edge feature range: [ %.1f - %.1f ]", edgeRangeMin, edgeRangeMax ) );
 		return str.toString();
 	}
@@ -379,12 +397,12 @@ public class FeatureColorMode implements Style< FeatureColorMode >
 		N_LINKS.name = "Number of links";
 		N_LINKS.vertexColorMode = VertexColorMode.VERTEX;
 		N_LINKS.vertexColorMap = ColorMap.PARULA.getName();
-		N_LINKS.vertexFeatureProjection = new String[] { SpotNLinksFeature.KEY, SpotNLinksFeature.KEY };
+		N_LINKS.vertexFeatureProjection = new FeatureProjectionId( SpotNLinksFeature.KEY, SpotNLinksFeature.KEY );
 		N_LINKS.vertexRangeMin = 0;
 		N_LINKS.vertexRangeMax = 3;
 		N_LINKS.edgeColorMode = EdgeColorMode.SOURCE_VERTEX;
 		N_LINKS.edgeColorMap = N_LINKS.vertexColorMap;
-		N_LINKS.edgeFeatureProjection = N_LINKS.vertexFeatureProjection;
+		N_LINKS.edgeFeatureProjection = new FeatureProjectionId( SpotNLinksFeature.KEY, SpotNLinksFeature.KEY );
 		N_LINKS.edgeRangeMin = N_LINKS.vertexRangeMin;
 		N_LINKS.edgeRangeMax = N_LINKS.vertexRangeMax;
 	}
@@ -399,5 +417,20 @@ public class FeatureColorMode implements Style< FeatureColorMode >
 	public static FeatureColorMode defaultMode()
 	{
 		return N_LINKS;
+	}
+
+	public static void main( final String[] args )
+	{
+		Yaml yaml = FeatureColorModeIO.createYaml();
+		final ArrayList< Object > objects = new ArrayList<>();
+		objects.add( N_LINKS );
+		final StringWriter writer = new StringWriter();
+		yaml.dumpAll( objects.iterator(), writer );
+
+		System.out.println( "writer = " + writer );
+
+		yaml = FeatureColorModeIO.createYaml();
+		final Iterable< Object > objs = yaml.loadAll( new StringReader( writer.toString() ) );
+		System.out.println( "objs = " + objs.iterator().next() );
 	}
 }

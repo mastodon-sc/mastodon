@@ -12,12 +12,13 @@ import javax.swing.JSeparator;
 
 import org.mastodon.feature.FeatureModel;
 import org.mastodon.feature.FeatureModel.FeatureModelListener;
-import org.mastodon.feature.FeatureModelUtil;
 import org.mastodon.revised.model.tag.TagSetModel;
 import org.mastodon.revised.model.tag.TagSetStructure;
 import org.mastodon.revised.ui.coloring.feature.FeatureColorMode;
 import org.mastodon.revised.ui.coloring.feature.FeatureColorMode.UpdateListener;
 import org.mastodon.revised.ui.coloring.feature.FeatureColorModeManager;
+import org.mastodon.revised.ui.coloring.feature.Projections;
+import org.mastodon.revised.ui.coloring.feature.revised.Playground.ProjectionsFromFeatureModel;
 import org.mastodon.revised.util.HasSelectedState;
 import org.mastodon.util.Listeners;
 import org.scijava.ui.behaviour.util.AbstractNamedAction;
@@ -30,24 +31,16 @@ public class ColoringMenu implements TagSetModel.TagSetModelListener, UpdateList
 
 	private final ArrayList< Runnable > cleanup;
 
-	private final FeatureModel featureModel;
-
-	private final Class< ? > vertexClass;
-
-	private final Class< ? > edgeClass;
+	private final Projections projections;
 
 	public ColoringMenu(
 			final JMenu menu,
 			final ColoringModel coloringModel,
-			final FeatureModel featureModel,
-			final Class< ? > vertexClass,
-			final Class< ? > edgeClass )
+			final FeatureModel featureModel )
 	{
 		this.menu = menu;
 		this.coloringModel = coloringModel;
-		this.featureModel = featureModel;
-		this.vertexClass = vertexClass;
-		this.edgeClass = edgeClass;
+		this.projections = new ProjectionsFromFeatureModel( featureModel );
 		cleanup = new ArrayList<>();
 		rebuild();
 	}
@@ -105,7 +98,15 @@ public class ColoringMenu implements TagSetModel.TagSetModelListener, UpdateList
 	 */
 	private boolean isValid( final FeatureColorMode mode )
 	{
-		return FeatureModelUtil.isValid( featureModel, mode, vertexClass, edgeClass );
+		if ( mode.getVertexColorMode() != FeatureColorMode.VertexColorMode.NONE
+				&& null == projections.getFeatureProjection( mode.getVertexFeatureProjection() ) )
+			return false;
+
+		if ( mode.getEdgeColorMode() != FeatureColorMode.EdgeColorMode.NONE
+				&& null == projections.getFeatureProjection( mode.getEdgeFeatureProjection() ) )
+			return false;
+
+		return true;
 	}
 
 	private void addColorAction( final ColorAction action )
@@ -194,3 +195,5 @@ public class ColoringMenu implements TagSetModel.TagSetModelListener, UpdateList
 		}
 	}
 }
+
+

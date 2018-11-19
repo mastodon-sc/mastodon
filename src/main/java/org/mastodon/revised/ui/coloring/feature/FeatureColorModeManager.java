@@ -16,7 +16,6 @@ import org.yaml.snakeyaml.Yaml;
 
 public class FeatureColorModeManager extends AbstractStyleManager< FeatureColorModeManager, FeatureColorMode >
 {
-
 	private static final String COLOR_MODE_FILE = System.getProperty( "user.home" ) + "/.mastodon/colormodes.yaml";
 
 	private final FeatureColorMode forwardDefaultMode;
@@ -126,4 +125,8 @@ public class FeatureColorModeManager extends AbstractStyleManager< FeatureColorM
 		return Collections.unmodifiableList( new ArrayList<>( FeatureColorMode.defaults ) );
 	}
 
+	public static void main( final String[] args )
+	{
+		final FeatureColorModeManager m = new FeatureColorModeManager( true );
+	}
 }

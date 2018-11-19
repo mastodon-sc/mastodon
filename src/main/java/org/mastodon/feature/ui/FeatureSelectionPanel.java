@@ -6,34 +6,21 @@ import java.awt.event.ItemListener;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Comparator;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Locale;
-import java.util.Set;
-
-import javax.swing.AbstractListModel;
+import java.util.NoSuchElementException;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
-import javax.swing.ComboBoxModel;
 import javax.swing.DefaultComboBoxModel;
-import javax.swing.DefaultListCellRenderer;
 import javax.swing.JComboBox;
-import javax.swing.JFrame;
 import javax.swing.JLabel;
-import javax.swing.JList;
 import javax.swing.JPanel;
-import javax.swing.UIManager;
-import javax.swing.UnsupportedLookAndFeelException;
-
 import org.mastodon.feature.FeatureProjectionSpec;
 import org.mastodon.feature.FeatureSpec;
-import org.mastodon.feature.FeatureSpecsService;
 import org.mastodon.feature.Multiplicity;
-import org.mastodon.revised.model.mamut.Spot;
+import org.mastodon.revised.ui.coloring.feature.AvailableFeatureProjections;
+import org.mastodon.revised.ui.coloring.feature.FeatureProjectionId;
+import org.mastodon.revised.ui.coloring.feature.TargetType;
 import org.mastodon.util.Listeners;
-import org.scijava.Context;
 
 /**
  * A JPanel, one line, in which the user can select a pair of feature /
@@ -41,18 +28,17 @@ import org.scijava.Context;
  *
  * @author Jean-Yves Tinevez
  */
-public class FeatureSelectionPanel extends JPanel
+public class FeatureSelectionPanel
 {
+	private final JPanel panel;
 
-	private static final long serialVersionUID = 1L;
+	private AvailableFeatureProjections availableFeatureProjections;
 
-	private static final int MAX_N_SOURCES = 10;
+	private TargetType targetType;
 
-	private Set< FeatureSpec< ?, ? > > featureSpecs;
+	private final JComboBox< String > cbFeatures;
 
-	private final JComboBox< FeatureSpec< ?, ? > > cbFeatures;
-
-	private final JComboBox< FeatureProjectionSpec > cbProjections;
+	private final JComboBox< String > cbProjections;
 
 	private final JLabel lblArrow;
 
@@ -80,11 +66,8 @@ public class FeatureSelectionPanel extends JPanel
 
 	public FeatureSelectionPanel()
 	{
-		this( new HashSet<>() );
-	}
+		this.panel = new JPanel();
 
-	public FeatureSelectionPanel( final Set< FeatureSpec< ?, ? > > featureSpecs )
-	{
 		this.updateListeners = new Listeners.SynchronizedList<>();
 		// Forwarding listener.
 		final ItemListener forwardListener = new ItemListener()
@@ -98,12 +81,11 @@ public class FeatureSelectionPanel extends JPanel
 			}
 		};
 
-		final BoxLayout layout = new BoxLayout( this, BoxLayout.LINE_AXIS );
-		setLayout( layout );
+		final BoxLayout layout = new BoxLayout( panel, BoxLayout.LINE_AXIS );
+		panel.setLayout( layout );
 
 		// Feature CB.
 		this.cbFeatures = new JComboBox<>();
-		cbFeatures.setRenderer( new FeatureSpecListCellRenderer() );
 		cbFeatures.addItemListener( new ItemListener()
 		{
 
@@ -114,47 +96,45 @@ public class FeatureSelectionPanel extends JPanel
 					refreshProjections();
 			}
 		} );
-		add( cbFeatures );
-		this.featureStrut = add( Box.createHorizontalStrut( 5 ) );
+		panel.add( cbFeatures );
+		this.featureStrut = panel.add( Box.createHorizontalStrut( 5 ) );
 
 		// Arrow label
 		this.lblArrow = new JLabel( "\u2192" );
-		add( lblArrow );
-		this.arrowStrut = add( Box.createHorizontalStrut( 5 ) );
+		panel.add( lblArrow );
+		this.arrowStrut = panel.add( Box.createHorizontalStrut( 5 ) );
 
 		// Projection CB.
 		this.cbProjections = new JComboBox<>();
-		cbProjections.setRenderer( new FeatureProjectionSpecListCellRenderer() );
 		cbProjections.addItemListener( forwardListener );
-		add( cbProjections );
-		this.projectionStrut = add( Box.createHorizontalStrut( 5 ) );
-
-		// N-sources. Careful! Their display is 1-based!
-		final Integer[] sources = new Integer[ MAX_N_SOURCES ];
-		for ( int i = 0; i < sources.length; i++ )
-			sources[ i ] = i + 1;
+		panel.add( cbProjections );
+		this.projectionStrut = panel.add( Box.createHorizontalStrut( 5 ) );
 
 		// Source index 1.
 		this.lblSource1 = new JLabel( "ch" );
-		add( lblSource1 );
-		this.cbSource1 = new JComboBox<>( sources );
+		panel.add( lblSource1 );
+		this.cbSource1 = new JComboBox<>();
 		cbSource1.addItemListener( forwardListener );
-		add( cbSource1 );
-		this.source1Strut = add( Box.createHorizontalStrut( 5 ) );
+		panel.add( cbSource1 );
+		this.source1Strut = panel.add( Box.createHorizontalStrut( 5 ) );
 
 		// & label.
 		this.lblAnd = new JLabel( "&" );
-		add( lblAnd );
-		this.andStrut = add( Box.createHorizontalStrut( 5 ) );
+		panel.add( lblAnd );
+		this.andStrut = panel.add( Box.createHorizontalStrut( 5 ) );
 
 		// Source index 2.
 		this.lblSource2 = new JLabel( "ch" );
-		add( lblSource2 );
-		this.cbSource2 = new JComboBox<>( sources );
+		panel.add( lblSource2 );
+		this.cbSource2 = new JComboBox<>();
 		cbSource2.addItemListener( forwardListener );
-		add( cbSource2 );
+		panel.add( cbSource2 );
+	}
 
-		setFeatureSpecs( featureSpecs );
+	// TODO remove, make this class extend JPanel
+	public JPanel getPanel()
+	{
+		return panel;
 	}
 
 	private void notifyListeners()
@@ -188,255 +168,139 @@ public class FeatureSelectionPanel extends JPanel
 	 *
 	 * @return a 2-element string array.
 	 */
-	public String[] getSelection()
+	public FeatureProjectionId getSelection()
 	{
-		final FeatureSpec< ?, ? > featureSpec = ( FeatureSpec< ?, ? > ) cbFeatures.getSelectedItem();
-		if ( null == featureSpec )
-			return new String[] { "", "" };
+		final String featureKey = ( String ) cbFeatures.getSelectedItem();
+		if ( null == featureKey )
+			return null;
 
-		final FeatureProjectionSpec projectionSpec = ( FeatureProjectionSpec ) cbProjections.getSelectedItem();
-		if (null == projectionSpec)
-			return new String[] { featureSpec.getKey(), "" };
-
-		return new String[] {
-				featureSpec.getKey(),
-				projectionSpec.projectionKey(
-						// We use the index, since the display is 1-based.
-						cbSource1.getSelectedIndex(),
-						cbSource2.getSelectedIndex() ) };
-	}
-
-	public void setSelection( final String[] selection )
-	{
-		final String featureKey = selection[ 0 ];
-		final FeatureSpec< ?, ? > featureSpec = getFeatureSpecFromKey( featureKey );
-		cbFeatures.setSelectedItem( featureSpec );
-		if ( null == featureSpec )
-			return;
-
-		final String projectionKey = selection[ 1 ];
-		final String projectionName = featureSpec.getMultiplicity().nameFromKey( projectionKey );
-		final FeatureProjectionSpec featureProjectionSpec = getFeatureProjectionSpecFromName( featureSpec, projectionName );
-		cbProjections.setSelectedItem( featureProjectionSpec );
-
-		final int[] indices = featureSpec.getMultiplicity().indicesFromKey( projectionKey );
-		if ( indices.length > 0 )
+		try
 		{
-			cbSource1.setSelectedIndex( indices[ 0 ] );
-			if ( indices.length > 1 )
-				cbSource2.setSelectedIndex( indices[ 1 ] );
+			String projectionKey = ( String ) cbProjections.getSelectedItem();
+			if ( null == projectionKey )
+				projectionKey = availableFeatureProjections.projectionKeys( targetType, featureKey ).iterator().next();
+			if ( null == projectionKey )
+				return null;
+
+			final int i0, i1;
+			switch ( availableFeatureProjections.multiplicity( targetType, featureKey ) )
+			{
+			default:
+			case SINGLE:
+				i0 = -1;
+				i1 = -1;
+				break;
+			case ON_SOURCES:
+				i0 = availableFeatureProjections.getSourceIndices().get( Math.max( 0, cbSource1.getSelectedIndex() ) );
+				i1 = -1;
+				break;
+			case ON_SOURCE_PAIRS:
+				i0 = availableFeatureProjections.getSourceIndices().get( Math.max( 0, cbSource1.getSelectedIndex() ) );
+				i1 = availableFeatureProjections.getSourceIndices().get( Math.max( 0, cbSource2.getSelectedIndex() ) );
+				break;
+			}
+
+			return new FeatureProjectionId( featureKey, projectionKey, i0, i1 );
+		}
+		catch( NoSuchElementException e )
+		{
+			return null;
 		}
 	}
 
-	private FeatureProjectionSpec getFeatureProjectionSpecFromName( final FeatureSpec< ?, ? > featureSpec, final String projectionName )
+	public void setSelection( final FeatureProjectionId selection )
 	{
-		final Set<FeatureProjectionSpec> projectionSpecs = featureSpec.getProjectionSpecs();
-		for ( final FeatureProjectionSpec featureProjectionSpec : projectionSpecs )
-		{
-			if ( featureProjectionSpec.projectionName.equals( projectionName ) )
-				return featureProjectionSpec;
-		}
-		return null;
-	}
-
-	private FeatureSpec< ?, ? > getFeatureSpecFromKey( final String key )
-	{
-		for ( final FeatureSpec< ?, ? > featureSpec : featureSpecs )
-		{
-			if ( featureSpec.getKey().equals( key ) )
-				return featureSpec;
-		}
-		return null;
+		cbFeatures.setSelectedItem( selection.getFeatureKey() );
+		cbProjections.setSelectedItem( selection.getProjectionKey() );
+		cbSource1.setSelectedIndex( Math.max( 0, availableFeatureProjections.getSourceIndices().indexOf( selection.getI0() ) ) );
+		cbSource2.setSelectedIndex( Math.max( 0, availableFeatureProjections.getSourceIndices().indexOf( selection.getI1() ) ) );
 	}
 
 	private void refreshProjections()
 	{
-		final FeatureSpec< ?, ? > currentSelection = ( FeatureSpec< ?, ? > ) cbFeatures.getSelectedItem();
+		final String featureKey = ( String ) cbFeatures.getSelectedItem();
 
 		// Projections.
-		final Set< FeatureProjectionSpec > projectionSpecs = ( currentSelection == null )
-				? Collections.emptySet()
-				: currentSelection.getProjectionSpecs();
-		cbProjections.setModel( new DefaultComboBoxModel<>( projectionSpecs.toArray( new FeatureProjectionSpec[ 0 ] ) ) );
+		final Collection< String > projectionKeys = availableFeatureProjections.projectionKeys( targetType, featureKey );
+		final String[] pk = projectionKeys.toArray( new String[] {} );
+		Arrays.sort( pk );
+		cbProjections.setModel( new DefaultComboBoxModel<>( pk ) );
 
 		// Visibility.
-		final boolean projectionCBVisible = ( null != currentSelection ) &&
-				( ( projectionSpecs.size() > 1 )
-						|| currentSelection.getMultiplicity() != Multiplicity.SINGLE );
+		final Multiplicity multiplicity = availableFeatureProjections.multiplicity( targetType, featureKey );
+		final boolean projectionCBVisible = ( null != featureKey ) &&
+				( ( projectionKeys.size() > 1 )
+						|| multiplicity != Multiplicity.SINGLE );
 		arrowStrut.setVisible( projectionCBVisible );
 		cbProjections.setVisible( projectionCBVisible );
 		lblArrow.setVisible( projectionCBVisible );
 		featureStrut.setVisible( projectionCBVisible );
 
-		projectionStrut.setVisible( projectionCBVisible && ( currentSelection.getMultiplicity() != Multiplicity.SINGLE ) );
-		lblSource1.setVisible( projectionCBVisible && ( currentSelection.getMultiplicity() != Multiplicity.SINGLE ) );
-		cbSource1.setVisible( projectionCBVisible && ( currentSelection.getMultiplicity() != Multiplicity.SINGLE ) );
+		projectionStrut.setVisible( projectionCBVisible && ( multiplicity != Multiplicity.SINGLE ) );
+		lblSource1.setVisible( projectionCBVisible && ( multiplicity != Multiplicity.SINGLE ) );
+		cbSource1.setVisible( projectionCBVisible && ( multiplicity != Multiplicity.SINGLE ) );
 
-		source1Strut.setVisible( projectionCBVisible && ( currentSelection.getMultiplicity() == Multiplicity.ON_SOURCE_PAIRS ) );
-		lblAnd.setVisible( projectionCBVisible && ( currentSelection.getMultiplicity() == Multiplicity.ON_SOURCE_PAIRS ) );
-		andStrut.setVisible( projectionCBVisible && ( currentSelection.getMultiplicity() == Multiplicity.ON_SOURCE_PAIRS ) );
+		source1Strut.setVisible( projectionCBVisible && ( multiplicity == Multiplicity.ON_SOURCE_PAIRS ) );
+		lblAnd.setVisible( projectionCBVisible && ( multiplicity == Multiplicity.ON_SOURCE_PAIRS ) );
+		andStrut.setVisible( projectionCBVisible && ( multiplicity == Multiplicity.ON_SOURCE_PAIRS ) );
 
-		lblSource2.setVisible( projectionCBVisible && ( currentSelection.getMultiplicity() == Multiplicity.ON_SOURCE_PAIRS ) );
-		cbSource2.setVisible( projectionCBVisible && ( currentSelection.getMultiplicity() == Multiplicity.ON_SOURCE_PAIRS ) );
+		lblSource2.setVisible( projectionCBVisible && ( multiplicity == Multiplicity.ON_SOURCE_PAIRS ) );
+		cbSource2.setVisible( projectionCBVisible && ( multiplicity == Multiplicity.ON_SOURCE_PAIRS ) );
 
 		notifyListeners();
 	}
 
 	/**
 	 * Sets the feature specifications to display in this panel.
-	 *
-	 * @param featureSpecs
-	 *                         the feature specifications.
 	 */
-	public void setFeatureSpecs( final Set< FeatureSpec< ?, ? > > featureSpecs )
+	public void setAvailableFeatureProjections( final AvailableFeatureProjections afp, final TargetType targetType )
 	{
-		if ( null == this.featureSpecs || !this.featureSpecs.equals( featureSpecs ) )
+		if ( afp != null && targetType != null && ! ( afp.equals( this.availableFeatureProjections ) && targetType.equals( this.targetType ) ) )
 		{
-			this.featureSpecs = featureSpecs;
-			final FeatureSpec< ?, ? > previousSelection = ( FeatureSpec< ?, ? > ) cbFeatures.getSelectedItem();
-			cbFeatures.setModel( new FeatureSpecComboBoxModel( featureSpecs ) );
-			if ( null == previousSelection && cbFeatures.getModel().getSize() > 0  )
-				cbFeatures.setSelectedIndex( 0 );
-			else
-			{
-				cbFeatures.setSelectedItem( previousSelection );
-				final Object selectedItem = cbFeatures.getSelectedItem();
-				if (null == selectedItem && cbFeatures.getModel().getSize() > 0)
-					cbFeatures.setSelectedIndex( 0 );
-			}
+			this.availableFeatureProjections = afp;
+			this.targetType = targetType;
+
+			final Integer[] indices = Arrays.stream( afp.getSourceIndices().toArray() )
+					.map( i -> i + 1 )
+					.boxed()
+					.toArray( Integer[]::new );
+			cbSource1.setModel( new DefaultComboBoxModel<>( indices ) );
+			cbSource2.setModel( new DefaultComboBoxModel<>( indices ) );
+
+			final ArrayList< String > featureKeys = new ArrayList<>( afp.featureKeys( targetType ) );
+			featureKeys.sort( Comparator.naturalOrder() );
+
+			final String previousSelection = ( String ) cbFeatures.getSelectedItem();
+			final int selectIndex = Math.max( 0, featureKeys.indexOf( previousSelection ) );
+
+			cbFeatures.setModel( new DefaultComboBoxModel<>( featureKeys.toArray( new String[] {} ) ) );
+			cbFeatures.setSelectedIndex( selectIndex );
+			// If selectIndex != 0, this will trigger refreshProjections().
+			// Otherwise, we do it explicitly
+			if ( selectIndex == 0 )
+				refreshProjections();
 		}
 	}
 
-	private class FeatureSpecComboBoxModel extends AbstractListModel< FeatureSpec< ?, ? > > implements ComboBoxModel< FeatureSpec< ?, ? > >
-	{
-
-		private static final long serialVersionUID = 1L;
-
-		private final List< FeatureSpec< ?, ? > > featureSpecs;
-
-		private FeatureSpec< ?, ? > selectedItem;
-
-		public FeatureSpecComboBoxModel( final Collection< FeatureSpec< ?, ? > > featureSpecs )
-		{
-			this.featureSpecs = new ArrayList<>( featureSpecs );
-			this.featureSpecs.sort( Comparator.comparing( FeatureSpec::getKey ) );
-		}
-
-		@Override
-		public int getSize()
-		{
-			return featureSpecs.size();
-		}
-
-		@Override
-		public FeatureSpec< ?, ? > getElementAt( final int index )
-		{
-			if ( index < 0 || index >= featureSpecs.size() )
-				return null;
-			return featureSpecs.get( index );
-		}
-
-		@Override
-		public FeatureSpec< ?, ? > getSelectedItem()
-		{
-			return selectedItem;
-		}
-
-		@Override
-		public void setSelectedItem( final Object object )
-		{
-			// No item is selected and object is null, so no change required.
-			if ( selectedItem == null && object == null )
-				return;
-
-			// Bad class
-			if ( !( object instanceof FeatureSpec ) )
-				return;
-
-			// object is already selected so no change required.
-			if ( selectedItem != null && selectedItem.equals( object ) )
-				return;
-
-			// Simply return if object is not in the list.
-			if ( object != null && getIndexOf( object ) == -1 )
-				return;
-
-			// Here we know that object is either an item in the list or null.
-
-			// Handle the three change cases: selectedItem is null, object is
-			// non-null; selectedItem is non-null, object is null;
-			// selectedItem is non-null, object is non-null and they're not
-			// equal.
-			selectedItem = ( FeatureSpec< ?, ? > ) object;
-			fireContentsChanged( this, -1, -1 );
-		}
-
-		public int getIndexOf( final Object object )
-		{
-			// Maybe no need for binary search even if the list is sorted.
-			return featureSpecs.indexOf( object );
-		}
-	}
-
-	private static final class FeatureSpecListCellRenderer extends DefaultListCellRenderer
-	{
-
-		private static final long serialVersionUID = 1L;
-
-		@Override
-		public Component getListCellRendererComponent( final JList< ? > list, final Object value, final int index, final boolean isSelected, final boolean cellHasFocus )
-		{
-			final Component renderer = super.getListCellRendererComponent(
-					list,
-					( null == value ) ? "" : ( ( FeatureSpec< ?, ? > ) value ).getKey(),
-					index,
-					isSelected,
-					cellHasFocus );
-
-			return renderer;
-		}
-	}
-
-	private static final class FeatureProjectionSpecListCellRenderer extends DefaultListCellRenderer
-	{
-
-		private static final long serialVersionUID = 1L;
-
-		@Override
-		public Component getListCellRendererComponent( final JList< ? > list, final Object value, final int index, final boolean isSelected, final boolean cellHasFocus )
-		{
-			final Component renderer = super.getListCellRendererComponent(
-					list,
-					( null == value ) ? "" : ( ( FeatureProjectionSpec ) value ).projectionName,
-					index,
-					isSelected,
-					cellHasFocus );
-
-			return renderer;
-		}
-	}
-
-	public static interface UpdateListener
+	public interface UpdateListener
 	{
 		public void featureKeyChanged();
 	}
 
-	public static void main( final String[] args ) throws ClassNotFoundException, InstantiationException, IllegalAccessException, UnsupportedLookAndFeelException
-	{
-		UIManager.setLookAndFeel( UIManager.getSystemLookAndFeelClassName() );
-		setDefaultLocale( Locale.ROOT );
-
-		final Context context = new Context( FeatureSpecsService.class );
-		final FeatureSpecsService specsService = context.getService( FeatureSpecsService.class );
-
-		final FeatureSelectionPanel selectionPanel = new FeatureSelectionPanel();
-		selectionPanel.updateListeners().add( () -> System.out.println( Arrays.toString( selectionPanel.getSelection() ) ) );
-
-		final JFrame frame = new JFrame( "Feature selection panel" );
-		frame.getContentPane().add( selectionPanel );
-		frame.setVisible( true );
-
-		selectionPanel.setFeatureSpecs( new HashSet<>( specsService.getSpecs( Spot.class ) ) );
-		frame.pack();
-	}
+//	public static void main( final String[] args ) throws ClassNotFoundException, InstantiationException, IllegalAccessException, UnsupportedLookAndFeelException
+//	{
+//		UIManager.setLookAndFeel( UIManager.getSystemLookAndFeelClassName() );
+//		JComponent.setDefaultLocale( Locale.ROOT );
+//
+//		final FeatureSelectionPanel selectionPanel = new FeatureSelectionPanel();
+//		selectionPanel.updateListeners().add( () -> System.out.println( selectionPanel.getSelection() ) );
+//
+//		final JFrame frame = new JFrame( "Feature selection panel" );
+//		frame.getContentPane().add( selectionPanel.panel );
+//		frame.setVisible( true );
+//
+//		final AvailableFeatureProjections afp = Playground.dummyAvailableFeatureProjections();
+//		selectionPanel.setAvailableFeatureProjections( afp, TargetType.VERTEX );
+//		frame.pack();
+//	}
 }

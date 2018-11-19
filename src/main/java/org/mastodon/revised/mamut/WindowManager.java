@@ -1,14 +1,13 @@
 package org.mastodon.revised.mamut;
 
+import bdv.util.InvokeOnEDT;
 import java.awt.event.WindowEvent;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
-
 import javax.swing.JDialog;
 import javax.swing.JFrame;
-
 import org.mastodon.feature.FeatureSpecsService;
 import org.mastodon.feature.ui.FeatureColorModeConfigPage;
 import org.mastodon.plugin.MastodonPlugin;
@@ -26,6 +25,7 @@ import org.mastodon.revised.ui.SelectionActions;
 import org.mastodon.revised.ui.coloring.feature.DefaultFeatureRangeCalculator;
 import org.mastodon.revised.ui.coloring.feature.FeatureColorModeManager;
 import org.mastodon.revised.ui.coloring.feature.FeatureRangeCalculator;
+import org.mastodon.revised.ui.coloring.feature.revised.Playground.ProjectionsFromFeatureModel;
 import org.mastodon.revised.ui.keymap.CommandDescriptionProvider;
 import org.mastodon.revised.ui.keymap.CommandDescriptions;
 import org.mastodon.revised.ui.keymap.CommandDescriptionsBuilder;
@@ -43,8 +43,6 @@ import org.scijava.ui.behaviour.KeyPressedManager;
 import org.scijava.ui.behaviour.util.AbstractNamedAction;
 import org.scijava.ui.behaviour.util.Actions;
 import org.scijava.ui.behaviour.util.RunnableAction;
-
-import bdv.util.InvokeOnEDT;
 
 public class WindowManager
 {
@@ -242,12 +240,14 @@ public class WindowManager
 
 		// Feature color modes.
 		final FeatureRangeCalculator vertexFeatureRangeCalculator =
-				new DefaultFeatureRangeCalculator<>( model.getGraph().vertices(), model.getFeatureModel() );
+				new DefaultFeatureRangeCalculator<>( model.getGraph().vertices(), new ProjectionsFromFeatureModel( model.getFeatureModel() ) );
 		final FeatureRangeCalculator edgeFeatureRangeCalculator =
-				new DefaultFeatureRangeCalculator<>( model.getGraph().edges(), model.getFeatureModel() );
+				new DefaultFeatureRangeCalculator<>( model.getGraph().edges(), new ProjectionsFromFeatureModel( model.getFeatureModel() ) );
+		System.out.println( "WindowManager.setAppModel" );
 		settings.addPage( new FeatureColorModeConfigPage( FEATURECOLORMODE_SETTINGSPAGE_TREEPATH,
 				featureColorModeManager,
 				context.getService( FeatureSpecsService.class ),
+				appModel.getSharedBdvData().getSources().size(),
 				model.getFeatureModel(),
 				vertexFeatureRangeCalculator,
 				edgeFeatureRangeCalculator,

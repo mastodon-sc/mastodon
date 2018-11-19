@@ -268,7 +268,7 @@ public class GraphUpdateStackTest
 		}
 
 		@Override
-		public Set< FeatureProjectionKey > projectionKeys()
+		public Set< FeatureProjection< Spot > > projections()
 		{
 			return null;
 		}
@@ -351,7 +351,7 @@ public class GraphUpdateStackTest
 		}
 
 		@Override
-		public Set< FeatureProjectionKey > projectionKeys()
+		public Set< FeatureProjection< Spot > > projections()
 		{
 			return null;
 		}
@@ -426,7 +426,7 @@ public class GraphUpdateStackTest
 		}
 
 		@Override
-		public Set< FeatureProjectionKey > projectionKeys()
+		public Set< FeatureProjection< Spot > > projections()
 		{
 			return null;
 		}

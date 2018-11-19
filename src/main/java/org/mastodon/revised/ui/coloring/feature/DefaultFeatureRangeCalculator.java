@@ -3,42 +3,36 @@ package org.mastodon.revised.ui.coloring.feature;
 import java.util.Collection;
 import java.util.DoubleSummaryStatistics;
 
-import org.mastodon.feature.FeatureModel;
-import org.mastodon.feature.FeatureModelUtil;
 import org.mastodon.feature.FeatureProjection;
-import org.mastodon.feature.FeatureSpec;
 
 public class DefaultFeatureRangeCalculator< O > implements FeatureRangeCalculator
 {
-
-	private final FeatureModel featureModel;
-
 	private final Collection< O > objs;
 
-	public DefaultFeatureRangeCalculator( final Collection< O > objs, final FeatureModel featureModel )
+	private final Projections projections;
+
+	public DefaultFeatureRangeCalculator( final Collection< O > objs, final Projections projections )
 	{
 		this.objs = objs;
-		this.featureModel = featureModel;
+		this.projections = projections;
 	}
 
 	@Override
-	public double[] computeMinMax( final FeatureSpec< ?, ? > featureSpec, final String projectionKey )
+	public double[] computeMinMax( final FeatureProjectionId id )
 	{
-		final FeatureProjection< ? > projection = FeatureModelUtil.getFeatureProjection( featureModel, featureSpec, FeatureModelUtil.parseProjectionName( projectionKey ) );
-		if ( null == projection )
-			return null;
-
 		if ( objs.isEmpty() )
 			return null;
 
-		if ( !featureSpec.getTargetClass().isAssignableFrom( objs.iterator().next().getClass() ) )
+		@SuppressWarnings( "unchecked" )
+		final Class< O > target = ( Class< O > ) objs.iterator().next().getClass();
+
+		final FeatureProjection< O > projection = projections.getFeatureProjection( id, target );
+		if ( null == projection )
 			return null;
 
-		@SuppressWarnings( "unchecked" )
-		final FeatureProjection< O > fp = ( FeatureProjection< O > ) projection;
 		final DoubleSummaryStatistics stats = objs.stream()
-				.filter( e -> fp.isSet( e ) )
-				.mapToDouble( e -> fp.value( e ) )
+				.filter( projection::isSet )
+				.mapToDouble( projection::value )
 				.summaryStatistics();
 		return new double[] { stats.getMin(), stats.getMax() };
 	}

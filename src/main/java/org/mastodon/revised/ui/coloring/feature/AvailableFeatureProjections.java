@@ -1,4 +1,4 @@
-package org.mastodon.revised.ui.coloring.feature.revised;
+package org.mastodon.revised.ui.coloring.feature;
 
 import gnu.trove.list.TIntList;
 import java.util.Collection;

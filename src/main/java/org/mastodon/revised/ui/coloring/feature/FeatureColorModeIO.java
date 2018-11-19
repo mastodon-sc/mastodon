@@ -20,11 +20,11 @@ import org.yaml.snakeyaml.representer.Representer;
 
 public class FeatureColorModeIO
 {
-
 	private static class FeatureColorModeRepresenter extends WorkaroundRepresenter
 	{
 		public FeatureColorModeRepresenter()
 		{
+			putRepresent( new RepresentFeatureProjectionId( this ) );
 			putRepresent( new RepresentFeatureColorMode( this ) );
 		}
 	}
@@ -34,6 +34,7 @@ public class FeatureColorModeIO
 		public FeatureColorModeConstructor()
 		{
 			super( Object.class );
+			putConstruct( new ConstructFeatureProjectionId( this ) );
 			putConstruct( new ConstructFeatureColorMode( this ) );
 		}
 	}
@@ -45,6 +46,56 @@ public class FeatureColorModeIO
 		final Constructor constructor = new FeatureColorModeConstructor();
 		final Yaml yaml = new Yaml( constructor, representer, dumperOptions );
 		return yaml;
+	}
+
+	public static final Tag FEATURE_PROJECTION_ID_TAG = new Tag( "!featureprojection" );
+
+	public static class RepresentFeatureProjectionId extends WorkaroundRepresent
+	{
+		public RepresentFeatureProjectionId( final WorkaroundRepresenter r )
+		{
+			super( r, FEATURE_PROJECTION_ID_TAG, FeatureProjectionId.class );
+		}
+
+		@Override
+		public Node representData( final Object data )
+		{
+			final FeatureProjectionId p = ( FeatureProjectionId ) data;
+			final Map< String, Object > mapping = new LinkedHashMap< >();
+			mapping.put( "feature", p.getFeatureKey() );
+			mapping.put( "projection", p.getProjectionKey() );
+			mapping.put( "i0", p.getI0() );
+			mapping.put( "i1", p.getI1() );
+			final Node node = representMapping( getTag(), mapping, Boolean.TRUE );
+			return node;
+		}
+	}
+
+	public static class ConstructFeatureProjectionId extends AbstractWorkaroundConstruct
+	{
+		public ConstructFeatureProjectionId( final WorkaroundConstructor c )
+		{
+			super( c, FEATURE_PROJECTION_ID_TAG );
+		}
+
+		@Override
+		public Object construct( final Node node )
+		{
+			try
+			{
+				final Map< Object, Object > mapping = constructMapping( ( MappingNode  ) node );
+				final String featureKey = ( String ) mapping.get( "feature" );
+				final String projectionKey = ( String ) mapping.get( "projection" );
+				final int i0 = ( Integer ) mapping.get( "i0" );
+				final int i1 = ( Integer ) mapping.get( "i1" );
+				return new FeatureProjectionId( featureKey, projectionKey, i0, i1 );
+			}
+			catch( final Exception e )
+			{
+				e.printStackTrace();
+			}
+			return null;
+		}
 	}
 
 	private static final Tag FEATURECOLORMODE_TAG = new Tag( "!featurecolormode" );
@@ -94,20 +145,14 @@ public class FeatureColorModeIO
 				final String name = ( String ) mapping.get( "name" );
 				final FeatureColorMode s = FeatureColorMode.defaultMode().copy( name );
 
-				s.setName( ( String ) mapping.get( "name" ) );
-
 				s.setVertexColorMode( VertexColorMode.valueOf( ( String ) mapping.get( "vertexColorMode" ) ) );
-				@SuppressWarnings( "unchecked" )
-				final List< String > vertexFeatureKeys = ( List< String > ) mapping.get( "vertexFeatureProjection" );
-				s.setVertexFeatureProjection( vertexFeatureKeys.get( 0 ), vertexFeatureKeys.get( 1 ) );
+				s.setVertexFeatureProjection( ( FeatureProjectionId ) mapping.get( "vertexFeatureProjection" ) );
 				s.setVertexColorMap( ( String ) mapping.get( "vertexColorMap" ) );
 				@SuppressWarnings( "unchecked" )
 				final List< Double > vertexRange = ( List< Double > ) mapping.get( "vertexFeatureRange" );
 				s.setVertexRange( vertexRange.get( 0 ), vertexRange.get( 1 ) );
 				s.setEdgeColorMode( EdgeColorMode.valueOf( ( String ) mapping.get( "edgeColorMode" ) ) );
-				@SuppressWarnings( "unchecked" )
-				final List< String > edgeFeatureKeys = ( List< String > ) mapping.get( "edgeFeatureProjection" );
-				s.setEdgeFeatureProjection( edgeFeatureKeys.get( 0 ), edgeFeatureKeys.get( 1 ) );
+				s.setEdgeFeatureProjection( ( FeatureProjectionId )mapping.get( "edgeFeatureProjection" ) );
 				s.setEdgeColorMap( ( String ) mapping.get( "edgeColorMap" ) );
 				@SuppressWarnings( "unchecked" )
 				final List< Double > edgeRange = ( List< Double > ) mapping.get( "edgeFeatureRange" );

@@ -1,6 +1,6 @@
 package org.mastodon.revised.ui.coloring.feature.revised;
 
-import static org.mastodon.revised.ui.coloring.feature.revised.TargetType.VERTEX;
+import static org.mastodon.revised.ui.coloring.feature.TargetType.VERTEX;
 
 import java.util.Collection;
 import java.util.LinkedHashMap;
@@ -17,6 +17,10 @@ import org.mastodon.feature.FeatureSpec;
 import org.mastodon.feature.Multiplicity;
 import org.mastodon.revised.model.mamut.Link;
 import org.mastodon.revised.model.mamut.Spot;
+import org.mastodon.revised.ui.coloring.feature.AvailableFeatureProjections;
+import org.mastodon.revised.ui.coloring.feature.FeatureProjectionId;
+import org.mastodon.revised.ui.coloring.feature.Projections;
+import org.mastodon.revised.ui.coloring.feature.TargetType;
 
 import gnu.trove.list.TIntList;
 import gnu.trove.list.array.TIntArrayList;
@@ -24,26 +28,39 @@ import gnu.trove.list.array.TIntArrayList;
 public class Playground
 {
 
-	public static class ProjectionsFromFeatureModel< T > implements Projections< T >
+	public static class ProjectionsFromFeatureModel implements Projections
 	{
 		private final FeatureModel featureModel;
 
-		private final Class< T > target;
-
-		public ProjectionsFromFeatureModel( final FeatureModel featureModel, final Class< T > target )
+		public ProjectionsFromFeatureModel( final FeatureModel featureModel )
 		{
 			this.featureModel = featureModel;
-			this.target = target;
 		}
 
 		@Override
-		public FeatureProjection< T > getFeatureProjection( final FeatureProjectionId id )
+		public FeatureProjection< ? > getFeatureProjection( final FeatureProjectionId id )
 		{
 			final FeatureSpec< ?, ? > featureSpec = featureModel.getFeatureSpecs().stream()
+					.filter( spec -> spec.getKey().equals( id.getFeatureKey() ) )
+					.findFirst()
+					.orElse( null );
+			return getFeatureProjection( id, featureSpec );
+		}
+
+		@Override
+		public < T > FeatureProjection< T > getFeatureProjection( final FeatureProjectionId id, final Class< T > target )
+		{
+			@SuppressWarnings( "unchecked" )
+			final FeatureSpec< ?, T > featureSpec = ( FeatureSpec< ?, T > ) featureModel.getFeatureSpecs().stream()
 					.filter( spec -> target.isAssignableFrom( spec.getTargetClass() ) )
 					.filter( spec -> spec.getKey().equals( id.getFeatureKey() ) )
 					.findFirst()
 					.orElse( null );
+			return getFeatureProjection( id, featureSpec );
+		}
+
+		private final < T > FeatureProjection< T > getFeatureProjection( final FeatureProjectionId id, final FeatureSpec< ?, T > featureSpec )
+		{
 			if ( featureSpec == null )
 				return null;
 
@@ -152,7 +169,7 @@ public class Playground
 		/**
 		 * Adds {@code 0 .. numSources-1} to available {@code sourceIndices}.
 		 */
-		void setMinNumSources( final int numSources )
+		public void setMinNumSources( final int numSources )
 		{
 			for ( int i = 0; i < numSources; i++ )
 			{
@@ -166,7 +183,7 @@ public class Playground
 		 * Add {@code i} to available {@code sourceIndices}.
 		 * If {@code i < 0}, do nothing.
 		 */
-		void addSourceIndex( final int i )
+		public void addSourceIndex( final int i )
 		{
 			if ( i >= 0 && !sourceIndices.contains( i ) )
 			{
@@ -178,7 +195,7 @@ public class Playground
 		/**
 		 * Adds {@code FeatureSpec} (from {@code FeatureSpecsService} or {@code FeatureModel}).
 		 */
-		void add( final FeatureSpec< ?, ? > spec )
+		public void add( final FeatureSpec< ?, ? > spec )
 		{
 			final Map< String, FeatureProperties > features;
 
@@ -210,7 +227,7 @@ public class Playground
 		/**
 		 * Adds {@code FeatureProjectionId} (from existing color mode).
 		 */
-		void add( final FeatureProjectionId id, final TargetType targetType )
+		public void add( final FeatureProjectionId id, final TargetType targetType )
 		{
 			final Map< String, FeatureProperties > features = features( targetType );
 
