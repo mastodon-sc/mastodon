@@ -10,12 +10,12 @@ public class FeatureProjections
 {
 	public static final < T > IntFeatureProjection< T > project( final FeatureProjectionKey key, final IntPropertyMap< T > map, final String units )
 	{
-		return new MyIntPropertyProjection<>( null, map, units );
+		return new MyIntPropertyProjection<>( key, map, units );
 	}
 
 	public static final < T > FeatureProjection< T > project( final FeatureProjectionKey key, final DoublePropertyMap< T > map, final String units )
 	{
-		return new MyDoublePropertyProjection<>( null, map, units );
+		return new MyDoublePropertyProjection<>( key, map, units );
 	}
 
 	private static final class MyIntPropertyProjection< T > implements IntFeatureProjection< T >
