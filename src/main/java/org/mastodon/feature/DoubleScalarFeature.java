@@ -7,7 +7,6 @@ import java.util.Set;
 
 import org.mastodon.RefPool;
 import org.mastodon.properties.DoublePropertyMap;
-import org.mastodon.revised.model.mamut.Spot;
 
 /**
  * Feature made of a double scalar value.
@@ -45,7 +44,7 @@ public class DoubleScalarFeature< O > implements Feature< O >
 	 */
 	public DoubleScalarFeature( final String key, final String info, final Dimension dimension, final String units, final RefPool< O > pool )
 	{
-		FeatureProjectionSpec projectionSpec = new FeatureProjectionSpec( key, dimension );
+		final FeatureProjectionSpec projectionSpec = new FeatureProjectionSpec( key, dimension );
 		this.spec = new MyFeatureSpec<>( key, info, pool.getRefClass(), projectionSpec );
 		this.values = new DoublePropertyMap<>( pool, Double.NaN );
 		this.projection = FeatureProjections.project( key( projectionSpec ), values, units );
@@ -96,7 +95,6 @@ public class DoubleScalarFeature< O > implements Feature< O >
 	 *
 	 * @return the values of the map as an array of double values.
 	 */
-	// TODO: REMOVE?
 	public double[] values()
 	{
 		return values.getMap().values();

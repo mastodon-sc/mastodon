@@ -92,7 +92,6 @@ import org.mastodon.feature.Dimension;
 import org.mastodon.feature.Feature;
 import org.mastodon.feature.FeatureModel;
 import org.mastodon.feature.FeatureProjection;
-import org.mastodon.feature.FeatureProjectionKey;
 import org.mastodon.feature.IntFeatureProjection;
 import org.mastodon.graph.algorithm.RootFinder;
 import org.mastodon.graph.algorithm.traversal.DepthFirstSearch;
@@ -483,7 +482,7 @@ public class MamutExporter
 		final List< Feature< Link > > features = getFeaturesForTarget( model.getFeatureModel(), Link.class );
 		for ( final Feature< Link > f : features )
 		{
-			for ( FeatureProjection< Link > projection : f.projections() )
+			for ( final FeatureProjection< Link > projection : f.projections() )
 				attributes.add( new Attribute(
 						sanitize( projection.getKey().toString() ),
 						Double.toString( projection.value( edge ) ) ) );
@@ -544,7 +543,7 @@ public class MamutExporter
 		final List< Feature< Spot > > features = getFeaturesForTarget( model.getFeatureModel(), Spot.class );
 		for ( final Feature< Spot > f : features )
 		{
-			for ( FeatureProjection< Spot > projection : f.projections() )
+			for ( final FeatureProjection< Spot > projection : f.projections() )
 				attributes.add( new Attribute(
 						sanitize( projection.getKey().toString() ),
 						Double.toString( projection.value( spot ) ) ) );
@@ -576,7 +575,7 @@ public class MamutExporter
 		{
 
 			// We actually export feature projections.
-			for ( FeatureProjection< T > projection : feature.projections() )
+			for ( final FeatureProjection< T > projection : feature.projections() )
 			{
 				final String isint = ( projection instanceof IntFeatureProjection )
 						? "true"

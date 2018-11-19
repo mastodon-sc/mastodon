@@ -3,12 +3,6 @@ package org.mastodon.feature.ui;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.HashSet;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Set;
 import java.util.function.Consumer;
 
 import javax.swing.JComponent;
@@ -16,7 +10,6 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JSeparator;
 
-import org.mastodon.feature.FeatureSpec;
 import org.mastodon.revised.ui.coloring.ColorMap;
 import org.mastodon.revised.ui.coloring.feature.AvailableFeatureProjections;
 import org.mastodon.revised.ui.coloring.feature.FeatureColorMode;
@@ -24,7 +17,6 @@ import org.mastodon.revised.ui.coloring.feature.FeatureColorMode.EdgeColorMode;
 import org.mastodon.revised.ui.coloring.feature.FeatureColorMode.VertexColorMode;
 import org.mastodon.revised.ui.coloring.feature.FeatureProjectionId;
 import org.mastodon.revised.ui.coloring.feature.FeatureRangeCalculator;
-import org.mastodon.revised.ui.coloring.feature.TargetType;
 
 /**
  * JPanel to edit a single {@link FeatureColorMode}.

@@ -1,13 +1,13 @@
 package org.mastodon.app;
 
 import java.util.ArrayList;
+
 import org.mastodon.adapter.FocusModelAdapter;
 import org.mastodon.adapter.HighlightModelAdapter;
 import org.mastodon.adapter.NavigationHandlerAdapter;
 import org.mastodon.adapter.RefBimap;
 import org.mastodon.adapter.SelectionModelAdapter;
 import org.mastodon.adapter.TimepointModelAdapter;
-import org.mastodon.app.ui.ViewFrame;
 import org.mastodon.graph.Edge;
 import org.mastodon.graph.Vertex;
 import org.mastodon.graph.ref.AbstractListenableEdge;
@@ -18,7 +18,6 @@ import org.mastodon.model.NavigationHandler;
 import org.mastodon.model.SelectionModel;
 import org.mastodon.model.TimepointModel;
 import org.mastodon.revised.model.AbstractSpot;
-import org.mastodon.util.Listeners;
 
 /**
  *

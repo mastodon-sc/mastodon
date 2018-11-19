@@ -8,7 +8,6 @@ import java.util.Set;
 
 import org.mastodon.feature.Feature;
 import org.mastodon.feature.FeatureProjection;
-import org.mastodon.feature.FeatureProjectionKey;
 import org.mastodon.feature.FeatureSpec;
 import org.mastodon.feature.FeatureSpecsService;
 import org.mastodon.project.MamutProject;

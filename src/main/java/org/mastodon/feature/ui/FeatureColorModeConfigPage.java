@@ -2,8 +2,6 @@ package org.mastodon.feature.ui;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Map;
-import java.util.Set;
 
 import javax.swing.JPanel;
 
@@ -12,9 +10,7 @@ import org.mastodon.app.ui.settings.SelectAndEditProfileSettingsPage;
 import org.mastodon.app.ui.settings.style.StyleProfile;
 import org.mastodon.app.ui.settings.style.StyleProfileManager;
 import org.mastodon.feature.FeatureModel;
-import org.mastodon.feature.FeatureSpec;
 import org.mastodon.feature.FeatureSpecsService;
-import org.mastodon.revised.bdv.SharedBigDataViewerData;
 import org.mastodon.revised.ui.coloring.feature.AvailableFeatureProjections;
 import org.mastodon.revised.ui.coloring.feature.FeatureColorMode;
 import org.mastodon.revised.ui.coloring.feature.FeatureColorModeManager;

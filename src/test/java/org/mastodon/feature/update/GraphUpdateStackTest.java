@@ -4,11 +4,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
-import static org.mastodon.feature.FeatureProjectionKey.key;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -16,12 +12,9 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mastodon.collection.RefSet;
 import org.mastodon.collection.ref.RefSetImp;
-import org.mastodon.feature.Dimension;
 import org.mastodon.feature.Feature;
 import org.mastodon.feature.FeatureProjection;
 import org.mastodon.feature.FeatureProjectionKey;
-import org.mastodon.feature.FeatureProjectionSpec;
-import org.mastodon.feature.FeatureProjections;
 import org.mastodon.feature.FeatureSpec;
 import org.mastodon.feature.FeatureSpecsService;
 import org.mastodon.feature.Multiplicity;

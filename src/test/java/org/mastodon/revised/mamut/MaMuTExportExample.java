@@ -9,7 +9,6 @@ import org.jdom2.JDOMException;
 import org.mastodon.feature.Feature;
 import org.mastodon.feature.FeatureModel;
 import org.mastodon.feature.FeatureProjection;
-import org.mastodon.feature.FeatureProjectionKey;
 import org.mastodon.feature.FeatureSpec;
 import org.mastodon.mamut.feature.MamutFeatureComputerService;
 import org.mastodon.project.MamutProject;
@@ -55,7 +54,7 @@ public class MaMuTExportExample
 		{
 			System.out.println( " - " + fs.getKey() );
 			final Feature< ? > feature = features.get( fs );
-			for ( FeatureProjection< ? > projection : feature.projections() )
+			for ( final FeatureProjection< ? > projection : feature.projections() )
 				System.out.println( "   - " + projection.getKey() );
 		}
 

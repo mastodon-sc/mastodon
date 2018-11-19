@@ -2,11 +2,8 @@ package org.mastodon.feature;
 
 import static org.scijava.ItemIO.OUTPUT;
 
-import java.util.Collections;
 import java.util.Set;
 
-import org.mastodon.revised.model.mamut.Link;
-import org.mastodon.revised.model.mamut.Spot;
 import org.scijava.Context;
 import org.scijava.command.CommandService;
 import org.scijava.plugin.Parameter;

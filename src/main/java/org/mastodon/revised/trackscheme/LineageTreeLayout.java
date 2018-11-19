@@ -13,7 +13,6 @@ import org.mastodon.model.SelectionModel;
 import org.mastodon.revised.trackscheme.ScreenEdge.ScreenEdgePool;
 import org.mastodon.revised.trackscheme.ScreenVertex.ScreenVertexPool;
 import org.mastodon.revised.trackscheme.ScreenVertexRange.ScreenVertexRangePool;
-import org.mastodon.revised.ui.coloring.ColorGenerator;
 import org.mastodon.revised.ui.coloring.GraphColorGenerator;
 import org.mastodon.util.Listeners;
 
