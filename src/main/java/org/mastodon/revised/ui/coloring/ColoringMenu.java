@@ -18,7 +18,7 @@ import org.mastodon.revised.ui.coloring.feature.FeatureColorMode;
 import org.mastodon.revised.ui.coloring.feature.FeatureColorMode.UpdateListener;
 import org.mastodon.revised.ui.coloring.feature.FeatureColorModeManager;
 import org.mastodon.revised.ui.coloring.feature.Projections;
-import org.mastodon.revised.ui.coloring.feature.revised.Playground.ProjectionsFromFeatureModel;
+import org.mastodon.revised.ui.coloring.feature.ProjectionsFromFeatureModel;
 import org.mastodon.revised.util.HasSelectedState;
 import org.mastodon.util.Listeners;
 import org.scijava.ui.behaviour.util.AbstractNamedAction;

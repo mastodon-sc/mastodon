@@ -25,7 +25,7 @@ import org.mastodon.revised.ui.SelectionActions;
 import org.mastodon.revised.ui.coloring.feature.DefaultFeatureRangeCalculator;
 import org.mastodon.revised.ui.coloring.feature.FeatureColorModeManager;
 import org.mastodon.revised.ui.coloring.feature.FeatureRangeCalculator;
-import org.mastodon.revised.ui.coloring.feature.revised.Playground.ProjectionsFromFeatureModel;
+import org.mastodon.revised.ui.coloring.feature.ProjectionsFromFeatureModel;
 import org.mastodon.revised.ui.keymap.CommandDescriptionProvider;
 import org.mastodon.revised.ui.keymap.CommandDescriptions;
 import org.mastodon.revised.ui.keymap.CommandDescriptionsBuilder;

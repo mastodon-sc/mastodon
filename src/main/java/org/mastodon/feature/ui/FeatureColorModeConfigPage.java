@@ -11,11 +11,9 @@ import org.mastodon.app.ui.settings.style.StyleProfile;
 import org.mastodon.app.ui.settings.style.StyleProfileManager;
 import org.mastodon.feature.FeatureModel;
 import org.mastodon.feature.FeatureSpecsService;
-import org.mastodon.revised.ui.coloring.feature.AvailableFeatureProjections;
 import org.mastodon.revised.ui.coloring.feature.FeatureColorMode;
 import org.mastodon.revised.ui.coloring.feature.FeatureColorModeManager;
 import org.mastodon.revised.ui.coloring.feature.FeatureRangeCalculator;
-import org.mastodon.revised.ui.coloring.feature.revised.Playground.AvailableFeatureProjectionsImp;
 import org.mastodon.util.Listeners;
 import org.mastodon.util.Listeners.SynchronizedList;
 

@@ -18,7 +18,7 @@ import org.mastodon.revised.ui.coloring.feature.DefaultFeatureRangeCalculator;
 import org.mastodon.revised.ui.coloring.feature.FeatureColorModeManager;
 import org.mastodon.revised.ui.coloring.feature.FeatureRangeCalculator;
 import org.mastodon.revised.ui.coloring.feature.Projections;
-import org.mastodon.revised.ui.coloring.feature.revised.Playground;
+import org.mastodon.revised.ui.coloring.feature.ProjectionsFromFeatureModel;
 import org.mastodon.revised.ui.keymap.Keymap;
 import org.mastodon.revised.ui.keymap.KeymapManager;
 import org.scijava.Context;
@@ -42,7 +42,7 @@ public class FeatureColorModeConfigPageDemo
 		final Model model = new Model();
 		model.loadRaw( project.openForReading() );
 
-		final Projections projections = new Playground.ProjectionsFromFeatureModel( model.getFeatureModel() );
+		final Projections projections = new ProjectionsFromFeatureModel( model.getFeatureModel() );
 
 		final FeatureRangeCalculator vertexFeatureRangeCalculator =
 				new DefaultFeatureRangeCalculator<>( model.getGraph().vertices(), projections );

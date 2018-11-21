@@ -17,7 +17,6 @@ import javax.swing.JPanel;
 import org.mastodon.feature.FeatureProjectionSpec;
 import org.mastodon.feature.FeatureSpec;
 import org.mastodon.feature.Multiplicity;
-import org.mastodon.revised.ui.coloring.feature.AvailableFeatureProjections;
 import org.mastodon.revised.ui.coloring.feature.FeatureProjectionId;
 import org.mastodon.revised.ui.coloring.feature.TargetType;
 import org.mastodon.util.Listeners;

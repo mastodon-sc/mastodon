@@ -25,7 +25,7 @@ import org.mastodon.revised.ui.coloring.GraphColorGeneratorAdapter;
 import org.mastodon.revised.ui.coloring.TagSetGraphColorGenerator;
 import org.mastodon.revised.ui.coloring.feature.FeatureColorMode;
 import org.mastodon.revised.ui.coloring.feature.FeatureColorModeManager;
-import org.mastodon.revised.ui.coloring.feature.revised.Playground.ProjectionsFromFeatureModel;
+import org.mastodon.revised.ui.coloring.feature.ProjectionsFromFeatureModel;
 
 public class MamutView< VG extends ViewGraph< Spot, Link, V, E >, V extends Vertex< E >, E extends Edge< V > >
 		extends MastodonFrameView< MamutAppModel, VG, Spot, Link, V, E >

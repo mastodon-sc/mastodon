@@ -1,10 +1,11 @@
-package org.mastodon.revised.ui.coloring.feature;
+package org.mastodon.feature.ui;
 
 import java.util.Collection;
 
 import org.mastodon.feature.Multiplicity;
 
 import gnu.trove.list.TIntList;
+import org.mastodon.revised.ui.coloring.feature.TargetType;
 
 /**
  * Lists the features and projections (as their respective ({@code String}

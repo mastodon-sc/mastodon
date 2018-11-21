@@ -11,7 +11,6 @@ import javax.swing.JPanel;
 import javax.swing.JSeparator;
 
 import org.mastodon.revised.ui.coloring.ColorMap;
-import org.mastodon.revised.ui.coloring.feature.AvailableFeatureProjections;
 import org.mastodon.revised.ui.coloring.feature.FeatureColorMode;
 import org.mastodon.revised.ui.coloring.feature.FeatureColorMode.EdgeColorMode;
 import org.mastodon.revised.ui.coloring.feature.FeatureColorMode.VertexColorMode;
