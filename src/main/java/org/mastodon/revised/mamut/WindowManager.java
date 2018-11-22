@@ -1,22 +1,22 @@
 package org.mastodon.revised.mamut;
 
-import bdv.util.InvokeOnEDT;
 import java.awt.event.WindowEvent;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
+
 import javax.swing.JDialog;
 import javax.swing.JFrame;
+
 import org.mastodon.feature.FeatureSpecsService;
-import org.mastodon.feature.ui.AvailableFeatureProjections;
 import org.mastodon.feature.ui.FeatureColorModeConfigPage;
+import org.mastodon.feature.ui.mamut.MamutAvailableFeatureProjectionsManager;
 import org.mastodon.plugin.MastodonPlugin;
 import org.mastodon.plugin.MastodonPluginAppModel;
 import org.mastodon.plugin.MastodonPlugins;
 import org.mastodon.revised.bdv.overlay.ui.RenderSettingsConfigPage;
 import org.mastodon.revised.bdv.overlay.ui.RenderSettingsManager;
-import org.mastodon.revised.model.mamut.Link;
 import org.mastodon.revised.model.mamut.Model;
 import org.mastodon.revised.model.mamut.Spot;
 import org.mastodon.revised.model.tag.ui.TagSetDialog;
@@ -44,6 +44,8 @@ import org.scijava.ui.behaviour.KeyPressedManager;
 import org.scijava.ui.behaviour.util.AbstractNamedAction;
 import org.scijava.ui.behaviour.util.Actions;
 import org.scijava.ui.behaviour.util.RunnableAction;
+
+import bdv.util.InvokeOnEDT;
 
 public class WindowManager
 {
@@ -109,6 +111,8 @@ public class WindowManager
 
 	private final FeatureColorModeManager featureColorModeManager;
 
+	private final MamutAvailableFeatureProjectionsManager featureProjectionsManager;
+
 	private final KeymapManager keymapManager;
 
 	private final Actions globalAppActions;
@@ -141,6 +145,9 @@ public class WindowManager
 		trackSchemeStyleManager = new TrackSchemeStyleManager();
 		renderSettingsManager = new RenderSettingsManager();
 		featureColorModeManager = new FeatureColorModeManager();
+		featureProjectionsManager = new MamutAvailableFeatureProjectionsManager(
+				context.getService( FeatureSpecsService.class ),
+				featureColorModeManager );
 		keymapManager = new KeymapManager();
 
 		final Keymap keymap = keymapManager.getForwardDefaultKeymap();
@@ -247,33 +254,14 @@ public class WindowManager
 		System.out.println( "WindowManager.setAppModel" );
 
 
-		// TODO. make a class to manage AvailableFeatureProjections instead!
-		final AvailableFeatureProjections specs = FeatureColorModeConfigPage.getFeatureSpecs(
-				context.getService( FeatureSpecsService.class ),
-				appModel.getSharedBdvData().getSources().size(),
-				model.getFeatureModel(),
-				featureColorModeManager,
-				Spot.class,
-				Link.class );
-		// TODO create page once in WindowManager constructor
+		// TODO create page once in WindowManager
+		featureProjectionsManager.setAppModel( appModel );
 		final FeatureColorModeConfigPage colorModeConfigPage = new FeatureColorModeConfigPage( FEATURECOLORMODE_SETTINGSPAGE_TREEPATH,
-				specs,
 				featureColorModeManager,
+				featureProjectionsManager,
 				vertexFeatureRangeCalculator,
 				edgeFeatureRangeCalculator );
 		settings.addPage( colorModeConfigPage );
-		// TODO. make a class to manage AvailableFeatureProjections instead!
-		model.getFeatureModel().listeners().add( () -> {
-			final AvailableFeatureProjections specs2 = FeatureColorModeConfigPage.getFeatureSpecs(
-					context.getService( FeatureSpecsService.class ),
-					appModel.getSharedBdvData().getSources().size(),
-					model.getFeatureModel(),
-					featureColorModeManager,
-					Spot.class,
-					Link.class );
-			colorModeConfigPage.editPanel.setAvailableFeatureProjections( specs2 );
-		} );
-
 
 		updateEnabledActions();
 

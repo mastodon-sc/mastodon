@@ -2,6 +2,7 @@ package org.mastodon.feature.ui;
 
 import static org.mastodon.revised.ui.coloring.feature.TargetType.VERTEX;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
@@ -14,8 +15,8 @@ import org.mastodon.feature.FeatureProjectionSpec;
 import org.mastodon.feature.FeatureSpec;
 import org.mastodon.feature.FeatureSpecsService;
 import org.mastodon.feature.Multiplicity;
-import org.mastodon.revised.model.mamut.Model;
-import org.mastodon.feature.ui.AvailableFeatureProjections;
+import org.mastodon.revised.ui.coloring.feature.FeatureColorMode;
+import org.mastodon.revised.ui.coloring.feature.FeatureColorModeManager;
 import org.mastodon.revised.ui.coloring.feature.FeatureProjectionId;
 import org.mastodon.revised.ui.coloring.feature.TargetType;
 
@@ -33,7 +34,7 @@ import gnu.trove.list.array.TIntArrayList;
  * {@link FeatureModel} (via {@link #add(FeatureSpec)})</li>
  * <li>{@link FeatureProjectionId}s of feature projections defined in existing
  * FeatureColorModes (via {@link #add(FeatureProjectionId, TargetType)})</li>
- * <li>the number of sources from the current {@link Model} (via
+ * <li>the number of sources from the current model (via
  * {@link #setMinNumSources(int)})</li>
  * </ul>
  *
@@ -231,5 +232,60 @@ public class AvailableFeatureProjectionsImp implements AvailableFeatureProjectio
 		sb.append( "  edgeClass=" ).append( edgeClass ).append( ",\n" );
 		sb.append( '}' );
 		return sb.toString();
+	}
+
+	/*
+	 * Below this: Everything required to generate a comprehensive set of
+	 * feature specs, from 3 sources: - discoverable feature specs; - feature
+	 * model; - unknown feature specs mentioned in color modes.
+	 */
+
+	public static AvailableFeatureProjections createAvailableFeatureProjections(
+			final FeatureSpecsService featureSpecsService,
+			final int numSources,
+			final FeatureModel featureModel,
+			final FeatureColorModeManager featureColorModeManager,
+			final Class< ? > vertexClass,
+			final Class< ? > edgeClass )
+	{
+		final AvailableFeatureProjectionsImp projections = new AvailableFeatureProjectionsImp( vertexClass, edgeClass );
+
+		/*
+		 * Available source indices from SharedBigDataViewerData.
+		 */
+		projections.setMinNumSources( Math.max( numSources, 1 ) );
+
+		/*
+		 * Feature specs from service.
+		 */
+		featureSpecsService.getSpecs( vertexClass ).forEach( projections::add );
+		featureSpecsService.getSpecs( edgeClass ).forEach( projections::add );
+
+		/*
+		 * Feature specs from feature model.
+		 */
+		if ( featureModel != null )
+			featureModel.getFeatureSpecs().forEach( projections::add );
+
+		/*
+		 * Feature projections used in existing FeatureColorModes
+		 */
+		final Collection< FeatureColorMode > modes = new ArrayList<>();
+		modes.addAll( featureColorModeManager.getBuiltinStyles() );
+		modes.addAll( featureColorModeManager.getUserStyles() );
+		for ( final FeatureColorMode mode : modes )
+		{
+			/*
+			 * Vertex mode.
+			 */
+			projections.add( mode.getVertexFeatureProjection(), mode.getVertexColorMode().targetType() );
+
+			/*
+			 * Edge mode.
+			 */
+			projections.add( mode.getEdgeFeatureProjection(), mode.getEdgeColorMode().targetType() );
+		}
+
+		return projections;
 	}
 }

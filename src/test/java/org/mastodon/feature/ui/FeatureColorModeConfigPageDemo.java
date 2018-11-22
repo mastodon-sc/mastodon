@@ -2,18 +2,15 @@ package org.mastodon.feature.ui;
 
 import java.io.IOException;
 import java.util.Locale;
-
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
-
 import org.mastodon.feature.FeatureSpecsService;
+import org.mastodon.feature.ui.mamut.MamutAvailableFeatureProjectionsManager;
 import org.mastodon.project.MamutProject;
 import org.mastodon.project.MamutProjectIO;
 import org.mastodon.revised.mamut.KeyConfigContexts;
 import org.mastodon.revised.mamut.PreferencesDialog;
-import org.mastodon.revised.model.mamut.Link;
 import org.mastodon.revised.model.mamut.Model;
-import org.mastodon.revised.model.mamut.Spot;
 import org.mastodon.revised.ui.coloring.feature.DefaultFeatureRangeCalculator;
 import org.mastodon.revised.ui.coloring.feature.FeatureColorModeManager;
 import org.mastodon.revised.ui.coloring.feature.FeatureRangeCalculator;
@@ -58,19 +55,12 @@ public class FeatureColorModeConfigPageDemo
 				new DefaultFeatureRangeCalculator<>( model.getGraph().edges(), projections );
 
 		final FeatureColorModeManager featureColorModeManager = new FeatureColorModeManager();
-
-		final AvailableFeatureProjections specs = FeatureColorModeConfigPage.getFeatureSpecs(
+		final AvailableFeatureProjectionsManager featureProjectionsManager = new MamutAvailableFeatureProjectionsManager(
 				context.getService( FeatureSpecsService.class ),
-				3,
-				model.getFeatureModel(),
-				featureColorModeManager,
-				Spot.class,
-				Link.class );
-
-
+				featureColorModeManager );
 		settings.addPage( new FeatureColorModeConfigPage( FEATURECOLORMODE_SETTINGSPAGE_TREEPATH,
-				specs,
 				featureColorModeManager,
+				featureProjectionsManager,
 				vertexFeatureRangeCalculator,
 				edgeFeatureRangeCalculator ) );
 
