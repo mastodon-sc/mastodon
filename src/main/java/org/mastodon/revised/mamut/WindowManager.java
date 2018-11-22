@@ -9,6 +9,7 @@ import java.util.function.Consumer;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
 import org.mastodon.feature.FeatureSpecsService;
+import org.mastodon.feature.ui.AvailableFeatureProjections;
 import org.mastodon.feature.ui.FeatureColorModeConfigPage;
 import org.mastodon.plugin.MastodonPlugin;
 import org.mastodon.plugin.MastodonPluginAppModel;
@@ -244,15 +245,35 @@ public class WindowManager
 		final FeatureRangeCalculator edgeFeatureRangeCalculator =
 				new DefaultFeatureRangeCalculator<>( model.getGraph().edges(), new ProjectionsFromFeatureModel( model.getFeatureModel() ) );
 		System.out.println( "WindowManager.setAppModel" );
-		settings.addPage( new FeatureColorModeConfigPage( FEATURECOLORMODE_SETTINGSPAGE_TREEPATH,
-				featureColorModeManager,
+
+
+		// TODO. make a class to manage AvailableFeatureProjections instead!
+		final AvailableFeatureProjections specs = FeatureColorModeConfigPage.getFeatureSpecs(
 				context.getService( FeatureSpecsService.class ),
 				appModel.getSharedBdvData().getSources().size(),
 				model.getFeatureModel(),
-				vertexFeatureRangeCalculator,
-				edgeFeatureRangeCalculator,
+				featureColorModeManager,
 				Spot.class,
-				Link.class ) );
+				Link.class );
+		// TODO create page once in WindowManager constructor
+		final FeatureColorModeConfigPage colorModeConfigPage = new FeatureColorModeConfigPage( FEATURECOLORMODE_SETTINGSPAGE_TREEPATH,
+				specs,
+				featureColorModeManager,
+				vertexFeatureRangeCalculator,
+				edgeFeatureRangeCalculator );
+		settings.addPage( colorModeConfigPage );
+		// TODO. make a class to manage AvailableFeatureProjections instead!
+		model.getFeatureModel().listeners().add( () -> {
+			final AvailableFeatureProjections specs2 = FeatureColorModeConfigPage.getFeatureSpecs(
+					context.getService( FeatureSpecsService.class ),
+					appModel.getSharedBdvData().getSources().size(),
+					model.getFeatureModel(),
+					featureColorModeManager,
+					Spot.class,
+					Link.class );
+			colorModeConfigPage.editPanel.setAvailableFeatureProjections( specs2 );
+		} );
+
 
 		updateEnabledActions();
 

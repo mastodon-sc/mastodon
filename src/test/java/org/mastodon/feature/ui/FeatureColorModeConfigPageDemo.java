@@ -32,6 +32,14 @@ public class FeatureColorModeConfigPageDemo
 		Locale.setDefault( Locale.US );
 		UIManager.setLookAndFeel( UIManager.getSystemLookAndFeelClassName() );
 
+//		final AvailableFeatureProjectionsImp afp = new AvailableFeatureProjectionsImp( Spot.class, Link.class );
+//		afp.setMinNumSources( 3 );
+//		afp.add( new FeatureProjectionId( "Link displacement", "Link displacement", -1, -1 ), TargetType.EDGE );
+//		afp.add( new FeatureProjectionId( "Spot N links", "Spot N links", -1, -1 ), TargetType.VERTEX );
+//		afp.add( new FeatureProjectionId( "Spot gaussian-filtered intensity", "Mean", 0, -1 ), TargetType.VERTEX );
+//		afp.add( new FeatureProjectionId( "Spot gaussian-filtered intensity", "Std", 0, -1 ), TargetType.VERTEX );
+//		afp.add( new FeatureProjectionId( "Spot intensity", "Spot intensity", 0, -1 ), TargetType.VERTEX );
+
 		final KeymapManager keymapManager = new KeymapManager();
 		final Keymap keymap = keymapManager.getForwardDefaultKeymap();
 		final PreferencesDialog settings = new PreferencesDialog( null, keymap, new String[] { KeyConfigContexts.MASTODON } );
@@ -50,15 +58,21 @@ public class FeatureColorModeConfigPageDemo
 				new DefaultFeatureRangeCalculator<>( model.getGraph().edges(), projections );
 
 		final FeatureColorModeManager featureColorModeManager = new FeatureColorModeManager();
-		settings.addPage( new FeatureColorModeConfigPage( FEATURECOLORMODE_SETTINGSPAGE_TREEPATH,
-				featureColorModeManager,
+
+		final AvailableFeatureProjections specs = FeatureColorModeConfigPage.getFeatureSpecs(
 				context.getService( FeatureSpecsService.class ),
 				3,
 				model.getFeatureModel(),
-				vertexFeatureRangeCalculator,
-				edgeFeatureRangeCalculator,
+				featureColorModeManager,
 				Spot.class,
-				Link.class ) );
+				Link.class );
+
+
+		settings.addPage( new FeatureColorModeConfigPage( FEATURECOLORMODE_SETTINGSPAGE_TREEPATH,
+				specs,
+				featureColorModeManager,
+				vertexFeatureRangeCalculator,
+				edgeFeatureRangeCalculator ) );
 
 		settings.pack();
 		settings.setVisible( true );

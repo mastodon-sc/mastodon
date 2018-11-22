@@ -20,32 +20,34 @@ import org.mastodon.util.Listeners.SynchronizedList;
 public class FeatureColorModeConfigPage extends SelectAndEditProfileSettingsPage< StyleProfile< FeatureColorMode > >
 {
 
+	public final FeatureColorModelEditPanel editPanel;
+
 	public FeatureColorModeConfigPage(
 			final String treePath,
+			final AvailableFeatureProjections featureSpecs,
 			final FeatureColorModeManager featureColorModeManager,
-			final FeatureSpecsService featureSpecsService,
-			final int numSources,
-			final FeatureModel featureModel,
 			final FeatureRangeCalculator vertexFeatureRangeCalculator,
-			final FeatureRangeCalculator edgeFeatureRangeCalculator,
-			final Class< ? > vertexClass,
-			final Class< ? > edgeClass )
+			final FeatureRangeCalculator edgeFeatureRangeCalculator )
 	{
-		super( treePath,
+		this( treePath,
 				new StyleProfileManager<>( featureColorModeManager, new FeatureColorModeManager( false ) ),
 				new FeatureColorModelEditPanel(
 						featureColorModeManager.getDefaultStyle(),
-						featureSpecsService,
-						numSources,
-						featureModel,
-						featureColorModeManager,
+						featureSpecs,
 						vertexFeatureRangeCalculator,
-						edgeFeatureRangeCalculator,
-						vertexClass,
-						edgeClass ) );
+						edgeFeatureRangeCalculator ) );
 	}
 
-	private static class FeatureColorModelEditPanel implements FeatureColorMode.UpdateListener, SelectAndEditProfileSettingsPage.ProfileEditPanel< StyleProfile< FeatureColorMode > >
+	private FeatureColorModeConfigPage(
+			final String treePath,
+			final StyleProfileManager< FeatureColorModeManager, FeatureColorMode > styleProfileManager,
+			final FeatureColorModelEditPanel editPanel )
+	{
+		super( treePath, styleProfileManager, editPanel );
+		this.editPanel = editPanel;
+	}
+
+	public static class FeatureColorModelEditPanel implements FeatureColorMode.UpdateListener, SelectAndEditProfileSettingsPage.ProfileEditPanel< StyleProfile< FeatureColorMode > >
 	{
 
 		private final FeatureColorMode editedMode;
@@ -58,14 +60,9 @@ public class FeatureColorModeConfigPage extends SelectAndEditProfileSettingsPage
 
 		public FeatureColorModelEditPanel(
 				final FeatureColorMode initialMode,
-				final FeatureSpecsService featureSpecsService,
-				final int numSources,
-				final FeatureModel featureModel,
-				final FeatureColorModeManager featureColorModeManager,
+				final AvailableFeatureProjections featureSpecs,
 				final FeatureRangeCalculator vertexFeatureRangeCalculator,
-				final FeatureRangeCalculator edgeFeatureRangeCalculator,
-				final Class< ? > vertexClass,
-				final Class< ? > edgeClass )
+				final FeatureRangeCalculator edgeFeatureRangeCalculator )
 		{
 			this.editedMode = initialMode.copy( "Edited" );
 			this.featureColorModeEditorPanel = new FeatureColorModeEditorPanel(
@@ -73,14 +70,19 @@ public class FeatureColorModeConfigPage extends SelectAndEditProfileSettingsPage
 					vertexFeatureRangeCalculator,
 					edgeFeatureRangeCalculator );
 
-			featureColorModeEditorPanel.setAvailableFeatureProjections(
-					getFeatureSpecs( featureSpecsService, numSources, featureModel, featureColorModeManager, vertexClass, edgeClass ) );
+			featureColorModeEditorPanel.setAvailableFeatureProjections( featureSpecs );
 
-			// Listen to changes in the feature model.
-			featureModel.listeners().add( () -> {
-				featureColorModeEditorPanel.setAvailableFeatureProjections(
-						getFeatureSpecs( featureSpecsService, numSources, featureModel, featureColorModeManager, vertexClass, edgeClass ) );
-			} );
+			// TODO!!!
+			// TODO!!!
+			// TODO!!!
+			// TODO!!!
+			// TODO!!!
+//			// Listen to changes in the feature model.
+//			featureModel.listeners().add( () -> {
+//				final AvailableFeatureProjections specs = getFeatureSpecs( featureSpecsService, numSources, featureModel, featureColorModeManager, vertexClass, edgeClass );
+//				featureColorModeEditorPanel.setAvailableFeatureProjections(
+//						specs );
+//			} );
 
 			this.modificationListeners = new Listeners.SynchronizedList<>();
 			editedMode.updateListeners().add( this );
@@ -121,6 +123,11 @@ public class FeatureColorModeConfigPage extends SelectAndEditProfileSettingsPage
 			if ( trackModifications )
 				modificationListeners.list.forEach( ModificationListener::modified );
 		}
+
+		public void setAvailableFeatureProjections( final AvailableFeatureProjections featureSpecs )
+		{
+			featureColorModeEditorPanel.setAvailableFeatureProjections( featureSpecs );
+		}
 	}
 
 	/*
@@ -130,7 +137,7 @@ public class FeatureColorModeConfigPage extends SelectAndEditProfileSettingsPage
 	 * - unknown feature specs mentioned in color modes.
 	 */
 
-	private static AvailableFeatureProjections getFeatureSpecs(
+	public static AvailableFeatureProjections getFeatureSpecs(
 			final FeatureSpecsService featureSpecsService,
 			final int numSources,
 			final FeatureModel featureModel,
