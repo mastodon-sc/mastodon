@@ -1,8 +1,15 @@
 package org.mastodon.feature.ui;
 
+import org.mastodon.revised.ui.coloring.feature.FeatureRangeCalculator;
 import org.mastodon.util.Listeners;
 
-public interface AvailableFeatureProjectionsManager
+/**
+ * Provides and up-to-date set of feature projections, as well as
+ * {@code FeatureRangeCalculator}s for vertices and edges.
+ *
+ * @author Tobias Pietzsch
+ */
+public interface FeatureProjectionsManager
 {
 	public interface AvailableFeatureProjectionsListener
 	{
@@ -20,4 +27,8 @@ public interface AvailableFeatureProjectionsManager
 	public Listeners< AvailableFeatureProjectionsListener > listeners();
 
 	public AvailableFeatureProjections getAvailableFeatureProjections();
+
+	// TODO: consider getFeatureRangeCalculator( TargetType ) instead
+	public FeatureRangeCalculator getVertexFeatureRangeCalculator();
+	public FeatureRangeCalculator getEdgeFeatureRangeCalculator();
 }

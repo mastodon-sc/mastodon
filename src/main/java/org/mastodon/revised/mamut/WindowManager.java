@@ -23,10 +23,7 @@ import org.mastodon.revised.model.tag.ui.TagSetDialog;
 import org.mastodon.revised.trackscheme.display.style.TrackSchemeStyleManager;
 import org.mastodon.revised.trackscheme.display.style.TrackSchemeStyleSettingsPage;
 import org.mastodon.revised.ui.SelectionActions;
-import org.mastodon.revised.ui.coloring.feature.DefaultFeatureRangeCalculator;
 import org.mastodon.revised.ui.coloring.feature.FeatureColorModeManager;
-import org.mastodon.revised.ui.coloring.feature.FeatureRangeCalculator;
-import org.mastodon.revised.ui.coloring.feature.ProjectionsFromFeatureModel;
 import org.mastodon.revised.ui.keymap.CommandDescriptionProvider;
 import org.mastodon.revised.ui.keymap.CommandDescriptions;
 import org.mastodon.revised.ui.keymap.CommandDescriptionsBuilder;
@@ -247,20 +244,11 @@ public class WindowManager
 		featureComputationDialog = MamutFeatureComputation.getDialog( appModel, context );
 
 		// Feature color modes.
-		final FeatureRangeCalculator vertexFeatureRangeCalculator =
-				new DefaultFeatureRangeCalculator<>( model.getGraph().vertices(), new ProjectionsFromFeatureModel( model.getFeatureModel() ) );
-		final FeatureRangeCalculator edgeFeatureRangeCalculator =
-				new DefaultFeatureRangeCalculator<>( model.getGraph().edges(), new ProjectionsFromFeatureModel( model.getFeatureModel() ) );
-		System.out.println( "WindowManager.setAppModel" );
-
-
 		// TODO create page once in WindowManager
-		featureProjectionsManager.setAppModel( appModel );
+		featureProjectionsManager.setModel( model, appModel.getSharedBdvData().getSources().size() );
 		final FeatureColorModeConfigPage colorModeConfigPage = new FeatureColorModeConfigPage( FEATURECOLORMODE_SETTINGSPAGE_TREEPATH,
 				featureColorModeManager,
-				featureProjectionsManager,
-				vertexFeatureRangeCalculator,
-				edgeFeatureRangeCalculator );
+				featureProjectionsManager );
 		settings.addPage( colorModeConfigPage );
 
 		updateEnabledActions();

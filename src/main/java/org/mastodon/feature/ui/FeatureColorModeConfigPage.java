@@ -1,13 +1,13 @@
 package org.mastodon.feature.ui;
 
 import javax.swing.JPanel;
+
 import org.mastodon.app.ui.settings.ModificationListener;
 import org.mastodon.app.ui.settings.SelectAndEditProfileSettingsPage;
 import org.mastodon.app.ui.settings.style.StyleProfile;
 import org.mastodon.app.ui.settings.style.StyleProfileManager;
 import org.mastodon.revised.ui.coloring.feature.FeatureColorMode;
 import org.mastodon.revised.ui.coloring.feature.FeatureColorModeManager;
-import org.mastodon.revised.ui.coloring.feature.FeatureRangeCalculator;
 import org.mastodon.util.Listeners;
 import org.mastodon.util.Listeners.SynchronizedList;
 
@@ -16,17 +16,13 @@ public class FeatureColorModeConfigPage extends SelectAndEditProfileSettingsPage
 	public FeatureColorModeConfigPage(
 			final String treePath,
 			final FeatureColorModeManager featureColorModeManager,
-			final AvailableFeatureProjectionsManager featureProjectionsManager,
-			final FeatureRangeCalculator vertexFeatureRangeCalculator,
-			final FeatureRangeCalculator edgeFeatureRangeCalculator )
+			final FeatureProjectionsManager featureProjectionsManager )
 	{
 		super( treePath,
 				new StyleProfileManager<>( featureColorModeManager, new FeatureColorModeManager( false ) ),
 				new FeatureColorModelEditPanel(
 						featureColorModeManager.getDefaultStyle(),
-						featureProjectionsManager,
-						vertexFeatureRangeCalculator,
-						edgeFeatureRangeCalculator ) );
+						featureProjectionsManager ) );
 	}
 
 	public static class FeatureColorModelEditPanel implements FeatureColorMode.UpdateListener, SelectAndEditProfileSettingsPage.ProfileEditPanel< StyleProfile< FeatureColorMode > >
@@ -42,15 +38,13 @@ public class FeatureColorModeConfigPage extends SelectAndEditProfileSettingsPage
 
 		public FeatureColorModelEditPanel(
 				final FeatureColorMode initialMode,
-				final AvailableFeatureProjectionsManager featureProjectionsManager,
-				final FeatureRangeCalculator vertexFeatureRangeCalculator,
-				final FeatureRangeCalculator edgeFeatureRangeCalculator )
+				final FeatureProjectionsManager featureProjectionsManager )
 		{
 			this.editedMode = initialMode.copy( "Edited" );
 			this.featureColorModeEditorPanel = new FeatureColorModeEditorPanel(
 					editedMode,
-					vertexFeatureRangeCalculator,
-					edgeFeatureRangeCalculator );
+					featureProjectionsManager.getVertexFeatureRangeCalculator(),
+					featureProjectionsManager.getEdgeFeatureRangeCalculator() );
 			featureColorModeEditorPanel.setAvailableFeatureProjections( featureProjectionsManager.getAvailableFeatureProjections() );
 			featureProjectionsManager.listeners().add( () -> {
 				featureColorModeEditorPanel.setAvailableFeatureProjections( featureProjectionsManager.getAvailableFeatureProjections() );

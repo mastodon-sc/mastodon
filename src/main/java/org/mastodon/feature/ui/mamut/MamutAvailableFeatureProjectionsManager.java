@@ -5,22 +5,33 @@ import static org.mastodon.feature.ui.AvailableFeatureProjectionsImp.createAvail
 import org.mastodon.feature.FeatureModel;
 import org.mastodon.feature.FeatureSpecsService;
 import org.mastodon.feature.ui.AvailableFeatureProjections;
-import org.mastodon.feature.ui.AvailableFeatureProjectionsManager;
-import org.mastodon.revised.mamut.MamutAppModel;
+import org.mastodon.feature.ui.FeatureProjectionsManager;
 import org.mastodon.revised.model.mamut.Link;
+import org.mastodon.revised.model.mamut.Model;
 import org.mastodon.revised.model.mamut.Spot;
+import org.mastodon.revised.ui.coloring.feature.DefaultFeatureRangeCalculator;
 import org.mastodon.revised.ui.coloring.feature.FeatureColorModeManager;
+import org.mastodon.revised.ui.coloring.feature.FeatureProjectionId;
+import org.mastodon.revised.ui.coloring.feature.FeatureRangeCalculator;
+import org.mastodon.revised.ui.coloring.feature.Projections;
+import org.mastodon.revised.ui.coloring.feature.ProjectionsFromFeatureModel;
 import org.mastodon.util.Listeners;
 
-public class MamutAvailableFeatureProjectionsManager implements AvailableFeatureProjectionsManager
+public class MamutAvailableFeatureProjectionsManager implements FeatureProjectionsManager
 {
 	private final FeatureSpecsService featureSpecsService;
 
 	private final FeatureColorModeManager featureColorModeManager;
 
-	private MamutAppModel appModel;
+	private final FeatureRangeCalculatorWrapper vertexFeatureRangeCalculator;
+
+	private final FeatureRangeCalculatorWrapper edgeFeatureRangeCalculator;
 
 	private final Listeners.List< AvailableFeatureProjectionsListener > listeners;
+
+	private Model model;
+
+	private int numSources = 1;
 
 	public MamutAvailableFeatureProjectionsManager(
 			final FeatureSpecsService featureSpecsService,
@@ -28,22 +39,31 @@ public class MamutAvailableFeatureProjectionsManager implements AvailableFeature
 	{
 		this.featureSpecsService = featureSpecsService;
 		this.featureColorModeManager = featureColorModeManager;
+		this.vertexFeatureRangeCalculator = new FeatureRangeCalculatorWrapper();
+		this.edgeFeatureRangeCalculator = new FeatureRangeCalculatorWrapper();
 		this.listeners = new Listeners.List<>();
 	}
 
 	/**
-	 * Sets the current {@code MamutAppModel}. This will update the available
-	 * projections and listen to the appModel's {@code FeatureModel}.
+	 * Sets the current {@code Model}. This will update the available
+	 * projections and listen to the model's {@code FeatureModel}.
 	 *
-	 * @param appModel
-	 *            the current {@code MamutAppModel} (or {@code null}).
+	 * @param model
+	 *            the current {@code Model} (or {@code null}).
 	 */
-	public void setAppModel( final MamutAppModel appModel )
+	public void setModel( final Model model, final int numSources )
 	{
-		this.appModel = appModel;
+		this.model = model;
+		this.numSources = Math.max( 1, numSources );
 
-		if ( appModel != null )
-			appModel.getModel().getFeatureModel().listeners().add( this::notifyAvailableFeatureProjectionsChanged );
+		if ( model != null )
+		{
+			final FeatureModel featureModel = model.getFeatureModel();
+			final Projections projections = new ProjectionsFromFeatureModel( featureModel );
+			vertexFeatureRangeCalculator.wrapped = new DefaultFeatureRangeCalculator<>( model.getGraph().vertices(), projections );
+			edgeFeatureRangeCalculator.wrapped = new DefaultFeatureRangeCalculator<>( model.getGraph().edges(), projections );
+			featureModel.listeners().add( this::notifyAvailableFeatureProjectionsChanged );
+		}
 
 		notifyAvailableFeatureProjectionsChanged();
 	}
@@ -60,12 +80,7 @@ public class MamutAvailableFeatureProjectionsManager implements AvailableFeature
 	@Override
 	public AvailableFeatureProjections getAvailableFeatureProjections()
 	{
-		final int numSources = ( appModel != null )
-				? appModel.getSharedBdvData().getSources().size()
-				: 1;
-		final FeatureModel featureModel = ( appModel != null )
-				? appModel.getModel().getFeatureModel()
-				: null;
+		final FeatureModel featureModel = ( model != null ) ? model.getFeatureModel() : null;
 		return createAvailableFeatureProjections(
 				featureSpecsService,
 				numSources,
@@ -78,5 +93,28 @@ public class MamutAvailableFeatureProjectionsManager implements AvailableFeature
 	private void notifyAvailableFeatureProjectionsChanged()
 	{
 		listeners.list.forEach( AvailableFeatureProjectionsListener::availableFeatureProjectionsChanged );
+	}
+
+	private static class FeatureRangeCalculatorWrapper implements FeatureRangeCalculator
+	{
+		FeatureRangeCalculator wrapped;
+
+		@Override
+		public double[] computeMinMax( final FeatureProjectionId projection )
+		{
+			return wrapped == null ? null : wrapped.computeMinMax( projection );
+		}
+	};
+
+	@Override
+	public FeatureRangeCalculator getVertexFeatureRangeCalculator()
+	{
+		return vertexFeatureRangeCalculator;
+	}
+
+	@Override
+	public FeatureRangeCalculator getEdgeFeatureRangeCalculator()
+	{
+		return edgeFeatureRangeCalculator;
 	}
 }
