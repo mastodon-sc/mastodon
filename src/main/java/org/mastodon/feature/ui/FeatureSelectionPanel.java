@@ -8,14 +8,14 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.NoSuchElementException;
+
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import org.mastodon.feature.FeatureProjectionSpec;
-import org.mastodon.feature.FeatureSpec;
+
 import org.mastodon.feature.Multiplicity;
 import org.mastodon.revised.ui.coloring.feature.FeatureProjectionId;
 import org.mastodon.revised.ui.coloring.feature.TargetType;
@@ -154,21 +154,16 @@ public class FeatureSelectionPanel
 	}
 
 	/**
-	 * Returns the key pair corresponding to the selection in this panel, as an
-	 * 2-elements string array.
-	 * <p>
-	 * The first element is the feature key ({@link FeatureSpec#getKey()}) or the
-	 * empty string if there is no selection.
-	 * <p>
-	 * The second element is the feature projection key, built from the selected
-	 * feature projection name ({@link FeatureProjectionSpec#projectionName}), the
-	 * feature multiplicity and the source indices selected in this panel. Or the
-	 * empty string if there is no selection.
+	 * Returns the {@link FeatureProjectionId} corresponding to the selection in
+	 * this panel.
 	 *
-	 * @return a 2-element string array.
+	 * @return current selection (or {@code null} if nothing is selected).
 	 */
 	public FeatureProjectionId getSelection()
 	{
+		if ( availableFeatureProjections == null )
+			return null;
+
 		final String featureKey = ( String ) cbFeatures.getSelectedItem();
 		if ( null == featureKey )
 			return null;
@@ -201,22 +196,40 @@ public class FeatureSelectionPanel
 
 			return new FeatureProjectionId( featureKey, projectionKey, targetType, i0, i1 );
 		}
-		catch( NoSuchElementException e )
+		catch( final NoSuchElementException e )
 		{
 			return null;
 		}
 	}
 
+	/**
+	 * Sets the selection in this panel to correspond to the specified
+	 * {@link FeatureProjectionId}. Does nothing, if currently no
+	 * {@link AvailableFeatureProjections} are specified.
+	 */
 	public void setSelection( final FeatureProjectionId selection )
 	{
-		cbFeatures.setSelectedItem( selection.getFeatureKey() );
-		cbProjections.setSelectedItem( selection.getProjectionKey() );
-		cbSource1.setSelectedIndex( Math.max( 0, availableFeatureProjections.getSourceIndices().indexOf( selection.getI0() ) ) );
-		cbSource2.setSelectedIndex( Math.max( 0, availableFeatureProjections.getSourceIndices().indexOf( selection.getI1() ) ) );
+		if ( availableFeatureProjections == null || selection == null )
+		{
+			cbFeatures.setSelectedIndex( -1 );
+			cbProjections.setSelectedIndex( -1 );
+			cbSource1.setSelectedIndex( -1 );
+			cbSource2.setSelectedIndex( -1 );
+		}
+		else
+		{
+			cbFeatures.setSelectedItem( selection.getFeatureKey() );
+			cbProjections.setSelectedItem( selection.getProjectionKey() );
+			cbSource1.setSelectedIndex( Math.max( 0, availableFeatureProjections.getSourceIndices().indexOf( selection.getI0() ) ) );
+			cbSource2.setSelectedIndex( Math.max( 0, availableFeatureProjections.getSourceIndices().indexOf( selection.getI1() ) ) );
+		}
 	}
 
 	private void refreshProjections()
 	{
+		if ( availableFeatureProjections == null )
+			return;
+
 		final String featureKey = ( String ) cbFeatures.getSelectedItem();
 
 		// Projections.
@@ -254,7 +267,15 @@ public class FeatureSelectionPanel
 	 */
 	public void setAvailableFeatureProjections( final AvailableFeatureProjections afp, final TargetType targetType )
 	{
-		if ( afp != null && targetType != null && ! ( afp.equals( this.availableFeatureProjections ) && targetType.equals( this.targetType ) ) )
+		if ( afp == null || targetType == null )
+		{
+			this.availableFeatureProjections = null;
+			this.targetType = null;
+			cbSource1.setModel( new DefaultComboBoxModel<>() );
+			cbSource2.setModel( new DefaultComboBoxModel<>() );
+			cbFeatures.setModel( new DefaultComboBoxModel<>() );
+		}
+		else if ( ! ( afp.equals( this.availableFeatureProjections ) && targetType.equals( this.targetType ) ) )
 		{
 			this.availableFeatureProjections = afp;
 			this.targetType = targetType;
