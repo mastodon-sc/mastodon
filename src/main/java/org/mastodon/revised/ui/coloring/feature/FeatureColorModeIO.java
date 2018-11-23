@@ -10,6 +10,7 @@ import org.mastodon.revised.io.yaml.WorkaroundRepresent;
 import org.mastodon.revised.io.yaml.WorkaroundRepresenter;
 import org.mastodon.revised.ui.coloring.feature.FeatureColorMode.EdgeColorMode;
 import org.mastodon.revised.ui.coloring.feature.FeatureColorMode.VertexColorMode;
+import org.mastodon.util.DebugHelpers;
 import org.yaml.snakeyaml.DumperOptions;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.constructor.Constructor;
@@ -64,6 +65,7 @@ public class FeatureColorModeIO
 			final Map< String, Object > mapping = new LinkedHashMap< >();
 			mapping.put( "feature", p.getFeatureKey() );
 			mapping.put( "projection", p.getProjectionKey() );
+			mapping.put( "target", p.getTargetType().name() );
 			mapping.put( "i0", p.getI0() );
 			mapping.put( "i1", p.getI1() );
 			final Node node = representMapping( getTag(), mapping, Boolean.TRUE );
@@ -86,9 +88,10 @@ public class FeatureColorModeIO
 				final Map< Object, Object > mapping = constructMapping( ( MappingNode  ) node );
 				final String featureKey = ( String ) mapping.get( "feature" );
 				final String projectionKey = ( String ) mapping.get( "projection" );
+				final TargetType targetType = TargetType.valueOf( ( String ) mapping.get( "target" ) );
 				final int i0 = ( Integer ) mapping.get( "i0" );
 				final int i1 = ( Integer ) mapping.get( "i1" );
-				return new FeatureProjectionId( featureKey, projectionKey, i0, i1 );
+				return new FeatureProjectionId( featureKey, projectionKey, targetType, i0, i1 );
 			}
 			catch( final Exception e )
 			{

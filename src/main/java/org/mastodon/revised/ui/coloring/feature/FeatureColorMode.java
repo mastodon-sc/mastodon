@@ -397,12 +397,12 @@ public class FeatureColorMode implements Style< FeatureColorMode >
 		N_LINKS.name = "Number of links";
 		N_LINKS.vertexColorMode = VertexColorMode.VERTEX;
 		N_LINKS.vertexColorMap = ColorMap.PARULA.getName();
-		N_LINKS.vertexFeatureProjection = new FeatureProjectionId( SpotNLinksFeature.KEY, SpotNLinksFeature.KEY );
+		N_LINKS.vertexFeatureProjection = new FeatureProjectionId( SpotNLinksFeature.KEY, SpotNLinksFeature.KEY, N_LINKS.vertexColorMode.targetType() );
 		N_LINKS.vertexRangeMin = 0;
 		N_LINKS.vertexRangeMax = 3;
 		N_LINKS.edgeColorMode = EdgeColorMode.SOURCE_VERTEX;
 		N_LINKS.edgeColorMap = N_LINKS.vertexColorMap;
-		N_LINKS.edgeFeatureProjection = new FeatureProjectionId( SpotNLinksFeature.KEY, SpotNLinksFeature.KEY );
+		N_LINKS.edgeFeatureProjection = new FeatureProjectionId( SpotNLinksFeature.KEY, SpotNLinksFeature.KEY, N_LINKS.edgeColorMode.targetType() );
 		N_LINKS.edgeRangeMin = N_LINKS.vertexRangeMin;
 		N_LINKS.edgeRangeMax = N_LINKS.vertexRangeMax;
 	}

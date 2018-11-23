@@ -199,7 +199,7 @@ public class FeatureSelectionPanel
 				break;
 			}
 
-			return new FeatureProjectionId( featureKey, projectionKey, i0, i1 );
+			return new FeatureProjectionId( featureKey, projectionKey, targetType, i0, i1 );
 		}
 		catch( NoSuchElementException e )
 		{
