@@ -33,7 +33,7 @@ import gnu.trove.list.array.TIntArrayList;
  * <li>{@link FeatureSpec}s from the {@link FeatureSpecsService} and the
  * {@link FeatureModel} (via {@link #add(FeatureSpec)})</li>
  * <li>{@link FeatureProjectionId}s of feature projections defined in existing
- * FeatureColorModes (via {@link #add(FeatureProjectionId, TargetType)})</li>
+ * FeatureColorModes (via {@link #add(FeatureProjectionId)})</li>
  * <li>the number of sources from the current model (via
  * {@link #setMinNumSources(int)})</li>
  * </ul>
@@ -174,9 +174,12 @@ public class AvailableFeatureProjectionsImp implements AvailableFeatureProjectio
 	/**
 	 * Adds {@code FeatureProjectionId} (from existing color mode).
 	 */
-	public void add( final FeatureProjectionId id, final TargetType targetType )
+	public void add( final FeatureProjectionId id )
 	{
-		final Map< String, FeatureProperties > features = features( targetType );
+		if ( id == null )
+			return;
+
+		final Map< String, FeatureProperties > features = features( id.getTargetType() );
 
 		final String key = id.getFeatureKey();
 		FeatureProperties fp = features.get( key );
@@ -278,12 +281,12 @@ public class AvailableFeatureProjectionsImp implements AvailableFeatureProjectio
 			/*
 			 * Vertex mode.
 			 */
-			projections.add( mode.getVertexFeatureProjection(), mode.getVertexColorMode().targetType() );
+			projections.add( mode.getVertexFeatureProjection() );
 
 			/*
 			 * Edge mode.
 			 */
-			projections.add( mode.getEdgeFeatureProjection(), mode.getEdgeColorMode().targetType() );
+			projections.add( mode.getEdgeFeatureProjection() );
 		}
 
 		return projections;

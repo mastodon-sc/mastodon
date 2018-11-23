@@ -7,7 +7,7 @@ import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 
 import org.mastodon.feature.FeatureSpecsService;
-import org.mastodon.feature.ui.mamut.MamutAvailableFeatureProjectionsManager;
+import org.mastodon.feature.ui.mamut.MamutFeatureProjectionsManager;
 import org.mastodon.project.MamutProject;
 import org.mastodon.project.MamutProjectIO;
 import org.mastodon.revised.mamut.KeyConfigContexts;
@@ -29,7 +29,7 @@ public class FeatureColorModeConfigPageDemo
 		final Context context = new Context( FeatureSpecsService.class );
 
 		final FeatureColorModeManager featureColorModeManager = new FeatureColorModeManager();
-		final MamutAvailableFeatureProjectionsManager featureProjectionsManager = new MamutAvailableFeatureProjectionsManager(
+		final MamutFeatureProjectionsManager featureProjectionsManager = new MamutFeatureProjectionsManager(
 				context.getService( FeatureSpecsService.class ),
 				featureColorModeManager );
 

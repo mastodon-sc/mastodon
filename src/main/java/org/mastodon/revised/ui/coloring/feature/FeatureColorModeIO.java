@@ -10,7 +10,6 @@ import org.mastodon.revised.io.yaml.WorkaroundRepresent;
 import org.mastodon.revised.io.yaml.WorkaroundRepresenter;
 import org.mastodon.revised.ui.coloring.feature.FeatureColorMode.EdgeColorMode;
 import org.mastodon.revised.ui.coloring.feature.FeatureColorMode.VertexColorMode;
-import org.mastodon.util.DebugHelpers;
 import org.yaml.snakeyaml.DumperOptions;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.constructor.Constructor;

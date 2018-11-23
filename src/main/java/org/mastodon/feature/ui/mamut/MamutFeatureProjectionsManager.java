@@ -15,17 +15,16 @@ import org.mastodon.revised.ui.coloring.feature.FeatureProjectionId;
 import org.mastodon.revised.ui.coloring.feature.FeatureRangeCalculator;
 import org.mastodon.revised.ui.coloring.feature.Projections;
 import org.mastodon.revised.ui.coloring.feature.ProjectionsFromFeatureModel;
+import org.mastodon.revised.ui.coloring.feature.TargetType;
 import org.mastodon.util.Listeners;
 
-public class MamutAvailableFeatureProjectionsManager implements FeatureProjectionsManager
+public class MamutFeatureProjectionsManager implements FeatureProjectionsManager
 {
 	private final FeatureSpecsService featureSpecsService;
 
 	private final FeatureColorModeManager featureColorModeManager;
 
-	private final FeatureRangeCalculatorWrapper vertexFeatureRangeCalculator;
-
-	private final FeatureRangeCalculatorWrapper edgeFeatureRangeCalculator;
+	private final AggregateFeatureRangeCalculator featureRangeCalculator;
 
 	private final Listeners.List< AvailableFeatureProjectionsListener > listeners;
 
@@ -33,14 +32,13 @@ public class MamutAvailableFeatureProjectionsManager implements FeatureProjectio
 
 	private int numSources = 1;
 
-	public MamutAvailableFeatureProjectionsManager(
+	public MamutFeatureProjectionsManager(
 			final FeatureSpecsService featureSpecsService,
 			final FeatureColorModeManager featureColorModeManager )
 	{
 		this.featureSpecsService = featureSpecsService;
 		this.featureColorModeManager = featureColorModeManager;
-		this.vertexFeatureRangeCalculator = new FeatureRangeCalculatorWrapper();
-		this.edgeFeatureRangeCalculator = new FeatureRangeCalculatorWrapper();
+		this.featureRangeCalculator = new AggregateFeatureRangeCalculator();
 		this.listeners = new Listeners.List<>();
 	}
 
@@ -60,8 +58,8 @@ public class MamutAvailableFeatureProjectionsManager implements FeatureProjectio
 		{
 			final FeatureModel featureModel = model.getFeatureModel();
 			final Projections projections = new ProjectionsFromFeatureModel( featureModel );
-			vertexFeatureRangeCalculator.wrapped = new DefaultFeatureRangeCalculator<>( model.getGraph().vertices(), projections );
-			edgeFeatureRangeCalculator.wrapped = new DefaultFeatureRangeCalculator<>( model.getGraph().edges(), projections );
+			featureRangeCalculator.vertexCalculator = new DefaultFeatureRangeCalculator<>( model.getGraph().vertices(), projections );
+			featureRangeCalculator.edgeCalculator = new DefaultFeatureRangeCalculator<>( model.getGraph().edges(), projections );
 			featureModel.listeners().add( this::notifyAvailableFeatureProjectionsChanged );
 		}
 
@@ -95,26 +93,36 @@ public class MamutAvailableFeatureProjectionsManager implements FeatureProjectio
 		listeners.list.forEach( AvailableFeatureProjectionsListener::availableFeatureProjectionsChanged );
 	}
 
-	private static class FeatureRangeCalculatorWrapper implements FeatureRangeCalculator
+	private static class AggregateFeatureRangeCalculator implements FeatureRangeCalculator
 	{
-		FeatureRangeCalculator wrapped;
+		FeatureRangeCalculator vertexCalculator;
+
+		FeatureRangeCalculator edgeCalculator;
 
 		@Override
 		public double[] computeMinMax( final FeatureProjectionId projection )
 		{
-			return wrapped == null ? null : wrapped.computeMinMax( projection );
+			if ( projection == null )
+				return null;
+
+			if ( projection.getTargetType() == TargetType.VERTEX )
+			{
+				return vertexCalculator == null
+						? null
+						: vertexCalculator.computeMinMax( projection );
+			}
+			else // if ( projection.getTargetType() == TargetType.EDGE )
+			{
+				return edgeCalculator == null
+						? null
+						: edgeCalculator.computeMinMax( projection );
+			}
 		}
 	};
 
 	@Override
-	public FeatureRangeCalculator getVertexFeatureRangeCalculator()
+	public FeatureRangeCalculator getFeatureRangeCalculator()
 	{
-		return vertexFeatureRangeCalculator;
-	}
-
-	@Override
-	public FeatureRangeCalculator getEdgeFeatureRangeCalculator()
-	{
-		return edgeFeatureRangeCalculator;
+		return featureRangeCalculator;
 	}
 }

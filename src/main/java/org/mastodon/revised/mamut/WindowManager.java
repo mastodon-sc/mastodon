@@ -11,7 +11,7 @@ import javax.swing.JFrame;
 
 import org.mastodon.feature.FeatureSpecsService;
 import org.mastodon.feature.ui.FeatureColorModeConfigPage;
-import org.mastodon.feature.ui.mamut.MamutAvailableFeatureProjectionsManager;
+import org.mastodon.feature.ui.mamut.MamutFeatureProjectionsManager;
 import org.mastodon.plugin.MastodonPlugin;
 import org.mastodon.plugin.MastodonPluginAppModel;
 import org.mastodon.plugin.MastodonPlugins;
@@ -108,7 +108,7 @@ public class WindowManager
 
 	private final FeatureColorModeManager featureColorModeManager;
 
-	private final MamutAvailableFeatureProjectionsManager featureProjectionsManager;
+	private final MamutFeatureProjectionsManager featureProjectionsManager;
 
 	private final KeymapManager keymapManager;
 
@@ -142,7 +142,7 @@ public class WindowManager
 		trackSchemeStyleManager = new TrackSchemeStyleManager();
 		renderSettingsManager = new RenderSettingsManager();
 		featureColorModeManager = new FeatureColorModeManager();
-		featureProjectionsManager = new MamutAvailableFeatureProjectionsManager(
+		featureProjectionsManager = new MamutFeatureProjectionsManager(
 				context.getService( FeatureSpecsService.class ),
 				featureColorModeManager );
 		keymapManager = new KeymapManager();

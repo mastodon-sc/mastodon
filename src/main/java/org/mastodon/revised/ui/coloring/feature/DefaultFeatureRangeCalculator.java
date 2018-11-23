@@ -5,6 +5,13 @@ import java.util.DoubleSummaryStatistics;
 
 import org.mastodon.feature.FeatureProjection;
 
+/**
+ * A {@link FeatureRangeCalculator} computing statistics over a
+ * {@code Collection<O>} of objects of one specific target type {@code O}.
+ *
+ * @param <O>
+ *            target type.
+ */
 public class DefaultFeatureRangeCalculator< O > implements FeatureRangeCalculator
 {
 	private final Collection< O > objs;

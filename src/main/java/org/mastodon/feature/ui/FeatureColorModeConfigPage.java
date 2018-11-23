@@ -43,8 +43,7 @@ public class FeatureColorModeConfigPage extends SelectAndEditProfileSettingsPage
 			this.editedMode = initialMode.copy( "Edited" );
 			this.featureColorModeEditorPanel = new FeatureColorModeEditorPanel(
 					editedMode,
-					featureProjectionsManager.getVertexFeatureRangeCalculator(),
-					featureProjectionsManager.getEdgeFeatureRangeCalculator() );
+					featureProjectionsManager.getFeatureRangeCalculator() );
 			featureColorModeEditorPanel.setAvailableFeatureProjections( featureProjectionsManager.getAvailableFeatureProjections() );
 			featureProjectionsManager.listeners().add( () -> {
 				featureColorModeEditorPanel.setAvailableFeatureProjections( featureProjectionsManager.getAvailableFeatureProjections() );

@@ -28,7 +28,5 @@ public interface FeatureProjectionsManager
 
 	public AvailableFeatureProjections getAvailableFeatureProjections();
 
-	// TODO: consider getFeatureRangeCalculator( TargetType ) instead
-	public FeatureRangeCalculator getVertexFeatureRangeCalculator();
-	public FeatureRangeCalculator getEdgeFeatureRangeCalculator();
+	public FeatureRangeCalculator getFeatureRangeCalculator();
 }

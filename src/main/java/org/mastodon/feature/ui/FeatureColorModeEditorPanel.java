@@ -45,8 +45,7 @@ public class FeatureColorModeEditorPanel extends JPanel
 
 	public FeatureColorModeEditorPanel(
 			final FeatureColorMode mode,
-			final FeatureRangeCalculator vertexFeatureRangeCalculator,
-			final FeatureRangeCalculator edgeFeatureRangeCalculator
+			final FeatureRangeCalculator rangeCalculator
 			)
 	{
 		this.mode = mode;
@@ -96,9 +95,6 @@ public class FeatureColorModeEditorPanel extends JPanel
 			@Override
 			public void autoscale()
 			{
-				final FeatureRangeCalculator rangeCalculator = ( mode.getVertexColorMode().equals( VertexColorMode.VERTEX ) )
-						? vertexFeatureRangeCalculator
-						: edgeFeatureRangeCalculator;
 				final FeatureProjectionId projection = mode.getVertexFeatureProjection();
 				if ( null == projection )
 					return;
@@ -154,9 +150,6 @@ public class FeatureColorModeEditorPanel extends JPanel
 			@Override
 			public void autoscale()
 			{
-				final FeatureRangeCalculator rangeCalculator = ( mode.getEdgeColorMode().equals( EdgeColorMode.EDGE ) )
-						? edgeFeatureRangeCalculator
-						: vertexFeatureRangeCalculator;
 				final FeatureProjectionId projection = mode.getVertexFeatureProjection();
 				if ( null == projection )
 					return;
@@ -243,19 +236,13 @@ public class FeatureColorModeEditorPanel extends JPanel
 		// Listen to changes in the vertex feature panel and forward it to the mode.
 		vertexFeatureSelectionPanel.updateListeners().add( () -> {
 			if ( doForwardToMode )
-			{
-				final FeatureProjectionId p = vertexFeatureSelectionPanel.getSelection();
-				mode.setVertexFeatureProjection( p );
-			}
+				mode.setVertexFeatureProjection( vertexFeatureSelectionPanel.getSelection() );
 		} );
 
 		// Listen to changes in the vertex feature panel and forward it to the mode.
 		edgeFeatureSelectionPanel.updateListeners().add( () -> {
 			if ( doForwardToMode )
-			{
-				final FeatureProjectionId p = edgeFeatureSelectionPanel.getSelection();
-				mode.setEdgeFeatureProjection( p );
-			}
+				mode.setEdgeFeatureProjection( edgeFeatureSelectionPanel.getSelection() );
 		} );
 
 		/*
