@@ -38,7 +38,6 @@ public class MamutAppModel extends MastodonAppModel< Model, Spot, Link >
 
 	private final int maxTimepoint;
 
-
 	public MamutAppModel(
 			final Model model,
 			final SharedBigDataViewerData sharedBdvData,
@@ -77,6 +76,11 @@ public class MamutAppModel extends MastodonAppModel< Model, Spot, Link >
 		return renderSettingsManager;
 	}
 
+	public FeatureColorModeManager getFeatureColorModeManager()
+	{
+		return featureColorModeManager;
+	}
+
 	public BoundingSphereRadiusStatistics getRadiusStats()
 	{
 		return radiusStats;
@@ -95,10 +99,5 @@ public class MamutAppModel extends MastodonAppModel< Model, Spot, Link >
 	public int getMaxTimepoint()
 	{
 		return maxTimepoint;
-	}
-
-	public FeatureColorModeManager getFeatureColorModeManager()
-	{
-		return featureColorModeManager;
 	}
 }

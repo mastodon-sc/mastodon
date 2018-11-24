@@ -37,9 +37,9 @@ public class StyleElements
 		return new Separator();
 	}
 
-	public static LabelElement label(final String label)
+	public static LabelElement label( final String label )
 	{
-		return new LabelElement(label);
+		return new LabelElement( label );
 	}
 
 	public static BooleanElement booleanElement( final String label, final BooleanSupplier get, final Consumer< Boolean > set )
@@ -374,7 +374,7 @@ public class StyleElements
 	 *
 	 */
 
-	public static JLabel linkedLabel(final LabelElement element)
+	public static JLabel linkedLabel( final LabelElement element )
 	{
 		return new JLabel( element.getLabel() );
 	}
