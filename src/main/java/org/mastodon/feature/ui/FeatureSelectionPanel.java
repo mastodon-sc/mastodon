@@ -306,21 +306,4 @@ public class FeatureSelectionPanel
 	{
 		public void featureKeyChanged();
 	}
-
-//	public static void main( final String[] args ) throws ClassNotFoundException, InstantiationException, IllegalAccessException, UnsupportedLookAndFeelException
-//	{
-//		UIManager.setLookAndFeel( UIManager.getSystemLookAndFeelClassName() );
-//		JComponent.setDefaultLocale( Locale.ROOT );
-//
-//		final FeatureSelectionPanel selectionPanel = new FeatureSelectionPanel();
-//		selectionPanel.updateListeners().add( () -> System.out.println( selectionPanel.getSelection() ) );
-//
-//		final JFrame frame = new JFrame( "Feature selection panel" );
-//		frame.getContentPane().add( selectionPanel.panel );
-//		frame.setVisible( true );
-//
-//		final AvailableFeatureProjections afp = Playground.dummyAvailableFeatureProjections();
-//		selectionPanel.setAvailableFeatureProjections( afp, TargetType.VERTEX );
-//		frame.pack();
-//	}
 }
