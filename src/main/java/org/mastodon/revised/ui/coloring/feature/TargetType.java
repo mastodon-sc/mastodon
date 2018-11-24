@@ -1,6 +1,11 @@
 package org.mastodon.revised.ui.coloring.feature;
 
-// TODO: Does equivalent of this enum already exist?
+/**
+ * The kind of target, a feature/projection applies to.
+ * <p>
+ * This is used for FeatureColorModes, which need to be serialized/edited
+ * without mentioning/knowing an explicit target {@link Class}.
+ */
 public enum TargetType
 {
 	VERTEX,
