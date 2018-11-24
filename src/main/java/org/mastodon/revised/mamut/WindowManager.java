@@ -58,8 +58,6 @@ public class WindowManager
 	static final String[] TAGSETS_DIALOG_KEYS = new String[] { "not mapped" };
 	static final String[] COMPUTE_FEATURE_DIALOG_KEYS = new String[] { "not mapped" };
 
-	private static final String FEATURECOLORMODE_SETTINGSPAGE_TREEPATH = "Feature Color Modes";
-
 	/*
 	 * Command descriptions for all provided commands
 	 */
@@ -183,6 +181,8 @@ public class WindowManager
 		settings.addPage( new TrackSchemeStyleSettingsPage( "TrackScheme Styles", trackSchemeStyleManager ) );
 		settings.addPage( new RenderSettingsConfigPage( "BDV Render Settings", renderSettingsManager ) );
 		settings.addPage( new KeymapSettingsPage( "Keymap", keymapManager, descriptions ) );
+		settings.addPage( new FeatureColorModeConfigPage( "Feature Color Modes", featureColorModeManager, featureProjectionsManager ) );
+
 		final ToggleDialogAction tooglePreferencesDialogAction = new ToggleDialogAction( PREFERENCES_DIALOG, settings );
 		globalAppActions.namedAction( tooglePreferencesDialogAction, PREFERENCES_DIALOG_KEYS );
 
@@ -230,8 +230,8 @@ public class WindowManager
 			tagSetDialog = null;
 			featureComputationDialog.dispose();
 			featureComputationDialog = null;
+			featureProjectionsManager.setModel( null, 1 );
 			updateEnabledActions();
-			settings.removePage( FEATURECOLORMODE_SETTINGSPAGE_TREEPATH );
 			return;
 		}
 
@@ -242,14 +242,7 @@ public class WindowManager
 		final Keymap keymap = keymapManager.getForwardDefaultKeymap();
 		tagSetDialog = new TagSetDialog( null, model.getTagSetModel(), model, keymap, new String[] { KeyConfigContexts.MASTODON } );
 		featureComputationDialog = MamutFeatureComputation.getDialog( appModel, context );
-
-		// Feature color modes.
-		// TODO create page once in WindowManager
 		featureProjectionsManager.setModel( model, appModel.getSharedBdvData().getSources().size() );
-		final FeatureColorModeConfigPage colorModeConfigPage = new FeatureColorModeConfigPage( FEATURECOLORMODE_SETTINGSPAGE_TREEPATH,
-				featureColorModeManager,
-				featureProjectionsManager );
-		settings.addPage( colorModeConfigPage );
 
 		updateEnabledActions();
 

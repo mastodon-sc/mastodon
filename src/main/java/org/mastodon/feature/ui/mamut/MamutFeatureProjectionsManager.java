@@ -62,6 +62,11 @@ public class MamutFeatureProjectionsManager implements FeatureProjectionsManager
 			featureRangeCalculator.edgeCalculator = new DefaultFeatureRangeCalculator<>( model.getGraph().edges(), projections );
 			featureModel.listeners().add( this::notifyAvailableFeatureProjectionsChanged );
 		}
+		else
+		{
+			featureRangeCalculator.vertexCalculator = null;
+			featureRangeCalculator.edgeCalculator = null;
+		}
 
 		notifyAvailableFeatureProjectionsChanged();
 	}
