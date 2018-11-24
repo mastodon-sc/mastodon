@@ -10,18 +10,18 @@ import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import org.scijava.plugin.PluginService;
 
-public class Playground
+public class FeatureDiscoveryExample
 {
-	public static class PlaygroundSpot {};
+	public static class ExampleSpot {};
 
-	public static class PlaygroundLink {};
+	public static class ExampleLink {};
 
-	public static class F1 implements Feature< PlaygroundSpot >
+	public static class F1 implements Feature< ExampleSpot >
 	{
 		public static final Spec SPEC = new Spec();
 
 		@Plugin( type = FeatureSpec.class )
-		public static class Spec extends FeatureSpec< F1, PlaygroundSpot >
+		public static class Spec extends FeatureSpec< F1, ExampleSpot >
 		{
 			public Spec()
 			{
@@ -29,19 +29,19 @@ public class Playground
 						"F1",
 						"Dummy feature F1",
 						F1.class,
-						PlaygroundSpot.class,
+						ExampleSpot.class,
 						Multiplicity.SINGLE );
 			}
 		}
 
 		@Override
-		public FeatureProjection< PlaygroundSpot > project( final FeatureProjectionKey key )
+		public FeatureProjection< ExampleSpot > project( final FeatureProjectionKey key )
 		{
 			return null;
 		}
 
 		@Override
-		public Set< FeatureProjection< PlaygroundSpot > > projections()
+		public Set< FeatureProjection< ExampleSpot > > projections()
 		{
 			return null;
 		}
@@ -53,12 +53,12 @@ public class Playground
 		}
 	}
 
-	public static class F2 implements Feature< PlaygroundSpot >
+	public static class F2 implements Feature< ExampleSpot >
 	{
 		public static final Spec SPEC = new Spec();
 
 		@Plugin( type = FeatureSpec.class )
-		public static class Spec extends FeatureSpec< F2, PlaygroundSpot >
+		public static class Spec extends FeatureSpec< F2, ExampleSpot >
 		{
 			public Spec()
 			{
@@ -66,19 +66,19 @@ public class Playground
 						"F2",
 						"Dummy feature F2",
 						F2.class,
-						PlaygroundSpot.class,
+						ExampleSpot.class,
 						Multiplicity.SINGLE );
 			}
 		}
 
 		@Override
-		public FeatureProjection< PlaygroundSpot > project( final FeatureProjectionKey key )
+		public FeatureProjection< ExampleSpot > project( final FeatureProjectionKey key )
 		{
 			return null;
 		}
 
 		@Override
-		public Set< FeatureProjection< PlaygroundSpot > > projections()
+		public Set< FeatureProjection< ExampleSpot > > projections()
 		{
 			return null;
 		}
@@ -90,12 +90,12 @@ public class Playground
 		}
 	}
 
-	public static class F3 implements Feature< PlaygroundSpot >
+	public static class F3 implements Feature< ExampleSpot >
 	{
 		public static final Spec SPEC = new Spec();
 
 		@Plugin( type = FeatureSpec.class )
-		public static class Spec extends FeatureSpec< F3, PlaygroundSpot >
+		public static class Spec extends FeatureSpec< F3, ExampleSpot >
 		{
 			public Spec()
 			{
@@ -103,19 +103,19 @@ public class Playground
 						"F3",
 						"Dummy feature F3",
 						F3.class,
-						PlaygroundSpot.class,
+						ExampleSpot.class,
 						Multiplicity.SINGLE );
 			}
 		}
 
 		@Override
-		public FeatureProjection< PlaygroundSpot > project( final FeatureProjectionKey key )
+		public FeatureProjection< ExampleSpot > project( final FeatureProjectionKey key )
 		{
 			return null;
 		}
 
 		@Override
-		public Set< FeatureProjection< PlaygroundSpot > > projections()
+		public Set< FeatureProjection< ExampleSpot > > projections()
 		{
 			return null;
 		}
@@ -127,12 +127,12 @@ public class Playground
 		}
 	}
 
-	public static class F4 implements Feature< PlaygroundSpot >
+	public static class F4 implements Feature< ExampleSpot >
 	{
 		public static final Spec SPEC = new Spec();
 
 		@Plugin( type = FeatureSpec.class )
-		public static class Spec extends FeatureSpec< F4, PlaygroundSpot >
+		public static class Spec extends FeatureSpec< F4, ExampleSpot >
 		{
 			public Spec()
 			{
@@ -140,19 +140,19 @@ public class Playground
 						"F4",
 						"Dummy feature F4",
 						F4.class,
-						PlaygroundSpot.class,
+						ExampleSpot.class,
 						Multiplicity.SINGLE );
 			}
 		}
 
 		@Override
-		public FeatureProjection< PlaygroundSpot > project( final FeatureProjectionKey key )
+		public FeatureProjection< ExampleSpot > project( final FeatureProjectionKey key )
 		{
 			return null;
 		}
 
 		@Override
-		public Set< FeatureProjection< PlaygroundSpot > > projections()
+		public Set< FeatureProjection< ExampleSpot > > projections()
 		{
 			return null;
 		}
@@ -266,8 +266,8 @@ public class Playground
 		final FeatureSpecsService specs = new FeatureSpecsService();
 		context.inject( specs );
 		specs.initialize();
-		System.out.println( "specs.getSpecs( PlaygroundSpot.class ) = " + specs.getSpecs( PlaygroundSpot.class ) );
-		System.out.println( "specs.getSpecs( PlaygroundLink.class ) = " + specs.getSpecs( PlaygroundLink.class ) );
+		System.out.println( "specs.getSpecs( ExampleSpot.class ) = " + specs.getSpecs( ExampleSpot.class ) );
+		System.out.println( "specs.getSpecs( ExampleLink.class ) = " + specs.getSpecs( ExampleLink.class ) );
 		System.out.println( "specs.getSpec( \"F1\" ) = " + specs.getSpec( "F1" ) );
 		System.out.println( "specs.getSpec( \"F2\" ) = " + specs.getSpec( "F2" ) );
 		System.out.println( "specs.getSpec( \"F3\" ) = " + specs.getSpec( "F3" ) );
