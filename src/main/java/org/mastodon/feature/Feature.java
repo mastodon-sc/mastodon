@@ -21,23 +21,13 @@ import java.util.Set;
 public interface Feature< T >
 {
 	/**
-	 * Get the projection with the specified {@code key}. Depending of this
-	 * features {@link Multiplicity}, source indices need to be specified
-	 * additionally.
+	 * Get the projection with the specified {@link FeatureProjectionKey}.
 	 *
-	 * @param spec
-	 *            spec of the requested projection
-	 * @param sources
-	 *            indices of 0, 1, or 2 sources (depending on this features
-	 *            {@code Multiplicity}) for which to obtain the projection
+	 * @param key
+	 *            the requested projection
 	 * @return the specified projection, or {@code null} if the projection is
 	 *         not available.
 	 */
-	default public FeatureProjection< T > project( final FeatureProjectionSpec spec, final int... sources )
-	{
-		return project( FeatureProjectionKey.key( spec, sources ) );
-	}
-
 	public FeatureProjection< T > project( final FeatureProjectionKey key );
 
 	/**

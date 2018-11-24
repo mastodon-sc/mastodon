@@ -3,8 +3,11 @@ package org.mastodon.revised.ui.coloring.feature;
 import org.mastodon.feature.Feature;
 import org.mastodon.feature.FeatureModel;
 import org.mastodon.feature.FeatureProjection;
+import org.mastodon.feature.FeatureProjectionKey;
 import org.mastodon.feature.FeatureProjectionSpec;
 import org.mastodon.feature.FeatureSpec;
+
+import static org.mastodon.feature.FeatureProjectionKey.key;
 
 /**
  * Provides mapping from {@link FeatureProjectionId} to
@@ -43,7 +46,7 @@ public class ProjectionsFromFeatureModel implements Projections
 		return getFeatureProjection( id, featureSpec );
 	}
 
-	private final < T > FeatureProjection< T > getFeatureProjection( final FeatureProjectionId id, final FeatureSpec< ?, T > featureSpec )
+	private < T > FeatureProjection< T > getFeatureProjection( final FeatureProjectionId id, final FeatureSpec< ?, T > featureSpec )
 	{
 		if ( featureSpec == null )
 			return null;
@@ -65,15 +68,11 @@ public class ProjectionsFromFeatureModel implements Projections
 		{
 		default:
 		case SINGLE:
-			sourceIndices = new int[] {};
-			break;
+			return feature.project( key( projectionSpec ) );
 		case ON_SOURCES:
-			sourceIndices = new int[] { id.getI0() };
-			break;
+			return feature.project( key( projectionSpec, id.getI0() ) );
 		case ON_SOURCE_PAIRS:
-			sourceIndices = new int[] { id.getI0(), id.getI1() };
-			break;
+			return feature.project( key( projectionSpec, id.getI0(), id.getI1() ) );
 		}
-		return feature.project( projectionSpec, sourceIndices );
 	}
 }

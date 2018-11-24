@@ -8,7 +8,6 @@ public class FeatureProjectionSpec
 	/**
 	 * The projection specification name.
 	 */
-	// TODO: rename to key
 	public final String projectionName;
 
 	public final Dimension projectionDimension;

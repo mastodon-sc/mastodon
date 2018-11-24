@@ -2,11 +2,36 @@ package org.mastodon.feature;
 
 import java.util.Arrays;
 
+/**
+ * Links a {@link FeatureProjectionSpec} to source indices (according to the
+ * features {@link Multiplicity}).
+ * <p>
+ * Can be used to {@link Feature#project(FeatureProjectionKey) retrieve} a projection from a {@link Feature}.
+ */
 public final class FeatureProjectionKey
 {
-	public static FeatureProjectionKey key( final FeatureProjectionSpec spec, final int... sourceIndices )
+	/**
+	 * Construct a {@link FeatureProjectionKey} with {@link Multiplicity#SINGLE}.
+	 */
+	public static FeatureProjectionKey key( final FeatureProjectionSpec spec )
 	{
-		return new FeatureProjectionKey( spec, sourceIndices );
+		return new FeatureProjectionKey( spec );
+	}
+
+	/**
+	 * Construct a {@link FeatureProjectionKey} with {@link Multiplicity#ON_SOURCES}.
+	 */
+	public static FeatureProjectionKey key( final FeatureProjectionSpec spec, final int i0 )
+	{
+		return new FeatureProjectionKey( spec, i0 );
+	}
+
+	/**
+	 * Construct a {@link FeatureProjectionKey} with {@link Multiplicity#ON_SOURCE_PAIRS}.
+	 */
+	public static FeatureProjectionKey key( final FeatureProjectionSpec spec, final int i0, final int i1 )
+	{
+		return new FeatureProjectionKey( spec, i0, i1 );
 	}
 
 	private final FeatureProjectionSpec spec;

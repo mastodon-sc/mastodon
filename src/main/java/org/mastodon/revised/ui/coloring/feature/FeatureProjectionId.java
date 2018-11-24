@@ -1,7 +1,16 @@
 package org.mastodon.revised.ui.coloring.feature;
 
+import org.mastodon.feature.Feature;
+import org.mastodon.feature.FeatureProjection;
 import org.mastodon.feature.Multiplicity;
 
+/**
+ * Identifies a particular {@link FeatureProjection projection} of a particular
+ * {@link Feature feature} (for the given source/pair in case the feature has
+ * {@link Multiplicity}).
+ *
+ * @author Tobias Pietzsch
+ */
 public final class FeatureProjectionId
 {
 	final private String featureKey;
