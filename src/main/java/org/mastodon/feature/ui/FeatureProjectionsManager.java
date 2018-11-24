@@ -6,6 +6,8 @@ import org.mastodon.util.Listeners;
 /**
  * Provides and up-to-date set of feature projections, as well as
  * {@code FeatureRangeCalculator}s for vertices and edges.
+ * <p>
+ * Used for FeatureColorModes.
  *
  * @author Tobias Pietzsch
  */

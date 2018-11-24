@@ -18,6 +18,19 @@ import org.mastodon.revised.ui.coloring.feature.ProjectionsFromFeatureModel;
 import org.mastodon.revised.ui.coloring.feature.TargetType;
 import org.mastodon.util.Listeners;
 
+/**
+ * Provides and up-to-date set of feature projections, as well as
+ * {@code FeatureRangeCalculator}s for vertices and edges.
+ * <p>
+ * Used for FeatureColorModes.
+ * <p>
+ * This implementation feeds from a {@link Model}: It provides
+ * {@code FeatureRangeCalculator} on the {@code Model}s vertices and edges. It
+ * listens to changes in the {@code Model}s {@link FeatureModel} to update the
+ * available feature projections.
+ *
+ * @author Tobias Pietzsch
+ */
 public class MamutFeatureProjectionsManager implements FeatureProjectionsManager
 {
 	private final FeatureSpecsService featureSpecsService;
