@@ -5,6 +5,7 @@ import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import java.util.Objects;
 import org.mastodon.app.ui.settings.style.Style;
 import org.mastodon.mamut.feature.SpotNLinksFeature;
 import org.mastodon.revised.ui.coloring.ColorMap;
@@ -256,7 +257,7 @@ public class FeatureColorMode implements Style< FeatureColorMode >
 
 	public synchronized void setVertexFeatureProjection( final FeatureProjectionId vertexFeatureProjection )
 	{
-		if ( !this.vertexFeatureProjection.equals( vertexFeatureProjection ) )
+		if ( !Objects.equals( this.vertexFeatureProjection, vertexFeatureProjection ) )
 		{
 			this.vertexFeatureProjection = vertexFeatureProjection;
 			notifyListeners();
@@ -293,7 +294,7 @@ public class FeatureColorMode implements Style< FeatureColorMode >
 
 	public synchronized void setEdgeFeatureProjection( final FeatureProjectionId edgeFeatureProjection )
 	{
-		if ( !this.edgeFeatureProjection.equals( edgeFeatureProjection ) )
+		if ( !Objects.equals( this.edgeFeatureProjection, edgeFeatureProjection ) )
 		{
 			this.edgeFeatureProjection = edgeFeatureProjection;
 			notifyListeners();
