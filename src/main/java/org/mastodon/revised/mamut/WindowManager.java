@@ -282,11 +282,15 @@ public class WindowManager
 		contextProviders.add( w.getContextProvider() );
 		for ( final MamutViewTrackScheme tsw : tsWindows )
 			tsw.getContextChooser().updateContextProviders( contextProviders );
+		for ( final MamutViewTable tw : tableWindows )
+			tw.getContextChooser().updateContextProviders( contextProviders );
 		w.onClose( () -> {
 			bdvWindows.remove( w );
 			contextProviders.remove( w.getContextProvider() );
 			for ( final MamutViewTrackScheme tsw : tsWindows )
 				tsw.getContextChooser().updateContextProviders( contextProviders );
+			for ( final MamutViewTable tw : tableWindows )
+				tw.getContextChooser().updateContextProviders( contextProviders );
 		} );
 	}
 
