@@ -27,6 +27,9 @@ public class ProjectionsFromFeatureModel implements Projections
 	@Override
 	public FeatureProjection< ? > getFeatureProjection( final FeatureProjectionId id )
 	{
+		if ( id == null )
+			return null;
+
 		final FeatureSpec< ?, ? > featureSpec = featureModel.getFeatureSpecs().stream()
 				.filter( spec -> spec.getKey().equals( id.getFeatureKey() ) )
 				.findFirst()
@@ -37,6 +40,9 @@ public class ProjectionsFromFeatureModel implements Projections
 	@Override
 	public < T > FeatureProjection< T > getFeatureProjection( final FeatureProjectionId id, final Class< T > target )
 	{
+		if ( id == null )
+			return null;
+
 		@SuppressWarnings( "unchecked" )
 		final FeatureSpec< ?, T > featureSpec = ( FeatureSpec< ?, T > ) featureModel.getFeatureSpecs().stream()
 				.filter( spec -> target.isAssignableFrom( spec.getTargetClass() ) )
