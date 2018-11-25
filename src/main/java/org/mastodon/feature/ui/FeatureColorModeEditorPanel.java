@@ -177,7 +177,7 @@ public class FeatureColorModeEditorPanel extends JPanel
 			vertexColorMapSelector.setVisible( visible );
 			vertexFeatureRangeSelector.setVisible( visible );
 			vertexFeatureSelectionPanel.getPanel().setVisible( visible );
-			vertexFeatureSelectionPanel.setAvailableFeatureProjections( availableFeatureProjections, vcm.targetType() );
+			vertexFeatureSelectionPanel.setAvailableFeatureProjections( visible ? availableFeatureProjections : null, vcm.targetType() );
 
 			if ( doForwardToMode )
 				mode.setVertexColorMode( vcm );
@@ -194,7 +194,7 @@ public class FeatureColorModeEditorPanel extends JPanel
 			edgeColorMapSelector.setVisible( visible );
 			edgeFeatureRangeSelector.setVisible( visible );
 			edgeFeatureSelectionPanel.getPanel().setVisible( visible );
-			edgeFeatureSelectionPanel.setAvailableFeatureProjections( availableFeatureProjections, ecm.targetType() );
+			edgeFeatureSelectionPanel.setAvailableFeatureProjections( visible ? availableFeatureProjections : null, ecm.targetType() );
 
 			if ( doForwardToMode )
 				mode.setEdgeColorMode( ecm );

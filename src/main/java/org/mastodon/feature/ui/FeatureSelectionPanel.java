@@ -274,6 +274,7 @@ public class FeatureSelectionPanel
 			cbSource1.setModel( new DefaultComboBoxModel<>() );
 			cbSource2.setModel( new DefaultComboBoxModel<>() );
 			cbFeatures.setModel( new DefaultComboBoxModel<>() );
+			notifyListeners();
 		}
 		else if ( ! ( afp.equals( this.availableFeatureProjections ) && targetType.equals( this.targetType ) ) )
 		{
