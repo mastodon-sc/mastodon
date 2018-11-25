@@ -287,7 +287,13 @@ public class TrackMateImporter
 						final Spot source = idToSpotIDmap.get( sourceID, sourceRef );
 						final int targetID = Integer.parseInt( edgeEl.getAttributeValue( EDGE_TARGET_ATTRIBUTE ) );
 						final Spot target = idToSpotIDmap.get( targetID, targetRef );
-						final Link link = graph.addEdge( source, target, edgeRef ).init();
+
+						// Protect against link time inversion.
+						final Link link;
+						if ( source.getTimepoint() < target.getTimepoint() )
+							link = graph.addEdge( source, target, edgeRef ).init();
+						else
+							link = graph.addEdge( target, source, edgeRef ).init();
 
 						// Edge features.
 						for ( final String featureKey : linkDoubleFeatureMap.keySet() )
