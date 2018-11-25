@@ -124,9 +124,4 @@ public class FeatureColorModeManager extends AbstractStyleManager< FeatureColorM
 	{
 		return Collections.unmodifiableList( new ArrayList<>( FeatureColorMode.defaults ) );
 	}
-
-	public static void main( final String[] args )
-	{
-		final FeatureColorModeManager m = new FeatureColorModeManager( true );
-	}
 }

@@ -44,11 +44,6 @@ public final class FeatureProjectionKey
 		this.sourceIndices = ( sourceIndices == null ) ? new int[ 0 ] : sourceIndices;
 	}
 
-	public FeatureProjectionSpec getSpec()
-	{
-		return spec;
-	}
-
 	@Override
 	public String toString()
 	{
