@@ -15,7 +15,6 @@ import org.mastodon.feature.FeatureModel.FeatureModelListener;
 import org.mastodon.revised.model.tag.TagSetModel;
 import org.mastodon.revised.model.tag.TagSetStructure;
 import org.mastodon.revised.ui.coloring.feature.FeatureColorMode;
-import org.mastodon.revised.ui.coloring.feature.FeatureColorMode.UpdateListener;
 import org.mastodon.revised.ui.coloring.feature.FeatureColorModeManager;
 import org.mastodon.revised.ui.coloring.feature.Projections;
 import org.mastodon.revised.ui.coloring.feature.ProjectionsFromFeatureModel;
@@ -23,7 +22,7 @@ import org.mastodon.revised.util.HasSelectedState;
 import org.mastodon.util.Listeners;
 import org.scijava.ui.behaviour.util.AbstractNamedAction;
 
-public class ColoringMenu implements TagSetModel.TagSetModelListener, UpdateListener, FeatureModelListener
+public class ColoringMenu implements TagSetModel.TagSetModelListener, FeatureModelListener
 {
 	private final JMenu menu;
 
@@ -128,12 +127,6 @@ public class ColoringMenu implements TagSetModel.TagSetModelListener, UpdateList
 
 	@Override
 	public void featureModelChanged()
-	{
-		rebuild();
-	}
-
-	@Override
-	public void featureColorModeChanged()
 	{
 		rebuild();
 	}

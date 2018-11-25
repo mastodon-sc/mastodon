@@ -146,12 +146,13 @@ public class MamutViewTrackScheme extends MamutView< TrackSchemeGraph< Spot, Lin
 		);
 		appModel.getPlugins().addMenus( menu );
 
-		final TagSetModel< Spot, Link > tagSetModel = appModel.getModel().getTagSetModel();
-		final FeatureModel featureModel = appModel.getModel().getFeatureModel();
-		final FeatureColorModeManager featureColorModeManager = appModel.getFeatureColorModeManager();
-		final ColoringModel coloringModel = new ColoringModel( tagSetModel, featureColorModeManager );
-		tagSetModel.listeners().add( coloringModel );
-		onClose( () -> tagSetModel.listeners().remove( coloringModel ) );
+				final TagSetModel< Spot, Link > tagSetModel = appModel.getModel().getTagSetModel();
+				final FeatureModel featureModel = appModel.getModel().getFeatureModel();
+				final FeatureColorModeManager featureColorModeManager = appModel.getFeatureColorModeManager();
+				final ColoringModel coloringModel = new ColoringModel( tagSetModel, featureColorModeManager );
+
+				tagSetModel.listeners().add( coloringModel );
+				onClose( () -> tagSetModel.listeners().remove( coloringModel ) );
 
 		final ColoringMenu coloringMenu = new ColoringMenu(
 				tagSetColoringMenuHandle.getMenu(),
@@ -169,6 +170,7 @@ public class MamutViewTrackScheme extends MamutView< TrackSchemeGraph< Spot, Lin
 		};
 		coloringModel.listeners().add( coloringChangedListener );
 
+		// TODO rename tagSetColoringMenuHandle (--> coloringMenuHandle?)
 		registerColoring( coloring, tagSetColoringMenuHandle, () -> frame.getTrackschemePanel().entitiesAttributesChanged() );
 
 		frame.getTrackschemePanel().repaint();

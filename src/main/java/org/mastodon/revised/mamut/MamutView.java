@@ -53,9 +53,6 @@ public class MamutView< VG extends ViewGraph< Spot, Link, V, E >, V extends Vert
 		tagSetModel.listeners().add( coloringModel );
 		onClose( () -> tagSetModel.listeners().remove( coloringModel ) );
 
-		featureColorModeManager.getForwardDefaultMode().updateListeners().add( coloringModel );
-		onClose( () -> featureColorModeManager.getForwardDefaultMode().updateListeners().remove( coloringModel ) );
-
 		final ColoringMenu coloringMenu = new ColoringMenu( menuHandle.getMenu(), coloringModel,
 				appModel.getModel().getFeatureModel() );
 
@@ -64,9 +61,6 @@ public class MamutView< VG extends ViewGraph< Spot, Link, V, E >, V extends Vert
 
 		featureModel.listeners().add( coloringMenu );
 		onClose( () -> featureModel.listeners().remove( coloringMenu ) );
-
-		featureColorModeManager.getForwardDefaultMode().updateListeners().add( coloringMenu );
-		onClose( () -> featureColorModeManager.getForwardDefaultMode().updateListeners().remove( coloringMenu ) );
 
 		final ProjectionsFromFeatureModel projections = new ProjectionsFromFeatureModel( featureModel );
 

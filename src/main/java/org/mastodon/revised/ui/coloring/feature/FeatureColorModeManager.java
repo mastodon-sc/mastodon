@@ -18,10 +18,6 @@ public class FeatureColorModeManager extends AbstractStyleManager< FeatureColorM
 {
 	private static final String COLOR_MODE_FILE = System.getProperty( "user.home" ) + "/.mastodon/colormodes.yaml";
 
-	private final FeatureColorMode forwardDefaultMode;
-
-	private final FeatureColorMode.UpdateListener updateForwardDefaultListeners;
-
 	public FeatureColorModeManager()
 	{
 		this( true );
@@ -29,25 +25,15 @@ public class FeatureColorModeManager extends AbstractStyleManager< FeatureColorM
 
 	public FeatureColorModeManager( final boolean loadModes )
 	{
-		forwardDefaultMode = FeatureColorMode.defaultMode().copy();
-		updateForwardDefaultListeners = () -> forwardDefaultMode.set( defaultStyle );
-		defaultStyle.updateListeners().add( updateForwardDefaultListeners );
 		if ( loadModes )
 			loadModes();
 	}
 
-	public FeatureColorMode getForwardDefaultMode()
-	{
-		return forwardDefaultMode;
-	}
-
 	@Override
-	public synchronized void setDefaultStyle( final FeatureColorMode featureColorMode )
+	public void set( final FeatureColorModeManager other )
 	{
-		defaultStyle.updateListeners().remove( updateForwardDefaultListeners );
-		defaultStyle = featureColorMode;
-		forwardDefaultMode.set( defaultStyle );
-		defaultStyle.updateListeners().add( updateForwardDefaultListeners );
+		super.set( other );
+		// TODO: notify listerns
 	}
 
 	@Override
@@ -60,7 +46,7 @@ public class FeatureColorModeManager extends AbstractStyleManager< FeatureColorM
 	{
 		try (final FileWriter output = new FileWriter( filename ))
 		{
-			new File( filename ).mkdirs();
+			new File( filename ).mkdirs(); // TODO pointless. FileWriter already opened or failed.
 			final Yaml yaml = FeatureColorModeIO.createYaml();
 			final ArrayList< Object > objects = new ArrayList<>();
 			objects.add( defaultStyle.getName() );

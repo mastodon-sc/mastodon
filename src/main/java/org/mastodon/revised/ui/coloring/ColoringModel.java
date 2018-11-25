@@ -1,7 +1,5 @@
 package org.mastodon.revised.ui.coloring;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
 
 import org.mastodon.revised.model.tag.TagSetModel;
@@ -20,7 +18,7 @@ import org.mastodon.util.Listeners;
  *
  * @author Tobias Pietzsch
  */
-public class ColoringModel implements TagSetModel.TagSetModelListener, FeatureColorMode.UpdateListener
+public class ColoringModel implements TagSetModel.TagSetModelListener
 {
 	public interface ColoringChangedListener
 	{
@@ -97,26 +95,6 @@ public class ColoringModel implements TagSetModel.TagSetModelListener, FeatureCo
 				colorByTagSet( ts.get() );
 			else
 				colorByNone();
-		}
-	}
-
-	@Override
-	public void featureColorModeChanged()
-	{
-		if ( featureColorMode != null )
-		{
-			final List< FeatureColorMode > l1 = featureColorModeManager.getBuiltinStyles();
-			final List< FeatureColorMode > l2 = featureColorModeManager.getUserStyles();
-			final ArrayList< FeatureColorMode > modes = new ArrayList<>( l1.size() + l2.size() );
-			modes.addAll( l1 );
-			modes.addAll( l2 );
-			final String name = featureColorMode.getName();
-			final Optional< FeatureColorMode > f = modes.stream().filter( fcm -> fcm.getName().equals( name ) ).findFirst();
-			if ( f.isPresent() )
-				colorByFeature( f.get() );
-			else
-				colorByNone();
-
 		}
 	}
 
