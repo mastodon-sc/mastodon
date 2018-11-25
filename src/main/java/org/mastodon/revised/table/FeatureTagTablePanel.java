@@ -36,7 +36,6 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.KeyStroke;
 import javax.swing.ListSelectionModel;
-import javax.swing.RowFilter;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.border.Border;
@@ -196,8 +195,6 @@ public class FeatureTagTablePanel< O > extends JPanel
 		refreshColumns();
 
 		final TableRowSorter< MyTableModel > sorter = new TableRowSorter<>( tableModel );
-		final RowFilter< MyTableModel, Integer > rowFilter = new MyRowFilter();
-		sorter.setRowFilter( rowFilter );
 		table.setRowSorter( sorter );
 
 		final JScrollPane scroll = new JScrollPane( table, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED );
@@ -231,12 +228,14 @@ public class FeatureTagTablePanel< O > extends JPanel
 		if ( viewRowIndex < 0 )
 			return null;
 		final int modelRow = table.convertRowIndexToModel( viewRowIndex );
-		return objects.get( modelRow, ref );
+		return doFilter
+				? filterBy.get( modelRow, ref )
+				: objects.get( modelRow, ref );
 	}
 
 	public int getViewRowForObject( final O o )
 	{
-		final int row = Collections.binarySearch( objects, o, cmp );
+		final int row = Collections.binarySearch( doFilter ? filterBy : objects, o, cmp );
 		if ( row < 0 ) // Object not in table.
 			return -1;
 		return table.convertRowIndexToView( row );
@@ -286,7 +285,7 @@ public class FeatureTagTablePanel< O > extends JPanel
 	 * there is no filtering and all objects are displayed.
 	 *
 	 * @param filterBy
-	 *            the collection of objects to filter by (unchanged).
+	 *                     the collection of objects to filter by (unchanged).
 	 */
 	public void setFilterBy( final Collection< O > filterBy )
 	{
@@ -298,7 +297,7 @@ public class FeatureTagTablePanel< O > extends JPanel
 		}
 		this.filterBy.clear();
 		this.filterBy.addAll( filterBy );
-		this.filterBy.sort( cmp );
+		this.filterBy.retainAll( objects );
 		doFilter = true;
 		tableModel.fireTableDataChanged();
 	}
@@ -475,23 +474,6 @@ public class FeatureTagTablePanel< O > extends JPanel
 		table.repaint();
 	}
 
-	private class MyRowFilter extends RowFilter< MyTableModel, Integer >
-	{
-
-		private final O ref = idBimap.createRef();
-
-		@Override
-		public boolean include( final Entry< ? extends MyTableModel, ? extends Integer > entry )
-		{
-			if ( !doFilter )
-				return true;
-
-			final int modelRow = entry.getIdentifier().intValue();
-			final O o = objects.get( modelRow, ref );
-			return Collections.binarySearch( filterBy, o, cmp ) >= 0;
-		}
-	}
-
 	/*
 	 * INNER CLASSES
 	 */
@@ -536,7 +518,7 @@ public class FeatureTagTablePanel< O > extends JPanel
 		@Override
 		public int getRowCount()
 		{
-			return objects.size();
+			return doFilter ? filterBy.size() : objects.size();
 		}
 
 		@Override
@@ -548,7 +530,9 @@ public class FeatureTagTablePanel< O > extends JPanel
 		@Override
 		public Object getValueAt( final int rowIndex, final int columnIndex )
 		{
-			final O o = objects.get( rowIndex, ref );
+			final O o = doFilter
+					? filterBy.get( rowIndex, ref )
+					: objects.get( rowIndex, ref );
 
 			if ( columnIndex == 0 )
 				return labelGenerator.apply( o );
@@ -584,7 +568,9 @@ public class FeatureTagTablePanel< O > extends JPanel
 		{
 			if ( columnIndex == 0 )
 			{
-				final O o = objects.get( rowIndex, ref );
+				final O o = doFilter
+						? filterBy.get( rowIndex, ref )
+						: objects.get( rowIndex, ref );
 				labelSetter.accept( o, ( String ) aValue );
 				if ( null != undoPointMarker )
 					undoPointMarker.setUndoPoint();
@@ -592,7 +578,9 @@ public class FeatureTagTablePanel< O > extends JPanel
 			else if ( columnIndex >= 2 + mapToProjections.size() )
 			{
 				final boolean isSet = ( boolean ) aValue;
-				final O o = objects.get( rowIndex, ref );
+				final O o = doFilter
+						? filterBy.get( rowIndex, ref )
+						: objects.get( rowIndex, ref );
 				final int[] ids = mapToTagIndices.get( columnIndex - ( 2 + mapToProjections.size() ) );
 				final TagSet tagSet = tagSets.get( ids[ 0 ] );
 				final Tag columnTag = tagSet.getTags().get( ids[ 1 ] );
