@@ -106,15 +106,13 @@ public class MamutView< VG extends ViewGraph< Spot, Link, V, E >, V extends Vert
 				vertexColorGenerator = new FeatureColorGeneratorIncomingEdge<>(
 						( FeatureProjection< E > ) vertexProjection,
 						ColorMap.getColorMap( vertexColorMap ),
-						vertexRangeMin, vertexRangeMax,
-						graph.edgeRef() );
+						vertexRangeMin, vertexRangeMax );
 				break;
 			case OUTGOING_EDGE:
 				vertexColorGenerator = new FeatureColorGeneratorOutgoingEdge<>(
 						( FeatureProjection< E > ) vertexProjection,
 						ColorMap.getColorMap( vertexColorMap ),
-						vertexRangeMin, vertexRangeMax,
-						graph.edgeRef() );
+						vertexRangeMin, vertexRangeMax );
 				break;
 			case VERTEX:
 				vertexColorGenerator = new FeatureColorGenerator<>(
