@@ -4,6 +4,7 @@ import java.awt.event.ActionEvent;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.BooleanSupplier;
+import java.util.stream.Stream;
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
@@ -56,17 +57,14 @@ public class ColoringMenu implements TagSetModel.TagSetModelListener, FeatureMod
 		final FeatureColorModeManager featureColorModeManager = coloringModel.getFeatureColorModeManager();
 		final List< FeatureColorMode > l1 = featureColorModeManager.getBuiltinStyles();
 		final List< FeatureColorMode > l2 = featureColorModeManager.getUserStyles();
-		final ArrayList< FeatureColorMode > modes = new ArrayList<>( l1.size() + l2.size() );
-		modes.addAll( l1 );
-		modes.addAll( l2 );
-		for ( final FeatureColorMode mode : modes )
-			addColorAction( new ColorAction(
-					mode.getName(),
-					() -> coloringModel.getFeatureColorMode() == mode,
-					() -> coloringModel.isValid( mode ),
-					() -> coloringModel.colorByFeature( mode ) ) );
+		Stream.concat( l1.stream(), l2.stream() ).forEach( mode ->
+				addColorAction( new ColorAction(
+						mode.getName(),
+						() -> coloringModel.getFeatureColorMode() == mode,
+						() -> coloringModel.isValid( mode ),
+						() -> coloringModel.colorByFeature( mode ) ) ) );
 
-		if ( !modes.isEmpty() )
+		if ( !( l1.isEmpty() && l2.isEmpty() ) )
 			menu.add( new JSeparator() );
 
 		addColorAction( new ColorAction(
