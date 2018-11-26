@@ -6,8 +6,10 @@ import org.mastodon.app.ui.ViewMenuBuilder.JMenuHandle;
 import org.mastodon.feature.FeatureModel;
 import org.mastodon.feature.FeatureProjection;
 import org.mastodon.graph.Edge;
+import org.mastodon.graph.ReadOnlyGraph;
 import org.mastodon.graph.Vertex;
 import org.mastodon.revised.model.mamut.Link;
+import org.mastodon.revised.model.mamut.ModelGraph;
 import org.mastodon.revised.model.mamut.Spot;
 import org.mastodon.revised.model.tag.TagSetModel;
 import org.mastodon.revised.ui.coloring.ColorGenerator;
@@ -68,6 +70,7 @@ public class MamutView< VG extends ViewGraph< Spot, Link, V, E >, V extends Vert
 		onClose( () -> featureColorModeManager.listeners().remove( coloringMenu ) );
 
 		final ProjectionsFromFeatureModel projections = new ProjectionsFromFeatureModel( featureModel );
+		final ModelGraph graph = appModel.getModel().getGraph();
 
 		@SuppressWarnings( "unchecked" )
 		final ColoringModel.ColoringChangedListener coloringChangedListener = () -> {
@@ -76,91 +79,95 @@ public class MamutView< VG extends ViewGraph< Spot, Link, V, E >, V extends Vert
 			else if ( coloringModel.getTagSet() != null )
 				coloring.setColorGenerator( new TagSetGraphColorGenerator<>( tagSetModel, coloringModel.getTagSet() ) );
 			else if ( coloringModel.getFeatureColorMode() != null )
-			{
-				final FeatureColorMode fcm = coloringModel.getFeatureColorMode();
-
-				// Vertex.
-				final ColorGenerator< Spot > vertexColorGenerator;
-				final FeatureProjection< ? > vertexProjection = projections.getFeatureProjection( fcm.getVertexFeatureProjection() );
-				if ( null == vertexProjection )
-					vertexColorGenerator = new DefaultColorGenerator< Spot >();
-				else
-				{
-					final String vertexColorMap = fcm.getVertexColorMap();
-					final double vertexRangeMin = fcm.getVertexRangeMin();
-					final double vertexRangeMax = fcm.getVertexRangeMax();
-					switch ( fcm.getVertexColorMode() )
-					{
-					case INCOMING_EDGE:
-						vertexColorGenerator = new FeatureColorGeneratorIncomingEdge< Spot, Link >(
-								( FeatureProjection< Link > ) vertexProjection,
-								ColorMap.getColorMap( vertexColorMap ),
-								vertexRangeMin, vertexRangeMax,
-								appModel.getModel().getGraph().edgeRef() );
-						break;
-					case OUTGOING_EDGE:
-						vertexColorGenerator = new FeatureColorGeneratorOutgoingEdge< Spot, Link >(
-								( FeatureProjection< Link > ) vertexProjection,
-								ColorMap.getColorMap( vertexColorMap ),
-								vertexRangeMin, vertexRangeMax,
-								appModel.getModel().getGraph().edgeRef() );
-						break;
-					case VERTEX:
-						vertexColorGenerator = new FeatureColorGenerator< Spot >(
-								( FeatureProjection< Spot > ) vertexProjection,
-								ColorMap.getColorMap( vertexColorMap ),
-								vertexRangeMin, vertexRangeMax );
-						break;
-					case NONE:
-					default:
-						vertexColorGenerator = new DefaultColorGenerator<>();
-						break;
-					}
-				}
-
-				// Edge.
-				final ColorGenerator< Link > edgeColorGenerator;
-				final FeatureProjection< ? > edgeProjection = projections.getFeatureProjection( fcm.getEdgeFeatureProjection() );
-				if ( null == edgeProjection )
-					edgeColorGenerator = new DefaultColorGenerator< Link >();
-				else
-				{
-					final String edgeColorMap = fcm.getEdgeColorMap();
-					final double edgeRangeMin = fcm.getEdgeRangeMin();
-					final double edgeRangeMax = fcm.getEdgeRangeMax();
-					switch ( fcm.getEdgeColorMode() )
-					{
-					case SOURCE_VERTEX:
-						edgeColorGenerator = new FeatureColorGeneratorSourceVertex< Spot, Link >(
-								( FeatureProjection< Spot > ) edgeProjection,
-								ColorMap.getColorMap( edgeColorMap ),
-								edgeRangeMin, edgeRangeMax,
-								appModel.getModel().getGraph().vertexRef() );
-						break;
-					case TARGET_VERTEX:
-						edgeColorGenerator = new FeatureColorGeneratorTargetVertex< Spot, Link >(
-								( FeatureProjection< Spot > ) edgeProjection,
-								ColorMap.getColorMap( edgeColorMap ),
-								edgeRangeMin, edgeRangeMax,
-								appModel.getModel().getGraph().vertexRef() );
-						break;
-					case EDGE:
-						edgeColorGenerator = new FeatureColorGenerator< Link >(
-								( FeatureProjection< Link > ) edgeProjection,
-								ColorMap.getColorMap( edgeColorMap ),
-								edgeRangeMin, edgeRangeMax );
-						break;
-					case NONE:
-					default:
-						edgeColorGenerator = new DefaultColorGenerator<>();
-						break;
-					}
-				}
-
-				coloring.setColorGenerator( new ComposedGraphColorGenerator<>( vertexColorGenerator, edgeColorGenerator ) );
-			}
+				coloring.setColorGenerator( getFeatureGraphColorGenerator( projections, coloringModel.getFeatureColorMode(), graph ) );
 			refresh.run();
 		};
 		coloringModel.listeners().add( coloringChangedListener );
+	}
+
+	public static < V extends Vertex< E >, E extends Edge< V > > ComposedGraphColorGenerator< V, E > getFeatureGraphColorGenerator(
+			final ProjectionsFromFeatureModel projections,
+			final FeatureColorMode fcm,
+			final ReadOnlyGraph< V, E > graph )
+	{
+		// Vertex.
+		final ColorGenerator< V > vertexColorGenerator;
+		final FeatureProjection< ? > vertexProjection = projections.getFeatureProjection( fcm.getVertexFeatureProjection() );
+		if ( null == vertexProjection )
+			vertexColorGenerator = new DefaultColorGenerator<>();
+		else
+		{
+			final String vertexColorMap = fcm.getVertexColorMap();
+			final double vertexRangeMin = fcm.getVertexRangeMin();
+			final double vertexRangeMax = fcm.getVertexRangeMax();
+			switch ( fcm.getVertexColorMode() )
+			{
+			case INCOMING_EDGE:
+				vertexColorGenerator = new FeatureColorGeneratorIncomingEdge<>(
+						( FeatureProjection< E > ) vertexProjection,
+						ColorMap.getColorMap( vertexColorMap ),
+						vertexRangeMin, vertexRangeMax,
+						graph.edgeRef() );
+				break;
+			case OUTGOING_EDGE:
+				vertexColorGenerator = new FeatureColorGeneratorOutgoingEdge<>(
+						( FeatureProjection< E > ) vertexProjection,
+						ColorMap.getColorMap( vertexColorMap ),
+						vertexRangeMin, vertexRangeMax,
+						graph.edgeRef() );
+				break;
+			case VERTEX:
+				vertexColorGenerator = new FeatureColorGenerator<>(
+						( FeatureProjection< V > ) vertexProjection,
+						ColorMap.getColorMap( vertexColorMap ),
+						vertexRangeMin, vertexRangeMax );
+				break;
+			case NONE:
+			default:
+				vertexColorGenerator = new DefaultColorGenerator<>();
+				break;
+			}
+		}
+
+		// Edge.
+		final ColorGenerator< E > edgeColorGenerator;
+		final FeatureProjection< ? > edgeProjection = projections.getFeatureProjection( fcm.getEdgeFeatureProjection() );
+		if ( null == edgeProjection )
+			edgeColorGenerator = new DefaultColorGenerator<>();
+		else
+		{
+			final String edgeColorMap = fcm.getEdgeColorMap();
+			final double edgeRangeMin = fcm.getEdgeRangeMin();
+			final double edgeRangeMax = fcm.getEdgeRangeMax();
+			switch ( fcm.getEdgeColorMode() )
+			{
+			case SOURCE_VERTEX:
+				edgeColorGenerator = new FeatureColorGeneratorSourceVertex<>(
+						( FeatureProjection< V > ) edgeProjection,
+						ColorMap.getColorMap( edgeColorMap ),
+						edgeRangeMin, edgeRangeMax,
+						graph.vertexRef() );
+				break;
+			case TARGET_VERTEX:
+				edgeColorGenerator = new FeatureColorGeneratorTargetVertex<>(
+						( FeatureProjection< V > ) edgeProjection,
+						ColorMap.getColorMap( edgeColorMap ),
+						edgeRangeMin, edgeRangeMax,
+						graph.vertexRef() );
+				break;
+			case EDGE:
+				edgeColorGenerator = new FeatureColorGenerator<>(
+						( FeatureProjection< E > ) edgeProjection,
+						ColorMap.getColorMap( edgeColorMap ),
+						edgeRangeMin, edgeRangeMax );
+				break;
+			case NONE:
+			default:
+				edgeColorGenerator = new DefaultColorGenerator<>();
+				break;
+			}
+		}
+
+		return new ComposedGraphColorGenerator<>( vertexColorGenerator, edgeColorGenerator );
 	}
 }
