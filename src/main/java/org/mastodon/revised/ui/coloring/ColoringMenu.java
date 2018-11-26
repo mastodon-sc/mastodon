@@ -4,25 +4,20 @@ import java.awt.event.ActionEvent;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.BooleanSupplier;
-
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JSeparator;
-
-import org.mastodon.feature.FeatureModel;
 import org.mastodon.feature.FeatureModel.FeatureModelListener;
 import org.mastodon.revised.model.tag.TagSetModel;
 import org.mastodon.revised.model.tag.TagSetStructure;
 import org.mastodon.revised.ui.coloring.feature.FeatureColorMode;
 import org.mastodon.revised.ui.coloring.feature.FeatureColorModeManager;
-import org.mastodon.revised.ui.coloring.feature.Projections;
-import org.mastodon.revised.ui.coloring.feature.ProjectionsFromFeatureModel;
 import org.mastodon.revised.util.HasSelectedState;
 import org.mastodon.util.Listeners;
 import org.scijava.ui.behaviour.util.AbstractNamedAction;
 
-public class ColoringMenu implements TagSetModel.TagSetModelListener, FeatureModelListener
+public class ColoringMenu implements TagSetModel.TagSetModelListener, FeatureModelListener, FeatureColorModeManager.FeatureColorModesListener
 {
 	private final JMenu menu;
 
@@ -30,16 +25,12 @@ public class ColoringMenu implements TagSetModel.TagSetModelListener, FeatureMod
 
 	private final ArrayList< Runnable > cleanup;
 
-	private final Projections projections;
-
 	public ColoringMenu(
 			final JMenu menu,
-			final ColoringModel coloringModel,
-			final FeatureModel featureModel )
+			final ColoringModel coloringModel )
 	{
 		this.menu = menu;
 		this.coloringModel = coloringModel;
-		this.projections = new ProjectionsFromFeatureModel( featureModel );
 		cleanup = new ArrayList<>();
 		rebuild();
 	}
@@ -72,7 +63,7 @@ public class ColoringMenu implements TagSetModel.TagSetModelListener, FeatureMod
 			addColorAction( new ColorAction(
 					mode.getName(),
 					() -> coloringModel.getFeatureColorMode() == mode,
-					() -> isValid( mode ),
+					() -> coloringModel.isValid( mode ),
 					() -> coloringModel.colorByFeature( mode ) ) );
 
 		if ( !modes.isEmpty() )
@@ -84,28 +75,6 @@ public class ColoringMenu implements TagSetModel.TagSetModelListener, FeatureMod
 				() -> true,
 				() -> coloringModel.colorByNone() ) );
 
-	}
-
-	/**
-	 * Returns {@code true} if the specified color mode is valid against the
-	 * {@link FeatureModel}. That is: the feature projections that the color
-	 * mode rely on are declared in the feature model, and of the right class.
-	 *
-	 * @param mode
-	 *            the color mode
-	 * @return {@code true} if the color mode is valid.
-	 */
-	private boolean isValid( final FeatureColorMode mode )
-	{
-		if ( mode.getVertexColorMode() != FeatureColorMode.VertexColorMode.NONE
-				&& null == projections.getFeatureProjection( mode.getVertexFeatureProjection() ) )
-			return false;
-
-		if ( mode.getEdgeColorMode() != FeatureColorMode.EdgeColorMode.NONE
-				&& null == projections.getFeatureProjection( mode.getEdgeFeatureProjection() ) )
-			return false;
-
-		return true;
 	}
 
 	private void addColorAction( final ColorAction action )
@@ -127,6 +96,12 @@ public class ColoringMenu implements TagSetModel.TagSetModelListener, FeatureMod
 
 	@Override
 	public void featureModelChanged()
+	{
+		rebuild();
+	}
+
+	@Override
+	public void featureColorModesChanged()
 	{
 		rebuild();
 	}

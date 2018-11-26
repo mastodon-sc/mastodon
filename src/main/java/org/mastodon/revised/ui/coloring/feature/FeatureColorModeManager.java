@@ -12,11 +12,19 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.mastodon.app.ui.settings.style.AbstractStyleManager;
+import org.mastodon.util.Listeners;
 import org.yaml.snakeyaml.Yaml;
 
 public class FeatureColorModeManager extends AbstractStyleManager< FeatureColorModeManager, FeatureColorMode >
 {
 	private static final String COLOR_MODE_FILE = System.getProperty( "user.home" ) + "/.mastodon/colormodes.yaml";
+
+	public interface FeatureColorModesListener
+	{
+		public void featureColorModesChanged();
+	}
+
+	private final Listeners.List< FeatureColorModesListener > featureColorModesListeners;
 
 	public FeatureColorModeManager()
 	{
@@ -27,13 +35,19 @@ public class FeatureColorModeManager extends AbstractStyleManager< FeatureColorM
 	{
 		if ( loadModes )
 			loadModes();
+		featureColorModesListeners = new Listeners.SynchronizedList<>();
 	}
 
 	@Override
 	public void set( final FeatureColorModeManager other )
 	{
 		super.set( other );
-		// TODO: notify listerns
+		notifyListeners();
+	}
+
+	public Listeners< FeatureColorModesListener > listeners()
+	{
+		return featureColorModesListeners;
 	}
 
 	@Override
@@ -109,5 +123,10 @@ public class FeatureColorModeManager extends AbstractStyleManager< FeatureColorM
 	protected List< FeatureColorMode > loadBuiltinStyles()
 	{
 		return Collections.unmodifiableList( new ArrayList<>( FeatureColorMode.defaults ) );
+	}
+
+	private void notifyListeners()
+	{
+		featureColorModesListeners.list.forEach( FeatureColorModesListener::featureColorModesChanged );
 	}
 }
