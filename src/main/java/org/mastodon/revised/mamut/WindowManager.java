@@ -54,8 +54,8 @@ public class WindowManager
 {
 	public static final String NEW_BDV_VIEW = "new bdv view";
 	public static final String NEW_TRACKSCHEME_VIEW = "new trackscheme view";
-	public static final String NEW_TABLE_VIEW = "show full table";
-	public static final String NEW_SELECTION_TABLE_VIEW = "show selection table";
+	public static final String NEW_TABLE_VIEW = "new full table view";
+	public static final String NEW_SELECTION_TABLE_VIEW = "new selection table view";
 	public static final String PREFERENCES_DIALOG = "Preferences";
 	public static final String TAGSETS_DIALOG = "edit tag sets";
 	public static final String COMPUTE_FEATURE_DIALOG = "compute features";
@@ -84,10 +84,12 @@ public class WindowManager
 		{
 			descriptions.add( NEW_BDV_VIEW, NEW_BDV_VIEW_KEYS, "Open a new BigDataViewer view." );
 			descriptions.add( NEW_TRACKSCHEME_VIEW, NEW_TRACKSCHEME_VIEW_KEYS, "Open a new TrackScheme view." );
-			descriptions.add( NEW_TABLE_VIEW, NEW_TABLE_VIEW_KEYS, "Show the feature and tag full table." );
+			descriptions.add( NEW_TABLE_VIEW, NEW_TABLE_VIEW_KEYS, "Open a new table view. "
+					+ "The table displays the full data." );
 			descriptions.add( NEW_SELECTION_TABLE_VIEW, NEW_SELECTION_TABLE_VIEW_KEYS,
-					"Show a feature and tag table for the current selection. "
-					+ "The table is updated as the selection changes." );
+					"Open a new selection table view. "
+							+ "The table only displays the current selection and "
+							+ "is updated as the selection changes." );
 			descriptions.add( PREFERENCES_DIALOG, PREFERENCES_DIALOG_KEYS, "Edit Mastodon preferences." );
 			descriptions.add( TAGSETS_DIALOG, TAGSETS_DIALOG_KEYS, "Edit tag definitions." );
 		}
