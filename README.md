@@ -1,5 +1,7 @@
 [![](https://travis-ci.org/fiji/TrackMate3.svg?branch=master)](https://travis-ci.org/fiji/TrackMate3)
 
+![Mastodon logo](doc/Mastodon-logo-512x512.png)
+
 Mastodon – a large-scale tracking and track-editing framework for large, multi-view images.
 =============================================================================================
 
