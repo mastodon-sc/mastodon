@@ -4,7 +4,6 @@ import org.mastodon.feature.FeatureProjection;
 
 public class FeatureColorGenerator< T > implements ColorGenerator< T >
 {
-
 	private final FeatureProjection< T > featureProjection;
 
 	private final ColorMap colorMap;

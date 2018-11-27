@@ -4,9 +4,8 @@ import org.mastodon.feature.FeatureProjection;
 import org.mastodon.graph.Edge;
 import org.mastodon.graph.Vertex;
 
-public class FeatureColorGeneratorTargetVertex< V extends Vertex< E >, E extends Edge< V > > implements ColorGenerator< E >
+public class FeatureColorGeneratorTargetVertex< V extends Vertex< E >, E extends Edge< V > > implements EdgeColorGenerator< V, E >
 {
-
 	private final FeatureProjection< V > featureProjection;
 
 	private final ColorMap colorMap;
@@ -15,27 +14,21 @@ public class FeatureColorGeneratorTargetVertex< V extends Vertex< E >, E extends
 
 	private final double max;
 
-	private final V ref;
-
-	public FeatureColorGeneratorTargetVertex( final FeatureProjection< V > featureProjection, final ColorMap colorMap, final double min, final double max, final V ref )
+	public FeatureColorGeneratorTargetVertex( final FeatureProjection< V > featureProjection, final ColorMap colorMap, final double min, final double max )
 	{
 		this.featureProjection = featureProjection;
 		this.colorMap = colorMap;
 		this.min = min;
 		this.max = max;
-		this.ref = ref;
 	}
 
 	@Override
-	public int color( final E edge )
+	public int color( final E edge, final V source, final V target )
 	{
-		final V v = edge.getTarget( ref );
-		if ( !featureProjection.isSet( v ) )
+		if ( !featureProjection.isSet( target ) )
 			return 0;
 
-		final double alpha = ( featureProjection.value( v ) - min ) / ( max - min );
+		final double alpha = ( featureProjection.value( target ) - min ) / ( max - min );
 		return colorMap.get( alpha );
-
 	}
-
 }
