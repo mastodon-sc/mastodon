@@ -78,20 +78,24 @@ public class MamutProject
 		this.datasetXmlFile = datasetXmlFile;
 	}
 
-	public void setUnits(final String spaceUnits, final String timeUnits)
-	{
-		this.spaceUnits = spaceUnits;
-		this.timeUnits = timeUnits;
-	}
-
 	public String getSpaceUnits()
 	{
 		return spaceUnits;
 	}
 
+	public void setSpaceUnits( final String spaceUnits )
+	{
+		this.spaceUnits = spaceUnits;
+	}
+
 	public String getTimeUnits()
 	{
 		return timeUnits;
+	}
+
+	public void setTimeUnits( final String timeUnits )
+	{
+		this.timeUnits = timeUnits;
 	}
 
 	@Override

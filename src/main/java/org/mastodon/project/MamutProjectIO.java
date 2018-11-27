@@ -72,7 +72,8 @@ public class MamutProjectIO
 		project.setDatasetXmlFile( datasetXmlFile );
 		final String spaceUnits = XmlHelpers.getText( root, SPACE_UNITS_TAG );
 		final String timeUnits = XmlHelpers.getText( root, TIME_UNITS_TAG );
-		project.setUnits( spaceUnits, timeUnits );
+		project.setSpaceUnits( spaceUnits );
+		project.setTimeUnits( timeUnits );
 	}
 
 	public static boolean mkdirs( final String fileName )

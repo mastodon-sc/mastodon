@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Random;
 
+import mpicbg.spim.data.generic.sequence.BasicViewSetup;
 import org.mastodon.plugin.MastodonPlugins;
 import org.mastodon.project.MamutProject;
 import org.mastodon.project.MamutProjectIO;
@@ -266,6 +267,36 @@ public class ProjectManager
 		if ( spimData == null )
 			spimData = new XmlIoSpimDataMinimal().load( spimDataXmlFilename );
 
+		/*
+		 * Try to read units from spimData is they are not present
+		 */
+		if ( project.getSpaceUnits() == null )
+		{
+			project.setSpaceUnits(
+					spimData.getSequenceDescription().getViewSetupsOrdered().stream()
+							.filter( BasicViewSetup::hasVoxelSize )
+							.map( setup -> setup.getVoxelSize().unit() )
+							.findFirst()
+							.orElse( "pixel" ) );
+		}
+		if ( project.getTimeUnits() == null )
+		{
+			project.setTimeUnits( "frame" );
+		}
+
+		/*
+		 * Load Model
+		 */
+		final Model model = new Model( project.getSpaceUnits(), project.getTimeUnits() );
+		final boolean isNewProject = project.getProjectRoot() == null;
+		if ( !isNewProject )
+		{
+			try ( final MamutProject.ProjectReader reader = project.openForReading() )
+			{
+				model.loadRaw( reader );
+			}
+		}
+
 		final KeyPressedManager keyPressedManager = windowManager.getKeyPressedManager();
 		final TrackSchemeStyleManager trackSchemeStyleManager = windowManager.getTrackSchemeStyleManager();
 		final FeatureColorModeManager featureColorModeManager = windowManager.getFeatureColorModeManager();
@@ -279,48 +310,6 @@ public class ProjectManager
 				spimData,
 				options,
 				() -> windowManager.forEachBdvView( MamutViewBdv::requestRepaint ) );
-
-		/*
-		 * Load Model
-		 */
-
-		// Units
-
-		final Model model;
-		final boolean isNewProject = project.getProjectRoot() == null;
-
-		if ( !isNewProject )
-		{
-			// Try to read units from the project file.
-			String spaceUnits = project.getSpaceUnits();
-			String timeUnits = project.getTimeUnits();
-			if (null == spaceUnits)
-			{
-				// We could not. Read if from the BDV file.
-				if (sharedBdvData.getSources().isEmpty())
-					spaceUnits = "pixel";
-				else
-					spaceUnits = sharedBdvData.getSources().get( 0 ).getSpimSource().getVoxelDimensions().unit();
-			}
-			if (null == timeUnits)
-				timeUnits = "frame";
-			model = new Model(spaceUnits, timeUnits);
-			try (final MamutProject.ProjectReader reader = project.openForReading())
-			{
-				model.loadRaw( reader );
-			}
-		}
-		else
-		{
-			// Read units from the BDV file.
-			final String timeUnits = "frame";
-			final String spaceUnits;
-			if (sharedBdvData.getSources().isEmpty())
-				spaceUnits = "pixel";
-			else
-				spaceUnits = sharedBdvData.getSources().get( 0 ).getSpimSource().getVoxelDimensions().unit();
-			model = new Model( spaceUnits, timeUnits );
-		}
 
 		final MamutAppModel appModel = new MamutAppModel(
 				model,

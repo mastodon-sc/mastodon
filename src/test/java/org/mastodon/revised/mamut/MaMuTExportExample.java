@@ -88,7 +88,7 @@ public class MaMuTExportExample
 		 * 3. Re-import it using the TrackMate importer.
 		 */
 
-		final Model importedModel = new Model(model.getSpaceUnits(), model.getTimeUnits());
+		final Model importedModel = new Model( model.getSpaceUnits(), model.getTimeUnits() );
 		new TrackMateImporter( targetFile ).readModel( importedModel );
 		System.out.println();
 		System.out.println( "Model AFTER de-serialization:" );

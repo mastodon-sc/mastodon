@@ -65,16 +65,16 @@ public class Model extends AbstractModel< ModelGraph, Spot, Link > implements Un
 
 	private final DefaultTagSetModel< Spot, Link > tagSetModel;
 
-	private String spaceUnits;
+	private final String spaceUnits;
 
-	private String timeUnits;
+	private final String timeUnits;
 
 	public Model()
 	{
-		this("pixel", "frame");
+		this( "pixel", "frame" );
 	}
 
-	public Model(final String spaceUnits, final String timeUnits)
+	public Model( final String spaceUnits, final String timeUnits )
 	{
 		super( new ModelGraph() );
 		this.spaceUnits = spaceUnits;
@@ -145,8 +145,10 @@ public class Model extends AbstractModel< ModelGraph, Spot, Link > implements Un
 	{
 		final FileIdToGraphMap< Spot, Link > idmap = modelGraph.loadRaw( reader.getRawModelInputStream(), ModelSerializer.getInstance() );
 
-		try (final InputStream tis = reader.getRawTagsInputStream();
-				final ObjectInputStream ois = new ObjectInputStream( new BufferedInputStream( tis, 1024 * 1024 ) ))
+		try (
+				final InputStream tis = reader.getRawTagsInputStream();
+				final ObjectInputStream ois = new ObjectInputStream( new BufferedInputStream( tis, 1024 * 1024 ) )
+		)
 		{
 //			tagSetModel.pauseListeners(); // TODO
 			RawTagSetModelIO.read( tagSetModel, idmap, ois );
@@ -170,8 +172,10 @@ public class Model extends AbstractModel< ModelGraph, Spot, Link > implements Un
 	{
 		final GraphToFileIdMap< Spot, Link > idmap = modelGraph.saveRaw( writer.getRawModelOutputStream(), ModelSerializer.getInstance() );
 
-		try (final OutputStream fos = writer.getRawTagsOutputStream();
-				final ObjectOutputStream oos = new ObjectOutputStream( new BufferedOutputStream( fos, 1024 * 1024 ) ))
+		try (
+				final OutputStream fos = writer.getRawTagsOutputStream();
+				final ObjectOutputStream oos = new ObjectOutputStream( new BufferedOutputStream( fos, 1024 * 1024 ) )
+		)
 		{
 			RawTagSetModelIO.write( tagSetModel, idmap, oos );
 		}
