@@ -244,13 +244,17 @@ public class ProjectManager
 	}
 
 	/**
-	 * Open a project. If {@code project.getProjectRoot() == null} this is a new project and data structures are initialized as empty.
-	 * The image data {@code project.getDatasetXmlFile()} must always be set.
+	 * Opens a project. If {@code project.getProjectRoot() == null} this is a
+	 * new project and data structures are initialized as empty. The image data
+	 * {@code project.getDatasetXmlFile()} must always be set.
 	 *
 	 * @param project
-	 *
+	 *            the project to open.
 	 * @throws IOException
+	 *             if an IO exception occurs during opening.
 	 * @throws SpimDataException
+	 *             if a spim-data exception occurs while opening the spim-data
+	 *             XML file.
 	 */
 	public synchronized void open( final MamutProject project ) throws IOException, SpimDataException
 	{

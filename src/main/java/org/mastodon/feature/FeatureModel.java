@@ -72,6 +72,9 @@ public class FeatureModel
 
 	/**
 	 * Registers the specified feature.
+	 * 
+	 * @param feature
+	 *            the feature to register.
 	 */
 	public void declareFeature( final Feature< ? > feature )
 	{

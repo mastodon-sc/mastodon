@@ -99,11 +99,13 @@ public class GroupHandle
 
 	/**
 	 * Get the forwarding model with the specified {@code key}.
-	 *
+	 * 
+	 * @param <T>
+	 *            the type of the backing model.
 	 * @param key
 	 *            the factory by which this kind of model was
 	 *            {@link GroupManager#registerModel(GroupableModelFactory)
-	 *            reqistered} with the {@code GroupManager}.
+	 *            registered} with the {@code GroupManager}.
 	 * @return the forwarding model with the specified {@code key}.
 	 */
 	public < T > T getModel( final GroupableModelFactory< T > key )

@@ -38,6 +38,9 @@ import mpicbg.spim.data.sequence.TimePoint;
 
 public class SimiImportDialog extends JDialog
 {
+
+	private static final long serialVersionUID = 1L;
+
 	private final JTextField pathTextField;
 
 	private final JSpinner spinnerSetup;

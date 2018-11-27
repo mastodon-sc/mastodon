@@ -54,11 +54,15 @@ public class SelectAndEditProfileSettingsPage< T extends SelectAndEditProfileSet
 	private final JPanel contentPanel;
 
 	/**
-	 *
+	 * Creates a new {@link SelectAndEditProfileSettingsPage} for the specified
+	 * profile manager and the specified editor panel.
+	 * 
 	 * @param treePath
 	 *            path of this page in the settings tree.
 	 * @param profileManager
+	 *            the profile manager.
 	 * @param profileEditPanel
+	 *            the profile edit panel.
 	 */
 	public SelectAndEditProfileSettingsPage(
 			final String treePath,
@@ -117,9 +121,8 @@ public class SelectAndEditProfileSettingsPage< T extends SelectAndEditProfileSet
 	}
 
 	/**
-	 *
-	 *
-	 *
+	 * Interface for the objects that are edited and selected in a
+	 * {@link SelectAndEditProfileSettingsPage}.
 	 */
 	public interface Profile
 	{
@@ -129,8 +132,10 @@ public class SelectAndEditProfileSettingsPage< T extends SelectAndEditProfileSet
 	}
 
 	/**
-	 *
+	 * Interface for classes that manage a collection of profiles.
+	 * 
 	 * @param <T>
+	 *            the type of profiles to manage.
 	 */
 	public interface ProfileManager< T extends Profile >
 	{
@@ -139,29 +144,35 @@ public class SelectAndEditProfileSettingsPage< T extends SelectAndEditProfileSet
 		T getSelectedProfile();
 
 		/**
-		 * Select the active profile.
+		 * Selects the active profile.
 		 *
 		 * @param profile
+		 *            the profile.
 		 */
 		void select( T profile );
 
 		/**
-		 * Dublicate {@code profile} with a new derived name and add it to user profiles list.
+		 * Duplicates {@code profile} with a new derived name and add it to user
+		 * profiles list.
 		 *
 		 * @param profile
+		 *            the profile.
 		 *
 		 * @return duplicated profile
 		 */
 		T duplicate( T profile );
 
 		/**
-		 * Try to set the name of {@code profile} to {@code newName}.
+		 * Tries to set the name of {@code profile} to {@code newName}.
 		 *
 		 * @param profile
+		 *            the profile.
 		 * @param newName
+		 *            tjhe name to set.
 		 *
 		 * @throws IllegalArgumentException
-		 * 		if renaming was not possible (e.g., newName already exists)
+		 *             if renaming was not possible (e.g., newName already
+		 *             exists)
 		 */
 		void rename( T profile, String newName ) throws IllegalArgumentException;
 
@@ -173,8 +184,10 @@ public class SelectAndEditProfileSettingsPage< T extends SelectAndEditProfileSet
 	}
 
 	/**
-	 *
+	 * Interface for classes that edit of profile in to a JPanel.
+	 * 
 	 * @param <T>
+	 *            the type of profile that are edited.
 	 */
 	public interface ProfileEditPanel< T >
 	{

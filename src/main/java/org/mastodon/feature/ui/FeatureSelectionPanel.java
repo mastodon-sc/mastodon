@@ -206,6 +206,9 @@ public class FeatureSelectionPanel
 	 * Sets the selection in this panel to correspond to the specified
 	 * {@link FeatureProjectionId}. Does nothing, if currently no
 	 * {@link AvailableFeatureProjections} are specified.
+	 * 
+	 * @param selection
+	 *            the id of the feature projection to select.
 	 */
 	public void setSelection( final FeatureProjectionId selection )
 	{
@@ -264,6 +267,11 @@ public class FeatureSelectionPanel
 
 	/**
 	 * Sets the feature specifications to display in this panel.
+	 * 
+	 * @param afp
+	 *            the available feature projections.
+	 * @param targetType
+	 *            the type of the projection target.
 	 */
 	public void setAvailableFeatureProjections( final AvailableFeatureProjections afp, final TargetType targetType )
 	{

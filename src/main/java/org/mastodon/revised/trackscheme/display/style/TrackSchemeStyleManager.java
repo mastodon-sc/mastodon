@@ -69,6 +69,8 @@ public class TrackSchemeStyleManager extends AbstractStyleManager< TrackSchemeSt
 	/**
 	 * Returns a final {@link TrackSchemeStyle} instance that always has the
 	 * same properties as the default style.
+	 * 
+	 * @return the style instance.
 	 */
 	public TrackSchemeStyle getForwardDefaultStyle()
 	{

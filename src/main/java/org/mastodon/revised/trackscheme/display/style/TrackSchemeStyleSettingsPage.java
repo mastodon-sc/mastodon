@@ -19,8 +19,12 @@ import org.mastodon.util.Listeners;
 public class TrackSchemeStyleSettingsPage extends SelectAndEditProfileSettingsPage< StyleProfile< TrackSchemeStyle > >
 {
 	/**
+	 * Creates a new settings page for TrackScheme styles.
+	 * 
 	 * @param treePath
-	 * 		path of this page in the settings tree.
+	 *            path of this page in the settings tree.
+	 * @param styleManager
+	 *            the style manager.
 	 */
 	public TrackSchemeStyleSettingsPage( final String treePath, final TrackSchemeStyleManager styleManager )
 	{

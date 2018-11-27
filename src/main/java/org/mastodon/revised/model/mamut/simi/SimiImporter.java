@@ -86,9 +86,12 @@ public class SimiImporter
 		 * simi file.
 		 *
 		 * @param generic_name
+		 *            the cell generic name.
 		 * @param generation_name
+		 *            the cell generation name.
 		 * @param name
-		 * @return spot name
+		 *            the cell name.
+		 * @return a spot name. Can be <code>null</code>.
 		 */
 		String apply( final String generic_name, final String generation_name, final String name );
 	}

@@ -61,6 +61,8 @@ public class MamutFeatureProjectionsManager implements FeatureProjectionsManager
 	 *
 	 * @param model
 	 *            the current {@code Model} (or {@code null}).
+	 * @param numSources
+	 *            the number of sources in the image data.
 	 */
 	public void setModel( final Model model, final int numSources )
 	{

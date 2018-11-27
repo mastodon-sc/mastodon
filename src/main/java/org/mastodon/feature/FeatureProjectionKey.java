@@ -11,7 +11,12 @@ import java.util.Arrays;
 public final class FeatureProjectionKey
 {
 	/**
-	 * Construct a {@link FeatureProjectionKey} with {@link Multiplicity#SINGLE}.
+	 * Construct a {@link FeatureProjectionKey} with
+	 * {@link Multiplicity#SINGLE}.
+	 * 
+	 * @param spec
+	 *            the feature projection spec.
+	 * @return a new {@link FeatureProjectionKey}.
 	 */
 	public static FeatureProjectionKey key( final FeatureProjectionSpec spec )
 	{
@@ -19,7 +24,14 @@ public final class FeatureProjectionKey
 	}
 
 	/**
-	 * Construct a {@link FeatureProjectionKey} with {@link Multiplicity#ON_SOURCES}.
+	 * Constructs a {@link FeatureProjectionKey} with
+	 * {@link Multiplicity#ON_SOURCES}.
+	 * 
+	 * @param spec
+	 *            the feature projection spec.
+	 * @param i0
+	 *            the source index.
+	 * @return a new {@link FeatureProjectionKey}.
 	 */
 	public static FeatureProjectionKey key( final FeatureProjectionSpec spec, final int i0 )
 	{
@@ -27,7 +39,16 @@ public final class FeatureProjectionKey
 	}
 
 	/**
-	 * Construct a {@link FeatureProjectionKey} with {@link Multiplicity#ON_SOURCE_PAIRS}.
+	 * Constructs a {@link FeatureProjectionKey} with
+	 * {@link Multiplicity#ON_SOURCE_PAIRS}.
+	 * 
+	 * @param spec
+	 *            the feature projection spec.
+	 * @param i0
+	 *            the first source index.
+	 * @param i1
+	 *            the second source index.
+	 * @return a new {@link FeatureProjectionKey}.
 	 */
 	public static FeatureProjectionKey key( final FeatureProjectionSpec spec, final int i0, final int i1 )
 	{

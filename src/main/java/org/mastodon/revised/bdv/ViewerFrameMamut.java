@@ -45,12 +45,10 @@ import org.scijava.ui.behaviour.MouseAndKeyHandler;
 import org.scijava.ui.behaviour.util.InputActionBindings;
 import org.scijava.ui.behaviour.util.TriggerBehaviourBindings;
 
-import bdv.BehaviourTransformEventHandler;
 import bdv.cache.CacheControl;
 import bdv.viewer.SourceAndConverter;
 import bdv.viewer.ViewerOptions;
 import bdv.viewer.ViewerPanel;
-import net.imglib2.ui.TransformEventHandler;
 
 /**
  * A {@link JFrame} containing a {@link ViewerPanel} and associated
@@ -65,13 +63,18 @@ public class ViewerFrameMamut extends ViewFrame
 	private final ViewerPanelMamut viewer;
 
 	/**
-	 *
+	 * Creates a new {@link ViewerFrameMamut}.
+	 * 
+	 * @param windowTitle
+	 *            the window title to display.
 	 * @param sources
 	 *            the {@link SourceAndConverter sources} to display.
 	 * @param numTimepoints
 	 *            number of available timepoints.
 	 * @param cacheControl
 	 *            handle to cache. This is used to control io timing.
+	 * @param groupHandle
+	 *            the group handle.
 	 * @param optional
 	 *            optional parameters. See {@link ViewerOptions#options()}.
 	 */

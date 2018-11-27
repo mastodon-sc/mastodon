@@ -68,6 +68,8 @@ public class RenderSettingsManager extends AbstractStyleManager< RenderSettingsM
 	/**
 	 * Returns a final {@link RenderSettings} instance that always has the same
 	 * properties as the default style.
+	 * 
+	 * @return the {@link RenderSettings} instance.
 	 */
 	public RenderSettings getForwardDefaultStyle()
 	{

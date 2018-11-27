@@ -133,6 +133,10 @@ public class FeatureDependencyGraph extends AbstractObjectGraph< FeatureDependen
 	 * recursive dependencies.
 	 * <p>
 	 * <em>Note that this assumes that there are no cycles in the graph!</em>
+	 * 
+	 * @param specs
+	 *            the collection of feature specs.
+	 * @return a new feature dependency graph.
 	 */
 	public FeatureDependencyGraph subGraphFor( final Collection< FeatureSpec< ?, ? > > specs )
 	{

@@ -25,6 +25,8 @@ public interface FeatureProjectionsManager
 	/**
 	 * Exposes the list of listeners that are notified when the set of available
 	 * feature projections has changed.
+	 * 
+	 * @return the listeners.
 	 */
 	public Listeners< AvailableFeatureProjectionsListener > listeners();
 
