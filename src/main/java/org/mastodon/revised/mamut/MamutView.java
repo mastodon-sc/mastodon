@@ -24,45 +24,49 @@ public class MamutView< VG extends ViewGraph< Spot, Link, V, E >, V extends Vert
 	}
 
 	/**
-	 * Sets up and register the coloring menu item and related actions and
+	 * Sets up and registers the coloring menu item and related actions and
 	 * listeners.
 	 *
-	 * @param coloring
+	 * @param colorGeneratorAdapter
+	 *            adapts a (modifiable) model coloring to view vertices/edges.
 	 * @param menuHandle
+	 *            handle to the JMenu corresponding to the coloring submenu.
+	 *            Coloring options will be installed here.
 	 * @param refresh
+	 *            triggers repaint of the graph (called when coloring changes)
 	 */
-	protected void registerColoring( final GraphColorGeneratorAdapter< Spot, Link, V, E > coloring, final JMenuHandle menuHandle, final Runnable refresh )
+	protected void registerColoring(
+			final GraphColorGeneratorAdapter< Spot, Link, V, E > colorGeneratorAdapter,
+			final JMenuHandle menuHandle,
+			final Runnable refresh )
 	{
 		final TagSetModel< Spot, Link > tagSetModel = appModel.getModel().getTagSetModel();
 		final FeatureModel featureModel = appModel.getModel().getFeatureModel();
 		final FeatureColorModeManager featureColorModeManager = appModel.getFeatureColorModeManager();
 		final ColoringModel coloringModel = new ColoringModel( tagSetModel, featureColorModeManager, featureModel );
+		final ColoringMenu coloringMenu = new ColoringMenu( menuHandle.getMenu(), coloringModel );
 
 		tagSetModel.listeners().add( coloringModel );
 		onClose( () -> tagSetModel.listeners().remove( coloringModel ) );
+		tagSetModel.listeners().add( coloringMenu );
+		onClose( () -> tagSetModel.listeners().remove( coloringMenu ) );
 
 		featureColorModeManager.listeners().add( coloringModel );
 		onClose( () -> featureColorModeManager.listeners().remove( coloringModel ) );
-
-		final ColoringMenu coloringMenu = new ColoringMenu( menuHandle.getMenu(), coloringModel );
-
-		tagSetModel.listeners().add( coloringMenu );
-		onClose( () -> tagSetModel.listeners().remove( coloringMenu ) );
+		featureColorModeManager.listeners().add( coloringMenu );
+		onClose( () -> featureColorModeManager.listeners().remove( coloringMenu ) );
 
 		featureModel.listeners().add( coloringMenu );
 		onClose( () -> featureModel.listeners().remove( coloringMenu ) );
 
-		featureColorModeManager.listeners().add( coloringMenu );
-		onClose( () -> featureColorModeManager.listeners().remove( coloringMenu ) );
-
 		@SuppressWarnings( "unchecked" )
 		final ColoringModel.ColoringChangedListener coloringChangedListener = () -> {
 			if ( coloringModel.noColoring() )
-				coloring.setColorGenerator( null );
+				colorGeneratorAdapter.setColorGenerator( null );
 			else if ( coloringModel.getTagSet() != null )
-				coloring.setColorGenerator( new TagSetGraphColorGenerator<>( tagSetModel, coloringModel.getTagSet() ) );
+				colorGeneratorAdapter.setColorGenerator( new TagSetGraphColorGenerator<>( tagSetModel, coloringModel.getTagSet() ) );
 			else if ( coloringModel.getFeatureColorMode() != null )
-				coloring.setColorGenerator( coloringModel.getFeatureGraphColorGenerator() );
+				colorGeneratorAdapter.setColorGenerator( coloringModel.getFeatureGraphColorGenerator() );
 			refresh.run();
 		};
 		coloringModel.listeners().add( coloringChangedListener );
