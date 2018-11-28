@@ -8,10 +8,10 @@ import org.mastodon.revised.bdv.overlay.OverlayGraphRenderer;
 import org.mastodon.revised.bdv.overlay.wrap.OverlayContextWrapper;
 import org.mastodon.revised.bdv.overlay.wrap.OverlayEdgeWrapper;
 import org.mastodon.revised.bdv.overlay.wrap.OverlayVertexWrapper;
+import org.mastodon.util.Listeners;
 import org.mastodon.views.context.Context;
 import org.mastodon.views.context.ContextListener;
 import org.mastodon.views.context.ContextProvider;
-import org.mastodon.util.Listeners;
 
 import net.imglib2.realtransform.AffineTransform3D;
 import net.imglib2.ui.TransformListener;
@@ -25,7 +25,8 @@ import net.imglib2.ui.TransformListener;
  *
  * @param <V>
  *            the type of vertices in the model.
- *
+ * @param <E>
+ *            the type of edges in the model.
  * @author Tobias Pietzsch
  */
 public class BdvContextProvider< V extends Vertex< E >, E extends Edge< V > >

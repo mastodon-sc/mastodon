@@ -17,6 +17,11 @@ import org.mastodon.spatial.HasTimepoint;
  * {@link DefaultModelGraphProperties} can be used.
  *
  * @author Tobias Pietzsch &lt;tobias.pietzsch@gmail.com&gt;
+ * @param <V>
+ *            the type of vertices in the model graph (not the TrackScheme
+ *            graph).
+ * @param <E>
+ *            the type of edges in the graph.
  */
 public interface ModelGraphProperties< V, E >
 {

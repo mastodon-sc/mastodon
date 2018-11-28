@@ -17,6 +17,10 @@ import net.imglib2.realtransform.AffineTransform3D;
  * </ol>
  *
  * @author Tobias Pietzsch &lt;tobias.pietzsch@gmail.com&gt;
+ * @param <V>
+ *            the type of vertices in the model graph.
+ * @param <E>
+ *            the type of edges in the model graph.
  */
 public class ScreenEdgeMath< V extends OverlayVertex< V, E >, E extends OverlayEdge< E, V > >
 {

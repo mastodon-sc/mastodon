@@ -1,9 +1,5 @@
 package org.mastodon.feature;
 
-import java.util.function.Function;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 /**
  * The Multiplicity of a feature indicates whether it is dependent of the number
  * of sources (e.g., channels, etc) present in the model.

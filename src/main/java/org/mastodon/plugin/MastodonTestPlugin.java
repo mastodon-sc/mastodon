@@ -11,7 +11,6 @@ import org.mastodon.revised.mamut.KeyConfigContexts;
 import org.mastodon.revised.mamut.MamutMenuBuilder;
 import org.mastodon.revised.ui.keymap.CommandDescriptionProvider;
 import org.mastodon.revised.ui.keymap.CommandDescriptions;
-import org.scijava.plugin.Plugin;
 import org.scijava.ui.behaviour.util.AbstractNamedAction;
 import org.scijava.ui.behaviour.util.Actions;
 
@@ -40,8 +39,6 @@ public class MastodonTestPlugin implements MastodonPlugin
 		}
 	}
 
-	private MastodonPluginAppModel appModel;
-
 	private static Map< String, String > menuTexts = new HashMap<>();
 
 	static
@@ -51,6 +48,9 @@ public class MastodonTestPlugin implements MastodonPlugin
 
 	private final AbstractNamedAction action1 = new AbstractNamedAction( ACTION_1 )
 	{
+
+		private static final long serialVersionUID = 1L;
+
 		@Override
 		public void actionPerformed( final ActionEvent e )
 		{
@@ -80,7 +80,5 @@ public class MastodonTestPlugin implements MastodonPlugin
 
 	@Override
 	public void setAppModel( final MastodonPluginAppModel appModel )
-	{
-		this.appModel = appModel;
-	}
+	{}
 }

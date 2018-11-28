@@ -1,15 +1,14 @@
 package org.mastodon.mamut.feature;
 
+import static org.mastodon.feature.FeatureProjectionKey.key;
+
 import java.io.IOException;
 import java.util.Map;
-
-import net.imglib2.util.StopWatch;
 
 import org.jdom2.JDOMException;
 import org.mastodon.feature.Feature;
 import org.mastodon.feature.FeatureModel;
 import org.mastodon.feature.FeatureProjection;
-import org.mastodon.feature.FeatureProjectionKey;
 import org.mastodon.feature.FeatureSpec;
 import org.mastodon.project.MamutProject;
 import org.mastodon.project.MamutProjectIO;
@@ -19,8 +18,7 @@ import org.mastodon.revised.model.mamut.Spot;
 import org.scijava.Context;
 
 import mpicbg.spim.data.SpimDataException;
-
-import static org.mastodon.feature.FeatureProjectionKey.key;
+import net.imglib2.util.StopWatch;
 
 public class SpotIntensityUpdateExample
 {

@@ -56,6 +56,7 @@ public class RefSetAdapter< O, WO >
 		return set.isEmpty();
 	}
 
+	@SuppressWarnings( "unchecked" )
 	@Override
 	public boolean contains( final Object o )
 	{
@@ -86,6 +87,7 @@ public class RefSetAdapter< O, WO >
 		return set.add( map.getLeft( e ) );
 	}
 
+	@SuppressWarnings( "unchecked" )
 	@Override
 	public boolean remove( final Object o )
 	{

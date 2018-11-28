@@ -5,10 +5,6 @@ import java.awt.Graphics;
 
 import javax.swing.ImageIcon;
 
-import net.imglib2.ui.OverlayRenderer;
-import net.imglib2.ui.TransformEventHandler;
-import net.imglib2.ui.TransformListener;
-
 import org.mastodon.graph.Edge;
 import org.mastodon.graph.Vertex;
 import org.mastodon.revised.mamut.KeyConfigContexts;
@@ -22,14 +18,22 @@ import org.scijava.ui.behaviour.DragBehaviour;
 import org.scijava.ui.behaviour.util.AbstractNamedBehaviour;
 import org.scijava.ui.behaviour.util.Behaviours;
 
+import net.imglib2.ui.OverlayRenderer;
+import net.imglib2.ui.TransformEventHandler;
+import net.imglib2.ui.TransformListener;
+
 /**
- * Drag behaviour that implements a zoom rectangle in TrackScheme.
+ * Drag behavior that implements a zoom rectangle in TrackScheme.
  * <p>
  * This class depends on the {@link TransformEventHandler} of the TrackScheme
  * display to be an {@link InertialScreenTransformEventHandler}, to be able to
  * pass it a transform animator that will execute the zoom.
  *
  * @author Jean-Yves Tinevez
+ * @param <V>
+ *            the type of vertices in the graph.
+ * @param <E>
+ *            the type of edges in the graph.
  */
 public class TrackSchemeZoom< V extends Vertex< E > & HasTimepoint, E extends Edge< V > >
 		extends AbstractNamedBehaviour

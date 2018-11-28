@@ -248,6 +248,7 @@ public class SelectAndEditProfileSettingsPage< T extends SelectAndEditProfileSet
 			comboBox.addItemListener( e -> {
 				if ( blockComboBoxItemListener )
 					return;
+				@SuppressWarnings( "unchecked" )
 				final T profile = ( ( Item ) e.getItem() ).profile;
 				if ( e.getStateChange() == ItemEvent.SELECTED )
 				{
@@ -280,6 +281,7 @@ public class SelectAndEditProfileSettingsPage< T extends SelectAndEditProfileSet
 
 		private void duplicateSelected()
 		{
+			@SuppressWarnings( "unchecked" )
 			final Item selected = ( Item ) comboBox.getSelectedItem();
 			if ( selected != null )
 			{
@@ -307,6 +309,7 @@ public class SelectAndEditProfileSettingsPage< T extends SelectAndEditProfileSet
 
 		private void deleteSelected()
 		{
+			@SuppressWarnings( "unchecked" )
 			final Item selected = ( Item ) comboBox.getSelectedItem();
 			if ( selected != null )
 			{
@@ -320,6 +323,7 @@ public class SelectAndEditProfileSettingsPage< T extends SelectAndEditProfileSet
 
 		private void renameSelected()
 		{
+			@SuppressWarnings( "unchecked" )
 			final Item selected = ( Item ) comboBox.getSelectedItem();
 			if ( selected != null )
 			{
@@ -345,6 +349,7 @@ public class SelectAndEditProfileSettingsPage< T extends SelectAndEditProfileSet
 			}
 		}
 
+		@SuppressWarnings( "unchecked" )
 		@Override
 		public void modified()
 		{
@@ -407,6 +412,7 @@ public class SelectAndEditProfileSettingsPage< T extends SelectAndEditProfileSet
 				if ( o == null || getClass() != o.getClass() )
 					return false;
 
+				@SuppressWarnings( "unchecked" )
 				final Item item = ( Item ) o;
 
 				return profile.equals( item.profile );

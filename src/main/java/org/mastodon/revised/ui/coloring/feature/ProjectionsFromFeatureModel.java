@@ -1,13 +1,12 @@
 package org.mastodon.revised.ui.coloring.feature;
 
+import static org.mastodon.feature.FeatureProjectionKey.key;
+
 import org.mastodon.feature.Feature;
 import org.mastodon.feature.FeatureModel;
 import org.mastodon.feature.FeatureProjection;
-import org.mastodon.feature.FeatureProjectionKey;
 import org.mastodon.feature.FeatureProjectionSpec;
 import org.mastodon.feature.FeatureSpec;
-
-import static org.mastodon.feature.FeatureProjectionKey.key;
 
 /**
  * Provides mapping from {@link FeatureProjectionId} to
@@ -69,7 +68,6 @@ public class ProjectionsFromFeatureModel implements Projections
 		if ( projectionSpec == null )
 			return null;
 
-		final int[] sourceIndices;
 		switch ( id.getMultiplicity() )
 		{
 		default:

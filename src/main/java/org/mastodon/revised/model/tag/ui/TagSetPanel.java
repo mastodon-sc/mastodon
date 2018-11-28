@@ -16,6 +16,9 @@ import org.mastodon.util.Listeners;
 
 public class TagSetPanel extends JPanel
 {
+
+	private static final long serialVersionUID = 1L;
+
 	private final TagTable< TagSetStructure, TagSet > tagSetTable;
 
 	private final ColorTagTable< TagSet, Tag > tagTable;

@@ -9,7 +9,6 @@ import org.mastodon.graph.Edges;
 import org.mastodon.graph.Graph;
 import org.mastodon.graph.Vertex;
 import org.mastodon.model.FocusModel;
-import org.mastodon.model.NavigationHandler;
 import org.mastodon.model.SelectionModel;
 import org.mastodon.revised.mamut.KeyConfigContexts;
 import org.mastodon.revised.trackscheme.display.TrackSchemeNavigationActions.NavigatorEtiquette;

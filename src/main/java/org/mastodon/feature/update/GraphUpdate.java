@@ -12,6 +12,11 @@ import org.mastodon.graph.Vertex;
  * For the first two methods, a flag specifies whether they return the objects
  * that were modified or added themselves ({@link UpdateLocality#SELF}) or the
  * direct neighbors of these objects ({@link UpdateLocality#NEIGHBOR}).
+ * 
+ * @param <V>
+ *            the type of vertices in the graph.
+ * @param <E>
+ *            the type of edges in the graph.
  */
 public class GraphUpdate< V extends Vertex< E >, E extends Edge< V > >
 {

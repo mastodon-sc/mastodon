@@ -1,13 +1,17 @@
 package org.mastodon.revised.bdv;
 
+import java.util.List;
+
 import bdv.cache.CacheControl;
 import bdv.viewer.SourceAndConverter;
 import bdv.viewer.ViewerOptions;
 import bdv.viewer.ViewerPanel;
-import java.util.List;
 
 public class ViewerPanelMamut extends ViewerPanel
 {
+
+	private static final long serialVersionUID = 1L;
+
 	private final BehaviourTransformEventHandler3DMamut transformEventHandler;
 
 	public ViewerPanelMamut( final List< SourceAndConverter< ? > > sources, final int numTimepoints, final CacheControl cacheControl, final ViewerOptions optional )

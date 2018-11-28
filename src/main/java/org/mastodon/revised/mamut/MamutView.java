@@ -59,7 +59,6 @@ public class MamutView< VG extends ViewGraph< Spot, Link, V, E >, V extends Vert
 		featureModel.listeners().add( coloringMenu );
 		onClose( () -> featureModel.listeners().remove( coloringMenu ) );
 
-		@SuppressWarnings( "unchecked" )
 		final ColoringModel.ColoringChangedListener coloringChangedListener = () -> {
 			if ( coloringModel.noColoring() )
 				colorGeneratorAdapter.setColorGenerator( null );

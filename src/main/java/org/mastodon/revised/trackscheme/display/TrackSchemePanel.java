@@ -144,8 +144,6 @@ public class TrackSchemePanel extends JPanel implements
 	 */
 	private boolean ignoreScrollBarChanges;
 
-	private final FocusModel< TrackSchemeVertex, TrackSchemeEdge > focus;
-
 	private final TimepointModel timepoint;
 
 	private final TrackSchemeAutoFocus autoFocus;
@@ -173,7 +171,6 @@ public class TrackSchemePanel extends JPanel implements
 	{
 		super( new BorderLayout(), false );
 		this.graph = graph;
-		this.focus = focus;
 		this.timepoint = timepoint;
 
 		final Values options = optional.values;

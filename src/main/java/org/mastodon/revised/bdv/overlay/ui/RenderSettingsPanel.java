@@ -34,14 +34,11 @@ public class RenderSettingsPanel extends JPanel
 
 	private static final int tfCols = 4;
 
-	private final RenderSettings style;
-
 	private final List< StyleElement > styleElements;
 
 	public RenderSettingsPanel( final RenderSettings style )
 	{
 		super( new GridBagLayout() );
-		this.style = style;
 
 		styleElements = styleElements( style );
 

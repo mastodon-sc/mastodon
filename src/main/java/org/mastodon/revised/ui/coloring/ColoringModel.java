@@ -1,8 +1,8 @@
 package org.mastodon.revised.ui.coloring;
 
 import java.util.Optional;
-
 import java.util.stream.Stream;
+
 import org.mastodon.feature.FeatureModel;
 import org.mastodon.feature.FeatureProjection;
 import org.mastodon.graph.Edge;
@@ -117,7 +117,7 @@ public class ColoringModel implements TagSetModel.TagSetModelListener, FeatureCo
 		if ( featureColorMode != null )
 		{
 			final String name = featureColorMode.getName();
-			Optional< FeatureColorMode > mode = Stream.concat(
+			final Optional< FeatureColorMode > mode = Stream.concat(
 					featureColorModeManager.getBuiltinStyles().stream(),
 					featureColorModeManager.getUserStyles().stream() )
 					.filter( m -> m.getName().equals( name ) && isValid( m ) )
@@ -161,6 +161,7 @@ public class ColoringModel implements TagSetModel.TagSetModelListener, FeatureCo
 		return true;
 	}
 
+	@SuppressWarnings( "unchecked" )
 	public < V extends Vertex< E >, E extends Edge< V > > GraphColorGenerator< V, E > getFeatureGraphColorGenerator()
 	{
 		final FeatureColorMode fcm = featureColorMode;
