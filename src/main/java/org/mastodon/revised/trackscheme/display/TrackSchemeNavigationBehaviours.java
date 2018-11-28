@@ -88,7 +88,7 @@ public class TrackSchemeNavigationBehaviours implements TransformListener< Scree
 
 	private final TrackSchemeOverlay graphOverlay;
 
-	private final FocusModel< TrackSchemeVertex, TrackSchemeEdge > focus;
+	private final FocusModel< TrackSchemeVertex > focus;
 
 	private final ScreenTransform screenTransform;
 
@@ -119,7 +119,7 @@ public class TrackSchemeNavigationBehaviours implements TransformListener< Scree
 			final TrackSchemeGraph< ?, ? > graph,
 			final LineageTreeLayout layout,
 			final TrackSchemeOverlay graphOverlay,
-			final FocusModel< TrackSchemeVertex, TrackSchemeEdge > focus,
+			final FocusModel< TrackSchemeVertex > focus,
 			final NavigationHandler< TrackSchemeVertex, TrackSchemeEdge > navigation,
 			final SelectionModel< TrackSchemeVertex, TrackSchemeEdge > selection )
 	{

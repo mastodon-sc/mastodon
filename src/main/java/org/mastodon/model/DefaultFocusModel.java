@@ -7,16 +7,16 @@ import org.mastodon.graph.Vertex;
 import org.mastodon.util.Listeners;
 
 /**
- * Class to manage the model vertex that has the "focus", regardless of how this
- * focus is used.
+ * Class to manage the focus of a model vertex in a graph, regardless of how
+ * this focus is used.
  *
  * @param <V>
- *            type of model vertices.
+ *            type of model vertices in the graph.
  * @param <E>
- *            the of model edges.
+ *            type of model edges in the graph.
  */
 public class DefaultFocusModel< V extends Vertex< E >, E extends Edge< V > >
-		implements FocusModel< V, E >, GraphListener< V, E >
+		implements FocusModel< V >, GraphListener< V, E >
 {
 	private final GraphIdBimap< V, E > idmap;
 

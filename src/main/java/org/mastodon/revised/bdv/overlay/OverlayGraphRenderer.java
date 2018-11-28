@@ -83,7 +83,7 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 
 	private final HighlightModel< V, E > highlight;
 
-	private final FocusModel< V, E > focus;
+	private final FocusModel< V > focus;
 
 	private final SelectionModel< V, E > selection;
 
@@ -92,7 +92,7 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 	public OverlayGraphRenderer(
 			final OverlayGraph< V, E > graph,
 			final HighlightModel< V, E > highlight,
-			final FocusModel< V, E > focus,
+			final FocusModel< V > focus,
 			final SelectionModel< V, E > selection )
 	{
 		this.graph = graph;

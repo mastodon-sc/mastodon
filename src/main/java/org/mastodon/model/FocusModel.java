@@ -1,24 +1,19 @@
 package org.mastodon.model;
 
-import org.mastodon.graph.Edge;
-import org.mastodon.graph.Vertex;
 import org.mastodon.util.Listeners;
 
 /**
- * Class to manage the model vertex that has the "focus", regardless of how this
- * focus is used.
+ * Class to manage the object that has the "focus", regardless of how this focus
+ * is used.
  *
- * @param <V>
- *            type of model vertices.
- * @param <E>
- *            the of model edges.
+ * @param <T>
+ *            type of object that might receive the focus.
  */
-// TODO: E parameter not needed
-public interface FocusModel< V extends Vertex< E >, E extends Edge< V > >
+public interface FocusModel< T >
 {
-	public void focusVertex( final V vertex );
+	public void focusVertex( final T vertex );
 
-	public V getFocusedVertex( final V ref );
+	public T getFocusedVertex( final T ref );
 
 	public Listeners< FocusListener > listeners();
 }

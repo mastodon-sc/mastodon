@@ -110,7 +110,7 @@ public class TrackSchemeNavigationActions
 
 	private final SelectionModel< TrackSchemeVertex, TrackSchemeEdge > selection;
 
-	private final FocusModel< TrackSchemeVertex, TrackSchemeEdge > focus;
+	private final FocusModel< TrackSchemeVertex > focus;
 
 	/**
 	 * Creates a new {@link TrackSchemeNavigationActions}.
@@ -129,7 +129,7 @@ public class TrackSchemeNavigationActions
 	public TrackSchemeNavigationActions(
 			final TrackSchemeGraph< ?, ? > graph,
 			final LineageTreeLayout layout,
-			final FocusModel< TrackSchemeVertex, TrackSchemeEdge > focus,
+			final FocusModel< TrackSchemeVertex > focus,
 			final SelectionModel< TrackSchemeVertex, TrackSchemeEdge > selection )
 	{
 		this.graph = graph;
