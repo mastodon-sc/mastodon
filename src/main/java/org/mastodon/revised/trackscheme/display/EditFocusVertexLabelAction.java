@@ -120,7 +120,7 @@ public class EditFocusVertexLabelAction extends AbstractNamedAction implements T
 	public void actionPerformed( final ActionEvent e )
 	{
 		final TrackSchemeVertex ref = panel.getGraph().vertexRef();
-		final TrackSchemeVertex vertex = focus.getFocusedVertex( ref );
+		final TrackSchemeVertex vertex = focus.getFocused( ref );
 		if ( vertex == null )
 		{
 			panel.getGraph().releaseRef( ref );

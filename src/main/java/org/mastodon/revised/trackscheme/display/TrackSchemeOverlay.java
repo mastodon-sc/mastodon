@@ -156,7 +156,7 @@ public class TrackSchemeOverlay implements OverlayRenderer, OffsetHeadersListene
 		final TrackSchemeEdge he = highlight.getHighlightedEdge( eref );
 		final int highlightedEdgeId = ( he == null ) ? -1 : he.getInternalPoolIndex();
 
-		final TrackSchemeVertex f = focus.getFocusedVertex( ref );
+		final TrackSchemeVertex f = focus.getFocused( ref );
 		final int focusedVertexId = ( f == null ) ? -1 : f.getInternalPoolIndex();
 
 		graph.releaseRef( ref );

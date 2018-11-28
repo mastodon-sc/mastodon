@@ -32,7 +32,7 @@ public class DefaultFocusModel< V extends Vertex< E >, E extends Edge< V > >
 	}
 
 	@Override
-	public synchronized void focusVertex( final V vertex )
+	public synchronized void focus( final V vertex )
 	{
 		final int id = ( vertex == null ) ? - 1 : idmap.getVertexId( vertex );
 		if ( focusVertexId != id )
@@ -43,7 +43,7 @@ public class DefaultFocusModel< V extends Vertex< E >, E extends Edge< V > >
 	}
 
 	@Override
-	public synchronized V getFocusedVertex( final V ref )
+	public synchronized V getFocused( final V ref )
 	{
 		return ( focusVertexId < 0 ) ?
 				null : idmap.getVertex( focusVertexId, ref );
@@ -64,7 +64,7 @@ public class DefaultFocusModel< V extends Vertex< E >, E extends Edge< V > >
 	@Override
 	public void graphRebuilt()
 	{
-		focusVertex( null );
+		focus( null );
 // TODO: notifyListeners(); ? (This may change the layout and we might want to re-center on the focused vertex
 	}
 
@@ -78,7 +78,7 @@ public class DefaultFocusModel< V extends Vertex< E >, E extends Edge< V > >
 	public synchronized void vertexRemoved( final V vertex )
 	{
 		if ( focusVertexId == idmap.getVertexId( vertex ) )
-			focusVertex( null );
+			focus( null );
 // TODO: notifyListeners(); ? (This may change the layout and we might want to re-center on the focused vertex
 	}
 

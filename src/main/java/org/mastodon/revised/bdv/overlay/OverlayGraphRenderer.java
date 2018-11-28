@@ -513,7 +513,7 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 				final double pointFadeDepth = settings.getPointFadeDepth();
 
 				final V highlighted = highlight.getHighlightedVertex( ref1 );
-				final V focused = focus.getFocusedVertex( ref2 );
+				final V focused = focus.getFocused( ref2 );
 
 				graphics.setStroke( defaultVertexStroke );
 				final AffineTransform torig = graphics.getTransform();

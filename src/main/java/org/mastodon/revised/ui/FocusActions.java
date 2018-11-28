@@ -206,7 +206,7 @@ public class FocusActions< V extends Vertex< E > & Ref< V >, E extends Edge< V >
 		lock.readLock().lock();
 		try
 		{
-			final V vertex = focus.getFocusedVertex( ref1 );
+			final V vertex = focus.getFocused( ref1 );
 			if ( vertex == null )
 				return;
 
@@ -233,7 +233,7 @@ public class FocusActions< V extends Vertex< E > & Ref< V >, E extends Edge< V >
 			{
 				selection.pauseListeners();
 
-				focus.focusVertex( current );
+				focus.focus( current );
 
 				if ( !expandSelection )
 					selection.clearSelection();
@@ -258,7 +258,7 @@ public class FocusActions< V extends Vertex< E > & Ref< V >, E extends Edge< V >
 		lock.readLock().lock();
 		try
 		{
-			final V vertex = focus.getFocusedVertex( ref1 );
+			final V vertex = focus.getFocused( ref1 );
 			if ( vertex == null )
 				return;
 
@@ -282,7 +282,7 @@ public class FocusActions< V extends Vertex< E > & Ref< V >, E extends Edge< V >
 
 			if ( current != null )
 			{
-				focus.focusVertex( current );
+				focus.focus( current );
 				if ( !expandSelection )
 				{
 					selection.clearSelection();

@@ -197,7 +197,7 @@ public class TrackSchemeNavigationActions
 		lock.readLock().lock();
 		try
 		{
-			final TrackSchemeVertex vertex = focus.getFocusedVertex( ref );
+			final TrackSchemeVertex vertex = focus.getFocused( ref );
 			if ( vertex == null )
 				return null;
 
@@ -222,7 +222,7 @@ public class TrackSchemeNavigationActions
 			}
 
 			if ( current != null )
-				focus.focusVertex( current );
+				focus.focus( current );
 
 			return current;
 		}
@@ -241,7 +241,7 @@ public class TrackSchemeNavigationActions
 		lock.readLock().lock();
 		try
 		{
-			final TrackSchemeVertex v = focus.getFocusedVertex( ref );
+			final TrackSchemeVertex v = focus.getFocused( ref );
 			if ( v != null )
 				selection.toggle( v );
 			}
@@ -279,7 +279,7 @@ public class TrackSchemeNavigationActions
 		lock.readLock().lock();
 		try
 		{
-			final TrackSchemeVertex vertex = focus.getFocusedVertex( ref );
+			final TrackSchemeVertex vertex = focus.getFocused( ref );
 			if ( vertex == null )
 				return null;
 
@@ -305,7 +305,7 @@ public class TrackSchemeNavigationActions
 
 			if ( current != null )
 			{
-				focus.focusVertex( current );
+				focus.focus( current );
 				if ( clearSelection )
 					selection.clearSelection();
 				selection.setSelected( current, true );

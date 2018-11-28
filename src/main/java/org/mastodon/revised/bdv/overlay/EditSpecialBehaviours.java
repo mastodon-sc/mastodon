@@ -335,7 +335,7 @@ public class EditSpecialBehaviours< V extends OverlayVertex< V, E >, E extends O
 						undo.setUndoPoint();
 
 						if ( FOCUS_EDITED_SPOT )
-							focus.focusVertex( target );
+							focus.focus( target );
 
 						if ( SELECT_ADDED_SPOT )
 						{
@@ -462,7 +462,7 @@ public class EditSpecialBehaviours< V extends OverlayVertex< V, E >, E extends O
 				undo.setUndoPoint();
 
 				if ( FOCUS_EDITED_SPOT )
-					focus.focusVertex( target );
+					focus.focus( target );
 
 				if ( SELECT_ADDED_SPOT )
 				{

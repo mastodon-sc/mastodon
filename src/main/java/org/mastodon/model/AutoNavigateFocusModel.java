@@ -31,16 +31,16 @@ public class AutoNavigateFocusModel< V extends Vertex< E >, E extends Edge< V > 
 	}
 
 	@Override
-	public void focusVertex( final V vertex )
+	public void focus( final V vertex )
 	{
-		focus.focusVertex( vertex );
+		focus.focus( vertex );
 		navigation.notifyNavigateToVertex( vertex );
 	}
 
 	@Override
-	public V getFocusedVertex( final V ref )
+	public V getFocused( final V ref )
 	{
-		return focus.getFocusedVertex( ref );
+		return focus.getFocused( ref );
 	}
 
 	@Override

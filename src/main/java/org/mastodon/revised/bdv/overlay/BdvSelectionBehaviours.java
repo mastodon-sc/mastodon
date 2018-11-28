@@ -178,7 +178,7 @@ public class BdvSelectionBehaviours< V extends OverlayVertex< V, E >, E extends 
 		lock.readLock().lock();
 		try
 		{
-			focus.focusVertex( renderer.getVertexAt( x, y, POINT_SELECT_DISTANCE_TOLERANCE, vertex ) ); // if clicked outside, getVertexAt == null, clears the focus.
+			focus.focus( renderer.getVertexAt( x, y, POINT_SELECT_DISTANCE_TOLERANCE, vertex ) ); // if clicked outside, getVertexAt == null, clears the focus.
 		}
 		finally
 		{

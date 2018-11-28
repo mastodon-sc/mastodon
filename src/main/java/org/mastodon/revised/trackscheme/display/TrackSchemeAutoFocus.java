@@ -35,21 +35,21 @@ public class TrackSchemeAutoFocus implements FocusModel< TrackSchemeVertex >, Tr
 	}
 
 	@Override
-	public void focusVertex( final TrackSchemeVertex vertex )
+	public void focus( final TrackSchemeVertex vertex )
 	{
-		focus.focusVertex( vertex );
+		focus.focus( vertex );
 	}
 
 	@Override
-	public TrackSchemeVertex getFocusedVertex( final TrackSchemeVertex ref )
+	public TrackSchemeVertex getFocused( final TrackSchemeVertex ref )
 	{
-		TrackSchemeVertex vertex = focus.getFocusedVertex( ref );
+		TrackSchemeVertex vertex = focus.getFocused( ref );
 		if ( vertex != null )
 			return vertex;
 
 		vertex = layout.getClosestActiveVertex( centerPos, ratioXtoY, ref );
 		if ( vertex != null )
-			focus.focusVertex( vertex );
+			focus.focus( vertex );
 
 		return vertex;
 	}

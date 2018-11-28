@@ -34,15 +34,15 @@ public class FocusModelAdapter< T, WT >
 	}
 
 	@Override
-	public void focusVertex( final WT vertex )
+	public void focus( final WT vertex )
 	{
-		focus.focusVertex( vertexMap.getLeft( vertex ) );
+		focus.focus( vertexMap.getLeft( vertex ) );
 	}
 
 	@Override
-	public WT getFocusedVertex( final WT ref )
+	public WT getFocused( final WT ref )
 	{
-		return vertexMap.getRight( focus.getFocusedVertex( vertexMap.reusableLeftRef( ref ) ), ref );
+		return vertexMap.getRight( focus.getFocused( vertexMap.reusableLeftRef( ref ) ), ref );
 	}
 
 	@Override

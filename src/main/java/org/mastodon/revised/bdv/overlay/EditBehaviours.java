@@ -215,7 +215,7 @@ public class EditBehaviours< V extends OverlayVertex< V, E >, E extends OverlayE
 					undo.setUndoPoint();
 
 					if ( FOCUS_EDITED_SPOT )
-						focus.focusVertex( vertex );
+						focus.focus( vertex );
 
 					if ( SELECT_ADDED_SPOT )
 					{
@@ -295,7 +295,7 @@ public class EditBehaviours< V extends OverlayVertex< V, E >, E extends OverlayE
 				undo.setUndoPoint();
 
 				if ( FOCUS_EDITED_SPOT )
-					focus.focusVertex( vertex );
+					focus.focus( vertex );
 
 				moving = false;
 				lock.readLock().unlock();
@@ -346,7 +346,7 @@ public class EditBehaviours< V extends OverlayVertex< V, E >, E extends OverlayE
 					undo.setUndoPoint();
 
 					if ( FOCUS_EDITED_SPOT )
-						focus.focusVertex( vertex );
+						focus.focus( vertex );
 				}
 			}
 			finally
