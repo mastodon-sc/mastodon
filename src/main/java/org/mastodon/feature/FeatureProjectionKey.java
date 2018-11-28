@@ -65,10 +65,26 @@ public final class FeatureProjectionKey
 		this.sourceIndices = ( sourceIndices == null ) ? new int[ 0 ] : sourceIndices;
 	}
 
+	public FeatureProjectionSpec getSpec()
+	{
+		return spec;
+	}
+
+	public int[] getSourceIndices()
+	{
+		return sourceIndices;
+	}
+
 	@Override
 	public String toString()
 	{
-		return spec.projectionKey( sourceIndices );
+		StringBuilder sb = new StringBuilder( spec.getKey() );
+		for ( int sourceIndex : sourceIndices )
+		{
+			sb.append( " ch" );
+			sb.append( sourceIndex );
+		}
+		return sb.toString();
 	}
 
 	@Override

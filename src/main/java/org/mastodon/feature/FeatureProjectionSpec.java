@@ -28,25 +28,6 @@ public class FeatureProjectionSpec
 		return projectionName;
 	}
 
-	/**
-	 * Generates a feature projection key based on this specification name and
-	 * on the specified source indices.
-	 *
-	 * @param sourceIndices
-	 *            the source indices.
-	 * @return they feature projection key.
-	 */
-	public String projectionKey( final int... sourceIndices )
-	{
-		StringBuilder sb = new StringBuilder( projectionName );
-		for ( int sourceIndex : sourceIndices )
-		{
-			sb.append( " ch" );
-			sb.append( sourceIndex );
-		}
-		return sb.toString();
-	}
-
 	@Override
 	public String toString()
 	{

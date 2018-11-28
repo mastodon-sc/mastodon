@@ -75,8 +75,9 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Set;
 
 import org.jdom2.Attribute;
 import org.jdom2.Document;
@@ -92,6 +93,9 @@ import org.mastodon.feature.Dimension;
 import org.mastodon.feature.Feature;
 import org.mastodon.feature.FeatureModel;
 import org.mastodon.feature.FeatureProjection;
+import org.mastodon.feature.FeatureProjectionSpec;
+import org.mastodon.feature.FeatureSpec;
+import org.mastodon.feature.FeatureSpecsService;
 import org.mastodon.feature.IntFeatureProjection;
 import org.mastodon.graph.algorithm.RootFinder;
 import org.mastodon.graph.algorithm.traversal.DepthFirstSearch;
@@ -136,6 +140,10 @@ public class MamutExporter
 	 */
 	private final double[][] cov;
 
+	private final List< ExportFeatureProjection< Spot > > spotFeatureProjections;
+
+	private final List< ExportFeatureProjection< Link > > linkFeatureProjections;
+
 	private MamutExporter( final Model model, final MamutProject project )
 	{
 		this.model = model;
@@ -144,6 +152,9 @@ public class MamutExporter
 		root.setAttribute( VERSION_ATTRIBUTE, "3.6.0" );
 		this.eig = new JamaEigenvalueDecomposition( 3 );
 		this.cov = new double[ 3 ][ 3 ];
+
+		spotFeatureProjections = getExportFeatureProjections( model.getFeatureModel(), Spot.class );
+		linkFeatureProjections = getExportFeatureProjections( model.getFeatureModel(), Link.class );
 	}
 
 	private void write( final File file ) throws IOException
@@ -479,14 +490,9 @@ public class MamutExporter
 		attributes.add( new Attribute( EDGE_TARGET_ATTRIBUTE, Integer.toString( targetSpotID ) ) );
 
 		// Link features.
-		final List< Feature< Link > > features = getFeaturesForTarget( model.getFeatureModel(), Link.class );
-		for ( final Feature< Link > f : features )
-		{
-			for ( final FeatureProjection< Link > projection : f.projections() )
-				attributes.add( new Attribute(
-						sanitize( projection.getKey().toString() ),
-						Double.toString( projection.value( edge ) ) ) );
-		}
+		linkFeatureProjections.forEach( p -> attributes.add( new Attribute(
+				p.attributeName,
+				Double.toString( p.projection.value( edge ) ) ) ) );
 
 		final Element edgeElement = new Element( EDGE_TAG );
 		edgeElement.setAttributes( attributes );
@@ -539,15 +545,10 @@ public class MamutExporter
 		attributes.add( new Attribute( RADIUS_FEATURE_NAME, Double.toString( meanRadius ) ) );
 
 		// Spot features.
+		spotFeatureProjections.forEach( p -> attributes.add( new Attribute(
+				p.attributeName,
+				Double.toString( p.projection.value( spot ) ) ) ) );
 
-		final List< Feature< Spot > > features = getFeaturesForTarget( model.getFeatureModel(), Spot.class );
-		for ( final Feature< Spot > f : features )
-		{
-			for ( final FeatureProjection< Spot > projection : f.projections() )
-				attributes.add( new Attribute(
-						sanitize( projection.getKey().toString() ),
-						Double.toString( projection.value( spot ) ) ) );
-		}
 		final Element spotElement = new Element( SPOT_ELEMENT_TAG );
 		spotElement.setAttributes( attributes );
 		return spotElement;
@@ -565,33 +566,30 @@ public class MamutExporter
 
 	private < T > void appendFeaturesDeclarationOfClass( final Class< T > clazz, final Element featuresElement, final String classFeatureDeclarationTag )
 	{
-		final FeatureModel fm = model.getFeatureModel();
-		List< Feature< T > > features = getFeaturesForTarget( fm, clazz );
-		if ( null == features )
-			features = Collections.emptyList();
+		final List< ExportFeatureProjection< T > > projections;
+		if ( clazz.equals( Spot.class ) )
+			projections = ( List ) spotFeatureProjections;
+		else if ( clazz.equals( Link.class ) )
+			projections = ( List ) linkFeatureProjections;
+		else
+			projections = Collections.emptyList();
 
 		final Element classFeaturesElement = new Element( classFeatureDeclarationTag );
-		for ( final Feature< T > feature : features )
+		for ( ExportFeatureProjection< T > p : projections )
 		{
+			final String isint = ( p.projection instanceof IntFeatureProjection )
+					? "true"
+					: "false";
 
-			// We actually export feature projections.
-			for ( final FeatureProjection< T > projection : feature.projections() )
-			{
-				final String isint = ( projection instanceof IntFeatureProjection )
-						? "true"
-						: "false";
-
-				final Element fel = new Element( FEATURE_TAG );
-				final String projectionName = projection.getKey().toString();
-				fel.setAttribute( FEATURE_ATTRIBUTE, sanitize( projectionName ) );
-				// Mastodon does not support feature name yet.
-				fel.setAttribute( FEATURE_NAME_ATTRIBUTE, projectionName );
-				fel.setAttribute( FEATURE_SHORT_NAME_ATTRIBUTE, projectionName );
-				final String units = projection.units();
-				fel.setAttribute( FEATURE_DIMENSION_ATTRIBUTE, unitsToDimension( units, model.getSpaceUnits(), model.getTimeUnits() ) );
-				fel.setAttribute( FEATURE_ISINT_ATTRIBUTE, isint );
-				classFeaturesElement.addContent( fel );
-			}
+			final Element fel = new Element( FEATURE_TAG );
+			fel.setAttribute( FEATURE_ATTRIBUTE, p.attributeName );
+			// Mastodon does not support feature name yet.
+			fel.setAttribute( FEATURE_NAME_ATTRIBUTE, p.featureName );
+			fel.setAttribute( FEATURE_SHORT_NAME_ATTRIBUTE, p.featureShortName );
+			final String units = p.projection.units();
+			fel.setAttribute( FEATURE_DIMENSION_ATTRIBUTE, unitsToDimension( units, model.getSpaceUnits(), model.getTimeUnits() ) );
+			fel.setAttribute( FEATURE_ISINT_ATTRIBUTE, isint );
+			classFeaturesElement.addContent( fel );
 		}
 		featuresElement.addContent( classFeaturesElement );
 	}
@@ -611,11 +609,6 @@ public class MamutExporter
 		return document;
 	}
 
-	private static final String sanitize( final String tag )
-	{
-		return tag.replace( ' ', '_' );
-	}
-
 	/**
 	 * Tries to recover the TrackMate dimension from the unit string and the spatial and
 	 * time units.
@@ -628,7 +621,7 @@ public class MamutExporter
 	 *            the time units.
 	 * @return a dimension string that can be parsed by MaMuT.
 	 */
-	private static final String unitsToDimension( final String units, final String spaceUnits, final String timeUnits )
+	private static String unitsToDimension( final String units, final String spaceUnits, final String timeUnits )
 	{
 		if ( units.equals( Dimension.QUALITY.getUnits( spaceUnits, timeUnits ) ) )
 			return "QUALITY";
@@ -651,26 +644,109 @@ public class MamutExporter
 	}
 
 	/**
-	 * Returns the list of features stored in the specified feature model that
-	 * have the specified class as target.
+	 * Creates a map from export name to feature projection for all feature projections in {@code featureModel} matching the given {@code target} class.
 	 *
 	 * @param featureModel
-	 *            the feature model.
 	 * @param target
-	 *            the target class.
-	 * @return a new list.
+	 * @param <T>
 	 */
-	private static final < T > List< Feature< T > > getFeaturesForTarget( final FeatureModel featureModel, final Class< T > target )
+	public static < T > List< ExportFeatureProjection< T > > getExportFeatureProjections( final FeatureModel featureModel, final Class< T > target )
 	{
-		@SuppressWarnings( "rawtypes" )
-		final List list = featureModel.getFeatureSpecs()
-				.stream()
-				.filter( ( fs ) -> fs.getTargetClass().equals( target ) )
-				.map( ( fs ) -> featureModel.getFeature( fs ) )
-				.collect( Collectors.toList() );
-		@SuppressWarnings( "unchecked" )
-		final List< Feature< T > > features = list;
-		return features;
+		final ArrayList< ExportFeatureProjection< T > > list = new ArrayList<>();
+		for ( FeatureSpec< ?, ? > fspec : featureModel.getFeatureSpecs() )
+		{
+			if ( fspec.getTargetClass().equals( target ) )
+			{
+				@SuppressWarnings( "unchecked" )
+				final Feature< T > feature = ( Feature< T > ) featureModel.getFeature( fspec );
+				final String fname = fspec.getKey();
+				for ( FeatureProjection< T > projection : feature.projections() )
+				{
+					final String pname = projection.getKey().getSpec().getKey();
+					final String name = getProjectionExportName( fname, pname, projection.getKey().getSourceIndices() );
+					list.add( new ExportFeatureProjection<>( projection, sanitize( name ), name, name ) );
+				}
+			}
+		}
+		return list;
+	}
+
+	public static class ExportFeatureProjection< T >
+	{
+		public final FeatureProjection< T > projection;
+
+		public final String attributeName;
+
+		public final String featureName;
+
+		public final String featureShortName;
+
+		ExportFeatureProjection( final FeatureProjection< T > projection, final String attributeName, final String featureName, final String featureShortName )
+		{
+			this.projection = projection;
+			this.attributeName = attributeName;
+			this.featureName = featureName;
+			this.featureShortName = featureShortName;
+		}
+	}
+
+	/**
+	 * Produce a set of attribute names for exported feature projections.
+	 * This is to filter these from re-import in {@link TrackMateImporter}
+	 *
+	 * @param specsService
+	 * @param numSources
+	 * @param target
+	 * @param <T>
+	 * @return
+	 */
+	public static < T > Set< String > getLikelyExportedFeatureProjections( FeatureSpecsService specsService, final int numSources, final Class< T > target )
+	{
+		final HashSet< String > names = new HashSet<>();
+		final List< FeatureSpec< ?, T > > fspecs = specsService.getSpecs( target );
+		for ( FeatureSpec< ?, T > fspec : fspecs )
+		{
+			final String fname = fspec.getKey();
+			for ( FeatureProjectionSpec pspec : fspec.getProjectionSpecs() )
+			{
+				final String pname = pspec.getKey();
+				switch( fspec.getMultiplicity() )
+				{
+				case SINGLE:
+					names.add( sanitize( getProjectionExportName( fname, pname ) ) );
+					break;
+				case ON_SOURCES:
+					for ( int i = 0; i < numSources; i++ )
+						names.add( sanitize( getProjectionExportName( fname, pname, i ) ) );
+					break;
+				case ON_SOURCE_PAIRS:
+					for ( int i = 0; i < numSources; i++ )
+						for ( int j = 0; j < numSources; j++ )
+							names.add( sanitize( getProjectionExportName( fname, pname, i, j ) ) );
+					break;
+				}
+			}
+		}
+		return names;
+	}
+
+	private static String sanitize( final String tag )
+	{
+		return tag.replace( ' ', '_' );
+	}
+
+	private static String getProjectionExportName( String fname, String pname, int... sourceIndices )
+	{
+		final StringBuilder sb = new StringBuilder( fname ).append( " " ).append( pname );
+		if ( sourceIndices != null )
+		{
+			for ( int sourceIndex : sourceIndices )
+			{
+				sb.append( " ch" );
+				sb.append( sourceIndex );
+			}
+		}
+		return sb.toString();
 	}
 
 	public static final void export( final File target, final Model model, final MamutProject project ) throws IOException
