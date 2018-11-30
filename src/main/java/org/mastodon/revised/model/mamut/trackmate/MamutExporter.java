@@ -98,7 +98,6 @@ import org.mastodon.feature.FeatureProjectionSpec;
 import org.mastodon.feature.FeatureSpec;
 import org.mastodon.feature.FeatureSpecsService;
 import org.mastodon.feature.IntFeatureProjection;
-import org.mastodon.feature.Multiplicity;
 import org.mastodon.graph.algorithm.RootFinder;
 import org.mastodon.graph.algorithm.traversal.DepthFirstSearch;
 import org.mastodon.graph.algorithm.traversal.GraphSearch.SearchDirection;
@@ -577,7 +576,7 @@ public class MamutExporter
 			projections = Collections.emptyList();
 
 		final Element classFeaturesElement = new Element( classFeatureDeclarationTag );
-		for ( ExportFeatureProjection< T > p : projections )
+		for ( final ExportFeatureProjection< T > p : projections )
 		{
 			final String isint = ( p.projection instanceof IntFeatureProjection )
 					? "true"
@@ -625,11 +624,11 @@ public class MamutExporter
 	 */
 	private static String unitsToDimension( final String units, final String spaceUnits, final String timeUnits )
 	{
-		if ( units.equals( Dimension.QUALITY.getUnits( spaceUnits, timeUnits ) ) )
+		if ( units.equals( Dimension.QUALITY_UNITS ) )
 			return "QUALITY";
-		else if ( units.equals( Dimension.INTENSITY.getUnits( spaceUnits, timeUnits ) ) )
+		else if ( units.equals( Dimension.COUNTS_UNITS ) )
 			return "INTENSITY";
-		else if ( units.equals( Dimension.INTENSITY_SQUARED.getUnits( spaceUnits, timeUnits ) ) )
+		else if ( units.equals( Dimension.COUNTS_SQUARED_UNITS ) )
 			return "INTENSITY_SQUARED";
 		else if ( units.equals( Dimension.LENGTH.getUnits( spaceUnits, timeUnits ) ) )
 			return "LENGTH";
@@ -655,14 +654,16 @@ public class MamutExporter
 	public static < T > List< ExportFeatureProjection< T > > getExportFeatureProjections( final FeatureModel featureModel, final Class< T > target )
 	{
 		final ArrayList< ExportFeatureProjection< T > > list = new ArrayList<>();
-		for ( FeatureSpec< ?, ? > fspec : featureModel.getFeatureSpecs() )
+		for ( final FeatureSpec< ?, ? > fspec : featureModel.getFeatureSpecs() )
 		{
 			if ( fspec.getTargetClass().equals( target ) )
 			{
 				@SuppressWarnings( "unchecked" )
 				final Feature< T > feature = ( Feature< T > ) featureModel.getFeature( fspec );
 				final String fname = fspec.getKey();
-				for ( FeatureProjection< T > projection : feature.projections() )
+				if (null == feature.projections())
+					continue;
+				for ( final FeatureProjection< T > projection : feature.projections() )
 				{
 					final String pname = projection.getKey().getSpec().getKey();
 					final String name = isScalarFeature( fspec )
@@ -704,11 +705,11 @@ public class MamutExporter
 	 * @param <T>
 	 * @return
 	 */
-	public static < T > Set< String > getLikelyExportedFeatureProjections( FeatureSpecsService specsService, final int numSources, final Class< T > target )
+	public static < T > Set< String > getLikelyExportedFeatureProjections( final FeatureSpecsService specsService, final int numSources, final Class< T > target )
 	{
 		final HashSet< String > names = new HashSet<>();
 		final List< FeatureSpec< ?, T > > fspecs = specsService.getSpecs( target );
-		for ( FeatureSpec< ?, T > fspec : fspecs )
+		for ( final FeatureSpec< ?, T > fspec : fspecs )
 		{
 			final String fname = fspec.getKey();
 			if ( isScalarFeature( fspec ) )
@@ -716,7 +717,7 @@ public class MamutExporter
 				names.add( sanitize( getProjectionExportName( fname ) ) );
 				continue;
 			}
-			for ( FeatureProjectionSpec pspec : fspec.getProjectionSpecs() )
+			for ( final FeatureProjectionSpec pspec : fspec.getProjectionSpecs() )
 			{
 				final String pname = pspec.getKey();
 				switch( fspec.getMultiplicity() )
@@ -739,7 +740,7 @@ public class MamutExporter
 		return names;
 	}
 
-	private static boolean isScalarFeature( FeatureSpec< ?, ? > spec )
+	private static boolean isScalarFeature( final FeatureSpec< ?, ? > spec )
 	{
 		return spec.getMultiplicity() == SINGLE && spec.getProjectionSpecs().size() == 1;
 	}
@@ -749,17 +750,17 @@ public class MamutExporter
 		return tag.replace( ' ', '_' );
 	}
 
-	private static String getProjectionExportName( String fname )
+	private static String getProjectionExportName( final String fname )
 	{
 		return fname;
 	}
 
-	private static String getProjectionExportName( String fname, String pname, int... sourceIndices )
+	private static String getProjectionExportName( final String fname, final String pname, final int... sourceIndices )
 	{
 		final StringBuilder sb = new StringBuilder( fname ).append( " " ).append( pname );
 		if ( sourceIndices != null )
 		{
-			for ( int sourceIndex : sourceIndices )
+			for ( final int sourceIndex : sourceIndices )
 			{
 				sb.append( " ch" );
 				sb.append( sourceIndex );

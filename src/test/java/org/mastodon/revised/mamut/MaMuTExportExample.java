@@ -54,6 +54,8 @@ public class MaMuTExportExample
 		{
 			System.out.println( " - " + fs.getKey() );
 			final Feature< ? > feature = features.get( fs );
+			if ( null == feature.projections() )
+				continue;
 			for ( final FeatureProjection< ? > projection : feature.projections() )
 				System.out.println( "   - " + projection.getKey() );
 		}

@@ -58,6 +58,8 @@ public class MamutPlayground
 				continue;
 			}
 			final Set< FeatureProjection< T > > projections = feature.projections();
+			if ( null == projections )
+				continue;
 			System.out.println( "\n - Feature " + spec.getKey() +". Has " + projections.size() + " projections:" );
 			for ( final FeatureProjection< T > projection : projections )
 			{
