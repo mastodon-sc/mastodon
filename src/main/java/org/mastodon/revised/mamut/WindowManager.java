@@ -130,8 +130,6 @@ public class WindowManager
 
 	final ProjectManager projectManager;
 
-
-
 	public WindowManager( final Context context )
 	{
 		this.context = context;
@@ -401,6 +399,11 @@ public class WindowManager
 	public Context getContext()
 	{
 		return context;
+	}
+
+	public FeatureSpecsService getFeatureSpecsService()
+	{
+		return context.getService( FeatureSpecsService.class );
 	}
 
 	/**

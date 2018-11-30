@@ -39,6 +39,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import java.util.Set;
 import org.jdom2.Document;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
@@ -48,6 +49,7 @@ import org.mastodon.collection.RefMaps;
 import org.mastodon.feature.Dimension;
 import org.mastodon.feature.DoubleScalarFeature;
 import org.mastodon.feature.FeatureModel;
+import org.mastodon.feature.FeatureSpecsService;
 import org.mastodon.feature.IntScalarFeature;
 import org.mastodon.project.MamutProject;
 import org.mastodon.revised.model.AbstractModelImporter;
@@ -133,12 +135,17 @@ public class TrackMateImporter
 	 */
 	public void readModel( final Model model ) throws IOException
 	{
-		new Import( model );
+		readModel( model, null );
+	}
+
+	public void readModel( final Model model, final FeatureSpecsService featureSpecsService ) throws IOException
+	{
+		new Import( model, featureSpecsService );
 	}
 
 	private final class Import extends AbstractModelImporter< Model >
 	{
-		Import( final Model model ) throws IOException
+		Import( final Model model, final FeatureSpecsService featureSpecsService ) throws IOException
 		{
 			super( model );
 			startImport();
@@ -163,14 +170,23 @@ public class TrackMateImporter
 
 			final Element featureDeclarationEl = modelEl.getChild( FEATURE_DECLARATION_TAG );
 
+			/*
+			 * TODO: could get this from the spimdata XML, for now just we're
+			 *       safe for a while with 10...
+			 */
+			final int expectedNumSources = 10;
+
 			// Spot features.
 			final Element spotFeatureDeclarationEl = featureDeclarationEl.getChild( SPOT_FEATURE_DECLARATION_TAG );
 			final List< Element > spotFeatureEls = spotFeatureDeclarationEl.getChildren( FEATURE_TAG );
 			final Map< String, DoubleScalarFeature< Spot > > spotDoubleFeatureMap = new HashMap<>();
 			final Map< String, IntScalarFeature< Spot > > spotIntFeatureMap = new HashMap<>();
+			final Set< String > ignoredSpotFeatureKeys = MamutExporter.getLikelyExportedFeatureProjections( featureSpecsService, expectedNumSources, Spot.class );
 			for ( final Element featureEl : spotFeatureEls )
 			{
 				final String featureKey = featureEl.getAttributeValue( FEATURE_ATTRIBUTE );
+				if ( ignoredSpotFeatureKeys.contains( featureKey ) )
+					continue;
 //				final String featureName = featureEl.getAttributeValue( FEATURE_NAME_ATTRIBUTE );
 //				final String featureShortName = featureEl.getAttributeValue( FEATURE_SHORT_NAME_ATTRIBUTE );
 				final String featureDimension = featureEl.getAttributeValue( FEATURE_DIMENSION_ATTRIBUTE );
@@ -188,9 +204,12 @@ public class TrackMateImporter
 			final List< Element > edgeFeatureEls = edgeFeatureDeclarationEl.getChildren( FEATURE_TAG );
 			final Map< String, DoubleScalarFeature< Link > > linkDoubleFeatureMap = new HashMap<>();
 			final Map< String, IntScalarFeature< Link > > linkIntFeatureMap = new HashMap<>();
+			final Set< String > ignoredLinkFeatureKeys = MamutExporter.getLikelyExportedFeatureProjections( featureSpecsService, expectedNumSources, Link.class );
 			for ( final Element featureEl : edgeFeatureEls )
 			{
 				final String featureKey = featureEl.getAttributeValue( FEATURE_ATTRIBUTE );
+				if ( ignoredLinkFeatureKeys.contains( featureKey ) )
+					continue;
 //				final String featureName = featureEl.getAttributeValue( FEATURE_NAME_ATTRIBUTE );
 //				final String featureShortName = featureEl.getAttributeValue( FEATURE_SHORT_NAME_ATTRIBUTE );
 				final String featureDimension = featureEl.getAttributeValue( FEATURE_DIMENSION_ATTRIBUTE );
