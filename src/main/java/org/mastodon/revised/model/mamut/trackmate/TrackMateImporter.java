@@ -122,7 +122,21 @@ public class TrackMateImporter
 				throw new IOException( "Could not import TrackMate project. Cannot find the image data file: \"" + imageFilename + "\" in \"" + imageFolder + "\" nor in \"" + file.getParent() + "\"." );
 		}
 
-		return new MamutProject( null, imageFile );
+		final MamutProject project = new MamutProject( null, imageFile );
+
+		// Set project time and space units
+		final Element modelEl = root.getChild( MODEL_TAG );
+		if ( null != modelEl )
+		{
+			final String spaceUnits = modelEl.getAttributeValue( SPATIAL_UNITS_ATTRIBUTE );
+			if ( spaceUnits != null )
+				project.setSpaceUnits( spaceUnits );
+			final String timeUnits = modelEl.getAttributeValue( TIME_UNITS_ATTRIBUTE );
+			if ( timeUnits != null )
+				project.setTimeUnits( timeUnits );
+		}
+
+		return project;
 	}
 
 	/**
