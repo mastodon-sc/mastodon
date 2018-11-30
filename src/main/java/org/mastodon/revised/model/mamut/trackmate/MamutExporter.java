@@ -1,5 +1,6 @@
 package org.mastodon.revised.model.mamut.trackmate;
 
+import static org.mastodon.feature.Multiplicity.SINGLE;
 import static org.mastodon.revised.model.mamut.trackmate.TrackMateXMLKeys.ANALYZER_COLLECTION_TAG;
 import static org.mastodon.revised.model.mamut.trackmate.TrackMateXMLKeys.ANALYZER_KEY_ATTRIBUTE;
 import static org.mastodon.revised.model.mamut.trackmate.TrackMateXMLKeys.ANALYZER_TAG;
@@ -97,6 +98,7 @@ import org.mastodon.feature.FeatureProjectionSpec;
 import org.mastodon.feature.FeatureSpec;
 import org.mastodon.feature.FeatureSpecsService;
 import org.mastodon.feature.IntFeatureProjection;
+import org.mastodon.feature.Multiplicity;
 import org.mastodon.graph.algorithm.RootFinder;
 import org.mastodon.graph.algorithm.traversal.DepthFirstSearch;
 import org.mastodon.graph.algorithm.traversal.GraphSearch.SearchDirection;
@@ -663,7 +665,9 @@ public class MamutExporter
 				for ( FeatureProjection< T > projection : feature.projections() )
 				{
 					final String pname = projection.getKey().getSpec().getKey();
-					final String name = getProjectionExportName( fname, pname, projection.getKey().getSourceIndices() );
+					final String name = isScalarFeature( fspec )
+							? getProjectionExportName( fname )
+							: getProjectionExportName( fname, pname, projection.getKey().getSourceIndices() );
 					list.add( new ExportFeatureProjection<>( projection, sanitize( name ), name, name ) );
 				}
 			}
@@ -707,6 +711,11 @@ public class MamutExporter
 		for ( FeatureSpec< ?, T > fspec : fspecs )
 		{
 			final String fname = fspec.getKey();
+			if ( isScalarFeature( fspec ) )
+			{
+				names.add( sanitize( getProjectionExportName( fname ) ) );
+				continue;
+			}
 			for ( FeatureProjectionSpec pspec : fspec.getProjectionSpecs() )
 			{
 				final String pname = pspec.getKey();
@@ -730,9 +739,19 @@ public class MamutExporter
 		return names;
 	}
 
+	private static boolean isScalarFeature( FeatureSpec< ?, ? > spec )
+	{
+		return spec.getMultiplicity() == SINGLE && spec.getProjectionSpecs().size() == 1;
+	}
+
 	private static String sanitize( final String tag )
 	{
 		return tag.replace( ' ', '_' );
+	}
+
+	private static String getProjectionExportName( String fname )
+	{
+		return fname;
 	}
 
 	private static String getProjectionExportName( String fname, String pname, int... sourceIndices )
