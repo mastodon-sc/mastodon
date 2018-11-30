@@ -708,6 +708,9 @@ public class MamutExporter
 	public static < T > Set< String > getLikelyExportedFeatureProjections( final FeatureSpecsService specsService, final int numSources, final Class< T > target )
 	{
 		final HashSet< String > names = new HashSet<>();
+		if (null == specsService)
+			return names;
+
 		final List< FeatureSpec< ?, T > > fspecs = specsService.getSpecs( target );
 		for ( final FeatureSpec< ?, T > fspec : fspecs )
 		{
