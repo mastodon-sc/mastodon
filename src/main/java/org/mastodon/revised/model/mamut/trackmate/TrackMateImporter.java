@@ -20,10 +20,12 @@ import static org.mastodon.revised.model.mamut.trackmate.TrackMateXMLKeys.POSITI
 import static org.mastodon.revised.model.mamut.trackmate.TrackMateXMLKeys.POSITION_Z_FEATURE_NAME;
 import static org.mastodon.revised.model.mamut.trackmate.TrackMateXMLKeys.RADIUS_FEATURE_NAME;
 import static org.mastodon.revised.model.mamut.trackmate.TrackMateXMLKeys.SETTINGS_TAG;
+import static org.mastodon.revised.model.mamut.trackmate.TrackMateXMLKeys.SPATIAL_UNITS_ATTRIBUTE;
 import static org.mastodon.revised.model.mamut.trackmate.TrackMateXMLKeys.SPOT_COLLECTION_TAG;
 import static org.mastodon.revised.model.mamut.trackmate.TrackMateXMLKeys.SPOT_ELEMENT_TAG;
 import static org.mastodon.revised.model.mamut.trackmate.TrackMateXMLKeys.SPOT_FEATURE_DECLARATION_TAG;
 import static org.mastodon.revised.model.mamut.trackmate.TrackMateXMLKeys.SPOT_FRAME_COLLECTION_TAG;
+import static org.mastodon.revised.model.mamut.trackmate.TrackMateXMLKeys.TIME_UNITS_ATTRIBUTE;
 import static org.mastodon.revised.model.mamut.trackmate.TrackMateXMLKeys.TRACK_COLLECTION_TAG;
 import static org.mastodon.revised.model.mamut.trackmate.TrackMateXMLKeys.TRACK_TAG;
 import static org.mastodon.revised.model.mamut.trackmate.TrackMateXMLKeys.VISIBILITY_FEATURE_NAME;
@@ -114,7 +116,21 @@ public class TrackMateImporter
 				throw new IOException( "Could not import TrackMate project. Cannot find the image data file: \"" + imageFilename + "\" in \"" + imageFolder + "\" nor in \"" + file.getParent() + "\"." );
 		}
 
-		return new MamutProject( null, imageFile );
+		final MamutProject project = new MamutProject( null, imageFile );
+
+		// Set project time and space units
+		final Element modelEl = root.getChild( MODEL_TAG );
+		if ( null != modelEl )
+		{
+			final String spaceUnits = modelEl.getAttributeValue( SPATIAL_UNITS_ATTRIBUTE );
+			if ( spaceUnits != null )
+				project.setSpaceUnits( spaceUnits );
+			final String timeUnits = modelEl.getAttributeValue( TIME_UNITS_ATTRIBUTE );
+			if ( timeUnits != null )
+				project.setTimeUnits( timeUnits );
+		}
+
+		return project;
 	}
 
 	/**
@@ -143,6 +159,13 @@ public class TrackMateImporter
 			final Element modelEl = root.getChild( MODEL_TAG );
 			if ( null == modelEl )
 				throw new IOException( "Could not import TrackMate project. No <" + MODEL_TAG + "> element found." );
+
+			/*
+			 * Units.
+			 */
+
+			final String spaceUnits = modelEl.getAttributeValue( SPATIAL_UNITS_ATTRIBUTE );
+			final String timeUnits = modelEl.getAttributeValue( TIME_UNITS_ATTRIBUTE );
 
 			/*
 			 * Read feature declaration and instantiate mastodon features.
