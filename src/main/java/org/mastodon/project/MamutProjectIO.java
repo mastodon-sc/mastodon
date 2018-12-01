@@ -3,7 +3,7 @@ package org.mastodon.project;
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
-import mpicbg.spim.data.XmlHelpers;
+
 import org.jdom2.Document;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
@@ -11,14 +11,18 @@ import org.jdom2.input.SAXBuilder;
 import org.jdom2.output.Format;
 import org.jdom2.output.XMLOutputter;
 
+import mpicbg.spim.data.XmlHelpers;
+
 public class MamutProjectIO
 {
 	public static final String MAMUTPROJECT_TAG = "MamutProject";
 	public static final String MAMUTPROJECT_VERSION_ATTRIBUTE_NAME = "version";
-	public static final String MAMUTPROJECT_VERSION_ATTRIBUTE_CURRENT = "0.2";
+	public static final String MAMUTPROJECT_VERSION_ATTRIBUTE_CURRENT = "0.3";
 	public static final String SPIMDATAFILE_TAG = "SpimDataFile";
+	private static final String SPACE_UNITS_TAG = "SpaceUnits";
+	private static final String TIME_UNITS_TAG = "TimeUnits";
 
-	public void save( final MamutProject project, MamutProject.ProjectWriter writer ) throws IOException
+	public void save( final MamutProject project, final MamutProject.ProjectWriter writer ) throws IOException
 	{
 		final Document doc = new Document( toXml( project ) );
 		final XMLOutputter xout = new XMLOutputter( Format.getPrettyFormat() );
@@ -57,6 +61,8 @@ public class MamutProjectIO
 		final Element root = new Element( MAMUTPROJECT_TAG );
 		root.setAttribute( MAMUTPROJECT_VERSION_ATTRIBUTE_NAME, MAMUTPROJECT_VERSION_ATTRIBUTE_CURRENT );
 		root.addContent( XmlHelpers.pathElement( SPIMDATAFILE_TAG, project.getDatasetXmlFile(), project.getProjectRoot() ) );
+		root.addContent( XmlHelpers.textElement( SPACE_UNITS_TAG, project.getSpaceUnits() ) );
+		root.addContent( XmlHelpers.textElement( TIME_UNITS_TAG, project.getTimeUnits() ) );
 		return root;
 	}
 
@@ -64,6 +70,10 @@ public class MamutProjectIO
 	{
 		final File datasetXmlFile = XmlHelpers.loadPath( root, SPIMDATAFILE_TAG, project.getProjectRoot() ).toPath().normalize().toFile();
 		project.setDatasetXmlFile( datasetXmlFile );
+		final String spaceUnits = XmlHelpers.getText( root, SPACE_UNITS_TAG );
+		final String timeUnits = XmlHelpers.getText( root, TIME_UNITS_TAG );
+		project.setSpaceUnits( spaceUnits );
+		project.setTimeUnits( timeUnits );
 	}
 
 	public static boolean mkdirs( final String fileName )

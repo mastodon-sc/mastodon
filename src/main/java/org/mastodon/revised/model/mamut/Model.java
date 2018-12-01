@@ -60,9 +60,20 @@ public class Model extends AbstractModel< ModelGraph, Spot, Link > implements Un
 
 	private final DefaultTagSetModel< Spot, Link > tagSetModel;
 
+	private final String spaceUnits;
+
+	private final String timeUnits;
+
 	public Model()
 	{
+		this( "pixel", "frame" );
+	}
+
+	public Model( final String spaceUnits, final String timeUnits )
+	{
 		super( new ModelGraph() );
+		this.spaceUnits = spaceUnits;
+		this.timeUnits = timeUnits;
 		final SpatioTemporalIndexImp< Spot, Link > theIndex = new SpatioTemporalIndexImp<>( modelGraph, modelGraph.idmap().vertexIdBimap() );
 		/*
 		 * Every 1 second, rebuild spatial indices with more than 100
@@ -208,5 +219,15 @@ public class Model extends AbstractModel< ModelGraph, Spot, Link > implements Un
 	public TagSetModel< Spot, Link > getTagSetModel()
 	{
 		return tagSetModel;
+	}
+
+	public String getSpaceUnits()
+	{
+		return spaceUnits;
+	}
+
+	public String getTimeUnits()
+	{
+		return timeUnits;
 	}
 }
