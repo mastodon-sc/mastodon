@@ -19,8 +19,6 @@ import org.mastodon.labels.LabelSets;
 import org.mastodon.project.MamutProject;
 import org.mastodon.properties.Property;
 import org.mastodon.revised.model.AbstractModel;
-import org.mastodon.revised.model.feature.DefaultFeatureModel;
-import org.mastodon.revised.model.feature.FeatureModel;
 import org.mastodon.revised.model.tag.DefaultTagSetModel;
 import org.mastodon.revised.model.tag.RawTagSetModelIO;
 import org.mastodon.revised.model.tag.TagSetModel;
@@ -60,8 +58,6 @@ public class Model extends AbstractModel< ModelGraph, Spot, Link > implements Un
 
 	private final GraphUndoRecorder< Spot, Link > undoRecorder;
 
-	private final FeatureModel featureModel;
-
 	private final DefaultTagSetModel< Spot, Link > tagSetModel;
 
 	public Model()
@@ -87,7 +83,6 @@ public class Model extends AbstractModel< ModelGraph, Spot, Link > implements Un
 
 		final List< Property< Link > > edgeUndoableProperties = new ArrayList<>();
 
-		featureModel = new DefaultFeatureModel();
 		tagSetModel = new DefaultTagSetModel<>( getGraph() );
 		vertexUndoableProperties.add(
 				new DefaultTagSetModel.SerialisationAccess< Spot, Link >( tagSetModel )
@@ -208,11 +203,6 @@ public class Model extends AbstractModel< ModelGraph, Spot, Link > implements Un
 	public void setUndoPoint()
 	{
 		undoRecorder.setUndoPoint();
-	}
-
-	public FeatureModel getFeatureModel()
-	{
-		return featureModel;
 	}
 
 	public TagSetModel< Spot, Link > getTagSetModel()

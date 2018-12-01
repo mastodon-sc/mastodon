@@ -98,9 +98,6 @@ import org.mastodon.properties.IntPropertyMap;
 import org.mastodon.properties.PropertyMap;
 import org.mastodon.revised.bdv.overlay.util.JamaEigenvalueDecomposition;
 import org.mastodon.project.MamutProject;
-import org.mastodon.revised.model.feature.Feature;
-import org.mastodon.revised.model.feature.FeatureModel;
-import org.mastodon.revised.model.feature.FeatureProjection;
 import org.mastodon.revised.model.mamut.Link;
 import org.mastodon.revised.model.mamut.Model;
 import org.mastodon.revised.model.mamut.Spot;
@@ -500,21 +497,6 @@ public class MamutExporter
 		attributes.add( new Attribute( EDGE_SOURCE_ATTRIBUTE, Integer.toString( sourceSpotID ) ) );
 		attributes.add( new Attribute( EDGE_TARGET_ATTRIBUTE, Integer.toString( targetSpotID ) ) );
 
-		// Link features.
-		final FeatureModel fm = model.getFeatureModel();
-		Set< Feature< ?, ? > > features = fm.getFeatureSet( Link.class );
-		if ( null == features )
-			features = Collections.emptySet();
-
-		for ( final Feature< ?, ? > feature : features )
-		{
-			@SuppressWarnings( "unchecked" )
-			final Feature< Link, ? > f = ( Feature< Link, PropertyMap< Link, ? > > ) feature;
-			final Map< String, FeatureProjection< Link > > projections = f.getProjections();
-			for ( final String projectionKey : projections.keySet() )
-				attributes.add( new Attribute( sanitize( projectionKey ), Double.toString( projections.get( projectionKey ).value( edge ) ) ) );
-		}
-
 		final Element edgeElement = new Element( EDGE_TAG );
 		edgeElement.setAttributes( attributes );
 		return edgeElement;
@@ -532,19 +514,6 @@ public class MamutExporter
 
 		// Other track features.
 		// TODO: when we compute and store track features, modify this.
-//		final FeatureModel fm = model.getFeatureModel();
-		Set< Feature< ?, ? > > features = null;
-		if ( null == features )
-			features = Collections.emptySet();
-
-		for ( final Feature< ?, ? > feature : features )
-		{
-			@SuppressWarnings( "unchecked" )
-			final Feature< Spot, ? > f = ( Feature< Spot, PropertyMap< Spot, ? > > ) feature;
-			final Map< String, FeatureProjection< Spot > > projections = f.getProjections();
-			for ( final String projectionKey : projections.keySet() )
-				attributes.add( new Attribute( sanitize( projectionKey ), Double.toString( projections.get( projectionKey ).value( root ) ) ) );
-		}
 
 		final Element trackElement = new Element( TRACK_TAG );
 		trackElement.setAttributes( attributes );
@@ -578,21 +547,6 @@ public class MamutExporter
 		final double meanRadius = Arrays.stream( eig.getRealEigenvalues() ).map( Math::sqrt ).average().getAsDouble();
 		attributes.add( new Attribute( RADIUS_FEATURE_NAME, Double.toString( meanRadius ) ) );
 
-		// Spot features.
-		final FeatureModel fm = model.getFeatureModel();
-		Set< Feature< ?, ? > > features = fm.getFeatureSet( Spot.class );
-		if ( null == features )
-			features = Collections.emptySet();
-
-		for ( final Feature< ?, ? > feature : features )
-		{
-			@SuppressWarnings( "unchecked" )
-			final Feature< Spot, ? > f = ( Feature< Spot, PropertyMap< Spot, ? > > ) feature;
-			final Map< String, FeatureProjection< Spot > > projections = f.getProjections();
-			for ( final String projectionKey : projections.keySet() )
-				attributes.add( new Attribute( sanitize( projectionKey ), Double.toString( projections.get( projectionKey ).value( spot ) ) ) );
-		}
-
 		final Element spotElement = new Element( SPOT_ELEMENT_TAG );
 		spotElement.setAttributes( attributes );
 		return spotElement;
@@ -601,49 +555,7 @@ public class MamutExporter
 	private Element featuresDeclarationToXml()
 	{
 		final Element featuresElement = new Element( FEATURE_DECLARATION_TAG );
-		appendFeaturesDeclarationOfClass( Spot.class, featuresElement, SPOT_FEATURE_DECLARATION_TAG );
-		appendFeaturesDeclarationOfClass( Link.class, featuresElement, EDGE_FEATURE_DECLARATION_TAG );
-		appendFeaturesDeclarationOfClass( Link.class, featuresElement, TRACK_FEATURE_DECLARATION_TAG );
 		return featuresElement;
-	}
-
-	private void appendFeaturesDeclarationOfClass( final Class< ? > clazz, final Element featuresElement, final String classFeatureDeclarationTag )
-	{
-		final FeatureModel fm = model.getFeatureModel();
-		Set< Feature< ?, ? > > features = fm.getFeatureSet( clazz );
-		if ( null == features )
-			features = Collections.emptySet();
-
-		final Element classFeaturesElement = new Element( classFeatureDeclarationTag );
-		for ( final Feature< ?, ? > feature : features )
-		{
-			/*
-			 * If we have ONE feature mapped on an int projection map, then we
-			 * can use the ISINT flag of TrackMate safely.
-			 */
-			final PropertyMap< ?, ? > pm = feature.getPropertyMap();
-			final String isint;
-			if ( pm instanceof IntPropertyMap )
-				isint = "true";
-			else
-				isint = " false";
-
-			// We actually export feature projections.
-			final Map< String, ? > projections = feature.getProjections();
-			for ( final String projectionKey : projections.keySet() )
-			{
-				final Element fel = new Element( FEATURE_TAG );
-				fel.setAttribute( FEATURE_ATTRIBUTE, sanitize( projectionKey ) );
-				// Mastodon does not support feature name yet.
-				fel.setAttribute( FEATURE_NAME_ATTRIBUTE, projectionKey );
-				fel.setAttribute( FEATURE_SHORT_NAME_ATTRIBUTE, projectionKey );
-				// Mastodon does not support feature dimension yet.
-				fel.setAttribute( FEATURE_DIMENSION_ATTRIBUTE, "NONE" );
-				fel.setAttribute( FEATURE_ISINT_ATTRIBUTE, isint );
-				classFeaturesElement.addContent( fel );
-			}
-		}
-		featuresElement.addContent( classFeaturesElement );
 	}
 
 	private static Document getSAXParsedDocument( final String fileName )

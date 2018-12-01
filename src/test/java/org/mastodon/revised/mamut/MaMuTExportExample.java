@@ -2,20 +2,14 @@ package org.mastodon.revised.mamut;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.HashSet;
-import java.util.Set;
 
 import org.jdom2.JDOMException;
 import org.mastodon.project.MamutProject;
 import org.mastodon.project.MamutProjectIO;
-import org.mastodon.revised.mamut.feature.MamutFeatureComputerService;
-import org.mastodon.revised.model.feature.FeatureComputer;
-import org.mastodon.revised.model.mamut.ModelUtils;
 import org.mastodon.revised.model.mamut.Model;
 import org.mastodon.revised.model.mamut.trackmate.MamutExporter;
 import org.mastodon.revised.model.mamut.trackmate.TrackMateImporter;
 import org.mastodon.revised.ui.ProgressListener;
-import org.scijava.Context;
 
 import mpicbg.spim.data.SpimDataException;
 
@@ -36,9 +30,6 @@ public class MaMuTExportExample
 		 * 1.1. Compute features.
 		 */
 
-		final Context context = new Context( MamutFeatureComputerService.class );
-		final MamutFeatureComputerService featureComputerService = context.getService( MamutFeatureComputerService.class );
-		final Set< FeatureComputer< Model > > featureComputers = new HashSet<>( featureComputerService.getFeatureComputers() );
 		final ProgressListener pl = new ProgressListener()
 		{
 
@@ -56,13 +47,6 @@ public class MaMuTExportExample
 			public void clearStatus()
 			{}
 		};
-		System.out.println( "Computing all features." );
-		final boolean computed = featureComputerService.compute( model, model.getFeatureModel(), featureComputers, pl );
-		if (!computed)
-		{
-			System.err.println( "Error while calculating model features." );
-			return;
-		}
 
 		/*
 		 * 2. Export it to a MaMuT file.
@@ -82,7 +66,5 @@ public class MaMuTExportExample
 
 		final Model importedModel = new Model();
 		new TrackMateImporter( target ).readModel( importedModel );
-		System.out.println( ModelUtils.dump( importedModel ) );
 	}
-
 }

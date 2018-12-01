@@ -47,10 +47,6 @@ import org.mastodon.properties.DoublePropertyMap;
 import org.mastodon.properties.IntPropertyMap;
 import org.mastodon.project.MamutProject;
 import org.mastodon.revised.model.AbstractModelImporter;
-import org.mastodon.revised.model.feature.Feature;
-import org.mastodon.revised.model.feature.FeatureModel;
-import org.mastodon.revised.model.feature.FeatureProjection;
-import org.mastodon.revised.model.feature.FeatureProjectors;
 import org.mastodon.revised.model.mamut.Link;
 import org.mastodon.revised.model.mamut.Model;
 import org.mastodon.revised.model.mamut.ModelGraph;
@@ -327,40 +323,6 @@ public class TrackMateImporter
 				graph.releaseRef( sourceRef );
 				graph.releaseRef( targetRef );
 				graph.releaseRef( edgeRef );
-			}
-
-			/*
-			 * Feed property maps to feature model.
-			 */
-
-			final FeatureModel featureModel = model.getFeatureModel();
-			for ( final String featureKey : spotDoubleFeatureMap.keySet() )
-			{
-				final DoublePropertyMap< Spot > pm = spotDoubleFeatureMap.get( featureKey );
-				final Map< String, FeatureProjection< Spot > > projections = Collections.singletonMap( featureKey, FeatureProjectors.project( pm ) );
-				final Feature< Spot, DoublePropertyMap< Spot > > feature = new Feature<>( featureKey, Spot.class, pm, projections );
-				featureModel.declareFeature( feature );
-			}
-			for ( final String featureKey : spotIntFeatureMap.keySet() )
-			{
-				final IntPropertyMap< Spot > pm = spotIntFeatureMap.get( featureKey );
-				final Map< String, FeatureProjection< Spot > > projections = Collections.singletonMap( featureKey, FeatureProjectors.project( pm ) );
-				final Feature< Spot, IntPropertyMap< Spot > > feature = new Feature<>( featureKey, Spot.class, pm, projections );
-				featureModel.declareFeature( feature );
-			}
-			for ( final String featureKey : linkDoubleFeatureMap.keySet() )
-			{
-				final DoublePropertyMap< Link > pm = linkDoubleFeatureMap.get( featureKey );
-				final Map< String, FeatureProjection< Link > > projections = Collections.singletonMap( featureKey, FeatureProjectors.project( pm ) );
-				final Feature< Link, DoublePropertyMap< Link > > feature = new Feature<>( featureKey, Link.class, pm, projections );
-				featureModel.declareFeature( feature );
-			}
-			for ( final String featureKey : linkIntFeatureMap.keySet() )
-			{
-				final IntPropertyMap< Link > pm = linkIntFeatureMap.get( featureKey );
-				final Map< String, FeatureProjection< Link > > projections = Collections.singletonMap( featureKey, FeatureProjectors.project( pm ) );
-				final Feature< Link, IntPropertyMap< Link > > feature = new Feature<>( featureKey, Link.class, pm, projections );
-				featureModel.declareFeature( feature );
 			}
 
 			finishImport();
