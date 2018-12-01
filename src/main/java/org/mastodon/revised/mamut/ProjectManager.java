@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Random;
 
+import mpicbg.spim.data.generic.sequence.BasicViewSetup;
 import org.mastodon.plugin.MastodonPlugins;
 import org.mastodon.project.MamutProject;
 import org.mastodon.project.MamutProjectIO;
@@ -254,26 +255,42 @@ public class ProjectManager
 	public synchronized void open( final MamutProject project ) throws IOException, SpimDataException
 	{
 		/*
-		 * Load Model
-		 */
-		final Model model = new Model();
-		final boolean isNewProject = project.getProjectRoot() == null;
-
-		if ( !isNewProject )
-		{
-			try (final MamutProject.ProjectReader reader = project.openForReading())
-			{
-				model.loadRaw( reader );
-			}
-		}
-
-		/*
 		 * Load SpimData
 		 */
 		final String spimDataXmlFilename = project.getDatasetXmlFile().getAbsolutePath();
 		SpimDataMinimal spimData = DummySpimData.tryCreate( project.getDatasetXmlFile().getName() );
 		if ( spimData == null )
 			spimData = new XmlIoSpimDataMinimal().load( spimDataXmlFilename );
+
+		/*
+		 * Try to read units from spimData is they are not present
+		 */
+		if ( project.getSpaceUnits() == null )
+		{
+			project.setSpaceUnits(
+					spimData.getSequenceDescription().getViewSetupsOrdered().stream()
+							.filter( BasicViewSetup::hasVoxelSize )
+							.map( setup -> setup.getVoxelSize().unit() )
+							.findFirst()
+							.orElse( "pixel" ) );
+		}
+		if ( project.getTimeUnits() == null )
+		{
+			project.setTimeUnits( "frame" );
+		}
+
+		/*
+		 * Load Model
+		 */
+		final Model model = new Model( project.getSpaceUnits(), project.getTimeUnits() );
+		final boolean isNewProject = project.getProjectRoot() == null;
+		if ( !isNewProject )
+		{
+			try ( final MamutProject.ProjectReader reader = project.openForReading() )
+			{
+				model.loadRaw( reader );
+			}
+		}
 
 		final KeyPressedManager keyPressedManager = windowManager.getKeyPressedManager();
 		final TrackSchemeStyleManager trackSchemeStyleManager = windowManager.getTrackSchemeStyleManager();

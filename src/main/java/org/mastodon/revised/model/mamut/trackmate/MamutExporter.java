@@ -156,30 +156,9 @@ public class MamutExporter
 
 	private void appendModel()
 	{
-		// Read space units from dataset xml if we can.
-		String spaceUnits = "pixel";
-		final Document document = getSAXParsedDocument( project.getDatasetXmlFile().getAbsolutePath() );
-		final List< Element > viewSetupsElements = document
-				.getRootElement()
-				.getChild( XmlKeys.SEQUENCEDESCRIPTION_TAG )
-				.getChild( XmlKeys.VIEWSETUPS_TAG )
-				.getChildren( XmlKeys.VIEWSETUP_TAG );
-		for ( final Element vsEl : viewSetupsElements )
-		{
-			final Element vs, uel;
-			if ( null != ( vs = vsEl.getChild( XmlKeys.VIEWSETUP_VOXELSIZE_TAG ) ) && null != ( uel = vs.getChild( XmlKeys.VOXELDIMENSIONS_UNIT_TAG ) ) )
-			{
-				spaceUnits = uel.getValue();
-				break;
-			}
-		}
-
-		// BDV does not let you save frame interval in physical units.
-		final String timeUnits = "frames";
-
 		final Element modelElement = new Element( MODEL_TAG );
-		modelElement.setAttribute( SPATIAL_UNITS_ATTRIBUTE, spaceUnits );
-		modelElement.setAttribute( TIME_UNITS_ATTRIBUTE, timeUnits );
+		modelElement.setAttribute( SPATIAL_UNITS_ATTRIBUTE, model.getSpaceUnits() );
+		modelElement.setAttribute( TIME_UNITS_ATTRIBUTE, model.getTimeUnits() );
 
 		final Element featureDeclarationElement = featuresDeclarationToXml();
 		modelElement.addContent( featureDeclarationElement );
