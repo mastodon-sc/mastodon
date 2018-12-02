@@ -11,7 +11,8 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
-import net.imglib2.RealLocalizable;
+
+import org.mastodon.feature.FeatureModel;
 import org.mastodon.graph.ReadOnlyGraph;
 import org.mastodon.graph.io.RawGraphIO.FileIdToGraphMap;
 import org.mastodon.graph.io.RawGraphIO.GraphToFileIdMap;
@@ -28,6 +29,8 @@ import org.mastodon.spatial.SpatioTemporalIndexImpRebuilderThread;
 import org.mastodon.undo.GraphUndoRecorder;
 import org.mastodon.undo.Recorder;
 import org.mastodon.undo.UndoPointMarker;
+
+import net.imglib2.RealLocalizable;
 
 /**
  * A model built to manage a graph of {@link Spot}s and {@link Link}s.
@@ -57,6 +60,8 @@ public class Model extends AbstractModel< ModelGraph, Spot, Link > implements Un
 	private final ReentrantReadWriteLock lock;
 
 	private final GraphUndoRecorder< Spot, Link > undoRecorder;
+
+	private final FeatureModel featureModel;
 
 	private final DefaultTagSetModel< Spot, Link > tagSetModel;
 
@@ -94,6 +99,7 @@ public class Model extends AbstractModel< ModelGraph, Spot, Link > implements Un
 
 		final List< Property< Link > > edgeUndoableProperties = new ArrayList<>();
 
+		featureModel = new FeatureModel();
 		tagSetModel = new DefaultTagSetModel<>( getGraph() );
 		vertexUndoableProperties.add(
 				new DefaultTagSetModel.SerialisationAccess< Spot, Link >( tagSetModel )
@@ -214,6 +220,11 @@ public class Model extends AbstractModel< ModelGraph, Spot, Link > implements Un
 	public void setUndoPoint()
 	{
 		undoRecorder.setUndoPoint();
+	}
+
+	public FeatureModel getFeatureModel()
+	{
+		return featureModel;
 	}
 
 	public TagSetModel< Spot, Link > getTagSetModel()
