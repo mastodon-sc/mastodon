@@ -10,6 +10,8 @@ import javax.swing.JDialog;
 import javax.swing.JFrame;
 
 import org.mastodon.feature.FeatureSpecsService;
+import org.mastodon.feature.ui.FeatureColorModeConfigPage;
+import org.mastodon.feature.ui.mamut.MamutFeatureProjectionsManager;
 import org.mastodon.plugin.MastodonPlugin;
 import org.mastodon.plugin.MastodonPluginAppModel;
 import org.mastodon.plugin.MastodonPlugins;
@@ -21,6 +23,7 @@ import org.mastodon.revised.model.tag.ui.TagSetDialog;
 import org.mastodon.revised.trackscheme.display.style.TrackSchemeStyleManager;
 import org.mastodon.revised.trackscheme.display.style.TrackSchemeStyleSettingsPage;
 import org.mastodon.revised.ui.SelectionActions;
+import org.mastodon.revised.ui.coloring.feature.FeatureColorModeManager;
 import org.mastodon.revised.ui.keymap.CommandDescriptionProvider;
 import org.mastodon.revised.ui.keymap.CommandDescriptions;
 import org.mastodon.revised.ui.keymap.CommandDescriptionsBuilder;
@@ -101,6 +104,10 @@ public class WindowManager
 
 	private final RenderSettingsManager renderSettingsManager;
 
+	private final FeatureColorModeManager featureColorModeManager;
+
+	private final MamutFeatureProjectionsManager featureProjectionsManager;
+
 	private final KeymapManager keymapManager;
 
 	private final Actions globalAppActions;
@@ -128,6 +135,10 @@ public class WindowManager
 		keyPressedManager = new KeyPressedManager();
 		trackSchemeStyleManager = new TrackSchemeStyleManager();
 		renderSettingsManager = new RenderSettingsManager();
+		featureColorModeManager = new FeatureColorModeManager();
+		featureProjectionsManager = new MamutFeatureProjectionsManager(
+				context.getService( FeatureSpecsService.class ),
+				featureColorModeManager );
 		keymapManager = new KeymapManager();
 
 		final Keymap keymap = keymapManager.getForwardDefaultKeymap();
@@ -166,6 +177,8 @@ public class WindowManager
 		settings.addPage( new TrackSchemeStyleSettingsPage( "TrackScheme Styles", trackSchemeStyleManager ) );
 		settings.addPage( new RenderSettingsConfigPage( "BDV Render Settings", renderSettingsManager ) );
 		settings.addPage( new KeymapSettingsPage( "Keymap", keymapManager, descriptions ) );
+		settings.addPage( new FeatureColorModeConfigPage( "Feature Color Modes", featureColorModeManager, featureProjectionsManager ) );
+
 		final ToggleDialogAction tooglePreferencesDialogAction = new ToggleDialogAction( PREFERENCES_DIALOG, settings );
 		globalAppActions.namedAction( tooglePreferencesDialogAction, PREFERENCES_DIALOG_KEYS );
 
@@ -213,6 +226,7 @@ public class WindowManager
 			tagSetDialog = null;
 			featureComputationDialog.dispose();
 			featureComputationDialog = null;
+			featureProjectionsManager.setModel( null, 1 );
 			updateEnabledActions();
 			return;
 		}
@@ -224,6 +238,7 @@ public class WindowManager
 		final Keymap keymap = keymapManager.getForwardDefaultKeymap();
 		tagSetDialog = new TagSetDialog( null, model.getTagSetModel(), model, keymap, new String[] { KeyConfigContexts.MASTODON } );
 		featureComputationDialog = MamutFeatureComputation.getDialog( appModel, context );
+		featureProjectionsManager.setModel( model, appModel.getSharedBdvData().getSources().size() );
 
 		updateEnabledActions();
 
@@ -351,6 +366,11 @@ public class WindowManager
 	RenderSettingsManager getRenderSettingsManager()
 	{
 		return renderSettingsManager;
+	}
+
+	FeatureColorModeManager getFeatureColorModeManager()
+	{
+		return featureColorModeManager;
 	}
 
 	KeymapManager getKeymapManager()
