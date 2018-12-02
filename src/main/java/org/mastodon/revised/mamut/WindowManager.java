@@ -9,6 +9,7 @@ import java.util.function.Consumer;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
 
+import org.mastodon.feature.FeatureSpecsService;
 import org.mastodon.plugin.MastodonPlugin;
 import org.mastodon.plugin.MastodonPluginAppModel;
 import org.mastodon.plugin.MastodonPlugins;
@@ -376,6 +377,11 @@ public class WindowManager
 	public Context getContext()
 	{
 		return context;
+	}
+
+	public FeatureSpecsService getFeatureSpecsService()
+	{
+		return context.getService( FeatureSpecsService.class );
 	}
 
 	/**

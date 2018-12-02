@@ -374,7 +374,7 @@ public class ProjectManager
 		{
 			final TrackMateImporter importer = new TrackMateImporter( file );
 			open( importer.createProject() );
-			importer.readModel( windowManager.getAppModel().getModel() );
+			importer.readModel( windowManager.getAppModel().getModel(), windowManager.getFeatureSpecsService() );
 		}
 		catch ( final IOException | SpimDataException e )
 		{

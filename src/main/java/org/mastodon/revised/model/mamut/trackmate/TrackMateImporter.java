@@ -6,6 +6,7 @@ import static org.mastodon.revised.model.mamut.trackmate.TrackMateXMLKeys.EDGE_T
 import static org.mastodon.revised.model.mamut.trackmate.TrackMateXMLKeys.EDGE_TARGET_ATTRIBUTE;
 import static org.mastodon.revised.model.mamut.trackmate.TrackMateXMLKeys.FEATURE_ATTRIBUTE;
 import static org.mastodon.revised.model.mamut.trackmate.TrackMateXMLKeys.FEATURE_DECLARATION_TAG;
+import static org.mastodon.revised.model.mamut.trackmate.TrackMateXMLKeys.FEATURE_DIMENSION_ATTRIBUTE;
 import static org.mastodon.revised.model.mamut.trackmate.TrackMateXMLKeys.FEATURE_ISINT_ATTRIBUTE;
 import static org.mastodon.revised.model.mamut.trackmate.TrackMateXMLKeys.FEATURE_TAG;
 import static org.mastodon.revised.model.mamut.trackmate.TrackMateXMLKeys.FILENAME_ATTRIBUTE;
@@ -34,19 +35,22 @@ import java.io.File;
 import java.io.IOException;
 import java.text.NumberFormat;
 import java.text.ParseException;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import java.util.Set;
 import org.jdom2.Document;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
 import org.jdom2.input.SAXBuilder;
 import org.mastodon.collection.IntRefMap;
 import org.mastodon.collection.RefMaps;
-import org.mastodon.properties.DoublePropertyMap;
-import org.mastodon.properties.IntPropertyMap;
+import org.mastodon.feature.Dimension;
+import org.mastodon.feature.DoubleScalarFeature;
+import org.mastodon.feature.FeatureModel;
+import org.mastodon.feature.FeatureSpecsService;
+import org.mastodon.feature.IntScalarFeature;
 import org.mastodon.project.MamutProject;
 import org.mastodon.revised.model.AbstractModelImporter;
 import org.mastodon.revised.model.mamut.Link;
@@ -72,9 +76,9 @@ public class TrackMateImporter
 	 * Read the specified TrackMate file.
 	 *
 	 * @param file
-	 * 		the path to the TrackMate file.
+	 *            the path to the TrackMate file.
 	 * @throws IOException
-	 * 		if an error happens while opening or parsing the XML file.
+	 *             if an error happens while opening or parsing the XML file.
 	 */
 	public TrackMateImporter( final File file ) throws IOException
 	{
@@ -90,12 +94,14 @@ public class TrackMateImporter
 	}
 
 	/**
-	 * Create a {@link MamutProject} with the image data specified in the TrackMate file.
-	 * This works only for MaMuT files (where the image data is a SpimData XML file).
+	 * Create a {@link MamutProject} with the image data specified in the
+	 * TrackMate file. This works only for MaMuT files (where the image data is
+	 * a SpimData XML file).
 	 *
 	 * @return a new project.
 	 * @throws IOException
-	 * 		if valid image data cannot be obtained from the TrackMate file.
+	 *             if valid image data cannot be obtained from the TrackMate
+	 *             file.
 	 */
 	public MamutProject createProject() throws IOException
 	{
@@ -137,18 +143,23 @@ public class TrackMateImporter
 	 * Imports the specified TrackMate file into a Mastodon {@link Model}.
 	 *
 	 * @param model
-	 * 		the Model that will receive the imported data.
+	 *            the Model that will receive the imported data.
 	 * @throws IOException
-	 * 		if the TrackMate file cannot be imported.
+	 *             if the TrackMate file cannot be imported.
 	 */
 	public void readModel( final Model model ) throws IOException
 	{
-		new Import( model );
+		readModel( model, null );
+	}
+
+	public void readModel( final Model model, final FeatureSpecsService featureSpecsService ) throws IOException
+	{
+		new Import( model, featureSpecsService );
 	}
 
 	private final class Import extends AbstractModelImporter< Model >
 	{
-		Import( final Model model ) throws IOException
+		Import( final Model model, final FeatureSpecsService featureSpecsService ) throws IOException
 		{
 			super( model );
 			startImport();
@@ -173,51 +184,57 @@ public class TrackMateImporter
 
 			final Element featureDeclarationEl = modelEl.getChild( FEATURE_DECLARATION_TAG );
 
+			/*
+			 * TODO: could get this from the spimdata XML, for now just we're
+			 *       safe for a while with 10...
+			 */
+			final int expectedNumSources = 10;
+
 			// Spot features.
 			final Element spotFeatureDeclarationEl = featureDeclarationEl.getChild( SPOT_FEATURE_DECLARATION_TAG );
 			final List< Element > spotFeatureEls = spotFeatureDeclarationEl.getChildren( FEATURE_TAG );
-			final Map< String, DoublePropertyMap< Spot > > spotDoubleFeatureMap = new HashMap<>();
-			final Map< String, IntPropertyMap< Spot > > spotIntFeatureMap = new HashMap<>();
+			final Map< String, DoubleScalarFeature< Spot > > spotDoubleFeatureMap = new HashMap<>();
+			final Map< String, IntScalarFeature< Spot > > spotIntFeatureMap = new HashMap<>();
+			final Set< String > ignoredSpotFeatureKeys = MamutExporter.getLikelyExportedFeatureProjections( featureSpecsService, expectedNumSources, Spot.class );
 			for ( final Element featureEl : spotFeatureEls )
 			{
 				final String featureKey = featureEl.getAttributeValue( FEATURE_ATTRIBUTE );
-//			final String featureName = featureEl.getAttributeValue( FEATURE_NAME_ATTRIBUTE );
-//			final String featureShortName = featureEl.getAttributeValue( FEATURE_SHORT_NAME_ATTRIBUTE );
-//			final String featureDimension = featureEl.getAttributeValue( FEATURE_DIMENSION_ATTRIBUTE );
+				if ( ignoredSpotFeatureKeys.contains( featureKey ) )
+					continue;
+//				final String featureName = featureEl.getAttributeValue( FEATURE_NAME_ATTRIBUTE );
+//				final String featureShortName = featureEl.getAttributeValue( FEATURE_SHORT_NAME_ATTRIBUTE );
+				final String featureDimension = featureEl.getAttributeValue( FEATURE_DIMENSION_ATTRIBUTE );
+				final String units = dimensionToUnits( featureDimension, spaceUnits, timeUnits );
 				final boolean featureIsInt = Boolean.parseBoolean( featureEl.getAttributeValue( FEATURE_ISINT_ATTRIBUTE ) );
 				if ( featureIsInt )
-				{
-					final IntPropertyMap< Spot > feature = new IntPropertyMap<>( graph.vertices(), Integer.MIN_VALUE );
-					spotIntFeatureMap.put( featureKey, feature );
-				}
+					spotIntFeatureMap.put( featureKey,
+							new IntScalarFeature<>( featureKey, featureKey, dimensionToDimension( featureDimension ), units, graph.vertices().getRefPool() ) );
 				else
-				{
-					final DoublePropertyMap< Spot > feature = new DoublePropertyMap<>( graph.vertices(), Double.NaN );
-					spotDoubleFeatureMap.put( featureKey, feature );
-				}
+					spotDoubleFeatureMap.put( featureKey,
+							new DoubleScalarFeature<>( featureKey, featureKey, dimensionToDimension( featureDimension ), units, graph.vertices().getRefPool() ) );
 			}
 
 			final Element edgeFeatureDeclarationEl = featureDeclarationEl.getChild( EDGE_FEATURE_DECLARATION_TAG );
 			final List< Element > edgeFeatureEls = edgeFeatureDeclarationEl.getChildren( FEATURE_TAG );
-			final Map< String, DoublePropertyMap< Link > > linkDoubleFeatureMap = new HashMap<>();
-			final Map< String, IntPropertyMap< Link > > linkIntFeatureMap = new HashMap<>();
+			final Map< String, DoubleScalarFeature< Link > > linkDoubleFeatureMap = new HashMap<>();
+			final Map< String, IntScalarFeature< Link > > linkIntFeatureMap = new HashMap<>();
+			final Set< String > ignoredLinkFeatureKeys = MamutExporter.getLikelyExportedFeatureProjections( featureSpecsService, expectedNumSources, Link.class );
 			for ( final Element featureEl : edgeFeatureEls )
 			{
 				final String featureKey = featureEl.getAttributeValue( FEATURE_ATTRIBUTE );
-//			final String featureName = featureEl.getAttributeValue( FEATURE_NAME_ATTRIBUTE );
-//			final String featureShortName = featureEl.getAttributeValue( FEATURE_SHORT_NAME_ATTRIBUTE );
-//			final String featureDimension = featureEl.getAttributeValue( FEATURE_DIMENSION_ATTRIBUTE );
+				if ( ignoredLinkFeatureKeys.contains( featureKey ) )
+					continue;
+//				final String featureName = featureEl.getAttributeValue( FEATURE_NAME_ATTRIBUTE );
+//				final String featureShortName = featureEl.getAttributeValue( FEATURE_SHORT_NAME_ATTRIBUTE );
+				final String featureDimension = featureEl.getAttributeValue( FEATURE_DIMENSION_ATTRIBUTE );
+				final String units = dimensionToUnits( featureDimension, spaceUnits, timeUnits );
 				final boolean featureIsInt = Boolean.parseBoolean( featureEl.getAttributeValue( FEATURE_ISINT_ATTRIBUTE ) );
 				if ( featureIsInt )
-				{
-					final IntPropertyMap< Link > feature = new IntPropertyMap<>( graph.edges(), Integer.MIN_VALUE );
-					linkIntFeatureMap.put( featureKey, feature );
-				}
+					linkIntFeatureMap.put( featureKey,
+							new IntScalarFeature<>( featureKey, featureKey, dimensionToDimension( featureDimension ), units, graph.edges().getRefPool() ) );
 				else
-				{
-					final DoublePropertyMap< Link > feature = new DoublePropertyMap<>( graph.edges(), Double.NaN );
-					linkDoubleFeatureMap.put( featureKey, feature );
-				}
+					linkDoubleFeatureMap.put( featureKey,
+							new DoubleScalarFeature<>( featureKey, featureKey, dimensionToDimension( featureDimension ), units, graph.edges().getRefPool() ) );
 			}
 
 			/*
@@ -271,8 +288,8 @@ public class TrackMateImporter
 							if ( null != attributeValue )
 							{
 								final double val = Double.parseDouble( attributeValue );
-								final DoublePropertyMap< Spot > pm = spotDoubleFeatureMap.get( featureKey );
-								pm.set( spot, val );
+								final DoubleScalarFeature< Spot > feature = spotDoubleFeatureMap.get( featureKey );
+								feature.set( spot, val );
 							}
 						}
 						for ( final String featureKey : spotIntFeatureMap.keySet() )
@@ -281,8 +298,8 @@ public class TrackMateImporter
 							if ( null != attributeValue )
 							{
 								final int val = NumberFormat.getInstance().parse( attributeValue ).intValue();
-								final IntPropertyMap< Spot > pm = spotIntFeatureMap.get( featureKey );
-								pm.set( spot, val );
+								final IntScalarFeature< Spot > feature = spotIntFeatureMap.get( featureKey );
+								feature.set( spot, val );
 							}
 						}
 					}
@@ -318,7 +335,7 @@ public class TrackMateImporter
 							if ( null != attributeValue )
 							{
 								final double val = Double.parseDouble( attributeValue );
-								final DoublePropertyMap< Link > pm = linkDoubleFeatureMap.get( featureKey );
+								final DoubleScalarFeature< Link > pm = linkDoubleFeatureMap.get( featureKey );
 								pm.set( link, val );
 							}
 						}
@@ -328,7 +345,7 @@ public class TrackMateImporter
 							if ( null != attributeValue )
 							{
 								final int val = NumberFormat.getInstance().parse( attributeValue ).intValue();
-								final IntPropertyMap< Link > pm = linkIntFeatureMap.get( featureKey );
+								final IntScalarFeature< Link > pm = linkIntFeatureMap.get( featureKey );
 								pm.set( link, val );
 							}
 						}
@@ -348,7 +365,78 @@ public class TrackMateImporter
 				graph.releaseRef( edgeRef );
 			}
 
+			/*
+			 * Feed property maps to feature model.
+			 */
+
+			final FeatureModel featureModel = model.getFeatureModel();
+			featureModel.pauseListeners();
+			spotDoubleFeatureMap.values().forEach( featureModel::declareFeature );
+			spotIntFeatureMap.values().forEach( featureModel::declareFeature );
+			linkDoubleFeatureMap.values().forEach( featureModel::declareFeature );
+			linkIntFeatureMap.values().forEach( featureModel::declareFeature );
+			featureModel.resumeListeners();
+
 			finishImport();
+		}
+	}
+
+	private static final Dimension dimensionToDimension( final String dimension )
+	{
+		switch ( dimension )
+		{
+		case "QUALITY":
+			return Dimension.QUALITY;
+		case "INTENSITY":
+			return Dimension.INTENSITY;
+		case "INTENSITY_SQUARED":
+			return Dimension.INTENSITY_SQUARED;
+		case "POSITION":
+			return Dimension.POSITION;
+		case "LENGTH":
+			return Dimension.LENGTH;
+		case "VELOCITY":
+			return Dimension.VELOCITY;
+		case "TIME":
+			return Dimension.TIME;
+		case "ANGLE":
+			return Dimension.ANGLE;
+		case "RATE":
+			return Dimension.RATE;
+		case "STRING":
+			return Dimension.STRING;
+		case "NONE":
+			return Dimension.NONE;
+		default:
+			throw new IllegalArgumentException( "Unkown dimension " + dimension );
+		}
+	}
+
+	private static final String dimensionToUnits( final String dimension, final String spaceUnits, final String timeUnits )
+	{
+		switch ( dimension )
+		{
+		case "QUALITY":
+			return "Quality";
+		case "INTENSITY":
+			return "Counts";
+		case "INTENSITY_SQUARED":
+			return "Counts²";
+		case "POSITION":
+		case "LENGTH":
+			return spaceUnits;
+		case "VELOCITY":
+			return spaceUnits + "/" + timeUnits;
+		case "TIME":
+			return timeUnits;
+		case "ANGLE":
+			return "Radians";
+		case "RATE":
+			return "/" + timeUnits;
+		case "STRING":
+		case "NONE":
+		default:
+			return "";
 		}
 	}
 }
