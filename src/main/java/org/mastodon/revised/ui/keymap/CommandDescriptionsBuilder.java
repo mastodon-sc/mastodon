@@ -53,7 +53,7 @@ public class CommandDescriptionsBuilder extends AbstractContextual
 	}
 
 	/**
-	 * Manually adds a {@code provider} in the specified {@code contexts}. For
+	 * Manually add a {@code provider} in the specified {@code contexts}. For
 	 * example, this is useful for adding stuff in a specific order, for
 	 * building nice {@code keyconfig.yaml} files.
 	 *

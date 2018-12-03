@@ -9,7 +9,6 @@ import bdv.viewer.ViewerPanel;
 
 public class ViewerPanelMamut extends ViewerPanel
 {
-
 	private static final long serialVersionUID = 1L;
 
 	private final BehaviourTransformEventHandler3DMamut transformEventHandler;

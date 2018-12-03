@@ -22,7 +22,7 @@ public interface ContextProvider< V >
 	 * If a new listener is added, it will be
 	 * {@link ContextListener#contextChanged(Context) updated} with the current
 	 * context immediately.
-	 * 
+	 *
 	 * @return the listeners.
 	 */
 	public Listeners< ContextListener< V > > listeners();

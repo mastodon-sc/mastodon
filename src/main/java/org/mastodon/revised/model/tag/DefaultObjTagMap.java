@@ -56,11 +56,11 @@ public class DefaultObjTagMap< O, T > implements ObjTagMap< O, T >
 	 * specified {@code idLabelSets} property.
 	 *
 	 * @param idLabelSets
-	 *            the property.
+	 *            the backing {@code LabelSets} property.
 	 * @param tags
-	 *            the collection of tags.
+	 *            set of mutually exclusive {@code tags}.
 	 * @param tagToIdFunction
-	 *            function that maps a tag to its integer id.
+	 *            maps tags to integer IDs (globally unique across all tag sets).
 	 */
 	public DefaultObjTagMap(
 			final LabelSets< O, Integer > idLabelSets,

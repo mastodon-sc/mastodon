@@ -20,7 +20,7 @@ public interface ForwardedListeners< T > extends Listeners< T >
 
 	/**
 	 * Implements {@link Listeners} using an {@link ArrayList}.
-	 * 
+	 *
 	 * @param <T>
 	 *            the type of listeners.
 	 */
@@ -71,7 +71,7 @@ public interface ForwardedListeners< T > extends Listeners< T >
 	/**
 	 * Extends {@link ForwardedListeners.List}, making {@code add} and
 	 * {@code remove} methods synchronized.
-	 * 
+	 *
 	 * @param <T>
 	 *            the type of listeners.
 	 */

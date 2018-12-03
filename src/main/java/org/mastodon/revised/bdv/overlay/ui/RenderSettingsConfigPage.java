@@ -21,9 +21,9 @@ public class RenderSettingsConfigPage extends SelectAndEditProfileSettingsPage< 
 {
 	/**
 	 * Creates a new render-settings config page.
-	 * 
+	 *
 	 * @param treePath
-	 *            path of this page in the settings tree.
+	 * 		path of this page in the settings tree.
 	 * @param renderSettingsManager
 	 *            the render settings manager.
 	 */

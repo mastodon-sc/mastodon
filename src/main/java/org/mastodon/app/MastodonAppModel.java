@@ -186,7 +186,7 @@ public class MastodonAppModel<
 
 	/**
 	 * Actions that should be available in all views.
-	 * 
+	 *
 	 * @return the application actions.
 	 */
 	public Actions getAppActions()
@@ -197,7 +197,7 @@ public class MastodonAppModel<
 	/**
 	 * Actions that are always available, even if no {@link MastodonAppModel}
 	 * currently exists.
-	 * 
+	 *
 	 * @return the global actions.
 	 */
 	public Actions getGlobalActions()

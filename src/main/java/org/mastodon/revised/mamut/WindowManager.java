@@ -126,8 +126,6 @@ public class WindowManager
 
 	private JDialog featureComputationDialog;
 
-	private final PreferencesDialog settings;
-
 	final ProjectManager projectManager;
 
 	public WindowManager( final Context context )
@@ -175,7 +173,7 @@ public class WindowManager
 		globalAppActions.namedAction( editTagSetsAction, TAGSETS_DIALOG_KEYS );
 		globalAppActions.namedAction( featureComputationAction, COMPUTE_FEATURE_DIALOG_KEYS );
 
-		this.settings = new PreferencesDialog( null, keymap, new String[] { KeyConfigContexts.MASTODON } );
+		final PreferencesDialog settings = new PreferencesDialog( null, keymap, new String[] { KeyConfigContexts.MASTODON } );
 		settings.addPage( new TrackSchemeStyleSettingsPage( "TrackScheme Styles", trackSchemeStyleManager ) );
 		settings.addPage( new RenderSettingsConfigPage( "BDV Render Settings", renderSettingsManager ) );
 		settings.addPage( new KeymapSettingsPage( "Keymap", keymapManager, descriptions ) );

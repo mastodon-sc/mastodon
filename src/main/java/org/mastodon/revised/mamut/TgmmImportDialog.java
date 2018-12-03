@@ -37,7 +37,6 @@ import mpicbg.spim.data.sequence.TimePointsPattern;
 
 public class TgmmImportDialog extends JDialog
 {
-
 	private static final long serialVersionUID = 1L;
 
 	private final JTextField pathTextField;

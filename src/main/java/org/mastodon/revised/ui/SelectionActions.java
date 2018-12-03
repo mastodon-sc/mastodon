@@ -66,9 +66,9 @@ public class SelectionActions< V extends Vertex< E >, E extends Edge< V > >
 	}
 
 	/**
-	 * Creates selection actions and install them in the specified
+	 * Create selection actions and install them in the specified
 	 * {@link Actions}.
-	 * 
+	 *
 	 * @param <V>
 	 *            the type of vertices in the graph.
 	 * @param <E>
@@ -82,11 +82,11 @@ public class SelectionActions< V extends Vertex< E >, E extends Edge< V > >
 	 *            a reentrant read/write lock to prevent concurrent modification
 	 *            of the graph.
 	 * @param notify
-	 *            a notifier for the graph changes made by these actions.
+	 *            is notified when the graph is changed by these actions.
 	 * @param selection
 	 *            the selection model.
 	 * @param undo
-	 *            the class that handles undo/redo.
+	 *            used to set undo points after a batch of graph changes completes.
 	 */
 	public static < V extends Vertex< E >, E extends Edge< V > > void install(
 			final Actions actions,

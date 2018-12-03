@@ -99,7 +99,7 @@ public class GroupHandle
 
 	/**
 	 * Get the forwarding model with the specified {@code key}.
-	 * 
+	 *
 	 * @param <T>
 	 *            the type of the backing model.
 	 * @param key

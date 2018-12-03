@@ -12,6 +12,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
+import net.imglib2.RealLocalizable;
+
 import org.mastodon.feature.FeatureModel;
 import org.mastodon.graph.ReadOnlyGraph;
 import org.mastodon.graph.io.RawGraphIO.FileIdToGraphMap;
@@ -29,8 +31,6 @@ import org.mastodon.spatial.SpatioTemporalIndexImpRebuilderThread;
 import org.mastodon.undo.GraphUndoRecorder;
 import org.mastodon.undo.Recorder;
 import org.mastodon.undo.UndoPointMarker;
-
-import net.imglib2.RealLocalizable;
 
 /**
  * A model built to manage a graph of {@link Spot}s and {@link Link}s.

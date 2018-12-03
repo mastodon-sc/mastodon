@@ -161,5 +161,3 @@ public class ColoringMenu implements TagSetModel.TagSetModelListener, FeatureMod
 		}
 	}
 }
-
-

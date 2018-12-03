@@ -234,12 +234,12 @@ public class BoundingSphereRadiusStatistics implements GraphListener< Spot, Link
 		 * If {@code spot} is the representative for the max radius, we have to
 		 * find the new max radius from all spots. Otherwise, we're lucky and
 		 * we're done. Assumes that {@code spots} does not contain {@code spot}.
-		 * 
+		 *
 		 * @param spot
 		 *            the spot to check.
 		 * @param spots
-		 *            the spots that will be inspected for new max radius
-		 *            squared after the specified spot had been removed.
+		 *            all spots (may be inspected for new max radius
+		 *            squared after the specified spot had been removed).
 		 */
 		public void remove( final Spot spot, final Iterable< Spot > spots )
 		{
@@ -257,12 +257,12 @@ public class BoundingSphereRadiusStatistics implements GraphListener< Spot, Link
 		 * <p>
 		 * If {@code spot} is the representative for the max radius and its
 		 * radius decreased, we have to find the new max radius from all spots.
-		 * 
+		 *
 		 * @param spot
 		 *            the spot to check.
 		 * @param spots
-		 *            the spots that will be inspected for new max radius
-		 *            squared after the specified spot had been changed.
+		 *            all spots (may be inspected for new max radius
+		 *            squared after the specified spot had been removed).
 		 */
 		public void radiusChanged( final Spot spot, final Iterable< Spot > spots )
 		{

@@ -24,7 +24,7 @@ public class KeymapSettingsPage extends SelectAndEditProfileSettingsPage< StyleP
 {
 	/**
 	 * Creates a new settings page for Keymaps.
-	 * 
+	 *
 	 * @param treePath
 	 *            path of this page in the settings tree.
 	 * @param styleManager

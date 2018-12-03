@@ -139,11 +139,11 @@ public class DefaultTagSetModel< V extends Vertex< E >, E extends Edge< V > > im
 	/**
 	 * Internals. Can be derived for implementing de/serialisation and
 	 * undo/redo.
-	 * 
+	 *
 	 * @param <V>
-	 *            the type of vertices in the model.
+	 *            the type of the vertices in the graph.
 	 * @param <E>
-	 *            the type of edges in the model.
+	 *            the type of the edges in the graph.
 	 */
 	public static class SerialisationAccess< V extends Vertex< E >, E extends Edge< V > >
 	{

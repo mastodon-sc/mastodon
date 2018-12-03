@@ -64,7 +64,7 @@ public class ViewerFrameMamut extends ViewFrame
 
 	/**
 	 * Creates a new {@link ViewerFrameMamut}.
-	 * 
+	 *
 	 * @param windowTitle
 	 *            the window title to display.
 	 * @param sources

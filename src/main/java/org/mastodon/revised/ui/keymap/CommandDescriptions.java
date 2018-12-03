@@ -64,7 +64,7 @@ public final class CommandDescriptions
 	/**
 	 * Sets the current context. This context name is then used for subsequently
 	 * {@link #add(String, String[], String) added} commands.
-	 * 
+	 *
 	 * @param context
 	 *            the context name.
 	 */
@@ -76,7 +76,7 @@ public final class CommandDescriptions
 	/**
 	 * Builds a map from {@link Command} to textual description. This is for
 	 * making a keyconfig {@link VisualEditorPanel}.
-	 * 
+	 *
 	 * @return a new map.
 	 */
 	public Map< Command, String > createCommandDescriptionsMap()
@@ -90,7 +90,7 @@ public final class CommandDescriptions
 	 * Builds a {@link InputTriggerConfig} with all commands and their default
 	 * triggers. Commands that have no specified default triggers will have
 	 * trigger {@code "not mapped"}.
-	 * 
+	 *
 	 * @return a new {@link InputTriggerConfig}.
 	 */
 	public InputTriggerConfig createDefaultKeyconfig()
@@ -112,7 +112,7 @@ public final class CommandDescriptions
 	 * For commands that are not yet defined in {@code config}, add them with
 	 * their default triggers. Commands that have no specified default triggers
 	 * will have trigger {@code "not mapped"}.
-	 * 
+	 *
 	 * @param config
 	 *            the input trigger config to add commands to.
 	 */

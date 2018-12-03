@@ -23,7 +23,7 @@ import org.mastodon.revised.model.AbstractSpot;
  * Mother class for generic mastodon views. Offer facilities to manage model
  * objects (selection, highlight, focus, time-point) and navigation (navigation,
  * group-handle).
- * 
+ *
  * @param <M>
  *            the type of the mastodon-app model.
  * @param <VG>
@@ -102,7 +102,7 @@ public class MastodonView<
 	/**
 	 * Adds the specified {@link Runnable} to the list of runnables to execute
 	 * when this view is closed.
-	 * 
+	 *
 	 * @param runnable
 	 *            the {@link Runnable} to add.
 	 */

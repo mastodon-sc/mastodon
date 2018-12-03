@@ -23,7 +23,7 @@ import net.imglib2.ui.TransformEventHandler;
 import net.imglib2.ui.TransformListener;
 
 /**
- * Drag behavior that implements a zoom rectangle in TrackScheme.
+ * Drag behaviour that implements a zoom rectangle in TrackScheme.
  * <p>
  * This class depends on the {@link TransformEventHandler} of the TrackScheme
  * display to be an {@link InertialScreenTransformEventHandler}, to be able to

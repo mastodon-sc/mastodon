@@ -98,8 +98,8 @@ public class KeymapManager extends AbstractStyleManager< KeymapManager, Keymap >
 	/**
 	 * Returns a final {@link Keymap} instance that always has the same
 	 * properties as the default keymap.
-	 * 
-	 * @return the keymap instance.
+	 *
+	 * @return a keymap instance that always has the same properties as the default keymap.
 	 */
 	public Keymap getForwardDefaultKeymap()
 	{

@@ -56,7 +56,7 @@ public class SelectAndEditProfileSettingsPage< T extends SelectAndEditProfileSet
 	/**
 	 * Creates a new {@link SelectAndEditProfileSettingsPage} for the specified
 	 * profile manager and the specified editor panel.
-	 * 
+	 *
 	 * @param treePath
 	 *            path of this page in the settings tree.
 	 * @param profileManager
@@ -133,7 +133,7 @@ public class SelectAndEditProfileSettingsPage< T extends SelectAndEditProfileSet
 
 	/**
 	 * Interface for classes that manage a collection of profiles.
-	 * 
+	 *
 	 * @param <T>
 	 *            the type of profiles to manage.
 	 */
@@ -144,7 +144,7 @@ public class SelectAndEditProfileSettingsPage< T extends SelectAndEditProfileSet
 		T getSelectedProfile();
 
 		/**
-		 * Selects the active profile.
+		 * Select the active profile.
 		 *
 		 * @param profile
 		 *            the profile.
@@ -152,7 +152,7 @@ public class SelectAndEditProfileSettingsPage< T extends SelectAndEditProfileSet
 		void select( T profile );
 
 		/**
-		 * Duplicates {@code profile} with a new derived name and add it to user
+		 * Duplicate {@code profile} with a new derived name and add it to user
 		 * profiles list.
 		 *
 		 * @param profile
@@ -163,12 +163,12 @@ public class SelectAndEditProfileSettingsPage< T extends SelectAndEditProfileSet
 		T duplicate( T profile );
 
 		/**
-		 * Tries to set the name of {@code profile} to {@code newName}.
+		 * Try to set the name of {@code profile} to {@code newName}.
 		 *
 		 * @param profile
 		 *            the profile.
 		 * @param newName
-		 *            tjhe name to set.
+		 *            the name to set.
 		 *
 		 * @throws IllegalArgumentException
 		 *             if renaming was not possible (e.g., newName already
@@ -184,8 +184,8 @@ public class SelectAndEditProfileSettingsPage< T extends SelectAndEditProfileSet
 	}
 
 	/**
-	 * Interface for classes that edit of profile in to a JPanel.
-	 * 
+	 * Class that edits a profile of type {@code T} in a JPanel.
+	 *
 	 * @param <T>
 	 *            the type of profile that are edited.
 	 */
