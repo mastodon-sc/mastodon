@@ -4,14 +4,34 @@
 
 # Mastodon – a large-scale tracking and track-editing framework for large, multi-view images.
 
-Modern microscopy technologies such as light sheet microscopy allows live 3D imaging of entire developing embryos with high spatial and temporal resolution. Computational analysis of these recordings promises new insights in developmental biology. However, a single dataset often comprises many terabytes, which makes storage, processing, and visualization of the data a challenging problem. 
+Modern microscopy technologies such as light sheet microscopy allows live sample *in toto* 3D imaging with high spatial and temporal resolution. Such images will be 3D over time, possibly multi-channels and multi-view. Computational analysis of these images promises new insights in cellular, developmental and stem cells biology. However, a single image can amount to several terabytes, and in turn, the automated or semi-automated analysis of these large images can generate a vast amount of annotations. The challenges of big data are then met twice: first by dealing with a very large image, and second with generating large annotations from this image. They will make interacting and analyzing the data especially difficult.
 
-Large-scale automated tracking in biological datasets is a very active field of research. To support machine learning methods, editing tools are needed to facilitate curation, proof-reading, and the manual generation of ground truth data. To make such tools accessible to biologist researchers, they should be easy to obtain, learn, and use. Additionally they must be intuitively usable and remain responsive in the face of millions of tracked objects and terabytes of image data. To make them useful for researchers in automated tracking, they need to be open source, adaptable, and extensible. 
+**Mastodon** is our effort to provide a tool that can harness these challenges. 
 
-Mastodon is our effort to provide such a tool. 
+## Mastodon goals.
 
-Mastodon is a track-editing framework for cell tracking and lineage tracing tool. 
+The goals of Mastodon are the following:
 
+- **Interactive** browsing, inspection and navigation through the image data. Fast and reponsive.
+- Build **tracking and lineage data** from images.
+- **User-friendly** framework to navigate throught this data. Easy to relate spatial information with hierarchical information. Easily orient the user in a possibly very large annotation.
+- "Pointwise" **interactive editing** of the tracking and lineage data. Manual curation.
+- **Semi-automatic and fully automatic tracking**.
+- **Numerical features** and statistics on tracking data. **Tagging of this data**. Tags and numerical features can then be used to to enrich the visualization.
+- **Extensible**: a 3rd party can build plugins for Mastodon:
+  - Custom numerical feature analysers;
+  - Custom trackgin algorithms (detection and particle-linking algorithms);
+  - General-use plugins.
+
+## Mastodon technologies.
+
+Mastodon relies on several technologies to achieve these goals, specially developed for them.
+
+*Interactive visualization and navigation of large images thanks to the BigDataViewer* (BDV, https://imagej.net/BigDataViewer). Any file that can be opened in the BDV will work in Mastodon (BDV HSF5 file format, KLB, Keller-Lab Blocks file format, N5 file format, ...). These file formats enable interactive visualiztion of multi-view TB dataset at the one-time cost of a file conversion. Also, they can be exploited for efficient image processing in special cases, taking advantage of multi-scale pyramidal representation and blocks decomposition. 
+
+*Mastodon-collection: a high performance framework to manipulate collections of data*. Mastodon-collection was developped specifically for this project. It offers an in-memory compact layout storage of objects. Mastodon collections have a much smaller memory footprint. Objects in a mastodon collection are contiguous in memory,  
+
+allowing to manipulate many of them seamess
 
 ## How to use.
 
@@ -28,43 +48,41 @@ The keyboard shortcuts listed below are valid for the _default_ keymap.
 | Move in Z.                       | Mouse-wheel. Press and hold shift to move faster, control to move slower. |
 | Rotate.                          | Click and drag. The view will rotate around the location you clicked. |
 | Align view with X /  Y / Z axes. | - Align with XY plane: `Shift-Z`<br> - Align with YZ plane: `Shift-X` <br>-  Align with XZ plane: `Shift-C` or `Shift-Y`   <br> The view will rotate around the location you clicked. |
-| Zoom / Unzoom.                   | `Control-shift mouse-wheel` or `Command-mouse-wheel`.<br>The view will zoom and unzoom around the mouse location.     |
-| _Time-points._                     |                                                              |
+| Zoom / Unzoom.                   | `Control-shift mouse-wheel` or `Command-mouse-wheel`.<br>The view will zoom and unzoom around the mouse location. |
+| _Time-points._                   |                                                              |
 | Next time-point.                 | `]` or `M`                                                   |
 | Previous time-point.             | `[` or `N`                                                   |
-| _Bookmarks._                       |                                                              |
+| _Bookmarks._                     |                                                              |
 | Store a bookmark.                | Shift-B then press any key to store a bookmark with this key as name. A bookmark stores the position, zoom and orientation in the view but not the time-point. Bookmarks are saved in display settings file. |
 | Recall a bookmark.               | Press B then the key of the bookmark.                        |
 | Recall a bookmark orientation.   | Press O then the key of the bookmark. Only the orientation of the bookmark will be restored. |
-| _Image display._                   |                                                              |
+| _Image display._                 |                                                              |
 | Select source 1, 2, ...          | Press 1, 2, ...                                              |
 | Brightness and color dialog.     | Press S. In this dialog you can adjust the min & max for each source, select to what sources these min & max apply and pick a color for each source. |
 | Toggle fused mode.               | Press F. In fused mode, several sources are overlaid. Press shift-1, shift-2, … to add / remove the source to the view. In single-source mode, only one source is shown. |
 | Visibility and grouping dialog.  | Press F6. In this dialog you can define what sources are visible in fused mode, and define groups of sources for use in the grouping mode. |
 | Save / load display settings.    | F11 / F12. This will create a XYZ_settings.xml file in which the display settings will be saved. |
 
-
 #### Manual editing and navigation in BDV windows.
 
-| Action                                    | Key                      |
-|-------------------------------------------|--------------------------|
-| _Editing spots._                          |                          |
-| Add a new spot.                           | Press `A` with the mouse over the desired location. |
-| Remove a spot.                            | Press `D` with the mouse inside the spot to remove.   |
-| Increase / Decrease the radius of a spot. | Press `E` / `Q` with the mouse inside the spot.<br>`Shift-E` / `Q` increase / decrease the spot radius by larger steps.<br>`Control-E` / `Q` enlarges the spot radius by finer steps.|
-| Move a spot.                              | Press and hold `space` with mouse inside the spot to move, and move it around.                |
-| _Creating links between spots._           |                          |
-| Create a link between two spots.          | Press and hold `L` with the mouse inside the source spot. The BDV moves to the next frame. Release `L` when inside the target spot.<br>Press and hold `shift-L` to do the same, but linking to the previous frame.                        |
-| Remove a link.                            | Press `D` with the mouse on the link to remove.   |
-| Create a spot linked to a spot.           | Press and hold `A` with the mouse inside the source spot. The BDV moves to the next frame. Release `A` at the desired position. A new spot is created, linked to the source spot.<br>Press and hold `shift-A` to do the same, but linking to the previous frame.                      |
-| _Selection editing._                      |                         |
-| Add a spot / link to the selection.       | `Shift-click` on a spot or a link to add / remove it to / from the selection.                    |
-| Clearing the selection.                   | Click on an empty place of the image.                                                            |
-| Remove selection content.                 | `Shift-delete`.         |
-| _Undo / redo_.                            |                         |
-| Undo.                                     | `Control-Z`.            |
-| Redo.                                     | `Control-shift-Z.`      |
-
+| Action                                    | Key                                                          |
+| ----------------------------------------- | ------------------------------------------------------------ |
+| _Editing spots._                          |                                                              |
+| Add a new spot.                           | Press `A` with the mouse over the desired location.          |
+| Remove a spot.                            | Press `D` with the mouse inside the spot to remove.          |
+| Increase / Decrease the radius of a spot. | Press `E` / `Q` with the mouse inside the spot.<br>`Shift-E` / `Q` increase / decrease the spot radius by larger steps.<br>`Control-E` / `Q` enlarges the spot radius by finer steps. |
+| Move a spot.                              | Press and hold `space` with mouse inside the spot to move, and move it around. |
+| _Creating links between spots._           |                                                              |
+| Create a link between two spots.          | Press and hold `L` with the mouse inside the source spot. The BDV moves to the next frame. Release `L` when inside the target spot.<br>Press and hold `shift-L` to do the same, but linking to the previous frame. |
+| Remove a link.                            | Press `D` with the mouse on the link to remove.              |
+| Create a spot linked to a spot.           | Press and hold `A` with the mouse inside the source spot. The BDV moves to the next frame. Release `A` at the desired position. A new spot is created, linked to the source spot.<br>Press and hold `shift-A` to do the same, but linking to the previous frame. |
+| _Selection editing._                      |                                                              |
+| Add a spot / link to the selection.       | `Shift-click` on a spot or a link to add / remove it to / from the selection. |
+| Clearing the selection.                   | Click on an empty place of the image.                        |
+| Remove selection content.                 | `Shift-delete`.                                              |
+| _Undo / redo_.                            |                                                              |
+| Undo.                                     | `Control-Z`.                                                 |
+| Redo.                                     | `Control-shift-Z.`                                           |
 
 ### TrackScheme windows.
 
@@ -84,15 +102,15 @@ The keyboard shortcuts listed below are valid for the _default_ keymap.
 
 #### Moving around in TrackScheme windows.
 
-| Action                  | Key                                        |
-|-------------------------|--------------------------------------------|
-| _View._                 |                                            |
-| Move around.            | `Right-click` and `drag` or `mouse-wheel`. |
-| Zoom / unzoom in X.     | `Shift mouse-wheel`.                       |
-| Zoom / unzoom in Y.     | `Control-mouse-wheel`.                     |
-| Zoom / unzoom in X & Y. | `Control-shift-mouse-wheel`.               |
-| Full zoom, full unzoom. | Press `Z`. The view zoom at max level to the mouse location. Pressing `Z` again to unzoom fully.                    |
-| Zoom in a box.          | Press and hold Z, then drag a box. The view will zoom to the box.                            |
+| Action                  | Key                                                          |
+| ----------------------- | ------------------------------------------------------------ |
+| _View._                 |                                                              |
+| Move around.            | `Right-click` and `drag` or `mouse-wheel`.                   |
+| Zoom / unzoom in X.     | `Shift mouse-wheel`.                                         |
+| Zoom / unzoom in Y.     | `Control-mouse-wheel`.                                       |
+| Zoom / unzoom in X & Y. | `Control-shift-mouse-wheel`.                                 |
+| Full zoom, full unzoom. | Press `Z`. The view zoom at max level to the mouse location. Pressing `Z` again to unzoom fully. |
+| Zoom in a box.          | Press and hold Z, then drag a box. The view will zoom to the box. |
 
 _TrackScheme box zoom:_
 Drag a rectangle with the `Z` key pressed. TrackScheme will zoom to this rectangle. A press of `Z` fully zoom to designated location.
@@ -101,19 +119,20 @@ If TrackScheme is fully zoomed, a tap of `Z` unzoom fully.
 
 #### Manual track editing in TrackScheme windows.
 
-| Action                              | Key                        |
-|-------------------------------------|----------------------------|
-| _Editing spots._                    |                            |
-| Remove a spot.                      | Press `D` with the mouse inside the spot to remove.                                                |
-| Edit the label of a spot.           | Press `Enter` when a spot is focused, then enter its label and press `Enter` to validate.       |
-| _Creating links between spots._     |                            |
+| Action                              | Key                                                          |
+| ----------------------------------- | ------------------------------------------------------------ |
+| _Editing spots._                    |                                                              |
+| Remove a spot.                      | Press `D` with the mouse inside the spot to remove.          |
+| Edit the label of a spot.           | Press `Enter` when a spot is focused, then enter its label and press `Enter` to validate. |
+| _Creating links between spots._     |                                                              |
 | Create a link between two spots.    | Press and hold `L` with the mouse inside the source spot. Release `L` when inside the target spot. |
-| Remove a link.                      | Press `D` with the mouse on the link to remove.                                                    |
-| _Selection editing._                  |                                                                                                |
-| Add a spot / link to the selection. | `Shift-click` on a spot or a link to add / remove it to / from the selection.                   |
-| Select all in a box.                | `Click and drag` a box.<br>`Shift-click and drag` to add the content of the box to the current selection.                   |
-| Clearing the selection.             | `Click` on an empty place of the image.                                                          |
-| Remove selection content.           | `Shift-delete.`         |
-| _Undo / redo._                      |                         |
-| Undo.                               | `Control-Z`.            |
-| Redo.                               | `Control-shift-Z`.      |
+| Remove a link.                      | Press `D` with the mouse on the link to remove.              |
+| _Selection editing._                |                                                              |
+| Add a spot / link to the selection. | `Shift-click` on a spot or a link to add / remove it to / from the selection. |
+| Select all in a box.                | `Click and drag` a box.<br>`Shift-click and drag` to add the content of the box to the current selection. |
+| Clearing the selection.             | `Click` on an empty place of the image.                      |
+| Remove selection content.           | `Shift-delete.`                                              |
+| _Undo / redo._                      |                                                              |
+| Undo.                               | `Control-Z`.                                                 |
+| Redo.                               | `Control-shift-Z`.                                           |
+
