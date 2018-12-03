@@ -6,8 +6,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 
+import javax.swing.JDialog;
 import javax.swing.JFrame;
 
+import org.mastodon.feature.FeatureSpecsService;
+import org.mastodon.feature.ui.FeatureColorModeConfigPage;
+import org.mastodon.feature.ui.mamut.MamutFeatureProjectionsManager;
 import org.mastodon.plugin.MastodonPlugin;
 import org.mastodon.plugin.MastodonPluginAppModel;
 import org.mastodon.plugin.MastodonPlugins;
@@ -19,6 +23,7 @@ import org.mastodon.revised.model.tag.ui.TagSetDialog;
 import org.mastodon.revised.trackscheme.display.style.TrackSchemeStyleManager;
 import org.mastodon.revised.trackscheme.display.style.TrackSchemeStyleSettingsPage;
 import org.mastodon.revised.ui.SelectionActions;
+import org.mastodon.revised.ui.coloring.feature.FeatureColorModeManager;
 import org.mastodon.revised.ui.keymap.CommandDescriptionProvider;
 import org.mastodon.revised.ui.keymap.CommandDescriptions;
 import org.mastodon.revised.ui.keymap.CommandDescriptionsBuilder;
@@ -45,11 +50,13 @@ public class WindowManager
 	public static final String NEW_TRACKSCHEME_VIEW = "new trackscheme view";
 	public static final String PREFERENCES_DIALOG = "Preferences";
 	public static final String TAGSETS_DIALOG = "edit tag sets";
+	public static final String COMPUTE_FEATURE_DIALOG = "compute features";
 
 	static final String[] NEW_BDV_VIEW_KEYS = new String[] { "not mapped" };
 	static final String[] NEW_TRACKSCHEME_VIEW_KEYS = new String[] { "not mapped" };
 	static final String[] PREFERENCES_DIALOG_KEYS = new String[] { "meta COMMA", "ctrl COMMA" };
 	static final String[] TAGSETS_DIALOG_KEYS = new String[] { "not mapped" };
+	static final String[] COMPUTE_FEATURE_DIALOG_KEYS = new String[] { "not mapped" };
 
 	/*
 	 * Command descriptions for all provided commands
@@ -97,6 +104,10 @@ public class WindowManager
 
 	private final RenderSettingsManager renderSettingsManager;
 
+	private final FeatureColorModeManager featureColorModeManager;
+
+	private final MamutFeatureProjectionsManager featureProjectionsManager;
+
 	private final KeymapManager keymapManager;
 
 	private final Actions globalAppActions;
@@ -107,9 +118,13 @@ public class WindowManager
 
 	private final AbstractNamedAction editTagSetsAction;
 
+	private final AbstractNamedAction featureComputationAction;
+
 	private MamutAppModel appModel;
 
 	private TagSetDialog tagSetDialog;
+
+	private JDialog featureComputationDialog;
 
 	final ProjectManager projectManager;
 
@@ -120,6 +135,10 @@ public class WindowManager
 		keyPressedManager = new KeyPressedManager();
 		trackSchemeStyleManager = new TrackSchemeStyleManager();
 		renderSettingsManager = new RenderSettingsManager();
+		featureColorModeManager = new FeatureColorModeManager();
+		featureProjectionsManager = new MamutFeatureProjectionsManager(
+				context.getService( FeatureSpecsService.class ),
+				featureColorModeManager );
 		keymapManager = new KeymapManager();
 
 		final Keymap keymap = keymapManager.getForwardDefaultKeymap();
@@ -147,15 +166,19 @@ public class WindowManager
 		newBdvViewAction = new RunnableAction( NEW_BDV_VIEW, this::createBigDataViewer );
 		newTrackSchemeViewAction = new RunnableAction( NEW_TRACKSCHEME_VIEW, this::createTrackScheme );
 		editTagSetsAction = new RunnableAction( TAGSETS_DIALOG, this::editTagSets );
+		featureComputationAction = new RunnableAction( COMPUTE_FEATURE_DIALOG, this::computeFeatures );
 
 		globalAppActions.namedAction( newBdvViewAction, NEW_BDV_VIEW_KEYS );
 		globalAppActions.namedAction( newTrackSchemeViewAction, NEW_TRACKSCHEME_VIEW_KEYS );
 		globalAppActions.namedAction( editTagSetsAction, TAGSETS_DIALOG_KEYS );
+		globalAppActions.namedAction( featureComputationAction, COMPUTE_FEATURE_DIALOG_KEYS );
 
 		final PreferencesDialog settings = new PreferencesDialog( null, keymap, new String[] { KeyConfigContexts.MASTODON } );
 		settings.addPage( new TrackSchemeStyleSettingsPage( "TrackScheme Styles", trackSchemeStyleManager ) );
 		settings.addPage( new RenderSettingsConfigPage( "BDV Render Settings", renderSettingsManager ) );
 		settings.addPage( new KeymapSettingsPage( "Keymap", keymapManager, descriptions ) );
+		settings.addPage( new FeatureColorModeConfigPage( "Feature Color Modes", featureColorModeManager, featureProjectionsManager ) );
+
 		final ToggleDialogAction tooglePreferencesDialogAction = new ToggleDialogAction( PREFERENCES_DIALOG, settings );
 		globalAppActions.namedAction( tooglePreferencesDialogAction, PREFERENCES_DIALOG_KEYS );
 
@@ -189,6 +212,7 @@ public class WindowManager
 		newBdvViewAction.setEnabled( appModel != null );
 		newTrackSchemeViewAction.setEnabled( appModel != null );
 		editTagSetsAction.setEnabled( appModel != null );
+		featureComputationAction.setEnabled( appModel != null );
 	}
 
 	void setAppModel( final MamutAppModel appModel )
@@ -200,6 +224,9 @@ public class WindowManager
 		{
 			tagSetDialog.dispose();
 			tagSetDialog = null;
+			featureComputationDialog.dispose();
+			featureComputationDialog = null;
+			featureProjectionsManager.setModel( null, 1 );
 			updateEnabledActions();
 			return;
 		}
@@ -210,6 +237,9 @@ public class WindowManager
 
 		final Keymap keymap = keymapManager.getForwardDefaultKeymap();
 		tagSetDialog = new TagSetDialog( null, model.getTagSetModel(), model, keymap, new String[] { KeyConfigContexts.MASTODON } );
+		featureComputationDialog = MamutFeatureComputation.getDialog( appModel, context );
+		featureProjectionsManager.setModel( model, appModel.getSharedBdvData().getSources().size() );
+
 		updateEnabledActions();
 
 		plugins.setAppModel( new MastodonPluginAppModel( appModel, this ) );
@@ -285,6 +315,14 @@ public class WindowManager
 		}
 	}
 
+	public void computeFeatures()
+	{
+		if ( appModel != null )
+		{
+			featureComputationDialog.setVisible( true );
+		}
+	}
+
 	public void closeAllWindows()
 	{
 		final ArrayList< JFrame > frames = new ArrayList<>();
@@ -330,6 +368,11 @@ public class WindowManager
 		return renderSettingsManager;
 	}
 
+	FeatureColorModeManager getFeatureColorModeManager()
+	{
+		return featureColorModeManager;
+	}
+
 	KeymapManager getKeymapManager()
 	{
 		return keymapManager;
@@ -354,6 +397,11 @@ public class WindowManager
 	public Context getContext()
 	{
 		return context;
+	}
+
+	public FeatureSpecsService getFeatureSpecsService()
+	{
+		return context.getService( FeatureSpecsService.class );
 	}
 
 	/**

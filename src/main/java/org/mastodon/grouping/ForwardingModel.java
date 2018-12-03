@@ -12,6 +12,8 @@ package org.mastodon.grouping;
  * </p>
  *
  * @author Tobias Pietzsch
+ * @param <T>
+ *            the type of the backing model.
  */
 public interface ForwardingModel< T >
 {

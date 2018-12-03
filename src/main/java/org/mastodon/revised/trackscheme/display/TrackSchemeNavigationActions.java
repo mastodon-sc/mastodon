@@ -113,13 +113,18 @@ public class TrackSchemeNavigationActions
 	private final FocusModel< TrackSchemeVertex, TrackSchemeEdge > focus;
 
 	/**
+	 * Creates a new {@link TrackSchemeNavigationActions}.
 	 *
 	 * @param graph
+	 *            the {@link TrackSchemeGraph} through which to navigate.
 	 * @param layout
+	 *            the graph layout.
 	 * @param focus
 	 *            normally {@link TrackSchemeAutoFocus} which makes navigation
 	 *            follow the focus.
 	 * @param selection
+	 *            the selection model for TrackScheme. Is used to possibly add
+	 *            the navigated object to the selection.
 	 */
 	public TrackSchemeNavigationActions(
 			final TrackSchemeGraph< ?, ? > graph,

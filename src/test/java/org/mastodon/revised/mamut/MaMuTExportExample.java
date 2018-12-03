@@ -2,19 +2,21 @@ package org.mastodon.revised.mamut;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.Collection;
+import java.util.Map;
 
 import org.jdom2.JDOMException;
+import org.mastodon.feature.Feature;
+import org.mastodon.feature.FeatureModel;
+import org.mastodon.feature.FeatureProjection;
+import org.mastodon.feature.FeatureSpec;
+import org.mastodon.mamut.feature.MamutFeatureComputerService;
 import org.mastodon.project.MamutProject;
 import org.mastodon.project.MamutProjectIO;
-import org.mastodon.revised.mamut.feature.MamutFeatureComputerService;
-import org.mastodon.revised.model.feature.FeatureComputer;
-import org.mastodon.revised.model.mamut.ModelUtils;
 import org.mastodon.revised.model.mamut.Model;
+import org.mastodon.revised.model.mamut.ModelUtils;
 import org.mastodon.revised.model.mamut.trackmate.MamutExporter;
 import org.mastodon.revised.model.mamut.trackmate.TrackMateImporter;
-import org.mastodon.revised.ui.ProgressListener;
 import org.scijava.Context;
 
 import mpicbg.spim.data.SpimDataException;
@@ -29,40 +31,48 @@ public class MaMuTExportExample
 		 */
 
 		final MamutProject project = new MamutProjectIO().load( "samples/mamutproject.mastodon" );
-		final Model model = new Model();
-		model.loadRaw( project.openForReading() );
+		final WindowManager windowManager = new WindowManager( new Context() );
+		windowManager.projectManager.open( project );
+		final Model model = windowManager.getAppModel().getModel();
+		final FeatureModel featureModel = model.getFeatureModel();
 
 		/*
-		 * 1.1. Compute features.
+		 * 1.1a. Compute all features.
 		 */
 
-		final Context context = new Context( MamutFeatureComputerService.class );
+		final Context context = windowManager.getContext();
 		final MamutFeatureComputerService featureComputerService = context.getService( MamutFeatureComputerService.class );
-		final Set< FeatureComputer< Model > > featureComputers = new HashSet<>( featureComputerService.getFeatureComputers() );
-		final ProgressListener pl = new ProgressListener()
+		final Collection< FeatureSpec< ?, ? > > featureKeys = featureComputerService.getFeatureSpecs();
+		featureComputerService.setModel( model );
+		featureComputerService.setSharedBdvData( windowManager.getAppModel().getSharedBdvData() );
+		System.out.println( "Computing all discovered features: " + featureKeys );
+		final Map< FeatureSpec< ?, ? >, Feature< ? > > features = featureComputerService.compute( featureKeys );
+		System.out.println( "Done." );
+
+
+		for ( final FeatureSpec< ?, ? > fs : features.keySet() )
 		{
-
-			@Override
-			public void showStatus( final String string )
-			{
-				System.out.println( " - " + string );
-			}
-
-			@Override
-			public void showProgress( final int current, final int total )
-			{}
-
-			@Override
-			public void clearStatus()
-			{}
-		};
-		System.out.println( "Computing all features." );
-		final boolean computed = featureComputerService.compute( model, model.getFeatureModel(), featureComputers, pl );
-		if (!computed)
-		{
-			System.err.println( "Error while calculating model features." );
-			return;
+			System.out.println( " - " + fs.getKey() );
+			final Feature< ? > feature = features.get( fs );
+			if ( null == feature.projections() )
+				continue;
+			for ( final FeatureProjection< ? > projection : feature.projections() )
+				System.out.println( "   - " + projection.getKey() );
 		}
+
+
+		/*
+		 * 1.1b. Pass them to the feature model.
+		 */
+
+		featureModel.clear();
+		for ( final FeatureSpec< ?, ? > spec: features.keySet() )
+			featureModel.declareFeature( features.get( spec ) );
+
+		System.out.println();
+		System.out.println( "Model BEFORE serialization:" );
+		System.out.println( ModelUtils.dump( model, 10 ) );
+		System.out.println();
 
 		/*
 		 * 2. Export it to a MaMuT file.
@@ -73,16 +83,17 @@ public class MaMuTExportExample
 		 * the ellipsoid semi-axes.
 		 */
 
-		final File target = new File( "samples/mamutExport.xml" );
-		MamutExporter.export( target, model, project );
+		final File targetFile = new File( "samples/mamutExport.xml" );
+		MamutExporter.export( targetFile, model, project );
 
 		/*
 		 * 3. Re-import it using the TrackMate importer.
 		 */
 
-		final Model importedModel = new Model();
-		new TrackMateImporter( target ).readModel( importedModel );
-		System.out.println( ModelUtils.dump( importedModel ) );
+		final Model importedModel = new Model( model.getSpaceUnits(), model.getTimeUnits() );
+		new TrackMateImporter( targetFile ).readModel( importedModel );
+		System.out.println();
+		System.out.println( "Model AFTER de-serialization:" );
+		System.out.println( ModelUtils.dump( importedModel, 10 ) );
 	}
-
 }

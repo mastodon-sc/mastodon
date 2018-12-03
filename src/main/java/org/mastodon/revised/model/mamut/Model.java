@@ -11,7 +11,10 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
+
 import net.imglib2.RealLocalizable;
+
+import org.mastodon.feature.FeatureModel;
 import org.mastodon.graph.ReadOnlyGraph;
 import org.mastodon.graph.io.RawGraphIO.FileIdToGraphMap;
 import org.mastodon.graph.io.RawGraphIO.GraphToFileIdMap;
@@ -19,8 +22,6 @@ import org.mastodon.labels.LabelSets;
 import org.mastodon.project.MamutProject;
 import org.mastodon.properties.Property;
 import org.mastodon.revised.model.AbstractModel;
-import org.mastodon.revised.model.feature.DefaultFeatureModel;
-import org.mastodon.revised.model.feature.FeatureModel;
 import org.mastodon.revised.model.tag.DefaultTagSetModel;
 import org.mastodon.revised.model.tag.RawTagSetModelIO;
 import org.mastodon.revised.model.tag.TagSetModel;
@@ -64,9 +65,20 @@ public class Model extends AbstractModel< ModelGraph, Spot, Link > implements Un
 
 	private final DefaultTagSetModel< Spot, Link > tagSetModel;
 
+	private final String spaceUnits;
+
+	private final String timeUnits;
+
 	public Model()
 	{
+		this( "pixel", "frame" );
+	}
+
+	public Model( final String spaceUnits, final String timeUnits )
+	{
 		super( new ModelGraph() );
+		this.spaceUnits = spaceUnits;
+		this.timeUnits = timeUnits;
 		final SpatioTemporalIndexImp< Spot, Link > theIndex = new SpatioTemporalIndexImp<>( modelGraph, modelGraph.idmap().vertexIdBimap() );
 		/*
 		 * Every 1 second, rebuild spatial indices with more than 100
@@ -87,7 +99,7 @@ public class Model extends AbstractModel< ModelGraph, Spot, Link > implements Un
 
 		final List< Property< Link > > edgeUndoableProperties = new ArrayList<>();
 
-		featureModel = new DefaultFeatureModel();
+		featureModel = new FeatureModel();
 		tagSetModel = new DefaultTagSetModel<>( getGraph() );
 		vertexUndoableProperties.add(
 				new DefaultTagSetModel.SerialisationAccess< Spot, Link >( tagSetModel )
@@ -133,16 +145,16 @@ public class Model extends AbstractModel< ModelGraph, Spot, Link > implements Un
 	{
 		final FileIdToGraphMap< Spot, Link > idmap = modelGraph.loadRaw( reader.getRawModelInputStream(), ModelSerializer.getInstance() );
 
-		try
+		try (
+				final InputStream tis = reader.getRawTagsInputStream();
+				final ObjectInputStream ois = new ObjectInputStream( new BufferedInputStream( tis, 1024 * 1024 ) )
+		)
 		{
-			final InputStream tis = reader.getRawTagsInputStream();
-			final ObjectInputStream ois = new ObjectInputStream( new BufferedInputStream( tis, 1024 * 1024 ) );
 //			tagSetModel.pauseListeners(); // TODO
 			RawTagSetModelIO.read( tagSetModel, idmap, ois );
-			ois.close();
 //			tagSetModel.resumeListeners(); // TODO
 		}
-		catch ( FileNotFoundException e )
+		catch ( final FileNotFoundException e )
 		{
 //			tagSetModel.clear(); // TODO
 		}
@@ -152,7 +164,7 @@ public class Model extends AbstractModel< ModelGraph, Spot, Link > implements Un
 	 * Saves this model to the specified the specified project folder.
 	 *
 	 * @param writer
-	 *            	writer to save the raw project files.
+	 *            writer to save the raw project files.
 	 * @throws IOException
 	 *             if an I/O error occurs while writing the file.
 	 */
@@ -160,10 +172,13 @@ public class Model extends AbstractModel< ModelGraph, Spot, Link > implements Un
 	{
 		final GraphToFileIdMap< Spot, Link > idmap = modelGraph.saveRaw( writer.getRawModelOutputStream(), ModelSerializer.getInstance() );
 
-		final OutputStream fos = writer.getRawTagsOutputStream();
-		final ObjectOutputStream oos = new ObjectOutputStream( new BufferedOutputStream( fos, 1024 * 1024 ) );
-		RawTagSetModelIO.write( tagSetModel, idmap, oos );
-		oos.close();
+		try (
+				final OutputStream fos = writer.getRawTagsOutputStream();
+				final ObjectOutputStream oos = new ObjectOutputStream( new BufferedOutputStream( fos, 1024 * 1024 ) )
+		)
+		{
+			RawTagSetModelIO.write( tagSetModel, idmap, oos );
+		}
 	}
 
 	/**
@@ -218,5 +233,15 @@ public class Model extends AbstractModel< ModelGraph, Spot, Link > implements Un
 	public TagSetModel< Spot, Link > getTagSetModel()
 	{
 		return tagSetModel;
+	}
+
+	public String getSpaceUnits()
+	{
+		return spaceUnits;
+	}
+
+	public String getTimeUnits()
+	{
+		return timeUnits;
 	}
 }

@@ -10,6 +10,11 @@ import org.mastodon.util.Listeners;
  * <p>
  * This allows to implement view-follows-focus behaviour on demand (without
  * having to hard-wire navigation into {@code FocusActions}).
+ *
+ * @param <V>
+ *            the type of vertices in the graph.
+ * @param <E>
+ *            the type of edges in the graph.
  */
 public class AutoNavigateFocusModel< V extends Vertex< E >, E extends Edge< V > > implements FocusModel< V, E >
 {

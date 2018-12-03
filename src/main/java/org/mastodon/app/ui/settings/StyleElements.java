@@ -21,6 +21,7 @@ import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JColorChooser;
 import javax.swing.JDialog;
+import javax.swing.JLabel;
 import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
 
@@ -34,6 +35,11 @@ public class StyleElements
 	public static Separator separator()
 	{
 		return new Separator();
+	}
+
+	public static LabelElement label( final String label )
+	{
+		return new LabelElement( label );
 	}
 
 	public static BooleanElement booleanElement( final String label, final BooleanSupplier get, final Consumer< Boolean > set )
@@ -115,6 +121,11 @@ public class StyleElements
 			throw new UnsupportedOperationException();
 		}
 
+		public default void visit( final LabelElement label )
+		{
+			throw new UnsupportedOperationException();
+		}
+
 		public default void visit( final ColorElement colorElement )
 		{
 			throw new UnsupportedOperationException();
@@ -153,6 +164,27 @@ public class StyleElements
 
 	public static class Separator implements StyleElement
 	{
+		@Override
+		public void accept( final StyleElementVisitor visitor )
+		{
+			visitor.visit( this );
+		}
+	}
+
+	public static class LabelElement implements StyleElement
+	{
+		private final String label;
+
+		public LabelElement( final String label )
+		{
+			this.label = label;
+		}
+
+		public String getLabel()
+		{
+			return label;
+		}
+
 		@Override
 		public void accept( final StyleElementVisitor visitor )
 		{
@@ -341,6 +373,11 @@ public class StyleElements
 	 * ===============================================================
 	 *
 	 */
+
+	public static JLabel linkedLabel( final LabelElement element )
+	{
+		return new JLabel( element.getLabel() );
+	}
 
 	public static JCheckBox linkedCheckBox( final BooleanElement element, final String label )
 	{

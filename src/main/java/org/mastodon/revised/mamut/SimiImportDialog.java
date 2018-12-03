@@ -38,6 +38,8 @@ import mpicbg.spim.data.sequence.TimePoint;
 
 public class SimiImportDialog extends JDialog
 {
+	private static final long serialVersionUID = 1L;
+
 	private final JTextField pathTextField;
 
 	private final JSpinner spinnerSetup;
@@ -214,11 +216,7 @@ public class SimiImportDialog extends JDialog
 			final boolean interpolateMissingSpots = interpolateCheckbox.isSelected();
 			SimiImporter.read( sbdFilename, frameToTimepointFunction, labelFunction, positionFunction, radius, interpolateMissingSpots, model );
 		}
-		catch ( final ParseException e )
-		{
-			e.printStackTrace();
-		}
-		catch ( final IOException e )
+		catch ( final ParseException | IOException e )
 		{
 			e.printStackTrace();
 		}

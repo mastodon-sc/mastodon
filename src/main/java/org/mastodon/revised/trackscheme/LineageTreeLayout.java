@@ -13,7 +13,6 @@ import org.mastodon.model.SelectionModel;
 import org.mastodon.revised.trackscheme.ScreenEdge.ScreenEdgePool;
 import org.mastodon.revised.trackscheme.ScreenVertex.ScreenVertexPool;
 import org.mastodon.revised.trackscheme.ScreenVertexRange.ScreenVertexRangePool;
-import org.mastodon.revised.ui.coloring.ColorGenerator;
 import org.mastodon.revised.ui.coloring.GraphColorGenerator;
 import org.mastodon.util.Listeners;
 
@@ -38,10 +37,10 @@ import net.imglib2.RealLocalizable;
  * <li>non-leafs are centered between first and last child's layoutX
  * <li>for layout of vertices with more than one parent, only first incoming
  * edge counts as parent edge
- * <li>vertices marked with a timestamp &lt; the current
- * {@link #mark} are marked as ghosts.
+ * <li>vertices marked with a timestamp &lt; the current {@code #mark} are
+ * marked as ghosts.
  * <li>additionally, vertices marked with a timestamp &lt; the current
- * {@link #mark}<em>-1</em> are treated as leafs.
+ * {@code #mark}<em>-1</em> are treated as leafs.
  * </ul>
  *
  * We call vertices contained in the current layout <em>active</em>.
@@ -297,6 +296,8 @@ public class LineageTreeLayout
 	 *            the screen entities are shifted in X by this amount.
 	 * @param decorationsOffsetY
 	 *            the screen entities are shifted in Y by this amount.
+	 * @param colorGenerator
+	 *            the color generator used to generate vertex and edge colors.
 	 */
 	public void cropAndScale(
 			final ScreenTransform transform,

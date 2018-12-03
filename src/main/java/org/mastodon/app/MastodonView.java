@@ -1,13 +1,13 @@
 package org.mastodon.app;
 
 import java.util.ArrayList;
+
 import org.mastodon.adapter.FocusModelAdapter;
 import org.mastodon.adapter.HighlightModelAdapter;
 import org.mastodon.adapter.NavigationHandlerAdapter;
 import org.mastodon.adapter.RefBimap;
 import org.mastodon.adapter.SelectionModelAdapter;
 import org.mastodon.adapter.TimepointModelAdapter;
-import org.mastodon.app.ui.ViewFrame;
 import org.mastodon.graph.Edge;
 import org.mastodon.graph.Vertex;
 import org.mastodon.graph.ref.AbstractListenableEdge;
@@ -18,20 +18,24 @@ import org.mastodon.model.NavigationHandler;
 import org.mastodon.model.SelectionModel;
 import org.mastodon.model.TimepointModel;
 import org.mastodon.revised.model.AbstractSpot;
-import org.mastodon.util.Listeners;
 
 /**
+ * Mother class for generic mastodon views. Offer facilities to manage model
+ * objects (selection, highlight, focus, time-point) and navigation (navigation,
+ * group-handle).
  *
  * @param <M>
+ *            the type of the mastodon-app model.
  * @param <VG>
+ *            the type of the view-graph displayed in this view.
  * @param <MV>
- *            model vertex type
+ *            model vertex type.
  * @param <ME>
- *            model edge type
+ *            model edge type.
  * @param <V>
- *            view vertex type
+ *            view vertex type.
  * @param <E>
- *            view edge type
+ *            view edge type.
  *
  * @author Tobias Pietzsch
  */
@@ -95,6 +99,13 @@ public class MastodonView<
 		});
 	}
 
+	/**
+	 * Adds the specified {@link Runnable} to the list of runnables to execute
+	 * when this view is closed.
+	 *
+	 * @param runnable
+	 *            the {@link Runnable} to add.
+	 */
 	public synchronized void onClose( final Runnable runnable )
 	{
 		runOnClose.add( runnable );

@@ -44,15 +44,15 @@ import net.imglib2.type.numeric.ARGBType;
  * <li>{@link #beforeDrawEdges()} to configure the Graphics2D object prior to
  * painting edges.
  * <li>{@link #drawEdge(ScreenEdge, ScreenVertex, ScreenVertex)} for each edge.
- * <li>{@link #beforeDrawVertices()} to configure the Graphics2D object prior to
+ * <li>{@code #beforeDrawVertices()} to configure the Graphics2D object prior to
  * painting vertices.
- * <li>{@link #drawVertex(ScreenVertex)} for each vertex.
- * <li>{@link #beforeDrawVertexRanges()} to configure the Graphics2D object
+ * <li>{@code #drawVertex(ScreenVertex)} for each vertex.
+ * <li>{@code #beforeDrawVertexRanges()} to configure the Graphics2D object
  * prior to painting vertex ranges.
- * <li>{@link #drawVertexRange(ScreenVertexRange)} for each vertex range.
+ * <li>{@code #drawVertexRange(ScreenVertexRange)} for each vertex range.
  * </ol>
  * <p>
- * Subclasses can override some or all of these methods to influcence how the
+ * Subclasses can override some or all of these methods to influence how the
  * graph is drawn.
  * </p>
  *

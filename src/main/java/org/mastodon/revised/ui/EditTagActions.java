@@ -46,7 +46,9 @@ import net.imglib2.ui.OverlayRenderer;
  * @author Jean-Yves Tinevez
  *
  * @param <V>
+ *            the type of vertices to tag.
  * @param <E>
+ *            the type of edges to tag.
  */
 public class EditTagActions< V extends Vertex< E >, E extends Edge< V > >
 		implements Runnable

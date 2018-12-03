@@ -21,6 +21,16 @@ public class MamutProject
 	 */
 	private File datasetXmlFile;
 
+	/**
+	 * The space units (e.g. µm, mm, ...).
+	 */
+	private String spaceUnits;
+
+	/**
+	 * The time units (e.g. frame, s, ...).
+	 */
+	private String timeUnits;
+
 	static final String PROJECT_FILE_NAME = "project.xml";
 	static final String RAW_MODEL_FILE_NAME = "model.raw";
 	static final String RAW_TAGS_FILE_NAME = "tags.raw";
@@ -66,6 +76,26 @@ public class MamutProject
 	public void setDatasetXmlFile( final File datasetXmlFile )
 	{
 		this.datasetXmlFile = datasetXmlFile;
+	}
+
+	public String getSpaceUnits()
+	{
+		return spaceUnits;
+	}
+
+	public void setSpaceUnits( final String spaceUnits )
+	{
+		this.spaceUnits = spaceUnits;
+	}
+
+	public String getTimeUnits()
+	{
+		return timeUnits;
+	}
+
+	public void setTimeUnits( final String timeUnits )
+	{
+		this.timeUnits = timeUnits;
 	}
 
 	@Override

@@ -1,24 +1,22 @@
 package org.mastodon.revised.mamut;
 
 import java.awt.Component;
-import java.awt.Dialog;
 import java.io.File;
 import java.io.IOException;
 import java.util.Random;
 
-import javax.swing.JFrame;
-
+import mpicbg.spim.data.generic.sequence.BasicViewSetup;
 import org.mastodon.plugin.MastodonPlugins;
 import org.mastodon.project.MamutProject;
 import org.mastodon.project.MamutProjectIO;
 import org.mastodon.revised.bdv.SharedBigDataViewerData;
 import org.mastodon.revised.bdv.overlay.ui.RenderSettingsManager;
-import org.mastodon.revised.mamut.feature.MamutFeatureComputerService;
 import org.mastodon.revised.model.mamut.Model;
 import org.mastodon.revised.model.mamut.trackmate.MamutExporter;
 import org.mastodon.revised.model.mamut.trackmate.TrackMateImporter;
 import org.mastodon.revised.model.tag.TagSetStructure;
 import org.mastodon.revised.trackscheme.display.style.TrackSchemeStyleManager;
+import org.mastodon.revised.ui.coloring.feature.FeatureColorModeManager;
 import org.mastodon.revised.ui.keymap.CommandDescriptionProvider;
 import org.mastodon.revised.ui.keymap.CommandDescriptions;
 import org.mastodon.revised.ui.keymap.KeymapManager;
@@ -27,7 +25,6 @@ import org.mastodon.revised.ui.util.FileChooser;
 import org.mastodon.revised.ui.util.FileChooser.SelectionMode;
 import org.mastodon.revised.ui.util.XmlFileFilter;
 import org.mastodon.revised.util.DummySpimData;
-import org.mastodon.revised.util.ToggleDialogAction;
 import org.scijava.plugin.Plugin;
 import org.scijava.ui.behaviour.KeyPressedManager;
 import org.scijava.ui.behaviour.util.AbstractNamedAction;
@@ -248,30 +245,20 @@ public class ProjectManager
 	}
 
 	/**
-	 * Open a project. If {@code project.getProjectRoot() == null} this is a new project and data structures are initialized as empty.
-	 * The image data {@code project.getDatasetXmlFile()} must always be set.
+	 * Opens a project. If {@code project.getProjectRoot() == null} this is a
+	 * new project and data structures are initialized as empty. The image data
+	 * {@code project.getDatasetXmlFile()} must always be set.
 	 *
 	 * @param project
-	 *
+	 *            the project to open.
 	 * @throws IOException
+	 *             if an IO exception occurs during opening.
 	 * @throws SpimDataException
+	 *             if a spim-data exception occurs while opening the spim-data
+	 *             XML file.
 	 */
 	public synchronized void open( final MamutProject project ) throws IOException, SpimDataException
 	{
-		/*
-		 * Load Model
-		 */
-		final Model model = new Model();
-		final boolean isNewProject = project.getProjectRoot() == null;
-
-		if ( !isNewProject )
-		{
-			try (final MamutProject.ProjectReader reader = project.openForReading())
-			{
-				model.loadRaw( reader );
-			}
-		}
-
 		/*
 		 * Load SpimData
 		 */
@@ -280,8 +267,39 @@ public class ProjectManager
 		if ( spimData == null )
 			spimData = new XmlIoSpimDataMinimal().load( spimDataXmlFilename );
 
+		/*
+		 * Try to read units from spimData is they are not present
+		 */
+		if ( project.getSpaceUnits() == null )
+		{
+			project.setSpaceUnits(
+					spimData.getSequenceDescription().getViewSetupsOrdered().stream()
+							.filter( BasicViewSetup::hasVoxelSize )
+							.map( setup -> setup.getVoxelSize().unit() )
+							.findFirst()
+							.orElse( "pixel" ) );
+		}
+		if ( project.getTimeUnits() == null )
+		{
+			project.setTimeUnits( "frame" );
+		}
+
+		/*
+		 * Load Model
+		 */
+		final Model model = new Model( project.getSpaceUnits(), project.getTimeUnits() );
+		final boolean isNewProject = project.getProjectRoot() == null;
+		if ( !isNewProject )
+		{
+			try ( final MamutProject.ProjectReader reader = project.openForReading() )
+			{
+				model.loadRaw( reader );
+			}
+		}
+
 		final KeyPressedManager keyPressedManager = windowManager.getKeyPressedManager();
 		final TrackSchemeStyleManager trackSchemeStyleManager = windowManager.getTrackSchemeStyleManager();
+		final FeatureColorModeManager featureColorModeManager = windowManager.getFeatureColorModeManager();
 		final RenderSettingsManager renderSettingsManager = windowManager.getRenderSettingsManager();
 		final KeymapManager keymapManager = windowManager.getKeymapManager();
 		final MastodonPlugins plugins = windowManager.getPlugins();
@@ -293,11 +311,16 @@ public class ProjectManager
 				options,
 				() -> windowManager.forEachBdvView( MamutViewBdv::requestRepaint ) );
 
-		final MamutAppModel appModel = new MamutAppModel( model, sharedBdvData, keyPressedManager, trackSchemeStyleManager, renderSettingsManager, keymapManager, plugins, globalAppActions );
-
-		/*
-		 * Feature calculation.
-		 */
+		final MamutAppModel appModel = new MamutAppModel(
+				model,
+				sharedBdvData,
+				keyPressedManager,
+				trackSchemeStyleManager,
+				renderSettingsManager,
+				featureColorModeManager,
+				keymapManager,
+				plugins,
+				globalAppActions );
 
 		/*
 		 * TODO REMOVE
@@ -320,14 +343,6 @@ public class ProjectManager
 		}
 
 		windowManager.setAppModel( appModel );
-
-		final MamutFeatureComputerService featureComputerService = windowManager.getContext().getService( MamutFeatureComputerService.class );
-		final JFrame owner = null; // TODO
-		final Dialog featureComputationDialog = new FeatureAndTagDialog( owner, model, featureComputerService );
-		featureComputationDialog.setSize( 400, 400 );
-
-		final ToggleDialogAction toggleFeatureComputationDialogAction = new ToggleDialogAction( "feature computation", featureComputationDialog );
-
 		this.project = project;
 		updateEnabledActions();
 	}
@@ -370,7 +385,7 @@ public class ProjectManager
 		{
 			final TrackMateImporter importer = new TrackMateImporter( file );
 			open( importer.createProject() );
-			importer.readModel( windowManager.getAppModel().getModel() );
+			importer.readModel( windowManager.getAppModel().getModel(), windowManager.getFeatureSpecsService() );
 		}
 		catch ( final IOException | SpimDataException e )
 		{

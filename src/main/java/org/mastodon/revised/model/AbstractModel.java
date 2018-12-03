@@ -6,7 +6,13 @@ import org.mastodon.graph.ref.AbstractListenableEdge;
 /**
  * Manages the model graph.
  *
- * @author Tobias Pietzsch &lt;tobias.pietzsch@gmail.com&gt;
+ * @author Tobias Pietzsch
+ * @param <MG>
+ *            the model-graph used in this model.
+ * @param <V>
+ *            the type of vertices in the model-graph.
+ * @param <E>
+ *            the type of edges in the model-graph.
  */
 public class AbstractModel<
 		MG extends AbstractModelGraph< MG, ?, ?, V, E, ? >,

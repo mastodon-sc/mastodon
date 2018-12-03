@@ -17,7 +17,7 @@ import org.mastodon.revised.model.tag.TagSetStructure.Tag;
  * </p>
  * <p>
  * Tags must map to {@link Integer} IDs that are globally unique across all tag
- * sets.The default implementation ({@code DefaultObjTagMap}) is backed by a
+ * sets. The default implementation ({@code DefaultObjTagMap}) is backed by a
  * {@link LabelSets} property of the objects (which can be shared among all
  * {@code DefaultObjTagMap}s).
  * </p>

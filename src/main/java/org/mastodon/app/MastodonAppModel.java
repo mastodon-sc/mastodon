@@ -29,6 +29,13 @@ import org.scijava.ui.behaviour.util.Actions;
  * application.
  *
  * @author Jean-Yves Tinevez
+ * @author Tobias Pietzsch
+ * @param <M>
+ *            the type of the model used in the application.
+ * @param <V>
+ *            the type of vertices in the model graph.
+ * @param <E>
+ *            the type of edges in the model graph.
  */
 public class MastodonAppModel<
 		M extends AbstractModel< ?, V, E >,
@@ -63,20 +70,29 @@ public class MastodonAppModel<
 	private final Actions appActions;
 
 	/**
-	 * Actions that are always available, even if no ({@code {@link MastodonAppModel}} currently exists.
+	 * Actions that are always available, even if no {@link MastodonAppModel}
+	 * currently exists.
 	 */
 	private final Actions globalActions;
 
-
 	/**
+	 * Instantiate a new Mastodon-app model.
+	 *
 	 * @param numGroups
+	 *            the number of groups to create in the group manager,
 	 * @param model
+	 *            the data model.
 	 * @param keyPressedManager
+	 *            the key-pressed manager.
 	 * @param keymapManager
+	 *            the keymap manager.
 	 * @param plugins
+	 *            the plugins.
 	 * @param globalActions
+	 *            the global actions.
 	 * @param keyConfigContexts
-	 *            keyconf contexts for appActions (actions that should be available in all views)
+	 *            keyconf contexts for appActions (actions that should be
+	 *            available in all views)
 	 */
 	public MastodonAppModel(
 			final int numGroups,
@@ -170,6 +186,8 @@ public class MastodonAppModel<
 
 	/**
 	 * Actions that should be available in all views.
+	 *
+	 * @return the application actions.
 	 */
 	public Actions getAppActions()
 	{
@@ -177,7 +195,10 @@ public class MastodonAppModel<
 	}
 
 	/**
-	 * Actions that are always available, even if no ({@code {@link MastodonAppModel}} currently exists.
+	 * Actions that are always available, even if no {@link MastodonAppModel}
+	 * currently exists.
+	 *
+	 * @return the global actions.
 	 */
 	public Actions getGlobalActions()
 	{
