@@ -48,6 +48,8 @@ public class TgmmImporter extends AbstractModelImporter< Model >
 	 *            {@code /Volumes/Data/TGMM_TL0-528_xmls_curated/GMEMfinalResult_frame%04d.xml}
 	 * @param timepointsToRead
 	 *            the desired time-points to read.
+	 * @param timepointToIndex
+	 *            mapping between time-point and index in the file name.
 	 * @param viewRegistrations
 	 *            the {@link ViewRegistrations} to position the tracks in the
 	 *            proper coordinate system.
@@ -253,7 +255,13 @@ public class TgmmImporter extends AbstractModelImporter< Model >
 		System.out.println( " Done." );
 
 		System.out.println( "Reading the model." );
-		final Model model = new Model();
+		final String timeUnits = "frame";
+		final String spaceUnits;
+		if ( spimData.getSequenceDescription().getViewSetupsOrdered().isEmpty() )
+			spaceUnits = "pixel";
+		else
+			spaceUnits = spimData.getSequenceDescription().getViewSetupsOrdered().get( 0 ).getVoxelSize().unit();
+		final Model model = new Model( spaceUnits, timeUnits );
 		read( tgmmFiles, timepoints, timepointToIndex, viewRegistrations, setupID, 2, model );
 		final long end = System.currentTimeMillis();
 		System.out.println( "Done  in " + ( end - start ) / 1000d + " s." );

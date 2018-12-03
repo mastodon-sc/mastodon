@@ -14,7 +14,6 @@ import org.jdom2.output.Format;
 import org.jdom2.output.XMLOutputter;
 import org.scijava.ui.behaviour.io.InputTriggerConfig;
 
-import bdv.BehaviourTransformEventHandler3D.BehaviourTransformEventHandler3DFactory;
 import bdv.BigDataViewer;
 import bdv.ViewerImgLoader;
 import bdv.cache.CacheControl;
@@ -24,7 +23,6 @@ import bdv.tools.bookmarks.Bookmarks;
 import bdv.tools.brightness.BrightnessDialog;
 import bdv.tools.brightness.ConverterSetup;
 import bdv.tools.brightness.MinMaxGroup;
-import bdv.tools.brightness.RealARGBColorConverterSetup;
 import bdv.tools.brightness.SetupAssignments;
 import bdv.tools.transformation.ManualTransformation;
 import bdv.viewer.RequestRepaint;

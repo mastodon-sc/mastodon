@@ -49,6 +49,7 @@ public class CollectionAdapterReverse< O, WO >
 	public boolean contains( final Object o )
 	{
 		final O ref = map.reusableRightRef();
+		@SuppressWarnings( "unchecked" )
 		final boolean result = collection.contains( map.getRight( ( WO ) o, ref ) );
 		map.releaseRef( ref );
 		return result;
@@ -98,6 +99,7 @@ public class CollectionAdapterReverse< O, WO >
 	public boolean remove( final Object o )
 	{
 		final O ref = map.reusableRightRef();
+		@SuppressWarnings( "unchecked" )
 		final boolean result = collection.remove( map.getRight( ( WO ) o, ref ) );
 		map.releaseRef( ref );
 		return result;

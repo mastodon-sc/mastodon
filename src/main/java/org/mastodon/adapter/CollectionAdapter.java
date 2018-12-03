@@ -45,6 +45,7 @@ public class CollectionAdapter< O, WO >
 		return collection.isEmpty();
 	}
 
+	@SuppressWarnings( "unchecked" )
 	@Override
 	public boolean contains( final Object o )
 	{
@@ -89,6 +90,7 @@ public class CollectionAdapter< O, WO >
 		return collection.add( map.getLeft( e ) );
 	}
 
+	@SuppressWarnings( "unchecked" )
 	@Override
 	public boolean remove( final Object o )
 	{

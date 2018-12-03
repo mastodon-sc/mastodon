@@ -23,8 +23,14 @@ import org.scijava.ui.behaviour.io.gui.VisualEditorPanel;
 public class KeymapSettingsPage extends SelectAndEditProfileSettingsPage< StyleProfile< Keymap > >
 {
 	/**
+	 * Creates a new settings page for Keymaps.
+	 *
 	 * @param treePath
-	 * 		path of this page in the settings tree.
+	 *            path of this page in the settings tree.
+	 * @param styleManager
+	 *            the keymap manager.
+	 * @param commandDescriptions
+	 *            the command descriptions.
 	 */
 	public KeymapSettingsPage( final String treePath, final KeymapManager styleManager, final CommandDescriptions commandDescriptions )
 	{

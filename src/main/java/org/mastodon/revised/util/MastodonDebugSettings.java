@@ -26,6 +26,8 @@ public interface MastodonDebugSettings
 	 * IntelliJ IDE for example, so not Mastodon-specific.
 	 * <p>
 	 * Seems to be fixed in jdk1.8.0_162.
+	 *
+	 * @return whether menu accelerators should be used.
 	 */
 	boolean isUseMenuAccelerators();
 

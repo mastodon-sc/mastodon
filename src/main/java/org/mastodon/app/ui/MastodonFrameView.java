@@ -25,15 +25,17 @@ import org.scijava.ui.behaviour.util.WrappedInputMap;
  * just a panel, for instance).
  *
  * @param <M>
+ *            the type of the mastodon-app model.
  * @param <VG>
+ *            the type of the view-graph displayed in this view.
  * @param <MV>
- *            model vertex type
+ *            model vertex type.
  * @param <ME>
- *            model edge type
+ *            model edge type.
  * @param <V>
- *            view vertex type
+ *            view vertex type.
  * @param <E>
- *            view edge type
+ *            view edge type.
  *
  * @author Tobias Pietzsch
  */

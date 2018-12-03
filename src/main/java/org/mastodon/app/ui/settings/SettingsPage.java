@@ -13,6 +13,8 @@ public interface SettingsPage
 {
 	/**
 	 * Get the path of this page in the settings tree.
+	 *
+	 * @return the path.
 	 */
 	public String getTreePath();
 

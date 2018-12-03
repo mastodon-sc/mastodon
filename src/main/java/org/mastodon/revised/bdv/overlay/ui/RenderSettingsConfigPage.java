@@ -20,8 +20,12 @@ import org.mastodon.util.Listeners;
 public class RenderSettingsConfigPage extends SelectAndEditProfileSettingsPage< StyleProfile< RenderSettings > >
 {
 	/**
+	 * Creates a new render-settings config page.
+	 *
 	 * @param treePath
 	 * 		path of this page in the settings tree.
+	 * @param renderSettingsManager
+	 *            the render settings manager.
 	 */
 	public RenderSettingsConfigPage( final String treePath, final RenderSettingsManager renderSettingsManager )
 	{

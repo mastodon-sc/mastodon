@@ -7,14 +7,18 @@ import javax.swing.JPanel;
 import org.mastodon.util.Listeners;
 
 /**
- * Helper class to easily put a {@link JPanel} as a page into a {@link SettingsPanel}.
+ * Helper class to easily put a {@link JPanel} as a page into a
+ * {@link SettingsPanel}.
  * <p>
- * Call {@link #notifyModified()} when edits were made in your panel.
- * (This will trigger correct "Cancel", "Apply", and "OK" behaviour by the {@link SettingsPanel}.)
+ * Call {@link #notifyModified()} when edits were made in your panel. (This will
+ * trigger correct "Cancel", "Apply", and "OK" behaviour by the
+ * {@link SettingsPanel}.)
  * </p>
  * <p>
- * To specify what should happen on "Apply" (propagate panel edits to your data model) add a {@link #runOnApply} callback.
- * To specify what should happen on "Cancel" (reset panel contents to your data model) add a {@link #runOnCancel} callback.
+ * To specify what should happen on "Apply" (propagate panel edits to your data
+ * model) add a {@code #runOnApply} callback. To specify what should happen on
+ * "Cancel" (reset panel contents to your data model) add a {@code #runOnCancel}
+ * callback.
  * </p>
  *
  * @author Tobias Pietzsch

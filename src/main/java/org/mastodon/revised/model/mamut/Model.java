@@ -12,6 +12,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
+import net.imglib2.RealLocalizable;
+
 import org.mastodon.feature.FeatureModel;
 import org.mastodon.graph.ReadOnlyGraph;
 import org.mastodon.graph.io.RawGraphIO.FileIdToGraphMap;
@@ -29,8 +31,6 @@ import org.mastodon.spatial.SpatioTemporalIndexImpRebuilderThread;
 import org.mastodon.undo.GraphUndoRecorder;
 import org.mastodon.undo.Recorder;
 import org.mastodon.undo.UndoPointMarker;
-
-import net.imglib2.RealLocalizable;
 
 /**
  * A model built to manage a graph of {@link Spot}s and {@link Link}s.
@@ -145,16 +145,16 @@ public class Model extends AbstractModel< ModelGraph, Spot, Link > implements Un
 	{
 		final FileIdToGraphMap< Spot, Link > idmap = modelGraph.loadRaw( reader.getRawModelInputStream(), ModelSerializer.getInstance() );
 
-		try
+		try (
+				final InputStream tis = reader.getRawTagsInputStream();
+				final ObjectInputStream ois = new ObjectInputStream( new BufferedInputStream( tis, 1024 * 1024 ) )
+		)
 		{
-			final InputStream tis = reader.getRawTagsInputStream();
-			final ObjectInputStream ois = new ObjectInputStream( new BufferedInputStream( tis, 1024 * 1024 ) );
 //			tagSetModel.pauseListeners(); // TODO
 			RawTagSetModelIO.read( tagSetModel, idmap, ois );
-			ois.close();
 //			tagSetModel.resumeListeners(); // TODO
 		}
-		catch ( FileNotFoundException e )
+		catch ( final FileNotFoundException e )
 		{
 //			tagSetModel.clear(); // TODO
 		}
@@ -164,7 +164,7 @@ public class Model extends AbstractModel< ModelGraph, Spot, Link > implements Un
 	 * Saves this model to the specified the specified project folder.
 	 *
 	 * @param writer
-	 *            	writer to save the raw project files.
+	 *            writer to save the raw project files.
 	 * @throws IOException
 	 *             if an I/O error occurs while writing the file.
 	 */
@@ -172,10 +172,13 @@ public class Model extends AbstractModel< ModelGraph, Spot, Link > implements Un
 	{
 		final GraphToFileIdMap< Spot, Link > idmap = modelGraph.saveRaw( writer.getRawModelOutputStream(), ModelSerializer.getInstance() );
 
-		final OutputStream fos = writer.getRawTagsOutputStream();
-		final ObjectOutputStream oos = new ObjectOutputStream( new BufferedOutputStream( fos, 1024 * 1024 ) );
-		RawTagSetModelIO.write( tagSetModel, idmap, oos );
-		oos.close();
+		try (
+				final OutputStream fos = writer.getRawTagsOutputStream();
+				final ObjectOutputStream oos = new ObjectOutputStream( new BufferedOutputStream( fos, 1024 * 1024 ) )
+		)
+		{
+			RawTagSetModelIO.write( tagSetModel, idmap, oos );
+		}
 	}
 
 	/**

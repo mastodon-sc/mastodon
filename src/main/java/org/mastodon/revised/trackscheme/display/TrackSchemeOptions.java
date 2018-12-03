@@ -97,7 +97,7 @@ public class TrackSchemeOptions
 	}
 
 	/**
-	 * Set the {@link KeyPressedManager} to share
+	 * Sets the {@link KeyPressedManager} to share
 	 * {@link KeyListener#keyPressed(java.awt.event.KeyEvent)} events with other
 	 * ui-behaviour windows.
 	 * <p>
@@ -107,7 +107,8 @@ public class TrackSchemeOptions
 	 * </p>
 	 *
 	 * @param manager
-	 * @return
+	 *            the key-pressed manager.
+	 * @return this instance.
 	 */
 	public TrackSchemeOptions shareKeyPressedEvents( final KeyPressedManager manager )
 	{

@@ -1,7 +1,5 @@
 package org.mastodon.revised.model;
 
-import org.mastodon.util.DelegateRealLocalizable;
-import org.mastodon.util.DelegateRealPositionable;
 import org.mastodon.graph.ref.AbstractListenableEdge;
 import org.mastodon.graph.ref.AbstractListenableVertex;
 import org.mastodon.pool.ByteMappedElement;
@@ -9,6 +7,8 @@ import org.mastodon.pool.MappedElement;
 import org.mastodon.pool.attributes.IntAttributeValue;
 import org.mastodon.pool.attributes.RealPointAttributeValue;
 import org.mastodon.spatial.HasTimepoint;
+import org.mastodon.util.DelegateRealLocalizable;
+import org.mastodon.util.DelegateRealPositionable;
 
 /**
  * Base class for specialized vertices that are part of a graph, and are used to
@@ -20,9 +20,13 @@ import org.mastodon.spatial.HasTimepoint;
  * @param <V>
  *            the recursive type of the concrete implementation.
  * @param <E>
- *            associated edge type
+ *            associated edge type.
+ * @param <VP>
+ *            the type of the vertex pool.
  * @param <T>
  *            the MappedElement type, for example {@link ByteMappedElement}.
+ * @param <G>
+ *            the type of the model graph using this class as vertex class.
  *
  * @author Jean-Yves Tinevez
  * @author Tobias Pietzsch

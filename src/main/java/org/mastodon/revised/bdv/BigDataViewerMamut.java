@@ -36,13 +36,10 @@ import javax.swing.JFileChooser;
 import javax.swing.filechooser.FileFilter;
 
 import org.mastodon.grouping.GroupHandle;
-import org.scijava.ui.behaviour.io.InputTriggerConfig;
 
 import bdv.tools.VisibilityAndGroupingDialog;
 import bdv.tools.bookmarks.BookmarksEditor;
 import bdv.tools.brightness.BrightnessDialog;
-import bdv.viewer.NavigationActions;
-import bdv.viewer.ViewerPanel;
 
 public class BigDataViewerMamut
 {
@@ -77,8 +74,6 @@ public class BigDataViewerMamut
 			final GroupHandle groupHandle )
 	{
 		this.shared = shared;
-		final InputTriggerConfig inputTriggerConfig = shared.getInputTriggerConfig();
-
 		viewerFrame = new ViewerFrameMamut(
 				windowTitle,
 				shared.getSources(),

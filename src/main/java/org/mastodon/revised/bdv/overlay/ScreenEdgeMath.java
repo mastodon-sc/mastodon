@@ -16,7 +16,12 @@ import net.imglib2.realtransform.AffineTransform3D;
  * provide the requested value. Intermediate results are cached.
  * </ol>
  *
- * @author Tobias Pietzsch &lt;tobias.pietzsch@gmail.com&gt;
+ * @param <V>
+ *            OverlayVertex type.
+ * @param <E>
+ *            OverlayEdge type.
+ *
+ * @author Tobias Pietzsch
  */
 public class ScreenEdgeMath< V extends OverlayVertex< V, E >, E extends OverlayEdge< E, V > >
 {

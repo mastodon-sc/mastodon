@@ -33,12 +33,14 @@ public class CommandDescriptionsBuilder extends AbstractContextual
 	private final List< ProviderAndContext > registered = new ArrayList<>();
 
 	/**
-	 * Manually add a {@code provider} in a specified {@code context}. For
+	 * Manually adds a {@code provider} in a specified {@code context}. For
 	 * example, this is useful for adding stuff in a specific order, for
 	 * building nice {@code keyconfig.yaml} files.
 	 *
 	 * @param provider
+	 *            the provider to add.
 	 * @param context
+	 *            the context to add to.
 	 */
 	public void addManually( final CommandDescriptionProvider provider, final String context )
 	{
@@ -56,7 +58,9 @@ public class CommandDescriptionsBuilder extends AbstractContextual
 	 * building nice {@code keyconfig.yaml} files.
 	 *
 	 * @param provider
+	 *            the provider to add.
 	 * @param contexts
+	 *            the list of contexts to add to.
 	 */
 	public void addManually( final CommandDescriptionProvider provider, final String ... contexts )
 	{
@@ -64,7 +68,7 @@ public class CommandDescriptionsBuilder extends AbstractContextual
 	}
 
 	/**
-	 * Add all {@link CommandDescriptionProvider}s on the plugin index, with
+	 * Adds all {@link CommandDescriptionProvider}s on the plugin index, with
 	 * their respective {@link CommandDescriptionProvider#getExpectedContexts()
 	 * expected contexts}.
 	 */
