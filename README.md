@@ -12,34 +12,60 @@ Modern microscopy technologies such as light sheet microscopy allows live sample
 
 The goals of Mastodon are the following:
 
-- **Interactive** browsing, inspection and navigation through the image data. Fast and reponsive.
+- **Interactive** browsing, inspection and navigation through the image data. Fast and responsive.
 - Build **tracking and lineage data** from images.
-- **User-friendly** framework to navigate throught this data. Easy to relate spatial information with hierarchical information. Easily orient the user in a possibly very large annotation.
-- "Pointwise" **interactive editing** of the tracking and lineage data. Manual curation.
+- **User-friendly** framework to navigate through this data. Easy to relate spatial information with hierarchical information. Easily orient the user in a possibly very large annotation.
+- "Point-wise" **interactive editing** of the tracking and lineage data. Manual curation.
 - **Semi-automatic and fully automatic tracking**.
 - **Numerical features** and statistics on tracking data. **Tagging of this data**. Tags and numerical features can then be used to to enrich the visualization.
 - **Extensible**: a 3rd party can build plugins for Mastodon:
   - Custom numerical feature analysers;
-  - Custom trackgin algorithms (detection and particle-linking algorithms);
+  - Custom tracking algorithms (detection and particle-linking algorithms);
   - General-use plugins.
+
+## Mastodon components.
+
+![BDV and TrackScheme](doc/Mastodon_BDV_and_TrackScheme.png)
+
+### BDV windows.
+
+Display image data and overlay the tracking data. Single objects (spots or links) can be individually edited.
+
+![Multi-view image in BDV](doc/Mastodon_BDV-moving.png)
+
+![Single track in BDV](doc/Mastodon_BDV-editing.png)
+
+### TrackScheme windows.
+
+TrackScheme is used to display a hierarchical view of the lineage data. The tracks are arranged from left to right, and time is laid out from top to bottom.
+
+![TrackScheme example 2](doc/Mastodon_TracSchemeColoring_02.png)
+
+![TrackScheme example 3](doc/Mastodon_TracSchemeColoring_03.png)
 
 ## Mastodon technologies.
 
-Mastodon relies on several technologies to achieve these goals, specially developed for them.
+Mastodon is a Java software that relies on several technologies to achieve these goals, specially developed for it.
 
-*Interactive visualization and navigation of large images thanks to the BigDataViewer* (BDV, https://imagej.net/BigDataViewer). Any file that can be opened in the BDV will work in Mastodon (BDV HSF5 file format, KLB, Keller-Lab Blocks file format, N5 file format, ...). These file formats enable interactive visualiztion of multi-view TB dataset at the one-time cost of a file conversion. Also, they can be exploited for efficient image processing in special cases, taking advantage of multi-scale pyramidal representation and blocks decomposition. 
+*Interactive visualization and navigation of large images thanks to the BigDataViewer* ([BDV](https://imagej.net/BigDataViewer). Any file that can be opened in the BDV will work in Mastodon (BDV HSF5 file format, KLB, Keller-Lab Blocks file format, N5 file format, ...). These file formats enable interactive visualization of multi-view TB dataset at the one-time cost of a file conversion. Also, they can be exploited for efficient image processing in special cases, taking advantage of multi-scale pyramidal representation and blocks decomposition. 
 
-*Mastodon-collection: a high performance framework to manipulate collections of data*. Mastodon-collection was developped specifically for this project. It offers an in-memory compact layout storage of objects. Mastodon collections have a much smaller memory footprint. Objects in a mastodon collection are contiguous in memory,  
+*[Mastodon-collection](https://github.com/bigdataviewer/mastodon-collection): a high performance framework to manipulate collections of data*. Mastodon-collection was developed specifically for this project. It offers an in-memory compact layout storage of objects. Mastodon collections have a much smaller memory footprint. Objects in a mastodon collection are contiguous in memory. Thanks to CPU cache and [data locality](http://gameprogrammingpatterns.com/data-locality.html), iterating these collections is much faster than classical object collections. Mastodon-collection also offers techniques to do garbage-collection-free manipulations in Java, considerably improving the responsiveness of applications based on it.
 
-allowing to manipulate many of them seamess
+*[Mastodon-graph](https://github.com/bigdataviewer/mastodon-graph): a data structure based on mastodon-collection, and optimized for lineage and tracking data.* Mastodon-graph is a graph library based on mastodon-collections, that underlies the data model of Mastodon.
 
-## How to use.
+*Efficient retrieval of objects in space and time*. User interactions with tracking objects rely on [Kd-tree search on convex polytopes](http://fly.mpi-cbg.de/~pietzsch/polytope.pdf).
 
-The keyboard shortcuts listed below are valid for the _default_ keymap.
+*Level of detail to display large number of objects*. TrackScheme automatically adapts the level of detail while displaying data at varying scales.
 
-### BigDataViewer (BDV) windows.
+## Usage.
 
-#### Moving around and display in BDV windows.
+### Actions and keyboard shortcuts.
+
+The keyboard shortcuts listed below are valid for the _default_ key-map.
+
+#### BigDataViewer (BDV) windows.
+
+##### Moving around and display in BDV windows.
 
 | Action                           | Key                                                          |
 | -------------------------------- | ------------------------------------------------------------ |
@@ -63,7 +89,7 @@ The keyboard shortcuts listed below are valid for the _default_ keymap.
 | Visibility and grouping dialog.  | Press F6. In this dialog you can define what sources are visible in fused mode, and define groups of sources for use in the grouping mode. |
 | Save / load display settings.    | F11 / F12. This will create a XYZ_settings.xml file in which the display settings will be saved. |
 
-#### Manual editing and navigation in BDV windows.
+##### Manual editing and navigation in BDV windows.
 
 | Action                                    | Key                                                          |
 | ----------------------------------------- | ------------------------------------------------------------ |
@@ -84,9 +110,9 @@ The keyboard shortcuts listed below are valid for the _default_ keymap.
 | Undo.                                     | `Control-Z`.                                                 |
 | Redo.                                     | `Control-shift-Z.`                                           |
 
-### TrackScheme windows.
+#### TrackScheme windows.
 
-#### Navigation through lineages in BDV and TrackScheme windows.
+##### Navigation through lineages in BDV and TrackScheme windows.
 
 | Action                                     | Key                                                          |
 | ------------------------------------------ | ------------------------------------------------------------ |
@@ -100,7 +126,7 @@ The keyboard shortcuts listed below are valid for the _default_ keymap.
 | Select all children.                       | `Shift + ⇟`. Select all the children of this spots, that is all the spots in its lineage forward in time. |
 | Select all lineage.                        | `Shift + space`. Select all the spots of this spot lineage.  |
 
-#### Moving around in TrackScheme windows.
+##### Moving around in TrackScheme windows.
 
 | Action                  | Key                                                          |
 | ----------------------- | ------------------------------------------------------------ |
@@ -117,7 +143,7 @@ Drag a rectangle with the `Z` key pressed. TrackScheme will zoom to this rectang
 If TrackScheme is fully zoomed, a tap of `Z` unzoom fully.
 ![TrackScheme_ZoomBox](https://user-images.githubusercontent.com/3583203/32853983-6bfdd534-ca3d-11e7-8437-ec76eb04ae61.gif)
 
-#### Manual track editing in TrackScheme windows.
+##### Manual track editing in TrackScheme windows.
 
 | Action                              | Key                                                          |
 | ----------------------------------- | ------------------------------------------------------------ |
