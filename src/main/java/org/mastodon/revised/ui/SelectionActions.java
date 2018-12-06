@@ -3,6 +3,8 @@ package org.mastodon.revised.ui;
 import java.awt.event.ActionEvent;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
+import javax.swing.SwingUtilities;
+
 import org.mastodon.collection.RefCollections;
 import org.mastodon.collection.RefSet;
 import org.mastodon.graph.Edge;
@@ -146,8 +148,9 @@ public class SelectionActions< V extends Vertex< E >, E extends Edge< V > >
 		DeleteSelectionAction( final String name )
 		{
 			super( name );
-			setEnabled( !selection.isEmpty() );
-			selection.listeners().add( () -> setEnabled( !selection.isEmpty() ) );
+			SwingUtilities.invokeLater( () -> setEnabled( !selection.isEmpty() ) );
+			selection.listeners().add( () -> SwingUtilities.invokeLater(
+					() -> setEnabled( !selection.isEmpty() ) ) );
 		}
 
 		@Override
@@ -191,8 +194,9 @@ public class SelectionActions< V extends Vertex< E >, E extends Edge< V > >
 		{
 			super( name );
 			this.directivity = directivity;
-			setEnabled( !selection.isEmpty() );
-			selection.listeners().add( () -> setEnabled( !selection.isEmpty() ) );
+			SwingUtilities.invokeLater( () -> setEnabled( !selection.isEmpty() ) );
+			selection.listeners().add( () -> SwingUtilities.invokeLater(
+					() -> setEnabled( !selection.isEmpty() ) ) );
 		}
 
 		@Override
