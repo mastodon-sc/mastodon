@@ -465,13 +465,14 @@ public class MamutExporter
 		}
 
 		final SpatioTemporalIndex< Spot > spots = model.getSpatioTemporalIndex();
-		for ( final TimePoint tp : tps )
+		for ( int tpIndex = 0; tpIndex < tps.size(); tpIndex++ )
 		{
+			final TimePoint tp = tps.get( tpIndex );
 
 			final Element frameSpotsElement = new Element( SPOT_FRAME_COLLECTION_TAG );
 			frameSpotsElement.setAttribute( FRAME_ATTRIBUTE, tp.getName() );
 
-			for ( final Spot spot : spots.getSpatialIndex( tp.getId() ) )
+			for ( final Spot spot : spots.getSpatialIndex( tpIndex ) )
 			{
 				final Element spotElement = spotToXml( spot );
 				frameSpotsElement.addContent( spotElement );
