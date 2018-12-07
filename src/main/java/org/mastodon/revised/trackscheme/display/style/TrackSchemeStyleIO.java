@@ -24,6 +24,8 @@ import org.yaml.snakeyaml.nodes.SequenceNode;
 import org.yaml.snakeyaml.nodes.Tag;
 import org.yaml.snakeyaml.representer.Representer;
 
+import static org.yaml.snakeyaml.DumperOptions.FlowStyle.FLOW;
+
 public class TrackSchemeStyleIO
 {
 	public static final Tag COLOR_TAG = new Tag( "!color" );
@@ -77,7 +79,7 @@ public class TrackSchemeStyleIO
 					c.getGreen(),
 					c.getBlue(),
 					c.getAlpha() );
-			return representSequence( getTag(), rgba, Boolean.TRUE );
+			return representSequence( getTag(), rgba, FLOW );
 		}
 	}
 
@@ -135,7 +137,7 @@ public class TrackSchemeStyleIO
 			}
 			mapping.put( "dash", dash );
 			mapping.put( "dash_phase", s.getDashPhase() );
-			final Node node = representMapping( getTag(), mapping, Boolean.TRUE );
+			final Node node = representMapping( getTag(), mapping, FLOW );
 			return node;
 		}
 	}
@@ -195,7 +197,7 @@ public class TrackSchemeStyleIO
 			mapping.put( "name", f.getName() );
 			mapping.put( "style", f.getStyle() );
 			mapping.put( "size", f.getSize() );
-			final Node node = representMapping( getTag(), mapping, Boolean.TRUE );
+			final Node node = representMapping( getTag(), mapping, FLOW );
 			return node;
 		}
 	}

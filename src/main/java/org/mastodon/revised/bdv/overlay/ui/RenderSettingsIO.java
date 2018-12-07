@@ -19,9 +19,11 @@ import org.yaml.snakeyaml.nodes.Node;
 import org.yaml.snakeyaml.nodes.Tag;
 import org.yaml.snakeyaml.representer.Representer;
 
+import static org.yaml.snakeyaml.DumperOptions.FlowStyle.FLOW;
+
 /**
  * Facilities to dump / load {@link RenderSettings} to / from a YAML file.
- * 
+ *
  * @author Jean-Yves Tinevez
  *
  */
@@ -89,7 +91,7 @@ public class RenderSettingsIO
 			}
 			mapping.put( "dash", dash );
 			mapping.put( "dash_phase", s.getDashPhase() );
-			final Node node = representMapping( getTag(), mapping, Boolean.TRUE );
+			final Node node = representMapping( getTag(), mapping, FLOW );
 			return node;
 		}
 	}

@@ -27,6 +27,8 @@ import org.yaml.snakeyaml.nodes.SequenceNode;
 import org.yaml.snakeyaml.nodes.Tag;
 import org.yaml.snakeyaml.representer.Representer;
 
+import static org.yaml.snakeyaml.DumperOptions.FlowStyle.FLOW;
+
 /**
  * Serialization / Deserialization of {@link ColorMap}.
  *
@@ -87,7 +89,7 @@ public class ColorMapIO
 			final float[] comps = new float[ 4 ];
 			new Color( c, true ).getRGBComponents( comps );
 			final List< Float > rgba = Arrays.asList( comps[ 0 ], comps[ 1 ], comps[ 2 ], comps[ 3 ] );
-			return representSequence( getTag(), rgba, Boolean.TRUE );
+			return representSequence( getTag(), rgba, FLOW );
 		}
 	}
 

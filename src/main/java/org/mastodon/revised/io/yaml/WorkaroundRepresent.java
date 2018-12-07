@@ -2,6 +2,8 @@ package org.mastodon.revised.io.yaml;
 
 import java.util.Map;
 
+import org.yaml.snakeyaml.DumperOptions;
+import org.yaml.snakeyaml.DumperOptions.FlowStyle;
 import org.yaml.snakeyaml.nodes.Node;
 import org.yaml.snakeyaml.nodes.Tag;
 import org.yaml.snakeyaml.representer.Represent;
@@ -21,19 +23,19 @@ public abstract class WorkaroundRepresent implements Represent
 		this.clazz = clazz;
 	}
 
-	protected Node representSequence( final Tag tag, final Iterable< ? > sequence, final Boolean flowStyle )
+	protected Node representSequence( final Tag tag, final Iterable< ? > sequence, final FlowStyle flowStyle )
 	{
 		return r.representSequence( tag, sequence, flowStyle );
 	}
 
-	protected Node representMapping( final Tag tag, final Map< ?, ? > mapping, final Boolean flowStyle )
+	protected Node representMapping( final Tag tag, final Map< ?, ? > mapping, final FlowStyle flowStyle )
 	{
 		return r.representMapping( tag, mapping, flowStyle );
 	}
 
-	protected Boolean getDefaultFlowStyle()
+	protected FlowStyle getDefaultFlowStyle()
 	{
-		return r.getDefaultFlowStyle().getStyleBoolean();
+		return r.getDefaultFlowStyle();
 	}
 
 	protected Tag getTag()

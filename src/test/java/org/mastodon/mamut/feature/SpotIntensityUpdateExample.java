@@ -47,8 +47,7 @@ public class SpotIntensityUpdateExample
 		featureComputerService.setModel( model );
 		featureComputerService.setSharedBdvData( windowManager.getAppModel().getSharedBdvData() );
 		System.out.println( "Computing spot intensity..." );
-		final StopWatch stopWatch = new StopWatch();
-		stopWatch.start();
+		final StopWatch stopWatch = StopWatch.createAndStart();
 		final Map< FeatureSpec< ?, ? >, Feature< ? > > features = featureComputerService.compute(
 				SpotGaussFilteredIntensityFeature.SPEC );
 		stopWatch.stop();

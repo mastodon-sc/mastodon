@@ -18,6 +18,8 @@ import org.yaml.snakeyaml.nodes.Node;
 import org.yaml.snakeyaml.nodes.Tag;
 import org.yaml.snakeyaml.representer.Representer;
 
+import static org.yaml.snakeyaml.DumperOptions.FlowStyle.FLOW;
+
 public class FeatureColorModeIO
 {
 	private static class FeatureColorModeRepresenter extends WorkaroundRepresenter
@@ -67,7 +69,7 @@ public class FeatureColorModeIO
 			mapping.put( "target", p.getTargetType().name() );
 			mapping.put( "i0", p.getI0() );
 			mapping.put( "i1", p.getI1() );
-			final Node node = representMapping( getTag(), mapping, Boolean.TRUE );
+			final Node node = representMapping( getTag(), mapping, FLOW );
 			return node;
 		}
 	}
