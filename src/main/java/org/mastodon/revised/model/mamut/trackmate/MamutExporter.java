@@ -566,6 +566,7 @@ public class MamutExporter
 		return featuresElement;
 	}
 
+	@SuppressWarnings( { "unchecked", "rawtypes" } )
 	private < T > void appendFeaturesDeclarationOfClass( final Class< T > clazz, final Element featuresElement, final String classFeatureDeclarationTag )
 	{
 		final List< ExportFeatureProjection< T > > projections;

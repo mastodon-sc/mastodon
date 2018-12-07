@@ -7,7 +7,6 @@ import java.util.Set;
 
 import org.scijava.Cancelable;
 import org.scijava.service.SciJavaService;
-import org.scijava.service.Service;
 
 public interface FeatureComputerService extends Cancelable, SciJavaService
 {
@@ -41,7 +40,7 @@ public interface FeatureComputerService extends Cancelable, SciJavaService
 	/**
 	 * Returns the list of dependencies identified for the feature with the
 	 * given specification.
-	 * 
+	 *
 	 * @param spec
 	 *            the specification of the feature to query.
 	 * @return the dependencies.

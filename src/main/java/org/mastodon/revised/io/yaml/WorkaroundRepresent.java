@@ -2,7 +2,6 @@ package org.mastodon.revised.io.yaml;
 
 import java.util.Map;
 
-import org.yaml.snakeyaml.DumperOptions;
 import org.yaml.snakeyaml.DumperOptions.FlowStyle;
 import org.yaml.snakeyaml.nodes.Node;
 import org.yaml.snakeyaml.nodes.Tag;

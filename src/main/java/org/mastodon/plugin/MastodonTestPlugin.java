@@ -39,6 +39,7 @@ public class MastodonTestPlugin implements MastodonPlugin
 		}
 	}
 
+	@SuppressWarnings( "unused" )
 	private MastodonPluginAppModel appModel;
 
 	private static Map< String, String > menuTexts = new HashMap<>();
@@ -50,6 +51,8 @@ public class MastodonTestPlugin implements MastodonPlugin
 
 	private final AbstractNamedAction action1 = new AbstractNamedAction( ACTION_1 )
 	{
+		private static final long serialVersionUID = 1L;
+
 		@Override
 		public void actionPerformed( final ActionEvent e )
 		{
