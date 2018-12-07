@@ -625,9 +625,7 @@ public class MamutExporter
 	 */
 	private static String unitsToDimension( final String units, final String spaceUnits, final String timeUnits )
 	{
-		if ( units.equals( Dimension.QUALITY_UNITS ) )
-			return "QUALITY";
-		else if ( units.equals( Dimension.COUNTS_UNITS ) )
+		if ( units.equals( Dimension.COUNTS_UNITS ) )
 			return "INTENSITY";
 		else if ( units.equals( Dimension.COUNTS_SQUARED_UNITS ) )
 			return "INTENSITY_SQUARED";
