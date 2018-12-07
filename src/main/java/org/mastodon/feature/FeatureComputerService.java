@@ -6,9 +6,10 @@ import java.util.Map;
 import java.util.Set;
 
 import org.scijava.Cancelable;
+import org.scijava.service.SciJavaService;
 import org.scijava.service.Service;
 
-public interface FeatureComputerService extends Cancelable, Service
+public interface FeatureComputerService extends Cancelable, SciJavaService
 {
 
 	/**

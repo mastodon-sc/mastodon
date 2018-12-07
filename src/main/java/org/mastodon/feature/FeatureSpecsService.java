@@ -10,12 +10,13 @@ import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import org.scijava.plugin.PluginService;
 import org.scijava.service.AbstractService;
+import org.scijava.service.SciJavaService;
 
 /**
  * Helper class to discover and hold {@link FeatureSpec}s.
  */
 @Plugin( type = FeatureSpecsService.class )
-public class FeatureSpecsService extends AbstractService
+public class FeatureSpecsService extends AbstractService implements SciJavaService
 {
 	@Parameter
 	private PluginService pluginService;
