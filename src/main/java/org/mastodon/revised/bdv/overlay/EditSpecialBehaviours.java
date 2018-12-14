@@ -393,27 +393,51 @@ public class EditSpecialBehaviours< V extends OverlayVertex< V, E >, E extends O
 		@Override
 		public void init( final int x, final int y )
 		{
-			lock.writeLock().lock();
-
-			if ( renderer.getVertexAt( x, y, POINT_SELECT_DISTANCE_TOLERANCE, source ) != null )
+			// Read if we have a source candidate at x,y location.
+			lock.readLock().lock();
+			try
 			{
-				// Get vertex we clicked inside.
-				renderer.getGlobalPosition( x, y, start );
+				if ( renderer.getVertexAt( x, y, POINT_SELECT_DISTANCE_TOLERANCE, source ) == null )
+					return;
+
+				System.out.println( "Received reference " + source ); // DEBUG
+
 				source.localize( pos );
-				LinAlgHelpers.subtract( pos, start, start );
-
-				// Set it as ghost vertex for the overlay.
-				overlay.vertex = source;
-				overlay.paintGhostVertex = true;
-
-				// Move to next time point.
-				if ( forward )
-					viewer.nextTimePoint();
-				else
-					viewer.previousTimePoint();
-
-				// Create new vertex under click location.
 				source.getCovariance( mat );
+			}
+			finally
+			{
+				lock.readLock().unlock();
+			}
+
+			System.out.println( "Copied reference to " + source ); // DEBUG
+
+			// Check if we can move to next time point.
+			if ( forward )
+			{
+				if ( renderer.getCurrentTimepoint() >= viewer.getState().getNumTimepoints() - 1 )
+					return;
+				viewer.nextTimePoint();
+			}
+			else
+			{
+				if ( renderer.getCurrentTimepoint() <= 0 )
+					return;
+				viewer.previousTimePoint();
+			}
+
+			// Get vertex we clicked inside.
+			renderer.getGlobalPosition( x, y, start );
+			LinAlgHelpers.subtract( pos, start, start );
+
+			// Set it as ghost vertex for the overlay.
+			overlay.vertex = source;
+			overlay.paintGhostVertex = true;
+
+			// Create new vertex under click location.
+			lock.writeLock().lock();
+			try
+			{
 				final int timepoint = renderer.getCurrentTimepoint();
 				overlayGraph.addVertex( target ).init( timepoint, pos, mat );
 
@@ -429,14 +453,12 @@ public class EditSpecialBehaviours< V extends OverlayVertex< V, E >, E extends O
 				overlay.paintGhostLink = true;
 
 				overlayGraph.notifyGraphChanged();
-
-				lock.readLock().lock();
-				lock.writeLock().unlock();
-
 				moving = true;
 			}
-			else
+			finally
+			{
 				lock.writeLock().unlock();
+			}
 		}
 
 		@Override
@@ -473,7 +495,6 @@ public class EditSpecialBehaviours< V extends OverlayVertex< V, E >, E extends O
 				}
 
 				moving = false;
-				lock.readLock().unlock();
 			}
 		}
 	}
