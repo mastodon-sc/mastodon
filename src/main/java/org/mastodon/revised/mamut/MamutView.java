@@ -1,5 +1,10 @@
 package org.mastodon.revised.mamut;
 
+import javax.swing.ButtonGroup;
+import javax.swing.JCheckBoxMenuItem;
+import javax.swing.JRadioButtonMenuItem;
+import javax.swing.JSeparator;
+
 import org.mastodon.app.ViewGraph;
 import org.mastodon.app.ui.MastodonFrameView;
 import org.mastodon.app.ui.ViewMenuBuilder.JMenuHandle;
@@ -11,6 +16,8 @@ import org.mastodon.revised.model.mamut.Link;
 import org.mastodon.revised.model.mamut.Model;
 import org.mastodon.revised.model.mamut.Spot;
 import org.mastodon.revised.model.tag.TagSetModel;
+import org.mastodon.revised.trackscheme.display.ColorBarOverlay;
+import org.mastodon.revised.trackscheme.display.ColorBarOverlay.Position;
 import org.mastodon.revised.ui.TagSetMenu;
 import org.mastodon.revised.ui.coloring.ColoringMenu;
 import org.mastodon.revised.ui.coloring.ColoringModel;
@@ -31,14 +38,18 @@ public class MamutView< VG extends ViewGraph< Spot, Link, V, E >, V extends Vert
 	 * listeners.
 	 *
 	 * @param colorGeneratorAdapter
-	 *            adapts a (modifiable) model coloring to view vertices/edges.
+	 *                                  adapts a (modifiable) model coloring to view
+	 *                                  vertices/edges.
 	 * @param menuHandle
-	 *            handle to the JMenu corresponding to the coloring submenu.
-	 *            Coloring options will be installed here.
+	 *                                  handle to the JMenu corresponding to the
+	 *                                  coloring submenu. Coloring options will be
+	 *                                  installed here.
 	 * @param refresh
-	 *            triggers repaint of the graph (called when coloring changes)
+	 *                                  triggers repaint of the graph (called when
+	 *                                  coloring changes)
+	 * @return the coloring model of the coloring submenu.
 	 */
-	protected void registerColoring(
+	protected ColoringModel registerColoring(
 			final GraphColorGeneratorAdapter< Spot, Link, V, E > colorGeneratorAdapter,
 			final JMenuHandle menuHandle,
 			final Runnable refresh )
@@ -72,6 +83,43 @@ public class MamutView< VG extends ViewGraph< Spot, Link, V, E >, V extends Vert
 			refresh.run();
 		};
 		coloringModel.listeners().add( coloringChangedListener );
+
+		return coloringModel;
+	}
+
+	protected void registerColorbarOverlay(
+			final ColorBarOverlay colorBarOverlay,
+			final JMenuHandle menuHandle,
+			final Runnable refresh )
+	{
+		menuHandle.getMenu().add( new JSeparator() );
+		final JCheckBoxMenuItem toggleOverlay = new JCheckBoxMenuItem( "Show colorbar", ColorBarOverlay.DEFAULT_VISIBLE );
+		toggleOverlay.addActionListener( ( l ) -> {
+			colorBarOverlay.setVisible( toggleOverlay.isSelected() );
+			refresh.run();
+		} );
+		menuHandle.getMenu().add( toggleOverlay );
+
+		menuHandle.getMenu().add( new JSeparator() );
+		menuHandle.getMenu().add( "Position:" ).setEnabled( false );
+
+		final ButtonGroup buttonGroup = new ButtonGroup();
+		for ( final Position position : Position.values() )
+		{
+			final JRadioButtonMenuItem positionItem = new JRadioButtonMenuItem( position.toString() );
+			positionItem.addActionListener( ( l ) -> {
+				if ( positionItem.isSelected() )
+				{
+					colorBarOverlay.setPosition( position );
+					refresh.run();
+				}
+			} );
+			buttonGroup.add( positionItem );
+			menuHandle.getMenu().add( positionItem );
+
+			if ( position.equals( ColorBarOverlay.DEFAULT_POSITION ) )
+				positionItem.setSelected( true );
+		}
 	}
 
 	protected void registerTagSetMenu(
