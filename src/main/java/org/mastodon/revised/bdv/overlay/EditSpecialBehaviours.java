@@ -23,6 +23,7 @@ import org.scijava.ui.behaviour.DragBehaviour;
 import org.scijava.ui.behaviour.util.AbstractNamedBehaviour;
 import org.scijava.ui.behaviour.util.Behaviours;
 
+import bdv.viewer.TimePointListener;
 import bdv.viewer.ViewerPanel;
 import net.imglib2.realtransform.AffineTransform3D;
 import net.imglib2.ui.OverlayRenderer;
@@ -86,6 +87,9 @@ public class EditSpecialBehaviours< V extends OverlayVertex< V, E >, E extends O
 			final UndoPointMarker undo )
 	{
 		final EditSpecialBehaviours< V, E > eb = new EditSpecialBehaviours<>( viewer, overlayGraph, renderer, selection, focus, undo );
+
+		viewer.addTimePointListener( eb.addSpotAndLinkItForwardBehaviour );
+		viewer.addTimePointListener( eb.addSpotAndLinkItBackwardBehaviour );
 
 		behaviours.namedBehaviour( eb.addSpotAndLinkItForwardBehaviour, ADD_SPOT_AND_LINK_IT_FORWARD_KEYS );
 		behaviours.namedBehaviour( eb.addSpotAndLinkItBackwardBehaviour, ADD_SPOT_AND_LINK_IT_BACKWARD_KEYS );
@@ -358,8 +362,7 @@ public class EditSpecialBehaviours< V extends OverlayVertex< V, E >, E extends O
 		}
 	}
 
-	// TODO What to do if the user changes the time-point while dragging?
-	private class AddSpotAndLinkIt extends AbstractNamedBehaviour implements DragBehaviour
+	private class AddSpotAndLinkIt extends AbstractNamedBehaviour implements DragBehaviour, TimePointListener
 	{
 		private final V source;
 
@@ -400,8 +403,6 @@ public class EditSpecialBehaviours< V extends OverlayVertex< V, E >, E extends O
 				if ( renderer.getVertexAt( x, y, POINT_SELECT_DISTANCE_TOLERANCE, source ) == null )
 					return;
 
-				System.out.println( "Received reference " + source ); // DEBUG
-
 				source.localize( pos );
 				source.getCovariance( mat );
 			}
@@ -409,8 +410,6 @@ public class EditSpecialBehaviours< V extends OverlayVertex< V, E >, E extends O
 			{
 				lock.readLock().unlock();
 			}
-
-			System.out.println( "Copied reference to " + source ); // DEBUG
 
 			// Check if we can move to next time point.
 			if ( forward )
@@ -495,6 +494,36 @@ public class EditSpecialBehaviours< V extends OverlayVertex< V, E >, E extends O
 				}
 
 				moving = false;
+			}
+		}
+
+		@Override
+		public void timePointChanged( final int timepoint )
+		{
+			if ( moving
+					&& ( source.getTimepoint() != timepoint )
+					&& ( timepoint >= 0 )
+					&& ( timepoint < viewer.getState().getNumTimepoints() ) )
+			{
+				// Ugly stuff: remove current target, put a new one.
+				lock.writeLock().lock();
+				try
+				{
+					overlayGraph.remove( target );
+					overlayGraph.addVertex( target ).init( timepoint, pos, mat );
+
+					// Link it to source vertex. Careful for oriented edge.
+					if ( timepoint > source.getTimepoint() )
+						overlayGraph.addEdge( source, target, edge ).init();
+					else
+						overlayGraph.addEdge( target, source, edge ).init();
+
+					overlayGraph.notifyGraphChanged();
+				}
+				finally
+				{
+					lock.writeLock().unlock();
+				}
 			}
 		}
 	}
