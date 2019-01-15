@@ -88,7 +88,7 @@
 	<properties>
 		<package-name>net.trackmate</package-name>
 
-		<!--		<enforcer.skip>true</enforcer.skip> -->
+		<!-- <enforcer.skip>true</enforcer.skip> -->
 
 		<license.licenseName>not licensed yet</license.licenseName>
 		<license.projectName>TrackMate3</license.projectName>
@@ -97,7 +97,33 @@
 
 		<!-- NB: Deploy releases to the ImageJ Maven repository. -->
 		<releaseProfiles>deploy-to-imagej</releaseProfiles>
+
+		<!-- Export build properties to make them accessible at runtime. -->
+		<name>${project.name></name>
+		<version>${project.version}</version>
 	</properties>
+
+	<build>
+		<plugins>
+			<plugin>
+				<!-- Used to export build properties. -->
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>properties-maven-plugin</artifactId>
+				<version>1.0.0</version>
+				<executions>
+					<execution>
+						<phase>generate-resources</phase>
+						<goals>
+							<goal>write-project-properties</goal>
+						</goals>
+						<configuration>
+							<outputFile>${project.build.outputDirectory}/mastodon-app.properties</outputFile>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
 
 	<developers>
 		<developer>
