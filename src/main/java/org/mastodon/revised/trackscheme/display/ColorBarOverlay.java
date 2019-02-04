@@ -25,7 +25,7 @@ public class ColorBarOverlay implements OverlayRenderer
 
 	public static final Position DEFAULT_POSITION = Position.BOTTOM_RIGHT;
 
-	public static final boolean DEFAULT_VISIBLE = true;
+	public static final boolean DEFAULT_VISIBLE = false;
 
 	private static final int DEFAULT_WIDTH = 70;
 
@@ -96,7 +96,7 @@ public class ColorBarOverlay implements OverlayRenderer
 		}
 	}
 
-	private int minWidth = DEFAULT_WIDTH;
+	private final int minWidth = DEFAULT_WIDTH;
 
 	private Position position = DEFAULT_POSITION;
 
