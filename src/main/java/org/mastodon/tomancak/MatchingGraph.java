@@ -1,5 +1,7 @@
 package org.mastodon.tomancak;
 
+import gnu.trove.map.TObjectIntMap;
+import gnu.trove.map.hash.TObjectIntHashMap;
 import java.util.List;
 import org.mastodon.graph.ref.AbstractEdgePool;
 import org.mastodon.graph.ref.AbstractEdgePool.AbstractEdgeLayout;
@@ -43,6 +45,7 @@ public class MatchingGraph extends GraphImp<
 	static class MatchingVertexPool extends AbstractVertexPool< MatchingVertex, MatchingEdge, ByteMappedElement >
 	{
 		final List< ModelGraph > modelGraphs;
+		final TObjectIntMap< ModelGraph > modelGraphToIndex;
 
 		final IndexAttribute< MatchingVertex > graphIndex = new IndexAttribute<>( vertexLayout.graphIndex, this );
 		final IndexAttribute< MatchingVertex > graphVertexIndex = new IndexAttribute<>( vertexLayout.graphVertexIndex, this );
@@ -51,6 +54,9 @@ public class MatchingGraph extends GraphImp<
 		{
 			super( initialCapacity, vertexLayout, MatchingVertex.class, SingleArrayMemPool.factory( ByteMappedElementArray.factory ) );
 			this.modelGraphs = modelGraphs;
+			modelGraphToIndex = new TObjectIntHashMap< ModelGraph >();
+			for ( int i = 0; i < modelGraphs.size(); i++ )
+				modelGraphToIndex.put( modelGraphs.get( i ), i );
 		}
 
 		@Override
