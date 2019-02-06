@@ -34,6 +34,8 @@ public abstract class AbstractSpotPool<
 
 	protected final IntAttribute< V > timepoint;
 
+	protected G modelGraph;
+
 	public AbstractSpotPool(
 			final int initialCapacity,
 			final AbstractSpotLayout layout,
@@ -50,6 +52,11 @@ public abstract class AbstractSpotPool<
 	public int numDimensions()
 	{
 		return layout.position.numElements();
+	}
+
+	void linkModelGraph( G modelGraph )
+	{
+		this.modelGraph = modelGraph;
 	}
 
 	/*

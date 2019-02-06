@@ -78,4 +78,9 @@ public class AbstractSpot<
 	{
 		return timepoint.get();
 	}
+
+	public G getModelGraph()
+	{
+		return pool.modelGraph;
+	}
 }

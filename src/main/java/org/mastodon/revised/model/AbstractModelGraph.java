@@ -48,6 +48,7 @@ public class AbstractModelGraph<
 	public AbstractModelGraph( final EP edgePool )
 	{
 		super( edgePool );
+		vertexPool.linkModelGraph( ( G ) this );
 		idmap = new GraphIdBimap<>( vertexPool, edgePool );
 		vertexPropertySerializers = new PropertyMapSerializers<>();
 		lock = new ReentrantReadWriteLock();
