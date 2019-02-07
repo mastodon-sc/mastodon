@@ -276,12 +276,25 @@ public class MetteMerging
 		}
 	}
 
-	private static String spotToString( Spot spot )
+	private static boolean hasLabel( final Spot spot )
+	{
+		final SpotPool pool = ( SpotPool ) spot.getModelGraph().vertices().getRefPool();
+		ObjPropertyMap< Spot, String > labels = ( ObjPropertyMap< Spot, String > ) pool.labelProperty();
+		return labels.isSet( spot );
+	}
+
+	private static String spotToString( final Spot spot )
 	{
 		return String.format( "Spot( id=%3d, tp=%3d, label='%s' )",
 				spot.getInternalPoolIndex(),
 				spot.getTimepoint(),
 				spot.getLabel() );
+//		return String.format( "Spot( id=%3d, tp=%3d",
+//				spot.getInternalPoolIndex(),
+//				spot.getTimepoint() )
+//				+ ( hasLabel( spot )
+//						? String.format( ", label='%s' )", spot.getLabel() )
+//						: " )" );
 	}
 
 	private static void checkMatchingGraph( final MatchingGraph matching )
