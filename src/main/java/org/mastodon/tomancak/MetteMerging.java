@@ -8,20 +8,13 @@ import org.mastodon.collection.RefCollections;
 import org.mastodon.collection.RefList;
 import org.mastodon.kdtree.IncrementalNearestNeighborSearch;
 import org.mastodon.project.MamutProject;
-import org.mastodon.project.MamutProjectIO;
-import org.mastodon.properties.ObjPropertyMap;
-import org.mastodon.revised.model.mamut.Link;
 import org.mastodon.revised.model.mamut.Model;
 import org.mastodon.revised.model.mamut.Spot;
-import org.mastodon.revised.model.mamut.SpotPool;
-import org.mastodon.revised.model.tag.ObjTags;
-import org.mastodon.revised.model.tag.TagSetModel;
-import org.mastodon.revised.model.tag.TagSetStructure;
-import org.mastodon.revised.model.tag.TagSetStructure.Tag;
-import org.mastodon.revised.model.tag.TagSetStructure.TagSet;
 import org.mastodon.revised.util.DummySpimData;
 import org.mastodon.spatial.SpatialIndex;
 import org.mastodon.spatial.SpatioTemporalIndex;
+
+import static org.mastodon.tomancak.MergingUtil.spotToString;
 
 public class MetteMerging
 {
@@ -34,79 +27,6 @@ public class MetteMerging
 			basepath + "4.Vlado_TrackingPlatynereis",
 			basepath + "5.SimView2_20130315_Mastodon_Automat-segm-t0-t300_JG"
 	};
-
-	public static class Dataset
-	{
-		final MamutProject project;
-
-		final int numTimepoints;
-
-		final Model model;
-
-		final int maxNonEmptyTimepoint;
-
-		Dataset( String path ) throws IOException
-		{
-			project = new MamutProjectIO().load( path );
-			numTimepoints = getNumTimepoints( project );
-			model = new Model();
-			try (final MamutProject.ProjectReader reader = project.openForReading())
-			{
-				model.loadRaw( reader );
-			}
-			maxNonEmptyTimepoint = getMaxNonEmptyTimepoint( model, numTimepoints );
-		}
-
-		public void verify()
-		{
-			for ( Spot spot : model.getGraph().vertices() )
-			{
-				if ( spot.incomingEdges().size() > 1 )
-					System.err.println( spot + " has more than one parent" );
-
-				if ( spot.outgoingEdges().size() > 2 )
-					System.err.println( spot + " has more than two children" );
-			}
-		}
-
-		public void labels()
-		{
-			final SpotPool pool = ( SpotPool ) model.getGraph().vertices().getRefPool();
-			ObjPropertyMap< Spot, String > labels = ( ObjPropertyMap< Spot, String > ) pool.labelProperty();
-			System.out.println( "pool = " + pool );
-			System.out.println( "labels = " + labels );
-
-			for ( Spot spot : model.getGraph().vertices() )
-			{
-				if ( labels.isSet( spot ) )
-				{
-					System.out.println( "spot = " + spot + " label=" + labels.get( spot ) );
-				}
-			}
-		}
-
-		public void tags()
-		{
-			final TagSetModel< Spot, Link > tsm = model.getTagSetModel();
-			final TagSetStructure tss = tsm.getTagSetStructure();
-			final ObjTags< Spot > vt = tsm.getVertexTags();
-
-			for ( Spot spot : model.getGraph().vertices() )
-			{
-				StringBuilder labels = new StringBuilder();
-				for ( TagSet tagSet : tss.getTagSets() )
-				{
-					final Tag t = vt.tags( tagSet ).get( spot );
-					if ( t != null )
-						labels.append( " #" ).append( t.id() ).append( ":" ).append( t.label() );
-				}
-				if ( labels.length() > 0 )
-				{
-					System.out.println( spotToString( spot ) + labels );
-				}
-			}
-		}
-	}
 
 	// Helper: read spimdata to figure out number of timepoints
 	static int getNumTimepoints( MamutProject project )
@@ -151,8 +71,8 @@ public class MetteMerging
 	{
 		final int numTimepoints = 1 + Math.max( ds1.maxNonEmptyTimepoint, ds2.maxNonEmptyTimepoint );
 
-		final SpatioTemporalIndex< Spot > stIndex1 = ds1.model.getSpatioTemporalIndex();
-		final SpatioTemporalIndex< Spot > stIndex2 = ds2.model.getSpatioTemporalIndex();
+		final SpatioTemporalIndex< Spot > stIndex1 = ds1.model().getSpatioTemporalIndex();
+		final SpatioTemporalIndex< Spot > stIndex2 = ds2.model().getSpatioTemporalIndex();
 		stIndex1.readLock().lock();
 		stIndex2.readLock().lock();
 		try
@@ -175,8 +95,8 @@ public class MetteMerging
 
 	static void runLocked( final Dataset dsA, final Dataset dsB, final Runnable runnable )
 	{
-		final SpatioTemporalIndex< Spot > stIndexA = dsA.model.getSpatioTemporalIndex();
-		final SpatioTemporalIndex< Spot > stIndexB = dsB.model.getSpatioTemporalIndex();
+		final SpatioTemporalIndex< Spot > stIndexA = dsA.model().getSpatioTemporalIndex();
+		final SpatioTemporalIndex< Spot > stIndexB = dsB.model().getSpatioTemporalIndex();
 		stIndexA.readLock().lock();
 		stIndexB.readLock().lock();
 		try
@@ -194,12 +114,12 @@ public class MetteMerging
 	{
 		final SpotMath spotMath = new SpotMath();
 
-		final SpatioTemporalIndex< Spot > stIndexA = dsA.model.getSpatioTemporalIndex();
+		final SpatioTemporalIndex< Spot > stIndexA = dsA.model().getSpatioTemporalIndex();
 		final SpatialIndex< Spot > indexA = stIndexA.getSpatialIndex( timepoint );
-		final SpatioTemporalIndex< Spot > stIndexB = dsB.model.getSpatioTemporalIndex();
+		final SpatioTemporalIndex< Spot > stIndexB = dsB.model().getSpatioTemporalIndex();
 		final SpatialIndex< Spot > indexB = stIndexB.getSpatialIndex( timepoint );
 
-		final MatchingGraph matching = new MatchingGraph( dsA.model.getGraph(), dsB.model.getGraph() );
+		final MatchingGraph matching = new MatchingGraph( dsA.model().getGraph(), dsB.model().getGraph() );
 		for ( Spot spot : indexA )
 			matching.getVertex( spot );
 		for ( Spot spot : indexB )
@@ -276,27 +196,6 @@ public class MetteMerging
 		}
 	}
 
-	private static boolean hasLabel( final Spot spot )
-	{
-		final SpotPool pool = ( SpotPool ) spot.getModelGraph().vertices().getRefPool();
-		ObjPropertyMap< Spot, String > labels = ( ObjPropertyMap< Spot, String > ) pool.labelProperty();
-		return labels.isSet( spot );
-	}
-
-	private static String spotToString( final Spot spot )
-	{
-		return String.format( "Spot( id=%3d, tp=%3d, label='%s' )",
-				spot.getInternalPoolIndex(),
-				spot.getTimepoint(),
-				spot.getLabel() );
-//		return String.format( "Spot( id=%3d, tp=%3d",
-//				spot.getInternalPoolIndex(),
-//				spot.getTimepoint() )
-//				+ ( hasLabel( spot )
-//						? String.format( ", label='%s' )", spot.getLabel() )
-//						: " )" );
-	}
-
 	private static void checkMatchingGraph( final MatchingGraph matching )
 	{
 		for ( final MatchingVertex v : matching.vertices() )
@@ -318,24 +217,26 @@ public class MetteMerging
 
 	public static void main( String[] args ) throws IOException
 	{
-//		for ( String path : paths )
-//		{
-//			System.out.println("=================================================");
-//			System.out.println( "path = " + path );
-//			final Dataset dataset = new Dataset( path );
-//			dataset.verify();
+		for ( String path : paths )
+		{
+			System.out.println("=================================================");
+			System.out.println( "path = " + path );
+			final Dataset dataset = new Dataset( path );
+			dataset.verify();
 //			dataset.labels();
-//		}
+			dataset.tags();
+		}
 
-		final String path1 = paths[ 0 ];
-		final String path2 = paths[ 4 ];
-		System.out.println( "path1 = " + path1 );
-		System.out.println( "path2 = " + path2 );
-
-		final Dataset ds1 = new Dataset( path1 );
-		final Dataset ds2 = new Dataset( path2 );
-
-		ds2.tags();
+//		final String path1 = paths[ 0 ];
+//		final String path2 = paths[ 4 ];
+//		System.out.println( "path1 = " + path1 );
+//		System.out.println( "path2 = " + path2 );
+//
+//		final Dataset ds1 = new Dataset( path1 );
+//		final Dataset ds2 = new Dataset( path2 );
+//
+//		ds1.tags();
+//		ds2.tags();
 
 //		printSpotsPerTimepoint( ds1, ds2 );
 //		runLocked( ds1, ds2, () -> match( ds1, ds2,0 ) );
