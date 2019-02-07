@@ -2,6 +2,7 @@ package org.mastodon.tomancak;
 
 import bdv.spimdata.SpimDataMinimal;
 import bdv.spimdata.XmlIoSpimDataMinimal;
+import java.util.concurrent.locks.Lock;
 import mpicbg.spim.data.SpimDataException;
 import org.mastodon.project.MamutProject;
 import org.mastodon.properties.ObjPropertyMap;
@@ -85,4 +86,40 @@ public class MergingUtil
 		return maxNonEmptyTimepoint;
 	}
 
+	/**
+	 * Prints number of spots per timepoint of two datasets for comparison
+	 */
+	public static void printSpotsPerTimepoint( final Dataset ds1, final Dataset ds2 )
+	{
+		final int numTimepoints = 1 + Math.max( ds1.maxNonEmptyTimepoint(), ds2.maxNonEmptyTimepoint() );
+		final SpatioTemporalIndex< Spot > stIndex1 = ds1.model().getSpatioTemporalIndex();
+		final SpatioTemporalIndex< Spot > stIndex2 = ds2.model().getSpatioTemporalIndex();
+		for ( int t = 0; t < numTimepoints; ++t )
+		{
+			final SpatialIndex< Spot > index1 = stIndex1.getSpatialIndex( t );
+			final SpatialIndex< Spot > index2 = stIndex2.getSpatialIndex( t );
+			final int s1 = index1.size();
+			final int s2 = index2.size();
+			System.out.println( String.format( "tp %3d: %3d / %3d spots (diff = %d)", t, s1, s2, Math.abs( s1 - s2 ) ) );
+		}
+	}
+
+	public static void runLocked( final Dataset ds1, final Dataset ds2, final Runnable runnable )
+	{
+		runLocked( ds1, () -> runLocked( ds2, runnable ) );
+	}
+
+	public static void runLocked( final Dataset ds1, final Runnable runnable )
+	{
+		final Lock lock = ds1.model().getSpatioTemporalIndex().readLock();
+		lock.lock();
+		try
+		{
+			runnable.run();
+		}
+		finally
+		{
+			lock.unlock();
+		}
+	}
 }

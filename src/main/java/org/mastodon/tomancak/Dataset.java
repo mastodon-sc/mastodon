@@ -39,7 +39,7 @@ public class Dataset
 
 	private final Model model;
 
-	final int maxNonEmptyTimepoint;
+	private final int maxNonEmptyTimepoint;
 
 	public Dataset( String path ) throws IOException
 	{
@@ -59,6 +59,11 @@ public class Dataset
 	public Model model()
 	{
 		return model;
+	}
+
+	public int maxNonEmptyTimepoint()
+	{
+		return maxNonEmptyTimepoint;
 	}
 
 	/**

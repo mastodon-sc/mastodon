@@ -1,6 +1,7 @@
 package org.mastodon.tomancak;
 
 import java.io.IOException;
+import java.util.concurrent.locks.Lock;
 import org.mastodon.collection.RefCollections;
 import org.mastodon.collection.RefList;
 import org.mastodon.kdtree.IncrementalNearestNeighborSearch;
@@ -21,49 +22,6 @@ public class MetteMerging
 			basepath + "4.Vlado_TrackingPlatynereis",
 			basepath + "5.SimView2_20130315_Mastodon_Automat-segm-t0-t300_JG"
 	};
-
-	static void printSpotsPerTimepoint( final Dataset ds1, final Dataset ds2 )
-	{
-		final int numTimepoints = 1 + Math.max( ds1.maxNonEmptyTimepoint, ds2.maxNonEmptyTimepoint );
-
-		final SpatioTemporalIndex< Spot > stIndex1 = ds1.model().getSpatioTemporalIndex();
-		final SpatioTemporalIndex< Spot > stIndex2 = ds2.model().getSpatioTemporalIndex();
-		stIndex1.readLock().lock();
-		stIndex2.readLock().lock();
-		try
-		{
-			for ( int t = 0; t < numTimepoints; ++t )
-			{
-				final SpatialIndex< Spot > index1 = stIndex1.getSpatialIndex( t );
-				final SpatialIndex< Spot > index2 = stIndex2.getSpatialIndex( t );
-				final int s1 = index1.size();
-				final int s2 = index2.size();
-				System.out.println( String.format( "tp %3d: %3d / %3d spots (diff = %d)", t, s1, s2, Math.abs( s1 - s2 ) ) );
-			}
-		}
-		finally
-		{
-			stIndex1.readLock().unlock();
-			stIndex2.readLock().unlock();
-		}
-	}
-
-	static void runLocked( final Dataset dsA, final Dataset dsB, final Runnable runnable )
-	{
-		final SpatioTemporalIndex< Spot > stIndexA = dsA.model().getSpatioTemporalIndex();
-		final SpatioTemporalIndex< Spot > stIndexB = dsB.model().getSpatioTemporalIndex();
-		stIndexA.readLock().lock();
-		stIndexB.readLock().lock();
-		try
-		{
-			runnable.run();
-		}
-		finally
-		{
-			stIndexA.readLock().unlock();
-			stIndexB.readLock().unlock();
-		}
-	}
 
 	static void match( final Dataset dsA, final Dataset dsB, final int timepoint )
 	{
@@ -170,30 +128,37 @@ public class MetteMerging
 		}
 	}
 
+
+	private static void tags( final Dataset dsA, final Dataset dsB )
+	{
+	}
+
+	private static void mergeTagSetStructures()
+	{
+
+	}
+
 	public static void main( String[] args ) throws IOException
 	{
-		for ( String path : paths )
-		{
-			System.out.println("=================================================");
-			System.out.println( "path = " + path );
-			final Dataset dataset = new Dataset( path );
-			dataset.verify();
+//		for ( String path : paths )
+//		{
+//			System.out.println("=================================================");
+//			System.out.println( "path = " + path );
+//			final Dataset dataset = new Dataset( path );
+//			dataset.verify();
 //			dataset.labels();
-			dataset.tags();
-		}
+//			dataset.tags();
+//		}
 
-//		final String path1 = paths[ 0 ];
-//		final String path2 = paths[ 4 ];
-//		System.out.println( "path1 = " + path1 );
-//		System.out.println( "path2 = " + path2 );
-//
-//		final Dataset ds1 = new Dataset( path1 );
-//		final Dataset ds2 = new Dataset( path2 );
-//
-//		ds1.tags();
-//		ds2.tags();
+		final String path1 = paths[ 0 ];
+		final String path2 = paths[ 4 ];
+		System.out.println( "path1 = " + path1 );
+		System.out.println( "path2 = " + path2 );
 
-//		printSpotsPerTimepoint( ds1, ds2 );
+		final Dataset ds1 = new Dataset( path1 );
+		final Dataset ds2 = new Dataset( path2 );
+
 //		runLocked( ds1, ds2, () -> match( ds1, ds2,0 ) );
+		tags( ds1, ds2 );
 	}
 }
