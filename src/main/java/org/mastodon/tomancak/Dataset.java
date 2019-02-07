@@ -15,6 +15,8 @@ import org.mastodon.revised.model.tag.ObjTags;
 import org.mastodon.revised.model.tag.TagSetModel;
 import org.mastodon.revised.model.tag.TagSetStructure;
 
+import static org.mastodon.tomancak.MergingUtil.getMaxNonEmptyTimepoint;
+import static org.mastodon.tomancak.MergingUtil.getNumTimepoints;
 import static org.mastodon.tomancak.MergingUtil.spotToString;
 
 /**
@@ -42,13 +44,13 @@ public class Dataset
 	public Dataset( String path ) throws IOException
 	{
 		project = new MamutProjectIO().load( path );
-		numTimepoints = MetteMerging.getNumTimepoints( project );
+		numTimepoints = getNumTimepoints( project );
 		model = new Model();
 		try (final MamutProject.ProjectReader reader = project.openForReading())
 		{
 			model.loadRaw( reader );
 		}
-		maxNonEmptyTimepoint = MetteMerging.getMaxNonEmptyTimepoint( model, numTimepoints );
+		maxNonEmptyTimepoint = getMaxNonEmptyTimepoint( model, numTimepoints );
 		graphToDataset.put( model.getGraph(), this );
 
 		verify();
