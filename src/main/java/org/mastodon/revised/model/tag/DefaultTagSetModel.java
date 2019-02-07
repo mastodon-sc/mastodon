@@ -100,7 +100,6 @@ public class DefaultTagSetModel< V extends Vertex< E >, E extends Edge< V > > im
 		}
 		edgeIdLabelSets.releaseRef( eref );
 
-		// TODO: undo-record TagSetStructure change
 		if ( editRecorder != null )
 		{
 			editRecorder.record( new SetTagSetStructureUndoableEdit( this, tagSetStructure, tss ) );
