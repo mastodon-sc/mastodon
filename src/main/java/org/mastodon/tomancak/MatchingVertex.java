@@ -2,6 +2,7 @@ package org.mastodon.tomancak;
 
 import org.mastodon.graph.ref.AbstractVertex;
 import org.mastodon.pool.ByteMappedElement;
+import org.mastodon.revised.model.mamut.ModelGraph;
 import org.mastodon.revised.model.mamut.Spot;
 import org.mastodon.tomancak.MatchingGraph.MatchingVertexPool;
 
@@ -12,10 +13,40 @@ public class MatchingVertex extends AbstractVertex< MatchingVertex, MatchingEdge
 		super( pool );
 	}
 
-	MatchingVertex init( final Spot spot )
+	MatchingVertex init( final int graphId, final int spotId )
 	{
-		pool.graphIndex.set( this, pool.modelGraphToIndex.get( spot.getModelGraph() ) );
-		pool.graphVertexIndex.set( this, spot.getInternalPoolIndex() );
+		pool.graphId.set( this, graphId );
+		pool.spotId.set( this, spotId );
 		return this;
+	}
+
+	int graphId()
+	{
+		return pool.graphId.get( this );
+	}
+
+	int spotId()
+	{
+		return pool.spotId.get( this );
+	}
+
+	public Spot getSpot()
+	{
+		return getSpot( spotRef() );
+	}
+
+	public Spot getSpot( final Spot ref )
+	{
+		return getModelGraph().getGraphIdBimap().getVertex( spotId(), ref );
+	}
+
+	private ModelGraph getModelGraph()
+	{
+		return pool.modelGraphs.get( graphId() );
+	}
+
+	private Spot spotRef()
+	{
+		return pool.modelGraphs.get( 0 ).vertexRef();
 	}
 }

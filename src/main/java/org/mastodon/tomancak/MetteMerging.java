@@ -4,14 +4,21 @@ import bdv.spimdata.SpimDataMinimal;
 import bdv.spimdata.XmlIoSpimDataMinimal;
 import java.io.IOException;
 import mpicbg.spim.data.SpimDataException;
-import net.imglib2.RealLocalizable;
+import org.mastodon.collection.RefCollections;
+import org.mastodon.collection.RefList;
 import org.mastodon.kdtree.IncrementalNearestNeighborSearch;
 import org.mastodon.project.MamutProject;
 import org.mastodon.project.MamutProjectIO;
 import org.mastodon.properties.ObjPropertyMap;
+import org.mastodon.revised.model.mamut.Link;
 import org.mastodon.revised.model.mamut.Model;
 import org.mastodon.revised.model.mamut.Spot;
 import org.mastodon.revised.model.mamut.SpotPool;
+import org.mastodon.revised.model.tag.ObjTags;
+import org.mastodon.revised.model.tag.TagSetModel;
+import org.mastodon.revised.model.tag.TagSetStructure;
+import org.mastodon.revised.model.tag.TagSetStructure.Tag;
+import org.mastodon.revised.model.tag.TagSetStructure.TagSet;
 import org.mastodon.revised.util.DummySpimData;
 import org.mastodon.spatial.SpatialIndex;
 import org.mastodon.spatial.SpatioTemporalIndex;
@@ -78,27 +85,25 @@ public class MetteMerging
 			}
 		}
 
-		// for inns termination criterion
-//		private void largestRadius( Ellipsoid ellipsoid )
-
-		public void spotAt( int t, RealLocalizable pos )
+		public void tags()
 		{
-			final SpatioTemporalIndex< Spot > spatioTemporalIndex = model.getSpatioTemporalIndex();
-			spatioTemporalIndex.readLock().lock();
-			try
+			final TagSetModel< Spot, Link > tsm = model.getTagSetModel();
+			final TagSetStructure tss = tsm.getTagSetStructure();
+			final ObjTags< Spot > vt = tsm.getVertexTags();
+
+			for ( Spot spot : model.getGraph().vertices() )
 			{
-				final SpatialIndex< Spot > index = spatioTemporalIndex.getSpatialIndex( t );
-				final IncrementalNearestNeighborSearch< Spot > inns = index.getIncrementalNearestNeighborSearch();
-				inns.search( pos );
-				while ( inns.hasNext() )
+				StringBuilder labels = new StringBuilder();
+				for ( TagSet tagSet : tss.getTagSets() )
 				{
-					inns.fwd();
-					System.out.println( "inns.getDistance() = " + inns.getDistance() );
+					final Tag t = vt.tags( tagSet ).get( spot );
+					if ( t != null )
+						labels.append( " #" ).append( t.id() ).append( ":" ).append( t.label() );
 				}
-			}
-			finally
-			{
-				spatioTemporalIndex.readLock().unlock();
+				if ( labels.length() > 0 )
+				{
+					System.out.println( spotToString( spot ) + labels );
+				}
 			}
 		}
 	}
@@ -168,52 +173,135 @@ public class MetteMerging
 		}
 	}
 
-	static void match( final Dataset ds1, final Dataset ds2, final int timepoint )
+	static void runLocked( final Dataset dsA, final Dataset dsB, final Runnable runnable )
 	{
-		final SpotMath spotMath = new SpotMath();
-
-		final SpatioTemporalIndex< Spot > stIndex1 = ds1.model.getSpatioTemporalIndex();
-		final SpatioTemporalIndex< Spot > stIndex2 = ds2.model.getSpatioTemporalIndex();
-		stIndex1.readLock().lock();
-		stIndex2.readLock().lock();
+		final SpatioTemporalIndex< Spot > stIndexA = dsA.model.getSpatioTemporalIndex();
+		final SpatioTemporalIndex< Spot > stIndexB = dsB.model.getSpatioTemporalIndex();
+		stIndexA.readLock().lock();
+		stIndexB.readLock().lock();
 		try
 		{
-			final SpatialIndex< Spot > index1 = stIndex1.getSpatialIndex( timepoint );
-
-			final SpatialIndex< Spot > index2 = stIndex2.getSpatialIndex( timepoint );
-			final IncrementalNearestNeighborSearch< Spot > inns2 = index2.getIncrementalNearestNeighborSearch();
-
-			for ( Spot spot1 : index1 )
-			{
-				final double radiusSqu = spot1.getBoundingSphereRadiusSquared();
-				System.out.println( "spot1 = " + spot1 + " r^2 = " + radiusSqu );
-
-				inns2.search( spot1 );
-				while ( inns2.hasNext() )
-				{
-					inns2.fwd();
-					final double dSqu = inns2.getSquareDistance();
-					if ( dSqu > 2 * radiusSqu )
-						break;
-					final Spot spot2 = inns2.get();
-					final boolean c12 = spotMath.containsCenter( spot1, spot2 );
-					final boolean c21 = spotMath.containsCenter( spot2, spot1 );
-
-					System.out.println( "     " + spot2 + " dSqu = " + dSqu + ", " + ( c12 ? "2 in 1 " : "------ " ) + ( c21 ? "1 in 2 " : "------ " ) );
-
-				}
-
-			}
+			runnable.run();
 		}
 		finally
 		{
-			stIndex1.readLock().unlock();
-			stIndex2.readLock().unlock();
+			stIndexA.readLock().unlock();
+			stIndexB.readLock().unlock();
 		}
-
 	}
 
+	static void match( final Dataset dsA, final Dataset dsB, final int timepoint )
+	{
+		final SpotMath spotMath = new SpotMath();
 
+		final SpatioTemporalIndex< Spot > stIndexA = dsA.model.getSpatioTemporalIndex();
+		final SpatialIndex< Spot > indexA = stIndexA.getSpatialIndex( timepoint );
+		final SpatioTemporalIndex< Spot > stIndexB = dsB.model.getSpatioTemporalIndex();
+		final SpatialIndex< Spot > indexB = stIndexB.getSpatialIndex( timepoint );
+
+		final MatchingGraph matching = new MatchingGraph( dsA.model.getGraph(), dsB.model.getGraph() );
+		for ( Spot spot : indexA )
+			matching.getVertex( spot );
+		for ( Spot spot : indexB )
+			matching.getVertex( spot );
+
+		IncrementalNearestNeighborSearch< Spot > inns = indexB.getIncrementalNearestNeighborSearch();
+		for ( Spot spot1 : indexA )
+		{
+			final double radiusSqu = spot1.getBoundingSphereRadiusSquared();
+			inns.search( spot1 );
+			while ( inns.hasNext() )
+			{
+				inns.fwd();
+				final double dSqu = inns.getSquareDistance();
+				if ( dSqu > radiusSqu )
+					break;
+				final Spot spot2 = inns.get();
+				if ( spotMath.containsCenter( spot1, spot2 ) )
+					matching.addEdge( matching.getVertex( spot1 ), matching.getVertex( spot2 ) );
+			}
+		}
+
+		inns = indexA.getIncrementalNearestNeighborSearch();
+		for ( Spot spot1 : indexB )
+		{
+			final double radiusSqu = spot1.getBoundingSphereRadiusSquared();
+			inns.search( spot1 );
+			while ( inns.hasNext() )
+			{
+				inns.fwd();
+				final double dSqu = inns.getSquareDistance();
+				if ( dSqu > radiusSqu )
+					break;
+				final Spot spot2 = inns.get();
+				if ( spotMath.containsCenter( spot1, spot2 ) )
+					matching.addEdge( matching.getVertex( spot1 ), matching.getVertex( spot2 ) );
+			}
+		}
+
+		checkMatchingGraph( matching );
+
+		RefList< MatchingVertex > seeds = RefCollections.createRefList( matching.vertices() );
+		for ( final MatchingVertex v : matching.vertices() )
+		{
+			if ( v.edges().isEmpty() )
+			{
+				seeds.add( v );
+			}
+			else if ( v.outgoingEdges().size() == 1 && v.incomingEdges().size() == 1 )
+			{
+				final MatchingVertex w = v.outgoingEdges().get( 0 ).getTarget();
+				if ( w.equals( v.incomingEdges().get( 0 ).getSource() ) )
+				{
+					if ( !seeds.contains( w ) )
+						seeds.add( v );
+				}
+			}
+		}
+
+		for ( final MatchingVertex v : seeds )
+		{
+			final Spot spot1 = v.getSpot();
+			if ( v.edges().isEmpty() )
+			{
+				System.out.println( "[add]   " + spotToString( spot1 ) + " (ds " + v.graphId() + ")" );
+			}
+			else
+			{
+				final MatchingVertex v2 = v.outgoingEdges().get( 0 ).getTarget();
+				final Spot spot2 = v2.getSpot();
+				System.out.println( "[merge] " + spotToString( spot1 ) + " (ds " + v.graphId() + ")" );
+				System.out.println( "        " + spotToString( spot2 ) + " (ds " + v2.graphId() + ")" );
+			}
+		}
+	}
+
+	private static String spotToString( Spot spot )
+	{
+		return String.format( "Spot( id=%3d, tp=%3d, label='%s' )",
+				spot.getInternalPoolIndex(),
+				spot.getTimepoint(),
+				spot.getLabel() );
+	}
+
+	private static void checkMatchingGraph( final MatchingGraph matching )
+	{
+		for ( final MatchingVertex v : matching.vertices() )
+		{
+			if ( v.edges().size() == 0 )
+				// not matched
+				continue;
+
+			if ( v.outgoingEdges().size() == 1 &&
+					v.incomingEdges().size() == 1 &&
+					v.outgoingEdges().get( 0 ).getTarget().equals( v.incomingEdges().get( 0 ).getSource() ) )
+				// perfectly matched
+				continue;
+
+			// otherwise matching is ambiguous
+			System.out.println( "ambiguous: " + v.getSpot() );
+		}
+	}
 
 	public static void main( String[] args ) throws IOException
 	{
@@ -234,7 +322,9 @@ public class MetteMerging
 		final Dataset ds1 = new Dataset( path1 );
 		final Dataset ds2 = new Dataset( path2 );
 
+		ds2.tags();
+
 //		printSpotsPerTimepoint( ds1, ds2 );
-		match( ds1, ds2,0 );
+//		runLocked( ds1, ds2, () -> match( ds1, ds2,0 ) );
 	}
 }
