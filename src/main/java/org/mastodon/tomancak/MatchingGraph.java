@@ -20,6 +20,14 @@ import org.mastodon.pool.attributes.IndexAttribute;
 import org.mastodon.revised.model.mamut.ModelGraph;
 import org.mastodon.revised.model.mamut.Spot;
 
+/**
+ * Graph that represents potential matches between Spots in two (or more) models.
+ * Every vertex corresponds to a Spot, every vertex corresponds to a potential match.
+ * There are no edges between vertices corresponding to the same model.
+ * (I.e., there is a vertex coloring such that all vertices corresponding to the same model have the same color.
+ * In the case of two models, the graph is bipartite.)
+ * Edges are directed: {@code A --> B} means "the ellipsoid of {@code A} contains the center of {@code B}".
+ */
 public class MatchingGraph extends GraphImp<
 		MatchingGraph.MatchingVertexPool,
 		MatchingGraph.MatchingEdgePool,
