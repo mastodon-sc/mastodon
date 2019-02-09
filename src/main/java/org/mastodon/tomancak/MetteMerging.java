@@ -1,7 +1,6 @@
 package org.mastodon.tomancak;
 
 import java.io.IOException;
-import java.util.concurrent.locks.Lock;
 import org.mastodon.collection.RefCollections;
 import org.mastodon.collection.RefList;
 import org.mastodon.kdtree.IncrementalNearestNeighborSearch;
@@ -131,10 +130,9 @@ public class MetteMerging
 
 	private static void tags( final Dataset dsA, final Dataset dsB )
 	{
-	}
-
-	private static void mergeTagSetStructures()
-	{
+		MergeTags.mergeTagSetStructures(
+				dsA.model().getTagSetModel().getTagSetStructure(),
+				dsB.model().getTagSetModel().getTagSetStructure() );
 
 	}
 
