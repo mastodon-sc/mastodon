@@ -246,9 +246,9 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 			final double g = isSelected ? i1 : i2;
 			final double b = 0.1;
 			final double a = Math.max(
-	 				isHighlighted ? 0.8 : ( isSelected ? 0.6 : 0.4 ),
+					isHighlighted ? 0.8 : ( isSelected ? 0.6 : 0.4 ),
 					( 1 + tf ) * ( 1 - Math.abs( sf ) ) );
-	 		return new Color( truncRGBA( r, g, b, a ), true );
+			return new Color( truncRGBA( r, g, b, a ), true );
 		}
 		else
 		{
