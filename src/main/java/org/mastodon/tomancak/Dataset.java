@@ -61,6 +61,11 @@ public class Dataset
 		return model;
 	}
 
+	public MamutProject project()
+	{
+		return project;
+	}
+
 	public int maxNonEmptyTimepoint()
 	{
 		return maxNonEmptyTimepoint;
