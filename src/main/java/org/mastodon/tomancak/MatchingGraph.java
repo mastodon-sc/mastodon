@@ -6,6 +6,7 @@ import gnu.trove.map.hash.TObjectIntHashMap;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 import org.mastodon.collection.IntRefMap;
 import org.mastodon.collection.ref.IntRefArrayMap;
 import org.mastodon.graph.ref.AbstractEdgePool;
@@ -33,6 +34,18 @@ public class MatchingGraph extends GraphImp<
 		MatchingGraph.MatchingEdgePool,
 		MatchingVertex, MatchingEdge, ByteMappedElement >
 {
+	public static MatchingGraph newWithAllSpots( final Dataset... datasets )
+	{
+		final List< ModelGraph > graphs = Arrays.stream( datasets ).map( ds -> ds.model().getGraph() ).collect( Collectors.toList() );
+		final int capacity = graphs.stream().mapToInt( g -> g.vertices().size() ).sum();
+		final MatchingGraph matching = new MatchingGraph( graphs, capacity );
+		final MatchingVertex ref = matching.vertexRef();
+		for ( ModelGraph graph : graphs )
+			for ( Spot spot : graph.vertices() )
+				matching.getVertex( spot, ref );
+		return matching;
+	}
+
 	private final List< IntRefMap< MatchingVertex > > graphToSpotToMatchingVertex;
 
 	public MatchingGraph( final ModelGraph... modelGraphs )

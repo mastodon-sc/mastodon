@@ -6,7 +6,6 @@ import org.mastodon.collection.RefList;
 import org.mastodon.kdtree.IncrementalNearestNeighborSearch;
 import org.mastodon.revised.model.mamut.Spot;
 import org.mastodon.spatial.SpatialIndex;
-import org.mastodon.spatial.SpatioTemporalIndex;
 
 import static org.mastodon.tomancak.MergingUtil.spotToString;
 
@@ -22,57 +21,65 @@ public class MetteMerging
 			basepath + "5.SimView2_20130315_Mastodon_Automat-segm-t0-t300_JG"
 	};
 
-	static void match( final Dataset dsA, final Dataset dsB, final int timepoint )
+
+	static void match( final Dataset dsA, final Dataset dsB )
+	{
+		match( dsA, dsB, -1 );
+	}
+
+	static void match( final Dataset dsA, final Dataset dsB, final int tp )
 	{
 		final SpotMath spotMath = new SpotMath();
 
-		final SpatioTemporalIndex< Spot > stIndexA = dsA.model().getSpatioTemporalIndex();
-		final SpatialIndex< Spot > indexA = stIndexA.getSpatialIndex( timepoint );
-		final SpatioTemporalIndex< Spot > stIndexB = dsB.model().getSpatioTemporalIndex();
-		final SpatialIndex< Spot > indexB = stIndexB.getSpatialIndex( timepoint );
+		final MatchingGraph matching = MatchingGraph.newWithAllSpots( dsA, dsB );
 
-		final MatchingGraph matching = new MatchingGraph( dsA.model().getGraph(), dsB.model().getGraph() );
-		for ( Spot spot : indexA )
-			matching.getVertex( spot );
-		for ( Spot spot : indexB )
-			matching.getVertex( spot );
+		final int minTimepoint = tp >= 0 ? tp : 0;
+		final int maxTimepoint = tp >= 0 ? tp : Math.max( dsA.maxNonEmptyTimepoint(), dsB.maxNonEmptyTimepoint() );
 
-		IncrementalNearestNeighborSearch< Spot > inns = indexB.getIncrementalNearestNeighborSearch();
-		for ( Spot spot1 : indexA )
+		for ( int timepoint = minTimepoint; timepoint <= maxTimepoint; timepoint++ )
 		{
-			final double radiusSqu = spot1.getBoundingSphereRadiusSquared();
-			inns.search( spot1 );
-			while ( inns.hasNext() )
+			final SpatialIndex< Spot > indexA = dsA.model().getSpatioTemporalIndex().getSpatialIndex( timepoint );
+			final SpatialIndex< Spot > indexB = dsB.model().getSpatioTemporalIndex().getSpatialIndex( timepoint );
+
+			IncrementalNearestNeighborSearch< Spot > inns = indexB.getIncrementalNearestNeighborSearch();
+			for ( final Spot spot1 : indexA )
 			{
-				inns.fwd();
-				final double dSqu = inns.getSquareDistance();
-				if ( dSqu > radiusSqu )
-					break;
-				final Spot spot2 = inns.get();
-				if ( spotMath.containsCenter( spot1, spot2 ) )
-					matching.addEdge( matching.getVertex( spot1 ), matching.getVertex( spot2 ) );
+				final double radiusSqu = spot1.getBoundingSphereRadiusSquared();
+				inns.search( spot1 );
+				while ( inns.hasNext() )
+				{
+					inns.fwd();
+					final double dSqu = inns.getSquareDistance();
+					if ( dSqu > radiusSqu )
+						break;
+					final Spot spot2 = inns.get();
+					if ( spotMath.containsCenter( spot1, spot2 ) )
+						matching.addEdge( matching.getVertex( spot1 ), matching.getVertex( spot2 ) );
+				}
+			}
+
+			inns = indexA.getIncrementalNearestNeighborSearch();
+			for ( final Spot spot1 : indexB )
+			{
+				final double radiusSqu = spot1.getBoundingSphereRadiusSquared();
+				inns.search( spot1 );
+				while ( inns.hasNext() )
+				{
+					inns.fwd();
+					final double dSqu = inns.getSquareDistance();
+					if ( dSqu > radiusSqu )
+						break;
+					final Spot spot2 = inns.get();
+					if ( spotMath.containsCenter( spot1, spot2 ) )
+						matching.addEdge( matching.getVertex( spot1 ), matching.getVertex( spot2 ) );
+				}
 			}
 		}
 
-		inns = indexA.getIncrementalNearestNeighborSearch();
-		for ( Spot spot1 : indexB )
-		{
-			final double radiusSqu = spot1.getBoundingSphereRadiusSquared();
-			inns.search( spot1 );
-			while ( inns.hasNext() )
-			{
-				inns.fwd();
-				final double dSqu = inns.getSquareDistance();
-				if ( dSqu > radiusSqu )
-					break;
-				final Spot spot2 = inns.get();
-				if ( spotMath.containsCenter( spot1, spot2 ) )
-					matching.addEdge( matching.getVertex( spot1 ), matching.getVertex( spot2 ) );
-			}
-		}
-
+		// make sure that there are only singletons and perfect matches
 		checkMatchingGraph( matching );
 
+		// seeds contains one MatchingVertex for all target spots that have to be created.
 		RefList< MatchingVertex > seeds = RefCollections.createRefList( matching.vertices() );
 		for ( final MatchingVertex v : matching.vertices() )
 		{
@@ -110,6 +117,7 @@ public class MetteMerging
 
 	private static void checkMatchingGraph( final MatchingGraph matching )
 	{
+		boolean ambiguous = false;
 		for ( final MatchingVertex v : matching.vertices() )
 		{
 			if ( v.edges().size() == 0 )
@@ -124,7 +132,12 @@ public class MetteMerging
 
 			// otherwise matching is ambiguous
 			System.out.println( "ambiguous: " + v.getSpot() );
+			System.out.println( "           in(" + v.incomingEdges().size() + ") out(" + v.outgoingEdges().size() + ")" );
+			ambiguous = true;
 		}
+
+		if ( ambiguous )
+			throw new IllegalArgumentException( "MatchingGraph is ambiguous" );
 	}
 
 
@@ -157,6 +170,7 @@ public class MetteMerging
 		final Dataset ds2 = new Dataset( path2 );
 
 //		runLocked( ds1, ds2, () -> match( ds1, ds2,0 ) );
-		tags( ds1, ds2 );
+		match( ds1, ds2, 0 );
+//		tags( ds1, ds2 );
 	}
 }
