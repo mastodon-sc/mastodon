@@ -225,6 +225,23 @@ public class TagSetStructure
 		{
 			return Collections.unmodifiableList( tags );
 		}
+
+		@Override
+		public boolean equals( final Object o )
+		{
+			if ( this == o )
+				return true;
+			if ( !( o instanceof TagSet ) )
+				return false;
+			final TagSet tagSet = ( TagSet ) o;
+			return id == tagSet.id;
+		}
+
+		@Override
+		public int hashCode()
+		{
+			return id;
+		}
 	}
 
 	public static class Tag
@@ -275,6 +292,23 @@ public class TagSetStructure
 		public String label()
 		{
 			return label;
+		}
+
+		@Override
+		public boolean equals( final Object o )
+		{
+			if ( this == o )
+				return true;
+			if ( !( o instanceof Tag ) )
+				return false;
+			final Tag tag = ( Tag ) o;
+			return id == tag.id;
+		}
+
+		@Override
+		public int hashCode()
+		{
+			return id;
 		}
 	}
 
