@@ -160,22 +160,29 @@ public class JoinDataSets
 
 	public static void main( String[] args ) throws IOException
 	{
-		final String path1 = paths[ 0 ];
-		final Dataset dataset = new Dataset( path1 );
-		copy( dataset, "/Users/pietzsch/Desktop/Mastodon/merging/testcopy.mastodon" );
+		final String resultPath = "/Users/pietzsch/Desktop/Mastodon/merging/testcopy.mastodon";
 
-//		final String path1 = paths[ 0 ];
-//		final String path2 = paths[ 4 ];
-//		System.out.println( "path1 = " + path1 );
-//		System.out.println( "path2 = " + path2 );
-//
-//		final Dataset ds1 = new Dataset( path1 );
-//		final Dataset ds2 = new Dataset( path2 );
-//
-//		final TagSetStructure tss = new TagSetStructure();
-//		final TagSetStructureMaps maps1 = MergeTags.addTagSetStructureCopy( tss, ds1.model().getTagSetModel().getTagSetStructure(), "(A) " );
-//		final TagSetStructureMaps maps2 = MergeTags.addTagSetStructureCopy( tss, ds2.model().getTagSetModel().getTagSetStructure(), "(B) " );
-//
-//		System.out.println( "tss = " + tss );
+		final String path1 = paths[ 0 ];
+		final String path2 = paths[ 4 ];
+		System.out.println( "path1 = " + path1 );
+		System.out.println( "path2 = " + path2 );
+
+		final Dataset ds1 = new Dataset( path1 );
+		final Dataset ds2 = new Dataset( path2 );
+
+		final JoinedDataSet jds = new JoinedDataSet();
+		jds.setDatasetXmlFile( ds1.project().getDatasetXmlFile() );
+		jds.addCopy( ds1, "ds(1)_", "ds(1)", 0xffff00ff );
+		jds.addCopy( ds2, "ds(5)_", "ds(5)", 0xff00ff00 );
+		try
+		{
+			jds.saveProject( new File( resultPath ) );
+		}
+		catch ( IOException e )
+		{
+			e.printStackTrace();
+		}
+
+		System.out.println( "done" );
 	}
 }
