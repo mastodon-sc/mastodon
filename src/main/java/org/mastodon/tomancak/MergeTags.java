@@ -103,4 +103,39 @@ public class MergeTags
 				.findFirst()
 				.orElse( null );
 	}
+
+
+
+
+
+
+
+
+
+
+
+	public static class TagSetStructureMaps
+	{
+		final Map< TagSet, TagSet > tagSetMap = new HashMap<>();
+		final Map< Tag, Tag > tagMap = new HashMap<>();
+	}
+
+	/**
+	 * Adds all TagSets from {@code tts}, prefixed with {@code prefix}.
+	 */
+	public static TagSetStructureMaps addTagSetStructureCopy( TagSetStructure to, TagSetStructure from, String prefix )
+	{
+		TagSetStructureMaps maps = new TagSetStructureMaps();
+		for ( TagSet tagSet : from.getTagSets() )
+		{
+			final TagSet newTagSet = to.createTagSet( prefix + tagSet.getName() );
+			maps.tagSetMap.put( tagSet, newTagSet );
+			for ( Tag tag : tagSet.getTags() )
+			{
+				Tag newTag = newTagSet.createTag( tag.label(),  tag.color() );
+				maps.tagMap.put( tag, newTag );
+			}
+		}
+		return maps;
+	}
 }
