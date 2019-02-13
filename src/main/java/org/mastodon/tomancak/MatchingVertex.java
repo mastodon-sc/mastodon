@@ -49,4 +49,14 @@ public class MatchingVertex extends AbstractVertex< MatchingVertex, MatchingEdge
 	{
 		return pool.modelGraphs.get( 0 ).vertexRef();
 	}
+
+	@Override
+	public String toString()
+	{
+		final StringBuffer sb = new StringBuffer( "{" );
+		sb.append( graphId() );
+		sb.append( ", " ).append( getSpot().getLabel() );
+		sb.append( '}' );
+		return sb.toString();
+	}
 }

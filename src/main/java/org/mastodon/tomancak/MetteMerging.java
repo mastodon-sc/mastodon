@@ -1,13 +1,28 @@
 package org.mastodon.tomancak;
 
+import java.io.File;
 import java.io.IOException;
+import java.util.Locale;
+import javax.swing.SwingUtilities;
+import javax.swing.UIManager;
+import javax.swing.WindowConstants;
 import org.mastodon.collection.RefCollections;
 import org.mastodon.collection.RefList;
+import org.mastodon.graph.algorithm.traversal.UndirectedDepthFirstIterator;
 import org.mastodon.kdtree.IncrementalNearestNeighborSearch;
+import org.mastodon.project.MamutProject;
+import org.mastodon.project.MamutProjectIO;
+import org.mastodon.revised.mamut.Mastodon;
+import org.mastodon.revised.mamut.WindowManager;
+import org.mastodon.revised.model.mamut.Model;
+import org.mastodon.revised.model.mamut.ModelGraph;
 import org.mastodon.revised.model.mamut.Spot;
+import org.mastodon.revised.model.tag.ObjTags;
+import org.mastodon.revised.model.tag.TagSetStructure;
+import org.mastodon.revised.model.tag.TagSetStructure.Tag;
+import org.mastodon.revised.model.tag.TagSetStructure.TagSet;
 import org.mastodon.spatial.SpatialIndex;
-
-import static org.mastodon.tomancak.MergingUtil.spotToString;
+import org.scijava.Context;
 
 public class MetteMerging
 {
@@ -21,22 +36,19 @@ public class MetteMerging
 			basepath + "5.SimView2_20130315_Mastodon_Automat-segm-t0-t300_JG"
 	};
 
-
-	static void match( final Dataset dsA, final Dataset dsB )
+	public static MatchingGraph buildMatchingGraph( final Dataset dsA, final Dataset dsB )
 	{
-		match( dsA, dsB, -1 );
+		final int minTimepoint = 0;
+		final int maxTimepoint = Math.max( dsA.maxNonEmptyTimepoint(), dsB.maxNonEmptyTimepoint() );
+		return buildMatchingGraph( dsA, dsB, minTimepoint, maxTimepoint );
 	}
 
-	static void match( final Dataset dsA, final Dataset dsB, final int tp )
+	public static MatchingGraph buildMatchingGraph( final Dataset dsA, final Dataset dsB, final int minTimepoint, final int maxTimepoint )
 	{
 		final SpotMath spotMath = new SpotMath();
 
 		final MatchingGraph matching = MatchingGraph.newWithAllSpots( dsA, dsB );
-
-		final int minTimepoint = tp >= 0 ? tp : 0;
-		final int maxTimepoint = tp >= 0 ? tp : Math.max( dsA.maxNonEmptyTimepoint(), dsB.maxNonEmptyTimepoint() );
-
-		for ( int timepoint = minTimepoint; timepoint <= maxTimepoint; timepoint++ )
+		for ( int timepoint = 0; timepoint <= maxTimepoint; timepoint++ )
 		{
 			final SpatialIndex< Spot > indexA = dsA.model().getSpatioTemporalIndex().getSpatialIndex( timepoint );
 			final SpatialIndex< Spot > indexB = dsB.model().getSpatioTemporalIndex().getSpatialIndex( timepoint );
@@ -76,49 +88,97 @@ public class MetteMerging
 			}
 		}
 
-		// make sure that there are only singletons and perfect matches
-		checkMatchingGraph( matching );
+		return matching;
+	}
 
-		// seeds contains one MatchingVertex for all target spots that have to be created.
-		RefList< MatchingVertex > seeds = RefCollections.createRefList( matching.vertices() );
-		for ( final MatchingVertex v : matching.vertices() )
+	public static class OutputDataSet
+	{
+		private File datasetXmlFile;
+
+		private final Model model;
+
+		private final TagSetStructure tagSetStructure;
+
+		private final TagSet sourceTagSet;
+
+		private final TagSet conflictTagSet;
+
+		public OutputDataSet()
 		{
-			if ( v.edges().isEmpty() )
+			model = new Model();
+			tagSetStructure = new TagSetStructure();
+			sourceTagSet = tagSetStructure.createTagSet( "Merge Source" );
+			conflictTagSet = tagSetStructure.createTagSet( "Merge Conflict" );
+		}
+
+		public void setDatasetXmlFile( File file )
+		{
+			datasetXmlFile = file;
+		}
+
+		/**
+		 * @param projectRoot
+		 * 		where to store the new project
+		 */
+		public void saveProject( final File projectRoot ) throws IOException
+		{
+			if ( datasetXmlFile == null )
+				throw new IllegalStateException();
+
+			final MamutProject project = new MamutProject( projectRoot, datasetXmlFile );
+			try ( final MamutProject.ProjectWriter writer = project.openForWriting() )
 			{
-				seeds.add( v );
-			}
-			else if ( v.outgoingEdges().size() == 1 && v.incomingEdges().size() == 1 )
-			{
-				final MatchingVertex w = v.outgoingEdges().get( 0 ).getTarget();
-				if ( w.equals( v.incomingEdges().get( 0 ).getSource() ) )
-				{
-					if ( !seeds.contains( w ) )
-						seeds.add( v );
-				}
+				new MamutProjectIO().save( project, writer );
+				model.saveRaw( writer );
 			}
 		}
 
-		for ( final MatchingVertex v : seeds )
+		public Model getModel()
 		{
-			final Spot spot1 = v.getSpot();
-			if ( v.edges().isEmpty() )
-			{
-				System.out.println( "[add]   " + spotToString( spot1 ) + " (ds " + v.graphId() + ")" );
-			}
-			else
-			{
-				final MatchingVertex v2 = v.outgoingEdges().get( 0 ).getTarget();
-				final Spot spot2 = v2.getSpot();
-				System.out.println( "[merge] " + spotToString( spot1 ) + " (ds " + v.graphId() + ")" );
-				System.out.println( "        " + spotToString( spot2 ) + " (ds " + v2.graphId() + ")" );
-			}
+			return model;
+		}
+
+		public Tag addSourceTag( String name, int color )
+		{
+			final Tag tag = sourceTagSet.createTag( name, color );
+			model.getTagSetModel().setTagSetStructure( tagSetStructure );
+			return tag;
+		}
+
+		public Tag addConflictTag( String name, int color )
+		{
+			final Tag tag = conflictTagSet.createTag( name, color );
+			model.getTagSetModel().setTagSetStructure( tagSetStructure );
+			return tag;
 		}
 	}
 
-	private static void checkMatchingGraph( final MatchingGraph matching )
+	static void match( final Dataset dsA, final Dataset dsB, final OutputDataSet output )
 	{
-		boolean ambiguous = false;
-		for ( final MatchingVertex v : matching.vertices() )
+		match( dsA, dsB, output,-1 );
+	}
+
+	static void match( final Dataset dsA, final Dataset dsB, final OutputDataSet output, final int tp )
+	{
+		final int minTimepoint = tp >= 0 ? tp : 0;
+		final int maxTimepoint = tp >= 0 ? tp : Math.max( dsA.maxNonEmptyTimepoint(), dsB.maxNonEmptyTimepoint() );
+		final MatchingGraph matching = buildMatchingGraph( dsA, dsB, minTimepoint, maxTimepoint );
+
+		System.out.println( "conflicts:" );
+		System.out.println( "----------" );
+
+		final Tag tagA = output.addSourceTag( "A", 0xff00ff00 );
+		final Tag tagB = output.addSourceTag( "B", 0xffff00ff );
+		final ModelGraph graph = output.getModel().getGraph();
+		final ObjTags< Spot > vertexTags = output.getModel().getTagSetModel().getVertexTags();
+
+		final double[] pos = new double[ 3 ];
+		final double[][] cov = new double[ 3 ][ 3 ];
+		final Spot vref = graph.vertexRef();
+
+		final RefList< MatchingVertex > addedMatchingVertices = RefCollections.createRefList( matching.vertices() );
+		final UndirectedDepthFirstIterator< MatchingVertex, MatchingEdge > miter = new UndirectedDepthFirstIterator<>( matching );
+		for ( MatchingVertex v : matching.vertices() )
 		{
 			if ( v.edges().size() == 0 )
 				// not matched
@@ -130,23 +190,22 @@ public class MetteMerging
 				// perfectly matched
 				continue;
 
-			// otherwise matching is ambiguous
-			System.out.println( "ambiguous: " + v.getSpot() );
-			System.out.println( "           in(" + v.incomingEdges().size() + ") out(" + v.outgoingEdges().size() + ")" );
-			ambiguous = true;
+			miter.reset( v );
+			while ( miter.hasNext() )
+			{
+				final MatchingVertex mv = miter.next();
+				if ( !addedMatchingVertices.contains( mv ) )
+				{
+					addedMatchingVertices.add( mv );
+					final Spot sourceSpot = mv.getSpot();
+					final int stp = sourceSpot.getTimepoint();
+					sourceSpot.localize( pos );
+					sourceSpot.getCovariance( cov );
+					final Spot destSpot = graph.addVertex( vref ).init( stp, pos, cov );
+					vertexTags.set( destSpot, mv.graphId() == 0 ? tagA : tagB );
+				}
+			}
 		}
-
-		if ( ambiguous )
-			throw new IllegalArgumentException( "MatchingGraph is ambiguous" );
-	}
-
-
-	private static void tags( final Dataset dsA, final Dataset dsB )
-	{
-		MergeTags.mergeTagSetStructures(
-				dsA.model().getTagSetModel().getTagSetStructure(),
-				dsB.model().getTagSetModel().getTagSetStructure() );
-
 	}
 
 	public static void main( String[] args ) throws IOException
@@ -169,8 +228,51 @@ public class MetteMerging
 		final Dataset ds1 = new Dataset( path1 );
 		final Dataset ds2 = new Dataset( path2 );
 
-//		runLocked( ds1, ds2, () -> match( ds1, ds2,0 ) );
-		match( ds1, ds2, 0 );
-//		tags( ds1, ds2 );
+		final OutputDataSet output = new OutputDataSet();
+		match( ds1, ds2, output );
+		output.setDatasetXmlFile( ds1.project().getDatasetXmlFile() );
+
+		final String resultPath = "/Users/pietzsch/Desktop/Mastodon/merging/conflicts.mastodon";
+		try
+		{
+			output.saveProject( new File( resultPath ) );
+		}
+		catch ( IOException e )
+		{
+			e.printStackTrace();
+		}
+
+		System.out.println( "done" );
+
+		try
+		{
+			openInMastodon( resultPath );
+		}
+		catch ( Exception e )
+		{
+			e.printStackTrace();
+		}
 	}
+
+	public static void openInMastodon( final String projectPath ) throws Exception
+	{
+		Locale.setDefault( Locale.US );
+		UIManager.setLookAndFeel( UIManager.getSystemLookAndFeelClassName() );
+
+		final Mastodon mastodon = new Mastodon();
+		new Context().inject( mastodon );
+		mastodon.run();
+		mastodon.mainWindow.setDefaultCloseOperation( WindowConstants.EXIT_ON_CLOSE );
+
+		final WindowManager windowManager = mastodon.windowManager;
+
+		final MamutProject project = new MamutProjectIO().load( projectPath );
+
+		windowManager.getProjectManager().open( project );
+		SwingUtilities.invokeAndWait( () -> {
+			windowManager.createBigDataViewer();
+			windowManager.createTrackScheme();
+		} );
+	}
+
 }

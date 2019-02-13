@@ -88,6 +88,38 @@ public class MatchingGraph extends GraphImp<
 		return v;
 	}
 
+	/**
+	 * Find conflicts, i.e., connected components with cardinality other than 1 or 2.
+	 *
+	 * @param warnOnly
+	 * 		if {@code false}, throws an {@code IllegalArgumentException} if conflicts are found.
+	 * 		if {@code true}, only prints warnings.
+	 */
+	public void checkForConflicts( final boolean warnOnly )
+	{
+		boolean ambiguous = false;
+		for ( final MatchingVertex v : vertices() )
+		{
+			if ( v.edges().size() == 0 )
+				// not matched
+				continue;
+
+			if ( v.outgoingEdges().size() == 1 &&
+					v.incomingEdges().size() == 1 &&
+					v.outgoingEdges().get( 0 ).getTarget().equals( v.incomingEdges().get( 0 ).getSource() ) )
+				// perfectly matched
+				continue;
+
+			// otherwise matching is ambiguous
+			System.out.println( "ambiguous: " + v.getSpot() );
+			System.out.println( "           in(" + v.incomingEdges().size() + ") out(" + v.outgoingEdges().size() + ")" );
+			ambiguous = true;
+		}
+
+		if ( ambiguous && !warnOnly )
+			throw new IllegalArgumentException( "MatchingGraph is ambiguous" );
+	}
+
 	@Override
 	public MatchingVertex addVertex()
 	{
