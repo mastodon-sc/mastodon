@@ -19,9 +19,11 @@ import mpicbg.spim.data.SpimDataException;
 @Plugin( type = Command.class, menuPath = "Plugins>Mastodon (preview)" )
 public class Mastodon extends ContextCommand
 {
-	private WindowManager windowManager;
+	/* TEMPORARY */
+	public WindowManager windowManager;
 
-	private MainWindow mainWindow;
+	/* TEMPORARY */
+	public MainWindow mainWindow;
 
 	@Override
 	public void run()
