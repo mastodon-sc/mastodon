@@ -17,6 +17,7 @@ import org.mastodon.graph.ref.GraphImp;
 import org.mastodon.pool.ByteMappedElement;
 import org.mastodon.pool.ByteMappedElementArray;
 import org.mastodon.pool.SingleArrayMemPool;
+import org.mastodon.pool.attributes.DoubleAttribute;
 import org.mastodon.pool.attributes.IndexAttribute;
 import org.mastodon.revised.model.mamut.ModelGraph;
 import org.mastodon.revised.model.mamut.Spot;
@@ -176,12 +177,19 @@ public class MatchingGraph extends GraphImp<
 		}
 	}
 
-	static class MatchingEdgeLayout extends AbstractEdgeLayout {}
+	static class MatchingEdgeLayout extends AbstractEdgeLayout
+	{
+		final DoubleField distSqu = doubleField();
+		final DoubleField mahalDistSqu = doubleField();
+	}
 
 	static MatchingEdgeLayout edgeLayout = new MatchingEdgeLayout();
 
 	static class MatchingEdgePool extends AbstractEdgePool< MatchingEdge, MatchingVertex, ByteMappedElement >
 	{
+		final DoubleAttribute< MatchingEdge > distSqu = new DoubleAttribute<>( edgeLayout.distSqu, this );
+		final DoubleAttribute< MatchingEdge > mahalDistSqu = new DoubleAttribute<>( edgeLayout.mahalDistSqu, this );
+
 		private MatchingEdgePool( final int initialCapacity, final MatchingVertexPool vertexPool )
 		{
 			super( initialCapacity, edgeLayout, MatchingEdge.class, SingleArrayMemPool.factory( ByteMappedElementArray.factory ), vertexPool );
