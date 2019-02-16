@@ -13,7 +13,7 @@ public class MatchingVertex extends AbstractVertex< MatchingVertex, MatchingEdge
 		super( pool );
 	}
 
-	MatchingVertex init( final int graphId, final int spotId )
+	public MatchingVertex init( final int graphId, final int spotId )
 	{
 		pool.graphId.set( this, graphId );
 		pool.spotId.set( this, spotId );

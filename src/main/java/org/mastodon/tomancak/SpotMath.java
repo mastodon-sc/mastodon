@@ -22,14 +22,21 @@ public class SpotMath
 	 */
 	public boolean containsCenter( final Spot s1, final Spot s2 )
 	{
+		return mahalanobisDistSqu( s1, s2 ) < 1.0;
+	}
+
+	/**
+	 * Returns the squared mahalanobis distance of the center of {@code s2} to {@code s1} ellipsoid.
+	 */
+	public double mahalanobisDistSqu( final Spot s1, final Spot s2 )
+	{
 		s1.localize( pos1 );
 		s1.getCovariance( cov );
 		LinAlgHelpers.invertSymmetric3x3( cov, P );
 
 		s2.localize( diff );
 		LinAlgHelpers.subtract( diff, pos1, diff );
-		final double d2 = multSymmetric3x3bAb( P, diff );
-		return d2 < 1.0;
+		return multSymmetric3x3bAb( P, diff );
 	}
 
 	static double multSymmetric3x3bAb( final double[][] A, final double[] b )

@@ -11,6 +11,13 @@ public class MatchingEdge extends AbstractEdge< MatchingEdge, MatchingVertex, Ma
 		super( pool );
 	}
 
+	public MatchingEdge init( final double distSqu, final double mahalDistSqu )
+	{
+		pool.distSqu.set( this, distSqu );
+		pool.mahalDistSqu.set( this, mahalDistSqu );
+		return this;
+	}
+
 	public double getDistSqu()
 	{
 		return pool.distSqu.get( this );
