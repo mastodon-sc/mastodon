@@ -47,6 +47,19 @@ public class MatchingGraph extends GraphImp<
 		return matching;
 	}
 
+	/**
+	 * Initialize a new MatchingGraph with all MatchingVertices from {@code graph}
+	 * (but no edges).
+	 */
+	public static MatchingGraph newWithAllSpots( MatchingGraph graph )
+	{
+		final MatchingGraph matching = new MatchingGraph( graph.vertexPool.modelGraphs, graph.vertexPool.size() );
+		final MatchingVertex ref = matching.vertexRef();
+		for ( MatchingVertex v : graph.vertices() )
+			matching.superAddVertex( ref ).init( v.graphId(), v.spotId() );
+		return matching;
+	}
+
 	private final List< IntRefMap< MatchingVertex > > graphToSpotToMatchingVertex;
 
 	public MatchingGraph( final ModelGraph... modelGraphs )
@@ -131,6 +144,21 @@ public class MatchingGraph extends GraphImp<
 	public MatchingVertex addVertex( final MatchingVertex ref )
 	{
 		throw new UnsupportedOperationException();
+	}
+
+	private MatchingVertex superAddVertex()
+	{
+		return super.addVertex();
+	}
+
+	private MatchingVertex superAddVertex( final MatchingVertex ref )
+	{
+		return super.addVertex( ref );
+	}
+
+	public Spot spotRef()
+	{
+		return vertexPool.modelGraphs.get( 0 ).vertexRef();
 	}
 
 	/*

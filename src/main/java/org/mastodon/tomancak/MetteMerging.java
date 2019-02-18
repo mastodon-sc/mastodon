@@ -27,6 +27,10 @@ import org.mastodon.revised.model.tag.TagSetStructure.TagSet;
 import org.mastodon.spatial.SpatialIndex;
 import org.scijava.Context;
 
+import static org.mastodon.tomancak.MatchCandidates.avgOutDegree;
+import static org.mastodon.tomancak.MatchCandidates.avgOutDegreeOfMatchedVertices;
+import static org.mastodon.tomancak.MatchCandidates.maxOutDegree;
+
 public class MetteMerging
 {
 	public static final String basepath = "/Users/pietzsch/Desktop/Mastodon/merging/Mastodon-files_SimView2_20130315/";
@@ -39,59 +43,23 @@ public class MetteMerging
 			basepath + "5.SimView2_20130315_Mastodon_Automat-segm-t0-t300_JG"
 	};
 
-	public static MatchingGraph buildMatchingGraph( final Dataset dsA, final Dataset dsB )
-	{
-		final int minTimepoint = 0;
-		final int maxTimepoint = Math.max( dsA.maxNonEmptyTimepoint(), dsB.maxNonEmptyTimepoint() );
-		return buildMatchingGraph( dsA, dsB, minTimepoint, maxTimepoint );
-	}
-
 	public static MatchingGraph buildMatchingGraph( final Dataset dsA, final Dataset dsB, final int minTimepoint, final int maxTimepoint )
 	{
-		final SpotMath spotMath = new SpotMath();
+		final MatchCandidates candidates = new MatchCandidates();
 
-		final MatchingGraph matching = MatchingGraph.newWithAllSpots( dsA, dsB );
-		for ( int timepoint = 0; timepoint <= maxTimepoint; timepoint++ )
-		{
-			final SpatialIndex< Spot > indexA = dsA.model().getSpatioTemporalIndex().getSpatialIndex( timepoint );
-			final SpatialIndex< Spot > indexB = dsB.model().getSpatioTemporalIndex().getSpatialIndex( timepoint );
+		MatchingGraph graph = candidates.buildMatchingGraph( dsA, dsB, minTimepoint, maxTimepoint );
 
-			IncrementalNearestNeighborSearch< Spot > inns = indexB.getIncrementalNearestNeighborSearch();
-			for ( final Spot spot1 : indexA )
-			{
-				final double radiusSqu = spot1.getBoundingSphereRadiusSquared();
-				inns.search( spot1 );
-				while ( inns.hasNext() )
-				{
-					inns.fwd();
-					final double dSqu = inns.getSquareDistance();
-					if ( dSqu > radiusSqu )
-						break;
-					final Spot spot2 = inns.get();
-					if ( spotMath.containsCenter( spot1, spot2 ) )
-						matching.addEdge( matching.getVertex( spot1 ), matching.getVertex( spot2 ) );
-				}
-			}
+		System.out.println( "avgOutDegree = " + avgOutDegree( graph ) );
+		System.out.println( "avgOutDegreeOfMatchedVertices = " + avgOutDegreeOfMatchedVertices( graph ) );
+		System.out.println( "maxOutDegree = " + maxOutDegree( graph ) );
 
-			inns = indexA.getIncrementalNearestNeighborSearch();
-			for ( final Spot spot1 : indexB )
-			{
-				final double radiusSqu = spot1.getBoundingSphereRadiusSquared();
-				inns.search( spot1 );
-				while ( inns.hasNext() )
-				{
-					inns.fwd();
-					final double dSqu = inns.getSquareDistance();
-					if ( dSqu > radiusSqu )
-						break;
-					final Spot spot2 = inns.get();
-					if ( spotMath.containsCenter( spot1, spot2 ) )
-						matching.addEdge( matching.getVertex( spot1 ), matching.getVertex( spot2 ) );
-				}
-			}
-		}
+		graph = candidates.pruneMatchingGraph( graph );
 
-		return matching;
+		System.out.println( "avgOutDegree = " + avgOutDegree( graph ) );
+		System.out.println( "avgOutDegreeOfMatchedVertices = " + avgOutDegreeOfMatchedVertices( graph ) );
+		System.out.println( "maxOutDegree = " + maxOutDegree( graph ) );
+
+		return graph;
 	}
 
 	public static class OutputDataSet
@@ -154,61 +122,6 @@ public class MetteMerging
 		}
 	}
 
-	static void matchz( final Dataset dsA, final Dataset dsB, final OutputDataSet output )
-	{
-		matchz( dsA, dsB, output,-1 );
-	}
-
-	static void matchz( final Dataset dsA, final Dataset dsB, final OutputDataSet output, final int tp )
-	{
-		final int minTimepoint = tp >= 0 ? tp : 0;
-		final int maxTimepoint = tp >= 0 ? tp : Math.max( dsA.maxNonEmptyTimepoint(), dsB.maxNonEmptyTimepoint() );
-		final MatchingGraph matching = buildMatchingGraph( dsA, dsB, minTimepoint, maxTimepoint );
-
-		System.out.println( "conflicts:" );
-		System.out.println( "----------" );
-
-		final Tag tagA = output.addSourceTag( "A", 0xff00ff00 );
-		final Tag tagB = output.addSourceTag( "B", 0xffff00ff );
-		final ModelGraph graph = output.getModel().getGraph();
-		final ObjTags< Spot > vertexTags = output.getModel().getTagSetModel().getVertexTags();
-
-		final double[] pos = new double[ 3 ];
-		final double[][] cov = new double[ 3 ][ 3 ];
-		final Spot vref = graph.vertexRef();
-
-		final RefList< MatchingVertex > addedMatchingVertices = RefCollections.createRefList( matching.vertices() );
-		final UndirectedDepthFirstIterator< MatchingVertex, MatchingEdge > miter = new UndirectedDepthFirstIterator<>( matching );
-		for ( MatchingVertex v : matching.vertices() )
-		{
-			if ( v.edges().size() == 0 )
-				// not matched
-				continue;
-
-			if ( v.outgoingEdges().size() == 1 &&
-					v.incomingEdges().size() == 1 &&
-					v.outgoingEdges().get( 0 ).getTarget().equals( v.incomingEdges().get( 0 ).getSource() ) )
-				// perfectly matched
-				continue;
-
-			miter.reset( v );
-			while ( miter.hasNext() )
-			{
-				final MatchingVertex mv = miter.next();
-				if ( !addedMatchingVertices.contains( mv ) )
-				{
-					addedMatchingVertices.add( mv );
-					final Spot sourceSpot = mv.getSpot();
-					final int stp = sourceSpot.getTimepoint();
-					sourceSpot.localize( pos );
-					sourceSpot.getCovariance( cov );
-					final Spot destSpot = graph.addVertex( vref ).init( stp, pos, cov );
-					vertexTags.set( destSpot, mv.graphId() == 0 ? tagA : tagB );
-				}
-			}
-		}
-	}
-
 	static void merge( final Dataset dsA, final Dataset dsB, final OutputDataSet output )
 	{
 		final int minTimepoint = 0;
@@ -218,9 +131,9 @@ public class MetteMerging
 
 		final Tag tagA = output.addSourceTag( "A", 0xffffff00 );
 		final Tag tagB = output.addSourceTag( "B", 0xffff00ff );
-		final Tag tagSingletonA = output.addConflictTag( "Singleton A", 0xffffff00 );
-		final Tag tagSingletonB = output.addConflictTag( "Singleton B", 0xffff00ff );
-		final Tag tagMatchAB = output.addConflictTag( "MatchAB", 0xff8888ff );
+		final Tag tagSingletonA = output.addConflictTag( "Singleton A", 0xffffffcc );
+		final Tag tagSingletonB = output.addConflictTag( "Singleton B", 0xffffccff );
+		final Tag tagMatchAB = output.addConflictTag( "MatchAB", 0xffccffcc );
 		final Tag tagConflict = output.addConflictTag( "Conflict", 0xffff0000 );
 
 		final ModelGraph graph = output.getModel().getGraph();
