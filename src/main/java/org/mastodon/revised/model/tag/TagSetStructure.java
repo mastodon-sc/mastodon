@@ -310,6 +310,17 @@ public class TagSetStructure
 		{
 			return id;
 		}
+
+		@Override
+		public String toString()
+		{
+			final StringBuilder str = new StringBuilder();
+			str.append( "Tag{id=" ).append( id() );
+			str.append( ", label='" ).append( label() ).append( "'" );
+			str.append( ", color=" ).append( String.format( "0x%08X", color() ) );
+			str.append( "}" );
+			return str.toString();
+		}
 	}
 
 	@Override
