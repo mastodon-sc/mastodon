@@ -40,60 +40,32 @@ public class MergeTags
 		}
 	}
 
-	static void mergeTagSetStructures( TagSetStructure tssA, TagSetStructure tssB )
+	/**
+	 * Merge all TagSets from {@code source} into {@code merged}.
+	 */
+	public static TagSetStructureMaps mergeTagSetStructure( TagSetStructure merged, TagSetStructure source )
 	{
-		final TagSetStructure mergedTagSetStructure = new TagSetStructure();
-		final Map< Tag, TagSet > mergedTagToMergedTagSet = new HashMap<>();
 		final Map< String, TagSet > nameToMergedTagSet = new HashMap<>();
-		final Map< TagId, Tag > tagIdToMergedTag = new HashMap<>();
+		merged.getTagSets().forEach( tagSet -> nameToMergedTagSet.put( tagSet.getName(), tagSet ) );
 
-		// copy tssA to mergedTagSetStructure
-		final Map< Tag, Tag > aToMerged = new HashMap<>();
-		for ( TagSet tagSet : tssA.getTagSets() )
+		TagSetStructureMaps maps = new TagSetStructureMaps();
+		for ( TagSet tagSet : source.getTagSets() )
 		{
 			final String tsn = tagSet.getName();
-			final TagSet mergedTagSet = nameToMergedTagSet.computeIfAbsent( tsn, mergedTagSetStructure::createTagSet );
-
+			final TagSet mergedTagSet = nameToMergedTagSet.computeIfAbsent( tsn, merged::createTagSet );
+			maps.tagSetMap.put( tagSet, mergedTagSet );
 			for ( Tag tag : tagSet.getTags() )
 			{
 				final String tn = tag.label();
 				final int tc = tag.color();
-
-				Tag mergedTag = mergedTagSet.createTag( tn,  tc );
-				mergedTagToMergedTagSet.put( mergedTag, mergedTagSet );
-				tagIdToMergedTag.put( new TagId( tsn, tn ), mergedTag );
-				aToMerged.put( tag, mergedTag );
-			}
-		}
-
-		// merge tssB into mergedTagSetStructure (add tags that are not present)
-		final Map< Tag, Tag > bToMerged = new HashMap<>();
-		for ( TagSet tagSet : tssB.getTagSets() )
-		{
-			final String tsn = tagSet.getName();
-			final TagSet mergedTagSet = nameToMergedTagSet.computeIfAbsent( tsn, mergedTagSetStructure::createTagSet );
-
-			for ( Tag tag : tagSet.getTags() )
-			{
-				final String tn = tag.label();
-				final int tc = tag.color();
-
 				Tag mergedTag = getTag( mergedTagSet, tn );
 				if ( mergedTag == null )
-				{
 					mergedTag = mergedTagSet.createTag( tn, tc );
-					mergedTagToMergedTagSet.put( mergedTag, mergedTagSet );
-					tagIdToMergedTag.put( new TagId( tsn, tn ), mergedTag );
-				}
-				bToMerged.put( tag, mergedTag );
+				maps.tagMap.put( tag, mergedTag );
 			}
 		}
 
-		System.out.println( "tssA = " + tssA );
-		System.out.println( "=======================================\n\n" );
-		System.out.println( "tssB = " + tssB );
-		System.out.println( "=======================================\n\n" );
-		System.out.println( "mergedTagSetStructure = " + mergedTagSetStructure );
+		return maps;
 	}
 
 	private static Tag getTag( final TagSet tagSet, final String tagName )
@@ -104,9 +76,18 @@ public class MergeTags
 				.orElse( null );
 	}
 
-
-
-
+	// for debugging ...
+	static void mergeTagSetStructures( TagSetStructure tssA, TagSetStructure tssB )
+	{
+		final TagSetStructure merged = new TagSetStructure();
+		mergeTagSetStructure( merged, tssA );
+		mergeTagSetStructure( merged, tssB );
+		System.out.println( "tssA = " + tssA );
+		System.out.println( "=======================================\n\n" );
+		System.out.println( "tssB = " + tssB );
+		System.out.println( "=======================================\n\n" );
+		System.out.println( "mergedTagSetStructure = " + merged );
+	}
 
 
 
@@ -121,14 +102,14 @@ public class MergeTags
 	}
 
 	/**
-	 * Adds all TagSets from {@code tts}, prefixed with {@code prefix}.
+	 * Adds all TagSets from {@code source} to {@code target}, prefixed with {@code prefix}.
 	 */
-	public static TagSetStructureMaps addTagSetStructureCopy( TagSetStructure to, TagSetStructure from, String prefix )
+	public static TagSetStructureMaps addTagSetStructureCopy( TagSetStructure target, TagSetStructure source, String prefix )
 	{
 		TagSetStructureMaps maps = new TagSetStructureMaps();
-		for ( TagSet tagSet : from.getTagSets() )
+		for ( TagSet tagSet : source.getTagSets() )
 		{
-			final TagSet newTagSet = to.createTagSet( prefix + tagSet.getName() );
+			final TagSet newTagSet = target.createTagSet( prefix + tagSet.getName() );
 			maps.tagSetMap.put( tagSet, newTagSet );
 			for ( Tag tag : tagSet.getTags() )
 			{
