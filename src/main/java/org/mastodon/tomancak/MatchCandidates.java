@@ -49,7 +49,7 @@ public class MatchCandidates
 
 	public MatchCandidates()
 	{
-		this( 1000, 1, 2.0 );
+		this( 1000, 0.5, 2.0 );
 	}
 
 	public MatchCandidates( final double distCutoff, final double mahalanobisDistCutoff, final double ratioThreshold )
@@ -107,7 +107,6 @@ public class MatchCandidates
 
 	public MatchingGraph pruneMatchingGraph( MatchingGraph graph )
 	{
-		final SpotMath spotMath = new SpotMath();
 		final MatchingGraph matching = MatchingGraph.newWithAllSpots( graph );
 		/*
 		prune matching graph

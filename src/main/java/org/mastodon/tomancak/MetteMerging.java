@@ -277,16 +277,31 @@ public class MetteMerging
 			return mv.edges().isEmpty();
 		}
 
+		/**
+		 * {@code true} if the best target of {@code mv}, has {@code mv} as its best target in return.
+		 * Assumes that outgoing edges are sorted by increasing mahalanobis distance.
+		 */
 		public boolean isPerfectlyMatched( MatchingVertex mv )
 		{
-			if ( mv.outgoingEdges().size() != 1 )
+			if ( mv.outgoingEdges().isEmpty() )
 				return false;
-			if ( mv.incomingEdges().size() != 1 )
+			final MatchingVertex target = mv.outgoingEdges().get( 0, eref1 ).getTarget( vref1 );
+			if ( target.outgoingEdges().isEmpty() )
 				return false;
-			final MatchingVertex vTo = mv.outgoingEdges().get( 0, eref1 ).getTarget( vref1 );
-			final MatchingVertex vFrom = mv.incomingEdges().get( 0, eref2 ).getSource( vref2 );
-			return vTo.equals( vFrom );
+			final MatchingVertex targetsTarget = target.outgoingEdges().get( 0, eref2 ).getTarget( vref2 );
+			return targetsTarget.equals( mv );
 		}
+
+//		public boolean isPerfectlyMatched( MatchingVertex mv )
+//		{
+//			if ( mv.outgoingEdges().size() != 1 )
+//				return false;
+//			if ( mv.incomingEdges().size() != 1 )
+//				return false;
+//			final MatchingVertex vTo = mv.outgoingEdges().get( 0, eref1 ).getTarget( vref1 );
+//			final MatchingVertex vFrom = mv.incomingEdges().get( 0, eref2 ).getSource( vref2 );
+//			return vTo.equals( vFrom );
+//		}
 	}
 
 
