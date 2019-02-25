@@ -49,7 +49,7 @@ public class MatchCandidates
 
 	public MatchCandidates()
 	{
-		this( 1000, 0.5, 2.0 );
+		this( 1000, 1.0, 2.0 );
 	}
 
 	public MatchCandidates( final double distCutoff, final double mahalanobisDistCutoff, final double ratioThreshold )

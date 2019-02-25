@@ -162,71 +162,6 @@ public class MetteMerging
 		}
 
 /*
-		for every spot b in B:
-			if singleton (b):
-				add b' with shape and translated b tags
-				add mapping MB: b --> b'
-			else if perfect match (a,b):
-				get a'
-				add translated b tags, checking for conflicts
-				add mapping MB: b --> a'
-			else
-				add b' with shape and translated b tags
-				add "conflict" tag to b' and any connected (and already present) c'
-				add mapping MB: b --> b'
-*/
-		final ModelGraph graphB = dsB.model().getGraph();
-		final RefRefMap< Spot, Spot > mapBtoDest = RefMaps.createRefRefMap( graphA.vertices(), graph.vertices() );
-		final UndirectedDepthFirstIterator< MatchingVertex, MatchingEdge > miter = new UndirectedDepthFirstIterator<>( matching );
-		for ( Spot spotB : graphB.vertices() )
-		{
-			final MatchingVertex mvB = matching.getVertex( spotB );
-
-			if ( utils.isUnmatched( mvB ) )
-			{
-				final int tp = spotB.getTimepoint();
-				spotB.localize( pos );
-				spotB.getCovariance( cov );
-				final Spot destSpot = graph.addVertex( vref ).init( tp, pos, cov );
-				vertexTags.set( destSpot, tagB );
-				vertexTags.set( destSpot, tagSingletonB );
-				mapBtoDest.put( spotB, destSpot );
-			}
-			else if ( utils.isPerfectlyMatched( mvB ) )
-			{
-				final MatchingVertex mvA = mvB.outgoingEdges().get( 0 ).getTarget();
-				final Spot spotA = mvA.getSpot( vref );
-				final Spot destSpot = mapAtoDest.get( spotA );
-				vertexTags.set( destSpot, tagB );
-				vertexTags.set( destSpot, tagMatchAB );
-				mapBtoDest.put( spotB, destSpot );
-			}
-			else
-			{
-				final int tp = spotB.getTimepoint();
-				spotB.localize( pos );
-				spotB.getCovariance( cov );
-				final Spot destSpot = graph.addVertex( vref ).init( tp, pos, cov );
-				vertexTags.set( destSpot, tagB );
-				mapBtoDest.put( spotB, destSpot );
-
-				miter.reset( mvB );
-				while ( miter.hasNext() )
-				{
-					final MatchingVertex mv = miter.next();
-					final Spot sourceSpot = mv.getSpot();
-					final Spot spot;
-					if ( sourceSpot.getModelGraph() == graphA )
-						spot = mapAtoDest.get( sourceSpot );
-					else
-						spot = mapBtoDest.get( sourceSpot );
-					if ( spot != null )
-						vertexTags.set( spot, tagConflict );
-				}
-			}
-		}
-
-/*
 		for every edge (a1,a2) in A
 			get a1', a2' from mapping MA
 			add edge (a1',a2') and translated (a1,a2) tags
@@ -236,6 +171,102 @@ public class MetteMerging
 			final Spot source = mapAtoDest.get( linkA.getSource() );
 			final Spot target = mapAtoDest.get( linkA.getTarget() );
 			graph.addEdge( source, target );
+		}
+
+/*
+		for every spot b in B, ordered by ascending timepoint!:
+			if singleton (b):
+				add b' with shape and translated b tags
+				add mapping MB: b --> b'
+			else if perfect match (a,b):
+				get a'
+				if b has incoming edge (c,b) AND a has incoming edge (d,a)
+					get c', d'
+					if c' != d':
+						add b' with shape and translated b tags
+						add mapping MB: b --> b'
+						add "conflict" tag to a' and b'
+						continue;
+				(else:)
+					add translated b tags, checking for conflicts
+					add mapping MB: b --> a'
+			else
+				add b' with shape and translated b tags
+				add "conflict" tag to b' and any connected (and already present) c'
+				add mapping MB: b --> b'
+*/
+		final ModelGraph graphB = dsB.model().getGraph();
+		final RefRefMap< Spot, Spot > mapBtoDest = RefMaps.createRefRefMap( graphA.vertices(), graph.vertices() );
+		final UndirectedDepthFirstIterator< MatchingVertex, MatchingEdge > miter = new UndirectedDepthFirstIterator<>( matching );
+		for ( int timepoint = 0; timepoint <= maxTimepoint; timepoint++ )
+		{
+			final SpatialIndex< Spot > indexB = dsB.model().getSpatioTemporalIndex().getSpatialIndex( timepoint );
+			for ( Spot spotB : indexB )
+			{
+				final MatchingVertex mvB = matching.getVertex( spotB );
+
+				if ( utils.isUnmatched( mvB ) )
+				{
+					final int tp = spotB.getTimepoint();
+					spotB.localize( pos );
+					spotB.getCovariance( cov );
+					final Spot destSpot = graph.addVertex( vref ).init( tp, pos, cov );
+					vertexTags.set( destSpot, tagB );
+					vertexTags.set( destSpot, tagSingletonB );
+					mapBtoDest.put( spotB, destSpot );
+				}
+				else if ( utils.isPerfectlyMatched( mvB ) )
+				{
+					final MatchingVertex mvA = mvB.outgoingEdges().get( 0 ).getTarget();
+					final Spot spotA = mvA.getSpot( vref );
+					final Spot destSpotA = mapAtoDest.get( spotA );
+					if ( ! ( spotB.incomingEdges().isEmpty() || spotA.incomingEdges().isEmpty() ) )
+					{
+						final Spot spotC = spotB.incomingEdges().get( 0 ).getSource();
+						final Spot spotD = spotA.incomingEdges().get( 0 ).getSource();
+						final Spot destSpotC = mapBtoDest.get( spotC );
+						final Spot destSpotD = mapAtoDest.get( spotD );
+						if ( !destSpotC.equals( destSpotD ) )
+						{
+							final int tp = spotB.getTimepoint();
+							spotB.localize( pos );
+							spotB.getCovariance( cov );
+							final Spot destSpotB = graph.addVertex( vref ).init( tp, pos, cov );
+							vertexTags.set( destSpotB, tagB );
+							mapBtoDest.put( spotB, destSpotB );
+							vertexTags.set( destSpotB, tagConflict );
+							vertexTags.set( destSpotA, tagConflict );
+							continue;
+						}
+					}
+					vertexTags.set( destSpotA, tagB );
+					vertexTags.set( destSpotA, tagMatchAB );
+					mapBtoDest.put( spotB, destSpotA );
+				}
+				else
+				{
+					final int tp = spotB.getTimepoint();
+					spotB.localize( pos );
+					spotB.getCovariance( cov );
+					final Spot destSpot = graph.addVertex( vref ).init( tp, pos, cov );
+					vertexTags.set( destSpot, tagB );
+					mapBtoDest.put( spotB, destSpot );
+
+					miter.reset( mvB );
+					while ( miter.hasNext() )
+					{
+						final MatchingVertex mv = miter.next();
+						final Spot sourceSpot = mv.getSpot();
+						final Spot spot;
+						if ( sourceSpot.getModelGraph() == graphA )
+							spot = mapAtoDest.get( sourceSpot );
+						else
+							spot = mapBtoDest.get( sourceSpot );
+						if ( spot != null )
+							vertexTags.set( spot, tagConflict );
+					}
+				}
+			}
 		}
 
 /*
