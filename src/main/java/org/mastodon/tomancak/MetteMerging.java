@@ -5,13 +5,9 @@ import java.io.IOException;
 import java.util.Locale;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
-import javax.swing.WindowConstants;
-import org.mastodon.collection.RefCollections;
-import org.mastodon.collection.RefList;
 import org.mastodon.collection.RefMaps;
 import org.mastodon.collection.RefRefMap;
 import org.mastodon.graph.algorithm.traversal.UndirectedDepthFirstIterator;
-import org.mastodon.kdtree.IncrementalNearestNeighborSearch;
 import org.mastodon.project.MamutProject;
 import org.mastodon.project.MamutProjectIO;
 import org.mastodon.revised.mamut.Mastodon;
@@ -29,41 +25,8 @@ import org.mastodon.spatial.SpatialIndex;
 import org.mastodon.tomancak.MergeTags.TagSetStructureMaps;
 import org.scijava.Context;
 
-import static org.mastodon.tomancak.MatchCandidates.avgOutDegree;
-import static org.mastodon.tomancak.MatchCandidates.avgOutDegreeOfMatchedVertices;
-import static org.mastodon.tomancak.MatchCandidates.maxOutDegree;
-
 public class MetteMerging
 {
-	public static final String basepath = "/Users/pietzsch/Desktop/Mastodon/merging/Mastodon-files_SimView2_20130315/";
-
-	public static final String[] paths = {
-			basepath + "1.SimView2_20130315_Mastodon_Automat-segm-t0-t300",
-			basepath + "2.SimView2_20130315_Mastodon_MHT",
-			basepath + "3.Pavel manual",
-			basepath + "4.Vlado_TrackingPlatynereis",
-			basepath + "5.SimView2_20130315_Mastodon_Automat-segm-t0-t300_JG"
-	};
-
-	public static MatchingGraph buildMatchingGraph( final Dataset dsA, final Dataset dsB, final int minTimepoint, final int maxTimepoint )
-	{
-		final MatchCandidates candidates = new MatchCandidates();
-
-		MatchingGraph graph = candidates.buildMatchingGraph( dsA, dsB, minTimepoint, maxTimepoint );
-
-		System.out.println( "avgOutDegree = " + avgOutDegree( graph ) );
-		System.out.println( "avgOutDegreeOfMatchedVertices = " + avgOutDegreeOfMatchedVertices( graph ) );
-		System.out.println( "maxOutDegree = " + maxOutDegree( graph ) );
-
-		graph = candidates.pruneMatchingGraph( graph );
-
-		System.out.println( "avgOutDegree = " + avgOutDegree( graph ) );
-		System.out.println( "avgOutDegreeOfMatchedVertices = " + avgOutDegreeOfMatchedVertices( graph ) );
-		System.out.println( "maxOutDegree = " + maxOutDegree( graph ) );
-
-		return graph;
-	}
-
 	public static class OutputDataSet
 	{
 		private File datasetXmlFile;
@@ -154,11 +117,12 @@ public class MetteMerging
 		}
 	}
 
-	static void merge( final Dataset dsA, final Dataset dsB, final OutputDataSet output )
+	public static void merge( final Dataset dsA, final Dataset dsB, final OutputDataSet output, final double distCutoff, final double mahalanobisDistCutoff, final double ratioThreshold )
 	{
 		final int minTimepoint = 0;
 		final int maxTimepoint = Math.max( dsA.maxNonEmptyTimepoint(), dsB.maxNonEmptyTimepoint() );
-		final MatchingGraph matching = buildMatchingGraph( dsA, dsB, minTimepoint, maxTimepoint );
+		final MatchCandidates candidates = new MatchCandidates( distCutoff, mahalanobisDistCutoff, ratioThreshold );
+		final MatchingGraph matching = candidates.pruneMatchingGraph( candidates.buildMatchingGraph( dsA, dsB, minTimepoint, maxTimepoint ) );
 		final MatchingGraphUtils utils = new MatchingGraphUtils( matching );
 
 		final Tag tagA = output.addSourceTag( "A", 0xffffff00 );
@@ -491,11 +455,8 @@ public class MetteMerging
 		}
 	}
 
-
-	static class MatchingGraphUtils
+	private static class MatchingGraphUtils
 	{
-		private final MatchingGraph matchingGraph;
-
 		private final MatchingEdge eref1;
 		private final MatchingEdge eref2;
 		private final MatchingVertex vref1;
@@ -503,7 +464,6 @@ public class MetteMerging
 
 		public MatchingGraphUtils( final MatchingGraph matchingGraph )
 		{
-			this.matchingGraph = matchingGraph;
 			eref1 = matchingGraph.edgeRef();
 			eref2 = matchingGraph.edgeRef();
 			vref1 = matchingGraph.vertexRef();
@@ -529,32 +489,40 @@ public class MetteMerging
 			final MatchingVertex targetsTarget = target.outgoingEdges().get( 0, eref2 ).getTarget( vref2 );
 			return targetsTarget.equals( mv );
 		}
-
-//		public boolean isPerfectlyMatched( MatchingVertex mv )
-//		{
-//			if ( mv.outgoingEdges().size() != 1 )
-//				return false;
-//			if ( mv.incomingEdges().size() != 1 )
-//				return false;
-//			final MatchingVertex vTo = mv.outgoingEdges().get( 0, eref1 ).getTarget( vref1 );
-//			final MatchingVertex vFrom = mv.incomingEdges().get( 0, eref2 ).getSource( vref2 );
-//			return vTo.equals( vFrom );
-//		}
 	}
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	public static final String basepath = "/Users/pietzsch/Desktop/Mastodon/merging/Mastodon-files_SimView2_20130315/";
+
+	public static final String[] paths = {
+			basepath + "1.SimView2_20130315_Mastodon_Automat-segm-t0-t300",
+			basepath + "2.SimView2_20130315_Mastodon_MHT",
+			basepath + "3.Pavel manual",
+			basepath + "4.Vlado_TrackingPlatynereis",
+			basepath + "5.SimView2_20130315_Mastodon_Automat-segm-t0-t300_JG"
+	};
+
 	public static void main( String[] args ) throws IOException
 	{
-//		for ( String path : paths )
-//		{
-//			System.out.println("=================================================");
-//			System.out.println( "path = " + path );
-//			final Dataset dataset = new Dataset( path );
-//			dataset.verify();
-//			dataset.labels();
-//			dataset.tags();
-//		}
-
 		final String path1 = paths[ 0 ];
 		final String path2 = paths[ 4 ];
 		System.out.println( "path1 = " + path1 );
@@ -563,12 +531,8 @@ public class MetteMerging
 		final Dataset ds1 = new Dataset( path1 );
 		final Dataset ds2 = new Dataset( path2 );
 
-//		MergeTags.mergeTagSetStructures(
-//				ds1.model().getTagSetModel().getTagSetStructure(),
-//				ds2.model().getTagSetModel().getTagSetStructure() );
-
 		final OutputDataSet output = new OutputDataSet();
-		merge( ds1, ds2, output );
+		merge( ds1, ds2, output, 1000, 1.0, 2.0 );
 		output.setDatasetXmlFile( ds1.project().getDatasetXmlFile() );
 
 		final String resultPath = "/Users/pietzsch/Desktop/Mastodon/merging/conflicts.mastodon";
@@ -601,7 +565,6 @@ public class MetteMerging
 		final Mastodon mastodon = new Mastodon();
 		new Context().inject( mastodon );
 		mastodon.run();
-		mastodon.mainWindow.setDefaultCloseOperation( WindowConstants.EXIT_ON_CLOSE );
 
 		final WindowManager windowManager = mastodon.windowManager;
 

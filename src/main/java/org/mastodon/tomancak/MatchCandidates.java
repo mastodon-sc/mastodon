@@ -1,62 +1,23 @@
 package org.mastodon.tomancak;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.Comparator;
-import java.util.Iterator;
-import java.util.Locale;
-import javax.swing.SwingUtilities;
-import javax.swing.UIManager;
-import javax.swing.WindowConstants;
-import org.mastodon.collection.RefCollection;
 import org.mastodon.collection.RefCollections;
 import org.mastodon.collection.RefList;
-import org.mastodon.collection.RefMaps;
-import org.mastodon.collection.RefRefMap;
-import org.mastodon.collection.ref.RefArrayList;
-import org.mastodon.graph.algorithm.traversal.UndirectedDepthFirstIterator;
 import org.mastodon.kdtree.IncrementalNearestNeighborSearch;
-import org.mastodon.project.MamutProject;
-import org.mastodon.project.MamutProjectIO;
-import org.mastodon.revised.mamut.Mastodon;
-import org.mastodon.revised.mamut.WindowManager;
-import org.mastodon.revised.model.mamut.Link;
-import org.mastodon.revised.model.mamut.Model;
-import org.mastodon.revised.model.mamut.ModelGraph;
 import org.mastodon.revised.model.mamut.Spot;
-import org.mastodon.revised.model.tag.ObjTags;
-import org.mastodon.revised.model.tag.TagSetStructure;
-import org.mastodon.revised.model.tag.TagSetStructure.Tag;
-import org.mastodon.revised.model.tag.TagSetStructure.TagSet;
 import org.mastodon.spatial.SpatialIndex;
-import org.scijava.Context;
 
 public class MatchCandidates
 {
-	public static final String basepath = "/Users/pietzsch/Desktop/Mastodon/merging/Mastodon-files_SimView2_20130315/";
-
-	public static final String[] paths = {
-			basepath + "1.SimView2_20130315_Mastodon_Automat-segm-t0-t300",
-			basepath + "2.SimView2_20130315_Mastodon_MHT",
-			basepath + "3.Pavel manual",
-			basepath + "4.Vlado_TrackingPlatynereis",
-			basepath + "5.SimView2_20130315_Mastodon_Automat-segm-t0-t300_JG"
-	};
-
-	private final double ABSOLUTE_DISTSQU_CUTOFF;
-	private final double MAHALANOBIS_DISTSQU_CUTOFF;
-	private final double RATIO_THRESHOLD_SQU;
-
-	public MatchCandidates()
-	{
-		this( 1000, 1.0, 2.0 );
-	}
+	private final double absoluteDistSquCutoff;
+	private final double mahalanobisDistSquCutoff;
+	private final double ratioThresholdSqu;
 
 	public MatchCandidates( final double distCutoff, final double mahalanobisDistCutoff, final double ratioThreshold )
 	{
-		ABSOLUTE_DISTSQU_CUTOFF = distCutoff * distCutoff;
-		MAHALANOBIS_DISTSQU_CUTOFF = mahalanobisDistCutoff * mahalanobisDistCutoff;
-		RATIO_THRESHOLD_SQU = ratioThreshold * ratioThreshold;
+		absoluteDistSquCutoff = distCutoff * distCutoff;
+		mahalanobisDistSquCutoff = mahalanobisDistCutoff * mahalanobisDistCutoff;
+		ratioThresholdSqu = ratioThreshold * ratioThreshold;
 	}
 
 	public MatchingGraph buildMatchingGraph( final Dataset dsA, final Dataset dsB )
@@ -69,7 +30,7 @@ public class MatchCandidates
 	public MatchingGraph buildMatchingGraph( final Dataset dsA, final Dataset dsB, final int minTimepoint, final int maxTimepoint )
 	{
 		final MatchingGraph matching = MatchingGraph.newWithAllSpots( dsA, dsB );
-		for ( int timepoint = 0; timepoint <= maxTimepoint; timepoint++ )
+		for ( int timepoint = minTimepoint; timepoint <= maxTimepoint; timepoint++ )
 		{
 			final SpatialIndex< Spot > indexA = dsA.model().getSpatioTemporalIndex().getSpatialIndex( timepoint );
 			final SpatialIndex< Spot > indexB = dsB.model().getSpatioTemporalIndex().getSpatialIndex( timepoint );
@@ -91,11 +52,11 @@ public class MatchCandidates
 			{
 				inns.fwd();
 				final double dSqu = inns.getSquareDistance();
-				if ( dSqu > ABSOLUTE_DISTSQU_CUTOFF )
+				if ( dSqu > absoluteDistSquCutoff )
 					break;
 				final Spot spot2 = inns.get();
 				final double mdSqu = spotMath.mahalanobisDistSqu( spot1, spot2 );
-				if ( mdSqu > MAHALANOBIS_DISTSQU_CUTOFF )
+				if ( mdSqu > mahalanobisDistSquCutoff )
 					break;
 				matching.addEdge(
 						matching.getVertex( spot1 ),
@@ -148,7 +109,7 @@ public class MatchCandidates
 				if ( i + 1 < edges.size() )
 				{
 					final MatchingEdge ne = edges.get( i + 1 );
-					if ( ne.getMahalDistSqu() / ge.getMahalDistSqu() > RATIO_THRESHOLD_SQU )
+					if ( ne.getMahalDistSqu() / ge.getMahalDistSqu() > ratioThresholdSqu )
 						break;
 				}
 			}
@@ -188,23 +149,5 @@ public class MatchCandidates
 		for ( MatchingVertex v : graph.vertices() )
 			maxOutEdges = Math.max( maxOutEdges, v.outgoingEdges().size() );
 		return maxOutEdges;
-	}
-
-	public static void main( String[] args ) throws IOException
-	{
-		final String path1 = paths[ 0 ];
-		final String path2 = paths[ 4 ];
-		System.out.println( "path1 = " + path1 );
-		System.out.println( "path2 = " + path2 );
-
-		final Dataset ds1 = new Dataset( path1 );
-		final Dataset ds2 = new Dataset( path2 );
-
-		final MatchCandidates candidates = new MatchCandidates();
-		final MatchingGraph graph = candidates.buildMatchingGraph( ds1, ds2 );
-		System.out.println( "avgOutDegree = " + avgOutDegree( graph ) );
-		System.out.println( "avgOutDegreeOfMatchedVertices = " + avgOutDegreeOfMatchedVertices( graph ) );
-		System.out.println( "maxOutDegree = " + maxOutDegree( graph ) );
-		candidates.pruneMatchingGraph( graph );
 	}
 }
