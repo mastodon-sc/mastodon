@@ -21,10 +21,12 @@ import org.mastodon.revised.model.mamut.Model;
 import org.mastodon.revised.model.mamut.ModelGraph;
 import org.mastodon.revised.model.mamut.Spot;
 import org.mastodon.revised.model.tag.ObjTags;
+import org.mastodon.revised.model.tag.TagSetModel;
 import org.mastodon.revised.model.tag.TagSetStructure;
 import org.mastodon.revised.model.tag.TagSetStructure.Tag;
 import org.mastodon.revised.model.tag.TagSetStructure.TagSet;
 import org.mastodon.spatial.SpatialIndex;
+import org.mastodon.tomancak.MergeTags.TagSetStructureMaps;
 import org.scijava.Context;
 
 import static org.mastodon.tomancak.MatchCandidates.avgOutDegree;
@@ -72,11 +74,14 @@ public class MetteMerging
 
 		private final TagSet conflictTagSet;
 
+		private final TagSet tagConflictTagSet;
+
 		public OutputDataSet()
 		{
 			model = new Model();
 			tagSetStructure = new TagSetStructure();
 			conflictTagSet = tagSetStructure.createTagSet( "Merge Conflict" );
+			tagConflictTagSet = tagSetStructure.createTagSet( "Merge Conflict (Tags)" );
 		}
 
 		public void setDatasetXmlFile( File file )
@@ -120,6 +125,23 @@ public class MetteMerging
 			model.getTagSetModel().setTagSetStructure( tagSetStructure );
 			return tag;
 		}
+
+		public Tag addTagConflictTag( String name, int color )
+		{
+			final Tag tag = tagConflictTagSet.createTag( name, color );
+			model.getTagSetModel().setTagSetStructure( tagSetStructure );
+			return tag;
+		}
+
+		public TagSetStructure getTagSetStructure()
+		{
+			return tagSetStructure;
+		}
+
+		public void updateTagSetModel()
+		{
+			model.getTagSetModel().setTagSetStructure( tagSetStructure );
+		}
 	}
 
 	static void merge( final Dataset dsA, final Dataset dsB, final OutputDataSet output )
@@ -135,6 +157,7 @@ public class MetteMerging
 		final Tag tagSingletonB = output.addConflictTag( "Singleton B", 0xffffccff );
 		final Tag tagMatchAB = output.addConflictTag( "MatchAB", 0xffccffcc );
 		final Tag tagConflict = output.addConflictTag( "Conflict", 0xffff0000 );
+		final Tag tagTagConflict = output.addTagConflictTag( "Tag Conflict", 0xffff0000 );
 
 		final ModelGraph graph = output.getModel().getGraph();
 		final ObjTags< Spot > vertexTags = output.getModel().getTagSetModel().getVertexTags();
@@ -166,11 +189,13 @@ public class MetteMerging
 			get a1', a2' from mapping MA
 			add edge (a1',a2') and translated (a1,a2) tags
 */
+		final RefRefMap< Link, Link > mapAtoDestLinks = RefMaps.createRefRefMap( graphA.edges(), graph.edges() );
 		for ( Link linkA : graphA.edges() )
 		{
 			final Spot source = mapAtoDest.get( linkA.getSource() );
 			final Spot target = mapAtoDest.get( linkA.getTarget() );
-			graph.addEdge( source, target );
+			final Link destLink = graph.addEdge( source, target );
+			mapAtoDestLinks.put( linkA, destLink );
 		}
 
 /*
@@ -275,13 +300,155 @@ public class MetteMerging
 			add edge (b1',b2') if not exists
 			add translated (b1,b2) tags, checking for conflicts
 */
+		final RefRefMap< Link, Link > mapBtoDestLinks = RefMaps.createRefRefMap( graphB.edges(), graph.edges() );
 		for ( Link linkB : graphB.edges() )
 		{
 			final Spot source = mapBtoDest.get( linkB.getSource() );
 			final Spot target = mapBtoDest.get( linkB.getTarget() );
-			if ( graph.getEdge( source, target ) == null )
-				graph.addEdge( source, target );
+			Link destLink = graph.getEdge( source, target );
+			if ( destLink == null )
+				destLink = graph.addEdge( source, target );
+			mapBtoDestLinks.put( linkB, destLink );
 		}
+
+
+
+
+		/*
+		 * ========================================
+		 *           transfer tags
+		 * ========================================
+		 */
+
+		final TagSetModel< Spot, Link > tsm = output.getModel().getTagSetModel();
+		final TagSetStructure tss = output.getTagSetStructure();
+		final TagSetModel< Spot, Link > tsmA = dsA.model().getTagSetModel();
+		final TagSetModel< Spot, Link > tsmB = dsB.model().getTagSetModel();
+		final TagSetStructure tssA = tsmA.getTagSetStructure();
+		final TagSetStructure tssB = tsmB.getTagSetStructure();
+		final TagSetStructureMaps tssAtoCopy = MergeTags.addTagSetStructureCopy( tss, tssA, "((A)) " );
+		final TagSetStructureMaps tssBtoCopy = MergeTags.addTagSetStructureCopy( tss, tssB, "((B)) " );
+		final TagSetStructureMaps tssAtoDest = MergeTags.mergeTagSetStructure( tss, tssA );
+		final TagSetStructureMaps tssBtoDest = MergeTags.mergeTagSetStructure( tss, tssB );
+		output.updateTagSetModel();
+
+/*
+		for every spot a in A:
+			get a'
+			for every tagset in A:
+				get tag t of (a, tagset)
+				if t exists:
+					get t' as copy ((A)) of t
+					set t' for a'
+					get t" as merge of t
+					set t" for a'
+		analogous for links in A...
+*/
+		for ( Spot spotA : graphA.vertices() )
+		{
+			final Spot destSpot = mapAtoDest.get( spotA );
+			for ( TagSet tagSet : tssA.getTagSets() )
+			{
+				final Tag tag = tsmA.getVertexTags().tags( tagSet ).get( spotA );
+				if ( tag != null )
+				{
+					// copy ((A))
+					tsm.getVertexTags().set( destSpot, tssAtoCopy.tagMap.get( tag ) );
+
+					// merged
+					tsm.getVertexTags().set( destSpot, tssAtoDest.tagMap.get( tag ) );
+				}
+			}
+		}
+		for ( Link linkA : graphA.edges() )
+		{
+			final Link destLink = mapAtoDestLinks.get( linkA );
+			for ( TagSet tagSet : tssA.getTagSets() )
+			{
+				final Tag tag = tsmA.getEdgeTags().tags( tagSet ).get( linkA );
+				if ( tag != null )
+				{
+					// copy ((A))
+					tsm.getEdgeTags().set( destLink, tssAtoCopy.tagMap.get( tag ) );
+
+					// merged
+					tsm.getEdgeTags().set( destLink, tssAtoDest.tagMap.get( tag ) );
+				}
+			}
+		}
+
+/*
+		for every spot b in B:
+			get b'
+			for every tagset in B:
+				get tag t of (b, tagset)
+				if t != null:
+					get t' as copy ((B)) of t
+					set t' for b'
+					get t" as merge of t
+					get tagset" as merge of tagset
+					get tag x" og (b', tagset")
+					if x" exists and x" != t":
+						mark tag conflict for b'
+					else:
+						set t" for b'
+		analogous for links in B...
+*/
+		for ( Spot spotB : graphB.vertices() )
+		{
+			final Spot destSpot = mapBtoDest.get( spotB );
+			for ( TagSet tagSet : tssB.getTagSets() )
+			{
+				final Tag tag = tsmB.getVertexTags().tags( tagSet ).get( spotB );
+				if ( tag != null )
+				{
+					// copy ((B))
+					tsm.getVertexTags().set( destSpot, tssBtoCopy.tagMap.get( tag ) );
+
+					// merged
+					final TagSet destTagSet = tssBtoDest.tagSetMap.get( tagSet );
+					final Tag destTag = tsm.getVertexTags().tags( destTagSet ).get( destSpot );
+					final Tag expectedDestTag = tssBtoDest.tagMap.get( tag );
+					if ( destTag == null )
+						tsm.getVertexTags().set( destSpot, expectedDestTag );
+					else if ( !destTag.equals( expectedDestTag ) )
+						tsm.getVertexTags().set( destSpot, tagTagConflict );
+				}
+			}
+		}
+		for ( Link linkB : graphB.edges() )
+		{
+			final Link destLink = mapBtoDestLinks.get( linkB );
+			for ( TagSet tagSet : tssB.getTagSets() )
+			{
+				final Tag tag = tsmB.getEdgeTags().tags( tagSet ).get( linkB );
+				if ( tag != null )
+				{
+					// copy ((B))
+					tsm.getEdgeTags().set( destLink, tssBtoCopy.tagMap.get( tag ) );
+
+					// merged
+					final TagSet destTagSet = tssBtoDest.tagSetMap.get( tagSet );
+					final Tag destTag = tsm.getEdgeTags().tags( destTagSet ).get( destLink );
+					final Tag expectedDestTag = tssBtoDest.tagMap.get( tag );
+					if ( destTag == null )
+						tsm.getEdgeTags().set( destLink, expectedDestTag );
+					else if ( !destTag.equals( expectedDestTag ) )
+						tsm.getEdgeTags().set( destLink, tagTagConflict );
+				}
+			}
+		}
+
+
+
+
+		/*
+		 * ========================================
+		 *           transfer labels
+		 * ========================================
+		 */
+
+		//
 	}
 
 
@@ -355,6 +522,10 @@ public class MetteMerging
 
 		final Dataset ds1 = new Dataset( path1 );
 		final Dataset ds2 = new Dataset( path2 );
+
+//		MergeTags.mergeTagSetStructures(
+//				ds1.model().getTagSetModel().getTagSetStructure(),
+//				ds2.model().getTagSetModel().getTagSetStructure() );
 
 		final OutputDataSet output = new OutputDataSet();
 		merge( ds1, ds2, output );
