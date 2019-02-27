@@ -76,12 +76,15 @@ public class MetteMerging
 
 		private final TagSet tagConflictTagSet;
 
+		private final TagSet labelConflictTagSet;
+
 		public OutputDataSet()
 		{
 			model = new Model();
 			tagSetStructure = new TagSetStructure();
 			conflictTagSet = tagSetStructure.createTagSet( "Merge Conflict" );
 			tagConflictTagSet = tagSetStructure.createTagSet( "Merge Conflict (Tags)" );
+			labelConflictTagSet = tagSetStructure.createTagSet( "Merge Conflict (Labels)" );
 		}
 
 		public void setDatasetXmlFile( File file )
@@ -133,6 +136,13 @@ public class MetteMerging
 			return tag;
 		}
 
+		public Tag addLabelConflictTag( String name, int color )
+		{
+			final Tag tag = labelConflictTagSet.createTag( name, color );
+			model.getTagSetModel().setTagSetStructure( tagSetStructure );
+			return tag;
+		}
+
 		public TagSetStructure getTagSetStructure()
 		{
 			return tagSetStructure;
@@ -158,6 +168,7 @@ public class MetteMerging
 		final Tag tagMatchAB = output.addConflictTag( "MatchAB", 0xffccffcc );
 		final Tag tagConflict = output.addConflictTag( "Conflict", 0xffff0000 );
 		final Tag tagTagConflict = output.addTagConflictTag( "Tag Conflict", 0xffff0000 );
+		final Tag tagLabelConflict = output.addLabelConflictTag( "Label Conflict", 0xffff0000 );
 
 		final ModelGraph graph = output.getModel().getGraph();
 		final ObjTags< Spot > vertexTags = output.getModel().getTagSetModel().getVertexTags();
@@ -448,7 +459,36 @@ public class MetteMerging
 		 * ========================================
 		 */
 
-		//
+		for ( Spot spotA : graphA.vertices() )
+		{
+			if ( MergingUtil.hasLabel( spotA ) )
+			{
+				final Spot destSpot = mapAtoDest.get( spotA );
+				destSpot.setLabel( spotA.getLabel() );
+			}
+		}
+
+		for ( Spot spotB : graphB.vertices() )
+		{
+			if ( MergingUtil.hasLabel( spotB ) )
+			{
+				final Spot destSpot = mapBtoDest.get( spotB );
+				final String lB = spotB.getLabel();
+				if ( MergingUtil.hasLabel( destSpot ) )
+				{
+					final String lA = destSpot.getLabel();
+					if ( !lA.equals( lB ) )
+					{
+						destSpot.setLabel( destSpot.getLabel() + " @@@ " + spotB.getLabel() );
+						tsm.getVertexTags().set( destSpot, tagLabelConflict );
+					}
+				}
+				else
+				{
+					destSpot.setLabel( lB );
+				}
+			}
+		}
 	}
 
 
