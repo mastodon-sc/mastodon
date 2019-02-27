@@ -3,7 +3,6 @@ package org.mastodon.revised.mamut;
 import java.awt.Component;
 import java.io.File;
 import java.io.IOException;
-import java.util.Random;
 
 import mpicbg.spim.data.generic.sequence.BasicViewSetup;
 import org.mastodon.plugin.MastodonPlugins;
@@ -14,7 +13,6 @@ import org.mastodon.revised.bdv.overlay.ui.RenderSettingsManager;
 import org.mastodon.revised.model.mamut.Model;
 import org.mastodon.revised.model.mamut.trackmate.MamutExporter;
 import org.mastodon.revised.model.mamut.trackmate.TrackMateImporter;
-import org.mastodon.revised.model.tag.TagSetStructure;
 import org.mastodon.revised.trackscheme.display.style.TrackSchemeStyleManager;
 import org.mastodon.revised.ui.coloring.feature.FeatureColorModeManager;
 import org.mastodon.revised.ui.keymap.CommandDescriptionProvider;
@@ -321,26 +319,6 @@ public class ProjectManager
 				keymapManager,
 				plugins,
 				globalAppActions );
-
-		/*
-		 * TODO REMOVE
-		 * Set TagSetStructure for debugging.
-		 */
-		if ( isNewProject )
-		{
-			final TagSetStructure tss = new TagSetStructure();
-			final Random ran = new Random( 0l );
-			final TagSetStructure.TagSet reviewedByTag = tss.createTagSet( "Reviewed by" );
-			reviewedByTag.createTag( "Pavel", ran.nextInt() | 0xFF000000 );
-			reviewedByTag.createTag( "Mette", ran.nextInt() | 0xFF000000 );
-			reviewedByTag.createTag( "Tobias", ran.nextInt() | 0xFF000000 );
-			reviewedByTag.createTag( "JY", ran.nextInt() | 0xFF000000 );
-			final TagSetStructure.TagSet locationTag = tss.createTagSet( "Location" );
-			locationTag.createTag( "Anterior", ran.nextInt() | 0xFF000000 );
-			locationTag.createTag( "Posterior", ran.nextInt() | 0xFF000000 );
-			System.out.println( "Initial TagSetStructure:\n" + tss );
-			model.getTagSetModel().setTagSetStructure( tss );
-		}
 
 		windowManager.setAppModel( appModel );
 		this.project = project;
