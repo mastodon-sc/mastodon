@@ -71,12 +71,11 @@ public class MatchCandidates
 		final MatchingGraph matching = MatchingGraph.newWithAllSpots( graph );
 		/*
 		prune matching graph
-			distance must be < th1 -- already done
-			mahalanobis distance must be < th2 -- already done
+			distance must be < distCutoff -- already done
+			mahalanobis distance must be < mahalanobisDistCutoff -- already done
 			remaining edges qualify for creating conflict if no accepted match is found.
-				accepted matches must be mutually nearest neighbors (wrt mahalanobis distance?)
-				ratio of distance to 2nd neighbor must be > th3
-				ratio of mahalanobis distance to 2nd neighbor must be > th4
+				accepted matches must be mutually nearest neighbors wrt mahalanobis distance
+				ratio of mahalanobis distance to 2nd neighbor must be > ratioThreshold
 
 
 

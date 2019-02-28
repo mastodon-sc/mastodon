@@ -12,6 +12,7 @@ import org.mastodon.project.MamutProject;
 import org.mastodon.project.MamutProjectIO;
 import org.mastodon.revised.mamut.Mastodon;
 import org.mastodon.revised.mamut.WindowManager;
+import org.mastodon.revised.model.AbstractModelImporter;
 import org.mastodon.revised.model.mamut.Link;
 import org.mastodon.revised.model.mamut.Model;
 import org.mastodon.revised.model.mamut.ModelGraph;
@@ -43,7 +44,12 @@ public class MetteMerging
 
 		public OutputDataSet()
 		{
-			model = new Model();
+			this( new Model() );
+		}
+
+		public OutputDataSet( Model model )
+		{
+			this.model = model;
 			tagSetStructure = new TagSetStructure();
 			conflictTagSet = tagSetStructure.createTagSet( "Merge Conflict" );
 			tagConflictTagSet = tagSetStructure.createTagSet( "Merge Conflict (Tags)" );
@@ -119,6 +125,8 @@ public class MetteMerging
 
 	public static void merge( final Dataset dsA, final Dataset dsB, final OutputDataSet output, final double distCutoff, final double mahalanobisDistCutoff, final double ratioThreshold )
 	{
+		new AbstractModelImporter< Model >( output.getModel() ){{ startImport(); }};
+
 		final int minTimepoint = 0;
 		final int maxTimepoint = Math.max( dsA.maxNonEmptyTimepoint(), dsB.maxNonEmptyTimepoint() );
 		final MatchCandidates candidates = new MatchCandidates( distCutoff, mahalanobisDistCutoff, ratioThreshold );
@@ -453,6 +461,8 @@ public class MetteMerging
 				}
 			}
 		}
+
+		new AbstractModelImporter< Model >( output.getModel() ){{ finishImport(); }};
 	}
 
 	private static class MatchingGraphUtils

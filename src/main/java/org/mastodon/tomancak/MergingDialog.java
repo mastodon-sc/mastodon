@@ -34,6 +34,14 @@ public class MergingDialog extends JDialog
 
 	private final JTextField pathBTextField;
 
+	private final JTextField distCutoffTextField;
+
+	private final JTextField mahalanobisDistCutoffTextField;
+
+	private final JTextField ratioThresholdTextField;
+
+	private Runnable onMerge;
+
 	public MergingDialog( final Frame owner )
 	{
 		super( owner, "Merge Projects...", true );
@@ -74,6 +82,27 @@ public class MergingDialog extends JDialog
 		c.gridx = 2;
 		content.add( browseBButton, c );
 
+		++c.gridy;
+		c.gridx = 0;
+		content.add( new JLabel( "absolute distance cutoff" ), c );
+		distCutoffTextField = new JTextField( "1000" );
+		c.gridx = 1;
+		content.add( distCutoffTextField, c );
+
+		++c.gridy;
+		c.gridx = 0;
+		content.add( new JLabel( "mahalanobis distance cutoff" ), c );
+		mahalanobisDistCutoffTextField = new JTextField( "1" );
+		c.gridx = 1;
+		content.add( mahalanobisDistCutoffTextField, c );
+
+		++c.gridy;
+		c.gridx = 0;
+		content.add( new JLabel( "ration threshold" ), c );
+		ratioThresholdTextField = new JTextField( "2" );
+		c.gridx = 1;
+		content.add( ratioThresholdTextField, c );
+
 		class Browse implements ActionListener
 		{
 			private final JTextField path;
@@ -109,7 +138,7 @@ public class MergingDialog extends JDialog
 		cancelButton.addActionListener( e -> cancel() );
 		final JButton okButton = new JButton( "Merge" );
 		okButton.addActionListener( e -> merge() );
-		buttons.setLayout( new BoxLayout( this, BoxLayout.LINE_AXIS ) );
+		buttons.setLayout( new BoxLayout( buttons, BoxLayout.LINE_AXIS ) );
 		buttons.add( Box.createHorizontalGlue() );
 		buttons.add( cancelButton );
 		buttons.add( okButton );
@@ -147,24 +176,45 @@ public class MergingDialog extends JDialog
 
 	private void cancel()
 	{
-		// TODO
 		setVisible( false );
+	}
+
+	public void onMerge( final Runnable onMerge )
+	{
+		this.onMerge = onMerge;
+	}
+
+	public String getPathA()
+	{
+		return pathATextField.getText();
+	}
+
+	public String getPathB()
+	{
+		return pathBTextField.getText();
+	}
+
+	public double getDistCutoff() throws NumberFormatException
+	{
+		return Double.parseDouble( distCutoffTextField.getText() );
+	}
+
+	public double getMahalanobisDistCutoff() throws NumberFormatException
+	{
+		return Double.parseDouble( mahalanobisDistCutoffTextField.getText() );
+	}
+
+	public double getRatioThreshold() throws NumberFormatException
+	{
+		return Double.parseDouble( ratioThresholdTextField.getText() );
 	}
 
 	private void merge()
 	{
-		// TODO
+		if ( onMerge != null )
+			onMerge.run();
 		setVisible( false );
 	}
-
-
-
-
-
-
-
-
-
 
 	public static void main( String[] args )
 	{

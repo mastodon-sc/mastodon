@@ -7,6 +7,7 @@ import java.util.Map;
 import org.mastodon.app.ui.ViewMenuBuilder;
 import org.mastodon.plugin.MastodonPlugin;
 import org.mastodon.plugin.MastodonPluginAppModel;
+import org.mastodon.project.MamutProject;
 import org.mastodon.revised.mamut.KeyConfigContexts;
 import org.mastodon.revised.mamut.MamutAppModel;
 import org.mastodon.revised.ui.keymap.CommandDescriptionProvider;
@@ -93,11 +94,36 @@ public class MergingPlugins extends AbstractContextual implements MastodonPlugin
 	private void updateEnabledActions()
 	{
 		final MamutAppModel appModel = ( pluginAppModel == null ) ? null : pluginAppModel.getAppModel();
-		mergeProjectsAction.setEnabled( true );
+		mergeProjectsAction.setEnabled( appModel != null );
 	}
+
+	private MergingDialog mergingDialog;
 
 	private void mergeProjects()
 	{
+		if ( mergingDialog == null )
+			mergingDialog = new MergingDialog( null );
+		mergingDialog.onMerge( () ->
+		{
+			try
+			{
+				final String pathA = mergingDialog.getPathA();
+				final String pathB = mergingDialog.getPathB();
+				final double distCutoff = mergingDialog.getDistCutoff();
+				final double mahalanobisDistCutoff = mergingDialog.getMahalanobisDistCutoff();
+				final double ratioThreshold = mergingDialog.getRatioThreshold();
 
+				final Dataset dsA = new Dataset( pathA );
+				final Dataset dsB = new Dataset( pathB );
+				pluginAppModel.getWindowManager().getProjectManager().open( new MamutProject( null, dsA.project().getDatasetXmlFile() ) );
+				final MetteMerging.OutputDataSet output = new MetteMerging.OutputDataSet( pluginAppModel.getAppModel().getModel() );
+				MetteMerging.merge( dsA, dsB, output, distCutoff, mahalanobisDistCutoff, ratioThreshold );
+			}
+			catch( Exception e )
+			{
+				e.printStackTrace();
+			}
+		} );
+		mergingDialog.setVisible( true );
 	}
 }
