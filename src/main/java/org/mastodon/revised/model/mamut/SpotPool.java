@@ -28,11 +28,13 @@ public class SpotPool extends AbstractSpotPool< Spot, Link, ByteMappedElement, M
 
 	final DoubleAttribute< Spot > boundingSphereRadiusSqu = new DoubleAttribute<>( layout.boundingSphereRadiusSqu, this );
 
-	final ObjPropertyMap< Spot, String > label = new ObjPropertyMap<>( this );
+	final ObjPropertyMap< Spot, String > label;
 
 	SpotPool( final int initialCapacity )
 	{
 		super( initialCapacity, layout, Spot.class, SingleArrayMemPool.factory( ByteMappedElementArray.factory ) );
+		label = new ObjPropertyMap<>( this );
+		registerPropertyMap( label );
 	}
 
 	@Override
