@@ -21,10 +21,10 @@ import java.util.function.BiFunction;
 import java.util.function.IntUnaryOperator;
 import java.util.stream.Stream;
 
-import org.mastodon.revised.model.AbstractModelImporter;
 import org.mastodon.revised.model.mamut.Link;
 import org.mastodon.revised.model.mamut.Model;
 import org.mastodon.revised.model.mamut.ModelGraph;
+import org.mastodon.revised.model.mamut.ModelImporter;
 import org.mastodon.revised.model.mamut.Spot;
 
 /**
@@ -455,7 +455,7 @@ public class SimiImporter
 	/*
 	 * ModelImporter from Simi
 	 */
-	static final class Builder extends AbstractModelImporter< Model >
+	static final class Builder extends ModelImporter
 	{
 		private final IntUnaryOperator timepointIdFunction;
 

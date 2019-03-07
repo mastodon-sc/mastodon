@@ -145,19 +145,18 @@ public class Model extends AbstractModel< ModelGraph, Spot, Link > implements Un
 	{
 		final FileIdToGraphMap< Spot, Link > idmap = modelGraph.loadRaw( reader.getRawModelInputStream(), ModelSerializer.getInstance() );
 
+		tagSetModel.pauseListeners();
+		tagSetModel.clear();
 		try (
 				final InputStream tis = reader.getRawTagsInputStream();
 				final ObjectInputStream ois = new ObjectInputStream( new BufferedInputStream( tis, 1024 * 1024 ) )
 		)
 		{
-//			tagSetModel.pauseListeners(); // TODO
 			RawTagSetModelIO.read( tagSetModel, idmap, ois );
-//			tagSetModel.resumeListeners(); // TODO
 		}
 		catch ( final FileNotFoundException e )
-		{
-//			tagSetModel.clear(); // TODO
-		}
+		{}
+		tagSetModel.resumeListeners();
 	}
 
 	/**

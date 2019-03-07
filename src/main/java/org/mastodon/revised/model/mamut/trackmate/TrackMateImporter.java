@@ -52,10 +52,10 @@ import org.mastodon.feature.FeatureModel;
 import org.mastodon.feature.FeatureSpecsService;
 import org.mastodon.feature.IntScalarFeature;
 import org.mastodon.project.MamutProject;
-import org.mastodon.revised.model.AbstractModelImporter;
 import org.mastodon.revised.model.mamut.Link;
 import org.mastodon.revised.model.mamut.Model;
 import org.mastodon.revised.model.mamut.ModelGraph;
+import org.mastodon.revised.model.mamut.ModelImporter;
 import org.mastodon.revised.model.mamut.Spot;
 
 /**
@@ -157,7 +157,7 @@ public class TrackMateImporter
 		new Import( model, featureSpecsService );
 	}
 
-	private final class Import extends AbstractModelImporter< Model >
+	private final class Import extends ModelImporter
 	{
 		Import( final Model model, final FeatureSpecsService featureSpecsService ) throws IOException
 		{

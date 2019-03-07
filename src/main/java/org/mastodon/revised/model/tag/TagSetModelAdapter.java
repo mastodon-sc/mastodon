@@ -72,4 +72,22 @@ public class TagSetModelAdapter< V extends Vertex< E >, E extends Edge< V >, WV 
 	{
 		return listeners;
 	}
+
+	@Override
+	public void pauseListeners()
+	{
+		tagSetModel.pauseListeners();
+	}
+
+	@Override
+	public void resumeListeners()
+	{
+		tagSetModel.resumeListeners();
+	}
+
+	@Override
+	public void clear()
+	{
+		tagSetModel.clear();
+	}
 }

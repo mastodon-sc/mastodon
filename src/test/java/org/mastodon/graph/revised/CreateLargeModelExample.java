@@ -1,8 +1,8 @@
 package org.mastodon.graph.revised;
 
-import org.mastodon.revised.model.AbstractModelImporter;
 import org.mastodon.revised.model.mamut.Link;
 import org.mastodon.revised.model.mamut.Model;
+import org.mastodon.revised.model.mamut.ModelImporter;
 import org.mastodon.revised.model.mamut.Spot;
 
 public class CreateLargeModelExample
@@ -31,7 +31,7 @@ public class CreateLargeModelExample
 
 	public Model run( final int nStartingCells, final int nDivisions, final int nFramesPerDivision )
 	{
-		new AbstractModelImporter< Model >( model ){{ startImport(); }};
+		new ModelImporter( model ){{ startImport(); }};
 		final Spot tmp = model.getGraph().vertexRef();
 		for ( int ic = 0; ic < nStartingCells; ic++ )
 		{
@@ -51,7 +51,7 @@ public class CreateLargeModelExample
 			addBranch( mother, vx, vy, 1, nDivisions, nFramesPerDivision );
 		}
 		model.getGraph().releaseRef( tmp );
-		new AbstractModelImporter< Model >( model ){{ finishImport(); }};
+		new ModelImporter( model ){{ finishImport(); }};
 		return model;
 	}
 

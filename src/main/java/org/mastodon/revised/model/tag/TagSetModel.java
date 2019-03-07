@@ -30,4 +30,10 @@ public interface TagSetModel< V, E >
 	}
 
 	Listeners< TagSetModelListener > listeners();
+
+	void pauseListeners();
+
+	void resumeListeners();
+
+	void clear();
 }

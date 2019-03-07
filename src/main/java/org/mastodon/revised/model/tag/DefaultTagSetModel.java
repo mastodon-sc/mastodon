@@ -25,9 +25,9 @@ import org.mastodon.util.Listeners;
  * Provides facilities for serialization and undo/redo.
  *
  * @param <V>
- *            the type of the vertices in the graph.
+ * 		the type of the vertices in the graph.
  * @param <E>
- *            the type of the edges in the graph.
+ * 		the type of the edges in the graph.
  *
  * @author Jean-Yves Tinevez
  * @author Tobias Pietzsch
@@ -50,6 +50,8 @@ public class DefaultTagSetModel< V extends Vertex< E >, E extends Edge< V > > im
 
 	private Recorder< SetTagSetStructureUndoableEdit > editRecorder;
 
+	private boolean emitEvents;
+
 	public DefaultTagSetModel( final ReadOnlyGraph< V, E > graph )
 	{
 		this( graph, RefCollections.tryGetRefPool( graph.vertices() ), RefCollections.tryGetRefPool( graph.edges() ) );
@@ -64,6 +66,7 @@ public class DefaultTagSetModel< V extends Vertex< E >, E extends Edge< V > > im
 		vertexTags = new DefaultObjTags<>( vertexIdLabelSets, tagSetStructure );
 		edgeTags = new DefaultObjTags<>( edgeIdLabelSets, tagSetStructure );
 		listeners = new Listeners.SynchronizedList<>();
+		emitEvents = true;
 	}
 
 	@Override
@@ -100,7 +103,7 @@ public class DefaultTagSetModel< V extends Vertex< E >, E extends Edge< V > > im
 		}
 		edgeIdLabelSets.releaseRef( eref );
 
-		if ( editRecorder != null )
+		if ( editRecorder != null && emitEvents )
 		{
 			editRecorder.record( new SetTagSetStructureUndoableEdit( this, tagSetStructure, tss ) );
 		}
@@ -109,7 +112,8 @@ public class DefaultTagSetModel< V extends Vertex< E >, E extends Edge< V > > im
 		vertexTags.update( tagSetStructure );
 		edgeTags.update( tagSetStructure );
 
-		listeners.list.forEach( TagSetModelListener::tagSetStructureChanged );
+		if ( emitEvents )
+			listeners.list.forEach( TagSetModelListener::tagSetStructureChanged );
 	}
 
 	@Override
@@ -135,14 +139,35 @@ public class DefaultTagSetModel< V extends Vertex< E >, E extends Edge< V > > im
 		return listeners;
 	}
 
+	@Override
+	public void pauseListeners()
+	{
+		emitEvents = false;
+	}
+
+	@Override
+	public void resumeListeners()
+	{
+		emitEvents = true;
+		if ( emitEvents )
+			listeners.list.forEach( TagSetModelListener::tagSetStructureChanged );
+	}
+
+	@Override
+	public void clear()
+	{
+		vertexIdLabelSets.clear();
+		edgeIdLabelSets.clear();
+	}
+
 	/**
 	 * Internals. Can be derived for implementing de/serialisation and
 	 * undo/redo.
 	 *
 	 * @param <V>
-	 *            the type of the vertices in the graph.
+	 * 		the type of the vertices in the graph.
 	 * @param <E>
-	 *            the type of the edges in the graph.
+	 * 		the type of the edges in the graph.
 	 */
 	public static class SerialisationAccess< V extends Vertex< E >, E extends Edge< V > >
 	{
@@ -178,7 +203,7 @@ public class DefaultTagSetModel< V extends Vertex< E >, E extends Edge< V > > im
 
 		private final TagSetStructure newTss;
 
-		SetTagSetStructureUndoableEdit( final DefaultTagSetModel<?,?> tagSetModel, final TagSetStructure oldTss,  final TagSetStructure newTss )
+		SetTagSetStructureUndoableEdit( final DefaultTagSetModel< ?, ? > tagSetModel, final TagSetStructure oldTss, final TagSetStructure newTss )
 		{
 			this.tagSetModel = tagSetModel;
 			this.oldTss = new TagSetStructure();
