@@ -145,11 +145,15 @@ public class AbstractModelGraph<
 	protected void pauseListeners()
 	{
 		super.pauseListeners();
+		vertexPool.getPropertyMaps().pauseListeners();
+		edgePool.getPropertyMaps().pauseListeners();
 	}
 
 	@Override
 	protected void resumeListeners()
 	{
+		edgePool.getPropertyMaps().resumeListeners();
+		vertexPool.getPropertyMaps().resumeListeners();
 		super.resumeListeners();
 	}
 
