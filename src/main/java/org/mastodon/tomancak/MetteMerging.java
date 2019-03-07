@@ -12,10 +12,10 @@ import org.mastodon.project.MamutProject;
 import org.mastodon.project.MamutProjectIO;
 import org.mastodon.revised.mamut.Mastodon;
 import org.mastodon.revised.mamut.WindowManager;
-import org.mastodon.revised.model.AbstractModelImporter;
 import org.mastodon.revised.model.mamut.Link;
 import org.mastodon.revised.model.mamut.Model;
 import org.mastodon.revised.model.mamut.ModelGraph;
+import org.mastodon.revised.model.mamut.ModelImporter;
 import org.mastodon.revised.model.mamut.Spot;
 import org.mastodon.revised.model.tag.ObjTags;
 import org.mastodon.revised.model.tag.TagSetModel;
@@ -125,7 +125,7 @@ public class MetteMerging
 
 	public static void merge( final Dataset dsA, final Dataset dsB, final OutputDataSet output, final double distCutoff, final double mahalanobisDistCutoff, final double ratioThreshold )
 	{
-		new AbstractModelImporter< Model >( output.getModel() ){{ startImport(); }};
+		new ModelImporter( output.getModel() ){{ startImport(); }};
 
 		final int minTimepoint = 0;
 		final int maxTimepoint = Math.max( dsA.maxNonEmptyTimepoint(), dsB.maxNonEmptyTimepoint() );
@@ -462,7 +462,7 @@ public class MetteMerging
 			}
 		}
 
-		new AbstractModelImporter< Model >( output.getModel() ){{ finishImport(); }};
+		new ModelImporter( output.getModel() ){{ finishImport(); }};
 	}
 
 	private static class MatchingGraphUtils
