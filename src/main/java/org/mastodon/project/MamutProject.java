@@ -34,6 +34,7 @@ public class MamutProject
 	static final String PROJECT_FILE_NAME = "project.xml";
 	static final String RAW_MODEL_FILE_NAME = "model.raw";
 	static final String RAW_TAGS_FILE_NAME = "tags.raw";
+	static final String GUI_FILE_NAME = "gui.xml";
 
 	public MamutProject( final String projectRoot )
 	{
@@ -127,6 +128,8 @@ public class MamutProject
 		InputStream getRawModelInputStream() throws IOException;
 
 		InputStream getRawTagsInputStream() throws IOException;
+
+		InputStream getGuiInputStream() throws IOException;
 	}
 
 	public interface ProjectWriter extends Closeable
@@ -136,6 +139,8 @@ public class MamutProject
 		OutputStream getRawModelOutputStream() throws IOException;
 
 		OutputStream getRawTagsOutputStream() throws IOException;
+
+		OutputStream getGuiOutputStream() throws IOException;
 	}
 
 	private class ReadFromDirectory implements ProjectReader
@@ -156,6 +161,12 @@ public class MamutProject
 		public InputStream getRawTagsInputStream() throws FileNotFoundException
 		{
 			return new FileInputStream( new File( projectRoot, RAW_TAGS_FILE_NAME ) );
+		}
+
+		@Override
+		public InputStream getGuiInputStream() throws IOException
+		{
+			return new FileInputStream( new File( projectRoot, GUI_FILE_NAME ) );
 		}
 
 		@Override
@@ -192,6 +203,12 @@ public class MamutProject
 		}
 
 		@Override
+		public InputStream getGuiInputStream() throws IOException
+		{
+			return zip.getInputStream( GUI_FILE_NAME );
+		}
+
+		@Override
 		public void close() throws IOException
 		{
 			zip.close();
@@ -216,6 +233,12 @@ public class MamutProject
 		public OutputStream getRawTagsOutputStream() throws FileNotFoundException
 		{
 			return new FileOutputStream( new File( projectRoot, RAW_TAGS_FILE_NAME ) );
+		}
+
+		@Override
+		public OutputStream getGuiOutputStream() throws IOException
+		{
+			return new FileOutputStream( new File( projectRoot, GUI_FILE_NAME ) );
 		}
 
 		@Override
@@ -249,6 +272,12 @@ public class MamutProject
 		public OutputStream getRawTagsOutputStream() throws IOException
 		{
 			return zip.getOutputStream( RAW_TAGS_FILE_NAME );
+		}
+
+		@Override
+		public OutputStream getGuiOutputStream() throws IOException
+		{
+			return zip.getOutputStream( GUI_FILE_NAME );
 		}
 
 		@Override
