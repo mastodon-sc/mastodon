@@ -150,6 +150,12 @@ public class ProjectManager
 		actions.namedAction( exportMamutAction, EXPORT_MAMUT_KEYS );
 	}
 
+	public synchronized String getProjectTitle()
+	{
+		return "projectRoot: " + project.getProjectRoot().getAbsolutePath()
+		        + " dataset: " + project.getDatasetXmlFile().getName();
+	}
+
 	public synchronized void createProject()
 	{
 		final Component parent = null; // TODO
