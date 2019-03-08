@@ -34,8 +34,9 @@ public class MamutView< VG extends ViewGraph< Spot, Link, V, E >, V extends Vert
 	 *            Coloring options will be installed here.
 	 * @param refresh
 	 *            triggers repaint of the graph (called when coloring changes)
+	 * @return the coloring model created.
 	 */
-	protected void registerColoring(
+	protected ColoringModel registerColoring(
 			final GraphColorGeneratorAdapter< Spot, Link, V, E > colorGeneratorAdapter,
 			final JMenuHandle menuHandle,
 			final Runnable refresh )
@@ -69,5 +70,6 @@ public class MamutView< VG extends ViewGraph< Spot, Link, V, E >, V extends Vert
 			refresh.run();
 		};
 		coloringModel.listeners().add( coloringChangedListener );
+		return coloringModel;
 	}
 }
