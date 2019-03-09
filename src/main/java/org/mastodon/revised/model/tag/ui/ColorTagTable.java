@@ -2,22 +2,19 @@ package org.mastodon.revised.model.tag.ui;
 
 import java.awt.Color;
 import java.awt.Component;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.RenderingHints;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.geom.RoundRectangle2D;
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.ToIntFunction;
 
-import javax.swing.Icon;
 import javax.swing.JButton;
 import javax.swing.JColorChooser;
 import javax.swing.JTable;
 import javax.swing.table.TableCellRenderer;
+
+import org.mastodon.revised.util.ColorIcon;
 
 public class ColorTagTable< C, T > extends AbstractTagTable< C, T, ColorTagTable< C, T >.Element >
 {
@@ -137,44 +134,6 @@ public class ColorTagTable< C, T > extends AbstractTagTable< C, T, ColorTagTable
 				if ( table.getSelectedRow() < elements.size() )
 					editSelectedRowColor();
 			}
-		}
-	}
-
-	/**
-	 * Adapted from http://stackoverflow.com/a/3072979/230513
-	 *
-	 * TODO: unify and move the various ColorIcon inner classes to a common utility class
-	 */
-	private static class ColorIcon implements Icon
-	{
-		private final int size = 16;
-
-		private final Color color;
-
-		public ColorIcon( final Color color )
-		{
-			this.color = color;
-		}
-
-		@Override
-		public void paintIcon( final Component c, final Graphics g, final int x, final int y )
-		{
-			final Graphics2D g2d = ( Graphics2D ) g;
-			g2d.setRenderingHint( RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON );
-			g2d.setColor( color );
-			g2d.fill( new RoundRectangle2D.Float( x, y, size, size, 5, 5 ) );
-		}
-
-		@Override
-		public int getIconWidth()
-		{
-			return size;
-		}
-
-		@Override
-		public int getIconHeight()
-		{
-			return size;
 		}
 	}
 }

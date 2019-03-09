@@ -1,14 +1,9 @@
 package org.mastodon.app.ui.settings;
 
 import java.awt.Color;
-import java.awt.Component;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
 import java.awt.Insets;
-import java.awt.RenderingHints;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.geom.RoundRectangle2D;
 import java.util.ArrayList;
 import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
@@ -16,7 +11,6 @@ import java.util.function.DoubleSupplier;
 import java.util.function.IntSupplier;
 import java.util.function.Supplier;
 
-import javax.swing.Icon;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JColorChooser;
@@ -24,6 +18,8 @@ import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
+
+import org.mastodon.revised.util.ColorIcon;
 
 import bdv.tools.brightness.SliderPanel;
 import bdv.tools.brightness.SliderPanelDouble;
@@ -393,7 +389,7 @@ public class StyleElements
 
 	public static JButton linkedColorButton( final ColorElement element, final String label, final JColorChooser colorChooser )
 	{
-		final ColorIcon icon = new ColorIcon( element.getColor() );
+		final ColorIcon icon = new ColorIcon( element.getColor(), 16, 2 );
 		final JButton button = new JButton( label, icon );
 		button.setOpaque( false );
 		button.setContentAreaFilled( false );
@@ -440,49 +436,5 @@ public class StyleElements
 		slider.setNumColummns( tfCols );
 		slider.setBorder( new EmptyBorder( 0, 0, 0, 6 ) );
 		return slider;
-	}
-
-	/**
-	 * Adapted from http://stackoverflow.com/a/3072979/230513
-	 */
-	private static class ColorIcon implements Icon
-	{
-		private final int size = 16;
-
-		private final int pad = 2;
-
-		private Color color;
-
-		public ColorIcon( final Color color )
-		{
-			this.color = color;
-		}
-
-		@Override
-		public void paintIcon( final Component c, final Graphics g, final int x, final int y )
-		{
-			final Graphics2D g2d = ( Graphics2D ) g;
-			g2d.setRenderingHint( RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON );
-			g2d.setColor( color );
-			// g2d.fillOval( x, y, size, size );
-			g2d.fill( new RoundRectangle2D.Float( x + pad, y + pad, size, size, 5, 5 ) );
-		}
-
-		public void setColor( final Color color )
-		{
-			this.color = color;
-		}
-
-		@Override
-		public int getIconWidth()
-		{
-			return size + 2 * pad;
-		}
-
-		@Override
-		public int getIconHeight()
-		{
-			return size + 2 * pad;
-		}
 	}
 }
