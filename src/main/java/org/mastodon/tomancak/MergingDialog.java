@@ -98,7 +98,7 @@ public class MergingDialog extends JDialog
 
 		++c.gridy;
 		c.gridx = 0;
-		content.add( new JLabel( "ration threshold" ), c );
+		content.add( new JLabel( "ratio threshold" ), c );
 		ratioThresholdTextField = new JTextField( "2" );
 		c.gridx = 1;
 		content.add( ratioThresholdTextField, c );
