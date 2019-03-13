@@ -6,9 +6,12 @@ import org.mastodon.app.ui.ViewMenuBuilder.JMenuHandle;
 import org.mastodon.feature.FeatureModel;
 import org.mastodon.graph.Edge;
 import org.mastodon.graph.Vertex;
+import org.mastodon.model.SelectionModel;
 import org.mastodon.revised.model.mamut.Link;
+import org.mastodon.revised.model.mamut.Model;
 import org.mastodon.revised.model.mamut.Spot;
 import org.mastodon.revised.model.tag.TagSetModel;
+import org.mastodon.revised.ui.TagSetMenu;
 import org.mastodon.revised.ui.coloring.ColoringMenu;
 import org.mastodon.revised.ui.coloring.ColoringModel;
 import org.mastodon.revised.ui.coloring.GraphColorGeneratorAdapter;
@@ -69,5 +72,17 @@ public class MamutView< VG extends ViewGraph< Spot, Link, V, E >, V extends Vert
 			refresh.run();
 		};
 		coloringModel.listeners().add( coloringChangedListener );
+	}
+
+	protected void registerTagSetMenu(
+			final JMenuHandle menuHandle,
+			final Runnable refresh )
+	{
+		final SelectionModel< Spot, Link > selectionModel = appModel.getSelectionModel();
+		final Model model = appModel.getModel();
+		final TagSetModel< Spot, Link > tagSetModel = model.getTagSetModel();
+		final TagSetMenu< Spot, Link > tagSetMenu = new TagSetMenu< >( menuHandle.getMenu(), tagSetModel, selectionModel, model );
+		tagSetModel.listeners().add( tagSetMenu );
+		onClose( () -> tagSetModel.listeners().remove( tagSetMenu ) );
 	}
 }

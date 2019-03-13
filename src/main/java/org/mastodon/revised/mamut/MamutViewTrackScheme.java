@@ -4,6 +4,7 @@ import static org.mastodon.app.ui.ViewMenuBuilder.item;
 import static org.mastodon.app.ui.ViewMenuBuilder.separator;
 import static org.mastodon.revised.mamut.MamutMenuBuilder.colorMenu;
 import static org.mastodon.revised.mamut.MamutMenuBuilder.editMenu;
+import static org.mastodon.revised.mamut.MamutMenuBuilder.tagSetMenu;
 import static org.mastodon.revised.mamut.MamutMenuBuilder.viewMenu;
 
 import javax.swing.ActionMap;
@@ -108,6 +109,7 @@ public class MamutViewTrackScheme extends MamutView< TrackSchemeGraph< Spot, Lin
 		final ActionMap actionMap = frame.getKeybindings().getConcatenatedActionMap();
 
 		final JMenuHandle coloringMenuHandle = new JMenuHandle();
+		final JMenuHandle tagSetMenuHandle = new JMenuHandle();
 
 		MainWindow.addMenus( menu, actionMap );
 		MamutMenuBuilder.build( menu, actionMap,
@@ -135,12 +137,16 @@ public class MamutViewTrackScheme extends MamutView< TrackSchemeGraph< Spot, Lin
 						item( TrackSchemeNavigationActions.NAVIGATE_LEFT ),
 						item( TrackSchemeNavigationActions.NAVIGATE_RIGHT ),
 						separator(),
-						item( EditFocusVertexLabelAction.EDIT_FOCUS_LABEL )
+						item( EditFocusVertexLabelAction.EDIT_FOCUS_LABEL ),
+						tagSetMenu( tagSetMenuHandle )
 				)
 		);
 		appModel.getPlugins().addMenus( menu );
 
 		registerColoring( coloring, coloringMenuHandle,
+				() -> frame.getTrackschemePanel().entitiesAttributesChanged() );
+
+		registerTagSetMenu( tagSetMenuHandle,
 				() -> frame.getTrackschemePanel().entitiesAttributesChanged() );
 
 		frame.getTrackschemePanel().repaint();

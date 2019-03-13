@@ -5,6 +5,7 @@ import static org.mastodon.app.ui.ViewMenuBuilder.separator;
 import static org.mastodon.revised.mamut.MamutMenuBuilder.colorMenu;
 import static org.mastodon.revised.mamut.MamutMenuBuilder.editMenu;
 import static org.mastodon.revised.mamut.MamutMenuBuilder.fileMenu;
+import static org.mastodon.revised.mamut.MamutMenuBuilder.tagSetMenu;
 import static org.mastodon.revised.mamut.MamutMenuBuilder.viewMenu;
 
 import javax.swing.ActionMap;
@@ -81,6 +82,7 @@ public class MamutViewBdv extends MamutView< OverlayGraphWrapper< Spot, Link >, 
 		final ActionMap actionMap = frame.getKeybindings().getConcatenatedActionMap();
 
 		final JMenuHandle menuHandle = new JMenuHandle();
+		final JMenuHandle tagSetMenuHandle = new JMenuHandle();
 		MainWindow.addMenus( menu, actionMap );
 		MamutMenuBuilder.build( menu, actionMap,
 				fileMenu(
@@ -100,7 +102,9 @@ public class MamutViewBdv extends MamutView< OverlayGraphWrapper< Spot, Link >, 
 						item( SelectionActions.DELETE_SELECTION ),
 						item( SelectionActions.SELECT_WHOLE_TRACK ),
 						item( SelectionActions.SELECT_TRACK_DOWNWARD ),
-						item( SelectionActions.SELECT_TRACK_UPWARD )
+						item( SelectionActions.SELECT_TRACK_UPWARD ),
+						separator(),
+						tagSetMenu( tagSetMenuHandle )
 				),
 				ViewMenuBuilder.menu( "Settings",
 						item( BigDataViewerActionsMamut.BRIGHTNESS_SETTINGS ),
@@ -132,6 +136,8 @@ public class MamutViewBdv extends MamutView< OverlayGraphWrapper< Spot, Link >, 
 		final ModelGraph modelGraph = model.getGraph();
 
 		registerColoring( coloring, menuHandle, () -> viewer.getDisplay().repaint() );
+		registerTagSetMenu( tagSetMenuHandle, () -> viewer.getDisplay().repaint() );
+
 		highlightModel.listeners().add( () -> viewer.getDisplay().repaint() );
 		focusModel.listeners().add( () -> viewer.getDisplay().repaint() );
 		modelGraph.addGraphChangeListener( () -> viewer.getDisplay().repaint() );
