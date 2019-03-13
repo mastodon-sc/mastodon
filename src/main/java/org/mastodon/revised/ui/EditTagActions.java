@@ -28,6 +28,7 @@ import org.mastodon.revised.model.tag.TagSetStructure.Tag;
 import org.mastodon.revised.model.tag.TagSetStructure.TagSet;
 import org.mastodon.revised.ui.keymap.CommandDescriptionProvider;
 import org.mastodon.revised.ui.keymap.CommandDescriptions;
+import org.mastodon.revised.ui.util.NumberListeners;
 import org.mastodon.undo.UndoPointMarker;
 import org.scijava.plugin.Plugin;
 import org.scijava.ui.behaviour.InputTriggerMap;
@@ -154,28 +155,44 @@ public class EditTagActions< V extends Vertex< E >, E extends Edge< V > >
 		inputMap.put( abortKey, "abort tags" );
 		actionMap.put( "abort tags", abortAction );
 
+		// Do we have more than 9 tagsets?
+		final boolean manyTagSets = tagModel.getTagSetStructure().getTagSets().size() > 9;
+
 		// Prepare tag map.
-		int i = 1;
-		for ( final TagSet tagSet : tagModel.getTagSetStructure().getTagSets() )
+
+		if ( manyTagSets )
 		{
-			final String actionName = "select tag " + i;
-			final KeyStroke tagKeyStroke = KeyStroke.getKeyStroke( ( char ) ( '0' + i ) );
-			final AbstractAction action = new AbstractAction( actionName )
-			{
-				@Override
-				public void actionPerformed( final ActionEvent e )
+			NumberListeners.positiveIntegerListener( actionMap, inputMap, ( n ) -> {
+				final int i = ( int ) n;
+				if ( i > 0 && i <= tagModel.getTagSetStructure().getTagSets().size() )
 				{
-					selectTagSet( tagSet );
+					selectTagSet( tagModel.getTagSetStructure().getTagSets().get( i - 1 ) );
 				}
-
-				private static final long serialVersionUID = 1L;
-			};
-
-			inputMap.put( tagKeyStroke, actionName );
-			actionMap.put( actionName, action );
-			i++;
+			} );
 		}
+		else
+		{
+			int i = 1;
+			for ( final TagSet tagSet : tagModel.getTagSetStructure().getTagSets() )
+			{
+				final String actionName = "select tag " + i;
+				final KeyStroke tagKeyStroke = KeyStroke.getKeyStroke( ( char ) ( '0' + i ) );
+				final AbstractAction action = new AbstractAction( actionName )
+				{
+					@Override
+					public void actionPerformed( final ActionEvent e )
+					{
+						selectTagSet( tagSet );
+					}
 
+					private static final long serialVersionUID = 1L;
+				};
+
+				inputMap.put( tagKeyStroke, actionName );
+				actionMap.put( actionName, action );
+				i++;
+			}
+		}
 		actionBindings.addActionMap( PICK_TAGS_MAP, actionMap );
 		actionBindings.addInputMap( PICK_TAGS_MAP, inputMap, "all" );
 		behaviourBindings.addInputTriggerMap( PICK_TAGS_MAP, triggerMap, "all" );
@@ -253,25 +270,43 @@ public class EditTagActions< V extends Vertex< E >, E extends Edge< V > >
 		inputMap.put( clearAllKey, "clear all labels" );
 		actionMap.put( "clear all labels", clearAllAction );
 
-		int i = 1;
-		for ( final Tag tag : tagSet.getTags() )
+		// Prepare tag map.
+
+		// Do we have more than 9 tags?
+		final boolean manyTags = tagSet.getTags().size() > 9;
+		if ( manyTags )
 		{
-			final String actionName = "select label " + i;
-			final KeyStroke takKeyStroke = KeyStroke.getKeyStroke( ( char ) ( '0' + i ) );
-			final AbstractAction action = new AbstractAction( actionName )
-			{
-				@Override
-				public void actionPerformed( final ActionEvent e )
+			panel.requestFocusInWindow();
+			NumberListeners.positiveIntegerListener( actionMap, inputMap, ( n ) -> {
+				final int i = ( int ) n;
+				if ( i > 0 && i <= tagSet.getTags().size() )
 				{
-					selectTag( tag );
+					selectTag( tagSet.getTags().get( i - 1 ) );
 				}
+			} );
+		}
+		else
+		{
+			int i = 1;
+			for ( final Tag tag : tagSet.getTags() )
+			{
+				final String actionName = "select label " + i;
+				final KeyStroke takKeyStroke = KeyStroke.getKeyStroke( ( char ) ( '0' + i ) );
+				final AbstractAction action = new AbstractAction( actionName )
+				{
+					@Override
+					public void actionPerformed( final ActionEvent e )
+					{
+						selectTag( tag );
+					}
 
-				private static final long serialVersionUID = 1L;
-			};
+					private static final long serialVersionUID = 1L;
+				};
 
-			inputMap.put( takKeyStroke, actionName );
-			actionMap.put( actionName, action );
-			i++;
+				inputMap.put( takKeyStroke, actionName );
+				actionMap.put( actionName, action );
+				i++;
+			}
 		}
 
 		actionBindings.addActionMap( PICK_TAGS_MAP, actionMap );
