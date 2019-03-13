@@ -422,6 +422,11 @@ public class ProjectManager
 		}
 	}
 
+	public MamutProject getProject()
+	{
+		return project;
+	}
+
 	private static final String EXT_DOT_MASTODON = ".mastodon";
 
 	private static String stripExtensionIfPresent( final String fn, final String ext )
