@@ -10,6 +10,7 @@ import java.awt.event.KeyEvent;
 import java.awt.geom.Rectangle2D;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
@@ -17,6 +18,7 @@ import javax.swing.ActionMap;
 import javax.swing.InputMap;
 import javax.swing.KeyStroke;
 
+import org.mastodon.collection.RefSet;
 import org.mastodon.graph.Edge;
 import org.mastodon.graph.Vertex;
 import org.mastodon.model.SelectionModel;
@@ -28,6 +30,7 @@ import org.mastodon.revised.model.tag.TagSetStructure.Tag;
 import org.mastodon.revised.model.tag.TagSetStructure.TagSet;
 import org.mastodon.revised.ui.keymap.CommandDescriptionProvider;
 import org.mastodon.revised.ui.keymap.CommandDescriptions;
+import org.mastodon.revised.ui.util.NumberListeners;
 import org.mastodon.undo.UndoPointMarker;
 import org.scijava.plugin.Plugin;
 import org.scijava.ui.behaviour.InputTriggerMap;
@@ -79,21 +82,25 @@ public class EditTagActions< V extends Vertex< E >, E extends Edge< V > >
 
 	private static final Font FONT = new Font( "SansSerif", Font.PLAIN, 12 );
 
-	private final UndoPointMarker undo;
+	private final InputActionBindings actionBindings;
 
-	private final FontMetrics fontMetrics;
-
-	private final Component panel;
+	private final TriggerBehaviourBindings behaviourBindings;
 
 	private final TagSetModel< V, E > tagModel;
 
 	private final SelectionModel< V, E > selectionModel;
 
-	private Mode mode = Mode.INACTIVE;
+	private final ReentrantReadWriteLock lock;
 
-	private final InputActionBindings actionBindings;
+	private final Component panel;
 
-	private final TriggerBehaviourBindings behaviourBindings;
+	private final InteractiveDisplayCanvas< ? > renderer;
+
+	private final UndoPointMarker undo;
+
+	private final EditTagActions< V, E >.TagSelectionOverlay overlay;
+
+	private final FontMetrics fontMetrics;
 
 	private final ActionMap actionMap;
 
@@ -101,9 +108,7 @@ public class EditTagActions< V extends Vertex< E >, E extends Edge< V > >
 
 	private final InputTriggerMap triggerMap;
 
-	private final InteractiveDisplayCanvas< ? > renderer;
-
-	private final EditTagActions< V, E >.TagSelectionOverlay overlay;
+	private Mode mode = Mode.INACTIVE;
 
 	private TagSet tagSet;
 
@@ -112,6 +117,7 @@ public class EditTagActions< V extends Vertex< E >, E extends Edge< V > >
 			final TriggerBehaviourBindings triggerBehaviourBindings,
 			final TagSetModel< V, E > tagModel,
 			final SelectionModel< V, E > selectionModel,
+			final ReentrantReadWriteLock lock,
 			final Component panel,
 			final InteractiveDisplayCanvas< ? > renderer,
 			final UndoPointMarker undoPointMarker )
@@ -120,6 +126,7 @@ public class EditTagActions< V extends Vertex< E >, E extends Edge< V > >
 		this.behaviourBindings = triggerBehaviourBindings;
 		this.tagModel = tagModel;
 		this.selectionModel = selectionModel;
+		this.lock = lock;
 		this.panel = panel;
 		this.renderer = renderer;
 		this.undo = undoPointMarker;
@@ -140,6 +147,7 @@ public class EditTagActions< V extends Vertex< E >, E extends Edge< V > >
 		inputMap.clear();
 		actionMap.clear();
 
+		// Abort.
 		final KeyStroke abortKey = KeyStroke.getKeyStroke( KeyEvent.VK_ESCAPE, 0 );
 		final Action abortAction = new AbstractAction( "abort tags" )
 		{
@@ -154,28 +162,59 @@ public class EditTagActions< V extends Vertex< E >, E extends Edge< V > >
 		inputMap.put( abortKey, "abort tags" );
 		actionMap.put( "abort tags", abortAction );
 
-		// Prepare tag map.
-		int i = 1;
-		for ( final TagSet tagSet : tagModel.getTagSetStructure().getTagSets() )
+		// Clear all.
+		final KeyStroke clearAllKey = KeyStroke.getKeyStroke( KeyEvent.VK_DELETE, KeyEvent.SHIFT_DOWN_MASK );
+		final Action clearAllAction = new AbstractAction( "clear all labels" )
 		{
-			final String actionName = "select tag " + i;
-			final KeyStroke tagKeyStroke = KeyStroke.getKeyStroke( ( char ) ( '0' + i ) );
-			final AbstractAction action = new AbstractAction( actionName )
+			@Override
+			public void actionPerformed( final ActionEvent e )
 			{
-				@Override
-				public void actionPerformed( final ActionEvent e )
+				clearAllLabels();
+			}
+
+			private static final long serialVersionUID = 1L;
+		};
+		inputMap.put( clearAllKey, "clear all labels" );
+		actionMap.put( "clear all labels", clearAllAction );
+
+		// Do we have more than 9 tagsets?
+		final boolean manyTagSets = tagModel.getTagSetStructure().getTagSets().size() > 9;
+
+		// Prepare tag map.
+
+		if ( manyTagSets )
+		{
+			NumberListeners.positiveIntegerListener( actionMap, inputMap, ( n ) -> {
+				final int i = ( int ) n;
+				if ( i > 0 && i <= tagModel.getTagSetStructure().getTagSets().size() )
 				{
-					selectTagSet( tagSet );
+					selectTagSet( tagModel.getTagSetStructure().getTagSets().get( i - 1 ) );
 				}
-
-				private static final long serialVersionUID = 1L;
-			};
-
-			inputMap.put( tagKeyStroke, actionName );
-			actionMap.put( actionName, action );
-			i++;
+			} );
 		}
+		else
+		{
+			int i = 1;
+			for ( final TagSet tagSet : tagModel.getTagSetStructure().getTagSets() )
+			{
+				final String actionName = "select tag " + i;
+				final KeyStroke tagKeyStroke = KeyStroke.getKeyStroke( ( char ) ( '0' + i ) );
+				final AbstractAction action = new AbstractAction( actionName )
+				{
+					@Override
+					public void actionPerformed( final ActionEvent e )
+					{
+						selectTagSet( tagSet );
+					}
 
+					private static final long serialVersionUID = 1L;
+				};
+
+				inputMap.put( tagKeyStroke, actionName );
+				actionMap.put( actionName, action );
+				i++;
+			}
+		}
 		actionBindings.addActionMap( PICK_TAGS_MAP, actionMap );
 		actionBindings.addInputMap( PICK_TAGS_MAP, inputMap, "all" );
 		behaviourBindings.addInputTriggerMap( PICK_TAGS_MAP, triggerMap, "all" );
@@ -238,40 +277,44 @@ public class EditTagActions< V extends Vertex< E >, E extends Edge< V > >
 		};
 		inputMap.put( removeKey, "remove labels" );
 		actionMap.put( "remove labels", removeAction );
-		// Clear all.
-		final KeyStroke clearAllKey = KeyStroke.getKeyStroke( KeyEvent.VK_DELETE, KeyEvent.SHIFT_DOWN_MASK );
-		final Action clearAllAction = new AbstractAction( "clear all labels" )
-		{
-			@Override
-			public void actionPerformed( final ActionEvent e )
-			{
-				clearAllLabels();
-			}
 
-			private static final long serialVersionUID = 1L;
-		};
-		inputMap.put( clearAllKey, "clear all labels" );
-		actionMap.put( "clear all labels", clearAllAction );
+		// Prepare tag map.
 
-		int i = 1;
-		for ( final Tag tag : tagSet.getTags() )
+		// Do we have more than 9 tags?
+		final boolean manyTags = tagSet.getTags().size() > 9;
+		if ( manyTags )
 		{
-			final String actionName = "select label " + i;
-			final KeyStroke takKeyStroke = KeyStroke.getKeyStroke( ( char ) ( '0' + i ) );
-			final AbstractAction action = new AbstractAction( actionName )
-			{
-				@Override
-				public void actionPerformed( final ActionEvent e )
+			panel.requestFocusInWindow();
+			NumberListeners.positiveIntegerListener( actionMap, inputMap, ( n ) -> {
+				final int i = ( int ) n;
+				if ( i > 0 && i <= tagSet.getTags().size() )
 				{
-					selectTag( tag );
+					selectTag( tagSet.getTags().get( i - 1 ) );
 				}
+			} );
+		}
+		else
+		{
+			int i = 1;
+			for ( final Tag tag : tagSet.getTags() )
+			{
+				final String actionName = "select label " + i;
+				final KeyStroke takKeyStroke = KeyStroke.getKeyStroke( ( char ) ( '0' + i ) );
+				final AbstractAction action = new AbstractAction( actionName )
+				{
+					@Override
+					public void actionPerformed( final ActionEvent e )
+					{
+						selectTag( tag );
+					}
 
-				private static final long serialVersionUID = 1L;
-			};
+					private static final long serialVersionUID = 1L;
+				};
 
-			inputMap.put( takKeyStroke, actionName );
-			actionMap.put( actionName, action );
-			i++;
+				inputMap.put( takKeyStroke, actionName );
+				actionMap.put( actionName, action );
+				i++;
+			}
 		}
 
 		actionBindings.addActionMap( PICK_TAGS_MAP, actionMap );
@@ -288,17 +331,18 @@ public class EditTagActions< V extends Vertex< E >, E extends Edge< V > >
 	 */
 	private synchronized void clearAllLabels()
 	{
-		if ( null == tagSet )
-			return;
-
-//		TODO
-//		setTag( selectionModel.getSelectedVertices(), selectionModel.getSelectedEdges(), null );
-//		tagSet.clearTag();
+		final RefSet< V > vertices = selectionModel.getSelectedVertices();
+		final RefSet< E > edges = selectionModel.getSelectedEdges();
+		for ( final TagSet tagSet : tagModel.getTagSetStructure().getTagSets() )
+		{
+			final ObjTagMap< V, Tag > vertexTags = tagModel.getVertexTags().tags( tagSet );
+			final ObjTagMap< E, Tag > edgeTags = tagModel.getEdgeTags().tags( tagSet );
+			vertices.forEach( v -> vertexTags.set( v, null ) );
+			edges.forEach( e -> edgeTags.set( e, null ) );
+		}
 
 		undo.setUndoPoint();
 		done();
-
-		throw new UnsupportedOperationException( "TODO" );
 	}
 
 	private synchronized void removeLabels()
@@ -317,7 +361,15 @@ public class EditTagActions< V extends Vertex< E >, E extends Edge< V > >
 		if ( null == tagSet || !tagSet.getTags().contains( tag ) )
 			return;
 
-		setTag( selectionModel.getSelectedVertices(), selectionModel.getSelectedEdges(), tag );
+		lock.readLock().lock();
+		try
+		{
+			setTag( selectionModel.getSelectedVertices(), selectionModel.getSelectedEdges(), tag );
+		}
+		finally
+		{
+			lock.readLock().unlock();
+		}
 
 		undo.setUndoPoint();
 		done();
@@ -354,7 +406,7 @@ public class EditTagActions< V extends Vertex< E >, E extends Edge< V > >
 			{
 				// Collect text to display.
 				final TagSetStructure tagSetStructure = tagModel.getTagSetStructure();
-				lines = new String[ tagSetStructure.getTagSets().size() + 2 ];
+				lines = new String[ tagSetStructure.getTagSets().size() + 3 ];
 				fonts = new Font[ lines.length ];
 				colors = new Color[ lines.length ];
 				if ( tagSetStructure.getTagSets().size() == 0 )
@@ -377,9 +429,11 @@ public class EditTagActions< V extends Vertex< E >, E extends Edge< V > >
 					}
 					fonts[ index ] = FONT;
 					lines[ index ] = " - ESC: Cancel.";
+					index++;
+					fonts[ index ] = FONT;
+					lines[ index ] = " - Shift DEL: Clear all";
 				}
 				Arrays.fill( colors, Color.BLACK );
-
 			}
 				break;
 			case PICK_TAG:
@@ -398,7 +452,7 @@ public class EditTagActions< V extends Vertex< E >, E extends Edge< V > >
 				}
 				else
 				{
-					lines = new String[ tagSet.getTags().size() + 4 ];
+					lines = new String[ tagSet.getTags().size() + 3 ];
 					fonts = new Font[ lines.length ];
 					colors = new Color[ lines.length ];
 					lines[ 0 ] = "Labels available:\n";
@@ -414,10 +468,6 @@ public class EditTagActions< V extends Vertex< E >, E extends Edge< V > >
 					}
 					fonts[ index ] = FONT;
 					lines[ index ] = " -  0: Remove labels";
-					colors[ index ] = Color.BLACK;
-					index++;
-					fonts[ index ] = FONT;
-					lines[ index ] = " - Shift DEL: Clear all";
 					colors[ index ] = Color.BLACK;
 					index++;
 					fonts[ index ] = FONT;
@@ -485,11 +535,12 @@ public class EditTagActions< V extends Vertex< E >, E extends Edge< V > >
 			final TriggerBehaviourBindings triggerBehaviourBindings,
 			final TagSetModel< V, E > tagModel,
 			final SelectionModel< V, E > selectionModel,
+			final ReentrantReadWriteLock lock,
 			final Component panel,
 			final InteractiveDisplayCanvas< ? > display,
 			final UndoPointMarker undo )
 	{
-		final EditTagActions< V, E > editTagActions = new EditTagActions<>( inputActionBindings, triggerBehaviourBindings, tagModel, selectionModel, panel, display, undo );
+		final EditTagActions< V, E > editTagActions = new EditTagActions<>( inputActionBindings, triggerBehaviourBindings, tagModel, selectionModel, lock, panel, display, undo );
 		actions.runnableAction( editTagActions, PICK_TAGS, PICK_TAGS_KEYS );
 	}
 }
