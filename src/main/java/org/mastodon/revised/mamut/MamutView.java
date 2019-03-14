@@ -81,7 +81,7 @@ public class MamutView< VG extends ViewGraph< Spot, Link, V, E >, V extends Vert
 		final SelectionModel< Spot, Link > selectionModel = appModel.getSelectionModel();
 		final Model model = appModel.getModel();
 		final TagSetModel< Spot, Link > tagSetModel = model.getTagSetModel();
-		final TagSetMenu< Spot, Link > tagSetMenu = new TagSetMenu< >( menuHandle.getMenu(), tagSetModel, selectionModel, model );
+		final TagSetMenu< Spot, Link > tagSetMenu = new TagSetMenu< >( menuHandle.getMenu(), tagSetModel, selectionModel, model.getGraph().getLock(), model );
 		tagSetModel.listeners().add( tagSetMenu );
 		onClose( () -> tagSetModel.listeners().remove( tagSetMenu ) );
 	}

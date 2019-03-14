@@ -10,6 +10,7 @@ import java.awt.event.KeyEvent;
 import java.awt.geom.Rectangle2D;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
@@ -81,21 +82,25 @@ public class EditTagActions< V extends Vertex< E >, E extends Edge< V > >
 
 	private static final Font FONT = new Font( "SansSerif", Font.PLAIN, 12 );
 
-	private final UndoPointMarker undo;
+	private final InputActionBindings actionBindings;
 
-	private final FontMetrics fontMetrics;
-
-	private final Component panel;
+	private final TriggerBehaviourBindings behaviourBindings;
 
 	private final TagSetModel< V, E > tagModel;
 
 	private final SelectionModel< V, E > selectionModel;
 
-	private Mode mode = Mode.INACTIVE;
+	private final ReentrantReadWriteLock lock;
 
-	private final InputActionBindings actionBindings;
+	private final Component panel;
 
-	private final TriggerBehaviourBindings behaviourBindings;
+	private final InteractiveDisplayCanvas< ? > renderer;
+
+	private final UndoPointMarker undo;
+
+	private final EditTagActions< V, E >.TagSelectionOverlay overlay;
+
+	private final FontMetrics fontMetrics;
 
 	private final ActionMap actionMap;
 
@@ -103,9 +108,7 @@ public class EditTagActions< V extends Vertex< E >, E extends Edge< V > >
 
 	private final InputTriggerMap triggerMap;
 
-	private final InteractiveDisplayCanvas< ? > renderer;
-
-	private final EditTagActions< V, E >.TagSelectionOverlay overlay;
+	private Mode mode = Mode.INACTIVE;
 
 	private TagSet tagSet;
 
@@ -114,6 +117,7 @@ public class EditTagActions< V extends Vertex< E >, E extends Edge< V > >
 			final TriggerBehaviourBindings triggerBehaviourBindings,
 			final TagSetModel< V, E > tagModel,
 			final SelectionModel< V, E > selectionModel,
+			final ReentrantReadWriteLock lock,
 			final Component panel,
 			final InteractiveDisplayCanvas< ? > renderer,
 			final UndoPointMarker undoPointMarker )
@@ -122,6 +126,7 @@ public class EditTagActions< V extends Vertex< E >, E extends Edge< V > >
 		this.behaviourBindings = triggerBehaviourBindings;
 		this.tagModel = tagModel;
 		this.selectionModel = selectionModel;
+		this.lock = lock;
 		this.panel = panel;
 		this.renderer = renderer;
 		this.undo = undoPointMarker;
@@ -356,7 +361,15 @@ public class EditTagActions< V extends Vertex< E >, E extends Edge< V > >
 		if ( null == tagSet || !tagSet.getTags().contains( tag ) )
 			return;
 
-		setTag( selectionModel.getSelectedVertices(), selectionModel.getSelectedEdges(), tag );
+		lock.readLock().lock();
+		try
+		{
+			setTag( selectionModel.getSelectedVertices(), selectionModel.getSelectedEdges(), tag );
+		}
+		finally
+		{
+			lock.readLock().unlock();
+		}
 
 		undo.setUndoPoint();
 		done();
@@ -522,11 +535,12 @@ public class EditTagActions< V extends Vertex< E >, E extends Edge< V > >
 			final TriggerBehaviourBindings triggerBehaviourBindings,
 			final TagSetModel< V, E > tagModel,
 			final SelectionModel< V, E > selectionModel,
+			final ReentrantReadWriteLock lock,
 			final Component panel,
 			final InteractiveDisplayCanvas< ? > display,
 			final UndoPointMarker undo )
 	{
-		final EditTagActions< V, E > editTagActions = new EditTagActions<>( inputActionBindings, triggerBehaviourBindings, tagModel, selectionModel, panel, display, undo );
+		final EditTagActions< V, E > editTagActions = new EditTagActions<>( inputActionBindings, triggerBehaviourBindings, tagModel, selectionModel, lock, panel, display, undo );
 		actions.runnableAction( editTagActions, PICK_TAGS, PICK_TAGS_KEYS );
 	}
 }
