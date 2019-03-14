@@ -14,6 +14,18 @@ public class GroupStringsTest
 {
 
 	@Test
+	public void testSingle()
+	{
+		final List< String > names = new ArrayList<>();
+		names.add( "Select to Child" );
+		final GroupStrings gs = new GroupStrings();
+		for ( final String string : names )
+			gs.add( string );
+		final Collection< Group > groups = gs.group();
+		assertEquals( "Did not group into the right numbers of groups.", 1, groups.size() );
+	}
+
+	@Test
 	public void testGroup()
 	{
 		final String s0 = "Import all the TGMM tracks";

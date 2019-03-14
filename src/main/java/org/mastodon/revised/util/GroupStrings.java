@@ -15,24 +15,24 @@ import java.util.Set;
  * words.
  * <p>
  * For instance, the 3 strings:
- * 
+ *
  * <pre>
- * - "Save Project"
- * - "Import TGMM tracks"
- * - "Import Simi BioCell tracks"
+ * -"Save Project"
+ * -"Import TGMM tracks"
+ * -"Import Simi BioCell tracks"
  * </pre>
  *
  * will be grouped in 2 groups:
- * 
+ *
  * <pre>
- * - "Save Project"
- * - "Import"
- * 	+ "TGMM tracks"
- * 	+ "Simi BioCell tracks"
+ * -"Save Project"
+ * -"Import"
+ * 	+"TGMM tracks"
+ * 	+"Simi BioCell tracks"
  * </pre>
- * 
+ *
  * Comparisons of common words are case insensitive.
- * 
+ *
  * @author Jean-Yves Tinevez
  */
 public class GroupStrings
@@ -67,44 +67,45 @@ public class GroupStrings
 		final List< Group > split = new ArrayList<>();
 		for ( final Group sg : fused )
 			split.addAll( sg.split() );
-		
+
 		return split;
 	}
 
 	private static List< Group > fuseCollection( final Collection< Group > c )
 	{
+		if ( c.size() <= 1 )
+			return new ArrayList<>( c );
+
 		final Deque< Group > champions = new ArrayDeque<>( c );
 		final List< Group > fused = new ArrayList<>();
-		if ( champions.size() > 1 )
+		while ( !champions.isEmpty() )
 		{
-			while ( !champions.isEmpty() )
+
+			// First champion.
+			Group champion = champions.pop();
+
+			// Match the champion against all other challengers.
+			final Set< Group > challengers = new HashSet<>( champions );
+			challengers.remove( champion );
+
+			for ( final Group challenger : challengers )
 			{
-
-				// First champion.
-				Group champion = champions.pop();
-
-				// Match the champion against all other challengers.
-				final Set< Group > challengers = new HashSet<>( champions );
-				challengers.remove( champion );
-
-				for ( final Group challenger : challengers )
+				final Group fusion = champion.fuse( challenger );
+				if ( null == fusion )
 				{
-					final Group fusion = champion.fuse( challenger );
-					if ( null == fusion )
-					{
-						// No fusion possible.
-					}
-					else
-					{
-						// Fusion is possible. The challenger won't become a champion.
-						champions.remove( challenger );
-						// The fusion becomes the champion.
-						champion = fusion;
-					}
+					// No fusion possible.
 				}
-
-				fused.add( champion );
+				else
+				{
+					// Fusion is possible. The challenger won't become a
+					// champion.
+					champions.remove( challenger );
+					// The fusion becomes the champion.
+					champion = fusion;
+				}
 			}
+
+			fused.add( champion );
 		}
 		return fused;
 	}
@@ -139,9 +140,9 @@ public class GroupStrings
 		}
 
 		/**
-		 * Tries to split a single group into several ones when by trying to increase
-		 * the number of common words in the split groups.
-		 * 
+		 * Tries to split a single group into several ones when by trying to
+		 * increase the number of common words in the split groups.
+		 *
 		 * @return a collection of groups.
 		 */
 		private Collection< Group > split()
@@ -153,9 +154,10 @@ public class GroupStrings
 			final List< Group > singletons = new ArrayList<>();
 			for ( final String string : strings )
 			{
-				final Group singleton = new Group( );
+				final Group singleton = new Group();
 				singleton.strings.add( string );
-				// But we remove the common words of this group to check if we can regroup them.
+				// But we remove the common words of this group to check if we
+				// can regroup them.
 				final String[] tokens = string.split( "\\s+" );
 				for ( int i = this.words.size(); i < tokens.length; i++ )
 					singleton.words.add( tokens[ i ] );
@@ -176,14 +178,15 @@ public class GroupStrings
 		}
 
 		/**
-		 * Fuses this subgroup with the specified one. Fusion is made by checking
-		 * whether the first words of the string composition are common. Returns
-		 * <code>null</code> if the two subgroups have no words in common amd fusion is
-		 * impossible.
-		 * 
+		 * Fuses this subgroup with the specified one. Fusion is made by
+		 * checking whether the first words of the string composition are
+		 * common. Returns <code>null</code> if the two subgroups have no words
+		 * in common amd fusion is impossible.
+		 *
 		 * @param other
-		 *                  the subgroup to fuse with.
-		 * @return a fused subgroup, or <code>null</code> if fusion is impossible.
+		 *            the subgroup to fuse with.
+		 * @return a fused subgroup, or <code>null</code> if fusion is
+		 *         impossible.
 		 */
 		private Group fuse( final Group other )
 		{
@@ -212,15 +215,14 @@ public class GroupStrings
 		}
 
 		/**
-		 * Returns the part of the specified string left after the common words in this
-		 * group has been removed.
-		 * 
+		 * Returns the part of the specified string left after the common words
+		 * in this group has been removed.
+		 *
 		 * @param string
-		 *                   the string to determine the suffix of.
+		 *            the string to determine the suffix of.
 		 * @return the suffix.
 		 * @throws IllegalArgumentException
-		 *                                      if the specified string does not belong
-		 *                                      in this group.
+		 *             if the specified string does not belong in this group.
 		 */
 		public String suffix( final String string )
 		{
@@ -246,7 +248,6 @@ public class GroupStrings
 			str.append( "\n - Common words: " + words );
 			return str.toString();
 		}
-
 
 	}
 }
