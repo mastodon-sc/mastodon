@@ -16,7 +16,7 @@ import org.mastodon.revised.util.GroupStrings.Group;
  * <p>
  * One instance of this iterator is instantiated per menu. As the menu is built,
  * add the menu item with {@link #add(AbstractButton)} method. When all the menu
- * items have been created and added, call the {@link #assignMnenonics()}
+ * items have been created and added, call the {@link #assignMnemonics()}
  * methods. The mnemonic assigned will be unique for all the menu items, and
  * will be taken from the first letter of the name not already assigned to
  * another mnemonic. If all letters of the name are taken, then no mnemonics are
@@ -39,7 +39,7 @@ public class MnemonicsAssigner
 		buttons.put( button.getText(), button );
 	}
 
-	public void assignMnenonics()
+	public void assignMnemonics()
 	{
 		final GroupStrings grouper = new GroupStrings();
 

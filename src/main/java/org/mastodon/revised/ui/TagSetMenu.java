@@ -72,9 +72,9 @@ public class TagSetMenu< V extends Vertex< E >, E extends Edge< V > > implements
 			subMenuMnemo.add( clearTagMenuItem );
 			tsMenu.add( clearTagMenuItem );
 			menu.add( tsMenu );
-			subMenuMnemo.assignMnenonics();
+			subMenuMnemo.assignMnemonics();
 		}
-		menuMnemo.assignMnenonics();
+		menuMnemo.assignMnemonics();
 	}
 
 	@Override
