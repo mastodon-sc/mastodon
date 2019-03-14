@@ -17,6 +17,7 @@ import javax.swing.ActionMap;
 import javax.swing.InputMap;
 import javax.swing.KeyStroke;
 
+import org.mastodon.collection.RefSet;
 import org.mastodon.graph.Edge;
 import org.mastodon.graph.Vertex;
 import org.mastodon.model.SelectionModel;
@@ -141,6 +142,7 @@ public class EditTagActions< V extends Vertex< E >, E extends Edge< V > >
 		inputMap.clear();
 		actionMap.clear();
 
+		// Abort.
 		final KeyStroke abortKey = KeyStroke.getKeyStroke( KeyEvent.VK_ESCAPE, 0 );
 		final Action abortAction = new AbstractAction( "abort tags" )
 		{
@@ -154,6 +156,21 @@ public class EditTagActions< V extends Vertex< E >, E extends Edge< V > >
 		};
 		inputMap.put( abortKey, "abort tags" );
 		actionMap.put( "abort tags", abortAction );
+
+		// Clear all.
+		final KeyStroke clearAllKey = KeyStroke.getKeyStroke( KeyEvent.VK_DELETE, KeyEvent.SHIFT_DOWN_MASK );
+		final Action clearAllAction = new AbstractAction( "clear all labels" )
+		{
+			@Override
+			public void actionPerformed( final ActionEvent e )
+			{
+				clearAllLabels();
+			}
+
+			private static final long serialVersionUID = 1L;
+		};
+		inputMap.put( clearAllKey, "clear all labels" );
+		actionMap.put( "clear all labels", clearAllAction );
 
 		// Do we have more than 9 tagsets?
 		final boolean manyTagSets = tagModel.getTagSetStructure().getTagSets().size() > 9;
@@ -255,20 +272,6 @@ public class EditTagActions< V extends Vertex< E >, E extends Edge< V > >
 		};
 		inputMap.put( removeKey, "remove labels" );
 		actionMap.put( "remove labels", removeAction );
-		// Clear all.
-		final KeyStroke clearAllKey = KeyStroke.getKeyStroke( KeyEvent.VK_DELETE, KeyEvent.SHIFT_DOWN_MASK );
-		final Action clearAllAction = new AbstractAction( "clear all labels" )
-		{
-			@Override
-			public void actionPerformed( final ActionEvent e )
-			{
-				clearAllLabels();
-			}
-
-			private static final long serialVersionUID = 1L;
-		};
-		inputMap.put( clearAllKey, "clear all labels" );
-		actionMap.put( "clear all labels", clearAllAction );
 
 		// Prepare tag map.
 
@@ -323,17 +326,18 @@ public class EditTagActions< V extends Vertex< E >, E extends Edge< V > >
 	 */
 	private synchronized void clearAllLabels()
 	{
-		if ( null == tagSet )
-			return;
-
-//		TODO
-//		setTag( selectionModel.getSelectedVertices(), selectionModel.getSelectedEdges(), null );
-//		tagSet.clearTag();
+		final RefSet< V > vertices = selectionModel.getSelectedVertices();
+		final RefSet< E > edges = selectionModel.getSelectedEdges();
+		for ( final TagSet tagSet : tagModel.getTagSetStructure().getTagSets() )
+		{
+			final ObjTagMap< V, Tag > vertexTags = tagModel.getVertexTags().tags( tagSet );
+			final ObjTagMap< E, Tag > edgeTags = tagModel.getEdgeTags().tags( tagSet );
+			vertices.forEach( v -> vertexTags.set( v, null ) );
+			edges.forEach( e -> edgeTags.set( e, null ) );
+		}
 
 		undo.setUndoPoint();
 		done();
-
-		throw new UnsupportedOperationException( "TODO" );
 	}
 
 	private synchronized void removeLabels()
@@ -389,7 +393,7 @@ public class EditTagActions< V extends Vertex< E >, E extends Edge< V > >
 			{
 				// Collect text to display.
 				final TagSetStructure tagSetStructure = tagModel.getTagSetStructure();
-				lines = new String[ tagSetStructure.getTagSets().size() + 2 ];
+				lines = new String[ tagSetStructure.getTagSets().size() + 3 ];
 				fonts = new Font[ lines.length ];
 				colors = new Color[ lines.length ];
 				if ( tagSetStructure.getTagSets().size() == 0 )
@@ -412,9 +416,11 @@ public class EditTagActions< V extends Vertex< E >, E extends Edge< V > >
 					}
 					fonts[ index ] = FONT;
 					lines[ index ] = " - ESC: Cancel.";
+					index++;
+					fonts[ index ] = FONT;
+					lines[ index ] = " - Shift DEL: Clear all";
 				}
 				Arrays.fill( colors, Color.BLACK );
-
 			}
 				break;
 			case PICK_TAG:
@@ -433,7 +439,7 @@ public class EditTagActions< V extends Vertex< E >, E extends Edge< V > >
 				}
 				else
 				{
-					lines = new String[ tagSet.getTags().size() + 4 ];
+					lines = new String[ tagSet.getTags().size() + 3 ];
 					fonts = new Font[ lines.length ];
 					colors = new Color[ lines.length ];
 					lines[ 0 ] = "Labels available:\n";
@@ -449,10 +455,6 @@ public class EditTagActions< V extends Vertex< E >, E extends Edge< V > >
 					}
 					fonts[ index ] = FONT;
 					lines[ index ] = " -  0: Remove labels";
-					colors[ index ] = Color.BLACK;
-					index++;
-					fonts[ index ] = FONT;
-					lines[ index ] = " - Shift DEL: Clear all";
 					colors[ index ] = Color.BLACK;
 					index++;
 					fonts[ index ] = FONT;
