@@ -127,6 +127,9 @@ public class MetteMerging
 	{
 		new ModelImporter( output.getModel() ){{ startImport(); }};
 
+		InterpolateMissingSpots.interpolate( dsA.model() );
+		InterpolateMissingSpots.interpolate( dsB.model() );
+
 		final int minTimepoint = 0;
 		final int maxTimepoint = Math.max( dsA.maxNonEmptyTimepoint(), dsB.maxNonEmptyTimepoint() );
 		final MatchCandidates candidates = new MatchCandidates( distCutoff, mahalanobisDistCutoff, ratioThreshold );
