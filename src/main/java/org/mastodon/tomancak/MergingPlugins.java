@@ -27,9 +27,11 @@ public class MergingPlugins extends AbstractContextual implements MastodonPlugin
 {
 	private static final String MERGE_PROJECTS = "[tomancak] merge projects";
 	private static final String COPY_TAG = "[tomancak] copy tag";
+	private static final String INTERPOLATE_SPOTS = "[tomancak] interpolate spots";
 
 	private static final String[] MERGE_PROJECTS_KEYS = { "not mapped" };
 	private static final String[] COPY_TAG_KEYS = { "not mapped" };
+	private static final String[] INTERPOLATE_SPOTS_KEYS = { "not mapped" };
 
 	private static Map< String, String > menuTexts = new HashMap<>();
 
@@ -37,6 +39,7 @@ public class MergingPlugins extends AbstractContextual implements MastodonPlugin
 	{
 		menuTexts.put( MERGE_PROJECTS, "Merge Projects..." );
 		menuTexts.put( COPY_TAG, "Copy Tag..." );
+		menuTexts.put( INTERPOLATE_SPOTS, "Interpolate Missing Spots" );
 	}
 
 	/*
@@ -55,11 +58,13 @@ public class MergingPlugins extends AbstractContextual implements MastodonPlugin
 		{
 			descriptions.add( MERGE_PROJECTS, MERGE_PROJECTS_KEYS, "Merge two Mastodon projects." );
 			descriptions.add( COPY_TAG, COPY_TAG_KEYS, "Copy tags: everything that has tag A assigned gets B assigned." );
+			descriptions.add( INTERPOLATE_SPOTS, INTERPOLATE_SPOTS_KEYS, "Interpolate missing spots." );
 		}
 	}
 
 	private final AbstractNamedAction mergeProjectsAction;
 	private final AbstractNamedAction copyTagAction;
+	private final AbstractNamedAction interpolateSpotsAction;
 
 	private MastodonPluginAppModel pluginAppModel;
 
@@ -67,6 +72,7 @@ public class MergingPlugins extends AbstractContextual implements MastodonPlugin
 	{
 		mergeProjectsAction = new RunnableAction( MERGE_PROJECTS, this::mergeProjects );
 		copyTagAction = new RunnableAction( COPY_TAG, this::copyTag );
+		interpolateSpotsAction = new RunnableAction( INTERPOLATE_SPOTS, this::interpolateSpots );
 		updateEnabledActions();
 	}
 
@@ -84,7 +90,8 @@ public class MergingPlugins extends AbstractContextual implements MastodonPlugin
 				menu( "Plugins",
 						menu( "Merging",
 								item( MERGE_PROJECTS ),
-								item( COPY_TAG ) ) ) );
+								item( COPY_TAG ),
+								item( INTERPOLATE_SPOTS ) ) ) );
 	}
 
 	@Override
@@ -98,6 +105,7 @@ public class MergingPlugins extends AbstractContextual implements MastodonPlugin
 	{
 		actions.namedAction( mergeProjectsAction, MERGE_PROJECTS_KEYS );
 		actions.namedAction( copyTagAction, COPY_TAG_KEYS );
+		actions.namedAction( interpolateSpotsAction, INTERPOLATE_SPOTS_KEYS );
 	}
 
 	private void updateEnabledActions()
@@ -105,6 +113,7 @@ public class MergingPlugins extends AbstractContextual implements MastodonPlugin
 		final MamutAppModel appModel = ( pluginAppModel == null ) ? null : pluginAppModel.getAppModel();
 		mergeProjectsAction.setEnabled( appModel != null );
 		copyTagAction.setEnabled( appModel != null );
+		interpolateSpotsAction.setEnabled( appModel != null );
 	}
 
 	private MergingDialog mergingDialog;
@@ -141,5 +150,11 @@ public class MergingPlugins extends AbstractContextual implements MastodonPlugin
 	{
 		final Model model = pluginAppModel.getAppModel().getModel();
 		new CopyTagDialog( null, model ).setVisible( true );
+	}
+
+	private void interpolateSpots()
+	{
+		final Model model = pluginAppModel.getAppModel().getModel();
+		InterpolateMissingSpots.interpolate( model );
 	}
 }
