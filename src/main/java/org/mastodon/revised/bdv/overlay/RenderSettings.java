@@ -2,8 +2,8 @@ package org.mastodon.revised.bdv.overlay;
 
 import java.util.ArrayList;
 import java.util.Collection;
-
 import java.util.Objects;
+
 import org.mastodon.app.ui.settings.style.Style;
 import org.mastodon.util.Listeners;
 
@@ -19,6 +19,7 @@ public class RenderSettings implements Style< RenderSettings >
 	public static final boolean DEFAULT_USE_GRADIENT = false;
 	public static final boolean DEFAULT_DRAW_SPOTS = true;
 	public static final boolean DEFAULT_DRAW_LINKS = true;
+	public static final boolean DEFAULT_DRAW_ARROW_HEADS = false;
 	public static final boolean DEFAULT_DRAW_ELLIPSE = true;
 	public static final boolean DEFAULT_DRAW_SLICE_INTERSECTION = true;
 	public static final boolean DEFAULT_DRAW_SLICE_PROJECTION = !DEFAULT_DRAW_SLICE_INTERSECTION;
@@ -70,6 +71,7 @@ public class RenderSettings implements Style< RenderSettings >
 		useGradient = settings.useGradient;
 		timeLimit = settings.timeLimit;
 		drawLinks = settings.drawLinks;
+		drawArrowHeads = settings.drawArrowHeads;
 		drawSpots = settings.drawSpots;
 		drawEllipsoidSliceProjection = settings.drawEllipsoidSliceProjection;
 		drawEllipsoidSliceIntersection = settings.drawEllipsoidSliceIntersection;
@@ -124,6 +126,11 @@ public class RenderSettings implements Style< RenderSettings >
 	 * Whether to draw links (at all).
 	 */
 	private boolean drawLinks;
+
+	/**
+	 * Whether to draw links with an arrow head, in time direction.
+	 */
+	private boolean drawArrowHeads;
 
 	/**
 	 * Whether to draw spots (at all).
@@ -326,6 +333,16 @@ public class RenderSettings implements Style< RenderSettings >
 	}
 
 	/**
+	 * Gets whether to draw links with arrow heads.
+	 *
+	 * @return {@code true} if links are drawn with arrow heads.
+	 */
+	public boolean getDrawArrowHeads()
+	{
+		return drawArrowHeads;
+	}
+
+	/**
 	 * Sets whether to draw links (at all). For specific settings, see
 	 * {@link #setTimeLimit(int)}, {@link #setUseGradient(boolean)}.
 	 *
@@ -337,6 +354,21 @@ public class RenderSettings implements Style< RenderSettings >
 		if ( this.drawLinks != drawLinks )
 		{
 			this.drawLinks = drawLinks;
+			notifyListeners();
+		}
+	}
+
+	/**
+	 * Sets whether to draw links with arrow heads.
+	 *
+	 * @param drawArrowHeads
+	 *            whether to draw links with arrow heads.
+	 */
+	public synchronized void setDrawArrowHeads( final boolean drawArrowHeads )
+	{
+		if ( this.drawArrowHeads != drawArrowHeads )
+		{
+			this.drawArrowHeads = drawArrowHeads;
 			notifyListeners();
 		}
 	}
@@ -683,6 +715,7 @@ public class RenderSettings implements Style< RenderSettings >
 		df.useGradient = DEFAULT_USE_GRADIENT;
 		df.timeLimit = DEFAULT_LIMIT_TIME_RANGE;
 		df.drawLinks = DEFAULT_DRAW_LINKS;
+		df.drawArrowHeads = DEFAULT_DRAW_ARROW_HEADS;
 		df.drawSpots = DEFAULT_DRAW_SPOTS;
 		df.drawEllipsoidSliceProjection = DEFAULT_DRAW_SLICE_PROJECTION;
 		df.drawEllipsoidSliceIntersection = DEFAULT_DRAW_SLICE_INTERSECTION;
