@@ -1,5 +1,7 @@
 package org.mastodon.views.bdv.overlay.ui;
 
+import static org.yaml.snakeyaml.DumperOptions.FlowStyle.FLOW;
+
 import java.awt.BasicStroke;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -18,8 +20,6 @@ import org.yaml.snakeyaml.nodes.MappingNode;
 import org.yaml.snakeyaml.nodes.Node;
 import org.yaml.snakeyaml.nodes.Tag;
 import org.yaml.snakeyaml.representer.Representer;
-
-import static org.yaml.snakeyaml.DumperOptions.FlowStyle.FLOW;
 
 /**
  * Facilities to dump / load {@link RenderSettings} to / from a YAML file.
@@ -153,6 +153,7 @@ public class RenderSettingsIO
 
 			mapping.put( "antialiasing", s.getUseAntialiasing() );
 			mapping.put( "drawLinks", s.getDrawLinks() );
+			mapping.put( "drawArrowHeads", s.getDrawArrowHeads() );
 			mapping.put( "timeRangeForLinks", s.getTimeLimit() );
 			mapping.put( "gradientForLinks", s.getUseGradient() );
 			mapping.put( "drawSpots", s.getDrawSpots() );
@@ -191,6 +192,7 @@ public class RenderSettingsIO
 
 				s.setUseAntialiasing( ( boolean ) mapping.get( "antialiasing" ) );
 				s.setDrawLinks( ( boolean ) mapping.get( "drawLinks" ) );
+				s.setDrawArrowHeads( ( boolean ) mapping.get( "drawArrowHeads" ) );
 				s.setTimeLimit( ( int ) mapping.get( "timeRangeForLinks" ) );
 				s.setUseGradient( ( boolean ) mapping.get( "gradientForLinks" ) );
 				s.setDrawSpots( ( boolean ) mapping.get( "drawSpots" ) );
