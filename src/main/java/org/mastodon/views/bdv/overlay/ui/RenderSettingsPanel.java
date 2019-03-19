@@ -117,6 +117,7 @@ public class RenderSettingsPanel extends JPanel
 				intElement( "time range for links", 0, 100, style::getTimeLimit, style::setTimeLimit ),
 				booleanElement( "gradients for links", style::getUseGradient, style::setUseGradient ),
 				booleanElement( "arrow heads", style::getDrawArrowHeads, style::setDrawArrowHeads ),
+				booleanElement( "draw links ahead in time", style::getDrawLinksAheadInTime, style::setDrawLinksAheadInTime ),
 
 				separator(),
 
