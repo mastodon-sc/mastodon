@@ -19,6 +19,7 @@ public class RenderSettings implements Style< RenderSettings >
 	public static final boolean DEFAULT_USE_GRADIENT = false;
 	public static final boolean DEFAULT_DRAW_SPOTS = true;
 	public static final boolean DEFAULT_DRAW_LINKS = true;
+	public static final boolean DEFAULT_DRAW_LINKS_AHEAD_IN_TIME = false;
 	public static final boolean DEFAULT_DRAW_ARROW_HEADS = false;
 	public static final boolean DEFAULT_DRAW_ELLIPSE = true;
 	public static final boolean DEFAULT_DRAW_SLICE_INTERSECTION = true;
@@ -71,6 +72,7 @@ public class RenderSettings implements Style< RenderSettings >
 		useGradient = settings.useGradient;
 		timeLimit = settings.timeLimit;
 		drawLinks = settings.drawLinks;
+		drawLinksAheadInTime = settings.drawLinksAheadInTime;
 		drawArrowHeads = settings.drawArrowHeads;
 		drawSpots = settings.drawSpots;
 		drawEllipsoidSliceProjection = settings.drawEllipsoidSliceProjection;
@@ -126,6 +128,12 @@ public class RenderSettings implements Style< RenderSettings >
 	 * Whether to draw links (at all).
 	 */
 	private boolean drawLinks;
+
+	/**
+	 * Whether to draw links ahead in time. They are otherwise drawn only
+	 * backward in time.
+	 */
+	private boolean drawLinksAheadInTime;
 
 	/**
 	 * Whether to draw links with an arrow head, in time direction.
@@ -333,6 +341,17 @@ public class RenderSettings implements Style< RenderSettings >
 	}
 
 	/**
+	 * Gets whether to draw links ahead in time. They are otherwise drawn only
+	 * backward in time.
+	 * 
+	 * @return {@code true} if links are drawn ahead in time.
+	 */
+	public boolean getDrawLinksAheadInTime()
+	{
+		return drawLinksAheadInTime;
+	}
+
+	/**
 	 * Gets whether to draw links with arrow heads.
 	 *
 	 * @return {@code true} if links are drawn with arrow heads.
@@ -354,6 +373,22 @@ public class RenderSettings implements Style< RenderSettings >
 		if ( this.drawLinks != drawLinks )
 		{
 			this.drawLinks = drawLinks;
+			notifyListeners();
+		}
+	}
+
+	/**
+	 * Sets whether to draw links ahead in time. They are otherwise drawn only
+	 * backward in time.
+	 *
+	 * @param drawLinksAheadInTime
+	 *            whether to draw links ahead in time.
+	 */
+	public synchronized void setDrawLinksAheadInTime( final boolean drawLinksAheadInTime )
+	{
+		if ( this.drawLinksAheadInTime != drawLinksAheadInTime )
+		{
+			this.drawLinksAheadInTime = drawLinksAheadInTime;
 			notifyListeners();
 		}
 	}
@@ -715,6 +750,7 @@ public class RenderSettings implements Style< RenderSettings >
 		df.useGradient = DEFAULT_USE_GRADIENT;
 		df.timeLimit = DEFAULT_LIMIT_TIME_RANGE;
 		df.drawLinks = DEFAULT_DRAW_LINKS;
+		df.drawLinksAheadInTime = DEFAULT_DRAW_LINKS_AHEAD_IN_TIME;
 		df.drawArrowHeads = DEFAULT_DRAW_ARROW_HEADS;
 		df.drawSpots = DEFAULT_DRAW_SPOTS;
 		df.drawEllipsoidSliceProjection = DEFAULT_DRAW_SLICE_PROJECTION;

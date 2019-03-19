@@ -240,8 +240,8 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 
 		if ( color == 0 )
 		{
-			final double i1 = -2 * td;
-			final double i2 = 1 + 2 * td;
+			final double i1 = 2 * Math.abs( td );
+			final double i2 = 1 - 2 * Math.abs( td );
 			final double r = isSelected ? i2 : i1;
 			final double g = isSelected ? i1 : i2;
 			final double b = 0.1;
@@ -261,9 +261,9 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 			final int r0 = isSelected ? 255 : ( ( color >> 16 ) & 0xff );
 			final int g0 = isSelected ? 0 : ( ( color >> 8 ) & 0xff );
 			final int b0 = isSelected ? 25 : ( ( color ) & 0xff );
-			final double r = ( 1 - td ) * r0 / 255;
-			final double g = ( 1 - td ) * g0 / 255;
-			final double b = ( 1 - td ) * b0 / 255;
+			final double r = ( 1 + Math.abs( td ) ) * r0 / 255;
+			final double g = ( 1 + Math.abs( td ) ) * g0 / 255;
+			final double b = ( 1 + Math.abs( td ) ) * b0 / 255;
 			final double a = Math.max(
 					isHighlighted ? 0.8 : ( isSelected ? 0.6 : 0.4 ),
 					a0 / 255f * ( 1 + tf ) * ( 1 - Math.abs( sf ) ) );
@@ -408,6 +408,7 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 		if ( !settings.getDrawLinks())
 			return;
 
+		final boolean drawLinksAheadInTime = settings.getDrawLinksAheadInTime();
 		final double maxDepth = getMaxDepth( transform );
 
 		final V ref = graph.vertexRef();
@@ -415,7 +416,12 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 		final double[] lPos = new double[ 3 ];
 
 		final int timeLimit = settings.getTimeLimit();
-		for ( int t = Math.max( 0, currentTimepoint - timeLimit + 1 ); t <= currentTimepoint; ++t )
+		final int minT = Math.max( 0, currentTimepoint - timeLimit + 1 );
+		final int maxT = drawLinksAheadInTime 
+				? currentTimepoint + timeLimit - 1
+				: currentTimepoint;
+		
+		for ( int t = minT; t <= maxT; ++t )
 		{
 			final double td0 = timeDistance( t - 1, currentTimepoint, timeLimit );
 			final double td1 = timeDistance( t, currentTimepoint, timeLimit );

@@ -153,6 +153,7 @@ public class RenderSettingsIO
 
 			mapping.put( "antialiasing", s.getUseAntialiasing() );
 			mapping.put( "drawLinks", s.getDrawLinks() );
+			mapping.put( "drawLinksAheadInTime", s.getDrawLinksAheadInTime() );
 			mapping.put( "drawArrowHeads", s.getDrawArrowHeads() );
 			mapping.put( "timeRangeForLinks", s.getTimeLimit() );
 			mapping.put( "gradientForLinks", s.getUseGradient() );
@@ -192,6 +193,7 @@ public class RenderSettingsIO
 
 				s.setUseAntialiasing( ( boolean ) mapping.get( "antialiasing" ) );
 				s.setDrawLinks( ( boolean ) mapping.get( "drawLinks" ) );
+				s.setDrawLinksAheadInTime( ( boolean ) mapping.get( "drawLinksAheadInTime" ) );
 				s.setDrawArrowHeads( ( boolean ) mapping.get( "drawArrowHeads" ) );
 				s.setTimeLimit( ( int ) mapping.get( "timeRangeForLinks" ) );
 				s.setUseGradient( ( boolean ) mapping.get( "gradientForLinks" ) );
