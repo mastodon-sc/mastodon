@@ -235,9 +235,11 @@ public class GroupStrings
 
 			String out = string;
 			for ( final String word : words )
-				out = out.split( word, 2 )[ 1 ];
-
-			return out.trim();
+			{
+				out = out.substring( word.length() );
+				out = out.trim();
+			}
+			return out;
 		}
 
 		@Override

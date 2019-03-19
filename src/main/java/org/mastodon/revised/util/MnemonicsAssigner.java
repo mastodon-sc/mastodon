@@ -56,6 +56,8 @@ public class MnemonicsAssigner
 				final String suffix = group.suffix( string );
 				for ( final char c : suffix.toLowerCase().toCharArray() )
 				{
+					if ( c < 'a' || c > 'z' )
+						continue;
 					final int keyCode = KeyEvent.getExtendedKeyCodeForChar( c );
 					if ( !mnemonics.contains( Integer.valueOf( keyCode ) ) )
 					{
