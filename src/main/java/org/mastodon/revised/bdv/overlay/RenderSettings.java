@@ -1,5 +1,6 @@
 package org.mastodon.revised.bdv.overlay;
 
+import java.awt.Color;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Objects;
@@ -29,6 +30,9 @@ public class RenderSettings implements Style< RenderSettings >
 	public static final boolean DEFAULT_DRAW_SPOT_LABELS = false;
 	public static final boolean DEFAULT_IS_FOCUS_LIMIT_RELATIVE = true;
 	public static final double DEFAULT_ELLIPSOID_FADE_DEPTH = 0.2;
+	public static final int DEFAULT_COLOR_SPOT_AND_PRESENT = Color.GREEN.getRGB();
+	public static final int DEFAULT_COLOR_PAST = Color.RED.getRGB();
+	public static final int DEFAULT_COLOR_FUTURE = Color.BLUE.getRGB();
 
 	public interface UpdateListener
 	{
@@ -84,6 +88,9 @@ public class RenderSettings implements Style< RenderSettings >
 		isFocusLimitViewRelative = settings.isFocusLimitViewRelative;
 		ellipsoidFadeDepth = settings.ellipsoidFadeDepth;
 		pointFadeDepth = settings.pointFadeDepth;
+		colorSpot = settings.colorSpot;
+		colorPast = settings.colorPast;
+		colorFuture = settings.colorFuture;
 		notifyListeners();
 	}
 
@@ -219,6 +226,21 @@ public class RenderSettings implements Style< RenderSettings >
 	 * they are fully opaque, then their alpha value goes to 0 linearly.
 	 */
 	private double pointFadeDepth;
+
+	/**
+	 * The color used to paint spots and links in the current time-point.
+	 */
+	private int colorSpot;
+
+	/**
+	 * The color used to paint links in the past time-points.
+	 */
+	private int colorPast;
+
+	/**
+	 * The color used to paint links in the future time-points.
+	 */
+	private int colorFuture;
 
 	/**
 	 * Returns the name of this {@link RenderSettings}.
@@ -738,6 +760,84 @@ public class RenderSettings implements Style< RenderSettings >
 		}
 	}
 
+	/**
+	 * Returns the color used to paint spots and links in the current
+	 * time-point.
+	 * 
+	 * @return the color used to paint spots and links in the current
+	 *         time-point.
+	 */
+	public int getColorSpot()
+	{
+		return colorSpot;
+	}
+
+	/**
+	 * Sets the color used to paint spots and links in the current time-point.
+	 * 
+	 * @param colorSpot
+	 *            the color used to paint spots and links in the current
+	 *            time-point.
+	 */
+	public synchronized void setColorSpot( final int colorSpot )
+	{
+		if ( this.colorSpot != colorSpot )
+		{
+			this.colorSpot = colorSpot;
+			notifyListeners();
+		}
+	}
+
+	/**
+	 * Returns the color used to paint links in the past time-points.
+	 * 
+	 * @return the color used to paint links in the past time-points.
+	 */
+	public int getColorPast()
+	{
+		return colorPast;
+	}
+
+	/**
+	 * Sets the color used to paint links in the past time-points.
+	 * 
+	 * @param colorPast
+	 *            the color used to paint links in the past time-points.
+	 */
+	public synchronized void setColorPast( final int colorPast )
+	{
+		if ( this.colorPast != colorPast )
+		{
+			this.colorPast = colorPast;
+			notifyListeners();
+		}
+	}
+
+	/**
+	 * Returns the color used to paint links in the future time-points.
+	 * 
+	 * @return the color used to paint links in the future time-points.
+	 */
+	public int getColorFuture()
+	{
+		return colorFuture;
+	}
+
+	/**
+	 * Sets the color used to paint links in the future time-points.
+	 * 
+	 * @param colorFuture
+	 *            the color used to paint links in the future time-points.
+	 */
+	public synchronized void setColorFuture( final int colorFuture )
+	{
+		if ( this.colorFuture != colorFuture )
+		{
+			this.colorFuture = colorFuture;
+			notifyListeners();
+		}
+	}
+
 	/*
 	 * DEFAULTS RENDER SETTINGS LIBRARY.
 	 */
@@ -761,6 +861,9 @@ public class RenderSettings implements Style< RenderSettings >
 		df.focusLimit = DEFAULT_LIMIT_FOCUS_RANGE;
 		df.isFocusLimitViewRelative = DEFAULT_IS_FOCUS_LIMIT_RELATIVE;
 		df.ellipsoidFadeDepth = DEFAULT_ELLIPSOID_FADE_DEPTH;
+		df.colorSpot = DEFAULT_COLOR_SPOT_AND_PRESENT;
+		df.colorPast = DEFAULT_COLOR_PAST;
+		df.colorFuture = DEFAULT_COLOR_FUTURE;
 		df.name = "Default";
 	}
 

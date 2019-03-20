@@ -1,12 +1,15 @@
 package org.mastodon.revised.bdv.overlay.ui;
 
 import static org.mastodon.app.ui.settings.StyleElements.booleanElement;
+import static org.mastodon.app.ui.settings.StyleElements.colorElement;
 import static org.mastodon.app.ui.settings.StyleElements.doubleElement;
 import static org.mastodon.app.ui.settings.StyleElements.intElement;
 import static org.mastodon.app.ui.settings.StyleElements.linkedCheckBox;
+import static org.mastodon.app.ui.settings.StyleElements.linkedColorButton;
 import static org.mastodon.app.ui.settings.StyleElements.linkedSliderPanel;
 import static org.mastodon.app.ui.settings.StyleElements.separator;
 
+import java.awt.Color;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
@@ -14,13 +17,16 @@ import java.util.Arrays;
 import java.util.List;
 
 import javax.swing.Box;
+import javax.swing.JButton;
 import javax.swing.JCheckBox;
+import javax.swing.JColorChooser;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 
 import org.mastodon.app.ui.settings.StyleElements.BooleanElement;
+import org.mastodon.app.ui.settings.StyleElements.ColorElement;
 import org.mastodon.app.ui.settings.StyleElements.DoubleElement;
 import org.mastodon.app.ui.settings.StyleElements.IntElement;
 import org.mastodon.app.ui.settings.StyleElements.Separator;
@@ -34,12 +40,14 @@ public class RenderSettingsPanel extends JPanel
 
 	private static final int tfCols = 4;
 
+	private final JColorChooser colorChooser;
+
 	private final List< StyleElement > styleElements;
 
 	public RenderSettingsPanel( final RenderSettings style )
 	{
 		super( new GridBagLayout() );
-
+		colorChooser = new JColorChooser();
 		styleElements = styleElements( style );
 
 		style.updateListeners().add( () -> {
@@ -91,6 +99,16 @@ public class RenderSettingsPanel extends JPanel
 								new JLabel( element.getLabel() ) );
 					}
 
+					@Override
+					public void visit( final ColorElement element )
+					{
+						final JButton button = linkedColorButton( element, null, colorChooser );
+						button.setHorizontalAlignment( SwingConstants.RIGHT );
+						addToLayout(
+								button,
+								new JLabel( element.getLabel() ) );
+					}
+
 					private void addToLayout( final JComponent comp1, final JComponent comp2 )
 					{
 						c.anchor = GridBagConstraints.LINE_END;
@@ -110,6 +128,21 @@ public class RenderSettingsPanel extends JPanel
 	{
 		return Arrays.asList(
 				booleanElement( "anti-aliasing", style::getUseAntialiasing, style::setUseAntialiasing ),
+
+				separator(),
+
+				colorElement(
+						"spot color",
+						() -> new Color( style.getColorSpot(), true ),
+						( c ) -> style.setColorSpot( c.getRGB() ) ),
+				colorElement(
+						"links backward in time",
+						() -> new Color( style.getColorPast(), true ),
+						( c ) -> style.setColorPast( c.getRGB() ) ),
+				colorElement(
+						"links ahead in time",
+						() -> new Color( style.getColorFuture(), true ),
+						( c ) -> style.setColorFuture( c.getRGB() ) ),
 
 				separator(),
 

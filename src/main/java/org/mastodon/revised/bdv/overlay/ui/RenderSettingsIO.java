@@ -167,6 +167,10 @@ public class RenderSettingsIO
 			mapping.put( "focusLimitViewRelative", s.getFocusLimitViewRelative() );
 			mapping.put( "ellipsoidFadeDepth", s.getEllipsoidFadeDepth() );
 			mapping.put( "pointFadeDepth", s.getPointFadeDepth() );
+			mapping.put( "colorSpot", s.getColorSpot() );
+			mapping.put( "colorPast", s.getColorPast() );
+			mapping.put( "colorFuture", s.getColorFuture() );
+			
 
 			final Node node = representMapping( getTag(), mapping, getDefaultFlowStyle() );
 			return node;
@@ -207,6 +211,9 @@ public class RenderSettingsIO
 				s.setFocusLimitViewRelative( ( boolean ) mapping.get( "focusLimitViewRelative" ) );
 				s.setEllipsoidFadeDepth( ( double ) mapping.get( "ellipsoidFadeDepth" ) );
 				s.setPointFadeDepth( ( double ) mapping.get( "pointFadeDepth" ) );
+				s.setColorSpot( ( int ) mapping.get( "colorSpot" ) );
+				s.setColorPast( ( int ) mapping.get( "colorPast" ) );
+				s.setColorFuture( ( int ) mapping.get( "colorFuture" ) );
 
 				return s;
 			}
