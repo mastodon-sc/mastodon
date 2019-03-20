@@ -210,7 +210,17 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 	 * @param color the color assigned to the object when using a coloring scheme.
 	 * @return vertex/edge color suitable for display in a BDV.
 	 */
-	private static Color getColor( final double sd, final double td, final double sdFade, final double tdFade, final boolean isSelected, final boolean isHighlighted, final int color )
+	private static Color getColor(
+			final double sd,
+			final double td,
+			final double sdFade,
+			final double tdFade,
+			final boolean isSelected,
+			final boolean isHighlighted,
+			final int colorSpot,
+			final int colorPast,
+			final int colorFuture,
+			final int color )
 	{
 		/*
 		 * |sf| = {                  0  for  |sd| <= sdFade,
@@ -220,33 +230,46 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 		 */
 		final double sf;
 		if ( sd > 0 )
-		{
 			sf = Math.max( 0, ( sd - sdFade ) / ( 1 - sdFade ) );
-		}
 		else
-		{
 			sf = -Math.max( 0, ( -sd - sdFade ) / ( 1 - sdFade ) );
-		}
 
 		final double tf;
+		final int colorTo;
 		if ( td > 0 )
 		{
 			tf = Math.max( 0, ( td - tdFade ) / ( 1 - tdFade ) );
+			colorTo = isSelected
+					? complementaryColor( colorFuture )
+					: colorFuture;
 		}
 		else
 		{
 			tf = -Math.max( 0, ( -td - tdFade ) / ( 1 - tdFade ) );
+			colorTo = isSelected
+					? complementaryColor( colorPast )
+					: colorPast;
 		}
+		final int colorFrom = isSelected
+				? complementaryColor( colorSpot )
+				: colorSpot;
 
 		if ( color == 0 )
 		{
-			final double i1 = 2 * Math.abs( td );
-			final double i2 = 1 - 2 * Math.abs( td );
-			final double r = isSelected ? i2 : i1;
-			final double g = isSelected ? i1 : i2;
-			final double b = 0.1;
+			// No coloring. Color are set by the RenderSettings.
+			final int r0 = ( colorFrom >> 16 ) & 0xff;
+			final int g0 = ( colorFrom >> 8 ) & 0xff;
+			final int b0 = ( colorFrom ) & 0xff;
+			final int r1 = ( colorTo >> 16 ) & 0xff;
+			final int g1 = ( colorTo >> 8 ) & 0xff;
+			final int b1 = ( colorTo ) & 0xff;
+			final double r = ( Math.abs( td ) * ( r1 - r0 ) + r0 ) / 255.;
+			final double g = ( Math.abs( td ) * ( g1 - g0 ) + g0 ) / 255.;
+			final double b = ( Math.abs( td ) * ( b1 - b0 ) + b0 ) / 255.;
 			final double a = Math.max(
-					isHighlighted ? 0.8 : ( isSelected ? 0.6 : 0.4 ),
+					isHighlighted
+							? 0.8
+							: ( isSelected ? 0.6 : 0.4 ),
 					( 1 + tf ) * ( 1 - Math.abs( sf ) ) );
 			return new Color( truncRGBA( r, g, b, a ), true );
 		}
@@ -265,10 +288,17 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 			final double g = ( 1 + Math.abs( td ) ) * g0 / 255;
 			final double b = ( 1 + Math.abs( td ) ) * b0 / 255;
 			final double a = Math.max(
-					isHighlighted ? 0.8 : ( isSelected ? 0.6 : 0.4 ),
+					isHighlighted
+							? 0.8
+							: ( isSelected ? 0.6 : 0.4 ),
 					a0 / 255f * ( 1 + tf ) * ( 1 - Math.abs( sf ) ) );
 			return new Color( truncRGBA( r, g, b, a ), true );
 		}
+	}
+
+	private static final int complementaryColor( final int color )
+	{
+		return 0xff000000 | ~color;
 	}
 
 	/**
@@ -495,6 +525,9 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 		final boolean drawPointsMaybe = drawPointsMaybe();
 		final boolean useGradient = settings.getUseGradient();
 		final boolean drawArrowHeads = settings.getDrawArrowHeads();
+		final int colorSpot = settings.getColorSpot();
+		final int colorPast = settings.getColorPast();
+		final int colorFuture = settings.getColorFuture();
 
 		graph.getLock().readLock().lock();
 		index.readLock().lock();
@@ -510,10 +543,30 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 					edge.getSource( source );
 					edge.getTarget( target );
 					final int edgeColor = coloring.color( edge, source, target );
-					final Color c1 = getColor( sd1, td1, sliceDistanceFade, timepointDistanceFade, selection.isSelected( edge ), isHighlighted, edgeColor );
+					final Color c1 = getColor(
+							sd1,
+							td1,
+							sliceDistanceFade,
+							timepointDistanceFade,
+							selection.isSelected( edge ),
+							isHighlighted,
+							colorSpot,
+							colorPast,
+							colorFuture,
+							edgeColor );
 					if ( useGradient )
 					{
-						final Color c0 = getColor( sd0, td0, sliceDistanceFade, timepointDistanceFade, selection.isSelected( edge ), isHighlighted, edgeColor );
+						final Color c0 = getColor(
+								sd0,
+								td0,
+								sliceDistanceFade,
+								timepointDistanceFade,
+								selection.isSelected( edge ),
+								isHighlighted,
+								colorSpot,
+								colorPast,
+								colorFuture,
+								edgeColor );
 						graphics.setPaint( new GradientPaint( x0, y0, c0, x1, y1, c1 ) );
 					}
 					else
@@ -581,7 +634,17 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 						{
 							final Ellipse ellipse = screenVertexMath.getIntersectEllipse();
 
-							graphics.setColor( getColor( 0, 0, ellipsoidFadeDepth, timepointDistanceFade, selection.isSelected( vertex ), isHighlighted, color ) );
+							graphics.setColor( getColor(
+									0,
+									0,
+									ellipsoidFadeDepth,
+									timepointDistanceFade,
+									selection.isSelected( vertex ),
+									isHighlighted,
+									colorSpot,
+									colorPast,
+									colorFuture,
+									color ) );
 							if ( isHighlighted )
 								graphics.setStroke( highlightedVertexStroke );
 							else if ( isFocused )
@@ -601,7 +664,17 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 						{
 							final Ellipse ellipse = screenVertexMath.getProjectEllipse();
 
-							graphics.setColor( getColor( sd, 0, ellipsoidFadeDepth, timepointDistanceFade, selection.isSelected( vertex ), isHighlighted, color ) );
+							graphics.setColor( getColor(
+									sd,
+									0,
+									ellipsoidFadeDepth,
+									timepointDistanceFade,
+									selection.isSelected( vertex ),
+									isHighlighted,
+									colorSpot,
+									colorPast,
+									colorFuture,
+									color ) );
 							if ( isHighlighted )
 								graphics.setStroke( highlightedVertexStroke );
 							else if ( isFocused )
@@ -618,7 +691,17 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 
 						if ( drawPointsAlways || ( drawPointsMaybe && !screenVertexMath.intersectsViewPlane() ) )
 						{
-							graphics.setColor( getColor( sd, 0, pointFadeDepth, timepointDistanceFade, selection.isSelected( vertex ), isHighlighted, color ) );
+							graphics.setColor( getColor(
+									sd,
+									0,
+									pointFadeDepth,
+									timepointDistanceFade,
+									selection.isSelected( vertex ),
+									isHighlighted,
+									colorSpot,
+									colorPast,
+									colorFuture,
+									color ) );
 							double radius = pointRadius;
 							if ( isHighlighted || isFocused )
 								radius *= 2;
