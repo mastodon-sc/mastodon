@@ -10,6 +10,7 @@ import static org.mastodon.app.ui.settings.StyleElements.linkedSliderPanel;
 import static org.mastodon.app.ui.settings.StyleElements.separator;
 
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
@@ -34,11 +35,16 @@ import org.mastodon.app.ui.settings.StyleElements.StyleElement;
 import org.mastodon.app.ui.settings.StyleElements.StyleElementVisitor;
 import org.mastodon.views.bdv.overlay.RenderSettings;
 
+import bdv.tools.brightness.SliderPanel;
+import bdv.tools.brightness.SliderPanelDouble;
+
 public class RenderSettingsPanel extends JPanel
 {
 	private static final long serialVersionUID = 1L;
 
 	private static final int tfCols = 4;
+
+	private static final Dimension SLIDER_PREFERRED_DIM = new Dimension( 50, 30 );
 
 	private final JColorChooser colorChooser;
 
@@ -86,16 +92,20 @@ public class RenderSettingsPanel extends JPanel
 					@Override
 					public void visit( final DoubleElement element )
 					{
+						final SliderPanelDouble slider = linkedSliderPanel( element, tfCols );
+						slider.setPreferredSize( SLIDER_PREFERRED_DIM );
 						addToLayout(
-								linkedSliderPanel( element, tfCols ),
+								slider,
 								new JLabel( element.getLabel() ) );
 					}
 
 					@Override
 					public void visit( final IntElement element )
 					{
+						final SliderPanel slider = linkedSliderPanel( element, tfCols );
+						slider.setPreferredSize( SLIDER_PREFERRED_DIM );
 						addToLayout(
-								linkedSliderPanel( element, tfCols ),
+								slider,
 								new JLabel( element.getLabel() ) );
 					}
 
