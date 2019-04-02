@@ -41,7 +41,9 @@ public class ColorMap
 {
 	private static final String COLORMAP_FILE = System.getProperty( "user.home" ) + "/.mastodon/colormaps.yaml";
 
-	private static final String LUT_FOLDER = System.getProperty( "user.home" ) + "/.mastodon/luts/";
+	private static final String USER_LUT_FOLDER = System.getProperty( "user.home" ) + "/.mastodon/luts/";
+
+	private static final String BUILTIN_LUT_FOLDER = ColorMap.class.getResource( "luts/" ).getFile();
 
 	final int[] colors;
 
@@ -342,7 +344,9 @@ public class ColorMap
 
 	private static List< ColorMap > loadLUTs()
 	{
-		return loadLUTs( LUT_FOLDER );
+		final List< ColorMap > luts = loadLUTs( USER_LUT_FOLDER );
+		luts.addAll( loadLUTs( BUILTIN_LUT_FOLDER ) );
+		return luts;
 	}
 
 	private static List< ColorMap > loadLUTs( final String folder )
