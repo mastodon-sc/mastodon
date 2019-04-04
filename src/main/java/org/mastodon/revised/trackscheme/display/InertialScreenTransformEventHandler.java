@@ -3,9 +3,6 @@ package org.mastodon.revised.trackscheme.display;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import net.imglib2.ui.TransformEventHandler;
-import net.imglib2.ui.TransformListener;
-
 import org.mastodon.revised.mamut.KeyConfigContexts;
 import org.mastodon.revised.trackscheme.LineageTreeLayout;
 import org.mastodon.revised.trackscheme.LineageTreeLayout.LayoutListener;
@@ -21,6 +18,9 @@ import org.scijava.ui.behaviour.DragBehaviour;
 import org.scijava.ui.behaviour.ScrollBehaviour;
 import org.scijava.ui.behaviour.util.AbstractNamedBehaviour;
 import org.scijava.ui.behaviour.util.Behaviours;
+
+import net.imglib2.ui.TransformEventHandler;
+import net.imglib2.ui.TransformListener;
 
 public class InertialScreenTransformEventHandler
 	implements
@@ -108,8 +108,8 @@ public class InertialScreenTransformEventHandler
 	private static final double borderRatioY = 0;
 	private static final double maxSizeFactorX = 1;
 	private static final double maxSizeFactorY = 1;
-	private static final double boundXLayoutBorder = 1;
-	private static final double boundYLayoutBorder = 1;
+	static final double boundXLayoutBorder = 0.5;
+	static final double boundYLayoutBorder = 0.5;
 
 	// ...still something else...
 //	private static final double borderRatioX = 0.1;
