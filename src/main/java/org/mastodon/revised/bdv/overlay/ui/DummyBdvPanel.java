@@ -5,8 +5,8 @@ import java.awt.Dimension;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.image.BufferedImage;
-import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 
 import javax.imageio.ImageIO;
 import javax.swing.JPanel;
@@ -27,7 +27,6 @@ import org.mastodon.model.DefaultHighlightModel;
 import org.mastodon.model.DefaultSelectionModel;
 import org.mastodon.model.FocusModel;
 import org.mastodon.model.SelectionModel;
-import org.mastodon.project.MamutProject;
 import org.mastodon.project.MamutProject.ProjectReader;
 import org.mastodon.revised.bdv.overlay.OverlayGraphRenderer;
 import org.mastodon.revised.bdv.overlay.RenderSettings;
@@ -52,7 +51,7 @@ import net.imglib2.ui.InteractiveDisplayCanvasComponent;
 /**
  * Panel that displays a dummy model, non-interactive, for the single purpose of
  * showing how a {@link RenderSettings} is displayed on real data.
- * 
+ *
  * @author Jean-Yves Tinevez
  */
 public class DummyBdvPanel extends JPanel
@@ -74,11 +73,10 @@ public class DummyBdvPanel extends JPanel
 		 * Load model.
 		 */
 
-		final File modelFile = new File( DummyBdvPanel.class.getResource( "dummy" ).getFile() );
 		final Model model = new Model();
 		try
 		{
-			final ProjectReader reader = new MamutProject( modelFile ).openForReading();
+			final ProjectReader reader = new MyProjectReader( "dummy" );
 			model.loadRaw( reader );
 		}
 		catch ( final IOException e1 )
@@ -227,8 +225,8 @@ public class DummyBdvPanel extends JPanel
 		final BufferedImageFixAspectRatioOverlayRenderer imgRenderer = new BufferedImageFixAspectRatioOverlayRenderer();
 		try
 		{
-			final File picFile = new File( DummyBdvPanel.class.getResource( "CaptureTP24.PNG" ).getFile() );
-			final BufferedImage pic = ImageIO.read( picFile );
+			final InputStream picStream = DummyBdvPanel.class.getResourceAsStream( "CaptureTP24.PNG" );
+			final BufferedImage pic = ImageIO.read( picStream );
 			imgRenderer.setBufferedImage( pic );
 			final int lwidth = pic.getWidth();
 			final int lheight = pic.getHeight();
@@ -240,7 +238,6 @@ public class DummyBdvPanel extends JPanel
 		}
 		final int width = imgRenderer.getOriginalSize().width;
 		final int height = imgRenderer.getOriginalSize().height;
-
 
 		/*
 		 * Picture renderer.
@@ -309,4 +306,45 @@ public class DummyBdvPanel extends JPanel
 		renderer.setRenderSettings( settings );
 		repaint();
 	}
+
+
+	private static class MyProjectReader implements ProjectReader
+	{
+
+		private static final String PROJECT_FILE_NAME = "/project.xml";
+
+		private static final String RAW_MODEL_FILE_NAME = "/model.raw";
+
+		private static final String RAW_TAGS_FILE_NAME = "/tags.raw";
+
+		private final String resourceName;
+
+		public MyProjectReader( final String resourceName )
+		{
+			this.resourceName = resourceName;
+		}
+
+		@Override
+		public void close() throws IOException
+		{}
+
+		@Override
+		public InputStream getProjectXmlInputStream() throws IOException
+		{
+			return DummyBdvPanel.class.getResourceAsStream( resourceName + PROJECT_FILE_NAME );
+		}
+
+		@Override
+		public InputStream getRawModelInputStream() throws IOException
+		{
+			return DummyBdvPanel.class.getResourceAsStream( resourceName + RAW_MODEL_FILE_NAME );
+		}
+
+		@Override
+		public InputStream getRawTagsInputStream() throws IOException
+		{
+			return DummyBdvPanel.class.getResourceAsStream( resourceName + RAW_TAGS_FILE_NAME );
+		}
+	}
+
 }
