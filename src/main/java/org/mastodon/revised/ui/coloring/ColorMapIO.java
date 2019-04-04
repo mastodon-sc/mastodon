@@ -3,10 +3,8 @@ package org.mastodon.revised.ui.coloring;
 import static org.yaml.snakeyaml.DumperOptions.FlowStyle.FLOW;
 
 import java.awt.Color;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
@@ -219,13 +217,12 @@ public class ColorMapIO
 		return yaml;
 	}
 
-	static ColorMap importLUT( final String filename )
+	static ColorMap importLUT( final Path path ) throws IOException
 	{
-		final Path path = Paths.get( filename );
+		String name = path.getFileName().toString();
+		name = name.substring( 0, name.indexOf( '.' ) ).toLowerCase();
 		try (final Scanner scanner = new Scanner( path ))
 		{
-			String name = path.getFileName().toString();
-			name = name.substring( 0, name.indexOf( '.' ) ).toLowerCase();
 
 			final IntArray intColors = new IntArray();
 			final IntArray intAlphas = new IntArray();
@@ -252,19 +249,9 @@ public class ColorMapIO
 			for ( int i = 0; i < alphas.length; i++ )
 			{
 				alphas[ i ] = ( double ) intAlphas.get( i ) / ( nLines.get() - 1 );
-				colors[ i] = intColors.getValue( i );
+				colors[ i ] = intColors.getValue( i );
 			}
 			return new ColorMap( name, colors, alphas, naColor );
-		}
-		catch ( final FileNotFoundException e )
-		{
-			e.printStackTrace();
-			return null;
-		}
-		catch ( final IOException e )
-		{
-			e.printStackTrace();
-			return null;
 		}
 	}
 }

@@ -6,14 +6,14 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.nio.file.DirectoryStream;
+import java.nio.file.FileSystem;
 import java.nio.file.FileSystems;
-import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.PathMatcher;
 import java.nio.file.Paths;
-import java.nio.file.SimpleFileVisitor;
-import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -39,11 +39,24 @@ import org.yaml.snakeyaml.Yaml;
  */
 public class ColorMap
 {
+
 	private static final String COLORMAP_FILE = System.getProperty( "user.home" ) + "/.mastodon/colormaps.yaml";
 
-	private static final String USER_LUT_FOLDER = System.getProperty( "user.home" ) + "/.mastodon/luts/";
-
-	private static final String BUILTIN_LUT_FOLDER = ColorMap.class.getResource( "luts/" ).getFile();
+	private static final List< URI > LUT_FOLDERS = new ArrayList<>();
+	static
+	{
+		try
+		{
+			final URI USER_LUT_FOLDER = new URI( "file:///" + System.getProperty( "user.home" ) + "/.mastodon/luts/" );
+			LUT_FOLDERS.add( USER_LUT_FOLDER );
+			final URI BUILTIN_LUT_FOLDER = ColorMap.class.getResource( "luts/" ).toURI();
+			LUT_FOLDERS.add( BUILTIN_LUT_FOLDER );
+		}
+		catch ( final URISyntaxException e )
+		{
+			e.printStackTrace();
+		}
+	}
 
 	final int[] colors;
 
@@ -344,49 +357,56 @@ public class ColorMap
 
 	private static List< ColorMap > loadLUTs()
 	{
-		final List< ColorMap > luts = loadLUTs( USER_LUT_FOLDER );
-		luts.addAll( loadLUTs( BUILTIN_LUT_FOLDER ) );
+		final List< ColorMap > luts = new ArrayList<>();
+		for ( final URI lutFolder : LUT_FOLDERS )
+		{
+			try
+			{
+				luts.addAll( loadLUTs( lutFolder ) );
+			}
+			catch ( final IOException e )
+			{
+				e.printStackTrace();
+			}
+		}
 		return luts;
 	}
 
-	private static List< ColorMap > loadLUTs( final String folder )
+	private static List< ColorMap > loadLUTs( final URI folder ) throws IOException
+	{
+		if ( folder.getScheme().equals( "jar" ) )
+		{
+			// Try to read from within the jar file.
+			final String[] array = folder.toString().split( "!" );
+			try (FileSystem fileSystem = FileSystems.newFileSystem( URI.create( array[ 0 ] ), Collections.emptyMap() ))
+			{
+				final Path folderPath = fileSystem.getPath( array[ 1 ] );
+				return loadLUTs( folderPath );
+			}
+		}
+		else
+		{
+			// Read from a standard folder.
+			final Path folderPath = Paths.get( folder );
+			return loadLUTs( folderPath );
+		}
+	}
+
+	private static List< ColorMap > loadLUTs( final Path folderPath ) throws IOException
 	{
 		final List< ColorMap > cms = new ArrayList<>();
-
-		final String glob = "glob:**/*.lut";
-		final PathMatcher pathMatcher = FileSystems.getDefault().getPathMatcher( glob );
-
-		try
+		final String glob = "*.lut";
+		try (final DirectoryStream< Path > folderStream = Files.newDirectoryStream( folderPath, glob ))
 		{
-			Files.walkFileTree( Paths.get( folder ), new SimpleFileVisitor< Path >()
+			for ( final Path path : folderStream )
 			{
 
-				@Override
-				public FileVisitResult visitFile( final Path path,
-						final BasicFileAttributes attrs ) throws IOException
-				{
-					if ( pathMatcher.matches( path ) )
-					{
-						final ColorMap cm = ColorMapIO.importLUT( path.toFile().getAbsolutePath() );
-						if ( null == cm )
-							System.err.println( "Could not read LUT file: " + path + ". Skipping." );
-						cms.add( cm );
-					}
-					return FileVisitResult.CONTINUE;
-				}
-
-				@Override
-				public FileVisitResult visitFileFailed( final Path file, final IOException exc ) throws IOException
-				{
-					return FileVisitResult.CONTINUE;
-				}
-			} );
+				final ColorMap cm = ColorMapIO.importLUT( path );
+				if ( null == cm )
+					System.err.println( "Could not read LUT file: " + path + ". Skipping." );
+				cms.add( cm );
+			}
 		}
-		catch ( final IOException e )
-		{
-			e.printStackTrace();
-		}
-
 		return cms;
 	}
 }
