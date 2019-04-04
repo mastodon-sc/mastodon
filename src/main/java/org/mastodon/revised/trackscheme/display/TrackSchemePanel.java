@@ -1,5 +1,8 @@
 package org.mastodon.revised.trackscheme.display;
 
+import static org.mastodon.revised.trackscheme.display.InertialScreenTransformEventHandler.boundXLayoutBorder;
+import static org.mastodon.revised.trackscheme.display.InertialScreenTransformEventHandler.boundYLayoutBorder;
+
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.Graphics;
@@ -401,13 +404,13 @@ public class TrackSchemePanel extends JPanel implements
 			xScrollScale = 10000.0 / ( layoutMaxX - layoutMinX + 2 );
 			final int xval = ( int ) ( xScrollScale * t.getMinX() );
 			final int xext = ( int ) ( xScrollScale * ( t.getMaxX() - t.getMinX() ) );
-			final int xmin = ( int ) ( xScrollScale * ( layoutMinX - 1 ) );
-			final int xmax = ( int ) ( xScrollScale * ( layoutMaxX + 1 ) );
+			final int xmin = ( int ) ( xScrollScale * ( layoutMinX - boundXLayoutBorder ) );
+			final int xmax = ( int ) ( xScrollScale * ( layoutMaxX + boundXLayoutBorder ) );
 			yScrollScale = 10000.0 / ( layoutMaxY - layoutMinY + 2 );
 			final int yval = ( int ) ( yScrollScale * t.getMinY() );
 			final int yext = ( int ) ( yScrollScale * ( t.getMaxY() - t.getMinY() ) );
-			final int ymin = ( int ) ( yScrollScale * ( layoutMinY - 1 ) );
-			final int ymax = ( int ) ( yScrollScale * ( layoutMaxY + 1 ) );
+			final int ymin = ( int ) ( yScrollScale * ( layoutMinY - boundYLayoutBorder ) );
+			final int ymax = ( int ) ( yScrollScale * ( layoutMaxY + boundYLayoutBorder ) );
 			ignoreScrollBarChanges = true;
 			xScrollBar.setValues( xval, xext, xmin, xmax );
 			yScrollBar.setValues( yval, yext, ymin, ymax );
