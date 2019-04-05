@@ -11,36 +11,40 @@ public class ConstrainScreenTransform
 	 * bounds of the layouted graph in TrackScheme layout coordinates.
 	 * <p>
 	 * Makes sure that the {@code transform} does not move too far outside the
-	 * visible screen area minus {@code borderRatio}, in the following way: If
-	 * the transformed {@code (minBound, maxBound)} interval is larger than the
-	 * allowed area, the {@code minBoundX} may be transformed only such that
-	 * {@code x <= width * borderRatioX}, and analogously for the other bounds.
-	 * If the transformed {@code (minBound, maxBound)} interval is smaller than
-	 * the allowed area, the {@code minBoundX} may be transformed only such that
-	 * {@code x >= width * borderRatioX}, and analogously for the other bounds.
+	 * visible screen area. If necessary, the {@code transform} is shifted such
+	 * that {@code minBoundX} (in layout coordinates) cannot be mapped to screen
+	 * coordinates higher than {@code border}, where border is
+	 * {@code borderRatioX * screenWidth + borderAbsX}. Similar for the other
+	 * borders.
 	 *
 	 * @param transform
 	 *            the transform to modify.
 	 * @param minSizeX
-	 *            the X min size.
+	 *            the minimal allowed width (in layout coordinates).
 	 * @param minSizeY
-	 *            the Y min size.
+	 *            the minimal allowed height (in layout coordinates).
 	 * @param maxSizeX
-	 *            the X max size.
+	 *            the maximal allowed width (in layout coordinates).
 	 * @param maxSizeY
-	 *            the Y max size.
+	 *            the maximal allowed height (in layout coordinates).
 	 * @param minBoundX
-	 *            the X min bound.
+	 *            the X min bound of the layouted graph (in layout coordinates).
 	 * @param maxBoundX
-	 *            the X max bound.
+	 *            the X max bound of the layouted graph (in layout coordinates).
 	 * @param minBoundY
-	 *            the Y min bound.
+	 *            the Y min bound of the layouted graph (in layout coordinates), ie, min timepoint.
 	 * @param maxBoundY
-	 *            the Y max bound.
+	 *            the Y max bound of the layouted graph (in layout coordinates), ie, max timepoint.
 	 * @param borderRatioX
-	 *            the X border ratio to limit moving out the visible screen.
+	 *            contributes to X border as ratio of visible screen.
 	 * @param borderRatioY
-	 *            the Y border ratio to limit moving out the visible screen.
+	 *            contributes to Y border as ratio of visible screen.
+	 * @param borderAbsX
+	 *            contributes to X border (absolute value in screen
+	 *            coordinates).
+	 * @param borderAbsY
+	 *            contributes to Y border (absolute value in screen
+	 *            coordinates).
 	 */
 	public static void constrainTransform(
 			final ScreenTransform transform,
@@ -53,7 +57,9 @@ public class ConstrainScreenTransform
 			final double minBoundY,
 			final double maxBoundY,
 			final double borderRatioX,
-			final double borderRatioY )
+			final double borderRatioY,
+			final double borderAbsX,
+			final double borderAbsY )
 	{
 		double minX = transform.getMinX();
 		double maxX = transform.getMaxX();
@@ -93,8 +99,8 @@ public class ConstrainScreenTransform
 		// check out of bounds
 		final double scaleX = ( maxX - minX ) / ( screenWidth - 1 );
 		final double scaleY = ( maxY - minY ) / ( screenHeight - 1 );
-		final double borderX = scaleX * screenWidth * borderRatioX;
-		final double borderY = scaleY * screenHeight * borderRatioY;
+		final double borderX = scaleX * ( screenWidth * borderRatioX + borderAbsX );
+		final double borderY = scaleY * ( screenHeight * borderRatioY + borderAbsY );
 		final double w = maxX - minX;
 		final double addw = Math.max( borderX, w - ( maxBoundX - minBoundX ) - borderX );
 		final double h = maxY - minY;
@@ -130,11 +136,11 @@ public class ConstrainScreenTransform
 	 * @param transform
 	 *            the transform to modify.
 	 * @param maxSizeX
-	 *            the maximal allowed width.
+	 *            the maximal allowed width (in layout coordinates).
 	 * @param minBoundX
-	 *            the X min bound.
+	 *            the X min bound of the layouted graph (in layout coordinates).
 	 * @param maxBoundX
-	 *            the X max bound.
+	 *            the X max bound of the layouted graph (in layout coordinates).
 	 * @param borderRatioX
 	 *            the X border ratio to limit moving out the visible screen.
 	 */
@@ -143,11 +149,12 @@ public class ConstrainScreenTransform
 			final double maxSizeX,
 			final double minBoundX,
 			final double maxBoundX,
-			final double borderRatioX )
+			final double borderRatioX,
+			final double borderAbsX )
 	{
 		final int screenWidth = transform.getScreenWidth();
 		final double scaleX = maxSizeX / ( screenWidth - 1 );
-		final double borderX = scaleX * screenWidth * borderRatioX;
+		final double borderX = scaleX * ( screenWidth * borderRatioX + borderAbsX );
 		final double w = maxSizeX;
 		final double addw = Math.max( borderX, w - ( maxBoundX - minBoundX ) - borderX );
 		final double minX = minBoundX - addw;
@@ -161,11 +168,11 @@ public class ConstrainScreenTransform
 	 * @param transform
 	 *            the transform to modify.
 	 * @param maxSizeY
-	 *            the maximal allowed height.
+	 *            the maximal allowed height (in layout coordinates).
 	 * @param minBoundY
-	 *            the Y min bound.
+	 *            the Y min bound of the layouted graph (in layout coordinates), ie, min timepoint.
 	 * @param maxBoundY
-	 *            the Y max bound.
+	 *            the Y max bound of the layouted graph (in layout coordinates), ie, max timepoint.
 	 * @param borderRatioY
 	 *            the Y border ratio to limit moving out the visible screen.
 	 */
@@ -174,11 +181,12 @@ public class ConstrainScreenTransform
 			final double maxSizeY,
 			final double minBoundY,
 			final double maxBoundY,
-			final double borderRatioY )
+			final double borderRatioY,
+			final double borderAbsY )
 	{
 		final int screenHeight = transform.getScreenHeight();
 		final double scaleY = maxSizeY / ( screenHeight - 1 );
-		final double borderY = scaleY * screenHeight * borderRatioY;
+		final double borderY = scaleY * ( screenHeight * borderRatioY + borderAbsY );
 		final double h = maxSizeY;
 		final double addh = Math.max( borderY, h - ( maxBoundY - minBoundY ) - borderY );
 		final double minY = minBoundY - addh;
