@@ -106,6 +106,8 @@ public class InertialScreenTransformEventHandler
 	// ...TP settings...
 	private static final double borderRatioX = 0;
 	private static final double borderRatioY = 0;
+	private static final double borderAbsX = 10;
+	private static final double borderAbsY = 10;
 	private static final double maxSizeFactorX = 1;
 	private static final double maxSizeFactorY = 1;
 	static final double boundXLayoutBorder = 0.5;
@@ -133,7 +135,7 @@ public class InertialScreenTransformEventHandler
 	 * range, respectively.
 	 *
 	 * See
-	 * {@link ConstrainScreenTransform#constrainTransform(ScreenTransform, double, double, double, double, double, double, double, double, double, double)}
+	 * {@link ConstrainScreenTransform#constrainTransform(ScreenTransform, double, double, double, double, double, double, double, double, double, double, double, double)}
 	 * for details on enforcing transform boundaries.
 	 */
 	private double boundXMin, boundXMax, boundYMin, boundYMax;
@@ -235,28 +237,34 @@ public class InertialScreenTransformEventHandler
 	@Override
 	public void setCanvasSize( final int width, final int height, final boolean updateTransform )
 	{
-		canvasWidth = width;
-		canvasHeight = height;
-		updateTransformScreenSize();
+		synchronized ( transform )
+		{
+			canvasWidth = width;
+			canvasHeight = height;
+			updateTransformScreenSize();
+		}
 	}
 
 	@Override
 	public void updateHeaderSize( final int width, final int height )
 	{
-		headerWidth = width;
-		headerHeight = height;
-		updateTransformScreenSize();
+		synchronized ( transform )
+		{
+
+			headerWidth = width;
+			headerHeight = height;
+			updateTransformScreenSize();
+		}
 	}
 
 	private void updateTransformScreenSize()
 	{
-		synchronized ( transform )
-		{
-			transform.setScreenSize(
-					Math.max( canvasWidth - headerWidth, 1 ),
-					Math.max( canvasHeight - headerHeight, 1 ) );
-			notifyListeners();
-		}
+		transform.setScreenSize(
+				Math.max( canvasWidth - headerWidth, 1 ),
+				Math.max( canvasHeight - headerHeight, 1 ) );
+		updateMaxSizeX();
+		updateMaxSizeY();
+		notifyListeners();
 	}
 
 	@Override
@@ -286,12 +294,32 @@ public class InertialScreenTransformEventHandler
 				boundXMax = c + MIN_SIBLINGS_ON_CANVAS / 2;
 			}
 
-			maxSizeX = ( boundXMax - boundXMin ) * maxSizeFactorX;
+			updateMaxSizeX();
 
 			if ( stayFullyZoomedOut )
 				zoomOutFullyX( transform );
 			constrainTransform( transform );
 			notifyListeners();
+		}
+	}
+
+	private void updateMaxSizeX()
+	{
+		synchronized ( transform )
+		{
+			final int screenWidth = transform.getScreenWidth();
+			final double border = screenWidth * borderRatioX + borderAbsX;
+			maxSizeX = ( boundXMax - boundXMin ) * maxSizeFactorX / ( 1.0 - 2.0 * border / ( screenWidth - 1 ) );
+		}
+	}
+
+	private void updateMaxSizeY()
+	{
+		synchronized ( transform )
+		{
+			final int screenHeight = transform.getScreenHeight();
+			final double border = screenHeight * borderRatioY + borderAbsY;
+			maxSizeY = ( boundYMax - boundYMin ) * maxSizeFactorY / ( 1.0 - 2.0 * border / ( screenHeight - 1 ) );
 		}
 	}
 
@@ -307,7 +335,7 @@ public class InertialScreenTransformEventHandler
 			boundYMax = c + MIN_TIMEPOINTS_ON_CANVAS / 2;
 		}
 
-		maxSizeY = ( boundYMax - boundYMin ) * maxSizeFactorY;
+		updateMaxSizeY();
 	}
 
 	/**
@@ -326,7 +354,8 @@ public class InertialScreenTransformEventHandler
 				MIN_SIBLINGS_ON_CANVAS, MIN_TIMEPOINTS_ON_CANVAS,
 				maxSizeX, maxSizeY,
 				boundXMin, boundXMax, boundYMin, boundYMax,
-				borderRatioX, borderRatioY );
+				borderRatioX, borderRatioY,
+				borderAbsX, borderAbsY );
 	}
 
 	private void zoomOutFullyX( final ScreenTransform transform )
@@ -335,7 +364,8 @@ public class InertialScreenTransformEventHandler
 				transform,
 				maxSizeX,
 				boundXMin, boundXMax,
-				borderRatioX );
+				borderRatioX,
+				borderAbsX );
 	}
 
 	private void zoomOutFullyY( final ScreenTransform transform )
@@ -344,7 +374,8 @@ public class InertialScreenTransformEventHandler
 				transform,
 				maxSizeY,
 				boundYMin, boundYMax,
-				borderRatioY );
+				borderRatioY,
+				borderAbsY );
 	}
 
 	private boolean hasMinSizeX( final ScreenTransform transform )
