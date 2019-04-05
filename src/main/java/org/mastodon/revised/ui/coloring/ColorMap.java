@@ -395,16 +395,19 @@ public class ColorMap
 	private static List< ColorMap > loadLUTs( final Path folderPath ) throws IOException
 	{
 		final List< ColorMap > cms = new ArrayList<>();
-		final String glob = "*.lut";
-		try (final DirectoryStream< Path > folderStream = Files.newDirectoryStream( folderPath, glob ))
+		if ( Files.exists( folderPath ) )
 		{
-			for ( final Path path : folderStream )
+			final String glob = "*.lut";
+			try (final DirectoryStream< Path > folderStream = Files.newDirectoryStream( folderPath, glob ))
 			{
+				for ( final Path path : folderStream )
+				{
 
-				final ColorMap cm = ColorMapIO.importLUT( path );
-				if ( null == cm )
-					System.err.println( "Could not read LUT file: " + path + ". Skipping." );
-				cms.add( cm );
+					final ColorMap cm = ColorMapIO.importLUT( path );
+					if ( null == cm )
+						System.err.println( "Could not read LUT file: " + path + ". Skipping." );
+					cms.add( cm );
+				}
 			}
 		}
 		return cms;
