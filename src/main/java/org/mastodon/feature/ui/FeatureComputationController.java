@@ -11,10 +11,12 @@ import javax.swing.SwingUtilities;
 
 import org.mastodon.feature.DefaultFeatureComputerService.FeatureComputationStatusListener;
 import org.mastodon.feature.Feature;
+import org.mastodon.feature.FeatureComputer;
 import org.mastodon.feature.FeatureComputerService;
 import org.mastodon.feature.FeatureSpec;
 import org.mastodon.graph.GraphChangeListener;
 import org.mastodon.revised.ui.util.EverythingDisablerAndReenabler;
+import org.scijava.command.CommandService;
 
 public class FeatureComputationController implements GraphChangeListener
 {
@@ -106,6 +108,7 @@ public class FeatureComputationController implements GraphChangeListener
 
 	private FeatureComputationModel createModel( final Collection< Class< ? > > targets )
 	{
+		final CommandService commandService = computerService.getContext().getService( CommandService.class );
 		final FeatureComputationModel model = new FeatureComputationModel();
 		for ( final FeatureSpec< ?, ? > spec : computerService.getFeatureSpecs() )
 		{
@@ -114,6 +117,11 @@ public class FeatureComputationController implements GraphChangeListener
 			{
 				model.put( spec.getTargetClass(), spec, computerService.getDependencies( spec ) );
 				model.setSelected( spec, true );
+
+				final FeatureComputer featureComputer = computerService.getFeatureComputerFor( spec );
+				// Check visibility.
+				final boolean visible = commandService.getCommand( featureComputer.getClass() ).isVisible();
+				model.setVisible( spec, visible );
 			}
 		}
 		return model;
