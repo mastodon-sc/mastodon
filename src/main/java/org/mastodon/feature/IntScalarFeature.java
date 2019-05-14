@@ -25,7 +25,7 @@ public class IntScalarFeature< O > implements Feature< O >
 
 	private final FeatureProjection< O > projection;
 
-	private final IntPropertyMap< O > values;
+	final IntPropertyMap< O > values;
 
 	/**
 	 * Creates a new scalar integer feature instance.
@@ -44,9 +44,31 @@ public class IntScalarFeature< O > implements Feature< O >
 	 */
 	public IntScalarFeature( final String key, final String info, final Dimension dimension, final String units, final RefPool< O > pool )
 	{
-		FeatureProjectionSpec projectionSpec = new FeatureProjectionSpec( key, dimension );
-		this.spec = new MyFeatureSpec<>( key, info, pool.getRefClass(), projectionSpec );
-		this.values = new IntPropertyMap<>( pool, Integer.MIN_VALUE );
+		this( key, info, dimension, units, new IntPropertyMap<>( pool, Integer.MIN_VALUE ), pool.getRefClass() );
+	}
+
+	/**
+	 * Only used for deserialization.
+	 *
+	 * @param key
+	 *            the feature unique key. Must be unique within the application
+	 *            scope.
+	 * @param info
+	 *            the feature info text.
+	 * @param dimension
+	 *            the dimension of the quantity of this scalar feature.
+	 * @param units
+	 *            the projection units.
+	 * @param map
+	 *            the values to store in this feature.
+	 * @param targetClass
+	 *            the target class of this feature.
+	 */
+	protected IntScalarFeature( final String key, final String info, final Dimension dimension, final String units, final IntPropertyMap< O > map, final Class< O > targetClass )
+	{
+		final FeatureProjectionSpec projectionSpec = new FeatureProjectionSpec( key, dimension );
+		this.spec = new MyFeatureSpec<>( key, info, targetClass, projectionSpec );
+		this.values = map;
 		this.projection = FeatureProjections.project( key( projectionSpec ), values, units );
 	}
 

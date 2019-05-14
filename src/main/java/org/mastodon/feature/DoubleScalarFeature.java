@@ -25,7 +25,7 @@ public class DoubleScalarFeature< O > implements Feature< O >
 
 	private final FeatureProjection< O > projection;
 
-	private final DoublePropertyMap< O > values;
+	final DoublePropertyMap< O > values;
 
 	/**
 	 * Creates a new scalar double feature instance.
@@ -44,9 +44,31 @@ public class DoubleScalarFeature< O > implements Feature< O >
 	 */
 	public DoubleScalarFeature( final String key, final String info, final Dimension dimension, final String units, final RefPool< O > pool )
 	{
+		this( key, info, dimension, units, new DoublePropertyMap<>( pool, Double.NaN ), pool.getRefClass() );
+	}
+
+	/**
+	 * Only used for deserialization.
+	 *
+	 * @param key
+	 *            the feature unique key. Must be unique within the application
+	 *            scope.
+	 * @param info
+	 *            the feature info text.
+	 * @param dimension
+	 *            the dimension of the quantity of this scalar feature.
+	 * @param units
+	 *            the projection units.
+	 * @param map
+	 *            the values to store in this feature.
+	 * @param targetClass
+	 *            the target class of this feature.
+	 */
+	protected DoubleScalarFeature( final String key, final String info, final Dimension dimension, final String units, final DoublePropertyMap< O > map, final Class< O > targetClass )
+	{
 		final FeatureProjectionSpec projectionSpec = new FeatureProjectionSpec( key, dimension );
-		this.spec = new MyFeatureSpec<>( key, info, pool.getRefClass(), projectionSpec );
-		this.values = new DoublePropertyMap<>( pool, Double.NaN );
+		this.spec = new MyFeatureSpec<>( key, info, targetClass, projectionSpec );
+		this.values = map;
 		this.projection = FeatureProjections.project( key( projectionSpec ), values, units );
 	}
 
