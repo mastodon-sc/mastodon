@@ -63,6 +63,24 @@ public class MamutFeatureComputation
 		}
 
 		@Override
+		public Context getContext()
+		{
+			return wrapped.getContext();
+		}
+
+		@Override
+		public Context context()
+		{
+			return wrapped.context();
+		}
+
+		@Override
+		public void setContext( final Context context )
+		{
+			wrapped.setContext( context );
+		}
+
+		@Override
 		public boolean isCanceled()
 		{
 			return wrapped.isCanceled();
