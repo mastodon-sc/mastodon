@@ -19,9 +19,8 @@ import org.mastodon.properties.IntPropertyMap;
  * @param <O>
  *            the feature target.
  */
-public class IntScalarFeature< O > implements Feature< O >
+public abstract class IntScalarFeature< O > implements Feature< O >
 {
-	private final FeatureSpec< IntScalarFeature< O >, O > spec;
 
 	private final FeatureProjection< O > projection;
 
@@ -33,8 +32,6 @@ public class IntScalarFeature< O > implements Feature< O >
 	 * @param key
 	 *            the feature unique key. Must be unique within the application
 	 *            scope.
-	 * @param info
-	 *            the feature info text.
 	 * @param dimension
 	 *            the dimension of the quantity of this scalar feature.
 	 * @param units
@@ -42,9 +39,9 @@ public class IntScalarFeature< O > implements Feature< O >
 	 * @param pool
 	 *            the pool of objects on which to define the feature.
 	 */
-	public IntScalarFeature( final String key, final String info, final Dimension dimension, final String units, final RefPool< O > pool )
+	public IntScalarFeature( final String key, final Dimension dimension, final String units, final RefPool< O > pool )
 	{
-		this( key, info, dimension, units, new IntPropertyMap<>( pool, Integer.MIN_VALUE ), pool.getRefClass() );
+		this( key, dimension, units, new IntPropertyMap<>( pool, Integer.MIN_VALUE ) );
 	}
 
 	/**
@@ -53,21 +50,16 @@ public class IntScalarFeature< O > implements Feature< O >
 	 * @param key
 	 *            the feature unique key. Must be unique within the application
 	 *            scope.
-	 * @param info
-	 *            the feature info text.
 	 * @param dimension
 	 *            the dimension of the quantity of this scalar feature.
 	 * @param units
 	 *            the projection units.
 	 * @param map
 	 *            the values to store in this feature.
-	 * @param targetClass
-	 *            the target class of this feature.
 	 */
-	protected IntScalarFeature( final String key, final String info, final Dimension dimension, final String units, final IntPropertyMap< O > map, final Class< O > targetClass )
+	protected IntScalarFeature( final String key, final Dimension dimension, final String units, final IntPropertyMap< O > map )
 	{
 		final FeatureProjectionSpec projectionSpec = new FeatureProjectionSpec( key, dimension );
-		this.spec = new MyFeatureSpec<>( key, info, targetClass, projectionSpec );
 		this.values = map;
 		this.projection = FeatureProjections.project( key( projectionSpec ), values, units );
 	}
@@ -82,12 +74,6 @@ public class IntScalarFeature< O > implements Feature< O >
 	public Set< FeatureProjection< O > > projections()
 	{
 		return Collections.singleton( projection );
-	}
-
-	@Override
-	public FeatureSpec< ? extends Feature< O >, O > getSpec()
-	{
-		return spec;
 	}
 
 	public boolean isSet( final O o )
@@ -108,14 +94,5 @@ public class IntScalarFeature< O > implements Feature< O >
 	public void clear( final O o )
 	{
 		values.remove( o );
-	}
-
-	private static final class MyFeatureSpec< T > extends FeatureSpec< IntScalarFeature< T >, T >
-	{
-		@SuppressWarnings( "unchecked" )
-		public MyFeatureSpec( final String key, final String info, final Class< T > targetClass, final FeatureProjectionSpec projectionSpec )
-		{
-			super( key, info, ( Class< IntScalarFeature< T > > ) ( Class< ? > ) IntScalarFeature.class, targetClass, Multiplicity.SINGLE, projectionSpec );
-		}
 	}
 }
