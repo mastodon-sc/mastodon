@@ -181,6 +181,7 @@ public class FeatureSelectionPanel
 			{
 			default:
 			case SINGLE:
+			case MULTI:
 				i0 = -1;
 				i1 = -1;
 				break;
@@ -206,7 +207,7 @@ public class FeatureSelectionPanel
 	 * Sets the selection in this panel to correspond to the specified
 	 * {@link FeatureProjectionId}. Does nothing, if currently no
 	 * {@link AvailableFeatureProjections} are specified.
-	 * 
+	 *
 	 * @param selection
 	 *            the id of the feature projection to select.
 	 */
@@ -251,9 +252,9 @@ public class FeatureSelectionPanel
 		lblArrow.setVisible( projectionCBVisible );
 		featureStrut.setVisible( projectionCBVisible );
 
-		projectionStrut.setVisible( projectionCBVisible && ( multiplicity != Multiplicity.SINGLE ) );
-		lblSource1.setVisible( projectionCBVisible && ( multiplicity != Multiplicity.SINGLE ) );
-		cbSource1.setVisible( projectionCBVisible && ( multiplicity != Multiplicity.SINGLE ) );
+		projectionStrut.setVisible( projectionCBVisible && ( multiplicity == Multiplicity.ON_SOURCES ||  multiplicity == Multiplicity.ON_SOURCE_PAIRS ) );
+		lblSource1.setVisible( projectionCBVisible && ( multiplicity == Multiplicity.ON_SOURCES ||  multiplicity == Multiplicity.ON_SOURCE_PAIRS ) );
+		cbSource1.setVisible( projectionCBVisible && ( multiplicity == Multiplicity.ON_SOURCES ||  multiplicity == Multiplicity.ON_SOURCE_PAIRS ) );
 
 		source1Strut.setVisible( projectionCBVisible && ( multiplicity == Multiplicity.ON_SOURCE_PAIRS ) );
 		lblAnd.setVisible( projectionCBVisible && ( multiplicity == Multiplicity.ON_SOURCE_PAIRS ) );
@@ -267,7 +268,7 @@ public class FeatureSelectionPanel
 
 	/**
 	 * Sets the feature specifications to display in this panel.
-	 * 
+	 *
 	 * @param afp
 	 *            the available feature projections.
 	 * @param targetType

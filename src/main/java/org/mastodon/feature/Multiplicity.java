@@ -11,6 +11,10 @@ public enum Multiplicity
 	 */
 	SINGLE,
 	/**
+	 * For features that aggregates multiple scalar projections.
+	 */
+	MULTI,
+	/**
 	 * For features that have one value per source present in the model.
 	 */
 	ON_SOURCES,

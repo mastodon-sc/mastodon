@@ -48,6 +48,23 @@ public abstract class FeatureSpec< F extends Feature< T >, T > implements SciJav
 	}
 
 	/**
+	 * Creates a {@link FeatureSpec} for a feature with the
+	 * {@link Multiplicity#MULTI} multiplicity.
+	 *
+	 * @param key
+	 * @param info
+	 * @param featureClass
+	 * @param targetClass
+	 */
+	protected FeatureSpec( final String key,
+			final String info,
+			final Class< F > featureClass,
+			final Class< T > targetClass )
+	{
+		this( key, info, featureClass, targetClass, Multiplicity.MULTI, new FeatureProjectionSpec[] {} );
+	}
+
+	/**
 	 * Get an info string describing the feature (to be displayed in UI, for
 	 * example).
 	 *
@@ -95,10 +112,17 @@ public abstract class FeatureSpec< F extends Feature< T >, T > implements SciJav
 		if ( !( o instanceof FeatureSpec ) )
 			return false;
 		final FeatureSpec< ?, ? > that = ( FeatureSpec< ?, ? > ) o;
-		return key.equals( that.key )
-				&& projectionSpecs.equals( that.projectionSpecs )
-				&& featureClass.equals( that.featureClass )
-				&& targetClass.equals( that.targetClass );
+
+		// Don't test for feature projection specs for MULTI.
+		if ( multiplicity.equals( Multiplicity.MULTI ) )
+			return key.equals( that.key )
+					&& featureClass.equals( that.featureClass )
+					&& targetClass.equals( that.targetClass );
+		else
+			return key.equals( that.key )
+					&& projectionSpecs.equals( that.projectionSpecs )
+					&& featureClass.equals( that.featureClass )
+					&& targetClass.equals( that.targetClass );
 	}
 
 	@Override

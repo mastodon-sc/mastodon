@@ -726,6 +726,7 @@ public class MamutExporter
 				switch( fspec.getMultiplicity() )
 				{
 				case SINGLE:
+				case MULTI:
 					names.add( sanitize( getProjectionExportName( fname, pname ) ) );
 					break;
 				case ON_SOURCES:
