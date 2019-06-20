@@ -90,7 +90,6 @@ public class KeymapManager extends AbstractStyleManager< KeymapManager, Keymap >
 	@Override
 	public synchronized void setDefaultStyle( final Keymap keymap )
 	{
-		System.out.println( "KeymapManager.setDefaultStyle" );
 		super.setDefaultStyle( keymap );
 		forwardDefaultKeymap.set( defaultStyle );
 	}
