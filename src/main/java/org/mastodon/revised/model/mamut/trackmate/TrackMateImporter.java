@@ -38,8 +38,8 @@ import java.text.ParseException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 import java.util.Set;
+
 import org.jdom2.Document;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
@@ -47,11 +47,11 @@ import org.jdom2.input.SAXBuilder;
 import org.mastodon.collection.IntRefMap;
 import org.mastodon.collection.RefMaps;
 import org.mastodon.feature.Dimension;
-import org.mastodon.feature.DoubleScalarFeature;
 import org.mastodon.feature.FeatureModel;
 import org.mastodon.feature.FeatureSpecsService;
-import org.mastodon.feature.IntScalarFeature;
 import org.mastodon.project.MamutProject;
+import org.mastodon.properties.DoublePropertyMap;
+import org.mastodon.properties.IntPropertyMap;
 import org.mastodon.revised.model.mamut.Link;
 import org.mastodon.revised.model.mamut.Model;
 import org.mastodon.revised.model.mamut.ModelGraph;
@@ -191,10 +191,11 @@ public class TrackMateImporter
 			final int expectedNumSources = 10;
 
 			// Spot features.
+			final TrackMateImportedSpotFeatures spotFeatures = new TrackMateImportedSpotFeatures();
 			final Element spotFeatureDeclarationEl = featureDeclarationEl.getChild( SPOT_FEATURE_DECLARATION_TAG );
 			final List< Element > spotFeatureEls = spotFeatureDeclarationEl.getChildren( FEATURE_TAG );
-			final Map< String, DoubleScalarFeature< Spot > > spotDoubleFeatureMap = new HashMap<>();
-			final Map< String, IntScalarFeature< Spot > > spotIntFeatureMap = new HashMap<>();
+			final Map< String, DoublePropertyMap< Spot > > spotDoubleFeatureMap = new HashMap<>();
+			final Map< String, IntPropertyMap< Spot > > spotIntFeatureMap = new HashMap<>();
 			final Set< String > ignoredSpotFeatureKeys = MamutExporter.getLikelyExportedFeatureProjections( featureSpecsService, expectedNumSources, Spot.class );
 			for ( final Element featureEl : spotFeatureEls )
 			{
@@ -207,17 +208,25 @@ public class TrackMateImporter
 				final String units = dimensionToUnits( featureDimension, spaceUnits, timeUnits );
 				final boolean featureIsInt = Boolean.parseBoolean( featureEl.getAttributeValue( FEATURE_ISINT_ATTRIBUTE ) );
 				if ( featureIsInt )
-					spotIntFeatureMap.put( featureKey,
-							new IntScalarFeature<>( featureKey, featureKey, dimensionToDimension( featureDimension ), units, graph.vertices().getRefPool() ) );
+				{
+					final IntPropertyMap< Spot > values = new IntPropertyMap<>( graph.vertices().getRefPool(), Integer.MIN_VALUE );
+					spotFeatures.store( featureKey, dimensionToDimension( featureDimension ), units, values );
+					spotIntFeatureMap.put( featureKey,values );
+				}
 				else
-					spotDoubleFeatureMap.put( featureKey,
-							new DoubleScalarFeature<>( featureKey, featureKey, dimensionToDimension( featureDimension ), units, graph.vertices().getRefPool() ) );
+				{
+					final DoublePropertyMap< Spot > values = new DoublePropertyMap<>( graph.vertices().getRefPool(), Double.NaN );
+					spotFeatures.store( featureKey, dimensionToDimension( featureDimension ), units, values );
+					spotDoubleFeatureMap.put( featureKey,values );
+				}
 			}
 
+			// Link features.
+			final TrackMateImportedLinkFeatures linkFeatures = new TrackMateImportedLinkFeatures();
 			final Element edgeFeatureDeclarationEl = featureDeclarationEl.getChild( EDGE_FEATURE_DECLARATION_TAG );
 			final List< Element > edgeFeatureEls = edgeFeatureDeclarationEl.getChildren( FEATURE_TAG );
-			final Map< String, DoubleScalarFeature< Link > > linkDoubleFeatureMap = new HashMap<>();
-			final Map< String, IntScalarFeature< Link > > linkIntFeatureMap = new HashMap<>();
+			final Map< String, DoublePropertyMap< Link > > linkDoubleFeatureMap = new HashMap<>();
+			final Map< String, IntPropertyMap< Link > > linkIntFeatureMap = new HashMap<>();
 			final Set< String > ignoredLinkFeatureKeys = MamutExporter.getLikelyExportedFeatureProjections( featureSpecsService, expectedNumSources, Link.class );
 			for ( final Element featureEl : edgeFeatureEls )
 			{
@@ -230,11 +239,17 @@ public class TrackMateImporter
 				final String units = dimensionToUnits( featureDimension, spaceUnits, timeUnits );
 				final boolean featureIsInt = Boolean.parseBoolean( featureEl.getAttributeValue( FEATURE_ISINT_ATTRIBUTE ) );
 				if ( featureIsInt )
-					linkIntFeatureMap.put( featureKey,
-							new IntScalarFeature<>( featureKey, featureKey, dimensionToDimension( featureDimension ), units, graph.edges().getRefPool() ) );
+				{
+					final IntPropertyMap< Link > values = new IntPropertyMap<>( graph.edges().getRefPool(), Integer.MIN_VALUE );
+					linkFeatures.store( featureKey, dimensionToDimension( featureDimension ), units, values );
+					linkIntFeatureMap.put( featureKey,values );
+				}
 				else
-					linkDoubleFeatureMap.put( featureKey,
-							new DoubleScalarFeature<>( featureKey, featureKey, dimensionToDimension( featureDimension ), units, graph.edges().getRefPool() ) );
+				{
+					final DoublePropertyMap< Link > values = new DoublePropertyMap<>( graph.edges().getRefPool(), Double.NaN );
+					linkFeatures.store( featureKey, dimensionToDimension( featureDimension ), units, values );
+					linkDoubleFeatureMap.put( featureKey,values );
+				}
 			}
 
 			/*
@@ -288,7 +303,7 @@ public class TrackMateImporter
 							if ( null != attributeValue )
 							{
 								final double val = Double.parseDouble( attributeValue );
-								final DoubleScalarFeature< Spot > feature = spotDoubleFeatureMap.get( featureKey );
+								final DoublePropertyMap< Spot > feature = spotDoubleFeatureMap.get( featureKey );
 								feature.set( spot, val );
 							}
 						}
@@ -298,7 +313,7 @@ public class TrackMateImporter
 							if ( null != attributeValue )
 							{
 								final int val = NumberFormat.getInstance().parse( attributeValue ).intValue();
-								final IntScalarFeature< Spot > feature = spotIntFeatureMap.get( featureKey );
+								final IntPropertyMap< Spot > feature = spotIntFeatureMap.get( featureKey );
 								feature.set( spot, val );
 							}
 						}
@@ -335,7 +350,7 @@ public class TrackMateImporter
 							if ( null != attributeValue )
 							{
 								final double val = Double.parseDouble( attributeValue );
-								final DoubleScalarFeature< Link > pm = linkDoubleFeatureMap.get( featureKey );
+								final DoublePropertyMap< Link > pm = linkDoubleFeatureMap.get( featureKey );
 								pm.set( link, val );
 							}
 						}
@@ -345,7 +360,7 @@ public class TrackMateImporter
 							if ( null != attributeValue )
 							{
 								final int val = NumberFormat.getInstance().parse( attributeValue ).intValue();
-								final IntScalarFeature< Link > pm = linkIntFeatureMap.get( featureKey );
+								final IntPropertyMap< Link > pm = linkIntFeatureMap.get( featureKey );
 								pm.set( link, val );
 							}
 						}
@@ -371,12 +386,9 @@ public class TrackMateImporter
 
 			final FeatureModel featureModel = model.getFeatureModel();
 			featureModel.pauseListeners();
-			spotDoubleFeatureMap.values().forEach( featureModel::declareFeature );
-			spotIntFeatureMap.values().forEach( featureModel::declareFeature );
-			linkDoubleFeatureMap.values().forEach( featureModel::declareFeature );
-			linkIntFeatureMap.values().forEach( featureModel::declareFeature );
+			featureModel.declareFeature( spotFeatures );
+			featureModel.declareFeature( linkFeatures );
 			featureModel.resumeListeners();
-
 			finishImport();
 		}
 	}
