@@ -12,10 +12,15 @@ import static org.mastodon.revised.model.mamut.trackmate.TrackMateXMLKeys.FEATUR
 import static org.mastodon.revised.model.mamut.trackmate.TrackMateXMLKeys.FILENAME_ATTRIBUTE;
 import static org.mastodon.revised.model.mamut.trackmate.TrackMateXMLKeys.FOLDER_ATTRIBUTE;
 import static org.mastodon.revised.model.mamut.trackmate.TrackMateXMLKeys.FRAME_FEATURE_NAME;
+import static org.mastodon.revised.model.mamut.trackmate.TrackMateXMLKeys.HEIGHT_ATTRIBUTE;
 import static org.mastodon.revised.model.mamut.trackmate.TrackMateXMLKeys.ID_FEATURE_NAME;
 import static org.mastodon.revised.model.mamut.trackmate.TrackMateXMLKeys.IMAGE_DATA_TAG;
 import static org.mastodon.revised.model.mamut.trackmate.TrackMateXMLKeys.LABEL_FEATURE_NAME;
 import static org.mastodon.revised.model.mamut.trackmate.TrackMateXMLKeys.MODEL_TAG;
+import static org.mastodon.revised.model.mamut.trackmate.TrackMateXMLKeys.NFRAMES_ATTRIBUTE;
+import static org.mastodon.revised.model.mamut.trackmate.TrackMateXMLKeys.NSLICES_ATTRIBUTE;
+import static org.mastodon.revised.model.mamut.trackmate.TrackMateXMLKeys.PIXEL_HEIGHT_ATTRIBUTE;
+import static org.mastodon.revised.model.mamut.trackmate.TrackMateXMLKeys.PIXEL_WIDTH_ATTRIBUTE;
 import static org.mastodon.revised.model.mamut.trackmate.TrackMateXMLKeys.POSITION_X_FEATURE_NAME;
 import static org.mastodon.revised.model.mamut.trackmate.TrackMateXMLKeys.POSITION_Y_FEATURE_NAME;
 import static org.mastodon.revised.model.mamut.trackmate.TrackMateXMLKeys.POSITION_Z_FEATURE_NAME;
@@ -30,6 +35,8 @@ import static org.mastodon.revised.model.mamut.trackmate.TrackMateXMLKeys.TIME_U
 import static org.mastodon.revised.model.mamut.trackmate.TrackMateXMLKeys.TRACK_COLLECTION_TAG;
 import static org.mastodon.revised.model.mamut.trackmate.TrackMateXMLKeys.TRACK_TAG;
 import static org.mastodon.revised.model.mamut.trackmate.TrackMateXMLKeys.VISIBILITY_FEATURE_NAME;
+import static org.mastodon.revised.model.mamut.trackmate.TrackMateXMLKeys.VOXEL_DEPTH_ATTRIBUTE;
+import static org.mastodon.revised.model.mamut.trackmate.TrackMateXMLKeys.WIDTH_ATTRIBUTE;
 
 import java.io.File;
 import java.io.IOException;
@@ -119,7 +126,11 @@ public class TrackMateImporter
 			// Then try relative path
 			imageFile = new File( file.getParent(), imageFilename );
 			if ( !imageFile.exists() )
-				throw new IOException( "Could not import TrackMate project. Cannot find the image data file: \"" + imageFilename + "\" in \"" + imageFolder + "\" nor in \"" + file.getParent() + "\"." );
+			{
+				System.err.println( "Warning. Cannot find the image data file: \"" + imageFilename + "\" in \"" + imageFolder + "\" nor in \""
+						+ file.getParent() + "\". Substituting default void image." );
+				imageFile = makDummyImage(imageDataEl);
+			}
 		}
 
 		final MamutProject project = new MamutProject( null, imageFile );
@@ -137,6 +148,45 @@ public class TrackMateImporter
 		}
 
 		return project;
+	}
+
+	/**
+	 * Returns a dummy BDV file, made to reflect the metadata stored in the
+	 * <code>ImageData</code> XML element of a TrackMate file.
+	 *
+	 * @param imageDataEl
+	 *            the <code>ImageData</code> XML element.
+	 * @return a dummy BDF file.
+	 */
+	private static File makDummyImage( final Element imageDataEl )
+	{
+		final String wel = imageDataEl.getAttributeValue( WIDTH_ATTRIBUTE );
+		final int width = wel == null ? 1000 : Integer.parseInt( wel );
+
+		final String hel = imageDataEl.getAttributeValue( HEIGHT_ATTRIBUTE );
+		final int height = hel == null ? 1000 : Integer.parseInt( hel );
+
+		final String zel = imageDataEl.getAttributeValue( NSLICES_ATTRIBUTE );
+		final int depth = zel == null ? 100 : Integer.parseInt( zel );
+
+		final String ntel = imageDataEl.getAttributeValue( NFRAMES_ATTRIBUTE );
+		final int nTimepoints = ntel == null ? 100 : Integer.parseInt( ntel );
+
+		final String dxel = imageDataEl.getAttributeValue( PIXEL_WIDTH_ATTRIBUTE );
+		final double dx = dxel == null ? 1. : Double.parseDouble( dxel );
+
+		final String dyel = imageDataEl.getAttributeValue( PIXEL_HEIGHT_ATTRIBUTE );
+		final double dy = dyel  == null ? 1. : Double.parseDouble( dyel );
+
+		final String dzel = imageDataEl.getAttributeValue( VOXEL_DEPTH_ATTRIBUTE );
+		final double dz = dzel == null ? 1. : Double.parseDouble( dzel );
+
+//		final String dtel = imageDataEl.getAttributeValue( TIME_INTERVAL_ATTRIBUTE );
+//		final double dt = dtel == null ? 1. : Double.parseDouble( dtel );
+
+		final String dummyStr = String.format( "x=%d y=%d z=%d sx=%f sy=%f sz=%f t=%d.dummy",
+				width, height, depth, dx, dy, dz, nTimepoints );
+		return new File( dummyStr );
 	}
 
 	/**
