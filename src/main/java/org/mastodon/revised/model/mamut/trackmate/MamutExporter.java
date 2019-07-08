@@ -743,22 +743,22 @@ public class MamutExporter
 		return names;
 	}
 
-	private static boolean isScalarFeature( final FeatureSpec< ?, ? > spec )
+	static boolean isScalarFeature( final FeatureSpec< ?, ? > spec )
 	{
 		return spec.getMultiplicity() == SINGLE && spec.getProjectionSpecs().size() == 1;
 	}
 
-	private static String sanitize( final String tag )
+	static String sanitize( final String tag )
 	{
 		return tag.replace( ' ', '_' );
 	}
 
-	private static String getProjectionExportName( final String fname )
+	static String getProjectionExportName( final String fname )
 	{
 		return fname;
 	}
 
-	private static String getProjectionExportName( final String fname, final String pname, final int... sourceIndices )
+	static String getProjectionExportName( final String fname, final String pname, final int... sourceIndices )
 	{
 		final StringBuilder sb = new StringBuilder( fname ).append( " " ).append( pname );
 		if ( sourceIndices != null )
