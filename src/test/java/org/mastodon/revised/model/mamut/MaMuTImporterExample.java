@@ -1,4 +1,4 @@
-package org.mastodon.revised.mamut;
+package org.mastodon.revised.model.mamut;
 
 import java.io.File;
 import java.io.IOException;
@@ -8,6 +8,7 @@ import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 
 import org.mastodon.project.MamutProjectIO;
+import org.mastodon.revised.mamut.WindowManager;
 import org.mastodon.revised.model.mamut.Model;
 import org.mastodon.revised.model.mamut.ModelUtils;
 import org.mastodon.revised.model.mamut.trackmate.TrackMateImporter;

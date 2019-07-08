@@ -1,4 +1,4 @@
-package org.mastodon.revised.mamut;
+package org.mastodon.revised.model.mamut;
 
 import java.io.File;
 import java.io.IOException;
@@ -13,8 +13,7 @@ import org.mastodon.feature.FeatureSpec;
 import org.mastodon.mamut.feature.MamutFeatureComputerService;
 import org.mastodon.project.MamutProject;
 import org.mastodon.project.MamutProjectIO;
-import org.mastodon.revised.model.mamut.Model;
-import org.mastodon.revised.model.mamut.ModelUtils;
+import org.mastodon.revised.mamut.WindowManager;
 import org.mastodon.revised.model.mamut.trackmate.MamutExporter;
 import org.mastodon.revised.model.mamut.trackmate.TrackMateImporter;
 import org.scijava.Context;
@@ -32,7 +31,7 @@ public class MaMuTExportExample
 
 		final MamutProject project = new MamutProjectIO().load( "samples/mamutproject.mastodon" );
 		final WindowManager windowManager = new WindowManager( new Context() );
-		windowManager.projectManager.open( project );
+		windowManager.getProjectManager().open( project );
 		final Model model = windowManager.getAppModel().getModel();
 		final FeatureModel featureModel = model.getFeatureModel();
 

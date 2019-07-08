@@ -1,4 +1,4 @@
-package org.mastodon.revised.mamut;
+package org.mastodon.revised.model.mamut;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.junit.Assert.assertEquals;
@@ -26,6 +26,7 @@ import org.mastodon.feature.FeatureProjectionSpec;
 import org.mastodon.feature.FeatureSpec;
 import org.mastodon.feature.IntFeatureProjection;
 import org.mastodon.graph.algorithm.RootFinder;
+import org.mastodon.revised.mamut.WindowManager;
 import org.mastodon.revised.model.mamut.Link;
 import org.mastodon.revised.model.mamut.Model;
 import org.mastodon.revised.model.mamut.ModelGraph;
