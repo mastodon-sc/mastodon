@@ -56,11 +56,32 @@
 		</dependency>
 
 		<!-- Test dependencies -->
+		
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
 			<scope>test</scope>
 		</dependency>
+
+		<dependency>
+			<groupId>sc.fiji</groupId>
+			<artifactId>TrackMate_</artifactId>
+			<scope>test</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>sc.fiji</groupId>
+			<artifactId>MaMuT_</artifactId>
+			<version>0.28.3</version>
+			<scope>test</scope>
+			<exclusions>
+				<exclusion>
+					<groupId> net.sf.jgrapht</groupId>
+					<artifactId>jgrapht</artifactId>
+				</exclusion>
+			</exclusions> 
+		</dependency>
+				
 	</dependencies>
 
 	<build>
