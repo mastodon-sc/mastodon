@@ -217,7 +217,7 @@ public class UpdateStackSerializationTest
 		SAVED_PROJECT.delete();
 	}
 
-	public static class FT4 extends TestFeature< Spot >
+	public static class FT4 extends TestFeature< org.mastodon.revised.model.mamut.Spot >
 	{
 
 		public final static String KEY = "FT4";
