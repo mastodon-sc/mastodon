@@ -261,13 +261,13 @@ public class TrackMateImporter
 				{
 					final IntPropertyMap< Spot > values = new IntPropertyMap<>( graph.vertices().getRefPool(), Integer.MIN_VALUE );
 					spotFeatures.store( featureKey, dimensionToDimension( featureDimension ), units, values );
-					spotIntFeatureMap.put( featureKey,values );
+					spotIntFeatureMap.put( featureKey, values );
 				}
 				else
 				{
 					final DoublePropertyMap< Spot > values = new DoublePropertyMap<>( graph.vertices().getRefPool(), Double.NaN );
 					spotFeatures.store( featureKey, dimensionToDimension( featureDimension ), units, values );
-					spotDoubleFeatureMap.put( featureKey,values );
+					spotDoubleFeatureMap.put( featureKey, values );
 				}
 			}
 
@@ -292,13 +292,13 @@ public class TrackMateImporter
 				{
 					final IntPropertyMap< Link > values = new IntPropertyMap<>( graph.edges().getRefPool(), Integer.MIN_VALUE );
 					linkFeatures.store( featureKey, dimensionToDimension( featureDimension ), units, values );
-					linkIntFeatureMap.put( featureKey,values );
+					linkIntFeatureMap.put( featureKey, values );
 				}
 				else
 				{
 					final DoublePropertyMap< Link > values = new DoublePropertyMap<>( graph.edges().getRefPool(), Double.NaN );
 					linkFeatures.store( featureKey, dimensionToDimension( featureDimension ), units, values );
-					linkDoubleFeatureMap.put( featureKey,values );
+					linkDoubleFeatureMap.put( featureKey, values );
 				}
 			}
 
