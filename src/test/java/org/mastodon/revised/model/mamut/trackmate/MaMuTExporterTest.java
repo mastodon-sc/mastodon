@@ -140,7 +140,7 @@ public class MaMuTExporterTest
 				if ( tmSpot.getName().equals( spot.getLabel() ) )
 				{
 					ntested++;
-					
+
 					for ( int d = 0; d < 3; d++ )
 						assertEquals( "Spot position " + ( 'X' + d ) + " does not match exported value.",
 								spot.getDoublePosition( d ), tmSpot.getDoublePosition( d ), 1e-9 );
@@ -184,7 +184,7 @@ public class MaMuTExporterTest
 						&& exportedModel.getTrackModel().getEdgeTarget( tmLink ).getName().equals( link.getTarget().getLabel() ) )
 				{
 					ntested++;
-					
+
 					final List< FeatureSpec< ?, ? > > linkFeatures = sourceModel.getFeatureModel().getFeatureSpecs().stream()
 							.filter( f -> f.getTargetClass().isAssignableFrom( Link.class ) )
 							.collect( Collectors.toList() );
@@ -209,7 +209,7 @@ public class MaMuTExporterTest
 		}
 		assertEquals( "Could not test all links in the source model.",
 				sourceModel.getGraph().edges().size(), ntested );
-		
+
 		/*
 		 * Test whether MaMuT can open the image data.
 		 */
@@ -273,8 +273,8 @@ public class MaMuTExporterTest
 	}
 
 	private static final void checkFeatures(
-			final FeatureModel featureModel, 
-			final Class< ? > targetClass, 
+			final FeatureModel featureModel,
+			final Class< ? > targetClass,
 			final Collection< String > featuresToIgnore,
 			final Collection< String > exportedFeatures )
 	{

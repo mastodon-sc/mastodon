@@ -129,7 +129,7 @@ public class TrackMateImporter
 			{
 				System.err.println( "Warning. Cannot find the image data file: \"" + imageFilename + "\" in \"" + imageFolder + "\" nor in \""
 						+ file.getParent() + "\". Substituting default void image." );
-				imageFile = makDummyImage(imageDataEl);
+				imageFile = makDummyImage( imageDataEl );
 			}
 		}
 
@@ -176,7 +176,7 @@ public class TrackMateImporter
 		final double dx = dxel == null ? 1. : Double.parseDouble( dxel );
 
 		final String dyel = imageDataEl.getAttributeValue( PIXEL_HEIGHT_ATTRIBUTE );
-		final double dy = dyel  == null ? 1. : Double.parseDouble( dyel );
+		final double dy = dyel == null ? 1. : Double.parseDouble( dyel );
 
 		final String dzel = imageDataEl.getAttributeValue( VOXEL_DEPTH_ATTRIBUTE );
 		final double dz = dzel == null ? 1. : Double.parseDouble( dzel );
@@ -261,13 +261,13 @@ public class TrackMateImporter
 				{
 					final IntPropertyMap< Spot > values = new IntPropertyMap<>( graph.vertices().getRefPool(), Integer.MIN_VALUE );
 					spotFeatures.store( featureKey, dimensionToDimension( featureDimension ), units, values );
-					spotIntFeatureMap.put( featureKey,values );
+					spotIntFeatureMap.put( featureKey, values );
 				}
 				else
 				{
 					final DoublePropertyMap< Spot > values = new DoublePropertyMap<>( graph.vertices().getRefPool(), Double.NaN );
 					spotFeatures.store( featureKey, dimensionToDimension( featureDimension ), units, values );
-					spotDoubleFeatureMap.put( featureKey,values );
+					spotDoubleFeatureMap.put( featureKey, values );
 				}
 			}
 
@@ -292,13 +292,13 @@ public class TrackMateImporter
 				{
 					final IntPropertyMap< Link > values = new IntPropertyMap<>( graph.edges().getRefPool(), Integer.MIN_VALUE );
 					linkFeatures.store( featureKey, dimensionToDimension( featureDimension ), units, values );
-					linkIntFeatureMap.put( featureKey,values );
+					linkIntFeatureMap.put( featureKey, values );
 				}
 				else
 				{
 					final DoublePropertyMap< Link > values = new DoublePropertyMap<>( graph.edges().getRefPool(), Double.NaN );
 					linkFeatures.store( featureKey, dimensionToDimension( featureDimension ), units, values );
-					linkDoubleFeatureMap.put( featureKey,values );
+					linkDoubleFeatureMap.put( featureKey, values );
 				}
 			}
 
