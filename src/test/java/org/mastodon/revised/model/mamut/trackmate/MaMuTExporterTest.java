@@ -58,9 +58,8 @@ public class MaMuTExporterTest
 	 * TrackMate features that are automatically added by TrackMate during
 	 * export.
 	 */
-	private static final Collection< String > SPOT_FEATURES_TO_IGNORE = Arrays.asList( new String[] {
-			"QUALITY", "POSITION_X", "POSITION_Y", "POSITION_Z", "POSITION_T", "FRAME", "RADIUS", "VISIBILITY"
-	} );
+	private static final Collection< String > SPOT_FEATURES_TO_IGNORE = Arrays.asList(
+			"QUALITY", "POSITION_X", "POSITION_Y", "POSITION_Z", "POSITION_T", "FRAME", "RADIUS", "VISIBILITY" );
 
 	@Test
 	public void test() throws IOException, SpimDataException
