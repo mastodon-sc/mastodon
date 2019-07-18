@@ -102,6 +102,11 @@ public class MamutFeatureComputerService extends DefaultFeatureComputerService
 	 */
 	public void setModel( final Model model )
 	{
+		/*
+		 * TODO: Unregister listeners from previous this.model.getGraph()
+		 *       For this, the listeners should be remembered (graphListener, vertexPropertyListener)
+		 */
+
 		this.model = model;
 
 		// Listen to graph changes to support incremental computation.
