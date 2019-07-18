@@ -70,14 +70,22 @@ public class UpdateStackSerializationSeriesTest
 	@Test
 	public void test() throws Exception
 	{
-		createProjectWithPendingChanges(4);
-		makeOtherChangesAndRecompute(1);
-		makeOtherChangesAndRecompute(2);
-		makeOtherChangesAndRecompute(3);
-		makeOtherChangesAndRecompute(5);
-		openProjectWithPendingChanges(new int[] {1, 2, 3, 4, 5 });
-		openProjectWithoutPendingChanges();
-		deleteProject();
+		try
+		{
+			createProjectWithPendingChanges( 4 );
+			makeOtherChangesAndRecompute( 1 );
+			makeOtherChangesAndRecompute( 2 );
+			makeOtherChangesAndRecompute( 3 );
+			makeOtherChangesAndRecompute( 5 );
+			openProjectWithPendingChanges( new int[] { 1, 2, 3, 4, 5 } );
+			openProjectWithoutPendingChanges();
+			deleteProject();
+			throw new NullPointerException();
+		} catch ( Exception e )
+		{
+			e.printStackTrace( System.out );
+			throw e;
+		}
 	}
 
 	private void createProjectWithPendingChanges(final int id) throws Exception
