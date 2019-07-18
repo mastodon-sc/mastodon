@@ -89,10 +89,21 @@ public class MaMuTExportExample
 		 * 3. Re-import it using the TrackMate importer.
 		 */
 
-		final Model importedModel = new Model( model.getSpaceUnits(), model.getTimeUnits() );
+		Model importedModel = new Model( model.getSpaceUnits(), model.getTimeUnits() );
 		new TrackMateImporter( targetFile ).readModel( importedModel );
 		System.out.println();
 		System.out.println( "Model AFTER de-serialization:" );
 		System.out.println( ModelUtils.dump( importedModel, 10 ) );
+
+		for ( int i = 1; i < 10; ++i )
+		{
+			MamutExporter.export( targetFile, importedModel, project );
+
+			importedModel = new Model( model.getSpaceUnits(), model.getTimeUnits() );
+			new TrackMateImporter( targetFile ).readModel( importedModel );
+			System.out.println();
+			System.out.println( "Model AFTER de-serialization " + i + ":" );
+			System.out.println( ModelUtils.dump( importedModel, 10 ) );
+		}
 	}
 }
