@@ -3,6 +3,7 @@ package org.mastodon.revised.model.mamut;
 import java.io.File;
 import java.io.IOException;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Map;
 
 import org.jdom2.JDOMException;
@@ -11,6 +12,7 @@ import org.mastodon.feature.FeatureModel;
 import org.mastodon.feature.FeatureProjection;
 import org.mastodon.feature.FeatureSpec;
 import org.mastodon.mamut.feature.MamutFeatureComputerService;
+import org.mastodon.mamut.feature.TrackSizeFeature;
 import org.mastodon.project.MamutProject;
 import org.mastodon.project.MamutProjectIO;
 import org.mastodon.revised.mamut.WindowManager;
@@ -89,10 +91,35 @@ public class MaMuTExportExample
 		 * 3. Re-import it using the TrackMate importer.
 		 */
 
-		final Model importedModel = new Model( model.getSpaceUnits(), model.getTimeUnits() );
+		Model importedModel = new Model( model.getSpaceUnits(), model.getTimeUnits() );
 		new TrackMateImporter( targetFile ).readModel( importedModel );
 		System.out.println();
 		System.out.println( "Model AFTER de-serialization:" );
+		System.out.println( ModelUtils.dump( importedModel, 10 ) );
+
+		/*
+		 * Test for name clash: recompute a feature that we already imported,
+		 * and try to re-export both.
+		 */
+
+		featureComputerService.setModel( importedModel );
+		featureComputerService.setSharedBdvData( windowManager.getAppModel().getSharedBdvData() );
+		System.out.println( "Computing feature: " + TrackSizeFeature.SPEC );
+		final Map< FeatureSpec< ?, ? >, Feature< ? > > features2 = featureComputerService.compute( Collections.singleton( TrackSizeFeature.SPEC ) );
+		System.out.println( "Done." );
+		for ( final FeatureSpec< ?, ? > spec: features2.keySet() )
+			importedModel.getFeatureModel().declareFeature( features.get( spec ) );
+
+		System.out.println();
+		System.out.println( "Model BEFORE serialization:" );
+		System.out.println( ModelUtils.dump( importedModel, 10 ) );
+		System.out.println();
+
+		MamutExporter.export( targetFile, importedModel, project );
+		importedModel = new Model( model.getSpaceUnits(), model.getTimeUnits() );
+		new TrackMateImporter( targetFile ).readModel( importedModel );
+		System.out.println();
+		System.out.println( "Model AFTER de-serialization EXTRA:" );
 		System.out.println( ModelUtils.dump( importedModel, 10 ) );
 	}
 }
