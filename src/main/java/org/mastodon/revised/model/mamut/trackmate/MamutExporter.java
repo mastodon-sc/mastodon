@@ -154,8 +154,8 @@ public class MamutExporter
 		this.eig = new JamaEigenvalueDecomposition( 3 );
 		this.cov = new double[ 3 ][ 3 ];
 
-		spotFeatureProjections = getExportFeatureProjections( model.getFeatureModel(), Spot.class );
-		linkFeatureProjections = getExportFeatureProjections( model.getFeatureModel(), Link.class );
+		spotFeatureProjections = getExportFeatureProjections( model.getFeatureModel(), Spot.class, TrackMateImportedSpotFeatures.class );
+		linkFeatureProjections = getExportFeatureProjections( model.getFeatureModel(), Link.class, TrackMateImportedLinkFeatures.class );
 	}
 
 	private void write( final File file ) throws IOException
@@ -645,14 +645,59 @@ public class MamutExporter
 	}
 
 	/**
-	 * Creates a map from export name to feature projection for all feature projections in {@code featureModel} matching the given {@code target} class.
+	 * Creates a map from export name to feature projection for all feature
+	 * projections in {@code featureModel} matching the given {@code target}
+	 * class.
+	 * <p>
+	 * Special care are taken to avoid feature name inflation when exporting
+	 * re-imported features from a TrackMate file, and conflict between
+	 * re-import features and computed features.
 	 *
 	 * @param featureModel
 	 * @param target
+	 * @param trackMateImporterFeatureClass
 	 * @param <T>
 	 */
-	public static < T > List< ExportFeatureProjection< T > > getExportFeatureProjections( final FeatureModel featureModel, final Class< T > target )
+	public static < T > List< ExportFeatureProjection< T > > getExportFeatureProjections(
+			final FeatureModel featureModel,
+			final Class< T > target,
+			final Class< ? > trackMateImporterFeatureClass )
 	{
+		/*
+		 * First iteration: collect all projection names that are NOT coming
+		 * from a re-imported TrackMate feature.
+		 */
+
+		final HashSet< String > featureModelProjections = new HashSet<>();
+		for ( final FeatureSpec< ?, ? > fspec : featureModel.getFeatureSpecs() )
+		{
+			if ( fspec.getTargetClass().equals( target ) )
+			{
+				@SuppressWarnings( "unchecked" )
+				final Feature< T > feature = ( Feature< T > ) featureModel.getFeature( fspec );
+				final String fname = fspec.getKey();
+				if ( null == feature.projections() )
+					continue;
+
+				if ( trackMateImporterFeatureClass.isInstance( feature ) )
+					continue;
+
+				for ( final FeatureProjection< T > projection : feature.projections() )
+				{
+					final String pname = projection.getKey().getSpec().getKey();
+					final String name = isScalarFeature( fspec )
+							? getProjectionExportName( fname )
+							: getProjectionExportName( fname, pname, projection.getKey().getSourceIndices() );
+					featureModelProjections.add( sanitize( name ) );
+				}
+			}
+		}
+
+		/*
+		 * Second iteration: build the list of feature projection to export,
+		 * filtering if there are some duplicates due to re-import.
+		 */
+
 		final ArrayList< ExportFeatureProjection< T > > list = new ArrayList<>();
 		for ( final FeatureSpec< ?, ? > fspec : featureModel.getFeatureSpecs() )
 		{
@@ -661,15 +706,49 @@ public class MamutExporter
 				@SuppressWarnings( "unchecked" )
 				final Feature< T > feature = ( Feature< T > ) featureModel.getFeature( fspec );
 				final String fname = fspec.getKey();
-				if (null == feature.projections())
+				if ( null == feature.projections() )
 					continue;
+
+				/*
+				 * Are we trying to export a feature that results from an import
+				 * from a TrackMate file?
+				 */
+				final boolean reExport = trackMateImporterFeatureClass.isInstance( feature );
+
 				for ( final FeatureProjection< T > projection : feature.projections() )
 				{
 					final String pname = projection.getKey().getSpec().getKey();
+
 					final String name = isScalarFeature( fspec )
 							? getProjectionExportName( fname )
 							: getProjectionExportName( fname, pname, projection.getKey().getSourceIndices() );
-					list.add( new ExportFeatureProjection<>( projection, sanitize( name ), name, name ) );
+
+					/*
+					 * Avoid re-exporting features that were imported from
+					 * TrackMate or MaMuT, with added
+					 * 'TrackMateImportedFeatures_' etc. We export them with
+					 * their original name. If we don't do that, succeeding
+					 * exports/imports result in the feature name being
+					 * inflated: <pre> Track N spots --> Track_N_spots -->
+					 * TrackMate_Spot_features_Track_N_spots -->
+					 * TrackMate_Spot_features_TrackMate_Spot_features_Track_N_spots
+					 * --> ...
+					 */
+					final String croppedName = reExport
+							? name.substring( 1 + TrackMateImportedSpotFeatures.KEY.length() )
+							: name;
+
+					/*
+					 * To avoid name clash between re-imported feature and
+					 * feature that were computed in Mastodon: Do not export
+					 * this projection if: 1. It is a re-imported feature. 2. We
+					 * have one with the same name in the feature model.
+					 */
+
+					if ( reExport && featureModelProjections.contains( sanitize( croppedName ) ) )
+						continue;
+
+					list.add( new ExportFeatureProjection<>( projection, sanitize( croppedName ), croppedName, croppedName ) );
 				}
 			}
 		}
