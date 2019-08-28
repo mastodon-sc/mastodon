@@ -3,6 +3,7 @@ package org.mastodon.revised.mamut;
 import static org.mastodon.app.ui.ViewMenuBuilder.item;
 import static org.mastodon.app.ui.ViewMenuBuilder.separator;
 import static org.mastodon.revised.mamut.MamutMenuBuilder.colorMenu;
+import static org.mastodon.revised.mamut.MamutMenuBuilder.colorbarMenu;
 import static org.mastodon.revised.mamut.MamutMenuBuilder.editMenu;
 import static org.mastodon.revised.mamut.MamutMenuBuilder.tagSetMenu;
 import static org.mastodon.revised.mamut.MamutMenuBuilder.viewMenu;
@@ -21,6 +22,7 @@ import org.mastodon.revised.trackscheme.TrackSchemeContextListener;
 import org.mastodon.revised.trackscheme.TrackSchemeEdge;
 import org.mastodon.revised.trackscheme.TrackSchemeGraph;
 import org.mastodon.revised.trackscheme.TrackSchemeVertex;
+import org.mastodon.revised.trackscheme.display.ColorBarOverlay;
 import org.mastodon.revised.trackscheme.display.EditFocusVertexLabelAction;
 import org.mastodon.revised.trackscheme.display.ToggleLinkBehaviour;
 import org.mastodon.revised.trackscheme.display.TrackSchemeFrame;
@@ -32,6 +34,7 @@ import org.mastodon.revised.ui.EditTagActions;
 import org.mastodon.revised.ui.FocusActions;
 import org.mastodon.revised.ui.HighlightBehaviours;
 import org.mastodon.revised.ui.SelectionActions;
+import org.mastodon.revised.ui.coloring.ColoringModel;
 import org.mastodon.revised.ui.coloring.GraphColorGeneratorAdapter;
 import org.mastodon.views.context.ContextChooser;
 import org.scijava.ui.behaviour.KeyPressedManager;
@@ -109,11 +112,13 @@ public class MamutViewTrackScheme extends MamutView< TrackSchemeGraph< Spot, Lin
 
 		final JMenuHandle coloringMenuHandle = new JMenuHandle();
 		final JMenuHandle tagSetMenuHandle = new JMenuHandle();
+		final JMenuHandle colorbarMenuHandle = new JMenuHandle();
 
 		MainWindow.addMenus( menu, actionMap );
 		MamutMenuBuilder.build( menu, actionMap,
 				viewMenu(
 						colorMenu( coloringMenuHandle ),
+						colorbarMenu( colorbarMenuHandle ),
 						separator(),
 						item( MastodonFrameViewActions.TOGGLE_SETTINGS_PANEL )
 				),
@@ -142,12 +147,16 @@ public class MamutViewTrackScheme extends MamutView< TrackSchemeGraph< Spot, Lin
 		);
 		appModel.getPlugins().addMenus( menu );
 
-		registerColoring( coloring, coloringMenuHandle,
+		final ColoringModel coloringModel = registerColoring( coloring, coloringMenuHandle,
 				() -> frame.getTrackschemePanel().entitiesAttributesChanged() );
+		final ColorBarOverlay colorBarOverlay = new ColorBarOverlay( coloringModel );
+		registerColorbarOverlay( colorBarOverlay, colorbarMenuHandle,
+				() -> frame.getTrackschemePanel().repaint() );
 
 		registerTagSetMenu( tagSetMenuHandle,
 				() -> frame.getTrackschemePanel().entitiesAttributesChanged() );
 
+		frame.getTrackschemePanel().getDisplay().addOverlayRenderer( colorBarOverlay );
 		frame.getTrackschemePanel().repaint();
 	}
 
