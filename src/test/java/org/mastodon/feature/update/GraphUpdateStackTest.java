@@ -18,9 +18,10 @@ import org.mastodon.feature.FeatureProjectionKey;
 import org.mastodon.feature.FeatureSpec;
 import org.mastodon.feature.FeatureSpecsService;
 import org.mastodon.feature.Multiplicity;
-import org.mastodon.feature.update.GraphUpdate.UpdateLocality;
+import org.mastodon.mamut.feature.LinkUpdateStack;
 import org.mastodon.mamut.feature.MamutFeatureComputer;
 import org.mastodon.mamut.feature.MamutFeatureComputerService;
+import org.mastodon.mamut.feature.SpotUpdateStack;
 import org.mastodon.properties.DoublePropertyMap;
 import org.mastodon.revised.model.mamut.Link;
 import org.mastodon.revised.model.mamut.Model;
@@ -98,7 +99,7 @@ public class GraphUpdateStackTest
 		 * Do plenty of computation, but without FT1. Up to 10, we should catch
 		 * up.
 		 */
-		for ( int i = 0; i < GraphUpdateStack.BUFFER_SIZE - 1; i++ )
+		for ( int i = 0; i < UpdateStack.BUFFER_SIZE - 1; i++ )
 			computerService.compute();
 
 		ft1.expectedVerticesSelf = new RefSetImp<>( graph.vertices().getRefPool() );
@@ -116,7 +117,7 @@ public class GraphUpdateStackTest
 		 * Do plenty of computation, but without FT1. More than 10, we should
 		 * not catch up.
 		 */
-		for ( int i = 0; i < GraphUpdateStack.BUFFER_SIZE; i++ )
+		for ( int i = 0; i < UpdateStack.BUFFER_SIZE; i++ )
 			computerService.compute();
 
 		ft1.expectedVerticesSelf = null;
@@ -464,40 +465,44 @@ public class GraphUpdateStackTest
 		}
 	}
 
-	private static abstract class TestFeatureComputer implements MamutFeatureComputer
+	static abstract class TestFeatureComputer implements MamutFeatureComputer
 	{
 		@Parameter
-		protected GraphUpdateStack< Spot, Link > graphUpdateStack;
+		protected SpotUpdateStack spotUpdateStack;
+
+		@Parameter
+		protected LinkUpdateStack linkUpdateStack;
 
 		@Override
 		public void run()
 		{
 			final TestFeature< Spot > output = getOutput();
-			final GraphUpdate< Spot, Link > changes = graphUpdateStack.changesFor( getKey() );
+			final Update< Spot > vertexChanges = spotUpdateStack.changesFor( getKey() );
+			final Update< Link > edgeChanges = linkUpdateStack.changesFor( getKey() );
 
 			if ( null == output.expectedVerticesSelf )
-				assertNull( "Graph update for " + getKey() + " should be null.", changes );
+				assertNull( "Vertex update for " + getKey() + " should be null.", vertexChanges );
 			else
 				assertThat( "Unexpected SELF vertices: ", output.expectedVerticesSelf,
-						IsIterableContainingInAnyOrder.containsInAnyOrder( changes.vertices( UpdateLocality.SELF ).toArray() ) );
+						IsIterableContainingInAnyOrder.containsInAnyOrder( vertexChanges.get().toArray() ) );
 
 			if ( null == output.expectedVerticesNeighbor )
-				assertNull( "Graph update for " + getKey() + " should be null.", changes );
+				assertNull( "Vertex update for " + getKey() + " should be null.", vertexChanges );
 			else
 				assertThat( "Unexpected NEIGHBOR vertices: ", output.expectedVerticesNeighbor,
-						IsIterableContainingInAnyOrder.containsInAnyOrder( changes.vertices( UpdateLocality.NEIGHBOR ).toArray() ) );
+						IsIterableContainingInAnyOrder.containsInAnyOrder( vertexChanges.getNeighbors().toArray() ) );
 
 			if ( null == output.expectedEdgesSelf )
-				assertNull( "Graph update for " + getKey() + " should be null.", changes );
+				assertNull( "Edge update for " + getKey() + " should be null.", edgeChanges );
 			else
 				assertThat( "Unexpected SELF edges: ", output.expectedEdgesSelf,
-						IsIterableContainingInAnyOrder.containsInAnyOrder( changes.edges( UpdateLocality.SELF ).toArray() ) );
+						IsIterableContainingInAnyOrder.containsInAnyOrder( edgeChanges.get().toArray() ) );
 
 			if ( null == output.expectedEdgesNeighbor )
-				assertNull( "Graph update for " + getKey() + " should be null.", changes );
+				assertNull( "Edge update for " + getKey() + " should be null.", edgeChanges );
 			else
 				assertThat( "Unexpected NEIGHBOR edges: ", output.expectedEdgesNeighbor,
-						IsIterableContainingInAnyOrder.containsInAnyOrder( changes.edges( UpdateLocality.NEIGHBOR ).toArray() ) );
+						IsIterableContainingInAnyOrder.containsInAnyOrder( edgeChanges.getNeighbors().toArray() ) );
 
 		}
 
@@ -506,7 +511,7 @@ public class GraphUpdateStackTest
 		protected abstract TestFeature< Spot > getOutput();
 	}
 
-	private static abstract class TestFeature< O > implements Feature< O >
+	static abstract class TestFeature< O > implements Feature< O >
 	{
 		protected RefSet< Spot > expectedVerticesSelf = null;
 

@@ -22,6 +22,8 @@ public class FeatureComputationModel
 
 	private final Set< FeatureSpec< ?, ? > > selectedFeatures;
 
+	private final Map< FeatureSpec< ?, ? >, Boolean > visibleFeatures;
+
 	private final Map< Class< ? >, Collection< FeatureSpec< ?, ? > > > featureSpecsTargetMap;
 
 	private final Map< String, FeatureSpec< ?, ? > > featureSpecsKeys;
@@ -30,10 +32,12 @@ public class FeatureComputationModel
 
 	private final Map< FeatureSpec< ?, ? >, Collection< FeatureSpec< ?, ? > > > deps;
 
+
 	public FeatureComputationModel()
 	{
 		this.updateListeners = new Listeners.SynchronizedList<>();
 		this.selectedFeatures = new HashSet<>();
+		this.visibleFeatures = new HashMap<>();
 		this.featureSpecsTargetMap = new HashMap<>();
 		this.featureSpecsKeys = new HashMap<>();
 		this.uptodateMap = new HashMap<>();
@@ -65,6 +69,16 @@ public class FeatureComputationModel
 			notifyListeners();
 	}
 
+	public boolean isVisible( final FeatureSpec< ?, ? > spec )
+	{
+		return visibleFeatures.getOrDefault( spec, Boolean.TRUE ).booleanValue();
+	}
+
+	public void setVisible( final FeatureSpec< ?, ? > spec, final boolean visible )
+	{
+		visibleFeatures.put( spec, Boolean.valueOf( visible ) );
+	}
+
 	public Set< FeatureSpec< ?, ? > > getSelectedFeatureKeys()
 	{
 		return Collections.unmodifiableSet( selectedFeatures );
@@ -84,7 +98,7 @@ public class FeatureComputationModel
 	/**
 	 * Stores the give specification, with the given target class and
 	 * dependencies.
-	 * 
+	 *
 	 * @param target
 	 *            the target class of the the feature .
 	 * @param spec
@@ -121,7 +135,7 @@ public class FeatureComputationModel
 
 	/**
 	 * Marks all the specified {@link FeatureSpec}s in this model as up to date.
-	 * 
+	 *
 	 * @param featureSpecs
 	 *            the feature specs to mark as up to date.
 	 */
@@ -135,5 +149,4 @@ public class FeatureComputationModel
 	{
 		return Collections.unmodifiableCollection( deps.computeIfAbsent( spec, s -> Collections.emptyList() ) );
 	}
-
 }

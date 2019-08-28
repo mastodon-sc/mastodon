@@ -114,7 +114,7 @@ public class AvailableFeatureProjectionsImp implements AvailableFeatureProjectio
 
 	/**
 	 * Adds {@code 0 .. numSources-1} to available {@code sourceIndices}.
-	 * 
+	 *
 	 * @param numSources
 	 *            the number of sources.
 	 */
@@ -131,7 +131,7 @@ public class AvailableFeatureProjectionsImp implements AvailableFeatureProjectio
 	/**
 	 * Add {@code i} to available {@code sourceIndices}. If {@code i < 0}, do
 	 * nothing.
-	 * 
+	 *
 	 * @param i
 	 *            the source index to add.
 	 */
@@ -147,12 +147,16 @@ public class AvailableFeatureProjectionsImp implements AvailableFeatureProjectio
 	/**
 	 * Adds {@code FeatureSpec} (from {@code FeatureSpecsService} or
 	 * {@code FeatureModel}).
-	 * 
+	 *
 	 * @param spec
 	 *            the feature spec to add.
 	 */
 	public void add( final FeatureSpec< ?, ? > spec )
 	{
+		// Don't add features with 0 projections.
+		if ( spec.getProjectionSpecs().isEmpty() )
+			return;
+
 		final Map< String, FeatureProperties > features;
 
 		final Class< ? > target = spec.getTargetClass();
@@ -182,7 +186,7 @@ public class AvailableFeatureProjectionsImp implements AvailableFeatureProjectio
 
 	/**
 	 * Adds {@code FeatureProjectionId} (from existing color mode).
-	 * 
+	 *
 	 * @param id
 	 *            the feature projection id to add.
 	 */

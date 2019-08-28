@@ -206,7 +206,7 @@ public class FeatureSelectionPanel
 	 * Sets the selection in this panel to correspond to the specified
 	 * {@link FeatureProjectionId}. Does nothing, if currently no
 	 * {@link AvailableFeatureProjections} are specified.
-	 * 
+	 *
 	 * @param selection
 	 *            the id of the feature projection to select.
 	 */
@@ -243,9 +243,7 @@ public class FeatureSelectionPanel
 
 		// Visibility.
 		final Multiplicity multiplicity = availableFeatureProjections.multiplicity( targetType, featureKey );
-		final boolean projectionCBVisible = ( null != featureKey ) &&
-				( ( projectionKeys.size() > 1 )
-						|| multiplicity != Multiplicity.SINGLE );
+		final boolean projectionCBVisible = ( null != featureKey ) && ( projectionKeys.size() > 1 );
 		arrowStrut.setVisible( projectionCBVisible );
 		cbProjections.setVisible( projectionCBVisible );
 		lblArrow.setVisible( projectionCBVisible );
@@ -267,7 +265,7 @@ public class FeatureSelectionPanel
 
 	/**
 	 * Sets the feature specifications to display in this panel.
-	 * 
+	 *
 	 * @param afp
 	 *            the available feature projections.
 	 * @param targetType

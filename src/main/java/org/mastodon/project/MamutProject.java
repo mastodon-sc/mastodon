@@ -8,6 +8,11 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class MamutProject
 {
@@ -32,8 +37,12 @@ public class MamutProject
 	private String timeUnits;
 
 	static final String PROJECT_FILE_NAME = "project.xml";
+
 	static final String RAW_MODEL_FILE_NAME = "model.raw";
+
 	static final String RAW_TAGS_FILE_NAME = "tags.raw";
+
+	static final String FEATURE_FOLDER_NAME = "features";
 
 	public MamutProject( final String projectRoot )
 	{
@@ -127,6 +136,16 @@ public class MamutProject
 		InputStream getRawModelInputStream() throws IOException;
 
 		InputStream getRawTagsInputStream() throws IOException;
+
+		InputStream getFeatureInputStream( String featureKey ) throws IOException;
+
+		/**
+		 * Returns the collection of feature keys that are stored in this
+		 * project.
+		 *
+		 * @return the collection of feature keys.
+		 */
+		Collection< String > getFeatureKeys();
 	}
 
 	public interface ProjectWriter extends Closeable
@@ -136,6 +155,8 @@ public class MamutProject
 		OutputStream getRawModelOutputStream() throws IOException;
 
 		OutputStream getRawTagsOutputStream() throws IOException;
+
+		OutputStream getFeatureOutputStream( String featureKey ) throws IOException;
 	}
 
 	private class ReadFromDirectory implements ProjectReader
@@ -159,9 +180,29 @@ public class MamutProject
 		}
 
 		@Override
-		public void close()
+		public InputStream getFeatureInputStream( final String featureKey ) throws IOException
 		{
+			final File featureFolder = new File( projectRoot, FEATURE_FOLDER_NAME );
+			return new FileInputStream( new File( featureFolder, featureKey + ".raw" ) );
 		}
+
+		@Override
+		public Collection< String > getFeatureKeys()
+		{
+			final File featureFolder = new File( projectRoot, FEATURE_FOLDER_NAME );
+			if ( !featureFolder.exists() || !featureFolder.canRead() )
+				return Collections.emptyList();
+
+			final List< String > featureKeys = Arrays.stream( featureFolder.listFiles( ( dir, name ) -> name.toLowerCase().endsWith( ".raw" ) ) )
+				.map( f -> f.getName() )
+				.map( s -> s.replace( ".raw", "" ) )
+				.collect( Collectors.toList() );
+			return featureKeys;
+		}
+
+		@Override
+		public void close()
+		{}
 	}
 
 	private class ReadFromZip implements ProjectReader
@@ -192,6 +233,20 @@ public class MamutProject
 		}
 
 		@Override
+		public InputStream getFeatureInputStream( final String featureKey ) throws IOException
+		{
+			return zip.getInputStream( FEATURE_FOLDER_NAME + "/" + featureKey + ".raw" );
+		}
+
+		@Override
+		public Collection< String > getFeatureKeys()
+		{
+			return zip.listFile( FEATURE_FOLDER_NAME ).stream()
+				.map( s -> s.replace( ".raw", "" ) )
+				.collect( Collectors.toList() );
+		}
+
+		@Override
 		public void close() throws IOException
 		{
 			zip.close();
@@ -200,6 +255,7 @@ public class MamutProject
 
 	private class WriteToDirectory implements ProjectWriter
 	{
+
 		@Override
 		public OutputStream getProjectXmlOutputStream() throws FileNotFoundException
 		{
@@ -219,9 +275,17 @@ public class MamutProject
 		}
 
 		@Override
-		public void close() throws IOException
+		public OutputStream getFeatureOutputStream( final String featureKey ) throws IOException
 		{
+			final File featureFolder = new File( projectRoot, FEATURE_FOLDER_NAME );
+			if ( !featureFolder.exists() )
+				featureFolder.mkdir();
+			return new FileOutputStream( new File( featureFolder, featureKey + ".raw" ) );
 		}
+
+		@Override
+		public void close() throws IOException
+		{}
 	}
 
 	private class WriteToZip implements ProjectWriter
@@ -249,6 +313,12 @@ public class MamutProject
 		public OutputStream getRawTagsOutputStream() throws IOException
 		{
 			return zip.getOutputStream( RAW_TAGS_FILE_NAME );
+		}
+
+		@Override
+		public OutputStream getFeatureOutputStream( final String featureKey ) throws IOException
+		{
+			return zip.getOutputStream( FEATURE_FOLDER_NAME + "/" + featureKey + ".raw" );
 		}
 
 		@Override
