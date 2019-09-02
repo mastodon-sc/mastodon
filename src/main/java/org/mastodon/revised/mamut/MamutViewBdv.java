@@ -26,6 +26,7 @@ import org.mastodon.revised.bdv.overlay.BdvHighlightHandler;
 import org.mastodon.revised.bdv.overlay.BdvSelectionBehaviours;
 import org.mastodon.revised.bdv.overlay.EditBehaviours;
 import org.mastodon.revised.bdv.overlay.EditSpecialBehaviours;
+import org.mastodon.revised.bdv.overlay.OverlayActions;
 import org.mastodon.revised.bdv.overlay.OverlayGraphRenderer;
 import org.mastodon.revised.bdv.overlay.OverlayNavigation;
 import org.mastodon.revised.bdv.overlay.RenderSettings;
@@ -161,6 +162,7 @@ public class MamutViewBdv extends MamutView< OverlayGraphWrapper< Spot, Link >, 
 		EditSpecialBehaviours.install( viewBehaviours, frame.getViewerPanel(), viewGraph, tracksOverlay, selectionModel, focusModel, model );
 		HighlightBehaviours.install( viewBehaviours, viewGraph, viewGraph.getLock(), viewGraph, highlightModel, model );
 		FocusActions.install( viewActions, viewGraph, viewGraph.getLock(), navigateFocusModel, selectionModel );
+		OverlayActions.install( viewActions, viewer, tracksOverlay );
 
 		NavigationActionsMamut.install( viewActions, viewer );
 		viewer.getTransformEventHandler().install( viewBehaviours );
@@ -176,6 +178,9 @@ public class MamutViewBdv extends MamutView< OverlayGraphWrapper< Spot, Link >, 
 		};
 		renderSettings.updateListeners().add( updateListener );
 		onClose( () -> renderSettings.updateListeners().remove( updateListener ) );
+
+		// Notifies context provider that context changes when visibility mode changes.
+		tracksOverlay.getVisibilities().getVisibilityListeners().add( contextProvider::notifyContextChanged);
 
 //		if ( !bdv.tryLoadSettings( bdvFile ) ) // TODO
 //			InitializeViewerState.initBrightness( 0.001, 0.999, bdv.getViewer(), bdv.getSetupAssignments() );
