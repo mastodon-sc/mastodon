@@ -80,8 +80,8 @@ public class UpdateStackSerializationSeriesTest
 			openProjectWithPendingChanges( new int[] { 1, 2, 3, 4, 5 } );
 			openProjectWithoutPendingChanges();
 			deleteProject();
-			throw new NullPointerException();
-		} catch ( Exception e )
+//			throw new NullPointerException();
+		} catch ( final Exception e )
 		{
 			e.printStackTrace( System.out );
 			throw e;
