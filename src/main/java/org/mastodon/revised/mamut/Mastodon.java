@@ -44,6 +44,12 @@ public class Mastodon extends ContextCommand
 		mainWindow.setDefaultCloseOperation( WindowConstants.EXIT_ON_CLOSE );
 	}
 
+	// FOR TESTING ONLY!
+	public WindowManager getWindowManager()
+	{
+		return windowManager;
+	}
+
 	public static void main( final String[] args ) throws Exception
 	{
 		Locale.setDefault( Locale.US );
