@@ -2,14 +2,12 @@ package org.mastodon.mamut.feature;
 
 import static org.mastodon.feature.FeatureProjectionKey.key;
 
-import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.mastodon.RefPool;
 import org.mastodon.feature.Dimension;
 import org.mastodon.feature.Feature;
 import org.mastodon.feature.FeatureProjection;
@@ -55,32 +53,26 @@ public class SpotGaussFilteredIntensityFeature implements Feature< Spot >
 		}
 	}
 
+	private final Map< FeatureProjectionKey, FeatureProjection< Spot > > projectionMap;
+
 	final List< DoublePropertyMap< Spot > > means;
 
 	final List< DoublePropertyMap< Spot > > stds;
 
-	private final Map< FeatureProjectionKey, FeatureProjection< Spot > > projectionMap;
-
-	SpotGaussFilteredIntensityFeature( final int nSources, final RefPool< Spot > pool )
+	SpotGaussFilteredIntensityFeature(
+			final List< DoublePropertyMap< Spot > > means,
+			final List< DoublePropertyMap< Spot > > stds )
 	{
-		this.means = new ArrayList<>( nSources );
-		this.stds = new ArrayList<>( nSources );
-		this.projectionMap = new LinkedHashMap<>( 2 * nSources );
-		for ( int iSource = 0; iSource < nSources; iSource++ )
+		this.means = means;
+		this.stds = stds;
+		this.projectionMap = new LinkedHashMap<>( 2 * means.size() );
+		for ( int iSource = 0; iSource < means.size(); iSource++ )
 		{
-			/*
-			 * We use property maps, so that they are automatically cleaned if
-			 * an object is removed from the graph.
-			 */
-			final DoublePropertyMap< Spot > m = new DoublePropertyMap<>( pool, Double.NaN );
-			means.add( m );
 			final FeatureProjectionKey mkey = key( MEAN_PROJECTION_SPEC, iSource );
-			projectionMap.put( mkey, FeatureProjections.project( mkey, m, Dimension.COUNTS_UNITS ) );
+			projectionMap.put( mkey, FeatureProjections.project( mkey, means.get( iSource ), Dimension.COUNTS_UNITS ) );
 
-			final DoublePropertyMap< Spot > s = new DoublePropertyMap<>( pool, Double.NaN );
-			stds.add( s );
 			final FeatureProjectionKey skey = key( STD_PROJECTION_SPEC, iSource );
-			projectionMap.put( skey, FeatureProjections.project( skey, s, Dimension.COUNTS_UNITS ) );
+			projectionMap.put( skey, FeatureProjections.project( skey, stds.get( iSource ), Dimension.COUNTS_UNITS ) );
 		}
 	}
 

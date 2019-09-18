@@ -47,7 +47,7 @@ public class ColorMap
 	{
 		try
 		{
-			final URI USER_LUT_FOLDER = new URI( "file:///" + System.getProperty( "user.home" ) + "/.mastodon/luts/" );
+			final URI USER_LUT_FOLDER = new File( System.getProperty( "user.home" ) + "/.mastodon/luts/" ).toURI();
 			LUT_FOLDERS.add( USER_LUT_FOLDER );
 			final URI BUILTIN_LUT_FOLDER = ColorMap.class.getResource( "luts/" ).toURI();
 			LUT_FOLDERS.add( BUILTIN_LUT_FOLDER );

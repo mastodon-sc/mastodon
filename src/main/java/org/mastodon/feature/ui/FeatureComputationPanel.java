@@ -8,10 +8,10 @@ import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.swing.BorderFactory;
 import javax.swing.Box;
@@ -140,8 +140,11 @@ public class FeatureComputationPanel extends JPanel
 			panelFeatures.add( lbl );
 			panelFeatures.add( Box.createVerticalStrut( 5 ) );
 
-			final List< FeatureSpec< ?, ? > > featureSpecs =
-					new ArrayList<>( model.getFeatureSpecs( target ) );
+			final List< FeatureSpec< ?, ? > > featureSpecs = model.getFeatureSpecs( target )
+					.stream()
+					.filter( model::isVisible )
+					.collect( Collectors.toList() );
+
 			final FeatureTable< List< FeatureSpec< ?, ? > >, FeatureSpec< ?, ? > > featureTable =
 					new FeatureTable<>(
 							featureSpecs,

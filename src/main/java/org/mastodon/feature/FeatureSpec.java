@@ -95,8 +95,9 @@ public abstract class FeatureSpec< F extends Feature< T >, T > implements SciJav
 		if ( !( o instanceof FeatureSpec ) )
 			return false;
 		final FeatureSpec< ?, ? > that = ( FeatureSpec< ?, ? > ) o;
+
+		// Don't test for feature projection.
 		return key.equals( that.key )
-				&& projectionSpecs.equals( that.projectionSpecs )
 				&& featureClass.equals( that.featureClass )
 				&& targetClass.equals( that.targetClass );
 	}

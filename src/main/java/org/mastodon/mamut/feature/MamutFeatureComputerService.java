@@ -5,11 +5,12 @@ import java.util.Map;
 
 import org.mastodon.feature.DefaultFeatureComputerService;
 import org.mastodon.feature.Feature;
+import org.mastodon.feature.FeatureModel;
 import org.mastodon.feature.FeatureSpec;
 import org.mastodon.feature.FeatureSpecsService;
-import org.mastodon.feature.update.GraphUpdateStack;
+import org.mastodon.feature.update.GraphFeatureUpdateListeners;
+import org.mastodon.properties.PropertyChangeListener;
 import org.mastodon.revised.bdv.SharedBigDataViewerData;
-import org.mastodon.revised.model.mamut.Link;
 import org.mastodon.revised.model.mamut.Model;
 import org.mastodon.revised.model.mamut.ModelGraph;
 import org.mastodon.revised.model.mamut.Spot;
@@ -30,8 +31,6 @@ public class MamutFeatureComputerService extends DefaultFeatureComputerService
 	@Parameter
 	private FeatureSpecsService featureSpecsService;
 
-	private GraphUpdateStack< Spot, Link > graphUpdate;
-
 	public MamutFeatureComputerService()
 	{
 		super( MamutFeatureComputer.class );
@@ -45,7 +44,12 @@ public class MamutFeatureComputerService extends DefaultFeatureComputerService
 			return null;
 
 		// Store updates.
-		graphUpdate.commit( featureKeys );
+		final ModelGraph graph = model.getGraph();
+		final FeatureModel featureModel = model.getFeatureModel();
+		final SpotUpdateStack spotUpdates = SpotUpdateStack.getOrCreate( featureModel, graph.vertices() );
+		final LinkUpdateStack linkUpdates = LinkUpdateStack.getOrCreate( featureModel, graph.edges() );
+		spotUpdates.commit( featureKeys );
+		linkUpdates.commit( featureKeys );
 		return results;
 	}
 
@@ -76,14 +80,6 @@ public class MamutFeatureComputerService extends DefaultFeatureComputerService
 			return;
 		}
 
-		if ( GraphUpdateStack.class.isAssignableFrom( parameterClass ) )
-		{
-			@SuppressWarnings( "unchecked" )
-			final ModuleItem< GraphUpdateStack< Spot, Link > > updateItem = ( ModuleItem< GraphUpdateStack< Spot, Link > > ) item;
-			updateItem.setValue( module, graphUpdate );
-			return;
-		}
-
 		super.provideParameters( item, module, parameterClass, featureModel );
 	}
 
@@ -106,14 +102,24 @@ public class MamutFeatureComputerService extends DefaultFeatureComputerService
 	 */
 	public void setModel( final Model model )
 	{
+		/*
+		 * TODO: Unregister listeners from previous this.model.getGraph()
+		 *       For this, the listeners should be remembered (graphListener, vertexPropertyListener)
+		 */
+
 		this.model = model;
+
 		// Listen to graph changes to support incremental computation.
 		final ModelGraph graph = model.getGraph();
-		this.graphUpdate = new GraphUpdateStack<>( graph );
-		graph.addGraphListener( graphUpdate.graphListener() );
+		final FeatureModel featureModel = model.getFeatureModel();
+		final SpotUpdateStack spotUpdates = SpotUpdateStack.getOrCreate( featureModel, graph.vertices() );
+		final LinkUpdateStack linkUpdates = LinkUpdateStack.getOrCreate( featureModel, graph.edges() );
+
+		graph.addGraphListener( GraphFeatureUpdateListeners.graphListener( spotUpdates, linkUpdates, graph.vertexRef() ) );
 		// Listen to changes in spot properties.
 		final SpotPool spotPool = ( SpotPool ) graph.vertices().getRefPool();
-		spotPool.covarianceProperty().addPropertyChangeListener( graphUpdate.vertexPropertyChangeListener() );
-		spotPool.positionProperty().addPropertyChangeListener( graphUpdate.vertexPropertyChangeListener() );
+		final PropertyChangeListener< Spot > vertexPropertyListener = GraphFeatureUpdateListeners.vertexPropertyListener( spotUpdates, linkUpdates );
+		spotPool.covarianceProperty().addPropertyChangeListener( vertexPropertyListener );
+		spotPool.positionProperty().addPropertyChangeListener( vertexPropertyListener );
 	}
 }

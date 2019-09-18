@@ -41,7 +41,7 @@ public class SharedBigDataViewerData
 
 	private final SetupAssignments setupAssignments;
 
-	private final BrightnessDialog brightnessDialog;
+	private BrightnessDialog brightnessDialog;
 
 	private final ManualTransformation manualTransformation;
 
@@ -99,9 +99,6 @@ public class SharedBigDataViewerData
 		manualTransformation = new ManualTransformation( sources );
 
 		bookmarks = new Bookmarks();
-
-		// TODO: dialog parent?
-		brightnessDialog = new BrightnessDialog( null, setupAssignments );
 
 		if ( !tryLoadSettings( spimDataXmlFilename ) )
 		{
@@ -222,8 +219,11 @@ public class SharedBigDataViewerData
 		return bookmarks;
 	}
 
-	public BrightnessDialog getBrightnessDialog()
+	public synchronized BrightnessDialog getBrightnessDialog()
 	{
+		if ( brightnessDialog == null )
+			brightnessDialog = new BrightnessDialog( null, setupAssignments );
+
 		return brightnessDialog;
 	}
 
