@@ -1,9 +1,14 @@
 package org.mastodon.revised.model.mamut.trackmate;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-
+import bdv.spimdata.SpimDataMinimal;
+import bdv.spimdata.XmlIoSpimDataMinimal;
+import bdv.tools.bookmarks.Bookmarks;
+import bdv.viewer.ViewerOptions;
+import fiji.plugin.mamut.SourceSettings;
+import fiji.plugin.mamut.io.MamutXmlReader;
+import fiji.plugin.mamut.providers.MamutEdgeAnalyzerProvider;
+import fiji.plugin.mamut.providers.MamutSpotAnalyzerProvider;
+import fiji.plugin.mamut.providers.MamutTrackAnalyzerProvider;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -15,7 +20,7 @@ import java.util.Map;
 import java.util.NavigableSet;
 import java.util.Set;
 import java.util.stream.Collectors;
-
+import mpicbg.spim.data.SpimDataException;
 import org.jgrapht.graph.DefaultWeightedEdge;
 import org.junit.Test;
 import org.mastodon.collection.RefSet;
@@ -24,22 +29,20 @@ import org.mastodon.feature.FeatureModel;
 import org.mastodon.feature.FeatureProjection;
 import org.mastodon.feature.FeatureSpec;
 import org.mastodon.graph.algorithm.ConnectedComponents;
+import org.mastodon.graph.io.RawGraphIO;
 import org.mastodon.mamut.feature.MamutFeatureComputerService;
 import org.mastodon.project.MamutProject;
 import org.mastodon.project.MamutProjectIO;
-import org.mastodon.revised.mamut.WindowManager;
+import org.mastodon.revised.bdv.SharedBigDataViewerData;
 import org.mastodon.revised.model.mamut.Link;
+import org.mastodon.revised.model.mamut.MamutRawFeatureModelIO;
 import org.mastodon.revised.model.mamut.Model;
 import org.mastodon.revised.model.mamut.Spot;
 import org.scijava.Context;
 
-import bdv.tools.bookmarks.Bookmarks;
-import fiji.plugin.mamut.SourceSettings;
-import fiji.plugin.mamut.io.MamutXmlReader;
-import fiji.plugin.mamut.providers.MamutEdgeAnalyzerProvider;
-import fiji.plugin.mamut.providers.MamutSpotAnalyzerProvider;
-import fiji.plugin.mamut.providers.MamutTrackAnalyzerProvider;
-import mpicbg.spim.data.SpimDataException;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 public class MaMuTExporterTest
 {
@@ -228,29 +231,48 @@ public class MaMuTExporterTest
 		reader.readBookmarks( new Bookmarks() );
 	}
 
+	private static void loadProject( final Context context, final MamutProject project, final Model model ) throws IOException
+	{
+		try ( final MamutProject.ProjectReader reader = project.openForReading() )
+		{
+			final RawGraphIO.FileIdToGraphMap< Spot, Link > idmap = model.loadRaw( reader );
+			MamutRawFeatureModelIO.deserialize( context, model, idmap, reader );
+		}
+		catch ( ClassNotFoundException e )
+		{
+			throw new RuntimeException( e );
+		}
+	}
+
+
 	private Model export() throws IOException, SpimDataException
 	{
 		/*
 		 * 1. Load a regular Mastodon project.
 		 */
 
+		final Context context = new Context();
 		final MamutProject project = new MamutProjectIO().load( MASTODON_FILE );
-		final WindowManager windowManager = new WindowManager( new Context() );
-		windowManager.getProjectManager().open( project );
-		final Model model = windowManager.getAppModel().getModel();
-		final FeatureModel featureModel = model.getFeatureModel();
+
+
+		final String spimDataXmlFilename = project.getDatasetXmlFile().getAbsolutePath();
+		final SpimDataMinimal spimData = new XmlIoSpimDataMinimal().load( spimDataXmlFilename );
+		final SharedBigDataViewerData sharedBdvData = new SharedBigDataViewerData( spimDataXmlFilename, spimData, new ViewerOptions(), () -> {} );
+
+		final Model model = new Model( project.getSpaceUnits(), project.getTimeUnits() );
+		loadProject( context, project, model );
 
 		/*
 		 * 1.1a. Recompute all features.
 		 */
 
-		final Context context = windowManager.getContext();
 		final MamutFeatureComputerService featureComputerService = context.getService( MamutFeatureComputerService.class );
 		final Collection< FeatureSpec< ?, ? > > featureKeys = featureComputerService.getFeatureSpecs();
 		featureComputerService.setModel( model );
-		featureComputerService.setSharedBdvData( windowManager.getAppModel().getSharedBdvData() );
+		featureComputerService.setSharedBdvData( sharedBdvData );
 		final Map< FeatureSpec< ?, ? >, Feature< ? > > features = featureComputerService.compute( featureKeys );
 
+		final FeatureModel featureModel = model.getFeatureModel();
 		featureModel.pauseListeners();
 		featureModel.clear();
 		for ( final FeatureSpec< ?, ? > spec : features.keySet() )
