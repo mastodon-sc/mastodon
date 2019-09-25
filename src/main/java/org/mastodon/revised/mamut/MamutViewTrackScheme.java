@@ -13,6 +13,8 @@ import org.mastodon.app.ui.MastodonFrameViewActions;
 import org.mastodon.app.ui.ViewMenu;
 import org.mastodon.app.ui.ViewMenuBuilder.JMenuHandle;
 import org.mastodon.model.AutoNavigateFocusModel;
+import org.mastodon.model.TimepointListener;
+import org.mastodon.model.TimepointModel;
 import org.mastodon.revised.model.mamut.Link;
 import org.mastodon.revised.model.mamut.Model;
 import org.mastodon.revised.model.mamut.ModelGraphTrackSchemeProperties;
@@ -32,6 +34,7 @@ import org.mastodon.revised.ui.EditTagActions;
 import org.mastodon.revised.ui.FocusActions;
 import org.mastodon.revised.ui.HighlightBehaviours;
 import org.mastodon.revised.ui.SelectionActions;
+import org.mastodon.revised.ui.coloring.ColoringModel;
 import org.mastodon.revised.ui.coloring.GraphColorGeneratorAdapter;
 import org.mastodon.views.context.ContextChooser;
 import org.scijava.ui.behaviour.KeyPressedManager;
@@ -39,6 +42,12 @@ import org.scijava.ui.behaviour.KeyPressedManager;
 public class MamutViewTrackScheme extends MamutView< TrackSchemeGraph< Spot, Link >, TrackSchemeVertex, TrackSchemeEdge >
 {
 	private final ContextChooser< Spot > contextChooser;
+
+	/** a reference on the {@code GraphColorGeneratorAdapter} created and registered with this instance/window */
+	private final GraphColorGeneratorAdapter< Spot, Link, TrackSchemeVertex, TrackSchemeEdge > coloringAdapter;
+
+	/** a reference on a supervising instance of the {@code ColoringModel} that is bound to this instance/window */
+	private final ColoringModel coloringModel;
 
 	public MamutViewTrackScheme( final MamutAppModel appModel )
 	{
@@ -63,11 +72,11 @@ public class MamutViewTrackScheme extends MamutView< TrackSchemeGraph< Spot, Lin
 		 * show TrackSchemeFrame
 		 */
 		final TrackSchemeStyle forwardDefaultStyle = appModel.getTrackSchemeStyleManager().getForwardDefaultStyle();
-		final GraphColorGeneratorAdapter< Spot, Link, TrackSchemeVertex, TrackSchemeEdge > coloring = new GraphColorGeneratorAdapter<>( viewGraph.getVertexMap(), viewGraph.getEdgeMap() );
+		coloringAdapter = new GraphColorGeneratorAdapter<>( viewGraph.getVertexMap(), viewGraph.getEdgeMap() );
 		final TrackSchemeOptions options = TrackSchemeOptions.options()
 				.shareKeyPressedEvents( keyPressedManager )
 				.style( forwardDefaultStyle )
-				.graphColorGenerator( coloring );
+				.graphColorGenerator( coloringAdapter );
 		final AutoNavigateFocusModel< TrackSchemeVertex, TrackSchemeEdge > navigateFocusModel = new AutoNavigateFocusModel<>( focusModel, navigationHandler );
 		final TrackSchemeFrame frame = new TrackSchemeFrame(
 				viewGraph,
@@ -142,7 +151,7 @@ public class MamutViewTrackScheme extends MamutView< TrackSchemeGraph< Spot, Lin
 		);
 		appModel.getPlugins().addMenus( menu );
 
-		registerColoring( coloring, coloringMenuHandle,
+		coloringModel = registerColoring( coloringAdapter, coloringMenuHandle,
 				() -> frame.getTrackschemePanel().entitiesAttributesChanged() );
 
 		registerTagSetMenu( tagSetMenuHandle,
@@ -154,5 +163,20 @@ public class MamutViewTrackScheme extends MamutView< TrackSchemeGraph< Spot, Lin
 	public ContextChooser< Spot > getContextChooser()
 	{
 		return contextChooser;
+	}
+
+	public GraphColorGeneratorAdapter< Spot, Link, TrackSchemeVertex, TrackSchemeEdge > getGraphColorGeneratorAdapter()
+	{
+		return coloringAdapter;
+	}
+
+	public ColoringModel getColoringModel()
+	{
+		return coloringModel;
+	}
+
+	public TimepointModel getTimepointModel()
+	{
+		return timepointModel;
 	}
 }
