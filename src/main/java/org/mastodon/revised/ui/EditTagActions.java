@@ -397,6 +397,7 @@ public class EditTagActions< V extends Vertex< E >, E extends Edge< V > >
 			final String[] lines;
 			final Font[] fonts;
 			final Color[] colors;
+
 			switch ( mode )
 			{
 			case INACTIVE:
@@ -406,11 +407,11 @@ public class EditTagActions< V extends Vertex< E >, E extends Edge< V > >
 			{
 				// Collect text to display.
 				final TagSetStructure tagSetStructure = tagModel.getTagSetStructure();
-				lines = new String[ tagSetStructure.getTagSets().size() + 3 ];
-				fonts = new Font[ lines.length ];
-				colors = new Color[ lines.length ];
 				if ( tagSetStructure.getTagSets().size() == 0 )
 				{
+					lines = new String[ 2 ];
+					fonts = new Font[ lines.length ];
+					colors = new Color[ lines.length ];
 					lines[ 0 ] = "No tags available.\n";
 					lines[ 1 ] = "ESC: Cancel.";
 					fonts[ 0 ] = FONT.deriveFont( Font.BOLD );
@@ -418,6 +419,9 @@ public class EditTagActions< V extends Vertex< E >, E extends Edge< V > >
 				}
 				else
 				{
+					lines = new String[ tagSetStructure.getTagSets().size() + 3 ];
+					fonts = new Font[ lines.length ];
+					colors = new Color[ lines.length ];
 					lines[ 0 ] = "Tags available:\n";
 					fonts[ 0 ] = FONT.deriveFont( Font.BOLD );
 					int index = 1;
@@ -434,8 +438,8 @@ public class EditTagActions< V extends Vertex< E >, E extends Edge< V > >
 					lines[ index ] = " - Shift DEL: Clear all";
 				}
 				Arrays.fill( colors, Color.BLACK );
-			}
 				break;
+			}
 			case PICK_TAG:
 			{
 				// Collect text to display.
@@ -474,8 +478,8 @@ public class EditTagActions< V extends Vertex< E >, E extends Edge< V > >
 					lines[ index ] = " - ESC: Cancel.";
 					colors[ index ] = Color.BLACK;
 				}
-			}
 				break;
+			}
 			}
 
 			// Compute string box size.
