@@ -117,6 +117,12 @@ public class MastodonIcons
 	public static final Image TABLE_VIEW_ICON = isMac() ? null : BDV_ICON_LARGE.getImage();
 
 	/*
+	 * Background for the main window.
+	 */
+
+	public static final Image MAINWINDOW_BG = new ImageIcon( MastodonIcons.class.getResource( "MastodonMainWindowBG.png" ) ).getImage();
+
+	/*
 	 * Utils.
 	 */
 
