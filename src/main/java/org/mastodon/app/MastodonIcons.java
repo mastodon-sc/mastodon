@@ -28,15 +28,23 @@ public class MastodonIcons
 
 	public static final ImageIcon TRACKSCHEME_ICON_SMALL = new ImageIcon( MastodonIcons.class.getResource( "icon-lineage-view-16x16.png" ) );
 
-	public static final ImageIcon LOAD_ICON_SMALL = new ImageIcon( MastodonIcons.class.getResource( "icon-load-new-project-16x16.png" ) );
+	public static final ImageIcon NEW_ICON_SMALL = new ImageIcon( MastodonIcons.class.getResource( "icon-load-new-project-16x16.png" ) );
 
 	public static final ImageIcon SAVE_AS_ICON_SMALL = new ImageIcon( MastodonIcons.class.getResource( "icon-save-as-16x16.png" ) );
 
 	public static final ImageIcon SAVE_ICON_SMALL = new ImageIcon( MastodonIcons.class.getResource( "icon-save-16x16.png" ) );
 
+	public static final ImageIcon LOAD_ICON_SMALL = new ImageIcon( MastodonIcons.class.getResource( "icon-load-16x16.png" ) );
+
 	public static final ImageIcon TABLE_ICON_SMALL = new ImageIcon( MastodonIcons.class.getResource( "icon-table-16x16.png" ) );
 
 	public static final ImageIcon TAGS_ICON_SMALL = new ImageIcon( MastodonIcons.class.getResource( "icon-tag-16x16.png" ) );
+
+	public static final ImageIcon MAMUT_IMPORT_ICON_SMALL = new ImageIcon( MastodonIcons.class.getResource( "icon-mamut-import-16x16.png" ) );
+
+	public static final ImageIcon MAMUT_EXPORT_ICON_SMALL = new ImageIcon( MastodonIcons.class.getResource( "icon-mamut-export-16x16.png" ) );
+
+	public static final ImageIcon TGMM_IMPORT_ICON_SMALL = new ImageIcon( MastodonIcons.class.getResource( "icon-tgmm-import-16x16.png" ) );
 
 	/*
 	 * Medium.
@@ -50,7 +58,9 @@ public class MastodonIcons
 
 	public static final ImageIcon TRACKSCHEME_ICON_MEDIUM = new ImageIcon( MastodonIcons.class.getResource( "icon-lineage-view-32x32.png" ) );
 
-	public static final ImageIcon LOAD_ICON_MEDIUM = new ImageIcon( MastodonIcons.class.getResource( "icon-load-new-project-32x32.png" ) );
+	public static final ImageIcon NEW_ICON_MEDIUM = new ImageIcon( MastodonIcons.class.getResource( "icon-load-new-project-32x32.png" ) );
+
+	public static final ImageIcon LOAD_ICON_MEDIUM = new ImageIcon( MastodonIcons.class.getResource( "icon-load-32x32.png" ) );
 
 	public static final ImageIcon SAVE_AS_ICON_MEDIUM = new ImageIcon( MastodonIcons.class.getResource( "icon-save-as-32x32.png" ) );
 
@@ -59,6 +69,12 @@ public class MastodonIcons
 	public static final ImageIcon TABLE_ICON_MEDIUM = new ImageIcon( MastodonIcons.class.getResource( "icon-table-32x32.png" ) );
 
 	public static final ImageIcon TAGS_ICON_MEDIUM = new ImageIcon( MastodonIcons.class.getResource( "icon-tag-32x32.png" ) );
+
+	public static final ImageIcon MAMUT_IMPORT_ICON_MEDIUM = new ImageIcon( MastodonIcons.class.getResource( "icon-mamut-import-32x32.png" ) );
+
+	public static final ImageIcon MAMUT_EXPORT_ICON_MEDIUM = new ImageIcon( MastodonIcons.class.getResource( "icon-mamut-export-32x32.png" ) );
+
+	public static final ImageIcon TGMM_IMPORT_ICON_MEDIUM = new ImageIcon( MastodonIcons.class.getResource( "icon-tgmm-import-32x32.png" ) );
 
 	/*
 	 * Large.
@@ -72,7 +88,9 @@ public class MastodonIcons
 
 	public static final ImageIcon TRACKSCHEME_ICON_LARGE = new ImageIcon( MastodonIcons.class.getResource( "icon-lineage-view-512x512.png" ) );
 
-	public static final ImageIcon LOAD_ICON_LARGE = new ImageIcon( MastodonIcons.class.getResource( "icon-load-new-project-512x512.png" ) );
+	public static final ImageIcon NEW_ICON_LARGE = new ImageIcon( MastodonIcons.class.getResource( "icon-load-new-project-512x512.png" ) );
+
+	public static final ImageIcon LOAD_ICON_LARGE = new ImageIcon( MastodonIcons.class.getResource( "icon-load-512x512.png" ) );
 
 	public static final ImageIcon SAVE_AS_ICON_LARGE = new ImageIcon( MastodonIcons.class.getResource( "icon-save-as-512x512.png" ) );
 
@@ -81,6 +99,12 @@ public class MastodonIcons
 	public static final ImageIcon TABLE_ICON_LARGE = new ImageIcon( MastodonIcons.class.getResource( "icon-table-512x512.png" ) );
 
 	public static final ImageIcon TAGS_ICON_LARGE = new ImageIcon( MastodonIcons.class.getResource( "icon-tag-512x512.png" ) );
+
+	public static final ImageIcon MAMUT_IMPORT_ICON_LARGE = new ImageIcon( MastodonIcons.class.getResource( "icon-mamut-import-512x512.png" ) );
+
+	public static final ImageIcon MAMUT_EXPORT_ICON_LARGE = new ImageIcon( MastodonIcons.class.getResource( "icon-mamut-export-512x512.png" ) );
+
+	public static final ImageIcon TGMM_IMPORT_ICON_LARGE = new ImageIcon( MastodonIcons.class.getResource( "icon-tgmm-import-512x512.png" ) );
 
 	/*
 	 * Images for views.
