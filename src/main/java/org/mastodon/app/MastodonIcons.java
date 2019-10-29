@@ -14,6 +14,12 @@ import javax.swing.ImageIcon;
 public class MastodonIcons
 {
 
+	public static final ImageIcon MASTODON_ICON_LARGE = new ImageIcon( MastodonIcons.class.getResource( "mastodon-logo.png" ) );
+
+	/*
+	 * Small.
+	 */
+
 	public static final ImageIcon BVV_ICON_SMALL = new ImageIcon( MastodonIcons.class.getResource( "icon-BDV-volume-16x16.png" ) );
 
 	public static final ImageIcon BDV_ICON_SMALL = new ImageIcon( MastodonIcons.class.getResource( "icon-BDV-slicing-16x16.png" ) );
@@ -31,6 +37,32 @@ public class MastodonIcons
 	public static final ImageIcon TABLE_ICON_SMALL = new ImageIcon( MastodonIcons.class.getResource( "icon-table-16x16.png" ) );
 
 	public static final ImageIcon TAGS_ICON_SMALL = new ImageIcon( MastodonIcons.class.getResource( "icon-tag-16x16.png" ) );
+
+	/*
+	 * Medium.
+	 */
+
+	public static final ImageIcon BVV_ICON_MEDIUM = new ImageIcon( MastodonIcons.class.getResource( "icon-BDV-volume-32x32.png" ) );
+
+	public static final ImageIcon BDV_ICON_MEDIUM = new ImageIcon( MastodonIcons.class.getResource( "icon-BDV-slicing-32x32.png" ) );
+
+	public static final ImageIcon FEATURES_ICON_MEDIUM = new ImageIcon( MastodonIcons.class.getResource( "icon-compute-values-32x32.png" ) );
+
+	public static final ImageIcon TRACKSCHEME_ICON_MEDIUM = new ImageIcon( MastodonIcons.class.getResource( "icon-lineage-view-32x32.png" ) );
+
+	public static final ImageIcon LOAD_ICON_MEDIUM = new ImageIcon( MastodonIcons.class.getResource( "icon-load-new-project-32x32.png" ) );
+
+	public static final ImageIcon SAVE_AS_ICON_MEDIUM = new ImageIcon( MastodonIcons.class.getResource( "icon-save-as-32x32.png" ) );
+
+	public static final ImageIcon SAVE_ICON_MEDIUM = new ImageIcon( MastodonIcons.class.getResource( "icon-save-32x32.png" ) );
+
+	public static final ImageIcon TABLE_ICON_MEDIUM = new ImageIcon( MastodonIcons.class.getResource( "icon-table-32x32.png" ) );
+
+	public static final ImageIcon TAGS_ICON_MEDIUM = new ImageIcon( MastodonIcons.class.getResource( "icon-tag-32x32.png" ) );
+
+	/*
+	 * Large.
+	 */
 
 	public static final ImageIcon BVV_ICON_LARGE = new ImageIcon( MastodonIcons.class.getResource( "icon-BDV-volume-512x512.png" ) );
 
@@ -50,11 +82,19 @@ public class MastodonIcons
 
 	public static final ImageIcon TAGS_ICON_LARGE = new ImageIcon( MastodonIcons.class.getResource( "icon-tag-512x512.png" ) );
 
+	/*
+	 * Images for views.
+	 */
+
 	public static final Image BDV_VIEW_ICON = isMac() ? null : BDV_ICON_LARGE.getImage();
 
 	public static final Image TRACKSCHEME_VIEW_ICON = isMac() ? null : BDV_ICON_LARGE.getImage();
 
 	public static final Image TABLE_VIEW_ICON = isMac() ? null : BDV_ICON_LARGE.getImage();
+
+	/*
+	 * Utils.
+	 */
 
 	private static final boolean isMac()
 	{
