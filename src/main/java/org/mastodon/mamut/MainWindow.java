@@ -1,5 +1,16 @@
 package org.mastodon.mamut;
 
+import static org.mastodon.app.MastodonIcons.BDV_ICON_MEDIUM;
+import static org.mastodon.app.MastodonIcons.FEATURES_ICON_MEDIUM;
+import static org.mastodon.app.MastodonIcons.LOAD_ICON_MEDIUM;
+import static org.mastodon.app.MastodonIcons.MAMUT_EXPORT_ICON_MEDIUM;
+import static org.mastodon.app.MastodonIcons.MAMUT_IMPORT_ICON_MEDIUM;
+import static org.mastodon.app.MastodonIcons.MASTODON_ICON_LARGE;
+import static org.mastodon.app.MastodonIcons.NEW_ICON_MEDIUM;
+import static org.mastodon.app.MastodonIcons.SAVE_ICON_MEDIUM;
+import static org.mastodon.app.MastodonIcons.TAGS_ICON_MEDIUM;
+import static org.mastodon.app.MastodonIcons.TGMM_IMPORT_ICON_MEDIUM;
+import static org.mastodon.app.MastodonIcons.TRACKSCHEME_ICON_MEDIUM;
 import static org.mastodon.app.ui.ViewMenuBuilder.item;
 import static org.mastodon.app.ui.ViewMenuBuilder.separator;
 import static org.mastodon.mamut.MamutMenuBuilder.fileMenu;
@@ -14,12 +25,14 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
 import javax.swing.ActionMap;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JMenuBar;
 import javax.swing.JPanel;
 import javax.swing.JSeparator;
+import javax.swing.SwingConstants;
 import javax.swing.WindowConstants;
 
 import org.mastodon.app.ui.ViewMenu;
@@ -37,6 +50,7 @@ public class MainWindow extends JFrame
 	public MainWindow( final WindowManager windowManager )
 	{
 		super( "Mastodon" );
+		setIconImage( MASTODON_ICON_LARGE.getImage() );
 
 		final ActionMap actionMap = windowManager.getGlobalAppActions().getActionMap();
 
@@ -60,12 +74,12 @@ public class MainWindow extends JFrame
 
 		final GridBagConstraints button_gbc_right = new GridBagConstraints();
 		button_gbc_right.fill = GridBagConstraints.BOTH;
-		button_gbc_right.insets = new Insets(0, 0, 5, 0);
+		button_gbc_right.insets = new Insets(0, 0, 5, 10);
 		button_gbc_right.gridx = 1;
 
 		final GridBagConstraints button_gbc_left = new GridBagConstraints();
 		button_gbc_left.fill = GridBagConstraints.BOTH;
-		button_gbc_left.insets = new Insets(0, 0, 5, 5);
+		button_gbc_left.insets = new Insets(0, 10, 5, 5);
 		button_gbc_left.gridx = 0;
 
 		int gridy = 0;
@@ -76,14 +90,14 @@ public class MainWindow extends JFrame
 		++gridy;
 
 		final JButton bdvButton = new JButton( actionMap.get( WindowManager.NEW_BDV_VIEW ) );
-		bdvButton.setText( "bdv" );
+		prepareButton( bdvButton, "bdv", BDV_ICON_MEDIUM );
 		button_gbc_right.gridy = gridy;
 		buttonsPanel.add( bdvButton, button_gbc_right );
 
 		++gridy;
 
 		final JButton trackschemeButton = new JButton( actionMap.get( WindowManager.NEW_TRACKSCHEME_VIEW ) );
-		trackschemeButton.setText( "trackscheme" );
+		prepareButton( trackschemeButton, "trackscheme", TRACKSCHEME_ICON_MEDIUM );
 		button_gbc_right.gridy = gridy;
 		buttonsPanel.add( trackschemeButton, button_gbc_right );
 
@@ -100,14 +114,14 @@ public class MainWindow extends JFrame
 		++gridy;
 
 		final JButton featureComputationButton = new JButton( actionMap.get( WindowManager.COMPUTE_FEATURE_DIALOG ) );
-		featureComputationButton.setText( "compute features" );
+		prepareButton( featureComputationButton, "compute features", FEATURES_ICON_MEDIUM );
 		button_gbc_right.gridy = gridy;
 		buttonsPanel.add( featureComputationButton, button_gbc_right );
 
 		++gridy;
 
 		final JButton editTagSetsButton = new JButton( actionMap.get( WindowManager.TAGSETS_DIALOG ) );
-		editTagSetsButton.setText( "configure tags" );
+		prepareButton( editTagSetsButton, "configure tags", TAGS_ICON_MEDIUM );
 		button_gbc_right.gridy = gridy;
 		buttonsPanel.add( editTagSetsButton, button_gbc_right );
 
@@ -124,36 +138,36 @@ public class MainWindow extends JFrame
 		++gridy;
 
 		final JButton createProjectButton = new JButton( actionMap.get( ProjectManager.CREATE_PROJECT ) );
-		createProjectButton.setText( "new project" );
+		prepareButton( createProjectButton, "new project", NEW_ICON_MEDIUM );
 		button_gbc_left.gridy = gridy;
 		buttonsPanel.add( createProjectButton, button_gbc_left );
 
 		final JButton importTgmmButton = new JButton( actionMap.get( ProjectManager.IMPORT_TGMM ) );
-		importTgmmButton.setText( "import tgmm" );
+		prepareButton( importTgmmButton, "import tgmm", TGMM_IMPORT_ICON_MEDIUM );
 		button_gbc_right.gridy = gridy;
 		buttonsPanel.add( importTgmmButton, button_gbc_right );
 
 		++gridy;
 
 		final JButton importMamutButton = new JButton( actionMap.get( ProjectManager.IMPORT_MAMUT ) );
-		importMamutButton.setText( "import mamut" );
+		prepareButton( importMamutButton, "import mamut", MAMUT_IMPORT_ICON_MEDIUM );
 		button_gbc_left.gridy = gridy;
 		buttonsPanel.add( importMamutButton, button_gbc_left );
 
 		final JButton exportMamutButton = new JButton( actionMap.get( ProjectManager.EXPORT_MAMUT ) );
-		exportMamutButton.setText( "export mamut" );
+		prepareButton( exportMamutButton, "export mamut", MAMUT_EXPORT_ICON_MEDIUM );
 		button_gbc_right.gridy = gridy;
 		buttonsPanel.add( exportMamutButton, button_gbc_right );
 
 		++gridy;
 
 		final JButton saveProjectButton = new JButton( actionMap.get( ProjectManager.SAVE_PROJECT ) );
-		saveProjectButton.setText( "save project" );
+		prepareButton( saveProjectButton, "save project", SAVE_ICON_MEDIUM );
 		button_gbc_left.gridy = gridy;
 		buttonsPanel.add( saveProjectButton, button_gbc_left );
 
 		final JButton loadProjectButton = new JButton( actionMap.get( ProjectManager.LOAD_PROJECT ) );
-		loadProjectButton.setText( "load project" );
+		prepareButton( loadProjectButton, "load project", LOAD_ICON_MEDIUM );
 		button_gbc_right.gridy = gridy;
 		buttonsPanel.add( loadProjectButton, button_gbc_right );
 
@@ -181,6 +195,16 @@ public class MainWindow extends JFrame
 		} );
 
 		pack();
+	}
+
+	private static void prepareButton( final JButton button, final String txt, final ImageIcon icon )
+	{
+		final JLabel iconLabel = new JLabel( icon );
+		final JLabel clickMe = new JLabel( txt, SwingConstants.CENTER );
+		button.setText( "" );
+		button.setLayout( new BorderLayout() );
+		button.add( iconLabel, BorderLayout.WEST );
+		button.add( clickMe, BorderLayout.CENTER );
 	}
 
 	public static void addMenus( final ViewMenu menu, final ActionMap actionMap )
