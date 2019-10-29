@@ -1,5 +1,8 @@
 package org.mastodon.app;
 
+import java.awt.Image;
+import java.util.Locale;
+
 import javax.swing.ImageIcon;
 
 /**
@@ -46,5 +49,17 @@ public class MastodonIcons
 	public static final ImageIcon TABLE_ICON_LARGE = new ImageIcon( MastodonIcons.class.getResource( "icon-table-512x512.png" ) );
 
 	public static final ImageIcon TAGS_ICON_LARGE = new ImageIcon( MastodonIcons.class.getResource( "icon-tag-512x512.png" ) );
+
+	public static final Image BDV_VIEW_ICON = isMac() ? null : BDV_ICON_LARGE.getImage();
+
+	public static final Image TRACKSCHEME_VIEW_ICON = isMac() ? null : BDV_ICON_LARGE.getImage();
+
+	public static final Image TABLE_VIEW_ICON = isMac() ? null : BDV_ICON_LARGE.getImage();
+
+	private static final boolean isMac()
+	{
+		final String OS = System.getProperty( "os.name", "generic" ).toLowerCase( Locale.ENGLISH );
+		return ( OS.indexOf( "mac" ) >= 0 ) || ( OS.indexOf( "darwin" ) >= 0 );
+	}
 
 }
