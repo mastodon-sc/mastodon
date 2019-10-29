@@ -195,6 +195,7 @@ public class MainWindow extends JFrame
 		} );
 
 		pack();
+		setResizable( false );
 	}
 
 	private static void prepareButton( final JButton button, final String txt, final ImageIcon icon )
