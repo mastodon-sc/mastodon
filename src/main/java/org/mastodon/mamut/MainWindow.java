@@ -54,6 +54,8 @@ public class MainWindow extends JFrame
 	{
 		super( "Mastodon" );
 		setIconImage( MASTODON_ICON_LARGE.getImage() );
+		setLocationByPlatform( true );
+		setLocationRelativeTo( null );
 
 		final ActionMap actionMap = windowManager.getGlobalAppActions().getActionMap();
 
