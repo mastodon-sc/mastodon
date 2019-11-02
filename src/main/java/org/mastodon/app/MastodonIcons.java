@@ -110,11 +110,11 @@ public class MastodonIcons
 	 * Images for views.
 	 */
 
-	public static final Image BDV_VIEW_ICON = isMac() ? null : BDV_ICON_LARGE.getImage();
+	public static final Image BDV_VIEW_ICON = isMac() ? null : BDV_ICON_MEDIUM.getImage();
 
-	public static final Image TRACKSCHEME_VIEW_ICON = isMac() ? null : BDV_ICON_LARGE.getImage();
+	public static final Image TRACKSCHEME_VIEW_ICON = isMac() ? null : TRACKSCHEME_ICON_MEDIUM.getImage();
 
-	public static final Image TABLE_VIEW_ICON = isMac() ? null : BDV_ICON_LARGE.getImage();
+	public static final Image TABLE_VIEW_ICON = isMac() ? null : TABLE_ICON_MEDIUM.getImage();
 
 	/*
 	 * Background for the main window.
