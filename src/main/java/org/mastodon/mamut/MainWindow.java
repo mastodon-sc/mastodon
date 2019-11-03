@@ -6,7 +6,7 @@ import static org.mastodon.app.MastodonIcons.LOAD_ICON_MEDIUM;
 import static org.mastodon.app.MastodonIcons.MAINWINDOW_BG;
 import static org.mastodon.app.MastodonIcons.MAMUT_EXPORT_ICON_MEDIUM;
 import static org.mastodon.app.MastodonIcons.MAMUT_IMPORT_ICON_MEDIUM;
-import static org.mastodon.app.MastodonIcons.MASTODON_ICON_LARGE;
+import static org.mastodon.app.MastodonIcons.MASTODON_ICON_MEDIUM;
 import static org.mastodon.app.MastodonIcons.NEW_ICON_MEDIUM;
 import static org.mastodon.app.MastodonIcons.SAVE_ICON_MEDIUM;
 import static org.mastodon.app.MastodonIcons.TAGS_ICON_MEDIUM;
@@ -53,7 +53,7 @@ public class MainWindow extends JFrame
 	public MainWindow( final WindowManager windowManager )
 	{
 		super( "Mastodon" );
-		setIconImage( MASTODON_ICON_LARGE.getImage() );
+		setIconImage( MASTODON_ICON_MEDIUM.getImage() );
 		setLocationByPlatform( true );
 		setLocationRelativeTo( null );
 
