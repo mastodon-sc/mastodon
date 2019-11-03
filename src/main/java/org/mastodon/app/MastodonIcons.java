@@ -14,7 +14,11 @@ import javax.swing.ImageIcon;
 public class MastodonIcons
 {
 
-	public static final ImageIcon MASTODON_ICON_LARGE = new ImageIcon( MastodonIcons.class.getResource( "mastodon-logo.png" ) );
+	public static final ImageIcon MASTODON_ICON_LARGE = new ImageIcon( MastodonIcons.class.getResource( "mastodon-logo-512x512.png" ) );
+
+	public static final ImageIcon MASTODON_ICON_MEDIUM = new ImageIcon( MastodonIcons.class.getResource( "mastodon-logo-32x32.png" ) );
+
+	public static final ImageIcon MASTODON_ICON_SMALL = new ImageIcon( MastodonIcons.class.getResource( "mastodon-logo-16x16.png" ) );
 
 	/*
 	 * Small.
