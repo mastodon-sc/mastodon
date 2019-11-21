@@ -80,6 +80,8 @@ public class MastodonIcons
 
 	public static final ImageIcon TGMM_IMPORT_ICON_MEDIUM = new ImageIcon( MastodonIcons.class.getResource( "icon-tgmm-import-32x32.png" ) );
 
+	public static final ImageIcon HELP_ICON_MEDIUM = new ImageIcon( MastodonIcons.class.getResource( "help.png" ) );
+
 	/*
 	 * Large.
 	 */
