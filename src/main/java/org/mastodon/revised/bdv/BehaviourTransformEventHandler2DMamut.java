@@ -42,7 +42,7 @@ public class BehaviourTransformEventHandler2DMamut implements BehaviourTransform
 	private static final String KEY_ZOOM_OUT = "2d zoom out";
 	private static final String KEY_ZOOM_OUT_FAST = "2d zoom out fast";
 	private static final String KEY_ZOOM_OUT_SLOW = "2d zoom out slow";
-	
+
 	private static final String[] DRAG_TRANSLATE_KEYS = new String[] { "button2", "button3" };
 	private static final String[] ZOOM_NORMAL_KEYS = new String[] { "scroll" };
 	private static final String[] ZOOM_FAST_KEYS = new String[] { "shift scroll" };
@@ -54,19 +54,19 @@ public class BehaviourTransformEventHandler2DMamut implements BehaviourTransform
 	private static final String[] SCROLL_ROTATE_KEYS = new String[] { "not mapped" };
 	private static final String[] SCROLL_ROTATE_FAST_KEYS = new String[] { "not mapped" };
 	private static final String[] SCROLL_ROTATE_SLOW_KEYS = new String[] { "not mapped" };
-	private static final String[] ROTATE_LEFT_KEYS = new String[] { "LEFT" };
-	private static final String[] ROTATE_RIGHT_KEYS = new String[] { "RIGHT" };
-	private static final String[] ROTATE_LEFT_FAST_KEYS = new String[] { "shift LEFT" };
-	private static final String[] ROTATE_RIGHT_FAST_KEYS = new String[] { "shift RIGHT" };
-	private static final String[] ROTATE_LEFT_SLOW_KEYS = new String[] { "ctrl LEFT" };
-	private static final String[] ROTATE_RIGHT_SLOW_KEYS = new String[] { "ctrl RIGHT" };
-	
-	private static final String[] KEY_ZOOM_IN_KEYS = new String[] { "UP" };
-	private static final String[] KEY_ZOOM_OUT_KEYS = new String[] { "DOWN" };
-	private static final String[] KEY_ZOOM_IN_FAST_KEYS = new String[] { "shift UP" };
-	private static final String[] KEY_ZOOM_OUT_FAST_KEYS = new String[] { "shift DOWN" };
-	private static final String[] KEY_ZOOM_IN_SLOW_KEYS = new String[] { "ctrl UP" };
-	private static final String[] KEY_ZOOM_OUT_SLOW_KEYS = new String[] { "ctrl DOWN" };
+	private static final String[] ROTATE_LEFT_KEYS = new String[] { "not mapped" };
+	private static final String[] ROTATE_RIGHT_KEYS = new String[] { "not mapped" };
+	private static final String[] ROTATE_LEFT_FAST_KEYS = new String[] { "not mapped" };
+	private static final String[] ROTATE_RIGHT_FAST_KEYS = new String[] { "not mapped" };
+	private static final String[] ROTATE_LEFT_SLOW_KEYS = new String[] { "not mapped" };
+	private static final String[] ROTATE_RIGHT_SLOW_KEYS = new String[] { "not mapped" };
+
+	private static final String[] KEY_ZOOM_IN_KEYS = new String[] { "not mapped" };
+	private static final String[] KEY_ZOOM_OUT_KEYS = new String[] { "not mapped" };
+	private static final String[] KEY_ZOOM_IN_FAST_KEYS = new String[] { "not mapped" };
+	private static final String[] KEY_ZOOM_OUT_FAST_KEYS = new String[] { "not mapped" };
+	private static final String[] KEY_ZOOM_IN_SLOW_KEYS = new String[] { "not mapped" };
+	private static final String[] KEY_ZOOM_OUT_SLOW_KEYS = new String[] { "not mapped" };
 
 	private static final double[] SPEED = { 1.0, 10.0, 0.1 };
 
@@ -217,11 +217,11 @@ public class BehaviourTransformEventHandler2DMamut implements BehaviourTransform
 	{
 		behaviours.behaviour( dragTranslate, DRAG_TRANSLATE, DRAG_TRANSLATE_KEYS );
 		behaviours.behaviour( dragRotate, DRAG_ROTATE,  DRAG_ROTATE_KEYS );
-		
+
 		behaviours.behaviour( scrollTranslateNormal, SCROLL_TRANSLATE, SCROLL_TRANSLATE_KEYS );
 		behaviours.behaviour( scrollTranslateFast, SCROLL_TRANSLATE_FAST, SCROLL_TRANSLATE_FAST_KEYS );
 		behaviours.behaviour( scrollTranslateSlow, SCROLL_TRANSLATE_SLOW, SCROLL_TRANSLATE_SLOW_KEYS );
-		
+
 		behaviours.behaviour( zoom, ZOOM_NORMAL, ZOOM_NORMAL_KEYS );
 		behaviours.behaviour( zoomFast, ZOOM_FAST, ZOOM_FAST_KEYS );
 		behaviours.behaviour( zoomSlow, ZOOM_SLOW, ZOOM_SLOW_KEYS );
