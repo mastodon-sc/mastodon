@@ -51,7 +51,7 @@ import net.imglib2.ui.TransformListener;
  * @author Stephan Saalfeld
  * @author Tobias Pietzsch
  */
-public class BehaviourTransformEventHandler3DMamut implements TransformEventHandler< AffineTransform3D >
+public class BehaviourTransformEventHandler3DMamut implements BehaviourTransformEventHandlerMamut
 {
 	public static final String DRAG_TRANSLATE = "drag translate";
 	public static final String ZOOM_NORMAL = "scroll zoom";
@@ -281,6 +281,7 @@ public class BehaviourTransformEventHandler3DMamut implements TransformEventHand
 		keyBackwardZSlowBehaviour = new KeyTranslateZ( KEY_BACKWARD_Z_SLOW, -speed[ 2 ] );
 	}
 
+	@Override
 	public void install( final Behaviours behaviours )
 	{
 		behaviours.namedBehaviour( drageTranslateBehaviour, DRAG_TRANSLATE_KEYS );
