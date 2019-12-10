@@ -442,6 +442,8 @@ public class WindowManager
 			frames.add( w.getFrame() );
 		for ( final MamutViewTrackScheme w : tsWindows )
 			frames.add( w.getFrame() );
+		for ( final MamutViewTable w : tableWindows )
+			frames.add( w.getFrame() );
 		try
 		{
 			InvokeOnEDT.invokeAndWait( new Runnable()
