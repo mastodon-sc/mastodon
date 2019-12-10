@@ -750,8 +750,9 @@ public class FeatureTagTablePanel< O > extends JPanel
 			{
 				final O o = getObjectForViewRow( row, ref );
 				final int color = coloring.color( o );
-				c.setBackground( color == 0 ? table.getBackground() : new Color( color, true ) );
-				c.setForeground( table.getForeground() );
+				final Color bgColor = color == 0 ? table.getBackground() : new Color( color, true );
+				c.setBackground( bgColor );
+				c.setForeground( textColorForBackground( bgColor ) );
 			}
 
 			if ( hasFocus )
@@ -864,5 +865,24 @@ public class FeatureTagTablePanel< O > extends JPanel
 		final InputMap inputMap = editorComponent.getInputMap( JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT );
 		for ( final KeyStroke key : allTableKeys )
 			inputMap.put( key, "nothing" );
+	}
+
+	/**
+	 * Returns the black color or white color depending on the specified
+	 * background color, to ensure proper readability of the text on said
+	 * background.
+	 *
+	 * @param backgroundColor
+	 *            the background color.
+	 * @return the black or white color.
+	 */
+	private static Color textColorForBackground( final Color backgroundColor )
+	{
+		if ( ( backgroundColor.getRed() * 0.299
+				+ backgroundColor.getGreen() * 0.587
+				+ backgroundColor.getBlue() * 0.114 ) > 150 )
+			return Color.BLACK;
+		else
+			return Color.WHITE;
 	}
 }
