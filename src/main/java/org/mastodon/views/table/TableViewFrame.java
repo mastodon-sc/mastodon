@@ -42,6 +42,7 @@ import org.mastodon.model.SelectionModel;
 import org.mastodon.model.tag.ObjTags;
 import org.mastodon.model.tag.TagSetModel;
 import org.mastodon.model.tag.TagSetStructure.TagSet;
+import org.mastodon.ui.coloring.ColorGenerator;
 import org.mastodon.ui.coloring.GraphColorGenerator;
 import org.mastodon.ui.context.ContextChooserPanel;
 import org.mastodon.undo.UndoPointMarker;
@@ -89,12 +90,6 @@ public class TableViewFrame<
 
 	private final E eref;
 
-	/** Used in coloring edges. */
-	private final V source;
-
-	/** Used in coloring edges. */
-	private final V target;
-
 	/**
 	 * If <code>true</code>, the selection in the {@link JTable}s will be used
 	 * to update the {@link SelectionModel} of this view.
@@ -132,8 +127,6 @@ public class TableViewFrame<
 		final GraphIdBimap< V, E > graphIdBimap = appModel.getModel().getGraphIdBimap();
 		this.vref = graphIdBimap.vertexIdBimap().createRef();
 		this.eref = graphIdBimap.edgeIdBimap().createRef();
-		this.source = graphIdBimap.vertexIdBimap().createRef();
-		this.target = graphIdBimap.vertexIdBimap().createRef();
 		final List< TagSet > tagSets = tagSetModel.getTagSetStructure().getTagSets();
 		this.filterByVertices = new RefArrayList<>( graphIdBimap.vertexIdBimap() );
 		this.filterByEdges = new RefSetImp<>( graphIdBimap.edgeIdBimap() );
@@ -217,13 +210,30 @@ public class TableViewFrame<
 
 		final ObjTags< E > edgeTags = tagSetModel.getEdgeTags();
 		final RefPool< E > edgeIdBimap = graphIdBimap.edgeIdBimap();
+
+		final ColorGenerator< E > edgeColorGenerator = new ColorGenerator< E >()
+		{
+
+			private final V vTmpS = graphIdBimap.vertexIdBimap().createRef();
+
+			private final V vTmpT = graphIdBimap.vertexIdBimap().createRef();
+
+			@Override
+			public int color( final E edge )
+			{
+				edge.getTarget( vTmpT );
+				edge.getSource( vTmpS );
+				return coloring.color( edge, vTmpS, vTmpT );
+			}
+		};
+
 		edgeTable = new FeatureTagTablePanel<>(
 				edgeTags,
 				edgeIdBimap,
 				edgeLabelGenerator,
 				edgeLabelSetter,
 				undoPointMarker,
-				( e ) -> coloring.color( e, source, target ) );
+				edgeColorGenerator );
 		final JTable et = edgeTable.getTable();
 		et.getSelectionModel().addListSelectionListener( new ListSelectionListener()
 		{
