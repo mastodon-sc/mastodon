@@ -17,6 +17,7 @@ import org.mastodon.mamut.model.Link;
 import org.mastodon.mamut.model.Model;
 import org.mastodon.mamut.model.ModelGraph;
 import org.mastodon.mamut.model.Spot;
+import org.mastodon.mamut.model.SpotPool;
 import org.mastodon.mamut.plugin.MamutPlugin;
 import org.mastodon.mamut.plugin.MamutPluginAppModel;
 import org.mastodon.mamut.plugin.MamutPlugins;
@@ -411,9 +412,11 @@ public class WindowManager
 			view.onClose( () -> selectionModel.listeners().remove( view.getFrame() ) );
 		}
 		/*
-		 * TODO Have the model expose the label property so that we can register a
-		 * listener to it, that will update the table-view when the label change.
+		 * Register a listener to vertex label property changes, will update the
+		 * table-view when the label change.
 		 */
+		final SpotPool spotPool = ( SpotPool ) appModel.getModel().getGraph().vertices().getRefPool();
+		spotPool.labelProperty().addPropertyChangeListener( v -> view.getFrame().repaint() );
 
 		addTableWindow( view );
 		return view;
