@@ -1,20 +1,12 @@
 package org.mastodon.revised.model.mamut;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
-
 import java.io.File;
-import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
 import org.junit.Test;
 import org.mastodon.collection.RefSet;
 import org.mastodon.feature.Dimension;
@@ -24,20 +16,21 @@ import org.mastodon.feature.FeatureProjection;
 import org.mastodon.feature.FeatureProjectionKey;
 import org.mastodon.feature.FeatureProjectionSpec;
 import org.mastodon.feature.FeatureSpec;
+import org.mastodon.feature.FeatureSpecsService;
 import org.mastodon.feature.IntFeatureProjection;
 import org.mastodon.graph.algorithm.RootFinder;
-import org.mastodon.revised.mamut.WindowManager;
-import org.mastodon.revised.model.mamut.Link;
-import org.mastodon.revised.model.mamut.Model;
-import org.mastodon.revised.model.mamut.ModelGraph;
-import org.mastodon.revised.model.mamut.Spot;
+import org.mastodon.project.MamutProject;
 import org.mastodon.revised.model.mamut.trackmate.TrackMateImportedLinkFeatures;
 import org.mastodon.revised.model.mamut.trackmate.TrackMateImportedSpotFeatures;
 import org.mastodon.revised.model.mamut.trackmate.TrackMateImportedSpotFeatures.Spec;
 import org.mastodon.revised.model.mamut.trackmate.TrackMateImporter;
 import org.scijava.Context;
 
-import mpicbg.spim.data.SpimDataException;
+import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 public class TrackMateImporterTest
 {
@@ -232,13 +225,15 @@ public class TrackMateImporterTest
 	@Test
 	public void test()
 	{
-		final WindowManager windowManager = new WindowManager( new Context() );
+		final Context context = new Context();
+		final FeatureSpecsService featureSpecsService = context.getService( FeatureSpecsService.class );
+//		final WindowManager windowManager = new WindowManager( context );
 		try
 		{
 			final TrackMateImporter importer = new TrackMateImporter( new File( TRACKMATE_FILE ) );
-			windowManager.getProjectManager().open( importer.createProject() );
-			importer.readModel( windowManager.getAppModel().getModel(), windowManager.getFeatureSpecsService() );
-			final Model model = windowManager.getAppModel().getModel();
+			final MamutProject project = importer.createProject();
+			final Model model = new Model( project.getSpaceUnits(), project.getTimeUnits() );
+			importer.readModel( model, featureSpecsService );
 
 			// Check that the whole model is there.
 			final ModelGraph graph = model.getGraph();
@@ -298,7 +293,7 @@ public class TrackMateImporterTest
 			assertTrue( "Did not test link feature values: could not find link with source ID" + TARGET_LINK_SOURCE_ID, tested );
 
 		}
-		catch ( final IOException | SpimDataException e )
+		catch ( final Exception e )
 		{
 			e.printStackTrace();
 		}

@@ -1,8 +1,6 @@
 package org.mastodon.feature.update;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
-
+import bdv.spimdata.SpimDataMinimal;
 import java.io.File;
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -10,7 +8,7 @@ import java.io.ObjectOutputStream;
 import java.util.Map;
 import java.util.Random;
 import java.util.Set;
-
+import mpicbg.spim.data.SpimDataException;
 import org.junit.Test;
 import org.mastodon.collection.RefCollection;
 import org.mastodon.collection.ref.RefSetImp;
@@ -24,6 +22,7 @@ import org.mastodon.feature.io.FeatureSerializer;
 import org.mastodon.feature.update.GraphUpdateStackTest.TestFeature;
 import org.mastodon.feature.update.GraphUpdateStackTest.TestFeatureComputer;
 import org.mastodon.feature.update.UpdateStackSerializationTest.FT4.Spec;
+import org.mastodon.graph.io.RawGraphIO;
 import org.mastodon.io.FileIdToObjectMap;
 import org.mastodon.io.ObjectToFileIdMap;
 import org.mastodon.io.properties.DoublePropertyMapSerializer;
@@ -31,17 +30,19 @@ import org.mastodon.mamut.feature.MamutFeatureComputerService;
 import org.mastodon.project.MamutProject;
 import org.mastodon.project.MamutProjectIO;
 import org.mastodon.properties.DoublePropertyMap;
-import org.mastodon.revised.mamut.WindowManager;
 import org.mastodon.revised.model.mamut.Link;
+import org.mastodon.revised.model.mamut.MamutRawFeatureModelIO;
 import org.mastodon.revised.model.mamut.Model;
 import org.mastodon.revised.model.mamut.ModelGraph;
 import org.mastodon.revised.model.mamut.Spot;
+import org.mastodon.revised.util.DummySpimData;
 import org.scijava.Context;
 import org.scijava.ItemIO;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 
-import mpicbg.spim.data.SpimDataException;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 
 /**
  * JUnit test for incremental feature state de/serialization.
@@ -92,14 +93,16 @@ public class UpdateStackSerializationTest
 	private void createProjectWithPendingChanges() throws Exception
 	{
 		final String bdvFile = "x=10 y=10 z=10 sx=1 sy=1 sz=1 t=10.dummy";
-		final MamutProject originalProject = new MamutProject( null, new File( bdvFile ) );
+		final SpimDataMinimal spimData = DummySpimData.tryCreate( bdvFile );
+		final MamutProject originalProject = new MamutProject( SAVED_PROJECT, new File( bdvFile ) );
 
-		final WindowManager windowManager = new WindowManager( new Context() );
-		windowManager.getProjectManager().open( originalProject );
+		final Model model = new Model();
 
-		final Model model = windowManager.getAppModel().getModel();
+		final Context context = new Context();
+		final MamutFeatureComputerService computerService = context.getService( MamutFeatureComputerService.class );
+		computerService.setModel( model );
+
 		final ModelGraph graph = model.getGraph();
-
 		final Spot vref1 = graph.vertexRef();
 		final Spot vref2 = graph.vertexRef();
 		final Link eref = graph.edgeRef();
@@ -108,7 +111,7 @@ public class UpdateStackSerializationTest
 		final double[] pos = new double[] { 10 * ran.nextDouble(), 10 * ran.nextDouble(), 10 * ran.nextDouble() };
 		final Spot source = graph.addVertex( vref1 ).init( 0, pos, ran.nextDouble() );
 
-		final int numTimepoints = windowManager.getAppModel().getSharedBdvData().getNumTimepoints();
+		final int numTimepoints = spimData.getSequenceDescription().getTimePoints().size();
 		for ( int t = 1; t < numTimepoints; t++ )
 		{
 			pos[ 0 ] = 10 * ran.nextDouble();
@@ -119,31 +122,32 @@ public class UpdateStackSerializationTest
 			source.refTo( target );
 		}
 
-		final MamutFeatureComputerService computerService = windowManager.getContext().getService( MamutFeatureComputerService.class );
-		computerService.setModel( model );
-
 		// Get one spot in particular.
-		final FeatureModel featureModel = model.getFeatureModel();
 		final Spot s0 = model.getSpatioTemporalIndex().getSpatialIndex( 4 ).iterator().next();
 
 		// Compute all for FT4, that simply stores the X position of spots.
 		final Map< FeatureSpec< ?, ? >, Feature< ? > > features = computerService.compute( FT4.SPEC );
+		final FeatureModel featureModel = model.getFeatureModel();
 		features.values().forEach( featureModel::declareFeature );
 
 		// Make one change.
 		s0.move( 10., 0 );
 
 		// Save project.
-		windowManager.getProjectManager().saveProject( SAVED_PROJECT );
+		saveProject( context, originalProject, model );
 	}
 
 	private void openProjectWithPendingChanges() throws IOException, SpimDataException
 	{
 		// Open serialized project.
-		final WindowManager windowManager = new WindowManager( new Context() );
-		windowManager.getProjectManager().open( new MamutProjectIO().load( SAVED_PROJECT.getAbsolutePath() ) );
+		final Context context = new Context();
+		final MamutProject project = new MamutProjectIO().load( SAVED_PROJECT.getAbsolutePath() );
+		final Model model = new Model();
+		loadProject( context, project, model );
 
-		final Model model = windowManager.getAppModel().getModel();
+		final MamutFeatureComputerService computerService = context.getService( MamutFeatureComputerService.class );
+		computerService.setModel( model );
+
 		final ModelGraph graph = model.getGraph();
 		final FeatureModel featureModel = model.getFeatureModel();
 		final Spot s0 = model.getSpatioTemporalIndex().getSpatialIndex( 4 ).iterator().next();
@@ -157,9 +161,6 @@ public class UpdateStackSerializationTest
 		/*
 		 * Trigger recalculation of FT4.
 		 */
-
-		final MamutFeatureComputerService computerService = windowManager.getContext().getService( MamutFeatureComputerService.class );
-		computerService.setModel( model );
 
 		/*
 		 * For this one, we expect that only the spot s0 will be recalculated.
@@ -181,23 +182,24 @@ public class UpdateStackSerializationTest
 		assertEquals( "Now that we recomputed the feature value, it should be equal to the spot X position.", x0b, s0.getDoublePosition( 0 ), 1e-9 );
 
 		// Save the project again.
-		windowManager.getProjectManager().saveProject( SAVED_PROJECT );
+		saveProject( context, project, model );
 	}
 
 	private void openProjectWithoutPendingChanges() throws IOException, SpimDataException
 	{
 		// Open serialized project.
-		final WindowManager windowManager = new WindowManager( new Context() );
-		windowManager.getProjectManager().open( new MamutProjectIO().load( SAVED_PROJECT.getAbsolutePath() ) );
+		final Context context = new Context();
+		final MamutProject project = new MamutProjectIO().load( SAVED_PROJECT.getAbsolutePath() );
+		final Model model = new Model();
+		loadProject( context, project, model );
 
-		final Model model = windowManager.getAppModel().getModel();
+		final MamutFeatureComputerService computerService = context.getService( MamutFeatureComputerService.class );
+		computerService.setModel( model );
+
 		final ModelGraph graph = model.getGraph();
 		final FeatureModel featureModel = model.getFeatureModel();
 
 		final FT4 ft = ( FT4 ) featureModel.getFeature( FT4.SPEC );
-
-		final MamutFeatureComputerService computerService = windowManager.getContext().getService( MamutFeatureComputerService.class );
-		computerService.setModel( model );
 
 		/*
 		 * For this one, we expect now nothing to be recalculated.
@@ -215,6 +217,29 @@ public class UpdateStackSerializationTest
 	{
 		// Cleanup.
 		SAVED_PROJECT.delete();
+	}
+
+	public static void saveProject( final Context context, final MamutProject project, final Model model ) throws IOException
+	{
+		try ( final MamutProject.ProjectWriter writer = project.openForWriting() )
+		{
+			new MamutProjectIO().save( project, writer );
+			final RawGraphIO.GraphToFileIdMap< Spot, Link > idmap = model.saveRaw( writer );
+			MamutRawFeatureModelIO.serialize( context, model.getFeatureModel(), idmap, writer );
+		}
+	}
+
+	public static void loadProject( final Context context, final MamutProject project, final Model model ) throws IOException
+	{
+		try ( final MamutProject.ProjectReader reader = project.openForReading() )
+		{
+			final RawGraphIO.FileIdToGraphMap< Spot, Link > idmap = model.loadRaw( reader );
+			MamutRawFeatureModelIO.deserialize( context, model, idmap, reader );
+		}
+		catch ( ClassNotFoundException e )
+		{
+			throw new RuntimeException( e );
+		}
 	}
 
 	public static class FT4 extends TestFeature< org.mastodon.revised.model.mamut.Spot >

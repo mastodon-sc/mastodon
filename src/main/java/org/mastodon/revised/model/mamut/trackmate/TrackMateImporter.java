@@ -129,7 +129,7 @@ public class TrackMateImporter
 			{
 				System.err.println( "Warning. Cannot find the image data file: \"" + imageFilename + "\" in \"" + imageFolder + "\" nor in \""
 						+ file.getParent() + "\". Substituting default void image." );
-				imageFile = makDummyImage(imageDataEl);
+				imageFile = makDummyImage( imageDataEl );
 			}
 		}
 
@@ -176,7 +176,7 @@ public class TrackMateImporter
 		final double dx = dxel == null ? 1. : Double.parseDouble( dxel );
 
 		final String dyel = imageDataEl.getAttributeValue( PIXEL_HEIGHT_ATTRIBUTE );
-		final double dy = dyel  == null ? 1. : Double.parseDouble( dyel );
+		final double dy = dyel == null ? 1. : Double.parseDouble( dyel );
 
 		final String dzel = imageDataEl.getAttributeValue( VOXEL_DEPTH_ATTRIBUTE );
 		final double dz = dzel == null ? 1. : Double.parseDouble( dzel );
