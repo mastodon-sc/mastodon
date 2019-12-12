@@ -51,6 +51,12 @@ public class SpotGaussFilteredIntensityFeature implements Feature< Spot >
 					Multiplicity.ON_SOURCES,
 					MEAN_PROJECTION_SPEC, STD_PROJECTION_SPEC );
 		}
+
+		@Override
+		public final boolean isDefaultSelected()
+		{
+			return false;
+		}
 	}
 
 	private final Map< FeatureProjectionKey, FeatureProjection< Spot > > projectionMap;

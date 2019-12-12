@@ -107,4 +107,18 @@ public abstract class FeatureSpec< F extends Feature< T >, T > implements SciJav
 	{
 		return key.hashCode();
 	}
+
+	/**
+	 * Returns <code>true</code> when a feature should be selected by default in
+	 * a user interface. It is a good idea override the default implementation,
+	 * that returns <code>true</code>, when a feature computer is known to take
+	 * very long to compute.
+	 *
+	 * @return whether a feature should be selected by default in an user
+	 *         interface.
+	 */
+	public boolean isDefaultSelected()
+	{
+		return true;
+	}
 }
