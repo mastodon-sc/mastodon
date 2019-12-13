@@ -11,12 +11,15 @@ import javax.swing.SwingUtilities;
 
 import org.mastodon.feature.DefaultFeatureComputerService.FeatureComputationStatusListener;
 import org.mastodon.feature.Feature;
+import org.mastodon.feature.FeatureComputationSettings;
 import org.mastodon.feature.FeatureComputer;
 import org.mastodon.feature.FeatureComputerService;
 import org.mastodon.feature.FeatureSpec;
 import org.mastodon.graph.GraphChangeListener;
 import org.mastodon.revised.ui.util.EverythingDisablerAndReenabler;
 import org.scijava.command.CommandService;
+
+import mpicbg.spim.data.generic.sequence.AbstractSequenceDescription;
 
 public class FeatureComputationController implements GraphChangeListener
 {
@@ -31,9 +34,33 @@ public class FeatureComputationController implements GraphChangeListener
 
 	private final FeatureComputationStatusListener computationStatusListener;
 
-	public FeatureComputationController( final FeatureComputerService computerService, final Collection< Class< ? > > targets )
+	/**
+	 * Description of the image data. Required to create a proper feature
+	 * computation settings.
+	 */
+	private final AbstractSequenceDescription< ?, ?, ? > sequenceDescription;
+
+	/**
+	 * Creates a new controller for feature computation.
+	 *
+	 * @param computerService
+	 *            the feature computation service to be called by this
+	 *            controller.
+	 * @param targets
+	 *            the collection of target classes. Only feature computers that
+	 *            compute features for the specified target will be managed by
+	 *            this controller.
+	 * @param sequenceDescription
+	 *            the description of the image data. Required to create a
+	 *            proper feature computation settings.
+	 */
+	public FeatureComputationController(
+			final FeatureComputerService computerService,
+			final Collection< Class< ? > > targets,
+			final AbstractSequenceDescription< ?, ?, ? > sequenceDescription )
 	{
 		this.computerService = computerService;
+		this.sequenceDescription = sequenceDescription;
 		model = createModel( targets );
 		dialog = new JDialog( ( JFrame ) null, "Feature calculation" );
 		gui = new FeatureComputationPanel( model, targets );
@@ -109,7 +136,7 @@ public class FeatureComputationController implements GraphChangeListener
 	private FeatureComputationModel createModel( final Collection< Class< ? > > targets )
 	{
 		final CommandService commandService = computerService.getContext().getService( CommandService.class );
-		final FeatureComputationModel model = new FeatureComputationModel();
+		final FeatureComputationModel model = new FeatureComputationModel( sequenceDescription );
 		for ( final FeatureSpec< ?, ? > spec : computerService.getFeatureSpecs() )
 		{
 			// Only add the features with specified targets.
@@ -137,5 +164,10 @@ public class FeatureComputationController implements GraphChangeListener
 	public JDialog getDialog()
 	{
 		return dialog;
+	}
+
+	public FeatureComputationSettings getFeatureComputationSettings()
+	{
+		return model.getFeatureComputationSettings();
 	}
 }

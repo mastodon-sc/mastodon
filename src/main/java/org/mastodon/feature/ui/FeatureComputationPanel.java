@@ -18,6 +18,7 @@ import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -26,8 +27,14 @@ import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.ScrollPaneConstants;
 
+import org.mastodon.feature.FeatureComputationSettings;
+import org.mastodon.feature.FeatureComputationSettings.SourcePairSelection;
+import org.mastodon.feature.FeatureComputationSettings.SourceSelection;
 import org.mastodon.feature.FeatureProjectionSpec;
 import org.mastodon.feature.FeatureSpec;
+
+import mpicbg.spim.data.generic.sequence.AbstractSequenceDescription;
+import mpicbg.spim.data.generic.sequence.BasicViewSetup;
 
 public class FeatureComputationPanel extends JPanel
 {
@@ -66,7 +73,7 @@ public class FeatureComputationPanel extends JPanel
 		gbc_panelButton.fill = GridBagConstraints.BOTH;
 		gbc_panelButton.gridx = 0;
 		gbc_panelButton.gridy = 0;
-		panelComputation.add(panelButton, gbc_panelButton);
+		panelComputation.add( panelButton, gbc_panelButton );
 		panelButton.setLayout( new BoxLayout( panelButton, BoxLayout.X_AXIS ) );
 
 		final Component horizontalStrut = Box.createHorizontalStrut( 20 );
@@ -129,7 +136,7 @@ public class FeatureComputationPanel extends JPanel
 
 		// Feed the feature panel.
 
-		final FeatureTable.SelectionListener< FeatureSpec< ?, ? > > sl = fs -> displayConfigPanel( fs, model.getDependencies( fs ) );
+		final FeatureTable.SelectionListener< FeatureSpec< ?, ? > > sl = fs -> displayConfigPanel( fs, model.getDependencies( fs ), model.getFeatureComputationSettings() );
 		final FeatureTable.Tables aggregator = new FeatureTable.Tables();
 
 		for ( final Class< ? > target : targets )
@@ -165,7 +172,7 @@ public class FeatureComputationPanel extends JPanel
 		}
 	}
 
-	private void displayConfigPanel( final FeatureSpec< ?, ? > spec, final Collection< FeatureSpec< ?, ? > > dependencies )
+	private void displayConfigPanel( final FeatureSpec< ?, ? > spec, final Collection< FeatureSpec< ?, ? > > dependencies, final FeatureComputationSettings featureComputationSettings )
 	{
 		panelConfig.removeAll();
 		if ( null == spec )
@@ -238,11 +245,60 @@ public class FeatureComputationPanel extends JPanel
 		}
 		panelConfig.add( infoPanel, BorderLayout.NORTH );
 
-		final JComponent configPanel = null; // TODO
+		final JComponent configPanel;
+		switch ( spec.getMultiplicity() )
+		{
+		case SINGLE:
+		default:
+			configPanel = null;
+			break;
+		case ON_SOURCES:
+			configPanel = createSourceConfigPanel( featureComputationSettings.getSourceSelection( spec ) );
+			break;
+		case ON_SOURCE_PAIRS:
+			configPanel = createSourcePairConfigPanel( featureComputationSettings.getSourcePairSelection( spec ) );
+			break;
+		}
+
 		if ( null != configPanel )
 			panelConfig.add( configPanel, BorderLayout.CENTER );
 
 		panelConfig.revalidate();
 		panelConfig.repaint();
+	}
+
+	private final JComponent createSourceConfigPanel( final SourceSelection sourceSelection )
+	{
+		final JPanel panel = new JPanel();
+		panel.setBorder( BorderFactory.createEmptyBorder( 5, 5, 5, 5 ) );
+		final BoxLayout layout = new BoxLayout( panel, BoxLayout.PAGE_AXIS );
+		panel.setLayout( layout );
+
+		final JLabel title = new JLabel( "Sources to compute:" );
+		panel.add( title );
+		panel.add( Box.createVerticalStrut( 5 ) );
+
+		final AbstractSequenceDescription< ?, ?, ? > sequenceDescription = sourceSelection.getSequenceDescription();
+		int ch = 0;
+		for ( final BasicViewSetup basicViewSetup : sequenceDescription.getViewSetupsOrdered() )
+		{
+			String name = basicViewSetup.getName();
+			if ( null == name || name.isEmpty() )
+				name = "Channel " + ( 1 + ch );
+			final JCheckBox checkBox = new JCheckBox( name, sourceSelection.isSourceSelected( ch ) );
+			final int iSource = ch;;
+			checkBox.addActionListener( l -> sourceSelection.setSourceSelected( iSource , checkBox.isSelected() ) );
+			panel.add( checkBox );
+
+			ch++;
+		}
+
+		return panel;
+	}
+
+	private final JComponent createSourcePairConfigPanel( final SourcePairSelection sourcePairSelection )
+	{
+		// TODO do it when we have a use case.
+		return null;
 	}
 }

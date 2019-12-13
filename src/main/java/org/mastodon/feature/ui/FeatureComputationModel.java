@@ -8,8 +8,11 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import org.mastodon.feature.FeatureComputationSettings;
 import org.mastodon.feature.FeatureSpec;
 import org.mastodon.util.Listeners;
+
+import mpicbg.spim.data.generic.sequence.AbstractSequenceDescription;
 
 public class FeatureComputationModel
 {
@@ -32,8 +35,9 @@ public class FeatureComputationModel
 
 	private final Map< FeatureSpec< ?, ? >, Collection< FeatureSpec< ?, ? > > > deps;
 
+	private final FeatureComputationSettings featureComputationSettings;
 
-	public FeatureComputationModel()
+	public FeatureComputationModel( final AbstractSequenceDescription< ?, ?, ? > sequenceDescription )
 	{
 		this.updateListeners = new Listeners.SynchronizedList<>();
 		this.selectedFeatures = new HashSet<>();
@@ -42,6 +46,7 @@ public class FeatureComputationModel
 		this.featureSpecsKeys = new HashMap<>();
 		this.uptodateMap = new HashMap<>();
 		this.deps = new HashMap<>();
+		this.featureComputationSettings = new FeatureComputationSettings( sequenceDescription );
 	}
 
 	private void notifyListeners()
@@ -148,5 +153,10 @@ public class FeatureComputationModel
 	public Collection< FeatureSpec< ?, ? > > getDependencies( final FeatureSpec< ?, ? > spec )
 	{
 		return Collections.unmodifiableCollection( deps.computeIfAbsent( spec, s -> Collections.emptyList() ) );
+	}
+
+	public FeatureComputationSettings getFeatureComputationSettings()
+	{
+		return featureComputationSettings;
 	}
 }

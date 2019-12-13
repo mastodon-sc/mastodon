@@ -35,8 +35,12 @@ public class MamutFeatureComputation
 
 		// Controller.
 		final Collection< Class< ? > > targets = Arrays.asList( Spot.class, Link.class );
-		final FeatureComputationController controller = new FeatureComputationController( myComputerService, targets );
+		final FeatureComputationController controller = new FeatureComputationController(
+				myComputerService,
+				targets,
+				appModel.getSharedBdvData().getSpimData().getSequenceDescription() );
 		computerService.computationStatusListeners().add( controller.getComputationStatusListener() );
+		computerService.setFeatureComputationSettings( controller.getFeatureComputationSettings() );
 
 		// Listen to model changes and echo in the GUI
 		final ModelGraph graph = appModel.getModel().getGraph();
