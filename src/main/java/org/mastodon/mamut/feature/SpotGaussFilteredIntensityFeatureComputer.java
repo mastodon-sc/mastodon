@@ -1,7 +1,6 @@
 package org.mastodon.mamut.feature;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -13,6 +12,8 @@ import org.mastodon.RefPool;
 import org.mastodon.collection.ref.RefArrayList;
 import org.mastodon.feature.DefaultFeatureComputerService.FeatureComputationStatus;
 import org.mastodon.feature.Feature;
+import org.mastodon.feature.FeatureComputationSettings;
+import org.mastodon.feature.FeatureComputationSettings.SourceSelection;
 import org.mastodon.feature.update.Update;
 import org.mastodon.properties.DoublePropertyMap;
 import org.mastodon.revised.bdv.SharedBigDataViewerData;
@@ -52,10 +53,11 @@ public class SpotGaussFilteredIntensityFeatureComputer implements MamutFeatureCo
 	@Parameter
 	private FeatureComputationStatus status;
 
+	@Parameter
+	private FeatureComputationSettings featureComputationSettings;
+
 	@Parameter( type = ItemIO.OUTPUT )
 	private SpotGaussFilteredIntensityFeature output;
-
-	private boolean[] processSource;
 
 	private String cancelReason;
 
@@ -90,28 +92,6 @@ public class SpotGaussFilteredIntensityFeatureComputer implements MamutFeatureCo
 	{
 		cancelReason = null;
 
-		// TODO Take into account that some sources might not be computed.
-		this.processSource = new boolean[ bdvData.getSources().size() ];
-		Arrays.fill( processSource, true );
-
-		// Spots to process, per time-point.
-		final IntFunction< Iterable< Spot > > index;
-		final Update< Spot > changes = update.changesFor( SpotGaussFilteredIntensityFeature.SPEC );
-		if (null == changes)
-		{
-			// Redo all.
-			index = ( timepoint ) -> model.getSpatioTemporalIndex().getSpatialIndex( timepoint );
-			// Clear all.
-			for ( final DoublePropertyMap< Spot > map : output.means )
-				map.beforeClearPool();
-			for ( final DoublePropertyMap< Spot > map : output.stds )
-				map.beforeClearPool();
-		}
-		else
-		{
-			// Only process modified spots.
-			index = new MyIndex( changes, model.getGraph().vertices().getRefPool() );
-		}
 
 		// Calculation are made on resolution level 0.
 		final int level = 0;
@@ -133,19 +113,60 @@ public class SpotGaussFilteredIntensityFeatureComputer implements MamutFeatureCo
 		final long[] p = new long[ 3 ];
 
 		final int numTimepoints = bdvData.getNumTimepoints();
-		int nSourcesToCompute = 0;
-		for ( final boolean process : processSource )
-			if (process)
-				nSourcesToCompute++;
-		final int todo = numTimepoints * nSourcesToCompute;
-
 		final ArrayList< SourceAndConverter< ? > > sources = bdvData.getSources();
 		final int nSources = sources.size();
+
+		// Spots to process, per time-point.
+		final IndexToCompute index;
+		final Update< Spot > changes = update.changesFor( SpotGaussFilteredIntensityFeature.SPEC );
+		if ( null == changes )
+		{
+			// Redo all.
+			index = new AllIndex( model );
+			// Clear all.
+			for ( final DoublePropertyMap< Spot > map : output.means )
+				map.beforeClearPool();
+			for ( final DoublePropertyMap< Spot > map : output.stds )
+				map.beforeClearPool();
+		}
+		else
+		{
+			/*
+			 * Determine what sources are empty. For these sources, we cannot
+			 * use the update mechanism.
+			 */
+			final boolean[] emptySources = new boolean[ nSources ];
+			for ( int iSource = 0; iSource < emptySources.length; iSource++ )
+				emptySources[ iSource ] = ( output.means.get( iSource ).size() == 0 );
+
+			// Only process modified spots.
+			index = new UpdateIndex( model, emptySources, changes, model.getGraph().vertices().getRefPool() );
+		}
+
+		// Determine how many sources we will have to compute.
+		final SourceSelection sourceSelection = featureComputationSettings.getSourceSelection( output.getSpec() );
+		int nSourcesToCompute = 0;
+		for ( int iSource = 0; iSource < nSources; iSource++ )
+		{
+			if ( sourceSelection.isSourceSelected( iSource ) )
+				nSourcesToCompute++;
+		}
+		final int todo = numTimepoints * nSourcesToCompute;
+
 		int done = 0;
 		MAIN_LOOP: for ( int iSource = 0; iSource < nSources; iSource++ )
 		{
-			if ( !processSource[ iSource ] )
+
+			if ( !sourceSelection.isSourceSelected( iSource ) )
+			{
+				/*
+				 * We are told not to compute mean intensity on this source. So
+				 * we don't, and clear any prior value that might exist.
+				 */
+				output.means.get( iSource ).beforeClearPool();
+				output.stds.get( iSource ).beforeClearPool();
 				continue;
+			}
 
 			final Source< ? > source = sources.get( iSource ).getSpimSource();
 			for ( int timepoint = 0; timepoint < numTimepoints; timepoint++ )
@@ -161,7 +182,7 @@ public class SpotGaussFilteredIntensityFeatureComputer implements MamutFeatureCo
 				final RandomAccessibleInterval< RealType< ? > > rai = ( RandomAccessibleInterval< RealType< ? > > ) source.getSource( timepoint, level );
 				final RandomAccess< RealType< ? > > ra = rai.randomAccess( rai );
 
-				for ( final Spot spot : index.apply( timepoint ) )
+				for ( final Spot spot : index.getSpotsToCompute( timepoint, iSource ) )
 				{
 					if ( isCanceled() )
 						break MAIN_LOOP;
@@ -245,13 +266,41 @@ public class SpotGaussFilteredIntensityFeatureComputer implements MamutFeatureCo
 		return nSpots;
 	}
 
-	private static final class MyIndex implements IntFunction< Iterable< Spot > >
+
+	private static interface IndexToCompute
+	{
+
+		public Iterable< Spot > getSpotsToCompute(int timepoint, int iSource);
+
+	}
+
+	private static class AllIndex implements IndexToCompute
+	{
+		private final Model model;
+
+		public AllIndex( final Model model )
+		{
+			this.model = model;
+		}
+
+		@Override
+		public Iterable< Spot > getSpotsToCompute( final int timepoint, final int iSource )
+		{
+			return model.getSpatioTemporalIndex().getSpatialIndex( timepoint );
+		}
+	}
+
+	private static final class UpdateIndex extends AllIndex
 	{
 
 		private final Map< Integer, Collection< Spot > > index;
 
-		public MyIndex( final Update< Spot > update, final RefPool< Spot > pool )
+		private final boolean[] emptySources;
+
+		public UpdateIndex( final Model model, final boolean[] emptySources, final Update< Spot > update, final RefPool< Spot > pool )
 		{
+			super( model );
+			this.emptySources = emptySources;
 			this.index = new HashMap<>();
 			for ( final Spot spot : update.get() )
 			{
@@ -263,12 +312,28 @@ public class SpotGaussFilteredIntensityFeatureComputer implements MamutFeatureCo
 		}
 
 		@Override
-		public Iterable< Spot > apply( final int timepoint )
+		public Iterable< Spot > getSpotsToCompute( final int timepoint, final int iSource )
 		{
-			final Collection< Spot > collection = index.get( Integer.valueOf( timepoint ) );
-			if ( null == collection )
-				return Collections.emptyList();
-			return collection;
+			if ( emptySources[ iSource ] )
+			{
+				/*
+				 * The feature values for this source is completely empty. It
+				 * was not computed before, and therefore we cannot just compute
+				 * an update. We need to recompute all.
+				 */
+				return super.getSpotsToCompute( timepoint, iSource );
+			}
+			else
+			{
+				/*
+				 * This source was part of a computation before. We can just
+				 * update values for this source.
+				 */
+				final Collection< Spot > collection = index.get( Integer.valueOf( timepoint ) );
+				if ( null == collection )
+					return Collections.emptyList();
+				return collection;
+			}
 		}
 	}
 

@@ -5,6 +5,7 @@ import java.util.Map;
 
 import org.mastodon.feature.DefaultFeatureComputerService;
 import org.mastodon.feature.Feature;
+import org.mastodon.feature.FeatureComputationSettings;
 import org.mastodon.feature.FeatureModel;
 import org.mastodon.feature.FeatureSpec;
 import org.mastodon.feature.FeatureSpecsService;
@@ -27,6 +28,8 @@ public class MamutFeatureComputerService extends DefaultFeatureComputerService
 	private SharedBigDataViewerData sharedBdvData;
 
 	private Model model;
+
+	private FeatureComputationSettings featureComputationSettings;
 
 	@Parameter
 	private FeatureSpecsService featureSpecsService;
@@ -80,6 +83,14 @@ public class MamutFeatureComputerService extends DefaultFeatureComputerService
 			return;
 		}
 
+		if ( FeatureComputationSettings.class.isAssignableFrom( parameterClass ) )
+		{
+			@SuppressWarnings( "unchecked" )
+			final ModuleItem< FeatureComputationSettings > settingsItem = ( ModuleItem< FeatureComputationSettings > ) item;
+			settingsItem.setValue( module, featureComputationSettings );
+			return;
+		}
+
 		super.provideParameters( item, module, parameterClass, featureModel );
 	}
 
@@ -121,5 +132,10 @@ public class MamutFeatureComputerService extends DefaultFeatureComputerService
 		final PropertyChangeListener< Spot > vertexPropertyListener = GraphFeatureUpdateListeners.vertexPropertyListener( spotUpdates, linkUpdates );
 		spotPool.covarianceProperty().addPropertyChangeListener( vertexPropertyListener );
 		spotPool.positionProperty().addPropertyChangeListener( vertexPropertyListener );
+	}
+
+	public void setFeatureComputationSettings( final FeatureComputationSettings featureComputationSettings )
+	{
+		this.featureComputationSettings = featureComputationSettings;
 	}
 }
