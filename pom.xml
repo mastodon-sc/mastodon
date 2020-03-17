@@ -5,20 +5,20 @@
 	<parent>
 		<groupId>org.scijava</groupId>
 		<artifactId>pom-scijava</artifactId>
-		<version>26.0.0</version>
+		<version>28.0.0</version>
 	</parent>
 
-	<groupId>net.trackmate</groupId>
-	<artifactId>trackmate</artifactId>
+	<groupId>org.mastodon</groupId>
+	<artifactId>mastodon</artifactId>
 	<version>1.0.0-beta-14-SNAPSHOT</version>
 
-	<name>TrackMate3</name>
-	<description>This is the prototype code for the 3rd version of TrackMate, planned for mid 2017.</description>
-	<url>https://github.com/fiji/TrackMate3</url>
+	<name>Mastodon</name>
+	<description>Mastodon – a large-scale tracking and track-editing framework for large, multi-view images.</description>
+	<url>https://github.com/mastodon-sc/mastodon</url>
 	<inceptionYear>2014</inceptionYear>
 	<organization>
-		<name>Fiji</name>
-		<url>https://fiji.sc</url>
+		<name>Mastodon Science</name>
+		<url>https://mastodon.org</url>
 	</organization>
 	<licenses>
 		<license>
@@ -107,27 +107,27 @@
 	</mailingLists>
 
 	<scm>
-		<connection>scm:git:git://github.com/fiji/TrackMate3</connection>
-		<developerConnection>scm:git:git@github.com:fiji/TrackMate3</developerConnection>
+		<connection>scm:git:git://github.com/mastodon-sc/mastodon</connection>
+		<developerConnection>scm:git:git@github.com:mastodon-sc/mastodon</developerConnection>
 		<tag>HEAD</tag>
-		<url>https://github.com/fiji/TrackMate3</url>
+		<url>https://github.com/mastodon-sc/mastodon</url>
 	</scm>
 	<issueManagement>
 		<system>GitHub</system>
-		<url>https://github.com/fiji/TrackMate3/issues</url>
+		<url>https://github.com/mastodon-sc/mastodon/issues</url>
 	</issueManagement>
 	<ciManagement>
 		<system>Travis CI</system>
-		<url>https://travis-ci.org/fiji/TrackMate3</url>
+		<url>https://travis-ci.org/mastodon-sc/mastodon</url>
 	</ciManagement>
 
 	<properties>
-		<package-name>net.trackmate</package-name>
+		<package-name>org.mastodon</package-name>
 
 		<!--		<enforcer.skip>true</enforcer.skip> -->
 
 		<license.licenseName>not licensed yet</license.licenseName>
-		<license.projectName>TrackMate3</license.projectName>
+		<license.projectName>Mastodon</license.projectName>
 		<license.organizationName>Mastodon authors</license.organizationName>
 		<license.copyrightOwners>Tobias Pietzsch, Jean-Yves Tinevez</license.copyrightOwners>
 
@@ -140,7 +140,7 @@
 			<id>tinevez</id>
 			<name>Jean-Yves Tinevez</name>
 			<email>jean-yves.tinevez@pasteur.fr</email>
-			<url>http://www.pasteur.fr/ip/easysite/pasteur/fr/recherche/plates-formes-technologiques/imagopole/plates-formes-imagopole/la-plate-forme-d-imagerie-dynamique/equipe-pfid/equipe-pfid-jyt</url>
+			<url>https://research.pasteur.fr/en/member/jean-yves-tinevez/</url>
 			<organization>Institut Pasteur</organization>
 			<organizationUrl>http://www.pasteur.fr/</organizationUrl>
 			<roles>
