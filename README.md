@@ -1,4 +1,4 @@
-[![](https://travis-ci.org/fiji/TrackMate3.svg?branch=master)](https://travis-ci.org/fiji/TrackMate3)
+[![Build Status](https://travis-ci.com/mastodon-sc/mastodon.svg?branch=master)](https://travis-ci.com/mastodon-sc/mastodon)
 
 ![Mastodon logo](doc/Mastodon-logo-512x512.png)
 
