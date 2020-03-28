@@ -118,7 +118,7 @@
 	</issueManagement>
 	<ciManagement>
 		<system>Travis CI</system>
-		<url>https://travis-ci.org/mastodon-sc/mastodon</url>
+		<url>https://travis-ci.com/mastodon-sc/mastodon</url>
 	</ciManagement>
 
 	<properties>
