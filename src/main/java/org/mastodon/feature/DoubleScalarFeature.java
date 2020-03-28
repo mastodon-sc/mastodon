@@ -32,8 +32,6 @@ public abstract class DoubleScalarFeature< O > implements Feature< O >
 	 * @param key
 	 *            the feature unique key. Must be unique within the application
 	 *            scope.
-	 * @param info
-	 *            the feature info text.
 	 * @param dimension
 	 *            the dimension of the quantity of this scalar feature.
 	 * @param units

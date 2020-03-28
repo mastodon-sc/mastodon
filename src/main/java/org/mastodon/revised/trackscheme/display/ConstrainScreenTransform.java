@@ -143,6 +143,9 @@ public class ConstrainScreenTransform
 	 *            the X max bound of the layouted graph (in layout coordinates).
 	 * @param borderRatioX
 	 *            the X border ratio to limit moving out the visible screen.
+	 * @param borderAbsX
+	 *            absolute value of the border in X to respect when unzooming in
+	 *            pixels.
 	 */
 	public static void zoomOutFullyX(
 			final ScreenTransform transform,
@@ -170,11 +173,17 @@ public class ConstrainScreenTransform
 	 * @param maxSizeY
 	 *            the maximal allowed height (in layout coordinates).
 	 * @param minBoundY
-	 *            the Y min bound of the layouted graph (in layout coordinates), ie, min timepoint.
+	 *            the Y min bound of the layouted graph (in layout coordinates),
+	 *            ie, min timepoint.
 	 * @param maxBoundY
-	 *            the Y max bound of the layouted graph (in layout coordinates), ie, max timepoint.
+	 *            the Y max bound of the layouted graph (in layout coordinates),
+	 *            ie, max timepoint.
 	 * @param borderRatioY
 	 *            the Y border ratio to limit moving out the visible screen.
+	 * @param borderAbsY
+	 *            absolute value of the border in Y to respect when unzooming in
+	 *            pixels.
+	 * 
 	 */
 	public static void zoomOutFullyY(
 			final ScreenTransform transform,

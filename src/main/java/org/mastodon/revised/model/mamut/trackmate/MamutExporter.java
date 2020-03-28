@@ -645,18 +645,24 @@ public class MamutExporter
 	}
 
 	/**
-	 * Creates a map from export name to feature projection for all feature
-	 * projections in {@code featureModel} matching the given {@code target}
-	 * class.
+	 * Creates list of exported feature projections for all feature projections
+	 * in {@code featureModel} matching the given {@code target} class.
 	 * <p>
 	 * Special care are taken to avoid feature name inflation when exporting
 	 * re-imported features from a TrackMate file, and conflict between
 	 * re-import features and computed features.
 	 *
 	 * @param featureModel
+	 *            the feature model from which to read feature specs and values.
 	 * @param target
+	 *            the class of the data items (spots or links) for which the
+	 *            features we want to export are defined.
 	 * @param trackMateImporterFeatureClass
+	 *            the class of the TrackMate feature imported in Mastodon for
+	 *            the target data item class.
 	 * @param <T>
+	 *            the type of the data item.
+	 * @return a new list of exported feature projections.
 	 */
 	public static < T > List< ExportFeatureProjection< T > > getExportFeatureProjections(
 			final FeatureModel featureModel,
@@ -775,14 +781,20 @@ public class MamutExporter
 	}
 
 	/**
-	 * Produce a set of attribute names for exported feature projections.
-	 * This is to filter these from re-import in {@link TrackMateImporter}
+	 * Produces a set of attribute names for exported feature projections. This
+	 * is to filter these from re-import in {@link TrackMateImporter}
 	 *
 	 * @param specsService
+	 *            the feature specification service.
 	 * @param numSources
+	 *            the number of views, setup or channel in the dataset.
 	 * @param target
+	 *            the class of the data item for which we are exporting feature
+	 *            projections.
 	 * @param <T>
-	 * @return
+	 *            the type of the data item for which we are exporting feature
+	 *            projections.
+	 * @return a new set of attribute names to be used as feature keys.
 	 */
 	public static < T > Set< String > getLikelyExportedFeatureProjections( final FeatureSpecsService specsService, final int numSources, final Class< T > target )
 	{
