@@ -106,12 +106,12 @@ public class NavigationActionsMamut
 		this.vg = viewer.getVisibilityAndGrouping();
 	}
 
-	public static void install( final Actions actions, final ViewerPanelMamut viewer )
+	public static void install( final Actions actions, final ViewerPanelMamut viewer, final boolean is2D )
 	{
-		new NavigationActionsMamut( viewer ).install( actions );
+		new NavigationActionsMamut( viewer ).install( actions, is2D );
 	}
 
-	public void install( final Actions actions )
+	public void install( final Actions actions, final boolean is2D )
 	{
 		actions.runnableAction( viewer::toggleInterpolation, TOGGLE_INTERPOLATION, TOGGLE_INTERPOLATION_KEYS );
 		actions.runnableAction(	this::toggleFusedMode, TOGGLE_FUSED_MODE, TOGGLE_FUSED_MODE_KEYS );
@@ -127,8 +127,11 @@ public class NavigationActionsMamut
 		actions.runnableAction( viewer::previousTimePoint, PREVIOUS_TIMEPOINT, PREVIOUS_TIMEPOINT_KEYS );
 
 		actions.runnableAction( () -> viewer.align( AlignPlane.XY ), ALIGN_XY_PLANE, ALIGN_XY_PLANE_KEYS );
-		actions.runnableAction( () -> viewer.align( AlignPlane.ZY ), ALIGN_ZY_PLANE, ALIGN_ZY_PLANE_KEYS );
-		actions.runnableAction( () -> viewer.align( AlignPlane.XZ ), ALIGN_XZ_PLANE, ALIGN_XZ_PLANE_KEYS );
+		if ( !is2D )
+		{
+			actions.runnableAction( () -> viewer.align( AlignPlane.ZY ), ALIGN_ZY_PLANE, ALIGN_ZY_PLANE_KEYS );
+			actions.runnableAction( () -> viewer.align( AlignPlane.XZ ), ALIGN_XZ_PLANE, ALIGN_XZ_PLANE_KEYS );
+		}
 	}
 
 	private void toggleFusedMode()

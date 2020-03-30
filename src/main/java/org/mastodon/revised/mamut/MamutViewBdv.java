@@ -8,9 +8,6 @@ import static org.mastodon.revised.mamut.MamutMenuBuilder.fileMenu;
 import static org.mastodon.revised.mamut.MamutMenuBuilder.tagSetMenu;
 import static org.mastodon.revised.mamut.MamutMenuBuilder.viewMenu;
 
-import java.awt.event.ActionEvent;
-
-import javax.swing.AbstractAction;
 import javax.swing.ActionMap;
 
 import org.mastodon.app.ui.MastodonFrameViewActions;
@@ -49,7 +46,6 @@ import org.mastodon.revised.ui.coloring.GraphColorGeneratorAdapter;
 import org.mastodon.views.context.ContextProvider;
 
 import bdv.tools.InitializeViewerState;
-import net.imglib2.realtransform.AffineTransform3D;
 
 public class MamutViewBdv extends MamutView< OverlayGraphWrapper< Spot, Link >, OverlayVertexWrapper< Spot, Link >, OverlayEdgeWrapper< Spot, Link > >
 {
@@ -167,7 +163,10 @@ public class MamutViewBdv extends MamutView< OverlayGraphWrapper< Spot, Link >, 
 		HighlightBehaviours.install( viewBehaviours, viewGraph, viewGraph.getLock(), viewGraph, highlightModel, model );
 		FocusActions.install( viewActions, viewGraph, viewGraph.getLock(), navigateFocusModel, selectionModel );
 
-		NavigationActionsMamut.install( viewActions, viewer );
+		// TODO
+		final boolean is2D = BehaviourTransformEventHandlerMamut.is2D( sharedBdvData.getSources(), sharedBdvData.getNumTimepoints() );
+
+		NavigationActionsMamut.install( viewActions, viewer, is2D );
 		viewer.getTransformEventHandler().install( viewBehaviours );
 
 		viewer.addTimePointListener( timePointIndex -> timepointModel.setTimepoint( timePointIndex ) );
@@ -184,31 +183,6 @@ public class MamutViewBdv extends MamutView< OverlayGraphWrapper< Spot, Link >, 
 
 //		if ( !bdv.tryLoadSettings( bdvFile ) ) // TODO
 //			InitializeViewerState.initBrightness( 0.001, 0.999, bdv.getViewer(), bdv.getSetupAssignments() );
-
-		// Fine-tune 2D data case.
-		if ( BehaviourTransformEventHandlerMamut.is2D( sharedBdvData.getSources(), sharedBdvData.getNumTimepoints() ) )
-		{
-			// Move transform at exactly z = 0.
-			final AffineTransform3D t = new AffineTransform3D();
-			viewer.getState().getViewerTransform( t );
-			t.set( 0., 2, 3 );
-			viewer.setCurrentViewerTransform( t );
-
-			// Blocks some actions that make no sense for 2D data.
-			final AbstractAction blockerAction =
-					new AbstractAction( "Do nothing" )
-					{
-
-						private static final long serialVersionUID = 1L;
-
-						@Override
-						public void actionPerformed( final ActionEvent e )
-						{
-						}
-					};
-			viewActions.getActionMap().put( "align ZY plane", blockerAction );
-			viewActions.getActionMap().put( "align XZ plane", blockerAction );
-		}
 	}
 
 	public ContextProvider< Spot > getContextProvider()
