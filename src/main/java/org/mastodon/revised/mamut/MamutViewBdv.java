@@ -16,7 +16,6 @@ import org.mastodon.app.ui.ViewMenuBuilder;
 import org.mastodon.app.ui.ViewMenuBuilder.JMenuHandle;
 import org.mastodon.model.AutoNavigateFocusModel;
 import org.mastodon.revised.bdv.BdvContextProvider;
-import org.mastodon.revised.bdv.BehaviourTransformEventHandlerMamut;
 import org.mastodon.revised.bdv.BigDataViewerActionsMamut;
 import org.mastodon.revised.bdv.BigDataViewerMamut;
 import org.mastodon.revised.bdv.NavigationActionsMamut;
@@ -163,10 +162,7 @@ public class MamutViewBdv extends MamutView< OverlayGraphWrapper< Spot, Link >, 
 		HighlightBehaviours.install( viewBehaviours, viewGraph, viewGraph.getLock(), viewGraph, highlightModel, model );
 		FocusActions.install( viewActions, viewGraph, viewGraph.getLock(), navigateFocusModel, selectionModel );
 
-		// TODO
-		final boolean is2D = BehaviourTransformEventHandlerMamut.is2D( sharedBdvData.getSources(), sharedBdvData.getNumTimepoints() );
-
-		NavigationActionsMamut.install( viewActions, viewer, is2D );
+		NavigationActionsMamut.install( viewActions, viewer, sharedBdvData.is2D() );
 		viewer.getTransformEventHandler().install( viewBehaviours );
 
 		viewer.addTimePointListener( timePointIndex -> timepointModel.setTimepoint( timePointIndex ) );

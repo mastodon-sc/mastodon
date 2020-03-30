@@ -1,11 +1,13 @@
 package org.mastodon.revised.bdv;
 
+import bdv.viewer.Source;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 
+import net.imglib2.RandomAccessibleInterval;
 import org.jdom2.Document;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
@@ -57,6 +59,8 @@ public class SharedBigDataViewerData
 
 	private final CacheControl cache;
 
+	private final boolean is2D;
+
 	private File proposedSettingsFile;
 
 	public SharedBigDataViewerData(
@@ -71,7 +75,6 @@ public class SharedBigDataViewerData
 		}
 
 		this.spimData = spimData;
-		this.options = options;
 
 		inputTriggerConfig = ( options.values.getInputTriggerConfig() != null )
 				? options.values.getInputTriggerConfig()
@@ -105,6 +108,11 @@ public class SharedBigDataViewerData
 			final ViewerState state = new ViewerState( sources, new ArrayList<>(), 1 );
 			InitializeViewerState.initBrightness( 0.001, 0.999, state, setupAssignments );
 		}
+
+		is2D = computeIs2D();
+		this.options = options.transformEventHandlerFactory( is2D
+				? BehaviourTransformEventHandler2DMamut::new
+				: BehaviourTransformEventHandler3DMamut::new );
 
 		WrapBasicImgLoader.removeWrapperIfPresent( spimData );
 	}
@@ -235,5 +243,34 @@ public class SharedBigDataViewerData
 	public void setProposedSettingsFile( final File file )
 	{
 		this.proposedSettingsFile = file;
+	}
+
+	public boolean is2D()
+	{
+		return is2D;
+	}
+
+	/**
+	 * Utility that returns <code>true</code> if all the sources specified are 2D.
+	 *
+	 * @return <code>true</code> if all the sources specified are 2D.
+	 */
+	private boolean computeIs2D()
+	{
+		for ( final SourceAndConverter< ? > sac : sources )
+		{
+			final Source< ? > source = sac.getSpimSource();
+			for ( int t = 0; t < numTimepoints; t++ )
+			{
+				if ( source.isPresent( t ) )
+				{
+					final RandomAccessibleInterval< ? > level = source.getSource( t, 0 );
+					if ( level.dimension( 2 ) > 1 )
+						return false;
+					break;
+				}
+			}
+		}
+		return true;
 	}
 }
