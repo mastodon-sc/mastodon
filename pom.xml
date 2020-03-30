@@ -56,7 +56,7 @@
 		</dependency>
 
 		<!-- Test dependencies -->
-		
+
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
@@ -79,9 +79,9 @@
 					<groupId> net.sf.jgrapht</groupId>
 					<artifactId>jgrapht</artifactId>
 				</exclusion>
-			</exclusions> 
+			</exclusions>
 		</dependency>
-				
+
 	</dependencies>
 
 	<build>
@@ -130,6 +130,9 @@
 		<license.projectName>Mastodon</license.projectName>
 		<license.organizationName>Mastodon authors</license.organizationName>
 		<license.copyrightOwners>Tobias Pietzsch, Jean-Yves Tinevez</license.copyrightOwners>
+
+		<bigdataviewer-core.version>9.0.1</bigdataviewer-core.version>
+		<bigdataviewer-vistools.version>1.0.0-beta-19</bigdataviewer-vistools.version>
 
 		<!-- NB: Deploy releases to the SciJava Maven repository. -->
 		<releaseProfiles>deploy-to-scijava</releaseProfiles>

@@ -532,6 +532,98 @@
   contexts: [bdv]
   triggers: [not mapped]
 - !mapping
+  action: 2d drag translate
+  contexts: [bdv]
+  triggers: [button2, button3]
+- !mapping
+  action: 2d rotate left
+  contexts: [bdv]
+  triggers: [not mapped]
+- !mapping
+  action: 2d zoom in
+  contexts: [bdv]
+  triggers: [not mapped]
+- !mapping
+  action: 2d rotate right
+  contexts: [bdv]
+  triggers: [not mapped]
+- !mapping
+  action: 2d zoom out
+  contexts: [bdv]
+  triggers: [not mapped]
+- !mapping
+  action: 2d drag rotate
+  contexts: [bdv]
+  triggers: [button1]
+- !mapping
+  action: 2d scroll zoom
+  contexts: [bdv]
+  triggers: [meta scroll, shift ctrl scroll]
+- !mapping
+  action: 2d rotate right slow
+  contexts: [bdv]
+  triggers: [not mapped]
+- !mapping
+  action: 2d zoom out slow
+  contexts: [bdv]
+  triggers: [not mapped]
+- !mapping
+  action: 2d zoom out fast
+  contexts: [bdv]
+  triggers: [not mapped]
+- !mapping
+  action: 2d rotate right fast
+  contexts: [bdv]
+  triggers: [not mapped]
+- !mapping
+  action: 2d scroll zoom slow
+  contexts: [bdv]
+  triggers: [not mapped]
+- !mapping
+  action: 2d scroll rotate slow
+  contexts: [bdv]
+  triggers: [not mapped]
+- !mapping
+  action: 2d zoom in fast
+  contexts: [bdv]
+  triggers: [not mapped]
+- !mapping
+  action: 2d rotate left fast
+  contexts: [bdv]
+  triggers: [not mapped]
+- !mapping
+  action: 2d rotate left slow
+  contexts: [bdv]
+  triggers: [not mapped]
+- !mapping
+  action: 2d scroll zoom fast
+  contexts: [bdv]
+  triggers: [not mapped]
+- !mapping
+  action: 2d scroll rotate fast
+  contexts: [bdv]
+  triggers: [not mapped]
+- !mapping
+  action: 2d zoom in slow
+  contexts: [bdv]
+  triggers: [not mapped]
+- !mapping
+  action: 2d scroll rotate
+  contexts: [bdv]
+  triggers: [not mapped]
+- !mapping
+  action: 2d scroll translate slow
+  contexts: [bdv]
+  triggers: [ctrl scroll]
+- !mapping
+  action: 2d scroll translate fast
+  contexts: [bdv]
+  triggers: [shift scroll]
+- !mapping
+  action: 2d scroll translate
+  contexts: [bdv]
+  triggers: [scroll]
+- !mapping
   action: create new project
   contexts: [mastodon]
   triggers: [not mapped]
