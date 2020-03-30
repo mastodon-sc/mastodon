@@ -14,7 +14,7 @@ import org.mastodon.revised.ui.keymap.CommandDescriptions;
 import org.scijava.ui.behaviour.util.AbstractNamedAction;
 import org.scijava.ui.behaviour.util.Actions;
 
-//@Plugin( type = MastodonTestPlugin.class )
+//@Plugin( type = MastodonPlugin.class )
 public class MastodonTestPlugin implements MastodonPlugin
 {
 	private static final String ACTION_1 = "[testplugin] action1";
@@ -24,7 +24,7 @@ public class MastodonTestPlugin implements MastodonPlugin
 	/*
 	 * Command descriptions for all provided commands
 	 */
-//	@Plugin( type = Descriptions.class )
+//	@Plugin( type = CommandDescriptionProvider.class )
 	public static class Descriptions extends CommandDescriptionProvider
 	{
 		public Descriptions()

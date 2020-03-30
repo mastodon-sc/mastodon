@@ -274,7 +274,7 @@ public class GraphUpdateStackTest
 		}
 	}
 
-	@Plugin( type = FT1computer.class )
+	@Plugin( type = MamutFeatureComputer.class )
 	public static class FT1computer extends TestFeatureComputer
 	{
 
@@ -357,7 +357,7 @@ public class GraphUpdateStackTest
 		}
 	}
 
-	@Plugin( type = FT2computer.class )
+	@Plugin( type = MamutFeatureComputer.class )
 	public static class FT2computer extends TestFeatureComputer
 	{
 
@@ -432,7 +432,7 @@ public class GraphUpdateStackTest
 		}
 	}
 
-	@Plugin( type = FT3computer.class )
+	@Plugin( type = MamutFeatureComputer.class )
 	public static class FT3computer extends TestFeatureComputer
 	{
 

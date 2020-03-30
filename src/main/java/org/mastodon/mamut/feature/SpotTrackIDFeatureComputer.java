@@ -11,7 +11,7 @@ import org.scijava.ItemIO;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 
-@Plugin( type = SpotTrackIDFeatureComputer.class )
+@Plugin( type = MamutFeatureComputer.class )
 public class SpotTrackIDFeatureComputer implements MamutFeatureComputer
 {
 

@@ -5,11 +5,12 @@ import java.io.ObjectInputStream;
 
 import org.mastodon.collection.RefCollection;
 import org.mastodon.feature.FeatureSpec;
+import org.mastodon.feature.io.FeatureSerializer;
 import org.mastodon.io.FileIdToObjectMap;
 import org.mastodon.revised.model.mamut.Link;
 import org.scijava.plugin.Plugin;
 
-@Plugin( type = TrackMateImportedLinkFeaturesSerializer.class )
+@Plugin( type = FeatureSerializer.class )
 public class TrackMateImportedLinkFeaturesSerializer extends TrackMateImportedFeaturesSerializer< TrackMateImportedLinkFeatures, Link >
 {
 
