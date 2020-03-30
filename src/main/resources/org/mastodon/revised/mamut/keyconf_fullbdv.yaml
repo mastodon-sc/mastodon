@@ -480,6 +480,98 @@
   contexts: [ts]
   triggers: [meta scroll, shift ctrl scroll]
 - !mapping
+  action: 2d drag translate
+  contexts: [bdv]
+  triggers: [button2, button3]
+- !mapping
+  action: 2d rotate left
+  contexts: [bdv]
+  triggers: [LEFT]
+- !mapping
+  action: 2d zoom in
+  contexts: [bdv]
+  triggers: [UP]
+- !mapping
+  action: 2d rotate right
+  contexts: [bdv]
+  triggers: [RIGHT]
+- !mapping
+  action: 2d zoom out
+  contexts: [bdv]
+  triggers: [DOWN]
+- !mapping
+  action: 2d drag rotate
+  contexts: [bdv]
+  triggers: [button1]
+- !mapping
+  action: 2d scroll zoom
+  contexts: [bdv]
+  triggers: [meta scroll, shift ctrl scroll]
+- !mapping
+  action: 2d rotate right slow
+  contexts: [bdv]
+  triggers: [ctrl RIGHT]
+- !mapping
+  action: 2d zoom out slow
+  contexts: [bdv]
+  triggers: [ctrl DOWN]
+- !mapping
+  action: 2d zoom out fast
+  contexts: [bdv]
+  triggers: [shift DOWN]
+- !mapping
+  action: 2d rotate right fast
+  contexts: [bdv]
+  triggers: [shift RIGHT]
+- !mapping
+  action: 2d scroll zoom slow
+  contexts: [bdv]
+  triggers: [ctrl scroll]
+- !mapping
+  action: 2d scroll rotate slow
+  contexts: [bdv]
+  triggers: [ctrl scroll]
+- !mapping
+  action: 2d zoom in fast
+  contexts: [bdv]
+  triggers: [shift UP]
+- !mapping
+  action: 2d rotate left fast
+  contexts: [bdv]
+  triggers: [shift LEFT]
+- !mapping
+  action: 2d rotate left slow
+  contexts: [bdv]
+  triggers: [ctrl LEFT]
+- !mapping
+  action: 2d scroll zoom fast
+  contexts: [bdv]
+  triggers: [shift scroll]
+- !mapping
+  action: 2d scroll rotate fast
+  contexts: [bdv]
+  triggers: [shift scroll]
+- !mapping
+  action: 2d zoom in slow
+  contexts: [bdv]
+  triggers: [ctrl UP]
+- !mapping
+  action: 2d scroll rotate
+  contexts: [bdv]
+  triggers: [scroll]
+- !mapping
+  action: 2d scroll translate slow
+  contexts: [bdv]
+  triggers: [not mapped]
+- !mapping
+  action: 2d scroll translate fast
+  contexts: [bdv]
+  triggers: [not mapped]
+- !mapping
+  action: 2d scroll translate
+  contexts: [bdv]
+  triggers: [not mapped]
+- !mapping
   action: edit vertex label
   contexts: [ts]
   triggers: [ENTER]
