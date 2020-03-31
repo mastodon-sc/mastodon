@@ -60,7 +60,8 @@ public class MamutProjectIO
 	{
 		final Element root = new Element( MAMUTPROJECT_TAG );
 		root.setAttribute( MAMUTPROJECT_VERSION_ATTRIBUTE_NAME, MAMUTPROJECT_VERSION_ATTRIBUTE_CURRENT );
-		root.addContent( XmlHelpers.pathElement( SPIMDATAFILE_TAG, project.getDatasetXmlFile(), project.getProjectRoot() ) );
+		final File base = project.isDatasetXmlPathRelative() ? project.getProjectRoot() : null;
+		root.addContent( XmlHelpers.pathElement( SPIMDATAFILE_TAG, project.getDatasetXmlFile(), base ) );
 		root.addContent( XmlHelpers.textElement( SPACE_UNITS_TAG, project.getSpaceUnits() ) );
 		root.addContent( XmlHelpers.textElement( TIME_UNITS_TAG, project.getTimeUnits() ) );
 		return root;
@@ -70,6 +71,8 @@ public class MamutProjectIO
 	{
 		final File datasetXmlFile = XmlHelpers.loadPath( root, SPIMDATAFILE_TAG, project.getProjectRoot() ).toPath().normalize().toFile();
 		project.setDatasetXmlFile( datasetXmlFile );
+		final boolean datasetXmlPathRelative = XmlHelpers.isPathRelative( root, SPIMDATAFILE_TAG );
+		project.setDatasetXmlPathRelative( datasetXmlPathRelative );
 		final String spaceUnits = XmlHelpers.getText( root, SPACE_UNITS_TAG );
 		final String timeUnits = XmlHelpers.getText( root, TIME_UNITS_TAG );
 		project.setSpaceUnits( spaceUnits );

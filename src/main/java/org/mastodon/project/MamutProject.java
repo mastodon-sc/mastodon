@@ -26,6 +26,8 @@ public class MamutProject
 	 */
 	private File datasetXmlFile;
 
+	private boolean isDatasetXmlPathRelative;
+
 	/**
 	 * The space units (e.g. µm, mm, ...).
 	 */
@@ -60,6 +62,7 @@ public class MamutProject
 	{
 		this.projectRoot = projectRoot;
 		this.datasetXmlFile = datasetXmlFile;
+		this.isDatasetXmlPathRelative = true;
 	}
 
 	/**
@@ -85,6 +88,16 @@ public class MamutProject
 	public void setDatasetXmlFile( final File datasetXmlFile )
 	{
 		this.datasetXmlFile = datasetXmlFile;
+	}
+
+	public boolean isDatasetXmlPathRelative()
+	{
+		return isDatasetXmlPathRelative;
+	}
+
+	public void setDatasetXmlPathRelative( final boolean relative )
+	{
+		isDatasetXmlPathRelative = relative;
 	}
 
 	public String getSpaceUnits()
