@@ -132,7 +132,8 @@
 		<license.copyrightOwners>Tobias Pietzsch, Jean-Yves Tinevez</license.copyrightOwners>
 
 		<bigdataviewer-core.version>9.0.1</bigdataviewer-core.version>
-		<bigdataviewer-vistools.version>1.0.0-beta-19</bigdataviewer-vistools.version>
+		<bigdataviewer-vistools.version>1.0.0-beta-20</bigdataviewer-vistools.version>
+		<spim_data.version>2.2.4</spim_data.version>
 
 		<!-- NB: Deploy releases to the SciJava Maven repository. -->
 		<releaseProfiles>deploy-to-scijava</releaseProfiles>
