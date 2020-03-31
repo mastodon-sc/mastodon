@@ -37,6 +37,7 @@ import bdv.spimdata.SpimDataMinimal;
 import bdv.spimdata.XmlIoSpimDataMinimal;
 import bdv.viewer.ViewerOptions;
 import mpicbg.spim.data.SpimDataException;
+import mpicbg.spim.data.SpimDataIOException;
 import mpicbg.spim.data.generic.sequence.BasicViewSetup;
 
 public class ProjectManager
@@ -270,7 +271,18 @@ public class ProjectManager
 		final String spimDataXmlFilename = project.getDatasetXmlFile().getAbsolutePath();
 		SpimDataMinimal spimData = DummySpimData.tryCreate( project.getDatasetXmlFile().getName() );
 		if ( spimData == null )
-			spimData = new XmlIoSpimDataMinimal().load( spimDataXmlFilename );
+		{
+			try
+			{
+				spimData = new XmlIoSpimDataMinimal().load( spimDataXmlFilename );
+			}
+			catch ( SpimDataIOException e )
+			{
+				e.printStackTrace();
+				System.err.println( "Could not open image data file. Opening with dummy dataset. Please fix dataset path!" );
+				spimData = DummySpimData.tryCreate( "x=100 y=100 z=100 sx=1 sy=1 sz=1 t=10.dummy" );
+			}
+		}
 
 		/*
 		 * Try to read units from spimData is they are not present
