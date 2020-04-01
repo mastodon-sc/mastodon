@@ -28,6 +28,7 @@
  */
 package org.mastodon.revised.bdv;
 
+import bdv.ui.splitpanel.SplitPanel;
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
@@ -46,6 +47,8 @@ public class BigDataViewerMamut
 	private final ViewerFrameMamut viewerFrame;
 
 	private final ViewerPanelMamut viewer;
+
+	private final SplitPanel splitPanel;
 
 	private final BrightnessDialog brightnessDialog;
 
@@ -77,11 +80,13 @@ public class BigDataViewerMamut
 		viewerFrame = new ViewerFrameMamut(
 				windowTitle,
 				shared.getSources(),
+				shared.getConverterSetups(),
 				shared.getNumTimepoints(),
 				shared.getCache(),
 				groupHandle,
 				shared.getOptions() );
 		viewer = viewerFrame.getViewerPanel();
+		splitPanel = viewerFrame.getSplitPanel();
 
 		fileChooser = new JFileChooser();
 		fileChooser.setFileFilter( new FileFilter()
@@ -141,6 +146,18 @@ public class BigDataViewerMamut
 	public BookmarksEditor getBookmarksEditor()
 	{
 		return bookmarkEditor;
+	}
+
+	public void expandAndFocusCardPanel()
+	{
+		splitPanel.setCollapsed( false );
+		splitPanel.getRightComponent().requestFocusInWindow();
+	}
+
+	public void collapseCardPanel()
+	{
+		splitPanel.setCollapsed( true );
+		viewer.requestFocusInWindow();
 	}
 
 	protected void saveSettings()
