@@ -1,5 +1,7 @@
 package org.mastodon.revised.bdv;
 
+import bdv.viewer.BasicViewerState;
+import bdv.viewer.ConverterSetups;
 import bdv.viewer.Source;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -31,18 +33,19 @@ import bdv.viewer.RequestRepaint;
 import bdv.viewer.SourceAndConverter;
 import bdv.viewer.ViewerOptions;
 import bdv.viewer.ViewerPanel;
-import bdv.viewer.state.ViewerState;
 import mpicbg.spim.data.generic.AbstractSpimData;
 import mpicbg.spim.data.generic.sequence.AbstractSequenceDescription;
 
 public class SharedBigDataViewerData
 {
-	private final ArrayList< ConverterSetup > converterSetups;
-
 	private final ArrayList< SourceAndConverter< ? > > sources;
 
+	private final ConverterSetups setups;
+
+	// TODO: Remove
 	private final SetupAssignments setupAssignments;
 
+	// TODO: Remove
 	private BrightnessDialog brightnessDialog;
 
 	private final ManualTransformation manualTransformation;
@@ -84,12 +87,13 @@ public class SharedBigDataViewerData
 		numTimepoints = seq.getTimePoints().size();
 		cache = ( ( ViewerImgLoader ) seq.getImgLoader() ).getCacheControl();
 
-		converterSetups = new ArrayList<>();
+		final ArrayList< ConverterSetup > converterSetups = new ArrayList<>();
 		sources = new ArrayList<>();
 		BigDataViewer.initSetups( spimData, converterSetups, sources );
 
-		for ( final ConverterSetup cs : converterSetups )
-			cs.setViewer( requestRepaint );
+		setups = new ConverterSetups( new BasicViewerState() );
+		for ( int i = 0; i < sources.size(); ++i )
+			setups.put( sources.get( i ), converterSetups.get( i ) );
 
 		setupAssignments = new SetupAssignments( converterSetups, 0, 65535 );
 		if ( setupAssignments.getMinMaxGroups().size() > 0 )
@@ -105,14 +109,18 @@ public class SharedBigDataViewerData
 
 		if ( !tryLoadSettings( spimDataXmlFilename ) )
 		{
-			final ViewerState state = new ViewerState( sources, new ArrayList<>(), 1 );
-			InitializeViewerState.initBrightness( 0.001, 0.999, state, setupAssignments );
+			final BasicViewerState state = new BasicViewerState();
+			state.addSource( sources.get( 0 ) );
+			state.setCurrentSource( sources.get( 0 ) );
+			InitializeViewerState.initBrightness( 0.001, 0.999, state, setups );
 		}
 
 		is2D = computeIs2D();
-		this.options = options.transformEventHandlerFactory( is2D
-				? BehaviourTransformEventHandler2DMamut::new
-				: BehaviourTransformEventHandler3DMamut::new );
+		this.options = options
+				.inputTriggerConfig( inputTriggerConfig )
+				.transformEventHandlerFactory( is2D
+						? BehaviourTransformEventHandler2DMamut::new
+						: BehaviourTransformEventHandler3DMamut::new );
 
 		WrapBasicImgLoader.removeWrapperIfPresent( spimData );
 	}
@@ -202,11 +210,20 @@ public class SharedBigDataViewerData
 		return sources;
 	}
 
-	public ArrayList< ConverterSetup > getConverterSetups()
+	// TODO: REMOVE
+	@Deprecated
+	public ArrayList< ConverterSetup > getConverterSetupsDEPRECATED()
 	{
-		return converterSetups;
+		throw new UnsupportedOperationException( "TODO" );
 	}
 
+	public ConverterSetups getConverterSetups()
+	{
+		return setups;
+	}
+
+	// TODO: REMOVE
+	@Deprecated
 	public SetupAssignments getSetupAssignments()
 	{
 		return setupAssignments;
@@ -227,6 +244,8 @@ public class SharedBigDataViewerData
 		return bookmarks;
 	}
 
+	// TODO: REMOVE
+	@Deprecated
 	public synchronized BrightnessDialog getBrightnessDialog()
 	{
 		if ( brightnessDialog == null )

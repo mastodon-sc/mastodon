@@ -49,13 +49,9 @@ public class BigDataViewerActionsMamut
 	static final String[] GO_TO_BOOKMARK_ROTATION_KEYS     = new String[] { "O" };
 
 	private final ToggleDialogAction toggleVisibilityAndGroupingDialogAction;
-
 	private final RunnableAction goToBookmarkAction;
-
 	private final RunnableAction goToBookmarkRotationAction;
-
 	private final RunnableAction setBookmarkAction;
-
 
 
 
@@ -68,10 +64,19 @@ public class BigDataViewerActionsMamut
 	static final String[] LOAD_SETTINGS_KEYS               = new String[] { "F12" };
 
 	private final ToggleDialogAction toggleBrightnessDialogAction;
-
 	private final RunnableAction saveBdvSettingsAction;
-
 	private final RunnableAction loadBdvSettingsAction;
+
+
+
+	public static final String EXPAND_CARDS = "expand and focus cards panel";
+	public static final String COLLAPSE_CARDS = "collapse cards panel";
+
+	public static final String[] EXPAND_CARDS_KEYS         = new String[] { "P" };
+	public static final String[] COLLAPSE_CARDS_KEYS       = new String[] { "shift P", "shift ESCAPE" };
+
+	private final RunnableAction expandAndFocusCardPanelAction;
+	private final RunnableAction collapseCardPanelAction;
 
 
 	/*
@@ -95,6 +100,8 @@ public class BigDataViewerActionsMamut
 			descriptions.add( BRIGHTNESS_SETTINGS,BRIGHTNESS_SETTINGS_KEYS, "Show the Brightness&Colors dialog." );
 			descriptions.add( SAVE_SETTINGS, SAVE_SETTINGS_KEYS, "Save the BigDataViewer settings to a settings.xml file." );
 			descriptions.add( LOAD_SETTINGS, LOAD_SETTINGS_KEYS, "Load the BigDataViewer settings from a settings.xml file." );
+			descriptions.add( EXPAND_CARDS, EXPAND_CARDS_KEYS, "Expand and focus the BigDataViewer card panel" );
+			descriptions.add( COLLAPSE_CARDS, COLLAPSE_CARDS_KEYS, "Collapse the BigDataViewer card panel" );
 		}
 	}
 
@@ -126,6 +133,9 @@ public class BigDataViewerActionsMamut
 		actions.namedAction( ba.toggleBrightnessDialogAction, BRIGHTNESS_SETTINGS_KEYS );
 		actions.namedAction( ba.saveBdvSettingsAction, SAVE_SETTINGS_KEYS );
 		actions.namedAction( ba.loadBdvSettingsAction, LOAD_SETTINGS_KEYS );
+
+		actions.namedAction( ba.expandAndFocusCardPanelAction, EXPAND_CARDS_KEYS );
+		actions.namedAction( ba.collapseCardPanelAction, COLLAPSE_CARDS_KEYS );
 	}
 
 	private BigDataViewerActionsMamut( final BigDataViewerMamut bdv )
@@ -138,5 +148,8 @@ public class BigDataViewerActionsMamut
 		toggleBrightnessDialogAction = new ToggleDialogAction( BRIGHTNESS_SETTINGS, bdv.getBrightnessDialog() );
 		saveBdvSettingsAction = new RunnableAction( SAVE_SETTINGS, bdv::saveSettings );
 		loadBdvSettingsAction = new RunnableAction( LOAD_SETTINGS, bdv::loadSettings );
+
+		expandAndFocusCardPanelAction = new RunnableAction( EXPAND_CARDS, bdv::expandAndFocusCardPanel );
+		collapseCardPanelAction = new RunnableAction( COLLAPSE_CARDS, bdv::collapseCardPanel );
 	}
 }

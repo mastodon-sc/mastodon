@@ -29,13 +29,19 @@
  */
 package org.mastodon.revised.bdv;
 
+import bdv.ui.BdvDefaultCards;
+import bdv.ui.CardPanel;
+import bdv.ui.splitpanel.SplitPanel;
+import bdv.viewer.ConverterSetups;
 import java.awt.BorderLayout;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.List;
 
 import javax.swing.Box;
+import javax.swing.JComponent;
 import javax.swing.JFrame;
+import javax.swing.SwingUtilities;
 import javax.swing.WindowConstants;
 
 import org.mastodon.app.ui.GroupLocksPanel;
@@ -62,6 +68,10 @@ public class ViewerFrameMamut extends ViewFrame
 
 	private final ViewerPanelMamut viewer;
 
+	private final CardPanel cards;
+
+	private final SplitPanel splitPanel;
+
 	/**
 	 * Creates a new {@link ViewerFrameMamut}.
 	 *
@@ -69,6 +79,8 @@ public class ViewerFrameMamut extends ViewFrame
 	 *            the window title to display.
 	 * @param sources
 	 *            the {@link SourceAndConverter sources} to display.
+	 * @param setups
+	 *            min/max and color settings of the sources.
 	 * @param numTimepoints
 	 *            number of available timepoints.
 	 * @param cacheControl
@@ -81,6 +93,7 @@ public class ViewerFrameMamut extends ViewFrame
 	public ViewerFrameMamut(
 			final String windowTitle,
 			final List< SourceAndConverter< ? > > sources,
+			final ConverterSetups setups,
 			final int numTimepoints,
 			final CacheControl cacheControl,
 			final GroupHandle groupHandle,
@@ -89,7 +102,13 @@ public class ViewerFrameMamut extends ViewFrame
 		super( windowTitle );
 
 		viewer = new ViewerPanelMamut( sources, numTimepoints, cacheControl, optional );
-		add( viewer, BorderLayout.CENTER );
+		setups.listeners().add( s -> viewer.requestRepaint() );
+
+		cards = new CardPanel();
+		BdvDefaultCards.setup( cards, viewer, setups );
+		splitPanel = new SplitPanel( viewer, cards );
+
+		add( splitPanel, BorderLayout.CENTER );
 
 		final GroupLocksPanel navigationLocksPanel = new GroupLocksPanel( groupHandle );
 		settingsPanel.add( navigationLocksPanel );
@@ -106,6 +125,9 @@ public class ViewerFrameMamut extends ViewFrame
 			}
 		} );
 
+		SwingUtilities.replaceUIActionMap( viewer, keybindings.getConcatenatedActionMap() );
+		SwingUtilities.replaceUIInputMap( viewer, JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT, keybindings.getConcatenatedInputMap() );
+
 		final MouseAndKeyHandler mouseAndKeyHandler = new MouseAndKeyHandler();
 		mouseAndKeyHandler.setInputMap( triggerbindings.getConcatenatedInputTriggerMap() );
 		mouseAndKeyHandler.setBehaviourMap( triggerbindings.getConcatenatedBehaviourMap() );
@@ -116,6 +138,16 @@ public class ViewerFrameMamut extends ViewFrame
 	public ViewerPanelMamut getViewerPanel()
 	{
 		return viewer;
+	}
+
+	public CardPanel getCardPanel()
+	{
+		return cards;
+	}
+
+	public SplitPanel getSplitPanel()
+	{
+		return splitPanel;
 	}
 
 	public InputActionBindings getKeybindings()
