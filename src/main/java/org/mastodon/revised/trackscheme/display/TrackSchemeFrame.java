@@ -5,6 +5,8 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
 import javax.swing.Box;
+import javax.swing.JComponent;
+import javax.swing.SwingUtilities;
 import javax.swing.WindowConstants;
 
 import org.mastodon.app.ui.GroupLocksPanel;
@@ -72,6 +74,9 @@ public class TrackSchemeFrame extends ViewFrame
 				trackschemePanel.stop();
 			}
 		} );
+
+		SwingUtilities.replaceUIActionMap( trackschemePanel, keybindings.getConcatenatedActionMap() );
+		SwingUtilities.replaceUIInputMap( trackschemePanel, JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT, keybindings.getConcatenatedInputMap() );
 
 		final MouseAndKeyHandler mouseAndKeyHandler = new MouseAndKeyHandler();
 		mouseAndKeyHandler.setInputMap( triggerbindings.getConcatenatedInputTriggerMap() );
