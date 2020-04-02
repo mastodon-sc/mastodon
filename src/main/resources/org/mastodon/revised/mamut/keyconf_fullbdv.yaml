@@ -572,6 +572,14 @@
   contexts: [bdv]
   triggers: [not mapped]
 - !mapping
+  action: expand and focus cards panel
+  contexts: [bdv]
+  triggers: [P]
+- !mapping
+  action: collapse cards panel
+  contexts: [bdv]
+  triggers: [shift ESCAPE, shift P]
+- !mapping
   action: edit vertex label
   contexts: [ts]
   triggers: [ENTER]
