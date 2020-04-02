@@ -45,13 +45,13 @@ public class ViewFrame extends JFrame
 		keybindings = new InputActionBindings();
 		triggerbindings = new TriggerBehaviourBindings();
 
-		SwingUtilities.replaceUIActionMap( getRootPane(), keybindings.getConcatenatedActionMap() );
-		SwingUtilities.replaceUIInputMap( getRootPane(), JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT, keybindings.getConcatenatedInputMap() );
-
 		settingsPanel = new JPanel();
 		settingsPanel.setLayout( new BoxLayout( settingsPanel, BoxLayout.LINE_AXIS ) );
 		add( settingsPanel, BorderLayout.NORTH );
 		isSettingsPanelVisible = true;
+
+		SwingUtilities.replaceUIActionMap( settingsPanel, keybindings.getConcatenatedActionMap() );
+		SwingUtilities.replaceUIInputMap( settingsPanel, JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT, keybindings.getConcatenatedInputMap() );
 
 		menubar = new JMenuBar();
 		setJMenuBar( menubar );
