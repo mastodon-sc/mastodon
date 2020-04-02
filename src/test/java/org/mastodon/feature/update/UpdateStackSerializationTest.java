@@ -26,6 +26,7 @@ import org.mastodon.graph.io.RawGraphIO;
 import org.mastodon.io.FileIdToObjectMap;
 import org.mastodon.io.ObjectToFileIdMap;
 import org.mastodon.io.properties.DoublePropertyMapSerializer;
+import org.mastodon.mamut.feature.MamutFeatureComputer;
 import org.mastodon.mamut.feature.MamutFeatureComputerService;
 import org.mastodon.project.MamutProject;
 import org.mastodon.project.MamutProjectIO;
@@ -284,7 +285,7 @@ public class UpdateStackSerializationTest
 		}
 	}
 
-	@Plugin( type = FT4computer.class )
+	@Plugin( type = MamutFeatureComputer.class )
 	public static class FT4computer extends TestFeatureComputer
 	{
 

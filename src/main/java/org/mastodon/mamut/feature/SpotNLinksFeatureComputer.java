@@ -7,7 +7,7 @@ import org.scijava.ItemIO;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 
-@Plugin( type = SpotNLinksFeatureComputer.class )
+@Plugin( type = MamutFeatureComputer.class )
 public class SpotNLinksFeatureComputer implements MamutFeatureComputer
 {
 

@@ -15,7 +15,7 @@ import org.mastodon.properties.DoublePropertyMap;
 import org.mastodon.revised.model.mamut.Link;
 import org.scijava.plugin.Plugin;
 
-@Plugin( type = LinkDisplacementFeatureSerializer.class )
+@Plugin( type = FeatureSerializer.class )
 public class LinkDisplacementFeatureSerializer implements FeatureSerializer< LinkDisplacementFeature, Link >
 {
 

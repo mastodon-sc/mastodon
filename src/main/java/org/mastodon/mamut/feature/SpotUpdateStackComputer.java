@@ -5,7 +5,7 @@ import org.scijava.ItemIO;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 
-@Plugin( type = SpotUpdateStackComputer.class, visible = false )
+@Plugin( type = MamutFeatureComputer.class, visible = false )
 public class SpotUpdateStackComputer implements MamutFeatureComputer
 {
 

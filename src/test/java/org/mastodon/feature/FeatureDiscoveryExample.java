@@ -164,7 +164,7 @@ public class FeatureDiscoveryExample
 		}
 	}
 
-	@Plugin( type = FC1.class )
+	@Plugin( type = FeatureComputer.class )
 	public static class FC1 implements FeatureComputer
 	{
 		@Parameter( type = OUTPUT )
@@ -181,7 +181,7 @@ public class FeatureDiscoveryExample
 		}
 	}
 
-	@Plugin( type = FC2.class )
+	@Plugin( type = FeatureComputer.class )
 	public static class FC2 implements FeatureComputer
 	{
 		@Parameter
@@ -203,7 +203,7 @@ public class FeatureDiscoveryExample
 		}
 	}
 
-	@Plugin( type = FC3.class )
+	@Plugin( type = FeatureComputer.class )
 	public static class FC3 implements FeatureComputer
 	{
 		@Parameter
@@ -228,7 +228,7 @@ public class FeatureDiscoveryExample
 		}
 	}
 
-	@Plugin( type = FC4.class )
+	@Plugin( type = FeatureComputer.class )
 	public static class FC4 implements FeatureComputer
 	{
 		@Parameter

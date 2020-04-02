@@ -11,7 +11,7 @@ import org.scijava.plugin.Plugin;
 import gnu.trove.map.TIntIntMap;
 import gnu.trove.map.hash.TIntIntHashMap;
 
-@Plugin( type = TrackSizeFeatureComputer.class )
+@Plugin( type = MamutFeatureComputer.class )
 public class TrackSizeFeatureComputer implements MamutFeatureComputer
 {
 

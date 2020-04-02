@@ -33,7 +33,7 @@ import net.imglib2.RealPoint;
 import net.imglib2.realtransform.AffineTransform3D;
 import net.imglib2.type.numeric.RealType;
 
-@Plugin( type = SpotGaussFilteredIntensityFeatureComputer.class )
+@Plugin( type = MamutFeatureComputer.class )
 public class SpotGaussFilteredIntensityFeatureComputer implements MamutFeatureComputer, Cancelable
 {
 

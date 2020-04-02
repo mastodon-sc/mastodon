@@ -14,7 +14,7 @@ import org.mastodon.properties.IntPropertyMap;
 import org.mastodon.revised.model.mamut.Spot;
 import org.scijava.plugin.Plugin;
 
-@Plugin( type = SpotTrackIDFeatureSerializer.class )
+@Plugin( type = FeatureSerializer.class )
 public class SpotTrackIDFeatureSerializer implements FeatureSerializer< SpotTrackIDFeature, Spot >
 {
 

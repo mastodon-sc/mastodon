@@ -38,7 +38,7 @@ public class HighlightBehaviours< V extends Vertex< E >, E extends Edge< V > >
 	/*
 	 * Command descriptions for all provided commands
 	 */
-	@Plugin( type = Descriptions.class )
+	@Plugin( type = CommandDescriptionProvider.class )
 	public static class Descriptions extends CommandDescriptionProvider
 	{
 		public Descriptions()

@@ -67,7 +67,7 @@ public class NavigationActionsMamut
 	/*
 	 * Command descriptions for all provided commands
 	 */
-	@Plugin( type = Descriptions.class )
+	@Plugin( type = CommandDescriptionProvider.class )
 	public static class Descriptions extends CommandDescriptionProvider
 	{
 		public Descriptions()

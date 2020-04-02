@@ -28,7 +28,7 @@ public class BdvSelectionBehaviours< V extends OverlayVertex< V, E >, E extends 
 	/*
 	 * Command descriptions for all provided commands
 	 */
-	@Plugin( type = Descriptions.class )
+	@Plugin( type = CommandDescriptionProvider.class )
 	public static class Descriptions extends CommandDescriptionProvider
 	{
 		public Descriptions()
