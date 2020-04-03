@@ -210,19 +210,11 @@ public class SharedBigDataViewerData
 		return sources;
 	}
 
-	// TODO: REMOVE
-	@Deprecated
-	public ArrayList< ConverterSetup > getConverterSetupsDEPRECATED()
-	{
-		throw new UnsupportedOperationException( "TODO" );
-	}
-
 	public ConverterSetups getConverterSetups()
 	{
 		return setups;
 	}
 
-	// TODO: REMOVE
 	@Deprecated
 	public SetupAssignments getSetupAssignments()
 	{
@@ -244,7 +236,6 @@ public class SharedBigDataViewerData
 		return bookmarks;
 	}
 
-	// TODO: REMOVE
 	@Deprecated
 	public synchronized BrightnessDialog getBrightnessDialog()
 	{
