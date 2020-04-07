@@ -13,7 +13,6 @@ import org.mastodon.app.ui.MastodonFrameViewActions;
 import org.mastodon.app.ui.ViewMenu;
 import org.mastodon.app.ui.ViewMenuBuilder.JMenuHandle;
 import org.mastodon.model.AutoNavigateFocusModel;
-import org.mastodon.model.TimepointListener;
 import org.mastodon.model.TimepointModel;
 import org.mastodon.revised.model.mamut.Link;
 import org.mastodon.revised.model.mamut.Model;
@@ -43,10 +42,16 @@ public class MamutViewTrackScheme extends MamutView< TrackSchemeGraph< Spot, Lin
 {
 	private final ContextChooser< Spot > contextChooser;
 
-	/** a reference on the {@code GraphColorGeneratorAdapter} created and registered with this instance/window */
+	/**
+	 * a reference on the {@code GraphColorGeneratorAdapter} created and
+	 * registered with this instance/window
+	 */
 	private final GraphColorGeneratorAdapter< Spot, Link, TrackSchemeVertex, TrackSchemeEdge > coloringAdapter;
 
-	/** a reference on a supervising instance of the {@code ColoringModel} that is bound to this instance/window */
+	/**
+	 * a reference on a supervising instance of the {@code ColoringModel} that
+	 * is bound to this instance/window
+	 */
 	private final ColoringModel coloringModel;
 
 	public MamutViewTrackScheme( final MamutAppModel appModel )
