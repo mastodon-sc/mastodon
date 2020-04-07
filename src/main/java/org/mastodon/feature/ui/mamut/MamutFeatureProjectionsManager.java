@@ -16,7 +16,7 @@ import org.mastodon.revised.ui.coloring.feature.FeatureRangeCalculator;
 import org.mastodon.revised.ui.coloring.feature.Projections;
 import org.mastodon.revised.ui.coloring.feature.ProjectionsFromFeatureModel;
 import org.mastodon.revised.ui.coloring.feature.TargetType;
-import org.mastodon.util.Listeners;
+import org.scijava.listeners.Listeners;
 
 /**
  * Provides and up-to-date set of feature projections, as well as

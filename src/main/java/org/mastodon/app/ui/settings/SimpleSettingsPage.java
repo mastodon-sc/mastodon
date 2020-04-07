@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 import javax.swing.JPanel;
 
-import org.mastodon.util.Listeners;
+import org.scijava.listeners.Listeners;
 
 /**
  * Helper class to easily put a {@link JPanel} as a page into a

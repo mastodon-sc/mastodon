@@ -1,6 +1,6 @@
 package org.mastodon.views.context;
 
-import org.mastodon.util.Listeners;
+import org.scijava.listeners.Listeners;
 
 /**
  * Something that provides {@link Context} to {@link ContextListener}s. It has

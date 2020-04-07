@@ -4,7 +4,7 @@ import org.mastodon.adapter.ForwardedListeners;
 import org.mastodon.adapter.RefBimap;
 import org.mastodon.graph.Edge;
 import org.mastodon.graph.Vertex;
-import org.mastodon.util.Listeners;
+import org.scijava.listeners.Listeners;
 
 /**
  * Adapts a {@code TagSetModel<V, E>} as a {@code TagSetModel<WV, WE>}. The

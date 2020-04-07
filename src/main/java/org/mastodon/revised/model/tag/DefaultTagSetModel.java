@@ -15,7 +15,7 @@ import org.mastodon.revised.model.tag.TagSetStructure.Tag;
 import org.mastodon.revised.model.tag.TagSetStructure.TagSet;
 import org.mastodon.undo.Recorder;
 import org.mastodon.undo.UndoableEdit;
-import org.mastodon.util.Listeners;
+import org.scijava.listeners.Listeners;
 
 /**
  * Default implementation of {@link TagSetModel}.

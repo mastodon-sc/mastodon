@@ -6,7 +6,7 @@ import org.mastodon.revised.trackscheme.LineageTreeLayout;
 import org.mastodon.revised.trackscheme.ScreenTransform;
 import org.mastodon.revised.trackscheme.TrackSchemeEdge;
 import org.mastodon.revised.trackscheme.TrackSchemeVertex;
-import org.mastodon.util.Listeners;
+import org.scijava.listeners.Listeners;
 
 import net.imglib2.RealPoint;
 import net.imglib2.ui.TransformListener;

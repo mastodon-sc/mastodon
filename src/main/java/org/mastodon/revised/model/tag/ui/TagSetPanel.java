@@ -12,7 +12,7 @@ import javax.swing.border.MatteBorder;
 import org.mastodon.revised.model.tag.TagSetStructure;
 import org.mastodon.revised.model.tag.TagSetStructure.Tag;
 import org.mastodon.revised.model.tag.TagSetStructure.TagSet;
-import org.mastodon.util.Listeners;
+import org.scijava.listeners.Listeners;
 
 public class TagSetPanel extends JPanel
 {

@@ -2,7 +2,7 @@ package org.mastodon.adapter;
 
 import org.mastodon.model.NavigationHandler;
 import org.mastodon.model.NavigationListener;
-import org.mastodon.util.Listeners;
+import org.scijava.listeners.Listeners;
 
 public class NavigationHandlerAdapter< V, E, WV, WE >
 		implements NavigationHandler< WV, WE >

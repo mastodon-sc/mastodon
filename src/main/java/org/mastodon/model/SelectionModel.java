@@ -6,7 +6,7 @@ import org.mastodon.collection.RefSet;
 import org.mastodon.graph.Edge;
 import org.mastodon.graph.GraphListener;
 import org.mastodon.graph.Vertex;
-import org.mastodon.util.Listeners;
+import org.scijava.listeners.Listeners;
 
 /**
  * A class that manages a selection of vertices and edges of a graph.

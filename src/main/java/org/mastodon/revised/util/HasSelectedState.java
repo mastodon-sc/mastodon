@@ -2,7 +2,7 @@ package org.mastodon.revised.util;
 
 import java.awt.Desktop.Action;
 
-import org.mastodon.util.Listeners;
+import org.scijava.listeners.Listeners;
 
 /**
  * Something that can be selected or unselected.

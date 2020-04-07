@@ -1,6 +1,6 @@
 package org.mastodon.revised.trackscheme.display;
 
-import org.mastodon.util.Listeners;
+import org.scijava.listeners.Listeners;
 
 public class OffsetHeaders
 {

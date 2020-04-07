@@ -13,7 +13,7 @@ import org.mastodon.revised.ui.coloring.feature.FeatureColorMode;
 import org.mastodon.revised.ui.coloring.feature.FeatureColorModeManager;
 import org.mastodon.revised.ui.coloring.feature.Projections;
 import org.mastodon.revised.ui.coloring.feature.ProjectionsFromFeatureModel;
-import org.mastodon.util.Listeners;
+import org.scijava.listeners.Listeners;
 
 /**
  * ColoringModel knows which coloring scheme is currently active.

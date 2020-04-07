@@ -8,8 +8,8 @@ import org.mastodon.app.ui.settings.style.StyleProfile;
 import org.mastodon.app.ui.settings.style.StyleProfileManager;
 import org.mastodon.revised.ui.coloring.feature.FeatureColorMode;
 import org.mastodon.revised.ui.coloring.feature.FeatureColorModeManager;
-import org.mastodon.util.Listeners;
-import org.mastodon.util.Listeners.SynchronizedList;
+import org.scijava.listeners.Listeners;
+import org.scijava.listeners.Listeners.SynchronizedList;
 
 public class FeatureColorModeConfigPage extends SelectAndEditProfileSettingsPage< StyleProfile< FeatureColorMode > >
 {

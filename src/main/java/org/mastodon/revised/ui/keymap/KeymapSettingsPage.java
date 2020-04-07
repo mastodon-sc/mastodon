@@ -17,7 +17,7 @@ import org.mastodon.app.ui.settings.style.StyleProfile;
 import org.mastodon.app.ui.settings.style.StyleProfileManager;
 import org.mastodon.revised.bdv.NavigationActionsMamut;
 import org.mastodon.revised.mamut.KeyConfigContexts;
-import org.mastodon.util.Listeners;
+import org.scijava.listeners.Listeners;
 import org.scijava.ui.behaviour.io.gui.VisualEditorPanel;
 
 public class KeymapSettingsPage extends SelectAndEditProfileSettingsPage< StyleProfile< Keymap > >

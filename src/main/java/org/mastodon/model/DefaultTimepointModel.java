@@ -1,6 +1,6 @@
 package org.mastodon.model;
 
-import org.mastodon.util.Listeners;
+import org.scijava.listeners.Listeners;
 
 /**
  * TODO

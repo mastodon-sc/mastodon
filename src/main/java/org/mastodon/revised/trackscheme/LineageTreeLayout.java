@@ -14,7 +14,7 @@ import org.mastodon.revised.trackscheme.ScreenEdge.ScreenEdgePool;
 import org.mastodon.revised.trackscheme.ScreenVertex.ScreenVertexPool;
 import org.mastodon.revised.trackscheme.ScreenVertexRange.ScreenVertexRangePool;
 import org.mastodon.revised.ui.coloring.GraphColorGenerator;
-import org.mastodon.util.Listeners;
+import org.scijava.listeners.Listeners;
 
 import gnu.trove.iterator.TIntAlternatingIterator;
 import gnu.trove.iterator.TIntIterator;

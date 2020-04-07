@@ -2,7 +2,8 @@ package org.mastodon.views.context;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import org.mastodon.util.Listeners;
+
+import org.scijava.listeners.Listeners;
 
 public class ContextChooser< V >
 {

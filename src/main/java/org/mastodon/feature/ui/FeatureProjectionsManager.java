@@ -1,7 +1,7 @@
 package org.mastodon.feature.ui;
 
 import org.mastodon.revised.ui.coloring.feature.FeatureRangeCalculator;
-import org.mastodon.util.Listeners;
+import org.scijava.listeners.Listeners;
 
 /**
  * Provides and up-to-date set of feature projections, as well as

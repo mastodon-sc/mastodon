@@ -2,7 +2,7 @@ package org.mastodon.app.ui.settings;
 
 import javax.swing.JPanel;
 
-import org.mastodon.util.Listeners;
+import org.scijava.listeners.Listeners;
 
 /**
  * A content page in a {@link SettingsPanel}.

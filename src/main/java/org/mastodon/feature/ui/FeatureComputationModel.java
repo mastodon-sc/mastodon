@@ -9,7 +9,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.mastodon.feature.FeatureSpec;
-import org.mastodon.util.Listeners;
+import org.scijava.listeners.Listeners;
 
 public class FeatureComputationModel
 {

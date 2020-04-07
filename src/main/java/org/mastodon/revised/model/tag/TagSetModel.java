@@ -1,6 +1,6 @@
 package org.mastodon.revised.model.tag;
 
-import org.mastodon.util.Listeners;
+import org.scijava.listeners.Listeners;
 
 /**
  * Assigns tags to vertices and edges of a graph, according to a

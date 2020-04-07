@@ -2,7 +2,7 @@ package org.mastodon.model;
 
 import org.mastodon.graph.Edge;
 import org.mastodon.graph.Vertex;
-import org.mastodon.util.Listeners;
+import org.scijava.listeners.Listeners;
 
 /**
  * A {@code FocusModel} that calls {@code notifyNavigateToVertex()} on

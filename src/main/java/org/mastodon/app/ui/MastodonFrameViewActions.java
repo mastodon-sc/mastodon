@@ -9,7 +9,7 @@ import org.mastodon.revised.mamut.KeyConfigContexts;
 import org.mastodon.revised.ui.keymap.CommandDescriptionProvider;
 import org.mastodon.revised.ui.keymap.CommandDescriptions;
 import org.mastodon.revised.util.HasSelectedState;
-import org.mastodon.util.Listeners;
+import org.scijava.listeners.Listeners;
 import org.scijava.plugin.Plugin;
 import org.scijava.ui.behaviour.util.AbstractNamedAction;
 import org.scijava.ui.behaviour.util.Actions;

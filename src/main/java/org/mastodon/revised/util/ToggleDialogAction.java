@@ -5,7 +5,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 
-import org.mastodon.util.Listeners;
+import org.scijava.listeners.Listeners;
 import org.scijava.ui.behaviour.util.AbstractNamedAction;
 
 public class ToggleDialogAction extends AbstractNamedAction implements HasSelectedState

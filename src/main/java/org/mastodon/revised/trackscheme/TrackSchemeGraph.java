@@ -31,7 +31,7 @@ import org.mastodon.pool.attributes.IntAttribute;
 import org.mastodon.revised.trackscheme.wrap.DefaultModelGraphProperties;
 import org.mastodon.revised.trackscheme.wrap.ModelGraphProperties;
 import org.mastodon.spatial.HasTimepoint;
-import org.mastodon.util.Listeners;
+import org.scijava.listeners.Listeners;
 
 /**
  * A specialized graph to be used in the TrackScheme application.

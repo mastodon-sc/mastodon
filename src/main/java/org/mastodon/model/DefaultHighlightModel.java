@@ -4,7 +4,7 @@ import org.mastodon.graph.Edge;
 import org.mastodon.graph.GraphIdBimap;
 import org.mastodon.graph.GraphListener;
 import org.mastodon.graph.Vertex;
-import org.mastodon.util.Listeners;
+import org.scijava.listeners.Listeners;
 
 /**
  * Manages the highlighted vertex.

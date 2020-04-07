@@ -3,7 +3,7 @@ package org.mastodon.model;
 import org.mastodon.grouping.ForwardingModel;
 import org.mastodon.grouping.GroupManager;
 import org.mastodon.grouping.GroupableModelFactory;
-import org.mastodon.util.Listeners;
+import org.scijava.listeners.Listeners;
 
 /**
  * A {@link NavigationHandler} forwarding to another (switchable)

@@ -19,7 +19,7 @@ import javax.swing.JPanel;
 import org.mastodon.feature.Multiplicity;
 import org.mastodon.revised.ui.coloring.feature.FeatureProjectionId;
 import org.mastodon.revised.ui.coloring.feature.TargetType;
-import org.mastodon.util.Listeners;
+import org.scijava.listeners.Listeners;
 
 /**
  * A JPanel, one line, in which the user can select a pair of feature /

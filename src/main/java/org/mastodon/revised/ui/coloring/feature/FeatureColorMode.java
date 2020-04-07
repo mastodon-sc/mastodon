@@ -4,12 +4,12 @@ import java.io.StringReader;
 import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Collection;
-
 import java.util.Objects;
+
 import org.mastodon.app.ui.settings.style.Style;
 import org.mastodon.mamut.feature.SpotNLinksFeature;
 import org.mastodon.revised.ui.coloring.ColorMap;
-import org.mastodon.util.Listeners;
+import org.scijava.listeners.Listeners;
 import org.yaml.snakeyaml.Yaml;
 
 /**

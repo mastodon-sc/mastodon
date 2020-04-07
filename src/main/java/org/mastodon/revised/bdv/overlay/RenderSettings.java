@@ -2,10 +2,10 @@ package org.mastodon.revised.bdv.overlay;
 
 import java.util.ArrayList;
 import java.util.Collection;
-
 import java.util.Objects;
+
 import org.mastodon.app.ui.settings.style.Style;
-import org.mastodon.util.Listeners;
+import org.scijava.listeners.Listeners;
 
 public class RenderSettings implements Style< RenderSettings >
 {

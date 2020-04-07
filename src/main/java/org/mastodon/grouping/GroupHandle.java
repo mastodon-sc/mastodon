@@ -4,7 +4,7 @@ import static org.mastodon.grouping.GroupManager.NO_GROUP;
 
 import java.util.HashMap;
 
-import org.mastodon.util.Listeners;
+import org.scijava.listeners.Listeners;
 
 /**
  * Each Mastodon view has a {@code GroupHandle}. The view can

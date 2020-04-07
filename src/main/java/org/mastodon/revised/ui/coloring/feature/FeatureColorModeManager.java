@@ -12,7 +12,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.mastodon.app.ui.settings.style.AbstractStyleManager;
-import org.mastodon.util.Listeners;
+import org.scijava.listeners.Listeners;
 import org.yaml.snakeyaml.Yaml;
 
 public class FeatureColorModeManager extends AbstractStyleManager< FeatureColorModeManager, FeatureColorMode >

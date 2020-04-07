@@ -3,7 +3,7 @@ package org.mastodon.revised.ui.keymap;
 import java.util.Objects;
 
 import org.mastodon.app.ui.settings.style.Style;
-import org.mastodon.util.Listeners;
+import org.scijava.listeners.Listeners;
 import org.scijava.ui.behaviour.io.InputTriggerConfig;
 
 public class Keymap implements Style< Keymap >

@@ -5,17 +5,19 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.BooleanSupplier;
 import java.util.stream.Stream;
+
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JSeparator;
+
 import org.mastodon.feature.FeatureModel.FeatureModelListener;
 import org.mastodon.revised.model.tag.TagSetModel;
 import org.mastodon.revised.model.tag.TagSetStructure;
 import org.mastodon.revised.ui.coloring.feature.FeatureColorMode;
 import org.mastodon.revised.ui.coloring.feature.FeatureColorModeManager;
 import org.mastodon.revised.util.HasSelectedState;
-import org.mastodon.util.Listeners;
+import org.scijava.listeners.Listeners;
 import org.scijava.ui.behaviour.util.AbstractNamedAction;
 
 public class ColoringMenu implements TagSetModel.TagSetModelListener, FeatureModelListener, FeatureColorModeManager.FeatureColorModesListener

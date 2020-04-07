@@ -3,7 +3,8 @@ package org.mastodon.adapter;
 import java.util.ArrayList;
 import java.util.function.Consumer;
 
-import org.mastodon.util.Listeners;
+import org.scijava.listeners.Listeners;
+
 
 /**
  * A subset of listeners of type {@code T} forwarding to a wrapped
