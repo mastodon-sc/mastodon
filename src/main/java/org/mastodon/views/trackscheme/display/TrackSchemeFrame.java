@@ -46,6 +46,7 @@ public class TrackSchemeFrame extends ViewFrame
 			final TrackSchemeOptions optional )
 	{
 		super( "TrackScheme" );
+		setLocation( optional.values.getX(), optional.values.getY() );
 
 		trackschemePanel = new TrackSchemePanel(
 				graph,
