@@ -141,7 +141,8 @@ public class MamutViewBdv extends MamutView< OverlayGraphWrapper< Spot, Link >, 
 		highlightModel.listeners().add( () -> viewer.getDisplay().repaint() );
 		focusModel.listeners().add( () -> viewer.getDisplay().repaint() );
 		modelGraph.addGraphChangeListener( () -> viewer.getDisplay().repaint() );
-		modelGraph.addVertexPositionListener( ( v ) -> viewer.getDisplay().repaint() );
+		modelGraph.addVertexPositionListener( v -> viewer.getDisplay().repaint() );
+		modelGraph.addVertexLabelListener( v -> viewer.getDisplay().repaint() );
 		selectionModel.listeners().add( () -> viewer.getDisplay().repaint() );
 
 		final OverlayNavigation< OverlayVertexWrapper< Spot, Link >, OverlayEdgeWrapper< Spot, Link > > overlayNavigation = new OverlayNavigation<>( viewer, viewGraph );

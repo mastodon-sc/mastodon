@@ -162,6 +162,8 @@ public class MamutViewTrackScheme extends MamutView< TrackSchemeGraph< Spot, Lin
 		registerTagSetMenu( tagSetMenuHandle,
 				() -> frame.getTrackschemePanel().entitiesAttributesChanged() );
 
+		model.getGraph().addVertexLabelListener( v -> frame.getTrackschemePanel().entitiesAttributesChanged() );
+
 		frame.getTrackschemePanel().repaint();
 	}
 
