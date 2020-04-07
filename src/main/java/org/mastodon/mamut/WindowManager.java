@@ -8,7 +8,9 @@ import static org.mastodon.app.MastodonIcons.TRACKSCHEME_VIEW_ICON;
 import java.awt.event.WindowEvent;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Consumer;
 
 import javax.swing.JDialog;
@@ -347,9 +349,14 @@ public class WindowManager
 
 	public MamutViewBdv createBigDataViewer()
 	{
+		return createBigDataViewer( new HashMap<>() );
+	}
+
+	public MamutViewBdv createBigDataViewer( final Map< String, Object > guiState )
+	{
 		if ( appModel != null )
 		{
-			final MamutViewBdv view = new MamutViewBdv( appModel );
+			final MamutViewBdv view = new MamutViewBdv( appModel, guiState );
 			view.getFrame().setIconImage( BDV_VIEW_ICON );
 			addBdvWindow( view );
 			return view;
@@ -359,9 +366,14 @@ public class WindowManager
 
 	public MamutViewTrackScheme createTrackScheme()
 	{
+		return createTrackScheme( new HashMap<>() );
+	}
+
+	public MamutViewTrackScheme createTrackScheme( final Map< String, Object > guiState )
+	{
 		if ( appModel != null )
 		{
-			final MamutViewTrackScheme view = new MamutViewTrackScheme( appModel );
+			final MamutViewTrackScheme view = new MamutViewTrackScheme( appModel, guiState );
 			view.getFrame().setIconImage( TRACKSCHEME_VIEW_ICON );
 			addTsWindow( view );
 			return view;
