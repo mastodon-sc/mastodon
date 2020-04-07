@@ -300,7 +300,7 @@ public class TrackSchemeGraph<
 	}
 
 	/**
-	 * Get the list of GraphChangeListeners. This can be used to adds (or
+	 * Get the list of GraphChangeListeners. This can be used to add (or
 	 * remove) a GraphChangeListener that will be notified when this
 	 * TrackSchemeGraph changes.
 	 *
