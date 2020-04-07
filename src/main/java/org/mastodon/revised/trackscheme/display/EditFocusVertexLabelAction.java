@@ -264,7 +264,6 @@ public class EditFocusVertexLabelAction extends AbstractNamedAction implements T
 		{
 			vertex.setLabel( getText().trim() );
 			undoPointMarker.setUndoPoint();
-			panel.entitiesAttributesChanged();
 		}
 
 		private void kill()
