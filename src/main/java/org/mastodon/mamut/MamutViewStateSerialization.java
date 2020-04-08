@@ -1,5 +1,7 @@
 package org.mastodon.mamut;
 
+import java.awt.GraphicsDevice;
+import java.awt.GraphicsEnvironment;
 import java.awt.Rectangle;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -357,7 +359,8 @@ class MamutViewStateSerialization
 				value = XmlHelpers.getAffineTransform3D( viewEl, key );
 				break;
 			case FRAME_POSITION_KEY:
-				value = XmlHelpers.getIntArray( viewEl, key );
+				final int[] pos = XmlHelpers.getIntArray( viewEl, key );
+				value = sanitize( pos );
 				break;
 			case TAG_SET_KEY:
 			case FEATURE_COLOR_MODE_KEY:
@@ -383,5 +386,94 @@ class MamutViewStateSerialization
 			guiState.put( key, value );
 		}
 		return guiState;
+	}
+
+	private static final int MIN_WIDTH = 200;
+
+	private static final int MIN_HEIGHT = MIN_WIDTH;
+
+	/**
+	 * Makes sure the specified position array won't end in creating windows
+	 * off-screen. We impose that a window is fully on *one* screen and not
+	 * split over severals. We also impose a minimal size for the windows.
+	 * <p>
+	 * The pos array is { x, y, width, height }.
+	 * 
+	 * @param pos
+	 *            the position array.
+	 * @return the same position array.
+	 */
+	private static int[] sanitize( final int[] pos )
+	{
+		assert pos.length == 4;
+		final GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
+		if ( null == ge )
+			return pos;
+		final GraphicsDevice sd[] = ge.getScreenDevices();
+		if ( sd.length < 1 )
+			return pos;
+
+		// Window min size.
+		pos[ 2 ] = Math.max( MIN_WIDTH, pos[ 2 ] );
+		pos[ 3 ] = Math.max( MIN_HEIGHT, pos[ 3 ] );
+
+		for ( final GraphicsDevice gd : sd )
+		{
+			final Rectangle bounds = gd.getDefaultConfiguration().getBounds();
+			if ( bounds.contains( pos[ 0 ], pos[ 1 ], pos[ 2 ], pos[ 3 ] ) )
+				// Fully in a screen, nothing to do.
+				return pos;
+
+			if ( bounds.contains( pos[ 0 ], pos[ 1 ] ) )
+			{
+				/*
+				 * This window is on this screen, but exits it. First resize it
+				 * so that it is not bigger than the screen.
+				 */
+				pos[ 2 ] = Math.min( bounds.width, pos[ 2 ] );
+				pos[ 3 ] = Math.min( bounds.height, pos[ 3 ] );
+
+				/*
+				 * Then move it back so that its bottom right corner is in the
+				 * screen.
+				 */
+				if ( pos[ 0 ] + pos[ 2 ] > bounds.x + bounds.width )
+					pos[ 0 ] -= ( pos[ 0 ] - bounds.x + pos[ 2 ] - bounds.width );
+
+				if ( pos[ 1 ] + pos[ 3 ] > bounds.y + bounds.height )
+					pos[ 1 ] -= ( pos[ 1 ] - bounds.y + pos[ 3 ] - bounds.height );
+
+				return pos;
+			}
+		}
+
+		/*
+		 * Ok we did not find a screen in which this window is. So we will put
+		 * it in the first screen.
+		 */
+		final Rectangle bounds = sd[ 0 ].getDefaultConfiguration().getBounds();
+		pos[ 0 ] = Math.max( bounds.x,
+				Math.min( bounds.x + bounds.width - pos[ 2 ], pos[ 0 ] ) );
+		pos[ 1 ] = Math.max( bounds.y,
+				Math.min( bounds.y + bounds.height - pos[ 3 ], pos[ 1 ] ) );
+
+		if ( bounds.contains( pos[ 0 ], pos[ 1 ], pos[ 2 ], pos[ 3 ] ) )
+			// Fully in a screen, nothing to do.
+			return pos;
+
+		/*
+		 * This window is on this screen, but exits it. First resize it so that
+		 * it is not bigger than the screen.
+		 */
+		pos[ 2 ] = Math.min( bounds.width, pos[ 2 ] );
+		pos[ 3 ] = Math.min( bounds.height, pos[ 3 ] );
+
+		/*
+		 * Then move it back so that its bottom right corner is in the screen.
+		 */
+		pos[ 0 ] -= ( pos[ 0 ] - bounds.x + pos[ 2 ] - bounds.width );
+		pos[ 1 ] -= ( pos[ 1 ] - bounds.y + pos[ 3 ] - bounds.height );
+
+		return pos;
 	}
 }
