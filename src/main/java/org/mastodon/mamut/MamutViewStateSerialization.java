@@ -115,7 +115,6 @@ class MamutViewStateSerialization
 	 *            the GUI state to serialize.
 	 * @return a new XML element.
 	 */
-
 	static Element toXml( final MamutView< ?, ?, ? > view )
 	{
 		final Map< String, Object > guiState = getGuiState( view );
@@ -169,6 +168,13 @@ class MamutViewStateSerialization
 		return element;
 	}
 
+	/**
+	 * Wraps GUI state of a {@link MamutView} into a map.
+	 * 
+	 * @param view
+	 *            the view.
+	 * @return a new {@link Map}.
+	 */
 	private static Map< String, Object > getGuiState( final MamutView< ?, ?, ? > view )
 	{
 		final Map< String, Object > guiState = new LinkedHashMap<>();
@@ -199,6 +205,14 @@ class MamutViewStateSerialization
 		return guiState;
 	}
 
+	/**
+	 * Stores the {@link MamutViewTrackScheme} GUI state in the specified map.
+	 * 
+	 * @param view
+	 *            the {@link MamutViewTrackScheme}.
+	 * @param guiState
+	 *            the map to store info into.
+	 */
 	private static void getGuiStateTrackScheme( final MamutViewTrackScheme view, final Map< String, Object > guiState )
 	{
 		final TrackSchemePanel trackschemePanel = view.getTrackschemePanel();
@@ -224,6 +238,14 @@ class MamutViewStateSerialization
 		guiState.put( CHOSEN_CONTEXT_PROVIDER_KEY, view.getContextChooser().getChosenProvider().getName() );
 	}
 
+	/**
+	 * Stores the {@link MamutViewBdv} GUI state in the specified map.
+	 * 
+	 * @param view
+	 *            the {@link MamutViewBdv}.
+	 * @param guiState
+	 *            the map to store info into.
+	 */
 	private static void getGuiStateBdv( final MamutViewBdv view, final Map< String, Object > guiState )
 	{
 		// Viewer state.
@@ -238,6 +260,14 @@ class MamutViewStateSerialization
 		getColoringState( coloringModel, guiState );
 	}
 
+	/**
+	 * Reads the coloring state of a view and stores it into the specified map.
+	 * 
+	 * @param coloringModel
+	 *            the coloring model to read from.
+	 * @param guiState
+	 *            the map to store it to.
+	 */
 	private static void getColoringState( final ColoringModel coloringModel, final Map< String, Object > guiState )
 	{
 		final boolean noColoring = coloringModel.noColoring();
@@ -249,6 +279,14 @@ class MamutViewStateSerialization
 				guiState.put( FEATURE_COLOR_MODE_KEY, coloringModel.getFeatureColorMode().getName() );
 	}
 
+	/**
+	 * Deserializes a GUI state from XML and recreate view windows as specified.
+	 * 
+	 * @param windowsEl
+	 *            the XML element that stores the GUI state of a view.
+	 * @param windowManager
+	 *            the application {@link WindowManager}.
+	 */
 	static void fromXml( final Element windowsEl, final WindowManager windowManager )
 	{
 		// To deal later with context providers.
