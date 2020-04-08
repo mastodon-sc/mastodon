@@ -2,6 +2,7 @@ package org.mastodon.mamut;
 
 import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
+import java.awt.Point;
 import java.awt.Rectangle;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -221,10 +222,10 @@ class MamutViewStateSerialization
 
 		// Edit position to reflect the fact that we store the TrackScheme panel
 		// width and height.
-		final Rectangle bounds = view.getFrame().getBounds();
+		final Point point = view.getFrame().getLocation();
 		guiState.put( FRAME_POSITION_KEY, new int[] {
-				( int ) bounds.getMinX(),
-				( int ) bounds.getMinY(),
+				point.x,
+				point.y,
 				trackschemePanel.getDisplay().getWidth(),
 				trackschemePanel.getDisplay().getHeight() } );
 
