@@ -165,6 +165,10 @@ public class MamutViewTrackScheme extends MamutView< TrackSchemeGraph< Spot, Lin
 		model.getGraph().addVertexLabelListener( v -> frame.getTrackschemePanel().entitiesAttributesChanged() );
 
 		frame.getTrackschemePanel().repaint();
+
+		// Give focus to the display so that it can receive key presses
+		// immediately.
+		frame.getTrackschemePanel().getDisplay().requestFocusInWindow();
 	}
 
 	public ContextChooser< Spot > getContextChooser()

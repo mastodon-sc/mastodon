@@ -178,6 +178,9 @@ public class MamutViewBdv extends MamutView< OverlayGraphWrapper< Spot, Link >, 
 		renderSettings.updateListeners().add( updateListener );
 		onClose( () -> renderSettings.updateListeners().remove( updateListener ) );
 
+		// Give focus to display so that it can receive key-presses immediately.
+		viewer.getDisplay().requestFocusInWindow();
+
 //		if ( !bdv.tryLoadSettings( bdvFile ) ) // TODO
 //			InitializeViewerState.initBrightness( 0.001, 0.999, bdv.getViewer(), bdv.getSetupAssignments() );
 	}
