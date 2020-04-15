@@ -265,18 +265,28 @@ public class EditSpecialBehaviours< V extends OverlayVertex< V, E >, E extends O
 			// Get vertex we clicked inside.
 			if ( renderer.getVertexAt( x, y, POINT_SELECT_DISTANCE_TOLERANCE, source ) != null )
 			{
-				overlay.paintGhostLink = true;
-				overlay.paintGhostVertex = true;
 				source.localize( overlay.from );
 				source.localize( overlay.to );
 				overlay.vertex = source;
 
-				// Move to next time point.
+				// Move to next or previous time point and check that we can.
+				final int currentTimepoint = viewer.state().getCurrentTimepoint();
 				if ( forward )
 					viewer.nextTimePoint();
 				else
 					viewer.previousTimePoint();
 
+				final int newTimepoint = viewer.state().getCurrentTimepoint();
+				if ( currentTimepoint == newTimepoint )
+				{
+					// Refuse to work: we are in the same time-point. We do not
+					// want to create links inside the same time-point.
+					lock.readLock().unlock();
+					return;
+				}
+
+				overlay.paintGhostLink = true;
+				overlay.paintGhostVertex = true;
 				editing = true;
 			}
 			else
@@ -404,17 +414,26 @@ public class EditSpecialBehaviours< V extends OverlayVertex< V, E >, E extends O
 
 				// Set it as ghost vertex for the overlay.
 				overlay.vertex = source;
-				overlay.paintGhostVertex = true;
 
-				// Move to next time point.
+				// Move to next or previous time point and check that we can.
+				final int currentTimepoint = viewer.state().getCurrentTimepoint();
 				if ( forward )
 					viewer.nextTimePoint();
 				else
 					viewer.previousTimePoint();
 
+				final int newTimepoint = viewer.state().getCurrentTimepoint();
+				if ( currentTimepoint == newTimepoint )
+				{
+					// Refuse to work: we are in the same time-point. We do not
+					// want to create links inside the same time-point.
+					lock.writeLock().unlock();
+					return;
+				}
+
 				// Create new vertex under click location.
 				source.getCovariance( mat );
-				final int timepoint = renderer.getCurrentTimepoint();
+				final int timepoint = viewer.state().getCurrentTimepoint();
 				overlayGraph.addVertex( target ).init( timepoint, pos, mat );
 
 				// Link it to source vertex. Careful for oriented edge.
@@ -427,7 +446,7 @@ public class EditSpecialBehaviours< V extends OverlayVertex< V, E >, E extends O
 				System.arraycopy( pos, 0, overlay.from, 0, pos.length );
 				System.arraycopy( pos, 0, overlay.to, 0, pos.length );
 				overlay.paintGhostLink = true;
-
+				overlay.paintGhostVertex = true;
 				overlayGraph.notifyGraphChanged();
 
 				lock.readLock().lock();
