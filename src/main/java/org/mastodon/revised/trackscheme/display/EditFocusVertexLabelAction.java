@@ -227,6 +227,9 @@ public class EditFocusVertexLabelAction extends AbstractNamedAction implements T
 		 */
 		private void blockKeys()
 		{
+			if ( killed )
+				return;
+
 			// Get all keystrokes that are mapped to actions in higher components
 			final ArrayList< KeyStroke > allTableKeys = new ArrayList<>();
 			for ( Container c = this; c != null; c = c.getParent() )
@@ -262,6 +265,9 @@ public class EditFocusVertexLabelAction extends AbstractNamedAction implements T
 
 		private void commit()
 		{
+			if ( killed )
+				return;
+
 			vertex.setLabel( getText().trim() );
 			undoPointMarker.setUndoPoint();
 		}
@@ -279,6 +285,9 @@ public class EditFocusVertexLabelAction extends AbstractNamedAction implements T
 
 		private void reposition()
 		{
+			if ( killed )
+				return;
+
 			final int ly = vertex.getTimepoint();
 			final double lx = vertex.getLayoutX();
 
