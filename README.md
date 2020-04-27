@@ -8,6 +8,10 @@ Modern microscopy technologies such as light sheet microscopy allows live sample
 
 **Mastodon** is our effort to provide a tool that can harness these challenges. 
 
+## *Warning.*
+
+Despite the naming of the artifacts and the apparent usability of the software, *Mastodon is still in alpha stage, not released, not published and not supported* at the present time.
+
 ## Mastodon goals.
 
 The goals of Mastodon are the following:
@@ -49,9 +53,9 @@ Mastodon is a Java software that relies on several technologies to achieve these
 
 *Interactive visualization and navigation of large images thanks to the BigDataViewer* ([BDV](https://imagej.net/BigDataViewer). Any file that can be opened in the BDV will work in Mastodon (BDV HDF5 file format, KLB, Keller-Lab Blocks file format, N5 file format, ...). These file formats enable interactive visualization of multi-view TB dataset at the one-time cost of a file conversion. Also, they can be exploited for efficient image processing in special cases, taking advantage of multi-scale pyramidal representation and blocks decomposition. 
 
-*[Mastodon-collection](https://github.com/bigdataviewer/mastodon-collection): a high performance framework to manipulate collections of data*. Mastodon-collection was developed specifically for this project. It offers an in-memory compact layout storage of objects. Mastodon collections have a much smaller memory footprint. Objects in a mastodon collection are contiguous in memory. Thanks to CPU cache and [data locality](http://gameprogrammingpatterns.com/data-locality.html), iterating these collections is much faster than classical object collections. Mastodon-collection also offers techniques to do garbage-collection-free manipulations in Java, considerably improving the responsiveness of applications based on it.
+*[Mastodon-collection](https://github.com/mastodon-sc/mastodon-collection): a high performance framework to manipulate collections of data*. Mastodon-collection was developed specifically for this project. It offers an in-memory compact layout storage of objects. Mastodon collections have a much smaller memory footprint. Objects in a mastodon collection are contiguous in memory. Thanks to CPU cache and [data locality](http://gameprogrammingpatterns.com/data-locality.html), iterating these collections is much faster than classical object collections. Mastodon-collection also offers techniques to do garbage-collection-free manipulations in Java, considerably improving the responsiveness of applications based on it.
 
-*[Mastodon-graph](https://github.com/bigdataviewer/mastodon-graph): a data structure based on mastodon-collection, and optimized for lineage and tracking data.* Mastodon-graph is a graph library based on mastodon-collections, that underlies the data model of Mastodon.
+*[Mastodon-graph](https://github.com/mastodon-sc/mastodon-graph): a data structure based on mastodon-collection, and optimized for lineage and tracking data.* Mastodon-graph is a graph library based on mastodon-collections, that underlies the data model of Mastodon.
 
 *Efficient retrieval of objects in space and time*. User interactions with tracking objects rely on [Kd-tree search on convex polytopes](http://fly.mpi-cbg.de/~pietzsch/polytope.pdf).
 
