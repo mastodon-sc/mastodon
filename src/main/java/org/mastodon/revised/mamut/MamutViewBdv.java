@@ -190,6 +190,11 @@ public class MamutViewBdv extends MamutView< OverlayGraphWrapper< Spot, Link >, 
 		return contextProvider;
 	}
 
+	public ViewerPanelMamut getViewerPanelMamut()
+	{
+		return viewer;
+	}
+
 	public void requestRepaint()
 	{
 		viewer.requestRepaint();
