@@ -11,9 +11,12 @@ import org.scijava.ui.behaviour.util.Actions;
 /**
  * Mother interface for Mastodon plugins.
  * <p>
- * Each concrete app should have a more specialized interface deriving from this one, that
- * specifies against what concrete {@link MastodonAppPluginModel} it is built.
+ * Each concrete app should have a more specialized interface deriving from this
+ * one, that specifies against what concrete {@link MastodonAppPluginModel} it
+ * is built.
+ *
  * @param <M>
+ *            the type of {@link MastodonAppPluginModel} this plugin will use.
  */
 public interface MastodonPlugin< M extends MastodonAppPluginModel > extends SciJavaPlugin
 {

@@ -28,8 +28,8 @@
  * <p>
  * This app is the final and central application of Mastodon. When end-users and
  * us speak of Mastodon, we mean this one. It is based on the
- * {@link org.mastodon.mamut.importer.Model} and on
- * {@link org.mastodon.mamut.importer.Spot}.
+ * {@link org.mastodon.mamut.model.Model} and on
+ * {@link org.mastodon.mamut.model.Spot}.
  * <p>
  * Because this app is the successor of the MaMuT project (<i>Wolff, Tinevez,
  * Pietzsch et al, 2018</i>) the classes of this app are called
