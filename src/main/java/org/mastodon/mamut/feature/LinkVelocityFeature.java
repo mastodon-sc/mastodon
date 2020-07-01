@@ -13,8 +13,8 @@ import org.mastodon.feature.FeatureProjectionSpec;
 import org.mastodon.feature.FeatureProjections;
 import org.mastodon.feature.FeatureSpec;
 import org.mastodon.feature.Multiplicity;
+import org.mastodon.mamut.model.Link;
 import org.mastodon.properties.DoublePropertyMap;
-import org.mastodon.revised.model.mamut.Link;
 import org.scijava.plugin.Plugin;
 
 public class LinkVelocityFeature implements Feature< Link >

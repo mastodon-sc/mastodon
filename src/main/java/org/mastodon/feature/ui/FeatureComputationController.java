@@ -15,7 +15,7 @@ import org.mastodon.feature.FeatureComputer;
 import org.mastodon.feature.FeatureComputerService;
 import org.mastodon.feature.FeatureSpec;
 import org.mastodon.graph.GraphChangeListener;
-import org.mastodon.revised.ui.util.EverythingDisablerAndReenabler;
+import org.mastodon.ui.util.EverythingDisablerAndReenabler;
 import org.scijava.command.CommandService;
 
 public class FeatureComputationController implements GraphChangeListener

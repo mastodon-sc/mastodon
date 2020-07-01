@@ -14,8 +14,8 @@ import org.mastodon.feature.FeatureProjections;
 import org.mastodon.feature.FeatureSpec;
 import org.mastodon.feature.IntFeatureProjection;
 import org.mastodon.feature.Multiplicity;
+import org.mastodon.mamut.model.Spot;
 import org.mastodon.properties.IntPropertyMap;
-import org.mastodon.revised.model.mamut.Spot;
 import org.scijava.plugin.Plugin;
 
 public class SpotTrackIDFeature implements Feature< Spot >

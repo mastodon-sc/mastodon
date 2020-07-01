@@ -1,6 +1,6 @@
 package org.mastodon.mamut.feature;
 
-import org.mastodon.revised.model.mamut.Model;
+import org.mastodon.mamut.model.Model;
 import org.scijava.ItemIO;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;

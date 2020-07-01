@@ -1,6 +1,6 @@
 package org.mastodon.feature.ui;
 
-import static org.mastodon.revised.ui.coloring.feature.TargetType.VERTEX;
+import static org.mastodon.ui.coloring.feature.TargetType.VERTEX;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -15,10 +15,10 @@ import org.mastodon.feature.FeatureProjectionSpec;
 import org.mastodon.feature.FeatureSpec;
 import org.mastodon.feature.FeatureSpecsService;
 import org.mastodon.feature.Multiplicity;
-import org.mastodon.revised.ui.coloring.feature.FeatureColorMode;
-import org.mastodon.revised.ui.coloring.feature.FeatureColorModeManager;
-import org.mastodon.revised.ui.coloring.feature.FeatureProjectionId;
-import org.mastodon.revised.ui.coloring.feature.TargetType;
+import org.mastodon.ui.coloring.feature.FeatureColorMode;
+import org.mastodon.ui.coloring.feature.FeatureColorModeManager;
+import org.mastodon.ui.coloring.feature.FeatureProjectionId;
+import org.mastodon.ui.coloring.feature.TargetType;
 
 import gnu.trove.list.TIntList;
 import gnu.trove.list.array.TIntArrayList;

@@ -2,11 +2,11 @@ package org.mastodon.mamut.feature;
 
 import org.mastodon.graph.algorithm.traversal.BreadthFirstCrossComponentSearch;
 import org.mastodon.graph.algorithm.traversal.GraphSearch.SearchDirection;
+import org.mastodon.mamut.model.Link;
+import org.mastodon.mamut.model.ModelGraph;
+import org.mastodon.mamut.model.Spot;
 import org.mastodon.graph.algorithm.traversal.SearchListener;
 import org.mastodon.properties.IntPropertyMap;
-import org.mastodon.revised.model.mamut.Link;
-import org.mastodon.revised.model.mamut.ModelGraph;
-import org.mastodon.revised.model.mamut.Spot;
 import org.scijava.ItemIO;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;

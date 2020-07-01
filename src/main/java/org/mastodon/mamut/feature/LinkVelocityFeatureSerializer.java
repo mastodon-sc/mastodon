@@ -11,8 +11,8 @@ import org.mastodon.io.FileIdToObjectMap;
 import org.mastodon.io.ObjectToFileIdMap;
 import org.mastodon.io.properties.DoublePropertyMapSerializer;
 import org.mastodon.mamut.feature.LinkVelocityFeature.Spec;
+import org.mastodon.mamut.model.Link;
 import org.mastodon.properties.DoublePropertyMap;
-import org.mastodon.revised.model.mamut.Link;
 import org.scijava.plugin.Plugin;
 
 @Plugin( type = FeatureSerializer.class )

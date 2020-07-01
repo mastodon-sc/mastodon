@@ -14,7 +14,7 @@ import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
 
-import org.mastodon.revised.ui.coloring.ColorMap;
+import org.mastodon.ui.coloring.ColorMap;
 
 public class ColorMapSelector extends JPanel
 {

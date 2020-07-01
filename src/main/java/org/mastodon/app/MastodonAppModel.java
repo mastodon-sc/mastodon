@@ -1,10 +1,13 @@
 package org.mastodon.app;
 
+import org.mastodon.app.plugin.MastodonPlugins;
 import org.mastodon.graph.GraphIdBimap;
 import org.mastodon.graph.ListenableReadOnlyGraph;
 import org.mastodon.graph.ref.AbstractListenableEdge;
 import org.mastodon.grouping.GroupManager;
 import org.mastodon.grouping.GroupableModelFactory;
+import org.mastodon.model.AbstractModel;
+import org.mastodon.model.AbstractSpot;
 import org.mastodon.model.DefaultFocusModel;
 import org.mastodon.model.DefaultHighlightModel;
 import org.mastodon.model.DefaultSelectionModel;
@@ -15,17 +18,14 @@ import org.mastodon.model.HighlightModel;
 import org.mastodon.model.NavigationHandler;
 import org.mastodon.model.SelectionModel;
 import org.mastodon.model.TimepointModel;
-import org.mastodon.plugin.MastodonPlugins;
-import org.mastodon.revised.model.AbstractModel;
-import org.mastodon.revised.model.AbstractSpot;
-import org.mastodon.revised.ui.keymap.Keymap;
-import org.mastodon.revised.ui.keymap.KeymapManager;
+import org.mastodon.ui.keymap.Keymap;
+import org.mastodon.ui.keymap.KeymapManager;
 import org.scijava.ui.behaviour.KeyPressedManager;
 import org.scijava.ui.behaviour.io.InputTriggerConfig;
 import org.scijava.ui.behaviour.util.Actions;
 
 /**
- * Data class that stores the data model and the application model of the MaMuT
+ * Data class that stores the data model and the application model of a Mastodon
  * application.
  *
  * @author Jean-Yves Tinevez
@@ -60,7 +60,7 @@ public class MastodonAppModel<
 
 	private final KeymapManager keymapManager;
 
-	private final MastodonPlugins plugins;
+	private final MastodonPlugins< ?, ? > plugins;
 
 	private final String[] keyConfigContexts;
 
@@ -99,7 +99,7 @@ public class MastodonAppModel<
 			final M model,
 			final KeyPressedManager keyPressedManager,
 			final KeymapManager keymapManager,
-			final MastodonPlugins plugins,
+			final MastodonPlugins< ?, ? > plugins,
 			final Actions globalActions,
 			final String[] keyConfigContexts )
 	{
@@ -179,7 +179,7 @@ public class MastodonAppModel<
 		return keymapManager;
 	}
 
-	public MastodonPlugins getPlugins()
+	public MastodonPlugins< ?, ? > getPlugins()
 	{
 		return plugins;
 	}

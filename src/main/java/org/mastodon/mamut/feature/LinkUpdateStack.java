@@ -7,7 +7,7 @@ import org.mastodon.feature.FeatureSpec;
 import org.mastodon.feature.Multiplicity;
 import org.mastodon.feature.update.SizedDeque;
 import org.mastodon.feature.update.UpdateStack;
-import org.mastodon.revised.model.mamut.Link;
+import org.mastodon.mamut.model.Link;
 import org.scijava.plugin.Plugin;
 
 public class LinkUpdateStack extends UpdateStack< Link >

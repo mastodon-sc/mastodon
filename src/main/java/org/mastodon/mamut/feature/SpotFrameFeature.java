@@ -12,7 +12,7 @@ import org.mastodon.feature.FeatureProjectionSpec;
 import org.mastodon.feature.FeatureSpec;
 import org.mastodon.feature.IntFeatureProjection;
 import org.mastodon.feature.Multiplicity;
-import org.mastodon.revised.model.mamut.Spot;
+import org.mastodon.mamut.model.Spot;
 import org.scijava.plugin.Plugin;
 
 public class SpotFrameFeature implements Feature< Spot >

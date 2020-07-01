@@ -5,10 +5,10 @@ import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.event.WindowEvent;
 
-import org.mastodon.revised.mamut.KeyConfigContexts;
-import org.mastodon.revised.ui.keymap.CommandDescriptionProvider;
-import org.mastodon.revised.ui.keymap.CommandDescriptions;
-import org.mastodon.revised.util.HasSelectedState;
+import org.mastodon.ui.keymap.CommandDescriptionProvider;
+import org.mastodon.ui.keymap.CommandDescriptions;
+import org.mastodon.ui.keymap.KeyConfigContexts;
+import org.mastodon.util.HasSelectedState;
 import org.scijava.listeners.Listeners;
 import org.scijava.plugin.Plugin;
 import org.scijava.ui.behaviour.util.AbstractNamedAction;

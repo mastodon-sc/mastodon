@@ -7,7 +7,7 @@ import org.mastodon.feature.FeatureSpec;
 import org.mastodon.feature.Multiplicity;
 import org.mastodon.feature.update.SizedDeque;
 import org.mastodon.feature.update.UpdateStack;
-import org.mastodon.revised.model.mamut.Spot;
+import org.mastodon.mamut.model.Spot;
 import org.scijava.plugin.Plugin;
 
 public class SpotUpdateStack extends UpdateStack< Spot >

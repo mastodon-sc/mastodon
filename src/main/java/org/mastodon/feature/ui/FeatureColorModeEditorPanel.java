@@ -10,12 +10,12 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JSeparator;
 
-import org.mastodon.revised.ui.coloring.ColorMap;
-import org.mastodon.revised.ui.coloring.feature.FeatureColorMode;
-import org.mastodon.revised.ui.coloring.feature.FeatureColorMode.EdgeColorMode;
-import org.mastodon.revised.ui.coloring.feature.FeatureColorMode.VertexColorMode;
-import org.mastodon.revised.ui.coloring.feature.FeatureProjectionId;
-import org.mastodon.revised.ui.coloring.feature.FeatureRangeCalculator;
+import org.mastodon.ui.coloring.ColorMap;
+import org.mastodon.ui.coloring.feature.FeatureColorMode;
+import org.mastodon.ui.coloring.feature.FeatureProjectionId;
+import org.mastodon.ui.coloring.feature.FeatureRangeCalculator;
+import org.mastodon.ui.coloring.feature.FeatureColorMode.EdgeColorMode;
+import org.mastodon.ui.coloring.feature.FeatureColorMode.VertexColorMode;
 
 /**
  * JPanel to edit a single {@link FeatureColorMode}.

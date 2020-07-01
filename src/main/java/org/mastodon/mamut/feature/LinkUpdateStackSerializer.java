@@ -8,7 +8,7 @@ import org.mastodon.feature.io.FeatureSerializer;
 import org.mastodon.feature.update.UpdateStackSerializer;
 import org.mastodon.io.FileIdToObjectMap;
 import org.mastodon.mamut.feature.LinkUpdateStack.Spec;
-import org.mastodon.revised.model.mamut.Link;
+import org.mastodon.mamut.model.Link;
 import org.scijava.plugin.Plugin;
 
 @Plugin( type = FeatureSerializer.class )

@@ -8,7 +8,7 @@ import org.mastodon.feature.io.FeatureSerializer;
 import org.mastodon.feature.update.UpdateStackSerializer;
 import org.mastodon.io.FileIdToObjectMap;
 import org.mastodon.mamut.feature.SpotUpdateStack.Spec;
-import org.mastodon.revised.model.mamut.Spot;
+import org.mastodon.mamut.model.Spot;
 import org.scijava.plugin.Plugin;
 
 @Plugin( type = FeatureSerializer.class )

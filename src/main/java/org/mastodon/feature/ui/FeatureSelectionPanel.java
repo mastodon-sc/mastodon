@@ -17,8 +17,8 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 import org.mastodon.feature.Multiplicity;
-import org.mastodon.revised.ui.coloring.feature.FeatureProjectionId;
-import org.mastodon.revised.ui.coloring.feature.TargetType;
+import org.mastodon.ui.coloring.feature.FeatureProjectionId;
+import org.mastodon.ui.coloring.feature.TargetType;
 import org.scijava.listeners.Listeners;
 
 /**

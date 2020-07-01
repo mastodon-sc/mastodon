@@ -16,8 +16,8 @@ import org.mastodon.feature.FeatureProjectionSpec;
 import org.mastodon.feature.FeatureProjections;
 import org.mastodon.feature.FeatureSpec;
 import org.mastodon.feature.Multiplicity;
+import org.mastodon.mamut.model.Spot;
 import org.mastodon.properties.DoublePropertyMap;
-import org.mastodon.revised.model.mamut.Spot;
 import org.scijava.plugin.Plugin;
 
 public class SpotGaussFilteredIntensityFeature implements Feature< Spot >

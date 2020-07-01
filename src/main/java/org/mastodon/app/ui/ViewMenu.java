@@ -15,9 +15,9 @@ import javax.swing.JPopupMenu;
 import javax.swing.JSeparator;
 import javax.swing.MenuElement;
 
-import org.mastodon.revised.ui.keymap.Keymap;
-import org.mastodon.revised.util.HasSelectedState;
-import org.mastodon.revised.util.MastodonDebugSettings;
+import org.mastodon.ui.keymap.Keymap;
+import org.mastodon.util.HasSelectedState;
+import org.mastodon.util.MastodonDebugSettings;
 import org.scijava.ui.behaviour.InputTrigger;
 import org.scijava.ui.behaviour.io.InputTriggerConfig;
 import org.scijava.ui.behaviour.util.AbstractNamedAction;

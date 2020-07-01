@@ -1,6 +1,6 @@
 package org.mastodon.feature.ui;
 
-import org.mastodon.revised.ui.coloring.feature.FeatureRangeCalculator;
+import org.mastodon.ui.coloring.feature.FeatureRangeCalculator;
 import org.scijava.listeners.Listeners;
 
 /**

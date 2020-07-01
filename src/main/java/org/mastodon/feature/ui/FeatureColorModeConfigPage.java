@@ -6,8 +6,8 @@ import org.mastodon.app.ui.settings.ModificationListener;
 import org.mastodon.app.ui.settings.SelectAndEditProfileSettingsPage;
 import org.mastodon.app.ui.settings.style.StyleProfile;
 import org.mastodon.app.ui.settings.style.StyleProfileManager;
-import org.mastodon.revised.ui.coloring.feature.FeatureColorMode;
-import org.mastodon.revised.ui.coloring.feature.FeatureColorModeManager;
+import org.mastodon.ui.coloring.feature.FeatureColorMode;
+import org.mastodon.ui.coloring.feature.FeatureColorModeManager;
 import org.scijava.listeners.Listeners;
 import org.scijava.listeners.Listeners.SynchronizedList;
 

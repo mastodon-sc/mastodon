@@ -12,12 +12,12 @@ import org.mastodon.graph.Edge;
 import org.mastodon.graph.Vertex;
 import org.mastodon.graph.ref.AbstractListenableEdge;
 import org.mastodon.grouping.GroupHandle;
+import org.mastodon.model.AbstractSpot;
 import org.mastodon.model.FocusModel;
 import org.mastodon.model.HighlightModel;
 import org.mastodon.model.NavigationHandler;
 import org.mastodon.model.SelectionModel;
 import org.mastodon.model.TimepointModel;
-import org.mastodon.revised.model.AbstractSpot;
 
 /**
  * Mother class for generic mastodon views. Offer facilities to manage model

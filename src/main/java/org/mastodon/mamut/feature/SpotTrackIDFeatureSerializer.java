@@ -10,8 +10,8 @@ import org.mastodon.io.FileIdToObjectMap;
 import org.mastodon.io.ObjectToFileIdMap;
 import org.mastodon.io.properties.IntPropertyMapSerializer;
 import org.mastodon.mamut.feature.SpotTrackIDFeature.Spec;
+import org.mastodon.mamut.model.Spot;
 import org.mastodon.properties.IntPropertyMap;
-import org.mastodon.revised.model.mamut.Spot;
 import org.scijava.plugin.Plugin;
 
 @Plugin( type = FeatureSerializer.class )

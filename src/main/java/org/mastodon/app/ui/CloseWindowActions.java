@@ -10,9 +10,9 @@ import java.awt.event.WindowEvent;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
 
-import org.mastodon.revised.mamut.KeyConfigContexts;
-import org.mastodon.revised.ui.keymap.CommandDescriptionProvider;
-import org.mastodon.revised.ui.keymap.CommandDescriptions;
+import org.mastodon.ui.keymap.CommandDescriptionProvider;
+import org.mastodon.ui.keymap.CommandDescriptions;
+import org.mastodon.ui.keymap.KeyConfigContexts;
 import org.scijava.plugin.Plugin;
 import org.scijava.ui.behaviour.util.AbstractNamedAction;
 import org.scijava.ui.behaviour.util.Actions;

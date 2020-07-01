@@ -19,7 +19,7 @@ import javax.swing.JLabel;
 import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
 
-import org.mastodon.revised.util.ColorIcon;
+import org.mastodon.util.ColorIcon;
 
 import bdv.tools.brightness.SliderPanel;
 import bdv.tools.brightness.SliderPanelDouble;
