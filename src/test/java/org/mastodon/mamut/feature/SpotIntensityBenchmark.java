@@ -3,11 +3,11 @@ package org.mastodon.mamut.feature;
 import java.io.IOException;
 
 import org.jdom2.JDOMException;
-import org.mastodon.project.MamutProject;
-import org.mastodon.project.MamutProjectIO;
-import org.mastodon.revised.mamut.WindowManager;
-import org.mastodon.revised.model.mamut.Model;
-import org.mastodon.revised.model.mamut.Spot;
+import org.mastodon.mamut.WindowManager;
+import org.mastodon.mamut.model.Model;
+import org.mastodon.mamut.model.Spot;
+import org.mastodon.mamut.project.MamutProject;
+import org.mastodon.mamut.project.MamutProjectIO;
 import org.scijava.Context;
 
 import mpicbg.spim.data.SpimDataException;

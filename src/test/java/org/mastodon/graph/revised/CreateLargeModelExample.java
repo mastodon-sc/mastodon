@@ -1,9 +1,9 @@
 package org.mastodon.graph.revised;
 
-import org.mastodon.revised.model.mamut.Link;
-import org.mastodon.revised.model.mamut.Model;
-import org.mastodon.revised.model.mamut.ModelImporter;
-import org.mastodon.revised.model.mamut.Spot;
+import org.mastodon.mamut.importer.ModelImporter;
+import org.mastodon.mamut.model.Link;
+import org.mastodon.mamut.model.Model;
+import org.mastodon.mamut.model.Spot;
 
 public class CreateLargeModelExample
 {
