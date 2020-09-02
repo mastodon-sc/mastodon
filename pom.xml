@@ -76,7 +76,7 @@
 			<scope>test</scope>
 			<exclusions>
 				<exclusion>
-					<groupId> net.sf.jgrapht</groupId>
+					<groupId>net.sf.jgrapht</groupId>
 					<artifactId>jgrapht</artifactId>
 				</exclusion>
 			</exclusions>
@@ -124,17 +124,10 @@
 	<properties>
 		<package-name>org.mastodon</package-name>
 
-		<!--		<enforcer.skip>true</enforcer.skip> -->
-
 		<license.licenseName>not licensed yet</license.licenseName>
 		<license.projectName>Mastodon</license.projectName>
 		<license.organizationName>Mastodon authors</license.organizationName>
 		<license.copyrightOwners>Tobias Pietzsch, Jean-Yves Tinevez</license.copyrightOwners>
-
-		<bigdataviewer-core.version>9.0.2</bigdataviewer-core.version>
-		<bigdataviewer-vistools.version>1.0.0-beta-20</bigdataviewer-vistools.version>
-		<spim_data.version>2.2.4</spim_data.version>
-		<ui-behaviour.version>2.0.1</ui-behaviour.version>
 
 		<!-- NB: Deploy releases to the SciJava Maven repository. -->
 		<releaseProfiles>deploy-to-scijava</releaseProfiles>
