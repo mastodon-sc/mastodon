@@ -37,17 +37,25 @@ public class MamutFeatureComputerService extends DefaultFeatureComputerService
 	}
 
 	@Override
-	public Map< FeatureSpec< ?, ? >, Feature< ? > > compute( final Collection< FeatureSpec< ?, ? > > featureKeys )
+	public Map< FeatureSpec< ?, ? >, Feature< ? > > compute( final boolean forceComputeAll, final Collection< FeatureSpec< ?, ? > > featureKeys )
 	{
-		final Map< FeatureSpec< ?, ? >, Feature< ? > > results = super.compute( featureKeys );
-		if ( isCanceled() )
-			return null;
-
-		// Store updates.
 		final ModelGraph graph = model.getGraph();
 		final FeatureModel featureModel = model.getFeatureModel();
 		final SpotUpdateStack spotUpdates = SpotUpdateStack.getOrCreate( featureModel, graph.vertices() );
 		final LinkUpdateStack linkUpdates = LinkUpdateStack.getOrCreate( featureModel, graph.edges() );
+
+		// Clear the update stacks if we have the force flag.
+		if ( forceComputeAll )
+		{
+			spotUpdates.clear();
+			linkUpdates.clear();
+		}
+
+		final Map< FeatureSpec< ?, ? >, Feature< ? > > results = super.compute( forceComputeAll, featureKeys );
+		if ( isCanceled() )
+			return null;
+
+		// Store updates.
 		spotUpdates.commit( featureKeys );
 		linkUpdates.commit( featureKeys );
 		return results;

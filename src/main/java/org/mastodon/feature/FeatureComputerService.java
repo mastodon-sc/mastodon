@@ -18,11 +18,21 @@ public interface FeatureComputerService extends Cancelable, SciJavaService
 	 */
 	public Set< FeatureSpec< ?, ? > > getFeatureSpecs();
 
-	public Map< FeatureSpec< ?, ? >, Feature< ? > > compute( Collection< FeatureSpec< ?, ? > > featureKeys );
+	public Map< FeatureSpec< ?, ? >, Feature< ? > > compute(  boolean forceComputeAll, Collection< FeatureSpec< ?, ? > > featureKeys );
+
+	public default Map< FeatureSpec< ?, ? >, Feature< ? > > compute( final Collection< FeatureSpec< ?, ? > > featureKeys )
+	{
+		return compute( false, featureKeys );
+	}
 
 	public default Map< FeatureSpec< ?, ? >, Feature< ? > > compute( final FeatureSpec< ?, ? >... keys )
 	{
-		return compute( Arrays.asList( keys ) );
+		return compute( false, Arrays.asList( keys ) );
+	}
+
+	public default Map< FeatureSpec< ?, ? >, Feature< ? > > compute( final boolean forceComputeAll, final FeatureSpec< ?, ? >... keys )
+	{
+		return compute( forceComputeAll, Arrays.asList( keys ) );
 	}
 
 	/**
