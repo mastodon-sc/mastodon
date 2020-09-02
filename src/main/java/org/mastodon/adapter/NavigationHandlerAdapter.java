@@ -45,6 +45,12 @@ public class NavigationHandlerAdapter< V, E, WV, WE >
 				}
 
 				@Override
+				public boolean add( final int index, final NavigationListener< WV, WE > listener )
+				{
+					return navigationHandler.listeners().add( index, new NavigationListenerAdapter<>( listener, vertexMap, edgeMap ) );
+				}
+
+				@Override
 				public boolean remove( final NavigationListener< WV, WE > listener )
 				{
 					return navigationHandler.listeners().remove( new NavigationListenerAdapter<>( listener, vertexMap, edgeMap ) );
