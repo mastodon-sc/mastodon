@@ -2,12 +2,12 @@ package org.mastodon.mamut.feature.update;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 import java.util.Map;
 import java.util.Set;
 
+import org.hamcrest.MatcherAssert;
 import org.junit.Before;
 import org.junit.Test;
 import org.mastodon.collection.RefSet;
@@ -489,25 +489,25 @@ public class GraphUpdateStackTest
 			if ( null == output.expectedVerticesSelf )
 				assertNull( "Vertex update for " + getKey() + " should be null.", vertexChanges );
 			else
-				assertThat( "Unexpected SELF vertices: ", output.expectedVerticesSelf,
+				MatcherAssert.assertThat( "Unexpected SELF vertices: ", output.expectedVerticesSelf,
 						IsIterableContainingInAnyOrder.containsInAnyOrder( vertexChanges.get().toArray() ) );
 
 			if ( null == output.expectedVerticesNeighbor )
 				assertNull( "Vertex update for " + getKey() + " should be null.", vertexChanges );
 			else
-				assertThat( "Unexpected NEIGHBOR vertices: ", output.expectedVerticesNeighbor,
+				MatcherAssert.assertThat( "Unexpected NEIGHBOR vertices: ", output.expectedVerticesNeighbor,
 						IsIterableContainingInAnyOrder.containsInAnyOrder( vertexChanges.getNeighbors().toArray() ) );
 
 			if ( null == output.expectedEdgesSelf )
 				assertNull( "Edge update for " + getKey() + " should be null.", edgeChanges );
 			else
-				assertThat( "Unexpected SELF edges: ", output.expectedEdgesSelf,
+				MatcherAssert.assertThat( "Unexpected SELF edges: ", output.expectedEdgesSelf,
 						IsIterableContainingInAnyOrder.containsInAnyOrder( edgeChanges.get().toArray() ) );
 
 			if ( null == output.expectedEdgesNeighbor )
 				assertNull( "Edge update for " + getKey() + " should be null.", edgeChanges );
 			else
-				assertThat( "Unexpected NEIGHBOR edges: ", output.expectedEdgesNeighbor,
+				MatcherAssert.assertThat( "Unexpected NEIGHBOR edges: ", output.expectedEdgesNeighbor,
 						IsIterableContainingInAnyOrder.containsInAnyOrder( edgeChanges.getNeighbors().toArray() ) );
 
 		}

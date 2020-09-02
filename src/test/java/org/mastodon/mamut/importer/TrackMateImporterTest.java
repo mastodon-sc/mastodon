@@ -1,5 +1,10 @@
 package org.mastodon.mamut.importer;
 
+import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
 import java.io.File;
 import java.util.Arrays;
 import java.util.Collection;
@@ -7,6 +12,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import org.hamcrest.MatcherAssert;
 import org.junit.Test;
 import org.mastodon.collection.RefSet;
 import org.mastodon.feature.Dimension;
@@ -21,20 +28,14 @@ import org.mastodon.feature.IntFeatureProjection;
 import org.mastodon.graph.algorithm.RootFinder;
 import org.mastodon.mamut.importer.trackmate.TrackMateImportedLinkFeatures;
 import org.mastodon.mamut.importer.trackmate.TrackMateImportedSpotFeatures;
-import org.mastodon.mamut.importer.trackmate.TrackMateImporter;
 import org.mastodon.mamut.importer.trackmate.TrackMateImportedSpotFeatures.Spec;
+import org.mastodon.mamut.importer.trackmate.TrackMateImporter;
 import org.mastodon.mamut.model.Link;
 import org.mastodon.mamut.model.Model;
 import org.mastodon.mamut.model.ModelGraph;
 import org.mastodon.mamut.model.Spot;
 import org.mastodon.mamut.project.MamutProject;
 import org.scijava.Context;
-
-import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
 
 public class TrackMateImporterTest
 {
@@ -348,7 +349,7 @@ public class TrackMateImporterTest
 			// Int or Double?
 			final FeatureProjection< ? > projection = feature.project( FeatureProjectionKey.key( projSpec ) );
 			if ( expectedProjectionIsint[ index ] )
-				assertThat( projection, instanceOf( IntFeatureProjection.class ) );
+				MatcherAssert.assertThat( projection, instanceOf( IntFeatureProjection.class ) );
 		}
 	}
 }
