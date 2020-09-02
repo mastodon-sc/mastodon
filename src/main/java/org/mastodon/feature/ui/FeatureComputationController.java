@@ -88,13 +88,14 @@ public class FeatureComputationController implements GraphChangeListener
 		gui.btnCancel.setEnabled( true );
 		gui.btnCancel.setVisible( true );
 		gui.btnCompute.setVisible( false );
+		final boolean forceComputeAll = gui.chckbxForce.isSelected();
 		new Thread( "Feature computation thread" )
 		{
 			@Override
 			public void run()
 			{
 				final Map< FeatureSpec< ?, ? >, Feature< ? > > computed =
-						computerService.compute( model.getSelectedFeatureKeys() );
+						computerService.compute( forceComputeAll, model.getSelectedFeatureKeys() );
 				SwingUtilities.invokeLater( () -> {
 					gui.btnCancel.setVisible( false );
 					gui.btnCompute.setVisible( true );
