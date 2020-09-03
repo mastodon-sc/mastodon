@@ -9,6 +9,7 @@ import static org.mastodon.app.MastodonIcons.MAMUT_IMPORT_ICON_MEDIUM;
 import static org.mastodon.app.MastodonIcons.MASTODON_ICON_MEDIUM;
 import static org.mastodon.app.MastodonIcons.NEW_ICON_MEDIUM;
 import static org.mastodon.app.MastodonIcons.SAVE_ICON_MEDIUM;
+import static org.mastodon.app.MastodonIcons.TABLE_ICON_MEDIUM;
 import static org.mastodon.app.MastodonIcons.TAGS_ICON_MEDIUM;
 import static org.mastodon.app.MastodonIcons.TGMM_IMPORT_ICON_MEDIUM;
 import static org.mastodon.app.MastodonIcons.TRACKSCHEME_ICON_MEDIUM;
@@ -96,12 +97,22 @@ public class MainWindow extends JFrame
 
 		++gridy;
 
+		final JButton tableButton = new JButton( actionMap.get( WindowManager.NEW_TABLE_VIEW ) );
+		prepareButton( tableButton, "table", TABLE_ICON_MEDIUM );
+		button_gbc_right.gridy = gridy;
+		buttonsPanel.add( tableButton, button_gbc_left );
+
 		final JButton bdvButton = new JButton( actionMap.get( WindowManager.NEW_BDV_VIEW ) );
 		prepareButton( bdvButton, "bdv", BDV_ICON_MEDIUM );
 		button_gbc_right.gridy = gridy;
 		buttonsPanel.add( bdvButton, button_gbc_right );
 
 		++gridy;
+
+		final JButton selectionTableButton = new JButton( actionMap.get( WindowManager.NEW_SELECTION_TABLE_VIEW ) );
+		prepareButton( selectionTableButton, "selection table", TABLE_ICON_MEDIUM );
+		button_gbc_right.gridy = gridy;
+		buttonsPanel.add( selectionTableButton, button_gbc_left );
 
 		final JButton trackschemeButton = new JButton( actionMap.get( WindowManager.NEW_TRACKSCHEME_VIEW ) );
 		prepareButton( trackschemeButton, "trackscheme", TRACKSCHEME_ICON_MEDIUM );
