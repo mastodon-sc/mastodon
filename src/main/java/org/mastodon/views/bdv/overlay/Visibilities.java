@@ -15,7 +15,7 @@ import org.mastodon.model.FocusListener;
 import org.mastodon.model.FocusModel;
 import org.mastodon.model.SelectionListener;
 import org.mastodon.model.SelectionModel;
-import org.mastodon.util.Listeners;
+import org.scijava.listeners.Listeners;
 
 /**
  * Manages several visibility modes for the vertices and edges of a graph.
