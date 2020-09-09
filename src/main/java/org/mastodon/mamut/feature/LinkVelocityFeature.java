@@ -71,4 +71,10 @@ public class LinkVelocityFeature implements Feature< Link >
 	{
 		return SPEC;
 	}
+
+	@Override
+	public void remove( final Link link )
+	{
+		map.remove( link );
+	}
 }

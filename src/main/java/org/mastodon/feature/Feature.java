@@ -38,4 +38,15 @@ public interface Feature< T >
 	public Set< FeatureProjection< T > > projections();
 
 	public FeatureSpec< ? extends Feature<T>, T > getSpec();
+
+	/**
+	 * Removes the specified object from this feature storage.
+	 * <p>
+	 * This method is used to invalidate a feature value when an object has been
+	 * modified under it.
+	 *
+	 * @param obj
+	 *            the object to remove.
+	 */
+	public void remove( T obj );
 }
