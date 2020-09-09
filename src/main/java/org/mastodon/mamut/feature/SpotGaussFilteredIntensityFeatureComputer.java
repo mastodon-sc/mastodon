@@ -1,22 +1,16 @@
 package org.mastodon.mamut.feature;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.IntFunction;
 
-import org.mastodon.RefPool;
-import org.mastodon.collection.ref.RefArrayList;
 import org.mastodon.feature.DefaultFeatureComputerService.FeatureComputationStatus;
 import org.mastodon.feature.Feature;
-import org.mastodon.feature.update.Update;
 import org.mastodon.mamut.model.Model;
 import org.mastodon.mamut.model.Spot;
 import org.mastodon.properties.DoublePropertyMap;
+import org.mastodon.spatial.SpatialIndex;
 import org.mastodon.views.bdv.SharedBigDataViewerData;
 import org.mastodon.views.bdv.overlay.util.JamaEigenvalueDecomposition;
 import org.scijava.Cancelable;
@@ -47,15 +41,13 @@ public class SpotGaussFilteredIntensityFeatureComputer implements MamutFeatureCo
 	private Model model;
 
 	@Parameter
-	private SpotUpdateStack update;
+	private AtomicBoolean forceComputeAll;
 
 	@Parameter
 	private FeatureComputationStatus status;
 
 	@Parameter( type = ItemIO.OUTPUT )
 	private SpotGaussFilteredIntensityFeature output;
-
-	private boolean[] processSource;
 
 	private String cancelReason;
 
@@ -89,28 +81,15 @@ public class SpotGaussFilteredIntensityFeatureComputer implements MamutFeatureCo
 	public void run()
 	{
 		cancelReason = null;
+		final boolean recomputeAll = forceComputeAll.get();
 
-		// TODO Take into account that some sources might not be computed.
-		this.processSource = new boolean[ bdvData.getSources().size() ];
-		Arrays.fill( processSource, true );
-
-		// Spots to process, per time-point.
-		final IntFunction< Iterable< Spot > > index;
-		final Update< Spot > changes = update.changesFor( SpotGaussFilteredIntensityFeature.SPEC );
-		if (null == changes)
+		if ( recomputeAll )
 		{
-			// Redo all.
-			index = ( timepoint ) -> model.getSpatioTemporalIndex().getSpatialIndex( timepoint );
 			// Clear all.
 			for ( final DoublePropertyMap< Spot > map : output.means )
 				map.beforeClearPool();
 			for ( final DoublePropertyMap< Spot > map : output.stds )
 				map.beforeClearPool();
-		}
-		else
-		{
-			// Only process modified spots.
-			index = new MyIndex( changes, model.getGraph().vertices().getRefPool() );
 		}
 
 		// Calculation are made on resolution level 0.
@@ -133,10 +112,7 @@ public class SpotGaussFilteredIntensityFeatureComputer implements MamutFeatureCo
 		final long[] p = new long[ 3 ];
 
 		final int numTimepoints = bdvData.getNumTimepoints();
-		int nSourcesToCompute = 0;
-		for ( final boolean process : processSource )
-			if (process)
-				nSourcesToCompute++;
+		final int nSourcesToCompute = bdvData.getSources().size();
 		final int todo = numTimepoints * nSourcesToCompute;
 
 		final ArrayList< SourceAndConverter< ? > > sources = bdvData.getSources();
@@ -144,9 +120,6 @@ public class SpotGaussFilteredIntensityFeatureComputer implements MamutFeatureCo
 		int done = 0;
 		MAIN_LOOP: for ( int iSource = 0; iSource < nSources; iSource++ )
 		{
-			if ( !processSource[ iSource ] )
-				continue;
-
 			final Source< ? > source = sources.get( iSource ).getSpimSource();
 			for ( int timepoint = 0; timepoint < numTimepoints; timepoint++ )
 			{
@@ -161,10 +134,18 @@ public class SpotGaussFilteredIntensityFeatureComputer implements MamutFeatureCo
 				final RandomAccessibleInterval< RealType< ? > > rai = ( RandomAccessibleInterval< RealType< ? > > ) source.getSource( timepoint, level );
 				final RandomAccess< RealType< ? > > ra = rai.randomAccess( rai );
 
-				for ( final Spot spot : index.apply( timepoint ) )
+				final SpatialIndex< Spot > toProcess = model.getSpatioTemporalIndex().getSpatialIndex( timepoint );
+				for ( final Spot spot : toProcess )
 				{
 					if ( isCanceled() )
 						break MAIN_LOOP;
+
+					/*
+					 * Skip if we are not force to recompute all and if a value
+					 * is already computed.
+					 */
+					if ( !recomputeAll && output.means.get( iSource ).isSet( spot ) )
+						continue;
 
 					// Spot location in pixel units.
 					transform.applyInverse( center, spot );
@@ -243,33 +224,6 @@ public class SpotGaussFilteredIntensityFeatureComputer implements MamutFeatureCo
 				nSpots++;
 		}
 		return nSpots;
-	}
-
-	private static final class MyIndex implements IntFunction< Iterable< Spot > >
-	{
-
-		private final Map< Integer, Collection< Spot > > index;
-
-		public MyIndex( final Update< Spot > update, final RefPool< Spot > pool )
-		{
-			this.index = new HashMap<>();
-			for ( final Spot spot : update.get() )
-			{
-				final int timepoint = spot.getTimepoint();
-				index
-						.computeIfAbsent( Integer.valueOf( timepoint ), t -> new RefArrayList<>( pool ) )
-						.add( spot );
-			}
-		}
-
-		@Override
-		public Iterable< Spot > apply( final int timepoint )
-		{
-			final Collection< Spot > collection = index.get( Integer.valueOf( timepoint ) );
-			if ( null == collection )
-				return Collections.emptyList();
-			return collection;
-		}
 	}
 
 	private static final double[] halfkernel( final double sigma, final double offset, final int size )

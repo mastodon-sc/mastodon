@@ -91,7 +91,8 @@ public abstract class IntScalarFeature< O > implements Feature< O >
 		values.set( o, value );
 	}
 
-	public void clear( final O o )
+	@Override
+	public void remove( final O o )
 	{
 		values.remove( o );
 	}
