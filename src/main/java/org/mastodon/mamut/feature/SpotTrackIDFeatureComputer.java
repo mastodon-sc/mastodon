@@ -32,33 +32,37 @@ public class SpotTrackIDFeatureComputer implements MamutFeatureComputer
 	public void run()
 	{
 		output.map.beforeClearPool();
+
+		if ( graph.vertices().isEmpty() )
+			return;
+
 		final BreadthFirstCrossComponentSearch< Spot, Link > search = new BreadthFirstCrossComponentSearch<>( graph, SearchDirection.UNDIRECTED );
 		final SearchListener< Spot, Link, BreadthFirstCrossComponentSearch< Spot, Link > > l =
 				new SearchListener< Spot, Link, BreadthFirstCrossComponentSearch< Spot, Link > >()
-		{
+				{
 
-			private int id = 0;
+					private int id = 0;
 
-			@Override
-			public void processVertexLate( final Spot spot, final BreadthFirstCrossComponentSearch< Spot, Link > search )
-			{}
+					@Override
+					public void processVertexLate( final Spot spot, final BreadthFirstCrossComponentSearch< Spot, Link > search )
+					{}
 
-			@Override
-			public void processVertexEarly( final Spot spot, final BreadthFirstCrossComponentSearch< Spot, Link > search )
-			{
-				output.map.set( spot, id );
-			}
+					@Override
+					public void processVertexEarly( final Spot spot, final BreadthFirstCrossComponentSearch< Spot, Link > search )
+					{
+						output.map.set( spot, id );
+					}
 
-			@Override
-			public void processEdge( final Link link, final Spot source, final Spot target, final BreadthFirstCrossComponentSearch< Spot, Link > search )
-			{}
+					@Override
+					public void processEdge( final Link link, final Spot source, final Spot target, final BreadthFirstCrossComponentSearch< Spot, Link > search )
+					{}
 
-			@Override
-			public void crossComponent( final Spot endSpot, final Spot startSpot, final BreadthFirstCrossComponentSearch< Spot, Link > search )
-			{
-				id++;
-			}
-		};
+					@Override
+					public void crossComponent( final Spot endSpot, final Spot startSpot, final BreadthFirstCrossComponentSearch< Spot, Link > search )
+					{
+						id++;
+					}
+				};
 		search.setTraversalListener( l );
 		search.start( graph.vertices().iterator().next() );
 	}
