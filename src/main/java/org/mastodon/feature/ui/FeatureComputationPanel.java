@@ -24,7 +24,10 @@ import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
+import javax.swing.JToggleButton;
 import javax.swing.ScrollPaneConstants;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 
 import org.mastodon.feature.FeatureProjectionSpec;
 import org.mastodon.feature.FeatureSpec;
@@ -119,7 +122,6 @@ public class FeatureComputationPanel extends JPanel
 
 		final JPanel panelFeatures = new JPanel();
 		panelFeatures.setBorder( BorderFactory.createEmptyBorder( 10, 10, 10, 10 ) );
-		panelFeatures.setPreferredSize( new Dimension( 300, 300 ) );
 		scrollPaneFeatures.setViewportView( panelFeatures );
 		final BoxLayout boxLayout = new BoxLayout( panelFeatures, BoxLayout.PAGE_AXIS );
 		panelFeatures.setLayout( boxLayout );
@@ -140,10 +142,23 @@ public class FeatureComputationPanel extends JPanel
 
 		for ( final Class< ? > target : targets )
 		{
+			final JPanel headerPanel = new JPanel();
+			final BoxLayout hpLayout = new BoxLayout( headerPanel, BoxLayout.LINE_AXIS );
+			headerPanel.setLayout( hpLayout );
+			final JToggleButton button = new JToggleButton( "ALL" );
+			button.setPreferredSize( new Dimension( 40, 24 ) );
+			button.setFont( button.getFont().deriveFont( 6f ) );
+
 			final JLabel lbl = new JLabel( target.getSimpleName() );
 			lbl.setFont( panelFeatures.getFont().deriveFont( Font.BOLD ) );
 			lbl.setAlignmentX( Component.LEFT_ALIGNMENT );
-			panelFeatures.add( lbl );
+
+			headerPanel.add( lbl );
+			headerPanel.add( Box.createHorizontalGlue() );
+			headerPanel.add( button );
+
+			panelFeatures.add( headerPanel );
+			headerPanel.setAlignmentX( Component.LEFT_ALIGNMENT );
 			panelFeatures.add( Box.createVerticalStrut( 5 ) );
 
 			final List< FeatureSpec< ?, ? > > featureSpecs = model.getFeatureSpecs( target )
@@ -168,7 +183,21 @@ public class FeatureComputationPanel extends JPanel
 
 			aggregator.add( featureTable );
 			featureTable.selectionListeners().add( sl );
+
+			button.addChangeListener( new ChangeListener()
+			{
+
+				@Override
+				public void stateChanged( final ChangeEvent e )
+				{
+					final boolean selected = button.isSelected();
+					model.getFeatureSpecs( target ).forEach( fs -> model.setSelected( fs, selected ) );
+					featureTable.getComponent().repaint();
+				}
+			} );
+			button.doClick();
 		}
+		scrollPaneFeatures.setPreferredSize( new Dimension( 300, 300 ) );
 	}
 
 	private void displayConfigPanel( final FeatureSpec< ?, ? > spec, final Collection< FeatureSpec< ?, ? > > dependencies )
