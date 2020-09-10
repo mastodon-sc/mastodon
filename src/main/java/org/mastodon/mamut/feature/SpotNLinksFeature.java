@@ -1,7 +1,5 @@
 package org.mastodon.mamut.feature;
 
-import static org.mastodon.feature.FeatureProjectionKey.key;
-
 import java.util.Collections;
 import java.util.Set;
 
@@ -10,12 +8,10 @@ import org.mastodon.feature.Feature;
 import org.mastodon.feature.FeatureProjection;
 import org.mastodon.feature.FeatureProjectionKey;
 import org.mastodon.feature.FeatureProjectionSpec;
-import org.mastodon.feature.FeatureProjections;
 import org.mastodon.feature.FeatureSpec;
 import org.mastodon.feature.IntFeatureProjection;
 import org.mastodon.feature.Multiplicity;
 import org.mastodon.mamut.model.Spot;
-import org.mastodon.properties.IntPropertyMap;
 import org.scijava.plugin.Plugin;
 
 public class SpotNLinksFeature implements Feature< Spot >
@@ -28,8 +24,6 @@ public class SpotNLinksFeature implements Feature< Spot >
 	public static final FeatureProjectionSpec PROJECTION_SPEC = new FeatureProjectionSpec( KEY );
 
 	public static final Spec SPEC = new Spec();
-
-	final IntPropertyMap< Spot > map;
 
 	private final IntFeatureProjection< Spot > projection;
 
@@ -48,10 +42,9 @@ public class SpotNLinksFeature implements Feature< Spot >
 		}
 	}
 
-	SpotNLinksFeature( final IntPropertyMap< Spot > map )
+	SpotNLinksFeature()
 	{
-		this.map = map;
-		this.projection = FeatureProjections.project( key( PROJECTION_SPEC ), map, Dimension.NONE_UNITS );
+		this.projection = new MyProjection();
 	}
 
 	@Override
@@ -75,4 +68,33 @@ public class SpotNLinksFeature implements Feature< Spot >
 	@Override
 	public void invalidate( final Spot spot )
 	{}
+
+	private static final class MyProjection implements IntFeatureProjection< Spot >
+	{
+
+		@Override
+		public FeatureProjectionKey getKey()
+		{
+			return FeatureProjectionKey.key( PROJECTION_SPEC );
+		}
+
+		@Override
+		public boolean isSet( final Spot obj )
+		{
+			return true;
+		}
+
+		@Override
+		public double value( final Spot obj )
+		{
+			return obj.edges().size();
+		}
+
+		@Override
+		public String units()
+		{
+			return Dimension.NONE_UNITS;
+		}
+
+	}
 }
