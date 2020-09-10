@@ -5,16 +5,17 @@ import static org.mastodon.app.MastodonIcons.FEATURES_ICON_LARGE;
 import static org.mastodon.app.MastodonIcons.TAGS_ICON_LARGE;
 import static org.mastodon.app.MastodonIcons.TRACKSCHEME_VIEW_ICON;
 
+import java.awt.Window;
 import java.awt.event.WindowEvent;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.function.Consumer;
 
 import javax.swing.JDialog;
-import javax.swing.JFrame;
 
 import org.mastodon.feature.FeatureSpecsService;
 import org.mastodon.feature.ui.FeatureColorModeConfigPage;
@@ -462,24 +463,22 @@ public class WindowManager
 
 	public void closeAllWindows()
 	{
-		final ArrayList< JFrame > frames = new ArrayList<>();
+		final ArrayList< Window > windows = new ArrayList<>();
 		for ( final MamutViewBdv w : bdvWindows )
-			frames.add( w.getFrame() );
+			windows.add( w.getFrame() );
 		for ( final MamutViewTrackScheme w : tsWindows )
-			frames.add( w.getFrame() );
+			windows.add( w.getFrame() );
 		for ( final MamutViewTable w : tableWindows )
-			frames.add( w.getFrame() );
+			windows.add( w.getFrame() );
+		windows.add( tagSetDialog );
+		windows.add( featureComputationDialog );
+
 		try
 		{
-			InvokeOnEDT.invokeAndWait( new Runnable()
-			{
-				@Override
-				public void run()
-				{
-					for ( final JFrame f : frames )
-						f.dispatchEvent( new WindowEvent( f, WindowEvent.WINDOW_CLOSING ) );
-				}
-			} );
+			InvokeOnEDT.invokeAndWait(
+					() -> windows.stream()
+							.filter( Objects::nonNull )
+							.forEach( window -> window.dispatchEvent( new WindowEvent( window, WindowEvent.WINDOW_CLOSING ) ) ) );
 		}
 		catch ( final InvocationTargetException e )
 		{
