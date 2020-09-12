@@ -1,5 +1,7 @@
 package org.mastodon.views.trackscheme.display.style;
 
+import static org.yaml.snakeyaml.DumperOptions.FlowStyle.FLOW;
+
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Font;
@@ -14,7 +16,6 @@ import org.mastodon.io.yaml.AbstractWorkaroundConstruct;
 import org.mastodon.io.yaml.WorkaroundConstructor;
 import org.mastodon.io.yaml.WorkaroundRepresent;
 import org.mastodon.io.yaml.WorkaroundRepresenter;
-import org.mastodon.views.trackscheme.display.style.TrackSchemeStyle;
 import org.yaml.snakeyaml.DumperOptions;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.constructor.Constructor;
@@ -23,8 +24,6 @@ import org.yaml.snakeyaml.nodes.Node;
 import org.yaml.snakeyaml.nodes.SequenceNode;
 import org.yaml.snakeyaml.nodes.Tag;
 import org.yaml.snakeyaml.representer.Representer;
-
-import static org.yaml.snakeyaml.DumperOptions.FlowStyle.FLOW;
 
 public class TrackSchemeStyleIO
 {
@@ -103,7 +102,7 @@ public class TrackSchemeStyleIO
 						rgba.get( 2 ),
 						rgba.get( 3 ) );
 			}
-			catch( final Exception e )
+			catch ( final Exception e )
 			{}
 			return null;
 		}
@@ -154,7 +153,7 @@ public class TrackSchemeStyleIO
 		{
 			try
 			{
-				final Map< Object, Object > mapping = constructMapping( ( MappingNode  ) node );
+				final Map< Object, Object > mapping = constructMapping( ( MappingNode ) node );
 				final float width = ( ( Double ) mapping.get( "width" ) ).floatValue();
 				final int cap = ( Integer ) mapping.get( "cap" );
 				final int join = ( Integer ) mapping.get( "join" );
@@ -172,7 +171,7 @@ public class TrackSchemeStyleIO
 				final float dash_phase = ( ( Double ) mapping.get( "dash_phase" ) ).floatValue();
 				return new BasicStroke( width, cap, join, miterlimit, dash, dash_phase );
 			}
-			catch( final Exception e )
+			catch ( final Exception e )
 			{
 				e.printStackTrace();
 			}
@@ -193,7 +192,7 @@ public class TrackSchemeStyleIO
 		public Node representData( final Object data )
 		{
 			final Font f = ( Font ) data;
-			final Map< String, Object > mapping = new LinkedHashMap< >();
+			final Map< String, Object > mapping = new LinkedHashMap<>();
 			mapping.put( "name", f.getName() );
 			mapping.put( "style", f.getStyle() );
 			mapping.put( "size", f.getSize() );
@@ -214,13 +213,13 @@ public class TrackSchemeStyleIO
 		{
 			try
 			{
-				final Map< Object, Object > mapping = constructMapping( ( MappingNode  ) node );
+				final Map< Object, Object > mapping = constructMapping( ( MappingNode ) node );
 				final String name = ( String ) mapping.get( "name" );
 				final int style = ( Integer ) mapping.get( "style" );
 				final int size = ( Integer ) mapping.get( "size" );
 				return new Font( name, style, size );
 			}
-			catch( final Exception e )
+			catch ( final Exception e )
 			{
 				e.printStackTrace();
 			}
@@ -241,7 +240,7 @@ public class TrackSchemeStyleIO
 		public Node representData( final Object data )
 		{
 			final TrackSchemeStyle s = ( TrackSchemeStyle ) data;
-			final Map< String, Object > mapping = new LinkedHashMap< >();
+			final Map< String, Object > mapping = new LinkedHashMap<>();
 
 			// Name.
 			mapping.put( "name", s.getName() );
@@ -297,45 +296,46 @@ public class TrackSchemeStyleIO
 		{
 			try
 			{
-				final Map< Object, Object > mapping = constructMapping( ( MappingNode  ) node );
-				final String name = ( String ) mapping.get( "name" );
+				final Map< Object, Object > mapping = constructMapping( ( MappingNode ) node );
+				final String name = ( String ) mapping.getOrDefault( "name", "NameNotFound" );
 				final TrackSchemeStyle s = TrackSchemeStyle.defaultStyle().copy( name );
+				final TrackSchemeStyle df = TrackSchemeStyle.defaultStyle();
 
-				s.edgeColor( ( Color ) mapping.get( "edgeColor" ) );
-				s.vertexFillColor( ( Color ) mapping.get( "vertexFillColor" ) );
-				s.vertexDrawColor( ( Color ) mapping.get( "vertexDrawColor" ) );
-				s.selectedVertexFillColor( ( Color ) mapping.get( "selectedVertexFillColor" ) );
-				s.selectedEdgeColor( ( Color ) mapping.get( "selectedEdgeColor" ) );
-				s.selectedVertexDrawColor( ( Color ) mapping.get( "selectedVertexDrawColor" ) );
-				s.simplifiedVertexFillColor( ( Color ) mapping.get( "simplifiedVertexFillColor" ) );
-				s.selectedSimplifiedVertexFillColor( ( Color ) mapping.get( "selectedSimplifiedVertexFillColor" ) );
-				s.backgroundColor( ( Color ) mapping.get( "backgroundColor" ) );
-				s.currentTimepointColor( ( Color ) mapping.get( "currentTimepointColor" ) );
-				s.decorationColor( ( Color ) mapping.get( "decorationColor" ) );
-				s.vertexRangeColor( ( Color ) mapping.get( "vertexRangeColor" ) );
-				s.headerBackgroundColor( ( Color ) mapping.get( "headerBackgroundColor" ) );
-				s.headerDecorationColor( ( Color ) mapping.get( "headerDecorationColor" ) );
-				s.headerCurrentTimepointColor( ( Color ) mapping.get( "headerCurrentTimepointColor" ) );
+				s.edgeColor( ( Color ) mapping.getOrDefault( "edgeColor", df.getEdgeColor() ) );
+				s.vertexFillColor( ( Color ) mapping.getOrDefault( "vertexFillColor", df.getVertexFillColor() ) );
+				s.vertexDrawColor( ( Color ) mapping.getOrDefault( "vertexDrawColor", df.getVertexDrawColor() ) );
+				s.selectedVertexFillColor( ( Color ) mapping.getOrDefault( "selectedVertexFillColor", df.getSelectedVertexFillColor() ) );
+				s.selectedEdgeColor( ( Color ) mapping.getOrDefault( "selectedEdgeColor", df.getSelectedEdgeColor() ) );
+				s.selectedVertexDrawColor( ( Color ) mapping.getOrDefault( "selectedVertexDrawColor", df.getSelectedVertexDrawColor() ) );
+				s.simplifiedVertexFillColor( ( Color ) mapping.getOrDefault( "simplifiedVertexFillColor", df.getSimplifiedVertexFillColor() ) );
+				s.selectedSimplifiedVertexFillColor( ( Color ) mapping.getOrDefault( "selectedSimplifiedVertexFillColor", df.getSelectedSimplifiedVertexFillColor() ) );
+				s.backgroundColor( ( Color ) mapping.getOrDefault( "backgroundColor", df.getBackgroundColor() ) );
+				s.currentTimepointColor( ( Color ) mapping.getOrDefault( "currentTimepointColor", df.getCurrentTimepointColor() ) );
+				s.decorationColor( ( Color ) mapping.getOrDefault( "decorationColor", df.getDecorationColor() ) );
+				s.vertexRangeColor( ( Color ) mapping.getOrDefault( "vertexRangeColor", df.getVertexRangeColor() ) );
+				s.headerBackgroundColor( ( Color ) mapping.getOrDefault( "headerBackgroundColor", df.getHeaderBackgroundColor() ) );
+				s.headerDecorationColor( ( Color ) mapping.getOrDefault( "headerDecorationColor", df.getHeaderDecorationColor() ) );
+				s.headerCurrentTimepointColor( ( Color ) mapping.getOrDefault( "headerCurrentTimepointColor", df.getCurrentTimepointColor() ) );
 
-				s.font( ( Font ) mapping.get( "font" ) );
-				s.headerFont( ( Font ) mapping.get( "headerFont" ) );
+				s.font( ( Font ) mapping.getOrDefault( "font", df.getFont() ) );
+				s.headerFont( ( Font ) mapping.getOrDefault( "headerFont", df.getHeaderFont() ) );
 
-				s.edgeStroke( ( Stroke ) mapping.get( "edgeStroke" ) );
-				s.edgeGhostStroke( ( Stroke ) mapping.get( "edgeGhostStroke" ) );
-				s.edgeHighlightStroke( ( Stroke ) mapping.get( "edgeHighlightStroke" ) );
-				s.vertexStroke( ( Stroke ) mapping.get( "vertexStroke" ) );
-				s.vertexGhostStroke( ( Stroke ) mapping.get( "vertexGhostStroke" ) );
-				s.vertexHighlightStroke( ( Stroke ) mapping.get( "vertexHighlightStroke" ) );
-				s.focusStroke( ( Stroke ) mapping.get( "focusStroke" ) );
+				s.edgeStroke( ( Stroke ) mapping.getOrDefault( "edgeStroke", df.getEdgeStroke() ) );
+				s.edgeGhostStroke( ( Stroke ) mapping.getOrDefault( "edgeGhostStroke", df.getEdgeGhostStroke() ) );
+				s.edgeHighlightStroke( ( Stroke ) mapping.getOrDefault( "edgeHighlightStroke", df.getEdgeHighlightStroke() ) );
+				s.vertexStroke( ( Stroke ) mapping.getOrDefault( "vertexStroke", df.getVertexStroke() ) );
+				s.vertexGhostStroke( ( Stroke ) mapping.getOrDefault( "vertexGhostStroke", df.getVertexGhostStroke() ) );
+				s.vertexHighlightStroke( ( Stroke ) mapping.getOrDefault( "vertexHighlightStroke", df.getVertexHighlightStroke() ) );
+				s.focusStroke( ( Stroke ) mapping.getOrDefault( "focusStroke", df.getFocusStroke() ) );
 
-				s.highlightCurrentTimepoint( ( boolean ) mapping.get( "highlightCurrentTimepoint" ) );
-				s.paintRows( ( boolean ) mapping.get( "paintRows" ) );
-				s.paintColumns( ( boolean ) mapping.get( "paintColumns" ) );
-				s.paintHeaderShadow( ( boolean ) mapping.get( "paintHeaderShadow" ) );
+				s.highlightCurrentTimepoint( ( boolean ) mapping.getOrDefault( "highlightCurrentTimepoint", df.isHighlightCurrentTimepoint() ) );
+				s.paintRows( ( boolean ) mapping.getOrDefault( "paintRows", df.isPaintRows() ) );
+				s.paintColumns( ( boolean ) mapping.getOrDefault( "paintColumns", df.isPaintColumns() ) );
+				s.paintHeaderShadow( ( boolean ) mapping.getOrDefault( "paintHeaderShadow", df.isPaintHeaderShadow() ) );
 
 				return s;
 			}
-			catch( final Exception e )
+			catch ( final Exception e )
 			{
 				e.printStackTrace();
 			}
