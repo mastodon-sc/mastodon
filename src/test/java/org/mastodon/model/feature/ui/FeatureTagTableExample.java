@@ -17,7 +17,6 @@ import org.mastodon.mamut.MamutViewTable;
 import org.mastodon.mamut.WindowManager;
 import org.mastodon.mamut.feature.MamutFeatureComputerService;
 import org.mastodon.mamut.model.Model;
-import org.mastodon.mamut.model.ModelGraph;
 import org.mastodon.mamut.project.MamutProject;
 import org.mastodon.mamut.project.MamutProjectIO;
 import org.mastodon.model.tag.TagSetStructure;
@@ -66,13 +65,7 @@ public class FeatureTagTableExample
 		locationTag.createTag( "Posterior", ran.nextInt() | 0xFF000000 );
 		model.getTagSetModel().setTagSetStructure( tss );
 
-		final MamutViewTable view = new MamutViewTable( appModel );
-		view.getFrame().setMirrorSelection( true );
-		final ModelGraph graph = appModel.getModel().getGraph();
-		view.getFrame().getVertexTable().setRows( graph.vertices() );
-		view.getFrame().getEdgeTable().setRows( graph.edges() );
-		view.getFrame().setSize( 400, 400 );
-		view.getFrame().setVisible( true );
+		new MamutViewTable( appModel, false );
 	}
 
 	public static ProgressListener voidLogger()

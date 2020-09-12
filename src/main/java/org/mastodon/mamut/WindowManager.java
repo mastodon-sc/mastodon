@@ -20,18 +20,12 @@ import javax.swing.JDialog;
 
 import org.mastodon.feature.FeatureSpecsService;
 import org.mastodon.feature.ui.FeatureColorModeConfigPage;
-import org.mastodon.graph.GraphChangeListener;
 import org.mastodon.mamut.feature.MamutFeatureProjectionsManager;
-import org.mastodon.mamut.model.Link;
 import org.mastodon.mamut.model.Model;
-import org.mastodon.mamut.model.ModelGraph;
 import org.mastodon.mamut.model.Spot;
-import org.mastodon.mamut.model.SpotPool;
 import org.mastodon.mamut.plugin.MamutPlugin;
 import org.mastodon.mamut.plugin.MamutPluginAppModel;
 import org.mastodon.mamut.plugin.MamutPlugins;
-import org.mastodon.model.SelectionListener;
-import org.mastodon.model.SelectionModel;
 import org.mastodon.model.tag.ui.TagSetDialog;
 import org.mastodon.ui.SelectionActions;
 import org.mastodon.ui.coloring.feature.FeatureColorModeManager;
@@ -46,7 +40,6 @@ import org.mastodon.util.ToggleDialogAction;
 import org.mastodon.views.bdv.overlay.ui.RenderSettingsConfigPage;
 import org.mastodon.views.bdv.overlay.ui.RenderSettingsManager;
 import org.mastodon.views.context.ContextProvider;
-import org.mastodon.views.table.FeatureTagTablePanel;
 import org.mastodon.views.trackscheme.display.style.TrackSchemeStyleManager;
 import org.mastodon.views.trackscheme.display.style.TrackSchemeStyleSettingsPage;
 import org.scijava.Context;
@@ -397,55 +390,14 @@ public class WindowManager
 	 */
 	public MamutViewTable createTable( final boolean selectionOnly )
 	{
-		if ( appModel == null )
-			return null;
-
-		final MamutViewTable view = new MamutViewTable( appModel );
-		view.getFrame().setIconImage( TABLE_VIEW_ICON );
-		final FeatureTagTablePanel< Spot > vertexTable = view.getFrame().getVertexTable();
-		final FeatureTagTablePanel< Link > edgeTable = view.getFrame().getEdgeTable();
-		final SelectionModel< Spot, Link > selectionModel = appModel.getSelectionModel();
-
-		if ( selectionOnly )
+		if ( appModel != null )
 		{
-			// Pass only the selection.
-			view.getFrame().setTitle( "Selection table" );
-			view.getFrame().setMirrorSelection( false );
-			final SelectionListener selectionListener = () -> {
-				vertexTable.setRows( selectionModel.getSelectedVertices() );
-				edgeTable.setRows( selectionModel.getSelectedEdges() );
-			};
-			selectionModel.listeners().add( selectionListener );
-			selectionListener.selectionChanged();
-			view.onClose( () -> selectionModel.listeners().remove( selectionListener ) );
+			final MamutViewTable view = new MamutViewTable( appModel, selectionOnly );
+			view.getFrame().setIconImage( TABLE_VIEW_ICON );
+			addTableWindow( view );
+			return view;
 		}
-		else
-		{
-			// Pass and listen to the full graph.
-			final ModelGraph graph = appModel.getModel().getGraph();
-			final GraphChangeListener graphChangeListener = () -> {
-				vertexTable.setRows( graph.vertices() );
-				edgeTable.setRows( graph.edges() );
-			};
-			graph.addGraphChangeListener( graphChangeListener );
-			graphChangeListener.graphChanged();
-			view.onClose( () -> graph.removeGraphChangeListener( graphChangeListener ) );
-
-			// Listen to selection changes.
-			view.getFrame().setMirrorSelection( true );
-			selectionModel.listeners().add( view.getFrame() );
-			view.getFrame().selectionChanged();
-			view.onClose( () -> selectionModel.listeners().remove( view.getFrame() ) );
-		}
-		/*
-		 * Register a listener to vertex label property changes, will update the
-		 * table-view when the label change.
-		 */
-		final SpotPool spotPool = ( SpotPool ) appModel.getModel().getGraph().vertices().getRefPool();
-		spotPool.labelProperty().addPropertyChangeListener( v -> view.getFrame().repaint() );
-
-		addTableWindow( view );
-		return view;
+		return null;
 	}
 
 	public void editTagSets()

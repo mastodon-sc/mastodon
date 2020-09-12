@@ -14,14 +14,21 @@ import org.mastodon.app.ui.ViewFrame;
 import org.mastodon.app.ui.ViewMenu;
 import org.mastodon.app.ui.ViewMenuBuilder.JMenuHandle;
 import org.mastodon.feature.FeatureModel;
+import org.mastodon.graph.GraphChangeListener;
 import org.mastodon.mamut.model.Link;
 import org.mastodon.mamut.model.Model;
+import org.mastodon.mamut.model.ModelGraph;
 import org.mastodon.mamut.model.Spot;
+import org.mastodon.mamut.model.SpotPool;
+import org.mastodon.model.SelectionListener;
+import org.mastodon.model.SelectionModel;
 import org.mastodon.model.tag.TagSetModel;
 import org.mastodon.ui.SelectionActions;
+import org.mastodon.ui.coloring.ColoringModel;
 import org.mastodon.ui.coloring.GraphColorGeneratorAdapter;
 import org.mastodon.ui.keymap.KeyConfigContexts;
 import org.mastodon.views.context.ContextChooser;
+import org.mastodon.views.table.FeatureTagTablePanel;
 import org.mastodon.views.table.TableViewActions;
 import org.mastodon.views.table.TableViewFrame;
 
@@ -30,7 +37,9 @@ public class MamutViewTable extends MamutView< ViewGraph< Spot, Link, Spot, Link
 
 	private static final String[] CONTEXTS = new String[] { KeyConfigContexts.TABLE };
 
-	public MamutViewTable( final MamutAppModel appModel )
+	private final ColoringModel coloringModel;
+
+	public MamutViewTable( final MamutAppModel appModel, final boolean selectionOnly )
 
 	{
 		super( appModel, IdentityViewGraph.wrap( appModel.getModel().getGraph(), appModel.getModel().getGraphIdBimap() ), CONTEXTS );
@@ -95,8 +104,7 @@ public class MamutViewTable extends MamutView< ViewGraph< Spot, Link, Spot, Link
 				MamutMenuBuilder.viewMenu(
 						MamutMenuBuilder.colorMenu( menuHandle ),
 						separator(),
-						item( MastodonFrameViewActions.TOGGLE_SETTINGS_PANEL )
-						),
+						item( MastodonFrameViewActions.TOGGLE_SETTINGS_PANEL ) ),
 				MamutMenuBuilder.editMenu(
 						item( TableViewActions.EDIT_LABEL ),
 						item( TableViewActions.TOGGLE_TAG ),
@@ -104,10 +112,52 @@ public class MamutViewTable extends MamutView< ViewGraph< Spot, Link, Spot, Link
 						item( SelectionActions.DELETE_SELECTION ) ) );
 		appModel.getPlugins().addMenus( menu );
 
-		registerColoring( coloring, menuHandle, () -> {
+		coloringModel = registerColoring( coloring, menuHandle, () -> {
 			frame.getEdgeTable().repaint();
 			frame.getVertexTable().repaint();
 		} );
+
+		final FeatureTagTablePanel< Spot > vertexTable = frame.getVertexTable();
+		final FeatureTagTablePanel< Link > edgeTable = frame.getEdgeTable();
+		final SelectionModel< Spot, Link > selectionModel = appModel.getSelectionModel();
+
+		if ( selectionOnly )
+		{
+			// Pass only the selection.
+			frame.setTitle( "Selection table" );
+			frame.setMirrorSelection( false );
+			final SelectionListener selectionListener = () -> {
+				vertexTable.setRows( selectionModel.getSelectedVertices() );
+				edgeTable.setRows( selectionModel.getSelectedEdges() );
+			};
+			selectionModel.listeners().add( selectionListener );
+			selectionListener.selectionChanged();
+			onClose( () -> selectionModel.listeners().remove( selectionListener ) );
+		}
+		else
+		{
+			// Pass and listen to the full graph.
+			final ModelGraph graph = appModel.getModel().getGraph();
+			final GraphChangeListener graphChangeListener = () -> {
+				vertexTable.setRows( graph.vertices() );
+				edgeTable.setRows( graph.edges() );
+			};
+			graph.addGraphChangeListener( graphChangeListener );
+			graphChangeListener.graphChanged();
+			onClose( () -> graph.removeGraphChangeListener( graphChangeListener ) );
+
+			// Listen to selection changes.
+			frame.setMirrorSelection( true );
+			selectionModel.listeners().add( frame );
+			frame.selectionChanged();
+			onClose( () -> selectionModel.listeners().remove( frame ) );
+		}
+		/*
+		 * Register a listener to vertex label property changes, will update the
+		 * table-view when the label change.
+		 */
+		final SpotPool spotPool = ( SpotPool ) appModel.getModel().getGraph().vertices().getRefPool();
+		spotPool.labelProperty().addPropertyChangeListener( v -> frame.repaint() );
 
 		frame.setSize( 400, 400 );
 		frame.setVisible( true );
@@ -125,5 +175,10 @@ public class MamutViewTable extends MamutView< ViewGraph< Spot, Link, Spot, Link
 	public ContextChooser< Spot > getContextChooser()
 	{
 		return getFrame().getContextChooser();
+	}
+
+	public ColoringModel getColoringModel()
+	{
+		return coloringModel;
 	}
 }
