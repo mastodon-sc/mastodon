@@ -35,27 +35,20 @@ public class MamutView< VG extends ViewGraph< Spot, Link, V, E >, V extends Vert
 
 	/**
 	 * Sets up and registers the coloring menu item and related actions and
-	 * listeners. A new instance of the {@code ColoringModel} is created here and
-	 * a reference on it is returned. This instance is bound to all relevant actions
-	 * and is therefore knowledgeable of the currently used coloring style.
+	 * listeners. A new instance of the {@code ColoringModel} is created here
+	 * and a reference on it is returned. This instance is bound to all relevant
+	 * actions and is therefore knowledgeable of the currently used coloring
+	 * style.
 	 *
 	 * @param colorGeneratorAdapter
-	 *                                  adapts a (modifiable) model coloring to view
-	 *                                  vertices/edges.
+	 *            adapts a (modifiable) model coloring to view vertices/edges.
 	 * @param menuHandle
-	 *                                  handle to the JMenu corresponding to the
-	 *                                  coloring submenu. Coloring options will be
-	 *                                  installed here.
+	 *            handle to the JMenu corresponding to the coloring submenu.
+	 *            Coloring options will be installed here.
 	 * @param refresh
-<<<<<<< HEAD:src/main/java/org/mastodon/mamut/MamutView.java
 	 *            triggers repaint of the graph (called when coloring changes)
-     *
+	 *
 	 * @return reference on the underlying {@code ColoringModel}
-=======
-	 *                                  triggers repaint of the graph (called when
-	 *                                  coloring changes)
-	 * @return the coloring model of the coloring submenu.
->>>>>>> 5803e35e... Use the colorbar overlay in TrackScheme views.:src/main/java/org/mastodon/revised/mamut/MamutView.java
 	 */
 	protected ColoringModel registerColoring(
 			final GraphColorGeneratorAdapter< Spot, Link, V, E > colorGeneratorAdapter,
