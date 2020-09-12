@@ -189,35 +189,35 @@ public class RenderSettingsIO
 		{
 			try
 			{
-				final Map< Object, Object > mapping = constructMapping( ( MappingNode  ) node );
+				final Map< Object, Object > mapping = constructMapping( ( MappingNode ) node );
 				final String name = ( String ) mapping.get( "name" );
 				final RenderSettings s = RenderSettings.defaultStyle().copy( name );
 
-				s.setName( ( String ) mapping.get( "name") );
+				s.setName( ( String ) mapping.getOrDefault( "name", "CouldNotFindName" ) );
 
-				s.setUseAntialiasing( ( boolean ) mapping.get( "antialiasing" ) );
-				s.setDrawLinks( ( boolean ) mapping.get( "drawLinks" ) );
-				s.setDrawLinksAheadInTime( ( boolean ) mapping.get( "drawLinksAheadInTime" ) );
-				s.setDrawArrowHeads( ( boolean ) mapping.get( "drawArrowHeads" ) );
-				s.setTimeLimit( ( int ) mapping.get( "timeRangeForLinks" ) );
-				s.setUseGradient( ( boolean ) mapping.get( "gradientForLinks" ) );
-				s.setDrawSpots( ( boolean ) mapping.get( "drawSpots" ) );
-				s.setDrawEllipsoidSliceIntersection( ( boolean ) mapping.get( "drawEllipsoidIntersection" ) );
-				s.setDrawEllipsoidSliceProjection( ( boolean ) mapping.get( "drawEllipsoidProjection" ) );
-				s.setDrawSpotCenters( ( boolean ) mapping.get( "drawSpotCenters" ) );
-				s.setDrawSpotCentersForEllipses( ( boolean ) mapping.get( "drawSpotCentersForEllipses" ) );
-				s.setDrawSpotLabels( ( boolean ) mapping.get( "drawSpotLabels" ) );
-				s.setFocusLimit( ( double ) mapping.get( "focusLimit" ) );
-				s.setFocusLimitViewRelative( ( boolean ) mapping.get( "focusLimitViewRelative" ) );
-				s.setEllipsoidFadeDepth( ( double ) mapping.get( "ellipsoidFadeDepth" ) );
-				s.setPointFadeDepth( ( double ) mapping.get( "pointFadeDepth" ) );
-				s.setColorSpot( ( int ) mapping.get( "colorSpot" ) );
-				s.setColorPast( ( int ) mapping.get( "colorPast" ) );
-				s.setColorFuture( ( int ) mapping.get( "colorFuture" ) );
+				s.setUseAntialiasing( ( boolean ) mapping.getOrDefault( "antialiasing", RenderSettings.DEFAULT_USE_ANTI_ALIASING ) );
+				s.setDrawLinks( ( boolean ) mapping.getOrDefault( "drawLinks", RenderSettings.DEFAULT_DRAW_LINKS ) );
+				s.setDrawLinksAheadInTime( ( boolean ) mapping.getOrDefault( "drawLinksAheadInTime", RenderSettings.DEFAULT_DRAW_LINKS_AHEAD_IN_TIME ) );
+				s.setDrawArrowHeads( ( boolean ) mapping.getOrDefault( "drawArrowHeads", RenderSettings.DEFAULT_DRAW_ARROW_HEADS ) );
+				s.setTimeLimit( ( int ) mapping.getOrDefault( "timeRangeForLinks", RenderSettings.DEFAULT_LIMIT_TIME_RANGE ) );
+				s.setUseGradient( ( boolean ) mapping.getOrDefault( "gradientForLinks", RenderSettings.DEFAULT_USE_GRADIENT ) );
+				s.setDrawSpots( ( boolean ) mapping.getOrDefault( "drawSpots", RenderSettings.DEFAULT_DRAW_SPOTS ) );
+				s.setDrawEllipsoidSliceIntersection( ( boolean ) mapping.getOrDefault( "drawEllipsoidIntersection", RenderSettings.DEFAULT_DRAW_SLICE_INTERSECTION ) );
+				s.setDrawEllipsoidSliceProjection( ( boolean ) mapping.getOrDefault( "drawEllipsoidProjection", RenderSettings.DEFAULT_DRAW_SLICE_PROJECTION ) );
+				s.setDrawSpotCenters( ( boolean ) mapping.getOrDefault( "drawSpotCenters", RenderSettings.DEFAULT_DRAW_POINTS ) );
+				s.setDrawSpotCentersForEllipses( ( boolean ) mapping.getOrDefault( "drawSpotCentersForEllipses", RenderSettings.DEFAULT_DRAW_POINTS_FOR_ELLIPSE ) );
+				s.setDrawSpotLabels( ( boolean ) mapping.getOrDefault( "drawSpotLabels", RenderSettings.DEFAULT_DRAW_SPOT_LABELS ) );
+				s.setFocusLimit( ( double ) mapping.getOrDefault( "focusLimit", RenderSettings.DEFAULT_LIMIT_FOCUS_RANGE ) );
+				s.setFocusLimitViewRelative( ( boolean ) mapping.getOrDefault( "focusLimitViewRelative", RenderSettings.DEFAULT_IS_FOCUS_LIMIT_RELATIVE ) );
+				s.setEllipsoidFadeDepth( ( double ) mapping.getOrDefault( "ellipsoidFadeDepth", RenderSettings.DEFAULT_ELLIPSOID_FADE_DEPTH ) );
+				s.setPointFadeDepth( ( double ) mapping.getOrDefault( "pointFadeDepth", RenderSettings.DEFAULT_ELLIPSOID_FADE_DEPTH ) );
+				s.setColorSpot( ( int ) mapping.getOrDefault( "colorSpot", RenderSettings.DEFAULT_COLOR_SPOT_AND_PRESENT ) );
+				s.setColorPast( ( int ) mapping.getOrDefault( "colorPast", RenderSettings.DEFAULT_COLOR_PAST ) );
+				s.setColorFuture( ( int ) mapping.getOrDefault( "colorFuture", RenderSettings.DEFAULT_COLOR_FUTURE ) );
 
 				return s;
 			}
-			catch( final Exception e )
+			catch ( final Exception e )
 			{
 				e.printStackTrace();
 			}
