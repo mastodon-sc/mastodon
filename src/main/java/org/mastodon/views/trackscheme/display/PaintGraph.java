@@ -16,8 +16,8 @@ import org.mastodon.util.GeometryUtil;
 import org.mastodon.views.trackscheme.ScreenEdge;
 import org.mastodon.views.trackscheme.ScreenEntities;
 import org.mastodon.views.trackscheme.ScreenVertex;
-import org.mastodon.views.trackscheme.ScreenVertexRange;
 import org.mastodon.views.trackscheme.ScreenVertex.Transition;
+import org.mastodon.views.trackscheme.ScreenVertexRange;
 import org.mastodon.views.trackscheme.display.style.TrackSchemeStyle;
 
 import net.imglib2.type.numeric.ARGBType;
@@ -413,8 +413,12 @@ public class PaintGraph
 			if ( label.length() > maxLabelLength )
 				label = label.substring( 0, maxLabelLength - 2 ) + "...";
 
-			if ( ! label.isEmpty() )
+			if ( !label.isEmpty() )
 			{
+				// Text color depend on the bg color for color schemes.
+				if ( specifiedColor != 0 )
+					g2.setColor( textColorForBackground( fillColor ) );
+
 				final FontRenderContext frc = g2.getFontRenderContext();
 				final TextLayout layout = new TextLayout( label, style.getFont(), frc );
 				final Rectangle2D bounds = layout.getBounds();
@@ -482,5 +486,24 @@ public class PaintGraph
 					? TrackSchemeStyle.mixGhostColor( color, style.getBackgroundColor() )
 					: color;
 		}
+	}
+
+	/**
+	 * Returns the black color or white color depending on the specified
+	 * background color, to ensure proper readability of the text on said
+	 * background.
+	 *
+	 * @param backgroundColor
+	 *            the background color.
+	 * @return the black or white color.
+	 */
+	private static Color textColorForBackground( final Color backgroundColor )
+	{
+		if ( ( backgroundColor.getRed() * 0.299
+				+ backgroundColor.getGreen() * 0.587
+				+ backgroundColor.getBlue() * 0.114 ) > 150 )
+			return Color.BLACK;
+		else
+			return Color.WHITE;
 	}
 }
