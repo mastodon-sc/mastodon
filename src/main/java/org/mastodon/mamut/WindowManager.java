@@ -2,6 +2,7 @@ package org.mastodon.mamut;
 
 import static org.mastodon.app.MastodonIcons.BDV_VIEW_ICON;
 import static org.mastodon.app.MastodonIcons.FEATURES_ICON_LARGE;
+import static org.mastodon.app.MastodonIcons.TABLE_VIEW_ICON;
 import static org.mastodon.app.MastodonIcons.TAGS_ICON_LARGE;
 import static org.mastodon.app.MastodonIcons.TRACKSCHEME_VIEW_ICON;
 
@@ -400,6 +401,7 @@ public class WindowManager
 			return null;
 
 		final MamutViewTable view = new MamutViewTable( appModel );
+		view.getFrame().setIconImage( TABLE_VIEW_ICON );
 		final FeatureTagTablePanel< Spot > vertexTable = view.getFrame().getVertexTable();
 		final FeatureTagTablePanel< Link > edgeTable = view.getFrame().getEdgeTable();
 		final SelectionModel< Spot, Link > selectionModel = appModel.getSelectionModel();
