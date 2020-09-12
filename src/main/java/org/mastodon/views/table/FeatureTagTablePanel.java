@@ -133,6 +133,8 @@ public class FeatureTagTablePanel< O > extends JPanel
 
 	private final ColorGenerator< O > coloring;
 
+	private final JScrollPane scrollPane;
+
 	public FeatureTagTablePanel(
 			final ObjTags< O > tags,
 			final RefPool< O > idBimap,
@@ -210,11 +212,11 @@ public class FeatureTagTablePanel< O > extends JPanel
 		final TableRowSorter< MyTableModel > sorter = new TableRowSorter<>( tableModel );
 		table.setRowSorter( sorter );
 
-		final JScrollPane scroll = new JScrollPane( table, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED );
+		this.scrollPane = new JScrollPane( table, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED );
 		table.setAutoResizeMode( JTable.AUTO_RESIZE_OFF );
 
 		setLayout( new BorderLayout() );
-		add( scroll, BorderLayout.CENTER );
+		add( scrollPane, BorderLayout.CENTER );
 	}
 
 	/**
@@ -830,6 +832,11 @@ public class FeatureTagTablePanel< O > extends JPanel
 
 		final int modelRow = table.convertRowIndexToModel( row );
 		tableModel.fireTableRowsUpdated( modelRow, modelRow );
+	}
+
+	public JScrollPane getScrollPane()
+	{
+		return scrollPane;
 	}
 
 	/**

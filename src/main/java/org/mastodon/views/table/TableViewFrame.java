@@ -422,10 +422,15 @@ public class TableViewFrame<
 		ignoreTableSelectionChange = false;
 	}
 
-	private FeatureTagTablePanel< ? > getCurrentlyDisplayedTable()
+	public FeatureTagTablePanel< ? > getCurrentlyDisplayedTable()
 	{
 		final int selectedIndex = pane.getSelectedIndex();
 		return selectedIndex == 0 ? vertexTable : edgeTable;
+	}
+
+	public void switchToVertexTable( final boolean toVertexTable )
+	{
+		pane.setSelectedIndex( toVertexTable ? 0 : 1 );
 	}
 
 	public void editCurrentLabel()

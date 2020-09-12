@@ -10,13 +10,17 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import javax.swing.JViewport;
+
 import org.jdom2.Element;
 import org.mastodon.app.ui.MastodonFrameView;
+import org.mastodon.mamut.model.Link;
 import org.mastodon.mamut.model.Spot;
 import org.mastodon.ui.coloring.ColoringModel;
 import org.mastodon.views.bdv.ViewerPanelMamut;
 import org.mastodon.views.context.ContextChooser;
 import org.mastodon.views.context.ContextProvider;
+import org.mastodon.views.table.FeatureTagTablePanel;
 import org.mastodon.views.trackscheme.ScreenTransform;
 import org.mastodon.views.trackscheme.display.TrackSchemePanel;
 
@@ -75,6 +79,32 @@ class MamutViewStateSerialization
 	 * {@link ScreenTransform} instance.
 	 */
 	static final String TRACKSCHEME_TRANSFORM_KEY = "TrackSchemeTransform";
+
+	/**
+	 * Key that specifies whether a table only display the selection or the
+	 * whole model. Boolean instance.
+	 */
+	static final String TABLE_SELECTION_ONLY = "TableSelectionOnly";
+
+	/**
+	 * Key that specifies whether a table is currently showing the vertex table.
+	 * If <code>false</code>, then the edge table is displayed.
+	 */
+	static final String TABLE_DISPLAYING_VERTEX_TABLE = "TableVertexTableDisplayed";
+
+	/**
+	 * Key to the parameter that stores the vertex table displayed rectangle.
+	 * Value is and <code>int[]</code> array of 4 elements: x, y, width and
+	 * height.
+	 */
+	static final String TABLE_VERTEX_TABLE_VISIBLE_POS = "TableVertexTableVisibleRect";
+
+	/**
+	 * Key to the parameter that stores the edge table displayed rectangle.
+	 * Value is and <code>int[]</code> array of 4 elements: x, y, width and
+	 * height.
+	 */
+	static final String TABLE_EDGE_TABLE_VISIBLE_POS = "TableEdgeTableVisibleRect";
 
 	/**
 	 * Key that specifies whether we do not use a special coloring scheme on the
@@ -204,8 +234,49 @@ class MamutViewStateSerialization
 			getGuiStateBdv( ( MamutViewBdv ) view, guiState );
 		else if ( view instanceof MamutViewTrackScheme )
 			getGuiStateTrackScheme( ( MamutViewTrackScheme ) view, guiState );
+		else if ( view instanceof MamutViewTable )
+			getGuiStateTable( ( MamutViewTable ) view, guiState );
 
 		return guiState;
+	}
+
+	/**
+	 * Stores the {@link MamutViewTable} GUI state in the specified map.
+	 * 
+	 * @param view
+	 *            the {@link MamutViewTable}.
+	 * @param guiState
+	 *            the map to store info into.
+	 */
+	private static void getGuiStateTable( final MamutViewTable view, final Map< String, Object > guiState )
+	{
+		// Selection table or not.
+		guiState.put( TABLE_SELECTION_ONLY, view.isSelectionTable() );
+
+		// View rectangles.
+		final FeatureTagTablePanel< Spot > vertexTable = view.getFrame().getVertexTable();
+		final JViewport viewportVertex = vertexTable.getScrollPane().getViewport();
+		final Point vertexTableRect = viewportVertex.getViewPosition();
+		guiState.put( TABLE_VERTEX_TABLE_VISIBLE_POS, new int[] {
+				vertexTableRect.x,
+				vertexTableRect.y } );
+
+		final FeatureTagTablePanel<Link> edgeTable = view.getFrame().getEdgeTable();
+		final JViewport viewportEdge = edgeTable.getScrollPane().getViewport();
+		final Point edgeTablePos = viewportEdge.getViewPosition();
+		guiState.put( TABLE_EDGE_TABLE_VISIBLE_POS, new int[] {
+				edgeTablePos.x,
+				edgeTablePos.y } );
+
+		final boolean isVertexTableDisplayed = view.getFrame().getCurrentlyDisplayedTable() == vertexTable;
+		guiState.put( TABLE_DISPLAYING_VERTEX_TABLE, isVertexTableDisplayed );
+
+		// Coloring.
+		final ColoringModel coloringModel = view.getColoringModel();
+		getColoringState( coloringModel, guiState );
+
+		// Context provider.
+		guiState.put( CHOSEN_CONTEXT_PROVIDER_KEY, view.getContextChooser().getChosenProvider().getName() );
 	}
 
 	/**
@@ -323,6 +394,17 @@ class MamutViewStateSerialization
 				break;
 			}
 
+			case "MamutViewTable":
+			{
+				final MamutViewTable table = windowManager.createTable( guiState );
+
+				// Deal with context chooser.
+				final String desiredProvider = ( String ) guiState.get( CHOSEN_CONTEXT_PROVIDER_KEY );
+				if ( null != desiredProvider )
+					contextChosers.put( table.getContextChooser(), desiredProvider );
+				break;
+			}
+
 			default:
 				System.err.println( "Unknown window type: " + typeStr + "." );
 				continue;
@@ -373,6 +455,12 @@ class MamutViewStateSerialization
 				final double[] arr = XmlHelpers.getDoubleArray( viewEl, key );
 				value = new ScreenTransform( arr[ 0 ], arr[ 1 ], arr[ 2 ], arr[ 3 ], ( int ) arr[ 4 ], ( int ) arr[ 5 ] );
 				break;
+			case TABLE_VERTEX_TABLE_VISIBLE_POS:
+			case TABLE_EDGE_TABLE_VISIBLE_POS:
+				value = XmlHelpers.getIntArray( viewEl, key );
+				break;
+			case TABLE_SELECTION_ONLY:
+			case TABLE_DISPLAYING_VERTEX_TABLE:
 			case NO_COLORING_KEY:
 			case SETTINGS_PANEL_VISIBLE_KEY:
 				value = XmlHelpers.getBoolean( viewEl, key );
