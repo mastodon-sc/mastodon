@@ -97,8 +97,8 @@ public class TrackSchemeStyleManager extends AbstractStyleManager< TrackSchemeSt
 				if ( obj instanceof String )
 				{
 					defaultStyleName = ( String ) obj;
-					System.out.println( "TrackSchemeStyleManager.loadStyles" );
-					System.out.println( defaultStyleName );
+//					System.out.println( "TrackSchemeStyleManager.loadStyles" );
+//					System.out.println( defaultStyleName );
 				}
 				else if ( obj instanceof TrackSchemeStyle )
 				{
@@ -109,7 +109,9 @@ public class TrackSchemeStyleManager extends AbstractStyleManager< TrackSchemeSt
 						if ( names.add( ts.getName() ) )
 							userStyles.add( ts );
 						else
-							System.out.println( "Discarded style with duplicate name \"" + ts.getName() + "\"." );
+						{
+//							System.out.println( "Discarded style with duplicate name \"" + ts.getName() + "\"." );
+						}
 					}
 				}
 			}
@@ -117,7 +119,7 @@ public class TrackSchemeStyleManager extends AbstractStyleManager< TrackSchemeSt
 		}
 		catch ( final FileNotFoundException e )
 		{
-			System.out.println( "TrackScheme style file " + filename + " not found. Using builtin styles." );
+//			System.out.println( "TrackScheme style file " + filename + " not found. Using builtin styles." );
 		}
 	}
 

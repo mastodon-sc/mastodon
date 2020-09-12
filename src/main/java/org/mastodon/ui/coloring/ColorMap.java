@@ -323,7 +323,7 @@ public class ColorMap
 		}
 		catch ( final FileNotFoundException e )
 		{
-			System.out.println( "ColorMap file " + COLORMAP_FILE + " not found. Using builtin colormaps." );
+//			System.out.println( "ColorMap file " + COLORMAP_FILE + " not found. Using builtin colormaps." );
 		}
 		catch ( final IOException e1 )
 		{
