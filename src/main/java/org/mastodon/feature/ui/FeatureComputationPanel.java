@@ -8,6 +8,8 @@ import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
@@ -26,8 +28,6 @@ import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.JToggleButton;
 import javax.swing.ScrollPaneConstants;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
 
 import org.mastodon.feature.FeatureProjectionSpec;
 import org.mastodon.feature.FeatureSpec;
@@ -184,11 +184,11 @@ public class FeatureComputationPanel extends JPanel
 			aggregator.add( featureTable );
 			featureTable.selectionListeners().add( sl );
 
-			button.addChangeListener( new ChangeListener()
+			button.addActionListener( new ActionListener()
 			{
 
 				@Override
-				public void stateChanged( final ChangeEvent e )
+				public void actionPerformed( final ActionEvent e )
 				{
 					final boolean selected = button.isSelected();
 					model.getFeatureSpecs( target ).forEach( fs -> model.setSelected( fs, selected ) );
