@@ -76,6 +76,16 @@ public class SpotGaussFilteredIntensityFeature implements Feature< Spot >
 		}
 	}
 
+	public double getMean( final Spot spot, final int source )
+	{
+		return means.get( source ).getDouble( spot );
+	}
+
+	public double getStd( final Spot spot, final int source )
+	{
+		return stds.get( source ).getDouble( spot );
+	}
+
 	@Override
 	public FeatureProjection< Spot > project( final FeatureProjectionKey key )
 	{

@@ -54,6 +54,11 @@ public class SpotTrackIDFeature implements Feature< Spot >
 		this.projection = FeatureProjections.project( key( PROJECTION_SPEC ), map, Dimension.NONE_UNITS );
 	}
 
+	public int get( final Spot spot)
+	{
+		return map.getInt( spot );
+	}
+
 	@Override
 	public FeatureProjection< Spot > project( final FeatureProjectionKey key )
 	{

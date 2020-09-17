@@ -54,6 +54,11 @@ public class LinkVelocityFeature implements Feature< Link >
 		this.projection = FeatureProjections.project( key( PROJECTION_SPEC ), map, units );
 	}
 
+	public double get( final Link link )
+	{
+		return map.getDouble( link );
+	}
+
 	@Override
 	public FeatureProjection< Link > project( final FeatureProjectionKey key )
 	{

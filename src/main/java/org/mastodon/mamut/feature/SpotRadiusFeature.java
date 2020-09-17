@@ -55,6 +55,11 @@ public class SpotRadiusFeature implements Feature< Spot >
 		}
 	}
 
+	public double get(final Spot spot)
+	{
+		return map.getDouble( spot );
+	}
+
 	@Override
 	public FeatureProjection< Spot > project( final FeatureProjectionKey key )
 	{
