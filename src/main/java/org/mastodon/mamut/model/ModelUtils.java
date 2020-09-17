@@ -17,7 +17,7 @@ import org.mastodon.feature.IntFeatureProjection;
 public class ModelUtils
 {
 
-	public static final String dump( final Model model)
+	public static final String dump( final Model model )
 	{
 		return dump( model, Long.MAX_VALUE );
 	}
@@ -35,8 +35,8 @@ public class ModelUtils
 		 * Get feature specs and sort them by key.
 		 */
 
-		final List< FeatureSpec< ?, ? > > featureSpecs = new ArrayList<>(featureModel.getFeatureSpecs());
-		featureSpecs.sort( (fs1, fs2) -> fs1.getKey().compareTo( fs2.getKey() ) );
+		final List< FeatureSpec< ?, ? > > featureSpecs = new ArrayList<>( featureModel.getFeatureSpecs() );
+		featureSpecs.sort( ( fs1, fs2 ) -> fs1.getKey().compareTo( fs2.getKey() ) );
 
 		/*
 		 * Collect spot feature headers.
@@ -52,7 +52,8 @@ public class ModelUtils
 				spotFeatures.add( spotFeature );
 			}
 
-		// TODO if different features have same FeatureProjectionKey, map entries will be overridden!
+		// TODO if different features have same FeatureProjectionKey, map
+		// entries will be overridden!
 		for ( final Feature< Spot > feature : spotFeatures )
 		{
 			if ( feature.projections() == null )
@@ -73,7 +74,7 @@ public class ModelUtils
 		// Unit line
 		final StringBuilder unitLineSpots = new StringBuilder();
 		unitLineSpots.append( String.format( "%9s  %9s  %6s  %9s  %9s  %9s",
-				"", "", "", bracket(spaceUnits), bracket(spaceUnits), bracket(spaceUnits) ) );
+				"", "", "", bracket( spaceUnits ), bracket( spaceUnits ), bracket( spaceUnits ) ) );
 
 		final int[] spotColumnHeaderWidth = new int[ sfs.size() ];
 		int i = 0;
@@ -98,7 +99,7 @@ public class ModelUtils
 		long n = 0;
 		for ( final Spot spot : graph.vertices() )
 		{
-			if (n++ > maxLines)
+			if ( n++ > maxLines )
 				break;
 
 			final String h1b = String.format( "%9d  %9s  %6d  %9.1f  %9.1f  %9.1f",
@@ -149,7 +150,7 @@ public class ModelUtils
 		str.append( h2a );
 		// Unit line
 		final StringBuilder unitLineLinks = new StringBuilder();
-		unitLineLinks.append( String.format( "%9s  %9s  %9s", "", "", "") );
+		unitLineLinks.append( String.format( "%9s  %9s  %9s", "", "", "" ) );
 
 		final int[] linkColumnHeaderWidth = new int[ lfs.size() ];
 		i = 0;
@@ -175,7 +176,7 @@ public class ModelUtils
 		final Spot ref = graph.vertexRef();
 		for ( final Link link : graph.edges() )
 		{
-			if (n++ > maxLines)
+			if ( n++ > maxLines )
 				break;
 
 			final String h1b = String.format( "%9d  %9d  %9d", link.getInternalPoolIndex(),
@@ -199,7 +200,7 @@ public class ModelUtils
 		return str.toString();
 	}
 
-	private static final String bracket(final String str)
+	private static final String bracket( final String str )
 	{
 		return str.isEmpty() ? "" : "(" + str + ")";
 	}
