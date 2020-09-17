@@ -2,17 +2,20 @@ package org.mastodon.mamut.model;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import org.mastodon.collection.ref.RefArrayList;
 import org.mastodon.feature.Feature;
 import org.mastodon.feature.FeatureModel;
 import org.mastodon.feature.FeatureProjection;
 import org.mastodon.feature.FeatureProjectionKey;
 import org.mastodon.feature.FeatureSpec;
 import org.mastodon.feature.IntFeatureProjection;
+import org.mastodon.mamut.feature.SpotTrackIDFeature;
 
 public class ModelUtils
 {
@@ -96,8 +99,40 @@ public class ModelUtils
 		str.append( sline );
 		str.append( '\n' );
 
+		/*
+		 * Sort spots.
+		 */
+
+		final RefArrayList< Spot > spots = new RefArrayList<Spot>( graph.vertices().getRefPool(), graph.vertices().size() );
+		spots.addAll( graph.vertices() );
+
+		// Do we have track id?
+		if (featureSpecs.contains( SpotTrackIDFeature.SPEC ))
+		{
+			final SpotTrackIDFeature trackID = ( SpotTrackIDFeature ) featureModel.getFeature( SpotTrackIDFeature.SPEC );
+			spots.sort( new Comparator< Spot >()
+			{
+
+				@Override
+				public int compare( final Spot o1, final Spot o2 )
+				{
+					final int track1 = trackID.get( o1 );
+					final int track2 = trackID.get( o2 );
+					if (track1 == track2)
+						return o1.getTimepoint() - o2.getTimepoint();
+
+					return track1 - track2;
+				}
+			} );
+		}
+		else
+		{
+			spots.sort( Comparator.comparingInt( Spot::getTimepoint ) );
+		}
+
+
 		long n = 0;
-		for ( final Spot spot : graph.vertices() )
+		for ( final Spot spot : spots )
 		{
 			if ( n++ > maxLines )
 				break;
