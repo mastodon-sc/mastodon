@@ -2,16 +2,12 @@ package org.mastodon.mamut;
 
 import static org.mastodon.app.MastodonIcons.BDV_ICON_MEDIUM;
 import static org.mastodon.app.MastodonIcons.FEATURES_ICON_MEDIUM;
-import static org.mastodon.app.MastodonIcons.LOAD_ICON_MEDIUM;
 import static org.mastodon.app.MastodonIcons.MAINWINDOW_BG;
-import static org.mastodon.app.MastodonIcons.MAMUT_EXPORT_ICON_MEDIUM;
-import static org.mastodon.app.MastodonIcons.MAMUT_IMPORT_ICON_MEDIUM;
 import static org.mastodon.app.MastodonIcons.MASTODON_ICON_MEDIUM;
-import static org.mastodon.app.MastodonIcons.NEW_ICON_MEDIUM;
+import static org.mastodon.app.MastodonIcons.SAVE_AS_ICON_MEDIUM;
 import static org.mastodon.app.MastodonIcons.SAVE_ICON_MEDIUM;
 import static org.mastodon.app.MastodonIcons.TABLE_ICON_MEDIUM;
 import static org.mastodon.app.MastodonIcons.TAGS_ICON_MEDIUM;
-import static org.mastodon.app.MastodonIcons.TGMM_IMPORT_ICON_MEDIUM;
 import static org.mastodon.app.MastodonIcons.TRACKSCHEME_ICON_MEDIUM;
 import static org.mastodon.app.ui.ViewMenuBuilder.item;
 import static org.mastodon.app.ui.ViewMenuBuilder.separator;
@@ -153,46 +149,21 @@ public class MainWindow extends JFrame
 		++gridy;
 
 		label_gbc.gridy = gridy;
-		final JLabel ioLabel = new JLabel( "Input / Output:" );
+		final JLabel ioLabel = new JLabel( "Saving:" );
 		ioLabel.setFont( buttonsPanel.getFont().deriveFont( Font.BOLD ) );
 		buttonsPanel.add( ioLabel, label_gbc );
 
 		++gridy;
 
-		final JButton createProjectButton = new JButton( actionMap.get( ProjectManager.CREATE_PROJECT ) );
-		prepareButton( createProjectButton, "new project", NEW_ICON_MEDIUM );
-		button_gbc_left.gridy = gridy;
-		buttonsPanel.add( createProjectButton, button_gbc_left );
-
-		final JButton importTgmmButton = new JButton( actionMap.get( ProjectManager.IMPORT_TGMM ) );
-		prepareButton( importTgmmButton, "import tgmm", TGMM_IMPORT_ICON_MEDIUM );
-		button_gbc_right.gridy = gridy;
-		buttonsPanel.add( importTgmmButton, button_gbc_right );
-
-		++gridy;
-
-		final JButton importMamutButton = new JButton( actionMap.get( ProjectManager.IMPORT_MAMUT ) );
-		prepareButton( importMamutButton, "import mamut", MAMUT_IMPORT_ICON_MEDIUM );
-		button_gbc_left.gridy = gridy;
-		buttonsPanel.add( importMamutButton, button_gbc_left );
-
-		final JButton exportMamutButton = new JButton( actionMap.get( ProjectManager.EXPORT_MAMUT ) );
-		prepareButton( exportMamutButton, "export mamut", MAMUT_EXPORT_ICON_MEDIUM );
-		button_gbc_right.gridy = gridy;
-		buttonsPanel.add( exportMamutButton, button_gbc_right );
-
-		++gridy;
-
 		final JButton saveProjectButton = new JButton( actionMap.get( ProjectManager.SAVE_PROJECT ) );
-		prepareButton( saveProjectButton, "save project", SAVE_ICON_MEDIUM );
+		prepareButton( saveProjectButton, "save", SAVE_ICON_MEDIUM );
 		button_gbc_left.gridy = gridy;
 		buttonsPanel.add( saveProjectButton, button_gbc_left );
 
-		final JButton loadProjectButton = new JButton( actionMap.get( ProjectManager.LOAD_PROJECT ) );
-		prepareButton( loadProjectButton, "load project", LOAD_ICON_MEDIUM );
+		final JButton loadProjectButton = new JButton( actionMap.get( ProjectManager.SAVE_PROJECT_AS ) );
+		prepareButton( loadProjectButton, "save as...", SAVE_AS_ICON_MEDIUM );
 		button_gbc_right.gridy = gridy;
 		buttonsPanel.add( loadProjectButton, button_gbc_right );
-
 
 		/*
 		 * Background with an image.
