@@ -22,9 +22,11 @@ import java.util.List;
 import java.util.Map;
 
 import javax.swing.ActionMap;
+import javax.swing.JPanel;
 
 import org.jdom2.Element;
 import org.mastodon.app.ui.MastodonFrameViewActions;
+import org.mastodon.app.ui.SearchVertexLabel;
 import org.mastodon.app.ui.ViewMenu;
 import org.mastodon.app.ui.ViewMenuBuilder;
 import org.mastodon.app.ui.ViewMenuBuilder.JMenuHandle;
@@ -34,6 +36,7 @@ import org.mastodon.mamut.model.ModelGraph;
 import org.mastodon.mamut.model.ModelOverlayProperties;
 import org.mastodon.mamut.model.Spot;
 import org.mastodon.model.AutoNavigateFocusModel;
+import org.mastodon.model.NavigationHandler;
 import org.mastodon.model.tag.TagSetStructure.TagSet;
 import org.mastodon.ui.FocusActions;
 import org.mastodon.ui.HighlightBehaviours;
@@ -259,6 +262,21 @@ public class MamutViewBdv extends MamutView< OverlayGraphWrapper< Spot, Link >, 
 		HighlightBehaviours.install( viewBehaviours, viewGraph, viewGraph.getLock(), viewGraph, highlightModel, model );
 		FocusActions.install( viewActions, viewGraph, viewGraph.getLock(), navigateFocusModel, selectionModel );
 		OverlayActions.install( viewActions, viewer, tracksOverlay );
+
+		/*
+		 * We must make a search action using the underlying model graph,
+		 * because we cannot iterate over the OverlayGraphWrapper properly
+		 * (vertices are object vertices that wrap a pool vertex...)
+		 */
+		final NavigationHandler< Spot, Link > navigationHandlerAdapter = groupHandle.getModel( appModel.NAVIGATION );
+		final JPanel searchField = SearchVertexLabel.install(
+				viewActions,
+				appModel.getModel().getGraph(),
+				navigationHandlerAdapter,
+				appModel.getSelectionModel(),
+				appModel.getFocusModel(),
+				viewer );
+		frame.getSettingsPanel().add( searchField );
 
 		NavigationActionsMamut.install( viewActions, viewer, sharedBdvData.is2D() );
 		viewer.getTransformEventHandler().install( viewBehaviours );
