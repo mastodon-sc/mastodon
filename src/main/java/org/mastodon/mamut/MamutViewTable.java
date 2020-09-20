@@ -21,10 +21,12 @@ import java.util.Map;
 import java.util.function.Function;
 
 import javax.swing.ActionMap;
+import javax.swing.JPanel;
 
 import org.mastodon.app.IdentityViewGraph;
 import org.mastodon.app.ViewGraph;
 import org.mastodon.app.ui.MastodonFrameViewActions;
+import org.mastodon.app.ui.SearchVertexLabel;
 import org.mastodon.app.ui.ViewFrame;
 import org.mastodon.app.ui.ViewMenu;
 import org.mastodon.app.ui.ViewMenuBuilder.JMenuHandle;
@@ -131,6 +133,9 @@ public class MamutViewTable extends MamutView< ViewGraph< Spot, Link, Spot, Link
 
 		MastodonFrameViewActions.install( viewActions, this );
 		TableViewActions.install( viewActions, frame );
+
+		final JPanel searchPanel = SearchVertexLabel.install( viewActions, viewGraph, navigationHandler, selectionModel, focusModel, frame.getCurrentlyDisplayedTable() );
+		frame.getSettingsPanel().add( searchPanel );
 
 		onClose( () -> {
 			focusModel.listeners().remove( frame );
