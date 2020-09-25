@@ -48,5 +48,6 @@ public interface Feature< T >
 	 * @param obj
 	 *            the object to remove.
 	 */
+	// TODO: Would invalidate() be a better name for this method?
 	public void remove( T obj );
 }

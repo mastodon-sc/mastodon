@@ -52,6 +52,10 @@ public class GraphFeatureUpdateListeners
 		}
 	}
 
+	// TODO: Revise! This is called potentially very often, so it can become costly.
+	//   Instead, MyVertexPropertyChangeListener should cache featuresOfTargets lists.
+	//   It should register a FeatureModelListener with the FeatureModel and update
+	//   the cached featuresOfTarget lists (only) when notified of changes.
 	private static < O > List< Feature< O > > featuresOfTarget( final FeatureModel featureModel, final Class< O > targetClass )
 	{
 		final List< ? > f = featureModel.getFeatureSpecs().stream()
