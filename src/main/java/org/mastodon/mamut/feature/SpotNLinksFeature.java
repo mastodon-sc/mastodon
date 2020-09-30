@@ -71,4 +71,8 @@ public class SpotNLinksFeature implements Feature< Spot >
 	{
 		return SPEC;
 	}
+
+	@Override
+	public void remove( final Spot spot )
+	{}
 }

@@ -1,5 +1,6 @@
 package org.mastodon.mamut;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.Locale;
 
@@ -8,7 +9,6 @@ import javax.swing.UIManager;
 import javax.swing.WindowConstants;
 
 import org.mastodon.mamut.project.MamutProject;
-import org.mastodon.mamut.project.MamutProjectIO;
 import org.scijava.Context;
 import org.scijava.command.Command;
 import org.scijava.command.ContextCommand;
@@ -62,11 +62,11 @@ public class Mastodon extends ContextCommand
 
 		final WindowManager windowManager = mastodon.windowManager;
 
-//		final String bdvFile = "samples/datasethdf5.xml";
-//		final MamutProject project = new MamutProject( new File( "samples/mamutproject" ), new File( bdvFile ) );
+		final String bdvFile = "samples/datasethdf5.xml";
+		final MamutProject project = new MamutProject( null, new File( bdvFile ) );
 //		final MamutProject project = new MamutProjectIO().load( "/Volumes/External/Data/Mastodon/Tassos200" );
 //		final MamutProject project = new MamutProject( null, new File( "x=1000 y=1000 z=100 sx=1 sy=1 sz=10 t=400.dummy" ) );
-		final MamutProject project = new MamutProjectIO().load( "samples/drosophila_crop.mastodon" );
+//		final MamutProject project = new MamutProjectIO().load( "samples/drosophila_crop.mastodon" );
 
 		windowManager.projectManager.open( project );
 //		mw.proposedProjectFile = new File( "/Users/pietzsch/Desktop/data/TGMM_METTE/project2.xml" );

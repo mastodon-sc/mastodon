@@ -36,6 +36,12 @@ public class ContextChooser< V >
 			}
 
 			@Override
+			public boolean add( final int index, final ContextListener< V > listener )
+			{
+				return add( listener );
+			}
+
+			@Override
 			public boolean remove( final ContextListener< V > listener )
 			{
 				return true;

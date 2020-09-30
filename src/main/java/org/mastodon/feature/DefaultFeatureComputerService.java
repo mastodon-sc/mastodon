@@ -175,7 +175,7 @@ public class DefaultFeatureComputerService extends AbstractService implements Fe
 		final Vertex vertex = dependencies.get( spec );
 		if (null == vertex)
 			return Collections.emptyList();
-		
+
 		final List<FeatureSpec< ?, ? >> deps = new ArrayList<>();
 		for ( final Edge edge : vertex.outgoingEdges() )
 		{
@@ -187,7 +187,7 @@ public class DefaultFeatureComputerService extends AbstractService implements Fe
 	}
 
 	@Override
-	public Map< FeatureSpec< ?, ? >, Feature< ? > > compute( final Collection< FeatureSpec< ?, ? > > featureKeys )
+	public Map< FeatureSpec< ?, ? >, Feature< ? > > compute( final boolean forceComputeAll, final Collection< FeatureSpec< ?, ? > > featureKeys )
 	{
 		cancelReason = null;
 		final List< FeatureSpec< ?, ? > > specs = new ArrayList<>();
@@ -301,7 +301,7 @@ public class DefaultFeatureComputerService extends AbstractService implements Fe
 	/**
 	 * {@code FeatureComputationStatusListener}s added here will be notified
 	 * about progress of computation.
-	 * 
+	 *
 	 * @return the listeners.
 	 */
 	public Listeners< FeatureComputationStatusListener > computationStatusListeners()

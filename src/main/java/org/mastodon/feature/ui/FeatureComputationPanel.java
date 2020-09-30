@@ -18,7 +18,7 @@ import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
-import javax.swing.JComponent;
+import javax.swing.JCheckBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
@@ -45,6 +45,8 @@ public class FeatureComputationPanel extends JPanel
 
 	final JPanel panelConfig;
 
+	final JCheckBox chckbxForce;
+
 	public FeatureComputationPanel(
 			final FeatureComputationModel model,
 			final Collection< Class< ? > > targets )
@@ -56,7 +58,7 @@ public class FeatureComputationPanel extends JPanel
 
 		final GridBagLayout gbl_panelComputation = new GridBagLayout();
 		gbl_panelComputation.columnWeights = new double[] { 0.0, 1.0 };
-		gbl_panelComputation.rowWeights = new double[] { 1.0, 0.0, 0.0 };
+		gbl_panelComputation.rowWeights = new double[] { 1.0 };
 		panelComputation.setLayout( gbl_panelComputation );
 
 		final JPanel panelButton = new JPanel();
@@ -69,8 +71,8 @@ public class FeatureComputationPanel extends JPanel
 		panelComputation.add(panelButton, gbc_panelButton);
 		panelButton.setLayout( new BoxLayout( panelButton, BoxLayout.X_AXIS ) );
 
-		final Component horizontalStrut = Box.createHorizontalStrut( 20 );
-		panelButton.add( horizontalStrut );
+		final Component horizontalStrut0 = Box.createHorizontalStrut( 20 );
+		panelButton.add( horizontalStrut0 );
 
 		btnCompute = new JButton( "Compute", GO_ICON );
 		panelButton.add( btnCompute );
@@ -79,15 +81,19 @@ public class FeatureComputationPanel extends JPanel
 		btnCancel.setVisible( false );
 		panelButton.add( btnCancel );
 
-		final Component horizontalStrut_1 = Box.createHorizontalStrut( 20 );
-		panelButton.add( horizontalStrut_1 );
+		final Component horizontalStrut1 = Box.createHorizontalStrut( 20 );
+		panelButton.add( horizontalStrut1 );
 
 		progressBar = new JProgressBar();
 		progressBar.setStringPainted( true );
 		panelButton.add( progressBar );
 
-		final Component horizontalStrut_2 = Box.createHorizontalStrut( 5 );
-		panelButton.add( horizontalStrut_2 );
+		final Component horizontalStrut2 = Box.createHorizontalStrut( 5 );
+		panelButton.add( horizontalStrut2 );
+
+		chckbxForce = new JCheckBox( "Force compute all" );
+		chckbxForce.setFont( new Font( "Lucida Grande", Font.PLAIN, 11 ) );
+		panelButton.add( chckbxForce );
 
 		final JPanel panelTitle = new JPanel( new FlowLayout( FlowLayout.LEADING ) );
 		add( panelTitle, BorderLayout.NORTH );
@@ -237,11 +243,6 @@ public class FeatureComputationPanel extends JPanel
 			infoPanel.add( depsLabel, c );
 		}
 		panelConfig.add( infoPanel, BorderLayout.NORTH );
-
-		final JComponent configPanel = null; // TODO
-		if ( null != configPanel )
-			panelConfig.add( configPanel, BorderLayout.CENTER );
-
 		panelConfig.revalidate();
 		panelConfig.repaint();
 	}

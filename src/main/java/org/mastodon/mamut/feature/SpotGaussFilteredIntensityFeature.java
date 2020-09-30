@@ -93,4 +93,15 @@ public class SpotGaussFilteredIntensityFeature implements Feature< Spot >
 	{
 		return SPEC;
 	}
+
+	@Override
+	public void remove( final Spot spot )
+	{
+		for ( final DoublePropertyMap< Spot > map : means )
+			map.remove( spot );
+
+		for ( final DoublePropertyMap< Spot > map : stds )
+			map.remove( spot );
+
+	}
 }

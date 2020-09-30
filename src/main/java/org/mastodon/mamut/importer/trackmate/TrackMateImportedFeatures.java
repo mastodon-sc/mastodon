@@ -57,4 +57,14 @@ public abstract class TrackMateImportedFeatures< O > implements Feature< O >
 	{
 		return new LinkedHashSet<>( projectionMap.values() );
 	}
+
+	@Override
+	public void remove( final O obj )
+	{
+		for ( final DoublePropertyMap< O > map : doublePropertyMapMap.values() )
+			map.remove( obj );
+
+		for ( final IntPropertyMap< O > map : intPropertyMapMap.values() )
+			map.remove( obj );
+	}
 }

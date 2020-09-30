@@ -105,9 +105,9 @@ public class MamutFeatureComputation
 		}
 
 		@Override
-		public Map< FeatureSpec< ?, ? >, Feature< ? > > compute( final Collection< FeatureSpec< ?, ? > > featureKeys )
+		public Map< FeatureSpec< ?, ? >, Feature< ? > > compute( final boolean forceComputeAll, final Collection< FeatureSpec< ?, ? > > featureKeys )
 		{
-			final Map< FeatureSpec< ?, ? >, Feature< ? > > map = wrapped.compute( featureKeys );
+			final Map< FeatureSpec< ?, ? >, Feature< ? > > map = wrapped.compute( forceComputeAll, featureKeys );
 			if ( wrapped.isCanceled() )
 				return null;
 

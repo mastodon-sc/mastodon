@@ -51,6 +51,10 @@ public class FeatureDiscoveryExample
 		{
 			return SPEC;
 		}
+
+		@Override
+		public void remove( final ExampleSpot obj )
+		{}
 	}
 
 	public static class F2 implements Feature< ExampleSpot >
@@ -88,6 +92,10 @@ public class FeatureDiscoveryExample
 		{
 			return SPEC;
 		}
+
+		@Override
+		public void remove( final ExampleSpot obj )
+		{}
 	}
 
 	public static class F3 implements Feature< ExampleSpot >
@@ -125,6 +133,10 @@ public class FeatureDiscoveryExample
 		{
 			return SPEC;
 		}
+
+		@Override
+		public void remove( final ExampleSpot obj )
+		{}
 	}
 
 	public static class F4 implements Feature< ExampleSpot >
@@ -162,6 +174,10 @@ public class FeatureDiscoveryExample
 		{
 			return SPEC;
 		}
+
+		@Override
+		public void remove( final ExampleSpot obj )
+		{}
 	}
 
 	@Plugin( type = FeatureComputer.class )
