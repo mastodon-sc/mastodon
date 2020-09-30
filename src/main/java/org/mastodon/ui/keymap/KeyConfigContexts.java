@@ -3,9 +3,7 @@ package org.mastodon.ui.keymap;
 /**
  * Constants that specify to what context an action or a behaviour applies.
  */
-// TODO make this an interface
-// TODO move to somewhere in mamut package
-public final class KeyConfigContexts
+public interface KeyConfigContexts
 {
 
 	/**
@@ -23,6 +21,4 @@ public final class KeyConfigContexts
 	 */
 	public static final String BIGDATAVIEWER = "bdv";
 
-	private KeyConfigContexts()
-	{}
 }
