@@ -46,9 +46,9 @@ public class GraphFeatureUpdateListeners
 		@Override
 		public void propertyChanged( final V v )
 		{
-			featuresOfTarget( featureModel, vertexClass ).forEach( f -> f.remove( v ) );
+			featuresOfTarget( featureModel, vertexClass ).forEach( f -> f.invalidate( v ) );
 			for ( final Feature< E > f : featuresOfTarget( featureModel, edgeClass ) )
-				v.edges().forEach( e -> f.remove( e ) );
+				v.edges().forEach( e -> f.invalidate( e ) );
 		}
 	}
 

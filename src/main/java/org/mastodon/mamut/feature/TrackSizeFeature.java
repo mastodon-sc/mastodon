@@ -73,7 +73,7 @@ public class TrackSizeFeature implements Feature< Spot >
 	}
 
 	@Override
-	public void remove( final Spot spot )
+	public void invalidate( final Spot spot )
 	{
 		map.remove( spot );
 	}

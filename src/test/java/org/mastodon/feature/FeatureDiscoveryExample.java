@@ -53,7 +53,7 @@ public class FeatureDiscoveryExample
 		}
 
 		@Override
-		public void remove( final ExampleSpot obj )
+		public void invalidate( final ExampleSpot obj )
 		{}
 	}
 
@@ -94,7 +94,7 @@ public class FeatureDiscoveryExample
 		}
 
 		@Override
-		public void remove( final ExampleSpot obj )
+		public void invalidate( final ExampleSpot obj )
 		{}
 	}
 
@@ -135,7 +135,7 @@ public class FeatureDiscoveryExample
 		}
 
 		@Override
-		public void remove( final ExampleSpot obj )
+		public void invalidate( final ExampleSpot obj )
 		{}
 	}
 
@@ -176,7 +176,7 @@ public class FeatureDiscoveryExample
 		}
 
 		@Override
-		public void remove( final ExampleSpot obj )
+		public void invalidate( final ExampleSpot obj )
 		{}
 	}
 

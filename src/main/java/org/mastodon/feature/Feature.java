@@ -40,7 +40,7 @@ public interface Feature< T >
 	public FeatureSpec< ? extends Feature<T>, T > getSpec();
 
 	/**
-	 * Removes the specified object from this feature storage.
+	 * Invalidates the value of this feature for the specified object.
 	 * <p>
 	 * This method is used to invalidate a feature value when an object has been
 	 * modified under it.
@@ -48,6 +48,5 @@ public interface Feature< T >
 	 * @param obj
 	 *            the object to remove.
 	 */
-	// TODO: Would invalidate() be a better name for this method?
-	public void remove( T obj );
+	public void invalidate( T obj );
 }
