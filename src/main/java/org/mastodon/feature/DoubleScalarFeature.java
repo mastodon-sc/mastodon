@@ -92,7 +92,7 @@ public abstract class DoubleScalarFeature< O > implements Feature< O >
 	}
 
 	@Override
-	public void remove( final O o )
+	public void invalidate( final O o )
 	{
 		values.remove( o );
 	}

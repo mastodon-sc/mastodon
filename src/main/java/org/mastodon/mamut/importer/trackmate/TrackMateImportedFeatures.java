@@ -59,7 +59,7 @@ public abstract class TrackMateImportedFeatures< O > implements Feature< O >
 	}
 
 	@Override
-	public void remove( final O obj )
+	public void invalidate( final O obj )
 	{
 		for ( final DoublePropertyMap< O > map : doublePropertyMapMap.values() )
 			map.remove( obj );

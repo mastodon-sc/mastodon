@@ -67,7 +67,7 @@ public class SpotFrameFeature implements Feature< Spot >
 	}
 
 	@Override
-	public void remove( final Spot spot )
+	public void invalidate( final Spot spot )
 	{}
 
 	private static final class MyProjection implements IntFeatureProjection< Spot >

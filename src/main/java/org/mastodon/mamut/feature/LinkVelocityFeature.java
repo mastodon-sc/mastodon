@@ -73,7 +73,7 @@ public class LinkVelocityFeature implements Feature< Link >
 	}
 
 	@Override
-	public void remove( final Link link )
+	public void invalidate( final Link link )
 	{
 		map.remove( link );
 	}
