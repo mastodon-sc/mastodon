@@ -29,6 +29,7 @@ public class MamutMenuBuilder extends ViewMenuBuilder
 		menuTexts.put( ProjectManager.EXPORT_MAMUT, "Export MaMuT project" );
 
 		menuTexts.put( WindowManager.NEW_BDV_VIEW, "New Bdv" );
+		menuTexts.put( WindowManager.NEW_BVV_VIEW, "New Bvv" );
 		menuTexts.put( WindowManager.NEW_TRACKSCHEME_VIEW, "New Trackscheme" );
 		menuTexts.put( WindowManager.PREFERENCES_DIALOG, "Preferences..." );
 

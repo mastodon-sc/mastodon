@@ -48,12 +48,14 @@ import bdv.util.InvokeOnEDT;
 public class WindowManager
 {
 	public static final String NEW_BDV_VIEW = "new bdv view";
+	public static final String NEW_BVV_VIEW = "new bvv view";
 	public static final String NEW_TRACKSCHEME_VIEW = "new trackscheme view";
 	public static final String PREFERENCES_DIALOG = "Preferences";
 	public static final String TAGSETS_DIALOG = "edit tag sets";
 	public static final String COMPUTE_FEATURE_DIALOG = "compute features";
 
 	static final String[] NEW_BDV_VIEW_KEYS = new String[] { "not mapped" };
+	static final String[] NEW_BVV_VIEW_KEYS = new String[] { "not mapped" };
 	static final String[] NEW_TRACKSCHEME_VIEW_KEYS = new String[] { "not mapped" };
 	static final String[] PREFERENCES_DIALOG_KEYS = new String[] { "meta COMMA", "ctrl COMMA" };
 	static final String[] TAGSETS_DIALOG_KEYS = new String[] { "not mapped" };
@@ -88,6 +90,11 @@ public class WindowManager
 	 * All currently open BigDataViewer windows.
 	 */
 	private final List< MamutViewBdv > bdvWindows = new ArrayList<>();
+
+	/**
+	 * All currently open BigVolumeViewer windows.
+	 */
+	private final List< MamutViewBvv > bvvWindows = new ArrayList<>();
 
 	/**
 	 * The {@link ContextProvider}s of all currently open BigDataViewer windows.
@@ -265,6 +272,19 @@ public class WindowManager
 		bdvWindows.forEach( action );
 	}
 
+	private synchronized void addBvvWindow( final MamutViewBvv w )
+	{
+		bvvWindows.add( w );
+		w.onClose( () -> {
+			bvvWindows.remove( w );
+		} );
+	}
+
+	public void forEachBvvView( final Consumer< ? super MamutViewBvv > action )
+	{
+		bvvWindows.forEach( action );
+	}
+
 	private synchronized void addTsWindow( final MamutViewTrackScheme w )
 	{
 		tsWindows.add( w );
@@ -283,6 +303,7 @@ public class WindowManager
 	public void forEachView( final Consumer< ? super MamutView< ?, ?, ? > > action )
 	{
 		forEachBdvView( action );
+		forEachBvvView( action );
 		forEachTrackSchemeView( action );
 	}
 
@@ -292,6 +313,17 @@ public class WindowManager
 		{
 			final MamutViewBdv view = new MamutViewBdv( appModel );
 			addBdvWindow( view );
+			return view;
+		}
+		return null;
+	}
+
+	public MamutViewBvv createBigVolumeViewer()
+	{
+		if ( appModel != null )
+		{
+			final MamutViewBcv view = new MamutViewBcv( appModel );
+			addBcvWindow( view );
 			return view;
 		}
 		return null;
