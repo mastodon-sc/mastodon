@@ -90,7 +90,6 @@ public class InstancedEllipsoid
 			gl.glBindBuffer( GL_ARRAY_BUFFER, vboColor );
 			final int size = data.limit();
 			gl.glBufferData( GL_ARRAY_BUFFER, size * Float.BYTES, data, GL_DYNAMIC_DRAW );
-			instanceCount = size / 3;
 			gl.glBindBuffer( GL_ARRAY_BUFFER, 0 );
 		}
 
@@ -106,7 +105,7 @@ public class InstancedEllipsoid
 			this.modCount = modCount;
 		}
 
-		private int modCount = 0;
+		private int modCount = -1;
 
 		private int instanceCount;
 		private int vboShape;

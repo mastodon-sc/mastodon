@@ -122,6 +122,8 @@ public class WindowManager
 
 	private final AbstractNamedAction newBdvViewAction;
 
+	private final AbstractNamedAction newBvvViewAction;
+
 	private final AbstractNamedAction newTrackSchemeViewAction;
 
 	private final AbstractNamedAction editTagSetsAction;
@@ -172,11 +174,13 @@ public class WindowManager
 		projectManager.install( globalAppActions );
 
 		newBdvViewAction = new RunnableAction( NEW_BDV_VIEW, this::createBigDataViewer );
+		newBvvViewAction = new RunnableAction( NEW_BVV_VIEW, this::createBigVolumeViewer );
 		newTrackSchemeViewAction = new RunnableAction( NEW_TRACKSCHEME_VIEW, this::createTrackScheme );
 		editTagSetsAction = new RunnableAction( TAGSETS_DIALOG, this::editTagSets );
 		featureComputationAction = new RunnableAction( COMPUTE_FEATURE_DIALOG, this::computeFeatures );
 
 		globalAppActions.namedAction( newBdvViewAction, NEW_BDV_VIEW_KEYS );
+		globalAppActions.namedAction( newBvvViewAction, NEW_BVV_VIEW_KEYS );
 		globalAppActions.namedAction( newTrackSchemeViewAction, NEW_TRACKSCHEME_VIEW_KEYS );
 		globalAppActions.namedAction( editTagSetsAction, TAGSETS_DIALOG_KEYS );
 		globalAppActions.namedAction( featureComputationAction, COMPUTE_FEATURE_DIALOG_KEYS );
@@ -218,6 +222,7 @@ public class WindowManager
 	private void updateEnabledActions()
 	{
 		newBdvViewAction.setEnabled( appModel != null );
+		newBvvViewAction.setEnabled( appModel != null );
 		newTrackSchemeViewAction.setEnabled( appModel != null );
 		editTagSetsAction.setEnabled( appModel != null );
 		featureComputationAction.setEnabled( appModel != null );
@@ -322,8 +327,8 @@ public class WindowManager
 	{
 		if ( appModel != null )
 		{
-			final MamutViewBcv view = new MamutViewBcv( appModel );
-			addBcvWindow( view );
+			final MamutViewBvv view = new MamutViewBvv( appModel );
+			addBvvWindow( view );
 			return view;
 		}
 		return null;

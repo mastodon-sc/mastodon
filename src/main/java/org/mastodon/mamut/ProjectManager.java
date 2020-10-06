@@ -343,7 +343,10 @@ public class ProjectManager
 				spimDataXmlFilename,
 				spimData,
 				options,
-				() -> windowManager.forEachBdvView( MamutViewBdv::requestRepaint ) );
+				() -> {
+					windowManager.forEachBdvView( MamutViewBdv::requestRepaint );
+//					windowManager.forEachBvvView( MamutViewBvv::requestRepaint );
+				} );
 
 		final MamutAppModel appModel = new MamutAppModel(
 				model,

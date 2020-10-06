@@ -72,7 +72,7 @@ class ReusableInstanceArrays< A extends HasModCount >
 		timepointToArray.put( timepoint, array );
 		array.lru = lrutimestamp++;
 		array.timepoint = timepoint;
-		array.instanceArray.setModCount( 0 );
+		array.instanceArray.setModCount( -1 );
 		return array.instanceArray;
 	}
 }
