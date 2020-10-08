@@ -8,7 +8,6 @@ import org.mastodon.model.HighlightModel;
 import org.mastodon.model.SelectionModel;
 import org.mastodon.views.bvv.scene.InstancedEllipsoid;
 import tpietzsch.offscreen.OffScreenFrameBufferWithDepth;
-import tpietzsch.scene.TexturedUnitCube;
 import tpietzsch.util.MatrixMath;
 
 import static com.jogamp.opengl.GL.GL_COLOR_BUFFER_BIT;
@@ -32,8 +31,6 @@ public class BvvRenderer< V extends BvvVertex< V, E >, E extends BvvEdge< E, V >
 	private final double dClip = 1000;
 	private double screenWidth = 640;
 	private double screenHeight = 480;
-
-	private final TexturedUnitCube cube = new TexturedUnitCube( "imglib2.png" );
 
 	private final InstancedEllipsoid instancedEllipsoid;
 
@@ -84,8 +81,6 @@ public class BvvRenderer< V extends BvvVertex< V, E >, E extends BvvEdge< E, V >
 		gl.glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
 
 		gl.glEnable( GL_DEPTH_TEST );
-		cube.draw( gl, new Matrix4f( pv ).translate( 200, 200, 50 ).scale( 100 ) );
-
 		final InstancedEllipsoid.InstanceArray instanceArray = reusableInstanceArrays.getForTimepoint( timepoint );
 		final EllipsoidInstances< V, E > instances = graph.getEllipsoids().forTimepoint( timepoint );
 		final int modCount = instances.getModCount();
