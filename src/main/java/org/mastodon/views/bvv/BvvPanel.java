@@ -109,7 +109,15 @@ public class BvvPanel
 
 		transformHandler = new TransformHandler();
 		transformHandler.setCanvasSize( canvas.getWidth(), canvas.getHeight(), false );
-		transformHandler.setTransform( new AffineTransform3D() );
+
+					// TODO: FIX THIS HACK.
+					//  This is just setting some transform that works ok for my default testing dataset
+					//  Instead, initialize to a good initial view either based on the image data, or
+					//  by looking at the transform of the last active BDV window
+					final AffineTransform3D initialTransform = new AffineTransform3D();
+					initialTransform.scale( 4 );
+
+		transformHandler.setTransform( initialTransform );
 		transformHandler.listeners().add( this::transformChanged );
 
 		timePointListeners = new CopyOnWriteArrayList<>();
