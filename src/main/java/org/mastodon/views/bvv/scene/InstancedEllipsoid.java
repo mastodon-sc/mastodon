@@ -20,6 +20,15 @@ import static com.jogamp.opengl.GL.GL_STATIC_DRAW;
 import static com.jogamp.opengl.GL.GL_TRIANGLES;
 import static com.jogamp.opengl.GL.GL_UNSIGNED_INT;
 
+/**
+ * Draw instanced ellipsoids.
+ * <p>
+ * {@ode InstancedEllipsoid} sets up vertex buffer and element buffer objects to to draw a tesselated unit sphere.
+ * Then {@link #draw} is called with an {@code InstanceArray} to draw a set of ellipsoids as instances of the transformed unit sphere.
+ * <p>
+ * {@code InstanceArray}s can be created using {@link #createInstanceArray()} and filled with data using {@code updateShapes()} and {@code updateColors()}.
+ * {@code InstanceArray} has a modCount field that is used (externally) to keep track of whether the ellipsoid data is up to date.
+ */
 public class InstancedEllipsoid
 {
 	private final int subdivisions;
