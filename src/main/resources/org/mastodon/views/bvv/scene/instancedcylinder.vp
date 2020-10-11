@@ -1,0 +1,21 @@
+layout (location = 0) in vec3 aPos;
+
+out vec3 Normal;
+out vec3 FragPos;
+out vec3 ObjectColor;
+
+uniform mat4 pvm;
+uniform mat4 vm;
+uniform mat3 itvm;
+
+const vec3 highlightColor = vec3( 1, 0.5, 0.5 );
+
+void main()
+{
+	vec4 pos = vec4( vec3( 50, 50, 200 ) * aPos + vec3( 100,100,-100 ), 1.0 );
+	gl_Position = pvm * pos;
+	vec3 aNorm = vec3( aPos.xy, 0.0 );
+	Normal = normalize( itvm * aNorm );
+	FragPos = vec3( vm * pos );
+	ObjectColor = highlightColor;
+}

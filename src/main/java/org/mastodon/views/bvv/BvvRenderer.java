@@ -1,11 +1,13 @@
 package org.mastodon.views.bvv;
 
+import com.jogamp.opengl.GL;
 import com.jogamp.opengl.GL3;
 import net.imglib2.realtransform.AffineTransform3D;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 import org.mastodon.model.HighlightModel;
 import org.mastodon.model.SelectionModel;
+import org.mastodon.views.bvv.scene.InstancedCylinder;
 import org.mastodon.views.bvv.scene.InstancedEllipsoid;
 import tpietzsch.offscreen.OffScreenFrameBufferWithDepth;
 import tpietzsch.util.MatrixMath;
@@ -33,6 +35,7 @@ public class BvvRenderer< V extends BvvVertex< V, E >, E extends BvvEdge< E, V >
 	private double screenHeight = 480;
 
 	private final InstancedEllipsoid instancedEllipsoid;
+	private final InstancedCylinder instancedCylinder;
 
 	private final ReusableInstanceArrays< InstancedEllipsoid.InstanceArray > reusableInstanceArrays;
 
@@ -48,6 +51,7 @@ public class BvvRenderer< V extends BvvVertex< V, E >, E extends BvvEdge< E, V >
 		this.highlight = highlight;
 		sceneBuf = new OffScreenFrameBufferWithDepth( renderWidth, renderHeight, GL_RGB8 );
 		instancedEllipsoid = new InstancedEllipsoid( 3 );
+		instancedCylinder = new InstancedCylinder( 36 );
 
 		final int numInstanceArrays = 10;
 		reusableInstanceArrays = new ReusableInstanceArrays<>(
@@ -81,6 +85,9 @@ public class BvvRenderer< V extends BvvVertex< V, E >, E extends BvvEdge< E, V >
 		gl.glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
 
 		gl.glEnable( GL_DEPTH_TEST );
+		gl.glEnable( GL.GL_CULL_FACE );
+		gl.glCullFace( GL.GL_BACK );
+		gl.glFrontFace( GL.GL_CCW );
 		final InstancedEllipsoid.InstanceArray instanceArray = reusableInstanceArrays.getForTimepoint( timepoint );
 		final EllipsoidInstances< V, E > instances = graph.getEllipsoids().forTimepoint( timepoint );
 		final int modCount = instances.getModCount();
@@ -110,6 +117,8 @@ public class BvvRenderer< V extends BvvVertex< V, E >, E extends BvvEdge< E, V >
 		final int highlightId = instances.indexOf( vertex );
 		graph.releaseRef( vref );
 		instancedEllipsoid.draw( gl, pv, camview, instanceArray, highlightId );
+
+		instancedCylinder.draw( gl, pv, camview );
 
 		sceneBuf.unbind( gl, false );
 		gl.glDisable( GL_DEPTH_TEST );
