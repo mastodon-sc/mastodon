@@ -35,7 +35,7 @@ public class EllipsoidInstance extends PoolObject< EllipsoidInstance, EllipsoidI
 	private final float[] edata = new float[ 9 ];
 	private final float[] invedata = new float[ 9 ];
 
-	EllipsoidInstance( final EllipsoidInstances pool )
+	EllipsoidInstance( final EllipsoidInstances< ?, ? > pool )
 	{
 		super( pool );
 		e = pool.mat3fE.createQuietAttributeValue( this );

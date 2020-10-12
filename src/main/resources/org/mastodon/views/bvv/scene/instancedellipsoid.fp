@@ -18,16 +18,15 @@ const float specularStrength = 1.0;
 
 void main()
 {
-	vec3 norm = normalize( Normal );
-
-	float diff1 = max( dot( norm, lightDir1 ), 0.0 );
-	float diff2 = max( dot( norm, lightDir2 ), 0.0 );
+	float diff1 = max( dot( Normal, lightDir1 ), 0.0 );
+	float diff2 = max( dot( Normal, lightDir2 ), 0.0 );
 	vec3 diffuse = diff1 * lightColor1 + diff2 * lightColor2;
 
 	vec3 viewDir = normalize( -FragPos );
-	vec3 reflectDir = reflect( -lightDir2, norm );
+	vec3 reflectDir = reflect( -lightDir2, Normal );
 	float spec = pow( max( dot( viewDir, reflectDir ), 0.0 ), 32 );
 	vec3 specular = specularStrength * spec * lightColor2;
 
     fragColor = vec4( ( ambient + diffuse + specular ) * ObjectColor, 1 );
+//	fragColor = vec4( -Normal, 1 );
 }
