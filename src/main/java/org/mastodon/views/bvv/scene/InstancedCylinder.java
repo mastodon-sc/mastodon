@@ -45,7 +45,7 @@ public class InstancedCylinder
 	{
 		this.subdivisions = subdivisions;
 		final Segment ex1vp = new SegmentTemplate( InstancedCylinder.class, "instancedcylinder.vp" ).instantiate();
-		final Segment ex1fp = new SegmentTemplate( InstancedCylinder.class, "instancedcylinder.fp" ).instantiate();
+		final Segment ex1fp = new SegmentTemplate( InstancedCylinder.class, "instancedellipsoid.fp" ).instantiate();
 		prog = new DefaultShader( ex1vp.getCode(), ex1fp.getCode() );
 	}
 
