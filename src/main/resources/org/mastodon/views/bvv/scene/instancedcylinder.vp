@@ -16,9 +16,17 @@ const vec3 highlightColor = vec3( 1, 1, 1 );
 
 void main()
 {
-	vec4 pos = vec4( e * aPos + t, 1.0 );
+	// TODO: pass as uniforms
+	float r0 = 2;
+	float r1 = 3;
+	// ======================
+
+	float r = r0 - r1;
+	float s = r0 - aPos.z * r;
+	vec3 fPos = vec3( s * aPos.xy, aPos.z );
+	vec4 pos = vec4( e * fPos + t, 1.0 );
 	gl_Position = pvm * pos;
-	vec3 n = vec3( aPos.xy, 0.0 );
+	vec3 n = vec3( aPos.xy, r );
 	Normal = normalize( itvm * ite * n );
 	FragPos = vec3( vm * pos );
 	ObjectColor = highlightColor;

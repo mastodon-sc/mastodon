@@ -76,8 +76,8 @@ public class Mastodon extends ContextCommand
 //		mw.createProject();
 //		mw.loadProject();
 		SwingUtilities.invokeAndWait( () -> {
-			windowManager.createBigDataViewer();
-			windowManager.createTrackScheme();
+//			windowManager.createBigDataViewer();
+//			windowManager.createTrackScheme();
 			windowManager.createBigVolumeViewer();
 //			YamlConfigIO.write( new InputTriggerDescriptionsBuilder( keyconf ).getDescriptions(), new PrintWriter( System.out ) );
 		} );

@@ -88,8 +88,8 @@ public class CylinderInstance extends PoolObject< CylinderInstance, CylinderInst
 		final Vector3f m = l.cross( k, new Vector3f() );
 
 		final Matrix3f E = new Matrix3f( l, m, k );
-		final Matrix3f Einv = E.scale( 1f / 20f, 1f / 20f, 1 / length, new Matrix3f() );
-		E.scale( 20, 20, length );
+		final Matrix3f Einv = E.scale( 1, 1, 1 / length, new Matrix3f() );
+		E.scale( 1, 1, length );
 
 		e.set( E );
 		inve.set( Einv );
