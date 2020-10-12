@@ -85,7 +85,7 @@ public class BvvRenderer< V extends BvvVertex< V, E >, E extends BvvEdge< E, V >
 		gl.glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
 
 		gl.glEnable( GL_DEPTH_TEST );
-		gl.glEnable( GL.GL_CULL_FACE );
+		gl.glDisable( GL.GL_CULL_FACE );
 		gl.glCullFace( GL.GL_BACK );
 		gl.glFrontFace( GL.GL_CCW );
 		final InstancedEllipsoid.InstanceArray instanceArray = reusableInstanceArrays.getForTimepoint( timepoint );
@@ -118,12 +118,21 @@ public class BvvRenderer< V extends BvvVertex< V, E >, E extends BvvEdge< E, V >
 		graph.releaseRef( vref );
 		instancedEllipsoid.draw( gl, pv, camview, instanceArray, highlightId );
 
-		instancedCylinder.draw( gl, pv, camview );
+		if ( cylInstanceArray == null )
+		{
+			cylInstanceArray = instancedCylinder.createInstanceArray();
+			CylinderInstances cylinders = new CylinderInstances();
+			cylinders.addInstanceFor( new Vector3f( 0, 0, 0 ), new Vector3f( 0, 100, 0 ) );
+			cylInstanceArray.updateShapes( gl, cylinders.buffer().asFloatBuffer() );
+		}
+		instancedCylinder.draw( gl, pv, camview, cylInstanceArray );
 
 		sceneBuf.unbind( gl, false );
 		gl.glDisable( GL_DEPTH_TEST );
 		sceneBuf.drawQuad( gl );
 	}
+
+	private InstancedCylinder.InstanceArray cylInstanceArray;
 
 	private int colorModCount = 1;
 
