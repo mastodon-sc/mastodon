@@ -1,5 +1,8 @@
 package org.mastodon.views.bvv.scene;
 
+/**
+ * Helper class to create vertices and triangles for a tesselated unit cylinder.
+ */
 class UnitCylinder
 {
 	private final float[] vertices;

@@ -4,6 +4,12 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 
+/**
+ * Helper class to create vertices and triangles for a tesselated unit sphere.
+ * <p>
+ * Code is adapted from C version by Jonathan Leech (?) that can be found all over the internet.
+ * <a href="http://archive.gamedev.net/archive/reference/articles/article427.html">http://archive.gamedev.net/archive/reference/articles/article427.html</a>
+ */
 class UnitSphere
 {
 	private final int numElements;
