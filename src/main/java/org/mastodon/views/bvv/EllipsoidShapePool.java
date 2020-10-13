@@ -2,6 +2,7 @@ package org.mastodon.views.bvv;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import java.util.concurrent.atomic.AtomicBoolean;
 import org.mastodon.pool.BufferMappedElement;
 import org.mastodon.pool.BufferMappedElementArray;
 import org.mastodon.pool.Pool;
@@ -15,6 +16,8 @@ public class EllipsoidShapePool extends Pool< EllipsoidShape, BufferMappedElemen
 	final Matrix3fAttribute< EllipsoidShape > mat3fInvE = new Matrix3fAttribute<>( EllipsoidShape.layout.mat3fInvE, this );
 	final Vector3fAttribute< EllipsoidShape > vec3fT = new Vector3fAttribute<>( EllipsoidShape.layout.vec3fT, this );
 
+	private final AtomicBoolean modified = new AtomicBoolean( true );
+
 	public EllipsoidShapePool()
 	{
 		this( 100 );
@@ -24,6 +27,25 @@ public class EllipsoidShapePool extends Pool< EllipsoidShape, BufferMappedElemen
 	{
 		super( initialCapacity, EllipsoidShape.layout, EllipsoidShape.class,
 				SingleArrayMemPool.factory( BufferMappedElementArray.factory ) );
+
+		mat3fE.addPropertyChangeListener( o -> setModified() );
+		mat3fInvE.addPropertyChangeListener( o -> setModified() );
+		vec3fT.addPropertyChangeListener( o -> setModified() );
+	}
+
+	private void setModified()
+	{
+		modified.set( true );
+	}
+
+	/**
+	 * Get the {@code ByteBuffer} slice with the TODO
+	 * NB: resets modified flag.
+	 * @return
+	 */
+	private ByteBuffer getBufferIfModified()
+	{
+		return modified.getAndSet( false ) ? buffer() : null;
 	}
 
 	/**
@@ -51,12 +73,14 @@ public class EllipsoidShapePool extends Pool< EllipsoidShape, BufferMappedElemen
 	@Override
 	protected EllipsoidShape create( final EllipsoidShape obj )
 	{
+		setModified();
 		return super.create( obj );
 	}
 
 	@Override
 	protected void delete( final EllipsoidShape obj )
 	{
+		setModified();
 		super.delete( obj );
 	}
 }

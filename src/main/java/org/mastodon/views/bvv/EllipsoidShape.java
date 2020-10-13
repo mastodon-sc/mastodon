@@ -31,9 +31,9 @@ public class EllipsoidShape extends PoolObject< EllipsoidShape, EllipsoidShapePo
 	EllipsoidShape( final EllipsoidShapePool pool )
 	{
 		super( pool );
-		e = pool.mat3fE.createQuietAttributeValue( this );
-		inve = pool.mat3fInvE.createQuietAttributeValue( this );
-		t = pool.vec3fT.createQuietAttributeValue( this );
+		e = pool.mat3fE.createAttributeValue( this );
+		inve = pool.mat3fInvE.createAttributeValue( this );
+		t = pool.vec3fT.createAttributeValue( this );
 	}
 
 	public EllipsoidShape init()

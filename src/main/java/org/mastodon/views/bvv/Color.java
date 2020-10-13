@@ -20,7 +20,7 @@ class Color extends PoolObject< Color, ColorPool, BufferMappedElement >
 	Color( final ColorPool pool )
 	{
 		super( pool );
-		color = pool.vec3fColor.createQuietAttributeValue( this );
+		color = pool.vec3fColor.createAttributeValue( this );
 	}
 
 	public void set( Color other )

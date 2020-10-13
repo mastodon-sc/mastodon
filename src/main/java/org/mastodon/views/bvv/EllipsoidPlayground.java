@@ -155,7 +155,6 @@ public class EllipsoidPlayground
 		// TODO interface method
 		public void delete( final Ellipsoid obj )
 		{
-			// TODO: modCount++
 			shapes.delete( obj.shape );
 			colors.delete( obj.color );
 		}
@@ -163,7 +162,6 @@ public class EllipsoidPlayground
 		// TODO interface method
 		public Ellipsoid create( final Ellipsoid ref )
 		{
-			// TODO: modCount++
 			shapes.create( ref.shape );
 			colors.create( ref.color );
 			return ref;
