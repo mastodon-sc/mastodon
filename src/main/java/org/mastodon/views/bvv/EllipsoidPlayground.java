@@ -33,9 +33,9 @@ public class EllipsoidPlayground
 		private final IntRefMap< Ellipsoid > keyToEllipsoid;
 		private final RefIntMap< Ellipsoid > ellipsoidToKey;
 
-		public Ellipsoids( final int initialCapacity )
+		public Ellipsoids( final EllipsoidPool pool, final int initialCapacity )
 		{
-			pool = new EllipsoidPool( initialCapacity );
+			this.pool = pool;
 			keyToEllipsoid = new IntRefHashMap<>( pool, NO_ENTRY_KEY, initialCapacity );
 			ellipsoidToKey = new RefIntHashMap<>( pool, NO_ENTRY_VALUE, initialCapacity );
 		}
