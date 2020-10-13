@@ -13,9 +13,9 @@ public class EllipsoidPlayground
 {
 
 	// TODO extract CompactingPool (to be reused for Cylinders)
-	public static class Ellipsoids
+	public static class CompactingPool< O extends ModifiableRef< O > >
 	{
-		private final EllipsoidPool pool;
+		private final ModifiableRefPool< O > pool;
 
 		/**
 		 * Int value used to declare that the requested key is not in the map.
@@ -30,34 +30,34 @@ public class EllipsoidPlayground
 		private static final int NO_ENTRY_VALUE = -2;
 
 		// TODO: extract RefIntBimap (?)
-		private final IntRefMap< Ellipsoid > keyToEllipsoid;
-		private final RefIntMap< Ellipsoid > ellipsoidToKey;
+		private final IntRefMap< O > keyToObj;
+		private final RefIntMap< O > objToKey;
 
-		public Ellipsoids( final EllipsoidPool pool, final int initialCapacity )
+		public CompactingPool( final ModifiableRefPool< O > pool, final int initialCapacity )
 		{
 			this.pool = pool;
-			keyToEllipsoid = new IntRefHashMap<>( pool, NO_ENTRY_KEY, initialCapacity );
-			ellipsoidToKey = new RefIntHashMap<>( pool, NO_ENTRY_VALUE, initialCapacity );
+			keyToObj = new IntRefHashMap<>( pool, NO_ENTRY_KEY, initialCapacity );
+			objToKey = new RefIntHashMap<>( pool, NO_ENTRY_VALUE, initialCapacity );
 		}
 
 		// TODO version with reusable ref
-		public Ellipsoid get( final int key )
+		public O get( final int key )
 		{
-			return keyToEllipsoid.get( key );
+			return keyToObj.get( key );
 		}
 
 		// TODO version with reusable ref
-		public Ellipsoid getOrAdd( final int key )
+		public O getOrAdd( final int key )
 		{
-			Ellipsoid ellipsoid = get( key );
-			if ( ellipsoid == null )
+			O obj = get( key );
+			if ( obj == null )
 			{
 				// create new value
-				ellipsoid = pool.create( pool.createRef() );
-				keyToEllipsoid.put( key, ellipsoid );
-				ellipsoidToKey.put( ellipsoid, key );
+				obj = pool.create( pool.createRef() );
+				keyToObj.put( key, obj );
+				objToKey.put( obj, key );
 			}
-			return ellipsoid;
+			return obj;
 		}
 
 		public int size()
@@ -68,28 +68,44 @@ public class EllipsoidPlayground
 		public void remove( final int key )
 		{
 			// TODO reusable refs
-			final Ellipsoid ellipsoid = keyToEllipsoid.remove( key );
-			if ( ellipsoid == null )
+			final O obj = keyToObj.remove( key );
+			if ( obj == null )
 				throw new NoSuchElementException();
-			if ( ellipsoid.getInternalPoolIndex() == size() - 1 )
+			if ( pool.getId( obj ) == size() - 1 )
 			{
-				ellipsoidToKey.remove( ellipsoid );
-				pool.delete( ellipsoid );
+				objToKey.remove( obj );
+				pool.delete( obj );
 			}
 			else
 			{
 				// swap with last, and remove last
-				final Ellipsoid last = pool.getObject( size() - 1, pool.createRef() );
-				ellipsoid.set( last );
-				final int lastKey = ellipsoidToKey.remove( last );
-				ellipsoidToKey.put( ellipsoid, lastKey );
-				keyToEllipsoid.put( lastKey, ellipsoid );
-				pool.delete( last );
+				final O lastObj = pool.getObject( size() - 1, pool.createRef() );
+				obj.set( lastObj );
+				final int lastKey = objToKey.remove( lastObj );
+				objToKey.put( obj, lastKey );
+				keyToObj.put( lastKey, obj );
+				pool.delete( lastObj );
 			}
 		}
 	}
 
-	public static class EllipsoidPool implements RefPool< Ellipsoid >
+	// TODO move to mastodon-collection?
+	public interface ModifiableRefPool< O > extends RefPool< O >
+	{
+		int size();
+
+		void delete( final O obj );
+
+		O create( final O ref );
+	}
+
+	// TODO move to mastodon-collection?
+	public interface ModifiableRef< O extends ModifiableRef< O > > extends Ref< O >
+	{
+		void set( final O obj );
+	}
+
+	public static class EllipsoidPool implements ModifiableRefPool< Ellipsoid >
 	{
 		final EllipsoidShapePool shapes; // TODO: private?
 
@@ -146,20 +162,20 @@ public class EllipsoidPlayground
 			return Ellipsoid.class;
 		}
 
-		// TODO interface method
+		@Override
 		public int size()
 		{
 			return shapes.size();
 		}
 
-		// TODO interface method
+		@Override
 		public void delete( final Ellipsoid obj )
 		{
 			shapes.delete( obj.shape );
 			colors.delete( obj.color );
 		}
 
-		// TODO interface method
+		@Override
 		public Ellipsoid create( final Ellipsoid ref )
 		{
 			shapes.create( ref.shape );
@@ -168,7 +184,7 @@ public class EllipsoidPlayground
 		}
 	}
 
-	public static class Ellipsoid implements Ref< Ellipsoid >
+	public static class Ellipsoid implements ModifiableRef< Ellipsoid >
 	{
 		final EllipsoidPool pool; // TODO: private?
 		final EllipsoidShape shape;
@@ -193,6 +209,7 @@ public class EllipsoidPlayground
 			return pool.getObject( obj.getInternalPoolIndex(), this );
 		}
 
+		@Override
 		public void set( final Ellipsoid obj )
 		{
 			shape.set( obj.shape );
