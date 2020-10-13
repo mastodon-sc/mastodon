@@ -6,6 +6,7 @@ import java.nio.IntBuffer;
 import org.joml.Matrix3f;
 import org.joml.Matrix4f;
 import org.joml.Matrix4fc;
+import org.mastodon.views.bvv.scene.HotLoading.ShaderHotLoader;
 import tpietzsch.backend.jogl.JoglGpuContext;
 import tpietzsch.shadergen.DefaultShader;
 import tpietzsch.shadergen.Shader;
@@ -33,7 +34,8 @@ public class InstancedEllipsoid
 {
 	private final int subdivisions;
 
-	private final Shader prog;
+	private final ShaderHotLoader hotloader;
+	private Shader prog;
 
 	private int sphereVbo;
 	private int sphereEbo;
@@ -42,9 +44,20 @@ public class InstancedEllipsoid
 	public InstancedEllipsoid( final int subdivisions )
 	{
 		this.subdivisions = subdivisions;
-		final Segment ex1vp = new SegmentTemplate(InstancedEllipsoid.class, "instancedellipsoid.vp" ).instantiate();
-		final Segment ex1fp = new SegmentTemplate(InstancedEllipsoid.class, "instancedellipsoid.fp" ).instantiate();
-		prog = new DefaultShader( ex1vp.getCode(), ex1fp.getCode() );
+		hotloader = new ShaderHotLoader()
+				.watch( InstancedEllipsoid.class, "instancedellipsoid.vp" )
+				.watch( InstancedEllipsoid.class, "instancedellipsoid.fp" );
+		hotloadShader();
+	}
+
+	private void hotloadShader()
+	{
+		if ( hotloader.isModified() || prog == null )
+		{
+			final Segment ex1vp = new SegmentTemplate( InstancedEllipsoid.class, "instancedellipsoid.vp" ).instantiate();
+			final Segment ex1fp = new SegmentTemplate( InstancedEllipsoid.class, "instancedellipsoid.fp" ).instantiate();
+			prog = new DefaultShader( ex1vp.getCode(), ex1fp.getCode() );
+		}
 	}
 
 	private boolean initialized;
@@ -173,6 +186,7 @@ public class InstancedEllipsoid
 			init( gl );
 
 		JoglGpuContext context = JoglGpuContext.get( gl );
+		hotloadShader();
 
 		final Matrix4f itvm = vm.invert( new Matrix4f() ).transpose();
 		prog.getUniformMatrix4f( "pvm" ).set( pvm );

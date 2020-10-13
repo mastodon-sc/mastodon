@@ -2,6 +2,7 @@ package org.mastodon.views.bvv;
 
 import com.jogamp.opengl.GL;
 import com.jogamp.opengl.GL3;
+import com.jogamp.opengl.util.glsl.ShaderProgram;
 import net.imglib2.realtransform.AffineTransform3D;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
