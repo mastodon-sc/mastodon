@@ -99,9 +99,9 @@ public class EllipsoidPlayground
 
 		public EllipsoidPool( final int initialCapacity )
 		{
-			this.shapes = new EllipsoidShapePool( initialCapacity );
-			this.colors = new ColorPool( initialCapacity );
-			this.tmpObjRefs = new ConcurrentLinkedQueue<>();
+			shapes = new EllipsoidShapePool( initialCapacity );
+			colors = new ColorPool( initialCapacity );
+			tmpObjRefs = new ConcurrentLinkedQueue<>();
 		}
 
 		@Override
