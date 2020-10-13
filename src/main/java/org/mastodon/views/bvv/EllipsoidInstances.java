@@ -9,11 +9,11 @@ import org.mastodon.collection.RefRefMap;
 
 public class EllipsoidInstances< V extends BvvVertex< V, E >, E extends BvvEdge< E, V > >
 {
-	private final EllipsoidPool ellipsoids;
+	private final EllipsoidShapePool ellipsoids;
 	private final ColorPool colors;
 
-	private final RefRefMap< V, Ellipsoid > vertexToInstance;
-	private final RefRefMap< Ellipsoid, V > instanceToVertex;
+	private final RefRefMap< V, EllipsoidShape > vertexToInstance;
+	private final RefRefMap< EllipsoidShape, V > instanceToVertex;
 
 	/**
 	 * Tracks modifications to ellipsoid number and shape (for one timepoint).
@@ -38,7 +38,7 @@ public class EllipsoidInstances< V extends BvvVertex< V, E >, E extends BvvEdge<
 
 	public EllipsoidInstances( BvvGraph< V, E > graph, final int initialCapacity )
 	{
-		ellipsoids = new EllipsoidPool( initialCapacity );
+		ellipsoids = new EllipsoidShapePool( initialCapacity );
 		colors = new ColorPool( initialCapacity );
 		vertexToInstance = RefMaps.createRefRefMap( graph.vertices(), ellipsoids.asRefCollection(), initialCapacity );
 		instanceToVertex = RefMaps.createRefRefMap( ellipsoids.asRefCollection(), graph.vertices(), initialCapacity );
@@ -76,7 +76,7 @@ public class EllipsoidInstances< V extends BvvVertex< V, E >, E extends BvvEdge<
 
 	public void updateColors( Function< V, Vector3f > coloring )
 	{
-		final Ellipsoid ref = ellipsoids.createRef();
+		final EllipsoidShape ref = ellipsoids.createRef();
 		final Color cref = colors.createRef();
 		final V vref = instanceToVertex.createValueRef();
 		for ( int i = 0; i < size(); ++i )
@@ -99,9 +99,9 @@ public class EllipsoidInstances< V extends BvvVertex< V, E >, E extends BvvEdge<
 		++modCount;
 		colorModCount = 0;
 
-		final Ellipsoid ref = ellipsoids.createRef();
+		final EllipsoidShape ref = ellipsoids.createRef();
 		final Color cref = colors.createRef();
-		Ellipsoid instance = vertexToInstance.get( vertex, ref );
+		EllipsoidShape instance = vertexToInstance.get( vertex, ref );
 		if ( instance != null )
 			util.setFromVertex( vertex, instance );
 		else
@@ -125,10 +125,10 @@ public class EllipsoidInstances< V extends BvvVertex< V, E >, E extends BvvEdge<
 	{
 		++modCount;
 
-		final Ellipsoid ref = ellipsoids.createRef();
+		final EllipsoidShape ref = ellipsoids.createRef();
 		final Color cref = colors.createRef();
 		final V vref = instanceToVertex.createValueRef();
-		final Ellipsoid instance = vertexToInstance.removeWithRef( vertex, ref );
+		final EllipsoidShape instance = vertexToInstance.removeWithRef( vertex, ref );
 		if ( instance == null )
 			throw new NoSuchElementException();
 		final Color color = colors.getObject( instance.getInternalPoolIndex(), cref );
@@ -140,9 +140,9 @@ public class EllipsoidInstances< V extends BvvVertex< V, E >, E extends BvvEdge<
 		}
 		else
 		{
-			final Ellipsoid ref2 = ellipsoids.createRef();
+			final EllipsoidShape ref2 = ellipsoids.createRef();
 			final Color cref2 = colors.createRef();
-			final Ellipsoid last = ellipsoids.getObject( size() - 1, ref2 );
+			final EllipsoidShape last = ellipsoids.getObject( size() - 1, ref2 );
 			final Color colorLast = colors.getObject( size() - 1, cref2 );
 			instance.set( last );
 			color.set( colorLast );
@@ -164,10 +164,10 @@ public class EllipsoidInstances< V extends BvvVertex< V, E >, E extends BvvEdge<
 		if ( vertex == null )
 			return -1;
 
-		final Ellipsoid ref = ellipsoids.createRef();
+		final EllipsoidShape ref = ellipsoids.createRef();
 		try
 		{
-			final Ellipsoid instance = vertexToInstance.get( vertex, ref );
+			final EllipsoidShape instance = vertexToInstance.get( vertex, ref );
 			return ( instance == null ) ? -1 : instance.getInternalPoolIndex();
 		}
 		finally

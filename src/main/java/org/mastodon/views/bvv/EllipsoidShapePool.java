@@ -2,35 +2,27 @@ package org.mastodon.views.bvv;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
-import java.util.NoSuchElementException;
-import java.util.function.Function;
-import org.joml.Vector3f;
-import org.mastodon.collection.RefMaps;
-import org.mastodon.collection.RefRefMap;
 import org.mastodon.pool.BufferMappedElement;
 import org.mastodon.pool.BufferMappedElementArray;
 import org.mastodon.pool.Pool;
-import org.mastodon.pool.PoolObject;
 import org.mastodon.pool.SingleArrayMemPool;
-import org.mastodon.views.bvv.pool.PoolObjectLayoutJoml;
 import org.mastodon.views.bvv.pool.attributes.Matrix3fAttribute;
 import org.mastodon.views.bvv.pool.attributes.Vector3fAttribute;
-import org.mastodon.views.bvv.pool.attributes.Vector3fAttributeValue;
 
-public class EllipsoidPool extends Pool< Ellipsoid, BufferMappedElement >
+public class EllipsoidShapePool extends Pool< EllipsoidShape, BufferMappedElement >
 {
-	final Matrix3fAttribute< Ellipsoid > mat3fE = new Matrix3fAttribute<>( Ellipsoid.layout.mat3fE, this );
-	final Matrix3fAttribute< Ellipsoid > mat3fInvE = new Matrix3fAttribute<>( Ellipsoid.layout.mat3fInvE, this );
-	final Vector3fAttribute< Ellipsoid > vec3fT = new Vector3fAttribute<>( Ellipsoid.layout.vec3fT, this );
+	final Matrix3fAttribute< EllipsoidShape > mat3fE = new Matrix3fAttribute<>( EllipsoidShape.layout.mat3fE, this );
+	final Matrix3fAttribute< EllipsoidShape > mat3fInvE = new Matrix3fAttribute<>( EllipsoidShape.layout.mat3fInvE, this );
+	final Vector3fAttribute< EllipsoidShape > vec3fT = new Vector3fAttribute<>( EllipsoidShape.layout.vec3fT, this );
 
-	public EllipsoidPool()
+	public EllipsoidShapePool()
 	{
 		this( 100 );
 	}
 
-	public EllipsoidPool( final int initialCapacity )
+	public EllipsoidShapePool( final int initialCapacity )
 	{
-		super( initialCapacity, Ellipsoid.layout, Ellipsoid.class,
+		super( initialCapacity, EllipsoidShape.layout, EllipsoidShape.class,
 				SingleArrayMemPool.factory( BufferMappedElementArray.factory ) );
 	}
 
@@ -46,24 +38,24 @@ public class EllipsoidPool extends Pool< Ellipsoid, BufferMappedElement >
 		final ByteBuffer buffer = dataArray.getBuffer();
 		buffer.rewind();
 		final ByteBuffer slice = buffer.slice().order( ByteOrder.nativeOrder() );
-		slice.limit( this.size() * Ellipsoid.layout.getSizeInBytes() );
+		slice.limit( this.size() * EllipsoidShape.layout.getSizeInBytes() );
 		return slice;
 	}
 
 	@Override
-	protected Ellipsoid createEmptyRef()
+	protected EllipsoidShape createEmptyRef()
 	{
-		return new Ellipsoid( this );
+		return new EllipsoidShape( this );
 	}
 
 	@Override
-	protected Ellipsoid create( final Ellipsoid obj )
+	protected EllipsoidShape create( final EllipsoidShape obj )
 	{
 		return super.create( obj );
 	}
 
 	@Override
-	protected void delete( final Ellipsoid obj )
+	protected void delete( final EllipsoidShape obj )
 	{
 		super.delete( obj );
 	}

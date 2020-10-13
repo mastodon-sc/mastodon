@@ -1,12 +1,9 @@
 package org.mastodon.views.bvv;
 
-import net.imglib2.util.LinAlgHelpers;
 import org.joml.Matrix3fc;
-import org.joml.Vector3f;
 import org.joml.Vector3fc;
 import org.mastodon.pool.BufferMappedElement;
 import org.mastodon.pool.PoolObject;
-import org.mastodon.views.bdv.overlay.util.JamaEigenvalueDecomposition;
 import org.mastodon.views.bvv.pool.PoolObjectLayoutJoml;
 import org.mastodon.views.bvv.pool.attributes.Matrix3fAttributeValue;
 import org.mastodon.views.bvv.pool.attributes.Vector3fAttributeValue;
@@ -16,22 +13,22 @@ import org.mastodon.views.bvv.pool.attributes.Vector3fAttributeValue;
  *
  * @author Tobias Pietzsch
  */
-public class Ellipsoid extends PoolObject< Ellipsoid, EllipsoidPool, BufferMappedElement >
+public class EllipsoidShape extends PoolObject< EllipsoidShape, EllipsoidShapePool, BufferMappedElement >
 {
-	public static class EllipsoidLayout extends PoolObjectLayoutJoml
+	public static class EllipsoidShapeLayout extends PoolObjectLayoutJoml
 	{
 		final Matrix3fField mat3fE = matrix3fField();
 		final Matrix3fField mat3fInvE = matrix3fField();
 		final Vector3fField vec3fT = vector3fField();
 	}
 
-	public static EllipsoidLayout layout = new EllipsoidLayout();
+	public static EllipsoidShapeLayout layout = new EllipsoidShapeLayout();
 
 	public final Matrix3fAttributeValue e;
 	public final Matrix3fAttributeValue inve;
 	public final Vector3fAttributeValue t;
 
-	Ellipsoid( final EllipsoidPool pool )
+	EllipsoidShape( final EllipsoidShapePool pool )
 	{
 		super( pool );
 		e = pool.mat3fE.createQuietAttributeValue( this );
@@ -39,7 +36,7 @@ public class Ellipsoid extends PoolObject< Ellipsoid, EllipsoidPool, BufferMappe
 		t = pool.vec3fT.createQuietAttributeValue( this );
 	}
 
-	public Ellipsoid init()
+	public EllipsoidShape init()
 	{
 		e.identity();
 		inve.identity();
@@ -47,7 +44,7 @@ public class Ellipsoid extends PoolObject< Ellipsoid, EllipsoidPool, BufferMappe
 		return this;
 	}
 
-	public void set( Ellipsoid other )
+	public void set( EllipsoidShape other )
 	{
 		this.e.set( other.e );
 		this.inve.set( other.inve );
