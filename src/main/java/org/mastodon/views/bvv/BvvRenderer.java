@@ -1,8 +1,6 @@
 package org.mastodon.views.bvv;
 
-import com.jogamp.opengl.GL;
 import com.jogamp.opengl.GL3;
-import com.jogamp.opengl.util.glsl.ShaderProgram;
 import net.imglib2.realtransform.AffineTransform3D;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
@@ -99,7 +97,7 @@ public class BvvRenderer< V extends BvvVertex< V, E >, E extends BvvEdge< E, V >
 		if ( needShapeUpdate )
 		{
 			instanceArray.setModCount( modCount );
-			instanceArray.updateShapes( gl, instances.buffer().asFloatBuffer() );
+			instanceArray.updateShapes( gl, instances.ellipsoidBuffer().asFloatBuffer() );
 		}
 
 		final boolean needColorUpdate = instances.getColorModCount() != colorModCount;
