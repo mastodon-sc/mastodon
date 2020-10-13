@@ -13,7 +13,10 @@ import org.mastodon.views.bvv.scene.InstancedEllipsoid;
 import tpietzsch.offscreen.OffScreenFrameBufferWithDepth;
 import tpietzsch.util.MatrixMath;
 
+import static com.jogamp.opengl.GL.GL_BACK;
+import static com.jogamp.opengl.GL.GL_CCW;
 import static com.jogamp.opengl.GL.GL_COLOR_BUFFER_BIT;
+import static com.jogamp.opengl.GL.GL_CULL_FACE;
 import static com.jogamp.opengl.GL.GL_DEPTH_BUFFER_BIT;
 import static com.jogamp.opengl.GL.GL_DEPTH_TEST;
 import static com.jogamp.opengl.GL.GL_RGB8;
@@ -86,9 +89,9 @@ public class BvvRenderer< V extends BvvVertex< V, E >, E extends BvvEdge< E, V >
 		gl.glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
 
 		gl.glEnable( GL_DEPTH_TEST );
-		gl.glDisable( GL.GL_CULL_FACE );
-		gl.glCullFace( GL.GL_BACK );
-		gl.glFrontFace( GL.GL_CCW );
+		gl.glEnable( GL_CULL_FACE );
+		gl.glCullFace( GL_BACK );
+		gl.glFrontFace( GL_CCW );
 		final InstancedEllipsoid.InstanceArray instanceArray = reusableInstanceArrays.getForTimepoint( timepoint );
 		final EllipsoidInstances< V, E > instances = graph.getEllipsoids().forTimepoint( timepoint );
 		final int modCount = instances.getModCount();

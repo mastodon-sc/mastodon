@@ -11,18 +11,14 @@ out vec3 ObjectColor;
 uniform mat4 pvm;
 uniform mat4 vm;
 uniform mat3 itvm;
+uniform vec2 radii; // (r0, r1)
 
 const vec3 highlightColor = vec3( 1, 1, 1 );
 
 void main()
 {
-	// TODO: pass as uniforms
-	float r0 = 2;
-	float r1 = 3;
-	// ======================
-
-	float r = r0 - r1;
-	float s = r0 - aPos.z * r;
+	float r = radii.x - radii.y;
+	float s = radii.x - aPos.z * r;
 	vec3 fPos = vec3( s * aPos.xy, aPos.z );
 	vec4 pos = vec4( e * fPos + t, 1.0 );
 	gl_Position = pvm * pos;
