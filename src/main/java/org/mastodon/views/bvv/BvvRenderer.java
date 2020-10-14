@@ -6,6 +6,9 @@ import org.joml.Matrix4f;
 import org.joml.Vector3f;
 import org.mastodon.model.HighlightModel;
 import org.mastodon.model.SelectionModel;
+import org.mastodon.views.bvv.scene.Cylinder;
+import org.mastodon.views.bvv.scene.CylinderMath;
+import org.mastodon.views.bvv.scene.Cylinders;
 import org.mastodon.views.bvv.scene.InstancedCylinder;
 import org.mastodon.views.bvv.scene.InstancedEllipsoid;
 import tpietzsch.offscreen.OffScreenFrameBufferWithDepth;
@@ -51,7 +54,7 @@ public class BvvRenderer< V extends BvvVertex< V, E >, E extends BvvEdge< E, V >
 		this.highlight = highlight;
 		sceneBuf = new OffScreenFrameBufferWithDepth( renderWidth, renderHeight, GL_RGB8 );
 		instancedEllipsoid = new InstancedEllipsoid( 3, 10 );
-		instancedCylinder = new InstancedCylinder( 36 );
+		instancedCylinder = new InstancedCylinder( 36, 10 );
 		selection.listeners().add( this::selectionChanged );
 	}
 
@@ -93,21 +96,20 @@ public class BvvRenderer< V extends BvvVertex< V, E >, E extends BvvEdge< E, V >
 
 		instancedEllipsoid.draw( gl, pv, camview, ellipsoids.getEllipsoids(), highlightId );
 
-		if ( cylInstanceArray == null )
+		if ( cylinders == null )
 		{
-			cylInstanceArray = instancedCylinder.createInstanceArray();
-			CylinderInstances cylinders = new CylinderInstances();
-			cylinders.addInstanceFor( new Vector3f( 0, 0, 0 ), new Vector3f( 0, 100, 0 ) );
-			cylInstanceArray.updateShapes( gl, cylinders.buffer().asFloatBuffer() );
+			cylinders = new Cylinders();
+			Cylinder cylinder = cylinders.getOrAdd( 1 );
+			new CylinderMath().set( new Vector3f( 0, 0, 0 ), new Vector3f( 0, 100, 0 ), cylinder );
 		}
-		instancedCylinder.draw( gl, pv, camview, cylInstanceArray );
+		instancedCylinder.draw( gl, pv, camview, cylinders );
 
 		sceneBuf.unbind( gl, false );
 		gl.glDisable( GL_DEPTH_TEST );
 		sceneBuf.drawQuad( gl );
 	}
 
-	private InstancedCylinder.InstanceArray cylInstanceArray;
+	private Cylinders cylinders;
 
 	private int colorModCount = 1;
 

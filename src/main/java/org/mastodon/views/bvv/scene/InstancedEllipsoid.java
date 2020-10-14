@@ -24,7 +24,7 @@ import static com.jogamp.opengl.GL.GL_UNSIGNED_INT;
 /**
  * Draw instanced ellipsoids.
  * <p>
- * {@ode InstancedEllipsoid} sets up vertex buffer and element buffer objects to to draw a tesselated unit sphere.
+ * {@code InstancedEllipsoid} sets up vertex buffer and element buffer objects to to draw a tesselated unit sphere.
  * Then {@link #draw} is called with an {@code Ellipsoids} collection to draw as instances of the transformed unit sphere.
  */
 public class InstancedEllipsoid
