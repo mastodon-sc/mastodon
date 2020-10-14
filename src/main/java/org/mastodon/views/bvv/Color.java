@@ -1,6 +1,6 @@
 package org.mastodon.views.bvv;
 
-import org.joml.Vector3f;
+import org.joml.Vector3fc;
 import org.mastodon.pool.BufferMappedElement;
 import org.mastodon.pool.PoolObject;
 import org.mastodon.views.bvv.pool.PoolObjectLayoutJoml;
@@ -28,17 +28,59 @@ class Color extends PoolObject< Color, ColorPool, BufferMappedElement >
 		this.color.set( other.color );
 	}
 
-	public void set( Vector3f color )
+	public void set( Vector3fc value )
 	{
-		this.color.set( color );
+		color.set( value );
 	}
 
 	public void set( float r, float g, float b )
 	{
-		this.color.set( r, g, b );
+		color.set( r, g, b );
 	}
 
 	@Override
 	protected void setToUninitializedState()
 	{}
+
+	/*
+
+	// -- implements Vector3fAttributeValue --
+
+	@Override
+	public Vector3f get( final Vector3f dest )
+	{
+		return color.get( dest );
+	}
+
+	@Override
+	public float x()
+	{
+		return color.x();
+	}
+
+	@Override
+	public float y()
+	{
+		return color.y();
+	}
+
+	@Override
+	public float z()
+	{
+		return color.z();
+	}
+
+	@Override
+	public void set( final Vector3fAttributeReadOnlyValue value )
+	{
+		color.set( value );
+	}
+
+	@Override
+	public void zero()
+	{
+		color.zero();
+	}
+
+	*/
 }

@@ -8,11 +8,12 @@ import org.mastodon.collection.IntRefMap;
 import org.mastodon.collection.RefIntMap;
 import org.mastodon.collection.ref.IntRefHashMap;
 import org.mastodon.collection.ref.RefIntHashMap;
+import org.mastodon.views.bvv.pool.attributes.Matrix3fAttributeValue;
+import org.mastodon.views.bvv.pool.attributes.Vector3fAttributeValue;
 
 public class EllipsoidPlayground
 {
-
-	// TODO extract CompactingPool (to be reused for Cylinders)
+	// (to be reused for Ellipsoids and Cylinders)
 	public static class CompactingPool< O extends ModifiableRef< O > >
 	{
 		private final ModifiableRefPool< O > pool;
@@ -184,17 +185,28 @@ public class EllipsoidPlayground
 		}
 	}
 
+	// bundle EllipsoidShape and Color
 	public static class Ellipsoid implements ModifiableRef< Ellipsoid >
 	{
 		final EllipsoidPool pool; // TODO: private?
 		final EllipsoidShape shape;
 		final Color color;
 
+		public final Matrix3fAttributeValue e;
+		public final Matrix3fAttributeValue inve;
+		public final Vector3fAttributeValue t;
+		public final Vector3fAttributeValue rgb;
+
 		Ellipsoid( EllipsoidPool pool )
 		{
 			this.pool = pool;
 			shape = pool.shapes.createRef();
 			color = pool.colors.createRef();
+
+			e = shape.e;
+			inve = shape.inve;
+			t = shape.t;
+			rgb = color.color;
 		}
 
 		@Override

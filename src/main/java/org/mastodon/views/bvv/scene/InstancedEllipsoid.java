@@ -199,4 +199,129 @@ public class InstancedEllipsoid
 
 		instanceArray.draw( gl );
 	}
+
+
+
+
+
+
+
+	// ================================================
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	public interface I_InstanceArray
+	{
+		// number of instances in the gpu buffers.
+		// the size of the associated pool might be different, if not isUpToDate().
+		int size();
+
+		boolean isUpToDate();
+	}
+
+	public class REVISED_InstanceArray implements I_InstanceArray
+	{
+		private void updateShapes( GL3 gl, FloatBuffer data )
+		{
+//			if ( !initialized )
+//				init( gl );
+//
+			gl.glBindBuffer( GL_ARRAY_BUFFER, vboShape );
+			final int size = data.limit();
+			gl.glBufferData( GL_ARRAY_BUFFER, size * Float.BYTES, data, GL_DYNAMIC_DRAW );
+//			instanceCount = size / 21;
+			gl.glBindBuffer( GL_ARRAY_BUFFER, 0 );
+		}
+
+		private void updateColors( GL3 gl, FloatBuffer data )
+		{
+//			if ( !initialized )
+//				init( gl );
+//
+			gl.glBindBuffer( GL_ARRAY_BUFFER, vboColor );
+			final int size = data.limit();
+			gl.glBufferData( GL_ARRAY_BUFFER, size * Float.BYTES, data, GL_DYNAMIC_DRAW );
+			gl.glBindBuffer( GL_ARRAY_BUFFER, 0 );
+		}
+
+		private int instanceCount;
+		private int vboShape;
+		private int vboColor;
+		private int vao;
+
+		private boolean initialized;
+
+		private void init( GL3 gl )
+		{
+			initialized = true;
+
+			if ( !InstancedEllipsoid.this.initialized )
+				InstancedEllipsoid.this.init( gl );
+
+			final int[] tmp = new int[ 2 ];
+			gl.glGenBuffers( 2, tmp, 0 );
+			vboShape = tmp[ 0 ];
+			vboColor = tmp[ 1 ];
+			gl.glGenVertexArrays( 1, tmp, 0 );
+			vao = tmp[ 0 ];
+
+			gl.glBindVertexArray( vao );
+			gl.glBindBuffer( GL_ARRAY_BUFFER, sphereVbo );
+			gl.glVertexAttribPointer( 0, 3, GL_FLOAT, false, 3 * Float.BYTES, 0 );
+			gl.glEnableVertexAttribArray( 0 );
+			gl.glBindBuffer( GL_ARRAY_BUFFER, vboShape );
+			for ( int i = 0; i < 7; ++i )
+			{
+				gl.glVertexAttribPointer( 1 + i, 3, GL_FLOAT, false, 21 * Float.BYTES, i * 3 * Float.BYTES );
+				gl.glEnableVertexAttribArray( 1 + i );
+				gl.glVertexAttribDivisor( 1 + i, 1 );
+			}
+			gl.glBindBuffer( GL_ARRAY_BUFFER, vboColor );
+			gl.glVertexAttribPointer( 8, 3, GL_FLOAT, false, 3 * Float.BYTES, 0 );
+			gl.glEnableVertexAttribArray( 8 );
+			gl.glVertexAttribDivisor( 8, 1 );
+			gl.glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, sphereEbo );
+			gl.glBindVertexArray( 0 );
+		}
+
+		private void draw( GL3 gl )
+		{
+			if ( !initialized )
+				init( gl );
+
+			gl.glBindVertexArray( vao );
+			gl.glDrawElementsInstanced( GL_TRIANGLES, sphereNumElements, GL_UNSIGNED_INT, 0, instanceCount );
+			gl.glBindVertexArray( 0 );
+		}
+
+		@Override
+		public int size()
+		{
+			// TODO
+			throw new UnsupportedOperationException();
+		}
+
+		@Override
+		public boolean isUpToDate()
+		{
+			// TODO
+			throw new UnsupportedOperationException();
+		}
+	}
+
+
 }
