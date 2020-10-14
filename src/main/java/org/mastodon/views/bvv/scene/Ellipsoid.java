@@ -6,7 +6,8 @@ import org.mastodon.views.bvv.pool.attributes.Vector3fAttributeValue;
 // bundle EllipsoidShape and Color
 public class Ellipsoid implements ModifiableRef< Ellipsoid >
 {
-	final EllipsoidPool pool; // TODO: private?
+	private final EllipsoidPool pool;
+
 	final EllipsoidShape shape;
 	final Color color;
 
