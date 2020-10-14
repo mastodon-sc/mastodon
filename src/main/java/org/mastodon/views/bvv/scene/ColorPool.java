@@ -9,7 +9,7 @@ import org.mastodon.pool.Pool;
 import org.mastodon.pool.SingleArrayMemPool;
 import org.mastodon.views.bvv.pool.attributes.Vector3fAttribute;
 
-public class ColorPool extends Pool< Color, BufferMappedElement >
+class ColorPool extends Pool< Color, BufferMappedElement >
 {
 	final Vector3fAttribute< Color > vec3fColor = new Vector3fAttribute<>( Color.layout.vec3fColor, this );
 

@@ -6,7 +6,7 @@ import org.mastodon.pool.PoolObject;
 import org.mastodon.views.bvv.pool.PoolObjectLayoutJoml;
 import org.mastodon.views.bvv.pool.attributes.Vector3fAttributeValue;
 
-public class Color extends PoolObject< Color, ColorPool, BufferMappedElement >
+class Color extends PoolObject< Color, ColorPool, BufferMappedElement >
 {
 	public static class ColorLayout extends PoolObjectLayoutJoml
 	{

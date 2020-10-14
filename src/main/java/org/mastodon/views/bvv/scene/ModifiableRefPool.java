@@ -4,7 +4,7 @@ import java.util.Iterator;
 import org.mastodon.RefPool;
 
 // TODO move to mastodon-collection?
-public interface ModifiableRefPool< O > extends RefPool< O >, Iterable< O >
+interface ModifiableRefPool< O > extends RefPool< O >, Iterable< O >
 {
 	int size();
 

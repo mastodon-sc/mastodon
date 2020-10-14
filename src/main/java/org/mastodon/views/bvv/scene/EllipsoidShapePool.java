@@ -10,7 +10,7 @@ import org.mastodon.pool.SingleArrayMemPool;
 import org.mastodon.views.bvv.pool.attributes.Matrix3fAttribute;
 import org.mastodon.views.bvv.pool.attributes.Vector3fAttribute;
 
-public class EllipsoidShapePool extends Pool< EllipsoidShape, BufferMappedElement >
+class EllipsoidShapePool extends Pool< EllipsoidShape, BufferMappedElement >
 {
 	final Matrix3fAttribute< EllipsoidShape > mat3fE = new Matrix3fAttribute<>( EllipsoidShape.layout.mat3fE, this );
 	final Matrix3fAttribute< EllipsoidShape > mat3fInvE = new Matrix3fAttribute<>( EllipsoidShape.layout.mat3fInvE, this );

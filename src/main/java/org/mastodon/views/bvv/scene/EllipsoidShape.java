@@ -13,7 +13,7 @@ import org.mastodon.views.bvv.pool.attributes.Vector3fAttributeValue;
  *
  * @author Tobias Pietzsch
  */
-public class EllipsoidShape extends PoolObject< EllipsoidShape, EllipsoidShapePool, BufferMappedElement >
+class EllipsoidShape extends PoolObject< EllipsoidShape, EllipsoidShapePool, BufferMappedElement >
 {
 	public static class EllipsoidShapeLayout extends PoolObjectLayoutJoml
 	{

@@ -3,7 +3,7 @@ package org.mastodon.views.bvv.scene;
 import java.util.Iterator;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
-public class EllipsoidPool implements ModifiableRefPool< Ellipsoid >
+class EllipsoidPool implements ModifiableRefPool< Ellipsoid >
 {
 	final EllipsoidShapePool shapes;
 

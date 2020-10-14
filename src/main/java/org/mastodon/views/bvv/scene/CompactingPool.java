@@ -8,7 +8,7 @@ import org.mastodon.collection.ref.IntRefHashMap;
 import org.mastodon.collection.ref.RefIntHashMap;
 
 // (to be reused for Ellipsoids and Cylinders)
-public class CompactingPool< O extends ModifiableRef< O > > implements Iterable< O >
+class CompactingPool< O extends ModifiableRef< O > > implements Iterable< O >
 {
 	private final ModifiableRefPool< O > pool;
 
