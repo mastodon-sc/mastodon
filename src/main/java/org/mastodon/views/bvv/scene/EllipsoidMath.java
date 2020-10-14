@@ -1,7 +1,8 @@
-package org.mastodon.views.bvv;
+package org.mastodon.views.bvv.scene;
 
 import net.imglib2.util.LinAlgHelpers;
 import org.mastodon.views.bdv.overlay.util.JamaEigenvalueDecomposition;
+import org.mastodon.views.bvv.BvvVertex;
 
 public class EllipsoidMath
 {

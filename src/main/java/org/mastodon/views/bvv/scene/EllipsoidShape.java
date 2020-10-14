@@ -1,4 +1,4 @@
-package org.mastodon.views.bvv;
+package org.mastodon.views.bvv.scene;
 
 import org.joml.Matrix3fc;
 import org.joml.Vector3fc;

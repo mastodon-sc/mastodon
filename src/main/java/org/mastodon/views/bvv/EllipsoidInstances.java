@@ -6,6 +6,11 @@ import java.util.function.Function;
 import org.joml.Vector3f;
 import org.mastodon.collection.RefMaps;
 import org.mastodon.collection.RefRefMap;
+import org.mastodon.views.bvv.scene.Color;
+import org.mastodon.views.bvv.scene.ColorPool;
+import org.mastodon.views.bvv.scene.EllipsoidMath;
+import org.mastodon.views.bvv.scene.EllipsoidShape;
+import org.mastodon.views.bvv.scene.EllipsoidShapePool;
 
 public class EllipsoidInstances< V extends BvvVertex< V, E >, E extends BvvEdge< E, V > >
 {

@@ -1,4 +1,4 @@
-package org.mastodon.views.bvv;
+package org.mastodon.views.bvv.scene;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -7,30 +7,19 @@ import org.mastodon.pool.BufferMappedElement;
 import org.mastodon.pool.BufferMappedElementArray;
 import org.mastodon.pool.Pool;
 import org.mastodon.pool.SingleArrayMemPool;
-import org.mastodon.views.bvv.pool.attributes.Matrix3fAttribute;
 import org.mastodon.views.bvv.pool.attributes.Vector3fAttribute;
 
-public class EllipsoidShapePool extends Pool< EllipsoidShape, BufferMappedElement >
+public class ColorPool extends Pool< Color, BufferMappedElement >
 {
-	final Matrix3fAttribute< EllipsoidShape > mat3fE = new Matrix3fAttribute<>( EllipsoidShape.layout.mat3fE, this );
-	final Matrix3fAttribute< EllipsoidShape > mat3fInvE = new Matrix3fAttribute<>( EllipsoidShape.layout.mat3fInvE, this );
-	final Vector3fAttribute< EllipsoidShape > vec3fT = new Vector3fAttribute<>( EllipsoidShape.layout.vec3fT, this );
+	final Vector3fAttribute< Color > vec3fColor = new Vector3fAttribute<>( Color.layout.vec3fColor, this );
 
 	private final AtomicBoolean modified = new AtomicBoolean( true );
 
-	public EllipsoidShapePool()
+	public ColorPool( final int initialCapacity )
 	{
-		this( 100 );
-	}
-
-	public EllipsoidShapePool( final int initialCapacity )
-	{
-		super( initialCapacity, EllipsoidShape.layout, EllipsoidShape.class,
+		super( initialCapacity, Color.layout, Color.class,
 				SingleArrayMemPool.factory( BufferMappedElementArray.factory ) );
-
-		mat3fE.addPropertyChangeListener( o -> setModified() );
-		mat3fInvE.addPropertyChangeListener( o -> setModified() );
-		vec3fT.addPropertyChangeListener( o -> setModified() );
+		vec3fColor.addPropertyChangeListener( o -> setModified() );
 	}
 
 	private void setModified()
@@ -60,25 +49,25 @@ public class EllipsoidShapePool extends Pool< EllipsoidShape, BufferMappedElemen
 		final ByteBuffer buffer = dataArray.getBuffer();
 		buffer.rewind();
 		final ByteBuffer slice = buffer.slice().order( ByteOrder.nativeOrder() );
-		slice.limit( this.size() * EllipsoidShape.layout.getSizeInBytes() );
+		slice.limit( this.size() * Color.layout.getSizeInBytes() );
 		return slice;
 	}
 
 	@Override
-	protected EllipsoidShape createEmptyRef()
+	protected Color createEmptyRef()
 	{
-		return new EllipsoidShape( this );
+		return new Color( this );
 	}
 
 	@Override
-	protected EllipsoidShape create( final EllipsoidShape obj )
+	protected Color create( final Color obj )
 	{
 		setModified();
 		return super.create( obj );
 	}
 
 	@Override
-	protected void delete( final EllipsoidShape obj )
+	protected void delete( final Color obj )
 	{
 		setModified();
 		super.delete( obj );

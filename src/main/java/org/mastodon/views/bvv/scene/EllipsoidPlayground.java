@@ -1,4 +1,4 @@
-package org.mastodon.views.bvv;
+package org.mastodon.views.bvv.scene;
 
 import java.util.NoSuchElementException;
 import java.util.concurrent.ConcurrentLinkedQueue;
