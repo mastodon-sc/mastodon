@@ -7,7 +7,16 @@ import org.mastodon.collection.RefIntMap;
 import org.mastodon.collection.ref.IntRefHashMap;
 import org.mastodon.collection.ref.RefIntHashMap;
 
-// (to be reused for Ellipsoids and Cylinders)
+/**
+ * A pool of {@code O} objects that maintains compact storage.
+ * <p>
+ * New objects are added at the end.
+ * If an object is removed from the middle, the last object is swapped into the empty spot and removed.
+ * <p>
+ * Objects are associated with {@code int} keys, which keep referring to the same object through swaps.
+ *
+ * @param <O>
+ */
 class CompactingPool< O extends ModifiableRef< O > > implements Iterable< O >
 {
 	private final ModifiableRefPool< O > pool;
