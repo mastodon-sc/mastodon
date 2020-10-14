@@ -2,7 +2,7 @@ package org.mastodon.views.bvv.scene;
 
 public class Ellipsoids extends CompactingPool< Ellipsoid >
 {
-	final EllipsoidShapePool shapes;
+	final ShapeTransformPool shapes;
 
 	final ColorPool colors;
 
@@ -13,10 +13,10 @@ public class Ellipsoids extends CompactingPool< Ellipsoid >
 
 	public Ellipsoids( final int initialCapacity )
 	{
-		this( new EllipsoidShapePool( initialCapacity ), new ColorPool( initialCapacity ), initialCapacity );
+		this( new ShapeTransformPool( initialCapacity ), new ColorPool( initialCapacity ), initialCapacity );
 	}
 
-	private Ellipsoids( final EllipsoidShapePool shapes, final ColorPool colors, final int initialCapacity )
+	private Ellipsoids( final ShapeTransformPool shapes, final ColorPool colors, final int initialCapacity )
 	{
 		super( new EllipsoidPool( shapes, colors ), initialCapacity );
 		this.shapes = shapes;

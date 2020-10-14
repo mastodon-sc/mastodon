@@ -2,7 +2,7 @@ package org.mastodon.views.bvv.scene;
 
 public class Cylinders extends CompactingPool< Cylinder >
 {
-	final EllipsoidShapePool shapes;
+	final ShapeTransformPool shapes;
 
 	final ColorPool colors;
 
@@ -13,10 +13,10 @@ public class Cylinders extends CompactingPool< Cylinder >
 
 	public Cylinders( final int initialCapacity )
 	{
-		this( new EllipsoidShapePool( initialCapacity ), new ColorPool( initialCapacity ), initialCapacity );
+		this( new ShapeTransformPool( initialCapacity ), new ColorPool( initialCapacity ), initialCapacity );
 	}
 
-	private Cylinders( final EllipsoidShapePool shapes, final ColorPool colors, final int initialCapacity )
+	private Cylinders( final ShapeTransformPool shapes, final ColorPool colors, final int initialCapacity )
 	{
 		super( new CylinderPool( shapes, colors ), initialCapacity );
 		this.shapes = shapes;

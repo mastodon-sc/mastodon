@@ -5,13 +5,13 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 
 class EllipsoidPool implements ModifiableRefPool< Ellipsoid >
 {
-	final EllipsoidShapePool shapes;
+	final ShapeTransformPool shapes;
 
 	final ColorPool colors;
 
 	private final ConcurrentLinkedQueue< Ellipsoid > tmpObjRefs;
 
-	public EllipsoidPool( final EllipsoidShapePool shapes, final ColorPool colors )
+	public EllipsoidPool( final ShapeTransformPool shapes, final ColorPool colors )
 	{
 		this.shapes = shapes;
 		this.colors = colors;
@@ -90,7 +90,7 @@ class EllipsoidPool implements ModifiableRefPool< Ellipsoid >
 	// garbage-free version
 	public Iterator< Ellipsoid > iterator( final Ellipsoid obj )
 	{
-		final Iterator< EllipsoidShape > si = shapes.iterator( obj.shape );
+		final Iterator< ShapeTransform > si = shapes.iterator( obj.shape );
 		final Iterator< Color > ci = colors.iterator( obj.color );
 		return new Iterator< Ellipsoid >()
 		{

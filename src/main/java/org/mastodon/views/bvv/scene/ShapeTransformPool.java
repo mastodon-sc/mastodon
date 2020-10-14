@@ -10,22 +10,22 @@ import org.mastodon.pool.SingleArrayMemPool;
 import org.mastodon.views.bvv.pool.attributes.Matrix3fAttribute;
 import org.mastodon.views.bvv.pool.attributes.Vector3fAttribute;
 
-class EllipsoidShapePool extends Pool< EllipsoidShape, BufferMappedElement >
+class ShapeTransformPool extends Pool< ShapeTransform, BufferMappedElement >
 {
-	final Matrix3fAttribute< EllipsoidShape > mat3fE = new Matrix3fAttribute<>( EllipsoidShape.layout.mat3fE, this );
-	final Matrix3fAttribute< EllipsoidShape > mat3fInvE = new Matrix3fAttribute<>( EllipsoidShape.layout.mat3fInvE, this );
-	final Vector3fAttribute< EllipsoidShape > vec3fT = new Vector3fAttribute<>( EllipsoidShape.layout.vec3fT, this );
+	final Matrix3fAttribute< ShapeTransform > mat3fE = new Matrix3fAttribute<>( ShapeTransform.layout.mat3fE, this );
+	final Matrix3fAttribute< ShapeTransform > mat3fInvE = new Matrix3fAttribute<>( ShapeTransform.layout.mat3fInvE, this );
+	final Vector3fAttribute< ShapeTransform > vec3fT = new Vector3fAttribute<>( ShapeTransform.layout.vec3fT, this );
 
 	private final AtomicBoolean modified = new AtomicBoolean( true );
 
-	public EllipsoidShapePool()
+	public ShapeTransformPool()
 	{
 		this( 100 );
 	}
 
-	public EllipsoidShapePool( final int initialCapacity )
+	public ShapeTransformPool( final int initialCapacity )
 	{
-		super( initialCapacity, EllipsoidShape.layout, EllipsoidShape.class,
+		super( initialCapacity, ShapeTransform.layout, ShapeTransform.class,
 				SingleArrayMemPool.factory( BufferMappedElementArray.factory ) );
 
 		mat3fE.addPropertyChangeListener( o -> setModified() );
@@ -59,25 +59,25 @@ class EllipsoidShapePool extends Pool< EllipsoidShape, BufferMappedElement >
 		final ByteBuffer buffer = dataArray.getBuffer();
 		buffer.rewind();
 		final ByteBuffer slice = buffer.slice().order( ByteOrder.nativeOrder() );
-		slice.limit( this.size() * EllipsoidShape.layout.getSizeInBytes() );
+		slice.limit( this.size() * ShapeTransform.layout.getSizeInBytes() );
 		return slice;
 	}
 
 	@Override
-	protected EllipsoidShape createEmptyRef()
+	protected ShapeTransform createEmptyRef()
 	{
-		return new EllipsoidShape( this );
+		return new ShapeTransform( this );
 	}
 
 	@Override
-	protected EllipsoidShape create( final EllipsoidShape obj )
+	protected ShapeTransform create( final ShapeTransform obj )
 	{
 		setModified();
 		return super.create( obj );
 	}
 
 	@Override
-	protected void delete( final EllipsoidShape obj )
+	protected void delete( final ShapeTransform obj )
 	{
 		setModified();
 		super.delete( obj );

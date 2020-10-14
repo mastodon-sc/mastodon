@@ -11,7 +11,7 @@ public class EllipsoidMath
 	private final float[] edata = new float[ 9 ];
 	private final float[] invedata = new float[ 9 ];
 
-	public void setFromVertex( final BvvVertex< ?, ? > vertex, final EllipsoidShape ellipsoidShape )
+	public void setFromVertex( final BvvVertex< ?, ? > vertex, final ShapeTransform shapeTransform )
 	{
 		vertex.getCovariance( cov );
 		eig3.decomposeSymmetric( cov );
@@ -34,9 +34,9 @@ public class EllipsoidMath
 			}
 		}
 
-		ellipsoidShape.e.set( edata );
-		ellipsoidShape.inve.set( invedata );
-		ellipsoidShape.t.set( vertex.x(), vertex.y(), vertex.z() );
+		shapeTransform.e.set( edata );
+		shapeTransform.inve.set( invedata );
+		shapeTransform.t.set( vertex.x(), vertex.y(), vertex.z() );
 	}
 
 	public void setFromVertex( final BvvVertex< ?, ? > vertex, final Ellipsoid ellipsoid )

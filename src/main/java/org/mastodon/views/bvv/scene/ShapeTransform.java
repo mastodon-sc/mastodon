@@ -9,11 +9,11 @@ import org.mastodon.views.bvv.pool.attributes.Matrix3fAttributeValue;
 import org.mastodon.views.bvv.pool.attributes.Vector3fAttributeValue;
 
 /**
- * Ellipsoid instance in vertex attribute array.
+ * Transformation of a shape (ellipsoid, cylinder) consisting of scaling, rotation, and translation.
  *
  * @author Tobias Pietzsch
  */
-class EllipsoidShape extends PoolObject< EllipsoidShape, EllipsoidShapePool, BufferMappedElement >
+class ShapeTransform extends PoolObject< ShapeTransform, ShapeTransformPool, BufferMappedElement >
 {
 	public static class EllipsoidShapeLayout extends PoolObjectLayoutJoml
 	{
@@ -28,7 +28,7 @@ class EllipsoidShape extends PoolObject< EllipsoidShape, EllipsoidShapePool, Buf
 	public final Matrix3fAttributeValue inve;
 	public final Vector3fAttributeValue t;
 
-	EllipsoidShape( final EllipsoidShapePool pool )
+	ShapeTransform( final ShapeTransformPool pool )
 	{
 		super( pool );
 		e = pool.mat3fE.createAttributeValue( this );
@@ -36,7 +36,7 @@ class EllipsoidShape extends PoolObject< EllipsoidShape, EllipsoidShapePool, Buf
 		t = pool.vec3fT.createAttributeValue( this );
 	}
 
-	public EllipsoidShape init()
+	public ShapeTransform init()
 	{
 		e.identity();
 		inve.identity();
@@ -44,7 +44,7 @@ class EllipsoidShape extends PoolObject< EllipsoidShape, EllipsoidShapePool, Buf
 		return this;
 	}
 
-	public void set( EllipsoidShape other )
+	public void set( ShapeTransform other )
 	{
 		this.e.set( other.e );
 		this.inve.set( other.inve );

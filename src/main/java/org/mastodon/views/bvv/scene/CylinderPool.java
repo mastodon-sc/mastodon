@@ -5,13 +5,13 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 
 class CylinderPool implements ModifiableRefPool< Cylinder >
 {
-	final EllipsoidShapePool shapes;
+	final ShapeTransformPool shapes;
 
 	final ColorPool colors;
 
 	private final ConcurrentLinkedQueue< Cylinder > tmpObjRefs;
 
-	public CylinderPool( final EllipsoidShapePool shapes, final ColorPool colors )
+	public CylinderPool( final ShapeTransformPool shapes, final ColorPool colors )
 	{
 		this.shapes = shapes;
 		this.colors = colors;
@@ -90,7 +90,7 @@ class CylinderPool implements ModifiableRefPool< Cylinder >
 	// garbage-free version
 	public Iterator< Cylinder > iterator( final Cylinder obj )
 	{
-		final Iterator< EllipsoidShape > si = shapes.iterator( obj.shape );
+		final Iterator< ShapeTransform > si = shapes.iterator( obj.shape );
 		final Iterator< Color > ci = colors.iterator( obj.color );
 		return new Iterator< Cylinder >()
 		{

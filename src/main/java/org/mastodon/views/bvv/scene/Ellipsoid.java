@@ -8,7 +8,7 @@ public class Ellipsoid implements ModifiableRef< Ellipsoid >
 {
 	private final EllipsoidPool pool;
 
-	final EllipsoidShape shape;
+	final ShapeTransform shape;
 	final Color color;
 
 	public final Matrix3fAttributeValue e;

@@ -8,7 +8,7 @@ public class Cylinder implements ModifiableRef< Cylinder >
 {
 	private final CylinderPool pool;
 
-	final EllipsoidShape shape;
+	final ShapeTransform shape;
 	final Color color;
 
 	public final Matrix3fAttributeValue e;
