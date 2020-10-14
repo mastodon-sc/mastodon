@@ -39,13 +39,12 @@ public class EllipsoidShapePool extends Pool< EllipsoidShape, BufferMappedElemen
 	}
 
 	/**
-	 * Get the {@code ByteBuffer} slice with the TODO
-	 * NB: resets modified flag.
+	 * Get the modified flag, and reset it to {@code false}.
 	 * @return
 	 */
-	private ByteBuffer getBufferIfModified()
+	public boolean getAndClearModified()
 	{
-		return modified.getAndSet( false ) ? buffer() : null;
+		return modified.getAndSet( false );
 	}
 
 	/**

@@ -39,7 +39,7 @@ public class EllipsoidMath
 		ellipsoidShape.t.set( vertex.x(), vertex.y(), vertex.z() );
 	}
 
-	public void setFromVertex( final BvvVertex< ?, ? > vertex, final EllipsoidPlayground.Ellipsoid ellipsoid )
+	public void setFromVertex( final BvvVertex< ?, ? > vertex, final Ellipsoid ellipsoid )
 	{
 		vertex.getCovariance( cov );
 		eig3.decomposeSymmetric( cov );
