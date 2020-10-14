@@ -1,12 +1,13 @@
 package org.mastodon.views.bvv.scene;
 
+import java.util.Iterator;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class EllipsoidPool implements ModifiableRefPool< Ellipsoid >
 {
-	private final EllipsoidShapePool shapes;
+	final EllipsoidShapePool shapes;
 
-	private final ColorPool colors;
+	final ColorPool colors;
 
 	private final ConcurrentLinkedQueue< Ellipsoid > tmpObjRefs;
 
@@ -78,5 +79,40 @@ public class EllipsoidPool implements ModifiableRefPool< Ellipsoid >
 		shapes.create( ref.shape );
 		colors.create( ref.color );
 		return ref;
+	}
+
+	@Override
+	public Iterator< Ellipsoid > iterator()
+	{
+		return iterator( createRef() );
+	}
+
+	// garbage-free version
+	public Iterator< Ellipsoid > iterator( final Ellipsoid obj )
+	{
+		final Iterator< EllipsoidShape > si = shapes.iterator( obj.shape );
+		final Iterator< Color > ci = colors.iterator( obj.color );
+		return new Iterator< Ellipsoid >()
+		{
+			@Override
+			public boolean hasNext()
+			{
+				return si.hasNext();
+			}
+
+			@Override
+			public Ellipsoid next()
+			{
+				si.next();
+				ci.next();
+				return obj;
+			}
+
+			@Override
+			public void remove()
+			{
+				throw new UnsupportedOperationException();
+			}
+		};
 	}
 }

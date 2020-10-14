@@ -39,8 +39,6 @@ public class BvvRenderer< V extends BvvVertex< V, E >, E extends BvvEdge< E, V >
 	private final InstancedEllipsoid instancedEllipsoid;
 	private final InstancedCylinder instancedCylinder;
 
-	private final ReusableInstanceArrays< InstancedEllipsoid.InstanceArray > reusableInstanceArrays;
-
 	public BvvRenderer(
 			final int renderWidth,
 			final int renderHeight,
@@ -52,16 +50,8 @@ public class BvvRenderer< V extends BvvVertex< V, E >, E extends BvvEdge< E, V >
 		this.selection = selection;
 		this.highlight = highlight;
 		sceneBuf = new OffScreenFrameBufferWithDepth( renderWidth, renderHeight, GL_RGB8 );
-		instancedEllipsoid = new InstancedEllipsoid( 3 );
+		instancedEllipsoid = new InstancedEllipsoid( 3, 10 );
 		instancedCylinder = new InstancedCylinder( 36 );
-
-		final int numInstanceArrays = 10;
-		reusableInstanceArrays = new ReusableInstanceArrays<>(
-				t -> graph.getEllipsoids().forTimepoint( t ).getModCount(),
-				numInstanceArrays,
-				instancedEllipsoid::createInstanceArray
-		);
-
 		selection.listeners().add( this::selectionChanged );
 	}
 
@@ -90,35 +80,18 @@ public class BvvRenderer< V extends BvvVertex< V, E >, E extends BvvEdge< E, V >
 		gl.glEnable( GL_CULL_FACE );
 		gl.glCullFace( GL_BACK );
 		gl.glFrontFace( GL_CCW );
-		final InstancedEllipsoid.InstanceArray instanceArray = reusableInstanceArrays.getForTimepoint( timepoint );
-		final EllipsoidInstances< V, E > instances = graph.getEllipsoids().forTimepoint( timepoint );
-		final int modCount = instances.getModCount();
-		final boolean needShapeUpdate = instanceArray.getModCount() != modCount;
-		if ( needShapeUpdate )
-		{
-			instanceArray.setModCount( modCount );
-			instanceArray.updateShapes( gl, instances.ellipsoidBuffer().asFloatBuffer() );
-		}
 
-		final boolean needColorUpdate = instances.getColorModCount() != colorModCount;
-		if ( needColorUpdate )
-		{
-			instances.setColorModCount( colorModCount );
-			final Vector3f defaultColor = new Vector3f( 0.5f, 1.0f, 0.5f );
-			final Vector3f selectedColor = new Vector3f( 1.0f, 0.7f, 0.7f );
-			instances.updateColors( v -> selection.isSelected( v ) ? selectedColor : defaultColor );
-		}
-
-		if ( needShapeUpdate || needColorUpdate )
-		{
-			instanceArray.updateColors( gl, instances.colorBuffer().asFloatBuffer() );
-		}
+		final ColoredEllipsoids< V, E > ellipsoids = graph.getEllipsoids().forTimepoint( timepoint );
+		final Vector3f defaultColor = new Vector3f( 0.5f, 1.0f, 0.5f );
+		final Vector3f selectedColor = new Vector3f( 1.0f, 0.7f, 0.7f );
+		ellipsoids.updateColors( colorModCount, v -> selection.isSelected( v ) ? selectedColor : defaultColor );
 
 		final V vref = graph.vertexRef();
 		final V vertex = highlight.getHighlightedVertex( vref );
-		final int highlightId = instances.indexOf( vertex );
+		int highlightId = ellipsoids.indexOf( vertex );
 		graph.releaseRef( vref );
-		instancedEllipsoid.draw( gl, pv, camview, instanceArray, highlightId );
+
+		instancedEllipsoid.draw( gl, pv, camview, ellipsoids.getEllipsoids(), highlightId );
 
 		if ( cylInstanceArray == null )
 		{

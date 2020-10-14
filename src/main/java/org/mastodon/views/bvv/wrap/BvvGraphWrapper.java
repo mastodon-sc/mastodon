@@ -16,12 +16,12 @@ import org.mastodon.graph.GraphIdBimap;
 import org.mastodon.graph.GraphListener;
 import org.mastodon.graph.ListenableReadOnlyGraph;
 import org.mastodon.graph.Vertex;
+import org.mastodon.spatial.SpatioTemporalIndex;
 import org.mastodon.views.bvv.BvvEdge;
 import org.mastodon.views.bvv.BvvGraph;
 import org.mastodon.views.bvv.BvvVertex;
-import org.mastodon.views.bvv.EllipsoidInstances;
-import org.mastodon.views.bvv.EllipsoidsPerTimepoint;
-import org.mastodon.spatial.SpatioTemporalIndex;
+import org.mastodon.views.bvv.ColoredEllipsoids;
+import org.mastodon.views.bvv.ColoredEllipsoidsPerTimepoint;
 import org.scijava.listeners.Listeners;
 
 /**
@@ -276,24 +276,24 @@ public class BvvGraphWrapper< V extends Vertex< E >, E extends Edge< V > > imple
 	 * GraphListener
 	 */
 
-	private static class EllipsoidsPerTimepointImp< V extends BvvVertex< V, E >, E extends BvvEdge< E, V > > implements EllipsoidsPerTimepoint< V, E >
+	private static class ColoredEllipsoidsPerTimepointImp< V extends BvvVertex< V, E >, E extends BvvEdge< E, V > > implements ColoredEllipsoidsPerTimepoint< V, E >
 	{
-		private final TIntObjectArrayMap< EllipsoidInstances< V, E > > map = new TIntObjectArrayMap<>();
+		private final TIntObjectArrayMap< ColoredEllipsoids< V, E > > map = new TIntObjectArrayMap<>();
 
 		private final BvvGraph< V, E > graph;
 
-		EllipsoidsPerTimepointImp( BvvGraph< V, E > graph )
+		ColoredEllipsoidsPerTimepointImp( BvvGraph< V, E > graph )
 		{
 			this.graph = graph;
 		}
 
 		@Override
-		public EllipsoidInstances< V, E > forTimepoint( final int timepoint )
+		public ColoredEllipsoids< V, E > forTimepoint( final int timepoint )
 		{
-			EllipsoidInstances< V, E > ellipsoids = map.get( timepoint );
+			ColoredEllipsoids< V, E > ellipsoids = map.get( timepoint );
 			if ( ellipsoids == null )
 			{
-				ellipsoids = new EllipsoidInstances<>( graph );
+				ellipsoids = new ColoredEllipsoids<>( graph );
 				map.put( timepoint, ellipsoids );
 			}
 			return ellipsoids;
@@ -301,12 +301,12 @@ public class BvvGraphWrapper< V extends Vertex< E >, E extends Edge< V > > imple
 
 		void addInstanceFor( final V vertex )
 		{
-			forTimepoint( vertex.getTimepoint() ).addInstanceFor( vertex );
+			forTimepoint( vertex.getTimepoint() ).addOrUpdate( vertex );
 		}
 
 		void removeInstanceFor( final V vertex )
 		{
-			forTimepoint( vertex.getTimepoint() ).removeInstanceFor( vertex );
+			forTimepoint( vertex.getTimepoint() ).remove( vertex );
 		}
 
 		void clear()
@@ -315,10 +315,10 @@ public class BvvGraphWrapper< V extends Vertex< E >, E extends Edge< V > > imple
 		}
 	}
 
-	private final EllipsoidsPerTimepointImp< BvvVertexWrapper< V, E >, BvvEdgeWrapper< V, E > > ellipsoidsPerTimepoint = new EllipsoidsPerTimepointImp<>( this );
+	private final ColoredEllipsoidsPerTimepointImp< BvvVertexWrapper< V, E >, BvvEdgeWrapper< V, E > > ellipsoidsPerTimepoint = new ColoredEllipsoidsPerTimepointImp<>( this );
 
 	@Override
-	public EllipsoidsPerTimepoint< BvvVertexWrapper< V, E >, BvvEdgeWrapper< V, E > > getEllipsoids()
+	public ColoredEllipsoidsPerTimepoint< BvvVertexWrapper< V, E >, BvvEdgeWrapper< V, E > > getEllipsoids()
 	{
 		return ellipsoidsPerTimepoint;
 	}

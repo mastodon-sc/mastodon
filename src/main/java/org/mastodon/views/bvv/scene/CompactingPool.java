@@ -1,5 +1,6 @@
 package org.mastodon.views.bvv.scene;
 
+import java.util.Iterator;
 import java.util.NoSuchElementException;
 import org.mastodon.collection.IntRefMap;
 import org.mastodon.collection.RefIntMap;
@@ -7,7 +8,7 @@ import org.mastodon.collection.ref.IntRefHashMap;
 import org.mastodon.collection.ref.RefIntHashMap;
 
 // (to be reused for Ellipsoids and Cylinders)
-public class CompactingPool< O extends ModifiableRef< O > >
+public class CompactingPool< O extends ModifiableRef< O > > implements Iterable< O >
 {
 	private final ModifiableRefPool< O > pool;
 
@@ -34,20 +35,51 @@ public class CompactingPool< O extends ModifiableRef< O > >
 		objToKey = new RefIntHashMap<>( pool, NO_ENTRY_VALUE, initialCapacity );
 	}
 
-	// TODO version with reusable ref
-	public O get( final int key )
+	/**
+	 * Generates an object reference.
+	 *
+	 * @return a new, uninitialized, reference object.
+	 */
+	public O createRef()
 	{
-		return keyToObj.get( key );
+		return pool.createRef();
 	}
 
-	// TODO version with reusable ref
+	/**
+	 * Releases a previously created reference object.
+	 *
+	 * @param obj
+	 *            the reference object to release.
+	 */
+	public void releaseRef( final O obj )
+	{
+		pool.releaseRef( obj );
+	}
+
+	// TODO where is this used? use version with reusable ref instead?
+	public O get( final int key )
+	{
+		return get( key, pool.createRef() );
+	}
+
+	public O get( final int key, final O ref )
+	{
+		return keyToObj.get( key, ref );
+	}
+
+	// TODO where is this used? use version with reusable ref instead?
 	public O getOrAdd( final int key )
+	{
+		return getOrAdd( key, pool.createRef() );
+	}
+
+	public O getOrAdd( final int key, final O ref )
 	{
 		O obj = get( key );
 		if ( obj == null )
 		{
 			// create new value
-			obj = pool.create( pool.createRef() );
+			obj = pool.create( ref );
 			keyToObj.put( key, obj );
 			objToKey.put( obj, key );
 		}
@@ -61,24 +93,54 @@ public class CompactingPool< O extends ModifiableRef< O > >
 
 	public void remove( final int key )
 	{
-		// TODO reusable refs
-		final O obj = keyToObj.remove( key );
-		if ( obj == null )
-			throw new NoSuchElementException();
-		if ( pool.getId( obj ) == size() - 1 )
+		final O ref = createRef();
+		final O ref2 = createRef();
+		try
 		{
-			objToKey.remove( obj );
-			pool.delete( obj );
+			final O obj = keyToObj.remove( key, ref );
+			if ( obj == null )
+				throw new NoSuchElementException();
+			if ( pool.getId( obj ) == size() - 1 )
+			{
+				objToKey.remove( obj );
+				pool.delete( obj );
+			}
+			else
+			{
+				// swap with last, and remove last
+				final O lastObj = pool.getObject( size() - 1, ref2 );
+				obj.set( lastObj );
+				final int lastKey = objToKey.remove( lastObj );
+				objToKey.put( obj, lastKey );
+				keyToObj.put( lastKey, obj );
+				pool.delete( lastObj );
+			}
 		}
-		else
+		finally
 		{
-			// swap with last, and remove last
-			final O lastObj = pool.getObject( size() - 1, pool.createRef() );
-			obj.set( lastObj );
-			final int lastKey = objToKey.remove( lastObj );
-			objToKey.put( obj, lastKey );
-			keyToObj.put( lastKey, obj );
-			pool.delete( lastObj );
+			releaseRef( ref );
+			releaseRef( ref2 );
 		}
+	}
+
+	/**
+	 * Get key of obj.
+	 * If obj is not present (shouldn't happen except for stale refs), {@link #NO_ENTRY_VALUE} is returned.
+	 */
+	public int keyOf( O obj )
+	{
+		return objToKey.get( obj );
+	}
+
+	@Override
+	public Iterator< O > iterator()
+	{
+		return iterator( createRef() );
+	}
+
+	// garbage-free version
+	public Iterator< O > iterator( final O obj )
+	{
+		return pool.iterator( obj );
 	}
 }
