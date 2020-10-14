@@ -38,7 +38,7 @@ public class InstancedEllipsoid
 	private int sphereEbo;
 	private int sphereNumElements;
 
-	private final ReusableInstanceArrays< Ellipsoids, InstanceArray > instanceArrays;
+	private final ReusableResources< Ellipsoids, InstanceArray > instanceArrays;
 
 	public InstancedEllipsoid()
 	{
@@ -52,7 +52,7 @@ public class InstancedEllipsoid
 				.watch( InstancedEllipsoid.class, "instancedellipsoid.vp" )
 				.watch( InstancedEllipsoid.class, "instancedellipsoid.fp" );
 		hotloadShader();
-		instanceArrays = new ReusableInstanceArrays<>( numReusableInstanceArrays, InstanceArray::new );
+		instanceArrays = new ReusableResources<>( numReusableInstanceArrays, InstanceArray::new );
 	}
 
 	private void hotloadShader()
@@ -90,7 +90,7 @@ public class InstancedEllipsoid
 		gl.glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, 0 );
 	}
 
-	class InstanceArray extends ReusableInstanceArray< Ellipsoids >
+	class InstanceArray extends ReusableResource< Ellipsoids >
 	{
 		private int instanceCount;
 		private int vboShape;

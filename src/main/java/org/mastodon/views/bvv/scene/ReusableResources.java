@@ -7,13 +7,13 @@ import java.util.Map;
 import java.util.WeakHashMap;
 import java.util.function.Supplier;
 
-class ReusableInstanceArrays< K, A extends ReusableInstanceArray< K > >
+class ReusableResources< K, A extends ReusableResource< K > >
 {
 	private int lrutimestamp = 1;
 	private final List< A > arrays = new ArrayList<>();
 	private final Map< K, A > keyToArray = new WeakHashMap<>();
 
-	ReusableInstanceArrays( final int size, final Supplier< A > createInstanceArray )
+	ReusableResources( final int size, final Supplier< A > createInstanceArray )
 	{
 		for ( int i = 0; i < size; ++i )
 			arrays.add( createInstanceArray.get() );

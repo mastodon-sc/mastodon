@@ -9,7 +9,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
  *
  * @param <K>
  */
-abstract class ReusableInstanceArray< K >
+abstract class ReusableResource< K >
 {
 	// TODO: should be a WeakReference
 	protected K key = null;

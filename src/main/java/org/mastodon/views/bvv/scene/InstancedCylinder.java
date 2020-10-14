@@ -38,7 +38,7 @@ public class InstancedCylinder
 	private int cylinderEbo;
 	private int cylinderNumElements;
 
-	private final ReusableInstanceArrays< Cylinders, InstanceArray > instanceArrays;
+	private final ReusableResources< Cylinders, InstanceArray > instanceArrays;
 
 	public InstancedCylinder()
 	{
@@ -52,7 +52,7 @@ public class InstancedCylinder
 				.watch( InstancedCylinder.class, "instancedcylinder.vp" )
 				.watch( InstancedEllipsoid.class, "instancedellipsoid.fp" );
 		hotloadShader();
-		instanceArrays = new ReusableInstanceArrays<>( numReusableInstanceArrays, InstanceArray::new );
+		instanceArrays = new ReusableResources<>( numReusableInstanceArrays, InstanceArray::new );
 	}
 
 	private void hotloadShader()
@@ -90,7 +90,7 @@ public class InstancedCylinder
 		gl.glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, 0 );
 	}
 
-	class InstanceArray extends ReusableInstanceArray< Cylinders >
+	class InstanceArray extends ReusableResource< Cylinders >
 	{
 		private int instanceCount;
 		private int vboShape;
