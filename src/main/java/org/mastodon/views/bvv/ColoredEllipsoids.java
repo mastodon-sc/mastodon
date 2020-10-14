@@ -36,7 +36,9 @@ public class ColoredEllipsoids< V extends BvvVertex< V, E >, E extends BvvEdge< 
 	public void addOrUpdate( final V vertex )
 	{
 		colorModCount = -1;
-		math.setFromVertex( vertex, ellipsoids.getOrAdd( vertex.getInternalPoolIndex() ) );
+		final Ellipsoid ref = ellipsoids.createRef();
+		math.setFromVertex( vertex, ellipsoids.getOrAdd( vertex.getInternalPoolIndex(), ref ) );
+		ellipsoids.releaseRef( ref );
 	}
 
 	public void remove( final V vertex )

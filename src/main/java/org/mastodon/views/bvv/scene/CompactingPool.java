@@ -56,7 +56,6 @@ public class CompactingPool< O extends ModifiableRef< O > > implements Iterable<
 		pool.releaseRef( obj );
 	}
 
-	// TODO where is this used? use version with reusable ref instead?
 	public O get( final int key )
 	{
 		return get( key, pool.createRef() );
@@ -67,7 +66,6 @@ public class CompactingPool< O extends ModifiableRef< O > > implements Iterable<
 		return keyToObj.get( key, ref );
 	}
 
-	// TODO where is this used? use version with reusable ref instead?
 	public O getOrAdd( final int key )
 	{
 		return getOrAdd( key, pool.createRef() );
@@ -75,7 +73,7 @@ public class CompactingPool< O extends ModifiableRef< O > > implements Iterable<
 
 	public O getOrAdd( final int key, final O ref )
 	{
-		O obj = get( key );
+		O obj = get( key, ref );
 		if ( obj == null )
 		{
 			// create new value
