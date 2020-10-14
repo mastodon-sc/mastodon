@@ -1,5 +1,7 @@
 package org.mastodon.views.bvv.scene;
 
+import java.util.concurrent.atomic.AtomicBoolean;
+
 /**
  * GPU resources for parameters of instances.
  * Associated to a pool.
@@ -12,13 +14,13 @@ abstract class ReusableInstanceArray< K >
 	// TODO: should be a WeakReference
 	protected K key = null;
 
-	protected boolean needsUpdate = false;
+	protected AtomicBoolean needsUpdate = new AtomicBoolean();
 
 	int lru = -1;
 
 	void associate( K key )
 	{
 		this.key = key;
-		needsUpdate = true;
+		needsUpdate.set( true );
 	}
 }

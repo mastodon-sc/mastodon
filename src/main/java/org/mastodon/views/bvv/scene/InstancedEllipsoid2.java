@@ -30,7 +30,7 @@ import static com.jogamp.opengl.GL.GL_UNSIGNED_INT;
  * {@code InstanceArray}s can be created using {@link #createInstanceArray()} and filled with data using {@code updateShapes()} and {@code updateColors()}.
  * {@code InstanceArray} has a modCount field that is used (externally) to keep track of whether the ellipsoid data is up to date.
  */
-public class InstancedEllipsoid
+public class InstancedEllipsoid2
 {
 	private final int subdivisions;
 
@@ -41,21 +41,29 @@ public class InstancedEllipsoid
 	private int sphereEbo;
 	private int sphereNumElements;
 
-	public InstancedEllipsoid( final int subdivisions )
+	private final ReusableInstanceArrays< Ellipsoids, InstanceArray > instanceArrays;
+
+	public InstancedEllipsoid2()
+	{
+		this( 3, 10 );
+	}
+
+	public InstancedEllipsoid2( final int subdivisions, final int numReusableInstanceArrays )
 	{
 		this.subdivisions = subdivisions;
 		hotloader = new ShaderHotLoader()
-				.watch( InstancedEllipsoid.class, "instancedellipsoid.vp" )
-				.watch( InstancedEllipsoid.class, "instancedellipsoid.fp" );
+				.watch( InstancedEllipsoid2.class, "instancedellipsoid.vp" )
+				.watch( InstancedEllipsoid2.class, "instancedellipsoid.fp" );
 		hotloadShader();
+		instanceArrays = new ReusableInstanceArrays<>( numReusableInstanceArrays, InstanceArray::new );
 	}
 
 	private void hotloadShader()
 	{
 		if ( hotloader.isModified() || prog == null )
 		{
-			final Segment ex1vp = new SegmentTemplate( InstancedEllipsoid.class, "instancedellipsoid.vp" ).instantiate();
-			final Segment ex1fp = new SegmentTemplate( InstancedEllipsoid.class, "instancedellipsoid.fp" ).instantiate();
+			final Segment ex1vp = new SegmentTemplate( InstancedEllipsoid2.class, "instancedellipsoid.vp" ).instantiate();
+			final Segment ex1fp = new SegmentTemplate( InstancedEllipsoid2.class, "instancedellipsoid.fp" ).instantiate();
 			prog = new DefaultShader( ex1vp.getCode(), ex1fp.getCode() );
 		}
 	}
@@ -85,50 +93,8 @@ public class InstancedEllipsoid
 		gl.glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, 0 );
 	}
 
-	public InstanceArray createInstanceArray()
+	class InstanceArray extends ReusableInstanceArray< Ellipsoids >
 	{
-		return new InstanceArray();
-	}
-
-	public class InstanceArray implements HasModCount
-	{
-		public void updateShapes( GL3 gl, FloatBuffer data )
-		{
-			if ( !initialized )
-				init( gl );
-
-			gl.glBindBuffer( GL_ARRAY_BUFFER, vboShape );
-			final int size = data.limit();
-			gl.glBufferData( GL_ARRAY_BUFFER, size * Float.BYTES, data, GL_DYNAMIC_DRAW );
-			instanceCount = size / 21;
-			gl.glBindBuffer( GL_ARRAY_BUFFER, 0 );
-		}
-
-		public void updateColors( GL3 gl, FloatBuffer data )
-		{
-			if ( !initialized )
-				init( gl );
-
-			gl.glBindBuffer( GL_ARRAY_BUFFER, vboColor );
-			final int size = data.limit();
-			gl.glBufferData( GL_ARRAY_BUFFER, size * Float.BYTES, data, GL_DYNAMIC_DRAW );
-			gl.glBindBuffer( GL_ARRAY_BUFFER, 0 );
-		}
-
-		@Override
-		public int getModCount()
-		{
-			return modCount;
-		}
-
-		@Override
-		public void setModCount( final int modCount )
-		{
-			this.modCount = modCount;
-		}
-
-		private int modCount = -1;
-
 		private int instanceCount;
 		private int vboShape;
 		private int vboColor;
@@ -139,9 +105,6 @@ public class InstancedEllipsoid
 		private void init( GL3 gl )
 		{
 			initialized = true;
-
-			if ( !InstancedEllipsoid.this.initialized )
-				InstancedEllipsoid.this.init( gl );
 
 			final int[] tmp = new int[ 2 ];
 			gl.glGenBuffers( 2, tmp, 0 );
@@ -169,10 +132,41 @@ public class InstancedEllipsoid
 			gl.glBindVertexArray( 0 );
 		}
 
+		private void update( GL3 gl )
+		{
+			boolean updateShape = needsUpdate.getAndSet( false );
+			boolean updateColor = updateShape;
+
+			final Ellipsoids ellipsoids = this.key;
+			updateShape |= ellipsoids.shapes.getAndClearModified();
+			updateColor |= ellipsoids.colors.getAndClearModified();
+
+			if ( updateShape )
+			{
+				final FloatBuffer data = ellipsoids.shapes.buffer().asFloatBuffer();
+				final int size = data.limit();
+				gl.glBindBuffer( GL_ARRAY_BUFFER, vboShape );
+				gl.glBufferData( GL_ARRAY_BUFFER, size * Float.BYTES, data, GL_DYNAMIC_DRAW );
+				gl.glBindBuffer( GL_ARRAY_BUFFER, 0 );
+				instanceCount = ellipsoids.size();
+			}
+
+			if ( updateColor )
+			{
+				final FloatBuffer data = ellipsoids.colors.buffer().asFloatBuffer();
+				final int size = data.limit();
+				gl.glBindBuffer( GL_ARRAY_BUFFER, vboColor );
+				gl.glBufferData( GL_ARRAY_BUFFER, size * Float.BYTES, data, GL_DYNAMIC_DRAW );
+				gl.glBindBuffer( GL_ARRAY_BUFFER, 0 );
+			}
+		}
+
 		private void draw( GL3 gl )
 		{
 			if ( !initialized )
 				init( gl );
+
+			update( gl );
 
 			gl.glBindVertexArray( vao );
 			gl.glDrawElementsInstanced( GL_TRIANGLES, sphereNumElements, GL_UNSIGNED_INT, 0, instanceCount );
@@ -180,7 +174,7 @@ public class InstancedEllipsoid
 		}
 	}
 
-	public void draw( GL3 gl, Matrix4fc pvm, Matrix4f vm, InstanceArray instanceArray, final int highlightIndex )
+	public void draw( GL3 gl, Matrix4fc pvm, Matrix4f vm, Ellipsoids ellipsoids, final int highlightIndex )
 	{
 		if ( !initialized )
 			init( gl );
@@ -197,6 +191,6 @@ public class InstancedEllipsoid
 		prog.setUniforms( context );
 		prog.use( context );
 
-		instanceArray.draw( gl );
+		instanceArrays.get( ellipsoids ).draw( gl );
 	}
 }
