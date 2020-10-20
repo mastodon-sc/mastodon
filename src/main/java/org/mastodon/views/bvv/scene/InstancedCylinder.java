@@ -134,7 +134,7 @@ public class InstancedCylinder
 			boolean updateShape = needsUpdate.getAndSet( false );
 			boolean updateColor = updateShape;
 
-			final Cylinders cylinders = this.key;
+			final Cylinders cylinders = this.key();
 			updateShape |= cylinders.shapes.getAndClearModified();
 			updateColor |= cylinders.colors.getAndClearModified();
 

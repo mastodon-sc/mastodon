@@ -30,7 +30,7 @@ class ReusableResources< K, A extends ReusableResource< K > >
 
 		for ( A a : arrays )
 		{
-			if ( a.key == null )
+			if ( a.key() == null )
 			{
 				array = a;
 				break;
@@ -43,8 +43,9 @@ class ReusableResources< K, A extends ReusableResource< K > >
 			array = arrays.get( 0 );
 		}
 
-		if ( array.key != null )
-			keyToArray.remove( array.key );
+		final K k = array.key();
+		if ( k != null )
+			keyToArray.remove( k );
 
 		array.lru = lrutimestamp++;
 		array.associate( key );

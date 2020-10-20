@@ -134,7 +134,7 @@ public class InstancedEllipsoid
 			boolean updateShape = needsUpdate.getAndSet( false );
 			boolean updateColor = updateShape;
 
-			final Ellipsoids ellipsoids = this.key;
+			final Ellipsoids ellipsoids = this.key();
 			updateShape |= ellipsoids.shapes.getAndClearModified();
 			updateColor |= ellipsoids.colors.getAndClearModified();
 
