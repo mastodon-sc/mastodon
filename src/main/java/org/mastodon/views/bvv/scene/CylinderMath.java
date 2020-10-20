@@ -27,7 +27,7 @@ public class CylinderMath
 		E.scale( 1, 1, length );
 
 		cylinder.e.set( E );
-		cylinder.inve.set( Einv );
+		cylinder.invte.set( Einv );
 		cylinder.t.set( from );
 	}
 }

@@ -11,9 +11,24 @@ public class Ellipsoid implements ModifiableRef< Ellipsoid >
 	final ShapeTransform shape;
 	final Color color;
 
+	/**
+	 * Transform consisting of (anisotropic) scaling and rotation.
+	 */
 	public final Matrix3fAttributeValue e;
-	public final Matrix3fAttributeValue inve;
+
+	/**
+	 * Inverse transpose of {@link #e} (to transform normals).
+	 */
+	public final Matrix3fAttributeValue invte;
+
+	/**
+	 * Translation
+	 */
 	public final Vector3fAttributeValue t;
+
+	/**
+	 * RGB color
+	 */
 	public final Vector3fAttributeValue rgb;
 
 	Ellipsoid( EllipsoidPool pool )
@@ -23,7 +38,7 @@ public class Ellipsoid implements ModifiableRef< Ellipsoid >
 		color = pool.colors.createRef();
 
 		e = shape.e;
-		inve = shape.inve;
+		invte = shape.invte;
 		t = shape.t;
 		rgb = color.color;
 	}

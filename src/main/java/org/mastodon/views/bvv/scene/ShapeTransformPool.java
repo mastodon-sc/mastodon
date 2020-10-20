@@ -13,7 +13,7 @@ import org.mastodon.views.bvv.pool.attributes.Vector3fAttribute;
 class ShapeTransformPool extends Pool< ShapeTransform, BufferMappedElement >
 {
 	final Matrix3fAttribute< ShapeTransform > mat3fE = new Matrix3fAttribute<>( ShapeTransform.layout.mat3fE, this );
-	final Matrix3fAttribute< ShapeTransform > mat3fInvE = new Matrix3fAttribute<>( ShapeTransform.layout.mat3fInvE, this );
+	final Matrix3fAttribute< ShapeTransform > mat3fInvTE = new Matrix3fAttribute<>( ShapeTransform.layout.mat3fInvTE, this );
 	final Vector3fAttribute< ShapeTransform > vec3fT = new Vector3fAttribute<>( ShapeTransform.layout.vec3fT, this );
 
 	private final AtomicBoolean modified = new AtomicBoolean( true );
@@ -29,7 +29,7 @@ class ShapeTransformPool extends Pool< ShapeTransform, BufferMappedElement >
 				SingleArrayMemPool.factory( BufferMappedElementArray.factory ) );
 
 		mat3fE.addPropertyChangeListener( o -> setModified() );
-		mat3fInvE.addPropertyChangeListener( o -> setModified() );
+		mat3fInvTE.addPropertyChangeListener( o -> setModified() );
 		vec3fT.addPropertyChangeListener( o -> setModified() );
 	}
 

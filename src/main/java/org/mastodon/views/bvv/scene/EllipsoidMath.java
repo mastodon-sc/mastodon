@@ -9,7 +9,7 @@ public class EllipsoidMath
 	private final JamaEigenvalueDecomposition eig3 = new JamaEigenvalueDecomposition( 3 );
 	private final double cov[][] = new double[ 3 ][ 3 ];
 	private final float[] edata = new float[ 9 ];
-	private final float[] invedata = new float[ 9 ];
+	private final float[] invtedata = new float[ 9 ];
 
 	public void setFromVertex( final BvvVertex< ?, ? > vertex, final ShapeTransform shapeTransform )
 	{
@@ -30,12 +30,12 @@ public class EllipsoidMath
 			for ( int j = 0; j < 3; ++j )
 			{
 				edata[ j + 3 * i ] = ( float ) ( e * V[ j ][ i ] );
-				invedata[ j + 3 * i ] = ( float ) ( inve * V[ j ][ i ] );
+				invtedata[ j + 3 * i ] = ( float ) ( inve * V[ j ][ i ] );
 			}
 		}
 
 		shapeTransform.e.set( edata );
-		shapeTransform.inve.set( invedata );
+		shapeTransform.invte.set( invtedata );
 		shapeTransform.t.set( vertex.x(), vertex.y(), vertex.z() );
 	}
 
@@ -58,12 +58,12 @@ public class EllipsoidMath
 			for ( int j = 0; j < 3; ++j )
 			{
 				edata[ j + 3 * i ] = ( float ) ( e * V[ j ][ i ] );
-				invedata[ j + 3 * i ] = ( float ) ( inve * V[ j ][ i ] );
+				invtedata[ j + 3 * i ] = ( float ) ( inve * V[ j ][ i ] );
 			}
 		}
 
 		ellipsoid.e.set( edata );
-		ellipsoid.inve.set( invedata );
+		ellipsoid.invte.set( invtedata );
 		ellipsoid.t.set( vertex.x(), vertex.y(), vertex.z() );
 	}
 }

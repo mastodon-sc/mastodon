@@ -18,28 +18,39 @@ class ShapeTransform extends PoolObject< ShapeTransform, ShapeTransformPool, Buf
 	public static class EllipsoidShapeLayout extends PoolObjectLayoutJoml
 	{
 		final Matrix3fField mat3fE = matrix3fField();
-		final Matrix3fField mat3fInvE = matrix3fField();
+		final Matrix3fField mat3fInvTE = matrix3fField();
 		final Vector3fField vec3fT = vector3fField();
 	}
 
 	public static EllipsoidShapeLayout layout = new EllipsoidShapeLayout();
 
+	/**
+	 * Transform consisting of (anisotropic) scaling and rotation.
+	 */
 	public final Matrix3fAttributeValue e;
-	public final Matrix3fAttributeValue inve;
+
+	/**
+	 * Inverse transpose of {@link #e} (to transform normals).
+	 */
+	public final Matrix3fAttributeValue invte;
+
+	/**
+	 * Translation
+	 */
 	public final Vector3fAttributeValue t;
 
 	ShapeTransform( final ShapeTransformPool pool )
 	{
 		super( pool );
 		e = pool.mat3fE.createAttributeValue( this );
-		inve = pool.mat3fInvE.createAttributeValue( this );
+		invte = pool.mat3fInvTE.createAttributeValue( this );
 		t = pool.vec3fT.createAttributeValue( this );
 	}
 
 	public ShapeTransform init()
 	{
 		e.identity();
-		inve.identity();
+		invte.identity();
 		t.zero();
 		return this;
 	}
@@ -47,7 +58,7 @@ class ShapeTransform extends PoolObject< ShapeTransform, ShapeTransformPool, Buf
 	public void set( ShapeTransform other )
 	{
 		this.e.set( other.e );
-		this.inve.set( other.inve );
+		this.invte.set( other.invte );
 		this.t.set( other.t );
 	}
 
@@ -57,7 +68,7 @@ class ShapeTransform extends PoolObject< ShapeTransform, ShapeTransformPool, Buf
 			final Vector3fc t )
 	{
 		this.e.set( e );
-		this.inve.set( inve );
+		this.invte.set( inve );
 		this.t.set( t );
 	}
 
@@ -72,6 +83,6 @@ class ShapeTransform extends PoolObject< ShapeTransform, ShapeTransformPool, Buf
 				getInternalPoolIndex(),
 				t.get().toString(),
 				e.get().toString(),
-				inve.get().toString() );
+				invte.get().toString() );
 	}
 }
