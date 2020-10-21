@@ -323,12 +323,23 @@ public class WindowManager
 		return null;
 	}
 
-	public MamutViewBvv createBigVolumeViewer()
+	public MamutViewBvv createBigVolumeViewer_()
 	{
 		if ( appModel != null )
 		{
 			final MamutViewBvv view = new MamutViewBvv( appModel );
 			addBvvWindow( view );
+			return view;
+		}
+		return null;
+	}
+
+	public MamutViewDbvv createBigVolumeViewer()
+	{
+		if ( appModel != null )
+		{
+			final MamutViewDbvv view = new MamutViewDbvv( appModel );
+//			addDbvvWindow( view ); TODO
 			return view;
 		}
 		return null;
