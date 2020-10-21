@@ -9,11 +9,9 @@ import org.mastodon.mamut.model.ModelGraph;
 import org.mastodon.mamut.model.Spot;
 import org.mastodon.model.HighlightModel;
 import org.mastodon.model.SelectionModel;
-import org.mastodon.views.bvv.scene.Cylinder;
-import org.mastodon.views.bvv.scene.CylinderMath;
-import org.mastodon.views.bvv.scene.Cylinders;
 import org.mastodon.views.bvv.scene.InstancedCylinder;
 import org.mastodon.views.bvv.scene.InstancedEllipsoid;
+import org.mastodon.views.bvv.scene.InstancedLink;
 import tpietzsch.offscreen.OffScreenFrameBufferWithDepth;
 import tpietzsch.util.MatrixMath;
 
@@ -45,7 +43,7 @@ public class DBvvRenderer
 	private double screenHeight = 480;
 
 	private final InstancedEllipsoid instancedEllipsoid;
-	private final InstancedCylinder instancedCylinder;
+	private final InstancedLink instancedLink;
 
 	public DBvvRenderer(
 			final int renderWidth,
@@ -61,7 +59,7 @@ public class DBvvRenderer
 		this.highlight = highlight;
 		sceneBuf = new OffScreenFrameBufferWithDepth( renderWidth, renderHeight, GL_RGB8 );
 		instancedEllipsoid = new InstancedEllipsoid( 3, 10 );
-		instancedCylinder = new InstancedCylinder( 36, 10 );
+		instancedLink = new InstancedLink( 36, 3, 20 );
 		selection.listeners().add( this::selectionChanged );
 	}
 
@@ -87,7 +85,7 @@ public class DBvvRenderer
 		gl.glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
 
 		gl.glEnable( GL_DEPTH_TEST );
-		gl.glEnable( GL_CULL_FACE );
+		gl.glDisable( GL_CULL_FACE );
 		gl.glCullFace( GL_BACK );
 		gl.glFrontFace( GL_CCW );
 
@@ -108,7 +106,10 @@ public class DBvvRenderer
 		// -- paint edges -----------------------------------------------------
 
 		// the maximum number of time-points into the past for which outgoing
-		final int timeLimit = 1000;
+		final int timeLimit = 10;
+		final double rHead = 0.5;
+		final double rTail = 0.01;
+		final double f = ( rTail - rHead ) / ( timeLimit + 1 );
 
 		final Link eref = graph.edgeRef();
 		for ( int t = Math.max( 0, timepoint - timeLimit + 1 ); t <= timepoint; ++t )
@@ -116,7 +117,8 @@ public class DBvvRenderer
 			final DColoredCylinders cylinders = entities.forTimepoint( t ).cylinders;
 			cylinders.updateColors( colorModCount, e -> selection.isSelected( e ) ? selectedColor : defaultColor );
 			highlightId = cylinders.indexOf( highlight.getHighlightedEdge( eref ) );
-			instancedCylinder.draw( gl, pv, camview, cylinders.getCylinders(), highlightId, 0.1, 0.2 );
+			final double r0 = rHead + f * ( timepoint - t );
+			instancedLink.draw( gl, pv, camview, cylinders.getCylinders(), highlightId, r0 + f, r0 );
 		}
 		graph.releaseRef( eref );
 

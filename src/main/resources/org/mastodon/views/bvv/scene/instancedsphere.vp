@@ -1,10 +1,7 @@
 layout (location = 0) in vec3 aPos;
 
-layout (location = 1) in mat3 e;
-layout (location = 4) in mat3 ite;
-layout (location = 7) in vec3 t;
-
-layout (location = 8) in vec3 color;
+layout (location = 1) in vec3 t;
+layout (location = 2) in vec3 color;
 
 out vec3 Normal;
 out vec3 FragPos;
@@ -20,13 +17,9 @@ const vec3 highlightColor = vec3( 1, 0, 0 );
 
 void main()
 {
-	float r = radii.x - radii.y;
-	float s = radii.x - aPos.z * r;
-	vec3 fPos = vec3( s * aPos.xy, aPos.z );
-	vec4 pos = vec4( e * fPos + t, 1 );
+	vec4 pos = vec4( radii.x * aPos + t, 1.0 );
 	gl_Position = pvm * pos;
-	vec3 n = vec3( aPos.xy, r );
-	Normal = normalize( itvm * ite * n );
+	Normal = normalize( itvm * aPos );
 	FragPos = vec3( vm * pos );
 
 	if ( gl_InstanceID == highlight)

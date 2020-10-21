@@ -26,16 +26,17 @@ public class CylinderMath
 		// TODO: avoid object creation (reuse joml objects)
 		final Vector3f k = to.sub( from, new Vector3f() );
 		final float length = k.length();
-		if ( length < 0.0001 )
+		if ( length < 1e-12f )
 		{
-			throw new RuntimeException( "TODO. not implemented yet" );
-			// need to set some default parameters here
+			cylinder.e.zero();
+			cylinder.invte.zero();
+			cylinder.t.zero();
+			return;
 		}
-		k.mul( 1.0f / length );
-		final Vector3f ei = new Vector3f().setComponent( k.minComponent(), 1 );
-
-		final Vector3f l = k.cross( ei, new Vector3f() );
-		final Vector3f m = l.cross( k, new Vector3f() );
+		k.mul( 1 / length );
+		final Vector3f l = new Vector3f();
+		final Vector3f m = new Vector3f();
+		perpendicular(k, l, m);
 
 		final Matrix3f E = new Matrix3f( l, m, k );
 		final Matrix3f Einv = E.scale( 1, 1, 1 / length, new Matrix3f() );
@@ -60,4 +61,42 @@ public class CylinderMath
 
 		set( new Vector3f( sx, sy, sz ), new Vector3f( tx, ty, tz ), cylinder );
 	}
+
+
+	// TODO: This is a fixed version of JOML's GeometryUtils.perpendicular(). Replace
+	//  once it has been fixed in a JOML release.
+	static void perpendicular(float x, float y, float z, Vector3f dest1, Vector3f dest2) {
+		float magX = z * z + y * y;
+		float magY = z * z + x * x;
+		float magZ = y * y + x * x;
+		float mag;
+		if (magX > magY && magX > magZ) {
+			dest1.x = 0;
+			dest1.y = z;
+			dest1.z = -y;
+			mag = magX;
+		} else if (magY > magZ) {
+			dest1.x = -z;
+			dest1.y = 0;
+			dest1.z = x;
+			mag = magY;
+		} else {
+			dest1.x = y;
+			dest1.y = -x;
+			dest1.z = 0;
+			mag = magZ;
+		}
+		float len = org.joml.Math.invsqrt(mag);
+		dest1.x *= len;
+		dest1.y *= len;
+		dest1.z *= len;
+		dest2.x = y * dest1.z - z * dest1.y;
+		dest2.y = z * dest1.x - x * dest1.z;
+		dest2.z = x * dest1.y - y * dest1.x;
+	}
+
+	static void perpendicular(Vector3fc v, Vector3f dest1, Vector3f dest2) {
+		perpendicular(v.x(), v.y(), v.z(), dest1, dest2);
+	}
+
 }
