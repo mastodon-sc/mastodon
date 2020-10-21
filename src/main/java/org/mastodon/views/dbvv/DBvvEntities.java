@@ -6,7 +6,7 @@ import org.mastodon.mamut.model.Link;
 import org.mastodon.mamut.model.ModelGraph;
 import org.mastodon.mamut.model.Spot;
 
-public class DBvvEntities implements GraphListener< Spot, Link >, DColoredEllipsoidsPerTimepoint
+public class DBvvEntities implements GraphListener< Spot, Link >, SceneEntitiesPerTimepoint
 {
 	public DBvvEntities( final ModelGraph graph )
 	{
@@ -18,52 +18,73 @@ public class DBvvEntities implements GraphListener< Spot, Link >, DColoredEllips
 	@Override
 	public void graphRebuilt()
 	{
-		map.clear();
+		timepoints.clear();
 
-		for ( final Spot v : graph.vertices() )
-			forTimepoint( v.getTimepoint() ).addOrUpdate( v );
+		for ( final Spot vertex : graph.vertices() )
+			forTimepoint( vertex ).ellipsoids.addOrUpdate( vertex );
 
-		// TODO: edges
+		final Spot ref = graph.vertexRef();
+		for ( final Link edge : graph.edges() )
+			forTimepoint( edge, ref ).cylinders.addOrUpdate( edge );
+		graph.releaseRef( ref );
 	}
 
 	@Override
 	public void vertexAdded( final Spot vertex )
 	{
-		forTimepoint( vertex.getTimepoint() ).addOrUpdate( vertex );
+		forTimepoint( vertex ).ellipsoids.addOrUpdate( vertex );
 	}
 
 	@Override
 	public void vertexRemoved( final Spot vertex )
 	{
-		forTimepoint( vertex.getTimepoint() ).remove( vertex );
+		forTimepoint( vertex ).ellipsoids.remove( vertex );
 	}
 
 	@Override
 	public void edgeAdded( final Link edge )
 	{
-		// TODO: edges
+		forTimepoint( edge ).cylinders.addOrUpdate( edge );
 	}
 
 	@Override
 	public void edgeRemoved( final Link edge )
 	{
-		// TODO: edges
+		forTimepoint( edge ).cylinders.remove( edge );
 	}
 
 	private final ModelGraph graph;
 
-	// Maps timepoint to DColoredEllipsoids
-	private final TIntObjectArrayMap< DColoredEllipsoids > map = new TIntObjectArrayMap<>();
+	// Maps timepoint to SceneEntities
+	private final TIntObjectArrayMap< SceneEntities > timepoints = new TIntObjectArrayMap<>();
 
 	@Override
-	public DColoredEllipsoids forTimepoint( final int timepoint )
+	public SceneEntities forTimepoint( final int timepoint )
 	{
-		DColoredEllipsoids ellipsoids = map.get( timepoint );
-		if ( ellipsoids == null )
+		SceneEntities entities = timepoints.get( timepoint );
+		if ( entities == null )
 		{
-			ellipsoids = new DColoredEllipsoids( graph );
-			map.put( timepoint, ellipsoids );
+			entities = new SceneEntities( graph );
+			timepoints.put( timepoint, entities );
 		}
-		return ellipsoids;
+		return entities;
+	}
+
+	private SceneEntities forTimepoint( final Spot v )
+	{
+		return forTimepoint( v.getTimepoint() );
+	}
+
+	private SceneEntities forTimepoint( final Link edge )
+	{
+		final Spot ref = graph.vertexRef();
+		final SceneEntities entities = forTimepoint( edge, ref );
+		graph.releaseRef( ref );
+		return entities;
+	}
+
+	private SceneEntities forTimepoint( final Link edge, final Spot ref )
+	{
+		return forTimepoint( edge.getTarget( ref ).getTimepoint() );
 	}
 }

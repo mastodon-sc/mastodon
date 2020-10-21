@@ -171,7 +171,7 @@ public class InstancedCylinder
 		}
 	}
 
-	public void draw( GL3 gl, Matrix4fc pvm, Matrix4f vm, final Cylinders cylinders )
+	public void draw( GL3 gl, Matrix4fc pvm, Matrix4f vm, final Cylinders cylinders, final int highlightIndex, final double r0, final double r1 )
 	{
 		if ( !initialized )
 			init( gl );
@@ -183,7 +183,8 @@ public class InstancedCylinder
 		prog.getUniformMatrix4f( "pvm" ).set( pvm );
 		prog.getUniformMatrix4f( "vm" ).set( vm );
 		prog.getUniformMatrix3f( "itvm" ).set( itvm.get3x3( new Matrix3f() ) );
-		prog.getUniform2f( "radii" ).set( 2, 3 );
+		prog.getUniform1i( "highlight" ).set( highlightIndex );
+		prog.getUniform2f( "radii" ).set( ( float ) r0, ( float ) r1 );
 		prog.setUniforms( context );
 		prog.use( context );
 

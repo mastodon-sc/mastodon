@@ -184,7 +184,6 @@ public class InstancedEllipsoid
 		prog.getUniformMatrix4f( "vm" ).set( vm );
 		prog.getUniformMatrix3f( "itvm" ).set( itvm.get3x3( new Matrix3f() ) );
 		prog.getUniform1i( "highlight" ).set( highlightIndex );
-		prog.getUniform3f( "color" ).set( 0.5f, 1.0f, 0.5f );
 		prog.setUniforms( context );
 		prog.use( context );
 

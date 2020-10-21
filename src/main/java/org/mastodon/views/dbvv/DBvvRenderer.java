@@ -9,10 +9,6 @@ import org.mastodon.mamut.model.ModelGraph;
 import org.mastodon.mamut.model.Spot;
 import org.mastodon.model.HighlightModel;
 import org.mastodon.model.SelectionModel;
-import org.mastodon.views.bvv.BvvEdge;
-import org.mastodon.views.bvv.BvvGraph;
-import org.mastodon.views.bvv.BvvVertex;
-import org.mastodon.views.bvv.ColoredEllipsoids;
 import org.mastodon.views.bvv.scene.Cylinder;
 import org.mastodon.views.bvv.scene.CylinderMath;
 import org.mastodon.views.bvv.scene.Cylinders;
@@ -95,32 +91,39 @@ public class DBvvRenderer
 		gl.glCullFace( GL_BACK );
 		gl.glFrontFace( GL_CCW );
 
-		final DColoredEllipsoids ellipsoids = entities.forTimepoint( timepoint );
+		// -- paint vertices --------------------------------------------------
+		final DColoredEllipsoids ellipsoids = entities.forTimepoint( timepoint ).ellipsoids;
 		final Vector3f defaultColor = new Vector3f( 0.5f, 1.0f, 0.5f );
 		final Vector3f selectedColor = new Vector3f( 1.0f, 0.7f, 0.7f );
 		ellipsoids.updateColors( colorModCount, v -> selection.isSelected( v ) ? selectedColor : defaultColor );
 
 		final Spot vref = graph.vertexRef();
-		final Spot vertex = highlight.getHighlightedVertex( vref );
-		int highlightId = ellipsoids.indexOf( vertex );
+		int highlightId = ellipsoids.indexOf( highlight.getHighlightedVertex( vref ) );
 		graph.releaseRef( vref );
 
-		instancedEllipsoid.draw( gl, pv, camview, ellipsoids.getEllipsoids(), highlightId );
+//		instancedEllipsoid.draw( gl, pv, camview, ellipsoids.getEllipsoids(), highlightId );
 
-		if ( cylinders == null )
+
+
+		// -- paint edges -----------------------------------------------------
+
+		// the maximum number of time-points into the past for which outgoing
+		final int timeLimit = 1000;
+
+		final Link eref = graph.edgeRef();
+		for ( int t = Math.max( 0, timepoint - timeLimit + 1 ); t <= timepoint; ++t )
 		{
-			cylinders = new Cylinders();
-			Cylinder cylinder = cylinders.getOrAdd( 1 );
-			new CylinderMath().set( new Vector3f( 0, 0, 0 ), new Vector3f( 0, 100, 0 ), cylinder );
+			final DColoredCylinders cylinders = entities.forTimepoint( t ).cylinders;
+			cylinders.updateColors( colorModCount, e -> selection.isSelected( e ) ? selectedColor : defaultColor );
+			highlightId = cylinders.indexOf( highlight.getHighlightedEdge( eref ) );
+			instancedCylinder.draw( gl, pv, camview, cylinders.getCylinders(), highlightId, 0.1, 0.2 );
 		}
-		instancedCylinder.draw( gl, pv, camview, cylinders );
+		graph.releaseRef( eref );
 
 		sceneBuf.unbind( gl, false );
 		gl.glDisable( GL_DEPTH_TEST );
 		sceneBuf.drawQuad( gl );
 	}
-
-	private Cylinders cylinders;
 
 	private int colorModCount = 1;
 

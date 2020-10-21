@@ -102,7 +102,7 @@ public class BvvRenderer< V extends BvvVertex< V, E >, E extends BvvEdge< E, V >
 			Cylinder cylinder = cylinders.getOrAdd( 1 );
 			new CylinderMath().set( new Vector3f( 0, 0, 0 ), new Vector3f( 0, 100, 0 ), cylinder );
 		}
-		instancedCylinder.draw( gl, pv, camview, cylinders );
+		instancedCylinder.draw( gl, pv, camview, cylinders, highlightId, 0.1, 0.2 );
 
 		sceneBuf.unbind( gl, false );
 		gl.glDisable( GL_DEPTH_TEST );
