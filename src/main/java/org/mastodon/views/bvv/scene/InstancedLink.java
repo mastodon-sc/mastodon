@@ -244,7 +244,7 @@ public class InstancedLink
 		sphereProg.getUniformMatrix4f( "vm" ).set( vm );
 		sphereProg.getUniformMatrix3f( "itvm" ).set( itvm.get3x3( new Matrix3f() ) );
 		sphereProg.getUniform1i( "highlight" ).set( highlightIndex );
-		sphereProg.getUniform2f( "radii" ).set( ( float ) r0, ( float ) r1 );
+		sphereProg.getUniform1f( "radius" ).set( ( float ) r0 );
 		sphereProg.setUniforms( context );
 
 		instanceArrays.get( cylinders ).draw( gl, context );

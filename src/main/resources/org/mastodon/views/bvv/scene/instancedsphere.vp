@@ -10,14 +10,14 @@ out vec3 ObjectColor;
 uniform mat4 pvm;
 uniform mat4 vm;
 uniform mat3 itvm;
-uniform vec2 radii; // (r0, r1)
+uniform float radius;
 uniform int highlight;
 
 const vec3 highlightColor = vec3( 1, 0, 0 );
 
 void main()
 {
-	vec4 pos = vec4( radii.x * aPos + t, 1.0 );
+	vec4 pos = vec4( radius * aPos + t, 1.0 );
 	gl_Position = pvm * pos;
 	Normal = normalize( itvm * aPos );
 	FragPos = vec3( vm * pos );

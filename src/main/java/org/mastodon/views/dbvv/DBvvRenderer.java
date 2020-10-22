@@ -12,6 +12,7 @@ import org.mastodon.model.SelectionModel;
 import org.mastodon.views.bvv.scene.InstancedCylinder;
 import org.mastodon.views.bvv.scene.InstancedEllipsoid;
 import org.mastodon.views.bvv.scene.InstancedLink;
+import org.mastodon.views.bvv.scene.InstancedSpot;
 import tpietzsch.offscreen.OffScreenFrameBufferWithDepth;
 import tpietzsch.util.MatrixMath;
 
@@ -42,7 +43,7 @@ public class DBvvRenderer
 	private double screenWidth = 640;
 	private double screenHeight = 480;
 
-	private final InstancedEllipsoid instancedEllipsoid;
+	private final InstancedSpot instancedEllipsoid;
 	private final InstancedLink instancedLink;
 
 	public DBvvRenderer(
@@ -58,7 +59,7 @@ public class DBvvRenderer
 		this.selection = selection;
 		this.highlight = highlight;
 		sceneBuf = new OffScreenFrameBufferWithDepth( renderWidth, renderHeight, GL_RGB8 );
-		instancedEllipsoid = new InstancedEllipsoid( 3, 10 );
+		instancedEllipsoid = new InstancedSpot( 3, 10 );
 		instancedLink = new InstancedLink( 36, 3, 20 );
 		selection.listeners().add( this::selectionChanged );
 	}
@@ -99,7 +100,7 @@ public class DBvvRenderer
 		int highlightId = ellipsoids.indexOf( highlight.getHighlightedVertex( vref ) );
 		graph.releaseRef( vref );
 
-//		instancedEllipsoid.draw( gl, pv, camview, ellipsoids.getEllipsoids(), highlightId );
+		instancedEllipsoid.draw( gl, pv, camview, ellipsoids.getEllipsoids(), highlightId );
 
 
 
