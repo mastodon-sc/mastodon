@@ -105,6 +105,20 @@ public class Matrix3fAttribute< O extends PoolObject< O, ?, ? > >
 		notifyPropertyChanged( key );
 	}
 
+	public void setZeroQuiet( final O key )
+	{
+		final MappedElement access = access( key );
+		for ( int i = 0; i < 9; ++i )
+			access.putFloat( 0, offset + i * FLOAT_SIZE );
+	}
+
+	public void setZero( final O key )
+	{
+		notifyBeforePropertyChange( key );
+		setZeroQuiet( key );
+		notifyPropertyChanged( key );
+	}
+
 	public Matrix3f get( final O key, Matrix3f dest )
 	{
 		final MappedElement access = access( key );
@@ -193,6 +207,12 @@ public class Matrix3fAttribute< O extends PoolObject< O, ?, ? > >
 			{
 				attribute.setIdentity( key );
 			}
+
+			@Override
+			public void zero()
+			{
+				attribute.setZero( key );
+			}
 		};
 	}
 
@@ -222,6 +242,12 @@ public class Matrix3fAttribute< O extends PoolObject< O, ?, ? > >
 			public void identity()
 			{
 				attribute.setIdentityQuiet( key );
+			}
+
+			@Override
+			public void zero()
+			{
+				attribute.setZeroQuiet( key );
 			}
 		};
 	}

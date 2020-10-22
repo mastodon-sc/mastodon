@@ -11,4 +11,6 @@ public interface Matrix3fAttributeValue extends Matrix3fAttributeReadOnlyValue
 	void set( final Matrix3fAttributeReadOnlyValue value );
 
 	void identity();
+
+	void zero();
 }
