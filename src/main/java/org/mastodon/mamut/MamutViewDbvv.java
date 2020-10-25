@@ -36,6 +36,8 @@ public class MamutViewDbvv extends MamutView< IdentityViewGraph< ModelGraph, Spo
 
 	private final DBvvPanel bvvPanel;
 
+	private final DBvvPanel viewer;
+
 	public MamutViewDbvv( final MamutAppModel appModel )
 	{
 		super( appModel,
@@ -100,5 +102,13 @@ public class MamutViewDbvv extends MamutView< IdentityViewGraph< ModelGraph, Spo
 		highlightModel.listeners().add( bvvPanel::requestRepaint );
 
 		frame.setVisible( true );
+
+		viewer = frame.getBvvPanel();
+
+		viewer.addTimePointListener( timePointIndex -> timepointModel.setTimepoint( timePointIndex ) );
+		timepointModel.listeners().add( () -> viewer.setTimepoint( timepointModel.getTimepoint() ) );
+
+		// Give focus to display so that it can receive key-presses immediately.
+		viewer.getDisplay().requestFocusInWindow();
 	}
 }

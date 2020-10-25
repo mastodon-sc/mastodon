@@ -228,4 +228,51 @@ public class DBvvPanel
 		{
 		}
 	};
+
+	/**
+	 * Add a {@link TimePointListener} to notify about time-point
+	 * changes. Listeners will be notified <em>before</em> calling
+	 * {@link #requestRepaint()} so they have the chance to interfere.
+	 *
+	 * @param listener
+	 *            the listener to add.
+	 */
+	public void addTimePointListener( final TimePointListener listener )
+	{
+		addTimePointListener( listener, Integer.MAX_VALUE );
+	}
+
+	/**
+	 * Add a {@link TimePointListener} to notify about time-point
+	 * changes. Listeners will be notified <em>before</em> calling
+	 * {@link #requestRepaint()} so they have the chance to interfere.
+	 *
+	 * @param listener
+	 *            the listener to add.
+	 * @param index
+	 *            position in the list of listeners at which to insert this one.
+	 */
+	public void addTimePointListener( final TimePointListener listener, final int index )
+	{
+		synchronized ( timePointListeners )
+		{
+			final int s = timePointListeners.size();
+			timePointListeners.add( index < 0 ? 0 : Math.min( index, s ), listener );
+			listener.timePointChanged( state.getCurrentTimepoint() );
+		}
+	}
+
+	/**
+	 * Remove a {@link TimePointListener}.
+	 *
+	 * @param listener
+	 *            the listener to remove.
+	 */
+	public void removeTimePointListener( final TimePointListener listener )
+	{
+		synchronized ( timePointListeners )
+		{
+			timePointListeners.remove( listener );
+		}
+	}
 }
