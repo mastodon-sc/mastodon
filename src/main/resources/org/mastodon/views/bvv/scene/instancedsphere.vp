@@ -13,17 +13,19 @@ uniform mat3 itvm;
 uniform float radius;
 uniform int highlight;
 
-const vec3 highlightColor = vec3( 1, 0, 0 );
+const vec3 highlightColor = vec3( 0.2, 0.1, 0.2 );
 
 void main()
 {
-	vec4 pos = vec4( radius * aPos + t, 1.0 );
+	ObjectColor = color;
+	float scale = 1.0;
+	if ( gl_InstanceID == highlight )
+	{
+		ObjectColor += highlightColor;
+		scale = 1.2;
+	}
+	vec4 pos = vec4( radius * scale * aPos + t, 1.0 );
 	gl_Position = pvm * pos;
 	Normal = normalize( itvm * aPos );
 	FragPos = vec3( vm * pos );
-
-	if ( gl_InstanceID == highlight)
-		ObjectColor = highlightColor;
-	else
-		ObjectColor = color;
 }
