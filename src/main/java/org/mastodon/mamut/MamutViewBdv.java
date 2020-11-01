@@ -9,6 +9,7 @@ import static org.mastodon.mamut.MamutMenuBuilder.tagSetMenu;
 import static org.mastodon.mamut.MamutMenuBuilder.viewMenu;
 
 import bdv.viewer.NavigationActions;
+import bdv.viewer.ViewerPanel;
 import javax.swing.ActionMap;
 
 import org.mastodon.app.ui.MastodonFrameViewActions;
@@ -31,7 +32,6 @@ import org.mastodon.views.bdv.BigDataViewerActionsMamut;
 import org.mastodon.views.bdv.BigDataViewerMamut;
 import org.mastodon.views.bdv.SharedBigDataViewerData;
 import org.mastodon.views.bdv.ViewerFrameMamut;
-import org.mastodon.views.bdv.ViewerPanelMamut;
 import org.mastodon.views.bdv.overlay.BdvHighlightHandler;
 import org.mastodon.views.bdv.overlay.BdvSelectionBehaviours;
 import org.mastodon.views.bdv.overlay.EditBehaviours;
@@ -56,7 +56,7 @@ public class MamutViewBdv extends MamutView< OverlayGraphWrapper< Spot, Link >, 
 
 	private final BdvContextProvider< Spot, Link > contextProvider;
 
-	private final ViewerPanelMamut viewer;
+	private final ViewerPanel viewer;
 
 	public MamutViewBdv( final MamutAppModel appModel )
 	{
@@ -190,7 +190,7 @@ public class MamutViewBdv extends MamutView< OverlayGraphWrapper< Spot, Link >, 
 		return contextProvider;
 	}
 
-	public ViewerPanelMamut getViewerPanelMamut()
+	public ViewerPanel getViewerPanelMamut()
 	{
 		return viewer;
 	}

@@ -66,7 +66,7 @@ public class ViewerFrameMamut extends ViewFrame
 {
 	private static final long serialVersionUID = 1L;
 
-	private final ViewerPanelMamut viewer;
+	private final ViewerPanel viewer;
 
 	private final CardPanel cards;
 
@@ -101,7 +101,7 @@ public class ViewerFrameMamut extends ViewFrame
 	{
 		super( windowTitle );
 
-		viewer = new ViewerPanelMamut( sources, numTimepoints, cacheControl, optional );
+		viewer = new ViewerPanel( sources, numTimepoints, cacheControl, optional );
 		setups.listeners().add( s -> viewer.requestRepaint() );
 
 		cards = new CardPanel();
@@ -135,7 +135,7 @@ public class ViewerFrameMamut extends ViewFrame
 		viewer.getDisplay().addHandler( mouseAndKeyHandler );
 	}
 
-	public ViewerPanelMamut getViewerPanel()
+	public ViewerPanel getViewerPanel()
 	{
 		return viewer;
 	}
