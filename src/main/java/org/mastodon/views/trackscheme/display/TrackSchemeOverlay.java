@@ -1,5 +1,6 @@
 package org.mastodon.views.trackscheme.display;
 
+import bdv.viewer.OverlayRenderer;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
@@ -17,8 +18,6 @@ import org.mastodon.views.trackscheme.TrackSchemeGraph;
 import org.mastodon.views.trackscheme.TrackSchemeVertex;
 import org.mastodon.views.trackscheme.display.OffsetHeaders.OffsetHeadersListener;
 import org.mastodon.views.trackscheme.display.style.TrackSchemeStyle;
-
-import net.imglib2.ui.OverlayRenderer;
 
 /**
  * An {@link OverlayRenderer} that paints {@link ScreenEntities} of a

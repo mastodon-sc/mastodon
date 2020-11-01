@@ -1,5 +1,7 @@
 package org.mastodon.views.bdv.overlay;
 
+import bdv.viewer.OverlayRenderer;
+import bdv.viewer.TransformListener;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Font;
@@ -35,8 +37,6 @@ import net.imglib2.algorithm.kdtree.ConvexPolytope;
 import net.imglib2.neighborsearch.NearestNeighborSearch;
 import net.imglib2.realtransform.AffineTransform3D;
 import net.imglib2.type.numeric.ARGBType;
-import net.imglib2.ui.OverlayRenderer;
-import net.imglib2.ui.TransformListener;
 import net.imglib2.util.LinAlgHelpers;
 
 /**

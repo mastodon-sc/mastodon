@@ -1,5 +1,6 @@
 package org.mastodon.app.ui;
 
+import bdv.util.AWTUtils;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.lang.reflect.InvocationTargetException;
@@ -15,7 +16,6 @@ import org.scijava.ui.behaviour.util.InputActionBindings;
 import org.scijava.ui.behaviour.util.TriggerBehaviourBindings;
 
 import bdv.util.InvokeOnEDT;
-import net.imglib2.ui.util.GuiUtil;
 
 /**
  * A {@code JFrame} with some stuff added. Used to display
@@ -39,7 +39,7 @@ public class ViewFrame extends JFrame
 
 	public ViewFrame( final String windowTitle )
 	{
-		super( windowTitle, GuiUtil.getSuitableGraphicsConfiguration( GuiUtil.RGB_COLOR_MODEL ) );
+		super( windowTitle, AWTUtils.getSuitableGraphicsConfiguration( AWTUtils.RGB_COLOR_MODEL ) );
 		getRootPane().setDoubleBuffered( true );
 
 		keybindings = new InputActionBindings();

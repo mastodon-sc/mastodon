@@ -13,9 +13,9 @@ import org.mastodon.ui.SelectionActions;
 import org.mastodon.ui.keymap.CommandDescriptions;
 import org.mastodon.ui.keymap.CommandDescriptionsBuilder;
 import org.mastodon.ui.keymap.KeyConfigContexts;
-import org.mastodon.views.bdv.BehaviourTransformEventHandler3DMamut;
 import org.mastodon.views.bdv.BigDataViewerActionsMamut;
-import org.mastodon.views.bdv.NavigationActionsMamut;
+import org.mastodon.views.bdv.NavigationActionsDescriptions;
+import org.mastodon.views.bdv.TransformEventHandler3DDescriptions;
 import org.mastodon.views.bdv.overlay.BdvSelectionBehaviours;
 import org.mastodon.views.bdv.overlay.EditBehaviours;
 import org.mastodon.views.bdv.overlay.EditSpecialBehaviours;
@@ -63,9 +63,9 @@ public class DumpInputConfig
 		builder.addManually( new WindowManager.Descriptions(), KeyConfigContexts.MASTODON);
 
 		builder.addManually( new MastodonFrameViewActions.Descriptions(), KeyConfigContexts.BIGDATAVIEWER );
-		builder.addManually( new BehaviourTransformEventHandler3DMamut.Descriptions(), KeyConfigContexts.BIGDATAVIEWER );
+		builder.addManually( new TransformEventHandler3DDescriptions(), KeyConfigContexts.BIGDATAVIEWER );
 		builder.addManually( new BigDataViewerActionsMamut.Descriptions(), KeyConfigContexts.BIGDATAVIEWER );
-		builder.addManually( new NavigationActionsMamut.Descriptions(), KeyConfigContexts.BIGDATAVIEWER );
+		builder.addManually( new NavigationActionsDescriptions(), KeyConfigContexts.BIGDATAVIEWER );
 		builder.addManually( new BdvSelectionBehaviours.Descriptions(), KeyConfigContexts.BIGDATAVIEWER );
 		builder.addManually( new EditBehaviours.Descriptions(), KeyConfigContexts.BIGDATAVIEWER );
 		builder.addManually( new EditSpecialBehaviours.Descriptions(), KeyConfigContexts.BIGDATAVIEWER );

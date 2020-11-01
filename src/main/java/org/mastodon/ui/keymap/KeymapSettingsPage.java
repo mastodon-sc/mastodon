@@ -15,7 +15,7 @@ import org.mastodon.app.ui.settings.SelectAndEditProfileSettingsPage;
 import org.mastodon.app.ui.settings.SettingsPanel;
 import org.mastodon.app.ui.settings.style.StyleProfile;
 import org.mastodon.app.ui.settings.style.StyleProfileManager;
-import org.mastodon.views.bdv.NavigationActionsMamut;
+import org.mastodon.views.bdv.NavigationActionsDescriptions;
 import org.scijava.listeners.Listeners;
 import org.scijava.ui.behaviour.io.gui.VisualEditorPanel;
 
@@ -107,7 +107,7 @@ public class KeymapSettingsPage extends SelectAndEditProfileSettingsPage< StyleP
 
 		final CommandDescriptions descriptions = new CommandDescriptions();
 		descriptions.setKeyconfigContext( KeyConfigContexts.BIGDATAVIEWER );
-		new NavigationActionsMamut.Descriptions().getCommandDescriptions( descriptions );
+		new NavigationActionsDescriptions().getCommandDescriptions( descriptions );
 
 		settings.addPage( new KeymapSettingsPage( "Style > Keymap", styleManager, descriptions ) );
 

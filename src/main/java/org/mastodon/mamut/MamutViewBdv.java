@@ -8,6 +8,7 @@ import static org.mastodon.mamut.MamutMenuBuilder.fileMenu;
 import static org.mastodon.mamut.MamutMenuBuilder.tagSetMenu;
 import static org.mastodon.mamut.MamutMenuBuilder.viewMenu;
 
+import bdv.viewer.NavigationActions;
 import javax.swing.ActionMap;
 
 import org.mastodon.app.ui.MastodonFrameViewActions;
@@ -28,7 +29,6 @@ import org.mastodon.ui.keymap.KeyConfigContexts;
 import org.mastodon.views.bdv.BdvContextProvider;
 import org.mastodon.views.bdv.BigDataViewerActionsMamut;
 import org.mastodon.views.bdv.BigDataViewerMamut;
-import org.mastodon.views.bdv.NavigationActionsMamut;
 import org.mastodon.views.bdv.SharedBigDataViewerData;
 import org.mastodon.views.bdv.ViewerFrameMamut;
 import org.mastodon.views.bdv.ViewerPanelMamut;
@@ -115,7 +115,6 @@ public class MamutViewBdv extends MamutView< OverlayGraphWrapper< Spot, Link >, 
 		appModel.getPlugins().addMenus( menu );
 
 		frame.setVisible( true );
-
 		viewer = bdv.getViewer();
 		InitializeViewerState.initTransform( viewer );
 
@@ -129,8 +128,8 @@ public class MamutViewBdv extends MamutView< OverlayGraphWrapper< Spot, Link >, 
 				focusModel,
 				selectionModel,
 				coloring );
-		viewer.getDisplay().addOverlayRenderer( tracksOverlay );
-		viewer.addRenderTransformListener( tracksOverlay );
+		viewer.getDisplay().overlays().add( tracksOverlay );
+		viewer.renderTransformListeners().add( tracksOverlay );
 		viewer.addTimePointListener( tracksOverlay );
 
 		final Model model = appModel.getModel();
@@ -164,7 +163,7 @@ public class MamutViewBdv extends MamutView< OverlayGraphWrapper< Spot, Link >, 
 		HighlightBehaviours.install( viewBehaviours, viewGraph, viewGraph.getLock(), viewGraph, highlightModel, model );
 		FocusActions.install( viewActions, viewGraph, viewGraph.getLock(), navigateFocusModel, selectionModel );
 
-		NavigationActionsMamut.install( viewActions, viewer, sharedBdvData.is2D() );
+		NavigationActions.install( viewActions, viewer, sharedBdvData.is2D() );
 		viewer.getTransformEventHandler().install( viewBehaviours );
 
 		viewer.addTimePointListener( timePointIndex -> timepointModel.setTimepoint( timePointIndex ) );

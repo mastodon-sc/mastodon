@@ -11,17 +11,9 @@ public class ViewerPanelMamut extends ViewerPanel
 {
 	private static final long serialVersionUID = 1L;
 
-	private final BehaviourTransformEventHandlerMamut transformEventHandler;
-
 	public ViewerPanelMamut( final List< SourceAndConverter< ? > > sources, final int numTimepoints, final CacheControl cacheControl, final ViewerOptions optional )
 	{
 		super( sources, numTimepoints, cacheControl, optional );
-		transformEventHandler = ( BehaviourTransformEventHandlerMamut ) display.getTransformEventHandler();
-	}
-
-	public BehaviourTransformEventHandlerMamut getTransformEventHandler()
-	{
-		return transformEventHandler;
 	}
 
 	@Override

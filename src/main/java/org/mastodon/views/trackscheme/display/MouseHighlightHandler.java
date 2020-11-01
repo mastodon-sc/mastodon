@@ -1,5 +1,6 @@
 package org.mastodon.views.trackscheme.display;
 
+import bdv.viewer.TransformListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
@@ -10,8 +11,6 @@ import org.mastodon.views.trackscheme.TrackSchemeEdge;
 import org.mastodon.views.trackscheme.TrackSchemeGraph;
 import org.mastodon.views.trackscheme.TrackSchemeVertex;
 import org.mastodon.views.trackscheme.display.OffsetHeaders.OffsetHeadersListener;
-
-import net.imglib2.ui.TransformListener;
 
 public class MouseHighlightHandler implements MouseMotionListener, MouseListener, TransformListener< ScreenTransform >, OffsetHeadersListener
 {

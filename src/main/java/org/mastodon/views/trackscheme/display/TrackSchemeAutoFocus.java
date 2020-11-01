@@ -1,5 +1,6 @@
 package org.mastodon.views.trackscheme.display;
 
+import bdv.viewer.TransformListener;
 import org.mastodon.model.FocusListener;
 import org.mastodon.model.FocusModel;
 import org.mastodon.views.trackscheme.LineageTreeLayout;
@@ -9,7 +10,6 @@ import org.mastodon.views.trackscheme.TrackSchemeVertex;
 import org.scijava.listeners.Listeners;
 
 import net.imglib2.RealPoint;
-import net.imglib2.ui.TransformListener;
 
 /**
  * A {@code FocusModel} for TrackScheme that automatically focuses a vertex near
