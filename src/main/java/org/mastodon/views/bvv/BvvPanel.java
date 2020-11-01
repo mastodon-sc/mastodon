@@ -1,10 +1,16 @@
 package org.mastodon.views.bvv;
 
+import bdv.TransformEventHandler3D;
+import bdv.TransformState;
 import bdv.cache.CacheControl;
 import bdv.viewer.RequestRepaint;
 import bdv.viewer.SourceAndConverter;
+import bdv.viewer.SynchronizedViewerState;
 import bdv.viewer.TimePointListener;
 import bdv.viewer.ViewerOptions;
+import bdv.viewer.ViewerStateChange;
+import bdv.viewer.ViewerStateChangeListener;
+import bdv.viewer.render.PainterThread;
 import bdv.viewer.state.SourceGroup;
 import bdv.viewer.state.ViewerState;
 import com.jogamp.opengl.GL3;
@@ -22,17 +28,14 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import javax.swing.JPanel;
 import javax.swing.JSlider;
 import javax.swing.SwingConstants;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
+import javax.swing.SwingUtilities;
 import net.imglib2.realtransform.AffineTransform3D;
-import net.imglib2.ui.PainterThread;
 import org.mastodon.model.HighlightModel;
 import org.mastodon.model.SelectionModel;
-import tpietzsch.util.TransformHandler;
 
 public class BvvPanel
 		extends JPanel
-		implements RequestRepaint
+		implements RequestRepaint, ViewerStateChangeListener
 {
 	/**
 	 * Currently rendered state (visible sources, transformation, timepoint,
@@ -42,13 +45,15 @@ public class BvvPanel
 
 	private final PainterThread painterThread;
 
-	private final TransformHandler transformHandler;
+	private final TransformEventHandler3D transformEventHandler;
 
 	private final BvvRenderer< ?, ? > renderer;
 
 	private final GLCanvas canvas;
 
 	private final JSlider sliderTime;
+
+	private boolean blockSliderTimeEvents;
 
 	/**
 	 * These listeners will be notified about changes to the current timepoint
@@ -93,22 +98,17 @@ public class BvvPanel
 		canvas.addGLEventListener( glEventListener );
 
 		sliderTime = new JSlider( SwingConstants.HORIZONTAL, 0, numTimepoints - 1, 0 );
-		sliderTime.addChangeListener( new ChangeListener()
-		{
-			@Override
-			public void stateChanged( final ChangeEvent e )
-			{
-				if ( e.getSource().equals( sliderTime ) )
-					setTimepoint( sliderTime.getValue() );
-			}
+		sliderTime.addChangeListener( e -> {
+			if ( !blockSliderTimeEvents )
+				setTimepoint( sliderTime.getValue() );
 		} );
 
 		add( canvas, BorderLayout.CENTER );
 		if ( numTimepoints > 1 )
 			add( sliderTime, BorderLayout.SOUTH );
 
-		transformHandler = new TransformHandler();
-		transformHandler.setCanvasSize( canvas.getWidth(), canvas.getHeight(), false );
+		transformEventHandler = new TransformEventHandler3D(
+				TransformState.from( state()::getViewerTransform, state()::setViewerTransform ) );
 
 					// TODO: FIX THIS HACK.
 					//  This is just setting some transform that works ok for my default testing dataset
@@ -117,10 +117,11 @@ public class BvvPanel
 					final AffineTransform3D initialTransform = new AffineTransform3D();
 					initialTransform.scale( 4 );
 
-		transformHandler.setTransform( initialTransform );
-		transformHandler.listeners().add( this::transformChanged );
+		state().setViewerTransform( initialTransform );
 
 		timePointListeners = new CopyOnWriteArrayList<>();
+
+		state().changeListeners().add( this );
 
 		painterThread.start();
 	}
@@ -143,19 +144,32 @@ public class BvvPanel
 		}
 	}
 
-	public TransformHandler getTransformEventHandler()
+	public TransformEventHandler3D getTransformEventHandler()
 	{
-		return transformHandler;
+		return transformEventHandler;
 	}
 
 	/**
+	 * @deprecated Use {@link #state()} instead.
+	 *
 	 * Get a copy of the current {@link ViewerState}.
 	 *
 	 * @return a copy of the current {@link ViewerState}.
 	 */
+	@Deprecated
 	public ViewerState getState()
 	{
 		return state.copy();
+	}
+
+	/**
+	 * Get the ViewerState. This can be directly used for modifications, e.g.,
+	 * adding/removing sources etc. See {@link SynchronizedViewerState} for
+	 * thread-safety considerations.
+	 */
+	public SynchronizedViewerState state()
+	{
+		return state.getState();
 	}
 
 	/**
@@ -185,10 +199,41 @@ public class BvvPanel
 		canvas.display();
 	}
 
-	private void transformChanged( final AffineTransform3D transform )
+	@Override
+	public void viewerStateChanged( final ViewerStateChange change )
 	{
-		state.setViewerTransform( transform );
-		requestRepaint();
+		switch ( change )
+		{
+		case CURRENT_SOURCE_CHANGED:
+		case DISPLAY_MODE_CHANGED:
+		case GROUP_NAME_CHANGED:
+		case CURRENT_GROUP_CHANGED:
+		case SOURCE_ACTIVITY_CHANGED:
+		case GROUP_ACTIVITY_CHANGED:
+		case VISIBILITY_CHANGED:
+		case SOURCE_TO_GROUP_ASSIGNMENT_CHANGED:
+		case NUM_SOURCES_CHANGED:
+		case NUM_GROUPS_CHANGED:
+		case INTERPOLATION_CHANGED:
+		case NUM_TIMEPOINTS_CHANGED:
+			break;
+		case CURRENT_TIMEPOINT_CHANGED:
+		{
+			final int timepoint = state().getCurrentTimepoint();
+			SwingUtilities.invokeLater( () -> {
+				blockSliderTimeEvents = true;
+				if ( sliderTime.getValue() != timepoint )
+					sliderTime.setValue( timepoint );
+				blockSliderTimeEvents = false;
+			} );
+			for ( final TimePointListener l : timePointListeners )
+				l.timePointChanged( timepoint );
+			requestRepaint();
+			break;
+		}
+		case VIEWER_TRANSFORM_CHANGED:
+			requestRepaint();
+		}
 	}
 
 	private final GLEventListener glEventListener = new GLEventListener()

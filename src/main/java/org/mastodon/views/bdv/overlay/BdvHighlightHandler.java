@@ -1,5 +1,6 @@
 package org.mastodon.views.bdv.overlay;
 
+import bdv.viewer.TransformListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
@@ -7,7 +8,6 @@ import java.awt.event.MouseMotionListener;
 import org.mastodon.model.HighlightModel;
 
 import net.imglib2.realtransform.AffineTransform3D;
-import net.imglib2.ui.TransformListener;
 
 public class BdvHighlightHandler< V extends OverlayVertex< V, E >, E extends OverlayEdge< E, V > > implements MouseMotionListener, MouseListener, TransformListener< AffineTransform3D >
 {

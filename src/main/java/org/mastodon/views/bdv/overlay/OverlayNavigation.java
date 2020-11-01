@@ -58,7 +58,7 @@ public class OverlayNavigation< V extends OverlayVertex< V, E >, E extends Overl
 		final int tp = vertex.getTimepoint();
 		panel.setTimepoint( tp );
 
-		final AffineTransform3D currentTransform = panel.getDisplay().getTransformEventHandler().getTransform();
+		final AffineTransform3D currentTransform = panel.state().getViewerTransform();
 		final double[] target = navigationBehaviour.navigateToVertex( vertex, currentTransform );
 		if ( target != null )
 		{
@@ -79,7 +79,7 @@ public class OverlayNavigation< V extends OverlayVertex< V, E >, E extends Overl
 		graph.releaseRef( ref );
 		panel.setTimepoint( tp );
 
-		final AffineTransform3D currentTransform = panel.getDisplay().getTransformEventHandler().getTransform();
+		final AffineTransform3D currentTransform = panel.state().getViewerTransform();
 		final double[] target = navigationBehaviour.navigateToEdge( edge, currentTransform );
 		if ( target != null )
 		{

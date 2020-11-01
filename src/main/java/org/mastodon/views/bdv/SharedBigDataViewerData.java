@@ -1,5 +1,7 @@
 package org.mastodon.views.bdv;
 
+import bdv.TransformEventHandler2D;
+import bdv.TransformEventHandler3D;
 import bdv.viewer.BasicViewerState;
 import bdv.viewer.ConverterSetups;
 import bdv.viewer.Source;
@@ -119,8 +121,8 @@ public class SharedBigDataViewerData
 		this.options = options
 				.inputTriggerConfig( inputTriggerConfig )
 				.transformEventHandlerFactory( is2D
-						? BehaviourTransformEventHandler2DMamut::new
-						: BehaviourTransformEventHandler3DMamut::new );
+						? TransformEventHandler2D::new
+						: TransformEventHandler3D::new );
 
 		WrapBasicImgLoader.removeWrapperIfPresent( spimData );
 	}

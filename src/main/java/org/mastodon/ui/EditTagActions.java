@@ -1,5 +1,7 @@
 package org.mastodon.ui;
 
+import bdv.viewer.InteractiveDisplayCanvas;
+import bdv.viewer.OverlayRenderer;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Font;
@@ -39,8 +41,6 @@ import org.scijava.ui.behaviour.util.InputActionBindings;
 import org.scijava.ui.behaviour.util.TriggerBehaviourBindings;
 
 import bdv.tools.bookmarks.BookmarksEditor;
-import net.imglib2.ui.InteractiveDisplayCanvas;
-import net.imglib2.ui.OverlayRenderer;
 
 /**
  * <p>
@@ -94,7 +94,7 @@ public class EditTagActions< V extends Vertex< E >, E extends Edge< V > >
 
 	private final Component panel;
 
-	private final InteractiveDisplayCanvas< ? > renderer;
+	private final InteractiveDisplayCanvas renderer;
 
 	private final UndoPointMarker undo;
 
@@ -119,7 +119,7 @@ public class EditTagActions< V extends Vertex< E >, E extends Edge< V > >
 			final SelectionModel< V, E > selectionModel,
 			final ReentrantReadWriteLock lock,
 			final Component panel,
-			final InteractiveDisplayCanvas< ? > renderer,
+			final InteractiveDisplayCanvas renderer,
 			final UndoPointMarker undoPointMarker )
 	{
 		this.actionBindings = inputActionBindings;
@@ -220,7 +220,7 @@ public class EditTagActions< V extends Vertex< E >, E extends Edge< V > >
 		behaviourBindings.addInputTriggerMap( PICK_TAGS_MAP, triggerMap, "all" );
 
 		mode = Mode.PICK_TAGSET;
-		renderer.addOverlayRenderer( overlay );
+		renderer.overlays().add( overlay );
 		panel.repaint();
 	}
 
@@ -235,7 +235,7 @@ public class EditTagActions< V extends Vertex< E >, E extends Edge< V > >
 		actionBindings.removeActionMap( PICK_TAGS_MAP );
 		actionBindings.removeInputMap( PICK_TAGS_MAP );
 		behaviourBindings.removeInputTriggerMap( PICK_TAGS_MAP );
-		renderer.removeOverlayRenderer( overlay );
+		renderer.overlays().remove( overlay );
 		panel.repaint();
 	}
 
@@ -541,7 +541,7 @@ public class EditTagActions< V extends Vertex< E >, E extends Edge< V > >
 			final SelectionModel< V, E > selectionModel,
 			final ReentrantReadWriteLock lock,
 			final Component panel,
-			final InteractiveDisplayCanvas< ? > display,
+			final InteractiveDisplayCanvas display,
 			final UndoPointMarker undo )
 	{
 		final EditTagActions< V, E > editTagActions = new EditTagActions<>( inputActionBindings, triggerBehaviourBindings, tagModel, selectionModel, lock, panel, display, undo );

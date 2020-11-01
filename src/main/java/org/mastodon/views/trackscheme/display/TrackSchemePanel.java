@@ -3,6 +3,10 @@ package org.mastodon.views.trackscheme.display;
 import static org.mastodon.views.trackscheme.display.InertialScreenTransformEventHandler.boundXLayoutBorder;
 import static org.mastodon.views.trackscheme.display.InertialScreenTransformEventHandler.boundYLayoutBorder;
 
+import bdv.viewer.InteractiveDisplayCanvas;
+import bdv.viewer.OverlayRenderer;
+import bdv.viewer.TransformListener;
+import bdv.viewer.render.PainterThread;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.Graphics;
@@ -42,11 +46,6 @@ import org.mastodon.views.trackscheme.display.TrackSchemeOptions.Values;
 import org.mastodon.views.trackscheme.display.animate.AbstractAnimator;
 import org.mastodon.views.trackscheme.display.style.TrackSchemeStyle;
 
-import net.imglib2.ui.InteractiveDisplayCanvasComponent;
-import net.imglib2.ui.OverlayRenderer;
-import net.imglib2.ui.PainterThread;
-import net.imglib2.ui.TransformListener;
-
 public class TrackSchemePanel extends JPanel implements
 		TransformListener< ScreenTransform >,
 		PainterThread.Paintable,
@@ -67,7 +66,7 @@ public class TrackSchemePanel extends JPanel implements
 	/**
 	 * Canvas used for displaying the trackscheme graph.
 	 */
-	private final InteractiveDisplayCanvasComponent< ScreenTransform > display;
+	private final InteractiveDisplayCanvas display;
 
 	private final JScrollBar xScrollBar;
 
@@ -76,7 +75,7 @@ public class TrackSchemePanel extends JPanel implements
 	/**
 	 * The current transform from layout to screen coordinates.
 	 */
-	private final ScreenTransform screenTransform;
+	private final ScreenTransformState screenTransform;
 
 	/**
 	 * layout the {@link TrackSchemeGraph} into layout coordinates.
@@ -187,9 +186,11 @@ public class TrackSchemePanel extends JPanel implements
 
 		final int w = options.getWidth();
 		final int h = options.getHeight();
-		display = new InteractiveDisplayCanvasComponent<>( w, h, InertialScreenTransformEventHandler::new );
-		transformEventHandler = ( InertialScreenTransformEventHandler ) display.getTransformEventHandler();
-		display.addTransformListener( this );
+		display = new InteractiveDisplayCanvas( w, h );
+
+		screenTransform = new ScreenTransformState();
+		screenTransform.listeners().add( this );
+		transformEventHandler = new InertialScreenTransformEventHandler( screenTransform );
 
 		highlight.listeners().add( this );
 		focus.listeners().add( this );
@@ -215,7 +216,6 @@ public class TrackSchemePanel extends JPanel implements
 			}
 		} );
 
-		screenTransform = new ScreenTransform();
 		layout = new LineageTreeLayout( graph, selection );
 		contextLayout = new ContextLayout( graph, layout );
 		colorGenerator = options.getGraphColorGenerator();
@@ -227,15 +227,15 @@ public class TrackSchemePanel extends JPanel implements
 		final MouseHighlightHandler highlightHandler = new MouseHighlightHandler( graphOverlay, highlight, graph );
 		display.addMouseMotionListener( highlightHandler );
 		display.addMouseListener( highlightHandler );
-		display.addTransformListener( highlightHandler );
+		screenTransform.listeners().add( highlightHandler );
 
 		autoFocus = new TrackSchemeAutoFocus( layout, focus );
-		display.addTransformListener( autoFocus );
+		screenTransform.listeners().add( autoFocus );
 
 		navigationActions = new TrackSchemeNavigationActions( graph, layout, autoFocus, selection );
 
 		navigationBehaviours = new TrackSchemeNavigationBehaviours( display, graph, layout, graphOverlay, autoFocus, navigation, selection );
-		display.addTransformListener( navigationBehaviours );
+		screenTransform.listeners().add( navigationBehaviours );
 
 		offsetHeaders = new OffsetHeaders();
 		offsetHeaders.listeners().add( transformEventHandler );
@@ -255,11 +255,11 @@ public class TrackSchemePanel extends JPanel implements
 					return;
 
 				final double s = xScrollBar.getValue() / xScrollScale;
-				synchronized ( screenTransform )
-				{
-					screenTransform.shiftLayoutX( s - screenTransform.getMinX() );
-					transformEventHandler.setTransform( screenTransform );
-				}
+				final ScreenTransform t = screenTransform.get();
+				t.shiftLayoutX( s - t.getMinX() );
+				screenTransform.set( t );
+
+				// TODO: probably this should be triggered in a listener to screenTransform:
 				flags.setTransformChanged();
 				painterThread.requestRepaint();
 			}
@@ -273,11 +273,11 @@ public class TrackSchemePanel extends JPanel implements
 					return;
 
 				final double s = yScrollBar.getValue() / yScrollScale;
-				synchronized ( screenTransform )
-				{
-					screenTransform.shiftLayoutY( s - screenTransform.getMinY() );
-					transformEventHandler.setTransform( screenTransform );
-				}
+				final ScreenTransform t = screenTransform.get();
+				t.shiftLayoutY( s - t.getMinY() );
+				screenTransform.set( t );
+
+				// TODO: probably this should be triggered in a listener to screenTransform:
 				flags.setTransformChanged();
 				painterThread.requestRepaint();
 			}
@@ -337,12 +337,7 @@ public class TrackSchemePanel extends JPanel implements
 		lock.readLock().lock();
 		try
 		{
-			final ScreenTransform transform = new ScreenTransform();
-			synchronized ( screenTransform )
-			{
-				transform.set( screenTransform );
-			}
-
+			final ScreenTransform transform = screenTransform.get();
 			final Flags flags = this.flags.clear();
 			if ( flags.graphChanged )
 			{
@@ -436,13 +431,6 @@ public class TrackSchemePanel extends JPanel implements
 	@Override
 	public void transformChanged( final ScreenTransform transform )
 	{
-		synchronized( screenTransform )
-		{
-			if ( screenTransform.equals( transform ) )
-				return;
-//			TODO
-			screenTransform.set( transform );
-		}
 		flags.setTransformChanged();
 		painterThread.requestRepaint();
 	}
@@ -523,13 +511,7 @@ public class TrackSchemePanel extends JPanel implements
 		if ( v.getLayoutTimestamp() == layout.getCurrentLayoutTimestamp() )
 		{
 			timepoint.setTimepoint( v.getTimepoint() );
-
-			final ScreenTransform transform = new ScreenTransform();
-			synchronized( screenTransform )
-			{
-				transform.set( screenTransform );
-			}
-			navigationBehaviour.navigateToVertex( v, transform );
+			navigationBehaviour.navigateToVertex( v, screenTransform.get() );
 		}
 	}
 
@@ -544,13 +526,7 @@ public class TrackSchemePanel extends JPanel implements
 		if ( target.getLayoutTimestamp() == clts && source.getLayoutTimestamp() == clts )
 		{
 			timepoint.setTimepoint( target.getTimepoint() );
-
-			final ScreenTransform transform = new ScreenTransform();
-			synchronized ( screenTransform )
-			{
-				transform.set( screenTransform );
-			}
-			navigationBehaviour.navigateToEdge( edge, source, target, transform );
+			navigationBehaviour.navigateToEdge( edge, source, target, screenTransform.get() );
 		}
 		graph.releaseRef( source );
 		graph.releaseRef( target );
@@ -732,8 +708,13 @@ public class TrackSchemePanel extends JPanel implements
 		}
 	}
 
+	public ScreenTransformState getScreenTransform()
+	{
+		return screenTransform;
+	}
+
 	// TODO remove??? revise TrackSchemePanel / TrackSchemeFrame construction.
-	public InteractiveDisplayCanvasComponent< ScreenTransform > getDisplay()
+	public InteractiveDisplayCanvas getDisplay()
 	{
 		return display;
 	}

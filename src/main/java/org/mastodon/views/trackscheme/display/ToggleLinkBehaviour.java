@@ -3,6 +3,8 @@
  */
 package org.mastodon.views.trackscheme.display;
 
+import bdv.viewer.OverlayRenderer;
+import bdv.viewer.TransformListener;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics;
@@ -25,9 +27,6 @@ import org.scijava.plugin.Plugin;
 import org.scijava.ui.behaviour.DragBehaviour;
 import org.scijava.ui.behaviour.util.AbstractNamedBehaviour;
 import org.scijava.ui.behaviour.util.Behaviours;
-
-import net.imglib2.ui.OverlayRenderer;
-import net.imglib2.ui.TransformListener;
 
 /**
  * Bahviour for creating / deleting links in TrackScheme views.
@@ -119,10 +118,10 @@ public class ToggleLinkBehaviour< V extends Vertex< E > & HasTimepoint, E extend
 
 		// Create and register overlay.
 		overlay = new EditOverlay();
-		overlay.transformChanged( panel.getTransformEventHandler().getTransform() );
+		overlay.transformChanged( panel.getScreenTransform().get() );
 		// put the overlay first, so that is below the graph rendering.
 		renderer.addOverlayRenderer( overlay );
-		panel.getDisplay().addTransformListener( overlay );
+		panel.getScreenTransform().listeners().add( overlay );
 
 		startVertex = graph.vertexRef();
 		endVertex = graph.vertexRef();

@@ -1,5 +1,8 @@
 package org.mastodon.views.trackscheme.display;
 
+import bdv.viewer.InteractiveDisplayCanvas;
+import bdv.viewer.OverlayRenderer;
+import bdv.viewer.TransformListener;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
@@ -22,10 +25,6 @@ import org.scijava.ui.behaviour.ClickBehaviour;
 import org.scijava.ui.behaviour.DragBehaviour;
 import org.scijava.ui.behaviour.util.AbstractNamedBehaviour;
 import org.scijava.ui.behaviour.util.Behaviours;
-
-import net.imglib2.ui.InteractiveDisplayCanvasComponent;
-import net.imglib2.ui.OverlayRenderer;
-import net.imglib2.ui.TransformListener;
 
 /**
  * Focus and selection behaviours in TrackScheme.
@@ -74,7 +73,7 @@ public class TrackSchemeNavigationBehaviours implements TransformListener< Scree
 
 	public static final double EDGE_SELECT_DISTANCE_TOLERANCE = 5.0;
 
-	private final InteractiveDisplayCanvasComponent< ScreenTransform > display;
+	private final InteractiveDisplayCanvas display;
 
 	private final TrackSchemeGraph< ?, ? > graph;
 
@@ -115,7 +114,7 @@ public class TrackSchemeNavigationBehaviours implements TransformListener< Scree
 	private final BoxSelectionBehaviour boxAddSelectBehaviour;
 
 	public TrackSchemeNavigationBehaviours(
-			final InteractiveDisplayCanvasComponent< ScreenTransform > display,
+			final InteractiveDisplayCanvas display,
 			final TrackSchemeGraph< ?, ? > graph,
 			final LineageTreeLayout layout,
 			final TrackSchemeOverlay graphOverlay,

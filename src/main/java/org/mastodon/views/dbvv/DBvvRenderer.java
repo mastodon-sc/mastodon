@@ -102,10 +102,7 @@ public class DBvvRenderer
 
 		instancedEllipsoid.draw( gl, pv, camview, ellipsoids.getEllipsoids(), highlightId );
 
-
-
 		// -- paint edges -----------------------------------------------------
-
 		// the maximum number of time-points into the past for which outgoing
 		final int timeLimit = 10;
 		final double rHead = 0.5;

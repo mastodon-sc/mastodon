@@ -1,5 +1,6 @@
 package org.mastodon.views.bdv.overlay;
 
+import bdv.viewer.TransformListener;
 import java.util.concurrent.locks.Lock;
 
 import org.mastodon.views.context.Context;
@@ -7,7 +8,6 @@ import org.mastodon.views.context.ContextListener;
 import org.mastodon.spatial.SpatioTemporalIndex;
 
 import net.imglib2.realtransform.AffineTransform3D;
-import net.imglib2.ui.TransformListener;
 
 public class OverlayContext< V extends OverlayVertex< V, ? > > implements
 		Context< V >,

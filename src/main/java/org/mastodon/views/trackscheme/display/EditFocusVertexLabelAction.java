@@ -1,5 +1,6 @@
 package org.mastodon.views.trackscheme.display;
 
+import bdv.viewer.TransformListener;
 import java.awt.Color;
 import java.awt.Container;
 import java.awt.Font;
@@ -34,8 +35,6 @@ import org.mastodon.views.trackscheme.display.OffsetHeaders.OffsetHeadersListene
 import org.scijava.plugin.Plugin;
 import org.scijava.ui.behaviour.util.AbstractNamedAction;
 import org.scijava.ui.behaviour.util.Actions;
-
-import net.imglib2.ui.TransformListener;
 
 /**
  * Edit vertex label in TrackScheme.
@@ -99,7 +98,7 @@ public class EditFocusVertexLabelAction extends AbstractNamedAction implements T
 			final UndoPointMarker undoPointMarker )
 	{
 		final EditFocusVertexLabelAction editFocusVertexLabelAction = new EditFocusVertexLabelAction( focus, undoPointMarker, panel );
-		panel.getDisplay().addTransformListener( editFocusVertexLabelAction );
+		panel.getScreenTransform().listeners().add( editFocusVertexLabelAction );
 		panel.getOffsetHeaders().listeners().add( editFocusVertexLabelAction );
 		actions.namedAction( editFocusVertexLabelAction, EDIT_FOCUS_LABEL_KEYS );
 	}

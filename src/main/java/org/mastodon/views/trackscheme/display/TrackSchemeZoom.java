@@ -1,5 +1,7 @@
 package org.mastodon.views.trackscheme.display;
 
+import bdv.viewer.OverlayRenderer;
+import bdv.viewer.TransformListener;
 import java.awt.Color;
 import java.awt.Graphics;
 
@@ -18,16 +20,8 @@ import org.scijava.ui.behaviour.DragBehaviour;
 import org.scijava.ui.behaviour.util.AbstractNamedBehaviour;
 import org.scijava.ui.behaviour.util.Behaviours;
 
-import net.imglib2.ui.OverlayRenderer;
-import net.imglib2.ui.TransformEventHandler;
-import net.imglib2.ui.TransformListener;
-
 /**
  * Drag behaviour that implements a zoom rectangle in TrackScheme.
- * <p>
- * This class depends on the {@link TransformEventHandler} of the TrackScheme
- * display to be an {@link InertialScreenTransformEventHandler}, to be able to
- * pass it a transform animator that will execute the zoom.
  *
  * @author Jean-Yves Tinevez
  * @param <V>
@@ -66,11 +60,11 @@ public class TrackSchemeZoom< V extends Vertex< E > & HasTimepoint, E extends Ed
 		final TrackSchemeZoom< V, E > zoom = new TrackSchemeZoom<>( panel );
 
 		// Create and register overlay.
-		zoom.transformChanged( panel.getDisplay().getTransformEventHandler().getTransform() );
+		zoom.transformChanged( panel.getScreenTransform().get() );
 		zoom.updateHeaderSize( panel.getOffsetHeaders().getWidth(), panel.getOffsetHeaders().getHeight() );
 		// put the overlay first, so that is below the graph rendering.
 		panel.getDisplay().addOverlayRenderer( zoom.overlay );
-		panel.getDisplay().addTransformListener( zoom );
+		panel.getScreenTransform().listeners().add( zoom );
 		panel.getOffsetHeaders().listeners().add( zoom );
 
 		behaviours.namedBehaviour( zoom, TOGGLE_ZOOM_KEYS );
@@ -98,7 +92,7 @@ public class TrackSchemeZoom< V extends Vertex< E > & HasTimepoint, E extends Ed
 	{
 		super( TOGGLE_ZOOM );
 		this.panel = panel;
-		this.transformEventHandler = ( InertialScreenTransformEventHandler ) panel.getDisplay().getTransformEventHandler();
+		this.transformEventHandler = panel.getTransformEventHandler();
 
 		dragging = false;
 		screenTransform = new ScreenTransform();
