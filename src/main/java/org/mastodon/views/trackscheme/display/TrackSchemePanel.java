@@ -188,7 +188,7 @@ public class TrackSchemePanel extends JPanel implements
 		final int h = options.getHeight();
 		display = new InteractiveDisplayCanvas( w, h );
 
-		screenTransform = new ScreenTransformState();
+		screenTransform = new ScreenTransformState( new ScreenTransform( -10000, 10000, -10000, 10000, w, h ) );
 		screenTransform.listeners().add( this );
 		transformEventHandler = new InertialScreenTransformEventHandler( screenTransform );
 
@@ -199,11 +199,11 @@ public class TrackSchemePanel extends JPanel implements
 
 		graphOverlay = options.getTrackSchemeOverlayFactory().create( graph, highlight, focus, optional );
 
-		display.addOverlayRenderer( graphOverlay );
+		display.overlays().add( graphOverlay );
 
 		// This should be the last OverlayRenderer in display.
 		// It triggers repainting if there is currently an ongoing animation.
-		display.addOverlayRenderer( new OverlayRenderer()
+		display.overlays().add( new OverlayRenderer()
 		{
 			@Override
 			public void setCanvasSize( final int width, final int height )
@@ -283,7 +283,7 @@ public class TrackSchemePanel extends JPanel implements
 			}
 		} );
 
-
+		display.setTransformEventHandler( transformEventHandler );
 		add( display, BorderLayout.CENTER );
 
 		add( yScrollBar, BorderLayout.EAST );

@@ -150,10 +150,10 @@ public class MamutViewBdv extends MamutView< OverlayGraphWrapper< Spot, Link >, 
 
 		final BdvHighlightHandler< ?, ? > highlightHandler = new BdvHighlightHandler<>( viewGraph, tracksOverlay, highlightModel );
 		viewer.getDisplay().addHandler( highlightHandler );
-		viewer.addRenderTransformListener( highlightHandler );
+		viewer.renderTransformListeners().add( highlightHandler );
 
 		contextProvider = new BdvContextProvider<>( windowTitle, viewGraph, tracksOverlay );
-		viewer.addRenderTransformListener( contextProvider );
+		viewer.renderTransformListeners().add( contextProvider );
 
 		final AutoNavigateFocusModel< OverlayVertexWrapper< Spot, Link >, OverlayEdgeWrapper< Spot, Link > > navigateFocusModel = new AutoNavigateFocusModel<>( focusModel, navigationHandler );
 

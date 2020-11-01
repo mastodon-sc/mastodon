@@ -63,7 +63,7 @@ public class TrackSchemeZoom< V extends Vertex< E > & HasTimepoint, E extends Ed
 		zoom.transformChanged( panel.getScreenTransform().get() );
 		zoom.updateHeaderSize( panel.getOffsetHeaders().getWidth(), panel.getOffsetHeaders().getHeight() );
 		// put the overlay first, so that is below the graph rendering.
-		panel.getDisplay().addOverlayRenderer( zoom.overlay );
+		panel.getDisplay().overlays().add( zoom.overlay );
 		panel.getScreenTransform().listeners().add( zoom );
 		panel.getOffsetHeaders().listeners().add( zoom );
 
