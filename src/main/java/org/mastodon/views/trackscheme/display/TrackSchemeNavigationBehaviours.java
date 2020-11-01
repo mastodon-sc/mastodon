@@ -412,7 +412,7 @@ public class TrackSchemeNavigationBehaviours implements TransformListener< Scree
 			if ( !dragging )
 			{
 				dragging = true;
-				display.addOverlayRenderer( this );
+				display.overlays().add( this );
 			}
 			display.repaint();
 		}
@@ -426,7 +426,7 @@ public class TrackSchemeNavigationBehaviours implements TransformListener< Scree
 			if ( dragging )
 			{
 				dragging = false;
-				display.removeOverlayRenderer( this );
+				display.overlays().remove( this );
 				display.repaint();
 				lock.readLock().lock();
 				try
