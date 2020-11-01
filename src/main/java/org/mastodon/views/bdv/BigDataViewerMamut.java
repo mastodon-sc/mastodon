@@ -29,6 +29,7 @@
 package org.mastodon.views.bdv;
 
 import bdv.ui.splitpanel.SplitPanel;
+import bdv.viewer.ViewerPanel;
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
@@ -46,7 +47,7 @@ public class BigDataViewerMamut
 {
 	private final ViewerFrameMamut viewerFrame;
 
-	private final ViewerPanelMamut viewer;
+	private final ViewerPanel viewer;
 
 	private final SplitPanel splitPanel;
 
@@ -123,7 +124,7 @@ public class BigDataViewerMamut
 		visibilityAndGroupingDialog = new VisibilityAndGroupingDialog( viewerFrame, viewer.getVisibilityAndGrouping() );
 	}
 
-	public ViewerPanelMamut getViewer()
+	public ViewerPanel getViewer()
 	{
 		return viewer;
 	}
