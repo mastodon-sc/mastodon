@@ -93,16 +93,19 @@ public class DBvvPanel
 		if ( !sources.isEmpty() )
 			state.setCurrentSource( 0 );
 
+		final int displayWidth = options.getWidth();
+		final int displayHeight = options.getHeight();
+
 		painterThread = new PainterThread( this );
 		entities = new DBvvEntities( viewGraph );
-		renderer = new DBvvRenderer( 640, 480, viewGraph, entities, selection, highlight );
+		renderer = new DBvvRenderer( displayWidth, displayHeight, viewGraph, entities, selection, highlight );
 		transformEventHandler = new TransformEventHandler3D(
 				TransformState.from( state()::getViewerTransform, state()::setViewerTransform ) );
 
-		final GLCapabilities capsReqUser = new GLCapabilities( GLProfile.getMaxProgrammableCore( true ) );
-		display = new InteractiveGLDisplayCanvas( options.getWidth(), options.getHeight() );
+		display = new InteractiveGLDisplayCanvas( displayWidth, displayHeight );
 		display.setTransformEventHandler( transformEventHandler );
 		display.addGLEventListener( glEventListener );
+		display.canvasSizeListeners().add( renderer::setScreenSize );
 
 		sliderTime = new JSlider( SwingConstants.HORIZONTAL, 0, numTimepoints - 1, 0 );
 		sliderTime.addChangeListener( e -> {

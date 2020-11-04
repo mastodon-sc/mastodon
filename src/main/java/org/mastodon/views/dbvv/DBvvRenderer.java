@@ -35,33 +35,39 @@ public class DBvvRenderer
 
 	private final HighlightModel< Spot, Link > highlight;
 
-	private final OffScreenFrameBufferWithDepth sceneBuf;
-
 	// TODO...
 	private final double dCam = 2000;
 	private final double dClip = 1000;
-	private double screenWidth = 640;
-	private double screenHeight = 480;
+
+	private double screenWidth;
+	private double screenHeight;
 
 	private final InstancedSpot instancedEllipsoid;
 	private final InstancedLink instancedLink;
 
 	public DBvvRenderer(
-			final int renderWidth,
-			final int renderHeight,
+			final int screenWidth,
+			final int screenHeight,
 			final ModelGraph graph,
 			final DBvvEntities entities,
 			final SelectionModel< Spot, Link > selection,
 			final HighlightModel< Spot, Link > highlight )
 	{
+		this.screenWidth = screenWidth;
+		this.screenHeight = screenHeight;
 		this.graph = graph;
 		this.entities = entities;
 		this.selection = selection;
 		this.highlight = highlight;
-		sceneBuf = new OffScreenFrameBufferWithDepth( renderWidth, renderHeight, GL_RGB8 );
 		instancedEllipsoid = new InstancedSpot( 3, 10 );
 		instancedLink = new InstancedLink( 36, 3, 20 );
 		selection.listeners().add( this::selectionChanged );
+	}
+
+	public void setScreenSize( final double screenWidth, final double screenHeight )
+	{
+		this.screenWidth = screenWidth;
+		this.screenHeight = screenHeight;
 	}
 
 	public void init( final GL3 gl )
@@ -75,18 +81,22 @@ public class DBvvRenderer
 			final int timepoint )
 	{
 		final Matrix4f view = MatrixMath.affine( worldToScreen, new Matrix4f() );
+		// NB: The following shift-to-scree-center and offset-to-camera transformation
+		//     is also done inside MatrixMath.screenPerspective(). However, we need the
+		//     camview transformation also inside the geometry draw calls.
+		// TODO: Maybe MatrixMath.screenPerspective() should be split up to make this more explicit
 		final Matrix4f camview = new Matrix4f()
 			.translation( ( float ) ( -( screenWidth - 1 ) / 2 ), ( float ) ( -( screenHeight - 1 ) / 2 ), ( float ) dCam )
 			.mul( view );
 		final Matrix4f projection = MatrixMath.screenPerspective( dCam, dClip, screenWidth, screenHeight, 0, new Matrix4f() );
+		// TODO also possible:    = MatrixMath.screenPerspective( dCam, dClipNear, dClipFar, screenWidth, screenHeight, 0, new Matrix4f() );
 		final Matrix4f pv = new Matrix4f( projection ).mul( view );
 
-		sceneBuf.bind( gl, false );
 		gl.glClearColor( 0.0f, 0.2f, 0.1f, 0.0f );
 		gl.glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
 
 		gl.glEnable( GL_DEPTH_TEST );
-		gl.glDisable( GL_CULL_FACE );
+		gl.glDisable( GL_CULL_FACE ); // TODO: enable
 		gl.glCullFace( GL_BACK );
 		gl.glFrontFace( GL_CCW );
 
@@ -119,10 +129,6 @@ public class DBvvRenderer
 			instancedLink.draw( gl, pv, camview, cylinders.getCylinders(), highlightId, r0 + f, r0 );
 		}
 		graph.releaseRef( eref );
-
-		sceneBuf.unbind( gl, false );
-		gl.glDisable( GL_DEPTH_TEST );
-		sceneBuf.drawQuad( gl );
 	}
 
 	private int colorModCount = 1;
