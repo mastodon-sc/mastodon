@@ -9,11 +9,8 @@ import org.mastodon.mamut.model.ModelGraph;
 import org.mastodon.mamut.model.Spot;
 import org.mastodon.model.HighlightModel;
 import org.mastodon.model.SelectionModel;
-import org.mastodon.views.bvv.scene.InstancedCylinder;
-import org.mastodon.views.bvv.scene.InstancedEllipsoid;
 import org.mastodon.views.bvv.scene.InstancedLink;
 import org.mastodon.views.bvv.scene.InstancedSpot;
-import tpietzsch.offscreen.OffScreenFrameBufferWithDepth;
 import tpietzsch.util.MatrixMath;
 
 import static com.jogamp.opengl.GL.GL_BACK;
@@ -22,7 +19,6 @@ import static com.jogamp.opengl.GL.GL_COLOR_BUFFER_BIT;
 import static com.jogamp.opengl.GL.GL_CULL_FACE;
 import static com.jogamp.opengl.GL.GL_DEPTH_BUFFER_BIT;
 import static com.jogamp.opengl.GL.GL_DEPTH_TEST;
-import static com.jogamp.opengl.GL.GL_RGB8;
 import static com.jogamp.opengl.GL.GL_UNPACK_ALIGNMENT;
 
 public class DBvvRenderer
@@ -96,7 +92,7 @@ public class DBvvRenderer
 		gl.glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
 
 		gl.glEnable( GL_DEPTH_TEST );
-		gl.glDisable( GL_CULL_FACE ); // TODO: enable
+		gl.glEnable( GL_CULL_FACE );
 		gl.glCullFace( GL_BACK );
 		gl.glFrontFace( GL_CCW );
 

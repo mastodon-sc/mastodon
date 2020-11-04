@@ -33,7 +33,7 @@ class UnitCylinder
 	 * These are arranged in counterclockwise order when looking down the z axis onto the xy plane.
 	 *
 	 * The points have coordinates
-	 * p_i^j = [x=sin(i * 2*pi/subdivisions), y=cos(i * 2*pi/subdivisions), z=j] for j in {0,1}.
+	 * p_i^j = [x=cos(i * 2*pi/subdivisions), y=sin(i * 2*pi/subdivisions), z=j] for j in {0,1}.
 	 *
 	 * In the vertex array, they are ordered as (p_0^0, p_0^1, p_1^0, p_1^1, ...).
 	 * So, p_i^j has index 2*i+j.
@@ -63,8 +63,8 @@ class UnitCylinder
 		for ( int i = 0; i < subdivisions; ++i )
 			for ( int j = 0; j < 2; ++j )
 			{
-				vertices[ k++ ] = ( float ) Math.sin( i * 2 * Math.PI / subdivisions );
 				vertices[ k++ ] = ( float ) Math.cos( i * 2 * Math.PI / subdivisions );
+				vertices[ k++ ] = ( float ) Math.sin( i * 2 * Math.PI / subdivisions );
 				vertices[ k++ ] = j;
 			}
 
