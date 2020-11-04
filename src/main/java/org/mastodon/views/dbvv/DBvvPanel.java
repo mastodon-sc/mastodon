@@ -18,10 +18,7 @@ import com.jogamp.opengl.GLAutoDrawable;
 import com.jogamp.opengl.GLCapabilities;
 import com.jogamp.opengl.GLEventListener;
 import com.jogamp.opengl.GLProfile;
-import com.jogamp.opengl.awt.GLCanvas;
 import java.awt.BorderLayout;
-import java.awt.Component;
-import java.awt.Dimension;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -36,10 +33,11 @@ import org.mastodon.mamut.model.Spot;
 import org.mastodon.model.HighlightModel;
 import org.mastodon.model.SelectionModel;
 import org.mastodon.views.bvv.BvvOptions;
+import tpietzsch.example2.InteractiveGLDisplayCanvas;
 
 public class DBvvPanel
 		extends JPanel
-		implements RequestRepaint, ViewerStateChangeListener
+		implements RequestRepaint, PainterThread.Paintable, ViewerStateChangeListener
 {
 	/**
 	 * Currently rendered state (visible sources, transformation, timepoint,
@@ -55,7 +53,7 @@ public class DBvvPanel
 
 	private final DBvvRenderer renderer;
 
-	private final GLCanvas canvas;
+	private final InteractiveGLDisplayCanvas display;
 
 	private final JSlider sliderTime;
 
@@ -95,14 +93,16 @@ public class DBvvPanel
 		if ( !sources.isEmpty() )
 			state.setCurrentSource( 0 );
 
-		painterThread = new PainterThread( this::paint );
+		painterThread = new PainterThread( this );
 		entities = new DBvvEntities( viewGraph );
 		renderer = new DBvvRenderer( 640, 480, viewGraph, entities, selection, highlight );
+		transformEventHandler = new TransformEventHandler3D(
+				TransformState.from( state()::getViewerTransform, state()::setViewerTransform ) );
 
 		final GLCapabilities capsReqUser = new GLCapabilities( GLProfile.getMaxProgrammableCore( true ) );
-		canvas = new GLCanvas( capsReqUser );
-		canvas.setPreferredSize( new Dimension( options.getWidth(), options.getHeight() ) );
-		canvas.addGLEventListener( glEventListener );
+		display = new InteractiveGLDisplayCanvas( options.getWidth(), options.getHeight() );
+		display.setTransformEventHandler( transformEventHandler );
+		display.addGLEventListener( glEventListener );
 
 		sliderTime = new JSlider( SwingConstants.HORIZONTAL, 0, numTimepoints - 1, 0 );
 		sliderTime.addChangeListener( e -> {
@@ -110,21 +110,10 @@ public class DBvvPanel
 				setTimepoint( sliderTime.getValue() );
 		} );
 
-		add( canvas, BorderLayout.CENTER );
+		add( display, BorderLayout.CENTER );
 		if ( numTimepoints > 1 )
 			add( sliderTime, BorderLayout.SOUTH );
-
-		transformEventHandler = new TransformEventHandler3D(
-				TransformState.from( state()::getViewerTransform, state()::setViewerTransform ) );
-
-					// TODO: FIX THIS HACK.
-					//  This is just setting some transform that works ok for my default testing dataset
-					//  Instead, initialize to a good initial view either based on the image data, or
-					//  by looking at the transform of the last active BDV window
-					final AffineTransform3D initialTransform = new AffineTransform3D();
-					initialTransform.scale( 4 );
-
-		state().setViewerTransform( initialTransform );
+		setFocusable( false );
 
 		timePointListeners = new CopyOnWriteArrayList<>();
 
@@ -196,14 +185,20 @@ public class DBvvPanel
 		painterThread.interrupt();
 	}
 
-	public Component getDisplay()
+	/**
+	 * Get the viewer canvas.
+	 *
+	 * @return the viewer canvas.
+	 */
+	public InteractiveGLDisplayCanvas getDisplay()
 	{
-		return canvas;
+		return display;
 	}
 
-	private void paint()
+	@Override
+	public void paint()
 	{
-		canvas.display();
+		display.display();
 	}
 
 	@Override

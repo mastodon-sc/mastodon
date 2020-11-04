@@ -1,11 +1,13 @@
 package org.mastodon.mamut;
 
+import bdv.tools.InitializeViewerState;
+import java.awt.Dimension;
 import javax.swing.ActionMap;
+import net.imglib2.realtransform.AffineTransform3D;
 import org.mastodon.app.ui.MastodonFrameViewActions;
 import org.mastodon.app.ui.ViewMenu;
 import org.mastodon.app.ui.ViewMenuBuilder;
 import org.mastodon.mamut.model.Link;
-import org.mastodon.mamut.model.MamutModelGraphPropertiesBvv;
 import org.mastodon.mamut.model.Model;
 import org.mastodon.mamut.model.ModelGraph;
 import org.mastodon.mamut.model.Spot;
@@ -14,11 +16,6 @@ import org.mastodon.ui.keymap.KeyConfigContexts;
 import org.mastodon.views.bdv.BigDataViewerActionsMamut;
 import org.mastodon.views.bdv.SharedBigDataViewerData;
 import org.mastodon.views.bvv.BvvOptions;
-import org.mastodon.views.bvv.BvvPanel;
-import org.mastodon.views.bvv.BvvViewFrame;
-import org.mastodon.views.bvv.wrap.BvvEdgeWrapper;
-import org.mastodon.views.bvv.wrap.BvvGraphWrapper;
-import org.mastodon.views.bvv.wrap.BvvVertexWrapper;
 import org.mastodon.views.dbvv.DBvvPanel;
 import org.mastodon.views.dbvv.DBvvViewFrame;
 import org.mastodon.views.dbvv.IdentityViewGraph;
@@ -33,8 +30,6 @@ public class MamutViewDbvv extends MamutView< IdentityViewGraph< ModelGraph, Spo
 {
 	// TODO
 	private static int bvvName = 1;
-
-	private final DBvvPanel bvvPanel;
 
 	private final DBvvPanel viewer;
 
@@ -59,11 +54,17 @@ public class MamutViewDbvv extends MamutView< IdentityViewGraph< ModelGraph, Spo
 				shared.getOptions(),
 				BvvOptions.options() );
 		setFrame( frame );
-		bvvPanel = frame.getBvvPanel();
+		viewer = frame.getBvvPanel();
+
+		// initialize transform
+		final Dimension dim = viewer.getDisplay().getSize();
+		final AffineTransform3D viewerTransform = InitializeViewerState.initTransform( dim.width, dim.height, false, viewer.state() );
+		viewer.state().setViewerTransform( viewerTransform );
 
 		frame.getBvvPanel().getTransformEventHandler().install( viewBehaviours );
 
 		MastodonFrameViewActions.install( viewActions, this );
+		viewer.getTransformEventHandler().install( viewBehaviours );
 
 		final ViewMenu menu = new ViewMenu( this );
 		final ActionMap actionMap = frame.getKeybindings().getConcatenatedActionMap();
@@ -97,13 +98,11 @@ public class MamutViewDbvv extends MamutView< IdentityViewGraph< ModelGraph, Spo
 		final Model model = appModel.getModel();
 		final ModelGraph modelGraph = model.getGraph();
 
-		modelGraph.addGraphChangeListener( bvvPanel::requestRepaint );
-		selectionModel.listeners().add( bvvPanel::requestRepaint );
-		highlightModel.listeners().add( bvvPanel::requestRepaint );
+		modelGraph.addGraphChangeListener( viewer::requestRepaint );
+		selectionModel.listeners().add( viewer::requestRepaint );
+		highlightModel.listeners().add( viewer::requestRepaint );
 
 		frame.setVisible( true );
-
-		viewer = frame.getBvvPanel();
 
 		viewer.addTimePointListener( timePointIndex -> timepointModel.setTimepoint( timePointIndex ) );
 		timepointModel.listeners().add( () -> viewer.setTimepoint( timepointModel.getTimepoint() ) );

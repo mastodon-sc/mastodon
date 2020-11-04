@@ -21,6 +21,7 @@ import org.mastodon.model.SelectionModel;
 import org.mastodon.views.bvv.BvvOptions;
 import org.scijava.ui.behaviour.MouseAndKeyHandler;
 import org.scijava.ui.behaviour.util.InputActionBindings;
+import tpietzsch.example2.InteractiveGLDisplayCanvas;
 
 public class DBvvViewFrame extends ViewFrame
 {
@@ -70,16 +71,12 @@ public class DBvvViewFrame extends ViewFrame
 			}
 		} );
 
-		final Component display = bvvPanel.getDisplay();
+		final InteractiveGLDisplayCanvas display = bvvPanel.getDisplay();
 		final MouseAndKeyHandler mouseAndKeyHandler = new MouseAndKeyHandler();
 		mouseAndKeyHandler.setInputMap( triggerbindings.getConcatenatedInputTriggerMap() );
 		mouseAndKeyHandler.setBehaviourMap( triggerbindings.getConcatenatedBehaviourMap() );
 		mouseAndKeyHandler.setKeypressManager( optional.values.getKeyPressedManager(), display );
-		display.addKeyListener( mouseAndKeyHandler );
-		display.addMouseListener( mouseAndKeyHandler );
-		display.addMouseWheelListener( mouseAndKeyHandler );
-		display.addMouseMotionListener( mouseAndKeyHandler );
-		display.addFocusListener( mouseAndKeyHandler );
+		display.addHandler( mouseAndKeyHandler );
 	}
 
 	public InputActionBindings getKeybindings()
