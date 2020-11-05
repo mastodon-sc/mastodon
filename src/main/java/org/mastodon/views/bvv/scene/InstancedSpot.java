@@ -217,7 +217,7 @@ public class InstancedSpot
 		}
 	}
 
-	public void draw( GL3 gl, Matrix4fc pvm, Matrix4f vm, Ellipsoids ellipsoids, final int highlightIndex )
+	public void draw( GL3 gl, Matrix4fc pvm, Matrix4fc vm, Ellipsoids ellipsoids, final int highlightIndex )
 	{
 		if ( !initialized )
 			init( gl );

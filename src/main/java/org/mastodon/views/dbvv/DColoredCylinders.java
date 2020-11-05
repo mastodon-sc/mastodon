@@ -42,13 +42,15 @@ public class DColoredCylinders
 	{
 		colorModCount = -1;
 		final Cylinder ref = cylinders.createRef();
-		math.setFromEdge( edge, cylinders.getOrAdd( edge.getInternalPoolIndex(), ref ) );
+		final int key = graph.getGraphIdBimap().getEdgeId( edge );
+		math.setFromEdge( edge, cylinders.getOrAdd( key, ref ) );
 		cylinders.releaseRef( ref );
 	}
 
 	public void remove( final Link edge )
 	{
-		cylinders.remove( edge.getInternalPoolIndex() );
+		final int key = graph.getGraphIdBimap().getEdgeId( edge );
+		cylinders.remove( key );
 	}
 
 	/**
@@ -64,7 +66,8 @@ public class DColoredCylinders
 		final Cylinder ref = cylinders.createRef();
 		try
 		{
-			final Cylinder cylinder = cylinders.get( edge.getInternalPoolIndex(), ref );
+			final int key = graph.getGraphIdBimap().getEdgeId( edge );
+			final Cylinder cylinder = cylinders.get( key, ref );
 			return ( cylinder == null ) ? -1 : cylinder.getInternalPoolIndex();
 		}
 		finally

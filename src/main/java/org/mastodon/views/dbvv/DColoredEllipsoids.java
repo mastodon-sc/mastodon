@@ -40,13 +40,16 @@ public class DColoredEllipsoids
 	{
 		colorModCount = -1;
 		final Ellipsoid ref = ellipsoids.createRef();
-		math.setFromVertex( vertex, ellipsoids.getOrAdd( vertex.getInternalPoolIndex(), ref ) );
+		final int key = graph.getGraphIdBimap().getVertexId( vertex );
+		math.setFromVertex( vertex, ellipsoids.getOrAdd( key, ref ) );
 		ellipsoids.releaseRef( ref );
 	}
 
 	public void remove( final Spot vertex )
 	{
-		ellipsoids.remove( vertex.getInternalPoolIndex() );
+		final int key = graph.getGraphIdBimap().getVertexId( vertex );
+		ellipsoids.remove( key );
+	}
 	}
 
 	/**
@@ -59,10 +62,11 @@ public class DColoredEllipsoids
 		if ( vertex == null )
 			return -1;
 
+		final int key = graph.getGraphIdBimap().getVertexId( vertex );
 		final Ellipsoid ref = ellipsoids.createRef();
 		try
 		{
-			final Ellipsoid ellipsoid = ellipsoids.get( vertex.getInternalPoolIndex(), ref );
+			final Ellipsoid ellipsoid = ellipsoids.get( key, ref );
 			return ( ellipsoid == null ) ? -1 : ellipsoid.getInternalPoolIndex();
 		}
 		finally

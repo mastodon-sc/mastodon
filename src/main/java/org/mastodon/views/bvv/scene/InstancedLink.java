@@ -224,7 +224,7 @@ public class InstancedLink
 		}
 	}
 
-	public void draw( GL3 gl, Matrix4fc pvm, Matrix4f vm, final Cylinders cylinders, final int highlightIndex, final double r0, final double r1 )
+	public void draw( GL3 gl, Matrix4fc pvm, Matrix4fc vm, final Cylinders cylinders, final int highlightIndex, final double r0, final double r1 )
 	{
 		if ( !initialized )
 			init( gl );
