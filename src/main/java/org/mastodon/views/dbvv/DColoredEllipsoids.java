@@ -50,6 +50,10 @@ public class DColoredEllipsoids
 		final int key = graph.getGraphIdBimap().getVertexId( vertex );
 		ellipsoids.remove( key );
 	}
+
+	public Spot getVertex( final Ellipsoid ellipsoid, final Spot ref )
+	{
+		return graph.getGraphIdBimap().getVertex( ellipsoids.keyOf( ellipsoid ), ref );
 	}
 
 	/**
