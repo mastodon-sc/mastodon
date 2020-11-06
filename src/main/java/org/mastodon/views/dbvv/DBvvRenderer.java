@@ -14,7 +14,6 @@ import org.mastodon.model.SelectionModel;
 import org.mastodon.views.bvv.scene.Ellipsoid;
 import org.mastodon.views.bvv.scene.InstancedLink;
 import org.mastodon.views.bvv.scene.InstancedSpot;
-import tpietzsch.util.MatrixMath;
 
 import static com.jogamp.opengl.GL.GL_BACK;
 import static com.jogamp.opengl.GL.GL_CCW;
@@ -178,6 +177,7 @@ public class DBvvRenderer
 		final int timepoint = data.getTimepoint();
 		final int w = ( int ) data.getScreenWidth();
 		final int h = ( int ) data.getScreenHeight();
+		final int[] viewport = { 0, 0, w, h };
 
 		final DColoredEllipsoids ellipsoids = entities.forTimepoint( timepoint ).ellipsoids;
 
@@ -187,7 +187,9 @@ public class DBvvRenderer
 		final Vector3f pFarMinusNear = new Vector3f();
 
 		data.getPv().invert( pvinv );
-		pvinv.unprojectInvRay( x + 0.5f, h - y - 0.5f, new int[] { 0, 0, w, h }, pNear, pFarMinusNear );
+//		pvinv.unprojectInvRay( x + 0.5f, h - y - 0.5f, viewport, pNear, pFarMinusNear );
+		pvinv.unprojectInv( x + 0.5f, h - y - 0.5f, 0, viewport, pNear );
+		pvinv.unprojectInv( x + 0.5f, h - y - 0.5f, 1, viewport, pFarMinusNear ).sub( pNear );
 
 
 		final Matrix3f e = new Matrix3f();
@@ -226,4 +228,44 @@ public class DBvvRenderer
 		return best;
 	}
 
+	/**
+	 * Returns the edge currently painted close to the specified location.
+	 * <p>
+	 * It is the responsibility of the caller to lock the graph it inspects for
+	 * reading operations, prior to calling this method. A typical call from
+	 * another method would happen like this:
+	 *
+	 * <pre>
+	 * ReentrantReadWriteLock lock = graph.getLock();
+	 * lock.readLock().lock();
+	 * boolean found = false;
+	 * try
+	 * {
+	 * 	E edge = renderer.getEdgeAt( x, y, EDGE_SELECT_DISTANCE_TOLERANCE, ref )
+	 * 	... // do something with the edge
+	 * 	... // edge is guaranteed to stay valid while the lock is held
+	 * }
+	 * finally
+	 * {
+	 * 	lock.readLock().unlock();
+	 * }
+	 * </pre>
+	 *
+	 * @param x
+	 *            the x location to search, in viewer coordinates (screen).
+	 * @param y
+	 *            the y location to search, in viewer coordinates (screen).
+	 * @param tolerance
+	 *            the distance tolerance to accept close edges.
+	 * @param ref
+	 *            an edge reference, that might be used to return the vertex
+	 *            found.
+	 * @return the closest edge within tolerance, or <code>null</code> if it
+	 *         could not be found.
+	 */
+	public Link getEdgeAt( final int x, final int y, final double tolerance, final Link ref )
+	{
+		// TODO
+		return null;
+	}
 }

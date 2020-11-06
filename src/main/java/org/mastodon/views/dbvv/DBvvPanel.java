@@ -7,6 +7,7 @@ import bdv.viewer.RequestRepaint;
 import bdv.viewer.SourceAndConverter;
 import bdv.viewer.SynchronizedViewerState;
 import bdv.viewer.TimePointListener;
+import bdv.viewer.TransformListener;
 import bdv.viewer.ViewerOptions;
 import bdv.viewer.ViewerStateChange;
 import bdv.viewer.ViewerStateChangeListener;
@@ -15,13 +16,10 @@ import bdv.viewer.state.SourceGroup;
 import bdv.viewer.state.ViewerState;
 import com.jogamp.opengl.GL3;
 import com.jogamp.opengl.GLAutoDrawable;
-import com.jogamp.opengl.GLCapabilities;
 import com.jogamp.opengl.GLEventListener;
-import com.jogamp.opengl.GLProfile;
 import java.awt.BorderLayout;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
 import javax.swing.JPanel;
 import javax.swing.JSlider;
 import javax.swing.SwingConstants;
@@ -33,6 +31,7 @@ import org.mastodon.mamut.model.Spot;
 import org.mastodon.model.HighlightModel;
 import org.mastodon.model.SelectionModel;
 import org.mastodon.views.bvv.BvvOptions;
+import org.scijava.listeners.Listeners;
 import tpietzsch.example2.InteractiveGLDisplayCanvas;
 
 public class DBvvPanel
@@ -65,7 +64,9 @@ public class DBvvPanel
 	 * calling {@link #requestRepaint()} so listeners have the chance to
 	 * interfere.
 	 */
-	private final CopyOnWriteArrayList< TimePointListener > timePointListeners;
+	private final Listeners.List< TimePointListener > timePointListeners;
+
+	private final Listeners.List< TransformListener< AffineTransform3D > > transformListeners;
 
 	public DBvvPanel(
 			final ModelGraph viewGraph,
@@ -118,7 +119,8 @@ public class DBvvPanel
 			add( sliderTime, BorderLayout.SOUTH );
 		setFocusable( false );
 
-		timePointListeners = new CopyOnWriteArrayList<>();
+		timePointListeners = new Listeners.SynchronizedList<>( l -> l.timePointChanged( state().getCurrentTimepoint() ) );
+		transformListeners = new Listeners.SynchronizedList<>( l -> l.transformChanged( state().getViewerTransform() ) );
 
 		state().changeListeners().add( this );
 
@@ -133,19 +135,27 @@ public class DBvvPanel
 	 */
 	public synchronized void setTimepoint( final int timepoint )
 	{
-		if ( state.getCurrentTimepoint() != timepoint )
-		{
-			state.setCurrentTimepoint( timepoint );
-			sliderTime.setValue( timepoint );
-			for ( final TimePointListener l : timePointListeners )
-				l.timePointChanged( timepoint );
-			requestRepaint();
-		}
+		state().setCurrentTimepoint( timepoint );
 	}
 
 	public TransformEventHandler3D getTransformEventHandler()
 	{
 		return transformEventHandler;
+	}
+
+	public DBvvRenderer getRenderer()
+	{
+		return renderer;
+	}
+
+	public Listeners< TimePointListener > timePointListeners()
+	{
+		return timePointListeners;
+	}
+
+	public Listeners< TransformListener< AffineTransform3D > > transformListeners()
+	{
+		return transformListeners;
 	}
 
 	/**
@@ -231,12 +241,13 @@ public class DBvvPanel
 					sliderTime.setValue( timepoint );
 				blockSliderTimeEvents = false;
 			} );
-			for ( final TimePointListener l : timePointListeners )
-				l.timePointChanged( timepoint );
+			timePointListeners.list.forEach( l -> l.timePointChanged( timepoint ) );
 			requestRepaint();
 			break;
 		}
 		case VIEWER_TRANSFORM_CHANGED:
+			final AffineTransform3D transform = state().getViewerTransform();
+			transformListeners.list.forEach( l -> l.transformChanged( transform ) );
 			requestRepaint();
 		}
 	}
@@ -271,51 +282,4 @@ public class DBvvPanel
 		{
 		}
 	};
-
-	/**
-	 * Add a {@link TimePointListener} to notify about time-point
-	 * changes. Listeners will be notified <em>before</em> calling
-	 * {@link #requestRepaint()} so they have the chance to interfere.
-	 *
-	 * @param listener
-	 *            the listener to add.
-	 */
-	public void addTimePointListener( final TimePointListener listener )
-	{
-		addTimePointListener( listener, Integer.MAX_VALUE );
-	}
-
-	/**
-	 * Add a {@link TimePointListener} to notify about time-point
-	 * changes. Listeners will be notified <em>before</em> calling
-	 * {@link #requestRepaint()} so they have the chance to interfere.
-	 *
-	 * @param listener
-	 *            the listener to add.
-	 * @param index
-	 *            position in the list of listeners at which to insert this one.
-	 */
-	public void addTimePointListener( final TimePointListener listener, final int index )
-	{
-		synchronized ( timePointListeners )
-		{
-			final int s = timePointListeners.size();
-			timePointListeners.add( index < 0 ? 0 : Math.min( index, s ), listener );
-			listener.timePointChanged( state.getCurrentTimepoint() );
-		}
-	}
-
-	/**
-	 * Remove a {@link TimePointListener}.
-	 *
-	 * @param listener
-	 *            the listener to remove.
-	 */
-	public void removeTimePointListener( final TimePointListener listener )
-	{
-		synchronized ( timePointListeners )
-		{
-			timePointListeners.remove( listener );
-		}
-	}
 }

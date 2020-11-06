@@ -16,6 +16,7 @@ import org.mastodon.ui.keymap.KeyConfigContexts;
 import org.mastodon.views.bdv.BigDataViewerActionsMamut;
 import org.mastodon.views.bdv.SharedBigDataViewerData;
 import org.mastodon.views.bvv.BvvOptions;
+import org.mastodon.views.dbvv.DBvvHighlightHandler;
 import org.mastodon.views.dbvv.DBvvPanel;
 import org.mastodon.views.dbvv.DBvvViewFrame;
 import org.mastodon.views.dbvv.IdentityViewGraph;
@@ -104,8 +105,13 @@ public class MamutViewDbvv extends MamutView< IdentityViewGraph< ModelGraph, Spo
 
 		frame.setVisible( true );
 
-		viewer.addTimePointListener( timePointIndex -> timepointModel.setTimepoint( timePointIndex ) );
+		viewer.timePointListeners().add( timePointIndex -> timepointModel.setTimepoint( timePointIndex ) );
 		timepointModel.listeners().add( () -> viewer.setTimepoint( timepointModel.getTimepoint() ) );
+
+		final DBvvHighlightHandler highlightHandler = new DBvvHighlightHandler( viewGraph.getGraph(), viewer.getRenderer(), highlightModel );
+		viewer.getDisplay().addHandler( highlightHandler );
+		viewer.transformListeners().add( highlightHandler );
+
 
 		// Give focus to display so that it can receive key-presses immediately.
 		viewer.getDisplay().requestFocusInWindow();
