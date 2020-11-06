@@ -3,7 +3,10 @@ package org.mastodon.views.dbvv;
 import net.imglib2.realtransform.AffineTransform3D;
 import org.joml.Matrix4f;
 import org.joml.Matrix4fc;
+import org.mastodon.views.bvv.scene.InstancedSpot.SpotDrawingMode;
 import tpietzsch.util.MatrixMath;
+
+import static org.mastodon.views.bvv.scene.InstancedSpot.SpotDrawingMode.SPHERES;
 
 public class SceneRenderData
 {
@@ -17,6 +20,7 @@ public class SceneRenderData
 	private double dClipFar;
 	private double screenWidth;
 	private double screenHeight;
+	private SpotDrawingMode spotDrawingMode = SPHERES;
 
 	/**
 	 * @param timepoint timepoint index
@@ -70,6 +74,7 @@ public class SceneRenderData
 		this.dClipFar = other.dClipFar;
 		this.screenWidth = other.screenWidth;
 		this.screenHeight = other.screenHeight;
+		this.spotDrawingMode = other.spotDrawingMode;
 	}
 
 	public int getTimepoint()
@@ -120,5 +125,10 @@ public class SceneRenderData
 	public double getScreenHeight()
 	{
 		return screenHeight;
+	}
+
+	public SpotDrawingMode getSpotDrawingMode()
+	{
+		return spotDrawingMode;
 	}
 }

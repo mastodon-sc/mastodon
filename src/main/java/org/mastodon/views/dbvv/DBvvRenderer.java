@@ -14,6 +14,7 @@ import org.mastodon.model.SelectionModel;
 import org.mastodon.views.bvv.scene.Ellipsoid;
 import org.mastodon.views.bvv.scene.InstancedLink;
 import org.mastodon.views.bvv.scene.InstancedSpot;
+import org.mastodon.views.bvv.scene.InstancedSpot.SpotDrawingMode;
 
 import static com.jogamp.opengl.GL.GL_BACK;
 import static com.jogamp.opengl.GL.GL_CCW;
@@ -22,6 +23,7 @@ import static com.jogamp.opengl.GL.GL_CULL_FACE;
 import static com.jogamp.opengl.GL.GL_DEPTH_BUFFER_BIT;
 import static com.jogamp.opengl.GL.GL_DEPTH_TEST;
 import static com.jogamp.opengl.GL.GL_UNPACK_ALIGNMENT;
+import static org.mastodon.views.bvv.scene.InstancedSpot.SpotDrawingMode.ELLIPSOIDS;
 
 public class DBvvRenderer
 {
@@ -106,7 +108,7 @@ public class DBvvRenderer
 		int highlightId = ellipsoids.indexOf( highlight.getHighlightedVertex( vref ) );
 		graph.releaseRef( vref );
 
-		instancedEllipsoid.draw( gl, pv, camview, ellipsoids.getEllipsoids(), highlightId );
+		instancedEllipsoid.draw( gl, pv, camview, ellipsoids.getEllipsoids(), highlightId, data.getSpotDrawingMode() );
 
 		// -- paint edges -----------------------------------------------------
 		// the maximum number of time-points into the past for which outgoing
@@ -174,6 +176,8 @@ public class DBvvRenderer
 		// TODO: KDTree clipping to region around ray.
 
 		final SceneRenderData data = renderData.copy();
+		final SpotDrawingMode spotDrawingMode = data.getSpotDrawingMode();
+
 		final int timepoint = data.getTimepoint();
 		final int w = ( int ) data.getScreenWidth();
 		final int h = ( int ) data.getScreenHeight();
@@ -191,8 +195,6 @@ public class DBvvRenderer
 		pvinv.unprojectInv( x + 0.5f, h - y - 0.5f, 0, viewport, pNear );
 		pvinv.unprojectInv( x + 0.5f, h - y - 0.5f, 1, viewport, pFarMinusNear ).sub( pNear );
 
-
-		final Matrix3f e = new Matrix3f();
 		final Matrix3f inve = new Matrix3f();
 		final Vector3f t = new Vector3f();
 		final Vector3f a = new Vector3f();
@@ -204,9 +206,18 @@ public class DBvvRenderer
 
 		for ( final Ellipsoid ellipsoid : ellipsoids.getEllipsoids() )
 		{
-			ellipsoid.invte.get( inve ).transpose();
-			inve.transform( ellipsoid.t.get( t ).sub( pNear ), a );
-			inve.transform( pFarMinusNear, b );
+			if ( spotDrawingMode == ELLIPSOIDS )
+			{
+				ellipsoid.invte.get( inve ).transpose();
+				inve.transform( ellipsoid.t.get( t ).sub( pNear ), a );
+				inve.transform( pFarMinusNear, b );
+			}
+			else // if ( spotDrawingMode == SPHERES )
+			{
+				final float radius = 3f;
+				ellipsoid.t.get( t ).sub( pNear ).div( radius, a );
+				pFarMinusNear.div( radius, b );
+			}
 
 			final float abbb = a.dot( b ) / b.dot( b );
 			b.mul( abbb, a1 );

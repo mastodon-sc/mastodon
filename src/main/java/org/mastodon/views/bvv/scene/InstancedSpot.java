@@ -20,7 +20,6 @@ import static com.jogamp.opengl.GL.GL_FLOAT;
 import static com.jogamp.opengl.GL.GL_STATIC_DRAW;
 import static com.jogamp.opengl.GL.GL_TRIANGLES;
 import static com.jogamp.opengl.GL.GL_UNSIGNED_INT;
-import static org.mastodon.views.bvv.scene.InstancedSpot.SpotDrawingMode.SPHERES;
 
 /**
  * Draw instanced ellipsoids.
@@ -101,7 +100,7 @@ public class InstancedSpot
 		gl.glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, 0 );
 	}
 
-	enum SpotDrawingMode
+	public enum SpotDrawingMode
 	{
 		ELLIPSOIDS,
 		SPHERES
@@ -217,7 +216,9 @@ public class InstancedSpot
 		}
 	}
 
-	public void draw( GL3 gl, Matrix4fc pvm, Matrix4fc vm, Ellipsoids ellipsoids, final int highlightIndex )
+	public void draw( GL3 gl, Matrix4fc pvm, Matrix4fc vm, Ellipsoids ellipsoids,
+			final int highlightIndex,
+			final SpotDrawingMode spotDrawingMode )
 	{
 		if ( !initialized )
 			init( gl );
@@ -239,6 +240,6 @@ public class InstancedSpot
 		sphereProg.getUniform1f( "radius" ).set( 3f );
 		sphereProg.setUniforms( context );
 
-		instanceArrays.get( ellipsoids ).draw( gl, context, SPHERES );
+		instanceArrays.get( ellipsoids ).draw( gl, context, spotDrawingMode );
 	}
 }
