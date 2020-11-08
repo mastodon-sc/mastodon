@@ -1,5 +1,6 @@
 package org.mastodon.mamut;
 
+import bdv.BigDataViewerActions;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
@@ -10,7 +11,6 @@ import org.mastodon.app.ui.MastodonFrameViewActions;
 import org.mastodon.app.ui.ViewMenu;
 import org.mastodon.app.ui.ViewMenuBuilder;
 import org.mastodon.ui.SelectionActions;
-import org.mastodon.views.bdv.BigDataViewerActionsMamut;
 import org.mastodon.views.trackscheme.display.EditFocusVertexLabelAction;
 import org.mastodon.views.trackscheme.display.TrackSchemeNavigationActions;
 
@@ -42,10 +42,10 @@ public class MamutMenuBuilder extends ViewMenuBuilder
 		menuTexts.put( SelectionActions.SELECT_TRACK_DOWNWARD, "Select Track Downward" );
 		menuTexts.put( SelectionActions.SELECT_TRACK_UPWARD, "Select Track Upward" );
 
-		menuTexts.put( BigDataViewerActionsMamut.LOAD_SETTINGS, "Load Bdv Settings" );
-		menuTexts.put( BigDataViewerActionsMamut.SAVE_SETTINGS, "Save Bdv Settings" );
-		menuTexts.put( BigDataViewerActionsMamut.BRIGHTNESS_SETTINGS, "Brightness & Color" );
-		menuTexts.put( BigDataViewerActionsMamut.VISIBILITY_AND_GROUPING, "Visibility & Grouping" );
+		menuTexts.put( BigDataViewerActions.LOAD_SETTINGS, "Load Bdv Settings" );
+		menuTexts.put( BigDataViewerActions.SAVE_SETTINGS, "Save Bdv Settings" );
+		menuTexts.put( BigDataViewerActions.BRIGHTNESS_SETTINGS, "Brightness & Color" );
+		menuTexts.put( BigDataViewerActions.VISIBILITY_AND_GROUPING, "Visibility & Grouping" );
 
 		menuTexts.put( TrackSchemeNavigationActions.NAVIGATE_CHILD, "Navigate to Child" );
 		menuTexts.put( TrackSchemeNavigationActions.NAVIGATE_PARENT, "Navigate to Parent" );
