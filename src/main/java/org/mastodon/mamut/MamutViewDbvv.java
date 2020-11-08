@@ -1,5 +1,6 @@
 package org.mastodon.mamut;
 
+import bdv.BigDataViewerActions;
 import bdv.tools.InitializeViewerState;
 import java.awt.Dimension;
 import javax.swing.ActionMap;
@@ -13,7 +14,6 @@ import org.mastodon.mamut.model.ModelGraph;
 import org.mastodon.mamut.model.Spot;
 import org.mastodon.ui.SelectionActions;
 import org.mastodon.ui.keymap.KeyConfigContexts;
-import org.mastodon.views.bdv.BigDataViewerActionsMamut;
 import org.mastodon.views.bdv.SharedBigDataViewerData;
 import org.mastodon.views.bvv.BvvOptions;
 import org.mastodon.views.dbvv.DBvvHighlightHandler;
@@ -46,6 +46,7 @@ public class MamutViewDbvv extends MamutView< IdentityViewGraph< ModelGraph, Spo
 		DBvvViewFrame frame = new DBvvViewFrame(
 				windowTitle,
 				viewGraph.getGraph(),
+				appModel.getModel().getSpatioTemporalIndex(),
 				selectionModel,
 				highlightModel,
 				shared.getSources(),
@@ -74,8 +75,8 @@ public class MamutViewDbvv extends MamutView< IdentityViewGraph< ModelGraph, Spo
 		MamutMenuBuilder.build( menu, actionMap,
 				fileMenu(
 						separator(),
-						item( BigDataViewerActionsMamut.LOAD_SETTINGS ),
-						item( BigDataViewerActionsMamut.SAVE_SETTINGS )
+						item( BigDataViewerActions.LOAD_SETTINGS ),
+						item( BigDataViewerActions.SAVE_SETTINGS )
 				),
 				viewMenu(
 						item( MastodonFrameViewActions.TOGGLE_SETTINGS_PANEL )
@@ -90,8 +91,8 @@ public class MamutViewDbvv extends MamutView< IdentityViewGraph< ModelGraph, Spo
 						item( SelectionActions.SELECT_TRACK_UPWARD )
 				),
 				ViewMenuBuilder.menu( "Settings",
-						item( BigDataViewerActionsMamut.BRIGHTNESS_SETTINGS ),
-						item( BigDataViewerActionsMamut.VISIBILITY_AND_GROUPING )
+						item( BigDataViewerActions.BRIGHTNESS_SETTINGS ),
+						item( BigDataViewerActions.VISIBILITY_AND_GROUPING )
 				)
 		);
 		appModel.getPlugins().addMenus( menu );

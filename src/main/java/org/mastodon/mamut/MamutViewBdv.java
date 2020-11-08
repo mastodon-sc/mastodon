@@ -8,6 +8,7 @@ import static org.mastodon.mamut.MamutMenuBuilder.fileMenu;
 import static org.mastodon.mamut.MamutMenuBuilder.tagSetMenu;
 import static org.mastodon.mamut.MamutMenuBuilder.viewMenu;
 
+import bdv.BigDataViewerActions;
 import bdv.viewer.NavigationActions;
 import bdv.viewer.ViewerPanel;
 import javax.swing.ActionMap;
@@ -88,8 +89,8 @@ public class MamutViewBdv extends MamutView< OverlayGraphWrapper< Spot, Link >, 
 		MamutMenuBuilder.build( menu, actionMap,
 				fileMenu(
 						separator(),
-						item( BigDataViewerActionsMamut.LOAD_SETTINGS ),
-						item( BigDataViewerActionsMamut.SAVE_SETTINGS )
+						item( BigDataViewerActions.LOAD_SETTINGS ),
+						item( BigDataViewerActions.SAVE_SETTINGS )
 				),
 				viewMenu(
 						colorMenu( menuHandle ),
@@ -108,8 +109,8 @@ public class MamutViewBdv extends MamutView< OverlayGraphWrapper< Spot, Link >, 
 						tagSetMenu( tagSetMenuHandle )
 				),
 				ViewMenuBuilder.menu( "Settings",
-						item( BigDataViewerActionsMamut.BRIGHTNESS_SETTINGS ),
-						item( BigDataViewerActionsMamut.VISIBILITY_AND_GROUPING )
+						item( BigDataViewerActions.BRIGHTNESS_SETTINGS ),
+						item( BigDataViewerActions.VISIBILITY_AND_GROUPING )
 				)
 		);
 		appModel.getPlugins().addMenus( menu );
