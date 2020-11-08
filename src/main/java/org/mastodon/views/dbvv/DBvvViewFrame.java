@@ -18,6 +18,7 @@ import org.mastodon.mamut.model.ModelGraph;
 import org.mastodon.mamut.model.Spot;
 import org.mastodon.model.HighlightModel;
 import org.mastodon.model.SelectionModel;
+import org.mastodon.spatial.SpatioTemporalIndex;
 import org.mastodon.views.bvv.BvvOptions;
 import org.scijava.ui.behaviour.MouseAndKeyHandler;
 import org.scijava.ui.behaviour.util.InputActionBindings;
@@ -28,20 +29,22 @@ public class DBvvViewFrame extends ViewFrame
 	private final DBvvPanel bvvPanel;
 
 	/**
+	 * @param spatioTemporalIndex
 	 * @param sources
 	 * 		the {@link SourceAndConverter sources} to display.
 	 * @param numTimepoints
-	 * 		number of available timepoints.
+ * 		number of available timepoints.
 	 * @param cacheControl
-	 * 		handle to cache. This is used to control io timing.
+* 		handle to cache. This is used to control io timing.
 	 * @param optional
-	 * 		optional parameters. See {@link ViewerOptions}.
+* 		optional parameters. See {@link ViewerOptions}.
 	 * @param bvvOptional
-	 * 		optional parameters. See {@link BvvOptions}.
+* 		optional parameters. See {@link BvvOptions}.
 	 */
 	public DBvvViewFrame(
 			final String windowTitle,
 			final ModelGraph viewGraph,
+			final SpatioTemporalIndex< Spot > index,
 			final SelectionModel< Spot, Link > selection,
 			final HighlightModel< Spot, Link > highlight,
 			final List< SourceAndConverter< ? > > sources,
@@ -53,7 +56,7 @@ public class DBvvViewFrame extends ViewFrame
 	{
 		super( windowTitle );
 
-		bvvPanel = new DBvvPanel( viewGraph, selection, highlight, sources, numTimepoints, cacheControl, optional, bvvOptional );
+		bvvPanel = new DBvvPanel( viewGraph, index, selection, highlight, sources, numTimepoints, cacheControl, optional, bvvOptional );
 		add( bvvPanel, BorderLayout.CENTER );
 
 		final GroupLocksPanel navigationLocksPanel = new GroupLocksPanel( groupHandle );

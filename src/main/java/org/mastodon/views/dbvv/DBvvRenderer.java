@@ -6,11 +6,14 @@ import org.joml.Matrix3f;
 import org.joml.Matrix4f;
 import org.joml.Matrix4fc;
 import org.joml.Vector3f;
+import org.joml.Vector3fc;
 import org.mastodon.mamut.model.Link;
 import org.mastodon.mamut.model.ModelGraph;
 import org.mastodon.mamut.model.Spot;
 import org.mastodon.model.HighlightModel;
 import org.mastodon.model.SelectionModel;
+import org.mastodon.spatial.SpatialIndex;
+import org.mastodon.spatial.SpatioTemporalIndex;
 import org.mastodon.views.bvv.scene.Ellipsoid;
 import org.mastodon.views.bvv.scene.InstancedLink;
 import org.mastodon.views.bvv.scene.InstancedSpot;
@@ -28,6 +31,8 @@ import static org.mastodon.views.bvv.scene.InstancedSpot.SpotDrawingMode.ELLIPSO
 public class DBvvRenderer
 {
 	private final ModelGraph graph;
+
+	private final SpatioTemporalIndex< Spot > index;
 
 	private final DBvvEntities entities;
 
@@ -49,6 +54,7 @@ public class DBvvRenderer
 			final int screenWidth,
 			final int screenHeight,
 			final ModelGraph graph,
+			final SpatioTemporalIndex< Spot > index, // TODO appModel.getModel().getSpatioTemporalIndex(),
 			final DBvvEntities entities,
 			final SelectionModel< Spot, Link > selection,
 			final HighlightModel< Spot, Link > highlight )
@@ -56,6 +62,7 @@ public class DBvvRenderer
 		this.screenWidth = screenWidth;
 		this.screenHeight = screenHeight;
 		this.graph = graph;
+		this.index = index;
 		this.entities = entities;
 		this.selection = selection;
 		this.highlight = highlight;
@@ -111,7 +118,7 @@ public class DBvvRenderer
 		instancedEllipsoid.draw( gl, pv, camview, ellipsoids.getEllipsoids(), highlightId, data.getSpotDrawingMode() );
 
 		// -- paint edges -----------------------------------------------------
-		// the maximum number of time-points into the past for which outgoing
+		// the maximum number of time-points into the past for which outgoing edges are painted
 		final int timeLimit = 10;
 		final double rHead = 0.5;
 		final double rTail = 0.01;
@@ -191,7 +198,6 @@ public class DBvvRenderer
 		final Vector3f pFarMinusNear = new Vector3f();
 
 		data.getPv().invert( pvinv );
-//		pvinv.unprojectInvRay( x + 0.5f, h - y - 0.5f, viewport, pNear, pFarMinusNear );
 		pvinv.unprojectInv( x + 0.5f, h - y - 0.5f, 0, viewport, pNear );
 		pvinv.unprojectInv( x + 0.5f, h - y - 0.5f, 1, viewport, pFarMinusNear ).sub( pNear );
 
@@ -276,7 +282,157 @@ public class DBvvRenderer
 	 */
 	public Link getEdgeAt( final int x, final int y, final double tolerance, final Link ref )
 	{
-		// TODO
-		return null;
+		// TODO: graph locking?
+		// TODO: prune candidate edges by some fast lookup structure
+
+		final SceneRenderData data = renderData.copy();
+
+		final int timepoint = data.getTimepoint();
+		final int w = ( int ) data.getScreenWidth();
+		final int h = ( int ) data.getScreenHeight();
+		final int[] viewport = { 0, 0, w, h };
+
+		// ray through pixel
+		final Matrix4f pvinv = new Matrix4f();
+		final Vector3f pNear = new Vector3f();
+		final Vector3f pFar = new Vector3f();
+
+		data.getPv().invert( pvinv );
+		pvinv.unprojectInv( x + 0.5f, h - y - 0.5f, 0, viewport, pNear );
+		pvinv.unprojectInv( x + 0.5f, h - y - 0.5f, 1, viewport, pFar );
+
+		// TODO: these should come from SceneRenderData
+		// the maximum number of time-points into the past for which outgoing edges are painted
+		final int timeLimit = 10;
+		final double rHead = 0.5;
+		final double rTail = 0.01;
+		final double f = ( rTail - rHead ) / ( timeLimit + 1 );
+
+		final Spot vref = graph.vertexRef(); // TODO release
+		final float[] spos = new float[ 3 ];
+		final float[] tpos = new float[ 3 ];
+		final Vector3f vspos = new Vector3f();
+		final Vector3f vtpos = new Vector3f();
+
+		float bestDist = Float.POSITIVE_INFINITY;
+		Link best = null;
+
+		for ( int t = Math.max( 0, timepoint - timeLimit + 1 ); t <= timepoint; ++t )
+		{
+			final SpatialIndex< Spot > si = index.getSpatialIndex( t );
+			for ( final Spot target : si )
+			{
+				target.localize( tpos );
+				vtpos.set( tpos );
+				for ( final Link edge : target.incomingEdges() )
+				{
+					final Spot source = edge.getSource( vref );
+					source.localize( spos );
+					vspos.set( spos );
+					final float d = dist3D_Segment_to_Segment( pNear, pFar, vspos, vtpos );
+					if ( d <= bestDist )
+					{
+						bestDist = d;
+						best = ref.refTo( edge );
+					}
+				}
+			}
+		}
+		return best;
+	}
+
+	private static final float SMALL_NUM = 1e-08f;
+
+	/**
+	 * dist3D_Segment_to_Segment(): get the 3D minimum distance between 2 segments
+	 *
+	 * @param S1P0
+	 * 		start point of segment S1
+	 * @param S1P1
+	 * 		end point of segment S1
+	 * @param S2P0
+	 * 		start point of segment S2
+	 * @param S2P1
+	 * 		end point of segment S2
+	 *
+	 * @return the shortest distance between S1 and S2
+	 */
+	private float dist3D_Segment_to_Segment( final Vector3fc S1P0, final Vector3fc S1P1, final Vector3fc S2P0, final Vector3fc S2P1 )
+	{
+		// TODO use the fact that S1 is always pNear, pFar for one frame
+		final Vector3f u = S1P1.sub( S1P0, new Vector3f() );
+		final Vector3f v = S2P1.sub( S2P0, new Vector3f() );
+		final Vector3f w = S1P0.sub( S2P0, new Vector3f() );
+		final float a = u.dot( u ); // always >= 0
+		final float b = u.dot( v );
+		final float c = v.dot( v ); // always >= 0
+		final float d = u.dot( w );
+		final float e = v.dot( w );
+		final float D = a * c - b * b; // always >= 0
+		float sc, sN, sD = D; // sc = sN / sD, default sD = D >= 0
+		float tc, tN, tD = D; // tc = tN / tD, default tD = D >= 0
+
+		// compute the line parameters of the two closest points
+		if ( D < SMALL_NUM ) // the lines are almost parallel
+		{
+			sN = 0f; // force using point P0 on segment S1
+			sD = 1f; // to prevent possible division by 0.0 later
+			tN = e;
+			tD = c;
+		}
+		else // get the closest points on the infinite lines
+		{
+			sN = ( b * e - c * d );
+			tN = ( a * e - b * d );
+			if ( sN < 0f ) // sc < 0 => the s=0 edge is visible
+			{
+				sN = 0f;
+				tN = e;
+				tD = c;
+			}
+			else if ( sN > sD ) // sc > 1  => the s=1 edge is visible
+			{
+				sN = sD;
+				tN = e + b;
+				tD = c;
+			}
+		}
+
+		if ( tN < 0f ) // tc < 0 => the t=0 edge is visible
+		{
+			tN = 0f;
+			// recompute sc for this edge
+			if ( -d < 0f )
+				sN = 0f;
+			else if ( -d > a )
+				sN = sD;
+			else
+			{
+				sN = -d;
+				sD = a;
+			}
+		}
+		else if ( tN > tD ) // tc > 1 => the t=1 edge is visible
+		{
+			tN = tD;
+			// recompute sc for this edge
+			if ( ( -d + b ) < 0.0 )
+				sN = 0;
+			else if ( ( -d + b ) > a )
+				sN = sD;
+			else
+			{
+				sN = ( -d + b );
+				sD = a;
+			}
+		}
+		// finally do the division to get sc and tc
+		sc = ( Math.abs( sN ) < SMALL_NUM ? 0f : sN / sD );
+		tc = ( Math.abs( tN ) < SMALL_NUM ? 0f : tN / tD );
+
+		// get the difference of the two closest points
+		final Vector3f dP = w.add(u.mul( sc ).sub(v.mul(tc))); // =  S1(sc) - S2(tc)
+
+		return dP.length(); // return the closest distance
 	}
 }
