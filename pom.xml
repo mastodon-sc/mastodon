@@ -143,8 +143,8 @@
 
 		<mastodon-collection.version>1.0.0-beta-20-SNAPSHOT</mastodon-collection.version>
 		<mastodon-graph.version>1.0.0-beta-19-SNAPSHOT</mastodon-graph.version>
-		<bigdataviewer-core.version>10.0.3-SNAPSHOT</bigdataviewer-core.version>
-		<bigdataviewer-vistools.version>1.0.0-beta-23</bigdataviewer-vistools.version>
+		<bigdataviewer-core.version>10.1.0</bigdataviewer-core.version>
+		<bigdataviewer-vistools.version>1.0.0-beta-24</bigdataviewer-vistools.version>
 
 		<!-- NB: Deploy releases to the SciJava Maven repository. -->
 		<releaseProfiles>deploy-to-scijava</releaseProfiles>
