@@ -58,7 +58,6 @@ public class DBvvHighlightHandler implements MouseMotionListener, MouseListener,
 
 	private void highlight()
 	{
-		System.out.println( "DBvvHighlightHandler.highlight" );
 		final Spot vertex = graph.vertexRef();
 		final Link edge = graph.edgeRef();
 		graph.getLock().readLock().lock();
