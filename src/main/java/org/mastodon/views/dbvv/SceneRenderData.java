@@ -6,6 +6,7 @@ import org.joml.Matrix4fc;
 import org.mastodon.views.bvv.scene.InstancedSpot.SpotDrawingMode;
 import tpietzsch.util.MatrixMath;
 
+import static org.mastodon.views.bvv.scene.InstancedSpot.SpotDrawingMode.ELLIPSOIDS;
 import static org.mastodon.views.bvv.scene.InstancedSpot.SpotDrawingMode.SPHERES;
 
 public class SceneRenderData
@@ -20,7 +21,7 @@ public class SceneRenderData
 	private double dClipFar;
 	private double screenWidth;
 	private double screenHeight;
-	private SpotDrawingMode spotDrawingMode = SPHERES;
+	private SpotDrawingMode spotDrawingMode = ELLIPSOIDS;
 
 	/**
 	 * @param timepoint timepoint index

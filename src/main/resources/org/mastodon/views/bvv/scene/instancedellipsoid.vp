@@ -15,19 +15,34 @@ uniform mat4 vm;
 uniform mat3 itvm;
 uniform int highlight;
 
-const vec3 highlightColor = vec3( 0.2, 0.1, 0.2 );
+const vec3 highlightColor = vec3(0.2, 0.1, 0.2);
+const float highlightDilateMin = 0.2;
+const float highlightDilateRatio = 0.1;
 
 void main()
 {
 	ObjectColor = color;
-	float scale = 1.0;
-	if ( gl_InstanceID == highlight )
+	mat3 e2 = e;
+	mat3 ite2 = ite;
+	if (gl_InstanceID == highlight)
 	{
 		ObjectColor += highlightColor;
-		scale = 1.2;
+
+		float l0 = length(e[0]);
+		float l1 = length(e[1]);
+		float l2 = length(e[2]);
+
+		float l = max(max(l0, l1), l2);
+		float dilate = max(highlightDilateMin, l * highlightDilateRatio);
+
+		e2 = mat3(
+			(1 + dilate / l0) * e[0],
+			(1 + dilate / l1) * e[1],
+			(1 + dilate / l2) * e[2]);
+		ite2 = transpose(inverse(e2));
 	}
-	vec4 pos = vec4( e * scale * aPos + t, 1.0 );
+	vec4 pos = vec4(e2 * aPos + t, 1.0);
 	gl_Position = pvm * pos;
-	Normal = normalize( itvm * ite * aPos );
-	FragPos = vec3( vm * pos );
+	Normal = normalize(itvm * ite2 * aPos);
+	FragPos = vec3(vm * pos);
 }

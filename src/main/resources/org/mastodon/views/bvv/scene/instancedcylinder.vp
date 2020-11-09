@@ -13,24 +13,29 @@ out vec3 ObjectColor;
 uniform mat4 pvm;
 uniform mat4 vm;
 uniform mat3 itvm;
-uniform vec2 radii; // (r0, r1)
+uniform vec2 radii;// (r0, r1)
 uniform int highlight;
 
-const vec3 highlightColor = vec3( 1, 0, 0 );
+const vec3 highlightColor = vec3(0.2, 0.1, 0.2);
+const float highlightDilateMin = 0.2;
+const float highlightDilateRatio = 0.1;
 
 void main()
 {
+	ObjectColor = color;
 	float r = radii.x - radii.y;
 	float s = radii.x - aPos.z * r;
-	vec3 fPos = vec3( s * aPos.xy, aPos.z );
-	vec4 pos = vec4( e * fPos + t, 1 );
+	if (gl_InstanceID == highlight)
+	{
+		ObjectColor += highlightColor;
+		float dilate = max(highlightDilateMin, radii.x * highlightDilateRatio);
+		r += dilate;
+		s += dilate;
+	}
+	vec3 fPos = vec3(s * aPos.xy, aPos.z);
+	vec4 pos = vec4(e * fPos + t, 1);
 	gl_Position = pvm * pos;
-	vec3 n = vec3( aPos.xy, r );
-	Normal = normalize( itvm * ite * n );
-	FragPos = vec3( vm * pos );
-
-	if ( gl_InstanceID == highlight)
-		ObjectColor = highlightColor;
-	else
-		ObjectColor = color;
+	vec3 n = vec3(aPos.xy, r);
+	Normal = normalize(itvm * ite * n);
+	FragPos = vec3(vm * pos);
 }

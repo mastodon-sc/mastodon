@@ -97,7 +97,7 @@ public class DBvvRenderer
 		final Matrix4fc pv = data.getPv();
 		final Matrix4fc camview = data.getCamview();
 
-		gl.glClearColor( 0.0f, 0.2f, 0.1f, 0.0f );
+		gl.glClearColor( 0.0f, 0.0f, 0.0f, 0.0f );
 		gl.glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
 
 		gl.glEnable( GL_DEPTH_TEST );
