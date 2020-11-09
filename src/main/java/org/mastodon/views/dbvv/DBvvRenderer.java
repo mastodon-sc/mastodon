@@ -317,8 +317,10 @@ public class DBvvRenderer
 		float bestDist = Float.POSITIVE_INFINITY;
 		Link best = null;
 
+		EdgeDistance edgeDistance = new EdgeDistance( pNear, pFar );
 		for ( int t = Math.max( 0, timepoint - timeLimit + 1 ); t <= timepoint; ++t )
 		{
+			final double r1 = rHead + f * ( timepoint - t + 1 );
 			final SpatialIndex< Spot > si = index.getSpatialIndex( t );
 			for ( final Spot target : si )
 			{
@@ -329,8 +331,8 @@ public class DBvvRenderer
 					final Spot source = edge.getSource( vref );
 					source.localize( spos );
 					vspos.set( spos );
-					final float d = dist3D_Segment_to_Segment( pNear, pFar, vspos, vtpos );
-					if ( d <= bestDist )
+					final float d = edgeDistance.to( vspos, vtpos, ( float ) r1 );
+					if ( d < bestDist )
 					{
 						bestDist = d;
 						best = ref.refTo( edge );
@@ -341,98 +343,113 @@ public class DBvvRenderer
 		return best;
 	}
 
-	private static final float SMALL_NUM = 1e-08f;
 
-	/**
-	 * dist3D_Segment_to_Segment(): get the 3D minimum distance between 2 segments
-	 *
-	 * @param S1P0
-	 * 		start point of segment S1
-	 * @param S1P1
-	 * 		end point of segment S1
-	 * @param S2P0
-	 * 		start point of segment S2
-	 * @param S2P1
-	 * 		end point of segment S2
-	 *
-	 * @return the shortest distance between S1 and S2
-	 */
-	private float dist3D_Segment_to_Segment( final Vector3fc S1P0, final Vector3fc S1P1, final Vector3fc S2P0, final Vector3fc S2P1 )
+	private static class EdgeDistance
 	{
-		// TODO use the fact that S1 is always pNear, pFar for one frame
-		final Vector3f u = S1P1.sub( S1P0, new Vector3f() );
-		final Vector3f v = S2P1.sub( S2P0, new Vector3f() );
-		final Vector3f w = S1P0.sub( S2P0, new Vector3f() );
-		final float a = u.dot( u ); // always >= 0
-		final float b = u.dot( v );
-		final float c = v.dot( v ); // always >= 0
-		final float d = u.dot( w );
-		final float e = v.dot( w );
-		final float D = a * c - b * b; // always >= 0
-		float sc, sN, sD = D; // sc = sN / sD, default sD = D >= 0
-		float tc, tN, tD = D; // tc = tN / tD, default tD = D >= 0
+		private static final float SMALL_NUM = 1e-08f;
 
-		// compute the line parameters of the two closest points
-		if ( D < SMALL_NUM ) // the lines are almost parallel
+		private final Vector3fc p0;
+		private final Vector3fc p1;
+		private final Vector3fc u;
+		private final float a;
+
+		public EdgeDistance( final Vector3fc pNear, final Vector3fc pFar )
 		{
-			sN = 0f; // force using point P0 on segment S1
-			sD = 1f; // to prevent possible division by 0.0 later
-			tN = e;
-			tD = c;
+			this.p0 = pNear;
+			this.p1 = pFar;
+			u = p1.sub( p0, new Vector3f() ); // always >= 0
+			a = u.dot( u );
 		}
-		else // get the closest points on the infinite lines
+
+		/**
+		 * TODO
+		 *
+		 * @param q0
+		 * 		start point of segment S2
+		 * @param q1
+		 * 		end point of segment S2
+		 *
+		 * @return the shortest distance between S1 and S2
+		 */
+		private float to( final Vector3fc q0, final Vector3fc q1, final float tolerance )
 		{
-			sN = ( b * e - c * d );
-			tN = ( a * e - b * d );
-			if ( sN < 0f ) // sc < 0 => the s=0 edge is visible
+			// TODO use the fact that S1 is always pNear, pFar for one frame
+			final Vector3f v = new Vector3f();
+			final Vector3f w = new Vector3f();
+			q1.sub( q0, v );
+			p0.sub( q0, w );
+			final float b = u.dot( v );
+			final float c = v.dot( v ); // always >= 0
+			final float d = u.dot( w );
+			final float e = v.dot( w );
+			final float D = a * c - b * b; // always >= 0
+			float sc, sN, sD = D; // sc = sN / sD, default sD = D >= 0
+			float tc, tN, tD = D; // tc = tN / tD, default tD = D >= 0
+
+			// compute the line parameters of the two closest points
+			if ( D < SMALL_NUM ) // the lines are almost parallel
 			{
-				sN = 0f;
+				sN = 0f; // force using point P0 on segment S1
+				sD = 1f; // to prevent possible division by 0.0 later
 				tN = e;
 				tD = c;
 			}
-			else if ( sN > sD ) // sc > 1  => the s=1 edge is visible
+			else // get the closest points on the infinite lines
 			{
-				sN = sD;
-				tN = e + b;
-				tD = c;
+				sN = ( b * e - c * d );
+				tN = ( a * e - b * d );
+				if ( sN < 0f ) // sc < 0 => the s=0 edge is visible
+				{
+					sN = 0f;
+					tN = e;
+					tD = c;
+				}
+				else if ( sN > sD ) // sc > 1  => the s=1 edge is visible
+				{
+					sN = sD;
+					tN = e + b;
+					tD = c;
+				}
 			}
-		}
 
-		if ( tN < 0f ) // tc < 0 => the t=0 edge is visible
-		{
-			tN = 0f;
-			// recompute sc for this edge
-			if ( -d < 0f )
-				sN = 0f;
-			else if ( -d > a )
-				sN = sD;
-			else
+			if ( tN < 0f ) // tc < 0 => the t=0 edge is visible
 			{
-				sN = -d;
-				sD = a;
+				tN = 0f;
+				// recompute sc for this edge
+				if ( -d < 0f )
+					sN = 0f;
+				else if ( -d > a )
+					sN = sD;
+				else
+				{
+					sN = -d;
+					sD = a;
+				}
 			}
-		}
-		else if ( tN > tD ) // tc > 1 => the t=1 edge is visible
-		{
-			tN = tD;
-			// recompute sc for this edge
-			if ( ( -d + b ) < 0.0 )
-				sN = 0;
-			else if ( ( -d + b ) > a )
-				sN = sD;
-			else
+			else if ( tN > tD ) // tc > 1 => the t=1 edge is visible
 			{
-				sN = ( -d + b );
-				sD = a;
+				tN = tD;
+				// recompute sc for this edge
+				if ( ( -d + b ) < 0.0 )
+					sN = 0;
+				else if ( ( -d + b ) > a )
+					sN = sD;
+				else
+				{
+					sN = ( -d + b );
+					sD = a;
+				}
 			}
+			// finally do the division to get sc and tc
+			sc = ( Math.abs( sN ) < SMALL_NUM ? 0f : sN / sD );
+			tc = ( Math.abs( tN ) < SMALL_NUM ? 0f : tN / tD );
+
+			// get the difference of the two closest points
+			final Vector3f dP = w.add( u.mul( sc, new Vector3f() ).sub( v.mul( tc ) ) ); // =  S1(sc) - S2(tc)
+
+			if ( dP.length() < tolerance )
+				return sc;
+			return Float.POSITIVE_INFINITY;
 		}
-		// finally do the division to get sc and tc
-		sc = ( Math.abs( sN ) < SMALL_NUM ? 0f : sN / sD );
-		tc = ( Math.abs( tN ) < SMALL_NUM ? 0f : tN / tD );
-
-		// get the difference of the two closest points
-		final Vector3f dP = w.add(u.mul( sc ).sub(v.mul(tc))); // =  S1(sc) - S2(tc)
-
-		return dP.length(); // return the closest distance
 	}
 }

@@ -16,8 +16,8 @@ uniform mat3 itvm;
 uniform int highlight;
 
 const vec3 highlightColor = vec3(0.2, 0.1, 0.2);
-const float highlightDilateMin = 0.2;
-const float highlightDilateRatio = 0.1;
+const float highlightDilateMin = 0.05;
+const float highlightDilateRatio = 0.05;
 
 void main()
 {

@@ -21,7 +21,7 @@ public class SceneRenderData
 	private double dClipFar;
 	private double screenWidth;
 	private double screenHeight;
-	private SpotDrawingMode spotDrawingMode = ELLIPSOIDS;
+	private SpotDrawingMode spotDrawingMode = SPHERES;
 
 	/**
 	 * @param timepoint timepoint index

@@ -237,7 +237,7 @@ public class InstancedSpot
 		sphereProg.getUniformMatrix4f( "vm" ).set( vm );
 		sphereProg.getUniformMatrix3f( "itvm" ).set( itvm.get3x3( new Matrix3f() ) );
 		sphereProg.getUniform1i( "highlight" ).set( highlightIndex );
-		sphereProg.getUniform1f( "radius" ).set( 3f );
+		sphereProg.getUniform1f( "radius" ).set( 2f );
 		sphereProg.setUniforms( context );
 
 		instanceArrays.get( ellipsoids ).draw( gl, context, spotDrawingMode );
