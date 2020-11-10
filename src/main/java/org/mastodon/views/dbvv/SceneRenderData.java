@@ -21,7 +21,31 @@ public class SceneRenderData
 	private double dClipFar;
 	private double screenWidth;
 	private double screenHeight;
+
+	/**
+	 * whether spots are drawn as ellipsoids or spheres
+	 */
 	private SpotDrawingMode spotDrawingMode = SPHERES;
+
+	/**
+	 * sphere radius, if spots are drawn as spheres
+	 */
+	private float spotRadius = 2f;
+
+	/**
+	 * number of time-points into the past for which outgoing edges are painted
+	 */
+	private int timeLimit = 10;
+
+	/**
+	 * width of "edge cylinders" at the head (most recent timepoint)
+	 */
+	private float rHead = 0.5f;
+
+	/**
+	 * width of "edge cylinders" at the tail (oldest timepoint within timeLimit)
+	 */
+	private float rTail = 0.01f;
 
 	/**
 	 * @param timepoint timepoint index
@@ -76,6 +100,10 @@ public class SceneRenderData
 		this.screenWidth = other.screenWidth;
 		this.screenHeight = other.screenHeight;
 		this.spotDrawingMode = other.spotDrawingMode;
+		this.spotRadius = other.spotRadius;
+		this.timeLimit = other.timeLimit;
+		this.rHead = other.rHead;
+		this.rTail = other.rTail;
 	}
 
 	public int getTimepoint()
@@ -131,5 +159,25 @@ public class SceneRenderData
 	public SpotDrawingMode getSpotDrawingMode()
 	{
 		return spotDrawingMode;
+	}
+
+	public float getSpotRadius()
+	{
+		return spotRadius;
+	}
+
+	public int getLinkTimeLimit()
+	{
+		return timeLimit;
+	}
+
+	public float getLinkRadiusHead()
+	{
+		return rHead;
+	}
+
+	public float getLinkRadiusTail()
+	{
+		return rTail;
 	}
 }

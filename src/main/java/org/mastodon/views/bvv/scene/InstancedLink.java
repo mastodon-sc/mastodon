@@ -224,7 +224,7 @@ public class InstancedLink
 		}
 	}
 
-	public void draw( GL3 gl, Matrix4fc pvm, Matrix4fc vm, final Cylinders cylinders, final int highlightIndex, final double r0, final double r1 )
+	public void draw( GL3 gl, Matrix4fc pvm, Matrix4fc vm, final Cylinders cylinders, final int highlightIndex, final float r0, final float r1 )
 	{
 		if ( !initialized )
 			init( gl );
@@ -237,14 +237,14 @@ public class InstancedLink
 		cylinderProg.getUniformMatrix4f( "vm" ).set( vm );
 		cylinderProg.getUniformMatrix3f( "itvm" ).set( itvm.get3x3( new Matrix3f() ) );
 		cylinderProg.getUniform1i( "highlight" ).set( highlightIndex );
-		cylinderProg.getUniform2f( "radii" ).set( ( float ) r0, ( float ) r1 );
+		cylinderProg.getUniform2f( "radii" ).set( r0, r1 );
 		cylinderProg.setUniforms( context );
 
 		sphereProg.getUniformMatrix4f( "pvm" ).set( pvm );
 		sphereProg.getUniformMatrix4f( "vm" ).set( vm );
 		sphereProg.getUniformMatrix3f( "itvm" ).set( itvm.get3x3( new Matrix3f() ) );
 		sphereProg.getUniform1i( "highlight" ).set( highlightIndex );
-		sphereProg.getUniform1f( "radius" ).set( ( float ) r0 );
+		sphereProg.getUniform1f( "radius" ).set( r0 );
 		sphereProg.setUniforms( context );
 
 		instanceArrays.get( cylinders ).draw( gl, context );

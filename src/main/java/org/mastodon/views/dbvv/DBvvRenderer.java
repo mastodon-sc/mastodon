@@ -115,14 +115,14 @@ public class DBvvRenderer
 		int highlightId = ellipsoids.indexOf( highlight.getHighlightedVertex( vref ) );
 		graph.releaseRef( vref );
 
-		instancedEllipsoid.draw( gl, pv, camview, ellipsoids.getEllipsoids(), highlightId, data.getSpotDrawingMode() );
+		instancedEllipsoid.draw( gl, pv, camview, ellipsoids.getEllipsoids(), highlightId, data.getSpotDrawingMode(), data.getSpotRadius() );
 
 		// -- paint edges -----------------------------------------------------
 		// the maximum number of time-points into the past for which outgoing edges are painted
-		final int timeLimit = 10;
-		final double rHead = 0.5;
-		final double rTail = 0.01;
-		final double f = ( rTail - rHead ) / ( timeLimit + 1 );
+		final int timeLimit = renderData.getLinkTimeLimit();
+		final float rHead = renderData.getLinkRadiusHead();
+		final float rTail = renderData.getLinkRadiusTail();
+		final float f = ( rTail - rHead ) / ( timeLimit + 1 );
 
 		final Link eref = graph.edgeRef();
 		for ( int t = Math.max( 0, timepoint - timeLimit + 1 ); t <= timepoint; ++t )
@@ -130,7 +130,7 @@ public class DBvvRenderer
 			final DColoredCylinders cylinders = entities.forTimepoint( t ).cylinders;
 			cylinders.updateColors( colorModCount, e -> selection.isSelected( e ) ? selectedColor : defaultColor );
 			highlightId = cylinders.indexOf( highlight.getHighlightedEdge( eref ) );
-			final double r0 = rHead + f * ( timepoint - t );
+			final float r0 = rHead + f * ( timepoint - t );
 			instancedLink.draw( gl, pv, camview, cylinders.getCylinders(), highlightId, r0 + f, r0 );
 		}
 		graph.releaseRef( eref );
@@ -207,6 +207,7 @@ public class DBvvRenderer
 
 		final SceneRenderData data = renderData.copy();
 		final SpotDrawingMode spotDrawingMode = data.getSpotDrawingMode();
+		final float spotRadius = data.getSpotRadius();
 
 		final int timepoint = data.getTimepoint();
 		final int w = ( int ) data.getScreenWidth();
@@ -243,9 +244,8 @@ public class DBvvRenderer
 			}
 			else // if ( spotDrawingMode == SPHERES )
 			{
-				final float radius = 3f;
-				ellipsoid.t.get( t ).sub( pNear ).div( radius, a );
-				pFarMinusNear.div( radius, b );
+				ellipsoid.t.get( t ).sub( pNear ).div( spotRadius, a );
+				pFarMinusNear.div( spotRadius, b );
 			}
 
 			final float abbb = a.dot( b ) / b.dot( b );
@@ -326,10 +326,10 @@ public class DBvvRenderer
 
 		// TODO: these should come from SceneRenderData
 		// the maximum number of time-points into the past for which outgoing edges are painted
-		final int timeLimit = 10;
-		final double rHead = 0.5;
-		final double rTail = 0.01;
-		final double f = ( rTail - rHead ) / ( timeLimit + 1 );
+		final int timeLimit = renderData.getLinkTimeLimit();
+		final float rHead = renderData.getLinkRadiusHead();
+		final float rTail = renderData.getLinkRadiusTail();
+		final float f = ( rTail - rHead ) / ( timeLimit + 1 );
 
 		final Spot vref = graph.vertexRef(); // TODO release
 		final float[] spos = new float[ 3 ];
@@ -340,10 +340,10 @@ public class DBvvRenderer
 		float bestDist = Float.POSITIVE_INFINITY;
 		Link best = null;
 
-		EdgeDistance edgeDistance = new EdgeDistance( pNear, pFar );
+		final EdgeDistance edgeDistance = new EdgeDistance( pNear, pFar );
 		for ( int t = Math.max( 0, timepoint - timeLimit + 1 ); t <= timepoint; ++t )
 		{
-			final double r1 = rHead + f * ( timepoint - t + 1 );
+			final float r1 = rHead + f * ( timepoint - t + 1 );
 			final SpatialIndex< Spot > si = index.getSpatialIndex( t );
 			for ( final Spot target : si )
 			{
@@ -354,7 +354,7 @@ public class DBvvRenderer
 					final Spot source = edge.getSource( vref );
 					source.localize( spos );
 					vspos.set( spos );
-					final float d = edgeDistance.to( vspos, vtpos, ( float ) r1 );
+					final float d = edgeDistance.to( vspos, vtpos, r1 );
 					if ( d < bestDist )
 					{
 						bestDist = d;
