@@ -143,6 +143,29 @@ public class DBvvRenderer
 		++colorModCount;
 	}
 
+	public final class Closest< T >
+	{
+		private final T t;
+
+		private final float distance;
+
+		public Closest( final T t, final float distance )
+		{
+			this.t = t;
+			this.distance = distance;
+		}
+
+		public T get()
+		{
+			return t;
+		}
+
+		public float distance()
+		{
+			return distance;
+		}
+	}
+
 	/**
 	 * Returns the vertex currently painted close to the specified location.
 	 * <p>
@@ -177,7 +200,7 @@ public class DBvvRenderer
 	 * @return the closest vertex within tolerance, or <code>null</code> if it
 	 *         could not be found.
 	 */
-	public Spot getVertexAt( final int x, final int y, final double tolerance, final Spot ref )
+	public Closest< Spot > getVertexAt( final int x, final int y, final double tolerance, final Spot ref )
 	{
 		// TODO: graph locking?
 		// TODO: KDTree clipping to region around ray.
@@ -207,7 +230,7 @@ public class DBvvRenderer
 		final Vector3f b = new Vector3f();
 		final Vector3f a1 = new Vector3f();
 
-		double bestDist = Double.POSITIVE_INFINITY;
+		float bestDist = Float.POSITIVE_INFINITY;
 		Spot best = null;
 
 		for ( final Ellipsoid ellipsoid : ellipsoids.getEllipsoids() )
@@ -230,8 +253,8 @@ public class DBvvRenderer
 			final float aa1squ = a.sub( a1 ).lengthSquared();
 			if ( aa1squ <= 1.0f )
 			{
-				final double dx = Math.sqrt( ( 1.0 - aa1squ ) / b.lengthSquared() );
-				final double d = abbb > dx ? abbb - dx : abbb + dx;
+				final float dx = ( float ) Math.sqrt( ( 1.0 - aa1squ ) / b.lengthSquared() );
+				final float d = abbb > dx ? abbb - dx : abbb + dx;
 				if ( d >= 0 && d <= 1 )
 				{
 					if ( d <= bestDist )
@@ -242,7 +265,7 @@ public class DBvvRenderer
 				}
 			}
 		}
-		return best;
+		return new Closest<>( best, bestDist );
 	}
 
 	/**
@@ -280,7 +303,7 @@ public class DBvvRenderer
 	 * @return the closest edge within tolerance, or <code>null</code> if it
 	 *         could not be found.
 	 */
-	public Link getEdgeAt( final int x, final int y, final double tolerance, final Link ref )
+	public Closest< Link > getEdgeAt( final int x, final int y, final double tolerance, final Link ref )
 	{
 		// TODO: graph locking?
 		// TODO: prune candidate edges by some fast lookup structure
@@ -340,9 +363,8 @@ public class DBvvRenderer
 				}
 			}
 		}
-		return best;
+		return new Closest<>( best, bestDist );
 	}
-
 
 	private static class EdgeDistance
 	{
@@ -352,6 +374,8 @@ public class DBvvRenderer
 		private final Vector3fc p1;
 		private final Vector3fc u;
 		private final float a;
+		private final Vector3f v;
+		private final Vector3f w;
 
 		public EdgeDistance( final Vector3fc pNear, final Vector3fc pFar )
 		{
@@ -359,10 +383,20 @@ public class DBvvRenderer
 			this.p1 = pFar;
 			u = p1.sub( p0, new Vector3f() ); // always >= 0
 			a = u.dot( u );
+			v = new Vector3f();
+			w = new Vector3f();
 		}
 
 		/**
-		 * TODO
+		 * Adapted from:
+		 * https://geomalgorithms.com/a07-_distance.html#dist3D_Segment_to_Segment()
+		 *
+		 * Copyright 2001 softSurfer, 2012 Dan Sunday
+		 * This code may be freely used and modified for any purpose
+		 * providing that this copyright notice is included with it.
+		 * SoftSurfer makes no warranty for this code, and cannot be held
+		 * liable for any real or imagined damage resulting from its use.
+		 * Users of this code must verify correctness for their application.
 		 *
 		 * @param q0
 		 * 		start point of segment S2
@@ -374,8 +408,6 @@ public class DBvvRenderer
 		private float to( final Vector3fc q0, final Vector3fc q1, final float tolerance )
 		{
 			// TODO use the fact that S1 is always pNear, pFar for one frame
-			final Vector3f v = new Vector3f();
-			final Vector3f w = new Vector3f();
 			q1.sub( q0, v );
 			p0.sub( q0, w );
 			final float b = u.dot( v );
