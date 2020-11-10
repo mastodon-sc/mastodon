@@ -20,4 +20,9 @@ public interface KeyConfigContexts
 	 * The action or behaviour applies to the BDV views.
 	 */
 	String BIGDATAVIEWER = "bdv";
+
+	/**
+	 * The action or behaviour applies to the BVV views.
+	 */
+	String BIGVOLUMEVIEWER = "bvv";
 }

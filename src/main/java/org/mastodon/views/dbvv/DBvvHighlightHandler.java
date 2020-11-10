@@ -9,8 +9,10 @@ import org.mastodon.mamut.model.Link;
 import org.mastodon.mamut.model.ModelGraph;
 import org.mastodon.mamut.model.Spot;
 import org.mastodon.model.HighlightModel;
-import org.mastodon.views.bdv.overlay.BdvSelectionBehaviours;
 import org.mastodon.views.dbvv.DBvvRenderer.Closest;
+
+import static org.mastodon.views.dbvv.DBvvSelectionBehaviours.EDGE_SELECT_DISTANCE_TOLERANCE;
+import static org.mastodon.views.dbvv.DBvvSelectionBehaviours.POINT_SELECT_DISTANCE_TOLERANCE;
 
 public class DBvvHighlightHandler implements MouseMotionListener, MouseListener, TransformListener< AffineTransform3D >
 {
@@ -65,10 +67,10 @@ public class DBvvHighlightHandler implements MouseMotionListener, MouseListener,
 		try
 		{
 			// See if we can find an edge.
-			final Closest< Link > closestEdge = scene.getEdgeAt( x, y, BdvSelectionBehaviours.EDGE_SELECT_DISTANCE_TOLERANCE, edge );
+			final Closest< Link > closestEdge = scene.getEdgeAt( x, y, EDGE_SELECT_DISTANCE_TOLERANCE, edge );
 
 			// See if we can find a vertex.
-			final Closest< Spot > closestVertex = scene.getVertexAt( x, y, BdvSelectionBehaviours.POINT_SELECT_DISTANCE_TOLERANCE, vertex );
+			final Closest< Spot > closestVertex = scene.getVertexAt( x, y, POINT_SELECT_DISTANCE_TOLERANCE, vertex );
 
 			if ( closestEdge.get() != null && closestEdge.distance() <= closestVertex.distance() )
 				highlight.highlightEdge( closestEdge.get() );

@@ -18,6 +18,7 @@ import org.mastodon.views.bdv.SharedBigDataViewerData;
 import org.mastodon.views.bvv.BvvOptions;
 import org.mastodon.views.dbvv.DBvvHighlightHandler;
 import org.mastodon.views.dbvv.DBvvPanel;
+import org.mastodon.views.dbvv.DBvvSelectionBehaviours;
 import org.mastodon.views.dbvv.DBvvViewFrame;
 import org.mastodon.views.dbvv.IdentityViewGraph;
 
@@ -113,6 +114,7 @@ public class MamutViewDbvv extends MamutView< IdentityViewGraph< ModelGraph, Spo
 		viewer.getDisplay().addHandler( highlightHandler );
 		viewer.transformListeners().add( highlightHandler );
 
+		DBvvSelectionBehaviours.install( viewBehaviours, viewGraph.getGraph(), viewer.getRenderer(), selectionModel, focusModel, navigationHandler );
 
 		// Give focus to display so that it can receive key-presses immediately.
 		viewer.getDisplay().requestFocusInWindow();
