@@ -8,11 +8,13 @@ import net.imglib2.realtransform.AffineTransform3D;
 import org.mastodon.app.ui.MastodonFrameViewActions;
 import org.mastodon.app.ui.ViewMenu;
 import org.mastodon.app.ui.ViewMenuBuilder;
+import org.mastodon.app.ui.ViewMenuBuilder.JMenuHandle;
 import org.mastodon.mamut.model.Link;
 import org.mastodon.mamut.model.Model;
 import org.mastodon.mamut.model.ModelGraph;
 import org.mastodon.mamut.model.Spot;
 import org.mastodon.ui.SelectionActions;
+import org.mastodon.ui.coloring.GraphColorGeneratorAdapter;
 import org.mastodon.ui.keymap.KeyConfigContexts;
 import org.mastodon.views.bdv.SharedBigDataViewerData;
 import org.mastodon.views.bvv.BvvOptions;
@@ -24,14 +26,18 @@ import org.mastodon.views.dbvv.IdentityViewGraph;
 
 import static org.mastodon.app.ui.ViewMenuBuilder.item;
 import static org.mastodon.app.ui.ViewMenuBuilder.separator;
+import static org.mastodon.mamut.MamutMenuBuilder.colorMenu;
 import static org.mastodon.mamut.MamutMenuBuilder.editMenu;
 import static org.mastodon.mamut.MamutMenuBuilder.fileMenu;
+import static org.mastodon.mamut.MamutMenuBuilder.tagSetMenu;
 import static org.mastodon.mamut.MamutMenuBuilder.viewMenu;
 
 public class MamutViewDbvv extends MamutView< IdentityViewGraph< ModelGraph, Spot, Link >, Spot, Link >
 {
 	// TODO
 	private static int bvvName = 1;
+
+	private final SharedBigDataViewerData sharedBdvData;
 
 	private final DBvvPanel viewer;
 
@@ -41,7 +47,10 @@ public class MamutViewDbvv extends MamutView< IdentityViewGraph< ModelGraph, Spo
 				new IdentityViewGraph<>( appModel.getModel().getGraph() ),
 				new String[] { KeyConfigContexts.BIGDATAVIEWER } );
 
-		final SharedBigDataViewerData shared = appModel.getSharedBdvData();
+		sharedBdvData = appModel.getSharedBdvData();
+
+		final GraphColorGeneratorAdapter< Spot, Link, Spot, Link > coloring =
+				new GraphColorGeneratorAdapter<>( viewGraph.getVertexMap(), viewGraph.getEdgeMap() );
 
 		final String windowTitle = "Unwrapped BigVolumeViewer " + ( bvvName++ );
 		DBvvViewFrame frame = new DBvvViewFrame(
@@ -50,11 +59,12 @@ public class MamutViewDbvv extends MamutView< IdentityViewGraph< ModelGraph, Spo
 				appModel.getModel().getSpatioTemporalIndex(),
 				selectionModel,
 				highlightModel,
-				shared.getSources(),
-				shared.getNumTimepoints(),
-				shared.getCache(),
+				coloring,
+				sharedBdvData.getSources(),
+				sharedBdvData.getNumTimepoints(),
+				sharedBdvData.getCache(),
 				groupHandle,
-				shared.getOptions(),
+				sharedBdvData.getOptions(),
 				BvvOptions.options() );
 		setFrame( frame );
 		viewer = frame.getBvvPanel();
@@ -72,6 +82,8 @@ public class MamutViewDbvv extends MamutView< IdentityViewGraph< ModelGraph, Spo
 		final ViewMenu menu = new ViewMenu( this );
 		final ActionMap actionMap = frame.getKeybindings().getConcatenatedActionMap();
 
+		final JMenuHandle menuHandle = new JMenuHandle();
+		final JMenuHandle tagSetMenuHandle = new JMenuHandle();
 		MainWindow.addMenus( menu, actionMap );
 		MamutMenuBuilder.build( menu, actionMap,
 				fileMenu(
@@ -80,6 +92,8 @@ public class MamutViewDbvv extends MamutView< IdentityViewGraph< ModelGraph, Spo
 						item( BigDataViewerActions.SAVE_SETTINGS )
 				),
 				viewMenu(
+						colorMenu( menuHandle ),
+						separator(),
 						item( MastodonFrameViewActions.TOGGLE_SETTINGS_PANEL )
 				),
 				editMenu(
@@ -89,7 +103,9 @@ public class MamutViewDbvv extends MamutView< IdentityViewGraph< ModelGraph, Spo
 						item( SelectionActions.DELETE_SELECTION ),
 						item( SelectionActions.SELECT_WHOLE_TRACK ),
 						item( SelectionActions.SELECT_TRACK_DOWNWARD ),
-						item( SelectionActions.SELECT_TRACK_UPWARD )
+						item( SelectionActions.SELECT_TRACK_UPWARD ),
+						separator(),
+						tagSetMenu( tagSetMenuHandle )
 				),
 				ViewMenuBuilder.menu( "Settings",
 						item( BigDataViewerActions.BRIGHTNESS_SETTINGS ),
@@ -101,10 +117,14 @@ public class MamutViewDbvv extends MamutView< IdentityViewGraph< ModelGraph, Spo
 		final Model model = appModel.getModel();
 		final ModelGraph modelGraph = model.getGraph();
 
+		registerColoring( coloring, menuHandle, () -> viewer.getDisplay().repaint() );
+		registerTagSetMenu( tagSetMenuHandle, () -> viewer.getDisplay().repaint() );
+
+		highlightModel.listeners().add( viewer::requestRepaint );
+		focusModel.listeners().add( viewer::requestRepaint );
 		modelGraph.addGraphChangeListener( viewer::requestRepaint );
 		modelGraph.addVertexPositionListener( v -> viewer.requestRepaint() );
 		selectionModel.listeners().add( viewer::requestRepaint );
-		highlightModel.listeners().add( viewer::requestRepaint );
 
 		frame.setVisible( true );
 

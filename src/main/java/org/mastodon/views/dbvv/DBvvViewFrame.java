@@ -19,6 +19,7 @@ import org.mastodon.mamut.model.Spot;
 import org.mastodon.model.HighlightModel;
 import org.mastodon.model.SelectionModel;
 import org.mastodon.spatial.SpatioTemporalIndex;
+import org.mastodon.ui.coloring.GraphColorGenerator;
 import org.mastodon.views.bvv.BvvOptions;
 import org.scijava.ui.behaviour.MouseAndKeyHandler;
 import org.scijava.ui.behaviour.util.InputActionBindings;
@@ -29,17 +30,23 @@ public class DBvvViewFrame extends ViewFrame
 	private final DBvvPanel bvvPanel;
 
 	/**
-	 * @param spatioTemporalIndex
+	 * @param windowTitle
+	 * @param viewGraph
+	 * @param index
+	 * @param selection
+	 * @param highlight
+	 * @param graphColorGenerator
 	 * @param sources
 	 * 		the {@link SourceAndConverter sources} to display.
 	 * @param numTimepoints
- * 		number of available timepoints.
+	 * 		number of available timepoints.
 	 * @param cacheControl
-* 		handle to cache. This is used to control io timing.
+	 * 		handle to cache. This is used to control io timing.
+	 * @param groupHandle
 	 * @param optional
-* 		optional parameters. See {@link ViewerOptions}.
+	 * 		optional parameters. See {@link ViewerOptions}.
 	 * @param bvvOptional
-* 		optional parameters. See {@link BvvOptions}.
+	 * 		optional parameters. See {@link BvvOptions}.
 	 */
 	public DBvvViewFrame(
 			final String windowTitle,
@@ -47,6 +54,7 @@ public class DBvvViewFrame extends ViewFrame
 			final SpatioTemporalIndex< Spot > index,
 			final SelectionModel< Spot, Link > selection,
 			final HighlightModel< Spot, Link > highlight,
+			final GraphColorGenerator< Spot, Link > graphColorGenerator,
 			final List< SourceAndConverter< ? > > sources,
 			final int numTimepoints,
 			final CacheControl cacheControl,
@@ -56,7 +64,7 @@ public class DBvvViewFrame extends ViewFrame
 	{
 		super( windowTitle );
 
-		bvvPanel = new DBvvPanel( viewGraph, index, selection, highlight, sources, numTimepoints, cacheControl, optional, bvvOptional );
+		bvvPanel = new DBvvPanel( viewGraph, index, selection, highlight, graphColorGenerator, sources, numTimepoints, cacheControl, optional, bvvOptional );
 		add( bvvPanel, BorderLayout.CENTER );
 
 		final GroupLocksPanel navigationLocksPanel = new GroupLocksPanel( groupHandle );

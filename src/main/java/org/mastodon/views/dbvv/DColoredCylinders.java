@@ -1,12 +1,11 @@
 package org.mastodon.views.dbvv;
 
 import java.util.function.Function;
-import org.joml.Vector3f;
+import org.joml.Vector3fc;
 import org.mastodon.RefPool;
 import org.mastodon.collection.RefCollections;
 import org.mastodon.mamut.model.Link;
 import org.mastodon.mamut.model.ModelGraph;
-import org.mastodon.mamut.model.Spot;
 import org.mastodon.views.bvv.BvvRenderer;
 import org.mastodon.views.bvv.scene.Cylinder;
 import org.mastodon.views.bvv.scene.CylinderMath;
@@ -76,7 +75,7 @@ public class DColoredCylinders
 		}
 	}
 
-	public void updateColors( final int modCount, final Function< Link, Vector3f > coloring )
+	public void updateColors( final int modCount, final Function< Link, Vector3fc > coloring )
 	{
 		if ( colorModCount != modCount )
 		{

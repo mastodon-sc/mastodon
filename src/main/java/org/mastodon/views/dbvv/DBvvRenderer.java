@@ -14,6 +14,7 @@ import org.mastodon.model.HighlightModel;
 import org.mastodon.model.SelectionModel;
 import org.mastodon.spatial.SpatialIndex;
 import org.mastodon.spatial.SpatioTemporalIndex;
+import org.mastodon.ui.coloring.GraphColorGenerator;
 import org.mastodon.views.bvv.scene.Ellipsoid;
 import org.mastodon.views.bvv.scene.InstancedLink;
 import org.mastodon.views.bvv.scene.InstancedSpot;
@@ -40,6 +41,8 @@ public class DBvvRenderer
 
 	private final HighlightModel< Spot, Link > highlight;
 
+	private final GraphColorGenerator< Spot, Link > graphColorGenerator;
+
 	// TODO...
 	private final double dCam = 2000;
 	private final double dClip = 1000;
@@ -57,7 +60,8 @@ public class DBvvRenderer
 			final SpatioTemporalIndex< Spot > index, // TODO appModel.getModel().getSpatioTemporalIndex(),
 			final DBvvEntities entities,
 			final SelectionModel< Spot, Link > selection,
-			final HighlightModel< Spot, Link > highlight )
+			final HighlightModel< Spot, Link > highlight,
+			final GraphColorGenerator< Spot, Link > graphColorGenerator )
 	{
 		this.screenWidth = screenWidth;
 		this.screenHeight = screenHeight;
@@ -66,6 +70,7 @@ public class DBvvRenderer
 		this.entities = entities;
 		this.selection = selection;
 		this.highlight = highlight;
+		this.graphColorGenerator = graphColorGenerator;
 		instancedEllipsoid = new InstancedSpot( 3, 10 );
 		instancedLink = new InstancedLink( 36, 3, 20 );
 		selection.listeners().add( this::selectionChanged );
@@ -107,9 +112,16 @@ public class DBvvRenderer
 
 		// -- paint vertices --------------------------------------------------
 		final DColoredEllipsoids ellipsoids = entities.forTimepoint( timepoint ).ellipsoids;
-		final Vector3f defaultColor = new Vector3f( 0.5f, 1.0f, 0.5f );
-		final Vector3f selectedColor = new Vector3f( 1.0f, 0.7f, 0.7f );
-		ellipsoids.updateColors( colorModCount, v -> selection.isSelected( v ) ? selectedColor : defaultColor );
+		final Vector3fc defaultColor = new Vector3f( 0.5f, 1.0f, 0.5f );
+		final Vector3fc selectedColor = new Vector3f( 1.0f, 0.7f, 0.7f );
+		ellipsoids.updateColors( colorModCount, v -> {
+			if ( selection.isSelected( v ) )
+				return selectedColor;
+			final int i = graphColorGenerator.color( v );
+			return i == 0
+					? defaultColor
+					: colorToVertex3f( i ); // TODO reuse a Vector3f
+		} );
 
 		final Spot vref = graph.vertexRef();
 		int highlightId = ellipsoids.indexOf( highlight.getHighlightedVertex( vref ) );
@@ -134,6 +146,21 @@ public class DBvvRenderer
 			instancedLink.draw( gl, pv, camview, cylinders.getCylinders(), highlightId, r0 + f, r0 );
 		}
 		graph.releaseRef( eref );
+	}
+
+	private static Vector3f colorToVertex3f( final int argb )
+	{
+		final int a0 = ( argb >> 24 ) & 0xff;
+		final int r0 = ( argb >> 16 ) & 0xff;
+		final int g0 = ( argb >> 8 ) & 0xff;
+		final int b0 = ( argb ) & 0xff;
+
+		final float a = a0 / 255f;
+		final float r = r0 / 255f;
+		final float g = g0 / 255f;
+		final float b = b0 / 255f;
+
+		return new Vector3f( r, g, b );
 	}
 
 	private int colorModCount = 1;

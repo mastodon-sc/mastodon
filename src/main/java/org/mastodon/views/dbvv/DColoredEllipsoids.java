@@ -1,7 +1,7 @@
 package org.mastodon.views.dbvv;
 
 import java.util.function.Function;
-import org.joml.Vector3f;
+import org.joml.Vector3fc;
 import org.mastodon.RefPool;
 import org.mastodon.collection.RefCollections;
 import org.mastodon.mamut.model.ModelGraph;
@@ -79,7 +79,7 @@ public class DColoredEllipsoids
 		}
 	}
 
-	public void updateColors( final int modCount, final Function< Spot, Vector3f > coloring )
+	public void updateColors( final int modCount, final Function< Spot, Vector3fc > coloring )
 	{
 		if ( colorModCount != modCount )
 		{

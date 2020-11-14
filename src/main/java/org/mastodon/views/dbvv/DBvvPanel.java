@@ -32,6 +32,7 @@ import org.mastodon.mamut.model.Spot;
 import org.mastodon.model.HighlightModel;
 import org.mastodon.model.SelectionModel;
 import org.mastodon.spatial.SpatioTemporalIndex;
+import org.mastodon.ui.coloring.GraphColorGenerator;
 import org.mastodon.views.bvv.BvvOptions;
 import org.scijava.listeners.Listeners;
 import tpietzsch.example2.InteractiveGLDisplayCanvas;
@@ -81,6 +82,7 @@ public class DBvvPanel
 			final SpatioTemporalIndex< Spot > index,
 			final SelectionModel< Spot, Link > selection,
 			final HighlightModel< Spot, Link > highlight,
+			final GraphColorGenerator< Spot, Link > graphColorGenerator,
 			final List< SourceAndConverter< ? > > sources,
 			final int numTimepoints,
 			final CacheControl cacheControl,
@@ -108,7 +110,7 @@ public class DBvvPanel
 
 		painterThread = new PainterThread( this );
 		entities = new DBvvEntities( viewGraph );
-		renderer = new DBvvRenderer( displayWidth, displayHeight, viewGraph, index, entities, selection, highlight );
+		renderer = new DBvvRenderer( displayWidth, displayHeight, viewGraph, index, entities, selection, highlight, graphColorGenerator );
 		transformEventHandler = new TransformEventHandler3D(
 				TransformState.from( state()::getViewerTransform, state()::setViewerTransform ) );
 
