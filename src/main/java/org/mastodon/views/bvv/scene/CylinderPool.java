@@ -42,9 +42,9 @@ class CylinderPool implements ModifiableRefPool< Cylinder >
 	@Override
 	public Cylinder getObjectIfExists( final int id, final Cylinder obj )
 	{
-		if ( shapes.getObject( id, obj.shape ) == null )
+		if ( shapes.getObjectIfExists( id, obj.shape ) == null )
 			return null;
-		colors.getObject( id, obj.color );
+		colors.getObjectIfExists( id, obj.color );
 		return obj;
 	}
 
