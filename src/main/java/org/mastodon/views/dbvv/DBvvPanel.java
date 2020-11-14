@@ -11,6 +11,7 @@ import bdv.viewer.TransformListener;
 import bdv.viewer.ViewerOptions;
 import bdv.viewer.ViewerStateChange;
 import bdv.viewer.ViewerStateChangeListener;
+import bdv.viewer.animate.AbstractTransformAnimator;
 import bdv.viewer.render.PainterThread;
 import bdv.viewer.state.SourceGroup;
 import bdv.viewer.state.ViewerState;
@@ -58,6 +59,12 @@ public class DBvvPanel
 	private final JSlider sliderTime;
 
 	private boolean blockSliderTimeEvents;
+
+	/**
+	 * Current animator for viewer transform, or null. This is for example used
+	 * to make smooth transitions when aligning to orthogonal planes}.
+	 */
+	protected AbstractTransformAnimator currentAnimator = null;
 
 	/**
 	 * These listeners will be notified about changes to the current timepoint
@@ -214,6 +221,17 @@ public class DBvvPanel
 	public void paint()
 	{
 		display.display();
+
+		synchronized ( this )
+		{
+			if ( currentAnimator != null )
+			{
+				final AffineTransform3D transform = currentAnimator.getCurrent( System.currentTimeMillis() );
+				state().setViewerTransform( transform );
+				if ( currentAnimator.isComplete() )
+					currentAnimator = null;
+			}
+		}
 	}
 
 	@Override
@@ -252,6 +270,13 @@ public class DBvvPanel
 			transformListeners.list.forEach( l -> l.transformChanged( transform ) );
 			requestRepaint();
 		}
+	}
+
+	public synchronized void setTransformAnimator( final AbstractTransformAnimator animator )
+	{
+		currentAnimator = animator;
+		currentAnimator.setTime( System.currentTimeMillis() );
+		requestRepaint();
 	}
 
 	private final GLEventListener glEventListener = new GLEventListener()
