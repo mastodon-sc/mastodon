@@ -15,14 +15,4 @@ public class SceneEntities
 		ellipsoids = new DColoredEllipsoids( graph );
 		cylinders = new DColoredCylinders( graph );
 	}
-
-	public Ellipsoids getEllipsoids()
-	{
-		return ellipsoids.getEllipsoids();
-	}
-
-	public Cylinders getCylinders()
-	{
-		return cylinders.getCylinders();
-	}
 }

@@ -5,13 +5,15 @@ import org.mastodon.graph.GraphListener;
 import org.mastodon.mamut.model.Link;
 import org.mastodon.mamut.model.ModelGraph;
 import org.mastodon.mamut.model.Spot;
+import org.mastodon.spatial.VertexPositionListener;
 
-public class DBvvEntities implements GraphListener< Spot, Link >, SceneEntitiesPerTimepoint
+public class DBvvEntities implements GraphListener< Spot, Link >, VertexPositionListener< Spot >, SceneEntitiesPerTimepoint
 {
 	public DBvvEntities( final ModelGraph graph )
 	{
 		this.graph = graph;
 		graph.addGraphListener( this );
+		graph.addVertexPositionListener( this );
 		graphRebuilt();
 	}
 
@@ -53,6 +55,17 @@ public class DBvvEntities implements GraphListener< Spot, Link >, SceneEntitiesP
 		forTimepoint( edge ).cylinders.remove( edge );
 	}
 
+	@Override
+	public void vertexPositionChanged( final Spot vertex )
+	{
+		forTimepoint( vertex ).ellipsoids.addOrUpdate( vertex );
+
+		final Spot ref = graph.vertexRef();
+		for ( Link edge : vertex.edges() )
+			forTimepoint( edge, ref ).cylinders.addOrUpdate( edge );
+		graph.releaseRef( ref );
+	}
+
 	private final ModelGraph graph;
 
 	// Maps timepoint to SceneEntities
@@ -70,9 +83,14 @@ public class DBvvEntities implements GraphListener< Spot, Link >, SceneEntitiesP
 		return entities;
 	}
 
-	private SceneEntities forTimepoint( final Spot v )
+	private void update( final Spot vertex )
 	{
-		return forTimepoint( v.getTimepoint() );
+		forTimepoint( vertex ).ellipsoids.addOrUpdate( vertex );
+	}
+
+	private SceneEntities forTimepoint( final Spot vertex )
+	{
+		return forTimepoint( vertex.getTimepoint() );
 	}
 
 	private SceneEntities forTimepoint( final Link edge )

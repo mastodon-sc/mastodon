@@ -102,6 +102,7 @@ public class MamutViewDbvv extends MamutView< IdentityViewGraph< ModelGraph, Spo
 		final ModelGraph modelGraph = model.getGraph();
 
 		modelGraph.addGraphChangeListener( viewer::requestRepaint );
+		modelGraph.addVertexPositionListener( v -> viewer.requestRepaint() );
 		selectionModel.listeners().add( viewer::requestRepaint );
 		highlightModel.listeners().add( viewer::requestRepaint );
 
