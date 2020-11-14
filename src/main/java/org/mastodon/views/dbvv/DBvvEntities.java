@@ -23,46 +23,45 @@ public class DBvvEntities implements GraphListener< Spot, Link >, VertexPosition
 		timepoints.clear();
 
 		for ( final Spot vertex : graph.vertices() )
-			forTimepoint( vertex ).ellipsoids.addOrUpdate( vertex );
+			update( vertex );
 
 		final Spot ref = graph.vertexRef();
 		for ( final Link edge : graph.edges() )
-			forTimepoint( edge, ref ).cylinders.addOrUpdate( edge );
+			update( edge, ref );
 		graph.releaseRef( ref );
 	}
 
 	@Override
 	public void vertexAdded( final Spot vertex )
 	{
-		forTimepoint( vertex ).ellipsoids.addOrUpdate( vertex );
+		update( vertex );
 	}
 
 	@Override
 	public void vertexRemoved( final Spot vertex )
 	{
-		forTimepoint( vertex ).ellipsoids.remove( vertex );
+		remove( vertex );
 	}
 
 	@Override
 	public void edgeAdded( final Link edge )
 	{
-		forTimepoint( edge ).cylinders.addOrUpdate( edge );
+		update( edge );
 	}
 
 	@Override
 	public void edgeRemoved( final Link edge )
 	{
-		forTimepoint( edge ).cylinders.remove( edge );
+		remove( edge );
 	}
 
 	@Override
 	public void vertexPositionChanged( final Spot vertex )
 	{
-		forTimepoint( vertex ).ellipsoids.addOrUpdate( vertex );
-
+		update( vertex );
 		final Spot ref = graph.vertexRef();
 		for ( Link edge : vertex.edges() )
-			forTimepoint( edge, ref ).cylinders.addOrUpdate( edge );
+			update( edge, ref );
 		graph.releaseRef( ref );
 	}
 
@@ -88,17 +87,38 @@ public class DBvvEntities implements GraphListener< Spot, Link >, VertexPosition
 		forTimepoint( vertex ).ellipsoids.addOrUpdate( vertex );
 	}
 
+	private void remove( final Spot vertex )
+	{
+		forTimepoint( vertex ).ellipsoids.remove( vertex );
+	}
+
+	private void update( final Link edge )
+	{
+		final Spot ref = graph.vertexRef();
+		update( edge, ref );
+		graph.releaseRef( ref );
+	}
+
+	private void remove( final Link edge )
+	{
+		final Spot ref = graph.vertexRef();
+		remove( edge, ref );
+		graph.releaseRef( ref );
+	}
+
+	private void update( final Link edge, final Spot ref )
+	{
+		forTimepoint( edge, ref ).cylinders.addOrUpdate( edge );
+	}
+
+	private void remove( final Link edge, final Spot ref )
+	{
+		forTimepoint( edge, ref ).cylinders.remove( edge );
+	}
+
 	private SceneEntities forTimepoint( final Spot vertex )
 	{
 		return forTimepoint( vertex.getTimepoint() );
-	}
-
-	private SceneEntities forTimepoint( final Link edge )
-	{
-		final Spot ref = graph.vertexRef();
-		final SceneEntities entities = forTimepoint( edge, ref );
-		graph.releaseRef( ref );
-		return entities;
 	}
 
 	private SceneEntities forTimepoint( final Link edge, final Spot ref )
