@@ -19,7 +19,7 @@ class ColorPool extends Pool< Color, BufferMappedElement >
 	{
 		super( initialCapacity, Color.layout, Color.class,
 				SingleArrayMemPool.factory( BufferMappedElementArray.factory ) );
-		vec3fColor.addPropertyChangeListener( o -> setModified() );
+		vec3fColor.propertyChangeListeners().add( o -> setModified() );
 	}
 
 	private void setModified()

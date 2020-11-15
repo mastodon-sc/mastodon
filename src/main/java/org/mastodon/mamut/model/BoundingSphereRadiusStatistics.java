@@ -53,7 +53,7 @@ public class BoundingSphereRadiusStatistics implements GraphListener< Spot, Link
 		this.graph = model.getGraph();
 		timepointToStats = new TIntObjectHashMap<>( 10, 0.5f, NO_ENTRY_KEY );
 		graph.addGraphListener( this );
-		graph.getVertexPool().boundingSphereRadiusSquProperty().addPropertyChangeListener( this );
+		graph.getVertexPool().boundingSphereRadiusSquProperty().propertyChangeListeners().add( this );
 		final ReentrantReadWriteLock rwl = new ReentrantReadWriteLock();
 	    readLock = rwl.readLock();
 	    writeLock = rwl.writeLock();

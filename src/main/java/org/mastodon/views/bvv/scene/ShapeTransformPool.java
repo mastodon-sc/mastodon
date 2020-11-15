@@ -28,9 +28,9 @@ class ShapeTransformPool extends Pool< ShapeTransform, BufferMappedElement >
 		super( initialCapacity, ShapeTransform.layout, ShapeTransform.class,
 				SingleArrayMemPool.factory( BufferMappedElementArray.factory ) );
 
-		mat3fE.addPropertyChangeListener( o -> setModified() );
-		mat3fInvTE.addPropertyChangeListener( o -> setModified() );
-		vec3fT.addPropertyChangeListener( o -> setModified() );
+		mat3fE.propertyChangeListeners().add( o -> setModified() );
+		mat3fInvTE.propertyChangeListeners().add( o -> setModified() );
+		vec3fT.propertyChangeListeners().add( o -> setModified() );
 	}
 
 	private void setModified()

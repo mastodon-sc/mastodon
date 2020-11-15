@@ -175,7 +175,7 @@ public class AbstractModelGraph<
 	@Override
 	public boolean addVertexPositionListener( final VertexPositionListener< V > listener )
 	{
-		return vertexPool.position.addPropertyChangeListener( wrap( listener ) );
+		return vertexPool.position.propertyChangeListeners().add( wrap( listener ) );
 	}
 
 	/**
@@ -190,7 +190,7 @@ public class AbstractModelGraph<
 	@Override
 	public boolean removeVertexPositionListener( final VertexPositionListener< V > listener )
 	{
-		return vertexPool.position.removePropertyChangeListener( wrap( listener ) );
+		return vertexPool.position.propertyChangeListeners().remove( wrap( listener ) );
 	}
 
 	private VertexPositionListenerWrapper< V > wrap( final VertexPositionListener< V > l )
