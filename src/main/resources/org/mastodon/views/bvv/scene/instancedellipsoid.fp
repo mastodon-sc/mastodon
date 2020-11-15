@@ -16,15 +16,15 @@ const vec3 ambient = vec3(0.1, 0.1, 0.1);
 const float specularStrength = 1.0;
 */
 
-const vec3 lightColor1 = vec3(1, 1, 1);
+const vec3 lightColor1 = vec3(0.9, 0.9, 1);
 const vec3 lightDir1 = normalize(vec3(0, -0.2, -1));
 
-const vec3 lightColor2 = vec3(1, 0.4, 0.2);
-const vec3 lightDir2 = normalize(vec3(1, 1, 0));
+const vec3 lightColor2 = vec3(1, 0.7, 0.7);
+const vec3 lightDir2 = normalize(vec3(1, 1, 0.5));
 
-const vec3 ambient = vec3(0.1, 0, 0.1);
+const vec3 ambient = vec3(0.1, 0.1, 0.1);
 
-const float specularStrength = 0.1;
+const float specularStrength = 1;
 
 
 void main()
