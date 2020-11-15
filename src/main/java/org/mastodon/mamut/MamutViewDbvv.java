@@ -14,6 +14,7 @@ import org.mastodon.mamut.model.Model;
 import org.mastodon.mamut.model.ModelGraph;
 import org.mastodon.mamut.model.Spot;
 import org.mastodon.ui.SelectionActions;
+import org.mastodon.ui.coloring.ColoringModel;
 import org.mastodon.ui.coloring.GraphColorGeneratorAdapter;
 import org.mastodon.ui.keymap.KeyConfigContexts;
 import org.mastodon.views.bdv.SharedBigDataViewerData;
@@ -117,8 +118,12 @@ public class MamutViewDbvv extends MamutView< IdentityViewGraph< ModelGraph, Spo
 		final Model model = appModel.getModel();
 		final ModelGraph modelGraph = model.getGraph();
 
-		registerColoring( coloring, menuHandle, () -> viewer.getDisplay().repaint() );
-		registerTagSetMenu( tagSetMenuHandle, () -> viewer.getDisplay().repaint() );
+		final ColoringModel coloringModel = registerColoring( coloring, menuHandle, viewer::requestRepaint );
+		registerTagSetMenu( tagSetMenuHandle,  viewer::requestRepaint );
+
+		coloringModel.listeners().add( viewer.getRenderer()::colorsChanged );
+		model.getTagSetModel().vertexTagChangeListeners().add( v -> viewer.getRenderer().colorsChanged() );
+		model.getTagSetModel().edgeTagChangeListeners().add( v -> viewer.getRenderer().colorsChanged() );
 
 		highlightModel.listeners().add( viewer::requestRepaint );
 		focusModel.listeners().add( viewer::requestRepaint );

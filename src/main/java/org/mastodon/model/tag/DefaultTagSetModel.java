@@ -13,6 +13,7 @@ import org.mastodon.labels.LabelSet;
 import org.mastodon.labels.LabelSets;
 import org.mastodon.model.tag.TagSetStructure.Tag;
 import org.mastodon.model.tag.TagSetStructure.TagSet;
+import org.mastodon.properties.PropertyChangeListener;
 import org.mastodon.undo.Recorder;
 import org.mastodon.undo.UndoableEdit;
 import org.scijava.listeners.Listeners;
@@ -67,6 +68,18 @@ public class DefaultTagSetModel< V extends Vertex< E >, E extends Edge< V > > im
 		edgeTags = new DefaultObjTags<>( edgeIdLabelSets, tagSetStructure );
 		listeners = new Listeners.SynchronizedList<>();
 		emitEvents = true;
+	}
+
+	@Override
+	public Listeners< PropertyChangeListener< V > > vertexTagChangeListeners()
+	{
+		return vertexIdLabelSets.propertyChangeListeners();
+	}
+
+	@Override
+	public Listeners< PropertyChangeListener< E > > edgeTagChangeListeners()
+	{
+		return edgeIdLabelSets.propertyChangeListeners();
 	}
 
 	@Override

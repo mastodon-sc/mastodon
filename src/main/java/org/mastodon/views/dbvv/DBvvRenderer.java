@@ -112,15 +112,16 @@ public class DBvvRenderer
 
 		// -- paint vertices --------------------------------------------------
 		final DColoredEllipsoids ellipsoids = entities.forTimepoint( timepoint ).ellipsoids;
-		final Vector3fc defaultColor = new Vector3f( 0.5f, 1.0f, 0.5f );
+		final Vector3fc defaultColor = new Vector3f( 0.7f, 0.7f, 0.7f );
 		final Vector3fc selectedColor = new Vector3f( 1.0f, 0.7f, 0.7f );
+		final Vector3f tmp = new Vector3f();
 		ellipsoids.updateColors( colorModCount, v -> {
 			if ( selection.isSelected( v ) )
 				return selectedColor;
 			final int i = graphColorGenerator.color( v );
 			return i == 0
 					? defaultColor
-					: colorToVertex3f( i ); // TODO reuse a Vector3f
+					: colorToVertex3f( i, tmp );
 		} );
 
 		final Spot vref = graph.vertexRef();
@@ -148,7 +149,7 @@ public class DBvvRenderer
 		graph.releaseRef( eref );
 	}
 
-	private static Vector3f colorToVertex3f( final int argb )
+	private static Vector3fc colorToVertex3f( final int argb, final Vector3f dest )
 	{
 		final int a0 = ( argb >> 24 ) & 0xff;
 		final int r0 = ( argb >> 16 ) & 0xff;
@@ -160,12 +161,17 @@ public class DBvvRenderer
 		final float g = g0 / 255f;
 		final float b = b0 / 255f;
 
-		return new Vector3f( r, g, b );
+		return dest.set( r, g, b );
 	}
 
 	private int colorModCount = 1;
 
 	private void selectionChanged()
+	{
+		++colorModCount;
+	}
+
+	public void colorsChanged()
 	{
 		++colorModCount;
 	}

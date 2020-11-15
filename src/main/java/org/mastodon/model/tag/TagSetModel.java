@@ -1,5 +1,6 @@
 package org.mastodon.model.tag;
 
+import org.mastodon.properties.PropertyChangeListener;
 import org.scijava.listeners.Listeners;
 
 /**
@@ -35,6 +36,10 @@ public interface TagSetModel< V, E >
 	}
 
 	Listeners< TagSetModelListener > listeners();
+
+	Listeners< PropertyChangeListener< V > > vertexTagChangeListeners();
+
+	Listeners< PropertyChangeListener< E > > edgeTagChangeListeners();
 
 	void pauseListeners();
 

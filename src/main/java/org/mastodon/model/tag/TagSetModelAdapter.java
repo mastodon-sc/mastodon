@@ -1,9 +1,11 @@
 package org.mastodon.model.tag;
 
 import org.mastodon.adapter.ForwardedListeners;
+import org.mastodon.adapter.ListenersAdapter;
 import org.mastodon.adapter.RefBimap;
 import org.mastodon.graph.Edge;
 import org.mastodon.graph.Vertex;
+import org.mastodon.properties.PropertyChangeListener;
 import org.scijava.listeners.Listeners;
 
 /**
@@ -32,6 +34,10 @@ public class TagSetModelAdapter< V extends Vertex< E >, E extends Edge< V >, WV 
 
 	private final ForwardedListeners< TagSetModelListener > listeners;
 
+	private final ForwardedListeners< PropertyChangeListener< WV > > vertexTagChangeListeners;
+
+	private final ForwardedListeners< PropertyChangeListener< WE > > edgeTagChangeListeners;
+
 	public TagSetModelAdapter(
 			final TagSetModel< V, E > tagSetModel,
 			final RefBimap< V, WV > vertexMap,
@@ -40,7 +46,21 @@ public class TagSetModelAdapter< V extends Vertex< E >, E extends Edge< V >, WV 
 		this.tagSetModel = tagSetModel;
 		vertexTags = new ObjTagsAdapter<>( tagSetModel.getVertexTags(), vertexMap );
 		edgeTags = new ObjTagsAdapter<>( tagSetModel.getEdgeTags(), edgeMap );
-		this.listeners = new ForwardedListeners.List<>( tagSetModel.listeners() );
+		listeners = new ForwardedListeners.List<>( tagSetModel.listeners() );
+		final Listeners< PropertyChangeListener< WV > > vertexTagChangeListenersAdapter =
+				new ListenersAdapter.List<>( tagSetModel.vertexTagChangeListeners(), l -> v -> {
+					final WV ref = vertexMap.reusableRightRef();
+					l.propertyChanged( vertexMap.getRight( v, ref ) );
+					vertexMap.releaseRef( ref );
+				} );
+		final Listeners< PropertyChangeListener< WE > > edgeTagChangeListenersAdapter =
+				new ListenersAdapter.List<>( tagSetModel.edgeTagChangeListeners(), l -> e -> {
+					final WE ref = edgeMap.reusableRightRef();
+					l.propertyChanged( edgeMap.getRight( e, ref ) );
+					edgeMap.releaseRef( ref );
+				} );
+		vertexTagChangeListeners = new ForwardedListeners.List<>( vertexTagChangeListenersAdapter );
+		edgeTagChangeListeners = new ForwardedListeners.List<>( edgeTagChangeListenersAdapter );
 	}
 
 	@Override
@@ -71,6 +91,18 @@ public class TagSetModelAdapter< V extends Vertex< E >, E extends Edge< V >, WV 
 	public Listeners< TagSetModelListener > listeners()
 	{
 		return listeners;
+	}
+
+	@Override
+	public Listeners< PropertyChangeListener< WV > > vertexTagChangeListeners()
+	{
+		return vertexTagChangeListeners;
+	}
+
+	@Override
+	public Listeners< PropertyChangeListener< WE > > edgeTagChangeListeners()
+	{
+		return edgeTagChangeListeners;
 	}
 
 	@Override
