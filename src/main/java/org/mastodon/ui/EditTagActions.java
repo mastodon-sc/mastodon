@@ -526,7 +526,7 @@ public class EditTagActions< V extends Vertex< E >, E extends Edge< V > >
 		{}
 	}
 
-	static enum Mode
+	enum Mode
 	{
 		INACTIVE,
 		PICK_TAGSET,

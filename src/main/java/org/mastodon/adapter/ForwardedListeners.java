@@ -17,7 +17,7 @@ import org.scijava.listeners.Listeners;
  */
 public interface ForwardedListeners< T > extends Listeners< T >
 {
-	public void removeAll();
+	void removeAll();
 
 	/**
 	 * Implements {@link Listeners} using an {@link ArrayList}.
@@ -25,7 +25,7 @@ public interface ForwardedListeners< T > extends Listeners< T >
 	 * @param <T>
 	 *            the type of listeners.
 	 */
-	public static class List< T > implements ForwardedListeners< T >
+	class List< T > implements ForwardedListeners< T >
 	{
 		private final Listeners< T > listeners;
 
@@ -63,7 +63,7 @@ public interface ForwardedListeners< T > extends Listeners< T >
 				list.add( index, listener );
 				onAdd.accept( listener );
 			}
-			return listeners.add( listener );
+			return listeners.add( index, listener );
 		}
 
 		@Override
@@ -87,7 +87,7 @@ public interface ForwardedListeners< T > extends Listeners< T >
 	 * @param <T>
 	 *            the type of listeners.
 	 */
-	public static class SynchronizedList< T > extends List< T >
+	class SynchronizedList< T > extends List< T >
 	{
 		public SynchronizedList( final Listeners< T > listeners, final Consumer< T > onAdd )
 		{
@@ -103,6 +103,12 @@ public interface ForwardedListeners< T > extends Listeners< T >
 		public synchronized boolean add( final T listener )
 		{
 			return super.add( listener );
+		}
+
+		@Override
+		public synchronized boolean add( final int index, final T listener )
+		{
+			return super.add( index, listener );
 		}
 
 		@Override
