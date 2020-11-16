@@ -138,15 +138,26 @@ public class DBvvRenderer
 		final float f = ( rTail - rHead ) / ( timeLimit + 1 );
 
 		final Link eref = graph.edgeRef();
+		final Spot sref = graph.vertexRef();
+		final Spot tref = graph.vertexRef();
 		for ( int t = Math.max( 0, timepoint - timeLimit + 1 ); t <= timepoint; ++t )
 		{
 			final DColoredCylinders cylinders = entities.forTimepoint( t ).cylinders;
-			cylinders.updateColors( colorModCount, e -> selection.isSelected( e ) ? selectedColor : defaultColor );
+			cylinders.updateColors( colorModCount, e -> {
+				if ( selection.isSelected( e ) )
+					return selectedColor;
+				final int i = graphColorGenerator.color( e, sref, tref );
+				return i == 0
+						? defaultColor
+						: colorToVertex3f( i, tmp );
+			} );
 			highlightId = cylinders.indexOf( highlight.getHighlightedEdge( eref ) );
 			final float r0 = rHead + f * ( timepoint - t );
 			instancedLink.draw( gl, pv, camview, cylinders.getCylinders(), highlightId, r0 + f, r0 );
 		}
 		graph.releaseRef( eref );
+		graph.releaseRef( sref );
+		graph.releaseRef( tref );
 	}
 
 	private static Vector3fc colorToVertex3f( final int argb, final Vector3f dest )
