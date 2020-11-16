@@ -6,6 +6,7 @@ layout (location = 2) in vec3 color;
 out vec3 Normal;
 out vec3 FragPos;
 out vec3 ObjectColor;
+out float hl;
 
 uniform mat4 pvm;
 uniform mat4 vm;
@@ -23,9 +24,11 @@ void main()
 	float r = radius;
 	if (gl_InstanceID == highlight)
 	{
-		ObjectColor += highlightColor;
+//		ObjectColor += highlightColor;
 		float dilate = max(highlightDilateMin, r * highlightDilateRatio);
 		r += dilate;
+
+		hl = 1;
 	}
 	vec4 pos = vec4(r * aPos + t, 1.0);
 	gl_Position = pvm * pos;
