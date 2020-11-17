@@ -6,10 +6,12 @@ import java.nio.IntBuffer;
 import org.joml.Matrix3f;
 import org.joml.Matrix4f;
 import org.joml.Matrix4fc;
+import org.joml.Vector4f;
 import org.mastodon.views.bvv.scene.HotLoading.ShaderHotLoader;
 import tpietzsch.backend.jogl.JoglGpuContext;
 import tpietzsch.shadergen.DefaultShader;
 import tpietzsch.shadergen.Shader;
+import tpietzsch.shadergen.Uniform1f;
 import tpietzsch.shadergen.generate.Segment;
 import tpietzsch.shadergen.generate.SegmentTemplate;
 
@@ -238,6 +240,7 @@ public class InstancedLink
 		cylinderProg.getUniformMatrix3f( "itvm" ).set( itvm.get3x3( new Matrix3f() ) );
 		cylinderProg.getUniform1i( "highlight" ).set( highlightIndex );
 		cylinderProg.getUniform2f( "radii" ).set( r0, r1 );
+		highlight_stuff( pvm, vm, itvm, cylinderProg.getUniform1f( "highlight_f" ), cylinderProg.getUniform1f( "highlight_k" ) );
 		cylinderProg.setUniforms( context );
 
 		sphereProg.getUniformMatrix4f( "pvm" ).set( pvm );
@@ -245,8 +248,34 @@ public class InstancedLink
 		sphereProg.getUniformMatrix3f( "itvm" ).set( itvm.get3x3( new Matrix3f() ) );
 		sphereProg.getUniform1i( "highlight" ).set( highlightIndex );
 		sphereProg.getUniform1f( "radius" ).set( r0 );
+		highlight_stuff( pvm, vm, itvm, sphereProg.getUniform1f( "highlight_f" ), sphereProg.getUniform1f( "highlight_k" ) );
 		sphereProg.setUniforms( context );
 
 		instanceArrays.get( cylinders ).draw( gl, context );
 	}
+
+	public static void highlight_stuff( Matrix4fc pvm, Matrix4fc vm, Matrix4fc itvm, final Uniform1f highlight_f, final Uniform1f highlight_k )
+	{
+		final int viewportWidth = 800; // TODO!
+
+		final Matrix4f ipvm = pvm.invert( new Matrix4f() );
+		final float dx = ( float ) ( 2.0 / viewportWidth );
+
+		final Vector4f adx = vm.transform( ipvm.transform( new Vector4f( dx, 0, -1, 1 ) ) );
+		final Vector4f cdx = vm.transform( ipvm.transform( new Vector4f( dx, 0,  1, 1 ) ) );
+		adx.div( adx.w() );
+		cdx.div( cdx.w() );
+
+		final float sNear = adx.x;
+		final float sFar = cdx.x;
+		final float ac = cdx.z - adx.z;
+		final float f = ( sFar - sNear ) / ac;
+		final float k = sNear - f * adx.z;
+
+		final float s = ( float )Math.sqrt( itvm.m00() * itvm.m00() + itvm.m01() * itvm.m01() + itvm.m02() * itvm.m02() );
+
+		highlight_f.set( s * f );
+		highlight_k.set( s * k );
+	}
+
 }

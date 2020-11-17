@@ -20,6 +20,7 @@ import static com.jogamp.opengl.GL.GL_FLOAT;
 import static com.jogamp.opengl.GL.GL_STATIC_DRAW;
 import static com.jogamp.opengl.GL.GL_TRIANGLES;
 import static com.jogamp.opengl.GL.GL_UNSIGNED_INT;
+import static org.mastodon.views.bvv.scene.InstancedLink.highlight_stuff;
 
 /**
  * Draw instanced ellipsoids.
@@ -239,6 +240,7 @@ public class InstancedSpot
 		sphereProg.getUniformMatrix3f( "itvm" ).set( itvm.get3x3( new Matrix3f() ) );
 		sphereProg.getUniform1i( "highlight" ).set( highlightIndex );
 		sphereProg.getUniform1f( "radius" ).set( spotRadius );
+		highlight_stuff( pvm, vm, itvm, sphereProg.getUniform1f( "highlight_f" ), sphereProg.getUniform1f( "highlight_k" ) );
 		sphereProg.setUniforms( context );
 
 		instanceArrays.get( ellipsoids ).draw( gl, context, spotDrawingMode );

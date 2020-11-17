@@ -13,6 +13,8 @@ uniform mat4 vm;
 uniform mat3 itvm;
 uniform float radius;
 uniform int highlight;
+uniform float highlight_f;
+uniform float highlight_k;
 
 const vec3 highlightColor = vec3(0.2, 0.1, 0.2);
 const float highlightDilateMin = 0.05;
@@ -25,8 +27,11 @@ void main()
 	if (gl_InstanceID == highlight)
 	{
 //		ObjectColor += highlightColor;
-		float dilate = max(highlightDilateMin, r * highlightDilateRatio);
-		r += dilate;
+//		float dilate = max(highlightDilateMin, r * highlightDilateRatio);
+
+		vec4 p = vm * vec4(r * aPos + t, 1.0);
+		float dilate = highlight_f * p.z + highlight_k;
+		r += 4 * dilate;
 
 		hl = 1;
 	}
