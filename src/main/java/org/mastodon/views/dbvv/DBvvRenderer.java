@@ -16,6 +16,8 @@ import org.mastodon.spatial.SpatialIndex;
 import org.mastodon.spatial.SpatioTemporalIndex;
 import org.mastodon.ui.coloring.GraphColorGenerator;
 import org.mastodon.views.bvv.scene.Ellipsoid;
+import org.mastodon.views.bvv.scene.EllipsoidMath;
+import org.mastodon.views.bvv.scene.Ellipsoids;
 import org.mastodon.views.bvv.scene.InstancedLink;
 import org.mastodon.views.bvv.scene.InstancedSpot;
 import org.mastodon.views.bvv.scene.InstancedSpot.SpotDrawingMode;
@@ -89,6 +91,34 @@ public class DBvvRenderer
 
 
 
+	private class Highlights
+	{
+		final Vector3fc HIGHLIGHT_COLOR = new Vector3f( 0, 1, 1 );
+
+		final Ellipsoids highlightedVertices = new Ellipsoids( 2 );
+		final EllipsoidMath math = new EllipsoidMath();
+
+		void update()
+		{
+			highlightedVertices.clear();
+
+			final Spot vref = graph.vertexRef();
+			final Ellipsoid elref = highlightedVertices.createRef();
+
+			final Spot vertex = highlight.getHighlightedVertex( vref );
+			if ( vertex != null )
+			{
+				final Ellipsoid ellipsoid = highlightedVertices.getOrAdd( 0, elref );
+				math.setFromVertex( vertex, ellipsoid );
+				ellipsoid.rgb.set( HIGHLIGHT_COLOR );
+			}
+
+			graph.releaseRef( vref );
+			highlightedVertices.releaseRef( elref );
+		}
+	}
+
+	private final Highlights highlights = new Highlights();
 
 	private final SceneRenderData renderData = new SceneRenderData();
 
@@ -128,7 +158,13 @@ public class DBvvRenderer
 		int highlightId = ellipsoids.indexOf( highlight.getHighlightedVertex( vref ) );
 		graph.releaseRef( vref );
 
-		instancedEllipsoid.draw( gl, pv, camview, ellipsoids.getEllipsoids(), highlightId, data.getSpotDrawingMode(), data.getSpotRadius() );
+//		instancedEllipsoid.draw( gl, pv, camview, ellipsoids.getEllipsoids(), highlightId, data.getSpotDrawingMode(), data.getSpotRadius() );
+
+		highlights.update();
+		if ( highlights.highlightedVertices.size() > 0 )
+		{
+			instancedEllipsoid.draw( gl, pv, camview, highlights.highlightedVertices, 0, data.getSpotDrawingMode(), data.getSpotRadius() );
+		}
 
 		// -- paint edges -----------------------------------------------------
 		// the maximum number of time-points into the past for which outgoing edges are painted
