@@ -15,6 +15,9 @@ import org.mastodon.model.SelectionModel;
 import org.mastodon.spatial.SpatialIndex;
 import org.mastodon.spatial.SpatioTemporalIndex;
 import org.mastodon.ui.coloring.GraphColorGenerator;
+import org.mastodon.views.bvv.scene.Cylinder;
+import org.mastodon.views.bvv.scene.CylinderMath;
+import org.mastodon.views.bvv.scene.Cylinders;
 import org.mastodon.views.bvv.scene.Ellipsoid;
 import org.mastodon.views.bvv.scene.EllipsoidMath;
 import org.mastodon.views.bvv.scene.Ellipsoids;
@@ -29,6 +32,7 @@ import static com.jogamp.opengl.GL.GL_COLOR_BUFFER_BIT;
 import static com.jogamp.opengl.GL.GL_CULL_FACE;
 import static com.jogamp.opengl.GL.GL_DEPTH_BUFFER_BIT;
 import static com.jogamp.opengl.GL.GL_DEPTH_TEST;
+import static com.jogamp.opengl.GL.GL_ONE;
 import static com.jogamp.opengl.GL.GL_ONE_MINUS_SRC_ALPHA;
 import static com.jogamp.opengl.GL.GL_SRC_ALPHA;
 import static com.jogamp.opengl.GL.GL_UNPACK_ALIGNMENT;
@@ -76,6 +80,7 @@ public class DBvvRenderer
 		this.selection = selection;
 		this.highlight = highlight;
 		this.graphColorGenerator = graphColorGenerator;
+		highlights = new Highlights();
 		instancedEllipsoid = new InstancedSpot( 3, 10 );
 		instancedLink = new InstancedLink( 36, 3, 20 );
 		selection.listeners().add( this::selectionChanged );
@@ -97,9 +102,13 @@ public class DBvvRenderer
 	private class Highlights
 	{
 		final Vector3fc HIGHLIGHT_COLOR = new Vector3f( 0, 1, 1 );
+		final Vector3fc FOCUS_COLOR = new Vector3f( 0, 1, 0 );
 
 		final Ellipsoids highlightedVertices = new Ellipsoids( 2 );
-		final EllipsoidMath math = new EllipsoidMath();
+		final EllipsoidMath ellipsoidMath = new EllipsoidMath();
+
+		final Cylinders highlightedEdges = new Cylinders( 2 );
+		final CylinderMath cylinderMath = new CylinderMath( graph );
 
 		void update()
 		{
@@ -112,16 +121,34 @@ public class DBvvRenderer
 			if ( vertex != null )
 			{
 				final Ellipsoid ellipsoid = highlightedVertices.getOrAdd( 0, elref );
-				math.setFromVertex( vertex, ellipsoid );
+				ellipsoidMath.setFromVertex( vertex, ellipsoid );
 				ellipsoid.rgb.set( HIGHLIGHT_COLOR );
 			}
 
 			graph.releaseRef( vref );
 			highlightedVertices.releaseRef( elref );
+
+			// ----------------------------------------------------
+
+			highlightedEdges.clear();
+
+			final Link eref = graph.edgeRef();
+			final Cylinder cyref = highlightedEdges.createRef();
+
+			final Link edge = highlight.getHighlightedEdge( eref );
+			if ( edge != null )
+			{
+				final Cylinder cylinder = highlightedEdges.getOrAdd( 0, cyref );
+				cylinderMath.setFromEdge( edge, cylinder );
+				cylinder.rgb.set( HIGHLIGHT_COLOR );
+			}
+
+			graph.releaseRef( eref );
+			highlightedVertices.releaseRef( elref );
 		}
 	}
 
-	private final Highlights highlights = new Highlights();
+	private final Highlights highlights;
 
 	private final SceneRenderData renderData = new SceneRenderData();
 
@@ -143,6 +170,11 @@ public class DBvvRenderer
 		gl.glCullFace( GL_BACK );
 		gl.glFrontFace( GL_CCW );
 
+		final Spot vref = graph.vertexRef();
+		final Link eref = graph.edgeRef();
+		final Spot sref = graph.vertexRef();
+		final Spot tref = graph.vertexRef();
+
 		// -- paint vertices --------------------------------------------------
 		final DColoredEllipsoids ellipsoids = entities.forTimepoint( timepoint ).ellipsoids;
 		final Vector3fc defaultColor = new Vector3f( 0.7f, 0.7f, 0.7f );
@@ -157,9 +189,7 @@ public class DBvvRenderer
 					: colorToVertex3f( i, tmp );
 		} );
 
-		final Spot vref = graph.vertexRef();
 		int highlightId = ellipsoids.indexOf( highlight.getHighlightedVertex( vref ) );
-		graph.releaseRef( vref );
 
 		instancedEllipsoid.draw( gl, pv, camview,
 				ellipsoids.getEllipsoids(), highlightId,
@@ -173,9 +203,6 @@ public class DBvvRenderer
 		final float rTail = renderData.getLinkRadiusTail();
 		final float f = ( rTail - rHead ) / ( timeLimit + 1 );
 
-		final Link eref = graph.edgeRef();
-		final Spot sref = graph.vertexRef();
-		final Spot tref = graph.vertexRef();
 		for ( int t = Math.max( 0, timepoint - timeLimit + 1 ); t <= timepoint; ++t )
 		{
 			final DColoredCylinders cylinders = entities.forTimepoint( t ).cylinders;
@@ -189,25 +216,35 @@ public class DBvvRenderer
 			} );
 			highlightId = cylinders.indexOf( highlight.getHighlightedEdge( eref ) );
 			final float r0 = rHead + f * ( timepoint - t );
-			instancedLink.draw( gl, pv, camview, cylinders.getCylinders(), highlightId, r0 + f, r0 );
+			instancedLink.draw( gl, pv, camview,
+					cylinders.getCylinders(), highlightId, r0 + f, r0, false );
 		}
-		graph.releaseRef( eref );
-		graph.releaseRef( sref );
-		graph.releaseRef( tref );
 
 
-		// -- paint highlighted vertices --------------------------------------------------
+		// -- paint highlighted vertices and edges ----------------------------------------
 		highlights.update();
+		gl.glEnable( GL_BLEND );
+		gl.glBlendFunc( GL_SRC_ALPHA, GL_ONE );
 		if ( highlights.highlightedVertices.size() > 0 )
 		{
-			gl.glEnable( GL_BLEND );
-			gl.glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
 			instancedEllipsoid.draw( gl, pv, camview,
 					highlights.highlightedVertices, 0,
 					data.getSpotDrawingMode(), data.getSpotRadius(), true );
-			gl.glDisable( GL_BLEND );
 		}
+		if ( highlights.highlightedEdges.size() > 0 )
+		{
+			final int t = highlight.getHighlightedEdge( eref ).getTarget( sref ).getTimepoint();
+			final float r0 = rHead + f * ( timepoint - t );
+			instancedLink.draw( gl, pv, camview,
+					highlights.highlightedEdges, 0, r0 + f, r0, true );
+		}
+		gl.glDisable( GL_BLEND );
 
+
+		graph.releaseRef( vref );
+		graph.releaseRef( eref );
+		graph.releaseRef( sref );
+		graph.releaseRef( tref );
 	}
 
 	private static Vector3fc colorToVertex3f( final int argb, final Vector3f dest )

@@ -4,6 +4,7 @@ import com.jogamp.opengl.GL3;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 import org.joml.Matrix3f;
+import org.joml.Matrix3fc;
 import org.joml.Matrix4f;
 import org.joml.Matrix4fc;
 import org.joml.Vector4f;
@@ -38,6 +39,8 @@ public class InstancedLink
 	private final ShaderHotLoader hotloader;
 	private Shader cylinderProg;
 	private Shader sphereProg;
+	private Shader cylinderHighlightProg;
+	private Shader sphereHighlightProg;
 
 	private int cylinderVbo;
 	private int cylinderEbo;
@@ -61,7 +64,10 @@ public class InstancedLink
 		hotloader = new ShaderHotLoader()
 				.watch( InstancedLink.class, "instancedcylinder.vp" )
 				.watch( InstancedLink.class, "instancedsphere.vp" )
-				.watch( InstancedLink.class, "instancedellipsoid.fp" );
+				.watch( InstancedLink.class, "instancedellipsoid.fp" )
+				.watch( InstancedLink.class, "instancedcylinder-highlight.vp" )
+				.watch( InstancedSpot.class, "instancedsphere-highlight.vp" )
+				.watch( InstancedSpot.class, "instancedellipsoid-highlight.fp" );
 		hotloadShader();
 		instanceArrays = new ReusableResources<>( numReusableInstanceArrays, InstanceArray::new );
 	}
@@ -77,6 +83,14 @@ public class InstancedLink
 			final Segment ex2vp = new SegmentTemplate( InstancedLink.class, "instancedsphere.vp" ).instantiate();
 			final Segment ex2fp = new SegmentTemplate( InstancedLink.class, "instancedellipsoid.fp" ).instantiate();
 			sphereProg = new DefaultShader( ex2vp.getCode(), ex2fp.getCode() );
+
+			final Segment ex3vp = new SegmentTemplate( InstancedLink.class, "instancedcylinder-highlight.vp" ).instantiate();
+			final Segment ex3fp = new SegmentTemplate( InstancedLink.class, "instancedellipsoid-highlight.fp" ).instantiate();
+			cylinderHighlightProg = new DefaultShader( ex3vp.getCode(), ex3fp.getCode() );
+
+			final Segment ex4vp = new SegmentTemplate( InstancedSpot.class, "instancedsphere-highlight.vp" ).instantiate();
+			final Segment ex4fp = new SegmentTemplate( InstancedSpot.class, "instancedellipsoid-highlight.fp" ).instantiate();
+			sphereHighlightProg = new DefaultShader( ex4vp.getCode(), ex4fp.getCode() );
 		}
 	}
 
@@ -207,26 +221,35 @@ public class InstancedLink
 			}
 		}
 
-		private void draw( GL3 gl, JoglGpuContext context )
+		private void draw( GL3 gl, JoglGpuContext context, boolean onlyHighlights )
 		{
 			if ( !initialized )
 				init( gl );
 
 			update( gl );
 
-			cylinderProg.use( context );
+			if ( onlyHighlights )
+				cylinderHighlightProg.use( context );
+			else
+				cylinderProg.use( context );
 			gl.glBindVertexArray( cylinderVao );
 			gl.glDrawElementsInstanced( GL_TRIANGLES, cylinderNumElements, GL_UNSIGNED_INT, 0, instanceCount );
 			gl.glBindVertexArray( 0 );
 
-			sphereProg.use( context );
+			if ( onlyHighlights )
+				sphereHighlightProg.use( context );
+			else
+				sphereProg.use( context );
 			gl.glBindVertexArray( sphereVao );
 			gl.glDrawElementsInstanced( GL_TRIANGLES, sphereNumElements, GL_UNSIGNED_INT, 0, instanceCount );
 			gl.glBindVertexArray( 0 );
 		}
 	}
 
-	public void draw( GL3 gl, Matrix4fc pvm, Matrix4fc vm, final Cylinders cylinders, final int highlightIndex, final float r0, final float r1 )
+	public void draw( GL3 gl, Matrix4fc pvm, Matrix4fc vm, final Cylinders cylinders,
+			final int highlightIndex,
+			final float r0, final float r1,
+			final boolean onlyHighlights )
 	{
 		if ( !initialized )
 			init( gl );
@@ -234,27 +257,55 @@ public class InstancedLink
 		JoglGpuContext context = JoglGpuContext.get( gl );
 		hotloadShader();
 
-		final Matrix4f itvm = vm.invert( new Matrix4f() ).transpose();
-		cylinderProg.getUniformMatrix4f( "pvm" ).set( pvm );
-		cylinderProg.getUniformMatrix4f( "vm" ).set( vm );
-		cylinderProg.getUniformMatrix3f( "itvm" ).set( itvm.get3x3( new Matrix3f() ) );
-		cylinderProg.getUniform1i( "highlight" ).set( highlightIndex );
-		cylinderProg.getUniform2f( "radii" ).set( r0, r1 );
-		highlight_stuff( pvm, vm, itvm, cylinderProg.getUniform1f( "highlight_f" ), cylinderProg.getUniform1f( "highlight_k" ) );
-		cylinderProg.setUniforms( context );
+		final Matrix3f itvm = vm.invert( new Matrix4f() ).transpose().get3x3( new Matrix3f() );
 
-		sphereProg.getUniformMatrix4f( "pvm" ).set( pvm );
-		sphereProg.getUniformMatrix4f( "vm" ).set( vm );
-		sphereProg.getUniformMatrix3f( "itvm" ).set( itvm.get3x3( new Matrix3f() ) );
-		sphereProg.getUniform1i( "highlight" ).set( highlightIndex );
-		sphereProg.getUniform1f( "radius" ).set( r0 );
-		highlight_stuff( pvm, vm, itvm, sphereProg.getUniform1f( "highlight_f" ), sphereProg.getUniform1f( "highlight_k" ) );
-		sphereProg.setUniforms( context );
+		if ( onlyHighlights )
+		{
+			cylinderHighlightProg.getUniformMatrix4f( "pvm" ).set( pvm );
+			cylinderHighlightProg.getUniformMatrix4f( "vm" ).set( vm );
+			cylinderHighlightProg.getUniformMatrix3f( "itvm" ).set( itvm );
+			cylinderHighlightProg.getUniform2f( "radii" ).set( r0, r1 );
+			highlight_stuff( pvm, vm, itvm,
+					cylinderHighlightProg.getUniform1f( "highlight_f" ),
+					cylinderHighlightProg.getUniform1f( "highlight_k" ) );
+			cylinderHighlightProg.setUniforms( context );
 
-		instanceArrays.get( cylinders ).draw( gl, context );
+			sphereHighlightProg.getUniformMatrix4f( "pvm" ).set( pvm );
+			sphereHighlightProg.getUniformMatrix4f( "vm" ).set( vm );
+			sphereHighlightProg.getUniformMatrix3f( "itvm" ).set( itvm );
+			sphereHighlightProg.getUniform1f( "radius" ).set( r0 );
+			highlight_stuff( pvm, vm, itvm,
+					sphereHighlightProg.getUniform1f( "highlight_f" ),
+					sphereHighlightProg.getUniform1f( "highlight_k" ) );
+			sphereHighlightProg.setUniforms( context );
+		}
+		else
+		{
+			cylinderProg.getUniformMatrix4f( "pvm" ).set( pvm );
+			cylinderProg.getUniformMatrix4f( "vm" ).set( vm );
+			cylinderProg.getUniformMatrix3f( "itvm" ).set( itvm );
+			cylinderProg.getUniform1i( "highlight" ).set( highlightIndex );
+			cylinderProg.getUniform2f( "radii" ).set( r0, r1 );
+			highlight_stuff( pvm, vm, itvm,
+					cylinderProg.getUniform1f( "highlight_f" ),
+					cylinderProg.getUniform1f( "highlight_k" ) );
+			cylinderProg.setUniforms( context );
+
+			sphereProg.getUniformMatrix4f( "pvm" ).set( pvm );
+			sphereProg.getUniformMatrix4f( "vm" ).set( vm );
+			sphereProg.getUniformMatrix3f( "itvm" ).set( itvm );
+			sphereProg.getUniform1i( "highlight" ).set( highlightIndex );
+			sphereProg.getUniform1f( "radius" ).set( r0 );
+			highlight_stuff( pvm, vm, itvm,
+					sphereProg.getUniform1f( "highlight_f" ),
+					sphereProg.getUniform1f( "highlight_k" ) );
+			sphereProg.setUniforms( context );
+		}
+
+		instanceArrays.get( cylinders ).draw( gl, context, onlyHighlights );
 	}
 
-	public static void highlight_stuff( Matrix4fc pvm, Matrix4fc vm, Matrix4fc itvm, final Uniform1f highlight_f, final Uniform1f highlight_k )
+	public static void highlight_stuff( Matrix4fc pvm, Matrix4fc vm, Matrix3fc itvm, final Uniform1f highlight_f, final Uniform1f highlight_k )
 	{
 		final int viewportWidth = 800; // TODO!
 

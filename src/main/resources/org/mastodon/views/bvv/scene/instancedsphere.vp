@@ -26,9 +26,9 @@ void main()
 	{
 		ObjectColor += highlightColor;
 
-		vec4 p = vm * vec4(r * aPos + t, 1.0);
+		vec4 p = vm * vec4(r * aPos + t, 1);
 		float dilate = highlight_f * p.z + highlight_k;
-		r += 4 * dilate;
+		r += dilate;
 
 		hl = 1;
 	}

@@ -36,17 +36,12 @@ public class InstancedSpot
 	private final int subdivisions;
 
 	private final ShaderHotLoader hotloader;
-
 	private Shader ellipsoidProg;
-
 	private Shader sphereProg;
-
 	private Shader sphereHighlightProg;
 
 	private int sphereVbo;
-
 	private int sphereEbo;
-
 	private int sphereNumElements;
 
 	private final ReusableResources< Ellipsoids, InstanceArray > instanceArrays;
@@ -269,7 +264,9 @@ public class InstancedSpot
 			sphereProg.getUniformMatrix3f( "itvm" ).set( itvm );
 			sphereProg.getUniform1i( "highlight" ).set( highlightIndex );
 			sphereProg.getUniform1f( "radius" ).set( spotRadius );
-			highlight_stuff( pvm, vm, itvm, sphereProg.getUniform1f( "highlight_f" ), sphereProg.getUniform1f( "highlight_k" ) );
+			highlight_stuff( pvm, vm, itvm,
+					sphereProg.getUniform1f( "highlight_f" ),
+					sphereProg.getUniform1f( "highlight_k" ) );
 			sphereProg.setUniforms( context );
 		}
 
