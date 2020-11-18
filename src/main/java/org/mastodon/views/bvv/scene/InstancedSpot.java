@@ -4,12 +4,15 @@ import com.jogamp.opengl.GL3;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 import org.joml.Matrix3f;
+import org.joml.Matrix3fc;
 import org.joml.Matrix4f;
 import org.joml.Matrix4fc;
+import org.joml.Vector4f;
 import org.mastodon.views.bvv.scene.HotLoading.ShaderHotLoader;
 import tpietzsch.backend.jogl.JoglGpuContext;
 import tpietzsch.shadergen.DefaultShader;
 import tpietzsch.shadergen.Shader;
+import tpietzsch.shadergen.Uniform1f;
 import tpietzsch.shadergen.generate.Segment;
 import tpietzsch.shadergen.generate.SegmentTemplate;
 
@@ -38,6 +41,8 @@ public class InstancedSpot
 
 	private Shader sphereProg;
 
+	private Shader sphereHighlightProg;
+
 	private int sphereVbo;
 
 	private int sphereEbo;
@@ -57,7 +62,9 @@ public class InstancedSpot
 		hotloader = new ShaderHotLoader()
 				.watch( InstancedSpot.class, "instancedellipsoid.vp" )
 				.watch( InstancedSpot.class, "instancedsphere.vp" )
-				.watch( InstancedSpot.class, "instancedellipsoid.fp" );
+				.watch( InstancedSpot.class, "instancedellipsoid.fp" )
+				.watch( InstancedSpot.class, "instancedsphere-highlight.vp" )
+				.watch( InstancedSpot.class, "instancedellipsoid-highlight.fp" );
 		hotloadShader();
 		instanceArrays = new ReusableResources<>( numReusableInstanceArrays, InstanceArray::new );
 	}
@@ -73,6 +80,10 @@ public class InstancedSpot
 			final Segment ex2vp = new SegmentTemplate( InstancedSpot.class, "instancedsphere.vp" ).instantiate();
 			final Segment ex2fp = new SegmentTemplate( InstancedSpot.class, "instancedellipsoid.fp" ).instantiate();
 			sphereProg = new DefaultShader( ex2vp.getCode(), ex2fp.getCode() );
+
+			final Segment ex3vp = new SegmentTemplate( InstancedSpot.class, "instancedsphere-highlight.vp" ).instantiate();
+			final Segment ex3fp = new SegmentTemplate( InstancedSpot.class, "instancedellipsoid-highlight.fp" ).instantiate();
+			sphereHighlightProg = new DefaultShader( ex3vp.getCode(), ex3fp.getCode() );
 		}
 	}
 
@@ -192,7 +203,7 @@ public class InstancedSpot
 			}
 		}
 
-		private void draw( GL3 gl, JoglGpuContext context, SpotDrawingMode mode )
+		private void draw( GL3 gl, JoglGpuContext context, SpotDrawingMode mode, boolean onlyHighlights )
 		{
 			if ( !initialized )
 				init( gl );
@@ -208,7 +219,10 @@ public class InstancedSpot
 				gl.glBindVertexArray( 0 );
 				break;
 			case SPHERES:
-				sphereProg.use( context );
+				if ( onlyHighlights )
+					sphereHighlightProg.use( context );
+				else
+					sphereProg.use( context );
 				gl.glBindVertexArray( sphereVao );
 				gl.glDrawElementsInstanced( GL_TRIANGLES, sphereNumElements, GL_UNSIGNED_INT, 0, instanceCount );
 				gl.glBindVertexArray( 0 );
@@ -220,7 +234,8 @@ public class InstancedSpot
 	public void draw( GL3 gl, Matrix4fc pvm, Matrix4fc vm, Ellipsoids ellipsoids,
 			final int highlightIndex,
 			final SpotDrawingMode spotDrawingMode,
-			final float spotRadius )
+			final float spotRadius,
+			final boolean onlyHighlights )
 	{
 		if ( !initialized )
 			init( gl );
@@ -228,21 +243,60 @@ public class InstancedSpot
 		JoglGpuContext context = JoglGpuContext.get( gl );
 		hotloadShader();
 
-		final Matrix4f itvm = vm.invert( new Matrix4f() ).transpose();
-		ellipsoidProg.getUniformMatrix4f( "pvm" ).set( pvm );
-		ellipsoidProg.getUniformMatrix4f( "vm" ).set( vm );
-		ellipsoidProg.getUniformMatrix3f( "itvm" ).set( itvm.get3x3( new Matrix3f() ) );
-		ellipsoidProg.getUniform1i( "highlight" ).set( highlightIndex );
-		ellipsoidProg.setUniforms( context );
+		final Matrix3f itvm = vm.invert( new Matrix4f() ).transpose().get3x3( new Matrix3f() );
 
-		sphereProg.getUniformMatrix4f( "pvm" ).set( pvm );
-		sphereProg.getUniformMatrix4f( "vm" ).set( vm );
-		sphereProg.getUniformMatrix3f( "itvm" ).set( itvm.get3x3( new Matrix3f() ) );
-		sphereProg.getUniform1i( "highlight" ).set( highlightIndex );
-		sphereProg.getUniform1f( "radius" ).set( spotRadius );
-		highlight_stuff( pvm, vm, itvm, sphereProg.getUniform1f( "highlight_f" ), sphereProg.getUniform1f( "highlight_k" ) );
-		sphereProg.setUniforms( context );
+		if ( onlyHighlights )
+		{
+			sphereHighlightProg.getUniformMatrix4f( "pvm" ).set( pvm );
+			sphereHighlightProg.getUniformMatrix4f( "vm" ).set( vm );
+			sphereHighlightProg.getUniformMatrix3f( "itvm" ).set( itvm );
+			sphereHighlightProg.getUniform1f( "radius" ).set( spotRadius );
+			highlight_stuff( pvm, vm, itvm,
+					sphereHighlightProg.getUniform1f( "highlight_f" ),
+					sphereHighlightProg.getUniform1f( "highlight_k" ) );
+			sphereHighlightProg.setUniforms( context );
+		}
+		else
+		{
+			ellipsoidProg.getUniformMatrix4f( "pvm" ).set( pvm );
+			ellipsoidProg.getUniformMatrix4f( "vm" ).set( vm );
+			ellipsoidProg.getUniformMatrix3f( "itvm" ).set( itvm );
+			ellipsoidProg.getUniform1i( "highlight" ).set( highlightIndex );
+			ellipsoidProg.setUniforms( context );
 
-		instanceArrays.get( ellipsoids ).draw( gl, context, spotDrawingMode );
+			sphereProg.getUniformMatrix4f( "pvm" ).set( pvm );
+			sphereProg.getUniformMatrix4f( "vm" ).set( vm );
+			sphereProg.getUniformMatrix3f( "itvm" ).set( itvm );
+			sphereProg.getUniform1i( "highlight" ).set( highlightIndex );
+			sphereProg.getUniform1f( "radius" ).set( spotRadius );
+			highlight_stuff( pvm, vm, itvm, sphereProg.getUniform1f( "highlight_f" ), sphereProg.getUniform1f( "highlight_k" ) );
+			sphereProg.setUniforms( context );
+		}
+
+		instanceArrays.get( ellipsoids ).draw( gl, context, spotDrawingMode, onlyHighlights );
+	}
+
+	public static void highlight_stuff( Matrix4fc pvm, Matrix4fc vm, Matrix3fc itvm, final Uniform1f highlight_f, final Uniform1f highlight_k )
+	{
+		final int viewportWidth = 800; // TODO!
+
+		final Matrix4f ipvm = pvm.invert( new Matrix4f() );
+		final float dx = ( float ) ( 2.0 / viewportWidth );
+
+		final Vector4f adx = vm.transform( ipvm.transform( new Vector4f( dx, 0, -1, 1 ) ) );
+		final Vector4f cdx = vm.transform( ipvm.transform( new Vector4f( dx, 0,  1, 1 ) ) );
+		adx.div( adx.w() );
+		cdx.div( cdx.w() );
+
+		final float sNear = adx.x;
+		final float sFar = cdx.x;
+		final float ac = cdx.z - adx.z;
+		final float f = ( sFar - sNear ) / ac;
+		final float k = sNear - f * adx.z;
+
+		final float s = ( float ) Math.sqrt( itvm.m00() * itvm.m00() + itvm.m01() * itvm.m01() + itvm.m02() * itvm.m02() );
+
+		highlight_f.set( s * f );
+		highlight_k.set( s * k );
 	}
 }

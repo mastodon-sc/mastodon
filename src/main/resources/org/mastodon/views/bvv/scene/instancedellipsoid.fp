@@ -36,8 +36,8 @@ void main()
 	vec3 l2 = phong( norm, viewDir, lightDir2, lightColor2, 32, 0.5 );
 
 	fragColor = vec4((ambient + l1 + l2) * ObjectColor, 1);
-	if ( hl > 0 )
-		fragColor += hl * vec4(vec3(0,1,1) * pow( cos(1.571 * dot(viewDir, norm) + 2.5), 10 ), 0);
+//	if ( hl > 0 )
+//		fragColor += hl * vec4(vec3(0,1,1) * pow( cos(1.571 * dot(viewDir, norm) + 2.5), 10 ), 0);
 //	fragColor = vec4((ambient + diffuse + specular) * ObjectColor, 1);
 //	fragColor = vec4(-norm, 1);
 }

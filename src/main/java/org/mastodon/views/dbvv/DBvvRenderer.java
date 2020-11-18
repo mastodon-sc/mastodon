@@ -23,11 +23,14 @@ import org.mastodon.views.bvv.scene.InstancedSpot;
 import org.mastodon.views.bvv.scene.InstancedSpot.SpotDrawingMode;
 
 import static com.jogamp.opengl.GL.GL_BACK;
+import static com.jogamp.opengl.GL.GL_BLEND;
 import static com.jogamp.opengl.GL.GL_CCW;
 import static com.jogamp.opengl.GL.GL_COLOR_BUFFER_BIT;
 import static com.jogamp.opengl.GL.GL_CULL_FACE;
 import static com.jogamp.opengl.GL.GL_DEPTH_BUFFER_BIT;
 import static com.jogamp.opengl.GL.GL_DEPTH_TEST;
+import static com.jogamp.opengl.GL.GL_ONE_MINUS_SRC_ALPHA;
+import static com.jogamp.opengl.GL.GL_SRC_ALPHA;
 import static com.jogamp.opengl.GL.GL_UNPACK_ALIGNMENT;
 import static org.mastodon.views.bvv.scene.InstancedSpot.SpotDrawingMode.ELLIPSOIDS;
 
@@ -158,12 +161,19 @@ public class DBvvRenderer
 		int highlightId = ellipsoids.indexOf( highlight.getHighlightedVertex( vref ) );
 		graph.releaseRef( vref );
 
-//		instancedEllipsoid.draw( gl, pv, camview, ellipsoids.getEllipsoids(), highlightId, data.getSpotDrawingMode(), data.getSpotRadius() );
+		instancedEllipsoid.draw( gl, pv, camview,
+				ellipsoids.getEllipsoids(), highlightId,
+				data.getSpotDrawingMode(), data.getSpotRadius(), false );
 
 		highlights.update();
 		if ( highlights.highlightedVertices.size() > 0 )
 		{
-			instancedEllipsoid.draw( gl, pv, camview, highlights.highlightedVertices, 0, data.getSpotDrawingMode(), data.getSpotRadius() );
+			gl.glEnable( GL_BLEND );
+			gl.glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
+			instancedEllipsoid.draw( gl, pv, camview,
+					highlights.highlightedVertices, 0,
+					data.getSpotDrawingMode(), data.getSpotRadius(), true );
+			gl.glDisable( GL_BLEND );
 		}
 
 		// -- paint edges -----------------------------------------------------
@@ -222,6 +232,16 @@ public class DBvvRenderer
 	{
 		++colorModCount;
 	}
+
+
+
+
+
+
+
+	// ---------------------------------------------------------
+	// -- find closest objects for highlighting and selecting --
+	// ---------------------------------------------------------
 
 	public final class Closest< T >
 	{
