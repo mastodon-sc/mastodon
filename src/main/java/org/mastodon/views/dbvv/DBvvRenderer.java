@@ -165,16 +165,6 @@ public class DBvvRenderer
 				ellipsoids.getEllipsoids(), highlightId,
 				data.getSpotDrawingMode(), data.getSpotRadius(), false );
 
-		highlights.update();
-		if ( highlights.highlightedVertices.size() > 0 )
-		{
-			gl.glEnable( GL_BLEND );
-			gl.glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
-			instancedEllipsoid.draw( gl, pv, camview,
-					highlights.highlightedVertices, 0,
-					data.getSpotDrawingMode(), data.getSpotRadius(), true );
-			gl.glDisable( GL_BLEND );
-		}
 
 		// -- paint edges -----------------------------------------------------
 		// the maximum number of time-points into the past for which outgoing edges are painted
@@ -204,6 +194,20 @@ public class DBvvRenderer
 		graph.releaseRef( eref );
 		graph.releaseRef( sref );
 		graph.releaseRef( tref );
+
+
+		// -- paint highlighted vertices --------------------------------------------------
+		highlights.update();
+		if ( highlights.highlightedVertices.size() > 0 )
+		{
+			gl.glEnable( GL_BLEND );
+			gl.glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
+			instancedEllipsoid.draw( gl, pv, camview,
+					highlights.highlightedVertices, 0,
+					data.getSpotDrawingMode(), data.getSpotRadius(), true );
+			gl.glDisable( GL_BLEND );
+		}
+
 	}
 
 	private static Vector3fc colorToVertex3f( final int argb, final Vector3f dest )
