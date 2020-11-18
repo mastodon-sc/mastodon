@@ -12,6 +12,8 @@ interface ModifiableRefPool< O > extends RefPool< O >, Iterable< O >
 
 	O create( final O ref );
 
+	void clear();
+
 	// garbage-free iterator() version
 	Iterator< O > iterator( final O obj );
 }

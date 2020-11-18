@@ -82,6 +82,13 @@ class EllipsoidPool implements ModifiableRefPool< Ellipsoid >
 	}
 
 	@Override
+	public void clear()
+	{
+		shapes.clear();
+		colors.clear();
+	}
+
+	@Override
 	public Iterator< Ellipsoid > iterator()
 	{
 		return iterator( createRef() );

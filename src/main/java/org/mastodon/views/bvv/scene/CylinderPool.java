@@ -82,6 +82,13 @@ class CylinderPool implements ModifiableRefPool< Cylinder >
 	}
 
 	@Override
+	public void clear()
+	{
+		shapes.clear();
+		colors.clear();
+	}
+
+	@Override
 	public Iterator< Cylinder > iterator()
 	{
 		return iterator( createRef() );

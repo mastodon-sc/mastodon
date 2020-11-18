@@ -130,6 +130,13 @@ class CompactingPool< O extends ModifiableRef< O > > implements Iterable< O >
 		}
 	}
 
+	public void clear()
+	{
+		objToKey.clear();
+		keyToObj.clear();
+		pool.clear();
+	}
+
 	/**
 	 * Get key of obj.
 	 * If obj is not present (shouldn't happen except for stale refs), {@link #NO_ENTRY_VALUE} is returned.
