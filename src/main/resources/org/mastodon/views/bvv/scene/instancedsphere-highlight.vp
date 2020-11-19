@@ -22,7 +22,7 @@ void main()
 
 	vec4 p = vm * vec4(r * aPos + t, 1.0);
 	float dilate = highlight_f * p.z + highlight_k;
-	r += dilate + 0.1;
+	r += 2 * dilate + 0.1;
 	fr = r / dilate;
 
 	vec4 pos = vec4(r * aPos + t, 1.0);

@@ -26,7 +26,7 @@ void main()
 
 	vec4 p = vm * vec4(e * vec3(s * aPos.xy, aPos.z) + t, 1);
 	float dilate = highlight_f * p.z + highlight_k;
-	s += dilate + 0.1;
+	s += 2 * dilate + 0.1;
 	fr = s / dilate;
 
 	vec3 fPos = vec3(s * aPos.xy, aPos.z);

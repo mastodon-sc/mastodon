@@ -16,7 +16,7 @@ uniform int highlight;
 uniform float highlight_f;
 uniform float highlight_k;
 
-const vec3 highlightColor = vec3(0.2, 0.1, 0.2);
+const vec3 highlightColor = vec3(0.1, 0.1, 0.1);
 
 void main()
 {
