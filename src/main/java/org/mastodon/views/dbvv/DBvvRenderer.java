@@ -33,7 +33,6 @@ import static com.jogamp.opengl.GL.GL_CULL_FACE;
 import static com.jogamp.opengl.GL.GL_DEPTH_BUFFER_BIT;
 import static com.jogamp.opengl.GL.GL_DEPTH_TEST;
 import static com.jogamp.opengl.GL.GL_ONE;
-import static com.jogamp.opengl.GL.GL_ONE_MINUS_SRC_ALPHA;
 import static com.jogamp.opengl.GL.GL_SRC_ALPHA;
 import static com.jogamp.opengl.GL.GL_UNPACK_ALIGNMENT;
 import static org.mastodon.views.bvv.scene.InstancedSpot.SpotDrawingMode.ELLIPSOIDS;
@@ -59,7 +58,7 @@ public class DBvvRenderer
 	private double screenWidth;
 	private double screenHeight;
 
-	private final InstancedSpot instancedEllipsoid;
+	private final InstancedSpot instancedSpot;
 	private final InstancedLink instancedLink;
 
 	public DBvvRenderer(
@@ -81,7 +80,7 @@ public class DBvvRenderer
 		this.highlight = highlight;
 		this.graphColorGenerator = graphColorGenerator;
 		highlights = new Highlights();
-		instancedEllipsoid = new InstancedSpot( 3, 10 );
+		instancedSpot = new InstancedSpot( 3, 10 );
 		instancedLink = new InstancedLink( 36, 3, 20 );
 		selection.listeners().add( this::selectionChanged );
 	}
@@ -191,7 +190,7 @@ public class DBvvRenderer
 
 		int highlightId = ellipsoids.indexOf( highlight.getHighlightedVertex( vref ) );
 
-		instancedEllipsoid.draw( gl, pv, camview,
+		instancedSpot.draw( gl, pv, camview,
 				ellipsoids.getEllipsoids(), highlightId,
 				data.getSpotDrawingMode(), data.getSpotRadius(), false );
 
@@ -227,7 +226,7 @@ public class DBvvRenderer
 		gl.glBlendFunc( GL_SRC_ALPHA, GL_ONE );
 		if ( highlights.highlightedVertices.size() > 0 )
 		{
-			instancedEllipsoid.draw( gl, pv, camview,
+			instancedSpot.draw( gl, pv, camview,
 					highlights.highlightedVertices, 0,
 					data.getSpotDrawingMode(), data.getSpotRadius(), true );
 		}
