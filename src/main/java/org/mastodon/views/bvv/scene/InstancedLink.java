@@ -41,6 +41,7 @@ public class InstancedLink
 	private Shader sphereProg;
 	private Shader cylinderHighlightProg;
 	private Shader sphereHighlightProg;
+	private Shader sphereTargetHighlightProg;
 
 	private int cylinderVbo;
 	private int cylinderEbo;
@@ -67,6 +68,7 @@ public class InstancedLink
 				.watch( InstancedLink.class, "instancedellipsoid.fp" )
 				.watch( InstancedLink.class, "instancedcylinder-highlight.vp" )
 				.watch( InstancedSpot.class, "instancedsphere-highlight.vp" )
+				.watch( InstancedSpot.class, "instancedsphere-target-highlight.vp" )
 				.watch( InstancedSpot.class, "instancedellipsoid-highlight.fp" );
 		hotloadShader();
 		instanceArrays = new ReusableResources<>( numReusableInstanceArrays, InstanceArray::new );
@@ -91,6 +93,10 @@ public class InstancedLink
 			final Segment ex4vp = new SegmentTemplate( InstancedSpot.class, "instancedsphere-highlight.vp" ).instantiate();
 			final Segment ex4fp = new SegmentTemplate( InstancedSpot.class, "instancedellipsoid-highlight.fp" ).instantiate();
 			sphereHighlightProg = new DefaultShader( ex4vp.getCode(), ex4fp.getCode() );
+
+			final Segment ex5vp = new SegmentTemplate( InstancedSpot.class, "instancedsphere-target-highlight.vp" ).instantiate();
+			final Segment ex5fp = new SegmentTemplate( InstancedSpot.class, "instancedellipsoid-highlight.fp" ).instantiate();
+			sphereTargetHighlightProg = new DefaultShader( ex5vp.getCode(), ex5fp.getCode() );
 		}
 	}
 
@@ -143,6 +149,7 @@ public class InstancedLink
 		private int vboColor;
 		private int cylinderVao;
 		private int sphereVao;
+		private int sphereTargetVao;
 
 		private boolean initialized;
 
@@ -150,13 +157,14 @@ public class InstancedLink
 		{
 			initialized = true;
 
-			final int[] tmp = new int[ 2 ];
+			final int[] tmp = new int[ 3 ];
 			gl.glGenBuffers( 2, tmp, 0 );
 			vboShape = tmp[ 0 ];
 			vboColor = tmp[ 1 ];
-			gl.glGenVertexArrays( 2, tmp, 0 );
+			gl.glGenVertexArrays( 3, tmp, 0 );
 			cylinderVao = tmp[ 0 ];
 			sphereVao = tmp[ 1 ];
+			sphereTargetVao = tmp[ 2 ];
 
 			gl.glBindVertexArray( cylinderVao );
 			gl.glBindBuffer( GL_ARRAY_BUFFER, cylinderVbo );
@@ -188,6 +196,27 @@ public class InstancedLink
 			gl.glVertexAttribPointer( 2, 3, GL_FLOAT, false, 3 * Float.BYTES, 0 );
 			gl.glEnableVertexAttribArray( 2 );
 			gl.glVertexAttribDivisor( 2, 1 );
+			gl.glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, sphereEbo );
+			gl.glBindVertexArray( 0 );
+
+			gl.glBindVertexArray( sphereTargetVao );
+			gl.glBindBuffer( GL_ARRAY_BUFFER, sphereVbo );
+			gl.glVertexAttribPointer( 0, 3, GL_FLOAT, false, 3 * Float.BYTES, 0 );
+			gl.glEnableVertexAttribArray( 0 );
+			gl.glBindBuffer( GL_ARRAY_BUFFER, vboShape );
+			for ( int i = 0; i < 3; ++i )
+			{
+				gl.glVertexAttribPointer( 1 + i, 3, GL_FLOAT, false, 21 * Float.BYTES, i * 3 * Float.BYTES );
+				gl.glEnableVertexAttribArray( 1 + i );
+				gl.glVertexAttribDivisor( 1 + i, 1 );
+			}
+			gl.glVertexAttribPointer( 4, 3, GL_FLOAT, false, 21 * Float.BYTES, 18 * Float.BYTES );
+			gl.glEnableVertexAttribArray( 4 );
+			gl.glVertexAttribDivisor( 4, 1 );
+			gl.glBindBuffer( GL_ARRAY_BUFFER, vboColor );
+			gl.glVertexAttribPointer( 5, 3, GL_FLOAT, false, 3 * Float.BYTES, 0 );
+			gl.glEnableVertexAttribArray( 5 );
+			gl.glVertexAttribDivisor( 5, 1 );
 			gl.glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, sphereEbo );
 			gl.glBindVertexArray( 0 );
 		}
@@ -243,6 +272,14 @@ public class InstancedLink
 			gl.glBindVertexArray( sphereVao );
 			gl.glDrawElementsInstanced( GL_TRIANGLES, sphereNumElements, GL_UNSIGNED_INT, 0, instanceCount );
 			gl.glBindVertexArray( 0 );
+
+			if ( onlyHighlights )
+			{
+				sphereTargetHighlightProg.use( context );
+				gl.glBindVertexArray( sphereTargetVao );
+				gl.glDrawElementsInstanced( GL_TRIANGLES, sphereNumElements, GL_UNSIGNED_INT, 0, instanceCount );
+				gl.glBindVertexArray( 0 );
+			}
 		}
 	}
 
@@ -278,6 +315,15 @@ public class InstancedLink
 					sphereHighlightProg.getUniform1f( "highlight_f" ),
 					sphereHighlightProg.getUniform1f( "highlight_k" ) );
 			sphereHighlightProg.setUniforms( context );
+
+			sphereTargetHighlightProg.getUniformMatrix4f( "pvm" ).set( pvm );
+			sphereTargetHighlightProg.getUniformMatrix4f( "vm" ).set( vm );
+			sphereTargetHighlightProg.getUniformMatrix3f( "itvm" ).set( itvm );
+			sphereTargetHighlightProg.getUniform1f( "radius" ).set( r1 );
+			highlight_stuff( pvm, vm, itvm,
+					sphereTargetHighlightProg.getUniform1f( "highlight_f" ),
+					sphereTargetHighlightProg.getUniform1f( "highlight_k" ) );
+			sphereTargetHighlightProg.setUniforms( context );
 		}
 		else
 		{

@@ -1,0 +1,35 @@
+layout (location = 0) in vec3 aPos;
+
+layout (location = 1) in mat3 e;
+layout (location = 4) in vec3 t;
+layout (location = 5) in vec3 color;
+
+out vec3 Normal;
+out vec3 FragPos;
+out vec3 ObjectColor;
+out float fr;
+
+uniform mat4 pvm;
+uniform mat4 vm;
+uniform mat3 itvm;
+uniform float radius;
+uniform float highlight_f;
+uniform float highlight_k;
+
+void main()
+{
+	ObjectColor = color;
+	float r = radius;
+
+	vec3 tt = t + e * vec3(0,0,1);
+
+	vec4 p = vm * vec4(r * aPos + tt, 1.0);
+	float dilate = highlight_f * p.z + highlight_k;
+	r += dilate + 0.1;
+	fr = r / dilate;
+
+	vec4 pos = vec4(r * aPos + tt, 1.0);
+	gl_Position = pvm * pos;
+	Normal = normalize(itvm * aPos);
+	FragPos = vec3(vm * pos);
+}
