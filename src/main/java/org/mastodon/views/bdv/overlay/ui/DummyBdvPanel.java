@@ -319,6 +319,8 @@ public class DummyBdvPanel extends JPanel
 
 		private static final String RAW_TAGS_FILE_NAME = "/tags.raw";
 
+		private static final String GUI_FILE_NAME = "gui.xml";
+
 		private final String resourceName;
 
 		public MyProjectReader( final String resourceName )
@@ -352,6 +354,12 @@ public class DummyBdvPanel extends JPanel
 		public InputStream getFeatureInputStream( final String featureKey ) throws IOException
 		{
 			return DummyBdvPanel.class.getResourceAsStream( resourceName );
+		}
+
+		@Override
+		public InputStream getGuiInputStream() throws IOException
+		{
+			return DummyBdvPanel.class.getResourceAsStream( resourceName + GUI_FILE_NAME );
 		}
 
 		@Override
