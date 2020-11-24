@@ -83,7 +83,7 @@ public class LinkTargetIdFeature implements Feature< Link >
 	}
 
 	@Override
-	public void remove( final Link obj )
+	public void invalidate( final Link obj )
 	{}
 
 	private static final class SourceIdProjection implements FeatureProjection< Link >
