@@ -2,6 +2,7 @@ package org.mastodon.mamut;
 
 import bdv.BigDataViewerActions;
 import bdv.tools.InitializeViewerState;
+import bdv.viewer.NavigationActions;
 import java.awt.Dimension;
 import javax.swing.ActionMap;
 import net.imglib2.realtransform.AffineTransform3D;
@@ -84,6 +85,7 @@ public class MamutViewDbvv extends MamutView< IdentityViewGraph< ModelGraph, Spo
 
 		MastodonFrameViewActions.install( viewActions, this );
 		FocusActions.install( viewActions, viewGraph, viewGraph.getLock(), navigateFocusModel, selectionModel );
+		NavigationActions.installTimeActions( viewActions, viewer.state() );
 		DBvvSelectionBehaviours.install( viewBehaviours, viewGraph.getGraph(), viewer.getRenderer(), selectionModel, focusModel, navigationHandler );
 
 		viewer.getTransformEventHandler().install( viewBehaviours );
