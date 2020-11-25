@@ -54,7 +54,6 @@ public class DBvvNavigation implements NavigationListener< Spot, Link >
 	@Override
 	public void navigateToVertex( final Spot vertex )
 	{
-		System.out.println( "DBvvNavigation.navigateToVertex" );
 		// Always move in T.
 		final int tp = vertex.getTimepoint();
 		panel.setTimepoint( tp );
