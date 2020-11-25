@@ -234,6 +234,8 @@ public class DBvvPanel
 				state().setViewerTransform( transform );
 				if ( currentAnimator.isComplete() )
 					currentAnimator = null;
+				else
+					requestRepaint();
 			}
 		}
 	}
