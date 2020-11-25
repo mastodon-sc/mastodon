@@ -1,5 +1,6 @@
 package org.mastodon.views.dbvv;
 
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 import org.mastodon.Ref;
 import org.mastodon.adapter.RefBimap;
 import org.mastodon.app.ViewGraph;
@@ -14,13 +15,16 @@ public class IdentityViewGraph< G extends ReadOnlyGraph< V, E >, V extends Verte
 {
 	private final G graph;
 
+	private final ReentrantReadWriteLock lock;
+
 	private final RefBimap< V, V > vertexMap;
 
 	private final RefBimap< E, E > edgeMap;
 
-	public IdentityViewGraph( final G graph )
+	public IdentityViewGraph( final G graph, final ReentrantReadWriteLock lock )
 	{
 		this.graph = graph;
+		this.lock = lock;
 		vertexMap = new RefBimap< V, V >()
 		{
 			@Override
@@ -90,6 +94,11 @@ public class IdentityViewGraph< G extends ReadOnlyGraph< V, E >, V extends Verte
 	public G getGraph()
 	{
 		return graph;
+	}
+
+	public ReentrantReadWriteLock getLock()
+	{
+		return lock;
 	}
 
 	@Override

@@ -13,6 +13,8 @@ import org.mastodon.mamut.model.Link;
 import org.mastodon.mamut.model.Model;
 import org.mastodon.mamut.model.ModelGraph;
 import org.mastodon.mamut.model.Spot;
+import org.mastodon.model.AutoNavigateFocusModel;
+import org.mastodon.ui.FocusActions;
 import org.mastodon.ui.SelectionActions;
 import org.mastodon.ui.coloring.ColoringModel;
 import org.mastodon.ui.coloring.GraphColorGeneratorAdapter;
@@ -45,14 +47,17 @@ public class MamutViewDbvv extends MamutView< IdentityViewGraph< ModelGraph, Spo
 	public MamutViewDbvv( final MamutAppModel appModel )
 	{
 		super( appModel,
-				new IdentityViewGraph<>( appModel.getModel().getGraph() ),
-				new String[] { KeyConfigContexts.BIGDATAVIEWER } );
+				new IdentityViewGraph<>(
+						appModel.getModel().getGraph(),
+						appModel.getModel().getGraph().getLock() ),
+				new String[] { KeyConfigContexts.BIGVOLUMEVIEWER } );
 
 		sharedBdvData = appModel.getSharedBdvData();
 
 		final GraphColorGeneratorAdapter< Spot, Link, Spot, Link > coloring =
 				new GraphColorGeneratorAdapter<>( viewGraph.getVertexMap(), viewGraph.getEdgeMap() );
 
+		final AutoNavigateFocusModel< Spot, Link > navigateFocusModel = new AutoNavigateFocusModel<>( focusModel, navigationHandler );
 		final String windowTitle = "Unwrapped BigVolumeViewer " + ( bvvName++ );
 		DBvvViewFrame frame = new DBvvViewFrame(
 				windowTitle,
@@ -60,7 +65,7 @@ public class MamutViewDbvv extends MamutView< IdentityViewGraph< ModelGraph, Spo
 				appModel.getModel().getSpatioTemporalIndex(),
 				selectionModel,
 				highlightModel,
-				focusModel,
+				navigateFocusModel,
 				coloring,
 				sharedBdvData.getSources(),
 				sharedBdvData.getNumTimepoints(),
@@ -76,9 +81,9 @@ public class MamutViewDbvv extends MamutView< IdentityViewGraph< ModelGraph, Spo
 		final AffineTransform3D viewerTransform = InitializeViewerState.initTransform( dim.width, dim.height, false, viewer.state() );
 		viewer.state().setViewerTransform( viewerTransform );
 
-		frame.getBvvPanel().getTransformEventHandler().install( viewBehaviours );
-
 		MastodonFrameViewActions.install( viewActions, this );
+		FocusActions.install( viewActions, viewGraph, viewGraph.getLock(), navigateFocusModel, selectionModel );
+
 		viewer.getTransformEventHandler().install( viewBehaviours );
 
 		final ViewMenu menu = new ViewMenu( this );
@@ -106,6 +111,24 @@ public class MamutViewDbvv extends MamutView< IdentityViewGraph< ModelGraph, Spo
 						item( SelectionActions.SELECT_WHOLE_TRACK ),
 						item( SelectionActions.SELECT_TRACK_DOWNWARD ),
 						item( SelectionActions.SELECT_TRACK_UPWARD ),
+						separator(),
+						item( FocusActions.SELECT_NAVIGATE_CHILD ),
+						item( FocusActions.SELECT_NAVIGATE_LAST_CHILD ),
+						item( FocusActions.SELECT_NAVIGATE_PARENT ),
+						item( FocusActions.SELECT_NAVIGATE_SIBLING ),
+						separator(),
+						item( FocusActions.SELECT_NAVIGATE_BRANCH_CHILD ),
+						item( FocusActions.SELECT_NAVIGATE_LAST_BRANCH_CHILD ),
+						item( FocusActions.SELECT_NAVIGATE_BRANCH_PARENT ),
+						separator(),
+						item( FocusActions.NAVIGATE_CHILD ),
+						item( FocusActions.NAVIGATE_LAST_CHILD ),
+						item( FocusActions.NAVIGATE_PARENT ),
+						item( FocusActions.NAVIGATE_SIBLING ),
+						separator(),
+						item( FocusActions.NAVIGATE_BRANCH_CHILD ),
+						item( FocusActions.NAVIGATE_LAST_BRANCH_CHILD ),
+						item( FocusActions.NAVIGATE_BRANCH_PARENT ),
 						separator(),
 						tagSetMenu( tagSetMenuHandle )
 				),
