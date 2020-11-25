@@ -109,22 +109,29 @@ public class DBvvRenderer
 		final Cylinders highlightedEdges = new Cylinders( 2 );
 		final CylinderMath cylinderMath = new CylinderMath( graph );
 
-		void update()
+		boolean isEmpty()
 		{
+			return highlightedVertices.size() == 0 && highlightedEdges.size() == 0;
+		}
+
+		void update( final SceneRenderData renderData )
+		{
+			final int timepoint = renderData.getTimepoint();
+			final int timeLimit = renderData.getLinkTimeLimit();
+
 			highlightedVertices.clear();
 
 			final Spot vref = graph.vertexRef();
 			final Ellipsoid elref = highlightedVertices.createRef();
 
 			final Spot vertex = highlight.getHighlightedVertex( vref );
-			if ( vertex != null )
+			if ( vertex != null && vertex.getTimepoint() == timepoint )
 			{
 				final Ellipsoid ellipsoid = highlightedVertices.getOrAdd( 0, elref );
 				ellipsoidMath.setFromVertex( vertex, ellipsoid );
 				ellipsoid.rgb.set( HIGHLIGHT_COLOR );
 			}
 
-			graph.releaseRef( vref );
 			highlightedVertices.releaseRef( elref );
 
 			// ----------------------------------------------------
@@ -137,11 +144,16 @@ public class DBvvRenderer
 			final Link edge = highlight.getHighlightedEdge( eref );
 			if ( edge != null )
 			{
-				final Cylinder cylinder = highlightedEdges.getOrAdd( 0, cyref );
-				cylinderMath.setFromEdge( edge, cylinder );
-				cylinder.rgb.set( HIGHLIGHT_COLOR );
+				final int et = edge.getTarget( vref ).getTimepoint();
+				if ( et <= timepoint && et > timepoint - timeLimit )
+				{
+					final Cylinder cylinder = highlightedEdges.getOrAdd( 0, cyref );
+					cylinderMath.setFromEdge( edge, cylinder );
+					cylinder.rgb.set( HIGHLIGHT_COLOR );
+				}
 			}
 
+			graph.releaseRef( vref );
 			graph.releaseRef( eref );
 			highlightedVertices.releaseRef( elref );
 		}
@@ -221,23 +233,26 @@ public class DBvvRenderer
 
 
 		// -- paint highlighted vertices and edges ----------------------------------------
-		highlights.update();
-		gl.glEnable( GL_BLEND );
-		gl.glBlendFunc( GL_SRC_ALPHA, GL_ONE );
-		if ( highlights.highlightedVertices.size() > 0 )
+		highlights.update( renderData );
+		if ( !highlights.isEmpty() )
 		{
-			instancedSpot.draw( gl, pv, camview,
-					highlights.highlightedVertices, 0,
-					data.getSpotDrawingMode(), data.getSpotRadius(), true );
+			gl.glEnable( GL_BLEND );
+			gl.glBlendFunc( GL_SRC_ALPHA, GL_ONE );
+			if ( highlights.highlightedVertices.size() > 0 )
+			{
+				instancedSpot.draw( gl, pv, camview,
+						highlights.highlightedVertices, 0,
+						data.getSpotDrawingMode(), data.getSpotRadius(), true );
+			}
+			if ( highlights.highlightedEdges.size() > 0 )
+			{
+				final int t = highlight.getHighlightedEdge( eref ).getTarget( sref ).getTimepoint();
+				final float r0 = rHead + f * ( timepoint - t );
+				instancedLink.draw( gl, pv, camview,
+						highlights.highlightedEdges, 0, r0 + f, r0, true );
+			}
+			gl.glDisable( GL_BLEND );
 		}
-		if ( highlights.highlightedEdges.size() > 0 )
-		{
-			final int t = highlight.getHighlightedEdge( eref ).getTarget( sref ).getTimepoint();
-			final float r0 = rHead + f * ( timepoint - t );
-			instancedLink.draw( gl, pv, camview,
-					highlights.highlightedEdges, 0, r0 + f, r0, true );
-		}
-		gl.glDisable( GL_BLEND );
 
 
 		graph.releaseRef( vref );
