@@ -6,7 +6,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 import org.mastodon.Ref;
 import org.mastodon.graph.Edge;
 import org.mastodon.graph.Edges;
-import org.mastodon.graph.Graph;
+import org.mastodon.graph.ReadOnlyGraph;
 import org.mastodon.graph.Vertex;
 import org.mastodon.model.FocusModel;
 import org.mastodon.model.SelectionModel;
@@ -122,7 +122,7 @@ public class FocusActions< V extends Vertex< E > & Ref< V >, E extends Edge< V >
 
 	public static < V extends Vertex< E > & Ref< V >, E extends Edge< V > & Ref< E > > void install(
 			final Actions actions,
-			final Graph< V, E > graph,
+			final ReadOnlyGraph< V, E > graph,
 			final ReentrantReadWriteLock lock,
 			final FocusModel< V, E > focus,
 			final SelectionModel< V, E > selection )
@@ -153,7 +153,7 @@ public class FocusActions< V extends Vertex< E > & Ref< V >, E extends Edge< V >
 		SIBLING,
 	}
 
-	private final Graph< V, E > graph;
+	private final ReadOnlyGraph< V, E > graph;
 
 	private final ReentrantReadWriteLock lock;
 
@@ -162,7 +162,7 @@ public class FocusActions< V extends Vertex< E > & Ref< V >, E extends Edge< V >
 	private final SelectionModel< V, E > selection;
 
 	public FocusActions(
-			final Graph< V, E > graph,
+			final ReadOnlyGraph< V, E > graph,
 			final ReentrantReadWriteLock lock,
 			final FocusModel< V, E > focus,
 			final SelectionModel< V, E > selection )
