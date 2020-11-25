@@ -43,7 +43,7 @@ public class HighlightBehaviours< V extends Vertex< E >, E extends Edge< V > >
 	{
 		public Descriptions()
 		{
-			super( KeyConfigContexts.BIGDATAVIEWER, KeyConfigContexts.TRACKSCHEME );
+			super( KeyConfigContexts.BIGDATAVIEWER, KeyConfigContexts.BIGVOLUMEVIEWER, KeyConfigContexts.TRACKSCHEME );
 		}
 
 		@Override

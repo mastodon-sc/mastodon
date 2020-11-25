@@ -69,7 +69,7 @@ public class FocusActions< V extends Vertex< E > & Ref< V >, E extends Edge< V >
 	{
 		public Descriptions()
 		{
-			super( KeyConfigContexts.BIGDATAVIEWER, KeyConfigContexts.TRACKSCHEME );
+			super( KeyConfigContexts.BIGDATAVIEWER, KeyConfigContexts.BIGVOLUMEVIEWER, KeyConfigContexts.TRACKSCHEME );
 		}
 
 		@Override

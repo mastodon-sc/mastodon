@@ -42,7 +42,7 @@ public class MamutViewBvv extends MamutView< BvvGraphWrapper< Spot, Link >, BvvV
 						appModel.getModel().getSpatioTemporalIndex(),
 						appModel.getModel().getGraph().getLock(),
 						new MamutModelGraphPropertiesBvv( appModel.getModel().getGraph(), appModel.getRadiusStats() ) ),
-				new String[] { KeyConfigContexts.BIGDATAVIEWER } );
+				new String[] { KeyConfigContexts.BIGVOLUMEVIEWER } );
 
 		final SharedBigDataViewerData shared = appModel.getSharedBdvData();
 
