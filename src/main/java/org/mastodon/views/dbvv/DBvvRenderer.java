@@ -10,6 +10,7 @@ import org.joml.Vector3fc;
 import org.mastodon.mamut.model.Link;
 import org.mastodon.mamut.model.ModelGraph;
 import org.mastodon.mamut.model.Spot;
+import org.mastodon.model.FocusModel;
 import org.mastodon.model.HighlightModel;
 import org.mastodon.model.SelectionModel;
 import org.mastodon.spatial.SpatialIndex;
@@ -49,6 +50,8 @@ public class DBvvRenderer
 
 	private final HighlightModel< Spot, Link > highlight;
 
+	private final FocusModel< Spot, Link > focus;
+
 	private final GraphColorGenerator< Spot, Link > graphColorGenerator;
 
 	// TODO...
@@ -69,6 +72,7 @@ public class DBvvRenderer
 			final DBvvEntities entities,
 			final SelectionModel< Spot, Link > selection,
 			final HighlightModel< Spot, Link > highlight,
+			final FocusModel< Spot, Link > focus,
 			final GraphColorGenerator< Spot, Link > graphColorGenerator )
 	{
 		this.screenWidth = screenWidth;
@@ -78,6 +82,7 @@ public class DBvvRenderer
 		this.entities = entities;
 		this.selection = selection;
 		this.highlight = highlight;
+		this.focus = focus;
 		this.graphColorGenerator = graphColorGenerator;
 		highlights = new Highlights();
 		instancedSpot = new InstancedSpot( 3, 10 );
@@ -96,12 +101,11 @@ public class DBvvRenderer
 		gl.glPixelStorei( GL_UNPACK_ALIGNMENT, 2 );
 	}
 
-
-
 	private class Highlights
 	{
 		final Vector3fc HIGHLIGHT_COLOR = new Vector3f( 0, 1, 1 );
 		final Vector3fc FOCUS_COLOR = new Vector3f( 0, 1, 0 );
+		final Vector3fc HIGHLIGHT_FOCUS_COLOR = new Vector3f( 0.5f, 1.5f, 1 );
 
 		final Ellipsoids highlightedVertices = new Ellipsoids( 2 );
 		final EllipsoidMath ellipsoidMath = new EllipsoidMath();
@@ -119,27 +123,35 @@ public class DBvvRenderer
 			final int timepoint = renderData.getTimepoint();
 			final int timeLimit = renderData.getLinkTimeLimit();
 
+			final Spot vref = graph.vertexRef();
+			final Spot vref2 = graph.vertexRef();
+			final Link eref = graph.edgeRef();
+			final Ellipsoid elref = highlightedVertices.createRef();
+			final Cylinder cyref = highlightedEdges.createRef();
+
+			// ----------------------------------------------------
+
 			highlightedVertices.clear();
 
-			final Spot vref = graph.vertexRef();
-			final Ellipsoid elref = highlightedVertices.createRef();
-
-			final Spot vertex = highlight.getHighlightedVertex( vref );
-			if ( vertex != null && vertex.getTimepoint() == timepoint )
+			final Spot hVertex = highlight.getHighlightedVertex( vref );
+			final Spot fVertex = focus.getFocusedVertex( vref2 );
+			final boolean hfSame = hVertex != null && hVertex.equals( fVertex );
+			if ( hVertex != null && hVertex.getTimepoint() == timepoint )
 			{
 				final Ellipsoid ellipsoid = highlightedVertices.getOrAdd( 0, elref );
-				ellipsoidMath.setFromVertex( vertex, ellipsoid );
-				ellipsoid.rgb.set( HIGHLIGHT_COLOR );
+				ellipsoidMath.setFromVertex( hVertex, ellipsoid );
+				ellipsoid.rgb.set( hfSame ? HIGHLIGHT_FOCUS_COLOR : HIGHLIGHT_COLOR );
 			}
-
-			highlightedVertices.releaseRef( elref );
+			if ( fVertex != null && fVertex.getTimepoint() == timepoint && !hfSame )
+			{
+				final Ellipsoid ellipsoid = highlightedVertices.getOrAdd( 1, elref );
+				ellipsoidMath.setFromVertex( fVertex, ellipsoid );
+				ellipsoid.rgb.set( FOCUS_COLOR );
+			}
 
 			// ----------------------------------------------------
 
 			highlightedEdges.clear();
-
-			final Link eref = graph.edgeRef();
-			final Cylinder cyref = highlightedEdges.createRef();
 
 			final Link edge = highlight.getHighlightedEdge( eref );
 			if ( edge != null )
@@ -154,8 +166,10 @@ public class DBvvRenderer
 			}
 
 			graph.releaseRef( vref );
+			graph.releaseRef( vref2 );
 			graph.releaseRef( eref );
 			highlightedVertices.releaseRef( elref );
+			highlightedEdges.releaseRef( cyref );
 		}
 	}
 

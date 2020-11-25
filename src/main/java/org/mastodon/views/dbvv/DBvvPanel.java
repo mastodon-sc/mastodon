@@ -29,6 +29,7 @@ import net.imglib2.realtransform.AffineTransform3D;
 import org.mastodon.mamut.model.Link;
 import org.mastodon.mamut.model.ModelGraph;
 import org.mastodon.mamut.model.Spot;
+import org.mastodon.model.FocusModel;
 import org.mastodon.model.HighlightModel;
 import org.mastodon.model.SelectionModel;
 import org.mastodon.spatial.SpatioTemporalIndex;
@@ -82,6 +83,7 @@ public class DBvvPanel
 			final SpatioTemporalIndex< Spot > index,
 			final SelectionModel< Spot, Link > selection,
 			final HighlightModel< Spot, Link > highlight,
+			final FocusModel< Spot, Link > focus,
 			final GraphColorGenerator< Spot, Link > graphColorGenerator,
 			final List< SourceAndConverter< ? > > sources,
 			final int numTimepoints,
@@ -110,7 +112,7 @@ public class DBvvPanel
 
 		painterThread = new PainterThread( this );
 		entities = new DBvvEntities( viewGraph );
-		renderer = new DBvvRenderer( displayWidth, displayHeight, viewGraph, index, entities, selection, highlight, graphColorGenerator );
+		renderer = new DBvvRenderer( displayWidth, displayHeight, viewGraph, index, entities, selection, highlight, focus, graphColorGenerator );
 		transformEventHandler = new TransformEventHandler3D(
 				TransformState.from( state()::getViewerTransform, state()::setViewerTransform ) );
 

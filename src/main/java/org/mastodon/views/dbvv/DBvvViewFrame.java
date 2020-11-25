@@ -16,6 +16,7 @@ import org.mastodon.grouping.GroupHandle;
 import org.mastodon.mamut.model.Link;
 import org.mastodon.mamut.model.ModelGraph;
 import org.mastodon.mamut.model.Spot;
+import org.mastodon.model.FocusModel;
 import org.mastodon.model.HighlightModel;
 import org.mastodon.model.SelectionModel;
 import org.mastodon.spatial.SpatioTemporalIndex;
@@ -35,6 +36,7 @@ public class DBvvViewFrame extends ViewFrame
 	 * @param index
 	 * @param selection
 	 * @param highlight
+	 * @param focusModel
 	 * @param graphColorGenerator
 	 * @param sources
 	 * 		the {@link SourceAndConverter sources} to display.
@@ -54,6 +56,7 @@ public class DBvvViewFrame extends ViewFrame
 			final SpatioTemporalIndex< Spot > index,
 			final SelectionModel< Spot, Link > selection,
 			final HighlightModel< Spot, Link > highlight,
+			final FocusModel< Spot, Link > focus,
 			final GraphColorGenerator< Spot, Link > graphColorGenerator,
 			final List< SourceAndConverter< ? > > sources,
 			final int numTimepoints,
@@ -64,7 +67,7 @@ public class DBvvViewFrame extends ViewFrame
 	{
 		super( windowTitle );
 
-		bvvPanel = new DBvvPanel( viewGraph, index, selection, highlight, graphColorGenerator, sources, numTimepoints, cacheControl, optional, bvvOptional );
+		bvvPanel = new DBvvPanel( viewGraph, index, selection, highlight, focus, graphColorGenerator, sources, numTimepoints, cacheControl, optional, bvvOptional );
 		add( bvvPanel, BorderLayout.CENTER );
 
 		final GroupLocksPanel navigationLocksPanel = new GroupLocksPanel( groupHandle );

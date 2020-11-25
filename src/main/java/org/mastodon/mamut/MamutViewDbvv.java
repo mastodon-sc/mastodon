@@ -60,6 +60,7 @@ public class MamutViewDbvv extends MamutView< IdentityViewGraph< ModelGraph, Spo
 				appModel.getModel().getSpatioTemporalIndex(),
 				selectionModel,
 				highlightModel,
+				focusModel,
 				coloring,
 				sharedBdvData.getSources(),
 				sharedBdvData.getNumTimepoints(),
