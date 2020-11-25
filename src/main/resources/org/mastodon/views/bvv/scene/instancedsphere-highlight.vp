@@ -7,6 +7,8 @@ out vec3 Normal;
 out vec3 FragPos;
 out vec3 ObjectColor;
 out float fr;
+// fr: radius in screen pixels. this is used to
+//     determine at which angle to highlight normals
 
 uniform mat4 pvm;
 uniform mat4 vm;
@@ -22,6 +24,8 @@ void main()
 
 	vec4 p = vm * vec4(r * aPos + t, 1.0);
 	float dilate = highlight_f * p.z + highlight_k;
+	// dilate: size of a screen pixel at depth of p,
+	//         transformed back to world coordinates
 	r += 2 * dilate + 0.1;
 	fr = r / dilate;
 

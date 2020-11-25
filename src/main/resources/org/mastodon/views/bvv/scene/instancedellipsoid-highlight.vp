@@ -9,41 +9,36 @@ layout (location = 8) in vec3 color;
 out vec3 Normal;
 out vec3 FragPos;
 out vec3 ObjectColor;
-out float hl;
+out float fr;
 
 uniform mat4 pvm;
 uniform mat4 vm;
 uniform mat3 itvm;
-uniform int highlight;
 uniform float highlight_f;
 uniform float highlight_k;
-
-const vec3 highlightColor = vec3(0.1, 0.1, 0.1);
 
 void main()
 {
 	ObjectColor = color;
 	mat3 e2 = e;
 	mat3 ite2 = ite;
-	if (gl_InstanceID == highlight)
-	{
-		ObjectColor += highlightColor;
 
-		vec4 p = vm * vec4(e * aPos + t, 1);
-		float dilate = highlight_f * p.z + highlight_k;
+	vec4 p = vm * vec4(e * aPos + t, 1);
+	float dilate = highlight_f * p.z + highlight_k;
 
-		float l0 = length(e[0]);
-		float l1 = length(e[1]);
-		float l2 = length(e[2]);
+	fr = distance( vm * vec4(t, 1), p );
+//	fr = r;// / dilate;
 
-		e2 = mat3(
-			(1 + dilate / l0 ) * e[0],
-			(1 + dilate / l1 ) * e[1],
-			(1 + dilate / l2 ) * e[2]);
-		ite2 = transpose(inverse(e2));
+	float l0 = length(e[0]);
+	float l1 = length(e[1]);
+	float l2 = length(e[2]);
 
-		hl = 1;
-	}
+	e2 = mat3(
+		(1 + 2 * dilate / l0) * e[0],
+		(1 + 2 * dilate / l1) * e[1],
+		(1 + 2 * dilate / l2) * e[2]);
+	ite2 = transpose(inverse(e2));
+
 	vec4 pos = vec4(e2 * aPos + t, 1.0);
 	gl_Position = pvm * pos;
 	Normal = normalize(itvm * ite2 * aPos);

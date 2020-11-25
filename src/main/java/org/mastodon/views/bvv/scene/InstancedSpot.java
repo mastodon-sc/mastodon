@@ -37,6 +37,7 @@ public class InstancedSpot
 
 	private final ShaderHotLoader hotloader;
 	private Shader ellipsoidProg;
+	private Shader ellipsoidHighlightProg;
 	private Shader sphereProg;
 	private Shader sphereHighlightProg;
 
@@ -58,6 +59,7 @@ public class InstancedSpot
 				.watch( InstancedSpot.class, "instancedellipsoid.vp" )
 				.watch( InstancedSpot.class, "instancedsphere.vp" )
 				.watch( InstancedSpot.class, "instancedellipsoid.fp" )
+				.watch( InstancedSpot.class, "instancedellipsoid-highlight.vp" )
 				.watch( InstancedSpot.class, "instancedsphere-highlight.vp" )
 				.watch( InstancedSpot.class, "instancedellipsoid-highlight.fp" );
 		hotloadShader();
@@ -68,17 +70,20 @@ public class InstancedSpot
 	{
 		if ( hotloader.isModified() || ellipsoidProg == null )
 		{
-			final Segment ex1vp = new SegmentTemplate( InstancedSpot.class, "instancedellipsoid.vp" ).instantiate();
-			final Segment ex1fp = new SegmentTemplate( InstancedSpot.class, "instancedellipsoid.fp" ).instantiate();
-			ellipsoidProg = new DefaultShader( ex1vp.getCode(), ex1fp.getCode() );
+			final Segment fp = new SegmentTemplate( InstancedSpot.class, "instancedellipsoid.fp" ).instantiate();
+			final Segment hfp = new SegmentTemplate( InstancedSpot.class, "instancedellipsoid-highlight.fp" ).instantiate();
 
-			final Segment ex2vp = new SegmentTemplate( InstancedSpot.class, "instancedsphere.vp" ).instantiate();
-			final Segment ex2fp = new SegmentTemplate( InstancedSpot.class, "instancedellipsoid.fp" ).instantiate();
-			sphereProg = new DefaultShader( ex2vp.getCode(), ex2fp.getCode() );
+			final Segment evp = new SegmentTemplate( InstancedSpot.class, "instancedellipsoid.vp" ).instantiate();
+			ellipsoidProg = new DefaultShader( evp.getCode(), fp.getCode() );
 
-			final Segment ex3vp = new SegmentTemplate( InstancedSpot.class, "instancedsphere-highlight.vp" ).instantiate();
-			final Segment ex3fp = new SegmentTemplate( InstancedSpot.class, "instancedellipsoid-highlight.fp" ).instantiate();
-			sphereHighlightProg = new DefaultShader( ex3vp.getCode(), ex3fp.getCode() );
+			final Segment ehvp = new SegmentTemplate( InstancedSpot.class, "instancedellipsoid-highlight.vp" ).instantiate();
+			ellipsoidHighlightProg = new DefaultShader( ehvp.getCode(), hfp.getCode() );
+
+			final Segment svp = new SegmentTemplate( InstancedSpot.class, "instancedsphere.vp" ).instantiate();
+			sphereProg = new DefaultShader( svp.getCode(), fp.getCode() );
+
+			final Segment shvp = new SegmentTemplate( InstancedSpot.class, "instancedsphere-highlight.vp" ).instantiate();
+			sphereHighlightProg = new DefaultShader( shvp.getCode(), hfp.getCode() );
 		}
 	}
 
@@ -208,7 +213,10 @@ public class InstancedSpot
 			switch ( mode )
 			{
 			case ELLIPSOIDS:
-				ellipsoidProg.use( context );
+				if ( onlyHighlights )
+					ellipsoidHighlightProg.use( context );
+				else
+					ellipsoidProg.use( context );
 				gl.glBindVertexArray( ellipsoidVao );
 				gl.glDrawElementsInstanced( GL_TRIANGLES, sphereNumElements, GL_UNSIGNED_INT, 0, instanceCount );
 				gl.glBindVertexArray( 0 );
@@ -242,6 +250,14 @@ public class InstancedSpot
 
 		if ( onlyHighlights )
 		{
+			ellipsoidHighlightProg.getUniformMatrix4f( "pvm" ).set( pvm );
+			ellipsoidHighlightProg.getUniformMatrix4f( "vm" ).set( vm );
+			ellipsoidHighlightProg.getUniformMatrix3f( "itvm" ).set( itvm );
+			highlight_stuff( pvm, vm, itvm,
+					ellipsoidHighlightProg.getUniform1f( "highlight_f" ),
+					ellipsoidHighlightProg.getUniform1f( "highlight_k" ) );
+			ellipsoidHighlightProg.setUniforms( context );
+
 			sphereHighlightProg.getUniformMatrix4f( "pvm" ).set( pvm );
 			sphereHighlightProg.getUniformMatrix4f( "vm" ).set( vm );
 			sphereHighlightProg.getUniformMatrix3f( "itvm" ).set( itvm );
@@ -257,6 +273,9 @@ public class InstancedSpot
 			ellipsoidProg.getUniformMatrix4f( "vm" ).set( vm );
 			ellipsoidProg.getUniformMatrix3f( "itvm" ).set( itvm );
 			ellipsoidProg.getUniform1i( "highlight" ).set( highlightIndex );
+			highlight_stuff( pvm, vm, itvm,
+					ellipsoidProg.getUniform1f( "highlight_f" ),
+					ellipsoidProg.getUniform1f( "highlight_k" ) );
 			ellipsoidProg.setUniforms( context );
 
 			sphereProg.getUniformMatrix4f( "pvm" ).set( pvm );
