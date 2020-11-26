@@ -234,7 +234,7 @@ public class DBvvRenderer
 			cylinders.updateColors( colorModCount, e -> {
 				if ( selection.isSelected( e ) )
 					return selectedColor;
-				final int i = graphColorGenerator.color( e, sref, tref );
+				final int i = graphColorGenerator.color( e, e.getSource( sref ), e.getTarget( tref ) );
 				return i == 0
 						? defaultColor
 						: colorToVertex3f( i, tmp );
