@@ -36,7 +36,7 @@ public class DBvvViewFrame extends ViewFrame
 	 * @param index
 	 * @param selection
 	 * @param highlight
-	 * @param focusModel
+	 * @param focus
 	 * @param graphColorGenerator
 	 * @param sources
 	 * 		the {@link SourceAndConverter sources} to display.
