@@ -56,7 +56,7 @@ public class DBvvRenderer
 
 	// TODO...
 	private final double dCam = 2000;
-	private final double dClip = 1000;
+	private final double dClip = 1500;
 
 	private double screenWidth;
 	private double screenHeight;

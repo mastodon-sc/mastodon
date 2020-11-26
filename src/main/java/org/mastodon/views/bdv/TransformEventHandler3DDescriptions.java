@@ -14,7 +14,7 @@ public class TransformEventHandler3DDescriptions extends CommandDescriptionProvi
 {
 	public TransformEventHandler3DDescriptions()
 	{
-		super( KeyConfigContexts.BIGDATAVIEWER );
+		super( KeyConfigContexts.BIGDATAVIEWER, KeyConfigContexts.BIGVOLUMEVIEWER );
 	}
 
 	@Override
