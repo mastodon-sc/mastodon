@@ -252,6 +252,7 @@ public class DBvvRenderer
 		{
 			gl.glEnable( GL_BLEND );
 			gl.glBlendFunc( GL_SRC_ALPHA, GL_ONE );
+//			gl.glDisable( GL_DEPTH_TEST );
 			if ( highlights.highlightedVertices.size() > 0 )
 			{
 				instancedSpot.draw( gl, pv, camview,

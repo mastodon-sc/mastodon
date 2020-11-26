@@ -35,10 +35,10 @@ void main()
 	float maxa = asin( 1 - 1 / fr);
 	float angle = acos(dot(viewDir, norm)) + (pi2-maxa);
 //	float angle = min(maxa, acos(dot(viewDir, norm))) + (pi2-maxa);
-	fragColor = vec4(ObjectColor, 1) * pow(sin(angle), 20);
+//	fragColor = vec4(ObjectColor, 1) * pow(sin(angle), 20);
 
 	vec4 l1 = specular( norm, viewDir, lightDir1, lightColor1, 64, 1 );
 	vec4 l2 = specular( norm, viewDir, lightDir2, lightColor2, 64, 1 );
 	fragColor = vec4(ObjectColor, 1) * pow(sin(angle), 20)
-			  + (vec4(ObjectColor, 1) + vec4(0)) * (l1 + l2);
+			  + vec4(ObjectColor, 1) * (l1 + l2);
 }
