@@ -8,13 +8,13 @@ import org.joml.Matrix3fc;
 import org.joml.Matrix4f;
 import org.joml.Matrix4fc;
 import org.joml.Vector4f;
-import org.mastodon.views.bvv.scene.HotLoading.ShaderHotLoader;
 import tpietzsch.backend.jogl.JoglGpuContext;
 import tpietzsch.shadergen.DefaultShader;
 import tpietzsch.shadergen.Shader;
 import tpietzsch.shadergen.Uniform1f;
 import tpietzsch.shadergen.generate.Segment;
 import tpietzsch.shadergen.generate.SegmentTemplate;
+import tpietzsch.util.HotLoadingUtils.ShaderHotLoader;
 
 import static com.jogamp.opengl.GL.GL_ARRAY_BUFFER;
 import static com.jogamp.opengl.GL.GL_DYNAMIC_DRAW;

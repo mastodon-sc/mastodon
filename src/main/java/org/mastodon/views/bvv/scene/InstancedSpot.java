@@ -8,13 +8,13 @@ import org.joml.Matrix3fc;
 import org.joml.Matrix4f;
 import org.joml.Matrix4fc;
 import org.joml.Vector4f;
-import org.mastodon.views.bvv.scene.HotLoading.ShaderHotLoader;
 import tpietzsch.backend.jogl.JoglGpuContext;
 import tpietzsch.shadergen.DefaultShader;
 import tpietzsch.shadergen.Shader;
 import tpietzsch.shadergen.Uniform1f;
 import tpietzsch.shadergen.generate.Segment;
 import tpietzsch.shadergen.generate.SegmentTemplate;
+import tpietzsch.util.HotLoadingUtils.ShaderHotLoader;
 
 import static com.jogamp.opengl.GL.GL_ARRAY_BUFFER;
 import static com.jogamp.opengl.GL.GL_DYNAMIC_DRAW;
@@ -23,7 +23,6 @@ import static com.jogamp.opengl.GL.GL_FLOAT;
 import static com.jogamp.opengl.GL.GL_STATIC_DRAW;
 import static com.jogamp.opengl.GL.GL_TRIANGLES;
 import static com.jogamp.opengl.GL.GL_UNSIGNED_INT;
-import static org.mastodon.views.bvv.scene.InstancedLink.highlight_stuff;
 
 /**
  * Draw instanced ellipsoids.
