@@ -9,6 +9,8 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.List;
 import javax.swing.Box;
+import javax.swing.JComponent;
+import javax.swing.SwingUtilities;
 import javax.swing.WindowConstants;
 import org.mastodon.app.ui.GroupLocksPanel;
 import org.mastodon.app.ui.ViewFrame;
@@ -84,6 +86,9 @@ public class DBvvViewFrame extends ViewFrame
 				bvvPanel.stop();
 			}
 		} );
+
+		SwingUtilities.replaceUIActionMap( bvvPanel, keybindings.getConcatenatedActionMap() );
+		SwingUtilities.replaceUIInputMap( bvvPanel, JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT, keybindings.getConcatenatedInputMap() );
 
 		final InteractiveGLDisplayCanvas display = bvvPanel.getDisplay();
 		final MouseAndKeyHandler mouseAndKeyHandler = new MouseAndKeyHandler();
