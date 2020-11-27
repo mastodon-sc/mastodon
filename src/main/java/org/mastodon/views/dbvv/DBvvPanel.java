@@ -36,7 +36,7 @@ import org.mastodon.spatial.SpatioTemporalIndex;
 import org.mastodon.ui.coloring.GraphColorGenerator;
 import org.mastodon.views.bvv.BvvOptions;
 import org.scijava.listeners.Listeners;
-import tpietzsch.example2.InteractiveGLDisplayCanvas;
+import tpietzschx.example2.InteractiveGLDisplayCanvas;
 
 public class DBvvPanel
 		extends JPanel

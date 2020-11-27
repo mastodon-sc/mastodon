@@ -4,9 +4,8 @@ import net.imglib2.realtransform.AffineTransform3D;
 import org.joml.Matrix4f;
 import org.joml.Matrix4fc;
 import org.mastodon.views.bvv.scene.InstancedSpot.SpotDrawingMode;
-import tpietzsch.util.MatrixMath;
+import tpietzschx.util.MatrixMath;
 
-import static org.mastodon.views.bvv.scene.InstancedSpot.SpotDrawingMode.ELLIPSOIDS;
 import static org.mastodon.views.bvv.scene.InstancedSpot.SpotDrawingMode.SPHERES;
 
 public class SceneRenderData

@@ -4,7 +4,6 @@ import bdv.cache.CacheControl;
 import bdv.viewer.SourceAndConverter;
 import bdv.viewer.ViewerOptions;
 import java.awt.BorderLayout;
-import java.awt.Component;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.List;
@@ -26,7 +25,7 @@ import org.mastodon.ui.coloring.GraphColorGenerator;
 import org.mastodon.views.bvv.BvvOptions;
 import org.scijava.ui.behaviour.MouseAndKeyHandler;
 import org.scijava.ui.behaviour.util.InputActionBindings;
-import tpietzsch.example2.InteractiveGLDisplayCanvas;
+import tpietzschx.example2.InteractiveGLDisplayCanvas;
 
 public class DBvvViewFrame extends ViewFrame
 {

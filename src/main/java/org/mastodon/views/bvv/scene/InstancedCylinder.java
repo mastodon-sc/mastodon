@@ -6,12 +6,12 @@ import java.nio.IntBuffer;
 import org.joml.Matrix3f;
 import org.joml.Matrix4f;
 import org.joml.Matrix4fc;
-import tpietzsch.backend.jogl.JoglGpuContext;
-import tpietzsch.shadergen.DefaultShader;
-import tpietzsch.shadergen.Shader;
-import tpietzsch.shadergen.generate.Segment;
-import tpietzsch.shadergen.generate.SegmentTemplate;
-import tpietzsch.util.HotLoadingUtils.ShaderHotLoader;
+import tpietzschx.backend.jogl.JoglGpuContext;
+import tpietzschx.shadergen.DefaultShader;
+import tpietzschx.shadergen.Shader;
+import tpietzschx.shadergen.generate.Segment;
+import tpietzschx.shadergen.generate.SegmentTemplate;
+import tpietzschx.util.HotLoadingUtils.ShaderHotLoader;
 
 import static com.jogamp.opengl.GL.GL_ARRAY_BUFFER;
 import static com.jogamp.opengl.GL.GL_DYNAMIC_DRAW;
