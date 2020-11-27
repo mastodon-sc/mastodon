@@ -64,17 +64,65 @@
 			<artifactId>joml</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>org.jogamp.gluegen</groupId>
-			<artifactId>gluegen-rt-main</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.jogamp.jogl</groupId>
-			<artifactId>jogl-all-main</artifactId>
-		</dependency>
-		<dependency>
 			<groupId>org.antlr</groupId>
 			<artifactId>ST4</artifactId>
 			<version>${ST4.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.jogamp.jogl</groupId>
+			<artifactId>jogl-all</artifactId>
+			<version>2.4.0-rc-20200307</version>
+			<scope>system</scope>
+			<systemPath>${project.basedir}/lib/jogl-all.jar</systemPath>
+		</dependency>
+		<dependency>
+			<groupId>org.jogamp.jogl</groupId>
+			<artifactId>jogl-all-natives-macosx-universal</artifactId>
+			<version>2.4.0-rc-20200307</version>
+			<scope>system</scope>
+			<systemPath>${project.basedir}/lib/jogl-all-natives-macosx-universal.jar</systemPath>
+		</dependency>
+		<dependency>
+			<groupId>org.jogamp.jogl</groupId>
+			<artifactId>jogl-all-natives-windows-amd64</artifactId>
+			<version>2.4.0-rc-20200307</version>
+			<scope>system</scope>
+			<systemPath>${project.basedir}/lib/jogl-all-natives-windows-amd64.jar</systemPath>
+		</dependency>
+		<dependency>
+			<groupId>org.jogamp.jogl</groupId>
+			<artifactId>jogl-all-natives-linux-amd64</artifactId>
+			<version>2.4.0-rc-20200307</version>
+			<scope>system</scope>
+			<systemPath>${project.basedir}/lib/jogl-all-natives-linux-amd64.jar</systemPath>
+		</dependency>
+		<dependency>
+			<groupId>org.jogamp.gluegen</groupId>
+			<artifactId>gluegen-rt</artifactId>
+			<version>2.4.0-rc-20200307</version>
+			<scope>system</scope>
+			<systemPath>${project.basedir}/lib/gluegen-rt.jar</systemPath>
+		</dependency>
+		<dependency>
+			<groupId>org.jogamp.gluegen</groupId>
+			<artifactId>gluegen-rt-natives-macosx-universal</artifactId>
+			<version>2.4.0-rc-20200307</version>
+			<scope>system</scope>
+			<systemPath>${project.basedir}/lib/gluegen-rt-natives-macosx-universal.jar</systemPath>
+		</dependency>
+		<dependency>
+			<groupId>org.jogamp.gluegen</groupId>
+			<artifactId>gluegen-rt-natives-windows-amd64</artifactId>
+			<version>2.4.0-rc-20200307</version>
+			<scope>system</scope>
+			<systemPath>${project.basedir}/lib/gluegen-rt-natives-windows-amd64.jar</systemPath>
+		</dependency>
+		<dependency>
+			<groupId>org.jogamp.gluegen</groupId>
+			<artifactId>gluegen-rt-natives-linux-amd64</artifactId>
+			<version>2.4.0-rc-20200307</version>
+			<scope>system</scope>
+			<systemPath>${project.basedir}/lib/gluegen-rt-natives-linux-amd64.jar</systemPath>
 		</dependency>
 
 
@@ -152,11 +200,10 @@
 		<license.organizationName>Mastodon authors</license.organizationName>
 		<license.copyrightOwners>Tobias Pietzsch, Jean-Yves Tinevez</license.copyrightOwners>
 
-		<mastodon-collection.version>1.0.0-beta-22-SNAPSHOT</mastodon-collection.version>
-		<mastodon-graph.version>1.0.0-beta-20-SNAPSHOT</mastodon-graph.version>
+		<mastodon-collection.version>1.0.0-beta-21</mastodon-collection.version>
+		<mastodon-graph.version>1.0.0-beta-19</mastodon-graph.version>
 		<bigdataviewer-core.version>10.1.0</bigdataviewer-core.version>
 		<bigdataviewer-vistools.version>1.0.0-beta-24</bigdataviewer-vistools.version>
-
 		<ST4.version>4.0.8</ST4.version>
 
 		<!-- NB: Deploy releases to the SciJava Maven repository. -->
