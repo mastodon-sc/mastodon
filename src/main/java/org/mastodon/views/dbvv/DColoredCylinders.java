@@ -6,7 +6,6 @@ import org.mastodon.RefPool;
 import org.mastodon.collection.RefCollections;
 import org.mastodon.mamut.model.Link;
 import org.mastodon.mamut.model.ModelGraph;
-import org.mastodon.views.bvv.BvvRenderer;
 import org.mastodon.views.bvv.scene.Cylinder;
 import org.mastodon.views.bvv.scene.CylinderMath;
 import org.mastodon.views.bvv.scene.Cylinders;

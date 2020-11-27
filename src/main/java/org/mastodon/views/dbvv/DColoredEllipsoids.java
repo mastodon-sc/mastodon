@@ -6,7 +6,6 @@ import org.mastodon.RefPool;
 import org.mastodon.collection.RefCollections;
 import org.mastodon.mamut.model.ModelGraph;
 import org.mastodon.mamut.model.Spot;
-import org.mastodon.views.bvv.BvvRenderer;
 import org.mastodon.views.bvv.scene.Ellipsoid;
 import org.mastodon.views.bvv.scene.EllipsoidMath;
 import org.mastodon.views.bvv.scene.Ellipsoids;

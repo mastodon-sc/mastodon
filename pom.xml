@@ -57,15 +57,26 @@
 			<artifactId>imglib2</artifactId>
 		</dependency>
 
+		<!-- 3D view -->
+
 		<dependency>
 			<groupId>org.joml</groupId>
 			<artifactId>joml</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>sc.fiji</groupId>
-			<artifactId>bigvolumeviewer</artifactId>
-			<version>0.2.0-SNAPSHOT</version>
+			<groupId>org.jogamp.gluegen</groupId>
+			<artifactId>gluegen-rt-main</artifactId>
 		</dependency>
+		<dependency>
+			<groupId>org.jogamp.jogl</groupId>
+			<artifactId>jogl-all-main</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.antlr</groupId>
+			<artifactId>ST4</artifactId>
+			<version>${ST4.version}</version>
+		</dependency>
+
 
 		<!-- Test dependencies -->
 
@@ -145,6 +156,8 @@
 		<mastodon-graph.version>1.0.0-beta-20-SNAPSHOT</mastodon-graph.version>
 		<bigdataviewer-core.version>10.1.0</bigdataviewer-core.version>
 		<bigdataviewer-vistools.version>1.0.0-beta-24</bigdataviewer-vistools.version>
+
+		<ST4.version>4.0.8</ST4.version>
 
 		<!-- NB: Deploy releases to the SciJava Maven repository. -->
 		<releaseProfiles>deploy-to-scijava</releaseProfiles>

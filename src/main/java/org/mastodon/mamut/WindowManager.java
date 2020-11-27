@@ -94,7 +94,7 @@ public class WindowManager
 	/**
 	 * All currently open BigVolumeViewer windows.
 	 */
-	private final List< MamutViewBvv > bvvWindows = new ArrayList<>();
+	private final List< MamutViewDbvv > bvvWindows = new ArrayList<>();
 
 	/**
 	 * The {@link ContextProvider}s of all currently open BigDataViewer windows.
@@ -277,7 +277,7 @@ public class WindowManager
 		bdvWindows.forEach( action );
 	}
 
-	private synchronized void addBvvWindow( final MamutViewBvv w )
+	private synchronized void addBvvWindow( final MamutViewDbvv w )
 	{
 		bvvWindows.add( w );
 		w.onClose( () -> {
@@ -285,7 +285,7 @@ public class WindowManager
 		} );
 	}
 
-	public void forEachBvvView( final Consumer< ? super MamutViewBvv > action )
+	public void forEachBvvView( final Consumer< ? super MamutViewDbvv > action )
 	{
 		bvvWindows.forEach( action );
 	}
@@ -323,11 +323,11 @@ public class WindowManager
 		return null;
 	}
 
-	public MamutViewBvv createBigVolumeViewer_()
+	public MamutViewDbvv createBigVolumeViewer_()
 	{
 		if ( appModel != null )
 		{
-			final MamutViewBvv view = new MamutViewBvv( appModel );
+			final MamutViewDbvv view = new MamutViewDbvv( appModel );
 			addBvvWindow( view );
 			return view;
 		}
