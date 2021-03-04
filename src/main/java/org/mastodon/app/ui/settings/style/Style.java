@@ -35,6 +35,13 @@ public interface Style< S extends Style< S > >
 		return copy( getName() );
 	}
 
+	/**
+	 * Returns a new style instance, copied from this style.
+	 *
+	 * @param newName
+	 *            the name for the copied style.
+	 * @return a new style instance.
+	 */
 	S copy( String newName );
 
 	String getName();

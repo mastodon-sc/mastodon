@@ -223,6 +223,9 @@ public class KeymapManager extends AbstractStyleManager< KeymapManager, Keymap >
 		}
 	}
 
+	/**
+	 * Creates YAML de/serializer that handles {@code KeymapsListIO} objects.
+	 */
 	private static Yaml createYaml()
 	{
 		final DumperOptions dumperOptions = new DumperOptions();

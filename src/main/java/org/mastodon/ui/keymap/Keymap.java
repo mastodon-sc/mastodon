@@ -45,7 +45,7 @@ public class Keymap implements Style< Keymap >
 
 	public interface UpdateListener
 	{
-		public void keymapChanged();
+		void keymapChanged();
 	}
 
 	private final Listeners.List< UpdateListener > updateListeners;

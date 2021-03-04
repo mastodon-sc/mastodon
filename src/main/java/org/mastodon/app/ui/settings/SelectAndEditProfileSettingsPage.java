@@ -228,11 +228,12 @@ public class SelectAndEditProfileSettingsPage< T extends SelectAndEditProfileSet
 		JPanel getJPanel();
 	}
 
+	@FunctionalInterface
 	interface SelectionListener< T >
 	{
-		public void selected( T profile );
+		void selected( T profile );
 
-		public default void deselected( final T profile ) {};
+		default void deselected( final T profile ) {};
 	}
 
 	static class ProfileSelectionPanel< T extends Profile > extends JPanel implements ModificationListener
@@ -377,6 +378,9 @@ public class SelectAndEditProfileSettingsPage< T extends SelectAndEditProfileSet
 			}
 		}
 
+		/**
+		 * Called when modifications are made in the {@link ProfileEditPanel}.
+		 */
 		@SuppressWarnings( "unchecked" )
 		@Override
 		public void modified()
@@ -387,6 +391,9 @@ public class SelectAndEditProfileSettingsPage< T extends SelectAndEditProfileSet
 			}
 		}
 
+		/**
+		 * Update the profile selection panel from the {@link ProfileManager}.
+		 */
 		private void makeModel()
 		{
 			final Vector< Item > items = new Vector<>();
@@ -400,11 +407,17 @@ public class SelectAndEditProfileSettingsPage< T extends SelectAndEditProfileSet
 			blockComboBoxItemListener = false;
 		}
 
+		/**
+		 * {@code SelectionListener}s registered here are notified when a different profile is selected.
+		 */
 		public Listeners< SelectionListener< T > > selectionListeners()
 		{
 			return selectionListeners;
 		}
 
+		/**
+		 * An item in the profiles combobox, representing a profile (of type {@code T}).
+		 */
 		class Item
 		{
 			private final T profile;

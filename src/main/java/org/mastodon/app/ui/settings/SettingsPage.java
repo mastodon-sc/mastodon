@@ -44,9 +44,9 @@ public interface SettingsPage
 	 *
 	 * @return the path.
 	 */
-	public String getTreePath();
+	String getTreePath();
 
-	public JPanel getJPanel();
+	JPanel getJPanel();
 
 	Listeners< ModificationListener > modificationListeners();
 
@@ -54,11 +54,11 @@ public interface SettingsPage
 	 * Called by the {@link SettingsPanel} if user presses "Cancel". Should
 	 * restore any modified state to the original state.
 	 */
-	public void cancel();
+	void cancel();
 
 	/**
-	 * Called by the {@link SettingsPanel} if user presses "OK" or "Cancel".
+	 * Called by the {@link SettingsPanel} if user presses "OK" or "Apply".
 	 * Should commit any modified state.
 	 */
-	public void apply();
+	void apply();
 }

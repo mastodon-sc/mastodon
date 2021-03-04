@@ -36,8 +36,13 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+/**
+ * Data class used for serializing the list of keymaps into the {@code keymaps.yaml} file.
+ */
 class KeymapsListIO
 {
+	// NB: Don't change field names because these are used as identifiers in the YAML!
+
 	public String defaultKeymapName;
 
 	public LinkedHashMap< String, String > keymapNameToFileName;
@@ -78,6 +83,9 @@ class KeymapsListIO
 		}
 	}
 
+	/**
+	 * Compute and return reverse mapping of {@code keymapNameToFileName}
+	 */
 	public Map< String, String > getFileNameToKeymapName()
 	{
 		final Map< String, String > map = new LinkedHashMap<>();
@@ -86,7 +94,10 @@ class KeymapsListIO
 		return map;
 	}
 
-	public KeymapsListIO() // default constructor needed for snakeyaml
+	/**
+	 * default constructor needed for snakeyaml
+	 */
+	public KeymapsListIO()
 	{
 	}
 }
