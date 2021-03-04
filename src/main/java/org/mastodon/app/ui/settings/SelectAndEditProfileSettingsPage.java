@@ -104,6 +104,7 @@ public class SelectAndEditProfileSettingsPage< T extends SelectAndEditProfileSet
 		profileSelectionPanel = new ProfileSelectionPanel<>( profileManager, profileEditPanel );
 		profileSelectionPanel.setBorder( new EmptyBorder( 0, 0, 10, 0 ) );
 
+		profileEditPanel.loadProfile( profileManager.getSelectedProfile() );
 		profileEditPanel.modificationListeners().add( profileSelectionPanel );
 
 		modificationListeners = new Listeners.SynchronizedList<>();
