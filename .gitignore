@@ -13,3 +13,4 @@ pom.xml.next
 doc/
 *.bak
 debug.yaml
+/.apt_generated_tests/
