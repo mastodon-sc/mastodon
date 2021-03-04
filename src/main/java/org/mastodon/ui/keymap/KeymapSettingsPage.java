@@ -67,7 +67,7 @@ public class KeymapSettingsPage extends SelectAndEditProfileSettingsPage< StyleP
 				new KeymapProfileEditPanel( styleManager.getDefaultStyle(), commandDescriptions ) );
 	}
 
-	static class KeymapProfileEditPanel implements VisualEditorPanel.ConfigChangeListener, ProfileEditPanel< StyleProfile< Keymap > >
+	static class KeymapProfileEditPanel implements ProfileEditPanel< StyleProfile< Keymap > >
 	{
 		private final Listeners.SynchronizedList< ModificationListener > modificationListeners;
 
@@ -81,19 +81,15 @@ public class KeymapSettingsPage extends SelectAndEditProfileSettingsPage< StyleP
 			styleEditorPanel = new VisualEditorPanel( editedStyle.getConfig(), commandDescriptions.createCommandDescriptionsMap() );
 			styleEditorPanel.setButtonPanelVisible( false );
 			modificationListeners = new Listeners.SynchronizedList<>();
-			styleEditorPanel.addConfigChangeListener( this );
+			styleEditorPanel.modelChangedListeners().add( () -> {
+				styleEditorPanel.modelToConfig();
+				if ( trackModifications )
+					modificationListeners.list.forEach( ModificationListener::modified );
+			} );
 			styleEditorPanel.setPreferredSize( new Dimension( 200, 200 ) );
 		}
 
 		private boolean trackModifications = true;
-
-		@Override
-		public void configChanged()
-		{
-			styleEditorPanel.modelToConfig();
-			if ( trackModifications )
-				modificationListeners.list.forEach( ModificationListener::modified );
-		}
 
 		@Override
 		public void loadProfile( final StyleProfile< Keymap > profile )
