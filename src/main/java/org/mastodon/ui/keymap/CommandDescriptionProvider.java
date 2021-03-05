@@ -50,11 +50,39 @@ public abstract class CommandDescriptionProvider implements SciJavaPlugin
 		this.expectedContexts = expectedContexts;
 	}
 
+	/**
+	 * The contexts in which the described actions/bahaviours are expected to be
+	 * used.
+	 * <p>
+	 * The scope describes the application / Fiji plugin that the actions are
+	 * defined in. This is to make it possible to only harvest descriptions
+	 * for the desired scopes.
+	 * <p>
+	 * Note that {@code CommandDescriptionProvider} is only used for harvesting
+	 * actions/behaviours for the config dialog. So basically it has nothing to
+	 * do with reality, necessarily. Whether these actions are ever actualized
+	 * depends on other code! The {@code scope} is for which scope
+	 * the config dialog will make the actions configurable. For example, if you
+	 * put {"mastodon"} there, then the {@code InputTriggerConfig} will be picked
+	 * up by a config dialog requesting these scopes.
+	 */
 	public Scope getScope()
 	{
 		return scope;
 	}
 
+	/**
+	 * The contexts in which the described actions/bahaviours are expected to be
+	 * used.
+	 * <p>
+	 * Note that {@code CommandDescriptionProvider} is only used for harvesting
+	 * actions/behaviours for the config dialog. So basically it has nothing to
+	 * do with reality, necessarily. Whether these actions are ever actualized
+	 * depends on other code! The {@code expectedContexts} is for which context
+	 * the config dialog will make the actions configurable. For example, if you
+	 * put {"bdv", "ts"} there, then the {@code InputTriggerConfig} made by the
+	 * config dialog will put InputTriggers with these contexts.
+	 */
 	public String[] getExpectedContexts()
 	{
 		return expectedContexts;
