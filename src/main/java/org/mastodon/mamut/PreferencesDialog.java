@@ -39,6 +39,7 @@ import javax.swing.JComponent;
 import javax.swing.JDialog;
 import javax.swing.WindowConstants;
 
+import org.mastodon.app.MastodonIcons;
 import org.mastodon.app.ui.CloseWindowActions;
 import org.mastodon.app.ui.settings.SettingsPage;
 import org.mastodon.app.ui.settings.SettingsPanel;
@@ -59,6 +60,7 @@ public class PreferencesDialog extends JDialog
 		super( owner, "Preferences", false );
 		setLocationByPlatform( true );
 		setLocationRelativeTo( null );
+		setIconImage( MastodonIcons.MASTODON_ICON_MEDIUM.getImage() );
 		settingsPanel = new SettingsPanel();
 		settingsPanel.onOk( () -> setVisible( false ) );
 		settingsPanel.onCancel( () -> setVisible( false ) );
@@ -91,11 +93,11 @@ public class PreferencesDialog extends JDialog
 	}
 
 	/**
-	 * Removes the settings page with the specified path. Does nothing if there is
-	 * not settings page for the path.
+	 * Removes the settings page with the specified path. Does nothing if there
+	 * is not settings page for the path.
 	 *
 	 * @param path
-	 *                 the path of the settings page to remove.
+	 *            the path of the settings page to remove.
 	 */
 	public void removePage( final String path )
 	{
