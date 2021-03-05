@@ -1,9 +1,39 @@
+/*-
+ * #%L
+ * Mastodon
+ * %%
+ * Copyright (C) 2014 - 2021 Tobias Pietzsch, Jean-Yves Tinevez
+ * %%
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ * 
+ * 1. Redistributions of source code must retain the above copyright notice,
+ *    this list of conditions and the following disclaimer.
+ * 2. Redistributions in binary form must reproduce the above copyright notice,
+ *    this list of conditions and the following disclaimer in the documentation
+ *    and/or other materials provided with the distribution.
+ * 
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDERS OR CONTRIBUTORS BE
+ * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+ * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+ * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+ * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+ * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+ * POSSIBILITY OF SUCH DAMAGE.
+ * #L%
+ */
 package org.mastodon.views.bdv.overlay;
 
 import static org.mastodon.views.bdv.overlay.EditBehaviours.FOCUS_EDITED_SPOT;
 import static org.mastodon.views.bdv.overlay.EditBehaviours.POINT_SELECT_DISTANCE_TOLERANCE;
 import static org.mastodon.views.bdv.overlay.EditBehaviours.SELECT_ADDED_SPOT;
 
+import bdv.viewer.OverlayRenderer;
+import bdv.viewer.TransformListener;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics;
@@ -25,8 +55,6 @@ import org.scijava.ui.behaviour.util.Behaviours;
 
 import bdv.viewer.ViewerPanel;
 import net.imglib2.realtransform.AffineTransform3D;
-import net.imglib2.ui.OverlayRenderer;
-import net.imglib2.ui.TransformListener;
 import net.imglib2.util.LinAlgHelpers;
 
 public class EditSpecialBehaviours< V extends OverlayVertex< V, E >, E extends OverlayEdge< E, V > >
@@ -127,9 +155,9 @@ public class EditSpecialBehaviours< V extends OverlayVertex< V, E >, E extends O
 
 		// Create and register overlay.
 		overlay = new EditSpecialBehavioursOverlay();
-		overlay.transformChanged( viewer.getDisplay().getTransformEventHandler().getTransform() );
-		viewer.getDisplay().addOverlayRenderer( overlay );
-		viewer.getDisplay().addTransformListener( overlay );
+		overlay.transformChanged( viewer.state().getViewerTransform() );
+		viewer.getDisplay().overlays().add( overlay );
+		viewer.renderTransformListeners().add( overlay );
 
 		// Behaviours.
 		addSpotAndLinkItForwardBehaviour = new AddSpotAndLinkIt( ADD_SPOT_AND_LINK_IT_FORWARD, true );

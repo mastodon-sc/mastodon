@@ -12,7 +12,7 @@ import org.mastodon.ui.coloring.ColoringModel;
 import org.mastodon.ui.coloring.feature.FeatureColorMode;
 import org.mastodon.ui.coloring.feature.FeatureProjectionId;
 
-import net.imglib2.ui.OverlayRenderer;
+import bdv.viewer.OverlayRenderer;
 
 /**
  * An {@link OverlayRenderer} that displays a color-bar for the
@@ -72,7 +72,7 @@ public class ColorBarOverlay implements OverlayRenderer
 
 		public int xOrigin( final int canvasWidth, final int barWidth )
 		{
-			switch(this)
+			switch ( this )
 			{
 			default:
 			case BOTTOM_LEFT:

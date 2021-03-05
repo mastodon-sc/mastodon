@@ -1,14 +1,43 @@
+/*-
+ * #%L
+ * Mastodon
+ * %%
+ * Copyright (C) 2014 - 2021 Tobias Pietzsch, Jean-Yves Tinevez
+ * %%
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ * 
+ * 1. Redistributions of source code must retain the above copyright notice,
+ *    this list of conditions and the following disclaimer.
+ * 2. Redistributions in binary form must reproduce the above copyright notice,
+ *    this list of conditions and the following disclaimer in the documentation
+ *    and/or other materials provided with the distribution.
+ * 
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDERS OR CONTRIBUTORS BE
+ * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+ * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+ * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+ * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+ * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+ * POSSIBILITY OF SUCH DAMAGE.
+ * #L%
+ */
 package org.mastodon.views.trackscheme.display;
 
+import bdv.TransformEventHandler;
+import bdv.viewer.TransformListener;
 import java.util.Timer;
 import java.util.TimerTask;
-
 import org.mastodon.ui.keymap.CommandDescriptionProvider;
 import org.mastodon.ui.keymap.CommandDescriptions;
 import org.mastodon.ui.keymap.KeyConfigContexts;
 import org.mastodon.views.trackscheme.LineageTreeLayout;
-import org.mastodon.views.trackscheme.ScreenTransform;
 import org.mastodon.views.trackscheme.LineageTreeLayout.LayoutListener;
+import org.mastodon.views.trackscheme.ScreenTransform;
 import org.mastodon.views.trackscheme.display.OffsetHeaders.OffsetHeadersListener;
 import org.mastodon.views.trackscheme.display.animate.AbstractTransformAnimator;
 import org.mastodon.views.trackscheme.display.animate.InertialScreenTransformAnimator;
@@ -19,12 +48,9 @@ import org.scijava.ui.behaviour.ScrollBehaviour;
 import org.scijava.ui.behaviour.util.AbstractNamedBehaviour;
 import org.scijava.ui.behaviour.util.Behaviours;
 
-import net.imglib2.ui.TransformEventHandler;
-import net.imglib2.ui.TransformListener;
-
 public class InertialScreenTransformEventHandler
 	implements
-		TransformEventHandler< ScreenTransform >,
+		TransformEventHandler,
 		LayoutListener,
 		OffsetHeadersListener
 {
@@ -172,11 +198,6 @@ public class InertialScreenTransformEventHandler
 	private boolean stayFullyZoomedOut;
 
 	/**
-	 * Current source to screen transform.
-	 */
-	final private ScreenTransform transform = new ScreenTransform( -10000, 10000, -10000, 10000, 800, 600 );
-
-	/**
 	 * Whom to notify when the current transform is changed.
 	 */
 	private TransformListener< ScreenTransform > listener;
@@ -193,9 +214,11 @@ public class InertialScreenTransformEventHandler
 
 	private AbstractTransformAnimator< ScreenTransform > animator;
 
-	public InertialScreenTransformEventHandler( final TransformListener< ScreenTransform > listener )
+	private final ScreenTransformState transformState;
+
+	public InertialScreenTransformEventHandler( final ScreenTransformState transformState )
 	{
-		this.listener = listener;
+		this.transformState = transformState;
 
 		timer = new Timer( "TrackScheme transform animation", true );
 		currentTimerTask = null;
@@ -217,110 +240,66 @@ public class InertialScreenTransformEventHandler
 	}
 
 	@Override
-	public ScreenTransform getTransform()
+	public synchronized void setCanvasSize( final int width, final int height, final boolean updateTransform )
 	{
-		synchronized ( transform )
-		{
-			return transform.copy();
-		}
+		canvasWidth = width;
+		canvasHeight = height;
+		updateTransformScreenSize();
 	}
 
 	@Override
-	public void setTransform( final ScreenTransform t )
+	public synchronized void updateHeaderSize( final int width, final int height )
 	{
-		synchronized ( transform )
-		{
-			transform.set( t );
-		}
-	}
-
-	@Override
-	public void setCanvasSize( final int width, final int height, final boolean updateTransform )
-	{
-		synchronized ( transform )
-		{
-			canvasWidth = width;
-			canvasHeight = height;
-			updateTransformScreenSize();
-		}
-	}
-
-	@Override
-	public void updateHeaderSize( final int width, final int height )
-	{
-		synchronized ( transform )
-		{
-
-			headerWidth = width;
-			headerHeight = height;
-			updateTransformScreenSize();
-		}
+		headerWidth = width;
+		headerHeight = height;
+		updateTransformScreenSize();
 	}
 
 	private void updateTransformScreenSize()
 	{
+		final ScreenTransform transform = transformState.get();
 		transform.setScreenSize(
 				Math.max( canvasWidth - headerWidth, 1 ),
 				Math.max( canvasHeight - headerHeight, 1 ) );
-		updateMaxSizeX();
-		updateMaxSizeY();
-		notifyListeners();
+		updateMaxSizeX( transform.getScreenWidth() );
+		updateMaxSizeY( transform.getScreenHeight() );
+		transformState.set( transform );
 	}
 
 	@Override
-	public void setTransformListener( final TransformListener< ScreenTransform > transformListener )
+	public synchronized void layoutChanged( final LineageTreeLayout layout )
 	{
-		listener = transformListener;
-	}
+		final ScreenTransform transform = transformState.get();
 
-	@Override
-	public String getHelpString()
-	{
-		return null;
-	}
+		boundXMin = layout.getCurrentLayoutMinX() - boundXLayoutBorder;
+		boundXMax = layout.getCurrentLayoutMaxX() + boundXLayoutBorder;
 
-	@Override
-	public void layoutChanged( final LineageTreeLayout layout )
-	{
-		synchronized ( transform )
+		if ( boundXMax - boundXMin < MIN_SIBLINGS_ON_CANVAS )
 		{
-			boundXMin = layout.getCurrentLayoutMinX() - boundXLayoutBorder;
-			boundXMax = layout.getCurrentLayoutMaxX() + boundXLayoutBorder;
-
-			if ( boundXMax - boundXMin < MIN_SIBLINGS_ON_CANVAS )
-			{
-				final double c = (boundXMax + boundXMin) / 2;
-				boundXMin = c - MIN_SIBLINGS_ON_CANVAS / 2;
-				boundXMax = c + MIN_SIBLINGS_ON_CANVAS / 2;
-			}
-
-			updateMaxSizeX();
-
-			if ( stayFullyZoomedOut )
-				zoomOutFullyX( transform );
-			constrainTransform( transform );
-			notifyListeners();
+			final double c = ( boundXMax + boundXMin ) / 2;
+			boundXMin = c - MIN_SIBLINGS_ON_CANVAS / 2;
+			boundXMax = c + MIN_SIBLINGS_ON_CANVAS / 2;
 		}
+
+		updateMaxSizeX( transform.getScreenWidth() );
+
+		if ( stayFullyZoomedOut )
+			zoomOutFullyX( transform );
+		constrainTransform( transform );
+
+		transformState.set( transform );
 	}
 
-	private void updateMaxSizeX()
+	private void updateMaxSizeX( final int screenWidth )
 	{
-		synchronized ( transform )
-		{
-			final int screenWidth = transform.getScreenWidth();
-			final double border = screenWidth * borderRatioX + borderAbsX;
-			maxSizeX = ( boundXMax - boundXMin ) * maxSizeFactorX / ( 1.0 - 2.0 * border / ( screenWidth - 1 ) );
-		}
+		final double border = screenWidth * borderRatioX + borderAbsX;
+		maxSizeX = ( boundXMax - boundXMin ) * maxSizeFactorX / ( 1.0 - 2.0 * border / ( screenWidth - 1 ) );
 	}
 
-	private void updateMaxSizeY()
+	private void updateMaxSizeY( final int screenHeight )
 	{
-		synchronized ( transform )
-		{
-			final int screenHeight = transform.getScreenHeight();
-			final double border = screenHeight * borderRatioY + borderAbsY;
-			maxSizeY = ( boundYMax - boundYMin ) * maxSizeFactorY / ( 1.0 - 2.0 * border / ( screenHeight - 1 ) );
-		}
+		final double border = screenHeight * borderRatioY + borderAbsY;
+		maxSizeY = ( boundYMax - boundYMin ) * maxSizeFactorY / ( 1.0 - 2.0 * border / ( screenHeight - 1 ) );
 	}
 
 	public void setLayoutRangeY( final double layoutMinY, final double layoutMaxY )
@@ -335,16 +314,7 @@ public class InertialScreenTransformEventHandler
 			boundYMax = c + MIN_TIMEPOINTS_ON_CANVAS / 2;
 		}
 
-		updateMaxSizeY();
-	}
-
-	/**
-	 * notifies {@link #listener} that the current transform changed.
-	 */
-	private void notifyListeners()
-	{
-		if ( listener != null )
-			listener.transformChanged( transform );
+		updateMaxSizeY( transformState.get().getScreenHeight() );
 	}
 
 	private void constrainTransform( final ScreenTransform transform )
@@ -420,37 +390,37 @@ public class InertialScreenTransformEventHandler
 		public void init( final int x, final int y )
 		{
 			final long t = System.currentTimeMillis();
-			synchronized ( transform )
-			{
-				oX = x;
-				oY = y;
-				previousTransform.set( transform );
-				previousTime = t;
-				dt = 0;
-			}
+			oX = x;
+			oY = y;
+			transformState.get( previousTransform );
+			previousTime = t;
+			dt = 0;
 		}
 
 		@Override
 		public void drag( final int x, final int y )
 		{
-			final long t = System.currentTimeMillis();
-			synchronized ( transform )
-			{
-				if ( t > previousTime )
-				{
-					previousTransform.set( transform );
-					dt = t - previousTime;
-					previousTime = t;
-				}
+			final ScreenTransform transform = transformState.get();
 
-				final int dX = oX - x;
-				final int dY = oY - y;
-				oX = x;
-				oY = y;
-				transform.shift( dX, dY );
-				constrainTransform( transform );
-				notifyListeners();
+			// TODO: Revise?
+			//  This seems a quite noisy way to estimate current motion speed.
+			//  Instead, it would be better to average over dXY/dt over last few updates?
+			final long t = System.currentTimeMillis();
+			if ( t > previousTime )
+			{
+				previousTransform.set( transform );
+				dt = t - previousTime;
+				previousTime = t;
 			}
+
+			final int dX = oX - x;
+			final int dY = oY - y;
+			oX = x;
+			oY = y;
+			transform.shift( dX, dY );
+			constrainTransform( transform );
+
+			transformState.set( transform );
 		}
 
 		@Override
@@ -458,16 +428,13 @@ public class InertialScreenTransformEventHandler
 		{
 			if ( enableIntertialTranslate && dt > 0 )
 			{
-				synchronized ( transform )
-				{
-					animator = new InertialScreenTransformAnimator( previousTransform, transform, dt, 400 );
-				}
+				animator = new InertialScreenTransformAnimator( previousTransform, transformState.get(), dt, 400 );
 				runAnimation();
 			}
 		}
 	}
 
-	private static enum ScrollAxis
+	private enum ScrollAxis
 	{
 		X, Y, XY
 	}
@@ -475,8 +442,6 @@ public class InertialScreenTransformEventHandler
 	private class ZoomScrollBehaviour extends AbstractNamedBehaviour implements ScrollBehaviour
 	{
 		private final ScrollAxis axis;
-
-		private final ScreenTransform previousTransform = new ScreenTransform();
 
 		public ZoomScrollBehaviour( final String name, final ScrollAxis axis )
 		{
@@ -498,48 +463,48 @@ public class InertialScreenTransformEventHandler
 			if ( zoomIn )
 				dScale = 1.0 / dScale;
 
-			synchronized ( transform )
+
+			final ScreenTransform transform = transformState.get();
+			final ScreenTransform previousTransform = transform.copy();
+
+			if ( axis == ScrollAxis.X || axis == ScrollAxis.XY )
 			{
-				previousTransform.set( transform );
-
-				if ( axis == ScrollAxis.X || axis == ScrollAxis.XY )
+				if ( zoomIn )
 				{
-					if ( zoomIn )
-					{
-						if ( !hasMinSizeX( transform ) )
-							transform.zoomX( dScale, x );
-					}
-					else
-					{
-						if ( !hasMaxSizeX( transform ) )
-							transform.zoomX( dScale, x );
-					}
+					if ( !hasMinSizeX( transform ) )
+						transform.zoomX( dScale, x );
 				}
-
-				if ( axis == ScrollAxis.Y || axis == ScrollAxis.XY )
+				else
 				{
-					if ( zoomIn )
-					{
-						if ( !hasMinSizeY( transform ) )
-							transform.zoomY( dScale, y );
-					}
-					else
-					{
-						if ( !hasMaxSizeY( transform ) )
-							transform.zoomY( dScale, y );
-					}
+					if ( !hasMaxSizeX( transform ) )
+						transform.zoomX( dScale, x );
 				}
+			}
 
-				stayFullyZoomedOut = hasMaxSizeX( transform );
-
-				constrainTransform( transform );
-				ConstrainScreenTransform.removeJitter( transform, previousTransform );
-				if ( !transform.equals( previousTransform ) )
+			if ( axis == ScrollAxis.Y || axis == ScrollAxis.XY )
+			{
+				if ( zoomIn )
 				{
-					if ( enableInertialZoom )
-						animator = new InertialScreenTransformAnimator( previousTransform, transform, 50, 400 );
-					notifyListeners();
+					if ( !hasMinSizeY( transform ) )
+						transform.zoomY( dScale, y );
 				}
+				else
+				{
+					if ( !hasMaxSizeY( transform ) )
+						transform.zoomY( dScale, y );
+				}
+			}
+
+			stayFullyZoomedOut = hasMaxSizeX( transform );
+
+			constrainTransform( transform );
+			ConstrainScreenTransform.removeJitter( transform, previousTransform );
+			if ( !transform.equals( previousTransform ) )
+			{
+				if ( enableInertialZoom )
+					animator = new InertialScreenTransformAnimator( previousTransform, transform, 50, 400 );
+				else
+					transformState.set( transform );
 			}
 
 			if ( enableInertialZoom )
@@ -549,8 +514,6 @@ public class InertialScreenTransformEventHandler
 
 	private class TranslateScrollBehaviour extends AbstractNamedBehaviour implements ScrollBehaviour
 	{
-		private final ScreenTransform previousTransform = new ScreenTransform();
-
 		public TranslateScrollBehaviour()
 		{
 			super( SCROLL_TRANSLATE );
@@ -559,20 +522,16 @@ public class InertialScreenTransformEventHandler
 		@Override
 		public void scroll( final double wheelRotation, final boolean isHorizontal, final int x, final int y )
 		{
-			synchronized ( transform )
-			{
-				previousTransform.set( transform );
-				final double d = wheelRotation * 15;
-				if ( isHorizontal )
-					transform.shiftX( d );
-				else
-					transform.shiftY( d );
-				constrainTransform( transform );
-
-				ConstrainScreenTransform.removeJitter( transform, previousTransform );
-				if ( !transform.equals( previousTransform ) )
-					notifyListeners();
-			}
+			final ScreenTransform transform = transformState.get();
+			final ScreenTransform previousTransform = transform.copy();
+			final double d = wheelRotation * 15;
+			if ( isHorizontal )
+				transform.shiftX( d );
+			else
+				transform.shiftY( d );
+			constrainTransform( transform );
+			ConstrainScreenTransform.removeJitter( transform, previousTransform );
+			transformState.set( transform );
 		}
 	}
 
@@ -582,10 +541,7 @@ public class InertialScreenTransformEventHandler
 
 	public void centerOn( final double lx, final double ly )
 	{
-		synchronized( transform )
-		{
-			tstart.set( transform );
-		}
+		transformState.get( tstart );
 
 		final double minX = tstart.getMinX();
 		final double maxX = tstart.getMaxX();
@@ -624,10 +580,7 @@ public class InertialScreenTransformEventHandler
 	 */
 	public void zoomTo( final double lx1, final double lx2, final double ly1, final double ly2 )
 	{
-		synchronized ( transform )
-		{
-			tstart.set( transform );
-		}
+		transformState.get( tstart );
 		final double xmin = Math.min( lx1, lx2 );
 		final double xmax = Math.max( lx1, lx2 );
 		final double ymin = Math.min( ly1, ly2 );
@@ -662,11 +615,7 @@ public class InertialScreenTransformEventHandler
 		if ( stayFullyZoomedOut )
 			zoomOutFullyX( c );
 		constrainTransform( c );
-		synchronized ( transform )
-		{
-			transform.set( c );
-			notifyListeners();
-		}
+		transformState.set( c );
 	}
 
 	private synchronized void runAnimation()
@@ -682,10 +631,7 @@ public class InertialScreenTransformEventHandler
 				if ( null == animator || animator.isComplete() )
 				{
 					cancel();
-					synchronized ( transform )
-					{
-						stayFullyZoomedOut = hasMaxSizeX( transform );
-					}
+					stayFullyZoomedOut = hasMaxSizeX( transformState.get() );
 					currentTimerTask = null;
 				}
 				else

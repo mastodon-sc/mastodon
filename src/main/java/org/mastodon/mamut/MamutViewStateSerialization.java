@@ -17,7 +17,6 @@ import org.mastodon.app.ui.MastodonFrameView;
 import org.mastodon.mamut.model.Link;
 import org.mastodon.mamut.model.Spot;
 import org.mastodon.ui.coloring.ColoringModel;
-import org.mastodon.views.bdv.ViewerPanelMamut;
 import org.mastodon.views.context.ContextChooser;
 import org.mastodon.views.context.ContextProvider;
 import org.mastodon.views.table.FeatureTagTablePanel;
@@ -261,7 +260,7 @@ class MamutViewStateSerialization
 				vertexTableRect.x,
 				vertexTableRect.y } );
 
-		final FeatureTagTablePanel<Link> edgeTable = view.getFrame().getEdgeTable();
+		final FeatureTagTablePanel< Link > edgeTable = view.getFrame().getEdgeTable();
 		final JViewport viewportEdge = edgeTable.getScrollPane().getViewport();
 		final Point edgeTablePos = viewportEdge.getViewPosition();
 		guiState.put( TABLE_EDGE_TABLE_VISIBLE_POS, new int[] {
@@ -301,7 +300,7 @@ class MamutViewStateSerialization
 				trackschemePanel.getDisplay().getHeight() } );
 
 		// Transform.
-		final ScreenTransform t = trackschemePanel.getTransformEventHandler().getTransform().copy();
+		final ScreenTransform t = trackschemePanel.getScreenTransform().get();
 		guiState.put( TRACKSCHEME_TRANSFORM_KEY, t );
 
 		// Coloring.
@@ -323,11 +322,11 @@ class MamutViewStateSerialization
 	private static void getGuiStateBdv( final MamutViewBdv view, final Map< String, Object > guiState )
 	{
 		// Viewer state.
-		final Element stateEl = view.getViewer().stateToXml();
+		final Element stateEl = view.getViewerPanelMamut().stateToXml();
 		guiState.put( BDV_STATE_KEY, stateEl );
 		// Transform.
 		final AffineTransform3D t = new AffineTransform3D();
-		view.getViewer().state().getViewerTransform( t );
+		view.getViewerPanelMamut().state().getViewerTransform( t );
 		guiState.put( BDV_TRANSFORM_KEY, t );
 		// Coloring.
 		final ColoringModel coloringModel = view.getColoringModel();

@@ -1,18 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
 	<parent>
 		<groupId>org.scijava</groupId>
 		<artifactId>pom-scijava</artifactId>
-		<version>29.2.1</version>
+		<version>30.0.0</version>
 	</parent>
 
 	<groupId>org.mastodon</groupId>
 	<artifactId>mastodon</artifactId>
-	<version>1.0.0-beta-17-SNAPSHOT</version>
+	<version>1.0.0-beta-18-SNAPSHOT</version>
 
 	<name>Mastodon</name>
 	<description>Mastodon – a large-scale tracking and track-editing framework for large, multi-view images.</description>
@@ -24,7 +22,8 @@
 	</organization>
 	<licenses>
 		<license>
-			<name>not licensed yet</name>
+			<name>Simplified BSD License</name>
+			<url>https://opensource.org/licenses/BSD-2-Clause</url>
 			<distribution>repo</distribution>
 		</license>
 	</licenses>
@@ -130,13 +129,14 @@
 	<properties>
 		<package-name>org.mastodon</package-name>
 
-		<license.licenseName>not licensed yet</license.licenseName>
+		<license.licenseName>bsd_2</license.licenseName>
 		<license.projectName>Mastodon</license.projectName>
 		<license.organizationName>Mastodon authors</license.organizationName>
 		<license.copyrightOwners>Tobias Pietzsch, Jean-Yves Tinevez</license.copyrightOwners>
 
 		<mastodon-collection.version>1.0.0-beta-19</mastodon-collection.version>
 		<mastodon-graph.version>1.0.0-beta-18</mastodon-graph.version>
+		<bigdataviewer-core.version>10.2.0</bigdataviewer-core.version>
 
 		<!-- NB: Deploy releases to the SciJava Maven repository. -->
 		<releaseProfiles>deploy-to-scijava</releaseProfiles>

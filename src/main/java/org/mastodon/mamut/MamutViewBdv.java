@@ -1,3 +1,31 @@
+/*-
+ * #%L
+ * Mastodon
+ * %%
+ * Copyright (C) 2014 - 2021 Tobias Pietzsch, Jean-Yves Tinevez
+ * %%
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ * 
+ * 1. Redistributions of source code must retain the above copyright notice,
+ *    this list of conditions and the following disclaimer.
+ * 2. Redistributions in binary form must reproduce the above copyright notice,
+ *    this list of conditions and the following disclaimer in the documentation
+ *    and/or other materials provided with the distribution.
+ * 
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDERS OR CONTRIBUTORS BE
+ * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+ * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+ * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+ * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+ * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+ * POSSIBILITY OF SUCH DAMAGE.
+ * #L%
+ */
 package org.mastodon.mamut;
 
 import static org.mastodon.app.ui.ViewMenuBuilder.item;
@@ -48,10 +76,8 @@ import org.mastodon.ui.keymap.KeyConfigContexts;
 import org.mastodon.views.bdv.BdvContextProvider;
 import org.mastodon.views.bdv.BigDataViewerActionsMamut;
 import org.mastodon.views.bdv.BigDataViewerMamut;
-import org.mastodon.views.bdv.NavigationActionsMamut;
 import org.mastodon.views.bdv.SharedBigDataViewerData;
 import org.mastodon.views.bdv.ViewerFrameMamut;
-import org.mastodon.views.bdv.ViewerPanelMamut;
 import org.mastodon.views.bdv.overlay.BdvHighlightHandler;
 import org.mastodon.views.bdv.overlay.BdvSelectionBehaviours;
 import org.mastodon.views.bdv.overlay.EditBehaviours;
@@ -66,7 +92,10 @@ import org.mastodon.views.bdv.overlay.wrap.OverlayGraphWrapper;
 import org.mastodon.views.bdv.overlay.wrap.OverlayVertexWrapper;
 import org.mastodon.views.context.ContextProvider;
 
+import bdv.BigDataViewerActions;
 import bdv.tools.InitializeViewerState;
+import bdv.viewer.NavigationActions;
+import bdv.viewer.ViewerPanel;
 import net.imglib2.realtransform.AffineTransform3D;
 
 public class MamutViewBdv extends MamutView< OverlayGraphWrapper< Spot, Link >, OverlayVertexWrapper< Spot, Link >, OverlayEdgeWrapper< Spot, Link > >
@@ -78,7 +107,7 @@ public class MamutViewBdv extends MamutView< OverlayGraphWrapper< Spot, Link >, 
 
 	private final BdvContextProvider< Spot, Link > contextProvider;
 
-	private final ViewerPanelMamut viewer;
+	private final ViewerPanel viewer;
 
 	/**
 	 * A reference on a supervising instance of the {@code ColoringModel} that
@@ -104,7 +133,11 @@ public class MamutViewBdv extends MamutView< OverlayGraphWrapper< Spot, Link >, 
 
 		sharedBdvData = appModel.getSharedBdvData();
 
-		final String windowTitle = "BigDataViewer " + ( bdvName++ ); // TODO: use JY naming scheme
+		final String windowTitle = "BigDataViewer " + ( bdvName++ ); // TODO:
+																		// use
+																		// JY
+																		// naming
+																		// scheme
 		final BigDataViewerMamut bdv = new BigDataViewerMamut( sharedBdvData, windowTitle, groupHandle );
 		final ViewerFrameMamut frame = bdv.getViewerFrame();
 		setFrame( frame );
@@ -138,14 +171,12 @@ public class MamutViewBdv extends MamutView< OverlayGraphWrapper< Spot, Link >, 
 		MamutMenuBuilder.build( menu, actionMap,
 				fileMenu(
 						separator(),
-						item( BigDataViewerActionsMamut.LOAD_SETTINGS ),
-						item( BigDataViewerActionsMamut.SAVE_SETTINGS )
-				),
+						item( BigDataViewerActions.LOAD_SETTINGS ),
+						item( BigDataViewerActions.SAVE_SETTINGS ) ),
 				viewMenu(
 						colorMenu( menuHandle ),
 						separator(),
-						item( MastodonFrameViewActions.TOGGLE_SETTINGS_PANEL )
-				),
+						item( MastodonFrameViewActions.TOGGLE_SETTINGS_PANEL ) ),
 				editMenu(
 						item( UndoActions.UNDO ),
 						item( UndoActions.REDO ),
@@ -155,13 +186,10 @@ public class MamutViewBdv extends MamutView< OverlayGraphWrapper< Spot, Link >, 
 						item( SelectionActions.SELECT_TRACK_DOWNWARD ),
 						item( SelectionActions.SELECT_TRACK_UPWARD ),
 						separator(),
-						tagSetMenu( tagSetMenuHandle )
-				),
+						tagSetMenu( tagSetMenuHandle ) ),
 				ViewMenuBuilder.menu( "Settings",
-						item( BigDataViewerActionsMamut.BRIGHTNESS_SETTINGS ),
-						item( BigDataViewerActionsMamut.VISIBILITY_AND_GROUPING )
-				)
-		);
+						item( BigDataViewerActions.BRIGHTNESS_SETTINGS ),
+						item( BigDataViewerActions.VISIBILITY_AND_GROUPING ) ) );
 		appModel.getPlugins().addMenus( menu );
 
 		viewer = bdv.getViewer();
@@ -176,7 +204,7 @@ public class MamutViewBdv extends MamutView< OverlayGraphWrapper< Spot, Link >, 
 		if ( null == tLoaded )
 			InitializeViewerState.initTransform( viewer );
 		else
-			viewer.setCurrentViewerTransform( tLoaded );
+			viewer.state().setViewerTransform( tLoaded );
 
 		final GraphColorGeneratorAdapter< Spot, Link, OverlayVertexWrapper< Spot, Link >, OverlayEdgeWrapper< Spot, Link > > coloring =
 				new GraphColorGeneratorAdapter<>( viewGraph.getVertexMap(), viewGraph.getEdgeMap() );
@@ -187,8 +215,8 @@ public class MamutViewBdv extends MamutView< OverlayGraphWrapper< Spot, Link >, 
 				focusModel,
 				selectionModel,
 				coloring );
-		viewer.getDisplay().addOverlayRenderer( tracksOverlay );
-		viewer.addRenderTransformListener( tracksOverlay );
+		viewer.getDisplay().overlays().add( tracksOverlay );
+		viewer.renderTransformListeners().add( tracksOverlay );
 		viewer.addTimePointListener( tracksOverlay );
 
 		final Model model = appModel.getModel();
@@ -249,10 +277,10 @@ public class MamutViewBdv extends MamutView< OverlayGraphWrapper< Spot, Link >, 
 
 		final BdvHighlightHandler< ?, ? > highlightHandler = new BdvHighlightHandler<>( viewGraph, tracksOverlay, highlightModel );
 		viewer.getDisplay().addHandler( highlightHandler );
-		viewer.addRenderTransformListener( highlightHandler );
+		viewer.renderTransformListeners().add( highlightHandler );
 
 		contextProvider = new BdvContextProvider<>( windowTitle, viewGraph, tracksOverlay );
-		viewer.addRenderTransformListener( contextProvider );
+		viewer.renderTransformListeners().add( contextProvider );
 
 		final AutoNavigateFocusModel< OverlayVertexWrapper< Spot, Link >, OverlayEdgeWrapper< Spot, Link > > navigateFocusModel = new AutoNavigateFocusModel<>( focusModel, navigationHandler );
 
@@ -278,7 +306,7 @@ public class MamutViewBdv extends MamutView< OverlayGraphWrapper< Spot, Link >, 
 				viewer );
 		frame.getSettingsPanel().add( searchField );
 
-		NavigationActionsMamut.install( viewActions, viewer, sharedBdvData.is2D() );
+		NavigationActions.install( viewActions, viewer, sharedBdvData.is2D() );
 		viewer.getTransformEventHandler().install( viewBehaviours );
 
 		viewer.addTimePointListener( timePointIndex -> timepointModel.setTimepoint( timePointIndex ) );
@@ -296,8 +324,9 @@ public class MamutViewBdv extends MamutView< OverlayGraphWrapper< Spot, Link >, 
 		// Give focus to display so that it can receive key-presses immediately.
 		viewer.getDisplay().requestFocusInWindow();
 
-		// Notifies context provider that context changes when visibility mode changes.
-		tracksOverlay.getVisibilities().getVisibilityListeners().add( contextProvider::notifyContextChanged);
+		// Notifies context provider that context changes when visibility mode
+		// changes.
+		tracksOverlay.getVisibilities().getVisibilityListeners().add( contextProvider::notifyContextChanged );
 
 		frame.setVisible( true );
 
@@ -310,7 +339,7 @@ public class MamutViewBdv extends MamutView< OverlayGraphWrapper< Spot, Link >, 
 		return contextProvider;
 	}
 
-	public ViewerPanelMamut getViewerPanelMamut()
+	public ViewerPanel getViewerPanelMamut()
 	{
 		return viewer;
 	}
@@ -318,11 +347,6 @@ public class MamutViewBdv extends MamutView< OverlayGraphWrapper< Spot, Link >, 
 	public void requestRepaint()
 	{
 		viewer.requestRepaint();
-	}
-
-	ViewerPanelMamut getViewer()
-	{
-		return ( ( ViewerFrameMamut ) getFrame() ).getViewerPanel();
 	}
 
 	public ColoringModel getColoringModel()

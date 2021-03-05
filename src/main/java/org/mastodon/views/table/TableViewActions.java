@@ -23,19 +23,19 @@ import org.scijava.ui.behaviour.util.RunnableAction;
 
 import com.opencsv.CSVWriter;
 
-public class TableViewActions<
-			M extends MastodonAppModel< ?, V, E >,
-			VG extends ViewGraph< V, E, V, E >,
-			V extends AbstractSpot< V, E, ?, ?, ? >,
-			E extends AbstractListenableEdge< E, V, ?, ? > >
+public class TableViewActions< M extends MastodonAppModel< ?, V, E >, VG extends ViewGraph< V, E, V, E >, V extends AbstractSpot< V, E, ?, ?, ? >, E extends AbstractListenableEdge< E, V, ?, ? > >
 {
 
 	public static final String EDIT_LABEL = "edit vertex label";
+
 	public static final String TOGGLE_TAG = "toggle tag";
+
 	public static final String EXPORT_TO_CSV = "export to csv";
 
 	private static final String[] EDIT_LABEL_KEYS = new String[] { "F2" };
+
 	private static final String[] TOGGLE_TAG_KEYS = new String[] { "SPACE" };
+
 	private static final String[] EXPORT_TO_CSV_KEYS = new String[] { "not mapped" };
 
 	private final RunnableAction editLabel;
@@ -85,11 +85,7 @@ public class TableViewActions<
 	 * @param frame
 	 *            Actions are targeted at this table view.
 	 */
-	public static <
-		M extends MastodonAppModel< ?, V, E >,
-		VG extends ViewGraph< V, E, V, E >,
-		V extends AbstractSpot< V, E, ?, ?, ? >,
-		E extends AbstractListenableEdge< E, V, ?, ? > > void install(
+	public static < M extends MastodonAppModel< ?, V, E >, VG extends ViewGraph< V, E, V, E >, V extends AbstractSpot< V, E, ?, ?, ? >, E extends AbstractListenableEdge< E, V, ?, ? > > void install(
 			final Actions actions,
 			final TableViewFrame< M, VG, V, E > frame )
 	{
@@ -152,7 +148,11 @@ public class TableViewActions<
 
 	public static < O > void export( final String path, final FeatureTagTablePanel< O > table, final char separator ) throws IOException
 	{
-		try (CSVWriter writer = new CSVWriter( new FileWriter( new File( path ) ), separator ))
+		try (CSVWriter writer = new CSVWriter( new FileWriter( new File( path ) ),
+				separator,
+				CSVWriter.DEFAULT_QUOTE_CHARACTER,
+				CSVWriter.DEFAULT_ESCAPE_CHARACTER,
+				CSVWriter.DEFAULT_LINE_END ))
 		{
 			/*
 			 * Headers are complicated: The first 2 columns are label and id,
@@ -169,7 +169,7 @@ public class TableViewActions<
 			headerEntries[ 1 ][ 1 ] = "";
 			headerEntries[ 2 ][ 1 ] = "";
 
-			if ( null != header.columnGroups)
+			if ( null != header.columnGroups )
 			{
 				int lcol = 2;
 				for ( final ColumnGroup cg : header.columnGroups )

@@ -1,18 +1,18 @@
 /*
  * #%L
- * BigDataViewer core classes with minimal dependencies
+ * Mastodon
  * %%
- * Copyright (C) 2012 - 2015 BigDataViewer authors
+ * Copyright (C) 2014 - 2021 Tobias Pietzsch, Jean-Yves Tinevez
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- *
+ * 
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- *
+ * 
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -28,57 +28,34 @@
  */
 package org.mastodon.views.bdv;
 
+import bdv.BigDataViewerActions;
 import org.mastodon.ui.keymap.CommandDescriptionProvider;
 import org.mastodon.ui.keymap.CommandDescriptions;
 import org.mastodon.ui.keymap.KeyConfigContexts;
-import org.mastodon.util.ToggleDialogAction;
 import org.scijava.plugin.Plugin;
 import org.scijava.ui.behaviour.util.Actions;
-import org.scijava.ui.behaviour.util.RunnableAction;
+
+import static bdv.BigDataViewerActions.BRIGHTNESS_SETTINGS;
+import static bdv.BigDataViewerActions.BRIGHTNESS_SETTINGS_KEYS;
+import static bdv.BigDataViewerActions.COLLAPSE_CARDS;
+import static bdv.BigDataViewerActions.COLLAPSE_CARDS_KEYS;
+import static bdv.BigDataViewerActions.EXPAND_CARDS;
+import static bdv.BigDataViewerActions.EXPAND_CARDS_KEYS;
+import static bdv.BigDataViewerActions.GO_TO_BOOKMARK;
+import static bdv.BigDataViewerActions.GO_TO_BOOKMARK_KEYS;
+import static bdv.BigDataViewerActions.GO_TO_BOOKMARK_ROTATION;
+import static bdv.BigDataViewerActions.GO_TO_BOOKMARK_ROTATION_KEYS;
+import static bdv.BigDataViewerActions.LOAD_SETTINGS;
+import static bdv.BigDataViewerActions.LOAD_SETTINGS_KEYS;
+import static bdv.BigDataViewerActions.SAVE_SETTINGS;
+import static bdv.BigDataViewerActions.SAVE_SETTINGS_KEYS;
+import static bdv.BigDataViewerActions.SET_BOOKMARK;
+import static bdv.BigDataViewerActions.SET_BOOKMARK_KEYS;
+import static bdv.BigDataViewerActions.VISIBILITY_AND_GROUPING;
+import static bdv.BigDataViewerActions.VISIBILITY_AND_GROUPING_KEYS;
 
 public class BigDataViewerActionsMamut
 {
-	public static final String VISIBILITY_AND_GROUPING = "visibility and grouping";
-	public static final String SET_BOOKMARK = "set bookmark";
-	public static final String GO_TO_BOOKMARK = "go to bookmark";
-	public static final String GO_TO_BOOKMARK_ROTATION = "go to bookmark rotation";
-
-	static final String[] VISIBILITY_AND_GROUPING_KEYS     = new String[] { "F6" };
-	static final String[] SET_BOOKMARK_KEYS                = new String[] { "shift B" };
-	static final String[] GO_TO_BOOKMARK_KEYS              = new String[] { "B" };
-	static final String[] GO_TO_BOOKMARK_ROTATION_KEYS     = new String[] { "O" };
-
-	private final ToggleDialogAction toggleVisibilityAndGroupingDialogAction;
-	private final RunnableAction goToBookmarkAction;
-	private final RunnableAction goToBookmarkRotationAction;
-	private final RunnableAction setBookmarkAction;
-
-
-
-	public static final String BRIGHTNESS_SETTINGS = "brightness settings";
-	public static final String SAVE_SETTINGS = "save settings";
-	public static final String LOAD_SETTINGS = "load settings";
-
-	static final String[] BRIGHTNESS_SETTINGS_KEYS         = new String[] { "S" };
-	static final String[] SAVE_SETTINGS_KEYS               = new String[] { "F11" };
-	static final String[] LOAD_SETTINGS_KEYS               = new String[] { "F12" };
-
-	private final ToggleDialogAction toggleBrightnessDialogAction;
-	private final RunnableAction saveBdvSettingsAction;
-	private final RunnableAction loadBdvSettingsAction;
-
-
-
-	public static final String EXPAND_CARDS = "expand and focus cards panel";
-	public static final String COLLAPSE_CARDS = "collapse cards panel";
-
-	public static final String[] EXPAND_CARDS_KEYS         = new String[] { "P" };
-	public static final String[] COLLAPSE_CARDS_KEYS       = new String[] { "shift P", "shift ESCAPE" };
-
-	private final RunnableAction expandAndFocusCardPanelAction;
-	private final RunnableAction collapseCardPanelAction;
-
-
 	/*
 	 * Command descriptions for all provided commands
 	 */
@@ -118,11 +95,8 @@ public class BigDataViewerActionsMamut
 			final Actions actions,
 			final BigDataViewerMamut bdv )
 	{
-		final BigDataViewerActionsMamut ba = new BigDataViewerActionsMamut( bdv );
-		actions.namedAction( ba.toggleVisibilityAndGroupingDialogAction, VISIBILITY_AND_GROUPING_KEYS );
-		actions.namedAction( ba.goToBookmarkAction, GO_TO_BOOKMARK_KEYS );
-		actions.namedAction( ba.goToBookmarkRotationAction, GO_TO_BOOKMARK_ROTATION_KEYS );
-		actions.namedAction( ba.setBookmarkAction, SET_BOOKMARK_KEYS );
+		BigDataViewerActions.dialog( actions, bdv.getVisibilityAndGroupingDialog() );
+		BigDataViewerActions.bookmarks( actions, bdv.getBookmarksEditor() );
 
 		/*
 		 * TODO: move to app actions
@@ -130,26 +104,11 @@ public class BigDataViewerActionsMamut
 		 * This requires modifications in bigdataviewer-core: The group setup
 		 * should be shared between multiple windows.
 		 */
-		actions.namedAction( ba.toggleBrightnessDialogAction, BRIGHTNESS_SETTINGS_KEYS );
-		actions.namedAction( ba.saveBdvSettingsAction, SAVE_SETTINGS_KEYS );
-		actions.namedAction( ba.loadBdvSettingsAction, LOAD_SETTINGS_KEYS );
+		BigDataViewerActions.dialog( actions, bdv.getBrightnessDialog() );
+		actions.runnableAction( bdv::saveSettings, SAVE_SETTINGS, SAVE_SETTINGS_KEYS );
+		actions.runnableAction( bdv::loadSettings, LOAD_SETTINGS, LOAD_SETTINGS_KEYS );
 
-		actions.namedAction( ba.expandAndFocusCardPanelAction, EXPAND_CARDS_KEYS );
-		actions.namedAction( ba.collapseCardPanelAction, COLLAPSE_CARDS_KEYS );
-	}
-
-	private BigDataViewerActionsMamut( final BigDataViewerMamut bdv )
-	{
-		toggleVisibilityAndGroupingDialogAction = new ToggleDialogAction( VISIBILITY_AND_GROUPING, bdv.getVisibilityAndGroupingDialog() );
-		goToBookmarkAction = new RunnableAction( GO_TO_BOOKMARK, bdv.getBookmarksEditor()::initGoToBookmark );
-		goToBookmarkRotationAction = new RunnableAction( GO_TO_BOOKMARK_ROTATION, bdv.getBookmarksEditor()::initGoToBookmarkRotation );
-		setBookmarkAction = new RunnableAction( SET_BOOKMARK, bdv.getBookmarksEditor()::initSetBookmark );
-
-		toggleBrightnessDialogAction = new ToggleDialogAction( BRIGHTNESS_SETTINGS, bdv.getBrightnessDialog() );
-		saveBdvSettingsAction = new RunnableAction( SAVE_SETTINGS, bdv::saveSettings );
-		loadBdvSettingsAction = new RunnableAction( LOAD_SETTINGS, bdv::loadSettings );
-
-		expandAndFocusCardPanelAction = new RunnableAction( EXPAND_CARDS, bdv::expandAndFocusCardPanel );
-		collapseCardPanelAction = new RunnableAction( COLLAPSE_CARDS, bdv::collapseCardPanel );
+		actions.runnableAction( bdv::expandAndFocusCardPanel, EXPAND_CARDS, EXPAND_CARDS_KEYS );
+		actions.runnableAction( bdv::collapseCardPanel, COLLAPSE_CARDS, COLLAPSE_CARDS_KEYS );
 	}
 }

@@ -1,19 +1,18 @@
 /*
  * #%L
- * BigDataViewer core classes with minimal dependencies
+ * Mastodon
  * %%
- * Copyright (C) 2012 - 2016 Tobias Pietzsch, Stephan Saalfeld, Stephan Preibisch,
- * Jean-Yves Tinevez, HongKee Moon, Johannes Schindelin, Curtis Rueden, John Bogovic
+ * Copyright (C) 2014 - 2021 Tobias Pietzsch, Jean-Yves Tinevez
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- *
+ * 
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- *
+ * 
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -66,7 +65,7 @@ public class ViewerFrameMamut extends ViewFrame
 {
 	private static final long serialVersionUID = 1L;
 
-	private final ViewerPanelMamut viewer;
+	private final ViewerPanel viewer;
 
 	private final CardPanel cards;
 
@@ -101,7 +100,7 @@ public class ViewerFrameMamut extends ViewFrame
 	{
 		super( windowTitle );
 
-		viewer = new ViewerPanelMamut( sources, numTimepoints, cacheControl, optional );
+		viewer = new ViewerPanel( sources, numTimepoints, cacheControl, optional );
 		setups.listeners().add( s -> viewer.requestRepaint() );
 
 		cards = new CardPanel();
@@ -135,7 +134,7 @@ public class ViewerFrameMamut extends ViewFrame
 		viewer.getDisplay().addHandler( mouseAndKeyHandler );
 	}
 
-	public ViewerPanelMamut getViewerPanel()
+	public ViewerPanel getViewerPanel()
 	{
 		return viewer;
 	}

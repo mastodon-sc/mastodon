@@ -1,7 +1,9 @@
 package org.mastodon.views.bdv.overlay.ui;
 
 import java.awt.BorderLayout;
-import java.awt.Dimension;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.RenderingHints;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.image.BufferedImage;
@@ -46,9 +48,9 @@ import org.mastodon.views.bdv.overlay.wrap.OverlayEdgeWrapper;
 import org.mastodon.views.bdv.overlay.wrap.OverlayGraphWrapper;
 import org.mastodon.views.bdv.overlay.wrap.OverlayVertexWrapper;
 
-import bdv.BehaviourTransformEventHandler3D.BehaviourTransformEventHandler3DFactory;
+import bdv.viewer.InteractiveDisplayCanvas;
+import bdv.viewer.OverlayRenderer;
 import net.imglib2.realtransform.AffineTransform3D;
-import net.imglib2.ui.InteractiveDisplayCanvasComponent;
 
 /**
  * Panel that displays a dummy model, non-interactive, for the single purpose of
@@ -218,50 +220,43 @@ public class DummyBdvPanel extends JPanel
 		 * Canvas.
 		 */
 
-		final InteractiveDisplayCanvasComponent< AffineTransform3D > canvas = new InteractiveDisplayCanvasComponent<>( WIDTH, HEIGHT, new BehaviourTransformEventHandler3DFactory() );
+		final InteractiveDisplayCanvas canvas = new InteractiveDisplayCanvas( WIDTH, HEIGHT );
 
 		/*
 		 * Picture.
 		 */
 
-		final BufferedImageFixAspectRatioOverlayRenderer imgRenderer = new BufferedImageFixAspectRatioOverlayRenderer();
+		BufferedImage pic = null;
 		try
 		{
 			final InputStream picStream = DummyBdvPanel.class.getResourceAsStream( "CaptureTP24.PNG" );
-			final BufferedImage pic = ImageIO.read( picStream );
-			imgRenderer.setBufferedImage( pic );
-			final int lwidth = pic.getWidth();
-			final int lheight = pic.getHeight();
-			imgRenderer.setOriginalSize( new Dimension( lwidth, lheight ) );
+			pic = ImageIO.read( picStream );
 		}
 		catch ( final IOException e1 )
 		{
 			e1.printStackTrace();
 		}
-		final int width = imgRenderer.getOriginalSize().width;
-		final int height = imgRenderer.getOriginalSize().height;
+		final MyBufferedImageOverlayRenderer imgRenderer = new MyBufferedImageOverlayRenderer( pic );
 
 		/*
 		 * Picture renderer.
 		 */
 
 		final int tp = 24;
-		canvas.addOverlayRenderer( imgRenderer );
+		canvas.overlays().add( imgRenderer );
 
 		/*
 		 * Model renderer.
 		 */
 
-		this.renderer =
-				new OverlayGraphRenderer<>( viewGraph, viewHighlight, viewFocus, viewSelection, viewColoring );
-		canvas.addOverlayRenderer( renderer );
+		this.renderer = new OverlayGraphRenderer<>( viewGraph, viewHighlight, viewFocus, viewSelection, viewColoring );
+		canvas.overlays().add( renderer );
 		renderer.timePointChanged( tp );
 
 		/*
 		 * Listeners. Listen to component being resized.
 		 */
 
-		canvas.addTransformListener( renderer );
 		final AffineTransform3D t = new AffineTransform3D();
 		// Set z to model import.
 		t.set( -400., 2, 3 );
@@ -271,10 +266,10 @@ public class DummyBdvPanel extends JPanel
 			@Override
 			public void componentResized( final ComponentEvent e )
 			{
-				final int viewerWidth = canvas.getWidth();
-				final int viewerHeight = canvas.getHeight();
-				final double s1 = ( double ) viewerWidth / width;
-				final double s2 = ( double ) viewerHeight / height;
+				final int viewerWidth = imgRenderer.scaleWidth;
+				final int viewerHeight = imgRenderer.scaleHeight;
+				final double s1 = ( double ) viewerWidth / imgRenderer.image.getWidth();
+				final double s2 = ( double ) viewerHeight / imgRenderer.image.getHeight();
 				final double s = Math.max( s1, s2 );
 				if ( s < 1e-3 )
 					return;
@@ -301,6 +296,7 @@ public class DummyBdvPanel extends JPanel
 				repaint();
 			}
 		} );
+		renderer.transformChanged( t );
 	}
 
 	public void setRenderSettings( final RenderSettings settings )
@@ -308,7 +304,6 @@ public class DummyBdvPanel extends JPanel
 		renderer.setRenderSettings( settings );
 		repaint();
 	}
-
 
 	private static class MyProjectReader implements ProjectReader
 	{
@@ -369,4 +364,53 @@ public class DummyBdvPanel extends JPanel
 		}
 	}
 
+	private static class MyBufferedImageOverlayRenderer implements OverlayRenderer
+	{
+		private final BufferedImage image;
+
+		/**
+		 * The current canvas width.
+		 */
+		private volatile int width;
+
+		/**
+		 * The current canvas height.
+		 */
+		private volatile int height;
+
+		private int scaleWidth;
+
+		private int scaleHeight;
+
+		public MyBufferedImageOverlayRenderer( final BufferedImage image )
+		{
+			this.image = image;
+			width = 0;
+			height = 0;
+		}
+
+		@Override
+		public void drawOverlays( final Graphics g )
+		{
+			( ( Graphics2D ) g ).setRenderingHint( RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_NEAREST_NEIGHBOR );
+			( ( Graphics2D ) g ).setRenderingHint( RenderingHints.KEY_ALPHA_INTERPOLATION, RenderingHints.VALUE_ALPHA_INTERPOLATION_SPEED );
+			( ( Graphics2D ) g ).setRenderingHint( RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF );
+			( ( Graphics2D ) g ).setRenderingHint( RenderingHints.KEY_COLOR_RENDERING, RenderingHints.VALUE_COLOR_RENDER_SPEED );
+			( ( Graphics2D ) g ).setRenderingHint( RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_SPEED );
+
+			final double s1 = ( double ) width / image.getWidth();
+			final double s2 = ( double ) height / image.getHeight();
+			final double s = Math.max( s1, s2 );
+			scaleWidth = ( int ) Math.round( image.getWidth() * s );
+			scaleHeight = ( int ) Math.round( image.getHeight() * s );
+			g.drawImage( image, 0, 0, scaleWidth, scaleHeight, 0, 0, image.getWidth(), image.getHeight(), null );
+		}
+
+		@Override
+		public void setCanvasSize( final int width, final int height )
+		{
+			this.width = width;
+			this.height = height;
+		}
+	}
 }

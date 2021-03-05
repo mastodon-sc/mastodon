@@ -1,5 +1,35 @@
+/*-
+ * #%L
+ * Mastodon
+ * %%
+ * Copyright (C) 2014 - 2021 Tobias Pietzsch, Jean-Yves Tinevez
+ * %%
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ * 
+ * 1. Redistributions of source code must retain the above copyright notice,
+ *    this list of conditions and the following disclaimer.
+ * 2. Redistributions in binary form must reproduce the above copyright notice,
+ *    this list of conditions and the following disclaimer in the documentation
+ *    and/or other materials provided with the distribution.
+ * 
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDERS OR CONTRIBUTORS BE
+ * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+ * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+ * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+ * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+ * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+ * POSSIBILITY OF SUCH DAMAGE.
+ * #L%
+ */
 package org.mastodon.views.trackscheme.display;
 
+import bdv.viewer.OverlayRenderer;
+import bdv.viewer.TransformListener;
 import java.awt.Color;
 import java.awt.Graphics;
 
@@ -18,16 +48,8 @@ import org.scijava.ui.behaviour.DragBehaviour;
 import org.scijava.ui.behaviour.util.AbstractNamedBehaviour;
 import org.scijava.ui.behaviour.util.Behaviours;
 
-import net.imglib2.ui.OverlayRenderer;
-import net.imglib2.ui.TransformEventHandler;
-import net.imglib2.ui.TransformListener;
-
 /**
  * Drag behaviour that implements a zoom rectangle in TrackScheme.
- * <p>
- * This class depends on the {@link TransformEventHandler} of the TrackScheme
- * display to be an {@link InertialScreenTransformEventHandler}, to be able to
- * pass it a transform animator that will execute the zoom.
  *
  * @author Jean-Yves Tinevez
  * @param <V>
@@ -66,11 +88,11 @@ public class TrackSchemeZoom< V extends Vertex< E > & HasTimepoint, E extends Ed
 		final TrackSchemeZoom< V, E > zoom = new TrackSchemeZoom<>( panel );
 
 		// Create and register overlay.
-		zoom.transformChanged( panel.getDisplay().getTransformEventHandler().getTransform() );
+		zoom.transformChanged( panel.getScreenTransform().get() );
 		zoom.updateHeaderSize( panel.getOffsetHeaders().getWidth(), panel.getOffsetHeaders().getHeight() );
 		// put the overlay first, so that is below the graph rendering.
-		panel.getDisplay().addOverlayRenderer( zoom.overlay );
-		panel.getDisplay().addTransformListener( zoom );
+		panel.getDisplay().overlays().add( zoom.overlay );
+		panel.getScreenTransform().listeners().add( zoom );
 		panel.getOffsetHeaders().listeners().add( zoom );
 
 		behaviours.namedBehaviour( zoom, TOGGLE_ZOOM_KEYS );
@@ -98,7 +120,7 @@ public class TrackSchemeZoom< V extends Vertex< E > & HasTimepoint, E extends Ed
 	{
 		super( TOGGLE_ZOOM );
 		this.panel = panel;
-		this.transformEventHandler = ( InertialScreenTransformEventHandler ) panel.getDisplay().getTransformEventHandler();
+		this.transformEventHandler = panel.getTransformEventHandler();
 
 		dragging = false;
 		screenTransform = new ScreenTransform();

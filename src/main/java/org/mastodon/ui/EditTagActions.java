@@ -1,5 +1,35 @@
+/*-
+ * #%L
+ * Mastodon
+ * %%
+ * Copyright (C) 2014 - 2021 Tobias Pietzsch, Jean-Yves Tinevez
+ * %%
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ * 
+ * 1. Redistributions of source code must retain the above copyright notice,
+ *    this list of conditions and the following disclaimer.
+ * 2. Redistributions in binary form must reproduce the above copyright notice,
+ *    this list of conditions and the following disclaimer in the documentation
+ *    and/or other materials provided with the distribution.
+ * 
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDERS OR CONTRIBUTORS BE
+ * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+ * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+ * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+ * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+ * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+ * POSSIBILITY OF SUCH DAMAGE.
+ * #L%
+ */
 package org.mastodon.ui;
 
+import bdv.viewer.InteractiveDisplayCanvas;
+import bdv.viewer.OverlayRenderer;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Font;
@@ -39,8 +69,6 @@ import org.scijava.ui.behaviour.util.InputActionBindings;
 import org.scijava.ui.behaviour.util.TriggerBehaviourBindings;
 
 import bdv.tools.bookmarks.BookmarksEditor;
-import net.imglib2.ui.InteractiveDisplayCanvas;
-import net.imglib2.ui.OverlayRenderer;
 
 /**
  * <p>
@@ -94,7 +122,7 @@ public class EditTagActions< V extends Vertex< E >, E extends Edge< V > >
 
 	private final Component panel;
 
-	private final InteractiveDisplayCanvas< ? > renderer;
+	private final InteractiveDisplayCanvas renderer;
 
 	private final UndoPointMarker undo;
 
@@ -119,7 +147,7 @@ public class EditTagActions< V extends Vertex< E >, E extends Edge< V > >
 			final SelectionModel< V, E > selectionModel,
 			final ReentrantReadWriteLock lock,
 			final Component panel,
-			final InteractiveDisplayCanvas< ? > renderer,
+			final InteractiveDisplayCanvas renderer,
 			final UndoPointMarker undoPointMarker )
 	{
 		this.actionBindings = inputActionBindings;
@@ -220,7 +248,7 @@ public class EditTagActions< V extends Vertex< E >, E extends Edge< V > >
 		behaviourBindings.addInputTriggerMap( PICK_TAGS_MAP, triggerMap, "all" );
 
 		mode = Mode.PICK_TAGSET;
-		renderer.addOverlayRenderer( overlay );
+		renderer.overlays().add( overlay );
 		panel.repaint();
 	}
 
@@ -235,7 +263,7 @@ public class EditTagActions< V extends Vertex< E >, E extends Edge< V > >
 		actionBindings.removeActionMap( PICK_TAGS_MAP );
 		actionBindings.removeInputMap( PICK_TAGS_MAP );
 		behaviourBindings.removeInputTriggerMap( PICK_TAGS_MAP );
-		renderer.removeOverlayRenderer( overlay );
+		renderer.overlays().remove( overlay );
 		panel.repaint();
 	}
 
@@ -541,7 +569,7 @@ public class EditTagActions< V extends Vertex< E >, E extends Edge< V > >
 			final SelectionModel< V, E > selectionModel,
 			final ReentrantReadWriteLock lock,
 			final Component panel,
-			final InteractiveDisplayCanvas< ? > display,
+			final InteractiveDisplayCanvas display,
 			final UndoPointMarker undo )
 	{
 		final EditTagActions< V, E > editTagActions = new EditTagActions<>( inputActionBindings, triggerBehaviourBindings, tagModel, selectionModel, lock, panel, display, undo );
