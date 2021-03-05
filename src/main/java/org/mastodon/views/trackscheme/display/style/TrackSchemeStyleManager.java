@@ -56,14 +56,14 @@ public class TrackSchemeStyleManager extends AbstractStyleManager< TrackSchemeSt
 	private static final String STYLE_FILE = System.getProperty( "user.home" ) + "/.mastodon/trackschemestyles.yaml";
 
 	/**
-	 * A {@code TrackSchemeStyle} that has the same properties as the default
-	 * style. In contrast to defaultStyle this will always refer to the same
+	 * A {@code TrackSchemeStyle} that has the same properties as the selected
+	 * style. In contrast to selectedStyle this will always refer to the same
 	 * object, so a trackscheme can just use this one style to listen for
 	 * changes and for painting.
 	 */
-	private final TrackSchemeStyle forwardDefaultStyle;
+	private final TrackSchemeStyle forwardSelectedStyle;
 
-	private final TrackSchemeStyle.UpdateListener updateForwardDefaultListeners;
+	private final TrackSchemeStyle.UpdateListener updateForwardSelectedListeners;
 
 	public TrackSchemeStyleManager()
 	{
@@ -72,9 +72,9 @@ public class TrackSchemeStyleManager extends AbstractStyleManager< TrackSchemeSt
 
 	public TrackSchemeStyleManager( final boolean loadStyles )
 	{
-		forwardDefaultStyle = TrackSchemeStyle.defaultStyle().copy();
-		updateForwardDefaultListeners = () -> forwardDefaultStyle.set( defaultStyle );
-		defaultStyle.updateListeners().add( updateForwardDefaultListeners );
+		forwardSelectedStyle = TrackSchemeStyle.defaultStyle().copy();
+		updateForwardSelectedListeners = () -> forwardSelectedStyle.set( selectedStyle );
+		selectedStyle.updateListeners().add( updateForwardSelectedListeners );
 		if ( loadStyles )
 			loadStyles();
 	}
@@ -86,23 +86,23 @@ public class TrackSchemeStyleManager extends AbstractStyleManager< TrackSchemeSt
 	}
 
 	@Override
-	public synchronized void setDefaultStyle( final TrackSchemeStyle style )
+	public synchronized void setSelectedStyle( final TrackSchemeStyle style )
 	{
-		defaultStyle.updateListeners().remove( updateForwardDefaultListeners );
-		defaultStyle = style;
-		forwardDefaultStyle.set( defaultStyle );
-		defaultStyle.updateListeners().add( updateForwardDefaultListeners );
+		selectedStyle.updateListeners().remove( updateForwardSelectedListeners );
+		selectedStyle = style;
+		forwardSelectedStyle.set( selectedStyle );
+		selectedStyle.updateListeners().add( updateForwardSelectedListeners );
 	}
 
 	/**
 	 * Returns a final {@link TrackSchemeStyle} instance that always has the
-	 * same properties as the default style.
+	 * same properties as the selected style.
 	 *
-	 * @return a style instance that always has the same properties as the default style.
+	 * @return a style instance that always has the same properties as the selected style.
 	 */
-	public TrackSchemeStyle getForwardDefaultStyle()
+	public TrackSchemeStyle getForwardSelectedStyle()
 	{
-		return forwardDefaultStyle;
+		return forwardSelectedStyle;
 	}
 
 	public void loadStyles()
@@ -119,14 +119,14 @@ public class TrackSchemeStyleManager extends AbstractStyleManager< TrackSchemeSt
 			final FileReader input = new FileReader( filename );
 			final Yaml yaml = TrackSchemeStyleIO.createYaml();
 			final Iterable< Object > objs = yaml.loadAll( input );
-			String defaultStyleName = null;
+			String selectedStyleName = null;
 			for ( final Object obj : objs )
 			{
 				if ( obj instanceof String )
 				{
-					defaultStyleName = ( String ) obj;
+					selectedStyleName = ( String ) obj;
 					System.out.println( "TrackSchemeStyleManager.loadStyles" );
-					System.out.println( defaultStyleName );
+					System.out.println( selectedStyleName );
 				}
 				else if ( obj instanceof TrackSchemeStyle )
 				{
@@ -141,7 +141,7 @@ public class TrackSchemeStyleManager extends AbstractStyleManager< TrackSchemeSt
 					}
 				}
 			}
-			setDefaultStyle( styleForName( defaultStyleName ).orElseGet( () -> builtinStyles.get( 0 ) ) );
+			setSelectedStyle( styleForName( selectedStyleName ).orElseGet( () -> builtinStyles.get( 0 ) ) );
 		}
 		catch ( final FileNotFoundException e )
 		{
@@ -163,7 +163,7 @@ public class TrackSchemeStyleManager extends AbstractStyleManager< TrackSchemeSt
 			final FileWriter output = new FileWriter( filename );
 			final Yaml yaml = TrackSchemeStyleIO.createYaml();
 			final ArrayList< Object > objects = new ArrayList<>();
-			objects.add( defaultStyle.getName() );
+			objects.add( selectedStyle.getName() );
 			objects.addAll( userStyles );
 			yaml.dumpAll( objects.iterator(), output );
 			output.close();

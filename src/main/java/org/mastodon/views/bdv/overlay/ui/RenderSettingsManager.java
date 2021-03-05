@@ -55,14 +55,14 @@ public class RenderSettingsManager extends AbstractStyleManager< RenderSettingsM
 	private static final String STYLE_FILE = System.getProperty( "user.home" ) + "/.mastodon/rendersettings.yaml";
 
 	/**
-	 * A {@code RenderSettings} that has the same properties as the default
-	 * RenderSettings. In contrast to defaultStyle this will always
+	 * A {@code RenderSettings} that has the same properties as the selected
+	 * RenderSettings. In contrast to selectedStyle this will always
 	 * refer to the same object, so a consumers can just use this one
 	 * RenderSettings to listen for changes and for painting.
 	 */
-	private final RenderSettings forwardDefaultStyle;
+	private final RenderSettings forwardSelectedStyle;
 
-	private final RenderSettings.UpdateListener updateForwardDefaultListeners;
+	private final RenderSettings.UpdateListener updateForwardSelectedListeners;
 
 	public RenderSettingsManager()
 	{
@@ -71,9 +71,9 @@ public class RenderSettingsManager extends AbstractStyleManager< RenderSettingsM
 
 	public RenderSettingsManager( final boolean loadStyles )
 	{
-		forwardDefaultStyle = RenderSettings.defaultStyle().copy();
-		updateForwardDefaultListeners = () -> forwardDefaultStyle.set( defaultStyle );
-		defaultStyle.updateListeners().add( updateForwardDefaultListeners );
+		forwardSelectedStyle = RenderSettings.defaultStyle().copy();
+		updateForwardSelectedListeners = () -> forwardSelectedStyle.set( selectedStyle );
+		selectedStyle.updateListeners().add( updateForwardSelectedListeners );
 		if ( loadStyles )
 			loadStyles();
 	}
@@ -85,23 +85,23 @@ public class RenderSettingsManager extends AbstractStyleManager< RenderSettingsM
 	}
 
 	@Override
-	public synchronized void setDefaultStyle( final RenderSettings renderSettings )
+	public synchronized void setSelectedStyle( final RenderSettings renderSettings )
 	{
-		defaultStyle.updateListeners().remove( updateForwardDefaultListeners );
-		defaultStyle = renderSettings;
-		forwardDefaultStyle.set( defaultStyle );
-		defaultStyle.updateListeners().add( updateForwardDefaultListeners );
+		selectedStyle.updateListeners().remove( updateForwardSelectedListeners );
+		selectedStyle = renderSettings;
+		forwardSelectedStyle.set( selectedStyle );
+		selectedStyle.updateListeners().add( updateForwardSelectedListeners );
 	}
 
 	/**
 	 * Returns a final {@link RenderSettings} instance that always has the same
-	 * properties as the default style.
+	 * properties as the selected style.
 	 *
 	 * @return the {@link RenderSettings} instance.
 	 */
-	public RenderSettings getForwardDefaultStyle()
+	public RenderSettings getForwardSelectedStyle()
 	{
-		return forwardDefaultStyle;
+		return forwardSelectedStyle;
 	}
 
 	public void loadStyles()
@@ -118,14 +118,14 @@ public class RenderSettingsManager extends AbstractStyleManager< RenderSettingsM
 			final FileReader input = new FileReader( filename );
 			final Yaml yaml = RenderSettingsIO.createYaml();
 			final Iterable< Object > objs = yaml.loadAll( input );
-			String defaultStyleName = null;
+			String selectedStyleName = null;
 			for ( final Object obj : objs )
 			{
 				if ( obj instanceof String )
 				{
-					defaultStyleName = ( String ) obj;
+					selectedStyleName = ( String ) obj;
 					System.out.println( "RenderSettingsManager.loadStyles" );
-					System.out.println( defaultStyleName );
+					System.out.println( selectedStyleName );
 				}
 				else if ( obj instanceof RenderSettings )
 				{
@@ -140,7 +140,7 @@ public class RenderSettingsManager extends AbstractStyleManager< RenderSettingsM
 					}
 				}
 			}
-			setDefaultStyle( styleForName( defaultStyleName ).orElseGet( () -> builtinStyles.get( 0 ) ) );
+			setSelectedStyle( styleForName( selectedStyleName ).orElseGet( () -> builtinStyles.get( 0 ) ) );
 		}
 		catch ( final FileNotFoundException e )
 		{
@@ -162,7 +162,7 @@ public class RenderSettingsManager extends AbstractStyleManager< RenderSettingsM
 			final FileWriter output = new FileWriter( filename );
 			final Yaml yaml = RenderSettingsIO.createYaml();
 			final ArrayList< Object > objects = new ArrayList<>();
-			objects.add( defaultStyle.getName() );
+			objects.add( selectedStyle.getName() );
 			objects.addAll( userStyles );
 			yaml.dumpAll( objects.iterator(), output );
 			output.close();

@@ -49,7 +49,7 @@ public class FeatureColorModeConfigPage extends SelectAndEditProfileSettingsPage
 		super( treePath,
 				new StyleProfileManager<>( featureColorModeManager, new FeatureColorModeManager( false ) ),
 				new FeatureColorModelEditPanel(
-						featureColorModeManager.getDefaultStyle(),
+						featureColorModeManager.getSelectedStyle(),
 						featureProjectionsManager ) );
 	}
 

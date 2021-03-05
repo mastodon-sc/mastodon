@@ -191,7 +191,7 @@ public class MainWindow extends JFrame
 		menubar = new JMenuBar();
 		setJMenuBar( menubar );
 
-		final Keymap keymap = windowManager.getKeymapManager().getForwardDefaultKeymap();
+		final Keymap keymap = windowManager.getKeymapManager().getForwardSelectedKeymap();
 		menu = new ViewMenu( menubar, keymap, KeyConfigContexts.MASTODON );
 		keymap.updateListeners().add( menu::updateKeymap );
 		addMenus( menu, actionMap );

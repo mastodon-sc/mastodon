@@ -60,7 +60,7 @@ public class RenderSettingsConfigPage extends SelectAndEditProfileSettingsPage< 
 		super(
 				treePath,
 				new StyleProfileManager<>( renderSettingsManager, new RenderSettingsManager( false ) ),
-				new RenderSettingsProfileEditPanel( renderSettingsManager.getDefaultStyle() ) );
+				new RenderSettingsProfileEditPanel( renderSettingsManager.getSelectedStyle() ) );
 	}
 
 	static class RenderSettingsProfileEditPanel implements RenderSettings.UpdateListener, SelectAndEditProfileSettingsPage.ProfileEditPanel< StyleProfile< RenderSettings > >

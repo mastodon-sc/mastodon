@@ -171,7 +171,7 @@ public class WindowManager
 				featureColorModeManager );
 		keymapManager = new KeymapManager();
 
-		final Keymap keymap = keymapManager.getForwardDefaultKeymap();
+		final Keymap keymap = keymapManager.getForwardSelectedKeymap();
 
 		plugins = new MamutPlugins( keymap );
 		discoverPlugins();
@@ -265,7 +265,7 @@ public class WindowManager
 		UndoActions.install( appModel.getAppActions(), model );
 		SelectionActions.install( appModel.getAppActions(), model.getGraph(), model.getGraph().getLock(), model.getGraph(), appModel.getSelectionModel(), model );
 
-		final Keymap keymap = keymapManager.getForwardDefaultKeymap();
+		final Keymap keymap = keymapManager.getForwardSelectedKeymap();
 		tagSetDialog = new TagSetDialog( null, model.getTagSetModel(), model, keymap, new String[] { KeyConfigContexts.MASTODON } );
 		featureComputationDialog = MamutFeatureComputation.getDialog( appModel, context );
 		featureProjectionsManager.setModel( model, appModel.getSharedBdvData().getSources().size() );

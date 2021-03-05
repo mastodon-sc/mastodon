@@ -91,7 +91,7 @@ public class FeatureColorModeManager extends AbstractStyleManager< FeatureColorM
 			new File( filename ).mkdirs(); // TODO pointless. FileWriter already opened or failed.
 			final Yaml yaml = FeatureColorModeIO.createYaml();
 			final ArrayList< Object > objects = new ArrayList<>();
-			objects.add( defaultStyle.getName() );
+			objects.add( selectedStyle.getName() );
 			objects.addAll( userStyles );
 			yaml.dumpAll( objects.iterator(), output );
 		}
@@ -114,12 +114,12 @@ public class FeatureColorModeManager extends AbstractStyleManager< FeatureColorM
 		{
 			final Yaml yaml = FeatureColorModeIO.createYaml();
 			final Iterable< Object > objs = yaml.loadAll( input );
-			String defaultStyleName = null;
+			String selectedStyleName = null;
 			for ( final Object obj : objs )
 			{
 				if ( obj instanceof String )
 				{
-					defaultStyleName = ( String ) obj;
+					selectedStyleName = ( String ) obj;
 				}
 				else if ( obj instanceof FeatureColorMode )
 				{
@@ -134,7 +134,7 @@ public class FeatureColorModeManager extends AbstractStyleManager< FeatureColorM
 					}
 				}
 			}
-			setDefaultStyle( styleForName( defaultStyleName ).orElseGet( () -> builtinStyles.get( 0 ) ) );
+			setSelectedStyle( styleForName( selectedStyleName ).orElseGet( () -> builtinStyles.get( 0 ) ) );
 		}
 		catch ( final FileNotFoundException e )
 		{

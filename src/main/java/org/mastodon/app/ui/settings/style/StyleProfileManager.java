@@ -59,7 +59,7 @@ public class StyleProfileManager< M extends StyleManager< M, S >, S extends Styl
 	@Override
 	public StyleProfile< S > getSelectedProfile()
 	{
-		final S style = styles.getDefaultStyle();
+		final S style = styles.getSelectedStyle();
 		final boolean isBuiltin = styles.getBuiltinStyles().stream().anyMatch( s -> s.getName().equals( style.getName() ) );
 		return new StyleProfile<>( style, isBuiltin );
 	}
@@ -67,7 +67,7 @@ public class StyleProfileManager< M extends StyleManager< M, S >, S extends Styl
 	@Override
 	public void select( final StyleProfile< S > profile )
 	{
-		styles.setDefaultStyle( profile.style );
+		styles.setSelectedStyle( profile.style );
 	}
 
 	@Override

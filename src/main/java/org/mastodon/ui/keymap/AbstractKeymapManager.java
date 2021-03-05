@@ -61,41 +61,41 @@ public abstract class AbstractKeymapManager< T extends AbstractKeymapManager< T 
 		extends AbstractStyleManager< T, Keymap >
 {
 	/**
-	 * A {@code Keymap} that has the same properties as the default
-	 * keymap. In contrast to defaultStyle this will always
+	 * A {@code Keymap} that has the same properties as the selected
+	 * keymap. In contrast to selectedStyle this will always
 	 * refer to the same object, so a consumers can just use this one
 	 * to listen for changes.
 	 */
-	private final Keymap forwardDefaultKeymap;
+	private final Keymap forwardSelectedKeymap;
 
 	public AbstractKeymapManager()
 	{
-		forwardDefaultKeymap = new Keymap();
+		forwardSelectedKeymap = new Keymap();
 	}
 
 	@Override
-	public synchronized void setDefaultStyle( final Keymap keymap )
+	public synchronized void setSelectedStyle( final Keymap keymap )
 	{
-		super.setDefaultStyle( keymap );
-		forwardDefaultKeymap.set( defaultStyle );
+		super.setSelectedStyle( keymap );
+		forwardSelectedKeymap.set( selectedStyle );
 	}
 
 	/**
 	 * Returns a final {@link Keymap} instance that always has the same
-	 * properties as the default keymap.
+	 * properties as the selected keymap.
 	 *
-	 * @return a keymap instance that always has the same properties as the default keymap.
+	 * @return a keymap instance that always has the same properties as the selected keymap.
 	 */
-	public Keymap getForwardDefaultKeymap()
+	public Keymap getForwardSelectedKeymap()
 	{
-		return forwardDefaultKeymap;
+		return forwardSelectedKeymap;
 	}
 
 	protected void loadStyles( final File directory ) throws IOException
 	{
 		userStyles.clear();
 		final Set< String > names = builtinStyles.stream().map( Keymap::getName ).collect( Collectors.toSet() );
-		Keymap defaultStyle = builtinStyles.get( 0 );
+		Keymap selectedStyle = builtinStyles.get( 0 );
 
 		File file = new File( directory, "/keymaps.yaml" );
 		KeymapsListData keymapsList = null;
@@ -128,10 +128,10 @@ public abstract class AbstractKeymapManager< T extends AbstractKeymapManager< T 
 					System.out.println( "Keymap file " + file + " not found. Skipping." );
 				}
 			}
-			defaultStyle = styleForName( keymapsList.defaultKeymapName ).orElse( defaultStyle );
+			selectedStyle = styleForName( keymapsList.defaultKeymapName ).orElse( selectedStyle );
 		}
 
-		setDefaultStyle( defaultStyle );
+		setSelectedStyle( selectedStyle );
 	}
 
 	protected void saveStyles( final File directory ) throws IOException
@@ -139,7 +139,7 @@ public abstract class AbstractKeymapManager< T extends AbstractKeymapManager< T 
 		directory.mkdirs();
 
 		final KeymapsListData keymapsList = new KeymapsListData(
-				defaultStyle.getName(),
+				selectedStyle.getName(),
 				userStyles.stream().map( Keymap::getName ).collect( Collectors.toList() ) );
 
 		File file = new File( directory, "keymaps.yaml" );

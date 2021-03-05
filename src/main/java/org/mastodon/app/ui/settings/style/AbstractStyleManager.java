@@ -43,13 +43,13 @@ public abstract class AbstractStyleManager< M extends AbstractStyleManager< M, S
 
 	protected final List< S > userStyles;
 
-	protected S defaultStyle;
+	protected S selectedStyle;
 
 	protected AbstractStyleManager()
 	{
 		builtinStyles = loadBuiltinStyles();
 		userStyles = new ArrayList<>();
-		defaultStyle = builtinStyles.get( 0 );
+		selectedStyle = builtinStyles.get( 0 );
 	}
 
 	// ==== abstract methods =====================================================
@@ -77,22 +77,22 @@ public abstract class AbstractStyleManager< M extends AbstractStyleManager< M, S
 	}
 
 	@Override
-	public S getDefaultStyle()
+	public S getSelectedStyle()
 	{
-		return defaultStyle;
+		return selectedStyle;
 	}
 
 	@Override
-	public synchronized void setDefaultStyle( final S style )
+	public synchronized void setSelectedStyle( final S style )
 	{
-		defaultStyle = style;
+		selectedStyle = style;
 	}
 
 	@Override
 	public synchronized void remove( final S style )
 	{
-		if ( defaultStyle.equals( style ) )
-			setDefaultStyle( builtinStyles.get( 0 ) );
+		if ( selectedStyle.equals( style ) )
+			setSelectedStyle( builtinStyles.get( 0 ) );
 		userStyles.remove( style );
 	}
 
@@ -161,12 +161,12 @@ public abstract class AbstractStyleManager< M extends AbstractStyleManager< M, S
 	{
 		private final List< S > userStyles;
 
-		private final String defaultStyleName;
+		private final String selectedStyleName;
 
 		public Snapshot( final AbstractStyleManager< M, S > manager )
 		{
 			this.userStyles = manager.getUserStyles().stream().map( s -> s.copy() ).collect( Collectors.toList() );
-			this.defaultStyleName = manager.getDefaultStyle().getName();
+			this.selectedStyleName = manager.getSelectedStyle().getName();
 		}
 	}
 
@@ -179,6 +179,6 @@ public abstract class AbstractStyleManager< M extends AbstractStyleManager< M, S
 	{
 		userStyles.clear();
 		snapshot.userStyles.forEach( s -> userStyles.add( s.copy() ) );
-		setDefaultStyle( styleForName( snapshot.defaultStyleName ).orElseGet( () -> builtinStyles.get( 0 ) ) );
+		setSelectedStyle( styleForName( snapshot.selectedStyleName ).orElseGet( () -> builtinStyles.get( 0 ) ) );
 	}
 }

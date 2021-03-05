@@ -158,7 +158,7 @@ public class MastodonAppModel<
 		this.keymapManager = keymapManager;
 		this.keyConfigContexts = keyConfigContexts;
 
-		final InputTriggerConfig keyconf = keymapManager.getForwardDefaultKeymap().getConfig();
+		final InputTriggerConfig keyconf = keymapManager.getForwardSelectedKeymap().getConfig();
 		this.appActions = new Actions( keyconf, keyConfigContexts );
 	}
 
@@ -189,7 +189,7 @@ public class MastodonAppModel<
 
 	public Keymap getKeymap()
 	{
-		return keymapManager.getForwardDefaultKeymap();
+		return keymapManager.getForwardSelectedKeymap();
 	}
 
 	public String[] getKeyConfigContexts()

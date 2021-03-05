@@ -38,9 +38,9 @@ public interface StyleManager< M extends StyleManager< M, S >, S extends Style< 
 
 	List< S > getUserStyles();
 
-	void setDefaultStyle( final S style );
+	void setSelectedStyle( final S style );
 
-	S getDefaultStyle();
+	S getSelectedStyle();
 
 	S duplicate( final S style );
 

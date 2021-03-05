@@ -59,7 +59,7 @@ public class TrackSchemeStyleSettingsPage extends SelectAndEditProfileSettingsPa
 		super(
 				treePath,
 				new StyleProfileManager<>( styleManager, new TrackSchemeStyleManager( false ) ),
-				new TrackSchemeProfileEditPanel( styleManager.getDefaultStyle() ) );
+				new TrackSchemeProfileEditPanel( styleManager.getSelectedStyle() ) );
 	}
 
 	static class TrackSchemeProfileEditPanel implements TrackSchemeStyle.UpdateListener, SelectAndEditProfileSettingsPage.ProfileEditPanel< StyleProfile< TrackSchemeStyle > >
