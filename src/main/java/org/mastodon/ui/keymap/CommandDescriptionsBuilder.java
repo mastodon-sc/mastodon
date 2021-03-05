@@ -32,6 +32,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import java.util.function.Predicate;
 import org.scijava.AbstractContextual;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.PluginService;
@@ -102,10 +103,31 @@ public class CommandDescriptionsBuilder extends AbstractContextual
 	 */
 	public void discoverProviders()
 	{
+		discoverProviders( p -> true );
+	}
+
+	/**
+	 * Adds all {@link CommandDescriptionProvider}s on the plugin index having
+	 * any of the given {@code scopes}, with their respective {@link
+	 * CommandDescriptionProvider#getExpectedContexts() expected contexts}.
+	 */
+	public void discoverProviders( final CommandDescriptionProvider.Scope ... scopes )
+	{
+		discoverProviders( Arrays.asList(scopes)::contains );
+	}
+
+	/**
+	 * Adds all {@link CommandDescriptionProvider}s on the plugin index that
+	 * match the given {@code predicate}, with their respective {@link
+	 * CommandDescriptionProvider#getExpectedContexts() expected contexts}.
+	 */
+	public void discoverProviders( final Predicate< CommandDescriptionProvider > predicate )
+	{
 		final List< CommandDescriptionProvider > providers = pluginService.createInstancesOfType( CommandDescriptionProvider.class );
 		for ( final CommandDescriptionProvider provider : providers )
-			for ( final String context : provider.getExpectedContexts() )
-				registered.add( new ProviderAndContext( provider, context ) );
+			if ( predicate.test( provider ) )
+				for ( final String context : provider.getExpectedContexts() )
+					registered.add( new ProviderAndContext( provider, context ) );
 	}
 
 	/**
