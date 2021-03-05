@@ -41,6 +41,9 @@ public interface SettingsPage
 {
 	/**
 	 * Get the path of this page in the settings tree.
+	 * <p>
+	 * The path is split at "{@code >}" to get the nodes along the settings tree
+	 * branch.
 	 *
 	 * @return the path.
 	 */
