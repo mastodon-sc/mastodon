@@ -58,7 +58,7 @@ public class MamutTestPlugin implements MamutPlugin
 	{
 		public Descriptions()
 		{
-			super( KeyConfigScopes.MASTODON, KeyConfigContexts.MASTODON );
+			super( KeyConfigScopes.MASTODON_PLUGIN, KeyConfigContexts.MASTODON );
 		}
 
 		@Override

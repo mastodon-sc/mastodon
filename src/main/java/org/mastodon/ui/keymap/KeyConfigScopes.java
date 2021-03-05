@@ -34,4 +34,5 @@ package org.mastodon.ui.keymap;
 public interface KeyConfigScopes
 {
 	CommandDescriptionProvider.Scope MASTODON = new CommandDescriptionProvider.Scope( "org.mastodon.core" );
+	CommandDescriptionProvider.Scope MASTODON_PLUGIN = new CommandDescriptionProvider.Scope( "org.mastodon.plugin" );
 }
