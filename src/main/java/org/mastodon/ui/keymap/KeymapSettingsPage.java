@@ -84,7 +84,7 @@ public class KeymapSettingsPage extends SelectAndEditProfileSettingsPage< StyleP
 			styleEditorPanel.modelChangedListeners().add( () -> {
 				styleEditorPanel.modelToConfig();
 				if ( trackModifications )
-					modificationListeners.list.forEach( ModificationListener::modified );
+					modificationListeners.list.forEach( ModificationListener::setModified );
 			} );
 			styleEditorPanel.setPreferredSize( new Dimension( 200, 200 ) );
 		}

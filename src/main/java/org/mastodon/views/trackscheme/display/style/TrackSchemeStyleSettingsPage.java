@@ -84,7 +84,7 @@ public class TrackSchemeStyleSettingsPage extends SelectAndEditProfileSettingsPa
 		public void trackSchemeStyleChanged()
 		{
 			if ( trackModifications )
-				modificationListeners.list.forEach( ModificationListener::modified );
+				modificationListeners.list.forEach( ModificationListener::setModified );
 		}
 
 		@Override

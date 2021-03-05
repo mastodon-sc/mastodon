@@ -113,7 +113,7 @@ public class FeatureColorModeConfigPage extends SelectAndEditProfileSettingsPage
 		public void featureColorModeChanged()
 		{
 			if ( trackModifications )
-				modificationListeners.list.forEach( ModificationListener::modified );
+				modificationListeners.list.forEach( ModificationListener::setModified );
 		}
 	}
 }

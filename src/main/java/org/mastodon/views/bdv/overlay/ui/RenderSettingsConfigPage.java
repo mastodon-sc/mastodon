@@ -85,7 +85,7 @@ public class RenderSettingsConfigPage extends SelectAndEditProfileSettingsPage< 
 		public void renderSettingsChanged()
 		{
 			if ( trackModifications )
-				modificationListeners.list.forEach( ModificationListener::modified );
+				modificationListeners.list.forEach( ModificationListener::setModified );
 		}
 
 		@Override

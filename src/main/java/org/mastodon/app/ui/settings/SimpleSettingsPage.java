@@ -80,7 +80,7 @@ public class SimpleSettingsPage implements SettingsPage
 
 	public void notifyModified()
 	{
-		modificationListeners.list.forEach( ModificationListener::modified );
+		modificationListeners.list.forEach( ModificationListener::setModified );
 	}
 
 	@Override

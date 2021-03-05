@@ -36,5 +36,5 @@ package org.mastodon.app.ui.settings;
 @FunctionalInterface
 public interface ModificationListener
 {
-	void modified();
+	void setModified();
 }

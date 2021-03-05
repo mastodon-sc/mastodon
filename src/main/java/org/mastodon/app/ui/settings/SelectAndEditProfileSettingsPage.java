@@ -108,8 +108,8 @@ public class SelectAndEditProfileSettingsPage< T extends SelectAndEditProfileSet
 		profileEditPanel.modificationListeners().add( profileSelectionPanel );
 
 		modificationListeners = new Listeners.SynchronizedList<>();
-		profileEditPanel.modificationListeners().add( () -> modificationListeners.list.forEach( ModificationListener::modified ) );
-		profileSelectionPanel.selectionListeners().add( p -> modificationListeners.list.forEach( ModificationListener::modified ) );
+		profileEditPanel.modificationListeners().add( () -> modificationListeners.list.forEach( ModificationListener::setModified ) );
+		profileSelectionPanel.selectionListeners().add( p -> modificationListeners.list.forEach( ModificationListener::setModified ) );
 
 		contentPanel = new JPanel( new BorderLayout() );
 		contentPanel.add( profileSelectionPanel, BorderLayout.NORTH );
@@ -384,7 +384,7 @@ public class SelectAndEditProfileSettingsPage< T extends SelectAndEditProfileSet
 		 */
 		@SuppressWarnings( "unchecked" )
 		@Override
-		public void modified()
+		public void setModified()
 		{
 			if ( ( ( Item ) comboBox.getSelectedItem() ).isBuiltin() )
 			{
