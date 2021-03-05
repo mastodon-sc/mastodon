@@ -60,17 +60,9 @@ import org.yaml.snakeyaml.representer.Representer;
  *
  * @author Tobias Pietzsch
  */
-public class KeymapManager extends AbstractStyleManager< KeymapManager, Keymap >
+public class KeymapManager extends AbstractKeymapManager< KeymapManager >
 {
 	private static final String KEYMAPS_PATH = System.getProperty( "user.home" ) + "/.mastodon/keymaps/";
-
-	/**
-	 * A {@code Keymap} that has the same properties as the default
-	 * keymap. In contrast to defaultStyle this will always
-	 * refer to the same object, so a consumers can just use this one
-	 * RenderSettings to listen for changes and for painting.
-	 */
-	private final Keymap forwardDefaultKeymap;
 
 	public KeymapManager()
 	{
@@ -79,7 +71,6 @@ public class KeymapManager extends AbstractStyleManager< KeymapManager, Keymap >
 
 	public KeymapManager( final boolean loadStyles )
 	{
-		forwardDefaultKeymap = new Keymap();
 		if ( loadStyles )
 			loadStyles();
 	}
@@ -108,132 +99,34 @@ public class KeymapManager extends AbstractStyleManager< KeymapManager, Keymap >
 
 	private static Keymap loadBuiltinStyle( final String name, final String filename ) throws IOException
 	{
-		final Reader reader = new InputStreamReader( KeymapManager.class.getResourceAsStream( filename ) );
-		final InputTriggerConfig config = new InputTriggerConfig( YamlConfigIO.read( reader ) );
-		reader.close();
-		return new Keymap( name, config );
-	}
-
-	@Override
-	public synchronized void setDefaultStyle( final Keymap keymap )
-	{
-		super.setDefaultStyle( keymap );
-		forwardDefaultKeymap.set( defaultStyle );
-	}
-
-	/**
-	 * Returns a final {@link Keymap} instance that always has the same
-	 * properties as the default keymap.
-	 *
-	 * @return a keymap instance that always has the same properties as the default keymap.
-	 */
-	public Keymap getForwardDefaultKeymap()
-	{
-		return forwardDefaultKeymap;
+		try ( Reader reader = new InputStreamReader( KeymapManager.class.getResourceAsStream( filename ) ) )
+		{
+			return new Keymap( name, new InputTriggerConfig( YamlConfigIO.read( reader ) ) );
+		}
 	}
 
 	public void loadStyles()
 	{
-		loadStyles( KEYMAPS_PATH );
-	}
-
-	public void loadStyles( final String directory )
-	{
-		userStyles.clear();
-		final Set< String > names = builtinStyles.stream().map( Keymap::getName ).collect( Collectors.toSet() );
-		Keymap defaultStyle = builtinStyles.get( 0 );
 		try
 		{
-			String filename = KEYMAPS_PATH + "/keymaps.yaml";
-
-			KeymapsListIO keymapsList = null;
-			try
-			{
-				final FileReader input = new FileReader( filename );
-				keymapsList = createYaml().loadAs( input, KeymapsListIO.class );
-				input.close();
-			}
-			catch ( final FileNotFoundException e )
-			{
-				System.out.println( "Keymap list file " + filename + " not found. Using builtin styles." );
-			}
-
-			if ( keymapsList != null )
-			{
-				for ( final Map.Entry< String, String > entry : keymapsList.getFileNameToKeymapName().entrySet() )
-				{
-					filename = KEYMAPS_PATH + "/" + entry.getKey();
-					try
-					{
-						final String name = entry.getValue();
-						final InputTriggerConfig config = new InputTriggerConfig( YamlConfigIO.read( filename ) );
-						// sanity check: style names must be unique
-						if ( names.add( name ) )
-							userStyles.add( new Keymap( name, config ) );
-						else
-							System.out.println( "Discarded style with duplicate name \"" + name + "\"." );
-					}
-					catch ( final FileNotFoundException e )
-					{
-						System.out.println( "Keymap file " + filename + " not found. Skipping." );
-					}
-				}
-
-				defaultStyle = styleForName( keymapsList.defaultKeymapName ).orElse( defaultStyle );
-			}
+			loadStyles( new File( KEYMAPS_PATH ) );
 		}
-		catch ( final IOException e )
+		catch ( IOException e )
 		{
 			e.printStackTrace();
 		}
-		setDefaultStyle( defaultStyle );
 	}
 
 	@Override
 	public void saveStyles()
 	{
-		saveStyles( KEYMAPS_PATH );
-	}
-
-	public void saveStyles( final String directory )
-	{
 		try
 		{
-			new File( directory ).mkdirs();
-
-			final KeymapsListIO keymapsList = new KeymapsListIO(
-					defaultStyle.getName(),
-					userStyles.stream().map( Keymap::getName ).collect( Collectors.toList() ) );
-
-			String filename = KEYMAPS_PATH + "/keymaps.yaml";
-			final FileWriter output = new FileWriter( filename );
-			createYaml().dump( keymapsList, output );
-			output.close();
-
-			for ( final Keymap keymap : userStyles )
-			{
-				filename = KEYMAPS_PATH + "/" + keymapsList.keymapNameToFileName.get( keymap.getName() );
-				final List< InputTriggerDescription > descriptions = new InputTriggerDescriptionsBuilder( keymap.getConfig() ).getDescriptions();
-				YamlConfigIO.write( descriptions, filename );
-			}
+			saveStyles( new File( KEYMAPS_PATH ) );
 		}
-		catch ( final IOException e )
+		catch ( IOException e )
 		{
 			e.printStackTrace();
 		}
-	}
-
-	/**
-	 * Creates YAML de/serializer that handles {@code KeymapsListIO} objects.
-	 */
-	private static Yaml createYaml()
-	{
-		final DumperOptions dumperOptions = new DumperOptions();
-		dumperOptions.setDefaultFlowStyle( DumperOptions.FlowStyle.BLOCK );
-		final Representer representer = new Representer();
-		representer.addClassTag( KeymapsListIO.class, new Tag( "!keymapslist" ) );
-		final Constructor constructor = new Constructor();
-		constructor.addTypeDescription( new TypeDescription( KeymapsListIO.class, "!keymapslist" ) );
-		return new Yaml( constructor, representer, dumperOptions );
 	}
 }

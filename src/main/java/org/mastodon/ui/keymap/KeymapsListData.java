@@ -6,13 +6,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -39,7 +39,7 @@ import java.util.regex.Pattern;
 /**
  * Data class used for serializing the list of keymaps into the {@code keymaps.yaml} file.
  */
-class KeymapsListIO
+class KeymapsListData
 {
 	// NB: Don't change field names because these are used as identifiers in the YAML!
 
@@ -47,7 +47,7 @@ class KeymapsListIO
 
 	public LinkedHashMap< String, String > keymapNameToFileName;
 
-	public KeymapsListIO( final String defaultName, final List< String > keymapNames )
+	public KeymapsListData( final String defaultName, final List< String > keymapNames )
 	{
 		defaultKeymapName = defaultName;
 		keymapNameToFileName = new LinkedHashMap<>();
@@ -97,7 +97,7 @@ class KeymapsListIO
 	/**
 	 * default constructor needed for snakeyaml
 	 */
-	public KeymapsListIO()
+	public KeymapsListData()
 	{
 	}
 }
