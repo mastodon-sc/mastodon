@@ -36,6 +36,7 @@ import java.awt.event.WindowEvent;
 import org.mastodon.ui.keymap.CommandDescriptionProvider;
 import org.mastodon.ui.keymap.CommandDescriptions;
 import org.mastodon.ui.keymap.KeyConfigContexts;
+import org.mastodon.ui.keymap.KeyConfigScopes;
 import org.mastodon.util.HasSelectedState;
 import org.scijava.listeners.Listeners;
 import org.scijava.plugin.Plugin;
@@ -58,7 +59,7 @@ public class MastodonFrameViewActions
 	{
 		public Descriptions()
 		{
-			super( KeyConfigContexts.BIGDATAVIEWER, KeyConfigContexts.TRACKSCHEME );
+			super( KeyConfigScopes.MASTODON, KeyConfigContexts.BIGDATAVIEWER, KeyConfigContexts.TRACKSCHEME );
 		}
 
 		@Override

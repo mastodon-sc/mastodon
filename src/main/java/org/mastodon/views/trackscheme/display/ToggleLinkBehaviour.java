@@ -46,6 +46,7 @@ import org.mastodon.spatial.HasTimepoint;
 import org.mastodon.ui.keymap.CommandDescriptionProvider;
 import org.mastodon.ui.keymap.CommandDescriptions;
 import org.mastodon.ui.keymap.KeyConfigContexts;
+import org.mastodon.ui.keymap.KeyConfigScopes;
 import org.mastodon.undo.UndoPointMarker;
 import org.mastodon.views.trackscheme.ScreenTransform;
 import org.mastodon.views.trackscheme.TrackSchemeEdge;
@@ -83,7 +84,7 @@ public class ToggleLinkBehaviour< V extends Vertex< E > & HasTimepoint, E extend
 	{
 		public Descriptions()
 		{
-			super( KeyConfigContexts.TRACKSCHEME );
+			super( KeyConfigScopes.MASTODON, KeyConfigContexts.TRACKSCHEME );
 		}
 
 		@Override

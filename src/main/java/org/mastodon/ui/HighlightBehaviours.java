@@ -38,6 +38,7 @@ import org.mastodon.model.HighlightModel;
 import org.mastodon.ui.keymap.CommandDescriptionProvider;
 import org.mastodon.ui.keymap.CommandDescriptions;
 import org.mastodon.ui.keymap.KeyConfigContexts;
+import org.mastodon.ui.keymap.KeyConfigScopes;
 import org.mastodon.undo.UndoPointMarker;
 import org.scijava.plugin.Plugin;
 import org.scijava.ui.behaviour.ClickBehaviour;
@@ -71,7 +72,7 @@ public class HighlightBehaviours< V extends Vertex< E >, E extends Edge< V > >
 	{
 		public Descriptions()
 		{
-			super( KeyConfigContexts.BIGDATAVIEWER, KeyConfigContexts.TRACKSCHEME );
+			super( KeyConfigScopes.MASTODON, KeyConfigContexts.BIGDATAVIEWER, KeyConfigContexts.TRACKSCHEME );
 		}
 
 		@Override

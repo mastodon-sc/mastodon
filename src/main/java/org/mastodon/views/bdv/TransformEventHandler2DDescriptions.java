@@ -32,6 +32,7 @@ import bdv.TransformEventHandler2D;
 import org.mastodon.ui.keymap.CommandDescriptionProvider;
 import org.mastodon.ui.keymap.CommandDescriptions;
 import org.mastodon.ui.keymap.KeyConfigContexts;
+import org.mastodon.ui.keymap.KeyConfigScopes;
 import org.scijava.plugin.Plugin;
 
 /*
@@ -42,7 +43,7 @@ public class TransformEventHandler2DDescriptions extends CommandDescriptionProvi
 {
 	public TransformEventHandler2DDescriptions()
 	{
-		super( KeyConfigContexts.BIGDATAVIEWER );
+		super( KeyConfigScopes.MASTODON, KeyConfigContexts.BIGDATAVIEWER );
 	}
 
 	@Override

@@ -35,6 +35,7 @@ import org.mastodon.model.SelectionModel;
 import org.mastodon.ui.keymap.CommandDescriptionProvider;
 import org.mastodon.ui.keymap.CommandDescriptions;
 import org.mastodon.ui.keymap.KeyConfigContexts;
+import org.mastodon.ui.keymap.KeyConfigScopes;
 import org.mastodon.views.trackscheme.LineageTreeLayout;
 import org.mastodon.views.trackscheme.TrackSchemeEdge;
 import org.mastodon.views.trackscheme.TrackSchemeGraph;
@@ -80,7 +81,7 @@ public class TrackSchemeNavigationActions
 	{
 		public Descriptions()
 		{
-			super( KeyConfigContexts.TRACKSCHEME );
+			super( KeyConfigScopes.MASTODON, KeyConfigContexts.TRACKSCHEME );
 		}
 
 		@Override

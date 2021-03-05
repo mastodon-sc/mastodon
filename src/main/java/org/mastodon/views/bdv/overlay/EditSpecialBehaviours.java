@@ -46,6 +46,7 @@ import org.mastodon.model.SelectionModel;
 import org.mastodon.ui.keymap.CommandDescriptionProvider;
 import org.mastodon.ui.keymap.CommandDescriptions;
 import org.mastodon.ui.keymap.KeyConfigContexts;
+import org.mastodon.ui.keymap.KeyConfigScopes;
 import org.mastodon.undo.UndoPointMarker;
 import org.mastodon.views.bdv.overlay.ScreenVertexMath.Ellipse;
 import org.scijava.plugin.Plugin;
@@ -77,7 +78,7 @@ public class EditSpecialBehaviours< V extends OverlayVertex< V, E >, E extends O
 	{
 		public Descriptions()
 		{
-			super( KeyConfigContexts.BIGDATAVIEWER );
+			super( KeyConfigScopes.MASTODON, KeyConfigContexts.BIGDATAVIEWER );
 		}
 
 		@Override

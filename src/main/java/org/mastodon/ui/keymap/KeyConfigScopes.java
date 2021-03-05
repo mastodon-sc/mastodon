@@ -6,13 +6,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -29,25 +29,9 @@
 package org.mastodon.ui.keymap;
 
 /**
- * Constants that specify to what context an action or a behaviour applies.
+ * The CommandDescription scope used for actions and behaviours defined in mastodon
  */
-// TODO move to somewhere in mamut package
-public interface KeyConfigContexts
+public interface KeyConfigScopes
 {
-	CommandDescriptionProvider.Scope SCOPE_MASTODON_CORE = new CommandDescriptionProvider.Scope( "org.mastodon.core" );
-
-	/**
-	 * The action or behaviour applies to the whole app.
-	 */
-	String MASTODON = "mastodon";
-
-	/**
-	 * The action or behaviour applies to the TrackScheme views.
-	 */
-	String TRACKSCHEME = "ts";
-
-	/**
-	 * The action or behaviour applies to the BDV views.
-	 */
-	String BIGDATAVIEWER = "bdv";
+	CommandDescriptionProvider.Scope MASTODON = new CommandDescriptionProvider.Scope( "org.mastodon.core" );
 }

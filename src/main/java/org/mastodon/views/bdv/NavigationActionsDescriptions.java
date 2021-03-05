@@ -32,6 +32,7 @@ import java.util.stream.IntStream;
 import org.mastodon.ui.keymap.CommandDescriptionProvider;
 import org.mastodon.ui.keymap.CommandDescriptions;
 import org.mastodon.ui.keymap.KeyConfigContexts;
+import org.mastodon.ui.keymap.KeyConfigScopes;
 import org.scijava.plugin.Plugin;
 
 import static bdv.viewer.NavigationActions.ALIGN_XY_PLANE;
@@ -63,7 +64,7 @@ public class NavigationActionsDescriptions extends CommandDescriptionProvider
 {
 	public NavigationActionsDescriptions()
 	{
-		super( KeyConfigContexts.BIGDATAVIEWER );
+		super( KeyConfigScopes.MASTODON, KeyConfigContexts.BIGDATAVIEWER );
 	}
 
 	@Override

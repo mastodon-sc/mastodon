@@ -55,6 +55,7 @@ import org.mastodon.model.FocusModel;
 import org.mastodon.ui.keymap.CommandDescriptionProvider;
 import org.mastodon.ui.keymap.CommandDescriptions;
 import org.mastodon.ui.keymap.KeyConfigContexts;
+import org.mastodon.ui.keymap.KeyConfigScopes;
 import org.mastodon.undo.UndoPointMarker;
 import org.mastodon.views.trackscheme.ScreenTransform;
 import org.mastodon.views.trackscheme.TrackSchemeEdge;
@@ -85,7 +86,7 @@ public class EditFocusVertexLabelAction extends AbstractNamedAction implements T
 	{
 		public Descriptions()
 		{
-			super( KeyConfigContexts.TRACKSCHEME );
+			super( KeyConfigScopes.MASTODON, KeyConfigContexts.TRACKSCHEME );
 		}
 
 		@Override

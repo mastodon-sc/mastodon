@@ -60,6 +60,7 @@ import org.mastodon.model.tag.TagSetStructure.TagSet;
 import org.mastodon.ui.keymap.CommandDescriptionProvider;
 import org.mastodon.ui.keymap.CommandDescriptions;
 import org.mastodon.ui.keymap.KeyConfigContexts;
+import org.mastodon.ui.keymap.KeyConfigScopes;
 import org.mastodon.ui.util.NumberListeners;
 import org.mastodon.undo.UndoPointMarker;
 import org.scijava.plugin.Plugin;
@@ -96,7 +97,7 @@ public class EditTagActions< V extends Vertex< E >, E extends Edge< V > >
 	{
 		public Descriptions()
 		{
-			super( KeyConfigContexts.TRACKSCHEME );
+			super( KeyConfigScopes.MASTODON, KeyConfigContexts.TRACKSCHEME );
 		}
 
 		@Override

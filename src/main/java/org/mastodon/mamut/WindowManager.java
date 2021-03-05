@@ -52,6 +52,7 @@ import org.mastodon.ui.keymap.CommandDescriptionProvider;
 import org.mastodon.ui.keymap.CommandDescriptions;
 import org.mastodon.ui.keymap.CommandDescriptionsBuilder;
 import org.mastodon.ui.keymap.KeyConfigContexts;
+import org.mastodon.ui.keymap.KeyConfigScopes;
 import org.mastodon.ui.keymap.Keymap;
 import org.mastodon.ui.keymap.KeymapManager;
 import org.mastodon.ui.keymap.KeymapSettingsPage;
@@ -95,7 +96,7 @@ public class WindowManager
 	{
 		public Descriptions()
 		{
-			super( KeyConfigContexts.MASTODON );
+			super( KeyConfigScopes.MASTODON, KeyConfigContexts.MASTODON );
 		}
 
 		@Override

@@ -42,9 +42,17 @@ public abstract class CommandDescriptionProvider implements SciJavaPlugin
 {
 	private final String[] expectedContexts;
 
-	protected CommandDescriptionProvider( final String... expectedContexts )
+	private final Scope scope;
+
+	protected CommandDescriptionProvider( final Scope scope, final String... expectedContexts )
 	{
+		this.scope = scope;
 		this.expectedContexts = expectedContexts;
+	}
+
+	public Scope getScope()
+	{
+		return scope;
 	}
 
 	public String[] getExpectedContexts()
@@ -53,4 +61,35 @@ public abstract class CommandDescriptionProvider implements SciJavaPlugin
 	}
 
 	public abstract void getCommandDescriptions( final CommandDescriptions descriptions );
+
+	public static class Scope
+	{
+		private final String name;
+
+		public Scope( final String name )
+		{
+			this.name = name;
+		}
+
+		public String getName()
+		{
+			return name;
+		}
+
+		@Override
+		public boolean equals( final Object o )
+		{
+			if ( this == o )
+				return true;
+			if ( !( o instanceof Scope ) )
+				return false;
+			return name.equals( ( ( Scope ) o ).name );
+		}
+
+		@Override
+		public int hashCode()
+		{
+			return name.hashCode();
+		}
+	}
 }

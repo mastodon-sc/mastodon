@@ -39,6 +39,7 @@ import org.mastodon.mamut.MamutMenuBuilder;
 import org.mastodon.ui.keymap.CommandDescriptionProvider;
 import org.mastodon.ui.keymap.CommandDescriptions;
 import org.mastodon.ui.keymap.KeyConfigContexts;
+import org.mastodon.ui.keymap.KeyConfigScopes;
 import org.scijava.ui.behaviour.util.AbstractNamedAction;
 import org.scijava.ui.behaviour.util.Actions;
 
@@ -57,7 +58,7 @@ public class MamutTestPlugin implements MamutPlugin
 	{
 		public Descriptions()
 		{
-			super( KeyConfigContexts.MASTODON );
+			super( KeyConfigScopes.MASTODON, KeyConfigContexts.MASTODON );
 		}
 
 		@Override

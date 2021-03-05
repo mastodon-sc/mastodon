@@ -32,6 +32,7 @@ import org.mastodon.mamut.model.Model;
 import org.mastodon.ui.keymap.CommandDescriptionProvider;
 import org.mastodon.ui.keymap.CommandDescriptions;
 import org.mastodon.ui.keymap.KeyConfigContexts;
+import org.mastodon.ui.keymap.KeyConfigScopes;
 import org.scijava.plugin.Plugin;
 import org.scijava.ui.behaviour.util.Actions;
 
@@ -51,7 +52,7 @@ public class UndoActions
 	{
 		public Descriptions()
 		{
-			super( KeyConfigContexts.MASTODON );
+			super( KeyConfigScopes.MASTODON, KeyConfigContexts.MASTODON );
 		}
 
 		@Override

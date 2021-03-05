@@ -35,6 +35,7 @@ import java.util.TimerTask;
 import org.mastodon.ui.keymap.CommandDescriptionProvider;
 import org.mastodon.ui.keymap.CommandDescriptions;
 import org.mastodon.ui.keymap.KeyConfigContexts;
+import org.mastodon.ui.keymap.KeyConfigScopes;
 import org.mastodon.views.trackscheme.LineageTreeLayout;
 import org.mastodon.views.trackscheme.LineageTreeLayout.LayoutListener;
 import org.mastodon.views.trackscheme.ScreenTransform;
@@ -74,7 +75,7 @@ public class InertialScreenTransformEventHandler
 	{
 		public Descriptions()
 		{
-			super( KeyConfigContexts.TRACKSCHEME );
+			super( KeyConfigScopes.MASTODON, KeyConfigContexts.TRACKSCHEME );
 		}
 
 		@Override

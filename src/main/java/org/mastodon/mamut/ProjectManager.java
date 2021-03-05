@@ -49,6 +49,7 @@ import org.mastodon.ui.coloring.feature.FeatureColorModeManager;
 import org.mastodon.ui.keymap.CommandDescriptionProvider;
 import org.mastodon.ui.keymap.CommandDescriptions;
 import org.mastodon.ui.keymap.KeyConfigContexts;
+import org.mastodon.ui.keymap.KeyConfigScopes;
 import org.mastodon.ui.keymap.KeymapManager;
 import org.mastodon.ui.util.ExtensionFileFilter;
 import org.mastodon.ui.util.FileChooser;
@@ -97,7 +98,7 @@ public class ProjectManager
 	{
 		public Descriptions()
 		{
-			super( KeyConfigContexts.MASTODON );
+			super( KeyConfigScopes.MASTODON, KeyConfigContexts.MASTODON );
 		}
 
 		@Override
