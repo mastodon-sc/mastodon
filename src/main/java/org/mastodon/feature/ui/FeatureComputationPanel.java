@@ -99,7 +99,7 @@ public class FeatureComputationPanel extends JPanel
 		gbc_panelButton.fill = GridBagConstraints.BOTH;
 		gbc_panelButton.gridx = 0;
 		gbc_panelButton.gridy = 0;
-		panelComputation.add(panelButton, gbc_panelButton);
+		panelComputation.add( panelButton, gbc_panelButton );
 		panelButton.setLayout( new BoxLayout( panelButton, BoxLayout.X_AXIS ) );
 
 		final Component horizontalStrut0 = Box.createHorizontalStrut( 20 );
@@ -174,7 +174,7 @@ public class FeatureComputationPanel extends JPanel
 			final BoxLayout hpLayout = new BoxLayout( headerPanel, BoxLayout.LINE_AXIS );
 			headerPanel.setLayout( hpLayout );
 			final JToggleButton button = new JToggleButton( "ALL" );
-			button.setPreferredSize( new Dimension( 40, 24 ) );
+			button.setPreferredSize( new Dimension( 42, 24 ) );
 			button.setFont( button.getFont().deriveFont( 6f ) );
 
 			final JLabel lbl = new JLabel( target.getSimpleName() );
