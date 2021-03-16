@@ -100,7 +100,7 @@ public class MamutRawFeatureModelIO
 			final FeatureSpec< ?, ? > spec = featureSpecsService.getSpec( featureKey );
 			if (null == spec)
 			{
-				System.err.println( "Unkown feature: " + featureKey );
+				System.err.println( "Unknown feature: " + featureKey );
 				continue;
 			}
 			final FeatureSerializer< ?, ? > serializer = featureSerializationService.getFeatureSerializerFor( spec );

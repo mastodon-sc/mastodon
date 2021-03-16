@@ -468,7 +468,7 @@ class MamutViewStateSerialization
 				value = XmlHelpers.getInt( viewEl, key );
 				break;
 			default:
-				System.err.println( "Unkown GUI config parameter: " + key + " found in GUI file." );
+				System.err.println( "Unknown GUI config parameter: " + key + " found in GUI file." );
 				continue;
 			}
 			guiState.put( key, value );
