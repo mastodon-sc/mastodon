@@ -187,6 +187,8 @@ public class WindowManager
 
 	final ProjectManager projectManager;
 
+	private final List< BdvViewCreatedListener > listeners;
+
 	public WindowManager( final Context context )
 	{
 		this.context = context;
@@ -247,6 +249,8 @@ public class WindowManager
 		globalAppActions.namedAction( tooglePreferencesDialogAction, PREFERENCES_DIALOG_KEYS );
 
 		updateEnabledActions();
+
+		listeners = new ArrayList<>();
 	}
 
 	private void discoverPlugins()
@@ -386,6 +390,7 @@ public class WindowManager
 			final MamutViewBdv view = new MamutViewBdv( appModel, guiState );
 			view.getFrame().setIconImages( BDV_VIEW_ICON );
 			addBdvWindow( view );
+			notifyListeners( view );
 			return view;
 		}
 		return null;
@@ -537,6 +542,16 @@ public class WindowManager
 	}
 
 	/**
+	 * Exposes currently open BigDataViewer windows.
+	 *
+	 * @return a {@link List} of {@link MamutViewBdv}.
+	 */
+	public List< MamutViewBdv > getBdvWindows()
+	{
+		return bdvWindows;
+	}
+
+	/**
 	 * Exposes the {@link ProjectManager} of this window manager, that handles
 	 * project files.
 	 *
@@ -553,5 +568,35 @@ public class WindowManager
 		context.inject( builder );
 		builder.discoverProviders();
 		return builder.build();
+	}
+
+	/**
+	 * Classes that implement {@link BdvViewCreatedListener} get a notification
+	 * when a new {@link MamutViewBdv} instance is created.
+	 */
+	public interface BdvViewCreatedListener
+	{
+		void bdvViewCreated( final MamutViewBdv view );
+	}
+
+	public synchronized boolean addBdvViewCreatedListner( final BdvViewCreatedListener listener )
+	{
+		if ( !listeners.contains( listener ) )
+		{
+			listeners.add( listener );
+			return true;
+		}
+		return false;
+	}
+
+	public synchronized boolean removeBdvViewCreatedListner( final BdvViewCreatedListener listener )
+	{
+		return listeners.remove( listener );
+	}
+
+	private void notifyListeners( final MamutViewBdv view )
+	{
+		for ( final BdvViewCreatedListener l : listeners )
+			l.bdvViewCreated( view );
 	}
 }
