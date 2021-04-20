@@ -231,9 +231,17 @@ public class TrackSchemeGraph<
 		vertexMap = new TrackSchemeVertexBimap<>( this );
 		edgeMap = new TrackSchemeEdgeBimap<>( this );
 
-		modelGraph.addGraphListener( this );
-		modelGraph.addGraphChangeListener( this );
-		graphRebuilt();
+		lock.writeLock().lock();
+		try
+		{
+			graphRebuilt();
+		}
+		finally
+		{
+			lock.writeLock().unlock();
+			modelGraph.addGraphListener( this );
+			modelGraph.addGraphChangeListener( this );
+		}
 	}
 
 	/**
