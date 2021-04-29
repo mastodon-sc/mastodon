@@ -48,70 +48,53 @@ import org.mastodon.mamut.model.Spot;
 import org.mastodon.properties.DoublePropertyMap;
 import org.scijava.plugin.Plugin;
 
-public class SpotGaussFilteredIntensityFeature implements Feature< Spot >
+public class SpotCenterIntensityFeature implements Feature< Spot >
 {
-	public static final String KEY = "Spot gaussian-filtered intensity";
+	public static final String KEY = "Spot center intensity";
 
 	private static final String HELP_STRING =
-			"Computes the average intensity and its standard deviation inside spots "
-					+ "over all sources of the dataset. "
-					+ "The average is calculated by a weighted mean over the pixels of the spot, "
-					+ "weighted by a gaussian centered in the spot and with a sigma value equal "
-					+ "to the minimal radius of the ellipsoid divided by "
-					+ SpotGaussFilteredIntensityFeatureComputer.SIGMA_FACTOR + ".";
+			"Computes the intensity at the center of spots by taking the mean of pixel intensity "
+					+ "weigthted by a gaussian. The gaussian weights are centered int the spot, "
+					+ "and have a sigma value equal to the minimal radius of the ellipsoid divided by "
+					+ SpotCenterIntensityFeatureComputer.SIGMA_FACTOR + ".";
 
-	public static final FeatureProjectionSpec MEAN_PROJECTION_SPEC = new FeatureProjectionSpec( "Mean", Dimension.INTENSITY );
-
-	public static final FeatureProjectionSpec STD_PROJECTION_SPEC = new FeatureProjectionSpec( "Std", Dimension.INTENSITY );
+	public static final FeatureProjectionSpec PROJECTION_SPEC = new FeatureProjectionSpec( "Center", Dimension.INTENSITY );
 
 	public static final Spec SPEC = new Spec();
 
 	@Plugin( type = FeatureSpec.class )
-	public static class Spec extends FeatureSpec< SpotGaussFilteredIntensityFeature, Spot >
+	public static class Spec extends FeatureSpec< SpotCenterIntensityFeature, Spot >
 	{
 		public Spec()
 		{
 			super(
 					KEY,
 					HELP_STRING,
-					SpotGaussFilteredIntensityFeature.class,
+					SpotCenterIntensityFeature.class,
 					Spot.class,
 					Multiplicity.ON_SOURCES,
-					MEAN_PROJECTION_SPEC, STD_PROJECTION_SPEC );
+					PROJECTION_SPEC );
 		}
 	}
 
 	private final Map< FeatureProjectionKey, FeatureProjection< Spot > > projectionMap;
 
-	final List< DoublePropertyMap< Spot > > means;
+	final List< DoublePropertyMap< Spot > > maps;
 
-	final List< DoublePropertyMap< Spot > > stds;
-
-	SpotGaussFilteredIntensityFeature(
-			final List< DoublePropertyMap< Spot > > means,
-			final List< DoublePropertyMap< Spot > > stds )
+	SpotCenterIntensityFeature( final List< DoublePropertyMap< Spot > > maps )
 	{
-		this.means = means;
-		this.stds = stds;
-		this.projectionMap = new LinkedHashMap<>( 2 * means.size() );
-		for ( int iSource = 0; iSource < means.size(); iSource++ )
+		this.maps = maps;
+		this.projectionMap = new LinkedHashMap<>( 2 * maps.size() );
+		for ( int iSource = 0; iSource < maps.size(); iSource++ )
 		{
-			final FeatureProjectionKey mkey = key( MEAN_PROJECTION_SPEC, iSource );
-			projectionMap.put( mkey, FeatureProjections.project( mkey, means.get( iSource ), Dimension.COUNTS_UNITS ) );
-
-			final FeatureProjectionKey skey = key( STD_PROJECTION_SPEC, iSource );
-			projectionMap.put( skey, FeatureProjections.project( skey, stds.get( iSource ), Dimension.COUNTS_UNITS ) );
+			final FeatureProjectionKey mkey = key( PROJECTION_SPEC, iSource );
+			projectionMap.put( mkey, FeatureProjections.project( mkey, maps.get( iSource ), Dimension.COUNTS_UNITS ) );
 		}
 	}
 
-	public double getMean( final Spot spot, final int source )
+	public double getCenterIntensity( final Spot spot, final int source )
 	{
-		return means.get( source ).getDouble( spot );
-	}
-
-	public double getStd( final Spot spot, final int source )
-	{
-		return stds.get( source ).getDouble( spot );
+		return maps.get( source ).getDouble( spot );
 	}
 
 	@Override
@@ -135,11 +118,7 @@ public class SpotGaussFilteredIntensityFeature implements Feature< Spot >
 	@Override
 	public void invalidate( final Spot spot )
 	{
-		for ( final DoublePropertyMap< Spot > map : means )
+		for ( final DoublePropertyMap< Spot > map : maps )
 			map.remove( spot );
-
-		for ( final DoublePropertyMap< Spot > map : stds )
-			map.remove( spot );
-
 	}
 }

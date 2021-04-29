@@ -39,49 +39,41 @@ import org.mastodon.feature.io.FeatureSerializer;
 import org.mastodon.io.FileIdToObjectMap;
 import org.mastodon.io.ObjectToFileIdMap;
 import org.mastodon.io.properties.DoublePropertyMapSerializer;
-import org.mastodon.mamut.feature.SpotGaussFilteredIntensityFeature.Spec;
+import org.mastodon.mamut.feature.SpotCenterIntensityFeature.Spec;
 import org.mastodon.mamut.model.Spot;
 import org.mastodon.properties.DoublePropertyMap;
 import org.scijava.plugin.Plugin;
 
 @Plugin( type = FeatureSerializer.class )
-public class SpotGaussFilteredIntensityFeatureSerializer implements FeatureSerializer< SpotGaussFilteredIntensityFeature, Spot >
+public class SpotCenterIntensityFeatureSerializer implements FeatureSerializer< SpotCenterIntensityFeature, Spot >
 {
 
 	@Override
 	public Spec getFeatureSpec()
 	{
-		return SpotGaussFilteredIntensityFeature.SPEC;
+		return SpotCenterIntensityFeature.SPEC;
 	}
 
 	@Override
-	public void serialize( final SpotGaussFilteredIntensityFeature feature, final ObjectToFileIdMap< Spot > idmap, final ObjectOutputStream oos ) throws IOException
+	public void serialize( final SpotCenterIntensityFeature feature, final ObjectToFileIdMap< Spot > idmap, final ObjectOutputStream oos ) throws IOException
 	{
-		final int nSources = feature.means.size();
+		final int nSources = feature.maps.size();
 		oos.writeInt( nSources );
 		for ( int i = 0; i < nSources; i++ )
-		{
-			new DoublePropertyMapSerializer<>( feature.means.get( i ) ).writePropertyMap( idmap, oos );
-			new DoublePropertyMapSerializer<>( feature.stds.get( i ) ).writePropertyMap( idmap, oos );
-		}
+			new DoublePropertyMapSerializer<>( feature.maps.get( i ) ).writePropertyMap( idmap, oos );
 	}
 
 	@Override
-	public SpotGaussFilteredIntensityFeature deserialize( final FileIdToObjectMap< Spot > idmap, final RefCollection< Spot > pool, final ObjectInputStream ois ) throws IOException, ClassNotFoundException
+	public SpotCenterIntensityFeature deserialize( final FileIdToObjectMap< Spot > idmap, final RefCollection< Spot > pool, final ObjectInputStream ois ) throws IOException, ClassNotFoundException
 	{
 		final int nSources = ois.readInt();
-		final List< DoublePropertyMap< Spot > > means = new ArrayList<>( nSources );
-		final List< DoublePropertyMap< Spot > > stds = new ArrayList<>( nSources );
+		final List< DoublePropertyMap< Spot > > maps = new ArrayList<>( nSources );
 		for ( int i = 0; i < nSources; i++ )
 		{
 			final DoublePropertyMap< Spot > meanMap = new DoublePropertyMap<>( pool, Double.NaN );
 			new DoublePropertyMapSerializer<>( meanMap ).readPropertyMap( idmap, ois );
-			means.add( meanMap );
-
-			final DoublePropertyMap< Spot > stdMap = new DoublePropertyMap<>( pool, Double.NaN );
-			new DoublePropertyMapSerializer<>( stdMap ).readPropertyMap( idmap, ois );
-			stds.add( stdMap );
+			maps.add( meanMap );
 		}
-		return new SpotGaussFilteredIntensityFeature( means, stds );
+		return new SpotCenterIntensityFeature( maps );
 	}
 }
