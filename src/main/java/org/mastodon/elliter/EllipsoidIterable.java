@@ -1,8 +1,11 @@
 package org.mastodon.elliter;
 
-import bdv.viewer.Source;
 import java.util.Iterator;
 import java.util.function.Predicate;
+
+import org.mastodon.mamut.model.Spot;
+
+import bdv.viewer.Source;
 import net.imglib2.Cursor;
 import net.imglib2.IterableInterval;
 import net.imglib2.Localizable;
@@ -15,9 +18,21 @@ import net.imglib2.roi.mask.integer.DefaultMask;
 import net.imglib2.util.Intervals;
 import net.imglib2.util.LinAlgHelpers;
 import net.imglib2.view.Views;
-import org.mastodon.mamut.model.Spot;
 
-public class EllipsoidIterable< T > implements IterableInterval< T >
+/**
+ * An iterable that iterates over the pixels of spot over a specified
+ * {@link Source}. The pixels iterated are taken from the resolution level 0.
+ * The source transform is taken into account.
+ * <p>
+ * Call {@link #reset(Spot)} before iterating over a spot. The
+ * {@link Localizable} methods return the spot center in pixel coordinates.
+ * 
+ * @author Tobias Pietzsch
+ *
+ * @param <T>
+ *            the pixel type in the source.
+ */
+public class EllipsoidIterable< T > implements IterableInterval< T >, Localizable
 {
 	// bounding box min/max
 	private final long[] min = new long[ 3 ];
@@ -165,5 +180,29 @@ public class EllipsoidIterable< T > implements IterableInterval< T >
 	public int numDimensions()
 	{
 		return 3;
+	}
+
+	@Override
+	public double realMin( final int d )
+	{
+		return min( d );
+	}
+
+	@Override
+	public double realMax( final int d )
+	{
+		return max( d );
+	}
+
+	@Override
+	public long getLongPosition( final int d )
+	{
+		return Math.round( pos[ d ] );
+	}
+
+	@Override
+	public double getDoublePosition( final int d )
+	{
+		return pos[ d ];
 	}
 }
