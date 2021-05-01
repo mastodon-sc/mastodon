@@ -197,7 +197,6 @@ public class SpotCenterIntensityFeatureComputer implements MamutFeatureComputer,
 
 		private final boolean recomputeAll;
 
-
 		public SpotIntensityComputer(
 				final Source< RealType< ? > > source,
 				final Iterator< Spot > iterator,
@@ -268,10 +267,13 @@ public class SpotCenterIntensityFeatureComputer implements MamutFeatureComputer,
 					weightedMean = oldWeightedMean + ( weight / weightedSum ) * ( val - oldWeightedMean );
 				}
 
-				if ( npixels > 0 )
-					map.set( spot, weightedMean );
-				else
-					map.remove( spot );
+				synchronized ( map )
+				{
+					if ( npixels > 0 )
+						map.set( spot, weightedMean );
+					else
+						map.remove( spot );
+				}
 			}
 			return null;
 		}
