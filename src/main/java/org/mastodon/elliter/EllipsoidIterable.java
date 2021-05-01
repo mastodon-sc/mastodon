@@ -21,8 +21,7 @@ import net.imglib2.view.Views;
 
 /**
  * An iterable that iterates over the pixels of spot over a specified
- * {@link Source}. The pixels iterated are taken from the resolution level 0.
- * The source transform is taken into account.
+ * {@link Source}. The source transform is taken into account.
  * <p>
  * Call {@link #reset(Spot)} before iterating over a spot. The
  * {@link Localizable} methods return the spot center in pixel coordinates.
@@ -36,6 +35,7 @@ public class EllipsoidIterable< T > implements IterableInterval< T >, Localizabl
 {
 	// bounding box min/max
 	private final long[] min = new long[ 3 ];
+
 	private final long[] max = new long[ 3 ];
 
 	// spot covariance in source coordinates
@@ -49,12 +49,14 @@ public class EllipsoidIterable< T > implements IterableInterval< T >, Localizabl
 
 	// temporary transformation matrices
 	private final double[][] T = new double[ 3 ][ 3 ];
+
 	private final double[][] TS = new double[ 3 ][ 3 ];
 
 	// transform of current source to global coordinates
 	private final AffineTransform3D sourceTransform = new AffineTransform3D();
 
 	private final double[] p = new double[ 3 ];
+
 	private final double[] diff = new double[ 3 ];
 
 	private final Source< T > source;
@@ -64,11 +66,33 @@ public class EllipsoidIterable< T > implements IterableInterval< T >, Localizabl
 		this.source = source;
 	}
 
+	/**
+	 * Resets this iterable to that it iterates over the specified spot. The
+	 * pixel iterated are taken from the resolution level 0,
+	 * 
+	 * @param spot
+	 *            the spot to iterate.
+	 */
 	public void reset( final Spot spot )
 	{
+		reset( spot, 0 );
+	}
+
+	/**
+	 * Resets this iterable to that it iterates over the specified spot, at the
+	 * specified resolution level in the source. Generate an error of the
+	 * specified resolution level is not present in the source.
+	 * 
+	 * @param spot
+	 *            the spot to iterate.
+	 * @param resolutionLevel
+	 *            the resolution level to use in the source.
+	 */
+	public void reset( final Spot spot, final int resolutionLevel )
+	{
 		final int t = spot.getTimepoint();
-		source.getSourceTransform( t, 0, sourceTransform );
-		final RandomAccessibleInterval< T > img = source.getSource( t, 0 );
+		source.getSourceTransform( t, resolutionLevel, sourceTransform );
+		final RandomAccessibleInterval< T > img = source.getSource( t, resolutionLevel );
 
 		// transform spot covariance into source coordinates
 		spot.getCovariance( S );
@@ -91,7 +115,8 @@ public class EllipsoidIterable< T > implements IterableInterval< T >, Localizabl
 		}
 
 		// if bounding box is empty, we set it to cover pixel at (0,0,0)
-		// this will hopefully not cause problems, because it would not overlap with ellipsoid,
+		// this will hopefully not cause problems, because it would not overlap
+		// with ellipsoid,
 		// so the ellipsoidVoxels iterable bould be empty.
 		if ( Intervals.isEmpty( this ) )
 			for ( int d = 0; d < 3; ++d )
