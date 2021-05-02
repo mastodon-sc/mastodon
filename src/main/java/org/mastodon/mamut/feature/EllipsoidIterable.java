@@ -1,4 +1,4 @@
-package org.mastodon.elliter;
+package org.mastodon.mamut.feature;
 
 import java.util.Iterator;
 import java.util.function.Predicate;

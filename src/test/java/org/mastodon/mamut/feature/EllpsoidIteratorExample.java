@@ -1,4 +1,4 @@
-package org.mastodon.elliter;
+package org.mastodon.mamut.feature;
 
 import bdv.util.Bdv;
 import bdv.util.BdvFunctions;
@@ -16,7 +16,9 @@ import net.imglib2.img.array.ArrayImgs;
 import net.imglib2.realtransform.AffineTransform3D;
 import net.imglib2.type.numeric.integer.UnsignedByteType;
 import net.imglib2.util.LinAlgHelpers;
-import org.mastodon.elliter.EllpsoidIteratorExample.ScreenVertexMath.Ellipse;
+
+import org.mastodon.mamut.feature.EllipsoidIterable;
+import org.mastodon.mamut.feature.EllpsoidIteratorExample.ScreenVertexMath.Ellipse;
 import org.mastodon.mamut.model.ModelGraph;
 import org.mastodon.mamut.model.Spot;
 import org.mastodon.views.bdv.overlay.util.JamaEigenvalueDecomposition;
