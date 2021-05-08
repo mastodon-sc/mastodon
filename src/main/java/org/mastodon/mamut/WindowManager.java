@@ -29,9 +29,9 @@
 package org.mastodon.mamut;
 
 import static org.mastodon.app.MastodonIcons.BDV_VIEW_ICON;
-import static org.mastodon.app.MastodonIcons.FEATURES_ICON_LARGE;
+import static org.mastodon.app.MastodonIcons.FEATURES_ICON;
 import static org.mastodon.app.MastodonIcons.TABLE_VIEW_ICON;
-import static org.mastodon.app.MastodonIcons.TAGS_ICON_LARGE;
+import static org.mastodon.app.MastodonIcons.TAGS_ICON;
 import static org.mastodon.app.MastodonIcons.TRACKSCHEME_VIEW_ICON;
 
 import java.awt.Window;
@@ -210,7 +210,8 @@ public class WindowManager
 		keymapManager.getUserStyles().forEach( augmentInputTriggerConfig );
 		keymapManager.getBuiltinStyles().forEach( augmentInputTriggerConfig );
 
-		// TODO: naming, this should be named appActions and the AppModel.appActions should become modelActions?
+		// TODO: naming, this should be named appActions and the
+		// AppModel.appActions should become modelActions?
 		// TODO: or rename AppModel --> ProjectModel, then projectActions?
 		globalAppActions = new Actions( keymap.getConfig(), KeyConfigContexts.MASTODON );
 		keymap.updateListeners().add( () -> {
@@ -303,9 +304,9 @@ public class WindowManager
 
 		final Keymap keymap = keymapManager.getForwardDefaultKeymap();
 		tagSetDialog = new TagSetDialog( null, model.getTagSetModel(), model, keymap, new String[] { KeyConfigContexts.MASTODON } );
-		tagSetDialog.setIconImage( TAGS_ICON_LARGE.getImage() );
+		tagSetDialog.setIconImages( TAGS_ICON );
 		featureComputationDialog = MamutFeatureComputation.getDialog( appModel, context );
-		featureComputationDialog.setIconImage( FEATURES_ICON_LARGE.getImage() );
+		featureComputationDialog.setIconImages( FEATURES_ICON );
 		featureProjectionsManager.setModel( model, appModel.getSharedBdvData().getSources().size() );
 
 		updateEnabledActions();
@@ -383,7 +384,7 @@ public class WindowManager
 		if ( appModel != null )
 		{
 			final MamutViewBdv view = new MamutViewBdv( appModel, guiState );
-			view.getFrame().setIconImage( BDV_VIEW_ICON );
+			view.getFrame().setIconImages( BDV_VIEW_ICON );
 			addBdvWindow( view );
 			return view;
 		}
@@ -400,7 +401,7 @@ public class WindowManager
 		if ( appModel != null )
 		{
 			final MamutViewTrackScheme view = new MamutViewTrackScheme( appModel, guiState );
-			view.getFrame().setIconImage( TRACKSCHEME_VIEW_ICON );
+			view.getFrame().setIconImages( TRACKSCHEME_VIEW_ICON );
 			addTsWindow( view );
 			return view;
 		}
@@ -412,7 +413,7 @@ public class WindowManager
 		if ( appModel != null )
 		{
 			final MamutViewTable view = new MamutViewTable( appModel, guiState );
-			view.getFrame().setIconImage( TABLE_VIEW_ICON );
+			view.getFrame().setIconImages( TABLE_VIEW_ICON );
 			addTableWindow( view );
 			return view;
 		}
@@ -426,8 +427,9 @@ public class WindowManager
 	 * @param selectionOnly
 	 *            if <code>true</code>, the table will only display the current
 	 *            content of the selection, and will listen to its changes. If
-	 *            <code>false</code>, the table will display the full graph content,
-	 *            listen to its changes, and will be able to edit the selection.
+	 *            <code>false</code>, the table will display the full graph
+	 *            content, listen to its changes, and will be able to edit the
+	 *            selection.
 	 * @return a new table view.
 	 */
 	public MamutViewTable createTable( final boolean selectionOnly )

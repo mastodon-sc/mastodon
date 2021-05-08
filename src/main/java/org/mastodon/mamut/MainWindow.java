@@ -31,7 +31,7 @@ package org.mastodon.mamut;
 import static org.mastodon.app.MastodonIcons.BDV_ICON_MEDIUM;
 import static org.mastodon.app.MastodonIcons.FEATURES_ICON_MEDIUM;
 import static org.mastodon.app.MastodonIcons.MAINWINDOW_BG;
-import static org.mastodon.app.MastodonIcons.MASTODON_ICON_MEDIUM;
+import static org.mastodon.app.MastodonIcons.MASTODON_ICON;
 import static org.mastodon.app.MastodonIcons.SAVE_AS_ICON_MEDIUM;
 import static org.mastodon.app.MastodonIcons.SAVE_ICON_MEDIUM;
 import static org.mastodon.app.MastodonIcons.TABLE_ICON_MEDIUM;
@@ -78,7 +78,7 @@ public class MainWindow extends JFrame
 	public MainWindow( final WindowManager windowManager )
 	{
 		super( "Mastodon" );
-		setIconImage( MASTODON_ICON_MEDIUM.getImage() );
+		setIconImages( MASTODON_ICON );
 		setLocationByPlatform( true );
 		setLocationRelativeTo( null );
 
@@ -88,28 +88,28 @@ public class MainWindow extends JFrame
 		final GridBagLayout gbl = new GridBagLayout();
 		gbl.columnWeights = new double[] { 1.0, 1.0 };
 		gbl.rowWeights = new double[] { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 };
-		buttonsPanel.setLayout(gbl);
+		buttonsPanel.setLayout( gbl );
 
 		final GridBagConstraints separator_gbc = new GridBagConstraints();
 		separator_gbc.fill = GridBagConstraints.HORIZONTAL;
 		separator_gbc.gridwidth = 2;
-		separator_gbc.insets = new Insets(5, 5, 5, 5);
+		separator_gbc.insets = new Insets( 5, 5, 5, 5 );
 		separator_gbc.gridx = 0;
 
 		final GridBagConstraints label_gbc = new GridBagConstraints();
 		label_gbc.fill = GridBagConstraints.HORIZONTAL;
 		label_gbc.gridwidth = 2;
-		label_gbc.insets = new Insets(5, 5, 5, 5);
+		label_gbc.insets = new Insets( 5, 5, 5, 5 );
 		label_gbc.gridx = 0;
 
 		final GridBagConstraints button_gbc_right = new GridBagConstraints();
 		button_gbc_right.fill = GridBagConstraints.BOTH;
-		button_gbc_right.insets = new Insets(0, 0, 5, 10);
+		button_gbc_right.insets = new Insets( 0, 0, 5, 10 );
 		button_gbc_right.gridx = 1;
 
 		final GridBagConstraints button_gbc_left = new GridBagConstraints();
 		button_gbc_left.fill = GridBagConstraints.BOTH;
-		button_gbc_left.insets = new Insets(0, 10, 5, 5);
+		button_gbc_left.insets = new Insets( 0, 10, 5, 5 );
 		button_gbc_left.gridx = 0;
 
 		int gridy = 0;
@@ -261,14 +261,11 @@ public class MainWindow extends JFrame
 						item( ProjectManager.IMPORT_MAMUT ),
 						item( ProjectManager.EXPORT_MAMUT ),
 						separator(),
-						item( WindowManager.PREFERENCES_DIALOG )
-				),
+						item( WindowManager.PREFERENCES_DIALOG ) ),
 				windowMenu(
 						item( WindowManager.NEW_BDV_VIEW ),
 						item( WindowManager.NEW_TRACKSCHEME_VIEW ),
 						item( WindowManager.NEW_TABLE_VIEW ),
-						item( WindowManager.NEW_SELECTION_TABLE_VIEW )
-				)
-		);
+						item( WindowManager.NEW_SELECTION_TABLE_VIEW ) ) );
 	}
 }
