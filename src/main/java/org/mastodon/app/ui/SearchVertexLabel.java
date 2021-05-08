@@ -40,8 +40,12 @@ import org.mastodon.model.FocusModel;
 import org.mastodon.model.HasLabel;
 import org.mastodon.model.NavigationHandler;
 import org.mastodon.model.SelectionModel;
+import org.mastodon.ui.keymap.CommandDescriptionProvider;
+import org.mastodon.ui.keymap.CommandDescriptions;
+import org.mastodon.ui.keymap.KeyConfigContexts;
 import org.mastodon.util.KeyConfigUtils;
 import org.mastodon.views.trackscheme.util.AlphanumCompare;
+import org.scijava.plugin.Plugin;
 import org.scijava.ui.behaviour.util.Actions;
 import org.scijava.ui.behaviour.util.RunnableAction;
 
@@ -62,7 +66,7 @@ public class SearchVertexLabel< V extends Vertex< E > & HasLabel & Ref< V >, E e
 
 	public static final String SEARCH = "search label";
 
-	public static final String[] SEARCH_KEYS = new String[] { "ctrl F", "meta F", "SLASH" };
+	public static final String[] SEARCH_KEYS = new String[] { "ctrl F", "SLASH" };
 
 	private final static String CANCEL_ACTION = "cancel-entry";
 
@@ -104,6 +108,27 @@ public class SearchVertexLabel< V extends Vertex< E > & HasLabel & Ref< V >, E e
 		final SearchVertexLabel< V, E > search = new SearchVertexLabel<>( graph, navigation, selection, focus, cancelEntryFocusTarget );
 		actions.runnableAction( () -> search.searchField.requestFocusInWindow(), SEARCH, SEARCH_KEYS );
 		return search.searchPanel;
+	}
+
+	/*
+	 * Command description.
+	 */
+	@Plugin( type = Descriptions.class )
+	public static class Descriptions extends CommandDescriptionProvider
+	{
+		public Descriptions()
+		{
+			super( KeyConfigContexts.BIGDATAVIEWER, KeyConfigContexts.TRACKSCHEME, KeyConfigContexts.TABLE );
+		}
+
+		@Override
+		public void getCommandDescriptions( final CommandDescriptions descriptions )
+		{
+			descriptions.add(
+					SEARCH,
+					SEARCH_KEYS,
+					"Find vertices by their label." );
+		}
 	}
 
 	private SearchVertexLabel(
