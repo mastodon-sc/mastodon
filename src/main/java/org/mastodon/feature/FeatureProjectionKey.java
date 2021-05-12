@@ -106,11 +106,11 @@ public final class FeatureProjectionKey
 	@Override
 	public String toString()
 	{
-		StringBuilder sb = new StringBuilder( spec.getKey() );
-		for ( int sourceIndex : sourceIndices )
+		final StringBuilder sb = new StringBuilder( spec.getKey() );
+		for ( final int sourceIndex : sourceIndices )
 		{
 			sb.append( " ch" );
-			sb.append( sourceIndex );
+			sb.append( sourceIndex + 1 );
 		}
 		return sb.toString();
 	}

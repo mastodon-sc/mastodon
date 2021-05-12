@@ -60,7 +60,7 @@ public class PreferencesDialog extends JDialog
 		super( owner, "Preferences", false );
 		setLocationByPlatform( true );
 		setLocationRelativeTo( null );
-		setIconImage( MastodonIcons.MASTODON_ICON_MEDIUM.getImage() );
+		setIconImages( MastodonIcons.MASTODON_ICON );
 		settingsPanel = new SettingsPanel();
 		settingsPanel.onOk( () -> setVisible( false ) );
 		settingsPanel.onCancel( () -> setVisible( false ) );

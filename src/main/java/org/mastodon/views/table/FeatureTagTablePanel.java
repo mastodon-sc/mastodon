@@ -52,7 +52,6 @@ import javax.swing.text.JTextComponent;
 import org.mastodon.RefPool;
 import org.mastodon.feature.Feature;
 import org.mastodon.feature.FeatureProjection;
-import org.mastodon.feature.FeatureProjectionKey;
 import org.mastodon.feature.FeatureSpec;
 import org.mastodon.feature.IntFeatureProjection;
 import org.mastodon.model.tag.ObjTags;
@@ -382,7 +381,6 @@ public class FeatureTagTablePanel< O > extends JPanel
 			if ( null == feature.projections() )
 				continue;
 			final List< FeatureProjection< ? > > projections = new ArrayList<>( feature.projections() );
-			projections.sort( Comparator.comparing( FeatureProjection::getKey, Comparator.comparing( FeatureProjectionKey::toString ) ) );
 			for ( final FeatureProjection< ? > projection : projections )
 			{
 				@SuppressWarnings( "unchecked" )
@@ -435,8 +433,6 @@ public class FeatureTagTablePanel< O > extends JPanel
 			}
 			else
 			{
-				projections.sort( Comparator.comparing( FeatureProjection::getKey, Comparator.comparing( FeatureProjectionKey::toString ) ) );
-
 				for ( final FeatureProjection< ? > projection : projections )
 				{
 					final ColumnGroup projectionGroup = new ColumnGroup( projection.getKey().toString() );

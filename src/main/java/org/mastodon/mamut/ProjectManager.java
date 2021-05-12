@@ -298,6 +298,16 @@ public class ProjectManager
 
 	public synchronized void saveProject()
 	{
+		if ( project == null )
+			return;
+
+		// If a Mastodon project was not yet created, ask to create one.
+		if ( project.getProjectRoot() == null )
+		{
+			saveProjectAs();
+			return;
+		}
+
 		try
 		{
 			saveProject( project.getProjectRoot() );

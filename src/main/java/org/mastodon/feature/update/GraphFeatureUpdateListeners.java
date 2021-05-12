@@ -34,6 +34,7 @@ import java.util.List;
 import org.mastodon.feature.Feature;
 import org.mastodon.feature.FeatureModel;
 import org.mastodon.feature.FeatureModel.FeatureModelListener;
+import org.mastodon.feature.FeatureSpec;
 import org.mastodon.graph.Edge;
 import org.mastodon.graph.Vertex;
 import org.mastodon.properties.PropertyChangeListener;
@@ -102,10 +103,9 @@ public class GraphFeatureUpdateListeners
 				final List< Feature< O > > featureList )
 		{
 			featureList.clear();
-			featureModel.getFeatureSpecs()
-					.stream()
-					.filter( fs -> fs.getTargetClass().equals( targetClass ) )
-					.map( fs -> featureList.add( ( Feature< O > ) fs ) );
+			for ( final FeatureSpec< ?, ? > fs : featureModel.getFeatureSpecs() )
+				if ( fs.getTargetClass().equals( targetClass ) )
+					featureList.add( ( Feature< O > ) featureModel.getFeature( fs ) );
 		}
 	}
 }

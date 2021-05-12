@@ -77,7 +77,7 @@ public class SpotIntensityUpdateExample
 		System.out.println( "Computing spot intensity..." );
 		final StopWatch stopWatch = StopWatch.createAndStart();
 		final Map< FeatureSpec< ?, ? >, Feature< ? > > features = featureComputerService.compute(
-				SpotGaussFilteredIntensityFeature.SPEC );
+				SpotCenterIntensityFeature.SPEC );
 		stopWatch.stop();
 		System.out.println( String.format( "Done in %.1s.", stopWatch.nanoTime() / 1e9 ) );
 
@@ -90,13 +90,10 @@ public class SpotIntensityUpdateExample
 
 		@SuppressWarnings( "unchecked" )
 		final FeatureProjection< Spot > proj1 = ( FeatureProjection< Spot > ) model.getFeatureModel()
-				.getFeature( SpotGaussFilteredIntensityFeature.SPEC ).project( key( SpotGaussFilteredIntensityFeature.MEAN_PROJECTION_SPEC, 0 ) );
-		@SuppressWarnings( "unchecked" )
-		final FeatureProjection< Spot > proj2 = ( FeatureProjection< Spot > ) model.getFeatureModel()
-				.getFeature( SpotGaussFilteredIntensityFeature.SPEC ).project( key( SpotGaussFilteredIntensityFeature.STD_PROJECTION_SPEC, 0 ) );
+				.getFeature( SpotCenterIntensityFeature.SPEC ).project( key( SpotCenterIntensityFeature.PROJECTION_SPEC, 0 ) );
 
 		System.out.println();
-		System.out.println( "Spot " + spot.getLabel() + " intensity was " + proj1.value( spot ) + " ± " + proj2.value( spot ) );
+		System.out.println( "Spot " + spot.getLabel() + " center intensity was " + proj1.value( spot ) );
 		System.out.println();
 
 		/*
@@ -112,12 +109,12 @@ public class SpotIntensityUpdateExample
 
 		System.out.println( "Re-computing spot intensity..." );
 		final Map< FeatureSpec< ?, ? >, Feature< ? > > features2 = featureComputerService.compute(
-				SpotGaussFilteredIntensityFeature.SPEC );
+				SpotCenterIntensityFeature.SPEC );
 
 		featureModel.clear();
 		features2.values().forEach( featureModel::declareFeature );
 
-		System.out.println( "Spot " + spot.getLabel() + " intensity is now " + proj1.value( spot ) + " ± " + proj2.value( spot ) );
+		System.out.println( "Spot " + spot.getLabel() + " center intensity is now " + proj1.value( spot ) );
 		System.out.println();
 
 		/*
@@ -127,12 +124,12 @@ public class SpotIntensityUpdateExample
 		System.out.println( "Full recalculation..." );
 		featureComputerService.setModel( model );
 		final Map< FeatureSpec< ?, ? >, Feature< ? > > features3 = featureComputerService.compute(
-				SpotGaussFilteredIntensityFeature.SPEC );
+				SpotCenterIntensityFeature.SPEC );
 
 		featureModel.clear();
 		features3.values().forEach( featureModel::declareFeature );
 
-		System.out.println( "Spot " + spot.getLabel() + " intensity is to be compared with " + proj1.value( spot ) + " ± " + proj2.value( spot ) );
+		System.out.println( "Spot " + spot.getLabel() + " center intensity is to be compared with " + proj1.value( spot ) );
 		System.out.println();
 
 		/*
@@ -141,7 +138,7 @@ public class SpotIntensityUpdateExample
 
 		System.out.println( "Update without changes..." );
 		final Map< FeatureSpec< ?, ? >, Feature< ? > > features4 = featureComputerService.compute(
-				SpotGaussFilteredIntensityFeature.SPEC );
+				SpotCenterIntensityFeature.SPEC );
 
 		featureModel.clear();
 		features4.values().forEach( featureModel::declareFeature );

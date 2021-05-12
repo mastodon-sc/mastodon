@@ -80,7 +80,7 @@ public class SpotIntensityBenchmark
 		for ( int i = 0; i < 5; i++ )
 		{
 			final StopWatch stopWatch = StopWatch.createAndStart();
-			featureComputerService.compute( SpotGaussFilteredIntensityFeature.SPEC );
+			featureComputerService.compute( SpotCenterIntensityFeature.SPEC );
 			stopWatch.stop();
 			System.out.println( String.format( "Done in %.2f s.", stopWatch.nanoTime() / 1e9 ) );
 		}

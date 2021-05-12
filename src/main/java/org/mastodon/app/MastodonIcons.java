@@ -1,7 +1,8 @@
 package org.mastodon.app;
 
 import java.awt.Image;
-import java.util.Locale;
+import java.util.Arrays;
+import java.util.List;
 
 import javax.swing.ImageIcon;
 
@@ -113,29 +114,24 @@ public class MastodonIcons
 	public static final ImageIcon TGMM_IMPORT_ICON_LARGE = new ImageIcon( MastodonIcons.class.getResource( "icon-tgmm-import-512x512.png" ) );
 
 	/*
-	 * Images for views.
+	 * Images icons for JFrames and dialogs.
 	 */
 
-	public static final Image BDV_VIEW_ICON = isMac() ? null : BDV_ICON_MEDIUM.getImage();
+	public static final List< Image > BDV_VIEW_ICON = Arrays.asList( new Image[] { BDV_ICON_SMALL.getImage(), BDV_ICON_MEDIUM.getImage(), BDV_ICON_LARGE.getImage() } );
 
-	public static final Image TRACKSCHEME_VIEW_ICON = isMac() ? null : TRACKSCHEME_ICON_MEDIUM.getImage();
+	public static final List< Image > TRACKSCHEME_VIEW_ICON = Arrays.asList( new Image[] { TRACKSCHEME_ICON_SMALL.getImage(), TRACKSCHEME_ICON_MEDIUM.getImage(), TRACKSCHEME_ICON_LARGE.getImage() } );
 
-	public static final Image TABLE_VIEW_ICON = isMac() ? null : TABLE_ICON_MEDIUM.getImage();
+	public static final List< Image > TABLE_VIEW_ICON = Arrays.asList( new Image[] { TABLE_ICON_SMALL.getImage(), TABLE_ICON_MEDIUM.getImage(), TABLE_ICON_LARGE.getImage() } );
+
+	public static final List< Image > MASTODON_ICON = Arrays.asList( new Image[] { MASTODON_ICON_SMALL.getImage(), MASTODON_ICON_MEDIUM.getImage(), MASTODON_ICON_LARGE.getImage() } );
+
+	public static final List< Image > TAGS_ICON = Arrays.asList( new Image[] { TAGS_ICON_SMALL.getImage(), TAGS_ICON_MEDIUM.getImage(), TAGS_ICON_LARGE.getImage() } );
+
+	public static final List< Image > FEATURES_ICON = Arrays.asList( new Image[] { FEATURES_ICON_SMALL.getImage(), FEATURES_ICON_MEDIUM.getImage(), FEATURES_ICON_LARGE.getImage() } );
 
 	/*
 	 * Background for the main window.
 	 */
 
 	public static final Image MAINWINDOW_BG = new ImageIcon( MastodonIcons.class.getResource( "MastodonMainWindowBG.png" ) ).getImage();
-
-	/*
-	 * Utils.
-	 */
-
-	private static final boolean isMac()
-	{
-		final String OS = System.getProperty( "os.name", "generic" ).toLowerCase( Locale.ENGLISH );
-		return ( OS.indexOf( "mac" ) >= 0 ) || ( OS.indexOf( "darwin" ) >= 0 );
-	}
-
 }

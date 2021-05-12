@@ -42,7 +42,7 @@ public interface KeyConfigContexts
 	/**
 	 * The action or behaviour applies to the TrackScheme views.
 	 */
-	String TRACKSCHEME = "ts";
+	String TRACKSCHEME = "trackscheme";
 
 	/**
 	 * The action or behaviour applies to the BDV views.
