@@ -314,6 +314,8 @@ public class JamaEigenvalueDecomposition
       if ( issort ) {
 
           // Sort eigenvalues and corresponding vectors.
+    	  // eigenvalues (non-absolute) are sorted in ascending order
+    	  // accompanied by its corresponding eigenvectors.
 
           for (int i = 0; i < n-1; i++) {
              int k = i;
@@ -900,6 +902,8 @@ public class JamaEigenvalueDecomposition
    	/**
 	 * Check for symmetry, then construct the eigenvalue decomposition Structure
 	 * to access D and V. Sort eigenvalues and corresponding vectors.
+	 * eigenvalues (non-absolute) are sorted in ascending order accompanied by
+	 * its corresponding eigenvectors.
 	 *
 	 * @param numDimensions
 	 *            the dimensionality of the problem (size of the square matrix).
@@ -916,6 +920,8 @@ public class JamaEigenvalueDecomposition
 	 *            the dimensionality of the problem (size of the square matrix).
 	 * @param issort
 	 *            sort eigenvalues and corresponding vectors if true.
+	 *            eigenvalues (non-absolute) are sorted in ascending order
+	 *            accompanied by its corresponding eigenvectors.
 	 */
    public JamaEigenvalueDecomposition( final int numDimensions, final boolean issort ) {
       n = numDimensions;
