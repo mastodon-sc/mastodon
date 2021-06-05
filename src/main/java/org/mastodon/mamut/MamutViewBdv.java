@@ -353,4 +353,14 @@ public class MamutViewBdv extends MamutView< OverlayGraphWrapper< Spot, Link >, 
 	{
 		return coloringModel;
 	}
+
+	/**
+	 * Returns visible vertices in this BDV view.
+	 * 
+	 * @return {@code Iterable} of {@link Spot}
+	 */
+	public Iterable< Spot > getInsideVertices( final int timepoint )
+	{
+		return contextProvider.getOverlayContextWrapper().getInsideVertices( timepoint );
+	}
 }
