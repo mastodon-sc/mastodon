@@ -231,6 +231,8 @@ public class TrackSchemeGraph<
 		vertexMap = new TrackSchemeVertexBimap<>( this );
 		edgeMap = new TrackSchemeEdgeBimap<>( this );
 
+		modelGraph.addGraphListener( this );
+		modelGraph.addGraphChangeListener( this );
 		lock.writeLock().lock();
 		try
 		{
@@ -239,8 +241,6 @@ public class TrackSchemeGraph<
 		finally
 		{
 			lock.writeLock().unlock();
-			modelGraph.addGraphListener( this );
-			modelGraph.addGraphChangeListener( this );
 		}
 	}
 
