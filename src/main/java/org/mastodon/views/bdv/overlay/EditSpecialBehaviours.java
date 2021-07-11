@@ -32,8 +32,6 @@ import static org.mastodon.views.bdv.overlay.EditBehaviours.FOCUS_EDITED_SPOT;
 import static org.mastodon.views.bdv.overlay.EditBehaviours.POINT_SELECT_DISTANCE_TOLERANCE;
 import static org.mastodon.views.bdv.overlay.EditBehaviours.SELECT_ADDED_SPOT;
 
-import bdv.viewer.OverlayRenderer;
-import bdv.viewer.TransformListener;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics;
@@ -53,6 +51,8 @@ import org.scijava.ui.behaviour.DragBehaviour;
 import org.scijava.ui.behaviour.util.AbstractNamedBehaviour;
 import org.scijava.ui.behaviour.util.Behaviours;
 
+import bdv.viewer.OverlayRenderer;
+import bdv.viewer.TransformListener;
 import bdv.viewer.ViewerPanel;
 import net.imglib2.realtransform.AffineTransform3D;
 import net.imglib2.util.LinAlgHelpers;
@@ -223,7 +223,7 @@ public class EditSpecialBehaviours< V extends OverlayVertex< V, E >, E extends O
 				screenVertexMath.init( vertex, transform );
 
 				final Ellipse ellipse = screenVertexMath.getProjectEllipse();
-				OverlayGraphRenderer.drawEllipse( graphics, ellipse, torig );
+				SpotOverlayGraphRenderer.drawEllipse( graphics, ellipse, torig );
 			}
 
 			// The link.
