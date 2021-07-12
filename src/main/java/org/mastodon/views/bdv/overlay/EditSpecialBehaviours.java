@@ -57,7 +57,7 @@ import bdv.viewer.ViewerPanel;
 import net.imglib2.realtransform.AffineTransform3D;
 import net.imglib2.util.LinAlgHelpers;
 
-public class EditSpecialBehaviours< V extends OverlayVertex< V, E >, E extends OverlayEdge< E, V > >
+public class EditSpecialBehaviours< V extends SpotOverlayVertex< V, E >, E extends SpotOverlayEdge< E, V > >
 {
 	private static final String ADD_SPOT_AND_LINK_IT_FORWARD = "add linked spot";
 	private static final String ADD_SPOT_AND_LINK_IT_BACKWARD = "add linked spot backward";
@@ -104,10 +104,10 @@ public class EditSpecialBehaviours< V extends OverlayVertex< V, E >, E extends O
 
 	private final ToggleLink toggleLinkBackwardBehaviour;
 
-	public static < V extends OverlayVertex< V, E >, E extends OverlayEdge< E, V > > void install(
+	public static < V extends SpotOverlayVertex< V, E >, E extends SpotOverlayEdge< E, V > > void install(
 			final Behaviours behaviours,
 			final ViewerPanel viewer,
-			final OverlayGraph< V, E > overlayGraph,
+			final SpotOverlayGraph< V, E > overlayGraph,
 			final OverlayGraphRenderer< V, E > renderer,
 			final SelectionModel< V, E > selection,
 			final FocusModel< V, E > focus,
@@ -123,7 +123,7 @@ public class EditSpecialBehaviours< V extends OverlayVertex< V, E >, E extends O
 
 	private final ViewerPanel viewer;
 
-	private final OverlayGraph< V, E > overlayGraph;
+	private final SpotOverlayGraph< V, E > overlayGraph;
 
 	private final ReentrantReadWriteLock lock;
 
@@ -139,7 +139,7 @@ public class EditSpecialBehaviours< V extends OverlayVertex< V, E >, E extends O
 
 	private EditSpecialBehaviours(
 			final ViewerPanel viewer,
-			final OverlayGraph< V, E > overlayGraph,
+			final SpotOverlayGraph< V, E > overlayGraph,
 			final OverlayGraphRenderer< V, E > renderer,
 			final SelectionModel< V, E > selection,
 			final FocusModel< V, E > focus,

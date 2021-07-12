@@ -94,7 +94,7 @@ import net.imglib2.util.LinAlgHelpers;
  *
  * @author Tobias Pietzsch
  */
-public class SpotOverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends OverlayEdge< E, V > >
+public class SpotOverlayGraphRenderer< V extends SpotOverlayVertex< V, E >, E extends SpotOverlayEdge< E, V > >
 		implements OverlayGraphRenderer< V, E >
 {
 	private int width;
@@ -105,7 +105,7 @@ public class SpotOverlayGraphRenderer< V extends OverlayVertex< V, E >, E extend
 
 	private int renderTimepoint;
 
-	private final OverlayGraph< V, E > graph;
+	private final SpotOverlayGraph< V, E > graph;
 
 	private final SpatioTemporalIndex< V > index;
 
@@ -122,7 +122,7 @@ public class SpotOverlayGraphRenderer< V extends OverlayVertex< V, E >, E extend
 	private final Visibilities< V, E > visibilities;
 
 	public SpotOverlayGraphRenderer(
-			final OverlayGraph< V, E > graph,
+			final SpotOverlayGraph< V, E > graph,
 			final HighlightModel< V, E > highlight,
 			final FocusModel< V, E > focus,
 			final SelectionModel< V, E > selection,

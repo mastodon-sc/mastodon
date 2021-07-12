@@ -43,7 +43,7 @@ import org.mastodon.graph.GraphIdBimap;
 import org.mastodon.graph.ReadOnlyGraph;
 import org.mastodon.graph.Vertex;
 import org.mastodon.spatial.SpatioTemporalIndex;
-import org.mastodon.views.bdv.overlay.OverlayGraph;
+import org.mastodon.views.bdv.overlay.SpotOverlayGraph;
 
 /**
  * TODO: implement remaining ReadOnlyGraph methods
@@ -57,7 +57,7 @@ import org.mastodon.views.bdv.overlay.OverlayGraph;
  * @author Tobias Pietzsch
  */
 public class OverlayGraphWrapper< V extends Vertex< E >, E extends Edge< V > > implements
-		OverlayGraph< OverlayVertexWrapper< V, E >, OverlayEdgeWrapper< V, E > >,
+		SpotOverlayGraph< OverlayVertexWrapper< V, E >, OverlayEdgeWrapper< V, E > >,
 		ViewGraph< V, E, OverlayVertexWrapper< V, E >, OverlayEdgeWrapper< V, E > >
 {
 	final ReadOnlyGraph< V, E > wrappedGraph;

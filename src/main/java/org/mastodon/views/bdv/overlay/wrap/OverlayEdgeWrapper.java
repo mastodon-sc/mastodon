@@ -30,10 +30,10 @@ package org.mastodon.views.bdv.overlay.wrap;
 
 import org.mastodon.graph.Edge;
 import org.mastodon.graph.Vertex;
-import org.mastodon.views.bdv.overlay.OverlayEdge;
+import org.mastodon.views.bdv.overlay.SpotOverlayEdge;
 
 public class OverlayEdgeWrapper< V extends Vertex< E >, E extends Edge< V > >
-	implements OverlayEdge< OverlayEdgeWrapper< V, E >, OverlayVertexWrapper< V, E > >
+	implements SpotOverlayEdge< OverlayEdgeWrapper< V, E >, OverlayVertexWrapper< V, E > >
 {
 	private final OverlayGraphWrapper< V, E > wrapper;
 

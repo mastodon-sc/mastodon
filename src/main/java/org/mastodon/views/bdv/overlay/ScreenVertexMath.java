@@ -35,14 +35,14 @@ import net.imglib2.realtransform.AffineTransform3D;
 import net.imglib2.util.LinAlgHelpers;
 
 /**
- * Computations to extract information from {@link OverlayVertex} and current
+ * Computations to extract information from {@link SpotOverlayVertex} and current
  * viewer transform for painting.
  * <p>
- * One instance is used repeatedly for multiple {@link OverlayVertex
+ * One instance is used repeatedly for multiple {@link SpotOverlayVertex
  * OverlayVertices} as follows:
  * <ol>
- * <li>Call {@link #init(OverlayVertex, AffineTransform3D)} with the
- * {@link OverlayVertex} and the current viewer transform. This resets internal
+ * <li>Call {@link #init(SpotOverlayVertex, AffineTransform3D)} with the
+ * {@link SpotOverlayVertex} and the current viewer transform. This resets internal
  * state.
  * <li>Call any of the getters (e.g., {@link #getIntersectEllipse()}). This
  * triggers all necessary computations to provide the requested value.
@@ -234,7 +234,7 @@ public class ScreenVertexMath
 	 * @param viewerTransform
 	 *            the transform.
 	 */
-	public void init( final OverlayVertex< ?, ? > vertex, final AffineTransform3D viewerTransform )
+	public void init( final SpotOverlayVertex< ?, ? > vertex, final AffineTransform3D viewerTransform )
 	{
 		this.transform = viewerTransform;
 

@@ -31,14 +31,14 @@ package org.mastodon.views.bdv.overlay;
 import net.imglib2.realtransform.AffineTransform3D;
 
 /**
- * Computations to extract information from {@link OverlayEdge} and current
+ * Computations to extract information from {@link SpotOverlayEdge} and current
  * viewer transform for selecting.
  * <p>
- * One instance is used repeatedly for multiple {@link OverlayEdge OverlayEdges}
+ * One instance is used repeatedly for multiple {@link SpotOverlayEdge OverlayEdges}
  * as follows:
  * <ol>
- * <li>Call {@link #init(OverlayEdge, AffineTransform3D)} with the
- * {@link OverlayEdge} and the current viewer transform. This resets internal
+ * <li>Call {@link #init(SpotOverlayEdge, AffineTransform3D)} with the
+ * {@link SpotOverlayEdge} and the current viewer transform. This resets internal
  * state.
  * <li>Call any of the getters. This triggers all necessary computations to
  * provide the requested value. Intermediate results are cached.
@@ -51,7 +51,7 @@ import net.imglib2.realtransform.AffineTransform3D;
  *
  * @author Tobias Pietzsch
  */
-public class ScreenEdgeMath< V extends OverlayVertex< V, E >, E extends OverlayEdge< E, V > >
+public class ScreenEdgeMath< V extends SpotOverlayVertex< V, E >, E extends SpotOverlayEdge< E, V > >
 {
 	private final V ref1;
 

@@ -37,11 +37,11 @@ import org.mastodon.views.context.ContextListener;
 
 import net.imglib2.realtransform.AffineTransform3D;
 
-public class OverlayContext< V extends OverlayVertex< V, ? > > implements
+public class OverlayContext< V extends SpotOverlayVertex< V, ? > > implements
 		Context< V >,
 		TransformListener< AffineTransform3D >
 {
-	private final OverlayGraph< V, ? > graph;
+	private final SpotOverlayGraph< V, ? > graph;
 
 	private final SpatioTemporalIndex< V > index;
 
@@ -50,7 +50,7 @@ public class OverlayContext< V extends OverlayVertex< V, ? > > implements
 	private ContextListener< V > contextListener = null;
 
 	public OverlayContext(
-			final OverlayGraph< V, ? > overlayGraph,
+			final SpotOverlayGraph< V, ? > overlayGraph,
 			final OverlayGraphRenderer< V, ? > renderer )
 	{
 		this.graph = overlayGraph;

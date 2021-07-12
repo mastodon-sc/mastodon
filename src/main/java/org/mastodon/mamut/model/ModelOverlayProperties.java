@@ -28,11 +28,11 @@
  */
 package org.mastodon.mamut.model;
 
-import org.mastodon.views.bdv.overlay.OverlayGraph;
+import org.mastodon.views.bdv.overlay.SpotOverlayGraph;
 import org.mastodon.views.bdv.overlay.wrap.OverlayProperties;
 
 /**
- * Provides spot {@link OverlayProperties properties} for BDV {@link OverlayGraph}.
+ * Provides spot {@link OverlayProperties properties} for BDV {@link SpotOverlayGraph}.
  *
  * @author Tobias Pietzsch &lt;tobias.pietzsch@gmail.com&gt;
  */

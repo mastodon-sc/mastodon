@@ -33,13 +33,13 @@ import java.util.Iterator;
 import org.mastodon.graph.Edge;
 import org.mastodon.graph.Edges;
 import org.mastodon.graph.Vertex;
-import org.mastodon.views.bdv.overlay.OverlayVertex;
+import org.mastodon.views.bdv.overlay.SpotOverlayVertex;
 
 import net.imglib2.Localizable;
 import net.imglib2.RealLocalizable;
 
 public class OverlayVertexWrapper< V extends Vertex< E >, E extends Edge< V > >
-	implements OverlayVertex< OverlayVertexWrapper< V, E >, OverlayEdgeWrapper< V, E > >
+	implements SpotOverlayVertex< OverlayVertexWrapper< V, E >, OverlayEdgeWrapper< V, E > >
 {
 	private final int n = 3;
 

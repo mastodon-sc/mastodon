@@ -35,12 +35,12 @@ import bdv.viewer.ViewerPanel;
 import bdv.viewer.animate.TranslationAnimator;
 import net.imglib2.realtransform.AffineTransform3D;
 
-public class OverlayNavigation< V extends OverlayVertex< V, E >, E extends OverlayEdge< E, V > >
+public class OverlayNavigation< V extends SpotOverlayVertex< V, E >, E extends SpotOverlayEdge< E, V > >
 	implements NavigationListener< V, E >
 {
 	private final ViewerPanel panel;
 
-	private final OverlayGraph< V, E > graph;
+	private final SpotOverlayGraph< V, E > graph;
 
 	private NavigationEtiquette navigationEtiquette;
 
@@ -48,7 +48,7 @@ public class OverlayNavigation< V extends OverlayVertex< V, E >, E extends Overl
 
 	public OverlayNavigation(
 			final ViewerPanel panel,
-			final OverlayGraph< V, E > graph )
+			final SpotOverlayGraph< V, E > graph )
 	{
 		this.panel = panel;
 		this.graph = graph;
@@ -123,7 +123,7 @@ public class OverlayNavigation< V extends OverlayVertex< V, E >, E extends Overl
 	 * Navigation behaviours
 	 */
 
-	interface NavigationBehaviour< V extends OverlayVertex< V, E >, E extends OverlayEdge< E, V > >
+	interface NavigationBehaviour< V extends SpotOverlayVertex< V, E >, E extends SpotOverlayEdge< E, V > >
 	{
 		public double[] navigateToVertex( final V vertex, final AffineTransform3D currentTransform );
 

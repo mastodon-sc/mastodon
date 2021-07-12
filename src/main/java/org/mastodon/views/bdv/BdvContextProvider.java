@@ -33,7 +33,7 @@ import bdv.viewer.ViewerPanel;
 import org.mastodon.graph.Edge;
 import org.mastodon.graph.Vertex;
 import org.mastodon.views.bdv.overlay.OverlayContext;
-import org.mastodon.views.bdv.overlay.OverlayGraph;
+import org.mastodon.views.bdv.overlay.SpotOverlayGraph;
 import org.mastodon.views.bdv.overlay.OverlayGraphRenderer;
 import org.mastodon.views.bdv.overlay.wrap.OverlayContextWrapper;
 import org.mastodon.views.bdv.overlay.wrap.OverlayEdgeWrapper;
@@ -70,7 +70,7 @@ public class BdvContextProvider< V extends Vertex< E >, E extends Edge< V > >
 	private Context< V > context;
 
 	public BdvContextProvider( final String name,
-			final OverlayGraph< OverlayVertexWrapper< V, E >, OverlayEdgeWrapper< V, E > > overlayGraph,
+			final SpotOverlayGraph< OverlayVertexWrapper< V, E >, OverlayEdgeWrapper< V, E > > overlayGraph,
 			final OverlayGraphRenderer< OverlayVertexWrapper< V, E >, OverlayEdgeWrapper< V, E > > renderer )
 	{
 		this.name = name;

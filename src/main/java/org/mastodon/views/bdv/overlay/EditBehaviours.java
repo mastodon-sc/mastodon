@@ -56,7 +56,7 @@ import net.imglib2.util.LinAlgHelpers;
  * @author Jean-Yves Tinevez
  * @author Tobias Pietzsch
  */
-public class EditBehaviours< V extends OverlayVertex< V, E >, E extends OverlayEdge< E, V > >
+public class EditBehaviours< V extends SpotOverlayVertex< V, E >, E extends SpotOverlayEdge< E, V > >
 {
 	public static final String MOVE_SPOT = "move spot";
 	public static final String ADD_SPOT = "add spot";
@@ -143,9 +143,9 @@ public class EditBehaviours< V extends OverlayVertex< V, E >, E extends OverlayE
 
 	private double lastRadius = 10;
 
-	public static < V extends OverlayVertex< V, E >, E extends OverlayEdge< E, V > > void install(
+	public static < V extends SpotOverlayVertex< V, E >, E extends SpotOverlayEdge< E, V > > void install(
 			final Behaviours behaviours,
-			final OverlayGraph< V, E > overlayGraph,
+			final SpotOverlayGraph< V, E > overlayGraph,
 			final OverlayGraphRenderer< V, E > renderer,
 			final SelectionModel< V, E > selection,
 			final FocusModel< V, E > focus,
@@ -163,7 +163,7 @@ public class EditBehaviours< V extends OverlayVertex< V, E >, E extends OverlayE
 		behaviours.namedBehaviour( eb.decreaseSpotRadiusBehaviourALot, DECREASE_SPOT_RADIUS_ALOT_KEYS );
 	}
 
-	private final OverlayGraph< V, E > overlayGraph;
+	private final SpotOverlayGraph< V, E > overlayGraph;
 
 	private final ReentrantReadWriteLock lock;
 
@@ -176,7 +176,7 @@ public class EditBehaviours< V extends OverlayVertex< V, E >, E extends OverlayE
 	private final UndoPointMarker undo;
 
 	private EditBehaviours(
-			final OverlayGraph< V, E > overlayGraph,
+			final SpotOverlayGraph< V, E > overlayGraph,
 			final OverlayGraphRenderer< V, E > renderer,
 			final SelectionModel< V, E > selection,
 			final FocusModel< V, E > focus,

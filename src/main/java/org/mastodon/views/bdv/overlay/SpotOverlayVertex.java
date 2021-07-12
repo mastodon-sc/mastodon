@@ -28,27 +28,18 @@
  */
 package org.mastodon.views.bdv.overlay;
 
-import java.util.concurrent.locks.ReentrantReadWriteLock;
+import org.mastodon.model.HasLabel;
 
-import org.mastodon.graph.Graph;
-import org.mastodon.graph.GraphChangeListener;
-import org.mastodon.graph.GraphChangeNotifier;
-import org.mastodon.spatial.SpatioTemporalIndex;
-
-public interface OverlayGraph< V extends OverlayVertex< V, E >, E extends OverlayEdge< E, V > >
-		extends Graph< V, E >, GraphChangeNotifier
+public interface SpotOverlayVertex< O extends SpotOverlayVertex< O, E >, E extends SpotOverlayEdge< E, ? > >
+		extends OverlayVertex< O, E >, HasLabel
 {
-	public SpatioTemporalIndex< V > getIndex();
+	public void getCovariance( final double[][] mat );
 
-	public ReentrantReadWriteLock getLock();
+	public void setCovariance( final double[][] mat );
 
-	/**
-	 * Triggers a {@link GraphChangeListener#graphChanged()} event.
-	 *
-	 * notifyGraphChanged() is not implicitly called in addVertex() etc because
-	 * we want to support batches of add/remove with one final
-	 * notifyGraphChanged() at the end.
-	 */
-	@Override
-	public void notifyGraphChanged();
+	public double getBoundingSphereRadiusSquared();
+
+	public O init( final int timepoint, final double[] position, final double radius );
+
+	public O init( final int timepoint, final double[] position, final double[][] covariance );
 }
