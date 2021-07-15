@@ -83,6 +83,10 @@ public enum Dimension
 	 */
 	RATE("Rate"), // count per frames.
 	/**
+	 * Area of objects.
+	 */
+	AREA( "Area" ),
+	/**
 	 * Non numerical quantities.
 	 */
 	STRING("NA"); // for non-numeric features
@@ -142,6 +146,8 @@ public enum Dimension
 			return spaceUnits + "/" + timeUnits;
 		case RATE:
 			return "/" + timeUnits;
+		case AREA:
+			return spaceUnits + "²";
 		default:
 		case STRING:
 			return null;
