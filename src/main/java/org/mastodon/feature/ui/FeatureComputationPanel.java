@@ -189,7 +189,12 @@ public class FeatureComputationPanel extends JPanel
 			headerPanel.setAlignmentX( Component.LEFT_ALIGNMENT );
 			panelFeatures.add( Box.createVerticalStrut( 5 ) );
 
-			final List< FeatureSpec< ?, ? > > featureSpecs = model.getFeatureSpecs( target )
+			final Collection< FeatureSpec< ?, ? > > fss = model.getFeatureSpecs( target );
+			if ( fss == null )
+				continue;
+
+			final List< FeatureSpec< ?, ? > > featureSpecs =
+					fss
 					.stream()
 					.filter( model::isVisible )
 					.collect( Collectors.toList() );
