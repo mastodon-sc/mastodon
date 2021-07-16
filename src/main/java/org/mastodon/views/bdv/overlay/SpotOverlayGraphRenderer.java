@@ -166,6 +166,7 @@ public class SpotOverlayGraphRenderer< V extends SpotOverlayVertex< V, E >, E ex
 		this.settings = settings;
 	}
 
+	@Override
 	public VisibilityMode nextVisibilityMode()
 	{
 		return visibilities.nextMode();

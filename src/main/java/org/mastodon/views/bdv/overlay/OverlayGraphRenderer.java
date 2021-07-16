@@ -30,6 +30,7 @@ package org.mastodon.views.bdv.overlay;
 
 import org.mastodon.collection.RefCollection;
 import org.mastodon.spatial.SpatioTemporalIndex;
+import org.mastodon.views.bdv.overlay.Visibilities.VisibilityMode;
 
 import bdv.viewer.OverlayRenderer;
 import bdv.viewer.TimePointListener;
@@ -184,5 +185,12 @@ public interface OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extend
 	 *         and the specified {@code transform} and {@code timepoint}.
 	 */
 	public RefCollection< V > getVisibleVertices( final AffineTransform3D transform, final int timepoint );
+
+	/**
+	 * Cycle across the visibility modes for the overlay in this renderer.
+	 * 
+	 * @return the new visibility mode.
+	 */
+	public VisibilityMode nextVisibilityMode();
 
 }
