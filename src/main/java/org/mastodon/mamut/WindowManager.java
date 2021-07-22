@@ -580,7 +580,7 @@ public class WindowManager
 		void bdvViewCreated( final MamutViewBdv view );
 	}
 
-	public Listeners< BdvViewCreatedListener > bdvViewCreatedListners()
+	public Listeners< BdvViewCreatedListener > bdvViewCreatedListeners()
 	{
 		return bdvViewCreatedListeners;
 	}
