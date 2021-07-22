@@ -28,8 +28,6 @@
  */
 package org.mastodon.views.bdv.overlay;
 
-import bdv.viewer.OverlayRenderer;
-import bdv.viewer.TransformListener;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Font;
@@ -61,7 +59,9 @@ import org.mastodon.views.bdv.overlay.Visibilities.VisibilityMode;
 import org.mastodon.views.bdv.overlay.util.BdvRendererUtil;
 
 import bdv.util.Affine3DHelpers;
+import bdv.viewer.OverlayRenderer;
 import bdv.viewer.TimePointListener;
+import bdv.viewer.TransformListener;
 import net.imglib2.RealPoint;
 import net.imglib2.algorithm.kdtree.ConvexPolytope;
 import net.imglib2.neighborsearch.NearestNeighborSearch;
@@ -655,6 +655,7 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 				final boolean drawEllipsoidSliceIntersection = settings.getDrawEllipsoidSliceIntersection();
 				final boolean drawEllipsoidSliceProjection = settings.getDrawEllipsoidSliceProjection();
 				final double pointFadeDepth = settings.getPointFadeDepth();
+				final boolean fillSpots = settings.getFillSpots();
 				final Visibility< V, E > visibility = visibilities.getVisibility();
 
 				final V highlighted = highlight.getHighlightedVertex( ref1 );
@@ -703,7 +704,7 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 								graphics.setStroke( highlightedVertexStroke );
 							else if ( isFocused )
 								graphics.setStroke( focusedVertexStroke );
-							drawEllipse( graphics, ellipse, torig );
+							drawEllipse( graphics, ellipse, torig, fillSpots );
 							if ( isHighlighted || isFocused )
 								graphics.setStroke( defaultVertexStroke );
 
@@ -733,7 +734,7 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 								graphics.setStroke( highlightedVertexStroke );
 							else if ( isFocused )
 								graphics.setStroke( focusedVertexStroke );
-							drawEllipse( graphics, ellipse, torig );
+							drawEllipse( graphics, ellipse, torig, fillSpots );
 							if ( isHighlighted || isFocused )
 								graphics.setStroke( defaultVertexStroke );
 
@@ -781,11 +782,6 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 		graph.releaseRef( ref3 );
 		graph.releaseRef( source );
 		graph.releaseRef( target );
-	}
-
-	static void drawEllipse( final Graphics2D graphics, final Ellipse ellipse, AffineTransform torig )
-	{
-		drawEllipse( graphics, ellipse, torig, false );
 	}
 
 	static void drawEllipse( final Graphics2D graphics, final Ellipse ellipse, AffineTransform torig, final boolean fillSpots )
