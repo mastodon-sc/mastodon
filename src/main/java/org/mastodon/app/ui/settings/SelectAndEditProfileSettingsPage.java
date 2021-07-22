@@ -34,6 +34,7 @@ import java.awt.event.ItemEvent;
 import java.util.List;
 import java.util.Vector;
 
+import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.DefaultComboBoxModel;
@@ -41,6 +42,7 @@ import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.border.EmptyBorder;
 
 import org.scijava.listeners.Listeners;
@@ -112,7 +114,9 @@ public class SelectAndEditProfileSettingsPage< T extends SelectAndEditProfileSet
 
 		contentPanel = new JPanel( new BorderLayout() );
 		contentPanel.add( profileSelectionPanel, BorderLayout.NORTH );
-		contentPanel.add( profileEditPanel.getJPanel(), BorderLayout.CENTER );
+		final JScrollPane sp = new JScrollPane( profileEditPanel.getJPanel() );
+		sp.setBorder( BorderFactory.createEmptyBorder() );
+		contentPanel.add( sp, BorderLayout.CENTER );
 	}
 
 	@Override
