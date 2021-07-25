@@ -36,7 +36,6 @@ import java.util.Collection;
 import java.util.List;
 
 import org.junit.Test;
-import org.mastodon.util.GroupStrings;
 import org.mastodon.util.GroupStrings.Group;
 
 public class GroupStringsTest

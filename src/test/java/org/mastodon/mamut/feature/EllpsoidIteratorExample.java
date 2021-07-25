@@ -28,15 +28,21 @@
  */
 package org.mastodon.mamut.feature;
 
+import java.awt.Color;
+import java.awt.Graphics2D;
+import java.awt.geom.AffineTransform;
+import java.awt.geom.Ellipse2D;
+
+import org.mastodon.mamut.feature.EllpsoidIteratorExample.ScreenVertexMath.Ellipse;
+import org.mastodon.mamut.model.ModelGraph;
+import org.mastodon.mamut.model.Spot;
+import org.mastodon.views.bdv.overlay.util.JamaEigenvalueDecomposition;
+
 import bdv.util.Bdv;
 import bdv.util.BdvFunctions;
 import bdv.util.BdvOverlay;
 import bdv.util.BdvStackSource;
 import bdv.viewer.Source;
-import java.awt.Color;
-import java.awt.Graphics2D;
-import java.awt.geom.AffineTransform;
-import java.awt.geom.Ellipse2D;
 import net.imglib2.Cursor;
 import net.imglib2.RealLocalizable;
 import net.imglib2.img.Img;
@@ -45,15 +51,9 @@ import net.imglib2.realtransform.AffineTransform3D;
 import net.imglib2.type.numeric.integer.UnsignedByteType;
 import net.imglib2.util.LinAlgHelpers;
 
-import org.mastodon.mamut.feature.EllipsoidIterable;
-import org.mastodon.mamut.feature.EllpsoidIteratorExample.ScreenVertexMath.Ellipse;
-import org.mastodon.mamut.model.ModelGraph;
-import org.mastodon.mamut.model.Spot;
-import org.mastodon.views.bdv.overlay.util.JamaEigenvalueDecomposition;
-
 public class EllpsoidIteratorExample
 {
-	public static void main( String[] args )
+	public static void main( final String[] args )
 	{
 		final Img< UnsignedByteType > img = ArrayImgs.unsignedBytes( 100, 100, 50 );
 		final Cursor< UnsignedByteType > cursor = img.cursor();

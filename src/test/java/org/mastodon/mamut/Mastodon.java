@@ -34,7 +34,6 @@ import java.util.Locale;
 import javax.swing.UIManager;
 import javax.swing.WindowConstants;
 
-import org.mastodon.mamut.MainWindow;
 import org.mastodon.mamut.project.MamutProject;
 import org.mastodon.mamut.project.MamutProjectIO;
 import org.scijava.Context;

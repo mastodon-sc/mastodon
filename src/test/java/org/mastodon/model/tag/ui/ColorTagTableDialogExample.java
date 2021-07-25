@@ -41,8 +41,6 @@ import javax.swing.JPanel;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 
-import org.mastodon.model.tag.ui.ColorTagTable;
-
 public class ColorTagTableDialogExample
 {
 	static class MyElement
