@@ -256,13 +256,12 @@ public class TrackMateImporterTest
 			true };
 
 	@Test
-	public void test()
+	public void test() throws Exception
 	{
-		final Context context = new Context();
-		final FeatureSpecsService featureSpecsService = context.getService( FeatureSpecsService.class );
-//		final WindowManager windowManager = new WindowManager( context );
-		try
+		try (final Context context = new Context())
 		{
+			final FeatureSpecsService featureSpecsService = context.getService( FeatureSpecsService.class );
+//			final WindowManager windowManager = new WindowManager( context );
 			final TrackMateImporter importer = new TrackMateImporter( new File( TRACKMATE_FILE ) );
 			final MamutProject project = importer.createProject();
 			final Model model = new Model( project.getSpaceUnits(), project.getTimeUnits() );
@@ -325,10 +324,6 @@ public class TrackMateImporterTest
 			}
 			assertTrue( "Did not test link feature values: could not find link with source ID" + TARGET_LINK_SOURCE_ID, tested );
 
-		}
-		catch ( final Exception e )
-		{
-			e.printStackTrace();
 		}
 	}
 

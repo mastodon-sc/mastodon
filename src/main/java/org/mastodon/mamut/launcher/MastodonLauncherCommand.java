@@ -52,12 +52,15 @@ public class MastodonLauncherCommand extends ContextCommand
 		launcher.setVisible( true );
 	}
 
-	public static void main( final String[] args )
+	public static void main( final String[] args ) throws Exception
 	{
 		setSystemLookAndFeelAndLocale();
 		final MastodonLauncherCommand launcher = new MastodonLauncherCommand();
-		new Context().inject( launcher );
-		launcher.run();
+		try (Context context = new Context())
+		{
+			context.inject( launcher );
+			launcher.run();
+		}
 	}
 
 	private static final void setSystemLookAndFeelAndLocale()

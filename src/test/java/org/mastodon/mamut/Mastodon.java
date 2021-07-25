@@ -82,30 +82,35 @@ public class Mastodon extends ContextCommand
 		Locale.setDefault( Locale.US );
 		UIManager.setLookAndFeel( UIManager.getSystemLookAndFeelClassName() );
 
-		final Mastodon mastodon = new Mastodon();
-		new Context().inject( mastodon );
-		mastodon.run();
-		mastodon.mainWindow.setDefaultCloseOperation( WindowConstants.EXIT_ON_CLOSE );
+		try (final Context context = new Context())
+		{
+			final Mastodon mastodon = new Mastodon();
+			context.inject( mastodon );
+			mastodon.run();
+			final MainWindow mw = mastodon.mainWindow;
+			mw.setDefaultCloseOperation( WindowConstants.EXIT_ON_CLOSE );
 
-		final WindowManager windowManager = mastodon.windowManager;
 
-		final String bdvFile = "samples/datasethdf5.xml";
-//		final MamutProject project = new MamutProject( null, new File( bdvFile ) );
-//		final MamutProject project = new MamutProjectIO().load( "/Volumes/External/Data/Mastodon/Tassos200" );
-//		final MamutProject project = new MamutProject( null, new File( "x=1000 y=1000 z=100 sx=1 sy=1 sz=10 t=400.dummy" ) );
-		final MamutProject project = new MamutProjectIO().load( "samples/drosophila_crop.mastodon" );
+//			final String bdvFile = "samples/datasethdf5.xml";
+//			final MamutProject project = new MamutProject( null, new File( bdvFile ) );
+//			final MamutProject project = new MamutProjectIO().load( "/Volumes/External/Data/Mastodon/Tassos200" );
+//			final MamutProject project = new MamutProject( null, new File( "x=1000 y=1000 z=100 sx=1 sy=1 sz=10 t=400.dummy" ) );
+			final MamutProject project = new MamutProjectIO().load( "samples/drosophila_crop.mastodon" );
 
-		windowManager.projectManager.open( project );
-//		mw.proposedProjectFile = new File( "/Users/pietzsch/Desktop/data/TGMM_METTE/project2.xml" );
-//		mw.loadProject( new File( "/Users/pietzsch/Desktop/data/TGMM_METTE/project.xml" ) );
-//		mw.createProject();
-//		mw.loadProject();
-//		SwingUtilities.invokeAndWait( () -> {
-//			windowManager.createBigDataViewer();
-//			windowManager.createTrackScheme();
-//			YamlConfigIO.write( new InputTriggerDescriptionsBuilder( keyconf ).getDescriptions(), new PrintWriter( System.out ) );
-//		} );
+			final WindowManager windowManager = mastodon.windowManager;
+			windowManager.projectManager.open( project );
 
-//		DumpInputConfig.writeDefaultConfigToYaml( System.getProperty( "user.home" ) + "/Desktop/DEFAULT.keyconfig.yaml", new Context() );
+//			mw.proposedProjectFile = new File( "/Users/pietzsch/Desktop/data/TGMM_METTE/project2.xml" );
+//			mw.loadProject( new File( "/Users/pietzsch/Desktop/data/TGMM_METTE/project.xml" ) );
+//			mw.createProject();
+//			mw.loadProject();
+//			SwingUtilities.invokeAndWait( () -> {
+//				windowManager.createBigDataViewer();
+//				windowManager.createTrackScheme();
+//				YamlConfigIO.write( new InputTriggerDescriptionsBuilder( keyconf ).getDescriptions(), new PrintWriter( System.out ) );
+//			} );
+
+//			DumpInputConfig.writeDefaultConfigToYaml( System.getProperty( "user.home" ) + "/Desktop/DEFAULT.keyconfig.yaml", new Context() );
+		}
 	}
 }
