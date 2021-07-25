@@ -77,7 +77,9 @@ public class AbstractModelGraph<
 	public AbstractModelGraph( final EP edgePool )
 	{
 		super( edgePool );
-		vertexPool.linkModelGraph( ( G ) this );
+		@SuppressWarnings( "unchecked" )
+		final G g = ( G ) this;
+		vertexPool.linkModelGraph( g );
 		idmap = new GraphIdBimap<>( vertexPool, edgePool );
 		vertexPropertySerializers = new PropertyMapSerializers<>();
 		lock = new ReentrantReadWriteLock();

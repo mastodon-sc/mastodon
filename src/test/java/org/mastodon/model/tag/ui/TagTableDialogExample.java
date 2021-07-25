@@ -39,8 +39,6 @@ import javax.swing.JPanel;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 
-import org.mastodon.model.tag.ui.TagTable;
-
 public class TagTableDialogExample
 {
 	static class MyElement
