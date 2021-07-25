@@ -28,9 +28,10 @@
  */
 package org.mastodon.views.trackscheme.display;
 
-import bdv.viewer.TransformListener;
 import org.mastodon.views.trackscheme.ScreenTransform;
 import org.scijava.listeners.Listeners;
+
+import bdv.viewer.TransformListener;
 
 public class ScreenTransformState
 {
@@ -55,7 +56,7 @@ public class ScreenTransformState
 	 * @param transform
 	 *     is set to the current transform
 	 */
-	public synchronized void get( ScreenTransform transform )
+	public synchronized void get( final ScreenTransform transform )
 	{
 		transform.set( this.transform );
 	}
@@ -72,8 +73,11 @@ public class ScreenTransformState
 
 	/**
 	 * Set the transform.
+	 * 
+	 * @param transform
+	 *            the transform to copy from.
 	 */
-	public synchronized void set( ScreenTransform transform )
+	public synchronized void set( final ScreenTransform transform )
 	{
 		if ( !this.transform.equals( transform ) )
 		{
@@ -84,6 +88,8 @@ public class ScreenTransformState
 
 	/**
 	 * {@code TransformListener<ScreenTransform>} can be added/removed here.
+	 * 
+	 * @return the listeners.
 	 */
 	public Listeners< TransformListener< ScreenTransform > > listeners()
 	{

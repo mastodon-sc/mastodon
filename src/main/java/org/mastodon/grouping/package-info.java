@@ -32,7 +32,7 @@
  * Groups are used to share state between views. Each view can belong to at most
  * one group at any time. A view that belongs to no group is effectively in its
  * own private group. Grouping mechanic is hidden from the views using
- * {@link ForwardingModel}s. Each view has an associated {@link GroupHandle}
+ * {@code ForwardingModel}s. Each view has an associated {@code GroupHandle}
  * from which it can obtain fixed forwarding models whose backing models are
  * transparently switched as group membership changes.
  */

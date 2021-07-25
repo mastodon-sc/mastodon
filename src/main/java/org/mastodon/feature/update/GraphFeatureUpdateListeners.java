@@ -49,6 +49,13 @@ public class GraphFeatureUpdateListeners
 	 * Returns a new {@link PropertyChangeListener} that will remove vertices
 	 * and their neighbor edges from a feature model if their property are
 	 * modified.
+	 * 
+	 * @param featureModel
+	 *            the feature model.
+	 * @param vertexClass
+	 *            the class of vertices in the model.
+	 * @param edgeClass
+	 *            the class of edges in the model.
 	 *
 	 * @return a new {@link PropertyChangeListener}.
 	 */

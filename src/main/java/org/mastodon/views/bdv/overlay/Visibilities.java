@@ -237,7 +237,7 @@ public class Visibilities< V extends Vertex< E >, E extends Edge< V > >
 	 * {@link VisibilityMode#TRACK_OF_FOCUSED_VERTEX} mode.
 	 * </ul>
 	 *
-	 * @return
+	 * @return the visibility listeners.
 	 */
 	public Listeners< VisibilityListener > getVisibilityListeners()
 	{

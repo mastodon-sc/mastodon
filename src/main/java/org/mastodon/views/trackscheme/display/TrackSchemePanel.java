@@ -31,10 +31,6 @@ package org.mastodon.views.trackscheme.display;
 import static org.mastodon.views.trackscheme.display.InertialScreenTransformEventHandler.boundXLayoutBorder;
 import static org.mastodon.views.trackscheme.display.InertialScreenTransformEventHandler.boundYLayoutBorder;
 
-import bdv.viewer.InteractiveDisplayCanvas;
-import bdv.viewer.OverlayRenderer;
-import bdv.viewer.TransformListener;
-import bdv.viewer.render.PainterThread;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.Graphics;
@@ -73,6 +69,11 @@ import org.mastodon.views.trackscheme.TrackSchemeVertex;
 import org.mastodon.views.trackscheme.display.TrackSchemeOptions.Values;
 import org.mastodon.views.trackscheme.display.animate.AbstractAnimator;
 import org.mastodon.views.trackscheme.display.style.TrackSchemeStyle;
+
+import bdv.viewer.InteractiveDisplayCanvas;
+import bdv.viewer.OverlayRenderer;
+import bdv.viewer.TransformListener;
+import bdv.viewer.render.PainterThread;
 
 public class TrackSchemePanel extends JPanel implements
 		TransformListener< ScreenTransform >,
@@ -856,7 +857,9 @@ public class TrackSchemePanel extends JPanel implements
 		/**
 		 *
 		 * @param transform
-		 * @param duration animation duration (in time units), may be 0.
+		 *            the screen transform to animate.
+		 * @param duration
+		 *            animation duration (in time units), may be 0.
 		 */
 		public void startAnimation( final ScreenTransform transform, final long duration )
 		{

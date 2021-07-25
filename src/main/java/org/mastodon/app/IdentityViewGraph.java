@@ -183,7 +183,7 @@ public class IdentityViewGraph< V extends Vertex< E >, E extends Edge< V > > imp
 	 *            the graph to wrap.
 	 * @param idBimap
 	 *            a {@link GraphIdBimap} for the wrapped graph.
-	 * @return
+	 * @return an identity wrapper graph.
 	 */
 	public static final < V extends Vertex< E >, E extends Edge< V > > ViewGraph< V, E, V, E > wrap( final ReadOnlyGraph< V, E > graph, final GraphIdBimap< V, E > idBimap )
 	{
