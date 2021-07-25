@@ -36,6 +36,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
+
 import org.mastodon.graph.GraphChangeNotifier;
 import org.mastodon.graph.GraphIdBimap;
 import org.mastodon.graph.io.GraphSerializer;
@@ -203,7 +204,7 @@ public class AbstractModelGraph<
 	@Override
 	public boolean addVertexPositionListener( final VertexPositionListener< V > listener )
 	{
-		return vertexPool.position.addPropertyChangeListener( wrap( listener ) );
+		return vertexPool.position.propertyChangeListeners().add( wrap( listener ) );
 	}
 
 	/**
@@ -218,7 +219,7 @@ public class AbstractModelGraph<
 	@Override
 	public boolean removeVertexPositionListener( final VertexPositionListener< V > listener )
 	{
-		return vertexPool.position.removePropertyChangeListener( wrap( listener ) );
+		return vertexPool.position.propertyChangeListeners().remove( wrap( listener ) );
 	}
 
 	private VertexPositionListenerWrapper< V > wrap( final VertexPositionListener< V > l )

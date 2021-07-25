@@ -280,7 +280,7 @@ public class MamutViewTable extends MamutView< ViewGraph< Spot, Link, Spot, Link
 		 * table-view when the label change.
 		 */
 		final SpotPool spotPool = ( SpotPool ) appModel.getModel().getGraph().vertices().getRefPool();
-		spotPool.labelProperty().addPropertyChangeListener( v -> frame.repaint() );
+		spotPool.labelProperty().propertyChangeListeners().add( v -> frame.repaint() );
 
 		/*
 		 * Show table.

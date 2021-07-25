@@ -155,8 +155,8 @@ public class MamutFeatureComputerService extends DefaultFeatureComputerService
 		if ( this.model != null )
 		{
 			final SpotPool previousSpotPool = ( SpotPool ) this.model.getGraph().vertices().getRefPool();
-			previousSpotPool.covarianceProperty().removePropertyChangeListener( vertexPropertyListener );
-			previousSpotPool.positionProperty().removePropertyChangeListener( vertexPropertyListener );
+			previousSpotPool.covarianceProperty().propertyChangeListeners().remove( vertexPropertyListener );
+			previousSpotPool.positionProperty().propertyChangeListeners().remove( vertexPropertyListener );
 		}
 
 		/*
@@ -186,7 +186,7 @@ public class MamutFeatureComputerService extends DefaultFeatureComputerService
 		// Listen to changes in spot properties.
 		final ModelGraph graph = model.getGraph();
 		final SpotPool spotPool = ( SpotPool ) graph.vertices().getRefPool();
-		spotPool.covarianceProperty().addPropertyChangeListener( vertexPropertyListener );
-		spotPool.positionProperty().addPropertyChangeListener( vertexPropertyListener );
+		spotPool.covarianceProperty().propertyChangeListeners().add( vertexPropertyListener );
+		spotPool.positionProperty().propertyChangeListeners().add( vertexPropertyListener );
 	}
 }

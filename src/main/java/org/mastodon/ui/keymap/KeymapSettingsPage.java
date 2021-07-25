@@ -81,7 +81,7 @@ public class KeymapSettingsPage extends SelectAndEditProfileSettingsPage< StyleP
 			styleEditorPanel = new VisualEditorPanel( editedStyle.getConfig(), commandDescriptions.createCommandDescriptionsMap() );
 			styleEditorPanel.setButtonPanelVisible( false );
 			modificationListeners = new Listeners.SynchronizedList<>();
-			styleEditorPanel.addConfigChangeListener( this );
+			styleEditorPanel.modelChangedListeners().add( this );
 			styleEditorPanel.setPreferredSize( new Dimension( 200, 200 ) );
 		}
 

@@ -71,8 +71,8 @@ public class MamutFeatureComputation
 		graph.addGraphChangeListener( controller );
 		// Listen to changes in spot properties.
 		final SpotPool spotPool = ( SpotPool ) graph.vertices().getRefPool();
-		spotPool.covarianceProperty().addPropertyChangeListener( ( o ) -> controller.graphChanged() );
-		spotPool.positionProperty().addPropertyChangeListener( ( o ) -> controller.graphChanged() );
+		spotPool.covarianceProperty().propertyChangeListeners().add( ( o ) -> controller.graphChanged() );
+		spotPool.positionProperty().propertyChangeListeners().add( ( o ) -> controller.graphChanged() );
 
 		return controller.getDialog();
 	}
