@@ -74,7 +74,7 @@ public class ModelGraph extends AbstractModelGraph< ModelGraph, SpotPool, LinkPo
 	 */
 	public boolean addVertexLabelListener( final PropertyChangeListener< Spot > listener )
 	{
-		return vertexPool.label.addPropertyChangeListener( listener );
+		return vertexPool.label.propertyChangeListeners().add( listener );
 	}
 
 	/**
@@ -88,6 +88,6 @@ public class ModelGraph extends AbstractModelGraph< ModelGraph, SpotPool, LinkPo
 	 */
 	public boolean removeVertexLabelListener( final PropertyChangeListener< Spot > listener )
 	{
-		return vertexPool.label.removePropertyChangeListener( listener );
+		return vertexPool.label.propertyChangeListeners().remove( listener );
 	}
 }
