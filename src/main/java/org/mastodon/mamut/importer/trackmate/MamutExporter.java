@@ -129,11 +129,11 @@ import org.mastodon.feature.IntFeatureProjection;
 import org.mastodon.graph.algorithm.RootFinder;
 import org.mastodon.graph.algorithm.traversal.DepthFirstSearch;
 import org.mastodon.graph.algorithm.traversal.GraphSearch.SearchDirection;
+import org.mastodon.graph.algorithm.traversal.SearchListener;
 import org.mastodon.mamut.model.Link;
 import org.mastodon.mamut.model.Model;
 import org.mastodon.mamut.model.Spot;
 import org.mastodon.mamut.project.MamutProject;
-import org.mastodon.graph.algorithm.traversal.SearchListener;
 import org.mastodon.pool.PoolObject;
 import org.mastodon.spatial.SpatioTemporalIndex;
 import org.mastodon.views.bdv.overlay.util.JamaEigenvalueDecomposition;
@@ -178,7 +178,7 @@ public class MamutExporter
 		this.model = model;
 		this.project = project;
 		this.root = new Element( TRACKMATE_TAG );
-		root.setAttribute( VERSION_ATTRIBUTE, "3.6.0" );
+		root.setAttribute( VERSION_ATTRIBUTE, "7.0.4" );
 		this.eig = new JamaEigenvalueDecomposition( 3 );
 		this.cov = new double[ 3 ][ 3 ];
 
