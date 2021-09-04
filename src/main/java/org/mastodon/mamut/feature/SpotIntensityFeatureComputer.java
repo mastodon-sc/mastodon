@@ -181,7 +181,7 @@ public class SpotIntensityFeatureComputer implements MamutFeatureComputer, Cance
 						output.sums.get( iSource ).set( spot, array[ 0 ] );
 						continue;
 					}
-
+					
 					double sum = 0.;
 					for ( int i = 0; i < size; i++ )
 						sum += array[ i ];
@@ -197,7 +197,7 @@ public class SpotIntensityFeatureComputer implements MamutFeatureComputer, Cance
 
 					Arrays.sort( array, 0, size );
 					final double min = array[ 0 ];
-					final double max = array[ size ];
+					final double max = array[ size - 1 ];
 					final double median = array[ size / 2 ];
 
 					output.means.get( iSource ).set( spot, mean );
