@@ -105,7 +105,7 @@ public class MaMuTExporterTest
 		}
 		finally
 		{
-			new File( EXPORT_FILE ).delete();
+//			new File( EXPORT_FILE ).delete();
 		}
 	}
 
