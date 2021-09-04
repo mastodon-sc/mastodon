@@ -78,14 +78,15 @@
 
 		<dependency>
 			<groupId>sc.fiji</groupId>
-			<artifactId>TrackMate_</artifactId>
+			<artifactId>TrackMate</artifactId>
+			<version>7.0.4</version>
 			<scope>test</scope>
 		</dependency>
 
 		<dependency>
 			<groupId>sc.fiji</groupId>
-			<artifactId>MaMuT_</artifactId>
-			<version>0.28.3</version>
+			<artifactId>MaMuT</artifactId>
+			<version>7.0.1</version>
 			<scope>test</scope>
 			<exclusions>
 				<exclusion>
