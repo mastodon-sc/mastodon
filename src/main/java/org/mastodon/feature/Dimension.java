@@ -83,6 +83,10 @@ public enum Dimension
 	 */
 	RATE("Rate"), // count per frames.
 	/**
+	 * Angle per time units..
+	 */
+	ANGLE_RATE( "Angle rate" ),
+	/**
 	 * Non numerical quantities.
 	 */
 	STRING("NA"); // for non-numeric features
