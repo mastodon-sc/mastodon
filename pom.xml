@@ -88,12 +88,6 @@
 			<artifactId>MaMuT</artifactId>
 			<version>7.0.1</version>
 			<scope>test</scope>
-			<exclusions>
-				<exclusion>
-					<groupId>net.sf.jgrapht</groupId>
-					<artifactId>jgrapht</artifactId>
-				</exclusion>
-			</exclusions>
 		</dependency>
 
 	</dependencies>
