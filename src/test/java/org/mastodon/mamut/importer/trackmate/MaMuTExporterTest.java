@@ -37,7 +37,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.NavigableSet;
@@ -69,9 +68,6 @@ import bdv.tools.bookmarks.Bookmarks;
 import bdv.viewer.ViewerOptions;
 import fiji.plugin.mamut.SourceSettings;
 import fiji.plugin.mamut.io.MamutXmlReader;
-import fiji.plugin.mamut.providers.MamutEdgeAnalyzerProvider;
-import fiji.plugin.mamut.providers.MamutSpotAnalyzerProvider;
-import fiji.plugin.mamut.providers.MamutTrackAnalyzerProvider;
 import mpicbg.spim.data.SpimDataException;
 
 public class MaMuTExporterTest
@@ -94,6 +90,9 @@ public class MaMuTExporterTest
 	private static final Collection< String > SPOT_FEATURES_TO_IGNORE = Arrays.asList(
 			"QUALITY", "POSITION_X", "POSITION_Y", "POSITION_Z", "POSITION_T", "FRAME", "RADIUS", "VISIBILITY" );
 
+	private static final Collection< String > EDGE_FEATURES_TO_IGNORE = Arrays.asList(
+			"LINK_COST", "SPOT_SOURCE_ID", "SPOT_TARGET_ID" );
+
 	@Test
 	public void test() throws IOException, SpimDataException
 	{
@@ -104,7 +103,7 @@ public class MaMuTExporterTest
 		}
 		finally
 		{
-			new File( EXPORT_FILE ).delete();
+//			new File( EXPORT_FILE ).delete();
 		}
 	}
 
@@ -131,7 +130,7 @@ public class MaMuTExporterTest
 		}
 
 		// Check number of links in whole model.
-		assertEquals( "Unexpected of links in the exported model.",
+		assertEquals( "Unexpected number of links in the exported model.",
 				sourceModel.getGraph().edges().size(), exportedModel.getTrackModel().edgeSet().size() );
 
 		/*
@@ -139,7 +138,7 @@ public class MaMuTExporterTest
 		 * 2 spots is not a track.
 		 */
 		final Set< RefSet< Spot > > tracks = new ConnectedComponents<>( sourceModel.getGraph(), 2 ).get();
-		assertEquals( "Unexpected of tracks in the exported model.",
+		assertEquals( "Unexpected number of tracks in the exported model.",
 				tracks.size(), exportedModel.getTrackModel().nTracks( false ) );
 
 		// Check spot features.
@@ -154,11 +153,15 @@ public class MaMuTExporterTest
 		checkFeatures(
 				featureModel,
 				Link.class,
-				Collections.emptyList(),
+				EDGE_FEATURES_TO_IGNORE,
 				exportedModel.getFeatureModel().getEdgeFeatures() );
 
 		// Check tracks features.
-		assertTrue( "Export track feature collection should be empty.",
+
+		System.out.println( exportedModel.getFeatureModel().getTrackFeatures() ); // DEBUG
+		System.out.println( featureModel.getFeatureSpecs() ); // DEBUG
+
+		assertTrue( "Exported track feature collection should be empty.",
 				exportedModel.getFeatureModel().getTrackFeatures().isEmpty() );
 
 		// Check all spot values.
@@ -246,8 +249,9 @@ public class MaMuTExporterTest
 		 * Test whether MaMuT can open the image data.
 		 */
 
-		final SourceSettings settings = new SourceSettings();
-		reader.readSettings( settings, null, null, new MamutSpotAnalyzerProvider(), new MamutEdgeAnalyzerProvider(), new MamutTrackAnalyzerProvider() );
+		final SourceSettings settings = new SourceSettings( "pixel", "frame" );
+		reader.readSourceSettings();
+
 		File imageFile = new File( settings.imageFolder, settings.imageFileName );
 		if ( !imageFile.exists() )
 		{
@@ -283,7 +287,6 @@ public class MaMuTExporterTest
 
 		final Context context = new Context();
 		final MamutProject project = new MamutProjectIO().load( MASTODON_FILE );
-
 
 		final String spimDataXmlFilename = project.getDatasetXmlFile().getAbsolutePath();
 		final SpimDataMinimal spimData = new XmlIoSpimDataMinimal().load( spimDataXmlFilename );
