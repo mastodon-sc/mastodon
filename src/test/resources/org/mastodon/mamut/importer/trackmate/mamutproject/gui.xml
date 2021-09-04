@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<MamutGui version="0.3">
+  <Windows>
+    <Window>
+      <Type>MamutViewBdv</Type>
+      <FramePosition>208 124 816 697</FramePosition>
+      <LockGroupId>-1</LockGroupId>
+      <SettingsPanelVisible>true</SettingsPanelVisible>
+      <BdvState>
+        <ViewerState>
+          <Sources>
+            <Source>
+              <active>true</active>
+            </Source>
+          </Sources>
+          <SourceGroups>
+            <SourceGroup>
+              <active>true</active>
+              <name>group 1</name>
+              <id>0</id>
+            </SourceGroup>
+            <SourceGroup>
+              <active>true</active>
+              <name>group 2</name>
+            </SourceGroup>
+            <SourceGroup>
+              <active>true</active>
+              <name>group 3</name>
+            </SourceGroup>
+            <SourceGroup>
+              <active>true</active>
+              <name>group 4</name>
+            </SourceGroup>
+            <SourceGroup>
+              <active>true</active>
+              <name>group 5</name>
+            </SourceGroup>
+            <SourceGroup>
+              <active>true</active>
+              <name>group 6</name>
+            </SourceGroup>
+            <SourceGroup>
+              <active>true</active>
+              <name>group 7</name>
+            </SourceGroup>
+            <SourceGroup>
+              <active>true</active>
+              <name>group 8</name>
+            </SourceGroup>
+            <SourceGroup>
+              <active>true</active>
+              <name>group 9</name>
+            </SourceGroup>
+            <SourceGroup>
+              <active>true</active>
+              <name>group 10</name>
+            </SourceGroup>
+          </SourceGroups>
+          <DisplayMode>ss</DisplayMode>
+          <Interpolation>nearestneighbor</Interpolation>
+          <CurrentSource>0</CurrentSource>
+          <CurrentGroup>0</CurrentGroup>
+          <CurrentTimePoint>13</CurrentTimePoint>
+        </ViewerState>
+      </BdvState>
+      <BdvTransform>4.26136363636364 -1.0092936587501423E-16 0.0 137.92111806964868 1.0092936587501423E-16 4.26136363636364 0.0 6.523829159903414 0.0 0.0 4.261363636363635 0.0</BdvTransform>
+      <NoColoring>true</NoColoring>
+    </Window>
+  </Windows>
+</MamutGui>
