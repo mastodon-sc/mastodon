@@ -137,8 +137,8 @@
 		<license.organizationName>Mastodon authors</license.organizationName>
 		<license.copyrightOwners>Tobias Pietzsch, Jean-Yves Tinevez</license.copyrightOwners>
 
-		<mastodon-collection.version>1.0.0-beta-23-SNAPSHOT</mastodon-collection.version>
-		<mastodon-graph.version>1.0.0-beta-21-SNAPSHOT</mastodon-graph.version>
+		<mastodon-collection.version>1.0.0-beta-22</mastodon-collection.version>
+		<mastodon-graph.version>1.0.0-beta-20</mastodon-graph.version>
 		<bigdataviewer-core.version>10.2.0</bigdataviewer-core.version>
 		<bigdataviewer-vistools.version>1.0.0-beta-28</bigdataviewer-vistools.version>
 
