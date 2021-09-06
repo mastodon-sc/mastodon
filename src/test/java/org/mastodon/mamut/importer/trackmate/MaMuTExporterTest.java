@@ -28,9 +28,14 @@
  */
 package org.mastodon.mamut.importer.trackmate;
 
+import static fiji.plugin.trackmate.io.TmXmlKeys.IMAGE_ELEMENT_KEY;
+import static fiji.plugin.trackmate.io.TmXmlKeys.IMAGE_FILENAME_ATTRIBUTE_NAME;
+import static fiji.plugin.trackmate.io.TmXmlKeys.IMAGE_FOLDER_ATTRIBUTE_NAME;
+import static fiji.plugin.trackmate.io.TmXmlKeys.SETTINGS_ELEMENT_KEY;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.io.File;
 import java.io.IOException;
@@ -43,8 +48,11 @@ import java.util.NavigableSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.jdom2.Document;
+import org.jdom2.Element;
+import org.jdom2.JDOMException;
+import org.jdom2.input.SAXBuilder;
 import org.jgrapht.graph.DefaultWeightedEdge;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.mastodon.collection.RefSet;
 import org.mastodon.feature.Feature;
@@ -94,7 +102,10 @@ public class MaMuTExporterTest
 	private static final Collection< String > EDGE_FEATURES_TO_IGNORE = Arrays.asList(
 			"LINK_COST", "SPOT_SOURCE_ID", "SPOT_TARGET_ID" );
 
-	@Ignore( "Working on version updates" )
+	// track features added when exporting to TrackMate.
+	private static final Collection< String > TRACK_FEATURES_ADDED = Arrays.asList(
+			"TRACK_INDEX", "TRACK_ID" );
+
 	@Test
 	public void test() throws IOException, SpimDataException
 	{
@@ -105,7 +116,7 @@ public class MaMuTExporterTest
 		}
 		finally
 		{
-//			new File( EXPORT_FILE ).delete();
+			new File( EXPORT_FILE ).delete();
 		}
 	}
 
@@ -160,11 +171,9 @@ public class MaMuTExporterTest
 
 		// Check tracks features.
 
-		System.out.println( exportedModel.getFeatureModel().getTrackFeatures() ); // DEBUG
-		System.out.println( featureModel.getFeatureSpecs() ); // DEBUG
-
-		assertTrue( "Exported track feature collection should be empty.",
-				exportedModel.getFeatureModel().getTrackFeatures().isEmpty() );
+		assertTrue( exportedModel.getFeatureModel().getTrackFeatures().size() == TRACK_FEATURES_ADDED.size()
+				&& exportedModel.getFeatureModel().getTrackFeatures().containsAll( TRACK_FEATURES_ADDED )
+				&& TRACK_FEATURES_ADDED.containsAll( exportedModel.getFeatureModel().getTrackFeatures() ) );
 
 		// Check all spot values.
 		int ntested = 0;
@@ -248,10 +257,40 @@ public class MaMuTExporterTest
 				sourceModel.getGraph().edges().size(), ntested );
 
 		/*
-		 * Test whether MaMuT can open the image data.
+		 * Test whether MaMuT can open the image data. We retrieve the image
+		 * file path from the exported MaMuT file.
 		 */
 
-		final SourceSettings settings = new SourceSettings( "pixel", "frame" );
+		final File file = new File( EXPORT_FILE );
+		final SAXBuilder sb = new SAXBuilder();
+		Element root = null;
+		try
+		{
+			final Document document = sb.build( file );
+			root = document.getRootElement();
+		}
+		catch ( final JDOMException e )
+		{
+			fail( "Problem parsing " + file.getName() + ", it is not a valid TrackMate XML file.\nError message is:\n"
+					+ e.getLocalizedMessage() );
+		}
+		catch ( final IOException e )
+		{
+			fail( "Problem reading " + file.getName()
+					+ ".\nError message is:\n" + e.getLocalizedMessage() );
+		}
+
+		final Element settingsElement = root.getChild( SETTINGS_ELEMENT_KEY );
+		if ( null == settingsElement )
+			fail( "Could not find a " + SETTINGS_ELEMENT_KEY + " element in the exported file." );
+
+		final Element imageInfoElement = settingsElement.getChild( IMAGE_ELEMENT_KEY );
+		final String filename = imageInfoElement.getAttributeValue( IMAGE_FILENAME_ATTRIBUTE_NAME );
+		final String folder = imageInfoElement.getAttributeValue( IMAGE_FOLDER_ATTRIBUTE_NAME );
+		if ( null == filename || filename.isEmpty() )
+			fail( "Cannot find image file name in xml file.\n" );
+
+		final SourceSettings settings = new SourceSettings( folder, filename );
 		reader.readSourceSettings();
 
 		File imageFile = new File( settings.imageFolder, settings.imageFileName );

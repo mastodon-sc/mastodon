@@ -3,8 +3,8 @@
   <Windows>
     <Window>
       <Type>MamutViewBdv</Type>
-      <FramePosition>208 124 816 697</FramePosition>
-      <LockGroupId>-1</LockGroupId>
+      <FramePosition>174 139 816 697</FramePosition>
+      <LockGroupId>0</LockGroupId>
       <SettingsPanelVisible>true</SettingsPanelVisible>
       <BdvState>
         <ViewerState>
@@ -60,11 +60,23 @@
           <Interpolation>nearestneighbor</Interpolation>
           <CurrentSource>0</CurrentSource>
           <CurrentGroup>0</CurrentGroup>
-          <CurrentTimePoint>13</CurrentTimePoint>
+          <CurrentTimePoint>49</CurrentTimePoint>
         </ViewerState>
       </BdvState>
-      <BdvTransform>4.26136363636364 -1.0092936587501423E-16 0.0 137.92111806964868 1.0092936587501423E-16 4.26136363636364 0.0 6.523829159903414 0.0 0.0 4.261363636363635 0.0</BdvTransform>
+      <BdvTransform>4.6875 0.0 0.0 101.84375 0.0 4.6875 0.0 79.99526024964294 0.0 0.0 4.6875 0.0</BdvTransform>
       <NoColoring>true</NoColoring>
+    </Window>
+    <Window>
+      <Type>MamutViewTable</Type>
+      <FramePosition>760 320 1039 457</FramePosition>
+      <LockGroupId>0</LockGroupId>
+      <SettingsPanelVisible>true</SettingsPanelVisible>
+      <TableSelectionOnly>false</TableSelectionOnly>
+      <TableVertexTableVisibleRect>480 1884</TableVertexTableVisibleRect>
+      <TableEdgeTableVisibleRect>0 0</TableEdgeTableVisibleRect>
+      <TableVertexTableDisplayed>true</TableVertexTableDisplayed>
+      <NoColoring>true</NoColoring>
+      <ContextProvider>full graph</ContextProvider>
     </Window>
   </Windows>
 </MamutGui>
