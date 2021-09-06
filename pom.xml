@@ -10,7 +10,7 @@
 
 	<groupId>org.mastodon</groupId>
 	<artifactId>mastodon</artifactId>
-	<version>1.0.0-beta-21-SNAPSHOT</version>
+	<version>1.0.0-beta-21</version>
 
 	<name>Mastodon</name>
 	<description>Mastodon – a large-scale tracking and track-editing framework for large, multi-view images.</description>
@@ -117,7 +117,7 @@
 	<scm>
 		<connection>scm:git:git://github.com/mastodon-sc/mastodon</connection>
 		<developerConnection>scm:git:git@github.com:mastodon-sc/mastodon</developerConnection>
-		<tag>HEAD</tag>
+		<tag>mastodon-1.0.0-beta-21</tag>
 		<url>https://github.com/mastodon-sc/mastodon</url>
 	</scm>
 	<issueManagement>
