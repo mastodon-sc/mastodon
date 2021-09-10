@@ -104,25 +104,25 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 
 	private int height;
 
-	private final AffineTransform3D renderTransform;
+	protected final AffineTransform3D renderTransform;
 
-	private int renderTimepoint;
+	protected int renderTimepoint;
 
-	private final OverlayGraph< V, E > graph;
+	protected final OverlayGraph< V, E > graph;
 
-	private final SpatioTemporalIndex< V > index;
+	protected final SpatioTemporalIndex< V > index;
 
-	private final HighlightModel< V, E > highlight;
+	protected final HighlightModel< V, E > highlight;
 
-	private final FocusModel< V, E > focus;
+	protected final FocusModel< V, E > focus;
 
-	private final SelectionModel< V, E > selection;
+	protected final SelectionModel< V, E > selection;
 
-	private final GraphColorGenerator< V, E > coloring;
+	protected final GraphColorGenerator< V, E > coloring;
 
-	private RenderSettings settings;
+	protected RenderSettings settings;
 
-	private final Visibilities< V, E > visibilities;
+	protected final Visibilities< V, E > visibilities;
 
 	public OverlayGraphRenderer(
 			final OverlayGraph< V, E > graph,
@@ -187,7 +187,7 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 	 * farther behind the plane has d=1. A point that is at -cutoff or more in
 	 * front of the plane has d=-1.
 	 */
-	private static double sliceDistance( final double z, final double cutoff )
+	protected static double sliceDistance( final double z, final double cutoff )
 	{
 		if ( z > 0 )
 			return Math.min( z, cutoff ) / cutoff;
@@ -253,7 +253,7 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 	 * @param color the color assigned to the object when using a coloring scheme.
 	 * @return vertex/edge color suitable for display in a BDV.
 	 */
-	private static Color getColor(
+	protected static Color getColor(
 			final double sd,
 			final double td,
 			final double sdFade,
@@ -384,7 +384,7 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 	 *
 	 * @return a copy of the {@code renderTransform}.
 	 */
-	private AffineTransform3D getRenderTransformCopy()
+	protected AffineTransform3D getRenderTransformCopy()
 	{
 		final AffineTransform3D transform = new AffineTransform3D();
 		synchronized ( renderTransform )
@@ -403,7 +403,7 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 	 * @param timepoint
 	 * @return
 	 */
-	private ConvexPolytope getVisiblePolytopeGlobal(
+	protected ConvexPolytope getVisiblePolytopeGlobal(
 			final AffineTransform3D transform,
 			final int timepoint )
 	{
@@ -444,7 +444,7 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 	 *
 	 * @return whether to draw points always
 	 */
-	private boolean drawPointsAlways()
+	protected boolean drawPointsAlways()
 	{
 		return settings.getDrawSpotCenters()
 				&& ( ( !settings.getDrawEllipsoidSliceIntersection() && !settings.getDrawEllipsoidSliceProjection() )
@@ -462,18 +462,18 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 	 *
 	 * @return whether to draw points depending on ellipse intersection with view plane.
 	 */
-	private boolean drawPointsMaybe()
+	protected boolean drawPointsMaybe()
 	{
 		return settings.getDrawSpotCenters()
 				&& !settings.getDrawEllipsoidSliceProjection() && settings.getDrawEllipsoidSliceIntersection();
 	}
 
-	private interface EdgeOperation< E >
+	protected interface EdgeOperation< E >
 	{
 		void apply( final E edge, final double td0, final double td1, final double sd0, final double sd1, final int x0, final int y0, final int x1, final int y1 );
 	}
 
-	private void forEachVisibleEdge(
+	protected void forEachVisibleEdge(
 			final AffineTransform3D transform,
 			final int currentTimepoint,
 			final EdgeOperation< E > edgeOperation )
@@ -1167,7 +1167,7 @@ public class OverlayGraphRenderer< V extends OverlayVertex< V, E >, E extends Ov
 	 *
 	 * @return maximum distance from view plane up to which to draw spots.
 	 */
-	private double getMaxDepth( final AffineTransform3D transform )
+	protected double getMaxDepth( final AffineTransform3D transform )
 	{
 		final double focusLimit = settings.getFocusLimit();
 		return settings.getFocusLimitViewRelative()
