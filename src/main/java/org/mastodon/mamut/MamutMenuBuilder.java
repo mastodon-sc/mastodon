@@ -136,4 +136,26 @@ public class MamutMenuBuilder extends ViewMenuBuilder
 	{
 		return ViewMenuBuilder.menu( "Window", items );
 	}
+
+	/**
+	 * Creates a menu item with the specified item name, under the specified
+	 * menu path. For instance
+	 * <code>makeFullMenuItem( "my action", "Plugins", "Submenu" );</code> will
+	 * create a menu item for <code>my action</code> under the menu path
+	 * <code>Plugins > Submenu</code> and create the said path if required.
+	 * 
+	 * @param itemName
+	 *            the name of the item.
+	 * @param menuPath
+	 *            the ordered menu path.
+	 * @return a new menu item.
+	 */
+	public static final MenuItem makeFullMenuItem( final String itemName, final String... menuPath )
+	{
+		final MenuItem item = MamutMenuBuilder.item( itemName );
+		MenuItem menuPathItem = item;
+		for ( int i = menuPath.length - 1; i >= 0; i-- )
+			menuPathItem = MamutMenuBuilder.menu( menuPath[ i ], menuPathItem );
+		return menuPathItem;
+	}
 }
