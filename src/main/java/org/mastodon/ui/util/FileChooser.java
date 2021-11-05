@@ -264,7 +264,7 @@ public class FileChooser
 		return file;
 	}
 
-	private static boolean isMac()
+	public static boolean isMac()
 	{
 		final String OS = System.getProperty( "os.name", "generic" ).toLowerCase( Locale.ENGLISH );
 		return ( OS.indexOf( "mac" ) >= 0 ) || ( OS.indexOf( "darwin" ) >= 0 );
