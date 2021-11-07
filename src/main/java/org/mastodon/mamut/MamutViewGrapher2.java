@@ -55,6 +55,8 @@ import org.mastodon.app.ui.MastodonFrameViewActions;
 import org.mastodon.app.ui.SearchVertexLabel;
 import org.mastodon.app.ui.ViewMenu;
 import org.mastodon.app.ui.ViewMenuBuilder.JMenuHandle;
+import org.mastodon.mamut.feature.SpotFrameFeature;
+import org.mastodon.mamut.feature.SpotIntensityFeature;
 import org.mastodon.mamut.model.Link;
 import org.mastodon.mamut.model.Model;
 import org.mastodon.mamut.model.Spot;
@@ -70,6 +72,7 @@ import org.mastodon.ui.coloring.GraphColorGeneratorAdapter;
 import org.mastodon.ui.coloring.feature.FeatureColorMode;
 import org.mastodon.ui.keymap.KeyConfigContexts;
 import org.mastodon.views.context.ContextChooser;
+import org.mastodon.views.grapher.SpecPair;
 import org.mastodon.views.grapher.datagraph.DataContextListener;
 import org.mastodon.views.grapher.datagraph.DataEdge;
 import org.mastodon.views.grapher.datagraph.DataGraph;
@@ -110,8 +113,18 @@ public class MamutViewGrapher2 extends MamutView< DataGraph< Spot, Link >, DataV
 						appModel.getModel().getGraph(),
 						appModel.getModel().getGraphIdBimap(),
 						new DefaultModelGraphProperties< Spot, Link >(),
+						appModel.getModel().getFeatureModel(),
 						appModel.getModel().getGraph().getLock() ),
 				new String[] { KeyConfigContexts.GRAPHER } );
+
+		/*
+		 * We hardcode the initial features for now.
+		 */
+		final SpecPair x = new SpecPair( SpotFrameFeature.SPEC, SpotFrameFeature.SPEC.getProjectionSpecs().iterator().next() );
+		final SpecPair y = new SpecPair( SpotIntensityFeature.SPEC, SpotIntensityFeature.MEAN_PROJECTION_SPEC, 1 );
+		viewGraph.getLayout().setXFeature( x );
+		viewGraph.getLayout().setYFeature( y );
+		viewGraph.getLayout().layout();
 
 		final KeyPressedManager keyPressedManager = appModel.getKeyPressedManager();
 		final Model model = appModel.getModel();

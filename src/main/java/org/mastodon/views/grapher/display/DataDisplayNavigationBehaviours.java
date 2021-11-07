@@ -41,7 +41,7 @@ import org.mastodon.ui.keymap.CommandDescriptions;
 import org.mastodon.ui.keymap.KeyConfigContexts;
 import org.mastodon.views.grapher.datagraph.DataEdge;
 import org.mastodon.views.grapher.datagraph.DataGraph;
-import org.mastodon.views.grapher.datagraph.DataGraphLayout;
+import org.mastodon.views.grapher.datagraph.DataGraph.DataGraphLayout;
 import org.mastodon.views.grapher.datagraph.DataVertex;
 import org.mastodon.views.grapher.datagraph.ScreenTransform;
 import org.mastodon.views.trackscheme.display.OffsetHeaders.OffsetHeadersListener;

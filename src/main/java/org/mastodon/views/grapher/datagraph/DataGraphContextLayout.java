@@ -31,6 +31,7 @@ package org.mastodon.views.grapher.datagraph;
 import org.mastodon.collection.RefCollections;
 import org.mastodon.collection.RefList;
 import org.mastodon.views.context.Context;
+import org.mastodon.views.grapher.datagraph.DataGraph.DataGraphLayout;
 import org.mastodon.views.trackscheme.LineageTreeLayout;
 
 /**
@@ -97,8 +98,6 @@ public class DataGraphContextLayout
 		previousMinTimepoint = minTimepoint;
 		previousMaxTimepoint = maxTimepoint;
 
-		final int ghostmark = layout.nextLayoutTimestamp();
-		final int mark = layout.nextLayoutTimestamp();
 		final RefList< DataVertex > roots = RefCollections.createRefList( graph.vertices() );
 
 		context.readLock().lock();
@@ -108,11 +107,8 @@ public class DataGraphContextLayout
 			{
 				for ( final DataVertex tv : context.getInsideVertices( t ) )
 				{
-					tv.setLayoutTimestamp( mark );
 					if ( t == minTimepoint )
 						roots.add( tv );
-					else
-						buildContextTraceParents( tv, ghostmark, minTimepoint, roots );
 				}
 			}
 		}
@@ -151,7 +147,7 @@ public class DataGraphContextLayout
 				if ( parent.getLayoutTimestamp() < ghostmark )
 				{
 					parent.setLayoutTimestamp( ghostmark );
-					if ( parent.getTimepoint() <= minTimepoint )
+					if ( parent.getLayoutY() <= minTimepoint )
 						roots.add( parent );
 					else
 						buildContextTraceParents( parent, ghostmark, minTimepoint, roots );

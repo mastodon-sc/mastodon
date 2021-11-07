@@ -34,8 +34,7 @@ import java.util.TimerTask;
 import org.mastodon.ui.keymap.CommandDescriptionProvider;
 import org.mastodon.ui.keymap.CommandDescriptions;
 import org.mastodon.ui.keymap.KeyConfigContexts;
-import org.mastodon.views.grapher.datagraph.DataGraphLayout;
-import org.mastodon.views.grapher.datagraph.DataGraphLayout.LayoutListener;
+import org.mastodon.views.grapher.datagraph.DataGraph.LayoutListener;
 import org.mastodon.views.grapher.datagraph.ScreenTransform;
 import org.mastodon.views.grapher.display.animate.InertialScreenTransformAnimator;
 import org.mastodon.views.grapher.display.animate.InterpolateScreenTransformAnimator;
@@ -271,7 +270,7 @@ public class InertialScreenTransformEventHandler
 	}
 
 	@Override
-	public synchronized void layoutChanged( final DataGraphLayout layout )
+	public synchronized void layoutChanged()
 	{
 		final ScreenTransform transform = transformState.get();
 

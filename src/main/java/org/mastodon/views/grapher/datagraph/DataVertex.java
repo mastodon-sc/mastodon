@@ -33,15 +33,9 @@ import org.mastodon.graph.ref.AbstractVertex;
 import org.mastodon.model.HasLabel;
 import org.mastodon.pool.ByteMappedElement;
 import org.mastodon.pool.PoolObject;
-import org.mastodon.spatial.HasTimepoint;
 import org.mastodon.views.grapher.datagraph.DataGraph.DataVertexPool;
 
-/**
- * The vertex class for TrackScheme.
- *
- * @author Tobias Pietzsch &lt;tobias.pietzsch@gmail.com&gt;
- */
-public class DataVertex extends AbstractVertex< DataVertex, DataEdge, DataVertexPool, ByteMappedElement > implements HasLabel, HasTimepoint
+public class DataVertex extends AbstractVertex< DataVertex, DataEdge, DataVertexPool, ByteMappedElement > implements HasLabel
 {
 	final ModelGraphWrapper< ?, ? >.ModelVertexWrapper modelVertex;
 
@@ -55,11 +49,11 @@ public class DataVertex extends AbstractVertex< DataVertex, DataEdge, DataVertex
 	DataVertex initModelId( final int modelVertexId )
 	{
 		setModelVertexId( modelVertexId );
-		setLayoutX( 0 );
+		setLayoutX( Double.NaN );
+		setLayoutY( Double.NaN );
 		setLayoutTimestamp( -1 );
 		setLayoutInEdgeIndex( 0 );
 		setGhost( false );
-		updateTimepointFromModel();
 		return this;
 	}
 
@@ -83,11 +77,11 @@ public class DataVertex extends AbstractVertex< DataVertex, DataEdge, DataVertex
 	@Override
 	public String toString()
 	{
-		return String.format( "TrackSchemeVertex( ID=%d, LABEL=%s, X=%.2f, TIMEPOINT=%d )",
+		return String.format( "DataVertex( ID=%d, LABEL=%s, X=%.2f, Y=%.2f )",
 				getModelVertexId(),
 				getLabel(),
 				getLayoutX(),
-				getTimepoint() );
+				getLayoutY() );
 	}
 
 	DataVertex( final DataVertexPool pool )
@@ -120,20 +114,14 @@ public class DataVertex extends AbstractVertex< DataVertex, DataEdge, DataVertex
 		modelVertex.setLabel( label );
 	}
 
-	@Override
-	public int getTimepoint()
+	public double getLayoutY()
 	{
-		return pool.timepoint.get( this );
+		return pool.layoutY.get( this );
 	}
 
-	protected void setTimepoint( final int timepoint )
+	protected void setLayoutY( final double y )
 	{
-		pool.timepoint.setQuiet( this, timepoint );
-	}
-
-	protected void updateTimepointFromModel()
-	{
-		setTimepoint( modelVertex.getTimepoint() );
+		pool.layoutY.setQuiet( this, y );
 	}
 
 	/**

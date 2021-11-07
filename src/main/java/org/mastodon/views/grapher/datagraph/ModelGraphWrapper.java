@@ -69,11 +69,6 @@ public class ModelGraphWrapper< V extends Vertex< E >, E extends Edge< V > >
 			this.vertex = vertex;
 		}
 
-		public int getTimepoint()
-		{
-			return modelGraphProperties.getTimepoint( getModelVertex() );
-		}
-
 		public String getLabel()
 		{
 			return modelGraphProperties.getLabel( getModelVertex() );

@@ -58,8 +58,8 @@ import org.mastodon.views.context.Context;
 import org.mastodon.views.context.ContextListener;
 import org.mastodon.views.grapher.datagraph.DataEdge;
 import org.mastodon.views.grapher.datagraph.DataGraph;
+import org.mastodon.views.grapher.datagraph.DataGraph.DataGraphLayout;
 import org.mastodon.views.grapher.datagraph.DataGraphContextLayout;
-import org.mastodon.views.grapher.datagraph.DataGraphLayout;
 import org.mastodon.views.grapher.datagraph.DataVertex;
 import org.mastodon.views.grapher.datagraph.ScreenEntities;
 import org.mastodon.views.grapher.datagraph.ScreenEntitiesInterpolator;
@@ -246,7 +246,7 @@ public class DataDisplayPanel extends JPanel implements
 			}
 		} );
 
-		layout = new DataGraphLayout( graph, selection );
+		layout = graph.getLayout();
 		contextLayout = new DataGraphContextLayout( graph, layout );
 		colorGenerator = options.getGraphColorGenerator();
 		layout.layoutListeners().add( transformEventHandler );
@@ -533,26 +533,15 @@ public class DataDisplayPanel extends JPanel implements
 	@Override
 	public void navigateToVertex( final DataVertex v )
 	{
-		if ( v.getLayoutTimestamp() == layout.getCurrentLayoutTimestamp() )
-		{
-			timepoint.setTimepoint( v.getTimepoint() );
-			navigationBehaviour.navigateToVertex( v, screenTransform.get() );
-		}
+		navigationBehaviour.navigateToVertex( v, screenTransform.get() );
 	}
 
 	@Override
 	public void navigateToEdge( final DataEdge edge )
 	{
-		// TODO: focus target vertex?
-
 		final DataVertex source = edge.getSource( graph.vertexRef() );
 		final DataVertex target = edge.getTarget( graph.vertexRef() );
-		final int clts = layout.getCurrentLayoutTimestamp();
-		if ( target.getLayoutTimestamp() == clts && source.getLayoutTimestamp() == clts )
-		{
-			timepoint.setTimepoint( target.getTimepoint() );
-			navigationBehaviour.navigateToEdge( edge, source, target, screenTransform.get() );
-		}
+		navigationBehaviour.navigateToEdge( edge, source, target, screenTransform.get() );
 		graph.releaseRef( source );
 		graph.releaseRef( target );
 	}
@@ -581,7 +570,7 @@ public class DataDisplayPanel extends JPanel implements
 		public void navigateToVertex( final DataVertex v, final ScreenTransform currentTransform )
 		{
 			final double lx = v.getLayoutX();
-			final double ly = v.getTimepoint();
+			final double ly = v.getLayoutY();
 			transformEventHandler.centerOn( lx, ly );
 		}
 
@@ -609,7 +598,7 @@ public class DataDisplayPanel extends JPanel implements
 		public void navigateToVertex( final DataVertex v, final ScreenTransform currentTransform )
 		{
 			final double lx = v.getLayoutX();
-			final double ly = v.getTimepoint();
+			final double ly = v.getLayoutY();
 			if ( currentTransform.getMaxX() < lx || currentTransform.getMinX() > lx
 					|| currentTransform.getMaxY() < ly || currentTransform.getMinY() > ly )
 			{
@@ -645,7 +634,7 @@ public class DataDisplayPanel extends JPanel implements
 		public void navigateToVertex( final DataVertex v, final ScreenTransform currentTransform )
 		{
 			final double lx = v.getLayoutX();
-			final double ly = v.getTimepoint();
+			final double ly = v.getLayoutY();
 
 			/*
 			 * TODO: check for compatibility of screenBorder and screenWidth,
@@ -703,8 +692,8 @@ public class DataDisplayPanel extends JPanel implements
 			final double targetX = target.getLayoutX();
 			final double eMinX = Math.min( sourceX, targetX );
 			final double eMaxX = Math.max( sourceX, targetX );
-			final double eMinY = source.getTimepoint();
-			final double eMaxY = target.getTimepoint();
+			final double eMinY = source.getLayoutY();
+			final double eMaxY = target.getLayoutY();
 			final double lx = 0.5 * ( eMinX + eMaxX );
 			final double ly = 0.5 * ( eMinY + eMaxY );
 

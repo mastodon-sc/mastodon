@@ -38,7 +38,6 @@ package org.mastodon.views.grapher.datagraph.wrap;
  */
 public interface ModelGraphProperties< V, E >
 {
-	public int getTimepoint( V v );
 
 	public String getLabel( V v );
 

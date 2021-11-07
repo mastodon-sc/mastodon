@@ -31,7 +31,7 @@ package org.mastodon.views.grapher.display;
 import org.mastodon.model.FocusListener;
 import org.mastodon.model.FocusModel;
 import org.mastodon.views.grapher.datagraph.DataEdge;
-import org.mastodon.views.grapher.datagraph.DataGraphLayout;
+import org.mastodon.views.grapher.datagraph.DataGraph.DataGraphLayout;
 import org.mastodon.views.grapher.datagraph.DataVertex;
 import org.mastodon.views.trackscheme.ScreenTransform;
 import org.scijava.listeners.Listeners;

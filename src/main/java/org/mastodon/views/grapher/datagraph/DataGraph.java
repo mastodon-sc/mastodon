@@ -36,7 +36,8 @@ import org.mastodon.app.ViewGraph;
 import org.mastodon.collection.IntRefMap;
 import org.mastodon.collection.RefSet;
 import org.mastodon.collection.ref.IntRefArrayMap;
-import org.mastodon.collection.ref.RefSetImp;
+import org.mastodon.feature.FeatureModel;
+import org.mastodon.feature.FeatureProjection;
 import org.mastodon.graph.Edge;
 import org.mastodon.graph.GraphChangeListener;
 import org.mastodon.graph.GraphChangeNotifier;
@@ -56,8 +57,13 @@ import org.mastodon.pool.attributes.BooleanAttribute;
 import org.mastodon.pool.attributes.DoubleAttribute;
 import org.mastodon.pool.attributes.IndexAttribute;
 import org.mastodon.pool.attributes.IntAttribute;
+import org.mastodon.ui.coloring.GraphColorGenerator;
+import org.mastodon.views.grapher.SpecPair;
 import org.mastodon.views.grapher.datagraph.wrap.ModelGraphProperties;
 import org.scijava.listeners.Listeners;
+import org.scijava.listeners.Listeners.List;
+
+import net.imglib2.RealPoint;
 
 public class DataGraph<
 		V extends Vertex< E >,
@@ -80,8 +86,6 @@ public class DataGraph<
 
 	private final IntRefMap< DataEdge > idToDataEdge;
 
-	private final RefSet< DataVertex > roots;
-
 	private V mv;
 
 	private final DataVertex tsv;
@@ -96,6 +100,8 @@ public class DataGraph<
 
 	private final RefBimap< E, DataEdge > edgeMap;
 
+	private DataGraph< V, E >.DataGraphLayout layout;
+
 	/**
 	 * Creates a new DataGraph with a default initial capacity.
 	 *
@@ -109,9 +115,10 @@ public class DataGraph<
 	public DataGraph(
 			final ListenableReadOnlyGraph< V, E > modelGraph,
 			final GraphIdBimap< V, E > idmap,
-			final ModelGraphProperties< V, E > modelGraphProperties )
+			final ModelGraphProperties< V, E > modelGraphProperties,
+			final FeatureModel featureModel )
 	{
-		this( modelGraph, idmap, modelGraphProperties, new ReentrantReadWriteLock() );
+		this( modelGraph, idmap, modelGraphProperties, featureModel, new ReentrantReadWriteLock() );
 	}
 
 	/**
@@ -123,6 +130,7 @@ public class DataGraph<
 	 *            the bidirectional id map of the model graph.
 	 * @param modelGraphProperties
 	 *            an accessor for properties of the model graph.
+	 * @param featureModel
 	 * @param lock
 	 *            read/write locks for the model graph
 	 */
@@ -130,15 +138,16 @@ public class DataGraph<
 			final ListenableReadOnlyGraph< V, E > modelGraph,
 			final GraphIdBimap< V, E > idmap,
 			final ModelGraphProperties< V, E > modelGraphProperties,
+			final FeatureModel featureModel,
 			final ReentrantReadWriteLock lock )
 	{
-		this( modelGraph, idmap, modelGraphProperties, lock, 10000 );
+		this( modelGraph, idmap, modelGraphProperties, featureModel, lock, 10000 );
 	}
 
 	/**
-	 * Creates a new {@link DataGraph} that reproduces the current model
-	 * graph structure. It registers as a {@link GraphListener} to keep in sync
-	 * with changes the model graph.
+	 * Creates a new {@link DataGraph} that reproduces the current model graph
+	 * structure. It registers as a {@link GraphListener} to keep in sync with
+	 * changes the model graph.
 	 *
 	 * @param modelGraph
 	 *            the model graph to wrap.
@@ -146,6 +155,7 @@ public class DataGraph<
 	 *            the bidirectional id map of the model graph.
 	 * @param modelGraphProperties
 	 *            an accessor for properties of the model graph.
+	 * @param featureModel
 	 * @param lock
 	 *            read/write locks for the model graph
 	 * @param initialCapacity
@@ -155,6 +165,7 @@ public class DataGraph<
 			final ListenableReadOnlyGraph< V, E > modelGraph,
 			final GraphIdBimap< V, E > idmap,
 			final ModelGraphProperties< V, E > modelGraphProperties,
+			final FeatureModel featureModel,
 			final ReentrantReadWriteLock lock,
 			final int initialCapacity )
 	{
@@ -165,11 +176,11 @@ public class DataGraph<
 						new ModelGraphWrapper<>( idmap, modelGraphProperties ) ) ) );
 		this.modelGraph = modelGraph;
 		this.modelGraphProperties = modelGraphProperties;
+		this.layout = new DataGraphLayout( featureModel );
 		this.lock = lock;
 		this.idmap = idmap;
 		idToDataVertex = new IntRefArrayMap<>( vertexPool );
 		idToDataEdge = new IntRefArrayMap<>( edgePool );
-		roots = new RefSetImp<>( vertexPool );
 		mv = modelGraph.vertexRef();
 		tsv = vertexRef();
 		tsv2 = vertexRef();
@@ -190,6 +201,7 @@ public class DataGraph<
 			lock.writeLock().unlock();
 		}
 	}
+
 
 	/**
 	 * Exposes the {@link RefPool} for the Data vertices of this DataGraph.
@@ -219,24 +231,6 @@ public class DataGraph<
 		return idmap;
 	}
 
-	/**
-	 * Returns the roots of this graph.
-	 * <p>
-	 * Roots are defined as the vertices that have no incoming edges. Therefore
-	 * a single connected-component of the graph may have several roots.
-	 * <p>
-	 * To be properly used in Data, it is best to adopt the convention where all
-	 * edges are directed along time: They should depart from the earliest
-	 * vertex in time, and point to the latest vertex in time. Then, the roots
-	 * of the graph corresponds to vertices that appear as time increases.
-	 *
-	 * @return the roots of the graph, as a set of vertices.
-	 */
-	public RefSet< DataVertex > getRoots()
-	{
-		return roots;
-	}
-
 	@Override
 	public String toString()
 	{
@@ -250,10 +244,6 @@ public class DataGraph<
 			sb.append( "    " + edge + "\n" );
 		sb.append( "  }\n" );
 		sb.append( "},\n" );
-		sb.append( "  roots = {\n" );
-		for ( final DataVertex vertex : roots )
-			sb.append( "    " + vertex + "\n" );
-		sb.append( "  },\n" );
 		sb.append( "}" );
 		return sb.toString();
 	}
@@ -310,41 +300,25 @@ public class DataGraph<
 	@Override
 	public DataEdge addEdge( final DataVertex source, final DataVertex target )
 	{
-		return addEdge( source, target, edgeRef() );
+		throw new UnsupportedOperationException();
 	}
 
 	@Override
 	public DataEdge addEdge( final DataVertex source, final DataVertex target, final DataEdge ref )
 	{
-		final E mref = modelGraph.edgeRef();
-
-		final E medge = modelGraphProperties.addEdge( vertexMap.getLeft( source ), vertexMap.getLeft( target ), mref );
-		modelGraphProperties.initEdge( medge );
-		final DataEdge edge = edgeMap.getRight( medge, ref );
-
-		modelGraph.releaseRef( mref );
-
-		return edge;
+		throw new UnsupportedOperationException();
 	}
 
 	@Override
 	public DataEdge insertEdge( final DataVertex source, final int sourceOutIndex, final DataVertex target, final int targetInIndex )
 	{
-		return insertEdge( source, sourceOutIndex, target, targetInIndex, edgeRef() );
+		throw new UnsupportedOperationException();
 	}
 
 	@Override
 	public DataEdge insertEdge( final DataVertex source, final int sourceOutIndex, final DataVertex target, final int targetInIndex, final DataEdge ref )
 	{
-		final E mref = modelGraph.edgeRef();
-
-		final E medge = modelGraphProperties.insertEdge( vertexMap.getLeft( source ), sourceOutIndex, vertexMap.getLeft( target ), targetInIndex, mref );
-		modelGraphProperties.initEdge( medge );
-		final DataEdge edge = edgeMap.getRight( medge, ref );
-
-		modelGraph.releaseRef( mref );
-
-		return edge;
+		throw new UnsupportedOperationException();
 	}
 
 	@Override
@@ -396,15 +370,12 @@ public class DataGraph<
 	{
 		idToDataVertex.clear();
 		idToDataEdge.clear();
-		roots.clear();
 
 		for ( final V v : modelGraph.vertices() )
 		{
 			final int id = idmap.getVertexId( v );
 			super.addVertex( tsv ).initModelId( id );
 			idToDataVertex.put( id, tsv );
-			if ( v.incomingEdges().isEmpty() )
-				roots.add( tsv );
 		}
 		for ( final E e : modelGraph.edges() )
 		{
@@ -422,7 +393,6 @@ public class DataGraph<
 		final int id = idmap.getVertexId( vertex );
 		super.addVertex( tsv ).initModelId( id );
 		idToDataVertex.put( id, tsv );
-		roots.add( tsv );
 	}
 
 	@Override
@@ -430,11 +400,7 @@ public class DataGraph<
 	{
 		final int id = idmap.getVertexId( vertex );
 		if ( idToDataVertex.remove( id, tsv ) != null )
-		{
-			if ( tsv.incomingEdges().isEmpty() )
-				roots.remove( tsv );
 			super.remove( tsv );
-		}
 	}
 
 	@Override
@@ -443,8 +409,6 @@ public class DataGraph<
 		final int id = idmap.getEdgeId( edge );
 		idToDataVertex.get( idmap.getVertexId( edge.getSource( mv ) ), tsv );
 		idToDataVertex.get( idmap.getVertexId( edge.getTarget( mv ) ), tsv2 );
-		if ( tsv2.incomingEdges().isEmpty() )
-			roots.remove( tsv2 );
 		super.insertEdge( tsv, edge.getSourceOutIndex(), tsv2, edge.getTargetInIndex(), tse ).initModelId( id );
 		idToDataEdge.put( id, tse );
 	}
@@ -454,17 +418,7 @@ public class DataGraph<
 	{
 		final int id = idmap.getEdgeId( edge );
 		if ( idToDataEdge.remove( id, tse ) != null )
-		{
-			if ( tse.getTarget( tsv ).incomingEdges().size() == 1 )
-				roots.add( tsv );
 			super.remove( tse );
-		}
-	}
-
-//	@Override // TODO: should be implemented for some listener interface, or REMOVE? (vertices never change timepoint?)
-	public void vertexTimepointChanged( final V vertex )
-	{
-		idToDataVertex.get( idmap.getVertexId( vertex ), tsv ).updateTimepointFromModel();
 	}
 
 	/**
@@ -489,6 +443,147 @@ public class DataGraph<
 		return edgeMap;
 	}
 
+	public DataGraph< V, E >.DataGraphLayout getLayout()
+	{
+		return layout;
+	}
+
+	/*
+	 * Layout class.
+	 */
+
+
+	public class DataGraphLayout
+	{
+
+		private final Listeners.List< LayoutListener > listeners;
+
+		private final FeatureModel featureModel;
+
+		private FeatureProjection< V > yp;
+
+		private FeatureProjection< V > xp;
+
+		private double currentLayoutMinX;
+
+		private double currentLayoutMaxX;
+
+		private double currentLayoutMaxY;
+
+		private double currentLayoutMinY;
+
+		public DataGraphLayout( final FeatureModel featureModel )
+		{
+			this.featureModel = featureModel;
+			this.listeners = new Listeners.SynchronizedList<>();
+		}
+
+		public void setXFeature( final SpecPair x )
+		{
+			this.xp = x.getProjection( featureModel );
+		}
+
+		public void setYFeature( final SpecPair y )
+		{
+			this.yp = y.getProjection( featureModel );
+		}
+		/*
+		 * Layout
+		 */
+
+		/**
+		 * Resets X and Y position based on the specified feature
+		 * specifications.
+		 */
+		public void layout()
+		{
+			currentLayoutMinX = Double.POSITIVE_INFINITY;
+			currentLayoutMaxX = Double.NEGATIVE_INFINITY;
+			currentLayoutMinY = Double.POSITIVE_INFINITY;
+			currentLayoutMaxY = Double.NEGATIVE_INFINITY;
+			for ( final V v : modelGraph.vertices() )
+			{
+				final double x = xp.value( v );
+				if ( x > currentLayoutMaxX )
+					currentLayoutMaxX = x;
+				if ( x < currentLayoutMinX )
+					currentLayoutMinX = x;
+
+				final double y = yp.value( v );
+				if ( y > currentLayoutMaxY )
+					currentLayoutMaxY = y;
+				if ( y < currentLayoutMinY )
+					currentLayoutMinY = y;
+
+				final int id = idmap.getVertexId( v );
+				idToDataVertex.get( id, tsv );
+				tsv.setLayoutX( x );
+				tsv.setLayoutY( y );
+			}
+			notifyListeners();
+		}
+
+		private void notifyListeners()
+		{
+			for ( final LayoutListener l : listeners.list )
+				l.layoutChanged();
+		}
+
+		public DataVertex getClosestActiveVertex( final RealPoint centerPos, final double ratioXtoY, final DataVertex ref )
+		{
+			// TODO Auto-generated method stub
+			return null;
+		}
+
+		public DataVertex getClosestActiveVertexWithin( final double lx1, final double ly1, final double lx2, final double ly2, final double ratioXtoY, final DataVertex vertexRef )
+		{
+			// TODO Auto-generated method stub
+			return null;
+		}
+
+		public RefSet< DataVertex > getActiveVerticesWithin( final double lx1, final double ly1, final double lx2, final double ly2 )
+		{
+			// TODO Auto-generated method stub
+			return null;
+		}
+
+		public List< LayoutListener > layoutListeners()
+		{
+			return listeners;
+		}
+
+		public double getCurrentLayoutMinX()
+		{
+			return currentLayoutMinX;
+		}
+
+		public double getCurrentLayoutMaxX()
+		{
+			return currentLayoutMaxX;
+		}
+
+		public void cropAndScale(
+				final ScreenTransform transform,
+				final ScreenEntities screenEntities,
+				final int width,
+				final int height,
+				final GraphColorGenerator< DataVertex, DataEdge > colorGenerator )
+		{
+			// TODO Auto-generated method stub
+
+		}
+
+	}
+
+	public interface LayoutListener
+	{
+
+		/**
+		 * Notifies after the layout has been done.
+		 */
+		public void layoutChanged();
+	}
+
 	/*
 	 * vertex and edge pools
 	 */
@@ -499,7 +594,7 @@ public class DataGraph<
 		final IntField layoutTimeStamp = intField();
 		final IndexField layoutInEdgeIndex = indexField();
 		final DoubleField layoutX = doubleField();
-		final IntField timepoint = intField();
+		final DoubleField layoutY = doubleField();
 		final IndexField screenVertexIndex = indexField();
 		final BooleanField ghost = booleanField();
 	}
@@ -514,7 +609,7 @@ public class DataGraph<
 		final IntAttribute< DataVertex > layoutTimeStamp = new IntAttribute<>( vertexLayout.layoutTimeStamp, this );
 		final IndexAttribute< DataVertex > layoutInEdgeIndex = new IndexAttribute<>( vertexLayout.layoutInEdgeIndex, this );
 		final DoubleAttribute< DataVertex > layoutX = new DoubleAttribute<>( vertexLayout.layoutX, this );
-		final IntAttribute< DataVertex > timepoint = new IntAttribute<>( vertexLayout.timepoint, this );
+		final DoubleAttribute< DataVertex > layoutY = new DoubleAttribute<>( vertexLayout.layoutY, this );
 		final IndexAttribute< DataVertex > screenVertexIndex = new IndexAttribute<>( vertexLayout.screenVertexIndex, this );
 		final BooleanAttribute< DataVertex > ghost = new BooleanAttribute<>( vertexLayout.ghost, this );
 
