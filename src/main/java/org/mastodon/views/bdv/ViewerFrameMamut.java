@@ -28,10 +28,6 @@
  */
 package org.mastodon.views.bdv;
 
-import bdv.ui.BdvDefaultCards;
-import bdv.ui.CardPanel;
-import bdv.ui.splitpanel.SplitPanel;
-import bdv.viewer.ConverterSetups;
 import java.awt.BorderLayout;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
@@ -48,9 +44,12 @@ import org.mastodon.app.ui.ViewFrame;
 import org.mastodon.grouping.GroupHandle;
 import org.scijava.ui.behaviour.MouseAndKeyHandler;
 import org.scijava.ui.behaviour.util.InputActionBindings;
-import org.scijava.ui.behaviour.util.TriggerBehaviourBindings;
 
 import bdv.cache.CacheControl;
+import bdv.ui.BdvDefaultCards;
+import bdv.ui.CardPanel;
+import bdv.ui.splitpanel.SplitPanel;
+import bdv.viewer.ConverterSetups;
 import bdv.viewer.SourceAndConverter;
 import bdv.viewer.ViewerOptions;
 import bdv.viewer.ViewerPanel;
@@ -147,15 +146,5 @@ public class ViewerFrameMamut extends ViewFrame
 	public SplitPanel getSplitPanel()
 	{
 		return splitPanel;
-	}
-
-	public InputActionBindings getKeybindings()
-	{
-		return keybindings;
-	}
-
-	public TriggerBehaviourBindings getTriggerbindings()
-	{
-		return triggerbindings;
 	}
 }

@@ -75,7 +75,6 @@ import org.mastodon.util.FeatureUtils;
 import org.mastodon.views.context.Context;
 import org.mastodon.views.context.ContextChooser;
 import org.mastodon.views.context.ContextListener;
-import org.scijava.ui.behaviour.util.InputActionBindings;
 
 public class TableViewFrame<
 		M extends MastodonAppModel< ?, V, E >,
@@ -335,11 +334,6 @@ public class TableViewFrame<
 		pane.add( "Vertices", vertexTable );
 		pane.add( "Edges", edgeTable );
 		add( pane, BorderLayout.CENTER );
-	}
-
-	public InputActionBindings getKeybindings()
-	{
-		return keybindings;
 	}
 
 	/**

@@ -28,7 +28,6 @@
  */
 package org.mastodon.app.ui;
 
-import bdv.util.AWTUtils;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.lang.reflect.InvocationTargetException;
@@ -43,6 +42,7 @@ import javax.swing.SwingUtilities;
 import org.scijava.ui.behaviour.util.InputActionBindings;
 import org.scijava.ui.behaviour.util.TriggerBehaviourBindings;
 
+import bdv.util.AWTUtils;
 import bdv.util.InvokeOnEDT;
 
 /**
@@ -102,6 +102,16 @@ public class ViewFrame extends JFrame
 		{
 			e.printStackTrace();
 		}
+	}
+
+	public InputActionBindings getKeybindings()
+	{
+		return keybindings;
+	}
+
+	public TriggerBehaviourBindings getTriggerbindings()
+	{
+		return triggerbindings;
 	}
 
 	private synchronized void setSettingsPanelVisibleSynchronized( final boolean visible )
