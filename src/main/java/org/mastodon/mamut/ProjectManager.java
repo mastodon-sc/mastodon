@@ -74,6 +74,7 @@ import org.mastodon.ui.util.XmlFileFilter;
 import org.mastodon.util.DummySpimData;
 import org.mastodon.views.bdv.SharedBigDataViewerData;
 import org.mastodon.views.bdv.overlay.ui.RenderSettingsManager;
+import org.mastodon.views.grapher.display.style.DataDisplayStyleManager;
 import org.mastodon.views.trackscheme.display.style.TrackSchemeStyleManager;
 import org.scijava.plugin.Plugin;
 import org.scijava.ui.behaviour.KeyPressedManager;
@@ -417,6 +418,7 @@ public class ProjectManager
 
 		final KeyPressedManager keyPressedManager = windowManager.getKeyPressedManager();
 		final TrackSchemeStyleManager trackSchemeStyleManager = windowManager.getTrackSchemeStyleManager();
+		final DataDisplayStyleManager dataDisplayStyleManager = windowManager.getDataDisplayStyleManager();
 		final FeatureColorModeManager featureColorModeManager = windowManager.getFeatureColorModeManager();
 		final RenderSettingsManager renderSettingsManager = windowManager.getRenderSettingsManager();
 		final KeymapManager keymapManager = windowManager.getKeymapManager();
@@ -434,6 +436,7 @@ public class ProjectManager
 				sharedBdvData,
 				keyPressedManager,
 				trackSchemeStyleManager,
+				dataDisplayStyleManager,
 				renderSettingsManager,
 				featureColorModeManager,
 				keymapManager,

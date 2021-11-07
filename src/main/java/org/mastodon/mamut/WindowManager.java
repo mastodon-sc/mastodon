@@ -69,6 +69,7 @@ import org.mastodon.util.ToggleDialogAction;
 import org.mastodon.views.bdv.overlay.ui.RenderSettingsConfigPage;
 import org.mastodon.views.bdv.overlay.ui.RenderSettingsManager;
 import org.mastodon.views.context.ContextProvider;
+import org.mastodon.views.grapher.display.style.DataDisplayStyleManager;
 import org.mastodon.views.trackscheme.display.style.TrackSchemeStyleManager;
 import org.mastodon.views.trackscheme.display.style.TrackSchemeStyleSettingsPage;
 import org.scijava.Context;
@@ -159,11 +160,13 @@ public class WindowManager
 	/**
 	 * All currently open Grapher windows.
 	 */
-	private final List< MamutViewGrapher > grapherWindows = new ArrayList<>();
+	private final List< MamutViewGrapher2 > grapherWindows = new ArrayList<>();
 
 	private final KeyPressedManager keyPressedManager;
 
 	private final TrackSchemeStyleManager trackSchemeStyleManager;
+
+	private final DataDisplayStyleManager dataDisplayStyleManager;
 
 	private final RenderSettingsManager renderSettingsManager;
 
@@ -205,6 +208,7 @@ public class WindowManager
 
 		keyPressedManager = new KeyPressedManager();
 		trackSchemeStyleManager = new TrackSchemeStyleManager();
+		dataDisplayStyleManager = new DataDisplayStyleManager();
 		renderSettingsManager = new RenderSettingsManager();
 		featureColorModeManager = new FeatureColorModeManager();
 		featureProjectionsManager = new MamutFeatureProjectionsManager(
@@ -373,7 +377,7 @@ public class WindowManager
 		} );
 	}
 
-	private synchronized void addGrapherWindow( final MamutViewGrapher grapher )
+	private synchronized void addGrapherWindow( final MamutViewGrapher2 grapher )
 	{
 		grapherWindows.add( grapher );
 		grapher.onClose( () -> grapherWindows.remove( grapher ) );
@@ -384,7 +388,7 @@ public class WindowManager
 		tableWindows.forEach( action );
 	}
 
-	public void forEachGrapherView( final Consumer< ? super MamutViewGrapher > action )
+	public void forEachGrapherView( final Consumer< ? super MamutViewGrapher2 > action )
 	{
 		grapherWindows.forEach( action );
 	}
@@ -466,16 +470,16 @@ public class WindowManager
 		return createTable( guiState );
 	}
 
-	public MamutViewGrapher createGrapher()
+	public MamutViewGrapher2 createGrapher()
 	{
 		return createGrapher( new HashMap<>() );
 	}
 
-	public MamutViewGrapher createGrapher( final Map< String, Object > guiState )
+	public MamutViewGrapher2 createGrapher( final Map< String, Object > guiState )
 	{
 		if ( appModel != null )
 		{
-			final MamutViewGrapher view = new MamutViewGrapher( appModel, guiState );
+			final MamutViewGrapher2 view = new MamutViewGrapher2( appModel, guiState );
 			view.getFrame().setIconImages( FEATURES_ICON );
 			addGrapherWindow( view );
 			return view;
@@ -509,7 +513,7 @@ public class WindowManager
 			windows.add( w.getFrame() );
 		for ( final MamutViewTable w : tableWindows )
 			windows.add( w.getFrame() );
-		for ( final MamutViewGrapher w : grapherWindows )
+		for ( final MamutViewGrapher2 w : grapherWindows )
 			windows.add( w.getFrame() );
 		windows.add( tagSetDialog );
 		windows.add( featureComputationDialog );
@@ -540,6 +544,11 @@ public class WindowManager
 	TrackSchemeStyleManager getTrackSchemeStyleManager()
 	{
 		return trackSchemeStyleManager;
+	}
+
+	public DataDisplayStyleManager getDataDisplayStyleManager()
+	{
+		return dataDisplayStyleManager;
 	}
 
 	RenderSettingsManager getRenderSettingsManager()
