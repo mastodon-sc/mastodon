@@ -1,8 +1,5 @@
 package org.mastodon.views.grapher.datagraph;
 
-import java.util.Collection;
-import java.util.Iterator;
-
 import org.mastodon.collection.RefList;
 import org.mastodon.collection.RefSet;
 import org.mastodon.feature.FeatureModel;
@@ -120,14 +117,14 @@ public class DataGraphLayout< V extends Vertex< E >, E extends Edge< V > >
 
 	public DataVertex getClosestActiveVertex( final RealPoint centerPos, final double ratioXtoY, final DataVertex ref )
 	{
-		// TODO Auto-generated method stub
 		return null;
+		// TODO
 	}
 
 	public DataVertex getClosestActiveVertexWithin( final double lx1, final double ly1, final double lx2, final double ly2, final double ratioXtoY, final DataVertex vertexRef )
 	{
-		// TODO Auto-generated method stub
 		return null;
+		// TODO
 	}
 
 	public RefSet< DataVertex > getActiveVerticesWithin( final double lx1, final double ly1, final double lx2, final double ly2 )
@@ -187,7 +184,6 @@ public class DataGraphLayout< V extends Vertex< E >, E extends Edge< V > >
 		final ScreenEdge se = screenEdgePool.createRef();
 
 		// Make hyperplanes for transform view.
-
 		final HyperPlane hpMinX = new HyperPlane( new double[] { 1., 0. }, minX );
 		final HyperPlane hpMaxX = new HyperPlane( new double[] { -1., 0. }, -maxX );
 		final HyperPlane hpMinY = new HyperPlane( new double[] { 0., 1. }, minY );
@@ -294,16 +290,6 @@ public class DataGraphLayout< V extends Vertex< E >, E extends Edge< V > >
 		}
 	}
 
-	private static final String printList( final Collection< ? > list )
-	{
-		final StringBuilder str = new StringBuilder();
-		final int n = list.size();
-		final Iterator< ? > it = list.iterator();
-		for ( int i = 0; i < n; i++ )
-			str.append( String.format( "\n %5d: %s", i, it.next() ) );
-		return str.toString();
-	}
-
 	public interface LayoutListener
 	{
 
@@ -312,5 +298,4 @@ public class DataGraphLayout< V extends Vertex< E >, E extends Edge< V > >
 		 */
 		public void layoutChanged( final DataGraphLayout< ?, ? > layout );
 	}
-
 }
