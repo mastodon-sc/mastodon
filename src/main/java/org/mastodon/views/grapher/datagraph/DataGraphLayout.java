@@ -182,9 +182,6 @@ public class DataGraphLayout< V extends Vertex< E >, E extends Edge< V > >
 		final ScreenVertexPool screenVertexPool = screenEntities.getVertexPool();
 		final ScreenEdgePool screenEdgePool = screenEntities.getEdgePool();
 
-		System.out.println( "\n\nReceiving " + screenVertices ); // DEBUG
-
-		final DataVertex vref1 = dataGraph.vertexRef();
 		final DataVertex v2 = dataGraph.vertexRef();
 		final ScreenVertex sv = screenVertexPool.createRef();
 		final ScreenEdge se = screenEdgePool.createRef();
@@ -201,69 +198,82 @@ public class DataGraphLayout< V extends Vertex< E >, E extends Edge< V > >
 		final ClipConvexPolytopeKDTree< DataVertex, DoubleMappedElement > clip = new ClipConvexPolytopeKDTree<>( kdtree );
 		clip.clip( polytope );
 
-		// Iterate only over visible data vertices.
-		final Iterable< DataVertex > vertices = clip.getInsideValues();
-		
-		for ( final DataVertex v1 : vertices )
+		// Get only visible data vertices.
+		final Iterable< DataVertex > inside = clip.getInsideValues();
+
+		// Reset them and their neighbors.
+		for ( final DataVertex v1 : inside )
 		{
-			final int v1si = screenVertices.size();
-
-			v1.setScreenVertexIndex( v1si );
-			final int id = v1.getInternalPoolIndex();
-			final String label = v1.getLabel();
-			final boolean selected = selection.isSelected( v1 );
-
-			final double x1 = v1.getLayoutX();
-			final double y1 = v1.getLayoutY();
-			final double sx1 = transform.layoutToScreenX( x1 ) + decorationsOffsetX;
-			final double sy1 = transform.layoutToScreenY( y1 ) + decorationsOffsetY;
-			screenVertexPool.create( sv ).init( id, label, sx1, sy1, selected, colorGenerator.color( v1 ) );
-			screenVertices.add( sv );
-
-			// Set edges to unitialized.
-			v1.edges().forEach( e -> e.setScreenEdgeIndex( -1 ) );
-		}
-
-		// Create edges.
-		for ( final DataVertex v1 : vertices )
-		{
-			for ( final DataEdge edge : v1.edges() )
+			v1.setScreenVertexIndex( -1 );
+			for ( final DataEdge e : v1.edges() )
 			{
-				if ( edge.getScreenEdgeIndex() >= 0 )
-					continue; // Already added.
-
-				edge.getSource( v2 );
-				final int sourceScreenVertexIndex;
-				final int targetScreenVertexIndex;
+				e.getSource( v2 );
 				if ( v2.equals( v1 ) )
-				{
-					edge.getTarget( v2 );
-					// v1 is the source, v2 the target.
-					sourceScreenVertexIndex = v1.getScreenVertexIndex();
-					targetScreenVertexIndex = v2.getScreenVertexIndex();
-				}
-				else
-				{
-					sourceScreenVertexIndex = v2.getScreenVertexIndex();
-					targetScreenVertexIndex = v1.getScreenVertexIndex();
-				}
-				if ( sourceScreenVertexIndex < 0 || targetScreenVertexIndex < 0 )
-					continue;
-
-				final int eid = edge.getInternalPoolIndex();
-				final boolean eselected = selection.isSelected( edge );
-				screenEdgePool.create( se ).init( eid, sourceScreenVertexIndex, targetScreenVertexIndex, eselected, colorGenerator.color( edge, v2, v1 ) );
-				screenEdges.add( se );
-				final int sei = se.getInternalPoolIndex();
-				edge.setScreenEdgeIndex( sei );
+					e.getTarget( v2 );
+				v2.setScreenVertexIndex( -1 );
+				e.setScreenEdgeIndex( -1 );
 			}
 		}
 
+		// Create screen vertices and edges.
+		for ( final DataVertex v1 : inside )
+		{
+			if ( v1.getScreenVertexIndex() < 0 )
+			{
+				final int v1si = screenVertices.size();
+				v1.setScreenVertexIndex( v1si );
+				final int id1 = v1.getInternalPoolIndex();
+				final String label1 = v1.getLabel();
+				final boolean selected1 = selection.isSelected( v1 );
+
+				final double x1 = v1.getLayoutX();
+				final double y1 = v1.getLayoutY();
+				final double sx1 = transform.layoutToScreenX( x1 ) + decorationsOffsetX;
+				final double sy1 = transform.layoutToScreenY( y1 ) + decorationsOffsetY;
+				screenVertexPool.create( sv ).init( id1, label1, sx1, sy1, selected1, colorGenerator.color( v1 ) );
+				screenVertices.add( sv );
+			}
+
+			// neighbors.
+			for ( final DataEdge e : v1.edges() )
+			{
+				e.getSource( v2 );
+				if ( v2.equals( v1 ) )
+					e.getTarget( v2 );
+
+				if ( v2.getScreenVertexIndex() < 0 )
+				{
+					// not visited. We have to create it.
+					final int v2si = screenVertices.size();
+					v2.setScreenVertexIndex( v2si );
+					final int id2 = v2.getInternalPoolIndex();
+					final String label2 = v2.getLabel();
+					final boolean selected2 = selection.isSelected( v2 );
+
+					final double x2 = v2.getLayoutX();
+					final double y2 = v2.getLayoutY();
+					final double sx2 = transform.layoutToScreenX( x2 ) + decorationsOffsetX;
+					final double sy2 = transform.layoutToScreenY( y2 ) + decorationsOffsetY;
+					screenVertexPool.create( sv ).init( id2, label2, sx2, sy2, selected2, colorGenerator.color( v2 ) );
+					screenVertices.add( sv );
+				}
+
+				if ( e.getScreenEdgeIndex() < 0 )
+				{
+					final int esi = screenEdges.size();
+					e.setScreenEdgeIndex( esi );
+					final int sourceScreenVertexIndex = v1.getScreenVertexIndex();
+					final int targetScreenVertexIndex = v2.getScreenVertexIndex();
+					final int eid = e.getInternalPoolIndex();
+					final boolean eselected = selection.isSelected( e );
+					screenEdgePool.create( se ).init( eid, sourceScreenVertexIndex, targetScreenVertexIndex, eselected, colorGenerator.color( e, v2, v1 ) );
+					screenEdges.add( se );
+				}
+			}
+		}
+		dataGraph.releaseRef( v2 );
 		screenEdgePool.releaseRef( se );
 		screenVertexPool.releaseRef( sv );
-		dataGraph.releaseRef( vref1 );
-		System.out.println( "Screen vertices: " + screenEntities.getVertices() ); // DEBUG
-		System.out.println( "Screen edges: " + screenEntities.getEdges() ); // DEBUG
 
 		/*
 		 * Let's set min dist from closest vertex.
