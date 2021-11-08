@@ -42,12 +42,12 @@ import org.mastodon.views.grapher.datagraph.DataVertex;
 import org.mastodon.views.grapher.datagraph.ScreenEdge;
 import org.mastodon.views.grapher.datagraph.ScreenEntities;
 import org.mastodon.views.grapher.datagraph.ScreenVertex;
+import org.mastodon.views.grapher.display.OffsetAxes.OffsetAxesListener;
 import org.mastodon.views.grapher.display.style.DataDisplayStyle;
-import org.mastodon.views.trackscheme.display.OffsetHeaders.OffsetHeadersListener;
 
 import bdv.viewer.OverlayRenderer;
 
-public class DataDisplayOverlay implements OverlayRenderer, OffsetHeadersListener
+public class DataDisplayOverlay implements OverlayRenderer, OffsetAxesListener
 {
 	/**
 	 * The {@link ScreenEntities} that are actually drawn on the canvas.
@@ -81,9 +81,9 @@ public class DataDisplayOverlay implements OverlayRenderer, OffsetHeadersListene
 
 	private int height;
 
-	private int headerWidth;
+	private int axesWidth;
 
-	private int headerHeight;
+	private int axesHeight;
 
 	private final DataDisplayStyle style;
 
@@ -155,7 +155,7 @@ public class DataDisplayOverlay implements OverlayRenderer, OffsetHeadersListene
 
 		graph.releaseRef( ref );
 
-		paintDecorations.paintBackground( g2, width, height, headerWidth, headerHeight, entities, currentTimepoint, style );
+		paintDecorations.paintBackground( g2, width, height, axesWidth, axesHeight, entities, currentTimepoint, style );
 
 		// Paint extra overlay if any.
 		for ( final OverlayRenderer or : overlayRenderers )
@@ -168,7 +168,7 @@ public class DataDisplayOverlay implements OverlayRenderer, OffsetHeadersListene
 		if ( antialiasOffForGraph )
 			g2.setRenderingHint( RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON );
 
-		paintDecorations.paintHeaders( g2, width, height, headerWidth, headerHeight, entities, currentTimepoint, style );
+		paintDecorations.paintHeaders( g2, width, height, axesWidth, axesHeight, entities, currentTimepoint, style );
 	}
 
 	/**
@@ -280,10 +280,10 @@ public class DataDisplayOverlay implements OverlayRenderer, OffsetHeadersListene
 	}
 
 	@Override
-	public void updateHeaderSize( final int width, final int height )
+	public void updateAxesSize( final int width, final int height )
 	{
-		headerWidth = width;
-		headerHeight = height;
+		axesWidth = width;
+		axesHeight = height;
 	}
 
 	/**
@@ -395,7 +395,13 @@ public class DataDisplayOverlay implements OverlayRenderer, OffsetHeadersListene
 				final FocusModel< DataVertex, DataEdge > focus,
 				final DataDisplayOptions options )
 		{
-			return new DataDisplayOverlay( graph, highlight, focus, new PaintDecorations(), new PaintGraph(), options );
+			return new DataDisplayOverlay(
+					graph,
+					highlight,
+					focus,
+					new PaintDecorations(),
+					new PaintGraph(),
+					options );
 		}
 	}
 }

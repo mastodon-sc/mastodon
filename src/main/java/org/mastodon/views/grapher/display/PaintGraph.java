@@ -261,18 +261,15 @@ public class PaintGraph
 		}
 		final boolean highlighted = ( highlightedEdgeId >= 0 ) && ( edge.getDataEdgeId() == highlightedEdgeId );
 		final boolean selected = edge.isSelected();
-		final boolean ghost = vs.isGhost() && vt.isGhost();
 		final int specifiedColor = edge.getColor();
-		final Color drawColor = getColor( selected, ghost, transition, ratio, specifiedColor,
+		final Color drawColor = getColor( selected, transition, ratio, specifiedColor,
 				style.getEdgeColor(), style.getSelectedEdgeColor(),
 				style.getGhostEdgeColor(), style.getGhostSelectedEdgeColor() );
 		g2.setColor( drawColor );
 		if ( highlighted )
 			g2.setStroke( style.getEdgeHighlightStroke() );
-		else if ( ghost )
-			g2.setStroke( style.getEdgeGhostStroke() );
 		g2.drawLine( ( int ) vs.getX(), ( int ) vs.getY(), ( int ) vt.getX(), ( int ) vt.getY() );
-		if ( highlighted || ghost )
+		if ( highlighted )
 			g2.setStroke( style.getEdgeStroke() );
 	}
 
@@ -285,7 +282,6 @@ public class PaintGraph
 		final boolean highlighted = ( highlightedVertexId >= 0 ) && ( vertex.getDataVertexId() == highlightedVertexId );
 		final boolean focused = ( focusedVertexId >= 0 ) && ( vertex.getDataVertexId() == focusedVertexId );
 		final boolean selected = vertex.isSelected();
-		final boolean ghost = vertex.isGhost();
 		final int specifiedColor = vertex.getColor();
 
 		double spotradius = simplifiedVertexRadius;
@@ -295,7 +291,7 @@ public class PaintGraph
 		if ( highlighted || focused )
 			spotradius *= 1.5;
 
-		final Color fillColor = getColor( selected, ghost, transition, ratio, specifiedColor,
+		final Color fillColor = getColor( selected, transition, ratio, specifiedColor,
 				disappear ? style.getSelectedSimplifiedVertexFillColor() : style.getSimplifiedVertexFillColor(),
 				style.getSelectedSimplifiedVertexFillColor(),
 				disappear ? style.getGhostSelectedSimplifiedVertexFillColor() : style.getGhostSimplifiedVertexFillColor(),
@@ -325,14 +321,13 @@ public class PaintGraph
 			final double ratio = vertex.getInterpolationCompletionRatio();
 
 			final boolean selected = vertex.isSelected();
-			final boolean ghost = vertex.isGhost();
 			final int specifiedColor = vertex.getColor();
 
 			double spotradius = simplifiedVertexRadius;
 			if ( disappear )
 				spotradius *= ( 1 + 3 * ratio );
 
-			final Color fillColor = getColor( selected, ghost, transition, ratio, specifiedColor,
+			final Color fillColor = getColor( selected, transition, ratio, specifiedColor,
 					disappear ? style.getSelectedSimplifiedVertexFillColor() : style.getSimplifiedVertexFillColor(),
 					style.getSelectedSimplifiedVertexFillColor(),
 					disappear ? style.getGhostSelectedSimplifiedVertexFillColor() : style.getGhostSimplifiedVertexFillColor(),
@@ -361,7 +356,6 @@ public class PaintGraph
 		final boolean highlighted = ( highlightedVertexId >= 0 ) && ( vertex.getDataVertexId() == highlightedVertexId );
 		final boolean focused = ( focusedVertexId >= 0 ) && ( vertex.getDataVertexId() == focusedVertexId );
 		final boolean selected = vertex.isSelected();
-		final boolean ghost = vertex.isGhost();
 		final int specifiedColor = vertex.getColor();
 
 		double spotdiameter = Math.min( vertex.getVertexDist() - 10.0, maxDisplayVertexSize );
@@ -371,10 +365,10 @@ public class PaintGraph
 			spotdiameter *= ( 1 + ratio );
 		final double spotradius = spotdiameter / 2;
 
-		final Color fillColor = getColor( selected, ghost, transition, ratio, specifiedColor,
+		final Color fillColor = getColor( selected, transition, ratio, specifiedColor,
 				style.getVertexFillColor(), style.getSelectedVertexFillColor(),
 				style.getGhostVertexFillColor(), style.getGhostSelectedVertexFillColor() );
-		final Color drawColor = getColor( selected, ghost, transition, ratio, 0,
+		final Color drawColor = getColor( selected, transition, ratio, 0,
 				style.getVertexDrawColor(), style.getSelectedVertexDrawColor(),
 				style.getGhostVertexDrawColor(), style.getGhostSelectedVertexDrawColor() );
 
@@ -392,10 +386,8 @@ public class PaintGraph
 		else if ( focused )
 			// An animation might be better for the focus, but for now this is it.
 			g2.setStroke( style.getFocusStroke() );
-		else if ( ghost )
-			g2.setStroke( style.getVertexGhostStroke() );
 		g2.drawOval( ox, oy, sd, sd );
-		if ( highlighted || focused || ghost )
+		if ( highlighted || focused )
 			g2.setStroke( style.getVertexStroke() );
 
 		final int maxLabelLength = ( int ) ( spotdiameter / avgLabelLetterWidth );
@@ -423,7 +415,6 @@ public class PaintGraph
 
 	protected Color getColor(
 			final boolean isSelected,
-			final boolean isGhost,
 			final Transition transition,
 			final double completionRatio,
 			final int specifiedColor,
@@ -434,9 +425,7 @@ public class PaintGraph
 	{
 		if ( transition == NONE )
 		{
-			if ( isGhost )
-				return isSelected ? ghostSelectedColor : ghostNormalColor;
-			else if ( isSelected )
+			if ( isSelected )
 				return selectedColor;
 			else if ( specifiedColor == 0 )
 				return normalColor;
@@ -474,9 +463,7 @@ public class PaintGraph
 			if ( fade )
 				a = ( int ) ( a * ( 1 - ratio ) );
 			final Color color = new Color( r, g, b, a );
-			return isGhost
-					? DataDisplayStyle.mixGhostColor( color, style.getBackgroundColor() )
-					: color;
+			return color;
 		}
 	}
 

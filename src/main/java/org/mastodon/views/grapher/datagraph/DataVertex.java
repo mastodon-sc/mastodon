@@ -35,7 +35,9 @@ import org.mastodon.pool.ByteMappedElement;
 import org.mastodon.pool.PoolObject;
 import org.mastodon.views.grapher.datagraph.DataGraph.DataVertexPool;
 
-public class DataVertex extends AbstractVertex< DataVertex, DataEdge, DataVertexPool, ByteMappedElement > implements HasLabel
+import net.imglib2.RealLocalizable;
+
+public class DataVertex extends AbstractVertex< DataVertex, DataEdge, DataVertexPool, ByteMappedElement > implements HasLabel, RealLocalizable
 {
 	final ModelGraphWrapper< ?, ? >.ModelVertexWrapper modelVertex;
 
@@ -53,7 +55,6 @@ public class DataVertex extends AbstractVertex< DataVertex, DataEdge, DataVertex
 		setLayoutY( Double.NaN );
 		setLayoutTimestamp( -1 );
 		setLayoutInEdgeIndex( 0 );
-		setGhost( false );
 		return this;
 	}
 
@@ -187,19 +188,15 @@ public class DataVertex extends AbstractVertex< DataVertex, DataEdge, DataVertex
 		pool.layoutInEdgeIndex.setQuiet( this, index );
 	}
 
-	/**
-	 * A vertex is set to <em>ghost</em> if it is hit during a partial layout
-	 * and is marked with a timestamp &lt; the current mark.
-	 *
-	 * @return whether this vertex is a ghost
-	 */
-	protected boolean isGhost()
+	@Override
+	public int numDimensions()
 	{
-		return pool.ghost.get( this );
+		return 2;
 	}
 
-	protected void setGhost( final boolean ghost )
+	@Override
+	public double getDoublePosition( final int d )
 	{
-		pool.ghost.setQuiet( this, ghost );
+		return ( d == 0 ) ? pool.layoutX.get( this ) : pool.layoutY.get( this );
 	}
 }

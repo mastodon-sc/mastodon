@@ -55,7 +55,6 @@ import org.mastodon.app.ui.MastodonFrameViewActions;
 import org.mastodon.app.ui.SearchVertexLabel;
 import org.mastodon.app.ui.ViewMenu;
 import org.mastodon.app.ui.ViewMenuBuilder.JMenuHandle;
-import org.mastodon.mamut.feature.SpotFrameFeature;
 import org.mastodon.mamut.feature.SpotIntensityFeature;
 import org.mastodon.mamut.model.Link;
 import org.mastodon.mamut.model.Model;
@@ -76,6 +75,7 @@ import org.mastodon.views.grapher.SpecPair;
 import org.mastodon.views.grapher.datagraph.DataContextListener;
 import org.mastodon.views.grapher.datagraph.DataEdge;
 import org.mastodon.views.grapher.datagraph.DataGraph;
+import org.mastodon.views.grapher.datagraph.DataGraphLayout;
 import org.mastodon.views.grapher.datagraph.DataVertex;
 import org.mastodon.views.grapher.datagraph.ScreenTransform;
 import org.mastodon.views.grapher.datagraph.wrap.DefaultModelGraphProperties;
@@ -113,18 +113,21 @@ public class MamutViewGrapher2 extends MamutView< DataGraph< Spot, Link >, DataV
 						appModel.getModel().getGraph(),
 						appModel.getModel().getGraphIdBimap(),
 						new DefaultModelGraphProperties< Spot, Link >(),
-						appModel.getModel().getFeatureModel(),
 						appModel.getModel().getGraph().getLock() ),
 				new String[] { KeyConfigContexts.GRAPHER } );
 
 		/*
 		 * We hardcode the initial features for now.
 		 */
-		final SpecPair x = new SpecPair( SpotFrameFeature.SPEC, SpotFrameFeature.SPEC.getProjectionSpecs().iterator().next() );
-		final SpecPair y = new SpecPair( SpotIntensityFeature.SPEC, SpotIntensityFeature.MEAN_PROJECTION_SPEC, 1 );
-		viewGraph.getLayout().setXFeature( x );
-		viewGraph.getLayout().setYFeature( y );
-		viewGraph.getLayout().layout();
+		final DataGraphLayout< Spot, Link > layout = new DataGraphLayout<>(
+				viewGraph,
+				appModel.getModel().getFeatureModel(),
+				selectionModel );
+//		final SpecPair x = new SpecPair( SpotFrameFeature.SPEC, SpotFrameFeature.SPEC.getProjectionSpecs().iterator().next() );
+		final SpecPair x = new SpecPair( SpotIntensityFeature.SPEC, SpotIntensityFeature.MEDIAN_PROJECTION_SPEC, 0 );
+		final SpecPair y = new SpecPair( SpotIntensityFeature.SPEC, SpotIntensityFeature.MEAN_PROJECTION_SPEC, 0 );
+		layout.setXFeature( x );
+		layout.setYFeature( y );
 
 		final KeyPressedManager keyPressedManager = appModel.getKeyPressedManager();
 		final Model model = appModel.getModel();
@@ -162,15 +165,16 @@ public class MamutViewGrapher2 extends MamutView< DataGraph< Spot, Link >, DataV
 		final AutoNavigateFocusModel< DataVertex, DataEdge > navigateFocusModel = new AutoNavigateFocusModel<>( focusModel, navigationHandler );
 		final DataDisplayFrame frame = new DataDisplayFrame(
 				viewGraph,
+				layout,
 				highlightModel,
 				navigateFocusModel,
-				timepointModel,
 				selectionModel,
 				navigationHandler,
 				model,
 				groupHandle,
 				contextChooser,
 				options );
+		final DataDisplayPanel dataDisplayPanel = frame.getDataDisplayPanel();
 
 		// Restore settings panel visibility.
 		final Boolean settingsPanelVisible = ( Boolean ) guiState.get( SETTINGS_PANEL_VISIBLE_KEY );
@@ -181,11 +185,10 @@ public class MamutViewGrapher2 extends MamutView< DataGraph< Spot, Link >, DataV
 		if ( null == pos || pos.length != 4 )
 			frame.setLocationRelativeTo( null );
 
-		frame.getDataDisplayPanel().setTimepointRange( appModel.getMinTimepoint(), appModel.getMaxTimepoint() );
-		frame.getDataDisplayPanel().graphChanged();
-		contextListener.setContextListener( frame.getDataDisplayPanel() );
+		dataDisplayPanel.graphChanged();
+		contextListener.setContextListener( dataDisplayPanel );
 
-		final DataDisplayStyle.UpdateListener updateListener = () -> frame.getDataDisplayPanel().repaint();
+		final DataDisplayStyle.UpdateListener updateListener = () -> dataDisplayPanel.repaint();
 		forwardDefaultStyle.updateListeners().add( updateListener );
 		onClose( () -> forwardDefaultStyle.updateListeners().remove( updateListener ) );
 
@@ -194,19 +197,19 @@ public class MamutViewGrapher2 extends MamutView< DataGraph< Spot, Link >, DataV
 		// Transform. // TODO!
 		final ScreenTransform tLoaded = ( ScreenTransform ) guiState.get( TRACKSCHEME_TRANSFORM_KEY );
 		if ( null != tLoaded )
-			frame.getDataDisplayPanel().getScreenTransform().set( tLoaded );
+			dataDisplayPanel.getScreenTransform().set( tLoaded );
 
 		MastodonFrameViewActions.install( viewActions, this );
 		HighlightBehaviours.install( viewBehaviours, viewGraph, viewGraph.getLock(), viewGraph, highlightModel, model );
 		FocusActions.install( viewActions, viewGraph, viewGraph.getLock(), navigateFocusModel, selectionModel );
-		EditTagActions.install( viewActions, frame.getKeybindings(), frame.getTriggerbindings(), model.getTagSetModel(), appModel.getSelectionModel(), viewGraph.getLock(), frame.getDataDisplayPanel(), frame.getDataDisplayPanel().getDisplay(), model );
+		EditTagActions.install( viewActions, frame.getKeybindings(), frame.getTriggerbindings(), model.getTagSetModel(), appModel.getSelectionModel(), viewGraph.getLock(), dataDisplayPanel, dataDisplayPanel.getDisplay(), model );
 
-		final JPanel searchPanel = SearchVertexLabel.install( viewActions, viewGraph, navigationHandler, selectionModel, focusModel, frame.getDataDisplayPanel() );
+		final JPanel searchPanel = SearchVertexLabel.install( viewActions, viewGraph, navigationHandler, selectionModel, focusModel, dataDisplayPanel );
 		frame.getSettingsPanel().add( searchPanel );
 
 		// TODO Let the user choose between the two selection/focus modes.
-		frame.getDataDisplayPanel().getNavigationBehaviours().install( viewBehaviours );
-		frame.getDataDisplayPanel().getTransformEventHandler().install( viewBehaviours );
+		dataDisplayPanel.getNavigationBehaviours().install( viewBehaviours );
+		dataDisplayPanel.getTransformEventHandler().install( viewBehaviours );
 
 		/*
 		 * Menus
@@ -242,12 +245,12 @@ public class MamutViewGrapher2 extends MamutView< DataGraph< Spot, Link >, DataV
 		 */
 
 		coloringModel = registerColoring( coloringAdapter, coloringMenuHandle,
-				() -> frame.getDataDisplayPanel().entitiesAttributesChanged() );
+				() -> dataDisplayPanel.entitiesAttributesChanged() );
 		registerTagSetMenu( tagSetMenuHandle,
-				() -> frame.getDataDisplayPanel().entitiesAttributesChanged() );
+				() -> dataDisplayPanel.entitiesAttributesChanged() );
 
 		// Listen to label changes.
-		model.getGraph().addVertexLabelListener( v -> frame.getDataDisplayPanel().entitiesAttributesChanged() );
+		model.getGraph().addVertexLabelListener( v -> dataDisplayPanel.entitiesAttributesChanged() );
 
 		// Restore coloring.
 		final Boolean noColoring = ( Boolean ) guiState.get( NO_COLORING_KEY );
@@ -286,9 +289,10 @@ public class MamutViewGrapher2 extends MamutView< DataGraph< Spot, Link >, DataV
 			}
 		}
 
+		layout.layout();
 		frame.setVisible( true );
-		frame.getDataDisplayPanel().repaint();
-		frame.getDataDisplayPanel().getDisplay().requestFocusInWindow();
+		dataDisplayPanel.repaint();
+		dataDisplayPanel.getDisplay().requestFocusInWindow();
 	}
 
 	public ContextChooser< Spot > getContextChooser()

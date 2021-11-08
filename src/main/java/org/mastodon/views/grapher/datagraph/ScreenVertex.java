@@ -36,12 +36,14 @@ import org.mastodon.pool.PoolObjectLayout;
 import org.mastodon.views.trackscheme.ScreenVertex.Transition;
 import org.mastodon.views.trackscheme.TrackSchemeVertex;
 
+import net.imglib2.RealLocalizable;
+
 /**
  * Layouted vertex.
  *
  * @author Tobias Pietzsch &lt;tobias.pietzsch@gmail.com&gt;
  */
-public class ScreenVertex extends PoolObject< ScreenVertex, ScreenVertexPool, ByteMappedElement >
+public class ScreenVertex extends PoolObject< ScreenVertex, ScreenVertexPool, ByteMappedElement > implements RealLocalizable
 {
 	public static class ScreenVertexLayout extends PoolObjectLayout
 	{
@@ -50,7 +52,6 @@ public class ScreenVertex extends PoolObject< ScreenVertex, ScreenVertexPool, By
 		final DoubleField yOffset = doubleField();
 		final DoubleField vertexDist = doubleField();
 		final BooleanField selected = booleanField();
-		final BooleanField ghost = booleanField();
 		final ByteField transition = byteField();
 		final IndexField ipScreenVertex = indexField();
 		final DoubleField ipRatio = doubleField();
@@ -72,7 +73,6 @@ public class ScreenVertex extends PoolObject< ScreenVertex, ScreenVertexPool, By
 			final double x,
 			final double y,
 			final boolean selected,
-			final boolean ghost,
 			final int color )
 	{
 		setDataVertexId( id );
@@ -80,7 +80,6 @@ public class ScreenVertex extends PoolObject< ScreenVertex, ScreenVertexPool, By
 		setX( x );
 		setY( y );
 		setSelected( selected );
-		setGhost( ghost );
 		setTransition( NONE );
 		setColor( color );
 		return this;
@@ -182,21 +181,6 @@ public class ScreenVertex extends PoolObject< ScreenVertex, ScreenVertexPool, By
 	}
 
 	/**
-	 * Get the ghost state of the vertex.
-	 *
-	 * @return true, if the vertex is ghosted.
-	 */
-	public boolean isGhost()
-	{
-		return pool.ghost.get( this );
-	}
-
-	protected void setGhost( final boolean ghost )
-	{
-		pool.ghost.setQuiet( this, ghost );
-	}
-
-	/**
 	 * Returns the current transition state for this screen vertex.
 	 *
 	 * @return the transition state.
@@ -293,7 +277,6 @@ public class ScreenVertex extends PoolObject< ScreenVertex, ScreenVertexPool, By
 		setY( v.getY() );
 		setVertexDist( v.getVertexDist() );
 		setSelected( v.isSelected() );
-		setGhost( v.isGhost() );
 		setTransition( v.getTransition() );
 		setInterpolatedScreenVertexIndex( v.getInterpolatedScreenVertexIndex() );
 		setInterpolationCompletionRatio( v.getInterpolationCompletionRatio() );
@@ -318,14 +301,25 @@ public class ScreenVertex extends PoolObject< ScreenVertex, ScreenVertexPool, By
 	@Override
 	public String toString()
 	{
-		return String.format( "ScreenVertex(%d, sv=%d, \"%s\", (%.2f, %.2f), %s, isv=%d%s)",
+		return String.format( "ScreenVertex(%d, dvid=%d, \"%s\", (%.2f, %.2f), %s %s)",
 				getInternalPoolIndex(),
 				getDataVertexId(),
 				getLabel(),
 				getX(),
 				getY(),
-				getTransition().toString(),
-				getInterpolatedScreenVertexIndex(),
+				getTransition().toString(), // getInterpolatedScreenVertexIndex(),
 				isSelected() ? ", selected" : "" );
+	}
+
+	@Override
+	public int numDimensions()
+	{
+		return 2;
+	}
+
+	@Override
+	public double getDoublePosition( final int d )
+	{
+		return ( d == 0 ) ? pool.xOffset.get( this ) : pool.yOffset.get( this );
 	}
 }

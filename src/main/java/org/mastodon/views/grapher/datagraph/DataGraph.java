@@ -34,10 +34,7 @@ import org.mastodon.RefPool;
 import org.mastodon.adapter.RefBimap;
 import org.mastodon.app.ViewGraph;
 import org.mastodon.collection.IntRefMap;
-import org.mastodon.collection.RefSet;
 import org.mastodon.collection.ref.IntRefArrayMap;
-import org.mastodon.feature.FeatureModel;
-import org.mastodon.feature.FeatureProjection;
 import org.mastodon.graph.Edge;
 import org.mastodon.graph.GraphChangeListener;
 import org.mastodon.graph.GraphChangeNotifier;
@@ -53,17 +50,11 @@ import org.mastodon.graph.ref.GraphImp;
 import org.mastodon.pool.ByteMappedElement;
 import org.mastodon.pool.ByteMappedElementArray;
 import org.mastodon.pool.SingleArrayMemPool;
-import org.mastodon.pool.attributes.BooleanAttribute;
 import org.mastodon.pool.attributes.DoubleAttribute;
 import org.mastodon.pool.attributes.IndexAttribute;
 import org.mastodon.pool.attributes.IntAttribute;
-import org.mastodon.ui.coloring.GraphColorGenerator;
-import org.mastodon.views.grapher.SpecPair;
 import org.mastodon.views.grapher.datagraph.wrap.ModelGraphProperties;
 import org.scijava.listeners.Listeners;
-import org.scijava.listeners.Listeners.List;
-
-import net.imglib2.RealPoint;
 
 public class DataGraph<
 		V extends Vertex< E >,
@@ -74,21 +65,22 @@ public class DataGraph<
 				DataVertex, DataEdge, ByteMappedElement >
 	implements GraphListener< V, E >, GraphChangeNotifier, GraphChangeListener, ViewGraph< V, E, DataVertex, DataEdge >
 {
-	private final ListenableReadOnlyGraph< V, E > modelGraph;
+
+	final ListenableReadOnlyGraph< V, E > modelGraph;
 
 	private final ModelGraphProperties< V, E > modelGraphProperties;
 
 	private final ReentrantReadWriteLock lock;
 
-	private final GraphIdBimap< V, E > idmap;
+	final GraphIdBimap< V, E > idmap;
 
-	private final IntRefMap< DataVertex > idToDataVertex;
+	final IntRefMap< DataVertex > idToDataVertex;
 
 	private final IntRefMap< DataEdge > idToDataEdge;
 
 	private V mv;
 
-	private final DataVertex tsv;
+	final DataVertex tsv;
 
 	private final DataVertex tsv2;
 
@@ -100,8 +92,6 @@ public class DataGraph<
 
 	private final RefBimap< E, DataEdge > edgeMap;
 
-	private DataGraph< V, E >.DataGraphLayout layout;
-
 	/**
 	 * Creates a new DataGraph with a default initial capacity.
 	 *
@@ -115,10 +105,9 @@ public class DataGraph<
 	public DataGraph(
 			final ListenableReadOnlyGraph< V, E > modelGraph,
 			final GraphIdBimap< V, E > idmap,
-			final ModelGraphProperties< V, E > modelGraphProperties,
-			final FeatureModel featureModel )
+			final ModelGraphProperties< V, E > modelGraphProperties )
 	{
-		this( modelGraph, idmap, modelGraphProperties, featureModel, new ReentrantReadWriteLock() );
+		this( modelGraph, idmap, modelGraphProperties, new ReentrantReadWriteLock() );
 	}
 
 	/**
@@ -130,7 +119,6 @@ public class DataGraph<
 	 *            the bidirectional id map of the model graph.
 	 * @param modelGraphProperties
 	 *            an accessor for properties of the model graph.
-	 * @param featureModel
 	 * @param lock
 	 *            read/write locks for the model graph
 	 */
@@ -138,10 +126,9 @@ public class DataGraph<
 			final ListenableReadOnlyGraph< V, E > modelGraph,
 			final GraphIdBimap< V, E > idmap,
 			final ModelGraphProperties< V, E > modelGraphProperties,
-			final FeatureModel featureModel,
 			final ReentrantReadWriteLock lock )
 	{
-		this( modelGraph, idmap, modelGraphProperties, featureModel, lock, 10000 );
+		this( modelGraph, idmap, modelGraphProperties, lock, 10000 );
 	}
 
 	/**
@@ -155,7 +142,6 @@ public class DataGraph<
 	 *            the bidirectional id map of the model graph.
 	 * @param modelGraphProperties
 	 *            an accessor for properties of the model graph.
-	 * @param featureModel
 	 * @param lock
 	 *            read/write locks for the model graph
 	 * @param initialCapacity
@@ -165,7 +151,6 @@ public class DataGraph<
 			final ListenableReadOnlyGraph< V, E > modelGraph,
 			final GraphIdBimap< V, E > idmap,
 			final ModelGraphProperties< V, E > modelGraphProperties,
-			final FeatureModel featureModel,
 			final ReentrantReadWriteLock lock,
 			final int initialCapacity )
 	{
@@ -176,7 +161,6 @@ public class DataGraph<
 						new ModelGraphWrapper<>( idmap, modelGraphProperties ) ) ) );
 		this.modelGraph = modelGraph;
 		this.modelGraphProperties = modelGraphProperties;
-		this.layout = new DataGraphLayout( featureModel );
 		this.lock = lock;
 		this.idmap = idmap;
 		idToDataVertex = new IntRefArrayMap<>( vertexPool );
@@ -443,147 +427,6 @@ public class DataGraph<
 		return edgeMap;
 	}
 
-	public DataGraph< V, E >.DataGraphLayout getLayout()
-	{
-		return layout;
-	}
-
-	/*
-	 * Layout class.
-	 */
-
-
-	public class DataGraphLayout
-	{
-
-		private final Listeners.List< LayoutListener > listeners;
-
-		private final FeatureModel featureModel;
-
-		private FeatureProjection< V > yp;
-
-		private FeatureProjection< V > xp;
-
-		private double currentLayoutMinX;
-
-		private double currentLayoutMaxX;
-
-		private double currentLayoutMaxY;
-
-		private double currentLayoutMinY;
-
-		public DataGraphLayout( final FeatureModel featureModel )
-		{
-			this.featureModel = featureModel;
-			this.listeners = new Listeners.SynchronizedList<>();
-		}
-
-		public void setXFeature( final SpecPair x )
-		{
-			this.xp = x.getProjection( featureModel );
-		}
-
-		public void setYFeature( final SpecPair y )
-		{
-			this.yp = y.getProjection( featureModel );
-		}
-		/*
-		 * Layout
-		 */
-
-		/**
-		 * Resets X and Y position based on the specified feature
-		 * specifications.
-		 */
-		public void layout()
-		{
-			currentLayoutMinX = Double.POSITIVE_INFINITY;
-			currentLayoutMaxX = Double.NEGATIVE_INFINITY;
-			currentLayoutMinY = Double.POSITIVE_INFINITY;
-			currentLayoutMaxY = Double.NEGATIVE_INFINITY;
-			for ( final V v : modelGraph.vertices() )
-			{
-				final double x = xp.value( v );
-				if ( x > currentLayoutMaxX )
-					currentLayoutMaxX = x;
-				if ( x < currentLayoutMinX )
-					currentLayoutMinX = x;
-
-				final double y = yp.value( v );
-				if ( y > currentLayoutMaxY )
-					currentLayoutMaxY = y;
-				if ( y < currentLayoutMinY )
-					currentLayoutMinY = y;
-
-				final int id = idmap.getVertexId( v );
-				idToDataVertex.get( id, tsv );
-				tsv.setLayoutX( x );
-				tsv.setLayoutY( y );
-			}
-			notifyListeners();
-		}
-
-		private void notifyListeners()
-		{
-			for ( final LayoutListener l : listeners.list )
-				l.layoutChanged();
-		}
-
-		public DataVertex getClosestActiveVertex( final RealPoint centerPos, final double ratioXtoY, final DataVertex ref )
-		{
-			// TODO Auto-generated method stub
-			return null;
-		}
-
-		public DataVertex getClosestActiveVertexWithin( final double lx1, final double ly1, final double lx2, final double ly2, final double ratioXtoY, final DataVertex vertexRef )
-		{
-			// TODO Auto-generated method stub
-			return null;
-		}
-
-		public RefSet< DataVertex > getActiveVerticesWithin( final double lx1, final double ly1, final double lx2, final double ly2 )
-		{
-			// TODO Auto-generated method stub
-			return null;
-		}
-
-		public List< LayoutListener > layoutListeners()
-		{
-			return listeners;
-		}
-
-		public double getCurrentLayoutMinX()
-		{
-			return currentLayoutMinX;
-		}
-
-		public double getCurrentLayoutMaxX()
-		{
-			return currentLayoutMaxX;
-		}
-
-		public void cropAndScale(
-				final ScreenTransform transform,
-				final ScreenEntities screenEntities,
-				final int width,
-				final int height,
-				final GraphColorGenerator< DataVertex, DataEdge > colorGenerator )
-		{
-			// TODO Auto-generated method stub
-
-		}
-
-	}
-
-	public interface LayoutListener
-	{
-
-		/**
-		 * Notifies after the layout has been done.
-		 */
-		public void layoutChanged();
-	}
-
 	/*
 	 * vertex and edge pools
 	 */
@@ -596,7 +439,6 @@ public class DataGraph<
 		final DoubleField layoutX = doubleField();
 		final DoubleField layoutY = doubleField();
 		final IndexField screenVertexIndex = indexField();
-		final BooleanField ghost = booleanField();
 	}
 
 	static DataVertexLayout vertexLayout = new DataVertexLayout();
@@ -611,7 +453,6 @@ public class DataGraph<
 		final DoubleAttribute< DataVertex > layoutX = new DoubleAttribute<>( vertexLayout.layoutX, this );
 		final DoubleAttribute< DataVertex > layoutY = new DoubleAttribute<>( vertexLayout.layoutY, this );
 		final IndexAttribute< DataVertex > screenVertexIndex = new IndexAttribute<>( vertexLayout.screenVertexIndex, this );
-		final BooleanAttribute< DataVertex > ghost = new BooleanAttribute<>( vertexLayout.ghost, this );
 
 		private DataVertexPool( final int initialCapacity, final ModelGraphWrapper< ?, ? > modelGraphWrapper )
 		{

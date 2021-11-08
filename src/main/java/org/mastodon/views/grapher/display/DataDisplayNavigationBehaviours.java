@@ -41,10 +41,10 @@ import org.mastodon.ui.keymap.CommandDescriptions;
 import org.mastodon.ui.keymap.KeyConfigContexts;
 import org.mastodon.views.grapher.datagraph.DataEdge;
 import org.mastodon.views.grapher.datagraph.DataGraph;
-import org.mastodon.views.grapher.datagraph.DataGraph.DataGraphLayout;
+import org.mastodon.views.grapher.datagraph.DataGraphLayout;
 import org.mastodon.views.grapher.datagraph.DataVertex;
 import org.mastodon.views.grapher.datagraph.ScreenTransform;
-import org.mastodon.views.trackscheme.display.OffsetHeaders.OffsetHeadersListener;
+import org.mastodon.views.grapher.display.OffsetAxes.OffsetAxesListener;
 import org.scijava.plugin.Plugin;
 import org.scijava.ui.behaviour.ClickBehaviour;
 import org.scijava.ui.behaviour.DragBehaviour;
@@ -61,7 +61,7 @@ import bdv.viewer.TransformListener;
  * @author Tobias Pietzsch
  * @author Jean-Yves Tinevez
  */
-public class DataDisplayNavigationBehaviours implements TransformListener< ScreenTransform >, OffsetHeadersListener
+public class DataDisplayNavigationBehaviours implements TransformListener< ScreenTransform >, OffsetAxesListener
 {
 	public static final String FOCUS_VERTEX = "data click focus vertex";
 	public static final String NAVIGATE_TO_VERTEX = "data click navigate to vertex";
@@ -504,7 +504,7 @@ public class DataDisplayNavigationBehaviours implements TransformListener< Scree
 	}
 
 	@Override
-	public void updateHeaderSize( final int width, final int height )
+	public void updateAxesSize( final int width, final int height )
 	{
 		headerWidth = width;
 		headerHeight = height;

@@ -226,17 +226,15 @@ public class ScreenEdge extends PoolObject< ScreenEdge, ScreenEdgePool, ByteMapp
 		return this;
 	}
 
-// TODO REMOVE? should be covered by base class.
-//	@Override
-//	public boolean equals( final Object obj )
-//	{
-//		return obj instanceof ScreenEdge &&
-//				access.equals( ( ( ScreenEdge ) obj ).access );
-//	}
-//
-//	@Override
-//	public int hashCode()
-//	{
-//		return access.hashCode();
-//	}
+	@Override
+	public String toString()
+	{
+		return String.format( "ScreenEdge(%d, deid=%d, %d->%d %s%s)",
+				getInternalPoolIndex(),
+				getDataEdgeId(),
+				getSourceScreenVertexIndex(),
+				getTargetScreenVertexIndex(),
+				getTransition().toString(),
+				isSelected() ? ", selected" : "" );
+	}
 }

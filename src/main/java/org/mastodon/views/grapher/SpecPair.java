@@ -72,9 +72,23 @@ public class SpecPair implements Comparable< SpecPair >
 		return featureSpec.getKey() + " - " + projectionSpec.getKey();
 	}
 
+	/**
+	 * Returns the feature projection found in the specified feature model, and
+	 * that matches the specifications of this instance. If the projection
+	 * cannot be found in the feature model, returns <code>null</code>.
+	 * 
+	 * @param <O>
+	 *            the type of objects the projection is defined on.
+	 * @param featureModel
+	 *            the feature model.
+	 * @return the feature projection or <code>null</code>.
+	 */
 	public < O > FeatureProjection< O > getProjection( final FeatureModel featureModel )
 	{
 		final Feature< ? > feature = featureModel.getFeature( featureSpec );
+		if ( null == feature )
+			return null;
+
 		final Multiplicity multiplicity = feature.getSpec().getMultiplicity();
 		final FeatureProjectionKey key;
 		switch ( multiplicity )

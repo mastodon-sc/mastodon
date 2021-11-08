@@ -31,7 +31,6 @@ package org.mastodon.views.grapher.datagraph;
 import org.mastodon.collection.RefCollections;
 import org.mastodon.collection.RefList;
 import org.mastodon.views.context.Context;
-import org.mastodon.views.grapher.datagraph.DataGraph.DataGraphLayout;
 import org.mastodon.views.trackscheme.LineageTreeLayout;
 
 /**

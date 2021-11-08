@@ -37,11 +37,11 @@ import org.mastodon.views.grapher.datagraph.DataEdge;
 import org.mastodon.views.grapher.datagraph.DataGraph;
 import org.mastodon.views.grapher.datagraph.DataVertex;
 import org.mastodon.views.grapher.datagraph.ScreenTransform;
-import org.mastodon.views.trackscheme.display.OffsetHeaders.OffsetHeadersListener;
+import org.mastodon.views.grapher.display.OffsetAxes.OffsetAxesListener;
 
 import bdv.viewer.TransformListener;
 
-public class MouseHighlightHandler implements MouseMotionListener, MouseListener, TransformListener< ScreenTransform >, OffsetHeadersListener
+public class MouseHighlightHandler implements MouseMotionListener, MouseListener, TransformListener< ScreenTransform >, OffsetAxesListener
 {
 	private final DataDisplayOverlay graphOverlay;
 
@@ -97,7 +97,7 @@ public class MouseHighlightHandler implements MouseMotionListener, MouseListener
 	}
 
 	@Override
-	public void updateHeaderSize( final int width, final int height )
+	public void updateAxesSize( final int width, final int height )
 	{
 		headerWidth = width;
 		headerHeight = height;

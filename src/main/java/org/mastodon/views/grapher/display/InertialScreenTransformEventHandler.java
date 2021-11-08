@@ -34,12 +34,13 @@ import java.util.TimerTask;
 import org.mastodon.ui.keymap.CommandDescriptionProvider;
 import org.mastodon.ui.keymap.CommandDescriptions;
 import org.mastodon.ui.keymap.KeyConfigContexts;
-import org.mastodon.views.grapher.datagraph.DataGraph.LayoutListener;
+import org.mastodon.views.grapher.datagraph.DataGraphLayout;
+import org.mastodon.views.grapher.datagraph.DataGraphLayout.LayoutListener;
 import org.mastodon.views.grapher.datagraph.ScreenTransform;
+import org.mastodon.views.grapher.display.OffsetAxes.OffsetAxesListener;
 import org.mastodon.views.grapher.display.animate.InertialScreenTransformAnimator;
 import org.mastodon.views.grapher.display.animate.InterpolateScreenTransformAnimator;
 import org.mastodon.views.trackscheme.LineageTreeLayout;
-import org.mastodon.views.trackscheme.display.OffsetHeaders.OffsetHeadersListener;
 import org.mastodon.views.trackscheme.display.animate.AbstractTransformAnimator;
 import org.scijava.plugin.Plugin;
 import org.scijava.ui.behaviour.DragBehaviour;
@@ -54,7 +55,7 @@ public class InertialScreenTransformEventHandler
 	implements
 		TransformEventHandler,
 		LayoutListener,
-		OffsetHeadersListener
+		OffsetAxesListener
 {
 	public static final String DRAG_TRANSLATE = "drag translate";
 	public static final String SCROLL_TRANSLATE = "scroll translate";
@@ -251,7 +252,7 @@ public class InertialScreenTransformEventHandler
 	}
 
 	@Override
-	public synchronized void updateHeaderSize( final int width, final int height )
+	public synchronized void updateAxesSize( final int width, final int height )
 	{
 		headerWidth = width;
 		headerHeight = height;
@@ -270,12 +271,14 @@ public class InertialScreenTransformEventHandler
 	}
 
 	@Override
-	public synchronized void layoutChanged()
+	public synchronized void layoutChanged( final DataGraphLayout< ?, ? > layout )
 	{
 		final ScreenTransform transform = transformState.get();
 
 		boundXMin = layout.getCurrentLayoutMinX() - boundXLayoutBorder;
 		boundXMax = layout.getCurrentLayoutMaxX() + boundXLayoutBorder;
+		boundYMin = layout.getCurrentLayoutMinY() - boundYLayoutBorder;
+		boundYMax = layout.getCurrentLayoutMaxY() + boundYLayoutBorder;
 
 		if ( boundXMax - boundXMin < MIN_SIBLINGS_ON_CANVAS )
 		{
@@ -283,11 +286,20 @@ public class InertialScreenTransformEventHandler
 			boundXMin = c - MIN_SIBLINGS_ON_CANVAS / 2;
 			boundXMax = c + MIN_SIBLINGS_ON_CANVAS / 2;
 		}
-
 		updateMaxSizeX( transform.getScreenWidth() );
+		if ( boundYMax - boundYMin < MIN_SIBLINGS_ON_CANVAS )
+		{
+			final double c = ( boundYMax + boundYMin ) / 2;
+			boundYMin = c - MIN_SIBLINGS_ON_CANVAS / 2;
+			boundYMax = c + MIN_SIBLINGS_ON_CANVAS / 2;
+		}
+		updateMaxSizeY( transform.getScreenHeight() );
 
 		if ( stayFullyZoomedOut )
+		{
 			zoomOutFullyX( transform );
+			zoomOutFullyY( transform );
+		}
 		constrainTransform( transform );
 
 		transformState.set( transform );

@@ -44,12 +44,12 @@ import org.mastodon.model.FocusModel;
 import org.mastodon.model.HighlightModel;
 import org.mastodon.model.NavigationHandler;
 import org.mastodon.model.SelectionModel;
-import org.mastodon.model.TimepointModel;
 import org.mastodon.ui.context.ContextChooserPanel;
 import org.mastodon.undo.UndoPointMarker;
 import org.mastodon.views.context.ContextChooser;
 import org.mastodon.views.grapher.datagraph.DataEdge;
 import org.mastodon.views.grapher.datagraph.DataGraph;
+import org.mastodon.views.grapher.datagraph.DataGraphLayout;
 import org.mastodon.views.grapher.datagraph.DataVertex;
 import org.scijava.ui.behaviour.MouseAndKeyHandler;
 
@@ -61,9 +61,9 @@ public class DataDisplayFrame extends ViewFrame
 
 	public DataDisplayFrame(
 			final DataGraph< ?, ? > graph,
+			final DataGraphLayout< ?, ? > layout,
 			final HighlightModel< DataVertex, DataEdge > highlight,
 			final FocusModel< DataVertex, DataEdge > focus,
-			final TimepointModel timepoint,
 			final SelectionModel< DataVertex, DataEdge > selection,
 			final NavigationHandler< DataVertex, DataEdge > navigation,
 			final UndoPointMarker undoPointMarker,
@@ -75,9 +75,9 @@ public class DataDisplayFrame extends ViewFrame
 
 		dataDisplayPanel = new DataDisplayPanel(
 				graph,
+				layout,
 				highlight,
 				focus,
-				timepoint,
 				selection,
 				navigation,
 				optional );

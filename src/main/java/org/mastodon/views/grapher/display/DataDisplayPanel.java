@@ -50,23 +50,20 @@ import org.mastodon.model.NavigationHandler;
 import org.mastodon.model.NavigationListener;
 import org.mastodon.model.SelectionListener;
 import org.mastodon.model.SelectionModel;
-import org.mastodon.model.TimepointListener;
-import org.mastodon.model.TimepointModel;
 import org.mastodon.ui.NavigationEtiquette;
 import org.mastodon.ui.coloring.GraphColorGenerator;
 import org.mastodon.views.context.Context;
 import org.mastodon.views.context.ContextListener;
 import org.mastodon.views.grapher.datagraph.DataEdge;
 import org.mastodon.views.grapher.datagraph.DataGraph;
-import org.mastodon.views.grapher.datagraph.DataGraph.DataGraphLayout;
 import org.mastodon.views.grapher.datagraph.DataGraphContextLayout;
+import org.mastodon.views.grapher.datagraph.DataGraphLayout;
 import org.mastodon.views.grapher.datagraph.DataVertex;
 import org.mastodon.views.grapher.datagraph.ScreenEntities;
 import org.mastodon.views.grapher.datagraph.ScreenEntitiesInterpolator;
 import org.mastodon.views.grapher.datagraph.ScreenTransform;
 import org.mastodon.views.grapher.display.DataDisplayOptions.Values;
 import org.mastodon.views.trackscheme.LineageTreeLayout;
-import org.mastodon.views.trackscheme.display.OffsetHeaders;
 import org.mastodon.views.trackscheme.display.animate.AbstractAnimator;
 
 import bdv.viewer.InteractiveDisplayCanvas;
@@ -79,7 +76,6 @@ public class DataDisplayPanel extends JPanel implements
 		PainterThread.Paintable,
 		HighlightListener,
 		FocusListener,
-		TimepointListener,
 		GraphChangeListener,
 		SelectionListener,
 		NavigationListener< DataVertex, DataEdge >,
@@ -112,7 +108,7 @@ public class DataDisplayPanel extends JPanel implements
 	/**
 	 * layout the {@link DataGraph} into layout coordinates.
 	 */
-	private final DataGraphLayout layout;
+	private final DataGraphLayout< ?, ? > layout;
 
 	/**
 	 * TODO
@@ -180,13 +176,11 @@ public class DataDisplayPanel extends JPanel implements
 
 	private final FocusModel< DataVertex, DataEdge > focus;
 
-	private final TimepointModel timepoint;
-
 	private final DataDisplayNavigationBehaviours navigationBehaviours;
 
 	private final InertialScreenTransformEventHandler transformEventHandler;
 
-	private final OffsetHeaders offsetHeaders;
+	private final OffsetAxes offsetAxes;
 
 	private NavigationEtiquette navigationEtiquette;
 
@@ -196,43 +190,46 @@ public class DataDisplayPanel extends JPanel implements
 
 	public DataDisplayPanel(
 			final DataGraph< ?, ? > graph,
+			final DataGraphLayout< ?, ? > layout,
 			final HighlightModel< DataVertex, DataEdge > highlight,
 			final FocusModel< DataVertex, DataEdge > focus,
-			final TimepointModel timepoint,
 			final SelectionModel< DataVertex, DataEdge > selection,
 			final NavigationHandler< DataVertex, DataEdge > navigation,
 			final DataDisplayOptions optional )
 	{
 		super( new BorderLayout(), false );
 		this.graph = graph;
+		this.layout = layout;
 		this.focus = focus;
-		this.timepoint = timepoint;
 
 		final Values options = optional.values;
 		ANIMATION_MILLISECONDS = options.getAnimationDurationMillis();
 
-		graph.graphChangeListeners().add( this );
-		navigation.listeners().add( this );
-
+		/*
+		 * Canvas and transform.
+		 */
 		final int w = options.getWidth();
 		final int h = options.getHeight();
 		display = new InteractiveDisplayCanvas( w, h );
-
 		screenTransform = new ScreenTransformState( new ScreenTransform( -10000, 10000, -10000, 10000, w, h ) );
 		screenTransform.listeners().add( this );
 		transformEventHandler = new InertialScreenTransformEventHandler( screenTransform );
 
+		/*
+		 * Make this instance listen to data graph and UI objects.
+		 */
+		graph.graphChangeListeners().add( this );
+		navigation.listeners().add( this );
 		highlight.listeners().add( this );
 		focus.listeners().add( this );
-		timepoint.listeners().add( this );
 		selection.listeners().add( this );
 
-		graphOverlay = options.getDataDisplayOverlayFactory().create( graph, highlight, focus, optional );
-
+		/*
+		 * Overlay.
+		 */
+		graphOverlay = options.getDataDisplayOverlayFactory()
+				.create( graph, highlight, focus, optional );
 		display.overlays().add( graphOverlay );
-
-		// This should be the last OverlayRenderer in display.
-		// It triggers repainting if there is currently an ongoing animation.
 		display.overlays().add( new OverlayRenderer()
 		{
 			@Override
@@ -246,7 +243,6 @@ public class DataDisplayPanel extends JPanel implements
 			}
 		} );
 
-		layout = graph.getLayout();
 		contextLayout = new DataGraphContextLayout( graph, layout );
 		colorGenerator = options.getGraphColorGenerator();
 		layout.layoutListeners().add( transformEventHandler );
@@ -263,12 +259,12 @@ public class DataDisplayPanel extends JPanel implements
 		navigationBehaviours = new DataDisplayNavigationBehaviours( display, graph, layout, graphOverlay, focus, navigation, selection );
 		screenTransform.listeners().add( navigationBehaviours );
 
-		offsetHeaders = new OffsetHeaders();
-		offsetHeaders.listeners().add( transformEventHandler );
-		offsetHeaders.listeners().add( graphOverlay );
-		offsetHeaders.listeners().add( navigationBehaviours );
-		offsetHeaders.listeners().add( highlightHandler );
-		offsetHeaders.setHeaderSize( 25, 20 );
+		offsetAxes = new OffsetAxes();
+		offsetAxes.listeners().add( transformEventHandler );
+		offsetAxes.listeners().add( graphOverlay );
+		offsetAxes.listeners().add( navigationBehaviours );
+		offsetAxes.listeners().add( highlightHandler );
+		offsetAxes.setAxesSize( 25, 20 );
 
 		xScrollBar = new JScrollBar( JScrollBar.HORIZONTAL );
 		yScrollBar = new JScrollBar( JScrollBar.VERTICAL );
@@ -333,21 +329,6 @@ public class DataDisplayPanel extends JPanel implements
 	}
 
 	/**
-	 * Sets the time-point range of the dataset.
-	 *
-	 * @param minTimepoint
-	 *            the min time-point.
-	 * @param maxTimepoint
-	 *            the max time-point.
-	 */
-	public void setTimepointRange( final int minTimepoint, final int maxTimepoint )
-	{
-		layoutMinY = minTimepoint;
-		layoutMaxY = maxTimepoint;
-		transformEventHandler.setLayoutRangeY( minTimepoint, maxTimepoint );
-	}
-
-	/**
 	 * request repainting if there is currently an ongoing animation.
 	 */
 	void checkAnimate()
@@ -371,6 +352,8 @@ public class DataDisplayPanel extends JPanel implements
 				layout.layout();
 				layoutMinX = layout.getCurrentLayoutMinX();
 				layoutMaxX = layout.getCurrentLayoutMaxX();
+				layoutMinY = layout.getCurrentLayoutMinY();
+				layoutMaxY = layout.getCurrentLayoutMaxY();
 				entityAnimator.startAnimation( transform, ANIMATION_MILLISECONDS );
 			}
 			else if ( flags.transformChanged )
@@ -381,6 +364,8 @@ public class DataDisplayPanel extends JPanel implements
 				{
 					layoutMinX = layout.getCurrentLayoutMinX();
 					layoutMaxX = layout.getCurrentLayoutMaxX();
+					layoutMinY = layout.getCurrentLayoutMinY();
+					layoutMaxY = layout.getCurrentLayoutMaxY();
 					entityAnimator.continueAnimation( transform, ANIMATION_MILLISECONDS );
 				}
 				else
@@ -401,11 +386,15 @@ public class DataDisplayPanel extends JPanel implements
 					layout.layout();
 					layoutMinX = layout.getCurrentLayoutMinX();
 					layoutMaxX = layout.getCurrentLayoutMaxX();
+					layoutMinY = layout.getCurrentLayoutMinY();
+					layoutMaxY = layout.getCurrentLayoutMaxY();
 				}
 				else if ( contextLayout.buildContext( context, transform, true ) )
 				{
 					layoutMinX = layout.getCurrentLayoutMinX();
 					layoutMaxX = layout.getCurrentLayoutMaxX();
+					layoutMinY = layout.getCurrentLayoutMinY();
+					layoutMaxY = layout.getCurrentLayoutMaxY();
 				}
 				entityAnimator.startAnimation( transform, ANIMATION_MILLISECONDS );
 			}
@@ -440,17 +429,6 @@ public class DataDisplayPanel extends JPanel implements
 		xScrollBar.setValues( xval, xext, xmin, xmax );
 		yScrollBar.setValues( yval, yext, ymin, ymax );
 		ignoreScrollBarChanges = false;
-	}
-
-	@Override
-	public void timepointChanged()
-	{
-		final int t = timepoint.getTimepoint();
-		if ( graphOverlay.getCurrentTimepoint() != t )
-		{
-			graphOverlay.setCurrentTimepoint( t );
-			display.repaint();
-		}
 	}
 
 	@Override
@@ -734,9 +712,9 @@ public class DataDisplayPanel extends JPanel implements
 	}
 
 	// TODO remove??? revise DataPanel / DataFrame construction.
-	protected OffsetHeaders getOffsetHeaders()
+	protected OffsetAxes getOffsetHeaders()
 	{
-		return offsetHeaders;
+		return offsetAxes;
 	}
 
 	// TODO is this needed? does it have to be public?
@@ -836,7 +814,7 @@ public class DataDisplayPanel extends JPanel implements
 			if (duration > 0 )
 			{
 				copyIpStart();
-				layout.cropAndScale( transform, screenEntities, offsetHeaders.getWidth(), offsetHeaders.getHeight(), colorGenerator );
+				layout.cropAndScale( transform, screenEntities, offsetAxes.getWidth(), offsetAxes.getHeight(), colorGenerator );
 				swapIpEnd();
 				interpolator = new ScreenEntitiesInterpolator( screenEntitiesIpStart, screenEntitiesIpEnd );
 			}
@@ -844,7 +822,7 @@ public class DataDisplayPanel extends JPanel implements
 			{
 				interpolator = null;
 				swapPools();
-				layout.cropAndScale( transform, screenEntities, offsetHeaders.getWidth(), offsetHeaders.getHeight(), colorGenerator );
+				layout.cropAndScale( transform, screenEntities, offsetAxes.getWidth(), offsetAxes.getHeight(), colorGenerator );
 				lastComputedScreenEntities = screenEntities;
 			}
 		}
@@ -853,7 +831,7 @@ public class DataDisplayPanel extends JPanel implements
 		{
 			if ( interpolator != null )
 			{
-				layout.cropAndScale( transform, screenEntities, offsetHeaders.getWidth(), offsetHeaders.getHeight(), colorGenerator );
+				layout.cropAndScale( transform, screenEntities, offsetAxes.getWidth(), offsetAxes.getHeight(), colorGenerator );
 				swapIpEnd();
 				interpolator = new ScreenEntitiesInterpolator(
 						screenEntitiesIpStart,

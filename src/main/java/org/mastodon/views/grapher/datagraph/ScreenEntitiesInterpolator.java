@@ -201,7 +201,6 @@ public class ScreenEntitiesInterpolator
 		vCurrent.setLabel( vEnd.getLabel() );
 		final boolean endSelected = vEnd.isSelected();
 		vCurrent.setSelected( endSelected );
-		vCurrent.setGhost( vEnd.isGhost() );
 		vCurrent.setVertexDist( vEnd.getVertexDist() );
 		double startX = vStart.getX();
 		double startY = vStart.getY();
@@ -228,7 +227,6 @@ public class ScreenEntitiesInterpolator
 		vCurrent.setDataVertexId( -1 );
 		vCurrent.setLabel( vStart.getLabel() );
 		vCurrent.setSelected( vStart.isSelected() );
-		vCurrent.setGhost( vStart.isGhost() );
 		vCurrent.setVertexDist( vStart.getVertexDist() );
 		double startX = vStart.getX();
 		double startY = vStart.getY();
@@ -249,7 +247,6 @@ public class ScreenEntitiesInterpolator
 		vCurrent.setDataVertexId( vEnd.getDataVertexId() );
 		vCurrent.setLabel( vEnd.getLabel() );
 		vCurrent.setSelected( vEnd.isSelected() );
-		vCurrent.setGhost( vEnd.isGhost() );
 		vCurrent.setVertexDist( vEnd.getVertexDist() );
 		vCurrent.setX( vEnd.getX() );
 		vCurrent.setY( vEnd.getY() );

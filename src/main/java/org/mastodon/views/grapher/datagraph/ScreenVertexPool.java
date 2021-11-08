@@ -21,7 +21,6 @@ public class ScreenVertexPool extends Pool< ScreenVertex, ByteMappedElement >
 	final DoubleAttribute< ScreenVertex > yOffset = new DoubleAttribute<>( ScreenVertex.layout.yOffset, this );
 	final DoubleAttribute< ScreenVertex > vertexDist = new DoubleAttribute<>( ScreenVertex.layout.vertexDist, this );
 	final BooleanAttribute< ScreenVertex > selected = new BooleanAttribute<>( ScreenVertex.layout.selected, this );
-	final BooleanAttribute< ScreenVertex > ghost = new BooleanAttribute<>( ScreenVertex.layout.ghost, this );
 	final ByteAttribute< ScreenVertex > transition = new ByteAttribute<>( ScreenVertex.layout.transition, this );
 	final IndexAttribute< ScreenVertex > ipScreenVertex = new IndexAttribute<>( ScreenVertex.layout.ipScreenVertex, this );
 	final DoubleAttribute< ScreenVertex > ipRatio = new DoubleAttribute<>( ScreenVertex.layout.ipRatio, this );
