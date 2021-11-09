@@ -82,6 +82,7 @@ import org.mastodon.views.grapher.datagraph.wrap.DefaultModelGraphProperties;
 import org.mastodon.views.grapher.display.DataDisplayFrame;
 import org.mastodon.views.grapher.display.DataDisplayOptions;
 import org.mastodon.views.grapher.display.DataDisplayPanel;
+import org.mastodon.views.grapher.display.DataDisplayZoom;
 import org.mastodon.views.grapher.display.style.DataDisplayStyle;
 import org.mastodon.views.trackscheme.display.TrackSchemeNavigationActions;
 import org.scijava.ui.behaviour.KeyPressedManager;
@@ -204,6 +205,7 @@ public class MamutViewGrapher2 extends MamutView< DataGraph< Spot, Link >, DataV
 		HighlightBehaviours.install( viewBehaviours, viewGraph, viewGraph.getLock(), viewGraph, highlightModel, model );
 		FocusActions.install( viewActions, viewGraph, viewGraph.getLock(), navigateFocusModel, selectionModel );
 		EditTagActions.install( viewActions, frame.getKeybindings(), frame.getTriggerbindings(), model.getTagSetModel(), appModel.getSelectionModel(), viewGraph.getLock(), dataDisplayPanel, dataDisplayPanel.getDisplay(), model );
+		DataDisplayZoom.install( viewBehaviours, dataDisplayPanel );
 
 		final JPanel searchPanel = SearchVertexLabel.install( viewActions, viewGraph, navigationHandler, selectionModel, focusModel, dataDisplayPanel );
 		frame.getSettingsPanel().add( searchPanel );
