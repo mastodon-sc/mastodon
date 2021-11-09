@@ -256,6 +256,10 @@ public class DataDisplayPanel extends JPanel implements
 		screenTransform.listeners().add( highlightHandler );
 
 		autoFocus = new DataDisplayAutoFocus( layout, focus );
+		screenTransform.listeners().add( autoFocus );
+
+		// TODO DataDsiaplayNavigationActions
+
 		navigationBehaviours = new DataDisplayNavigationBehaviours( display, graph, layout, graphOverlay, focus, navigation, selection );
 		screenTransform.listeners().add( navigationBehaviours );
 
