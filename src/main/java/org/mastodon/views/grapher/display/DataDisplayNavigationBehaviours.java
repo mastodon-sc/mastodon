@@ -140,12 +140,12 @@ public class DataDisplayNavigationBehaviours implements TransformListener< Scree
 
 	private final BoxSelectionBehaviour boxAddSelectBehaviour;
 
-	private final DataGraphLayout layout;
+	private final DataGraphLayout< ?, ? > layout;
 
 	public DataDisplayNavigationBehaviours(
 			final InteractiveDisplayCanvas display,
 			final DataGraph< ?, ? > graph,
-			final DataGraphLayout layout,
+			final DataGraphLayout< ?, ? > layout,
 			final DataDisplayOverlay graphOverlay,
 			final FocusModel< DataVertex, DataEdge > focus,
 			final NavigationHandler< DataVertex, DataEdge > navigation,
@@ -181,12 +181,6 @@ public class DataDisplayNavigationBehaviours implements TransformListener< Scree
 	}
 
 	/*
-	 * COMMON METHODS.
-	 */
-
-	private double ratioXtoY;
-
-	/*
 	 * PRIVATE METHODS
 	 */
 
@@ -197,16 +191,7 @@ public class DataDisplayNavigationBehaviours implements TransformListener< Scree
 		if ( !addToSelection )
 			selection.clearSelection();
 
-		final double lx1, ly1, lx2, ly2;
-		synchronized ( screenTransform )
-		{
-			lx1 = screenTransform.screenToLayoutX( x1 );
-			ly1 = screenTransform.screenToLayoutY( y1 );
-			lx2 = screenTransform.screenToLayoutX( x2 );
-			ly2 = screenTransform.screenToLayoutY( y2 );
-		}
-
-		final RefSet< DataVertex > vs = layout.getActiveVerticesWithin( lx1, ly1, lx2, ly2 );
+		final RefSet< DataVertex > vs = layout.getDataVerticesWithin( x1, y1, x2, y2 );
 		final DataVertex vertexRef = graph.vertexRef();
 		for ( final DataVertex v : vs )
 		{
@@ -219,7 +204,7 @@ public class DataDisplayNavigationBehaviours implements TransformListener< Scree
 			}
 		}
 
-		focus.focusVertex( layout.getClosestActiveVertexWithin( lx1, ly1, lx2, ly2, ratioXtoY, vertexRef ) );
+		focus.focusVertex( vs.iterator().next() );
 
 		graph.releaseRef( vertexRef );
 
@@ -499,7 +484,6 @@ public class DataDisplayNavigationBehaviours implements TransformListener< Scree
 		synchronized ( screenTransform )
 		{
 			screenTransform.set( transform );
-			ratioXtoY = transform.getXtoYRatio();
 		}
 	}
 

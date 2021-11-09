@@ -45,7 +45,7 @@ import net.imglib2.RealPoint;
  */
 public class DataDisplayAutoFocus implements FocusModel< DataVertex, DataEdge >, TransformListener< ScreenTransform >
 {
-	private final DataGraphLayout layout;
+	private final DataGraphLayout< ?, ? > layout;
 
 	private final FocusModel< DataVertex, DataEdge > focus;
 
@@ -53,10 +53,8 @@ public class DataDisplayAutoFocus implements FocusModel< DataVertex, DataEdge >,
 
 	private final RealPoint centerPos = new RealPoint( 2 );
 
-	private double ratioXtoY = 1;
-
 	public DataDisplayAutoFocus(
-			final DataGraphLayout layout,
+			final DataGraphLayout< ?, ? > layout,
 			final FocusModel< DataVertex, DataEdge > focus )
 	{
 		this.layout = layout;
@@ -76,7 +74,7 @@ public class DataDisplayAutoFocus implements FocusModel< DataVertex, DataEdge >,
 		if ( vertex != null )
 			return vertex;
 
-		vertex = layout.getClosestActiveVertex( centerPos, ratioXtoY, ref );
+		vertex = layout.getClosestActiveVertex( centerPos, ref );
 		if ( vertex != null )
 			focus.focusVertex( vertex );
 
@@ -95,9 +93,8 @@ public class DataDisplayAutoFocus implements FocusModel< DataVertex, DataEdge >,
 		synchronized ( screenTransform )
 		{
 			screenTransform.set( transform );
-			centerPos.setPosition( ( transform.getMaxX() + transform.getMinX() ) / 2., 0 );
-			centerPos.setPosition( ( transform.getMaxY() + transform.getMinY() ) / 2., 1 );
-			ratioXtoY = transform.getXtoYRatio();
+			centerPos.setPosition( transform.getScreenWidth() / 2., 0 );
+			centerPos.setPosition( transform.getScreenHeight() / 2., 1 );
 		}
 	}
 }

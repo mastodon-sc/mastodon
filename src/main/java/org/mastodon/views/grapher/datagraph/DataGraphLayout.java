@@ -1,5 +1,6 @@
 package org.mastodon.views.grapher.datagraph;
 
+import org.mastodon.collection.RefCollections;
 import org.mastodon.collection.RefList;
 import org.mastodon.collection.RefSet;
 import org.mastodon.feature.FeatureModel;
@@ -9,6 +10,7 @@ import org.mastodon.graph.Vertex;
 import org.mastodon.kdtree.ClipConvexPolytopeKDTree;
 import org.mastodon.kdtree.IncrementalNearestNeighborSearchOnKDTree;
 import org.mastodon.kdtree.KDTree;
+import org.mastodon.kdtree.NearestNeighborSearchOnKDTree;
 import org.mastodon.model.SelectionModel;
 import org.mastodon.pool.DoubleMappedElement;
 import org.mastodon.ui.coloring.GraphColorGenerator;
@@ -44,6 +46,8 @@ public class DataGraphLayout< V extends Vertex< E >, E extends Edge< V > >
 	private final SelectionModel< DataVertex, DataEdge > selection;
 
 	private KDTree< DataVertex, DoubleMappedElement > kdtree;
+
+	private KDTree< ScreenVertex, DoubleMappedElement > screenKDtree;
 
 	public DataGraphLayout(
 			final DataGraph< V, E > dataGraph,
@@ -115,22 +119,52 @@ public class DataGraphLayout< V extends Vertex< E >, E extends Edge< V > >
 			l.layoutChanged( this );
 	}
 
-	public DataVertex getClosestActiveVertex( final RealPoint centerPos, final double ratioXtoY, final DataVertex ref )
+	/**
+	 * 
+	 * @param centerPos
+	 *            in screen coordinates.
+	 * @param ref
+	 * @return
+	 */
+	public DataVertex getClosestActiveVertex( final RealPoint centerPos, final DataVertex ref )
 	{
-		return null;
-		// TODO
+		final NearestNeighborSearchOnKDTree< ScreenVertex, DoubleMappedElement > search = new NearestNeighborSearchOnKDTree<>( screenKDtree );
+		final ScreenVertex sv = search.get();
+		return dataGraph.getVertexPool().getObject( sv.getDataVertexId(), ref );
 	}
 
-	public DataVertex getClosestActiveVertexWithin( final double lx1, final double ly1, final double lx2, final double ly2, final double ratioXtoY, final DataVertex vertexRef )
+	/**
+	 * 
+	 * @param x1
+	 *            x min in screen coordinates.
+	 * @param y1
+	 *            y min in screen coordinates.
+	 * @param x2
+	 *            x max in screen coordinates.
+	 * @param y2
+	 *            y max in screen coordinates.
+	 * @return
+	 */
+	public RefSet< DataVertex > getDataVerticesWithin( final double x1, final double y1, final double x2, final double y2 )
 	{
-		return null;
-		// TODO
-	}
+		// Make hyperplanes for transform view.
+		final HyperPlane hpMinX = new HyperPlane( new double[] { 1., 0. }, x1 );
+		final HyperPlane hpMaxX = new HyperPlane( new double[] { -1., 0. }, -x2 );
+		final HyperPlane hpMinY = new HyperPlane( new double[] { 0., 1. }, y1 );
+		final HyperPlane hpMaxY = new HyperPlane( new double[] { 0., -1. }, -y2 );
 
-	public RefSet< DataVertex > getActiveVerticesWithin( final double lx1, final double ly1, final double lx2, final double ly2 )
-	{
-		// TODO Auto-generated method stub
-		return null;
+		// Convex polytope from hyperplanes.
+		final ConvexPolytope polytope = new ConvexPolytope( hpMinX, hpMinY, hpMaxX, hpMaxY );
+		final ClipConvexPolytopeKDTree< ScreenVertex, DoubleMappedElement > clip = new ClipConvexPolytopeKDTree<>( screenKDtree );
+		clip.clip( polytope );
+
+		// To data vertices.
+		final RefSet< DataVertex > set = RefCollections.createRefSet( dataGraph.vertices() );
+		final DataVertex ref = dataGraph.vertexRef();
+		for ( final ScreenVertex sv : clip.getInsideValues() )
+			set.add( dataGraph.getVertexPool().getObject( sv.getDataVertexId(), ref ) );
+		dataGraph.releaseRef( ref );
+		return set;
 	}
 
 	public List< LayoutListener > layoutListeners()
@@ -288,6 +322,11 @@ public class DataGraphLayout< V extends Vertex< E >, E extends Edge< V > >
 			}
 			svd.setVertexDist( distance );
 		}
+
+		/*
+		 * Screen kdtree
+		 */
+		screenKDtree = KDTree.kdtree( screenVertices, screenVertexPool );
 	}
 
 	public interface LayoutListener
