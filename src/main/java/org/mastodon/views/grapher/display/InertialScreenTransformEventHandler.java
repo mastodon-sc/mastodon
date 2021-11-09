@@ -49,7 +49,6 @@ import org.scijava.ui.behaviour.util.AbstractNamedBehaviour;
 import org.scijava.ui.behaviour.util.Behaviours;
 
 import bdv.TransformEventHandler;
-import bdv.viewer.TransformListener;
 
 public class InertialScreenTransformEventHandler
 	implements
@@ -199,11 +198,6 @@ public class InertialScreenTransformEventHandler
 	 * {@link #layoutChanged(LineageTreeLayout) layout changes}.
 	 */
 	private boolean stayFullyZoomedOut;
-
-	/**
-	 * Whom to notify when the current transform is changed.
-	 */
-	private TransformListener< ScreenTransform > listener;
 
 	/**
 	 * Timer that runs {@link #currentTimerTask}.
