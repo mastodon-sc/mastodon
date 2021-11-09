@@ -1,8 +1,11 @@
 package org.mastodon.views.grapher.datagraph;
 
+import java.util.Collection;
+
 import org.mastodon.collection.RefCollections;
 import org.mastodon.collection.RefList;
 import org.mastodon.collection.RefSet;
+import org.mastodon.collection.ref.RefArrayList;
 import org.mastodon.feature.FeatureModel;
 import org.mastodon.feature.FeatureProjection;
 import org.mastodon.graph.Edge;
@@ -74,9 +77,19 @@ public class DataGraphLayout< V extends Vertex< E >, E extends Edge< V > >
 	 */
 
 	/**
-	 * Resets X and Y position based on the specified feature specifications.
+	 * Resets X and Y position based on the specified feature specifications for
+	 * all the vertices in the data graph.
 	 */
 	public void layout()
+	{
+		layout( dataGraph.vertices() );
+	}
+
+	/**
+	 * Resets X and Y position based on the specified feature specifications for
+	 * the specified collection of vertices only.
+	 */
+	public void layout( final Iterable< DataVertex > vertices )
 	{
 		currentLayoutMinX = Double.POSITIVE_INFINITY;
 		currentLayoutMaxX = Double.NEGATIVE_INFINITY;
@@ -84,9 +97,12 @@ public class DataGraphLayout< V extends Vertex< E >, E extends Edge< V > >
 		currentLayoutMaxY = Double.NEGATIVE_INFINITY;
 		if ( xp != null && yp != null )
 		{
-			final DataVertex ref = dataGraph.vertexRef();
-			for ( final V v : this.dataGraph.modelGraph.vertices() )
+			final V ref = dataGraph.idmap.vertexIdBimap().createRef();
+			for ( final DataVertex dv : vertices )
 			{
+				final int id = dv.getModelVertexId();
+				final V v = dataGraph.idmap.getVertex( id, ref );
+
 				final double x = xp.value( v );
 				if ( x > currentLayoutMaxX )
 					currentLayoutMaxX = x;
@@ -99,15 +115,23 @@ public class DataGraphLayout< V extends Vertex< E >, E extends Edge< V > >
 				if ( y < currentLayoutMinY )
 					currentLayoutMinY = y;
 
-				final int id = this.dataGraph.idmap.getVertexId( v );
-				final DataVertex dv = this.dataGraph.idToDataVertex.get( id, ref );
 				dv.setLayoutX( x );
 				dv.setLayoutY( y );
 			}
-			dataGraph.releaseRef( ref );
+			dataGraph.idmap.vertexIdBimap().releaseRef( ref );
 
 			// Regen kdtree
-			kdtree = KDTree.kdtree( dataGraph.vertices(), dataGraph.getVertexPool() );
+			final Collection< DataVertex > collection;
+			if ( vertices instanceof Collection )
+			{
+				collection = ( Collection< DataVertex > ) vertices;
+			}
+			else
+			{
+				collection = new RefArrayList<>( dataGraph.getVertexPool() );
+				vertices.forEach( collection::add );
+			}
+			kdtree = KDTree.kdtree( collection, dataGraph.getVertexPool() );
 		}
 
 		notifyListeners();

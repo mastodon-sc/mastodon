@@ -28,131 +28,28 @@
  */
 package org.mastodon.views.grapher.datagraph;
 
-import org.mastodon.collection.RefCollections;
-import org.mastodon.collection.RefList;
 import org.mastodon.views.context.Context;
-import org.mastodon.views.trackscheme.LineageTreeLayout;
 
-/**
- * Algorithm:
- * <ol>
- * <li>Mark vertices in context with {@code mark}.
- * <li>Mark vertices attached to them with {@code ghostmark = mark - 1}.
- * <li>Use {@link LineageTreeLayout#layout(java.util.Collection, int)} to layout
- * vertices that have been marked like this. (After that, all active (laid out)
- * vertices (also ghosts) will have been marked with the
- * {@link LineageTreeLayout#getCurrentLayoutTimestamp()}).
- * </ol>
- *
- * @author Tobias Pietzsch &lt;tobias.pietzsch@gmail.com&gt;
- */
 public class DataGraphContextLayout
 {
-	private final DataGraph< ?, ? > graph;
 
-	private final DataGraphLayout layout;
+	private final DataGraphLayout< ?, ? > layout;
 
-	private int previousMinTimepoint;
-
-	private int previousMaxTimepoint;
-
-	public DataGraphContextLayout(
-			final DataGraph< ?, ? > graph,
-			final DataGraphLayout layout )
+	public DataGraphContextLayout( final DataGraphLayout< ?, ? > layout )
 	{
-		this.graph = graph;
 		this.layout = layout;
-		this.previousMinTimepoint = -1;
-		this.previousMaxTimepoint = -1;
 	}
 
 	/**
 	 * Layouts part of the graph covered by {@code context}.
-	 * <p>
-	 * The {@link ScreenTransform#getMinY()} and
-	 * {@link ScreenTransform#getMaxY()} of {@code transform} determines the
-	 * time-point range to cover. If the time-point range is the same as in the
-	 * previous call nothing is updated, unless {@code forceUpdate == true}.
 	 *
 	 * @param context
 	 *            the context to layout.
-	 * @param transform
-	 *            the transform used to determine the time-point range.
-	 * @param forceUpdate
-	 *            if {@code true}, will force an update regardless of whether
-	 *            the time-point is the same as in the previous call to this
-	 *            method.
-	 * @return {@code true} if the layout was updated.
 	 */
-	public boolean buildContext(
-			final Context< DataVertex > context,
-			final ScreenTransform transform,
-			final boolean forceUpdate )
+	public void buildContext( final Context< DataVertex > context )
 	{
-		final int minTimepoint = ( int ) transform.getMinY();
-		final int maxTimepoint = ( int ) transform.getMaxY() + 1;
-		if ( minTimepoint == previousMinTimepoint && maxTimepoint == previousMaxTimepoint && !forceUpdate )
-			return false;
-
-		previousMinTimepoint = minTimepoint;
-		previousMaxTimepoint = maxTimepoint;
-
-		final RefList< DataVertex > roots = RefCollections.createRefList( graph.vertices() );
-
-		context.readLock().lock();
-		try
-		{
-			for ( int t = minTimepoint; t <= maxTimepoint; ++t )
-			{
-				for ( final DataVertex tv : context.getInsideVertices( t ) )
-				{
-					if ( t == minTimepoint )
-						roots.add( tv );
-				}
-			}
-		}
-		finally
-		{
-			context.readLock().unlock();
-		}
-
-		layout.layout(); // TODO
-//				LexicographicalVertexOrder.sort( graph, roots ), mark );
-
-		return true;
-	}
-
-	/**
-	 * Follow backwards along incoming edges until
-	 * <ul>
-	 * <li>(A) a vertex is reached that is already marked with ghostmark or
-	 * mark, or
-	 * <li>(B) vertex is reached that has timepoint &lt;= minTimepoint.
-	 * </ul>
-	 *
-	 * Mark all recursively visited vertices as ghosts. In case (B), add the
-	 * final vertex to set of roots.
-	 */
-	private void buildContextTraceParents( final DataVertex tv, final int ghostmark, final int minTimepoint, final RefList< DataVertex > roots )
-	{
-		if( tv.incomingEdges().isEmpty() )
-			roots.add( tv );
-		else
-		{
-			final DataVertex ref = graph.vertexRef();
-			for ( final DataEdge te : tv.incomingEdges() )
-			{
-				final DataVertex parent = te.getSource( ref );
-				if ( parent.getLayoutTimestamp() < ghostmark )
-				{
-					parent.setLayoutTimestamp( ghostmark );
-					if ( parent.getLayoutY() <= minTimepoint )
-						roots.add( parent );
-					else
-						buildContextTraceParents( parent, ghostmark, minTimepoint, roots );
-				}
-			}
-			graph.releaseRef( ref );
-		}
+		final int timepoint = context.getTimepoint();
+		final Iterable< DataVertex > vertices = context.getInsideVertices( timepoint );
+		layout.layout( vertices );
 	}
 }

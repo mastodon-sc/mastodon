@@ -186,7 +186,7 @@ public class DataDisplayPanel extends JPanel implements
 
 	private NavigationBehaviour navigationBehaviour;
 
-	private DataDisplayAutoFocus autoFocus;
+	private final DataDisplayAutoFocus autoFocus;
 
 	public DataDisplayPanel(
 			final DataGraph< ?, ? > graph,
@@ -243,7 +243,7 @@ public class DataDisplayPanel extends JPanel implements
 			}
 		} );
 
-		contextLayout = new DataGraphContextLayout( graph, layout );
+		contextLayout = new DataGraphContextLayout( layout );
 		colorGenerator = options.getGraphColorGenerator();
 		layout.layoutListeners().add( transformEventHandler );
 		entityAnimator = new ScreenEntityAnimator();
@@ -360,8 +360,9 @@ public class DataDisplayPanel extends JPanel implements
 			{
 //				System.out.println( "paint: transformChanged" );
 //				entityAnimator.startAnimation( transform, 0 );
-				if ( context != null && contextLayout.buildContext( context, transform, false ) )
+				if ( context != null )
 				{
+					contextLayout.buildContext( context );
 					layoutMinX = layout.getCurrentLayoutMinX();
 					layoutMaxX = layout.getCurrentLayoutMaxX();
 					layoutMinY = layout.getCurrentLayoutMinY();
@@ -389,8 +390,9 @@ public class DataDisplayPanel extends JPanel implements
 					layoutMinY = layout.getCurrentLayoutMinY();
 					layoutMaxY = layout.getCurrentLayoutMaxY();
 				}
-				else if ( contextLayout.buildContext( context, transform, true ) )
+				else
 				{
+					contextLayout.buildContext( context );
 					layoutMinX = layout.getCurrentLayoutMinX();
 					layoutMaxX = layout.getCurrentLayoutMaxX();
 					layoutMinY = layout.getCurrentLayoutMinY();

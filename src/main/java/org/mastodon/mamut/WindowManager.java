@@ -342,6 +342,8 @@ public class WindowManager
 			tsw.getContextChooser().updateContextProviders( contextProviders );
 		for ( final MamutViewTable tw : tableWindows )
 			tw.getContextChooser().updateContextProviders( contextProviders );
+		for ( final MamutViewGrapher2 gw : grapherWindows )
+			gw.getContextChooser().updateContextProviders( contextProviders );
 		w.onClose( () -> {
 			bdvWindows.remove( w );
 			contextProviders.remove( w.getContextProvider() );
@@ -380,7 +382,10 @@ public class WindowManager
 	private synchronized void addGrapherWindow( final MamutViewGrapher2 grapher )
 	{
 		grapherWindows.add( grapher );
-		grapher.onClose( () -> grapherWindows.remove( grapher ) );
+		grapher.onClose( () -> {
+			grapherWindows.remove( grapher );
+			grapher.getContextChooser().updateContextProviders( new ArrayList<>() );
+		} );
 	}
 
 	public void forEachTableView( final Consumer< ? super MamutViewTable > action )
