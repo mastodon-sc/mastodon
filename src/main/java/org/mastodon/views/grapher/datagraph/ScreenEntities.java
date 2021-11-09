@@ -28,9 +28,6 @@
  */
 package org.mastodon.views.grapher.datagraph;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.mastodon.collection.RefList;
 import org.mastodon.collection.ref.RefArrayList;
 
@@ -59,8 +56,6 @@ public class ScreenEntities
 
 	private final RefArrayList< ScreenVertexRange > ranges;
 
-	private final ArrayList< ScreenColumn > columns;
-
 	/**
 	 * transform used to generate these {@link ScreenEntities}
 	 */
@@ -79,7 +74,6 @@ public class ScreenEntities
 		edges = new RefArrayList<>( edgePool, initialCapacity );
 		rangePool = new ScreenVertexRangePool( initialCapacity );
 		ranges = new RefArrayList<>( rangePool, initialCapacity );
-		columns = new ArrayList<>( initialCapacity );
 		screenTransform = new ScreenTransform();
 	}
 
@@ -96,11 +90,6 @@ public class ScreenEntities
 	public RefList< ScreenVertexRange > getRanges()
 	{
 		return ranges;
-	}
-
-	public List< ScreenColumn > getColumns()
-	{
-		return columns;
 	}
 
 	public void getScreenTransform( final ScreenTransform t )
@@ -136,7 +125,6 @@ public class ScreenEntities
 		edges.resetQuick();
 		rangePool.clear();
 		ranges.resetQuick();
-		columns.clear();
 	}
 
 	public void set( final ScreenEntities ent )
@@ -157,8 +145,6 @@ public class ScreenEntities
 		for ( final ScreenVertexRange r : ent.getRanges() )
 			ranges.add( rangePool.create( rRef ).cloneFrom( r ) );
 		rangePool.releaseRef( rRef );
-
-		columns.addAll( ent.getColumns() );
 
 		screenTransform().set( ent.screenTransform );
 	}
