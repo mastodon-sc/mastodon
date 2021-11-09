@@ -59,7 +59,7 @@ public class PaintGraph
 	private static final double simplifiedVertexRadius = 2.5;
 	private static final double simplifiedVertexSelectTolerance = 3.5;
 	private static final double minDisplayVertexDist = 17.0;
-	private static final double maxDisplayVertexSize = 100.0;
+	private static final double maxDisplayVertexSize = 20.0;
 	private static final double minDisplaySimplifiedVertexDist = 5.0;
 	private static final double avgLabelLetterWidth = 5.0;
 
