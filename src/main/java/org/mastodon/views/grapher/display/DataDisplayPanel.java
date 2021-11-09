@@ -174,8 +174,6 @@ public class DataDisplayPanel extends JPanel implements
 	 */
 	private boolean ignoreScrollBarChanges;
 
-	private final FocusModel< DataVertex, DataEdge > focus;
-
 	private final DataDisplayNavigationBehaviours navigationBehaviours;
 
 	private final InertialScreenTransformEventHandler transformEventHandler;
@@ -202,7 +200,6 @@ public class DataDisplayPanel extends JPanel implements
 		super( new BorderLayout(), false );
 		this.graph = graph;
 		this.layout = layout;
-		this.focus = focus;
 
 		final Values options = optional.values;
 		ANIMATION_MILLISECONDS = options.getAnimationDurationMillis();
