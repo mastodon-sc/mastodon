@@ -83,6 +83,7 @@ import org.mastodon.views.grapher.display.DataDisplayFrame;
 import org.mastodon.views.grapher.display.DataDisplayOptions;
 import org.mastodon.views.grapher.display.DataDisplayPanel;
 import org.mastodon.views.grapher.display.style.DataDisplayStyle;
+import org.mastodon.views.trackscheme.display.TrackSchemeNavigationActions;
 import org.scijava.ui.behaviour.KeyPressedManager;
 
 public class MamutViewGrapher2 extends MamutView< DataGraph< Spot, Link >, DataVertex, DataEdge >
@@ -207,7 +208,7 @@ public class MamutViewGrapher2 extends MamutView< DataGraph< Spot, Link >, DataV
 		final JPanel searchPanel = SearchVertexLabel.install( viewActions, viewGraph, navigationHandler, selectionModel, focusModel, dataDisplayPanel );
 		frame.getSettingsPanel().add( searchPanel );
 
-		// TODO Let the user choose between the two selection/focus modes.
+		dataDisplayPanel.getNavigationActions().install( viewActions, TrackSchemeNavigationActions.NavigatorEtiquette.FINDER_LIKE );
 		dataDisplayPanel.getNavigationBehaviours().install( viewBehaviours );
 		dataDisplayPanel.getTransformEventHandler().install( viewBehaviours );
 

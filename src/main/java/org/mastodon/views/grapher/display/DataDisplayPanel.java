@@ -188,6 +188,8 @@ public class DataDisplayPanel extends JPanel implements
 
 	private final DataDisplayAutoFocus autoFocus;
 
+	private DataDisplayNavigationActions navigationActions;
+
 	public DataDisplayPanel(
 			final DataGraph< ?, ? > graph,
 			final DataGraphLayout< ?, ? > layout,
@@ -258,7 +260,7 @@ public class DataDisplayPanel extends JPanel implements
 		autoFocus = new DataDisplayAutoFocus( layout, focus );
 		screenTransform.listeners().add( autoFocus );
 
-		// TODO DataDsiaplayNavigationActions
+		navigationActions = new DataDisplayNavigationActions( graph, autoFocus, selection );
 
 		navigationBehaviours = new DataDisplayNavigationBehaviours( display, graph, layout, graphOverlay, focus, navigation, selection );
 		screenTransform.listeners().add( navigationBehaviours );
@@ -737,6 +739,11 @@ public class DataDisplayPanel extends JPanel implements
 	public DataDisplayNavigationBehaviours getNavigationBehaviours()
 	{
 		return navigationBehaviours;
+	}
+
+	public DataDisplayNavigationActions getNavigationActions()
+	{
+		return navigationActions;
 	}
 
 	/**
