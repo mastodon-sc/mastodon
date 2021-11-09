@@ -75,8 +75,6 @@ public class DataDisplayOverlay implements OverlayRenderer, OffsetAxesListener
 
 	private final FocusModel< DataVertex, DataEdge > focus;
 
-	private int currentTimepoint = 0;
-
 	private int width;
 
 	private int height;
@@ -155,7 +153,7 @@ public class DataDisplayOverlay implements OverlayRenderer, OffsetAxesListener
 
 		graph.releaseRef( ref );
 
-		paintDecorations.paintBackground( g2, width, height, axesWidth, axesHeight, entities, currentTimepoint, style );
+		paintDecorations.paintBackground( g2, width, height, axesWidth, axesHeight, entities, style );
 
 		// Paint extra overlay if any.
 		for ( final OverlayRenderer or : overlayRenderers )
@@ -168,7 +166,7 @@ public class DataDisplayOverlay implements OverlayRenderer, OffsetAxesListener
 		if ( antialiasOffForGraph )
 			g2.setRenderingHint( RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON );
 
-		paintDecorations.paintHeaders( g2, width, height, axesWidth, axesHeight, entities, currentTimepoint, style );
+		paintDecorations.paintHeaders( g2, width, height, axesWidth, axesHeight, entities, style );
 	}
 
 	/**
@@ -304,27 +302,6 @@ public class DataDisplayOverlay implements OverlayRenderer, OffsetAxesListener
 	protected int getHeight()
 	{
 		return height;
-	}
-
-	/**
-	 * Sets the current timepoint.
-	 *
-	 * @param timepoint
-	 *            the current timepoint.
-	 */
-	public void setCurrentTimepoint( final int timepoint )
-	{
-		this.currentTimepoint  = timepoint;
-	}
-
-	/**
-	 * Returns the current timepoint.
-	 *
-	 * @return the current timepoint.
-	 */
-	protected int getCurrentTimepoint()
-	{
-		return currentTimepoint;
 	}
 
 	/**
