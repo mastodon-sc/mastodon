@@ -267,7 +267,7 @@ public class DataDisplayPanel extends JPanel implements
 		offsetAxes.listeners().add( graphOverlay );
 		offsetAxes.listeners().add( navigationBehaviours );
 		offsetAxes.listeners().add( highlightHandler );
-		offsetAxes.setAxesSize( 25, 20 );
+		offsetAxes.setAxesSize( 50, 35 );
 
 		xScrollBar = new JScrollBar( JScrollBar.HORIZONTAL );
 		yScrollBar = new JScrollBar( JScrollBar.VERTICAL );

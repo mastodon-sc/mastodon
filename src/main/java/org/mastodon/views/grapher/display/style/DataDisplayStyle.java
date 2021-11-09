@@ -781,7 +781,7 @@ public class DataDisplayStyle implements Style< DataDisplayStyle >
 				selectedEdgeColor( fill.darker() ).
 				decorationColor( Color.YELLOW.darker().darker() ).
 				vertexRangeColor( new Color( 128, 128, 128 ) ).
-				headerBackgroundColor( new Color( 217, 217, 217 ) ). // new Color( 238, 238, 238 ) ).
+				headerBackgroundColor( Color.LIGHT_GRAY ). // new Color( 238, 238, 238 ) ).
 				headerDecorationColor( Color.DARK_GRAY ).
 				headerCurrentTimepointColor( Color.WHITE ).
 				font( new Font( "SansSerif", Font.PLAIN, 9 ) ).
