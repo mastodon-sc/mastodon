@@ -147,11 +147,16 @@ public class DataGraphLayout< V extends Vertex< E >, E extends Edge< V > >
 	 */
 	public RefSet< DataVertex > getDataVerticesWithin( final double x1, final double y1, final double x2, final double y2 )
 	{
+		final double lx1 = Math.min( x1, x2 );
+		final double lx2 = Math.max( x1, x2 );
+		final double ly1 = Math.min( y1, y2 );
+		final double ly2 = Math.max( y1, y2 );
+
 		// Make hyperplanes for transform view.
-		final HyperPlane hpMinX = new HyperPlane( new double[] { 1., 0. }, x1 );
-		final HyperPlane hpMaxX = new HyperPlane( new double[] { -1., 0. }, -x2 );
-		final HyperPlane hpMinY = new HyperPlane( new double[] { 0., 1. }, y1 );
-		final HyperPlane hpMaxY = new HyperPlane( new double[] { 0., -1. }, -y2 );
+		final HyperPlane hpMinX = new HyperPlane( new double[] { 1., 0. }, lx1 );
+		final HyperPlane hpMaxX = new HyperPlane( new double[] { -1., 0. }, -lx2 );
+		final HyperPlane hpMinY = new HyperPlane( new double[] { 0., 1. }, ly1 );
+		final HyperPlane hpMaxY = new HyperPlane( new double[] { 0., -1. }, -ly2 );
 
 		// Convex polytope from hyperplanes.
 		final ConvexPolytope polytope = new ConvexPolytope( hpMinX, hpMinY, hpMaxX, hpMaxY );

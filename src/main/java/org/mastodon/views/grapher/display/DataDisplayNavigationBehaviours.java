@@ -30,6 +30,7 @@ package org.mastodon.views.grapher.display;
 
 import java.awt.Color;
 import java.awt.Graphics;
+import java.util.Iterator;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import org.mastodon.collection.RefSet;
@@ -204,7 +205,9 @@ public class DataDisplayNavigationBehaviours implements TransformListener< Scree
 			}
 		}
 
-		focus.focusVertex( vs.iterator().next() );
+		final Iterator< DataVertex > it = vs.iterator();
+		if ( it.hasNext() )
+			focus.focusVertex( it.next() );
 
 		graph.releaseRef( vertexRef );
 
