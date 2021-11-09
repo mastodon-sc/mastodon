@@ -16,6 +16,7 @@ import org.mastodon.kdtree.KDTree;
 import org.mastodon.kdtree.NearestNeighborSearchOnKDTree;
 import org.mastodon.model.SelectionModel;
 import org.mastodon.pool.DoubleMappedElement;
+import org.mastodon.spatial.HasTimepoint;
 import org.mastodon.ui.coloring.GraphColorGenerator;
 import org.mastodon.views.grapher.SpecPair;
 import org.scijava.listeners.Listeners;
@@ -25,7 +26,7 @@ import net.imglib2.RealPoint;
 import net.imglib2.algorithm.kdtree.ConvexPolytope;
 import net.imglib2.algorithm.kdtree.HyperPlane;
 
-public class DataGraphLayout< V extends Vertex< E >, E extends Edge< V > >
+public class DataGraphLayout< V extends Vertex< E > & HasTimepoint, E extends Edge< V > >
 {
 
 	private final DataGraph< V, E > dataGraph;

@@ -53,11 +53,12 @@ import org.mastodon.pool.SingleArrayMemPool;
 import org.mastodon.pool.attributes.DoubleAttribute;
 import org.mastodon.pool.attributes.IndexAttribute;
 import org.mastodon.pool.attributes.IntAttribute;
+import org.mastodon.spatial.HasTimepoint;
 import org.mastodon.views.grapher.datagraph.wrap.ModelGraphProperties;
 import org.scijava.listeners.Listeners;
 
 public class DataGraph<
-		V extends Vertex< E >,
+		V extends Vertex< E > & HasTimepoint,
 		E extends Edge< V > >
 	extends GraphImp<
 				DataGraph.DataVertexPool,
@@ -358,7 +359,7 @@ public class DataGraph<
 		for ( final V v : modelGraph.vertices() )
 		{
 			final int id = idmap.getVertexId( v );
-			super.addVertex( tsv ).initModelId( id );
+			super.addVertex( tsv ).initModelId( id, v.getTimepoint() );
 			idToDataVertex.put( id, tsv );
 		}
 		for ( final E e : modelGraph.edges() )
@@ -375,7 +376,7 @@ public class DataGraph<
 	public void vertexAdded( final V vertex )
 	{
 		final int id = idmap.getVertexId( vertex );
-		super.addVertex( tsv ).initModelId( id );
+		super.addVertex( tsv ).initModelId( id, vertex.getTimepoint() );
 		idToDataVertex.put( id, tsv );
 	}
 
@@ -434,7 +435,7 @@ public class DataGraph<
 	static class DataVertexLayout extends AbstractVertexLayout
 	{
 		final IndexField origVertexIndex = indexField();
-		final IntField layoutTimeStamp = intField();
+		final IntField modelTimepoint = intField();
 		final IndexField layoutInEdgeIndex = indexField();
 		final DoubleField layoutX = doubleField();
 		final DoubleField layoutY = doubleField();
@@ -448,7 +449,7 @@ public class DataGraph<
 		final ModelGraphWrapper< ?, ? > modelGraphWrapper;
 
 		final IndexAttribute< DataVertex > origVertexIndex = new IndexAttribute<>( vertexLayout.origVertexIndex, this );
-		final IntAttribute< DataVertex > layoutTimeStamp = new IntAttribute<>( vertexLayout.layoutTimeStamp, this );
+		final IntAttribute< DataVertex > modelTimepoint = new IntAttribute<>( vertexLayout.modelTimepoint, this );
 		final IndexAttribute< DataVertex > layoutInEdgeIndex = new IndexAttribute<>( vertexLayout.layoutInEdgeIndex, this );
 		final DoubleAttribute< DataVertex > layoutX = new DoubleAttribute<>( vertexLayout.layoutX, this );
 		final DoubleAttribute< DataVertex > layoutY = new DoubleAttribute<>( vertexLayout.layoutY, this );

@@ -48,12 +48,12 @@ public class DataVertex extends AbstractVertex< DataVertex, DataEdge, DataVertex
 		setScreenVertexIndex( -1 );
 	}
 
-	DataVertex initModelId( final int modelVertexId )
+	DataVertex initModelId( final int modelVertexId, final int timepoint )
 	{
 		setModelVertexId( modelVertexId );
 		setLayoutX( Double.NaN );
 		setLayoutY( Double.NaN );
-		setLayoutTimestamp( -1 );
+		setTimepoint( timepoint );
 		setLayoutInEdgeIndex( 0 );
 		return this;
 	}
@@ -151,21 +151,14 @@ public class DataVertex extends AbstractVertex< DataVertex, DataEdge, DataVertex
 		pool.layoutX.setQuiet( this, x );
 	}
 
-	/**
-	 * Layout timestamp is set when this vertex is layouted (assigned a
-	 * {@link #getLayoutX() coordinate}). It is also used to mark active
-	 * vertices before a partial layout.
-	 *
-	 * @return layout timestamp.
-	 */
-	public int getLayoutTimestamp()
+	public int getTimepoint()
 	{
-		return pool.layoutTimeStamp.get( this );
+		return pool.modelTimepoint.get( this );
 	}
 
-	public void setLayoutTimestamp( final int timestamp )
+	public void setTimepoint( final int timepoint )
 	{
-		pool.layoutTimeStamp.setQuiet( this, timestamp );
+		pool.modelTimepoint.setQuiet( this, timepoint );
 	}
 
 	/**

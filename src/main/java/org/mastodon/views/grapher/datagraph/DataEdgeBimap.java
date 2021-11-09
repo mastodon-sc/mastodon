@@ -32,8 +32,9 @@ import org.mastodon.adapter.RefBimap;
 import org.mastodon.graph.Edge;
 import org.mastodon.graph.GraphIdBimap;
 import org.mastodon.graph.Vertex;
+import org.mastodon.spatial.HasTimepoint;
 
-public class DataEdgeBimap< V extends Vertex< E >, E extends Edge< V > >
+public class DataEdgeBimap< V extends Vertex< E > & HasTimepoint, E extends Edge< V > >
 		implements RefBimap< E, DataEdge >
 {
 	private final GraphIdBimap< V, E > idmap;
