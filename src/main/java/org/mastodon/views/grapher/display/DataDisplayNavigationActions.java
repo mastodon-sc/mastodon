@@ -54,40 +54,25 @@ import org.scijava.ui.behaviour.util.Actions;
  */
 public class DataDisplayNavigationActions
 {
+	
 	public static final String NAVIGATE_CHILD = "grapher navigate to child";
-
 	public static final String NAVIGATE_PARENT = "grapher navigate to parent";
-
 	public static final String NAVIGATE_LEFT = "grapher navigate left";
-
 	public static final String NAVIGATE_RIGHT = "grapher navigate right";
-
 	public static final String SELECT_NAVIGATE_CHILD = "grapher select navigate to child";
-
 	public static final String SELECT_NAVIGATE_PARENT = "grapher select navigate to parent";
-
 	public static final String SELECT_NAVIGATE_LEFT = "grapher select navigate left";
-
 	public static final String SELECT_NAVIGATE_RIGHT = "grapher select navigate right";
-
 	public static final String TOGGLE_FOCUS_SELECTION = "grapher toggle focus selection";
 
 	private static final String[] NAVIGATE_CHILD_KEYS = new String[] { "DOWN" };
-
 	private static final String[] NAVIGATE_PARENT_KEYS = new String[] { "UP" };
-
 	private static final String[] NAVIGATE_LEFT_KEYS = new String[] { "LEFT" };
-
 	private static final String[] NAVIGATE_RIGHT_KEYS = new String[] { "RIGHT" };
-
 	private static final String[] SELECT_NAVIGATE_CHILD_KEYS = new String[] { "shift DOWN" };
-
 	private static final String[] SELECT_NAVIGATE_PARENT_KEYS = new String[] { "shift UP" };
-
 	private static final String[] SELECT_NAVIGATE_LEFT_KEYS = new String[] { "shift LEFT" };
-
 	private static final String[] SELECT_NAVIGATE_RIGHT_KEYS = new String[] { "shift RIGHT" };
-
 	private static final String[] TOGGLE_FOCUS_SELECTION_KEYS = new String[] { "SPACE" };
 
 	/*
