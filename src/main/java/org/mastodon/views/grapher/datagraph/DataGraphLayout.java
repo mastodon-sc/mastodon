@@ -155,7 +155,7 @@ public class DataGraphLayout< V extends Vertex< E > & HasTimepoint, E extends Ed
 	{
 		final NearestNeighborSearchOnKDTree< ScreenVertex, DoubleMappedElement > search = new NearestNeighborSearchOnKDTree<>( screenKDtree );
 		final ScreenVertex sv = search.get();
-		return dataGraph.getVertexPool().getObject( sv.getDataVertexId(), ref );
+		return ( sv == null ) ? null : dataGraph.getVertexPool().getObject( sv.getDataVertexId(), ref );
 	}
 
 	/**
