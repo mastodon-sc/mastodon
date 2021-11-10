@@ -160,7 +160,7 @@ public class PaintDecorations
 			for ( int y = ystart; y <= yend; y = y + stepY )
 			{
 				// 1. Ticks.
-				final int yline = ( int ) ( ( y - minY ) * yScale ) + axesHeight;
+				final int yline = ( int ) screenTransform.layoutToScreenY( y ) + axesHeight;
 				g2.drawLine( axesWidth - tickWidth, yline, axesWidth - 1, yline );
 
 				// 2. Tick labels.
@@ -194,7 +194,7 @@ public class PaintDecorations
 
 			// Steps.
 			final int stepX = Math.max( 1, maxTickSpacing / ( int ) ( 1 + xScale ) );
-			int xstart = Math.max( 0, ( int ) minX - 1 );
+			int xstart = Math.max( 0, ( int ) minX - 1 ); // TODO not -1
 			xstart = ( xstart / stepX ) * stepX;
 			int xend = Math.max( 0, 1 + ( int ) maxX );
 			xend = ( 1 + xend / stepX ) * stepX;

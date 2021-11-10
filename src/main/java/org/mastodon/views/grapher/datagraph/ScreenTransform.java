@@ -54,19 +54,21 @@ import net.imglib2.realtransform.InvertibleRealTransform;
  *   screenHeight
  * </pre>
  * <p>
- * Layout coordinates:
- *
+ * Layout coordinates: CAREFUL: the Y coordinates is inverted so that we match
+ * the classical display of XY plots (min to max go from bottom to top of the
+ * screen).
+ * 
  * <pre>
- *      minY
+ *      maxY
  * minX +----------------------+ maxX
  *      |                      |
  *      |                      |
  *      |                      |
  *      +----------------------+
- *      maxY
+ *      minY
  * </pre>
  *
- * @author Tobias Pietzsch &lt;tobias.pietzsch@gmail.com&gt;
+ * @author Tobias Pietzsch
  */
 public class ScreenTransform implements InvertibleRealTransform, Concatenable< ScreenTransform >, PreConcatenable< ScreenTransform >
 {
@@ -317,7 +319,7 @@ public class ScreenTransform implements InvertibleRealTransform, Concatenable< S
 	 */
 	public double screenToLayoutY( final double y )
 	{
-		return minY + y / scaleY;
+		return minY + ( ( screenHeight - y ) / scaleY );
 	}
 
 	/**
@@ -341,7 +343,7 @@ public class ScreenTransform implements InvertibleRealTransform, Concatenable< S
 	 */
 	public double layoutToScreenY( final double y )
 	{
-		return ( y - minY ) * scaleY;
+		return screenHeight - ( ( y - minY ) * scaleY );
 	}
 
 	/**
@@ -435,7 +437,7 @@ public class ScreenTransform implements InvertibleRealTransform, Concatenable< S
 	 */
 	public void shiftY( final double dY )
 	{
-		final double lY = dY / scaleY;
+		final double lY = -dY / scaleY;
 		minY += lY;
 		maxY += lY;
 	}

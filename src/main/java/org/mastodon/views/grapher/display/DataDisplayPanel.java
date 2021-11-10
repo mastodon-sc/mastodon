@@ -297,9 +297,9 @@ public class DataDisplayPanel extends JPanel implements
 				if ( ignoreScrollBarChanges )
 					return;
 
-				final double s = yScrollBar.getValue() / yScrollScale;
+				final double s = layoutMaxY - ( yScrollBar.getValue() - yScrollBar.getMinimum() ) / yScrollScale;
 				final ScreenTransform t = screenTransform.get();
-				t.shiftLayoutY( s - t.getMinY() );
+				t.shiftLayoutY( ( s - t.getMaxY() ) );
 				screenTransform.set( t );
 
 				// TODO: probably this should be triggered in a listener to screenTransform:
@@ -426,10 +426,10 @@ public class DataDisplayPanel extends JPanel implements
 		final int xmin = ( int ) ( xScrollScale * ( layoutMinX - boundXLayoutBorder ) );
 		final int xmax = ( int ) ( xScrollScale * ( layoutMaxX + boundXLayoutBorder ) );
 		yScrollScale = 10000.0 / ( layoutMaxY - layoutMinY + 2 );
-		final int yval = ( int ) ( yScrollScale * t.getMinY() );
-		final int yext = ( int ) ( yScrollScale * ( t.getMaxY() - t.getMinY() ) );
 		final int ymin = ( int ) ( yScrollScale * ( layoutMinY - boundYLayoutBorder ) );
 		final int ymax = ( int ) ( yScrollScale * ( layoutMaxY + boundYLayoutBorder ) );
+		final int yext = ( int ) ( yScrollScale * ( t.getMaxY() - t.getMinY() ) );
+		final int yval = ymin + ( int ) ( yScrollScale * ( layoutMaxY - t.getMaxY() ) );
 		ignoreScrollBarChanges = true;
 		xScrollBar.setValues( xval, xext, xmin, xmax );
 		yScrollBar.setValues( yval, yext, ymin, ymax );
@@ -846,7 +846,9 @@ public class DataDisplayPanel extends JPanel implements
 				interpolator = new ScreenEntitiesInterpolator(
 						screenEntitiesIpStart,
 						screenEntitiesIpEnd,
-						ScreenEntitiesInterpolator.getIncrementalY( screenEntitiesIpStart, screenEntitiesIpEnd ) );
+						null );
+				// TODO understand how to use this:
+//						ScreenEntitiesInterpolator.getIncrementalXY( screenEntitiesIpStart, screenEntitiesIpEnd ) );
 			}
 			else
 			{
