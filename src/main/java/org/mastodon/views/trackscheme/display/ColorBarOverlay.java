@@ -58,9 +58,9 @@ public class ColorBarOverlay implements OverlayRenderer
 
 	private static final int DEFAULT_WIDTH = 70;
 
-	private static final int X_CORNER_SPACE = 40;
+	private static final int X_CORNER_SPACE = 10 + 5; // 5 for the border
 
-	private static final int Y_CORNER_SPACE = 5;
+	private static final int Y_CORNER_SPACE = 10 + 15;
 
 	private static final int COLORBARS_SPACING = 10;
 
@@ -70,7 +70,7 @@ public class ColorBarOverlay implements OverlayRenderer
 
 	private static final String BOTH_HEADER = "V/E";
 
-	private final static int INSET = 5;
+	private static final int INSET = 5;
 
 	/**
 	 * Specifies the {@link ColorBarOverlay} position in the display.
@@ -98,28 +98,28 @@ public class ColorBarOverlay implements OverlayRenderer
 			return str;
 		}
 
-		public int xOrigin( final int canvasWidth, final int barWidth )
+		public int xOrigin( final int canvasWidth, final int barWidth, final int xLeftOffset )
 		{
 			switch ( this )
 			{
 			default:
 			case BOTTOM_LEFT:
 			case TOP_LEFT:
-				return X_CORNER_SPACE;
+				return X_CORNER_SPACE + xLeftOffset;
 			case BOTTOM_RIGHT:
 			case TOP_RIGHT:
 				return canvasWidth - barWidth - X_CORNER_SPACE;
 			}
 		}
 
-		public int yOrigin( final int canvasHeight, final int barHeight )
+		public int yOrigin( final int canvasHeight, final int barHeight, final int yTopOffset )
 		{
 			switch ( this )
 			{
 			default:
 			case TOP_LEFT:
 			case TOP_RIGHT:
-				return X_CORNER_SPACE;
+				return Y_CORNER_SPACE + yTopOffset;
 			case BOTTOM_LEFT:
 			case BOTTOM_RIGHT:
 				return canvasHeight - barHeight - Y_CORNER_SPACE;
@@ -136,6 +136,10 @@ public class ColorBarOverlay implements OverlayRenderer
 	private int canvasWidth;
 
 	private int canvasHeight;
+
+	private int xLeftOffset = 0;
+
+	private int yTopOffset = 0;
 
 	private boolean visible = DEFAULT_VISIBLE;
 
@@ -172,8 +176,8 @@ public class ColorBarOverlay implements OverlayRenderer
 	{
 		final int totalWidth = totalWidth( tagSet, g );
 		final int totalHeight = totalHeight( tagSet, g );
-		int x = position.xOrigin( canvasWidth, totalWidth );
-		final int y = position.yOrigin( canvasHeight, totalHeight );
+		int x = position.xOrigin( canvasWidth, totalWidth, xLeftOffset );
+		int y = position.yOrigin( canvasHeight, totalHeight, yTopOffset );
 		final FontMetrics fm = g.getFontMetrics();
 		final int height = fm.getHeight();
 
@@ -185,17 +189,18 @@ public class ColorBarOverlay implements OverlayRenderer
 				x - INSET,
 				y - INSET - totalHeight / 3,
 				totalWidth + 2 * INSET,
-				totalHeight + 2 * INSET );
+				( int ) ( totalHeight + 1.66 * INSET ) );
 		g.setColor( lineColor );
 		g.drawRect(
 				x - INSET,
 				y - INSET - totalHeight / 3,
 				totalWidth + 2 * INSET,
-				totalHeight + 2 * INSET );
+				( int ) ( totalHeight + 1.66 * INSET ) );
 
 		g.setColor( Color.BLACK );
 		g.drawString( tagSet.getName(), x, y );
 
+		y += 2;
 		for ( final Tag tag : tagSet.getTags() )
 		{
 			g.setColor( new Color( tag.color(), true ) );
@@ -223,8 +228,8 @@ public class ColorBarOverlay implements OverlayRenderer
 
 	private void draw( final FeatureColorMode featureColorMode, final Graphics g )
 	{
-		final int x = position.xOrigin( canvasWidth, totalWidth( featureColorMode, g ) );
-		final int y = position.yOrigin( canvasHeight, totalHeight( featureColorMode, g ) );
+		final int x = position.xOrigin( canvasWidth, totalWidth( featureColorMode, g ), xLeftOffset );
+		final int y = position.yOrigin( canvasHeight, totalHeight( featureColorMode, g ), yTopOffset );
 		final String vertexColorMap = featureColorMode.getVertexColorMap();
 		final String vertexProjectionKey = toString( featureColorMode.getVertexFeatureProjection() );
 		final double vertexRangeMin = featureColorMode.getVertexRangeMin();
@@ -423,5 +428,15 @@ public class ColorBarOverlay implements OverlayRenderer
 	public void setPosition( final Position position )
 	{
 		this.position = position;
+	}
+
+	public void setLeftXOffset( final int xLeftOffset )
+	{
+		this.xLeftOffset = xLeftOffset;
+	}
+
+	public void setTopYOffset( final int yTopOffset )
+	{
+		this.yTopOffset = yTopOffset;
 	}
 }
