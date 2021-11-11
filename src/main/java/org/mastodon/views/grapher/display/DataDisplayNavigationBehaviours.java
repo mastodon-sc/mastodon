@@ -448,12 +448,7 @@ public class DataDisplayNavigationBehaviours implements TransformListener< Scree
 				lock.readLock().lock();
 				try
 				{
-					selectWithin(
-							oX - headerWidth,
-							oY - headerHeight,
-							eX - headerWidth,
-							eY - headerHeight,
-							addToSelection );
+					selectWithin( oX, oY, eX, eY, addToSelection );
 				}
 				finally
 				{
