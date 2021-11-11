@@ -91,11 +91,11 @@ public class DataDisplayZoom< V extends Vertex< E > & HasTimepoint, E extends Ed
 
 		// Create and register overlay.
 		zoom.transformChanged( panel.getScreenTransform().get() );
-		zoom.updateAxesSize( panel.getOffsetHeaders().getWidth(), panel.getOffsetHeaders().getHeight() );
+		zoom.updateAxesSize( panel.getOffsetAxes().getWidth(), panel.getOffsetAxes().getHeight() );
 		// put the overlay first, so that is below the graph rendering.
 		panel.getDisplay().overlays().add( zoom.overlay );
 		panel.getScreenTransform().listeners().add( zoom );
-		panel.getOffsetHeaders().listeners().add( zoom );
+		panel.getOffsetAxes().listeners().add( zoom );
 
 		behaviours.namedBehaviour( zoom, TOGGLE_ZOOM_KEYS );
 	}

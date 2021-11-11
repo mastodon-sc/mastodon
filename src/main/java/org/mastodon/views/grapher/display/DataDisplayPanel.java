@@ -716,8 +716,7 @@ public class DataDisplayPanel extends JPanel implements
 		return display;
 	}
 
-	// TODO remove??? revise DataPanel / DataFrame construction.
-	protected OffsetAxes getOffsetHeaders()
+	public OffsetAxes getOffsetAxes()
 	{
 		return offsetAxes;
 	}

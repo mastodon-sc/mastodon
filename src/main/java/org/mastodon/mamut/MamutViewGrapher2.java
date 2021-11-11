@@ -83,7 +83,9 @@ import org.mastodon.views.grapher.display.DataDisplayFrame;
 import org.mastodon.views.grapher.display.DataDisplayOptions;
 import org.mastodon.views.grapher.display.DataDisplayPanel;
 import org.mastodon.views.grapher.display.DataDisplayZoom;
+import org.mastodon.views.grapher.display.OffsetAxes;
 import org.mastodon.views.grapher.display.style.DataDisplayStyle;
+import org.mastodon.views.trackscheme.display.ColorBarOverlay;
 import org.mastodon.views.trackscheme.display.TrackSchemeNavigationActions;
 import org.scijava.ui.behaviour.KeyPressedManager;
 
@@ -251,6 +253,15 @@ public class MamutViewGrapher2 extends MamutView< DataGraph< Spot, Link >, DataV
 				() -> dataDisplayPanel.entitiesAttributesChanged() );
 		registerTagSetMenu( tagSetMenuHandle,
 				() -> dataDisplayPanel.entitiesAttributesChanged() );
+		final ColorBarOverlay colorBarOverlay = new ColorBarOverlay( coloringModel, () -> dataDisplayPanel.getBackground() );
+		final OffsetAxes offset = dataDisplayPanel.getOffsetAxes();
+		offset.listeners().add( ( w, h ) -> {
+			colorBarOverlay.setLeftXOffset(  w );
+			// Because *for now* we paint the axis at the top:
+			colorBarOverlay.setTopYOffset( h );
+		} );
+		registerColorbarOverlay( colorBarOverlay, colorbarMenuHandle,
+				() -> dataDisplayPanel.repaint() );
 
 		// Listen to label changes.
 		model.getGraph().addVertexLabelListener( v -> dataDisplayPanel.entitiesAttributesChanged() );
@@ -291,6 +302,7 @@ public class MamutViewGrapher2 extends MamutView< DataGraph< Spot, Link >, DataV
 				}
 			}
 		}
+		dataDisplayPanel.getDisplay().overlays().add( colorBarOverlay );
 
 		layout.layout();
 		frame.setVisible( true );
