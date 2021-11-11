@@ -661,7 +661,7 @@ public class DataDisplayStyle implements Style< DataDisplayStyle >
 
 	public interface UpdateListener
 	{
-		void trackSchemeStyleChanged();
+		void dataGraphStyleChanged();
 	}
 
 	private final Listeners.List< UpdateListener > updateListeners;
@@ -722,7 +722,7 @@ public class DataDisplayStyle implements Style< DataDisplayStyle >
 
 	private void notifyListeners()
 	{
-		updateListeners.listCopy().forEach( UpdateListener::trackSchemeStyleChanged );
+		updateListeners.listCopy().forEach( UpdateListener::dataGraphStyleChanged );
 	}
 
 	public Listeners< UpdateListener > updateListeners()

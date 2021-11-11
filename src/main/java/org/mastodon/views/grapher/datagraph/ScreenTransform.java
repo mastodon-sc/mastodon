@@ -35,7 +35,7 @@ import net.imglib2.concatenate.PreConcatenable;
 import net.imglib2.realtransform.InvertibleRealTransform;
 
 /**
- * A transformation from trackscheme layout coordinates to screen coordinates.
+ * A transformation from data graph layout coordinates to screen coordinates.
  * <p>
  * It is defined by a bounding box in layout coordinates, and the size of the
  * screen that this should be mapped to. The forward direction of this transform

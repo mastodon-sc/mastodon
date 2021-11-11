@@ -48,13 +48,9 @@ public class ScreenEntities
 
 	private final ScreenEdgePool edgePool;
 
-	private final ScreenVertexRangePool rangePool;
-
 	private final RefArrayList< ScreenVertex > vertices;
 
 	private final RefArrayList< ScreenEdge > edges;
-
-	private final RefArrayList< ScreenVertexRange > ranges;
 
 	/**
 	 * transform used to generate these {@link ScreenEntities}
@@ -72,8 +68,6 @@ public class ScreenEntities
 		vertices = new RefArrayList<>( vertexPool, initialCapacity );
 		edgePool = new ScreenEdgePool( initialCapacity );
 		edges = new RefArrayList<>( edgePool, initialCapacity );
-		rangePool = new ScreenVertexRangePool( initialCapacity );
-		ranges = new RefArrayList<>( rangePool, initialCapacity );
 		screenTransform = new ScreenTransform();
 	}
 
@@ -85,11 +79,6 @@ public class ScreenEntities
 	public RefList< ScreenEdge > getEdges()
 	{
 		return edges;
-	}
-
-	public RefList< ScreenVertexRange > getRanges()
-	{
-		return ranges;
 	}
 
 	public void getScreenTransform( final ScreenTransform t )
@@ -107,11 +96,6 @@ public class ScreenEntities
 		return edgePool;
 	}
 
-	ScreenVertexRangePool getRangePool()
-	{
-		return rangePool;
-	}
-
 	ScreenTransform screenTransform()
 	{
 		return screenTransform;
@@ -123,8 +107,6 @@ public class ScreenEntities
 		vertices.resetQuick();
 		edgePool.clear();
 		edges.resetQuick();
-		rangePool.clear();
-		ranges.resetQuick();
 	}
 
 	public void set( final ScreenEntities ent )
@@ -140,11 +122,6 @@ public class ScreenEntities
 		for ( final ScreenEdge e : ent.getEdges() )
 			edges.add( edgePool.create( eRef ).cloneFrom( e ) );
 		edgePool.releaseRef( eRef );
-
-		final ScreenVertexRange rRef = rangePool.createRef();
-		for ( final ScreenVertexRange r : ent.getRanges() )
-			ranges.add( rangePool.create( rRef ).cloneFrom( r ) );
-		rangePool.releaseRef( rRef );
 
 		screenTransform().set( ent.screenTransform );
 	}

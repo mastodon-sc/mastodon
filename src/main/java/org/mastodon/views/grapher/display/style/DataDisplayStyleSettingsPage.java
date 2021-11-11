@@ -47,10 +47,10 @@ import org.scijava.listeners.Listeners;
 public class DataDisplayStyleSettingsPage extends SelectAndEditProfileSettingsPage< StyleProfile< DataDisplayStyle > >
 {
 	/**
-	 * Creates a new settings page for TrackScheme styles.
+	 * Creates a new settings page for grapher styles.
 	 *
 	 * @param treePath
-	 * 		path of this page in the settings tree.
+	 *            path of this page in the settings tree.
 	 * @param styleManager
 	 *            the style manager.
 	 */
@@ -59,10 +59,10 @@ public class DataDisplayStyleSettingsPage extends SelectAndEditProfileSettingsPa
 		super(
 				treePath,
 				new StyleProfileManager<>( styleManager, new DataDisplayStyleManager( false ) ),
-				new TrackSchemeProfileEditPanel( styleManager.getDefaultStyle() ) );
+				new DataGraphProfileEditPanel( styleManager.getDefaultStyle() ) );
 	}
 
-	static class TrackSchemeProfileEditPanel implements DataDisplayStyle.UpdateListener, SelectAndEditProfileSettingsPage.ProfileEditPanel< StyleProfile< DataDisplayStyle > >
+	static class DataGraphProfileEditPanel implements DataDisplayStyle.UpdateListener, SelectAndEditProfileSettingsPage.ProfileEditPanel< StyleProfile< DataDisplayStyle > >
 	{
 		private final Listeners.SynchronizedList< ModificationListener > modificationListeners;
 
@@ -70,7 +70,7 @@ public class DataDisplayStyleSettingsPage extends SelectAndEditProfileSettingsPa
 
 		private final DataDisplayStyleEditorPanel styleEditorPanel;
 
-		public TrackSchemeProfileEditPanel( final DataDisplayStyle initialStyle )
+		public DataGraphProfileEditPanel( final DataDisplayStyle initialStyle )
 		{
 			editedStyle = initialStyle.copy( "Edited" );
 			styleEditorPanel = new DataDisplayStyleEditorPanel( editedStyle );
@@ -81,7 +81,7 @@ public class DataDisplayStyleSettingsPage extends SelectAndEditProfileSettingsPa
 		private boolean trackModifications = true;
 
 		@Override
-		public void trackSchemeStyleChanged()
+		public void dataGraphStyleChanged()
 		{
 			if ( trackModifications )
 				modificationListeners.list.forEach( ModificationListener::modified );
@@ -122,7 +122,7 @@ public class DataDisplayStyleSettingsPage extends SelectAndEditProfileSettingsPa
 		final DataDisplayStyleManager styleManager = new DataDisplayStyleManager();
 
 		final SettingsPanel settings = new SettingsPanel();
-		settings.addPage( new DataDisplayStyleSettingsPage( "Style > TrackScheme", styleManager ) );
+		settings.addPage( new DataDisplayStyleSettingsPage( "Style > Grapher", styleManager ) );
 
 		final JDialog dialog = new JDialog( ( Frame ) null, "Settings" );
 		dialog.getContentPane().add( settings, BorderLayout.CENTER );

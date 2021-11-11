@@ -33,11 +33,12 @@ import org.mastodon.graph.ref.AbstractVertex;
 import org.mastodon.model.HasLabel;
 import org.mastodon.pool.ByteMappedElement;
 import org.mastodon.pool.PoolObject;
+import org.mastodon.spatial.HasTimepoint;
 import org.mastodon.views.grapher.datagraph.DataGraph.DataVertexPool;
 
 import net.imglib2.RealLocalizable;
 
-public class DataVertex extends AbstractVertex< DataVertex, DataEdge, DataVertexPool, ByteMappedElement > implements HasLabel, RealLocalizable
+public class DataVertex extends AbstractVertex< DataVertex, DataEdge, DataVertexPool, ByteMappedElement > implements HasLabel, HasTimepoint, RealLocalizable
 {
 	final ModelGraphWrapper< ?, ? >.ModelVertexWrapper modelVertex;
 
@@ -115,6 +116,16 @@ public class DataVertex extends AbstractVertex< DataVertex, DataEdge, DataVertex
 		modelVertex.setLabel( label );
 	}
 
+	public double getLayoutX()
+	{
+		return pool.layoutX.get( this );
+	}
+
+	protected void setLayoutX( final double x )
+	{
+		pool.layoutX.setQuiet( this, x );
+	}
+
 	public double getLayoutY()
 	{
 		return pool.layoutY.get( this );
@@ -123,6 +134,17 @@ public class DataVertex extends AbstractVertex< DataVertex, DataEdge, DataVertex
 	protected void setLayoutY( final double y )
 	{
 		pool.layoutY.setQuiet( this, y );
+	}
+
+	@Override
+	public int getTimepoint()
+	{
+		return pool.modelTimepoint.get( this );
+	}
+
+	public void setTimepoint( final int timepoint )
+	{
+		pool.modelTimepoint.setQuiet( this, timepoint );
 	}
 
 	/**
@@ -139,41 +161,6 @@ public class DataVertex extends AbstractVertex< DataVertex, DataEdge, DataVertex
 	protected void setScreenVertexIndex( final int screenVertexIndex )
 	{
 		pool.screenVertexIndex.setQuiet( this, screenVertexIndex );
-	}
-
-	public double getLayoutX()
-	{
-		return pool.layoutX.get( this );
-	}
-
-	protected void setLayoutX( final double x )
-	{
-		pool.layoutX.setQuiet( this, x );
-	}
-
-	public int getTimepoint()
-	{
-		return pool.modelTimepoint.get( this );
-	}
-
-	public void setTimepoint( final int timepoint )
-	{
-		pool.modelTimepoint.setQuiet( this, timepoint );
-	}
-
-	/**
-	 * internal pool index of first (and only) edge through which this vertex
-	 * was touched in last layout.
-	 * <p>
-	 * TODO: REMOVE? This is not be needed because VertexOrder is built directly
-	 * during layout now.
-	 *
-	 * @return internal pool index of first (and only) edge through which this
-	 *         vertex was touched in last layout.
-	 */
-	protected int getLayoutInEdgeIndex()
-	{
-		return pool.layoutInEdgeIndex.get( this );
 	}
 
 	protected void setLayoutInEdgeIndex( final int index )

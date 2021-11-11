@@ -36,6 +36,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import org.mastodon.collection.RefList;
 import org.mastodon.model.FocusModel;
 import org.mastodon.model.HighlightModel;
+import org.mastodon.util.GeometryUtil;
 import org.mastodon.views.grapher.datagraph.DataEdge;
 import org.mastodon.views.grapher.datagraph.DataGraph;
 import org.mastodon.views.grapher.datagraph.DataVertex;
@@ -175,9 +176,6 @@ public class DataDisplayOverlay implements OverlayRenderer, OffsetAxesListener
 	 * tolerance.
 	 * <p>
 	 * This method exists to facilitate writing mouse handlers.
-	 * <p>
-	 * Note that this really only looks at edges that are individually painted
-	 * on the screen. Edges inside dense ranges are ignored.
 	 *
 	 * @param x
 	 *            the x screen coordinate
@@ -203,7 +201,7 @@ public class DataDisplayOverlay implements OverlayRenderer, OffsetAxesListener
 			{
 				vertices.get( e.getSourceScreenVertexIndex(), vs );
 				vertices.get( e.getTargetScreenVertexIndex(), vt );
-				if ( paintGraph.distanceToPaintedEdge( x, y, e, vs, vt ) <= tolerance )
+				if ( distanceToPaintedEdge( x, y, e, vs, vt ) <= tolerance )
 				{
 					i = e.getDataEdgeId();
 					break;
@@ -380,5 +378,35 @@ public class DataDisplayOverlay implements OverlayRenderer, OffsetAxesListener
 					new PaintGraph(),
 					options );
 		}
+	}
+
+	/**
+	 * Returns the distance from a <b>screen</b> position to a specified edge.
+	 *
+	 * @param x
+	 *            the x screen coordinate
+	 * @param y
+	 *            the y screen coordinate
+	 * @param edge
+	 *            the edge.
+	 * @param source
+	 *            the edge source vertex.
+	 * @param target
+	 *            the edge target vertex.
+	 * @return the distance from the specified position to the edge.
+	 */
+	private static final double distanceToPaintedEdge(
+			final double x,
+			final double y,
+			final ScreenEdge edge,
+			final ScreenVertex source,
+			final ScreenVertex target )
+	{
+		final double x1 = source.getX();
+		final double y1 = source.getY();
+		final double x2 = target.getX();
+		final double y2 = target.getY();
+		final double d = GeometryUtil.segmentDist( x, y, x1, y1, x2, y2 );
+		return d;
 	}
 }

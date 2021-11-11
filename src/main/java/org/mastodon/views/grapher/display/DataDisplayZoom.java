@@ -51,7 +51,7 @@ import bdv.viewer.OverlayRenderer;
 import bdv.viewer.TransformListener;
 
 /**
- * Drag behaviour that implements a zoom rectangle in TrackScheme.
+ * Drag behaviour that implements a zoom rectangle in a grapher view.
  *
  * @author Jean-Yves Tinevez
  * @param <V>

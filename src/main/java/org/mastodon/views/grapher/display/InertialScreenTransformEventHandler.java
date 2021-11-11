@@ -40,7 +40,6 @@ import org.mastodon.views.grapher.datagraph.ScreenTransform;
 import org.mastodon.views.grapher.display.OffsetAxes.OffsetAxesListener;
 import org.mastodon.views.grapher.display.animate.InertialScreenTransformAnimator;
 import org.mastodon.views.grapher.display.animate.InterpolateScreenTransformAnimator;
-import org.mastodon.views.trackscheme.LineageTreeLayout;
 import org.mastodon.views.trackscheme.display.animate.AbstractTransformAnimator;
 import org.scijava.plugin.Plugin;
 import org.scijava.ui.behaviour.DragBehaviour;
@@ -76,7 +75,7 @@ public class InertialScreenTransformEventHandler
 	{
 		public Descriptions()
 		{
-			super( KeyConfigContexts.TRACKSCHEME );
+			super( KeyConfigContexts.GRAPHER );
 		}
 
 		@Override
@@ -158,10 +157,6 @@ public class InertialScreenTransformEventHandler
 	/**
 	 * Current boundaries to enforce for the transform.
 	 *
-	 * See {@link #layoutChanged(LineageTreeLayout)} and
-	 * {@link #setLayoutRangeY(double, double)} for computation of the X and Y
-	 * range, respectively.
-	 *
 	 * See
 	 * {@link ConstrainScreenTransform#constrainTransform(ScreenTransform, double, double, double, double, double, double, double, double, double, double, double, double)}
 	 * for details on enforcing transform boundaries.
@@ -194,8 +189,8 @@ public class InertialScreenTransformEventHandler
 	private int headerHeight;
 
 	/**
-	 * Whether the transform should stay fully zoomed out in X when the
-	 * {@link #layoutChanged(LineageTreeLayout) layout changes}.
+	 * Whether the transform should stay fully zoomed out in X when the layout
+	 * changes.
 	 */
 	private boolean stayFullyZoomedOut;
 
@@ -217,7 +212,7 @@ public class InertialScreenTransformEventHandler
 	{
 		this.transformState = transformState;
 
-		timer = new Timer( "TrackScheme transform animation", true );
+		timer = new Timer( "Grapher transform animation", true );
 		currentTimerTask = null;
 
 		translateDragBehaviour = new TranslateDragBehaviour();
@@ -411,7 +406,6 @@ public class InertialScreenTransformEventHandler
 		{
 			final ScreenTransform transform = transformState.get();
 
-			// TODO: Revise?
 			//  This seems a quite noisy way to estimate current motion speed.
 			//  Instead, it would be better to average over dXY/dt over last few updates?
 			final long t = System.currentTimeMillis();

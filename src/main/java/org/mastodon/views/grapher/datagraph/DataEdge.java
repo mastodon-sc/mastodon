@@ -54,8 +54,8 @@ public class DataEdge extends AbstractEdge< DataEdge, DataVertex, DataEdgePool, 
 	 * Initialize a new {@link DataEdge}
 	 * <p>
 	 * Fake {@code init()} constructor. Although it does nothing, it is good
-	 * practice to call it when adding a new {@code TrackSchemeEdge}, because
-	 * eventually it might do something...
+	 * practice to call it when adding a new data edge, because eventually it
+	 * might do something...
 	 * </p>
 	 *
 	 * @return this {@link DataEdge}

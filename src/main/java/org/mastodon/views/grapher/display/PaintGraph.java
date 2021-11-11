@@ -40,11 +40,9 @@ import java.awt.font.TextLayout;
 import java.awt.geom.Rectangle2D;
 
 import org.mastodon.collection.RefList;
-import org.mastodon.util.GeometryUtil;
 import org.mastodon.views.grapher.datagraph.ScreenEdge;
 import org.mastodon.views.grapher.datagraph.ScreenEntities;
 import org.mastodon.views.grapher.datagraph.ScreenVertex;
-import org.mastodon.views.grapher.datagraph.ScreenVertexRange;
 import org.mastodon.views.grapher.display.style.DataDisplayStyle;
 import org.mastodon.views.trackscheme.ScreenVertex.Transition;
 
@@ -93,7 +91,6 @@ public class PaintGraph
 
 		final RefList< ScreenEdge > edges = entities.getEdges();
 		final RefList< ScreenVertex > vertices = entities.getVertices();
-		final RefList< ScreenVertexRange > vertexRanges = entities.getRanges();
 
 		final ScreenVertex vt = vertices.createRef();
 		final ScreenVertex vs = vertices.createRef();
@@ -108,43 +105,10 @@ public class PaintGraph
 
 		beforeDrawVertices();
 		for ( final ScreenVertex vertex : vertices )
-		{
 			drawVertex( vertex );
-		}
-
-		beforeDrawVertexRanges();
-		for ( final ScreenVertexRange range : vertexRanges )
-		{
-			drawVertexRange( range );
-		}
 
 		vertices.releaseRef( vs );
 		vertices.releaseRef( vt );
-	}
-
-	/**
-	 * Returns the distance from a <b>screen</b> position to a specified edge.
-	 *
-	 * @param x
-	 *            the x screen coordinate
-	 * @param y
-	 *            the y screen coordinate
-	 * @param edge
-	 *            the edge.
-	 * @param source
-	 *            the edge source vertex.
-	 * @param target
-	 *            the edge target vertex.
-	 * @return the distance from the specified position to the edge.
-	 */
-	public double distanceToPaintedEdge( final double x, final double y, final ScreenEdge edge, final ScreenVertex source, final ScreenVertex target )
-	{
-		final double x1 = source.getX();
-		final double y1 = source.getY();
-		final double x2 = target.getX();
-		final double y2 = target.getY();
-		final double d = GeometryUtil.segmentDist( x, y, x1, y1, x2, y2 );
-		return d;
 	}
 
 	/**
@@ -202,29 +166,6 @@ public class PaintGraph
 			drawVertexSimplified( vertex );
 		else
 			drawVertexSimplifiedIfHighlighted( vertex );
-	}
-
-	/**
-	 * Configures the graphics object prior to drawing vertex ranges.
-	 */
-	protected void beforeDrawVertexRanges()
-	{
-		g2.setColor( style.getVertexRangeColor() );
-	}
-
-	/**
-	 * Paints the specified vertex range.
-	 *
-	 * @param range
-	 *            the vertex range to paint.
-	 */
-	protected void drawVertexRange( final ScreenVertexRange range )
-	{
-		final int x = ( int ) range.getMinX();
-		final int y = ( int ) range.getMinY();
-		final int w = ( int ) range.getMaxX() - x;
-		final int h = ( int ) range.getMaxY() - y;
-		g2.fillRect( x, y, w, h );
 	}
 
 	/**

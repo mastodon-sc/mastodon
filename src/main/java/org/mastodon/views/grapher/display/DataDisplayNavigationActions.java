@@ -45,7 +45,7 @@ import org.scijava.plugin.Plugin;
 import org.scijava.ui.behaviour.util.Actions;
 
 /**
- * Keyboard navigation actions in TrackScheme. Supports two flavours:
+ * Keyboard navigation actions in a grapher view. Supports two flavours:
  * {@link NavigatorEtiquette#FINDER_LIKE} and
  * {@link NavigatorEtiquette#MIDNIGHT_COMMANDER_LIKE}.
  *

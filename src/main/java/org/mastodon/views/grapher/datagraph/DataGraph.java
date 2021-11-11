@@ -37,7 +37,6 @@ import org.mastodon.collection.IntRefMap;
 import org.mastodon.collection.ref.IntRefArrayMap;
 import org.mastodon.graph.Edge;
 import org.mastodon.graph.GraphChangeListener;
-import org.mastodon.graph.GraphChangeNotifier;
 import org.mastodon.graph.GraphIdBimap;
 import org.mastodon.graph.GraphListener;
 import org.mastodon.graph.ListenableReadOnlyGraph;
@@ -47,6 +46,7 @@ import org.mastodon.graph.ref.AbstractEdgePool.AbstractEdgeLayout;
 import org.mastodon.graph.ref.AbstractVertexPool;
 import org.mastodon.graph.ref.AbstractVertexPool.AbstractVertexLayout;
 import org.mastodon.graph.ref.GraphImp;
+import org.mastodon.model.HasLabel;
 import org.mastodon.pool.ByteMappedElement;
 import org.mastodon.pool.ByteMappedElementArray;
 import org.mastodon.pool.SingleArrayMemPool;
@@ -54,22 +54,19 @@ import org.mastodon.pool.attributes.DoubleAttribute;
 import org.mastodon.pool.attributes.IndexAttribute;
 import org.mastodon.pool.attributes.IntAttribute;
 import org.mastodon.spatial.HasTimepoint;
-import org.mastodon.views.grapher.datagraph.wrap.ModelGraphProperties;
 import org.scijava.listeners.Listeners;
 
 public class DataGraph<
-		V extends Vertex< E > & HasTimepoint,
+		V extends Vertex< E > & HasTimepoint & HasLabel,
 		E extends Edge< V > >
 	extends GraphImp<
 				DataGraph.DataVertexPool,
 				DataGraph.DataEdgePool,
 				DataVertex, DataEdge, ByteMappedElement >
-	implements GraphListener< V, E >, GraphChangeNotifier, GraphChangeListener, ViewGraph< V, E, DataVertex, DataEdge >
+	implements GraphListener< V, E >, GraphChangeListener, ViewGraph< V, E, DataVertex, DataEdge >
 {
 
 	final ListenableReadOnlyGraph< V, E > modelGraph;
-
-	private final ModelGraphProperties< V, E > modelGraphProperties;
 
 	private final ReentrantReadWriteLock lock;
 
@@ -100,15 +97,12 @@ public class DataGraph<
 	 *            the model graph to wrap.
 	 * @param idmap
 	 *            the bidirectional id map of the model graph.
-	 * @param modelGraphProperties
-	 *            an accessor for properties of the model graph.
 	 */
 	public DataGraph(
 			final ListenableReadOnlyGraph< V, E > modelGraph,
-			final GraphIdBimap< V, E > idmap,
-			final ModelGraphProperties< V, E > modelGraphProperties )
+			final GraphIdBimap< V, E > idmap )
 	{
-		this( modelGraph, idmap, modelGraphProperties, new ReentrantReadWriteLock() );
+		this( modelGraph, idmap, new ReentrantReadWriteLock() );
 	}
 
 	/**
@@ -118,18 +112,15 @@ public class DataGraph<
 	 *            the model graph to wrap.
 	 * @param idmap
 	 *            the bidirectional id map of the model graph.
-	 * @param modelGraphProperties
-	 *            an accessor for properties of the model graph.
 	 * @param lock
 	 *            read/write locks for the model graph
 	 */
 	public DataGraph(
 			final ListenableReadOnlyGraph< V, E > modelGraph,
 			final GraphIdBimap< V, E > idmap,
-			final ModelGraphProperties< V, E > modelGraphProperties,
 			final ReentrantReadWriteLock lock )
 	{
-		this( modelGraph, idmap, modelGraphProperties, lock, 10000 );
+		this( modelGraph, idmap, lock, 10000 );
 	}
 
 	/**
@@ -141,8 +132,6 @@ public class DataGraph<
 	 *            the model graph to wrap.
 	 * @param idmap
 	 *            the bidirectional id map of the model graph.
-	 * @param modelGraphProperties
-	 *            an accessor for properties of the model graph.
 	 * @param lock
 	 *            read/write locks for the model graph
 	 * @param initialCapacity
@@ -151,17 +140,14 @@ public class DataGraph<
 	public DataGraph(
 			final ListenableReadOnlyGraph< V, E > modelGraph,
 			final GraphIdBimap< V, E > idmap,
-			final ModelGraphProperties< V, E > modelGraphProperties,
 			final ReentrantReadWriteLock lock,
 			final int initialCapacity )
 	{
 		super( new DataEdgePool(
 				initialCapacity,
-				new DataVertexPool(
-						initialCapacity,
-						new ModelGraphWrapper<>( idmap, modelGraphProperties ) ) ) );
+				new DataVertexPool( initialCapacity,
+						new ModelGraphWrapper<>( idmap ) ) ) );
 		this.modelGraph = modelGraph;
-		this.modelGraphProperties = modelGraphProperties;
 		this.lock = lock;
 		this.idmap = idmap;
 		idToDataVertex = new IntRefArrayMap<>( vertexPool );
@@ -309,30 +295,13 @@ public class DataGraph<
 	@Override
 	public void remove( final DataVertex vertex )
 	{
-		modelGraphProperties.removeVertex( vertexMap.getLeft( vertex ) );
+		throw new UnsupportedOperationException();
 	}
 
 	@Override
 	public void remove( final DataEdge edge )
 	{
-		modelGraphProperties.removeEdge( edgeMap.getLeft( edge ) );
-	}
-
-	/*
-	 * GraphChangeNotifier
-	 */
-
-	/**
-	 * Triggers a {@link GraphChangeListener#graphChanged()} event.
-	 *
-	 * notifyGraphChanged() is not implicitly called in addVertex() etc because
-	 * we want to support batches of add/remove with one final
-	 * notifyGraphChanged() at the end.
-	 */
-	@Override
-	public void notifyGraphChanged()
-	{
-		modelGraphProperties.notifyGraphChanged();
+		throw new UnsupportedOperationException();
 	}
 
 	/*

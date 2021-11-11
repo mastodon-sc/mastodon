@@ -86,7 +86,7 @@ public class DataDisplayNavigationBehaviours implements TransformListener< Scree
 	{
 		public Descriptions()
 		{
-			super( KeyConfigContexts.TRACKSCHEME );
+			super( KeyConfigContexts.GRAPHER );
 		}
 
 		@Override

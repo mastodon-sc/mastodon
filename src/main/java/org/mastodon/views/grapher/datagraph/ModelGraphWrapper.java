@@ -31,20 +31,15 @@ package org.mastodon.views.grapher.datagraph;
 import org.mastodon.graph.Edge;
 import org.mastodon.graph.GraphIdBimap;
 import org.mastodon.graph.Vertex;
-import org.mastodon.views.grapher.datagraph.wrap.ModelGraphProperties;
+import org.mastodon.model.HasLabel;
 
-public class ModelGraphWrapper< V extends Vertex< E >, E extends Edge< V > >
+public class ModelGraphWrapper< V extends Vertex< E > & HasLabel, E extends Edge< V > >
 {
 	final GraphIdBimap< V, E > idmap;
 
-	final ModelGraphProperties< V, E > modelGraphProperties;
-
-	ModelGraphWrapper(
-			final GraphIdBimap< V, E > idmap,
-			final ModelGraphProperties< V, E > modelGraphProperties )
+	ModelGraphWrapper( final GraphIdBimap< V, E > idmap )
 	{
 		this.idmap = idmap;
-		this.modelGraphProperties = modelGraphProperties;
 	}
 
 	ModelVertexWrapper createVertexWrapper( final DataVertex vertex )
@@ -71,12 +66,12 @@ public class ModelGraphWrapper< V extends Vertex< E >, E extends Edge< V > >
 
 		public String getLabel()
 		{
-			return modelGraphProperties.getLabel( getModelVertex() );
+			return getModelVertex().getLabel();
 		}
 
 		public void setLabel( final String label )
 		{
-			modelGraphProperties.setLabel( getModelVertex(), label );
+			getModelVertex().setLabel( label );
 		}
 
 		public V getReusableRef()
@@ -94,22 +89,14 @@ public class ModelGraphWrapper< V extends Vertex< E >, E extends Edge< V > >
 	{
 		private final E ref;
 
-//		private final TrackSchemeEdge edge;
-
 		public ModelEdgeWrapper( final E ref, final DataEdge edge )
 		{
 			this.ref = ref;
-//			this.edge = edge;
 		}
 
 		public E getReusableRef()
 		{
 			return ref;
 		}
-
-//		private E getModelEdge()
-//		{
-//			return idmap.getEdge( edge.getModelEdgeId(), ref );
-//		}
 	}
 }

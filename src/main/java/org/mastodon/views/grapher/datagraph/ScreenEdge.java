@@ -34,7 +34,6 @@ import org.mastodon.pool.ByteMappedElement;
 import org.mastodon.pool.PoolObject;
 import org.mastodon.pool.PoolObjectLayout;
 import org.mastodon.views.trackscheme.ScreenVertex.Transition;
-import org.mastodon.views.trackscheme.TrackSchemeEdge;
 
 /**
  * Layouted edge.
@@ -116,10 +115,9 @@ public class ScreenEdge extends PoolObject< ScreenEdge, ScreenEdgePool, ByteMapp
 	}
 
 	/**
-	 * Get the internal pool index of the associated {@link TrackSchemeEdge}.
+	 * Get the internal pool index of the associated data edge.
 	 *
-	 * @return the internal pool index of the associated
-	 *         {@link TrackSchemeEdge}.
+	 * @return the internal pool index of the associated data edge.
 	 */
 	public int getDataEdgeId()
 	{

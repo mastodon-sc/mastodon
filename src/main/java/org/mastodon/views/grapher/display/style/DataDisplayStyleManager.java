@@ -28,7 +28,6 @@
  */
 package org.mastodon.views.grapher.display.style;
 
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
@@ -40,6 +39,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.mastodon.app.ui.settings.style.AbstractStyleManager;
+import org.mastodon.ui.util.FileChooser;
 import org.yaml.snakeyaml.Yaml;
 
 /**
@@ -56,9 +56,9 @@ public class DataDisplayStyleManager extends AbstractStyleManager< DataDisplaySt
 	private static final String STYLE_FILE = System.getProperty( "user.home" ) + "/.mastodon/datagraphstyles.yaml";
 
 	/**
-	 * A {@code TrackSchemeStyle} that has the same properties as the default
+	 * A {@code DataDisplayStyle} that has the same properties as the default
 	 * style. In contrast to defaultStyle this will always refer to the same
-	 * object, so a trackscheme can just use this one style to listen for
+	 * object, so a data graph view can just use this one style to listen for
 	 * changes and for painting.
 	 */
 	private final DataDisplayStyle forwardDefaultStyle;
@@ -134,19 +134,13 @@ public class DataDisplayStyleManager extends AbstractStyleManager< DataDisplaySt
 						// sanity check: style names must be unique
 						if ( names.add( ts.getName() ) )
 							userStyles.add( ts );
-						else
-						{
-//							System.out.println( "Discarded style with duplicate name \"" + ts.getName() + "\"." );
-						}
 					}
 				}
 			}
 			setDefaultStyle( styleForName( defaultStyleName ).orElseGet( () -> builtinStyles.get( 0 ) ) );
 		}
 		catch ( final FileNotFoundException e )
-		{
-//			System.out.println( "TrackScheme style file " + filename + " not found. Using builtin styles." );
-		}
+		{}
 	}
 
 	@Override
@@ -159,7 +153,7 @@ public class DataDisplayStyleManager extends AbstractStyleManager< DataDisplaySt
 	{
 		try
 		{
-			mkdirs( filename );
+			FileChooser.mkdirs( filename );
 			final FileWriter output = new FileWriter( filename );
 			final Yaml yaml = DataDisplayStyleIO.createYaml();
 			final ArrayList< Object > objects = new ArrayList<>();
@@ -172,15 +166,5 @@ public class DataDisplayStyleManager extends AbstractStyleManager< DataDisplaySt
 		{
 			e.printStackTrace();
 		}
-	}
-
-	/*
-	 * STATIC UTILITIES
-	 */
-
-	private static boolean mkdirs( final String fileName )
-	{
-		final File dir = new File( fileName ).getParentFile();
-		return dir == null ? false : dir.mkdirs();
 	}
 }

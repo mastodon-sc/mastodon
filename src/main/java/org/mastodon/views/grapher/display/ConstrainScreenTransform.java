@@ -34,9 +34,9 @@ public class ConstrainScreenTransform
 {
 	/**
 	 * Modifies a {@link ScreenTransform}, such that it covers at least the
-	 * {@code minSize} and at most the {@code maxSize} (in TrackScheme layout
+	 * {@code minSize} and at most the {@code maxSize} (in data graph layout
 	 * coordinates). The {@code (minBound, maxBound)} interval specifies the
-	 * bounds of the layouted graph in TrackScheme layout coordinates.
+	 * bounds of the layouted graph in data graph layout coordinates.
 	 * <p>
 	 * Makes sure that the {@code transform} does not move too far outside the
 	 * visible screen area. If necessary, the {@code transform} is shifted such
@@ -60,9 +60,11 @@ public class ConstrainScreenTransform
 	 * @param maxBoundX
 	 *            the X max bound of the layouted graph (in layout coordinates).
 	 * @param minBoundY
-	 *            the Y min bound of the layouted graph (in layout coordinates), ie, min timepoint.
+	 *            the Y min bound of the layouted graph (in layout coordinates),
+	 *            ie, min timepoint.
 	 * @param maxBoundY
-	 *            the Y max bound of the layouted graph (in layout coordinates), ie, max timepoint.
+	 *            the Y max bound of the layouted graph (in layout coordinates),
+	 *            ie, max timepoint.
 	 * @param borderRatioX
 	 *            contributes to X border as ratio of visible screen.
 	 * @param borderRatioY

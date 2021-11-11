@@ -34,7 +34,6 @@ import org.mastodon.pool.ByteMappedElement;
 import org.mastodon.pool.PoolObject;
 import org.mastodon.pool.PoolObjectLayout;
 import org.mastodon.views.trackscheme.ScreenVertex.Transition;
-import org.mastodon.views.trackscheme.TrackSchemeVertex;
 
 import net.imglib2.RealLocalizable;
 
@@ -60,8 +59,6 @@ public class ScreenVertex extends PoolObject< ScreenVertex, ScreenVertexPool, By
 
 	public static ScreenVertexLayout layout = new ScreenVertexLayout();
 
-
-
 	protected ScreenVertex( final ScreenVertexPool pool )
 	{
 		super( pool );
@@ -86,10 +83,9 @@ public class ScreenVertex extends PoolObject< ScreenVertex, ScreenVertexPool, By
 	}
 
 	/**
-	 * Get the internal pool index of the associated {@link TrackSchemeVertex}.
+	 * Get the internal pool index of the associated data vertex.
 	 *
-	 * @return the internal pool index of the associated
-	 *         {@link TrackSchemeVertex}.
+	 * @return the internal pool index of the associated data vertex.
 	 */
 	public int getDataVertexId()
 	{
@@ -149,9 +145,8 @@ public class ScreenVertex extends PoolObject< ScreenVertex, ScreenVertexPool, By
 	}
 
 	/**
-	 * Get the label of the vertex. This calls
-	 * {@link TrackSchemeVertex#getLabel()} of the associated
-	 * {@link TrackSchemeVertex}.
+	 * Get the label of the vertex. This calls {@link DataVertex#getLabel()} of
+	 * the associated data vertex.
 	 *
 	 * @return label of the vertex.
 	 */
@@ -284,30 +279,16 @@ public class ScreenVertex extends PoolObject< ScreenVertex, ScreenVertexPool, By
 		return this;
 	}
 
-// TODO REMOVE? should be covered by base class.
-//	@Override
-//	public boolean equals( final Object obj )
-//	{
-//		return obj instanceof ScreenVertex &&
-//				access.equals( ( ( ScreenVertex ) obj ).access );
-//	}
-//
-//	@Override
-//	public int hashCode()
-//	{
-//		return access.hashCode();
-//	}
-
 	@Override
 	public String toString()
 	{
-		return String.format( "ScreenVertex(%d, dvid=%d, \"%s\", (%.2f, %.2f), %s %s)",
+		return String.format( "ScreenVertex(%d, dvid=%d, \"%s\", (%.2f, %.2f), %s%s)",
 				getInternalPoolIndex(),
 				getDataVertexId(),
 				getLabel(),
 				getX(),
 				getY(),
-				getTransition().toString(), // getInterpolatedScreenVertexIndex(),
+				getTransition().toString(),
 				isSelected() ? ", selected" : "" );
 	}
 

@@ -64,7 +64,6 @@ import org.mastodon.model.TimepointModel;
 import org.mastodon.model.tag.TagSetStructure.TagSet;
 import org.mastodon.ui.EditTagActions;
 import org.mastodon.ui.FocusActions;
-import org.mastodon.ui.HighlightBehaviours;
 import org.mastodon.ui.SelectionActions;
 import org.mastodon.ui.coloring.ColoringModel;
 import org.mastodon.ui.coloring.GraphColorGeneratorAdapter;
@@ -78,7 +77,6 @@ import org.mastodon.views.grapher.datagraph.DataGraph;
 import org.mastodon.views.grapher.datagraph.DataGraphLayout;
 import org.mastodon.views.grapher.datagraph.DataVertex;
 import org.mastodon.views.grapher.datagraph.ScreenTransform;
-import org.mastodon.views.grapher.datagraph.wrap.DefaultModelGraphProperties;
 import org.mastodon.views.grapher.display.DataDisplayFrame;
 import org.mastodon.views.grapher.display.DataDisplayOptions;
 import org.mastodon.views.grapher.display.DataDisplayPanel;
@@ -116,7 +114,6 @@ public class MamutViewGrapher2 extends MamutView< DataGraph< Spot, Link >, DataV
 				new DataGraph< Spot, Link >(
 						appModel.getModel().getGraph(),
 						appModel.getModel().getGraphIdBimap(),
-						new DefaultModelGraphProperties< Spot, Link >(),
 						appModel.getModel().getGraph().getLock() ),
 				new String[] { KeyConfigContexts.GRAPHER } );
 
@@ -204,7 +201,6 @@ public class MamutViewGrapher2 extends MamutView< DataGraph< Spot, Link >, DataV
 			dataDisplayPanel.getScreenTransform().set( tLoaded );
 
 		MastodonFrameViewActions.install( viewActions, this );
-		HighlightBehaviours.install( viewBehaviours, viewGraph, viewGraph.getLock(), viewGraph, highlightModel, model );
 		FocusActions.install( viewActions, viewGraph, viewGraph.getLock(), navigateFocusModel, selectionModel );
 		EditTagActions.install( viewActions, frame.getKeybindings(), frame.getTriggerbindings(), model.getTagSetModel(), appModel.getSelectionModel(), viewGraph.getLock(), dataDisplayPanel, dataDisplayPanel.getDisplay(), model );
 		DataDisplayZoom.install( viewBehaviours, dataDisplayPanel );

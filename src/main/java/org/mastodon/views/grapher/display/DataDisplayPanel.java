@@ -28,7 +28,6 @@
  */
 package org.mastodon.views.grapher.display;
 
-
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.Graphics;
@@ -63,7 +62,6 @@ import org.mastodon.views.grapher.datagraph.ScreenEntities;
 import org.mastodon.views.grapher.datagraph.ScreenEntitiesInterpolator;
 import org.mastodon.views.grapher.datagraph.ScreenTransform;
 import org.mastodon.views.grapher.display.DataDisplayOptions.Values;
-import org.mastodon.views.trackscheme.LineageTreeLayout;
 import org.mastodon.views.trackscheme.display.animate.AbstractAnimator;
 
 import bdv.viewer.InteractiveDisplayCanvas;
@@ -87,12 +85,12 @@ public class DataDisplayPanel extends JPanel implements
 
 	static final double boundYLayoutBorder = 0.5;
 
-	private final long ANIMATION_MILLISECONDS;
+	private final long animationMilleseconds;
 
 	private final DataGraph< ?, ? > graph;
 
 	/**
-	 * Canvas used for displaying the trackscheme graph.
+	 * Canvas used for displaying the data graph.
 	 */
 	private final InteractiveDisplayCanvas display;
 
@@ -121,7 +119,7 @@ public class DataDisplayPanel extends JPanel implements
 	private final GraphColorGenerator< DataVertex, DataEdge > colorGenerator;
 
 	/**
-	 * compute {@link ScreenEntities} from {@link LineageTreeLayout} using the
+	 * compute {@link ScreenEntities} from the {@link DataGraphLayout} using the
 	 * current {@link ScreenTransform} and interpolate between
 	 * {@link ScreenEntities} for animation.
 	 */
@@ -131,10 +129,6 @@ public class DataDisplayPanel extends JPanel implements
 
 	private final DataDisplayOverlay graphOverlay;
 
-	/**
-	 * TODO
-	 */
-	// TODO rename
 	private final Flags flags;
 
 	/**
@@ -188,6 +182,8 @@ public class DataDisplayPanel extends JPanel implements
 
 	private DataDisplayNavigationActions navigationActions;
 
+	private Context< DataVertex > context;
+
 	public DataDisplayPanel(
 			final DataGraph< ?, ? > graph,
 			final DataGraphLayout< ?, ? > layout,
@@ -202,7 +198,7 @@ public class DataDisplayPanel extends JPanel implements
 		this.layout = layout;
 
 		final Values options = optional.values;
-		ANIMATION_MILLISECONDS = options.getAnimationDurationMillis();
+		animationMilleseconds = options.getAnimationDurationMillis();
 
 		/*
 		 * Canvas and transform.
@@ -226,8 +222,7 @@ public class DataDisplayPanel extends JPanel implements
 		/*
 		 * Overlay.
 		 */
-		graphOverlay = options.getDataDisplayOverlayFactory()
-				.create( graph, highlight, focus, optional );
+		graphOverlay = options.getDataDisplayOverlayFactory().create( graph, highlight, focus, optional );
 		display.overlays().add( graphOverlay );
 		display.overlays().add( new OverlayRenderer()
 		{
@@ -284,7 +279,6 @@ public class DataDisplayPanel extends JPanel implements
 				t.shiftLayoutX( s - t.getMinX() );
 				screenTransform.set( t );
 
-				// TODO: probably this should be triggered in a listener to screenTransform:
 				flags.setTransformChanged();
 				painterThread.requestRepaint();
 			}
@@ -302,7 +296,6 @@ public class DataDisplayPanel extends JPanel implements
 				t.shiftLayoutY( ( s - t.getMaxY() ) );
 				screenTransform.set( t );
 
-				// TODO: probably this should be triggered in a listener to screenTransform:
 				flags.setTransformChanged();
 				painterThread.requestRepaint();
 			}
@@ -351,18 +344,15 @@ public class DataDisplayPanel extends JPanel implements
 			final Flags flags = this.flags.clear();
 			if ( flags.graphChanged )
 			{
-//				System.out.println( "paint: graphChanged" );
 				layout.layout();
 				layoutMinX = layout.getCurrentLayoutMinX();
 				layoutMaxX = layout.getCurrentLayoutMaxX();
 				layoutMinY = layout.getCurrentLayoutMinY();
 				layoutMaxY = layout.getCurrentLayoutMaxY();
-				entityAnimator.startAnimation( transform, ANIMATION_MILLISECONDS );
+				entityAnimator.startAnimation( transform, animationMilleseconds );
 			}
 			else if ( flags.transformChanged )
 			{
-//				System.out.println( "paint: transformChanged" );
-//				entityAnimator.startAnimation( transform, 0 );
 				if ( context != null )
 				{
 					contextLayout.buildContext( context );
@@ -370,21 +360,17 @@ public class DataDisplayPanel extends JPanel implements
 					layoutMaxX = layout.getCurrentLayoutMaxX();
 					layoutMinY = layout.getCurrentLayoutMinY();
 					layoutMaxY = layout.getCurrentLayoutMaxY();
-					entityAnimator.continueAnimation( transform, ANIMATION_MILLISECONDS );
+					entityAnimator.continueAnimation( transform, animationMilleseconds );
 				}
 				else
 					entityAnimator.continueAnimation( transform, 0 );
-//					entityAnimator.startAnimation( transform, 0 );
-//				entityAnimator.startAnimation( transform, ANIMATION_MILLISECONDS );
 			}
 			else if ( flags.selectionChanged )
 			{
-//				System.out.println( "paint: selectionChanged" );
-				entityAnimator.startAnimation( transform, ANIMATION_MILLISECONDS );
+				entityAnimator.startAnimation( transform, animationMilleseconds );
 			}
 			else if ( flags.contextChanged )
 			{
-//				System.out.println( "paint: contextChanged" );
 				if ( context == null )
 				{
 					layout.layout();
@@ -401,11 +387,10 @@ public class DataDisplayPanel extends JPanel implements
 					layoutMinY = layout.getCurrentLayoutMinY();
 					layoutMaxY = layout.getCurrentLayoutMaxY();
 				}
-				entityAnimator.startAnimation( transform, ANIMATION_MILLISECONDS );
+				entityAnimator.startAnimation( transform, animationMilleseconds );
 			}
 			else if ( flags.entitiesAttributesChanged )
 			{
-//				System.out.println( "paint: entitiesAttributesChanged" ); // DEBUG
 				entityAnimator.continueAnimation( transform, 0 );
 			}
 
@@ -475,10 +460,6 @@ public class DataDisplayPanel extends JPanel implements
 		painterThread.requestRepaint();
 	}
 
-	// TODO: THIS IS FOR TESTING ONLY
-	private Context< DataVertex > context;
-
-	// TODO: THIS IS FOR TESTING ONLY
 	@Override
 	public void contextChanged( final Context< DataVertex > context )
 	{
@@ -529,10 +510,6 @@ public class DataDisplayPanel extends JPanel implements
 		graph.releaseRef( target );
 	}
 
-	/**
-	 * TODO: Let NavigationHandler.navigateToVertex return a target transform
-	 * instead of talking to the TransformEventHandler directly.
-	 */
 	interface NavigationBehaviour
 	{
 		public void navigateToVertex( final DataVertex v, final ScreenTransform currentTransform );
@@ -560,7 +537,6 @@ public class DataDisplayPanel extends JPanel implements
 		@Override
 		public void navigateToEdge( final DataEdge e, final DataVertex source, final DataVertex target, final ScreenTransform currentTransform )
 		{
-			// TODO Auto-generated method stub
 			System.err.println( "not implemented: CenteringNavigationBehaviour.navigateToEdge()" );
 			new Throwable().printStackTrace( System.out );
 		}
@@ -592,7 +568,6 @@ public class DataDisplayPanel extends JPanel implements
 		@Override
 		public void navigateToEdge( final DataEdge e, final DataVertex source, final DataVertex target, final ScreenTransform currentTransform )
 		{
-			// TODO Auto-generated method stub
 			System.err.println( "not implemented: CenterIfInvisibleNavigationBehaviour.navigateToEdge()" );
 			new Throwable().printStackTrace( System.out );
 		}
@@ -618,14 +593,6 @@ public class DataDisplayPanel extends JPanel implements
 		{
 			final double lx = v.getLayoutX();
 			final double ly = v.getLayoutY();
-
-			/*
-			 * TODO: check for compatibility of screenBorder and screenWidth,
-			 * screenHeight. Fall back to CENTER_IF_INVISIBLE if screen size too
-			 * small.
-			 */
-//			final int screenWidth = currentTransform.getScreenWidth();
-//			final int screenHeight = currentTransform.getScreenHeight();
 
 			final double minX = currentTransform.getMinX();
 			final double maxX = currentTransform.getMaxX();
@@ -656,14 +623,6 @@ public class DataDisplayPanel extends JPanel implements
 		@Override
 		public void navigateToEdge( final DataEdge e, final DataVertex source, final DataVertex target, final ScreenTransform currentTransform )
 		{
-			/*
-			 * TODO: check for compatibility of screenBorder and screenWidth,
-			 * screenHeight. Fall back to CENTER_IF_INVISIBLE if screen size too
-			 * small.
-			 */
-//			final int screenWidth = currentTransform.getScreenWidth();
-//			final int screenHeight = currentTransform.getScreenHeight();
-
 			final double minX = currentTransform.getMinX();
 			final double maxX = currentTransform.getMaxX();
 			final double minY = currentTransform.getMinY();
@@ -710,7 +669,6 @@ public class DataDisplayPanel extends JPanel implements
 		return screenTransform;
 	}
 
-	// TODO remove??? revise DataPanel / DataFrame construction.
 	public InteractiveDisplayCanvas getDisplay()
 	{
 		return display;
@@ -719,12 +677,6 @@ public class DataDisplayPanel extends JPanel implements
 	public OffsetAxes getOffsetAxes()
 	{
 		return offsetAxes;
-	}
-
-	// TODO is this needed? does it have to be public?
-	protected DataGraph< ?, ? > getGraph()
-	{
-		return graph;
 	}
 
 	public InertialScreenTransformEventHandler getTransformEventHandler()
@@ -852,9 +804,6 @@ public class DataDisplayPanel extends JPanel implements
 			else
 			{
 				startAnimation( transform, duration );
-//				swapPools();
-//				layout.cropAndScale( transform, screenEntities );
-//				lastComputedScreenEntities = screenEntities;
 			}
 		}
 

@@ -14,6 +14,7 @@ import org.mastodon.kdtree.ClipConvexPolytopeKDTree;
 import org.mastodon.kdtree.IncrementalNearestNeighborSearchOnKDTree;
 import org.mastodon.kdtree.KDTree;
 import org.mastodon.kdtree.NearestNeighborSearchOnKDTree;
+import org.mastodon.model.HasLabel;
 import org.mastodon.model.SelectionModel;
 import org.mastodon.pool.DoubleMappedElement;
 import org.mastodon.spatial.HasTimepoint;
@@ -26,7 +27,7 @@ import net.imglib2.RealPoint;
 import net.imglib2.algorithm.kdtree.ConvexPolytope;
 import net.imglib2.algorithm.kdtree.HyperPlane;
 
-public class DataGraphLayout< V extends Vertex< E > & HasTimepoint, E extends Edge< V > >
+public class DataGraphLayout< V extends Vertex< E > & HasTimepoint & HasLabel, E extends Edge< V > >
 {
 
 	private final DataGraph< V, E > dataGraph;
@@ -51,6 +52,8 @@ public class DataGraphLayout< V extends Vertex< E > & HasTimepoint, E extends Ed
 
 	private KDTree< DataVertex, DoubleMappedElement > kdtree;
 
+	// TODO. Warning: we keep a ref to screen vertices that were last generated
+	// by the call to #cropAndScale(). Is this safe? Is this Ok?
 	private KDTree< ScreenVertex, DoubleMappedElement > screenKDtree;
 
 	public DataGraphLayout(
@@ -159,6 +162,8 @@ public class DataGraphLayout< V extends Vertex< E > & HasTimepoint, E extends Ed
 	}
 
 	/**
+	 * Returns the set of data vertices that are painted according to this
+	 * layout instance, within the specified <b>screen coordinates</b>.
 	 * 
 	 * @param x1
 	 *            x min in screen coordinates.
@@ -168,7 +173,7 @@ public class DataGraphLayout< V extends Vertex< E > & HasTimepoint, E extends Ed
 	 *            x max in screen coordinates.
 	 * @param y2
 	 *            y max in screen coordinates.
-	 * @return
+	 * @return a new {@link RefSet}.
 	 */
 	public RefSet< DataVertex > getDataVerticesWithin( final double x1, final double y1, final double x2, final double y2 )
 	{
