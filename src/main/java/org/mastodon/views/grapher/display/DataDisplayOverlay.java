@@ -190,6 +190,7 @@ public class DataDisplayOverlay implements OverlayRenderer, OffsetAxesListener
 	 */
 	public DataEdge getEdgeAt( final int x, final int y, final double tolerance, final DataEdge ref )
 	{
+		// TODO rework using kdtree.
 		synchronized ( entities )
 		{
 			final RefList< ScreenVertex > vertices = entities.getVertices();
@@ -237,6 +238,7 @@ public class DataDisplayOverlay implements OverlayRenderer, OffsetAxesListener
 	 */
 	public DataVertex getVertexAt( final int x, final int y, final DataVertex ref )
 	{
+		// TODO rework using kdtree.
 		synchronized ( entities )
 		{
 			double d2Best = Double.POSITIVE_INFINITY;
