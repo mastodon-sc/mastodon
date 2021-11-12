@@ -70,6 +70,7 @@ import org.mastodon.views.bdv.overlay.ui.RenderSettingsConfigPage;
 import org.mastodon.views.bdv.overlay.ui.RenderSettingsManager;
 import org.mastodon.views.context.ContextProvider;
 import org.mastodon.views.grapher.display.style.DataDisplayStyleManager;
+import org.mastodon.views.grapher.display.style.DataDisplayStyleSettingsPage;
 import org.mastodon.views.trackscheme.display.style.TrackSchemeStyleManager;
 import org.mastodon.views.trackscheme.display.style.TrackSchemeStyleSettingsPage;
 import org.scijava.Context;
@@ -258,6 +259,7 @@ public class WindowManager
 		final PreferencesDialog settings = new PreferencesDialog( null, keymap, new String[] { KeyConfigContexts.MASTODON } );
 		settings.addPage( new TrackSchemeStyleSettingsPage( "TrackScheme Styles", trackSchemeStyleManager ) );
 		settings.addPage( new RenderSettingsConfigPage( "BDV Render Settings", renderSettingsManager ) );
+		settings.addPage( new DataDisplayStyleSettingsPage( "Grapher styles", dataDisplayStyleManager ) );
 		settings.addPage( new KeymapSettingsPage( "Keymap", keymapManager, descriptions ) );
 		settings.addPage( new FeatureColorModeConfigPage( "Feature Color Modes", featureColorModeManager, featureProjectionsManager ) );
 

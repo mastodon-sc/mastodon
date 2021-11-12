@@ -136,11 +136,10 @@ public class PaintDecorations
 		final boolean isVisibleXAxis = axesHeight > 0;
 
 		final int maxTickSpacing = 200;
-		final int minTickSpacing = 50;
 
-		final FontMetrics fm = g2.getFontMetrics( style.getHeaderFont() );
-		g2.setFont( style.getHeaderFont() );
-		g2.setStroke( style.getDecorationStroke() );
+		final FontMetrics fm = g2.getFontMetrics( style.getAxisTickFont() );
+		g2.setFont( style.getAxisTickFont() );
+		g2.setStroke( style.getAxisStroke() );
 
 		// Width of the ticks.
 		final int tickWidth = 2;
@@ -156,11 +155,11 @@ public class PaintDecorations
 		if ( isVisibleYAxis )
 		{
 			// Erase.
-			g2.setColor( style.getHeaderBackgroundColor() );
+			g2.setColor( style.getBackgroundColor() );
 			g2.fillRect( 0, 0, axesWidth, ytop );
 
 			// Paint axis.
-			g2.setColor( style.getHeaderDecorationColor() );
+			g2.setColor( style.getAxisColor() );
 
 			// Steps.
 			final int stepY = Math.max( 1, maxTickSpacing / ( int ) ( 1 + yScale ) );
@@ -191,7 +190,7 @@ public class PaintDecorations
 			}
 
 			// 3. Y label
-			// TODO specific fonts for labels
+			g2.setFont( style.getAxisLabelFont() );
 			final int yLabelWidth = fm.stringWidth( yLabel );
 			drawStringRotated( g2,
 					axesWidth - tickWidth - 2 - maxStringWidth - 5,
@@ -203,11 +202,11 @@ public class PaintDecorations
 		if ( isVisibleXAxis )
 		{
 			// Erase.
-			g2.setColor( style.getHeaderBackgroundColor() );
+			g2.setColor( style.getBackgroundColor() );
 			g2.fillRect( axesWidth, ytop, width - axesWidth, ybottom );
 
 			// Paint axis.
-			g2.setColor( style.getHeaderDecorationColor() );
+			g2.setColor( style.getAxisColor() );
 
 			// Steps.
 			final int stepX = Math.max( 1, maxTickSpacing / ( int ) ( 1 + xScale ) );
@@ -220,6 +219,7 @@ public class PaintDecorations
 
 			// 0. Horizontal line.
 			g2.drawLine( axesWidth, ytop, width, ytop );
+			g2.setFont( style.getAxisTickFont() );
 
 			int maxStringWidth = -1;
 			for ( int x = xstart; x <= xend; x = x + stepX )
@@ -238,7 +238,7 @@ public class PaintDecorations
 			}
 
 			// 3. X label
-			// TODO specific fonts for labels
+			g2.setFont( style.getAxisLabelFont() );
 			final int xLabelWidth = fm.stringWidth( xLabel );
 			g2.drawString( xLabel,
 					axesWidth + ( width - axesWidth ) / 2 - xLabelWidth / 2,
@@ -247,7 +247,7 @@ public class PaintDecorations
 
 		if ( isVisibleYAxis && isVisibleXAxis )
 		{
-			g2.setColor( style.getHeaderBackgroundColor() );
+			g2.setColor( style.getBackgroundColor() );
 			g2.fillRect( 0, ytop, axesWidth, ybottom );
 		}
 	}

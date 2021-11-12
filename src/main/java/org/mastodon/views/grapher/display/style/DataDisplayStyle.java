@@ -43,8 +43,6 @@ public class DataDisplayStyle implements Style< DataDisplayStyle >
 {
 	private static final Stroke DEFAULT_FOCUS_STROKE = new BasicStroke( 2f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 1f, new float[] { 8f, 3f }, 0 );
 
-	private static final Stroke DEFAULT_GHOST_STROKE = new BasicStroke( 1.0f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 10.0f, new float[] { 3.0f }, 0.0f );
-
 	private String name;
 
 	private Color edgeColor;
@@ -63,88 +61,30 @@ public class DataDisplayStyle implements Style< DataDisplayStyle >
 
 	private Color selectedSimplifiedVertexFillColor;
 
-	private Color ghostEdgeColor;
-
-	private Color ghostVertexFillColor;
-
-	private Color ghostVertexDrawColor;
-
-	private Color ghostSelectedVertexFillColor;
-
-	private Color ghostSelectedEdgeColor;
-
-	private Color ghostSelectedVertexDrawColor;
-
-	private Color ghostSimplifiedVertexFillColor;
-
-	private Color ghostSelectedSimplifiedVertexFillColor;
-
 	private Color backgroundColor;
 
-	private Color currentTimepointColor;
-
-	private Color decorationColor;
-
-	private Color vertexRangeColor;
-
-	private Color headerBackgroundColor;
-
-	private Color headerDecorationColor;
-
-	private Color headerCurrentTimepointColor;
+	private Color axisColor;
 
 	private Font font;
 
-	private Font headerFont;
+	private Font axisTickFont;
+
+	private Font axisLabelFont;
 
 	private Stroke edgeStroke;
-
-	private Stroke edgeGhostStroke;
 
 	private Stroke edgeHighlightStroke;
 
 	private Stroke vertexStroke;
 
-	private Stroke vertexGhostStroke;
-
 	private Stroke vertexHighlightStroke;
 
 	private Stroke focusStroke;
 
-	private Stroke decorationStroke;
+	private Stroke axisStroke;
 
-	private boolean highlightCurrentTimepoint;
-
-	private boolean paintRows;
-
-	private boolean paintColumns;
-
-	private boolean paintHeaderShadow;
-
-	public // TODO?
-	static Color mixGhostColor( final Color color, final Color backgroundColor )
-	{
-		return ( color == null || backgroundColor == null )
-				? null
-				: new Color(
-						( color.getRed() + backgroundColor.getRed() ) / 2,
-						( color.getGreen() + backgroundColor.getGreen() ) / 2,
-						( color.getBlue() + backgroundColor.getBlue() ) / 2,
-						color.getAlpha() );
-	}
-
-	private void updateGhostColors()
-	{
-		ghostEdgeColor = mixGhostColor( edgeColor, backgroundColor );
-		ghostVertexFillColor = mixGhostColor( vertexFillColor, backgroundColor );
-		ghostVertexDrawColor = mixGhostColor( vertexDrawColor, backgroundColor );
-		ghostSelectedVertexFillColor = mixGhostColor( selectedVertexFillColor, backgroundColor );
-		ghostSelectedEdgeColor = mixGhostColor( selectedEdgeColor, backgroundColor );
-		ghostSelectedVertexDrawColor = mixGhostColor( selectedVertexDrawColor, backgroundColor );
-		ghostSimplifiedVertexFillColor = mixGhostColor( simplifiedVertexFillColor, backgroundColor );
-		ghostSelectedSimplifiedVertexFillColor = mixGhostColor( selectedSimplifiedVertexFillColor, backgroundColor );
-	}
-
+	private boolean drawVertexName;
+	
 	/*
 	 * GETTERS for non public fields.
 	 */
@@ -155,34 +95,39 @@ public class DataDisplayStyle implements Style< DataDisplayStyle >
 		return name;
 	}
 
+	public Color getAxisColor()
+	{
+		return axisColor;
+	}
+
+	public Font getAxisLabelFont()
+	{
+		return axisLabelFont;
+	}
+
+	public Stroke getAxisStroke()
+	{
+		return axisStroke;
+	}
+
+	public Font getAxisTickFont()
+	{
+		return axisTickFont;
+	}
+
 	public Color getBackgroundColor()
 	{
 		return backgroundColor;
 	}
 
-	public Color getCurrentTimepointColor()
+	public boolean isDrawVertexName()
 	{
-		return currentTimepointColor;
-	}
-
-	public Color getDecorationColor()
-	{
-		return decorationColor;
-	}
-
-	public Stroke getDecorationStroke()
-	{
-		return decorationStroke;
+		return drawVertexName;
 	}
 
 	public Color getEdgeColor()
 	{
 		return edgeColor;
-	}
-
-	public Stroke getEdgeGhostStroke()
-	{
-		return edgeGhostStroke;
 	}
 
 	public Stroke getEdgeHighlightStroke()
@@ -203,66 +148,6 @@ public class DataDisplayStyle implements Style< DataDisplayStyle >
 	public Font getFont()
 	{
 		return font;
-	}
-
-	public Color getGhostEdgeColor()
-	{
-		return ghostEdgeColor;
-	}
-
-	public Color getGhostSelectedEdgeColor()
-	{
-		return ghostSelectedEdgeColor;
-	}
-
-	public Color getGhostSelectedSimplifiedVertexFillColor()
-	{
-		return ghostSelectedSimplifiedVertexFillColor;
-	}
-
-	public Color getGhostSelectedVertexDrawColor()
-	{
-		return ghostSelectedVertexDrawColor;
-	}
-
-	public Color getGhostSelectedVertexFillColor()
-	{
-		return ghostSelectedVertexFillColor;
-	}
-
-	public Color getGhostSimplifiedVertexFillColor()
-	{
-		return ghostSimplifiedVertexFillColor;
-	}
-
-	public Color getGhostVertexDrawColor()
-	{
-		return ghostVertexDrawColor;
-	}
-
-	public Color getGhostVertexFillColor()
-	{
-		return ghostVertexFillColor;
-	}
-
-	public Color getHeaderBackgroundColor()
-	{
-		return headerBackgroundColor;
-	}
-
-	public Color getHeaderCurrentTimepointColor()
-	{
-		return headerCurrentTimepointColor;
-	}
-
-	public Color getHeaderDecorationColor()
-	{
-		return headerDecorationColor;
-	}
-
-	public Font getHeaderFont()
-	{
-		return headerFont;
 	}
 
 	public Color getSelectedEdgeColor()
@@ -300,44 +185,13 @@ public class DataDisplayStyle implements Style< DataDisplayStyle >
 		return simplifiedVertexFillColor;
 	}
 
-	public Stroke getVertexGhostStroke()
-	{
-		return vertexGhostStroke;
-	}
-
 	public Stroke getVertexHighlightStroke()
 	{
 		return vertexHighlightStroke;
 	}
-
-	public Color getVertexRangeColor()
-	{
-		return vertexRangeColor;
-	}
-
 	public Stroke getVertexStroke()
 	{
 		return vertexStroke;
-	}
-
-	public boolean isPaintColumns()
-	{
-		return paintColumns;
-	}
-
-	public boolean isHighlightCurrentTimepoint()
-	{
-		return highlightCurrentTimepoint;
-	}
-
-	public boolean isPaintHeaderShadow()
-	{
-		return paintHeaderShadow;
-	}
-
-	public boolean isPaintRows()
-	{
-		return paintRows;
 	}
 
 	/*
@@ -360,89 +214,41 @@ public class DataDisplayStyle implements Style< DataDisplayStyle >
 		name( name );
 	}
 
-	public DataDisplayStyle edgeColor( final Color color )
+	public DataDisplayStyle axisColor( final Color color )
 	{
-		if ( !Objects.equals( this.edgeColor, color ) )
+		if ( !Objects.equals( this.axisColor, color ) )
 		{
-			this.edgeColor = color;
-			updateGhostColors();
+			this.axisColor = color;
 			notifyListeners();
 		}
 		return this;
 	}
 
-	public DataDisplayStyle vertexFillColor( final Color color )
+	public DataDisplayStyle axisLabelFont( final Font axisLabelFont )
 	{
-		if ( !Objects.equals( this.vertexFillColor, color ) )
+		if ( !Objects.equals( this.axisLabelFont, axisLabelFont ) )
 		{
-			this.vertexFillColor = color;
-			updateGhostColors();
+			this.axisLabelFont = axisLabelFont;
 			notifyListeners();
 		}
 		return this;
 	}
 
-	public DataDisplayStyle vertexDrawColor( final Color color )
+	public DataDisplayStyle axisStroke( final Stroke stroke )
 	{
-		if ( !Objects.equals( this.vertexDrawColor, color ) )
+		if ( !Objects.equals( this.axisStroke, stroke ) )
 		{
-			this.vertexDrawColor = color;
-			updateGhostColors();
+			this.axisStroke = stroke;
 			notifyListeners();
 		}
 		return this;
 	}
 
-	public DataDisplayStyle selectedVertexFillColor( final Color color )
+	public DataDisplayStyle axisTickFont( final Font font )
 	{
-		if ( !Objects.equals( this.selectedVertexFillColor, color ) )
+		if ( !Objects.equals( this.axisTickFont, font ) )
 		{
-			this.selectedVertexFillColor = color;
-			updateGhostColors();
-			notifyListeners();
-		}
-		return this;
-	}
-
-	public DataDisplayStyle selectedEdgeColor( final Color color )
-	{
-		if ( !Objects.equals( this.selectedEdgeColor, color ) )
-		{
-			this.selectedEdgeColor = color;
-			updateGhostColors();
-			notifyListeners();
-		}
-		return this;
-	}
-
-	public DataDisplayStyle selectedVertexDrawColor( final Color color )
-	{
-		if ( !Objects.equals( this.selectedVertexDrawColor, color ) )
-		{
-			this.selectedVertexDrawColor = color;
-			updateGhostColors();
-			notifyListeners();
-		}
-		return this;
-	}
-
-	public DataDisplayStyle simplifiedVertexFillColor( final Color color )
-	{
-		if ( !Objects.equals( this.simplifiedVertexFillColor, color ) )
-		{
-			this.simplifiedVertexFillColor = color;
-			updateGhostColors();
-			notifyListeners();
-		}
-		return this;
-	}
-
-	public DataDisplayStyle selectedSimplifiedVertexFillColor( final Color color )
-	{
-		if ( !Objects.equals( this.selectedSimplifiedVertexFillColor, color ) )
-		{
-			this.selectedSimplifiedVertexFillColor = color;
-			updateGhostColors();
+			this.axisTickFont = font;
 			notifyListeners();
 		}
 		return this;
@@ -453,107 +259,26 @@ public class DataDisplayStyle implements Style< DataDisplayStyle >
 		if ( !Objects.equals( this.backgroundColor, color ) )
 		{
 			this.backgroundColor = color;
-			updateGhostColors();
 			notifyListeners();
 		}
 		return this;
 	}
 
-	public DataDisplayStyle currentTimepointColor( final Color color )
+	public DataDisplayStyle drawVertexName( final boolean drawVertexName )
 	{
-		if ( !Objects.equals( this.currentTimepointColor, color ) )
+		if ( this.drawVertexName != drawVertexName )
 		{
-			this.currentTimepointColor = color;
+			this.drawVertexName = drawVertexName;
 			notifyListeners();
 		}
 		return this;
 	}
 
-	public DataDisplayStyle decorationColor( final Color color )
+	public DataDisplayStyle edgeColor( final Color color )
 	{
-		if ( !Objects.equals( this.decorationColor, color ) )
+		if ( !Objects.equals( this.edgeColor, color ) )
 		{
-			this.decorationColor = color;
-			notifyListeners();
-		}
-		return this;
-	}
-
-	public DataDisplayStyle vertexRangeColor( final Color color )
-	{
-		if ( !Objects.equals( this.vertexRangeColor, color ) )
-		{
-			this.vertexRangeColor = color;
-			notifyListeners();
-		}
-		return this;
-	}
-
-	public DataDisplayStyle headerBackgroundColor( final Color color )
-	{
-		if ( !Objects.equals( this.headerBackgroundColor, color ) )
-		{
-			this.headerBackgroundColor = color;
-			notifyListeners();
-		}
-		return this;
-	}
-
-	public DataDisplayStyle headerDecorationColor( final Color color )
-	{
-		if ( !Objects.equals( this.headerDecorationColor, color ) )
-		{
-			this.headerDecorationColor = color;
-			notifyListeners();
-		}
-		return this;
-	}
-
-	public DataDisplayStyle headerCurrentTimepointColor( final Color color )
-	{
-		if ( !Objects.equals( this.headerCurrentTimepointColor, color ) )
-		{
-			this.headerCurrentTimepointColor = color;
-			notifyListeners();
-		}
-		return this;
-	}
-
-	public DataDisplayStyle font( final Font font )
-	{
-		if ( !Objects.equals( this.font, font ) )
-		{
-			this.font = font;
-			notifyListeners();
-		}
-		return this;
-	}
-
-	public DataDisplayStyle headerFont( final Font font )
-	{
-		if ( !Objects.equals( this.headerFont, font ) )
-		{
-			this.headerFont = font;
-			notifyListeners();
-		}
-		return this;
-	}
-
-	public DataDisplayStyle edgeStroke( final Stroke stroke )
-	{
-		if ( !Objects.equals( this.edgeStroke, stroke ) )
-		{
-			this.edgeStroke = stroke;
-			notifyListeners();
-		}
-		return this;
-	}
-
-	public DataDisplayStyle edgeGhostStroke( final Stroke stroke )
-	{
-		if ( !Objects.equals( this.edgeGhostStroke, stroke ) )
-		{
-			this.edgeGhostStroke = stroke;
+			this.edgeColor = color;
 			notifyListeners();
 		}
 		return this;
@@ -569,31 +294,11 @@ public class DataDisplayStyle implements Style< DataDisplayStyle >
 		return this;
 	}
 
-	public DataDisplayStyle vertexStroke( final Stroke stroke )
+	public DataDisplayStyle edgeStroke( final Stroke stroke )
 	{
-		if ( !Objects.equals( this.vertexStroke, stroke ) )
+		if ( !Objects.equals( this.edgeStroke, stroke ) )
 		{
-			this.vertexStroke = stroke;
-			notifyListeners();
-		}
-		return this;
-	}
-
-	public DataDisplayStyle vertexGhostStroke( final Stroke stroke )
-	{
-		if ( !Objects.equals( this.vertexGhostStroke, stroke ) )
-		{
-			this.vertexGhostStroke = stroke;
-			notifyListeners();
-		}
-		return this;
-	}
-
-	public DataDisplayStyle vertexHighlightStroke( final Stroke stroke )
-	{
-		if ( !Objects.equals( this.vertexHighlightStroke, stroke ) )
-		{
-			this.vertexHighlightStroke = stroke;
+			this.edgeStroke = stroke;
 			notifyListeners();
 		}
 		return this;
@@ -609,55 +314,110 @@ public class DataDisplayStyle implements Style< DataDisplayStyle >
 		return this;
 	}
 
-	public DataDisplayStyle decorationStroke( final Stroke stroke )
+	public DataDisplayStyle font( final Font font )
 	{
-		if ( !Objects.equals( this.decorationStroke, stroke ) )
+		if ( !Objects.equals( this.font, font ) )
 		{
-			this.decorationStroke = stroke;
+			this.font = font;
 			notifyListeners();
 		}
 		return this;
 	}
 
-	public DataDisplayStyle highlightCurrentTimepoint( final boolean b )
+
+	public DataDisplayStyle selectedEdgeColor( final Color color )
 	{
-		if ( this.highlightCurrentTimepoint != b )
+		if ( !Objects.equals( this.selectedEdgeColor, color ) )
 		{
-			this.highlightCurrentTimepoint = b;
+			this.selectedEdgeColor = color;
 			notifyListeners();
 		}
 		return this;
 	}
 
-	public DataDisplayStyle paintRows( final boolean b )
+	public DataDisplayStyle selectedVertexDrawColor( final Color color )
 	{
-		if ( this.paintRows != b )
+		if ( !Objects.equals( this.selectedVertexDrawColor, color ) )
 		{
-			this.paintRows = b;
+			this.selectedVertexDrawColor = color;
 			notifyListeners();
 		}
 		return this;
 	}
 
-	public DataDisplayStyle paintColumns( final boolean b )
+	public DataDisplayStyle selectedVertexFillColor( final Color color )
 	{
-		if ( this.paintColumns != b )
+		if ( !Objects.equals( this.selectedVertexFillColor, color ) )
 		{
-			this.paintColumns = b;
+			this.selectedVertexFillColor = color;
 			notifyListeners();
 		}
 		return this;
 	}
 
-	public DataDisplayStyle paintHeaderShadow( final boolean b )
+	public DataDisplayStyle selectedSimplifiedVertexFillColor( final Color color )
 	{
-		if ( this.paintHeaderShadow != b )
+		if ( !Objects.equals( this.selectedSimplifiedVertexFillColor, color ) )
 		{
-			this.paintHeaderShadow = b;
+			this.selectedSimplifiedVertexFillColor = color;
 			notifyListeners();
 		}
 		return this;
 	}
+
+	public DataDisplayStyle simplifiedVertexFillColor( final Color color )
+	{
+		if ( !Objects.equals( this.simplifiedVertexFillColor, color ) )
+		{
+			this.simplifiedVertexFillColor = color;
+			notifyListeners();
+		}
+		return this;
+	}
+
+	public DataDisplayStyle vertexDrawColor( final Color color )
+	{
+		if ( !Objects.equals( this.vertexDrawColor, color ) )
+		{
+			this.vertexDrawColor = color;
+			notifyListeners();
+		}
+		return this;
+	}
+
+	public DataDisplayStyle vertexFillColor( final Color color )
+	{
+		if ( !Objects.equals( this.vertexFillColor, color ) )
+		{
+			this.vertexFillColor = color;
+			notifyListeners();
+		}
+		return this;
+	}
+
+	public DataDisplayStyle vertexHighlightStroke( final Stroke stroke )
+	{
+		if ( !Objects.equals( this.vertexHighlightStroke, stroke ) )
+		{
+			this.vertexHighlightStroke = stroke;
+			notifyListeners();
+		}
+		return this;
+	}
+
+	public DataDisplayStyle vertexStroke( final Stroke stroke )
+	{
+		if ( !Objects.equals( this.vertexStroke, stroke ) )
+		{
+			this.vertexStroke = stroke;
+			notifyListeners();
+		}
+		return this;
+	}
+
+	/*
+	 * 
+	 */
 
 	public interface UpdateListener
 	{
@@ -680,43 +440,26 @@ public class DataDisplayStyle implements Style< DataDisplayStyle >
 	public synchronized void set( final DataDisplayStyle style )
 	{
 		this.name = style.name;
-		this.edgeColor = style.edgeColor;
-		this.vertexFillColor = style.vertexFillColor;
-		this.vertexDrawColor = style.vertexDrawColor;
-		this.selectedVertexFillColor = style.selectedVertexFillColor;
-		this.selectedEdgeColor = style.selectedEdgeColor;
-		this.selectedVertexDrawColor = style.selectedVertexDrawColor;
-		this.simplifiedVertexFillColor = style.simplifiedVertexFillColor;
-		this.selectedSimplifiedVertexFillColor = style.selectedSimplifiedVertexFillColor;
-		this.ghostEdgeColor = style.ghostEdgeColor;
-		this.ghostVertexFillColor = style.ghostVertexFillColor;
-		this.ghostVertexDrawColor = style.ghostVertexDrawColor;
-		this.ghostSelectedVertexFillColor = style.ghostSelectedVertexFillColor;
-		this.ghostSelectedEdgeColor = style.ghostSelectedEdgeColor;
-		this.ghostSelectedVertexDrawColor = style.ghostSelectedVertexDrawColor;
-		this.ghostSimplifiedVertexFillColor = style.ghostSimplifiedVertexFillColor;
-		this.ghostSelectedSimplifiedVertexFillColor = style.ghostSelectedSimplifiedVertexFillColor;
+		this.axisColor = style.axisColor;
+		this.axisLabelFont = style.axisLabelFont;
+		this.axisStroke = style.axisStroke;
+		this.axisTickFont = style.axisTickFont;
 		this.backgroundColor = style.backgroundColor;
-		this.currentTimepointColor = style.currentTimepointColor;
-		this.decorationColor = style.decorationColor;
-		this.vertexRangeColor = style.vertexRangeColor;
-		this.headerBackgroundColor = style.headerBackgroundColor;
-		this.headerDecorationColor = style.headerDecorationColor;
-		this.headerCurrentTimepointColor = style.headerCurrentTimepointColor;
-		this.font = style.font;
-		this.headerFont = style.headerFont;
-		this.edgeStroke = style.edgeStroke;
-		this.edgeGhostStroke = style.edgeGhostStroke;
+		this.drawVertexName = style.drawVertexName;
+		this.edgeColor = style.edgeColor;
 		this.edgeHighlightStroke = style.edgeHighlightStroke;
-		this.vertexStroke = style.vertexStroke;
-		this.vertexGhostStroke = style.vertexGhostStroke;
-		this.vertexHighlightStroke = style.vertexHighlightStroke;
+		this.edgeStroke = style.edgeStroke;
 		this.focusStroke = style.focusStroke;
-		this.decorationStroke = style.decorationStroke;
-		this.highlightCurrentTimepoint = style.highlightCurrentTimepoint;
-		this.paintRows = style.paintRows;
-		this.paintColumns = style.paintColumns;
-		this.paintHeaderShadow = style.paintHeaderShadow;
+		this.font = style.font;
+		this.selectedEdgeColor = style.selectedEdgeColor;
+		this.selectedSimplifiedVertexFillColor = style.selectedSimplifiedVertexFillColor;
+		this.selectedVertexDrawColor = style.selectedVertexDrawColor;
+		this.selectedVertexFillColor = style.selectedVertexFillColor;
+		this.simplifiedVertexFillColor = style.simplifiedVertexFillColor;
+		this.vertexDrawColor = style.vertexDrawColor;
+		this.vertexFillColor = style.vertexFillColor;
+		this.vertexHighlightStroke = style.vertexHighlightStroke;
+		this.vertexStroke = style.vertexStroke;
 		notifyListeners();
 	}
 
@@ -769,145 +512,32 @@ public class DataDisplayStyle implements Style< DataDisplayStyle >
 	{
 		final Color fill = new Color( 128, 255, 128 );
 		df = new DataDisplayStyle().name( "default" ).
-				backgroundColor( Color.LIGHT_GRAY ).
-				currentTimepointColor( new Color( 217, 217, 217 ) ).
-				vertexFillColor( Color.WHITE ).
-				selectedVertexFillColor( fill ).
-				simplifiedVertexFillColor( Color.BLACK ).
-				selectedSimplifiedVertexFillColor( new Color( 0, 128, 0 ) ).
-				vertexDrawColor( Color.BLACK ).
-				selectedVertexDrawColor( Color.BLACK ).
+				axisColor( new Color( 89, 89, 89 ) ).
+				axisTickFont( new Font( "SansSerif", Font.PLAIN, 9 ) ).
+				axisLabelFont( new Font( "SansSerif", Font.PLAIN, 10 ) ).
+				axisStroke( new BasicStroke() ).
+				backgroundColor( new Color( 204, 204, 204 ) ).
+				drawVertexName( true ).
 				edgeColor( Color.BLACK ).
-				selectedEdgeColor( fill.darker() ).
-				decorationColor( Color.YELLOW.darker().darker() ).
-				vertexRangeColor( new Color( 128, 128, 128 ) ).
-				headerBackgroundColor( Color.LIGHT_GRAY ). // new Color( 238, 238, 238 ) ).
-				headerDecorationColor( Color.DARK_GRAY ).
-				headerCurrentTimepointColor( Color.WHITE ).
+				edgeHighlightStroke( new BasicStroke( 2f ) ).
+				edgeStroke( new BasicStroke() ).
+				focusStroke( DEFAULT_FOCUS_STROKE ).
 				font( new Font( "SansSerif", Font.PLAIN, 9 ) ).
-				headerFont( new Font( "SansSerif", Font.PLAIN, 9 ) ).
-				edgeStroke( new BasicStroke() ).
-				edgeGhostStroke( DEFAULT_GHOST_STROKE ).
-				edgeHighlightStroke( new BasicStroke( 2f ) ).
-				vertexStroke( new BasicStroke() ).
-				vertexGhostStroke( DEFAULT_GHOST_STROKE ).
-				vertexHighlightStroke( new BasicStroke( 3f ) ).
-				focusStroke( DEFAULT_FOCUS_STROKE ).
-				decorationStroke( new BasicStroke() ).
-				highlightCurrentTimepoint( true ).
-				paintRows( true ).
-				paintColumns( true ).
-				paintHeaderShadow( true );
-	}
-
-	/**
-	 * Returns the modern TrackScheme style instance. Editing this instance will
-	 * affect all view using this style.
-	 *
-	 * @return the single common instance for the modern style.
-	 */
-	public static DataDisplayStyle modernStyle()
-	{
-		return modern;
-	}
-
-	private static final DataDisplayStyle modern;
-	static
-	{
-		final Color bg = new Color( 163, 199, 197 );
-		final Color fill = new Color( 64, 106, 102 );
-		final Color selfill = new Color( 255, 128, 128 );
-		final Color currenttp = new Color( 38, 175, 185 );
-		modern = new DataDisplayStyle().name( "modern" ).
-				backgroundColor( bg ).
-				currentTimepointColor( currenttp ).
-				vertexFillColor( fill ).
-				selectedVertexFillColor( selfill ).
-				simplifiedVertexFillColor( fill ).
-				selectedSimplifiedVertexFillColor( selfill ).
-				vertexDrawColor( Color.WHITE ).
+				selectedVertexFillColor( fill ).
+				selectedSimplifiedVertexFillColor( new Color( 0, 128, 0 ) ).
 				selectedVertexDrawColor( Color.BLACK ).
-				edgeColor( Color.WHITE ).
-				selectedEdgeColor( selfill.darker() ).
-				decorationColor( bg.darker() ).
-				vertexRangeColor( Color.WHITE ).
-				headerBackgroundColor( bg.brighter() ).
-				headerDecorationColor( bg ).
-				headerCurrentTimepointColor( bg.darker() ).
-				font( new Font( "Calibri", Font.PLAIN, 12 ) ).
-				headerFont( new Font( "Calibri", Font.PLAIN, 12 ) ).
-				edgeStroke( new BasicStroke() ).
-				edgeGhostStroke( DEFAULT_GHOST_STROKE ).
-				edgeHighlightStroke( new BasicStroke( 2f ) ).
-				vertexStroke( new BasicStroke() ).
-				vertexGhostStroke( DEFAULT_GHOST_STROKE ).
+				selectedEdgeColor( fill.darker() ).
+				simplifiedVertexFillColor( Color.BLACK ).
+				vertexDrawColor( Color.BLACK ).
+				vertexFillColor( Color.WHITE ).
 				vertexHighlightStroke( new BasicStroke( 3f ) ).
-				focusStroke( DEFAULT_FOCUS_STROKE ).
-				decorationStroke( new BasicStroke() ).
-				highlightCurrentTimepoint( true ).
-				paintRows( true ).
-				paintColumns( true ).
-				paintHeaderShadow( true );
-	}
-
-	/**
-	 * Returns the lorry TrackScheme style instance. Editing this instance will
-	 * affect all view using this style.
-	 *
-	 * @return the single common instance for the lorry style.
-	 */
-	public static DataDisplayStyle lorryStyle()
-	{
-		return hmdyk;
-	}
-
-	private static final DataDisplayStyle hmdyk;
-	static
-	{
-		final Color bg = new Color( 163, 199, 197 );
-		final Color fill = new Color( 225, 216, 183 );
-		final Color selfill = new Color( 53, 107, 154 );
-		final Color seldraw = new Color( 230, 245, 255 );
-		final Color seledge = new Color( 91, 137, 158 );
-		hmdyk = new DataDisplayStyle().name( "lorry" ).
-				backgroundColor( bg ).
-				currentTimepointColor( bg.brighter() ).
-				vertexFillColor( fill ).
-				selectedVertexFillColor( selfill ).
-				simplifiedVertexFillColor( Color.DARK_GRAY ).
-				selectedSimplifiedVertexFillColor( selfill ).
-				vertexDrawColor( Color.DARK_GRAY ).
-				selectedVertexDrawColor( seldraw ).
-				edgeColor( Color.DARK_GRAY ).
-				selectedEdgeColor( seledge ).
-				decorationColor( bg.darker() ).
-				vertexRangeColor( Color.DARK_GRAY ).
-				headerBackgroundColor( bg.brighter() ).
-				headerDecorationColor( bg ).
-				headerCurrentTimepointColor( bg.darker() ).
-				font( new Font( "Calibri", Font.PLAIN, 12 ) ).
-				headerFont( new Font( "Calibri", Font.PLAIN, 12 ) ).
-				edgeStroke( new BasicStroke() ).
-				edgeGhostStroke( DEFAULT_GHOST_STROKE ).
-				edgeHighlightStroke( new BasicStroke( 2f ) ).
-				vertexStroke( new BasicStroke() ).
-				vertexGhostStroke( DEFAULT_GHOST_STROKE ).
-				vertexHighlightStroke( new BasicStroke( 3f ) ).
-				focusStroke( DEFAULT_FOCUS_STROKE ).
-				decorationStroke( new BasicStroke() ).
-				highlightCurrentTimepoint( true ).
-				paintRows( true ).
-				paintColumns( true ).
-				paintHeaderShadow( true );
+				vertexStroke( new BasicStroke() );
 	}
 
 	public static Collection< DataDisplayStyle > defaults;
 	static
 	{
-		defaults = new ArrayList<>( 3 );
+		defaults = new ArrayList<>( 1 );
 		defaults.add( df );
-		defaults.add( hmdyk );
-		defaults.add( modern );
 	}
-
 }

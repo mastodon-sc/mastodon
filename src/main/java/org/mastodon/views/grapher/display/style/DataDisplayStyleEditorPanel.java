@@ -154,34 +154,24 @@ public class DataDisplayStyleEditorPanel extends JPanel
 	private List< StyleElement > styleElements( final DataDisplayStyle style )
 	{
 		return Arrays.asList(
-				colorElement( "edge", style::getEdgeColor, style::edgeColor ),
-				colorElement( "selected edge", style::getSelectedEdgeColor, style::selectedEdgeColor ),
+
+				booleanElement( "draw labels", style::isDrawVertexName, style::drawVertexName ),
+
+				separator(),
+
 				colorElement( "vertex fill", style::getVertexFillColor, style::vertexFillColor ),
 				colorElement( "selected vertex fill", style::getSelectedVertexFillColor, style::selectedVertexFillColor ),
-				colorElement( "vertex draw", style::getVertexDrawColor, style::vertexDrawColor ),
-				colorElement( "selected vertex draw", style::getSelectedVertexDrawColor, style::selectedVertexDrawColor ),
+				colorElement( "vertex contour", style::getVertexDrawColor, style::vertexDrawColor ),
+				colorElement( "selected vertex contour", style::getSelectedVertexDrawColor, style::selectedVertexDrawColor ),
 				colorElement( "simplified vertex fill", style::getSimplifiedVertexFillColor, style::simplifiedVertexFillColor ),
 				colorElement( "selected simplified vertex fill", style::getSelectedSimplifiedVertexFillColor, style::selectedSimplifiedVertexFillColor ),
+				colorElement( "edge", style::getEdgeColor, style::edgeColor ),
+				colorElement( "selected edge", style::getSelectedEdgeColor, style::selectedEdgeColor ),
 
 				separator(),
 
-				colorElement( "vertex range", style::getVertexRangeColor, style::vertexRangeColor ),
-
-				separator(),
-
-				colorElement( "background", style::getBackgroundColor, style::backgroundColor ),
-				colorElement( "header background", style::getHeaderBackgroundColor, style::headerBackgroundColor ),
-				colorElement( "decoration", style::getDecorationColor, style::decorationColor ),
-				colorElement( "header decoration", style::getHeaderDecorationColor, style::headerDecorationColor ),
-				colorElement( "current timepoint", style::getCurrentTimepointColor, style::currentTimepointColor ),
-				colorElement( "header current timepoint", style::getHeaderCurrentTimepointColor, style::headerCurrentTimepointColor ),
-
-				separator(),
-
-				booleanElement( "paint rows", style::isPaintRows, style::paintRows ),
-				booleanElement( "highlight current timepoint", style::isHighlightCurrentTimepoint, style::highlightCurrentTimepoint ),
-				booleanElement( "paint columns", style::isPaintColumns, style::paintColumns ),
-				booleanElement( "paint header shadow", style::isPaintHeaderShadow, style::paintHeaderShadow )
+				colorElement( "axis color", style::getAxisColor, style::axisColor ),
+				colorElement( "background", style::getBackgroundColor, style::backgroundColor )
 		);
 	}
 

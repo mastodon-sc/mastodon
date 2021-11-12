@@ -204,8 +204,7 @@ public class PaintGraph
 		final boolean selected = edge.isSelected();
 		final int specifiedColor = edge.getColor();
 		final Color drawColor = getColor( selected, transition, ratio, specifiedColor,
-				style.getEdgeColor(), style.getSelectedEdgeColor(),
-				style.getGhostEdgeColor(), style.getGhostSelectedEdgeColor() );
+				style.getEdgeColor(), style.getSelectedEdgeColor() );
 		g2.setColor( drawColor );
 		if ( highlighted )
 			g2.setStroke( style.getEdgeHighlightStroke() );
@@ -234,9 +233,7 @@ public class PaintGraph
 
 		final Color fillColor = getColor( selected, transition, ratio, specifiedColor,
 				disappear ? style.getSelectedSimplifiedVertexFillColor() : style.getSimplifiedVertexFillColor(),
-				style.getSelectedSimplifiedVertexFillColor(),
-				disappear ? style.getGhostSelectedSimplifiedVertexFillColor() : style.getGhostSimplifiedVertexFillColor(),
-				style.getGhostSelectedSimplifiedVertexFillColor() );
+				style.getSelectedSimplifiedVertexFillColor() );
 
 		final double x = vertex.getX();
 		final double y = vertex.getY();
@@ -270,9 +267,7 @@ public class PaintGraph
 
 			final Color fillColor = getColor( selected, transition, ratio, specifiedColor,
 					disappear ? style.getSelectedSimplifiedVertexFillColor() : style.getSimplifiedVertexFillColor(),
-					style.getSelectedSimplifiedVertexFillColor(),
-					disappear ? style.getGhostSelectedSimplifiedVertexFillColor() : style.getGhostSimplifiedVertexFillColor(),
-					style.getGhostSelectedSimplifiedVertexFillColor() );
+					style.getSelectedSimplifiedVertexFillColor() );
 
 			final double x = vertex.getX();
 			final double y = vertex.getY();
@@ -307,11 +302,9 @@ public class PaintGraph
 		final double spotradius = spotdiameter / 2;
 
 		final Color fillColor = getColor( selected, transition, ratio, specifiedColor,
-				style.getVertexFillColor(), style.getSelectedVertexFillColor(),
-				style.getGhostVertexFillColor(), style.getGhostSelectedVertexFillColor() );
+				style.getVertexFillColor(), style.getSelectedVertexFillColor() );
 		final Color drawColor = getColor( selected, transition, ratio, 0,
-				style.getVertexDrawColor(), style.getSelectedVertexDrawColor(),
-				style.getGhostVertexDrawColor(), style.getGhostSelectedVertexDrawColor() );
+				style.getVertexDrawColor(), style.getSelectedVertexDrawColor() );
 
 		final double x = vertex.getX();
 		final double y = vertex.getY();
@@ -360,9 +353,7 @@ public class PaintGraph
 			final double completionRatio,
 			final int specifiedColor,
 			final Color normalColor,
-			final Color selectedColor,
-			final Color ghostNormalColor,
-			final Color ghostSelectedColor )
+			final Color selectedColor )
 	{
 		if ( transition == NONE )
 		{
