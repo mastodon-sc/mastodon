@@ -6,7 +6,6 @@ import org.mastodon.collection.RefCollections;
 import org.mastodon.collection.RefList;
 import org.mastodon.collection.RefSet;
 import org.mastodon.collection.ref.RefArrayList;
-import org.mastodon.feature.FeatureModel;
 import org.mastodon.feature.FeatureProjection;
 import org.mastodon.graph.Edge;
 import org.mastodon.graph.Vertex;
@@ -19,7 +18,6 @@ import org.mastodon.model.SelectionModel;
 import org.mastodon.pool.DoubleMappedElement;
 import org.mastodon.spatial.HasTimepoint;
 import org.mastodon.ui.coloring.GraphColorGenerator;
-import org.mastodon.views.grapher.SpecPair;
 import org.scijava.listeners.Listeners;
 import org.scijava.listeners.Listeners.List;
 
@@ -34,11 +32,11 @@ public class DataGraphLayout< V extends Vertex< E > & HasTimepoint & HasLabel, E
 
 	private final Listeners.List< LayoutListener > listeners;
 
-	private final FeatureModel featureModel;
-
 	private FeatureProjection< V > yp;
 
 	private FeatureProjection< V > xp;
+
+	private RefSet< DataVertex > vertices;
 
 	private double currentLayoutMinX;
 
@@ -56,79 +54,105 @@ public class DataGraphLayout< V extends Vertex< E > & HasTimepoint & HasLabel, E
 	// by the call to #cropAndScale(). Is this safe? Is this Ok?
 	private KDTree< ScreenVertex, DoubleMappedElement > screenKDtree;
 
+	private boolean paintEdges;
+
 	public DataGraphLayout(
 			final DataGraph< V, E > dataGraph,
-			final FeatureModel featureModel,
 			final SelectionModel< DataVertex, DataEdge > selection )
 	{
 		this.dataGraph = dataGraph;
-		this.featureModel = featureModel;
 		this.selection = selection;
 		this.listeners = new Listeners.SynchronizedList<>();
+		this.vertices = RefCollections.createRefSet( dataGraph.vertices() );
 	}
 
-	public void setXFeature( final SpecPair x )
+	public void setXFeature( final FeatureProjection< V > xproj )
 	{
-		this.xp = x.getProjection( featureModel );
+		this.xp = xproj;
 	}
 
-	public void setYFeature( final SpecPair y )
+	public void setYFeature( final FeatureProjection< V > yproj )
 	{
-		this.yp = y.getProjection( featureModel );
+		this.yp = yproj;
 	}
+
+	/**
+	 * Specify what vertices to layout.
+	 * 
+	 * @param vertices
+	 *            the vertices to layout.
+	 */
+	public void setVertices( final RefSet< DataVertex > vertices )
+	{
+		this.vertices = vertices;
+	}
+
+	/**
+	 * Sets whether the screen edges will be generated.
+	 * 
+	 * @param paintEdges
+	 *            if <code>true</code> the screen edges will be generated.
+	 */
+	public void setPaintEdges( final boolean paintEdges )
+	{
+		this.paintEdges = paintEdges;
+	}
+
 	/*
 	 * Layout
 	 */
 
 	/**
-	 * Resets X and Y position based on the specified feature specifications for
-	 * all the vertices in the data graph.
+	 * Resets X and Y position based on the current feature specifications for
+	 * the current vertices in the data graph.
 	 */
 	public void layout()
 	{
-		layout( dataGraph.vertices() );
-	}
-
-	/**
-	 * Resets X and Y position based on the specified feature specifications for
-	 * the specified collection of vertices only.
-	 */
-	public void layout( final Iterable< DataVertex > vertices )
-	{
-		currentLayoutMinX = Double.POSITIVE_INFINITY;
-		currentLayoutMaxX = Double.NEGATIVE_INFINITY;
-		currentLayoutMinY = Double.POSITIVE_INFINITY;
-		currentLayoutMaxY = Double.NEGATIVE_INFINITY;
-		if ( xp != null && yp != null )
+		if ( vertices.isEmpty() )
 		{
-			final V ref = dataGraph.idmap.vertexIdBimap().createRef();
-			for ( final DataVertex dv : vertices )
+			currentLayoutMinX = 0.;
+			currentLayoutMaxX = 1.;
+			currentLayoutMinY = 0.;
+			currentLayoutMaxY = 1.;
+		}
+		else
+		{
+
+			currentLayoutMinX = Double.POSITIVE_INFINITY;
+			currentLayoutMaxX = Double.NEGATIVE_INFINITY;
+			currentLayoutMinY = Double.POSITIVE_INFINITY;
+			currentLayoutMaxY = Double.NEGATIVE_INFINITY;
+			if ( xp != null && yp != null )
 			{
-				final int id = dv.getModelVertexId();
-				final V v = dataGraph.idmap.getVertex( id, ref );
+				final V ref = dataGraph.idmap.vertexIdBimap().createRef();
+				for ( final DataVertex dv : vertices )
+				{
+					final int id = dv.getModelVertexId();
+					final V v = dataGraph.idmap.getVertex( id, ref );
 
-				final double x = xp.value( v );
-				if ( x > currentLayoutMaxX )
-					currentLayoutMaxX = x;
-				if ( x < currentLayoutMinX )
-					currentLayoutMinX = x;
+					final double x = xp.value( v );
+					if ( x > currentLayoutMaxX )
+						currentLayoutMaxX = x;
+					if ( x < currentLayoutMinX )
+						currentLayoutMinX = x;
 
-				final double y = yp.value( v );
-				if ( y > currentLayoutMaxY )
-					currentLayoutMaxY = y;
-				if ( y < currentLayoutMinY )
-					currentLayoutMinY = y;
+					final double y = yp.value( v );
+					if ( y > currentLayoutMaxY )
+						currentLayoutMaxY = y;
+					if ( y < currentLayoutMinY )
+						currentLayoutMinY = y;
 
-				dv.setLayoutX( x );
-				dv.setLayoutY( y );
+					dv.setLayoutX( x );
+					dv.setLayoutY( y );
+				}
+				dataGraph.idmap.vertexIdBimap().releaseRef( ref );
 			}
-			dataGraph.idmap.vertexIdBimap().releaseRef( ref );
 
 			// Regen kdtree
 			final Collection< DataVertex > collection;
 			if ( vertices instanceof Collection )
 			{
-				collection = ( Collection< DataVertex > ) vertices;
+				collection = vertices;
 			}
 			else
 			{
@@ -299,40 +323,46 @@ public class DataGraphLayout< V extends Vertex< E > & HasTimepoint & HasLabel, E
 				screenVertices.add( sv );
 			}
 
-			// neighbors.
-			for ( final DataEdge e : v1.edges() )
+			if ( paintEdges )
 			{
-				e.getSource( v2 );
-				if ( v2.equals( v1 ) )
-					e.getTarget( v2 );
-
-				if ( v2.getScreenVertexIndex() < 0 )
+				for ( final DataEdge e : v1.edges() )
 				{
-					// not visited. We have to create it.
-					final int v2si = screenVertices.size();
-					v2.setScreenVertexIndex( v2si );
-					final int id2 = v2.getInternalPoolIndex();
-					final String label2 = v2.getLabel();
-					final boolean selected2 = selection.isSelected( v2 );
+					e.getSource( v2 );
+					if ( v2.equals( v1 ) )
+						e.getTarget( v2 );
 
-					final double x2 = v2.getLayoutX();
-					final double y2 = v2.getLayoutY();
-					final double sx2 = transform.layoutToScreenX( x2 ) + decorationsOffsetX;
-					final double sy2 = transform.layoutToScreenY( y2 ) + decorationsOffsetY;
-					screenVertexPool.create( sv ).init( id2, label2, sx2, sy2, selected2, colorGenerator.color( v2 ) );
-					screenVertices.add( sv );
-				}
+					// Do not paint edges that connect vertices not in the set.
+					if ( !vertices.contains( v2 ) )
+						continue;
 
-				if ( e.getScreenEdgeIndex() < 0 )
-				{
-					final int esi = screenEdges.size();
-					e.setScreenEdgeIndex( esi );
-					final int sourceScreenVertexIndex = v1.getScreenVertexIndex();
-					final int targetScreenVertexIndex = v2.getScreenVertexIndex();
-					final int eid = e.getInternalPoolIndex();
-					final boolean eselected = selection.isSelected( e );
-					screenEdgePool.create( se ).init( eid, sourceScreenVertexIndex, targetScreenVertexIndex, eselected, colorGenerator.color( e, v2, v1 ) );
-					screenEdges.add( se );
+					if ( v2.getScreenVertexIndex() < 0 )
+					{
+						// not visited. We have to create it.
+						final int v2si = screenVertices.size();
+						v2.setScreenVertexIndex( v2si );
+						final int id2 = v2.getInternalPoolIndex();
+						final String label2 = v2.getLabel();
+						final boolean selected2 = selection.isSelected( v2 );
+
+						final double x2 = v2.getLayoutX();
+						final double y2 = v2.getLayoutY();
+						final double sx2 = transform.layoutToScreenX( x2 ) + decorationsOffsetX;
+						final double sy2 = transform.layoutToScreenY( y2 ) + decorationsOffsetY;
+						screenVertexPool.create( sv ).init( id2, label2, sx2, sy2, selected2, colorGenerator.color( v2 ) );
+						screenVertices.add( sv );
+					}
+
+					if ( e.getScreenEdgeIndex() < 0 )
+					{
+						final int esi = screenEdges.size();
+						e.setScreenEdgeIndex( esi );
+						final int sourceScreenVertexIndex = v1.getScreenVertexIndex();
+						final int targetScreenVertexIndex = v2.getScreenVertexIndex();
+						final int eid = e.getInternalPoolIndex();
+						final boolean eselected = selection.isSelected( e );
+						screenEdgePool.create( se ).init( eid, sourceScreenVertexIndex, targetScreenVertexIndex, eselected, colorGenerator.color( e, v2, v1 ) );
+						screenEdges.add( se );
+					}
 				}
 			}
 		}

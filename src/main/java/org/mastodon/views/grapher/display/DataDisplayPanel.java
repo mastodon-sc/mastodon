@@ -40,6 +40,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollBar;
 import javax.swing.UIManager;
 
+import org.mastodon.collection.RefCollections;
 import org.mastodon.graph.GraphChangeListener;
 import org.mastodon.model.FocusListener;
 import org.mastodon.model.FocusModel;
@@ -237,7 +238,7 @@ public class DataDisplayPanel extends JPanel implements
 			}
 		} );
 
-		contextLayout = new DataGraphContextLayout( layout );
+		contextLayout = new DataGraphContextLayout( layout, RefCollections.createRefSet( graph.vertices() ) );
 		colorGenerator = options.getGraphColorGenerator();
 		layout.layoutListeners().add( transformEventHandler );
 		entityAnimator = new ScreenEntityAnimator();
@@ -677,6 +678,11 @@ public class DataDisplayPanel extends JPanel implements
 	public OffsetAxes getOffsetAxes()
 	{
 		return offsetAxes;
+	}
+
+	public DataGraphLayout< ?, ? > getDataGraphLayout()
+	{
+		return layout;
 	}
 
 	public InertialScreenTransformEventHandler getTransformEventHandler()

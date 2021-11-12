@@ -28,6 +28,7 @@
  */
 package org.mastodon.views.grapher.datagraph;
 
+import org.mastodon.collection.RefSet;
 import org.mastodon.views.context.Context;
 
 public class DataGraphContextLayout
@@ -35,9 +36,12 @@ public class DataGraphContextLayout
 
 	private final DataGraphLayout< ?, ? > layout;
 
-	public DataGraphContextLayout( final DataGraphLayout< ?, ? > layout )
+	private final RefSet< DataVertex > holder;
+
+	public DataGraphContextLayout( final DataGraphLayout< ?, ? > layout, final RefSet< DataVertex > holder )
 	{
 		this.layout = layout;
+		this.holder = holder;
 	}
 
 	/**
@@ -50,6 +54,10 @@ public class DataGraphContextLayout
 	{
 		final int timepoint = context.getTimepoint();
 		final Iterable< DataVertex > vertices = context.getInsideVertices( timepoint );
-		layout.layout( vertices );
+		holder.clear();
+		for ( final DataVertex v : vertices )
+			holder.add( v );
+		layout.setVertices( holder );
+		layout.layout();
 	}
 }

@@ -56,7 +56,13 @@ public class SpecPair implements Comparable< SpecPair >
 		if ( c != 0 )
 			return c;
 
-		return projectionSpec.getKey().compareTo( o.projectionSpec.getKey() );
+		return projectionKey().toString().compareTo( o.projectionKey().toString() );
+	}
+
+	@Override
+	public boolean equals( final Object obj )
+	{
+		return ( obj instanceof SpecPair ) && compareTo( ( SpecPair ) obj ) == 0;
 	}
 
 	@Override
@@ -66,10 +72,30 @@ public class SpecPair implements Comparable< SpecPair >
 			return "";
 
 		final int size = featureSpec.getProjectionSpecs().size();
-		if ( size == 1 )
+		if ( featureSpec.getMultiplicity().equals( Multiplicity.SINGLE ) && size == 1 )
 			return featureSpec.getKey();
 
-		return featureSpec.getKey() + " - " + projectionSpec.getKey();
+		return featureSpec.getKey() + " - " + projectionKey();
+	}
+
+	public FeatureProjectionKey projectionKey()
+	{
+		final Multiplicity multiplicity = featureSpec.getMultiplicity();
+		final FeatureProjectionKey key;
+		switch ( multiplicity )
+		{
+		case ON_SOURCES:
+			key = FeatureProjectionKey.key( projectionSpec, c1 );
+			break;
+		case ON_SOURCE_PAIRS:
+			key = FeatureProjectionKey.key( projectionSpec, c1, c2 );
+			break;
+		case SINGLE:
+		default:
+			key = FeatureProjectionKey.key( projectionSpec );
+			break;
+		}
+		return key;
 	}
 
 	/**
@@ -89,21 +115,7 @@ public class SpecPair implements Comparable< SpecPair >
 		if ( null == feature )
 			return null;
 
-		final Multiplicity multiplicity = feature.getSpec().getMultiplicity();
-		final FeatureProjectionKey key;
-		switch ( multiplicity )
-		{
-		case ON_SOURCES:
-			key = FeatureProjectionKey.key( projectionSpec, c1 );
-			break;
-		case ON_SOURCE_PAIRS:
-			key = FeatureProjectionKey.key( projectionSpec, c1, c2 );
-			break;
-		case SINGLE:
-		default:
-			key = FeatureProjectionKey.key( projectionSpec );
-			break;
-		}
+		final FeatureProjectionKey key = projectionKey();
 		@SuppressWarnings( "unchecked" )
 		final FeatureProjection< O > projection = ( FeatureProjection< O > ) feature.project( key );
 		return projection;

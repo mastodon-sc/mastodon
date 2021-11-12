@@ -55,12 +55,12 @@ import org.mastodon.app.ui.MastodonFrameViewActions;
 import org.mastodon.app.ui.SearchVertexLabel;
 import org.mastodon.app.ui.ViewMenu;
 import org.mastodon.app.ui.ViewMenuBuilder.JMenuHandle;
-import org.mastodon.mamut.feature.SpotIntensityFeature;
+import org.mastodon.mamut.feature.SpotFrameFeature;
+import org.mastodon.mamut.feature.SpotQuickMeanIntensityFeature;
 import org.mastodon.mamut.model.Link;
 import org.mastodon.mamut.model.Model;
 import org.mastodon.mamut.model.Spot;
 import org.mastodon.model.AutoNavigateFocusModel;
-import org.mastodon.model.TimepointModel;
 import org.mastodon.model.tag.TagSetStructure.TagSet;
 import org.mastodon.ui.EditTagActions;
 import org.mastodon.ui.FocusActions;
@@ -81,6 +81,7 @@ import org.mastodon.views.grapher.display.DataDisplayFrame;
 import org.mastodon.views.grapher.display.DataDisplayOptions;
 import org.mastodon.views.grapher.display.DataDisplayPanel;
 import org.mastodon.views.grapher.display.DataDisplayZoom;
+import org.mastodon.views.grapher.display.GraphConfig;
 import org.mastodon.views.grapher.display.OffsetAxes;
 import org.mastodon.views.grapher.display.style.DataDisplayStyle;
 import org.mastodon.views.trackscheme.display.ColorBarOverlay;
@@ -117,21 +118,14 @@ public class MamutViewGrapher2 extends MamutView< DataGraph< Spot, Link >, DataV
 						appModel.getModel().getGraph().getLock() ),
 				new String[] { KeyConfigContexts.GRAPHER } );
 
-		/*
-		 * We hardcode the initial features for now.
-		 */
-		final DataGraphLayout< Spot, Link > layout = new DataGraphLayout<>(
-				viewGraph,
-				appModel.getModel().getFeatureModel(),
-				selectionModel );
-//		final SpecPair x = new SpecPair( SpotFrameFeature.SPEC, SpotFrameFeature.SPEC.getProjectionSpecs().iterator().next() );
-		final SpecPair x = new SpecPair( SpotIntensityFeature.SPEC, SpotIntensityFeature.MEDIAN_PROJECTION_SPEC, 0 );
-		final SpecPair y = new SpecPair( SpotIntensityFeature.SPEC, SpotIntensityFeature.MEAN_PROJECTION_SPEC, 0 );
-		layout.setXFeature( x );
-		layout.setYFeature( y );
-
 		final KeyPressedManager keyPressedManager = appModel.getKeyPressedManager();
 		final Model model = appModel.getModel();
+
+		/*
+		 * The layout.
+		 */
+		final DataGraphLayout< Spot, Link > layout = new DataGraphLayout<>( viewGraph, selectionModel );
+
 
 		/*
 		 * ContextChooser
@@ -164,8 +158,10 @@ public class MamutViewGrapher2 extends MamutView< DataGraph< Spot, Link >, DataV
 			groupHandle.setGroupId( groupID.intValue() );
 
 		final AutoNavigateFocusModel< DataVertex, DataEdge > navigateFocusModel = new AutoNavigateFocusModel<>( focusModel, navigationHandler );
-		final DataDisplayFrame frame = new DataDisplayFrame(
+		final DataDisplayFrame< Spot, Link > frame = new DataDisplayFrame< Spot, Link >(
 				viewGraph,
+				appModel.getModel().getFeatureModel(),
+				appModel.getSharedBdvData().getSources().size(),
 				layout,
 				highlightModel,
 				navigateFocusModel,
@@ -176,6 +172,12 @@ public class MamutViewGrapher2 extends MamutView< DataGraph< Spot, Link >, DataV
 				contextChooser,
 				options );
 		final DataDisplayPanel dataDisplayPanel = frame.getDataDisplayPanel();
+
+		// If they are available, set some sensible defaults for the feature.
+		final SpecPair spvx = new SpecPair( SpotFrameFeature.SPEC, SpotFrameFeature.SPEC.getProjectionSpecs().iterator().next() );
+		final SpecPair spvy = new SpecPair( SpotQuickMeanIntensityFeature.SPEC, SpotQuickMeanIntensityFeature.PROJECTION_SPEC, 0 );
+		final GraphConfig gcv = new GraphConfig( spvx, spvy, false, true, true );
+		frame.getVertexSidePanel().setGraphConfig( gcv );
 
 		// Restore settings panel visibility.
 		final Boolean settingsPanelVisible = ( Boolean ) guiState.get( SETTINGS_PANEL_VISIBLE_KEY );
@@ -244,7 +246,6 @@ public class MamutViewGrapher2 extends MamutView< DataGraph< Spot, Link >, DataV
 		/*
 		 * Coloring
 		 */
-
 		coloringModel = registerColoring( coloringAdapter, coloringMenuHandle,
 				() -> dataDisplayPanel.entitiesAttributesChanged() );
 		registerTagSetMenu( tagSetMenuHandle,
@@ -309,30 +310,5 @@ public class MamutViewGrapher2 extends MamutView< DataGraph< Spot, Link >, DataV
 	public ContextChooser< Spot > getContextChooser()
 	{
 		return contextChooser;
-	}
-
-	public GraphColorGeneratorAdapter< Spot, Link, DataVertex, DataEdge > getGraphColorGeneratorAdapter()
-	{
-		return coloringAdapter;
-	}
-
-	public ColoringModel getColoringModel()
-	{
-		return coloringModel;
-	}
-
-	public TimepointModel getTimepointModel()
-	{
-		return timepointModel;
-	}
-
-	/**
-	 * Exposes the {@link DataDisplayPanel} displayed in this view.
-	 *
-	 * @return the {@link DataDisplayPanel}.
-	 */
-	DataDisplayPanel getDataDisplayPanel()
-	{
-		return ( ( DataDisplayFrame ) getFrame() ).getDataDisplayPanel();
 	}
 }

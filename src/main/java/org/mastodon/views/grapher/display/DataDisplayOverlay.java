@@ -275,6 +275,16 @@ public class DataDisplayOverlay implements OverlayRenderer, OffsetAxesListener
 			overlay.setCanvasSize( width, height );
 	}
 
+	public void setXLabel( final String label )
+	{
+		paintDecorations.setXLabel( label );
+	}
+
+	public void setYLabel( final String label )
+	{
+		paintDecorations.setYLabel( label );
+	}
+
 	@Override
 	public void updateAxesSize( final int width, final int height )
 	{

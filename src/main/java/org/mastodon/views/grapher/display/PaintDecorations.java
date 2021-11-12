@@ -43,6 +43,20 @@ import org.mastodon.views.grapher.display.style.DataDisplayStyle;
 public class PaintDecorations
 {
 
+	private String xLabel = "X";
+
+	private String yLabel = "Y";
+
+	public void setXLabel( final String label )
+	{
+		this.xLabel = label;
+	}
+
+	public void setYLabel( final String label )
+	{
+		this.yLabel = label;
+	}
+
 	/**
 	 * Paint background of the DataGraph display. Specifics depend on the
 	 * {@link DataDisplayStyle} settings.
@@ -174,7 +188,6 @@ public class PaintDecorations
 
 			// 3. Y label
 			// TODO specific fonts for labels
-			final String yLabel = "The Y feature projection"; // TODO
 			final int yLabelWidth = fm.stringWidth( yLabel );
 			drawStringRotated( g2,
 					axesWidth - tickWidth - 2 - maxStringWidth - 5,
@@ -222,7 +235,6 @@ public class PaintDecorations
 
 			// 3. X label
 			// TODO specific fonts for labels
-			final String xLabel = "The X feature projection"; // TODO
 			final int xLabelWidth = fm.stringWidth( xLabel );
 			g2.drawString( xLabel,
 					axesWidth + ( width - axesWidth ) / 2 - xLabelWidth / 2,
