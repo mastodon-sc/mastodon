@@ -459,7 +459,7 @@ public class InertialScreenTransformEventHandler
 				return;
 
 			final int x = wx - headerWidth;
-			final int y = wy - headerHeight;
+			final int y = wy;
 
 			final boolean zoomIn = wheelRotation < 0;
 			double dScale = 1.0 + Math.abs( wheelRotation ) * zoomScrollSensitivity;

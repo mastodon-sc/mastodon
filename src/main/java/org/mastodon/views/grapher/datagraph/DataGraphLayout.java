@@ -201,6 +201,10 @@ public class DataGraphLayout< V extends Vertex< E > & HasTimepoint & HasLabel, E
 	 */
 	public RefSet< DataVertex > getDataVerticesWithin( final double x1, final double y1, final double x2, final double y2 )
 	{
+		final RefSet< DataVertex > set = RefCollections.createRefSet( dataGraph.vertices() );
+		if ( screenKDtree == null )
+			return set;
+
 		final double lx1 = Math.min( x1, x2 );
 		final double lx2 = Math.max( x1, x2 );
 		final double ly1 = Math.min( y1, y2 );
@@ -218,7 +222,6 @@ public class DataGraphLayout< V extends Vertex< E > & HasTimepoint & HasLabel, E
 		clip.clip( polytope );
 
 		// To data vertices.
-		final RefSet< DataVertex > set = RefCollections.createRefSet( dataGraph.vertices() );
 		final DataVertex ref = dataGraph.vertexRef();
 		for ( final ScreenVertex sv : clip.getInsideValues() )
 			set.add( dataGraph.getVertexPool().getObject( sv.getDataVertexId(), ref ) );
@@ -318,7 +321,7 @@ public class DataGraphLayout< V extends Vertex< E > & HasTimepoint & HasLabel, E
 				final double x1 = v1.getLayoutX();
 				final double y1 = v1.getLayoutY();
 				final double sx1 = transform.layoutToScreenX( x1 ) + decorationsOffsetX;
-				final double sy1 = transform.layoutToScreenY( y1 ) + decorationsOffsetY;
+				final double sy1 = transform.layoutToScreenY( y1 );
 				screenVertexPool.create( sv ).init( id1, label1, sx1, sy1, selected1, colorGenerator.color( v1 ) );
 				screenVertices.add( sv );
 			}
@@ -347,7 +350,7 @@ public class DataGraphLayout< V extends Vertex< E > & HasTimepoint & HasLabel, E
 						final double x2 = v2.getLayoutX();
 						final double y2 = v2.getLayoutY();
 						final double sx2 = transform.layoutToScreenX( x2 ) + decorationsOffsetX;
-						final double sy2 = transform.layoutToScreenY( y2 ) + decorationsOffsetY;
+						final double sy2 = transform.layoutToScreenY( y2 );
 						screenVertexPool.create( sv ).init( id2, label2, sx2, sy2, selected2, colorGenerator.color( v2 ) );
 						screenVertices.add( sv );
 					}

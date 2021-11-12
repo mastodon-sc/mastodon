@@ -297,7 +297,7 @@ public class DataDisplayNavigationBehaviours implements TransformListener< Scree
 		@Override
 		public void click( final int x, final int y )
 		{
-			if ( x < headerWidth || y < headerHeight )
+			if ( x < headerWidth || y > screenTransform.getScreenHeight() - headerHeight )
 				return;
 
 			lock.readLock().lock();
@@ -328,7 +328,7 @@ public class DataDisplayNavigationBehaviours implements TransformListener< Scree
 		@Override
 		public void click( final int x, final int y )
 		{
-			if ( x < headerWidth || y < headerHeight )
+			if ( x < headerWidth || y > screenTransform.getScreenHeight() - headerHeight )
 				return;
 
 			lock.readLock().lock();
@@ -362,7 +362,7 @@ public class DataDisplayNavigationBehaviours implements TransformListener< Scree
 		@Override
 		public void click( final int x, final int y )
 		{
-			if ( x < headerWidth || y < headerHeight )
+			if ( x < headerWidth || y > screenTransform.getScreenHeight() - headerHeight )
 				return;
 
 			lock.readLock().lock();
@@ -415,7 +415,7 @@ public class DataDisplayNavigationBehaviours implements TransformListener< Scree
 			oX = x;
 			oY = y;
 			dragging = false;
-			ignore = x < headerWidth || y < headerHeight;
+			ignore = x < headerWidth || y > screenTransform.getScreenHeight() - headerHeight;
 		}
 
 		@Override

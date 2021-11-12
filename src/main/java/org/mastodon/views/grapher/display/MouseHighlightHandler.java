@@ -54,14 +54,19 @@ public class MouseHighlightHandler implements MouseMotionListener, MouseListener
 	private int x, y;
 
 	/**
-	 * current width of vertical header.
+	 * Current width of vertical header.
 	 */
 	private int headerWidth;
 
 	/**
-	 * current height of horizontal header.
+	 * Current height of horizontal header.
 	 */
 	private int headerHeight;
+
+	/**
+	 * The height of the panel items are painted in.
+	 */
+	private int screenHeight;
 
 	public MouseHighlightHandler(
 			final DataDisplayOverlay graphOverlay,
@@ -92,6 +97,7 @@ public class MouseHighlightHandler implements MouseMotionListener, MouseListener
 	@Override
 	public void transformChanged( final ScreenTransform t )
 	{
+		screenHeight = t.getScreenHeight();
 		if ( mouseInside )
 			highlight();
 	}
@@ -105,7 +111,7 @@ public class MouseHighlightHandler implements MouseMotionListener, MouseListener
 
 	private void highlight()
 	{
-		if ( x < headerWidth || y < headerHeight )
+		if ( x < headerWidth || y > screenHeight - headerHeight )
 			highlight.clearHighlight();
 		else
 		{

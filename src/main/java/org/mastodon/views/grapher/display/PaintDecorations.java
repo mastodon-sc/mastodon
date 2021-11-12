@@ -149,11 +149,15 @@ public class PaintDecorations
 		final int fontAscent = fm.getAscent();
 		final int fontInc = fontAscent / 2;
 
+		// Y location of the X axis.
+		final int ytop = height - axesHeight;
+		final int ybottom = height;
+
 		if ( isVisibleYAxis )
 		{
 			// Erase.
 			g2.setColor( style.getHeaderBackgroundColor() );
-			g2.fillRect( 0, axesHeight, axesWidth, height - axesHeight );
+			g2.fillRect( 0, 0, axesWidth, ytop );
 
 			// Paint axis.
 			g2.setColor( style.getHeaderDecorationColor() );
@@ -174,7 +178,7 @@ public class PaintDecorations
 			for ( int y = ystart; y <= yend; y = y + stepY )
 			{
 				// 1. Ticks.
-				final int yline = ( int ) screenTransform.layoutToScreenY( y ) + axesHeight;
+				final int yline = ( int ) screenTransform.layoutToScreenY( y );
 				g2.drawLine( axesWidth - tickWidth, yline, axesWidth - 1, yline );
 
 				// 2. Tick labels.
@@ -200,14 +204,14 @@ public class PaintDecorations
 		{
 			// Erase.
 			g2.setColor( style.getHeaderBackgroundColor() );
-			g2.fillRect( axesWidth, 0, width - axesWidth, axesHeight );
+			g2.fillRect( axesWidth, ytop, width - axesWidth, ybottom );
 
 			// Paint axis.
 			g2.setColor( style.getHeaderDecorationColor() );
 
 			// Steps.
 			final int stepX = Math.max( 1, maxTickSpacing / ( int ) ( 1 + xScale ) );
-			int xstart = Math.max( 0, ( int ) minX - 1 ); // TODO not -1
+			int xstart = Math.max( 0, ( int ) minX - 1 );
 			xstart = ( xstart / stepX ) * stepX;
 			int xend = Math.max( 0, 1 + ( int ) maxX );
 			xend = ( 1 + xend / stepX ) * stepX;
@@ -215,20 +219,20 @@ public class PaintDecorations
 			// From top to bottom.
 
 			// 0. Horizontal line.
-			g2.drawLine( axesWidth, axesHeight, width, axesHeight );
+			g2.drawLine( axesWidth, ytop, width, ytop );
 
 			int maxStringWidth = -1;
 			for ( int x = xstart; x <= xend; x = x + stepX )
 			{
 				// 1. Ticks.
 				final int xline = ( int ) ( ( x - minX ) * xScale ) + axesWidth;
-				g2.drawLine( xline, axesHeight - tickWidth, xline, axesHeight - 1 );
+				g2.drawLine( xline, ytop + tickWidth, xline, ytop + 1 );
 
 				// 2. Tick labels.
 				final String tickLabel = "" + x;
 				final int stringWidth = fm.stringWidth( tickLabel );
 				final int xtext = xline - stringWidth / 2;
-				g2.drawString( tickLabel, xtext, axesHeight - tickWidth - 2 );
+				g2.drawString( tickLabel, xtext, ytop + tickWidth + 2 + fontAscent );
 				if ( stringWidth > maxStringWidth )
 					maxStringWidth = stringWidth;
 			}
@@ -238,13 +242,13 @@ public class PaintDecorations
 			final int xLabelWidth = fm.stringWidth( xLabel );
 			g2.drawString( xLabel,
 					axesWidth + ( width - axesWidth ) / 2 - xLabelWidth / 2,
-					axesHeight - tickWidth - 2 - fontAscent - 5 );
+					ytop + tickWidth + 2 + 2 * fontAscent + 5 );
 		}
 
 		if ( isVisibleYAxis && isVisibleXAxis )
 		{
 			g2.setColor( style.getHeaderBackgroundColor() );
-			g2.fillRect( 0, 0, axesWidth, axesHeight );
+			g2.fillRect( 0, ytop, axesWidth, ybottom );
 		}
 	}
 

@@ -112,8 +112,6 @@ public class DataDisplayZoom< V extends Vertex< E > & HasTimepoint, E extends Ed
 
 	private int axesWidth;
 
-	private int axesHeight;
-
 	private final ScreenTransform screenTransform;
 
 	private final ZoomOverlay overlay;
@@ -133,7 +131,6 @@ public class DataDisplayZoom< V extends Vertex< E > & HasTimepoint, E extends Ed
 	public void updateAxesSize( final int width, final int height )
 	{
 		axesWidth = width;
-		axesHeight = height;
 	}
 
 	@Override
@@ -177,8 +174,8 @@ public class DataDisplayZoom< V extends Vertex< E > & HasTimepoint, E extends Ed
 
 			final int x1 = Math.min( overlay.ox, overlay.ex ) - axesWidth;
 			final int x2 = Math.max( overlay.ox, overlay.ex ) - axesWidth;
-			final int y1 = Math.min( overlay.oy, overlay.ey ) - axesHeight;
-			final int y2 = Math.max( overlay.oy, overlay.ey ) - axesHeight;
+			final int y1 = Math.min( overlay.oy, overlay.ey );
+			final int y2 = Math.max( overlay.oy, overlay.ey );
 			final double[] screen1 = new double[] { x1, y1 };
 			final double[] screen2 = new double[] { x2, y2 };
 			final double[] layout1 = new double[ 2 ];
