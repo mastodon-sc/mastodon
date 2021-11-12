@@ -205,7 +205,7 @@ public class DataDisplayFrame< V extends Vertex< E > & HasTimepoint & HasLabel, 
 		return edgeSidePanel;
 	}
 
-	private void plotVertices( final GraphConfig gc, final FeatureModel featureModel )
+	private void plotVertices( final FeatureGraphConfig gc, final FeatureModel featureModel )
 	{
 		final FeatureProjection< V > xproj = gc.getXFeature().getProjection( featureModel );
 		final FeatureProjection< V > yproj = gc.getYFeature().getProjection( featureModel );
@@ -224,7 +224,7 @@ public class DataDisplayFrame< V extends Vertex< E > & HasTimepoint & HasLabel, 
 
 		String xlabel = gc.getXFeature().toString();
 		final String xunits = xproj.units();
-		if (!xunits.isEmpty())
+		if ( !xunits.isEmpty() )
 			xlabel += " (" + xunits + ")";
 		dataDisplayPanel.getGraphOverlay().setXLabel( xlabel );
 
@@ -237,7 +237,7 @@ public class DataDisplayFrame< V extends Vertex< E > & HasTimepoint & HasLabel, 
 		dataDisplayPanel.graphChanged();
 	}
 
-	private void plotEdges( final GraphConfig graphConfig, final FeatureModel featureModel )
+	private void plotEdges( final FeatureGraphConfig graphConfig, final FeatureModel featureModel )
 	{
 		// TODO Auto-generated method stub
 		System.out.println( "plot edges" ); // DEBUG

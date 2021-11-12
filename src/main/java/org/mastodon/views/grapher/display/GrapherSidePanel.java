@@ -34,30 +34,34 @@ import org.mastodon.mamut.project.MamutProject;
 import org.mastodon.mamut.project.MamutProject.ProjectReader;
 import org.mastodon.mamut.project.MamutProjectIO;
 import org.mastodon.util.FeatureUtils;
-import org.mastodon.views.grapher.SpecPair;
 import org.scijava.Context;
 
+/**
+ * Panel that lets the user specifies what to plot. The user specifications are
+ * bundled as a {@link FeatureGraphConfig} object.
+ * 
+ * @author Jean-Yves Tinevez
+ */
 public class GrapherSidePanel extends JPanel
 {
 
 	private static final long serialVersionUID = 1L;
 
-	private final List< SpecPair > specs;
+	private final int nSources;
 
-	private final JComboBox< SpecPair > cmbboxXFeature;
+	private final List< FeatureSpecPair > specs;
 
-	private final JComboBox< SpecPair > cmbboxYFeature;
+	private final JComboBox< FeatureSpecPair > cmbboxXFeature;
+
+	private final JComboBox< FeatureSpecPair > cmbboxYFeature;
 
 	private final JCheckBox chkboxConnect;
 
 	private final JRadioButton rdbtnSelection;
 
-	final JButton btnPlot;
-
-	private final int nSources;
-
 	private final JRadioButton rdbtnKeepCurrent;
 
+	final JButton btnPlot;
 
 	public GrapherSidePanel( final int nSources )
 	{
@@ -176,7 +180,7 @@ public class GrapherSidePanel extends JPanel
 					{
 						for ( int c = 0; c < nSources; c++ )
 						{
-							final SpecPair sp = new SpecPair( fs, ps, c );
+							final FeatureSpecPair sp = new FeatureSpecPair( fs, ps, c );
 							specs.add( sp );
 						}
 					}
@@ -188,7 +192,7 @@ public class GrapherSidePanel extends JPanel
 						{
 							for ( int c2 = 0; c2 < nSources; c2++ )
 							{
-								final SpecPair sp = new SpecPair( fs, ps, c1, c2 );
+								final FeatureSpecPair sp = new FeatureSpecPair( fs, ps, c1, c2 );
 								specs.add( sp );
 							}
 						}
@@ -198,7 +202,7 @@ public class GrapherSidePanel extends JPanel
 				case SINGLE:
 					for ( final FeatureProjectionSpec ps : fs.getProjectionSpecs() )
 					{
-						final SpecPair sp = new SpecPair( fs, ps );
+						final FeatureSpecPair sp = new FeatureSpecPair( fs, ps );
 						specs.add( sp );
 					}
 					break;
@@ -211,11 +215,11 @@ public class GrapherSidePanel extends JPanel
 		refreshComboBoxes();
 	}
 
-	public GraphConfig getGraphConfig()
+	public FeatureGraphConfig getGraphConfig()
 	{
-		final SpecPair xFeature = ( SpecPair ) cmbboxXFeature.getSelectedItem();
-		final SpecPair yFeature = ( SpecPair ) cmbboxYFeature.getSelectedItem();
-		return new GraphConfig(
+		final FeatureSpecPair xFeature = ( FeatureSpecPair ) cmbboxXFeature.getSelectedItem();
+		final FeatureSpecPair yFeature = ( FeatureSpecPair ) cmbboxYFeature.getSelectedItem();
+		return new FeatureGraphConfig(
 				xFeature,
 				yFeature,
 				rdbtnKeepCurrent.isSelected(),
@@ -223,7 +227,7 @@ public class GrapherSidePanel extends JPanel
 				chkboxConnect.isSelected() );
 	}
 
-	public void setGraphConfig( final GraphConfig gc )
+	public void setGraphConfig( final FeatureGraphConfig gc )
 	{
 		cmbboxXFeature.setSelectedItem( gc.getXFeature() );
 		cmbboxYFeature.setSelectedItem( gc.getYFeature() );

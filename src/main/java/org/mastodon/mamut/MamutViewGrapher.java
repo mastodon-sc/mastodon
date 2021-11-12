@@ -30,12 +30,18 @@ package org.mastodon.mamut;
 
 import static org.mastodon.app.ui.ViewMenuBuilder.item;
 import static org.mastodon.app.ui.ViewMenuBuilder.separator;
+import static org.mastodon.mamut.MamutMenuBuilder.colorMenu;
+import static org.mastodon.mamut.MamutMenuBuilder.colorbarMenu;
+import static org.mastodon.mamut.MamutMenuBuilder.editMenu;
+import static org.mastodon.mamut.MamutMenuBuilder.tagSetMenu;
+import static org.mastodon.mamut.MamutMenuBuilder.viewMenu;
 import static org.mastodon.mamut.MamutViewStateSerialization.FEATURE_COLOR_MODE_KEY;
 import static org.mastodon.mamut.MamutViewStateSerialization.FRAME_POSITION_KEY;
 import static org.mastodon.mamut.MamutViewStateSerialization.GROUP_HANDLE_ID_KEY;
 import static org.mastodon.mamut.MamutViewStateSerialization.NO_COLORING_KEY;
 import static org.mastodon.mamut.MamutViewStateSerialization.SETTINGS_PANEL_VISIBLE_KEY;
 import static org.mastodon.mamut.MamutViewStateSerialization.TAG_SET_KEY;
+import static org.mastodon.mamut.MamutViewStateSerialization.TRACKSCHEME_TRANSFORM_KEY;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -43,31 +49,59 @@ import java.util.List;
 import java.util.Map;
 
 import javax.swing.ActionMap;
+import javax.swing.JPanel;
 
-import org.mastodon.app.IdentityViewGraph;
-import org.mastodon.app.ViewGraph;
 import org.mastodon.app.ui.MastodonFrameViewActions;
-import org.mastodon.app.ui.ViewFrame;
+import org.mastodon.app.ui.SearchVertexLabel;
 import org.mastodon.app.ui.ViewMenu;
 import org.mastodon.app.ui.ViewMenuBuilder.JMenuHandle;
-import org.mastodon.feature.FeatureModel;
+import org.mastodon.mamut.feature.SpotFrameFeature;
+import org.mastodon.mamut.feature.SpotQuickMeanIntensityFeature;
 import org.mastodon.mamut.model.Link;
 import org.mastodon.mamut.model.Model;
 import org.mastodon.mamut.model.Spot;
+import org.mastodon.model.AutoNavigateFocusModel;
 import org.mastodon.model.tag.TagSetStructure.TagSet;
+import org.mastodon.ui.EditTagActions;
+import org.mastodon.ui.FocusActions;
 import org.mastodon.ui.SelectionActions;
 import org.mastodon.ui.coloring.ColoringModel;
 import org.mastodon.ui.coloring.GraphColorGeneratorAdapter;
 import org.mastodon.ui.coloring.feature.FeatureColorMode;
 import org.mastodon.ui.keymap.KeyConfigContexts;
-import org.mastodon.views.grapher.GrapherViewFrame;
-import org.mastodon.views.table.TableViewActions;
+import org.mastodon.views.context.ContextChooser;
+import org.mastodon.views.grapher.datagraph.DataContextListener;
+import org.mastodon.views.grapher.datagraph.DataEdge;
+import org.mastodon.views.grapher.datagraph.DataGraph;
+import org.mastodon.views.grapher.datagraph.DataGraphLayout;
+import org.mastodon.views.grapher.datagraph.DataVertex;
+import org.mastodon.views.grapher.datagraph.ScreenTransform;
+import org.mastodon.views.grapher.display.DataDisplayFrame;
+import org.mastodon.views.grapher.display.DataDisplayOptions;
+import org.mastodon.views.grapher.display.DataDisplayPanel;
+import org.mastodon.views.grapher.display.DataDisplayZoom;
+import org.mastodon.views.grapher.display.FeatureGraphConfig;
+import org.mastodon.views.grapher.display.OffsetAxes;
+import org.mastodon.views.grapher.display.FeatureSpecPair;
+import org.mastodon.views.grapher.display.style.DataDisplayStyle;
+import org.mastodon.views.trackscheme.display.ColorBarOverlay;
+import org.mastodon.views.trackscheme.display.TrackSchemeNavigationActions;
+import org.scijava.ui.behaviour.KeyPressedManager;
 
-public class MamutViewGrapher extends MamutView< ViewGraph< Spot, Link, Spot, Link >, Spot, Link >
+public class MamutViewGrapher extends MamutView< DataGraph< Spot, Link >, DataVertex, DataEdge >
 {
+	private final ContextChooser< Spot > contextChooser;
 
-	private static final String[] CONTEXTS = new String[] { KeyConfigContexts.GRAPHER };
+	/**
+	 * a reference on the {@code GraphColorGeneratorAdapter} created and
+	 * registered with this instance/window
+	 */
+	private final GraphColorGeneratorAdapter< Spot, Link, DataVertex, DataEdge > coloringAdapter;
 
+	/**
+	 * a reference on a supervising instance of the {@code ColoringModel} that
+	 * is bound to this instance/window
+	 */
 	private final ColoringModel coloringModel;
 
 	public MamutViewGrapher( final MamutAppModel appModel )
@@ -77,85 +111,157 @@ public class MamutViewGrapher extends MamutView< ViewGraph< Spot, Link, Spot, Li
 
 	public MamutViewGrapher( final MamutAppModel appModel, final Map< String, Object > guiState )
 	{
-		super( appModel, IdentityViewGraph.wrap( appModel.getModel().getGraph(), appModel.getModel().getGraphIdBimap() ), CONTEXTS );
+		super( appModel,
+				new DataGraph< Spot, Link >(
+						appModel.getModel().getGraph(),
+						appModel.getModel().getGraphIdBimap(),
+						appModel.getModel().getGraph().getLock() ),
+				new String[] { KeyConfigContexts.GRAPHER } );
 
-		final GraphColorGeneratorAdapter< Spot, Link, Spot, Link > coloring = new GraphColorGeneratorAdapter<>( viewGraph.getVertexMap(), viewGraph.getEdgeMap() );
+		final KeyPressedManager keyPressedManager = appModel.getKeyPressedManager();
+		final Model model = appModel.getModel();
 
-		final GrapherViewFrame< MamutAppModel, ViewGraph< Spot, Link, Spot, Link >, Spot, Link > frame = new GrapherViewFrame<>(
-				appModel,
-				viewGraph,
-				appModel.getModel().getFeatureModel(),
-				groupHandle,
-				navigationHandler,
-				coloring,
-				appModel.getModel().getSpaceUnits(),
-				appModel.getModel().getTimeUnits() );
+		/*
+		 * The layout.
+		 */
+		final DataGraphLayout< Spot, Link > layout = new DataGraphLayout<>( viewGraph, selectionModel );
 
-		setFrame( frame );
 
-		// Restore position.
+		/*
+		 * ContextChooser
+		 */
+		final DataContextListener< Spot > contextListener = new DataContextListener<>( viewGraph );
+		contextChooser = new ContextChooser<>( contextListener );
+
+		/*
+		 * Show the frame
+		 */
+		final DataDisplayStyle forwardDefaultStyle = appModel.getDataDisplayStyleManager().getForwardDefaultStyle();
+		coloringAdapter = new GraphColorGeneratorAdapter<>( viewGraph.getVertexMap(), viewGraph.getEdgeMap() );
+		final DataDisplayOptions options = DataDisplayOptions.options()
+				.shareKeyPressedEvents( keyPressedManager )
+				.style( forwardDefaultStyle )
+				.graphColorGenerator( coloringAdapter );
+
+		// Restore position
 		final int[] pos = ( int[] ) guiState.get( FRAME_POSITION_KEY );
-		if ( null != pos )
-			frame.setBounds( pos[ 0 ], pos[ 1 ], pos[ 2 ], pos[ 3 ] );
-		else
-		{
-			frame.setSize( 400, 400 );
-			frame.setLocationRelativeTo( null );
-		}
+		if ( null != pos && pos.length == 4 )
+			options
+					.x( pos[ 0 ] )
+					.y( pos[ 1 ] )
+					.width( pos[ 2 ] )
+					.height( pos[ 3 ] );
+
 		// Restore group handle.
 		final Integer groupID = ( Integer ) guiState.get( GROUP_HANDLE_ID_KEY );
 		if ( null != groupID )
 			groupHandle.setGroupId( groupID.intValue() );
+
+		final AutoNavigateFocusModel< DataVertex, DataEdge > navigateFocusModel = new AutoNavigateFocusModel<>( focusModel, navigationHandler );
+		final DataDisplayFrame< Spot, Link > frame = new DataDisplayFrame< Spot, Link >(
+				viewGraph,
+				appModel.getModel().getFeatureModel(),
+				appModel.getSharedBdvData().getSources().size(),
+				layout,
+				highlightModel,
+				navigateFocusModel,
+				selectionModel,
+				navigationHandler,
+				model,
+				groupHandle,
+				contextChooser,
+				options );
+		final DataDisplayPanel dataDisplayPanel = frame.getDataDisplayPanel();
+
+		// If they are available, set some sensible defaults for the feature.
+		final FeatureSpecPair spvx = new FeatureSpecPair( SpotFrameFeature.SPEC, SpotFrameFeature.SPEC.getProjectionSpecs().iterator().next() );
+		final FeatureSpecPair spvy = new FeatureSpecPair( SpotQuickMeanIntensityFeature.SPEC, SpotQuickMeanIntensityFeature.PROJECTION_SPEC, 0 );
+		final FeatureGraphConfig gcv = new FeatureGraphConfig( spvx, spvy, false, true, true );
+		frame.getVertexSidePanel().setGraphConfig( gcv );
 
 		// Restore settings panel visibility.
 		final Boolean settingsPanelVisible = ( Boolean ) guiState.get( SETTINGS_PANEL_VISIBLE_KEY );
 		if ( null != settingsPanelVisible )
 			frame.setSettingsPanelVisible( settingsPanelVisible.booleanValue() );
 
-		/*
-		 * Deal with actions.
-		 */
+		// Default location.
+		if ( null == pos || pos.length != 4 )
+			frame.setLocationRelativeTo( null );
 
-		final Model model = appModel.getModel();
-		final FeatureModel featureModel = model.getFeatureModel();
+		dataDisplayPanel.graphChanged();
+		contextListener.setContextListener( dataDisplayPanel );
 
-		focusModel.listeners().add( frame );
-		highlightModel.listeners().add( frame );
-		featureModel.listeners().add( frame );
+		final DataDisplayStyle.UpdateListener updateListener = () -> dataDisplayPanel.repaint();
+		forwardDefaultStyle.updateListeners().add( updateListener );
+		onClose( () -> forwardDefaultStyle.updateListeners().remove( updateListener ) );
+
+		setFrame( frame );
+
+		// Transform. // TODO!
+		final ScreenTransform tLoaded = ( ScreenTransform ) guiState.get( TRACKSCHEME_TRANSFORM_KEY );
+		if ( null != tLoaded )
+			dataDisplayPanel.getScreenTransform().set( tLoaded );
 
 		MastodonFrameViewActions.install( viewActions, this );
+		FocusActions.install( viewActions, viewGraph, viewGraph.getLock(), navigateFocusModel, selectionModel );
+		EditTagActions.install( viewActions, frame.getKeybindings(), frame.getTriggerbindings(), model.getTagSetModel(), appModel.getSelectionModel(), viewGraph.getLock(), dataDisplayPanel, dataDisplayPanel.getDisplay(), model );
+		DataDisplayZoom.install( viewBehaviours, dataDisplayPanel );
 
-		onClose( () -> {
-			focusModel.listeners().remove( frame );
-			highlightModel.listeners().remove( frame );
-			featureModel.listeners().remove( frame );
-		} );
+		final JPanel searchPanel = SearchVertexLabel.install( viewActions, viewGraph, navigationHandler, selectionModel, focusModel, dataDisplayPanel );
+		frame.getSettingsPanel().add( searchPanel );
 
+		dataDisplayPanel.getNavigationActions().install( viewActions, TrackSchemeNavigationActions.NavigatorEtiquette.FINDER_LIKE );
+		dataDisplayPanel.getNavigationBehaviours().install( viewBehaviours );
+		dataDisplayPanel.getTransformEventHandler().install( viewBehaviours );
+
+		/*
+		 * Menus
+		 */
 		final ViewMenu menu = new ViewMenu( this );
 		final ActionMap actionMap = frame.getKeybindings().getConcatenatedActionMap();
 
-		final JMenuHandle menuHandle = new JMenuHandle();
+		final JMenuHandle coloringMenuHandle = new JMenuHandle();
+		final JMenuHandle tagSetMenuHandle = new JMenuHandle();
+		final JMenuHandle colorbarMenuHandle = new JMenuHandle();
 
-		MamutMenuBuilder.build( menu, actionMap,
-				MamutMenuBuilder.fileMenu(
-						item( TableViewActions.EXPORT_TO_CSV ),
-						separator() ) );
 		MainWindow.addMenus( menu, actionMap );
 		MamutMenuBuilder.build( menu, actionMap,
-				MamutMenuBuilder.viewMenu(
-						MamutMenuBuilder.colorMenu( menuHandle ),
+				viewMenu(
+						colorMenu( coloringMenuHandle ),
+						colorbarMenu( colorbarMenuHandle ),
 						separator(),
 						item( MastodonFrameViewActions.TOGGLE_SETTINGS_PANEL ) ),
-				MamutMenuBuilder.editMenu(
-						item( TableViewActions.EDIT_LABEL ),
-						item( TableViewActions.TOGGLE_TAG ),
+				editMenu(
+						item( UndoActions.UNDO ),
+						item( UndoActions.REDO ),
 						separator(),
-						item( SelectionActions.DELETE_SELECTION ) ) );
+						item( SelectionActions.DELETE_SELECTION ),
+						item( SelectionActions.SELECT_WHOLE_TRACK ),
+						item( SelectionActions.SELECT_TRACK_DOWNWARD ),
+						item( SelectionActions.SELECT_TRACK_UPWARD ),
+						separator(),
+						tagSetMenu( tagSetMenuHandle ) ) );
 		appModel.getPlugins().addMenus( menu );
 
-		coloringModel = registerColoring( coloring, menuHandle, () -> {
-			System.out.println( "Refresh coloring TODO" ); // DEBUG
+		/*
+		 * Coloring
+		 */
+		coloringModel = registerColoring( coloringAdapter, coloringMenuHandle,
+				() -> dataDisplayPanel.entitiesAttributesChanged() );
+		registerTagSetMenu( tagSetMenuHandle,
+				() -> dataDisplayPanel.entitiesAttributesChanged() );
+		final ColorBarOverlay colorBarOverlay = new ColorBarOverlay( coloringModel, () -> dataDisplayPanel.getBackground() );
+		final OffsetAxes offset = dataDisplayPanel.getOffsetAxes();
+		offset.listeners().add( ( w, h ) -> {
+			colorBarOverlay.setLeftXOffset(  w );
+			// Because *for now* we paint the axis at the top:
+			colorBarOverlay.setTopYOffset( h );
 		} );
+		registerColorbarOverlay( colorBarOverlay, colorbarMenuHandle,
+				() -> dataDisplayPanel.repaint() );
+
+		// Listen to label changes.
+		model.getGraph().addVertexLabelListener( v -> dataDisplayPanel.entitiesAttributesChanged() );
 
 		// Restore coloring.
 		final Boolean noColoring = ( Boolean ) guiState.get( NO_COLORING_KEY );
@@ -193,20 +299,16 @@ public class MamutViewGrapher extends MamutView< ViewGraph< Spot, Link, Spot, Li
 				}
 			}
 		}
+		dataDisplayPanel.getDisplay().overlays().add( colorBarOverlay );
 
-		/*
-		 * Show table.
-		 */
-
+		layout.layout();
 		frame.setVisible( true );
+		dataDisplayPanel.repaint();
+		dataDisplayPanel.getDisplay().requestFocusInWindow();
 	}
 
-	@Override
-	public GrapherViewFrame< MamutAppModel, ViewGraph< Spot, Link, Spot, Link >, Spot, Link > getFrame()
+	public ContextChooser< Spot > getContextChooser()
 	{
-		final ViewFrame f = super.getFrame();
-		@SuppressWarnings( "unchecked" )
-		final GrapherViewFrame< MamutAppModel, ViewGraph< Spot, Link, Spot, Link >, Spot, Link > vf = ( GrapherViewFrame< MamutAppModel, ViewGraph< Spot, Link, Spot, Link >, Spot, Link > ) f;
-		return vf;
+		return contextChooser;
 	}
 }

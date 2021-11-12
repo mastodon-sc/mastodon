@@ -160,7 +160,7 @@ public class WindowManager
 	/**
 	 * All currently open Grapher windows.
 	 */
-	private final List< MamutViewGrapher2 > grapherWindows = new ArrayList<>();
+	private final List< MamutViewGrapher > grapherWindows = new ArrayList<>();
 
 	private final KeyPressedManager keyPressedManager;
 
@@ -342,7 +342,7 @@ public class WindowManager
 			tsw.getContextChooser().updateContextProviders( contextProviders );
 		for ( final MamutViewTable tw : tableWindows )
 			tw.getContextChooser().updateContextProviders( contextProviders );
-		for ( final MamutViewGrapher2 gw : grapherWindows )
+		for ( final MamutViewGrapher gw : grapherWindows )
 			gw.getContextChooser().updateContextProviders( contextProviders );
 		w.onClose( () -> {
 			bdvWindows.remove( w );
@@ -379,7 +379,7 @@ public class WindowManager
 		} );
 	}
 
-	private synchronized void addGrapherWindow( final MamutViewGrapher2 grapher )
+	private synchronized void addGrapherWindow( final MamutViewGrapher grapher )
 	{
 		grapherWindows.add( grapher );
 		grapher.onClose( () -> {
@@ -393,7 +393,7 @@ public class WindowManager
 		tableWindows.forEach( action );
 	}
 
-	public void forEachGrapherView( final Consumer< ? super MamutViewGrapher2 > action )
+	public void forEachGrapherView( final Consumer< ? super MamutViewGrapher > action )
 	{
 		grapherWindows.forEach( action );
 	}
@@ -475,16 +475,16 @@ public class WindowManager
 		return createTable( guiState );
 	}
 
-	public MamutViewGrapher2 createGrapher()
+	public MamutViewGrapher createGrapher()
 	{
 		return createGrapher( new HashMap<>() );
 	}
 
-	public MamutViewGrapher2 createGrapher( final Map< String, Object > guiState )
+	public MamutViewGrapher createGrapher( final Map< String, Object > guiState )
 	{
 		if ( appModel != null )
 		{
-			final MamutViewGrapher2 view = new MamutViewGrapher2( appModel, guiState );
+			final MamutViewGrapher view = new MamutViewGrapher( appModel, guiState );
 			view.getFrame().setIconImages( FEATURES_ICON );
 			addGrapherWindow( view );
 			return view;
@@ -518,7 +518,7 @@ public class WindowManager
 			windows.add( w.getFrame() );
 		for ( final MamutViewTable w : tableWindows )
 			windows.add( w.getFrame() );
-		for ( final MamutViewGrapher2 w : grapherWindows )
+		for ( final MamutViewGrapher w : grapherWindows )
 			windows.add( w.getFrame() );
 		windows.add( tagSetDialog );
 		windows.add( featureComputationDialog );

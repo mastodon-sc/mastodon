@@ -1,13 +1,16 @@
 package org.mastodon.views.grapher.display;
 
-import org.mastodon.views.grapher.SpecPair;
-
-public class GraphConfig
+/**
+ * Data class that specifies what to plot in a grapher view.
+ * 
+ * @author Jean-Yves Tinevez
+ */
+public class FeatureGraphConfig
 {
 
-	private final SpecPair xFeature;
+	private final FeatureSpecPair xFeature;
 
-	private final SpecPair yFeature;
+	private final FeatureSpecPair yFeature;
 
 	private final boolean keepCurrent;
 
@@ -15,9 +18,9 @@ public class GraphConfig
 
 	private final boolean connect;
 
-	public GraphConfig(
-			final SpecPair xFeature,
-			final SpecPair yFeature,
+	public FeatureGraphConfig(
+			final FeatureSpecPair xFeature,
+			final FeatureSpecPair yFeature,
 			final boolean keepCurrent,
 			final boolean trackOfSelection,
 			final boolean connect )
@@ -29,12 +32,12 @@ public class GraphConfig
 		this.connect = connect;
 	}
 
-	public SpecPair getXFeature()
+	public FeatureSpecPair getXFeature()
 	{
 		return xFeature;
 	}
 
-	public SpecPair getYFeature()
+	public FeatureSpecPair getYFeature()
 	{
 		return yFeature;
 	}

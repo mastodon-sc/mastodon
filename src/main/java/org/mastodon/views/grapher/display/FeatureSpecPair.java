@@ -1,4 +1,4 @@
-package org.mastodon.views.grapher;
+package org.mastodon.views.grapher.display;
 
 import org.mastodon.feature.Feature;
 import org.mastodon.feature.FeatureModel;
@@ -8,7 +8,14 @@ import org.mastodon.feature.FeatureProjectionSpec;
 import org.mastodon.feature.FeatureSpec;
 import org.mastodon.feature.Multiplicity;
 
-public class SpecPair implements Comparable< SpecPair >
+/**
+ * Data class representing a selection of a feature plus a projection in said
+ * feature, plus possibly a selection of the source indices in case the
+ * multiplicity is not SINGLE.
+ * 
+ * @author Jean-Yves Tinevez
+ */
+public class FeatureSpecPair implements Comparable< FeatureSpecPair >
 {
 
 	final FeatureSpec< ?, ? > featureSpec;
@@ -19,7 +26,7 @@ public class SpecPair implements Comparable< SpecPair >
 
 	private final int c2;
 
-	public SpecPair( final FeatureSpec< ?, ? > f, final FeatureProjectionSpec ps )
+	public FeatureSpecPair( final FeatureSpec< ?, ? > f, final FeatureProjectionSpec ps )
 	{
 		assert f.getMultiplicity() == Multiplicity.SINGLE;
 		this.featureSpec = f;
@@ -28,7 +35,7 @@ public class SpecPair implements Comparable< SpecPair >
 		this.c2 = -1;
 	}
 
-	public SpecPair( final FeatureSpec< ?, ? > f, final FeatureProjectionSpec ps, final int c1 )
+	public FeatureSpecPair( final FeatureSpec< ?, ? > f, final FeatureProjectionSpec ps, final int c1 )
 	{
 		assert f.getMultiplicity() == Multiplicity.ON_SOURCES;
 		this.featureSpec = f;
@@ -37,7 +44,7 @@ public class SpecPair implements Comparable< SpecPair >
 		this.c2 = -1;
 	}
 
-	public SpecPair( final FeatureSpec< ?, ? > f, final FeatureProjectionSpec ps, final int c1, final int c2 )
+	public FeatureSpecPair( final FeatureSpec< ?, ? > f, final FeatureProjectionSpec ps, final int c1, final int c2 )
 	{
 		assert f.getMultiplicity() == Multiplicity.ON_SOURCE_PAIRS;
 		this.featureSpec = f;
@@ -47,7 +54,7 @@ public class SpecPair implements Comparable< SpecPair >
 	}
 
 	@Override
-	public int compareTo( final SpecPair o )
+	public int compareTo( final FeatureSpecPair o )
 	{
 		if ( featureSpec == null || projectionSpec == null )
 			return 1;
@@ -62,7 +69,7 @@ public class SpecPair implements Comparable< SpecPair >
 	@Override
 	public boolean equals( final Object obj )
 	{
-		return ( obj instanceof SpecPair ) && compareTo( ( SpecPair ) obj ) == 0;
+		return ( obj instanceof FeatureSpecPair ) && compareTo( ( FeatureSpecPair ) obj ) == 0;
 	}
 
 	@Override
