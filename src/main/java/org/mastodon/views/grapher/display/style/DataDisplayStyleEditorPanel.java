@@ -30,8 +30,12 @@ package org.mastodon.views.grapher.display.style;
 
 import static org.mastodon.app.ui.settings.StyleElements.booleanElement;
 import static org.mastodon.app.ui.settings.StyleElements.colorElement;
+import static org.mastodon.app.ui.settings.StyleElements.doubleElement;
+import static org.mastodon.app.ui.settings.StyleElements.enumElement;
 import static org.mastodon.app.ui.settings.StyleElements.linkedCheckBox;
 import static org.mastodon.app.ui.settings.StyleElements.linkedColorButton;
+import static org.mastodon.app.ui.settings.StyleElements.linkedComboBoxEnumSelector;
+import static org.mastodon.app.ui.settings.StyleElements.linkedSliderPanel;
 import static org.mastodon.app.ui.settings.StyleElements.separator;
 
 import java.awt.BorderLayout;
@@ -51,17 +55,24 @@ import javax.swing.InputMap;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JColorChooser;
+import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JDialog;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.KeyStroke;
 import javax.swing.WindowConstants;
 
 import org.mastodon.app.ui.settings.StyleElements.BooleanElement;
 import org.mastodon.app.ui.settings.StyleElements.ColorElement;
+import org.mastodon.app.ui.settings.StyleElements.DoubleElement;
+import org.mastodon.app.ui.settings.StyleElements.EnumElement;
 import org.mastodon.app.ui.settings.StyleElements.Separator;
 import org.mastodon.app.ui.settings.StyleElements.StyleElement;
 import org.mastodon.app.ui.settings.StyleElements.StyleElementVisitor;
+import org.mastodon.views.grapher.display.PaintGraph.VertexDrawShape;
+
+import bdv.tools.brightness.SliderPanelDouble;
 
 public class DataDisplayStyleEditorPanel extends JPanel
 {
@@ -146,6 +157,48 @@ public class DataDisplayStyleEditorPanel extends JPanel
 							++c.gridy;
 						}
 					}
+
+					@Override
+					public void visit( final DoubleElement doubleElement )
+					{
+						if ( c.gridx != 0 )
+						{
+							c.gridx = 0;
+							++c.gridy;
+						}
+						final JLabel label = new JLabel( doubleElement.getLabel() + ":" );
+						editPanel.add( label, c );
+
+						c.gridx++;
+						final SliderPanelDouble slider = linkedSliderPanel( doubleElement, 3 );
+						editPanel.add( slider, c );
+						if ( ++c.gridx == numCols )
+						{
+							c.gridx = 0;
+							++c.gridy;
+						}
+					}
+
+					@Override
+					public < E > void visit( final EnumElement< E > enumElement )
+					{
+						if ( c.gridx != 0 )
+						{
+							c.gridx = 0;
+							++c.gridy;
+						}
+						final JLabel label = new JLabel( enumElement.getLabel() + ":" );
+						editPanel.add( label, c );
+
+						c.gridx++;
+						final JComboBox< E > enumSelector = linkedComboBoxEnumSelector( enumElement );
+						editPanel.add( enumSelector, c );
+						if ( ++c.gridx == numCols )
+						{
+							c.gridx = 0;
+							++c.gridy;
+						}
+					}
 				} ) );
 
 		add( editPanel, BorderLayout.SOUTH );
@@ -154,6 +207,15 @@ public class DataDisplayStyleEditorPanel extends JPanel
 	private List< StyleElement > styleElements( final DataDisplayStyle style )
 	{
 		return Arrays.asList(
+
+				enumElement( "vertex shape", VertexDrawShape.values(), style::getVertexDrawShape, style::vertexDrawShape ),
+
+				separator(),
+
+				booleanElement( "auto vertex size", style::isAutoVertexSize, style::autoVertexSize ),
+				doubleElement( "vertex fixed size", 1, 100, style::getVertexFixedSize, style::vertexFixedSize ),
+
+				separator(),
 
 				booleanElement( "draw labels", style::isDrawVertexName, style::drawVertexName ),
 

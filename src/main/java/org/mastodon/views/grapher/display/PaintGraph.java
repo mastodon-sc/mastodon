@@ -35,9 +35,12 @@ import static org.mastodon.views.trackscheme.ScreenVertex.Transition.SELECTING;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
+import java.awt.Shape;
 import java.awt.font.FontRenderContext;
 import java.awt.font.TextLayout;
+import java.awt.geom.Ellipse2D;
 import java.awt.geom.Rectangle2D;
+import java.awt.geom.RectangularShape;
 
 import org.mastodon.collection.RefList;
 import org.mastodon.views.grapher.datagraph.ScreenEdge;
@@ -50,6 +53,38 @@ import net.imglib2.type.numeric.ARGBType;
 
 public class PaintGraph
 {
+
+	/*
+	 * ENUM
+	 */
+
+	public enum VertexDrawShape
+	{
+		CIRCLE( "Circle", new Ellipse2D.Double() ), SQUARE( "Square", new Rectangle2D.Double() );
+
+		private final String name;
+
+		private final RectangularShape shape;
+
+		private VertexDrawShape( final String name, final RectangularShape shape )
+		{
+			this.name = name;
+			this.shape = shape;
+		}
+
+		@Override
+		public String toString()
+		{
+			return name;
+		}
+
+		private Shape shape( final double ox, final double oy, final double diameter )
+		{
+			shape.setFrame( ox, oy, diameter, diameter );
+			return shape;
+		}
+	}
+
 	/*
 	 * CONSTANTS
 	 */
@@ -159,13 +194,21 @@ public class PaintGraph
 	 */
 	protected void drawVertex( final ScreenVertex vertex )
 	{
-		final double d = vertex.getVertexDist();
-		if ( d >= minDisplayVertexDist )
-			drawVertexFull( vertex );
-		else if ( d >= minDisplaySimplifiedVertexDist )
-			drawVertexSimplified( vertex );
+		if ( style.isAutoVertexSize() )
+		{
+			final double d = vertex.getVertexDist();
+			if ( d >= minDisplayVertexDist )
+				drawVertexFullAutoSize( vertex );
+			else if ( d >= minDisplaySimplifiedVertexDist )
+				drawVertexSimplified( vertex );
+			else
+				drawVertexSimplifiedIfHighlighted( vertex );
+		}
 		else
-			drawVertexSimplifiedIfHighlighted( vertex );
+		{
+			final double spotdiameter = style.getVertexFixedSize();
+			drawVertexFull( vertex, spotdiameter );
+		}
 	}
 
 	/**
@@ -283,7 +326,18 @@ public class PaintGraph
 		}
 	}
 
-	protected void drawVertexFull( final ScreenVertex vertex )
+	protected void drawVertexFullAutoSize( final ScreenVertex vertex )
+	{
+		final Transition transition = vertex.getTransition();
+		final boolean disappear = ( transition == DISAPPEAR );
+		final double ratio = vertex.getInterpolationCompletionRatio();
+		final boolean highlighted = ( highlightedVertexId >= 0 ) && ( vertex.getDataVertexId() == highlightedVertexId );
+
+		final double spotdiameter = getVertexDiameter( vertex.getVertexDist(), highlighted, disappear, ratio );
+		drawVertexFull( vertex, spotdiameter );
+	}
+
+	protected void drawVertexFull( final ScreenVertex vertex, final double diameter )
 	{
 		final Transition transition = vertex.getTransition();
 		final boolean disappear = ( transition == DISAPPEAR );
@@ -294,7 +348,7 @@ public class PaintGraph
 		final boolean selected = vertex.isSelected();
 		final int specifiedColor = vertex.getColor();
 
-		double spotdiameter = Math.min( vertex.getVertexDist() - 10.0, maxDisplayVertexSize );
+		double spotdiameter = diameter;
 		if ( highlighted )
 			spotdiameter += 10.0;
 		if ( disappear )
@@ -308,43 +362,57 @@ public class PaintGraph
 
 		final double x = vertex.getX();
 		final double y = vertex.getY();
-		final int ox = ( int ) x - ( int ) spotradius;
-		final int oy = ( int ) y - ( int ) spotradius;
-		final int sd = 2 * ( int ) spotradius;
+		final double ox =  x -  spotradius;
+		final double oy =  y -  spotradius;
+		final double sd = 2 * spotradius;
+		final Shape shape = style.getVertexDrawShape().shape( ox, oy, sd );
 		g2.setColor( fillColor );
-		g2.fillOval( ox, oy, sd, sd );
+		g2.fill( shape );
 
 		g2.setColor( drawColor );
 		if ( highlighted )
 			g2.setStroke( style.getVertexHighlightStroke() );
 		else if ( focused )
-			// An animation might be better for the focus, but for now this is it.
 			g2.setStroke( style.getFocusStroke() );
-		g2.drawOval( ox, oy, sd, sd );
+		g2.draw( shape );
 		if ( highlighted || focused )
 			g2.setStroke( style.getVertexStroke() );
 
-		final int maxLabelLength = ( int ) ( spotdiameter / avgLabelLetterWidth );
-		if ( maxLabelLength > 2 && !disappear )
+		if ( style.isDrawVertexName() )
 		{
-			String label = vertex.getLabel();
-			if ( label.length() > maxLabelLength )
-				label = label.substring( 0, maxLabelLength - 2 ) + "...";
 
-			if ( !label.isEmpty() )
+			final int maxLabelLength = ( int ) ( spotdiameter / avgLabelLetterWidth );
+			if ( maxLabelLength > 2 && !disappear )
 			{
-				// Text color depend on the bg color for color schemes.
-				if ( specifiedColor != 0 )
-					g2.setColor( textColorForBackground( fillColor ) );
+				String label = vertex.getLabel();
+				if ( label.length() > maxLabelLength )
+					label = label.substring( 0, maxLabelLength - 2 ) + "...";
 
-				final FontRenderContext frc = g2.getFontRenderContext();
-				final TextLayout layout = new TextLayout( label, style.getFont(), frc );
-				final Rectangle2D bounds = layout.getBounds();
-				final float tx = ( float ) ( x - bounds.getCenterX() );
-				final float ty = ( float ) ( y - bounds.getCenterY() );
-				layout.draw( g2, tx, ty );
+				if ( !label.isEmpty() )
+				{
+					// Text color depend on the bg color for color schemes.
+					if ( specifiedColor != 0 )
+						g2.setColor( textColorForBackground( fillColor ) );
+
+					final FontRenderContext frc = g2.getFontRenderContext();
+					final TextLayout layout = new TextLayout( label, style.getFont(), frc );
+					final Rectangle2D bounds = layout.getBounds();
+					final float tx = ( float ) ( x - bounds.getCenterX() );
+					final float ty = ( float ) ( y - bounds.getCenterY() );
+					layout.draw( g2, tx, ty );
+				}
 			}
 		}
+	}
+
+	protected double getVertexDiameter( final double vertexDist, final boolean highlighted, final boolean disappear, final double ratio )
+	{
+		double spotdiameter = Math.min( vertexDist - 10.0, maxDisplayVertexSize );
+		if ( highlighted )
+			spotdiameter += 10.0;
+		if ( disappear )
+			spotdiameter *= ( 1 + ratio );
+		return spotdiameter;
 	}
 
 	protected Color getColor(

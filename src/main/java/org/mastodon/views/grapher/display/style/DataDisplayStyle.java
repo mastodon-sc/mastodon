@@ -37,6 +37,7 @@ import java.util.Collection;
 import java.util.Objects;
 
 import org.mastodon.app.ui.settings.style.Style;
+import org.mastodon.views.grapher.display.PaintGraph.VertexDrawShape;
 import org.scijava.listeners.Listeners;
 
 public class DataDisplayStyle implements Style< DataDisplayStyle >
@@ -75,6 +76,12 @@ public class DataDisplayStyle implements Style< DataDisplayStyle >
 
 	private Stroke edgeHighlightStroke;
 
+	private VertexDrawShape vertexDrawShape;
+
+	private boolean autoVertexSize;
+
+	private double vertexFixedSize;
+
 	private Stroke vertexStroke;
 
 	private Stroke vertexHighlightStroke;
@@ -93,6 +100,11 @@ public class DataDisplayStyle implements Style< DataDisplayStyle >
 	public String getName()
 	{
 		return name;
+	}
+
+	public boolean isAutoVertexSize()
+	{
+		return autoVertexSize;
 	}
 
 	public Color getAxisColor()
@@ -175,9 +187,19 @@ public class DataDisplayStyle implements Style< DataDisplayStyle >
 		return vertexDrawColor;
 	}
 
+	public VertexDrawShape getVertexDrawShape()
+	{
+		return vertexDrawShape;
+	}
+
 	public Color getVertexFillColor()
 	{
 		return vertexFillColor;
+	}
+
+	public double getVertexFixedSize()
+	{
+		return vertexFixedSize;
 	}
 
 	public Color getSimplifiedVertexFillColor()
@@ -212,6 +234,16 @@ public class DataDisplayStyle implements Style< DataDisplayStyle >
 	public void setName( final String name )
 	{
 		name( name );
+	}
+
+	public DataDisplayStyle autoVertexSize( final boolean autoVertexSize )
+	{
+		if ( this.autoVertexSize != autoVertexSize )
+		{
+			this.autoVertexSize = autoVertexSize;
+			notifyListeners();
+		}
+		return this;
 	}
 
 	public DataDisplayStyle axisColor( final Color color )
@@ -385,11 +417,31 @@ public class DataDisplayStyle implements Style< DataDisplayStyle >
 		return this;
 	}
 
+	public DataDisplayStyle vertexDrawShape( final VertexDrawShape vertexDrawShape )
+	{
+		if ( !Objects.equals( this.vertexDrawShape, vertexDrawShape ) )
+		{
+			this.vertexDrawShape = vertexDrawShape;
+			notifyListeners();
+		}
+		return this;
+	}
+
 	public DataDisplayStyle vertexFillColor( final Color color )
 	{
 		if ( !Objects.equals( this.vertexFillColor, color ) )
 		{
 			this.vertexFillColor = color;
+			notifyListeners();
+		}
+		return this;
+	}
+
+	public DataDisplayStyle vertexFixedSize( final double vertexFixedSize )
+	{
+		if ( this.vertexFixedSize != vertexFixedSize )
+		{
+			this.vertexFixedSize = vertexFixedSize;
 			notifyListeners();
 		}
 		return this;
@@ -440,6 +492,7 @@ public class DataDisplayStyle implements Style< DataDisplayStyle >
 	public synchronized void set( final DataDisplayStyle style )
 	{
 		this.name = style.name;
+		this.autoVertexSize = style.autoVertexSize;
 		this.axisColor = style.axisColor;
 		this.axisLabelFont = style.axisLabelFont;
 		this.axisStroke = style.axisStroke;
@@ -457,7 +510,9 @@ public class DataDisplayStyle implements Style< DataDisplayStyle >
 		this.selectedVertexFillColor = style.selectedVertexFillColor;
 		this.simplifiedVertexFillColor = style.simplifiedVertexFillColor;
 		this.vertexDrawColor = style.vertexDrawColor;
+		this.vertexDrawShape = style.vertexDrawShape;
 		this.vertexFillColor = style.vertexFillColor;
+		this.vertexFixedSize = style.vertexFixedSize;
 		this.vertexHighlightStroke = style.vertexHighlightStroke;
 		this.vertexStroke = style.vertexStroke;
 		notifyListeners();
@@ -512,6 +567,7 @@ public class DataDisplayStyle implements Style< DataDisplayStyle >
 	{
 		final Color fill = new Color( 128, 255, 128 );
 		df = new DataDisplayStyle().name( "default" ).
+				autoVertexSize( true ).
 				axisColor( new Color( 89, 89, 89 ) ).
 				axisTickFont( new Font( "SansSerif", Font.PLAIN, 9 ) ).
 				axisLabelFont( new Font( "SansSerif", Font.PLAIN, 10 ) ).
@@ -529,7 +585,9 @@ public class DataDisplayStyle implements Style< DataDisplayStyle >
 				selectedEdgeColor( fill.darker() ).
 				simplifiedVertexFillColor( Color.BLACK ).
 				vertexDrawColor( Color.BLACK ).
+				vertexDrawShape( VertexDrawShape.CIRCLE ).
 				vertexFillColor( Color.WHITE ).
+				vertexFixedSize( 10. ).
 				vertexHighlightStroke( new BasicStroke( 3f ) ).
 				vertexStroke( new BasicStroke() );
 	}

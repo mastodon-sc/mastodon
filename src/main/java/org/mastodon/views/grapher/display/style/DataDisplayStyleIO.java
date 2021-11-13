@@ -44,6 +44,7 @@ import org.mastodon.io.yaml.AbstractWorkaroundConstruct;
 import org.mastodon.io.yaml.WorkaroundConstructor;
 import org.mastodon.io.yaml.WorkaroundRepresent;
 import org.mastodon.io.yaml.WorkaroundRepresenter;
+import org.mastodon.views.grapher.display.PaintGraph.VertexDrawShape;
 import org.yaml.snakeyaml.DumperOptions;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.constructor.Constructor;
@@ -271,6 +272,10 @@ public class DataDisplayStyleIO
 
 			// Name.
 			mapping.put( "name", s.getName() );
+			// Vertex shape and size.
+			mapping.put( "autoVertexSize", s.isAutoVertexSize() );
+			mapping.put( "vertexFixedSize", s.getVertexFixedSize() );
+			mapping.put( "vertexDrawShape", s.getVertexDrawShape().name() );
 			// Fixed colors.
 			mapping.put( "edgeColor", s.getEdgeColor() );
 			mapping.put( "vertexFillColor", s.getVertexFillColor() );
@@ -319,6 +324,10 @@ public class DataDisplayStyleIO
 				final String name = ( String ) mapping.getOrDefault( "name", "NameNotFound" );
 				final DataDisplayStyle s = DataDisplayStyle.defaultStyle().copy( name );
 				final DataDisplayStyle df = DataDisplayStyle.defaultStyle();
+
+				s.autoVertexSize( ( boolean ) mapping.getOrDefault( "autoVertexSize", df.isAutoVertexSize() ) );
+				s.vertexFixedSize( ( double ) mapping.getOrDefault( "vertexFixedSize", df.getVertexFixedSize() ) );
+				s.vertexDrawShape( VertexDrawShape.valueOf( ( String ) mapping.getOrDefault( "vertexDrawShape", df.getVertexDrawShape().name() ) ) );
 
 				s.edgeColor( ( Color ) mapping.getOrDefault( "edgeColor", df.getEdgeColor() ) );
 				s.vertexFillColor( ( Color ) mapping.getOrDefault( "vertexFillColor", df.getVertexFillColor() ) );
