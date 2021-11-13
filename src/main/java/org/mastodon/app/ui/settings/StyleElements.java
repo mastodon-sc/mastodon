@@ -29,6 +29,7 @@
 package org.mastodon.app.ui.settings;
 
 import java.awt.Color;
+import java.awt.Font;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -39,11 +40,16 @@ import java.util.function.DoubleSupplier;
 import java.util.function.IntSupplier;
 import java.util.function.Supplier;
 
+import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JColorChooser;
+import javax.swing.JComboBox;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
+import javax.swing.JSpinner;
+import javax.swing.JSpinner.DefaultEditor;
+import javax.swing.SpinnerListModel;
 import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
 
@@ -56,6 +62,13 @@ import bdv.util.BoundedValueDouble;
 
 public class StyleElements
 {
+	private static final Font SMALL_FONT;
+	static
+	{
+		final Font font = new JLabel().getFont();
+		SMALL_FONT = font.deriveFont( font.getSize2D() - 2f );
+	}
+
 	public static Separator separator()
 	{
 		return new Separator();
@@ -138,6 +151,25 @@ public class StyleElements
 		};
 	}
 
+	public static < E > EnumElement< E > enumElement( final String label, final E[] values, final Supplier< E > get, final Consumer< E > set )
+	{
+		return new EnumElement< E >( label, values )
+		{
+
+			@Override
+			public E getValue()
+			{
+				return get.get();
+			}
+
+			@Override
+			public void setValue( final E e )
+			{
+				set.accept( e );
+			}
+		};
+	}
+
 	public interface StyleElementVisitor
 	{
 		public default void visit( final Separator element )
@@ -166,6 +198,11 @@ public class StyleElements
 		}
 
 		public default void visit( final IntElement intElement )
+		{
+			throw new UnsupportedOperationException();
+		}
+
+		public default < E > void visit( final EnumElement< E > enumElement )
 		{
 			throw new UnsupportedOperationException();
 		}
@@ -392,6 +429,52 @@ public class StyleElements
 		}
 	}
 
+	public static abstract class EnumElement< E > implements StyleElement
+	{
+		private final ArrayList< Consumer< E > > onSet = new ArrayList<>();
+
+		private final String label;
+
+		private final E[] values;
+
+		public EnumElement( final String label, final E[] values )
+		{
+			this.label = label;
+			this.values = values;
+		}
+
+		public String getLabel()
+		{
+			return label;
+		}
+
+		@Override
+		public void accept( final StyleElementVisitor visitor )
+		{
+			visitor.visit( this );
+		}
+
+		public void onSet( final Consumer< E > set )
+		{
+			onSet.add( set );
+		}
+
+		@Override
+		public void update()
+		{
+			onSet.forEach( c -> c.accept( getValue() ) );
+		}
+
+		public abstract E getValue();
+
+		public abstract void setValue( E e );
+
+		public E[] getValues()
+		{
+			return values;
+		}
+	}
+
 	/*
 	 *
 	 * ===============================================================
@@ -464,5 +547,35 @@ public class StyleElements
 		slider.setNumColummns( tfCols );
 		slider.setBorder( new EmptyBorder( 0, 0, 0, 6 ) );
 		return slider;
+	}
+
+	@SuppressWarnings( "unchecked" )
+	public static < E > JSpinner linkedSpinnerEnumSelector( final EnumElement< E > element )
+	{
+		final SpinnerListModel model = new SpinnerListModel( element.getValues() );
+		final JSpinner spinner = new JSpinner( model );
+		spinner.setFont( SMALL_FONT );
+		( ( DefaultEditor ) spinner.getEditor() ).getTextField().setEditable( false );
+		model.setValue( element.getValue() );
+		model.addChangeListener( e -> element.setValue( ( E ) model.getValue() ) );
+		element.onSet( e -> {
+			if ( e != model.getValue() )
+				model.setValue( e );
+		} );
+		return spinner;
+	}
+
+	@SuppressWarnings( "unchecked" )
+	public static < E > JComboBox< E > linkedComboBoxEnumSelector( final EnumElement< E > element )
+	{
+		final DefaultComboBoxModel< E > model = new DefaultComboBoxModel<>( element.values );
+		final JComboBox< E > cb = new JComboBox<>( model );
+		cb.setFont( SMALL_FONT );
+		cb.addActionListener( e -> element.setValue( ( E ) model.getSelectedItem() ) );
+		element.onSet( e -> {
+			if ( e != model.getSelectedItem() )
+				model.setSelectedItem( e );
+		} );
+		return cb;
 	}
 }
