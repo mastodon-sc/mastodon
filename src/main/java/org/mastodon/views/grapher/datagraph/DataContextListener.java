@@ -39,7 +39,7 @@ import org.mastodon.views.context.Context;
 import org.mastodon.views.context.ContextListener;
 
 /**
- * A {@link ContextListener} on vertice type {@code V} that wraps {@link Context
+ * A {@link ContextListener} on vertex type {@code V} that wraps {@link Context
  * Context&lt;V&gt;} and forwards them to a {@link ContextListener
  * ContextListener &lt;DataVertex&gt;}.
  *

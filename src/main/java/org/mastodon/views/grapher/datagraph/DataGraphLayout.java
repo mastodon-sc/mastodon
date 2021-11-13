@@ -99,7 +99,6 @@ public class DataGraphLayout< V extends Vertex< E > & HasTimepoint & HasLabel, E
 		this.ypVertex = null;
 	}
 
-
 	/**
 	 * Specify what vertices to layout.
 	 * 
